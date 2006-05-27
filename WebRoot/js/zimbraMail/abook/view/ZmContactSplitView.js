@@ -156,7 +156,7 @@ function(enable) {
 
 ZmContactSplitView.prototype._sizeChildren = 
 function(width, height) {
-	var padding = 4;		// css padding value (see ZmContactSplitView css class)
+	var padding = 5;		// css padding value (see ZmContactSplitView css class)
 	var listWidth = 200;	// fixed width size of list view
 	
 	// calc. height for children of this view
@@ -168,8 +168,8 @@ function(width, height) {
 	
 	// explicitly set the size for the xform part
 	var listSize = this._listPart.getSize();
-	var contactWidth = width - ((padding * 3) + listWidth);
-	var contactXPos = (padding * 2) + listWidth;
+	var contactWidth = width - ((padding * 5) + listWidth);
+	var contactXPos = (padding * 3) + listWidth;
 	this._contactPart.setSize(contactWidth, childHeight);
 	this._contactPart.setLocation(contactXPos, (alphabetBarHeight || Dwt.DEFAULT));
 	
@@ -224,17 +224,20 @@ function() {
 	var idx = 0;
 
 	html[idx++] = "<center>";
-	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=0 cellspacing=0 id='";
-	html[idx++] = this._alphabetBarId;
-	html[idx++] = "'><tr>"
+	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=2 cellspacing=2 width=80%><tr>"
 
 	for (var i = 0; i < alphabet.length; i++) {
-		html[idx++] = "<td class='AlphabetBarCell' onclick='ZmContactSplitView._alphabetClicked(";
+		html[idx++] = "<td onclick='ZmContactSplitView.alphabetClicked(";
 		if (i > 0)
 			html[idx++] = '"' + alphabet[i] + '"';
-		html[idx++] = "); return false;'>";
+		html[idx++] = "); return false;'";
+		if (i == 0) {
+			html[idx++] = " class='AlphabetBarCellFirst'>";		
+		} else {
+			html[idx++] = " class='AlphabetBarCell'>";		
+		}
 		html[idx++] = alphabet[i];
-		html[idx++] = "</td><td bgcolor='#FFFFFF' width=1></td>";
+		html[idx++] = "</td>";
 	}
 
 	html[idx++] = "</tr></table>";

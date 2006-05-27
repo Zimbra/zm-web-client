@@ -31,7 +31,7 @@ function ZmPicker(parent, id) {
 	this._header = new DwtToolBar(this);
 	this._label = new DwtLabel(this._header, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmPickerLabel");
 	this._header.addFiller();
-	this._close = new DwtButton(this._header, DwtLabel.IMAGE_LEFT, "TBButton");
+	this._close = new DwtButton(this._header, DwtLabel.IMAGE_LEFT, "DwtToolbarButton");
 	this._close.setImage("Close");
 	this._close.setToolTipContent(ZmMsg.close);
 	this._picker = new DwtComposite(this, "ZmPickerOverview");

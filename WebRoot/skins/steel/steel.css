@@ -25,128 +25,202 @@
 
 
 
-html						{	height:100%;}
-body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
-
-.hidden						{	display:none;		}
-.spacer						{	background-image:url(/zimbraAdmin/img/loRes/skins/steel/img/spacer.gif);		}
-
-
-
-.ConsoleOutset				{	}
-.ConsoleOutsetContents		{	width:100%;height:100%;		}
-.ConsoleOutsetTable			{	border-collapse:collapse;	width:100%; height:100%;}
-
-
-.ConsoleInset				{	}
-.ConsoleInsetContents		{	width:100%;height:100%;		}
-.ConsoleInsetTable			{	border-collapse:collapse;	width:100%; height:100%;}
-
-.ConsoleOutsetCorner		{	width:4;		height:4;		}
-.ConsoleInsetCorner			{	width:10;		height:10;		}
-.ConsoleHorizontal			{	width:100%;						}
-.ConsoleVertical			{					height:100%;	}
-.ConsoleCenter				{	width:100%;		height:100%;	}
-
-.ConsoleToolbarCorner_L_1	{	width:3;	}
-.ConsoleToolbarCorner_L_2	{	width:4;	}
-.ConsoleToolbarCorner_R_1	{	width:6;	}
-.ConsoleToolbarCorner_R_2	{	width:6;	}
-
-
-/* add to the dynamically generated chiclet styles to space things out and push the inner icon over a scooch */
-.ImgAppChiclet,
-.ImgAppChicletHover,
-.ImgAppChicletSel 			{	margin-bottom:3px; padding-left:1px;		}
-
-
+html						{	}
+body						{	@ChromeBg@		}
 
 /* classes for the skin around the various pieces of the app */
 
-.skin_table							{	border-collapse:collapse;							}
-.skin_table_fullsize				{	border-collapse:collapse; width:100%; height:100%;	}
+.skin_container						{	position:relative;	overflow:hidden;	}
+
+#skin_outer							{	display:block; width:100%;		height:100%; 		@ChromeBg@			}
 
 	
-#skin_table_outer					{	width:100%;	height:100%;							}
-	#skin_col_left					{	width:210;											}
-	#skin_col_main					{	width:auto;											}
-
-	#skin_tr_outer_top				{														}
-	#skin_tr_outer_main				{	height:100%;										}
-
-		
-#skin_table_left_chrome				{	width:210; 	height:100%;	table-layout:fixed; 	}
+.skin_table							{	width:100%;	height:100%;	border-collapse:collapse; table-layout:fixed;			}	/* NOTE: table-layout:fixed breaks FF Win */
+#skin_table_outer					{				}
+	/*	 all columns are sized with the following classes	*/
 	#skin_col_app_chooser			{	width:40px;											}
 	#skin_col_tree					{	width:170px;										}
-	#skin_tr_tree					{	height:100%;										}
-
-	
-#skin_table_main					{	width:100%; height:100%;						 	}
-	#skin_tr_app_main				{	height:100%;										}
-
-	
-
-	
-#skin_td_top						{														}
-#skin_td_logo						{	text-align:center; vertical-align:middle;			}
-#skin_td_quota						{	width:180;  text-align:right;						}
-#skin_td_quota_spacer				{	width:20;											}
-#skin_td_search						{	background-color:white;								}
-#skin_td_search_builder				{	background-color:white;								}
-
-		
-#skin_td_left_chrome				{														}
-#skin_td_right_frame				{	background-color:white;	vertical-align:top;			}
-
-	
-#skin_td_current_app				{	background-color:white;								}
-#skin_td_current_app_end			{	background-color:#EEEEEE;							}
-#skin_td_app_chooser				{														}
-#skin_td_tree						{														}
-#skin_td_status						{	background-color:#EEEEEE;							}
-#skin_td_tree_app_sash				{						 								}
+	#skin_col_tree_app_sash			{	width:8px;											}
+	#skin_col_main					{	width:auto;											}
+	#skin_col_quota					{	width:180px;										}
 
 
 
 
-
-/* these are the containers of the pieces that can be hidden and shown */
-#skin_tr_search_builder				{	display:none;										}
-#skin_tr_tree_footer_sep			{	display:none;										}
-#skin_tr_tree_footer				{	display:none;										}
-#skin_tr_top_toolbar				{	Xdisplay:none;										}
-#skin_tr_top_toolbar_shim			{	display:none;										}
-#skin_tr_bottom_toolbar				{	display:none;										}
-#skin_tr_bottom_toolbar_shim		{	Xdisplay:none;										}
-
-
-
-.skin_container						{	position:relative;	overflow:hidden;	width:100%; height:100%;	}
-
-/* named pieces of the skin that the app will work with */
-
-#skin_outer								{	width:100%;		height:100%; 	display:none;				}
-#skin_container_logo					{					height:32;									}
-#skin_container_quota					{					height:32;									}
-#search_control_inset					{																}
-#skin_container_search					{					height:25;	top:-5;		margin-bottom:-8px;	}
-#skin_container_search_builder			{					height:225;	left:-4; 						}
-#skin_container_search_builder_toolbar	{					height:26;	top:8;							}
-#skin_container_current_app				{					height:24;	top:-4; 	margin-bottom:-8px;	}
-#skin_container_app_chooser				{																}
-#skin_container_tree					{								left:-3;						}
-#skin_container_tree_footer				{					height:135;	left:-3; 						}
-#skin_container_status					{					height:30;									}
-#skin_container_app_top_toolbar			{					height:26;	top:6px;						}
-#skin_container_app_main				{																}
-#skin_container_app_bottom_toolbar		{					height:21;	top:5px;						}
-#skin_container_favorites				{					height:20;									}
-
-#XXXskin_container_tree_app_sash			{	cursor:w-resize; 					}
-
-
-
-.LogoContainer {
-	left: 54px;
-	top: 6px;
+.skin_round_inset	{
+	-moz-border-radius:3 3 3 3;
 }
+
+.skin_square_inset,
+.skin_round_inset {
+	@InsetBg@
+	@OutsetBorder@
+}
+
+.skin_toolbar_outset	{
+	@_ToolbarBorder_@
+}
+
+
+
+/* top row:  logo, search box, quota */
+#skin_tr_top							{		}
+#skin_td_logo							{	text-align:center; vertical-align:middle;			}
+#skin_border_logo						{						}
+#skin_container_logo					{						
+
+}
+
+
+#skin_td_search							{	padding:8 0 5 0;	}
+#skin_border_search						{						}
+#skin_container_search					{	
+	height:20;		margin:4 5 3 5;	
+	/height:26;		
+}
+
+
+#skin_td_quota							{	text-align:right;	}
+#skin_border_quota						{						}
+#skin_container_quota					{	
+	height:30;		margin: -2 5 0 10;  
+					/Xmargin:-10 5 0 10;
+}
+
+
+/* search builder */
+
+#skin_tr_search_builder_toolbar			{	display:none; 							}
+#skin_td_search_builder_toolbar			{	padding:0 6 0 6;						}
+#skin_border_search_builder_toolbar		{	@ToolbarContainer@	}
+#skin_container_search_builder_toolbar	{	
+	height:22;		margin:8 2 0 5;	
+					/Xmargin:0 4 0 0;
+}
+
+#skin_tr_search_builder					{	display:none;		}
+#skin_td_search_builder					{	padding:0 6 3 6;	}
+#skin_border_search_builder				{	border-top-width:0px;	}
+#skin_container_search_builder			{	
+	height:225;		margin:0 5 0 4;
+}
+
+
+
+/* current app, tree-app sash, top toolbar */
+#skin_tr_toolbar						{		}
+#skin_td_current_app					{	padding:0 0 0 6; 						}
+#skin_border_current_app				{	
+	-moz-border-radius:3 3 0 3;
+	margin-bottom:-1px;
+}
+#skin_container_current_app				{	
+	height:22;	 	margin:4 2 0 5;
+	/height:24;		/margin:0 4 0 0;
+}
+
+
+#skin_td_tree_app_sash					{	text-align:center; vertical-align:middle;		}
+#skin_border_tree_app_sash				{	cursor:e-resize; 	}
+#skin_container_tree_app_sash			{						}
+
+#skin_td_app_top_toolbar				{	padding:0 6 0 0;	}
+#skin_border_app_top_toolbar			{	@ToolbarContainer@	}
+#skin_container_app_top_toolbar			{	
+	height:22;		margin:4 2 0 5;	
+	/height:25;		/margin:0 0 0 1;
+}
+
+
+
+/* app chooser, tree, app main */
+
+#skin_tr_main							{	height:100%;		}
+
+#skin_td_app_chooser					{	padding:2 2 0 0; vertical-align:top;	}
+#skin_border_app_chooser				{	height:100%;		}
+#skin_container_app_chooser				{	
+	height:100%;
+	/margin:4 0 0 0;
+}
+
+#skin_tr_tree							{	height:100%;		}
+#skin_td_tree							{	
+		height:100%;
+		padding-bottom:2px;
+}
+#skin_border_tree						{	
+		-moz-border-radius:0 0 0 0; 
+		border-top-width:0px;
+		height:100%;
+}
+#skin_container_tree					{	
+		height:100%;	margin:0 -4 2 4; 
+						/margin:0 -2 2 2;
+}
+
+
+#skin_tr_tree_footer					{		}
+#skin_td_tree_footer					{		vertical-align:top;}
+#skin_border_tree_footer				{	
+		-moz-border-radius:0 0 3 0; 
+		border-top-width:0px;
+}
+
+#skin_container_tree_footer				{	
+		height:135;		margin:0 -4 0 4;  
+						/margin:0 0 0 0;
+}
+
+
+
+#skin_td_app_main						{	
+	padding:0 6 7 0;	 
+	/padding:0 6 4 0;
+}
+#skin_border_app_main					{	
+											border-top-width:0px;
+											/border-width:1px; /border-top-width:0;
+											height:100%;
+											@PageBg@
+}
+#skin_container_app_main				{	
+		height:100%;	margin:0 -4 -3 4;	
+						/margin:0 -2 0 1;
+}
+
+
+
+
+/* status box */
+
+#skin_tr_status	{	}
+#skin_td_status {	
+		padding:5 0 5 6;
+}
+#skin_border_status {	
+	-moz-border-radius:3 3 0 3;	
+}
+#skin_container_status					{	
+		height:30;		margin:8 -4 0 8;
+						/margin:15 0 0 0;
+}
+
+.AppSash-vert {
+	height:11px;
+}
+
+
+/* Hack the AppChiclets to do them with CSS instead of images */
+.ImgAppChiclet, 
+.ImgAppChicletHover,						
+.ImgAppChicletSel						{	
+		position:relative; 
+		background-image:none;		
+		right:1;
+		width:20; height:20;	margin:0 0 0 9; padding:4 2 0 6; 
+		/width:30; /height:28;	/margin:0 0 0 10;	/padding:5 13 0 0;
+}
+.ImgAppChiclet							{	@AppTabContainer@			}
+.ImgAppChicletHover						{	@AppTabContainer-hover@		}
+.ImgAppChicletSel						{	@AppTabContainer-selected@	}

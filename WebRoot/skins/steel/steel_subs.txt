@@ -1,196 +1,76 @@
 
-
-// SUBSTITUTIONS PERFORMED WITHIN THIS FILE ONLY -- DON'T USE OUTSIDE THIS FILE!
-
+// Items below that begin and end with "_" should only be used within this file -- never in another CSS file
 
 SkinImgDir					= /zimbra/skins/steel/img
 SkinAnimatedImgDir			= /zimbra/img/animated
 DwtImgDir					= /zimbra/img/loRes/dwt
 
-_ChromeBgColor_				= #B7B7B7
-_ChromeBgImg_				= url(@SkinImgDir@/Steel__BG.gif)
-_ChromeTextColor_			= black
-
-_InsetBgColor_				= white
-_InsetBgImg_				= none
-_InsetTextColor_			= black
-_InsetSeparatorColor_		= #cccccc
 
 
-_ToolbarBgColor_			= #eeeeee
-_ToolbarTextColor_			= black
-_HToolbarBgImg_				= url(@SkinImgDir@/Toolbar__BG.gif)
-_VToolbarBgImg_				= url(@SkinImgDir@/Toolbar__BG.gif)
+// Colors.  Note that this is designed for a primarily monochrome interface.
+_BaseColor_	= #bbbbbb
+
+// darker and lighter shades of base color, used for bgs, borders and shadows
+_BaseColorD1_		= #c6c6c6
+_BaseColorD2_		= #bcbcbc
+_BaseColorD3_		= #b1b1b1
+_BaseColorD4_		= #a6a6a6
+_BaseColorD5_		= #9a9a9a
+_BaseColorD6_		= #858585
+_BaseColorD7_		= #6e6e6e
+_BaseColorD8_		= #737373
+_BaseColorD9_		= #424242
+_BaseColorD10_		= #2c2c2c
 	
-_TreeBgColor_				= #eeeeee
-_TreeBgImg_					= url(@SkinImgDir@/Toolbar__BG.gif)
-_TreeTextColor_				= black
+_BaseColorL1_		= #eeeeee
+_BaseColorL2_		= #f8f8f8
 
-_TreeHeaderBgColor_			= #dcdcdc
-_TreeHeaderBgImg_			= url(@SkinImgDir@/PebbleDark__BG.gif)
-_TreeHeaderTextColor_		= black
-_TreeSeparatorColor_		= #333333
-
-_PageBgColor_				= #eeeeee
-_PageBgImg_					= none
-
-_PageHeaderBgColor_			= #dddddd
-_PageHeaderBgImg_			= none
-
-_ContentBgColor_			= white
-_ContentBgImg_				= none
-
-_SeparatorColor_			= #999999
-_LightSeparatorColor_		= #eeeeee
+SeparatorColor		= @_BaseColorD5_@
+LightSeparatorColor	= @_BaseColorD2_@
+DarkSeparatorColor	= @_BaseColorD8_@
 
 
-_TextColor_					= black
-_LabelColor_				= #666666
-_RequiredLabelColor_		= darkred
-_DisabledTextColor_			= #666666
-_DisabledBgColor_			= #dddddd
-_AnchorTextColor_			= darkblue
-_AnchorTextColor-hover_		= darkblue
-_AnchorTextColor-clicked_	= green
+// selection color, used for selected row/etc, focus items and default button
+_SelColor_			= #add6d6
+_SelColorD1_		= #9bc0c0
+_SelColorD2_		= #8aabab
+_SelColorD3_		= #799595
+_SelColorD4_		= #566b6b
+_SelColorL1_		= #c9d5cc
+_SelColorL2_		= #dbe2d5
 
-_NormalButtonBgColor_		= #cccccc
-_NormalButtonBgImg_			= url(@DwtImgDir@/ButtonUp__H.gif)
-_NormalButtonTextColor_		= black
-_NormalButtonBorderColor_	= 
-_DefaultButtonBgColor_		= #cccccc
-_DefaultButtonBgImg_		= url(@DwtImgDir@/ButtonUpDefault__H.gif)
-
-// IT IS DIFFICULT TO DO ATTRACTIVE X-PLATFORM BORDERS, SO SET IT UP HERE AND USE IT EVERYWHERE WE CAN
-_OutsetBorder_				= border: 1px solid; border-color:#cccccc black black #cccccc;
-_InsetBorder_				= border: 1px solid; border-color:black #cccccc #cccccc black;
-_DisabledBorder_			= border: 1px solid #cccccc;
-
-_NormalButtonBorder_		= @_OutsetBorder_@
-_NormalButtonDisabledBorder_ = @_DisabledBorder_@
-_DefaultButtonBorder_		= @_OutsetBorder_@
-_ToolbarButtonBorder_		= border: 0px; padding:1px;
-_InsetButtonBorder_			= border: 1px solid @_InsetBgColor_@;
-_HoverBorder_				= @_OutsetBorder_@
-_ClickedBorder_				= @_InsetBorder_@
-
-_NormalButtonSize_			= min-width:60px; height:20px; 
-
-_HoverBgColor_				= 
-_HoverBgImg_				= url(@DwtImgDir@/ButtonDown__H.gif)
-_HoverTextColor_			= black
-
-_ClickedBgColor_			= 
-_ClickedBgImg_				= url(@DwtImgDir@/ButtonDown__H.gif)
-_ClickedTextColor_			= black
-
-_SelectBgColor_				= @_NormalButtonBgColor_@
-_SelectBgImg_				= @_NormalButtonBgImg_@
-_SelectBorder_				= @_NormalButtonBorder_@
-_SelectTextColor_			= @_NormalButtonTextColor_@
-_SelectDisabledBorder_		= @_NormalButtonDisabledBorder_@
-
-_SelectSize_				= min-height:20px; 
-
-_MenuBgColor_			 	= @_TreeBgColor_@
-_MenuBgImg_					= @_TreeBgImg_@
-_MenuTextColor_				= @_ChromeTextColor_@
-_MenuItemBorder_			= border: 1px solid @_MenuBgColor_@;
+// a list item that is selected, but its container is unfocused
+_SelUnfocusColor_	= #dddddd
 
 
-_NoticeTextColor_			= black
-_NoticeBorder_				= border: 1px solid black;
-_InfoBgColor_				= #92e38e
-_WarningBgColor_			= #FFF6BF
-_CriticalBgColor_			= #F5BFBF
+HilightColor		= #e3da93
+MatchedColor		= @HilightColor@
+RightClickColor		= @HilightColor@
+HeaderColor			= @_BaseColorD1_@
+HeaderColor-hover	= @_BaseColorD2_@
+ValueChangedColor	= @_SelColorD4_@
+
+InputBgColor		= white
+WidgetBgColor		= @_BaseColorD1_@
 
 
-_InputBgColor_				= @_ContentBgColor_@
-_InputTextColor_			= @_TextColor_@
-_InputErrorBgColor_			= #fde79a
-_InputErrorTextColor_		= @_TextColor_@
-_InputDisabledBgColor_		= @_DisabledBgColor_@
-_InputDisabledTextColor_	= @_DisabledTextColor_@
-_InputBorder_				= @_InsetBorder_@
+// Drag and drop colors
+DragBg				= background-color:@HilightColor@;
+DragText			= color:@Text@;
+DropBg				= background-color:@HilightColor@;
+DropText			= color:@Text@;
+DropAllowedColor	= green;
+DropNotAllowedColor = red;
+
+// backgrounds for various states
+SelectedBg			= background-color:@_SelColor_@;
+SelectedBg-blurred	= background-color:@_SelUnfocusColor_@;
+SelectedBg-focused	= background-color:@_SelColor_@;
+MatchedBg			= background-color:@MatchedColor@;
+RightClickBg		= background-color:@RightClickColor@;
 
 
-_NormalRowBgColor_			= none
-_NormalRowBgImg_			= none
-
-_SelectedBgColor_			= #add6d6
-_SelectedRowBgImg_			= none
-_SelectedTextColor_			= @_TextColor_;
-
-_MatchedBgColor_			= yellow
-_MatchedRowBgImg_			= none
-_MatchedTextColor_			= black
-
-_RightClickBgColor_			= #C8E4E4
-_RightClickBgImg_			=
-_RightClickTextColor_		= black
-
-_DragBgColor_				= #eeeeee
-_DragTextColor_				= black
-_DropBgColor_				= #C8E4E4
-_DropTextColor_				= black
-
-_WidgetHeaderBgColor_		= @_PageHeaderBgColor_@
-_WidgetHeaderBgImg_			= none
-_WidgetHeaderSize_			= 24px
-_WidgetHeaderBorder_		=
-_WidgetHeaderHoverBgColor_	= #bbbbbb
-_WidgetHeaderHoverBgImg_	= none
-_BigWidgetHeaderBgImg_		= none
-
-
-_TooltipBgColor_			= none
-_TooltipBgImg_				= none
-_TooltipTextColor_			= black
-_TooltipLabelColor_			= #cccccc
-
-_DialogBgColor_				= white
-_DialogBgImg_				= none
-_DialogTextColor_			= @_TextColor_@
-_DialogLabelColor_			= @_LabelColor_@
-_DialogTitleTextColor_		= white
-
-_FocusBorder_				= border: 1px dotted black;
-
-
-TextPaddingSize				= 3px
-BoxPaddingSize				= 5px
-BoxMarginSize				= 5px
-SmallBoxPaddingSize			= 2px
-
-_TreeItemHeight_			= 18px
-_ListHeaderHeight_			= 22px
-_ListItemHeight_			= 20px
-_SmallIconSize_				= 16px
-_BigIconSize_				= 32px
-
-_SashBgColor_				= @_ChromeBgColor_@
-_SashGripColor_				= @_SeparatorColor_@
-_SashSize_					= 8px
-
-
-FontDefault					= font-family: Tahoma, Arial, Helvetica, sans-serif;
-FontFixed					= font-family: monospace; font-size:12px;
-
-FontNormal					= font-size:11px;
-FontBig						= font-size:12px;
-FontBigger					= font-size:15px; font-weight:bold;
-FontBiggest					= font-size:18px; font-weight:bold;
-FontSmaller					= font-size:9px;
-FontMiniscule				= font-size:6px;
-FontImportant				= color:darkred;
-FontError					= color:darkred;
-FontToday					= color:darkred; font-weight:bold;
-
-
-// END EASILY CUSTOMIZED BITS -- BELOW THIS YOU'RE ON YOUR OWN
-
-
-// CONVENIENCE STUFF
-
+// Short-hand substitutions used below, placed here for convenience
 InactiveCursor				= cursor: default;
 ActiveCursor				= cursor: pointer;
 DisabledCursor				= cursor: not-allowed;
@@ -204,6 +84,223 @@ FullHeight					= height:100%;
 CompactTable				= border-collapse:collapse; border-spacing:none; padding:0px;
 TableFixed					= table-layout:fixed;
 NoWrap						= white-space:nowrap; overflow:hidden;
+
+TransparentBg				=
+
+
+// Text colors and styles (for use on widgets, Page, Header and App regions -- other regions may have different colors)
+
+Text					 	= color: black;
+Label-wrap				 	= color: black; 
+Label				 		= @Label-wrap@ white-space:nowrap; overflow:hidden;
+Text-required			 	= color: darkred;
+Text-disabled				= color: @_BaseColorD8_@;
+Text-contrast				= color: white;
+Text-hover					= @Text@
+Text-clicked				= @Text@
+Text-default				= @Text@
+Text-focused				= @Text@
+Text-today					= color:darkred; font-weight:bold;
+Text-unread					= @Text@ font-weight:bold;
+Text-deleted				= @Text-disabled@ font-style:italic;
+Text-important				= color:darkred;
+Text-error					= color:darkred;
+Text-matched				= color:black;
+
+
+
+// fonts
+// TODO: change to "TextDefault"...?
+FontFamily-default			= font-family: Tahoma, Arial, Helvetica, sans-serif;
+FontFamily-fixed			= font-family: monospace; font-size:12px;
+FontFamily-html				= font-family:Verdana,Arial,serif;
+
+FontSize-normal				= font-size:11px;
+FontSize-big				= font-size:13px;
+FontSize-bigger				= font-size:15px; font-weight:bold;
+FontSize-biggest			= font-size:18px; font-weight:bold;
+FontSize-smaller			= font-size:9px;
+FontSize-miniscule			= font-size:6px;
+FontSize-html				= font-size:10pt;
+
+_WindowTitleTextStyle_		= font-weight:bold; padding:0 5 2 5;	@FontSize-big@;
+WindowTitleText				= @Text-contrast@ 	@_WindowTitleTextStyle_@
+WindowTitleText-light		= @Text@ 			@_WindowTitleTextStyle_@
+
+
+//
+// BORDERS:  create attractive, logical x-platform borders and use them consistently for all widgets and skin pieces
+//
+TransparentBorder			= padding:2px;	border-width:0px; 
+OutsetBorder				= padding:0px;	border:2px solid; border-color:@_BaseColorD3_@ @_BaseColorD6_@ @_BaseColorD6_@ @_BaseColorD3_@; 	-moz-border-left-colors:@_BaseColorD3_@ @_BaseColorD2_@; 	-moz-border-top-colors: @_BaseColorD3_@ @_BaseColorD2_@; 	-moz-border-bottom-colors: @_BaseColorD6_@ @_BaseColorD4_@;		-moz-border-right-colors: @_BaseColorD6_@ @_BaseColorD4_@;
+InsetBorder					= padding:0px;	border:2px solid; border-color:@_BaseColorD7_@ @_BaseColorD3_@ @_BaseColorD3_@ @_BaseColorD7_@; 	-moz-border-left-colors:@_BaseColorD3_@ @_BaseColorD7_@; 	-moz-border-top-colors: @_BaseColorD3_@ @_BaseColorD7_@; 	-moz-border-bottom-colors: @_BaseColorD2_@ @_BaseColorD3_@;		-moz-border-right-colors: @_BaseColorD2_@ @_BaseColorD3_@;
+DisabledBorder				= padding:0px;	border:2px solid; border-color:@_BaseColorD3_@; 													-moz-border-left-colors:@_BaseColorD3_@ transparent; 		-moz-border-top-colors: @_BaseColorD3_@ transparent; 		-moz-border-bottom-colors: @_BaseColorD3_@ transparent; 		-moz-border-right-colors: @_BaseColorD3_@ transparent;
+DefaultBorder				= padding:0px;	border:2px solid; border-color:@_SelColorD2_@ @_SelColorD4_@ @_SelColorD4_@ @_SelColorD2_@;			-moz-border-left-colors:@_SelColorD2_@ @_SelColorD1_@; 		-moz-border-top-colors: @_SelColorD2_@ @_SelColorD1_@; 		-moz-border-bottom-colors: @_SelColorD4_@ @_SelColorD3_@; 		-moz-border-right-colors: @_SelColorD4_@ @_SelColorD3_@;
+FocusBorder					= padding:0px;	border:2px solid; border-color:@_SelColorD2_@ @_SelColorD4_@ @_SelColorD4_@ @_SelColorD2_@;			-moz-border-left-colors:@_SelColorD2_@ @_SelColorD1_@; 		-moz-border-top-colors: @_SelColorD2_@ @_SelColorD1_@; 		-moz-border-bottom-colors: @_SelColorD4_@ @_SelColorD3_@; 		-moz-border-right-colors: @_SelColorD4_@ @_SelColorD3_@;
+DragBorder					= @FocusBorder@
+ItemBottomBorder			= padding:0px;	border-width:0px; border-bottom:1px solid @LightSeparatorColor@; padding-bottom:1px; padding-top:2px;
+
+_InputBorder_				= padding:2 4 2 4; border:1px solid; border-color:black @_BaseColorD1_@ @_BaseColorD1_@ black;
+_InputBorder-disabled_		= padding:2 4 2 4; border:1px solid @_BaseColorD1_@;
+_InputBorder-focused_		= padding:1 4 1 4; border:2px solid; border-color:@_SelColorD4_@ @_SelColorD1_@ @_SelColorD1_@ @_SelColorD4_@; -moz-border-left-colors:@_SelColorD3_@ @_SelColorD4_@; 		-moz-border-top-colors: @_SelColorD3_@ @_SelColorD4_@; 		-moz-border-bottom-colors: @_SelColorD1_@ @_SelColorD2_@; 		-moz-border-right-colors: @_SelColorD1_@ @_SelColorD2_@;
+_InputBorder-error_			= @_InputBorder_@
+
+_SmallButtonBorder_			= padding:2px; border:0px; 
+_SmallButtonBorder-hover_	= padding:1px; border:1px solid; border-color:@LightSeparatorColor@ @DarkSeparatorColor@ @DarkSeparatorColor@ @LightSeparatorColor@;
+_SmallButtonBorder-clicked_ = padding:1px; border:1px solid; border-color:@DarkSeparatorColor@ @LightSeparatorColor@ @LightSeparatorColor@ @DarkSeparatorColor@;
+
+_ToolbarBorder_				= border: 2px solid @_BaseColorD4_@;  /border-width:1; -moz-border-radius:3 3 0 0; border-color:@_BaseColorD5_@ @_BaseColorD7_@ @_BaseColorD7_@ @_BaseColorD5_@;	-moz-border-left-colors:@_BaseColorD3_@ @_BaseColorD1_@;	-moz-border-top-colors: @_BaseColorD3_@ @_BaseColorD1_@;	-moz-border-bottom-colors: @_BaseColorD8_@ @_BaseColorD4_@;	-moz-border-right-colors: @_BaseColorD6_@ @_BaseColorD4_@;
+_InlineToolbarBorder_		= @_ToolbarBorder_@	-moz-border-radius:0 0 0 0;
+_WidgetHeaderBorder_		= border-bottom:1px solid @DarkSeparatorColor@; padding-top:1px;
+
+// Borders and backgrounds for windows (dialogs, tooltip and the like)
+WindowOuterContainer		= background-color:@_BaseColorD8_@;	padding:2px; border:2px solid; border-color:@_BaseColorD7_@ @_BaseColorD9_@ @_BaseColorD9_@ @_BaseColorD7_@; -moz-border-radius:2 2 2 2; -moz-border-left-colors:@_BaseColorD6_@ @_BaseColorD7_@; -moz-border-top-colors: @_BaseColorD6_@ @_BaseColorD7_@; -moz-border-bottom-colors: @_BaseColorD10_@ @_BaseColorD9_@; -moz-border-right-colors: @_BaseColorD10_@ @_BaseColorD9_@;
+WindowInnerContainer		= @PageBg@							padding:4px; border:2px solid; border-color:@_BaseColorD9_@ @_BaseColorD7_@ @_BaseColorD7_@ @_BaseColorD9_@; -moz-border-radius:3 3 3 3; -moz-border-left-colors:@_BaseColorD9_@ @_BaseColorD10_@; -moz-border-top-colors: @_BaseColorD9_@ @_BaseColorD10_@; -moz-border-bottom-colors: @_BaseColorD7_@ @_BaseColorD6_@; -moz-border-right-colors:  @_BaseColorD7_@ @_BaseColorD6_@; vertical-align:top;	@InactiveCursor@
+WindowOuterContainer-light	= background-color:@_BaseColorD1_@;	padding:3px; border:2px solid; border-color:@_BaseColorD3_@ @_BaseColorD6_@ @_BaseColorD6_@ @_BaseColorD3_@; -moz-border-radius:2 2 2 2; -moz-border-left-colors:@_BaseColorD3_@ @_BaseColorD2_@; -moz-border-top-colors: @_BaseColorD3_@ @_BaseColorD2_@; -moz-border-bottom-colors: @_BaseColorD6_@ @_BaseColorD4_@; -moz-border-right-colors: @_BaseColorD6_@ @_BaseColorD4_@;
+WindowInnerContainer-light	= @PageBg@							padding:4px; border:2px solid; border-color:@_BaseColorD7_@ @_BaseColorD3_@ @_BaseColorD3_@ @_BaseColorD7_@; -moz-border-radius:3 3 3 3; -moz-border-left-colors:@_BaseColorD3_@ @_BaseColorD7_@; -moz-border-top-colors: @_BaseColorD3_@ @_BaseColorD7_@; -moz-border-bottom-colors: @_BaseColorD2_@ @_BaseColorD3_@; -moz-border-right-colors: @_BaseColorD2_@ @_BaseColorD3_@; vertical-align:top;	@InactiveCursor@
+
+_AppTabStyle_			 	= border-right-width:0px;	-moz-border-radius:3 0 0 3;
+AppTabContainer				= @_ToolbarBorder_@ 	background-color:@_BaseColor_@;		@_AppTabStyle_@
+AppTabContainer-hover		= @_ToolbarBorder_@ 	background-color:@_BaseColorL2_@;	@_AppTabStyle_@
+AppTabContainer-selected	= @_ToolbarBorder_@ 	background-color:@_BaseColorL1_@;	@_AppTabStyle_@
+
+
+
+//
+// Zones in the skin
+//
+
+ChromeBg					= background-color:@_BaseColor_@; background-image:url(@SkinImgDir@/Console__BG.gif);
+ChromeText					= @Text@
+
+InsetBg						= background-color:@_BaseColorL2_@;
+InsetText					= @Text@
+
+ToolbarBg					= background-color: @_BaseColorD3_@;
+VToolbarBg					= @ToolbarBg@
+
+TreeContainer				= background-color:@_BaseColorL2_@;
+TreeHeaderContainer			= background-color:@HeaderColor@;	@TopSeparator@
+TreeHeaderText				= @Text@ font-weight:bold;
+
+PageBg						= background-color:@_BaseColorL1_@;
+PageHeaderBg				= background-color:@HeaderColor@;
+PageHeaderText				= @Text@
+
+AppBg						= background-color:@_BaseColorL2_@;
+AppBorder					= @InsetBorder@
+
+_SashBg_					= background-color:@_BaseColor_@;
+_SashContentsColor_			= @_BaseColorD3_@
+
+
+
+// Widget semantics
+
+_NormalButtonSize_			= min-width:60px; /width:60px;  height:20px; 
+_SelectSize_				= height:20px; 
+_InputSize_					= height:20px;
+_ListItemSize_				= height:20px;
+WidgetHeaderSize			= height:20px;
+WidgetHeaderSize-big		= height:36px;
+MenuSize					= min-width:40px;  width:40px;
+_TreeItemSize_				= height:20px;
+_PickerSize_				= width:200px;
+SashSize					= 8px
+MiniCalButtonSize			= 
+
+TextPaddingSize				= 3px
+BoxPaddingSize				= 5px
+BoxMarginSize				= 5px
+SmallBoxPaddingSize			= 2px
+
+SmallIconWidth				= 16px
+SmallIconHeight				= 16px
+BigIconWidth				= 32px
+BigIconHeight				= 32px
+
+
+
+// "Widgets" here means buttons, selects and tabs
+_WidgetContainerStyle_		= -moz-border-radius:1 1 1 1; 
+_WidgetContainer_			= background-color:@WidgetBgColor@;		@OutsetBorder@		@_WidgetContainerStyle_@
+_WidgetContainer-disabled_ 	= background-color:none;				@DisabledBorder@	@_WidgetContainerStyle_@
+_WidgetContainer-hover_		= background-color:@_BaseColorL1_@;		@OutsetBorder@		@_WidgetContainerStyle_@
+_WidgetContainer-selected_	= background-color:@_BaseColorL2_@;		@OutsetBorder@		@_WidgetContainerStyle_@
+_WidgetContainer-clicked_	= background-color:@_BaseColorL2_@;		@InsetBorder@		@_WidgetContainerStyle_@
+_WidgetContainer-default_	= background-color:@_SelColorL2_@;		@DefaultBorder@		@_WidgetContainerStyle_@
+_WidgetContainer-focused_	= background-color:@_SelColor_@;		@FocusBorder@		@_WidgetContainerStyle_@
+_WidgetContainer-toggled_	= background-color:@HilightColor@;		@InsetBorder@		@_WidgetContainerStyle_@
+
+
+// "WidgetHeader" means headers of trees, lists, message header, etc
+WidgetHeaderContainer		= background-color:@HeaderColor@; 		@_WidgetHeaderBorder_@
+WidgetHeaderContainer-hover	= background-color:@HeaderColor-hover@; @_WidgetHeaderBorder_@
+
+
+// special case for toolbar buttons that don't have a border normally
+_ToolbarButtonContainer_	= background-color:none;			@TransparentBorder@
+
+// "Items" means listItems and menuItems
+_ItemContainerStyle_		= border-left-width:0; border-right-width:0;
+_ItemContainer_				= background-color:@_BaseColorL2_@;		@TransparentBorder@	@_ItemContainerStyle_@
+_ItemContainer-disabled		= @_ItemContainer_@
+_ItemContainer-selected_	= background-color:@_SelColor_@;		@TransparentBorder@	@_ItemContainerStyle_@
+_ItemContainer-focused_		= 										@FocusBorder@		@_ItemContainerStyle_@
+_ItemContainer-sel-focus_	= background-color:@_SelColor_@;		@FocusBorder@		@_ItemContainerStyle_@
+_ItemContainer-hover_		= background-color:@_BaseColorL1_@;		@OutsetBorder@		@_ItemContainerStyle_@
+_ItemContainer-down_		= background-color:@_BaseColorL1_@;		@InsetBorder@		@_ItemContainerStyle_@
+_ItemContainer-matched_		= background-color:@MatchedColor@;		@TransparentBorder@	@_ItemContainerStyle_@
+_ItemContainer-rightClicked_= background-color:@RightClickColor@;	@TransparentBorder@	@_ItemContainerStyle_@
+
+_ItemContainer-header_		= background-color:@HeaderColor@;		@TransparentBorder@	@_ItemContainerStyle_@
+
+
+ToolbarContainer			= @ToolbarBg@ @_ToolbarBorder_@
+InlineToolbarContainer		= @ToolbarBg@ @_InlineToolbarBorder_@
+
+// "Inputs" means input elements only
+InputField					= @Text@			background-color:@InputBgColor@;		@_InputBorder_@				@_InputSize_@
+InputField-focused			= @Text@			background-color:@InputBgColor@;		@_InputBorder-focused_@		@_InputSize_@
+InputField-error			= @Text@			background-color:@HilightColor@; 		@_InputBorder-error_@			@_InputSize_@
+InputField-disabled			= @Text-disabled@	background-color:@_BaseColor_@; 		@_InputBorder-disabled_@		@_InputSize_@
+
+// "TextArea" inputs
+TextArea					= @Text@			background-color:white; 			@_InputBorder_@			
+TextArea-focused			= @Text@			background-color:white; 			@_InputBorder-focused_@	
+TextArea-error				= @Text@			background-color:@HilightColor; 	@_InputBorder-error_@	
+TextArea-disabled			= @Text-disabled@	background-color:@_BaseColor_@; 	@_InputBorder-disabled_@
+
+
+// "Notice" is for the toast pane and warning messages that appear in Admin
+NoticeOuterBorder			= @WindowOuterContainer-light@
+NoticeInnerBorder			= @WindowInnerContainer-light@
+NoticeText					= @Text@ font-weight:bold;
+
+// colors for different levels of notice
+InfoBg						= background-color:#92e38e;
+WarningBg					= background-color:#FFF6BF;
+CriticalBg					= background-color:#F5BFBF;
+
+
+
+TooltipContainer			= 
+TooltipText					= @Text@
+TooltipText-label			= @Label@
+
+
+
+
+
+
+
+
+//
+//
+// END EASILY CUSTOMIZED BITS -- BELOW THIS YOU'RE ON YOUR OWN
+//
+//
+
 
 VerticalScrollOverflow		= overflow:-moz-scrollbars-vertical; overflow-x:hidden; overflow-y:auto;
 
@@ -220,309 +317,231 @@ ImagePadding				= padding-right: @BoxMarginSize@;
 
 
 
+// different separator pieces
+
+FixIESizeQuirk				= font-size:1px; line-height: 1px;
+
+SeparatorBorder				= border: 1px solid @SeparatorColor@;
+LeftSeparator				= border-left: 1px solid @SeparatorColor@;		Xfont-size:1px;
+TopSeparator				= border-top: 1px solid @SeparatorColor@;			Xfont-size:1px;
+BottomSeparator				= border-bottom: 1px solid @SeparatorColor@;		Xfont-size:1px;
+RightSeparator				= border-right:  1px solid @SeparatorColor@;		Xfont-size:1px;
+SeparatorBg					= background-color: @SeparatorColor@; padding: 0px;
+
+PrettyBottomSeparator		= height:2px; border-bottom:2px solid @SeparatorColor@; /border-bottom-width:1px;	-moz-border-bottom-colors:@LightSeparatorColor@ @DarkSeparatorColor@ ;
+
+LeftSeparator-light			= border-left: 1px solid @LightSeparatorColor@;
+TopSeparator-light			= border-top: 1px solid @LightSeparatorColor@;
+RightSeparator-light		= border-right: 1px solid @LightSeparatorColor@;
+BottomSeparator-light		= border-bottom: 1px solid @LightSeparatorColor@;
+
+SectionLabel				= @Label@ @BottomSeparator@ @FontSize-bigger@
 
 
-// TEXT (for use on Page, Header and Content regions -- other regions have their own text colors)
+FieldSet				 	= border: 1px solid @SeparatorColor@; @BoxSpacing@
+FieldSetLabel				= @Label@ font-weight:bold;
 
-Text					 	= color: @_TextColor_@;
-Label				 		= color: @_LabelColor_@; @NoWrap@
-LabelWrap				 	= color: @_LabelColor_@; 
-RequiredText			 	= color: @_RequiredTextColor_@;
-HoverText				 	= color: @_HoverTextColor_@;
-ClickedText				 	= color: @_ClickedTextColor_@;
-DisabledText				= color: @_DisabledTextColor_@;
-
-
-UnreadText					= @Text@ font-weight:bold;
-DeletedText					= @DisabledText@ font-style:italic;
-
-HTMLText					= font-family:Verdana,Arial,serif;
-HTMLTextSize				= font-size:10pt;
-
-// DIFFERENT REGIONS OF THE SKIN
-
-ChromeBg					= background-color:@_ChromeBgColor_@; background-image:@_ChromeBgImg_@;
-ChromeText					= color:@_ChromeTextColor_@; @InactiveCursor@
-
-InsetBg						= background-color:@_InsetBgColor_@; background-image:@_InsetBgImg_@;
-InsetText					= color:@_InsetTextColor_@;
-InsetBorder					= border: 1px solid @_InsetBgColor_@;
-
-ToolbarBg					= background-color:@_ToolbarBgColor_@; background-image:@_HToolbarBgImg_@;
-VToolbarBg					= background-color:@_ToolbarBgColor_@; background-image:@_VToolbarBgImg_@;
-ToolbarText					= color:@_ToolbarTextColor_@;
-
-TreeBg						= background-color:@_TreeBgColor_@; background-image:@_TreeBgImg_@;
-TreeText					= color:@_TreeTextColor_@;
-TreeDisabledText			= @DisabledText@
-TreeBorder					= border: 1px solid @_TreeBgColor_@;
-
-TreeHeaderBg				= background-color:@_TreeHeaderBgColor_@; background-image:@_TreeHeaderBgImg_@;
-TreeHeaderText				= color: @_TreeHeaderTextColor_@;
-TreeHeaderBorder			= border: 1px solid @_TreeHeaderBgColor_@;
-TreeHeaderBigBorder			= @_OutsetBorder_@
-
-PageBg						= background-color:@_PageBgColor_@; background-image:@_PageBgImg_@;
-PageHeaderBg				= background-color:@_PageHeaderBgColor_@; background-image:@_PageHeaderBgImg_@;
-PageHeaderText				= @Text@
-
-ContentBg					= background-color:@_ContentBgColor_@; background-image:@_ContentBgImg_@;
-ContentBorder				= @_InsetBorder_@
-
-SeparatorBorder				= border: 1px solid @_SeparatorColor_@;
-LeftSeparator				= border-left: 1px solid @_SeparatorColor_@;		Xfont-size:1px;
-TopSeparator				= border-top: 1px solid @_SeparatorColor_@;			Xfont-size:1px;
-BottomSeparator				= border-bottom: 1px solid @_SeparatorColor_@;		Xfont-size:1px;
-RightSeparator				= border-right:  1px solid @_SeparatorColor_@;		Xfont-size:1px;
-SeparatorBg					= background-color: @_SeparatorColor_@; padding: 0px;
-FixIESizeQuirk				= font-size:1px;
-
-LeftSeparator-light			= border-left: 1px solid @_LightSeparatorColor_@;
-TopSeparator-light			= border-top: 1px solid @_LightSeparatorColor_@;
-RightSeparator-light		= border-right: 1px solid @_LightSeparatorColor_@;
-BottomSeparator-light		= border-bottom: 1px solid @_LightSeparatorColor_@;
-
-WidgetHeaderBg				= @BottomSeparator@ background-color:@_WidgetHeaderBgColor_@; background-image:@_WidgetHeaderBgImg_@; @_WidgetHeaderBorder_@ height:@_WidgetHeaderSize_@;
-WidgetHeaderHoverBg			= @BottomSeparator@ background-color:@_WidgetHeaderHoverBgColor_@; background-image:@_WidgetHeaderHoverBgImg_@; @_WidgetHeaderBorder_@ height:@_WidgetHeaderSize_@;
-BigWidgetHeaderBg			= background-color:@_WidgetHeaderBgColor_@; background-image:@_BigWidgetHeaderBgImg_@;
-
-SectionLabel				= @Label@ @BottomSeparator@ @FontBigger@
-
-DialogBg					= background-color:@_DialogBgColor_@; background-image:@_DialogBgImg_@;
-DialogText					= color:@_DialogTextColor_@;
-DialogLabel					= color:@_LabelColor_@;
-DialogTitleText				= color:@_DialogTitleTextColor_@; @FontBig@ font-weight:bold;
-
-TooltipBg					= background-color:@_TooltipBgColor_@; background-image:@_TooltipBgImg_@;
-TooltipText					= color:@_TooltipTextColor_@;
-TooltipLabel				= color:@_TooltipLabelColor_@;
-
-
-InfoBg						= background-color:@_InfoBgColor_@;
-WarningBg					= background-color:@_WarningBgColor_@;
-CriticalBg					= background-color:@_CriticalBgColor_@;
-NoticeText					= color:@_NoticeTextColor_@;
-NoticeBorder				= @_NoticeBorder_@
-
-
-FieldSet				 	= border: 1px solid @_SeparatorColor_@; @BoxSpacing@
-FieldSetLabel				= @PageBg@ @Label@
-
-
-
-// GENERIC ROLLOVER AND CLICK APPEARANCE
-
-TransparentBg				=
-
-NormalButtonBg				= background-color:@_NormalButtonBgColor_@; background-image:@_NormalButtonBgImg_@;
-NormalButtonText			= color: @_NormalButtonTextColor_@; text-align:center;	@NoWrap@
-DefaultButtonBg				= background-color:@_DefaultButtonBgColor_@; background-image:@_DefaultButtonBgImg_@;
-DisabledButtonBg			= background-color:@_DisabledBgColor_@;
-
-SelectBg					= background-color:@_SelectBgColor_@; background-image:@_SelectBgImg_@;
-
-HoverBg						= background-color:@_HoverBgColor_@; background-image:@_HoverBgImg_@;
-HoverText					= color: @_HoverTextColor_@;
-
-ClickedBg					= background-color:@_ClickedBgColor_@; background-image:@_ClickedBgImg_@;
-ClickedText					= color: @_ClickedTextColor_@;
-
-SelectedBg					= background-color:@_SelectedBgColor_@; background-image:@_SelectedBgImg_@;
-SelectedText				= color: @_SelectedTextColor_@; @TextPadding@ vertical-align:center; overflow:hidden;
-SelectedBorder				= border: 1px solid @_SelectedBgColor_@
-
-FocusBorder					= @_FocusBorder_@
-
-
-// GENERIC LIST SELECTION APPEARANCE
-
-
-SelectedBg					= background-color:@_SelectedBgColor_@;
-SelectedText				= color:@_TextColor_@;
-
-MatchedBg					= background-color:@_MatchedBgColor_@;
-MatchedText					= color:@_MatchedTextColor_@;
-
-RightClickBg				= background-color:@_RightClickBgColor_@;
-RightClickText				= color:@_RightClickTextColor_@;
-
-DragBg						= background-color:@_DragBgColor_@;
-DragText					= color:@_DragTextColor_@;
-DragBorder					= border:1px solid @_DragBgColor_@;
-DropBg						= background-color:@_DropBgColor_@;
-DropText					= color:@_DropTextColor_@;
 
 
 // BUTTONS IN DIFFERENT FLAVORS
 
 
-NormalButton				= @_NormalButtonBorder_@			@NormalButtonBg@	@NormalButtonText@	@_NormalButtonSize_@	 @ActiveCursor@
-NormalButton-hover			= @_HoverBorder_@					@HoverBg@			@HoverText@			@_NormalButtonSize_@	 @ActiveCursor@
-NormalButton-clicked		= @_ClickedBorder_@					@ClickedBg@			@ClickedText@		@_NormalButtonSize_@	 @ActiveCursor@
-NormalButton-disabled		= @_NormalButtonDisabledBorder_@ 	@DisabledButtonBg@ 	@DisabledText@		@_NormalButtonSize_@	 @DisabledCursor@
-NormalButton-default		= @_DefaultButtonBorder_@			@DefaultButtonBg@	@NormalButtonText@	@_NormalButtonSize_@	 @ActiveCursor@
+_NormalButtonStyle_			= @_NormalButtonSize_@
+NormalButton				= @_WidgetContainer_@				@ActiveCursor@		@_NormalButtonStyle_@
+NormalButton-disabled		= @_WidgetContainer-disabled_@		@DisabledCursor@	@_NormalButtonStyle_@
+NormalButton-hover			= @_WidgetContainer-hover_@			@ActiveCursor@		@_NormalButtonStyle_@
+NormalButton-clicked		= @_WidgetContainer-clicked_@		@ActiveCursor@		@_NormalButtonStyle_@
+NormalButton-default		= @_WidgetContainer-default_@		@ActiveCursor@		@_NormalButtonStyle_@
+NormalButton-focused		= @_WidgetContainer-focused_@		@ActiveCursor@		@_NormalButtonStyle_@
+NormalButton-toggled		= @_WidgetContainer-toggled_@		@ActiveCursor@		@_NormalButtonStyle_@
 
-NormalButtonText-hover		= @HoverText@ text-align:center;	@NoWrap@
-NormalButtonText-clicked	= @ClickedText@ text-align:center;	@NoWrap@
-NormalButtonText-disabled	= @DisabledText@ text-align:center;	@NoWrap@
+_NormalButtonTextStyle_		= text-align:center;	@NoWrap@
+NormalButtonText			= @Text@	 		@_NormalButtonTextStyle_@
+NormalButtonText-disabled	= @Text-disabled@ 	@_NormalButtonTextStyle_@
+NormalButtonText-hover		= @Text-hover@ 		@_NormalButtonTextStyle_@
+NormalButtonText-clicked	= @Text-clicked@ 	@_NormalButtonTextStyle_@
+NormalButtonText-default	= @Text-default@	@_NormalButtonTextStyle_@
+NormalButtonText-focused	= @Text-focused@	@_NormalButtonTextStyle_@
+
+ToolbarButton				= @_ToolbarButtonContainer_@		@ActiveCursor@
+ToolbarButton-disabled		= @_ToolbarButtonContainer_@		@DisabledCursor@
+ToolbarButton-hover			= @_WidgetContainer-hover_@			@ActiveCursor@
+ToolbarButton-clicked		= @_WidgetContainer-clicked_@		@ActiveCursor@
+ToolbarButton-default		= @_WidgetContainer-default_@		@ActiveCursor@
+ToolbarButton-focused		= @_WidgetContainer-focused_@		@ActiveCursor@
+ToolbarButton-toggled		= @_WidgetContainer-toggled_@		@ActiveCursor@
+
+_ToolbarButtonTextStyle_	= @NoWrap@
+ToolbarButtonText			= @Text@	 		@_ToolbarButtonTextStyle_@
+ToolbarButtonText-disabled	= @Text-disabled@ 	@_ToolbarButtonTextStyle_@
+ToolbarButtonText-hover		= @Text-hover@ 		@_ToolbarButtonTextStyle_@
+ToolbarButtonText-clicked	= @Text-clicked@ 	@_ToolbarButtonTextStyle_@
+ToolbarButtonText-default	= @Text-default@	@_ToolbarButtonTextStyle_@
+ToolbarButtonText-focused	= @Text-focused@	@_ToolbarButtonTextStyle_@
 
 
-ToolbarButton				= @_ToolbarButtonBorder_@			@TransparentBg@		@ActiveCursor@
-ToolbarButton-hover			= @_HoverBorder_@					@HoverBg@			@ActiveCursor@
-ToolbarButton-clicked		= @_ClickedBorder_@					@ClickedBg@			@ActiveCursor@
-ToolbarButton-disabled		= @_ToolbarButtonBorder_@			@TransparentBg@		@DisabledCursor@
+_SelectStyle_				= @_SelectSize_@
+Select						= @_WidgetContainer_@				@ActiveCursor@		@_SelectStyle_@
+Select-disabled				= @_WidgetContainer-disabled_@		@DisabledCursor@	@_SelectStyle_@
+Select-hover				= @_WidgetContainer-hover_@			@ActiveCursor@		@_SelectStyle_@
+Select-clicked				= @_WidgetContainer-clicked_@		@ActiveCursor@		@_SelectStyle_@
+Select-default				= @_WidgetContainer-default_@		@ActiveCursor@		@_SelectStyle_@
+Select-focused				= @_WidgetContainer-focused_@		@ActiveCursor@		@_SelectStyle_@
+Select-toggled				= @_WidgetContainer-toggled_@		@ActiveCursor@		@_SelectStyle_@
 
-ToolbarButtonText			= @ToolbarText@; @NoWrap@
-ToolbarButtonText-hover		= @HoverText@ @NoWrap@
-ToolbarButtonText-clicked	= @ClickedText@ @NoWrap@
-ToolbarButtonText-disabled	= @DisabledText@ @NoWrap@ @DisabledCursor@ 
-
-InsetButton					= @_InsetButtonBorder_@				@TransparentBg@		@ActiveCursor@
-InsetButton-hover			= @_HoverBorder_@					@HoverBg@			@ActiveCursor@
-InsetButton-clicked			= @_ClickedBorder_@					@ClickedBg@			@ActiveCursor@
-InsetButton-disabled		= @_InsetButtonBorder_@				@TransparentBg@		@DisabledCursor@
-
-InsetButtonText				= @InsetText@		@NoWrap@
-InsetButtonText-hover		= @HoverText@		@NoWrap@
-InsetButtonText-clicked		= @ClickedText@		@NoWrap@
-InsetButtonText-disabled	= @DisabledText@	@NoWrap@
-
-
-Select						= @_SelectBorder_@					@SelectBg@		@_SelectSize_@	 @ActiveCursor@
-Select-hover				= @_HoverBorder_@					@HoverBg@		@_SelectSize_@	 @ActiveCursor@
-Select-clicked				= @_ClickedBorder_@					@ClickedBg@		@_SelectSize_@	 @ActiveCursor@
-Select-disabled				= @_SelectDisabledBorder_@ 			@SelectBg@ 		@_SelectSize_@	 @DisabledCursor@
-
-SelectText					= color:@_SelectTextColor_@;	text-align:left; 	@TextPadding@	@NoWrap@
-SelectText-hover			= @HoverText@					text-align:left; 	@TextPadding@	@NoWrap@
-SelectText-clicked			= @ClickedText@					text-align:left; 	@TextPadding@	@NoWrap@
-SelectText-disabled			= @DisabledText@				text-align:left; 	@TextPadding@	@NoWrap@
+_SelectTextStyle_			= text-align:left;	@TextPadding@	@NoWrap@
+SelectText					= @Text@	 		@_SelectTextStyle_@
+SelectText-disabled			= @Text-disabled@ 	@_SelectTextStyle_@
+SelectText-hover			= @Text-hover@ 		@_SelectTextStyle_@
+SelectText-clicked			= @Text-clicked@ 	@_SelectTextStyle_@
+SelectText-default			= @Text-default@	@_SelectTextStyle_@
+SelectText-focused			= @Text-focused@	@_SelectTextStyle_@
 
 
 
 // ANCHORS AND ZIMLETS
 
-AnchorText					= @TransparentBg@	color:@_AnchorTextColor_@; 			text-decoration: none; 		@ActiveCursor@
-AnchorTextHover				= @TransparentBg@	color:@_AnchorTextColor-hover_@;	text-decoration: underline;	@ActiveCursor@
-AnchorTextClick				= @TransparentBg@	color:@_AnchorTextColor-hover_@;	text-decoration: underline; @ActiveCursor@
-AnchorTextDisabled			= @TransparentBg@	color:@_DisabledTextColor_@; 		text-decoration: none; 	 	@DisabledCursor@
+// HMMM, not so sure about these AnchorContainer things...
+_AnchorContainer_			= background-color:none; @ActiveCursor@
+_AnchorText_				= color:darkblue; text-decoration:none;
 
-ZimletBg					= @TransparentBg@	color:@_AnchorTextColor_@;										@ActiveCursor@
-ZimletBg-Hover				= @TransparentBg@	color:@_AnchorTextColor-hover_@;	text-decoration: underline;	@ActiveCursor@
+_AnchorContainer-hover_		= background-color:@HilightColor@; @ActiveCursor@
+_AnchorText-hover_			= color:darkblue; text-decoration:none;
+
+_AnchorContainer-clicked_	= background-color:@HilightColor@; @ActiveCursor@
+_AnchorText-clicked_		= color:darkred;  text-decoration:none;
+
+_AnchorContainer-disabled_	= background-color:none; @DisabledCursor@
+_AnchorText-disabled_		= @Text-disabled@  text-decoration:none;
+
+_AnchorContainer-matched_	= background-color:@MatchedColor@;
+_AnchorText-matched_		= @Text@ text-decoration:none;
+
+
+Anchor						= @_AnchorContainer_@ 			@_AnchorText_@
+Anchor-hover				= @_AnchorContainer-hover_@ 	@_AnchorText-hover_@
+Anchor-clicked				= @_AnchorContainer-clicked_@ 	@_AnchorText-clicked_@
+Anchor-disabled				= @_AnchorContainer-disabled_@ 	@_AnchorText-disabled_@
+Anchor-matched				= @_AnchorContainer-matched_@ 	@_AnchorText-matched_@
+
+ZimletBg					= @Anchor@
+ZimletBg-Hover				= @Anchor-hover@
 
 
 
 // MENUS
 
-MenuBg						= color: @_MenuBgColor_@; background-image:@_MenuBgImg_@; padding:2px; Xmin-width:40px; border:1px solid black; border-bottom-width:3px;border-right-width:3px;
-MenuText					= color: @_MenuTextColor_@;
+MenuContainer			 	= @WindowOuterContainer@
 
-MenuItem					= @_MenuItemBorder_@	@TransparentBg@		@ActiveCursor@
-MenuItem-hover				= @_HoverBorder_@		@HoverBg@			@ActiveCursor@
-MenuItem-clicked			= @_ClickedBorder_@		@ClickedBg@			@ActiveCursor@
-MenuItem-disabled			= @_MenuItemBorder_@	@TransparentBg@		@DisabledCursor@
+_MenuItemStyle_				= padding-left:2px; padding-right:2px;
+MenuItem					= @_ItemContainer_@				background-color:@_BaseColorL1_@;	@ActiveCursor@		@_MenuItemStyle_@
+MenuItem-focused			= @_ItemContainer-focused_@		background-color:@_BaseColorL2_@;	@ActiveCursor@		@_MenuItemStyle_@
+MenuItem-hover				= @_ItemContainer-hover_@		background-color:@_BaseColorL2_@;	@ActiveCursor@		@_MenuItemStyle_@
+MenuItem-clicked			= @_ItemContainer-down_@		background-color:@_BaseColorL2_@;	@ActiveCursor@		@_MenuItemStyle_@
+MenuItem-disabled			= @_ItemContainer-disabled_@	background-color:@_BaseColorL1_@;	@DisabledCursor@	@_MenuItemStyle_@
 
-MenuItemText				= @MenuText@		@NoWrap@
-MenuItemText-hover			= @HoverText@		@NoWrap@
-MenuItemText-clicked		= @ClickedText@		@NoWrap@
-MenuItemText-disabled		= @DisabledText@	@NoWrap@
-MenuItemTextPadding			= height:16px; white-space:nowrap; padding-right:2px; padding-left:5px;
-MenuItemSeparator			= background-color: @_SeparatorColor_@; width:100%; height:1px;	@NoWrap@ 
+
+_MenuItemTextStyle_			= text-align:left;	@NoWrap@
+MenuItemText				= @Text@	 		@_MenuItemTextStyle_@
+MenuItemText-disabled		= @Text-disabled@ 	@_MenuItemTextStyle_@
+MenuItemText-hover			= @Text-hover@ 		@_MenuItemTextStyle_@
+MenuItemText-clicked		= @Text-clicked@ 	@_MenuItemTextStyle_@
+MenuItemText-default		= @Text-default@	@_MenuItemTextStyle_@
+MenuItemText-focused		= @Text-focused@	@_MenuItemTextStyle_@
+
+MenuItemTextPadding			= height:16px; white-space:nowrap; padding:0 2 0 5;
+MenuItemSeparator			= @PrettyBottomSeparator@
 
 
 // LISTS
 
-ListBg						= @ContentBg@
-ListBorder					= @ContentBorder@
+ListContainer				= @AppBg@ @InsetBorder@
 
-ListHeaderBg			 	= height:@_ListHeaderHeight_@; @BottomSeparator@
-ListColHeaderBg				= @WidgetHeaderBg@ 		height:auto;	@InactiveCursor@	
-ListColHeaderHoverBg		= @WidgetHeaderHoverBg@ height:auto;	@ActiveCursor@
+ListHeaderBg			 	= @WidgetHeaderSize@ 
+_ListColHeaderStyle_		= padding-left:@TextPaddingSize@;	@NoWrap@	text-overflow: ellipsis;
+ListColHeaderContainer		= @WidgetHeaderContainer@			@InactiveCursor@	@_ListColHeaderStyle_@
+ListColHeaderContainer-hover= @WidgetHeaderContainer-hover@		@ActiveCursor@		@_ListColHeaderStyle_@
 
-// ??? RENAME:  ListRowBg, ListRowBg-selected, etc
 
-ListRowSeparator			= border-bottom:1px solid @_LightSeparatorColor_@;
-ListNormalRowBg				= height:@_ListItemHeight_@; @TransparentBg@	background-image:@_NormalRowBgImg_@;		@Text@	@ActiveCursor@ @ListRowSeparator@
-ListSelectedRowBg			= height:@_ListItemHeight_@; @SelectedBg@; 		background-image:@_SelectedRowBgImg_@;		@Text@	@ActiveCursor@ @ListRowSeparator@
-ListMatchedRowBg			= height:@_ListItemHeight_@; @MatchedBg@		background-image:@_MatchedRowBgImg_@;		@Text@	@ActiveCursor@ @ListRowSeparator@
-ListRightClickRowBg			= height:@_ListItemHeight_@; @RightClickBg@		background-image:@_RightClickBgImg_@;		@Text@	@InactiveCursor@ @ListRowSeparator@
+_ListItemContainerStyle_		= @_ListItemSize_@	@Text@ @ActiveCursor@
+ListItemContainer				= @_ItemContainer_@					@ItemBottomBorder@		@_ListItemContainerStyle_@
+ListItemContainer-selected		= @_ItemContainer-selected_@		@ItemBottomBorder@		@_ListItemContainerStyle_@
+ListItemContainer-matched		= @_ItemContainer-matched_@			@ItemBottomBorder@		@_ListItemContainerStyle_@
+ListItemContainer-rightClicked	= @_ItemContainer-rightClicked_@	@ItemBottomBorder@		@_ListItemContainerStyle_@
+ListItemContainer-focused		= @_ItemContainer-focused_@									@_ListItemContainerStyle_@
 
-ListNormalText				= @Text@	vertical-align:center;
-ListSelectedRowText			= @SelectedText@
-ListMatchedRowText			= @MatchedText@
-ListRightClickRowText		= @RightClickText@
+_ListItemTextStyle_			= vertical-align:center; white-space: nowrap; overflow: hidden;	text-overflow: ellipsis;
+ListItemText				= @Text@	@_ListItemTextStyle_@
+ListItemText-focused		= @Text@	@_ListItemTextStyle_@
+ListItemText-selected		= @Text@	@_ListItemTextStyle_@
+ListItemText-sel-focus		= @Text@	@_ListItemTextStyle_@
+ListItemText-matched		= @Text@	@_ListItemTextStyle_@
+ListItemText-rightClicked	= @Text@	@_ListItemTextStyle_@
 
 
 
 // TREES
 
-TreeItem					= @TransparentBg@ 						height:@_TreeItemHeight_@;	@ActiveCursor@
-TreeItemText				= @InsetText@
+TreeItem					= @TransparentBg@ @_TreeItemSize_@;	@ActiveCursor@
+TreeItemText				= @Text@
 TreeItemSpacing				= padding-top:1px; padding-left:2px; padding-right:2px;
 
-TreeHeaderItem				= @TreeHeaderBg@ 	@TreeHeaderBorder@	height:@_TreeItemHeight_@;	@ActiveCursor@
-TreeHeaderItemText			= @TreeHeaderText@	font-weight:bold;
 
 
 // MINI CALENDAR
 
-MiniCalBg					= @TreeBg@
-MiniCalHeaderBg				= @TreeHeaderBg@
-MiniCalHeaderText			= @TreeHeaderText@	width:auto;
-		
-MiniCalDay					= @TreeText@			@TreeBorder@		@TransparentBg@		@ActiveCursor@
-MiniCalDay-hover			= @HoverText@			@_HoverBorder_@		@HoverBg@			@ActiveCursor@
-MiniCalDay-clicked			= @ClickedText@			@_ClickedBorder_@	@ClickedBg@			@ActiveCursor@
-MiniCalDay-hilited			= font-weight:bold;
-MiniCalDay-today			= @FontToday@
-MiniCalDay-gray				= @TreeDisabledText@
-		
-MiniCalArrowButtonStyle		= text-align:center; padding:3px; @ActiveCursor@
-MiniCalArrowButton			= @TreeHeaderBorder@				@TransparentBg@		@MiniCalArrowButtonStyle@
-MiniCalArrowButton-hover	= @_HoverBorder_@					@HoverBg@			@MiniCalArrowButtonStyle@
-MiniCalArrowButton-clicked	= @_ClickedBorder_@					@ClickedBg@			@MiniCalArrowButtonStyle@
+MiniCalBg					= @AppBg@
+MiniCalHeaderBg				= @WidgetHeaderContainer@ height:16px;
+MiniCalHeaderText			= @PageHeaderText@	width:auto;
 
-MiniCalDOWText				= @TreeDisabledText@ border-bottom: 1px solid @_TreeSeparatorColor_@; text-align:center;
+_MiniCalButtonStyle_		= text-align:center; @ActiveCursor@
+MiniCalButton				= @Text@			@_SmallButtonBorder_@			@_MiniCalButtonStyle_@
+MiniCalButton-hover			= @Text-hover@		@_SmallButtonBorder-hover_@		@_MiniCalButtonStyle_@
+MiniCalButton-clicked		= @Text-clicked@	@_SmallButtonBorder-clicked_@	@_MiniCalButtonStyle_@
+
+MiniCalDOWText				= @Text-disabled@ 	background-color:@_BaseColorL1_@; @BottomSeparator@ text-align:center;
+
+// added to day buttons
+MiniCalDay-hilited			= font-weight:bold;
+MiniCalDay-today			= @Text-today@
+MiniCalDay-gray				= @Text-disabled@
 
 
 // PROGRESS BARS
 
-ProgressBarBg				= background-color: @_ChromeBgColor_@; @_InsetBorder_@
-ProgressBarInfo				= @InfoBg@
-ProgressBarWarning			= @WarningBg@
-ProgressBarCritical			= @CriticalBg@
+ProgressBarContainer		= @ChromeBg@ @InsetBorder@ border-width:1px;
+ProgressBarBg-info			= @InfoBg@		@FixIESizeQuirk@
+ProgressBarBg-warning		= @WarningBg@	@FixIESizeQuirk@
+ProgressBarBg-critical		= @CriticalBg@	@FixIESizeQuirk@
 
 
 // TOASTER
 
-ToastPane					= @NoticeBorder@
-ToastInfo					= @InfoBg@
-ToastWarning				= @WarningBg@
-ToastCritical				= @CriticalBg@
-ToastText					= font-weight:bold;
+ToastContainer				= @NoticeOuterBorder@
+ToastBg-info				= @InfoBg@
+ToastBg-warning				= @WarningBg@
+ToastBg-critical			= @CriticalBg@
+ToastText					= @NoticeText@
 
 // SASHES
-SashBg						= background-color:@_SashBgColor_@;
-HSashBg						= @SashBg@ 		width:100%;			height:@_SashSize_@;
-SashGripBg					= background-color:@_SashGripColor_@;
-HSashSize					= width:@_SashSize_@;	height:100%;			font-size: 5px; /* WEIRD IE QUIRK */
-VSashSize					= width:100%;			height:@_SashSize_@; 
+HSashContainer				= @_SashBg_@ 	width:@SashSize@;	height:100%;			cursor:e-resize; @FixIESizeQuirk@ 
+HSashContents				= text-align:center; vertical-align:middle; font-size:9px; line-height:6px; color:@_SashContentsColor_@;
 
-// FORM FIELDS
+VSashContainer				= @_SashBg_@ 	width:100%;			height:@SashSize@;	cursor:s-resize;	border-top:1px solid @SeparatorColor@; border-bottom:1px solid @DarkSeparatorColor@;
+VSashContents				= text-align:center; vertical-align:middle; font-size:9px; line-height:9px; color:@_SashContentsColor_@;
 
-InputField					= color:@_InputTextColor_@; @_InputBorder_@ @TextPadding@
-InputField-error			= color:@_InputErrorTextColor_@; background-color:@_InputErrorBgColor_@; @_InputBorder_@ @TextPadding@
-InputField-disabled			= color:@_InputDisabledTextColor_@; background-color:@_InputDisabledBgColor_@; @_DisabledBorder_@ @TextPadding@ @InactiveCursor@
+
+
 
 
 // SEARCH BUILDER
 
-PickerBg					= background-color:@_PageBgColor_@; @RightSeparator@ width:200px;
+PickerContainer				= @PageBg@ @RightSeparator@ @_PickerSize_@
 
 
 // IMAGE STUFF
-SmallIconWidth				= @_SmallIconSize_@
-SmallIconSize				= width:@_SmallIconSize_@; height:@_SmallIconSize_@;
+SmallIconSize				= width:@SmallIconWidth@; height:@SmallIconHeight@;
+BigIconSize					= width:@SmallIconWidth@; height:@SmallIconHeight@;
 
 
 
@@ -532,8 +551,8 @@ ContactsCardSize			= width:300px; height:140px;
 // RANDOM CRAP
 
 DndOpacity					= filter:alpha(opacity=70); -moz-opacity:0.7; opacity:0.7;
-DndAllowedBg				= border: 2px solid green; 	background-color: @_DragBgColor_@;	
-DndNotAllowedBg				= border: 2px solid red; 	background-color: @_DragBgColor_@;	
+DndAllowedContainer			= border: 2px solid @DropAllowedColor@; 	@DragBg@;	
+DndNotAllowedContainer		= border: 2px solid @DropNotAllowedColor@; 	@DragBg@;	
 
 VeilOpacity					= filter:alpha(opacity=50); -moz-opacity:0.5; opacity:0.5;
 VeilColor					= background-color:white;
@@ -545,8 +564,7 @@ FreeBusyViewGridWidth		= width:12px;
 FreeBusyViewGridHeight		= height:22px; line-height:21px;
 
 
-// VIRTUAL WINDOWS - ??? ABSTRACT THIS?
-WindowBg					= @PageBg@
-WindowBorder				= border:2px outset CCCCCC;
-WindowBorder-focused		= border:2px solid; border-color:#339999 #003030 #003030 #339999;
-Chat
+// VIRTUAL WINDOWS, eg: for Chat
+WindowBg					= @AppBg@
+WindowContainer				= @WindowBg@	@WindowOuterContainer-light@
+WindowContainer-focused		= @WindowBg@	@WindowOuterContainer@

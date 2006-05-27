@@ -24,7 +24,7 @@
  */
 /**
 * Creates a generic quick add dialog (which basically mean it has different 
-* than regular dialogs). See "SemiModalDialog" in DwtBorder for cosmetics.
+* than regular dialogs). See "DwtSemiModalDialog" in DwtBorder for cosmetics.
 * @constructor
 * @class
 * This class represents a modal dialog which has at least a title and the 
@@ -83,9 +83,9 @@ function() {
 	var html = new Array();
 	var idx = 0;
 
-	html[idx++] = DwtBorder.getBorderStartHtml("SemiModalDialog", {id:this._titleId});
+	html[idx++] = DwtBorder.getBorderStartHtml("DwtSemiModalDialog", {id:this._titleId});
 	html[idx++] = this._getContentHtml();
-	html[idx++] = DwtBorder.getBorderEndHtml("SemiModalDialog");
+	html[idx++] = DwtBorder.getBorderEndHtml("DwtSemiModalDialog");
 
 	this.getHtmlElement().innerHTML = html.join("");
 

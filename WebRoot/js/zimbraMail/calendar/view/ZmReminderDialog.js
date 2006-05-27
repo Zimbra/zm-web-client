@@ -183,7 +183,7 @@ function(list) {
 		var appt = list.get(i);
 		var uid = appt.getUniqueId(true);		
 		var data = this._apptData[uid];
-		var button = new DwtButton(this, DwtLabel.ALIGN_CENTER , "TBButton");
+		var button = new DwtButton(this, DwtLabel.ALIGN_CENTER , "DwtToolbarButton");
 		button.setImage("Cancel");
 		button.addSelectionListener(new AjxListener(this, this._closeButtonListener));
 		button.__apptUniqueId = uid;

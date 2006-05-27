@@ -72,7 +72,7 @@ function() {
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
 	this._statusLabel = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowStatusLabel");	
 	this._toolbar.addFiller();
-	this._close = new DwtButton(this._toolbar, DwtLabel.IMAGE_LEFT, "TBButton");
+	this._close = new DwtButton(this._toolbar, DwtLabel.IMAGE_LEFT, "DwtToolbarButton");
 	this._close.setImage("Close");
 	this._close.setToolTipContent(ZmMsg.imEndChat);
 	this._content = new DwtComposite(c, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);

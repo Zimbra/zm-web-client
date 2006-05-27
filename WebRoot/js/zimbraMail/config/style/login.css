@@ -25,7 +25,7 @@
  
  
 P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
-	@FontDefault@
+	@FontFamily-default@
 }
 
 HTML {
@@ -62,11 +62,11 @@ FORM {
 	width:447px; 
 	height:115px; 
 	position:relative;
-	background-image:url(/zimbra/img/loRes/logo/LoginBanner_blank.gif);
+	background-image:url(/zimbra/img/loRes/logo/LoginBanner_blank.png);
 }
 
 .LoginMainPanel {
-	@PageBg@
+	@AppBg@
 }
 
 .LoginMainPanel td {
@@ -76,7 +76,7 @@ FORM {
 
 /* "appName" substitution:  eg:  "Collaboration Suite" */
 .LoginPanelAppName {
-	@FontBiggest@
+	@FontSize-biggest@
 	position:absolute;
 	left:60;
 	top:80;
@@ -93,9 +93,9 @@ FORM {
 	top:7px;
 	width:350;
 	text-align:right;
-	@FontBiggest@
+	@FontSize-biggest@
 	font-weight:normal;
-	@DisabledText@
+	@Text-disabled@
 }
 
 /* "short version" substitution:  eg:  "V 1.23 * 'Birdseye' * Wed Oct 12, 2005" */
@@ -112,9 +112,9 @@ FORM {
 
 
 .LoginPanelLicense {
-	@PageBg@
-	@FontSmaller@
-	@DisabledText@
+	@AppBg@
+	@FontSize-smaller@
+	@Text-disabled@
 	height:40px;
 	text-align:center;
 	vertical-align:bottom;
@@ -150,17 +150,21 @@ FORM {
 }
 
 
-.DwtButton 						{	@NormalButton@					}
-.DwtButton-activated 			{	@NormalButton-hover@			}
-.DwtButton-triggered			{	@NormalButton-clicked@			}	
-.DwtButton-toggled				{	@NormalButton-clicked@			}	
-.DwtButton-disabled				{	@NormalButton-disabled@			}	
-
-.DwtButton .Text 				{	@NormalButtonText@				}
-.DwtButton-activated .Text		{	@NormalButtonText-hover@		}
-.DwtButton-triggered .Text		{	@NormalButtonText-clicked@		}	
-.DwtButton-toggled .Text		{	@NormalButtonText-clicked@		}	
-.DwtButton-disabled .Text		{	@NormalButtonText-disabled@		}	
+.DwtButton 								{	@NormalButton@					}
+.DwtButton-activated 					{	@NormalButton-hover@			}
+.DwtButton-triggered					{	@NormalButton-clicked@			}	
+.DwtButton-toggled						{	@NormalButton-toggled@			}	
+.DwtButton-disabled						{	@NormalButton-disabled@			}	
+.DwtButton-active						{	@NormalButton-default@			}	
+.DwtButton-focused						{	@NormalButton-focused@			}	
+		
+.DwtButton .Text 						{	@NormalButtonText@				}
+.DwtButton-activated .Text				{	@NormalButtonText-hover@		}
+.DwtButton-triggered .Text				{	@NormalButtonText-clicked@		}	
+.DwtButton-toggled .Text				{	@NormalButtonText-clicked@		}	
+.DwtButton-disabled .Text				{	@NormalButtonText-disabled@		}	
+.DwtButton-active .Text					{	@NormalButtonText-default@		}	
+.DwtButton-focused .Text				{	@NormalButtonText-focused@		}	
 
 
 
@@ -184,6 +188,7 @@ FORM {
 }
 .ZmSplashScreen, .ZmSplashScreen table {
 	@ChromeBg@
+	padding:0px;
 }
 
 
@@ -204,7 +209,7 @@ FORM {
 	color:black;
 }
 .SplashScreenUrl a:active {
-	@AnchorTextClick@
+	@Anchor-clicked@
 }
 
 
@@ -215,7 +220,7 @@ FORM {
 	top:80;
 	width:350;
 	height:30;
-	@FontBiggest@
+	@FontSize-biggest@
 	font-weight:normal;
 	text-align:right;
 }
@@ -235,9 +240,9 @@ FORM {
 	left:384;
 	top:45;
 	width:80;
-	@FontBiggest@
+	@FontSize-biggest@
 	font-weight:normal;
-	@DisabledText@
+	@Text-disabled@
 }
 
 
@@ -266,8 +271,8 @@ FORM {
 	left:8;
 	top:305;
 	vertical-align:bottom;
-	@FontSmaller@
-	@DisabledText@
+	@FontSize-smaller@
+	@Text-disabled@
 }
 
 
@@ -278,7 +283,7 @@ FORM {
 
 /* Login Panel */
 .ZmLoginDialog {
-	background-color: #3D2D1F;
+	background-color: #eeeeee;
 	/*background-image:url(/zimbra/img/loRes/skins/steel/Steel__BG.gif);*/
 	overflow:hidden;
 }
@@ -311,5 +316,3 @@ FORM {
 }
 
 
-
-*/

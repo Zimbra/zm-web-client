@@ -30,11 +30,30 @@
 */
 
 /* these are the containers of the pieces that can be hidden and shown */
+/*
 #skin_tr_search_builder				{ display:table-row; 	}
 #skin_div_search_builder			{ display:none;			}
-
+*/
 
 /* named pieces of the skin that the app will work with */
 
-#skin_container_search				{ height:18; top:-5; margin-bottom:-8px; }
-#skin_container_current_app			{ height:18; top:-4; margin-bottom:-8px; }
+
+#skin_container_search				{ height:20; top:-4;  }
+#skin_container_current_app			{ height:20; top:-4;  }
+
+
+
+.ImgAppChiclet,
+.ImgAppChicletHover,
+.ImgAppChicletSel {
+	border-width:1px;
+}
+
+.skin_inset,
+.skin_toolbar_outset {
+	border-width:1px;
+}
+
+.skin_spacer_tree			{	margin:0px;	}
+.skin_spacer_tree_footer	{	margin:0px;	}
+.skin_spacer_status			{	margin:0px;	}

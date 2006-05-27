@@ -70,6 +70,7 @@ Contributor(s):
 	boolean isSafari = ua.indexOf("Safari/") != -1;
 
     String skinHtmlFile = "../skins/" + skin + "/" + skin + ".html";
+	String skinPreCacheFile = "../skins/" + skin + "/CacheLoRes.html";
 
 	if (vers == null) vers = "";
 	if (ext == null) ext = "";
@@ -162,6 +163,7 @@ Contributor(s):
 </head>
 <body>
 	<jsp:include page="/public/pre-cache.jsp"/>
+	<jsp:include page='<%= skinPreCacheFile %>'/>
 	<jsp:include page="<%= skinHtmlFile %>"/>
 </body>
 </html>

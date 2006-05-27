@@ -282,7 +282,7 @@ function() {
 	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
 	this._inviteToolbar = new ZmButtonToolBar(this,	operationButtonIds,
 						  null, DwtControl.STATIC_STYLE,
-						  "ZmInviteToolBar", "TBButton");
+						  "ZmInviteToolBar", "DwtToolbarButton");
 	// get a little space between the buttons.
 	var toolbarHtmlEl = this._inviteToolbar.getHtmlElement();
 	toolbarHtmlEl.firstChild.cellPadding = "3";
@@ -322,7 +322,7 @@ function() {
 	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
 	this._shareToolbar = new ZmButtonToolBar(this,	buttonIds,
 											  null, DwtControl.STATIC_STYLE,
-											  "ZmShareToolBar", "TBButton");
+											  "ZmShareToolBar", "DwtToolbarButton");
 	// get a little space between the buttons.
 	var toolbarHtmlEl = this._shareToolbar.getHtmlElement();
 	toolbarHtmlEl.firstChild.cellPadding = "3";
@@ -844,7 +844,7 @@ function(msg, container, callback) {
 	el.appendChild(Dwt.parseHtmlFragment(htmlArr.join("")));
 
 	// add the expand/collapse arrow button now that we have add to the DOM tree
-	this._expandButton = new DwtButton(this, null, "TBButton");
+	this._expandButton = new DwtButton(this, null, "DwtToolbarButton");
 	var image = this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed";
 	this._expandButton.setImage(image);
 	this._expandButton.setSize("14", "14");
@@ -853,7 +853,7 @@ function(msg, container, callback) {
 
 	// add the close button if applicable
 	if (this._hasHeaderCloseBtn) {
-		this._closeButton = new DwtButton(this, null, "TBButton");
+		this._closeButton = new DwtButton(this, null, "DwtToolbarButton");
 		this._closeButton.setImage("Close");
 		this._closeButton.setText(ZmMsg.close);
 		this._closeButton.reparentHtmlElement(closeBtnCellId);

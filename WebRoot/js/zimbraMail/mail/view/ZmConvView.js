@@ -181,7 +181,7 @@ function() {
 	this._summary.getHtmlElement().innerHTML = html.join("");
 
 	// add the close button
-	this._closeButton = new DwtButton(this, null, "TBButton");
+	this._closeButton = new DwtButton(this, null, "DwtToolbarButton");
 	this._closeButton.setImage("Close");
 	this._closeButton.setText(ZmMsg.close);
 	this._closeButton.reparentHtmlElement(closeBtnCellId);

@@ -4,7 +4,7 @@ var zImgLoading = (new Date()).getTime();
 </script>
 <div style='position:absolute;width:1px;height:1px;visibility:hidden;overflow:hidden;'>
 <jsp:include page='CacheLoRes.html'/>
-<jsp:include page='../skins/steel/CacheLoRes.html'/>
+<!-- NOTE: moved skin image loading to login.jsp so we can only load images for the correct skin -->
 <img alt="" src="<%= contextPath %>/img/animated/wait_16.gif">
 <img alt="" src="<%= contextPath %>/img/animated/wait_32.gif">
 <img alt="" src="<%= contextPath %>/img/animated/wait_64.gif">

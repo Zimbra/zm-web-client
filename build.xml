@@ -65,7 +65,8 @@
   <property name='l10n.excludes' value='msgs/*_*.properties' />
 
   <!-- list all the skins to build with here -->
-  <property name='skins' value='steel,walnut,bare' />
+  <!-- property name='skins' value='steel,walnut,bare' / -->
+  <property name='skins' value='steel,bare' />
 
   <condition property='isProduction' value='true'>
     <or>

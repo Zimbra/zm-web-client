@@ -545,25 +545,25 @@ function(parent) {
 	new DwtControl(tb, "vertSep");
 
 	var listener = new AjxListener(this, this._justificationListener);
-	var b = this._leftJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	var b = this._leftJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	b.setImage("LeftJustify");
 	b.setToolTipContent(ZmMsg.leftJustify);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT);
 	b.addSelectionListener(listener);
 
-	b = this._centerJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b = this._centerJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	b.setImage("CenterJustify");
 	b.setToolTipContent(ZmMsg.centerJustify);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_CENTER);
 	b.addSelectionListener(listener);
 
-	b = this._rightJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b = this._rightJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	b.setImage("RightJustify");
 	b.setToolTipContent(ZmMsg.rightJustify);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_RIGHT);
 	b.addSelectionListener(listener);
 
-	b = this._fullJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b = this._fullJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	b.setImage("FullJustify");
 	b.setToolTipContent(ZmMsg.justify);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_FULL);
@@ -572,26 +572,26 @@ function(parent) {
 	new DwtControl(tb, "vertSep");
 
 	var insElListener = new AjxListener(this, this._insElementListener);
-	b = this._listButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE,  "TBButton");
+	b = this._listButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE,  "DwtToolbarButton");
 	b.setToolTipContent(ZmMsg.bulletedList);
 	b.setImage("BulletedList");
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNORDERED_LIST);
 	b.addSelectionListener(insElListener);
 
-	b = this._numberedListButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b = this._numberedListButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	b.setToolTipContent(ZmMsg.numberedList);
 	b.setImage("NumberedList");
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ORDERED_LIST);
 	b.addSelectionListener(insElListener);
 
 	listener = new AjxListener(this, this._indentListener);
-	b = this._outdentButton = new DwtButton(tb, null, "TBButton");
+	b = this._outdentButton = new DwtButton(tb, null, "DwtToolbarButton");
 	b.setToolTipContent(ZmMsg.outdent);
 	b.setImage("Outdent");
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.OUTDENT);
 	b.addSelectionListener(listener);
 
-	b = this._indentButton = new DwtButton(tb, null, "TBButton");
+	b = this._indentButton = new DwtButton(tb, null, "DwtToolbarButton");
 	b.setToolTipContent(ZmMsg.indent);
 	b.setImage("Indent");
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.INDENT);
@@ -606,37 +606,37 @@ function(parent) {
 	tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 
 	var listener = new AjxListener(this, this._fontStyleListener);
-	var b = this._boldButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	var b = this._boldButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	b.setImage("Bold");
 	b.setToolTipContent(ZmMsg.boldText);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
 	b.addSelectionListener(listener);
 
-	b = this._italicButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b = this._italicButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	b.setImage("Italics");
 	b.setToolTipContent(ZmMsg.italicText);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
 	b.addSelectionListener(listener);
 
-	b = this._underlineButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b = this._underlineButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	b.setImage("Underline");
 	b.setToolTipContent(ZmMsg.underlineText);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
 	b.addSelectionListener(listener);
 
-	b = this._strikeThruButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b = this._strikeThruButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	b.setImage("StrikeThru");
 	b.setToolTipContent(ZmMsg.strikeThruText);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.STRIKETHRU_STYLE);
 	b.addSelectionListener(listener);
 
-	b = this._superscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b = this._superscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	b.setImage("SuperScript");
 	b.setToolTipContent(ZmMsg.superscript);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUPERSCRIPT_STYLE);
 	b.addSelectionListener(listener);
 
-	b = this._subscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "TBButton");
+	b = this._subscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	b.setImage("Subscript");
 	b.setToolTipContent(ZmMsg.subscript);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUBSCRIPT_STYLE);
@@ -644,13 +644,13 @@ function(parent) {
 
 	new DwtControl(tb, "vertSep");
 
-	b = this._fontColorButton = new DwtButtonColorPicker(tb, null, "TBButton");
+	b = this._fontColorButton = new DwtButtonColorPicker(tb, null, "DwtToolbarButton");
 	b.setImage("FontColor");
 	b.showColorDisplay();
 	b.setToolTipContent(ZmMsg.fontColor);
 	b.addSelectionListener(new AjxListener(this, this._fontColorListener));
 
-	b = this._fontBackgroundButton = new DwtButtonColorPicker(tb, null, "TBButton");
+	b = this._fontBackgroundButton = new DwtButtonColorPicker(tb, null, "DwtToolbarButton");
 	b.setImage("FontBackground");
 	b.showColorDisplay();
 	b.setToolTipContent(ZmMsg.fontBackground);
@@ -659,7 +659,7 @@ function(parent) {
 	new DwtControl(tb, "vertSep");
 
 	var insElListener = new AjxListener(this, this._insElementListener);
-	b = this._horizRuleButton = new DwtButton(tb, null, "TBButton");
+	b = this._horizRuleButton = new DwtButton(tb, null, "DwtToolbarButton");
 	b.setImage("HorizRule");
 	b.setToolTipContent(ZmMsg.horizRule);
 	b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
@@ -669,7 +669,7 @@ function(parent) {
 
 	var tblListener = new AjxListener(this, this._tableOperationsListener);
 
-	b = new DwtButton(tb, null, "TBButton");
+	b = new DwtButton(tb, null, "DwtToolbarButton");
 	b.setImage("Table");
 	var menu = new DwtMenu(b);
 	b.setMenu(menu);
@@ -720,7 +720,7 @@ function(parent) {
 		tb.addSeparator("vertSep");
 		var listener = new AjxListener(this, this._menu_insertObject);
 
-		var b = new DwtButton(tb, 0, "TBButton");
+		var b = new DwtButton(tb, 0, "DwtToolbarButton");
 		b.setImage("SpreadSheet");
 		b.setData("ACE", "ZmSpreadSheet");
 		b.setToolTipContent(ZmMsg.insertSpreadsheet);

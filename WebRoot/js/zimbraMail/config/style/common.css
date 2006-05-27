@@ -28,13 +28,12 @@
 */
 
 P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
-	@FontDefault@
-	@FontNormal@
+	@FontFamily-default@
+	@FontSize-normal@
 }
 
 INPUT[readonly], TEXTAREA[readonly] {
 	@InputField-disabled@
-	@_InputBorder_@
 	cursor: text;
 }
 
@@ -52,6 +51,13 @@ FORM {
 	padding: 0;
 }
 
+FIELDSET {
+	@FieldSet@
+}
+
+LEGEND {
+	@FieldSetLabel@
+}
 
 /* set for 'text' and 'password' fields explicitly so checkboxes don't get borders */
 HTML>BODY input[type="text"], 
@@ -96,32 +102,25 @@ HTML>BODY input[type="checkbox"] {
 
 /* Generic classes -- try to use one of these if you can */
 .ZmHead {
-	@FontBigger@
+	@FontSize-bigger@
 }
 
 .ZmSubHead {
-	@FontBig@
+	@FontSize-big@
 }
 
 .ZmBigger {
-	@FontBigger@
+	@FontSize-bigger@
 }
 
 .ZmFinePrint {
-	@FontSmaller@
+	@FontSize-smaller@
 }
 
 .ZmImportant {
-	@FontImportant@
+	@Text-important@
 }
 
-.ZmFieldset {
-	@FieldSet@
-}
-
-.ZmLegend {
-	@FieldSetLabel@
-}
 
 /* Field labels -- always use one of these!  */
 .ZmFieldLabel {
@@ -156,7 +155,8 @@ ZmSectionLabel {
 
 /* ??? USED */
 .BigHeaderBg {
-	@BigWidgetHeaderBg@
+	@WidgetHeaderContainer@
+	@WidgetHeaderSize-big@
 }
 
 
@@ -169,7 +169,7 @@ ZmSectionLabel {
 
 /* ??? */
 .ZmSelectedHeaderBg {
-	background-color:#ADD6D6;
+	@SelectedBg@
 }
 
 
@@ -179,13 +179,13 @@ ZmSectionLabel {
 
 /* Graph key -- eg: boxes in Appt Schedule view that say what each color mean */
 .ZmGraphKey {
-	@ContentBg@
-	@ContentBorder@
+	@AppBg@
+	@AppBorder@
 }
 
 .ZmGraphKeyHeader {
-	@WidgetHeaderBg@
-	@FontBig@
+	@PageHeaderBg@
+	@FontSize-big@
 	@Text@
 	@TextPadding@
 	text-align:left;
@@ -198,7 +198,7 @@ ZmSectionLabel {
 }
 
 .ZmGraphKeyColorBox {
-	@ContentBorder@
+	@AppBorder@
 	width:16px;
 	height:16px;
 }
@@ -218,7 +218,7 @@ ZmSectionLabel {
 
 /* Horizontal separator */
 .horizSep {
-	@BottomSeparator@
+	@PrettyBottomSeparator@
 	@AddVerticalSpace@
 	width: 100%;
 }
@@ -247,24 +247,23 @@ DIV.vSpace {
 */
 
 .AttLink:link, .AttLink:visited {
-	@AnchorText@
+	@Anchor@
 }
 .AttLink:hover {
-	@AnchorTextHover@
+	@Anchor-hover@
 }
 
 .AttLink:active {
-	@AnchorTextClick@
+	@Anchor-clicked@
 }
 
 /*  ??? WHY ARE THESE DIFFERENT ? */
 .Row-selected .AttLink:link, .Row-selected .AttLink:active, .Row-selected .AttLink:visited {
-	@AnchorText@
+	@Anchor@
 }
 .AttLink:hover, .Row-selected .AttLink:hover {
-	@AnchorTextHover@
+	@Anchor-hover@
 }
-*/
 
 
 
@@ -277,23 +276,23 @@ DIV.vSpace {
 }
 
 .DropNotAllowed {
-	@DndNotAllowedBg@
+	@DndNotAllowedContainer@
 	@DndOpacity@
 }
 
 /* bug fix# 3235 */
 .DropNotAllowed-linux {
-	@DndNotAllowedBg@
+	@DndNotAllowedContainer@
 }
 
 .DropAllowed {
-	@DndAllowedBg@
+	@DndAllowedContainer@
 	@DndOpacity@
 }
 
 /* bug fix# 3235 */
 .DropAllowed-linux {
-	@DndAllowedBg@
+	@DndAllowedContainer@
 }
 
 
@@ -362,38 +361,39 @@ DIV.vSpace {
  
  
 /* 
- *  Row display and highlighting 
+ *  Row display and highlighting in list views
+ *	NOTE: these should probably be more specific names!
  */
 .Row, .Row-selected, .Row-matched, .Row-matched-drag, 
 .Row-drag, .Row-selected-drag, .Row-selected-right, .Row-selected-disabled {
-	@ListNormalRowBg@
+	@ListItemContainer@
 }
 
 .selected, .Row-selected, .Row-selected-drag, .Row-selected-disabled { 
-	@ListSelectedRowBg@
+	@ListItemContainer-selected@
 }
 
 .Row-matched, .Row-matched-dnd { 
-	@ListMatchedRowBg@
+	@ListItemContainer-matched@
 }
 
 .Row-matched td, .Row-matched-dnd td{ 
-	@ListMatchedRowText@
+	@ListItemText-matched@
 }
 
 .Row-Focus {
-	@FocusBorder@
+	@ListItemContainer-focused@
 }
 
 
 /* ??? what is this used for ?*/
 .Row-selected-right, .Row-drag, .Row-matched-drag { 
-	@ListRightClickRowBg@
+	@ListItemContainer-rightClicked@
 }
 
 .Row-selected table, .Row-selected-drag table, .Row-drag table, 
 .Row-matched-drag table, .Row-selected-right table { 
-	@ListNormalText@
+	@ListItemText@
 }
 
 .Row table, .Row-selected table, .Row-matched table, .Row-matched-drag table, .Row-dnd table, 
@@ -404,11 +404,7 @@ DIV.vSpace {
 .Row, .Row-selected, .Row-selected-disabled, .Row-dnd, 
 .Row td, .Row div, .Row-selected td, .Row-matched td, .Row-dnd td, .Row-selected-drag td, 
 .Row-drag td, .Row-matched-drag td, .Row-selected-right td {
-	@Text@
-/*	vertical-align: top;*/
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
+	@ListItemText@
 }
 
 .Row td.Flag, .Row td.Attach, .Row td.Tag, .Row td.Icon,
@@ -425,10 +421,10 @@ DIV.vSpace {
  * Flags 
  */
 .Unread { 
-	@UnreadText@
+	@Text-unread@
 }
 .Trash { 
-	@DeletedText@
+	@Text-deleted@
 }
 
 
@@ -443,42 +439,37 @@ DIV.vSpace {
 
 .OverviewTree {
 	@FullWidth@
-	margin-bottom: @BoxMarginSize@;
 }
 
 
 .dialogOverview {
-	@TreeBg@
-	@TreeHeaderBorder@
+	@TreeContainer@
+	@InsetBorder@
 	@BoxPadding@
 	height: 200px;		/* ??? SIZE */
 }
 
-.dialogOverview {
-	@ContentBg@
-}
 
 .dialogOverview td {
 	@Text@
 }
 
 .pickerOverview {
-	@TreeBg@
+	@TreeContainer@
 	@FullHeight@
 }
 
 /* ??? MARGINS */
 .overviewHeader {
 	@InactiveCursor@
-	@TreeHeaderItem@
-	@TreeHeaderBigBorder@
-	@TreeHeaderItemText@
+	@TreeHeaderContainer@
+	@TreeHeaderText@
 	@TreeItemSpacing@
 }
 
 .overviewHeader-Text, .overviewHeader-actioned,
 .overviewHeader-DragOver {
-	@TreeHeaderItemText@
+	@TreeHeaderText@
 }
 
 

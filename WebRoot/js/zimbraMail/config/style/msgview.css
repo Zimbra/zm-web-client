@@ -24,8 +24,8 @@
  */
 
 P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
-	@FontDefault@
-	@FontNormal@
+	@FontFamily-default@
+	@FontSize-normal@
 }
 
 
@@ -34,8 +34,8 @@ P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
 }
 
 .MsgBody-text, .MsgBody-text * { 
+	@FontFamily-fixed@
 	@Text@
-	@FontFixed@
 }
 
 body.MsgBody { 
@@ -50,31 +50,29 @@ body.MsgBody {
 
 
 .Object {
-	@AnchorText@
-	@ZimletBg@
+	@Anchor@
 }
 
 .Object-activated {
-	@AnchorTextHover@
-	@ZimletBg-Hover@
+	@Anchor-hover@
 }
 
 .Object-triggered {
-	color: blue;
+	@Anchor-clicked@
 }
 
 
 .FakeAnchor, 
 a:link, a:visited {
-	@AnchorText@
+	@Anchor@
 }
 
 a:hover {
-	@AnchorTextHover@
+	@Anchor-hover@
 }
 
 a:active {
-	@AnchorTextClick@
+	@Anchor-clicked@
 }
 
 

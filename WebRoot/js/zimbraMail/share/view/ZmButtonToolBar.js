@@ -45,7 +45,7 @@ function ZmButtonToolBar(parent, standardButtons, extraButtons, posStyle, classN
 	if (arguments.length == 0) return;
 	ZmToolBar.call(this, parent, className, posStyle);
 	
-	buttonClassName = buttonClassName ? buttonClassName : "TBButton";
+	buttonClassName = buttonClassName ? buttonClassName : "DwtToolbarButton";
 	this._buttonStyle = buttonClassName;
 
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);

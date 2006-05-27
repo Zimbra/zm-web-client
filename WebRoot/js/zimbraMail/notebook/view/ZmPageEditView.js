@@ -392,7 +392,7 @@ ZmPageEditor.prototype._createToolbars = function() {
 ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	ZmHtmlEditor.prototype._createToolBar2.call(this, parent);
 
-	var button = new DwtButton(this._toolbar2, null, "TBButton")
+	var button = new DwtButton(this._toolbar2, null, "DwtToolbarButton")
 	button.setImage("ImageDoc");
 	button.setToolTipContent(ZmMsg.insertImage);
 	button.addSelectionListener(new AjxListener(this, this._insertImagesListener));
@@ -418,7 +418,7 @@ ZmPageEditor.prototype._createWikiToolBar = function(parent) {
 	var wiklets = ZmWiklet.getWiklets();
 	for (var name in wiklets) {
 		var wiklet = wiklets[name];
-		var button = new DwtButton(toolbar, null, "TBButton");
+		var button = new DwtButton(toolbar, null, "DwtToolbarButton");
 		button.setText(wiklet.label || name);
 		button.setToolTipContent(wiklet.tooltip);
 		button.setData("wiklet", name);

@@ -100,7 +100,7 @@ function(enabled) {
 ZmToolBar.prototype._createButton =
 function(buttonId, imageInfo, text, disImageInfo, toolTip, enabled, style, align, index) {
 	if (!style) {
-		style = "TBButton";
+		style = "DwtToolbarButton";
 	}
 	var b = this._buttons[buttonId] = new DwtButton(this, align, style, null, null, null, index);
 	if (imageInfo) {

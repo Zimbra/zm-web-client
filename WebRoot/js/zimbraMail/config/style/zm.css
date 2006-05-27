@@ -92,36 +92,32 @@
 .BannerBar {}
 
 .BannerBar .quotabar {
-	@ProgressBarBg@
+	@ProgressBarContainer@
 	width: 100px;
 	height: 6px;
-	@FixIESizeQuirk@	/* WEIRD IE QUIRK */
 }
 
 .BannerBar .quotaUsed {
-	@ProgressBarInfo@
+	@ProgressBarBg-info@
 	height: 6px;
-	@FixIESizeQuirk@	/* WEIRD IE QUIRK */
 }
 
 /* 65% - 85% of quota used */
 .BannerBar .quotaWarning {
-	@ProgressBarWarning@
+	@ProgressBarBg-warning@
 	height: 6px;
-	@FixIESizeQuirk@	/* WEIRD IE QUIRK */
 }
 
 /* 85%+ of quota used */
 .BannerBar .quotaCritical {
-	@ProgressBarCritical@
+	@ProgressBarBg-critical@
 	height: 6px;
-	@FixIESizeQuirk@	/* WEIRD IE QUIRK */
 }
 
 
 /* percent used label */
 .BannerBar .percent {
-	@FontSmaller@
+	@FontSize-smaller@
 	@ChromeText@
 	@NoWrap@
 /*	@FixIESizeQuirk@	/* WEIRD IE QUIRK */
@@ -169,16 +165,16 @@
 }
 
 .ZmStatusInfoToast {
-	@ToastPane@
-	@ToastInfo@
+	@ToastContainer@
+	@ToastBg-info@
 }
 .ZmStatusWarningToast {	
-	@ToastPane@
-	@ToastWarning@
+	@ToastContainer@
+	@ToastBg-warning@
 }
 .ZmStatusCriticalToast {	
-	@ToastPane@
-	@ToastCritical@
+	@ToastContainer@
+	@ToastBg-critical@
 }
 
 .ZmStatusHistory { 
@@ -206,6 +202,7 @@
 /* ??? DO WE WANT THIS FOR ALL TREES, OR JUST IN THE OVERVIEW TREES */
 .DwtTreeItemLevel1ChildDiv {
 	padding-left:0px;
+	margin-bottom:5px;
 }
 
 
@@ -244,19 +241,19 @@
 
 /* toolbar in child window */
 .ZmAppToolBar_cw {
-	@ToolbarBg@
+	@ToolbarContainer@
 	@FullWidth@
 }
 
 /* toolbar in child window for message view */
 .ZmMsgViewToolBar_cw {
-	@ToolbarBg@
+	@ToolbarContainer@
 	@FullWidth@
 }
 
-/* toolbars in read message view that let you accept an appointment, share, etc */
+/* toolbars in read message view that let you accept an appointment, share, etc (with no border) */
 .ZmInviteToolBar, .ZmShareToolBar {
-	@ToolbarBg@
+	@InlineToolbarContainer@
 	padding-left:@BoxPaddingSize@
 }
 
@@ -311,17 +308,18 @@ td.DDSepInvisible div {
 
 /* outer container for an individual picker */
 .ZmPicker {
-	@PickerBg@
+	@PickerContainer@
 }
 
 /* Header for each picker */
 .ZmPicker .DwtToolBar {
-	@WidgetHeaderBg@
+	@WidgetHeaderContainer@
+	@WidgetHeaderSize@
 }
 
 /* Name of the picker in the header */
 .ZmPickerLabel .Text {
-	@FontBig@
+	@FontSize-big@
 	font-weight:bold;
 }
 
@@ -333,10 +331,6 @@ td.DDSepInvisible div {
 /* ??? SHOTGUN */
 .ZmPickerOverview td {
 	 @Label@ 
-}
-
-.ZmPicker .DwtToolBar .TBButton {
-	border-color:@_PageHeaderBgColor_@;
 }
 
 
@@ -383,7 +377,7 @@ td.DDSepInvisible div {
 /* Label for the header of this conversation */
 .ZmConvView .Subject {
 	@Text@
-	@FontBigger@
+	@FontSize-bigger@
 	@BoxPadding@
 	@NoWrap@
 	text-overflow: ellipsis;
@@ -405,19 +399,19 @@ td.DDSepInvisible div {
 	-- there can be two instances, one for "conversation" view and one for "messages" view */
 .ZmMailMsgView {
 	@FullWidth@
-	@ContentBg@
+	@AppBg@
 	@Text@
 }
 
 /* Container for the body of the message */
 .MsgBody {
-	@ContentBg@
+	@AppBg@
 	@Text@
 }
 
 /* ??? USE? */
 .ZmMailMsgView .ZmToolBar {
-	@ToolbarBg@
+	@InlineToolbarContainer@
 	margin-left: 12px;
 	height: auto;
 	width: auto;
@@ -426,12 +420,11 @@ td.DDSepInvisible div {
 /* Container for the header of the message */
 .ZmMailMsgView .MsgHeaderTable {
 	padding-top:5px;
-	@PageHeaderBg@
-	@BottomSeparator@
+	@WidgetHeaderContainer@
 }
 
 .ZmMailMsgView .SubjectCol { 
-	@FontBigger@
+	@FontSize-bigger@
 	@Text@
 }
 
@@ -458,10 +451,11 @@ td.DDSepInvisible div {
 
 /* ??? USE? */
 .ZmMailMsgView .AttName-matched { 
-	@MatchedText@
+	@Anchor-matched@
 	white-space: nowrap; 
 }
 
+/* ??? MOVE ME */
 /* "Display Images" button in mail message view to show hidden images */
 /* ??? "Displayimages" CLASS REALLY SHOULD BE SHARED WITH "SpellCheckModeDiv"  */
 /* CLASS DEFINED IN spellcheck.css SINCE THEY SHOULD HAVE THE SAME VISUAL LOOK */
@@ -535,7 +529,7 @@ td.DDSepInvisible div {
 /* textarea where you type in the message? */
 /* ??? USED? */
 .ZmComposeView .msgArea {
-	@FontFixed@
+	@FontFamily-fixed@
 	@FullWidth@
 	overflow: auto;
 }
@@ -565,7 +559,7 @@ td.DDSepInvisible div {
 
 /* textarea where you type plain-text */
 .ZmHtmlEditor .DwtHtmlEditorTextArea {
-	@FontFixed@
+	@FontFamily-fixed@
 	@FullWidth@
 	overflow: auto;
 	padding: 1px;
@@ -574,14 +568,14 @@ td.DDSepInvisible div {
 /* iframe where you edit HTML WYSIWYG-stylee */
 /* NOTE: this is deliberately always black text on white */
 .ZmHtmlEditor .DwtHtmlEditorIFrame {
-	@ContentBorder@
+	@AppBorder@
 	@FullWidth@
 	background-color: white;
-	color:white;
+	color:black;
 }
 
 
-
+/* ??? USE? */
 .ZmHEDialog td.Label { text-align: right; 
   width: 12em; -moz-user-select: none; user-select: none; 
   padding-right: 3px;
@@ -662,17 +656,23 @@ td.DDSepInvisible div {
 	@BoxPadding@
 }
 
-.ZmContactSplitView .AlphabetBarTable {
-	border-width: 1px;
-	border-style: solid;
-	border-color: #CCCCCC #444444 #444444 #CCCCCC;
-	background-color: #DDDDDD;
+.AlphabetBarTable {
+	@NormalButton@
+	Xwidth:80%;
+}
+
+.AlphabetBarCell {
+	@LeftSeparator@
+	text-align:center;
+	@ActiveCursor@
+	width:15px;
 	cursor: pointer;
 }
 
 .ZmContactSplitView .AlphabetBarCell {
-	text-align: center;
-	padding: 3 7 3 7;
+	text-align:center;
+	@ActiveCursor@
+	width:30px;
 }
 
 .ZmContactSplitView .AlphabetBarDisabled {
@@ -682,11 +682,11 @@ td.DDSepInvisible div {
 	cursor: default;
 }
 
+
 /* Container for list of contacts */
 /* ??? RENAME */
 .ZmContactSimpleView {
-	@ListBg@
-	@ListBorder@
+	@ListContainer@
 }
 
 /* Single row in the list */
@@ -713,27 +713,32 @@ td.DDSepInvisible div {
 	@DragBg@
 }
 
+/* ???  USE? */
 .ZmContactSimpleView .SimpleContactHover {
-	@HoverBg@
+	@AppBg@	/* ??? */
 }
 
 
 
 /* Container for big display of one contact  */
 .ZmContactInfoView {
-	@ContentBg@
-	@ContentBorder@
+	@AppBg@
+	@AppBorder@
 	overflow: hidden;
 }
 
 .ZmContactInfoView .contactHeaderRow,
 .ZmContactView .contactHeaderRow {
+	@BigWidgetHeaderBg@
 	height: 40px;
+	height: 40px;
+	@WidgetHeaderContainer@
+	@WidgetHeaderSize-big@
 }
 
 .ZmContactInfoView .contactHeader,
 .ZmContactView .contactHeader {
-	@FontBiggest@
+	@FontSize-biggest@
 	@Text@
 	padding-left:@BoxPaddingSize@;
 	@NoWrap@
@@ -741,11 +746,11 @@ td.DDSepInvisible div {
 }
 
 .ZmContactInfoView .companyName {
-	@FontBigger@
+	@FontSize-bigger@
 }
 
 .ZmContactInfoView .companyFolder {
-	@FontBig@
+	@FontSize-big@
 	@NoWrap@
 	width: 1%;
 }
@@ -792,7 +797,7 @@ td.DDSepInvisible div {
 
 /* ??? USED? */
 .contactEditHeader {
-	@FontBigger@
+	@FontSize-bigger@
 	@BottomSeparator@
 	padding-top: 15;
 	padding-left: @BoxPaddingSize@;
@@ -817,38 +822,39 @@ td.DDSepInvisible div {
 	@FullSize@
 }
 
-/* Container for a single contact's card */
-.ZmContactCard {
-	@ContentBg@
-	@ContentBorder@
+/* Container for a single contact card in various states */
+.ZmContactCard, 
+.ZmContactCard-selected, 
+.ZmContactCard-selected-right,
+.ZmContactCard-drag, 
+.ZmContactCard-selected-drag,
+.ZmContactCard-dnd {
+	@AppBg@
 	@ContactsCardSize@
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
 
+.ZmContactCard {
+	@OutsetBorder@
+}
+
+/* Container for a single card when it is selected */
 .ZmContactCard-selected, .ZmContactCard-selected-right {
-	@ContentBg@
-	@SelectedBorder@
-	@ContactsCardSize@
-	overflow: hidden;
-	text-overflow: ellipsis;
+	@FocusBorder@
 }
 
 .ZmContactCard-drag, 
 .ZmContactCard-selected-drag,
 .ZmContactCard-dnd {
-	@DragBg@
-	@DragBorder@
-	@ContactsCardSize@
-	overflow: hidden;
-	text-overflow: ellipsis;
+	@FocusBorder@	/*???*/
 }
 
 /* Header for the contact cards view */
 .ZmContactCardsView .contactHeader,
 .ZmContactCard-dnd .contactHeader {
-	@WidgetHeaderBg@
-	@FontBigger@
+	@WidgetHeaderContainer@
+	@FontSize-bigger@
 	@Text@
 	padding-left:@BoxPaddingSize@;
 	@NoWrap@
@@ -905,7 +911,7 @@ td.DDSepInvisible div {
 /* Outer container for all calendar display views */
 .calendar_view {
 	@FullSize@
-	@ContentBg@
+	@AppBg@
 }
 
 /* ??? SHOTGUN   NECESSARY?  calendar_body? */
@@ -952,8 +958,7 @@ td.DDSepInvisible div {
 
 /* Container for the head of the calendar grid */
 .calendar_heading {
-	@WidgetHeaderBg@
-	@BottomSeparator@
+	@WidgetHeaderContainer@
 	height: 20px;			/* ??? SIZE */
 	overflow: hidden;
 }
@@ -970,7 +975,10 @@ td.DDSepInvisible div {
 }
 
 /* day label in various states */
-.calendar_heading_day {
+.calendar_heading_day,
+.calendar_heading_day-selected,
+.calendar_heading_day_today,
+.calendar_heading_day_today-selected {
 	@Label@
 	@FullSize@
 	@NoWrap@
@@ -981,38 +989,22 @@ td.DDSepInvisible div {
 
 .calendar_heading_day-selected {
 	@SelectedBg@
-	@SelectedText@
-	@NoWrap@
-	@FullSize@
-	padding-top:@TextPaddingSize@;
-	text-align:center;
-	vertical-align:center;
 }
 
 .calendar_heading_day_today {
-	@SelectedText@
-	@NoWrap@
-	@FullSize@
-	padding-top:@TextPaddingSize@;
-	text-align:center;
-	vertical-align:center;
-	@FontToday@
+	@Text-today@
+	font-weight:bold;
 }
 
 .calendar_heading_day_today-selected {
 	@SelectedBg@
-	@SelectedText@
-	@NoWrap@
-	@FullSize@
-	padding-top:@TextPaddingSize@;
-	text-align:center;
-	vertical-align:center;
-	@FontToday@
+	@Text-today@
+	font-weight:bold;
 }
 
 /* Separator between all-day and hourly sections */
 .calendar_header_allday_separator {
-	@HSashBg@
+	@HSashContainer@
 }
 
 /* Separator between individual days of the calendar */
@@ -1097,7 +1089,7 @@ td.DDSepInvisible div {
 .calendar_month_header_month {
 	@PageHeaderBg@
 	@PageHeaderText@
-	@FontBiggest@
+	@FontSize-biggest@
 	@Label@
 	text-align:center;
 }
@@ -1106,7 +1098,7 @@ td.DDSepInvisible div {
 .calendar_month_header_cells_text {
 	@PageHeaderBg@
 	@PageHeaderText@
-	@FontBig@
+	@FontSize-big@
 	@SmallBoxPadding@
 	@BottomSeparator@
 	@Label@
@@ -1144,22 +1136,22 @@ td.DDSepInvisible div {
 .calendar_month_day_label_off_month_today
 {
 	@NoWrap@
-	@FontBig@
+	@FontSize-big@
 	@TextPadding@
 	text-align:right;
 }
 
 .calendar_month_day_label_today {
-	@FontToday@
+	@Text-today@
 }
 
 .calendar_month_day_label_off_month {
-	@DisabledText@
+	@Text-disabled@
 }
 
 .calendar_month_day_label_off_month_today {
-	@DisabledText@
-	@FontToday@
+	@Text-disabled@
+	@Text-today@
 }
 
 
@@ -1285,6 +1277,7 @@ td.DDSepInvisible div {
 	overflow:hidden;
 	border:2px solid;
 	border-color:#AAAAAA #333333 #333333 #AAAAAA;
+	-moz-border-radius:2 2 2 2;
 	margin:0 0 0 -1;
 }
 
@@ -1294,6 +1287,7 @@ td.DDSepInvisible div {
 	overflow:hidden;
 	border:4px solid;
 	border-color:#339999 #003030 #003030 #339999;
+	-moz-border-radius:2 2 2 2;
 	margin:0 -2 -2 0;
 }
 
@@ -1301,6 +1295,7 @@ td.DDSepInvisible div {
 	position:relative;
 	overflow:hidden;
 	border:2px solid #333333;
+	-moz-border-radius:2 2 2 2;
 	border-top-width:1px;
 	border-bottom-width:1px;
 	margin:0 0 -1 0;
@@ -1313,6 +1308,7 @@ td.DDSepInvisible div {
 	border-top:2px solid #339999;
 	border-right:3px solid #003030;
 	border-bottom:2px solid #003030;
+	-moz-border-radius:2 2 2 2;
 	margin: 0 -1 -1 0;
 }
 
@@ -1350,13 +1346,13 @@ HTML>BODY .appt-selected .appt_allday_body
  */
 .calendar_print_date_header {
 	@BoxMargin@
-	@FontBiggest@
 	@BoxPadding@
 	@FullWidth@
+	@FontSize-biggest@
 	border-bottom: 2px solid #DDDDDD;
 }
 .calendar_print_date_header_weekday {
-	@FontNormal@
+	@FontSize-normal@
 }
 
 .calendar_print_appointment_container {
@@ -1441,12 +1437,13 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* Overdue appt text */
 .ZmReminderOverdue {
-	@FontImportant@
+	@Text-important@
+	font-weight:bold;
 }
 
 /* Appt coming soon text */
 .ZmReminderSoon {
-	@FontImportant@
+	@Text-important@
 	font-weight: bold;
 }
 
@@ -1495,7 +1492,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 .ZmSchedulerNormalRow {
-	@ContentBg@
+	@AppBg@
 }
 
 .ZmSchedulerDisabledRow {
@@ -1520,7 +1517,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* label for the current date */
 .ZmSchedulerDate {
-	@FontBigger@
+	@FontSize-bigger@
 	@NoWrap@
 	text-align: center;
 }
@@ -1534,10 +1531,9 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmSchedulerGridHeaderCell {
 	@FreeBusyViewHeaderWidth@;
-	@RightSeparator@	
 	@NoWrap@
 	@Label@
-	border-color:@_PageBgColor_@;
+	padding-right:1px;
 }
 
 .ZmSchedulerOrgIconTd {
@@ -1559,7 +1555,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmSchedulerAllTd {
 	@SeparatorBorder@
 	@NoWrap@
-	@DisabledText@
+	@Text-disabled@
 	font-weight: bold;
 	text-align: center;
 	@InactiveCursor@
@@ -1705,15 +1701,13 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmChatWindow {
-	@WindowBg@
-	@WindowBorder@
+	@WindowContainer@
 	width: 400px;			/* ??? SIZE */
 	height: 300px;
 }
 
 .ZmChatWindow-selected {
-	@WindowBg@
-	@WindowBorder-focused@
+	@WindowContainer-focused@
 	width: 400px;
 	height: 300px;	
 }
@@ -1725,21 +1719,22 @@ HTML>BODY .appt-selected .appt_allday_body
 	width: 1%;
 }
 
+/* ??? */
 .ZmChatWindow .DwtToolBar {
-	@ListNormalRowBg@
+	@ListItemContainer@
 }
 
 
 .ZmChatWindow-selected .DwtToolBar {
-	@ListSelectedRowBg@
+	@ListItemContainer-selected@
 	height:24px;
 }
 
 /* ??? REMOVE
-.ZmChatWindow .DwtToolBar .TBButton {
+.ZmChatWindow .DwtToolBar .DwtToolbarButton {
 	border: 1px solid #CCCCCC;
 }
-.ZmChatWindow-selected .DwtToolBar .TBButton {
+.ZmChatWindow-selected .DwtToolBar .DwtToolbarButton {
 	border: 1px solid #CCCCCC;
 }
 
@@ -1758,16 +1753,16 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* Body of the chat window */
 .ZmChatWindowChat {
-	@ContentBg@
-	@ContentBorder@
+	@AppBg@
+	@AppBorder@
 	overflow: hidden;
 }
 
 /* list of chat members for multi-person chat */
 .ZmChatMemberList {
 	/*overflow: hidden;*/
-	@ContentBg@
-	@ContentBorder@
+	@AppBg@
+	@AppBorder@
 }
 
 /* label in the chat record by text that user has typed, eg:  [2:10 PM] username: */
@@ -1801,7 +1796,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmChatWindowInput textarea {
-	@InputField@
+	@TextArea@
 }
 
 
@@ -1820,7 +1815,7 @@ HTML>BODY .appt-selected .appt_allday_body
  *	Name of the app in the inset
  */
 .currentAppLabel .Text {
-	@FontBigger@
+	@FontSize-bigger@
 	@InsetText@
 }
 
@@ -1845,10 +1840,13 @@ HTML>BODY .appt-selected .appt_allday_body
  *  Autocompletion
  */
 .ZmAutocompleteListView {
-	@MenuBg@
+	@MenuContainer@
 	width: auto;
 }
-.ZmAutocompleteListView .Row, .ZmAutocompleteListView .Row-selected {
+
+/* ??? USE? */
+.ZmAutocompleteListView .Row, 
+.ZmAutocompleteListView .Row-selected {
 	@TextPadding@
 }
 .ZmAutocompleteListView .Row-selected { 
@@ -1863,8 +1861,8 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* list of filters */
 .ZmFilterListView {
-	@ContentBg@
-	@ContentBorder@
+	@AppBg@
+	@AppBorder@
 	width: 100%;
 }
 
@@ -1892,11 +1890,11 @@ HTML>BODY .appt-selected .appt_allday_body
 * Print View
 */
 .ZmPrintView-username {
-	@FontBigger@
+	@FontSize-bigger@
 }
 
 .ZmPrintView-company {
-	@FontBiggest@
+	@FontSize-biggest@
 }
 
 
@@ -1924,7 +1922,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* Box that shows a color, allows you to click to set the color */
 .ZmPrefView .colorBox {
-	@ContentBorder@		/* ??? */
+	@AppBorder@		/* ??? */
 	width:18px; 
 	height:18px; 
 }
@@ -1988,7 +1986,7 @@ HTML>BODY .appt-selected .appt_allday_body
  */
 
 .ZmNotebookPageView {
-	@ContentBg@
+	@AppBg@
 }
 
 .ZmPageEditView {
@@ -2004,10 +2002,10 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmNotebookPageView, .ZmNotebookPageView P, .ZmNotebookPageView TD, .ZmNotebookPageView DIV,
 .ZmNotebookPageView SPAN, .ZmNotebookPageView SELECT, .ZmNotebookPageView INPUT, 
 .ZmNotebookPageView TEXTAREA, .ZmNotebookPageView BUTTON {
-	@HTMLText@
+	@FontFamily-html@
 }
 .ZmNotebookPageView H1 {
-	margin-top: 0em;
+	margin-top: 0;
 	margin-bottom: @BoxMarginSize@;
 }
 .ZmNotebookPageView H2 {
@@ -2026,8 +2024,8 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmPageEditView {
 }
 .ZmPageEditView .Label {
-	@HTMLText@
-	@FontBigger@
+	@FontFamily-html@
+	@FontSize-bigger@
 	text-align: right;
 	width: 1%;
 }

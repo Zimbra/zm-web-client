@@ -47,7 +47,7 @@ function ZmChicletButton(parent, outerClass, innerClass) {
 	// center the inner image
 	var outerSz = this.getSize();
 	var innerSz = Dwt.getSize(this._innerDiv);
-	Dwt.setLocation(this._innerDiv, Math.ceil((outerSz.x - innerSz.x) / 2), Math.ceil((outerSz.y - innerSz.y) / 2));
+//	Dwt.setLocation(this._innerDiv, Math.ceil((outerSz.x - innerSz.x) / 2), Math.ceil((outerSz.y - innerSz.y) / 2));
 	
 	this._origClassName = outerClass;
 	this._activatedClassName = this._origClassName + " " + DwtCssStyle.ACTIVATED;
