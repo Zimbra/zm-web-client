@@ -158,32 +158,32 @@ ZmContactSplitView.prototype._sizeChildren =
 function(width, height) {
 	var padding = 5;		// css padding value (see ZmContactSplitView css class)
 	var listWidth = 200;	// fixed width size of list view
-	
+
 	// calc. height for children of this view
 	var alphabetBarHeight = this._hasAlphabetBar ? ZmContactSplitView.ALPHABET_HEIGHT : null;
 	var childHeight = (height - (padding * 2)) - (alphabetBarHeight || 0);
 	// always set the list part width to 200px (should be in css?)
 	this._listPart.setSize(listWidth, childHeight);
 	this._listPart.setLocation(Dwt.DEFAULT, (alphabetBarHeight || Dwt.DEFAULT));
-	
+
 	// explicitly set the size for the xform part
 	var listSize = this._listPart.getSize();
 	var contactWidth = width - ((padding * 5) + listWidth);
 	var contactXPos = (padding * 3) + listWidth;
 	this._contactPart.setSize(contactWidth, childHeight);
 	this._contactPart.setLocation(contactXPos, (alphabetBarHeight || Dwt.DEFAULT));
-	
+
 	this._contactPartWidth = contactWidth;
 	this._contactPartHeight = childHeight;
-	
+
 	if (this._htmlInitialized) {
 		var bodyDiv = document.getElementById(this._contactBodyId);
 		bodyDiv.style.width = this._contactPartWidth;
 		bodyDiv.style.height = this._contactPartHeight - 40;
-	}	
+	}
 };
 
-ZmContactSplitView.prototype._createHtml = 
+ZmContactSplitView.prototype._createHtml =
 function() {
 	this._contactHeaderRowId = Dwt.getNextId();
 	this._contactHeaderId = Dwt.getNextId();
@@ -211,7 +211,7 @@ function() {
 	html[idx++] = "'></div></td></tr></table>";
 
 	this._contactPart.getHtmlElement().innerHTML = html.join("");
-	
+
 	this._htmlInitialized = true;
 };
 
@@ -227,14 +227,14 @@ function() {
 	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=2 cellspacing=2 width=80%><tr>"
 
 	for (var i = 0; i < alphabet.length; i++) {
-		html[idx++] = "<td onclick='ZmContactSplitView.alphabetClicked(";
+		html[idx++] = "<td onclick='ZmContactSplitView._alphabetClicked(";
 		if (i > 0)
 			html[idx++] = '"' + alphabet[i] + '"';
 		html[idx++] = "); return false;'";
 		if (i == 0) {
-			html[idx++] = " class='AlphabetBarCellFirst'>";		
+			html[idx++] = " class='AlphabetBarCellFirst'>";
 		} else {
-			html[idx++] = " class='AlphabetBarCell'>";		
+			html[idx++] = " class='AlphabetBarCell'>";
 		}
 		html[idx++] = alphabet[i];
 		html[idx++] = "</td>";
