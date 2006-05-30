@@ -55,7 +55,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
     var listener = new AjxListener(this, this._settingsChangeListener);
 	this._settings.getSetting(ZmSetting.QUOTA_USED).addChangeListener(listener);
 	this._settings.getSetting(ZmSetting.POLLING_INTERVAL).addChangeListener(listener);
-	this._settings.getSetting(ZmSetting.SKIN).addChangeListener(listener);
+	this._settings.getSetting(ZmSetting.SKIN_NAME).addChangeListener(listener);
 
 	ZmCsfeCommand.setServerUri(location.protocol + "//" + domain + appCtxt.get(ZmSetting.CSFE_SERVER_URI));
 
@@ -1534,7 +1534,7 @@ function(ev) {
 		this._setUserInfo();
 	} else if (setting.id == ZmSetting.POLLING_INTERVAL) {
 		this.setPollInterval();
-	} else if (setting.id == ZmSetting.SKIN) {
+	} else if (setting.id == ZmSetting.SKIN_NAME) {
 		var cd = this._confirmDialog = this._appCtxt.getYesNoMsgDialog();
 		cd.reset();
 		cd.registerCallback(DwtDialog.YES_BUTTON, this._newSkinYesCallback, this);

@@ -1,0 +1,172 @@
+
+<!-- templates for creating various types of widgets: not used yet -->
+<div id='widget_templates'  style='display:none;position:absolute;left:300;width:700;top:100;padding:5px;'>
+	
+	<div style='background-color:#e8dcc1'>
+		<table><tr>
+			<td><div class='DwtButton-activated'>Activated</div></td>
+			<td><div class='DwtButton'>Normal</div></td>
+			<td><div class='DwtButton-active'>Active</div></td>
+			<td><div class='DwtButton-triggered'>Triggered</div></td>
+			<td><div class='DwtButton-disabled'>Disabled</div></td>
+			<td><div class='DwtButton'>Normal Button With a Long Name</div></td>
+		</tr></table>
+	</div>
+	
+	<br>
+	
+	<div class='DwtTabHeader'>
+		<table cellspacing=0 cellpadding=0 style='width:100%'><tr>
+			<td valign=bottom><div class='DwtTabSpacerStart'></div></td>
+			<td><div class='DwtTabButton'>Normal</div></td>
+			<td><div class='DwtTabButton-toggled'>Toggled</div></td>
+			<td><div class='DwtTabButton-active'>Active</div></td>
+			<td><div class='DwtTabButton-triggered'>Triggered</div></td>
+			<td><div class='DwtTabButton-disabled'>Disabled</div></td>
+			<td><div class='DwtTabButton'>Tab With a Long Name</div></td>
+			<td valign=bottom width='100%'><div class='DwtTabSpacer'></div></td>
+		</tr></table>
+	</div>
+	<div style='background-color:#e8dcc1'>&nbsp;</div>
+
+<table cellspacing=20>
+<tr><td>
+
+	<div id='skin_menu_template' style='min-width:100px;'>
+		<div class='DwtMenu'>
+			<table cellspacing='0' cellpadding='0' width='100%'>
+				<tr><td class='DwtMenuItem'>
+					Menu Item 1
+				</td></tr>
+				<tr><td class='DwtMenuItem-selected'>
+					Menu Item Active
+				</td></tr>
+				<tr><td class='DwtMenuItem'>
+					Menu Item 3
+				</td></tr>
+				<tr><td class='DwtMenuItem-triggered'>
+					Menu Item Triggered
+				</td></tr>
+				<tr><td class='DwtMenuItem'>
+					Menu Item 5
+				</td></tr>
+				<tr><td class='DwtMenuItem'>
+					Menu Item 6
+				</td></tr>
+				<tr><td class='DwtMenuItem'>
+					Menu Item 7
+				</td></tr>
+			</table>
+		</div>
+	</div>
+
+</td><td>
+
+	<div id='skin_v_sash_template' style='height:60px'>
+		<div class='DwtHorizontalSash'>
+			<table cellspacing=0 cellpadding=1 width=10 height='90%'>
+				<tr><td height='50%' class='DwtSashContents'>&nbsp;</td></tr>
+				<tr><td class='DwtSashContents'>&deg;</td></tr>
+				<tr><td class='DwtSashContents'>&deg;</td></tr>
+				<tr><td class='DwtSashContents'>&deg;</td></tr>
+				<tr><td class='DwtSashContents'>&deg;</td></tr>
+				<tr><td class='DwtSashContents'>&deg;</td></tr>
+				<tr><td height='50%' class='DwtSashContents'>&nbsp;</td></tr>
+			</table>				
+		</div>
+	</div>
+
+</td><td>
+
+	<div id='skin_h_sash_template'>
+		<div class='DwtVerticalSash'>
+			<center>
+				<table cellspacing=0 cellpadding=1 width=20><tr>
+					<td class='DwtSashContents'>&deg;</td>
+					<td class='DwtSashContents'>&deg;</td>
+					<td class='DwtSashContents'>&deg;</td>
+					<td class='DwtSashContents'>&deg;</td>
+					<td class='DwtSashContents'>&deg;</td>
+				</tr></table>				
+			</center>
+		</div>
+	</div>
+
+
+</td></tr>
+
+<tr><td>
+	
+	<div id='skin_dialog_template' class='dialog' style='position:relative;width:200;height:100;'>
+			<div class='DwtDialog DwtDarkOuterBorder'>
+				<table class='full_size' cellspacing=0 cellpadding=0 style='cursor:move;'>
+					<tr id='{$titleId}'>
+						<td class='minWidth'><!--$icon--></td>
+						<td id='{$titleTextId}' class='DwtDialogTitle'>{$title}</td>
+						<td class='minWidth'><div class='{$closeIcon2}'></div></td>
+						<td class='minWidth'><div class='{$closeIcon1}'></div></td>
+					</tr>
+					<tr>
+						<td class='DwtDialogBody DwtDarkInnerBorder full_size' colspan='3'>
+							{$contents}
+						</td>
+					</tr>
+				</table>
+			</div>
+	</div>
+
+</td><td>
+
+	<div id='skin_semi_modal_dialog_template' class='dialog' style='position:relative;width:200;height:100;'>
+			<div class='DwtDialog DwtLightOuterBorder'>
+				<table class='full_size' cellspacing=0 cellpadding=0 style='cursor:move;'>
+					<tr id='{$titleId}'>
+						<td class='minWidth'><!--$icon--></td>
+						<td id='{$id}_title' class='DwtDialogTitle'>{$title}</td>
+						<td id='{$id}_close' class='minWidth'></td>
+					</tr>
+					<tr>
+						<td id='{$id}_contents' class='DwtDialogBody DwtLightInnerBorder full_size' colspan='3'>
+						{$contents}
+						</td>
+					</tr>
+				</table>
+			</div>
+	</div>
+
+</td><td>
+
+	<div id='skin_hover_template' class='dialog' style='position:relative;width:200;height:20;'>
+		<div class='DwtToolTip DwtLightOuterBorder'>
+			<div id='{$id}TopPointer' class='DwtToolTipTopPointer'>
+				<center>
+					<div class='DwtToolTipPointerRow' style='width:1px;'>&nbsp;</div>
+					<div class='DwtToolTipPointerRow' style='width:3px;'>&nbsp;</div>
+					<div class='DwtToolTipPointerRow' style='width:5px;'>&nbsp;</div>
+					<div class='DwtToolTipPointerRow' style='width:7px;'>&nbsp;</div>
+					<div class='DwtToolTipPointerRow' style='width:9px;'>&nbsp;</div>
+					<div class='DwtToolTipPointerRow' style='width:11px;'>&nbsp;</div>
+					<div class='DwtToolTipPointerRow' style='width:13px;'>&nbsp;</div>
+				</center>
+			</div>
+			<div id='{$id}_contents' class='DwtToolTipBody'>
+				{$contents}
+			</div>
+			<div id='{$id}BottomPointer' class='DwtToolTipBottomPointer'>
+				<center>
+					<div class='DwtToolTipPointerRow' style='width:13px;'>&nbsp;</div>
+					<div class='DwtToolTipPointerRow' style='width:11px;'>&nbsp;</div>
+					<div class='DwtToolTipPointerRow' style='width:9px;'>&nbsp;</div>
+					<div class='DwtToolTipPointerRow' style='width:7px;'>&nbsp;</div>
+					<div class='DwtToolTipPointerRow' style='width:5px;'>&nbsp;</div>
+					<div class='DwtToolTipPointerRow' style='width:3px;'>&nbsp;</div>
+					<div class='DwtToolTipPointerRow' style='width:1px;'>&nbsp;</div>
+				</center>
+			</div>
+		</div>
+	</div>
+
+</td></tr>
+</table>
+
+</div>

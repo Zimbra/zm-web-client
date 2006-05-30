@@ -45,7 +45,7 @@ ZmPref.GROUP_MAIL_BY_VALUE[ZmItem.CONV] = ZmSetting.GROUP_BY_CONV;
 ZmPref.GROUP_MAIL_BY_VALUE[ZmItem.MSG] = ZmSetting.GROUP_BY_MESSAGE;
 
 ZmPref.GENERAL_PREFS = [ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH, ZmSetting.PASSWORD, 
-						ZmSetting.SHOW_SEARCH_STRING, ZmSetting.SKIN,
+						ZmSetting.SHOW_SEARCH_STRING, ZmSetting.SKIN_NAME,
 						ZmSetting.COMPOSE_INIT_FONT_FAMILY, ZmSetting.COMPOSE_INIT_FONT_SIZE, ZmSetting.COMPOSE_INIT_FONT_COLOR];
 
 ZmPref.MAIL_PREFS = [ZmSetting.INITIAL_GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSetting.SHOW_FRAGMENTS,
@@ -77,6 +77,16 @@ ZmPref.TYPE_PASSWORD	= i++;
 ZmPref.TYPE_FONT		= i++;
 ZmPref.TYPE_IMPORT		= i++;
 ZmPref.TYPE_EXPORT		= i++;
+
+
+// List the server name for all skins here.
+//	You also need to update
+ZmPref.SKIN_SAND		= "sand";
+ZmPref.SKIN_SKY			= "sky";
+ZmPref.SKIN_STEEL		= "steel";
+ZmPref.SKIN_WALNUT		= "walnut";
+ZmPref.SKIN_MONEY		= "money";
+
 
 ZmPref.validateEmail = 
 function(emailStr) {
@@ -133,11 +143,11 @@ ZmPref.SETUP[ZmSetting.PASSWORD] = {
 	displaySeparator:	true,
 	precondition:		ZmSetting.CHANGE_PASSWORD_ENABLED};
 
-ZmPref.SETUP[ZmSetting.SKIN] = {
+ZmPref.SETUP[ZmSetting.SKIN_NAME] = {
 	displayName:		ZmMsg.selectSkin,
 	displayContainer:	ZmPref.TYPE_SELECT,
-	displayOptions:		[ZmMsg.skinBare, ZmMsg.skinSteel, ZmMsg.skinWalnut, ZmMsg.skinSky],
-	options:			[ZmSetting.SKIN_BARE, ZmSetting.SKIN_STEEL, ZmSetting.SKIN_WALNUT, ZmSetting.SKIN_SKY],
+	displayOptions:		[ZmMsg.skinSand, ZmMsg.skinSky, ZmMsg.skinSteel, "Bare"],
+	options:			[ZmPref.SKIN_SAND, ZmPref.SKIN_SKY, ZmPref.SKIN_STEEL, "bare"],
 	displaySeparator:	true,
 	precondition:		ZmSetting.SKIN_CHANGE_ENABLED};
 

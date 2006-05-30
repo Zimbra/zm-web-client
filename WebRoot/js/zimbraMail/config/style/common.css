@@ -32,8 +32,12 @@ P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
 	@FontSize-normal@
 }
 
-INPUT[readonly], TEXTAREA[readonly] {
+INPUT[readonly] {
 	@InputField-disabled@
+	cursor: text;
+}
+TEXTAREA[readonly] {
+	@TextArea-disabled@
 	cursor: text;
 }
 
@@ -61,9 +65,12 @@ LEGEND {
 
 /* set for 'text' and 'password' fields explicitly so checkboxes don't get borders */
 HTML>BODY input[type="text"], 
-HTML>BODY input[type="password"], 
-HTML>BODY textarea {
+HTML>BODY input[type="password"] {
 	@InputField@
+}
+
+HTML>BODY textarea {
+	@TextArea@
 }
 
 HTML>BODY input[type="checkbox"] {

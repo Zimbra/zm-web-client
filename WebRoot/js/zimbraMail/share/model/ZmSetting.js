@@ -88,10 +88,7 @@ ZmSetting.DEDUPE_INBOX		= "moveSentMessageToInbox";
 ZmSetting.DEDUPE_ALL		= "dedupeAll";
 ZmSetting.SIG_INTERNET		= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK		= "outlook";
-ZmSetting.SKIN_BARE			= "bare";					// zimbraPrefSkin
-ZmSetting.SKIN_SKY			= "sky";
-ZmSetting.SKIN_STEEL		= "steel";
-ZmSetting.SKIN_WALNUT		= "walnut";
+ZmSetting.SKIN				= "sand";					// zimbraPrefSkin
 
 // Constants for various setting types. A setting can represent configuration data, a COS attribute, or a user preference.
 // Any setting added here must also be added to INIT below.
@@ -206,7 +203,7 @@ ZmSetting.PASSWORD						= i++;
 ZmSetting.SEARCH_INCLUDES_SPAM			= i++;
 ZmSetting.SEARCH_INCLUDES_TRASH			= i++;
 ZmSetting.SHOW_SEARCH_STRING			= i++;
-ZmSetting.SKIN							= i++;
+ZmSetting.SKIN_NAME						= i++;
 ZmSetting.SORTING_PREF 					= i++;
 
 // mail preferences
@@ -371,7 +368,7 @@ ZmSetting.INIT[ZmSetting.PASSWORD]						= [null, ZmSetting.T_PREF];
 ZmSetting.INIT[ZmSetting.SEARCH_INCLUDES_SPAM]			= ["zimbraPrefIncludeSpamInSearch", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.SEARCH_INCLUDES_TRASH]			= ["zimbraPrefIncludeTrashInSearch", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.SHOW_SEARCH_STRING]			= ["zimbraPrefShowSearchString", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
-ZmSetting.INIT[ZmSetting.SKIN]							= ["zimbraPrefSkin", ZmSetting.T_PREF, ZmSetting.D_STRING, "steel"];
+ZmSetting.INIT[ZmSetting.SKIN_NAME]						= ["zimbraPrefSkin", ZmSetting.T_PREF, ZmSetting.D_STRING, "steel"];
 ZmSetting.INIT[ZmSetting.SORTING_PREF] 					= [null, ZmSetting.T_PREF, ZmSetting.D_HASH_TABLE];
 
 // mail preferences
