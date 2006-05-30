@@ -151,6 +151,7 @@ Contributor(s):
   <jsp:include page="<%= skinHtmlFile %>"/>
   <script type="text/javascript" language=Javascript>
     skin.hideQuota();
+    skin.hideTreeFooter();
   </script>
   </body>
 </html>
