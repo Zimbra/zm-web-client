@@ -52,8 +52,6 @@ ZmPage.prototype.modifyDate;
 ZmPage.prototype.size;
 ZmPage.prototype.version = 0;
 
-ZmPage.prototype._new;
-
 // Static functions
 
 ZmPage.load = function(appCtxt, folderId, name, version, callback, errorCallback) {
@@ -70,6 +68,12 @@ ZmPage.save = function(appCtxt, folderId, name, content, callback, errorCallback
 	page.name = name;
 	page._content = content;
 	page.save(callback, errorCallback);
+};
+
+ZmPage.createFromDom = function(node, args) {
+	var page = new ZmPage(args.appCtxt, null, args.list);
+	page.set(node);
+	return page;
 };
 
 // Public methods

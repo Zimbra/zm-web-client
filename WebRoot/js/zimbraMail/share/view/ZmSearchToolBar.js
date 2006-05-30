@@ -82,6 +82,11 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.NOTE);
 	}
 
+	if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+	    mi = DwtMenuItem.create(menu, "SearchNotes", ZmMsg.searchNotebooks, null, true, DwtMenuItem.RADIO_STYLE, 0);
+		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.PAGE);
+	}
+
 	if (this._appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED)) {
 		mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
 		mi = DwtMenuItem.create(menu, "SearchAll", ZmMsg.searchAll, null, true, DwtMenuItem.RADIO_STYLE, 0);
@@ -131,6 +136,7 @@ ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_MAIL_MI] = "searchMail";
 ZmSearchToolBar.MSG_KEY[ZmItem.CONTACT] = "searchContacts";
 ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_GAL_MI] = "searchGALContacts";
 ZmSearchToolBar.MSG_KEY[ZmItem.APPT] = "searchCalendar";
+ZmSearchToolBar.MSG_KEY[ZmItem.PAGE] = "searchNotebooks";
 ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_ANY_MI] = "searchAll";
 
 ZmSearchToolBar.TT_MSG_KEY = new Object();
@@ -140,6 +146,7 @@ ZmSearchToolBar.TT_MSG_KEY[ZmItem.CONTACT] = "searchPersonalContacts";
 ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_PAS_MI] = "searchPersonalAndShared";
 ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_GAL_MI] = "searchGALContacts";
 ZmSearchToolBar.TT_MSG_KEY[ZmItem.APPT] = "searchForAppts";
+ZmSearchToolBar.TT_MSG_KEY[ZmItem.PAGE] = "searchForPages";
 ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_ANY_MI] = "searchForAny";
 
 ZmSearchToolBar.ICON_KEY = new Object();
@@ -148,6 +155,7 @@ ZmSearchToolBar.ICON_KEY[ZmItem.CONTACT] = "ContactsFolder";
 ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_PAS_MI] = "GAL"; // XXX: new icon?
 ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_GAL_MI] = "GAL";
 ZmSearchToolBar.ICON_KEY[ZmItem.APPT] = "CalendarFolder";
+ZmSearchToolBar.ICON_KEY[ZmItem.PAGE] = "Notebook";
 ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_ANY_MI] = "Globe";
 
 ZmSearchToolBar.prototype = new ZmToolBar;

@@ -265,11 +265,18 @@ function(searchFor) {
 			types.add(ZmItem.APPT);
 		if (this._appCtxt.get(ZmSetting.NOTES_ENABLED))
 			types.add(ZmItem.NOTE);
+		if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+			types.add(ZmItem.PAGE);
+			types.add(ZmItem.DOCUMENT);
+		}
 	} else if (searchFor == ZmSearchToolBar.FOR_PAS_MI) {
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
 			types.add(ZmItem.CONTACT);
 	} else {
 		types.add(searchFor);
+		if (searchFor == ZmItem.PAGE) {
+			types.add(ZmItem.DOCUMENT);
+		}
 	}
 
 	return types;
@@ -399,6 +406,10 @@ function(results, search, isMixed) {
 		var isInGal = this._contactSource == ZmSearchToolBar.FOR_GAL_MI;
 		var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
 		clc.show(results, isInGal, search.folderId);
+	} else if (results.type == ZmItem.PAGE || results.type == ZmItem.DOCUMENT) {
+		var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+		var controller = app.getFileController();
+		controller.show(results, true);
 	}
 	this._appCtxt.setCurrentList(results.getResults(results.type));
 	this._updateOverview(search);

@@ -79,6 +79,8 @@ ZmSearch.TYPE[ZmItem.CONV]		= "conversation";
 ZmSearch.TYPE[ZmItem.MSG]		= "message";
 ZmSearch.TYPE[ZmItem.CONTACT]	= "contact";
 ZmSearch.TYPE[ZmItem.APPT]		= "appointment";
+ZmSearch.TYPE[ZmItem.PAGE]		= "wiki";
+ZmSearch.TYPE[ZmItem.DOCUMENT]	= "document";
 ZmSearch.TYPE[ZmItem.NOTE]		= "note";
 ZmSearch.TYPE_ANY				= "any";
 

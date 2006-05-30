@@ -74,6 +74,11 @@ ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]		= "s";
 ZmListView.FIELD_PREFIX[ZmItem.F_TAG_CELL]		= "t";
 ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]			= "u";
 
+ZmListView.PREFIX_MAP = {};
+for (var field in ZmListView.FIELD_PREFIX) {
+	ZmListView.PREFIX_MAP[ZmListView.FIELD_PREFIX[field]] = field;
+};
+
 ZmListView.ITEM_FLAG_CLICKED = DwtListView._LAST_REASON + 1;
 
 // Filler to add into an empty area so that Firefox gets mouseMove events
@@ -237,11 +242,16 @@ function(htmlArr, idx, item, className) {
 	return idx;
 }
 
+ZmListView.prototype._getFieldWidth =
+function(colIdx) {
+	return AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[colIdx]._width + 4): this._headerList[colIdx]._width;
+};
+
 // A table cell for one field of the item
 ZmListView.prototype._getField =
 function(htmlArr, idx, item, field, colIdx, now) {
 	var fieldId = this._getFieldId(item, field);
-	var width = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[colIdx]._width + 4): this._headerList[colIdx]._width;
+	var width = this._getFieldWidth(colIdx);
 	if (field == ZmItem.F_ITEM_TYPE) {
 		htmlArr[idx++] = "<td width=" + width + " class='Icon'>";
 		htmlArr[idx++] = AjxImg.getImageHtml(ZmItem.ICON[item.type], null, ["id='", fieldId, "'"].join(""));

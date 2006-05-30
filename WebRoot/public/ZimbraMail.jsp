@@ -252,16 +252,20 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/im/ZmImApp.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- Notebook Application -->
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/model/ZmDocument.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/model/ZmPage.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/model/ZmNotebookCache.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/view/conv/ZmWikiConverter.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/view/ZmNotebookPageView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/view/ZmNotebookFileView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/view/ZmPageEditView.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/view/ZmFileListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/view/wiklet/ZmWiklet.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/view/wiklet/ZmWikletContext.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/view/wiklet/ZmWikletProcessor.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/controller/ZmNotebookController.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/controller/ZmNotebookPageController.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/controller/ZmNotebookFileController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/controller/ZmPageEditController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/ZmNotebookApp.js<%= ext %>?v=<%= vers %>"></script>
 
@@ -288,6 +292,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/model/ZmApptList.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/model/ZmResourceList.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/model/ZmApptCache.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/model/ZmPageList.js<%= ext %>?v=<%= vers %>"></script>
 
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/ZmClientCmdHandler.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/ZmZimbraMail.js<%= ext %>?v=<%= vers %>"></script>

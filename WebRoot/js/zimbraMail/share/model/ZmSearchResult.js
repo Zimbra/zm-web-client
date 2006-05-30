@@ -36,6 +36,15 @@ function ZmSearchResult(appCtxt, search) {
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		this._results[ZmItem.CONTACT] = new ZmContactList(appCtxt, search, false);
 	}
+	if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+		this._results[ZmItem.PAGE] = new ZmPageList(appCtxt, search);
+		/***
+		// NOTE: Use the same list for document objects
+		this._results[ZmItem.DOCUMENT] = this._results[ZmItem.PAGE];
+		/***/
+		this._results[ZmItem.DOCUMENT] = new ZmPageList(appCtxt, search, ZmItem.DOCUMENT);
+		/***/
+	}
 	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		this._results[ZmItem.RESOURCE] = new ZmResourceList(appCtxt, null, search);
 	}
@@ -119,12 +128,15 @@ function(respEl, contactSource) {
 		for (var i = 0; i < types.length; i++) {
 			var type = types[i];
 			var data = respEl[ZmList.NODE[type]];
-			
+
 			// do a bunch of sanity checks
 			if (this._results[type] && data && data.length) {
 				_count += data.length;
-				for (var j = 0; j < data.length; j++)
-					this._results[type].addFromDom(data[j], {addressHash: addressHash});
+				for (var j = 0; j < data.length; j++) {
+					var item = data[j];
+					item._type = type;
+					this._results[type].addFromDom(item, {addressHash: addressHash});
+				}
 
 				if (!foundType[type]) {
 					foundType[type] = true;
@@ -137,9 +149,11 @@ function(respEl, contactSource) {
 	
 	var _en = new Date();
 	DBG.println(AjxDebug.DBG1, "TOTAL PARSE TIME for " + _count + " NODES: " + (_en.getTime() - _st.getTime()));
-	
+
 	if (numTypes <= 1) {
 		this.type = currentType;
+	} else if (numTypes == 2 && (currentType == ZmItem.PAGE || currentType == ZmItem.DOCUMENT)) {
+		this.type = ZmItem.PAGE;
 	} else {
 		this.type = this._appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED) ? ZmList.MIXED : currentType;
 	}

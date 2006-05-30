@@ -1,66 +1,61 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
- * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
 /**
-* Creates an empty mixed view controller.
-* @constructor
-* @class
-* This class manages a view of heterogeneous items.
-*
-* @author Conrad Damon
 * @param appCtxt		app context
 * @param container		containing shell
-* @param mixedApp		containing app
+* @param app			containing app
 */
-function ZmMixedController(appCtxt, container, mixedApp) {
+function ZmNotebookFileController(appCtxt, container, app) {
+	ZmNotebookController.call(this, appCtxt, container, app);
 
-	ZmListController.call(this, appCtxt, container, mixedApp);
-
+	/***
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
-	
+	/***/
+
 	this._listeners[ZmOperation.UNDELETE] = new AjxListener(this, this._undeleteListener);
-};
+}
 
-ZmMixedController.prototype = new ZmListController;
-ZmMixedController.prototype.constructor = ZmMixedController;
+ZmNotebookFileController.prototype = new ZmNotebookController;
+ZmNotebookFileController.prototype.constructor = ZmNotebookFileController;
 
-ZmMixedController.prototype.toString = 
-function() {
-	return "ZmMixedController";
+ZmNotebookFileController.prototype.toString = function() {
+	return "ZmNotebookFileController";
 };
 
 // Public methods
 
-ZmMixedController.prototype.show =
-function(searchResults) {
+ZmNotebookFileController.prototype.show = function(searchResults, fromUserSearch) {
 	ZmListController.prototype.show.call(this, searchResults);
-	
+
+	this._fromSearch = fromUserSearch;
+
 	this._setup(this._currentView);
 
-	this._list = searchResults.getResults(ZmList.MIXED);
+	this._list = searchResults.getResults(ZmItem.PAGE);
 	if (this._activeSearch) {
 		if (this._list)
 			this._list.setHasMore(this._activeSearch.getAttribute("more"));
@@ -83,6 +78,7 @@ function(searchResults) {
 	}
 
 	// reset the filter drop down per type of results returned
+	/*** TODO
 	var op = ZmOperation.SHOW_ALL_ITEM_TYPES;
 	if (searchResults.type == ZmItem.CONV || searchResults.type == ZmItem.MSG) {
 		op = ZmOperation.SHOW_ONLY_MAIL;
@@ -90,19 +86,51 @@ function(searchResults) {
 		op = ZmOperation.SHOW_ONLY_CONTACTS;
 	}
 	this._setFilterButtonProps(op, true);
+	/***/
 };
 
 // Resets the available options on a toolbar or action menu.
-ZmMixedController.prototype._resetOperations =
+ZmNotebookFileController.prototype._resetOperations =
 function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
+	/***
 	parent.enable(ZmOperation.SHOW_ALL_MENU, true);
+	/***/
+
+	var toolbar = this._toolbar[this._currentView];
+	var buttonIds = [ ZmOperation.SEND, ZmOperation.DETACH ];
+	toolbar.enable(buttonIds, true);
 };
 
 
 // Private and protected methods
 
-ZmMixedController.prototype._initializeToolBar = 
+ZmNotebookFileController.prototype._getToolBarOps = function() {
+	var list = [];
+	// shared items
+	list.push(
+		ZmOperation.NEW_MENU, /*ZmOperation.REFRESH,*/ ZmOperation.EDIT,
+		ZmOperation.SEP
+	);
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+		list.push(ZmOperation.TAG_MENU, ZmOperation.SEP);
+	/***
+	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+		list.push(ZmOperation.PRINT);
+	/***/
+	list.push(
+		ZmOperation.DELETE,
+		//ZmOperation.SEP,
+		//ZmOperation.ATTACHMENT,
+		ZmOperation.FILLER,
+		ZmOperation.SEND_PAGE,
+		ZmOperation.SEP,
+		ZmOperation.DETACH
+	);
+	return list;
+};
+
+ZmNotebookFileController.prototype._initializeToolBar =
 function(view) {
 	if (this._toolbar[view]) return;
 
@@ -112,8 +140,13 @@ function(view) {
 	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
 	this._setNavToolBar(tb);
 
-	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+	this._setNewButtonProps(view, ZmMsg.compose, "NewPage", "NewPageDis", ZmOperation.NEW_PAGE);
 
+	var toolbar = this._toolbar[view];
+	var button = toolbar.getButton(ZmOperation.EDIT);
+	button.setEnabled(false);
+
+	/*** TODO
 	var button = this._toolbar[view].getButton(ZmOperation.SHOW_ALL_MENU);
 	var menu = new ZmPopupMenu(button);
 	button.setMenu(menu);
@@ -132,82 +165,79 @@ function(view) {
 		mi.setData(ZmOperation.KEY_ID, op);
 		mi.addSelectionListener(listener);
 	}
+	/***/
 };
 
-ZmMixedController.prototype._initializeActionMenu = 
+ZmNotebookFileController.prototype._initializeActionMenu =
 function() {
 	ZmListController.prototype._initializeActionMenu.call(this);
 	// based on current search, show/hide undelete menu option
 	var showUndelete = false;
 	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
 	if (folderId) {
-		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-		var folder = folderTree ? folderTree.getById(folderId) : null;
+		var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+		var folder = tree ? tree.getById(folderId) : null;
 		showUndelete = folder && folder.isInTrash();
 	}
 	var mi = this._actionMenu.getMenuItem(ZmOperation.UNDELETE);
 	mi.setVisible(showUndelete);
 };
 
-ZmMixedController.prototype._getToolBarOps =
-function() {
-	var list = this._standardToolBarOps();
-	list.push(ZmOperation.FILLER);
-	list.push(ZmOperation.SHOW_ALL_MENU);
-	return list;
-};
-
-ZmMixedController.prototype._getActionMenuOps =
+ZmNotebookFileController.prototype._getActionMenuOps =
 function() {
 	var list = this._standardActionMenuOps();
 	list.push(ZmOperation.UNDELETE);
 	return list;
 };
 
-ZmMixedController.prototype._getViewType = 
+ZmNotebookFileController.prototype._getViewType =
 function() {
-	return ZmController.MIXED_VIEW;
+	return ZmController.NOTEBOOK_FILE_VIEW;
 };
 
-ZmMixedController.prototype._getItemType =
+ZmNotebookFileController.prototype._getItemType =
 function() {
-	return ZmList.MIXED;
+	return ZmItem.PAGE;
 };
 
-ZmMixedController.prototype._defaultView =
+ZmNotebookFileController.prototype._defaultView =
 function() {
-	return ZmController.MIXED_VIEW;
+	return ZmController.NOTEBOOK_FILE_VIEW;
 };
 
-ZmMixedController.prototype._createNewView = 
-function(view) {
-	var mv = new ZmMixedView(this._container, null, DwtControl.ABSOLUTE_STYLE, this, this._dropTgt);
-	mv.setDragSource(this._dragSrc);
-	return mv;
+ZmNotebookFileController.prototype._createNewView =
+function(viewType) {
+	var parent = this._container;
+	var className = null;
+	var posStyle = Dwt.ABSOLUTE_STYLE;
+	var mode = null; // ???
+	var controller = this;
+	var dropTgt = null; // ???
+	return new ZmFileListView(parent, className, posStyle, mode, controller, dropTgt);
 };
 
-ZmMixedController.prototype._getTagMenuMsg = 
+ZmNotebookFileController.prototype._getTagMenuMsg =
 function(num) {
 	return (num == 1) ? ZmMsg.tagItem : ZmMsg.tagItems;
 };
 
-ZmMixedController.prototype._getMoveDialogTitle = 
+ZmNotebookFileController.prototype._getMoveDialogTitle =
 function(num) {
 	return (num == 1) ? ZmMsg.moveItem : ZmMsg.moveItems;
 };
 
-ZmMixedController.prototype._setViewContents =
+ZmNotebookFileController.prototype._setViewContents =
 function(view) {
 	this._listView[view].set(this._list);
 };
 
-ZmMixedController.prototype._resetNavToolBarButtons = 
+ZmNotebookFileController.prototype._resetNavToolBarButtons =
 function(view) {
 	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
 	this._showListRange(view);
 };
 
-ZmMixedController.prototype._setFilterButtonProps =
+ZmNotebookFileController.prototype._setFilterButtonProps =
 function(op, setChecked) {
 	var icon = ZmOperation.getProp(op, "image");
 	var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
@@ -222,28 +252,31 @@ function(op, setChecked) {
 // List listeners
 
 // Double click displays an item.
-ZmMixedController.prototype._listSelectionListener =
+ZmNotebookFileController.prototype._listSelectionListener =
 function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-		if (ev.item.type == ZmItem.CONTACT)
-			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(ev.item, this._isGalSearch);
-		else if (ev.item.type == ZmItem.CONV)
-			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController().show(this._activeSearch, ev.item);
-		else if (ev.item.type == ZmItem.MSG)
-			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController().show(ev.item);
-		else if (ev.item.type == ZmItem.PAGE || ev.item.type == ZmItem.DOCUMENT) {
-			var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
-			var controller = app.getFileController();
-			controller._doSelectDblClicked(ev.item, true);
-		}
+		this._doSelectDblClicked(ev.item);
+	}
+};
+ZmNotebookFileController.prototype._doSelectDblClicked = function(item, fromSearch) {
+	item.type = item instanceof ZmPage ? ZmItem.PAGE : ZmItem.DOCUMENT;
+	if (item.type == ZmItem.PAGE) {
+		var controller = this._app.getNotebookController();
+		controller.show(item, true, this._fromSearch || fromSearch);
+	}
+	else if (item.type == ZmItem.DOCUMENT) {
+		var url = item.getUrl();
+		// TODO: popup window w/ REST URL
+		var win = open(url, "_new", "");
 	}
 };
 
-ZmMixedController.prototype._listActionListener = 
+ZmNotebookFileController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
-	
+
+	/*** TODO
 	// based on the items selected, enable/disable and/or show/hide appropriate menu items
 	var selItems = this._listView[this._currentView].getSelection();
 	var selTypes = new Object();
@@ -254,7 +287,7 @@ function(ev) {
 			numTypes++;
 		}
 	}
-	
+
 	var miUndelete = this._actionMenu.getMenuItem(ZmOperation.UNDELETE);
 	var miMoveTo = this._actionMenu.getMenuItem(ZmOperation.MOVE);
 	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
@@ -267,10 +300,10 @@ function(ev) {
 		var showMoveTo = numTypes == 1 && (selTypes[ZmItem.CONV] === true || selTypes[ZmItem.MSG] === true);
 		var showBoth = selItems.length > 1 && numTypes > 1;
 		var isDraft = numTypes == 1 && selItems[0].isDraft;
-		
+
 		miUndelete.setVisible(showUndelete || showBoth || isDraft);
 		miMoveTo.setVisible((showMoveTo || showBoth) && !isDraft);
-	
+
 		// if >1 item is selected and they're not all the same type, disable both menu items
 		this._actionMenu.enable([ZmOperation.UNDELETE, ZmOperation.MOVE], numTypes == 1);
 	} else {
@@ -281,12 +314,14 @@ function(ev) {
 		this._actionMenu.enable(ZmOperation.MOVE, enableMoveTo);
 	}
 	this._actionMenu.popup(0, ev.docX, ev.docY);
+	/***/
 };
 
-ZmMixedController.prototype._undeleteListener = 
+ZmNotebookFileController.prototype._undeleteListener =
 function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 
+	/*** TODO
 	// figure out the default for this item should be moved to
 	var folder = null;
 	if (items[0] instanceof ZmContact) {
@@ -301,12 +336,14 @@ function(ev) {
 
 	if (folder)
 		this._doMove(items, folder);
+	/***/
 };
 
-ZmMixedController.prototype._showAllListener =
+ZmNotebookFileController.prototype._showAllListener =
 function(ev) {
 	if (!ev.item.getChecked()) return;
 
+	/*** TODO
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 	this._setFilterButtonProps(op);
 
@@ -322,4 +359,5 @@ function(ev) {
 	var sc = this._appCtxt.getSearchController();
 	var types = sc.getTypes(searchFor);
 	sc.redoSearch(this._appCtxt.getCurrentSearch(), null, {types:types, offset:0});
+	/***/
 };

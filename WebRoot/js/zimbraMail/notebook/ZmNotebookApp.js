@@ -39,12 +39,14 @@ function() {
 
 // Constants
 
-ZmNotebookApp.NOTEBOOK = "notebook";
+ZmNotebookApp.PAGE = "page";
 ZmNotebookApp.PAGE_EDIT = "page_edit";
+ZmNotebookApp.FILE = "file";
 
 ZmNotebookApp.__CONTROLLERS = {};
-ZmNotebookApp.__CONTROLLERS[ZmNotebookApp.NOTEBOOK] = ZmNotebookController;
-ZmNotebookApp.__CONTROLLERS[ZmNotebookApp.PAGE_EDIT] = ZmPageEditController;
+ZmNotebookApp.__CONTROLLERS[ZmNotebookApp.PAGE]			= ZmNotebookPageController;
+ZmNotebookApp.__CONTROLLERS[ZmNotebookApp.PAGE_EDIT]	= ZmPageEditController;
+ZmNotebookApp.__CONTROLLERS[ZmNotebookApp.FILE]			= ZmNotebookFileController;
 
 // Data
 
@@ -56,7 +58,7 @@ ZmNotebookApp.prototype._notebookCache;
 ZmNotebookApp.prototype.launch =
 function(callback, errorCallback) {
 	var notebookController = this.getNotebookController();
-	notebookController.show();
+	notebookController.show(null, true);
 
 	if (callback) {
 		callback.run();
@@ -74,7 +76,7 @@ function(active) {
 };
 
 ZmNotebookApp.prototype.getController = function(name) {
-	name = name || ZmNotebookApp.NOTEBOOK;
+	name = name || ZmNotebookApp.PAGE;
 	if (!this._controllers[name]) {
 		var controllerCtor = ZmNotebookApp.__CONTROLLERS[name];
 		this._controllers[name] = new controllerCtor(this._appCtxt, this._container, this);
@@ -83,14 +85,18 @@ ZmNotebookApp.prototype.getController = function(name) {
 };
 
 ZmNotebookApp.prototype.getNotebookController = function() {
-	return this.getController(ZmNotebookApp.NOTEBOOK);
+	return this.getController(ZmNotebookApp.PAGE);
 };
 
 ZmNotebookApp.prototype.getPageEditController = function() {
 	return this.getController(ZmNotebookApp.PAGE_EDIT);
 };
 
-ZmNotebookApp.prototype.getNotebookCache = 
+ZmNotebookApp.prototype.getFileController = function() {
+	return this.getController(ZmNotebookApp.FILE);
+};
+
+ZmNotebookApp.prototype.getNotebookCache =
 function() {
 	return this._notebookCache;
 };

@@ -53,6 +53,8 @@ function(item, now, isDndIcon) {
 		return ZmConvListView.prototype._createItemHtml.call(this, item, now, isDndIcon, true);
 	} else if (item.type == ZmItem.MSG) {
 		return ZmMailMsgListView.prototype._createItemHtml.call(this, item, now, isDndIcon, true);
+	} else if (item.type == ZmItem.PAGE || item.type == ZmItem.DOCUMENT) {
+		return ZmFileListView.prototype._createItemHtml.call(this, item, now, isDndIcon);
 	}
 };
 

@@ -84,6 +84,7 @@ ZmOrganizer.ITEM2ORGANIZER[ZmItem.CONTACT]	= ZmOrganizer.ADDRBOOK;
 ZmOrganizer.ITEM2ORGANIZER[ZmItem.APPT]		= ZmOrganizer.CALENDAR;
 //ZmOrganizer.ITEM2ORGANIZER[ZmItem.NOTE]		= ZmOrganizer.FOLDER; // ???
 ZmOrganizer.ITEM2ORGANIZER[ZmItem.PAGE]		= ZmOrganizer.NOTEBOOK;
+ZmOrganizer.ITEM2ORGANIZER[ZmItem.DOCUMENT]	= ZmOrganizer.NOTEBOOK;
 //ZmOrganizer.ITEM2ORGANIZER[ZmItem.CHAT]		= ZmOrganizer.FOLDER; // ???
 //ZmOrganizer.ITEM2ORGANIZER[ZmItem.ROSTER_ITEM]	= ZmOrganizer.FOLDER; // ???
 //ZmOrganizer.ITEM2ORGANIZER[ZmItem.RESOURCE]	= ZmOrganizer.FOLDER; // ???
@@ -323,14 +324,14 @@ function(shares) {
 	this.shares = shares;
 };
 
-ZmOrganizer.prototype.addShare = 
+ZmOrganizer.prototype.addShare =
 function(share) {
 	if (!this.shares)
 		this.shares = [];
 	this.shares.push(share);
 };
 
-ZmOrganizer.prototype.clearShares = 
+ZmOrganizer.prototype.clearShares =
 function() {
 	if (this.shares && this.shares.length) {
 		for (var i = 0; i < this.shares.length; i++) {
@@ -399,11 +400,11 @@ function(newParent) {
 ZmOrganizer.prototype._delete =
 function() {
 	DBG.println(AjxDebug.DBG1, "deleting: " + this.name + ", ID: " + this.id);
-	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) && 
+	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
 					 (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH));
 	// make sure we're not deleting a system object (unless we're emptying SPAM or TRASH)
 	if (this.isSystem() && !isEmptyOp) return;
-	
+
 	var action = isEmptyOp ? "empty" : "delete";
 	this._organizerAction({action: action});
 };
@@ -489,7 +490,7 @@ function(obj) {
 		this._notify(ZmEvent.E_MOVE);
 		// could be moving search between Folders and Searches - make sure
 		// it has the correct tree
-		this.tree = newParent.tree; 
+		this.tree = newParent.tree;
 	}
 };
 
@@ -534,7 +535,7 @@ ZmOrganizer.prototype.getById =
 function(id) {
 	if (this.id == id)
 		return this;
-	
+
 	var organizer;
 	var a = this.children.getArray();
 	var sz = this.children.size();
@@ -542,7 +543,7 @@ function(id) {
 		if (organizer = a[i].getById(id))
 			return organizer;
 	}
-	return null;	
+	return null;
 };
 
 /**
@@ -587,6 +588,25 @@ function (organizer) {
 ZmOrganizer.prototype._getNewParent =
 function(parentId) {
 	return this.tree.getById(parentId);
+};
+
+ZmOrganizer.prototype.isUnder =
+function(id) {
+	if (this.id == id) return true;
+
+	var parent = this.parent;
+	while (parent && parent.id != ZmOrganizer.ID_ROOT) {
+		if (parent.id == id)
+			return true;
+		else
+			parent = parent.parent;
+	}
+	return false;
+};
+
+ZmOrganizer.prototype.isInTrash =
+function() {
+	return this.isUnder(ZmOrganizer.ID_TRASH);
 };
 
 /**
@@ -659,7 +679,7 @@ ZmOrganizer.prototype._getByName =
 function(name) {
 	if (this.name && name == this.name.toLowerCase())
 		return this;
-		
+
 	var organizer;
 	var a = this.children.getArray();
 	var sz = this.children.size();
@@ -667,7 +687,7 @@ function(name) {
 		if (organizer = a[i]._getByName(name))
 			return organizer;
 	}
-	return null;	
+	return null;
 };
 
 ZmOrganizer.prototype.addChangeListener =

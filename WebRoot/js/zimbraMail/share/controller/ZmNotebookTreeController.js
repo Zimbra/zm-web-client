@@ -55,7 +55,7 @@ ZmNotebookTreeController.prototype.toString = function() {
 
 // Public methods
 
-ZmNotebookTreeController.prototype.resetOperations = 
+ZmNotebookTreeController.prototype.resetOperations =
 function(actionMenu, type, id) {
 	if (actionMenu && id != ZmOrganizer.ID_ROOT) {
 		var overviewController = this._appCtxt.getOverviewController();
@@ -64,18 +64,18 @@ function(actionMenu, type, id) {
 		var notebook = treeData.getById(id);
 		actionMenu.enable(ZmOperation.SHARE_NOTEBOOK, !notebook.link);
 		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_NOTEBOOK);
-		
+
 		var menuItem = actionMenu.getMenuItem(ZmOperation.NEW_NOTEBOOK);
 		menuItem.setText(ZmMsg.newSection);
 		menuItem.setImage("NewSection");
 		menuItem.setDisabledImage("NewSectionDis");
-		
+
 		var isNotebook = notebook.parent.id == ZmOrganizer.ID_ROOT;
 		var menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_NOTEBOOK);
 		menuItem.setText(isNotebook ? ZmMsg.shareNotebook : ZmMsg.shareSection);
 		menuItem.setImage(isNotebook ? "Notebook" : "Section");
 		menuItem.setDisabledImage(menuItem.getImage()+"Dis");
-		
+
 		var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
 		menuItem.setImage("SendReceive");
 	}
@@ -136,7 +136,7 @@ ZmNotebookTreeController.prototype._itemClicked =
 function(notebook) {
 	var notebookApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var notebookController = notebookApp.getNotebookController();
-	notebookController.show(notebook.id);
+	notebookController.show(notebook.id, true);
 };
 
 // Handles a drop event
@@ -152,7 +152,7 @@ function(ev, treeView) {
 	ZmTreeController.prototype._changeListener.call(this, ev, treeView);
 
 	if (ev.type != this.type) return;
-	
+
 	var organizers = ev.getDetail("organizers");
 	if (!organizers && ev.source)
 		organizers = [ev.source];
@@ -165,9 +165,9 @@ function(ev, treeView) {
 
 		/***
 		var fields = ev.getDetail("fields");
-		// NOTE: ZmTreeController#_changeListener re-inserts the node if the 
+		// NOTE: ZmTreeController#_changeListener re-inserts the node if the
 		//		 name changes so we need to reset the color in that case, too.
-		if (ev.event == ZmEvent.E_CREATE || 
+		if (ev.event == ZmEvent.E_CREATE ||
 			(ev.event == ZmEvent.E_MODIFY && fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]))) {
 			var object = node.getData(Dwt.KEY_OBJECT);
 			this._setTreeItemColor(node, object.color);
@@ -180,7 +180,7 @@ function(ev, treeView) {
 ZmNotebookTreeController.prototype._newNotebookListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
-	
+
 	var overviewController = this._appCtxt.getOverviewController();
 	var treeData = overviewController.getTreeData(ZmOrganizer.NOTEBOOK);
 	var folder = treeData.getById(this._pendingActionData.id);
@@ -194,10 +194,10 @@ function(ev) {
 ZmNotebookTreeController.prototype._shareNotebookListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
-	
+
 	var notebook = this._pendingActionData;
 	var share = null;
-	
+
 	var sharePropsDialog = this._appCtxt.getSharePropsDialog();
 	sharePropsDialog.popup(ZmSharePropsDialog.NEW, notebook, share);
 };

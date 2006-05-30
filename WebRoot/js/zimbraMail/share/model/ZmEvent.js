@@ -55,6 +55,7 @@ ZmEvent.S_CONTACT			= i++;
 ZmEvent.S_APPT				= i++;
 ZmEvent.S_NOTE				= i++;
 ZmEvent.S_PAGE				= i++;
+ZmEvent.S_DOCUMENT			= i++;
 ZmEvent.S_NOTEBOOK			= i++;
 ZmEvent.S_PICKER			= i++;
 ZmEvent.S_SEARCH			= i++;

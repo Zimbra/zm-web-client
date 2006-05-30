@@ -275,25 +275,6 @@ function(newParent) {
 	ZmOrganizer.prototype.move.call(this, newParent);
 };
 
-ZmFolder.prototype.isUnder =
-function(id) {
-	if (this.id == id) return true;
-
-	var parent = this.parent;
-	while (parent && parent.id != ZmFolder.ID_ROOT) {
-		if (parent.id == id)
-			return true;
-		else
-			parent = parent.parent;
-	}
-	return false;
-};
-
-ZmFolder.prototype.isInTrash =
-function() {
-	return this.isUnder(ZmFolder.ID_TRASH);
-};
-
 ZmFolder.prototype.hasSearch =
 function(id) {
 	if (this.type == ZmOrganizer.SEARCH)

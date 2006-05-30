@@ -70,6 +70,7 @@ ZmItem.CONTACT		= ZmEvent.S_CONTACT;
 ZmItem.APPT			= ZmEvent.S_APPT;
 ZmItem.NOTE			= ZmEvent.S_NOTE;
 ZmItem.PAGE			= ZmEvent.S_PAGE;
+ZmItem.DOCUMENT		= ZmEvent.S_DOCUMENT;
 ZmItem.CHAT			= ZmEvent.S_CHAT;
 ZmItem.ROSTER_ITEM	= ZmEvent.S_ROSTER_ITEM;
 ZmItem.RESOURCE		= ZmEvent.S_RESOURCE;		// calendar resource
@@ -84,6 +85,7 @@ ZmItem.MSG_KEY[ZmItem.CONTACT]	= "contact";
 ZmItem.MSG_KEY[ZmItem.APPT]		= "appointment";
 ZmItem.MSG_KEY[ZmItem.NOTE]		= "note";
 ZmItem.MSG_KEY[ZmItem.PAGE]		= "page";
+ZmItem.MSG_KEY[ZmItem.DOCUMENT]	= "document";
 ZmItem.MSG_KEY[ZmItem.CHAT]		= "chat";
 
 // Representative icons
@@ -95,6 +97,7 @@ ZmItem.ICON[ZmItem.CONTACT]	= "Contact";
 ZmItem.ICON[ZmItem.APPT]	= "Appointment";
 ZmItem.ICON[ZmItem.NOTE]	= "Note";
 ZmItem.ICON[ZmItem.PAGE]	= "Page";
+ZmItem.ICON[ZmItem.DOCUMENT]= "GenericDoc";
 ZmItem.ICON[ZmItem.CHAT]	= "ImStartChat";
 
 // fields that can be part of a displayed item
@@ -129,6 +132,7 @@ ZmItem.SOAP_CMD[ZmItem.MSG]		= "MsgAction";
 ZmItem.SOAP_CMD[ZmItem.ATT]		= "unsupported";
 ZmItem.SOAP_CMD[ZmItem.CONTACT]	= "ContactAction";
 ZmItem.SOAP_CMD[ZmItem.PAGE]	= "ItemAction";
+ZmItem.SOAP_CMD[ZmItem.DOCUMENT]	= "ItemAction";
 
 // Item fields (for modify events)
 ZmItem.TAGS_FIELD = 1;
