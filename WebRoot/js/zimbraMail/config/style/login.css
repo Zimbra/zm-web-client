@@ -316,3 +316,230 @@ FORM {
 }
 
 
+
+.DwtButton 								{	background-color:#d0c6ad;		padding:0px;	border:2px solid; border-color:#bab09a #8b8474 #8b8474 #bab09a; 	-moz-border-left-colors:#bab09a #cbc1a9; 	-moz-border-top-colors: #bab09a #cbc1a9; 	-moz-border-bottom-colors: #8b8474 #afa692;		-moz-border-right-colors: #8b8474 #afa692;		-moz-border-radius:1 1 1 1; 				cursor: pointer;		min-width:60px; /width:60px;  height:20px; 					}
+.DwtButton-activated 					{	background-color:#e8dcc1;		padding:0px;	border:2px solid; border-color:#bab09a #8b8474 #8b8474 #bab09a; 	-moz-border-left-colors:#bab09a #cbc1a9; 	-moz-border-top-colors: #bab09a #cbc1a9; 	-moz-border-bottom-colors: #8b8474 #afa692;		-moz-border-right-colors: #8b8474 #afa692;		-moz-border-radius:1 1 1 1; 			cursor: pointer;		min-width:60px; /width:60px;  height:20px; 			}
+.DwtButton-triggered					{	background-color:#f8f5ed;		padding:0px;	border:2px solid; border-color:#746e60 #bab09a #bab09a #746e60; 	-moz-border-left-colors:#bab09a #746e60; 	-moz-border-top-colors: #bab09a #746e60; 	-moz-border-bottom-colors: #cbc1a9 #bab09a;		-moz-border-right-colors: #cbc1a9 #bab09a;		-moz-border-radius:1 1 1 1; 		cursor: pointer;		min-width:60px; /width:60px;  height:20px; 			}	
+.DwtButton-toggled						{	background-color:#e3da93;		padding:0px;	border:2px solid; border-color:#746e60 #bab09a #bab09a #746e60; 	-moz-border-left-colors:#bab09a #746e60; 	-moz-border-top-colors: #bab09a #746e60; 	-moz-border-bottom-colors: #cbc1a9 #bab09a;		-moz-border-right-colors: #cbc1a9 #bab09a;		-moz-border-radius:1 1 1 1; 		cursor: pointer;		min-width:60px; /width:60px;  height:20px; 			}	
+.DwtButton-disabled						{	background-color:none;				padding:0px;	border:2px solid; border-color:#bab09a; 													-moz-border-left-colors:#bab09a transparent; 		-moz-border-top-colors: #bab09a transparent; 		-moz-border-bottom-colors: #bab09a transparent; 		-moz-border-right-colors: #bab09a transparent;	-moz-border-radius:1 1 1 1; 		cursor: not-allowed;	min-width:60px; /width:60px;  height:20px; 			}	
+.DwtButton-active						{	background-color:#dbe2d5;		padding:0px;	border:2px solid; border-color:#8aabab #566b6b #566b6b #8aabab;			-moz-border-left-colors:#8aabab #9bc0c0; 		-moz-border-top-colors: #8aabab #9bc0c0; 		-moz-border-bottom-colors: #566b6b #799595; 		-moz-border-right-colors: #566b6b #799595;		-moz-border-radius:1 1 1 1; 		cursor: pointer;		min-width:60px; /width:60px;  height:20px; 			}	
+.DwtButton-focused						{	background-color:#add6d6;		padding:0px;	border:2px solid; border-color:#8aabab #566b6b #566b6b #8aabab;			-moz-border-left-colors:#8aabab #9bc0c0; 		-moz-border-top-colors: #8aabab #9bc0c0; 		-moz-border-bottom-colors: #566b6b #799595; 		-moz-border-right-colors: #566b6b #799595;		-moz-border-radius:1 1 1 1; 		cursor: pointer;		min-width:60px; /width:60px;  height:20px; 			}	
+		
+.DwtButton .Text 						{	color: black;	 		text-align:center;	white-space:nowrap; overflow:hidden;				}
+.DwtButton-activated .Text				{	color: black; 		text-align:center;	white-space:nowrap; overflow:hidden;		}
+.DwtButton-triggered .Text				{	color: black; 	text-align:center;	white-space:nowrap; overflow:hidden;		}	
+.DwtButton-toggled .Text				{	color: black; 	text-align:center;	white-space:nowrap; overflow:hidden;		}	
+.DwtButton-disabled .Text				{	color: #5d584d; 	text-align:center;	white-space:nowrap; overflow:hidden;		}	
+.DwtButton-active .Text					{	color: black;	text-align:center;	white-space:nowrap; overflow:hidden;		}	
+.DwtButton-focused .Text				{	color: black;	text-align:center;	white-space:nowrap; overflow:hidden;		}	
+
+
+
+
+/* Outer panel for the entire login/splash dialog */
+#ZLoginPanel {
+	position:relative;
+	width:500;
+	overflow:visible;
+	border: 2px solid; 
+	border-color: #CCCCCC #000000 #000000 #CCCCCC;
+}
+
+
+/* Cell for the 'header' (logo/app name/version) */
+#ZLoginHeaderContainer {
+	/* background-color:#efe7d4; */
+}
+
+/* Cell for the 'body' (notice/form/about) */
+#ZLoginBodyContainer {
+	/* @ContentBg@	*/
+	background-color:#eeeeee;
+	padding-top:20px;
+}
+
+
+
+/* Cell for the 'license' (copyright, etc) */
+#ZLoginLicenseContainer {
+	/* @ContentBg@	*/
+	background-color:#eeeeee;
+	padding-top:20px;
+	padding-bottom:5px;
+	text-align:center;
+	vertical-align:bottom;
+	color:#666666;
+	font-size:9px;
+}
+
+/* Cell for the 'banner' */
+#ZLoginBannerContainer {
+}
+
+/* Outer element for the 'banner' (image/app name/version) */
+#ZLoginBannerPanel {
+	margin:10px;
+	position:relative;
+}
+
+/* Application logo.  Use this for positioning only, image comes from .ImgLoginBanner */
+#ZLoginBannerImage {}
+
+
+/* (optional) Short version of the app -- eg:  'Beta' */
+#ZLoginShortVersion {
+	vertical-align:top;
+	font-size:18px;
+	font-weight:normal;
+	color:#666666;
+}
+
+/* Name of the app -- eg:  'Collaboration Suite' */
+#ZLoginAppName {
+	margin-top:5px;
+	font-size:18px;
+	width:100%;
+	font-weight:bold;
+	text-align:right;
+}
+
+/* (optional) Product name -- eg:  'Administration Console' */
+#ZLoginProductName {
+	font-size:15px;
+	width:100%;
+	font-weight:normal;
+	text-align:right;
+}
+
+/* Long version number, eg:  'Version 3.5 (April 18, 2005)' */
+#ZLoginLongVersion {
+	margin-top:3px;
+	color:#666666;
+	font-size:9px;
+	width:100%;
+	font-weight:normal;
+	text-align:right;
+}
+
+
+/* Panel that shows an error or notice */
+#ZLoginErrorPanel {
+	position:relative;
+	left:10%;
+	width:80%;
+	margin-top:10px;
+	margin-bottom:10px;
+	padding:5px;
+	border:1px solid #7c7c94;
+	background-color: #ffffcc;
+}
+
+
+
+
+/* Error icon -- use for positioning only, image comes from .ImgLoginError */
+#ZLoginErrorIcon {}
+
+
+/* Login error message text -- use for positioning only, text style comes from .errorText */
+#ZLoginErrorMsg {}
+.errorText {}
+
+
+/* Panel that contains all versions of the login panel */
+#ZLoginFormPanel {
+	position:relative;
+	left:10%;
+	width:80%;
+}
+
+
+/* Container that owns the login button */
+#ZLoginButton {}
+
+/* Container that owns the name of the login button */
+#ZLoginButtonText {}
+
+/* Containers that hold the various login form pieces -- set display:none on these to hide each piece */
+#ZLoginUserTr {}
+#ZLoginPasswordTr {}
+#ZLoginNewPassword1Tr {}
+#ZLoginNewPassword2Tr {}
+
+
+/* Container for the "remember me" checkbox */
+#ZLoginRememberMeContainer {}
+
+
+/* Generic table in login panel -- used to make spacing easier */
+.zLoginTable {
+	border-collapse: collapse;
+}
+
+/* Field label (right-aligned) */
+.zLoginLabelContainer {
+	white-space:nowrap;
+	text-align:right;
+	color:#666666;
+	width:100px;
+}
+
+/* Field label (left-aligned) */
+.zLoginCheckboxLabelContainer {
+	white-space:nowrap;
+	color:#666666;
+}
+
+/* Field <input> element */
+.zLoginField {
+	width:100%;
+}
+
+/* Container (td) for fields */
+.zLoginFieldContainer {}
+
+
+/* Container (td) for buttons */
+.zLoginButtonContainer {}
+
+
+/* Panel to show the "loading..." message */
+#ZLoginLoadingPanel {
+	position:relative;
+	left:10%;
+	width:80%;
+	margin-top:10px;
+	margin-bottom:10px;
+	padding:5px;
+}
+
+
+/* Actual place where the license text lives */
+#ZLoginLoadingMsg {
+	font-size:15px;
+	font-weight:bold;
+}
+
+
+/* Panel to show the "About" message */
+#ZLoginAboutPanel {
+	position:relative;
+	left:10%;
+	width:80%;
+	margin-top:10px;
+	margin-bottom:10px;
+	padding:5px;
+	font-size:15px;
+}
+
+
+
+/* Container to show/hide the license text */
+#ZLoginLicenseMsgContainer {}
+
+/* Actual place where the license text lives */
+#ZLoginLicenseMsg {
+	font-size:15px;
+	font-weight:bold;
+}
+
