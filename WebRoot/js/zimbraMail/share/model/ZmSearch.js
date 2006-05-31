@@ -31,40 +31,42 @@
 * the different search parameters that may be used. It can be used for a regular search,
 * or to search within a conv. The results are returned via a callback.
 *
-* @param appCtxt		[ZmAppCtxt]		the app context
-* @param query			[string]		query string
-* @param types			[AjxVector]		item types to search for
-* @param sortBy			[constant]*		sort order
-* @param offset			[int]*			starting point within result set
-* @param limit			[int]*			number of results to return
-* @param contactSource	[constant]*		where to search for contacts (GAL or personal)
-* @param lastId			[int]*			ID of last item displayed (for pagination)
-* @param lastSortVal	[string]*		value of sort field for above item
-* @param fetch			[boolean]*		if true, fetch first hit message
-* @param searchId		[int]*			ID of owning search folder (if any)
-* @param conds			[array]*		list of search conditions (SearchCalendarResourcesRequest)
-* @param attrs			[array]*		list of attributes to return (SearchCalendarResourcesRequest)
+* @param appCtxt					[ZmAppCtxt]		the app context
+* @param query						[string]		query string
+* @param types						[AjxVector]		item types to search for
+* @param sortBy						[constant]*		sort order
+* @param offset						[int]*			starting point within result set
+* @param limit						[int]*			number of results to return
+* @param contactSource				[constant]*		where to search for contacts (GAL or personal)
+* @param isGalAutocompleteSearch	[boolean]*		if true, autocomplete against GAL
+* @param lastId						[int]*			ID of last item displayed (for pagination)
+* @param lastSortVal				[string]*		value of sort field for above item
+* @param fetch						[boolean]*		if true, fetch first hit message
+* @param searchId					[int]*			ID of owning search folder (if any)
+* @param conds						[array]*		list of search conditions (SearchCalendarResourcesRequest)
+* @param attrs						[array]*		list of attributes to return (SearchCalendarResourcesRequest)
 */
 function ZmSearch(appCtxt, params) {
 
 	this._appCtxt = appCtxt;
 
 	if (params) {
-		this.query			= params.query;
-		this.types			= params.types;
-		this.sortBy			= params.sortBy;
-		this.offset			= params.offset;
-		this.limit			= params.limit;
-		this.contactSource	= params.contactSource;
-		this.lastId			= params.lastId;
-		this.lastSortVal	= params.lastSortVal;
-		this.fetch 			= params.fetch;
-		this.markRead       = params.markRead;
-		this.searchId		= params.searchId;
-		this.galType		= params.galType ? params.galType : ZmSearch.GAL_ACCOUNT;
-		this.conds			= params.conds;
-		this.join			= params.join ? params.join : ZmSearch.JOIN_AND;
-		this.attrs			= params.attrs;
+		this.query						= params.query;
+		this.types						= params.types;
+		this.sortBy						= params.sortBy;
+		this.offset						= params.offset;
+		this.limit						= params.limit;
+		this.contactSource				= params.contactSource;
+		this.isGalAutocompleteSearch	= params.isGalAutocompleteSearch;
+		this.lastId						= params.lastId;
+		this.lastSortVal				= params.lastSortVal;
+		this.fetch 						= params.fetch;
+		this.markRead       			= params.markRead;
+		this.searchId					= params.searchId;
+		this.galType					= params.galType ? params.galType : ZmSearch.GAL_ACCOUNT;
+		this.conds						= params.conds;
+		this.join						= params.join ? params.join : ZmSearch.JOIN_AND;
+		this.attrs						= params.attrs;
 		
 		if (this.query)
 			this._parseQuery();
@@ -148,6 +150,11 @@ function(params) {
 			method.setAttribute("type", this.galType);
 		}
 		soapDoc.set("name", this.query);
+	} else if (this.isGalAutocompleteSearch) {
+		soapDoc = AjxSoapDoc.create("AutoCompleteGalRequest", "urn:zimbraAccount");
+		var method = soapDoc.getMethod();
+		method.setAttribute("limit", ZmContactList.AC_MAX);
+		soapDoc.set("name", this.query);
 	} else if (this.isCalResSearch) {
 		soapDoc = AjxSoapDoc.create("SearchCalendarResourcesRequest", "urn:zimbraAccount");
 		var method = soapDoc.getMethod();
@@ -189,7 +196,8 @@ function(params) {
 		}
 	}
 	
-	var respCallback = new AjxCallback(this, this._handleResponseExecute, [this.isGalSearch, this.isCalResSearch, params.callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseExecute,
+						[this.isGalSearch, this.isGalAutocompleteSearch, this.isCalResSearch, params.callback]);
 	
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback);
@@ -204,12 +212,14 @@ function(params) {
 * Convert the SOAP response into a ZmSearchResult and pass it along.
 */
 ZmSearch.prototype._handleResponseExecute = 
-function(isGalSearch, isCalResSearch, callback, result) {
+function(isGalSearch, isGalAutocompleteSearch, isCalResSearch, callback, result) {
 	var response = result.getResponse();
 	if (isGalSearch) {
 		response = response.SearchGalResponse;
 	} else if (isCalResSearch) {
 		response = response.SearchCalendarResourcesResponse;
+	} else if (isGalAutocompleteSearch) {
+		response = response.AutoCompleteGalResponse;
 	} else {
 		response = response.SearchResponse;
 	}

@@ -59,11 +59,13 @@ function ZmContactList(appCtxt, search, isGal, type) {
 
 	this._emailToContact = {};
 	this._acAddrList = {};
+	this._galResults = {};
 	this._loadCount = 0;
 	this._loaded = false;
 	this._showStatus = true;
 	
 	this._acMatchFields = ZmContactList.AC_FIELDS;
+	this._galAutocompleteEnabled = this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED);
 };
 
 ZmContactList.prototype = new ZmList;
@@ -88,6 +90,7 @@ ZmContactList.AC_PREMATCH		= 2;	// # of characters to do pre-matching for
 ZmContactList.MAX_LOAD_COUNT	= AjxEnv.isIE ? 100 : 500;	// chunk size for loading contacts
 ZmContactList.LOAD_PAUSE		= AjxEnv.isIE ? 500 : 250;	// delay between chunks
 
+ZmContactList.GAL_RESULTS_TTL	= 900000;	// time-to-live for cached GAL autocomplete results
 
 ZmContactList.prototype.toString = 
 function() {
@@ -107,7 +110,7 @@ function(callback, errorCallback) {
 	DBG.println(AjxDebug.DBG1, "loading contacts");
 	this.isCanonical = true;
 	var soapDoc = AjxSoapDoc.create("GetContactsRequest", "urn:zimbraMail");
-	// set sorting pref (or now, always sort by name asc)
+	// set sorting pref (for now, always sort by name asc)
 	var method = soapDoc.getMethod();
 	method.setAttribute("sortBy", "nameAsc");
 
@@ -156,7 +159,9 @@ function(list) {
 		                                       contact._attrs[ZmContact.F_lastName]]).join(" "));
 		contact._attrs[ZmContact.X_firstLast] = AjxStringUtil.trim(([contact._attrs[ZmContact.F_firstName],
 		                                        contact._attrs[ZmContact.F_lastName]]).join(" "));
-		this._preMatch(contact);
+		if (!ZmContact.isInTrash(contact)) {
+			this._preMatch(contact);
+		}
 		this.add(contact);
 	}
 
@@ -436,29 +441,76 @@ function(item, result) {
 * Returns a list of matching contacts for a given string. The first name, last
 * name, full name, first/last name, and email addresses are matched against.
 *
-* @param str	[string]	string to match against
+* @param str		[string]		string to match against
+* @param callback	[AjxCallback]	callback to run with results
 */
 ZmContactList.prototype.autocompleteMatch =
-function(str) {
+function(str, callback) {
 	DBG.println(AjxDebug.DBG3, "begin contact matching");
+	this._acAddrList[str] = this._acAddrList[str] ? this._acAddrList[str] : [];
 
-	if (!this.isLoaded() && this._showStatus) {
-		this._appCtxt.setStatusMsg(ZmMsg.autocompleteNotReady, ZmStatusView.LEVEL_WARNING);
-		this._showStatus = false; // only show status message once.
-		return null;
+	// if personal contacts haven't finished loading, don't return any results (even
+	// though we could still search the GAL)
+	if (!this.isLoaded()) {
+		if (this._showStatus) {
+			this._appCtxt.setStatusMsg(ZmMsg.autocompleteNotReady, ZmStatusView.LEVEL_WARNING);
+			this._showStatus = false; // only show status message once
+		}
+		callback.run(null);
+		return;
 	}
-
+	
 	str = str.toLowerCase();
+	var strLen = str.length;
+	var gotData = false;
+
 	DBG.println(AjxDebug.DBG3, "str = " + str);
 
+	// see if we have GAL results we can use
+	if (this._galAutocompleteEnabled) {
+		var old = (new Date()).getTime() - ZmContactList.GAL_RESULTS_TTL;
+		if (this._galResults[str] && (this._galResults[str].ts > old)) {
+			DBG.println(AjxDebug.DBG3, "Found GAL results for " + str);
+			gotData = true;
+		} else {
+			// do we have recent and complete GAL results for part of this string?
+			var tmp = str;
+			var list = null;
+			while (tmp && !list) {
+				tmp = tmp.slice(0, -1); // remove last character
+				if (tmp && this._galResults[tmp] && (this._galResults[tmp].ts > old) && !this._galResults[tmp].more) {
+					DBG.println(AjxDebug.DBG3, "Found GAL results for substring " + tmp);
+					gotData = true;
+					break;
+				}
+			}
+		}
+	} else {
+		gotData = true;
+	}
+
+	if (!gotData) {
+		var respCallback = new AjxCallback(this, this._handleResponseAutocompleteMatch, [str, callback]);
+		this._getGalMatches(str, respCallback);
+	} else {
+		this._handleResponseAutocompleteMatch(str, callback);
+	}
+};
+
+ZmContactList.prototype._handleResponseAutocompleteMatch =
+function(str, callback) {
+
+	// by this point, we have GAL results
+
 	// have we already done this string?
-	if (this._acAddrList[str]) {
+	if (this._matchingDone(str)) {
 		DBG.println(AjxDebug.DBG3, "found previous match for " + str);
 		DBG.timePt("end autocomplete match - found previous match");
-		return this._matchList(str);
+		var matchList = this._matchList(str);
+		callback.run(matchList);
+		return;
 	}
 		
-	var strLen = str.length;
 	var newList = [];
 
 	// have we done part of this string?
@@ -466,49 +518,69 @@ function(str) {
 	var list = null;
 	while (tmp && !list) {
 		tmp = tmp.slice(0, -1); // remove last character
-		list = this._acAddrList[tmp];
+		list = (tmp && this._matchingDone(tmp)) ? this._acAddrList[tmp] : null;
 		if (list && list.length == 0) {
-			// substring had no matches, so this one doesn't as well
+			// substring had no matches, so this string has none
+			DBG.println(AjxDebug.DBG3, "Found empty results for substring " + tmp);
 			DBG.timePt("end autocomplete match - no matches");
-			return null;
+			callback.run(null);
+			return;
 		}
-	}
+	}	
 	
-	var foundOne = false;
 	if (list) {
 		// found a substring that we've already done matching for
 		DBG.println(AjxDebug.DBG3, "working forward from '" + tmp + "'");
-		this._acAddrList[str] = [];
 		var len = list.length;
 		// test each of the substring's matches to see if it also matches this string
 		for (var i = 0; i < len; i++) {
-			var id = list[i];
-			if (this._testAcMatch(this.getById(id), str)) {
-				this._acAddrList[str].push(id);
-				foundOne = true;
+			var contact = list[i];
+			if ((!contact.isGal && this._acAddrList[str].matchingDone) ||
+				(contact.isGal && this._acAddrList[str].galMatchingDone)) {
+				continue;
+			}
+			if (this._testAcMatch(contact, str)) {
+				this._acAddrList[str].push(contact);
 			}
 		}
+		this._acAddrList[str].addGalOnly = false;
 	} else {
 		// initial matching against all contacts
 		DBG.println(AjxDebug.DBG2, "creating new match list for '" + str + "'");
 		list = this.getArray();
 		for (var i = 0; i < list.length; i++) {
 			var contact = list[i];
+			if ((!contact.isGal && this._acAddrList[str].matchingDone) ||
+				(contact.isGal && this._acAddrList[str].galMatchingDone)) {
+				continue;
+			}
 			if (this._testAcMatch(contact, str)) {
-				if (!this._acAddrList[str]) {
-					this._acAddrList[str] = [];
-				}
 				this._acAddrList[str].push(contact.id);
-				foundOne = true;
 			}
 		}
 	}
-	if (!foundOne) {
-		this._acAddrList[str] = [];
-	}
+	this._acAddrList[str].matchingDone = true;
+	this._acAddrList[str].galMatchingDone = true;
 
+	// by this point all matching has been done and we should have
+	// a list of zero or more matches for this string
 	DBG.timePt("end autocomplete match");
-	return this._matchList(str);
+	var matchList = this._matchList(str);
+	DBG.println(AjxDebug.DBG3, "Returning list of matches");
+	callback.run(matchList);
+};
+
+/*
+ * Returns true if both local and GAL matching have been done for the given string.
+ * 
+ * @param str		[string]		string to match against
+ */
+ZmContactList.prototype._matchingDone =
+function(str) {
+	var localDone = (this._acAddrList[str] && this._acAddrList[str].matchingDone);
+	var galDone = (!this._galAutocompleteEnabled ||
+				   ((this._acAddrList[str] && this._acAddrList[str].galMatchingDone)));
+	return (localDone && galDone);
 };
 
 /*
@@ -528,10 +600,11 @@ function(contact) {
 		if (value) {
 			for (var j = 1; j <= ZmContactList.AC_PREMATCH; j++) {
 				var str = value.substring(0, j).toLowerCase();
-				if(!strings[str]) {
+				if (!strings[str]) {
 					this._acAddrList[str] = this._acAddrList[str] ? this._acAddrList[str] : [];
 					this._acAddrList[str].push(contact.id);
 					strings[str] = true;
+					this._acAddrList[str].matchingDone = true;
 				}
 			}
 		}
@@ -548,6 +621,7 @@ function(contact) {
 */
 ZmContactList.prototype._testAcMatch =
 function(contact, str, doMarkup) {
+	contact = (contact instanceof ZmContact) ? contact : this.getById(contact);
 	if (!contact || ZmContact.isInTrash(contact)) return false;
 
 	for (var i = 0; i < this._acMatchFields.length; i++) {
@@ -565,7 +639,12 @@ function(contact, str, doMarkup) {
 			}
 		}
 	}
-	return null;
+	if (contact.isGal && doMarkup) {
+		// if GAL match doesn't also match manually, assume full name matched
+		return {savedMatch: ZmContact.getAttr(ZmContact.X_fullName, contact), matchField: ZmContact.X_fullName};
+	} else {
+		return null;
+	}
 };
 
 /*
@@ -576,28 +655,43 @@ function(contact, str, doMarkup) {
 */
 ZmContactList.prototype._matchList =
 function(str) {
-	var max = Math.min(this._acAddrList[str].length, ZmContactList.AC_MAX);
-	DBG.println(AjxDebug.DBG2, "returning " + max + " match" + (max == 1) ? "" : "es");
-	var list = null;
-	if (this._acAddrList[str].length)
-		list = this._acAddrList[str].slice(0, max);
-	else
-		return null;
-	
-	var num = 0;
+	var list = this._acAddrList[str];
+	if (!(list && list.length)) return null;
+
+	// truncate list
+	list = list.slice(0, ZmContactList.AC_MAX);
+
+	// cull duplicates based on email
+	var emails = {};
+
+	// expand contacts with multiple email addresses
 	var results = [];
 	for (var i = 0; i < list.length; i++) {
 		var matches = this._getMatches(list[i], str);
 		if (matches && matches.length) {
 			for (var j = 0; j < matches.length; j++) {
-				num++;
-				if (num <= ZmContactList.AC_MAX)
+				var email = matches[j][ZmContactList.AC_VALUE_EMAIL];
+				if (!emails[email]) {
 					results.push(matches[j]);
+					emails[email] = true;
+				}
 			}
 		}
 	}
 
+	results = results.slice(0, ZmContactList.AC_MAX);	// truncate in case we added more contacts
+	results.sort(ZmContactList.acSortCompare);			// sort list by displayed text
 	return results;
+};
+
+/*
+ * Sort autocomplete list by the displayed text (minus HTML)
+ */
+ZmContactList.acSortCompare =
+function(a, b) {
+	if (a.plain.toLowerCase() > b.plain.toLowerCase()) return 1;
+	if (a.plain.toLowerCase() < b.plain.toLowerCase()) return -1;
+	return 0;
 };
 
 /*
@@ -605,18 +699,18 @@ function(str) {
 * email addresses and didn't match on one of them (it matched on a name), then a matching
 * object will be created for each email address.
 *
-* @param id		[int]		ID of matched contact
-* @param str	[string]	string that was matched
+* @param contact	[string|ZmContact]		ID of personal contact, or a GAL contact
+* @param str		[string]				string that was matched
 */
 ZmContactList.prototype._getMatches =
-function(id, str) {
-	var match = this._testAcMatch(this.getById(id), str, true);
+function(contact, str) {
+	contact = (contact instanceof ZmContact) ? contact : this.getById(contact);
+	var match = this._testAcMatch(contact, str, true);
 	if (!match) {
-		DBG.println(AjxDebug.DBG1, "Matched contact with ID " + id + " no longer matches '" + str + "' (possibly deleted)");
+		DBG.println(AjxDebug.DBG1, "Matched contact with ID " + contact.id + " no longer matches '" + str + "' (possibly deleted)");
 		return null;
 	}
 
-	var contact = this.getById(id);
 	var name;
 	if (match.matchedField == ZmContact.X_fullName || match.matchedField == ZmContact.X_firstLast) {
 		// if one of these matched, it will already be highlighted
@@ -627,8 +721,9 @@ function(id, str) {
 		for (var i = 0; i < ZmContactList.AC_NAME_FIELDS.length; i++) {
 			var field = ZmContactList.AC_NAME_FIELDS[i];
 			var val = ZmContact.getAttr(contact, field);
-			if (val)
+			if (val) {
 				names.push((match.matchedField == field) ? match.savedMatch : val);
+			}
 		}
 		name = names.join(" ");
 	}			
@@ -639,8 +734,9 @@ function(id, str) {
 	} else {
 		for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
 			var val = ZmContact.getAttr(contact, ZmContact.F_EMAIL_FIELDS[i]);
-			if (val)
+			if (val) {
 				results.push(this._createMatch(name, val, fullName, val, contact));
+			}
 		}
 	}
 	
@@ -658,13 +754,11 @@ function(id, str) {
 */
 ZmContactList.prototype._createMatch =
 function(nameHL, emailHL, name, email, contact) {
-	var text = nameHL + " &lt;" + emailHL + "&gt;";
-	var acValue = ['"', name, '" <', email, ">"].join("");
-	
 	var result = {};
-	result.text = text;
+	result.text = [nameHL, " &lt;", emailHL, "&gt;"].join("");
+	result.plain = result.text.replace(/<\/?b>/g, "");	// for sorting results
 	result.item = contact;
-	result[ZmContactList.AC_VALUE_FULL] = acValue;
+	result[ZmContactList.AC_VALUE_FULL] = ['"', name, '" <', email, ">"].join("");
 	result[ZmContactList.AC_VALUE_EMAIL] = email;
 	result[ZmContactList.AC_VALUE_NAME] = name;
 
@@ -682,8 +776,9 @@ function(contact, doAdd) {
 	for (var str in this._acAddrList) {
 		var list = this._acAddrList[str];
 		if (doAdd) {
-			if (this._testAcMatch(contact, str))
+			if (this._testAcMatch(contact, str)) {
 				list.push(contact.id);
+			}
 		} else {
 			var newMatches = [];
 			for (var i = 0; i < list.length; i++) {
@@ -694,4 +789,37 @@ function(contact, doAdd) {
 			this._acAddrList[str] = newMatches;
 		}
 	}
+};
+
+/*
+ * Fetches GAL matches for the given string from the server.
+ * 
+ * @param str		[string]	string to match against
+ */
+ZmContactList.prototype._getGalMatches =
+function(str, callback) {
+	var sortBy = ZmSearch.NAME_DESC;
+	var types = AjxVector.fromArray([ZmItem.CONTACT]);
+	var params = {query: str, types: types, sortBy: sortBy, offset: 0, limit: ZmContactList.AC_MAX, isGalAutocompleteSearch: true};
+	var search = new ZmSearch(this._appCtxt, params);
+	var respCallback = new AjxCallback(this, this._handleResponseGetGalMatches, [str, callback]);
+	search.execute({callback: respCallback});
+};
+
+ZmContactList.prototype._handleResponseGetGalMatches =
+function(str, callback, result) {
+	var resp = result.getResponse();
+	var vec = resp.getResults(ZmItem.CONTACT);
+	var a = vec ? vec.getArray() : [];
+
+	for (var i = 0; i < a.length; i++) {
+		this._acAddrList[str].push(a[i]);
+	}
+	this._acAddrList[str].galMatchingDone = true;
+	
+	this._galResults[str] = {};
+	this._galResults[str].ts = (new Date()).getTime();
+	this._galResults[str].more = resp._respEl.more;
+	
+	callback.run();
 };

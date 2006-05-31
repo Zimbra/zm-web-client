@@ -99,7 +99,7 @@ function(respEl, contactSource) {
 
 	this._respEl = respEl;
 	
-	if (this.search.isGalSearch) {
+	if (this.search.isGalSearch || this.search.isGalAutocompleteSearch) {
 		this._results[ZmItem.CONTACT].setIsGal(true);
 	}
 
