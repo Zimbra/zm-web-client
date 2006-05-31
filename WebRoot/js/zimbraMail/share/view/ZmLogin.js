@@ -156,75 +156,30 @@ function() {
 */
 ZmLogin.showPanel =
 function() {
-
 	var html = [];
 	var idx = 0;
-
 	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>";
 	html[idx++] = "<table align=center border=0 cellspacing=0 cellpadding=0 class='LoginPanel'>";
-//MOW: Make AppName and ShortVersion dynamic!!!!
-	html[idx++] = "<tr><td align=center style='position:relative'><div class='LoginPanelBanner'><div class='LoginPanelAppName'>Collaboration Suite</div><div class='LoginPanelShortVersion'></div></div></td></tr>";
 	html[idx++] = "<tr><td id='loginPanel' class='LoginMainPanel'>";
-	// error message div
-	html[idx++] = "<center><div class='error' style='display:none' id='errorMessageContainer'>";
-	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2><tr>";
-	html[idx++] = "<td valign=top width=40><img src='";
-	html[idx++] = appContextPath;
-	html[idx++] = "/img/loRes/dwt/Critical_32.gif' id='errorIcon' width=32 height=32></td>";
-	html[idx++] = "<td id='errorMessage'>";
-	html[idx++] = "</td></tr></table>";
-	html[idx++] = "</div></center>";
-	// real content
-	html[idx++] = "<table id='passTable' class='LoginPanelTable' border=0>";
-	html[idx++] = "<tr height=40>";
-	html[idx++] = "<td width=100 align=right>";
-	html[idx++] = ZmMsg.username;
-	html[idx++] = ":</td>";
-	html[idx++] = "<td><input style='width:100%' autocomplete=OFF type=text tabIndex=1 id='uname'></td>";
-	html[idx++] = "<td><div class='LoginPanelFormSpacer'></div></td>";
-	html[idx++] = "</tr><tr height=30>";
-	html[idx++] = "<td align=right width=100>";
-	html[idx++] = ZmMsg.password;
-	html[idx++] = ":</td>";
-	html[idx++] = "<td><input style='width:100%' type=password tabIndex=2 id='pass'></td>";
-	html[idx++] = "</tr><tr><td></td>";
-	html[idx++] = "<td><table border=0 width=100%><tr height=28><td width=1><input style='width:13px' id='rememberMe' type='checkbox'></td>";
-	html[idx++] = "<td style='width:1px' width=1><nobr>";
-	html[idx++] = ZmMsg.rememberMe;
-	html[idx++] = "</td>";
-	html[idx++] = "<td width=100%></td>";
-	html[idx++] = "<td>";
-	// logon button starts here
-	html[idx++] = "<div id='loginButton' class='DwtButton' style='text-align:center; cursor:default' ";
-	html[idx++] = "onclick='javascript:ZmLogin.handleLogin(); return false;' ";
-	html[idx++] = "onmouseover='javascript:this.className=\"DwtButton-activated\";' ";
-	html[idx++] = "onmouseout='javascript:this.className=\"DwtButton\";' ";
-	html[idx++] = "onmousedown='javascript:this.className=\"DwtButton-triggered\"; return false;' ";
-	html[idx++] = "onmouseup='javascript:this.className=\"DwtButton\";' ";
-	html[idx++] = "onmousemove='javascript:return false;' ";
-	html[idx++] = "onselectstart='javascript: return false;' ";
-	html[idx++] = "onfocus='javascript:ZmLogin.loginButtonFocus(this.parentNode);return false;' ";
-	html[idx++] = "onblur='javascript:ZmLogin.loginButtonBlur(this.parentNode);return false;'";
-	html[idx++] = "><table style='width:100%;height:100%'><tr><td class='Text' align=center>";
-	html[idx++] = ZmMsg.login;
-	// non-IE browsers dont allow focus for non-INPUT elements so we have to
-	// create a hidden input to fake focus for our DIV which acts as an input button
-	if (!AjxEnv.isIE)
-		html[idx++] = "<input type='button' style='display:none' id='hiddenButton'>";
-	html[idx++] = "</td></tr></table></div></td>";
 
-	html[idx++] = "</tr></table>";
-	html[idx++] = "</td></tr></table>";
-	html[idx++] = "</td></tr>";
-	html[idx++] = "<tr><td class='LoginPanelLicense'>";
-	html[idx++] = ZmMsg.splashScreenCopyright;
+	var params = {
+		showForm: true,
+		showUserField: true,
+		showPasswordField: true,
+		showLicenseMsg: true,
+		showRememberMeCheckbox: true,
+		showButton: true
+	};
+	html[idx++] = ZLoginFactory.getLoginDialogHTML(params);
+
 	html[idx++] = "</td></tr>";
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr></table>";
 	document.body.innerHTML = html.join("");
-
+	
 	ZmLogin._registerKeyPress();
 	ZmLogin._setUserNameAndFocus();
+ 
 };
 
 /*
@@ -233,10 +188,10 @@ function() {
 ZmLogin._registerKeyPress =
 function() {
 	if (AjxEnv.isIE) {
-		var el = document.getElementById("loginPanel");
-		el["onkeydown"] = ZmLogin.handleKeyPress;
+		var el = ZLoginFactory.getLoginPanel();
+		el["onkeydown"] = ZLoginFactory.handleKeyPress;
 	} else {
-		window["onkeypress"] = ZmLogin.handleKeyPress;
+		window["onkeypress"] = ZLoginFactory.handleKeyPress;
 	}
 };
 
@@ -251,10 +206,10 @@ function() {
 	// if we have a username, fill out the username field, and focus on the
 	// password field. Otherwise focus on the username field.
 	if (lastUser && lastUser != "") {
-		document.getElementById("uname").value = lastUser;
-		focusEl = document.getElementById("pass");
+		ZLoginFactory.showUserField(lastUser);
+		focusEl = ZLoginFactory.getPasswordField();
 	} else {
-		focusEl = document.getElementById("uname");
+		focusEl = ZLoginFactory.getUserField();
 	}
     focusEl.focus();
 };
@@ -267,29 +222,10 @@ function() {
 */
 ZmLogin._setErrorMessage =
 function(msg, skipFocus) {
-	var errCell = document.getElementById("errorMessage");
-	errCell.innerHTML = msg;
-	document.getElementById("errorMessageContainer").style.display = "block";
+	ZLoginFactory.showErrorMsg(msg);
 
 	if (!skipFocus)
-		document.getElementById("uname").focus();
-
-	ZmLogin._flickerErrorMessagePanel();
-};
-
-/*
-* Hide error panel very briefly, making it look like something happened if
-* user has successive errors.
-*/
-ZmLogin._flickerErrorMessagePanel =
-function() {
-	document.getElementById("errorMessageContainer").style.visibility = "hidden";
-	window.setTimeout(ZmLogin._showErrorMessagePanel, 5);
-};
-
-ZmLogin._showErrorMessagePanel =
-function() {
-	document.getElementById("errorMessageContainer").style.visibility = "visible";
+		ZLoginFactory.getUserField().focus();
 };
 
 ZmLogin.setServerUri =
@@ -298,116 +234,6 @@ function() {
 	if (location.search && location.search.indexOf("host=") != -1)
 		value += location.search;
     ZmCsfeCommand.setServerUri(value);
-};
-
-ZmLogin.cancelEvent =
-function(ev) {
-	if (ev.stopPropagation)
-		ev.stopPropagation();
-
-	if (ev.preventDefault)
-		ev.preventDefault();
-
-	ev.cancelBubble = true;
-	ev.returnValue = false;
-}
-
-ZmLogin.handleKeyPress =
-function(ev) {
-    ev = ev || window.event;
-    if (ev == null) return true;
-
-    var target = ev.target ? ev.target: ev.srcElement;
-    if (!target) return true;
-
-    var keyCode = ev.keyCode;
-    if (keyCode == 13) { // Enter
-		if (target.id == "uname") {
-			document.getElementById("pass").focus();
-		} else if (target.id == "rememberMe") {
-			target.checked = !target.checked;
-		} else if (target.id == "passNew") {
-			document.getElementById("passConfirm").focus();
-		} else {
-			ZmLogin.handleLogin();
-		}
-		ZmLogin.cancelEvent(ev);
-		return false;
-	} else if (keyCode == 9) { // Tab
-		var shiftKey = ev.shiftKey;
-		if (target.id == "uname") {
-			if (!shiftKey) {
-				document.getElementById("pass").focus();
-			} else {
-				ZmLogin._focusLoginButton(target);
-			}
-		} else if (target.id == "pass") {
-			var obj = !shiftKey
-				? document.getElementById("rememberMe")
-				: document.getElementById("uname");
-			obj.focus();
-		} else if (target.id == "rememberMe") {
-			if (!shiftKey) {
-				ZmLogin._focusLoginButton(target);
-			} else {
-				var obj = document.getElementById("pass");
-				if (obj.disabled)
-					obj = document.getElementById("passConfirm");
-				obj.focus();
-			}
-		} else if (target.id == "passNew") {
-			if (!shiftKey) {
-				document.getElementById("passConfirm").focus();
-			} else {
-				ZmLogin._focusLoginButton(target);
-			}
-		} else if (target.id == "passConfirm") {
-			var obj = !shiftKey
-				 ? document.getElementById("rememberMe")
-				 : document.getElementById("passNew");
-			obj.focus();
-		} else {
-			if (!shiftKey) {
-				var obj = document.getElementById("uname");
-				if (obj.disabled) {
-					obj = document.getElementById("passNew");
-				} else {
-					if (!AjxEnv.isIE) {
-						var button = document.getElementById("loginButton");
-						ZmLogin.loginButtonBlur(button.parentNode);
-					}
-				}
-				obj.focus();
-			} else {
-				document.getElementById("rememberMe").focus();
-			}
-		}
-		ZmLogin.cancelEvent(ev);
-		return false;
-    }
-    return true;
-};
-
-ZmLogin._focusLoginButton =
-function(target) {
-	var button = document.getElementById("loginButton");
-	if (AjxEnv.isIE) {
-		button.focus();
-	} else {
-		ZmLogin.loginButtonFocus(button.parentNode);
-		target.blur();
-		document.getElementById('hiddenButton').focus();
-	}
-};
-
-ZmLogin.loginButtonFocus =
-function(border) {
-	border.className = "focusBorder";
-};
-
-ZmLogin.loginButtonBlur =
-function(border) {
-	border.className = "";
 };
 
 ZmLogin.submitNoOpRequest =
@@ -453,8 +279,8 @@ function(uname, pword, result) {
 			var msg = ZmMsg.errorNetwork + " " + ZmMsg.errorTryAgain + " " + ZmMsg.errorContact;
 			ZmLogin._setErrorMessage(msg);
 		} else if (ex.code == ZmCsfeException.ACCT_CHANGE_PASSWORD)	{
-			var unameField = document.getElementById("uname");
-			var pwordField = document.getElementById("pass");
+			var unameField = document.getElementById(ZLoginFactory.USER_ID);
+			var pwordField = document.getElementById(ZLoginFactory.PASSWORD_ID);
 
 			// disable username and password fields
 			unameField.disabled = pwordField.disabled = true;
@@ -497,7 +323,7 @@ function(uname, pword, result) {
 		if (redirect != '1') mailServer = location.hostname;
 	}
 
-	var rmChecked = document.getElementById("rememberMe").checked;
+	var rmChecked = document.getElementById(ZLoginFactory.REMEMBER_ME_ID).checked;
 	ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword, rmChecked, skin);
 	ZmLogin._authToken = ZmLogin._authTokenLifetime = null;
 };
@@ -509,8 +335,8 @@ function(uname) {
 
 ZmLogin.handleLogin =
 function() {
-	var unameField = document.getElementById("uname");
-	var pwordField = document.getElementById("pass");
+	var unameField = document.getElementById(ZLoginFactory.USER_ID);
+	var pwordField = document.getElementById(ZLoginFactory.PASSWORD_ID);
     var uname = unameField.value;
     var pword = pwordField.value;
 
@@ -559,8 +385,8 @@ function(authToken, tokenLifetime, mailServer, uname, password, rememberMe, skin
 ZmLogin.handleChangePass =
 function(uname, oldPass) {
 	// error check new and confirmation password
-	var newPassField = document.getElementById("passNew");
-	var conPassField = document.getElementById("passConfirm");
+	var newPassField = ZLoginFactory.getNewPasswordField();
+	var conPassField = ZLoginFactory.getPasswordConfirmField();
 	var newPass = AjxStringUtil.trim(newPassField.value);
 	var conPass = AjxStringUtil.trim(conPassField.value);
 
@@ -604,8 +430,8 @@ function(uname, oldPass) {
 			passTable.deleteRow(2);
 
 			// re-enable username and password fields
-			var unameField = document.getElementById("uname");
-			var pwordField = document.getElementById("pass");
+			var unameField = document.getElementById(ZLoginFactory.USER_ID);
+			var pwordField = document.getElementById(ZLoginFactory.PASSWORD_ID);
 			unameField.disabled = pwordField.disabled = false;
 			pwordField.value = "";
 			pwordField.focus();
@@ -627,29 +453,8 @@ function(uname, oldPass) {
 ZmLogin.showChangePass =
 function(ex) {
 	ZmLogin._setErrorMessage(ZmMsg.errorPassChange, true);
-
-	// add new password fields
-	var passTable = document.getElementById("passTable");
-	var newPassRow = passTable.insertRow(2);
-	var newPassMsg = newPassRow.insertCell(-1);
-	var newPassFld = newPassRow.insertCell(-1);
-	newPassRow.style.height = "30";
-	newPassMsg.align = "right";
-	newPassMsg.innerHTML = ZmMsg.newPassword + ":";
-	newPassFld.innerHTML = "<input tabindex=10 style='width:100%' type=password id='passNew'>";
-
-	// add confirm password fields
-	var conPassRow = passTable.insertRow(3);
-	var conPassMsg = conPassRow.insertCell(-1);
-	var conPassFld = conPassRow.insertCell(-1);
-	conPassRow.style.height = "30";
-	conPassMsg.align = "right";
-	conPassMsg.innerHTML = ZmMsg.confirm + ":";
-	conPassFld.innerHTML = "<input tabindex=10 style='width:100%' type=password id='passConfirm'>";
-
-	// set focus to the new password field
-	var newPassInput = document.getElementById("passNew");
-	newPassInput.focus();
+	ZLoginFactory.showNewPasswordFields();
+	ZLoginFactory.getNewPasswordField().focus();
 };
 
 /*
