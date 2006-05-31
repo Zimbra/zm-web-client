@@ -629,16 +629,21 @@ function(dragOp) {
 		} else {
 			item = dndSelection;
 		}
-		//var idx = this._getItemIndex(item);
 		icon = this._createItemHtml(item, new Date(), true);
 		icon._origClassName = icon.className;
+
+		// ask the item what kind of action is allowed when dragging and add a
+		// plus icon if action is to copy
+		if ((item.getDefaultDndAction() & ZmItem.DND_ACTION_COPY) != 0) {
+			var imgHtml = AjxImg.getImageHtml("RoundPlus", "position:absolute;top:18;left:-11;");
+			icon.appendChild(Dwt.parseHtmlFragment(imgHtml));
+		}
 	} else {
 		// Create multi one
 		icon = document.createElement("div");
 		icon.className = "DndIcon";
 		Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE); 
 		
-		//Dwt.setPosition(this._dndImg, Dwt.ABSOLUTE_STYLE);
 		AjxImg.setImage(icon, "DndMultiYes_48");
 		this._dndImg = icon;
 								
@@ -648,14 +653,25 @@ function(dragOp) {
 						+ dndSelection.length + "</td></tr></table>";
 		icon.appendChild(div);
 
+		// walk thru the dnd selection array and find out what action is allowed
+		var action = null;
+		for (var i = 0; i < dndSelection.length; i++)
+			action |= dndSelection[i].getDefaultDndAction();
+		if (action == ZmItem.DND_ACTION_BOTH) {
+			// TODO
+		} else if ((action & ZmItem.DND_ACTION_COPY) != 0) {
+			var imgHtml = AjxImg.getImageHtml("RoundPlus", "position:absolute;top:30;left:0");
+			icon.appendChild(Dwt.parseHtmlFragment(imgHtml));
+		}
+
 		// The size of the Icon is envelopeImg.width + sealImg.width - 20, ditto for height
 		Dwt.setBounds(icon, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE, 43 + 32 - 16, 36 + 32 - 20);
 	}
 	
 	this.shell.getHtmlElement().appendChild(icon);
 	
-	// If we have multiple items selected, then we have our cool little dnd icon, so
-	// Position the text in the middle of the seal
+	// If we have multiple items selected, then we have our cool little dnd icon,
+	// so position the text in the middle of the seal
 	if (div) {
 		var sz = Dwt.getSize(div);
 		Dwt.setLocation(div, 16 + (32 - sz.x) / 2, 19 + (32 - sz.y) / 2);

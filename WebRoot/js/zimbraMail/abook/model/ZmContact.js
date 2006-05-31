@@ -278,16 +278,21 @@ function(contact) {
 };
 
 ZmContact.prototype.load =
-function(callback, errorCallback) {
+function(callback, errorCallback, batchCmd) {
 	var soapDoc = AjxSoapDoc.create("GetContactsRequest", "urn:zimbraMail");
 	var msgNode = soapDoc.set("cn");
 	msgNode.setAttribute("id", this.id);
 
 	var respCallback = new AjxCallback(this, this._handleLoadResponse, [callback]);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc,
-												  asyncMode: true,
-												  callback: respCallback,
-												  errorCallback: errorCallback});
+
+	if (batchCmd) {
+		batchCmd.addRequestParams(soapDoc, respCallback, errorCallback);
+	} else {
+		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc,
+													  asyncMode: true,
+													  callback: respCallback,
+													  errorCallback: errorCallback});
+	}
 };
 
 ZmContact.prototype._handleLoadResponse =
@@ -320,6 +325,28 @@ function() {
 ZmContact.prototype.isShared =
 function() {
 	return this.addrbook && this.addrbook.link;
+};
+
+ZmContact.prototype.getDefaultDndAction =
+function() {
+	return this.isReadOnly()
+		? ZmItem.DND_ACTION_COPY
+		: ZmItem.DND_ACTION_MOVE;
+};
+
+ZmContact.prototype.isReadOnly =
+function() {
+	if (this.isGal)
+		return true;
+
+	if (this.isShared()) {
+		// check if this contact is read-only
+		var shares = this.addrbook.getShares();
+		var share = shares ? shares[0] : null;
+		return (share && !share.isWrite());
+	}
+
+	return false;
 };
 
 ZmContact.prototype.getAttr =
@@ -363,7 +390,16 @@ function() {
 	} else {
 		return this.attr;
 	}
-}
+};
+
+ZmContact.prototype.clear =
+function() {
+	// if this contact is in the canonical list, dont clear it!
+	var contact = this.canonicalList.getById(this.id);
+	if (contact) return;
+
+	ZmItem.prototype.clear.call(this);
+};
 
 /**
 * Creates a contact from the given set of attributes. Used to create contacts on
@@ -375,7 +411,7 @@ function() {
 * @param attr	[hash]		attr/value pairs for this contact
 */
 ZmContact.prototype.create =
-function(attr) {
+function(attr, batchCmd) {
 	DBG.println(AjxDebug.DBG1, "ZmContact.create");
 
 	var soapDoc = AjxSoapDoc.create("CreateContactRequest", "urn:zimbraMail");
@@ -391,22 +427,24 @@ function(attr) {
 		a.setAttribute("n", name);
 	}
 
-	var respCallback = new AjxCallback(this, this._handleResponseCreate, [attr]);
-	var execFrame = new AjxCallback(this, this.create, [attr]);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback, execFrame: execFrame});
-};
+	var respCallback = new AjxCallback(this, this._handleResponseCreate, [attr, batchCmd != null]);
+	// TODO - handle errors(?) for create?
 
-ZmContact.prototype.clear =
-function() {
-	// if this contact is in the canonical list, dont clear it!
-	var contact = this.canonicalList.getById(this.id);
-	if (contact) return;
-
-	ZmItem.prototype.clear.call(this);
+	if (batchCmd) {
+		// TODO - add execFrame when ZmBatchCommand API is ready
+		batchCmd.addRequestParams(soapDoc, respCallback);
+	} else {
+		var execFrame = new AjxCallback(this, this.create, [attr]);
+		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, errorCallback:errorCallback, execFrame:execFrame});
+	}
 };
 
 ZmContact.prototype._handleResponseCreate =
-function(attr, result) {
+function(attr, isBatchMode, result) {
+	// dont bother processing creates when in batch mode (just let create
+	// notifications handle them)
+	if (isBatchMode) return;
+
 	var resp = result.getResponse().CreateContactResponse;
 	cn = resp ? resp.cn[0] : null;
 	var id = cn ? cn.id : null;

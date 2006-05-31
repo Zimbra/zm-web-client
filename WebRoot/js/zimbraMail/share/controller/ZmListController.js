@@ -782,7 +782,7 @@ function(items, hardDelete, attrs) {
 	this._list.deleteItems(items, hardDelete, attrs);
 };
 
-/*
+/**
 * Moves a list of items to the given folder. Any item already in that folder is excluded.
 *
 * @param items		[Array]			a list of items to move
@@ -791,7 +791,25 @@ function(items, hardDelete, attrs) {
 */
 ZmListController.prototype._doMove =
 function(items, folder, attrs) {
-	this._list.moveItems(items, folder, attrs);
+	if (!(items instanceof Array)) items = [items];
+
+	var move = [];
+	var copy = [];
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		if (!item.folderId || item.folderId != folder.id) {
+			if (item.isReadOnly())
+				copy.push(item);
+			else
+				move.push(item);
+		}
+	}
+
+	if (move.length)
+		this._list.moveItems(move, folder, attrs);
+
+	if (copy.length)
+		this._list.copyItems(copy, folder, attrs);
 };
 
 // Modify an item

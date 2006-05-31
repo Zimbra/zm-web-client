@@ -344,12 +344,13 @@ function(items) {
 }
 
 /**
-* Moves a list of items to the given folder. Any item already in that folder is excluded.
+* Moves a list of items to the given folder.
 * <p>
 * Search results are treated as though they're in a temporary folder, so that they behave as
 * they would if they were in any other folder such as Inbox. When items that are part of search
 * results are moved, they will disappear from the view, even though they may still satisfy the
-* search.</p>
+* search.
+* </p>
 *
 * @param items		[Array]			a list of items to move
 * @param folder		[ZmFolder]		destination folder
@@ -363,18 +364,13 @@ function(items, folder, attrs) {
 	}
 	if (!(items instanceof Array)) items = [items];
 
-	var items1 = new Array();
-	for (var i = 0; i < items.length; i++)
-		if (!items[i].folderId || (items[i].folderId != folder.id))
-			items1.push(items[i]);
-
-	attrs = attrs ? attrs : new Object();
+	attrs = attrs || (new Object());
 	attrs.l = folder.id;
 	
 	var respCallback = null;
 	if (this.type == ZmList.MIXED)
 		respCallback = new AjxCallback(this, this._handleResponseMoveItems, folder);
-	this._itemAction({items: items1, action: "move", attrs: attrs, callback: respCallback});
+	this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback});
 };
 
 ZmList.prototype._handleResponseMoveItems =
@@ -386,6 +382,22 @@ function(folder, result) {
 			movedItems[i].moveLocal(folder.id);
 		this._notify(ZmEvent.E_MOVE, {items: movedItems});
 	}
+};
+
+/**
+* Copies a list of items to the given folder.
+* <p>
+* Search results are treated as though they're in a temporary folder, so that they behave as
+* they would if they were in any other folder such as Inbox.
+* </p>
+*
+* @param items		[Array]			a list of items to move
+* @param folder		[ZmFolder]		destination folder
+* @param attrs		[Object]		additional attrs for SOAP command
+*/
+ZmList.prototype.copyItems =
+function(items, folder, attrs) {
+	// overload me
 };
 
 /**

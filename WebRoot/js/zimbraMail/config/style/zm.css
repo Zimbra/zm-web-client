@@ -689,13 +689,6 @@ td.DDSepInvisible div {
 	@ListContainer@
 }
 
-/* Single row in the list */
-/* ??? NECESSARY? 
-.SimpleContact td {
-	height:20px;
-}
-*/
-
 /* ??? WHY IS THIS NECESSARY? */
 .ZmContactSimpleView .SimpleContact,
 .ZmContactSimpleView .SimpleContact-right,

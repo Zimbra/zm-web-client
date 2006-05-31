@@ -158,6 +158,11 @@ ZmItem.FLAG_PROP[ZmItem.FLAG_FORWARDED]	= "isForwarded";
 ZmItem.FLAG_PROP[ZmItem.FLAG_ISSENT]	= "isSent";
 ZmItem.FLAG_PROP[ZmItem.FLAG_ISDRAFT] 	= "isDraft";
 
+// DnD actions this item is allowed
+ZmItem.DND_ACTION_MOVE = 1 << 0;
+ZmItem.DND_ACTION_COPY = 1 << 1;
+ZmItem.DND_ACTION_BOTH = ZmItem.DND_ACTION_MOVE | ZmItem.DND_ACTION_COPY;
+
 // abstract methods
 ZmItem.prototype.create = function(args) {}
 ZmItem.prototype.modify = function(mods) {}
@@ -233,6 +238,24 @@ function() {
 		tagImageInfo = "MiniTagStack";
 	}
 	return tagImageInfo;
+};
+
+/**
+* Returns what the default action should be when dragging this item. This method
+* is meant to be overloaded for items that are read-only and can only be copied.
+*/
+ZmItem.prototype.getDefaultDndAction =
+function() {
+	return ZmItem.DND_ACTION_MOVE;
+};
+
+/**
+* This method should be overloaded by the derived object to determine what
+* "read-only" means.
+*/
+ZmItem.prototype.isReadOnly =
+function() {
+	return false;
 };
 
 // Notification handling
