@@ -835,16 +835,30 @@ ZmSpreadSheetFormulae.prototype.eval = function() {
 // 	}
 // 	alert(txt.join("\n")/* + "\n\n" + this.eval()*/);
 
+	var autoType = {};
+	var decimals = null;
+
+	function encountered(cell) {
+		autoType[cell.getType()] = true;
+		if (cell.getDecimals() != null) {
+			if (decimals == null)
+				decimals = 0;
+			if (decimals < cell.getDecimals())
+				decimals = cell.getDecimals();
+		}
+		return cell.getValue();
+	};
+
 	function doit() {
 		var tok = stack[index--];
 // 		if (!tok)
 // 			return 0; // FIXME: assuming numeric return type.
 		if (tok.type === TYPE.CELL)
-			return tok.cell.getValue();
+			return encountered(tok.cell);
 		if (tok.type === TYPE.CELLRANGE) {
 			var a = new Array(tok.cells.length);
 			for (var i = a.length; --i >= 0;)
-				a[i] = tok.cells[i].getValue();
+				a[i] = encountered(tok.cells[i]);
 			return a;
 		}
 		if (tok.isOpr)
@@ -863,6 +877,16 @@ ZmSpreadSheetFormulae.prototype.eval = function() {
 	};
 
 	var ret = doit();
+
+	if (autoType.percentage && !autoType.currency)
+		autoType = "percentage";
+	else if (autoType.currency)
+		autoType = "currency";
+	else
+		autoType = null;
+	this.autoType = autoType;
+	this.decimals = decimals;
+
 	this._running = false;
 	return ret;
 };

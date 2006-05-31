@@ -958,8 +958,10 @@ ZmSpreadSheetCellModel.prototype.setEditValue = function(editValue, force) {
 			this.setExpression(expr);
 			if (expr) {
 				val = expr.eval();
+				if (expr.decimals != null)
+					this._decimals = expr.decimals;
 				auto = this._determineType(val);
-				this._autoType = auto.type;
+				this._autoType = expr.autoType || auto.type;
 				if (this._autoType == "currency")
 					// FIXME: this stinks.
 					val = auto.val;
