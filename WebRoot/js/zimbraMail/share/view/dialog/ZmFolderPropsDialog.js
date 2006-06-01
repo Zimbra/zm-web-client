@@ -59,6 +59,7 @@ ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.CALENDAR] = ZmMsg.calendarFolder;
 ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.NOTEBOOK] = ZmMsg.notebookFolder;
 ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.ADDRBOOK] = ZmMsg.addressBookFolder;
 
+ZmFolderPropsDialog.SHARES_HEIGHT = 150;
 
 // Public methods
 
@@ -327,6 +328,8 @@ function() {
 		this._sharesGroup = new DwtGrouper(view);
 		this._sharesGroup.setLabel(ZmMsg.folderSharing);
 		this._sharesGroup.setVisible(false);
+		this._sharesGroup.setSize(Dwt.DEFAULT, ZmFolderPropsDialog.SHARES_HEIGHT);
+		this._sharesGroup.setScrollStyle(Dwt.SCROLL);
 	}
 
 	// add everything to view and return
