@@ -156,8 +156,8 @@ Contributor(s):
 
 <!-- ALL STYLES MOVED TO login.css SO THEY CAN BE SKINNED:  WE USE THE SKIN FROM ABOVE. -->
 <style type="text/css">
-	@import url(/zimbra/skins/<%= skin %>/common.css?v=<%= vers %>);
-	@import url(/zimbra/skins/<%= skin %>/login.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/skins/<%= skin %>/common.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/skins/<%= skin %>/login.css?v=<%= vers %>);
 </style>
 
 
