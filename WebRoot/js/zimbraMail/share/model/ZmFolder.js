@@ -117,6 +117,9 @@ ZmFolder.HIDE["Notes"]		= true;
 ZmFolder.HIDE["Outbox"]		= true;
 ZmFolder.HIDE["Tasks"]		= true;
 
+// The extra-special, visible but untouchable outlook folder
+ZmFolder.SYNC_ISSUES = "Sync Issues";
+
 // map name to ID
 ZmFolder.QUERY_ID = new Object();
 for (var i in ZmFolder.QUERY_NAME)
@@ -198,6 +201,10 @@ function(name) {
 		if (name == ZmMsg[ZmFolder.MSG_KEY[id]])
 			return ZmMsg.folderNameReserved;
 	}
+	if (name.toLowerCase() == ZmFolder.SYNC_ISSUES.toLowerCase()) {
+		return ZmMsg.folderNameReserved;
+	}
+	
 	return null;
 };
 
@@ -423,6 +430,7 @@ ZmFolder.prototype.mayContain =
 function(what) {
 	if (!what) return true;
 	if (this.isFeed()) return false;
+	if (this.isSyncIssuesFolder()) return false;
 
 	var invalid = false;
 	if (what instanceof ZmFolder) {
@@ -474,6 +482,16 @@ function(what) {
 	}
 	return !invalid;
 };
+
+/**
+* Returns true if the folder is the one dealing with Outlook sync issues
+*
+*/
+ZmFolder.prototype.isSyncIssuesFolder =
+function() {
+	return this.name == ZmFolder.SYNC_ISSUES;
+};
+
 
 /**
 * Returns the folder with the given path

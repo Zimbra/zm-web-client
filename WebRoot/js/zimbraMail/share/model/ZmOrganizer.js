@@ -618,7 +618,7 @@ function () {
 };
 
 /**
-* Returns true is this organizer gets its contents from an external feed.
+* Returns true if this organizer gets its contents from an external feed.
 */
 ZmOrganizer.prototype.isFeed =
 function () {

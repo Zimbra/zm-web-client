@@ -240,14 +240,20 @@ function() {
 
 ZmNewOrganizerDialog.prototype._setupFolderControl =
 function() {
+	var organizerType = this._organizerType;
+	this._folderTree = this._appCtxt.getTree(organizerType);
+
 	var omit = new Object();
 	omit[ZmFolder.ID_SPAM] = true;
 	omit[ZmFolder.ID_DRAFTS] = true;
+	var syncIssuesFolder = this._folderTree.getByName(ZmFolder.SYNC_ISSUES);
+	if (syncIssuesFolder) {
+		omit[syncIssuesFolder.id] = true;
+	}
+	
 	var overviewId = this.toString();
-	var organizerType = this._organizerType;
 	this._setOverview(overviewId, this._folderTreeCellId, [organizerType], omit);
 	this._folderTreeView = this._treeView[organizerType];
-	this._folderTree = this._appCtxt.getTree(organizerType);
 };
 
 // other

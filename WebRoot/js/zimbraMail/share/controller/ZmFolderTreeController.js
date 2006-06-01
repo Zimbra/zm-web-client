@@ -87,7 +87,7 @@ function(parent, type, id) {
 	var deleteText = ZmMsg.del;
 	var folder = this._dataTree.getById(id);
 	// user folder or Folders header
-	if (id == ZmOrganizer.ID_ROOT || (!folder.isSystem())) {
+	if (id == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder())) {
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed());
 	// system folder
@@ -232,7 +232,7 @@ ZmFolderTreeController.prototype._dragListener =
 function(ev) {
 	if (ev.action == DwtDragEvent.DRAG_START) {
 		var folder = ev.srcData = ev.srcControl.getData(Dwt.KEY_OBJECT);
-		if (!(folder instanceof ZmFolder) || folder.isSystem())
+		if (!(folder instanceof ZmFolder) || folder.isSystem() || folder.isSyncIssuesFolder())
 			ev.operation = Dwt.DND_DROP_NONE;
 	}
 };
