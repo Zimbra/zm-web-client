@@ -89,7 +89,7 @@ function() {
 
 ZmAddrBook.prototype.getById =
 function(id) {
-	if (this.link) {
+	if (this.link && id && typeof(id) == "string") {
 		var ids = id.split(":");
 		if (this.zid == ids[0] && this.rid == ids[1])
 			return this;

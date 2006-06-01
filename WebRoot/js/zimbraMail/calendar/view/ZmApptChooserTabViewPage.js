@@ -687,8 +687,14 @@ function(item) {
 	for (var i = 0; i < this._headerList.length; i++) {
 		var id = this._headerList[i]._id;
 		if (id.indexOf(ZmApptChooserTabViewPage.ID_FOLDER) == 0) {
-			var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(item.folderId);
-			html[idx++] = this._getField(i, folder ? folder.name : "");
+			var name = "";
+			if (item.isGal) {
+				name = ZmMsg.GAL;
+			} else {
+				var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(item.folderId);
+				name = folder.name;
+			}
+			html[idx++] = this._getField(i, name);
 		} else if (id.indexOf(ZmApptChooserTabViewPage.ID_NAME) == 0) {
 			var name = (this._chooserType == ZmAppt.PERSON) ? item.getFullName() : item.getAttr(ZmResource.F_name);
 			html[idx++] = this._getField(i, name);
