@@ -258,6 +258,15 @@ function() {
 	return false;
 };
 
+/**
+* This method should be overloaded by the derived object to determine whether it
+* is a share or not.
+*/
+ZmItem.prototype.isShared =
+function() {
+	return false;
+};
+
 // Notification handling
 
 /**

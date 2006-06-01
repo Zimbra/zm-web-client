@@ -621,7 +621,9 @@ function(dragOp) {
 
 	var icon;
 	var div;
+	var roundPlusStyle;
 	this._dndImg = null;
+
 	if (!(dndSelection instanceof Array) || dndSelection.length == 1) {
 		var item = null;
 		if (dndSelection instanceof Array) {
@@ -632,12 +634,7 @@ function(dragOp) {
 		icon = this._createItemHtml(item, new Date(), true);
 		icon._origClassName = icon.className;
 
-		// ask the item what kind of action is allowed when dragging and add a
-		// plus icon if action is to copy
-		if ((item.getDefaultDndAction() & ZmItem.DND_ACTION_COPY) != 0) {
-			var imgHtml = AjxImg.getImageHtml("RoundPlus", "position:absolute;top:18;left:-11;");
-			icon.appendChild(Dwt.parseHtmlFragment(imgHtml));
-		}
+		roundPlusStyle = "position:absolute; top:18; left:-11;visibility:hidden";
 	} else {
 		// Create multi one
 		icon = document.createElement("div");
@@ -653,21 +650,15 @@ function(dragOp) {
 						+ dndSelection.length + "</td></tr></table>";
 		icon.appendChild(div);
 
-		// walk thru the dnd selection array and find out what action is allowed
-		var action = null;
-		for (var i = 0; i < dndSelection.length; i++)
-			action |= dndSelection[i].getDefaultDndAction();
-		if (action == ZmItem.DND_ACTION_BOTH) {
-			// TODO
-		} else if ((action & ZmItem.DND_ACTION_COPY) != 0) {
-			var imgHtml = AjxImg.getImageHtml("RoundPlus", "position:absolute;top:30;left:0");
-			icon.appendChild(Dwt.parseHtmlFragment(imgHtml));
-		}
+		roundPlusStyle = "position:absolute;top:30;left:0;visibility:hidden";
 
 		// The size of the Icon is envelopeImg.width + sealImg.width - 20, ditto for height
 		Dwt.setBounds(icon, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE, 43 + 32 - 16, 36 + 32 - 20);
 	}
 	
+	var imgHtml = AjxImg.getImageHtml("RoundPlus", roundPlusStyle);
+	icon.appendChild(Dwt.parseHtmlFragment(imgHtml));
+
 	this.shell.getHtmlElement().appendChild(icon);
 	
 	// If we have multiple items selected, then we have our cool little dnd icon,

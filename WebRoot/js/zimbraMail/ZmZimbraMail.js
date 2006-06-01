@@ -122,7 +122,7 @@ ZmZimbraMail.APP_CLASS = {};
 // app names
 ZmZimbraMail.MSG_KEY = {};
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]				= "mail";
-ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]			= "contacts";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]			= "addressBook";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CALENDAR_APP]			= "calendar";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.IM_APP]				= "imAppTitle";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.NOTEBOOK_APP]			= "notebook";

@@ -746,7 +746,7 @@ function(parent, name, color/*, url*/) {
 // Move stuff to a new folder.
 ZmListController.prototype._moveCallback =
 function(folder) {
-	this._doMove(this._pendingActionData, folder);
+	this._doMove(this._pendingActionData, folder, null, true);
 	this._clearDialog(this._appCtxt.getMoveToDialog());
 };
 
@@ -788,9 +788,10 @@ function(items, hardDelete, attrs) {
 * @param items		[Array]			a list of items to move
 * @param folder		[ZmFolder]		destination folder
 * @param attrs		[Object]		additional attrs for SOAP command
+@ @param force		[boolean]		true if forcing a move request (no copy)
 */
 ZmListController.prototype._doMove =
-function(items, folder, attrs) {
+function(items, folder, attrs, force) {
 	if (!(items instanceof Array)) items = [items];
 
 	var move = [];
@@ -798,7 +799,7 @@ function(items, folder, attrs) {
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		if (!item.folderId || item.folderId != folder.id) {
-			if (item.isReadOnly())
+			if (!force && (item.isShared() || item.isReadOnly() || folder.link))
 				copy.push(item);
 			else
 				move.push(item);

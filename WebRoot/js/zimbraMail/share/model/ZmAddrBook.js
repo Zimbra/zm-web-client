@@ -168,10 +168,11 @@ function(what) {
 			} else {
 				// can't move items to folder they're already in; we're okay if
 				// we have one item from another folder
-				if (!invalid && items[0].folderId) {
+				if (!invalid && item.folderId) {
 					invalid = true;
 					for (var i = 0; i < items.length; i++) {
-						if (items[i].folderId != this.id) {
+						var tree = this.tree.getById(items[i].folderId);
+						if (tree != this) {
 							invalid = false;
 							break;
 						}

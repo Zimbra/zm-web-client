@@ -258,9 +258,32 @@ function(ev) {
 		} else if (srcData instanceof ZmTag) {
 			ev.doIt = false; // tags cannot be moved
 		} else {
-			ev.doIt = !this._dropTgt.isValidTarget(srcData.data)
-				? false
-				: dropFolder.mayContain(srcData.data);
+			if (this._dropTgt.isValidTarget(srcData.data)) {
+				ev.doIt = dropFolder.mayContain(srcData.data);
+
+				var action = null;
+				var plusDiv = null;
+				var actionData = (!(srcData.data instanceof Array))
+					? [srcData.data]
+					: srcData.data;
+
+				// walk thru the array and find out what action is allowed
+				for (var i = 0; i < actionData.length; i++) {
+					if (actionData[i] instanceof ZmItem)
+						action |= actionData[i].getDefaultDndAction();
+				}
+				plusDiv = actionData.length == 1
+					? ev.dndIcon.firstChild.nextSibling
+					: ev.dndIcon.firstChild.nextSibling.nextSibling;
+
+				if (action && plusDiv) {
+					// TODO - what if action is ZmItem.DND_ACTION_BOTH ??
+					var isCopy = ((action & ZmItem.DND_ACTION_COPY) != 0);
+					Dwt.setVisibility(plusDiv, isCopy || dropFolder.link === true);
+				}
+			} else {
+				ev.doIt = false;
+			}
 		}
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		if (srcData instanceof ZmFolder) {

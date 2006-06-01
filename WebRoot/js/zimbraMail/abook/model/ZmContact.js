@@ -329,7 +329,7 @@ function() {
 
 ZmContact.prototype.getDefaultDndAction =
 function() {
-	return this.isReadOnly()
+	return (this.isShared() || this.isReadOnly())
 		? ZmItem.DND_ACTION_COPY
 		: ZmItem.DND_ACTION_MOVE;
 };
@@ -435,7 +435,7 @@ function(attr, batchCmd) {
 		batchCmd.addRequestParams(soapDoc, respCallback);
 	} else {
 		var execFrame = new AjxCallback(this, this.create, [attr]);
-		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, errorCallback:errorCallback, execFrame:execFrame});
+		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback, execFrame:execFrame});
 	}
 };
 

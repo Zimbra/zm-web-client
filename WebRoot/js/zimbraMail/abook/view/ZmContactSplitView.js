@@ -658,7 +658,7 @@ function(contact, now, isDndIcon) {
 	htmlArr[idx++] = "</td>";
 
 	// tags
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+	if (!isDndIcon && this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		var cellId = this._getFieldId(contact, ZmItem.F_TAG_CELL);
 		htmlArr[idx++] = "<td style='vertical-align:middle;' width=16 class='Tag' id='";
 		htmlArr[idx++] = cellId;
