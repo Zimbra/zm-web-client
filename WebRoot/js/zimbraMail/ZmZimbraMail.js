@@ -1546,7 +1546,8 @@ function(ev) {
 ZmZimbraMail.prototype._newSkinYesCallback =
 function() {
 	this._confirmDialog.popdown();
-	ZmZimbraMail.sendRedirect(location.toString()); // redirect to self to force reload
+    window.onbeforeunload = null;
+    ZmZimbraMail.sendRedirect(location.toString()); // redirect to self to force reload
 };
 
 /*

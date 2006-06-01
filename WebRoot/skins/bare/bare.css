@@ -68,7 +68,7 @@ body						{	@ChromeBg@		}
 #skin_td_logo							{	text-align:center; vertical-align:middle;			}
 #skin_border_logo						{						}
 #skin_container_logo					{						
-
+    height:30;
 }
 
 
