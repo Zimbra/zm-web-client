@@ -681,16 +681,16 @@ function(contact) {
 * Tests a string against various fields of a contact to see if the contact matches.
 * Contacts that are in the Trash will always fail to match.
 *
-* @param contact	[object]		contact
-* @param str		[string]		test string
-* @param doMarkup	[boolean]		if true, return highlighted value and matched field
+* @param contact	[ZmContact|object|string]	contact or ID
+* @param str		[string]					test string
+* @param doMarkup	[boolean]					if true, return highlighted value and matched field
 */
 ZmContactList.prototype._testAcMatch =
 function(contact, str, doMarkup) {
-	contact = (contact instanceof ZmContact) ? contact : this.getById(contact);
+	contact = (contact instanceof ZmContact) ? contact : contact.id ? this.getById(contact.id) : this.getById(contact);
 	if (!contact || ZmContact.isInTrash(contact)) return false;
 
-	for (var i = 0; i < this._acMatchFields.length; i++) {
+	for (var i = 0; i < this._acMatchFields.length;i++) {
 		var field = this._acMatchFields[i];
 		var value = ZmContact.getAttr(contact, field);
 		if (value && (value.toLowerCase().indexOf(str) == 0)) {
@@ -765,12 +765,12 @@ function(a, b) {
 * email addresses and didn't match on one of them (it matched on a name), then a matching
 * object will be created for each email address.
 *
-* @param contact	[string|ZmContact]		ID of personal contact, or a GAL contact
-* @param str		[string]				string that was matched
+* @param contact	[ZmContact|object|string]	contact or ID
+* @param str		[string]					string that was matched
 */
 ZmContactList.prototype._getMatches =
 function(contact, str) {
-	contact = (contact instanceof ZmContact) ? contact : this.getById(contact);
+	contact = (contact instanceof ZmContact) ? contact : contact.id ? this.getById(contact.id) : this.getById(contact);
 	var match = this._testAcMatch(contact, str, true);
 	if (!match) {
 		DBG.println(AjxDebug.DBG1, "Matched contact with ID " + contact.id + " no longer matches '" + str + "' (possibly deleted)");

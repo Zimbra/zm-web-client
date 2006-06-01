@@ -293,8 +293,7 @@ function(info) {
 	if (info.start < info.text.length) {
 		var chunk = this._nextChunk(info.text, info.start);
 		this._autocomplete(chunk, callback);
-	}
-	if (info.text != this._element.value) {
+	} else if (info.text != this._element.value) {
 		this._updateField(info.text);
 	}
 };
