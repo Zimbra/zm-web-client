@@ -1593,14 +1593,16 @@ function(ev) {
 ZmZimbraMail.prototype._createBanner =
 function() {
 	// The LogoContainer style centers the logo
-	var banner = new DwtComposite(this._shell, "LogoContainer", Dwt.ABSOLUTE_STYLE);
+	var banner = new DwtComposite(this._shell, null, Dwt.ABSOLUTE_STYLE);
 	var html = [];
 	var i = 0;
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 style='width:100%;height:100%'>";
+	html[i++] = "<tr><td align='center' valign='middle'>";
 	html[i++] = "<a href='";
 	html[i++] = this._appCtxt.get(ZmSetting.LOGO_URI);
 	html[i++] = "' target='_blank'><div class='";
 	html[i++] = AjxImg.getClassForImage("AppBanner");
-	html[i++] = "'></div></a>";
+	html[i++] = "'></div></a></td></tr></table>";
 	banner.getHtmlElement().innerHTML = html.join("");
 	return banner;
 };

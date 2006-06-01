@@ -499,8 +499,6 @@ ZmAppViewMgr.prototype._fitToContainer =
 function(components) {
 	for (var i = 0; i < components.length; i++) {
 		var cid = components[i];
-		// don't resize logo image (it will tile) or reposition it (centered via style)
-		if (cid == ZmAppViewMgr.C_BANNER) continue;
 		DBG.println(AjxDebug.DBG3, "fitting to container: " + cid);
 		var cont = this._containers[cid];
 		if (cont) {
