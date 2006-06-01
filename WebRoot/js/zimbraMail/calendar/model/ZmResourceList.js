@@ -44,6 +44,7 @@ function ZmResourceList(appCtxt, resType, search) {
 	this._nameToResource = {};
 	this._emailToResource = {};
 	this._acMatchFields = ZmResourceList.AC_FIELDS;
+	this._galAutocompleteEnabled = false;
 };
 
 ZmResourceList.ATTRS =
