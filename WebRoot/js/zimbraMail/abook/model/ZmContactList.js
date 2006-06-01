@@ -610,7 +610,6 @@ function(str, callback) {
 				this._acAddrList[str].push(contact);
 			}
 		}
-		this._acAddrList[str].addGalOnly = false;
 	} else {
 		// initial matching against all contacts
 		DBG.println(AjxDebug.DBG2, "creating new match list for '" + str + "'");
@@ -876,9 +875,10 @@ function(str, callback) {
 ZmContactList.prototype._handleResponseGetGalMatches =
 function(str, callback, result) {
 	var resp = result.getResponse();
-	var vec = resp.getResults(ZmItem.CONTACT);
-	var a = vec ? vec.getArray() : [];
+	var list = resp.getResults(ZmItem.CONTACT);
+	var a = list ? list.getArray() : [];
 
+	this._acAddrList[str] = this._acAddrList[str] ? this._acAddrList[str] : [];
 	for (var i = 0; i < a.length; i++) {
 		this._acAddrList[str].push(a[i]);
 	}

@@ -257,10 +257,10 @@ function(contact) {
 /* These next few static methods handle a contact that is either an anonymous object or an actual
 * ZmContact. The former is used to optimize loading. The anonymous object is upgraded to a
 * ZmContact when needed. */
-
 ZmContact.getAttr =
 function(contact, attr) {
-	return (contact instanceof ZmContact) ? contact.getAttr(attr) : contact._attrs[attr];
+	return (contact instanceof ZmContact) ? contact.getAttr(attr) : 
+			(contact && contact._attrs) ? contact._attrs[attr] : null;
 };
 
 ZmContact.setAttr =

@@ -284,6 +284,7 @@ function(element) {
 */
 ZmAutocompleteListView.prototype.autocomplete =
 function(info) {
+	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: autocomplete");
 
 	// The callback into ourself emulates a while loop, and is here to support
 	// async calls into _autocomplete(), which may result in a server request
@@ -388,18 +389,36 @@ function(show, loc) {
 
 // Private methods
 
-// Finds the next chunk of text in a string that we should try to autocomplete, by reading
-// until it hits some sort of address delimiter (or runs out of text)
+/*
+ * Finds the next chunk of text in a string that we should try to autocomplete, by reading
+ * until it hits some sort of address delimiter (or runs out of text). If the chunk is a
+ * valid email address, it's skipped since there's no point in trying to autocomplete it.
+ * 
+ * @param text	[string]	text to scan
+ * @param start	[int]		index to start at
+ */
 ZmAutocompleteListView.prototype._nextChunk =
 function(text, start) {
-	while (text.charAt(start) == ' ')	// ignore leading space
+	while (text.charAt(start) == ' ') {	// ignore leading space
 		start++;
+	}
 	for (var i = start; i < text.length; i++) {
 		var c = text.charAt(i);
-		if (ZmAutocompleteListView.IS_DELIM[c])
-			return {text: text, str: text.substring(start, i), start: start, end: i, delim: true};
+		if (ZmAutocompleteListView.IS_DELIM[c]) {
+			var chunk = text.substring(start, i);
+			if (ZmEmailAddress.isValid(chunk)) {
+				start = i + 1;
+			} else {
+				return {text: text, str: chunk, start: start, end: i, delim: true};
+			}
+		}
 	}
-	return {text: text, str: text.substring(start, i), start: start, end: i, delim: false};
+	var chunk = text.substring(start, i);
+	if (ZmEmailAddress.isValid(chunk)) {
+		start = i;
+		chunk = text.substring(start, i);
+	}
+	return {text: text, str: chunk, start: start, end: i, delim: false};
 };
 
 // Looks for matches for a string and either displays them in a list, or does the completion
@@ -407,8 +426,9 @@ function(text, start) {
 // information that allows us to do the replacement if we are performing completion.
 ZmAutocompleteListView.prototype._autocomplete =
 function(chunk, callback) {
+	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _autocomplete");
 
-	var str = chunk.str;
+	var str = AjxStringUtil.trim(chunk.str);
 
 	// if string is empty or already a delimited address, no reason to look for matches
 	if (!(str && str.length) || (this._done[str])) {
@@ -459,6 +479,7 @@ function(str, chunk, text, start, callback, list) {
 
 		// if the current segment ends in a delimiter, complete immediately without showing the list
 		if (chunk.delim) {
+			DBG.println(AjxDebug.DBG2, "performing quick completion");
 			var result = this._complete(text, true);
 			text = result.text;
 			start = result.start;
@@ -477,7 +498,7 @@ function(str, chunk, text, start, callback, list) {
 // Replaces a string within some text from the selected address match.
 ZmAutocompleteListView.prototype._complete =
 function(text, hasDelim) {
-	DBG.println(AjxDebug.DBG3, "complete: selected is " + this._selected);
+	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _complete: selected is " + this._selected);
 	var match = this._getSelected();
 	if (!match)	return;
 
@@ -494,12 +515,14 @@ function(text, hasDelim) {
 // Resets the value of an element to the given text.
 ZmAutocompleteListView.prototype._updateField =
 function(text, match) {
+	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _updateField");
 	var el = this._element;
 	el.value = text;
 	el.focus();
 	this.reset();
-	if (this._compCallback)
+	if (this._compCallback) {
 		this._compCallback.run(text, el, match);
+	}
 };
 
 // Updates the element with the currently selected match.

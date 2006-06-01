@@ -186,7 +186,7 @@ ZmEmailAddress.isValid =
 function(str) {
 	str = AjxStringUtil.trim(str);
 	var prelimOkay = ZmEmailAddress._prelimCheck(str);
-	return (prelimOkay && str.match(ZmEmailAddress.addrPat));
+	return (prelimOkay && (str.match(ZmEmailAddress.addrPat) != null));
 };
 
 ZmEmailAddress._prelimCheck =
