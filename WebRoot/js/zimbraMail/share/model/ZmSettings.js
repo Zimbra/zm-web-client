@@ -217,7 +217,7 @@ function(list, callback, result) {
 			var setting = list[i];
 			setting.origValue = setting.value;
 			if (setting.id == ZmSetting.SKIN_NAME) {
-				AjxCookie.setCookie(document, ZmLogin.skinCookie, setting.getValue(), null, "/");
+				ZmLogin.setSkinCookie(setting.getValue());
 			}
 			setting._notify(ZmEvent.E_MODIFY);
 		}
