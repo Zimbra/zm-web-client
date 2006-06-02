@@ -32,7 +32,7 @@ body						{	@ChromeBg@		}
 
 .skin_container						{	position:relative;	overflow:hidden;	}
 
-#skin_outer							{	display:block; width:100%;		height:100%; 		@ChromeBg@			}
+#skin_outer							{	display:none; width:100%;		height:100%; 		@ChromeBg@			}
 
 	
 .skin_table							{	width:100%;	height:100%;	border-collapse:collapse; table-layout:fixed;			}	/* NOTE: table-layout:fixed breaks FF Win */
