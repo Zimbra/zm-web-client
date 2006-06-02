@@ -702,6 +702,8 @@ function(container, html, isTextMsg) {
 		? "MsgBody MsgBody-text"
 		: "MsgBody MsgBody-html";
 
+	ifw.getIframe().onload = AjxCallback.simpleClosure(ZmMailMsgView._resetIframeHeight, ZmMailMsgView, this, ifw.getIframe());
+
 	// import the object styles
 	var head = idoc.getElementsByTagName("head")[0];
 	var link = idoc.createElement("link");
