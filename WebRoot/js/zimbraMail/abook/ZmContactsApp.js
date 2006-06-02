@@ -136,7 +136,7 @@ function() {
 	var addrbookList = [];
 	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
 	for (var i = 0; i < folders.length; i++) {
-		if (folders[i].id == ZmFolder.ID_ROOT || folders[i].id == ZmFolder.ID_TRASH)
+		if (folders[i].id == ZmFolder.ID_ROOT || folders[i].isInTrash())
 			continue;
 		addrbookList.push(folders[i].createQuery());
 	}

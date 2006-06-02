@@ -234,6 +234,8 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.prevSortBy	= search.prevSortBy;
 	params.fetch		= search.fetch;
 	params.searchId		= search.searchId;
+	params.lastSortVal	= search.lastSortVal;
+	params.lastId		= search.lastId;
 	
 	if (changes) {
 		for (var key in changes) 

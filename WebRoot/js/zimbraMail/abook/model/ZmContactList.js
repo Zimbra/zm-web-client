@@ -365,7 +365,7 @@ function(batchCmd, folder, result, contact) {
 
 ZmContactList.prototype._getCopyCmd =
 function(contact, folder) {
-	var temp = new ZmContact(this._appCtxt, contact.id, this);
+	var temp = new ZmContact(this._appCtxt, null, this);
 	for (var j in contact.attr)
 		temp.attr[j] = contact.attr[j];
 	temp.attr[ZmContact.F_folderId] = folder.id;

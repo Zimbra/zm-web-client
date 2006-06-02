@@ -105,7 +105,13 @@ function(mode, object, share, loc) {
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 
-	this._urlEl.value = this._object.getUrl();
+	// XXX: REST URL is not supported for addrbook's yet
+	if (object instanceof ZmAddrBook) {
+		this._urlGroup.setDisplay(Dwt.DISPLAY_NONE);
+	} else {
+		this._urlGroup.setDisplay(Dwt.DISPLAY_BLOCK);
+		this._urlEl.value = this._object.getUrl();
+	}
 
 	DwtDialog.prototype.popup.call(this, loc);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);

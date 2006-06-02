@@ -45,9 +45,8 @@ function ZmContactSplitView(parent, className, posStyle, controller, dropTgt) {
 	this._tagCellId = Dwt.getNextId();
 
 	// find out if the user's locale has a alphabet defined
-	this.alphabetBarEnabled = this._hasAlphabetBar = ZmMsg.alphabet && ZmMsg.alphabet.length>0;
-	if (this._hasAlphabetBar) {
-		this._createAlphabetHtml();
+	if (ZmMsg.alphabet && ZmMsg.alphabet.length>0) {
+		this._alphabetBar = new ZmContactAlphabetBar(this);
 	}
 
 	this._listPart = new ZmContactSimpleView(this, null, posStyle, controller, dropTgt);
@@ -123,6 +122,11 @@ function(contact, isGal) {
 	}
 };
 
+ZmContactSplitView.prototype.alphabetBarEnabled =
+function() {
+	return this._alphabetBar ? this._alphabetBar.enabled() : false;
+};
+
 ZmContactSplitView.prototype._handleResponseLoad =
 function(isGal, contact) {
 	if (contact.id == this._contact.id)
@@ -144,14 +148,7 @@ function() {
 
 ZmContactSplitView.prototype.enableAlphabetBar =
 function(enable) {
-	if (this.alphabetBarEnabled == enable) return;
-
-	this.alphabetBarEnabled = enable;
-
-	var alphabetBarEl = document.getElementById(this._alphabetBarId);
-	if (alphabetBarEl) {
-		alphabetBarEl.className = enable ? "AlphabetBarTable" : "AlphabetBarTable AlphabetBarDisabled";
-	}
+	this._alphabetBar.enable(enable);
 };
 
 ZmContactSplitView.prototype._sizeChildren = 
@@ -160,7 +157,7 @@ function(width, height) {
 	var listWidth = 200;	// fixed width size of list view
 
 	// calc. height for children of this view
-	var alphabetBarHeight = this._hasAlphabetBar ? ZmContactSplitView.ALPHABET_HEIGHT : null;
+	var alphabetBarHeight = this._alphabetBar ? ZmContactSplitView.ALPHABET_HEIGHT : null;
 	var childHeight = (height - (padding * 2)) - (alphabetBarHeight || 0);
 	// always set the list part width to 200px (should be in css?)
 	this._listPart.setSize(listWidth, childHeight);
@@ -215,37 +212,6 @@ function() {
 	this._htmlInitialized = true;
 };
 
-ZmContactSplitView.prototype._createAlphabetHtml =
-function() {
-	this._alphabetBarId = Dwt.getNextId();
-	var alphabet = ZmMsg.alphabet.split(",");
-
-	var html = new Array();
-	var idx = 0;
-
-	html[idx++] = "<center>";
-	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=2 cellspacing=2 width=80%><tr>"
-
-	for (var i = 0; i < alphabet.length; i++) {
-		html[idx++] = "<td onclick='ZmContactSplitView._alphabetClicked(";
-		if (i > 0)
-			html[idx++] = '"' + alphabet[i] + '"';
-		html[idx++] = "); return false;'";
-		if (i == 0) {
-			html[idx++] = " class='AlphabetBarCellFirst'>";
-		} else {
-			html[idx++] = " class='AlphabetBarCell'>";
-		}
-		html[idx++] = alphabet[i];
-		html[idx++] = "</td>";
-	}
-
-	html[idx++] = "</tr></table>";
-	html[idx++] = "</center>";
-
-	this.getHtmlElement().innerHTML = html.join("");
-};
-
 ZmContactSplitView.prototype._contactChangeListener = 
 function(ev) {
 	if (ev.type != ZmEvent.S_CONTACT || ev.source != this._contact)
@@ -290,10 +256,7 @@ function(contact, isGal) {
 	if (!this._htmlInitialized)
 		this._createHtml();
 
-	folderId = folderId || contact.folderId;
-	var folder = folderId ? this._addrbookTree.getById(folderId) : null;
-
-	this._setHeaderColor(folder);
+	this._setHeaderColor(contact.addrbook);
 
 	// set contact header (file as)
 	var contactHdr = document.getElementById(this._contactHeaderId);
@@ -324,11 +287,17 @@ function(contact, isGal) {
 	html[idx++] = "<td width=100% class='companyName'>";
 	html[idx++] = (contact.getCompanyField() || "&nbsp;");
 	html[idx++] = "</td>";
-	if (folder) {
+	if (contact.addrbook) {
 		html[idx++] = "<td width=20>";
-		html[idx++] = AjxImg.getImageHtml(folder.getIcon());
+		html[idx++] = AjxImg.getImageHtml(contact.addrbook.getIcon());
 		html[idx++] = "</td><td class='companyFolder'>";
-		html[idx++] = folder.getName();
+		html[idx++] = contact.addrbook.getName();
+		html[idx++] = "</td>";
+	} else if (isGal) {
+		html[idx++] = "<td width=20>";
+		html[idx++] = AjxImg.getImageHtml("GAL");
+		html[idx++] = "</td><td class='companyFolder'>";
+		html[idx++] = ZmMsg.GAL;
 		html[idx++] = "</td>";
 	}
 	html[idx++] = "</tr></table>";
@@ -543,14 +512,6 @@ function(ev) {
 		var tagCell = document.getElementById(this._tagCellId);
 		tagCell.innerHTML = this._getTagHtml(this._contact);
 	}
-};
-
-ZmContactSplitView._alphabetClicked =
-function(letter) {
-	var appCtxt = window._zimbraMail._appCtxt;
-	var clc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
-	if (clc.getParentView().alphabetBarEnabled)
-		clc.searchAlphabet(letter);
 };
 
 ZmContactSplitView._tagClicked =

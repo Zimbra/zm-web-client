@@ -998,6 +998,8 @@ function(view, forward, loadIndex) {
 //		lastSortVal = lastItem.getSortVal(this._activeSearch.search.sortBy);
 	}
 */
+	var lastSortVal = this._activeSearch.search.lastSortVal;
+	var lastId = this._activeSearch.search.lastId;
 	var offset = this._listView[view].getNewOffset(forward);
 	var limit = this._listView[view].getLimit();
 	forward ? this.currentPage++ : this.currentPage--;
@@ -1016,8 +1018,7 @@ function(view, forward, loadIndex) {
 
 		// get next page of items from server; note that callback may be overridden
 		var respCallback = new AjxCallback(this, this._handleResponsePaginate, [view, false, loadIndex, offset]);
-//		this._search(view, offset, max, respCallback, true, lastId, lastSortVal);
-		this._search(view, offset, max, respCallback, true);
+		this._search(view, offset, max, respCallback, true, lastId, lastSortVal);
 		return false;
 	} else {
 		this._resetOperations(this._toolbar[view], 0);

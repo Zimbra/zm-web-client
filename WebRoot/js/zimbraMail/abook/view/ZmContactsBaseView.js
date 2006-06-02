@@ -159,3 +159,78 @@ function() {
 	if (item)
 		this.setSelection(item);
 };
+
+
+function ZmContactAlphabetBar(parent, className) {
+	if (arguments.length == 0) return;
+
+	DwtComposite.call(this, parent, className);
+
+	this._createHtml();
+	this._enabled = true;
+};
+
+ZmContactAlphabetBar.prototype = new DwtComposite;
+ZmContactAlphabetBar.prototype.constructor = ZmContactAlphabetBar;
+
+ZmContactAlphabetBar.prototype.toString =
+function() {
+	return "ZmContactAlphabetBar";
+};
+
+ZmContactAlphabetBar.prototype.enable =
+function(enable) {
+	this._enabled = enable;
+
+	var alphabetBarEl = document.getElementById(this._alphabetBarId);
+	if (alphabetBarEl) {
+		alphabetBarEl.className = enable ? "AlphabetBarTable" : "AlphabetBarTable AlphabetBarDisabled";
+	}
+};
+
+ZmContactAlphabetBar.prototype.enabled =
+function() {
+	return this._enabled;
+};
+
+ZmContactAlphabetBar.prototype._createHtml =
+function() {
+	this._alphabetBarId = Dwt.getNextId();
+	var alphabet = ZmMsg.alphabet.split(",");
+
+	var html = new Array();
+	var idx = 0;
+
+	html[idx++] = "<center>";
+	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=2 cellspacing=2 width=80% id='";
+	html[idx++] = this._alphabetBarId;
+	html[idx++] = "'><tr>";
+
+	for (var i = 0; i < alphabet.length; i++) {
+		html[idx++] = "<td onclick='ZmContactAlphabetBar._alphabetClicked(";
+		if (i > 0)
+			html[idx++] = '"' + alphabet[i] + '"';
+		html[idx++] = "); return false;'";
+		if (i == 0) {
+			html[idx++] = " class='AlphabetBarCellFirst'>";
+		} else {
+			html[idx++] = " class='AlphabetBarCell'>";
+		}
+		html[idx++] = alphabet[i];
+		html[idx++] = "</td>";
+	}
+
+	html[idx++] = "</tr></table>";
+	html[idx++] = "</center>";
+
+	this.getHtmlElement().innerHTML = html.join("");
+};
+
+ZmContactAlphabetBar._alphabetClicked =
+function(letter) {
+	var appCtxt = window._zimbraMail._appCtxt;
+	var clc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+	if (clc.getParentView().alphabetBarEnabled())
+		clc.searchAlphabet(letter);
+};
+

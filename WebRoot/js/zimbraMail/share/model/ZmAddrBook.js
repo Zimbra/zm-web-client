@@ -162,9 +162,6 @@ function(what) {
 			if (item.type != ZmItem.CONTACT) {
 				// only contacts are valid for addr books.
 				invalid = true;
-			} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
-				// cannot drag a gal to addr book (at least not for now)
-				invalid = true;
 			} else {
 				// can't move items to folder they're already in; we're okay if
 				// we have one item from another folder

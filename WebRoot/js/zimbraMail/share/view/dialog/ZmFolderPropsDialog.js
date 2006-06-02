@@ -205,13 +205,18 @@ function(event) {
 	this._urlEl.innerHTML = organizer.url || "";
 	this._color.setSelectedValue(organizer.color);
 	this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
-	
+
+	var showPerm = organizer.link && organizer.shares && organizer.shares.length > 0;
+	if (showPerm)
+		this._permEl.innerHTML = ZmShare.getRoleActions(organizer.shares[0].link.perm);
+
 	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		this._populateShares(organizer);
 	}
 
 	this._props.setPropertyVisible(this._ownerId, organizer.owner != null);
 	this._props.setPropertyVisible(this._urlId, organizer.url != null);
+	this._props.setPropertyVisible(this._permId, showPerm);
 
 	Dwt.setVisible(this._excludeFbEl, !organizer.link && (organizer.type == ZmOrganizer.CALENDAR));
 };
@@ -286,6 +291,7 @@ function() {
 	this._ownerEl = document.createElement("DIV");
 	this._typeEl = document.createElement("DIV");
 	this._urlEl = document.createElement("DIV");
+	this._permEl = document.createElement("DIV");
 
 	var nameEl = document.createElement("DIV");
 	nameEl.appendChild(this._nameOutputEl);
@@ -311,10 +317,11 @@ function() {
 		this._color.addOption(color.label, false, color.value);
 	}
 
-	this._nameId = this._props.addProperty(ZmMsg.nameLabel, nameEl);
-	this._typeId = this._props.addProperty(ZmMsg.typeLabel, this._typeEl);
+	this._props.addProperty(ZmMsg.nameLabel, nameEl);
+	this._props.addProperty(ZmMsg.typeLabel, this._typeEl);
 	this._ownerId = this._props.addProperty(ZmMsg.ownerLabel, this._ownerEl);
 	this._urlId = this._props.addProperty(ZmMsg.urlLabel, this._urlEl);
+	this._permId = this._props.addProperty(ZmMsg.permissions, this._permEl)
 	this._props.addProperty(ZmMsg.colorLabel, this._color);
 
 	var propsContainer = document.createElement("DIV");

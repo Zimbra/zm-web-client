@@ -32,11 +32,18 @@ function ZmContactCardsView(parent, className, posStyle, controller, dropTgt) {
 	this._setMouseEventHdlrs(); // needed by object manager
 	// this manages all the detected objects within the view
 	this._objectManager = new ZmObjectManager(this, this.shell.getData(ZmAppCtxt.LABEL));
+
+	// find out if the user's locale has a alphabet defined
+	if (ZmMsg.alphabet && ZmMsg.alphabet.length>0) {
+		this._alphabetBar = new ZmContactAlphabetBar(this, "ZmContactAlphabetBar");
+	}
 };
 
 ZmContactCardsView.prototype = new ZmContactsBaseView;
 ZmContactCardsView.prototype.constructor = ZmContactCardsView;
 
+ZmContactCardsView.CARD_NAME = Dwt.getNextId();
+ZmContactCardsView.CARD_TABLE_ID = Dwt.getNextId();
 
 // Public methods
 
@@ -71,9 +78,16 @@ function(contacts) {
 
 	// XXX: optimize later - switch view always forces layout unnecessarily
 	ZmContactsBaseView.prototype.set.call(this, contacts, null, this._controller.getFolderId());
-	// XXX: we dont support shared contacts in cards view for now
-	if (!contacts._isShared)
-		this._layout();
+
+	this._layout();
+
+	// disable alphabet bar for gal searches
+	this._alphabetBar.enable(!contacts.isGal);
+};
+
+ZmContactCardsView.prototype.alphabetBarEnabled =
+function() {
+	return this._alphabetBar ? this._alphabetBar.enabled() : false;
 };
 
 
@@ -93,7 +107,9 @@ function(contact, now, isDndIcon, getHtml) {
 	var div = null;
 
 	if (getHtml) {
-		html[idx++] = "<div class='ZmContactCard' _styleClass='ZmContactCard' _selectedStyleClass='ZmContactCard-";
+		html[idx++] = "<div name='";
+		html[idx++] = ZmContactCardsView.CARD_NAME;
+		html[idx++] = "' class='ZmContactCard' _styleClass='ZmContactCard' _selectedStyleClass='ZmContactCard-";
 		html[idx++] = DwtCssStyle.SELECTED;
 		// manually associate item with element :(
 		html[idx++] = "' id='";
@@ -137,9 +153,24 @@ function(contact, now, isDndIcon, getHtml) {
 	
 	html[idx++] = "<td valign=top width=100% style='font-weight:bold; padding-left: 2px'>";
 	var value = contact.getCompanyField() || "&nbsp;";
-	html[idx++] = value + "</td>";
-	
-	html[idx++] = "</tr><tr height=100%><td valign=top colspan=10>";
+	html[idx++] = value;
+	html[idx++] = "</td></tr>";
+/*
+	if (contact.isGal) {
+		html[idx++] = "<tr><td style='white-space:nowrap'>";
+		html[idx++] = AjxImg.getImageSpanHtml("GAL");
+		html[idx++] = "&nbsp;";
+		html[idx++] = ZmMsg.GAL;
+		html[idx++] = "</td></tr>";
+	} else if (contact.addrbook) {
+		html[idx++] = "<tr><td style='white-space:nowrap'>";
+		html[idx++] = AjxImg.getImageSpanHtml(contact.addrbook.getIcon());
+		html[idx++] = "&nbsp;";
+		html[idx++] = contact.addrbook.getName();
+		html[idx++] = "</td></tr>";
+	}
+*/
+	html[idx++] = "<tr height=100%><td valign=top colspan=10>";
 
 	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1>";
 	html[idx++] = "<tr><td valign=top>";
@@ -253,7 +284,6 @@ function(item, id) {
 
 ZmContactCardsView.prototype._layout =
 function() {
-	this.removeAll();
 	if (this._list instanceof AjxVector && this._list.size()) {
 		var list = this._list.getArray();
 		var html = new Array();
@@ -261,7 +291,9 @@ function() {
 		var count = 0;
 
 		// OPTIMIZE: dont use appendChild to add to DOM - slows down IE
-		html[i++] = "<table border=0 cellpadding=5 cellspacing=5>";
+		html[i++] = "<table border=0 cellpadding=5 cellspacing=5 id='";
+		html[i++] = ZmContactCardsView.CARD_TABLE_ID;
+		html[i++] = "'>";
 		for (var j = 0; j < list.length; j++) {
 			var contact = list[j];
 			
@@ -283,42 +315,43 @@ function() {
 		}
 		html[i++] = "</table>";
 
-		this.getHtmlElement().innerHTML = html.join("");
+		this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html.join("")));
 	} else {
 		this._setNoResultsHtml();
 	}
+};
+
+// overload this protected method so we can keep the alphabet bar around
+ZmContactCardsView.prototype._resetListView =
+function() {
+	var cards = document.getElementsByName(ZmContactCardsView.CARD_NAME);
+	var cDiv;
+
+	// explicitly remove each child (setting innerHTML causes mem leak)
+	for (var i = 0; i < cards.length; i++) {
+		cDiv = cards[0].parentNode.removeChild(cards[0]);
+		AjxCore.unassignId(Dwt.getAttr(cDiv, "_itemIndex"));
+	}
+
+	var cardTable = document.getElementById(ZmContactCardsView.CARD_TABLE_ID);
+	if (cardTable)
+		cardTable.parentNode.removeChild(cardTable);
 };
 
 ZmContactCardsView.prototype._modifyContact =
 function(ev) {
 	// always call base class first to resort list if necessary
 	ZmContactsBaseView.prototype._modifyContact.call(this, ev);
-	// XXX: opitimize later - always re-layout no matter which field changed
-	this._parentEl.innerHTML = "";
-	this._layout();
-};
 
-// returns all child divs w/in each table's rows/cells
-ZmContactCardsView.prototype._getChildren = 
-function() {
-	var children = new Array();
-	
-	if (this._parentEl.childNodes.length) {
-		var table = this._parentEl.childNodes[0];
-		for (var i = 0; i < table.rows.length; i++) {
-			var cells = table.rows[i].cells;
-			for (var j = 0; j < cells.length; j++)
-				children.push(cells[j].firstChild);
-		}
-	}
-	
-	return children;
+	// XXX: opitimize later - always re-layout no matter which field changed
+	this._resetListView();
+	this._layout();
 };
 
 // we overload this base class method since cards view is unconventional
 ZmContactCardsView.prototype._getElFromItem = 
 function(item) {
-	var children = this._getChildren();
+	var children = document.getElementsByName(ZmContactCardsView.CARD_NAME);
 	var comparisonId = this._getItemId(item);
 
 	for (var i = 0; i < children.length; i++) {
@@ -387,7 +420,7 @@ function(list) {
 		var contact = list[i];
 		
 		// dont include contacts in trash folder
-		if (contact.folderId == ZmFolder.ID_TRASH)
+		if (contact.addrbook && contact.addrbook.isInTrash())
 			continue;
 		
 		// add a new row every 3 columns

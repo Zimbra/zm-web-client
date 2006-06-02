@@ -261,6 +261,7 @@ function(result) {
 		for (var j = 0; j < emails.length; j++) {
 			var email = new ZmEmailAddress(emails[j], null, contact.getFullName());
 			email.id = Dwt.getNextId();
+			email.icon = contact.isGal ? "GAL" : contact.addrbook.getIcon();
 			list.push(email);
 		}
 	}
@@ -349,6 +350,7 @@ function() {
 ZmContactChooserSourceListView.prototype._getHeaderList = 
 function() {
 	var headerList = [];
+	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_ICON, null, "Folder", 20));
 	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_PARTICIPANT, ZmMsg._name, null, 100, ZmItem.F_PARTICIPANT));
 	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_EMAIL, ZmMsg.email));
 	
@@ -370,10 +372,22 @@ function(item) {
 	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>";
 	for (var i = 0; i < this._headerList.length; i++) {
 		var id = this._headerList[i]._id;
-		if (id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
-			html[idx++] = "<td width=" + this._headerList[i]._width + ">&nbsp;" + item.name + "</td>";
+		if (id.indexOf(ZmContactPicker.ID_ICON) == 0) {
+			html[idx++] = "<td width=";
+			html[idx++] = this._headerList[i]._width;
+			html[idx++] = ">";
+			html[idx++] = AjxImg.getImageHtml(item.icon);
+			html[idx++] = "</td>";
+		} else if (id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
+			html[idx++] = "<td width=";
+			html[idx++] = this._headerList[i]._width;
+			html[idx++] = ">&nbsp;";
+			html[idx++] = item.name;
+			html[idx++] = "</td>";
 		} else if (id.indexOf(ZmContactPicker.ID_EMAIL) == 0) {
-			html[idx++] = "<td>&nbsp;" + item.address + "</td>";
+			html[idx++] = "<td>&nbsp;";
+			html[idx++] = item.address;
+			html[idx++] = "</td>";
 		}
 	}
 	html[idx++] = "</tr></table>";
@@ -412,7 +426,7 @@ function() {
 	}
 	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_PARTICIPANT, ZmMsg._name, null, 100));
 	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_EMAIL, ZmMsg.email));
-	
+
 	return headerList;
 };
 
@@ -426,7 +440,7 @@ function(item) {
 	div._styleClass = "Row";
 	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
 	div.className = div._styleClass;
-			
+
 	var html = [];
 	var idx = 0;
 
@@ -434,11 +448,21 @@ function(item) {
 	for (var i = 0; i < this._headerList.length; i++) {
 		var id = this._headerList[i]._id;
 		if (id.indexOf(ZmContactPicker.ID_ICON) == 0 && this._showType) {
-			html[idx++] = "<td width=" + this._headerList[i]._width + ">" + ZmMsg[item.getTypeAsString()] + ":</td>";
+			html[idx++] = "<td width=";
+			html[idx++] = this._headerList[i]._width;
+			html[idx++] = ">";
+			html[idx++] = ZmMsg[item.getTypeAsString()];
+			html[idx++] = ":</td>";
 		} else if (id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
-			html[idx++] = "<td width=" + this._headerList[i]._width + ">&nbsp;" + item.name + "</td>";
+			html[idx++] = "<td width=";
+			html[idx++] = this._headerList[i]._width;
+			html[idx++] = ">&nbsp;";
+			html[idx++] = item.name;
+			html[idx++] = "</td>";
 		} else if (id.indexOf(ZmContactPicker.ID_EMAIL) == 0) {
-			html[idx++] = "<td>&nbsp;" + item.address + "</td>";
+			html[idx++] = "<td>&nbsp;";
+			html[idx++] = item.address;
+			html[idx++] = "</td>";
 		}
 	}
 	html[idx++] = "</tr></table>";

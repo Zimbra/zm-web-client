@@ -656,26 +656,23 @@ td.DDSepInvisible div {
 	@BoxPadding@
 }
 
+.ZmContactAlphabetBar {
+	padding-top: 5px;
+}
+
 .AlphabetBarTable {
 	@NormalButton@
-	Xwidth:80%;
 }
 
 .AlphabetBarCell {
 	@LeftSeparator@
 	text-align:center;
 	@ActiveCursor@
-	width:15px;
+	width:30px;
 	cursor: pointer;
 }
 
-.ZmContactSplitView .AlphabetBarCell {
-	text-align:center;
-	@ActiveCursor@
-	width:30px;
-}
-
-.ZmContactSplitView .AlphabetBarDisabled {
+.AlphabetBarDisabled {
 	filter:alpha(opacity=50);
 	-moz-opacity:0.5;
 	opacity:0.5;
