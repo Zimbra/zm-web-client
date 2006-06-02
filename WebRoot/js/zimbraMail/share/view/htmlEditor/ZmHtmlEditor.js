@@ -57,6 +57,9 @@ function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt) {
 	this._spellChecker = new ZmSpellChecker(this, appCtxt);
 	this._spellCheck = null;
 	this._spellCheckSuggestionListener = new AjxListener(this, this._spellCheckSuggestionListener);
+
+	this.__contextMenuSelectionListener = new AjxListener(this, this.__contextMenuSelectionListener);
+	this.addListener(DwtEvent.ONCONTEXTMENU, new AjxListener(this, this.__onContextMenu));
 };
 
 ZmHtmlEditor.prototype = new DwtHtmlEditor();
@@ -667,8 +670,6 @@ function(parent) {
 
 	/* BEGIN: Table operations */
 
-	var tblListener = new AjxListener(this, this._tableOperationsListener);
-
 	b = new DwtButton(tb, null, "DwtToolbarButton");
 	b.setImage("Table");
 	var menu = new DwtMenu(b);
@@ -682,17 +683,36 @@ function(parent) {
  	item.setMenu(grid_menu);
 	item.setImage("InsertTable");
 
-	var tblCommands = [ null,
-			    "tableProperties...", "cellProperties...", null,
+	new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+	this._tableCmdItems = this.__createTableOperationItems(menu);
+
+	/* END: table operations */
+
+	if (this.ACE_ENABLED) {
+		tb.addSeparator("vertSep");
+		var listener = new AjxListener(this, this._menu_insertObject);
+
+		var b = new DwtButton(tb, 0, "DwtToolbarButton");
+		b.setImage("SpreadSheet");
+		b.setData("ACE", "ZmSpreadSheet");
+		b.setToolTipContent(ZmMsg.insertSpreadsheet);
+		b.addSelectionListener(listener);
+	}
+
+	this._toolbars.push(tb);
+};
+
+ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {
+	var tblListener = new AjxListener(this, this._tableOperationsListener);
+	var tblCommands = [ "tableProperties...", "cellProperties...", null,
 			    "insertRow", "deleteRow", "insertColumn", "deleteColumn", null,
 			    "mergeCells", "splitCells", null,
 			    "deleteTable" ];
-	var tblIcons = [ null,
-			 "TableProperties", "CellProperties", null,
+	var tblIcons = [ "TableProperties", "CellProperties", null,
 			 "InsertRowBefore", "DeleteRow", "InsertColBefore", "DeleteCol", null,
 			 "MergeCells", "SplitCells", null,
 			 "DeleteTable" ];
-	this._tableCmdItems = [];
+	var a = [];
 	for (var i = 0; i < tblCommands.length; ++i) {
 		var cmd = tblCommands[i];
 		if (cmd == null)
@@ -710,24 +730,10 @@ function(parent) {
 				item.setImage(tblIcons[i]);
 			item.setData("TableOperations", cmd);
 			item.addSelectionListener(tblListener);
-			this._tableCmdItems.push(item);
+			a.push(item);
 		}
 	}
-
-	/* END: table operations */
-
-	if (this.ACE_ENABLED) {
-		tb.addSeparator("vertSep");
-		var listener = new AjxListener(this, this._menu_insertObject);
-
-		var b = new DwtButton(tb, 0, "DwtToolbarButton");
-		b.setImage("SpreadSheet");
-		b.setData("ACE", "ZmSpreadSheet");
-		b.setToolTipContent(ZmMsg.insertSpreadsheet);
-		b.addSelectionListener(listener);
-	}
-
-	this._toolbars.push(tb);
+	return a;
 };
 
 ZmHtmlEditor.prototype._tableOperationsListener =
@@ -1467,4 +1473,121 @@ ZmHtmlEditor.prototype._enableDesignMode = function(doc) {
 	doc.addEventListener("blur", this._designModeHack_blur, true);
 	doc.addEventListener("focus", this._designModeHack_focus, true);
 //	}
+};
+
+ZmHtmlEditor.prototype.__contextMenuSelectionListener = function(ev) {
+	var item = ev.item;
+	var data = item.getData(ZmHtmlEditor._VALUE);
+
+	function callback() {
+		this.focus();
+		switch (data) {
+		    case "cut":
+		    case "copy":
+		    case "paste":
+			this._execCommand(data);
+			break;
+
+		    case DwtHtmlEditor.JUSTIFY_LEFT:
+		    case DwtHtmlEditor.JUSTIFY_CENTER:
+		    case DwtHtmlEditor.JUSTIFY_RIGHT:
+		    case DwtHtmlEditor.JUSTIFY_FULL:
+			this.setJustification(data);
+			break;
+		}
+	};
+
+// 	var t1 = new AjxTimedAction(this, this.focus);
+// 	AjxTimedAction.scheduleAction(t1, 10);
+
+	var t2 = new AjxTimedAction(this, callback);
+	AjxTimedAction.scheduleAction(t2, 10);
+};
+
+ZmHtmlEditor.prototype.__onContextMenu = function(ev) {
+	var menu = this.__contextMenu;
+	if (!menu) {
+		menu = this.__contextMenu = new DwtMenu(this);
+
+		var item;
+		var listener = this.__contextMenuSelectionListener;
+
+		if (!AjxEnv.isGeckoBased) {
+			// Gecko forbids custom clipboard operations
+			item = new DwtMenuItem(menu);
+			item.setImage("Cut");
+			item.setData(ZmHtmlEditor._VALUE, "cut");
+			item.setText(ZmMsg.cut);
+			item.addSelectionListener(listener);
+
+			item = new DwtMenuItem(menu);
+			item.setImage("Copy");
+			item.setData(ZmHtmlEditor._VALUE, "copy");
+			item.setText(ZmMsg.copy);
+			item.addSelectionListener(listener);
+
+			item = new DwtMenuItem(menu);
+			item.setImage("Paste");
+			item.setData(ZmHtmlEditor._VALUE, "paste");
+			item.setText(ZmMsg.paste);
+			item.addSelectionListener(listener);
+
+			new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+		}
+
+		// justification
+
+		item = new DwtMenuItem(menu);
+		item.setImage("LeftJustify");
+		item.setText(ZmMsg.leftJustify);
+		item.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT);
+		item.addSelectionListener(listener);
+
+		item = new DwtMenuItem(menu);
+		item.setImage("CenterJustify");
+		item.setText(ZmMsg.centerJustify);
+		item.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_CENTER);
+		item.addSelectionListener(listener);
+
+		item = new DwtMenuItem(menu);
+		item.setImage("RightJustify");
+		item.setText(ZmMsg.rightJustify);
+		item.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_RIGHT);
+		item.addSelectionListener(listener);
+
+		item = new DwtMenuItem(menu);
+		item.setImage("FullJustify");
+		item.setText(ZmMsg.justify);
+		item.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_FULL);
+		item.addSelectionListener(listener);
+
+		item = new DwtMenuItem(menu);
+		item.setText(ZmMsg.insertTable);
+		var grid_menu = new DwtMenu(item, DwtMenu.GENERIC_WIDGET_STYLE);
+ 		var grid = new DwtGridSizePicker(grid_menu, ZmMsg.tableSize);
+ 		grid.addSelectionListener(new AjxListener(this, this._createTableListener));
+ 		item.setMenu(grid_menu);
+		item.setImage("InsertTable");
+		menu.Item_insertTable = item;
+
+		// new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+
+		item = new DwtMenuItem(menu);
+		item.setImage("Table");
+		item.setText(ZmMsg.tableOperations);
+		var m2 = new DwtMenu(item);
+		item.setMenu(m2);
+		menu.Item_tableOperations = item;
+
+		this.__createTableOperationItems(m2);
+	}
+	var table = this.getNearestElement("table");
+
+	// don't display insert table if we're already in some table
+	menu.Item_insertTable.setDisplay(table ? "none" : "");
+
+	// but do display table operations only if we're in some table
+	menu.Item_tableOperations.setDisplay(table ? "" : "none");
+
+	menu.popup(0, ev.docX, ev.docY);
 };
