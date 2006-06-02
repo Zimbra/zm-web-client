@@ -197,6 +197,24 @@ function(parent, name, color, url, search) {
 	parent.create(name, color, url, search);
 };
 
+/*
+* Makes a request to add a new item to the tree, returning true if the item was 
+* actually added, or false if it was omitted.
+* 
+* @param treeView	[ZmTreeView]	a tree view
+* @param parentNode	[DwtTreeItem]	node under which to add the new one
+* @param organizer	[ZmOrganizer]	organizer for the new node
+* @param index		[int]*			position at which to add the new node
+ */
+ZmFolderTreeController.prototype._addNew = 
+function(treeView, parentNode, organizer, idx) {
+	if (ZmFolder.HIDE[organizer.name]) {
+		return false;
+	}
+	treeView._addNew(parentNode, organizer, idx);
+	return true;
+};
+
 // Listeners
 
 /*

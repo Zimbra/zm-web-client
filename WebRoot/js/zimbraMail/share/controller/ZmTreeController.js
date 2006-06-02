@@ -423,8 +423,8 @@ function(ev, treeView) {
 				node.dispose(); // remove from current parent
 			if (parentNode) {
 				var idx = ZmTreeView.getSortIndex(parentNode, organizer, ZmTreeView.COMPARE_FUNC[organizer.type]);
-				treeView._addNew(parentNode, organizer, idx); // add to new parent
-				if (parentNode)
+				var added = this._addNew(treeView, parentNode, organizer, idx); // add to new parent
+				if (added && parentNode)
 					parentNode.setExpanded(true); // so that new node is visible
 			}
 		} else if (ev.event == ZmEvent.E_MODIFY) {
@@ -453,6 +453,21 @@ function(ev, treeView) {
 			}
 		}
 	}
+};
+
+/*
+* Makes a request to add a new item to the tree, returning true if the item was 
+* actually added, or false if it was omitted.
+* 
+* @param treeView	[ZmTreeView]	a tree view
+* @param parentNode	[DwtTreeItem]	node under which to add the new one
+* @param organizer	[ZmOrganizer]	organizer for the new node
+* @param index		[int]*			position at which to add the new node
+ */
+ZmTreeController.prototype._addNew = 
+function(treeView, parentNode, organizer, idx) {
+	treeView._addNew(parentNode, organizer, idx);
+	return true;
 };
 
 /*
