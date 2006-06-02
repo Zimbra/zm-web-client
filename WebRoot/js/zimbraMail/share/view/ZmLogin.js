@@ -164,14 +164,13 @@ function() {
 	html[idx++] = "<table align=center border=0 cellspacing=0 cellpadding=0 class='LoginPanel'>";
 	html[idx++] = "<tr><td id='loginPanel' class='LoginMainPanel'>";
 
-	var params = {
-		showForm: true,
-		showUserField: true,
-		showPasswordField: true,
-		showLicenseMsg: true,
-		showRememberMeCheckbox: true,
-		showButton: true
-	};
+	var params = ZLoginFactory.copyDefaultParams(ZmMsg);
+	params.showForm = true;
+	params.showUserField = true;
+	params.showPasswordField = true;
+	params.showLicenseMsg = true;
+	params.showRememberMeCheckbox = true;
+	params.showButton = true;
 	html[idx++] = ZLoginFactory.getLoginDialogHTML(params);
 
 	html[idx++] = "</td></tr>";

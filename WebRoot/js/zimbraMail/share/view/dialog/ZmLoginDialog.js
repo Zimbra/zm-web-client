@@ -28,18 +28,16 @@ function ZmLoginDialog(parent, appCtxt, className) {
     className = className || "ZmLoginDialog";
 	DwtDialog.call(this, parent, className, ZmMsg.login, DwtDialog.NO_BUTTONS);
 
-	var self = this;
-	var params = {
-		showForm: true,
-		showUserField: true,
-		showPasswordField: true,
-		showLicenseMsg: true,
-		showRememberMeCheckbox: false,
-		showLogOff: true,
-		logOffAction: "ZmLoginDialog._loginDiffListener()",
-		loginAction: "ZmLoginDialog._loginListener(this)",
-		showButton: true
-	};
+	var params = ZLoginFactory.copyDefaultParams(ZmMsg);
+	params.showForm = true;
+	params.showUserField = true;
+	params.showPasswordField = true;
+	params.showLicenseMsg = true;
+	params.showRememberMeCheckbox = false;
+	params.showLogOff = true;
+	params.logOffAction = "ZmLoginDialog._loginDiffListener()";
+	params.loginAction = "ZmLoginDialog._loginListener(this)";
+	params.showButton = true;
 	var html = ZLoginFactory.getLoginDialogHTML(params);
 	this.setContent(html);
 }
