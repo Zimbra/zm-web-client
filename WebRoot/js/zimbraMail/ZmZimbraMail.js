@@ -227,34 +227,33 @@ function() {
 * Next, it launches the start app (which defaults to mail) and shows the results to
 * the user. Finally, we load contacts in the background.
 *
-* @param isRelogin		[boolean]*		if true, app is already loaded/started
 * @param app			[constant]*		starting app
+* @param isRelogin		[boolean]*		user has re-authenticated after session timeout
 * @param settings		[hash]*			settings overrides
 */
 ZmZimbraMail.prototype.startup =
 function(params) {
-	if (!(params && params.isRelogin)) {
-		if (!this._appViewMgr) {
-			this._appViewMgr = new ZmAppViewMgr(this._shell, this, false, true);
-		}
 
-		skin.showSkin(true);
+	if (!this._appViewMgr) {
+		this._appViewMgr = new ZmAppViewMgr(this._shell, this, false, true);
+	}
+
+	skin.showSkin(true);
+	if (!this._components) {
 		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE,
-												 				"console_inset_app_l", 20);
+											 				"console_inset_app_l", 20);
 		this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
 		this._components[ZmAppViewMgr.C_USER_INFO] = this._createUserInfo();
 		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell);
 		this._appCtxt.setCurrentAppToolbar(currentAppToolbar);
 		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
 		this._components[ZmAppViewMgr.C_STATUS] = this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE);
-
-		var respCallback = new AjxCallback(this, this._handleResponseStartup, [params]);
-		this._errorCallback = new AjxCallback(this, this._handleErrorStartup);
-		this._settings.loadUserSettings(respCallback, this._errorCallback); // load user prefs and COS data
-	} else {
-		this._killSplash();
 	}
+
+	var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
+	this._errorCallback = new AjxCallback(this, this._handleErrorStartup);
+	this._settings.loadUserSettings(respCallback, this._errorCallback); // load user prefs and COS data
 };
 
 ZmZimbraMail.prototype._handleErrorStartup =
@@ -278,28 +277,39 @@ function(params) {
 			this._settings.getSetting(id).setValue(params.settings[id]);
 	}
 
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		this.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+	}
 
     // trigger roster load/reload
-	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
 		this.getApp(ZmZimbraMail.IM_APP).getRoster().reload();
+	}
 
-	this.setPollInterval();
+	if (document.domain != "localhost") {
+		this.setPollInterval();	// turn off polling for dev
+	}
 	var opc = this._appCtxt.getOverviewController();
-	opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
-						selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true});
+	if (!opc.getOverview(ZmZimbraMail._OVERVIEW_ID)) {
+		opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
+							selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true});
+	}
 	this._setUserInfo();
 	this._checkOverviewLayout();
 
-	if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED))
+	if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		this._components[ZmAppViewMgr.C_SEARCH] = this._appCtxt.getSearchController().getSearchPanel();
-	this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._createAppChooser();
+	}
+		
+	if (!this._components[ZmAppViewMgr.C_APP_CHOOSER]) {
+		this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._createAppChooser();
+	}
 	this._appViewMgr.addComponents(this._components, true);
 
 	this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();		
-	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL))
+	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
 		this.getApp(ZmZimbraMail.CALENDAR_APP).showMiniCalendar(true);
+	}
 
 	this._preloadViews();
 
@@ -317,7 +327,8 @@ function(params) {
 ZmZimbraMail.prototype._handleResponseStartup1 =
 function(params) {
 	var respCallback = new AjxCallback(this, this._handleResponseStartup2);
-	var startApp = (params && params.app) ? params.app : ZmZimbraMail.defaultStartApp;
+	var startApp = (params && params.app) ? params.app :
+				   (params && params.isRelogin && this._activeApp) ? this._activeApp : ZmZimbraMail.defaultStartApp;
 	this.activateApp(startApp, false, respCallback, this._errorCallback);
 	this.setStatusMsg(ZmMsg.initializationComplete, null, null, null, ZmStatusView.TRANSITION_INVISIBLE);
 };
@@ -351,15 +362,28 @@ function(settings) {
 	// need to decide what to clean up, what to have startup load lazily
 	// could have each app do shutdown()
 	DBG.println(AjxDebug.DBG1, "RESTARTING APP");
-	ZmCsfeCommand.setSessionId(null);			// so we get a refresh block
-	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
-	if (tagList) tagList.reset();
-	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER)
-	if (folderTree) folderTree.reset();
-	if (!this._appCtxt.rememberMe())
+	this.reset();
+   	this.startup({settings: settings});
+};
+
+ZmZimbraMail.prototype.reset =
+function() {
+	ZmCsfeCommand.setSessionId(null);	// so we get a refresh block
+    this._highestNotifySeen = 0; 		// we have a new session
+    
+    for (var t in this._appCtxt._trees) {
+    	var tree = this._appCtxt.getTree(t);
+    	if (tree && tree.reset) {
+    		tree.reset();
+    	}
+    }
+
+	if (!this._appCtxt.rememberMe()) {
 		this._appCtxt.getLoginDialog().clearAll();
-	for (var app in this._apps)					// reset apps
+	}
+	for (var app in this._apps) {
 		this._apps[app] = null;
+	}
 	this._activeApp = null;
 	this._appViewMgr.dtor();
 	this._appViewMgr = null;

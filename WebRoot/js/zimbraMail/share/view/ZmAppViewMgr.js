@@ -98,22 +98,22 @@ function ZmAppViewMgr(shell, controller, isNewWindow, hasSkin) {
 	this._controlListener = new AjxListener(this, this._shellControlListener);
 	this._shell.addControlListener(this._controlListener);
 
-	this._lastView = null;				// ID of previously visible view
-	this._currentView = null;			// ID of currently visible view
-	this._views = new Object();			// hash that gives names to app views
-	this._hidden = new Array();			// stack of views that aren't visible
+	this._lastView = null;		// ID of previously visible view
+	this._currentView = null;	// ID of currently visible view
+	this._views = {};			// hash that gives names to app views
+	this._hidden = [];			// stack of views that aren't visible
 	
-	this._appView = new Object();		// hash matching an app name to its current main view
-	this._callbacks = new Object();		// view callbacks for when its state changes between hidden and shown
-	this._viewApp = new Object();		// hash matching view names to their owning apps
-	this._isAppView = new Object();		// names of top-level app views
-	this._isPoppable = new Object(); 	// hash of viewId's and whether they are "poppable"
+	this._appView = {};			// hash matching an app name to its current main view
+	this._callbacks = {};		// view callbacks for when its state changes between hidden and shown
+	this._viewApp = {};			// hash matching view names to their owning apps
+	this._isAppView = {};		// names of top-level app views
+	this._isPoppable = {}; 		// hash of viewId's and whether they are "poppable"
 
-	this._compList = new Array();		// list of component IDs
-	this._components = new Object();	// component objects (widgets)
-	this._htmlEl = new Object();		// their HTML elements
-	this._containers = new Object();	// containers within the skin
-	this._contBounds = new Object();	// bounds for the containers
+	this._compList = [];		// list of component IDs
+	this._components = {};		// component objects (widgets)
+	this._htmlEl = {};			// their HTML elements
+	this._containers = {};		// containers within the skin
+	this._contBounds = {};		// bounds for the containers
 
 	// view preemption
 	this._pushCallback = new AjxCallback(this, this.pushView);
@@ -137,7 +137,7 @@ ZmAppViewMgr.C_STATUS					= "STATUS";
 ZmAppViewMgr.C_SASH						= "SASH";
 
 // keys for getting container IDs
-ZmAppViewMgr.CONT_ID_KEY = new Object();
+ZmAppViewMgr.CONT_ID_KEY = {};
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_BANNER]					= ZmSetting.SKIN_LOGO_ID;
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_USER_INFO]				= ZmSetting.SKIN_USER_INFO_ID;
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH]					= ZmSetting.SKIN_SEARCH_ID;
@@ -179,7 +179,7 @@ function() {
 */
 ZmAppViewMgr.prototype.addComponents =
 function(components, doFit, noSetZ) {
-	var list = new Array();
+	var list = [];
 	for (var cid in components) {
 		this._compList.push(cid);
 		var comp = components[cid];
@@ -294,7 +294,7 @@ function(viewId, appName, elements, callbacks, isAppView, isPoppable) {
 	DBG.println(AjxDebug.DBG1, "createView: " + viewId);
 
 	this._views[viewId] = elements;
-	this._callbacks[viewId] = callbacks ? callbacks : new Object();
+	this._callbacks[viewId] = callbacks ? callbacks : {};
 	this._viewApp[viewId] = appName;
 	this._isAppView[viewId] = isAppView;
 	this._isPoppable[viewId] = isPoppable;
@@ -406,7 +406,7 @@ function(viewId, force) {
 			var view = this._views[this._hidden[i]];
 			this._deactivateView(view);
 		}
-		this._hidden = new Array();
+		this._hidden = [];
 	}
 	return result;
 }
@@ -449,14 +449,15 @@ function(viewId) {
 /**
 * Destructor for this object.
 */
-ZmAppViewMgr.prototype.dtor = 
+ZmAppViewMgr.prototype.reset = 
 function() {
 	this._shell.removeControlListener(this._controlListener);
 	for (var i in this._views) {
 		var elements = this._views[i];
 		for (var j = 0; j < elements.length; j++) {
 			for (var cid in elements[j]) {
-				this._components[cid].getHtmlElement().innerHTML = "";
+//				this._components[cid].getHtmlElement().innerHTML = "";
+				this._components[cid].dispose();
 				this._components[cid] = null;
 				this._containers[cid] = null;
 				this._htmlEl[cid] = null;
@@ -556,7 +557,7 @@ ZmAppViewMgr.prototype._setViewVisible =
 function(view, show) {
 	var elements = this._views[view];
 	if (show) {
-		var list = new Array();
+		var list = [];
 		for (var cid in elements) {
 			list.push(cid);
 			elements[cid].zShow(true);
@@ -578,7 +579,7 @@ function(view, show) {
 // Removes a view from the hidden stack.
 ZmAppViewMgr.prototype._removeFromHidden =
 function(view) {
-	var newHidden = new Array();
+	var newHidden = [];
 	for (var i = 0; i < this._hidden.length; i++)
 		if (this._hidden[i] != view)
 			newHidden.push(this._hidden[i]);
