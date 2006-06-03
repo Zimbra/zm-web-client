@@ -34,15 +34,14 @@ function () {
 
 ZmPrintView.prototype.render = 
 function(item) {
-	
 	var preferHtml = this._appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	
+
 	if (item instanceof ZmConv) {
 		var respCallback = new AjxCallback(this, this._handleResponseRender);
 		ZmConvListView.getPrintHtml(item, preferHtml, respCallback);
 		return;
-	//} else if (item instanceof ZmMailMsg) {
-	// XXX: fix this when opening a new window doesnt nuke type info!
+		// NOTE: we check for toString instead of instanceof b/c opening new
+		//       window loses type info :(
 	} else if (item.toString() == "ZmMailMsg") {
 		var respCallback = new AjxCallback(this, this._handleResponseRender);
 		ZmMailMsgView.getPrintHtml(item, preferHtml, respCallback);
@@ -54,7 +53,19 @@ function(item) {
 	} else if (item instanceof ZmCalViewMgr) {
 		this._html = ZmCalViewMgr.getPrintHtml(item);
 	}
-	
+
+	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
+};
+
+ZmPrintView.prototype.renderType =
+function(type, list) {
+	if (list instanceof Array)
+		list = AjxVector.fromArray(list);
+
+	if (type == ZmItem.CONTACT) {
+		this._html = ZmContactCardsView.getPrintHtml(list);
+	}
+
 	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
 };
 

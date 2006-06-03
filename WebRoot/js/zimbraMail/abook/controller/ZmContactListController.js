@@ -78,23 +78,27 @@ function() {
 // Public methods
 
 ZmContactListController.prototype.show =
-function(search, bIsGalSearch, folderId, isShared) {
+function(searchResult, bIsGalSearch, folderId, isShared) {
 	this._isGalSearch = bIsGalSearch;
 	this._folderId = folderId;
+	this._isAnywhereSearch = false;
 	var bForce = false;
 
-	if (search instanceof ZmList) {
-		this._list = search;			// set as canonical list of contacts
+	if (searchResult instanceof ZmList) {
+		this._list = searchResult;			// set as canonical list of contacts
 		this._list._isShared = false;
 		bForce = true;					// always force display
 		if (!this._currentView)
 			this._currentView = this._defaultView();
-	} else if (search instanceof ZmSearchResult) {
+	} else if (searchResult instanceof ZmSearchResult) {
 		this._isNewSearch = bForce = true;
-		this._list = search.getResults(ZmItem.CONTACT);
+		this._list = searchResult.getResults(ZmItem.CONTACT);
+
+		// HACK - find out if user did a "is:anywhere" search (for printing)
+		this._isAnywhereSearch = searchResult.search.isAnywhere;
 
 		if (bIsGalSearch && (this._list == null)) {
-			this._list = new ZmContactList(this._appCtxt, search.search, true);
+			this._list = new ZmContactList(this._appCtxt, searchResult.search, true);
 			this._list._isShared = false;
 		} else {
 			// find out if we just searched for a shared address book
@@ -103,9 +107,9 @@ function(search, bIsGalSearch, folderId, isShared) {
 			this._list._isShared = addrbook ? addrbook.link : false;
 		}
 
-		this._list.setHasMore(search.getAttribute("more"));
+		this._list.setHasMore(searchResult.getAttribute("more"));
 
-		ZmListController.prototype.show.apply(this, [search, this._currentView]);
+		ZmListController.prototype.show.apply(this, [searchResult, this._currentView]);
 	}
 		
 	// reset offset if list view has been created
@@ -301,9 +305,15 @@ function(view) {
 // Resets the available options on a toolbar or action menu.
 ZmContactListController.prototype._resetOperations = 
 function(parent, num) {
+	var printMenuItem;
+	if (parent instanceof ZmButtonToolBar) {
+		printMenuItem = parent.getButton(ZmOperation.PRINT_MENU).getMenu().getItem(0);
+		printMenuItem.setText(ZmMsg.printResults);
+	}
+
 	if (!this._isGalSearch) {
 		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW], true);
-		parent.enable(ZmOperation.PRINT_MENU, num == 1);
+		parent.enable(ZmOperation.PRINT_MENU, num > 0);
 		if (parent instanceof ZmActionMenu)
 			parent.enable(ZmOperation.PRINT, num == 1);
 		// a valid folderId means user clicked on an addrbook
@@ -321,11 +331,15 @@ function(parent, num) {
 			parent.enable([ZmOperation.TAG_MENU], !isShare && num > 0);
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1);
+
+			if (printMenuItem) {
+				var text = isShare ? ZmMsg.printResults : ZmMsg.printAddrBook;
+				printMenuItem.setText(text);
+			}
 		} else {
 			// must be a search
-			// TODO - enable toolbar based on currently selected contacts
-			parent.enable([ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE], num>0);
-			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], num==1);
+			parent.enable([ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE], num > 0);
+			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], num == 1);
 		}
 	} else {
 		// gal contacts cannot be tagged/moved/deleted
@@ -445,8 +459,16 @@ ZmContactListController.prototype._printListener =
 function(ev) {
 	if (!this._printView)
 		this._printView = new ZmPrintView(this._appCtxt);
-	
-	this._printView.render(this._list);
+
+	if (this._folderId && !this._list._isShared) {
+		var subList = this._list.getSubList(0, null, this._folderId);
+		this._printView.renderType(ZmItem.CONTACT, subList);
+	} else if (this._isAnywhereSearch) {
+		var canonicalList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+		this._printView.render(canonicalList);
+	} else {
+		this._printView.render(this._list);
+	}
 };
 
 ZmContactListController.prototype._printContactListener = 
@@ -454,14 +476,19 @@ function(ev) {
 	if (!this._printView)
 		this._printView = new ZmPrintView(this._appCtxt);
 	
-	var contact = this._listView[this._currentView].getSelection()[0];
-	if (contact) {
-		if (contact.isLoaded()) {
-			this._printView.render(contact);
-		} else {
-			var callback = new AjxCallback(this, this._handleResponsePrintLoad);
-			contact.load(callback);
+	var contacts = this._listView[this._currentView].getSelection();
+	if (contacts.length == 1) {
+		var contact = contacts[0];
+		if (contact) {
+			if (contact.isLoaded()) {
+				this._printView.render(contact);
+			} else {
+				var callback = new AjxCallback(this, this._handleResponsePrintLoad);
+				contact.load(callback);
+			}
 		}
+	} else {
+		this._printView.renderType(ZmItem.CONTACT, contacts);
 	}
 };
 

@@ -637,7 +637,7 @@ ZmOperation.SETUP[ZmOperation.PRINT] = {
 
 ZmOperation.PRINT_CONTACTLIST = i++;
 ZmOperation.SETUP[ZmOperation.PRINT_CONTACTLIST] = {
-	textKey:	"printContactListTooltip",
+	textKey:	"printAddrBook",
 	image:		"Print" 				// XXX: new icon?
 };
 

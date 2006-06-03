@@ -123,8 +123,9 @@ for (var i in ZmSearch.SORT_BY)
 ZmSearch.FOLDER_QUERY_RE = new RegExp('^in:\\s*"?(' + ZmOrganizer.VALID_PATH_CHARS + '+)"?\\s*$', "i");
 ZmSearch.TAG_QUERY_RE = new RegExp('^tag:\\s*"?(' + ZmOrganizer.VALID_NAME_CHARS + '+)"?\\s*$', "i");
 ZmSearch.UNREAD_QUERY_RE = new RegExp('\\bis:\\s*(un)?read\\b', "i");
+ZmSearch.IS_ANYWHERE_QUERY_RE = new RegExp('\\bis:\\s*anywhere\\b', "i");
 
-ZmSearch.prototype.toString = 
+ZmSearch.prototype.toString =
 function() {
 	return "ZmSearch";
 };
@@ -349,6 +350,7 @@ function() {
 			this.tagId = tag.id;
 	}
 	this.hasUnreadTerm = ZmSearch.UNREAD_QUERY_RE.test(this.query);
+	this.isAnywhere = ZmSearch.IS_ANYWHERE_QUERY_RE.test(this.query);
 };
 
 ZmSearch.prototype.hasFolderTerm =
