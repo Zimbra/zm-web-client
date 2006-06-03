@@ -250,6 +250,11 @@ function(view) {
 	if (this._actionMenu) return;
 
 	ZmListController.prototype._initializeActionMenu.call(this);
+
+	// reset the default listener for print action in action menu
+	this._actionMenu.removeSelectionListener(ZmOperation.PRINT, this._listeners[ZmOperation.PRINT]);
+	this._actionMenu.addSelectionListener(ZmOperation.PRINT, this._listeners[ZmOperation.PRINT_MENU]);
+
 	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT);
 };
 
@@ -299,6 +304,8 @@ function(parent, num) {
 	if (!this._isGalSearch) {
 		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW], true);
 		parent.enable(ZmOperation.PRINT_MENU, num == 1);
+		if (parent instanceof ZmActionMenu)
+			parent.enable(ZmOperation.PRINT, num == 1);
 		// a valid folderId means user clicked on an addrbook
 		if (this._folderId) {
 			var canEdit = true;
@@ -448,8 +455,19 @@ function(ev) {
 		this._printView = new ZmPrintView(this._appCtxt);
 	
 	var contact = this._listView[this._currentView].getSelection()[0];
-	if (contact)
-		this._printView.render(contact);
+	if (contact) {
+		if (contact.isLoaded()) {
+			this._printView.render(contact);
+		} else {
+			var callback = new AjxCallback(this, this._handleResponsePrintLoad);
+			contact.load(callback);
+		}
+	}
+};
+
+ZmContactListController.prototype._handleResponsePrintLoad =
+function(result, contact) {
+	this._printView.render(contact);
 };
 
 // Returns the type of item in the underlying list

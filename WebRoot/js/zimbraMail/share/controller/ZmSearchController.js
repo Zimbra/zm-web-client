@@ -335,7 +335,7 @@ function(params, noRender, callback, errorCallback) {
 		this._origQuery = params.query;
 		var addrbookList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getAddrbookList();
 		if (addrbookList.length)
-			params.query += " (" + sharedList.join(" or ") + ")";
+			params.query += " (" + addrbookList.join(" or ") + ")";
 	}
 
 	// only set contact source if we are searching for contacts

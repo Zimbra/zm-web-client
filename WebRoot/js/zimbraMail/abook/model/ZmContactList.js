@@ -308,6 +308,69 @@ function(address) {
 };
 
 /**
+* Moves a list of items to the given folder.
+* <p>
+* This method calls the base class for normal "moves" UNLESS we're dealing w/
+* shared items (or folder) in which case we must send a CREATE request for the
+* given folder to the server followed by a hard delete of the shared contact
+* (this is temporary, until we get better server support).
+* </p>
+*
+* @param items		[Array]			a list of items to move
+* @param folder		[ZmFolder]		destination folder
+* @param attrs		[Object]		additional attrs for SOAP command
+*/
+ZmContactList.prototype.moveItems =
+function(items, folder, attrs) {
+	if (!(items instanceof Array)) items = [items];
+
+	var moveBatchCmd = new ZmBatchCommand(this._appCtxt);
+	var loadBatchCmd = new ZmBatchCommand(this._appCtxt);
+	var softMove = [];
+	var hardMove = [];
+
+	// if the folder we're moving contacts to is a shared folder, then dont bother
+	// checking whether each item is shared or not
+	for (var i = 0; i < items.length; i++) {
+		var contact = items[i];
+
+		if (contact.isReadOnly())
+			continue;
+
+		if (contact.isShared() || folder.link) {
+			hardMove.push(contact);
+			if (contact.isLoaded()) {
+				moveBatchCmd.add(this._getCopyCmd(contact, folder));
+			} else {
+				var loadCallback = new AjxCallback(this, this._handleResponseBatchLoad, [moveBatchCmd, folder]);
+				var cmd = new AjxCallback(contact, contact.load, [loadCallback, null]);
+				loadBatchCmd.add(cmd);
+			}
+		} else {
+			softMove.push(contact);
+		}
+	}
+
+	if (hardMove.length > 0) {
+		if (loadBatchCmd.size()) {
+			var respCallback = new AjxCallback(this, this._handleResponseLoadMove, [moveBatchCmd, hardMove]);
+			loadBatchCmd.run(respCallback);
+		} else {
+			var deleteCmd = new AjxCallback(this, this._itemAction, [{items:hardMove, action:"delete"}]);
+			moveBatchCmd.add(deleteCmd);
+
+			var respCallback = new AjxCallback(this, this._handleResponseMoveBatchCmd);
+			moveBatchCmd.run(respCallback);
+		}
+	}
+
+	// just call the base class for "soft" moves
+	if (softMove.length > 0) {
+		ZmList.prototype.moveItems.call(this, softMove, folder, attrs);
+	}
+};
+
+/**
 * Copies a list of items to the given folder.
 * <p>
 * Search results are treated as though they're in a temporary folder, so that they behave as
@@ -337,7 +400,7 @@ function(items, folder, attrs) {
 	}
 
 	if (loadBatchCmd.size()) {
-		var respCallback = new AjxCallback(this, this._handleResponseLoadBatchCmd, [copyBatchCmd]);
+		var respCallback = new AjxCallback(this, this._handleResponseLoadCopy, [copyBatchCmd]);
 		loadBatchCmd.run(respCallback);
 	} else {
 		var respCallback = new AjxCallback(this, this._handleResponseCopyBatchCmd);
@@ -352,10 +415,34 @@ function(result) {
 	this._appCtxt.getAppController().setStatusMsg(msg);
 };
 
-ZmContactList.prototype._handleResponseLoadBatchCmd =
+ZmContactList.prototype._handleResponseLoadCopy =
 function(copyBatchCmd, result) {
 	var respCallback = new AjxCallback(this, this._handleResponseCopyBatchCmd);
 	copyBatchCmd.run(respCallback);
+};
+
+ZmContactList.prototype._handleResponseMoveBatchCmd =
+function(result) {
+	var resp = result.getResponse().BatchResponse.ContactActionResponse;
+	// XXX: b/c the server does not return notifications for actions done on
+	//      shares, we manually notify - TEMP UNTIL WE GET BETTER SERVER SUPPORT
+	var ids = resp[0].action.id.split(",");
+	for (var i = 0; i < ids.length; i++) {
+		var contact = this._appCtxt.cacheGet(ids[i]);
+		if (contact && contact.isShared()) {
+			contact.notifyDelete();
+			this._appCtxt.getItemCache().clear(ids[i]);
+		}
+	}
+};
+
+ZmContactList.prototype._handleResponseLoadMove =
+function(moveBatchCmd, hardMove) {
+	var deleteCmd = new AjxCallback(this, this._itemAction, [{items:hardMove, action:"delete"}]);
+	moveBatchCmd.add(deleteCmd);
+
+	var respCallback = new AjxCallback(this, this._handleResponseMoveBatchCmd);
+	moveBatchCmd.run(respCallback);
 };
 
 ZmContactList.prototype._handleResponseBatchLoad =
@@ -467,6 +554,10 @@ function(item, details) {
 		this.remove(contact);
 		this.add(contact, this._sortIndex(contact));
 	}
+
+	// reset addrbook property
+	if (contact.addrbook.id != contact.folderId)
+		contact.addrbook = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(contact.folderId);
 };
 
 ZmContactList.prototype.createLocal =

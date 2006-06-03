@@ -214,8 +214,12 @@ function() {
 
 ZmContactSplitView.prototype._contactChangeListener = 
 function(ev) {
-	if (ev.type != ZmEvent.S_CONTACT || ev.source != this._contact)
+	if (ev.type != ZmEvent.S_CONTACT ||
+		ev.source != this._contact ||
+		ev.event == ZmEvent.E_DELETE)
+	{
 		return;
+	}
 
 	this._setContact(ev.source);
 };

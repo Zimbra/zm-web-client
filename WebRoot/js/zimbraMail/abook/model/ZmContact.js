@@ -153,6 +153,8 @@ function(node, args) {
 	if (contact == null || (contact && contact.rev != node.rev)) {
 		contact = new ZmContact(args.appCtxt, node.id, args.list);
 		contact._loadFromDom(node);
+	} else {
+		contact.list = args.list || args.appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 	}
 
 	return contact;

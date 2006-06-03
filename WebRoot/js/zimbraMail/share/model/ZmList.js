@@ -493,7 +493,7 @@ function(items, folderId) {
 * @param callback	[AjxCallback]	async callback
 */
 ZmList.prototype._itemAction =
-function(params) {
+function(params, batchCmd) {
 	var actionedItems = new Array();
 	var idHash = this._getIds(params.items);
 	var idStr = idHash.list.join(",");;
@@ -514,7 +514,12 @@ function(params) {
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	var respCallback = params.callback ? new AjxCallback(this, this._handleResponseItemAction, [type, idHash, params.callback]) : null;
 	var execFrame = new AjxCallback(this, this._itemAction, params);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback, execFrame: execFrame});
+
+	if (batchCmd) {
+		batchCmd.addRequestParams(soapDoc, respCallback);
+	} else {
+		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback, execFrame: execFrame});
+	}
 };
 
 ZmList.prototype._handleResponseItemAction =
@@ -551,10 +556,14 @@ function(method, args) {
 	var typedItems = this._getTypedItems(args[0]);
 	for (var type in typedItems) {
 		this._mixedType = type; // marker that we've been here already
-		if (type == ZmItem.CONTACT)
-			ZmContactList.prototype[method].call(this, typedItems[type], args[1], args[2]);
-		else
+		if (type == ZmItem.CONTACT) {
+			var items = typedItems[type];
+			for (var i = 0; i < items.length; i++) {
+				items[i].list[method](items[i], args[1], args[2]);
+			}
+		} else {
 			ZmMailList.prototype[method].call(this, typedItems[type], args[1], args[2]);
+		}
 		this._mixedType = null;
 	}
 };
