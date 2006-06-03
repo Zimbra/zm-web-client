@@ -77,8 +77,12 @@ function(organizer, loc) {
 		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, !organizer.link);
 	}
 	DwtDialog.prototype.popup.call(this, loc);
+
 	if (organizer.id != ZmCalendar.ID_CALENDAR &&
-		organizer.id != ZmOrganizer.ID_NOTEBOOK) {
+		organizer.id != ZmOrganizer.ID_NOTEBOOK &&
+		organizer.id != ZmOrganizer.ID_ADDRBOOK &&
+		organizer.id != ZmFolder.ID_AUTO_ADDED)
+	{
 		this._nameInputEl.focus();
 	}
 };
@@ -151,20 +155,28 @@ function(event) {
 ZmFolderPropsDialog.prototype._handleOkButton =
 function(event) {
 	var organizer = this._organizer;
+
 	var color = this._color.getValue();
-	if (organizer.color != color) {
+	if (organizer.color != color)
 		organizer.setColor(color);
+
+	if (organizer.id != ZmCalendar.ID_CALENDAR &&
+		organizer.id != ZmOrganizer.ID_NOTEBOOK &&
+		organizer.id != ZmOrganizer.ID_ADDRBOOK &&
+		organizer.id != ZmFolder.ID_AUTO_ADDED)
+	{
+		var name = this._nameInputEl.value;
+		if (organizer.name != name)
+			organizer.rename(name);
 	}
-	var name = this._nameInputEl.value;
-	if (organizer.name != name) {
-		organizer.rename(name);
-	}
+
 	if (Dwt.getVisible(this._excludeFbEl) && organizer.setFreeBusy) {
 		var excludeFreeBusy = this._excludeFbCheckbox.checked;
 		if (organizer.excludeFreeBusy != excludeFreeBusy) {
 			organizer.setFreeBusy(excludeFreeBusy);
 		}
 	}
+
 	this.popdown();
 };
 

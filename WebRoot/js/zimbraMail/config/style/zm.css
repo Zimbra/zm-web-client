@@ -459,7 +459,7 @@ td.DDSepInvisible div {
 /* "Display Images" button in mail message view to show hidden images */
 /* ??? "Displayimages" CLASS REALLY SHOULD BE SHARED WITH "SpellCheckModeDiv"  */
 /* CLASS DEFINED IN spellcheck.css SINCE THEY SHOULD HAVE THE SAME VISUAL LOOK */
-.ZmMailMsgView .Displayimages {
+.Displayimages {
 	cursor: pointer;
 	background-color: #FFFFCC;
 	padding: 7px;
@@ -829,6 +829,18 @@ td.DDSepInvisible div {
 	@OutsetBorder@
 }
 
+/* "Finish Loading" banner in cards view to initiate GetContactRequest for
+ *  unloaded contacts */
+.FinishLoading {
+	cursor: pointer;
+	background-color: #FFFFCC;
+	padding: 4px;
+	border-width: 1 0 0 0;
+	border-style: solid;
+	border-color: #777777;
+}
+
+
 /* Container for a single card when it is selected */
 .ZmContactCard-selected, .ZmContactCard-selected-right {
 	@FocusBorder@
@@ -843,12 +855,11 @@ td.DDSepInvisible div {
 /* Header for the contact cards view */
 .ZmContactCardsView .contactHeader,
 .ZmContactCard-dnd .contactHeader {
-	@WidgetHeaderContainer@
 	@FontSize-bigger@
 	@Text@
-	padding-left:@BoxPaddingSize@;
 	@NoWrap@
 	text-overflow: ellipsis;
+	padding: 3 0 3 2;
 }
 
 .ZmContactCard-selected .contactHeader,

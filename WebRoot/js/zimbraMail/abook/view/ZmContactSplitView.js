@@ -154,7 +154,7 @@ function(enable) {
 ZmContactSplitView.prototype._sizeChildren = 
 function(width, height) {
 	var padding = 5;		// css padding value (see ZmContactSplitView css class)
-	var listWidth = 200;	// fixed width size of list view
+	var listWidth = 215;	// fixed width size of list view
 
 	// calc. height for children of this view
 	var alphabetBarHeight = this._alphabetBar ? ZmContactSplitView.ALPHABET_HEIGHT : null;
@@ -631,7 +631,13 @@ function(contact, now, isDndIcon) {
 		htmlArr[idx++] = this._getTagImgHtml(contact, ZmItem.F_TAG);
 		htmlArr[idx++] = "</td>";
 	}
-	
+
+	// read only icon
+	htmlArr[idx++] = "<td width=16>";
+	if (!isDndIcon && contact.isReadOnly())
+		htmlArr[idx++] = AjxImg.getImageHtml("PadLock");
+	htmlArr[idx++] = "</td>";
+
 	htmlArr[idx++] = "</tr></table>";
 
 	div.innerHTML = htmlArr.join("");

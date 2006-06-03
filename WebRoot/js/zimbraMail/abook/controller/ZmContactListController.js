@@ -316,6 +316,7 @@ function(parent, num) {
 		parent.enable(ZmOperation.PRINT_MENU, num > 0);
 		if (parent instanceof ZmActionMenu)
 			parent.enable(ZmOperation.PRINT, num == 1);
+
 		// a valid folderId means user clicked on an addrbook
 		if (this._folderId) {
 			var canEdit = true;
@@ -338,8 +339,9 @@ function(parent, num) {
 			}
 		} else {
 			// must be a search
+			var contact = this._listView[this._currentView].getSelection()[0];
 			parent.enable([ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE], num > 0);
-			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], num == 1);
+			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], num == 1 && !contact.isReadOnly());
 		}
 	} else {
 		// gal contacts cannot be tagged/moved/deleted

@@ -37,6 +37,9 @@ function ZmContactCardsView(parent, className, posStyle, controller, dropTgt) {
 	if (ZmMsg.alphabet && ZmMsg.alphabet.length>0) {
 		this._alphabetBar = new ZmContactAlphabetBar(this, "ZmContactAlphabetBar");
 	}
+
+	this._addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+	this._addrbookTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
 };
 
 ZmContactCardsView.prototype = new ZmContactsBaseView;
@@ -130,19 +133,23 @@ function(contact, now, isDndIcon, getHtml) {
 		this.associateItemWithElement(contact, div, DwtListView.TYPE_LIST_ITEM);
 	}
 
-	html[idx++] = "<table border=0 width=100% cellpadding=0 cellspacing=0>";
-	html[idx++] = "<tr style='padding:0' class='contactHeader'>";
-	html[idx++] = "<td valign=top><div class='contactHeader' style='font-size:16px;";
-	if (AjxEnv.isIE)
-		html[idx++] = " width:280;";
+	html[idx++] = "<table border=0 width=100% height=100% cellpadding=0 cellspacing=0>";
+	html[idx++] = "<tr class='contactHeader ";
+
+	var color = contact.addrbook ? contact.addrbook.color : ZmAddrBook.DEFAULT_COLOR;
+	html[idx++] = ZmOrganizer.COLOR_TEXT[color] + "Bg";
 	html[idx++] = "'>";
+	html[idx++] = "<td width=16>";
+	html[idx++] = AjxImg.getImageHtml("Person", "width:16"); // XXX: set icon per contact type
+	html[idx++] = "</td>";
+	html[idx++] = "<td width=100% valign=top><div class='contactHeader'>";
 	html[idx++] = contact.getFileAs();
 	html[idx++] = "</div></td>";
 
 	// Tag
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		var cellId = this._getFieldId(contact, ZmItem.F_TAG_CELL);
-		html[idx++] = "<td id='" + cellId + "'>";
+		html[idx++] = "<td width=16 id='" + cellId + "'>";
 		var fieldId = this._getFieldId(contact, ZmItem.F_TAG);
 		html[idx++] = AjxImg.getImageHtml(contact.getTagImageInfo(), null, ["id='", fieldId, "'"].join(""));
 		html[idx++] = "</td>";
@@ -151,7 +158,7 @@ function(contact, now, isDndIcon, getHtml) {
 	html[idx++] = style;
 	html[idx++] = ">";
 	
-	html[idx++] = "<td valign=top width=100% style='font-weight:bold; padding-left: 2px'>";
+	html[idx++] = "<td colspan=2 valign=top width=100% style='font-weight:bold; padding-left:2px'>";
 	var value = contact.getCompanyField() || "&nbsp;";
 	html[idx++] = value;
 	html[idx++] = "</td></tr>";
@@ -172,8 +179,8 @@ function(contact, now, isDndIcon, getHtml) {
 */
 	html[idx++] = "<tr height=100%><td valign=top colspan=10>";
 
-	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1>";
-	html[idx++] = "<tr><td valign=top>";
+	html[idx++] = "<table height=100% border=0 cellpadding=1 cellspacing=1>";
+	html[idx++] = "<tr height=100%><td valign=top>";
 	html[idx++] = "<table border=0><tr";
 	html[idx++] = style;
 	html[idx++] = ">";
@@ -249,7 +256,15 @@ function(contact, now, isDndIcon, getHtml) {
 	
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr></table>";
-	html[idx++] = "</td></tr></table>";
+	html[idx++] = "</td></tr>";
+	if (!contact.isLoaded()) {
+		html[idx++] = "<tr><td colspan=10 class='FinishLoading' onclick='ZmContactCardsView._loadContact(this, ";
+		html[idx++] = '"' + contact.id + '"';
+		html[idx++] = ")'><center>";
+		html[idx++] = ZmMsg.finishLoading;
+		html[idx++] = "</center></td></tr>";
+	}
+	html[idx++] = "</table>";
 
 	if (div) {
 		div.innerHTML = html.join("");
@@ -284,6 +299,8 @@ function(item, id) {
 
 ZmContactCardsView.prototype._layout =
 function() {
+	this._resetListView();
+
 	if (this._list instanceof AjxVector && this._list.size()) {
 		var list = this._list.getArray();
 		var html = new Array();
@@ -291,7 +308,7 @@ function() {
 		var count = 0;
 
 		// OPTIMIZE: dont use appendChild to add to DOM - slows down IE
-		html[i++] = "<table border=0 cellpadding=5 cellspacing=5 id='";
+		html[i++] = "<center><table border=0 cellpadding=5 cellspacing=5 id='";
 		html[i++] = ZmContactCardsView.CARD_TABLE_ID;
 		html[i++] = "'>";
 		for (var j = 0; j < list.length; j++) {
@@ -313,7 +330,7 @@ function() {
 			if (count%2 == 0)
 				html[i++] = "</tr>";
 		}
-		html[i++] = "</table>";
+		html[i++] = "</center></table>";
 
 		this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html.join("")));
 	} else {
@@ -373,6 +390,14 @@ function(dropAllowed) {
 	}
 };
 
+ZmContactCardsView.prototype._handleResponseLoad =
+function(result, contact) {
+	var div = document.getElementById(this._getItemId(contact));
+	var html = this._createItemHtml(contact, null, null, true);
+	var newDiv = Dwt.parseHtmlFragment(html);
+	div.innerHTML = newDiv.innerHTML;
+};
+
 
 // Listeners
 
@@ -404,10 +429,17 @@ function(ev) {
 	this.setSelection(this.getList().get(0));
 };
 
+ZmContactCardsView.prototype._addrbookTreeListener =
+function(ev, treeView) {
+	var fields = ev.getDetail("fields");
+	if (ev.event == ZmEvent.E_MODIFY && fields && fields[ZmOrganizer.F_COLOR]) {
+		this._layout();
+	}
+};
 
 // Static methods
 
-ZmContactCardsView.getPrintHtml = 
+ZmContactCardsView.getPrintHtml =
 function(list) {
 
 	var html = new Array();
@@ -444,3 +476,19 @@ function(list) {
 	
 	return html.join("");
 };
+
+ZmContactCardsView._loadContact =
+function(cell, contactId) {
+	var appCtxt = window._zimbraMail._appCtxt;
+	var contact = appCtxt.cacheGet(contactId);
+	if (contact && !contact.isLoaded()) {
+		var clc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+		var cardsView = clc.getParentView();
+		var callback = new AjxCallback(cardsView, cardsView._handleResponseLoad);
+		contact.load(callback);
+	}
+
+	// this looks weird, but we're just removing the table row
+	cell.parentNode.parentNode.removeChild(cell.parentNode);
+};
+
