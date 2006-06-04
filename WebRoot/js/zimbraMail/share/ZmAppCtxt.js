@@ -256,6 +256,14 @@ function() {
 	return this._newNotebookDialog;
 };
 
+ZmAppCtxt.prototype.getPageConflictDialog =
+function() {
+	if (!this._pageConflictDialog) {
+		this._pageConflictDialog = new ZmPageConflictDialog(this, this.getShell());
+	}
+	return this._pageConflictDialog;
+};
+
 ZmAppCtxt.prototype.getNewRosterItemDialog =
 function() {
 	if (!this._newRosterItemDialog) {
@@ -392,6 +400,7 @@ function() {
 ZmAppCtxt.prototype.clearNotebookDialogs =
 function() {
 	this._newNotebookDialog = null;
+	this._pageConflictDialog = null;
 };
 
 ZmAppCtxt.prototype.clearShareDialogs = 
