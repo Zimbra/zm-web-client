@@ -36,12 +36,18 @@ ZmUploadDialog.prototype.constructor = ZmUploadDialog;
 
 // Constants
 
+ZmUploadDialog.ACTION_KEEP_MINE = "mine";
+ZmUploadDialog.ACTION_KEEP_THEIRS = "theirs";
+ZmUploadDialog.ACTION_ASK = "ask";
+
 ZmUploadDialog.UPLOAD_FIELD_NAME = "uploadFile";
 
 // Data
 
 ZmUploadDialog.prototype._formId;
 ZmUploadDialog.prototype._tableId;
+
+ZmUploadDialog.prototype._selector;
 
 ZmUploadDialog.prototype._uploadFolder;
 ZmUploadDialog.prototype._uploadCallback;
@@ -69,7 +75,7 @@ ZmUploadDialog.prototype.popup = function(folder, callback, title, loc) {
 
 ZmUploadDialog.prototype.popdown = function() {
 	/***
-	// NOTE: Do NOT set these values to null! The upload conflict will
+	// NOTE: Do NOT set these values to null! The conflict dialog will
 	//       call back to this dialog after it's hidden to process the
 	//       files that should be replaced.
 	this._uploadFolder = null;
@@ -86,6 +92,7 @@ ZmUploadDialog.prototype._upload = function(){
 	for (var i in form.elements) {
 		var element = form.elements[i];
 		if (element.name != ZmUploadDialog.UPLOAD_FIELD_NAME) continue;
+		if (!element.value) continue;
 		var file = {
 			fullname: element.value,
 			name: element.value.replace(/^.*[\\\/:]/, "")
@@ -107,32 +114,14 @@ ZmUploadDialog.prototype._upload = function(){
 	uploadMgr.execute(callback, uploadForm);
 };
 
-/***
-ZmUploadDialog.prototype._uploadSaveDocs = function(filenames, status, guids) {
-	// REVISIT: For now, we overwrite existing docs w/o warning !!!
-	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
-	soapDoc.setMethodAttribute("types", "document");
-	soapDoc.set("query", "in:\""+this._uploadFolder.getSearchPath()+"\"");
-
-	var args = [this._uploadFolder.getPath(), filenames, status, guids];
-	var handleResponse = new AjxCallback(this, this._uploadSaveDocs2, args);	
-	var params = {
-		soapDoc: soapDoc,
-		asyncMode: true,
-		callback: handleResponse
-	};
-	var appController = this._appCtxt.getAppController();
-	appController.sendRequest(params);
-};
-/***/
 ZmUploadDialog.prototype._uploadSaveDocs = function(files, status, guids) {
 	guids = guids.split(",");
 	for (var i = 0; i < files.length; i++) {
+		DBG.println("guids["+i+"]: "+guids[i]+", files["+i+"]: "+files[i]);
 		files[i].guid = guids[i];
 	}
 	this._uploadSaveDocs2(files, status, guids);
 };
-/***/
 
 ZmUploadDialog.prototype._uploadSaveDocs2 = 
 function(files, status, guids) {
@@ -218,42 +207,30 @@ function(files, status, guids, response) {
 	this.popdown();
 
 	// resolve conflicts
-	if (conflicts.length > 0) {
+	var conflictCount = conflicts.length;
+	var action = this._selector.getValue();
+	if (conflictCount > 0 && action == ZmUploadDialog.ACTION_ASK) {
 		var dialog = this._appCtxt.getUploadConflictDialog();
 		if (!this._conflictCallback) {
-			this._conflictCallback = new AjxCallback(this, this._uploadConflict);
+			this._conflictCallback = new AjxCallback(this, this._uploadSaveDocs2);
 		}
 		this._conflictCallback.args = [ files, status, guids ];
 		dialog.popup(this._uploadFolder, conflicts, this._conflictCallback);
 	}
 
+	// keep mine
+	else if (conflictCount > 0 && action == ZmUploadDialog.ACTION_KEEP_MINE) {
+		this._uploadSaveDocs2(files, status, guids);
+	}
+
 	// perform callback
 	else if (this._uploadCallback) {
-		/***
-		var items = []
-		if (response._data && response._data.BatchResponse) {
-			var docs = response._data.BatchResponse.SaveDocumentResponse;
-			if (docs) {
-				for (var i = 0; i < docs.length; i++) {
-					var doc = docs[i].doc[0];
-					items.push(doc);
-				}
-			}
-		}
-		this._uploadCallback.run(path, items);
-		/***/
 		var filenames = [];
 		for (var i = 0; i < files.length; i++) {
 			filenames.push(files[i].name);
 		}
 		this._uploadCallback.run(this._uploadFolder, filenames);
-		/***/
 	}
-};
-
-ZmUploadDialog.prototype._uploadConflict =
-function(files, status, guids) {
-	this._uploadSaveDocs2(files, status, guids);
 };
 
 ZmUploadDialog.prototype._addFileInputRow = function() {
@@ -322,23 +299,46 @@ ZmUploadDialog.prototype._createUploadHtml = function() {
 	this._formId = Dwt.getNextId();
 	this._tableId = Dwt.getNextId();
 
+	this._selector = new DwtSelect(this);
+	this._selector.addOption(ZmMsg.uploadActionKeepMine, false, ZmUploadDialog.ACTION_KEEP_MINE);
+	this._selector.addOption(ZmMsg.uploadActionKeepTheirs, false, ZmUploadDialog.ACTION_KEEP_THEIRS);
+	this._selector.addOption(ZmMsg.uploadActionAsk, true, ZmUploadDialog.ACTION_ASK);
+
+	var label = document.createElement("DIV");
+	label.style.marginBottom = "0.5em";
+	label.innerHTML = ZmMsg.uploadChoose;
+
 	var container = document.createElement("DIV");
+	/***
 	container.style.position = "relative";
 	container.style.height = "7em";
 	container.style.overflow = "auto";
+	/***/
+	container.style.marginLeft = "1em";
+	container.style.marginBottom = "0.5em";
 	
 	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	container.innerHTML = [
 		"<form id='",this._formId,"' method='POST' action='",uri,"' enctype='multipart/form-data'>",
-			"<table id='",this._tableId," cellspacing=2 cellpadding=0 border=0>",
+			"<table id='",this._tableId," cellspacing=4 cellpadding=0 border=0>",
 			"</table>",
 		"</form>"
 	].join("");
 
-	var element = this._getContentDiv();
-	element.appendChild(container);
-};
+	var table = document.createElement("TABLE");
+	table.border = 0;
+	table.cellPadding = 0;
+	table.cellSpacing = 4;
 
-ZmUploadDialog.prototype._getSeparatorTemplate = function() {
-	return "";
+	var row = table.insertRow(-1);
+	var cell = row.insertCell(-1);
+	cell.innerHTML = ZmMsg.uploadAction;
+
+	var cell = row.insertCell(-1);
+	cell.appendChild(this._selector.getHtmlElement());
+
+	var element = this._getContentDiv();
+	element.appendChild(label);
+	element.appendChild(container);
+	element.appendChild(table);
 };
