@@ -68,8 +68,13 @@ ZmUploadDialog.prototype.popup = function(folder, callback, title, loc) {
 };
 
 ZmUploadDialog.prototype.popdown = function() {
+	/***
+	// NOTE: Do NOT set these values to null! The upload conflict will
+	//       call back to this dialog after it's hidden to process the
+	//       files that should be replaced.
 	this._uploadFolder = null;
 	this._uploadCallback = null;
+	/***/
 	ZmDialog.prototype.popdown.call(this);
 };
 
@@ -77,26 +82,32 @@ ZmUploadDialog.prototype.popdown = function() {
 
 ZmUploadDialog.prototype._upload = function(){ 
 	var form = document.getElementById(this._formId);
-	var filenames = [];
+	var files = [];
 	for (var i in form.elements) {
 		var element = form.elements[i];
 		if (element.name != ZmUploadDialog.UPLOAD_FIELD_NAME) continue;
-		filenames.push(element.value);
+		var file = {
+			fullname: element.value,
+			name: element.value.replace(/^.*[\\\/:]/, "")
+		};
+		files.push(file);
 	}
-	if (filenames.length == 0) {
+	if (files.length == 0) {
 		return;
 	}
 
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, false);
-	
-	var callback = new AjxCallback(this, this._uploadSaveDocs, [filenames]);
+
+	var callback = new AjxCallback(this, this._uploadSaveDocs, [files]);
 	var uploadForm = document.getElementById(this._formId);
 
 	var uploadMgr = this._appCtxt.getUploadManager();
 	window._uploadManager = uploadMgr;
 	uploadMgr.execute(callback, uploadForm);
 };
+
+/***
 ZmUploadDialog.prototype._uploadSaveDocs = function(filenames, status, guids) {
 	// REVISIT: For now, we overwrite existing docs w/o warning !!!
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
@@ -113,54 +124,48 @@ ZmUploadDialog.prototype._uploadSaveDocs = function(filenames, status, guids) {
 	var appController = this._appCtxt.getAppController();
 	appController.sendRequest(params);
 };
+/***/
+ZmUploadDialog.prototype._uploadSaveDocs = function(files, status, guids) {
+	guids = guids.split(",");
+	for (var i = 0; i < files.length; i++) {
+		files[i].guid = guids[i];
+	}
+	this._uploadSaveDocs2(files, status, guids);
+};
+/***/
 
 ZmUploadDialog.prototype._uploadSaveDocs2 = 
-function(path, filenames, status, guids, response) {
-	// handle response
-	var docs = {};
-	if (response._data && response._data.SearchResponse) {
-		var searchResp = response._data.SearchResponse;
-		if (searchResp.doc) {
-			for (var i = 0; i < searchResp.doc.length; i++) {
-				var doc = searchResp.doc[i];
-				docs[doc.name] = doc;
-			}
-		}
-	}
-	
+function(files, status, guids) {
 	// create document wrappers
-	guids = guids.split(",");
 	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra", null);
-	for (var i = 0; i < filenames.length; i++) {
-		var filename = filenames[i] = filenames[i].replace(/^.*[\\\/:]/, "");
-		var guid = guids[i];
-		
+	soapDoc.setMethodAttribute("onerror", "continue");
+	for (var i = 0; i < files.length; i++) {
+		var file = files[i];
+		if (file.done) continue;
+
 		var saveDocNode = soapDoc.set("SaveDocumentRequest");
 		saveDocNode.setAttribute("xmlns", "urn:zimbraMail");
+		saveDocNode.setAttribute("id", i);
 		
 		var docNode = soapDoc.set("doc", null, saveDocNode);
-		var doc = docs[filename];
-		if (doc) {
-			docNode.setAttribute("id", doc.id);
-			docNode.setAttribute("ver", doc.ver);
-			/***
-			// REVISIT: The name is also required because of a bug
-			//          in the backend.
-			docNode.setAttribute("name", doc.name);
-			/***/
+		if (file.id) {
+			docNode.setAttribute("id", file.id);
+			docNode.setAttribute("ver", file.version);
 		}
 		else {
 			docNode.setAttribute("l", this._uploadFolder.id);
 		}
 		
 		var uploadNode = soapDoc.set("upload", null, docNode);
-		uploadNode.setAttribute("id", guid);
+		uploadNode.setAttribute("id", file.guid);
 	}
-	
+
+	var args = [ files, status, guids ];
+	var callback = new AjxCallback(this, this._uploadSaveDocsResponse, args);
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: true,
-		callback: new AjxCallback(this, this._uploadSaveDocsResponse, [path, filenames]),
+		callback: callback,
 		errorCallback: null,
 		execFrame: null
 	};	
@@ -168,8 +173,62 @@ function(path, filenames, status, guids, response) {
 	appController.sendRequest(params);
 };
 
-ZmUploadDialog.prototype._uploadSaveDocsResponse = function(path, filenames, response) {
-	if (this._uploadCallback) {
+ZmUploadDialog.prototype._uploadSaveDocsResponse =
+function(files, status, guids, response) {
+	var resp = response && response._data && response._data.BatchResponse;
+
+	// mark successful uploads
+	if (resp && resp.SaveDocumentResponse) {
+		for (var i = 0; i < resp.SaveDocumentResponse.length; i++) {
+			var saveDocResp = resp.SaveDocumentResponse[i];
+			files[saveDocResp.id].done = true;
+		}
+	}
+
+	// check for conflicts
+	var conflicts = [];
+	if (resp && resp.Fault) {
+		var errors = [];
+		for (var i = 0; i < resp.Fault.length; i++) {
+			var fault = resp.Fault[i];
+			var error = fault.Detail.Error;
+			var code = error.Code;
+			var attrs = error.a;
+			if (code == ZmCsfeException.MAIL_ALREADY_EXISTS ||
+				code == ZmCsfeException.MODIFY_CONFLICT) {
+				var file = files[fault.id];
+				for (var p in attrs) {
+					var attr = attrs[p];
+					switch (attr.n) {
+						case "id": { file.id = attr._content; break; }
+						case "ver": { file.version = attr._content; break; }
+					}
+				}
+				conflicts.push(file);
+			}
+			else {
+				DBG.println("Unknown error occurred: "+code);
+				errors[fault.id] = fault;
+			}
+		}
+		// TODO: What to do about other errors?
+	}
+
+	// dismiss dialog
+	this.popdown();
+
+	// resolve conflicts
+	if (conflicts.length > 0) {
+		var dialog = this._appCtxt.getUploadConflictDialog();
+		if (!this._conflictCallback) {
+			this._conflictCallback = new AjxCallback(this, this._uploadConflict);
+		}
+		this._conflictCallback.args = [ files, status, guids ];
+		dialog.popup(this._uploadFolder, conflicts, this._conflictCallback);
+	}
+
+	// perform callback
+	else if (this._uploadCallback) {
 		/***
 		var items = []
 		if (response._data && response._data.BatchResponse) {
@@ -183,11 +242,18 @@ ZmUploadDialog.prototype._uploadSaveDocsResponse = function(path, filenames, res
 		}
 		this._uploadCallback.run(path, items);
 		/***/
-		this._uploadCallback.run(this._uploadFolder, path, filenames);
+		var filenames = [];
+		for (var i = 0; i < files.length; i++) {
+			filenames.push(files[i].name);
+		}
+		this._uploadCallback.run(this._uploadFolder, filenames);
 		/***/
 	}
-	
-	this.popdown();
+};
+
+ZmUploadDialog.prototype._uploadConflict =
+function(files, status, guids) {
+	this._uploadSaveDocs2(files, status, guids);
 };
 
 ZmUploadDialog.prototype._addFileInputRow = function() {

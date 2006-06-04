@@ -462,7 +462,7 @@ ZmPageEditor.prototype.__popupUploadDialog = function(callback, title) {
 	dialog.popup(notebook, callback, title);
 };
 
-ZmPageEditor.prototype._insertObjects = function(func, folder, path, filenames) {
+ZmPageEditor.prototype._insertObjects = function(func, folder, filenames) {
 	var baseUrl = folder.getUrl();
 	for (var i = 0; i < filenames.length; i++) {
 		var name = AjxStringUtil.urlComponentEncode(filenames[i]);

@@ -358,6 +358,12 @@ function() {
 		this._uploadDialog = new ZmUploadDialog(this, this.getShell());
 	return this._uploadDialog;
 };
+ZmAppCtxt.prototype.getUploadConflictDialog =
+function() {
+	if (!this._uploadConflictDialog)
+		this._uploadConflictDialog = new ZmUploadConflictDialog(this, this.getShell());
+	return this._uploadConflictDialog;
+};
 
 ZmAppCtxt.prototype.clearAllDialogs =
 function() {
@@ -365,14 +371,16 @@ function() {
 	this.clearCalendarDialogs();
 	this.clearNotebookDialogs();
 	this.clearShareDialogs();
-	this._filterRuleDialog = null;
-	this._confirmDialog = null;	
-	this._uploadDialog = null;
+	this.clearUploadDialogs();
+	this.clearOtherDialogs();
 };
 
 ZmAppCtxt.prototype.clearFolderDialogs =
 function() {
-	this._newFolderDialog = this._newSearchDialog = this._renameFolderDialog = this._moveToFolderDialog = null;
+	this._newFolderDialog = null;
+	this._newSearchDialog = null;
+	this._renameFolderDialog = null;
+	this._moveToFolderDialog = null;
 	this._folderPropsDialog = null;
 };
 
@@ -392,6 +400,18 @@ function() {
 	this._acceptShareDialog = null;
 	this._declineShareDialog = null;
 	this._revokeShareDialog = null;
+};
+
+ZmAppCtxt.prototype.clearUploadDialogs =
+function() {
+	this._uploadDialog = null;
+	this._uploadConflictDialog = null;
+};
+
+ZmAppCtxt.prototype.clearOtherDialogs =
+function() {
+	this._filterRuleDialog = null;
+	this._confirmDialog = null;
 };
 
 ZmAppCtxt.prototype.getRootTabGroup =
