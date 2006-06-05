@@ -93,7 +93,7 @@ function ZmAutocompleteListView(params) {
 
 	// for managing focus on Tab in Firefox
 	if (AjxEnv.isFirefox) {
-		this._focusAction = new AjxTimedAction(null, this._focus);
+		this._focusAction = new AjxTimedAction(null, this._autocompleteFocus);
 	}
 
 	this._internalId = AjxCore.assignId(this);
@@ -492,7 +492,7 @@ function(hasDelim) {
 ZmAutocompleteListView.prototype._mouseDownListener = 
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
-	var div = DwtUiEvent.getTarget(ev);
+	var div = DwtUiEvent.getTargetWithProp(ev, "_pos");	// target could be DIV or B
 	if (!div || div._pos == null)
 		return;
 	if (ev.button == DwtMouseEvent.LEFT) {
@@ -641,8 +641,8 @@ function(str) {
 	return this._data.autocompleteMatch(str);
 }
 
-// Force the focus to the element
-ZmAutocompleteListView.prototype._focus =
+// Force focus to the input element (handle Tab in Firefox)
+ZmAutocompleteListView.prototype._autocompleteFocus =
 function(htmlEl) {
 	htmlEl.focus();
 }
