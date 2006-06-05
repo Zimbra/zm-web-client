@@ -82,6 +82,11 @@ function(page) {
 	}
 };
 
+ZmNotebookPageView.prototype.getPrintHtml =
+function() {
+	return this.getHtmlElement().innerHTML;
+};
+
 ZmNotebookPageView.prototype.getTitle =
 function() {
 	var folderId = this.getSelection().getFolderId();

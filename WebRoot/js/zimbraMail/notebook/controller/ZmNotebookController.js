@@ -105,7 +105,8 @@ ZmNotebookController.prototype._getItemToolBarOps = function() {
 		list.push(ZmOperation.TAG_MENU, ZmOperation.SEP);
 	}
 	list.push(
-		ZmOperation.DELETE
+		ZmOperation.DELETE,
+		ZmOperation.PRINT
 		// ZmOperation.MOVE
 	);
 	/***
@@ -302,6 +303,12 @@ ZmNotebookController.prototype._detachListener = function(event) {
 
 		var win = open(winurl, winname, winfeatures);
 	}
+};
+
+ZmNotebookController.prototype._printListener =
+function(ev) {
+	var html = this.getCurrentView().getPrintHtml();
+	this._getPrintView().renderHtml(html);
 };
 
 //

@@ -393,6 +393,14 @@ function(view, elements, isAppView, clear, pushOnly, isPoppable) {
 	 return (clear ? this._app.setView(view) : this._app.pushView(view));
 };
 
+// Returns the print view, creating it if necessary.
+ZmListController.prototype._getPrintView =
+function() {
+	if (!this._printView)
+		this._printView = new ZmPrintView(this._appCtxt);
+	return this._printView;
+};
+
 // List listeners
 
 // List selection event - handle flagging if a flag icon was clicked, otherwise reset
@@ -534,10 +542,7 @@ ZmListController.prototype._printListener =
 function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	var item = (items instanceof Array) ? items[0] : items;
-	if (!this._printView)
-		this._printView = new ZmPrintView(this._appCtxt);
-
-	this._printView.render(item);
+	this._getPrintView().render(item);
 };
 
 ZmListController.prototype._backListener =

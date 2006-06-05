@@ -69,6 +69,12 @@ function(type, list) {
 	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
 };
 
+ZmPrintView.prototype.renderHtml = 
+function(html) {
+	this._html = html;
+	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
+};
+
 ZmPrintView.prototype._handleResponseRender =
 function(result) {
 	this._html = result.getResponse();
