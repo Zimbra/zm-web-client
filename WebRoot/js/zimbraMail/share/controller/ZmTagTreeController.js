@@ -137,9 +137,15 @@ function() {
 */
 ZmTagTreeController.prototype._itemClicked =
 function(tag) {
-	var searchController = this._appCtxt.getSearchController();
-	var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
-	searchController.search({query: 'tag:"' + tag.name + '"', types: types});
+	var sc = this._appCtxt.getSearchController();
+	var app = this._appCtxt.getAppController().getActiveApp();
+
+	var searchFor = app == ZmZimbraMail.CONTACTS_APP
+		? ZmItem.CONTACT
+		: ZmSearchToolBar.FOR_MAIL_MI;
+
+	var types = sc.getTypes(searchFor);
+	sc.search({query: 'tag:"' + tag.name + '"', types: types});
 };
 
 // Listeners

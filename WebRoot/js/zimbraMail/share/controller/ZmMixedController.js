@@ -84,10 +84,12 @@ function(searchResults) {
 
 	// reset the filter drop down per type of results returned
 	var op = ZmOperation.SHOW_ALL_ITEM_TYPES;
-	if (searchResults.type == ZmItem.CONV || searchResults.type == ZmItem.MSG) {
-		op = ZmOperation.SHOW_ONLY_MAIL;
-	} else if (searchResults.type == ZmItem.CONTACT) {
-		op = ZmOperation.SHOW_ONLY_CONTACTS;
+	if (searchResults.search.types.size() == 1) {
+		if (searchResults.type == ZmItem.CONV || searchResults.type == ZmItem.MSG) {
+			op = ZmOperation.SHOW_ONLY_MAIL;
+		} else if (searchResults.type == ZmItem.CONTACT) {
+			op = ZmOperation.SHOW_ONLY_CONTACTS;
+		}
 	}
 	this._setFilterButtonProps(op, true);
 };

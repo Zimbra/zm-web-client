@@ -73,7 +73,7 @@ function(overviewId, showUnread, omit, forceCreate) {
 			if (item._isSeparator) continue;
 			var object = item.getData(Dwt.KEY_OBJECT);
 //			if (object.color != ZmAddrBook.DEFAULT_COLOR)
-				this._setTreeItemColor(item, object.color);
+				this._setTreeItemColor(item, object);
 		}
 	}
 };
@@ -139,9 +139,11 @@ function() {
 };
 
 ZmAddrBookTreeController.prototype._setTreeItemColor =
-function(item, color) {
+function(item, object) {
+	if (object.id == ZmFolder.ID_TRASH) return;
+
 	var element = item.getHtmlElement();
-	element.className = ZmOrganizer.COLOR_TEXT[color] + "Bg";
+	element.className = ZmOrganizer.COLOR_TEXT[object.color] + "Bg";
 };
 
 
@@ -179,7 +181,7 @@ function(ev, treeView) {
 		if (ev.event == ZmEvent.E_CREATE ||
 			(ev.event == ZmEvent.E_MODIFY && fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]))) {
 			var object = node.getData(Dwt.KEY_OBJECT);
-			this._setTreeItemColor(node, object.color);
+			this._setTreeItemColor(node, object);
 		}
 	}
 };
