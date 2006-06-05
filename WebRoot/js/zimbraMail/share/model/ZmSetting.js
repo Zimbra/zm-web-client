@@ -52,9 +52,12 @@ function ZmSetting(id, name, type, dataType, defaultValue, settings) {
 	this.defaultValue = defaultValue;
 	this.settings = settings;
 	
-	if (this.dataType == ZmSetting.D_HASH_TABLE) {
-		this.value = new Object();
-		this.defaultValue = new Object();
+	if (this.dataType == ZmSetting.D_HASH) {
+		this.value = {};
+		this.defaultValue = {};
+	} else if (this.dataType == ZmSetting.D_LIST) {
+		this.value = [];
+		this.defaultValue = [];
 	} else {
 		this.value = null;
 	}
@@ -88,7 +91,6 @@ ZmSetting.DEDUPE_INBOX		= "moveSentMessageToInbox";
 ZmSetting.DEDUPE_ALL		= "dedupeAll";
 ZmSetting.SIG_INTERNET		= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK		= "outlook";
-ZmSetting.SKIN				= "sand";					// zimbraPrefSkin
 
 // Constants for various setting types. A setting can represent configuration data, a COS attribute, or a user preference.
 // Any setting added here must also be added to INIT below.
@@ -132,6 +134,7 @@ ZmSetting.SKIN_TREE_FOOTER_ID			= i++;
 ZmSetting.SKIN_USER_INFO_ID				= i++;
 
 // COS SETTINGS
+ZmSetting.AVAILABLE_SKINS				= i++;
 ZmSetting.BROWSE_ENABLED				= i++;
 ZmSetting.CALENDAR_ENABLED				= i++;
 ZmSetting.NOTEBOOK_ENABLED				= i++;
@@ -243,6 +246,7 @@ ZmSetting.VIEW_AS_HTML					= i++;
 
 
 ZmSetting.MAX_INDEX 	= i - 1;
+delete i;
 
 // setting types
 ZmSetting.T_CONFIG		= 1;
@@ -254,11 +258,12 @@ ZmSetting.D_STRING		= 1; // default type
 ZmSetting.D_INT			= 2;
 ZmSetting.D_BOOLEAN		= 3;
 ZmSetting.D_LDAP_TIME 	= 4;
-ZmSetting.D_HASH_TABLE 	= 5;
+ZmSetting.D_HASH 		= 5;
+ZmSetting.D_LIST		= 6;
 
 
 // initialization for settings: [name, type, data type, default value]
-ZmSetting.INIT = new Object();
+ZmSetting.INIT = {};
 
 // CONFIG SETTINGS
 ZmSetting.INIT[ZmSetting.AC_TIMER_INTERVAL]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_INT, 300];
@@ -298,6 +303,7 @@ ZmSetting.INIT[ZmSetting.SKIN_TREE_FOOTER_ID]			= [null, ZmSetting.T_CONFIG, ZmS
 ZmSetting.INIT[ZmSetting.SKIN_USER_INFO_ID]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_quota"];
 
 // COS SETTINGS
+ZmSetting.INIT[ZmSetting.AVAILABLE_SKINS]				= ["zimbraAvailableSkin", ZmSetting.T_COS, ZmSetting.D_LIST];
 ZmSetting.INIT[ZmSetting.BROWSE_ENABLED]				= ["zimbraFeatureAdvancedSearchEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.CALENDAR_ENABLED]				= ["zimbraFeatureCalendarEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.CHANGE_PASSWORD_ENABLED]		= ["zimbraFeatureChangePasswordEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
@@ -371,7 +377,7 @@ ZmSetting.INIT[ZmSetting.SEARCH_INCLUDES_SPAM]			= ["zimbraPrefIncludeSpamInSear
 ZmSetting.INIT[ZmSetting.SEARCH_INCLUDES_TRASH]			= ["zimbraPrefIncludeTrashInSearch", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.SHOW_SEARCH_STRING]			= ["zimbraPrefShowSearchString", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.SKIN_NAME]						= ["zimbraPrefSkin", ZmSetting.T_PREF, ZmSetting.D_STRING, "steel"];
-ZmSetting.INIT[ZmSetting.SORTING_PREF] 					= [null, ZmSetting.T_PREF, ZmSetting.D_HASH_TABLE];
+ZmSetting.INIT[ZmSetting.SORTING_PREF] 					= [null, ZmSetting.T_PREF, ZmSetting.D_HASH];
 
 // mail preferences
 ZmSetting.INIT[ZmSetting.COMPOSE_AS_FORMAT] 			= ["zimbraPrefComposeFormat", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.COMPOSE_TEXT];
@@ -471,10 +477,12 @@ function(value, key, setDefault, skipNotify) {
 		} else {
 			this.value = num;	// default
 		}
-	} else if (this.dataType == ZmSetting.D_HASH_TABLE) {
+	} else if (this.dataType == ZmSetting.D_HASH) {
 		if (key) {
 			this.value[key] = value;
 		}
+	} else if (this.dataType == ZmSetting.D_LIST) {
+		this.value.push(value);
 	}
 
 	if (setDefault) {

@@ -78,15 +78,20 @@ ZmPref.TYPE_FONT		= i++;
 ZmPref.TYPE_IMPORT		= i++;
 ZmPref.TYPE_EXPORT		= i++;
 
+// custom functions for loading and validation
 
-// List the server name for all skins here.
-//	You also need to update
-ZmPref.SKIN_SAND		= "sand";
-ZmPref.SKIN_SKY			= "sky";
-ZmPref.SKIN_STEEL		= "steel";
-ZmPref.SKIN_WALNUT		= "walnut";
-ZmPref.SKIN_MONEY		= "money";
-
+ZmPref.loadSkins =
+function(appCtxt, setup) {
+	var skins = appCtxt.get(ZmSetting.AVAILABLE_SKINS);
+	for (var i = 0; i < skins.length; i++) {
+		var skin = skins[i];
+		setup.options.push(skin);
+		var skin1 = skin.substr(0, 1).toUpperCase() + skin.substr(1);
+		var text = ZmMsg['skin' + skin1];
+		text = text ? text : skin1;
+		setup.displayOptions.push(text);
+	}
+};
 
 ZmPref.validateEmail = 
 function(emailStr) {
@@ -146,8 +151,9 @@ ZmPref.SETUP[ZmSetting.PASSWORD] = {
 ZmPref.SETUP[ZmSetting.SKIN_NAME] = {
 	displayName:		ZmMsg.selectSkin,
 	displayContainer:	ZmPref.TYPE_SELECT,
-	displayOptions:		[ZmMsg.skinSand, ZmMsg.skinSky, ZmMsg.skinSteel, "Bare"],
-	options:			[ZmPref.SKIN_SAND, ZmPref.SKIN_SKY, ZmPref.SKIN_STEEL, "bare"],
+	displayOptions:		[],
+	options:			[],
+	loadFunction:		ZmPref.loadSkins,
 	displaySeparator:	true,
 	precondition:		ZmSetting.SKIN_CHANGE_ENABLED};
 

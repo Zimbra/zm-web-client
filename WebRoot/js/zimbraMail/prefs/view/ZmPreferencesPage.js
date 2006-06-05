@@ -86,7 +86,14 @@ function() {
 
 		var setup = ZmPref.SETUP[id];
 		var pre = setup.precondition;
-		if (pre && !(this._appCtxt.get(pre))) continue;		
+		if (pre && !(this._appCtxt.get(pre))) continue;
+		
+		if (setup.loadFunction) {
+			setup.loadFunction(this._appCtxt, setup);
+			if (setup.options.length <= 1) {
+				continue;
+			}
+		}
 
 		// save the current value (for checking later if it changed)
 		pref.origValue = this._getPrefValue(id);
@@ -106,7 +113,7 @@ function() {
 			var div = this._setupInput(id, setup, value);
 			this._createRow(setup.displayName, div, setup.displaySeparator);
 		} else {
-			var html = new Array();
+			var html = [];
 			var j = 0;
 			var buttonId;
 			var prefId = ZmPref.KEY_ID + id;
