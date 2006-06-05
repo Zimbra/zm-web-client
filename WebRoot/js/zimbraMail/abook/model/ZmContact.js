@@ -356,6 +356,16 @@ function(sortBy) {
 	return this.sf;
 };
 
+ZmContact.prototype.getIcon =
+function() {
+	var icon;
+	if (this.isGal)				icon = "GALContact";
+	else if (this.isShared())	icon = "SharedContact";
+	else 						icon = "Contact";
+
+	return icon;
+};
+
 ZmContact.prototype.getAttr =
 function(name) {
 	if (!this.list) return null;

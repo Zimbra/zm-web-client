@@ -75,14 +75,11 @@ ZmAddrBook.prototype.getIcon =
 function() {
 	var icon;
 
-	if (this.id == ZmOrganizer.ID_ROOT)
-		icon = null;
-	else if (this.id == ZmOrganizer.ID_TRASH)
-		icon = "Trash";
-	else if (this.link)
-		icon = "SharedContactsFolder";
-	else
-		icon = "ContactsFolder";
+	if (this.id == ZmFolder.ID_ROOT)			icon = null;
+	else if (this.id == ZmFolder.ID_TRASH)		icon = "Trash";
+	else if (this.link)							icon = "SharedContactsFolder";
+	else if (this.id == ZmFolder.ID_AUTO_ADDED)	icon = "EmailedContacts";
+	else										icon = "ContactsFolder";
 
 	return icon;
 };

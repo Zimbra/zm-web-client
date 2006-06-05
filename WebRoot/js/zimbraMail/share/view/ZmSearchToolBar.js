@@ -63,7 +63,7 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 
 	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		// XXX: use different icon?
-		mi = DwtMenuItem.create(menu, "SearchGAL", ZmMsg.searchPersonalAndShared, null, true, DwtMenuItem.RADIO_STYLE, 0);
+		mi = DwtMenuItem.create(menu, "SearchSharedContacts", ZmMsg.searchPersonalAndShared, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_PAS_MI);
 	}
 

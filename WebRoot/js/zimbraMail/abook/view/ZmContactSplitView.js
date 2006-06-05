@@ -154,7 +154,7 @@ function(enable) {
 ZmContactSplitView.prototype._sizeChildren = 
 function(width, height) {
 	var padding = 5;		// css padding value (see ZmContactSplitView css class)
-	var listWidth = 215;	// fixed width size of list view
+	var listWidth = 200;	// fixed width size of list view
 
 	// calc. height for children of this view
 	var alphabetBarHeight = this._alphabetBar ? ZmContactSplitView.ALPHABET_HEIGHT : null;
@@ -192,10 +192,8 @@ function() {
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>";
 	html[idx++] = "<tr class='contactHeaderRow' id='";
 	html[idx++] = this._contactHeaderRowId;
-	html[idx++] = "'><td width=20><center>";
-	html[idx++] = AjxImg.getImageHtml("Person");
-	html[idx++] = "</center></td><td width='";
-	html[idx++] = this._contactPartWidth - 20;
+	html[idx++] = "'><td width='";
+	html[idx++] = this._contactPartWidth;
 	html[idx++] = "' id='";
 	html[idx++] = this._contactHeaderId;
 	html[idx++] = "'></td></tr>";
@@ -266,7 +264,10 @@ function(contact, isGal) {
 	var contactHdr = document.getElementById(this._contactHeaderId);
 	var hdrHtml = new Array();
 	var idx = 0;
-	hdrHtml[idx++] = "<table border=0 width=100% cellpadding=0 cellspacing=0><tr><td class='contactHeader'>";
+	hdrHtml[idx++] = "<table border=0 width=100% cellpadding=0 cellspacing=0><tr>";
+	hdrHtml[idx++] = "<td width=20><center>";
+	hdrHtml[idx++] = AjxImg.getImageHtml(contact.getIcon());
+	hdrHtml[idx++] = "</center></td><td class='contactHeader'>";
 	hdrHtml[idx++] = contact.getFileAs();
 	hdrHtml[idx++] = "</td><td align=right id='";
 	hdrHtml[idx++] = this._tagCellId;
@@ -612,9 +613,9 @@ function(contact, now, isDndIcon) {
 	idx = this._getRow(htmlArr, idx, contact);
 
 	// icon
-	htmlArr[idx++] = "<td style='vertical-align:middle;' width=16>";
-	htmlArr[idx++] = AjxImg.getImageHtml("Person");
-	htmlArr[idx++] = "</td>";
+	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
+	htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon());
+	htmlArr[idx++] = "</center></td>";
 
 	// file as
 	htmlArr[idx++] = "<td style='vertical-align:middle;'>&nbsp;";
@@ -622,22 +623,23 @@ function(contact, now, isDndIcon) {
 	htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
 	htmlArr[idx++] = "</td>";
 
-	// tags
-	if (!isDndIcon && this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		var cellId = this._getFieldId(contact, ZmItem.F_TAG_CELL);
-		htmlArr[idx++] = "<td style='vertical-align:middle;' width=16 class='Tag' id='";
-		htmlArr[idx++] = cellId;
-		htmlArr[idx++] = "'>";
-		htmlArr[idx++] = this._getTagImgHtml(contact, ZmItem.F_TAG);
-		htmlArr[idx++] = "</td>";
+	if (!isDndIcon) {
+		// if read only, show lock icon in place of the tag column since we dont
+		// currently support tags for "read-only" contacts (i.e. shares)
+		if (contact.isReadOnly()) {
+			htmlArr[idx++] = "<td width=16>";
+			htmlArr[idx++] = AjxImg.getImageHtml("ReadOnly");
+			htmlArr[idx++] = "</td>";
+		} else if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+			// otherwise, show tag if there is one
+			var cellId = this._getFieldId(contact, ZmItem.F_TAG_CELL);
+			htmlArr[idx++] = "<td style='vertical-align:middle;' width=16 class='Tag' id='";
+			htmlArr[idx++] = cellId;
+			htmlArr[idx++] = "'>";
+			htmlArr[idx++] = this._getTagImgHtml(contact, ZmItem.F_TAG);
+			htmlArr[idx++] = "</td>";
+		}
 	}
-
-	// read only icon
-	htmlArr[idx++] = "<td width=16>";
-	if (!isDndIcon && contact.isReadOnly())
-		htmlArr[idx++] = AjxImg.getImageHtml("PadLock");
-	htmlArr[idx++] = "</td>";
-
 	htmlArr[idx++] = "</tr></table>";
 
 	div.innerHTML = htmlArr.join("");
