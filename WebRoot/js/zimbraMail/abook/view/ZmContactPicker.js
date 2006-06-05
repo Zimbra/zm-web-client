@@ -174,10 +174,10 @@ function() {
 	
 	// add search button
 	var searchSpan = document.getElementById(this._searchBtnTdId);
-	var searchButton = new DwtButton(this);
-	searchButton.setText(ZmMsg.search);
-	searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
-	searchSpan.appendChild(searchButton.getHtmlElement());
+	this._searchButton = new DwtButton(this);
+	this._searchButton.setText(ZmMsg.search);
+	this._searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
+	searchSpan.appendChild(this._searchButton.getHtmlElement());
 
 	// add select menu
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
@@ -240,6 +240,8 @@ function(ev) {
 */
 ZmContactPicker.prototype.search = 
 function(columnItem, ascending) {
+	this._searchButton.setEnabled(false);
+
 	var sortBy = ascending ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC;
 	var types = AjxVector.fromArray([ZmItem.CONTACT]);
 	var params = {query: this._query, types: types, sortBy: sortBy, offset: 0, limit: ZmContactPicker.SEARCHFOR_MAX, contactSource: this._contactSource};
@@ -266,6 +268,8 @@ function(result) {
 		}
 	}
 	this._chooser.setItems(AjxVector.fromArray(list));
+
+	this._searchButton.setEnabled(true);
 };
 
 // Done choosing addresses, add them to the compose form
