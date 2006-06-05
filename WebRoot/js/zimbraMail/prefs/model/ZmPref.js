@@ -56,7 +56,7 @@ ZmPref.MAIL_PREFS = [ZmSetting.INITIAL_GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSet
 					 ZmSetting.VACATION_MSG_ENABLED, ZmSetting.VACATION_MSG,
 					 ZmSetting.NOTIF_ENABLED, ZmSetting.NOTIF_ADDRESS,
 					 ZmSetting.MAIL_FORWARDING_ADDRESS,					 
-					 ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED,
+//					 ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED,
 					 ZmSetting.VIEW_AS_HTML, ZmSetting.DEDUPE_MSG_TO_SELF, 
 					 ZmSetting.COMPOSE_AS_FORMAT, ZmSetting.COMPOSE_SAME_FORMAT, ZmSetting.NEW_WINDOW_COMPOSE];
 					 
@@ -239,6 +239,7 @@ ZmPref.SETUP[ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED] = {
 ZmPref.SETUP[ZmSetting.MAIL_FORWARDING_ADDRESS] = {
 	displayName:		ZmMsg.mailForwardingAddress,
 	displayContainer:	ZmPref.TYPE_INPUT,
+	displaySeparator:	true,
 	validationFunction: ZmPref.validateEmail,
 	errorMessage:       ZmMsg.invalidEmail,
 	precondition:		ZmSetting.MAIL_FORWARDING_ENABLED};
