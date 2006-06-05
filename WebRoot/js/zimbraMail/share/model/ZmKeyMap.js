@@ -54,6 +54,9 @@ function ZmKeyMap() {
 			"Alt+Shift+D,t": ZmKeyMap.DBG_TIMING,
 			"Ctrl+Shift+D,t": ZmKeyMap.DBG_TIMING,
 
+			"Alt+N": ZmKeyMap.NEW,
+			"Ctrl+N": ZmKeyMap.NEW,
+			
 			"Alt+N,A": ZmKeyMap.NEW_APPT,
 			"Ctrl+N,A": ZmKeyMap.NEW_APPT,
 
@@ -135,6 +138,7 @@ ZmKeyMap.DBG_TIMING = i++;
 ZmKeyMap.DEL = i++;
 ZmKeyMap.MARK_READ = i++;
 ZmKeyMap.MARK_UNREAD = i++;
+ZmKeyMap.NEW = i++;
 ZmKeyMap.NEW_APPT = i++;
 ZmKeyMap.NEW_CALENDAR = i++;
 ZmKeyMap.NEW_CONTACT = i++;

@@ -166,7 +166,22 @@ function(actionCode) {
 			this._paginate(this._currentView, false);
 			break;
 
-		case ZmKeyMap.NEW_APPT:
+		case ZmKeyMap.NEW: {
+			//Find the current app
+			switch (this._appCtxt.getAppController().getActiveApp()) {
+				case ZmZimbraMail.MAIL_APP:
+					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE]);
+					break;
+				case ZmZimbraMail.CALENDAR_APP:
+					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CALENDAR]);
+					break;
+				case ZmZimbraMail.CONTACTS_APP:
+					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CONTACT]);
+					break;
+			}
+			break;
+		}
+	
 		case ZmKeyMap.NEW_CALENDAR:
 		case ZmKeyMap.NEW_CONTACT:
 		case ZmKeyMap.NEW_FOLDER:
