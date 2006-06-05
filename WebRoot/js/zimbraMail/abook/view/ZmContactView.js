@@ -666,7 +666,9 @@ function(contact) {
 
 ZmContactView.prototype._setFolder =
 function() {
-	var match = this._contact.addrbook.id;
+	var match = this._contact.addrbook
+		? this._contact.addrbook.id
+		: ZmFolder.ID_CONTACTS;
 
 	// if this is a new contact, set folder to currently selected addrbook in overview tree
 	if (this._contact.id == null) {
