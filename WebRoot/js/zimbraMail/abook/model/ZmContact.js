@@ -329,13 +329,6 @@ function() {
 	return this.addrbook && this.addrbook.link;
 };
 
-ZmContact.prototype.getDefaultDndAction =
-function() {
-	return (this.isShared() || this.isReadOnly())
-		? ZmItem.DND_ACTION_COPY
-		: ZmItem.DND_ACTION_MOVE;
-};
-
 ZmContact.prototype.isReadOnly =
 function() {
 	if (this.isGal)
@@ -349,6 +342,18 @@ function() {
 	}
 
 	return false;
+};
+
+ZmContact.prototype.getDefaultDndAction =
+function() {
+	return (this.isShared() || this.isReadOnly())
+		? ZmItem.DND_ACTION_COPY
+		: ZmItem.DND_ACTION_MOVE;
+};
+
+ZmContact.prototype.getSortVal =
+function(sortBy) {
+	return this.sf;
 };
 
 ZmContact.prototype.getAttr =

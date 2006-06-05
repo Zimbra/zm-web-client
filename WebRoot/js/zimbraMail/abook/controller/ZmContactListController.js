@@ -53,7 +53,6 @@ function ZmContactListController(appCtxt, container, contactsApp) {
 	this._listeners[ZmOperation.PRINT_MENU] = new AjxListener(this, this._printContactListener);
 
 	this._appCtxt.getSettings().getSetting(ZmSetting.CONTACTS_PER_PAGE).addChangeListener(new AjxListener(this, this._settingsChangeListener));
-	this._isGalSearch = false;
 	this._parentView = new Object();
 };
 
@@ -68,6 +67,11 @@ ZmContactListController.MSG_KEY = new Object();
 ZmContactListController.MSG_KEY[ZmController.CONTACT_SIMPLE_VIEW]	= "contactList";
 ZmContactListController.MSG_KEY[ZmController.CONTACT_CARDS_VIEW]	= "detailedCards";
 
+ZmContactListController.SEARCH_TYPE_CANONICAL	= 1 << 0;
+ZmContactListController.SEARCH_TYPE_GAL			= 1 << 1;
+ZmContactListController.SEARCH_TYPE_NEW			= 1 << 2;
+ZmContactListController.SEARCH_TYPE_ANYWHERE	= 1 << 3;
+
 ZmContactListController.VIEWS = [ZmController.CONTACT_SIMPLE_VIEW, ZmController.CONTACT_CARDS_VIEW];
 
 ZmContactListController.prototype.toString = 
@@ -78,27 +82,28 @@ function() {
 // Public methods
 
 ZmContactListController.prototype.show =
-function(searchResult, bIsGalSearch, folderId, isShared) {
-	this._isGalSearch = bIsGalSearch;
+function(searchResult, bIsGalSearch, folderId) {
+	this._searchType = bIsGalSearch
+		? ZmContactListController.SEARCH_TYPE_GAL
+		: ZmContactListController.SEARCH_TYPE_CANONICAL;
 	this._folderId = folderId;
-	this._isAnywhereSearch = false;
-	var bForce = false;
 
 	if (searchResult instanceof ZmList) {
 		this._list = searchResult;			// set as canonical list of contacts
-		this._list._isShared = false;
-		bForce = true;					// always force display
+		this._list._isShared = false;		// this list is not a search of shared items
 		if (!this._currentView)
 			this._currentView = this._defaultView();
 	} else if (searchResult instanceof ZmSearchResult) {
-		this._isNewSearch = bForce = true;
+		this._searchType |= ZmContactListController.SEARCH_TYPE_NEW;
 		this._list = searchResult.getResults(ZmItem.CONTACT);
 
 		// HACK - find out if user did a "is:anywhere" search (for printing)
-		this._isAnywhereSearch = searchResult.search.isAnywhere;
+		if (searchResult.search.isAnywhere)
+			this._searchType |= ZmContactListController.SEARCH_TYPE_ANYWHERE;
 
-		if (bIsGalSearch && (this._list == null)) {
-			this._list = new ZmContactList(this._appCtxt, searchResult.search, true);
+		if (bIsGalSearch) {
+			if (this._list == null)
+				this._list = new ZmContactList(this._appCtxt, searchResult.search, true);
 			this._list._isShared = false;
 		} else {
 			// find out if we just searched for a shared address book
@@ -117,7 +122,7 @@ function(searchResult, bIsGalSearch, folderId, isShared) {
 	if (this._listView[view])
 		this._listView[view].setOffset(0);
 
-	this.switchView(view, bForce);
+	this.switchView(view, true);
 };
 
 ZmContactListController.prototype.switchView =
@@ -137,7 +142,7 @@ function(view, force) {
 		this._resetNavToolBarButtons(view);
 
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
-		if (this._isGalSearch)
+		if (this.isGalSearch())
 			this._appCtxt.getSearchController().setDefaultSearchType(ZmSearchToolBar.FOR_GAL_MI, true);
 
 		var list = this._listView[view].getList();
@@ -149,6 +154,11 @@ function(view, force) {
 ZmContactListController.prototype.getFolderId = 
 function() {
 	return this._folderId;
+};
+
+ZmContactListController.prototype.isGalSearch =
+function() {
+	return ((this._searchType & ZmContactListController.SEARCH_TYPE_GAL) != 0);
 };
 
 ZmContactListController.prototype.getParentView =
@@ -311,7 +321,7 @@ function(parent, num) {
 		printMenuItem.setText(ZmMsg.printResults);
 	}
 
-	if (!this._isGalSearch) {
+	if (!this.isGalSearch()) {
 		parent.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MENU, ZmOperation.VIEW], true);
 		parent.enable(ZmOperation.PRINT_MENU, num > 0);
 		if (parent instanceof ZmActionMenu)
@@ -319,16 +329,10 @@ function(parent, num) {
 
 		// a valid folderId means user clicked on an addrbook
 		if (this._folderId) {
-			var canEdit = true;
-			var isShare = false;
-			// get the folder from this folderId
 			var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this._folderId);
-			if (folder && folder.link) {
-				isShare = true;
-				var shares = folder.getShares();
-				var share = shares ? shares[0] : null;
-				canEdit = share && share.isWrite();
-			}
+			var isShare = folder && folder.link;
+			var canEdit = (folder == null || !folder.isReadOnly());
+
 			parent.enable([ZmOperation.TAG_MENU], !isShare && num > 0);
 			parent.enable([ZmOperation.DELETE, ZmOperation.MOVE], canEdit && num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], canEdit && num == 1);
@@ -338,7 +342,7 @@ function(parent, num) {
 				printMenuItem.setText(text);
 			}
 		} else {
-			// must be a search
+			// otherwise, must be a search
 			var contact = this._listView[this._currentView].getSelection()[0];
 			parent.enable([ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.MOVE], num > 0);
 			parent.enable([ZmOperation.EDIT, ZmOperation.CONTACT], num == 1 && !contact.isReadOnly());
@@ -392,19 +396,12 @@ function(ev) {
 		this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
 	{
 		this._resetNavToolBarButtons(this._currentView);
-		this._parentView[this._currentView].setContact(ev.item, this._isGalSearch);
+		this._parentView[this._currentView].setContact(ev.item, this.isGalSearch());
 	} 
 	else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) 
 	{
-		// get the folder from this folderId
-		var canEdit = true;
 		var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(ev.item.folderId);
-		if (folder && folder.link) {
-			var shares = folder.getShares();
-			var share = shares ? shares[0] : null;
-			canEdit = share && share.isWrite();
-		}
-		if (!this._isGalSearch && canEdit)
+		if (!this.isGalSearch() && (folder == null || !folder.isReadOnly()))
 			this._app.getContactController().show(ev.item);
 	}
 };
@@ -421,7 +418,7 @@ function(ev) {
 	// enable/disable New Email menu item per valid email found for this contact
 	var enableNewEmail = email != null && this._listView[this._currentView].getSelectionCount() == 1;
 	this._actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MESSAGE], enableNewEmail);
-	this._setContactText(!this._isGalSearch);
+	this._setContactText(!this.isGalSearch());
 	this._actionMenu.popup(0, ev.docX, ev.docY);
 };
 
@@ -452,9 +449,9 @@ ZmContactListController.prototype._settingsChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 	
-	var setting = ev.source;
-	if (setting.id == ZmSetting.CONTACTS_PER_PAGE)
-		this._isNewSearch = true; // mark flag for relayout
+	// mark flag for relayout if contacts per page setting changed
+	if (ev.source.id == ZmSetting.CONTACTS_PER_PAGE)
+		this._searchType |= ZmContactListController.SEARCH_TYPE_NEW;
 };
 
 ZmContactListController.prototype._printListener = 
@@ -465,7 +462,7 @@ function(ev) {
 	if (this._folderId && !this._list._isShared) {
 		var subList = this._list.getSubList(0, null, this._folderId);
 		this._printView.renderType(ZmItem.CONTACT, subList);
-	} else if (this._isAnywhereSearch) {
+	} else if ((this._searchType & ZmContactListController.SEARCH_TYPE_ANYWHERE) != 0) {
 		var canonicalList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 		this._printView.render(canonicalList);
 	} else {
@@ -510,8 +507,8 @@ function() {
 
 ZmContactListController.prototype._preShowCallback =
 function(view) {
-	if (this._isNewSearch) {
-		this._isNewSearch = false;
+	if ((this._searchType & ZmContactListController.SEARCH_TYPE_NEW) != 0) {
+		this._searchType &= ~ZmContactListController.SEARCH_TYPE_NEW;
 	} else {
 		this._resetNavToolBarButtons(view);
 	}

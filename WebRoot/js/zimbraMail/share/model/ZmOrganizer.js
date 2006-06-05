@@ -609,6 +609,12 @@ function() {
 	return this.isUnder(ZmOrganizer.ID_TRASH);
 };
 
+ZmOrganizer.prototype.isReadOnly =
+function() {
+	var share = this.shares ? this.shares[0] : null;
+	return share && !share.isWrite();
+};
+
 /**
 * Returns true is this is a system tag or folder.
 */

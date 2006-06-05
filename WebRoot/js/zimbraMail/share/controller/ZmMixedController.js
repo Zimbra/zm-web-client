@@ -229,7 +229,7 @@ function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		if (ev.item.type == ZmItem.CONTACT)
-			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(ev.item, this._isGalSearch);
+			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(ev.item);
 		else if (ev.item.type == ZmItem.CONV)
 			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController().show(this._activeSearch, ev.item);
 		else if (ev.item.type == ZmItem.MSG)

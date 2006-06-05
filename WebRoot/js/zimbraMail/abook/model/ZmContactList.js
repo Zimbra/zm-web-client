@@ -181,6 +181,8 @@ function(node, args) {
 	var contact = canonicalList.getById(node.id);
 	if (contact) {
 		// NOTE: we dont realize contact b/c getById already does that for us
+		// Also, set sf property if not set (we get it on search results, not GetContactResponse)
+		contact.sf = contact.sf || node.sf;
 		this.add(contact);
 	} else {
 		ZmList.prototype.addFromDom.call(this, node, args);

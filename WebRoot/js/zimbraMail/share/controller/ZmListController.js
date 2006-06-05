@@ -1009,22 +1009,10 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 */
 ZmListController.prototype._paginate = 
 function(view, forward, loadIndex) {
-/*
-	var list = this._listView[this._currentView].getList();
-	var lastItem = list.getLast();
-	var lastId, lastSortVal;
-	if (lastItem && lastItem.id) {
-		lastId = lastItem.id;
-//		lastSortVal = lastItem.getSortVal(this._activeSearch.search.sortBy);
-	}
-*/
-	var lastSortVal = this._activeSearch.search.lastSortVal;
-	var lastId = this._activeSearch.search.lastId;
 	var offset = this._listView[view].getNewOffset(forward);
 	var limit = this._listView[view].getLimit();
 	forward ? this.currentPage++ : this.currentPage--;
 	this.maxPage = Math.max(this.maxPage, this.currentPage);
-	DBG.println(AjxDebug.DBG2, "current page is now: " + this.currentPage);
 
 	this._listView[view].setOffset(offset);
 	
@@ -1035,6 +1023,14 @@ function(view, forward, loadIndex) {
 		var max = delta < limit && delta > 0 ? delta : limit;
 		if (max < limit)
 			offset = ((offset + limit) - max) + 1;
+
+		// figure out if this requires cursor-based paging
+		var list = this._listView[this._currentView].getList();
+		var lastItem = list.getLast();
+		var lastSortVal = (lastItem && lastItem.id)
+			? lastItem.getSortVal(this._activeSearch.search.sortBy)
+			: null;
+		var lastId = lastSortVal ? lastItem.id : null;
 
 		// get next page of items from server; note that callback may be overridden
 		var respCallback = new AjxCallback(this, this._handleResponsePaginate, [view, false, loadIndex, offset]);
