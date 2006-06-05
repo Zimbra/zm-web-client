@@ -34,6 +34,7 @@ P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
 
 .MsgBody-text, .MsgBody-text * { 
 	@Text@
+	font-family: monospace;
 }
 
 body.MsgBody { 
