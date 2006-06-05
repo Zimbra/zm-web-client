@@ -1307,6 +1307,7 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 	{
 		function makeMenu(fixall, parent) {
 			var menu = new ZmPopupMenu(parent), item;
+			menu.dontStealFocus();
 			if (modified) {
 				item = menu.createMenuItem
 					("orig", null,
@@ -1405,6 +1406,8 @@ function(words) {
 	} else {
 		this._appCtxt.setStatusMsg(ZmMsg.spellCheckUnavailable, ZmStatusView.LEVEL_CRITICAL);
 	}
+
+	setTimeout(AjxCallback.simpleClosure(this.focus, this), 10);
 
 	if (this.onExitSpellChecker)
 		this.onExitSpellChecker.run(wordsFound);
@@ -1508,6 +1511,7 @@ ZmHtmlEditor.prototype.__onContextMenu = function(ev) {
 	var menu = this.__contextMenu;
 	if (!menu) {
 		menu = this.__contextMenu = new DwtMenu(this);
+		menu.dontStealFocus();
 
 		var item;
 		var listener = this.__contextMenuSelectionListener;
@@ -1564,6 +1568,7 @@ ZmHtmlEditor.prototype.__onContextMenu = function(ev) {
 		item = new DwtMenuItem(menu);
 		item.setText(ZmMsg.insertTable);
 		var grid_menu = new DwtMenu(item, DwtMenu.GENERIC_WIDGET_STYLE);
+		grid_menu.dontStealFocus();
  		var grid = new DwtGridSizePicker(grid_menu, ZmMsg.tableSize);
  		grid.addSelectionListener(new AjxListener(this, this._createTableListener));
  		item.setMenu(grid_menu);
@@ -1576,6 +1581,7 @@ ZmHtmlEditor.prototype.__onContextMenu = function(ev) {
 		item.setImage("Table");
 		item.setText(ZmMsg.tableOperations);
 		var m2 = new DwtMenu(item);
+		m2.dontStealFocus();
 		item.setMenu(m2);
 		menu.Item_tableOperations = item;
 
