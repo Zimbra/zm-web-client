@@ -160,9 +160,7 @@ ZmLogin.showPanel =
 function() {
 	var html = [];
 	var idx = 0;
-	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>";
-	html[idx++] = "<table align=center border=0 cellspacing=0 cellpadding=0 class='LoginPanel'>";
-	html[idx++] = "<tr><td id='loginPanel' class='LoginMainPanel'>";
+	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td align='center' valign='center'>";
 
 	var params = ZLoginFactory.copyDefaultParams(ZmMsg);
 	params.showForm = true;
@@ -173,8 +171,6 @@ function() {
 	params.showButton = true;
 	html[idx++] = ZLoginFactory.getLoginDialogHTML(params);
 
-	html[idx++] = "</td></tr>";
-	html[idx++] = "</table>";
 	html[idx++] = "</td></tr></table>";
 	document.body.innerHTML = html.join("");
 	

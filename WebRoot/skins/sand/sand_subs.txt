@@ -4,6 +4,7 @@
 SkinImgDir					= /zimbra/skins/bare/img
 SkinAnimatedImgDir			= /zimbra/img/animated
 DwtImgDir					= /zimbra/img/loRes/dwt
+ImgDir						= /zimbra/img/loRes
 
 
 
@@ -133,11 +134,11 @@ WindowTitleText-light		= @Text@ 			@_WindowTitleTextStyle_@
 TransparentBorder			= padding:2px;	border-width:0px; 
 OutsetBorder				= padding:0px;	border:2px solid; border-color:@_BaseColorD3_@ @_BaseColorD6_@ @_BaseColorD6_@ @_BaseColorD3_@; 	-moz-border-left-colors:@_BaseColorD3_@ @_BaseColorD2_@; 	-moz-border-top-colors: @_BaseColorD3_@ @_BaseColorD2_@; 	-moz-border-bottom-colors: @_BaseColorD6_@ @_BaseColorD4_@;		-moz-border-right-colors: @_BaseColorD6_@ @_BaseColorD4_@;
 InsetBorder					= padding:0px;	border:2px solid; border-color:@_BaseColorD7_@ @_BaseColorD3_@ @_BaseColorD3_@ @_BaseColorD7_@; 	-moz-border-left-colors:@_BaseColorD3_@ @_BaseColorD7_@; 	-moz-border-top-colors: @_BaseColorD3_@ @_BaseColorD7_@; 	-moz-border-bottom-colors: @_BaseColorD2_@ @_BaseColorD3_@;		-moz-border-right-colors: @_BaseColorD2_@ @_BaseColorD3_@;
-DisabledBorder				= padding:0px;	border:2px solid; border-color:@_BaseColorD3_@; 													-moz-border-left-colors:@_BaseColorD3_@ transparent; 		-moz-border-top-colors: @_BaseColorD3_@ transparent; 		-moz-border-bottom-colors: @_BaseColorD3_@ transparent; 		-moz-border-right-colors: @_BaseColorD3_@ transparent;
+DisabledBorder				= padding:0px;	border:2px solid; border-color:@_BaseColorD1_@; 													-moz-border-left-colors:@_BaseColorD1_@ transparent; 		-moz-border-top-colors: @_BaseColorD1_@ transparent; 		-moz-border-bottom-colors: @_BaseColorD1_@ transparent; 		-moz-border-right-colors: @_BaseColorD1_@ transparent;
 DefaultBorder				= padding:0px;	border:2px solid; border-color:@_SelColorD2_@ @_SelColorD4_@ @_SelColorD4_@ @_SelColorD2_@;			-moz-border-left-colors:@_SelColorD2_@ @_SelColorD1_@; 		-moz-border-top-colors: @_SelColorD2_@ @_SelColorD1_@; 		-moz-border-bottom-colors: @_SelColorD4_@ @_SelColorD3_@; 		-moz-border-right-colors: @_SelColorD4_@ @_SelColorD3_@;
 FocusBorder					= padding:0px;	border:2px solid; border-color:@_SelColorD2_@ @_SelColorD4_@ @_SelColorD4_@ @_SelColorD2_@;			-moz-border-left-colors:@_SelColorD2_@ @_SelColorD1_@; 		-moz-border-top-colors: @_SelColorD2_@ @_SelColorD1_@; 		-moz-border-bottom-colors: @_SelColorD4_@ @_SelColorD3_@; 		-moz-border-right-colors: @_SelColorD4_@ @_SelColorD3_@;
 DragBorder					= @FocusBorder@
-ItemBottomBorder			= padding:0px;	border-width:0px; border-bottom:1px solid @LightSeparatorColor@; padding-bottom:1px; padding-top:2px;
+ItemBottomBorder			= padding:0px;	border-width:0px; border-bottom:1px solid @_BaseColor_@; padding-bottom:1px; padding-top:2px;
 
 _InputBorder_				= padding:2 4 2 4; border:1px solid; border-color:black @_BaseColorD1_@ @_BaseColorD1_@ black;
 _InputBorder-disabled_		= padding:2 4 2 4; border:1px solid @_BaseColorD1_@;
@@ -156,12 +157,12 @@ _WidgetHeaderBorder_		= border-bottom:1px solid @DarkSeparatorColor@; padding-to
 WindowOuterContainer		= background-color:@_BaseColorD8_@;	padding:2px; border:2px solid; border-color:@_BaseColorD7_@ @_BaseColorD9_@ @_BaseColorD9_@ @_BaseColorD7_@; -moz-border-radius:2 2 2 2; -moz-border-left-colors:@_BaseColorD6_@ @_BaseColorD7_@; -moz-border-top-colors: @_BaseColorD6_@ @_BaseColorD7_@; -moz-border-bottom-colors: @_BaseColorD10_@ @_BaseColorD9_@; -moz-border-right-colors: @_BaseColorD10_@ @_BaseColorD9_@;
 WindowInnerContainer		= @PageBg@							padding:4px; border:2px solid; border-color:@_BaseColorD9_@ @_BaseColorD7_@ @_BaseColorD7_@ @_BaseColorD9_@; -moz-border-radius:3 3 3 3; -moz-border-left-colors:@_BaseColorD9_@ @_BaseColorD10_@; -moz-border-top-colors: @_BaseColorD9_@ @_BaseColorD10_@; -moz-border-bottom-colors: @_BaseColorD7_@ @_BaseColorD6_@; -moz-border-right-colors:  @_BaseColorD7_@ @_BaseColorD6_@; vertical-align:top;	@InactiveCursor@
 WindowOuterContainer-light	= background-color:@_BaseColorD1_@;	padding:3px; border:2px solid; border-color:@_BaseColorD3_@ @_BaseColorD6_@ @_BaseColorD6_@ @_BaseColorD3_@; -moz-border-radius:2 2 2 2; -moz-border-left-colors:@_BaseColorD3_@ @_BaseColorD2_@; -moz-border-top-colors: @_BaseColorD3_@ @_BaseColorD2_@; -moz-border-bottom-colors: @_BaseColorD6_@ @_BaseColorD4_@; -moz-border-right-colors: @_BaseColorD6_@ @_BaseColorD4_@;
-WindowInnerContainer-light	= @PageBg@							padding:4px; border:2px solid; border-color:@_BaseColorD7_@ @_BaseColorD3_@ @_BaseColorD3_@ @_BaseColorD7_@; -moz-border-radius:3 3 3 3; -moz-border-left-colors:@_BaseColorD3_@ @_BaseColorD7_@; -moz-border-top-colors: @_BaseColorD3_@ @_BaseColorD7_@; -moz-border-bottom-colors: @_BaseColorD2_@ @_BaseColorD3_@; -moz-border-right-colors: @_BaseColorD2_@ @_BaseColorD3_@; vertical-align:top;	@InactiveCursor@
+WindowInnerContainer-light	= background-color:@_BaseColorD1_@;	padding:4px; border:2px solid; border-color:@_BaseColorD7_@ @_BaseColorD3_@ @_BaseColorD3_@ @_BaseColorD7_@; -moz-border-radius:3 3 3 3; -moz-border-left-colors:@_BaseColorD3_@ @_BaseColorD7_@; -moz-border-top-colors: @_BaseColorD3_@ @_BaseColorD7_@; -moz-border-bottom-colors: @_BaseColorD2_@ @_BaseColorD3_@; -moz-border-right-colors: @_BaseColorD2_@ @_BaseColorD3_@; vertical-align:top;	@InactiveCursor@
 
 _AppTabStyle_			 	= border-right-width:0px;	-moz-border-radius:3 0 0 3;
-AppTabContainer				= @_ToolbarBorder_@ 	background-color:@_BaseColor_@;		@_AppTabStyle_@
+AppTabContainer				= @_ToolbarBorder_@ 	background-color:@_BaseColorL1_@;	@_AppTabStyle_@
 AppTabContainer-hover		= @_ToolbarBorder_@ 	background-color:@_BaseColorL2_@;	@_AppTabStyle_@
-AppTabContainer-selected	= @_ToolbarBorder_@ 	background-color:@_BaseColorL1_@;	@_AppTabStyle_@
+AppTabContainer-selected	= @_ToolbarBorder_@ 	background-color:@HilightColor@;	@_AppTabStyle_@
 
 
 
@@ -199,7 +200,7 @@ _SashContentsColor_			= @_BaseColorD3_@
 _NormalButtonSize_			= min-width:60px; /width:60px;  height:20px; 
 _SelectSize_				= height:20px; 
 _InputSize_					= height:20px;
-_ListItemSize_				= height:20px;
+_ListItemSize_				= height:17px;
 WidgetHeaderSize			= height:20px;
 WidgetHeaderSize-big		= height:36px;
 MenuSize					= min-width:40px;  width:40px;
@@ -277,8 +278,8 @@ NoticeInnerBorder			= @WindowInnerContainer-light@
 NoticeText					= @Text@ font-weight:bold;
 
 # colors for different levels of notice
-InfoBg						= background-color:#92e38e;
-WarningBg					= background-color:#FFF6BF;
+InfoBg						= background-color:#BFDFCA;
+WarningBg					= background-color:#FFDDBF;
 CriticalBg					= background-color:#F5BFBF;
 
 
@@ -508,7 +509,7 @@ MiniCalDay-gray				= @Text-disabled@
 
 # PROGRESS BARS
 
-ProgressBarContainer		= @ChromeBg@ @InsetBorder@ border-width:1px;
+ProgressBarContainer		= @PageBg@ @InsetBorder@ border-width:1px;
 ProgressBarBg-info			= @InfoBg@		@FixIESizeQuirk@
 ProgressBarBg-warning		= @WarningBg@	@FixIESizeQuirk@
 ProgressBarBg-critical		= @CriticalBg@	@FixIESizeQuirk@
