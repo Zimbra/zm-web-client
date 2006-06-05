@@ -34,8 +34,8 @@ function ZmNotebookTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.SHARE_NOTEBOOK] = new AjxListener(this, this._shareNotebookListener);
 	this._listeners[ZmOperation.MOUNT_NOTEBOOK] = new AjxListener(this, this._mountNotebookListener);
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
-	this._listeners[ZmOperation.EDIT_NOTEBOOK_INDEX] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
 	/***
+	this._listeners[ZmOperation.EDIT_NOTEBOOK_INDEX] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME] = new AjxListener(this, this._editNotebookListener);
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_STYLES] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
 	this._listeners[ZmOperation.EDIT_NOTEBOOK_SIDE_BAR] = this._listeners[ZmOperation.EDIT_NOTEBOOK_CHROME];
@@ -87,10 +87,10 @@ function() {
 	return [
 		ZmOperation.NEW_NOTEBOOK, ZmOperation.EXPAND_ALL,
 		ZmOperation.SEP,
-		ZmOperation.REFRESH,
+		ZmOperation.REFRESH
+		/***
 		ZmOperation.SEP,
 		ZmOperation.EDIT_NOTEBOOK_INDEX
-		/***
 		ZmOperation.SEP,
 		ZmOperation.EDIT_NOTEBOOK_HEADER, ZmOperation.EDIT_NOTEBOOK_FOOTER,
 		ZmOperation.EDIT_NOTEBOOK_SIDE_BAR,
@@ -108,10 +108,10 @@ function() {
 		ops.push(ZmOperation.SHARE_NOTEBOOK);
 	}
 	ops.push(
-		ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.REFRESH,
+		ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.REFRESH
+		/***
 		ZmOperation.SEP,
 		ZmOperation.EDIT_NOTEBOOK_INDEX
-		/***
 		ZmOperation.SEP,
 		ZmOperation.EDIT_NOTEBOOK_HEADER, ZmOperation.EDIT_NOTEBOOK_FOOTER,
 		ZmOperation.EDIT_NOTEBOOK_SIDE_BAR,
