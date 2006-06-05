@@ -137,7 +137,7 @@ function(target) {
 		} else if (getSelection()) {		// mozilla
 			bSelection = getSelection().toString().length > 0;
 		}
-	
+
 		// if something has been selected and target is not a custom object,
 		return bSelection && !bObjFound ? false : true;
 	}
@@ -410,6 +410,49 @@ function() {
 	}
 };
 
+// This is needed for Gecko only: for some reason, clicking on a local
+// link will open the full Zimbra chrome in the iframe :-( so we fake
+// a scroll to the link target here. (bug 7927)
+ZmMailMsgView.__localLinkClicked = function(msgView, ev) {
+	// note that this function is called in the context of the link
+	var id = this.getAttribute("href");
+	var el = null;
+	var doc = this.ownerDocument;
+	if (/^#(.*)$/.test(id)) {
+		id = RegExp.$1;
+		var el = doc.getElementById(id);
+		if (!el) try {
+			el = doc.getElementsByName(id)[0];
+		} catch(ex) {};
+	}
+
+	// attempt #1: doesn't work at all -- we're not scrolling with the IFRAME :-(
+	// 		if (el) {
+	// 			var pos = Dwt.getLocation(el);
+	// 			doc.contentWindow.scrollTo(pos.x, pos.y);
+	// 		}
+
+	// attempt #2: works pretty well, but the target node will showup at the bottom of the frame
+	// 		var foo = doc.createElement("a");
+	// 		foo.href = "#";
+	// 		foo.innerHTML = "foo";
+	// 		el.parentNode.insertBefore(foo, el);
+	// 		foo.focus();
+
+	// the final monstrosity: scroll the containing DIV
+	// (that is the whole msgView).  Note we have to take
+	// into account the headers, "display images", etc --
+	// so we add iframe.offsetTop/Left.
+	var div = msgView.getHtmlElement();
+	var iframe = document.getElementById(msgView._iframeId);
+	var pos = Dwt.getLocation(el);
+	div.scrollTop = pos.y + iframe.offsetTop - 20; // fuzz factor necessary for unknown reason :-(
+	div.scrollLeft = pos.x + iframe.offsetLeft;
+	ev.stopPropagation();
+	ev.preventDefault();
+	return false;
+};
+
 // Dives recursively into the given DOM node.  Creates ObjectHandlers in text
 // nodes and cleans the mess in element nodes.  Discards by default "script",
 // "link", "object", "style", "applet" and "iframe" (most of them shouldn't
@@ -431,7 +474,7 @@ function(doc) {
 			node.normalize();
 			tmp = node.tagName.toLowerCase();
 			if (/^(img|a)$/.test(tmp)) {
-				if (tmp == "a"
+				if (tmp == "a" && node.target
 				    && (ZmMailMsgView._URL_RE.test(node.href)
 					|| ZmMailMsgView._MAILTO_RE.test(node.href)))
 				{
@@ -697,6 +740,21 @@ function(container, html, isTextMsg) {
 
 	var idoc = ifw.getDocument();
 
+	if (AjxEnv.isGeckoBased) {
+		// patch local links
+		var geckoScrollCallback = AjxCallback.simpleClosure(
+			// pass null as the object, so that it gets called in the context of the link
+			ZmMailMsgView.__localLinkClicked, null, this);
+		var links = idoc.getElementsByTagName("a");
+		for (var i = links.length; --i >= 0;) {
+			var link = links[i];
+			if (!link.target) {
+				// has chances to be a local link
+				link.onclick = geckoScrollCallback;
+			}
+		}
+	}
+
 	// assign the right class name to the iframe body
 	idoc.body.className = isTextMsg
 		? "MsgBody MsgBody-text"
@@ -760,8 +818,8 @@ function(htmlArr, idx, addrs, prefix) {
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
 	if (this._objectManager) {
-	    this._objectManager.setHandlerAttr(ZmObjectManager.DATE, 
-	    								   ZmObjectManager.ATTR_CURRENT_DATE, 
+	    this._objectManager.setHandlerAttr(ZmObjectManager.DATE,
+	    								   ZmObjectManager.ATTR_CURRENT_DATE,
 	    								   this._dateObjectHandlerDate);
 	}
 
@@ -813,8 +871,8 @@ function(msg, container, callback) {
 	   	htmlArr[idx++] = "&nbsp;&nbsp;<span class='LabelColName'>";
 	   	htmlArr[idx++] = ZmMsg.on;
 	   	htmlArr[idx++] = ": </span><span class='LabelColValue'>";
-		htmlArr[idx++] = this._objectManager 
-			? this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE) 
+		htmlArr[idx++] = this._objectManager
+			? this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE)
 			: dateString;
 	   	htmlArr[idx++] = "</span></td></tr>";
 	}
@@ -1181,7 +1239,7 @@ function(ev) {
 		this._setTags(this._msg);
 };
 
-ZmMailMsgView.prototype._expandButtonListener = 
+ZmMailMsgView.prototype._expandButtonListener =
 function(ev) {
 	this._expandHeader = !this._expandHeader;
 
@@ -1195,7 +1253,7 @@ function(ev) {
 	}
 };
 
-ZmMailMsgView.prototype._closeButtonListener = 
+ZmMailMsgView.prototype._closeButtonListener =
 function(ev) {
 	this._controller._app.popView();
 };
@@ -1404,8 +1462,8 @@ function(appCtxt, result) {
 
 ZmMailMsgView.rfc822Callback =
 function(msgId, msgPartId) {
-	var appCtxt = window.parentController 
-		? window.parentController._appCtxt 
+	var appCtxt = window.parentController
+		? window.parentController._appCtxt
 		: window._zimbraMail._appCtxt;
 	var getHtml = appCtxt.get(ZmSetting.VIEW_AS_HTML);
 	var sender = appCtxt.getAppController();
