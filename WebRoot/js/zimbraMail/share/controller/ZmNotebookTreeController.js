@@ -62,7 +62,9 @@ function(actionMenu, type, id) {
 		var treeData = overviewController.getTreeData(ZmOrganizer.NOTEBOOK);
 
 		var notebook = treeData.getById(id);
-		actionMenu.enable(ZmOperation.SHARE_NOTEBOOK, !notebook.link);
+		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+			actionMenu.enable(ZmOperation.SHARE_NOTEBOOK, !notebook.link);
+		}
 		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_NOTEBOOK);
 
 		var menuItem = actionMenu.getMenuItem(ZmOperation.NEW_NOTEBOOK);
@@ -70,11 +72,13 @@ function(actionMenu, type, id) {
 		menuItem.setImage("NewSection");
 		menuItem.setDisabledImage("NewSectionDis");
 
-		var isNotebook = notebook.parent.id == ZmOrganizer.ID_ROOT;
-		var menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_NOTEBOOK);
-		menuItem.setText(isNotebook ? ZmMsg.shareNotebook : ZmMsg.shareSection);
-		menuItem.setImage(isNotebook ? "Notebook" : "Section");
-		menuItem.setDisabledImage(menuItem.getImage()+"Dis");
+		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+			var isNotebook = notebook.parent.id == ZmOrganizer.ID_ROOT;
+			var menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_NOTEBOOK);
+			menuItem.setText(isNotebook ? ZmMsg.shareNotebook : ZmMsg.shareSection);
+			menuItem.setImage(isNotebook ? "Notebook" : "Section");
+			menuItem.setDisabledImage(menuItem.getImage()+"Dis");
+		}
 
 		var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
 		menuItem.setImage("SendReceive");

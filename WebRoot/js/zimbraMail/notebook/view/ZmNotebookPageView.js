@@ -78,6 +78,17 @@ function(page) {
 		content = ZmWikletProcessor.process(this._appCtxt, page, content);
 
 		element.innerHTML = content;
+
+		var links = element.getElementsByTagName("A");
+		for (var i = 0; i < links.length; i++) {
+			var link = links[i];
+			if (!link.href) continue;
+
+			if (!link.target) {
+				link.target = "_new";
+			}
+		}
+
 		this._findObjects(element);
 	}
 };
