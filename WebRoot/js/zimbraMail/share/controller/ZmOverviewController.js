@@ -144,10 +144,11 @@ function(overviewId, treeIds, omit, reset) {
 	// clear current tree views out of the overview
 	var curTreeIds = this._treeIds[overviewId];
 	var overview = this.getOverview(overviewId);
+	var oldApp = this._appCtxt.getAppController().getPreviousApp();
 	if (curTreeIds && curTreeIds.length) {
 		for (var i = 0; i < curTreeIds.length; i++) {
 			var treeId = curTreeIds[i];
-			var treeView = this.getTreeView(overviewId, treeId);
+			var treeView = this.getTreeView(overviewId, treeId, oldApp);
 			if (treeView) {
 				if (reset && reset[treeId]) {
 					this.getTreeController(treeId).clearTreeView(overviewId);
@@ -160,14 +161,15 @@ function(overviewId, treeIds, omit, reset) {
 	}
 
 	// add tree views to the overview
+	var app = this._appCtxt.getAppController().getActiveApp();
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
 		// lazily create appropriate tree controller
 		var treeController = this.getTreeController(treeId);
-		var treeView = this.getTreeView(overviewId, treeIds[i]);
+		var treeView = this.getTreeView(overviewId, treeIds[i], app);
 		if (!treeView || (reset && reset[treeId])) {
 			// create the tree view as a child of the overview
-			treeController.show(overviewId, this._showUnread[overviewId], omit);
+			treeController.show(overviewId, this._showUnread[overviewId], omit, false, app);
 		} else {
 			// add the tree view's HTML element back to the overview
 			overview.addChild(treeView);
@@ -266,10 +268,11 @@ function(overviewId) {
 *
 * @param overviewId		[constant]	overview ID
 * @param treeId			[constant]	organizer type
+* @param app			[string]*	app that owns the overview
 */
 ZmOverviewController.prototype.getTreeView =
-function(overviewId, treeId) {
-	return this.getTreeController(treeId).getTreeView(overviewId);
+function(overviewId, treeId, app) {
+	return this.getTreeController(treeId).getTreeView(overviewId, app);
 };
 
 /**
@@ -299,8 +302,9 @@ ZmOverviewController.prototype.itemSelected =
 function(overviewId, treeId) {
 	var treeIds = this._treeIds[overviewId];
 	for (var i = 0; i < treeIds.length; i++) {
-		if (treeIds[i] != treeId)
+		if (treeIds[i] != treeId) {
 			this.getTreeView(overviewId, treeIds[i]).deselectAll();
+		}
 	}
 };
 

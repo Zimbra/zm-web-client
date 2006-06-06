@@ -63,9 +63,10 @@ function() {
 * @param showUnread		[boolean]*	if true, unread counts will be shown
 * @param omit			[Object]*	hash of organizer IDs to ignore
 * @param forceCreate	[boolean]*	if true, tree view will be created
+* @param searchTypes	[hash]*		types of saved searches to show
 */
 ZmFolderTreeController.prototype.show = 
-function(overviewId, showUnread, omit, forceCreate) {
+function(overviewId, showUnread, omit, forceCreate, searchTypes) {
 	for (var name in ZmFolder.HIDE) {
 		var folder = this._dataTree.getByName(name);
 		if (folder) {
@@ -73,7 +74,7 @@ function(overviewId, showUnread, omit, forceCreate) {
 			omit[folder.id] = true;
 		}
 	}
-	ZmTreeController.prototype.show.apply(this, [overviewId, showUnread, omit, forceCreate]);
+	ZmTreeController.prototype.show.apply(this, [overviewId, showUnread, omit, forceCreate, searchTypes]);
 };
 
 /**

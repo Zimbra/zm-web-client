@@ -56,8 +56,8 @@ function ZmTreeView(params) {
 	this._dropTgt = params.dropTgt;
 
 	this._dataTree = null;
-	this._treeHash = new Object();
-}
+	this._treeHash = {};
+};
 
 ZmTreeView.KEY_TYPE	= "_type_";
 ZmTreeView.KEY_ID	= "_treeId_";
@@ -103,7 +103,7 @@ function(node, organizer, sortFunction) {
 			return i;
 	}
 	return i;
-}
+};
 
 ZmTreeView.prototype = new DwtTree;
 ZmTreeView.prototype.constructor = ZmTreeView;
@@ -113,17 +113,18 @@ ZmTreeView.prototype.constructor = ZmTreeView;
 ZmTreeView.prototype.toString = 
 function() {
 	return "ZmTreeView";
-}
+};
 
 /**
 * Populates the tree view with the given data and displays it.
 *
-* @param dataTree		[ZmTree]	data in tree form
-* @param showUnread		[boolean]*	if true, show unread counts
-* @param omit			[Object]*	hash of organizer IDs to ignore	
+* @param dataTree		[ZmTree]		data in tree form
+* @param showUnread		[boolean]*		if true, show unread counts
+* @param omit			[Object]*		hash of organizer IDs to ignore
+* @param searchTypes	[hash]*			types of saved searches to show
 */
 ZmTreeView.prototype.set =
-function(dataTree, showUnread, omit) {
+function(dataTree, showUnread, omit, searchTypes) {
 
 	this._showUnread = showUnread;
 	this._dataTree = dataTree;	
@@ -150,9 +151,9 @@ function(dataTree, showUnread, omit) {
 	this._treeHash[root.id] = ti;
 	
 	// render the root item's children (ie everything else)
-	this._render(ti, root, omit);
+	this._render(ti, root, omit, searchTypes);
 	ti.setExpanded(true);
-}
+};
 
 /**
 * Returns the tree item that represents the organizer with the given ID.
@@ -162,7 +163,7 @@ function(dataTree, showUnread, omit) {
 ZmTreeView.prototype.getTreeItemById =
 function(id) {
 	return this._treeHash[id];
-}
+};
 
 /**
 * Returns the tree view's header node
@@ -170,7 +171,7 @@ function(id) {
 ZmTreeView.prototype.getHeaderItem =
 function() {
 	return this._headerItem;
-}
+};
 
 /**
 * Returns the currently selected organizer. There can only be one.
@@ -180,7 +181,7 @@ function() {
 	if (this.getSelectionCount() != 1)
 		return null;
 	return this.getSelection()[0].getData(Dwt.KEY_OBJECT);
-}
+};
 
 /**
 * Selects the tree item for the given organizer.
@@ -193,19 +194,20 @@ function(organizer, skipNotify) {
 	var id = (organizer instanceof ZmOrganizer) ? organizer.id : organizer;
 	if (!id || !this._treeHash[id]) return;
 	this.setSelection(this._treeHash[id], skipNotify);
-}
+};
 
 // Private and protected methods
 
 /*
 * Draws the children of the given node.
 *
-* @param treeNode	[DwtTreeItem]	current node
-* @param organizer	[ZmOrganizer]	its organizer
-* @param omit		[Object]*		hash of organizer IDs to ignore	
+* @param treeNode		[DwtTreeItem]	current node
+* @param organizer		[ZmOrganizer]	its organizer
+* @param omit			[Object]*		hash of organizer IDs to ignore	
+* @param searchTypes	[hash]*			types of saved searches to show
 */
 ZmTreeView.prototype._render =
-function(treeNode, organizer, omit) {
+function(treeNode, organizer, omit, searchTypes) {
 	var children = organizer.children.getArray();
 	children.sort(ZmTreeView.COMPARE_FUNC[this.type]);
 	DBG.println(AjxDebug.DBG3, "Render: " + organizer.name + ": " + children.length);
@@ -213,6 +215,12 @@ function(treeNode, organizer, omit) {
 	for (var i = 0; i < children.length; i++) {
 		var child = children[i];
 		if (omit && omit[child.id]) continue;
+		// if this is a tree view of saved searches, make sure to only show saved searches
+		// that are for one of the given types
+		if ((child.type == ZmOrganizer.SEARCH) && searchTypes && !child._typeMatch(searchTypes)) {
+			continue;
+		}
+		
 		if (this._allowedTypes && !this._allowedTypes[child.type]) continue;
 		// NOTE: Separates public and shared folders
 		if (organizer.id == ZmOrganizer.ID_ROOT && child.link && addSep) {
@@ -221,7 +229,7 @@ function(treeNode, organizer, omit) {
 		}
 		this._addNew(treeNode, child, null);
 	}
-}
+};
 
 /*
 * Adds a tree item node to the tree, and then adds its children.
@@ -248,4 +256,4 @@ function(parentNode, organizer, index) {
 		parentNode.addSeparator();
 	if (organizer.children && organizer.children.size()) // recursively add children
 		this._render(ti, organizer);
-}
+};

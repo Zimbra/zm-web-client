@@ -45,7 +45,7 @@ function() {
 ZmFolderPicker.prototype._setupPicker =
 function(parent) {
 	var overviewId = ZmFolderPicker._OVERVIEW_ID + "_" + Dwt.getNextId();
-	this._setOverview(overviewId, parent, [ZmOrganizer.FOLDER], [ZmOrganizer.FOLDER]);
+	this._setOverview(overviewId, parent, [ZmOrganizer.FOLDER]);
 	this._twiddle();
 }
 

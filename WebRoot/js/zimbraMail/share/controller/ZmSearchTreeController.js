@@ -44,11 +44,65 @@ function ZmSearchTreeController(appCtxt) {
 ZmSearchTreeController.prototype = new ZmFolderTreeController;
 ZmSearchTreeController.prototype.constructor = ZmSearchTreeController;
 
+ZmSearchTreeController.APP_JOIN_CHAR = "-";
+
 // Public methods
 
 ZmSearchTreeController.prototype.toString = 
 function() {
 	return "ZmSearchTreeController";
+};
+
+/**
+* Displays the tree of this type.
+*
+* @param overviewId		[constant]	overview ID
+* @param showUnread		[boolean]*	if true, unread counts will be shown
+* @param omit			[Object]*	hash of organizer IDs to ignore
+* @param forceCreate	[boolean]*	if true, tree view will be created
+* @param app			[string]*	app that owns the overview
+*/
+ZmSearchTreeController.prototype.show =
+function(overviewId, showUnread, omit, forceCreate, app) {
+	app = app ? app : this._appCtxt.getAppController().getActiveApp();
+	var id = [overviewId, ZmSearchTreeController.APP_JOIN_CHAR, app].join("");
+	if (!this._treeView[id] || forceCreate) {
+		this._treeView[id] = this._setup(overviewId);
+	}
+	if (this._dataTree) {
+		var searchTypes = ZmZimbraMail.SEARCH_TYPES_H[app];
+		this._treeView[id].set(this._dataTree, showUnread, omit, searchTypes);
+	}
+	this._treeView[id].setVisible(true);
+};
+
+/**
+* Returns the tree view for the given overview.
+*
+* @param overviewId		[constant]	overview ID
+* @param app			[string]*	app that owns the overview
+*/
+ZmSearchTreeController.prototype.getTreeView =
+function(overviewId, app) {
+	app = app ? app : this._appCtxt.getAppController().getActiveApp();
+	var id = [overviewId, ZmSearchTreeController.APP_JOIN_CHAR, app].join("");
+	return this._treeView[id];
+};
+
+/**
+* Clears the tree view for the given overview.
+*
+* @param overviewId		[constant]	overview ID
+* @param app			[string]*	app that owns the overview
+*/
+ZmTreeController.prototype.clearTreeView =
+function(overviewId, app) {
+	app = app ? app : this._appCtxt.getAppController().getActiveApp();
+	var id = [overviewId, ZmSearchTreeController.APP_JOIN_CHAR, app].join("");
+	if (this._treeView[id]) {
+		this._treeView[id].dispose();
+		delete this._treeView[id];
+	}
 };
 
 /**
@@ -124,6 +178,31 @@ function(ev) {
 		var dropSearchFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
 		DBG.println(AjxDebug.DBG3, "DRAG_DROP: " + ev.srcData.name + " on to " + dropSearchFolder.name);
 		this._doMove(ev.srcData, dropSearchFolder);
+	}
+};
+
+/*
+* Override to handle our multiple tree views. Primarily, we need to make sure that
+* only the appropriate tree views receive CREATE notifications. For example, we
+* don't want to add a saved search for contacts to the mail app's search tree view.
+* CREATE notifications always come one at a time, so if the notify is for just one
+* organizer, we check the search types. Otherwise, it is a MODIFY or DELETE, and the
+* superclass's change listener will check for the node's existence before changing it.
+*
+* @param ev		[ZmEvent]	a change event
+*/
+ZmSearchTreeController.prototype._treeChangeListener =
+function(ev) {
+	var searches = ev.getDetail("organizers");
+	for (var overviewId in this._treeView) {
+		if (searches.length == 1) {
+			var app = overviewId.substr(overviewId.indexOf(ZmSearchTreeController.APP_JOIN_CHAR) + 1);
+			if (searches[0]._typeMatch(ZmZimbraMail.SEARCH_TYPES_H[app])) {
+				this._changeListener(ev, this._treeView[overviewId]);
+			}
+		} else {
+			this._changeListener(ev, this._treeView[overviewId]);
+		}
 	}
 };
 

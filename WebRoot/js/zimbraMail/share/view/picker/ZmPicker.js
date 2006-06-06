@@ -235,14 +235,14 @@ function() {
 }
 
 ZmPicker.prototype._setOverview =
-function(overviewId, parent, types, allowedTypes) {
+function(overviewId, parent, types) {
 	this._overviewId = overviewId;
 	this._picker.setScrollStyle(Dwt.CLIP);
 	var opc = this._appCtxt.getOverviewController();
 	opc.createOverview({overviewId: overviewId, parent: parent, //scroll: Dwt.VISIBLE,
 						headerClass: "DwtTreeItem",
 						treeStyle: DwtTree.CHECKEDITEM_STYLE});
-	opc.set(overviewId, types, null, allowedTypes);
+	opc.set(overviewId, types);
 	this._treeView = new Object();
 	for (var i = 0; i < types.length; i++) {
 		var treeView = this._treeView[types[i]] = opc.getTreeView(overviewId, types[i]);

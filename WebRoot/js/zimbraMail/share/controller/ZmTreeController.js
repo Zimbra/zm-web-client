@@ -118,13 +118,16 @@ function() {
 * @param showUnread		[boolean]*	if true, unread counts will be shown
 * @param omit			[Object]*	hash of organizer IDs to ignore
 * @param forceCreate	[boolean]*	if true, tree view will be created
+* @param app			[string]*	app that owns the overview
 */
 ZmTreeController.prototype.show = 
-function(overviewId, showUnread, omit, forceCreate) {
-	if (!this._treeView[overviewId] || forceCreate)
-		this._setup(overviewId, forceCreate);
-	if (this._dataTree)
+function(overviewId, showUnread, omit, forceCreate, app) {
+	if (!this._treeView[overviewId] || forceCreate) {
+		this._treeView[overviewId] = this._setup(overviewId);
+	}
+	if (this._dataTree) {
 		this._treeView[overviewId].set(this._dataTree, showUnread, omit);
+	}
 	this._treeView[overviewId].setVisible(true);
 };
 
@@ -157,32 +160,32 @@ function(overviewId) {
 * Performs initialization.
 *
 * @param overviewId		[constant]	overview ID
-* @param forceCreate	[boolean]*	if true, tree view will be created
 */
 ZmTreeController.prototype._setup = 
-function(overviewId, forceCreate) {
-	this._initializeTreeView(overviewId, forceCreate);
-	if (this._opc.actionSupported(overviewId))
+function(overviewId) {
+	var treeView = this._initializeTreeView(overviewId);
+	if (this._opc.actionSupported(overviewId)) {
 		this._initializeActionMenus();
+	}
+	return treeView;
 };
 
 /*
 * Lazily creates a tree view of this type, using options from the overview.
 *
 * @param overviewId		[constant]	overview ID
-* @param forceCreate	[boolean]*	if true, tree view will be created
 */
 ZmTreeController.prototype._initializeTreeView =
-function(overviewId, forceCreate) {
-	if (!this._treeView[overviewId] || forceCreate) {
-		var dragSrc = this._opc.dndSupported(overviewId) ? this._dragSrc : null;
-		var dropTgt = this._opc.dndSupported(overviewId) ? this._dropTgt : null;
-		var params = {parent: this._opc.getOverview(overviewId), overviewId: overviewId, type: this.type,
-					  headerClass: this._opc.getHeaderClass(overviewId), dragSrc: dragSrc, dropTgt: dropTgt,
-					  treeStyle: this.getTreeStyle() || this._opc.getTreeStyle(overviewId)}; 
-		this._treeView[overviewId] = new ZmTreeView(params);
-		this._treeView[overviewId].addSelectionListener(new AjxListener(this, this._treeViewListener));
-	}
+function(overviewId) {
+	var dragSrc = this._opc.dndSupported(overviewId) ? this._dragSrc : null;
+	var dropTgt = this._opc.dndSupported(overviewId) ? this._dropTgt : null;
+	var params = {parent: this._opc.getOverview(overviewId), overviewId: overviewId, type: this.type,
+				  headerClass: this._opc.getHeaderClass(overviewId), dragSrc: dragSrc, dropTgt: dropTgt,
+				  treeStyle: this.getTreeStyle() || this._opc.getTreeStyle(overviewId)}; 
+	var treeView = new ZmTreeView(params);
+	treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
+	
+	return treeView;
 };
 
 /** 

@@ -28,8 +28,9 @@ function ZmSearchFolder(id, name, parent, tree, numUnread, query, types, sortBy)
 	ZmFolder.call(this, id, name, parent, tree, numUnread);
 	
 	this.type = ZmOrganizer.SEARCH;
-	if (query)
+	if (query) {
 		this.search = new ZmSearch(tree._appCtxt, {query: query, types: types, sortBy: sortBy, searchId: id});
+	}
 };
 
 ZmSearchFolder.prototype = new ZmFolder;
@@ -96,4 +97,20 @@ function(parentId) {
 	var type = (this.parent.type == ZmOrganizer.SEARCH) ? ZmOrganizer.FOLDER : ZmOrganizer.SEARCH;
 	var tree = this.tree._appCtxt.getTree(type);
 	return tree.getById(parentId); 
+};
+
+/**
+ * Returns true if this saved search contains one of the types in the given hash.
+ * 
+ * @param types		[hash]		a hash of search types (item type IDs)
+ */
+ZmSearchFolder.prototype._typeMatch =
+function(types) {
+	var childSearchTypes = this.search.types;
+	for (var j = 0; j < childSearchTypes.length; j++) {
+		if (types[childSearchTypes[j]]) {
+			return true;
+		}
+	}
+	return false;
 };
