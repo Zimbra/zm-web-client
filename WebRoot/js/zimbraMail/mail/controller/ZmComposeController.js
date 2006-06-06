@@ -578,18 +578,12 @@ function() {
 	this._popShield.popdown();
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 		// save as draft
-		var respCallback = new AjxCallback(this, this._handleResponsePopShieldYesCallback);
-		this.sendMsg(null, true, respCallback);
+		this.sendMsg(null, true);
 	} else {
 		// cancel
 		this._composeView.reset(false);
 	}
 	this._app.getAppViewMgr().showPendingView(true);
-};
-
-ZmComposeController.prototype._handleResponsePopShieldYesCallback =
-function(args) {
-	this._composeView.draftSaved();
 };
 
 // Called as: No, don't save as draft
