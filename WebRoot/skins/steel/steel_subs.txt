@@ -56,7 +56,7 @@ WidgetBgColor		= @_BaseColorD1_@
 
 // Drag and drop colors
 DragBg				= background-color:@HilightColor@;
-DragText			= color:@Text@;
+DragText			= @Text@
 DropBg				= background-color:@HilightColor@;
 DropText			= color:@Text@;
 DropAllowedColor	= green;

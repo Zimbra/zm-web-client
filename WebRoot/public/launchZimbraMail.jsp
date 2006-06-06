@@ -94,18 +94,12 @@ Contributor(s):
 	<!--
 		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/skins/<%= skin %>/dwt.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/skins/<%= skin %>/common.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/skins/<%= skin %>/msgview.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/skins/<%= skin %>/login.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/skins/<%= skin %>/zm.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/skins/<%= skin %>/spellcheck.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/css/dwt,common,msgview,login,zm,spellcheck,skin.css?v=<%= vers %>);
 	-->
 	</style>
-	<jsp:include page="Ajax.jsp"/>
-	<jsp:include page="Zimbra.jsp"/>
-	<jsp:include page="ZimbraMail.jsp"/>
+	<jsp:include page="Ajax.jsp" />
+	<jsp:include page="Zimbra.jsp" />
+	<jsp:include page="ZimbraMail.jsp" />
 <% } else { %>
 <style type="text/css">
 <!--
@@ -115,16 +109,6 @@ Contributor(s):
 <script type="text/javascript" src="<%=contextPath%>/js/Ajax_all.js<%=ext %>?v=<%=vers%>"></script>
 <script type="text/javascript" src="<%=contextPath%>/js/ZimbraMail_all.js<%=ext %>?v=<%=vers%>"></script>
 <% } %>
-
-
-<%if (isSafari) { %>
-	<style type="text/css">
-	<!--
-		@import url(<%=contextPath %>/skins/<%= skin %>/<%= skin %>-safari.css?v=<%=vers%>);
-	-->
-	</style>
-<% } %>
-
 
 <script type="text/javascript" language="JavaScript">
 	zJSloading = (new Date()).getTime() - zJSloading;
@@ -162,8 +146,22 @@ Contributor(s):
 </script>
 </head>
 <body>
-	<jsp:include page="/public/pre-cache.jsp"/>
-	<jsp:include page='<%= skinPreCacheFile %>'/>
-	<jsp:include page="<%= skinHtmlFile %>"/>
+	<jsp:include page="/public/pre-cache.jsp" />
+	<jsp:include page='<%= skinPreCacheFile %>' />
+    <%
+		// NOTE: This inserts raw HTML files from the user's skin
+		//       into the JSP output. It's done *this* way so that
+		//       the SkinResources servlet sees the request URI as
+		//       "/html/skin.html" and not as "/public/launch...".
+		out.flush();
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/html/");
+		HttpServletRequest wrappedReq = new HttpServletRequestWrapper(request) {
+			public String getRequestURI() {
+				return "/html/skin.html";
+			}
+		};
+		dispatcher.include(wrappedReq, response);
+	%>
 </body>
 </html>

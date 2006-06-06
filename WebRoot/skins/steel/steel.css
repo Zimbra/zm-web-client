@@ -224,3 +224,25 @@ body						{	@ChromeBg@		}
 .ImgAppChiclet							{	@AppTabContainer@			}
 .ImgAppChicletHover						{	@AppTabContainer-hover@		}
 .ImgAppChicletSel						{	@AppTabContainer-selected@	}
+
+#ifdef SAFARI
+
+#skin_container_search				{ height:20; top:-4;  }
+#skin_container_current_app			{ height:20; top:-4;  }
+
+.ImgAppChiclet,
+.ImgAppChicletHover,
+.ImgAppChicletSel {
+	border-width:1px;
+}
+
+.skin_inset,
+.skin_toolbar_outset {
+	border-width:1px;
+}
+
+.skin_spacer_tree			{	margin:0px;	}
+.skin_spacer_tree_footer	{	margin:0px;	}
+.skin_spacer_status			{	margin:0px;	}
+
+#endif

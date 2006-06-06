@@ -1,0 +1,11 @@
+<skin>
+	<substitutions>
+		<file>steel_subs.txt</file>
+	</substitutions>
+	<css>
+		<file>steel.css</file>
+	</css>
+	<html>
+		<file>steel.html</file>
+	</html>
+</skin>
