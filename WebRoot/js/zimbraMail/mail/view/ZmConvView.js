@@ -117,6 +117,7 @@ function(newWidth, newHeight) {
 	
 	var summaryHeight = this._summary.getHtmlElement().offsetHeight;
 	if (this._isMsgViewVisible()) {
+		var sashHeight = this._msgSash.getSize().y;
 		if (!this._sashMoved) {
 			// calc. height MLV based on num of msgs in conv
 			var list = this._msgListView.getList();
@@ -125,7 +126,6 @@ function(newWidth, newHeight) {
 				var div = document.getElementById(this._msgListView._getItemId(list.get(0)));
 				var maxHeight = Dwt.getSize(div).y * threshold;
 				this._summaryTotalHeight = summaryHeight + maxHeight + DwtListView.HEADERITEM_HEIGHT;
-				var sashHeight = this._msgSash.getSize().y;
 				this._msgListView.resetHeight(maxHeight + DwtListView.HEADERITEM_HEIGHT);
 				var mvHeight = Math.max((newHeight - (this._summaryTotalHeight + sashHeight)), 0);
 				this._msgView.setBounds(Dwt.DEFAULT, this._summaryTotalHeight + sashHeight, Dwt.DEFAULT, mvHeight);

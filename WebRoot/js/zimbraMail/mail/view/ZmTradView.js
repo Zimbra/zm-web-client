@@ -63,21 +63,24 @@ function(newWidth, newHeight) {
 		return;
 	
 	if (this._isMsgViewVisible()) {
+		var sashHeight = this._msgSash.getSize().y;
 		if (!this._sashMoved) {
 			var listViewHeight = (newHeight / 2) - DwtListView.HEADERITEM_HEIGHT;
 			this._msgListView.resetHeight(listViewHeight);
-			this._msgView.setBounds(Dwt.DEFAULT, listViewHeight + 5, Dwt.DEFAULT, newHeight-(listViewHeight+5));
+			this._msgView.setBounds(Dwt.DEFAULT, listViewHeight + sashHeight, Dwt.DEFAULT,
+									newHeight - (listViewHeight + sashHeight));
 			this._msgSash.setLocation(Dwt.DEFAULT, listViewHeight);
 		} else {
 			var mvHeight = newHeight - this._msgView.getLocation().y;
 			var minHeight = this._msgView.getMinHeight();
 			if (mvHeight < minHeight) {
 				this._msgListView.resetHeight(newHeight - minHeight);
-				this._msgView.setBounds(Dwt.DEFAULT, (newHeight - minHeight) + 5, Dwt.DEFAULT, minHeight - 5);
+				this._msgView.setBounds(Dwt.DEFAULT, (newHeight - minHeight) + sashHeight,
+										Dwt.DEFAULT, minHeight - sashHeight);
 			} else {
 				this._msgView.setSize(Dwt.DEFAULT, mvHeight);
 			}
-			this._msgSash.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - 5);
+			this._msgSash.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - sashHeight);
 		}
 	} else {
 		this._msgListView.resetHeight(newHeight);
