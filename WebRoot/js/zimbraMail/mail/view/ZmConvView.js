@@ -107,6 +107,10 @@ function() {
 	return [ZmMsg.zimbraTitle, ": ", this._conv.subject].join("");
 };
 
+ZmConvView.prototype.getKeyMapName =
+function() {
+	return "ZmConvView";
+};
 
 // Private / protected methods
 

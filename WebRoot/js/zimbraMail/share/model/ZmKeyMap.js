@@ -85,41 +85,24 @@ function ZmKeyMap() {
 			"ArrowLeft":  ZmKeyMap.PREV_PAGE
 	};
 	
-	this._map["ZmComposeController"] = {
+	this._map["ZmComposeView"] = {
 			"Alt+Shift+S": ZmKeyMap.SEND,
 			"Ctrl+Shift+S": ZmKeyMap.SEND // Mac
 	};
 	
-	this._map["ZmConvListController"] = {
-			"INHERIT": "ZmGlobal",
+	this._map["ZmMailListView"] = {
+		"INHERIT": "DwtListView, ZmGlobal",
 		"R": ZmKeyMap.REPLY,
 		"A": ZmKeyMap.REPLY_ALL,
 		"M,R": ZmKeyMap.MARK_READ,
 		"M,U": ZmKeyMap.MARK_UNREAD
 	};
 	
-	this._map["ZmConvController"] = {
-		"INHERIT": "ZmConvListController",
+	this._map["ZmConvView"] = {
+		"INHERIT": "ZmMailListView",
 		"Shift+ArrowRight": ZmKeyMap.NEXT_CONV,
 		"Shift+ArrowLeft": ZmKeyMap.PREV_CONV
 	};
-	
-	this._map["ZmTradController"] = {
-		"INHERIT": "ZmConvListController"
-	};
-	
-	this._map["ZmDialog"] = {"INHERIT": "DwtDialog"};
-	this._map["ZmChangePasswordDialog"] = {"INHERIT": "ZmDialog"};
-	this._map["ZmNewTagDialog"] = {"INHERIT": "ZmDialog"};
-	
-	this._map["ZmConvListView"] = {"INHERIT": "DwtListView"};
-	this._map["ZmMailMsgListView"] = {"INHERIT": "DwtListView"};
-	this._map["ZmTradView"] = {"INHERIT": "DwtListView"};
-
-	this._map["ZmPopupMenu"] = {"INHERIT": "DwtMenu"};
-	this._map["ZmActionMenu"] = {"INHERIT": "DwtMenu"};
-	this._map["ZmTagMenu"] = {"INHERIT": "DwtMenu"};
-	//this._map["ActionMenu"] = {"INHERIT": "DwtMenu"};
 };
 
 ZmKeyMap.prototype = new DwtKeyMap(true);

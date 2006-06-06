@@ -82,12 +82,17 @@ function(list) {
 	this._resetColWidth();
 };
 
+ZmMailListView.prototype.getKeyMapName =
+function() {
+	return "ZmMailListView";
+};
+
 // Private / protected methods
 
 ZmMailListView.prototype._isSentOrDraftsFolder = 
 function() {
-	var isSentFolder = this._folderId == ZmFolder.ID_SENT;
-	var isDraftsFolder = this._folderId == ZmFolder.ID_DRAFTS;
+	var isSentFolder = (this._folderId == ZmFolder.ID_SENT);
+	var isDraftsFolder = (this._folderId == ZmFolder.ID_DRAFTS);
 
 	// if not in Sent/Drafts, deep dive into query to be certain		
 	if (!isSentFolder && !isDraftsFolder) {

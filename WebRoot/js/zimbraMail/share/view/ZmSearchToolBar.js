@@ -44,7 +44,7 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	var groupBy = this._appCtxt.getSettings().getGroupMailBy();
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
     this._searchButton = this._createButton(ZmSearchToolBar.SEARCH_BUTTON, null, ZmMsg.search, null, tooltip, true, "DwtToolbarButton");
-     document.getElementById(searchColId).appendChild(this._searchButton.getHtmlElement());
+	document.getElementById(searchColId).appendChild(this._searchButton.getHtmlElement());
 
 	this._searchMenuButton = this._createButton(ZmSearchToolBar.SEARCH_MENU_BUTTON, "MailFolder", null, null, ZmMsg.chooseSearchType, true, "DwtToolbarButton");
 	this._searchMenuButton.noMenuBar = true;
@@ -110,10 +110,9 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	}
 
 	
-	DBG.println("DUMPING TG");
+	DBG.println(AjxDebug.DBG3, "ZmSearchToolBar tab group:");
 	this._tabGroup.dump();
-	
-}
+};
 
 ZmSearchToolBar.BROWSE_BUTTON 		= 1;
 ZmSearchToolBar.SEARCH_BUTTON 		= 2;
@@ -164,51 +163,51 @@ ZmSearchToolBar.prototype.constructor = ZmSearchToolBar;
 ZmSearchToolBar.prototype.toString = 
 function() {
 	return "ZmSearchToolBar";
-}
+};
 
 // Public methods
 
 ZmSearchToolBar.prototype.getSearchField =
 function() {
 	return this._searchField;
-}
+};
 
 ZmSearchToolBar.prototype.getNavToolBar = 
 function() {
 	return this._navToolbar;
-}
+};
 
 ZmSearchToolBar.prototype.getTabGroup =
 function() {
 	return this._tabGroup;
-}
+};
 
 ZmSearchToolBar.prototype.registerCallback =
 function(func, obj) {
 	this._callback = new AjxCallback(obj, func);
-}
+};
 
 ZmSearchToolBar.prototype.focus =
 function() {
 	this._searchField.focus();
-}
+};
 
 ZmSearchToolBar.prototype.setEnabled =
 function(enable) {
 	this._searchField.disabled = !enable;
 	this._searchButton.setEnabled(enable);
-}
+};
 
 ZmSearchToolBar.prototype.setSearchFieldValue =
 function(value) {
 	if (value != this._searchField.value)
 		this._searchField.value = value;
-}
+};
 
 ZmSearchToolBar.prototype.getSearchFieldValue =
 function() {
 	return this._searchField.value;
-}
+};
 
 ZmSearchToolBar._keyPressHdlr =
 function(ev) {
@@ -219,7 +218,7 @@ function(ev) {
 	    return false;
 	}
 	return true;
-}
+};
 
 ZmSearchToolBar.prototype._createHtml =
 function(fieldId, searchColId, browseColId, saveColId, navColId, searchMenuColId) {
@@ -244,4 +243,4 @@ function(fieldId, searchColId, browseColId, saveColId, navColId, searchMenuColId
 	html[i++] = "</tr></table>";
 
 	this.getHtmlElement().innerHTML = html.join("");	
-}
+};
