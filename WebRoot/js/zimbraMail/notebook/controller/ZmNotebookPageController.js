@@ -105,6 +105,7 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 		var pageRef = { folderId: this._object.folderId, name: this._object.name };
 		this._history[this._place] = pageRef;
 	}
+	this._enableNaviButtons();
 
 	// REVISIT: Need to do proper list management! For now we fake
 	//          a list of a single item so that operations like
@@ -167,15 +168,15 @@ ZmNotebookPageController.prototype._enableNaviButtons = function() {
 	var toolbar = this._toolbar[this._currentView];
 	var button = toolbar.getButton(ZmOperation.PAGE_BACK);
 	button.setEnabled(enabled && this._place > 0);
-	ZmNotebookPageController.__setButtonToolTip(button, this._history[this._place - 1]);
+	ZmNotebookPageController.__setButtonToolTip(this._appCtxt, button, this._history[this._place - 1]);
 
 	var button = toolbar.getButton(ZmOperation.PAGE_DBL_BACK);
 	button.setEnabled(enabled && this._place > 0);
-	ZmNotebookPageController.__setButtonToolTip(button, this._history[0]);
+	ZmNotebookPageController.__setButtonToolTip(this._appCtxt, button, this._history[0]);
 
 	var button = toolbar.getButton(ZmOperation.PAGE_FORWARD);
 	button.setEnabled(enabled && this._place + 1 < this._history.length);
-	ZmNotebookPageController.__setButtonToolTip(button, this._history[this._place + 1]);
+	ZmNotebookPageController.__setButtonToolTip(this._appCtxt, button, this._history[this._place + 1]);
 };
 
 // listeners
@@ -208,7 +209,17 @@ ZmNotebookPageController.prototype._showIndex = function(folderId) {
 // Private functions
 //
 
-ZmNotebookPageController.__setButtonToolTip = function(button, pageRef) {
+ZmNotebookPageController.__setButtonToolTip = function(appCtxt, button, pageRef) {
 	var text = pageRef ? pageRef.name : "";
+	if (text == ZmNotebook.PAGE_INDEX) {
+		var notebook = appCtxt.getTree(ZmOrganizer.NOTEBOOK).getById(pageRef.folderId);
+		if (notebook) {
+			text = notebook.getName();
+		}
+		else {
+			/*** REVISIT ***/
+			// Get the remote notebook name. Or save the remote name in the pageRef.
+		}
+	}
 	button.setToolTipContent(text);
 };
