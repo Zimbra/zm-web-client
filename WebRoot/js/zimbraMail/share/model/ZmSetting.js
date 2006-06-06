@@ -328,6 +328,7 @@ ZmSetting.INIT[ZmSetting.SKIN_CHANGE_ENABLED]			= ["zimbraFeatureSkinChangeEnabl
 ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["zimbraFeatureTaggingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.VIEW_ATTACHMENT_AS_HTML] 		= ["zimbraFeatureViewInHtmlEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.SHARING_ENABLED]		 		= ["zimbraFeatureSharingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.NOTEBOOK_ENABLED]				= ["zimbraFeatureNotebookEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 
 // user metadata (included with COS since the user can't change them)
 ZmSetting.INIT[ZmSetting.QUOTA_USED]					= [null, ZmSetting.T_COS, ZmSetting.D_INT];
@@ -342,7 +343,6 @@ ZmSetting.INIT[ZmSetting.FEED_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D
 ZmSetting.INIT[ZmSetting.HELP_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.MIXED_VIEW_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.NOTES_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
-ZmSetting.INIT[ZmSetting.NOTEBOOK_ENABLED]				= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.PREFS_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.PRINT_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.REPLY_MENU_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
