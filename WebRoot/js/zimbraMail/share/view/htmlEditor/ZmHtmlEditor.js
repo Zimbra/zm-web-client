@@ -279,7 +279,7 @@ function(words, keepModeDiv) {
 			node = node.nextSibling;
 			break;
 		    case 3: /* TEXT */
-			if (!/\S/.test(node.data)) {
+			if (!/[^\s\xA0]/.test(node.data)) {
 				node = node.nextSibling;
 				break;
 			}
@@ -287,15 +287,14 @@ function(words, keepModeDiv) {
 			// not mess ourselves with leading/trailing
 			// whitespace, thus we save it in 2 text nodes.
 			var a = null, b = null;
-			var regex = /^[\s\xA0]+/;
-			var result = regex.exec(node.data);
+
+			var result = /^[\s\xA0]+/.exec(node.data);
 			if (result) {
 				// a will contain the leading space
 				a = node;
 				node = node.splitText(result[0].length);
 			}
-			regex = /[\s\xA0]+$/;
-			result = regex.exec(node.data);
+			result = /[\s\xA0]+$/.exec(node.data);
 			if (result) {
 				// and b will contain the trailing space
 				b = node.splitText(node.data.length - result[0].length);
