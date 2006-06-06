@@ -151,6 +151,7 @@ body						{	@ChromeBg@		}
 }
 #skin_border_tree	{	
 		@InsetContainer@
+		background-color:white;
 		-moz-border-radius:0 0 0 0; 
 		border-top-width:0px;
 		height:100%;
@@ -161,8 +162,8 @@ body						{	@ChromeBg@		}
 }
 
 
-#skin_tr_tree_footer					{		}
-#skin_td_tree_footer					{	display:none;	vertical-align:top;}
+#skin_tr_tree_footer					{	display:none;		}
+#skin_td_tree_footer					{	vertical-align:top;}
 #skin_border_tree_footer				{	
 		-moz-border-radius:0 0 3 0; 
 		border-top-width:0px;
