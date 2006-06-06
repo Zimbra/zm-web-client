@@ -1,0 +1,11 @@
+<skin>
+	<substitutions>
+		<file>sand_subs.txt</file>
+	</substitutions>
+	<css>
+		<file>sand.css</file>
+	</css>
+	<html>
+		<file>sand.html</file>
+	</html>
+</skin>

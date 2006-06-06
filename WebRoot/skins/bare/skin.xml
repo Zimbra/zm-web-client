@@ -1,0 +1,11 @@
+<skin>
+	<substitutions>
+		<file>bare_subs.txt</file>
+	</substitutions>
+	<css>
+		<file>bare.css</file>
+	</css>
+	<html>
+		<file>bare.html</file>
+	</html>
+</skin>

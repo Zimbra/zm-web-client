@@ -1,0 +1,11 @@
+<skin>
+	<substitutions>
+		<file>sky_subs.txt</file>
+	</substitutions>
+	<css>
+		<file>sky.css</file>
+	</css>
+	<html>
+		<file>sky.html</file>
+	</html>
+</skin>
