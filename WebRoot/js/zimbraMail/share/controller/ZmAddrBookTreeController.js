@@ -200,13 +200,13 @@ function(folder) {
 	var sc = this._appCtxt.getSearchController();
 	sc.setDefaultSearchType(ZmItem.CONTACT, true);
 
-	// force a search if user clicked Trash folder
-	// XXX: this is temp until we figure out how to switch to mixed view
+	var capp = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+
+	// force a search if user clicked Trash folder or share
 	if (folder.id == ZmFolder.ID_TRASH || folder.link) {
 		var types = sc.getTypes(ZmItem.CONTACT);
 		sc.search({query:folder.createQuery(), types:types, fetch:true, sortBy:ZmSearch.NAME_ASC});
 	} else {
-		var capp = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		capp.showFolder(folder);
 	}
 
