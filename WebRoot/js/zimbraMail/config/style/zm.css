@@ -341,15 +341,11 @@ td.DDSepInvisible div {
  */
 
 /* message fragment text */
-.ZmConvListFragment { 
-	@Label@
-	font-weight: normal; 
-}
+.ZmConvListFragment,
 .Row-Selected .ZmConvListFragment { 
-	@Label@
+	@Text-disabled@
 	font-weight: normal; 
 }
-
 
 /* Conversation view outer container (header, list and reading pane) */
 .ZmConvView {}
