@@ -1488,8 +1488,8 @@ td.DDSepInvisible div {background-color:transparent;width:1px;overflow:hidden;}
 
 .appt_location					{	padding:2px;						}
 
-.appt_top_sash { height: 6px; width:100%; top: 0; position:absolute; Xbackground:red; font-size: 2pt; cursor: n-resize;}
-.appt_bottom_sash { height: 6px; width:100%; bottom: 0; position:absolute; Xbackground:red; font-size: 2pt; cursor: s-resize;}
+.appt_top_sash { height: 5px; width:100%; top: 0; position:absolute; Xbackground:red; font-size: 2pt; cursor: n-resize;}
+.appt_bottom_sash { height: 5px; width:100%; bottom: 0; position:absolute; Xbackground:red; font-size: 2pt; cursor: s-resize;}
 
 .appt_body,
 .appt_30_body {

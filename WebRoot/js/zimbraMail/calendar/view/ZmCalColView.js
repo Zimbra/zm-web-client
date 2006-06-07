@@ -1253,6 +1253,7 @@ function(appt) {
 ZmCalColView.prototype._getBoundsForDate =
 function(d, duration, col) {
 	var durationMinutes = duration / 1000 / 60;
+	durationMinutes = Math.max(durationMinutes, 22);
 	var h = d.getHours();
 	var m = d.getMinutes();
 	if (col == null && !this._scheduleMode) {
@@ -1267,6 +1268,7 @@ function(d, duration, col) {
 ZmCalColView.prototype._getBoundsForCalendar =
 function(d, duration, folderId) {
 	var durationMinutes = duration / 1000 / 60;
+	durationMinutes = Math.max(durationMinutes, 22);
 	var h = d.getHours();
 	var m = d.getMinutes();
 	var col= this._getColForFolderId(folderId);
