@@ -1764,6 +1764,10 @@ function(actionCode, ev) {
 			this._assistantDialog.popup();
 			break;
 		}
+		
+		case ZmKeyMap.LOGOFF: {
+			ZmZimbraMail.conditionalLogOff();
+		}
 			
 		default: {
 			var curView = this._appViewMgr.getCurrentView();

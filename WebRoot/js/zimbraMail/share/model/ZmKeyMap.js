@@ -37,106 +37,110 @@ function ZmKeyMap() {
 	// always ends up reporting undefined for the <keycode>. For this reason I
 	// have added Ctrl analogs below	
 	this._map["ZmGlobal"] = {
-			"Ctrl+Q": ZmKeyMap.ASSISTANT,
-
-			"Alt+Shift+D,0": ZmKeyMap.DBG_NONE,
-			"Ctrl+Shift+D,0": ZmKeyMap.DBG_NONE, // Mac issue with Alt+Key
-
-			"Alt+Shift+D,1": ZmKeyMap.DBG_1,
-			"Ctrl+Shift+D,1": ZmKeyMap.DBG_1,
-
-			"Alt+Shift+D,2": ZmKeyMap.DBG_2,
-			"Ctrl+Shift+D,2": ZmKeyMap.DBG_2,
-
-			"Alt+Shift+D,3": ZmKeyMap.DBG_3,
-			"Ctrl+Shift+D,3": ZmKeyMap.DBG_3,
-
-			"Alt+Shift+D,t": ZmKeyMap.DBG_TIMING,
-			"Ctrl+Shift+D,t": ZmKeyMap.DBG_TIMING,
-
-			"Alt+N": ZmKeyMap.NEW,
-			"Ctrl+N": ZmKeyMap.NEW,
+		
+			"Ctrl+Q":				ZmKeyMap.ASSISTANT,
 			
-			"Alt+N,A": ZmKeyMap.NEW_APPT,
-			"Ctrl+N,A": ZmKeyMap.NEW_APPT,
+//			"Alt+Shift+Esc":		ZmKeyMap.LOGOFF,
+//			"Ctrl+Shift+Esc":		ZmKeyMap.LOGOFF,
 
-			"Alt+N,L": ZmKeyMap.NEW_CALENDAR,
-			"Ctrl+N,L": ZmKeyMap.NEW_CALENDAR,
+			"Alt+Shift+D,0":		ZmKeyMap.DBG_NONE,
+			"Ctrl+Shift+D,0":		ZmKeyMap.DBG_NONE,
 
-			"Alt+N,C": ZmKeyMap.NEW_CONTACT,
-			"Ctrl+N,C": ZmKeyMap.NEW_CONTACT,
+			"Alt+Shift+D,1":		ZmKeyMap.DBG_1,
+			"Ctrl+Shift+D,1":		ZmKeyMap.DBG_1,
 
-			"Alt+N,F": ZmKeyMap.NEW_FOLDER,
-			"Ctrl+N,F": ZmKeyMap.NEW_FOLDER,
+			"Alt+Shift+D,2":		ZmKeyMap.DBG_2,
+			"Ctrl+Shift+D,2":		ZmKeyMap.DBG_2,
 
-			"Alt+N,M": ZmKeyMap.NEW_MESSAGE,
-			"Ctrl+N,M": ZmKeyMap.NEW_MESSAGE,
+			"Alt+Shift+D,3":		ZmKeyMap.DBG_3,
+			"Ctrl+Shift+D,3":		ZmKeyMap.DBG_3,
 
-			"Alt+N,T": ZmKeyMap.NEW_TAG,
-			"Ctrl+N,T": ZmKeyMap.NEW_TAG,
+			"Alt+Shift+D,t":		ZmKeyMap.DBG_TIMING,
+			"Ctrl+Shift+D,t":		ZmKeyMap.DBG_TIMING,
 
-			"Alt+S":   ZmKeyMap.SAVE,
-			"Ctrl+S": ZmKeyMap.SAVE,
+			"Alt+N":				ZmKeyMap.NEW,
+			"Ctrl+N":				ZmKeyMap.NEW,
+			
+			"Alt+N,A":				ZmKeyMap.NEW_APPT,
+			"Ctrl+N,A":				ZmKeyMap.NEW_APPT,
 
-			"Del":        ZmKeyMap.DEL,
-			"Backspace":  ZmKeyMap.DEL, // MacBook keyboard
-			"Esc":        ZmKeyMap.CANCEL,
-			"ArrowRight": ZmKeyMap.NEXT_PAGE,
-			"ArrowLeft":  ZmKeyMap.PREV_PAGE
+			"Alt+N,L":				ZmKeyMap.NEW_CALENDAR,
+			"Ctrl+N,L":				ZmKeyMap.NEW_CALENDAR,
+
+			"Alt+N,C":				ZmKeyMap.NEW_CONTACT,
+			"Ctrl+N,C":				ZmKeyMap.NEW_CONTACT,
+
+			"Alt+N,F":				ZmKeyMap.NEW_FOLDER,
+			"Ctrl+N,F":				ZmKeyMap.NEW_FOLDER,
+
+			"Alt+N,M":				ZmKeyMap.NEW_MESSAGE,
+			"Ctrl+N,M":				ZmKeyMap.NEW_MESSAGE,
+
+			"Alt+N,T":				ZmKeyMap.NEW_TAG,
+			"Ctrl+N,T":				ZmKeyMap.NEW_TAG,
+
+			"Alt+S":				ZmKeyMap.SAVE,
+			"Ctrl+S":				ZmKeyMap.SAVE,
+
+			"Del":					ZmKeyMap.DEL,
+			"Backspace":			ZmKeyMap.DEL, // MacBook keyboard
+			"Esc":					ZmKeyMap.CANCEL,
+			"ArrowRight":			ZmKeyMap.NEXT_PAGE,
+			"ArrowLeft":			ZmKeyMap.PREV_PAGE
 	};
 	
 	this._map["ZmComposeView"] = {
-			"Alt+Shift+S": ZmKeyMap.SEND,
-			"Ctrl+Shift+S": ZmKeyMap.SEND // Mac
+			"Alt+Shift+S":			ZmKeyMap.SEND,
+			"Ctrl+Shift+S":			ZmKeyMap.SEND
 	};
 	
 	this._map["ZmMailListView"] = {
 		"INHERIT": "DwtListView, ZmGlobal",
-		"R": ZmKeyMap.REPLY,
-		"A": ZmKeyMap.REPLY_ALL,
-		"M,R": ZmKeyMap.MARK_READ,
-		"M,U": ZmKeyMap.MARK_UNREAD
+		"R":						ZmKeyMap.REPLY,
+		"A":						ZmKeyMap.REPLY_ALL,
+		"M,R":						ZmKeyMap.MARK_READ,
+		"M,U":						ZmKeyMap.MARK_UNREAD
 	};
 	
 	this._map["ZmConvView"] = {
 		"INHERIT": "ZmMailListView",
-		"Shift+ArrowRight": ZmKeyMap.NEXT_CONV,
-		"Shift+ArrowLeft": ZmKeyMap.PREV_CONV
+		"Shift+ArrowRight":			ZmKeyMap.NEXT_CONV,
+		"Shift+ArrowLeft":			ZmKeyMap.PREV_CONV
 	};
 };
 
 ZmKeyMap.prototype = new DwtKeyMap(true);
 ZmKeyMap.prototype.constructor = ZmKeyMap;
 
-// Key map action code contants
-var i = 0;
+// Action codes
+var i = 1;
 
-ZmKeyMap.ASSISTANT = i++;
-ZmKeyMap.CANCEL = i++;
-ZmKeyMap.DBG_NONE = i++;
-ZmKeyMap.DBG_1 = i++;
-ZmKeyMap.DBG_2 = i++;
-ZmKeyMap.DBG_3 = i++;
-ZmKeyMap.DBG_TIMING = i++;
-ZmKeyMap.DEL = i++;
-ZmKeyMap.MARK_READ = i++;
-ZmKeyMap.MARK_UNREAD = i++;
-ZmKeyMap.NEW = i++;
-ZmKeyMap.NEW_APPT = i++;
-ZmKeyMap.NEW_CALENDAR = i++;
-ZmKeyMap.NEW_CONTACT = i++;
-ZmKeyMap.NEW_FOLDER = i++;
-ZmKeyMap.NEW_MESSAGE = i++;
-ZmKeyMap.NEW_TAG = i++;
-ZmKeyMap.NEXT_CONV = i++;
-ZmKeyMap.NEXT_PAGE = i++;
-ZmKeyMap.PREV_CONV = i++;
-ZmKeyMap.PREV_PAGE = i++;
-ZmKeyMap.SAVE = i++;
-
-ZmKeyMap.REPLY = i++;
-ZmKeyMap.REPLY_ALL = i++;
-ZmKeyMap.SEND = i++;
+ZmKeyMap.ASSISTANT		= i++;
+ZmKeyMap.CANCEL			= i++;
+ZmKeyMap.DBG_NONE		= i++;
+ZmKeyMap.DBG_1			= i++;
+ZmKeyMap.DBG_2			= i++;
+ZmKeyMap.DBG_3			= i++;
+ZmKeyMap.DBG_TIMING		= i++;
+ZmKeyMap.DEL			= i++;
+ZmKeyMap.LOGOFF			= i++;
+ZmKeyMap.MARK_READ		= i++;
+ZmKeyMap.MARK_UNREAD	= i++;
+ZmKeyMap.NEW			= i++;
+ZmKeyMap.NEW_APPT		= i++;
+ZmKeyMap.NEW_CALENDAR	= i++;
+ZmKeyMap.NEW_CONTACT	= i++;
+ZmKeyMap.NEW_FOLDER		= i++;
+ZmKeyMap.NEW_MESSAGE	= i++;
+ZmKeyMap.NEW_TAG		= i++;
+ZmKeyMap.NEXT_CONV		= i++;
+ZmKeyMap.NEXT_PAGE		= i++;
+ZmKeyMap.PREV_CONV		= i++;
+ZmKeyMap.PREV_PAGE		= i++;
+ZmKeyMap.REPLY			= i++;
+ZmKeyMap.REPLY_ALL		= i++;
+ZmKeyMap.SAVE			= i++;
+ZmKeyMap.SEND			= i++;
 
 delete i;
 
