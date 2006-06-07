@@ -114,7 +114,7 @@ function() {
 
 ZmListView.prototype._changeListener =
 function(ev) {
-	if (ev.type != this.type)
+	if ((ev.type != this.type) && (ZmList.MIXED != this.type))
 		return;
 	var items = ev.getDetail("items");
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {

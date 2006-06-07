@@ -53,7 +53,7 @@ ZmDocument.prototype.version = 0;
 // Static functions
 
 ZmDocument.createFromDom = function(node, args) {
-	var doc = new ZmDocument(args.appCtxt, null, args.list);
+	var doc = new ZmDocument(args.appCtxt, node.id, args.list);
 	doc.set(node);
 	return doc;
 };

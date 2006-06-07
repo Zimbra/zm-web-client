@@ -34,7 +34,7 @@
 */
 function ZmTagTreeController(appCtxt) {
 
-	var dropTgt = new DwtDropTarget(ZmConv, ZmMailMsg, ZmContact);
+	var dropTgt = new DwtDropTarget(ZmConv, ZmMailMsg, ZmContact, ZmPage, ZmDocument);
 	ZmTreeController.call(this, appCtxt, ZmOrganizer.TAG, dropTgt);
 
 	this._listeners[ZmOperation.NEW_TAG] = new AjxListener(this, this._newListener);

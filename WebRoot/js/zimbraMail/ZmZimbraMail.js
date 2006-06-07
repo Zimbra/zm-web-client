@@ -1477,11 +1477,7 @@ function(modifies) {
 				cache.putPage(page);
 			}
 			else {
-				/***/
-				page.set(mod);
-				/***
 				page.notifyModify(mod);
-				/***/
 			}
 			
 			// re-render current page, if necessary

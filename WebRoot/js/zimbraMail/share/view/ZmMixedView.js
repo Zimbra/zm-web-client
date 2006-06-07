@@ -45,6 +45,26 @@ function() {
 	return "ZmMixedView";
 };
 
+ZmMixedView.prototype.set =
+function(list, sortField) {
+	ZmListView.prototype.set.call(this, list, sortField);
+
+	// The mixed list of items doesn't handle notifications.
+	// We need to add listeners to each of the lists that 
+	// owns items in the mixed array...
+	var items = list.getArray();
+	var owners = new Object();
+	for (var i = 0; i < items.length; i++) {
+		var list = items[i].list;
+		if (list) {
+			owners[list.type] = list;
+		}
+	}
+	for (var type in owners) {
+		owners[type].addChangeListener(this._listChangeListener);
+	}
+};
+
 ZmMixedView.prototype._createItemHtml =
 function(item, now, isDndIcon) {
 	if (item.type == ZmItem.CONTACT) {
