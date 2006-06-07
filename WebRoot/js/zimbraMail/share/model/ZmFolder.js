@@ -235,7 +235,7 @@ function(name, color, url, search) {
 			}
 		}
 		if (search.sortBy)
-			searchNode.setAttribute("sortBy", search.sortBy);
+			searchNode.setAttribute("sortBy", ZmSearch.SORT_BY[search.sortBy]);
 		searchNode.setAttribute("l", this.id);
 	} else {
 		var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
