@@ -1,5 +1,5 @@
-
-// Items below that begin and end with "_" should only be used within this file -- never in another CSS file
+_SkinName_ = bare
+# Items below that begin and end with "_" should only be used within this file -- never in another CSS file
 
 SkinImgDir					= /zimbra/skins/bare/img
 SkinAnimatedImgDir			= /zimbra/img/animated
@@ -7,10 +7,10 @@ DwtImgDir					= /zimbra/img/loRes/dwt
 
 
 
-// Colors.  Note that this is designed for a primarily monochrome interface.
+# Colors.  Note that this is designed for a primarily monochrome interface.
 _BaseColor_	= white
 
-// darker and lighter shades of base color, used for bgs, borders and shadows
+# darker and lighter shades of base color, used for bgs, borders and shadows
 _BaseColorD1_		= #abc2d6
 _BaseColorD2_		= #a2b8cb
 _BaseColorD3_		= #98adbe
@@ -30,7 +30,7 @@ LightSeparatorColor	= @_BaseColorD2_@
 DarkSeparatorColor	= @_BaseColorD8_@
 
 
-// selection color, used for selected row/etc, focus items and default button
+# selection color, used for selected row/etc, focus items and default button
 _SelColor_			= #add6d6
 _SelColorD1_		= #9bc0c0
 _SelColorD2_		= #8aabab
@@ -39,7 +39,7 @@ _SelColorD4_		= #566b6b
 _SelColorL1_		= #c9d5cc
 _SelColorL2_		= #dbe2d5
 
-// a list item that is selected, but its container is unfocused
+# a list item that is selected, but its container is unfocused
 _SelUnfocusColor_	= #dddddd
 
 
@@ -54,7 +54,7 @@ InputBgColor		= white
 WidgetBgColor		= @_BaseColorD1_@
 
 
-// Drag and drop colors
+# Drag and drop colors
 DragBg				= background-color:@HilightColor@;
 DragText			= color:@Text@;
 DropBg				= background-color:@HilightColor@;
@@ -62,7 +62,7 @@ DropText			= color:@Text@;
 DropAllowedColor	= green;
 DropNotAllowedColor = red;
 
-// backgrounds for various states
+# backgrounds for various states
 SelectedBg			= background-color:@_SelColor_@;
 SelectedBg-blurred	= background-color:@_SelUnfocusColor_@;
 SelectedBg-focused	= background-color:@_SelColor_@;
@@ -70,7 +70,7 @@ MatchedBg			= background-color:@MatchedColor@;
 RightClickBg		= background-color:@RightClickColor@;
 
 
-// Short-hand substitutions used below, placed here for convenience
+# Short-hand substitutions used below, placed here for convenience
 InactiveCursor				= cursor: default;
 ActiveCursor				= cursor: pointer;
 DisabledCursor				= cursor: not-allowed;
@@ -88,7 +88,7 @@ NoWrap						= white-space:nowrap; overflow:hidden;
 TransparentBg				=
 
 
-// Text colors and styles (for use on widgets, Page, Header and App regions -- other regions may have different colors)
+# Text colors and styles (for use on widgets, Page, Header and App regions -- other regions may have different colors)
 
 Text					 	= color: black;
 Label-wrap				 	= color: black; 
@@ -109,8 +109,8 @@ Text-matched				= color:black;
 
 
 
-// fonts
-// TODO: change to "TextDefault"...?
+# fonts
+# TODO: change to "TextDefault"...?
 FontFamily-default			= font-family: Tahoma, Arial, Helvetica, sans-serif;
 FontFamily-fixed			= font-family: monospace; font-size:12px;
 FontFamily-html				= font-family:Verdana,Arial,serif;
@@ -128,9 +128,9 @@ WindowTitleText				= @Text-contrast@ 	@_WindowTitleTextStyle_@
 WindowTitleText-light		= @Text@ 			@_WindowTitleTextStyle_@
 
 
-//
-// BORDERS:  create attractive, logical x-platform borders and use them consistently for all widgets and skin pieces
-//
+#
+# BORDERS:  create attractive, logical x-platform borders and use them consistently for all widgets and skin pieces
+#
 TransparentBorder			= padding:2px;	border-width:0px; 
 OutsetBorder				= padding:0px;	border:2px solid; border-color:@_BaseColorD1_@;
 InsetBorder					= padding:0px;	border:2px solid; border-color:@_BaseColorD1_@;
@@ -153,7 +153,7 @@ _ToolbarBorder_				= border: 2px solid @_BaseColorD1_@;  /border-width:1; -moz-b
 _InlineToolbarBorder_		= @_ToolbarBorder_@	-moz-border-radius:0 0 0 0;
 _WidgetHeaderBorder_		= border-bottom:1px solid @DarkSeparatorColor@; padding-top:1px;
 
-// Borders and backgrounds for windows (dialogs, tooltip and the like)
+# Borders and backgrounds for windows (dialogs, tooltip and the like)
 WindowOuterContainer		= background-color:@_BaseColorD8_@;	padding:2px; border:2px solid; border-color:@_BaseColorD7_@ @_BaseColorD9_@ @_BaseColorD9_@ @_BaseColorD7_@; -moz-border-radius:2 2 2 2; -moz-border-left-colors:@_BaseColorD6_@ @_BaseColorD7_@; -moz-border-top-colors: @_BaseColorD6_@ @_BaseColorD7_@; -moz-border-bottom-colors: @_BaseColorD10_@ @_BaseColorD9_@; -moz-border-right-colors: @_BaseColorD10_@ @_BaseColorD9_@;
 WindowInnerContainer		= @PageBg@							padding:4px; border:2px solid; border-color:@_BaseColorD9_@ @_BaseColorD7_@ @_BaseColorD7_@ @_BaseColorD9_@; -moz-border-radius:3 3 3 3; -moz-border-left-colors:@_BaseColorD9_@ @_BaseColorD10_@; -moz-border-top-colors: @_BaseColorD9_@ @_BaseColorD10_@; -moz-border-bottom-colors: @_BaseColorD7_@ @_BaseColorD6_@; -moz-border-right-colors:  @_BaseColorD7_@ @_BaseColorD6_@; vertical-align:top;	@InactiveCursor@
 WindowOuterContainer-light	= background-color:@_BaseColorD1_@;	padding:3px; border:2px solid; border-color:@_BaseColorD3_@ @_BaseColorD6_@ @_BaseColorD6_@ @_BaseColorD3_@; -moz-border-radius:2 2 2 2; -moz-border-left-colors:@_BaseColorD3_@ @_BaseColorD2_@; -moz-border-top-colors: @_BaseColorD3_@ @_BaseColorD2_@; -moz-border-bottom-colors: @_BaseColorD6_@ @_BaseColorD4_@; -moz-border-right-colors: @_BaseColorD6_@ @_BaseColorD4_@;
@@ -166,9 +166,9 @@ AppTabContainer-selected	= @_ToolbarBorder_@ 	background-color:@_BaseColorL1_@;	
 
 
 
-//
-// Zones in the skin
-//
+#
+# Zones in the skin
+#
 
 ChromeBg					= background-color:@_BaseColor_@;
 ChromeText					= @Text@
@@ -195,7 +195,7 @@ _SashContentsColor_			= @_BaseColorD3_@
 
 
 
-// Widget semantics
+# Widget semantics
 
 _NormalButtonSize_			= min-width:60px; /width:60px;  height:20px; 
 _SelectSize_				= height:20px; 
@@ -221,7 +221,7 @@ BigIconHeight				= 32px
 
 
 
-// "Widgets" here means buttons, selects and tabs
+# "Widgets" here means buttons, selects and tabs
 _WidgetContainerStyle_		= -moz-border-radius:1 1 1 1; 
 _WidgetContainer_			= background-color:@WidgetBgColor@;		@OutsetBorder@		@_WidgetContainerStyle_@
 _WidgetContainer-disabled_ 	= background-color:none;				@DisabledBorder@	@_WidgetContainerStyle_@
@@ -233,15 +233,15 @@ _WidgetContainer-focused_	= background-color:@_SelColor_@;		@FocusBorder@		@_Wid
 _WidgetContainer-toggled_	= background-color:@HilightColor@;		@InsetBorder@		@_WidgetContainerStyle_@
 
 
-// "WidgetHeader" means headers of trees, lists, message header, etc
+# "WidgetHeader" means headers of trees, lists, message header, etc
 WidgetHeaderContainer		= background-color:@HeaderColor@; 		@_WidgetHeaderBorder_@
 WidgetHeaderContainer-hover	= background-color:@HeaderColor-hover@; @_WidgetHeaderBorder_@
 
 
-// special case for toolbar buttons that don't have a border normally
+# special case for toolbar buttons that don't have a border normally
 _ToolbarButtonContainer_	= background-color:none;			@TransparentBorder@
 
-// "Items" means listItems and menuItems
+# "Items" means listItems and menuItems
 _ItemContainerStyle_		= border-left-width:0; border-right-width:0;
 _ItemContainer_				= background-color:white;		@TransparentBorder@	@_ItemContainerStyle_@
 _ItemContainer-disabled		= @_ItemContainer_@
@@ -259,25 +259,25 @@ _ItemContainer-header_		= background-color:@HeaderColor@;		@TransparentBorder@	@
 ToolbarContainer			= @ToolbarBg@ @_ToolbarBorder_@
 InlineToolbarContainer		= @ToolbarBg@ @_InlineToolbarBorder_@
 
-// "Inputs" means input elements only
+# "Inputs" means input elements only
 InputField					= @Text@			background-color:@InputBgColor@;		@_InputBorder_@				@_InputSize_@
 InputField-focused			= @Text@			background-color:@InputBgColor@;		@_InputBorder-focused_@		@_InputSize_@
 InputField-error			= @Text@			background-color:@HilightColor@; 		@_InputBorder-error_@		@_InputSize_@
 InputField-disabled			= @Text-disabled@	background-color:@_BaseColor_@; 		@_InputBorder-disabled_@	@_InputSize_@
 
-// "TextArea" inputs
+# "TextArea" inputs
 TextArea					= @Text@			background-color:white; 			@_InputBorder_@			
 TextArea-focused			= @Text@			background-color:white; 			@_InputBorder-focused_@	
 TextArea-error				= @Text@			background-color:@HilightColor; 	@_InputBorder-error_@	
 TextArea-disabled			= @Text-disabled@	background-color:@_BaseColor_@; 	@_InputBorder-disabled_@
 
 
-// "Notice" is for the toast pane and warning messages that appear in Admin
+# "Notice" is for the toast pane and warning messages that appear in Admin
 NoticeOuterBorder			= @WindowOuterContainer-light@
 NoticeInnerBorder			= @WindowInnerContainer-light@
 NoticeText					= @Text@ font-weight:bold;
 
-// colors for different levels of notice
+# colors for different levels of notice
 InfoBg						= background-color:#92e38e;
 WarningBg					= background-color:#FFF6BF;
 CriticalBg					= background-color:#F5BFBF;
@@ -295,11 +295,11 @@ TooltipText-label			= @Label@
 
 
 
-//
-//
-// END EASILY CUSTOMIZED BITS -- BELOW THIS YOU'RE ON YOUR OWN
-//
-//
+#
+#
+# END EASILY CUSTOMIZED BITS -- BELOW THIS YOU'RE ON YOUR OWN
+#
+#
 
 
 VerticalScrollOverflow		= overflow:-moz-scrollbars-vertical; overflow-x:hidden; overflow-y:auto;
@@ -317,7 +317,7 @@ ImagePadding				= padding-right: @BoxMarginSize@;
 
 
 
-// different separator pieces
+# different separator pieces
 
 FixIESizeQuirk				= font-size:1px; line-height: 1px;
 
@@ -343,7 +343,7 @@ FieldSetLabel				= @Label@ font-weight:bold;
 
 
 
-// BUTTONS IN DIFFERENT FLAVORS
+# BUTTONS IN DIFFERENT FLAVORS
 
 
 _NormalButtonStyle_			= @_NormalButtonSize_@
@@ -399,9 +399,9 @@ SelectText-focused			= @Text-focused@	@_SelectTextStyle_@
 
 
 
-// ANCHORS AND ZIMLETS
+# ANCHORS AND ZIMLETS
 
-// HMMM, not so sure about these AnchorContainer things...
+# HMMM, not so sure about these AnchorContainer things...
 _AnchorContainer_			= background-color:none; @ActiveCursor@
 _AnchorText_				= color:darkblue; text-decoration:none;
 
@@ -429,7 +429,7 @@ ZimletBg-Hover				= @Anchor-hover@
 
 
 
-// MENUS
+# MENUS
 
 MenuContainer			 	= @WindowOuterContainer@
 
@@ -453,7 +453,7 @@ MenuItemTextPadding			= height:16px; white-space:nowrap; padding:0 2 0 5;
 MenuItemSeparator			= @PrettyBottomSeparator@
 
 
-// LISTS
+# LISTS
 
 ListContainer				= @AppBg@ @InsetBorder@
 
@@ -480,7 +480,7 @@ ListItemText-rightClicked	= @Text@	@_ListItemTextStyle_@
 
 
 
-// TREES
+# TREES
 
 TreeItem					= @TransparentBg@ @_TreeItemSize_@;	@ActiveCursor@
 TreeItemText				= @Text@
@@ -488,7 +488,7 @@ TreeItemSpacing				= padding-top:1px; padding-left:2px; padding-right:2px;
 
 
 
-// MINI CALENDAR
+# MINI CALENDAR
 
 MiniCalBg					= @AppBg@
 MiniCalHeaderBg				= @WidgetHeaderContainer@ height:16px;
@@ -501,13 +501,13 @@ MiniCalButton-clicked		= @Text-clicked@	@_SmallButtonBorder-clicked_@	@_MiniCalB
 
 MiniCalDOWText				= @Text-disabled@ 	background-color:@_BaseColorL1_@; @BottomSeparator@ text-align:center;
 
-// added to day buttons
+# added to day buttons
 MiniCalDay-hilited			= font-weight:bold;
 MiniCalDay-today			= @Text-today@
 MiniCalDay-gray				= @Text-disabled@
 
 
-// PROGRESS BARS
+# PROGRESS BARS
 
 ProgressBarContainer		= @ChromeBg@ @InsetBorder@ border-width:1px;
 ProgressBarBg-info			= @InfoBg@		@FixIESizeQuirk@
@@ -515,7 +515,7 @@ ProgressBarBg-warning		= @WarningBg@	@FixIESizeQuirk@
 ProgressBarBg-critical		= @CriticalBg@	@FixIESizeQuirk@
 
 
-// TOASTER
+# TOASTER
 
 ToastContainer				= @NoticeOuterBorder@
 ToastBg-info				= @InfoBg@
@@ -523,7 +523,7 @@ ToastBg-warning				= @WarningBg@
 ToastBg-critical			= @CriticalBg@
 ToastText					= @NoticeText@
 
-// SASHES
+# SASHES
 HSashContainer				= @_SashBg_@ 	width:@SashSize@;	height:100%;			cursor:e-resize; @FixIESizeQuirk@ 
 HSashContents				= text-align:center; vertical-align:middle; font-size:9px; line-height:6px; color:@_SashContentsColor_@;
 
@@ -534,21 +534,21 @@ VSashContents				= text-align:center; vertical-align:middle; font-size:9px; line
 
 
 
-// SEARCH BUILDER
+# SEARCH BUILDER
 
 PickerContainer				= @PageBg@ @RightSeparator@ @_PickerSize_@
 
 
-// IMAGE STUFF
+# IMAGE STUFF
 SmallIconSize				= width:@SmallIconWidth@; height:@SmallIconHeight@;
 BigIconSize					= width:@SmallIconWidth@; height:@SmallIconHeight@;
 
 
 
-// CONTACTS STUFF
+# CONTACTS STUFF
 ContactsCardSize			= width:300px; height:140px;
 
-// RANDOM CRAP
+# RANDOM CRAP
 
 DndOpacity					= filter:alpha(opacity=70); -moz-opacity:0.7; opacity:0.7;
 DndAllowedContainer			= border: 2px solid @DropAllowedColor@; 	@DragBg@;	
@@ -558,13 +558,13 @@ VeilOpacity					= filter:alpha(opacity=50); -moz-opacity:0.5; opacity:0.5;
 VeilColor					= background-color:white;
 
 
-// Free/Busy view
+# Free/Busy view
 FreeBusyViewHeaderWidth		= width:25px;
 FreeBusyViewGridWidth		= width:12px;
 FreeBusyViewGridHeight		= height:22px; line-height:21px;
 
 
-// VIRTUAL WINDOWS, eg: for Chat
+# VIRTUAL WINDOWS, eg: for Chat
 WindowBg					= @AppBg@
 WindowContainer				= @WindowBg@	@WindowOuterContainer-light@
 WindowContainer-focused		= @WindowBg@	@WindowOuterContainer@

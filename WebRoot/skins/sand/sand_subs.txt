@@ -1,7 +1,8 @@
+_SkinName_		= sand
 
 # Items below that begin and end with "_" should only be used within this file -- never in another CSS file
 
-SkinImgDir					= /zimbra/skins/bare/img
+SkinImgDir					= /zimbra/skins/sand/img
 SkinAnimatedImgDir			= /zimbra/img/animated
 DwtImgDir					= /zimbra/img/loRes/dwt
 ImgDir						= /zimbra/img/loRes

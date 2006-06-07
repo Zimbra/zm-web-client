@@ -66,7 +66,7 @@
 
   <!-- list all the skins to build with here -->
   <!-- property name='skins' value='steel,walnut,bare' / -->
-  <property name='skins' value='sand,steel,sky,bare' />
+  <property name='skins' value='sand,steel,sky,bare,demo,money' />
 
   <condition property='isProduction' value='true'>
     <or>
@@ -443,9 +443,9 @@
     <delete file='${images.loRes.destDir}/skins/${skindir}/${skindir}.css'/>
     <delete file='${images.loRes.destDir}/skins/${skindir}/${dir.skincache}/CacheLoRes.html'/>
     <echo/>
-    <echo message='Merging loRes images for skin ${skindir}'/>
+    <echo message='Copying loRes images for skin ${skindir}'/>
     <echo/>
-    <imagemerge destdir='${images.loRes.destDir}/skins/${skindir}'
+    <imagemerge destdir='${images.loRes.destDir}/skins/${skindir}' copy='true'
       cssfile='${skindir}.css' csspath='${csspathprefix}loRes/skins/${skindir}/'
       cachefile='${dir.skincache}/CacheLoRes.html'>
       <dirset dir='WebRoot/skins/${skindir}' includes='**/img'/>

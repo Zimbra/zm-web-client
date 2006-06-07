@@ -1,0 +1,18 @@
+.ImgAppBanner{filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/demo/img/AppBanner.png',sizingMethod='scale');background-position:0px 0px;background-repeat:no-repeat;width:118px;height:34px;overflow:hidden;}
+HTML>BODY .ImgAppBanner{background-image:url("/zimbra/img/loRes/skins/demo/img/AppBanner.png");}
+.ImgLoginBanner{filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/demo/img/LoginBanner.png',sizingMethod='scale');background-position:0px 0px;background-repeat:no-repeat;width:349px;height:92px;overflow:hidden;}
+HTML>BODY .ImgLoginBanner{background-image:url("/zimbra/img/loRes/skins/demo/img/LoginBanner.png");}
+.ImgLoginBanner_blank{filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/demo/img/LoginBanner_blank.png',sizingMethod='scale');background-position:0px 0px;background-repeat:no-repeat;width:349px;height:92px;overflow:hidden;}
+HTML>BODY .ImgLoginBanner_blank{background-image:url("/zimbra/img/loRes/skins/demo/img/LoginBanner_blank.png");}
+.ImgSplashScreen_blank{filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/demo/img/SplashScreen_blank.png',sizingMethod='scale');background-position:0px 0px;background-repeat:no-repeat;width::476px;height:332px;overflow:hidden;}
+HTML>BODY .ImgSplashScreen_blank{background-image:url("/zimbra/img/loRes/skins/demo/img/SplashScreen_blank.png");}
+
+
+#ZLoginHeaderContainer {
+	background-color:#ffe0cc;
+}
+
+#ZLoginBodyContainer,
+#ZLoginLicenseContainer{
+	background-color:#ff6600;
+}

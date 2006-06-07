@@ -1,11 +1,12 @@
 <skin>
 	<substitutions>
+		<file>../sand/sand_subs.txt</file>
 		<file>sky_subs.txt</file>
 	</substitutions>
 	<css>
-		<file>sky.css</file>
+		<file>../sand/sand.css</file>
 	</css>
 	<html>
-		<file>sky.html</file>
+		<file>../sand/sand.html</file>
 	</html>
 </skin>

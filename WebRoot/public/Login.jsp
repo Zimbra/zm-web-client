@@ -95,6 +95,7 @@ Contributor(s):
 %>      
 
 <%
+	Cookie[] cookies = request.getCookies();
 	String contextPath = request.getContextPath();
 	String currentProto = request.getScheme();
 	String initMode = request.getParameter("initMode");
@@ -125,26 +126,31 @@ Contributor(s):
 		response.sendRedirect(PROTO_HTTP + "://" + request.getServerName() + httpPort + "/zimbra" + qs);
 		return;
 	}
-	String mode = (String) request.getAttribute("mode");
-	String vers = (String)request.getAttribute("version");
-	String ext = (String)request.getAttribute("fileExtension");
-	if (vers == null) {
-		vers = "";
-	}
-	if (ext == null) {
-		ext = "";
-	}
+	
 	
 	final String SKIN_COOKIE_NAME = "ZM_SKIN";
 	String skin = "sand";
-	Cookie[] cookies = request.getCookies();
-	if (cookies != null) {
+
+	String requestSkin = request.getParameter("skin");
+	if (requestSkin != null) {
+		skin = requestSkin;
+	} else if (cookies != null) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
                 skin = cookie.getValue();
             }
         }
     }
+	String skinPreCacheFile = "../skins/" + skin + "/CacheLoRes.html";
+
+	String mode = (String) request.getAttribute("mode");
+	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
+
+	String vers = (String) request.getAttribute("version");
+	if (vers == null) vers = "";
+
+	String ext = (String) request.getAttribute("fileExtension");
+	if (ext == null) ext = "";
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -154,14 +160,15 @@ Contributor(s):
 
 <title>Zimbra Login</title>
 
+<style type="text/css">
+	@import url(<%= contextPath %>/css/common,login,skin.css?v=<%= vers %>skin=<%= skin %><%= inDevMode ? "&debug=1" : "" %>);
+</style>
+
 <!-- ALL STYLES MOVED TO login.css SO THEY CAN BE SKINNED:  WE USE THE SKIN FROM ABOVE. -->
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
-	<style type="text/css">
-		@import url(<%= contextPath %>/css/common,login.css?v=<%= vers %>&debug=1);
-	</style>
 <% } else { %>
 	<style type="text/css">
-		@import url(<%= contextPath %>/css/common,login.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/css/common,login,skin.css?v=<%= vers %>);
 	</style>
 <% } %>
 

@@ -1,0 +1,22 @@
+_SkinName_ = demo
+
+
+######### DEMO STUFF ######### 
+_BaseColor_			= ff6600
+
+_BaseColorD1_		= #e55c00
+_BaseColorD2_		= #d95700
+_BaseColorD3_		= #cc5200
+_BaseColorD4_		= #bf4c00
+_BaseColorD5_		= #b24700
+_BaseColorD6_		= #993d00
+_BaseColorD7_		= #7f3300
+_BaseColorD8_		= #662900
+_BaseColorD9_		= #4c1e00
+_BaseColorD10_		= #331400
+	
+_BaseColorL1_		= #ffb380
+_BaseColorL2_		= #ffe0cc
+
+
+ChromeBg			= background-color:#ffe0cc;

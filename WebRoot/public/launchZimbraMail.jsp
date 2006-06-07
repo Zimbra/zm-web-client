@@ -55,21 +55,26 @@ Contributor(s):
 
 	final String SKIN_COOKIE_NAME = "ZM_SKIN";
 	String skin = "sand";
-	if (cookies != null) {
+
+	String requestSkin = request.getParameter("skin");
+	if (requestSkin != null) {
+		skin = requestSkin;
+	} else if (cookies != null) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
                 skin = cookie.getValue();
             }
         }
     }
-
-	String mode = (String) request.getAttribute("mode");
-	String vers = (String) request.getAttribute("version");
-	String ext = (String) request.getAttribute("fileExtension");
-
 	String skinPreCacheFile = "../skins/" + skin + "/CacheLoRes.html";
 
+	String mode = (String) request.getAttribute("mode");
+	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
+
+	String vers = (String) request.getAttribute("version");
 	if (vers == null) vers = "";
+
+	String ext = (String) request.getAttribute("fileExtension");
 	if (ext == null) ext = "";
 %>
 
@@ -86,25 +91,19 @@ Contributor(s):
 </script>
 
 <script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext %>?v=<%=vers %>"></script>
-<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
-	<style type="text/css">
-	<!--
-		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/css/dwt,common,msgview,login,zm,spellcheck,skin.css?v=<%= vers %>&debug=1);
-	-->
-	</style>
+<style type="text/css">
+<!--
+	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/css/dwt,common,msgview,login,zm,spellcheck,skin.css?v=<%= vers %><%= inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+-->
+</style>
+
+<% if (inDevMode) { %>
 	<jsp:include page="Ajax.jsp" />
 	<jsp:include page="Zimbra.jsp" />
 	<jsp:include page="ZimbraMail.jsp" />
 <% } else { %>
-	<style type="text/css">
-	<!--
-		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/css/dwt,common,msgview,login,zm,spellcheck,skin.css?v=<%= vers %>);
-	-->
-	</style>
 	<script type="text/javascript" src="<%=contextPath%>/js/Ajax_all.js<%=ext %>?v=<%=vers%>"></script>
 	<script type="text/javascript" src="<%=contextPath%>/js/ZimbraMail_all.js<%=ext %>?v=<%=vers%>"></script>
 <% } %>

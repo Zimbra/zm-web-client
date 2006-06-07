@@ -1,10 +1,11 @@
 <skin>
 	<substitutions>
 		<file>../sand/sand_subs.txt</file>
-		<file>steel_subs.txt</file>
+		<file>demo_subs.txt</file>
 	</substitutions>
 	<css>
 		<file>../sand/sand.css</file>
+		<file>demo.css</file>
 	</css>
 	<html>
 		<file>../sand/sand.html</file>
