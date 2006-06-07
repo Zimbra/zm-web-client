@@ -49,6 +49,7 @@ function ZmListController(appCtxt, container, app) {
 	ZmController.call(this, appCtxt, container, app);
 
 	this._toolbar = {};		// ZmButtonToolbar (one per view)
+	this._navToolBar = {};	// ZmNavToolBar (one per view)
 	this._listView = {};	// ZmListView (one per view)
 	this._list = null;				// ZmList (the data)
 	this._actionMenu = null; 		// ZmActionMenu
@@ -1177,51 +1178,51 @@ function(view, callback, result) {
 };
 
 ZmListController.prototype._setNavToolBar = 
-function(toolbar) {
-	this._navToolBar = toolbar;
-	if (this._navToolBar) {
+function(toolbar, view) {
+	this._navToolBar[view] = toolbar;
+	if (this._navToolBar[view]) {
 		var navBarListener = new AjxListener(this, this._navBarListener);
-		if (this._navToolBar.hasSingleArrows) {
-			this._navToolBar.addSelectionListener(ZmOperation.PAGE_BACK, navBarListener);
-			this._navToolBar.addSelectionListener(ZmOperation.PAGE_FORWARD, navBarListener);
+		if (this._navToolBar[view].hasSingleArrows) {
+			this._navToolBar[view].addSelectionListener(ZmOperation.PAGE_BACK, navBarListener);
+			this._navToolBar[view].addSelectionListener(ZmOperation.PAGE_FORWARD, navBarListener);
 		}
-		if (this._navToolBar.hasDoubleArrows) {
-			this._navToolBar.addSelectionListener(ZmOperation.PAGE_DBL_BACK, navBarListener);
-			this._navToolBar.addSelectionListener(ZmOperation.PAGE_DBL_FORW, navBarListener);
+		if (this._navToolBar[view].hasDoubleArrows) {
+			this._navToolBar[view].addSelectionListener(ZmOperation.PAGE_DBL_BACK, navBarListener);
+			this._navToolBar[view].addSelectionListener(ZmOperation.PAGE_DBL_FORW, navBarListener);
 		}
 	}
 };
 
 ZmListController.prototype._resetNavToolBarButtons = 
 function(view) {
-	if (!this._navToolBar) return;
+	if (!this._navToolBar[view]) return;
 
-	if (this._navToolBar.hasDoubleArrows)
-		this._navToolBar.enable([ZmOperation.PAGE_DBL_BACK, ZmOperation.PAGE_DBL_FORW], false);
+	if (this._navToolBar[view].hasDoubleArrows)
+		this._navToolBar[view].enable([ZmOperation.PAGE_DBL_BACK, ZmOperation.PAGE_DBL_FORW], false);
 
-	if (this._navToolBar.hasSingleArrows) {
+	if (this._navToolBar[view].hasSingleArrows) {
 		var offset = this._listView[view].getOffset();
-		this._navToolBar.enable(ZmOperation.PAGE_BACK, offset > 0);
+		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, offset > 0);
 	
 		// determine also if we have more cached conv to show (in case more is wrong)
 		var hasMore = this._list ? this._list.hasMore() : false;
 		var evenMore = this._list ? (offset + this._listView[view].getLimit()) < this._list.size() : false;
 	
-		this._navToolBar.enable(ZmOperation.PAGE_FORWARD, (hasMore || evenMore));
+		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, (hasMore || evenMore));
 	}
 };
 
 ZmListController.prototype.enablePagination =
 function(enabled, view) {
-	if (!this._navToolBar) return;
+	if (!this._navToolBar[view]) return;
 
 	if (enabled) {
 		this._resetNavToolBarButtons(view);
 	} else {	
-		if (this._navToolBar.hasDoubleArrows)
-			this._navToolBar.enable([ZmOperation.PAGE_DBL_BACK, ZmOperation.PAGE_DBL_FORW], false);
-		if (this._navToolBar.hasSingleArrows)
-			this._navToolBar.enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], false);
+		if (this._navToolBar[view].hasDoubleArrows)
+			this._navToolBar[view].enable([ZmOperation.PAGE_DBL_BACK, ZmOperation.PAGE_DBL_FORW], false);
+		if (this._navToolBar[view].hasSingleArrows)
+			this._navToolBar[view].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], false);
 	}
 };
 
@@ -1236,7 +1237,7 @@ function(view) {
 		var end = Math.min(offset + limit, size);
 		text = start + " - " + end;
 	}
-	this._navToolBar.setText(text);
+	this._navToolBar[view].setText(text);
 };
 
 // default callback before a view is shown - enable/disable nav buttons

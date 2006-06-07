@@ -301,14 +301,16 @@ ZmContactCardsView.prototype._layout =
 function() {
 	this._resetListView();
 
+	var html = new Array();
+	var i = 0;
+
+	html[i++] = "<center>";
 	if (this._list instanceof AjxVector && this._list.size()) {
 		var list = this._list.getArray();
-		var html = new Array();
-		var i = 0;
 		var count = 0;
 
 		// OPTIMIZE: dont use appendChild to add to DOM - slows down IE
-		html[i++] = "<center><table border=0 cellpadding=5 cellspacing=5 id='";
+		html[i++] = "<table border=0 cellpadding=5 cellspacing=5 id='";
 		html[i++] = ZmContactCardsView.CARD_TABLE_ID;
 		html[i++] = "'>";
 		for (var j = 0; j < list.length; j++) {
@@ -330,12 +332,22 @@ function() {
 			if (count%2 == 0)
 				html[i++] = "</tr>";
 		}
-		html[i++] = "</center></table>";
-
-		this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html.join("")));
+		html[i++] = "</table>";
 	} else {
-		this._setNoResultsHtml();
+		html[i++] = "<div class='NoResults' id='";
+		html[i++] = ZmContactCardsView.CARD_TABLE_ID;
+		html[i++] = "'><br><br>";
+		html[i++] = AjxMsg.noResults;
+		html[i++] = "</div>";
 	}
+	html[i++] = "</center>";
+
+	this.getHtmlElement().appendChild(Dwt.parseHtmlFragment(html.join("")));
+};
+
+ZmContactCardsView.prototype._setNoResultsHtml =
+function() {
+	// overload and ignore
 };
 
 // overload this protected method so we can keep the alphabet bar around

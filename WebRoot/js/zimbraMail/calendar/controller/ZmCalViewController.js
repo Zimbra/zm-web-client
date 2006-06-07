@@ -216,34 +216,34 @@ function(viewId) {
 		case ZmController.CAL_DAY_VIEW: 
 		case ZmController.CAL_SCHEDULE_VIEW: 		
 			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousDay);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextDay);
+			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousDay);
+			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextDay);
 			break;
 		case ZmController.CAL_WORK_WEEK_VIEW:
 			this._miniCalendar.setSelectionMode(DwtCalendar.WORK_WEEK);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWorkWeek);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWorkWeek);			
+			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWorkWeek);
+			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWorkWeek);
 			break;
 		case ZmController.CAL_WEEK_VIEW:
 			this._miniCalendar.setSelectionMode(DwtCalendar.WEEK);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWeek);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWeek);			
+			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousWeek);
+			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextWeek);
 			break;;		
 		case ZmController.CAL_MONTH_VIEW:
 			// use day until month does something
 			this._miniCalendar.setSelectionMode(DwtCalendar.DAY);		
-			this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMonth);
-			this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextMonth);
+			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previousMonth);
+			this._navToolBar[ZmController.CAL_VIEW].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.nextMonth);
 			break;
 	}
 	DBG.timePt("switching selection mode and tooltips");
 
 	if (viewId == ZmController.CAL_APPT_VIEW) {
-		this._navToolBar.setVisible(false);
+		this._navToolBar[ZmController.CAL_VIEW].setVisible(false);
 	} else {
-		this._navToolBar.setVisible(true);
+		this._navToolBar[ZmController.CAL_VIEW].setVisible(true);
 		var cv = this._viewMgr.getCurrentView();
-		this._navToolBar.setText(cv.getCalTitle());
+		this._navToolBar[ZmController.CAL_VIEW].setText(cv.getCalTitle());
 		this._scheduleMaintenance(ZmCalViewController.MAINT_VIEW);
 		DBG.timePt("scheduling maintenance");
 	}
@@ -396,7 +396,7 @@ function(viewId) {
 
 	this._toolbar[ZmController.CAL_DAY_VIEW].addFiller();
 	var tb = new ZmNavToolBar(this._toolbar[ZmController.CAL_DAY_VIEW], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
-	this._setNavToolBar(tb);
+	this._setNavToolBar(tb, ZmController.CAL_VIEW);
 
 	this._setNewButtonProps(viewId, ZmMsg.createNewAppt, "NewAppointment", "NewAppointmentDis", ZmOperation.NEW_APPT);
 };
@@ -659,7 +659,7 @@ function(date, duration, roll) {
 	if (this._viewMgr != null) {		
 		this._viewMgr.setDate(date, duration, roll);
 		var title = this._viewMgr.getCurrentView().getCalTitle();
-		this._navToolBar.setText(title);
+		this._navToolBar[ZmController.CAL_VIEW].setText(title);
 		Dwt.setTitle(title);
 		if (!roll && this._currentView == ZmController.CAL_WORK_WEEK_VIEW && (date.getDay() == 0 || date.getDay() ==  6)) {
 			this.show(ZmController.CAL_WEEK_VIEW);
@@ -1122,7 +1122,7 @@ function(view) {
 
 ZmCalViewController.prototype._resetNavToolBarButtons = 
 function(view) {
-	this._navToolBar.enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
+	this._navToolBar[ZmController.CAL_VIEW].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], true);
 };
 
 ZmCalViewController.prototype._resetOperations = 

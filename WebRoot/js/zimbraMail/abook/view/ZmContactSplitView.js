@@ -552,7 +552,8 @@ function(list, defaultColumnSort) {
 	ZmContactsBaseView.prototype.set.call(this, list, defaultColumnSort, this._controller.getFolderId());
 	if (!(this._list instanceof AjxVector) || this._list.size() == 0) {
 		this.parent.clear();
-		this._controller._navToolBar.setText("");
+		var view = this._controller._getViewType();
+		this._controller._navToolBar[view].setText("");
 	}
 
 	this.parent.enableAlphabetBar(!list.isGal && this._list.size() > 0);

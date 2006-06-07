@@ -348,14 +348,14 @@ function(view) {
 	
 	// enable/disable up/down buttons per conversation index
 	var first = list.get(0);
-	this._navToolBar.enable(ZmOperation.PAGE_DBL_BACK, (first && first != this._conv));
+	this._navToolBar[view].enable(ZmOperation.PAGE_DBL_BACK, (first && first != this._conv));
 	var enablePgDn = this._conv.list.hasMore() || (list.getLast() != this._conv);
-	this._navToolBar.enable(ZmOperation.PAGE_DBL_FORW, enablePgDn);
+	this._navToolBar[view].enable(ZmOperation.PAGE_DBL_FORW, enablePgDn);
 
-	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);	
-	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
-	this._navToolBar.setToolTip(ZmOperation.PAGE_DBL_BACK, ZmMsg.previous + " " + ZmMsg.conversation);
-	this._navToolBar.setToolTip(ZmOperation.PAGE_DBL_FORW, ZmMsg.next + " " + ZmMsg.conversation);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_DBL_BACK, ZmMsg.previous + " " + ZmMsg.conversation);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_DBL_FORW, ZmMsg.next + " " + ZmMsg.conversation);
 }
 
 // overloaded...

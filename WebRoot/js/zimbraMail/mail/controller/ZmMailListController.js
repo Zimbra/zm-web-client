@@ -195,7 +195,7 @@ function(view, arrowStyle) {
 		this._toolbar[view].addFiller();
 		arrowStyle = arrowStyle ? arrowStyle : ZmNavToolBar.SINGLE_ARROWS;
 		var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, arrowStyle, true);
-		this._setNavToolBar(tb);
+		this._setNavToolBar(tb, view);
 
 		// nuke the text for tag menu for 800x600 resolutions
 		if (AjxEnv.is800x600orLower) {

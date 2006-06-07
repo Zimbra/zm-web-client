@@ -265,7 +265,7 @@ function(view) {
 	this._setupPrintMenu(view);
 	this._toolbar[view].addFiller();
 	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
-	this._setNavToolBar(tb);
+	this._setNavToolBar(tb, view);
 };
 
 ZmContactListController.prototype._initializeActionMenu = 
@@ -382,10 +382,10 @@ function(view) {
 	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
 
 	if (this._list.isCanonical)
-		this._navToolBar.enable(ZmOperation.PAGE_FORWARD, this._list.hasMore());
+		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, this._list.hasMore());
 
-	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
-	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
 
 	this._showListRange(view);
 };
@@ -402,7 +402,7 @@ function(view) {
 		var end = offset + size;
 		text = start + " - " + end;
 	}
-	this._navToolBar.setText(text);
+	this._navToolBar[view].setText(text);
 };
 
 

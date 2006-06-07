@@ -102,7 +102,7 @@ function(view) {
 		this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 		this._toolbar[view].addFiller();
 		var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS);
-		this._setNavToolBar(tb);
+		this._setNavToolBar(tb, view);
     }
 }
 

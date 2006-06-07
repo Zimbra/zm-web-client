@@ -256,8 +256,8 @@ function(items, hardDelete, attrs) {
 ZmConvListController.prototype._resetNavToolBarButtons = 
 function(view) {
 	ZmMailListController.prototype._resetNavToolBarButtons.call(this, view);
-	this._navToolBar.setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
-	this._navToolBar.setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
+	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
 };
 
 ZmConvListController.prototype._processPrePopView = 
