@@ -46,7 +46,7 @@ function ZmContactSplitView(parent, className, posStyle, controller, dropTgt) {
 
 	// find out if the user's locale has a alphabet defined
 	if (ZmMsg.alphabet && ZmMsg.alphabet.length>0) {
-		this._alphabetBar = new ZmContactAlphabetBar(this);
+		this._alphabetBar = new ZmContactAlphabetBar(this, this._appCtxt);
 	}
 
 	this._listPart = new ZmContactSimpleView(this, null, posStyle, controller, dropTgt);
@@ -79,7 +79,12 @@ function() {
 ZmContactSplitView.prototype.getController =
 function() {
 	return this._controller;
-}
+};
+
+ZmContactSplitView.prototype.getAlphabetBar =
+function() {
+	return this._alphabetBar;
+};
 
 ZmContactSplitView.prototype.setSize = 
 function(width, height) {
@@ -120,11 +125,6 @@ function(contact, isGal) {
 		var errorCallback = new AjxCallback(this, this._handleErrorLoad);
 		this._contact.load(callback);
 	}
-};
-
-ZmContactSplitView.prototype.alphabetBarEnabled =
-function() {
-	return this._alphabetBar ? this._alphabetBar.enabled() : false;
 };
 
 ZmContactSplitView.prototype._handleResponseLoad =
@@ -555,7 +555,7 @@ function(list, defaultColumnSort) {
 		this._controller._navToolBar.setText("");
 	}
 
-	this.parent.enableAlphabetBar(!list.isGal);
+	this.parent.enableAlphabetBar(!list.isGal && this._list.size() > 0);
 };
 
 ZmContactSimpleView.prototype._modifyContact =

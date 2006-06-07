@@ -257,6 +257,12 @@ function(doc, appCtxt) {
 
 // Public methods
 
+
+ZmShare.prototype.toString =
+function() {
+	return "ZmShare";
+};
+
 /**
  * Returns true if the given permission exists on this share.
  * 
@@ -389,7 +395,8 @@ function(color, replyType, notes, callback, result) {
 		actionNode.setAttribute("op", "color");
 		actionNode.setAttribute("color", color);
 
-		var respCallback = new AjxCallback(this, this._handleResponseAccept1, [replyType, notes, callback]);		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+		var respCallback = new AjxCallback(this, this._handleResponseAccept1, [replyType, notes, callback]);
+		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	} else {
 		this._handleResponseAccept1(replyType, notes, callback);
 	}

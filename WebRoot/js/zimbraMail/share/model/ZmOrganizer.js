@@ -612,7 +612,12 @@ function() {
 ZmOrganizer.prototype.isReadOnly =
 function() {
 	var share = this.shares ? this.shares[0] : null;
-	return share && !share.isWrite();
+	return (this.isRemote() && share && !share.isWrite());
+};
+
+ZmOrganizer.prototype.isRemote =
+function() {
+	return (this.zid || this.id.indexOf(":") != -1);
 };
 
 /**

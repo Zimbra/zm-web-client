@@ -661,7 +661,7 @@ td.DDSepInvisible div {
 }
 
 .AlphabetBarTable {
-	@NormalButton@
+	background-color:@WidgetBgColor@
 }
 
 .AlphabetBarCell {

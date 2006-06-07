@@ -161,11 +161,12 @@ function() {
 };
 
 
-function ZmContactAlphabetBar(parent, className) {
+function ZmContactAlphabetBar(parent, appCtxt, className) {
 	if (arguments.length == 0) return;
 
 	DwtComposite.call(this, parent, className);
 
+	this._appCtxt = appCtxt;
 	this._createHtml();
 	this._enabled = true;
 };
@@ -182,15 +183,40 @@ ZmContactAlphabetBar.prototype.enable =
 function(enable) {
 	this._enabled = enable;
 
-	var alphabetBarEl = document.getElementById(this._alphabetBarId);
-	if (alphabetBarEl) {
-		alphabetBarEl.className = enable ? "AlphabetBarTable" : "AlphabetBarTable AlphabetBarDisabled";
+	var table = document.getElementById(this._alphabetBarId);
+	if (table) {
+		var cells = table.rows[0].cells;
+		for (var i = 0; i < cells.length; i++) {
+			var button = Dwt.getObjectFromElement(cells[i]);
+			if (button)
+				button.setEnabled(enable);
+		}
 	}
 };
 
-ZmContactAlphabetBar.prototype.enabled =
+ZmContactAlphabetBar.prototype.reset =
 function() {
-	return this._enabled;
+	this._current.setToggled(false);
+	this._current = this._all;
+	this._all.setToggled(true);
+};
+
+ZmContactAlphabetBar.prototype.setButtonByIndex =
+function(index) {
+	var table = document.getElementById(this._alphabetBarId);
+	var cell = table.rows[0].cells[index];
+
+	var button = cell ? Dwt.getObjectFromElement(cell) : null;
+	if (button) {
+		this._current.setToggled(false);
+		button.setToggled(true);
+		this._current = button;
+	}
+};
+
+ZmContactAlphabetBar.prototype.getCurrent =
+function() {
+	return this._current;
 };
 
 ZmContactAlphabetBar.prototype._createHtml =
@@ -202,35 +228,42 @@ function() {
 	var idx = 0;
 
 	html[idx++] = "<center>";
-	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=2 cellspacing=2 width=80% id='";
+	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=0 cellspacing=0 width=80% id='";
 	html[idx++] = this._alphabetBarId;
 	html[idx++] = "'><tr>";
-
-	for (var i = 0; i < alphabet.length; i++) {
-		html[idx++] = "<td onclick='ZmContactAlphabetBar._alphabetClicked(";
-		if (i > 0)
-			html[idx++] = '"' + alphabet[i] + '"';
-		html[idx++] = "); return false;'";
-		if (i == 0) {
-			html[idx++] = " class='AlphabetBarCellFirst'>";
-		} else {
-			html[idx++] = " class='AlphabetBarCell'>";
-		}
-		html[idx++] = alphabet[i];
-		html[idx++] = "</td>";
-	}
-
+	for (var i = 0; i < alphabet.length; i++)
+		html[idx++] = "<td></td>";
 	html[idx++] = "</tr></table>";
 	html[idx++] = "</center>";
 
 	this.getHtmlElement().innerHTML = html.join("");
+
+	var listener = new AjxListener(this, this._alphabetButtonListener);
+	var table = document.getElementById(this._alphabetBarId);
+	var cells = table.rows[0].cells;
+	for (var i = 0; i < cells.length; i++) {
+		var button = new DwtButton(this, DwtButton.TOGGLE_STYLE);
+		button.setText(alphabet[i]);
+		button.setSize("20");
+		button.getHtmlElement().style.minWidth = "20";
+		button.addSelectionListener(listener);
+		button.setData(Dwt.KEY_ID, i);
+		Dwt.associateElementWithObject(cells[i], button);
+		cells[i].appendChild(button.getHtmlElement());
+		if (i == 0) {
+			this._current = this._all = button;
+			button.setToggled(true);
+		}
+	}
 };
 
-ZmContactAlphabetBar._alphabetClicked =
-function(letter) {
-	var appCtxt = window._zimbraMail._appCtxt;
-	var clc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
-	if (clc.getParentView().alphabetBarEnabled())
-		clc.searchAlphabet(letter);
-};
+ZmContactAlphabetBar.prototype._alphabetButtonListener =
+function(ev) {
+	if (this._current)
+		this._current.setToggled(this._current == ev.item);
+	this._current = ev.item;
 
+	var letter = this._current == this._all ? null : this._current.getText();
+	var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+	clc.searchAlphabet(letter);
+};

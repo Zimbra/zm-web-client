@@ -36,6 +36,7 @@
 */
 function ZmContactsApp(appCtxt, container, parentController) {
 	ZmApp.call(this, ZmZimbraMail.CONTACTS_APP, appCtxt, container, parentController);
+	this._initialized = false;
 };
 
 ZmContactsApp.prototype = new ZmApp;
@@ -54,27 +55,30 @@ function(callback, errorCallback) {
 
 ZmContactsApp.prototype._handleResponseLaunch =
 function(callback) {
-	// get the last selected folder ID
-	var folderId = ZmOrganizer.ID_ADDRBOOK;
-	var treeView = this._appCtxt.getOverviewController().getTreeView(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.ADDRBOOK);
-	var treeItem = treeView ? treeView.getSelection()[0] : null;
-	if (treeItem) {
-		folderId = treeItem.getData(Dwt.KEY_ID);
+	var clc = this.getContactListController();
+	if (!this._initialized) {
+		// set search toolbar field manually
+		if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
+			var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(ZmFolder.ID_CONTACTS);
+			var stb = this._appCtxt.getSearchController().getSearchToolbar();
+			stb.setSearchFieldValue(folder.createQuery());
+		}
+		// create contact view for the first time
+		clc.show(this._contactList, null, ZmOrganizer.ID_ADDRBOOK);
+	} else {
+		// just push the view so it looks the same as last you saw it
+		clc.switchView(clc._getViewType(), true, this._initialized);
 	}
 
-	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
-		var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId);
-		var query = folder.createQuery();
-		this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue(query);
-	}
-
-	this.getContactListController().show(this._contactList, null, folderId);
 	if (callback)
 		callback.run();
+
+	this._initialized = true;
 };
 
 ZmContactsApp.prototype.showFolder = 
 function(folder) {
+	// we manually set search bar's field since contacts dont always make search requests
 	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
 		var query = folder.createQuery();
 		this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue(query);

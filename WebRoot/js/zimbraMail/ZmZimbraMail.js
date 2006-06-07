@@ -212,7 +212,7 @@ function() {
 
 // Public methods
 
-ZmZimbraMail.prototype.toString = 
+ZmZimbraMail.prototype.toString =
 function() {
 	return "ZmZimbraMail";
 };
@@ -238,21 +238,21 @@ function(domain, app, userShellId) {
 	var userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
 	var shell = new DwtShell(null, false, ZmZimbraMail._confirmExitMethod, userShell);
 	appCtxt.setShell(shell);
-    
+
 	appCtxt.setItemCache(new AjxCache());
 
 	// Create upload manager (for sending attachments)
 	appCtxt.setUploadManager(new AjxPost(appCtxt.getUploadFrameId()));
-	
+
 	// Go!
 	new ZmZimbraMail(appCtxt, domain, app, userShell);
 };
 
 /**
-* Allows parent window to walk list of open child windows and either nuke them 
+* Allows parent window to walk list of open child windows and either nuke them
 * or "disable" them.
 */
-ZmZimbraMail.unload = 
+ZmZimbraMail.unload =
 function() {
 	var childWinList = window._zimbraMail ? window._zimbraMail._childWinList : null;
 	if (childWinList) {
@@ -344,9 +344,9 @@ function(params) {
 	if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		this._components[ZmAppViewMgr.C_SEARCH] = this._appCtxt.getSearchController().getSearchPanel();
 	}
-		
+
 	// ROSSD - TEMPORARY - WILL BE MOVED
-	/* Appview manager is the place for these. the issue is that the skins will need to provide the 
+	/* Appview manager is the place for these. the issue is that the skins will need to provide the
 	 * tabgroup index location of each of the top level views
 	 */
 	DBG.println("SETTING SEARCH CONTROLLER TAB GROUP")
@@ -357,13 +357,13 @@ function(params) {
 	var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
 	ZmController._setCurrentAppViewTabGroup(dummyTg);
 	rootTg.addMember(dummyTg);
-	
+
 	if (!this._components[ZmAppViewMgr.C_APP_CHOOSER]) {
 		this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._createAppChooser();
 	}
 	this._appViewMgr.addComponents(this._components, true);
 
-	this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();		
+	this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
 		this.getApp(ZmZimbraMail.CALENDAR_APP).showMiniCalendar(true);
 	}
@@ -398,7 +398,7 @@ ZmZimbraMail.prototype._handleResponseStartup2 =
 function() {
 	this.setSessionTimer(true);
 	this._killSplash();
-	
+
 	//ROSSD will be moved?
 	this._shell.getKeyboardMgr().setTabGroup(this._appCtxt.getRootTabGroup());
 	//this._shell.getKeyboardMgr().grabFocus(this._appCtxt.getSearchController().getSearchToolbar().getSearchField());
@@ -421,7 +421,7 @@ ZmZimbraMail.prototype.reset =
 function() {
 	ZmCsfeCommand.setSessionId(null);	// so we get a refresh block
     this._highestNotifySeen = 0; 		// we have a new session
-    
+
     for (var t in this._appCtxt._trees) {
     	var tree = this._appCtxt.getTree(t);
     	if (tree && tree.reset) {
@@ -455,7 +455,7 @@ function() {
 * @param timeout		[int]*			timeout value (in seconds)
 * @param noBusyOverlay	[boolean]*		if true, don't use the busy overlay
 */
-ZmZimbraMail.prototype.sendRequest = 
+ZmZimbraMail.prototype.sendRequest =
 function(params) {
 	var reqId = params.reqId = ZmZimbraMail.getNextReqId();
 	var timeout = (params.timeout != null) ? params.timeout : this._stdTimeout;
@@ -465,7 +465,7 @@ function(params) {
 	var cmdParams = {soapDoc: params.soapDoc, useXml: this._useXml, changeToken: this._changeToken,
 					 asyncMode: params.asyncMode, callback: asyncCallback, logRequest: this._logRequest,
 					 highestNotifySeen: this._highestNotifySeen };
-	
+
 	DBG.println(AjxDebug.DBG2, "sendRequest: " + params.soapDoc._methodEl.nodeName);
 	if (params.asyncMode && !params.noBusyOverlay) {
 		var cancelCallback = null;
@@ -497,9 +497,9 @@ function(params, result) {
 
 	if (!this._pendingRequests[params.reqId]) return;
 	if (this._pendingRequests[params.reqId].state == ZmZimbraMail._CANCEL) return;
-	
+
 	this._pendingRequests[params.reqId].state = ZmZimbraMail._RESPONSE;
-	
+
 	if (!params.noBusyOverlay)
 		this._shell.setBusy(false, params.reqId); // remove busy overlay
 
@@ -525,7 +525,7 @@ function(params, result) {
 	if (params.asyncMode) {
 		result.set(response.Body);
 	}
-	
+
 	this._handleHeader(response.Header);
 
 	// start poll timer if we didn't get an exception
@@ -543,7 +543,7 @@ function(params, result) {
 	}
 };
 
-ZmZimbraMail.prototype.cancelRequest = 
+ZmZimbraMail.prototype.cancelRequest =
 function(reqId, errorCallback) {
 	if (!this._pendingRequests[reqId]) return;
 	if (this._pendingRequests[reqId].state == ZmZimbraMail._RESPONSE) return;
@@ -569,7 +569,7 @@ function(reqId) {
  * Processes the SOAP header that comes with a response. It updates the
  * change token, processes a <refresh> block if there is one (that happens
  * when a new session is created on the server), and handles notifications.
- * 
+ *
  * @param hdr	[object]	a SOAP header
  */
 ZmZimbraMail.prototype._handleHeader =
@@ -582,7 +582,7 @@ function(hdr) {
 	if (hdr && hdr.context && hdr.context.change) {
 		this._changeToken = hdr.context.change.token;
 	}
-	
+
 	// refresh block causes the overview panel to get updated
 	if (hdr && hdr.context && hdr.context.refresh) {
 		this._highestNotifySeen = 0;
@@ -593,7 +593,7 @@ function(hdr) {
 	// Handle notifications, then run the callback. Many callbacks take the SOAP
 	// response data and update the model. If we run into scenarios where that needs
 	// to happen before notifications are handled, then we may need to split the
-	// callback into two routines, one to handle the SOAP response, and one to do 
+	// callback into two routines, one to handle the SOAP response, and one to do
 	// everything else. In general, it always makes sense to run the callback last.
 	// That's especially important if the callback invokes another request, since if
 	// the callback were run before notifications, you'd end up with a stack of
@@ -602,7 +602,7 @@ function(hdr) {
         for(i = 0; i < hdr.context.notify.length; i++) {
         	var notify = hdr.context.notify[i];
         	var seq = notify.seq;
-            // BUG?  What if the array isn't in sequence-order?  We would miss some notifications. Can that happen?  
+            // BUG?  What if the array isn't in sequence-order?  We would miss some notifications. Can that happen?
             if (notify.seq > this._highestNotifySeen) {
                 DBG.println(AjxDebug.DBG1, "Handling notification[" + i + "] seq=" + seq);
                 this._highestNotifySeen = seq;
@@ -610,9 +610,9 @@ function(hdr) {
             } else {
             	DBG.println(AjxDebug.DBG1, "SKIPPING notification[" + i + "] seq=" + seq + " highestNotifySeen=" + this._highestNotifySeen);
 	      	}
-    	}        
+    	}
 	}
-	
+
 };
 
 /**
@@ -656,7 +656,7 @@ function() {
 ZmZimbraMail.prototype.activateApp =
 function(appName, force, callback, errorCallback) {
     DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
-	    
+
     var view = this._appViewMgr.getAppView(appName);
     if (view && !force) {
     	// if the app has been launched, make its view the current one
@@ -719,7 +719,7 @@ function(appName, view) {
 
 ZmZimbraMail.prototype._preloadViews =
 function() {
-	
+
 	// safari is slow on preloading so dont do it
 	if (AjxEnv.isSafari) return;
 
@@ -748,7 +748,7 @@ ZmZimbraMail.prototype._createApp =
 function(appName) {
 	if (this._apps[appName]) return;
 	DBG.println(AjxDebug.DBG1, "Creating app " + appName);
-	this._apps[appName] = new ZmZimbraMail.APP_CLASS[appName](this._appCtxt, this._shell);	
+	this._apps[appName] = new ZmZimbraMail.APP_CLASS[appName](this._appCtxt, this._shell);
 };
 
 // Launching an app causes it to create a view (if necessary) and display it. The view that is created is up to the app.
@@ -1699,7 +1699,7 @@ function(ev) {
 			this.activateApp(ZmZimbraMail.MAIL_APP);
 		} else if (id == ZmAppChooser.B_CONTACTS) {
 			// force launch to display all contacts
-			this.activateApp(ZmZimbraMail.CONTACTS_APP, true);
+			this.activateApp(ZmZimbraMail.CONTACTS_APP);
 		} else if (id == ZmAppChooser.B_CALENDAR) {
 			this.activateApp(ZmZimbraMail.CALENDAR_APP);
 		} else if (id == ZmAppChooser.B_IM) {

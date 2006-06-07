@@ -101,6 +101,9 @@ function(searchResult, bIsGalSearch, folderId) {
 		if (searchResult.search.isAnywhere)
 			this._searchType |= ZmContactListController.SEARCH_TYPE_ANYWHERE;
 
+		if (searchResult.search.userText && this.getParentView())
+			this.getParentView().getAlphabetBar().reset();
+
 		if (bIsGalSearch) {
 			if (this._list == null)
 				this._list = new ZmContactList(this._appCtxt, searchResult.search, true);
@@ -126,17 +129,21 @@ function(searchResult, bIsGalSearch, folderId) {
 };
 
 ZmContactListController.prototype.switchView =
-function(view, force) {
+function(view, force, initialized) {
 	if (view != this._currentView || force) {
 		DBG.timePt("setting up view", true);
 		this._setup(view);
 		DBG.timePt("done setting up view");
+
 		var elements = new Object();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
-		var ok = this._setView(view, elements, true);
-		this._currentView = view;
-		if (ok)
+
+		// call initialize before _setView since we havent set the new view yet
+		if (!initialized)
+			this._initializeAlphabetBar(view);
+
+		if (this._setView(view, elements, true))
 			this._setViewMenu(view);
 
 		this._resetNavToolBarButtons(view);
@@ -145,9 +152,11 @@ function(view, force) {
 		if (this.isGalSearch())
 			this._appCtxt.getSearchController().setDefaultSearchType(ZmSearchToolBar.FOR_GAL_MI, true);
 
-		var list = this._listView[view].getList();
-		if (list)
-			this._listView[view].setSelection(list.get(0));
+		if (!initialized) {
+			var list = this._listView[view].getList();
+			if (list)
+				this._listView[view].setSelection(list.get(0));
+		}
 	}
 };
 
@@ -270,6 +279,19 @@ function(view) {
 	this._actionMenu.addSelectionListener(ZmOperation.PRINT, this._listeners[ZmOperation.PRINT_MENU]);
 
 	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT);
+};
+
+ZmContactListController.prototype._initializeAlphabetBar =
+function(view) {
+	var pv = this._parentView[this._currentView];
+	var alphaBar = pv ? pv.getAlphabetBar() : null;
+	var current = alphaBar ? alphaBar.getCurrent() : null;
+	var idx = current ? current.getData(Dwt.KEY_ID) : null;
+	if (idx) {
+		var newAlphaBar = this._parentView[view].getAlphabetBar();
+		if (newAlphaBar)
+			newAlphaBar.setButtonByIndex(idx);
+	}
 };
 
 // Load contacts into the given view and perform layout.

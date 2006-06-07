@@ -67,6 +67,7 @@ function ZmSearch(appCtxt, params) {
 		this.conds						= params.conds;
 		this.join						= params.join ? params.join : ZmSearch.JOIN_AND;
 		this.attrs						= params.attrs;
+		this.userText					= params.userText;
 		
 		if (this.query)
 			this._parseQuery();

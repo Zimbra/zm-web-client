@@ -35,7 +35,7 @@ function ZmContactCardsView(parent, className, posStyle, controller, dropTgt) {
 
 	// find out if the user's locale has a alphabet defined
 	if (ZmMsg.alphabet && ZmMsg.alphabet.length>0) {
-		this._alphabetBar = new ZmContactAlphabetBar(this, "ZmContactAlphabetBar");
+		this._alphabetBar = new ZmContactAlphabetBar(this, this._appCtxt, "ZmContactAlphabetBar");
 	}
 
 	this._addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
@@ -85,12 +85,12 @@ function(contacts) {
 	this._layout();
 
 	// disable alphabet bar for gal searches
-	this._alphabetBar.enable(!contacts.isGal);
+	this._alphabetBar.enable(!contacts.isGal && contacts.size() > 0);
 };
 
-ZmContactCardsView.prototype.alphabetBarEnabled =
+ZmContactCardsView.prototype.getAlphabetBar =
 function() {
-	return this._alphabetBar ? this._alphabetBar.enabled() : false;
+	return this._alphabetBar;
 };
 
 
@@ -445,35 +445,35 @@ function(list) {
 	var html = new Array();
 	var idx = 0;
 	var list = list.getArray();
-	
+
 	html[idx++] = "<table border=0 style='width: 6.5in'>";
-	
+
 	for (var i = 0; i < list.length; i++) {
 		var contact = list[i];
-		
+
 		// dont include contacts in trash folder
 		if (contact.addrbook && contact.addrbook.isInTrash())
 			continue;
-		
+
 		// add a new row every 3 columns
 		if ((i % 3) == 0)
 			html[idx++] = "<tr>";
 		html[idx++] = "<td valign=top height=100%>";
-		
+
 		html[idx++] = "<div style='height: 100%; width: 2.2in; border: 1px solid #CCCCCC;'>";
 		html[idx++] = ZmContactView.getPrintHtml(contact, true);
 		html[idx++] = "</div>";
-		
+
 		html[idx++] = "</td>";
 		if (((i+1) % 3) == 0)
 			html[idx++] = "</tr>";
 	}
-	
+
 	if ((i % 3) != 0)
 		html[idx++] = "</tr>";
-	
+
 	html[idx++] = "</table>";
-	
+
 	return html.join("");
 };
 
