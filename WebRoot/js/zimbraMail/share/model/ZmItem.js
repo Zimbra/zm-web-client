@@ -217,6 +217,9 @@ function(sortBy) {
 };
 
 ZmItem.prototype.getUrl = function() {
+	if (this.url) {
+		return this.url;
+	}
 	var organizerType = ZmOrganizer.ITEM2ORGANIZER[this.type];
 	var tree = this._appCtxt.getTree(organizerType);
 	var organizer = tree.getById(this.folderId);

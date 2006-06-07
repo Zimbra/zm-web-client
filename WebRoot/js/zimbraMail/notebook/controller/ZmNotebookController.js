@@ -309,12 +309,6 @@ ZmNotebookController.prototype._detachListener = function(event) {
 	}
 };
 
-ZmNotebookController.prototype._printListener =
-function(ev) {
-	var html = this.getCurrentView().getPrintHtml();
-	this._getPrintView().renderHtml(html);
-};
-
 //
 // Private functions
 //

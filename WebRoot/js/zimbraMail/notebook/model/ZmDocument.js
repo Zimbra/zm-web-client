@@ -63,6 +63,7 @@ ZmDocument.createFromDom = function(node, args) {
 ZmDocument.prototype.set = function(data) {
 	// ZmItem fields
 	this.id = data.id;
+	this.url = data.url;
 	// REVISIT: Sometimes the server doesn't return the folderId!!!
 	this.folderId = data.l || this.folderId;
 	this._parseTags(data.t);

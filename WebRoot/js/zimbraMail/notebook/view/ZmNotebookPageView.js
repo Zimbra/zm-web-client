@@ -93,9 +93,24 @@ function(page) {
 	}
 };
 
-ZmNotebookPageView.prototype.getPrintHtml =
-function() {
-	return this.getHtmlElement().innerHTML;
+ZmNotebookPageView.getPrintHtml =
+function(item, callback) {
+	var url = item.getUrl();
+	try {
+		AjxRpc.invoke(null, url, null, new AjxCallback(this, this._handleResponseGetPrintHtml, [callback, url]), true);
+	} catch (e) {
+		var message = e.dump ? e.dump() : e.toString();
+		DBG.println("Unable to open URL for page. URL: " + url + " Exception: " + message);
+	}
+};
+
+ZmNotebookPageView._handleResponseGetPrintHtml =
+function(callback, url, response) {
+	// If an error occurs, log it, and then proceed to show the 404 message or whatever came back.
+	if (!response.success) {
+		DBG.println(AjxDebug.DBG1, "Request for print html failed. URL: " + url);
+	}
+	callback.run(response.text);	
 };
 
 ZmNotebookPageView.prototype.getTitle =

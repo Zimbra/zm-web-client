@@ -52,6 +52,10 @@ function(item) {
 		this._html = ZmContactCardsView.getPrintHtml(item);
 	} else if (item instanceof ZmCalViewMgr) {
 		this._html = ZmCalViewMgr.getPrintHtml(item);
+	} else if (item instanceof ZmPage) {
+		var respCallback = new AjxCallback(this, this._handleResponsePageRender);
+		ZmNotebookPageView.getPrintHtml(item, respCallback);
+		return;
 	}
 
 	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
@@ -69,7 +73,7 @@ function(type, list) {
 	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
 };
 
-ZmPrintView.prototype.renderHtml = 
+ZmPrintView.prototype._handleResponsePageRender =
 function(html) {
 	this._html = html;
 	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
