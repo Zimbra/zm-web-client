@@ -95,6 +95,7 @@ TransparentBg				=
 Text					 	= color: black;
 Label-wrap				 	= color: black; 
 Label				 		= @Label-wrap@ white-space:nowrap; overflow:hidden;
+Text-light				 	= color: @_BaseColorD4_@;
 Text-required			 	= color: darkred;
 Text-disabled				= color: @_BaseColorD8_@;
 Text-contrast				= color: white;

@@ -50,8 +50,15 @@ skin.hideTreeFooter = function () {
 	this.showTreeFooter(false);
 }
 
-skin.setSize = function(id, width, height) {
 
+skin.setTreeWidth = function(newWidth) {
+	skin.setSize("skin_col_tree", newWidth, null);
+}
+
+skin.setSize = function(id, width, height) {
+	var el = skin._getEl(id);
+	if (width != null) el.style.width = width;
+	if (height != null) el.style.height = height;
 }
 
 skin._getEl = function(id) {
