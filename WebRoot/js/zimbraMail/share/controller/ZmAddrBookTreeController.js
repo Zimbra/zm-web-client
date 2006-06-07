@@ -208,7 +208,9 @@ function(folder) {
 	} else {
 		var capp = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		capp.showFolder(folder);
+	}
 
+	if (folder.id != ZmFolder.ID_TRASH) {
 		var clc = capp.getContactListController();
 		clc.getParentView().getAlphabetBar().reset();
 	}
