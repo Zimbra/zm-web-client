@@ -397,6 +397,8 @@ function(results, search, isMixed) {
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 	var folder = folderTree ? folderTree.getById(search.folderId) : null;
 	var inTrash = folder && folder.isInTrash();
+	var isInGal = (this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
+	this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON).setEnabled(!isInGal);
 
 	if (isMixed || inTrash) {
 		this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results);
@@ -405,7 +407,6 @@ function(results, search, isMixed) {
 	} else if (results.type == ZmItem.MSG) {
 		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController().show(results);
 	} else if (results.type == ZmItem.CONTACT) {
-		var isInGal = this._contactSource == ZmSearchToolBar.FOR_GAL_MI;
 		var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
 		clc.show(results, isInGal, search.folderId);
 	} else if (results.type == ZmItem.PAGE || results.type == ZmItem.DOCUMENT) {

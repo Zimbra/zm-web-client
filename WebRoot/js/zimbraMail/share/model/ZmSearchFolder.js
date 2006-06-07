@@ -106,8 +106,8 @@ function(parentId) {
  */
 ZmSearchFolder.prototype._typeMatch =
 function(types) {
+	if (!this.search.types) return false;
 	var childSearchTypes = this.search.types;
-	if (!childSearchTypes) return;
 	for (var j = 0; j < childSearchTypes.length; j++) {
 		if (types[childSearchTypes[j]]) {
 			return true;
