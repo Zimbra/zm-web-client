@@ -171,13 +171,14 @@ ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.ADDRBOOK, 
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]	= [ZmOrganizer.CALENDAR, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTEBOOK_APP]	= [ZmOrganizer.NOTEBOOK, /*ZmOrganizer.SEARCH, ZmOrganizer.TAG,*/ ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 
 // types of saved searches to show
 ZmZimbraMail.SEARCH_TYPES = {};
 ZmZimbraMail.SEARCH_TYPES[ZmZimbraMail.MAIL_APP]		= [ZmItem.MSG, ZmItem.CONV];
 ZmZimbraMail.SEARCH_TYPES[ZmZimbraMail.CONTACTS_APP]	= [ZmItem.CONTACT];
 ZmZimbraMail.SEARCH_TYPES[ZmZimbraMail.NOTEBOOK_APP]	= [ZmItem.PAGE, ZmItem.DOCUMENT];
+ZmZimbraMail.SEARCH_TYPES[ZmZimbraMail.MIXED_APP]		= [ZmItem.MSG, ZmItem.CONV];
 ZmZimbraMail.SEARCH_TYPES_H = {};
 for (var app in ZmZimbraMail.SEARCH_TYPES) {
 	ZmZimbraMail.SEARCH_TYPES_H[app] = {};
@@ -792,6 +793,17 @@ function(app) {
 		{
 			continue;
 		}
+
+		// dont show folders when viewing mixed app coming from contacts app
+		// and dont show addrbooks when viewing mixed app coming from mail app
+		if (this._activeApp == ZmZimbraMail.MIXED_APP) {
+			if ((this._previousApp == ZmZimbraMail.CONTACTS_APP && id == ZmOrganizer.FOLDER) ||
+				(this._previousApp == ZmZimbraMail.MAIL_APP && id == ZmOrganizer.ADDRBOOK))
+			{
+				continue;
+			}
+		}
+
 		trees.push(id);
 	}
 	return trees;

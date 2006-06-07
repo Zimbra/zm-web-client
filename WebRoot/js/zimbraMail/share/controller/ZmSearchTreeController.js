@@ -64,13 +64,19 @@ function() {
 */
 ZmSearchTreeController.prototype.show =
 function(overviewId, showUnread, omit, forceCreate, app) {
-	app = app ? app : this._appCtxt.getAppController().getActiveApp();
-	var id = [overviewId, ZmSearchTreeController.APP_JOIN_CHAR, app].join("");
+	var appController = this._appCtxt.getAppController();
+	var activeApp = app || appController.getActiveApp();
+	var prevApp = appController.getPreviousApp();
+	var id = [overviewId, ZmSearchTreeController.APP_JOIN_CHAR, activeApp].join("");
+
 	if (!this._treeView[id] || forceCreate) {
 		this._treeView[id] = this._setup(overviewId);
 	}
 	if (this._dataTree) {
-		var searchTypes = ZmZimbraMail.SEARCH_TYPES_H[app];
+		// mixed app should be filtered based on the previous app!
+		var searchTypes = (activeApp == ZmZimbraMail.MIXED_APP && prevApp == ZmZimbraMail.CONTACTS_APP)
+			? ZmZimbraMail.SEARCH_TYPES_H[ZmZimbraMail.CONTACTS_APP]
+			: ZmZimbraMail.SEARCH_TYPES_H[activeApp];
 		this._treeView[id].set(this._dataTree, showUnread, omit, searchTypes);
 	}
 	this._treeView[id].setVisible(true);
@@ -95,7 +101,7 @@ function(overviewId, app) {
 * @param overviewId		[constant]	overview ID
 * @param app			[string]*	app that owns the overview
 */
-ZmTreeController.prototype.clearTreeView =
+ZmSearchTreeController.prototype.clearTreeView =
 function(overviewId, app) {
 	app = app ? app : this._appCtxt.getAppController().getActiveApp();
 	var id = [overviewId, ZmSearchTreeController.APP_JOIN_CHAR, app].join("");
