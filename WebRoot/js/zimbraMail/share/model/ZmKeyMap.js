@@ -43,69 +43,47 @@ function ZmKeyMap() {
 //			"Alt+Shift+Esc":		ZmKeyMap.LOGOFF,
 //			"Ctrl+Shift+Esc":		ZmKeyMap.LOGOFF,
 
-			"Alt+Shift+D,0":		ZmKeyMap.DBG_NONE,
-			"Ctrl+Shift+D,0":		ZmKeyMap.DBG_NONE,
+			"Shift+D,0":			ZmKeyMap.DBG_NONE,
+			"Shift+D,1":			ZmKeyMap.DBG_1,
+			"Shift+D,2":			ZmKeyMap.DBG_2,
+			"Shift+D,3":			ZmKeyMap.DBG_3,
+			"Shift+D,t":			ZmKeyMap.DBG_TIMING,
 
-			"Alt+Shift+D,1":		ZmKeyMap.DBG_1,
-			"Ctrl+Shift+D,1":		ZmKeyMap.DBG_1,
+			"N":					ZmKeyMap.NEW,
+			"N,A":					ZmKeyMap.NEW_APPT,
+			"N,L":					ZmKeyMap.NEW_CALENDAR,
+			"N,C":					ZmKeyMap.NEW_CONTACT,
+			"N,F":					ZmKeyMap.NEW_FOLDER,
+			"N,M":					ZmKeyMap.NEW_MESSAGE,
+			"N,T":					ZmKeyMap.NEW_TAG,
 
-			"Alt+Shift+D,2":		ZmKeyMap.DBG_2,
-			"Ctrl+Shift+D,2":		ZmKeyMap.DBG_2,
-
-			"Alt+Shift+D,3":		ZmKeyMap.DBG_3,
-			"Ctrl+Shift+D,3":		ZmKeyMap.DBG_3,
-
-			"Alt+Shift+D,t":		ZmKeyMap.DBG_TIMING,
-			"Ctrl+Shift+D,t":		ZmKeyMap.DBG_TIMING,
-
-			"Alt+N":				ZmKeyMap.NEW,
-			"Ctrl+N":				ZmKeyMap.NEW,
-			
-			"Alt+N,A":				ZmKeyMap.NEW_APPT,
-			"Ctrl+N,A":				ZmKeyMap.NEW_APPT,
-
-			"Alt+N,L":				ZmKeyMap.NEW_CALENDAR,
-			"Ctrl+N,L":				ZmKeyMap.NEW_CALENDAR,
-
-			"Alt+N,C":				ZmKeyMap.NEW_CONTACT,
-			"Ctrl+N,C":				ZmKeyMap.NEW_CONTACT,
-
-			"Alt+N,F":				ZmKeyMap.NEW_FOLDER,
-			"Ctrl+N,F":				ZmKeyMap.NEW_FOLDER,
-
-			"Alt+N,M":				ZmKeyMap.NEW_MESSAGE,
-			"Ctrl+N,M":				ZmKeyMap.NEW_MESSAGE,
-
-			"Alt+N,T":				ZmKeyMap.NEW_TAG,
-			"Ctrl+N,T":				ZmKeyMap.NEW_TAG,
-
-			"Alt+S":				ZmKeyMap.SAVE,
-			"Ctrl+S":				ZmKeyMap.SAVE,
+			"S":					ZmKeyMap.SAVE,
 
 			"Del":					ZmKeyMap.DEL,
 			"Backspace":			ZmKeyMap.DEL, // MacBook keyboard
+
 			"Esc":					ZmKeyMap.CANCEL,
+
 			"ArrowRight":			ZmKeyMap.NEXT_PAGE,
 			"ArrowLeft":			ZmKeyMap.PREV_PAGE
 	};
 	
 	this._map["ZmComposeView"] = {
-			"Alt+Shift+S":			ZmKeyMap.SEND,
-			"Ctrl+Shift+S":			ZmKeyMap.SEND
+			"Shift+S":				ZmKeyMap.SEND,
 	};
 	
 	this._map["ZmMailListView"] = {
-		"INHERIT": "DwtListView, ZmGlobal",
-		"R":						ZmKeyMap.REPLY,
-		"A":						ZmKeyMap.REPLY_ALL,
-		"M,R":						ZmKeyMap.MARK_READ,
-		"M,U":						ZmKeyMap.MARK_UNREAD
+			"INHERIT": "DwtListView, ZmGlobal",
+			"R":					ZmKeyMap.REPLY,
+			"A":					ZmKeyMap.REPLY_ALL,
+			"M,R":					ZmKeyMap.MARK_READ,
+			"M,U":					ZmKeyMap.MARK_UNREAD
 	};
 	
 	this._map["ZmConvView"] = {
-		"INHERIT": "ZmMailListView",
-		"Shift+ArrowRight":			ZmKeyMap.NEXT_CONV,
-		"Shift+ArrowLeft":			ZmKeyMap.PREV_CONV
+			"INHERIT": "ZmMailListView",
+			"Shift+ArrowRight":		ZmKeyMap.NEXT_CONV,
+			"Shift+ArrowLeft":		ZmKeyMap.PREV_CONV
 	};
 };
 
