@@ -241,11 +241,20 @@ function() {
 	var listener = new AjxListener(this, this._alphabetButtonListener);
 	var table = document.getElementById(this._alphabetBarId);
 	var cells = table.rows[0].cells;
-	for (var i = 0; i < cells.length; i++) {
+	var cellCount = cells.length;
+	for (var i = 0; i < cellCount; i++) {
 		var button = new DwtButton(this, DwtButton.TOGGLE_STYLE);
 		button.setText(alphabet[i]);
 		button.setSize("20");
-		button.getHtmlElement().style.minWidth = "20";
+		var el = button.getHtmlElement();
+		el.style.minWidth = "20";
+		// MOW: whack the borders off the sides of the inner buttons
+		if (i > 0) {
+			el.style.borderLeftWidth = 0;
+		}
+		if (i < (cellCount - 1)) {
+			el.style.borderRightWidth = 0;
+		}
 		button.addSelectionListener(listener);
 		button.setData(Dwt.KEY_ID, i);
 		Dwt.associateElementWithObject(cells[i], button);
