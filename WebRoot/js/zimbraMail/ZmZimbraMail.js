@@ -1733,11 +1733,8 @@ function(ev) {
 ZmZimbraMail.prototype.getKeyMapNameToUse =
 function() {
 	var curView = this._appViewMgr.getCurrentView();
-	if (curView && curView.getKeyMapName) {
-		return curView.getKeyMapName();
-	}
-	return null;
-}
+	return (curView && curView.getKeyMapName) ? curView.getKeyMapName() : "ZmGlobal";
+};
 
 ZmZimbraMail.prototype.handleKeyAction =
 function(actionCode, ev) {
@@ -1785,8 +1782,9 @@ function(actionCode, ev) {
 			var curView = this._appViewMgr.getCurrentView();
 			if (curView && curView.getController) {
 				var c = curView.getController();
-				if (c && c.handleKeyAction)
+				if (c && c.handleKeyAction) {
 					return c.handleKeyAction(actionCode, ev);
+				}
 			} else {
 				return false;
 			}

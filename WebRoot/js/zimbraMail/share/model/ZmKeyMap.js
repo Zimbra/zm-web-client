@@ -33,15 +33,11 @@
 function ZmKeyMap() {
 	DwtKeyMap.call(this);
 
-	// Note that FF on the mac has an issue reporting the ALT+<keycode> it
-	// always ends up reporting undefined for the <keycode>. For this reason I
-	// have added Ctrl analogs below	
 	this._map["ZmGlobal"] = {
 		
 			"Ctrl+Q":				ZmKeyMap.ASSISTANT,
 			
 //			"Alt+Shift+Esc":		ZmKeyMap.LOGOFF,
-//			"Ctrl+Shift+Esc":		ZmKeyMap.LOGOFF,
 
 			"Shift+D,0":			ZmKeyMap.DBG_NONE,
 			"Shift+D,1":			ZmKeyMap.DBG_1,
@@ -69,7 +65,8 @@ function ZmKeyMap() {
 	};
 	
 	this._map["ZmComposeView"] = {
-			"Shift+S":				ZmKeyMap.SEND,
+			"Esc":					ZmKeyMap.CANCEL,
+			"Shift+S":				ZmKeyMap.SEND
 	};
 	
 	this._map["ZmMailListView"] = {
