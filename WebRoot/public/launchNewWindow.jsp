@@ -48,13 +48,9 @@ Contributor(s):
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
         <!--
-            @import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-            @import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-            @import url(<%= contextPath %>/skins/<%= skin %>/dwt.css?v=<%= vers %>);
-            @import url(<%= contextPath %>/skins/<%= skin %>/common.css?v=<%= vers %>);
-            @import url(<%= contextPath %>/skins/<%= skin %>/zm.css?v=<%= vers %>);
-            @import url(<%= contextPath %>/skins/<%= skin %>/spellcheck.css?v=<%= vers %>);
-            @import url(<%= contextPath %>/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/css/dwt,common,zm,spellcheck,skin.css?v=<%= vers %>&debug=1);
         -->
 	</style>
 	<%if (full != null) {%>
@@ -68,9 +64,11 @@ Contributor(s):
 	<% } %>
 <% } else { %>
 	<style type="text/css">
-	<!--
-    @import url(<%=contextPath%>/js/ZimbraMail_loRes_<%= skin %>_all.css<%=ext%>?v=<%=vers%>);
-	-->
+        <!--
+		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/css/dwt,common,zm,spellcheck,skin.css?v=<%= vers %>);
+        -->
 	</style>
 
 	<%if (full != null) {%>

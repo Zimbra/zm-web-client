@@ -347,30 +347,6 @@
 		</foreach>
 	</target>
 
-    <target name="compress-css-files">
-        <delete>
-            <fileset dir="${build.dir}/WebRoot/js/" includes="*all.css*"/>
-        </delete>
-        <foreach list='${skins}' target='compress-css-file' param='skin'/>
-    </target>
-
-    <target name="compress-css-file" depends="copy-files-to-build-area, images, generate-preambles">
-		<echo>Compress CSS file ${skin}</echo>
-		<fileset id="zm-css-includes" dir="${build.dir}/WebRoot/skins/${skin}/" includes="dwt.css,common.css,msgview.css,zm.css,spellcheck.css,login.css,${skin}.css" />
-		<fileset id="za-css-includes" dir="${build.dir}/WebRoot/skins/${skin}/" includes="dwt.css,common.css,msgview.css,zmadmin.css,spellcheck.css,login.css,${skin}.css" />
-		<fileset id="loRes-css-includes" dir="${build.dir}/WebRoot/img/loRes/" includes="*.css,skins/${skin}/*.css" />
-		<concat destfile="${build.dir}/WebRoot/js/ZimbraMail_loRes_${skin}_all.css" fixlastline="yes">
-            <fileset refid="loRes-css-includes"/>
-			<fileset refid="zm-css-includes"/>
-		</concat>
-		<concat destfile="${build.dir}/WebRoot/js/ZimbraAdmin_loRes_${skin}_all.css" fixlastline="yes">
-            <fileset refid="loRes-css-includes"/>
-			<fileset refid="za-css-includes"/>
-		</concat>
-		<gzip src="${build.dir}/WebRoot/js/ZimbraMail_loRes_${skin}_all.css" zipfile="${build.dir}/WebRoot/js/ZimbraMail_loRes_${skin}_all.css${gzipExtension}"/>
-		<gzip src="${build.dir}/WebRoot/js/ZimbraAdmin_loRes_${skin}_all.css" zipfile="${build.dir}/WebRoot/js/ZimbraAdmin_loRes_${skin}_all.css${gzipExtension}"/>
-	</target>
-	
   <target name='images'>
     <antcall target='build-images'>
       <param name="csspathprefix" value="/zimbra/img/"/>
@@ -450,39 +426,6 @@
 
     <antcall target="skin-images"></antcall>
 
-  </target>
-
-  <target name='skin-css'>
-    <foreach list='${skins}' target='build-skin-css' param='skindir'>
-    	<param name='skin_output_dir' value='${deploy.dir}${deploy.path}' />
-    </foreach>
-  </target>
-
-  <target name="build-skin-css" depends='build-skin-css-init'>
-	<mkdir dir="${skin_output_dir}/skins/${skindir}"/>
-
-	<!-- first process the <skin>_subs.txt file itself, to get any subs in there -->
-	<filter filtersfile="WebRoot/skins/${skindir}/${skindir}_subs.txt"/>
-	<copy todir="${skin_output_dir}/skins/${skindir}" filtering="true" overwrite="true">
-	  <fileset dir="WebRoot/skins/${skindir}" includes="${skindir}_subs.txt"/>
-	</copy>
-
-	<!-- now process all .css files with the processed subs.txt file -->
-	<filter filtersfile="${skin_output_dir}/skins/${skindir}/${skindir}_subs.txt"/>
-	<copy todir="${skin_output_dir}/skins/${skindir}" filtering="true" overwrite="true">
-	  <fileset dir="WebRoot/js/zimbraMail/config/style" includes="**/*.css"/>
-	  <fileset dir="WebRoot/js/zimbraAdmin/config/style" includes="**/*.css"/>
-	  <fileset dir="${ajax.dir}/WebRoot/js/config/style" includes="**/*.css"/>
-	  <fileset dir="WebRoot/skins/${skindir}" includes="**/*.css"/>
-	</copy>
-  </target>
-
-  <target name='build-skin-css-init'>
-    <dependset>
-      <srcfileset dir='WebRoot/skins/${skindir}' includes='**' />
-      <targetfilelist dir="${skin_output_dir}" files="${skindir}_subs.txt" />
-    </dependset>
-    <available property='build-skin-css-done' file='${skin_output_dir}/skins/${skindir}/${skindir}_subs.txt'/>
   </target>
 
   <target name='skin-images'>
@@ -576,9 +519,6 @@
 	  <fileset dir='WebRoot/js/zimbraAdmin/config/style' includes='*.css' />
 	  <fileset dir='WebRoot/js/zimbraMail/config/style' includes='*.css' />
 	</copy>
-	  <foreach list='${skins}' target='build-skin-css' param='skindir'>
-      <param name='skin_output_dir' value='${build.dir}/WebRoot'/>
-    </foreach>
   </target>
 
   <target name="copy-imgs-to-tmp-area" depends="check4zimbraajax">
@@ -698,12 +638,6 @@
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
   </target>
 
-  <target name='skin-sync' depends='dev-sync'>
-    <foreach list='${skins}' target='build-skin-css' param='skindir'>
-        <param name='skin_output_dir' value='${deploy.dir}${deploy.path}'/>
-    </foreach>
-  </target>
-
   <target name="war" depends="copy-files-to-build-area, jam-files, inject-build-info, images, i18n">
     <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
@@ -721,7 +655,7 @@
 	</war>
   </target>
 
-	<target name="prod-war" depends="copy-files-to-build-area, inject-build-info, compress-js-files, images, i18n, compress-css-files, compress-ale-files">
+	<target name="prod-war" depends="copy-files-to-build-area, inject-build-info, compress-js-files, images, i18n, compress-ale-files">
     <property file="${build.dir}/build.properties" />
     <copy file="WebRoot/WEB-INF/web.xml.production" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="true"/>
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
@@ -736,7 +670,7 @@
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
       <fileset dir="${build.dir}/WebRoot" includes="ALE/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/xforms/**,**/test/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/xforms/**,**/test/**"/>
       <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**"/>
     </war>
   </target>
@@ -800,15 +734,8 @@
     <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
   </target>
 
-  <target name='admin-skin-sync' depends='admin-dev-sync'>
-	<!-- FOR EACH SKIN, COPY AND TRANSLATE CSS FILES -->
-    <foreach list='${skins}' target='build-skin-css' param='skindir'>
-    	<param name='skin_output_dir' value='${deploy.dir}${deploy.admin.path}' />
-    </foreach>
-  </target>
-
   <!-- this is the production war file target for the admin webapp -->
-  <target name="admin-war" depends="compress-js-files, generate-build-info, admin-images, copy-common-css-to-admin, i18n, compress-css-files">
+  <target name="admin-war" depends="compress-js-files, generate-build-info, admin-images, copy-common-css-to-admin, i18n">
     <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
@@ -820,7 +747,7 @@
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class,**/servlets/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
+      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
       <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheLoRes.html,public/pre-cache.jsp"/>
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
@@ -839,7 +766,7 @@
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="org/apache/kabuki/tools/**,**/build/*"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
+      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
       <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheLoRes.html,public/pre-cache.jsp"/>
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		

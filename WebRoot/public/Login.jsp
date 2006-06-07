@@ -136,7 +136,7 @@ Contributor(s):
 	}
 	
 	final String SKIN_COOKIE_NAME = "ZM_SKIN";
-	String skin = "steel";
+	String skin = "sand";
 	Cookie[] cookies = request.getCookies();
 	if (cookies != null) {
         for (Cookie cookie : cookies) {
@@ -155,10 +155,15 @@ Contributor(s):
 <title>Zimbra Login</title>
 
 <!-- ALL STYLES MOVED TO login.css SO THEY CAN BE SKINNED:  WE USE THE SKIN FROM ABOVE. -->
-<style type="text/css">
-	@import url(<%= contextPath %>/skins/<%= skin %>/common.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/skins/<%= skin %>/login.css?v=<%= vers %>);
-</style>
+<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
+	<style type="text/css">
+		@import url(<%= contextPath %>/css/common,login.css?v=<%= vers %>&debug=1);
+	</style>
+<% } else { %>
+	<style type="text/css">
+		@import url(<%= contextPath %>/css/common,login.css?v=<%= vers %>);
+	</style>
+<% } %>
 
 
 <script type="text/javascript" language="javascript">

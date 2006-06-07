@@ -54,7 +54,7 @@ Contributor(s):
 	}
 
 	final String SKIN_COOKIE_NAME = "ZM_SKIN";
-	String skin = "steel";
+	String skin = "sand";
 	if (cookies != null) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
@@ -66,10 +66,7 @@ Contributor(s):
 	String mode = (String) request.getAttribute("mode");
 	String vers = (String) request.getAttribute("version");
 	String ext = (String) request.getAttribute("fileExtension");
-	String ua = request.getHeader("user-agent");
-	boolean isSafari = ua.indexOf("Safari/") != -1;
 
-    String skinHtmlFile = "../skins/" + skin + "/" + skin + ".html";
 	String skinPreCacheFile = "../skins/" + skin + "/CacheLoRes.html";
 
 	if (vers == null) vers = "";
@@ -94,20 +91,22 @@ Contributor(s):
 	<!--
 		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/css/dwt,common,msgview,login,zm,spellcheck,skin.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/css/dwt,common,msgview,login,zm,spellcheck,skin.css?v=<%= vers %>&debug=1);
 	-->
 	</style>
 	<jsp:include page="Ajax.jsp" />
 	<jsp:include page="Zimbra.jsp" />
 	<jsp:include page="ZimbraMail.jsp" />
 <% } else { %>
-<style type="text/css">
-<!--
-@import url(<%=contextPath%>/js/ZimbraMail_loRes_<%= skin %>_all.css<%=ext%>?v=<%=vers%>);
--->
-</style>
-<script type="text/javascript" src="<%=contextPath%>/js/Ajax_all.js<%=ext %>?v=<%=vers%>"></script>
-<script type="text/javascript" src="<%=contextPath%>/js/ZimbraMail_all.js<%=ext %>?v=<%=vers%>"></script>
+	<style type="text/css">
+	<!--
+		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
+		@import url(<%= contextPath %>/css/dwt,common,msgview,login,zm,spellcheck,skin.css?v=<%= vers %>);
+	-->
+	</style>
+	<script type="text/javascript" src="<%=contextPath%>/js/Ajax_all.js<%=ext %>?v=<%=vers%>"></script>
+	<script type="text/javascript" src="<%=contextPath%>/js/ZimbraMail_all.js<%=ext %>?v=<%=vers%>"></script>
 <% } %>
 
 <script type="text/javascript" language="JavaScript">
