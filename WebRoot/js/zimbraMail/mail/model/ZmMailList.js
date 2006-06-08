@@ -147,9 +147,20 @@ function(items, folder, attrs) {
 	ZmList.prototype.deleteItems.call(this, items, folder, attrs);
 };
 
+/*
+ * Only make the request for items whose state will be changed. 
+ */
 ZmMailList.prototype.markRead =
 function(items, on) {
-	this.flagItems(items, "read", on);
+	var items1 = [];
+	for (var i = 0; i < items.length; i++) {
+		if (items[i].isUnread == on) {
+			items1.push(items[i]);
+		}
+	}
+	if (items1.length) {
+		this.flagItems(items1, "read", on);
+	}
 };
 
 // When a conv or msg is moved to Trash, it is marked read by the server.
