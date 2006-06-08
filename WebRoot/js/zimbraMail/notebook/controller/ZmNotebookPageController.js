@@ -197,6 +197,17 @@ ZmNotebookPageController.prototype._pageForwardListener = function(event) {
 	}
 };
 
+ZmNotebookPageController.prototype._dropListener =
+function(ev) {
+	// only tags can be dropped on us
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		ev.doIt = true;
+	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+		var tag = ev.srcData;
+		this._doTag([this._object], tag, true);
+	}
+};
+
 // notebook page view
 
 ZmNotebookPageController.prototype._showIndex = function(folderId) {

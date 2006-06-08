@@ -193,7 +193,7 @@ ZmNotebookController.prototype._defaultView = function() {
 ZmNotebookController.prototype._createNewView = function(view) {
 	if (!this._listView[view]) {
 		var viewCtor = ZmNotebookController._VIEWS[view];
-		this._listView[view] = new viewCtor(this._container, this._appCtxt, this);
+		this._listView[view] = new viewCtor(this._container, this._appCtxt, this, this._dropTgt);
 	}
 	return this._listView[view];
 };

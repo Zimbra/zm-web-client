@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNotebookPageView(parent, appCtxt, controller) {
+function ZmNotebookPageView(parent, appCtxt, controller, dropTgt) {
 	DwtComposite.call(this, parent, "ZmNotebookPageView", DwtControl.ABSOLUTE_STYLE);
 	
 	this._appCtxt = appCtxt;
@@ -33,6 +33,8 @@ function ZmNotebookPageView(parent, appCtxt, controller) {
 
 	this._createHtml();	
 	this._setMouseEventHdlrs(); // needed by object manager
+	
+	this.setDropTarget(dropTgt);
 }
 ZmNotebookPageView.prototype = new DwtComposite;
 ZmNotebookPageView.prototype.constructor = ZmNotebookPageView;
