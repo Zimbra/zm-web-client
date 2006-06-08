@@ -27,6 +27,8 @@ function ZmAssistant(appCtxt, title, command, commandSummary) {
 	if (arguments.length == 0) return;
 	this._appCtxt = appCtxt;
 	this._objectManager = new ZmObjectManager(null, this._appCtxt, null);
+	if (ZmDate10ObjectHandler)
+		this._objectManager.addHandler(new ZmDate10ObjectHandler(appCtxt), ZmObjectManager.DATE, 100);
 	this._fields = {};	
 	this._title = title;
 	this._commandSummary = commandSummary ? commandSummary : title;
