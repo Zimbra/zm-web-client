@@ -145,7 +145,6 @@ Contributor(s):
 </head>
 <body>
 	<jsp:include page="/public/pre-cache.jsp" />
-	<jsp:include page='<%= skinPreCacheFile %>' />
     <%
 		// NOTE: This inserts raw HTML files from the user's skin
 		//       into the JSP output. It's done *this* way so that
