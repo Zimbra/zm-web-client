@@ -228,7 +228,7 @@ function() {
 	var idx = 0;
 
 	html[idx++] = "<center>";
-	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=0 cellspacing=0 width=80% id='";
+	html[idx++] = "<table class='AlphabetBarTable' border=0 cellpadding=0 cellspacing=0 id='";
 	html[idx++] = this._alphabetBarId;
 	html[idx++] = "'><tr>";
 	for (var i = 0; i < alphabet.length; i++)
