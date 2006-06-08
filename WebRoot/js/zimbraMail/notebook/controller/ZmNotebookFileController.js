@@ -31,10 +31,8 @@
 function ZmNotebookFileController(appCtxt, container, app) {
 	ZmNotebookController.call(this, appCtxt, container, app);
 
-	/***
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
-	/***/
 
 	this._listeners[ZmOperation.UNDELETE] = new AjxListener(this, this._undeleteListener);
 }
@@ -212,8 +210,10 @@ function(viewType) {
 	var posStyle = Dwt.ABSOLUTE_STYLE;
 	var mode = null; // ???
 	var controller = this;
-	var dropTgt = null; // ???
-	return new ZmFileListView(parent, className, posStyle, mode, controller, dropTgt);
+	var dropTgt = this._dropTgt;
+	var result = new ZmFileListView(parent, className, posStyle, mode, controller, dropTgt);
+	result.setDragSource(this._dragSrc);
+	return result;
 };
 
 ZmNotebookFileController.prototype._getTagMenuMsg =
@@ -275,46 +275,7 @@ ZmNotebookFileController.prototype._doSelectDblClicked = function(item, fromSear
 ZmNotebookFileController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
-
-	/*** TODO
-	// based on the items selected, enable/disable and/or show/hide appropriate menu items
-	var selItems = this._listView[this._currentView].getSelection();
-	var selTypes = new Object();
-	var numTypes = 0;
-	for (var i = 0; i < selItems.length; i++) {
-		if (!selTypes[selItems[i].type]) {
-			selTypes[selItems[i].type] = true;
-			numTypes++;
-		}
-	}
-
-	var miUndelete = this._actionMenu.getMenuItem(ZmOperation.UNDELETE);
-	var miMoveTo = this._actionMenu.getMenuItem(ZmOperation.MOVE);
-	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
-	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-	var folder = folderTree && folderId ? folderTree.getById(folderId) : null;
-
-	if (folder && folder.isInTrash()) {
-		// only want to show Undelete menu item if contact(s) is selected
-		var showUndelete = numTypes == 1 && selTypes[ZmItem.CONTACT] === true;
-		var showMoveTo = numTypes == 1 && (selTypes[ZmItem.CONV] === true || selTypes[ZmItem.MSG] === true);
-		var showBoth = selItems.length > 1 && numTypes > 1;
-		var isDraft = numTypes == 1 && selItems[0].isDraft;
-
-		miUndelete.setVisible(showUndelete || showBoth || isDraft);
-		miMoveTo.setVisible((showMoveTo || showBoth) && !isDraft);
-
-		// if >1 item is selected and they're not all the same type, disable both menu items
-		this._actionMenu.enable([ZmOperation.UNDELETE, ZmOperation.MOVE], numTypes == 1);
-	} else {
- 		miUndelete.setVisible(false);	// never show Undelete option when not in Trash
- 		miMoveTo.setVisible(true);		// always show Move To option
- 		// show MoveTo only if one type has been selected and its not contacts
-		var enableMoveTo = numTypes == 1 && selItems[0].type != ZmItem.CONTACT;
-		this._actionMenu.enable(ZmOperation.MOVE, enableMoveTo);
-	}
 	this._actionMenu.popup(0, ev.docX, ev.docY);
-	/***/
 };
 
 ZmNotebookFileController.prototype._undeleteListener =

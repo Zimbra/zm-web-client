@@ -162,7 +162,9 @@ function(item, now, isDndIcon) {
 			}
 			htmlArr[idx++] = "<td id='" + fieldId + "'";
 			htmlArr[idx++] = " width=" + width + ">";
+			htmlArr[idx++] = "<span style='white-space: nowrap'>";
 			htmlArr[idx++] = cname;
+			htmlArr[idx++] = "</span>";
 			htmlArr[idx++] = "</td>";
 		}
 		else if (field == ZmItem.F_FOLDER) {

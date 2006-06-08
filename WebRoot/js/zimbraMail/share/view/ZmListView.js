@@ -452,7 +452,7 @@ function (ev, listEv, clickedEl) {
 				ev.target.className = "ImgBlank_16";
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) {
 				var item = this.getItemFromElement(clickedEl);
-				this._actionEv.detail = item.participants.get(m.participant);
+				this._actionEv.detail = item.participants ? item.participants.get(m.participant) : null;
 			}
 		}
 	}
