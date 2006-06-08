@@ -163,6 +163,7 @@ function(match, resource) {
 	var result = {};
 	result.item = resource;
 	result.text = match.savedMatch;
+	result.plain = result.text.replace(/<\/?b>/g, "");	// for sorting results
 	result[ZmContactList.AC_VALUE_EMAIL] = resource.getEmail();
 	result[ZmContactList.AC_VALUE_NAME] = resource.getFullName();
 
