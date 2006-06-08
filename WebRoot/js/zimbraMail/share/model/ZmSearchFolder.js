@@ -106,7 +106,10 @@ function(parentId) {
  */
 ZmSearchFolder.prototype._typeMatch =
 function(types) {
-	if (!this.search.types) return false;
+	if (!this.search.types) {
+		// if types are missing, default to mail
+		return (types[ZmItem.CONV] || types[ZmItem.MSG]);
+	}
 	var childSearchTypes = this.search.types;
 	for (var j = 0; j < childSearchTypes.length; j++) {
 		if (types[childSearchTypes[j]]) {
