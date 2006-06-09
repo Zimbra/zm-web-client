@@ -236,13 +236,18 @@ ZmMixedController.prototype._listSelectionListener =
 function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-		if (ev.item.type == ZmItem.CONTACT)
+		if (ev.item.type == ZmItem.CONTACT) {
 			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(ev.item);
-		else if (ev.item.type == ZmItem.CONV)
-			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController().show(this._activeSearch, ev.item);
-		else if (ev.item.type == ZmItem.MSG)
+		} else if (ev.item.type == ZmItem.CONV) {
+			var mailApp = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
+			if (ev.item.isDraft) {
+				mailApp.getConvListController()._doAction(ev, ZmOperation.DRAFT);
+			} else {
+				mailApp.getConvController().show(this._activeSearch, ev.item);
+			}
+		} else if (ev.item.type == ZmItem.MSG) {
 			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController().show(ev.item);
-		else if (ev.item.type == ZmItem.PAGE || ev.item.type == ZmItem.DOCUMENT) {
+		} else if (ev.item.type == ZmItem.PAGE || ev.item.type == ZmItem.DOCUMENT) {
 			var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 			var controller = app.getFileController();
 			controller._doSelectDblClicked(ev.item, true);

@@ -337,7 +337,7 @@ function(ev) {
 ZmMailListController.prototype._doAction = 
 function(ev, action, extraBodyText, instanceDate) {
 	// retrieve msg and make sure its loaded
-	var msg = this._getMsg();
+	var msg = this._getMsg(ev.item);
 	if (!msg) return;
 	msg._instanceDate = instanceDate;
 
@@ -434,6 +434,11 @@ function(view) {
 ZmMailListController.prototype._getSearchFolderId = 
 function() {
 	return this._activeSearch.search ? this._activeSearch.search.folderId : null;
+};
+
+ZmMailListController.prototype._getMsg =
+function(item) {
+	// overload me
 };
 
 ZmMailListController.prototype._getInviteReplyBody = 
