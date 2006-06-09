@@ -449,6 +449,11 @@ function(ex) {
 ZmShare.prototype.sendMessage =
 function(mode, addrs) {
 	// generate message
+	if (!addrs) {
+		var email = this.grantee.email;  
+		addrs = new AjxVector();
+		addrs.add(new ZmEmailAddress(email, ZmEmailAddress.TO));
+	}
 	var msg = this._createMsg(mode, false, addrs);
 
 	// send message
