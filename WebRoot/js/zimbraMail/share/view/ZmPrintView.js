@@ -113,8 +113,16 @@ function() {
 	html[idx++] = "<html><head><title>Zimbra: ";
 	html[idx++] = username;
 	html[idx++] = "</title>";
-	html[idx++] = "<link rel='stylesheet' href='"+appContextPath+"/skins/"+appCurrentSkin+"/msgview.css?v="+cacheKillerVersion+"' media='screen'></link>";
-	html[idx++] = "<link rel='stylesheet' href='"+appContextPath+"/skins/"+appCurrentSkin+"/zm.css?v="+cacheKillerVersion+"' media='screen'></link>";
+	html[idx++] = "<link rel='stylesheet' href='";
+	html[idx++] = appContextPath;
+	html[idx++] = "/css/msgview.css?v=";
+	html[idx++] = cacheKillerVersion;
+	html[idx++] = "' media='screen'></link>";
+	html[idx++] = "<link rel='stylesheet' href='";
+	html[idx++] = appContextPath;
+	html[idx++] = "/css/zm.css?v=";
+	html[idx++] = cacheKillerVersion;
+	html[idx++] = "' media='screen'></link>";
 	html[idx++] = "</head><body>";
 	html[idx++] = "<table border=0 width=100%><tr>";
 	html[idx++] = "<td class='ZmPrintView-company'><b>Zimbra</b> Collaboration Suite</td>";

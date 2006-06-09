@@ -766,7 +766,7 @@ function(container, html, isTextMsg) {
 	var head = idoc.getElementsByTagName("head")[0];
 	var link = idoc.createElement("link");
 	link.rel = "stylesheet";
-	link.href = appContextPath+"/skins/"+appCurrentSkin+"/msgview.css?v="+cacheKillerVersion;
+	link.href = appContextPath+"/css/msgview.css?v="+cacheKillerVersion;
 	head.appendChild(link);
 
 	ifw.getIframe().style.visibility = "";
