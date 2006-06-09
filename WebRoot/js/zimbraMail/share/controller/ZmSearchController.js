@@ -398,7 +398,9 @@ function(results, search, isMixed) {
 	var folder = folderTree ? folderTree.getById(search.folderId) : null;
 	var inTrash = folder && folder.isInTrash();
 	var isInGal = (this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
-	this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON).setEnabled(!isInGal);
+	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
+		this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON).setEnabled(!isInGal);
+	}
 
 	if (isMixed || inTrash) {
 		this._appCtxt.getApp(ZmZimbraMail.MIXED_APP).getMixedController().show(results);
