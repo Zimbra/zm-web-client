@@ -109,6 +109,26 @@ function(parent, num) {
 	}
 };
 
+ZmMixedController.prototype.getKeyMapName =
+function() {
+	return "ZmMixedController";
+};
+
+/*
+ * The mixed controller doesn't handle the action on its own. Instead, it asks
+ * the controllers for various apps to handle it.
+ */
+ZmMixedController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println(AjxDebug.DBG3, "ZmMixedController.handleKeyAction");
+	
+	var mailCtlr = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMailListController();
+	if (mailCtlr.handleKeyAction) {
+		var result = mailCtlr.handleKeyAction(actionCode);
+		if (result) return result;
+	}
+	return false;
+};
 
 // Private and protected methods
 

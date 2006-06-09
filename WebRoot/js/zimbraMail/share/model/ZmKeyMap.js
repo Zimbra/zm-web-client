@@ -24,12 +24,17 @@
  */
 
 /**
-* Creates a key mapping.
-* @constructor
-* @class
-* 
-* @author Ross Dargahi
-*/
+ * Creates a key mapping for the ZCS application.
+ * @constructor
+ * @class
+ * This class maps keys to actions for the ZCS application. There is a global key map
+ * with bindings that apply to any key not handled by the current controller; these
+ * global bindings apply across applications (mail, contacts, etc). Key bindings that
+ * are context-dependent are tied to a particular controller. If that controller has
+ * control, then those bindings will be used.
+ * 
+ * @author Ross Dargahi
+ */
 function ZmKeyMap() {
 	DwtKeyMap.call(this);
 
@@ -64,23 +69,37 @@ function ZmKeyMap() {
 			"ArrowLeft":			ZmKeyMap.PREV_PAGE
 	};
 	
-	this._map["ZmComposeView"] = {
+	this._map["ZmComposeController"] = {
 			"Esc":					ZmKeyMap.CANCEL,
 			"Shift+S":				ZmKeyMap.SEND
 	};
 	
-	this._map["ZmMailListView"] = {
-			"INHERIT": "DwtListView, ZmGlobal",
+	this._map["ZmMailListController"] = {
+
+			"INHERIT": "ZmGlobal",
+
 			"R":					ZmKeyMap.REPLY,
 			"A":					ZmKeyMap.REPLY_ALL,
+
 			"M,R":					ZmKeyMap.MARK_READ,
-			"M,U":					ZmKeyMap.MARK_UNREAD
+			"M,U":					ZmKeyMap.MARK_UNREAD,
+
+			"I":					ZmKeyMap.GOTO_INBOX,
+			"D":					ZmKeyMap.GOTO_DRAFTS,
+			"S":					ZmKeyMap.GOTO_SENT,
+			"T":					ZmKeyMap.GOTO_TRASH
 	};
 	
-	this._map["ZmConvView"] = {
-			"INHERIT": "ZmMailListView",
+	this._map["ZmConvController"] = {
+
+			"INHERIT": "ZmMailListController",
+
 			"Shift+ArrowRight":		ZmKeyMap.NEXT_CONV,
 			"Shift+ArrowLeft":		ZmKeyMap.PREV_CONV
+	};
+	
+	this._map["ZmMixedController"] = {
+			"INHERIT": "ZmMailListController"
 	};
 };
 
@@ -98,6 +117,10 @@ ZmKeyMap.DBG_2			= i++;
 ZmKeyMap.DBG_3			= i++;
 ZmKeyMap.DBG_TIMING		= i++;
 ZmKeyMap.DEL			= i++;
+ZmKeyMap.GOTO_DRAFTS	= i++;
+ZmKeyMap.GOTO_INBOX		= i++;
+ZmKeyMap.GOTO_SENT		= i++;
+ZmKeyMap.GOTO_TRASH		= i++;
 ZmKeyMap.LOGOFF			= i++;
 ZmKeyMap.MARK_READ		= i++;
 ZmKeyMap.MARK_UNREAD	= i++;

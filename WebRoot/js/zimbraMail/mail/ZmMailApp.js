@@ -25,7 +25,7 @@
 
 function ZmMailApp(appCtxt, container, parentController) {
 	ZmApp.call(this, ZmZimbraMail.MAIL_APP, appCtxt, container, parentController);
-}
+};
 
 ZmMailApp.prototype = new ZmApp;
 ZmMailApp.prototype.constructor = ZmMailApp;
@@ -33,58 +33,71 @@ ZmMailApp.prototype.constructor = ZmMailApp;
 ZmMailApp.prototype.toString = 
 function() {
 	return "ZmMailApp";
-}
+};
 
 ZmMailApp.prototype.launch =
 function(callback, errorCallback) {
 	var respCallback = new AjxCallback(this, this._handleResponseLaunch, callback);
 	var params = {query: this._appCtxt.get(ZmSetting.INITIAL_SEARCH), callback: respCallback, errorCallback: errorCallback};
 	this._appCtxt.getSearchController().search(params);
-}
+};
 
 ZmMailApp.prototype._handleResponseLaunch =
 function(callback) {
 	callback.run();
-}
+};
 
 ZmMailApp.prototype.getAttachmentListController =
 function() {
-	if (!this._attachmentListController)
+	if (!this._attachmentListController) {
 		this._attachmentListController = new ZmAttachmentListController(this._appCtxt, this._container, this);
+	}
 	return this._attachmentListController;
-}
+};
 
 ZmMailApp.prototype.getConvListController =
 function() {
-	if (!this._convListController)
+	if (!this._convListController) {
 		this._convListController = new ZmConvListController(this._appCtxt, this._container, this);
+	}
 	return this._convListController;
-}
+};
 
 ZmMailApp.prototype.getConvController =
 function() {
-	if (!this._convController)
+	if (!this._convController) {
 		this._convController = new ZmConvController(this._appCtxt, this._container, this);
+	}
 	return this._convController;
-}
+};
 
 ZmMailApp.prototype.getTradController = 
 function() {
-	if (!this._tradController)
+	if (!this._tradController) {
 		this._tradController = new ZmTradController(this._appCtxt, this._container, this);
+	}
 	return this._tradController;
-}
+};
 
 ZmMailApp.prototype.getMsgController = 
 function() {
-	if (!this._msgController)
+	if (!this._msgController) {
 		this._msgController = new ZmMsgController(this._appCtxt, this._container, this);
+	}
 	return this._msgController;
-}
+};
 
 ZmMailApp.prototype.getComposeController =
 function() {
-	if (!this._composeController)
+	if (!this._composeController) {
 		this._composeController = new ZmComposeController(this._appCtxt, this._container, this);
+	}
 	return this._composeController;
-}
+};
+
+ZmMailApp.prototype.getMailListController =
+function() {
+	var groupMailBy = this._appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	return (groupMailBy == ZmSetting.GROUP_BY_CONV) ? this.getConvListController() :
+													  this.getTradController();
+};

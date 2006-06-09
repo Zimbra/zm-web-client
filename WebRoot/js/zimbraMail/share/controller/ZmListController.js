@@ -1145,7 +1145,7 @@ function(idx) {
 ZmListController.prototype._getMoreToReplenish = 
 function(view, replCount, callback) {
 	if (this._list.hasMore()) {
-DBG.println("****** need to replenish: " + replCount);
+		DBG.println(AjxDebug.DBG2, "need to replenish: " + replCount);
 		var offset = this._list.size();
 		var respCallback = new AjxCallback(this, this._handleResponseGetMoreToReplenish, [view, callback]);
 		this._search(view, offset, replCount, respCallback);

@@ -647,11 +647,6 @@ function(all) {
 	}
 };
 
-ZmComposeView.prototype.getKeyMapName =
-function() {
-	return "ZmComposeView";
-};
-
 // Private / protected methods
 
 ZmComposeView.prototype._isInviteReply =

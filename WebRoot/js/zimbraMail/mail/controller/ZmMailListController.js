@@ -95,6 +95,11 @@ function() {
 	return "ZmMailListController";
 };
 
+ZmMailListController.prototype.getKeyMapName =
+function() {
+	return "ZmMailListController";
+};
+
 ZmMailListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmMailListController.handleKeyAction");
@@ -109,31 +114,32 @@ function(actionCode) {
 			break;
 			
 		case ZmKeyMap.MARK_READ: {
-			// This check is kind of weak (ditto for mark unread). We should really
-			// be smarter about what we send across the wire (look in ZmList) and
-			// minimize that data so the server does less work
-			var hasUnread = false;
-			var items = this._listView[this._currentView].getSelection();
-			for (var i = 0; i < items.length; i++) {
-				if (items[i].isUnread)
-					hasUnread = true;
-					break;
-			}
-			if (hasUnread)
-				this._list.markRead(this._listView[this._currentView].getSelection(), true);
+			this._markReadListener();
 			break;
 		}
 			
 		case ZmKeyMap.MARK_UNREAD: {
-			var hasUnread = false;
-			var items = this._listView[this._currentView].getSelection();
-			for (var i = 0; i < items.length; i++) {
-				if (!items[i].isUnread)
-					hasUnread = true;
-					break;
-			}
-			if (hasUnread)
-				this._list.markRead(this._listView[this._currentView].getSelection(), false);
+			this._markUnreadListener();
+			break;
+		}
+		
+		case ZmKeyMap.GOTO_INBOX: {
+			this._folderSearch(ZmFolder.ID_INBOX);
+			break;
+		}
+			
+		case ZmKeyMap.GOTO_DRAFTS: {
+			this._folderSearch(ZmFolder.ID_DRAFTS);
+			break;
+		}
+			
+		case ZmKeyMap.GOTO_SENT: {
+			this._folderSearch(ZmFolder.ID_SENT);
+			break;
+		}
+			
+		case ZmKeyMap.GOTO_TRASH: {
+			this._folderSearch(ZmFolder.ID_TRASH);
 			break;
 		}
 			
@@ -336,8 +342,8 @@ function(ev) {
 // This method may be called with a null ev parameter
 ZmMailListController.prototype._doAction = 
 function(ev, action, extraBodyText, instanceDate) {
-	// retrieve msg and make sure its loaded
-	var msg = this._getMsg(ev.item);
+	// retrieve msg and make sure it's loaded
+	var msg = this._getMsg(ev ? ev.item : null);
 	if (!msg) return;
 	msg._instanceDate = instanceDate;
 
@@ -534,9 +540,14 @@ function(ev) {
 
 ZmMailListController.prototype._checkMailListener = 
 function(ev) {
-    var searchController = this._appCtxt.getSearchController();
-    var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
-    searchController.search({query: "in:"+ ZmFolder.QUERY_NAME[ZmFolder.ID_INBOX], types: types});
+	this._folderSearch(ZmFolder.ID_INBOX);
+};
+
+ZmMailListController.prototype._folderSearch = 
+function(folderId) {
+	var searchController = this._appCtxt.getSearchController();
+	var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
+	searchController.search({query: "in:"+ ZmFolder.QUERY_NAME[folderId], types: types});
 };
 
 // Miscellaneous

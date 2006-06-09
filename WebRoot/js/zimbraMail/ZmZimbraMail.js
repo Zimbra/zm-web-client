@@ -69,7 +69,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	 */
 	this._kbMgr = this._shell.getKeyboardMgr();
 	this._kbMgr.registerKeyMap(new ZmKeyMap());
-	this._kbMgr.registerGlobalKeyActionHandler(this);
+	this._kbMgr.registerApplicationKeyActionHandler(this);
 
 	if (location.search && (location.search.indexOf("nss=1") != -1))
    	    this._splashScreen = null;
@@ -1732,10 +1732,16 @@ function(ev) {
 	}
 };
 
-ZmZimbraMail.prototype.getKeyMapNameToUse =
+ZmZimbraMail.prototype.getKeyMapName =
 function() {
 	var curView = this._appViewMgr.getCurrentView();
-	return (curView && curView.getKeyMapName) ? curView.getKeyMapName() : "ZmGlobal";
+	if (curView && curView.getController) {
+		var ctlr = curView.getController();
+		if (ctlr && ctlr.getKeyMapName) {
+			return ctlr.getKeyMapName();
+		}
+	}
+	return "ZmGlobal";
 };
 
 ZmZimbraMail.prototype.handleKeyAction =
@@ -1778,14 +1784,15 @@ function(actionCode, ev) {
 		
 		case ZmKeyMap.LOGOFF: {
 			ZmZimbraMail.conditionalLogOff();
+			break;
 		}
 			
 		default: {
 			var curView = this._appViewMgr.getCurrentView();
 			if (curView && curView.getController) {
-				var c = curView.getController();
-				if (c && c.handleKeyAction) {
-					return c.handleKeyAction(actionCode, ev);
+				var ctlr = curView.getController();
+				if (ctlr && ctlr.handleKeyAction) {
+					return ctlr.handleKeyAction(actionCode, ev);
 				}
 			} else {
 				return false;

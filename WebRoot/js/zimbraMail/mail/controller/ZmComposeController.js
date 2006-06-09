@@ -280,6 +280,11 @@ function(initHide, composeMode) {
 	}
 };
 
+ZmComposeController.prototype.getKeyMapName =
+function() {
+	return "ZmComposeController";
+};
+
 ZmComposeController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println("ZmComposeController.handleKeyAction");

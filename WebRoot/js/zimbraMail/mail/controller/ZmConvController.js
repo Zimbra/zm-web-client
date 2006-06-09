@@ -294,6 +294,11 @@ function() {
 	return popView;
 }
 
+ZmConvController.prototype.getKeyMapName =
+function() {
+	return "ZmConvController";
+};
+
 ZmConvController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmConvController.handleKeyAction");

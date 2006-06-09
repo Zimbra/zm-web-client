@@ -82,11 +82,6 @@ function(list) {
 	this._resetColWidth();
 };
 
-ZmMailListView.prototype.getKeyMapName =
-function() {
-	return "ZmMailListView";
-};
-
 // Private / protected methods
 
 ZmMailListView.prototype._isSentOrDraftsFolder = 
