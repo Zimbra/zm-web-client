@@ -907,6 +907,7 @@ function(msgNode) {
 	if (msgNode.rt) 	this.rt = msgNode.rt;
 	if (msgNode.origid) this.origId = msgNode.origid;
 	if (msgNode.hp) 	this._attHitList = msgNode.hp;
+	if (msgNode.mid)	this.messageId = msgNode.mid;
 
 	if (msgNode.mp) {
 		var params = {attachments: this._attachments, bodyParts: this._bodyParts};
