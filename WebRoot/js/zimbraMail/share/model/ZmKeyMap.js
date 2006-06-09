@@ -80,9 +80,16 @@ function ZmKeyMap() {
 
 			"R":					ZmKeyMap.REPLY,
 			"A":					ZmKeyMap.REPLY_ALL,
+			"R,S":					ZmKeyMap.REPLY,
+			"R,A":					ZmKeyMap.REPLY_ALL,
+
+			"F":					ZmKeyMap.FORWARD,
+			"F,I":					ZmKeyMap.FORWARD_INLINE,
+			"F,A":					ZmKeyMap.FORWARD_ATT,
 
 			"M,R":					ZmKeyMap.MARK_READ,
 			"M,U":					ZmKeyMap.MARK_UNREAD,
+			"M,F":					ZmKeyMap.FLAG,
 
 			"I":					ZmKeyMap.GOTO_INBOX,
 			"D":					ZmKeyMap.GOTO_DRAFTS,
@@ -117,6 +124,10 @@ ZmKeyMap.DBG_2			= i++;
 ZmKeyMap.DBG_3			= i++;
 ZmKeyMap.DBG_TIMING		= i++;
 ZmKeyMap.DEL			= i++;
+ZmKeyMap.FLAG			= i++;
+ZmKeyMap.FORWARD		= i++;
+ZmKeyMap.FORWARD_ATT	= i++;
+ZmKeyMap.FORWARD_INLINE	= i++;
 ZmKeyMap.GOTO_DRAFTS	= i++;
 ZmKeyMap.GOTO_INBOX		= i++;
 ZmKeyMap.GOTO_SENT		= i++;

@@ -187,8 +187,13 @@ function(actionCode) {
 		case ZmKeyMap.NEW_CONTACT:
 		case ZmKeyMap.NEW_FOLDER:
 		case ZmKeyMap.NEW_MESSAGE:
+		case ZmKeyMap.NEW_APPT:
 		case ZmKeyMap.NEW_TAG:
 			this._newListener(null, ZmListController.ACTION_CODE_TO_OP[actionCode]);
+			break;
+
+		case ZmKeyMap.FLAG:
+			this._doFlag(this._listView[this._currentView].getSelection());
 			break;
 
 		default:
@@ -776,7 +781,14 @@ function(folder) {
 // Flag/unflag an item
 ZmListController.prototype._doFlag =
 function(items) {
-	this._list.flagItems(items, "flag", !items[0].isFlagged);
+	var on = !items[0].isFlagged;
+	var items1 = [];
+	for (var i = 0; i < items.length; i++) {
+		if (items[i].isFlagged != on) {
+			items1.push(items[i]);
+		}
+	}
+	this._list.flagItems(items1, "flag", on);
 };
 
 // Tag/untag items

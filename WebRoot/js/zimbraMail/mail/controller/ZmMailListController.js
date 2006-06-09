@@ -84,9 +84,24 @@ ZmMailListController.MSG_KEY[ZmController.TRAD_VIEW]		= "byMessage";
 ZmMailListController.GROUP_BY_VIEWS = [ZmController.CONVLIST_VIEW, ZmController.TRAD_VIEW];
 
 ZmMailListController.INVITE_REPLY_MAP = {};
-ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_ACCEPT] = ZmOperation.REPLY_ACCEPT;
-ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_DECLINE] = ZmOperation.REPLY_DECLINE;
-ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_TENTATIVE] = ZmOperation.REPLY_TENTATIVE;
+ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_ACCEPT]		= ZmOperation.REPLY_ACCEPT;
+ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_DECLINE]		= ZmOperation.REPLY_DECLINE;
+ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_TENTATIVE]	= ZmOperation.REPLY_TENTATIVE;
+
+// convert key mapping to operation
+ZmMailListController.ACTION_CODE_TO_OP = {};
+ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.REPLY]			= ZmOperation.REPLY;
+ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.REPLY_ALL]		= ZmOperation.REPLY_ALL;
+ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.FORWARD_INLINE]	= ZmOperation.FORWARD_INLINE;
+ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.FORWARD_ATT]	= ZmOperation.FORWARD_ATT;
+
+// convert key mapping to folder to search
+ZmMailListController.ACTION_CODE_TO_FOLDER = {};
+ZmMailListController.ACTION_CODE_TO_FOLDER[ZmKeyMap.GOTO_INBOX]		= ZmFolder.ID_INBOX;
+ZmMailListController.ACTION_CODE_TO_FOLDER[ZmKeyMap.GOTO_DRAFTS]	= ZmFolder.ID_DRAFTS;
+ZmMailListController.ACTION_CODE_TO_FOLDER[ZmKeyMap.GOTO_SENT]		= ZmFolder.ID_SENT;
+ZmMailListController.ACTION_CODE_TO_FOLDER[ZmKeyMap.GOTO_TRASH]		= ZmFolder.ID_TRASH;
+
 
 // Public methods
 
@@ -106,43 +121,33 @@ function(actionCode) {
 	
 	switch (actionCode) {
 		case ZmKeyMap.REPLY:
-		    this._doAction(null, ZmOperation.REPLY);
-			break;
-		
 		case ZmKeyMap.REPLY_ALL:
-		    this._doAction(null, ZmOperation.REPLY_ALL);
+		case ZmKeyMap.FORWARD_INLINE:
+		case ZmKeyMap.FORWARD_ATT:
+			this._doAction(null, ZmMailListController.ACTION_CODE_TO_OP[actionCode]);
 			break;
 			
-		case ZmKeyMap.MARK_READ: {
+		case ZmKeyMap.FORWARD:
+			action = (this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INCLUDE_ATTACH) ?
+						ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
+			this._doAction(null, action);
+			break;
+			
+		case ZmKeyMap.GOTO_INBOX:
+		case ZmKeyMap.GOTO_DRAFTS:
+		case ZmKeyMap.GOTO_SENT:
+		case ZmKeyMap.GOTO_TRASH:
+			this._folderSearch(ZmMailListController.ACTION_CODE_TO_FOLDER[actionCode]);
+			break;
+			
+		case ZmKeyMap.MARK_READ:
 			this._markReadListener();
 			break;
-		}
 			
-		case ZmKeyMap.MARK_UNREAD: {
+		case ZmKeyMap.MARK_UNREAD:
 			this._markUnreadListener();
 			break;
-		}
 		
-		case ZmKeyMap.GOTO_INBOX: {
-			this._folderSearch(ZmFolder.ID_INBOX);
-			break;
-		}
-			
-		case ZmKeyMap.GOTO_DRAFTS: {
-			this._folderSearch(ZmFolder.ID_DRAFTS);
-			break;
-		}
-			
-		case ZmKeyMap.GOTO_SENT: {
-			this._folderSearch(ZmFolder.ID_SENT);
-			break;
-		}
-			
-		case ZmKeyMap.GOTO_TRASH: {
-			this._folderSearch(ZmFolder.ID_TRASH);
-			break;
-		}
-			
 		default:
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 			break;
