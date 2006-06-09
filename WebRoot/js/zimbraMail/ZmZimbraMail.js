@@ -173,6 +173,11 @@ ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.ROSTER_TREE_ITE
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTEBOOK_APP]	= [ZmOrganizer.NOTEBOOK, /*ZmOrganizer.SEARCH,*/ ZmOrganizer.TAG,ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 
+// trees to hide if they have no data
+ZmZimbraMail.HIDE_EMPTY = {};
+ZmZimbraMail.HIDE_EMPTY[ZmOrganizer.SEARCH]	= true;
+ZmZimbraMail.HIDE_EMPTY[ZmOrganizer.ZIMLET]	= true;
+
 // types of saved searches to show
 ZmZimbraMail.SEARCH_TYPES = {};
 ZmZimbraMail.SEARCH_TYPES[ZmZimbraMail.MAIL_APP]		= [ZmItem.MSG, ZmItem.CONV];
@@ -188,7 +193,7 @@ for (var app in ZmZimbraMail.SEARCH_TYPES) {
 }
 
 // trees whose data comes in a <refresh> block
-ZmZimbraMail.REFRESH_TREES = [ZmOrganizer.FOLDER, ZmOrganizer.TAG, ZmOrganizer.SEARCH,
+ZmZimbraMail.REFRESH_TREES = [ZmOrganizer.FOLDER, ZmOrganizer.TAG, ZmOrganizer.SEARCH, ZmOrganizer.ZIMLET,
 							  ZmOrganizer.ADDRBOOK, ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK];
 
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
@@ -337,7 +342,8 @@ function(params) {
 	var opc = this._appCtxt.getOverviewController();
 	if (!opc.getOverview(ZmZimbraMail._OVERVIEW_ID)) {
 		opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
-							selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true});
+							selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true,
+							hideEmpty: ZmZimbraMail.HIDE_EMPTY});
 	}
 	this._setUserInfo();
 	this._checkOverviewLayout();

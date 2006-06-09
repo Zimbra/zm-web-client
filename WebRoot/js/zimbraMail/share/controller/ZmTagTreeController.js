@@ -212,11 +212,12 @@ function(ev) {
 /*
 * Handles a color change event.
 *
-* @param ev			[ZmEvent]		a change event
-* @param treeView	[ZmTreeView]	a tree view
+* @param ev				[ZmEvent]		a change event
+* @param treeView		[ZmTreeView]	a tree view
+* @param overviewId		[constant]		overview ID
 */
 ZmTagTreeController.prototype._changeListener =
-function(ev, treeView) {
+function(ev, treeView, overviewId) {
 	var fields = ev.getDetail("fields");
 	var organizers = ev.getDetail("organizers");
 	for (var i = 0; i < organizers.length; i++) {
@@ -226,7 +227,7 @@ function(ev, treeView) {
 			if (node)
 				node.setImage(ZmTag.COLOR_ICON[tag.color]);
 		} else {
-			ZmTreeController.prototype._changeListener.call(this, ev, treeView);
+			ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 		}
 	}
 };

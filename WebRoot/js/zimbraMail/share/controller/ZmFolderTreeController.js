@@ -319,11 +319,12 @@ function(ev) {
 /*
 * Handles a search folder being moved from Folders to Searches.
 *
-* @param ev			[ZmEvent]		a change event
-* @param treeView	[ZmTreeView]	a tree view
+* @param ev				[ZmEvent]		a change event
+* @param treeView		[ZmTreeView]	a tree view
+* @param overviewId		[constant]		overview ID
 */
 ZmFolderTreeController.prototype._changeListener =
-function(ev, treeView) {
+function(ev, treeView, overviewId) {
 	var organizers = ev.getDetail("organizers");
 	if (!organizers && ev.source)
 		organizers = [ev.source];
@@ -339,16 +340,20 @@ function(ev, treeView) {
 			(organizer.parent.tree.type == ZmOrganizer.SEARCH || id == ZmOrganizer.ID_ROOT)) &&
 		 	(ev.event == ZmEvent.E_MOVE || (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_PARENT])))) {
 			DBG.println(AjxDebug.DBG3, "Moving search from Folders to Searches");
-			if (node)
+			if (node) {
 				node.dispose();
+			}
+			this._checkTreeView(overviewId);
 			// send a CREATE event to search tree controller to get it to add node
 			var newEv = new ZmEvent(ZmEvent.S_SEARCH);
 			newEv.set(ZmEvent.E_CREATE, organizer);
 			var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
 			var stv = stc.getTreeView(treeView.overviewId);
-			stc._changeListener(newEv, stv);
+			var app = this._appCtxt.getAppController().getActiveApp();
+			var searchOverviewId = [overviewId, ZmSearchTreeController.APP_JOIN_CHAR, app].join("");
+			stc._changeListener(newEv, stv, searchOverviewId);
 		} else {
-			ZmTreeController.prototype._changeListener.call(this, ev, treeView);
+			ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 		}
 	}
 };

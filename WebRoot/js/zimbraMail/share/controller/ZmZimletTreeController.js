@@ -60,9 +60,9 @@ function(overviewId, listener) {
 
 // Protected methods
 ZmZimletTreeController.prototype.show =
-function(overviewId, showUnread, omit, forceCreate) {
+function(overviewId, showUnread, omit, forceCreate, app, hideEmpty) {
 	var firstTime = !this._treeView[overviewId];
-	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate);
+	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate, app, hideEmpty);
 	if (firstTime) {
 		var treeView = this.getTreeView(overviewId);
 		var root = treeView.getItems()[0];

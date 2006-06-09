@@ -106,13 +106,36 @@ function(parentId) {
  */
 ZmSearchFolder.prototype._typeMatch =
 function(types) {
+	if (!this.search) {
+		return false;
+	}
 	if (!this.search.types) {
 		// if types are missing, default to mail
 		return (types[ZmItem.CONV] || types[ZmItem.MSG]);
 	}
 	var childSearchTypes = this.search.types;
 	for (var j = 0; j < childSearchTypes.length; j++) {
-		if (types[childSearchTypes[j]]) {
+		if (types && types[childSearchTypes[j]]) {
+			return true;
+		}
+	}
+	return false;
+};
+
+/*
+ * Returns true if this search folder has a search folder for any of
+ * the given types anywhere in or under it.
+ *
+ * @param types		[hash]		a hash of search types (item type IDs)
+ */
+ZmSearchFolder.prototype._hasType =
+function(types) {
+	if (this._typeMatch(types)) return true;
+	
+	var a = this.children.getArray();
+	var sz = this.children.size();
+	for (var i = 0; i < sz; i++) {
+		if (a[i]._typeMatch(types)) {
 			return true;
 		}
 	}

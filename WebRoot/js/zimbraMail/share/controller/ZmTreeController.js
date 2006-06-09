@@ -58,8 +58,9 @@ function ZmTreeController(appCtxt, type, dropTgt) {
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 	this._dropTgt = dropTgt;
-	if (this._dropTgt)
+	if (this._dropTgt) {
 		this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
+	}
 
 	// change listening
 	this._dataTree = appCtxt.getTree(type);
@@ -68,8 +69,8 @@ function ZmTreeController(appCtxt, type, dropTgt) {
 		this._dataTree.addChangeListener(this._dataChangeListener);
 	}
 	
-	// hash of tree views of this type, by overview ID
-	this._treeView = new Object();
+	this._treeView = {};	// hash of tree views of this type, by overview ID
+	this._hideEmpty = {};	// which tree views to hide if they have no data
 };
 
 ZmTreeController.prototype = new ZmController;
@@ -119,16 +120,16 @@ function() {
 * @param omit			[Object]*	hash of organizer IDs to ignore
 * @param forceCreate	[boolean]*	if true, tree view will be created
 * @param app			[string]*	app that owns the overview
+* @param hideEmpty		[boolean]*	if true, don't show header if there is no data
 */
 ZmTreeController.prototype.show = 
-function(overviewId, showUnread, omit, forceCreate, app) {
+function(overviewId, showUnread, omit, forceCreate, app, hideEmpty) {
+	this._hideEmpty[overviewId] = hideEmpty;
 	if (!this._treeView[overviewId] || forceCreate) {
 		this._treeView[overviewId] = this._setup(overviewId);
 	}
-	if (this._dataTree) {
-		this._treeView[overviewId].set(this._dataTree, showUnread, omit);
-	}
-	this._treeView[overviewId].setVisible(true);
+	this._treeView[overviewId].set(this._dataTree, showUnread, omit);
+	this._checkTreeView(overviewId);
 };
 
 /**
@@ -224,6 +225,7 @@ function() {
 	}
 	return this._headerActionMenu;
 };
+
 ZmTreeController.prototype._getActionMenu =
 function() {
 	if (this._actionMenu instanceof AjxCallback) {
@@ -380,23 +382,26 @@ function(ev) {
 */
 ZmTreeController.prototype._treeChangeListener =
 function(ev) {
-	for (var overviewId in this._treeView)
-		this._changeListener(ev, this._treeView[overviewId]);
+	for (var overviewId in this._treeView) {
+		this._changeListener(ev, this._treeView[overviewId], overviewId);
+	}
 };
 
 /*
 * Handles a change event for one tree view.
 *
-* @param ev			[ZmEvent]		a change event
-* @param treeView	[ZmTreeView]	a tree view
+* @param ev				[ZmEvent]		a change event
+* @param treeView		[ZmTreeView]	a tree view
+* @param overviewId		[constant]		overview ID
 */
 ZmTreeController.prototype._changeListener =
-function(ev, treeView) {
+function(ev, treeView, overviewId) {
 	if (ev.type != this.type) return;
 	
 	var organizers = ev.getDetail("organizers");
-	if (!organizers && ev.source)
+	if (!organizers && ev.source) {
 		organizers = [ev.source];
+	}
 
 	// handle one organizer at a time
 	for (var i = 0; i < organizers.length; i++) {
@@ -410,26 +415,31 @@ function(ev, treeView) {
 			var flag = ev.getDetail("flag");
 			var state = ev.getDetail("state");
 			// handle "Mark All As Read" by clearing unread count
-			if (node && (flag == ZmItem.FLAG_UNREAD) && !state)
+			if (node && (flag == ZmItem.FLAG_UNREAD) && !state) {
 				node.setText(organizer.getName(false));
+			}
 		} else if (ev.event == ZmEvent.E_DELETE) {
 			if (node) {
-				if (id == ZmFolder.ID_TRASH || id == ZmFolder.ID_SPAM)
-					// empty Trash or Junk
-					node.setText(organizer.getName(false));
-				else
+				if (id == ZmFolder.ID_TRASH || id == ZmFolder.ID_SPAM) {
+					node.setText(organizer.getName(false));	// empty Trash or Junk
+				} else {
 					node.dispose();
+				}
 			}
+			this._checkTreeView(overviewId);
 		} else if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE ||
 				   (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_PARENT]))) {
-			if (node && (ev.event != ZmEvent.E_CREATE))
+			if (node && (ev.event != ZmEvent.E_CREATE)) {
 				node.dispose(); // remove from current parent
+			}
 			if (parentNode) {
 				var idx = ZmTreeView.getSortIndex(parentNode, organizer, ZmTreeView.COMPARE_FUNC[organizer.type]);
 				var added = this._addNew(treeView, parentNode, organizer, idx); // add to new parent
-				if (added && parentNode)
+				if (added && parentNode) {
 					parentNode.setExpanded(true); // so that new node is visible
+				}
 			}
+			this._checkTreeView(overviewId);
 		} else if (ev.event == ZmEvent.E_MODIFY) {
 			if (node) {
 				// change that affects name
@@ -450,8 +460,9 @@ function(ev, treeView) {
 						}
 						this._appCtxt.getAppViewMgr().updateTitle();
 					}
-					if (parentNode)
+					if (parentNode) {
 						parentNode.setExpanded(true);
+					}
 				}
 			}
 		}
@@ -676,4 +687,17 @@ function(ev) {
 		obj = obj.parent;
 	}
 	return null;
+};
+
+/*
+ * Shows or hides the tree view. It is hidden only if there is no data, and we have been told
+ * to hide empty tree views of this type.
+ * 
+ * @param overviewId		[constant]		overview ID
+ */
+ZmTreeController.prototype._checkTreeView =
+function(overviewId) {
+	if (!overviewId || !this._treeView[overviewId].getHtmlElement()) return;	// tree view may have been pruned from overview
+	var show = ((this._dataTree.size() > 0) || !this._hideEmpty[overviewId]);
+	this._treeView[overviewId].setVisible(show);
 };

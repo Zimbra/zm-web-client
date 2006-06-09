@@ -52,6 +52,7 @@ function ZmOverviewController(appCtxt, container) {
 	this._showUnread = {};
 	this._treeStyle = {};
 	this._treeString = {};
+	this._hideEmpty = {};
 };
 
 ZmOverviewController.CONTROLLER = {};
@@ -88,6 +89,7 @@ function() {
 * @param headerClass			[string]*		class name for header item
 * @param showUnread				[boolean]*		if true, unread counts will be shown
 * @param treeStyle				[constant]*		display style for tree views
+* @param hideEmpty				[hash]*			IDs of tree to hide if they lack data
 */
 ZmOverviewController.prototype.createOverview =
 function(params) {
@@ -102,6 +104,7 @@ function(params) {
 	this._headerClass[overviewId] = params.headerClass;
 	this._showUnread[overviewId] = params.showUnread;
 	this._treeStyle[overviewId] = params.treeStyle;
+	this._hideEmpty[overviewId] = params.hideEmpty;
 
 	return overview;
 };
@@ -168,8 +171,9 @@ function(overviewId, treeIds, omit, reset) {
 		var treeController = this.getTreeController(treeId);
 		var treeView = this.getTreeView(overviewId, treeIds[i], app);
 		if (!treeView || (reset && reset[treeId])) {
+			var hideEmpty = this._hideEmpty[overviewId] ? this._hideEmpty[overviewId][treeId] : false;
 			// create the tree view as a child of the overview
-			treeController.show(overviewId, this._showUnread[overviewId], omit, false, app);
+			treeController.show(overviewId, this._showUnread[overviewId], omit, false, app, hideEmpty);
 		} else {
 			// add the tree view's HTML element back to the overview
 			overview.addChild(treeView);
