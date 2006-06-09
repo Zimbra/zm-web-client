@@ -64,10 +64,9 @@ function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 	}
 
 	this._changeListener = new AjxListener(this, this._msgChangeListener);
-	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
 	this.addListener(DwtEvent.ONSELECTSTART, new AjxListener(this, this._selectStartListener));
-	this.addListener(DwtEvent.ONCONTEXTMENU, new AjxListener(this, this._contextMenuListener));
 	this.addListener(DwtEvent.CONTROL, new AjxListener(this, this._controlEventListener));
+	this._setAllowSelection();
 }
 
 ZmMailMsgView.prototype = new DwtComposite;
@@ -118,29 +117,6 @@ function() {
 ZmMailMsgView.prototype.preventSelection =
 function() {
 	return false;
-};
-
-ZmMailMsgView.prototype.preventContextMenu =
-function(target) {
-	if (AjxEnv.isSafari) {
-		// XXX: for some reason Safari is returning false on getSelection()
-		//      even when something is selected w/in msg view. Just return false
-		//      to allow copying text :(
-		return true;
-	} else {
-		var bObjFound = target.id.indexOf("OBJ_") == 0;
-		var bSelection = false;
-
-		// determine if anything has been selected (IE and mozilla do it differently)
-		if (document.selection) {			// IE
-			bSelection = document.selection.type == "Text";
-		} else if (getSelection()) {		// mozilla
-			bSelection = getSelection().toString().length > 0;
-		}
-
-		// if something has been selected and target is not a custom object,
-		return bSelection && !bObjFound ? false : true;
-	}
 };
 
 ZmMailMsgView.prototype.set =
@@ -1199,25 +1175,9 @@ function(ev) {
 		this.reset();
 };
 
-ZmMailMsgView.prototype._mouseDownListener =
-function(ev) {
-	if (ev.button == DwtMouseEvent.LEFT) {
-		// reset mouse event to propagate event to browser (allows text selection)
-		ev._stopPropagation = false;
-		ev._returnValue = true;
-	}
-};
-
 ZmMailMsgView.prototype._selectStartListener =
 function(ev) {
 	// reset mouse event to propagate event to browser (allows text selection)
-	ev._stopPropagation = false;
-	ev._returnValue = true;
-};
-
-ZmMailMsgView.prototype._contextMenuListener =
-function(ev) {
-	// reset mouse event to propagate event to browser (allows context menu)
 	ev._stopPropagation = false;
 	ev._returnValue = true;
 };

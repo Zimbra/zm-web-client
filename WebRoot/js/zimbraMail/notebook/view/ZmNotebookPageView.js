@@ -33,6 +33,7 @@ function ZmNotebookPageView(parent, appCtxt, controller, dropTgt) {
 
 	this._createHtml();	
 	this._setMouseEventHdlrs(); // needed by object manager
+	this._setAllowSelection();
 	
 	this.setDropTarget(dropTgt);
 }
