@@ -254,7 +254,8 @@ function(organizer) {
 
 			var nameEl = row.insertCell(row.cells.length);
 			nameEl.style.paddingRight = "15px";
-			nameEl.innerHTML = AjxStringUtil.htmlEncode(share.isPublic() ? ZmMsg.shareWithAll : share.grantee.name);
+			var nameText = share.isPublic() ? ZmMsg.shareWithAll : (share.grantee.name || share.grantee.id); 
+			nameEl.innerHTML = AjxStringUtil.htmlEncode(nameText);
 
 			var roleEl = row.insertCell(row.cells.length);
 			roleEl.style.paddingRight = "15px";

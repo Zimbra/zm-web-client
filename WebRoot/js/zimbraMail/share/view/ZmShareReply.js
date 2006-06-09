@@ -44,6 +44,15 @@ ZmShareReply.STANDARD = "standard";
 ZmShareReply.QUICK = "quick";
 ZmShareReply.COMPOSE = "compose";
 
+ZmShareReply.DEFAULT_OPTIONS = [
+	ZmShareReply.STANDARD, ZmShareReply.QUICK, ZmShareReply.COMPOSE
+];
+
+ZmShareReply._LABELS = {};
+ZmShareReply._LABELS[ZmShareReply.STANDARD] = ZmMsg.sendStandardMailAboutShare;
+ZmShareReply._LABELS[ZmShareReply.QUICK] = ZmMsg.sendStandardMailAboutSharePlusNote;
+ZmShareReply._LABELS[ZmShareReply.COMPOSE] = ZmMsg.sendComposedMailAboutShare;
+
 // Data
 
 ZmShareReply.prototype._replyEl;
@@ -99,6 +108,26 @@ function() {
 	return this._replyNoteEl.value;
 };
 
+ZmShareReply.prototype.setReplyOptions =
+function(options) {
+	if (this._replyOptions == options) return;
+
+	this._replyOptions = options;
+
+	this._replyType.clearOptions();
+	for (var i = 0; i < options.length; i++) {
+		var value = options[i];
+		var label = ZmShareReply._LABELS[value];
+		var selected = false;
+		this._replyType.addOption(label, selected, value);
+	}
+};
+
+ZmShareReply.prototype.getReplyOptions =
+function() {
+	return this._replyOptions;
+};
+
 // Protected methods
 
 ZmShareReply.prototype._handleReplyType =
@@ -127,9 +156,7 @@ function() {
 	this._replyEl.insertBefore(this._replyCheckboxEl, this._replyEl.firstChild);
 	
 	this._replyType = new DwtSelect(this);
-	this._replyType.addOption(ZmMsg.sendStandardMailAboutShare, false, ZmShareReply.STANDARD);
-	this._replyType.addOption(ZmMsg.sendStandardMailAboutSharePlusNote, false, ZmShareReply.QUICK);
-	this._replyType.addOption(ZmMsg.sendComposedMailAboutShare, false, ZmShareReply.COMPOSE);
+	this.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
 	this._replyType.addChangeListener(new AjxListener(this, this._handleReplyType));
 	
 	this._replyTypeEl = document.createElement("DIV");
@@ -138,7 +165,7 @@ function() {
 	
 	this._replyStandardMailNoteEl = document.createElement("DIV");
 	this._replyStandardMailNoteEl.style.paddingBottom = "0.125em";
-	this._replyStandardMailNoteEl.style.width = "25em";
+	this._replyStandardMailNoteEl.style.width = "30em";
 	this._replyStandardMailNoteEl.innerHTML = ZmMsg.sendMailAboutShareNote;
 	
 	this._replyNoteEl = document.createElement("TEXTAREA");

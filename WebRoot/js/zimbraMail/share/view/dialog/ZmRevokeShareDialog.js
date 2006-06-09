@@ -50,7 +50,7 @@ function(share, loc) {
 
 	var isPubShare = share.isPublic();
 
-	var params = isPubShare ? ZmMsg.shareWithAll : share.grantee.name;
+	var params = isPubShare ? ZmMsg.shareWithAll : (share.grantee.name || share.grantee.id);
 	var message = this._formatter.format(params);
 	this._confirmMsgEl.innerHTML = message;
 

@@ -137,10 +137,16 @@ ZmShare.ROLES[ZmShare.ROLE_NONE]	= ZmMsg.shareRoleNone;
 ZmShare.ROLES[ZmShare.ROLE_VIEWER]	= ZmMsg.shareRoleViewer;
 ZmShare.ROLES[ZmShare.ROLE_MANAGER]	= ZmMsg.shareRoleManager;
 
-ZmShare.TYPE_ALL	= "pub";
+ZmShare.TYPE_ALL	= "all";
 ZmShare.TYPE_USER	= "usr";
+ZmShare.TYPE_GROUP	= "grp";
+ZmShare.TYPE_DOMAIN	= "dom";
+ZmShare.TYPE_COS	= "cos";
+ZmShare.TYPE_GUEST	= "guest";
+ZmShare.TYPE_PUBLIC	= "pub";
 
-ZmShare.ZID_ALL = "99999999-9999-9999-9999-999999999999";
+ZmShare.ZID_ALL = "00000000-0000-0000-0000-000000000000";
+ZmShare.ZID_PUBLIC = "99999999-9999-9999-9999-999999999999";
 
 // view types
 ZmShare._VIEWS = {};
@@ -327,16 +333,24 @@ function(parent, grant, appCtxt) {
 
 // Public methods
 
+ZmShare.prototype.isUser =
+function() {
+	return this.grantee.type == ZmShare.TYPE_USER;
+};
+ZmShare.prototype.isGuest =
+function() {
+	return this.grantee.type == ZmShare.TYPE_GUEST;
+};
 ZmShare.prototype.isPublic =
 function() {
-	return (this.grantee.type == ZmShare.TYPE_ALL);
+	return (this.grantee.type == ZmShare.TYPE_PUBLIC);
 };
 
 ZmShare.prototype.grant =
-function(perm, batchCmd) {
+function(perm, args, batchCmd) {
 	this.link.perm = perm;
 	var respCallback = new AjxCallback(this, this._handleResponseGrant);
-	this._shareAction("grant", null, {perm: perm}, respCallback, batchCmd);
+	this._shareAction("grant", null, {perm: perm, args: args}, respCallback, batchCmd);
 };
 
 ZmShare.prototype._handleResponseGrant =
@@ -348,7 +362,7 @@ function(result) {
 
 ZmShare.prototype.revoke = 
 function(callback) {
-	var actionAttrs = { zid: this.isPublic() ? ZmShare.ZID_ALL : this.grantee.id };
+	var actionAttrs = { zid: this.isPublic() ? ZmShare.ZID_PUBLIC : this.grantee.id };
 	var respCallback = new AjxCallback(this, this._handleResponseRevoke, [callback]);
 	this._shareAction("!grant", actionAttrs, null, respCallback);
 };
