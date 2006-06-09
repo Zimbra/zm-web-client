@@ -1343,7 +1343,7 @@ function(msg, preferHtml, callback) {
 		if (!msg.isRealAttachment(attach))
 			continue;
 
-		var label = attach.name || attach.filename || (ZmMsg.unknown + " <" + type + ">");
+		var label = attach.name || attach.filename || (ZmMsg.unknown + " <" + attach.ct + ">");
 
 		// get size info in any
 		var sizeText = "";
