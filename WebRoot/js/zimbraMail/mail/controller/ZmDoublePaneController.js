@@ -315,8 +315,10 @@ function(msg) {
 
 // Returns the message currently being displayed.
 ZmDoublePaneController.prototype._getMsg =
-function() {
-	return this._listView[this._currentView].getSelection()[0];
+function(msg) {
+	return (msg && msg instanceof ZmMailMsg)
+		? msg
+		: this._listView[this._currentView].getSelection()[0];
 };
 
 ZmDoublePaneController.prototype._resetOperations = 

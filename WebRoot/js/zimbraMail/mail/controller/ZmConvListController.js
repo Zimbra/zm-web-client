@@ -221,7 +221,7 @@ function(item) {
 	var msg = null;
 
 	// get the currently selected conversation or used the one passed in
-	var conv = (item instanceof ZmConv)
+	var conv = (item && item instanceof ZmConv)
 		? item : (this._listView[this._currentView].getSelection()[0]);
 
 	if (conv)

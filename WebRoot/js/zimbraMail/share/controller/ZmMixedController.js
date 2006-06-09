@@ -266,7 +266,12 @@ function(ev) {
 				mailApp.getConvController().show(this._activeSearch, ev.item);
 			}
 		} else if (ev.item.type == ZmItem.MSG) {
-			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController().show(ev.item);
+			var mailApp = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
+			if (ev.item.isDraft) {
+				mailApp.getTradController()._doAction(ev, ZmOperation.DRAFT);
+			} else {
+				mailApp.getMsgController().show(ev.item);
+			}
 		} else if (ev.item.type == ZmItem.PAGE || ev.item.type == ZmItem.DOCUMENT) {
 			var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 			var controller = app.getFileController();
