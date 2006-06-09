@@ -59,7 +59,7 @@ ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.CALENDAR] = ZmMsg.calendarFolder;
 ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.NOTEBOOK] = ZmMsg.notebookFolder;
 ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.ADDRBOOK] = ZmMsg.addressBookFolder;
 
-ZmFolderPropsDialog.SHARES_HEIGHT = 150;
+ZmFolderPropsDialog.SHARES_HEIGHT = "9em";
 
 // Public methods
 
@@ -104,9 +104,15 @@ function() {
 ZmFolderPropsDialog.prototype._handleEditShare =
 function(event) {
 	var target = DwtUiEvent.getTarget(event);
+	/***
 	var share = target._share;
 	var dialog = target._dialog;
 	var sharePropsDialog = dialog._appCtxt.getSharePropsDialog();
+	/***/
+	var share = Dwt.getObjectFromElement(target);
+	var dialog = share._appCtxt.getFolderPropsDialog();
+	var sharePropsDialog = share._appCtxt.getSharePropsDialog();
+	/***/
 	sharePropsDialog.popup(ZmSharePropsDialog.EDIT, share.object, share);
 	return false;
 };
@@ -114,9 +120,15 @@ function(event) {
 ZmFolderPropsDialog.prototype._handleRevokeShare =
 function(event) {
 	var target = DwtUiEvent.getTarget(event);
+	/***
 	var share = target._share;
 	var dialog = target._dialog;
 	var revokeShareDialog = dialog._appCtxt.getRevokeShareDialog();
+	/***/
+	var share = Dwt.getObjectFromElement(target);
+	var dialog = share._appCtxt.getFolderPropsDialog();
+	var revokePropsDialog = share._appCtxt.getRevokeShareDialog();
+	/***/
 	revokeShareDialog.popup(share);
 	return false;
 };
@@ -124,8 +136,13 @@ function(event) {
 ZmFolderPropsDialog.prototype._handleResendShare =
 function(event) {
 	var target = DwtUiEvent.getTarget(event);
+	/***
 	var share = target._share;
 	var dialog = target._dialog;
+	/***/
+	var share = Dwt.getObjectFromElement(target);
+	var dialog = share._appCtxt.getFolderPropsDialog();
+	/***/
 
 	// create share info
 	var tmpShare = new ZmShare({appCtxt: share._appCtxt, object: share.object});
@@ -250,27 +267,39 @@ function(organizer) {
 		table.cellPadding = 3;
 		for (var i = 0; i < shares.length; i++) {
 			var share = shares[i];
-			var row = table.insertRow(table.rows.length);
+			var row = table.insertRow(-1);
 
-			var nameEl = row.insertCell(row.cells.length);
+			var nameEl = row.insertCell(-1);
 			nameEl.style.paddingRight = "15px";
-			var nameText = share.isPublic() ? ZmMsg.shareWithAll : (share.grantee.name || share.grantee.id); 
+			var nameText = share.isPublic() ? ZmMsg.shareWithPublic : (share.grantee.name || share.grantee.id);
 			nameEl.innerHTML = AjxStringUtil.htmlEncode(nameText);
 
-			var roleEl = row.insertCell(row.cells.length);
+			var roleEl = row.insertCell(-1);
 			roleEl.style.paddingRight = "15px";
 			roleEl.innerHTML = ZmShare.getRoleName(share.link.perm);
 
-			var cmdsEl = row.insertCell(row.cells.length);
+			/***
+			var cmdsEl = row.insertCell(-1);
 			cmdsEl.style.whiteSpace = "nowrap";
 			this.__createCmdLinks(cmdsEl, share);
+			/***/
+			this.__createCmdCells(row, share);
+			/***/
 		}
 		this._sharesGroup.setElement(table);
+
+		var width = Dwt.DEFAULT;
+		var height = shares.length > 5 ? ZmFolderPropsDialog.SHARES_HEIGHT : Dwt.CLEAR;
+
+		var insetElement = this._sharesGroup.getInsetHtmlElement();
+		Dwt.setScrollStyle(insetElement, Dwt.SCROLL);
+		Dwt.setSize(insetElement, width, height);
 	}
 
 	this._sharesGroup.setVisible(visible);
 };
 
+/***
 ZmFolderPropsDialog.prototype.__createCmdLinks =
 function(parent, share) {
 	var labels = [ ZmMsg.edit, ZmMsg.revoke, ZmMsg.resend ];
@@ -294,6 +323,33 @@ function(parent, share) {
 		parent.appendChild(document.createTextNode(" "));
 	}
 };
+/***/
+ZmFolderPropsDialog.prototype.__createCmdCells =
+function(row, share) {
+	var labels = [ ZmMsg.edit, ZmMsg.revoke, ZmMsg.resend ];
+	var actions = [
+		this._handleEditShare, this._handleRevokeShare, this._handleResendShare
+	];
+	for (var i = 0; i < labels.length; i++) {
+		var cell = row.insertCell(-1);
+
+		var action = actions[i];
+		// public shares have no editable fields, and sent no mail
+		if (share.isPublic() && (action == this._handleEditShare ||
+								 action == this._handleResendShare)) continue;
+		if (share.isGuest() && (action == this._handleResendShare)) continue;
+
+		var link = document.createElement("A");
+		link.href = "#";
+		link.innerHTML = labels[i];
+
+		Dwt.setHandler(link, DwtEvent.ONCLICK, action);
+		Dwt.associateElementWithObject(link, share);
+
+		cell.appendChild(link);
+	}
+};
+/***/
 
 ZmFolderPropsDialog.prototype._createView =
 function() {
@@ -351,7 +407,6 @@ function() {
 		this._sharesGroup = new DwtGrouper(view);
 		this._sharesGroup.setLabel(ZmMsg.folderSharing);
 		this._sharesGroup.setVisible(false);
-		this._sharesGroup.setSize(Dwt.DEFAULT, ZmFolderPropsDialog.SHARES_HEIGHT);
 		this._sharesGroup.setScrollStyle(Dwt.SCROLL);
 	}
 

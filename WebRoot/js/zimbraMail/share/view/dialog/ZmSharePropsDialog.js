@@ -88,7 +88,7 @@ function(mode, object, share, loc) {
 	this._publicRadioEl.checked = isPublicShare;
 	this._publicRadioEl.disabled = !isNewShare;
 
-	this._granteeInput.setValue(share ? share.grantee.name : "");
+	this._granteeInput.setValue(share ? (share.grantee.name || share.grantee.id) : "", true);
 	this._granteeInput.setEnabled(isNewShare);
 
 	// Make all the properties visible so that their elements
@@ -100,15 +100,13 @@ function(mode, object, share, loc) {
 
 	this._passwordButton.setVisible(!isNewShare);
 	this._passwordInput.setVisible(isNewShare);
-	this._passwordInput.setValue((share && share.grantee.id) || "");
+	this._passwordInput.setValue((share && share.grantee.id) || "", true);
 
 	if (this._inheritEl) {
 		this._inheritEl.checked = share ? share.link.inh : isNewShare;
 	}
 
-	var type = (isUserShare && ZmShare.TYPE_USER) ||
-			   (isGuestShare && ZmShare.TYPE_GUEST) ||
-			   (isPublicShare && ZmShare.TYPE_PUBLIC);
+	var type = this._getType(isUserShare, isGuestShare, isPublicShare);
 	this._handleShareWith(type);
 
 	var perm = share ? share.link.perm : null;
@@ -148,6 +146,18 @@ function() {
 
 // Protected methods
 
+ZmSharePropsDialog.prototype._getType =
+function(isUserShare, isGuestShare, isPublicShare) {
+	if (arguments.length == 0) {
+		isUserShare = this._userRadioEl.checked;
+		isGuestShare = this._guestRadioEl.checked;
+		isPublicShare = this._publicRadioEl.checked;
+	}
+	return (isUserShare && ZmShare.TYPE_USER) ||
+		   (isGuestShare && ZmShare.TYPE_GUEST) ||
+		   (isPublicShare && ZmShare.TYPE_PUBLIC);
+};
+
 ZmSharePropsDialog.prototype._handleChangeButton =
 function(event) {
 	this._passwordButton.setVisible(false);
@@ -163,11 +173,8 @@ function(event) {
 
 	var shares = [];
 	if (this._shareMode == ZmSharePropsDialog.NEW) {
+		var type = this._getType(isUserShare, isGuestShare, isPublicShare);
 		if (!isPublicShare) {
-			var type = (isUserShare && this._userRadioEl.value) ||
-					   (isGuestShare && this._guestRadioEl.value) ||
-					   (isPublicShare && this._publicRadioEl.value);
-
 			var addrs = ZmEmailAddress.split(this._granteeInput.getValue());
 			if (addrs && addrs.length) {
 				for (var i = 0; i < addrs.length; i++) {
@@ -347,8 +354,6 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 
 	this._rolesGroup.setVisible(isUserShare);
 	this._messageGroup.setVisible(!isPublicShare);
-	this._granteeInput.setEnabled(!isPublicShare);
-	this._passwordInput.setEnabled(isGuestShare);
 
 	this._props.setPropertyVisible(this._shareWithOptsId, !isPublicShare);
 	this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
@@ -413,7 +418,7 @@ function() {
 		{ label: ZmMsg.shareWithGuest,
 		  field: ["<input type='radio' name='",shareWithRadioName,"' value='",ZmShare.TYPE_GUEST,"'>"].join("")
 		},
-		{ label: ZmMsg.shareWithPublic,
+		{ label: ZmMsg.shareWithPublicLong,
 		  field: ["<input type='radio' name='",shareWithRadioName,"' value='",ZmShare.TYPE_PUBLIC,"'>"].join("")
 		}
 	];
