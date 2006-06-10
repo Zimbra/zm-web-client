@@ -76,12 +76,8 @@ function(data, loc) {
 
 		for (var i = 0; i < folders.length; i++) {
 			var folder = folders[i];
-			if (folder.link) {
-				var shares = folder.getShares();
-				var share = shares ? shares[0] : null;
-				if (share && !share.isWrite())
-					omit[folder.id] = true;
-			}
+			if (folder.link && folder.isReadOnly())
+				omit[folder.id] = true;
 		}
 	} else {
 		omit[ZmFolder.ID_DRAFTS] = true;
@@ -119,14 +115,14 @@ function(data, loc) {
 	DBG.timePt("expanded and selected");
 };
 
-ZmMoveToDialog.prototype.reset = 
+ZmMoveToDialog.prototype.reset =
 function() {
 	ZmDialog.prototype.reset.call(this);
 	this._folder = this._items = null;
 	this._folderTreeView = null;
 };
 
-ZmMoveToDialog.prototype._contentHtml = 
+ZmMoveToDialog.prototype._contentHtml =
 function() {
 	this._folderTreeCellId = Dwt.getNextId();
 	var html = new Array();

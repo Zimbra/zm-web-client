@@ -475,7 +475,7 @@ function(ev) {
 	var omit = {};
 	omit[ZmFolder.ID_TRASH] = true;
 
-	dialog.popup([ZmOrganizer.ADDRBOOK], omit, ZmMsg.chooseFolderToExport);
+	dialog.popup([ZmOrganizer.ADDRBOOK], omit, false, ZmMsg.chooseFolderToExport);
 };
 
 ZmPreferencesPage.prototype._importContactsListener =
@@ -484,7 +484,22 @@ function(ev) {
 	var val = fileInput ? AjxStringUtil.trim(fileInput.value) : null;
 
 	if (val) {
-		var callback = new AjxCallback(this, this._importDoneCallback);
+		var dialog = this._appCtxt.getMoveToDialog();
+		dialog.reset();
+		dialog.setTitle(ZmMsg._import);
+		dialog.registerCallback(DwtDialog.OK_BUTTON, this._importOkCallback, this, dialog);
+
+		var blankContact = new ZmContact(this._appCtxt);
+		dialog.popup([blankContact]);
+	}
+};
+
+ZmPreferencesPage.prototype._importOkCallback =
+function(dialog, folder) {
+	if (folder && folder.id) {
+		dialog.popdown();
+
+		var callback = new AjxCallback(this, this._importDoneCallback, folder.id);
 		var um = this._appCtxt.getUploadManager();
 		window._uploadManager = um;
 		um.execute(callback, document.getElementById(this._uploadFormId));
@@ -492,36 +507,32 @@ function(ev) {
 };
 
 ZmPreferencesPage.prototype._importDoneCallback = 
-function(status, aid) {
-
+function(folderId, status, aid) {
 	var appCtlr = this._appCtxt.getAppController();
 	
 	if (status == 200) {
 		this._importBtn.setEnabled(false);
 		appCtlr.setStatusMsg(ZmMsg.importingContacts);
-		this._finishImport(aid);
+
+		// send the import request w/ the att Id to the server
+		var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:zimbraMail");
+		var method = soapDoc.getMethod();
+		method.setAttribute("ct", "csv"); // always "csv" for now
+		method.setAttribute("l", folderId);
+		var content = soapDoc.set("content", "");
+		content.setAttribute("aid", aid);
+
+		var respCallback = new AjxCallback(this, this._handleResponseFinishImport, [aid]);
+		var errorCallback = new AjxCallback(this, this._handleErrorFinishImport);
+		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
+													  callback:respCallback, errorCallback:errorCallback,
+													  timeout:ZmPreferencesPage.IMPORT_TIMEOUT});
 	} else {
 		appCtlr.setStatusMsg(ZmMsg.errorImporting + " (" + status + ")", ZmStatusView.LEVEL_CRITICAL);
 		// always re-render input file widget and its parent IFRAME
 		this._importDiv.innerHTML = "";
 		this._addImportWidgets(this._importDiv);
 	}
-};
-
-ZmPreferencesPage.prototype._finishImport = 
-function(aid) {
-	// send the import request w/ the att Id to the server
-	var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:zimbraMail");
-	var method = soapDoc.getMethod();
-	method.setAttribute("ct", "csv"); // always "csv" for now
-	var content = soapDoc.set("content", "");
-	content.setAttribute("aid", aid);
-	
-	var respCallback = new AjxCallback(this, this._handleResponseFinishImport, [aid]);
-	var errorCallback = new AjxCallback(this, this._handleErrorFinishImport);
-	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
-												  callback:respCallback, errorCallback:errorCallback, 
-												  timeout:ZmPreferencesPage.IMPORT_TIMEOUT});
 };
 
 ZmPreferencesPage.prototype._handleResponseFinishImport =

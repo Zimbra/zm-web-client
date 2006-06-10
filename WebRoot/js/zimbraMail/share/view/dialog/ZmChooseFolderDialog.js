@@ -43,8 +43,27 @@ function() {
 	return "ZmChooseFolderDialog";
 };
 
+/**
+* @param 	treeIds			[Array] 	Id's from overview's tree view's
+* @param	omit			[Hash]		Id's to omit in tree view
+* @param	skipReadOnly	[Boolean] 	Set true if you dont want to show read only folders
+* @param	description		[String]	Description of what the user is selecting
+*/
 ZmChooseFolderDialog.prototype.popup =
-function(treeIds, omit, description) {
+function(treeIds, omit, skipReadOnly, description) {
+	if (skipReadOnly) {
+		for (var j = 0; j < treeIds.length; j++) {
+			// remove any addrbooks that are read only
+			var folders = this._appCtxt.getTree(treeIds[j]).asList();
+
+			for (var i = 0; i < folders.length; i++) {
+				var folder = folders[i];
+				if (folder.link && folder.isReadOnly())
+					omit[folder.id] = true;
+			}
+		}
+	}
+
 	if (description) {
 		var descCell = document.getElementById(this._folderDescCellId);
 		descCell.innerHTML = description;
