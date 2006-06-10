@@ -137,7 +137,6 @@ ZmSetting.SKIN_USER_INFO_ID				= i++;
 ZmSetting.AVAILABLE_SKINS				= i++;
 ZmSetting.BROWSE_ENABLED				= i++;
 ZmSetting.CALENDAR_ENABLED				= i++;
-ZmSetting.NOTEBOOK_ENABLED				= i++;
 ZmSetting.CHANGE_PASSWORD_ENABLED		= i++;
 ZmSetting.CONTACTS_ENABLED				= i++;
 ZmSetting.CONVERSATIONS_ENABLED			= i++;
@@ -151,14 +150,15 @@ ZmSetting.IM_ENABLED					= i++;
 ZmSetting.INITIAL_SEARCH_ENABLED		= i++;
 ZmSetting.MAX_CONTACTS					= i++;
 ZmSetting.MIN_POLLING_INTERVAL			= i++;
+ZmSetting.NOTEBOOK_ENABLED				= i++;
 ZmSetting.PWD_MAX_LENGTH				= i++;
 ZmSetting.PWD_MIN_LENGTH				= i++;
 ZmSetting.QUOTA							= i++;
 ZmSetting.SAVED_SEARCHES_ENABLED		= i++;
+ZmSetting.SHARING_ENABLED				= i++;
 ZmSetting.SKIN_CHANGE_ENABLED			= i++;
 ZmSetting.TAGGING_ENABLED				= i++;
 ZmSetting.VIEW_ATTACHMENT_AS_HTML 		= i++;
-ZmSetting.SHARING_ENABLED				= i++;
 
 // USER METADATA
 ZmSetting.QUOTA_USED					= i++;

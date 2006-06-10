@@ -160,11 +160,15 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.NEXT_PAGE:
-			this._paginate(this._currentView, true);
+			if (this._navToolBar[this._currentView].getButton(ZmOperation.PAGE_FORWARD).getEnabled()) {
+				this._paginate(this._currentView, true);
+			}
 			break;
 
 		case ZmKeyMap.PREV_PAGE:
-			this._paginate(this._currentView, false);
+			if (this._navToolBar[this._currentView].getButton(ZmOperation.PAGE_BACK).getEnabled()) {
+				this._paginate(this._currentView, false);
+			}
 			break;
 
 		case ZmKeyMap.NEW: {
@@ -194,6 +198,10 @@ function(actionCode) {
 
 		case ZmKeyMap.FLAG:
 			this._doFlag(this._listView[this._currentView].getSelection());
+			break;
+
+		case ZmKeyMap.PRINT:
+			this._printListener();
 			break;
 
 		default:

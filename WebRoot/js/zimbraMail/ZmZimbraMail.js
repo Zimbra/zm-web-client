@@ -146,6 +146,10 @@ ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CONTACTS_APP]		= "displayContacts";
 ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.CALENDAR_APP]		= "displayCalendar";
 ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.IM_APP]	        = "displayIM";
 
+// apps for the app chooser
+ZmZimbraMail.APPS = [ZmZimbraMail.MAIL_APP, ZmZimbraMail.CONTACTS_APP, ZmZimbraMail.CALENDAR_APP,
+					 ZmZimbraMail.IM_APP, ZmZimbraMail.NOTEBOOK_APP];
+
 // app button IDs
 ZmZimbraMail.APP_BUTTON = {};
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.MAIL_APP]			= ZmAppChooser.B_EMAIL;
@@ -154,6 +158,13 @@ ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CALENDAR_APP]		= ZmAppChooser.B_CALENDAR;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.IM_APP]			= ZmAppChooser.B_IM;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.NOTEBOOK_APP]		= ZmAppChooser.B_NOTEBOOK;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.PREFERENCES_APP]	= ZmAppChooser.B_OPTIONS;
+
+// setting for each app which tells us if it is enabled
+ZmZimbraMail.APP_SETTING = {};
+ZmZimbraMail.APP_SETTING[ZmZimbraMail.CONTACTS_APP]		= ZmSetting.CONTACTS_ENABLED;
+ZmZimbraMail.APP_SETTING[ZmZimbraMail.CALENDAR_APP]		= ZmSetting.CALENDAR_ENABLED;
+ZmZimbraMail.APP_SETTING[ZmZimbraMail.IM_APP]			= ZmSetting.IM_ENABLED;
+ZmZimbraMail.APP_SETTING[ZmZimbraMail.NOTEBOOK_APP]		= ZmSetting.NOTEBOOK_ENABLED;
 
 // default search type for each app
 ZmZimbraMail.DEFAULT_SEARCH = {};
@@ -191,6 +202,15 @@ for (var app in ZmZimbraMail.SEARCH_TYPES) {
 		ZmZimbraMail.SEARCH_TYPES_H[app][ZmZimbraMail.SEARCH_TYPES[app][i]] = true;
 	}
 }
+
+// map a keyboard action code to the app to go to
+ZmZimbraMail.ACTION_CODE_TO_APP = {};
+ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_MAIL]		= ZmZimbraMail.MAIL_APP;
+ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_CONTACTS]	= ZmZimbraMail.CONTACTS_APP;
+ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_CALENDAR]	= ZmZimbraMail.CALENDAR_APP;
+ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_IM]		= ZmZimbraMail.IM_APP;
+ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_NOTEBOOK]	= ZmZimbraMail.NOTEBOOK_APP;
+ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_OPTIONS]	= ZmZimbraMail.PREFERENCES_APP;
 
 // trees whose data comes in a <refresh> block
 ZmZimbraMail.REFRESH_TREES = [ZmOrganizer.FOLDER, ZmOrganizer.TAG, ZmOrganizer.SEARCH, ZmOrganizer.ZIMLET,
@@ -1670,15 +1690,14 @@ function() {
 
 ZmZimbraMail.prototype._createAppChooser =
 function() {
-	var buttons = [ZmAppChooser.B_EMAIL];
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
-		buttons.push(ZmAppChooser.B_CONTACTS);
-	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED))
-		buttons.push(ZmAppChooser.B_CALENDAR);
-	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
-		buttons.push(ZmAppChooser.B_IM);
-	if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED))
-		buttons.push(ZmAppChooser.B_NOTEBOOK);
+	var buttons = [];
+	for (var i = 0; i < ZmZimbraMail.APPS.length; i++) {
+		var app = ZmZimbraMail.APPS[i];
+		var setting = ZmZimbraMail.APP_SETTING[app];
+		if (!setting || this._appCtxt.get(setting)) {
+			buttons.push(ZmZimbraMail.APP_BUTTON[app]);
+		}
+	}
 	buttons.push(ZmAppChooser.SPACER, ZmAppChooser.B_HELP, ZmAppChooser.B_OPTIONS, ZmAppChooser.B_LOGOUT);
 	var appChooser = new ZmAppChooser(this._shell, null, buttons);
 	
@@ -1775,6 +1794,22 @@ function(actionCode, ev) {
 			break;
 		}
 		
+		case ZmKeyMap.GOTO_MAIL:
+		case ZmKeyMap.GOTO_CONTACTS:
+		case ZmKeyMap.GOTO_CALENDAR:
+		case ZmKeyMap.GOTO_IM:
+		case ZmKeyMap.GOTO_NOTEBOOK: {
+			var app = ZmZimbraMail.ACTION_CODE_TO_APP[actionCode];
+			if (app == this.getActiveApp()) {
+				return false;
+			}
+			var setting = ZmZimbraMail.APP_SETTING[app];
+			if (!setting || this._appCtxt.get(setting)) {
+				this.activateApp(app);
+			}
+			break;
+		}
+
 		case ZmKeyMap.ASSISTANT: {
 			if (this._assistantDialog == null)
 				this._assistantDialog = new ZmAssistantDialog(this._appCtxt);

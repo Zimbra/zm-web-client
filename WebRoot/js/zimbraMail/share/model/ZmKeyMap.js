@@ -58,6 +58,14 @@ function ZmKeyMap() {
 			"N,M":					ZmKeyMap.NEW_MESSAGE,
 			"N,T":					ZmKeyMap.NEW_TAG,
 
+			"G,M":					ZmKeyMap.GOTO_MAIL,
+			"G,A":					ZmKeyMap.GOTO_CONTACTS,
+			"G,C":					ZmKeyMap.GOTO_CALENDAR,
+			"G,I":					ZmKeyMap.GOTO_IM,
+			"G,N":					ZmKeyMap.GOTO_NOTEBOOK,
+			"G,O":					ZmKeyMap.GOTO_OPTIONS,
+
+			"P":					ZmKeyMap.PRINT,
 			"S":					ZmKeyMap.SAVE,
 
 			"Del":					ZmKeyMap.DEL,
@@ -94,7 +102,13 @@ function ZmKeyMap() {
 			"I":					ZmKeyMap.GOTO_INBOX,
 			"D":					ZmKeyMap.GOTO_DRAFTS,
 			"S":					ZmKeyMap.GOTO_SENT,
-			"T":					ZmKeyMap.GOTO_TRASH
+			"T":					ZmKeyMap.GOTO_TRASH,
+			
+			"Shift+1":				ZmKeyMap.SPAM,
+
+			"Shift+.,I":			ZmKeyMap.MOVE_TO_INBOX,
+			"Shift+.,T":			ZmKeyMap.MOVE_TO_TRASH,
+			"Shift+.,J":			ZmKeyMap.MOVE_TO_JUNK
 	};
 	
 	this._map["ZmConvController"] = {
@@ -128,13 +142,22 @@ ZmKeyMap.FLAG			= i++;
 ZmKeyMap.FORWARD		= i++;
 ZmKeyMap.FORWARD_ATT	= i++;
 ZmKeyMap.FORWARD_INLINE	= i++;
+ZmKeyMap.GOTO_CALENDAR	= i++;
+ZmKeyMap.GOTO_CONTACTS	= i++;
 ZmKeyMap.GOTO_DRAFTS	= i++;
+ZmKeyMap.GOTO_IM		= i++;
 ZmKeyMap.GOTO_INBOX		= i++;
+ZmKeyMap.GOTO_MAIL		= i++;
+ZmKeyMap.GOTO_NOTEBOOK	= i++;
+ZmKeyMap.GOTO_OPTIONS	= i++;
 ZmKeyMap.GOTO_SENT		= i++;
 ZmKeyMap.GOTO_TRASH		= i++;
 ZmKeyMap.LOGOFF			= i++;
 ZmKeyMap.MARK_READ		= i++;
 ZmKeyMap.MARK_UNREAD	= i++;
+ZmKeyMap.MOVE_TO_INBOX	= i++;
+ZmKeyMap.MOVE_TO_JUNK	= i++;
+ZmKeyMap.MOVE_TO_TRASH	= i++;
 ZmKeyMap.NEW			= i++;
 ZmKeyMap.NEW_APPT		= i++;
 ZmKeyMap.NEW_CALENDAR	= i++;
@@ -146,10 +169,12 @@ ZmKeyMap.NEXT_CONV		= i++;
 ZmKeyMap.NEXT_PAGE		= i++;
 ZmKeyMap.PREV_CONV		= i++;
 ZmKeyMap.PREV_PAGE		= i++;
+ZmKeyMap.PRINT			= i++;
 ZmKeyMap.REPLY			= i++;
 ZmKeyMap.REPLY_ALL		= i++;
 ZmKeyMap.SAVE			= i++;
 ZmKeyMap.SEND			= i++;
+ZmKeyMap.SPAM			= i++;
 
 delete i;
 

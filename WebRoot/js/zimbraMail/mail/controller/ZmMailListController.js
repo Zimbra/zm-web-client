@@ -102,6 +102,11 @@ ZmMailListController.ACTION_CODE_TO_FOLDER[ZmKeyMap.GOTO_DRAFTS]	= ZmFolder.ID_D
 ZmMailListController.ACTION_CODE_TO_FOLDER[ZmKeyMap.GOTO_SENT]		= ZmFolder.ID_SENT;
 ZmMailListController.ACTION_CODE_TO_FOLDER[ZmKeyMap.GOTO_TRASH]		= ZmFolder.ID_TRASH;
 
+// convert key mapping to folder to move to
+ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE = {};
+ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[ZmKeyMap.MOVE_TO_INBOX]	= ZmFolder.ID_INBOX;
+ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[ZmKeyMap.MOVE_TO_TRASH]	= ZmFolder.ID_TRASH;
+ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[ZmKeyMap.MOVE_TO_JUNK]	= ZmFolder.ID_JUNK;
 
 // Public methods
 
@@ -139,7 +144,19 @@ function(actionCode) {
 		case ZmKeyMap.GOTO_TRASH:
 			this._folderSearch(ZmMailListController.ACTION_CODE_TO_FOLDER[actionCode]);
 			break;
-			
+		
+		case ZmKeyMap.MOVE_TO_INBOX:
+		case ZmKeyMap.MOVE_TO_TRASH:
+		case ZmKeyMap.MOVE_TO_JUNK:
+			var folderId = ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[actionCode];
+			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
+			this._doMove(this._listView[this._currentView].getSelection(), folder);
+			break;
+
+		case ZmKeyMap.SPAM:
+			this._spamListener();
+			break;
+
 		case ZmKeyMap.MARK_READ:
 			this._markReadListener();
 			break;
@@ -539,7 +556,7 @@ function(type, componentId, instanceDate) {
 ZmMailListController.prototype._spamListener = 
 function(ev) {
 	var items = this._listView[this._currentView].getSelection();
-	var markAsSpam = this._getSearchFolderId() != ZmFolder.ID_SPAM;
+	var markAsSpam = (this._getSearchFolderId() != ZmFolder.ID_SPAM);
 	this._doSpam(items, markAsSpam);
 };
 
