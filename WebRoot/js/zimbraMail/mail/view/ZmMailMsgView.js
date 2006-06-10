@@ -168,14 +168,22 @@ function(msg) {
 };
 
 ZmMailMsgView.prototype.highlightObjects =
-function() {
-	// This turns out to work fine for both HTML and Text emails.  For
-	// text, however, it's slower than if we were just calling findObjects
-	// on the whole text content, but has the advantage that it doesn't
-	// scroll the iframe to top.  If anyone thinks that hiliting objects in
-	// big text messages is too slow, lemme know.  -mihai@zimbra.com
+function(origText) {
 	var idoc = document.getElementById(this._iframeId).contentWindow.document;
-	this._processHtmlDoc(idoc);
+	if (origText != null) {
+		// we get here only for text messages; it's a lot
+		// faster to call findObjects on the whole text rather
+		// than parsing the DOM.
+		DBG.timePt("START - highlight objects on-demand, text msg.");
+		var html = this._objectManager.findObjects(origText, true);
+		html = html.replace(/^ /mg, "&nbsp;")
+			.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
+			.replace(/\n/g, "<br>");
+		idoc.body.innerHTML = html;
+		DBG.timePt("END - highlight objects on-demand, text msg.");
+	} else {
+		this._processHtmlDoc(idoc);
+	}
 };
 
 ZmMailMsgView.prototype.resetMsg =
@@ -436,9 +444,12 @@ ZmMailMsgView.__localLinkClicked = function(msgView, ev) {
 // the server-side, but we check, just in case..).
 ZmMailMsgView.prototype._processHtmlDoc =
 function(doc) {
+	DBG.timePt("Starting ZmMailMsgView.prototype._processHtmlDoc");
+
 	// var T1 = new Date().getTime();
 	this._checkForNewObjects();
 	var objectManager = this._objectManager,
+		tmpdiv = doc.createElement("div"),
 		node = doc.body;
 
 	// This inner function does the actual work.  BEWARE that it return-s
@@ -513,19 +524,17 @@ function(doc) {
 					// dealing with whitespace.  However, IE sometimes crashes here, for
 					// reasons that weren't possible to determine--hence we avoid this
 					// step for IE.  (bug #5345)
-					var regex = /^[\s\xA0]+/;
-					var results = regex.exec(node.data);
+					var results = /^[\s\xA0]+/.exec(node.data);
 					if (results) {
 						a = node;
 						node = node.splitText(results[0].length);
 					}
-					regex = /[\s\xA0]+$/;
-					results = regex.exec(node.data);
+					results = /[\s\xA0]+$/.exec(node.data);
 					if (results)
 						b = node.splitText(node.data.length - results[0].length);
 				}
 
-				tmp = doc.createElement("div");
+				tmp = tmpdiv;
 				var code = objectManager.findObjects(node.data, true);
 				var disembowel = false;
 				if (AjxEnv.isIE) {
@@ -554,8 +563,15 @@ function(doc) {
 		}
 		return node.nextSibling;
 	};
-	recurse(node, true);
+	var df = doc.createDocumentFragment();
+	while (node.firstChild) {
+		df.appendChild(node.firstChild); // NODE now out of the displayable DOM
+		recurse(df.lastChild, true);	 // parse tree and findObjects()
+	}
+	node.appendChild(df);	// put nodes back in the document
 	// alert((new Date().getTime() - T1)/1000);
+
+	DBG.timePt("-- END _processHtmlDoc");
 };
 
 ZmMailMsgView.prototype._fixMultipartRelatedImages =
@@ -620,13 +636,13 @@ function(msg, idoc, id, iframe) {
 };
 
 ZmMailMsgView.prototype._makeHighlightObjectsDiv =
-function() {
+function(origText) {
 	var self = this;
 	function func() {
 		var div = document.getElementById(self._highlightObjectsId);
 		div.innerHTML = ZmMsg.pleaseWaitHilitingObjects;
 		setTimeout(function() {
-			self.highlightObjects();
+			self.highlightObjects(origText);
 			div.style.display = "none";
 			ZmMailMsgView._resetIframeHeight(self, document.getElementById(self._iframeId));
 		}, 3);
@@ -677,15 +693,17 @@ function(container, html, isTextMsg) {
 			if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT) {
 				// better process objects directly rather than scanning the DOM afterwards.
 				this._checkForNewObjects();
+				DBG.timePt("START: small text msg -- findObjects");
 				html = this._objectManager.findObjects(html, true);
+				DBG.timePt("END: small text msg -- findObjects");
+				html = html.replace(/^ /mg, "&nbsp;")
+					.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
+					.replace(/\n/g, "<br>");
 			} else {
+				this._makeHighlightObjectsDiv(html);
 				html = AjxStringUtil.convertToHtml(html);
-				this._makeHighlightObjectsDiv();
 			}
 		}
-		html = html.replace(/^ /mg, "&nbsp;")
-			.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
-			.replace(/\n/g, "<br>");
 	} else {
 		html = html.replace(/<!--(.*?)-->/g, ""); // remove comments
 		if (this._objectManager) {
