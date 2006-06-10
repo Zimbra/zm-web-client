@@ -304,6 +304,15 @@ function() {
 	return this._moveToDialog;
 };
 
+ZmAppCtxt.prototype.getChooseFolderDialog =
+function() {
+	if (!this._chooseFolderDialog) {
+		var parent = this.getShell();
+		this._chooseFolderDialog = new ZmChooseFolderDialog(parent);
+	}
+	return this._chooseFolderDialog;
+};
+
 ZmAppCtxt.prototype.getFolderPropsDialog =
 function() {
 	if (!this._folderPropsDialog)

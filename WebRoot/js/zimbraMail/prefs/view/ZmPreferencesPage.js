@@ -468,24 +468,26 @@ function(ev) {
 
 ZmPreferencesPage.prototype._exportContactsListener = 
 function(ev) {
-	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_EXPORT_URI);
-	window.open(uri, "_blank");
+	var dialog = this._appCtxt.getChooseFolderDialog();
+	dialog.reset();
+	dialog.registerCallback(DwtDialog.OK_BUTTON, this._exportOkCallback, this, dialog);
+
+	var omit = {};
+	omit[ZmFolder.ID_TRASH] = true;
+
+	dialog.popup([ZmOrganizer.ADDRBOOK], omit, ZmMsg.chooseFolderToExport);
 };
 
 ZmPreferencesPage.prototype._importContactsListener =
 function(ev) {
 	var fileInput = document.getElementById(this._attInputId);
 	var val = fileInput ? AjxStringUtil.trim(fileInput.value) : null;
-	
-	// TODO - test val against regex for valid .csv filename
-	
+
 	if (val) {
 		var callback = new AjxCallback(this, this._importDoneCallback);
 		var um = this._appCtxt.getUploadManager();
 		window._uploadManager = um;
 		um.execute(callback, document.getElementById(this._uploadFormId));
-	} else {
-		// TODO - show error message in app controller's status window
 	}
 };
 
@@ -546,6 +548,17 @@ function(ex) {
 		return true;
 	}
 	return false;
+};
+
+ZmPreferencesPage.prototype._exportOkCallback =
+function(dialog, folder) {
+	if (folder && folder.id) {
+		var exportUrl = AjxMessageFormat.format(this._appCtxt.get(ZmSetting.CSFE_EXPORT_URI), folder.id);
+		var uri = location.protocol + "//" + document.domain + exportUrl;
+		window.open(uri, "_blank");
+
+		dialog.popdown();
+	}
 };
 
 // Reset the form values to the pref defaults. Note that the pref defaults aren't the

@@ -277,7 +277,7 @@ function() {
 	this._settings[ZmSetting.CSFE_UPLOAD_URI].setValue(value, null, false, true);
 	
 	// CSFE EXPORT URI
-	value = portPrefix + "/service/home/~/?auth=co&id=7&fmt=csv";
+	value = portPrefix + "/service/home/~/?auth=co&id={0}&fmt=csv";
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
 	
 	// default sorting preferences
