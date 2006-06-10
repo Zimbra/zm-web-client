@@ -865,13 +865,18 @@ function(action, msg, extraBodyText, incOption) {
 			incOption = this._appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG);
 		} else if (action == ZmOperation.FORWARD_INLINE) {
 			incOption = this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
+			if (incOption == ZmSetting.INCLUDE_ATTACH) {
+				incOption = ZmSetting.INCLUDE;
+			}
+		} else if (action == ZmOperation.FORWARD_ATT) {
+			incOption = ZmSetting.INCLUDE_ATTACH;
 		}
 	}
 
 	if (incOption == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
 		if (extraBodyText)
 			value += extraBodyText;
-	} else if (incOption == ZmSetting.INCLUDE_ATTACH || action == ZmOperation.FORWARD_ATT) {
+	} else if (incOption == ZmSetting.INCLUDE_ATTACH) {
 		this._msgAttId = this._msg.id;
 	} else {
 		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
