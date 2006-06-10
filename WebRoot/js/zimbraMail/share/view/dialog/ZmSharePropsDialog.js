@@ -243,6 +243,7 @@ function(shares, result) {
 			tmpShare.link.id = tmpShare.object.id;
 			tmpShare.link.name = tmpShare.object.name;
 			tmpShare.link.view = ZmOrganizer.getViewName(tmpShare.object.type);
+			tmpShare.link.inh = this._inheritEl ? this._inheritEl.checked : true;
 
 			if (isGuestShare) {
 				if (!this._guestFormatter) {
@@ -443,7 +444,7 @@ function() {
 		"<table border='0' cellpadding='0' cellpadding='3'>",
 			"<tr>",
 				"<td>",
-					"<input type='checkbox' id='",inheritId,"'>",
+					"<input type='checkbox' id='",inheritId,"' checked>",
 				"</td>",
 				"<td>", ZmMsg.inheritPerms, "</td>",
 			"</tr>",
@@ -455,6 +456,9 @@ function() {
 	this._props.addProperty(ZmMsg.typeLabel, "<span id='"+typeId+"'></span>");
 	this._props.addProperty(ZmMsg.shareWithLabel, shareWith);
 	var otherId = this._props.addProperty(ZmMsg.otherLabel, otherHtml);
+
+	this._inheritEl = document.getElementById(inheritId);
+
 	// XXX: for now, we are hiding this property for simplicity's sake
 	this._props.setPropertyVisible(otherId, false);
 	this._shareWithBreakId = this._props.addProperty("", "<HR>");
@@ -508,7 +512,6 @@ function() {
 	// save information elements
 	this._nameEl = document.getElementById(nameId)
 	this._typeEl = document.getElementById(typeId);
-	this._inheritEl = document.getElementById(inheritId);
 	this._urlEl = document.getElementById(urlId);
 
 	var inputEl = this._granteeInput.getInputElement();

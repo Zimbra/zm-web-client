@@ -450,7 +450,7 @@ ZmShare.prototype.sendMessage =
 function(mode, addrs) {
 	// generate message
 	if (!addrs) {
-		var email = this.grantee.email;  
+		var email = this.grantee.email;
 		addrs = new AjxVector();
 		addrs.add(new ZmEmailAddress(email, ZmEmailAddress.TO));
 	}
@@ -500,6 +500,9 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 
 	var shareNode = soapDoc.set("grant", null, actionNode);
 	shareNode.setAttribute("gt", this.grantee.type);
+	if (this.link.inh) {
+		shareNode.setAttribute("inh", "1");
+	}
 	if (!this.isPublic()) {
 		shareNode.setAttribute("d", this.grantee.name);
 	}

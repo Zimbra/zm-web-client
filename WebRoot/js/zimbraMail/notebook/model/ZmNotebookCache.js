@@ -240,6 +240,7 @@ function(folderId, callback, errorCallback, response) {
 			if (!page) {
 				page = new ZmPage(this._appCtxt);
 				page.set(word);
+				page.folderId = folderId;
 				page.remoteFolderId = remoteFolderId; // REVISIT
 				this.putPage(page);
 			}
