@@ -111,6 +111,7 @@ function(node) {
 */
 ZmSettings.prototype.createFromJs = 
 function(list) {
+	if (list == null) return;
 	for (i = 0; i < list.length; i++) {
 		var obj = list[i];
 		var setting = this._settings[this._nameToId[obj.name]];
@@ -145,9 +146,9 @@ function(callback, result) {
 		this._settings[ZmSetting.TOKEN_LIFETIME].setValue(obj.lifetime);
 	if (obj.used)
 		this._settings[ZmSetting.QUOTA_USED].setValue(obj.used);
-	if (obj.prefs)
+	if (obj.prefs && obj.prefs.pref)
 		this.createFromJs(obj.prefs.pref);
-	if (obj.attrs)
+	if (obj.attrs && obj.attrs.attr)
 		this.createFromJs(obj.attrs.attr);
 
 	// handle settings whose values may depend on other settings
