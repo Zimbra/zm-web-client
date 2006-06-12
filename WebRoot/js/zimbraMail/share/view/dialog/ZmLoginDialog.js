@@ -29,6 +29,7 @@ function ZmLoginDialog(parent, appCtxt, className) {
 	DwtDialog.call(this, parent, className, ZmMsg.login, DwtDialog.NO_BUTTONS);
 
 	var params = ZLoginFactory.copyDefaultParams(ZmMsg);
+	params.showPanelBorder = false;
 	params.showForm = true;
 	params.showUserField = true;
 	params.showPasswordField = true;

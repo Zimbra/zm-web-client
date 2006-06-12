@@ -45,3 +45,12 @@ ZmSplashScreen.prototype.getDefaultSubstitutions = function (){
 	}
 	return ZmSplashScreen._defaultSubstitutions;
 };
+
+ZmSplashScreen.prototype.getHtml = 
+function() {
+	var params = ZLoginFactory.copyDefaultParams(ZmMsg);
+	params.showForm = false;
+	params.showLicenseMsg = true;
+	params.showLoading = true;
+	return ZLoginFactory.getLoginDialogHTML(params);
+}
