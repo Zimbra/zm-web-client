@@ -39,7 +39,7 @@
 function ZmMsgController(appCtxt, container, mailApp) {
 
 	ZmMailListController.call(this, appCtxt, container, mailApp);
-}
+};
 
 ZmMsgController.prototype = new ZmMailListController;
 ZmMsgController.prototype.constructor = ZmMsgController;
@@ -49,7 +49,7 @@ ZmMsgController.prototype.constructor = ZmMsgController;
 ZmMsgController.prototype.toString = 
 function() {
 	return "ZmMsgController";
-}
+};
 
 /**
 * Displays a message in the single-pane view.
@@ -69,12 +69,12 @@ function(msg, mode) {
 	} else {
 		this._showMsg();	
 	}
-}
+};
 
 ZmMsgController.prototype._handleResponseShow = 
 function(result) {
 	this._showMsg();
-}
+};
 
 ZmMsgController.prototype._showMsg = 
 function() {
@@ -84,7 +84,28 @@ function() {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements, null, this.isChildWindow);
-}
+};
+
+ZmMsgController.prototype.getKeyMapName =
+function() {
+	return "ZmMsgController";
+};
+
+ZmMsgController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println(AjxDebug.DBG3, "ZmMsgController.handleKeyAction");
+	
+	switch (actionCode) {
+		case ZmKeyMap.CANCEL:
+			this._backListener();
+			break;
+			
+		default:
+			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
+			break;
+	}
+	return true;
+};
 
 // Private methods (mostly overrides of ZmListController protected methods)
 
@@ -101,7 +122,7 @@ function() {
 		list.push(ZmOperation.SEP);
 		return list;
 	}
-}
+};
 
 ZmMsgController.prototype._initializeToolBar = 
 function(view, arrowStyle) {
@@ -116,17 +137,17 @@ function(view, arrowStyle) {
 			if (buttons[i] > 0 && this._listeners[buttons[i]])
 				this._toolbar[view].addSelectionListener(buttons[i], this._listeners[buttons[i]]);
 	}
-}
+};
 
 ZmMsgController.prototype._getActionMenuOps =
 function() {
 	return null;
-}
+};
 
 ZmMsgController.prototype._getViewType = 
 function() {
 	return ZmController.MSG_VIEW;
-}
+};
 
 ZmMsgController.prototype._defaultView = 
 function() {
@@ -141,7 +162,7 @@ function(view) {
 		this._listView[view].addInviteReplyListener(this._inviteReplyListener);
 		this._listView[view].addShareListener(this._shareListener);
 	}
-}
+};
 
 ZmMsgController.prototype.getReferenceView = 
 function () {
@@ -151,22 +172,22 @@ function () {
 ZmMsgController.prototype._getSearchFolderId = 
 function() {
 	return this._msg.list ? this._msg.list.search.folderId : null;
-}
+};
 
 ZmMsgController.prototype._getTagMenuMsg = 
 function() {
 	return ZmMsg.tagMessage;
-}
+};
 
 ZmMsgController.prototype._getMoveDialogTitle = 
 function() {
 	return ZmMsg.moveMessage;
-}
+};
 
 ZmMsgController.prototype._setViewContents =
 function(view) {
 	this._listView[view].set(this._msg);
-}
+};
 
 ZmMsgController.prototype._resetNavToolBarButtons = 
 function(view) {
@@ -182,7 +203,7 @@ function(view) {
 		this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.message);
 		this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.message);
 	}
-}
+};
 
 ZmMsgController.prototype._paginate = 
 function(view, bPageForward) {
@@ -195,7 +216,7 @@ function(view, bPageForward) {
 		controller.pageItemSilently(this._msg, bPageForward);
 		this._resetNavToolBarButtons(view);
 	}
-}
+};
 
 ZmMsgController.prototype._processPrePopView = 
 function(view) {
@@ -205,7 +226,7 @@ function(view) {
 ZmMsgController.prototype._popdownActionListener = 
 function(ev) {
 	// dont do anything since msg view has no action menus
-}
+};
 
 // Actions
 
@@ -215,7 +236,7 @@ function(items, hardDelete, attrs) {
 	ZmMailListController.prototype._doDelete.call(this, items, hardDelete, attrs);
 	// XXX: async
 	this._app.popView();
-}
+};
 
 // Override so we can pop view
 ZmMsgController.prototype._doMove = 
@@ -223,7 +244,7 @@ function(items, folder, attrs) {
 	ZmMailListController.prototype._doMove.call(this, items, folder, attrs);
 	// XXX: async
 	this._app.popView();
-}
+};
 
 // Override so we can pop view
 ZmMsgController.prototype._doSpam = 
@@ -231,7 +252,7 @@ function(items, markAsSpam, folder) {
 	ZmMailListController.prototype._doSpam.call(this, items, markAsSpam, folder);
 	// XXX: async
 	this._app.popView();
-}
+};
 
 // Miscellaneous
 
@@ -239,7 +260,7 @@ function(items, markAsSpam, folder) {
 ZmMsgController.prototype._getMsg =
 function() {
 	return this._msg;
-}
+};
 
 ZmMsgController.prototype.setMsg =
 function (msg) {
@@ -251,4 +272,4 @@ ZmMsgController.prototype._checkReplenish =
 function(params) {
 	// XXX: remove this when replenishment is fixed for msg controller!
 	DBG.println("SORRY. NO REPLENISHMENT FOR YOU.");
-}
+};

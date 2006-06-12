@@ -304,8 +304,8 @@ function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmConvController.handleKeyAction");
 	
 	switch (actionCode) {
-		case ZmKeyMap.CANCEL: //Cancel or close
-			this._app.popView();
+		case ZmKeyMap.CANCEL:
+			this._backListener();
 			break;
 			
 		case ZmKeyMap.NEXT_CONV:

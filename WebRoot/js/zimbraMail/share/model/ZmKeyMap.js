@@ -40,7 +40,8 @@ function ZmKeyMap() {
 
 	this._map["ZmGlobal"] = {
 		
-			"Ctrl+Q":				ZmKeyMap.ASSISTANT,
+			"`":					ZmKeyMap.ASSISTANT,
+			"Shift+`":				ZmKeyMap.ASSISTANT,
 			
 //			"Alt+Shift+Esc":		ZmKeyMap.LOGOFF,
 
@@ -66,6 +67,7 @@ function ZmKeyMap() {
 			"G,O":					ZmKeyMap.GOTO_OPTIONS,
 
 			"P":					ZmKeyMap.PRINT,
+			"P,A":					ZmKeyMap.PRINT_ALL,
 			"S":					ZmKeyMap.SAVE,
 
 			"Del":					ZmKeyMap.DEL,
@@ -106,6 +108,9 @@ function ZmKeyMap() {
 			
 			"Shift+1":				ZmKeyMap.SPAM,
 
+			".,I":					ZmKeyMap.MOVE_TO_INBOX,
+			".,T":					ZmKeyMap.MOVE_TO_TRASH,
+			".,J":					ZmKeyMap.MOVE_TO_JUNK,
 			"Shift+.,I":			ZmKeyMap.MOVE_TO_INBOX,
 			"Shift+.,T":			ZmKeyMap.MOVE_TO_TRASH,
 			"Shift+.,J":			ZmKeyMap.MOVE_TO_JUNK
@@ -117,6 +122,18 @@ function ZmKeyMap() {
 
 			"Shift+ArrowRight":		ZmKeyMap.NEXT_CONV,
 			"Shift+ArrowLeft":		ZmKeyMap.PREV_CONV
+	};
+	
+	this._map["ZmMsgController"] = {
+
+			"INHERIT": "ZmMailListController",
+	};
+		
+	this._map["ZmContactListController"] = {
+
+			"INHERIT": "ZmGlobal",
+			
+			"E":					ZmKeyMap.EDIT
 	};
 	
 	this._map["ZmMixedController"] = {
@@ -138,6 +155,7 @@ ZmKeyMap.DBG_2			= i++;
 ZmKeyMap.DBG_3			= i++;
 ZmKeyMap.DBG_TIMING		= i++;
 ZmKeyMap.DEL			= i++;
+ZmKeyMap.EDIT			= i++;
 ZmKeyMap.FLAG			= i++;
 ZmKeyMap.FORWARD		= i++;
 ZmKeyMap.FORWARD_ATT	= i++;
@@ -170,6 +188,7 @@ ZmKeyMap.NEXT_PAGE		= i++;
 ZmKeyMap.PREV_CONV		= i++;
 ZmKeyMap.PREV_PAGE		= i++;
 ZmKeyMap.PRINT			= i++;
+ZmKeyMap.PRINT_ALL		= i++;
 ZmKeyMap.REPLY			= i++;
 ZmKeyMap.REPLY_ALL		= i++;
 ZmKeyMap.SAVE			= i++;

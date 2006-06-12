@@ -42,7 +42,7 @@ function ZmContactListController(appCtxt, container, contactsApp) {
 
 	ZmListController.call(this, appCtxt, container, contactsApp);
 
-	this._viewFactory = new Object();
+	this._viewFactory = {};
 	this._viewFactory[ZmController.CONTACT_CARDS_VIEW] = ZmContactCardsView;
 	this._viewFactory[ZmController.CONTACT_SIMPLE_VIEW] = ZmContactSplitView;
 	
@@ -53,17 +53,17 @@ function ZmContactListController(appCtxt, container, contactsApp) {
 	this._listeners[ZmOperation.PRINT_MENU] = new AjxListener(this, this._printContactListener);
 
 	this._appCtxt.getSettings().getSetting(ZmSetting.CONTACTS_PER_PAGE).addChangeListener(new AjxListener(this, this._settingsChangeListener));
-	this._parentView = new Object();
+	this._parentView = {};
 };
 
 ZmContactListController.prototype = new ZmListController;
 ZmContactListController.prototype.constructor = ZmContactListController;
 
-ZmContactListController.ICON = new Object();
+ZmContactListController.ICON = {};
 ZmContactListController.ICON[ZmController.CONTACT_SIMPLE_VIEW]		= "ListView";
 ZmContactListController.ICON[ZmController.CONTACT_CARDS_VIEW]		= "CardsView";
 
-ZmContactListController.MSG_KEY = new Object();
+ZmContactListController.MSG_KEY = {};
 ZmContactListController.MSG_KEY[ZmController.CONTACT_SIMPLE_VIEW]	= "contactList";
 ZmContactListController.MSG_KEY[ZmController.CONTACT_CARDS_VIEW]	= "detailedCards";
 
@@ -135,7 +135,7 @@ function(view, force, initialized) {
 		this._setup(view);
 		DBG.timePt("done setting up view");
 
-		var elements = new Object();
+		var elements = {};
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
 
@@ -192,6 +192,31 @@ function(letter) {
 		var sc = this._appCtxt.getSearchController();
 		sc.search(params);
 	}
+};
+
+ZmContactListController.prototype.getKeyMapName =
+function() {
+	return "ZmContactListController";
+};
+
+ZmContactListController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println(AjxDebug.DBG3, "ZmContactListController.handleKeyAction");
+	
+	switch (actionCode) {
+		case ZmKeyMap.EDIT:
+			this._editListener();
+			break;
+			
+		case ZmKeyMap.PRINT:
+			this._printContactListener();
+			break;
+
+		default:
+			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
+			break;
+	}
+	return true;
 };
 
 

@@ -201,6 +201,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.PRINT:
+		case ZmKeyMap.PRINT_ALL:
 			this._printListener();
 			break;
 
