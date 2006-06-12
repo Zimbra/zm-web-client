@@ -36,7 +36,7 @@ Contributor(s):
 
 <!--                                                                        -->
 <!-- THESE ARE THE MINIMALLY REQUIRED FILES NEEDED TO COMPOSE IN NEW WINDOW -->
-<!-- DONT ADD ANY NEW FILES HERE UNLESS YOU KNOW WHAT YOU'RE DOING          -->
+<!-- DON'T ADD ANY NEW FILES HERE UNLESS YOU KNOW WHAT YOU'RE DOING         -->
 <!--                                                                        -->
 
 <!-- BEGIN SCRIPT BLOCK -->
@@ -48,6 +48,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmItem.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmOrganizer.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmFolder.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmKeyMap.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmSearch.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmSearchResult.js<%= ext %>?v=<%= vers %>"></script>
 
