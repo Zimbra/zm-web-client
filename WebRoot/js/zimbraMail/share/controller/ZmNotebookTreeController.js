@@ -141,6 +141,13 @@ function(notebook) {
 	var notebookApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var notebookController = notebookApp.getNotebookController();
 	notebookController.show(notebook.id, true);
+
+	if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
+		var searchController = this._appCtxt.getSearchController();
+		var search = ["in:\"", notebook.getSearchPath(), '"' ].join("");
+		searchController.setDefaultSearchType(ZmItem.PAGE, true);
+		searchController.setSearchField(search);
+	}
 };
 
 // Handles a drop event
@@ -220,6 +227,12 @@ function(ev) {
 	var cache = notebookApp.getNotebookCache();
 
 	cache.fillCache(notebook.id);
+
+	var controller = notebookApp.getNotebookController();
+	var page = controller.getPage();
+	if (page && page.folderId == notebook.id) {
+		controller.gotoPage(page);
+	}
 };
 
 ZmNotebookTreeController.prototype._editNotebookListener = function(ev) {
