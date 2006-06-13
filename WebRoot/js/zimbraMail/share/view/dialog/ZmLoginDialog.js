@@ -113,7 +113,8 @@ function(bReloginMode, app, obj) {
 	} else {
 		ZLoginFactory.hideLogOff();
 	}
-	ZLoginFactory.get(ZLoginFactory.USER_ID).disabled = true;
+	var userName = ZLoginFactory.get(ZLoginFactory.USER_ID);
+	userName.disabled = !!userName.value.length;
 }
 
 ZmLoginDialog.prototype._loginSelListener =
