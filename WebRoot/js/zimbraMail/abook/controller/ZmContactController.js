@@ -26,7 +26,7 @@
 function ZmContactController(appCtxt, container, abApp) {
 
 	ZmListController.call(this, appCtxt, container, abApp);
-	
+
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
 };
@@ -41,18 +41,22 @@ function() {
 
 ZmContactController.prototype.show =
 function(contact, isDirty) {
-	this._currentView = this._getViewType();
 	this._contact = contact;
-	if (isDirty) this._contactDirty = true;
+	this._currentView = this._getViewType();
+	this._contactDirty = isDirty === true;
 	this._list = contact.list;
+
 	// re-enable input fields if list view exists
 	if (this._listView[this._currentView])
 		this._listView[this._currentView].enableInputs(true);
+
 	this._setup(this._currentView);
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
+
 	var elements = new Object();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+
 	this._setView(this._currentView, elements, null, null, null, true);
 };
 
@@ -78,13 +82,18 @@ function() {
 
 ZmContactController.prototype._getViewType = 
 function() {
-	return ZmController.CONTACT_VIEW;
+	return this._contact.subType == ZmContact.SUBTYPE_CONTACT
+		? ZmController.CONTACT_VIEW
+		: ZmController.CONTACT_GROUP_VIEW;
 };
 
 ZmContactController.prototype._initializeListView = 
 function(view) {
-	if (!this._listView[view])
-		this._listView[view] = new ZmContactView(this._container, this._appCtxt, this);
+	if (!this._listView[view]) {
+		this._listView[view] = view == ZmController.CONTACT_VIEW
+			? new ZmContactView(this._container, this._appCtxt, this)
+			: new ZmContactGroupView(this._container, this._appCtxt, this);
+	}
 };
 
 ZmContactController.prototype._initializeToolBar = 
@@ -137,10 +146,17 @@ function(parent, num) {
 
 ZmContactController.prototype._saveListener =
 function(ev, bIsPopCallback) {
+	var view = this._listView[this._currentView];
+	if (!view.isValid()) {
+		// TODO - get proper error message
+		this._msgDialog.setMessage("Cannot save. You are missing some required fields or have not entered valid values.", DwtMessageDialog.CRITICAL_STYLE);
+		this._msgDialog.popup();
+		return;
+	}
+
 	try {
-		var view = this._currentView;
-		var mods = this._listView[view].getModifiedAttrs();
-		this._listView[view].enableInputs(false);
+		var mods = view.getModifiedAttrs();
+		view.enableInputs(false);
 
 		if (!bIsPopCallback)
 			this._app.popView(true);
@@ -149,7 +165,7 @@ function(ev, bIsPopCallback) {
 			// Make sure at least one form field has a value (otherwise, delete the contact). The call
 			// to getModifiedAttrs() above populates _attrs with form field values.
 			var doDelete = true;
-			var formAttrs = this._listView[view]._attr;
+			var formAttrs = view._attr;
 			for (var i in formAttrs) {
 				if (i == ZmContact.F_fileAs || i == ZmContact.X_fullName) continue;
 				if (formAttrs[i]) {
@@ -158,7 +174,7 @@ function(ev, bIsPopCallback) {
 				}
 			}
 
-			var contact = this._listView[view].getContact();
+			var contact = view.getContact();
 
 			if (doDelete) {
 				this._doDelete([contact], null, null, true);
@@ -174,9 +190,15 @@ function(ev, bIsPopCallback) {
 			// bug fix #5829 - differentiate betw. an empty contact and saving 
 			//                 an existing contact w/o editing
 			if (this._contact.isEmpty()) {
-				this._appCtxt.setStatusMsg(ZmMsg.emptyContact, ZmStatusView.LEVEL_WARNING);
+				var msg = this._contact.subType == ZmContact.SUBTYPE_GROUP
+					? ZmMsg.emptyGroup
+					: ZmMsg.emptyContact;
+				this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 			} else {
-				this._appCtxt.setStatusMsg(ZmMsg.contactSaved, ZmStatusView.LEVEL_INFO);
+				var msg = this._contact.subType == ZmContact.SUBTYPE_GROUP
+					? ZmMsg.groupSaved
+					: ZmMsg.contactSaved;
+				this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);
 			}
 		}
 	} catch (ex) {

@@ -714,19 +714,15 @@ td.DDSepInvisible div {
 }
 
 .ZmContactInfoView .contactHeaderRow,
-.ZmContactView .contactHeaderRow {
+.ZmContactView .contactHeaderRow,
+.ZmContactGroupView .contactHeaderRow {
 	height: 40px;
-	height: 40px;
-	/*
-	   this style sets the bgcolor which over-writes user-defined one :(
-	   but we need it eventually for the bottom border!
-	*/
-	/*@WidgetHeaderContainer@*/
 	@WidgetHeaderSize-big@
 }
 
 .ZmContactInfoView .contactHeader,
-.ZmContactView .contactHeader {
+.ZmContactView .contactHeader,
+.ZmContactGroupView .contactHeader {
 	@FontSize-biggest@
 	@Text@
 	padding-left:@BoxPaddingSize@;
@@ -751,7 +747,8 @@ td.DDSepInvisible div {
 }
 
 /* ??? -> ZmFieldLabelRight */
-.ZmContactInfoView .contactLabel {
+.ZmContactInfoView .contactLabel,
+.ZmContactGroupView .editLabel {
 	@Label@
 	width: 1%;
 	text-align: right;
@@ -765,7 +762,8 @@ td.DDSepInvisible div {
 
 /* Container for the edit screen */
 /* ??? RENAME -> ZmContactEditView */
-.ZmContactView {
+.ZmContactView,
+.ZmContactGroupView {
 	@PageBg@
 }
 

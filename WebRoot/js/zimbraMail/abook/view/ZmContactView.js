@@ -24,6 +24,7 @@
  */
 
 function ZmContactView(parent, appCtxt, controller, isReadOnly) {
+	if (arguments.length == 0) return;
 
 	DwtComposite.call(this, parent, "ZmContactView", DwtControl.ABSOLUTE_STYLE);
 
@@ -224,6 +225,12 @@ function() {
 	return this._isDirty;
 };
 
+ZmContactView.prototype.isValid =
+function() {
+	// TODO - validate some of the necessary contact fields before allowing save
+	return true;
+};
+
 ZmContactView.prototype.setSize =
 function(width, height) {
 	DwtComposite.prototype.setSize.call(this, width, height);
@@ -420,8 +427,7 @@ function(field) {
 		var tagName = e.tagName.toLowerCase();
 		if (tagName == "input" || tagName == "textarea") {
 			Dwt.setHandler(e, DwtEvent.ONKEYUP, ZmContactView._onKeyUp);
-			// TODO circular reference
-			e._view = this;
+			Dwt.associateElementWithObject(e, this);
 			e._field = field;
 		}
 	}
@@ -457,8 +463,19 @@ function() {
 ZmContactView.prototype._setTitle =
 function(title) {
 	var div =  document.getElementById(this._fieldIds[ZmContactView.F_contactTitle]);
-	var fileAs = title != null ? title : this._contact.getFileAs();
-	div.innerHTML = fileAs ? fileAs : this._contact.id ? "&nbsp;" : ZmMsg.newContact;
+	var fileAs = title || this._contact.getFileAs();
+
+	if (!fileAs) {
+		if (this._contact.id) {
+			fileAs = "&nbsp;";
+		} else {
+			fileAs = this._contact.subType == ZmContact.SUBTYPE_GROUP
+				? ZmMsg.newGroup
+				: ZmMsg.newContact;
+		}
+	}
+
+	div.innerHTML = fileAs;
 };
 
 ZmContactView.prototype._setTags =
@@ -687,21 +704,15 @@ function() {
 		var folder = folders[i];
 		if (folder.id == ZmFolder.ID_ROOT ||
 			folder.id == ZmFolder.ID_AUTO_ADDED ||
-			folder.isInTrash())
+			folder.isInTrash() ||
+			folder.isReadOnly())
 		{
 			continue;
 		}
-		var id = folder.id;
 
-		// if this is a shared folder, check if we have write permissions
-		if (folder.link) {
-			var shares = folder.getShares();
-			var share = shares ? shares[0] : null;
-			if (share && !share.isWrite())
-				continue;
-			// for shared folders, use the zid to compare folder ID's
-			id = folder.zid;
-		}
+		// for shared folders, use the zid to compare folder ID's
+		var id = folder.link ? folder.zid : folder.id;
+
 		this._folderSelect.addOption(folder.name, id == match, id);
 	}
 };
@@ -756,14 +767,15 @@ function(ev) {
 
 	var e = DwtUiEvent.getTarget(ev);
 	if (e) {
-		e._view._isDirty = true;
+		var view = Dwt.getObjectFromElement(e);
+		view._isDirty = true;
 
 		if (e._field == ZmContact.F_firstName ||
 		  	e._field == ZmContact.F_lastName ||
 			e._field == ZmContact.F_company)
 		{
-			e._view._attr[e._field] = e.value;
-			e._view._setTitle(ZmContact.computeFileAs(e._view._attr));
+			view._attr[e._field] = e.value;
+			view._setTitle(ZmContact.computeFileAs(view._attr));
 		}
 	}
 	return true;

@@ -262,51 +262,36 @@ function(contact, isGal) {
 
 	// set contact header (file as)
 	var contactHdr = document.getElementById(this._contactHeaderId);
-	var hdrHtml = new Array();
-	var idx = 0;
-	hdrHtml[idx++] = "<table border=0 width=100% cellpadding=0 cellspacing=0><tr>";
-	hdrHtml[idx++] = "<td width=20><center>";
-	hdrHtml[idx++] = AjxImg.getImageHtml(contact.getIcon());
-	hdrHtml[idx++] = "</center></td><td class='contactHeader'>";
-	hdrHtml[idx++] = contact.getFileAs();
-	hdrHtml[idx++] = "</td><td align=right id='";
-	hdrHtml[idx++] = this._tagCellId;
-	hdrHtml[idx++] = "'>";
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hdrHtml[idx++] = this._getTagHtml(contact);
-	}
-	hdrHtml[idx++] = "</td></tr></table>";
-
-	contactHdr.innerHTML = hdrHtml.join("");
-
-	// set body
-	var contactBodyDiv = document.getElementById(this._contactBodyId);
-
-	var width = this._contactPart.getSize().x / 2;
-
 	var html = new Array();
-	idx = 0;
-
-	// set company name and folder this contact belongs to
-	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100%><tr>";
-	html[idx++] = "<td width=100% class='companyName'>";
-	html[idx++] = (contact.getCompanyField() || "&nbsp;");
-	html[idx++] = "</td>";
-	if (contact.addrbook) {
-		html[idx++] = "<td width=20>";
-		html[idx++] = AjxImg.getImageHtml(contact.addrbook.getIcon());
-		html[idx++] = "</td><td class='companyFolder'>";
-		html[idx++] = contact.addrbook.getName();
-		html[idx++] = "</td>";
-	} else if (isGal) {
-		html[idx++] = "<td width=20>";
-		html[idx++] = AjxImg.getImageHtml("GAL");
-		html[idx++] = "</td><td class='companyFolder'>";
-		html[idx++] = ZmMsg.GAL;
-		html[idx++] = "</td>";
+	var idx = 0;
+	html[idx++] = "<table border=0 width=100% cellpadding=0 cellspacing=0><tr>";
+	html[idx++] = "<td width=20><center>";
+	html[idx++] = AjxImg.getImageHtml(contact.getIcon());
+	html[idx++] = "</center></td><td class='contactHeader'>";
+	html[idx++] = contact.getFileAs();
+	html[idx++] = "</td><td align=right id='";
+	html[idx++] = this._tagCellId;
+	html[idx++] = "'>";
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		html[idx++] = this._getTagHtml(contact);
 	}
-	html[idx++] = "</tr></table>";
+	html[idx++] = "</td></tr></table>";
+	contactHdr.innerHTML = html.join("");
 
+	// finally set body depending on the kind of contact we have
+	var contactBodyDiv = document.getElementById(this._contactBodyId);
+	contactBodyDiv.innerHTML = contact.isGroup()
+		? this._getGroupHtml(contact, isGal)
+		: this._getContactHtml(contact, isGal);
+};
+
+ZmContactSplitView.prototype._getContactHtml =
+function(contact, isGal) {
+	var width = this._contactPart.getSize().x / 2;
+	var html = new Array();
+	var idx = 0;
+
+	idx = this._getWorkAndFolderHtml(contact, isGal, html, idx);
 
 	html[idx++] = "<table border=0 width=100% cellpadding=3 cellspacing=3>";
 
@@ -342,12 +327,12 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td colspan=4 valign=top class='sectionLabel'>";
 		html[idx++] = ZmMsg.work;
 		html[idx++] = "</td></tr>";
-	
+
 		// - column 1
 		html[idx++] = "<tr><td width=5>&nbsp;</td><td valign=top width='";
 		html[idx++] = width;
 		html[idx++] = "'>";
-		
+
 		if (workField || workURL) {
 			html[idx++] = "<div class='contactOutput'>";
 			if (workField) 	html[idx++] = (workField + "<br>");
@@ -355,7 +340,7 @@ function(contact, isGal) {
 			html[idx++] = "</div>";
 		}
 		html[idx++] = "</td>";
-	
+
 		// - column 2
 		html[idx++] = "<td valign=top><table border=0>";
 		if (workPhone)		idx = this._getObjectHtml(html, idx, ZmMsg.phone, workPhone, ZmObjectManager.PHONE);
@@ -368,7 +353,7 @@ function(contact, isGal) {
 		html[idx++] = "</td></tr>";
 		html[idx++] = "<tr><td><br></td></tr>";
 	}
-	
+
 	// add home fields
 	var homeField = AjxStringUtil.nl2br(contact.getHomeAddrField());
 	var homePhone = contact.getAttr(ZmContact.F_homePhone);
@@ -396,7 +381,7 @@ function(contact, isGal) {
 			html[idx++] = "</div>";
 		}
 		html[idx++] = "</td>";
-	
+
 		// - column 2
 		html[idx++] = "<td valign=top><table border=0>";
 		if (homePhone)		idx = this._getObjectHtml(html, idx, ZmMsg.phone, homePhone, ZmObjectManager.PHONE);
@@ -407,7 +392,7 @@ function(contact, isGal) {
 		html[idx++] = "</table></td></tr>";
 		html[idx++] = "<tr><td><br></td></tr>";
 	}
-	
+
 	// add other fields
 	var otherField = AjxStringUtil.nl2br(contact.getOtherAddrField());
 	var otherPhone = contact.getAttr(ZmContact.F_otherPhone);
@@ -424,7 +409,7 @@ function(contact, isGal) {
 		html[idx++] = "<tr><td width=5>&nbsp;</td><td valign=top width='";
 		html[idx++] = width;
 		html[idx++] = "'>";
-	
+
 		if (otherField || otherURL) {
 			html[idx++] = "<div class='contactOutput'>";
 			if (otherField) html[idx++] = otherField + "<br>";
@@ -432,7 +417,7 @@ function(contact, isGal) {
 			html[idx++] = "</div>";
 		}
 		html[idx++] = "</td>";
-	
+
 		// - column 2
 		html[idx++] = "<td valign=top><table border=0>";
 		if (otherPhone)		idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_otherPhone, otherPhone, ZmObjectManager.PHONE);
@@ -453,8 +438,55 @@ function(contact, isGal) {
 
 	html[idx++] = "</table>";
 	html[idx++] = "</div>";
-	
-	contactBodyDiv.innerHTML = html.join("");
+
+	return html.join("");
+};
+
+ZmContactSplitView.prototype._getGroupHtml =
+function(contact, isGal) {
+	var html = new Array();
+	var idx = this._getWorkAndFolderHtml(contact, isGal, html, 0);
+
+	var icon = isGal ? "GALContact" : (contact.addrbook.link ? "SharedContact" : "Contact");
+	var email = contact.getAttr(ZmContact.F_email);
+	var addrs = ZmEmailAddress.parseEmailString(email);
+
+	html[idx++] = "<table border=0 width=100% cellpadding=3 cellspacing=3>";
+	for (var i = 0; i < addrs.all.size(); i++) {
+		html[idx++] = "<tr><td width=16>";
+		html[idx++] = AjxImg.getImageHtml(icon, "width:20");
+		html[idx++] = "</td><td>"
+		html[idx++] = addrs.all.get(i).address;
+		html[idx++] = "</td></tr>";
+	}
+	html[idx++] = "</table>";
+
+	return html.join("");
+};
+
+ZmContactSplitView.prototype._getWorkAndFolderHtml =
+function(contact, isGal, html, idx) {
+	// set company name and folder this contact belongs to
+	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100%><tr>";
+	html[idx++] = "<td width=100% class='companyName'>";
+	html[idx++] = (contact.getCompanyField() || "&nbsp;");
+	html[idx++] = "</td>";
+	if (contact.addrbook) {
+		html[idx++] = "<td width=20>";
+		html[idx++] = AjxImg.getImageHtml(contact.addrbook.getIcon());
+		html[idx++] = "</td><td class='companyFolder'>";
+		html[idx++] = contact.addrbook.getName();
+		html[idx++] = "</td>";
+	} else if (isGal) {
+		html[idx++] = "<td width=20>";
+		html[idx++] = AjxImg.getImageHtml("GAL");
+		html[idx++] = "</td><td class='companyFolder'>";
+		html[idx++] = ZmMsg.GAL;
+		html[idx++] = "</td>";
+	}
+	html[idx++] = "</tr></table>";
+
+	return idx;
 };
 
 ZmContactSplitView.prototype._getTagHtml =
