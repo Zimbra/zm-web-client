@@ -202,7 +202,9 @@ function(actionCode) {
 
 		case ZmKeyMap.PRINT:
 		case ZmKeyMap.PRINT_ALL:
-			this._printListener();
+			if (this._appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+				this._printListener();
+			}
 			break;
 			
 		case DwtKeyMap.DBLCLICK:

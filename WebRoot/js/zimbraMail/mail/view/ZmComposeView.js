@@ -1339,8 +1339,8 @@ function() {
 
 // Address buttons invoke contact picker
 ZmComposeView.prototype._addressButtonListener =
-function(ev) {
-	var obj = DwtUiEvent.getDwtObjFromEvent(ev);
+function(ev, addrType) {
+	var obj = ev ? DwtUiEvent.getDwtObjFromEvent(ev) : null;
 	this.enableInputs(false);
 
 	if (!this._contactPicker) {
@@ -1353,7 +1353,7 @@ function(ev) {
 		this._contactPicker.registerCallback(DwtDialog.CANCEL_BUTTON, this._contactPickerCancelCallback, this);
 	}
 
-	var curType = obj.addrType;
+	var curType = obj ? obj.addrType : addrType;
 	var a = {};
 	var addrs = this._collectAddrs();
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {

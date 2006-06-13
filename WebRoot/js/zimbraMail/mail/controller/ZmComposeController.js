@@ -294,7 +294,9 @@ function(actionCode) {
 			break;
 			
 		case ZmKeyMap.SAVE: // Save to draft
-			this._saveDraft();
+			if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
+				this._saveDraft();
+			}
 			break;
 
 		case ZmKeyMap.SEND: // Send message
@@ -306,13 +308,24 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.SPELLCHECK:
+			this.toggleSpellCheckButton(true);
 			this._spellCheckListener();
 			break;
 		
 		case ZmKeyMap.HTML_FORMAT:
-			var mode = this._composeView.getComposeMode();
-			var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
-			this._setFormat(newMode);
+			if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+				var mode = this._composeView.getComposeMode();
+				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+				this._setFormat(newMode);
+			}
+			break;
+
+		case ZmKeyMap.ADDRESS_PICKER:
+			this._composeView._addressButtonListener(null, ZmEmailAddress.TO);
+			break;
+
+		case ZmKeyMap.NEW_WINDOW:
+			this._detachListener();
 			break;
 
 		default:

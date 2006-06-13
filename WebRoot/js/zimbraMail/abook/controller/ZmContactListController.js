@@ -209,7 +209,9 @@ function(actionCode) {
 			break;
 			
 		case ZmKeyMap.PRINT:
-			this._printContactListener();
+			if (this._appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+				this._printContactListener();
+			}
 			break;
 
 		default:

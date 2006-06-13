@@ -85,7 +85,9 @@ function ZmKeyMap() {
 			"Alt+S":				ZmKeyMap.SEND,
 			"Alt+D":				ZmKeyMap.SAVE,
 			"Alt+H":				ZmKeyMap.HTML_FORMAT,
-			"Alt+L":				ZmKeyMap.SPELLCHECK
+			"Alt+L":				ZmKeyMap.SPELLCHECK,
+			"Alt+W":				ZmKeyMap.NEW_WINDOW,
+			"Alt+T":				ZmKeyMap.ADDRESS_PICKER
 	};
 	
 	this._map["ZmMailListController"] = {
@@ -153,6 +155,7 @@ ZmKeyMap.prototype.constructor = ZmKeyMap;
 // Action codes
 var i = 1;
 
+ZmKeyMap.ADDRESS_PICKER	= i++;
 ZmKeyMap.ASSISTANT		= i++;
 ZmKeyMap.ATTACHMENT		= i++;
 ZmKeyMap.CANCEL			= i++;
@@ -191,6 +194,7 @@ ZmKeyMap.NEW_CONTACT	= i++;
 ZmKeyMap.NEW_FOLDER		= i++;
 ZmKeyMap.NEW_MESSAGE	= i++;
 ZmKeyMap.NEW_TAG		= i++;
+ZmKeyMap.NEW_WINDOW		= i++;
 ZmKeyMap.NEXT_CONV		= i++;
 ZmKeyMap.NEXT_PAGE		= i++;
 ZmKeyMap.PREV_CONV		= i++;
