@@ -193,20 +193,18 @@ function(contact) {
 	if (!attr) return;
 
 	var val = parseInt(attr.fileAs);
-
 	var fa = [];
 	var idx = 0;
 
 	switch (val) {
 		case ZmContact.FA_LAST_C_FIRST: /* Last, First */
 		default:
-			if (contact) {
-				// if GAL contact, use full name instead (bug fix #4850,4009)
-				if (contact.isGal)
-					return attr.fullName;
-				else if (contact.isGroup())
-					return attr.groupName;
-			}
+			// if GAL contact, use full name instead (bug fix #4850,4009)
+			if (contact.isGal)
+				return attr.fullName;
+			else if (attr.groupName != null)
+				return attr.groupName;
+
 			if (attr.lastName) fa[idx++] = attr.lastName;
 			if (attr.lastName && attr.firstName) fa[idx++] = ", ";
 			if (attr.firstName) fa[idx++] = attr.firstName;
@@ -355,7 +353,7 @@ function() {
 
 ZmContact.prototype.isGroup =
 function() {
-	return this.subType == ZmContact.SUBTYPE_GROUP;
+	return this.subType == ZmContact.SUBTYPE_GROUP || (this.attr[ZmContact.F_groupName] != null);
 };
 
 ZmContact.prototype.getDefaultDndAction =
@@ -956,10 +954,6 @@ function(node) {
 		if (node.email) this.attr[ZmContact.F_email] = node.email;
 		if (node.email2) this.attr[ZmContact.F_email2] = node.email2;
 		if (node.email3) this.attr[ZmContact.F_email3] = node.email3;
-
-		// if we get back a "groupName" field, then we're dealing w/ a group
-		if (this.attr[ZmContact.F_groupName])
-			this.subType = ZmContact.SUBTYPE_GROUP;
 
 		// check if the folderId is found in our address book (otherwise, we
 		// assume this contact to be a shared contact)

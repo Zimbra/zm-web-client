@@ -59,17 +59,50 @@ function(contact, isDirty) {
 
 ZmContactGroupView.prototype.getModifiedAttrs =
 function() {
-	this._attr[ZmContact.F_folderId] = this._folderSelect.getValue();
+	var mods = {};
 
-	var groupName = document.getElementById(this._groupNameId);
-	this._attr[ZmContact.F_groupName] = AjxStringUtil.trim(groupName.value);
+	var folderId = this._folderSelect.getValue();
 
+	var groupInputEl = document.getElementById(this._groupNameId);
+	var groupName = AjxStringUtil.trim(groupInputEl.value);
+
+	// we assume this._addrs is populated via isValid()
 	var emails = [];
 	for (var i = 0; i < this._addrs.good.size(); i++)
 		emails.push(this._addrs.good.get(i).address);
-	this._attr[ZmContact.F_email] = emails.join("; ");
+	var emailStr = emails.join("; ");
 
-	return this._attr;
+	// if this is a new contact (id == null),
+	// or we're converting a GAL contact to a "real" one
+	if (this._contact.id == null || this._contact.isGal) {
+		this._attr[ZmContact.F_folderId] = folderId;
+		this._attr[ZmContact.F_groupName] = groupName;
+		// set last name so server can compute fileAs
+		this._attr[ZmContact.F_lastName] = groupName;
+		this._attr[ZmContact.F_email] = emailStr;
+
+		mods = this._attr;
+	} else {
+		// set group/last name if changed
+		if (this._attr[ZmContact.F_groupName] != groupName) {
+			mods[ZmContact.F_groupName] = groupName;
+			// set last name so server can compute fileAs
+			mods[ZmContact.F_lastName] = groupName;
+		}
+
+		// set email if changed
+		if (this._attr[ZmContact.F_email] != emailStr)
+			mods[ZmContact.F_email] = emailStr;
+
+		// set folder Id if changed
+		var origFolderId = this._contact.isShared()
+			? this._contact.folderId.split(":")[0]
+			: this._contact.folderId;
+		if (origFolderId != folderId)
+			mods[ZmContact.F_folderId] = folderId;
+	}
+
+	return mods;
 };
 
 ZmContactGroupView.prototype.enableInputs =
@@ -103,26 +136,23 @@ function() {
 
 ZmContactGroupView.prototype._createHtml =
 function() {
-	this._fieldIds = new Object();
+	this._fieldIds = {};
 
-	var titleId = Dwt.getNextId();
-	this._fieldIds[ZmContactView.F_contactTitle] = titleId;
+	var titleId = this._fieldIds[ZmContactView.F_contactTitle] = Dwt.getNextId();
+	var tagsId = this._fieldIds[ZmContactView.F_contactTags] = Dwt.getNextId();
 
-	var tagsId = Dwt.getNextId();
-	this._fieldIds[ZmContactView.F_contactTags] = tagsId;
-
-	this._contactHeaderId = Dwt.getNextId();
-	this._contactHeaderRowId = Dwt.getNextId();
-	this._groupNameId = Dwt.getNextId();
-	this._membersTxtId = Dwt.getNextId();
-	var folderCellId = Dwt.getNextId();
-	var membersCellId = Dwt.getNextId();
+	this._contactHeaderId		= Dwt.getNextId();
+	this._contactHeaderRowId	= Dwt.getNextId();
+	this._groupNameId			= Dwt.getNextId();
+	this._membersTxtId			= Dwt.getNextId();
+	var folderCellId			= Dwt.getNextId();
+	var membersCellId			= Dwt.getNextId();
 
 	var html = [];
 	var idx = 0;
 
 	// Title bar
-	html[idx++] = "<table border=0 width=99% cellspacing=0 cellpadding=0 id='";
+	html[idx++] = "<table border=0 width=100% cellspacing=0 cellpadding=0 id='";
 	html[idx++] = this._contactHeaderId;
 	html[idx++] = "'><tr class='contactHeaderRow' id='";
 	html[idx++] = this._contactHeaderRowId;
@@ -133,9 +163,9 @@ function() {
 	html[idx++] = "' class='contactHeader'></div></td><td align='right' id='";
 	html[idx++] = tagsId;
 	html[idx++] = "'></td></tr></table><p>";
-	html[idx++] = "<table border=0 width=100%><tr><td width=100 valign=top class='editLabel'>";
+	html[idx++] = "<table border=0 width=100%><tr><td width=100 class='editLabel'>";
 	html[idx++] = ZmMsg.groupName;
-	html[idx++] = "</td><td valign=top><input type='text' autocomplete='off' size=35 id='";
+	html[idx++] = "</td><td><input type='text' autocomplete='off' size=35 id='";
 	html[idx++] = this._groupNameId;
 	html[idx++] = "'></td><td align=right valign=top id='";
 	html[idx++] = folderCellId;
@@ -172,16 +202,16 @@ function() {
 	this._setTags();
 	this._setFolder();
 
-	// TODO - populate these fields
-//	if (this._contact.id) {
-		// set group name
-		var groupName = document.getElementById(this._groupNameId);
+	// reset the two input fields
+	var groupName = document.getElementById(this._groupNameId);
+	var members = document.getElementById(this._membersTxtId);
+	if (this._contact.id) {
+		groupName.value = this._contact.getFileAs();
+		members.value = this._contact.getEmail();
+	} else {
 		groupName.value = "";
-
-		// set group members
-		var members = document.getElementById(this._membersTxtId);
 		members.value = "";
-//	}
+	}
 };
 
 ZmContactGroupView.prototype._sizeChildren =

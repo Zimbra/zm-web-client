@@ -82,9 +82,9 @@ function() {
 
 ZmContactController.prototype._getViewType = 
 function() {
-	return this._contact.subType == ZmContact.SUBTYPE_CONTACT
-		? ZmController.CONTACT_VIEW
-		: ZmController.CONTACT_GROUP_VIEW;
+	return this._contact.isGroup()
+		? ZmController.CONTACT_GROUP_VIEW
+		: ZmController.CONTACT_VIEW;
 };
 
 ZmContactController.prototype._initializeListView = 
