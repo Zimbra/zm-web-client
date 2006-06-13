@@ -152,16 +152,12 @@ function(msg) {
 		}
 	}
 	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) && msg.share && msg.share.action == ZmShare.NEW && msg.folderId != ZmFolder.ID_TRASH) {
-		// Note: Even if the share message is cc'd to someone else, the
-		//		 accept/decline buttons are only seen by the grantee.
-		if (msg.share.grantee.id == this._appCtxt.get(ZmSetting.USERID)) {
-			var topToolbar = this._getShareToolbar();
-			var tEl = topToolbar.getHtmlElement();
-			if (tEl && tEl.parentNode) {
-				tEl.parentNode.removeChild(tEl);
-			}
-			contentDiv.appendChild(tEl);
+		var topToolbar = this._getShareToolbar();
+		var tEl = topToolbar.getHtmlElement();
+		if (tEl && tEl.parentNode) {
+			tEl.parentNode.removeChild(tEl);
 		}
+		contentDiv.appendChild(tEl);
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseSet, [msg, oldMsg]);
 	this._renderMessage(msg, contentDiv, respCallback);
