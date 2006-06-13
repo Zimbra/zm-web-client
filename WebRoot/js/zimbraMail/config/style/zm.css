@@ -376,7 +376,7 @@ td.DDSepInvisible div {
 	@FontSize-bigger@
 	@BoxPadding@
 	@NoWrap@
-	text-overflow: ellipsis;
+	@OverflowEllipsis@
 }
 
 .ZmConvView .Tags {
@@ -571,24 +571,27 @@ td.DDSepInvisible div {
 }
 
 
+
 /* ??? USE? */
-.ZmHEDialog td.Label { text-align: right; 
-  width: 12em; -moz-user-select: none; user-select: none; 
-  padding-right: 3px;
+.ZmHEDialog td.Label { 
+	@NoSelect@
+	text-align: right; 
+	width: 12em; 
+	padding-right: 3px;
 }
-.ZmHEDialog td.SmallLabel { text-align: right; 
-  -moz-user-select: none; user-select: none; 
-  padding-right: 3px;
+.ZmHEDialog td.SmallLabel { 
+	@NoSelect@
+	text-align: right; 
+	padding-right: 3px;
 }
 .ZmHEDialog td.col2 { width: 7em; }
-.ZmHEDialog label { -moz-user-select: none; user-select: none; }
+.ZmHEDialog label { @NoSelect@ }
 .ZmHEDialog .ShowPickedColor {
-  border: 1px dashed #888;
-  width: 1.2em;
-  line-height: 1.2em;
-  -moz-user-select: none;
-  user-select: none;
-  cursor: default;
+	@NoSelect@
+	border: 1px dashed #888;
+	width: 1.2em;
+	line-height: 1.2em;
+	cursor: default;
 }
 .ZmHEDialog td.VSep-L { padding-left: 3px; font-size: 1px; border-right: 1px solid #aaa; }
 .ZmHEDialog td.VSep-R { padding-right: 3px; font-size: 1px; }
@@ -607,7 +610,6 @@ td.DDSepInvisible div {
 	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);
 	background-color: white;
 }
-*/
 
 
 
@@ -727,7 +729,7 @@ td.DDSepInvisible div {
 	@Text@
 	padding-left:@BoxPaddingSize@;
 	@NoWrap@
-	text-overflow: ellipsis;
+	@OverflowEllipsis@
 }
 
 .ZmContactInfoView .companyName {
@@ -816,7 +818,7 @@ td.DDSepInvisible div {
 	@AppBg@
 	@ContactsCardSize@
 	overflow: hidden;
-	text-overflow: ellipsis;
+	@OverflowEllipsis@
 }
 
 .ZmContactCard {
@@ -852,7 +854,7 @@ td.DDSepInvisible div {
 	@FontSize-bigger@
 	@Text@
 	@NoWrap@
-	text-overflow: ellipsis;
+	@OverflowEllipsis@
 	padding: 3 0 3 2;
 }
 
@@ -877,7 +879,7 @@ td.DDSepInvisible div {
 /* Display of a field in the contact card */
 .ZmContactField {
 	@Text@
-	text-overflow: ellipsis;
+	@OverflowElipsis@
 	@NoWrap@
 }
 
@@ -965,7 +967,7 @@ td.DDSepInvisible div {
 	position: absolute;
 	left: 0;
 	overflow: hidden;
-	vertical-align:center;
+	vertical-align:middle;
 	text-align:center;
 }
 
@@ -979,7 +981,7 @@ td.DDSepInvisible div {
 	@NoWrap@
 	padding-top:@TextPaddingSize@;
 	text-align:center;
-	vertical-align:center;
+	vertical-align:middle;
 }
 
 .calendar_heading_day-selected {
@@ -1053,18 +1055,27 @@ td.DDSepInvisible div {
 }
 
 /* actual time label -- a div so it can be moved up */
-/* ??? WHY IS THIS A DIV? */
 .calendar_grid_body_time_text {
 	@Label@
 	@TextPadding@
 }
 
 
-/* set the width of each day column in the month view *//
-.month_calendar_c0,.month_calendar_c1,.month_calendar_c2,.month_calendar_c3,
-.month_calendar_c4,.month_calendar_c5,.month_calendar_c6{ 
-	width: 14.7%; 
+/* set the width of each day column in the month view 
+	-- extra space goes to the last column  			*/
+.month_calendar_c0,
+.month_calendar_c1,
+.month_calendar_c2,
+.month_calendar_c3,
+.month_calendar_c4,
+.month_calendar_c5 { 
+	width: 14%; 
 }
+
+.month_calendar_c6{ 
+	width: 16%; 
+}
+
 
 /* outer table for the month view */
 .calendar_month_table {
@@ -1785,7 +1796,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmChatWindowInput {
-	bordor: none;
+	border: 0px;
 	overflow: auto;
 /*	border: 1px solid #999999;*/
 }
@@ -1952,7 +1963,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .Row .ZmFilterDetailsView td {
 	@NoWrap@
-	vertical-align: center;
+	vertical-align: middle;
 }
 
 
@@ -2012,9 +2023,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmNotebookPageView * {
 	font-family: inherit;
 }
-.ZmNotebookPageView SPAN.Object, .ZmNotebookPageView SPAN.Object-activated {
-	Xfont-size: inherit;
-}
+.ZmNotebookPageView SPAN.Object, .ZmNotebookPageView SPAN.Object-activated {}
 
 .ZmPageEditView {
 }

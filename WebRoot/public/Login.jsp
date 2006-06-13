@@ -161,7 +161,7 @@ Contributor(s):
 <title>Zimbra Login</title>
 
 <style type="text/css">
-	@import url(<%= contextPath %>/css/common,login,skin.css?v=<%= vers %>skin=<%= skin %><%= inDevMode ? "&debug=1" : "" %>);
+	@import url(<%= contextPath %>/css/common,login,skin.css?v=<%= vers %>&skin=<%= skin %><%= inDevMode ? "&debug=1" : "" %>);
 </style>
 
 <!-- ALL STYLES MOVED TO login.css SO THEY CAN BE SKINNED:  WE USE THE SKIN FROM ABOVE. -->

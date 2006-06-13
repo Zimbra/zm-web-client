@@ -189,6 +189,9 @@ function(components, doFit, noSetZ) {
 		if (this._hasSkin) {
 			var contId = this._appCtxt.get(ZmAppViewMgr.CONT_ID_KEY[cid]);
 			var contEl = document.getElementById(contId);
+			if (contEl == null) {
+				throw new AjxException("Skin container '" + contId + "' not found.");
+			}
 			this._containers[cid] = contEl;
 			if (Dwt.contains(contEl, htmlEl))
 				throw new AjxException("element already added to container: " + cid);		

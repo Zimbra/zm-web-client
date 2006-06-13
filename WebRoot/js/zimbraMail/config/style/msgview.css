@@ -95,5 +95,7 @@ pre { /* ripped off from http://cheeaun.phoenity.com/weblog/2005/06/whitespace-a
 	white-space: -pre-wrap; /* Opera 4-6 */
 	white-space: pre-wrap; /* CSS 2.1 */
 	white-space: pre-line; /* CSS 3 (and 2.1 as well, actually) */
+	#IFDEF MSIE
 	word-wrap: break-word; /* IE */
+	#ENDIF
 }
