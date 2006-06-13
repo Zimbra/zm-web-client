@@ -39,10 +39,12 @@
 * @param numUnread	[int]*			number of unread items for this folder
 * @param numTotal	[int]*			number of items for this folder
 * @param url		[string]*		URL for this folder's feed
+* @param owner		[string]* 		Owner for this organizer
+* @param zid		[string]*		Zimbra ID of owner, if remote folder
+* @param rid		[string]*		Remote ID of organizer, if remote folder
 */
-function ZmFolder(id, name, parent, tree, numUnread, numTotal, url) {
-
-	ZmOrganizer.call(this, ZmOrganizer.FOLDER, id, name, parent, tree, numUnread, numTotal, url);
+function ZmFolder(id, name, parent, tree, numUnread, numTotal, url, owner, zid, rid) {
+	ZmOrganizer.call(this, ZmOrganizer.FOLDER, id, name, parent, tree, numUnread, numTotal, url, owner, zid, rid);
 };
 
 ZmFolder.prototype = new ZmOrganizer;

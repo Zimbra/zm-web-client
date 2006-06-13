@@ -34,13 +34,13 @@
 * @param name		[string]		name
 * @param parent		[ZmOrganizer]	parent organizer
 * @param tree		[ZmTree]		tree model that contains this organizer
-* @param link
-* @param owner
+* @param owner		[string]		The owner of this organizer
+* @param zid		[string]*		Zimbra id of owner, if remote share
+* @param rid		[string]*		Remote id of organizer, if remote share
 */
-function ZmNotebook(id, name, parent, tree, color, link, owner) {
-	ZmOrganizer.call(this, ZmOrganizer.NOTEBOOK, id, name, parent, tree, null, null, null, owner);
+function ZmNotebook(id, name, parent, tree, color, owner, zid, rid) {
+	ZmOrganizer.call(this, ZmOrganizer.NOTEBOOK, id, name, parent, tree, null, null, null, owner, zid, rid);
 	this.color = color || ZmOrganizer.DEFAULT_COLOR;
-	this.link = link;
 }
 
 ZmNotebook.prototype = new ZmOrganizer;
@@ -93,8 +93,8 @@ ZmNotebook.prototype.getSearchPath = function() {
 // Callbacks
 
 ZmNotebook.prototype.notifyCreate =
-function(obj, link) {
-	var notebook = ZmNotebook.createFromJs(this, obj, this.tree, link);
+function(obj) {
+	var notebook = ZmNotebook.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(notebook, ZmNotebook.sortCompare);
 	this.children.add(notebook, index);
 	notebook._notify(ZmEvent.E_CREATE);
@@ -189,16 +189,16 @@ function(appCtxt, name, parentFolderId) {
 /***/
 
 ZmNotebook.createFromJs =
-function(parent, obj, tree, link) {
+function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 
 	// create calendar, populate, and return
-	var notebook = new ZmNotebook(obj.id, obj.name, parent, tree, obj.color, link, obj.d);
+	var notebook = new ZmNotebook(obj.id, obj.name, parent, tree, obj.color, obj.d, obj.zid, obj.rid);
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
 			if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
-				var childNotebook = ZmNotebook.createFromJs(notebook, folder, tree, false);
+				var childNotebook = ZmNotebook.createFromJs(notebook, folder, tree);
 				notebook.children.add(childNotebook);
 			}
 		}
@@ -207,9 +207,7 @@ function(parent, obj, tree, link) {
 		for (var i = 0; i < obj.link.length; i++) {
 			var link = obj.link[i];
 			if (link.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
-				var childNotebook = ZmNotebook.createFromJs(notebook, link, tree, true);
-				childNotebook.rid = link.rid;
-				childNotebook.zid = link.zid;
+				var childNotebook = ZmNotebook.createFromJs(notebook, link, tree);
 				notebook.children.add(childNotebook);
 			}
 		}

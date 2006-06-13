@@ -114,7 +114,6 @@ ZmNotebookCache.prototype.putPage = function(page) {
 		if (!this._foldersMap[remoteFolderId]) {
 			this._foldersMap[remoteFolderId] = this._foldersMap[folderId];
 		}
-		this._foldersMap[remoteFolderId][page.name] = page;
 	}
 	/***/
 	if (page.creator) {

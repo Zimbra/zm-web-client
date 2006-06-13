@@ -43,8 +43,10 @@
 * @param numTotal	[int]*			number of items for this organizer
 * @param url		[string]*		URL for this organizer's feed
 * @param owner		[string]* 		Owner for this organizer
+* @param zid		[string]*		Zimbra ID of owner, if remote folder
+* @param rid		[string]*		Remote ID of organizer, if remote folder
 */
-function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, owner) {
+function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, owner, zid, rid) {
 
 	if (arguments.length == 0) return;
 	
@@ -57,6 +59,9 @@ function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, own
 	this.numTotal = numTotal || 0;
 	this.url = url;
 	this.owner = owner;
+	this.link = Boolean(zid);
+	this.zid = zid;
+	this.rid = rid;
 
 	if (id && tree)
 		tree._appCtxt.cacheSet(id, this);
@@ -533,6 +538,12 @@ function(newParent) {
 */
 ZmOrganizer.prototype.getById =
 function(id) {
+	if (this.link && id && typeof(id) == "string") {
+		var ids = id.split(":");
+		if (this.zid == ids[0] && this.rid == ids[1])
+			return this;
+	}
+
 	if (this.id == id)
 		return this;
 

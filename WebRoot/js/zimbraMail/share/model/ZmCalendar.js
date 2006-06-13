@@ -35,14 +35,14 @@
 * @param parent		[ZmOrganizer]	parent organizer
 * @param tree		[ZmTree]		tree model that contains this organizer
 * @param color
-* @param link
 * @param url		[string]*		URL for this organizer's feed
 * @param owner
+* @param zid		[string]*		Zimbra id of owner, if remote share
+* @param rid		[string]*		Remote id of organizer, if remote share
 */
-function ZmCalendar(id, name, parent, tree, color, link, url, owner) {
-	ZmOrganizer.call(this, ZmOrganizer.CALENDAR, id, name, parent, tree, null, null, url, owner);
+function ZmCalendar(id, name, parent, tree, color, url, owner, zid, rid) {
+	ZmOrganizer.call(this, ZmOrganizer.CALENDAR, id, name, parent, tree, null, null, url, owner, zid, rid);
 	this.color = color || ZmOrganizer.DEFAULT_COLOR;
-	this.link = link;
 }
 
 ZmCalendar.prototype = new ZmOrganizer;
@@ -140,8 +140,8 @@ function(exclude) {
 // Callbacks
 
 ZmCalendar.prototype.notifyCreate =
-function(obj, link) {
-	var calendar = ZmCalendar.createFromJs(this, obj, this.tree, link);
+function(obj) {
+	var calendar = ZmCalendar.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(calendar, ZmCalendar.sortCompare);
 	this.children.add(calendar, index);
 	calendar._notify(ZmEvent.E_CREATE);
@@ -171,17 +171,17 @@ function(obj) {
 // Static methods
 
 ZmCalendar.createFromJs =
-function(parent, obj, tree, link) {
+function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 
 	// create calendar, populate, and return
-	var calendar = new ZmCalendar(obj.id, obj.name, parent, tree, obj.color, link, obj.url, obj.d);
+	var calendar = new ZmCalendar(obj.id, obj.name, parent, tree, obj.color, obj.url, obj.d, obj.zid, obj.rid);
 	calendar.excludeFreeBusy = obj.excludeFreeBusy;
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
 			if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
-				var childCalendar = ZmCalendar.createFromJs(calendar, folder, tree, false);
+				var childCalendar = ZmCalendar.createFromJs(calendar, folder, tree);
 				calendar.children.add(childCalendar);
 			}
 		}
@@ -190,7 +190,7 @@ function(parent, obj, tree, link) {
 		for (var i = 0; i < obj.link.length; i++) {
 			var link = obj.link[i];
 			if (link.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
-				var childCalendar = ZmCalendar.createFromJs(calendar, link, tree, true);
+				var childCalendar = ZmCalendar.createFromJs(calendar, link, tree);
 				calendar.children.add(childCalendar);
 			}
 		}

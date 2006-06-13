@@ -35,18 +35,13 @@
 * @param parent		[ZmOrganizer]	parent organizer
 * @param tree		[ZmTree]		tree model that contains this organizer
 * @param color		[int]			color of this address book
-* @param link		[boolean]		true means this address book is a share
 * @param owner		[string]*		owner of the address book (if shared)
 * @param zid 		[string]*		the share ID of a shared addrbook
 * @param rid		[string]*		the remote folder id of a shared addrbook
 */
-function ZmAddrBook(id, name, parent, tree, color, link, owner, zid, rid) {
-	ZmFolder.call(this, id, name, parent, tree);
+function ZmAddrBook(id, name, parent, tree, color, owner, zid, rid) {
+	ZmFolder.call(this, id, name, parent, tree, null, null, null, owner, zid, rid);
 	this.type = ZmOrganizer.ADDRBOOK;
-	this.link = link;
-	this.owner = owner;
-	this.zid = zid;
-	this.rid = rid;
 	this.color = color || ZmAddrBook.DEFAULT_COLOR;
 };
 
@@ -82,17 +77,6 @@ function() {
 	else										icon = "ContactsFolder";
 
 	return icon;
-};
-
-ZmAddrBook.prototype.getById =
-function(id) {
-	if (this.link && id && typeof(id) == "string") {
-		var ids = id.split(":");
-		if (this.zid == ids[0] && this.rid == ids[1])
-			return this;
-	}
-
-	return ZmFolder.prototype.getById.call(this, id);
 };
 
 ZmAddrBook.prototype.create =
@@ -183,11 +167,11 @@ function(what) {
 // Callbacks
 
 ZmAddrBook.prototype.notifyCreate =
-function(obj, link) {
+function(obj) {
 	// ignore creates of system folders
 	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.ADDRBOOK]) return;
 
-	var ab = ZmAddrBook.createFromJs(this, obj, this.tree, link);
+	var ab = ZmAddrBook.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(ab, ZmAddrBook.sortCompare);
 	this.children.add(ab, index);
 	ab._notify(ZmEvent.E_CREATE);
@@ -197,18 +181,18 @@ function(obj, link) {
 // Static methods
 
 ZmAddrBook.createFromJs =
-function(parent, obj, tree, link) {
+function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 
 	// create addrbook, populate, and return
-	var ab = new ZmAddrBook(obj.id, obj.name, parent, tree, obj.color, link, obj.d, obj.zid, obj.rid);
+	var ab = new ZmAddrBook(obj.id, obj.name, parent, tree, obj.color, obj.d, obj.zid, obj.rid);
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
 			if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK] ||
 				folder.id == ZmOrganizer.ID_TRASH)
 			{
-				var childAB = ZmAddrBook.createFromJs(ab, folder, tree, false);
+				var childAB = ZmAddrBook.createFromJs(ab, folder, tree);
 				ab.children.add(childAB);
 			}
 		}
@@ -218,7 +202,7 @@ function(parent, obj, tree, link) {
 		for (var i = 0; i < obj.link.length; i++) {
 			var link = obj.link[i];
 			if (link.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]) {
-				var childAB = ZmAddrBook.createFromJs(ab, link, tree, true);
+				var childAB = ZmAddrBook.createFromJs(ab, link, tree);
 				ab.children.add(childAB);
 			}
 		}
