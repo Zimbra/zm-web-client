@@ -76,7 +76,18 @@ function ZmKeyMap() {
 			"Esc":					ZmKeyMap.CANCEL,
 
 			"ArrowRight":			ZmKeyMap.NEXT_PAGE,
-			"ArrowLeft":			ZmKeyMap.PREV_PAGE
+			"ArrowLeft":			ZmKeyMap.PREV_PAGE,
+			
+			"0":					ZmKeyMap.TAG0,
+			"1":					ZmKeyMap.TAG1,
+			"2":					ZmKeyMap.TAG2,
+			"3":					ZmKeyMap.TAG3,
+			"4":					ZmKeyMap.TAG4,
+			"5":					ZmKeyMap.TAG5,
+			"6":					ZmKeyMap.TAG6,
+			"7":					ZmKeyMap.TAG7,
+			"8":					ZmKeyMap.TAG8,
+			"9":					ZmKeyMap.TAG9
 	};
 	
 	this._map["ZmComposeController"] = {
@@ -207,6 +218,16 @@ ZmKeyMap.SAVE			= i++;
 ZmKeyMap.SEND			= i++;
 ZmKeyMap.SPAM			= i++;
 ZmKeyMap.SPELLCHECK		= i++;
+ZmKeyMap.TAG0			= i++;
+ZmKeyMap.TAG1			= i++;
+ZmKeyMap.TAG2			= i++;
+ZmKeyMap.TAG3			= i++;
+ZmKeyMap.TAG4			= i++;
+ZmKeyMap.TAG5			= i++;
+ZmKeyMap.TAG6			= i++;
+ZmKeyMap.TAG7			= i++;
+ZmKeyMap.TAG8			= i++;
+ZmKeyMap.TAG9			= i++;
 
 delete i;
 

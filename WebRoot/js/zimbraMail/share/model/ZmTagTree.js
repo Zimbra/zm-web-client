@@ -57,3 +57,11 @@ function() {
 	if (!this.root)
 		this.root = new ZmTag(ZmTag.ID_ROOT, null, null, null, this);
 };
+
+ZmTagTree.prototype.getByIndex =
+function(idx) {
+	var list = this.asList();
+	if (list && list.length && (idx < list.length - 1))	{
+		return list[idx];
+	}
+};

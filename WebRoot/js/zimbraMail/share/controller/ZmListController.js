@@ -155,6 +155,10 @@ function(actionCode) {
 	var listView = this._listView[this._currentView];
 
 	switch (actionCode) {
+
+		case DwtKeyMap.DBLCLICK:
+			return listView.handleKeyAction(actionCode);
+
 		case ZmKeyMap.DEL:
 			this._doDelete(listView.getSelection());
 			break;
@@ -206,9 +210,30 @@ function(actionCode) {
 				this._printListener();
 			}
 			break;
-			
-		case DwtKeyMap.DBLCLICK:
-			return listView.handleKeyAction(actionCode);
+		
+		case ZmKeyMap.TAG0:
+		case ZmKeyMap.TAG1:
+		case ZmKeyMap.TAG2:
+		case ZmKeyMap.TAG3:
+		case ZmKeyMap.TAG4:
+		case ZmKeyMap.TAG5:
+		case ZmKeyMap.TAG6:
+		case ZmKeyMap.TAG7:
+		case ZmKeyMap.TAG8:
+		case ZmKeyMap.TAG9:
+			if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+				var items = listView.getSelection();
+				if (items && items.length) {
+					var tags = this._appCtxt.getTree(ZmOrganizer.TAG);
+					var idx = actionCode - ZmKeyMap.TAG0;
+					var tag = tags ? tags.getByIndex(idx) : null;	// root will be first in list
+					if (tag) {
+						var doTag = !items[0].hasTag(tag.id);
+						this._doTag(items, tag, doTag);
+					}
+				}
+			}
+			break;
 
 		default:
 			return ZmController.prototype.handleKeyAction(this, actionCode);
