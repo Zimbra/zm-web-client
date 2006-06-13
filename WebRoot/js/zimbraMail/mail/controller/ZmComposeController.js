@@ -301,6 +301,20 @@ function(actionCode) {
 			this._send();
 			break;
 
+		case ZmKeyMap.ATTACHMENT:
+			this._attachmentListener();
+			break;
+
+		case ZmKeyMap.SPELLCHECK:
+			this._spellCheckListener();
+			break;
+		
+		case ZmKeyMap.HTML_FORMAT:
+			var mode = this._composeView.getComposeMode();
+			var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+			this._setFormat(newMode);
+			break;
+
 		default:
 			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
 			break;

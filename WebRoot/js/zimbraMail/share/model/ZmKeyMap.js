@@ -45,11 +45,11 @@ function ZmKeyMap() {
 			
 //			"Alt+Shift+Esc":		ZmKeyMap.LOGOFF,
 
-			"Shift+D,0":			ZmKeyMap.DBG_NONE,
-			"Shift+D,1":			ZmKeyMap.DBG_1,
-			"Shift+D,2":			ZmKeyMap.DBG_2,
-			"Shift+D,3":			ZmKeyMap.DBG_3,
-			"Shift+D,t":			ZmKeyMap.DBG_TIMING,
+			"Alt+Shift+D,0":		ZmKeyMap.DBG_NONE,
+			"Alt+Shift+D,1":		ZmKeyMap.DBG_1,
+			"Alt+Shift+D,2":		ZmKeyMap.DBG_2,
+			"Alt+Shift+D,3":		ZmKeyMap.DBG_3,
+			"Alt+Shift+D,t":		ZmKeyMap.DBG_TIMING,
 
 			"N":					ZmKeyMap.NEW,
 			"N,A":					ZmKeyMap.NEW_APPT,
@@ -81,7 +81,11 @@ function ZmKeyMap() {
 	
 	this._map["ZmComposeController"] = {
 			"Esc":					ZmKeyMap.CANCEL,
-			"Shift+S":				ZmKeyMap.SEND
+			"Alt+A":				ZmKeyMap.ATTACHMENT,
+			"Alt+S":				ZmKeyMap.SEND,
+			"Alt+D":				ZmKeyMap.SAVE,
+			"Alt+H":				ZmKeyMap.HTML_FORMAT,
+			"Alt+L":				ZmKeyMap.SPELLCHECK
 	};
 	
 	this._map["ZmMailListController"] = {
@@ -106,6 +110,8 @@ function ZmKeyMap() {
 			"S":					ZmKeyMap.GOTO_SENT,
 			"T":					ZmKeyMap.GOTO_TRASH,
 			
+			"O":					DwtKeyMap.DBLCLICK,
+			
 			"Shift+1":				ZmKeyMap.SPAM,
 
 			".,I":					ZmKeyMap.MOVE_TO_INBOX,
@@ -126,7 +132,7 @@ function ZmKeyMap() {
 	
 	this._map["ZmMsgController"] = {
 
-			"INHERIT": "ZmMailListController",
+			"INHERIT": "ZmMailListController"
 	};
 		
 	this._map["ZmContactListController"] = {
@@ -148,6 +154,7 @@ ZmKeyMap.prototype.constructor = ZmKeyMap;
 var i = 1;
 
 ZmKeyMap.ASSISTANT		= i++;
+ZmKeyMap.ATTACHMENT		= i++;
 ZmKeyMap.CANCEL			= i++;
 ZmKeyMap.DBG_NONE		= i++;
 ZmKeyMap.DBG_1			= i++;
@@ -170,6 +177,7 @@ ZmKeyMap.GOTO_NOTEBOOK	= i++;
 ZmKeyMap.GOTO_OPTIONS	= i++;
 ZmKeyMap.GOTO_SENT		= i++;
 ZmKeyMap.GOTO_TRASH		= i++;
+ZmKeyMap.HTML_FORMAT	= i++;
 ZmKeyMap.LOGOFF			= i++;
 ZmKeyMap.MARK_READ		= i++;
 ZmKeyMap.MARK_UNREAD	= i++;
@@ -194,6 +202,7 @@ ZmKeyMap.REPLY_ALL		= i++;
 ZmKeyMap.SAVE			= i++;
 ZmKeyMap.SEND			= i++;
 ZmKeyMap.SPAM			= i++;
+ZmKeyMap.SPELLCHECK		= i++;
 
 delete i;
 

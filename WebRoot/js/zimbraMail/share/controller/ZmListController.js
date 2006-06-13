@@ -152,11 +152,11 @@ function(newList) {
 ZmListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");
-	var listView = this._listView[this._currentView]
+	var listView = this._listView[this._currentView];
 
 	switch (actionCode) {
 		case ZmKeyMap.DEL:
-			this._doDelete(this._listView[this._currentView].getSelection());
+			this._doDelete(listView.getSelection());
 			break;
 
 		case ZmKeyMap.NEXT_PAGE:
@@ -197,16 +197,19 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.FLAG:
-			this._doFlag(this._listView[this._currentView].getSelection());
+			this._doFlag(listView.getSelection());
 			break;
 
 		case ZmKeyMap.PRINT:
 		case ZmKeyMap.PRINT_ALL:
 			this._printListener();
 			break;
+			
+		case DwtKeyMap.DBLCLICK:
+			return listView.handleKeyAction(actionCode);
 
 		default:
-			return ZmController.prototype.handleKeyAction.call(this, actionCode);
+			return ZmController.prototype.handleKeyAction(this, actionCode);
 	}
 	return true;
 };
