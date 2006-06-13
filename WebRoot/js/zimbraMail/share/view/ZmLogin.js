@@ -90,40 +90,22 @@ function() {
 */
 ZmLogin.showUnsupported =
 function() {
-	var errorStr = AjxMessageFormat.format(ZmMsg.errorBrowserUnsupported, [navigator.appName, navigator.appVersion]);
+	var params = ZLoginFactory.copyDefaultParams(ZmMsg);
+	params.showError = true;
+	params.errorMsg = AjxMessageFormat.format(ZmMsg.errorBrowserUnsupported, [navigator.appName, navigator.appVersion]);
+	params.showAbout = true;
 
-	var tip;
 	if (ZmLogin.isAlmostSupportedBrowser()) {
-		tip = AjxMessageFormat.format(ZmMsg.almostSupportedBrowserTip, ["ZmLogin.handleOnload(null, true);"]);
+		params.aboutMsg = AjxMessageFormat.format(ZmMsg.almostSupportedBrowserTip, ["ZmLogin.handleOnload(null, true);"]);
 	} else {
-		tip = ZmMsg.unsupportedBrowserTip;
+		params.aboutMsg = ZmMsg.unsupportedBrowserTip;
 	}
-
+	
 	var html = [];
-	idx = 0;
-
-	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td>";
-	html[idx++] = "<table width=450 align=center border=0 cellspacing=0 cellpadding=0 style='border: 2px solid; border-color: #C7C7C7 #3E3E3E #3E3E3E #C7C7C7;'>";
-	html[idx++] = "<tr><td bgcolor='#FFFFFF'><div class='banner'></div></td></tr>";
-	html[idx++] = "<tr><td class='LoginMainPanel' align=center><div class='error'>";
-	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2><tr>";
-	html[idx++] = "<td valign=top width=40><img src='";
-	html[idx++] = appContextPath;
-	html[idx++] = "/img/loRes/dwt/Critical_32.gif' width=32 height=32></td>";
-	html[idx++] = "<td>";
-	html[idx++] = errorStr;
+	var idx = 0;
+	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td align='center' valign='center'>";
+	html[idx++] = ZLoginFactory.getLoginDialogHTML(params);
 	html[idx++] = "</td></tr></table>";
-	html[idx++] = "</div><p>";
-	html[idx++] = "<div style='text-align:left; width:85%'>";
-	html[idx++] = tip;
-	html[idx++] = "</div><br>";
-	html[idx++] = "<div class='LoginPanelLicense'>";
-	html[idx++] = ZmMsg.splashScreenCopyright;
-	html[idx++] = "</div>";
-	html[idx++] = "</td></tr>";
-	html[idx++] = "</table>";
-	html[idx++] = "</td></tr></table>";
-
 	document.body.innerHTML = html.join("");
 };
 
