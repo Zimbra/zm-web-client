@@ -31,21 +31,6 @@ function ZmSplashScreen(shell, imageInfo, className) {
 ZmSplashScreen.prototype = new ZmBaseSplashScreen;
 ZmSplashScreen.prototype.constructor = ZmSplashScreen;
 
-ZmSplashScreen.prototype.getDefaultSubstitutions = function (){
-	if (ZmSplashScreen._defaultSubstitutions == null) {
-		ZmSplashScreen._defaultSubstitutions = {
-			url:ZmMsg.splashScreenZimbraUrl,
-			shortVersion: "",
-			appName: ZmMsg.splashScreenAppName,
-			// version is not used 
-			// version : "Some version",
-			contents: AjxBuffer.concat("<br>", ZmMsg.splashScreenLoading, "<br><br>", AjxImg.getImageHtml("BarberPole_216")),
-			license: ZmMsg.splashScreenCopyright	
-		}
-	}
-	return ZmSplashScreen._defaultSubstitutions;
-};
-
 ZmSplashScreen.prototype.getHtml = 
 function() {
 	var params = ZLoginFactory.copyDefaultParams(ZmMsg);
