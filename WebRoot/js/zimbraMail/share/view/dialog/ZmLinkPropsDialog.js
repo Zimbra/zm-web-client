@@ -69,7 +69,7 @@ function(linkInfo, callback, loc) {
 	ZmLinkPropsDialog._setRequiredFields(this, !isUrlLink);
 
 	DwtDialog.prototype.popup.call(this, loc);
-	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+	ZmLinkPropsDialog._enableFieldsOnEdit(this);
 };
 
 ZmLinkPropsDialog.prototype.popdown =

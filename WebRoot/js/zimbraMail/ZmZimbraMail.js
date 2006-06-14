@@ -1491,7 +1491,6 @@ function(modifies) {
 			setting.notifyModify(mod);
 			continue;
 		}
-		// REVISIT: server is not returning the page id!
 		if (name == "w" && id) {
 			// REVISIT: Use app context item cache
 			var notebookApp = this.getApp(ZmZimbraMail.NOTEBOOK_APP);
@@ -1504,13 +1503,16 @@ function(modifies) {
 			}
 			else {
 				page.notifyModify(mod);
+				page.set(mod);
 			}
 			
 			// re-render current page, if necessary
 			var notebookController = notebookApp.getNotebookController();
 			var shownPage = notebookController.getPage();
-			if (shownPage && (shownPage.name == ZmNotebook.PAGE_INDEX || shownPage.name == page.name)) {
-				notebookController.gotoPage(shownPage);
+			if (shownPage && shownPage.folderId == page.folderId) {
+				if (shownPage.name == ZmNotebook.PAGE_INDEX || shownPage.name == page.name) {
+					notebookController.gotoPage(shownPage);
+				}
 			}
 			continue;
 		}

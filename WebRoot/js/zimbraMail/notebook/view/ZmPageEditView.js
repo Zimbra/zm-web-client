@@ -283,6 +283,7 @@ ZmPageEditor.prototype.setContent = function(content) {
 	if (this._mode == DwtHtmlEditor.HTML) {
 		var root = this._getIframeDoc();
 		this._deserializeWiklets(root);
+		this._patchLinks(root);
 	}
 };
 ZmPageEditor.prototype.getContent = function() {
@@ -298,6 +299,21 @@ ZmPageEditor.prototype.getContent = function() {
 };
 
 // Protected methods
+
+ZmPageEditor.prototype._patchLinks = function(element) {
+	var links = element.getElementsByTagName("A");
+	for (var i = 0; i < links.length; i++) {
+		var link = links[i];
+		if (!link.href) continue;
+		Dwt.associateElementWithObject(link, this);
+		if (AjxEnv.isIE) {
+			Dwt.setHandler(link, DwtEvent.ONCLICK, ZmPageEditor._handleLinkClick);
+		}
+		else {
+			link.addEventListener("click", ZmPageEditor._handleLinkClick, true);
+		}
+	}
+};
 
 ZmPageEditor.prototype._serializeWiklets = function() {
 	var elems = this._getIframeDoc().getElementsByTagName("BUTTON");
@@ -506,6 +522,7 @@ ZmPageEditor._handleLinkClick = function(event) {
 	dialog._popupLinkPropsDialog(target, url, text);
 
 	// NOTE: do NOT allow browser to follow link!
+	DwtUiEvent.setDhtmlBehaviour(event, true, false);
 	return false;
 };
 
