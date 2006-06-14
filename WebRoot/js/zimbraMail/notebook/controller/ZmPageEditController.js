@@ -205,8 +205,8 @@ function() {
 	return ZmMsg.tagPage;
 };
 
-ZmPageEditController.prototype._saveListener =
-function(ev) {
+ZmPageEditController.prototype._doSave =
+function(popViewWhenSaved) {
 	var name = this._pageEditView.getPageName();
 	if (!name || name.replace(/^\s+/,"").replace(/\s+$/,"") == "") {
 		var dialog = this._appCtxt.getMsgDialog();
@@ -223,10 +223,17 @@ function(ev) {
 	this._page.setContent(this._pageEditView.getContent());
 	
 	// save
+	this._popViewWhenSaved = popViewWhenSaved;
 	this._page.save(this._saveCallback, this._saveErrorCallback);
 };
+
+ZmPageEditController.prototype._saveListener =
+function(ev) {
+	this._doSave(true);
+};
+
 ZmPageEditController.prototype._saveResponseHandler = function(response) {
-	this._app.popView();
+	this._exitViewAfterSave();
 
 	var saveResp = response._data && response._data.SaveWikiResponse;
 	if (saveResp && saveResp.w[0].ver == 1) {
@@ -277,8 +284,16 @@ function(mineOrTheirs, conflict) {
 		return;
 	}
 	if (mineOrTheirs == ZmPageConflictDialog.KEEP_THEIRS) {
-		this._app.popView();
+		this._exitViewAfterSave();
 		return;
+	}
+};
+
+ZmPageEditController.prototype._exitViewAfterSave = function() {
+	if (this._popViewWhenSaved) {
+		this._app.popView();
+	} else {
+		this._app.getAppViewMgr().showPendingView(true);
 	}
 };
 
@@ -340,4 +355,45 @@ ZmPageEditController.prototype._formatListener = function(ev) {
 	this._format = ev.item.getData(ZmPageEditor.KEY_FORMAT);
 	this._pageEditView.setFormat(this._format);
 	this._pageEditView.setContent(content);
+};
+
+ZmPageEditController.prototype._preHideCallback =
+function() {
+	if (!this._pageEditView.isDirty()) {
+		return true;
+	}
+	
+	var ps = this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
+	ps.reset();
+	ps.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
+	ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
+	ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
+	ps.registerCallback(DwtDialog.CANCEL_BUTTON, this._popShieldDismissCallback, this);
+	ps.popup(this._pageEditView._getDialogXY());
+	return false;
+};
+
+ZmPageEditController.prototype._popShieldYesCallback =
+function() {
+	this._popShield.popdown();
+	this._doSave(false);
+};
+
+ZmPageEditController.prototype._popShieldNoCallback =
+function() {
+	this._popShield.popdown();
+
+	// bug fix #5282
+	// check if the pending view is poppable - if so, force-pop this view first!
+	var avm = this._app.getAppViewMgr();
+	if (avm.isPoppable(avm.getPendingViewId()))
+		this._app.popView(true);
+
+	this._app.getAppViewMgr().showPendingView(true);
+};
+
+ZmPageEditController.prototype._popShieldDismissCallback =
+function() {
+	this._popShield.popdown();
+	this._app.getAppViewMgr().showPendingView(false);
 };

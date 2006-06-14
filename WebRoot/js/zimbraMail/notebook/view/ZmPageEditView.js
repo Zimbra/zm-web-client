@@ -41,12 +41,17 @@ function() {
 
 // Data
 
+// Message dialog placement
+ZmPageEditView.DIALOG_X = 50;
+ZmPageEditView.DIALOG_Y = 100;
+
 ZmPageEditView.prototype._appCtxt;
 ZmPageEditView.prototype._controller;
 
 ZmPageEditView.prototype._locationEl;
 ZmPageEditView.prototype._pageNameInput;
 ZmPageEditView.prototype._pageEditor;
+ZmPageEditView.prototype._page;
 
 // Public methods
 
@@ -101,6 +106,7 @@ ZmPageEditView.prototype._setResponse = function(page) {
 	// set content
 	var content = page.getContent() || "";
 	this.setContent(content);
+	this._page = page;
 
 	// set focus
 	this.focus();
@@ -162,6 +168,24 @@ ZmPageEditView.prototype.focus = function() {
 	focusedComp.focus();
 };
 
+ZmPageEditView.prototype.isDirty =
+function() {
+	if (this._page) {
+		var pageName = this.getPageName();
+		var content = this.getContent();
+		if ((content.length == 0) && (pageName.length == 0)) {
+			return false;			
+		}
+		if (this._page.name != pageName) {
+			return true;
+		}
+		if (this._page.getContent() != content) {
+			return true;
+		}
+	}
+	return false;
+};
+
 // Protected methods
 
 ZmPageEditView.prototype._createHtml =
@@ -204,6 +228,12 @@ function() {
 	var element = this.getHtmlElement();
 	element.appendChild(table);
 	element.appendChild(textAreaEl);
+};
+
+ZmPageEditView.prototype._getDialogXY =
+function() {
+	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
+	return new DwtPoint(loc.x + ZmComposeView.DIALOG_X, loc.y + ZmComposeView.DIALOG_Y);
 };
 
 //
