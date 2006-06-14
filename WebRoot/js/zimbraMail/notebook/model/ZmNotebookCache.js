@@ -305,7 +305,6 @@ function(folderId, callback, errorCallback, response) {
 };
 
 ZmNotebookCache.prototype._handleChange = function(event) {
-	debugger;
 };
 
 ZmNotebookCache.prototype._generateSpecialPage = function(folderId, name) {

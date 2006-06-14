@@ -42,9 +42,6 @@ ZmWikiConverter.prototype.toWiki = function(html) {
 	return ZmWikiConverter.convert(html, this._toWikiRules);
 };
 
-// Static data
-
-ZmWikiConverter._data;
 
 // Static functions
 
