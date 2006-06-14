@@ -96,6 +96,11 @@ ZmContactSplitView.prototype.setBounds =
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width-10, height-10);
 	this._sizeChildren(width, height);
+
+	if (this._contact && this._contact.isGroup()) {
+		var contactBodyDiv = document.getElementById(this._contactBodyId);
+		contactBodyDiv.innerHTML = this._getGroupHtml(this._contact, this._contact.isGal, contactBodyDiv)
+	}
 };
 
 ZmContactSplitView.prototype.getTitle = 
@@ -281,8 +286,8 @@ function(contact, isGal) {
 	// finally set body depending on the kind of contact we have
 	var contactBodyDiv = document.getElementById(this._contactBodyId);
 	contactBodyDiv.innerHTML = contact.isGroup()
-		? this._getGroupHtml(contact, isGal)
-		: this._getContactHtml(contact, isGal);
+		? this._getGroupHtml(contact, isGal, contactBodyDiv)
+		: this._getContactHtml(contact, isGal, contactBodyDiv);
 };
 
 ZmContactSplitView.prototype._getContactHtml =
@@ -443,23 +448,27 @@ function(contact, isGal) {
 };
 
 ZmContactSplitView.prototype._getGroupHtml =
-function(contact, isGal) {
+function(contact, isGal, bodyDiv) {
 	var html = new Array();
 	var idx = this._getWorkAndFolderHtml(contact, isGal, html, 0);
 
+	var rows = Math.round((Dwt.getSize(bodyDiv).y - 40) / 16);
 	var icon = isGal ? "GALContact" : (contact.addrbook.link ? "SharedContact" : "Contact");
 	var email = contact.getAttr(ZmContact.F_email);
 	var addrs = ZmEmailAddress.parseEmailString(email);
 
-	html[idx++] = "<table border=0 width=100% cellpadding=3 cellspacing=3>";
+	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2><tr>";
 	for (var i = 0; i < addrs.all.size(); i++) {
-		html[idx++] = "<tr><td width=16>";
-		html[idx++] = AjxImg.getImageHtml(icon, "width:20");
-		html[idx++] = "</td><td>"
+		if (i%rows == 0)
+			html[idx++] = "<td valign=top style='white-space:nowrap'>";
+		html[idx++] = AjxImg.getImageSpanHtml(icon);
+		html[idx++] = "&nbsp;";
 		html[idx++] = addrs.all.get(i).address;
-		html[idx++] = "</td></tr>";
+		html[idx++] = "<br>";
+		if ((i+1)%rows == 0)
+			html[idx++] = "</td>";
 	}
-	html[idx++] = "</table>";
+	html[idx++] = "</tr></table>";
 
 	return html.join("");
 };
