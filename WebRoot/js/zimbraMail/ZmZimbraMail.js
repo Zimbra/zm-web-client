@@ -1760,7 +1760,7 @@ function() {
 			return ctlr.getKeyMapName();
 		}
 	}
-	return "ZmGlobal";
+	return "Global";
 };
 
 ZmZimbraMail.prototype.handleKeyAction =
@@ -1798,6 +1798,7 @@ function(actionCode, ev) {
 		case ZmKeyMap.GOTO_CONTACTS:
 		case ZmKeyMap.GOTO_CALENDAR:
 		case ZmKeyMap.GOTO_IM:
+		case ZmKeyMap.GOTO_OPTIONS:
 		case ZmKeyMap.GOTO_NOTEBOOK: {
 			var app = ZmZimbraMail.ACTION_CODE_TO_APP[actionCode];
 			if (app == this.getActiveApp()) {

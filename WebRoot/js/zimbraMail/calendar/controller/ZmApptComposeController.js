@@ -147,6 +147,42 @@ function(initHide) {
 	}
 };
 
+ZmApptComposeController.prototype.getKeyMapName =
+function() {
+	return "ZmApptComposeController";
+};
+
+ZmApptComposeController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println("ZmApptComposeController.handleKeyAction");
+	switch (actionCode) {
+
+		case ZmKeyMap.SAVE:
+			this._saveListener();
+			break;
+		
+		case ZmKeyMap.CANCEL:
+			this._cancelListener();
+			break;
+		
+		case ZmKeyMap.ALL_DAY:
+			var tabView = this._apptView.getTabView(this._apptView.getCurrentTab());
+			if (tabView && tabView.toggleAllDayField) {
+				tabView.toggleAllDayField();
+			}
+			break;
+
+		default:
+			return ZmController.prototype.handleKeyAction.call(this, actionCode);
+			break;
+	}
+	return true;
+};
+
+ZmApptComposeController.prototype.getTabView =
+function() {
+	return this._apptView;
+};
 
 // Private / Protected methods
 

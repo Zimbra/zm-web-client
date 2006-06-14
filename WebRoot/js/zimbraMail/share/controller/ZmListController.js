@@ -164,13 +164,17 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.NEXT_PAGE:
-			if (this._navToolBar[this._currentView].getButton(ZmOperation.PAGE_FORWARD).getEnabled()) {
+			var ntb = this._navToolBar[this._currentView];
+			var button = ntb ? ntb.getButton(ZmOperation.PAGE_FORWARD) : null;
+			if (button && button.getEnabled()) {
 				this._paginate(this._currentView, true);
 			}
 			break;
 
 		case ZmKeyMap.PREV_PAGE:
-			if (this._navToolBar[this._currentView].getButton(ZmOperation.PAGE_BACK).getEnabled()) {
+			var ntb = this._navToolBar[this._currentView];
+			var button = ntb ? ntb.getButton(ZmOperation.PAGE_BACK) : null;
+			if (button && button.getEnabled()) {
 				this._paginate(this._currentView, false);
 			}
 			break;
@@ -182,7 +186,7 @@ function(actionCode) {
 					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE]);
 					break;
 				case ZmZimbraMail.CALENDAR_APP:
-					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CALENDAR]);
+					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_APPT]);
 					break;
 				case ZmZimbraMail.CONTACTS_APP:
 					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CONTACT]);
@@ -212,6 +216,8 @@ function(actionCode) {
 			break;
 		
 		case ZmKeyMap.TAG0:
+			break;
+
 		case ZmKeyMap.TAG1:
 		case ZmKeyMap.TAG2:
 		case ZmKeyMap.TAG3:

@@ -60,6 +60,27 @@ function(contact, isDirty) {
 	this._setView(this._currentView, elements, null, null, null, true);
 };
 
+ZmContactController.prototype.getKeyMapName =
+function() {
+	return "ZmContactController";
+};
+
+ZmContactController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println("ZmContactController.handleKeyAction");
+	switch (actionCode) {
+
+		case ZmKeyMap.SAVE:
+			this._saveListener();
+			break;
+
+		case ZmKeyMap.CANCEL:
+			this._cancelListener();
+			break;
+	}
+	return true;
+};
+
 // Private methods (mostly overrides of ZmListController protected methods)
 
 ZmContactController.prototype._getToolBarOps = 

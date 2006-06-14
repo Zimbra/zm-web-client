@@ -204,6 +204,7 @@ function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmContactListController.handleKeyAction");
 	
 	switch (actionCode) {
+
 		case ZmKeyMap.EDIT:
 			this._editListener();
 			break;
@@ -216,7 +217,6 @@ function(actionCode) {
 
 		default:
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
-			break;
 	}
 	return true;
 };

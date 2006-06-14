@@ -104,6 +104,14 @@ ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmController.CAL_WO
 ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmController.CAL_MONTH_VIEW;
 ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmController.CAL_SCHEDULE_VIEW;
 
+// get view based on op
+ZmCalViewController.ACTION_CODE_TO_VIEW = {};
+ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_DAY_VIEW]			= ZmController.CAL_DAY_VIEW;
+ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_WEEK_VIEW]			= ZmController.CAL_WEEK_VIEW;
+ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_WORK_WEEK_VIEW]	= ZmController.CAL_WORK_WEEK_VIEW;
+ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_MONTH_VIEW]		= ZmController.CAL_MONTH_VIEW;
+ZmCalViewController.ACTION_CODE_TO_VIEW[ZmKeyMap.CAL_SCHEDULE_VIEW]		= ZmController.CAL_SCHEDULE_VIEW;
+
 // get op based on view
 ZmCalViewController.VIEW_TO_OP = {};
 for (var op in ZmCalViewController.OP_TO_VIEW) {
@@ -1538,4 +1546,54 @@ function() {
 	} else if (work & ZmCalViewController.MAINT_REMINDER) {
 		this._app.getReminderController().refresh();
 	}
+};
+
+ZmCalViewController.prototype.getKeyMapName =
+function() {
+	return "ZmCalViewController";
+};
+
+ZmCalViewController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println(AjxDebug.DBG3, "ZmCalViewController.handleKeyAction");
+	
+	switch (actionCode) {
+		
+		case ZmKeyMap.CAL_DAY_VIEW:
+		case ZmKeyMap.CAL_WEEK_VIEW:
+		case ZmKeyMap.CAL_WORK_WEEK_VIEW:
+		case ZmKeyMap.CAL_MONTH_VIEW:
+		case ZmKeyMap.CAL_SCHEDULE_VIEW:
+			this.show(ZmCalViewController.ACTION_CODE_TO_VIEW[actionCode]);
+			break;
+		
+		case ZmKeyMap.TODAY:
+			this._todayButtonListener();
+			break;
+
+		case ZmKeyMap.REFRESH:
+			this._refreshButtonListener();
+			break;
+
+		case ZmKeyMap.QUICK_ADD:
+			if (this._appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD)) {
+				var date = this._viewMgr ? this._viewMgr.getDate() : new Date();
+				this.newAppointmentHelper(date, ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
+			}
+			break;
+
+		case ZmKeyMap.EDIT:
+			var appt = this._listView[this._currentView].getSelection()[0];
+			if (appt) {
+				var ev = new DwtSelectionEvent();
+				ev.detail = DwtListView.ITEM_DBL_CLICKED;
+				ev.item = appt;
+				this._listSelectionListener(ev);
+			}
+			break;
+
+		default:
+			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
+	}
+	return true;
 };

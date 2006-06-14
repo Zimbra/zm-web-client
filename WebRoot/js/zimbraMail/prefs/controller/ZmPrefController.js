@@ -76,6 +76,31 @@ function() {
 	return this._filterRulesController;
 };
 
+ZmPrefController.prototype.getKeyMapName =
+function() {
+	return "ZmPrefController";
+};
+
+ZmPrefController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println("ZmPrefController.handleKeyAction");
+	switch (actionCode) {
+		case ZmKeyMap.CANCEL:
+			this._backListener();
+			break;
+			
+		default:
+			return ZmController.prototype.handleKeyAction.call(this, actionCode);
+			break;
+	}
+	return true;
+};
+
+ZmPrefController.prototype.getTabView =
+function() {
+	return this.getPrefsView();
+};
+
 /*
 * Enables/disables toolbar buttons.
 *

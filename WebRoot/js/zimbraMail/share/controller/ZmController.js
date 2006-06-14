@@ -136,7 +136,21 @@ function(view) {
 ZmController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmController.handleKeyAction");
-	return false;
+	switch (actionCode) {
+		case ZmKeyMap.GOTO_TAB1:
+		case ZmKeyMap.GOTO_TAB2:
+		case ZmKeyMap.GOTO_TAB3:
+		case ZmKeyMap.GOTO_TAB4:
+		case ZmKeyMap.GOTO_TAB5:
+			var tabView = this.getTabView ? this.getTabView() : null;
+			if (tabView) {
+				var idx = actionCode - ZmKeyMap.GOTO_TAB0;
+				tabView.switchToTab(idx);
+			} else {
+				return false;
+			}
+	}
+	return true;
 };
 
 ZmController.prototype._createTabGroup =

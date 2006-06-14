@@ -211,6 +211,14 @@ function(newWidth, newHeight) {
 	}
 };
 
+ZmSchedTabViewPage.prototype.toggleAllDayField =
+function() {
+	var el = this._allDayCheckbox;
+	el.checked = !el.checked;
+	this._showTimeFields(el.checked ? false : true);
+	this._apptTab.updateAllDayField(el.checked);
+	this._outlineAppt();
+};
 
 // Private / protected methods
 

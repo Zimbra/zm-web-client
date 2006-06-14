@@ -326,6 +326,11 @@ function(isAllDay) {
 	this._showTimeFields(!isAllDay);
 };
 
+ZmApptTabViewPage.prototype.toggleAllDayField =
+function() {
+	this.updateAllDayField(!this._allDayCheckbox.checked);
+};
+
 ZmApptTabViewPage.prototype.updateTimeField =
 function(dateInfo) {
 	this._startTimeSelect.setSelected(dateInfo.startHourIdx, dateInfo.startMinuteIdx, dateInfo.startAmPmIdx);
