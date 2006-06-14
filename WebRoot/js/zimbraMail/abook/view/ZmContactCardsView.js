@@ -140,9 +140,9 @@ function(contact, now, isDndIcon, getHtml) {
 	html[idx++] = ZmOrganizer.COLOR_TEXT[color] + "Bg";
 	html[idx++] = "'>";
 	html[idx++] = "<td width=16>";
-	html[idx++] = AjxImg.getImageHtml("Person", "width:16"); // XXX: set icon per contact type
+	html[idx++] = AjxImg.getImageHtml(contact.getIcon(), "width:16");
 	html[idx++] = "</td>";
-	html[idx++] = "<td width=100% valign=top><div class='contactHeader'>";
+	html[idx++] = "<td width=100% valign=top><div class='contactHeader'>&nbsp;";
 	html[idx++] = contact.getFileAs();
 	html[idx++] = "</div></td>";
 
@@ -154,31 +154,61 @@ function(contact, now, isDndIcon, getHtml) {
 		html[idx++] = AjxImg.getImageHtml(contact.getTagImageInfo(), null, ["id='", fieldId, "'"].join(""));
 		html[idx++] = "</td>";
 	}
-	html[idx++] = "</tr><tr";
-	html[idx++] = style;
-	html[idx++] = ">";
-	
-	html[idx++] = "<td colspan=2 valign=top width=100% style='font-weight:bold; padding-left:2px'>";
-	var value = contact.getCompanyField() || "&nbsp;";
-	html[idx++] = value;
-	html[idx++] = "</td></tr>";
-/*
-	if (contact.isGal) {
-		html[idx++] = "<tr><td style='white-space:nowrap'>";
-		html[idx++] = AjxImg.getImageSpanHtml("GAL");
-		html[idx++] = "&nbsp;";
-		html[idx++] = ZmMsg.GAL;
-		html[idx++] = "</td></tr>";
-	} else if (contact.addrbook) {
-		html[idx++] = "<tr><td style='white-space:nowrap'>";
-		html[idx++] = AjxImg.getImageSpanHtml(contact.addrbook.getIcon());
-		html[idx++] = "&nbsp;";
-		html[idx++] = contact.addrbook.getName();
+	html[idx++] = "</tr>";
+
+	// Company
+	if (!contact.isGroup()) {
+		html[idx++] = "<tr";
+		html[idx++] = style;
+		html[idx++] = ">";
+
+		html[idx++] = "<td colspan=2 valign=top width=100% style='font-weight:bold; padding-left:2px'>";
+		var value = contact.getCompanyField() || "&nbsp;";
+		html[idx++] = value;
 		html[idx++] = "</td></tr>";
 	}
-*/
-	html[idx++] = "<tr height=100%><td valign=top colspan=10>";
 
+	html[idx++] = "<tr height=100%><td valign=top colspan=10>";
+	idx = contact.isGroup()
+		? this._getGroupHtml(contact, isDndIcon, style, html, idx)
+		: this._getContactHtml(contact, isDndIcon, style, html, idx);
+	html[idx++] = "</td></tr>";
+
+	if (!contact.isLoaded()) {
+		html[idx++] = "<tr><td colspan=10 class='FinishLoading' onclick='ZmContactCardsView._loadContact(this, ";
+		html[idx++] = '"' + contact.id + '"';
+		html[idx++] = ")'><center>";
+		html[idx++] = ZmMsg.finishLoading;
+		html[idx++] = "</center></td></tr>";
+	}
+	html[idx++] = "</table>";
+
+	if (div) {
+		div.innerHTML = html.join("");
+		return div;
+	} else {
+		html[idx++] = "</div>";
+		return html.join("");
+	}
+};
+
+ZmContactCardsView.prototype._getField = 
+function(fname, value, skipObjectify, type) {
+	var newValue = skipObjectify ? value : this._generateObject(value, type);
+	var html = new Array();
+	var i = 0;
+
+	html[i++] = "<td valign=top class='ZmContactFieldValue'>";
+	html[i++] = fname;
+	html[i++] = " </td><td valign=top class='ZmContactField'>";
+	html[i++] = AjxStringUtil.nl2br(newValue);
+	html[i++] = "</td>";
+
+	return html.join("");
+};
+
+ZmContactCardsView.prototype._getContactHtml =
+function(contact, isDndIcon, style, html, idx) {
 	html[idx++] = "<table height=100% border=0 cellpadding=1 cellspacing=1>";
 	html[idx++] = "<tr height=100%><td valign=top>";
 	html[idx++] = "<table border=0><tr";
@@ -190,7 +220,7 @@ function(contact, now, isDndIcon, getHtml) {
 	else if (value = contact.getHomeAddrField())
 		html[idx++] = this._getField("H", value, isDndIcon);
 	html[idx++] = "</tr>";
-	
+
 	if (value = contact.getAttr("email")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
@@ -212,9 +242,9 @@ function(contact, now, isDndIcon, getHtml) {
 		html[idx++] = this._getField("E3", value, isDndIcon, ZmObjectManager.EMAIL);
 		html[idx++] = "</tr>";
 	}
-	
+
 	html[idx++] = "</table>";
-	
+
 	html[idx++] = "</td><td valign=top>";
 	html[idx++] = "<table border=0>";
 	// add second column of home info here
@@ -253,41 +283,38 @@ function(contact, now, isDndIcon, getHtml) {
 		html[idx++] = this._getField("H", value, isDndIcon, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
-	
+
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr></table>";
-	html[idx++] = "</td></tr>";
-	if (!contact.isLoaded()) {
-		html[idx++] = "<tr><td colspan=10 class='FinishLoading' onclick='ZmContactCardsView._loadContact(this, ";
-		html[idx++] = '"' + contact.id + '"';
-		html[idx++] = ")'><center>";
-		html[idx++] = ZmMsg.finishLoading;
-		html[idx++] = "</center></td></tr>";
-	}
-	html[idx++] = "</table>";
 
-	if (div) {
-		div.innerHTML = html.join("");
-		return div;
-	} else {
-		html[idx++] = "</div>";
-		return html.join("");
-	}
+	return idx;
 };
 
-ZmContactCardsView.prototype._getField = 
-function(fname, value, skipObjectify, type) {
-	var newValue = skipObjectify ? value : this._generateObject(value, type);
-	var html = new Array();
-	var i = 0;
+ZmContactCardsView.prototype._getGroupHtml =
+function(contact, isDndIcon, style, html, idx) {
+	var icon = contact.isGal ? "GALContact" : (contact.addrbook.link ? "SharedContact" : "Contact");
+	var email = contact.getAttr(ZmContact.F_email);
+	var addrs = ZmEmailAddress.parseEmailString(email);
+	var rows = AjxEnv.isIE ? 5 : 6;
 
-	html[i++] = "<td valign=top class='ZmContactFieldValue'>";
-	html[i++] = fname;
-	html[i++] = " </td><td valign=top class='ZmContactField'>";
-	html[i++] = AjxStringUtil.nl2br(newValue);
-	html[i++] = "</td>";
+	html[idx++] = "<div style='width:300px;";
+	html[idx++] = AjxEnv.isIE ? " height:106px;" : "height:116px;";
+	html[idx++] = isDndIcon ? " overflow:hidden'>" : " overflow:auto'>";
+	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1><tr>";
+	for (var i = 0; i < addrs.all.size(); i++) {
+		if (i%rows == 0)
+			html[idx++] = "<td style='white-space:nowrap'>";
+		html[idx++] = AjxImg.getImageSpanHtml(icon);
+		html[idx++] = "&nbsp;"
+		html[idx++] = addrs.all.get(i).address;
+		html[idx++] = "<br>";
+		if ((i+1)%rows == 0)
+			html[idx++] = "</td>";
+	}
+	html[idx++] = "</tr></table>";
+	html[idx++] = "</div>";
 
-	return html.join("");
+	return idx;
 };
 
 // override so that we don't get back ZmListView._fillerString
