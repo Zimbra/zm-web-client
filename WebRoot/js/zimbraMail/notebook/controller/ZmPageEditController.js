@@ -205,6 +205,11 @@ function() {
 	return ZmMsg.tagPage;
 };
 
+ZmPageEditController.prototype._saveListener =
+function(ev) {
+	this._doSave(true);
+};
+
 ZmPageEditController.prototype._doSave =
 function(popViewWhenSaved) {
 	var name = this._pageEditView.getPageName();
@@ -227,11 +232,6 @@ function(popViewWhenSaved) {
 	this._page.save(this._saveCallback, this._saveErrorCallback);
 };
 
-ZmPageEditController.prototype._saveListener =
-function(ev) {
-	this._doSave(true);
-};
-
 ZmPageEditController.prototype._saveResponseHandler = function(response) {
 	this._exitViewAfterSave();
 
@@ -243,6 +243,8 @@ ZmPageEditController.prototype._saveResponseHandler = function(response) {
 		var action = new AjxTimedAction(this, this._saveResponseHandlerShowNote, args);
 		AjxTimedAction.scheduleAction(action, 0);
 	}
+
+	this._appCtxt.setStatusMsg(ZmMsg.pageSaved);
 };
 ZmPageEditController.prototype._saveResponseHandlerShowNote = 
 function(folderId, name) {
