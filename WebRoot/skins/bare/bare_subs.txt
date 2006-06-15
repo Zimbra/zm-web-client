@@ -42,8 +42,8 @@ _SelUnfocusColor_	= #dddddd
 #	These are applied to, eg, <div id='skin_border_logo'> in the skin.css file
 #######
 
-_MonoColor_					= @_BaseColorD1_@
-_MonoDarkColor_				= @_BaseColorD4_@
+_MonoColor_					= @_BaseColorD10_@
+_MonoDarkColor_				= @_BaseColorD25_@
 		
 WhiteBg						= background-color:white;
 MonoBg						= background-color:@_MonoColor_@;
