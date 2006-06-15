@@ -118,7 +118,11 @@ function(callback, url, response) {
 
 ZmNotebookPageView.prototype.getTitle =
 function() {
-	var folderId = this.getSelection().getFolderId();
+	var selection = this.getSelection();
+	if (!selection) {
+		return ZmMsg.zimbraTitle;
+	}
+	var folderId = selection.getFolderId();
 	var notebook = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK).getById(folderId);
 	var notebookName = notebook.getName();
 	return [ZmMsg.zimbraTitle, notebookName].join(": ");

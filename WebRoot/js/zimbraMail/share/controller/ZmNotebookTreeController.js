@@ -139,6 +139,10 @@ function() {
 // Method that is run when a tree item is left-clicked
 ZmNotebookTreeController.prototype._itemClicked =
 function(notebook) {
+	if (this._appCtxt.getCurrentViewId() != ZmController.NOTEBOOK_PAGE_VIEW) {
+		this._appCtxt.getAppViewMgr().setView(ZmController.NOTEBOOK_PAGE_VIEW);
+	};
+	
 	var notebookApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var notebookController = notebookApp.getNotebookController();
 	notebookController.show(notebook.id, true);
