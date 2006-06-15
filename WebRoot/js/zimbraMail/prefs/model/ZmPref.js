@@ -234,24 +234,28 @@ ZmPref.SETUP[ZmSetting.SIGNATURE] = {
 
 ZmPref.SETUP[ZmSetting.VACATION_MSG_ENABLED] = {
 	displayName:		ZmMsg.awayMessageEnabled,
-	displayContainer:	ZmPref.TYPE_CHECKBOX};
+	displayContainer:	ZmPref.TYPE_CHECKBOX,
+	precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED};
 
 ZmPref.SETUP[ZmSetting.VACATION_MSG] = {
 	displayName:		ZmMsg.awayMessage,
 	displayContainer:	ZmPref.TYPE_TEXTAREA,
 	maxLength:			ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE],
 	errorMessage:       AjxMessageFormat.format(ZmMsg.invalidAwayMessage, ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE]),
+	precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.NOTIF_ENABLED] = {
 	displayName:		ZmMsg.mailNotifEnabled,
-	displayContainer:	ZmPref.TYPE_CHECKBOX};
+	displayContainer:	ZmPref.TYPE_CHECKBOX,
+	precondition:		ZmSetting.NOTIF_FEATURE_ENABLED};
 
 ZmPref.SETUP[ZmSetting.NOTIF_ADDRESS] = {
 	displayName:		ZmMsg.mailNotifAddress,
 	displayContainer:	ZmPref.TYPE_INPUT,
 	validationFunction: ZmPref.validateEmail,
 	errorMessage:       ZmMsg.invalidEmail,
+	precondition:		ZmSetting.NOTIF_FEATURE_ENABLED,
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED] = {
