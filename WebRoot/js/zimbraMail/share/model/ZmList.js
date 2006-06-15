@@ -69,14 +69,14 @@ ZmList.prototype.constructor = ZmList;
 
 // for item creation
 ZmList.ITEM_CLASS = {};
-ZmList.ITEM_CLASS[ZmItem.CONV]		= ZmConv; 
-ZmList.ITEM_CLASS[ZmItem.MSG]		= ZmMailMsg;
-ZmList.ITEM_CLASS[ZmItem.ATT]		= ZmMimePart;
-ZmList.ITEM_CLASS[ZmItem.CONTACT]	= ZmContact;
-ZmList.ITEM_CLASS[ZmItem.APPT]		= ZmAppt;
-ZmList.ITEM_CLASS[ZmItem.RESOURCE]	= ZmResource;
-ZmList.ITEM_CLASS[ZmItem.PAGE]		= ZmPage;
-ZmList.ITEM_CLASS[ZmItem.DOCUMENT]	= ZmDocument;
+ZmList.ITEM_CLASS[ZmItem.CONV]		= "ZmConv";
+ZmList.ITEM_CLASS[ZmItem.MSG]		= "ZmMailMsg";
+ZmList.ITEM_CLASS[ZmItem.ATT]		= "ZmMimePart";
+ZmList.ITEM_CLASS[ZmItem.CONTACT]	= "ZmContact";
+ZmList.ITEM_CLASS[ZmItem.APPT]		= "ZmAppt";
+ZmList.ITEM_CLASS[ZmItem.RESOURCE]	= "ZmResource";
+ZmList.ITEM_CLASS[ZmItem.PAGE]		= "ZmPage";
+ZmList.ITEM_CLASS[ZmItem.DOCUMENT]	= "ZmDocument";
 
 // node names for item types
 ZmList.NODE = {};
@@ -143,8 +143,12 @@ function(item) {
 */
 ZmList.prototype.create =
 function(args) {
-	var item = new ZmList.ITEM_CLASS[this.type](this._appCtxt, this);
-	item.create(args);
+	var item;
+	var obj = eval(ZmList.ITEM_CLASS[this.type]);
+	if (obj) {
+		item = new obj(this._appCtxt, this);
+		item.create(args);
+	}
 
 	return item;
 }
@@ -236,7 +240,9 @@ function(respNode) {
 			/// TODO: take this out, let view decide whether to show items in Trash
 			if (parseInt(node.getAttribute("l")) == ZmFolder.ID_TRASH && (this.type != ZmItem.CONTACT))
 				continue;
-			this.add(ZmList.ITEM_CLASS[this.type].createFromDom(node, args));
+			var obj = eval(ZmList.ITEM_CLASS[this.type]);
+			if (obj)
+				this.add(obj.createFromDom(node, args));
 		}
 	}
 }
@@ -252,7 +258,9 @@ function(node, args) {
 	if (!args) args = new Object();
 	args.appCtxt = this._appCtxt;
 	args.list = this;
-	this.add(ZmList.ITEM_CLASS[this.type].createFromDom(node, args));
+	var obj = eval(ZmList.ITEM_CLASS[this.type]);
+	if (obj)
+		this.add(obj.createFromDom(node, args));
 }
 
 /* 
@@ -453,10 +461,13 @@ function(item, mods, callback) {
 
 ZmList.prototype.notifyCreate =
 function(node) {
-	var item = ZmList.ITEM_CLASS[this.type].createFromDom(node, {appCtxt: this._appCtxt, list: this});
-	this.add(item, this._sortIndex(item));
-	this.createLocal(item);
-	this._notify(ZmEvent.E_CREATE, {items: [item]});
+	var obj = eval(ZmList.ITEM_CLASS[this.type]);
+	if (obj) {
+		var item = obj.createFromDom(node, {appCtxt: this._appCtxt, list: this});
+		this.add(item, this._sortIndex(item));
+		this.createLocal(item);
+		this._notify(ZmEvent.E_CREATE, {items: [item]});
+	}
 };
 
 // Local change handling

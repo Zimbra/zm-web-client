@@ -210,7 +210,8 @@ function(contact, idx) {
 		return contact;
 
 	var args = {appCtxt:this._appCtxt, addressHash:{}, list:this};
-	var realContact = ZmList.ITEM_CLASS[this.type].createFromDom(contact, args);
+	var obj = eval(ZmList.ITEM_CLASS[this.type]);
+	var realContact = obj ? obj.createFromDom(contact, args) : null;
 
 	if (this.isCanonical) {
 		var a = this.getArray();

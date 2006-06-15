@@ -742,6 +742,11 @@ function(appName, view) {
 	}
 };
 
+ZmZimbraMail.prototype.isChildWindow =
+function() {
+	return false;
+};
+
 // Private methods
 
 ZmZimbraMail.prototype._preloadViews =

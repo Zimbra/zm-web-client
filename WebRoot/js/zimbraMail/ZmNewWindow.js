@@ -221,6 +221,11 @@ function() {
 // App view mgr calls this, we don't need it to do anything.
 ZmNewWindow.prototype.setActiveApp = function() {};
 
+ZmNewWindow.prototype.isChildWindow =
+function() {
+	return true;
+};
+
 
 // Private methods
 

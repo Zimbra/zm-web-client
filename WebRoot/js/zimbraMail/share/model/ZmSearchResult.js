@@ -25,18 +25,20 @@
 
 function ZmSearchResult(appCtxt, search) {
 
+	var isChildWindow = appCtxt.getAppController().isChildWindow();
+
 	this._results = {};
-	if (appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
+	if (!isChildWindow && appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 		this._results[ZmItem.CONV] = new ZmMailList(ZmItem.CONV, appCtxt, search);
 	}
 	this._results[ZmItem.MSG] = new ZmMailList(ZmItem.MSG, appCtxt, search);
-	if (appCtxt.get(ZmSetting.ATT_VIEW_ENABLED)) {
+	if (!isChildWindow && appCtxt.get(ZmSetting.ATT_VIEW_ENABLED)) {
 		this._results[ZmItem.ATT] = new ZmMailList(ZmItem.ATT, appCtxt, search);
 	}
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED) || appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		this._results[ZmItem.CONTACT] = new ZmContactList(appCtxt, search, false);
 	}
-	if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+	if (!isChildWindow && appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
 		this._results[ZmItem.PAGE] = new ZmPageList(appCtxt, search);
 		/***
 		// NOTE: Use the same list for document objects
@@ -45,7 +47,7 @@ function ZmSearchResult(appCtxt, search) {
 		this._results[ZmItem.DOCUMENT] = new ZmPageList(appCtxt, search, ZmItem.DOCUMENT);
 		/***/
 	}
-	if (appCtxt.get(ZmSetting.GAL_ENABLED)) {
+	if (!isChildWindow && appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		this._results[ZmItem.RESOURCE] = new ZmResourceList(appCtxt, null, search);
 	}
 

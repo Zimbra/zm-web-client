@@ -460,7 +460,9 @@ function(shell) {
 
 ZmAppCtxt.prototype.getTree =
 function(type) {
-	return this._trees[type];
+	return this.getAppController().isChildWindow()
+		? window.parentController._appCtxt.getTree(type)
+		: this._trees[type];
 };
 
 ZmAppCtxt.prototype.setTree =
@@ -548,7 +550,7 @@ function() {
 
 ZmAppCtxt.prototype.getNewWindow = 
 function(fullVersion) {
-	var args = "height=450,width=615,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
+	var args = "height=450,width=640,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
 	var prefix = document.location.protocol + "//" + document.domain;
 	var port = (!location.port || location.port == "80") ? "" : ":" + location.port;
 	var url = prefix + port + appContextPath+"/public/launchNewWindow.jsp";

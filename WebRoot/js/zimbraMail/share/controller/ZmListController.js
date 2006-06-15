@@ -1260,10 +1260,14 @@ function(view) {
 		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, offset > 0);
 	
 		// determine also if we have more cached conv to show (in case more is wrong)
-		var hasMore = this._list ? this._list.hasMore() : false;
-		var evenMore = this._list ? (offset + this._listView[view].getLimit()) < this._list.size() : false;
-	
-		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, (hasMore || evenMore));
+		var hasMore = false;
+		if (this._list) {
+			hasMore = this._list.hasMore();
+			if (!hasMore && ((offset + this._listView[view].getLimit()) < this._list.size()))
+				hasMore = true;
+		}
+
+		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, hasMore);
 	}
 };
 
