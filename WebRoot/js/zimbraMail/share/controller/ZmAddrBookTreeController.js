@@ -45,6 +45,7 @@ function ZmAddrBookTreeController(appCtxt, type, dropTgt) {
 
 	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_ADDRBOOK] = new AjxListener(this, this._shareAddrBookListener);
+	this._listeners[ZmOperation.MOUNT_ADDRBOOK] = new AjxListener(this, this._mountAddrBookListener);
 };
 
 ZmAddrBookTreeController.prototype = new ZmFolderTreeController;
@@ -110,7 +111,10 @@ function(parent, type, id) {
 // Returns a list of desired header action menu operations
 ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_ADDRBOOK];
+	return [
+		ZmOperation.NEW_ADDRBOOK
+		//ZmOperation.MOUNT_ADDRBOOK
+	];
 };
 
 // Returns a list of desired action menu operations
@@ -157,6 +161,12 @@ function(ev) {
 	
     var sharePropsDialog = this._appCtxt.getSharePropsDialog();
     sharePropsDialog.popup(ZmSharePropsDialog.NEW, addrbook, null);
+};
+
+ZmAddrBookTreeController.prototype._mountAddrBookListener =
+function(event) {
+	var dialog = this._appCtxt.getMountFolderDialog();
+	dialog.popup(ZmMsg.mountAddrBook);
 };
 
 ZmAddrBookTreeController.prototype._changeListener =

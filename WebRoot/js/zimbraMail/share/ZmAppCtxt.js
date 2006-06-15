@@ -352,6 +352,13 @@ ZmAppCtxt.prototype.getRevokeShareDialog = function() {
 	return this._revokeShareDialog;
 };
 
+ZmAppCtxt.prototype.getMountFolderDialog = function() {
+	if (!this._mountFolderDialog) {
+		this._mountFolderDialog = new ZmMountFolderDialog(this, this.getShell());
+	}
+	return this._mountFolderDialog;
+};
+
 /**
 * Returns the dialog used to add or edit a filter rule.
 */
@@ -418,6 +425,7 @@ function() {
 	this._acceptShareDialog = null;
 	this._declineShareDialog = null;
 	this._revokeShareDialog = null;
+	this._mountFolderDialog = null;
 };
 
 ZmAppCtxt.prototype.clearUploadDialogs =

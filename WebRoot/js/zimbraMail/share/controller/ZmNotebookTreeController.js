@@ -89,7 +89,8 @@ function(actionMenu, type, id) {
 ZmNotebookTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [
-		ZmOperation.NEW_NOTEBOOK, ZmOperation.EXPAND_ALL,
+		ZmOperation.NEW_NOTEBOOK, ZmOperation.MOUNT_NOTEBOOK,
+		ZmOperation.EXPAND_ALL,
 		ZmOperation.SEP,
 		ZmOperation.REFRESH
 		/***
@@ -215,7 +216,8 @@ function(ev) {
 
 ZmNotebookTreeController.prototype._mountNotebookListener =
 function(ev) {
-	alert("TODO: mount notebook dialog");
+	var dialog = this._appCtxt.getMountFolderDialog();
+	dialog.popup(ZmMsg.mountNotebook);
 };
 
 ZmNotebookTreeController.prototype._refreshListener =

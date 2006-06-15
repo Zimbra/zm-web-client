@@ -143,7 +143,11 @@ function(actionMenu, type, id) {
 // Returns a list of desired header action menu operations
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_CALENDAR, ZmOperation.CHECK_ALL, ZmOperation.CLEAR_ALL];
+	return [
+		ZmOperation.NEW_CALENDAR,
+		//ZmOperation.MOUNT_CALENDAR,
+		ZmOperation.CHECK_ALL, ZmOperation.CLEAR_ALL
+	];
 };
 
 // Returns a list of desired action menu operations
@@ -258,7 +262,8 @@ function(ev) {
 
 ZmCalendarTreeController.prototype._mountCalListener =
 function(ev) {
-	alert("TODO: mount calendar dialog");
+	var dialog = this._appCtxt.getMountFolderDialog();
+	dialog.popup(ZmMsg.mountCalendar);
 };
 
 ZmCalendarTreeController.prototype._deleteListener = function(ev) {

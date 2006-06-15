@@ -504,10 +504,28 @@ ZmOperation.SETUP[ZmOperation.MONTH_VIEW] = {
 	image:		"MonthView"
 };
 
+ZmOperation.MOUNT_ADDRBOOK = i++;
+ZmOperation.SETUP[ZmOperation.MOUNT_ADDRBOOK] = {
+	textKey:	"mountAddrBook",
+	image:		"ContactsFolder"
+};
+
 ZmOperation.MOUNT_CALENDAR = i++;
 ZmOperation.SETUP[ZmOperation.MOUNT_CALENDAR] = {
 	textKey:	"mountCalendar",
 	image:		"GroupSchedule"
+};
+
+ZmOperation.MOUNT_FOLDER = i++;
+ZmOperation.SETUP[ZmOperation.MOUNT_FOLDER] = {
+	textKey:	"mountFolder",
+	image:		"Folder"
+};
+
+ZmOperation.MOUNT_NOTEBOOK = i++;
+ZmOperation.SETUP[ZmOperation.MOUNT_NOTEBOOK] = {
+	textKey:	"mountNotebook",
+	image:		"Notebook"
 };
 
 ZmOperation.MOVE = i++;
@@ -807,6 +825,12 @@ ZmOperation.SHARE_DECLINE = i++;
 ZmOperation.SETUP[ZmOperation.SHARE_DECLINE] = {
 	textKey:	"declineShare",
 	image:		"Cancel"
+};
+
+ZmOperation.SHARE_FOLDER = i++;
+ZmOperation.SETUP[ZmOperation.SHARE_FOLDER] = {
+	textKey:	"shareFolder",
+	image:		"Folder"
 };
 
 ZmOperation.SHARE_NOTEBOOK = i++;
