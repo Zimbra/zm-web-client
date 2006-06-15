@@ -1268,7 +1268,7 @@ function(msg, preferHtml, callback) {
 };
 
 ZmMailMsgView._handleResponseGetPrintHtml =
-function(msg, callback, result) {
+function(msg, preferHtml, callback, result) {
 	var resp = result.getResponse().GetMsgResponse;
 	msg._loadFromDom(resp.m[0]);
 	ZmMailMsgView._printMessage(msg, preferHtml, callback);
