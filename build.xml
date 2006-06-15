@@ -610,9 +610,15 @@
   -->
   <target name="dev-sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
-      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**,ALE/**"/>
+      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**,ALE/**" excludes="**/*.css"/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
+	<copy verbose='true' todir='${deploy.dir}${deploy.path}/css'>
+	  <fileset dir='${ajax.dir}/WebRoot/js/config/style' includes='*.css' />
+	  <fileset dir='WebRoot/js/zimbra/config/style' includes='*.css' />
+	  <fileset dir='WebRoot/js/zimbraAdmin/config/style' includes='*.css' />
+	  <fileset dir='WebRoot/js/zimbraMail/config/style' includes='*.css' />
+	</copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}/js/ajax">
       <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js,**/*.css" excludes="**/img/"/>
     </copy>
@@ -622,7 +628,6 @@
       <fileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
       <fileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
     </copy>
-
     <dependset>
       <srcfileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
       <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
