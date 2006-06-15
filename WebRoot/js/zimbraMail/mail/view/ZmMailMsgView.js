@@ -39,7 +39,7 @@ function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
 	// expand/collapse vars
-	this._expandHeader = false;
+	this._expandHeader = true;
 	this._expandDivId = Dwt.getNextId();
 
 	// do we add a close button in the header section?
