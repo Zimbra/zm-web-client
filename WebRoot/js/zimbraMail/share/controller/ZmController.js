@@ -175,20 +175,20 @@ function(actionCode) {
 
 ZmController.prototype._createTabGroup =
 function(name) {
+	name = name ? name : this.toString();
 	this._tabGroup = new DwtTabGroup(name);
-}
+	return this._tabGroup;
+};
 
 ZmController.prototype._setTabGroup =
 function(tabGroup) {
 	this._tabGroup = tabGroup;
-}
-
+};
 
 ZmController.prototype.getTabGroup =
 function() {
 	return this._tabGroup;
-}
-
+};
 
 ZmController.prototype._showLoginDialog =
 function(bReloginMode) {

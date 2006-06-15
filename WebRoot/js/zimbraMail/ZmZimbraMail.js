@@ -376,7 +376,7 @@ function(params) {
 	/* Appview manager is the place for these. the issue is that the skins will need to provide the
 	 * tabgroup index location of each of the top level views
 	 */
-	DBG.println("SETTING SEARCH CONTROLLER TAB GROUP")
+	DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP")
 	var rootTg = this._appCtxt.getRootTabGroup();
 	rootTg.addMember(this._appCtxt.getSearchController().getTabGroup());
 	// Add dummy app view tab group. This will get replaced right away when the
@@ -419,16 +419,16 @@ function(params) {
 
 /*
 * Startup: part 4
-* Does a couple housecleaning tasks, then loads the contacts.
+* Does a couple housecleaning tasks, then sets focus.
 */
 ZmZimbraMail.prototype._handleResponseStartup2 =
 function() {
 	this.setSessionTimer(true);
 	this._killSplash();
 
-	//ROSSD will be moved?
 	this._shell.getKeyboardMgr().setTabGroup(this._appCtxt.getRootTabGroup());
-	//this._shell.getKeyboardMgr().grabFocus(this._appCtxt.getSearchController().getSearchToolbar().getSearchField());
+	var startupFocusItem = this._appViewMgr.getCurrentView().getController().getCurrentView();	// returns a list view
+	this._shell.getKeyboardMgr().grabFocus(startupFocusItem);
 };
 
 /**

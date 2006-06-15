@@ -774,19 +774,16 @@ function(id) {
 
 ZmMailListController.prototype._preHideCallback = 
 function() {
-	//DBG.println("ZmMailListController.prototype._preHideCallback");
+	DBG.println(AjxDebug.DBG2, "ZmMailListController.prototype._preHideCallback");
 	var currentFocusMember = this._appCtxt.getRootTabGroup().getFocusMember();
 	var myTg = this.getTabGroup();
-	this._savedFocusMember = 
-		(currentFocusMember && myTg && myTg.contains(currentFocusMember))
-			? this._savedFocusMember = currentFocusMember
-			: this._savedFocusMember = null;
+	this._savedFocusMember = (currentFocusMember && myTg && myTg.contains(currentFocusMember)) ? currentFocusMember : null;
 	return true;
 };
 
 ZmMailListController.prototype._postShowCallback = 
 function() {
-	//DBG.println("ZmMailListController.prototype._postShowCallback");
+	DBG.println(AjxDebug.DBG2, "ZmMailListController.prototype._postShowCallback");
 	var rootTg = this._appCtxt.getRootTabGroup();
 	var myTg = this.getTabGroup();
 	var kbMgr = this._shell.getKeyboardMgr();
@@ -802,5 +799,3 @@ function() {
 	}
 	return true;
 };
-
-

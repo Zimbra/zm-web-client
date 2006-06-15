@@ -288,6 +288,7 @@ function(view) {
 	this._initializeToolBar(view);
 	this._initializeListView(view);
 	this._initializeActionMenu();
+	this._initializeTabGroup(view);
 };
 
 // Below are functions that return various groups of operations, for cafeteria-style
@@ -399,6 +400,14 @@ function() {
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._setupTagMenu(this._actionMenu);
 	}
+};
+
+ZmListController.prototype._initializeTabGroup =
+function(view) {
+	var tg = this._createTabGroup();
+	tg.newParent(this._appCtxt.getRootTabGroup());
+	tg.addMember(this._toolbar[view]);
+	tg.addMember(this._listView[view]);
 };
 
 /**

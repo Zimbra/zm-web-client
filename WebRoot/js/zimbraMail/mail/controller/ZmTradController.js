@@ -86,10 +86,6 @@ function(view, toggle) {
 ZmTradController.prototype._createDoublePaneView = 
 function() {
 	var view = new ZmTradView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
-	this._createTabGroup("Trad");
-	var tg = this.getTabGroup();
-	tg.newParent(this._appCtxt.getRootTabGroup());
-	tg.addMember(view.getMsgListView());
 	return view;
 };
 

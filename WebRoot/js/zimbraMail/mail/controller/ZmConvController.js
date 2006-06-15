@@ -86,10 +86,6 @@ function() {
 ZmConvController.prototype._createDoublePaneView = 
 function() {
 	var view = new ZmConvView(this._container, this, this._dropTgt);
-	this._createTabGroup("Conv");
-	var tg = this.getTabGroup();
-	tg.newParent(this._appCtxt.getRootTabGroup());
-	tg.addMember(view.getMsgListView());
 	return view;
 }
 
