@@ -96,6 +96,8 @@ ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_FOLDER]		= ZmOperation.NEW_FOLDE
 ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE]	= ZmOperation.NEW_MESSAGE;
 ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_TAG]		= ZmOperation.NEW_TAG;
 
+ZmListController.ACTION_TAG_RE = new RegExp("ToggleTag" + "(\\d+)");
+
 // abstract public methods
 
 // public methods
@@ -218,31 +220,25 @@ function(actionCode) {
 		case ZmKeyMap.TAG0:
 			break;
 
-		case ZmKeyMap.TAG1:
-		case ZmKeyMap.TAG2:
-		case ZmKeyMap.TAG3:
-		case ZmKeyMap.TAG4:
-		case ZmKeyMap.TAG5:
-		case ZmKeyMap.TAG6:
-		case ZmKeyMap.TAG7:
-		case ZmKeyMap.TAG8:
-		case ZmKeyMap.TAG9:
-			if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-				var items = listView.getSelection();
-				if (items && items.length) {
-					var tags = this._appCtxt.getTree(ZmOrganizer.TAG);
-					var idx = actionCode - ZmKeyMap.TAG0;
-					var tag = tags ? tags.getByIndex(idx) : null;	// root will be first in list
-					if (tag) {
-						var doTag = !items[0].hasTag(tag.id);
-						this._doTag(items, tag, doTag);
+		default:
+			// Handle action code like "ToggleTag3"
+			var m = actionCode.match(ZmListController.ACTION_TAG_RE);
+			if (m && m.length) {
+				if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+					var items = listView.getSelection();
+					if (items && items.length) {
+						var idx = m[1];
+						var tags = this._appCtxt.getTree(ZmOrganizer.TAG);
+						var tag = tags ? tags.getByIndex(idx) : null;	// root will be first in list
+						if (tag) {
+							var doTag = !items[0].hasTag(tag.id);
+							this._doTag(items, tag, doTag);
+						}
 					}
 				}
+			} else {
+				return ZmController.prototype.handleKeyAction.call(this, actionCode);
 			}
-			break;
-
-		default:
-			return ZmController.prototype.handleKeyAction(this, actionCode);
 	}
 	return true;
 };

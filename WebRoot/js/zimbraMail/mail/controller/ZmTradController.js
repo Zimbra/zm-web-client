@@ -70,9 +70,9 @@ function(search) {
 };
 
 ZmTradController.prototype.switchView =
-function(view) {
+function(view, toggle) {
 	if (view == ZmController.READING_PANE_VIEW) {
-		ZmDoublePaneController.prototype.switchView.call(this, view);
+		ZmDoublePaneController.prototype.switchView.call(this, view, toggle);
 	} else if (view == ZmController.CONVLIST_VIEW) {
 		var sc = this._appCtxt.getSearchController();
 		var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, ZmController.CONVLIST_VIEW);

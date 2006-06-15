@@ -165,6 +165,18 @@ function(actionCode) {
 			this._markUnreadListener();
 			break;
 		
+		case ZmKeyMap.VIEW_BY_CONV:
+			this.switchView(ZmController.CONVLIST_VIEW);
+			break;
+			
+		case ZmKeyMap.VIEW_BY_MSG:
+			this.switchView(ZmController.TRAD_VIEW);
+			break;
+
+		case ZmKeyMap.READING_PANE:
+			this.switchView(ZmController.READING_PANE_VIEW, true);
+			break;
+
 		default:
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 			break;

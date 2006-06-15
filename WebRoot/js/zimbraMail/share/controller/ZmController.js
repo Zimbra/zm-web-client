@@ -80,6 +80,8 @@ ZmController.NOTEBOOK_PAGE_EDIT_VIEW	= i++;
 ZmController.NOTEBOOK_FILE_VIEW			= i++;
 ZmController.NOTEBOOK_SITE_VIEW			= i++;
 
+ZmController.ACTION_TAB_RE = new RegExp("GoToTab" + "(\\d+)");
+
 /* ROSSD - It feels like we may need a ZmAppViewController class to help with
  * the tab group work. Delaying this until I have more experience pushing the 
  * tab group stuff around the app to see what abstraction makes sense*/
@@ -136,16 +138,34 @@ function(view) {
 ZmController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmController.handleKeyAction");
+	var tabView = this.getTabView ? this.getTabView() : null;
+	if (!tabView) {
+		return false;
+	}
 	switch (actionCode) {
-		case ZmKeyMap.GOTO_TAB1:
-		case ZmKeyMap.GOTO_TAB2:
-		case ZmKeyMap.GOTO_TAB3:
-		case ZmKeyMap.GOTO_TAB4:
-		case ZmKeyMap.GOTO_TAB5:
-			var tabView = this.getTabView ? this.getTabView() : null;
-			if (tabView) {
-				var idx = actionCode - ZmKeyMap.GOTO_TAB0;
-				tabView.switchToTab(idx);
+
+		case ZmKeyMap.GOTO_NEXT_TAB:
+			var curTab = tabView.getCurrentTab();
+			if (curTab < tabView.getNumTabs()) {
+				tabView.switchToTab(curTab + 1);
+			}
+			break;
+			
+		case ZmKeyMap.GOTO_PREV_TAB:
+			var curTab = tabView.getCurrentTab();
+			if (curTab > 1) {
+				tabView.switchToTab(curTab - 1);
+			}
+			break;
+			
+		default:
+			// Handle action code like "GoToTab3"
+			var m = actionCode.match(ZmController.ACTION_TAB_RE);
+			if (m && m.length) {
+				var idx = m[1];
+				if ((idx <= tabView.getNumTabs()) && (idx != tabView.getCurrentTab())) {
+					tabView.switchToTab(idx);
+				}
 			} else {
 				return false;
 			}

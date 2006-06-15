@@ -78,20 +78,21 @@ function ZmKeyMap() {
 			"ArrowRight":			ZmKeyMap.NEXT_PAGE,
 			"ArrowLeft":			ZmKeyMap.PREV_PAGE,
 			
-			"0":					ZmKeyMap.TAG0,
-			"1":					ZmKeyMap.TAG1,
-			"2":					ZmKeyMap.TAG2,
-			"3":					ZmKeyMap.TAG3,
-			"4":					ZmKeyMap.TAG4,
-			"5":					ZmKeyMap.TAG5,
-			"6":					ZmKeyMap.TAG6,
-			"7":					ZmKeyMap.TAG7,
-			"8":					ZmKeyMap.TAG8,
-			"9":					ZmKeyMap.TAG9
+			"G,1":					ZmKeyMap.TAG1,
+			"G,2":					ZmKeyMap.TAG2,
+			"G,3":					ZmKeyMap.TAG3,
+			"G,4":					ZmKeyMap.TAG4,
+			"G,5":					ZmKeyMap.TAG5,
+			"G,6":					ZmKeyMap.TAG6,
+			"G,7":					ZmKeyMap.TAG7,
+			"G,8":					ZmKeyMap.TAG8,
+			"G,9":					ZmKeyMap.TAG9
 	};
 	
 	// for these to work, controller must implement getTabView()
 	this._map[ZmKeyMap.TABVIEW_KEYMAP] = {
+			"Alt+ArrowRight":		ZmKeyMap.GOTO_NEXT_TAB,
+			"Alt+ArrowLeft":		ZmKeyMap.GOTO_PREV_TAB,
 			"Alt+1":				ZmKeyMap.GOTO_TAB1,
 			"Alt+2":				ZmKeyMap.GOTO_TAB2,
 			"Alt+3":				ZmKeyMap.GOTO_TAB3,
@@ -145,7 +146,11 @@ function ZmKeyMap() {
 			".,J":					ZmKeyMap.MOVE_TO_JUNK,
 			"Shift+.,I":			ZmKeyMap.MOVE_TO_INBOX,
 			"Shift+.,T":			ZmKeyMap.MOVE_TO_TRASH,
-			"Shift+.,J":			ZmKeyMap.MOVE_TO_JUNK
+			"Shift+.,J":			ZmKeyMap.MOVE_TO_JUNK,
+			
+			"V,C":					ZmKeyMap.VIEW_BY_CONV,
+			"V,M":					ZmKeyMap.VIEW_BY_MSG,
+			"R,P":					ZmKeyMap.READING_PANE
 	};
 	
 	this._map["ZmConvController"] = {
@@ -224,85 +229,83 @@ ZmKeyMap.GLOBAL_KEYMAP	= "Global";
 ZmKeyMap.TABVIEW_KEYMAP	= "TabView";
 
 // Action codes
-var i = 1;
-
-ZmKeyMap.ADDRESS_PICKER		= i++;
-ZmKeyMap.ALL_DAY			= i++;
-ZmKeyMap.ASSISTANT			= i++;
-ZmKeyMap.ATTACHMENT			= i++;
-ZmKeyMap.CAL_DAY_VIEW		= i++;
-ZmKeyMap.CAL_MONTH_VIEW		= i++;
-ZmKeyMap.CAL_SCHEDULE_VIEW	= i++;
-ZmKeyMap.CAL_WEEK_VIEW		= i++
-ZmKeyMap.CAL_WORK_WEEK_VIEW	= i++;
-ZmKeyMap.CANCEL				= i++;
-ZmKeyMap.DBG_NONE			= i++;
-ZmKeyMap.DBG_1				= i++;
-ZmKeyMap.DBG_2				= i++;
-ZmKeyMap.DBG_3				= i++;
-ZmKeyMap.DBG_TIMING			= i++;
-ZmKeyMap.DEL				= i++;
-ZmKeyMap.EDIT				= i++;
-ZmKeyMap.FLAG				= i++;
-ZmKeyMap.FORWARD			= i++;
-ZmKeyMap.FORWARD_ATT		= i++;
-ZmKeyMap.FORWARD_INLINE		= i++;
-ZmKeyMap.GOTO_CALENDAR		= i++;
-ZmKeyMap.GOTO_CONTACTS		= i++;
-ZmKeyMap.GOTO_DRAFTS		= i++;
-ZmKeyMap.GOTO_IM			= i++;
-ZmKeyMap.GOTO_INBOX			= i++;
-ZmKeyMap.GOTO_MAIL			= i++;
-ZmKeyMap.GOTO_NOTEBOOK		= i++;
-ZmKeyMap.GOTO_OPTIONS		= i++;
-ZmKeyMap.GOTO_SENT			= i++;
-ZmKeyMap.GOTO_TRASH			= i++;
-ZmKeyMap.HTML_FORMAT		= i++;
-ZmKeyMap.LOGOFF				= i++;
-ZmKeyMap.MARK_READ			= i++;
-ZmKeyMap.MARK_UNREAD		= i++;
-ZmKeyMap.MOVE_TO_INBOX		= i++;
-ZmKeyMap.MOVE_TO_JUNK		= i++;
-ZmKeyMap.MOVE_TO_TRASH		= i++;
-ZmKeyMap.NEW				= i++;
-ZmKeyMap.NEW_APPT			= i++;
-ZmKeyMap.NEW_CALENDAR		= i++;
-ZmKeyMap.NEW_CONTACT		= i++;
-ZmKeyMap.NEW_FOLDER			= i++;
-ZmKeyMap.NEW_MESSAGE		= i++;
-ZmKeyMap.NEW_TAG			= i++;
-ZmKeyMap.NEW_WINDOW			= i++;
-ZmKeyMap.NEXT_CONV			= i++;
-ZmKeyMap.NEXT_PAGE			= i++;
-ZmKeyMap.GOTO_TAB0			= i++;
-ZmKeyMap.GOTO_TAB1			= i++;
-ZmKeyMap.GOTO_TAB2			= i++;
-ZmKeyMap.GOTO_TAB3			= i++;
-ZmKeyMap.GOTO_TAB4			= i++;
-ZmKeyMap.GOTO_TAB5			= i++;
-ZmKeyMap.PREV_CONV			= i++;
-ZmKeyMap.PREV_PAGE			= i++;
-ZmKeyMap.PRINT				= i++;
-ZmKeyMap.PRINT_ALL			= i++;
-ZmKeyMap.QUICK_ADD			= i++;
-ZmKeyMap.REFRESH			= i++;
-ZmKeyMap.REPLY				= i++;
-ZmKeyMap.REPLY_ALL			= i++;
-ZmKeyMap.SAVE				= i++;
-ZmKeyMap.SEND				= i++;
-ZmKeyMap.SPAM				= i++;
-ZmKeyMap.SPELLCHECK			= i++;
-ZmKeyMap.TAG0				= i++;
-ZmKeyMap.TAG1				= i++;
-ZmKeyMap.TAG2				= i++;
-ZmKeyMap.TAG3				= i++;
-ZmKeyMap.TAG4				= i++;
-ZmKeyMap.TAG5				= i++;
-ZmKeyMap.TAG6				= i++;
-ZmKeyMap.TAG7				= i++;
-ZmKeyMap.TAG8				= i++;
-ZmKeyMap.TAG9				= i++;
-ZmKeyMap.TODAY				= i++;
-
-delete i;
-
+ZmKeyMap.ADDRESS_PICKER		= "ShowAddressPicker";
+ZmKeyMap.ALL_DAY			= "ToggleAllDay";
+ZmKeyMap.ASSISTANT			= "ShowAssistant";
+ZmKeyMap.ATTACHMENT			= "AddAttachment";
+ZmKeyMap.CAL_DAY_VIEW		= "CalendarDayView";
+ZmKeyMap.CAL_MONTH_VIEW		= "CalendarMonthView";
+ZmKeyMap.CAL_SCHEDULE_VIEW	= "CalendarScheduleView";
+ZmKeyMap.CAL_WEEK_VIEW		= "CalendarWeekView";
+ZmKeyMap.CAL_WORK_WEEK_VIEW	= "CalendarWorkWeekView";
+ZmKeyMap.CANCEL				= "Cancel";
+ZmKeyMap.DBG_NONE			= "DebugNone";
+ZmKeyMap.DBG_1				= "DebugLevel1";
+ZmKeyMap.DBG_2				= "DebugLevel2";
+ZmKeyMap.DBG_3				= "DebugLevel3";
+ZmKeyMap.DBG_TIMING			= "ToggleDebugTiming";
+ZmKeyMap.DEL				= "Delete";
+ZmKeyMap.EDIT				= "Edit";
+ZmKeyMap.FLAG				= "ToggleFlag";
+ZmKeyMap.FORWARD			= "Forward";
+ZmKeyMap.FORWARD_ATT		= "ForwardAsAttachment";
+ZmKeyMap.FORWARD_INLINE		= "ForwardInline";
+ZmKeyMap.GOTO_CALENDAR		= "GoToCalendar";
+ZmKeyMap.GOTO_CONTACTS		= "GoToContacts";
+ZmKeyMap.GOTO_DRAFTS		= "GoToDraftsFolder";
+ZmKeyMap.GOTO_IM			= "GoToIM";
+ZmKeyMap.GOTO_INBOX			= "GoToInboxFolder";
+ZmKeyMap.GOTO_MAIL			= "GoToMail";
+ZmKeyMap.GOTO_NEXT_TAB		= "NextTab";
+ZmKeyMap.GOTO_NOTEBOOK		= "GoToNotebook";
+ZmKeyMap.GOTO_OPTIONS		= "GoToOptions";
+ZmKeyMap.GOTO_PREV_TAB		= "PrevTab";
+ZmKeyMap.GOTO_SENT			= "GoToSentFolder";
+ZmKeyMap.GOTO_TRASH			= "GoToTrashFolder";
+ZmKeyMap.HTML_FORMAT		= "ToggleHTMLCompose";
+ZmKeyMap.LOGOFF				= "LogOff";
+ZmKeyMap.MARK_READ			= "MarkRead";
+ZmKeyMap.MARK_UNREAD		= "MarkUnread";
+ZmKeyMap.MOVE_TO_INBOX		= "MoveToInbox";
+ZmKeyMap.MOVE_TO_JUNK		= "MoveToJunk";
+ZmKeyMap.MOVE_TO_TRASH		= "MoveToTrash";
+ZmKeyMap.NEW				= "New";
+ZmKeyMap.NEW_APPT			= "NewAppointment";
+ZmKeyMap.NEW_CALENDAR		= "NewCalendar";
+ZmKeyMap.NEW_CONTACT		= "NewContact";
+ZmKeyMap.NEW_FOLDER			= "NewFolder";
+ZmKeyMap.NEW_MESSAGE		= "NewMessage";
+ZmKeyMap.NEW_TAG			= "NewTag";
+ZmKeyMap.NEW_WINDOW			= "OpenInNewWindow";
+ZmKeyMap.NEXT_CONV			= "NextConversation";
+ZmKeyMap.NEXT_PAGE			= "NextPage";
+ZmKeyMap.GOTO_TAB1			= "GoToTab1";
+ZmKeyMap.GOTO_TAB2			= "GoToTab2";
+ZmKeyMap.GOTO_TAB3			= "GoToTab3";
+ZmKeyMap.GOTO_TAB4			= "GoToTab4";
+ZmKeyMap.GOTO_TAB5			= "GoToTab5";
+ZmKeyMap.PREV_CONV			= "PreviousConversation";
+ZmKeyMap.PREV_PAGE			= "PreviousPage";
+ZmKeyMap.PRINT				= "Print";
+ZmKeyMap.PRINT_ALL			= "PrintAll";
+ZmKeyMap.QUICK_ADD			= "QuickAddAppointment";
+ZmKeyMap.READING_PANE		= "ToggleReadingPane";
+ZmKeyMap.REFRESH			= "Refresh";
+ZmKeyMap.REPLY				= "ReplyToSender";
+ZmKeyMap.REPLY_ALL			= "ReplyToAll";
+ZmKeyMap.SAVE				= "Save";
+ZmKeyMap.SEND				= "Send";
+ZmKeyMap.SPAM				= "MarkAsSpam";
+ZmKeyMap.SPELLCHECK			= "Spellcheck";
+ZmKeyMap.TAG1				= "ToggleTag1";
+ZmKeyMap.TAG2				= "ToggleTag2";
+ZmKeyMap.TAG3				= "ToggleTag3";
+ZmKeyMap.TAG4				= "ToggleTag4";
+ZmKeyMap.TAG5				= "ToggleTag5";
+ZmKeyMap.TAG6				= "ToggleTag6";
+ZmKeyMap.TAG7				= "ToggleTag7";
+ZmKeyMap.TAG8				= "ToggleTag8";
+ZmKeyMap.TAG9				= "ToggleTag9";
+ZmKeyMap.TODAY				= "GoToToday";
+ZmKeyMap.VIEW_BY_CONV		= "ViewByConversation";
+ZmKeyMap.VIEW_BY_MSG		= "ViewByMessage";

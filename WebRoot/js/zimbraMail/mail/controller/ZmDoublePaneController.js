@@ -90,13 +90,18 @@ function() {
 * Shows or hides the reading pane.
 *
 * @param view		the id of the menu item
+* @param toggle		flip state of reading pane
 */
 ZmDoublePaneController.prototype.switchView = 
-function(view) {
+function(view, toggle) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = appToolbar.getViewButton().getMenu();
 	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, view);
-	if (this._readingPaneOn == mi.getChecked()) return;
+	if (toggle) {
+		mi.setChecked(!mi.getChecked(), true);
+	} else {
+		if (this._readingPaneOn == mi.getChecked()) return;
+	}
 	
 	this._readingPaneOn = mi.getChecked();
 	this._doublePaneView.toggleView();
