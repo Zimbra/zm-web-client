@@ -52,12 +52,14 @@ ZmMountFolderDialog.prototype.constructor = ZmMountFolderDialog;
 // Constants
 
 ZmMountFolderDialog.DEFAULT_FOLDER_ID = ZmOrganizer.ID_ROOT;
+
 ZmMountFolderDialog.DEFAULT_TITLE = ZmMsg.mountFolder;
-ZmMountFolderDialog.DEFAULT_USER = "";
-ZmMountFolderDialog.DEFAULT_PATH = "Notebook";
 
 // Data
 
+ZmMountFolderDialog.prototype._folderId;
+
+ZmMountFolderDialog.prototype._nameInput;
 ZmMountFolderDialog.prototype._userInput;
 ZmMountFolderDialog.prototype._pathInput;
 
@@ -72,8 +74,9 @@ function(title, folderId, user, path, loc) {
 	this.setTitle(title || ZmMountFolderDialog.DEFAULT_TITLE);
 
 	// reset input fields
-	this._userInput.setValue(user || ZmMountFolderDialog.DEFAULT_USER);
-	this._pathInput.setValue(path || ZmMountFolderDialog.DEFAULT_PATH);
+	this._nameInput.setValue("");
+	this._userInput.setValue(user || "");
+	this._pathInput.setValue(path || "");
 
 	// show
 	DwtDialog.prototype.popup.call(this, loc);
@@ -129,9 +132,11 @@ ZmMountFolderDialog._handleKeyUp = function(event){
 };
 
 ZmMountFolderDialog._enableFieldsOnEdit = function(dialog) {
+	var name = dialog._nameInput.getValue();
 	var user = dialog._userInput.getValue();
 	var path = dialog._pathInput.getValue();
-	var enabled = user.length > 0 && user.match(/\S/) &&
+	var enabled = name.length > 0 && name.match(/\S/) &&
+				  user.length > 0 && user.match(/\S/) &&
 				  path.length > 0 && path.match(/\S/);
 	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, enabled);
 };
@@ -147,14 +152,20 @@ ZmMountFolderDialog.prototype._createMountHtml = function() {
 	// create components
 	var props = new DwtPropertySheet(this);
 	var params = { parent: props, required: true };
+	this._nameInput = new DwtInputField(params);
 	this._userInput = new DwtInputField(params);
 	this._pathInput = new DwtInputField(params);
 
 	// setup property sheet
+	props.addProperty(ZmMsg.nameLabel, this._nameInput);
 	props.addProperty(ZmMsg.userLabel, this._userInput);
 	props.addProperty(ZmMsg.pathLabel, this._pathInput);
 
 	// setup input fields
+	var inputEl = this._nameInput.getInputElement();
+	inputEl.style.width = "25em";
+	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmMountFolderDialog._handleKeyUp);
+
 	var inputEl = this._userInput.getInputElement();
 	inputEl.style.width = "25em";
 	if (this._acAddrSelectList) {
