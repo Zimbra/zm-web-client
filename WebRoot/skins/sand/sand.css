@@ -63,6 +63,9 @@ body						{	@ChromeBg@	}
 #IFDEF MSIE
 	height:26;		
 #ENDIF
+#IFDEF SAFARI
+	height:24;		margin:0 5 3 5;
+#ENDIF
 }
 
 
@@ -75,18 +78,30 @@ body						{	@ChromeBg@	}
 
 /* search builder */
 
-#skin_tr_search_builder_toolbar			{	display:none; 			}
-#skin_td_search_builder_toolbar			{	padding:0 6 0 6;		}
+#skin_border_outer						{							}
+
 #skin_border_search_builder_toolbar		{	@SkinBorderSBToolbar@	}
 #skin_container_search_builder_toolbar	{	
-	height:22;		margin:8 2 0 5;	
+	height:24;		margin:0 2 0 5;	
+#IFDEF MSIE
+	height:25;		margin:2 4 0 0;	
+#ENDIF
+#IFDEF SAFARI
+	height:22;		margin:2 2 0 2;	
+#ENDIF
 }
 
-#skin_tr_search_builder					{	display:none;			}
+#skin_tr_search_builder					{							}
 #skin_td_search_builder					{	padding:0 6 3 6;		}
 #skin_border_search_builder				{	@SkinBorderSB@			}
 #skin_container_search_builder			{	
 	height:225;		margin:0 5 0 4;
+#IFDEF MSIE
+					margin:0 4 0 -6;	
+#ENDIF
+#IFDEF SAFARI
+					margin:0 0 0 0;	
+#ENDIF
 }
 
 
@@ -101,7 +116,7 @@ body						{	@ChromeBg@	}
 	height:24;		margin:0 4 0 0;
 #ENDIF
 #IFDEF SAFARI
-	height:22;		margin:-4 2 0 5; background-color:pink;
+	height:24;		margin:-1 2 0 5;
 #ENDIF
 }
 
@@ -116,6 +131,9 @@ body						{	@ChromeBg@	}
 	height:22;		margin:4 2 0 5;	
 #IFDEF MSIE
 	height:25;		margin:0 0 0 1;
+#ENDIF
+#IFDEF SAFARI
+	height:26;		margin:0 0 0 0;
 #ENDIF
 }
 
@@ -145,6 +163,9 @@ body						{	@ChromeBg@	}
 #IFDEF MSIE
 					margin:0 -2 2 2;
 #ENDIF
+#IFDEF SAFARI
+					margin:0 0 -2 0;
+#ENDIF
 }
 
 
@@ -155,6 +176,9 @@ body						{	@ChromeBg@	}
 #skin_container_tree_footer				{	
 	height:135;		margin:0 -4 0 4;  
 #IFDEF MSIE
+					margin:0 0 0 0;
+#ENDIF
+#IFDEF SAFARI
 					margin:0 0 0 0;
 #ENDIF
 }
@@ -174,7 +198,7 @@ body						{	@ChromeBg@	}
 					margin:0 -2 0 1;
 #ENDIF
 #IFDEF SAFARI
-	height:100%; margin-left:0px;
+	height:100%; 	margin:0 0 0 0;
 #ENDIF
 }
 
@@ -210,7 +234,7 @@ body						{	@ChromeBg@	}
 		width:30; height:28;	margin:1 0 0 11;	padding:5 13 0 0;
 #ENDIF
 #IFDEF SAFARI
-		width:20; height:20;	margin:1 0 0 23;	padding:4 0 0 6;
+		width:20; height:20;	margin:1 0 0 24;	padding:4 0 0 6;
 #ENDIF
 }
 .ImgAppChiclet							{	@AppTabContainer@			}

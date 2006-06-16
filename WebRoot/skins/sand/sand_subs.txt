@@ -121,7 +121,7 @@ SkinBorderTreeSash			=
 SkinBorderAppToolbar		= @ToolbarContainer@
 SkinBorderAppChooser		= height:100%;
 SkinBorderTree				= @InsetBg@ @OutsetBorder@								border-top-width:0px;	height:100%;
-SkinBorderMiniCal			= @InsetBg@ @OutsetBorder@	-moz-border-radius:0 0 3 0; border-top-width:0px;
+SkinBorderMiniCal			= @InsetBg@ @OutsetBorder@	-moz-border-radius:0 0 3 0; 
 SkinBorderApp				= @PageBg@  @OutsetBorder@ 								border-top-width:0px; 	height:100%;
 SkinBorderStatus			= @InsetBg@ @OutsetBorder@ 	-moz-border-radius:3 3 0 3;	
 
@@ -187,6 +187,7 @@ CriticalBg					= background-color:#F5BFBF;
 _SelectSize_				= height:20px; 
 _InputSize_					= height:20px;
 WidgetHeaderSize			= height:20px;
+WidgetHeaderSize-medium		= height:26px;
 WidgetHeaderSize-big		= height:36px;
 _TreeItemSize_				= height:20px;
 _PickerSize_				= width:200px;

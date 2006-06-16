@@ -314,7 +314,7 @@ td.DDSepInvisible div {
 /* Header for each picker */
 .ZmPicker .DwtToolBar {
 	@WidgetHeaderContainer@
-	@WidgetHeaderSize@
+	@WidgetHeaderSize-medium@
 }
 
 /* Name of the picker in the header */
