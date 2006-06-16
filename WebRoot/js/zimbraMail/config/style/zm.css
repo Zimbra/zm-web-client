@@ -717,15 +717,13 @@ td.DDSepInvisible div {
 }
 
 .ZmContactInfoView .contactHeaderRow,
-.ZmContactView .contactHeaderRow,
-.ZmContactGroupView .contactHeaderRow {
+.ZmContactView .contactHeaderRow {
 	height: 40px;
 	@WidgetHeaderSize-big@
 }
 
 .ZmContactInfoView .contactHeader,
-.ZmContactView .contactHeader,
-.ZmContactGroupView .contactHeader {
+.ZmContactView .contactHeader {
 	@FontSize-biggest@
 	@Text@
 	padding-left:@BoxPaddingSize@;
@@ -750,8 +748,7 @@ td.DDSepInvisible div {
 }
 
 /* ??? -> ZmFieldLabelRight */
-.ZmContactInfoView .contactLabel,
-.ZmContactGroupView .editLabel {
+.ZmContactInfoView .contactLabel {
 	@Label@
 	width: 1%;
 	text-align: right;
@@ -765,8 +762,7 @@ td.DDSepInvisible div {
 
 /* Container for the edit screen */
 /* ??? RENAME -> ZmContactEditView */
-.ZmContactView,
-.ZmContactGroupView {
+.ZmContactView {
 	@PageBg@
 }
 

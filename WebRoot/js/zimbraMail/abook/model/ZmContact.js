@@ -41,9 +41,8 @@
 * @param id			[int]*				unique ID
 * @param list		[ZmContactList]*	list that contains this contact
 * @param type		[constant]*			item type
-* @param subType	[constant]*			item sub-type (normal contact vs. group)
 */
-function ZmContact(appCtxt, id, list, type, subType) {
+function ZmContact(appCtxt, id, list, type) {
 	if (arguments.length == 0) return;
 
 	// handle to canonical list (for contacts that are part of search results)
@@ -55,16 +54,12 @@ function ZmContact(appCtxt, id, list, type, subType) {
 
 	this.attr = {};
 	this.isGal = this.list.isGal;
-	this.subType = subType || ZmContact.SUBTYPE_CONTACT;
 
 	this.participants = new AjxVector(); // XXX: need to populate this guy (see ZmConv)
 };
 
 ZmContact.prototype = new ZmItem;
 ZmContact.prototype.constructor = ZmContact;
-
-ZmContact.SUBTYPE_CONTACT	= 1;
-ZmContact.SUBTYPE_GROUP		= 2;
 
 // fields
 ZmContact.F_assistantPhone	= "assistantPhone";
@@ -79,7 +74,6 @@ ZmContact.F_email3			= "email3";
 ZmContact.F_fileAs			= "fileAs";
 ZmContact.F_firstName		= "firstName";
 ZmContact.F_folderId        = "folderId";
-ZmContact.F_groupName		= "groupName";
 ZmContact.F_homeCity		= "homeCity";
 ZmContact.F_homeCountry		= "homeCountry";
 ZmContact.F_homeFax			= "homeFax";
@@ -138,6 +132,7 @@ ZmContact.F_EMAIL_FIELDS = [ZmContact.F_email, ZmContact.F_email2, ZmContact.F_e
 
 ZmContact.prototype.toString =
 function() {
+//	return "ZmContact: id = " + this.id + " fullName = " + this.getFullName();
 	return "ZmContact";
 };
 
@@ -193,6 +188,7 @@ function(contact) {
 	if (!attr) return;
 
 	var val = parseInt(attr.fileAs);
+
 	var fa = [];
 	var idx = 0;
 
@@ -200,11 +196,8 @@ function(contact) {
 		case ZmContact.FA_LAST_C_FIRST: /* Last, First */
 		default:
 			// if GAL contact, use full name instead (bug fix #4850,4009)
-			if (contact.isGal)
+			if (contact && contact.isGal)
 				return attr.fullName;
-			else if (attr.groupName != null)
-				return attr.groupName;
-
 			if (attr.lastName) fa[idx++] = attr.lastName;
 			if (attr.lastName && attr.firstName) fa[idx++] = ", ";
 			if (attr.firstName) fa[idx++] = attr.firstName;
@@ -268,7 +261,7 @@ function(contact) {
 * ZmContact when needed. */
 ZmContact.getAttr =
 function(contact, attr) {
-	return (contact instanceof ZmContact) ? contact.getAttr(attr) : 
+	return (contact instanceof ZmContact) ? contact.getAttr(attr) :
 			(contact && contact._attrs) ? contact._attrs[attr] : null;
 };
 
@@ -351,11 +344,6 @@ function() {
 	return false;
 };
 
-ZmContact.prototype.isGroup =
-function() {
-	return this.subType == ZmContact.SUBTYPE_GROUP || (this.attr[ZmContact.F_groupName] != null);
-};
-
 ZmContact.prototype.getDefaultDndAction =
 function() {
 	return (this.isShared() || this.isReadOnly())
@@ -373,7 +361,6 @@ function() {
 	var icon;
 	if (this.isGal)				icon = "GALContact";
 	else if (this.isShared())	icon = "SharedContact";
-	else if (this.isGroup())	icon = "Group";
 	else 						icon = "Contact";
 
 	return icon;
@@ -944,9 +931,11 @@ function(node) {
 		this.folderId = node.l;
 		this.created = node.cd;
 		this.modified = node.md;
-		// a shared contact always returns fileAs, so save it!
 		this._fileAs = node.fileAsStr;
-		this._fileAsLC = this._fileAs ? this._fileAs.toLowerCase() : null;
+
+		// for shared contacts, we'll always get fileAs
+		if (this._fileAs)
+			this._fileAsLC = this._fileAs.toLowerCase();
 
 		this.attr = node._attrs || {};
 

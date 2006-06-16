@@ -55,7 +55,6 @@ ZmController.MSG_NEW_WIN_VIEW			= i++; // needed for HACK (see ZmMailMsg)
 ZmController.CONTACT_CARDS_VIEW			= i++;
 ZmController.CONTACT_SIMPLE_VIEW 		= i++;
 ZmController.CONTACT_VIEW				= i++;
-ZmController.CONTACT_GROUP_VIEW			= i++;
 ZmController.READING_PANE_VIEW 			= i++;
 ZmController.ATT_LIST_VIEW 				= i++;
 ZmController.ATT_ICON_VIEW 				= i++;

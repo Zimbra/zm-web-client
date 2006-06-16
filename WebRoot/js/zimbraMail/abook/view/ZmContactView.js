@@ -24,7 +24,6 @@
  */
 
 function ZmContactView(parent, appCtxt, controller, isReadOnly) {
-	if (arguments.length == 0) return;
 
 	DwtComposite.call(this, parent, "ZmContactView", DwtControl.ABSOLUTE_STYLE);
 
@@ -225,12 +224,6 @@ function() {
 	return this._isDirty;
 };
 
-ZmContactView.prototype.isValid =
-function() {
-	// TODO - validate some of the necessary contact fields before allowing save
-	return true;
-};
-
 ZmContactView.prototype.setSize =
 function(width, height) {
 	DwtComposite.prototype.setSize.call(this, width, height);
@@ -243,7 +236,7 @@ function(x, y, width, height) {
 	this._sizeChildren(width, height);
 };
 
-ZmContactView.prototype.getTitle = 
+ZmContactView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, ZmMsg.contact].join(": ");
 };
@@ -463,19 +456,8 @@ function() {
 ZmContactView.prototype._setTitle =
 function(title) {
 	var div =  document.getElementById(this._fieldIds[ZmContactView.F_contactTitle]);
-	var fileAs = title || this._contact.getFileAs();
-
-	if (!fileAs) {
-		if (this._contact.id) {
-			fileAs = "&nbsp;";
-		} else {
-			fileAs = this._contact.subType == ZmContact.SUBTYPE_GROUP
-				? ZmMsg.newGroup
-				: ZmMsg.newContact;
-		}
-	}
-
-	div.innerHTML = fileAs;
+	var fileAs = title != null ? title : this._contact.getFileAs();
+	div.innerHTML = fileAs ? fileAs : this._contact.id ? "&nbsp;" : ZmMsg.newContact;
 };
 
 ZmContactView.prototype._setTags =
