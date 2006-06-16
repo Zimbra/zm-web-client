@@ -90,7 +90,7 @@ function(domain) {
 		appCtxt.setSettings(window.parentController._appCtxt.getSettings());
 	}
 
-	var shell = new DwtShell("MainShell", false);
+	var shell = new DwtShell("MainShell", false, ZmNewWindow._confirmExitMethod);
 	appCtxt.setShell(shell);
 
 	// Create upload manager (for sending attachments)
@@ -117,6 +117,20 @@ function(ev) {
 
 	if (window.parentController) {
 		window.parentController.removeChildWindow(window);
+	}
+};
+
+ZmNewWindow._confirmExitMethod =
+function(ev) {
+	if (window.command == "compose" || window.command == "composeDetach") {
+		// is there a better way to get a ref to the compose controller?
+		var shell = AjxCore.objectWithId(window._dwtShell);
+		var appCtxt = shell ? shell.getData(ZmAppCtxt.LABEL) : null;
+		var cc = appCtxt ? appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController() : null;
+		// only show native confirmation dialog if compose view is dirty
+		if (cc && cc._composeView.isDirty()) {
+			return ZmMsg.newWinComposeExit;
+		}
 	}
 };
 
