@@ -1,7 +1,7 @@
 <project name="ZimbraWebClient" default="war">
 
   <property environment="env"/>
-  
+
   <property name="build.dir"          location="build"/>
   
   <property name="dist.dir"           location="build/dist"/>
@@ -25,9 +25,22 @@
   <condition property="ajax.dir" value="../Ajax">
     <not><isset property="env.AJAX_DIR"/></not>
   </condition>	
-  <condition property="plat.tag" value="">
-    <not><isset property="plat.tag"/></not>
-  </condition>	
+
+   <condition property="platform.tag" value="MACOSXx86">
+       <os name="Mac OS X" arch="i386"/>
+   </condition>
+   <condition property="platform.tag" value="MACOSX">
+       <os name="Mac OS X"/>
+   </condition>
+   <condition property="platform.tag" value="">
+       <os family="unix"/>
+   </condition>
+   <condition property="platform.tag" value="">
+       <os family="windows"/>
+   </condition>
+   <condition property="plat.tag" value="${platform.tag}">
+     <not><isset property="plat.tag"/></not>
+   </condition>
 
   <property name="ajax.src.dir" value="${ajax.dir}/src"/>
   <property name="ajax.jars.dir" value="${ajax.dir}/jars"/>
