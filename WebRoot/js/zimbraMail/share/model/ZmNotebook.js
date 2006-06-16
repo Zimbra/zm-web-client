@@ -37,9 +37,10 @@
 * @param owner		[string]		The owner of this organizer
 * @param zid		[string]*		Zimbra id of owner, if remote share
 * @param rid		[string]*		Remote id of organizer, if remote share
+* @param restUrl	[string]*		The REST URL of this organizer.
 */
-function ZmNotebook(id, name, parent, tree, color, owner, zid, rid) {
-	ZmOrganizer.call(this, ZmOrganizer.NOTEBOOK, id, name, parent, tree, null, null, null, owner, zid, rid);
+function ZmNotebook(id, name, parent, tree, color, owner, zid, rid, restUrl) {
+	ZmOrganizer.call(this, ZmOrganizer.NOTEBOOK, id, name, parent, tree, null, null, null, owner, zid, rid, restUrl);
 	this.color = color || ZmOrganizer.DEFAULT_COLOR;
 }
 
@@ -193,7 +194,7 @@ function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 
 	// create calendar, populate, and return
-	var notebook = new ZmNotebook(obj.id, obj.name, parent, tree, obj.color, obj.d, obj.zid, obj.rid);
+	var notebook = new ZmNotebook(obj.id, obj.name, parent, tree, obj.color, obj.d, obj.zid, obj.rid, obj.rest);
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];

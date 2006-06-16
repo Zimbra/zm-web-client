@@ -283,7 +283,7 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 	var content = "<wiklet class='NAME'/>";
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		urls.push(item.getUrl());
+		urls.push(item.getRestUrl());
 		names.push(ZmWikletProcessor.process(this._appCtxt, item, content));
 	}
 
@@ -308,7 +308,7 @@ ZmNotebookController.prototype._detachListener = function(event) {
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 
-		var winurl = item.getUrl();
+		var winurl = item.getRestUrl();
 		var winname = "_new";
 		var winfeatures = [
 			"width=",(window.outerWidth || 640),",",

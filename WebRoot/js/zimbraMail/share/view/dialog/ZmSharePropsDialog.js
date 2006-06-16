@@ -125,7 +125,7 @@ function(mode, object, share, loc) {
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 
-	this._urlEl.innerHTML = AjxStringUtil.htmlEncode(this._object.getUrl());
+	this._urlEl.innerHTML = AjxStringUtil.htmlEncode(this._object.getRestUrl());
 
 	DwtDialog.prototype.popup.call(this, loc);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
@@ -250,7 +250,7 @@ function(shares, result) {
 					this._guestFormatter = new AjxMessageFormat(ZmMsg.shareWithGuestNotes);
 				}
 
-				var url = share.object.getUrl();
+				var url = share.object.getRestUrl();
 				var username = email;
 				var password = this._passwordInput.getValue();
 

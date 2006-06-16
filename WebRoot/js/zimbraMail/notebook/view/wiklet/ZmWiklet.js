@@ -149,7 +149,7 @@ ZmWiklet.register(
 		func: function(name, value, params, context) {
 			var item = context.getItem();
 			// REVISIT: What about remote ids? (e.g. item.remoteFolderId)
-			return item.getUrl();
+			return item.getRestUrl();
 		}
 	},
 	{

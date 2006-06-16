@@ -54,11 +54,11 @@ ZmPage.prototype.version = 0;
 
 // Static functions
 
-ZmPage.load = function(appCtxt, folderId, name, version, callback, errorCallback) {
+ZmPage.load = function(appCtxt, folderId, name, version, callback, errorCallback, traverseUp) {
 	var page = new ZmPage(appCtxt);
 	page.folderId = folderId;
 	page.name = name;
-	page.load(version, callback, errorCallback);
+	page.load(version, callback, errorCallback, traverseUp);
 	return page;
 };
 
@@ -140,8 +140,22 @@ function(callback, errorCallback) {
 	appController.sendRequest(params);
 };
 
+/**
+ * @param version		[number]		The version to load.
+ * @param callback		[AjxCallback]*	The callback to run on successful
+ *										completion. If no value is passed
+ *										for this parameter, then the load
+ *										is performed synchronously.
+ * @param errorCallback	[AjxCallback]*	The callback to run on error.
+ * @param traverseUp	[boolean]*		Tells the server to look up the
+ *										directory chain to find this page.
+ *										Page's whose name starts with an
+ *										underscore are automatically traced
+ *										up the folder chain unless this
+ *										parameter is explicitly set.
+ */
 ZmPage.prototype.load = 
-function(version, callback, errorCallback) {
+function(version, callback, errorCallback, traverseUp) {
 	var soapDoc = AjxSoapDoc.create("GetWikiRequest", "urn:zimbraMail");
 	var wordNode = soapDoc.set("w");
 	if (this.id) {
@@ -155,6 +169,9 @@ function(version, callback, errorCallback) {
 	}
 	if (version) {
 		wordNode.setAttribute("ver", version);
+	}
+	if (traverseUp || (traverseUp == null && this.name.match(/^_/))) {
+		wordNode.setAttribute("tr", "1");
 	}
 	
 	var handleResponse = callback ? new AjxCallback(this, this._loadHandleResponse, [callback]) : null;
@@ -188,7 +205,7 @@ ZmPage.prototype.set = function(data) {
 	
 	// ZmItem fields
 	this.id = data.id;
-	this.url = data.url;
+	this.restUrl = data.rest;
 	// REVISIT: Sometimes the server doesn't return the folderId!!!
 	this.folderId = data.l || this.folderId;
 	this._parseTags(data.t);

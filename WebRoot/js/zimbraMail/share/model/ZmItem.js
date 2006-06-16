@@ -216,7 +216,12 @@ function(sortBy) {
 	return null;
 };
 
+/** @deprecated Use getRestUrl. */
 ZmItem.prototype.getUrl = function() {
+	return this.getRestUrl();
+};
+
+ZmItem.prototype.getRestUrl = function() {
 	if (this.url) {
 		return this.url;
 	}
@@ -224,7 +229,7 @@ ZmItem.prototype.getUrl = function() {
 	var tree = this._appCtxt.getTree(organizerType);
 	var organizer = tree.getById(this.folderId);
 	return [
-		organizer.getUrl(), "/", AjxStringUtil.urlComponentEncode(this.name)
+		organizer.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(this.name)
 	].join("");
 };
 

@@ -140,7 +140,7 @@ ZmUploadConflictDialog._handleViewTheirs = function(event) {
 	var file = object.file;
 
 	var winurl = [
-		dialog._uploadFolder.getUrl(),
+		dialog._uploadFolder.getRestUrl(),
 		"/",
 		AjxStringUtil.urlComponentEncode(file.name)
 	].join("");

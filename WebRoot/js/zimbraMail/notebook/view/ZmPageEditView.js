@@ -154,7 +154,7 @@ function() {
 ZmPageEditView.prototype.addSelectionListener = function(listener) { /*TODO*/ };
 ZmPageEditView.prototype.addActionListener = function(listener) { /*TODO*/ };
 
-ZmPageEditView.prototype.setBounds = 
+ZmPageEditView.prototype.setBounds =
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
 
@@ -174,7 +174,7 @@ function() {
 		var pageName = this.getPageName();
 		var content = this.getContent();
 		if ((content.length == 0) && (pageName.length == 0)) {
-			return false;			
+			return false;
 		}
 		if (this._page.name != pageName) {
 			return true;
@@ -195,7 +195,7 @@ function() {
 	this._pageNameInput.setRequired(true);
 	var titleInputEl = this._pageNameInput.getInputElement();
 	titleInputEl.size = 50;
-		
+
 	this._pageEditor = new ZmPageEditor(this, null, null, DwtHtmlEditor.HTML, this._appCtxt, this._controller);
 	// HACK: Notes are always HTML format, regardless of the COS setting.
 	this._pageEditor.isHtmlEditingSupported = new Function("return true");
@@ -216,7 +216,7 @@ function() {
 	labelCell.className = "Label";
 	labelCell.innerHTML = ZmMsg.locationLabel;
 	this._locationEl = row.insertCell(-1);
-	
+
 	var row = table.insertRow(-1);
 	var labelCell = row.insertCell(-1);
 	labelCell.width = "1%";
@@ -224,7 +224,7 @@ function() {
 	labelCell.innerHTML = ZmMsg.pageLabel;
 	var inputCell = row.insertCell(-1);
 	inputCell.appendChild(this._pageNameInput.getHtmlElement());
-	
+
 	var element = this.getHtmlElement();
 	element.appendChild(table);
 	element.appendChild(textAreaEl);
@@ -509,7 +509,7 @@ ZmPageEditor.prototype.__popupUploadDialog = function(callback, title) {
 };
 
 ZmPageEditor.prototype._insertObjects = function(func, folder, filenames) {
-	var baseUrl = folder.getUrl();
+	var baseUrl = folder.getRestUrl();
 	for (var i = 0; i < filenames.length; i++) {
 		var name = AjxStringUtil.urlComponentEncode(filenames[i]);
 		var src = [ baseUrl,"/",name ].join("");

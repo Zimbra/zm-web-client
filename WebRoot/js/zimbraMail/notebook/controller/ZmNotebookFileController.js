@@ -266,7 +266,7 @@ ZmNotebookFileController.prototype._doSelectDblClicked = function(item, fromSear
 		controller.show(item, true, this._fromSearch || fromSearch);
 	}
 	else if (item.type == ZmItem.DOCUMENT) {
-		var url = item.getUrl();
+		var url = item.getRestUrl();
 		// TODO: popup window w/ REST URL
 		var win = open(url, "_new", "");
 	}

@@ -161,14 +161,15 @@ ZmNotebookCache.prototype.getCreators = function() {
 ZmNotebookCache.prototype.getPageById = function(id) {
 	return this._idMap[id];
 };
-ZmNotebookCache.prototype.getPageByName = function(folderId, name, recurseUp) {
+ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 	var page = this.getPagesInFolder(folderId)[name];
 	if (page != null) return page;
-	
+
+	/***/
 	// REVISIT: Need to force recursing up for "special" page when
 	//          navigating in the page browser. Is this always the
 	//          case? or should there be a better solution?
-	if (recurseUp == true || /^_.*$/.test(name)) {
+	if (traverseUp == true || /^_.*$/.test(name)) {
 		var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 		var parent = notebookTree.getById(folderId).parent;
 		while (parent != null) {
@@ -181,6 +182,22 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, recurseUp) {
 			parent = parent.parent;
 		}
 	}
+	/*** LATER -- this is toooooo slow right now ***
+	var page = ZmPage.load(this._appCtxt, folderId, name, null, null, traverseUp);
+	if (page != null) {
+		// REVISIT: Patch proxied pages
+		if (/:/.test(page.id)) {
+			var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+			var notebook = tree.getById(folderId);
+
+			page.folderId = folderId;
+			page.restUrl = notebook ? [ notebook.getRestUrl(), '/', page.name ].join("") : page.restUrl;
+			page.version = 0;
+		}
+		this.putPage(page);
+		return page;
+	}
+	/***/
 	
 	if (name in ZmNotebookCache._SPECIAL) {
 		return this._generateSpecialPage(folderId, name);

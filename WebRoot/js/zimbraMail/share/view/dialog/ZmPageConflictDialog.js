@@ -79,7 +79,7 @@ ZmPageConflictDialog.prototype.popdown = function() {
 // Protected methods
 
 ZmPageConflictDialog.prototype._viewTheirsListener = function(event) {
-	var winurl = this._conflict.page.getUrl();
+	var winurl = this._conflict.page.getRestUrl();
 	var winname = "_new";
 	var winfeatures = [
 		"width=",(window.outerWidth || 640),",",

@@ -60,7 +60,7 @@ function() {
 ZmNotebookPageView.prototype.set =
 function(page) {
 	if (this._USE_IFRAME) {
-		this._iframe.src = page.getUrl();
+		this._iframe.src = page.getRestUrl();
 	}
 	else {
 		var element = this.getHtmlElement();
@@ -98,7 +98,7 @@ function(page) {
 
 ZmNotebookPageView.getPrintHtml =
 function(item, callback) {
-	var url = item.getUrl();
+	var url = item.getRestUrl();
 	try {
 		AjxRpc.invoke(null, url, null, new AjxCallback(this, this._handleResponseGetPrintHtml, [callback, url]), true);
 	} catch (e) {
