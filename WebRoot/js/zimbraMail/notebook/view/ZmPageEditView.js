@@ -628,7 +628,3 @@ function(dialog, editor, wikletEl, schema) {
 	}
 	dialog.popdown();
 };
-
-ZmPageEditor.prototype._getInitialStyle = function(useDiv) {
-	return "";
-};

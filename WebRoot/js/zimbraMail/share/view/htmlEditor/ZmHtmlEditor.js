@@ -1025,10 +1025,7 @@ function(ev) {
 		this._initialStyle = this._getInitialStyle(true);
 		var iframeDoc = this._getIframeDoc();
 		if (iframeDoc) {
-			var initHtml = "<html><head>" + this._getInitialStyle(false) + "</head><body></body></html>";
-			iframeDoc.open();
-			iframeDoc.write(initHtml);
-			iframeDoc.close();
+			this._initializeContent("");
 
 			// update DwtSelect to reflect to new font size or family
 			if (setting.id == ZmSetting.COMPOSE_INIT_FONT_FAMILY) {
