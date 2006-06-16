@@ -200,6 +200,18 @@ ZmNotebookController.prototype._createNewView = function(view) {
 
 ZmNotebookController.prototype._setViewContents = function(view) {
 	this._listView[view].set(this._object);
+
+	// Select the appropriate notebook in the tree view.
+	if (this._object) {
+		var overviewController = this._appCtxt.getOverviewController();
+		var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
+		var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+		if (treeView) {
+			var folderId = this._object.getFolderId();
+			treeView.setSelected(folderId, false);
+			overviewController.itemSelected(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.NOTEBOOK);
+		}
+	}
 };
 
 /*** TODO: This will be exposed later.

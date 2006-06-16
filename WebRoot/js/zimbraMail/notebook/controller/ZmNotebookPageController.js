@@ -58,7 +58,8 @@ ZmNotebookPageController.prototype.gotoPage = function(pageRef) {
 
 	var cache = this._app.getNotebookCache();
 	var page = cache.getPageByName(pageRef.folderId, pageRef.name);
-	this._listView[this._currentView].set(this._object = page);
+	this._object = page;
+	this._setViewContents(this._currentView);
 };
 
 ZmNotebookPageController.prototype.getPage = function() {
@@ -115,8 +116,8 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 		this._list.add(this._object);
 	}
 
-	// show this page
-	this._listView[this._currentView].set(this._object);
+	// show this page 
+	this._setViewContents(this._currentView);
 };
 
 //
