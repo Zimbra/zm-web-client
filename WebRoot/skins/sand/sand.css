@@ -100,6 +100,9 @@ body						{	@ChromeBg@	}
 #IFDEF MSIE
 	height:24;		margin:0 4 0 0;
 #ENDIF
+#IFDEF SAFARI
+	height:22;		margin:-4 2 0 5; background-color:pink;
+#ENDIF
 }
 
 
@@ -171,7 +174,7 @@ body						{	@ChromeBg@	}
 					margin:0 -2 0 1;
 #ENDIF
 #IFDEF SAFARI
-	height:100%; background-color:pink; margin-left:10px;
+	height:100%; margin-left:0px;
 #ENDIF
 }
 
@@ -204,10 +207,10 @@ body						{	@ChromeBg@	}
 		position:relative; 		right:1;
 		width:20; height:20;	margin:0 0 0 9; 	padding:4 2 0 6; 
 #IFDEF MSIE
-		width:30; height:28;	margin:1 0 0 10;	padding:5 13 0 0;
+		width:30; height:28;	margin:1 0 0 11;	padding:5 13 0 0;
 #ENDIF
 #IFDEF SAFARI
-		width:30; height:28;	margin:1 0 0 20;	padding:0 0 0 0;
+		width:20; height:20;	margin:1 0 0 23;	padding:4 0 0 6;
 #ENDIF
 }
 .ImgAppChiclet							{	@AppTabContainer@			}
@@ -215,6 +218,6 @@ body						{	@ChromeBg@	}
 .ImgAppChicletSel						{	@AppTabContainer-selected@	}
 
 
-.ImgAppChiclet							{	background-color:pink;			}
+.ImgAppChiclet							{				}
 
 
