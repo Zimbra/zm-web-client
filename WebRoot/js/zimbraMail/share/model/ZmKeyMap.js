@@ -219,6 +219,10 @@ function ZmKeyMap() {
 	this._map["ZmMixedController"] = {
 			"INHERIT": "ZmMailListController"
 	};
+	
+	this._map["ZmChicletButton"] = {
+			"Enter":				DwtKeyMap.SELECT_CURRENT
+	};
 };
 
 ZmKeyMap.prototype = new DwtKeyMap(true);

@@ -372,6 +372,11 @@ function(params) {
 		this._components[ZmAppViewMgr.C_SEARCH] = this._appCtxt.getSearchController().getSearchPanel();
 	}
 
+	if (!this._components[ZmAppViewMgr.C_APP_CHOOSER]) {
+		this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._createAppChooser();
+	}
+	this._appViewMgr.addComponents(this._components, true);
+
 	// ROSSD - TEMPORARY - WILL BE MOVED
 	/* Appview manager is the place for these. the issue is that the skins will need to provide the
 	 * tabgroup index location of each of the top level views
@@ -384,11 +389,7 @@ function(params) {
 	var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
 	ZmController._setCurrentAppViewTabGroup(dummyTg);
 	rootTg.addMember(dummyTg);
-
-	if (!this._components[ZmAppViewMgr.C_APP_CHOOSER]) {
-		this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._createAppChooser();
-	}
-	this._appViewMgr.addComponents(this._components, true);
+	rootTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
 
 	this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {

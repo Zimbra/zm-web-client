@@ -180,7 +180,6 @@ function(ev) {
 			var selEv = DwtShell.selectionEvent;
 			DwtUiEvent.copy(selEv, ev);
 			selEv.item = this;
-			selEv.detail = 0;
 			this.notifyListeners(DwtEvent.SELECTION, selEv);
 		}
 	}
@@ -197,10 +196,44 @@ function() {
 // Button no longer activated/triggered.
 ZmChicletButton.prototype._mouseOutListener = 
 function(ev) {
-	if (AjxEnv.isIE){
+	if (AjxEnv.isIE) {
 		this._mouseOutActionId = 
  		   AjxTimedAction.scheduleAction(this._mouseOutAction, 6);
 	} else {
 		this._setMouseOutClassName();
 	}
 }
+
+ZmChicletButton.prototype._focus =
+function() {
+	this.setActivated(true);
+}
+
+ZmChicletButton.prototype._blur =
+function() {
+	this.setActivated(false);
+}
+
+ZmChicletButton.prototype.getKeyMapName = 
+function() {
+	return "ZmChicletButton";
+};
+
+ZmChicletButton.prototype.handleKeyAction =
+function(actionCode, ev) {
+    DBG.println("ZmChicletButton.prototype.handleKeyAction");
+	switch (actionCode) {
+
+		case DwtKeyMap.SELECT_CURRENT:
+			if (this.isListenerRegistered(DwtEvent.SELECTION)) {
+				var selEv = DwtShell.selectionEvent;
+				selEv.item = this;
+				this.notifyListeners(DwtEvent.SELECTION, selEv);
+			}
+			break;
+			
+		default:
+			return false;
+	}
+	return true;
+};
