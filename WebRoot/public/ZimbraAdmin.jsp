@@ -76,7 +76,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaAutoCompleteListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/AutoComplete_XFormItem.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaKeyMap.js<%= ext %>?v=<%= vers %>"></script>
-
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ACLXFormItem.js<%= ext %>?v=<%= vers %>"></script>
 <!-- Admin UI Specific components -->
 <!-- controllers -->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaOverviewPanelController.js<%= ext %>?v=<%= vers %>"></script>

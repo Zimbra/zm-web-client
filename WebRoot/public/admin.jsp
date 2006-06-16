@@ -24,6 +24,7 @@ Contributor(s):
 -->
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%
+   	Cookie[] cookies = request.getCookies();
    	String portsCSV = application.getInitParameter("admin.allowed.ports");
    	if (portsCSV != null) {
 	    // Split on zero-or-more spaces followed by comma followed by
@@ -73,10 +74,20 @@ Contributor(s):
 		mode= "";
 	}
 
-	String skin = (String) request.getAttribute("skin");
-	if (skin == null) {
-		skin = "sand";
-	}
+	final String SKIN_COOKIE_NAME = "ZM_SKIN";
+	String skin = "sand";
+
+	String requestSkin = request.getParameter("skin");
+	if (requestSkin != null) {
+		skin = requestSkin;
+	} else if (cookies != null) {
+        for (Cookie cookie : cookies) {
+            if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
+                skin = cookie.getValue();
+            }
+        }
+    }
+	String skinPreCacheFile = "../skins/" + skin + "/CacheLoRes.html";
 
     String contextPath = request.getContextPath();
     if(contextPath == null || contextPath.equals("/")) {
@@ -100,7 +111,7 @@ Contributor(s):
 		<!--
 		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
 		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,skin.css?v=<%= vers %>&debug=1);
+		@import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,skin.css?v=<%= vers %>&skin=<%= skin %>);
 		-->
 	</style>
 	<jsp:include page="/public/Ajax.jsp"/>
