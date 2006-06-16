@@ -610,7 +610,7 @@
   -->
   <target name="dev-sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
-      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**,ALE/**" excludes="**/*.css"/>
+      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**,ALE/**" excludes="**/style/*.css"/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
 	<copy verbose='true' todir='${deploy.dir}${deploy.path}/css'>
