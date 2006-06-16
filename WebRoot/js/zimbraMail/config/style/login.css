@@ -155,10 +155,18 @@ FORM {
 /* Logo image.  Note that this will someday come from a servlet, etc so that it can
 	be customized by an admin per-domain */
 .ImgLoginBanner {
-	width:349px;
-	height:92px;
+	width:450;
+	height:100;
+#IFDEF GECKO
 	background-image:url('@ImgDir@/logo/LoginBanner_blank.png');
+#ENDIF
+#IFDEF SAFARI
+	background-image:url('@ImgDir@/logo/LoginBanner_blank.png');
+#ENDIF
+#IFDEF MSIE
 	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='@ImgDir@/logo/LoginBanner_blank.png',sizingMethod='scale');
+#ENDIF
+
 }
 
 

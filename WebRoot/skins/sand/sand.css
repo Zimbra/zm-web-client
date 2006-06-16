@@ -31,7 +31,7 @@ body						{	@ChromeBg@	}
 .skin_container						{	position:relative;	overflow:hidden;	}
 .skin_table							{	width:100%;	height:100%;	
 										border-collapse:collapse; 
-										/* Xtable-layout:fixed;  NOTE: removing so skin resizing via sash will work */
+										table-layout:fixed; /* NOTE: removing so skin resizing via sash will work */
 }	
 
 
@@ -170,6 +170,9 @@ body						{	@ChromeBg@	}
 #IFDEF MSIE
 					margin:0 -2 0 1;
 #ENDIF
+#IFDEF SAFARI
+	height:100%; background-color:pink; margin-left:10px;
+#ENDIF
 }
 
 
@@ -203,21 +206,15 @@ body						{	@ChromeBg@	}
 #IFDEF MSIE
 		width:30; height:28;	margin:1 0 0 10;	padding:5 13 0 0;
 #ENDIF
+#IFDEF SAFARI
+		width:30; height:28;	margin:1 0 0 20;	padding:0 0 0 0;
+#ENDIF
 }
 .ImgAppChiclet							{	@AppTabContainer@			}
 .ImgAppChicletHover						{	@AppTabContainer-hover@		}
 .ImgAppChicletSel						{	@AppTabContainer-selected@	}
 
 
+.ImgAppChiclet							{	background-color:pink;			}
 
 
-#IFDEF SAFARI
-
-#skin_container_search				{ height:20; top:-4;  }
-#skin_container_current_app			{ height:20; top:-4;  }
-
-.skin_spacer_tree			{	margin:0px;	}
-.skin_spacer_tree_footer	{	margin:0px;	}
-.skin_spacer_status			{	margin:0px;	}
-
-#ENDIF

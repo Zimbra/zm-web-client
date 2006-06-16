@@ -555,6 +555,7 @@ td.DDSepInvisible div {
 
 /* textarea where you type plain-text */
 .ZmHtmlEditor .DwtHtmlEditorTextArea {
+	@FontSize-big@
 	@FontFamily-fixed@
 	@FullWidth@
 	overflow: auto;
