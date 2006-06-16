@@ -166,7 +166,7 @@ function(ev) {
 ZmAddrBookTreeController.prototype._mountAddrBookListener =
 function(event) {
 	var dialog = this._appCtxt.getMountFolderDialog();
-	dialog.popup(ZmMsg.mountAddrBook);
+	dialog.popup(ZmOrganizer.ADDRBOOK/*, ...*/);
 };
 
 ZmAddrBookTreeController.prototype._changeListener =

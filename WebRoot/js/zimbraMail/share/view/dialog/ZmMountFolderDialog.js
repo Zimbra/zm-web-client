@@ -25,7 +25,7 @@
 
 function ZmMountFolderDialog(appCtxt, shell, className) {
 	className = className || "ZmMountFolderDialog";
-	var title = ZmMsg.mountFolder;
+	var title = ZmMountFolderDialog.TITLES[ZmOrganizer.FOLDER];
 	DwtDialog.call(this, shell, className, title);
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 	this._appCtxt = appCtxt;
@@ -53,30 +53,38 @@ ZmMountFolderDialog.prototype.constructor = ZmMountFolderDialog;
 
 ZmMountFolderDialog.DEFAULT_FOLDER_ID = ZmOrganizer.ID_ROOT;
 
-ZmMountFolderDialog.DEFAULT_TITLE = ZmMsg.mountFolder;
+ZmMountFolderDialog.TITLES = {};
+ZmMountFolderDialog.TITLES[ZmOrganizer.ADDRBOOK] = ZmMsg.mountAddrBook;
+ZmMountFolderDialog.TITLES[ZmOrganizer.CALENDAR] = ZmMsg.mountCalendar;
+ZmMountFolderDialog.TITLES[ZmOrganizer.FOLDER] = ZmMsg.mountFolder;
+ZmMountFolderDialog.TITLES[ZmOrganizer.NOTEBOOK] = ZmMsg.mountNotebook;
 
 // Data
 
+ZmMountFolderDialog.prototype._organizerType;
 ZmMountFolderDialog.prototype._folderId;
 
 ZmMountFolderDialog.prototype._nameInput;
 ZmMountFolderDialog.prototype._userInput;
 ZmMountFolderDialog.prototype._pathInput;
 
+ZmMountFolderDialog.prototype._colorSelect;
+
 // Public methods
 
 ZmMountFolderDialog.prototype.popup =
-function(title, folderId, user, path, loc) {
-	// remember destination folderId
+function(organizerType, folderId, user, path, loc) {
+	// remember values
+	this._organizerType = organizerType;
 	this._folderId = folderId || ZmMountFolderDialog.DEFAULT_FOLDER_ID;
 
 	// set title
-	this.setTitle(title || ZmMountFolderDialog.DEFAULT_TITLE);
+	this.setTitle(ZmMountFolderDialog.TITLES[organizerType] || ZmMountFolderDialog.TITLES[ZmOrganizer.FOLDER]);
 
 	// reset input fields
-	this._nameInput.setValue("");
 	this._userInput.setValue(user || "");
 	this._pathInput.setValue(path || "");
+	this._nameInput.setValue("");
 
 	// show
 	DwtDialog.prototype.popup.call(this, loc);
@@ -132,40 +140,56 @@ ZmMountFolderDialog._handleKeyUp = function(event){
 };
 
 ZmMountFolderDialog._enableFieldsOnEdit = function(dialog) {
-	var name = dialog._nameInput.getValue();
 	var user = dialog._userInput.getValue();
 	var path = dialog._pathInput.getValue();
-	var enabled = name.length > 0 && name.match(/\S/) &&
-				  user.length > 0 && user.match(/\S/) &&
-				  path.length > 0 && path.match(/\S/);
+	var name = dialog._nameInput.getValue();
+	var enabled = user.length > 0 && user.match(/\S/) &&
+				  path.length > 0 && path.match(/\S/) &&
+				  name.length > 0 && name.match(/\S/);
 	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, enabled);
 };
 
 // Protected methods
 
 ZmMountFolderDialog.prototype._handleOkButton = function(event) {
-	alert("TODO: create mountpoint");
-	this.popdown();
+	var appCtxt = this._appCtxt;
+	var params = {
+		"l": this._folderId,
+		"name": this._nameInput.getValue(),
+		"d": this._userInput.getValue(),
+		"path": this._pathInput.getValue(),
+		"view": ZmOrganizer.VIEWS[this._organizerType] || ZmOrganizer.VIEWS[ZmOrganizer.FOLDER],
+		"color": this._colorSelect.getValue()
+	};
+	var callback = new AjxCallback(this, this.popdown);
+	var errorCallback = null;
+
+	ZmMountpoint.create(appCtxt, params, callback, errorCallback)
 };
 
 ZmMountFolderDialog.prototype._createMountHtml = function() {
 	// create components
 	var props = new DwtPropertySheet(this);
+
 	var params = { parent: props, required: true };
-	this._nameInput = new DwtInputField(params);
 	this._userInput = new DwtInputField(params);
 	this._pathInput = new DwtInputField(params);
+	this._nameInput = new DwtInputField(params);
+
+	this._colorSelect = new DwtSelect(props);
+	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
+		var choice = ZmOrganizer.COLOR_CHOICES[i];
+		this._colorSelect.addOption(choice.label, i == 0, choice.value);
+	}
 
 	// setup property sheet
-	props.addProperty(ZmMsg.nameLabel, this._nameInput);
 	props.addProperty(ZmMsg.userLabel, this._userInput);
 	props.addProperty(ZmMsg.pathLabel, this._pathInput);
+	props.addProperty("","");
+	props.addProperty(ZmMsg.nameLabel, this._nameInput);
+	props.addProperty(ZmMsg.colorLabel, this._colorSelect);
 
 	// setup input fields
-	var inputEl = this._nameInput.getInputElement();
-	inputEl.style.width = "25em";
-	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmMountFolderDialog._handleKeyUp);
-
 	var inputEl = this._userInput.getInputElement();
 	inputEl.style.width = "25em";
 	if (this._acAddrSelectList) {
@@ -177,6 +201,10 @@ ZmMountFolderDialog.prototype._createMountHtml = function() {
 
 	var inputEl = this._pathInput.getInputElement();
 	inputEl.style.width = "25em";
+	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmMountFolderDialog._handleKeyUp);
+
+	var inputEl = this._nameInput.getInputElement();
+	//inputEl.style.width = "25em";
 	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmMountFolderDialog._handleKeyUp);
 
 	// add to dialog

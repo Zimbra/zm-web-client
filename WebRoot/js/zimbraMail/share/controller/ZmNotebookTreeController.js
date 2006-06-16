@@ -142,7 +142,7 @@ function(notebook) {
 	if (this._appCtxt.getCurrentViewId() != ZmController.NOTEBOOK_PAGE_VIEW) {
 		this._appCtxt.getAppViewMgr().setView(ZmController.NOTEBOOK_PAGE_VIEW);
 	};
-	
+
 	var notebookApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var notebookController = notebookApp.getNotebookController();
 	notebookController.show(notebook.id, true);
@@ -221,7 +221,7 @@ function(ev) {
 ZmNotebookTreeController.prototype._mountNotebookListener =
 function(ev) {
 	var dialog = this._appCtxt.getMountFolderDialog();
-	dialog.popup(ZmMsg.mountNotebook);
+	dialog.popup(ZmOrganizer.NOTEBOOK/*, ...*/);
 };
 
 ZmNotebookTreeController.prototype._refreshListener =

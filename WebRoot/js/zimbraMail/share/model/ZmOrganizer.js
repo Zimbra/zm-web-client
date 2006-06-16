@@ -45,6 +45,7 @@
 * @param owner		[string]* 		Owner for this organizer
 * @param zid		[string]*		Zimbra ID of owner, if remote folder
 * @param rid		[string]*		Remote ID of organizer, if remote folder
+* @param restUrl	[string]*		REST URL of this organizer.
 */
 function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, owner, zid, rid) {
 
@@ -79,6 +80,7 @@ ZmOrganizer.ROSTER_TREE_ITEM	= ZmEvent.S_ROSTER_TREE_ITEM;
 ZmOrganizer.ROSTER_TREE_GROUP	= ZmEvent.S_ROSTER_TREE_GROUP;
 ZmOrganizer.ZIMLET				= ZmEvent.S_ZIMLET;
 ZmOrganizer.NOTEBOOK			= ZmEvent.S_NOTEBOOK;
+ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 
 // Primary organizer for items
 ZmOrganizer.ITEM2ORGANIZER = {};
@@ -294,7 +296,22 @@ ZmOrganizer.prototype.getSearchPath = function() {
 	return this.id != ZmOrganizer.ID_ROOT ? this.getPath(null, null, null, true) : "/";
 };
 
+/** @deprecated Use getRestUrl. */
 ZmOrganizer.prototype.getUrl = function() {
+	return this.getRestUrl();
+};
+
+ZmOrganizer.prototype.getSyncUrl = function() {
+	return url;
+};
+
+ZmOrganizer.prototype.getRestUrl = function() {
+	// return REST URL as seen by server
+	if (this.restUrl) {
+		return this.restUrl;
+	}
+
+	// if server doesn't tell us what URL to use, do our best to generate
 	var appCtxt = this.tree ? this.tree._appCtxt : null;
 	if (!appCtxt) {
 		var shell = DwtShell.getShell(window);

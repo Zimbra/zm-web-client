@@ -263,7 +263,7 @@ function(ev) {
 ZmCalendarTreeController.prototype._mountCalListener =
 function(ev) {
 	var dialog = this._appCtxt.getMountFolderDialog();
-	dialog.popup(ZmMsg.mountCalendar);
+	dialog.popup(ZmOrganizer.CALENDAR/*, ...*/);
 };
 
 ZmCalendarTreeController.prototype._deleteListener = function(ev) {
