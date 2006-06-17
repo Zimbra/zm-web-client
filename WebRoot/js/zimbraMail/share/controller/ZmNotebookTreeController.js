@@ -61,8 +61,11 @@ function(actionMenu, type, id) {
 		var overviewController = this._appCtxt.getOverviewController();
 		var treeData = overviewController.getTreeData(ZmOrganizer.NOTEBOOK);
 
+		// TODO: enable actions based on effective permissions
+
 		var notebook = treeData.getById(id);
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+			actionMenu.enable(ZmOperation.MOUNT_NOTEBOOK, !notebook.link);
 			actionMenu.enable(ZmOperation.SHARE_NOTEBOOK, !notebook.link);
 		}
 		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_NOTEBOOK);
@@ -73,7 +76,12 @@ function(actionMenu, type, id) {
 		menuItem.setDisabledImage("NewSectionDis");
 
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-			var isNotebook = notebook.parent.id == ZmOrganizer.ID_ROOT;
+			var isRoot = notebook.id == ZmOrganizer.ID_ROOT;
+			var isNotebook = !isRoot && notebook.parent.id == ZmOrganizer.ID_ROOT;
+			var menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_NOTEBOOK);
+			menuItem.setText(isRoot ? ZmMsg.mountNotebook : ZmMsg.mountSection);
+			menuItem.setImage(isRoot ? "SharedNotebook" : "SharedSection");
+			menuItem.setDisabledImage(menuItem.getImage()+"Dis");
 			var menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_NOTEBOOK);
 			menuItem.setText(isNotebook ? ZmMsg.shareNotebook : ZmMsg.shareSection);
 			menuItem.setImage(isNotebook ? "Notebook" : "Section");
@@ -88,8 +96,11 @@ function(actionMenu, type, id) {
 // Returns a list of desired header action menu operations
 ZmNotebookTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [
-		ZmOperation.NEW_NOTEBOOK, ZmOperation.MOUNT_NOTEBOOK,
+	var ops = [ ZmOperation.NEW_NOTEBOOK ];
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		ops.push(ZmOperation.MOUNT_NOTEBOOK);
+	}
+	ops.push(
 		ZmOperation.EXPAND_ALL,
 		ZmOperation.SEP,
 		ZmOperation.REFRESH
@@ -102,13 +113,18 @@ function() {
 		ZmOperation.SEP,
 		ZmOperation.EDIT_NOTEBOOK_CHROME, ZmOperation.EDIT_NOTEBOOK_STYLES
 		***/
-	];
+	);
+	return ops;
 };
 
 // Returns a list of desired action menu operations
 ZmNotebookTreeController.prototype._getActionMenuOps =
 function() {
-	var ops = [ZmOperation.NEW_NOTEBOOK, ZmOperation.SEP];
+	var ops = [ ZmOperation.NEW_NOTEBOOK ];
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		ops.push(ZmOperation.MOUNT_NOTEBOOK);
+	}
+	ops.push(ZmOperation.SEP);
 	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		ops.push(ZmOperation.SHARE_NOTEBOOK);
 	}
@@ -220,8 +236,11 @@ function(ev) {
 
 ZmNotebookTreeController.prototype._mountNotebookListener =
 function(ev) {
+	this._pendingActionData = this._getActionedOrganizer(ev);
+	var notebook = this._pendingActionData;
+
 	var dialog = this._appCtxt.getMountFolderDialog();
-	dialog.popup(ZmOrganizer.NOTEBOOK/*, ...*/);
+	dialog.popup(ZmOrganizer.NOTEBOOK, notebook.id/*, ...*/);
 };
 
 ZmNotebookTreeController.prototype._refreshListener =

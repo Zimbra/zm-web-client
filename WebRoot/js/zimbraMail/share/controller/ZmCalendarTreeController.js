@@ -143,11 +143,12 @@ function(actionMenu, type, id) {
 // Returns a list of desired header action menu operations
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [
-		ZmOperation.NEW_CALENDAR,
-		//ZmOperation.MOUNT_CALENDAR,
-		ZmOperation.CHECK_ALL, ZmOperation.CLEAR_ALL
-	];
+	var ops = [ ZmOperation.NEW_CALENDAR ];
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		ops.push(ZmOperation.MOUNT_CALENDAR);
+	}
+	ops.push(ZmOperation.CHECK_ALL, ZmOperation.CLEAR_ALL);
+	return ops;
 };
 
 // Returns a list of desired action menu operations

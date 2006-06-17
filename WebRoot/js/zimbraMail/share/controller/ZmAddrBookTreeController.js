@@ -111,10 +111,11 @@ function(parent, type, id) {
 // Returns a list of desired header action menu operations
 ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [
-		ZmOperation.NEW_ADDRBOOK
-		//ZmOperation.MOUNT_ADDRBOOK
-	];
+	var ops = [ ZmOperation.NEW_ADDRBOOK ];
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+		ops.push(ZmOperation.MOUNT_ADDRBOOK);
+	}
+	return ops;
 };
 
 // Returns a list of desired action menu operations

@@ -449,7 +449,7 @@ ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	button.addSelectionListener(new AjxListener(this, this._insertAttachmentsListener));
 
 	var button = new DwtButton(this._toolbar2, null, "TBButton");
-	button.setImage("ExternalLink");
+	button.setImage("URL");
 	button.setToolTipContent(ZmMsg.insertLink);
 	button.addSelectionListener(new AjxListener(this, this._insertLinkListener));
 };

@@ -51,8 +51,6 @@ ZmMountFolderDialog.prototype.constructor = ZmMountFolderDialog;
 
 // Constants
 
-ZmMountFolderDialog.DEFAULT_FOLDER_ID = ZmOrganizer.ID_ROOT;
-
 ZmMountFolderDialog.TITLES = {};
 ZmMountFolderDialog.TITLES[ZmOrganizer.ADDRBOOK] = ZmMsg.mountAddrBook;
 ZmMountFolderDialog.TITLES[ZmOrganizer.CALENDAR] = ZmMsg.mountCalendar;
@@ -76,7 +74,7 @@ ZmMountFolderDialog.prototype.popup =
 function(organizerType, folderId, user, path, loc) {
 	// remember values
 	this._organizerType = organizerType;
-	this._folderId = folderId || ZmMountFolderDialog.DEFAULT_FOLDER_ID;
+	this._folderId = folderId || ZmOrganizer.ID_ROOT;
 
 	// set title
 	this.setTitle(ZmMountFolderDialog.TITLES[organizerType] || ZmMountFolderDialog.TITLES[ZmOrganizer.FOLDER]);
@@ -168,26 +166,46 @@ ZmMountFolderDialog.prototype._handleOkButton = function(event) {
 };
 
 ZmMountFolderDialog.prototype._createMountHtml = function() {
-	// create components
-	var props = new DwtPropertySheet(this);
+	// create instructional elements
+	var instructEl1 = document.createElement("DIV");
+	instructEl1.innerHTML = ZmMsg.mountInstructions1;
+	instructEl1.style.width = "30em";
+	instructEl1.style.marginBottom = "0.5em";
 
-	var params = { parent: props, required: true };
+	var instructEl2 = document.createElement("DIV");
+	instructEl2.innerHTML = ZmMsg.mountInstructions2;
+	instructEl2.style.marginTop = "0.5em";
+	instructEl2.style.marginBottom = "0.5em";
+
+	// create components
+	var props1 = new DwtPropertySheet(this);
+	var props2 = new DwtPropertySheet(this);
+
+	var params = { parent: props1, required: true };
 	this._userInput = new DwtInputField(params);
 	this._pathInput = new DwtInputField(params);
+
+	var params = { parent: props2, required: true };
 	this._nameInput = new DwtInputField(params);
 
-	this._colorSelect = new DwtSelect(props);
+	this._colorSelect = new DwtSelect(props1);
 	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
 		var choice = ZmOrganizer.COLOR_CHOICES[i];
 		this._colorSelect.addOption(choice.label, i == 0, choice.value);
 	}
 
-	// setup property sheet
-	props.addProperty(ZmMsg.userLabel, this._userInput);
-	props.addProperty(ZmMsg.pathLabel, this._pathInput);
-	props.addProperty("","");
-	props.addProperty(ZmMsg.nameLabel, this._nameInput);
-	props.addProperty(ZmMsg.colorLabel, this._colorSelect);
+	// setup property sheets
+	props1.addProperty(ZmMsg.emailLabel, this._userInput);
+	props1.addProperty(ZmMsg.pathLabel, this._pathInput);
+
+	props2.addProperty(ZmMsg.nameLabel, this._nameInput);
+	props2.addProperty(ZmMsg.colorLabel, this._colorSelect);
+
+	var propsEl1 = props1.getHtmlElement();
+	var propsEl2 = props2.getHtmlElement();
+
+	propsEl1.style.marginLeft = "1em";
+	propsEl2.style.marginLeft = "1em";
 
 	// setup input fields
 	var inputEl = this._userInput.getInputElement();
@@ -204,10 +222,13 @@ ZmMountFolderDialog.prototype._createMountHtml = function() {
 	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmMountFolderDialog._handleKeyUp);
 
 	var inputEl = this._nameInput.getInputElement();
-	//inputEl.style.width = "25em";
+	inputEl.style.width = "20em";
 	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmMountFolderDialog._handleKeyUp);
 
 	// add to dialog
 	var element = this._getContentDiv();
-	element.appendChild(props.getHtmlElement());
+	element.appendChild(instructEl1);
+	element.appendChild(propsEl1);
+	element.appendChild(instructEl2);
+	element.appendChild(propsEl2);
 };

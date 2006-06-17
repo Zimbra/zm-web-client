@@ -76,7 +76,10 @@ function() {
 ZmNotebook.prototype.getIcon = 
 function() {
 	if (this.id == ZmOrganizer.ID_ROOT) return null;
-	return this.parent.id == ZmOrganizer.ID_ROOT ? "Notebook" : "Section";
+	if (this.parent.id == ZmOrganizer.ID_ROOT) {
+		return this.link ? "SharedNotebook" : "Notebook";
+	}
+	return this.link ? "SharedSection" : "Section";
 };
 
 ZmNotebook.prototype.getSearchPath = function() {

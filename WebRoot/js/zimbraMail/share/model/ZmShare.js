@@ -376,47 +376,19 @@ function(callback) {
 
 ZmShare.prototype.accept = 
 function(name, color, replyType, notes, callback) {
-
-	// create mountpoint
-	var soapDoc = AjxSoapDoc.create("CreateMountpointRequest", "urn:zimbraMail");
-
-	var linkNode = soapDoc.set("link");
-	linkNode.setAttribute("l", "1"); // place in root folder
-	linkNode.setAttribute("name", name);
-	linkNode.setAttribute("zid", this.grantor.id);
-	linkNode.setAttribute("rid", this.link.id);
-	if (this.link.view) {
-		linkNode.setAttribute("view", this.link.view);
-	}
-
-	var respCallback = new AjxCallback(this, this._handleResponseAccept, [color, replyType, notes, callback]);
-	var errorCallback = new AjxCallback(this, this._handleErrorAccept);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
-												  callback: respCallback, errorCallback: errorCallback});
+	var respCallback = new AjxCallback(this, this._handleResponseAccept, [replyType, notes, callback]);
+	var params = {
+		"l": ZmOrganizer.ID_ROOT,
+		"name": name,
+		"zid": this.grantor.id,
+		"rid": this.link.id,
+		"color": this.link.view != "contact" ? color : null,
+		"view": this.link.view
+	};
+	ZmMountpoint.create(this._appCtxt, params, callback);
 };
 
 ZmShare.prototype._handleResponseAccept =
-function(color, replyType, notes, callback, result) {
-	var resp = result.getResponse().CreateMountpointResponse;
-	var mountpointId = parseInt(resp.link[0].id);
-
-	// only set color for those views that are applicable
-	if (this.link.view != "contact") {
-		var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
-
-		var actionNode = soapDoc.set("action");
-		actionNode.setAttribute("id", mountpointId);
-		actionNode.setAttribute("op", "color");
-		actionNode.setAttribute("color", color);
-
-		var respCallback = new AjxCallback(this, this._handleResponseAccept1, [replyType, notes, callback]);
-		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
-	} else {
-		this._handleResponseAccept1(replyType, notes, callback);
-	}
-};
-
-ZmShare.prototype._handleResponseAccept1 =
 function(replyType, notes, callback) {
 
 	this.notes = notes;
