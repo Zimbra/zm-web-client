@@ -64,12 +64,10 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 
 	this._shell = appCtxt.getShell();
 	
-	/* Register our keymap and global key action handler with the shell's keyboard manager 
-	 * CURRENTLY use $set: kbnav. 
-	 */
-	this._kbMgr = this._shell.getKeyboardMgr();
-	this._kbMgr.registerKeyMap(new ZmKeyMap());
-	this._kbMgr.registerApplicationKeyActionHandler(this);
+	// Register our keymap and global key action handler with the shell's keyboard manager 
+	var kbMgr = this._shell.getKeyboardMgr();
+	kbMgr.registerKeyMap(new ZmKeyMap());
+	kbMgr.registerApplicationKeyActionHandler(this);
 
 	if (location.search && (location.search.indexOf("nss=1") != -1))
    	    this._splashScreen = null;
@@ -427,9 +425,10 @@ function() {
 	this.setSessionTimer(true);
 	this._killSplash();
 
-	this._shell.getKeyboardMgr().setTabGroup(this._appCtxt.getRootTabGroup());
+	var kbMgr = this._shell.getKeyboardMgr();
+	kbMgr.setTabGroup(this._appCtxt.getRootTabGroup());
 	var startupFocusItem = this._appViewMgr.getCurrentView().getController().getCurrentView();	// returns a list view
-	this._shell.getKeyboardMgr().grabFocus(startupFocusItem);
+	kbMgr.grabFocus(startupFocusItem);
 };
 
 /**

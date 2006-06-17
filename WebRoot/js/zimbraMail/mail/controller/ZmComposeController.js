@@ -162,8 +162,9 @@ function() {
 
 ZmComposeController.prototype.popShield =
 function() {
-	if (!this._composeView.isDirty())
+	if (!this._composeView.isDirty()) {
 		return true;
+	}
 
 	var ps = this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
@@ -182,8 +183,14 @@ function() {
 	return false;
 };
 
+ZmComposeController.prototype._preHideCallback =
+function() {
+	return this.popShield();
+};
+
 ZmComposeController.prototype._postShowCallback = 
 function() {
+	ZmController.prototype._postShowCallback.call(this);
 	this._composeView.setFocus();
 };
 
@@ -262,21 +269,49 @@ function(ex) {
 */
 ZmComposeController.prototype.initComposeView = 
 function(initHide, composeMode) {
-	if (this._composeView == null) {
-		this._composeView = new ZmComposeView(this._container, this, composeMode);
-		var callbacks = new Object();
-		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
-		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
-		var elements = new Object();
-		if (!this._toolbar)
-			this._createToolBar();
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-	    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks, null, true);
-	    if (initHide) {
-		    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-		    this._composeView.enableInputs(false);
-		}
+	if (this._composeView) return;
+
+	this._composeView = new ZmComposeView(this._container, this, composeMode);
+	var callbacks = {};
+	callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
+	callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
+	var elements = {};
+	this._initializeToolBar();
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
+    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks, null, true);
+    if (initHide) {
+	    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+	    this._composeView.enableInputs(false);
+	}
+};
+
+/**
+ * Sets the tab stops for the compose form based on what's showing. Called any
+ * time an address field is hidden/shown, as well as when the view is set.
+ * 
+ * @param field		[DwtControl|input]*		element to set focus to
+ */
+ZmComposeController.prototype._setTabGroup =
+function(field) {
+
+	this._saveFocus();
+
+	var tg = this._createTabGroup();
+	var rootTg = this._appCtxt.getRootTabGroup();
+	tg.newParent(rootTg);
+	tg.addMember(this._toolbar);
+	var addrFields = this._composeView.getAddrFields();
+	for (var i = 0; i < addrFields.length; i++) {
+		tg.addMember(addrFields[i]);
+	}
+	tg.addMember(this._composeView._subjectField);
+	tg.addMember(this._composeView._bodyField);
+	
+	this._restoreFocus();
+
+	if (field) {
+		this._shell.getKeyboardMgr().grabFocus(field);
 	}
 };
 
@@ -373,8 +408,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	this._subjOverride = subjOverride;
 	this._extraBodyText = extraBodyText;
 
-	if (!this._toolbar)
-		this._createToolBar();
+	this._initializeToolBar();
 	this._toolbar.enableAll(true);
 	if (action == ZmOperation.REPLY_CANCEL) {
 		this._toolbar.enable([ZmOperation.ATTACHMENT, ZmOperation.SAVE_DRAFT], false);
@@ -382,16 +416,19 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 
 	this.initComposeView(null, composeMode);
 
-	this._composeMode = composeMode || this._setComposeMode(msg);
+	this._composeMode = composeMode ? composeMode : this._setComposeMode(msg);
 	this._setOptionsMenu(this._composeMode);
 
 	this._composeView.set(action, msg, toOverride, subjOverride, extraBodyText);
-	this._app.pushView(ZmController.COMPOSE_VIEW, true);
+	this._setTabGroup();
+	this._app.pushView(ZmController.COMPOSE_VIEW);
 	this._composeView.reEnableDesignMode();
 };
 
-ZmComposeController.prototype._createToolBar =
+ZmComposeController.prototype._initializeToolBar =
 function() {
+	if (this._toolbar) return;
+	
 	var buttons = [ZmOperation.SEND, ZmOperation.CANCEL, ZmOperation.SEP];
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED))
 		buttons.push(ZmOperation.SAVE_DRAFT);

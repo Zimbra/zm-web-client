@@ -180,12 +180,25 @@ function() {
 // returns the field values for each of the addr fields
 ZmComposeView.prototype.getRawAddrFields =
 function() {
-	var addrs = new Object();
+	var addrs = {};
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
 		var type = ZmComposeView.ADDRS[i];
-		if (!this._using[type])
-			continue;
-		addrs[type] = this._field[type].value;
+		if (this._using[type]) {
+			addrs[type] = this._field[type].value;
+		}
+	}
+	return addrs;
+};
+
+// returns address fields that are currently visible
+ZmComposeView.prototype.getAddrFields =
+function() {
+	var addrs = [];
+	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
+		var type = ZmComposeView.ADDRS[i];
+		if (this._using[type]) {
+			addrs.push(this._field[type]);
+		}
 	}
 	return addrs;
 };
@@ -193,7 +206,7 @@ function() {
 // returns list of attachment field values (used by detachCompose)
 ZmComposeView.prototype.getAttFieldValues =
 function() {
-	var attList = new Array();
+	var attList = [];
 	var atts = document.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME);
 
 	for (var i = 0; i < atts.length; i++)
@@ -358,14 +371,7 @@ function(type, addr) {
 		this._using[type] = true;
 		this._showAddressField(type, true);
 	}
-
 	this._field[type].value = addr;
-	if (this._using[type] &&
-		this._action != ZmOperation.REPLY &&
-		this._action != ZmOperation.REPLY_ALL)
-	{
-		this._field[type].focus()
-	}
 };
 
 // Sets the mode ZmHtmlEditor should be in.
@@ -411,12 +417,10 @@ function() {
 	// set the cursor to either to To address for new message or a forward
 	if (this._action == ZmOperation.NEW_MESSAGE || 
 		this._action == ZmOperation.FORWARD_INLINE || 
-		this._action == ZmOperation.FORWARD_ATT) 
-	{
-		this._field[ZmEmailAddress.TO].focus();
-	} 
-	else 
-	{
+		this._action == ZmOperation.FORWARD_ATT) {
+
+		this.shell.getKeyboardMgr().grabFocus(this._field[ZmEmailAddress.TO]);
+	} else {
 		// otherwise set cursor to the beginning of first line
 		this._setBodyFieldFocus();
 	}
@@ -506,7 +510,7 @@ function() {
 
 	// add new cell and build html for inserting file upload input element
 	var	cell = row.insertCell(-1);
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 	html[idx++] = "<table cellspacing=2 cellpadding=0 border=0><tr>";
 	html[idx++] = "<td><div class='attachText'>" + ZmMsg.attachFile + ":</div></td>";
@@ -716,7 +720,7 @@ function() {
 
 ZmComposeView.prototype._getForwardAttIds =
 function() {
-	var forAttIds = new Array();
+	var forAttIds = [];
 	// XXX: should getElementsByName be added to dwt?
 	var forAttList = document.getElementsByName(ZmComposeView.FORWARD_ATT_NAME);
 
@@ -1001,7 +1005,8 @@ function(extraBodyText) {
 		this._bodyField.setSelectionRange(index, index);
 	}
 
-    this._bodyField.focus();
+//    this._bodyField.focus();
+	this.shell.getKeyboardMgr().grabFocus(this._bodyField);
 };
 
 /**
@@ -1010,12 +1015,12 @@ function(extraBodyText) {
 ZmComposeView.prototype._initialize =
 function(composeMode) {
 	// init address field objects
-	this._divId = new Object();
-	this._buttonTdId = new Object();
-	this._fieldId = new Object();
-	this._using = new Object();
-	this._button = new Object();
-	this._field = new Object();
+	this._divId = {};
+	this._buttonTdId = {};
+	this._fieldId = {};
+	this._using = {};
+	this._button = {};
+	this._field = {};
 	this._internalId = AjxCore.assignId(this);
 	// init element IDs for address fields
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
@@ -1093,7 +1098,7 @@ function() {
 	var attcDivId = Dwt.getNextId();
 	var div = document.createElement("div");
 
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
@@ -1164,7 +1169,7 @@ function() {
 	var uploadFormId = Dwt.getNextId();
 	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 	html[idx++] = "<div style='overflow:auto'><form method='POST' action='";
 	html[idx++] = uri;
@@ -1190,7 +1195,7 @@ function() {
 ZmComposeView.prototype._showForwardField =
 function(msg, action, replyPref) {
 	var subj = (msg ? msg.getSubject() : null) || AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 
 	if (replyPref == ZmSetting.INCLUDE_ATTACH || action == ZmOperation.FORWARD_ATT)
@@ -1272,13 +1277,13 @@ function(type, show, skipNotify) {
 	this._using[type] = show;
 	Dwt.setVisible(document.getElementById(this._divId[type]), show);
 	this._field[type].value = ""; // bug fix #750 and #3680
-	if (show)
-		this._field[type].focus();
 	var setting = ZmComposeView.ADDR_SETTING[type];
 	if (setting) {
 		this._appCtxt.set(setting, show, null, false, skipNotify);
 	}
 	this._resetBodySize();
+	var field = show ? this._field[type] : null;	// set focus if visible
+	this._controller._setTabGroup(field);
 };
 
 // Grab the addresses out of the form. Optionally, they can be returned broken out into good and
@@ -1286,7 +1291,7 @@ function(type, show, skipNotify) {
 // its contents are ignored.
 ZmComposeView.prototype._collectAddrs =
 function() {
-	var addrs = new Object();
+	var addrs = {};
 	addrs[ZmComposeView.BAD] = new AjxVector();
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
 		var type = ZmComposeView.ADDRS[i];
@@ -1308,7 +1313,7 @@ function() {
 // Returns a string representing the form content
 ZmComposeView.prototype._formValue =
 function(incAddrs, incSubject) {
-	var vals = new Array();
+	var vals = [];
 	if (incAddrs) {
 		for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
 			var type = ZmComposeView.ADDRS[i];
@@ -1403,8 +1408,9 @@ function(args) {
 		var key = DwtKeyEvent.getCharCode(args);
 		if (key == DwtKeyEvent.KEY_TAB) {
 			var toField = document.getElementById(this._fieldId[ZmEmailAddress.TO]);
-			if (toField)
-				toField.focus();
+			if (toField) {
+				this.shell.getKeyboardMgr().grabFocus(toField);
+			}
 			rv = false;
 		}
 	}
@@ -1452,7 +1458,7 @@ ZmComposeView.prototype._noSubjectCancelCallback =
 function() {
 	this.enableInputs(true);
 	this._confirmDialog.popdown();
-	this._subjectField.focus();
+	this.shell.getKeyboardMgr().grabFocus(this._subjectField);
 	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
 };
@@ -1472,8 +1478,9 @@ function(type) {
 	this.enableInputs(true);
 	this._badAddrsOkay = false;
 	this._confirmDialog.popdown();
-	if (this._using[type])
-		this._field[type].focus()
+	if (this._using[type]) {
+		this.shell.getKeyboardMgr().grabFocus(this._field[type]);
+	}
 	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
 };

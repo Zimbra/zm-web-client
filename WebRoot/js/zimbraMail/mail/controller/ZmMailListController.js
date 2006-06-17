@@ -771,31 +771,3 @@ function(id) {
 	if (searchCtlr)
 		searchCtlr.setGroupMailBy(id);
 };
-
-ZmMailListController.prototype._preHideCallback = 
-function() {
-	DBG.println(AjxDebug.DBG2, "ZmMailListController.prototype._preHideCallback");
-	var currentFocusMember = this._appCtxt.getRootTabGroup().getFocusMember();
-	var myTg = this.getTabGroup();
-	this._savedFocusMember = (currentFocusMember && myTg && myTg.contains(currentFocusMember)) ? currentFocusMember : null;
-	return true;
-};
-
-ZmMailListController.prototype._postShowCallback = 
-function() {
-	DBG.println(AjxDebug.DBG2, "ZmMailListController.prototype._postShowCallback");
-	var rootTg = this._appCtxt.getRootTabGroup();
-	var myTg = this.getTabGroup();
-	var kbMgr = this._shell.getKeyboardMgr();
-
-	// TODO - define proper tab grouping for new window when ready!
-	if (rootTg && myTg) {
-		rootTg.replaceMember(ZmController._getCurrentAppViewTabGroup(), myTg);
-		if (this._savedFocusMember)
-			kbMgr.grabFocus(this._savedFocusMember);
-		else 
-			kbMgr.grabFocus(myTg.getFirstMember(true));
-		ZmController._setCurrentAppViewTabGroup(myTg);
-	}
-	return true;
-};

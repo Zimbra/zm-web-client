@@ -404,6 +404,8 @@ function() {
 
 ZmListController.prototype._initializeTabGroup =
 function(view) {
+	if (this._tabGroup) return;
+	
 	var tg = this._createTabGroup();
 	tg.newParent(this._appCtxt.getRootTabGroup());
 	tg.addMember(this._toolbar[view]);

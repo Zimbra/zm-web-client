@@ -200,6 +200,48 @@ function(bReloginMode) {
 	}
 };
 
+// Remember the currently focused item before this view is hidden
+ZmController.prototype._saveFocus = 
+function() {
+	var currentFocusMember = this._appCtxt.getRootTabGroup().getFocusMember();
+	var myTg = this.getTabGroup();
+	this._savedFocusMember = (currentFocusMember && myTg && myTg.contains(currentFocusMember)) ? currentFocusMember : null;
+};
+
+// Make our tab group the current app view tab group, and restore focus to
+// whatever had it last time we were visible
+ZmController.prototype._restoreFocus = 
+function() {
+	var rootTg = this._appCtxt.getRootTabGroup();
+	var myTg = this.getTabGroup();
+	var kbMgr = this._shell.getKeyboardMgr();
+
+	// TODO - define proper tab grouping for new window when ready!
+	if (rootTg && myTg) {
+		rootTg.replaceMember(ZmController._getCurrentAppViewTabGroup(), myTg);
+		if (this._savedFocusMember) {
+			kbMgr.grabFocus(this._savedFocusMember);
+		} else {
+			kbMgr.grabFocus(myTg.getFirstMember(true));
+		}
+		ZmController._setCurrentAppViewTabGroup(myTg);
+	}
+};
+
+ZmController.prototype._preHideCallback = 
+function() {
+	DBG.println(AjxDebug.DBG2, "ZmController.prototype._preHideCallback");
+	this._saveFocus();
+	return true;
+};
+
+ZmController.prototype._postShowCallback = 
+function() {
+	DBG.println(AjxDebug.DBG2, "ZmController.prototype._postShowCallback");
+	this._restoreFocus();
+	return true;
+};
+
 ZmController.prototype._processPrePopView = 
 function(view) {
 	// overload me

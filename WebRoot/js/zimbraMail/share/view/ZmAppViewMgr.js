@@ -311,7 +311,7 @@ function(viewId, appName, elements, callbacks, isAppView, isPoppable) {
 * hidden stack.
 *
 * @param viewId		the ID of the app view to push
-* @param force		ignore preemption callbacks
+* @param force		don't run callbacks
 * @returns			true if the view was pushed (is now visible)
 */
 ZmAppViewMgr.prototype.pushView =
@@ -361,7 +361,7 @@ function(viewId, force) {
 /**
 * Hides the currently visible view, and makes the view on top of the hidden stack visible.
 *
-* @param force	ignore preemption callbacks
+* @param force	don't run callbacks
 * @returns		true if the view was popped
 */
 ZmAppViewMgr.prototype.popView =
