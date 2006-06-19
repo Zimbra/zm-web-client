@@ -496,8 +496,7 @@ function() {
 ZmCalColView._inSyncScroll = false;
 
 ZmCalColView.prototype._syncScroll =
-function(resetLeft)
-{
+function(resetLeft) {
 	if (ZmCalColView._inSyncScroll) return
 	else ZmCalColView._inSyncScroll = true;
 	
@@ -518,8 +517,7 @@ function(resetLeft)
 }
 
 ZmCalColView.prototype._horizontalScrollbar =
-function(enable)
-{
+function(enable) {
 	var bodyElement = document.getElementById(this._bodyDivId);
 	bodyElement.className = enable ? "calendar_body_hscroll" : "calendar_body";
 	if (enable != this._horzEnabled) {
@@ -529,8 +527,7 @@ function(enable)
 }
 
 ZmCalColView.prototype._allDayVerticalScrollbar =
-function(enable)
-{
+function(enable) {
 	var el = document.getElementById(this._allDayApptScrollDivId);
 	el.className = enable ? "calendar_allday_appt_vert" : "calendar_allday_appt";
 	if (enable != this._vertEnabled) {
@@ -540,15 +537,13 @@ function(enable)
 }
 
 ZmCalColView.prototype._allDayScrollToBottom =
-function()
-{
+function() {
 	var el = document.getElementById(this._allDayApptScrollDivId);
 	el.scrollTop = this._allDayFullDivHeight;
 }
 
 ZmCalColView.prototype._scrollTo8AM =
-function()
-{
+function() {
 	if (!this._autoScrollDisabled) {
 		var bodyElement = document.getElementById(this._bodyDivId);
 		bodyElement.scrollTop = ZmCalColView._HOUR_HEIGHT*8 - 10;
@@ -559,15 +554,16 @@ function()
 }
 
 ZmCalColView.prototype._updateTitle =
-function() 
-{
+function() {
 	var numDays = this.getNumDays();
-	var colFormatter = DwtCalendar.getDateFormatter();
 	var dayFormatter = DwtCalendar.getDayFormatter();
+
 	if (numDays == 1) {
+		var colFormatter = DwtCalendar.getDateFormatter();
 		var date = this._date;
 		this._title = this._scheduleMode 
-					? colFormatter.format(date) : dayFormatter.format(date);
+			? colFormatter.format(date)
+			: dayFormatter.format(date);
 	} else {
 		var first = this._days[0].date;
 		var last = this._days[numDays-1].date;
