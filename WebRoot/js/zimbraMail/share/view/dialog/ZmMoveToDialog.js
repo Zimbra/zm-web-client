@@ -69,7 +69,6 @@ function(data, loc) {
 		omit[ZmFolder.ID_SPAM] = true;
 	} else if (this._isContact) {
 		treeIds = [ZmOrganizer.ADDRBOOK];
-		omit[ZmFolder.ID_AUTO_ADDED] = true;
 
 		// remove any addrbooks that are read only
 		var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();

@@ -93,8 +93,6 @@ function(parent, type, id) {
 		parent.enableAll(true);
 		if (addrBook && addrBook.isSystem()) {
 			parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
-			if (addrBook.id == ZmFolder.ID_AUTO_ADDED)
-				parent.enable([ZmOperation.SHARE_ADDRBOOK], false);
 		} else if (addrBook.link) {
 			parent.enable([ZmOperation.SHARE_ADDRBOOK], false);
 		}

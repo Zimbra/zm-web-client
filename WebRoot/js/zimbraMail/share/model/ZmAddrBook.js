@@ -125,14 +125,12 @@ function(what) {
 		// we dont allow sub-folders in addrbook tree
 		invalid = true;
 	} else {
-		if (this.id == ZmOrganizer.ID_ROOT || this.id == ZmFolder.ID_AUTO_ADDED) {
-			// cannot drag anything onto root or auto-added folders
+		if (this.id == ZmOrganizer.ID_ROOT) {
+			// cannot drag anything onto root folder
 			invalid = true;
 		} else if (this.link) {
 			// cannot drop anything onto a read-only addrbook
-			var shares = this.getShares();
-			var share = shares ? shares[0] : null;
-			invalid = share && !share.isWrite();
+			invalid = this.isReadOnly();
 		}
 
 		if (!invalid) {

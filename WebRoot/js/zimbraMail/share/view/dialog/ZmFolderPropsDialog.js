@@ -230,9 +230,6 @@ function(event) {
 	this._props.setPropertyVisible(this._urlId, organizer.url != null);
 	this._props.setPropertyVisible(this._permId, showPerm);
 
-	// disable "Add Share" button for "Emailed Contacts" address book
-	this.setButtonEnabled(ZmFolderPropsDialog.ADD_SHARE_BUTTON, organizer.id != ZmFolder.ID_AUTO_ADDED)
-
 	Dwt.setVisible(this._excludeFbEl, !organizer.link && (organizer.type == ZmOrganizer.CALENDAR));
 };
 

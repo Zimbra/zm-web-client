@@ -685,7 +685,6 @@ function() {
 	for (var i = 0; i < folders.length; i++) {
 		var folder = folders[i];
 		if (folder.id == ZmFolder.ID_ROOT ||
-			folder.id == ZmFolder.ID_AUTO_ADDED ||
 			folder.isInTrash() ||
 			folder.isReadOnly())
 		{
