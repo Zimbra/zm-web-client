@@ -62,10 +62,11 @@ ZmMountFolderDialog.TITLES[ZmOrganizer.NOTEBOOK] = ZmMsg.mountNotebook;
 ZmMountFolderDialog.prototype._organizerType;
 ZmMountFolderDialog.prototype._folderId;
 
-ZmMountFolderDialog.prototype._nameInput;
 ZmMountFolderDialog.prototype._userInput;
 ZmMountFolderDialog.prototype._pathInput;
 
+ZmMountFolderDialog.prototype._nameInput;
+ZmMountFolderDialog.prototype._nameInputDirty;
 ZmMountFolderDialog.prototype._colorSelect;
 
 // Public methods
@@ -83,6 +84,7 @@ function(organizerType, folderId, user, path, loc) {
 	this._userInput.setValue(user || "");
 	this._pathInput.setValue(path || "");
 	this._nameInput.setValue("");
+	this._nameInputDirty = false;
 
 	// show
 	DwtDialog.prototype.popup.call(this, loc);
@@ -93,8 +95,7 @@ function(organizerType, folderId, user, path, loc) {
 
 ZmMountFolderDialog.prototype._acKeyUpListener =
 function(event, aclv, result) {
-	var dialog = aclv.parent;
-	ZmMountFolderDialog._enableFieldsOnEdit(dialog);
+	ZmMountFolderDialog._handleOtherKeyUp(event);
 };
 
 ZmMountFolderDialog.prototype._handleCompletionData =
@@ -126,6 +127,46 @@ function(cv, ev) {
 };
 
 // Protected functions
+
+ZmMountFolderDialog._handleOtherKeyUp = function(event){
+	var value = ZmMountFolderDialog._handleKeyUp(event);
+
+	var target = DwtUiEvent.getTarget(event);
+	var inputField = Dwt.getObjectFromElement(target);
+	var dialog = inputField.parent.parent;
+
+	if (!dialog._nameInputDirty) {
+		var user = dialog._userInput.getValue();
+		var path = dialog._pathInput.getValue();
+
+		if (user != "" && path != "") {
+			if (!dialog._nameFormatter) {
+				dialog._nameFormatter = new AjxMessageFormat(ZmMsg.shareNameDefault);
+			}
+
+			user = user.replace(/@.*/,"");
+			user = user.substr(0,1).toUpperCase() + user.substr(1);
+
+			path = path.replace(/\/$/,"");
+			path = path.replace(/^.*\//,"");
+
+			var args = [user, path];
+			dialog._nameInput.setValue(dialog._nameFormatter.format(args));
+		}
+	}
+
+	return value;
+};
+
+ZmMountFolderDialog._handleNameKeyUp = function(event){
+	var target = DwtUiEvent.getTarget(event);
+	var inputField = Dwt.getObjectFromElement(target);
+	var dialog = inputField.parent.parent;
+
+	dialog._nameInputDirty = true;
+
+	return ZmMountFolderDialog._handleKeyUp(event);
+};
 
 ZmMountFolderDialog._handleKeyUp = function(event){
 	if (DwtInputField._keyUpHdlr(event)) {
@@ -214,16 +255,16 @@ ZmMountFolderDialog.prototype._createMountHtml = function() {
 		this._acAddrSelectList.handle(inputEl);
 	}
 	else {
-		Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmMountFolderDialog._handleKeyUp);
+		Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmMountFolderDialog._handleOtherKeyUp);
 	}
 
 	var inputEl = this._pathInput.getInputElement();
 	inputEl.style.width = "25em";
-	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmMountFolderDialog._handleKeyUp);
+	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmMountFolderDialog._handleOtherKeyUp);
 
 	var inputEl = this._nameInput.getInputElement();
 	inputEl.style.width = "20em";
-	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmMountFolderDialog._handleKeyUp);
+	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmMountFolderDialog._handleNameKeyUp);
 
 	// add to dialog
 	var element = this._getContentDiv();
