@@ -79,7 +79,7 @@
 
   <!-- list all the skins to build with here -->
   <!-- property name='skins' value='steel,walnut,bare' / -->
-  <property name='skins' value='sand,steel,sky,bare,demo' />
+  <property name='skins' value='sand,steel,sky,bare,demo,money' />
 
   <condition property='isProduction' value='true'>
     <or>

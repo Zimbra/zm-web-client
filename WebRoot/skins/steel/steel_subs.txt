@@ -3,21 +3,91 @@ _SkinName_			= steel
 
 SkinImgDir			= /zimbra/skins/steel/img
 
-_BaseColor_			= #bbbbbb
+_BaseColor_		=	#bbbbbb
 
-# darker and lighter shades of base color, used for bgs, borders and shadows
-_BaseColorD1_		= #c6c6c6
-_BaseColorD2_		= #bcbcbc
-_BaseColorD3_		= #b1b1b1
-_BaseColorD4_		= #a6a6a6
-_BaseColorD5_		= #9a9a9a
-_BaseColorD6_		= #858585
-_BaseColorD7_		= #6e6e6e
-_BaseColorD8_		= #737373
-_BaseColorD9_		= #424242
-_BaseColorD10_		= #2c2c2c
-	
-_BaseColorL1_		= #eeeeee
-_BaseColorL2_		= #f8f8f8
+_BaseColorD95_		=	#090909
+_BaseColorD90_		=	#131313
+_BaseColorD85_		=	#1c1c1c
+_BaseColorD80_		=	#252525
+_BaseColorD75_		=	#2f2f2f
+_BaseColorD70_		=	#383838
+_BaseColorD65_		=	#414141
+_BaseColorD60_		=	#4b4b4b
+_BaseColorD55_		=	#545454
+_BaseColorD50_		=	#5e5e5e
+_BaseColorD45_		=	#676767
+_BaseColorD40_		=	#707070
+_BaseColorD35_		=	#7a7a7a
+_BaseColorD30_		=	#838383
+_BaseColorD25_		=	#8c8c8c
+_BaseColorD20_		=	#969696
+_BaseColorD15_		=	#9f9f9f
+_BaseColorD10_		=	#a8a8a8
+_BaseColorD5_		=	#b2b2b2
+
+_BaseColorL5_		=	#bebebe
+_BaseColorL10_		=	#c2c2c2
+_BaseColorL15_		=	#c5c5c5
+_BaseColorL20_		=	#c9c9c9
+_BaseColorL25_		=	#cccccc
+_BaseColorL30_		=	#cfcfcf
+_BaseColorL35_		=	#d3d3d3
+_BaseColorL40_		=	#d6d6d6
+_BaseColorL45_		=	#dadada
+_BaseColorL50_		=	#dddddd
+_BaseColorL55_		=	#e0e0e0
+_BaseColorL60_		=	#e4e4e4
+_BaseColorL65_		=	#e7e7e7
+_BaseColorL70_		=	#ebebeb
+_BaseColorL75_		=	#eeeeee
+_BaseColorL80_		=	#f1f1f1
+_BaseColorL85_		=	#f5f5f5
+_BaseColorL90_		=	#f8f8f8
+_BaseColorL95_		=	#fcfcfc
+
+
+_SelColor_		=	#aed6d6
+
+_SelColorD95_		=	#090b0b
+_SelColorD90_		=	#111515
+_SelColorD85_		=	#1a2020
+_SelColorD80_		=	#232b2b
+_SelColorD75_		=	#2c3636
+_SelColorD70_		=	#344040
+_SelColorD65_		=	#3d4b4b
+_SelColorD60_		=	#465656
+_SelColorD55_		=	#4e6060
+_SelColorD50_		=	#576b6b
+_SelColorD45_		=	#607676
+_SelColorD40_		=	#688080
+_SelColorD35_		=	#718b8b
+_SelColorD30_		=	#7a9696
+_SelColorD25_		=	#83a1a1
+_SelColorD20_		=	#8babab
+_SelColorD15_		=	#94b6b6
+_SelColorD10_		=	#9dc1c1
+_SelColorD5_		=	#a5cbcb
+
+_SelColorL5_		=	#b2d8d8
+_SelColorL10_		=	#b6dada
+_SelColorL15_		=	#badcdc
+_SelColorL20_		=	#bedede
+_SelColorL25_		=	#c2e0e0
+_SelColorL30_		=	#c6e2e2
+_SelColorL35_		=	#cae4e4
+_SelColorL40_		=	#cee6e6
+_SelColorL45_		=	#d2e8e8
+_SelColorL50_		=	#d7ebeb
+_SelColorL55_		=	#dbeded
+_SelColorL60_		=	#dfefef
+_SelColorL65_		=	#e3f1f1
+_SelColorL70_		=	#e7f3f3
+_SelColorL75_		=	#ebf5f5
+_SelColorL80_		=	#eff7f7
+_SelColorL85_		=	#f3f9f9
+_SelColorL90_		=	#f7fbfb
+_SelColorL95_		=	#fbfdfd
+
+
 
 ChromeBg					= background-color:@_BaseColor_@; background-image:url(@SkinImgDir@/Console__BG.gif);

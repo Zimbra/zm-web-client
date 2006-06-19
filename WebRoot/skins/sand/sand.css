@@ -174,7 +174,7 @@ body						{	@ChromeBg@	}
 #skin_border_tree_footer				{	@SkinBorderMiniCal@		}
 
 #skin_container_tree_footer				{	
-	height:135;		margin:0 -4 0 4;  
+	height:135;		margin:2 -4 0 4;  
 #IFDEF MSIE
 					margin:0 0 0 0;
 #ENDIF

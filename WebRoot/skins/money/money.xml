@@ -1,0 +1,12 @@
+<skin>
+	<substitutions>
+		<file>../sand/sand_subs.txt</file>
+		<file>money_subs.txt</file>
+	</substitutions>
+	<css>
+		<file>../sand/sand.css</file>
+	</css>
+	<html>
+		<file>../sand/sand.html</file>
+	</html>
+</skin>
