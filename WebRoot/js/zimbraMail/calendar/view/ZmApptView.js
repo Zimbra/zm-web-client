@@ -77,7 +77,6 @@ function() {
 
 ZmApptView.prototype.addSelectionListener = function() {};
 ZmApptView.prototype.addActionListener = function() {};
-
 ZmApptView.prototype.handleActionPopdown = function(ev) {};
 
 ZmApptView.prototype.getTitle =
@@ -106,6 +105,12 @@ function(appt) {
 	this._renderAppt(appt);
 
 	return;
+};
+
+ZmApptView.prototype.setBounds =
+function(x, y, width, height) {
+	// dont reset the width!
+	ZmMailMsgView.prototype.setBounds.call(this, x, y, Dwt.DEFAULT, height);
 };
 
 ZmApptView.prototype.close =
@@ -139,7 +144,7 @@ function(appt) {
 
 	// Subject
 	var name = appt.getName();
-	html[i++] = "<tr><td width=100 class='SubjectCol LabelColName' style='vertical-align:bottom'>";
+	html[i++] = "<tr><td width=100 class='SubjectCol LabelColName'>";
 	html[i++] = AjxStringUtil.htmlEncode(ZmMsg.subject);
 	html[i++] = ": </td><td colspan=3>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td class='SubjectCol LabelColValue'>";
@@ -149,7 +154,7 @@ function(appt) {
 	// Close button
 	html[i++] = "<td width=1% id='";
 	html[i++] = closeBtnCellId;
-	html[i++] = "'></td><td>&nbsp;</td>"; // add extra cell for padding since CSS does not play well in IE
+	html[i++] = "'></td>"; // add extra cell for padding since CSS does not play well in IE
 
 	html[i++] = "</tr></table>";
 	html[i++] = "</td></tr>";
@@ -198,7 +203,7 @@ function(appt) {
 
 	var attachStr = this._getAttachString(appt);
 	if (attachStr) {
-		this._showField(ZmMsg.attachments, attachStr, html, i);
+		i = this._showField(ZmMsg.attachments, attachStr, html, i);
 	}
 
 	html[i++] = "</table>";
@@ -207,7 +212,7 @@ function(appt) {
 	el.appendChild(Dwt.parseHtmlFragment(html.join("")));
 
 	// add the close button
-	this._closeButton = new DwtButton(this, null, "TBButton");
+	this._closeButton = new DwtButton(this, null, "DwtToolbarButton");
 	this._closeButton.setImage("Close");
 	this._closeButton.setText(ZmMsg.close);
 	this._closeButton.reparentHtmlElement(closeBtnCellId);
@@ -310,7 +315,3 @@ function(sd, ed) {
 
 	return start.valueOf() == end.valueOf();
 };
-
-
-// Listeners
-
