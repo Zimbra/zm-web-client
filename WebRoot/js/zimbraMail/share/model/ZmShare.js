@@ -333,9 +333,21 @@ function(parent, grant, appCtxt) {
 
 // Public methods
 
+ZmShare.prototype.isAll =
+function() {
+	return this.grantee.type == ZmShare.TYPE_ALL;
+};
 ZmShare.prototype.isUser =
 function() {
 	return this.grantee.type == ZmShare.TYPE_USER;
+};
+ZmShare.prototype.isGroup =
+function() {
+	return this.grantee.type == ZmShare.TYPE_GROUP;
+};
+ZmShare.prototype.isDomain =
+function() {
+	return this.grantee.type == ZmShare.TYPE_DOMAIN;
 };
 ZmShare.prototype.isGuest =
 function() {

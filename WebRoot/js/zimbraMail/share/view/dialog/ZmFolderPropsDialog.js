@@ -254,7 +254,9 @@ function(organizer) {
 
 			var nameEl = row.insertCell(-1);
 			nameEl.style.paddingRight = "15px";
-			var nameText = share.isPublic() ? ZmMsg.shareWithPublic : (share.grantee.name || share.grantee.id);
+			var nameText = share.grantee.name || share.grantee.id;
+			if (share.isAll()) nameText = ZmMsg.shareWithAll;
+			else if (share.isPublic()) nameText = ZmMsg.shareWithPublic;
 			nameEl.innerHTML = AjxStringUtil.htmlEncode(nameText);
 
 			var roleEl = row.insertCell(-1);
@@ -278,6 +280,14 @@ function(organizer) {
 
 ZmFolderPropsDialog.prototype.__createCmdCells =
 function(row, share) {
+	var type = share.grantee.type;
+	if (type == ZmShare.TYPE_ALL || type == ZmShare.TYPE_DOMAIN || !ZmShare.ROLES[share.link.perm]) {
+		var cell = row.insertCell(-1);
+		cell.colSpan = 3;
+		cell.innerHTML = ZmMsg.configureWithAdmin;
+		return;
+	}
+
 	var labels = [ ZmMsg.edit, ZmMsg.revoke, ZmMsg.resend ];
 	var actions = [
 		this._handleEditShare, this._handleRevokeShare, this._handleResendShare

@@ -77,7 +77,7 @@ function(mode, object, share, loc) {
 	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[this._object.type] || ZmMsg.folder;
 
 	var isNewShare = (this._shareMode == ZmSharePropsDialog.NEW);
-	var isUserShare = share ? share.isUser() : true;
+	var isUserShare = share ? share.isUser() || share.isGroup() : true;
 	var isGuestShare = share ? share.isGuest() : false;
 	var isPublicShare = share ? share.isPublic() : false;
 
