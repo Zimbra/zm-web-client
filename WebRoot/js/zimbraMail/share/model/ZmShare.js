@@ -398,7 +398,7 @@ function(name, color, replyType, notes, callback) {
 		"color": color,
 		"view": this.link.view
 	};
-	ZmMountpoint.create(this._appCtxt, params, callback, errorCallback);
+	ZmMountpoint.create(this._appCtxt, params, respCallback, errorCallback);
 };
 
 ZmShare.prototype._handleResponseAccept =
