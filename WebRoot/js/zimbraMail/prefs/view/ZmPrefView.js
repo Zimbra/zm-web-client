@@ -75,7 +75,7 @@ ZmPrefView.TAB_NAME = new Object();
 ZmPrefView.TAB_NAME[ZmPrefView.GENERAL]			= ZmMsg.general;
 ZmPrefView.TAB_NAME[ZmPrefView.MAIL]			= ZmMsg.mail;
 ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]	= ZmMsg.filterRules;
-ZmPrefView.TAB_NAME[ZmPrefView.ADDR_BOOK]		= ZmMsg.contacts;
+ZmPrefView.TAB_NAME[ZmPrefView.ADDR_BOOK]		= ZmMsg.addressBook;
 ZmPrefView.TAB_NAME[ZmPrefView.CALENDAR]		= ZmMsg.calendar;
 
 ZmPrefView.prototype.toString =
