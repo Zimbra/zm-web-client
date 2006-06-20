@@ -839,12 +839,6 @@ td.DDSepInvisible div {
 	@FocusBorder@
 }
 
-.ZmContactCard-drag, 
-.ZmContactCard-selected-drag,
-.ZmContactCard-dnd {
-	@FocusBorder@	/*???*/
-}
-
 /* Header for the contact cards view */
 .ZmContactCardsView .contactHeader,
 .ZmContactCard-dnd .contactHeader {
