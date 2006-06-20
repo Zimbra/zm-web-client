@@ -557,7 +557,8 @@ function (contactList, edited, componentId, callback, errorCallback, instanceDat
 		this._createMessageNode(soapDoc, contactList);
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback]);
-	var params = {soapDoc: soapDoc, isInvite: true, isDraft: false, callback: respCallback, errorCallback: errorCallback};
+	var execFrame = new AjxCallback(this, this._sendInviteReply, [contactList, edited, componentId, callback, errorCallback, instanceDate]);
+	var params = {soapDoc:soapDoc, isInvite:true, isDraft:false, callback:respCallback, errorCallback:errorCallback, execFrame:execFrame };
 	return this._sendMessage(params);
 };
 
@@ -592,10 +593,12 @@ function(contactList, isDraft, callback, errorCallback) {
 	} else {
 		var request = isDraft ? "SaveDraftRequest" : "SendMsgRequest";
 		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
-		// TODO - return code and put up status message
 		this._createMessageNode(soapDoc, contactList, isDraft);
+
 		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
-		var params = {soapDoc: soapDoc, isInvite: false, isDraft: isDraft, callback: respCallback, errorCallback: errorCallback};
+		var execFrame = new AjxCallback(this, this.send, [contactList, isDraft, callback, errorCallback]);
+		var params = {soapDoc:soapDoc, isInvite:false, isDraft:isDraft, callback:respCallback, errorCallback:errorCallback, execFrame:execFrame};
+
 		return this._sendMessage(params);
 	}	
 };
@@ -696,7 +699,6 @@ function(soapDoc, contactList, isDraft) {
 ZmMailMsg.prototype._sendMessage = 
 function(params) {
 	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params.isInvite, params.isDraft, params.callback]);
-	var execFrame = new AjxCallback(this, this._sendMessage, [params]);
 
 	// bug fix #4325 - its safer to make sync request when dealing w/ new window
 	if (window.parentController) {
@@ -711,8 +713,8 @@ function(params) {
 			return resp.SendMsgResponse;
 		}
 	} else {
-		this._appCtxt.getAppController().sendRequest({soapDoc: params.soapDoc, asyncMode: true, callback: respCallback,
-													  errorCallback: params.errorCallback, execFrame: execFrame});
+		var params2 = { soapDoc:params.soapDoc, asyncMode:true, callback:respCallback, errorCallback:params.errorCallback, execFrame:params.execFrame };
+		this._appCtxt.getAppController().sendRequest(params2);
 	}
 };
 

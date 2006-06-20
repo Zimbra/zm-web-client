@@ -75,7 +75,7 @@ function(errorStr) {
 ZmLoginDialog.prototype.setFocus =
 function(username, bReloginMode) {
 	ZLoginFactory.showUserField(username);
-	setReloginMode(username && username.length && bReloginMode);
+	this.setReloginMode(username && username.length && bReloginMode);
  }
 
 ZmLoginDialog.prototype.setVisible = 
@@ -113,8 +113,7 @@ function(bReloginMode, app, obj) {
 	} else {
 		ZLoginFactory.hideLogOff();
 	}
-	var userName = ZLoginFactory.get(ZLoginFactory.USER_ID);
-	userName.disabled = !!userName.value.length;
+	ZLoginFactory.get(ZLoginFactory.USER_ID).disabled = true;
 }
 
 ZmLoginDialog.prototype._loginSelListener =
