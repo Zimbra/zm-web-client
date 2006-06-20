@@ -119,12 +119,14 @@ ZmAddrBook.prototype.mayContain =
 function(what) {
 	if (!what) return true;
 
-	var invalid = false;
-
 	if (what instanceof ZmAddrBook) {
-		// we dont allow sub-folders in addrbook tree
-		invalid = true;
+		// allow non-system folders in Trash to be dragged ONLY to root OR
+		// allow non-system folders not in Trash to be dragged into ONLY Trash
+		return (what.isInTrash() && this.id == ZmFolder.ID_ROOT) ||
+			   (!what.isInTrash() && this.id == ZmFolder.ID_TRASH);
 	} else {
+		var invalid = false;
+
 		if (this.id == ZmOrganizer.ID_ROOT) {
 			// cannot drag anything onto root folder
 			invalid = true;
@@ -156,9 +158,9 @@ function(what) {
 				}
 			}
 		}
-	}
 
-	return !invalid;
+		return !invalid;
+	}
 };
 
 
