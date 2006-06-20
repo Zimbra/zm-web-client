@@ -91,7 +91,7 @@ ZmReminderController.prototype.refresh =
 function() {
 	if (this._warningTime == 0) return;
 	// grab appts -1 hour through +23 hours
-	// schedule aother refresh in + 12 hours
+	// schedule another refresh in + 12 hours
 	var start = new Date();
 	start.setMinutes(0, 0, 0);
 	var startTime = start.getTime() - AjxDateUtil.MSEC_PER_HOUR;
@@ -144,6 +144,16 @@ function(list) {
 */
 ZmReminderController.prototype._housekeepingAction =
 function() {
+	
+	var rd = this.getReminderDialog();
+	if (!ZmCsfeCommand.getAuthToken()) {
+		DBG.println(AjxDebug.DBG1, "reminder check: no auth token, bailing");
+		if (rd && rd.isPoppedUp()) {
+			rd.popdown();
+		}
+		return;
+	}
+
 	var cachedSize = this._cachedAppts.size();
 	var activeSize = this._activeAppts.size();	
 	if (cachedSize == 0 && activeSize == 0) return;
@@ -158,7 +168,7 @@ function() {
 
 	for (var i=0; i < cachedSize; i++) {
 		var appt = this._cachedAppts.get(i);
-		if (appt.isAllDayEvent() || appt.getEndTime() < startTime || appt.getParticipationStatus() == ZmAppt.PSTATUS_DECLINED) {
+		if (!appt || appt.isAllDayEvent() || appt.getEndTime() < startTime || appt.getParticipationStatus() == ZmAppt.PSTATUS_DECLINED) {
 			toRemove.push(appt);
 		} else if (appt.isInRange(startTime, endTime)) {
 			toRemove.push(appt);
@@ -187,7 +197,6 @@ function() {
 		this._cachedAppts.remove(toRemove[i]);
 	}
 
-	var rd = this.getReminderDialog();	
 	// if we have any to notify on, do it
 	if (numNotify || rd.isPoppedUp()) {
 		if (this._activeAppts.size() == 0 && rd.isPoppedUp()) {
