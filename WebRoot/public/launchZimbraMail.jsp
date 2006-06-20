@@ -1,31 +1,30 @@
-<!-- 
-***** BEGIN LICENSE BLOCK *****
-Version: ZPL 1.2
-
-The contents of this file are subject to the Zimbra Public License
-Version 1.2 ("License"); you may not use this file except in
-compliance with the License. You may obtain a copy of the License at
-http://www.zimbra.com/license
-
-Software distributed under the License is distributed on an "AS IS"
-basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
-the License for the specific language governing rights and limitations
-under the License.
-
-The Original Code is: Zimbra Collaboration Suite Web Client
-
-The Initial Developer of the Original Code is Zimbra, Inc.
-Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
-All Rights Reserved.
-
-Contributor(s):
-
-***** END LICENSE BLOCK *****
--->
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
+<!--
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.2
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.2 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ *
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
+ * All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK *****
+-->
 <%
 	final String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
 	String contextPath = request.getContextPath();
@@ -78,9 +77,9 @@ Contributor(s):
 	if (ext == null) ext = "";
 %>
 
-<link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif"/>
-<link rel="SHORTCUT ICON" href="<%=contextPath %>/img/loRes/logo/favicon.ico"/>
-<link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss" />
+<link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
+<link rel="SHORTCUT ICON" href="<%=contextPath %>/img/loRes/logo/favicon.ico">
+<link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss">
 
 <title>Zimbra</title>
 
@@ -115,6 +114,18 @@ Contributor(s):
 <script  type="text/javascript" language="JavaScript">
 	var cacheKillerVersion = "<%=vers%>";
 	function launch() {
+		// quit if this function has already been called
+		if (arguments.callee.done) {return;}
+
+		// flag this function so we don't do the same thing twice
+		arguments.callee.done = true;
+
+		// kill the timer
+		if (_timer) {
+			clearInterval(_timer);
+			_timer = null;
+		}
+
 		AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp"
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		// figure out the debug level
@@ -139,9 +150,23 @@ Contributor(s):
 
 		ZmZimbraMail.run(document.domain, app);
 	}
+	/* for Mozilla */
+	if (document.addEventListener) {
+		document.addEventListener("DOMContentLoaded", launch, null);
+	}
+
+	/* for Safari */
+	if (/WebKit/i.test(navigator.userAgent)) { // sniff
+		var _timer = setInterval(function() {
+			if (/loaded|complete/.test(document.readyState)) {
+				launch();
+			}
+		}, 10);
+	}
 	AjxCore.addOnloadListener(launch);
 	AjxCore.addOnunloadListener(ZmZimbraMail.unload);
 </script>
+<!--[if IE]><script defer src="javascript:'launch()'"></script><![endif]-->
 </head>
 <body>
 	<jsp:include page="/public/pre-cache.jsp" />
