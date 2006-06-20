@@ -389,15 +389,16 @@ function(callback) {
 ZmShare.prototype.accept = 
 function(name, color, replyType, notes, callback) {
 	var respCallback = new AjxCallback(this, this._handleResponseAccept, [replyType, notes, callback]);
+	var errorCallback = new AjxCallback(this, this._handleErrorAccept, name);
 	var params = {
 		"l": ZmOrganizer.ID_ROOT,
 		"name": name,
 		"zid": this.grantor.id,
 		"rid": this.link.id,
-		"color": this.link.view != "contact" ? color : null,
+		"color": color,
 		"view": this.link.view
 	};
-	ZmMountpoint.create(this._appCtxt, params, callback);
+	ZmMountpoint.create(this._appCtxt, params, callback, errorCallback);
 };
 
 ZmShare.prototype._handleResponseAccept =
@@ -418,10 +419,10 @@ function(replyType, notes, callback) {
 };
 
 ZmShare.prototype._handleErrorAccept =
-function(ex) {
+function(name, ex) {
 	var message = ZmMsg.unknownError;
 	if (ex instanceof ZmCsfeException && ex.code == "mail.ALREADY_EXISTS") {
-		message = ZmMsg.folderNameExists;
+		message = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [ZmMsg.folderLc, name]);
 		// NOTE: This prevents details from being shown
 		ex = null;
 	}
@@ -491,7 +492,8 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 		shareNode.setAttribute("d", this.grantee.name);
 	}
 	for (var attr in grantAttrs) {
-		shareNode.setAttribute(attr, grantAttrs[attr]);
+		if (grantAttrs[attr])
+			shareNode.setAttribute(attr, grantAttrs[attr]);
 	}
 	
 	var respCallback = new AjxCallback(this, this._handleResponseShareAction, [callback]);
