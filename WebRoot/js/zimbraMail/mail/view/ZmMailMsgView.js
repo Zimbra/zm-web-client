@@ -826,7 +826,7 @@ function(msg, container, callback) {
 
 	// Subject
 	var subject = msg.getSubject() || ZmMsg.noSubject;
-	htmlArr[idx++] = "<tr><td width=100 class='SubjectCol LabelColName' style='vertical-align:bottom'>";
+	htmlArr[idx++] = "<tr><td width=100 class='SubjectCol LabelColName' valign=top>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.subject);
 	htmlArr[idx++] = ": </td><td colspan=3>";
 	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td class='SubjectCol LabelColValue'>";

@@ -145,6 +145,9 @@ function(newWidth, newHeight) {
 	} else {
 		this._msgListView.resetHeight(newHeight - summaryHeight);
 	}
+
+	if (AjxEnv.isIE && this._subjectDiv)
+		Dwt.setSize(this._subjectDiv, newWidth - 95);
 	
 	this._msgListView._resetColWidth();
 };
