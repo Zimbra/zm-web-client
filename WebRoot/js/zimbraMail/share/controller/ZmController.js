@@ -260,6 +260,8 @@ function(ex, method, params, restartOnError, obj) {
 	if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED || 
 		ex.code == ZmCsfeException.SVC_AUTH_REQUIRED || 
 		ex.code == ZmCsfeException.NO_AUTH_TOKEN) {
+
+		ZmCsfeCommand.clearAuthToken();
 		var bReloginMode = true;
 		if (ex.code == ZmCsfeException.SVC_AUTH_EXPIRED) {
 			// remember the last operation attempted ONLY for expired auth token exception
@@ -298,7 +300,6 @@ function(ex, method, params, restartOnError, obj) {
 */
 ZmController.prototype._doAuth = 
 function(username, password, rememberMe) {
-	ZmCsfeCommand.clearAuthToken();
 	var auth = new ZmAuthenticate(this._appCtxt);
 	var respCallback = new AjxCallback(this, this._handleResponseDoAuth, rememberMe);
 	auth.execute(username, password, respCallback);
