@@ -1,30 +1,4 @@
-<!-- 
-***** BEGIN LICENSE BLOCK *****
-Version: ZPL 1.2
-
-The contents of this file are subject to the Zimbra Public License
-Version 1.2 ("License"); you may not use this file except in
-compliance with the License. You may obtain a copy of the License at
-http://www.zimbra.com/license
-
-Software distributed under the License is distributed on an "AS IS"
-basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
-the License for the specific language governing rights and limitations
-under the License.
-
-The Original Code is: Zimbra Collaboration Suite Web Client
-
-The Initial Developer of the Original Code is Zimbra, Inc.
-Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
-All Rights Reserved.
-
-Contributor(s):
-
-***** END LICENSE BLOCK *****
--->
-
-<%@ page language="java" import="javax.naming.*"%>
-<%
+<%@ page language="java" import="javax.naming.*"%><%
 	String portsCSV = application.getInitParameter("admin.allowed.ports");
 	if (portsCSV != null) {
 		// Split on zero-or-more spaces followed by comma followed by zero-or-more spaces.
@@ -40,7 +14,7 @@ Contributor(s):
 				if (mAllowedPorts[i] < 1) {
 					//
 				}
-			}  
+			}
 
 			if (mAllowedPorts != null && mAllowedPorts.length > 0) {
 				int incoming = request.getServerPort();
@@ -52,15 +26,14 @@ Contributor(s):
 						if(qs != null)
 						path = path + "?" + qs;
 
-						response.sendRedirect(path);    	
+						response.sendRedirect(path);
 						return;
 					}
 				}
-			}    
-		} 	
+			}
+		}
 	}
-%>
-<%! 
+%><%!
 	private static String protocolMode = null;
 	private static String httpsPort = null;
 	private static String httpPort = null;
@@ -78,13 +51,13 @@ Contributor(s):
 			if (httpsPort != null && httpsPort.equals(DEFAULT_HTTP_PORT)) {
 				httpsPort = "";
 			} else {
-				httpsPort = ":" + httpsPort;    
+				httpsPort = ":" + httpsPort;
 			}
 			httpPort = (String) envCtx.lookup("httpPort");
 			if (httpPort != null && httpPort.equals(DEFAULT_HTTP_PORT)) {
 				httpPort = "";
 			} else {
-				httpPort = ":" + httpPort;    
+				httpPort = ":" + httpPort;
 			}
 		} catch (NamingException ne) {
 			protocolMode = PROTO_HTTP;
@@ -92,9 +65,7 @@ Contributor(s):
 			httpsPort = DEFAULT_HTTP_PORT;
 		}
 	}
-%>      
-
-<%
+%><%
 	Cookie[] cookies = request.getCookies();
 	String contextPath = request.getContextPath();
 	String currentProto = request.getScheme();
@@ -111,7 +82,7 @@ Contributor(s):
 	if (protocolMode.equals(PROTO_MIXED) || protocolMode.equals(PROTO_HTTPS)) {
 		if (currentProto.equals(PROTO_HTTP)) {
 			String httpsLocation;
-			qs = emptyQs? "?initMode=" + currentProto: qs + "&initMode=" + 
+			qs = emptyQs? "?initMode=" + currentProto: qs + "&initMode=" +
 			currentProto;
 			httpsLocation = PROTO_HTTPS + "://" + request.getServerName() +
 			httpsPort + contextPath + "/" + qs;
@@ -126,8 +97,8 @@ Contributor(s):
 		response.sendRedirect(PROTO_HTTP + "://" + request.getServerName() + httpPort + "/zimbra" + qs);
 		return;
 	}
-	
-	
+
+
 	final String SKIN_COOKIE_NAME = "ZM_SKIN";
 	String skin = "sand";
 
@@ -151,27 +122,41 @@ Contributor(s):
 
 	String ext = (String) request.getAttribute("fileExtension");
 	if (ext == null) ext = "";
-%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+%><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<link rel="ICON" type="image/gif" href="<%= contextPath %>/img/loRes/logo/favicon.gif"/>
-<link rel="SHORTCUT ICON" href="<%= contextPath %>/img/loRes/logo/favicon.ico"/>
+<!--
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.2
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.2 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ *
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
+ * All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK *****
+-->
+<link rel="ICON" type="image/gif" href="<%= contextPath %>/img/loRes/logo/favicon.gif">
+<link rel="SHORTCUT ICON" href="<%= contextPath %>/img/loRes/logo/favicon.ico">
 
 <title>Zimbra Login</title>
 
 <style type="text/css">
 	@import url(<%= contextPath %>/css/common,login,skin.css?v=<%= vers %>&skin=<%= skin %><%= inDevMode ? "&debug=1" : "" %>);
 </style>
-
-<!-- ALL STYLES MOVED TO login.css SO THEY CAN BE SKINNED:  WE USE THE SKIN FROM ABOVE. -->
-<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
-<% } else { %>
-	<style type="text/css">
-		@import url(<%= contextPath %>/css/common,login,skin.css?v=<%= vers %>);
-	</style>
-<% } %>
-
 
 <script type="text/javascript" language="javascript">
 appContextPath = "<%= contextPath %>";
@@ -183,31 +168,65 @@ appContextPath = "<%= contextPath %>";
 <% } else { %>
 <script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>
-</head>
-<body>
-<script type="text/javascript" language="javascript">
+<script type="text/javascript">
 	var initMode = "<%= initMode %>";
-	AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
+	AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp";
 	DBG = new AjxDebug(AjxDebug.NONE, null, false);
-	if (initMode != "" && (initMode != location.protocol)) {
+	if (initMode && (initMode != location.protocol)) {
 		AjxDebug.deleteWindowCookie();
 	}
 	// figure out the debug level
 	if (location.search && (location.search.indexOf("debug=") != -1)) {
 		var m = location.search.match(/debug=(\w+)/);
 		if (m && m.length) {
-			var level = parseInt(m[1]);
-			if (level)
+			var level = parseInt(m[1],10);
+			if (level) {
 				DBG.setDebugLevel(level);
-			else if (m[1] == 't')
+			} else if (m[1] == 't') {
 				DBG.showTiming(true);
+			}
 		}
 	}
-	window.onload = ZmLogin.handleOnload;
+	function init() {
+		// quit if this function has already been called
+		if (arguments.callee.done) {return;}
+
+		// flag this function so we don't do the same thing twice
+		arguments.callee.done = true;
+
+		// kill the timer
+		if (_timer) {
+			clearInterval(_timer);
+			_timer = null;
+		}
+
+		// do onload
+		ZmLogin.handleOnload();
+	}
+
+	/* for Mozilla */
+	if (document.addEventListener) {
+		document.addEventListener("DOMContentLoaded", init, null);
+	}
+
+	/* for Safari */
+	if (/WebKit/i.test(navigator.userAgent)) { // sniff
+		var _timer = setInterval(function() {
+			if (/loaded|complete/.test(document.readyState)) {
+				init();
+			}
+		}, 10);
+	}
+
+	/* for other browsers */
+	window.onload = init;
 
 	// XXX: DO NOT REMOVE - THIS PREVENTS MEM LEAK IN IE
 	window.onunload = function() { window.onload = window.onunload = null; }
 </script>
+<!--[if IE]><script defer src="javascript:'init()'"></script><![endif]-->
+</head>
+<body>
 <% if ((mode != null) && (mode.equalsIgnoreCase("mjsf"))) { %>
 <jsp:include page="ZimbraMail.jsp"/>
 <% } else { %>
