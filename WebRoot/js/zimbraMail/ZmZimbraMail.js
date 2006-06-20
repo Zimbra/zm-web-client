@@ -1329,6 +1329,17 @@ function(deletes) {
 			var page = cache.getPageById(ids[i]);
 			if (page) {
 				cache.removePage(page);
+				page.notifyDelete();
+				
+				// re-render, if necessary
+				var notebookController = notebookApp.getNotebookController();
+				var shownPage = notebookController.getPage();
+				if (shownPage && shownPage.id == page.id) {
+					if (shownPage.name == ZmNotebook.PAGE_INDEX || shownPage.name == page.name) {
+						var pageRef = { folderId: page.folderId, name: ZmNotebook.PAGE_INDEX };
+						notebookController.gotoPage(pageRef);
+					}
+				}
 			}
 		}
 	}

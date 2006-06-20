@@ -204,23 +204,27 @@ ZmPage.prototype.set = function(data) {
 	if (this.version == version && this._content) return;
 	
 	// ZmItem fields
-	this.id = data.id;
-	this.restUrl = data.rest;
+	this.id = data.id || this.id;
+	this.restUrl = data.rest || this.restUrl;
 	// REVISIT: Sometimes the server doesn't return the folderId!!!
 	this.folderId = data.l || this.folderId;
-	this._parseTags(data.t);
+	if (data.t) this._parseTags(data.t);
 
 	// ZmPage fields
-	this.name = data.name;
+	this.name = data.name || this.name;
 	// REVISIT: This is temporary!
-	this.fragment = data.fr instanceof Array ? data.fr[0]._content : data.fr;
-	this._content = data.body instanceof Array ? data.body[0]._content : data.body;
-	this.creator = data.cr;
-	this.createDate = new Date(Number(data.d));
-	this.modifier = data.leb;
-	this.modifyDate = new Date(Number(data.md));
-	this.size = Number(data.s);
-	this.version = version;
+	this.fragment = data.fr ? (data.fr instanceof Array ? data.fr[0]._content : data.fr) : this.fragment;
+	if (version != this.version) {
+		this._content = null;
+	} else {
+		this._content = data.body ? (data.body instanceof Array ? data.body[0]._content : data.body) : this._content;
+	}
+	this.creator = data.cr || this.creator;
+	this.createDate = data.d ? new Date(Number(data.d)) : this.createDate;
+	this.modifier = data.leb || this.modifier;
+	this.modifyDate = data.md ? new Date(Number(data.md)) : this.modifyDate;
+	this.size = data.s ? Number(data.s) : this.size;
+	this.version = data.ver ? version : this.version;
 };
 
 // Protected methods

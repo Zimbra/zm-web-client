@@ -118,11 +118,11 @@ function(callback, url, response) {
 
 ZmNotebookPageView.prototype.getTitle =
 function() {
-	var selection = this.getSelection();
-	if (!selection) {
+	var page = this.getVisiblePage();
+	if (!page) {
 		return ZmMsg.zimbraTitle;
 	}
-	var folderId = selection.getFolderId();
+	var folderId = page.getFolderId();
 	var notebook = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK).getById(folderId);
 	var notebookName = notebook.getName();
 	return [ZmMsg.zimbraTitle, notebookName].join(": ");
@@ -134,6 +134,11 @@ function() {
 };
 
 ZmNotebookPageView.prototype.getSelection =
+function() {
+	return [this._controller.getPage()];
+};
+
+ZmNotebookPageView.prototype.getVisiblePage =
 function() {
 	return this._controller.getPage();
 };

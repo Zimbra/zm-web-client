@@ -258,7 +258,7 @@ ZmNotebookController.prototype._refreshListener = function(event) {
 
 ZmNotebookController.prototype._editListener = function(event) {
 	var pageEditController = this._app.getPageEditController();
-	var page = this._listView[this._currentView].getSelection();
+	var page = this._listView[this._currentView].getVisiblePage();
 	pageEditController.show(page);
 };
 

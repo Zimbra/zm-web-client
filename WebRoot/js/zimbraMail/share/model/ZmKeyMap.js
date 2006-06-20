@@ -57,6 +57,7 @@ function ZmKeyMap() {
 			"N,C":					ZmKeyMap.NEW_CONTACT,
 			"N,F":					ZmKeyMap.NEW_FOLDER,
 			"N,M":					ZmKeyMap.NEW_MESSAGE,
+			"N,P":					ZmKeyMap.NEW_PAGE,
 			"N,T":					ZmKeyMap.NEW_TAG,
 
 			"G,M":					ZmKeyMap.GOTO_MAIL,
@@ -219,9 +220,12 @@ function ZmKeyMap() {
 	this._map["ZmMixedController"] = {
 			"INHERIT": "ZmMailListController"
 	};
-	
-	this._map["ZmChicletButton"] = {
-			"Enter":				DwtKeyMap.SELECT_CURRENT
+
+	this._map["ZmNotebookPageController"] = {
+			"INHERIT": ZmKeyMap.GLOBAL_KEYMAP,
+
+			"E":					ZmKeyMap.EDIT,
+			"R":					ZmKeyMap.REFRESH	
 	};
 };
 
@@ -279,6 +283,7 @@ ZmKeyMap.NEW_CALENDAR		= "NewCalendar";
 ZmKeyMap.NEW_CONTACT		= "NewContact";
 ZmKeyMap.NEW_FOLDER			= "NewFolder";
 ZmKeyMap.NEW_MESSAGE		= "NewMessage";
+ZmKeyMap.NEW_PAGE			= "NewPage";
 ZmKeyMap.NEW_TAG			= "NewTag";
 ZmKeyMap.NEW_WINDOW			= "OpenInNewWindow";
 ZmKeyMap.NEXT_CONV			= "NextConversation";

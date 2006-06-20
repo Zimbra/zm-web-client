@@ -51,6 +51,36 @@ ZmNotebookPageController.prototype._history;
 // Public methods
 //
 
+ZmNotebookPageController.prototype.getKeyMapName =
+function() {
+	return "ZmNotebookPageController";
+};
+
+ZmNotebookPageController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println(AjxDebug.DBG3, "ZmNotebookPageController.handleKeyAction");
+	
+	switch (actionCode) {
+		case ZmKeyMap.EDIT:
+			if (this._object && this._object.name != ZmNotebook.PAGE_INDEX) {
+				this._editListener();
+			}
+			break;
+		case ZmKeyMap.DEL:
+			if (this._object && this._object.name != ZmNotebook.PAGE_INDEX) {
+				return ZmListController.prototype.handleKeyAction.call(this, actionCode);
+			}
+			break;
+		case ZmKeyMap.REFRESH:
+			this._refreshListener();
+			break;
+		default:
+			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
+			break;
+	}
+	return true;
+};
+
 // page
 
 ZmNotebookPageController.prototype.gotoPage = function(pageRef) {
