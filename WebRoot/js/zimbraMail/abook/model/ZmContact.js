@@ -331,17 +331,11 @@ function() {
 
 ZmContact.prototype.isReadOnly =
 function() {
-	if (this.isGal)
-		return true;
+	if (this.isGal) return true;
 
-	if (this.isShared()) {
-		// check if this contact is read-only
-		var shares = this.addrbook.getShares();
-		var share = shares ? shares[0] : null;
-		return (share && !share.isWrite());
-	}
-
-	return false;
+	return this.isShared()
+		? this.addrbook.isReadOnly()
+		: false;
 };
 
 ZmContact.prototype.getDefaultDndAction =

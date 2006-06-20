@@ -556,7 +556,7 @@ function(list, defaultColumnSort) {
 		this._controller._navToolBar[view].setText("");
 	}
 
-	this.parent.enableAlphabetBar(!list.isGal && this._list.size() > 0);
+	this.parent.enableAlphabetBar(!list.isGal && this._list && this._list.size() > 0);
 };
 
 ZmContactSimpleView.prototype._modifyContact =
