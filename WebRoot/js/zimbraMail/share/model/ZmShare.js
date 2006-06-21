@@ -492,7 +492,7 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 		shareNode.setAttribute("d", this.grantee.name);
 	}
 	for (var attr in grantAttrs) {
-		if (grantAttrs[attr])
+		if (grantAttrs[attr] != null)
 			shareNode.setAttribute(attr, grantAttrs[attr]);
 	}
 	
