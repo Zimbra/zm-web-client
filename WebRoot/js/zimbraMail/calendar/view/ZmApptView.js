@@ -193,7 +193,7 @@ function(appt) {
 		if (organizer) {
 			i = this._showField(ZmMsg.organizer, this._objectManager.findObjects(organizer, true), html, i);
 		}
-		this._showField(ZmMsg.attendees, this._objectManager.findObjects(attendees, true), html, i);
+		i = this._showField(ZmMsg.attendees, this._objectManager.findObjects(attendees, true), html, i);
 	}
 
 	var repeatStr = appt._getRecurrenceBlurbForSave();
