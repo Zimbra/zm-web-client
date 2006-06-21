@@ -552,7 +552,8 @@ function(mode, isCompose, addrs) {
 		msg.setAddress(ZmEmailAddress.TO, new ZmEmailAddress(this.grantor.email), ZmEmailAddress.TO);
 	} else {
 		msg.setAddress(ZmEmailAddress.FROM, new ZmEmailAddress(this.grantee.email, ZmEmailAddress.FROM));
-		msg.setAddresses(ZmEmailAddress.BCC, addrs);
+		var addrType = (addrs.size() > 1) ? ZmEmailAddress.BCC : ZmEmailAddress.TO;
+		msg.setAddresses(addrType, addrs);
 	}
 	msg.setSubject(ZmShare._SUBJECTS[mode]);
 	msg.setTopPart(topPart);
