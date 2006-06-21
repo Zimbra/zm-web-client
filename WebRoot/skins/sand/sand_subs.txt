@@ -12,12 +12,22 @@
 #
 ###################################
 
-_SkinName_		= sand
+_SkinName_			= sand
 
-SkinImgDir					= /zimbra/skins/sand/img
-SkinAnimatedImgDir			= /zimbra/img/animated
-DwtImgDir					= /zimbra/img/loRes/dwt
-ImgDir						= /zimbra/img/loRes
+SkinImgDir			= /zimbra/skins/sand/img
+SkinAnimatedImgDir	= /zimbra/img/animated
+ImgDir				= /zimbra/img/loRes
+DwtImgDir			= /zimbra/img/loRes/dwt
+LogoImgDir			= /zimbra/img/loRes/logo
+LogoURL				= http://www.zimbra.com
+
+LoginBannerImg      =	@LogoImgDir@/LoginBanner.png
+LoginBannerWidth    =	450px
+LoginBannerHeight   =	100px
+
+AppBannerImg        =	@LogoImgDir@/AppBanner.png
+AppBannerWidth      =	120px
+AppBannerHeight     =	35px
 
 
 #######

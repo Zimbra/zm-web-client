@@ -1,0 +1,248 @@
+<html>
+<style>
+* {	font-family:Verdana; font-size:10px;	}
+
+body {
+	background-color:#e8dcc1;
+}
+
+.title {
+	font-size:24px;
+	font-weight:bold;
+}
+
+.instructions {
+	font-style:italic;
+}
+
+.colorChip	{
+	width:10px; height:20px;
+	border:1px solid black;
+	border-right-width:0px;
+}
+
+.baseColor {
+	width:30px;
+}
+
+#display td {
+	font-size:9px;
+	color:#666666;
+}
+
+#display div {
+	font-size:9px;
+	color:black;
+}
+
+
+#clipboard {
+	width:100%; height:100%;
+	font-family:monaco,monospace;
+	font-size:10px;
+}
+
+.label {
+	width:80;
+}
+
+input {
+	width:80;
+}
+
+#picker {
+	position:absolute;
+	border:2px solid black;
+	background-color:white;
+	right:50; top:0;
+}
+
+#pickerGrid {}
+#huePicker{}
+
+.pickerCell {
+	width:10; height:10;
+}
+
+.hueCell {
+	width:20; height:4;
+}
+
+</style>
+
+<script language='javascript' src='SkinColorLib.js'></script>
+<script language='javascript'>
+
+var currentColorField = 'colorRGB1';
+function focusColor(id, hex) {
+	currentColorField = id;
+	var hsv = hex2hsv(hex);
+	pickHue(hsv.hue);
+}
+
+function getFocusColor() {
+	return document.getElementById(currentColorField).value;
+}
+
+function setFocusColor(hex) {
+	return document.getElementById(currentColorField).value = hex;
+}
+
+function getColorName(baseName, modifier) {
+	if (modifier == null) return "_" + baseName + "_";
+	return "_" + baseName + modifier + "_";
+}
+
+function getJSRep(name, value) {
+	return name + "\t\t=\t#" + value;
+}
+
+
+function drawAllShades() {
+	var clipboard = document.getElementById('clipboard');
+	clipboard.value = "";
+	drawShades(1);
+	drawShades(2);	
+}
+
+function drawShades(num) {
+	var baseColor = document.getElementById('colorRGB'+num).value;
+	var name = document.getElementById('colorName'+num).value;
+
+	var darkJS = [getJSRep(getColorName(name), baseColor),""];
+	var lightJS = [];
+
+	var html = 
+		["<table cellspacing=0 cellpadding=0 style='border-right:1px solid black'>",
+			"<tr>",
+		];
+
+	for (var i = 95; i >= 5; i-=5) {
+		var darkColor  = darken(baseColor, i);
+		var darkName = getColorName(name, "D"+ i);
+
+		html.push([
+				"<td><div class='colorChip' style='background-color:", darkColor, "'><\/div><\/td>",
+			].join(""));
+
+		darkJS.push(getJSRep(darkName, darkColor));
+	}
+
+	html.push([
+				"<td><div class='colorChip baseColor' style='background-color:", baseColor, "'><\/div><\/td>",
+			].join(""));
+
+	for (var i = 5; i <= 95; i+=5) {
+		var lightColor = lighten(baseColor, i);
+		var lightName = getColorName(name, "L"+ i);
+
+		html.push([
+				"<td><div class='colorChip' style='background-color:", lightColor, "'><\/div><\/td>",
+			].join(""));
+
+		lightJS.push(getJSRep(lightName, lightColor));
+	}
+	html.push("<\/tr><\/table>");
+	
+	var display = document.getElementById('display'+num);
+	display.innerHTML = html.join("\r");
+
+	var clipboard = document.getElementById('clipboard');
+	clipboard.value += darkJS.join("\r") + "\r\r" + lightJS.join("\r") + "\r\r\r";
+}
+
+
+function initPicker() {
+	var picker = document.getElementById("picker");
+	picker.innerHTML = 	"<table><tr><td><div id='pickerGrid'><\/div><\/td><td><div id='huePicker'><\/div><\/td><\/tr><\/table>";
+
+	drawHues(drawHues);
+	drawPicker(236);
+}
+
+
+function pickColor(color) {
+	setFocusColor(color);
+	drawAllShades();
+}
+
+function pickHue(hue) {
+	drawPicker(hue);
+
+	var hsv = hex2hsv(getFocusColor());
+	hsv.hue = hue;
+	setFocusColor(hsv2hex(hsv));
+}
+function drawPicker(hue) {
+	var hsv = {};
+
+	var html = ["<table cellspacing=0 cellpadding=0>"];
+
+	for (var v = 100; v >= 0; v -=5) {
+		html.push("<tr>");
+		for (var s = 0; s <= 100; s+= 5) {
+			hsv.hue = hue;
+			hsv.saturation = s;
+			hsv.value = v;
+			var color = rgb2hex(hsv2rgb(hsv));
+			html.push("<td><div class=pickerCell onclick='pickColor(\"", color, "\")' style='background-color:", color, "'><\/div><\/td>");
+		}
+		html.push("<\/tr>");
+	}
+	html.push("<\/table");
+	
+	var picker = document.getElementById("pickerGrid");
+	picker.innerHTML = html.join("");
+}
+
+
+function drawHues() {
+	var html = ["<table cellspacing=0 cellpadding=0 height=100%>"];
+
+	var hsv = {};
+	
+	for (var hue = 0; hue <= 360; hue += 7) {
+		hsv.hue = hue;
+		hsv.saturation = 100;
+		hsv.value = 100;
+		var color = rgb2hex(hsv2rgb(hsv));
+		html.push("<\/tr><td><div class=hueCell onclick='pickHue(\"", hue, "\")' style='background-color:", color, "'><\/div><\/td><\/tr>");
+	}
+	html.push("<\/table");
+	
+	var huePicker = document.getElementById("huePicker");
+	huePicker.innerHTML = html.join("");
+}
+
+</script>
+<body onload='initPicker();drawAllShades();'>
+<table width=100% height=100% border=0>
+	<tr><td colspan=4 class=title colspan=2>Skin Color Picker</td></tr>
+	<tr><td colspan=4 class='instructions'>
+			Enter names for the base and selection colors below, then copy the resulting
+			colors into your skin_subs.txt file.
+
+		</td></tr>
+	<tr>
+		<td class=label>Color Name</td>
+		<td class=label>RGB Value</td>
+	</tr>
+
+	<tr>
+		<td class=field><input class=nameField id='colorName1' value='BaseColor'></td>
+		<td class=field><input class=rgbField id='colorRGB1' value='e8dcc1'  onfocus='focusColor(this.id, this.value)' onblur='drawAllShades()'></td>
+		<td><div id='display1'></div></td>
+	</tr>
+
+	<tr>
+		<td class=field><input class=nameField id='colorName2' value='SelColor'></td>
+		<td class=field><input class=rgbField id='colorRGB2' value='C7E6F6'  onfocus='focusColor(this.id, this.value)' onblur='drawAllShades()'></td>
+		<td><div id='display2'></div></td>
+	</tr>
+
+	<tr><td colspan=6 height=100%><textarea id='clipboard'>Instructions here</textarea></td></tr>
+</table>
+
+<div id=picker></div>
+</body>
+</html>
