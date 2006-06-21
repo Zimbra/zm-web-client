@@ -178,6 +178,26 @@ function(callback, result) {
 		callback.run();
 };
 
+ZmSettings.prototype.loadAvailableSkins =
+function(callback) {
+	var soapDoc = AjxSoapDoc.create("GetAvailableSkinsRequest", "urn:zimbraAccount");
+	var respCallback = new AjxCallback(this, this._handleResponseLoadAvailableSkins, [callback]);
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+};
+
+ZmSettings.prototype._handleResponseLoadAvailableSkins =
+function(callback, result) {
+	var resp = result.getResponse().GetAvailableSkinsResponse;
+	var skins = resp.skin;
+	for (var i = 0; i < skins.length; i++) {
+		var name = skins[i].name;
+		this._settings[ZmSetting.AVAILABLE_SKINS].setValue(name);
+	}
+	if (callback) {
+		callback.run();
+	}
+};
+
 /**
 * Saves one or more settings.
 *

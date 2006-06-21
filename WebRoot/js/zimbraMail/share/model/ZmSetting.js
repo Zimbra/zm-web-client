@@ -305,7 +305,7 @@ ZmSetting.INIT[ZmSetting.SKIN_TREE_FOOTER_ID]			= [null, ZmSetting.T_CONFIG, ZmS
 ZmSetting.INIT[ZmSetting.SKIN_USER_INFO_ID]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_quota"];
 
 // COS SETTINGS
-ZmSetting.INIT[ZmSetting.AVAILABLE_SKINS]				= ["zimbraAvailableSkin", ZmSetting.T_COS, ZmSetting.D_LIST];
+ZmSetting.INIT[ZmSetting.AVAILABLE_SKINS]				= [null, ZmSetting.T_COS, ZmSetting.D_LIST];
 ZmSetting.INIT[ZmSetting.BROWSE_ENABLED]				= ["zimbraFeatureAdvancedSearchEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.CALENDAR_ENABLED]				= ["zimbraFeatureCalendarEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.CHANGE_PASSWORD_ENABLED]		= ["zimbraFeatureChangePasswordEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];

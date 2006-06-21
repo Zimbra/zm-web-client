@@ -42,15 +42,23 @@ function() {
 
 ZmPreferencesApp.prototype.launch =
 function(callback, errorCallback) {
+	var respCallback = new AjxCallback(this, this._handleResponseLaunch, [callback]);
+	this._appCtxt.getSettings().loadAvailableSkins(respCallback);
+};
+
+ZmPreferencesApp.prototype._handleResponseLaunch =
+function(callback) {
 	this.getPrefController().show();
-	if (callback)
+	if (callback) {
 		callback.run();
+	}
 };
 
 ZmPreferencesApp.prototype.getPrefController =
 function() {
-	if (!this._prefController)
+	if (!this._prefController) {
 		this._prefController = new ZmPrefController(this._appCtxt, this._container, this);
+	}
 	return this._prefController;
 };
 
