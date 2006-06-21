@@ -24,12 +24,20 @@
  */
 
 function ZmLoginDialog(parent, appCtxt, className) { 
-	this._appCtxt = appCtxt;
+	
     className = className || "ZmLoginDialog";
-	DwtDialog.call(this, parent, className, ZmMsg.login, DwtDialog.NO_BUTTONS);
+    DwtComposite.call(this, parent, className, DwtControl.ABSOLUTE_STYLE);
+	this._appCtxt = appCtxt;
+    this._origClassName = className;
+    this._xparentClassName = className + "-Transparent";
+    this.setBounds(0, 0, "100%", "100%");
+    var htmlElement = this.getHtmlElement();
+    htmlElement.style.zIndex = Dwt.Z_DIALOG;
+    htmlElement.className = className;
+    this.setVisible(false);
 
 	var params = ZLoginFactory.copyDefaultParams(ZmMsg);
-	params.showPanelBorder = false;
+	params.showPanelBorder = true;
 	params.showForm = true;
 	params.showUserField = true;
 	params.showPasswordField = true;
@@ -39,11 +47,18 @@ function ZmLoginDialog(parent, appCtxt, className) {
 	params.logOffAction = "ZmLoginDialog._loginDiffListener()";
 	params.loginAction = "ZmLoginDialog._loginListener(this)";
 	params.showButton = true;
-	var html = ZLoginFactory.getLoginDialogHTML(params);
-	this.setContent(html);
+
+	var html = [];
+	var idx = 0;
+	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td align='center' valign='center'>";
+	html[idx++] = ZLoginFactory.getLoginDialogHTML(params);
+	html[idx++] = "</td></tr></table>";
+	htmlElement.innerHTML = html.join("");
+
+    this.setReloginMode(false);
 }
 
-ZmLoginDialog.prototype = new ZmDialog;
+ZmLoginDialog.prototype = new DwtComposite;
 ZmLoginDialog.prototype.constructor = ZmLoginDialog;
 
 ZmLoginDialog.prototype.toString = 
@@ -69,7 +84,11 @@ function() {
 
 ZmLoginDialog.prototype.setError =
 function(errorStr) {
-	ZLoginFactory.showErrorMsg(errorStr);
+	if (errorStr && errorStr.length) {
+		ZLoginFactory.showErrorMsg(errorStr);
+	} else {
+		ZLoginFactory.hideErrorMsg();
+	}
 }
 
 ZmLoginDialog.prototype.setFocus =
@@ -80,25 +99,22 @@ function(username, bReloginMode) {
 
 ZmLoginDialog.prototype.setVisible = 
 function(visible, transparentBg) {
-	if (!!visible == this.isPoppedUp()) {
+	DwtComposite.prototype.setVisible.call(this, visible);
+	Dwt._ffOverflowHack(this._htmlElId, this.getZIndex(), null, visible);
+
+	if (!visible)
 		return;
-	}
-	
-	if (visible) {
-		this.popup();
-	} else {
-		this.popdown();
-	}
-	for (var i = 0; i < ZLoginFactory.TAB_ORDER.length; i++) {
-		var element = document.getElementById(ZLoginFactory.TAB_ORDER[i]);
-		if (visible) {
-			Dwt.associateElementWithObject(element, this);
-		} else {
-			Dwt.disassociateElementFromObject(null, this);
-		}
+		
+	this.setCursor("default");
+	if ((transparentBg == null || !transparentBg) && this._className != this._origClassName) {
+		this.getHtmlElement().className = this._origClassName;
+		this._className = this._origClassName;
+	} else if (transparentBg && this._className != this._xparentClassName) {
+		this.getHtmlElement().className = this._xparentClassName;
+		this._className = this._xparentClassName;
 	}
 
-	Dwt.setHandler(this._getContentDiv(), DwtEvent.ONKEYDOWN, ZLoginFactory.handleKeyPress);
+	Dwt.setHandler(this.getHtmlElement(), DwtEvent.ONKEYDOWN, ZLoginFactory.handleKeyPress);
 }
 
 ZmLoginDialog.prototype.addChild =
@@ -133,8 +149,16 @@ function() {
 
 ZmLoginDialog._loginListener =
 function(target) {
-	var loginDialogInstance = Dwt.getObjectFromElement(target);
-	loginDialogInstance._loginSelListener();
+	// Get the dialog instance.
+	var element = target;
+	while (element) {
+		var object = Dwt.getObjectFromElement(element);
+		if (object instanceof ZmLoginDialog) {
+			object._loginSelListener();
+			break;
+		}
+		element = element.parentNode;
+	}
 };
 
 ZmLoginDialog._loginDiffListener =

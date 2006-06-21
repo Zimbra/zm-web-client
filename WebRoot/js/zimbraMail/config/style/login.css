@@ -522,8 +522,7 @@ FORM {
 
 /* Login Panel */
 .ZmLoginDialog {
-	background-color: #eeeeee;
-	/*background-image:url(/zimbra/img/loRes/skins/steel/Steel__BG.gif);*/
+	@ChromeBg@
 	overflow:hidden;
 }
 .ZmLoginDialog-Transparent {background-color: transparent;}
