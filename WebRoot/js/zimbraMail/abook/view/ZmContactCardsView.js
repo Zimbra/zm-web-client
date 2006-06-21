@@ -85,7 +85,7 @@ function(contacts) {
 	this._layout();
 
 	// disable alphabet bar for gal searches
-	this._alphabetBar.enable(!contacts.isGal && contacts.size() > 0);
+	this._alphabetBar.enable(!contacts.isGal);
 };
 
 ZmContactCardsView.prototype.getAlphabetBar =
