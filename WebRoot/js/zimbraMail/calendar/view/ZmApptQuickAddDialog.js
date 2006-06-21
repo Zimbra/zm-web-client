@@ -161,12 +161,8 @@ function() {
 	var subj = AjxStringUtil.trim(this._subjectField.getValue());
 	var errorMsg = null;
 
-	if (subj && subj.length > 0) {
-		// check proper dates..
-		var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-		var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
-
-		if (startDate == null || endDate == null || startDate.valueOf() > endDate.valueOf()) {
+	if (subj && subj.length) {
+		if (!ZmTimeSelect.validStartEnd(this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField)) {
 			errorMsg = ZmMsg.errorInvalidDates;
 		}
 	} else {

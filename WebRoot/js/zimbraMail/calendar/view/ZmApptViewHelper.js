@@ -611,10 +611,10 @@ ZmTimeSelect.AMPM	= 3;
 ZmTimeSelect.getDateFromFields =
 function(hours, minutes, ampm, date) {
 	hours = Number(hours);
-	if (ampm != null) {
-		if (ampm == 0) {
+	if (ampm) {
+		if (ampm == "AM") {
 			hours = (hours == 12) ? 0 : hours;
-		} else {
+		} else if (ampm == "PM") {
 			hours = (hours < 12) ? hours + 12 : hours;
 		}
 	}
@@ -627,9 +627,7 @@ function(hours, minutes, ampm, date) {
 /**
 * Adjust an appt's start or end based on changes to the other one. If the user changes
 * the start time, change the end time so that the appt duration is maintained. If the
-* user changes the end time, we leave things alone unless the end time is changed to
-* before the start time, in which case we change the start time to maintain the appt
-* duration.
+* user changes the end time, we leave things alone.
 *
 * @param ev					[Event]				UI event from a DwtSelect
 * @param startSelect		[ZmTimeSelect]		start time select
@@ -660,25 +658,32 @@ function(ev, startSelect, endSelect, startDateField, endDateField) {
 		if (endDateField.value != endDateOrig) {
 			changedDateField = endDateField;
 		}
-	} else {
-		var oldStartDateMs = ZmTimeSelect.getDateFromFields(startSelect.getHours(), startSelect.getMinutes(), startSelect.getAmPm(), startDate).getTime();
-		var newEndDateMs = ZmTimeSelect.getDateFromFields(endSelect.getHours(), endSelect.getMinutes(), endSelect.getAmPm(), endDate).getTime();
-		if (newEndDateMs <= oldStartDateMs) {
-			var hours = (select.compId == ZmTimeSelect.HOUR) ? ev._args.oldValue : endSelect.getHours();
-			var minutes = (select.compId == ZmTimeSelect.MINUTE) ? ev._args.oldValue : endSelect.getMinutes();
-			var ampm = (select.compId == ZmTimeSelect.AMPM) ? ev._args.oldValue : endSelect.getAmPm();
-			var oldEndDateMs = ZmTimeSelect.getDateFromFields(hours, minutes, ampm, endDate).getTime();
-			var delta = oldEndDateMs - oldStartDateMs;
-			var newStartDateMs = newEndDateMs - delta;
-			var newStartDate = new Date(newStartDateMs);
-			startSelect.set(newStartDate);
-			startDateField.value = AjxDateUtil.simpleComputeDateStr(newStartDate);
-			if (startDateField.value != startDateOrig) {
-				changedDateField = startDateField;
-			}
-		}
 	}
 	return changedDateField;
+};
+
+/**
+ * Returns true if the start date/time is before the end date/time.
+ *
+ * @param ss				[ZmTimeSelect]		start time select
+ * @param es				[ZmTimeSelect]		end time select
+ * @param startDateField	[element]			start date field
+ * @param endDateField		[element]			end date field
+ */
+ZmTimeSelect.validStartEnd =
+function(ss, es, startDateField, endDateField) {
+	var startDate = AjxDateUtil.simpleParseDateStr(startDateField.value);
+	var endDate = AjxDateUtil.simpleParseDateStr(endDateField.value);
+	if (startDate && endDate) {
+		var startDateMs = ZmTimeSelect.getDateFromFields(ss.getHours(), ss.getMinutes(), ss.getAmPm(), startDate).getTime();
+		var endDateMs = ZmTimeSelect.getDateFromFields(es.getHours(), es.getMinutes(), es.getAmPm(), endDate).getTime();
+		if (startDateMs > endDateMs) {
+			return false;
+		}
+	} else {
+		return false;
+	}
+	return true;
 };
 
 ZmTimeSelect.prototype = new DwtComposite;
@@ -739,7 +744,7 @@ function() {
 
 ZmTimeSelect.prototype.getAmPm =
 function() {
-	return this._amPmSelect ? this.getSelectedAmPmIdx() : null;
+	return this._amPmSelect ? this._amPmSelect.getValue() : null;
 };
 
 ZmTimeSelect.prototype.setSelected = 
