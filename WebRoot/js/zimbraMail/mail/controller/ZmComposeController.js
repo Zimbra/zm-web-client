@@ -822,6 +822,7 @@ function() {
 ZmComposeController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
+	this._composeView.enableInputs(true);
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 		// save as draft
 		this.sendMsg(null, true);
@@ -837,6 +838,7 @@ function() {
 ZmComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
+	this._composeView.enableInputs(true);
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 		this._composeView.reset(false);
 
@@ -848,7 +850,6 @@ function() {
 
 		this._app.getAppViewMgr().showPendingView(true);
 	} else {
-		this._composeView.enableInputs(true);
 		this._app.getAppViewMgr().showPendingView(false);
 		this._composeView.reEnableDesignMode();
 	}
@@ -857,8 +858,8 @@ function() {
 // Called as: Don't save as draft or cancel
 ZmComposeController.prototype._popShieldDismissCallback =
 function() {
-	this._composeView.enableInputs(true);
 	this._popShield.popdown();
+	this._composeView.enableInputs(true);
 	this._app.getAppViewMgr().showPendingView(false);
 	this._composeView.reEnableDesignMode();
 };
