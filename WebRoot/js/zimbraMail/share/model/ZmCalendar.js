@@ -136,6 +136,12 @@ function(exclude) {
 	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"}});
 };
 
+ZmCalendar.prototype._parseFlags =
+function(flags) {
+	this.excludeFreeBusy = (flags.indexOf('b') != -1);
+	this.isChecked = (flags.indexOf('#') != -1);
+	this.imapSubscribed = (flags.indexOf('*') != -1);
+};
 
 // Callbacks
 
@@ -152,9 +158,9 @@ function(obj) {
 	ZmOrganizer.prototype.notifyModify.call(this, obj);
 
 	var doNotify = false;
-	var fields = new Object();
-	if (obj.excludeFreeBusy != null && this.excludeFreeBusy != obj.excludeFreeBusy) {
-		this.excludeFreeBusy = obj.excludeFreeBusy;
+	var fields = {};
+	if (obj.f != null) {
+		this._parseFlags(obj.f);
 		// TODO: Should a F_EXCLUDE_FB property be added to ZmOrganizer?
 		//       It doesn't make sense to require the base class to know about
 		//       all the possible fields in sub-classes. So I'm just using the
@@ -176,7 +182,9 @@ function(parent, obj, tree) {
 
 	// create calendar, populate, and return
 	var calendar = new ZmCalendar(obj.id, obj.name, parent, tree, obj.color, obj.url, obj.d, obj.zid, obj.rid);
-	calendar.excludeFreeBusy = obj.excludeFreeBusy;
+	if (obj.f) {
+		calendar._parseFlags(obj.f);
+	}
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];

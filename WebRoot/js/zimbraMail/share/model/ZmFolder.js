@@ -135,11 +135,11 @@ function(parent, obj, tree) {
 	if (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID &&
 		obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER])) return;
 	
-	// ignore calendar folders
+	// ignore non-mail folders
 	if (obj.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] ||
 		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK] ||
-		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) 
-	{
+		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
+
 		return;
 	}
 
