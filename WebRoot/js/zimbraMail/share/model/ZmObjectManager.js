@@ -257,7 +257,7 @@ function(content, htmlEncode, type) {
 			// do last chunk
 			chunk = content.substring(lastIndex, maxIndex);
 			if (htmlEncode) {
-				html[idx++] = AjxStringUtil.htmlEncode(chunk, true);
+				html[idx++] = AjxStringUtil.htmlEncode(chunk, false);
 			} else {
 				html[idx++] = chunk;
 			}
@@ -268,7 +268,7 @@ function(content, htmlEncode, type) {
 		if (lowestIndex > lastIndex) {
 			chunk = content.substring(lastIndex, lowestIndex);
 			if (htmlEncode) {
-				html[idx++] = AjxStringUtil.htmlEncode(chunk, true); 
+				html[idx++] = AjxStringUtil.htmlEncode(chunk, false); 
 			} else {
 				html[idx++] = chunk;
 			}
