@@ -109,9 +109,7 @@ function(overviewId, showUnread, omit, forceCreate) {
 			if (item._isSeparator) continue;
 			var object = item.getData(Dwt.KEY_OBJECT);
 			this._setTreeItemColor(item, object.color);
-			if (object.id == ZmCalendar.ID_CALENDAR) {
-				item.setChecked(true);
-			}
+			item.setChecked(object.isChecked);
 		}
 	}
 };

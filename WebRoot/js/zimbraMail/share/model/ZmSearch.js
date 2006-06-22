@@ -134,8 +134,9 @@ function() {
 /**
 * Creates a SOAP request that represents this search and sends it to the server.
 *
-* @param callback		[AjxCallback]*		(async) callback to run when response is received
-* @param errorCallback	[AjxCallback]*		(async) callback to run if there is an exception
+* @param callback		[AjxCallback]*		callback to run when response is received
+* @param errorCallback	[AjxCallback]*		callback to run if there is an exception
+* @param batchCmd		[ZmBatchCommand]*	batch command that contains this request
 */
 ZmSearch.prototype.execute =
 function(params) {
@@ -201,10 +202,10 @@ function(params) {
 	var respCallback = new AjxCallback(this, this._handleResponseExecute,
 						[this.isGalSearch, this.isGalAutocompleteSearch, this.isCalResSearch, params.callback]);
 	
+	var execFrame = new AjxCallback(this, this.execute, params);
 	if (params.batchCmd) {
-		params.batchCmd.addRequestParams(soapDoc, respCallback);
+		params.batchCmd.addRequestParams(soapDoc, respCallback, execFrame);
 	} else {
-		var execFrame = new AjxCallback(this, this.execute, params);
 		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback,
 													  errorCallback: params.errorCallback, execFrame: execFrame});
 	}

@@ -136,6 +136,13 @@ function(exclude) {
 	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"}});
 };
 
+ZmCalendar.prototype.setChecked = 
+function(checked, batchCmd) {
+	if (this.isChecked == checked) return;
+	var action = checked ? "check" : "!check";
+	this._organizerAction({action: action, batchCmd: batchCmd});
+};
+
 ZmCalendar.prototype._parseFlags =
 function(flags) {
 	this.excludeFreeBusy = (flags.indexOf('b') != -1);

@@ -306,6 +306,20 @@ function(ev) {
 	// TODO: diff between new and old...
 	this._checkedCalendars = newCheckedCalendars;
 	this._refreshAction(true);
+	
+	// save checkbox state to server
+	if (ev.item) {
+		var calendar = ev.item.getData(Dwt.KEY_OBJECT);
+		calendar.setChecked(ev.item.getChecked());
+	} else if (ev.items && ev.items.length) {
+		var batchCmd = new ZmBatchCommand(this._appCtxt);
+		for (var i = 0; i < ev.items.length; i++) {
+			var item = ev.items[i];
+			var calendar = item.getData(Dwt.KEY_OBJECT);
+			batchCmd.add(new AjxCallback(calendar, calendar.setChecked, [item.getChecked()]));
+		}
+		batchCmd.run();
+	}
 };
 
 ZmCalViewController.prototype._calTreeChangeListener =

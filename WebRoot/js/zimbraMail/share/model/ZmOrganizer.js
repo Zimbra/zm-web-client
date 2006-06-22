@@ -687,8 +687,9 @@ function(child, sortFunction) {
 * done before returning to the event loop. The result of the action is
 * handled via notifications.
 *
-* @param action		[string]	operation to perform
-* @param attrs		[Object]	hash of additional attributes to set in the request
+* @param action		[string]			operation to perform
+* @param attrs		[Object]			hash of additional attributes to set in the request
+* @param batchCmd	[ZmBatchCommand]*	batch command that contains this request
 */
 ZmOrganizer.prototype._organizerAction =
 function(params) {
@@ -701,9 +702,12 @@ function(params) {
 		actionNode.setAttribute(attr, params.attrs[attr]);
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, params);
-	var execFrame = new AjxCallback(this, this._itemAction, params);
-	this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
-													   callback: respCallback, execFrame: execFrame});
+	if (params.batchCmd) {
+		params.batchCmd.addRequestParams(soapDoc, respCallback);
+	} else {
+		this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+														   callback: respCallback});
+	}
 };
 
 ZmOrganizer.prototype._handleResponseOrganizerAction =
