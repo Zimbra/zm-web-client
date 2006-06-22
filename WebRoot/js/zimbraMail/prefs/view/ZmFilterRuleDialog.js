@@ -773,7 +773,7 @@ function(rowId) {
 	var subject = inputs.subject.dwtObj.getValue();
 	var conf = ZmFilterRule.CONDITIONS[subject];
 	var comparator = this._getInputValue(inputs, conf, "ops");
-	var value = this._getInputValue(inputs, conf, "value");
+	var value = AjxStringUtil.trim(this._getInputValue(inputs, conf, "value"));
 	var subjectMod = this._getInputValue(inputs, conf, "subjectMod");
 	var valueMod = this._getInputValue(inputs, conf, "valueMod");
 
