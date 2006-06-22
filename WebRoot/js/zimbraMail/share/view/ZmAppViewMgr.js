@@ -252,6 +252,14 @@ function() {
 }
 
 /**
+* Returns the ID of the app view last displayed.
+*/
+ZmAppViewMgr.prototype.getLastViewId =
+function() {
+	return this._lastView;
+}
+
+/**
 * Returns the app view currently being displayed.
 */
 ZmAppViewMgr.prototype.getCurrentView =
