@@ -1608,17 +1608,22 @@ function(ev) {
 	} else if (setting.id == ZmSetting.SKIN_NAME) {
 		var cd = this._confirmDialog = this._appCtxt.getYesNoMsgDialog();
 		cd.reset();
-		cd.registerCallback(DwtDialog.YES_BUTTON, this._newSkinYesCallback, this);
+		var skin = setting.getValue();
+		cd.registerCallback(DwtDialog.YES_BUTTON, this._newSkinYesCallback, this, [skin]);
 		cd.setMessage(ZmMsg.skinChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
 	}
 };
 
 ZmZimbraMail.prototype._newSkinYesCallback =
-function() {
+function(skin) {
 	this._confirmDialog.popdown();
     window.onbeforeunload = null;
-    ZmZimbraMail.sendRedirect(location.toString()); // redirect to self to force reload
+    var qs = AjxStringUtil.queryStringSet(location.search, "skin", skin);
+	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
+					  "" : ":" + location.port) + location.pathname + qs;
+	DBG.println(AjxDebug.DBG1, "skin change, redirect to: " + locationStr);
+    ZmZimbraMail.sendRedirect(locationStr); // redirect to self to force reload
 };
 
 /*
