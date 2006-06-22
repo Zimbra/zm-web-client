@@ -404,6 +404,8 @@ function(conf, field, options, dataValue, rowId, data) {
 			var o = options[i];
 			if (isMainSelect && (o == ZmFilterRule.A_TAG) && !this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 				continue;
+			if (isMainSelect && (o == ZmFilterRule.A_FORWARD) && !this._appCtxt.get(ZmSetting.MAIL_FORWARDING_ENABLED))
+				continue;
 			var value, label;
 			if (isMainSelect) {
 				value = o;
