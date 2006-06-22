@@ -82,9 +82,10 @@ function(folderId, callback, errorCallback) {
 
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("types", "wiki");
+	soapDoc.setMethodAttribute("limit", "250");
 	var queryNode = soapDoc.set("query", search);
 		
-	var args = callback ? [folderId, callback, errorCallback] : null;
+	var args = callback ? [null, folderId, callback, errorCallback] : null;
 	var handleResponse = callback ? new AjxCallback(this, this._fillCacheResponse, args) : null;
 	var params = {
 		soapDoc: soapDoc,
@@ -93,12 +94,16 @@ function(folderId, callback, errorCallback) {
 		errorCallback: errorCallback,
 		noBusyOverlay: false
 	};
+	// NOTE: Need to keep track of request params for response handler
+	if (args) {
+		args[0] = params;
+	}
 	
 	var appController = this._appCtxt.getAppController();
 	var response = appController.sendRequest(params);
 	
 	if (!params.asyncMode) {
-		this._fillCacheResponse(folderId, null, errorCallback, response);
+		this._fillCacheResponse(params, folderId, null, errorCallback, response);
 	}
 };
 
@@ -241,7 +246,7 @@ ZmNotebookCache.prototype.getPagesByCreator = function(creator) {
 // Protected methods
 
 ZmNotebookCache.prototype._fillCacheResponse = 
-function(folderId, callback, errorCallback, response) {
+function(requestParams, folderId, callback, errorCallback, response) {
 	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var notebook = tree.getById(folderId);
 	var remoteFolderId = notebook.zid ? notebook.zid+":"+notebook.rid : undefined;
@@ -263,6 +268,26 @@ function(folderId, callback, errorCallback, response) {
 			else {
 				page.set(word);
 			}
+		}
+
+		// retrieve another block of pages, if necessary
+		if (searchResponse.more) {
+			var soapDoc = requestParams.soapDoc;
+			var limit = Number(soapDoc.getMethod().getAttribute("limit")) * 2;
+			soapDoc.setMethodAttribute("offset", searchResponse.offset + words.length);
+			soapDoc.setMethodAttribute("limit", limit);
+			// NOTE: In order to re-use the soapDoc again, we have
+			//       to remove the old header element.
+			var headerEl = soapDoc.getHeader();
+			headerEl.parentNode.removeChild(headerEl);
+
+			var appController = this._appCtxt.getAppController();
+			var response = appController.sendRequest(requestParams);
+
+			if (!requestParams.asyncMode) {
+				this._fillCacheResponse(requestParams, folderId, null, errorCallback, response);
+			}
+			return;
 		}
 	}
 	
