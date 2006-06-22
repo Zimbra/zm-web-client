@@ -284,7 +284,7 @@ function(includeRoot, showUnread, maxLength, noMarkup) {
 	var parent = this.parent;
 	var path = this.getName(showUnread, maxLength, noMarkup);
 	while (parent && ((parent.id != ZmOrganizer.ID_ROOT) || includeRoot)) {
-		path = parent.getName() + ZmFolder.SEP + path;
+		path = parent.getName(showUnread, maxLength, noMarkup) + ZmFolder.SEP + path;
 		parent = parent.parent;
 	}
 
