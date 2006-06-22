@@ -279,12 +279,14 @@ TWikiConverter.COLORS = {
 TWikiConverter.toHtml = {};
 
 TWikiConverter.toHtml._verbatim = function(match, content) {
-	return ZmWikiConverter.store( [ "<nowiklet>", content, "</nowiklet>" ].join("") );
+	var text = [ "<pre><nowiklet>", content, "</nowiklet></pre>" ].join(""); 
+	return ZmWikiConverter.store(text);
 };
 TWikiConverter.toHtml._list = function(match, level, type, content) {
-	if ((level.length % 3) != 0) return match;
+	var length = level.match(/\t/) ? level.length * 3 : level.length;
+	if ((length % 3) != 0) return match;
 	type = type.match(/\*/) ? type : "#";
-	for (var i = Math.floor(level / 3); i > 0; i--) {
+	for (var i = Math.floor(length / 3); i > 0; i--) {
 		type += type.substr(0,1);
 	}
 	return MediaWikiConverter.toHtml._list(match, type, content);
@@ -328,15 +330,47 @@ TWikiConverter.toHtml._tableRow = function(match, twikiRow) {
 	a.push("</tr>\n");
 	return a.join("");
 };
+TWikiConverter.toHtml._metaData = function(match, name, value) {
+	if (name == "META:FILEATTACHMENT") {
+		var object = TWikiConverter._objectify(value);
+		return [
+			"<li><a href='", object.name, "'>",
+				(object.comment || object.name),
+			"</li>"
+		].join("");
+	}
+	if (name.match(/^META:(TOPICINFO|TOPICMOVED|TOPICPARENT)/)) {
+		var text = ["<!--",match.replace(/^\n/,""),"-->"].join("");
+		return ZmWikiConverter.store(text);
+	}
+	return ZmWikiConverter.store(match);
+};
+
+TWikiConverter._objectify = function(s) {
+	var object = {};
+	var re = /([a-z]+)="([^"]*)"/g;
+	var m;
+	while (m = re.exec(s)) {
+		var name = m[1];
+		var value = m[2];
+		object[name] = value;
+	}
+	return object;
+};
 
 TWikiConverter.toHtml.rules = [
     // pre-processing
     { input: /\r?\n/g, output: "\n" },
     { input: /\\(\{)/g, output: function($0,$1) { return ZmWikiConverter.store($1); } },
     { input: /\{\{/g, output: function($0) { return ZmWikiConverter.store($0); } },
+	// meta-data
+	{ input: /(?:^|\n)(%META:FILEATTACHMENT)/, output: "<h3>Attachments</h3>\n\n$1" },
+	{ input: /(?:^|\n)%(.*?)(?:\{(.*?)\})?%(?=\n|$)/g, output: TWikiConverter.toHtml._metaData },
 	// non-wiki
 	{ input: /<verbatim>((?:.|\n)*?)<\/verbatim>/g, output: TWikiConverter.toHtml._verbatim },
 	{ input: /<noautolink>(.*?)<\/noautolink>/g, output: "<nolink>$1</nolink>" },
+	// links
+	{ input: /\[\[%ATTACHURL%\//g, output: "[[" },
 	// literals
     { input: /&[^;]+?;/g, output: function($0) { return ZmWikiConverter.store($0); } },
     { input: /&/g, output: "&amp;" },
@@ -344,7 +378,7 @@ TWikiConverter.toHtml.rules = [
     { input: /!(\[\[.*?\]\])/g, output: "<nolink>$1</nolink>" },
     { input: /!([A-Z]+[a-z]+[A-Z]+[a-zA-Z0-9]*)/g, output: "<nolink>$1</nolink>" },
 	// lists
-	{ input: /(?:^|\n)([ ]{3,})([*]|[\dAaIi]\.) (.*?)(?=\n|$)/g, output: TWikiConverter.toHtml._list },
+	{ input: /(?:^|\n)([ ]{3,}|\t{1,})([*]|[\dAaIi]\.) (.*?)(?=\n|$)/g, output: TWikiConverter.toHtml._list },
 	{ input: /\{([*#;:]+)\}\}\n\{\{([*#;:]+)\}/g, output: MediaWikiConverter.toHtml._listTransition },
 	{ input: /\{\{([*#;:]+)\}(.*?)\{([*#;:]+)\}\}/g, output: MediaWikiConverter.toHtml._listBoundary },
     // inlines
@@ -362,7 +396,7 @@ TWikiConverter.toHtml.rules = [
 	// horizontal rule
 	{ input: /(?:^|\n)-{3,}(?=\n|$)/g, output: "<hr>\n" },
 	// tables
-	{ input: /(?=^|\n)((?:\|.*?\|(?:\n|$)){1,})/g, output: "<table border=1>\n$1</table>\n" },
+	{ input: /(?:^|\n)((?:\|.*?\|(?:\n|$)){1,})/g, output: "<table border=1>\n$1</table>\n" },
 	//{ input: /(?=\n)((\|.*?\|(?:\n)))/g, output: "<tr>\n$1</tr>\n" },
 	{ input: /(?!\n)(\|.*?\|)\n/g, output: TWikiConverter.toHtml._tableRow },
 	// post-processing
