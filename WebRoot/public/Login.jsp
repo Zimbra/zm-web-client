@@ -24,7 +24,7 @@
 						String path = "/zimbraAdmin";
 
 						if(qs != null)
-						path = path + "?" + qs;
+							path = path + "?" + qs;
 
 						response.sendRedirect(path);
 						return;
@@ -112,7 +112,6 @@
             }
         }
     }
-	String skinPreCacheFile = "../skins/" + skin + "/CacheLoRes.html";
 
 	String mode = (String) request.getAttribute("mode");
 	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));

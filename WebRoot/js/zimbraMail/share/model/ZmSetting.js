@@ -380,7 +380,7 @@ ZmSetting.INIT[ZmSetting.PASSWORD]						= [null, ZmSetting.T_PREF];
 ZmSetting.INIT[ZmSetting.SEARCH_INCLUDES_SPAM]			= ["zimbraPrefIncludeSpamInSearch", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.SEARCH_INCLUDES_TRASH]			= ["zimbraPrefIncludeTrashInSearch", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.SHOW_SEARCH_STRING]			= ["zimbraPrefShowSearchString", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
-ZmSetting.INIT[ZmSetting.SKIN_NAME]						= ["zimbraPrefSkin", ZmSetting.T_PREF, ZmSetting.D_STRING, "steel"];
+ZmSetting.INIT[ZmSetting.SKIN_NAME]						= ["zimbraPrefSkin", ZmSetting.T_PREF, ZmSetting.D_STRING, "sand"];
 ZmSetting.INIT[ZmSetting.SORTING_PREF] 					= [null, ZmSetting.T_PREF, ZmSetting.D_HASH];
 
 // mail preferences
