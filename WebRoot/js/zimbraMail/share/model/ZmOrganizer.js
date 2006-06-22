@@ -531,14 +531,24 @@ function() {
 */
 ZmOrganizer.prototype.hasChild =
 function(name) {
+	return this.getChild(name) ? true : false;
+};
+
+/**
+* Returns the child with the given name, or null if no child has the name.
+*
+* @param name		the name of the organizer to look for
+*/
+ZmOrganizer.prototype.getChild =
+function(name) {
 	name = name.toLowerCase();
 	var a = this.children.getArray();
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++)
 		if (a[i].name && (a[i].name.toLowerCase() == name))
-			return true;
+			return a[i];
 
-	return false;
+	return null;
 };
 
 ZmOrganizer.prototype.reparent =

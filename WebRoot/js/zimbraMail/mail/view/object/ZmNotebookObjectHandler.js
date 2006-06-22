@@ -127,7 +127,7 @@ function(page) {
 	var appController = this._appCtxt.getAppController();
 	var notebookApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	
-	var isNew = !page || page.version == 0;
+	var isNew = !page || (page.version == 0 && page.name != ZmNotebook.PAGE_INDEX);
 	var controller = isNew ? notebookApp.getPageEditController() : notebookApp.getNotebookController();
 	controller.show(page);
 };
@@ -136,14 +136,15 @@ ZmNotebookObjectHandler.prototype.getToolTipText =
 function(keyword, context) {
 	var page = this._getPage(context);
 
+	var imageClass = (page && page.name == ZmNotebook.PAGE_INDEX) ? 'ImgSection': 'ImgPage';
 	var html = [
 		"<table border=0 cellpadding=0 cellspacing=0>",
 			"<tr><td>",
 				"<div style='border-bottom:solid black 1px;margin-bottom:0.25em'>",
 				"<table width=100% border=0 cellpadding=0 cellspacing=0>",
 					"<tr valign=top>",
-						"<td><b>",page.name,"</b></td>",
-						"<td align=right style='padding-left:0.5em'><div class='ImgPage'></div></td>",
+						"<td><b>",keyword,"</b></td>",
+						"<td align=right style='padding-left:0.5em'><div class='", imageClass, "'></div></td>",
 					"</tr>",
 				"</table>",
 				"</div>",
@@ -155,26 +156,10 @@ function(keyword, context) {
 		html.push(fragment, "<br>&nbsp;");
 	}
 	html.push("<table border=0 cellpadding=0 cellspacing=0>");
-	if (page.creator) {
-		html.push(
-			"<tr valign=top>",
-				"<td align=right style='padding-right:5px'>",
-					"<b>",ZmMsg.userLabel,"</b>",
-				"</td>",
-				"<td>",page.creator,"</td>",
-			"</tr>"
-		);
-	}
-	html.push(
-			"<tr valign=top>",
-				"<td align=right style='padding-right:5px'>",
-					"<b>",ZmMsg.pathLabel,"</b>",
-				"</td>",
-				"<td>",page.restUrl,"</td>",
-			"</tr>",
-		"</table>"
-	);
-	html.push("</td></tr>");
+	this._appendPropertyToTooltip(html, page.creator, ZmMsg.userLabel);
+	this._appendPropertyToTooltip(html, page.getUrl(), ZmMsg.urlLabel);
+	this._appendPropertyToTooltip(html, page.getPath(), ZmMsg.pathLabel);
+	html.push("</table></td></tr></table>");
 	
 	return html.join("");
 };
@@ -194,10 +179,19 @@ function(context) {
 
 	// REVISIT: Need some structured syntax for wiki links	
 	var notebookController = notebookApp.getNotebookController();
-	var page = notebookController.getPage();
-	var folderId = page ? page.folderId : ZmOrganizer.ID_NOTEBOOK;
+	var visiblePage = notebookController.getPage();
+	var folderId = visiblePage ? visiblePage.folderId : ZmOrganizer.ID_NOTEBOOK;
 
 	var page = cache.getPageByName(folderId, context.keyword);
+	if (!page) {
+		// No page exists in the cache. Generate a page for a section.
+		var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+		var notebook = tree.getById(folderId);
+		var section = notebook.getChild(context.keyword);
+		if (section) {
+			page = cache.getPageByName(section.id, ZmNotebook.PAGE_INDEX);
+		}
+	}
 	if (!page) {
 		// NOTE: We assume the page is new if there's no entry in the cache.
 		page = new ZmPage(this._appCtxt);
@@ -205,6 +199,20 @@ function(context) {
 		page.folderId = folderId;
 	}	
 	return page;
+};
+
+ZmNotebookObjectHandler.prototype._appendPropertyToTooltip =
+function (html, property, label) {
+	if (property) {
+		html.push(
+			"<tr valign=top>",
+				"<td align=right style='padding-right:5px'>",
+					"<b>",label,"</b>",
+				"</td>",
+				"<td>",property,"</td>",
+			"</tr>"
+		);
+	}
 };
 
 ZmNotebookObjectHandler.prototype._getHtmlContent =
