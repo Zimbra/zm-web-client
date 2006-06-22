@@ -701,7 +701,7 @@ function(container, html, isTextMsg) {
 			}
 		}
 	} else {
-		html = html.replace(/<!--(.*?)-->/g, ""); // remove comments
+		html = html.replace(/<!--(.|\n)*?-->/g, ""); // remove comments
 		if (this._objectManager) {
 			// html = html.replace(/<style>/, "<style type='text/css'>");
 			// this callback will post-process the HTML after the IFRAME is created
