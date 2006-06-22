@@ -118,6 +118,76 @@ function(line, startIndex) {
 
 ZmNotebookObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
+	var page = this._getPage(context);
+	this._selectedHandleResponse(page);
+};
+
+ZmNotebookObjectHandler.prototype._selectedHandleResponse =
+function(page) {
+	var appController = this._appCtxt.getAppController();
+	var notebookApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	
+	var isNew = !page || page.version == 0;
+	var controller = isNew ? notebookApp.getPageEditController() : notebookApp.getNotebookController();
+	controller.show(page);
+};
+
+ZmNotebookObjectHandler.prototype.getToolTipText =
+function(keyword, context) {
+	var page = this._getPage(context);
+
+	var html = [
+		"<table border=0 cellpadding=0 cellspacing=0>",
+			"<tr><td>",
+				"<div style='border-bottom:solid black 1px;margin-bottom:0.25em'>",
+				"<table width=100% border=0 cellpadding=0 cellspacing=0>",
+					"<tr valign=top>",
+						"<td><b>",page.name,"</b></td>",
+						"<td align=right style='padding-left:0.5em'><div class='ImgPage'></div></td>",
+					"</tr>",
+				"</table>",
+				"</div>",
+			"</td></tr>",
+			"<tr><td>"
+	];
+	if (page.fragment) {
+		var fragment = AjxStringUtil.htmlEncode(page.fragment);
+		html.push(fragment, "<br>&nbsp;");
+	}
+	html.push("<table border=0 cellpadding=0 cellspacing=0>");
+	if (page.creator) {
+		html.push(
+			"<tr valign=top>",
+				"<td align=right style='padding-right:5px'>",
+					"<b>",ZmMsg.userLabel,"</b>",
+				"</td>",
+				"<td>",page.creator,"</td>",
+			"</tr>"
+		);
+	}
+	html.push(
+			"<tr valign=top>",
+				"<td align=right style='padding-right:5px'>",
+					"<b>",ZmMsg.pathLabel,"</b>",
+				"</td>",
+				"<td>",page.restUrl,"</td>",
+			"</tr>",
+		"</table>"
+	);
+	html.push("</td></tr>");
+	
+	return html.join("");
+};
+
+ZmNotebookObjectHandler.prototype.getActionMenu =
+function(obj) {
+	return null;
+};
+
+// Protected methods
+
+ZmNotebookObjectHandler.prototype._getPage =
+function(context) {
 	var appController = this._appCtxt.getAppController();
 	var notebookApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var cache = notebookApp.getNotebookCache();
@@ -134,65 +204,8 @@ function(obj, span, ev, context) {
 		page.name = context.keyword;
 		page.folderId = folderId;
 	}	
-	this._selectedHandleResponse(page);
+	return page;
 };
-
-ZmNotebookObjectHandler.prototype._selectedHandleResponse =
-function(page) {
-	var appController = this._appCtxt.getAppController();
-	var notebookApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
-	
-	var isNew = !page || page.version == 0;
-	var controller = isNew ? notebookApp.getPageEditController() : notebookApp.getNotebookController();
-	controller.show(page);
-};
-
-ZmNotebookObjectHandler.prototype.getToolTipText =
-function(keyword, context) {
-	var m = context.keyword.match(ZmNotebookObjectHandler.WIKIPATH_RE);
-	var label= m[3] || context.keyword;
-	if (context.label != context.keyword) {
-		label = context.label;
-	}
-	var html = [
-		"<div style='border-bottom:solid black 1px;margin-bottom:0.25em'>",
-		"<table border=0 cellpadding=0 cellspacing=0 width=100%>",
-			"<tr valign=top>",
-				"<td><b>",label,"</b></td>",
-				"<td width=1% style='padding-left:0.5em'><div class='ImgPage'></div></td>",
-			"</tr>",
-		"</table>",
-		"</div>",
-		"<table border=0 cellpadding=0 cellspacing=0 width=100%>"
-	];
-	if (m[1]) {
-		html.push(
-			"<tr valign=top>",
-				"<td width=1% align=right style='padding-right:5px'>",
-					"<b>",ZmMsg.userLabel,"</b>",
-				"</td>",
-				"<td>",m[1],"</td>",
-			"</tr>"
-		);
-	}
-	html.push(
-			"<tr valign=top>",
-				"<td width=1% align=right style='padding-right:5px'>",
-					"<b>",ZmMsg.pathLabel,"</b>",
-				"</td>",
-				"<td>",m[2],"</td>",
-			"</tr>",
-		"</table>"
-	);
-	return html.join("");
-};
-
-ZmNotebookObjectHandler.prototype.getActionMenu =
-function(obj) {
-	return null;
-};
-
-// Protected methods
 
 ZmNotebookObjectHandler.prototype._getHtmlContent =
 function(html, idx, keyword, context) {
