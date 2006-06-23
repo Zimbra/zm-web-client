@@ -811,9 +811,11 @@ function() {
 ZmComposeController.prototype._htmlToTextCancelCallback =
 function() {
 	this._htmlToTextDialog.popdown();
+
 	// reset the radio button for the format button menu
-	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-	formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
+	var menu = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS).getMenu();
+	menu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
+
 	this._composeView.reEnableDesignMode();
 };
 
