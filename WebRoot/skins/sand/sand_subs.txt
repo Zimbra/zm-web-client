@@ -21,7 +21,7 @@ DwtImgDir			= /zimbra/img/loRes/dwt
 LogoImgDir			= /zimbra/img/loRes/logo
 LogoURL				= http://www.zimbra.com
 
-LoginBannerImg      =	@LogoImgDir@/LoginBanner.png
+LoginBannerImg      =	@LogoImgDir@/LoginBanner_blank.png
 LoginBannerWidth    =	450px
 LoginBannerHeight   =	100px
 
