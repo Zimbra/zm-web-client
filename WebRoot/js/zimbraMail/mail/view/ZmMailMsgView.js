@@ -623,10 +623,12 @@ function(msg, idoc, id, iframe) {
 			}
 		}
 		diEl = document.getElementById(id);
-		diEl.style.display = "none";
+		if (diEl)
+			diEl.style.display = "none";
 		this._htmlBody = idoc.documentElement.innerHTML;
 		ZmMailMsgView._resetIframeHeight(self, iframe);
 		msg.setHtmlContent(this._htmlBody);
+		msg.showImages = true;
 	};
 	return func;
 };
@@ -668,7 +670,7 @@ function(container, html, isTextMsg) {
 	if (html == null) html = "";
 
 	var displayImages;
-	if (!isTextMsg && /<img/i.test(html)) {
+	if (!isTextMsg && !this._msg.showImages && /<img/i.test(html)) {
 		displayImages = document.createElement("div");
 		displayImages.className = "DisplayImages";
 		displayImages.id = this._displayImagesId;
@@ -703,7 +705,6 @@ function(container, html, isTextMsg) {
 	} else {
 		html = html.replace(/<!--(.|\n)*?-->/g, ""); // remove comments
 		if (this._objectManager) {
-			// html = html.replace(/<style>/, "<style type='text/css'>");
 			// this callback will post-process the HTML after the IFRAME is created
 			if (msgSize <= ZmMailMsgView.OBJ_SIZE_HTML)
 				callback = new AjxCallback(this, this._processHtmlDoc);
@@ -712,16 +713,6 @@ function(container, html, isTextMsg) {
 		}
 	}
 
-	// pass essential styles to avoid padding/font flickering
-/*	var inner_styles = [ ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }",
-			     "body.MsgBody { padding: 10px; }",
-			     ".MsgHeader .Object { white-space: nowrap; }",
-			     ".Object a:link, .Object a:active, .Object a:visited { text-decoration: none; }",
-			     ".Object a:hover { text-decoration: underline; }",
-			     ".Object-triggered { text-decoration:none; color: blue;}",
-			     ".Object-activated { text-decoration:underline; }"
-		].join(" ");
-*/
 	var inner_styles = "";
 	var ifw = new DwtIframe(this, "MsgBody", true, html, inner_styles,
 				!ZmMailMsgView.SCROLL_WITH_IFRAME, // "noscroll"
@@ -775,6 +766,9 @@ function(container, html, isTextMsg) {
 				var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
 				Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
 			}
+		} else if (this._msg.showImages) {
+			var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
+			func.call();
 		}
 	}
 
@@ -1286,13 +1280,13 @@ function(msg, preferHtml, callback) {
 	html[idx++] = "<table border=0 width=100%><tr>";
 
 	// print SUBJECT and DATE
-	html[idx++] = "<td><font size=+1>" + msg.getSubject() + "</font></td>";
-	html[idx++] = "<td align=right><font size=+1>";
+	html[idx++] = "<td><font size=+1>";
+	html[idx++] = msg.getSubject();
+	html[idx++] = "</font></td><td align=right><font size=+1>";
 	html[idx++] = msg.sentDate
 		? (new Date(msg.sentDate)).toLocaleString()
 		: (new Date(msg.date)).toLocaleString();
-	html[idx++] = "</font></td>";
-	html[idx++] = "</tr></table>";
+	html[idx++] = "</font></td></tr></table>";
 	html[idx++] = "<table border=0 width=100%>";
 
 	// print all address types
@@ -1300,16 +1294,14 @@ function(msg, preferHtml, callback) {
 		var addrs = msg.getAddresses(ZmMailMsg.ADDRS[j]);
 		var len = addrs.size();
 		if (len > 0) {
-			html[idx++] = "<tr>";
-			html[idx++] = "<td valign=top style='text-align:right; font-size:14px'>";
+			html[idx++] = "<tr><td valign=top style='text-align:right; font-size:14px'>";
 			html[idx++] = ZmMsg[ZmEmailAddress.TYPE_STRING[ZmMailMsg.ADDRS[j]]];
 			html[idx++] = ": </td><td width=100% style='font-size: 14px'>";
 			for (var i = 0; i < len; i++) {
 				html[idx++] = i > 0 ? AjxStringUtil.htmlEncode(ZmEmailAddress.SEPARATOR) : "";
 				html[idx++] = addrs.get(i).address;
 			}
-			html[idx++] = "</td>";
-			html[idx++] = "</tr>";
+			html[idx++] = "</td></tr>";
 		}
 	}
 
@@ -1376,7 +1368,7 @@ function(msg, preferHtml, callback) {
 ZmMailMsgView._swapIdAndSrc =
 function (image, i, len, msg, idoc) {
 	image.src = image.getAttribute("dfsrc");
-	if (i == len -1) {
+	if (i == len - 1) {
 		msg.setHtmlContent(idoc.documentElement.innerHTML);
 	}
 };

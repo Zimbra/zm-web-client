@@ -27,7 +27,7 @@ function ZmPrintView (appCtxt) {
 	this._appCtxt = appCtxt;
 };
 
-ZmPrintView.prototype.toString = 
+ZmPrintView.prototype.toString =
 function () {
 	return "ZmPrintView";
 };
@@ -37,13 +37,13 @@ function(item) {
 	var preferHtml = this._appCtxt.get(ZmSetting.VIEW_AS_HTML);
 
 	if (item instanceof ZmConv) {
-		var respCallback = new AjxCallback(this, this._handleResponseRender);
+		var respCallback = new AjxCallback(this, this._handleResponseRender, item);
 		ZmConvListView.getPrintHtml(item, preferHtml, respCallback);
 		return;
 		// NOTE: we check for toString instead of instanceof b/c opening new
 		//       window loses type info :(
 	} else if (item.toString() == "ZmMailMsg") {
-		var respCallback = new AjxCallback(this, this._handleResponseRender);
+		var respCallback = new AjxCallback(this, this._handleResponseRender, item);
 		ZmMailMsgView.getPrintHtml(item, preferHtml, respCallback);
 		return;
 	} else if (item instanceof ZmContact) {
@@ -58,7 +58,7 @@ function(item) {
 		return;
 	}
 
-	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
+	this._printWindow = this._getNewWindow();
 };
 
 ZmPrintView.prototype.renderType =
@@ -70,25 +70,29 @@ function(type, list) {
 		this._html = ZmContactCardsView.getPrintHtml(list);
 	}
 
-	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
+	this._printWindow = this._getNewWindow();
 };
 
 ZmPrintView.prototype._handleResponsePageRender =
 function(html) {
 	this._html = html;
-	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
+	this._printWindow = this._getNewWindow();
 };
 
 ZmPrintView.prototype._handleResponseRender =
-function(result) {
+function(mailItem, result) {
 	this._html = result.getResponse();
-	this._printWindow = AjxWindowOpener.openBlank("ZmPrintWindow", "menubar=yes,resizable=yes,scrollbars=yes", this._render, this, true);
+	var args = mailItem.showImages ? mailItem : null;
+	this._printWindow = this._getNewWindow(args);
 };
 
 ZmPrintView.prototype._render = 
-function() {
+function(item) {
 	if (this._printWindow) {
-		var header = this._getHeader();
+		var onloadStr = item && item.showImages
+			? this._getShowImagesStr()
+			: null;
+		var header = this._getHeader(onloadStr);
 		var footer = this._getFooter();
 		
 		this._printWindow.document.open();
@@ -106,7 +110,7 @@ function() {
 };
 
 ZmPrintView.prototype._getHeader = 
-function() {
+function(onloadStr) {
 	var username = this._appCtxt.get(ZmSetting.USERNAME);
 	var html = new Array();
 	var idx = 0;
@@ -123,7 +127,15 @@ function() {
 	html[idx++] = "/css/zm.css?v=";
 	html[idx++] = cacheKillerVersion;
 	html[idx++] = "' media='screen'></link>";
-	html[idx++] = "</head><body>";
+	if (onloadStr) {
+		html[idx++] = "<script language='javascript'>";
+		html[idx++] = "function handleOnload() {";
+		html[idx++] = onloadStr;
+		html[idx++] = "} </script>";
+		html[idx++] = "</head><body onload='handleOnload();'>";
+	} else {
+		html[idx++] = "</head><body>";
+	}
 	html[idx++] = "<table border=0 width=100%><tr>";
 	html[idx++] = "<td class='ZmPrintView-company'><b>Zimbra</b> Collaboration Suite</td>";
 	html[idx++] = "<td class='ZmPrintView-username' align=right>";
@@ -138,4 +150,25 @@ function() {
 ZmPrintView.prototype._getFooter = 
 function() {
 	return "</div></body></html>";
+};
+
+ZmPrintView.prototype._getNewWindow =
+function(args) {
+	var callback = new AjxCallback(this, this._render, args);
+	var winArgs = "menubar=yes,resizable=yes,scrollbars=yes";
+	return AjxWindowOpener.openBlank("ZmPrintWindow", winArgs, callback, true);
+}
+
+ZmPrintView.prototype._getShowImagesStr =
+function() {
+	var code = [];
+	var idx = 0;
+
+	code[idx++] = "var images = document.getElementsByTagName('img');";
+	code[idx++] = "for (var i = 0; i < images.length; i++) {";
+	code[idx++] = "if (images[i].getAttribute('dfsrc')) {";
+	code[idx++] = "images[i].src = images[i].getAttribute('dfsrc');";
+	code[idx++] = "	} };";
+
+	return code.join("");
 };
