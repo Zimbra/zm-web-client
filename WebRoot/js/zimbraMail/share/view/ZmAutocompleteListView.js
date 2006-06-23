@@ -150,6 +150,16 @@ ZmAutocompleteListView._onKeyDown =
 function(ev) {
 	DBG.println(AjxDebug.DBG3, "onKeyDown");
 	var key = DwtKeyEvent.getCharCode(ev);
+	// don't echo enter key if list view is visible, since in that case it's
+	// just a selection mechanism
+	if (key == 3 || key == 13) {
+		var element = DwtUiEvent.getTargetWithProp(ev, "id");
+		if (!element) return true;
+		var aclv = AjxCore.objectWithId(element._acListViewId);
+		if (aclv.getVisible()) {
+			return false;
+		}
+	}
 	return (key == DwtKeyEvent.KEY_TAB || key == DwtKeyEvent.KEY_ESCAPE) ? ZmAutocompleteListView._onKeyUp(ev) : true;
 };
 
@@ -171,6 +181,7 @@ function(ev) {
 	
 	var id = element.id;
 	var key = DwtKeyEvent.getCharCode(ev);
+
 	// Tab/Esc handled in keydown for IE
 	if (AjxEnv.isIE && ev.type == "keyup" && (key == 9 || key == 27))
 		return true;
@@ -207,7 +218,7 @@ function(ev) {
 
 	if (AjxStringUtil.isPrintKey(key) || (key == 3 || key == 9 || key == 13))
 		aclv._numChars++;
-
+		
 	// if the user types a single delimiting character with the list showing, do completion
 	var isDelim = (aclv.getVisible() && (aclv._numChars == 1) && 
 				   ((key == 3 || key == 9 || key == 13) || (!ev.shiftKey && (key == 59 || key == 186 || key == 188))));
