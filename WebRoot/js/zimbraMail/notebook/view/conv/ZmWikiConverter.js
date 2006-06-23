@@ -153,45 +153,45 @@ MediaWikiConverter.toHtml._paragraph = function(match, newlines) {
 
 MediaWikiConverter.toHtml.rules = [
 	// pre-processing
-	{ input: /\r?\n/g, output: "\n" },
-	{ input: /\\(\{)/g, output: function($0,$1) { return ZmWikiConverter.store($1); } },
-	{ input: /\{\{/g, output: function($0) { return ZmWikiConverter.store($0); } },
+	{ input: new RegExp("\\r?\\n","g"), output: "\n" },
+	{ input: new RegExp("\\\\(\\{)","g"), output: function($0,$1) { return ZmWikiConverter.store($1); } },
+	{ input: new RegExp("\\{\\{","g"), output: function($0) { return ZmWikiConverter.store($0); } },
 	// non-wiki stuff
-	{ input: /<pre>.*?<\/pre>/ig, output: function($0) { return ZmWikiConverter.store($0); } },
+	{ input: new RegExp("<pre>.*?<\\/pre>","ig"), output: function($0) { return ZmWikiConverter.store($0); } },
 	// literals
-	{ input: /&[^;]+?;/g, output: function($0) { return ZmWikiConverter.store($0); } },
-	{ input: /&/g, output: "&amp;" },
-	{ input: /<\s/g, output: function($0) { return ZmWikiConverter.store($0); } },
+	{ input: new RegExp("&[^;]+?;","g"), output: function($0) { return ZmWikiConverter.store($0); } },
+	{ input: new RegExp("&","g"), output: "&amp;" },
+	{ input: new RegExp("<\\s","g"), output: function($0) { return ZmWikiConverter.store($0); } },
 	// inlines
-	{ input: /'''''(.+?)'''''/g, output: "<strong><em>$1</em></strong>" },
-	{ input: /'''(.+?)'''/g, output: "<strong>$1</strong>" },
-	{ input: /''(.+?)''/g, output: "<em>$1</em>" },
+	{ input: new RegExp("'''''(.+?)'''''","g"), output: "<strong><em>$1</em></strong>" },
+	{ input: new RegExp("'''(.+?)'''","g"), output: "<strong>$1</strong>" },
+	{ input: new RegExp("''(.+?)''","g"), output: "<em>$1</em>" },
 	// links
-	{ input: /\[\[.+?\]\]/g, output: function($0) { ZmWikiConverter.store($0); } },
-	{ input: /\[([^\s]+)\s+([^\]]+)\]/g, output: "<a href='$1' target='_new'>$2</a>" },
-	{ input: /\[([^\]]+)\]/g, output: "<a href='$1' target='_new'>$1</a>" },
+	{ input: new RegExp("\\[\\[.+?\\]\\]","g"), output: function($0) { ZmWikiConverter.store($0); } },
+	{ input: new RegExp("\\[([^\\s]+)\\s+([^\\]]+)\\]","g"), output: "<a href='$1' target='_new'>$2</a>" },
+	{ input: new RegExp("\\[([^\\]]+)\\]","g"), output: "<a href='$1' target='_new'>$1</a>" },
 	// headers
-	{ input: /(?:^|\n)(={1,4})(.*?)={1,4}/g, output: MediaWikiConverter.toHtml._header },
+	{ input: new RegExp("(?:^|\\n)(={1,4})(.*?)={1,4}","g"), output: MediaWikiConverter.toHtml._header },
 	// horizontal rule
-	{ input: /(?:^|\n)-{4}(?=\n|$)/g, output: "\n<hr>\n" },
+	{ input: new RegExp("(?:^|\\n)-{4}(?=\\n|$)","g"), output: "\n<hr>\n" },
 	// lists
-	{ input: /(?:^|\n)([*#;:]*)(;[^:]*?)(:.*?)(?:\n|$)/g, output: "$1$2$1$3\n" },
-	{ input: /(?:^|\n)([*#;:]+)(.*?)(?=\n|$)/g, output: MediaWikiConverter.toHtml._list },
-	{ input: /\{([*#;:]+)\}\}\n\{\{([*#;:]+)\}/g, output: MediaWikiConverter.toHtml._listTransition },
-	{ input: /\{\{([*#;:]+)\}(.*?)\{([*#;:]+)\}\}/g, output: MediaWikiConverter.toHtml._listBoundary },
+	{ input: new RegExp("(?:^|\\n)([*#;:]*)(;[^:]*?)(:.*?)(?:\\n|$)","g"), output: "$1$2$1$3\n" },
+	{ input: new RegExp("(?:^|\\n)([*#;:]+)(.*?)(?=\\n|$)","g"), output: MediaWikiConverter.toHtml._list },
+	{ input: new RegExp("\\{([*#;:]+)\\}\\}\\n\\{\\{([*#;:]+)\\}","g"), output: MediaWikiConverter.toHtml._listTransition },
+	{ input: new RegExp("\\{\\{([*#;:]+)\\}(.*?)\\{([*#;:]+)\\}\\}","g"), output: MediaWikiConverter.toHtml._listBoundary },
 	// tables
-	{ input: /(?:^|\n)\{\|(.*?)(?=\n|$)/g, output: "<table $1>\n" },
-	{ input: /(?:^|\n)\|\}(?=\n|$)/g, output: "</table>\n" },
-	{ input: /(?:^|\n)\|-(.*?)(?=\n|$)/g, output: "<tr $1>\n" },
-	{ input: /(?:^|\n)\!([^\|]+?)\|(.*?)(?=\n|$)/g, output: "<th $1>$2\n" },
-	{ input: /(?:^|\n)\!(.*?)(?=\n|$)/g, output: "<th>$1\n" },
-	{ input: /(?:^|\n)\|([^\|]+?)\|(.*?)(?=\n|$)/g, output: "<td $1>$2\n" },
-	{ input: /(?:^|\n)\|(.*?)(?=\n|$)/g, output: "<td>$1\n" },
+	{ input: new RegExp("(?:^|\\n)\\{\\|(.*?)(?=\\n|$)","g"), output: "<table $1>\n" },
+	{ input: new RegExp("(?:^|\\n)\\|\\}(?=\\n|$)","g"), output: "</table>\n" },
+	{ input: new RegExp("(?:^|\\n)\\|-(.*?)(?=\\n|$)","g"), output: "<tr $1>\n" },
+	{ input: new RegExp("(?:^|\\n)\\!([^\\|]+?)\\|(.*?)(?=\\n|$)","g"), output: "<th $1>$2\n" },
+	{ input: new RegExp("(?:^|\\n)\\!(.*?)(?=\\n|$)","g"), output: "<th>$1\n" },
+	{ input: new RegExp("(?:^|\\n)\\|([^\\|]+?)\\|(.*?)(?=\\n|$)","g"), output: "<td $1>$2\n" },
+	{ input: new RegExp("(?:^|\\n)\\|(.*?)(?=\\n|$)","g"), output: "<td>$1\n" },
 	// paragraphs
-	{ input: /(\n{2,})/g, output: MediaWikiConverter.toHtml._paragraph },
+	{ input: new RegExp("(\\n{2,})","g"), output: MediaWikiConverter.toHtml._paragraph },
 	// post-processing
-	{ input: /\{\{(\d+)\}\}/g, output: function($0,$1) { return ZmWikiConverter.restore($1); } },
-	{ input: /^\n+|(?:<p.*?>)*\n+$|<p.*?>*$/i, output: "" }
+	{ input: new RegExp("\\{\\{(\\d+)\\}\\}","g"), output: function($0,$1) { return ZmWikiConverter.restore($1); } },
+	{ input: new RegExp("^\\n+|(?:<p.*?>)*\\n+$|<p.*?>*$","i"), output: "" }
 ];
 
 MediaWikiConverter.toWiki = {};
@@ -226,23 +226,23 @@ MediaWikiConverter.toWiki._listItem = function(match, level, content) {
 
 MediaWikiConverter.toWiki.rules = [
 	// pre-processing
-	{ input: /^/g, output: MediaWikiConverter.toWiki._listClear },
+	{ input: new RegExp("^","g"), output: MediaWikiConverter.toWiki._listClear },
 	// inlines
-	{ input: /(?:<em>|<i>)(.*?)(?:<\/em>|<\/i>)/ig, output: "''$1''" },
-	{ input: /(?:<strong>|<b>)(.*?)(?:<\/strong>|<\/b>)/ig, output: "'''$1'''" },
+	{ input: new RegExp("(?:<em>|<i>)(.*?)(?:<\\/em>|<\\/i>)","ig"), output: "''$1''" },
+	{ input: new RegExp("(?:<strong>|<b>)(.*?)(?:<\\/strong>|<\\/b>)","ig"), output: "'''$1'''" },
 	// headers
-	{ input: /<h(\d)(.*?)>(.*?)<\/h\d\s*>/ig, output: MediaWikiConverter.toWiki._header },
+	{ input: new RegExp("<h(\\d)(.*?)>(.*?)<\\/h\\d\\s*>","ig"), output: MediaWikiConverter.toWiki._header },
 	// horizontal rule
-	{ input: /<hr(?:\s+.*)?>/ig, output: "\n----\n" },
+	{ input: new RegExp("<hr(?:\\s+.*)?>","ig"), output: "\n----\n" },
 	// lists
-	{ input: /<(?:\/)?([uod])l(?:\s+.*?)?>/ig, output: MediaWikiConverter.toWiki._list },
-	{ input: /<.*? level=([uod]+)>[\s\n]*<li>(.*?)(?!<\/.+?>)/ig, output: MediaWikiConverter.toWiki._listItem },
-	{ input: /<\/[uod]l\s*>|<\/li>/ig, output: "" },
+	{ input: new RegExp("<(?:\\/)?([uod])l(?:\\s+.*?)?>","ig"), output: MediaWikiConverter.toWiki._list },
+	{ input: new RegExp("<.*? level=([uod]+)>[\\s\\n]*<li>(.*?)(?!<\\/.+?>)","ig"), output: MediaWikiConverter.toWiki._listItem },
+	{ input: new RegExp("<\\/[uod]l\\s*>|<\\/li>","ig"), output: "" },
 	// paragraphs
-	{ input: /<p(\s+.*)?>/ig, output: "\n\n" },
+	{ input: new RegExp("<p(\\s+.*)?>","ig"), output: "\n\n" },
 	// post-processing
-	{ input: /\n{3,}/g, output: "\n\n" },
-	{ input: /^\n+|\n+$/, output: "" }
+	{ input: new RegExp("\\n{3,}","g"), output: "\n\n" },
+	{ input: new RegExp("^\\n+|\\n+$"), output: "" }
 ];
 
 //
@@ -305,15 +305,16 @@ TWikiConverter.toHtml._color = function(match, color, content) {
 TWikiConverter.toHtml._tableRow = function(match, twikiRow) {
 	var a = [];
 	a.push("<tr>");
-	var cellRe = /\|([^\|]+?)(\|{1,})/g;
+	var cellRe = new RegExp("\\|([^\\|]+?)(\\|{1,})","g");
 	var m;
 	while (m = cellRe.exec(twikiRow)) {
-		var n = m[1].match(/^\s*<b>(.*?)<\/b>\s*$/g);
+		var headerRe = new RegExp("^\\s*<b>(.*?)<\\/b>\\s*$","g");
+		var n = m[1].match(headerRe);
 		a.push(n ? "<th" : "<td");
-		if (m[1].match(/^\S+/)) {
+		if (m[1].match(new RegExp("^\\S+"))) {
 			a.push(" align=left");
 		}
-		else if (m[1].match(/\S+$/)) {
+		else if (m[1].match(new RegExp("\\S+$"))) {
 			a.push(" align=right");
 		}
 		else {
@@ -330,6 +331,7 @@ TWikiConverter.toHtml._tableRow = function(match, twikiRow) {
 	a.push("</tr>\n");
 	return a.join("");
 };
+
 TWikiConverter.toHtml._metaData = function(match, name, value) {
 	if (name == "META:FILEATTACHMENT") {
 		var object = TWikiConverter._objectify(value);
@@ -339,8 +341,9 @@ TWikiConverter.toHtml._metaData = function(match, name, value) {
 			"</li>"
 		].join("");
 	}
-	if (name.match(/^META:(TOPICINFO|TOPICMOVED|TOPICPARENT)/)) {
-		var text = ["<!--",match.replace(/^\n/,""),"-->"].join("");
+	var metaRe = new RegExp("^META:(TOPICINFO|TOPICMOVED|TOPICPARENT)");
+	if (name.match(metaRe)) {
+		var text = ["<!--",match.replace(new RegExp("^\\n"),""),"-->"].join("");
 		return ZmWikiConverter.store(text);
 	}
 	return ZmWikiConverter.store(match);
@@ -348,7 +351,7 @@ TWikiConverter.toHtml._metaData = function(match, name, value) {
 
 TWikiConverter._objectify = function(s) {
 	var object = {};
-	var re = /([a-z]+)="([^"]*)"/g;
+	var re = new RegExp("([a-z]+)=\"([^\"]*)\"","g");
 	var m;
 	while (m = re.exec(s)) {
 		var name = m[1];
@@ -360,49 +363,49 @@ TWikiConverter._objectify = function(s) {
 
 TWikiConverter.toHtml.rules = [
     // pre-processing
-    { input: /\r?\n/g, output: "\n" },
-    { input: /\\(\{)/g, output: function($0,$1) { return ZmWikiConverter.store($1); } },
-    { input: /\{\{/g, output: function($0) { return ZmWikiConverter.store($0); } },
+    { input: new RegExp("\\r?\\n","g"), output: "\n" },
+    { input: new RegExp("\\\\(\\{)","g"), output: function($0,$1) { return ZmWikiConverter.store($1); } },
+    { input: new RegExp("\\{\\{","g"), output: function($0) { return ZmWikiConverter.store($0); } },
 	// meta-data
-	{ input: /(?:^|\n)(%META:FILEATTACHMENT)/, output: "<h3>Attachments</h3>\n\n$1" },
-	{ input: /(?:^|\n)%(.*?)(?:\{(.*?)\})?%(?=\n|$)/g, output: TWikiConverter.toHtml._metaData },
+	{ input: new RegExp("(?:^|\\n)(%META:FILEATTACHMENT)"), output: "<h3>Attachments</h3>\n\n$1" },
+	{ input: new RegExp("(?:^|\\n)%(.*?)(?:\\{(.*?)\\})?%(?=\\n|$)","g"), output: TWikiConverter.toHtml._metaData },
 	// non-wiki
-	{ input: /<verbatim>((?:.|\n)*?)<\/verbatim>/g, output: TWikiConverter.toHtml._verbatim },
-	{ input: /<noautolink>(.*?)<\/noautolink>/g, output: "<nolink>$1</nolink>" },
+	{ input: new RegExp("<verbatim>((?:.|\\n)*?)<\\/verbatim>","g"), output: TWikiConverter.toHtml._verbatim },
+	{ input: new RegExp("<noautolink>(.*?)<\\/noautolink>","g"), output: "<nolink>$1</nolink>" },
 	// links
-	{ input: /\[\[%ATTACHURL%\//g, output: "[[" },
+	{ input: new RegExp("\\[\\[%ATTACHURL%\\/","g"), output: "[[" },
 	// literals
-    { input: /&[^;]+?;/g, output: function($0) { return ZmWikiConverter.store($0); } },
-    { input: /&/g, output: "&amp;" },
-    { input: /<\s/g, output: function($0) { return ZmWikiConverter.store($0); } },
-    { input: /!(\[\[.*?\]\])/g, output: "<nolink>$1</nolink>" },
-    { input: /!([A-Z]+[a-z]+[A-Z]+[a-zA-Z0-9]*)/g, output: "<nolink>$1</nolink>" },
+    { input: new RegExp("&[^;]+?;","g"), output: function($0) { return ZmWikiConverter.store($0); } },
+    { input: new RegExp("&","g"), output: "&amp;" },
+    { input: new RegExp("<\\s","g"), output: function($0) { return ZmWikiConverter.store($0); } },
+    { input: new RegExp("!(\\[\\[.*?\\]\\])","g"), output: "<nolink>$1</nolink>" },
+    { input: new RegExp("!([A-Z]+[a-z]+[A-Z]+[a-zA-Z0-9]*)","g"), output: "<nolink>$1</nolink>" },
 	// lists
-	{ input: /(?:^|\n)([ ]{3,}|\t{1,})([*]|[\dAaIi]\.) (.*?)(?=\n|$)/g, output: TWikiConverter.toHtml._list },
-	{ input: /\{([*#;:]+)\}\}\n\{\{([*#;:]+)\}/g, output: MediaWikiConverter.toHtml._listTransition },
-	{ input: /\{\{([*#;:]+)\}(.*?)\{([*#;:]+)\}\}/g, output: MediaWikiConverter.toHtml._listBoundary },
+	{ input: new RegExp("(?:^|\\n)([ ]{3,}|\\t{1,})([*]|[\\dAaIi]\\.) (.*?)(?=\\n|$)","g"), output: TWikiConverter.toHtml._list },
+	{ input: new RegExp("\\{([*#;:]+)\\}\\}\\n\\{\\{([*#;:]+)\\}","g"), output: MediaWikiConverter.toHtml._listTransition },
+	{ input: new RegExp("\\{\\{([*#;:]+)\\}(.*?)\\{([*#;:]+)\\}\\}","g"), output: MediaWikiConverter.toHtml._listBoundary },
     // inlines
-    { input: /\*([^*]+?)\*/g, output: "<b>$1</b>" },
-    { input: /__([^_]+?)__/g, output: "<b><i>$1</i></b>" },
-    { input: /_([^_]+?[^\s])_/g, output: "<i>$1</i>" },
-    { input: /%(YELLOW|ORANGE|RED|PINK|PURPLE|TEAL|NAVY|BLUE|AQUA|LIME|GREEN|OLIVE|MAROON|BROWN|BLACK|GRAY|SILVER|WHITE)%(.*?)%ENDCOLOR%/g, output: TWikiConverter.toHtml._color },
+    { input: new RegExp("\\*([^*]+?)\\*","g"), output: "<b>$1</b>" },
+    { input: new RegExp("__([^_]+?)__","g"), output: "<b><i>$1</i></b>" },
+    { input: new RegExp("_([^_]+?[^\s])_","g"), output: "<i>$1</i>" },
+    { input: new RegExp("%(YELLOW|ORANGE|RED|PINK|PURPLE|TEAL|NAVY|BLUE|AQUA|LIME|GREEN|OLIVE|MAROON|BROWN|BLACK|GRAY|SILVER|WHITE)%(.*?)%ENDCOLOR%","g"), output: TWikiConverter.toHtml._color },
 	// literals2
-    { input: /<[\/]?[a-zA-Z][a-zA-Z0-9]*.*?>/g, output: function($0) { return ZmWikiConverter.store($0); } },
+    { input: new RegExp("<[\\/]?[a-zA-Z][a-zA-Z0-9]*.*?>","g"), output: function($0) { return ZmWikiConverter.store($0); } },
     // inlines2
 	{ input: new RegExp('==(.+?)==','g'), output: "<b><tt>$1</tt></b>" },
 	{ input: new RegExp('=(.+?)=','g'), output: "<tt>$1</tt>" },
 	// headers
-    { input: /(?:^|\n)---(\+{1,6})(.*?)(?=\n|$)/g, output: MediaWikiConverter.toHtml._header },
+    { input: new RegExp("(?:^|\\n)---(\\+{1,6})(.*?)(?=\\n|$)","g"), output: MediaWikiConverter.toHtml._header },
 	// horizontal rule
-	{ input: /(?:^|\n)-{3,}(?=\n|$)/g, output: "<hr>\n" },
+	{ input: new RegExp("(?:^|\\n)-{3,}(?=\\n|$)","g"), output: "<hr>\n" },
 	// tables
-	{ input: /(?:^|\n)((?:\|.*?\|(?:\n|$)){1,})/g, output: "<table border=1>\n$1</table>\n" },
+	{ input: new RegExp("(?:^|\\n)((?:\\|.*?\\|(?:\\n|$)){1,})","g"), output: "<table border=1>\n$1</table>\n" },
 	//{ input: /(?=\n)((\|.*?\|(?:\n)))/g, output: "<tr>\n$1</tr>\n" },
-	{ input: /(?!\n)(\|.*?\|)\n/g, output: TWikiConverter.toHtml._tableRow },
+	{ input: new RegExp("(?!\\n)(\\|.*?\\|)\\n","g"), output: TWikiConverter.toHtml._tableRow },
 	// post-processing
-    { input: /\{\{(\d+)\}\}/g, output: function($0,$1) { return ZmWikiConverter.restore($1); } },
-    { input: /\n{2,}/g, output: "\n<p>\n" },
-    { input: /^\s+|\s+$/, output: "" }
+    { input: new RegExp("\\{\\{(\\d+)\\}\\}","g"), output: function($0,$1) { return ZmWikiConverter.restore($1); } },
+    { input: new RegExp("\\n{2,}","g"), output: "\n<p>\n" },
+    { input: new RegExp("^\\s+|\\s+$"), output: "" }
 ];
 
 TWikiConverter.toWiki = {};
