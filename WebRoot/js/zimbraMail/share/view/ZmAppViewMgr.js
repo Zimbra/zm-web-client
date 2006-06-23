@@ -136,6 +136,13 @@ ZmAppViewMgr.C_APP_CONTENT				= "APP CONTENT";
 ZmAppViewMgr.C_STATUS					= "STATUS";
 ZmAppViewMgr.C_SASH						= "SASH";
 
+ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_SEARCH,
+							   ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
+							   ZmAppViewMgr.C_CURRENT_APP, ZmAppViewMgr.C_APP_CHOOSER,
+							   ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP,
+							   ZmAppViewMgr.C_TOOLBAR_BOTTOM, ZmAppViewMgr.C_APP_CONTENT,
+							   ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH];
+
 // keys for getting container IDs
 ZmAppViewMgr.CONT_ID_KEY = {};
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_BANNER]					= ZmSetting.SKIN_LOGO_ID;
@@ -521,8 +528,9 @@ function(components) {
 			}
 		}
 	}
-	if (DBG.getDebugLevel >= AjxDebug.DBG2)
+	if (DBG.getDebugLevel() >= AjxDebug.DBG2) {
 		this._debugShowMetrics(components);
+	}
 }
 
 // Performs manual layout of the components, absent a containing skin. Currently assumes
