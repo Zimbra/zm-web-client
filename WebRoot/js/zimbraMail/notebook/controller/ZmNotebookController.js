@@ -208,8 +208,8 @@ ZmNotebookController.prototype._setViewContents = function(view) {
 		var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
 		if (treeView) {
 			var folderId = this._object.getFolderId();
-			treeView.setSelected(folderId, false);
-			overviewController.itemSelected(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.NOTEBOOK);
+			var skipNotify = true;
+			treeView.setSelected(folderId, skipNotify);
 		}
 	}
 };
