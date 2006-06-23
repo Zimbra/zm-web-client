@@ -224,6 +224,9 @@ function(ev) {
 
 ZmContactSplitView.prototype._addrbookTreeListener =
 function(ev, treeView) {
+	if (!this._contact)
+		return;
+
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY && fields && fields[ZmOrganizer.F_COLOR]) {
 		var organizers = ev.getDetail("organizers");
