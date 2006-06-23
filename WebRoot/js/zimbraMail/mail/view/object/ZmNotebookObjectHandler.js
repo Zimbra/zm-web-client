@@ -118,7 +118,23 @@ function(line, startIndex) {
 
 ZmNotebookObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
-	var page = this._getPage(context);
+	var appController = this._appCtxt.getAppController();
+	var notebookApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	var cache = notebookApp.getNotebookCache();
+	// REVISIT: ZmNotebookCache#getPageByLink has to create an empty
+	//          page object in the case where the item can't be found
+	//          in a sub-folder! Otherwise, the page we'll be editing
+	//          won't have the right folder!
+	var page = cache.getPageByLink(context.keyword);
+	if (!page) {
+		var notebookController = notebookApp.getNotebookController();
+		var currentPage = notebookController.getPage();
+
+		// NOTE: We assume the page is new if there's no entry in the cache.
+		page = new ZmPage(this._appCtxt);
+		page.name = context.keyword;
+		page.folderId = (currentPage && currentPage.folderId) || ZmPage.DEFAULT_FOLDER;
+	}	
 	this._selectedHandleResponse(page);
 };
 
@@ -126,8 +142,8 @@ ZmNotebookObjectHandler.prototype._selectedHandleResponse =
 function(page) {
 	var appController = this._appCtxt.getAppController();
 	var notebookApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
-	
-	var isNew = !page || (page.version == 0 && page.name != ZmNotebook.PAGE_INDEX);
+
+	var isNew = !page;
 	var controller = isNew ? notebookApp.getPageEditController() : notebookApp.getNotebookController();
 	controller.show(page);
 };

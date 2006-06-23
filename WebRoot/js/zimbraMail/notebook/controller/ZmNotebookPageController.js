@@ -98,6 +98,14 @@ ZmNotebookPageController.prototype.getPage = function() {
 
 // view management
 
+ZmNotebookPageController.prototype.showLink = function(link) {
+	var cache = this._app.getNotebookCache();
+	var page = cache.getPageByLink(link);
+	if (page) {
+		this.show(page);
+	}
+};
+
 ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSearch) {
 	if (/*force ||*/ !(pageOrFolderId instanceof ZmPage)) {
 		this._showIndex(pageOrFolderId || ZmPage.DEFAULT_FOLDER);

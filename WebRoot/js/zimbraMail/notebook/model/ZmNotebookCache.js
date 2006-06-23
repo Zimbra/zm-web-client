@@ -211,6 +211,87 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 	return null;
 };
 
+/**
+ * Returns a page by link. This method will attempt to locate the page in
+ * cache and, if not found, will attempt to get the page from the server.
+ * <p>
+ * Links can be one of the following formats:
+ * <dl>
+ * <dt> Foo
+ *   <dd> Link to section/page in current notebook
+ * <dt> Foo/Bar
+ *   <dd> Link to section/page in sub-section of current notebook
+ * <dt> /Foo/Bar
+ *   <dd> Link to section/page in top-level notebook of owner of current
+ *        notebook
+ * <dt> //User/Foo/Bar
+ *   <dd> Link to section/page in top-level notebook of specific user
+ * </dl>
+ */
+ZmNotebookCache.prototype.getPageByLink = function(link) {
+	// link: //User/Foo/Bar
+	var m;
+	if (m = link.match(/^\/\/([^\/]+)(?:\/(.*))?/)) {
+		throw "TODO: //User/Foo/Bar links";
+	}
+
+	// link: /Foo/Bar
+	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var notebook = null;
+	if (link.match(/^\//)) {
+		// TODO: Handle case where current folder owner is not me
+		//       because absolute paths should be relative to where
+		//       the link was followed. [Q] Should they?
+		notebook = tree.getById(ZmOrganizer.ID_ROOT);
+		link = link.substr(1);
+	}
+	if (!notebook) {
+		var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+		var controller = app.getNotebookController();
+		var currentPage = controller.getPage();
+		var folderId = (currentPage && currentPage.folderId) || ZmOrganizer.ID_NOTEBOOK;
+		notebook = tree.getById(folderId);
+	}
+
+	// link: Foo/Bar
+	if (link.match(/\//)) {
+		var names = link.split('/');
+		for (var i = 0; i < names.length - 1; i++) {
+			var name = names[i];
+			notebook = ZmNotebookCache.__getNotebookByName(notebook, name);
+			if (notebook == null) {
+				throw "subfolder doesn't exist: "+(names.slice(0, i+1).join('/'));
+			}
+		}
+		link = names[names.length-1];
+	}
+
+	// link: Foo (section)
+	var section = ZmNotebookCache.__getNotebookByName(notebook, link);
+	if (section) {
+		notebook = section;
+		link = ZmNotebook.PAGE_INDEX;
+	}
+
+	// link: Foo (page)
+	var traverseUp = Boolean(link.match(/^_/));
+	var page = this.getPageByName(notebook.id, link, traverseUp);
+	return page;
+};
+
+ZmNotebookCache.__getNotebookByName = function(parent, name) {
+	if (name == ".") return parent;
+	if (name == "..") return parent.parent;
+	var notebooks = parent ? parent.children.getArray() : [];
+	for (var i = 0; i < notebooks.length; i++) {
+		var notebook = notebooks[i];
+		if (notebook.name == name) {
+			return notebook;
+		}
+	}
+	return null;
+};
+
 ZmNotebookCache.prototype.getPagesInFolder = function(folderId) {
 	folderId = folderId || ZmPage.DEFAULT_FOLDER;
 	if (!this._foldersMap[folderId]) {
