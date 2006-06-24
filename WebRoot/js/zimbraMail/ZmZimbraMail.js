@@ -1362,11 +1362,12 @@ function(creates, modifies) {
 	var gotMail = false;
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
-		// ignore create notif for item we already have
-		if (this._appCtxt.cacheGet(create.id)) {
+		// ignore create notif for item we already have (except tags, which can
+		// reuse IDs)
+		var name = create._name;
+		if (this._appCtxt.cacheGet(create.id) && name != "tag") {
 			continue;
 		}
-		var name = create._name;
 		if ((name == "c") && create._wasVirtConv) continue;
 		DBG.println(AjxDebug.DBG1, "handling CREATE for node: " + name);
 		if (name == "tag") {
