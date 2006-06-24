@@ -206,6 +206,7 @@ function(keepModeDiv) {
 
 		// avoid mem. leaks, hopefully
 		div.onclick = null;
+		div.oncontextmenu = null;
 		div.onmousedown = null;
 		div.parentNode.removeChild(div);
 		textArea.style.display = "";
@@ -389,7 +390,8 @@ function(words, keepModeDiv) {
 
 		textArea.parentNode.insertBefore(div, textArea);
 		div.scrollTop = scrollTop;
-		div.onclick = function(ev) { self._handleSpellCheckerEvents(ev || window.event); };
+		div.oncontextmenu = div.onclick
+			= function(ev) { self._handleSpellCheckerEvents(ev || window.event); };
 	}
 
 	this._spellCheckShowModeDiv();
@@ -1283,7 +1285,7 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 	//   - it's a KEY event AND there's no word under the caret, OR the word was modified.
 	// I know, it's ugly.
 	if (sc.menu &&
-	    (!ev || ( /click|mousedown|mouseup/.test(ev.type)
+	    (!ev || ( /click|mousedown|mouseup|contextmenu/.test(ev.type)
 		      || ( /key/.test(ev.type)
 			   && (!word || modified) )
 		    )))
@@ -1299,7 +1301,8 @@ ZmHtmlEditor.prototype._handleSpellCheckerEvents = function(ev) {
 	}
 	// but that's even uglier:
 	if (ev && word && (suggestions = sc.suggestions[word]) &&
-	    (/mouseup/i.test(ev.type) || (plainText && /(click|mousedown)/i.test(ev.type))))
+	    (/mouseup|contextmenu/i.test(ev.type) ||
+	     (plainText && /(click|mousedown|contextmenu)/i.test(ev.type))))
 	{
 		function makeMenu(fixall, parent) {
 			var menu = new ZmPopupMenu(parent), item;
@@ -1504,6 +1507,14 @@ ZmHtmlEditor.prototype.__contextMenuSelectionListener = function(ev) {
 };
 
 ZmHtmlEditor.prototype.__onContextMenu = function(ev) {
+	if (this._spellCheck) {
+		if (this._mode == DwtHtmlEditor.HTML) {
+			var p = this._getParentElement();
+			if (/^span$/i.test(p.tagName) && /ZM-SPELLCHECK/.test(p.className)) {
+				return;
+			}
+		}
+	}
 	var menu = this.__contextMenu;
 	if (!menu) {
 		menu = this.__contextMenu = new DwtMenu(this);
