@@ -670,7 +670,10 @@ function(container, html, isTextMsg) {
 	if (html == null) html = "";
 
 	var displayImages;
-	if (!isTextMsg && !this._msg.showImages && /<img/i.test(html)) {
+	if (!isTextMsg &&
+		(this._msg == null || (this._msg && !this._msg.showImages)) &&
+		/<img/i.test(html))
+	{
 		displayImages = document.createElement("div");
 		displayImages.className = "DisplayImages";
 		displayImages.id = this._displayImagesId;
@@ -766,7 +769,7 @@ function(container, html, isTextMsg) {
 				var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
 				Dwt.setHandler(displayImages, DwtEvent.ONCLICK, func);
 			}
-		} else if (this._msg.showImages) {
+		} else if (this._msg && this._msg.showImages) {
 			var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
 			func.call();
 		}
