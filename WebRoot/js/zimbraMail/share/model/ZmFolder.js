@@ -259,8 +259,8 @@ function(url, name, ex) {
 	if (name && (ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS)) {
 		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [ZmMsg.folderLc, name]);
 	} else if (url) {
-		var msg = (ex.code == ZmCsfeException.SVC_RESOURCE_UNREACHABLE) ? ZmMsg.feedUnreachable : ZmMsg.feedInvalid;
-		msg = AjxMessageFormat.format(msg, url);
+		var errorMsg = (ex.code == ZmCsfeException.SVC_RESOURCE_UNREACHABLE) ? ZmMsg.feedUnreachable : ZmMsg.feedInvalid;
+		msg = AjxMessageFormat.format(errorMsg, url);
 	}
 	if (msg) {
 		msgDialog.reset();

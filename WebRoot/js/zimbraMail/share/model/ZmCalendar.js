@@ -103,10 +103,13 @@ function(url, name, ex) {
 	
 	var msgDialog = this.tree._appCtxt.getMsgDialog();
 	var msg;
-	if (url) {
-		var msg = (ex.code == ZmCsfeException.SVC_PARSE_ERROR) ? ZmMsg.calFeedInvalid : ZmMsg.feedUnreachable;
-		msg = AjxMessageFormat.format(msg, url);
+	if (name && (ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS)) {
+		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [ZmMsg.folderLc, name]);
+	} else if (url) {
+		var errorMsg = (ex.code == ZmCsfeException.SVC_PARSE_ERROR) ? ZmMsg.calFeedInvalid : ZmMsg.feedUnreachable;
+		msg = AjxMessageFormat.format(errorMsg, url);
 	}
+
 	if (msg) {
 		msgDialog.reset();
 		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
