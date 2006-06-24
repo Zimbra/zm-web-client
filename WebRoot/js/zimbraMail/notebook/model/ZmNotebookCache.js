@@ -232,7 +232,38 @@ ZmNotebookCache.prototype.getPageByLink = function(link) {
 	// link: //User/Foo/Bar
 	var m;
 	if (m = link.match(/^\/\/([^\/]+)(?:\/(.*))?/)) {
-		throw "TODO: //User/Foo/Bar links";
+		// normalize link
+		if (!m[2]) {
+			link = link.replace(/\/?$/,"/Notebook/"+ZmNotebook.PAGE_INDEX);
+		}
+
+		// create batch request
+		var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
+		// exact request
+		var requestNode = soapDoc.set("GetWikiRequest",null,null,"urn:zimbraMail");
+		requestNode.setAttribute("id", "exact");
+		var wikiNode = soapDoc.set("w", null, requestNode);
+		wikiNode.setAttribute("name", link);
+		// section request
+		var requestNode = soapDoc.set("GetWikiRequest",null,null,"urn:zimbraMail");
+		requestNode.setAttribute("id", "index");
+		var wikiNode = soapDoc.set("w", null, requestNode);
+		wikiNode.setAttribute("name", link.replace(/\/?$/,'/')+ZmNotebook.PAGE_INDEX);
+		wikiNode.setAttribute("tr", 1);
+
+		// send request
+		var params = {
+			soapDoc: soapDoc,
+			asyncMode: false, // REVISIT
+			callback: null,
+			errorCallback: null
+		};
+
+		var appController = this._appCtxt.getAppController();
+		var response = appController.sendRequest(params);
+
+		// handle response
+		return this._getPageByLinkResponse(response);
 	}
 
 	// link: /Foo/Bar
@@ -260,6 +291,7 @@ ZmNotebookCache.prototype.getPageByLink = function(link) {
 			var name = names[i];
 			notebook = ZmNotebookCache.__getNotebookByName(notebook, name);
 			if (notebook == null) {
+				// TODO: handle this case!
 				throw "subfolder doesn't exist: "+(names.slice(0, i+1).join('/'));
 			}
 		}
@@ -277,6 +309,24 @@ ZmNotebookCache.prototype.getPageByLink = function(link) {
 	var traverseUp = Boolean(link.match(/^_/));
 	var page = this.getPageByName(notebook.id, link, traverseUp);
 	return page;
+};
+ZmNotebookCache.prototype._getPageByLinkResponse = function(response) {
+	var batchResp = response && response._data && response._data.BatchResponse;
+	var wikiResp = batchResp && batchResp.GetWikiResponse;
+	var word = wikiResp && wikiResp.w && wikiResp.w[0];
+	if (word) {
+		var page = this.getPageById(word.id);
+		if (!page) {
+			page = new ZmPage(this._appCtxt);
+			page.set(word);
+			this.putPage(page);
+		}
+		else {
+			page.set(word);
+		}
+		return page;
+	}
+	return null;
 };
 
 ZmNotebookCache.__getNotebookByName = function(parent, name) {
