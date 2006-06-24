@@ -305,11 +305,15 @@ function(actionCode) {
 			break;
 			
 		case ZmKeyMap.NEXT_CONV:
-			this._paginateDouble(true);
+			if (this._navToolBar[this._currentView].getButton(ZmOperation.PAGE_DBL_FORW).getEnabled()) {
+				this._paginateDouble(true);
+			}
 			break;
 			
 		case ZmKeyMap.PREV_CONV:
-			this._paginateDouble(false);
+			if (this._navToolBar[this._currentView].getButton(ZmOperation.PAGE_DBL_BACK).getEnabled()) {
+				this._paginateDouble(false);
+			}
 			break;
 			
 		default:
