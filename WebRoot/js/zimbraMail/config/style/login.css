@@ -44,7 +44,17 @@ FORM {
 }
 
 
-
+/*
+ *	Container for the splash screen
+ */
+.ZSplashScreen {
+	@ChromeBg@
+	width:100%;
+	height:100%;
+	top:0;
+	left:0;
+	position:absolute;
+}
 
 
 /*
@@ -68,15 +78,15 @@ FORM {
 /* Cell for the 'header' (logo/app name/version) */
 #ZLoginHeaderContainer {}
 
-/* Cell for the 'body' (notice/form/about) */
+/* Cell for the 'body' (notice/form/about/license) */
 #ZLoginBodyContainer {
+	@WindowInnerContainer-light@
 	@AppBg@
 	padding-top:20px;
 }
 
 /* Cell for the 'license' (copyright, etc) */
 #ZLoginLicenseContainer {
-	@AppBg@
 	padding-top:20px;
 	padding-bottom:5px;
 	text-align:center;
@@ -152,24 +162,6 @@ FORM {
 }
 
 
-/* Logo image.  Note that this will someday come from a servlet, etc so that it can
-	be customized by an admin per-domain */
-.ImgLoginBanner {
-	width:450;
-	height:100;
-#IFDEF GECKO
-	background-image:url('@ImgDir@/logo/LoginBanner_blank.png');
-#ENDIF
-#IFDEF SAFARI
-	background-image:url('@ImgDir@/logo/LoginBanner_blank.png');
-#ENDIF
-#IFDEF MSIE
-	filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='@ImgDir@/logo/LoginBanner_blank.png',sizingMethod='scale');
-#ENDIF
-
-}
-
-
 
 /* Error icon -- use for positioning only, image comes from .ImgLoginError */
 #ZLoginErrorIcon {}
@@ -206,9 +198,7 @@ FORM {
 
 
 /* Generic table in login panel -- used to make spacing easier */
-.zLoginTable {
-	border-collapse: collapse;
-}
+.zLoginTable {}
 
 /* Field label (right-aligned) */
 .zLoginLabelContainer {
@@ -277,103 +267,6 @@ FORM {
 
 
 
-/*
- *	Old login stuff -- we want to move away from this
- */
-
-
-
-
-.LoginPanel {
-	position:relative;
-	width:500px;
-	@InsetBg@
-	@Text@
-	border: 2px solid; 
-	border-color: #CCCCCC #000000 #000000 #CCCCCC;
-}
-
-
-.LoginPanelBanner {
-	margin-top:10px;
-	margin-bottom:10px;
-	/* the following are the dims of the login banner: */
-	width:447px; 
-	height:115px; 
-	position:relative;
-	background-image:url(/zimbra/img/loRes/logo/LoginBanner_blank.png);
-}
-
-.LoginMainPanel {
-	@AppBg@
-}
-
-.LoginMainPanel td {
-	@Text@
-}
-
-
-/* "appName" substitution:  eg:  "Collaboration Suite" */
-.LoginPanelAppName {
-	@FontSize-biggest@
-	position:absolute;
-	left:60;
-	top:80;
-	width:350;
-	height:30;
-	font-weight:normal;
-	text-align:right;
-}
-
-/* "short version" substitution:  eg:  "BETA" */
-.LoginPanelShortVersion {
-	position:absolute;
-	left:63px;
-	top:7px;
-	width:350;
-	text-align:right;
-	@FontSize-biggest@
-	font-weight:normal;
-	@Text-disabled@
-}
-
-/* "short version" substitution:  eg:  "V 1.23 * 'Birdseye' * Wed Oct 12, 2005" */
-.LoginPanelVersion {
-	position:absolute;
-	left:60;
-	top:120;
-	width:350;
-	height:30;
-	font-weight:normal;
-	text-align:right;
-}
-
-
-
-.LoginPanelLicense {
-	@AppBg@
-	@FontSize-smaller@
-	@Text-disabled@
-	height:40px;
-	text-align:center;
-	vertical-align:bottom;
-	padding-top:@BoxPaddingSize@;
-	padding-bottom:@BoxPaddingSize@;
-}
-
-
-
-.LoginPanelTable {
-	@FullWidth@
-}
-
-
-.LoginPanelFormSpacer {
-	width:50px;
-}
-
-
-
 .error {  
 	margin-top: 10px;
 	margin-bottom: 10px;
@@ -404,154 +297,3 @@ FORM {
 .DwtButton-disabled .Text				{	@NormalButtonText-disabled@		}	
 .DwtButton-active .Text					{	@NormalButtonText-default@		}	
 .DwtButton-focused .Text				{	@NormalButtonText-focused@		}	
-
-
-
-.SplashScreen {
-	@InsetBg@
-}
-
-/* FIX THIS STUFF */
-
-
-/*
- * Splash Screen
- */
- 
-.ZmSplashScreen { 
-  width:100%;
-  height:100%;
-  top:0;
-  left:0;
-  position:absolute;
-}
-.ZmSplashScreen, .ZmSplashScreen table {
-	@ChromeBg@
-	padding:0px;
-}
-
-
-
-/* splash screen and login banner pieces */
-
-/* "url" substitution:  eg:  "<a href='http://www.zimbra.com'>http:/www..." */
-.SplashScreenUrl {
-	position:absolute;
-	left:164;
-	top:9;
-	width:300;
-	text-align:right;
-}
-.SplashScreenUrl a:link,
-.SplashScreenUrl a:visited,
-.SplashScreenUrl a:hover {
-	color:black;
-}
-.SplashScreenUrl a:active {
-	@Anchor-clicked@
-}
-
-
-/* "appName" substitution:  eg:  "Collaboration Suite" */
-.SplashScreenAppName {
-	position:absolute;
-	left:60;
-	top:80;
-	width:350;
-	height:30;
-	@FontSize-biggest@
-	font-weight:normal;
-	text-align:right;
-}
-
-/* "version" substitution:  eg:  "V 1.23 * 'Birdseye' * Wed Oct 12, 2005" */
-.SplashScreenVersion {
-	position:absolute;
-	left:80;
-	top:145;
-	width:350;
-	text-align:right;
-}
-
-/* "shortVersion" substitution:  eg:  "BETA" */
-.SplashScreenShortVersion {
-	position:absolute;
-	left:384;
-	top:45;
-	width:80;
-	@FontSize-biggest@
-	font-weight:normal;
-	@Text-disabled@
-}
-
-
-/* "contents" substitution:  eg:  "Version: XXX, etc" */
-.SplashScreenContents {
-	position:absolute;
-	left:240;
-	top:185;
-	width:217;
-	height:105;
-	overflow:auto;
-}
-
-/* "button" substitution:  eg:  "<button style='width:60px;'>OK</button>" */
-.SplashScreenOKButton {
-	position:absolute;
-	left:410;
-	top:305;
-	width:60;
-	height:20;
-}
-
-/* "license" substitution:  eg:  "Copyright 2005 Zimbra, Inc..." */
-.SplashScreenLicense {
-	position:absolute;
-	left:8;
-	top:305;
-	vertical-align:bottom;
-	@FontSize-smaller@
-	@Text-disabled@
-}
-
-
-/* LOGIN SCREEN STUFF MOVED TO login.css */
-
-
-
-
-/* Login Panel */
-.ZmLoginDialog {
-	@ChromeBg@
-	overflow:hidden;
-}
-.ZmLoginDialog-Transparent {background-color: transparent;}
-.ZmLoginDialog-HeaderPanel {
-	margin-top:10px;
-	margin-bottom:10px;
-	height:115px;
-	background-image:url(/zimbra/img/loRes/logo/LoginBanner_blank.gif);
-}
-.ZmLoginDialog-HeaderText, .ZmLoginDialog-SubHeaderText {
-	color: white;
-}
-.ZmLoginDialog-HeaderText {
-	font-style: bold;
-	font-size: 14pt;
-}
-.ZmLoginDialog-MainPanel {
-	width:460px;
-	/*background-image:url(/zimbra/img/loRes/skins/steel/Pebble__BG.gif);*/
-}
-.ZmLoginDialog-SubHeaderText { font-size: 12pt; }
-.ZmLoginDialog-Field { width: 290px; }
-.ZmLoginDialog-ErrorText { width: 360px; }
-.ZmLoginDialog-ErrorPanel {
-	border: 1px solid #999999;
-	background-color: #FFFFCC;
-	width:415px;
-	height: 55px;
-}
-
-
-

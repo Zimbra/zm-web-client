@@ -24,7 +24,7 @@
  */
 
 function ZmSplashScreen(shell, imageInfo, className) {
- 	className = className || "ZmSplashScreen";
+ 	className = className || "ZSplashScreen";
  	ZmBaseSplashScreen.call(this, shell, imageInfo, className);
 }
 

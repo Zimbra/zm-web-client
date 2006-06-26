@@ -1,0 +1,90 @@
+SkinName			= lavender
+
+SkinImgDir			= /zimbra/skins/lavender/img
+
+
+_BaseColor_			=	#7248a2
+
+_BaseColorD95_		=	#060408
+_BaseColorD90_		=	#0b0710
+_BaseColorD85_		=	#110b18
+_BaseColorD80_		=	#170e20
+_BaseColorD75_		=	#1d1229
+_BaseColorD70_		=	#221631
+_BaseColorD65_		=	#281939
+_BaseColorD60_		=	#2e1d41
+_BaseColorD55_		=	#332049
+_BaseColorD50_		=	#392451
+_BaseColorD45_		=	#3f2859
+_BaseColorD40_		=	#442b61
+_BaseColorD35_		=	#4a2f69
+_BaseColorD30_		=	#503271
+_BaseColorD25_		=	#56367a
+_BaseColorD20_		=	#5b3a82
+_BaseColorD15_		=	#613d8a
+_BaseColorD10_		=	#674192
+_BaseColorD5_		=	#6c449a
+
+_BaseColorL5_		=	#7951a7
+_BaseColorL10_		=	#805aab
+_BaseColorL15_		=	#8763b0
+_BaseColorL20_		=	#8e6db5
+_BaseColorL25_		=	#9576b9
+_BaseColorL30_		=	#9c7fbe
+_BaseColorL35_		=	#a388c3
+_BaseColorL40_		=	#aa91c7
+_BaseColorL45_		=	#b19acc
+_BaseColorL50_		=	#b9a4d1
+_BaseColorL55_		=	#c0add5
+_BaseColorL60_		=	#c7b6da
+_BaseColorL65_		=	#cebfde
+_BaseColorL70_		=	#d5c8e3
+_BaseColorL75_		=	#dcd1e8
+_BaseColorL80_		=	#e3daec
+_BaseColorL85_		=	#eae4f1
+_BaseColorL90_		=	#f1edf6
+_BaseColorL95_		=	#f8f6fa
+
+
+	
+_SelColor_			=	#e77185
+
+_SelColorD95_		=	#0c0607
+_SelColorD90_		=	#170b0d
+_SelColorD85_		=	#231114
+_SelColorD80_		=	#2e171b
+_SelColorD75_		=	#3a1c21
+_SelColorD70_		=	#452228
+_SelColorD65_		=	#51282f
+_SelColorD60_		=	#5c2d35
+_SelColorD55_		=	#68333c
+_SelColorD50_		=	#743943
+_SelColorD45_		=	#7f3e49
+_SelColorD40_		=	#8b4450
+_SelColorD35_		=	#964956
+_SelColorD30_		=	#a24f5d
+_SelColorD25_		=	#ad5564
+_SelColorD20_		=	#b95a6a
+_SelColorD15_		=	#c46071
+_SelColorD10_		=	#d06678
+_SelColorD5_		=	#db6b7e
+
+_SelColorL5_		=	#e8788b
+_SelColorL10_		=	#e97f91
+_SelColorL15_		=	#eb8697
+_SelColorL20_		=	#ec8d9d
+_SelColorL25_		=	#ed95a4
+_SelColorL30_		=	#ee9caa
+_SelColorL35_		=	#efa3b0
+_SelColorL40_		=	#f1aab6
+_SelColorL45_		=	#f2b1bc
+_SelColorL50_		=	#f3b8c2
+_SelColorL55_		=	#f4bfc8
+_SelColorL60_		=	#f5c6ce
+_SelColorL65_		=	#f7cdd4
+_SelColorL70_		=	#f8d4da
+_SelColorL75_		=	#f9dce1
+_SelColorL80_		=	#fae3e7
+_SelColorL85_		=	#fbeaed
+_SelColorL90_		=	#fdf1f3
+_SelColorL95_		=	#fef8f9

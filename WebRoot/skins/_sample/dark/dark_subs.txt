@@ -1,6 +1,9 @@
-SkinName			= money
+_SkinName_			= [skin]
 
-SkinImgDir			= /zimbra/skins/money/img
+# Directories where skin-specific images come from
+SkinImgDir			= /zimbra/skins/[skin]/img
+LogoImgDir			= /zimbra/skins/_base/logos
+LogoURL				= http://www.zimbra.com
 
 
 #######
@@ -8,7 +11,7 @@ SkinImgDir			= /zimbra/skins/money/img
 #######
 
 
-_BaseColor_			=	#0e2c0b
+_BaseColor_		=	#0e2c0b
 
 _BaseColorD95_		=	#010201
 _BaseColorD90_		=	#010401
@@ -51,7 +54,7 @@ _BaseColorL90_		=	#e7eae7
 _BaseColorL95_		=	#f3f4f3
 
 
-_SelColor_			=	black
+_SelColor_		=	black
 
 _SelColorD95_		=	#0a0a0a
 _SelColorD90_		=	#141414

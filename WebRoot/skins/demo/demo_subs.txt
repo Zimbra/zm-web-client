@@ -1,8 +1,7 @@
-_SkinName_ = demo
+SkinName			 = demo
 
 
-######### DEMO STUFF ######### 
-_BaseColor_		=	#ff6600
+_BaseColor_			=	#ff6600
 
 _BaseColorD95_		=	#0d0500
 _BaseColorD90_		=	#1a0a00
@@ -45,7 +44,7 @@ _BaseColorL90_		=	#fff0e6
 _BaseColorL95_		=	#fff7f2
 
 
-_SelColor_		=	#fff34d
+_SelColor_			=	#fff34d
 
 _SelColorD95_		=	#0d0c04
 _SelColorD90_		=	#1a1808
@@ -88,6 +87,4 @@ _SelColorL90_		=	#fffeed
 _SelColorL95_		=	#fffef6
 
 
-
-
-ChromeBg			= background-color:#ffe0cc;
+ChromeBg			= background-color:@_BaseColorL80_@;

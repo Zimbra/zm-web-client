@@ -1,6 +1,6 @@
 <html>
 <head>
-<title>Skinning the Zimbra Collaboration Suite</title>
+<title>Themes for the Zimbra Collaboration Suite</title>
 <style type='text/css'>
 *				{	font-family:Verdana; 	}
 BODY, P, LI		{	font-size:12px;	}
@@ -33,6 +33,8 @@ TH				{	text-align: left; 	}
 					padding-left:5px;	padding-right:15px; 
 					vertical-align:top;
 				}
+
+.smallText		{	font-size:10px;	}	
 
 .nowrap			{	white-space: nowrap;	}
 
@@ -74,15 +76,15 @@ topLink a		{	text-decoration:none;	}
 
 var				{	font-style:italic;	}
 
-ol.roman li			{	 list-style:upper-roman;	}
-ol.roman ol li		{	 list-style:decimal;	}
-ol.roman ol ol li		{	 list-style:lower-alpha;	}
-ol.roman ol ul li		{	 list-style:disc;	}
+ol.roman li			{	 list-style:upper-roman;	font-size:10px;	}
+ol.roman ol li		{	 list-style:decimal;font-size:10px;	}
+ol.roman ol ol li	{	 list-style:lower-alpha;	font-size:10px;}
+ol.roman ol ul li	{	 list-style:disc;font-size:10px;	}
 </style>
 
 </head>
 <body>
-<H1><a name=top>Skinning the Zimbra Collaboration Suite</a></H1>
+<H1><a name=top>Themes for the Zimbra Collaboration Suite</a></H1>
 
 <table class='headerTable'>
 <tr>
@@ -90,32 +92,32 @@ ol.roman ol ul li		{	 list-style:disc;	}
 		<div class='gray'>
 			<tocName>Table of Contents</tocName>
 			<ol class='roman'>
-				<li><a href=#about>About Skins in ZCS</a></li>
+				<li><a href=#about>About Themes in ZCS</a></li>
 				<li><a href=#short>The Short Version</a></li>
 				<ol>
-					<li><a href=#location>Where the Skin Files Live</a></li>
-					<li><a href=#quick>Creating a Simple Skin</a></li>
+					<li><a href=#location>Where the Theme Files Live</a></li>
+					<li><a href=#quick>Creating a Simple Theme</a></li>
 				</ol>
 				<li><a href=#long>The Long Version</a></li>
 				<ol>
-					<li><a href=#components>Components of a ZCS Skin</a></li>
-					<li><a href=#manifest>The Skin Manifest</a></li>
-					<li><a href=#subs>Editing Skin Substitution Files</a></li>
+					<li><a href=#components>Components of a ZCS Theme</a></li>
+					<li><a href=#manifest>The Theme Manifest</a></li>
+					<li><a href=#subs>Editing Theme Substitution Files</a></li>
 					<ol>
 						<li><a href=#changeable>What You Can Change</a></li>
-						<li><a href=SkinColorPicker.html target=_blank>Skin Color Picker(&rArr;)</a></li>
+						<li><a href=SkinColorPicker.html target=_blank>Theme Color Picker(&rArr;)</a></li>
 						<li><a href=#browserspecific>Browser-Specific Substitutions</a></li>
 					</ol>
-					<li><a href=#html>Editing Skin HTML and CSS Files</a></li>
+					<li><a href=#html>Editing Theme HTML and CSS Files</a></li>
 					<ul>
-						<li><a href=#api>The Skin/ZCS API</a></li>
+						<li><a href=#api>The Theme/ZCS API</a></li>
 					</ul>
 						
 					<li><a href=#images>Changing the Logo Images</a></li>
 					<ul>
 						<li><a href=#inside>For Open Source Customers</a></li>
 					</ul>
-					<li><a href=#deploy>Deploying a Skin</a></li>
+					<li><a href=#deploy>Deploying a Theme</a></li>
 					<ol>
 						<li><a href=#deployCompiled>Deploying from a Pre-Packaged Binary Distribution</a></li>
 						<li><a href=#deploySource>Deploying from a Source Files</a></li>					
@@ -137,28 +139,28 @@ ol.roman ol ul li		{	 list-style:disc;	}
 
 
 <H2><topLink><a href=#top>top</a></topLink>
-	<a name=about>About Skins in ZCS</a>
+	<a name=about>About Themes in ZCS</a>
 </H2>
 <p>
-This document covers the basic information you will need to create a "skin" or user interface theme for the <a href='http://www.zimbra.com/products/' target=_blank>Zimbra Collaboration Suite (&rArr;)</a> (ZCS).  You can create a skin as simply as setting two colors and their variants, or you make heavy modifications to the "chrome" or outlines of the user interface with extensive use of images.  This guide is more oriented toward creating simpler variants of existing skins, but information is provided about the details of how the skinning mechanism works to enable you to create more advanced skins.
+This document covers the basic information you will need to create a user interface theme (known in the code as a "skin") for the <a href='http://www.zimbra.com/products/' target=_blank>Zimbra Collaboration Suite (&rArr;)</a> (ZCS).  You can create a theme as simply as setting two colors and their variants, or you make heavy modifications to the "chrome" or outlines of the user interface with extensive use of images.  This guide is more oriented toward creating simpler variants of existing themes, but information is provided about the details of how the theming mechanism works to enable you to create more advanced themes.
 <p>
-Note that while the skinning mechanism is very flexible, we recommend in this version of ZCS that you limit yourself to just changing colors and fonts.  While there is nothing preventing you from making more advanced skins, we cannot guarantee that these skins will survive upgrades to the framework as we are planning some changes in the near future that will shift some things around.  So if you don't mind having to possibly go back to the drawing board at some time in the future, go ahead and play around all you like.
+Note that while the theming mechanism is very flexible, we recommend in this version of ZCS that you limit yourself to just changing colors and fonts.  While there is nothing preventing you from making more advanced themes, we cannot guarantee that these themes will survive upgrades to the framework as we are planning some changes in the near future that will shift some things around.  So if you don't mind having to possibly go back to the drawing board at some time in the future, go ahead and play around all you like.
 <p>
-If you have any questions or skins you want to share with the world, feel free to post them on the <a href=http://www.zimbra.com/forums/ target=_blank>Zimbra Forums (&rArr;)</a>.
+If you have any questions or themes you want to share with the world, feel free to post them on the <a href=http://www.zimbra.com/forums/ target=_blank>Zimbra Forums (&rArr;)</a>.
 
 
 <H2><topLink><a href=#top>top</a></topLink>
 	<a name=short>The Short Version</a>
 </H2>
 <p>
-Below we walk you through the simplest way to create a skin, which will be based on one of the sample skins provided.  For the example, we will be creating a skin called <file>test</file> based on the <file>light</file> skin sample.
+Below we walk you through the simplest way to create a theme, which will be based on one of the sample themes provided.  For the example, we will be creating a theme called <file>test</file> based on the <file>light</file> theme sample.
 
 <H4><topLink><a href=#top>top</a></topLink>
-	<a name=location>Where the Skin Files Live</a>
+	<a name=location>Where the Theme Files Live</a>
 </H4>
 
 <p>
-The directory in which you will deploy the new skin is based on whether you have received a pre-built release of the ZCS, or if you have built the ZCS yourself from the source files.
+The directory in which you will deploy the new theme is based on whether you have received a pre-built release of the ZCS, or if you have built the ZCS yourself from the source files.
 <ul>
 	<li>If using a pre-build release, you will be using directory:
 		<indent><file>/opt/zimbra/tomcat/webapps/zimbra/skins/
@@ -172,21 +174,21 @@ We will use the notation <file>.../skins/</file> to indicate the directory above
 
 
 <p>
-<H4><a name=quick>Creating a Simple Skin</a></H4>
+<H4><a name=quick>Creating a Simple Theme</a></H4>
 
 <ol>
-	<li>Decide which skin you want to base your new skin on and locate its sample directory below:
+	<li>Decide which theme you want to base your new theme on and locate its sample directory below:
 		<ul>
-			<li><file>light</file> skin (eg: <file>Sand</file>) -- directory <file>.../skins/_samples/light</file>
+			<li><file>light</file> theme (eg: <file>Sand</file>) -- directory <file>.../skins/_samples/light</file>
 
-			<li><file>dark</file> skin (eg: <file>Money</file>) -- directory <file>.../skins/_samples/dark</file>
+			<li><file>dark</file> theme (eg: <file>Money</file>) -- directory <file>.../skins/_samples/dark</file>
 
-			<li><file>consumer</file> skin (eg: <file>Bare</file>) -- directory <file>.../skins/_samples/consumer</file>
+			<li><file>consumer</file> theme (eg: <file>Bare</file>) -- directory <file>.../skins/_samples/consumer</file>
 
 		</ul>
 	<li>Copy the sample directory above into: <file>.../skins/</file>
 	
-	<li>Rename the directory the same name as your skin.
+	<li>Rename the directory the same name as your theme.
 
 		<exampleBlock>Eg: for our example, we would have copied <br>
 	<indent><file>.../skins/_samples/light/</file></indent>
@@ -195,7 +197,7 @@ We will use the notation <file>.../skins/</file> to indicate the directory above
 		</exampleBlock>
 		
 	<li>For each file in the directory, rename it to
-		<file><var>skin</var>*</file>, where "<var>skin</var>" 
+		<file>[theme]*</file>, where "[theme]" 
 		is the same name as the directory, eg:
 
 		<sampleFile>
@@ -206,7 +208,7 @@ We will use the notation <file>.../skins/</file> to indicate the directory above
 			</indent>
 		</sampleFile>
 	
-	<li>Edit <file><var>skin</var>.xml</file>.  Change all entries that begin with <file><var>skin</var></file> to your skin name.
+	<li>Edit <file>[theme].xml</file>.  Change all occurances of <file>[theme]</file> to your theme name.
 	
 		<sampleFile>
 		<fileTitle>file: .../skins/test/test.xml</fileTitle>
@@ -214,7 +216,7 @@ We will use the notation <file>.../skins/</file> to indicate the directory above
 			<indent>
 				<code>&lt;substitutions></code>
 				<indent>
-			<code>&lt;file></code>../_base/light/light_subs.txt<code>&lt;/file></code><br>
+<code>&lt;file></code>../_base/base/base_subs.txt<code>&lt;/file></code><br>			<code>&lt;file></code>../_base/light/light_subs.txt<code>&lt;/file></code><br>
 					<code>&lt;file></code><file>test_subs.txt</file><code>&lt;/file></code>
 				</indent>
 				<code>&lt;/substitutions></code><br>
@@ -233,9 +235,9 @@ We will use the notation <file>.../skins/</file> to indicate the directory above
 		</sampleFile>
 	
 	
-	<li>Edit <file><var>skin</var>_subs.txt</file>.  Customize any of the entries there.  See <a href=#subs>Editing Skin Substitution Files</a> for details.
+	<li>Edit <file>[theme]_subs.txt</file>.  Customize any of the entries there.  See <a href=#subs>Editing Theme Substitution Files</a> for details.
 	
-	<li>Make the servers aware of the new skin and restart the servers.  See <a href=#deploy>Deploying a Skin</a>
+	<li>Make the servers aware of the new theme and restart the servers.  See <a href=#deploy>Deploying a Theme</a>
 	
 	<li>You're done!
 </ol>
@@ -247,40 +249,40 @@ We will use the notation <file>.../skins/</file> to indicate the directory above
 	<a name=long>The Long Version</a>	
 </H2>
 <p>
-This gets into the gory details of how the skinning mechanism works, probablly explaining more than you'd really like to know, and definitely more than you <i>need</i> to know to create a skin.
+This gets into the gory details of how the theming mechanism works, probablly explaining more than you'd really like to know, and definitely more than you <i>need</i> to know to create a theme.
 
 
 
 
 <H3><topLink><a href=#top>top</a></topLink>
-	<a name="components">Components</a> of a ZCS skin
+	<a name="components">Components</a> of a ZCS Theme
 </H3>
 <p>
-A skin is composed of a single directory which contains a number of text and image files.  Generally, the names of the text files are prefixed with the name of the skin.  For example, for the skin named <file>sand</file>, you would use files <file>sand.html</file>, <file>sand.xml</file>, etc.  In this document, whenever you see <file><var>skin</var></file> in a file name, substitute the name of your skin (e.g., <file><var>skin</var>.xml</file> in the <file>sand</file> skin would really mean file <file>sand.xml</file>).
+A theme is composed of a single directory which contains a number of text and image files.  Generally, the names of the text files are prefixed with the name of the theme.  For example, for the theme named <file>sand</file>, you would use files <file>sand.html</file>, <file>sand.xml</file>, etc.  In this document, whenever you see <file>[theme]</file> in a file name, substitute the name of your theme (e.g., <file>[theme].xml</file> in the <file>sand</file> theme would really mean file <file>sand.xml</file>).
 
 <p>
-All skin files live in the <file>.../skins/</file> directory (see <a href=#location>Where the Skin Files Live</a>).  In general, each directory there corresponds with a single skin available to users of the ZCS.  Note that the directories <file>.../skin/_sample/</file> and <file>.../skin/_base/</file> are special directories used to create skins -- these are not exposed as skins to the user.
+All theme files live in the <file>.../skins/</file> directory (see <a href=#location>Where the Theme Files Live</a>).  In general, each directory there corresponds with a single theme available to users of the ZCS.  Note that the directories <file>.../skin/_sample/</file> and <file>.../skin/_base/</file> are special directories used to create themes -- these are not exposed as themes to the user.
 
 <p>
-To create a new skin, create a folder with the name of your skin in the <file>.../skins/</file> directory.  (The examples will use the skin name <file>test</file>).  Note that currently, spaces are not allowed in the folder name.  Within this folder you can have the following files:
+To create a new theme, create a folder with the name of your theme in the <file>.../skins/</file> directory.  (The examples will use the theme name <file>test</file>).  Note that currently, spaces are not allowed in the folder name.  Within this folder you can have the following files:
 <ul>
-	<li><file><var>skin</var>.xml</file> (mandatory): This is the "manifest" for your skin, which details all of the other files that make up the skin.  See <a href=#manifest>The Skin Manifest</a> below.
+	<li><file>[theme].xml</file> (mandatory): This is the "manifest" for your theme, which details all of the other files that make up the theme.  See <a href=#manifest>The Theme Manifest</a> below.
 
-	<li><file><var>skin</var>_subs.txt</file> (mandatory):  This sets up a number of substitutions which are performed in the other skin files that customizes their appearance.  For example, this is where the background color of elements are set, where fonts are defined, etc.  See <a href=#subs>Editing Skin Substitution Files</a> below.
+	<li><file>[theme]_subs.txt</file> (mandatory):  This sets up a number of substitutions which are performed in the other theme files that customizes their appearance.  For example, this is where the background color of elements are set, where fonts are defined, etc.  See <a href=#subs>Editing Theme Substitution Files</a> below.
 	
-	<li><file><var>skin</var>.html</file> (optional):  This is the HTML responsible for drawing the skin, along with the javascript required to show or hide parts of the skin dynamically.  In general, you will be pointing to an HTML file in the <file>skins/_base</file> directory rather than creating your own.  See <a href=#html>Editing Skin HTML and CSS files</a>.
+	<li><file>[theme].html</file> (optional):  This is the HTML responsible for drawing the theme, along with the javascript required to show or hide parts of the theme dynamically.  In general, you will be pointing to an HTML file in the <file>skins/_base</file> directory rather than creating your own.  See <a href=#html>Editing Theme HTML and CSS files</a>.
 	
-	<li><file><var>skin</var>.css</file> (optional):  This is CSS definitions that are paired with the elements in <file><var>skin</var>.html</file>.  In general, you will be pointing to a CSS file in the <file>skins/_base</file> directory rather than creating your own.  See <a href=#html>Editing Skin HTML and CSS files</a>.
+	<li><file>[theme].css</file> (optional):  This is CSS definitions that are paired with the elements in <file>[theme].html</file>.  In general, you will be pointing to a CSS file in the <file>skins/_base</file> directory rather than creating your own.  See <a href=#html>Editing Theme HTML and CSS files</a>.
 <!--	
-	<li><file>img/</file> directory (optional):  Place images in here to use them in your skin -- they will automatically replace any normal application image of the same name.  For example, to replace the application logo image that appears on the login and splash screen, place an image entitled <file>LoginBanner.png</file> in your <file>img/</file> directory.  See <a href=#images>Including Images in a Skin</a>.
+	<li><file>img/</file> directory (optional):  Place images in here to use them in your theme - they will automatically replace any normal application image of the same name.  For example, to replace the application logo image that appears on the login and splash screen, place an image entitled <file>LoginBanner.png</file> in your <file>img/</file> directory.  See <a href=#images>Including Images in a Theme</a>.
 -->
 </ul>
 
 <p>
-Note that some of the files listed above are deemed (optional) -- for these files, some you can omit entirely, and for some you can set things up in the manifest to use the corresponding file in another skin.  See <a href=#manifest>The Skin Manifest</a> for details.
+Note that some of the files listed above are deemed (optional) -- for these files, some you can omit entirely, and for some you can set things up in the manifest to use the corresponding file in another theme.  See <a href=#manifest>The Theme Manifest</a> for details.
 
 <p>
-For example, to fully create a skin named <file>test</file>, you might have the following directory structure:<br>
+For example, to fully create a theme named <file>test</file>, you might have the following directory structure:<br>
 <sampleFile>
 	<file>.../skins/test/</file><br>
 	<indent>
@@ -288,11 +290,10 @@ For example, to fully create a skin named <file>test</file>, you might have the 
 		<file>test_subs.txt</file><br>
 		<file>test.html</file><br>
 		<file>test.css</file><br>
-		<file>img/</file><br>
+		<file>logo/</file><br>
 		<indent>
 			<file>AppBanner.png</file><br>
 			<file>LoginBanner.png</file><br>
-			<file>...</file><br>
 		</indent>
 	</indent>
 </sampleFile>
@@ -302,11 +303,11 @@ For example, to fully create a skin named <file>test</file>, you might have the 
 
 
 <H3><topLink><a href=#top>top</a></topLink>
-	<a name=manifest>The Skin Manifest</a>
+	<a name=manifest>The Theme Manifest</a>
 </H3>
 <p>
-The skin manifest (<file><var>skin</var>.xml</file>) defines the location
-of the files that make up the skin.  For a fully-specified skin named <file>test</file>, it would look like:
+The theme manifest (<file>[theme].xml</file>) defines the location
+of the files that make up the theme.  For a fully-specified theme named <file>test</file>, it would look like:
 
 <sampleFile>
 <fileTitle>file: .../skins/test/test.xml</fileTitle>
@@ -333,12 +334,12 @@ of the files that make up the skin.  For a fully-specified skin named <file>test
 
 <!--
 <p>
-Note that you do not have to list the images in the <file>img/</file> directory for your skin -- all of the images in that directory will automatically be loaded for you when your skin is accessed.
+Note that you do not have to list the images in the <file>img/</file> directory for your theme - all of the images in that directory will automatically be loaded for you when your theme is accessed.
 -->
 
 <p>
 
-Also, note that you can have more than one <code>&lt;file></code> entry per category, and that these file entries can refer to other skins by locating them in the directory structure.  For example, if skin <file>test</file> wanted to simply provide a small set of changes from skin <file>_base/light</file>, you might have:
+Also, note that you can have more than one <code>&lt;file></code> entry per category, and that these file entries can refer to other themes by locating them in the directory structure.  For example, if theme <file>test</file> wanted to simply provide a small set of changes from theme <file>_base/light</file>, you might have:
 
 <sampleFile>
 <fileTitle>file: .../skins/test/test.xml</fileTitle>
@@ -346,7 +347,8 @@ Also, note that you can have more than one <code>&lt;file></code> entry per cate
 	<indent>
 		<code>&lt;substitutions></code>
 		<indent>
-			<code>&lt;file></code><file>../_base/light/light_subs.txt</file><code>&lt;/file></code><br>
+			<code>&lt;file></code><file>../_base/base/base_subs.txt</file><code>&lt;/file></code><br>			<code>&lt;file></code><file>../_base/light/light_subs.txt</file><code>&lt;/file></code><br>
+
 			<code>&lt;file></code><file>test_subs.txt</file><code>&lt;/file></code>
 		</indent>
 		<code>&lt;/substitutions></code><br>
@@ -364,19 +366,19 @@ Also, note that you can have more than one <code>&lt;file></code> entry per cate
 	<code>&lt;/skin></code>
 </sampleFile>
 
-This indicates that the <file>light</file> skin files should be used in addition to or in place of the corresponding files in this skin.  In particular:
+This indicates that the <file>light</file> theme files should be used in addition to or in place of the corresponding files in this theme.  In particular:
 <ul>
 <li>
 	for the <a href=#subs>substitutions</a>, the file
-		<file>light_subs.txt</file> will be loaded first, 
+		<file>base_subs.txt</file> will be loaded first, then <file>light_subs.txt</file> will be loaded (overriding any similarly-named entities in <file>base_subs.txt</file>), 
 		and then the entries in <file>test_subs.txt</file> will 	
-		override the correspondingly named entries.
-<li>the skin does not specify its own <a href=#html>CSS and HTML</a> files, instead relying completely on the <file>light</file> skin for its HTML and CSS. 
+		override the correspondingly named entries in both base files.
+<li>the theme does not specify its own <a href=#html>CSS and HTML</a> files, instead relying completely on the <file>light</file> theme for its HTML and CSS. 
 </ul>
 
 <p>
-<span class=important>This is generally how you will set up your skin.</span>
-Although it is possible to completely redefine the HTML and CSS files for your skin, it is <span class=important>strongly</span> recommended that you use the base HTML and CSS files and simply change the substitutions that are performed in the css.  This way you can be assured that your skin will survive upgrades to the ZCS application.  Changes to the HTML and CSS files (as well as changes to private entries in the skin_subs file) are not guaranteed to survive upgrades.
+<span class=important>This is generally how you will set up your theme.</span>
+Although it is possible to completely redefine the HTML and CSS files for your theme, it is <span class=important>strongly</span> recommended that you use the base HTML and CSS files and simply change the substitutions that are performed in the css.  This way you can be assured that your theme will survive upgrades to the ZCS application.  Changes to the HTML and CSS files (as well as changes to private entries in the [theme]_subs file) are not guaranteed to survive upgrades.
 
 <p>
 Note that you can add extra <code>&lt;file></code> entries in any of the categories in your manifest -- the files will automatically be loaded in the order listed.  Make sure you include a file of the corresponding type as its category.  For example, to include a Javascript file, name it <file>foo.html</file> and make sure it has <code>&lt;SCRIPT language='JavaScript'>...&lt;/SCRIPT></code> tags around the actual Javascript content.  CSS files do not need to be encoded in this way -- just list your CSS entries as if the file was <code>@import</code>ed as a separate link.
@@ -386,11 +388,11 @@ Note that you can add extra <code>&lt;file></code> entries in any of the categor
 		
 		
 <H3><topLink><a href=#top>top</a></topLink>
-	<a name=subs>Editing Skin Substitution Files</a>
+	<a name=subs>Editing Theme Substitution Files</a>
 </H3>
 
 <p>
-All of the CSS files that are used within the ZCS application, as well as those defined in your skin, use a special substitution syntax to allow the skinning process to work.  The ZCS server application uses the substitution file(s) supplied with a skin to process all of the CSS files and apply colors, fonts, borders, etc to the ZCS applications and widgets.  This happens automatically when the server is running and is completely transparent to the browser.
+All of the CSS files that are used within the ZCS application, as well as those defined in your theme, use a special substitution syntax to allow the theming process to work.  The ZCS server application uses the substitution file(s) supplied with a theme to process all of the CSS files and apply colors, fonts, borders, etc to the ZCS applications and widgets.  This happens automatically when the server is running and is completely transparent to the browser.
 
 <p>
 If you were to look in the unprocessed css files that comprise the ZCS application, you would see a number of entries like so:
@@ -411,7 +413,7 @@ If you were to look in the unprocessed css files that comprise the ZCS applicati
 The <example>@xxx@</example> syntax there indicates that an entry in the substitution file(s) with that name should be placed at that spot in the CSS files.  This gives us a very powerful way to apply different styles to the widgets within the application, while not slowing down the browser to perform these substitutions at runtime.
 
 <p>
-Looking at a sample <file><var>skin</var>_subs.txt</file> file, you'll see entries like so:
+Looking at a sample <file>[theme]_subs.txt</file> file, you'll see entries like so:
 
 <sampleFile>
 <fileTitle>file: .../skins/test/test_subs.txt</fileTitle>
@@ -433,7 +435,7 @@ _SelColorL20_       = #8a9ab1
 HilightColor        = #e3da93
 MatchedColor        = @HilightColor@
 ...
-# Logical zones in the skin
+# Logical zones in the theme
 ChromeBg            = background-color:@_BaseColor_@;
 ChromeText          = @Text@
 InsetBg             = background-color:@_BaseColorL75_@;
@@ -469,20 +471,20 @@ Note that before the substition file is run on the CSS files, <b>substitutions a
 	<a name=changeable>What You Can Change</a>
 </H4>
 <p>
-As a rule of thumb, it is safe for you to change anything in the <file><var>skin</var>_subs.txt</file> that you copied from the <file>.../skins/_sample/</file> directory.   While there are literally hundreds of substitutions that can be used in the CSS files, we recommend that in this version of ZCS you limit yourself to only changing colors, fonts and logo images as indicated in the sample file.  To see the other things that you can possibly change, take a look at the file <file>.../skins/_base/light/light_subs.txt</file>.  You can change the other substitutions, but they may not survive upgrades to the system.
+As a rule of thumb, it is safe for you to change anything in the <file>[theme]_subs.txt</file> that you copied from the <file>.../skins/_sample/</file> directory.   While there are literally hundreds of substitutions that can be used in the CSS files, we recommend that in this version of ZCS you limit yourself to only changing colors, fonts and logo images as indicated in the sample file.  To see the other things that you can possibly change, take a look at the file <file>.../skins/_base/base/base_subs.txt</file>.  You can change the other substitutions, but they may not survive upgrades to the system.
 
 <p>
-Most commonly, you will want to change the colors of the skin.  The sample  skins define a single <code>_BaseColor_</code> that is used to give the skin a consistent color theme.  The HTML, CSS, and substitution files are crafted to use subtle light and dark variants of this color to achieve effects like attractive buttons that look like they raise and lower, without the use of images.  To define a <code>_BaseColor_</code>, use the 
-	<a href=SkinColorPicker.html target=_blank>Skin Color Picker (&rArr;)</a> to pick the skin interactively, then copy and paste the list of color variants into your <file><var>skin</var>_subs.txt</file> file.
+Most commonly, you will want to change the colors of the theme.  The sample  themes define a single <code>_BaseColor_</code> that is used to give the theme a consistent color theme.  The HTML, CSS, and substitution files are crafted to use subtle light and dark variants of this color to achieve effects like attractive buttons that look like they raise and lower, without the use of images.  To define a <code>_BaseColor_</code>, use the 
+	<a href=SkinColorPicker.html target=_blank>Theme Color Picker (&rArr;)</a> to pick the colors interactively, then copy and paste the list of color variants into your <file>[theme]_subs.txt</file> file.
 <p>
-The skins also define a <code>_SelColor_</code> which is the color used to show selected rows in lists, default buttons, etc.  The <a href=SkinColorPicker.html target=_blank>Skin Color Picker (&rArr;)</a> will also help you set the <code>_SelColor_</code> and its variants.
+The themes also define a <code>_SelColor_</code> which is the color used to show selected rows in lists, default buttons, etc.  The <a href=SkinColorPicker.html target=_blank>Theme Color Picker (&rArr;)</a> will also help you set the <code>_SelColor_</code> and its variants.
 
 <!--
 <p>
-Note that the <file>consumer</file> skin also specifies a separate background color for the entire application, to set this color, simply change the <code><todo>NAME???</todo></code> entry in your <file><var>skin</var>_subs.txt</file> file.
+Note that the <file>consumer</file> theme also specifies a separate background color for the entire application, to set this color, simply change the <code><todo>NAME???</todo></code> entry in your <file>[theme]_subs.txt</file> file.
 -->
 
-<p>See <a href=#images>Changing the Logo Images</a> for how to use custom logo images in your skin.
+<p>See <a href=#images>Changing the Logo Images</a> for how to use custom logo images in your theme.
 
 
 <H4><topLink><a href=#top>top</a></topLink>
@@ -496,28 +498,28 @@ Note that the <file>consumer</file> skin also specifies a separate background co
 	<li><code>SAFARI</code>
 </ul>
 <p>
-This <code>IFDEF</code> logic also applies to the HTML and CSS files that make up your skin, and is also performed automatically before the server sends the files to the client.
+This <code>IFDEF</code> logic also applies to the HTML and CSS files that make up your theme, and is also performed automatically before the server sends the files to the client.
 <p>
-Note that the skins take advantage of browser-specific CSS properties to make the skin more attractive when possible.  Specifically, the sample skins use the <code>-moz-border-colors</code> and <code>-moz-border-radius</code> attributes to make the pieces of the skin look round in FireFox.  IE and Safari do not support these attributes, so they have a more square look.
+Note that the themes take advantage of browser-specific CSS properties to make the theme more attractive when possible.  Specifically, the sample themes use the <code>-moz-border-colors</code> and <code>-moz-border-radius</code> attributes to make the pieces of the theme look round in FireFox.  IE and Safari do not support these attributes, so they have a more square look.
 
 
 <H3><topLink><a href=#top>top</a></topLink>
-	<a name=html>Editing Skin HTML and CSS files</a>
+	<a name=html>Editing Theme HTML and CSS files</a>
 </H3>
 <p>
-The skin HTML and CSS files are what actually draws the borders of the skin, and exposes the interface that tells the application where to position different pieces of the ZCS interface, like the overview tree, the search toolbar, etc.  The skin is responsible for laying out all of the pieces of the application, and for resizing the pieces of the skin automatically when the browser is resized.  The skin HTML file is also responsible for exposing a simple interface for showing and hiding different parts of the skin dynamically.  For example, sometimes the mini-calendar below the tree should be hidden.  The skin exposes <code>skin.showTreeFooter()</code> and <code>skin.hideTreeFooter()</code> routines that the app manager uses to show or hide that region of the interface.  The skin is responsible only for showing and hiding the outline of that portion of the UI an making sure that the rest of the skin reflows properly -- the app manager code will make sure that the components get placed properly and resized.
+The theme HTML and CSS files are what actually draws the borders of the theme, and exposes the interface that tells the application where to position different pieces of the ZCS interface, like the overview tree, the search toolbar, etc.  The theme is responsible for laying out all of the pieces of the application, and for resizing the pieces of the theme automatically when the browser is resized.  The theme HTML file is also responsible for exposing a simple interface for showing and hiding different parts of the theme dynamically.  For example, sometimes the mini-calendar below the tree should be hidden.  The theme exposes <code>skin.showTreeFooter()</code> and <code>skin.hideTreeFooter()</code> routines that the app manager uses to show or hide that region of the interface.  The theme is responsible only for showing and hiding the outline of that portion of the UI an making sure that the rest of the theme reflows properly -- the app manager code will make sure that the components get placed properly and resized.
 <p>
-There are a number of <code>&lt;div></code>'s that the skin must define in order for the application to know where to put the corresponding application element.  These are identified by id within the <file><var>skin</var>.html</file>.  The skin is free to put whatever other "chrome" around these elements that it wants to to make the skin look pretty.  The <file><var>skin</var>.css</file> file is used to position the various pieces of the <file><var>skin</var>.html</file> file.
+There are a number of <code>&lt;div></code>'s that the theme must define in order for the application to know where to put the corresponding application element.  These are identified by id within the <file>[theme].html</file>.  The theme is free to put whatever other "chrome" around these elements that it wants to to make the theme look pretty.  The <file>[theme].css</file> file is used to position the various pieces of the <file>[theme].html</file> file.
 <p>
-<important>We stronly recommend that you use one of the standard sets of CSS and HTML files, rather than creating your own.</important>  This way you can be ensured that your skin survives upgrades to future versions of ZCS.
+<important>We strongly recommend that you use one of the standard sets of CSS and HTML files, rather than creating your own.</important>  This way you can be ensured that your theme survives upgrades to future versions of ZCS.
 
 <h4><topLink><a href=#top>top</a></topLink>
-	<a name=api>The Skin/ZCS API</a>
+	<a name=api>The Theme/ZCS API</a>
 </h4>
 <p>
-The list of ID'd elements that the application looks for within the skin are listed below.  Note that you <b>must</b> provide all of the named elements within your skin (even if they are hidden) or the application will generate and error on startup.
+The list of ID'd elements that the application looks for within the theme are listed below.  Note that you <b>must</b> provide all of the named elements within your theme (even if they are hidden) or the application will generate an error on startup.
 <p>
-The skin and ZCS application use a simple API to show and hide various parts of the skin.  It is completely up to your skin how it wants to show and hide these elements -- you can either use AjaxToolKit routines to do so, or you can create your own simple API for doing this.  
+The theme and ZCS application use a simple API to show and hide various parts of the theme.  It is completely up to your theme how it wants to show and hide these elements -- you can either use AjaxToolKit routines to do so, or you can create your own simple API for doing this.  
 
 <p>The <code>skin.show<var>X</var>()</code> routine takes a single argument, which is a boolean indicating whether to show (true) or hide the element.  The <code>skin.hide<var>X</var>()</code> routine takes no arguments, should always hide the element, and can just call <code>skin.show<var>X</var>(false)</code>.  For brevity, only the <code>skin.show<var>X</var>()</code> routines are noted below.
 
@@ -585,7 +587,7 @@ The skin and ZCS application use a simple API to show and hide various parts of 
 	</tr>
 </table>
 
-<p>There is one other routine that your skin must implement:
+<p>There is one other routine that your theme must implement:
 	<indent><code>skin.setTreeWidth(newWidth)</code></indent>
 This is called by the application when the user drags the "sash" or split bar to resize the tree horizontally.  <code>newWidth</code> is the absolute width in pixels for the current size of the tree.
 
@@ -594,11 +596,17 @@ This is called by the application when the user drags the "sash" or split bar to
 	<a name=images>Changing the Logo Images</a>
 </H3>
 <p>
-One common reason to create a new skin is to change the logo images shown in the login and splash screen, as well as the small logo shown in the upper-left of the application screen.  You can also change the URL that is linked to when the logo is clicked.  To do this:
+One common reason to create a new theme is to change the logo images shown in the login and splash screen, as well as the small logo shown in the upper-left of the application screen.  You can also change the URL that is linked to when the logo is clicked.  
+
+<H4><topLink><a href=#top>top</a></topLink>
+	<a name=inside>For ZCS Network Customers</a>
+</h4>
+<p>
+You can customize the logo and URL to which it links at your preference.  To do so:
 
 
 <ol>
-	<li>create an <file>img/</file> directory in your skin directory (e.g., <file>.../skins/test/img/</file>) and add the following images:
+	<li>Create an <file>logo/</file> directory in your theme directory (e.g., <file>.../skins/test/logo/</file>) and add the following images:
 
 <p>
 <table class=smallTable>
@@ -620,9 +628,9 @@ One common reason to create a new skin is to change the logo images shown in the
 </table>
 
 <p>
-Note that these images must be the size specified above, or the application may not lay out correctly, and that they must be saved in the PNG format.  We recommend that you save them as 24-bit PNGs so that they can have alpha-channel blending on their edges or shadows, that will look good no matter the background color of your skin.
+Note that these images must be the size specified above, or the application may not lay out correctly, and that they must be saved in the PNG format.  We recommend that you save them as 24-bit PNGs so that they can have alpha-channel blending on their edges or shadows, that will look good no matter the background color of your theme.
 
-	<li>Modify your <file><var>skin</var>_subs.txt</file> to update the <code>LogoImgDir</code> entry to point to your <file>img/</file> directory and your company URL:
+	<li>Modify your <file>[theme]_subs.txt</file> to update the <code>LogoImgDir</code> entry to point to your <file>img/</file> directory and your company URL:
 	
 	<sampleFile>
 	<fileTitle>.../skins/test/test_subs.txt</fileTitle>
@@ -636,28 +644,36 @@ LogoURL             =	http://www.yourcompany.com
 </ol>
 
 <H4><topLink><a href=#top>top</a></topLink>
-	<a name=inside>For Open Source Customers</a>
+	<a name=inside>For Open Source Community Users</a>
 </h4>
 <p>
 <img src='http://www.zimbra.com/_media/zimbrainside_logo.gif'
 	style='float:right; margin-left:5px;'>
-If you are using ZCS under the <a href=http://www.zimbra.com/license/zimbra_public_license_1.2.html target=_blank>open-source license</a> and you change the ZCS application in any way, you are <b>required</b> to display a the "ZimbraInside" logo and link to the url <a href=http://www.zimbra.com/inside target=_blank>http://www.zimbra.com/inside (&rArr;)</a>.  To do this, change your <file><var>skin</var>_subs.txt</file> file like so:
+If you are using ZCS under the <a href=http://www.zimbra.com/license/zimbra_public_license_1.2.html target=_blank>open-source license</a>, your use of the logo will fall under one of two categories:
+<ol>
+	<li>If you have made no change to the application other than creating new theme(s), you <b>must</b> leave the Zimbra logo and URL intact.
+	
+	<li>If you have made changes to the application's source code, you <b>must</b> use the "ZimbraInside" logo and link to the url <a href=http://www.zimbra.com/inside target=_blank>http://www.zimbra.com/inside (&rArr;)</a>.  To do this, change your <file>[theme]_subs.txt</file> file like so:
 
 	<sampleFile>
 	<fileTitle>.../skins/test/test_subs.txt</fileTitle>
 	<code>
 ...
-LogoImgDir          =	/zimbra/skins/_base/base/img/ZimbraInside
+LogoImgDir          =	/zimbra/skins/_base/logos/ZimbraInside
 LogoURL             =	http://www.zimbra.com/inside
 ...</code>
 	</sampleFile>
-<p>Using any other logo or linking to a different page violates your license agreement to use the Zimbra Collaboration Suite.
+
+</ol>
+
+<p><important>For all open source community users, using any other logo or linking to a different page violates your license agreement to use the Zimbra Collaboration Suite.</important>
+
 
 <!--
-It is possible for your skin to override any of the images used within the normal ZCS application, from logos to the icons to represent the different applications, to the toolbar icons within the application.  To do so, create an <file>img/</file> directory in your skin directory (e.g. <file>.../skins/test/img/</file>) and add images with the same name as images used within the app.  Note that it is important that your images be saved in the same format as the original image (e.g., if the original image is a GIF, as most are, yours should be a GIF as well).  This is especially important for PNG images, which are rendered in a specific way to make them work in Internet Explorer.  Also, note that while it is technically possible for your images to be larger or smaller than the default images, this may result in the application looking unbalanced due to sizing assumptions made within the application code.
+It is possible for your theme to override any of the images used within the normal ZCS application, from logos to the icons to represent the different applications, to the toolbar icons within the application.  To do so, create an <file>img/</file> directory in your theme directory (e.g. <file>.../skins/test/img/</file>) and add images with the same name as images used within the app.  Note that it is important that your images be saved in the same format as the original image (e.g., if the original image is a GIF, as most are, yours should be a GIF as well).  This is especially important for PNG images, which are rendered in a specific way to make them work in Internet Explorer.  Also, note that while it is technically possible for your images to be larger or smaller than the default images, this may result in the application looking unbalanced due to sizing assumptions made within the application code.
 
 <p>
-When you <a href=#deploy>test and deploy</a> your skin, the ZCS build system will automatically consolidate your images into the smallest number of files possible, and will create CSS entries for each image that you can use to efficiently reference an image within your skin.  For example, an image named <code>SomeImage.gif</code> will automatically result in a CSS rule called <code>ImgSomeImage</code> that will be loaded with your skin.  To show the image in a particular HTML element, reference its image class, eg:
+When you <a href=#deploy>test and deploy</a> your theme, the ZCS build system will automatically consolidate your images into the smallest number of files possible, and will create CSS entries for each image that you can use to efficiently reference an image within your theme.  For example, an image named <code>SomeImage.gif</code> will automatically result in a CSS rule called <code>ImgSomeImage</code> that will be loaded with your theme.  To show the image in a particular HTML element, reference its image class, eg:
 	<exampleBlock>
 		<code>&lt;DIV class='ImgSomeImage'>&lt;/DIV></code>
 	</exampleBlock>
@@ -687,10 +703,10 @@ There are essentially two master directories that the images come from in the ZC
 
 
 <H3><topLink><a href=#top>top</a></topLink>
-	<a name=deploy>Deploying a Skin</a>
+	<a name=deploy>Deploying a Theme</a>
 </H3>
 <p>
-Deploying a skin is simple, but how you do it depends on if you are using a pre-packaged binary distribution of the application or building from the source code.  In the instructions below, text in the <code>code font</code> is what you will type at the command line.
+Deploying a theme is simple, but how you do it depends on if you are using a pre-packaged binary distribution of the application or building from the source code.  In the instructions below, text in the <code>code font</code> is what you will type at the command line.
 
 <H4><topLink><a href=#top>top</a></topLink>
 	<a name=deployCompiled>Deploying from a Pre-Packaged Binary Distribution</a>
@@ -699,12 +715,12 @@ Deploying a skin is simple, but how you do it depends on if you are using a pre-
 	<li>Open a terminal or dos window.
 	<li>Log in as the Zimbra user:<br>
 		<code>     su - zimbra</code>
-	<li>Tell the server about the new skin:<br>
-		<code>     zmprov mcf +zimbraInstalledSkin <file>skinName</file></code> 
+	<li>Tell the server about the new theme:<br>
+		<code>     zmprov mcf +zimbraInstalledSkin <file>themeName</file></code> 
 	<li>Restart the server:<br>
 		<code>     zmcontrol stop</code><br>
 		<code>     zmcontrol start</code>
-	<li>And you're done!  You should now be able to log in and switch to the new skin in the Options screen.
+	<li>And you're done!  You should now be able to log in and switch to the new theme in the Options screen.
 </ol>
 
 
@@ -713,14 +729,12 @@ Deploying a skin is simple, but how you do it depends on if you are using a pre-
 </H4>
 <ol>
 	<li>Open a terminal or dos window.
-	<li>Log in as the Zimbra user:<br>
-		<code>     su - zimbra</code>
-	<li>Tell the server about the new skin:<br>
-		<code>     zmprov mcf +zimbraInstalledSkin <file>skinName</file></code> 
+	<li>Tell the server about the new theme:<br>
+		<code>     /opt/zimbra/bin/zmprov mcf +zimbraInstalledSkin <file>themeName</file></code> 
 	<li>Go to your <file>ZimbraWebClient/</file> directory and re-build the source:<br>
 		<code>     ant clean deploy</code>
 	<li>Restart the server:<br>
-		<code>     zmcontrol stop</code><br>
-		<code>     zmcontrol start</code>
-	<li>And you're done!  You should now be able to log in and switch to the new skin in the Options screen.
+		<code>     /opt/zimbra/bin/zmcontrol stop</code><br>
+		<code>     /opt/zimbra/bin/zmcontrol start</code>
+	<li>And you're done!  You should now be able to log in and switch to the new theme in the Options screen.
 </ol>

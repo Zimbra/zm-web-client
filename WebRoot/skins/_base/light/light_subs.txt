@@ -1,0 +1,36 @@
+_SkinName_			= light
+
+
+# Colors.  Note that this is designed for a primarily monochrome interface.
+_BaseColor_			= #bed8ee
+
+# darker and lighter shades of base color, used for bgs, borders and shadows
+_BaseColorD10_		= #abc2d6
+_BaseColorD15_		= #a2b8cb
+_BaseColorD20_		= #98adbe
+_BaseColorD25_		= #8ea2b2
+_BaseColorD30_		= #8597a6
+_BaseColorD40_		= #72828f
+_BaseColorD50_		= #5f6c77
+_BaseColorD55_		= #4c565f
+_BaseColorD65_		= #394047
+_BaseColorD75_		= #262b30
+	
+_BaseColorL25_		= #e5eff8
+_BaseColorL50_		= #dfecf7
+_BaseColorL75_		= #f2f7fc
+
+
+
+# selection color, used for selected row/etc, focus items and default button
+_SelColor_			= #fdf8ba
+_SelColorD10_		= #e3dfa7
+_SelColorD20_		= #cac695
+_SelColorD30_		= #b1ad82
+_SelColorD40_		= #989570
+_SelColorD50_		= #7e7c5d
+_SelColorL25_		= #fefacf
+_SelColorL50_		= #fefcdd
+
+# a list item that is selected, but its container is unfocused
+_SelUnfocusColor_	= #dddddd

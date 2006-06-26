@@ -1,0 +1,94 @@
+SkinName			= white
+
+SkinImgDir			= /zimbra/skins/white/img
+
+
+### GREY COLORS
+_BaseColor_			= #eeeeee
+
+_BaseColorD10_		= #d6d6d6
+_BaseColorD15_		= #cbcbcb
+_BaseColorD20_		= #bebebe
+_BaseColorD25_		= #b2b2b2
+_BaseColorD30_		= #a6a6a6
+_BaseColorD40_		= #8f8f8f
+_BaseColorD50_		= #777777
+_BaseColorD55_		= #6b6b6b
+_BaseColorD65_		= #535353
+_BaseColorD75_		= #3c3c3c
+	
+_BaseColorL25_		= #f2f2f2
+_BaseColorL50_		= #f7f7f7
+_BaseColorL75_		= #fbfbfb
+
+
+# selection color, used for selected row/etc, focus items and default button
+_SelColor_			= #fdf8ba
+
+_SelColorD10_		= #e3dfa7
+_SelColorD20_		= #cac695
+_SelColorD30_		= #b1ad82
+_SelColorD40_		= #989570
+_SelColorD50_		= #7e7c5d
+
+_SelColorL25_		= #fefacf
+_SelColorL50_		= #fefcdd
+
+# a list item that is selected, but its container is unfocused
+_SelUnfocusColor_	= #dddddd
+
+
+#######
+# Actual skin containers (for setting borders, background colors, etc).
+#	These are applied to, eg, <div id='skin_border_logo'> in the skin.css file
+#######
+
+_MonoColor_					= @_BaseColorD10_@
+_MonoDarkColor_				= @_BaseColorD25_@
+		
+WhiteBg						= background-color:white;
+MonoBg						= background-color:@_MonoColor_@;
+MonoBorder 					= border:2px solid @_MonoColor_@;
+		
+MonoDarkBg					= background-color:@_MonoDarkColor_@;
+MonoDarkBorder 				= border:2px solid @_MonoDarkColor_@;
+
+_ToolbarBorder_				= border:2px solid @_MonoDarkColor_@; @RoundTopCorners@
+ToolbarContainer			= @MonoDarkBg@ @_ToolbarBorder_@
+
+RoundCorners				= -moz-border-radius:3 3 3 3;
+RoundTopCorners				= -moz-border-radius:3 3 0 0;
+RoundBottomCorners			= -moz-border-radius:0 0 3 3;
+
+ChromeBg					= @WhiteBg@
+
+SkinOuter					= @WhiteBg@
+SkinBorderLogo				= 
+SkinBorderSearch			= @MonoBg@ @MonoBorder@ @RoundCorners@
+SkinBorderQuota				= 
+SkinBorderSBToolbar			= @ToolbarContainer@
+SkinBorderSB				= @MonoBg@ @MonoBorder@									border-top-width:0px;
+SkinBorderCurrentApp		= @MonoDarkBg@ @MonoDarkBorder@ 	-moz-border-radius:3 3 0 3;	
+SkinBorderTreeSash			= 
+SkinBorderAppToolbar		= @ToolbarContainer@
+SkinBorderAppChooser		= height:100%;
+SkinBorderTree				= @WhiteBg@ @MonoDarkBorder@	border-top-width:0px;
+SkinBorderMiniCal			= @WhiteBg@ @MonoDarkBorder@	@RoundBottomCorners@
+SkinBorderApp				= @WhiteBg@  @MonoDarkBorder@ 	@RoundBottomCorners@	border-top-width:0px;
+SkinBorderStatus			= @MonoBg@ @MonoBorder@ 	@RoundCorners@
+
+
+
+_AppTabStyle_			 	= border-right-width:0px;	-moz-border-radius:3 0 0 3; margin-bottom:1px;
+AppTabContainer				= @_ToolbarBorder_@ 	@MonoDarkBg@ 						@_AppTabStyle_@
+AppTabContainer-hover		= @_ToolbarBorder_@ 	background-color:@_BaseColor_@;		@_AppTabStyle_@
+AppTabContainer-selected	= @_ToolbarBorder_@ 	background-color:@_BaseColorL2_@;	@_AppTabStyle_@
+
+
+MiniCalBg					= @WhiteBg@
+
+PageBg						= @WhiteBg@
+AppBg						= @WhiteBg@
+ItemBgColor					= white
+
+TreeHeaderContainer			= background-color:@HeaderColor@;

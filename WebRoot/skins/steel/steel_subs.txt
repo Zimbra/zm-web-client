@@ -1,9 +1,8 @@
-_SkinName_			= steel
-# Items below that begin and end with "_" should only be used within this file -- never in another CSS file
+SkinName			= steel
 
 SkinImgDir			= /zimbra/skins/steel/img
 
-_BaseColor_		=	#bbbbbb
+_BaseColor_			=	#bbbbbb
 
 _BaseColorD95_		=	#090909
 _BaseColorD90_		=	#131313
@@ -46,7 +45,7 @@ _BaseColorL90_		=	#f8f8f8
 _BaseColorL95_		=	#fcfcfc
 
 
-_SelColor_		=	#aed6d6
+_SelColor_			=	#aed6d6
 
 _SelColorD95_		=	#090b0b
 _SelColorD90_		=	#111515

@@ -1,12 +1,13 @@
 <skin>
 	<substitutions>
-		<file>../sand/sand_subs.txt</file>
+		<file>../_base/base/base_subs.txt</file>
+		<file>../_base/dark/dark_subs.txt</file>
 		<file>money_subs.txt</file>
 	</substitutions>
 	<css>
-		<file>../sand/sand.css</file>
+		<file>../_base/base/base.css</file>
 	</css>
 	<html>
-		<file>../sand/sand.html</file>
+		<file>../_base/base/base.html</file>
 	</html>
 </skin>

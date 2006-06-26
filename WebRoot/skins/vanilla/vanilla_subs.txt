@@ -1,7 +1,9 @@
-SkinName			= sky
-SkinImgDir			= /zimbra/skins/sky/img
+SkinName			= vanilla
 
-_BaseColor_			=	#bed8ee
+SkinImgDir			= /zimbra/skins/vanilla/img
+
+# Colors.  Note that this is designed for a primarily monochrome interface.
+_BaseColor_		=	#bed8ee
 
 _BaseColorD95_		=	#0a0b0c
 _BaseColorD90_		=	#131618
@@ -44,7 +46,7 @@ _BaseColorL90_		=	#f9fbfd
 _BaseColorL95_		=	#fcfdfe
 
 
-_SelColor_			=	#fdf8ba
+_SelColor_		=	#fdf8ba
 
 _SelColorD95_		=	#0d0c09
 _SelColorD90_		=	#191913
@@ -85,3 +87,5 @@ _SelColorL80_		=	#fffef1
 _SelColorL85_		=	#fffef5
 _SelColorL90_		=	#fffef8
 _SelColorL95_		=	#fffffc
+
+
