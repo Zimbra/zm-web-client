@@ -118,9 +118,7 @@ function(mode, object, share, loc) {
 		this._managerRadioEl.checked = true;
 	}
 
-	this._reply.setReply(true);
 	// Force a reply if new share
-	this._reply.setReplyRequired(this._shareMode == ZmSharePropsDialog.NEW);
 	this._reply.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
@@ -212,13 +210,9 @@ function(event) {
 
 ZmSharePropsDialog.prototype._handleResponseBatchCmd =
 function(shares, result) {
-	// check if we need to send message or bring up compose window
-	var isGuestShare = this._guestRadioEl.checked;
-	var isPublicShare = this._publicRadioEl.checked;
-
-	var replyType = !isPublicShare && this._reply.getReply() && this._reply.getReplyType();
-	var notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
-	if (replyType) {
+	var replyType = this._reply.getReplyType();
+	if (replyType != ZmShareReply.NONE) {
+		var notes = replyType == ZmShareReply.QUICK ? this._reply.getReplyNote() : "";
 		// TODO: Need to turn this into a batch request
 		for (var i = 0; i < shares.length; i++) {
 			var share = shares[i];
@@ -245,7 +239,7 @@ function(shares, result) {
 			tmpShare.link.view = ZmOrganizer.getViewName(tmpShare.object.type);
 			tmpShare.link.inh = this._inheritEl ? this._inheritEl.checked : true;
 
-			if (isGuestShare) {
+			if (this._guestRadioEl.checked) {
 				if (!this._guestFormatter) {
 					this._guestFormatter = new AjxMessageFormat(ZmMsg.shareWithGuestNotes);
 				}

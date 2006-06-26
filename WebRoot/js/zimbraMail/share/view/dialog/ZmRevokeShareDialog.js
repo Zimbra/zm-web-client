@@ -54,7 +54,6 @@ function(share, loc) {
 	var message = this._formatter.format(params);
 	this._confirmMsgEl.innerHTML = message;
 
-	this._reply.setReply(!isPubShare);
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 	this._reply.setVisible(!isPubShare);
@@ -74,7 +73,8 @@ function() {
 ZmRevokeShareDialog.prototype._yesButtonCallback =
 function() {
 	var share = this._share;
-	if (this._reply.getReply()) {
+	var replyType = this._reply.getReplyType();
+	if (replyType != ZmShareReply.NONE) {
 		// initialize rest of share information
 		share.grantee.email = share.grantee.name;
 		share.grantor.id = this._appCtxt.get(ZmSetting.USERID);
@@ -84,7 +84,6 @@ function() {
 		share.link.name = share.object.name;
 		share.link.view = ZmOrganizer.getViewName(share.object.type);
 
-		var replyType = this._reply.getReplyType();
 		share.notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote() : "";
 	
 		if (replyType == ZmShareReply.COMPOSE) {

@@ -72,8 +72,7 @@ function(share, loc) {
 	var shareName = this._defaultNameFormatter.format(params);
 	this._nameEl.value = shareName;
 
-	this._reply.setReply(false);
-	this._reply.setReplyType(ZmShareReply.STANDARD);
+	this._reply.setReplyType(ZmShareReply.NONE);
 	this._reply.setReplyNote("");
 	
 	DwtDialog.prototype.popup.call(this, loc);

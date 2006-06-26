@@ -61,7 +61,6 @@ function(share, loc) {
 	var message = this._formatter.format(params);
 	this._confirmMsgEl.innerHTML = AjxStringUtil.htmlEncode(message);
 	
-	this._reply.setReply(true);
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 	
@@ -79,9 +78,9 @@ function(listener) {
 ZmDeclineShareDialog.prototype._handleYesButton =
 function(event) {
 	// send mail
-	if (this._reply.getReply()) {
-		var replyType = this._reply.getReplyType();
+	var replyType = this._reply.getReplyType();
 
+	if (replyType != ZmShareReply.NONE) {
 		this._share.notes = (replyType == ZmShareReply.QUICK) ? this._reply.getReplyNote(): "";
 
 		if (replyType == ZmShareReply.COMPOSE) {

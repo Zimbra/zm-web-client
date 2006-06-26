@@ -40,51 +40,22 @@ ZmShareReply.prototype.constructor = ZmShareReply;
 
 // Constants
 
-ZmShareReply.STANDARD = "standard";
-ZmShareReply.QUICK = "quick";
-ZmShareReply.COMPOSE = "compose";
+ZmShareReply.NONE		= 0;
+ZmShareReply.STANDARD	= 1;
+ZmShareReply.QUICK		= 2;
+ZmShareReply.COMPOSE	= 3;
 
 ZmShareReply.DEFAULT_OPTIONS = [
-	ZmShareReply.STANDARD, ZmShareReply.QUICK, ZmShareReply.COMPOSE
+	ZmShareReply.NONE, ZmShareReply.STANDARD, ZmShareReply.QUICK, ZmShareReply.COMPOSE
 ];
 
 ZmShareReply._LABELS = {};
+ZmShareReply._LABELS[ZmShareReply.NONE]		= ZmMsg.sendNoMailAboutShare;
 ZmShareReply._LABELS[ZmShareReply.STANDARD] = ZmMsg.sendStandardMailAboutShare;
-ZmShareReply._LABELS[ZmShareReply.QUICK] = ZmMsg.sendStandardMailAboutSharePlusNote;
-ZmShareReply._LABELS[ZmShareReply.COMPOSE] = ZmMsg.sendComposedMailAboutShare;
-
-// Data
-
-ZmShareReply.prototype._replyEl;
-ZmShareReply.prototype._replyCheckboxEl;
-ZmShareReply.prototype._replyControlsEl;
-ZmShareReply.prototype._replyType;
-ZmShareReply.prototype._replyTypeEl;
-ZmShareReply.prototype._replyStandardMailNoteEl;
-ZmShareReply.prototype._replyNoteEl;
+ZmShareReply._LABELS[ZmShareReply.QUICK]	= ZmMsg.sendStandardMailAboutSharePlusNote;
+ZmShareReply._LABELS[ZmShareReply.COMPOSE]	= ZmMsg.sendComposedMailAboutShare;
 
 // Public methods
-
-ZmShareReply.prototype.setReply =
-function(reply) {
-	this._replyCheckboxEl.checked = reply;
-	Dwt.setVisible(this._replyControlsEl, reply);
-};
-
-ZmShareReply.prototype.getReply =
-function() {
-	return this._replyCheckboxEl.checked;
-};
-
-ZmShareReply.prototype.setReplyRequired =
-function(required) {
-	Dwt.setVisible(this._replyEl, !required);
-};
-
-ZmShareReply.prototype.getReplyRequired =
-function() {
-	return Dwt.getVisible(this._replyEl);
-};
 
 ZmShareReply.prototype.setReplyType =
 function(type) {
@@ -113,13 +84,11 @@ function(options) {
 	if (this._replyOptions == options) return;
 
 	this._replyOptions = options;
-
 	this._replyType.clearOptions();
+
 	for (var i = 0; i < options.length; i++) {
 		var value = options[i];
-		var label = ZmShareReply._LABELS[value];
-		var selected = false;
-		this._replyType.addOption(label, selected, value);
+		this._replyType.addOption(ZmShareReply._LABELS[value], false, value);
 	}
 };
 
@@ -136,25 +105,8 @@ function(event) {
 	this.setReplyType(type);
 };
 
-ZmShareReply.prototype._handleCheckbox =
-function(event) {
-	event = event || window.event;
-	var target = DwtUiEvent.getTarget(event);
-	target._control.setReply(target.checked);
-};
-
 ZmShareReply.prototype._initControl =
 function() {
-	// create controls
-	this._replyCheckboxEl = document.createElement("INPUT");
-	this._replyCheckboxEl.type = "checkbox";
-	this._replyCheckboxEl.checked = true;
-	
-	this._replyEl = document.createElement("DIV");
-	this._replyEl.style.paddingBottom = "0.25em";
-	this._replyEl.innerHTML = ZmMsg.sendMailAboutShare;
-	this._replyEl.insertBefore(this._replyCheckboxEl, this._replyEl.firstChild);
-	
 	this._replyType = new DwtSelect(this);
 	this.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
 	this._replyType.addChangeListener(new AjxListener(this, this._handleReplyType));
@@ -178,11 +130,7 @@ function() {
 	this._replyControlsEl.appendChild(this._replyStandardMailNoteEl);
 	this._replyControlsEl.appendChild(this._replyNoteEl);
 
-	this._replyCheckboxEl._control = this;
-	Dwt.setHandler(this._replyCheckboxEl, DwtEvent.ONCLICK, this._handleCheckbox);
-	
 	// append controls
 	var element = this.getHtmlElement();
-	element.appendChild(this._replyEl);
 	element.appendChild(this._replyControlsEl);
 };

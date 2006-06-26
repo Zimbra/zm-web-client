@@ -411,10 +411,11 @@ function(replyType, notes, callback) {
 	}
 
 	// check if we need to send message or bring up compose window
-	if (replyType == ZmShareReply.COMPOSE) {
-		this.composeMessage(ZmShare.ACCEPT);
-	} else {
-		this.sendMessage(ZmShare.ACCEPT);
+	if (replyType != ZmShareReply.NONE) {
+		if (replyType == ZmShareReply.COMPOSE)
+			this.composeMessage(ZmShare.ACCEPT);
+		else
+			this.sendMessage(ZmShare.ACCEPT);
 	}
 };
 
