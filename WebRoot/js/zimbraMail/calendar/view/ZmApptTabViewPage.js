@@ -595,7 +595,7 @@ function(enable) {
 		this._repeatDescField.className = "FakeAnchor";
 	}  else {
 		this._repeatSelect.disable();
-		this._repeatDescField.style.color = "DisabledText";
+		this._repeatDescField.className = "DisabledText";
 	}
 	this._repeatSelectDisabled = !enable;
 	this._repeatSelect.setAlign(DwtLabel.ALIGN_LEFT); // XXX: hack b/c bug w/ DwtSelect
