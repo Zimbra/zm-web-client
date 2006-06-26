@@ -670,7 +670,7 @@ function() {
 		var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
 		match = clc._folderId;
 	} else {
-		match = this._contact.addrbook || ZmFolder.ID_CONTACTS;
+		match = this._contact.addrbook.id || ZmFolder.ID_CONTACTS;
 	}
 
 	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
