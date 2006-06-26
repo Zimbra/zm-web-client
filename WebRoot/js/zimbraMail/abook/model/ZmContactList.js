@@ -650,7 +650,7 @@ function(str, callback) {
 		gotData = true;
 	}
 
-	if (!gotData) {
+	if (!gotData && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var respCallback = new AjxCallback(this, this._handleResponseAutocompleteMatch, [str, callback]);
 		this._getGalMatches(str, respCallback);
 	} else {

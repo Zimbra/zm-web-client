@@ -101,17 +101,16 @@ function() {
 
 ZmCalendarApp.prototype.loadResources = 
 function() {
-	var batchCmd = new ZmBatchCommand(this._appCtxt);
-
 	this._locations = new ZmResourceList(this._appCtxt, ZmAppt.LOCATION);
 	this._locations.isCanonical = true;
-	batchCmd.add(new AjxCallback(this._locations, this._locations.load));
-
 	this._equipment = new ZmResourceList(this._appCtxt, ZmAppt.EQUIPMENT);
 	this._equipment.isCanonical = true;
-	batchCmd.add(new AjxCallback(this._equipment, this._equipment.load));
-
-	batchCmd.run();
+	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		var batchCmd = new ZmBatchCommand(this._appCtxt);
+		batchCmd.add(new AjxCallback(this._locations, this._locations.load));
+		batchCmd.add(new AjxCallback(this._equipment, this._equipment.load));
+		batchCmd.run();
+	}
 };
 
 /**
