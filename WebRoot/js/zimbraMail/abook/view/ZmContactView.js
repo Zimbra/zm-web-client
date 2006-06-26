@@ -665,16 +665,12 @@ function(contact) {
 
 ZmContactView.prototype._setFolder =
 function() {
-	var match = this._contact.addrbook
-		? this._contact.addrbook.id
-		: ZmFolder.ID_CONTACTS;
-
-	// if this is a new contact, set folder to currently selected addrbook in overview tree
+	var match;
 	if (this._contact.id == null) {
-		var treeView = this._appCtxt.getOverviewController().getTreeView(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.ADDRBOOK);
-		var treeItem = treeView ? treeView.getSelection()[0] : null;
-		if (treeItem)
-			match = treeItem.getData(Dwt.KEY_ID);
+		var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+		match = clc._folderId;
+	} else {
+		match = this._contact.addrbook || ZmFolder.ID_CONTACTS;
 	}
 
 	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
@@ -691,10 +687,7 @@ function() {
 			continue;
 		}
 
-		// for shared folders, use the zid to compare folder ID's
-		var id = folder.link ? folder.zid : folder.id;
-
-		this._folderSelect.addOption(folder.name, id == match, id);
+		this._folderSelect.addOption(folder.name, folder.id == match, folder.id);
 	}
 };
 
