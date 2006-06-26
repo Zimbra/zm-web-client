@@ -90,6 +90,9 @@ function(participants, participantsElided, width) {
 
 ZmMixedView.prototype._changeListener =
 function(ev) {
+	if (this._appCtxt.getAppViewMgr().getCurrentViewId() != this.view)
+		return;
+
 	ZmListView.prototype._changeListener.call(this, ev);
 
 	var items = ev.getDetail("items");
