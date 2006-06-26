@@ -1812,7 +1812,8 @@ HTML>BODY .appt-selected .appt_allday_body
  *	Name of the app in the inset
  */
 .currentAppLabel .Text {
-	@FontSize-bigger@
+	@FontSize-big@
+	font-weight:bold;
 	@InsetText@
 }
 
