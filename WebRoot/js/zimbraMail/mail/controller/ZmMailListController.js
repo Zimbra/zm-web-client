@@ -120,22 +120,30 @@ function() {
 	return "ZmMailListController";
 };
 
+// We need to stay in sync with what's allowed by _resetOperations
 ZmMailListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmMailListController.handleKeyAction");
 	
+	var isDrafts = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
+	var num = this._listView[this._currentView].getSelectionCount();
+
 	switch (actionCode) {
 		case ZmKeyMap.REPLY:
 		case ZmKeyMap.REPLY_ALL:
 		case ZmKeyMap.FORWARD_INLINE:
 		case ZmKeyMap.FORWARD_ATT:
-			this._doAction(null, ZmMailListController.ACTION_CODE_TO_OP[actionCode]);
+			if (!isDrafts && num == 1) {
+				this._doAction(null, ZmMailListController.ACTION_CODE_TO_OP[actionCode]);
+			}
 			break;
 			
 		case ZmKeyMap.FORWARD:
-			action = (this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INCLUDE_ATTACH) ?
-						ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
-			this._doAction(null, action);
+			if (!isDrafts && num == 1) {
+				action = (this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INCLUDE_ATTACH) ?
+							ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
+				this._doAction(null, action);
+			}
 			break;
 			
 		case ZmKeyMap.GOTO_INBOX:
@@ -148,13 +156,18 @@ function(actionCode) {
 		case ZmKeyMap.MOVE_TO_INBOX:
 		case ZmKeyMap.MOVE_TO_TRASH:
 		case ZmKeyMap.MOVE_TO_JUNK:
-			var folderId = ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[actionCode];
-			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
-			this._doMove(this._listView[this._currentView].getSelection(), folder);
+			if (num && !(isDrafts && actionCode != ZmKeyMap.MOVE_TO_TRASH)) {
+				var folderId = ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[actionCode];
+				var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
+				items = items ? items : this._listView[this._currentView].getSelection();
+				this._doMove(items, folder);
+			}
 			break;
 
 		case ZmKeyMap.SPAM:
-			this._spamListener();
+			if (num && !isDrafts) {
+				this._spamListener();
+			}
 			break;
 
 		case ZmKeyMap.MARK_READ:
