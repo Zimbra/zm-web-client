@@ -211,21 +211,6 @@ function(view) {
 	this._listView[view].set(this._list, ZmItem.F_DATE);
 };
 
-// Returns the message currently being displayed.
-ZmConvListController.prototype._getMsg =
-function(item) {
-	var msg = null;
-
-	// get the currently selected conversation or used the one passed in
-	var conv = (item && item instanceof ZmConv)
-		? item : (this._listView[this._currentView].getSelection()[0]);
-
-	if (conv)
-		msg = conv.getFirstMsg();
-	
-	return msg;
-};
-
 // List listeners
 
 // Show conversation on double-click

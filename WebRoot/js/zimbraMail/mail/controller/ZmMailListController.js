@@ -491,7 +491,17 @@ function() {
 
 ZmMailListController.prototype._getMsg =
 function(item) {
-	// overload me
+	item = item ? item : this._listView[this._currentView].getSelection()[0];
+	if (!item) return null;
+	
+	var msg;
+	if (item instanceof ZmMailMsg) {
+		msg = item;
+	} else if (item instanceof ZmConv) {
+		msg = item.getFirstMsg();
+	}
+	
+	return msg;
 };
 
 ZmMailListController.prototype._getInviteReplyBody = 

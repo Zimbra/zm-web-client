@@ -36,7 +36,7 @@
 */
 function ZmMixedController(appCtxt, container, mixedApp) {
 
-	ZmListController.call(this, appCtxt, container, mixedApp);
+	ZmMailListController.call(this, appCtxt, container, mixedApp);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
@@ -44,7 +44,7 @@ function ZmMixedController(appCtxt, container, mixedApp) {
 	this._listeners[ZmOperation.UNDELETE] = new AjxListener(this, this._undeleteListener);
 };
 
-ZmMixedController.prototype = new ZmListController;
+ZmMixedController.prototype = new ZmMailListController;
 ZmMixedController.prototype.constructor = ZmMixedController;
 
 ZmMixedController.prototype.toString = 
@@ -112,22 +112,6 @@ function(parent, num) {
 ZmMixedController.prototype.getKeyMapName =
 function() {
 	return "ZmMixedController";
-};
-
-/*
- * The mixed controller doesn't handle the action on its own. Instead, it asks
- * the controllers for various apps to handle it.
- */
-ZmMixedController.prototype.handleKeyAction =
-function(actionCode) {
-	DBG.println(AjxDebug.DBG3, "ZmMixedController.handleKeyAction");
-	
-	var mailCtlr = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMailListController();
-	if (mailCtlr.handleKeyAction) {
-		var result = mailCtlr.handleKeyAction(actionCode);
-		if (result) return result;
-	}
-	return false;
 };
 
 // Private and protected methods

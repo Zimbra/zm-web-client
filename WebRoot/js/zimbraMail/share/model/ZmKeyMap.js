@@ -218,7 +218,33 @@ function ZmKeyMap() {
 	};
 
 	this._map["ZmMixedController"] = {
-			"INHERIT": "ZmMailListController"
+
+			"INHERIT": ZmKeyMap.GLOBAL_KEYMAP,
+
+			"R":					ZmKeyMap.REPLY,
+			"A":					ZmKeyMap.REPLY_ALL,
+			"R,S":					ZmKeyMap.REPLY,
+			"R,A":					ZmKeyMap.REPLY_ALL,
+
+			"F":					ZmKeyMap.FORWARD,
+			"F,I":					ZmKeyMap.FORWARD_INLINE,
+			"F,A":					ZmKeyMap.FORWARD_ATT,
+
+			"M,F":					ZmKeyMap.FLAG,
+
+			"I":					ZmKeyMap.GOTO_INBOX,
+			"D":					ZmKeyMap.GOTO_DRAFTS,
+			"S":					ZmKeyMap.GOTO_SENT,
+			"T":					ZmKeyMap.GOTO_TRASH,
+			
+			"O":					DwtKeyMap.DBLCLICK,
+			
+			".,I":					ZmKeyMap.MOVE_TO_INBOX,
+			".,T":					ZmKeyMap.MOVE_TO_TRASH,
+			".,J":					ZmKeyMap.MOVE_TO_JUNK,
+			"Shift+.,I":			ZmKeyMap.MOVE_TO_INBOX,
+			"Shift+.,T":			ZmKeyMap.MOVE_TO_TRASH,
+			"Shift+.,J":			ZmKeyMap.MOVE_TO_JUNK
 	};
 
 	this._map["ZmNotebookPageController"] = {

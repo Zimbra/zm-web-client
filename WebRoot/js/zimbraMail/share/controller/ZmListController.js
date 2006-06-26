@@ -186,6 +186,7 @@ function(actionCode) {
 			//Find the current app
 			switch (this._appCtxt.getAppController().getActiveApp()) {
 				case ZmZimbraMail.MAIL_APP:
+				case ZmZimbraMail.MIXED_APP:
 					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE]);
 					break;
 				case ZmZimbraMail.CALENDAR_APP:
