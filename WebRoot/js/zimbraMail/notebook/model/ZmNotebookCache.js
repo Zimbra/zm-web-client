@@ -33,23 +33,19 @@ function ZmNotebookCache(appCtxt) {
 // Constants
 //
 
-ZmNotebookCache._SPECIAL = {};
-ZmNotebookCache._SPECIAL[ZmNotebook.PAGE_INDEX] = [
-	"<H2><wiklet class='MSG' key='wikiUserPages' /></H2>",
-	"<P>",
-		"<wiklet class='TOC' />"
-	/***
-	"<H2><wiklet class='MSG' key='wikiSpecialPages' /></H2>",
-	"<P>",
-		"<wiklet class='TOC' name='_*_' />"
-	/***/
-].join("");
-ZmNotebookCache._SPECIAL[ZmNotebook.PAGE_CHROME] = [
-	"<DIV style='padding:0.5em'>",
-		"<H1><nolink><wiklet class='NAME' /></nolink></H1>",
-		"<DIV><wiklet class='CONTENT' /></DIV>",
-	"</DIV>"
-].join("");
+ZmNotebookCache._SPECIAL_NAMES = {};
+ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PAGE_INDEX] = true;
+ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PAGE_CHROME] = true;
+ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PAGE_CHROME_STYLES] = true;
+ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PAGE_TITLE_BAR] = true;
+ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PAGE_HEADER] = true;
+ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PAGE_FOOTER] = true;
+ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PAGE_SIDE_BAR] = true;
+ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PAGE_TOC_BODY_TEMPLATE] = true;
+ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PAGE_TOC_ITEM_TEMPLATE] = true;
+ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PATH_BODY_TEMPLATE] = true;
+ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PATH_ITEM_TEMPLATE] = true;
+ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PATH_SEPARATOR] = true;
 
 //
 // Data
@@ -167,47 +163,63 @@ ZmNotebookCache.prototype.getPageById = function(id) {
 	return this._idMap[id];
 };
 ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
-	var page = this.getPagesInFolder(folderId)[name];
+	var pages = this.getPagesInFolder(folderId);
+	var page = pages[name];
 	if (page != null) return page;
 
-	/***/
-	// REVISIT: Need to force recursing up for "special" page when
-	//          navigating in the page browser. Is this always the
-	//          case? or should there be a better solution?
-	if (traverseUp == true || /^_.*$/.test(name)) {
-		var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-		var parent = notebookTree.getById(folderId).parent;
-		while (parent != null) {
-			var folderMap = this.getPagesInFolder(parent.id);
-			if (folderMap && folderMap[name]) {
-				// create a proxy page but DO NOT insert it into the parent
-				// folderMap -- that way it won't show up in the TOC for the parent
-				return this.makeProxyPage(folderMap[name], folderId);
-			}
-			parent = parent.parent;
+	// one of the "special" pages was requested so load them all at once
+	if (name in ZmNotebookCache._SPECIAL_NAMES) {
+		// batch load special pages
+		var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
+		soapDoc.setMethodAttribute("onerror", "continue");
+		for (var specialName in ZmNotebookCache._SPECIAL_NAMES) {
+			if (this._foldersMap[folderId][specialName]) continue;
+			var requestNode = soapDoc.set("GetWikiRequest",null,null,"urn:zimbraMail");
+			requestNode.setAttribute("id", specialName);
+			var wordNode = soapDoc.set("w", null, requestNode);
+			wordNode.setAttribute("l", folderId);
+			wordNode.setAttribute("name", specialName);
+			wordNode.setAttribute("tr", 1);
 		}
-	}
-	/*** LATER -- this is toooooo slow right now ***
-	var page = ZmPage.load(this._appCtxt, folderId, name, null, null, traverseUp);
-	if (page != null) {
-		// REVISIT: Patch proxied pages
-		if (/:/.test(page.id)) {
-			var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-			var notebook = tree.getById(folderId);
 
-			page.folderId = folderId;
-			page.restUrl = notebook ? [ notebook.getRestUrl(), '/', page.name ].join("") : page.restUrl;
-			page.version = 0;
+		var params = {
+			soapDoc: soapDoc,
+			asyncMode: false,
+			callback: null,
+			errorCallback: null
+		};
+
+		var appController = this._appCtxt.getAppController();
+		var response = appController.sendRequest(params);
+
+		// add found pages to the cache
+		var batchResp = response && response.BatchResponse;
+		var wikiResp = batchResp && batchResp.GetWikiResponse;
+		if (wikiResp) {
+			for (var i = 0; i < wikiResp.length; i++) {
+				var word = wikiResp[i].w[0];
+				var page = this.getPageById(word.id);
+				if (!page) {
+					page = new ZmPage(this._appCtxt);
+					page.set(word);
+					if (page.folderId != folderId) {
+						page.id = 0;
+						page.folderId = folderId;
+						page.version = 0;
+					}
+					this.putPage(page);
+				}
+				else {
+					page.set(word);
+					page.folderId = folderId;
+				}
+			}
 		}
-		this.putPage(page);
-		return page;
+
+		return this._foldersMap[folderId][name];
 	}
-	/***/
-	
-	if (name in ZmNotebookCache._SPECIAL) {
-		return this._generateSpecialPage(folderId, name);
-	}
-	
+
+	// page not found
 	return null;
 };
 
@@ -478,18 +490,4 @@ function(folderId, callback, errorCallback, response) {
 };
 
 ZmNotebookCache.prototype._handleChange = function(event) {
-};
-
-ZmNotebookCache.prototype._generateSpecialPage = function(folderId, name) {
-	var page = new ZmPage(this._appCtxt);
-	page.name = name;
-	page.fragment = "";
-	page.setContent(ZmNotebookCache._SPECIAL[name]);
-	page.folderId = folderId;
-	page.creator = "[auto]"; // i18n
-	page.createDate = new Date();
-	page.modifier = page.creator;
-	page.modifyDate = new Date(page.createDate.getTime());
-	//page.version = 0;
-	return page;
 };

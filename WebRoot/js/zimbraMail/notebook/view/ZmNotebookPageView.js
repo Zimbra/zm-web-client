@@ -59,6 +59,8 @@ function() {
 
 ZmNotebookPageView.prototype.set =
 function(page) {
+	DBG.showTiming(true);
+	DBG.timePt("ZmNotebookPageView#set")
 	if (this._USE_IFRAME) {
 		this._iframe.src = page.getRestUrl();
 	}
@@ -69,19 +71,24 @@ function(page) {
 			return;
 		}
 
+		DBG.timePt("loading chrome");
 		var cache = this._controller._app.getNotebookCache();
 		var chrome = cache.getPageByName(page.folderId, ZmNotebook.PAGE_CHROME, true);
 		var chromeContent = chrome.getContent();
 
 		var content = chromeContent;
 		if (page.name != ZmNotebook.PAGE_CHROME) {
+			DBG.timePt("applying chrome");
 			var pageContent = page.getContent();
 			content = chromeContent.replace(ZmWiklet.RE_CONTENT, pageContent);
 		}
+		DBG.timePt("processing wiklets");
 		content = ZmWikletProcessor.process(this._appCtxt, page, content);
 
+		DBG.timePt("setting HTML");
 		element.innerHTML = content;
 
+		DBG.timePt("patching links to open in new window");
 		var links = element.getElementsByTagName("A");
 		for (var i = 0; i < links.length; i++) {
 			var link = links[i];
@@ -92,8 +99,11 @@ function(page) {
 			}
 		}
 
+		DBG.timePt("finding objects");
 		this._findObjects(element);
 	}
+	DBG.timePt("/ZmNotebookPageView#set");
+	DBG.showTiming(false);
 };
 
 ZmNotebookPageView.getPrintHtml =
@@ -179,12 +189,12 @@ ZmNotebookPageView.prototype._findObjects = function(element) {
 	if (!this._objectMgr) {
 		this._objectMgr = new ZmObjectManager(this, this._appCtxt);
 		var handler = new ZmNotebookObjectHandler(this._appCtxt);
-		this._objectMgr.addHandler(handler, ZmNotebookObjectHandler.TYPE, 20);
+		this._objectMgr.addHandler(handler, ZmNotebookObjectHandler.TYPE, 1);
 		this._objectMgr.sortHandlers();
 	}
 	this._objectMgr.reset();
 
-	var discard = null;
+	var discard = [];
 	var ignore = "nolink";
 	this._objectMgr.processHtmlNode(element, true, discard, ignore);
 };

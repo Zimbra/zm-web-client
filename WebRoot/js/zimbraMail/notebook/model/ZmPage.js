@@ -214,7 +214,7 @@ ZmPage.prototype.set = function(data) {
 	this.name = data.name || this.name;
 	// REVISIT: This is temporary!
 	this.fragment = data.fr ? (data.fr instanceof Array ? data.fr[0]._content : data.fr) : this.fragment;
-	if (version != this.version) {
+	if (version != this.version && !data.body) {
 		this._content = null;
 	} else {
 		this._content = data.body ? (data.body instanceof Array ? data.body[0]._content : data.body) : this._content;

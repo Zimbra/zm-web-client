@@ -529,19 +529,7 @@ ZmWiklet.register(
 					var folderId = context.getItem().folderId;
 
 					var itemTemplate = context.getPageByName(folderId, (params.itemTemplate || ZmNotebook.PAGE_TOC_ITEM_TEMPLATE), true);
-					var itemContent = itemTemplate ? itemTemplate.getContent() : [
-						// REVISIT
-						"<tr>",
-							"<td class='_pageIcon'><wiklet class='ICON' /></td>",
-							"<td class='_pageLink'>[[<wiklet class='NAME' />]]</td>",
-							"<td class='_tocAuthor'><wiklet class='MODIFIER' /></td>",
-							"<td class='_tocHistory'><wiklet class='MODIFYDATE' /></td>",
-						"</tr>",
-						"<tr>",
-							"<td></td>",
-							"<td class='_tocFragment' colspan='4'><wiklet class='FRAGMENT' /></td>",
-						"</tr>"
-					].join("");
+					var itemContent = itemTemplate.getContent();
 					for (var i = 0; i < items.length; i++) {
 						var length = context.getItemCount();
 						try {
@@ -555,16 +543,7 @@ ZmWiklet.register(
 					}
 
 					var bodyTemplate = context.getPageByName(folderId, (params.bodyTemplate || ZmNotebook.PAGE_TOC_BODY_TEMPLATE), true);
-					var bodyContent = bodyTemplate ? bodyTemplate.getContent() : [
-						// REVISIT
-						"<table class='_tocIconTable'>",
-							"<tr>",
-								"<td></td>",
-								"<td colspan='4' class='_tocHead'><wiklet class='NAME' /></td>",
-							"</tr>",
-							"<wiklet class='CONTENT' />",
-						"</table>"
-					].join("");
+					var bodyContent = bodyTemplate.getContent();
                     content = [ bodyContent.replace(ZmWiklet.RE_CONTENT, content.join("")) ];
 					break;
 				}
@@ -645,15 +624,7 @@ ZmWiklet.register(
 					var separator = params.separator || "<td class='_path_separator'>&nbsp;&raquo;&nbsp;</td>";
 
 					var itemTemplate = context.getPageByName(folderId, (params.itemTemplate || ZmNotebook.PATH_ITEM_TEMPLATE), true);
-					var itemContent = itemTemplate ? itemTemplate.getContent() : [
-						// REVISIT
-						"<td class='_pageIcon'><wiklet class='ICON' /></td>",
-						"<td class='_pageLink'>",
-							(makeLinks ? "[[" : ""),
-							"<wiklet class='NAME' />",
-							(makeLinks ? "[[" : ""),
-						"</td>"
-					].join("");
+					var itemContent = itemTemplate.getContent();
 					for (var i = 0; i < trail.length; i++) {
 						if (i > 0) {
 							content.push(separator);
@@ -670,14 +641,7 @@ ZmWiklet.register(
 					}
 
 					var bodyTemplate = context.getPageByName(folderId, (params.bodyTemplate || ZmNotebook.PATH_BODY_TEMPLATE), true);
-					var bodyContent = bodyTemplate ? bodyTemplate.getContent() : [
-						// REVISIT
-						"<table class='_path_table' cellspacing=0 cellpadding=0>",
-							"<tr>",
-								"<wiklet class='CONTENT' />",
-							"</tr>",
-						"</table>"
-					].join("");
+					var bodyContent = bodyTemplate.getContent();
                     content = [ bodyContent.replace(ZmWiklet.RE_CONTENT, content.join("")) ];
 					break;
 				}

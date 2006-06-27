@@ -52,6 +52,7 @@ ZmNotebook.prototype.constructor = ZmNotebook;
 ZmNotebook.PAGE_INDEX = "_Index";
 ZmNotebook.PAGE_CHROME = "_Template";
 ZmNotebook.PAGE_CHROME_STYLES = "_TemplateStyles";
+ZmNotebook.PAGE_TITLE_BAR = "_TitleBar";
 ZmNotebook.PAGE_HEADER = "_Header";
 ZmNotebook.PAGE_FOOTER = "_Footer";
 ZmNotebook.PAGE_SIDE_BAR = "_SideBar";
