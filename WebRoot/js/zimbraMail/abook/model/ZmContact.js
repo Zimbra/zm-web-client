@@ -705,6 +705,11 @@ function() {
 			this._fullName = fn.join(" ");
 		}
 	}
+
+	// as a last resort, set it to fileAs
+	if (!this._fullName)
+		this._fullName = this.getFileAs();
+
 	return this._fullName;
 };
 
