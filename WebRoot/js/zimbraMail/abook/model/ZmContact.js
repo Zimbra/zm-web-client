@@ -476,6 +476,35 @@ function(attr, isBatchMode, result) {
 	}
 };
 
+ZmContact.prototype.createFromVCard =
+function(msgId, vcardPartId) {
+	var soapDoc = AjxSoapDoc.create("CreateContactRequest", "urn:zimbraMail");
+	var cn = soapDoc.set("cn");
+	cn.setAttribute("l", ZmFolder.ID_CONTACTS);
+	var vcard = soapDoc.set("vcard", null, cn);
+	vcard.setAttribute("mid", msgId);
+	vcard.setAttribute("part", vcardPartId);
+
+	var respCallback = new AjxCallback(this, this._handleResponseCreateVCard);
+	var errorCallback = new AjxCallback(this, this._handleErrorCreateVCard);
+	var execFrame = new AjxCallback(this, this.create, [msgId, vcardPartId]);
+
+	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
+												callback:respCallback,
+												errorCallback:errorCallback,
+												execFrame:execFrame});
+};
+
+ZmContact.prototype._handleResponseCreateVCard =
+function(result) {
+	this._appCtxt.getAppController().setStatusMsg(ZmMsg.contactCreated);
+};
+
+ZmContact.prototype._handleErrorCreateVCard =
+function(ex) {
+	this._appCtxt.getAppController().setStatusMsg(ZmMsg.errorCreateContact, ZmStatusView.LEVEL_CRITICAL);
+};
+
 /**
 * Updates contact attributes.
 *

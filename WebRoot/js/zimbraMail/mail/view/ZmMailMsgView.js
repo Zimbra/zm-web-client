@@ -1113,16 +1113,20 @@ function(msg, htmlArr, idx) {
 			htmlArr[idx++] = link;
 		}
 
-		if (att.size || att.htmlLink) {
+		if (att.size || att.htmlLink || att.vcardLink) {
 			htmlArr[idx++] = "&nbsp;(";
 			if (att.size) {
 				htmlArr[idx++] = att.size;
-				if (att.htmlLink)
+				if (att.htmlLink || att.vcardLink)
 					htmlArr[idx++] = ", ";
 			}
 			if (att.htmlLink) {
 				htmlArr[idx++] = att.htmlLink;
 				htmlArr[idx++] = ZmMsg.viewAsHtml;
+				htmlArr[idx++] = "</a>";
+			} else if (att.vcardLink) {
+				htmlArr[idx++] = att.vcardLink;
+				htmlArr[idx++] = ZmMsg.addToAddrBook;
 				htmlArr[idx++] = "</a>";
 			}
 
@@ -1441,4 +1445,14 @@ function(msgId, msgPartId) {
 	var sender = appCtxt.getAppController();
 	var callback = new AjxCallback(null, ZmMailMsgView._detachCallback, [appCtxt]);
 	ZmMailMsg.fetchMsg({ sender:sender, msgId:msgId, partId:msgPartId, getHtml:getHtml, callback:callback });
+};
+
+ZmMailMsgView.vcardCallback =
+function(msgId, vcardPartId) {
+	debugger;
+	var appCtxt = window.parentController
+		? window.parentController._appCtxt
+		: window._zimbraMail._appCtxt;
+
+	appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).createFromVCard(msgId, vcardPartId);
 };

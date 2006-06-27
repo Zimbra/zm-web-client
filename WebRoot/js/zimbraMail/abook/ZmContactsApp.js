@@ -147,6 +147,12 @@ function() {
 	return addrbookList;
 };
 
+ZmContactsApp.prototype.createFromVCard =
+function(msgId, vcardPartId) {
+	var contact = new ZmContact(this._appCtxt);
+	contact.createFromVCard(msgId, vcardPartId);
+};
+
 ZmContactsApp.prototype.getContactListController =
 function() {
 	if (!this._contactListController)

@@ -859,6 +859,11 @@ function(findHits) {
 						// set the anchor html for the HTML version of this attachment on the server
 						props.htmlLink = "<a style='text-decoration:underline' target='_blank' class='AttLink' href='" + url + "&view=html" + "'>";
 					}
+					else if (attach.ct == ZmMimeTable.TEXT_VCARD)
+					{
+						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.getId() + "," + attach.part + ");";
+						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
+					}
 					else 
 					{
 						// set the objectify flag
