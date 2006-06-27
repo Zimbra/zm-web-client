@@ -497,7 +497,6 @@ function(attr, callback) {
 	var cn = soapDoc.set("cn");
 	cn.setAttribute("id", this.id);
 
-	// TODO - set new folder ID if applicable (see bug 2085)
 	var continueRequest = false;
 
 	for (var name in attr) {
@@ -568,14 +567,22 @@ ZmContact.prototype._setFolder =
 function(newFolderId) {
 	if (this.folderId == newFolderId) return;
 
-	var soapDoc = AjxSoapDoc.create("ContactActionRequest", "urn:zimbraMail");
-	var cn = soapDoc.set("action");
-	cn.setAttribute("id", this.id);
-	cn.setAttribute("op", "move");
-	cn.setAttribute("l", newFolderId);
+	// moving out of a share or into one is handled differently (create then hard delete)
+	var newFolder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(newFolderId)
+	if (this.isShared() || (newFolder && newFolder.link)) {
+		if (this.list) {
+			this.list.moveItems(this, newFolder);
+		}
+	} else {
+		var soapDoc = AjxSoapDoc.create("ContactActionRequest", "urn:zimbraMail");
+		var cn = soapDoc.set("action");
+		cn.setAttribute("id", this.id);
+		cn.setAttribute("op", "move");
+		cn.setAttribute("l", newFolderId);
 
-	var respCallback = new AjxCallback(this, this._handleResponseLoad, [false]);
-	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+		var respCallback = new AjxCallback(this, this._handleResponseLoad, [false]);
+		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+	}
 };
 
 ZmContact.prototype.notifyModify =

@@ -149,8 +149,7 @@ function(parent, num) {
 		parent.enable([ZmOperation.SAVE, ZmOperation.CANCEL], true);
 	} else if (this._contact.isShared()) {
 		parent.enableAll(true);
-		// XXX: let's disable DELETE until we figure out how to handle it
-		parent.enable([ZmOperation.TAG_MENU, ZmOperation.DELETE], false);
+		parent.enable(ZmOperation.TAG_MENU, false);
 	} else {
 		ZmListController.prototype._resetOperations.call(this, parent, num);
 	}
@@ -215,7 +214,6 @@ function(items, hardDelete, attrs, skipPostProcessing) {
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
 
 	if (!skipPostProcessing) {
-		// XXX: async
 		// disable input fields (to prevent blinking cursor from bleeding through)
 		this._listView[this._currentView].enableInputs(false);
 		this._app.popView();

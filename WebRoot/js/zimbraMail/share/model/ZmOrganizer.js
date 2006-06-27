@@ -655,7 +655,7 @@ function() {
 
 ZmOrganizer.prototype.isRemote =
 function() {
-	return (this.zid || this.id.indexOf(":") != -1);
+	return (this.zid != null || this.id.indexOf(":") != -1);
 };
 
 /**
