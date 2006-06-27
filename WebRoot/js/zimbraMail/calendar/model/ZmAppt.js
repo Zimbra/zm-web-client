@@ -1232,78 +1232,70 @@ function(field, data, html, idx, wrap, width) {
 };
 
 ZmAppt.prototype._populateRecurrenceFields = 
-function () {
-	if (this._rawRecurrences == null) return;
-	var recurrences = this._rawRecurrences;
-	var recur = null;
-	var i, j, k, x;
-	var adds, excludes, excepts, rules, rule;
-	for (k = 0; k < recurrences.length ; ++k) {
-		adds = recurrences[k].add;
-		excludes = recurrences[k].excludes;
-		excepts = recurrences[k].except;
-		if (adds != null) {
+function() {
+	if (this._rawRecurrences) {
+		for (var k = 0; k < this._rawRecurrences.length ; ++k) {
+			// TODO - handle excludes & excepts
+			//var excludes = this._rawRecurrences[k].excludes;
+			//var excepts = this._rawRecurrences[k].except;
+			var adds = this._rawRecurrences[k].add;
+			if (!adds) continue;
+
 			this.repeatYearlyMonthsList = this.startDate.getMonth() + 1;
-			for (i = 0; i < adds.length; ++i) {
-				rules = adds[i].rule;
-				if (rules) {
-					for (j =0; j < rules.length; ++j) {
-						rule = rules[j];
-						if (rule.freq) {
-							this.repeatType = rule.freq.substring(0,3);
-							if (rule.interval && rule.interval[0].ival) 
-								this.repeatCustomCount = parseInt(rule.interval[0].ival);
+			for (var i = 0; i < adds.length; ++i) {
+				var rules = adds[i].rule;
+				if (!rules) continue;
+
+				for (var j = 0; j < rules.length; ++j) {
+					var rule = rules[j];
+					if (rule.freq) {
+						this.repeatType = rule.freq.substring(0,3);
+						if (rule.interval && rule.interval[0].ival)
+							this.repeatCustomCount = parseInt(rule.interval[0].ival);
+					}
+					if (rule.bymonth) {
+						this.repeatYearlyMonthsList = rule.bymonth[0].molist;
+						this.repeatCustom = "1";
+					}
+					if (rule.bymonthday) {
+						if (this.repeatType == "YEA") {
+							this.repeatCustomMonthDay = rule.bymonthday[0].modaylist;
+							this.repeatCustomType = "S";
+						} else if (this.repeatType == "MON"){
+							this.repeatMonthlyDayList = rule.bymonthday[0].modaylist.split(",");
 						}
-						// hmm ... what to do about negative numbers....
-						if (rule.bymonth) {
-							this.repeatYearlyMonthsList = rule.bymonth[0].molist;
-							this.repeatCustom = "1";
-						}
-						if (rule.bymonthday) {
-							if (this.repeatType == "YEA") {
-								this.repeatCustomMonthDay = rule.bymonthday[0].modaylist;
-								this.repeatCustomType = "S";
-							} else if (this.repeatType == "MON"){
-								this.repeatMonthlyDayList = rule.bymonthday[0].modaylist.split(",");
+						this.repeatCustom = "1";
+					}
+					if (rule.byday && rule.byday[0] && rule.byday[0].wkday) {
+						this.repeatCustom = "1";
+						var wkdayLen = rule.byday[0].wkday.length;
+						if (this.repeatType == "WEE" || (this.repeatType == "DAI" && wkdayLen == 5)) {
+							this.repeatWeekday = this.repeatType == "DAI";
+							for (var x = 0; x < wkdayLen; ++x) {
+								if (this.repeatWeeklyDays == null)
+									this.repeatWeeklyDays = [];
+								this.repeatWeeklyDays.push(rule.byday[0].wkday[x].day);
 							}
-							this.repeatCustom = "1";
-						}
-						if (rule.byday && rule.byday[0] && rule.byday[0].wkday) {
-							this.repeatCustom = "1";
-							var wkdayLen = rule.byday[0].wkday.length;
-							if (this.repeatType == "WEE" || (this.repeatType == "DAI" && wkdayLen == 5)) {
-								this.repeatWeekday = this.repeatType == "DAI";
-								for (x = 0; x < wkdayLen; ++x) {
-									if (this.repeatWeeklyDays == null) 
-										this.repeatWeeklyDays = [];
-									this.repeatWeeklyDays.push(rule.byday[0].wkday[x].day);
-								}
-							} else {
-								this.repeatCustomDayOfWeek = rule.byday[0].wkday[0].day;
-								this.repeatCustomOrdinal = rule.byday[0].wkday[0].ordwk;
-								this.repeatCustomType = "O";
-							}
-						}
-						if (rule.until) {
-							this.repeatEndType = "D";
-							this.repeatEndDate = AjxDateUtil.parseServerDateTime(rule.until[0].d);
-						} else if (rule.count) {
-							this.repeatEndType = "A";
-							this.repeatEndCount = rule.count[0].num;
+						} else {
+							this.repeatCustomDayOfWeek = rule.byday[0].wkday[0].day;
+							this.repeatCustomOrdinal = rule.byday[0].wkday[0].ordwk;
+							this.repeatCustomType = "O";
 						}
 					}
+					if (rule.until) {
+						this.repeatEndType = "D";
+						this.repeatEndDate = AjxDateUtil.parseServerDateTime(rule.until[0].d);
+					} else if (rule.count) {
+						this.repeatEndType = "A";
+						this.repeatEndCount = rule.count[0].num;
+					}
 				}
-				if (this.repeatWeeklyDays == null) {
-					this.resetRepeatWeeklyDays();
-				}
-			}
-		}
-		if (excepts != null) {
-			for (i = 0; i < excepts.length; ++i){
-				// hmmm ....
 			}
 		}
 	}
+
+	if (this.repeatWeeklyDays == null)
+		this.resetRepeatWeeklyDays();
 };
 
 ZmAppt.prototype._frequencyToDisplayString = 
@@ -1317,11 +1309,9 @@ function(freq, count) {
 //TODO : i18n
 ZmAppt.prototype._getRecurrenceDisplayString = 
 function() {
-	if (this._recDispStr == null) {
-		var recurrences = this._rawRecurrences;
-		var startDate = this.startDate;
-		this._recDispStr = ZmApptViewHelper.getRecurrenceDisplayString(recurrences, startDate);
-	}
+	if (this._recDispStr == null)
+		this._recDispStr = ZmApptViewHelper.getRecurrenceDisplayString(this._rawRecurrences, this.startDate);
+
 	return this._recDispStr;
 };
 
