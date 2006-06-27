@@ -480,17 +480,6 @@ function(items, hardDelete, attrs) {
 };
 
 /**
-* Overrides method from ZmList, making flags a no-op for contacts.
-*
-* @param items		a list of items to set/unset a flag for
-* @param flagOp		the name of the flag operation ("flag" or "read")
-* @param on			whether to set the flag
-*/
-ZmContactList.prototype.flagItems =
-function(items, flagOp, on) {
-};
-
-/**
 * Returns true if the given string maps to a single contact. Used by autocomplete.
 *
 * @param str		string to test for uniqueness
