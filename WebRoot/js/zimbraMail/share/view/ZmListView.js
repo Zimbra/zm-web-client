@@ -357,7 +357,7 @@ function(ev, div) {
 		if (m && m.field) {
 			var item = this.getItemFromElement(div);
 			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
-				if (!item.isFlagged)
+				if (!item.isFlagged && !(item instanceof ZmContact))
 					ev.target.className = "ImgFlagRedDis";
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) {
 				this._setTagToolTip(div);
