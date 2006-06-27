@@ -191,10 +191,15 @@ function() {
 
 ZmController.prototype._showLoginDialog =
 function(bReloginMode) {
+	var username = this._appCtxt.getUsername();
+	if (!username) {
+		ZmZimbraMail.logOff();
+		return;
+	}
 	this._authenticating = true;
 	this._loginDialog.setVisible(true, false);
 	try {
-		this._loginDialog.setFocus(this._appCtxt.getUsername(), bReloginMode);
+		this._loginDialog.setFocus(username, bReloginMode);
 	} catch (ex) {
 		// do nothing. just catch and hope for the best.
 	}
