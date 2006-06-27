@@ -491,7 +491,9 @@ function() {
 
 ZmMailListController.prototype._getMsg =
 function(item) {
-	item = item ? item : this._listView[this._currentView].getSelection()[0];
+	item = (item && (item instanceof ZmMailItem))
+		? item
+		: this._listView[this._currentView].getSelection()[0];
 	if (!item) return null;
 	
 	var msg;
