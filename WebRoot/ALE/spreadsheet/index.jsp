@@ -40,14 +40,12 @@ Contributor(s):
     <title>Zimbra Spreadsheet Prototype</title>
 	<style type="text/css">
 	<!--
-    @import url(<%=contextPath %>/img/loRes/imgs.css?v=<%=vers%>);
-    @import url(<%=contextPath %>/img/loRes/skins/steel/steel.css?v=<%=vers%>);
-    @import url(<%=contextPath %>/skins/steel/dwt.css?v=<%=vers%>);
-    @import url(<%=contextPath %>/skins/steel/common.css?v=<%=vers%>);
-    @import url(<%=contextPath %>/skins/steel/msgview.css?v=<%=vers%>);
-    @import url(<%=contextPath %>/skins/steel/zm.css?v=<%=vers%>);
-    @import url(<%=contextPath %>/skins/steel/spellcheck.css?v=<%=vers%>);
-    @import url(<%=contextPath %>/skins/steel/steel.css?v=<%=vers%>);
+
+	@import url(/zimbra/img/loRes/imgs.css?v=<%=vers%>);
+	@import url(/zimbra/img/loRes/skins/steel/steel.css?v=<%=vers%>);
+	@import url(/zimbra/css/dwt,common,msgview,login,zm,spellcheck,skin.css?v=<%=vers%>&skin=steel);
+
+
     @import url(<%=contextPath %>/ALE/spreadsheet/style.css?v=<%=vers%>);
 	-->
 	</style>
