@@ -373,7 +373,6 @@ function(params) {
 	if (!this._components[ZmAppViewMgr.C_APP_CHOOSER]) {
 		this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._createAppChooser();
 	}
-	this._appViewMgr.addComponents(this._components, true);
 
 	// ROSSD - TEMPORARY - WILL BE MOVED
 	/* Appview manager is the place for these. the issue is that the skins will need to provide the
@@ -424,6 +423,7 @@ ZmZimbraMail.prototype._handleResponseStartup2 =
 function() {
 	this.setSessionTimer(true);
 	this._killSplash();
+	this._appViewMgr.addComponents(this._components, true);
 
 	var kbMgr = this._shell.getKeyboardMgr();
 	kbMgr.setTabGroup(this._appCtxt.getRootTabGroup());
@@ -553,8 +553,6 @@ function(params, result) {
 		result.set(response.Body);
 	}
 
-	this._handleHeader(response.Header);
-
 	// start poll timer if we didn't get an exception
 	if (this._pollInterval)
 		this._pollActionId = this._doPoll();
@@ -564,6 +562,8 @@ function(params, result) {
 	if (params.asyncMode && params.callback) {
 		params.callback.run(result);
 	}
+
+	this._handleHeader(response.Header);
 
 	if (!params.asyncMode) {
 		return response.Body;
@@ -617,14 +617,7 @@ function(hdr) {
 		this._checkOverviewLayout(false, resetTree);
 	}
 
-	// Handle notifications, then run the callback. Many callbacks take the SOAP
-	// response data and update the model. If we run into scenarios where that needs
-	// to happen before notifications are handled, then we may need to split the
-	// callback into two routines, one to handle the SOAP response, and one to do
-	// everything else. In general, it always makes sense to run the callback last.
-	// That's especially important if the callback invokes another request, since if
-	// the callback were run before notifications, you'd end up with a stack of
-	// notifications running in inverted order.
+	// handle notifications
 	if (hdr && hdr.context && hdr.context.notify) {
         for(i = 0; i < hdr.context.notify.length; i++) {
         	var notify = hdr.context.notify[i];

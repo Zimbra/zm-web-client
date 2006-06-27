@@ -83,18 +83,18 @@ ZmOrganizer.NOTEBOOK			= ZmEvent.S_NOTEBOOK;
 ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 
 // Primary organizer for items
-ZmOrganizer.ITEM2ORGANIZER = {};
-ZmOrganizer.ITEM2ORGANIZER[ZmItem.CONV]		= ZmOrganizer.FOLDER;
-ZmOrganizer.ITEM2ORGANIZER[ZmItem.MSG]		= ZmOrganizer.FOLDER;
-//ZmOrganizer.ITEM2ORGANIZER[ZmItem.ATT]		= ZmOrganizer.FOLDER; // ???
-ZmOrganizer.ITEM2ORGANIZER[ZmItem.CONTACT]	= ZmOrganizer.ADDRBOOK;
-ZmOrganizer.ITEM2ORGANIZER[ZmItem.APPT]		= ZmOrganizer.CALENDAR;
-//ZmOrganizer.ITEM2ORGANIZER[ZmItem.NOTE]		= ZmOrganizer.FOLDER; // ???
-ZmOrganizer.ITEM2ORGANIZER[ZmItem.PAGE]		= ZmOrganizer.NOTEBOOK;
-ZmOrganizer.ITEM2ORGANIZER[ZmItem.DOCUMENT]	= ZmOrganizer.NOTEBOOK;
-//ZmOrganizer.ITEM2ORGANIZER[ZmItem.CHAT]		= ZmOrganizer.FOLDER; // ???
-//ZmOrganizer.ITEM2ORGANIZER[ZmItem.ROSTER_ITEM]	= ZmOrganizer.FOLDER; // ???
-//ZmOrganizer.ITEM2ORGANIZER[ZmItem.RESOURCE]	= ZmOrganizer.FOLDER; // ???
+ZmOrganizer.ITEM_ORGANIZER = {};
+ZmOrganizer.ITEM_ORGANIZER[ZmItem.CONV]		= ZmOrganizer.FOLDER;
+ZmOrganizer.ITEM_ORGANIZER[ZmItem.MSG]		= ZmOrganizer.FOLDER;
+//ZmOrganizer.ITEM_ORGANIZER[ZmItem.ATT]		= ZmOrganizer.FOLDER; // ???
+ZmOrganizer.ITEM_ORGANIZER[ZmItem.CONTACT]	= ZmOrganizer.ADDRBOOK;
+ZmOrganizer.ITEM_ORGANIZER[ZmItem.APPT]		= ZmOrganizer.CALENDAR;
+//ZmOrganizer.ITEM_ORGANIZER[ZmItem.NOTE]		= ZmOrganizer.FOLDER; // ???
+ZmOrganizer.ITEM_ORGANIZER[ZmItem.PAGE]		= ZmOrganizer.NOTEBOOK;
+ZmOrganizer.ITEM_ORGANIZER[ZmItem.DOCUMENT]	= ZmOrganizer.NOTEBOOK;
+//ZmOrganizer.ITEM_ORGANIZER[ZmItem.CHAT]		= ZmOrganizer.FOLDER; // ???
+//ZmOrganizer.ITEM_ORGANIZER[ZmItem.ROSTER_ITEM]	= ZmOrganizer.FOLDER; // ???
+//ZmOrganizer.ITEM_ORGANIZER[ZmItem.RESOURCE]	= ZmOrganizer.FOLDER; // ???
 
 // defined in com.zimbra.cs.mailbox.Mailbox
 ZmOrganizer.ID_ROOT				= 1;
@@ -134,6 +134,17 @@ ZmOrganizer.F_COLOR		= i++;
 ZmOrganizer.F_QUERY		= i++;
 ZmOrganizer.F_SHARES	= i++;
 
+ZmOrganizer.FLAG_CHECKED			= "#";
+ZmOrganizer.FLAG_IMAP_SUBSCRIBED	= "*";
+ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY	= "b";
+ZmOrganizer.ALL_FLAGS = [ZmOrganizer.FLAG_CHECKED, ZmOrganizer.FLAG_IMAP_SUBSCRIBED,
+						 ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY];
+
+ZmOrganizer.FLAG_PROP = {};
+ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_CHECKED]				= "isChecked";
+ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_IMAP_SUBSCRIBED]		= "imapSubscribed";
+ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY]	= "excludeFreeBusy";
+
 // Following chars invalid in organizer names: " : / [anything less than " "]
 ZmOrganizer.VALID_NAME_CHARS = "[^\\x00-\\x1F\\x7F:\\/\\\"]";
 ZmOrganizer.VALID_PATH_CHARS = "[^\\x00-\\x1F\\x7F:\\\"]"; // forward slash is OK in path
@@ -156,7 +167,7 @@ ZmOrganizer.MAX_COLOR	= ZmOrganizer.C_GRAY;
 ZmOrganizer.DEFAULT_COLOR = ZmOrganizer.C_ORANGE;
 
 // color names
-ZmOrganizer.COLOR_TEXT = new Object();
+ZmOrganizer.COLOR_TEXT = {};
 ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_ORANGE]	= ZmMsg.orange;
 ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_BLUE]		= ZmMsg.blue;
 ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_CYAN]		= ZmMsg.cyan;
@@ -174,6 +185,7 @@ for (var i = 0; i <= ZmOrganizer.MAX_COLOR; i++) {
 	ZmOrganizer.COLORS.push(color);
 	ZmOrganizer.COLOR_CHOICES.push( { value: i, label: color } );
 }
+delete i;
 
 // views
 ZmOrganizer.VIEWS = new Object;
@@ -186,6 +198,10 @@ ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK] = "wiki";
 
 ZmOrganizer.sortCompare = function(organizerA, organizerB) {};
 ZmOrganizer.prototype.create = function() {};
+
+// Static data
+
+ZmOrganizer._pending = {};
 
 // Static methods
 
@@ -394,6 +410,14 @@ function(color, callback) {
 	var color = ZmOrganizer.checkColor(color);
 	if (this.color == color) return;
 	this._organizerAction({action: "color", attrs: {color: color}, callback: callback});
+};
+
+// Though it's possible to use this method to change just about any folder attribute,
+// it should only be used to set multiple attributes at once since it has extra
+// overhead on the server.
+ZmOrganizer.prototype.update =
+function(attrs) {
+	this._organizerAction({action: "update", attrs: attrs});
 };
 
 /**
@@ -741,6 +765,29 @@ function(name) {
 			return organizer;
 	}
 	return null;
+};
+
+// Takes a string of flag chars and applies them to this organizer.
+ZmOrganizer.prototype._parseFlags =
+function(str) {
+	for (var i = 0; i < ZmOrganizer.ALL_FLAGS.length; i++) {
+		var flag = ZmOrganizer.ALL_FLAGS[i];
+		this[ZmOrganizer.FLAG_PROP[flag]] = (str && (str.indexOf(flag) != -1)) ? true : false;
+	}
+};
+
+// Converts this organizer's flag-related props into a string of flag chars.
+ZmOrganizer.prototype._setFlags =
+function() {
+	var flags = "";
+	for (var i = 0; i < ZmOrganizer.ALL_FLAGS.length; i++) {
+		var flag = ZmOrganizer.ALL_FLAGS[i];
+		var prop = ZmOrganizer.FLAG_PROP[flag];
+		if (this[prop]) {
+			flags = flags + flag;
+		}
+	}
+	return flags;
 };
 
 ZmOrganizer.prototype.addChangeListener =

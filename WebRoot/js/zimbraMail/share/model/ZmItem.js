@@ -51,8 +51,8 @@ function ZmItem(appCtxt, type, id, list) {
 	this.id = id;
 	this.list = list;
 	
-	this.tags = new Array();
-	this.tagHash = new Object();
+	this.tags = [];
+	this.tagHash = {};
 	this.folderId = 0;
 	
 	if (id && appCtxt)
@@ -126,7 +126,7 @@ ZmItem.F_TAG_CELL		= i++;
 ZmItem.F_SIZE			= i++;
 
 // Action requests for different items
-ZmItem.SOAP_CMD = new Object();
+ZmItem.SOAP_CMD = {};
 ZmItem.SOAP_CMD[ZmItem.CONV]	= "ConvAction";
 ZmItem.SOAP_CMD[ZmItem.MSG]		= "MsgAction";
 ZmItem.SOAP_CMD[ZmItem.ATT]		= "unsupported";
@@ -149,7 +149,7 @@ ZmItem.ALL_FLAGS = [ZmItem.FLAG_FLAGGED, ZmItem.FLAG_ATTACH, ZmItem.FLAG_UNREAD,
 					ZmItem.FLAG_REPLIED, ZmItem.FLAG_FORWARDED, ZmItem.FLAG_ISSENT, ZmItem.FLAG_ISDRAFT];
 
 // Map flag to item property
-ZmItem.FLAG_PROP = new Object();
+ZmItem.FLAG_PROP = {};
 ZmItem.FLAG_PROP[ZmItem.FLAG_FLAGGED]	= "isFlagged";
 ZmItem.FLAG_PROP[ZmItem.FLAG_ATTACH]	= "hasAttach";
 ZmItem.FLAG_PROP[ZmItem.FLAG_UNREAD]	= "isUnread";
@@ -185,11 +185,11 @@ function() {
 	if (this.tags.length) {
 		for (var i = 0; i < this.tags.length; i++)
 			this.tags[i] = null;
-		this.tags = new Array();
+		this.tags = [];
 	}
 	for (var i in this.tagHash)
 		this.tagHash[i] = null;
-	this.tagHash = new Object();
+	this.tagHash = {};
 };
 
 /**
@@ -225,7 +225,7 @@ ZmItem.prototype.getRestUrl = function() {
 	if (this.url) {
 		return this.url;
 	}
-	var organizerType = ZmOrganizer.ITEM2ORGANIZER[this.type];
+	var organizerType = ZmOrganizer.ITEM_ORGANIZER[this.type];
 	var tree = this._appCtxt.getTree(organizerType);
 	var organizer = tree.getById(this.folderId);
 	return [
@@ -309,11 +309,11 @@ function(obj) {
 	// empty string is meaningful here, it means no flags
 	if (obj.f != null) {
 		var flags = this._getFlags();
-		var origFlags = new Object();
+		var origFlags = {};
 		for (var i = 0; i < flags.length; i++)
 			origFlags[flags[i]] = this[ZmItem.FLAG_PROP[flags[i]]];
 		this._parseFlags(obj.f);
-		var changedFlags = new Array();
+		var changedFlags = [];
 		for (var i = 0; i < flags.length; i++) {
 			var on = this[ZmItem.FLAG_PROP[flags[i]]];
 			if (origFlags[flags[i]] != on)
@@ -375,7 +375,7 @@ function(tagId, doTag) {
 
 ZmItem.prototype.removeAllTagsLocal =
 function() {
-	this.tags = new Array();
+	this.tags = [];
 	for (var i in this.tagHash) {
 		delete this.tagHash[i];
 	}
@@ -399,8 +399,8 @@ function(folderId) {
 // Takes a comma-separated list of tag IDs and applies the tags to this item.
 ZmItem.prototype._parseTags =
 function(str) {	
-	this.tags = new Array();
-	this.tagHash = new Object();
+	this.tags = [];
+	this.tagHash = {};
 	if (str && str.length) {
 		var tags = str.split(",");
 		for (var i = 0; i < tags.length; i++) {

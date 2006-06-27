@@ -53,7 +53,6 @@ ZmCalendar.prototype.constructor = ZmCalendar;
 
 ZmCalendar.ID_CALENDAR = ZmOrganizer.ID_CALENDAR;
 
-
 // Public methods
 
 ZmCalendar.prototype.toString = 
@@ -61,8 +60,12 @@ function() {
 	return "ZmCalendar";
 };
 
+/**
+ * Creates a new calendar. The color and flags will be set later in response
+ * to the create notification.
+ */
 ZmCalendar.prototype.create =
-function(name, color, url, excludeFb) {
+function(name, color, url, excludeFreeBusy) {
 	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 	var folderNode = soapDoc.set("folder");
 	folderNode.setAttribute("name", name);
@@ -70,31 +73,13 @@ function(name, color, url, excludeFb) {
 	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]);
 	if (url) folderNode.setAttribute("url", url);
 
-	var respCallback = new AjxCallback(this, this._handleResponseCreate, [color, excludeFb]);
 	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [url, name]);
-	var params = {
-		soapDoc: soapDoc, 
-		asyncMode: true,
-		callback: respCallback, 
-		errorCallback: errorCallback
-	};
-	
 	var appController = this.tree._appCtxt.getAppController();
-	appController.sendRequest(params);
-};
+	appController.sendRequest({soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback});
 
-ZmCalendar.prototype._handleResponseCreate =
-function(color, excludeFb, result) {
-	var response = result.getResponse();
-	var id = response.CreateFolderResponse.folder[0].id;
-	var cal = this.tree._appCtxt.cacheGet(id);
-	var respCallback = excludeFb ? new AjxCallback(this, this._handleResponseSetColor, cal) : null;
-	cal.setColor(color, respCallback);
-};
-
-ZmCalendar.prototype._handleResponseSetColor =
-function(cal) {
-	cal.setFreeBusy(true);
+	ZmOrganizer._pending[name] = {};
+	ZmOrganizer._pending[name].color = color;
+	ZmOrganizer._pending[name].excludeFreeBusy = excludeFreeBusy;
 };
 
 ZmCalendar.prototype._handleErrorCreate =
@@ -146,13 +131,6 @@ function(checked, batchCmd) {
 	this._organizerAction({action: action, batchCmd: batchCmd});
 };
 
-ZmCalendar.prototype._parseFlags =
-function(flags) {
-	this.excludeFreeBusy = (flags.indexOf('b') != -1);
-	this.isChecked = (flags.indexOf('#') != -1);
-	this.imapSubscribed = (flags.indexOf('*') != -1);
-};
-
 // Callbacks
 
 ZmCalendar.prototype.notifyCreate =
@@ -160,6 +138,14 @@ function(obj) {
 	var calendar = ZmCalendar.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(calendar, ZmCalendar.sortCompare);
 	this.children.add(calendar, index);
+	var pending = ZmOrganizer._pending[calendar.name];
+	if (pending) {
+		calendar.color = pending.color;
+		calendar.excludeFreeBusy = pending.excludeFreeBusy;
+		var flags = calendar._setFlags();
+		calendar.update({f: flags, color: calendar.color});
+	}
+	delete ZmOrganizer._pending[calendar.name];
 	calendar._notify(ZmEvent.E_CREATE);
 };
 
