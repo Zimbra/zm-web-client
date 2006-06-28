@@ -1864,11 +1864,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	width: 100%;
 }
 
-/* dialog that allows you to create/edit a filter rule */
-.ZmFilterRuleDialog {
-	width: 580px;			/* ??? SIZE */
-}
-
 /* ??? USE? */
 .ZmFilterRuleDialog .paddedTableCell {
   vertical-align:middle;
