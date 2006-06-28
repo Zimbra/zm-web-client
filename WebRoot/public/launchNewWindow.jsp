@@ -28,31 +28,37 @@ Contributor(s):
 <title>Zimbra</title>
 <%
 	String contextPath = request.getContextPath();
-	String mode = (String) request.getAttribute("mode");
-	String ext = (String) request.getAttribute("fileExtension");
 	String full = request.getParameter("full");
 
-	if (ext == null) ext = "";
-	String vers = (String) request.getAttribute("version");
-	if (vers == null) vers = "";
     String skin = request.getParameter("skin");
     if (skin == null) {
         skin = "steel";
     }
+
+	String mode = (String) request.getAttribute("mode");
+	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
+
+	String vers = (String) request.getAttribute("version");
+	if (vers == null) vers = "";
+
+	String ext = (String) request.getAttribute("fileExtension");
+	if (ext == null) ext = "";
 %>
-<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" language="javascript">
 	appContextPath = "<%= contextPath %>";
 	appCurrentSkin = "<%=skin %>";
 </script>
-<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
-	<style type="text/css">
-        <!--
-		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/css/dwt,common,zm,spellcheck,skin.css?v=<%= vers %>&debug=1);
-        -->
-	</style>
+
+<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
+<style type="text/css">
+	<!--
+	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
+	@import url(<%= contextPath %>/css/dwt,common,zm,spellcheck,skin.css?v=<%= vers %>&skin=<%= skin %>);
+	-->
+</style>
+
+<% if (inDevMode) { %>
 	<%if (full != null) {%>
 		<jsp:include page="Ajax.jsp"/>
 		<jsp:include page="Zimbra.jsp"/>
@@ -63,14 +69,6 @@ Contributor(s):
 		<jsp:include page="ZimbraNewWindow.jsp"/>
 	<% } %>
 <% } else { %>
-	<style type="text/css">
-        <!--
-		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/css/dwt,common,zm,spellcheck,skin.css?v=<%= vers %>);
-        -->
-	</style>
-
 	<%if (full != null) {%>
 		<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
 		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
@@ -79,6 +77,7 @@ Contributor(s):
 		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraNewWindow_all.js<%= ext %>?v=<%= vers %>"></script>
 	<% } %>
 <% } %>
+
 <script type="text/javascript" language="JavaScript">
     var cacheKillerVersion = "<%= vers %>";
 	function launch() {
@@ -89,6 +88,5 @@ Contributor(s):
 	AjxCore.addOnunloadListener(ZmNewWindow.unload);
 </script>
 </head>
-<body>
-</body>
+<body></body>
 </html>

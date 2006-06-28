@@ -550,13 +550,21 @@ function() {
 
 ZmAppCtxt.prototype.getNewWindow = 
 function(fullVersion) {
-	var args = "height=450,width=640,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
-	var prefix = document.location.protocol + "//" + document.domain;
-	var port = (!location.port || location.port == "80") ? "" : ":" + location.port;
-	var url = prefix + port + appContextPath+"/public/launchNewWindow.jsp";
+	// build url
+	var url = [];
+	var i = 0;
+	url[i++] = document.location.protocol;
+	url[i++] = "//";
+	url[i++] = document.domain;
+	url[i++] = (!location.port || location.port == "80") ? "" : (":" + location.port);
+	url[i++] = appContextPath;
+	url[i++] = "/public/launchNewWindow.jsp?skin=";
+	url[i++] = this.get(ZmSetting.SKIN_NAME);
 	if (fullVersion)
-		url += "?full=1";
-	var newWin = window.open(url, "_blank", args);
+		url[i++] = "&full=1";
+
+	var args = "height=450,width=640,location=no,menubar=no,resizable=yes,scrollbars=no,status=yes,toolbar=no";
+	var newWin = window.open(url.join(""), "_blank", args);
 	
 	// add this new window to global list so parent can keep track of child windows!
 	return this.getAppController().addChildWindow(newWin);
