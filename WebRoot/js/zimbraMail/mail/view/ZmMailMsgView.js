@@ -1449,7 +1449,6 @@ function(msgId, msgPartId) {
 
 ZmMailMsgView.vcardCallback =
 function(msgId, vcardPartId) {
-	debugger;
 	var appCtxt = window.parentController
 		? window.parentController._appCtxt
 		: window._zimbraMail._appCtxt;
