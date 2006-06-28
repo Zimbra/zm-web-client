@@ -80,15 +80,15 @@ function(page) {
 		}
 		content = ZmWikletProcessor.process(this._appCtxt, page, content);
 
-		DBG.showTiming(true);
-		DBG.timePt("-- ZmNotebookPageView#set --")
+		//DBG.showTiming(true);
+		//DBG.timePt("-- ZmNotebookPageView#set --")
 		/*** remove all styles ***
 		var re = /<style(.|\n)*?>(.|\n)*?<\/style(.|\n)*?>/gi;
 		content = content.replace(re);
 		/***/
 		element.innerHTML = content;
-		DBG.timePt("set innerHTML");
-		DBG.showTiming(false);
+		//DBG.timePt("set innerHTML");
+		//DBG.showTiming(false);
 
 		var links = element.getElementsByTagName("A");
 		for (var i = 0; i < links.length; i++) {

@@ -98,6 +98,7 @@ ZmOrganizer.ITEM_ORGANIZER[ZmItem.DOCUMENT]	= ZmOrganizer.NOTEBOOK;
 
 // defined in com.zimbra.cs.mailbox.Mailbox
 ZmOrganizer.ID_ROOT				= 1;
+ZmOrganizer.ID_INBOX			= 2;
 ZmOrganizer.ID_TRASH			= 3;
 ZmOrganizer.ID_SPAM				= 4;
 ZmOrganizer.ID_ADDRBOOK			= 7;
@@ -107,6 +108,12 @@ ZmOrganizer.ID_AUTO_ADDED 		= 13;
 ZmOrganizer.ID_ZIMLET			= -1000;  // zimlets need a range.  start from -1000 incrementing up.
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
+
+ZmOrganizer.DEFAULT_FOLDER = {};
+ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.FOLDER] = ZmOrganizer.ID_INBOX;
+ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.ADDRBOOK] = ZmOrganizer.ID_ADDRBOOK;
+ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.CALENDAR] = ZmOrganizer.ID_CALENDAR;
+ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.NOTEBOOK] = ZmOrganizer.ID_NOTEBOOK;
 
 ZmOrganizer.SOAP_CMD = {};
 ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";
@@ -469,6 +476,24 @@ function() {
 
 ZmOrganizer.prototype.notifyDelete =
 function() {
+	// select next reasonable organizer if the currently selected
+	// organizer is the one being deleted or a descendent of the
+	// one being deleted
+	var overviewController = this.tree._appCtxt.getOverviewController();
+	var treeController = overviewController.getTreeController(this.type);
+	var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+	var organizer = treeView && treeView.getSelected();
+	if (organizer &&
+		(organizer == this || organizer.isChildOf(this))) {
+		var folderId = this.parent.id;
+		if (folderId == ZmOrganizer.ID_ROOT) {
+			folderId = ZmOrganizer.DEFAULT_FOLDER[this.type];
+		}
+		var skipNotify = false;
+		treeView.setSelected(folderId, skipNotify);
+	}
+
+	// perform actual delete
 	this.deleteLocal();
 	this._notify(ZmEvent.E_DELETE);
 };
