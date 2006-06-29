@@ -147,10 +147,10 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
 	toolbarOrActionMenu.enable(ZmOperation.REFRESH, true);
 	//toolbarOrActionMenu.enable(ZmOperation.ATTACHMENT, true);
 	//toolbarOrActionMenu.enable(ZmOperation.DETACH, false);
-	if (this._object && this._object.name == ZmNotebook.PAGE_INDEX) {
-		toolbarOrActionMenu.enable(ZmOperation.EDIT, false);
-		toolbarOrActionMenu.enable(ZmOperation.DELETE, false);
-	}
+
+	var buttons = [ZmOperation.EDIT, ZmOperation.TAG_MENU, ZmOperation.DELETE]; 
+	var enabled = this._object && this._object.name != ZmNotebook.PAGE_INDEX;
+	toolbarOrActionMenu.enable(buttons, enabled);
 };
 
 ZmNotebookController.prototype._getTagMenuMsg = function() {
