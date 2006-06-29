@@ -51,6 +51,7 @@ function ZmListController(appCtxt, container, app) {
 	this._toolbar = {};		// ZmButtonToolbar (one per view)
 	this._navToolBar = {};	// ZmNavToolBar (one per view)
 	this._listView = {};	// ZmListView (one per view)
+	this._tabGroups = {};	// DwtTabGroup (one per view)
 	this._list = null;				// ZmList (the data)
 	this._actionMenu = null; 		// ZmActionMenu
 	this._actionEv = null;
@@ -410,12 +411,12 @@ function() {
 
 ZmListController.prototype._initializeTabGroup =
 function(view) {
-	if (this._tabGroup) return;
+	if (this._tabGroups[view]) return;
 	
-	var tg = this._createTabGroup();
-	tg.newParent(this._appCtxt.getRootTabGroup());
-	tg.addMember(this._toolbar[view]);
-	tg.addMember(this._listView[view]);
+	this._tabGroups[view] = this._createTabGroup();
+	this._tabGroups[view].newParent(this._appCtxt.getRootTabGroup());
+	this._tabGroups[view].addMember(this._toolbar[view]);
+	this._tabGroups[view].addMember(this._listView[view]);
 };
 
 /**

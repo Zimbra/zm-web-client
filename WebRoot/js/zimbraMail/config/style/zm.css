@@ -835,7 +835,7 @@ td.DDSepInvisible div {
 
 
 /* Container for a single card when it is selected */
-.ZmContactCard-selected, .ZmContactCard-selected-right {
+.ZmContactCard-selected, .ZmContactCard-selected-right .ZmContactCard-focused {
 	@FocusBorder@
 }
 

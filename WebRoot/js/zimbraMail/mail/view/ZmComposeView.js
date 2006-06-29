@@ -1283,7 +1283,7 @@ function(type, show, skipNotify) {
 	}
 	this._resetBodySize();
 	var field = show ? this._field[type] : null;	// set focus if visible
-	this._controller._setTabGroup(field);
+	this._controller._setComposeTabGroup(field);
 };
 
 // Grab the addresses out of the form. Optionally, they can be returned broken out into good and

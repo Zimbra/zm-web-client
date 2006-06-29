@@ -292,7 +292,7 @@ function(initHide, composeMode) {
  * 
  * @param field		[DwtControl|input]*		element to set focus to
  */
-ZmComposeController.prototype._setTabGroup =
+ZmComposeController.prototype._setComposeTabGroup =
 function(field) {
 
 	this._saveFocus();
@@ -420,7 +420,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	this._setOptionsMenu(this._composeMode);
 
 	this._composeView.set(action, msg, toOverride, subjOverride, extraBodyText);
-	this._setTabGroup();
+	this._setComposeTabGroup();
 	this._app.pushView(ZmController.COMPOSE_VIEW);
 	this._composeView.reEnableDesignMode();
 };

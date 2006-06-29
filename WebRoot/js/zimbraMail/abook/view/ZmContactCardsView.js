@@ -115,7 +115,7 @@ function(contact, now, isDndIcon, getHtml) {
 		html[idx++] = "' class='ZmContactCard' _styleClass='ZmContactCard' _selectedStyleClass='ZmContactCard-";
 		html[idx++] = DwtCssStyle.SELECTED;
 		// manually associate item with element :(
-		html[idx++] = "' id='";
+		html[idx++] = "' _kbFocusClass='ZmContactCard-focused' id='";
 		html[idx++] = this._getItemId(contact);
 		html[idx++] = "' _itemIndex='";
 		html[idx++] = AjxCore.assignId(contact);
@@ -504,3 +504,14 @@ function(cell, contactId) {
 	cell.parentNode.parentNode.removeChild(cell.parentNode);
 };
 
+ZmContactCardsView.prototype._getSiblingElement =
+function(element, next){
+	var item = this.getItemFromElement(this._kbAnchor);
+	if (!item) return element;
+	var index = this._list.indexOf(item);
+	if ((next && (index >= this._list.size() - 1)) || (!next && index <= 0)) return element;
+	index = next ? index + 1 : index - 1;
+	var id = this._getItemId(this._list.get(index));
+	var el = document.getElementById(id);
+	return el ? el : element;
+};
