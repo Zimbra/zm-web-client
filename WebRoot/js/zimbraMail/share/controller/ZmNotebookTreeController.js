@@ -79,7 +79,7 @@ function(actionMenu, type, id) {
 			var isRoot = notebook.id == ZmOrganizer.ID_ROOT;
 			var isNotebook = !isRoot && notebook.parent.id == ZmOrganizer.ID_ROOT;
 			var menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_NOTEBOOK);
-			menuItem.setText(isRoot ? ZmMsg.mountNotebook : ZmMsg.mountSection);
+			//menuItem.setText(isRoot ? ZmMsg.mountNotebook : ZmMsg.mountSection);
 			menuItem.setImage(isRoot ? "SharedNotebook" : "SharedSection");
 			menuItem.setDisabledImage(menuItem.getImage()+"Dis");
 			var menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_NOTEBOOK);
