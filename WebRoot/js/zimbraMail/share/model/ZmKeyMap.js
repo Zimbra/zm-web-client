@@ -87,7 +87,8 @@ function ZmKeyMap() {
 			"G,6":					ZmKeyMap.TAG6,
 			"G,7":					ZmKeyMap.TAG7,
 			"G,8":					ZmKeyMap.TAG8,
-			"G,9":					ZmKeyMap.TAG9
+			"G,9":					ZmKeyMap.TAG9,
+			"U":					ZmKeyMap.UNTAG
 	};
 	
 	// for these to work, controller must implement getTabView()
@@ -342,5 +343,6 @@ ZmKeyMap.TAG7				= "ToggleTag7";
 ZmKeyMap.TAG8				= "ToggleTag8";
 ZmKeyMap.TAG9				= "ToggleTag9";
 ZmKeyMap.TODAY				= "GoToToday";
+ZmKeyMap.UNTAG				= "Untag";
 ZmKeyMap.VIEW_BY_CONV		= "ViewByConversation";
 ZmKeyMap.VIEW_BY_MSG		= "ViewByMessage";

@@ -224,7 +224,13 @@ function(actionCode) {
 			}
 			break;
 		
-		case ZmKeyMap.TAG0:
+		case ZmKeyMap.UNTAG:
+			if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+				var items = listView.getSelection();
+				if (items && items.length) {
+					this._doRemoveAllTags(items);
+				}
+			}
 			break;
 
 		default:
