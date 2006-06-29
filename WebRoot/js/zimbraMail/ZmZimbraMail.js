@@ -211,7 +211,7 @@ ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_NOTEBOOK]	= ZmZimbraMail.NOTEBOOK_
 ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_OPTIONS]	= ZmZimbraMail.PREFERENCES_APP;
 
 // trees whose data comes in a <refresh> block
-ZmZimbraMail.REFRESH_TREES = [ZmOrganizer.FOLDER, ZmOrganizer.TAG, ZmOrganizer.SEARCH, ZmOrganizer.ZIMLET,
+ZmZimbraMail.REFRESH_TREES = [ZmOrganizer.FOLDER, ZmOrganizer.TAG, ZmOrganizer.SEARCH,
 							  ZmOrganizer.ADDRBOOK, ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK];
 
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
