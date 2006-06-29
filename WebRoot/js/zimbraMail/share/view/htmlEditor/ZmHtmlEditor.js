@@ -714,6 +714,7 @@ ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {
 			 "MergeCells", "SplitCells", null,
 			 "DeleteTable" ];
 	var a = [];
+	menu._tblItems = {};
 	for (var i = 0; i < tblCommands.length; ++i) {
 		var cmd = tblCommands[i];
 		if (cmd == null)
@@ -725,6 +726,7 @@ ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {
 				dots = "&hellip;";
 			}
 			var item = new DwtMenuItem(menu);
+			menu._tblItems[cmd] = item;
 			var txt = ZmMsg[cmd] || cmd;
 			item.setText(txt + dots);
 			if (tblIcons[i])
@@ -734,7 +736,15 @@ ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {
 			a.push(item);
 		}
 	}
+	menu.addPopupListener(new AjxListener(this, this.__onTableOperationsPopup));
 	return a;
+};
+
+ZmHtmlEditor.prototype.__onTableOperationsPopup = function(menu) {
+	var td = this.getNearestElement("td");
+	var splitEnabled = td && ((td.colSpan && td.colSpan > 1)
+				  || (td.rowSpan && td.rowSpan > 1));
+	menu._tblItems.splitCells.setEnabled(splitEnabled);
 };
 
 ZmHtmlEditor.prototype._tableOperationsListener =
