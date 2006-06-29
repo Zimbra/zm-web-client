@@ -80,7 +80,7 @@ onloadFunc = function () {
 			 window.setTimeout("window.opener.AjxWindowOpener.onWindowOpened("+id+")", 1);
 		 }
 	 } catch (e) {
-		 document.write("Error opening the view");
+		 document.write("Error opening the view: " + e.toString());
 	 }
 };
 	 window.onload = onloadFunc;
