@@ -130,6 +130,16 @@ function(str) {
 	return false;
 };
 
+/**
+ * Returns true if the given string is a valid resource name.
+ * 
+ * @param str	[string]	a string
+ */
+ZmResourceList.prototype.isComplete =
+function(str) {
+	return (this.getResourceByName(str) != null);
+};
+
 /*
 * Creates the matching object(s) for a particular matched contact. If a contact has multiple
 * email addresses and didn't match on one of them (it matched on a name), then a matching

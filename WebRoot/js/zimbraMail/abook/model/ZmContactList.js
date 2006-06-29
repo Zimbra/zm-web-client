@@ -608,6 +608,7 @@ function(item, result) {
 ZmContactList.prototype.autocompleteMatch =
 function(str, callback) {
 	DBG.println(AjxDebug.DBG3, "begin contact matching");
+	str = str.toLowerCase();
 	this._acAddrList[str] = this._acAddrList[str] ? this._acAddrList[str] : [];
 
 	// if personal contacts haven't finished loading, don't return any results (even
@@ -621,7 +622,6 @@ function(str, callback) {
 		return;
 	}
 
-	str = str.toLowerCase();
 	var strLen = str.length;
 	var gotData = false;
 
@@ -728,6 +728,16 @@ function(str, callback) {
 	var matchList = this._matchList(str);
 	DBG.println(AjxDebug.DBG3, "Returning list of matches");
 	callback.run(matchList);
+};
+
+/**
+ * Returns true if the given string is a valid email.
+ * 
+ * @param str	[string]	a string
+ */
+ZmContactList.prototype.isComplete =
+function(str) {
+	return ZmEmailAddress.isValid(str);
 };
 
 /*

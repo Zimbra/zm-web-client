@@ -296,6 +296,10 @@ function(element) {
 ZmAutocompleteListView.prototype.autocomplete =
 function(info) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: autocomplete");
+	if (!this._dataLoaded) {
+		this._data = this._dataLoader.call(this._dataClass);
+		this._dataLoaded = true;
+	}
 
 	// The callback into ourself emulates a while loop, and is here to support
 	// async calls into _autocomplete(), which may result in a server request
@@ -416,8 +420,12 @@ function(text, start) {
 		var c = text.charAt(i);
 		if (ZmAutocompleteListView.IS_DELIM[c]) {
 			var chunk = text.substring(start, i);
-			if (ZmEmailAddress.isValid(chunk)) {
+			if (this._data.isComplete && this._data.isComplete(chunk)) {
+				DBG.println(AjxDebug.DBG3, "skipping completed chunk: " + chunk);
 				start = i + 1;
+				while (text.charAt(start) == ' ') {	// ignore leading space
+					start++;
+				}
 			} else {
 				return {text: text, str: chunk, start: start, end: i, delim: true};
 			}
@@ -460,7 +468,8 @@ function(chunk, callback) {
 	this._removeAll();
 
 	var respCallback = new AjxCallback(this, this._handleResponseAutocomplete, [str, chunk, text, start, callback]);
-	this._getMatches(str, respCallback);
+	this._data.autocompleteMatch(str, respCallback);
+
 };
 
 ZmAutocompleteListView.prototype._handleResponseAutocomplete =
@@ -689,12 +698,9 @@ function() {
 
 // Calls the data class's matching function to get a list of matches for the given string. The data
 // is loaded lazily here.
+/*
 ZmAutocompleteListView.prototype._getMatches =
 function(str, callback) {
-	if (!this._dataLoaded) {
-		this._data = this._dataLoader.call(this._dataClass);
-		this._dataLoaded = true;
-	}
 	var respCallback = new AjxCallback(this, this._handleResponseGetMatches, [callback]);
 	this._data.autocompleteMatch(str, callback);
 };
@@ -705,6 +711,7 @@ function(callback, results) {
 		callback.run(results);
 	}
 };
+*/
 
 // Force focus to the input element (handle Tab in Firefox)
 ZmAutocompleteListView.prototype._autocompleteFocus =
