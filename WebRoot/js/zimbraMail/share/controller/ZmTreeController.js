@@ -128,8 +128,10 @@ function(overviewId, showUnread, omit, forceCreate, app, hideEmpty) {
 	if (!this._treeView[overviewId] || forceCreate) {
 		this._treeView[overviewId] = this._setup(overviewId);
 	}
-	this._treeView[overviewId].set(this._dataTree, showUnread, omit);
-	this._checkTreeView(overviewId);
+	if (this._dataTree) {
+		this._treeView[overviewId].set(this._dataTree, showUnread, omit);
+		this._checkTreeView(overviewId);
+	}
 };
 
 /**
