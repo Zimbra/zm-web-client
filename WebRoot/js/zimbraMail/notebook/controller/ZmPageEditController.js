@@ -34,6 +34,8 @@ function ZmPageEditController(appCtxt, container, app) {
 	this._saveCallback = new AjxCallback(this, this._saveResponseHandler);
 	this._saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler);
 	this._conflictCallback = new AjxCallback(this, this._saveConflictHandler);
+
+	this._isHandlingSave = false;
 }
 ZmPageEditController.prototype = new ZmListController;
 ZmPageEditController.prototype.constructor = ZmPageEditController;
@@ -233,7 +235,9 @@ function(popViewWhenSaved) {
 };
 
 ZmPageEditController.prototype._saveResponseHandler = function(response) {
+	this._isHandlingSave = true; // Prevents "pop shield" from asking user to save.
 	this._exitViewAfterSave();
+	this._isHandlingSave = false;
 
 	var saveResp = response._data && response._data.SaveWikiResponse;
 	if (saveResp && saveResp.w[0].ver == 1) {
@@ -361,7 +365,7 @@ ZmPageEditController.prototype._formatListener = function(ev) {
 
 ZmPageEditController.prototype._preHideCallback =
 function() {
-	if (!this._pageEditView.isDirty()) {
+	if (this._isHandlingSave || !this._pageEditView.isDirty()) {
 		return true;
 	}
 	

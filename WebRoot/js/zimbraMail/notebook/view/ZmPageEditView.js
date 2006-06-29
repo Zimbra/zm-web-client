@@ -30,6 +30,9 @@ function ZmPageEditView(parent, appCtxt, controller) {
 	this._controller = controller;
 	
 	this._createHtml();
+	this._page = null;
+	this._contentHasBeenSet = false;
+	this._originalContent = null;
 }
 ZmPageEditView.prototype = new DwtComposite;
 ZmPageEditView.prototype.constructor = ZmPageEditView
@@ -112,6 +115,13 @@ ZmPageEditView.prototype._setResponse = function(page) {
 	this.focus();
 };
 
+ZmPageEditView.prototype._onEditorContentInitialized =
+function() {
+	// Keep a copy of the view's contents, to help determine dirtiness.
+	this._contentHasBeenSet = true;
+	this._originalContent = this.getContent();
+};
+
 ZmPageEditView.prototype.getTitle =
 function() {
 	var pageName = this.getPageName();
@@ -176,10 +186,10 @@ function() {
 		if ((content.length == 0) && (pageName.length == 0)) {
 			return false;
 		}
-		if (this._page.name != pageName) {
+		if ((this._page.name || '') != pageName) {
 			return true;
 		}
-		if (this._page.getContent() != content) {
+		if (this._contentHasBeenSet && (this._originalContent != content)) {
 			return true;
 		}
 	}
@@ -627,4 +637,11 @@ function(dialog, editor, wikletEl, schema) {
 		}
 	}
 	dialog.popdown();
+};
+
+// This is called after the editor really has set its contents, which
+// is done after a series of timed events.
+ZmPageEditor.prototype._onContentInitialized =
+function() {
+	this.parent._onEditorContentInitialized();	
 };
