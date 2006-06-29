@@ -148,7 +148,7 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
 	//toolbarOrActionMenu.enable(ZmOperation.ATTACHMENT, true);
 	//toolbarOrActionMenu.enable(ZmOperation.DETACH, false);
 
-	var buttons = [ZmOperation.EDIT, ZmOperation.TAG_MENU, ZmOperation.DELETE]; 
+	var buttons = [ZmOperation.EDIT, ZmOperation.TAG_MENU, ZmOperation.DELETE];
 	var enabled = this._object && this._object.name != ZmNotebook.PAGE_INDEX;
 	toolbarOrActionMenu.enable(buttons, enabled);
 };
@@ -265,7 +265,7 @@ ZmNotebookController.prototype._editListener = function(event) {
 /***
 ZmNotebookController.prototype._uploadListener = function(event) {
 	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(this._folderId || ZmPage.DEFAULT_FOLDER);
+	var notebook = tree.getById(this._folderId || ZmNotebookItem.DEFAULT_FOLDER);
 	var callback = null;
 
 	var dialog = this._appCtxt.getUploadDialog();

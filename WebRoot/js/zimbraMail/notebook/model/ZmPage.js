@@ -25,10 +25,9 @@
 
 function ZmPage(appCtxt, id, list) {
 	if (arguments.length == 0) return;
-	ZmItem.call(this, appCtxt, ZmItem.PAGE, id, list);
-	this.folderId = ZmPage.DEFAULT_FOLDER;
+	ZmNotebookItem.call(this, appCtxt, ZmItem.PAGE, id, list);
 }
-ZmPage.prototype = new ZmItem;
+ZmPage.prototype = new ZmNotebookItem;
 ZmPage.prototype.constructor = ZmPage;
 
 ZmPage.prototype.toString =
@@ -36,21 +35,10 @@ function() {
 	return "ZmPage";
 };
 
-// Constants
-
-ZmPage.DEFAULT_FOLDER = ZmOrganizer.ID_NOTEBOOK;
-
 // Data
 
-ZmPage.prototype.name;
 ZmPage.prototype.fragment;
 ZmPage.prototype._content; // NOTE: content loading can be deferred
-ZmPage.prototype.creator;
-ZmPage.prototype.createDate;
-ZmPage.prototype.modifier;
-ZmPage.prototype.modifyDate;
-ZmPage.prototype.size;
-ZmPage.prototype.version = 0;
 
 // Static functions
 
@@ -84,18 +72,12 @@ ZmPage.createFromDom = function(node, args) {
 // query
 
 ZmPage.prototype.getPath = function() {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(this.folderId);
-	var name = this.name != ZmNotebook.PAGE_INDEX ? this.name : "";
-	return [ notebook.getPath(), "/", name ].join("");
+	var dontIncludeThisName = this.name == ZmNotebook.PAGE_INDEX;
+	return ZmNotebookItem.prototype.getPath.call(this, dontIncludeThisName);
 };
-
-ZmPage.prototype.getUrl = function() {
-	var url = ZmItem.prototype.getUrl.call(this);
-	if (this.name == ZmNotebook.PAGE_INDEX) {
-		url = url.substring(0, url.length - this.name.length);
-	}
-	return url;
+ZmPage.prototype.getRestUrl = function() {
+	var dontIncludeThisName = this.name == ZmNotebook.PAGE_INDEX;
+	return ZmNotebookItem.prototype.getRestUrl.call(this, dontIncludeThisName);
 };
 
 ZmPage.prototype.setContent = function(content) {
@@ -200,31 +182,20 @@ ZmPage.prototype.notifyModify = function(obj) {
 // initialization
 
 ZmPage.prototype.set = function(data) {
-	var version = Number(data.ver);
-	if (this.version == version && this._content) return;
-	
-	// ZmItem fields
-	this.id = data.id || this.id;
-	this.restUrl = data.rest || this.restUrl;
-	// REVISIT: Sometimes the server doesn't return the folderId!!!
-	this.folderId = data.l || this.folderId;
-	if (data.t) this._parseTags(data.t);
+	var version = this.version;
+	ZmNotebookItem.prototype.set.call(this, data);
 
 	// ZmPage fields
-	this.name = data.name || this.name;
 	// REVISIT: This is temporary!
-	this.fragment = data.fr ? (data.fr instanceof Array ? data.fr[0]._content : data.fr) : this.fragment;
-	if (version != this.version && !data.body) {
-		this._content = null;
-	} else {
-		this._content = data.body ? (data.body instanceof Array ? data.body[0]._content : data.body) : this._content;
+	if (data.fr != null) {
+		this.fragment = data.fr instanceof Array ? data.fr[0]._content : data.fr;
 	}
-	this.creator = data.cr || this.creator;
-	this.createDate = data.d ? new Date(Number(data.d)) : this.createDate;
-	this.modifier = data.leb || this.modifier;
-	this.modifyDate = data.md ? new Date(Number(data.md)) : this.modifyDate;
-	this.size = data.s ? Number(data.s) : this.size;
-	this.version = data.ver ? version : this.version;
+	if (version != this.version && data.body == null) {
+		this._content = null;
+	}
+	else if (data.body != null) {
+		this._content = data.body instanceof Array ? data.body[0]._content : data.body;
+	}
 };
 
 // Protected methods

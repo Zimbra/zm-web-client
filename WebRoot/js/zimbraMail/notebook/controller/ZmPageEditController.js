@@ -312,7 +312,7 @@ function(ev) {
 ZmPageEditController.prototype._addDocsListener =
 function(ev) {
 	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(this._page.folderId || ZmPage.DEFAULT_FOLDER);
+	var notebook = tree.getById(this._page.folderId || ZmNotebookItem.DEFAULT_FOLDER);
 	var callback = null;
 
 	var dialog = this._appCtxt.getUploadDialog();

@@ -38,9 +38,10 @@
 * @param owner		[string]*		owner of the address book (if shared)
 * @param zid 		[string]*		the share ID of a shared addrbook
 * @param rid		[string]*		the remote folder id of a shared addrbook
+* @param restUrl	[string]*		The REST URL of this organizer.
 */
-function ZmAddrBook(id, name, parent, tree, color, owner, zid, rid) {
-	ZmFolder.call(this, id, name, parent, tree, null, null, null, owner, zid, rid);
+function ZmAddrBook(id, name, parent, tree, color, owner, zid, rid, restUrl) {
+	ZmFolder.call(this, id, name, parent, tree, null, null, null, owner, zid, rid, restUrl);
 	this.type = ZmOrganizer.ADDRBOOK;
 	this.color = color || ZmAddrBook.DEFAULT_COLOR;
 };
@@ -185,7 +186,7 @@ function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 
 	// create addrbook, populate, and return
-	var ab = new ZmAddrBook(obj.id, obj.name, parent, tree, obj.color, obj.d, obj.zid, obj.rid);
+	var ab = new ZmAddrBook(obj.id, obj.name, parent, tree, obj.color, obj.d, obj.zid, obj.rid, obj.rest);
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];

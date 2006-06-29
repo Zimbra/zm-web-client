@@ -39,9 +39,10 @@
 * @param owner
 * @param zid		[string]*		Zimbra id of owner, if remote share
 * @param rid		[string]*		Remote id of organizer, if remote share
+* @param restUrl	[string]*		The REST URL of this organizer.
 */
-function ZmCalendar(id, name, parent, tree, color, url, owner, zid, rid) {
-	ZmOrganizer.call(this, ZmOrganizer.CALENDAR, id, name, parent, tree, null, null, url, owner, zid, rid);
+function ZmCalendar(id, name, parent, tree, color, url, owner, zid, rid, restUrl) {
+	ZmOrganizer.call(this, ZmOrganizer.CALENDAR, id, name, parent, tree, null, null, url, owner, zid, rid, restUrl);
 	this.color = color || ZmOrganizer.DEFAULT_COLOR;
 }
 
@@ -177,7 +178,7 @@ function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 
 	// create calendar, populate, and return
-	var calendar = new ZmCalendar(obj.id, obj.name, parent, tree, obj.color, obj.url, obj.d, obj.zid, obj.rid);
+	var calendar = new ZmCalendar(obj.id, obj.name, parent, tree, obj.color, obj.url, obj.d, obj.zid, obj.rid, obj.rest);
 	if (obj.f) {
 		calendar._parseFlags(obj.f);
 	}

@@ -107,7 +107,7 @@ ZmNotebookCache.prototype.putPage = function(page) {
 	if (page.id) { 
 		this._idMap[page.id] = page; 
 	}
-	var folderId = page.folderId || ZmPage.DEFAULT_FOLDER;
+	var folderId = page.folderId || ZmNotebookItem.DEFAULT_FOLDER;
 	this.getPagesInFolder(folderId)[page.name] = page;
 	/*** REVISIT ***/
 	var remoteFolderId = page.remoteFolderId;
@@ -355,7 +355,7 @@ ZmNotebookCache.__getNotebookByName = function(parent, name) {
 };
 
 ZmNotebookCache.prototype.getPagesInFolder = function(folderId) {
-	folderId = folderId || ZmPage.DEFAULT_FOLDER;
+	folderId = folderId || ZmNotebookItem.DEFAULT_FOLDER;
 	if (!this._foldersMap[folderId]) {
 		this._foldersMap[folderId] = {};
 		this.fillCache(folderId);

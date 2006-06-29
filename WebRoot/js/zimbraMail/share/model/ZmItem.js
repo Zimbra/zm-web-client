@@ -222,15 +222,22 @@ ZmItem.prototype.getUrl = function() {
 };
 
 ZmItem.prototype.getRestUrl = function() {
-	if (this.url) {
-		return this.url;
+	// return REST URL as seen by server
+	if (this.restUrl) {
+		return this.restUrl;
 	}
+
+	// if server doesn't tell us what URL to use, do our best to generate
 	var organizerType = ZmOrganizer.ITEM_ORGANIZER[this.type];
 	var tree = this._appCtxt.getTree(organizerType);
 	var organizer = tree.getById(this.folderId);
-	return [
+	var url = [
 		organizer.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(this.name)
 	].join("");
+
+	DBG.println("NO REST URL FROM SERVER. GENERATED URL: "+url);
+
+	return url;
 };
 
 /**

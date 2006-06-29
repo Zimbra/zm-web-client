@@ -42,9 +42,10 @@
 * @param owner		[string]* 		Owner for this organizer
 * @param zid		[string]*		Zimbra ID of owner, if remote folder
 * @param rid		[string]*		Remote ID of organizer, if remote folder
+* @param restUrl	[string]*		The REST URL of this organizer.
 */
-function ZmFolder(id, name, parent, tree, numUnread, numTotal, url, owner, zid, rid) {
-	ZmOrganizer.call(this, ZmOrganizer.FOLDER, id, name, parent, tree, numUnread, numTotal, url, owner, zid, rid);
+function ZmFolder(id, name, parent, tree, numUnread, numTotal, url, owner, zid, rid, restUrl) {
+	ZmOrganizer.call(this, ZmOrganizer.FOLDER, id, name, parent, tree, numUnread, numTotal, url, owner, zid, rid, restUrl);
 };
 
 ZmFolder.prototype = new ZmOrganizer;
@@ -144,7 +145,7 @@ function(parent, obj, tree) {
 	}
 
 	var name = ZmFolder.MSG_KEY[obj.id] ? ZmMsg[ZmFolder.MSG_KEY[obj.id]] : obj.name;
-	var folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n, obj.url);
+	var folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n, obj.url, null, null, obj.rest);
 	folder._setSharesFromJs(obj);
 
 	// a folder may contain other folders or searches

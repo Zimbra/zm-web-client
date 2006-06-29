@@ -25,30 +25,18 @@
 
 function ZmDocument(appCtxt, id, list) {
 	if (arguments.length == 0) return;
-	ZmItem.call(this, appCtxt, ZmItem.DOCUMENT, id, list);
-	this.folderId = ZmDocument.DEFAULT_FOLDER;
+	ZmNotebookItem.call(this, appCtxt, ZmItem.DOCUMENT, id, list);
 }
-ZmDocument.prototype = new ZmItem;
+ZmDocument.prototype = new ZmNotebookItem;
 ZmDocument.prototype.constructor = ZmDocument;
 
 ZmDocument.prototype.toString = function() {
 	return "ZmDocument";
 };
 
-// Constants
-
-ZmDocument.DEFAULT_FOLDER = ZmOrganizer.ID_NOTEBOOK;
-
 // Data
 
-ZmDocument.prototype.name;
 ZmDocument.prototype.contentType;
-ZmDocument.prototype.creator;
-ZmDocument.prototype.createDate;
-ZmDocument.prototype.modifier;
-ZmDocument.prototype.modifyDate;
-ZmDocument.prototype.size;
-ZmDocument.prototype.version = 0;
 
 // Static functions
 
@@ -61,20 +49,8 @@ ZmDocument.createFromDom = function(node, args) {
 // Public methods
 
 ZmDocument.prototype.set = function(data) {
-	// ZmItem fields
-	this.id = data.id;
-	this.url = data.url;
-	// REVISIT: Sometimes the server doesn't return the folderId!!!
-	this.folderId = data.l || this.folderId;
-	this._parseTags(data.t);
+	ZmNotebookItem.prototype.set.call(this, data);
 
 	// ZmDocument fields
-	this.name = data.name;
-	this.contentType = data.ct;
-	this.creator = data.cr;
-	this.createDate = new Date(Number(data.d));
-	this.modifier = data.leb;
-	this.modifyDate = new Date(Number(data.md));
-	this.size = Number(data.s);
-	this.version = Number(data.ver);
+	this.contentType = data.ct != null ? data.ct : this.contentType;
 };

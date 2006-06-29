@@ -133,7 +133,7 @@ function(obj, span, ev, context) {
 		// NOTE: We assume the page is new if there's no entry in the cache.
 		page = new ZmPage(this._appCtxt);
 		page.name = context.keyword;
-		page.folderId = (currentPage && currentPage.folderId) || ZmPage.DEFAULT_FOLDER;
+		page.folderId = (currentPage && currentPage.folderId) || ZmNotebookItem.DEFAULT_FOLDER;
 	}	
 	this._selectedHandleResponse(page);
 };
@@ -173,7 +173,7 @@ function(keyword, context) {
 	}
 	html.push("<table border=0 cellpadding=0 cellspacing=0>");
 	this._appendPropertyToTooltip(html, page.creator, ZmMsg.userLabel);
-	this._appendPropertyToTooltip(html, page.getUrl(), ZmMsg.urlLabel);
+	this._appendPropertyToTooltip(html, page.getRestUrl(), ZmMsg.urlLabel);
 	this._appendPropertyToTooltip(html, page.getPath(), ZmMsg.pathLabel);
 	html.push("</table></td></tr></table>");
 	

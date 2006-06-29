@@ -47,7 +47,7 @@
 * @param rid		[string]*		Remote ID of organizer, if remote folder
 * @param restUrl	[string]*		REST URL of this organizer.
 */
-function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, owner, zid, rid) {
+function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, owner, zid, rid, restUrl) {
 
 	if (arguments.length == 0) return;
 	
@@ -63,6 +63,7 @@ function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, own
 	this.link = Boolean(zid);
 	this.zid = zid;
 	this.rid = rid;
+	this.restUrl = restUrl;
 
 	if (id && tree)
 		tree._appCtxt.cacheSet(id, this);
@@ -353,10 +354,14 @@ ZmOrganizer.prototype.getRestUrl = function() {
 		host = host + ":" + loc.port;
 	}
 
-	return [
-		loc.protocol, "//", host, "/home/", uname, "/",
+	var url = [
+		loc.protocol, "//", host, "/service/user/", uname, "/",
 		AjxStringUtil.urlEncode(this.getSearchPath())
 	].join("");
+
+	DBG.println("NO REST URL FROM SERVER. GENERATED URL: "+url);
+
+	return url;
 };
 
 ZmOrganizer.prototype.getShares =

@@ -107,7 +107,7 @@ ZmNotebookPageController.prototype.showLink = function(link) {
 
 ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSearch) {
 	if (/*force ||*/ !(pageOrFolderId instanceof ZmPage)) {
-		this._showIndex(pageOrFolderId || ZmPage.DEFAULT_FOLDER);
+		this._showIndex(pageOrFolderId || ZmNotebookItem.DEFAULT_FOLDER);
 		return;
 	}
 

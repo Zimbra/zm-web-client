@@ -256,6 +256,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/im/ZmImApp.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- Notebook Application -->
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/model/ZmNotebookItem.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/model/ZmDocument.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/model/ZmPage.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/model/ZmNotebookCache.js<%= ext %>?v=<%= vers %>"></script>
