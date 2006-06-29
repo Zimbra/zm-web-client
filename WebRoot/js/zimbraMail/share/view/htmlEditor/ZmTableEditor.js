@@ -121,6 +121,7 @@ ZmTableEditor = {
 							   new DwtSelectOption("inset", false, ZmMsg.borderStyleInset),
 							   new DwtSelectOption("outset", false, ZmMsg.borderStyleOutset) ]);
 		this._wBorderStyle.reparentHtmlElement(this._idBorderStyle);
+		this._wBorderStyle.addChangeListener(new AjxListener(this, this.__onBorderStyleChange));
 
 		this._wBorderWidth = new DwtSpinner({ parent: this, size: 3, min: 0, max: 10 });
 		this._wBorderWidth.reparentHtmlElement(this._idBorderWidth);
@@ -139,6 +140,17 @@ ZmTableEditor = {
 
 		this._wWidth = new DwtSpinner({ parent: this, size : 3, min: 0 });
 		this._wWidth.reparentHtmlElement(this._idWidth);
+	},
+
+	__onBorderStyleChange : function(ev) {
+		var data = ev._args;
+		var borderStyle = data.newValue;
+		if (/^(double|groove|ridge|inset|outset)$/i.test(borderStyle)) {
+			var w = this._wBorderWidth.getValue();
+			if (w < 3) {
+				this._wBorderWidth.setValue(3);
+			}
+		}
 	}
 
 };
@@ -222,7 +234,7 @@ ZmTablePropsDialog.prototype.popup = function() {
 	this._wCaption.focus();
 };
 
-ZmCellPropsDialog.prototype.popdown = function() {
+ZmTablePropsDialog.prototype.popdown = function() {
 	this._cells = null;
 	this._table = null;
 	this._editor = null;
@@ -326,6 +338,8 @@ ZmTablePropsDialog.prototype.setup = function(editor, table) {
 	var borderCollapse = table.style.borderCollapse;
 	document.getElementById(this._idBorderCollapse).checked = /collapse/i.test(borderCollapse);
 };
+
+ZmTablePropsDialog.prototype.__onBorderStyleChange = ZmTableEditor.__onBorderStyleChange;
 
 ZmTablePropsDialog.prototype._setManualWidthState = function() {
 	var auto = document.getElementById(this._idWidthAuto).checked;
@@ -584,7 +598,8 @@ ZmCellPropsDialog.prototype._quickSetBorder = function(ev) {
 			else
 				style = "solid";
 		} else {
-			style = "none";
+			// style = "none";
+			continue;
 		}
 		this._grid_applyBorderStyles(i, {
 			width: width + "px",
@@ -659,6 +674,8 @@ ZmCellPropsDialog.prototype.setup = function(editor, table, cells) {
 		setTimeout(function() { grid.style.display = ""; }, 1);
 	}
 };
+
+ZmTablePropsDialog.prototype.__onBorderStyleChange = ZmTableEditor.__onBorderStyleChange;
 
 ZmCellPropsDialog.prototype._gridMouseEvent = function(ev) {
 	if (AjxEnv.isIE)
