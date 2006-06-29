@@ -427,8 +427,8 @@ InputField-error			= @Text@			background-color:@HilightColor@; 		@_InputBorder-e
 InputField-disabled			= @Text-disabled@	background-color:@_BaseColor_@; 		@_InputBorder-disabled_@		@_InputSize_@
 
 # "TextArea" inputs
-TextArea					= @Text@			background-color:white; 			@_InputBorder_@			
-TextArea-focused			= @Text@			background-color:white; 			@_InputBorder-focused_@	
+TextArea					= @Text@			background-color:@InputBgColor@; 			@_InputBorder_@			
+TextArea-focused			= @Text@			background-color:@InputBgColor@; 			@_InputBorder-focused_@	
 TextArea-error				= @Text@			background-color:@HilightColor; 	@_InputBorder-error_@	
 TextArea-disabled			= @Text-disabled@	background-color:@_BaseColor_@; 	@_InputBorder-disabled_@
 
