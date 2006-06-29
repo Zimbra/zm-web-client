@@ -94,7 +94,7 @@
 <!--
 	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
 	@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/css/dwt,common,msgview,login,zm,spellcheck,skin.css?v=<%= vers %><%= inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+	@import url(<%= contextPath %>/css/dwt,common,msgview,login,zm,spellcheck,wiki,skin.css?v=<%= vers %><%= inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
 -->
 </style>
 
