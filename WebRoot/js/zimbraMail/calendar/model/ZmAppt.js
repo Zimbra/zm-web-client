@@ -658,8 +658,8 @@ function(message, viewMode) {
 };
 
 ZmAppt.prototype.setFromMailMessage = 
-function(message) {
-	this.name = (message.subject) ? message.subject : "";
+function(message, subject) {
+	this.name = subject;
 	
 	// Only unique names in the attendee list, plus omit our own name
 	var used = {};
