@@ -775,7 +775,7 @@ function(ev) {
 ZmHtmlEditor.prototype._createTableListener =
 function(ev) {
 	var size = ev.detail;
-	this.insertTable(size.rows, size.cols);
+	this.insertTable(size.rows, size.cols, "90%", null, null, "center");
 };
 
 ZmHtmlEditor.prototype._menu_insertObject =
