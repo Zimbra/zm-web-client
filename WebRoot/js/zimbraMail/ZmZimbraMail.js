@@ -175,12 +175,13 @@ ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MIXED_APP]		= ZmSearchToolBar.FOR_ANY_M
 
 // trees shown in overview panel for each app
 ZmZimbraMail.OVERVIEW_TREES = {};
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]	= [ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]	= [ZmOrganizer.CALENDAR, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]		= [ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTEBOOK_APP]	= [ZmOrganizer.NOTEBOOK, /*ZmOrganizer.SEARCH,*/ ZmOrganizer.TAG,ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]		= [ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]			= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]		= [ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]		= [ZmOrganizer.CALENDAR, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]	= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]			= [ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTEBOOK_APP]		= [ZmOrganizer.NOTEBOOK, /*ZmOrganizer.SEARCH,*/ ZmOrganizer.TAG,ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MIXED_APP]			= [ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 
 // trees to hide if they have no data
 ZmZimbraMail.HIDE_EMPTY = {};
@@ -191,6 +192,7 @@ ZmZimbraMail.HIDE_EMPTY[ZmOrganizer.ZIMLET]	= true;
 ZmZimbraMail.SEARCH_TYPES = {};
 ZmZimbraMail.SEARCH_TYPES[ZmZimbraMail.MAIL_APP]		= [ZmItem.MSG, ZmItem.CONV];
 ZmZimbraMail.SEARCH_TYPES[ZmZimbraMail.CONTACTS_APP]	= [ZmItem.CONTACT];
+ZmZimbraMail.SEARCH_TYPES[ZmZimbraMail.PREFERENCES_APP]	= [ZmItem.MSG, ZmItem.CONV];
 ZmZimbraMail.SEARCH_TYPES[ZmZimbraMail.NOTEBOOK_APP]	= [ZmItem.PAGE, ZmItem.DOCUMENT];
 ZmZimbraMail.SEARCH_TYPES[ZmZimbraMail.MIXED_APP]		= [ZmItem.MSG, ZmItem.CONV];
 ZmZimbraMail.SEARCH_TYPES_H = {};
