@@ -1414,7 +1414,8 @@ function(words) {
 		this._appCtxt.setStatusMsg(ZmMsg.spellCheckUnavailable, ZmStatusView.LEVEL_CRITICAL);
 	}
 
-	setTimeout(AjxCallback.simpleClosure(this.focus, this), 10);
+	if (this._mode == DwtHtmlEditor.HTML)
+		setTimeout(AjxCallback.simpleClosure(this.focus, this), 10);
 
 	if (this.onExitSpellChecker)
 		this.onExitSpellChecker.run(wordsFound);
