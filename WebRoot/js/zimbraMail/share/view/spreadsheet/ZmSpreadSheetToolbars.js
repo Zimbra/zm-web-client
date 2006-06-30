@@ -250,6 +250,7 @@ ZmSpreadSheetToolbars.prototype._createToolbar2 = function() {
 	b.setText("Insert function");
 
 	var menu = new DwtMenu(b);
+	menu.dontStealFocus();
 
 	var funcs = [];
 	for (var i in ZmSpreadSheetFormulae.HELP)
