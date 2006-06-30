@@ -680,6 +680,10 @@ function(date, duration, roll) {
 		this._miniCalendar.setDate(date, true, roll);
 	if (this._viewMgr != null) {		
 		this._viewMgr.setDate(date, duration, roll);
+		var viewId = this._viewMgr.getCurrentViewName();
+		if (viewId == ZmController.CAL_APPT_VIEW) {
+			this._viewMgr.getCurrentView().close();
+		}
 		var title = this._viewMgr.getCurrentView().getCalTitle();
 		this._navToolBar[ZmController.CAL_VIEW].setText(title);
 		Dwt.setTitle(title);
