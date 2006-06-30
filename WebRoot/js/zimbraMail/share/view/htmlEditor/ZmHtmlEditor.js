@@ -685,7 +685,7 @@ function(parent) {
 	item.setImage("InsertTable");
 
 	new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
-	this._tableCmdItems = this.__createTableOperationItems(menu);
+	this.__createTableOperationItems(menu);
 
 	/* END: table operations */
 
@@ -713,7 +713,6 @@ ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {
 			 "InsertRowBefore", "DeleteRow", "InsertColBefore", "DeleteCol", null,
 			 "MergeCells", "SplitCells", null,
 			 "DeleteTable" ];
-	var a = [];
 	menu._tblItems = {};
 	for (var i = 0; i < tblCommands.length; ++i) {
 		var cmd = tblCommands[i];
@@ -733,18 +732,21 @@ ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {
 				item.setImage(tblIcons[i]);
 			item.setData("TableOperations", cmd);
 			item.addSelectionListener(tblListener);
-			a.push(item);
 		}
 	}
 	menu.addPopupListener(new AjxListener(this, this.__onTableOperationsPopup));
-	return a;
 };
 
 ZmHtmlEditor.prototype.__onTableOperationsPopup = function(menu) {
+	var table = this.getNearestElement("table");
+	var items = menu._tblItems;
+	for (var i in items) {
+		items[i].setEnabled(!!table);
+	}
 	var td = this.getNearestElement("td");
 	var splitEnabled = td && ((td.colSpan && td.colSpan > 1)
 				  || (td.rowSpan && td.rowSpan > 1));
-	menu._tblItems.splitCells.setEnabled(splitEnabled);
+	items.splitCells.setEnabled(splitEnabled);
 };
 
 ZmHtmlEditor.prototype._tableOperationsListener =
@@ -990,10 +992,6 @@ function(ev) {
 
 	this._fontColorButton.setColor(ev.color);
 	this._fontBackgroundButton.setColor(ev.backgroundColor);
-
-	var table = this.getNearestElement("table");
-	for (var i = 0; i < this._tableCmdItems.length; ++i)
-		this._tableCmdItems[i].setEnabled(!!table);
 
 	if (ev.style)
 		this._styleSelect.setSelectedValue(ev.style);
