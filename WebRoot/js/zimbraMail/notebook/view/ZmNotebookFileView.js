@@ -103,6 +103,8 @@ ZmNotebookFileView.prototype.addActionListener = function(listener) {
 	this._fileListView.addActionListener(listener);
 };
 
+ZmNotebookFileView.prototype.handleActionPopdown = function(ev) { /*TODO*/ };
+
 ZmNotebookFileView.prototype.getSelection =
 function() {
 	return this._fileListView.getSelection();

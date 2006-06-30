@@ -154,6 +154,7 @@ function() {
 
 ZmNotebookPageView.prototype.addSelectionListener = function(listener) { /*TODO*/ };
 ZmNotebookPageView.prototype.addActionListener = function(listener) { /*TODO*/ };
+ZmNotebookPageView.prototype.handleActionPopdown = function(ev) { /*TODO*/ };
 
 ZmNotebookPageView.prototype.setBounds =
 function(x, y, width, height) {
