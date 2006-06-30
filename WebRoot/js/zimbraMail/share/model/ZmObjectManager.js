@@ -190,7 +190,7 @@ function() {
 // type is optional.. if you know what type of content is being passed in, set the
 // type param so we dont have to figure out what kind of content we're dealing with
 ZmObjectManager.prototype.findObjects =
-function(content, htmlEncode, type) {
+function(content, htmlEncode, type, isTextMsg) {
 	if  (!content) {return "";}
 	var html = [];
 	var idx = 0;
@@ -257,7 +257,7 @@ function(content, htmlEncode, type) {
 			// do last chunk
 			chunk = content.substring(lastIndex, maxIndex);
 			if (htmlEncode) {
-				html[idx++] = AjxStringUtil.htmlEncode(chunk, false);
+				html[idx++] = AjxStringUtil.htmlEncode(chunk, !!isTextMsg);
 			} else {
 				html[idx++] = chunk;
 			}
@@ -268,7 +268,7 @@ function(content, htmlEncode, type) {
 		if (lowestIndex > lastIndex) {
 			chunk = content.substring(lastIndex, lowestIndex);
 			if (htmlEncode) {
-				html[idx++] = AjxStringUtil.htmlEncode(chunk, false); 
+				html[idx++] = AjxStringUtil.htmlEncode(chunk, !!isTextMsg);
 			} else {
 				html[idx++] = chunk;
 			}
