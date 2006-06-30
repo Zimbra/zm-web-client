@@ -10,6 +10,23 @@
               <!-- If you're wondering why this has to be so complex, check out this bug:
                    https://bugzilla.mozilla.org/show_bug.cgi?id=258255 -->
               <div style="padding-left: 1em; padding-top: 1em">$msg.clickToDrawABorder:</div>
+              <div style="margin-top: 10px;">
+                <table align="center">
+                  <tr>
+                    <td>$msg.style:</td>
+                    <td>$msg.colorLabel</td>
+                    <td>$msg.width:</td>
+                  </tr>
+                  <tr>
+                    <td id="$id.BorderStyle"></td>
+                    <td>
+                      <!-- embedded in a table so the widget doesn't enlarge -->
+                      <table cellspacing="0" cellpadding="0"><tr><td id="$id.BorderColor"></td></tr></table>
+                    </td>
+                    <td id="$id.BorderWidth"></td>
+                  </tr>
+                </table>
+              </div>
               <table id="$id.PreviewGridHolder"
                      style="width: 100px; height: 100px;"
                      cellspacing="0" cellpadding="0" align="center"><tr><td>
@@ -28,25 +45,6 @@
                   </table>
                 </td></tr></table>
               </td></tr></table>
-              <div style="margin-top: 15px">
-                <table align="center">
-                  <tr>
-                    <td class="SmallLabel">$msg.style:</td>
-                    <td id="$id.BorderStyle"></td>
-                  </tr>
-                  <tr>
-                    <td class="SmallLabel">$msg.colorLabel</td>
-                    <td>
-                      <!-- embedded in a table so the widget doesn't enlarge -->
-                      <table cellspacing="0" cellpadding="0"><tr><td id="$id.BorderColor"></td></tr></table>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td class="SmallLabel">$msg.width:</td>
-                    <td id="$id.BorderWidth"></td>
-                  </tr>
-                </table>
-              </div>
             </td>
             <td class="VSep-L">&nbsp;</td>
             <td class="VSep-R">&nbsp;</td>
