@@ -63,20 +63,21 @@ LEGEND {
 	@FieldSetLabel@
 }
 
-/* set for 'text' and 'password' fields explicitly so checkboxes don't get borders */
-HTML>BODY input[type="text"], 
-HTML>BODY input[type="password"] {
-	@InputField@
-}
-
-HTML>BODY textarea {
-	@TextArea@
-}
-
-HTML>BODY input[type="checkbox"] {
-	@ActiveCursor@
-}
-
+#IFDEF GECKO
+	/* set for 'text' and 'password' fields explicitly so checkboxes don't get borders */
+	input[type="text"], 
+	input[type="password"] {
+		@InputField@
+	}
+	
+	textarea {
+		@TextArea@
+	}
+	
+	input[type="checkbox"] {
+		@ActiveCursor@
+	}
+#ENDIF
 
 .CompactTable {
 	@CompactTable@
