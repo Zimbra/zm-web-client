@@ -201,9 +201,22 @@ ZmMountFolderDialog.prototype._handleOkButton = function(event) {
 		"color": this._colorSelect.getValue()
 	};
 	var callback = new AjxCallback(this, this.popdown);
-	var errorCallback = null;
+	var errorCallback = new AjxCallback(this, this._handleCreateError);
 
 	ZmMountpoint.create(appCtxt, params, callback, errorCallback)
+};
+
+ZmMountFolderDialog.prototype._handleCreateError = function(response) {
+	var code = response.code;
+	if (code == ZmCsfeException.SVC_PERM_DENIED ||
+		code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
+		var msg = ZmCsfeException.getErrorMsg(code);
+
+		var controller = this._appCtxt.getAppController();
+		controller.popupErrorDialog(msg, null, null, true);
+
+		return true;
+	}
 };
 
 ZmMountFolderDialog.prototype._createMountHtml = function() {
