@@ -60,7 +60,7 @@ ZmPref.MAIL_PREFS = [ZmSetting.INITIAL_GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSet
 					 ZmSetting.VIEW_AS_HTML, ZmSetting.DEDUPE_MSG_TO_SELF, 
 					 ZmSetting.COMPOSE_AS_FORMAT, ZmSetting.COMPOSE_SAME_FORMAT, ZmSetting.NEW_WINDOW_COMPOSE];
 					 
-ZmPref.ADDR_BOOK_PREFS = [ZmSetting.AUTO_ADD_ADDRESS, 
+ZmPref.ADDR_BOOK_PREFS = [ZmSetting.AUTO_ADD_ADDRESS, ZmSetting.GAL_AUTOCOMPLETE,
 						  ZmSetting.CONTACTS_VIEW, ZmSetting.CONTACTS_PER_PAGE,
 						  ZmSetting.IMPORT, ZmSetting.EXPORT];
 						  
@@ -314,7 +314,12 @@ ZmPref.SETUP[ZmSetting.NEW_WINDOW_COMPOSE] = {
 
 ZmPref.SETUP[ZmSetting.AUTO_ADD_ADDRESS] = {
 	displayName:		ZmMsg.autoAddContacts,
+	displayContainer:	ZmPref.TYPE_CHECKBOX};
+
+ZmPref.SETUP[ZmSetting.GAL_AUTOCOMPLETE] = {
+	displayName:		ZmMsg.galAutocomplete,
 	displayContainer:	ZmPref.TYPE_CHECKBOX,
+	precondition:		ZmSetting.GAL_AUTOCOMPLETE_ENABLED,
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.CONTACTS_VIEW] = {

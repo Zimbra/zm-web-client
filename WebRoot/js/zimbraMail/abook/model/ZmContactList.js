@@ -65,7 +65,6 @@ function ZmContactList(appCtxt, search, isGal, type) {
 	this._showStatus = true;
 
 	this._acMatchFields = ZmContactList.AC_FIELDS;
-	this._galAutocompleteEnabled = this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED);
 };
 
 ZmContactList.prototype = new ZmList;
@@ -628,7 +627,7 @@ function(str, callback) {
 	DBG.println(AjxDebug.DBG3, "str = " + str);
 
 	// see if we have GAL results we can use
-	if (this._galAutocompleteEnabled) {
+	if (this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE)) {
 		var old = (new Date()).getTime() - ZmContactList.GAL_RESULTS_TTL;
 		if (this._galResults[str] && (this._galResults[str].ts > old)) {
 			DBG.println(AjxDebug.DBG3, "Found GAL results for " + str);
@@ -748,7 +747,7 @@ function(str) {
 ZmContactList.prototype._matchingDone =
 function(str) {
 	var localDone = (this._acAddrList[str] && this._acAddrList[str].matchingDone);
-	var galDone = (!this._galAutocompleteEnabled ||
+	var galDone = (!this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE) ||
 				   ((this._acAddrList[str] && this._acAddrList[str].galMatchingDone)));
 	return (localDone && galDone);
 };
