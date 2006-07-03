@@ -649,12 +649,14 @@ function(parent) {
 	new DwtControl(tb, "vertSep");
 
 	b = this._fontColorButton = new DwtButtonColorPicker(tb, null, "DwtToolbarButton");
+	b.dontStealFocus();
 	b.setImage("FontColor");
 	b.showColorDisplay();
 	b.setToolTipContent(ZmMsg.fontColor);
 	b.addSelectionListener(new AjxListener(this, this._fontColorListener));
 
 	b = this._fontBackgroundButton = new DwtButtonColorPicker(tb, null, "DwtToolbarButton");
+	b.dontStealFocus();
 	b.setImage("FontBackground");
 	b.showColorDisplay();
 	b.setToolTipContent(ZmMsg.fontBackground);
@@ -672,6 +674,7 @@ function(parent) {
 	/* BEGIN: Table operations */
 
 	b = new DwtButton(tb, null, "DwtToolbarButton");
+	b.dontStealFocus();
 	b.setImage("Table");
 	var menu = new DwtMenu(b);
 	b.setMenu(menu);
@@ -933,6 +936,7 @@ ZmHtmlEditor.prototype._createStyleSelect =
 function(tb) {
 	var listener = new AjxListener(this, this._styleListener);
 	var s = this._styleSelect = new DwtSelect(tb, null);
+	s.dontStealFocus();
 	s.addChangeListener(listener);
 
 	s.addOption("Normal", true, DwtHtmlEditor.PARAGRAPH);
@@ -950,6 +954,7 @@ ZmHtmlEditor.prototype._createFontFamilySelect =
 function(tb) {
 	var listener = new AjxListener(this, this._fontNameListener);
 	var s = this._fontFamilySelect = new DwtSelect(tb, null);
+	s.dontStealFocus();
 	s.addChangeListener(listener);
 
 	var fontFamily = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
@@ -964,6 +969,7 @@ ZmHtmlEditor.prototype._createFontSizeMenu =
 function(tb) {
 	var listener = new AjxListener(this, this._fontSizeListener);
 	var s = this._fontSizeSelect = new DwtSelect(tb, null);
+	s.dontStealFocus();
 	s.addChangeListener(listener);
 
 	var fontSize = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
@@ -1441,44 +1447,60 @@ ZmHtmlEditor.prototype._enableDesignMode = function(doc) {
 	var bookmark = null;
 
 	if (!this._designModeHack_blur) {
-		this._designModeHack_blur = AjxCallback.simpleClosure(function() {
-			if (this._ace_componentsLoading > 0)
-				return;
-			var doc = this._getIframeDoc();
-			try {
-				var sel = this._getIframeWin().getSelection();
-				var i = 0, r;
+		this._designModeHack_blur = AjxCallback.simpleClosure(
+			function() {
+				var a = [];
+				if (this._toolbar1)
+					a = a.concat(this._toolbar1.getChildren());
+				if (this._toolbar2)
+					a = a.concat(this._toolbar2.getChildren());
+				for (var i = 0; i < a.length; ++i)
+					a[i].setEnabled(false);
+				if (this._ace_componentsLoading > 0)
+					return;
+				var doc = this._getIframeDoc();
 				try {
-					bookmark = [];
-					while (r = sel.getRangeAt(i++))
-						bookmark.push(r);
-				} catch(ex) {};
-				sel.removeAllRanges();
-			} catch(ex) {
-				bookmark = null;
-			}
-			doc.designMode = "off";
-		}, this);
+					var sel = this._getIframeWin().getSelection();
+					var i = 0, r;
+					try {
+						bookmark = [];
+						while (r = sel.getRangeAt(i++))
+							bookmark.push(r);
+					} catch(ex) {};
+					sel.removeAllRanges();
+				} catch(ex) {
+					bookmark = null;
+				}
+				doc.designMode = "off";
+			}, this);
 	}
 
 	if (!this._designModeHack_focus) {
-		this._designModeHack_focus = AjxCallback.simpleClosure(function() {
-			if (this._ace_componentsLoading > 0)
-				return;
-			var doc = this._getIframeDoc();
-			doc.designMode = "on";
-			// Probably a regression of FF 1.5.0.1/Linux requires us to
-			// reset event handlers here (Zimbra bug: 6545).
-			if (AjxEnv.isGeckoBased && (AjxEnv.isLinux || AjxEnv.isMac))
-				this._registerEditorEventHandlers(document.getElementById(this._iFrameId), doc);
-			if (bookmark) {
-				var sel = this._getIframeWin().getSelection();
-				sel.removeAllRanges();
-				for (var i = 0; i < bookmark.length; ++i)
-					sel.addRange(bookmark[i]);
-				bookmark = null;
-			}
-		}, this);
+		this._designModeHack_focus = AjxCallback.simpleClosure(
+			function() {
+				var a = [];
+				if (this._toolbar1)
+					a = a.concat(this._toolbar1.getChildren());
+				if (this._toolbar2)
+					a = a.concat(this._toolbar2.getChildren());
+				for (var i = 0; i < a.length; ++i)
+					a[i].setEnabled(true);
+				if (this._ace_componentsLoading > 0)
+					return;
+				var doc = this._getIframeDoc();
+				doc.designMode = "on";
+				// Probably a regression of FF 1.5.0.1/Linux requires us to
+				// reset event handlers here (Zimbra bug: 6545).
+				if (AjxEnv.isGeckoBased && (AjxEnv.isLinux || AjxEnv.isMac))
+					this._registerEditorEventHandlers(document.getElementById(this._iFrameId), doc);
+				if (bookmark) {
+					var sel = this._getIframeWin().getSelection();
+					sel.removeAllRanges();
+					for (var i = 0; i < bookmark.length; ++i)
+						sel.addRange(bookmark[i]);
+					bookmark = null;
+				}
+			}, this);
 	}
 
 	doc.addEventListener("blur", this._designModeHack_blur, true);
