@@ -1198,7 +1198,7 @@ function(ev, isHover) {
 			? "default" : "pointer";
 
 		if (this._rdfTooltip == null) {
-			this._rdfTooltip = new DwtToolTip(this._appCtxt.getShell());
+			this._rdfTooltip = this._appCtxt.getShell().getToolTip();
 		}
 
 		var content = "<div style='width:300px'>" + this._repeatDescField.innerHTML + "</div>";
