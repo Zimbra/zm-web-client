@@ -817,6 +817,8 @@ function(name, target, data) {
 		ifr.src = component_url;
 		ifr.style.width = "100%";
 		ifr.style.height = "400px";
+		// Avoid bug 8523 in IE.
+		ifr.ondragstart = AjxCallback.returnFalse;
 		if (!target)
 			this._insertNodeAtSelection(ifr);
 		else
