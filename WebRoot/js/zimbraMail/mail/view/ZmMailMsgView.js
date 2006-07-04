@@ -704,6 +704,11 @@ function(container, html, isTextMsg) {
 				this._makeHighlightObjectsDiv(html);
 				html = AjxStringUtil.convertToHtml(html);
 			}
+		} else {
+			// we get here when viewing text attachments
+			// and we need to HTMLize the text message in
+			// order to be displayed correctly (bug 8714).
+			html = AjxStringUtil.convertToHtml(html);
 		}
 	} else {
 		html = html.replace(/<!--(.|\n)*?-->/g, ""); // remove comments
