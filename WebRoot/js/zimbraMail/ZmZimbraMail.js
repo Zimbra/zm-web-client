@@ -539,6 +539,7 @@ function(params, result) {
 	var response;
 	try {
 		response = params.asyncMode ? result.getResponse() : result;
+		this._updateChangeToken(response.Header);
 	} catch (ex) {
 		DBG.println(AjxDebug.DBG2, "Request " + params.reqId + " got an exception");
 		if (params.errorCallback) {
@@ -548,7 +549,9 @@ function(params, result) {
 		} else {
 			this._handleException(ex, params.execFrame);
 		}
-		this._handleHeader(result.getHeader());
+		var hdr = result.getHeader();
+		this._updateChangeToken(hdr);
+		this._handleHeader(hdr);
 		return;
 	}
 	if (params.asyncMode) {
@@ -595,9 +598,23 @@ function(reqId) {
 };
 
 /**
- * Processes the SOAP header that comes with a response. It updates the
- * change token, processes a <refresh> block if there is one (that happens
- * when a new session is created on the server), and handles notifications.
+ * Updates our internal change token if the server sent us one. The server
+ * uses it to track revisions.
+ * 
+ * @param hdr	[object]	the response header
+ */
+ZmZimbraMail.prototype._updateChangeToken =
+function(hdr) {
+	// update change token if we got one
+	if (hdr && hdr.context && hdr.context.change) {
+		this._changeToken = hdr.context.change.token;
+	}
+};
+
+/**
+ * Processes the SOAP header that comes with a response. It processes a 
+ * <refresh> block if there is one (that happens when a new session is 
+ * created on the server), and handles notifications.
  *
  * @param hdr	[object]	a SOAP header
  */
@@ -605,11 +622,6 @@ ZmZimbraMail.prototype._handleHeader =
 function(hdr) {
 	if (!hdr) {
 		return;
-	}
-
-	// update change token if we got one
-	if (hdr && hdr.context && hdr.context.change) {
-		this._changeToken = hdr.context.change.token;
 	}
 
 	// refresh block causes the overview panel to get updated
