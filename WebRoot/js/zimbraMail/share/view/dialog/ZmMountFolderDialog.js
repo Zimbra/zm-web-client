@@ -183,7 +183,7 @@ ZmMountFolderDialog._enableFieldsOnEdit = function(dialog) {
 	var path = dialog._pathInput.getValue();
 	var name = dialog._nameInput.getValue();
 	var enabled = user.length > 0 && user.match(/\S/) &&
-				  path.length > 0 && path.match(/\S/) &&
+				  path.length > 0 && path.match(/\S/) && !path.match(/^\/+$/) &&
 				  name.length > 0 && name.match(/\S/);
 	dialog.setButtonEnabled(DwtDialog.OK_BUTTON, enabled);
 };
