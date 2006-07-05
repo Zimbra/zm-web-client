@@ -70,61 +70,16 @@ function(appCtxt, params, callback, errorCallback) {
 		linkNode.setAttribute(p, params[p]);
 	}
 
-	var args = [appCtxt, params, callback, errorCallback];
-	var respCallback = callback ? new AjxCallback(null, ZmMountpoint._setColor, args) : null;
+	ZmOrganizer._pending[params.name] = {};
+	ZmOrganizer._pending[params.name].color = params.color;
+
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: Boolean(callback),
-		callback: respCallback,
+		callback: callback,
 		errorCallback: errorCallback
 	};
 
 	var controller = appCtxt.getAppController();
 	var response = controller.sendRequest(params);
-
-	if (!callback) {
-		args.push(response);
-		return ZmMountpoint._setColor.apply(window, args);
-	}
-};
-
-ZmMountpoint._setColor =
-function(appCtxt, params, callback, errorCallback, response) {
-	// TODO: error handling
-	var resp = response._data && response._data.CreateMountpointResponse;
-	var mountpointId = resp.link[0].id;
-
-	var args = [mountpointId, callback];
-	var color = params.color;
-	if (color != null) {
-		var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
-
-		var actionNode = soapDoc.set("action");
-		actionNode.setAttribute("id", mountpointId);
-		actionNode.setAttribute("op", "color");
-		actionNode.setAttribute("color", color);
-
-		var respCallback = callback ? new AjxCallback(null, ZmMountpoint._finish, args) : null;
-		var params = {
-			soapDoc: soapDoc,
-			asyncMode: Boolean(callback),
-			callback: respCallback,
-			errorCallback: errorCallback
-		};
-
-		var controller = appCtxt.getAppController();
-		response = controller.sendRequest(params);
-	}
-
-	if (color == null || !callback) {
-		args.push(response);
-		return ZmMountpoint._finish.apply(window, args);
-	}
-};
-
-ZmMountpoint._finish =
-function(mountpointId, callback, response) {
-	if (callback) {
-		callback.run(mountpointId);
-	}
 };
