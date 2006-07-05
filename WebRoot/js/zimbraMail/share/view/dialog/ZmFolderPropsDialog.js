@@ -154,30 +154,74 @@ function(event) {
 
 ZmFolderPropsDialog.prototype._handleOkButton =
 function(event) {
+	if (!this._handleErrorCallback) {
+		this._handleErrorCallback = new AjxCallback(this, this._handleError);
+		this._handleRenameErrorCallback = new AjxCallback(this, this._handleRenameError);
+	}
+
+	// rename folder
+	var callback = new AjxCallback(this, this._handleColor);
 	var organizer = this._organizer;
-
-	var color = this._color.getValue();
-	if (organizer.color != color)
-		organizer.setColor(color);
-
 	if (organizer.id != ZmCalendar.ID_CALENDAR &&
 		organizer.id != ZmOrganizer.ID_NOTEBOOK &&
 		organizer.id != ZmOrganizer.ID_ADDRBOOK &&
 		organizer.id != ZmFolder.ID_AUTO_ADDED)
 	{
 		var name = this._nameInputEl.value;
-		if (organizer.name != name)
-			organizer.rename(name);
-	}
-
-	if (Dwt.getVisible(this._excludeFbEl) && organizer.setFreeBusy) {
-		var excludeFreeBusy = this._excludeFbCheckbox.checked;
-		if (organizer.excludeFreeBusy != excludeFreeBusy) {
-			organizer.setFreeBusy(excludeFreeBusy);
+		if (organizer.name != name) {
+			organizer.rename(name, callback, this._handleRenameErrorCallback);
+			return;
 		}
 	}
 
-	this.popdown();
+	// else, start by changing color
+	callback.run(null);
+};
+
+ZmFolderPropsDialog.prototype._handleColor = function(response) {
+	// change color
+	var callback = new AjxCallback(this, this._handleFreeBusy);
+	var organizer = this._organizer;
+	var color = this._color.getValue();
+	if (organizer.color != color) {
+		organizer.setColor(color, callback, this._handleErrorCallback);
+		return;
+	}
+
+	// else, change free/busy
+	callback.run(response);
+};
+
+ZmFolderPropsDialog.prototype._handleFreeBusy = function(response) {
+	// set free/busy
+	var callback = new AjxCallback(this, this.popdown);
+	var organizer = this._organizer;
+	if (Dwt.getVisible(this._excludeFbEl) && organizer.setFreeBusy) {
+		var excludeFreeBusy = this._excludeFbCheckbox.checked;
+		if (organizer.excludeFreeBusy != excludeFreeBusy) {
+			organizer.setFreeBusy(excludeFreeBusy, callback, this._handleErrorCallback);
+			return;
+		}
+	}
+
+	// else, popdown
+	callback.run(response);
+};
+
+ZmFolderPropsDialog.prototype._handleError = function(response) {
+	// TODO: Default handling?
+};
+
+ZmFolderPropsDialog.prototype._handleRenameError = function(response) {
+	// REVISIT: This should be handled generically. But the server doesn't
+	//          send back the information necessary to generate the error
+	//          message.
+	var controller = this._appCtxt.getAppController();
+	var type = ZmMsg.folderLc;
+	var name = this._nameInputEl.value;
+	var msg = AjxMessageFormat.format(ZMsg.errorAlreadyExists, [type, name]);
+	controller.popupErrorDialog(msg, null, null, true);
+	return true;
 };
 
 ZmFolderPropsDialog.prototype._handleCancelButton =

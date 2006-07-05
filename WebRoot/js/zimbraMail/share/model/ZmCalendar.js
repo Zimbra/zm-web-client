@@ -118,11 +118,11 @@ function() {
 };
 
 ZmCalendar.prototype.setFreeBusy = 
-function(exclude) {
+function(exclude, callback, errorCallback) {
 	if (this.excludeFreeBusy == exclude) return;
 	// NOTE: Don't need to store the value since the response will
 	//       report that the object was modified.
-	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"}});
+	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"}, callback: callback, errorCallback: errorCallback});
 };
 
 ZmCalendar.prototype.setChecked = 

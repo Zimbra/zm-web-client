@@ -412,16 +412,16 @@ ZmOrganizer.prototype.getIcon = function() {};
 * Assigns the organizer a new name.
 */
 ZmOrganizer.prototype.rename =
-function(name) {
+function(name, callback, errorCallback) {
 	if (name == this.name) return;
-	this._organizerAction({action: "rename", attrs: {name: name}});
+	this._organizerAction({action: "rename", attrs: {name: name}, callback: callback, errorCallback: errorCallback});
 };
 
 ZmOrganizer.prototype.setColor =
-function(color, callback) {
+function(color, callback, errorCallback) {
 	var color = ZmOrganizer.checkColor(color);
 	if (this.color == color) return;
-	this._organizerAction({action: "color", attrs: {color: color}, callback: callback});
+	this._organizerAction({action: "color", attrs: {color: color}, callback: callback, errorCallback: errorCallback});
 };
 
 // Though it's possible to use this method to change just about any folder attribute,
@@ -767,10 +767,10 @@ function(params) {
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseOrganizerAction, params);
 	if (params.batchCmd) {
-		params.batchCmd.addRequestParams(soapDoc, respCallback);
+		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
 	} else {
 		this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
-														   callback: respCallback});
+														   callback: respCallback, errorCallback: params.errorCallback });
 	}
 };
 
