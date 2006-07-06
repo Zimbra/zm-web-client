@@ -674,6 +674,7 @@ function(parent) {
 	/* BEGIN: Table operations */
 
 	b = new DwtButton(tb, null, "DwtToolbarButton");
+	b.setToolTipContent(ZmMsg.insertTable);
 	b.dontStealFocus();
 	b.setImage("Table");
 	var menu = new DwtMenu(b);
