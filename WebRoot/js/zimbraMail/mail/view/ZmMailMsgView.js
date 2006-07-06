@@ -722,9 +722,11 @@ function(container, html, isTextMsg) {
 	}
 
 	var inner_styles = "";
-	var ifw = new DwtIframe(this, "MsgBody", true, html, inner_styles,
-				!ZmMailMsgView.SCROLL_WITH_IFRAME, // "noscroll"
-				"static", callback);
+	var params = {parent: this, className: "MsgBody", hidden: true, html: html,
+				  styles: inner_styles, noscroll: !ZmMailMsgView.SCROLL_WITH_IFRAME,
+				  posStyle: DwtControl.STATIC_STYLE, processHtmlCallback: callback,
+				  useKbMgmt: true};
+	var ifw = new DwtIframe(params);
 	this._iframeId = ifw.getIframe().id;
 
 	var idoc = ifw.getDocument();

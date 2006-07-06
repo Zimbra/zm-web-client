@@ -690,7 +690,8 @@ function(bodyPart, encodeSpace) {
 	// if the only content type returned is html, convert to text
 	if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
 		// create a temp iframe to create a proper DOM tree
-		var dwtIframe = new DwtIframe(this, null, true, bodyPart.content);
+		var params = {parent: this, hidden: true, html: bodyPart.content};
+		var dwtIframe = new DwtIframe(params);
 		if (dwtIframe) {
 			text = AjxStringUtil.convertHtml2Text(dwtIframe.getDocument().body);
 			delete dwtIframe;
