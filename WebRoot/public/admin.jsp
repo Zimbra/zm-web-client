@@ -147,10 +147,23 @@ Contributor(s):
 		}
 			ZaZimbraAdmin.run(document.domain);
 		}
+		/* for Mozilla */
+		if (document.addEventListener) {
+			document.addEventListener("DOMContentLoaded", launch, null);
+		}
+		/* for Safari */
+		if (/WebKit/i.test(navigator.userAgent)) { // sniff
+			var _timer = setInterval(function() {
+				if (/loaded|complete/.test(document.readyState)) {
+					launch();
+				}
+			}, 10);
+		}				
 		AjxCore.addOnloadListener(launch);
     </script>
+<!--[if IE]><script defer src="javascript:'launch()'"></script><![endif]-->    
   </head>
-  <body onload="javascript:void launch()">
+  <body>
   <jsp:include page="/public/pre-cache.jsp"/>  
     <%
 		// NOTE: This inserts raw HTML files from the user's skin
