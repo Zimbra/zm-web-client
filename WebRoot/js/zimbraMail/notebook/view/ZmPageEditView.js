@@ -252,7 +252,7 @@ function() {
 
 function ZmPageEditor(parent, posStyle, content, mode, appCtxt, controller) {
 	if (arguments.length == 0) return;
-	ZmHtmlEditor.call(this, parent, posStyle, content, mode, appCtxt)
+	ZmHtmlEditor.call(this, parent, posStyle, content, mode, appCtxt, true /* enable ace */);
 	this._controller = controller;
 }
 ZmPageEditor.prototype = new ZmHtmlEditor;
@@ -643,5 +643,6 @@ function(dialog, editor, wikletEl, schema) {
 // is done after a series of timed events.
 ZmPageEditor.prototype._onContentInitialized =
 function() {
+	ZmHtmlEditor.prototype._onContentInitialized.call(this); // otherwise ALE objects won't be deserialized
 	this.parent._onEditorContentInitialized();	
 };

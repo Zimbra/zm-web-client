@@ -28,13 +28,13 @@
  *
  * @author Ross Dargahi
  */
-function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt) {
+function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt, withAce) {
 	if (arguments.length == 0) return;
 	this._appCtxt = appCtxt;
 	this._toolbars = [];
 
 	// ACE?
-	this.ACE_ENABLED = true;
+	this.ACE_ENABLED = !!withAce;
 	this.ACE_DEBUG = false;
 
 	if (this.ACE_ENABLED)
