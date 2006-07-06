@@ -890,7 +890,7 @@ function(action, msg, extraBodyText, incOption) {
 		if (composingHtml) {
 			body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
 			if (body) {
-				body = body.content;
+				body = AjxUtil.isString(body) ? body : body.content;
 			} else {
 				// if no html part exists, just grab the text
 				var bodyPart = msg.getBodyPart();

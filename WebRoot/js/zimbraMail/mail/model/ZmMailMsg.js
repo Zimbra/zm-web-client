@@ -83,7 +83,7 @@ ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\
 * @param callback		[AjxCallback]	async callback
 * @param errorCallback	[AjxCallback]	async error callback
 */
-ZmMailMsg.fetchMsg = 
+ZmMailMsg.fetchMsg =
 function(params) {
 	var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
 	var msgNode = soapDoc.set("m");
@@ -107,7 +107,7 @@ function(callback, result) {
 
 // Public methods
 
-ZmMailMsg.prototype.toString = 
+ZmMailMsg.prototype.toString =
 function() {
 	return "ZmMailMsg";
 };
@@ -140,7 +140,7 @@ function(type, used) {
 	}
 };
 
-ZmMailMsg.prototype.getAttachments = 
+ZmMailMsg.prototype.getAttachments =
 function() {
 	return this._attachments;
 }
@@ -258,7 +258,7 @@ function() {
 /**
 * Returns true if this message has html parts
 */
-ZmMailMsg.prototype.isHtmlMail = 
+ZmMailMsg.prototype.isHtmlMail =
 function() {
 	return this.getBodyPart(ZmMimeTable.TEXT_HTML) != null;
 };
@@ -334,13 +334,13 @@ function(part) {
 	this._topPart = part;
 };
 
-/** 
+/**
  * Note: It's assumed by other parts of the code that this._bodyParts
  * is an array of the node properties of ZmMimePart, <em>not</em> the
  * ZmMimePart objects themselves. Therefore, the caller must pass in
  * an array like [ part.node, ... ].
  */
-ZmMailMsg.prototype.setBodyParts = 
+ZmMailMsg.prototype.setBodyParts =
 function(parts) {
 	this._bodyParts = parts;
 }
@@ -367,11 +367,11 @@ function(id) {
 
 /**
 * Sets the list of attachment (message part) IDs to be forwarded
-* - This list will only be set for any msgs containing attachments that need to be forwarded 
+* - This list will only be set for any msgs containing attachments that need to be forwarded
 *
 * @param id		list of attachment IDs
 */
-ZmMailMsg.prototype.setForwardAttIds = 
+ZmMailMsg.prototype.setForwardAttIds =
 function(forAttIds) {
 	this._forAttIds = forAttIds;
 };
@@ -384,7 +384,7 @@ function(forAttIds) {
 * may have been created as part of getting a conversation.
 *
 * @param node		a message node
-* @param args		hash of input args	
+* @param args		hash of input args
 */
 ZmMailMsg.createFromDom =
 function(node, args) {
@@ -397,7 +397,7 @@ function(node, args) {
 * Gets the full message object from the back end based on the current message ID, and
 * fills in the message.
 *
-* @param getHtml		
+* @param getHtml
 */
 ZmMailMsg.prototype.load =
 function(getHtml, forceLoad, callback, errorCallback) {
@@ -441,22 +441,30 @@ function(callback, result) {
 ZmMailMsg.prototype.getBodyParts = 
 function() {
 	return this._bodyParts;
-}
+};
 
 ZmMailMsg.prototype.getBodyPart =
 function(contentType) {
 
-	// return the first body part if content type was not specified, 
-	// otherwise, search for the first body part that matches the given ct.
-	for (var i = 0; i < this._bodyParts.length; i++) {
-		if (contentType) {
-			if (this._bodyParts[i].ct == contentType)
+	if (contentType == ZmMimeTable.TEXT_HTML &&
+		this._htmlBody && this._htmlBody.length > 0)
+	{
+		return this._htmlBody;
+	}
+	else
+	{
+		// return the first body part if content type was not specified,
+		// otherwise, search for the first body part that matches the given ct.
+		for (var i = 0; i < this._bodyParts.length; i++) {
+			if (contentType) {
+				if (this._bodyParts[i].ct == contentType)
+					return this._bodyParts[i];
+			} else {
 				return this._bodyParts[i];
-		} else {
-			return this._bodyParts[i];
+			}
 		}
 	}
-}
+};
 
 ZmMailMsg.prototype.getBodyContent =
 function() {
