@@ -78,6 +78,9 @@ function() {
 ZmNewWindow.run =
 function(domain) {
 
+	// inherit parent window's debug level
+	DBG.setDebugLevel(window.opener.DBG._level);
+	
 	// Create the global app context
 	var appCtxt = new ZmAppCtxt();
 
@@ -97,7 +100,7 @@ function(domain) {
 	appCtxt.setUploadManager(new AjxPost(appCtxt.getUploadFrameId()));
 
 	// Go!
-	var lm = new ZmNewWindow(appCtxt, domain);
+	new ZmNewWindow(appCtxt, domain);
 };
 
 /**
@@ -144,8 +147,12 @@ function(ev) {
 ZmNewWindow.prototype.startup =
 function() {
 
-	if (!this._appViewMgr)
+	if (!this._appViewMgr) {
 		this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
+	}
+	
+	var rootTg = this._appCtxt.getRootTabGroup();
+	var startupFocusItem;
 
 	// get params from parent window b/c of Safari bug #7162
 	if (window.parentController) {
@@ -164,7 +171,7 @@ function() {
 			// bug fix #4681
 			var action = window.args[0];
 			var msg = (action == ZmOperation.REPLY_ALL) ? this._deepCopyMsg(window.args[1]) : window.args[1];
-			this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController()._setView(window.args[0], msg, window.args[2], window.args[3], window.args[4]);
+			cc._setView(window.args[0], msg, window.args[2], window.args[3], window.args[4]);
 		} else {
 			var op = window.args.action ? window.args.action : ZmOperation.NEW_MESSAGE;
 			if (window.args.msg) {
@@ -188,11 +195,19 @@ function() {
 				parentCC._app.popView(true);
 			}
 		}
+		rootTg.addMember(cc.getTabGroup());
+		startupFocusItem = cc._composeView.getAddrFields()[0];
 	} else if (window.command == "msgViewDetach") {
 		var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
 		msgController.isChildWindow = true;
 		msgController.show(window.args.msg);
+		rootTg.addMember(msgController.getTabGroup());
+		startupFocusItem = msgController.getCurrentView();
 	}
+
+	var kbMgr = this._shell.getKeyboardMgr();
+	kbMgr.setTabGroup(rootTg);
+	kbMgr.grabFocus(startupFocusItem);
 };
 
 /**
@@ -324,3 +339,33 @@ function(msg) {
 	return newMsg;
 };
 
+ZmNewWindow.prototype.getKeyMapName =
+function() {
+	var curView = this._appViewMgr.getCurrentView();
+	if (curView && curView.getController) {
+		var ctlr = curView.getController();
+		if (ctlr && ctlr.getKeyMapName) {
+			return ctlr.getKeyMapName();
+		}
+	}
+	return "Global";
+};
+
+ZmNewWindow.prototype.handleKeyAction =
+function(actionCode, ev) {
+	switch (actionCode) {
+		default: {
+			var curView = this._appViewMgr.getCurrentView();
+			if (curView && curView.getController) {
+				var ctlr = curView.getController();
+				if (ctlr && ctlr.handleKeyAction) {
+					return ctlr.handleKeyAction(actionCode, ev);
+				}
+			} else {
+				return false;
+			}
+			break;
+		}
+	}
+	return true;
+};

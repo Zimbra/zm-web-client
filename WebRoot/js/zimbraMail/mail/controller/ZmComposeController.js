@@ -360,7 +360,9 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.NEW_WINDOW:
-			this._detachListener();
+			if (!this.isChildWindow) {
+				this._detachListener();
+			}
 			break;
 
 		default:

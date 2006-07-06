@@ -442,9 +442,17 @@ function() {
 
 ZmAppCtxt.prototype.getRootTabGroup =
 function() {
-	if (!this._rootTabGrp)
-		this._rootTabGrp = new DwtTabGroup("ROOT");
-	return this._rootTabGrp;
+	var isChildWin = this.getAppController().isChildWindow();
+	if (isChildWin) {
+		if (!this._childWinTabGrp) {
+			this._childWinTabGrp = new DwtTabGroup("CHILD_WINDOW");
+		}
+	} else {		
+		if (!this._rootTabGrp) {
+			this._rootTabGrp = new DwtTabGroup("ROOT");
+		}
+	}
+	return isChildWin ? this._childWinTabGrp : this._rootTabGrp;
 }
 
 ZmAppCtxt.prototype.getShell =
