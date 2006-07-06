@@ -1,4 +1,16 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<%
+	// Set to expire far in the past.
+	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
+
+	// Set standard HTTP/1.1 no-cache headers.
+	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+
+	// Set IE extended HTTP/1.1 no-cache headers (use addHeader).
+	response.addHeader("Cache-Control", "post-check=0, pre-check=0");
+
+	// Set standard HTTP/1.0 no-cache header.
+	response.setHeader("Pragma", "no-cache");
+%><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
 <!--
@@ -24,8 +36,7 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK *****
--->
-<%
+--><%
 	final String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
 	String contextPath = request.getContextPath();
 	String authToken = request.getParameter("auth");
@@ -76,7 +87,6 @@
 	String ext = (String) request.getAttribute("fileExtension");
 	if (ext == null) ext = "";
 %>
-
 <link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
 <link rel="SHORTCUT ICON" href="<%=contextPath %>/img/loRes/logo/favicon.ico">
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss">

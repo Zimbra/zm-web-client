@@ -1,32 +1,42 @@
-<!-- 
-***** BEGIN LICENSE BLOCK *****
-Version: ZPL 1.2
+<%
+	// Set to expire far in the past.
+	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 
-The contents of this file are subject to the Zimbra Public License
-Version 1.2 ("License"); you may not use this file except in
-compliance with the License. You may obtain a copy of the License at
-http://www.zimbra.com/license
+	// Set standard HTTP/1.1 no-cache headers.
+	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
 
-Software distributed under the License is distributed on an "AS IS"
-basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
-the License for the specific language governing rights and limitations
-under the License.
+	// Set IE extended HTTP/1.1 no-cache headers (use addHeader).
+	response.addHeader("Cache-Control", "post-check=0, pre-check=0");
 
-The Original Code is: Zimbra Collaboration Suite Web Client
-
-The Initial Developer of the Original Code is Zimbra, Inc.
-Portions created by Zimbra are Copyright (C) 2006 Zimbra, Inc.
-All Rights Reserved.
-
-Contributor(s):
-
-***** END LICENSE BLOCK *****
--->
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+	// Set standard HTTP/1.0 no-cache header.
+	response.setHeader("Pragma", "no-cache");
+%><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <head>
-<title>Zimbra</title>
-<%
+<!--
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.2
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.2 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ *
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
+ * All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK *****
+--><%
 	String contextPath = request.getContextPath();
 	String full = request.getParameter("full");
 
@@ -44,6 +54,7 @@ Contributor(s):
 	String ext = (String) request.getAttribute("fileExtension");
 	if (ext == null) ext = "";
 %>
+<title>Zimbra</title>
 <script type="text/javascript" language="javascript">
 	appContextPath = "<%= contextPath %>";
 	appCurrentSkin = "<%=skin %>";
