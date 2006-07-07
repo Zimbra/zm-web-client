@@ -1159,7 +1159,10 @@ function(parent, num) {
  	if (this._viewMgr.getCurrentViewName() == ZmController.CAL_APPT_VIEW) {
 		parent.enable([ZmOperation.CAL_REFRESH, ZmOperation.PRINT, ZmOperation.TODAY], false);
  	}
- 	// disable button for current view
+	else {
+		 this._navToolBar[ZmController.CAL_VIEW].setVisible(true);
+	}
+	 // disable button for current view
  	var op = ZmCalViewController.VIEW_TO_OP[this._viewMgr.getCurrentViewName()];
  	if (op) {
 	 	parent.enable(op, false);
