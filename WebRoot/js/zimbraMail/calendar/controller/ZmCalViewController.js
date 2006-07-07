@@ -618,10 +618,23 @@ function(ev) {
 ZmCalViewController.prototype._newApptAction =
 function(ev) {
 	var d = this._minicalMenu ? this._minicalMenu.__detail : null;
-	if (d != null) delete this._minicalMenu.__detail;
-	else d = this._viewMgr ? this._viewMgr.getDate() : null;
-	if (d == null) d = new Date();
-	this.newAppointment(this._newApptObject(d));
+
+	if (d != null) {
+		delete this._minicalMenu.__detail;
+	} else {
+		d = this._viewMgr ? this._viewMgr.getDate() : null;
+	}
+
+	var curr = new Date();
+	if (d == null) {
+		d = curr;
+	} else {
+		// bug fix #4693 - set the current time since it will be init'd to midnite
+		d.setHours(curr.getHours());
+		d.setMinutes(curr.getMinutes());
+	}
+
+	this.newAppointmentHelper(d);
 };
 
 ZmCalViewController.prototype._searchMailAction =
@@ -701,26 +714,10 @@ function(ev) {
 
 ZmCalViewController.prototype._miniCalActionListener =
 function(ev) {
-//	this._viewActionListener(ev, ev.detail);
-	//alert("Mini-cal date actioned: " + ev.detail.toLocaleString() + "doc: " + ev.docX + ", " + ev.docY);
 	var mm = this._getMiniCalActionMenu();
 	mm.__detail = ev.detail;
 	mm.popup(0, ev.docX, ev.docY);
 };
-
-/*
-// Create action menu if needed
-ZmCalViewController.prototype._getMiniCalActionMenu =
-function() {
-	if (this._minicalMenu == null) {
-		var list = [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT, ZmOperation.SEP, ZmOperation.SEARCH_MAIL];
-		this._minicalMenu = new ZmActionMenu(this._appCtxt.getShell(), list);
-		this._minicalMenu.addSelectionListener(ZmOperation.NEW_APPT, this._listeners[ZmOperation.NEW_APPT]);
-		this._minicalMenu.addSelectionListener(ZmOperation.NEW_ALLDAY_APPT, this._listeners[ZmOperation.NEW_ALLDAY_APPT]);	
-		this._minicalMenu.addSelectionListener(ZmOperation.SEARCH_MAIL, this._listeners[ZmOperation.SEARCH_MAIL]);
-	}
-	return this._minicalMenu;
-};*/
 
 //Zimlet hack
 ZmCalViewController.prototype._getMiniCalActionMenu =
@@ -750,7 +747,6 @@ function() {
 	}
 	return this._minicalMenu;
 };
-//
 
 ZmCalViewController.prototype._miniCalSelectionListener =
 function(ev) {
