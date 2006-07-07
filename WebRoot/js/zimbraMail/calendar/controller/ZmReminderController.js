@@ -97,7 +97,7 @@ function() {
 	var startTime = start.getTime() - AjxDateUtil.MSEC_PER_HOUR;
 	var endTime = startTime + (AjxDateUtil.MSEC_PER_HOUR * ZmReminderController._CACHE_RANGE);
 	var cb = new AjxCallback(this, this._refreshCallback);
-	this._calController.getApptSummaries(start.getTime(), endTime, false, this._calController.getCheckedCalendarFolderIds(), cb);
+	this._calController.getApptSummaries(start.getTime(), endTime, false, this._calController.getCheckedCalendarFolderIds(true), cb);
 	
 	// cancel outstanding refresh, since we are doing one now, and re-schedule a new one
 	if (this._refreshActionId) AjxTimedAction.cancelAction(this._refreshActionId);

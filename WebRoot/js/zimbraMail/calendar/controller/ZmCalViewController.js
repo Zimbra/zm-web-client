@@ -267,12 +267,12 @@ function() {
 };
 
 ZmCalViewController.prototype.getCheckedCalendarFolderIds =
-function() {
+function(localOnly) {
 	if (this._checkedCalendarFolderIds == null) {
 		this.getCheckedCalendars();
 		if (this._checkedCalendarFolderIds == null) return [ZmOrganizer.ID_CALENDAR];
 	}
-	return this._checkedCalendarFolderIds;
+	return localOnly ? this._checkedLocalCalendarFolderIds : this._checkedCalendarFolderIds;
 };
 
 ZmCalViewController.prototype.getCheckedCalendar = 
@@ -291,9 +291,13 @@ ZmCalViewController.prototype._updateCheckedCalendars =
 function() {
 	var cc = this._calTreeController.getCheckedCalendars(ZmZimbraMail._OVERVIEW_ID);
 	this._checkedCalendarFolderIds = [];
+	this._checkedLocalCalendarFolderIds = [];
 	for (var i=0; i < cc.length; i++) {
 		var cal = cc[i];
 		this._checkedCalendarFolderIds.push(cal.id);
+		if (cal.isRemote && !cal.isRemote()) {
+			this._checkedLocalCalendarFolderIds.push(cal.id);
+		}
 	}
 	return cc;
 };
