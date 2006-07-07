@@ -55,7 +55,7 @@ function() {
 ZmNewCalendarDialog.prototype._createExtraContentHtml =
 function(html, idx) {
 	idx = this._createFreeBusyContentHtml(html, idx);
-	return ZmNewOrganizerDialog.prototype._createExtraContentHtml.apply(this, arguments);
+	return ZmNewOrganizerDialog.prototype._createExtraContentHtml.call(this, html, idx);
 };
 
 ZmNewCalendarDialog.prototype._createFreeBusyContentHtml =
