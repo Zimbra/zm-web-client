@@ -1964,6 +1964,16 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 /*
+ *	Login dialog
+ */
+.ZmLoginDialog {
+	@ChromeBg@
+	overflow:hidden;
+}
+.ZmLoginDialog-Transparent {background-color: transparent;}
+
+
+/*
  *	Share properties dialog
  */
 /* ??? USE? */
