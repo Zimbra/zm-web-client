@@ -72,13 +72,6 @@
 	</servlet>
 
 	<servlet>
-		<servlet-name>UserRedirectServlet</servlet-name>
-		<servlet-class>
-			com.zimbra.webClient.servlet.UserRedirectServlet
-		</servlet-class>
-	</servlet>
-
-	<servlet>
 		<servlet-name>SetCookieServlet</servlet-name>
 		<servlet-class>
 			com.zimbra.webClient.servlet.SetCookieServlet
@@ -104,16 +97,6 @@
 	<servlet-mapping>
 		<servlet-name>Forwarder</servlet-name>
 		<url-pattern>/mail</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>UserRedirectServlet</servlet-name>
-		<url-pattern>/user/*</url-pattern>
-	</servlet-mapping>
-
-	<servlet-mapping>
-		<servlet-name>UserRedirectServlet</servlet-name>
-		<url-pattern>/home/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>
