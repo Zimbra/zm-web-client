@@ -876,16 +876,16 @@ function(mode, msg, callback, errorCallback) {
 		}
 		msg.setBodyParts(bodyParts);
 		this._setNotes(msg);
-		this._doCancel(mode, callback);
+		this._doCancel(mode, callback, msg);
 	} else {
 		// To get the attendees for this appointment, we have to get the message.
-		var respCallback = new AjxCallback(this, this._doCancel, [mode, callback]);
+		var respCallback = new AjxCallback(this, this._doCancel, [mode, callback, null]);
 		this.getDetails(null, respCallback, errorCallback);
 	}
 };
 
 ZmAppt.prototype._doCancel =
-function(mode, callback) {
+function(mode, callback, msg, result) {
 	if (mode == ZmAppt.MODE_DELETE || mode == ZmAppt.MODE_DELETE_SERIES || mode == ZmAppt.MODE_DELETE_INSTANCE) {
 		var soapDoc = AjxSoapDoc.create("CancelAppointmentRequest", "urn:zimbraMail");
 		this._addInviteAndCompNum(soapDoc);
@@ -901,7 +901,24 @@ function(mode, callback) {
 
 		var m = soapDoc.set("m");
 		if (this.isOrganizer()) {
-			this._addAttendeesToSoap(soapDoc, null, m);
+			// NOTE: We only use the explicit list of addresses if sending via
+			//       a message compose.
+			if (msg) {
+				for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
+					var type = ZmMailMsg.ADDRS[i];
+					var vector = msg.getAddresses(type);
+					var count = vector.size();
+					for (var j = 0; j < count; j++) {
+						var addr = vector.get(j);
+						var e = soapDoc.set("e", null, m);
+						e.setAttribute("a", addr.getAddress());
+						e.setAttribute("t", ZmEmailAddress.toSoapType[type]);
+					}
+				}
+			}
+			else {
+				this._addAttendeesToSoap(soapDoc, null, m);
+			}
 		}
 		soapDoc.set("su", "Cancelled: " + this.name, m);
 		this._addNotesToSoap(soapDoc, m, true);
