@@ -89,7 +89,7 @@ function(startDate, endDate, repeatType, appt) {
 	var startMonth = this._startDate.getMonth();
 
 	// reset time based fields
-	this._endByField.setValue(AjxDateUtil.simpleComputeDateStr(new Date()));
+	this._endByField.setValue(AjxDateUtil.simpleComputeDateStr(this._startDate));
 	this._weeklySelect.setSelected(startDay);
 	this._weeklyCheckboxes[startDay].checked = true;
 	this._monthlyDayField.setValue(startDate);
