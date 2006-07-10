@@ -536,7 +536,7 @@ function() {
 };
 
 ZmAppt.prototype.getDetails =
-function(viewMode, callback, errorCallback) {
+function(viewMode, callback, errorCallback, ignoreOutOfDate) {
 	var mode = viewMode || this._viewMode;
 	
 	var seriesMode = mode == ZmAppt.MODE_EDIT_SERIES;
@@ -544,13 +544,48 @@ function(viewMode, callback, errorCallback) {
 		var id = seriesMode ? (this._seriesInvId || this.invId) : this.invId;
 		this._message = new ZmMailMsg(this._appCtxt, id);
 		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, this._message, callback]);
-		this._message.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, errorCallback);
+		var respErrorCallback = !ignoreOutOfDate ? new AjxCallback(this, this._handleErrorGetDetails, [mode, callback, errorCallback]) : errorCallback;
+		this._message.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, respErrorCallback);
 	} else {
 		this.setFromMessage(this._message, mode);
 		if (callback)
 			callback.run();
 	}
 };
+ZmAppt.prototype._handleErrorGetDetails =
+function(mode, callback, errorCallback, ex) {
+	if (ex.code == "mail.INVITE_OUT_OF_DATE") {
+		var soapDoc = AjxSoapDoc.create("GetAppointmentRequest", "urn:zimbraMail");
+		soapDoc.setMethodAttribute("id", this.id);
+
+		var respCallback = new AjxCallback(this, this._handleErrorGetDetails2, [mode, callback, errorCallback]);
+		var params = {
+			soapDoc: soapDoc,
+			asyncMode: true,
+			callback: respCallback,
+			errorCallback: errorCallback
+		};
+
+		var controller = this._appCtxt.getAppController();
+		controller.sendRequest(params);
+		return true;
+	}
+	if (errorCallback) {
+		return errorCallback.run(ex);
+	}
+	return false;
+};
+
+ZmAppt.prototype._handleErrorGetDetails2 =
+function(mode, callback, errorCallback, result) {
+	// Update invId and force a message reload
+	var invite = result._data.GetAppointmentResponse.appt[0].inv[0];
+	this.invId = [this.id, invite.id].join("-");
+	this._message = null;
+	var ignoreOutOfDate = true;
+	this.getDetails(mode, callback, errorCallback, ignoreOutOfDate);
+};
+
 
 ZmAppt.prototype.setFromMessage = 
 function(message, viewMode) {
