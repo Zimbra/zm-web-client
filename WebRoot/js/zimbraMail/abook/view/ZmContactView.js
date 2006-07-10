@@ -739,6 +739,9 @@ function(ev) {
 ZmContactView._onKeyUp =
 function(ev) {
 
+	if (ev.metaKey || ev.altKey || ev.ctrlKey)
+		return;
+
 	var e = DwtUiEvent.getTarget(ev);
 	if (e) {
 		var view = Dwt.getObjectFromElement(e);

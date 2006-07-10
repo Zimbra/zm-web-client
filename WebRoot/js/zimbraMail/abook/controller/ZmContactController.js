@@ -216,7 +216,7 @@ function(items, hardDelete, attrs, skipPostProcessing) {
 	if (!skipPostProcessing) {
 		// disable input fields (to prevent blinking cursor from bleeding through)
 		this._listView[this._currentView].enableInputs(false);
-		this._app.popView();
+		this._app.popView(true);
 	}
 };
 
