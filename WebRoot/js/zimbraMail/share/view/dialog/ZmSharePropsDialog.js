@@ -544,3 +544,7 @@ function() {
 
 	return view;
 };
+
+// NOTE: No-op this method to prevent blurring of password field in FF.
+// REVISIT: Should find real reason this is happening and fix general case.
+ZmSharePropsDialog.prototype._focusByMouseUpEvent = function() {};
