@@ -141,6 +141,7 @@ ZmOrganizer.F_PARENT	= i++;
 ZmOrganizer.F_COLOR		= i++;
 ZmOrganizer.F_QUERY		= i++;
 ZmOrganizer.F_SHARES	= i++;
+ZmOrganizer.F_FLAGS		= i++;
 
 ZmOrganizer.FLAG_CHECKED			= "#";
 ZmOrganizer.FLAG_IMAP_SUBSCRIBED	= "*";
@@ -540,6 +541,15 @@ function(obj) {
 			fields[ZmOrganizer.F_COLOR] = true;
 		}
 		doNotify = true;
+	}
+	if (obj.f != null) {
+		var oflags = this._setFlags().split("").sort().join("");
+		var nflags = obj.f.split("").sort().join("");
+		if (oflags != nflags) {
+			this._parseFlags(obj.f);
+			fields[ZmOrganizer.F_FLAGS] = true;
+			doNotify = true;
+		}
 	}
 	// if shares changed, do wholesale replace
 	if (obj.acl) {

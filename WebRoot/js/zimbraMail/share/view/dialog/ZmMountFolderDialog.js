@@ -200,6 +200,9 @@ ZmMountFolderDialog.prototype._handleOkButton = function(event) {
 		"view": ZmOrganizer.VIEWS[this._organizerType] || ZmOrganizer.VIEWS[ZmOrganizer.FOLDER],
 		"color": this._colorSelect.getValue()
 	};
+	if (this._organizerType == ZmOrganizer.CALENDAR) {
+		params.f = ZmOrganizer.FLAG_CHECKED;
+	}
 	var callback = new AjxCallback(this, this.popdown);
 	var errorCallback = new AjxCallback(this, this._handleCreateError);
 

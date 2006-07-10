@@ -72,6 +72,7 @@ function(appCtxt, params, callback, errorCallback) {
 
 	ZmOrganizer._pending[params.name] = {};
 	ZmOrganizer._pending[params.name].color = params.color;
+	ZmOrganizer._pending[params.name].f = params.f;
 
 	var params = {
 		soapDoc: soapDoc,

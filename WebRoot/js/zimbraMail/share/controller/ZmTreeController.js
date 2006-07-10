@@ -442,11 +442,22 @@ function(ev, treeView, overviewId) {
 				}
 			}
 			this._checkTreeView(overviewId);
+
+			// check tree item
+			if (treeView.getStyle() == DwtTree.CHECKEDITEM_STYLE) {
+				var treeItem = treeView.getTreeItemById(id);
+				treeItem.setChecked(organizer.isChecked);
+			}
+
 		} else if (ev.event == ZmEvent.E_MODIFY) {
-			if (node) {
-				// change that affects name
-				if ((fields && fields[ZmOrganizer.F_NAME]) || (fields && fields[ZmOrganizer.F_UNREAD]) ||
-					((id == ZmFolder.ID_DRAFTS) && (fields && fields[ZmOrganizer.F_TOTAL]))) {
+			if (node && fields) {
+				if (fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_UNREAD] ||
+					fields[ZmOrganizer.F_FLAGS] ||
+					(id == ZmFolder.ID_DRAFTS && fields[ZmOrganizer.F_TOTAL])) {
+					if (fields[ZmOrganizer.F_FLAGS] && (treeView.getStyle() & DwtTree.CHECKEDITEM_STYLE) != 0) {
+						var treeItem = treeView.getTreeItemById(id);
+						treeItem.setChecked(organizer.isChecked);
+					}
 					var checked = node.getChecked();
 					node.setText(organizer.getName(true));
 					if (fields && fields[ZmOrganizer.F_NAME]) {

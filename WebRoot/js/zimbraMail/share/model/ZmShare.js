@@ -398,6 +398,9 @@ function(name, color, replyType, notes, callback) {
 		"color": color,
 		"view": this.link.view
 	};
+	if (this.link.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
+		params.f = ZmOrganizer.FLAG_CHECKED;
+	}
 	ZmMountpoint.create(this._appCtxt, params, respCallback, errorCallback);
 };
 

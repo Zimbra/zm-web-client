@@ -81,6 +81,7 @@ function(name, color, url, excludeFreeBusy) {
 	ZmOrganizer._pending[name] = {};
 	ZmOrganizer._pending[name].color = color;
 	ZmOrganizer._pending[name].excludeFreeBusy = excludeFreeBusy;
+	ZmOrganizer._pending[name].f = ZmOrganizer.FLAG_CHECKED;
 };
 
 ZmCalendar.prototype._handleErrorCreate =
@@ -141,10 +142,11 @@ function(obj) {
 	this.children.add(calendar, index);
 	var pending = ZmOrganizer._pending[calendar.name];
 	if (pending) {
+		// REVISIT: We shouldn't be setting these values on the organizer
+		//          here because that will be done by the modify notification.
 		calendar.color = pending.color;
 		calendar.excludeFreeBusy = pending.excludeFreeBusy;
-		var flags = calendar._setFlags();
-		calendar.update({f: flags, color: calendar.color});
+		calendar.update({f: pending.f || "", color: calendar.color});
 	}
 	delete ZmOrganizer._pending[calendar.name];
 	calendar._notify(ZmEvent.E_CREATE);
