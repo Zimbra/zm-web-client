@@ -86,13 +86,12 @@ function(name, color) {
 	var folderNode = soapDoc.set("folder");
 	folderNode.setAttribute("name", name);
 	folderNode.setAttribute("l", this.id);
+	folderNode.setAttribute("color", color || ZmAddrBook.DEFAULT_COLOR);
 	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]);
 
 	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [name]);
-	this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback});
-
-	ZmOrganizer._pending[name] = {};
-	ZmOrganizer._pending[name].color = color;
+	var appController = this.tree._appCtxt.getAppController();
+	appController.sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
 };
 
 ZmAddrBook.prototype._handleErrorCreate =
@@ -169,12 +168,6 @@ function(obj) {
 	var ab = ZmAddrBook.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(ab, ZmAddrBook.sortCompare);
 	this.children.add(ab, index);
-	var pending = ZmOrganizer._pending[ab.name];
-	if (pending) {
-		ab.color = pending.color;
-		ab.setColor(color);
-	}
-	delete ZmOrganizer._pending[ab.name];
 	ab._notify(ZmEvent.E_CREATE);
 };
 

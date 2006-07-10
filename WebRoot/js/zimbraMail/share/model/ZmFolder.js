@@ -248,7 +248,8 @@ function(name, color, url, search) {
 		if (url) folderNode.setAttribute("url", url);
 	}
 	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [url, name]);
-	this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback});
+	var appController = this.tree._appCtxt.getAppController();
+	appController.sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
 };
 
 ZmFolder.prototype._handleErrorCreate =

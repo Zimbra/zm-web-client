@@ -133,46 +133,13 @@ function(name, color) {
 	var folderNode = soapDoc.set("folder");
 	folderNode.setAttribute("name", name);
 	folderNode.setAttribute("l", this.id);
+	folderNode.setAttribute("color", color || ZmOrganizer.DEFAULT_COLOR);
 	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]);
 
-	var callback = color ? new AjxCallback(this, this._createResponse, [color]) : null;
-	var params = {
-		soapDoc: soapDoc,
-		asyncMode: Boolean(callback),
-		callback: callback,
-		errorCallback: null
-	};
-
 	var appController = this.tree._appCtxt.getAppController();
-	return appController.sendRequest(params);
+	return appController.sendRequest({soapDoc:soapDoc, asyncMode:true});
 };
 
-// Protected methods
-
-ZmNotebook.prototype._createResponse = function(color, response) {
-	if (!response._data && !response._data.CreateFolderResponse) {
-		// TODO
-		throw "error response!";
-	}
-	var folder = response._data.CreateFolderResponse.folder[0];
-	
-	var soapDoc = AjxSoapDoc.create("FolderActionRequest", "urn:zimbraMail");
-	var actionNode = soapDoc.set("action");
-	actionNode.setAttribute("id", folder.id);
-	actionNode.setAttribute("op", "color");
-	actionNode.setAttribute("color", color);
-	
-	var callback = null;
-	var params = {
-		soapDoc: soapDoc,
-		asyncMode: Boolean(callback),
-		callback: callback,
-		errorCallback: null
-	};
-
-	var appController = this.tree._appCtxt.getAppController();
-	return appController.sendRequest(params);
-};
 
 // Static methods
 
