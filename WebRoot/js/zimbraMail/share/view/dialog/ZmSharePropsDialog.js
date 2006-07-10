@@ -293,6 +293,9 @@ ZmSharePropsDialog._handleEdit =
 function(event) {
 	var target = DwtUiEvent.getTarget(event);
 	var dialog = Dwt.getObjectFromElement(target);
+	if (dialog instanceof DwtInputField) {
+		dialog = dialog.getData(Dwt.KEY_OBJECT);
+	}
 
 	ZmSharePropsDialog._setReplyOptions(dialog);
 	ZmSharePropsDialog._enableFieldsOnEdit(dialog);
@@ -423,9 +426,11 @@ function() {
 	}
 
 	this._granteeInput = new DwtInputField({parent: this, size: 40});
+	this._granteeInput.setData(Dwt.KEY_OBJECT, this);
 
 	var password = new DwtComposite(this);
 	this._passwordInput = new DwtInputField({parent: password, size:40});
+	this._passwordInput.setData(Dwt.KEY_OBJECT, this);
 	this._passwordButton = new DwtButton(password);
 	this._passwordButton.setText(ZmMsg.changePassword);
 	this._passwordButton.addSelectionListener(new AjxListener(this, this._handleChangeButton));
@@ -524,7 +529,7 @@ function() {
 
 	var radios = [ "_userRadioEl", "_guestRadioEl", "_publicRadioEl" ];
 	var radioEls = document.getElementsByName(shareWithRadioName);
-	for (var i=0; i<radioEls.length; i++) {
+	for (var i = 0; i < radioEls.length; i++) {
 		this[radios[i]] = radioEls[i];
 		Dwt.setHandler(radioEls[i], DwtEvent.ONCLICK, ZmSharePropsDialog._handleShareWith);
 		Dwt.associateElementWithObject(radioEls[i], this);
@@ -532,11 +537,10 @@ function() {
 
 	var inputEl = this._passwordInput.getInputElement();
 	Dwt.setHandler(inputEl, DwtEvent.ONKEYUP, ZmSharePropsDialog._handleEdit);
-	Dwt.associateElementWithObject(inputEl, this);
 
 	var radios = [ "_noneRadioEl", "_viewerRadioEl", "_managerRadioEl" ];
 	var radioEls = document.getElementsByName(roleRadioName);
-	for (var i=0; i<radioEls.length; i++) {
+	for (var i = 0; i < radioEls.length; i++) {
 		this[radios[i]] = radioEls[i];
 		Dwt.setHandler(radioEls[i], DwtEvent.ONCLICK, ZmSharePropsDialog._handleEdit);
 		Dwt.associateElementWithObject(radioEls[i], this);
@@ -544,7 +548,3 @@ function() {
 
 	return view;
 };
-
-// NOTE: No-op this method to prevent blurring of password field in FF.
-// REVISIT: Should find real reason this is happening and fix general case.
-ZmSharePropsDialog.prototype._focusByMouseUpEvent = function() {};
