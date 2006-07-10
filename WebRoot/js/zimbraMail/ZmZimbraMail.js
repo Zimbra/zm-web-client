@@ -515,52 +515,59 @@ function(params) {
 	} catch (ex) {
 		this._handleResponseSendRequest(params, new ZmCsfeResult(ex, true));
 	}
-	if (!params.asyncMode)
+	if (!params.asyncMode) {
 		return this._handleResponseSendRequest(params, response);
+	}
 };
 
 ZmZimbraMail.prototype._handleResponseSendRequest =
 function(params, result) {
-	if (this._cancelDialog && this._cancelDialog.isPoppedUp())
+	if (this._cancelDialog && this._cancelDialog.isPoppedUp()) {
 		this._cancelDialog.popdown();
+	}
 
 	if (!this._pendingRequests[params.reqId]) return;
 	if (this._pendingRequests[params.reqId].state == ZmZimbraMail._CANCEL) return;
 
 	this._pendingRequests[params.reqId].state = ZmZimbraMail._RESPONSE;
 
-	if (!params.noBusyOverlay)
+	if (!params.noBusyOverlay) {
 		this._shell.setBusy(false, params.reqId); // remove busy overlay
+	}
 
 	// we just got activity, cancel current poll timer
-	if (this._pollActionId)
+	if (this._pollActionId) {
 		AjxTimedAction.cancelAction(this._pollActionId);
+	}
 
 	var response;
 	try {
-		response = params.asyncMode ? result.getResponse() : result;
-		this._updateChangeToken(response.Header);
+		response = params.asyncMode ? result.getResponse() : result;	// may throw exception
+		this._handleHeader(response.Header);
 	} catch (ex) {
 		DBG.println(AjxDebug.DBG2, "Request " + params.reqId + " got an exception");
 		if (params.errorCallback) {
 			var handled = params.errorCallback.run(ex);
-			if (!handled)
+			if (!handled) {
 				this._handleException(ex, params.execFrame);
+			}
 		} else {
 			this._handleException(ex, params.execFrame);
 		}
 		var hdr = result.getHeader();
-		this._updateChangeToken(hdr);
 		this._handleHeader(hdr);
+		this._handleNotifications(hdr);
 		return;
 	}
+
 	if (params.asyncMode) {
 		result.set(response.Body);
 	}
 
 	// start poll timer if we didn't get an exception
-	if (this._pollInterval)
+	if (this._pollInterval) {
 		this._pollActionId = this._doPoll();
+	}
 
 	this._clearPendingRequest(params.reqId);
 
@@ -568,7 +575,7 @@ function(params, result) {
 		params.callback.run(result);
 	}
 
-	this._handleHeader(response.Header);
+	this._handleNotifications(response.Header);
 
 	if (!params.asyncMode) {
 		return response.Body;
@@ -598,30 +605,19 @@ function(reqId) {
 };
 
 /**
- * Updates our internal change token if the server sent us one. The server
- * uses it to track revisions.
- * 
- * @param hdr	[object]	the response header
- */
-ZmZimbraMail.prototype._updateChangeToken =
-function(hdr) {
-	// update change token if we got one
-	if (hdr && hdr.context && hdr.context.change) {
-		this._changeToken = hdr.context.change.token;
-	}
-};
-
-/**
- * Processes the SOAP header that comes with a response. It processes a 
- * <refresh> block if there is one (that happens when a new session is 
- * created on the server), and handles notifications.
+ * Handles a response's SOAP header, except for notifications. Updates our
+ * change token, and processes a <refresh> block if there is one (happens
+ * when a new session is created on the server).
  *
  * @param hdr	[object]	a SOAP header
  */
 ZmZimbraMail.prototype._handleHeader =
 function(hdr) {
-	if (!hdr) {
-		return;
+	if (!hdr) return;
+
+	// update change token if we got one
+	if (hdr && hdr.context && hdr.context.change) {
+		this._changeToken = hdr.context.change.token;
 	}
 
 	// refresh block causes the overview panel to get updated
@@ -630,8 +626,15 @@ function(hdr) {
 		var resetTree = this._refreshHandler(hdr.context.refresh);
 		this._checkOverviewLayout(false, resetTree);
 	}
+};
 
-	// handle notifications
+/**
+ * Handles the <notify> block of a response's SOAP header.
+ *
+ * @param hdr	[object]	a SOAP header
+ */
+ZmZimbraMail.prototype._handleNotifications =
+function(hdr) {
 	if (hdr && hdr.context && hdr.context.notify) {
         for(i = 0; i < hdr.context.notify.length; i++) {
         	var notify = hdr.context.notify[i];
@@ -646,7 +649,6 @@ function(hdr) {
 	      	}
     	}
 	}
-
 };
 
 /**

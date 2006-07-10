@@ -329,18 +329,23 @@ function() {
 	if (results) {
 		var path = results[1].toLowerCase();
 		// first check if it's a system folder (name in query string may not match actual name)
-		for (var id in ZmFolder.QUERY_NAME)
-			if (ZmFolder.QUERY_NAME[id] == path)
+		for (var id in ZmFolder.QUERY_NAME) {
+			if (ZmFolder.QUERY_NAME[id] == path) {
 				this.folderId = id;
+			}
+		}
 		// now check all folders by name
 		if (!this.folderId) {
-			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getByPath(path);
+			var folders = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+			var folder = folders ? folders.getByPath(path) : null;
 			if (folder) {
 				this.folderId = folder.id;
 			} else {
-				var addrBook = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getByPath(path);
-				if (addrBook)
+				var addrBooks = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+				var addrBook = addrBooks ? addrBooks.getByPath(path) : null;
+				if (addrBook) {
 					this.folderId = addrBook.id;
+				}
 			}
 		}
 	}
@@ -348,8 +353,9 @@ function() {
 	if (results) {
 		var name = results[1].toLowerCase();
 		var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getByName(name);
-		if (tag)
+		if (tag) {
 			this.tagId = tag.id;
+		}
 	}
 	this.hasUnreadTerm = ZmSearch.UNREAD_QUERY_RE.test(this.query);
 	this.isAnywhere = ZmSearch.IS_ANYWHERE_QUERY_RE.test(this.query);
