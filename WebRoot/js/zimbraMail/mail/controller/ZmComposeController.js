@@ -454,7 +454,7 @@ function() {
 	var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
 	signatureButton.setVisible(canAddSig);
 
-	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY, ZmOperation.FORWARD_ATT];
+	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY, ZmOperation.FORWARD_ATT, ZmOperation.DRAFT];
 	this._optionsMenu = {};
 	for (var i = 0; i < actions.length; i++) {
 		this._optionsMenu[actions[i]] = this._createOptionsMenu(actions[i]);
