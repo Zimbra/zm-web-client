@@ -80,6 +80,8 @@ ZmComposeView.EMPTY_FORM_RE = /^[\s\|]*$/;
 ZmComposeView.SUBJ_PREFIX_RE = new RegExp("^\\s*(" + ZmMsg.re + "|" + ZmMsg.fwd + "|" + ZmMsg.fw + "):" + "\\s*", "i");
 ZmComposeView.QUOTED_CONTENT_RE = new RegExp("^----- ", "m");
 ZmComposeView.HTML_QUOTED_CONTENT_RE = new RegExp("<br>----- ", "i");
+ZmComposeView.REFANG_RE = new RegExp("(<img[^>]*)dfsrc\s*=([^>]*>)", "ig");
+ZmComposeView.REFANG_RE_REPLACE = "$1src=$2";
 
 ZmComposeView.WRAP_LENGTH = 72;
 
@@ -288,7 +290,9 @@ function(attId, isDraft) {
 
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
-		htmlPart.setContent(this._htmlEditor.getContent());
+		var defangedContent = this._htmlEditor.getContent();
+		var refangedContent = defangedContent.replace(ZmComposeView.REFANG_RE, ZmComposeView.REFANG_RE_REPLACE);
+		htmlPart.setContent(refangedContent);
 		top.children.add(htmlPart);
 	} else {
 		var textPart = this._extraParts ? new ZmMimePart() : top;
