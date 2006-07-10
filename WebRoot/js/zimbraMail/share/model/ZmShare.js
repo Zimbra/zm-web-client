@@ -454,6 +454,13 @@ function(mode, addrs) {
 
 ZmShare.prototype.composeMessage =
 function(mode, addrs) {
+	// generate message
+	if (!addrs) {
+		var email = this.grantee.email;
+		addrs = new AjxVector();
+		addrs.add(new ZmEmailAddress(email, ZmEmailAddress.TO));
+	}
+
 	var msg = this._createMsg(mode, true, addrs);
 	var mailApp = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
 	var composeController = mailApp.getComposeController();
