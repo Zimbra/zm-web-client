@@ -1156,17 +1156,23 @@ ZmCalViewController.prototype._resetOperations =
 function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 	parent.enableAll(true);
- 	if (this._viewMgr.getCurrentViewName() == ZmController.CAL_APPT_VIEW) {
-		parent.enable([ZmOperation.CAL_REFRESH, ZmOperation.PRINT, ZmOperation.TODAY], false);
- 	}
-	else {
-		 this._navToolBar[ZmController.CAL_VIEW].setVisible(true);
+	var currViewName = this._viewMgr.getCurrentViewName();
+	if (currViewName == ZmController.CAL_APPT_VIEW) {
+		// disable DELETE since CAL_APPT_VIEW is a read-only view
+		parent.enable([ZmOperation.DELETE, ZmOperation.CAL_REFRESH, ZmOperation.PRINT, ZmOperation.TODAY], false);
 	}
-	 // disable button for current view
- 	var op = ZmCalViewController.VIEW_TO_OP[this._viewMgr.getCurrentViewName()];
- 	if (op) {
-	 	parent.enable(op, false);
- 	}
+	else {
+		this._navToolBar[ZmController.CAL_VIEW].setVisible(true);
+		var currView = this._viewMgr.getCurrentView();
+		var appt = currView ? currView.getSelection()[0] : null;
+		var isReadOnly = appt ? appt.isReadOnly() : false;
+		parent.enable(ZmOperation.DELETE, !isReadOnly);
+	}
+	// disable button for current view
+	var op = ZmCalViewController.VIEW_TO_OP[currViewName];
+	if (op) {
+		parent.enable(op, false);
+	}
 };
 
 ZmCalViewController.prototype._listSelectionListener = 
