@@ -605,6 +605,7 @@ ZmComposeController.prototype._processSendMsg =
 function(isDraft, msg, resp) {
 	if (!isDraft) {
 		if (this.isChildWindow && window.parentController) {
+			window.onbeforeunload = null;
 			window.parentController.setStatusMsg(ZmMsg.messageSent);
 		} else {
 			this._appCtxt.setStatusMsg(ZmMsg.messageSent);
