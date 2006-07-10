@@ -508,6 +508,9 @@ function(appCtxt, item, type, strictText, strictEmail) {
 					attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._equipment, ZmAppt.EQUIPMENT);
 				}
 				attendee.initFromEmail(email, true);
+			} else if (type == ZmAppt.PERSON) {
+				// remember actual address (in case it's email2 or email3)
+				attendee._inviteAddress = addr;
 			}
 		} else if (type != ZmAppt.PERSON) {
 			// check if it's a location or piece of equipment we know by name

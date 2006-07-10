@@ -1730,7 +1730,13 @@ function(soapDoc, inv, m, notifyList) {
 
 ZmAppt.prototype._addAttendeeToSoap = 
 function(soapDoc, inv, m, notifyList, attendee, type) {
-	var address = attendee.getEmail();
+	var address;
+	if (attendee._inviteAddress) {
+		address = attendee._inviteAddress;
+		delete attendee._inviteAddress;
+	} else {
+		address = attendee.getEmail();
+	}
 	if (!address) return;
 
 	var dispName = attendee.getFullName();
@@ -1754,8 +1760,9 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 	if (m && !notifyList) {
 		e = soapDoc.set("e", null, m);
 		e.setAttribute("a", address);
-		if (dispName)
+		if (dispName) {
 			e.setAttribute("p", dispName);
+		}
 		e.setAttribute("t", ZmEmailAddress.toSoapType[ZmEmailAddress.TO]);
 	}
 };
