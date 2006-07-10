@@ -587,7 +587,9 @@ ZmComposeController.prototype._setFormat =
 function(mode) {
 	if (mode == this._composeView.getComposeMode())	return;
 
-	if (mode == DwtHtmlEditor.TEXT && this._composeView.isDirty()) {
+	if (mode == DwtHtmlEditor.TEXT &&
+		(this._composeView.isDirty() || this._action == ZmOperation.DRAFT))
+	{
 		// if formatting from html to text, confirm w/ user!
 		if (!this._htmlToTextDialog) {
 			this._htmlToTextDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
@@ -596,7 +598,9 @@ function(mode) {
 			this._htmlToTextDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._htmlToTextCancelCallback, this);
 		}
 		this._htmlToTextDialog.popup(this._composeView._getDialogXY());
-	} else {
+	}
+	else
+	{
 		this._composeView.setComposeMode(mode);
 	}
 };
