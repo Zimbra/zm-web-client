@@ -1173,8 +1173,10 @@ ZmApptRecurDialog.prototype._endByButtonListener =
 function(ev) {
 	var menu = ev.item.getMenu();
 	var cal = menu.getItem(0);
-	// always(?) reset the date to today's date
-	cal.setDate(new Date(), true);
+	var initDate = this._endByField.isValid()
+		? (new Date(this._endByField.getValue()))
+		: (new Date());
+	cal.setDate(initDate, true);
 	ev.item.popup();
 };
 
