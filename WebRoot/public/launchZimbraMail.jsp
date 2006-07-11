@@ -87,8 +87,8 @@
 	String ext = (String) request.getAttribute("fileExtension");
 	if (ext == null) ext = "";
 %>
-<link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
 <link rel="SHORTCUT ICON" href="<%=contextPath %>/img/loRes/logo/favicon.ico">
+<link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss">
 
 <title>Zimbra</title>
