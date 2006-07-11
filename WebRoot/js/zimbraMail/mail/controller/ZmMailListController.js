@@ -159,7 +159,7 @@ function(actionCode) {
 			if (num && !(isDrafts && actionCode != ZmKeyMap.MOVE_TO_TRASH)) {
 				var folderId = ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[actionCode];
 				var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
-				items = items ? items : this._listView[this._currentView].getSelection();
+				var items = this._listView[this._currentView].getSelection();
 				this._doMove(items, folder);
 			}
 			break;
