@@ -358,9 +358,10 @@ function(appt) {
 			for (var i = 0; i < len; i++) {
 				var cal = children[i];
 				this._calendarOrgs[cal.id] = cal.owner;
-				// if for some reason, we dont have share info, show all shares 
-				if (!cal.link || (cal.link && (cal.shares && cal.shares.length > 0 && cal.shares[0].isWrite())))
-					this._calendarSelect.addOption(cal.name, false, cal.id);
+				// don't show calendar if remote or don't have write perms
+				if (cal.url) continue;
+				if (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()) continue;
+				this._calendarSelect.addOption(cal.name, false, cal.id);
 			}
 		}
 		this._calendarSelect.setSelectedValue(appt.getFolderId());

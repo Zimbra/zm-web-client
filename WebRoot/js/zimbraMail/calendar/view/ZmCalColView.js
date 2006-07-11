@@ -772,7 +772,10 @@ function(appt) {
 	div.innerHTML = DwtBorder.getBorderHtml(template, subs, null);
 
 	// if (we can edit this appt) then create sash....
- 	if (!appt.isReadOnly() && !appt.isAllDayEvent()) {
+	var tree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+	var calendar = tree.getById(appt.folderId);
+	var isRemote = Boolean(calendar.url);
+	 if (!appt.isReadOnly() && !appt.isAllDayEvent() && !isRemote) {
 	
 		if (appt._fanoutLast || (!appt._fanoutFirst && (!appt._fanoutNum))) {
 			var bottom = document.createElement("div");
@@ -1764,7 +1767,10 @@ function(ev, apptEl) {
 	}
 
 	var appt = AjxCore.objectWithId(apptEl._itemIndex);
-	if (appt.isReadOnly() || appt.isAllDayEvent() || (appt._fanoutNum > 0)) return false;
+	var tree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+	var calendar = tree.getById(appt.folderId);
+	var isRemote = Boolean(calendar.url);
+	if (appt.isReadOnly() || appt.isAllDayEvent() || (appt._fanoutNum > 0) || isRemote) return false;
 	
 	var apptOffset = Dwt.toWindow(ev.target, ev.elementX, ev.elementY, apptEl, true);
 

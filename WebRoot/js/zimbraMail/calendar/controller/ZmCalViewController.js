@@ -966,7 +966,10 @@ function(appt) {
 	try {
 		// if we have an appointment, go get all the details.
 		if (!appt.__creating) {
-			if (appt.isReadOnly()) {
+			var tree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+			var calendar = tree.getById(appt.folderId);
+			var isRemote = Boolean(calendar.url);
+			if (appt.isReadOnly() || isRemote) {
 				var mode = appt.isException() ? ZmAppt.MODE_EDIT_SINGLE_INSTANCE : ZmAppt.MODE_EDIT_SERIES;
 				appt.getDetails(mode, new AjxCallback(this, this._showApptReadOnlyView, [appt]));
 			} else {
@@ -1166,7 +1169,10 @@ function(parent, num) {
 		var currView = this._viewMgr.getCurrentView();
 		var appt = currView ? currView.getSelection()[0] : null;
 		var isReadOnly = appt ? appt.isReadOnly() : false;
-		parent.enable(ZmOperation.DELETE, !isReadOnly);
+		var tree = appt && this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+		var calendar = tree && tree.getById(appt.folderId);
+		var isRemote = Boolean(calendar && calendar.url);
+		parent.enable(ZmOperation.DELETE, !isReadOnly && !isRemote);
 	}
 	// disable button for current view
 	var op = ZmCalViewController.VIEW_TO_OP[currViewName];
@@ -1193,7 +1199,10 @@ function(ev) {
 	var appt = this._actionMenu.__appt;
 	delete this._actionMenu.__appt;
 
-	if (appt.isReadOnly()) {
+	var tree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+	var calendar = tree.getById(appt.folderId);
+	var isRemote = Boolean(calendar.url);
+	if (appt.isReadOnly() || isRemote) {
 		// always get details on appt as if we're editing series (since its read only)
 		var callback = new AjxCallback(this, this._showApptReadOnlyView, [appt]);
 		appt.getDetails(ZmAppt.MODE_EDIT_SERIES, callback, this._errorCallback);
@@ -1383,6 +1392,7 @@ function (appt) {
 	
 	var calendar = this.getCheckedCalendar(appt.folderId);
 	var share = calendar.link ? calendar.shares[0] : null;
+	var isRemote = Boolean(calendar.url);
 
 	// action menu options
 	var accept = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_ACCEPT);
@@ -1406,6 +1416,7 @@ function (appt) {
 		del.setText(ZmMsg.del);
 		del.setImage("Delete");
 	}
+	del.setEnabled(!isRemote);
 	
 	// recurring action menu options
 	var series = this._recurringActionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.VIEW_APPT_SERIES);
