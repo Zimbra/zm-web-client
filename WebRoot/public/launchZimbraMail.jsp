@@ -91,6 +91,8 @@
 <link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss">
 
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
 <title>Zimbra</title>
 
 <script type="text/javascript" language="JavaScript">

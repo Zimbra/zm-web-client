@@ -1179,11 +1179,11 @@ function() {
 
 	var html = [];
 	var idx = 0;
-	html[idx++] = "<div style='overflow:auto'><form method='POST' action='";
+	html[idx++] = "<div style='overflow:auto'><form accept-charset='utf-8' method='POST' action='";
 	html[idx++] = uri;
 	html[idx++] = "' id='";
 	html[idx++] = uploadFormId;
-	html[idx++] = "' enctype='multipart/form-data'><table id='";
+	html[idx++] = "' enctype='multipart/form-data'><input type='hidden' name='_charset_'/><table id='";
 	html[idx++] = attachmentTableId;
 	html[idx++] = "' cellspacing=0 cellpadding=0 border=0 class='iframeTable'></table>";
 	html[idx++] = "</form></div>";
