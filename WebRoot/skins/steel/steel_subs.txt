@@ -2,50 +2,50 @@ SkinName			= steel
 
 SkinImgDir			= /zimbra/skins/steel/img
 
-_BaseColor_			=	#bbbbbb
+_BaseColor_		=	#eeeeee
 
-_BaseColorD95_		=	#090909
-_BaseColorD90_		=	#131313
-_BaseColorD85_		=	#1c1c1c
-_BaseColorD80_		=	#252525
-_BaseColorD75_		=	#2f2f2f
-_BaseColorD70_		=	#383838
-_BaseColorD65_		=	#414141
-_BaseColorD60_		=	#4b4b4b
-_BaseColorD55_		=	#545454
-_BaseColorD50_		=	#5e5e5e
-_BaseColorD45_		=	#676767
-_BaseColorD40_		=	#707070
-_BaseColorD35_		=	#7a7a7a
-_BaseColorD30_		=	#838383
-_BaseColorD25_		=	#8c8c8c
-_BaseColorD20_		=	#969696
-_BaseColorD15_		=	#9f9f9f
-_BaseColorD10_		=	#a8a8a8
-_BaseColorD5_		=	#b2b2b2
+_BaseColorD95_		=	#0c0c0c
+_BaseColorD90_		=	#181818
+_BaseColorD85_		=	#242424
+_BaseColorD80_		=	#303030
+_BaseColorD75_		=	#3c3c3c
+_BaseColorD70_		=	#474747
+_BaseColorD65_		=	#535353
+_BaseColorD60_		=	#5f5f5f
+_BaseColorD55_		=	#6b6b6b
+_BaseColorD50_		=	#777777
+_BaseColorD45_		=	#838383
+_BaseColorD40_		=	#8f8f8f
+_BaseColorD35_		=	#9b9b9b
+_BaseColorD30_		=	#a7a7a7
+_BaseColorD25_		=	#b3b3b3
+_BaseColorD20_		=	#bebebe
+_BaseColorD15_		=	#cacaca
+_BaseColorD10_		=	#d6d6d6
+_BaseColorD5_		=	#e2e2e2
 
-_BaseColorL5_		=	#bebebe
-_BaseColorL10_		=	#c2c2c2
-_BaseColorL15_		=	#c5c5c5
-_BaseColorL20_		=	#c9c9c9
-_BaseColorL25_		=	#cccccc
-_BaseColorL30_		=	#cfcfcf
-_BaseColorL35_		=	#d3d3d3
-_BaseColorL40_		=	#d6d6d6
-_BaseColorL45_		=	#dadada
-_BaseColorL50_		=	#dddddd
-_BaseColorL55_		=	#e0e0e0
-_BaseColorL60_		=	#e4e4e4
-_BaseColorL65_		=	#e7e7e7
-_BaseColorL70_		=	#ebebeb
-_BaseColorL75_		=	#eeeeee
-_BaseColorL80_		=	#f1f1f1
-_BaseColorL85_		=	#f5f5f5
-_BaseColorL90_		=	#f8f8f8
-_BaseColorL95_		=	#fcfcfc
+_BaseColorL5_		=	#efefef
+_BaseColorL10_		=	#f0f0f0
+_BaseColorL15_		=	#f1f1f1
+_BaseColorL20_		=	#f1f1f1
+_BaseColorL25_		=	#f2f2f2
+_BaseColorL30_		=	#f3f3f3
+_BaseColorL35_		=	#f4f4f4
+_BaseColorL40_		=	#f5f5f5
+_BaseColorL45_		=	#f6f6f6
+_BaseColorL50_		=	#f7f7f7
+_BaseColorL55_		=	#f7f7f7
+_BaseColorL60_		=	#f8f8f8
+_BaseColorL65_		=	#f9f9f9
+_BaseColorL70_		=	#fafafa
+_BaseColorL75_		=	#fbfbfb
+_BaseColorL80_		=	#fcfcfc
+_BaseColorL85_		=	#fcfcfc
+_BaseColorL90_		=	#fdfdfd
+_BaseColorL95_		=	#fefefe
 
 
-_SelColor_			=	#aed6d6
+_SelColor_		=	#aed6d6
 
 _SelColorD95_		=	#090b0b
 _SelColorD90_		=	#111515
@@ -89,4 +89,36 @@ _SelColorL95_		=	#fbfdfd
 
 
 
-ChromeBg					= background-color:@_BaseColor_@; background-image:url(@SkinImgDir@/Console__BG.gif);
+
+
+
+
+ChromeBg					= background-image:url(@SkinImgDir@/Console__BG.gif);
+
+_AppTabStyle_			 	= border-width:0px; padding-left:10px; margin-top:9px; margin-bottom:-8px;
+AppTabContainer				= @_AppTabStyle_@	
+AppTabContainer-hover		= @_AppTabStyle_@
+AppTabContainer-selected	= @_AppTabStyle_@
+
+
+ToolbarBg					= background-image:url(@SkinImgDir@/Toolbar__BG.gif);
+MiniCalBg					= @ToolbarBg@
+
+
+HoverBorder					= padding:0px;	border:2px solid; border-color:@_SelColorD20_@ @_SelColorD50_@ @_SelColorD50_@ @_SelColorD20_@;
+
+_BtnUpImg_					= background-image:url(@SkinImgDir@/ButtonUp__H.gif);
+_BtnDownImg_				= background-image:url(@SkinImgDir@/ButtonDown__H.gif);
+_BtnUpDefaultImg_			= background-image:url(@SkinImgDir@/ButtonUpDefault__H.gif);
+_BtnDownDefaultImg_			= background-image:url(@SkinImgDir@/ButtonDownDefault__H.gif);
+
+_WidgetContainer_			= @_BtnUpImg_@						@OutsetBorder@		@_WidgetContainerStyle_@
+_WidgetContainer-disabled_ 	= background-color:@Transparent@;	@DisabledBorder@	@_WidgetContainerStyle_@
+_WidgetContainer-hover_		= @_BtnUpImg_@						@HoverBorder@		@_WidgetContainerStyle_@
+_WidgetContainer-selected_	= @_BtnDownDefaultImg_@				@OutsetBorder@		@_WidgetContainerStyle_@
+_WidgetContainer-clicked_	= @_BtnDownImg_@					@InsetBorder@		@_WidgetContainerStyle_@
+_WidgetContainer-default_	= @_BtnUpDefaultImg_@				@DefaultBorder@		@_WidgetContainerStyle_@
+_WidgetContainer-focused_	= @_BtnUpDefaultImg_@				@FocusBorder@		@_WidgetContainerStyle_@
+_WidgetContainer-toggled_	= @_BtnDownDefaultImg_@				@InsetBorder@		@_WidgetContainerStyle_@
+
+MenuContainer			 	= @WindowOuterContainer-light@
