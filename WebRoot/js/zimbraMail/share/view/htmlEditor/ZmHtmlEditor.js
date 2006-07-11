@@ -44,6 +44,7 @@ function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt, withAce) {
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));
 
+/* This listener is causing some ugly problems when switching between Html & Text modes
 	// only add listener if this is not a child window
 	if (window.parentController == null) {
 		var settings = this._appCtxt.getSettings();
@@ -52,7 +53,7 @@ function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt, withAce) {
 		settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_FAMILY).addChangeListener(listener);
 		settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
 	}
-
+*/
 	// spell checker init
 	this._spellChecker = new ZmSpellChecker(this, appCtxt);
 	this._spellCheck = null;
@@ -1034,6 +1035,7 @@ function(ev) {
 	}
 };
 
+/* This is causing other of problems.
 ZmHtmlEditor.prototype._settingsChangeListener =
 function(ev) {
 	var setting = ev.source;
@@ -1072,6 +1074,7 @@ function(ev) {
 		}
 	}
 };
+*/
 
 ZmHtmlEditor.prototype._handleEditorEvent =
 function(ev) {
