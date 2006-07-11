@@ -516,14 +516,17 @@ function() {
 	var	cell = row.insertCell(-1);
 	var html = [];
 	var idx = 0;
-	html[idx++] = "<table cellspacing=2 cellpadding=0 border=0><tr>";
-	html[idx++] = "<td><div class='attachText'>" + ZmMsg.attachFile + ":</div></td>";
-	html[idx++] = "<td class='nobreak'>";
-	html[idx++] = "<input id='" + attInputId + "' type='file' name='" + ZmComposeView.UPLOAD_FIELD_NAME + "' size=40>&nbsp;";
-	html[idx++] = "<span id='" + attRemoveId + "'";
-	html[idx++] = " onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;'";
-	html[idx++] = ">" + ZmMsg.remove + "</span>";
-	html[idx++] = "</td></tr></table>";
+	html[idx++] = "<table cellspacing=2 cellpadding=0 border=0><tr><td><div class='attachText'>";
+	html[idx++] = ZmMsg.attachFile;
+	html[idx++] = ":</div></td><td class='nobreak'><input id='";
+	html[idx++] = attInputId;
+	html[idx++] = "' type='file' name='";
+	html[idx++] = ZmComposeView.UPLOAD_FIELD_NAME;
+	html[idx++] = "' size=40>&nbsp;<span id='";
+	html[idx++] = attRemoveId;
+	html[idx++] = "' onmouseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;'>";
+	html[idx++] = ZmMsg.remove;
+	html[idx++] = "</span></td></tr></table>";
 	cell.innerHTML = html.join("");
 
 	this._setEventHandler(attRemoveId, "onClick", null);
