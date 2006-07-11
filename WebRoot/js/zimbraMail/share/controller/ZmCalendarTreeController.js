@@ -203,13 +203,19 @@ function(ev, treeView) {
 		var node = treeView.getTreeItemById(id);
 		if (!node) continue;
 
-		var fields = ev.getDetail("fields");
+		var fields = ev.getDetail("fields") || {};
 		// NOTE: ZmTreeController#_changeListener re-inserts the node if the 
 		//		 name changes so we need to reset the color in that case, too.
 		if (ev.event == ZmEvent.E_CREATE || 
-			(ev.event == ZmEvent.E_MODIFY && fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]))) {
+			(ev.event == ZmEvent.E_MODIFY && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]))) {
 			var object = node.getData(Dwt.KEY_OBJECT);
 			this._setTreeItemColor(node, object.color);
+		}
+		if (ev.event == ZmEvent.E_CREATE || (ev.event == ZmEvent.E_MODIFY && fields[ZmOrganizer.F_FLAGS])) {
+			var app = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
+			var controller = app.getCalController();
+			controller._updateCheckedCalendars();
+			controller._refreshAction(true);
 		}
 	}
 };
