@@ -73,15 +73,12 @@ function(name, color, url, excludeFreeBusy) {
 	folderNode.setAttribute("l", this.id);
 	folderNode.setAttribute("color", color || ZmOrganizer.DEFAULT_COLOR);
 	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]);
+	folderNode.setAttribute("f", excludeFreeBusy ? "b#" : "#");
 	if (url) folderNode.setAttribute("url", url);
 
 	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [url, name]);
 	var appController = this.tree._appCtxt.getAppController();
 	appController.sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
-
-	ZmOrganizer._pending[name] = {};
-	ZmOrganizer._pending[name].excludeFreeBusy = excludeFreeBusy;
-	ZmOrganizer._pending[name].f = ZmOrganizer.FLAG_CHECKED;
 };
 
 ZmCalendar.prototype._handleErrorCreate =
@@ -140,14 +137,6 @@ function(obj) {
 	var calendar = ZmCalendar.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(calendar, ZmCalendar.sortCompare);
 	this.children.add(calendar, index);
-	var pending = ZmOrganizer._pending[calendar.name];
-	if (pending) {
-		// REVISIT: We shouldn't be setting these values on the organizer
-		//          here because that will be done by the modify notification.
-		calendar.excludeFreeBusy = pending.excludeFreeBusy;
-		calendar.update({f:pending.f || ""});
-	}
-	delete ZmOrganizer._pending[calendar.name];
 	calendar._notify(ZmEvent.E_CREATE);
 };
 

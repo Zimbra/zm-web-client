@@ -44,7 +44,7 @@ ZmMountpoint.prototype.toString = function() {
 // Constants
 //
 
-ZmMountpoint.__CREATE_PARAMS = { "l":1, "name":1, "zid":1, "rid":1, "d":1, "path":1, "view":1, "color":1 };
+ZmMountpoint.__CREATE_PARAMS = { "l":1, "name":1, "zid":1, "rid":1, "d":1, "path":1, "view":1, "color":1, "f":1 };
 
 //
 // Data
@@ -70,15 +70,5 @@ function(appCtxt, params, callback, errorCallback) {
 		linkNode.setAttribute(p, params[p]);
 	}
 
-	ZmOrganizer._pending[params.name] = {};
-	ZmOrganizer._pending[params.name].f = params.f;
-
-	var params = {
-		soapDoc: soapDoc,
-		asyncMode: Boolean(callback),
-		callback: callback,
-		errorCallback: errorCallback
-	};
-
-	var response = appCtxt.getAppController().sendRequest(params);
+	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback, errorCallback:errorCallback});
 };

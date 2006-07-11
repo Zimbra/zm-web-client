@@ -444,7 +444,7 @@ function(ev, treeView, overviewId) {
 			this._checkTreeView(overviewId);
 
 			// check tree item
-			if (treeView.getStyle() == DwtTree.CHECKEDITEM_STYLE) {
+			if (treeView.getStyle() & DwtTree.CHECKEDITEM_STYLE) {
 				var treeItem = treeView.getTreeItemById(id);
 				treeItem.setChecked(organizer.isChecked);
 			}

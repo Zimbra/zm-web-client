@@ -208,9 +208,6 @@ ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK] = "wiki";
 ZmOrganizer.sortCompare = function(organizerA, organizerB) {};
 ZmOrganizer.prototype.create = function() {};
 
-// Static data
-
-ZmOrganizer._pending = {};
 
 // Static methods
 
