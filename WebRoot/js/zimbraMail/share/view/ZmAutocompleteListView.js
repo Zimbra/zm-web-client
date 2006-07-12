@@ -538,6 +538,10 @@ function(text, match) {
 	var el = this._element;
 	el.value = text;
 	el.focus();
+	// bug fix #8776
+	if (AjxEnv.isSafari) {
+		el.setSelectionRange(text.length, text.length);
+	}
 	this.reset();
 	if (this._compCallback) {
 		this._compCallback.run(text, el, match);

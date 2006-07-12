@@ -170,6 +170,11 @@ function() {
 		}
 		if (assistant && mainCommand == cmd && this._assistant != assistant) {
 			this._commandEl.value = assistant.getCommand()+ " ";
+			// bug fix #8776
+			if (AjxEnv.isSafari) {
+				var len = this._commandEl.value.length
+				this._commandEl.setSelectionRange(len, len);
+			}
 		}
 	} else {
 		this._availableCommands = ZmMsg.ASST_availableCommands+ " " + ZmAssistant.getHandlerCommands().join(", ");
