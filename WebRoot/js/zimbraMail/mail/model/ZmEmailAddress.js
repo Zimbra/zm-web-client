@@ -259,7 +259,8 @@ function(str) {
 				if (ch != "\n") {
 					for (var i = 0; i < ignore.length; i++) {
 						var range = ignore[i];
-						doIgnore = (pos >= range.start && pos <= range.end);
+						var absPos = startPos + pos;
+						doIgnore = (absPos >= range.start && absPos <= range.end);
 						if (doIgnore) break;
 					}
 				}
