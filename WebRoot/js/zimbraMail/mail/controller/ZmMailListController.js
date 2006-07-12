@@ -205,15 +205,7 @@ ZmMailListController.prototype._setupViewMenu = function(view) {};
 ZmMailListController.prototype._initialize =
 function(view) {
 
-	// save info. returned by search result
-	if (this._activeSearch) {
-		if (this._list)
-			this._list.setHasMore(this._activeSearch.getAttribute("more"));
-
-		var newOffset = parseInt(this._activeSearch.getAttribute("offset"));
-		if (this._listView[view])
-			this._listView[view].setOffset(newOffset);
-	}
+	this._setActiveSearch(view);
 
 	// call base class
 	ZmListController.prototype._initialize.call(this, view);
@@ -310,6 +302,20 @@ function() {
 	
 	return list;
 };
+
+ZmMailListController.prototype._setActiveSearch =
+function(view) {
+	// save info. returned by search result
+	if (this._activeSearch) {
+		if (this._list)
+			this._list.setHasMore(this._activeSearch.getAttribute("more"));
+
+		var newOffset = parseInt(this._activeSearch.getAttribute("offset"));
+		if (this._listView[view])
+			this._listView[view].setOffset(newOffset);
+	}
+};
+
 
 // List listeners
 

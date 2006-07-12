@@ -170,6 +170,11 @@ function(idx) {
 	// do nothing (dont want base class functionality)
 }
 
+ZmConvController.prototype._setActiveSearch =
+function(view) {
+	// bug fix #7389 - do nothing!
+}
+
 // Operation listeners
 
 // Delete one or more items.
