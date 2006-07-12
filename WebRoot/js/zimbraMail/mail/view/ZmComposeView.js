@@ -115,9 +115,9 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 	this._createAttachmentsContainer();
 
 	// reset To/Cc/Bcc fields
-	this._showAddressField(ZmEmailAddress.TO, true, true);
-	this._showAddressField(ZmEmailAddress.CC, this._appCtxt.get(ZmSetting.SHOW_CC), true);
-	this._showAddressField(ZmEmailAddress.BCC, this._appCtxt.get(ZmSetting.SHOW_BCC), true);
+	this._showAddressField(ZmEmailAddress.TO, true, true, true);
+	this._showAddressField(ZmEmailAddress.CC, this._appCtxt.get(ZmSetting.SHOW_CC), true, true);
+	this._showAddressField(ZmEmailAddress.BCC, this._appCtxt.get(ZmSetting.SHOW_BCC), true, true);
 
 	// populate fields based on the action and user prefs
 	this._setAddresses(action, toOverride);
@@ -1281,7 +1281,7 @@ function() {
 
 // Show address field
 ZmComposeView.prototype._showAddressField =
-function(type, show, skipNotify) {
+function(type, show, skipNotify, skipFocus) {
 	this._using[type] = show;
 	Dwt.setVisible(document.getElementById(this._divId[type]), show);
 	this._field[type].value = ""; // bug fix #750 and #3680
@@ -1290,8 +1290,10 @@ function(type, show, skipNotify) {
 		this._appCtxt.set(setting, show, null, false, skipNotify);
 	}
 	this._resetBodySize();
-	var field = show ? this._field[type] : null;	// set focus if visible
-	this._controller._setComposeTabGroup(field);
+	if (!skipFocus) {
+		var field = show ? this._field[type] : null;	// set focus if visible
+		this._controller._setComposeTabGroup(field);
+	}
 };
 
 // Grab the addresses out of the form. Optionally, they can be returned broken out into good and

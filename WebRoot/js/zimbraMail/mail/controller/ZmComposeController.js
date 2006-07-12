@@ -184,8 +184,9 @@ function() {
 };
 
 ZmComposeController.prototype._preHideCallback =
-function() {
-	return this.popShield();
+function(view, force) {
+	ZmController.prototype._preHideCallback.call(this);
+	return force ? true : this.popShield();
 };
 
 ZmComposeController.prototype._postShowCallback = 
@@ -422,8 +423,8 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	this._setOptionsMenu(this._composeMode);
 
 	this._composeView.set(action, msg, toOverride, subjOverride, extraBodyText);
-	this._setComposeTabGroup();
 	this._app.pushView(ZmController.COMPOSE_VIEW);
+	this._setComposeTabGroup();
 	this._composeView.reEnableDesignMode();
 };
 
@@ -670,7 +671,7 @@ function() {
 	}
 	this._composeView.reEnableDesignMode();
 	this._app.popView(!dirty);
-}
+};
 
 // Attachment button was pressed
 ZmComposeController.prototype._attachmentListener =

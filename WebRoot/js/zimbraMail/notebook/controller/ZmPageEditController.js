@@ -364,7 +364,12 @@ ZmPageEditController.prototype._formatListener = function(ev) {
 };
 
 ZmPageEditController.prototype._preHideCallback =
-function() {
+function(view, force) {
+	ZmController.prototype._preHideCallback.call(this);
+	if (force) {
+		return true;
+	}
+	
 	if (this._isHandlingSave || !this._pageEditView.isDirty()) {
 		return true;
 	}

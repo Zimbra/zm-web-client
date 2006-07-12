@@ -221,7 +221,12 @@ function(items, hardDelete, attrs, skipPostProcessing) {
 };
 
 ZmContactController.prototype._preHideCallback =
-function() {
+function(view, force) {
+	ZmController.prototype._preHideCallback.call(this);
+	if (force) {
+		return true;
+	}
+	
 	var view = this._listView[this._currentView];
 	if (!view.isDirty())
 		return true;

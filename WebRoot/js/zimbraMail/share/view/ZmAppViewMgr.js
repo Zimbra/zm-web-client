@@ -346,10 +346,12 @@ function(viewId, force) {
 		force = true;
 	}
 
-	if (!this._hideView(this._currentView, this._pushCallback, viewId, force))
+	if (!this._hideView(this._currentView, this._pushCallback, viewId, force)) {
 	 	return false;
-	if (this._currentView && (this._currentView != viewId))
+	}
+	if (this._currentView && (this._currentView != viewId)) {
 		this._hidden.push(this._currentView);
+	}
 
 	this._removeFromHidden(viewId);
 	var temp = this._lastView;
@@ -357,7 +359,7 @@ function(viewId, force) {
 	this._currentView = viewId;
 	DBG.println(AjxDebug.DBG2, "app view mgr: current view is now " + this._currentView);
 
-	if (!this._showView(viewId, this._pushCallback, viewId, force, (viewId != this._currentView))){
+	if (!this._showView(viewId, this._pushCallback, viewId, force, (viewId != this._currentView))) {
 		this._currentView = this._lastView;
 		this._lastView = temp;
 		return false;
@@ -366,10 +368,13 @@ function(viewId, force) {
 	this._layout(this._currentView);
 
 	var viewController = this._views[viewId][ZmAppViewMgr.C_APP_CONTENT].getController();
-	if (viewController && viewController.setCurrentView)
+	if (viewController && viewController.setCurrentView) {
 		viewController.setCurrentView(viewId);
-	if (this._isAppView[viewId])
+	}
+	if (this._isAppView[viewId]) {
 		this.setAppView(this._viewApp[viewId], viewId);
+	}
+	
 	return true;
 }
 
@@ -381,12 +386,14 @@ function(viewId, force) {
 */
 ZmAppViewMgr.prototype.popView =
 function(force) {
-	if (!this._currentView)
+	if (!this._currentView) {
 		throw new AjxException("no view to pop");
+	}
 
 	DBG.println(AjxDebug.DBG1, "popView: " + this._currentView);
-	if (!this._hideView(this._currentView, this._popCallback, null, force))
+	if (!this._hideView(this._currentView, this._popCallback, null, force)) {
 		return false;
+	}
 	this._deactivateView(this._views[this._currentView]);
 	this._lastView = this._currentView;
 	this._currentView = this._hidden.pop();
@@ -398,13 +405,15 @@ function(force) {
 	}
 	
 	DBG.println(AjxDebug.DBG2, "app view mgr: current view is now " + this._currentView);
-	if (!this._showView(this._currentView, this._popCallback, null, force, true))
+	if (!this._showView(this._currentView, this._popCallback, null, force, true)) {
 		throw new AjxException("no view to show");
+	}
 	this._removeFromHidden(this._currentView);
 
 	this._layout(this._currentView);	
 	
 	this._controller.setActiveApp(this._viewApp[this._currentView], this._currentView);
+
 	return true;
 }
 
@@ -551,22 +560,23 @@ function(view) {
 // Tries to hide the given view. First checks to see if the view has a callback
 // for when it is hidden. The callback must return true for the view to be hidden.
 ZmAppViewMgr.prototype._hideView =
-function(view, pendingAction, pendingView, skipCallback) {
+function(view, pendingAction, pendingView, force) {
 	if (!view) return true;
 	var okToContinue = true;
 	var callback = this._callbacks[view] ? this._callbacks[view][ZmAppViewMgr.CB_PRE_HIDE] : null;
-	if (callback && !skipCallback) {
-		DBG.println(AjxDebug.DBG2, "hiding " + view + ", waiting on " + pendingView + "; skip = " + skipCallback);
+	if (callback) {
+		DBG.println(AjxDebug.DBG2, "hiding " + view + ", waiting on " + pendingView + "; skip = " + force);
 		this._pendingAction = pendingAction;
 		this._pendingView = pendingView;
-		okToContinue = callback.run(view);
+		okToContinue = callback.run(view, force);
 	}
 	if (okToContinue) {
 		this._setViewVisible(view, false);
 		DBG.println(AjxDebug.DBG2, view + " hidden");
 		callback = this._callbacks[view] ? this._callbacks[view][ZmAppViewMgr.CB_POST_HIDE] : null;
-		if (callback)
+		if (callback) {
 			callback.run(view);
+		}
 	}
 
 	return okToContinue;
@@ -574,21 +584,22 @@ function(view, pendingAction, pendingView, skipCallback) {
 
 // Makes the given view visible.
 ZmAppViewMgr.prototype._showView =
-function(view, pendingAction, pendingView, skipCallback, isNewView) {
+function(view, pendingAction, pendingView, force, isNewView) {
 	var okToContinue = true;
 	var callback = this._callbacks[view] ? this._callbacks[view][ZmAppViewMgr.CB_PRE_SHOW] : null;
-	if (callback && !skipCallback) {
-		DBG.println(AjxDebug.DBG2, "showing " + view + ", waiting on " + pendingView + "; skip = " + skipCallback);
+	if (callback) {
+		DBG.println(AjxDebug.DBG2, "showing " + view + ", waiting on " + pendingView + "; skip = " + force);
 		this._pendingAction = pendingAction;
 		this._pendingView = pendingView;
-		okToContinue = callback.run(view, isNewView);
+		okToContinue = callback.run(view, isNewView, force);
 	}
 	if (okToContinue) {
 		this._setViewVisible(view, true);
 		DBG.println(AjxDebug.DBG2, view + " shown");
 		callback = this._callbacks[view] ? this._callbacks[view][ZmAppViewMgr.CB_POST_SHOW] : null;
-		if (callback)
+		if (callback) {
 			callback.run(view, isNewView);
+		}
 	}
 
 	return okToContinue;
