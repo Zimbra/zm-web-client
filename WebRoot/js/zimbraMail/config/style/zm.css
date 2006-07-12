@@ -224,7 +224,7 @@
 
 /* Search builder toolbar (buttons only) */
 .ZmBrowseToolBar {
-	margin-top:-3px;
+	margin-top:3px;
 	@FullSize@
 }
 
