@@ -761,9 +761,6 @@ function() {
 ZmZimbraMail.prototype._preloadViews =
 function() {
 
-	// safari is slow on preloading so dont do it
-	if (AjxEnv.isSafari) return;
-
 	// preload the compose view
 	var cc = this.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
 	if (cc) {
