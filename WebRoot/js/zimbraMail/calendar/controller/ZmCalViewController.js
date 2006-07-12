@@ -261,7 +261,7 @@ ZmCalViewController.prototype.getCheckedCalendars =
 function() {
 	if (this._checkedCalendars == null) {
 		if (this._calTreeController == null) return [];		
-		this._checkedCalendars = this._updateCheckedCalendars();
+		this._updateCheckedCalendars();
 	}
 	return this._checkedCalendars;
 };
@@ -290,6 +290,7 @@ function(id) {
 ZmCalViewController.prototype._updateCheckedCalendars =
 function() {
 	var cc = this._calTreeController.getCheckedCalendars(ZmZimbraMail._OVERVIEW_ID);
+	this._checkedCalendars = cc;
 	this._checkedCalendarFolderIds = [];
 	this._checkedLocalCalendarFolderIds = [];
 	for (var i=0; i < cc.length; i++) {
@@ -305,10 +306,7 @@ function() {
 ZmCalViewController.prototype._calTreeSelectionListener =
 function(ev) {
 	if (ev.detail != DwtTree.ITEM_CHECKED) return;
-	var newCheckedCalendars = this._updateCheckedCalendars();
-	
-	// TODO: diff between new and old...
-	this._checkedCalendars = newCheckedCalendars;
+	this._updateCheckedCalendars();
 	this._refreshAction(true);
 	
 	// save checkbox state to server
@@ -330,8 +328,7 @@ ZmCalViewController.prototype._calTreeChangeListener =
 function(ev) {
 	// TODO: check only for color/name changes?
 	if (ev.event == ZmEvent.E_DELETE) {
-		// TODO: diff between new and old...
-		this._checkedCalendars = this._updateCheckedCalendars();
+		this._updateCheckedCalendars();
 	}
 	this._refreshAction(true);
 };
@@ -968,8 +965,8 @@ function(appt) {
 		if (!appt.__creating) {
 			var tree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
 			var calendar = tree.getById(appt.folderId);
-			var isRemote = Boolean(calendar.url);
-			if (appt.isReadOnly() || isRemote) {
+			var isSynced = Boolean(calendar.url);
+			if (appt.isReadOnly() || isSynced) {
 				var mode = appt.isException() ? ZmAppt.MODE_EDIT_SINGLE_INSTANCE : ZmAppt.MODE_EDIT_SERIES;
 				appt.getDetails(mode, new AjxCallback(this, this._showApptReadOnlyView, [appt]));
 			} else {
@@ -1171,8 +1168,9 @@ function(parent, num) {
 		var isReadOnly = appt ? appt.isReadOnly() : false;
 		var tree = appt && this._appCtxt.getTree(ZmOrganizer.CALENDAR);
 		var calendar = tree && tree.getById(appt.folderId);
-		var isRemote = Boolean(calendar && calendar.url);
-		parent.enable(ZmOperation.DELETE, !isReadOnly && !isRemote);
+		var isSynced = Boolean(calendar && calendar.url);
+		var disabled = isSynced || isReadOnly;
+		parent.enable(ZmOperation.DELETE, !disabled);
 	}
 	// disable button for current view
 	var op = ZmCalViewController.VIEW_TO_OP[currViewName];
@@ -1201,8 +1199,8 @@ function(ev) {
 
 	var tree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
 	var calendar = tree.getById(appt.folderId);
-	var isRemote = Boolean(calendar.url);
-	if (appt.isReadOnly() || isRemote) {
+	var isSynced = Boolean(calendar.url);
+	if (appt.isReadOnly() || isSynced) {
 		// always get details on appt as if we're editing series (since its read only)
 		var callback = new AjxCallback(this, this._showApptReadOnlyView, [appt]);
 		appt.getDetails(ZmAppt.MODE_EDIT_SERIES, callback, this._errorCallback);
@@ -1392,7 +1390,8 @@ function (appt) {
 	
 	var calendar = this.getCheckedCalendar(appt.folderId);
 	var share = calendar.link ? calendar.shares[0] : null;
-	var isRemote = Boolean(calendar.url);
+	var isReadOnly = calendar.isReadOnly();
+	var isSynced = Boolean(calendar.url);
 
 	// action menu options
 	var accept = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_ACCEPT);
@@ -1416,7 +1415,7 @@ function (appt) {
 		del.setText(ZmMsg.del);
 		del.setImage("Delete");
 	}
-	del.setEnabled(!isRemote);
+	del.setEnabled(!isReadOnly && !isSynced);
 	
 	// recurring action menu options
 	var series = this._recurringActionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.VIEW_APPT_SERIES);
