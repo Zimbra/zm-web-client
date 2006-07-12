@@ -168,7 +168,7 @@ Text-hover					= @Text@
 Text-clicked				= @Text@
 Text-default				= @Text@
 Text-focused				= @Text@
-Text-today					= color:darkred; font-weight:bold;
+Text-today					= color:darkred;
 Text-unread					= @Text@ font-weight:bold;
 Text-deleted				= @Text-disabled@ font-style:italic;
 Text-important				= color:darkred;
@@ -332,6 +332,7 @@ _InputBorder-disabled_		= padding:2 4 2 4; border:1px solid @_BaseColorD10_@;
 _SmallButtonBorder_			= padding:2px; border:0px; 
 _SmallButtonBorder-hover_	= padding:1px; border:1px solid; border-color:@LightSeparatorColor@ @DarkSeparatorColor@ @DarkSeparatorColor@ @LightSeparatorColor@;
 _SmallButtonBorder-clicked_ = padding:1px; border:1px solid; border-color:@DarkSeparatorColor@ @LightSeparatorColor@ @LightSeparatorColor@ @DarkSeparatorColor@;
+_SmallButtonBorder-today_ 	= padding:1px; border:1px solid darkred;
 
 
 
@@ -615,6 +616,7 @@ _MiniCalButtonStyle_		= text-align:center; @ActiveCursor@
 MiniCalButton				= @Text@			@_SmallButtonBorder_@			@_MiniCalButtonStyle_@
 MiniCalButton-hover			= @Text-hover@		@_SmallButtonBorder-hover_@		@_MiniCalButtonStyle_@
 MiniCalButton-clicked		= @Text-clicked@	@_SmallButtonBorder-clicked_@	@_MiniCalButtonStyle_@
+MiniCalButton-today			= @Text-today@		@_SmallButtonBorder-today_@		@_MiniCalButtonStyle_@
 
 MiniCalDOWText				= @Text-disabled@ 	background-color:@_BaseColorL25_@; @BottomSeparator@ text-align:center;
 

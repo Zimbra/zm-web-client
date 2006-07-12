@@ -225,6 +225,9 @@
 /* Search builder toolbar (buttons only) */
 .ZmBrowseToolBar {
 	margin-top:3px;
+#IFDEF MSIE
+	margin-top:-3px;
+#ENDIF
 	@FullSize@
 }
 
