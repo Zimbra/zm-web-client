@@ -246,7 +246,7 @@ body						{	@ChromeBg@	}
 
 
 
-#IFDEF GECKO
+#IFNDEF MSIE
 	.ImgAppBanner{background-image:url("@AppBannerImg@");width:@AppBannerWidth@;height:@AppBannerHeight@;}
 	.ImgLoginBanner{background-image:url("@LoginBannerImg@");width:@LoginBannerWidth@;height:@LoginBannerHeight@;}	
 #ENDIF
