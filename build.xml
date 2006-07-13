@@ -78,8 +78,7 @@
   <property name='l10n.excludes' value='msgs/*_*.properties' />
 
   <!-- list all the skins to build with here -->
-  <!-- property name='skins' value='steel,walnut,bare' / -->
-  <property name='skins' value='sand,steel,sky,bare,demo,money' />
+  <property name='skins' value='steel' />
 
   <condition property='isProduction' value='true'>
     <or>
@@ -449,19 +448,17 @@
 
   <target name='build-skin-images' depends='compile' unless='imagesdone'>
 	<property name='dir.skincache' value='../../../../skins/${skindir}' />
-
-
     <!-- merge loRes skin images -->
     <mkdir dir="${images.loRes.destDir}/skins/${skindir}"/>
     <delete file='${images.loRes.destDir}/skins/${skindir}/${skindir}.css'/>
     <delete file='${images.loRes.destDir}/skins/${skindir}/${dir.skincache}/CacheLoRes.html'/>
     <echo/>
-    <echo message='Copying loRes images for skin ${skindir}'/>
+    <echo message='Merging loRes images for skin ${skindir}'/>
     <echo/>
-    <imagemerge destdir='${images.loRes.destDir}/skins/${skindir}' copy='true'
+    <imagemerge destdir='${images.loRes.destDir}/skins/${skindir}'
       cssfile='${skindir}.css' csspath='${csspathprefix}loRes/skins/${skindir}/'
       cachefile='${dir.skincache}/CacheLoRes.html'>
-      <dirset dir='WebRoot/skins/${skindir}' includes='**/img'/>
+      <dirset dir='WebRoot/skins/${skindir}' includes='**/img/**'/>
     </imagemerge>
     <echo/>
   </target>
