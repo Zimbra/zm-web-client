@@ -311,8 +311,12 @@ function(ev) {
 	var items = ev.getDetail("items");
 	if ((ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) && this._mode == ZmController.CONV_VIEW) {
 		if (!this._controller.handleDelete()) {
-			this._changeTrashStatus(items);
-			this._changeFolderName(items);
+			if (ev.event == ZmEvent.E_DELETE) {
+				ZmMailListView.prototype._changeListener.call(this, ev);
+			} else {
+				this._changeTrashStatus(items);
+				this._changeFolderName(items);
+			}
 		}
 	} else if (this._mode == ZmController.CONV_VIEW && ev.event == ZmEvent.E_CREATE) {
 		var conv = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController().getConv();
