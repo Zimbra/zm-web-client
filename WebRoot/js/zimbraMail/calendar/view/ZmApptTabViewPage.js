@@ -1349,6 +1349,7 @@ function(type, useException) {
 				throw msg;
 			} else {
 				this.parent.showErrorMessage(msg, null, this._badAttendeeCallback, this, type);
+				break;
 			}
 		}
 	}
@@ -1369,7 +1370,7 @@ function(type, name) {
 
 ZmApptTabViewPage.prototype._badAttendeeCallback =
 function(type) {
-	this._attInputField[type].setValue(this._attInputCurVal[type]);
+	this._attInputField[type].focus();
 	this.parent._msgDialog.popdown();
 };
 
