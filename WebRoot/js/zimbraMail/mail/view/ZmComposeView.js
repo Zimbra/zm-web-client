@@ -842,7 +842,13 @@ function(action, msg, extraBodyText, incOption) {
 	var composingHtml = this._composeMode == DwtHtmlEditor.HTML;
 
 	// XXX: consolidate this code later.
-	if (action == ZmOperation.DRAFT || action == ZmOperation.SHARE) {
+	var isDraft = action == ZmOperation.DRAFT;
+	var isShare = action == ZmOperation.SHARE;
+	var isInviteReply = action == ZmOperation.REPLY_ACCEPT ||
+						action == ZmOperation.REPLY_DECLINE ||
+						action == ZmOperation.REPLY_TENTATIVE ||
+						action == ZmOperation.REPLY_NEW_TIME;
+	if (isDraft || isShare || isInviteReply) {
 		var body = "";
 		if (composingHtml) {
 			body = msg.getBodyPart(ZmMimeTable.TEXT_HTML);
@@ -860,7 +866,9 @@ function(action, msg, extraBodyText, incOption) {
 		}
 		this._htmlEditor.setContent(body);
 		this._showForwardField(msg, action);
-		return;
+		if (!isInviteReply) {
+			return;
+		}
 	}
 
 	var sigStyle = (this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED) && this._appCtxt.get(ZmSetting.SIGNATURE))
@@ -873,7 +881,8 @@ function(action, msg, extraBodyText, incOption) {
 
 	// get reply/forward prefs as necessary
 	if (!incOption) {
-		if (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL) {
+		var isReply = action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL;
+		if (isReply || isInviteReply) {
 			incOption = this._appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG);
 		} else if (action == ZmOperation.FORWARD_INLINE) {
 			incOption = this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
