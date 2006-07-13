@@ -72,7 +72,7 @@ function(attachment, now) {
 	htmlArr[idx++] = "<td>";
 	var name = attachment.getName() || attachment.getFilename();
 	if (name) {
-		var url = this._csfeMsgFetchSvc + "id=" + attachment.messageId + "&amp;part=" + attachment.getPartName();
+		var url = this._appCtxt.getCsfeMsgFetcher() + "id=" + attachment.messageId + "&amp;part=" + attachment.getPartName();
 		name = "<a class='AttLink' href='" + url + "'>" + AjxStringUtil.htmlEncode(name) + "</a>";
 	}
 	htmlArr[idx++] = name ? name : " ";

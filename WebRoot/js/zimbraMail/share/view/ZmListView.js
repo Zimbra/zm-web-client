@@ -39,8 +39,6 @@ function ZmListView(parent, className, posStyle, view, type, controller, headerL
 	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 	if (tagList)
 		tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
-
-	this._csfeMsgFetchSvc = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 }
 
 ZmListView.prototype = new DwtListView;

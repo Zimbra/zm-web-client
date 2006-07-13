@@ -565,35 +565,29 @@ function(doc) {
 		recurse(df.lastChild, true);	 // parse tree and findObjects()
 	}
 	node.appendChild(df);	// put nodes back in the document
-	// alert((new Date().getTime() - T1)/1000);
 
 	DBG.timePt("-- END _processHtmlDoc");
 };
 
 ZmMailMsgView.prototype._fixMultipartRelatedImages =
-function(msg, idoc, domain) {
+function(msg, idoc) {
 	var images = idoc.getElementsByTagName("img");
 	var num = 0;
 	for (var i = 0; i < images.length; i++) {
 		var dfsrc = images[i].getAttribute("dfsrc");
 		if (dfsrc) {
-			//DBG.println("images "+i+" id="+images[i].id);
 			if (dfsrc.substring(0,4) == "cid:") {
 				num++;
 				var cid = "<" + dfsrc.substring(4) + ">";
-				//DBG.printRaw(" cid = "+cid);
-				var src = msg.getContentIdAttachUrl(cid,domain);
+				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_ID, cid);
 				if (src) {
-					//DBG.printRaw(" src = "+src);
 					images[i].src = src;
 					images[i].dfsrc = src;
 				}
 			} else if (dfsrc.indexOf("//") == -1) { // check for content-location verison
-				//DBG.printRaw(" cid = "+cid);
-				var src = msg.getContentLocationAttachUrl(dfsrc,domain);
+				var src = msg.getContentPartAttachUrl(ZmMailMsg.CONTENT_PART_LOCATION, dfsrc);
 				if (src) {
 					num++;
-					//DBG.printRaw(" src = "+src);
 					images[i].src = src;
 					images[i].dfsrc = src;
 				}
@@ -766,7 +760,7 @@ function(container, html, isTextMsg) {
 		this._htmlBody = idoc.body.innerHTML;
 
 		// TODO: only call this if top-level is multipart/related?
-		var didAllImages = this._fixMultipartRelatedImages(this._msg, idoc, document.domain);
+		var didAllImages = this._fixMultipartRelatedImages(this._msg, idoc);
 
 		// setup the click handler for the images
 		if (displayImages) {

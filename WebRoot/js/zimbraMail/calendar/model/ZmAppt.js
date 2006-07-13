@@ -1121,8 +1121,7 @@ function(isHtml) {
 */
 ZmAppt.prototype.getAttachListHtml = 
 function(attach, hasCheckbox) {
-	var csfeMsgFetchSvc = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
-	var hrefRoot = "href='" + csfeMsgFetchSvc + "id=" + this.getInvId() + "&amp;part=";
+	var hrefRoot = "href='" + this._appCtxt.getCsfeMsgFetcher() + "id=" + this.getInvId() + "&amp;part=";
 
 	// gather meta data for this attachment
 	var mimeInfo = ZmMimeTable.getInfo(attach.ct);

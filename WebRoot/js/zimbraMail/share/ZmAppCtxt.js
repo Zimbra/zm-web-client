@@ -598,3 +598,11 @@ ZmAppCtxt.prototype.cacheGet =
 function(key) {
 	return this._itemCache ? this._itemCache.get(key) : null;
 };
+
+ZmAppCtxt.prototype.getCsfeMsgFetcher = 
+function() {
+	if (!this._csfeMsgFetchSvc) {
+		this._csfeMsgFetchSvc = location.protocol + "//" + document.domain + this.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+	}
+	return this._csfeMsgFetchSvc;
+};

@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -34,7 +34,7 @@
 * @param list		[ZmMailList]	list that contains this message
 */
 function ZmMailMsg(appCtxt, id, list) {
-	
+
 	ZmMailItem.call(this, appCtxt, ZmItem.MSG, id, list);
 
 	this._inHitList = false;
@@ -72,6 +72,9 @@ ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_DATE] = ZmMsg.sent;
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT] = ZmMsg.subject;
 
 ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/i;
+
+ZmMailMsg.CONTENT_PART_ID = "ci";
+ZmMailMsg.CONTENT_PART_LOCATION = "cl";
 
 /**
 * Fetches a message from the server.
@@ -421,24 +424,24 @@ function(callback, result) {
 		var type = ZmMailMsg.ADDRS[i];
 		this._addrs[type].removeAll();
 	}
-	
+
 	// clear all participants (since it'll get re-parsed w/ diff. ID's)
 	if (this.participants)
 		this.participants.removeAll();
 	for (var i in this._participantHash)
 		delete this._participantHash[i];
-		
+
 	// clear all attachments
-	this._attachments.length = 0;	
+	this._attachments.length = 0;
 
 	this._loadFromDom(response.m[0]);
 	this._markReadLocal(true);
-	
+
 	// return result so callers can check for exceptions if they want
 	if (callback) callback.run(result);
 };
 
-ZmMailMsg.prototype.getBodyParts = 
+ZmMailMsg.prototype.getBodyParts =
 function() {
 	return this._bodyParts;
 };
@@ -472,14 +475,14 @@ function() {
 		var bodyPart = this.getBodyPart();
 		return bodyPart ? bodyPart.content : null;
 	}
-	
+
 	return null;
 };
 
-ZmMailMsg.prototype.getTextPart = 
+ZmMailMsg.prototype.getTextPart =
 function(callback) {
 	var bodyPart = this.getBodyPart();
-	
+
 	if (bodyPart && bodyPart.ct == ZmMimeTable.TEXT_PLAIN) {
 		return bodyPart.content;
 	} else {
@@ -497,17 +500,17 @@ function(callback, result) {
 	if (callback) callback.run(result);
 };
 
-// we may want to set the text part w/o requesting it from the server 
+// we may want to set the text part w/o requesting it from the server
 // (i.e. if we already have the HTML part)
-ZmMailMsg.prototype.setTextPart = 
+ZmMailMsg.prototype.setTextPart =
 function(textPartStr) {
 	var textPart = new Object();
 	textPart.ct = ZmMimeTable.TEXT_PLAIN;
 	textPart.s = textPartStr.length;
 	textPart.content = textPartStr;
 	// XXX: not sure whether these params should be faked
-	//textPart.body = 
-	//textPart.part = 
+	//textPart.body =
+	//textPart.part =
 	this._bodyParts.push(textPart);
 };
 
@@ -516,7 +519,7 @@ function(content) {
 	this._htmlBody = content;
 };
 
-ZmMailMsg.prototype.sendInviteReply = 
+ZmMailMsg.prototype.sendInviteReply =
 function(contactList, edited, componentId, callback, errorCallback, instanceDate) {
 	var ed = edited || false;
 	if (!this._origMsg) {
@@ -529,7 +532,7 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 	}
 };
 
-ZmMailMsg.prototype._sendInviteReply = 
+ZmMailMsg.prototype._sendInviteReply =
 function (contactList, edited, componentId, callback, errorCallback, instanceDate) {
 	var soapDoc = AjxSoapDoc.create("SendInviteReplyRequest", "urn:zimbraMail");
 
@@ -608,13 +611,13 @@ function(contactList, isDraft, callback, errorCallback) {
 		var params = {soapDoc:soapDoc, isInvite:false, isDraft:isDraft, callback:respCallback, errorCallback:errorCallback, execFrame:execFrame};
 
 		return this._sendMessage(params);
-	}	
+	}
 };
 
 ZmMailMsg.prototype._handleResponseSend =
 function(isDraft, callback, result) {
 	var resp = result.getResponse().m[0];
-		
+
 	// notify listeners of successful send message
 	if (!isDraft) {
 		if (resp.id || !this._appCtxt.get(ZmSetting.SAVE_TO_SENT))
@@ -622,16 +625,16 @@ function(isDraft, callback, result) {
 	} else {
 		this._loadFromDom(resp);
 	}
-	
+
 	if (callback) callback.run(result);
 }
 
-ZmMailMsg.prototype._createMessageNode = 
+ZmMailMsg.prototype._createMessageNode =
 function(soapDoc, contactList, isDraft) {
 
 	var msgNode = soapDoc.set("m");
 
-	// if origId is given, means we're saving a draft or sending a msg that was 
+	// if origId is given, means we're saving a draft or sending a msg that was
 	// originally a reply/forward
 	if (this.origId)
 		msgNode.setAttribute("origid", this.origId);
@@ -647,12 +650,12 @@ function(soapDoc, contactList, isDraft) {
 	}
 
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
-		var type = ZmComposeView.ADDRS[i];		
+		var type = ZmComposeView.ADDRS[i];
 		this._addAddressNodes(soapDoc, msgNode, type, contactList, isDraft);
 	}
 
 	soapDoc.set("su", this.subject, msgNode);
-	
+
 	var topNode = soapDoc.set("mp", null, msgNode);
 	topNode.setAttribute("ct", this._topPart.getContentType());
 
@@ -668,12 +671,12 @@ function(soapDoc, contactList, isDraft) {
 	} else {
 		soapDoc.set("content", this._topPart.getContent(), topNode);
 	}
-	
+
 	if (this.irtMessageId)
 		soapDoc.set("irt", this.irtMessageId, msgNode);
-	
-	if (this._attId || this._msgAttId || 
-		(this._forAttIds && this._forAttIds.length)) 
+
+	if (this._attId || this._msgAttId ||
+		(this._forAttIds && this._forAttIds.length))
 	{
 		var attachNode = soapDoc.set("attach", null, msgNode);
 		if (this._attId)
@@ -704,7 +707,7 @@ function(soapDoc, contactList, isDraft) {
 * @param callback		[AjxCallback]	async callback
 * @param errorCallback	[AjxCallback]	async error callback
 */
-ZmMailMsg.prototype._sendMessage = 
+ZmMailMsg.prototype._sendMessage =
 function(params) {
 	var respCallback = new AjxCallback(this, this._handleResponseSendMessage, [params.isInvite, params.isDraft, params.callback]);
 
@@ -740,7 +743,7 @@ function(bIsInvite, bIsDraft, callback, result) {
 };
 
 
-ZmMailMsg.prototype._notifySendListeners = 
+ZmMailMsg.prototype._notifySendListeners =
 function() {
 	var flag = null;
 	if (this.isForwarded) {
@@ -748,7 +751,7 @@ function() {
 	} else if (this.isReplied) {
 		flag = ZmItem.FLAG_REPLIED;
 	}
-	
+
 	if (flag) {
 		this._origMsg[ZmItem.FLAG_PROP[flag]] = true;
 		if (this._origMsg.list)
@@ -756,19 +759,19 @@ function() {
 	}
 };
 
-ZmMailMsg.prototype.isRealAttachment = 
+ZmMailMsg.prototype.isRealAttachment =
 function(attachment) {
 	var type = attachment.ct;
 
 	// bug fix #6374 - ignore if attachment is body unless content type is message/rfc822
-	if (ZmMimeTable.isIgnored(type) || 
+	if (ZmMimeTable.isIgnored(type) ||
 		(attachment.body && attachment.ct != ZmMimeTable.MSG_RFC822))
 	{
 		return false;
 	}
 
-	if (type.match(/^image/) && 
-		((attachment.ci != null) || ((attachment.cl != null) && !attachment.cl.match(".*//")))) 
+	if (type.match(/^image/) &&
+		((attachment.ci != null) || ((attachment.cl != null) && !attachment.cl.match(".*//"))))
 	{
 		return false;
 	}
@@ -777,31 +780,17 @@ function(attachment) {
 };
 
 // this is a helper method to get an attachment url for multipart/related content
-ZmMailMsg.prototype.getContentIdAttachUrl = 
-function(cid, domain) {
-	if (this._attachments && this._attachments.length > 0) {
+ZmMailMsg.prototype.getContentPartAttachUrl =
+function(contentPartType, contentPart) {
+	if (this._attachments &&
+		this._attachments.length > 0 &&
+		(contentPartType == ZmMailMsg.CONTENT_PART_ID ||
+		 contentPartType == ZmMailMsg.CONTENT_PART_LOCATION))
+	{
     	for (var i = 0; i < this._attachments.length; i++) {
     		var attach = this._attachments[i];
-    		if (attach.ci == cid) {
-    			return location.protocol+"//" + domain + 
-    					this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) +
-    					"id=" + this.getId() + "&part=" + attach.part;
-    		}
-		}
-	}
-	return null;
-}
-
-// this is a helper method to get an attachment url for multipart/related content
-ZmMailMsg.prototype.getContentLocationAttachUrl = 
-function(cl, domain) {
-	if (this._attachments && this._attachments.length > 0) {
-    	for (var i = 0; i < this._attachments.length; i++) {
-    		var attach = this._attachments[i];
-    		if (attach.cl == cl) {
-    			return location.protocol+"//" + domain + 
-    					this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) +
-    					"id=" + this.getId() + "&part=" + attach.part;
+			if (attach[contentPartType] == contentPart) {
+    			return this._appCtxt.getCsfeMsgFetcher() + "id=" + this.getId() + "&part=" + attach.part;
     		}
 		}
 	}
@@ -809,10 +798,10 @@ function(cl, domain) {
 }
 
 /**
- * Returns an array of objects containing meta info about attachments to be used 
+ * Returns an array of objects containing meta info about attachments to be used
  * to build href's by the caller
 */
-ZmMailMsg.prototype.getAttachmentLinks = 
+ZmMailMsg.prototype.getAttachmentLinks =
 function(findHits) {
 	// cache the attachment links once they've been generated.
 	if (this._attLinks != null)
@@ -821,7 +810,7 @@ function(findHits) {
 	this._attLinks = [];
 
 	if (this._attachments && this._attachments.length > 0) {
-		var csfeMsgFetchSvc = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
+		var csfeMsgFetchSvc = this._appCtxt.getCsfeMsgFetcher();
 		var hrefRoot = csfeMsgFetchSvc + "id=" + this.getId() + "&amp;part=";
 
 		for (var i = 0; i < this._attachments.length; i++) {
@@ -840,8 +829,8 @@ function(findHits) {
 			// set size info in any
     		if (attach.s && attach.s > 0) {
     		    if (attach.s < 1024)		props.size = attach.s + " B";
-                else if (attach.s < 1024^2)	props.size = Math.round((attach.s / 1024) * 10) / 10 + " KB"; 
-                else 						props.size = Math.round((attach.s / (1024*1024)) * 10) / 10 + " MB"; 
+                else if (attach.s < 1024^2)	props.size = Math.round((attach.s / 1024) * 10) / 10 + " KB";
+                else 						props.size = Math.round((attach.s / (1024*1024)) * 10) / 10 + " MB";
     		} else {
     			useCL = attach.cl && ZmMailMsg.URL_RE.test(attach.cl);
     		}
@@ -872,7 +861,7 @@ function(findHits) {
 						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.getId() + "," + attach.part + ");";
 						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
 					}
-					else 
+					else
 					{
 						// set the objectify flag
 						props.objectify = attach.ct && attach.ct.match(/^image/);
@@ -906,7 +895,7 @@ function(findHits) {
 // Processes a message node, getting attributes and child nodes to fill in the message.
 ZmMailMsg.prototype._loadFromDom =
 function(msgNode) {
-	// this method could potentially be called twice (SearchConvResponse and 
+	// this method could potentially be called twice (SearchConvResponse and
 	// GetMsgResponse) so always check param before setting!
 	if (msgNode.id)		this.id = msgNode.id;
 	if (msgNode.cid) 	this.cid = msgNode.cid;
@@ -929,7 +918,7 @@ function(msgNode) {
 		this._topPart = ZmMimePart.createFromDom(msgNode.mp, params);
 		this._loaded = this._bodyParts.length > 0 || this._attachments.length > 0;
 	}
-	
+
 	if (msgNode.shr) {
 		// TODO: Make server output better msgNode.shr property...
 		var shareXmlDoc = AjxXmlDoc.createFromXml(msgNode.shr[0].content);
@@ -969,7 +958,7 @@ function () {
 /**
  * returns an ZmInvite object
  */
-ZmMailMsg.prototype.getInvite = 
+ZmMailMsg.prototype.getInvite =
 function() {
 	return this.invite;
 };
@@ -996,12 +985,12 @@ function(soapDoc, parent, type, contactList, isDraft) {
 	}
 };
 
-ZmMailMsg.prototype._isAttInHitList = 
+ZmMailMsg.prototype._isAttInHitList =
 function(attach) {
 	for (var i = 0; i < this._attHitList.length; i++) {
 		if (attach.part == this._attHitList[i].part)
 			return true;
 	}
-	
+
 	return false;
 };

@@ -396,7 +396,7 @@ ZmDoublePaneController.prototype._showOrigListener =
 function(ev) {
 	var msg = this._listView[this._currentView].getSelection()[0];
 	if (msg) {
-		var msgFetchUrl = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI) + "id=" + msg.id;
+		var msgFetchUrl = this._appCtxt.getCsfeMsgFetcher() + "id=" + msg.id;
 		// create a new window w/ generated msg based on msg id
 		window.open(msgFetchUrl, "_blank", "menubar=yes,resizable=yes,scrollbars=yes");
 	}

@@ -46,8 +46,6 @@ function ZmAttachmentListController(appCtxt, container, mailApp) {
 	this._viewFactory[ZmController.ATT_ICON_VIEW] = ZmAttachmentIconView;
 	this._toolbar = new Object();
 	this._contentView = new Object();
-
-	this._csfeMsgFetchSvc = location.protocol + "//" + document.domain + appCtxt.get(ZmSetting.CSFE_MSG_FETCHER_URI);
 }
 
 ZmAttachmentListController.prototype = new ZmMailListController;

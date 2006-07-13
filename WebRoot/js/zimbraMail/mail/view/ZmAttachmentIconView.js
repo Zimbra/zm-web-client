@@ -52,7 +52,7 @@ function(attachment, now) {
 	htmlArr[idx++] = "<table cellspacing='0' cellpadding='10' style='background-color:white; display:inline;'>";
 
 	var ct = attachment.getContentType();
-	var url = this._csfeMsgFetchSvc + "id=" + id + "&amp;part=" + attachment.getPartName();
+	var url = this._appCtxt.getCsfeMsgFetcher() + "id=" + id + "&amp;part=" + attachment.getPartName();
 	var name = attachment.getName() || attachment.getFilename();
 	name = AjxStringUtil.htmlEncode(name);
 	var subject = AjxStringUtil.htmlEncode(attachment.getSubject());
