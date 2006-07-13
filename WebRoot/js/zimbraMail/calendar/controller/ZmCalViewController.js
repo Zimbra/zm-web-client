@@ -658,6 +658,7 @@ function(ev) {
 
 ZmCalViewController.prototype._postShowCallback =
 function() {
+	ZmController.prototype._postShowCallback.call(this);
 	this._viewVisible = true;
 //	if (this._needFullRefresh) {
 //		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW);	
