@@ -203,7 +203,9 @@ function() {
 	if (folderId) {
 		if (this._conv.checkMoved(folderId)) { // view notif happens here
 			list.remove(this._conv);
-			clc._checkReplenish();
+			var clv = clc.getCurrentView();
+			var respCallback = new AjxCallback(clv, clv._handleResponseChangeListener);
+			clc._checkReplenish(respCallback);
 		}
 	}
 }

@@ -142,9 +142,7 @@ function(ev) {
 		}
 	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: DELETE or MOVE");
-		var needReplenish = false;
 		for (var i = 0; i < items.length; i++) {
-			needReplenish = needReplenish || ev.getDetail("replenish");
 			var row = document.getElementById(this._getItemId(items[i]));
 			if (row) {
 				this._parentEl.removeChild(row);
@@ -152,7 +150,7 @@ function(ev) {
 			}
 			this._list.remove(items[i]);
 		}
-		if (needReplenish) {
+		if (ev.getDetail("replenish")) {
 			var respCallback = new AjxCallback(this, this._handleResponseChangeListener);
 			this._controller._checkReplenish(respCallback);
 		}
