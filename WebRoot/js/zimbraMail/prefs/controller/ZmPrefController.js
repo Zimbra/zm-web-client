@@ -126,7 +126,7 @@ function() {
 	if (!this._prefsView) {
 		this._initializeToolBar();
 		var callbacks = new Object();
-		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
+		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
 		this._prefsView = new ZmPrefView(this._container, this._appCtxt, Dwt.ABSOLUTE_STYLE, this, this._passwordDialog);
 		var elements = new Object();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
@@ -220,6 +220,12 @@ function(ex) {
 	} else {
 		return false;
 	}
+};
+
+ZmPrefController.prototype._preHideCallback =
+function(view, force) {
+	ZmController.prototype._preHideCallback.call(this);
+	return force ? true : this.popShield();
 };
 
 ZmPrefController.prototype.popShield =

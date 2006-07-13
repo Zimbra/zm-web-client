@@ -68,6 +68,12 @@ function(appt, mode, isDirty) {
 	this._apptView.reEnableDesignMode();
 };
 
+ZmApptComposeController.prototype._preHideCallback =
+function(view, force) {
+	ZmController.prototype._preHideCallback.call(this);
+	return force ? true : this.popShield();
+};
+
 ZmApptComposeController.prototype.popShield =
 function() {
 	if (!this._apptView.isDirty()) {
@@ -134,7 +140,7 @@ function(initHide) {
 	if (this._apptView == null) {
 		this._apptView = new ZmApptComposeView(this._container, null, this._app, this);
 		var callbacks = {};
-		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this.popShield);
+		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
 		var elements = {};
 		if (!this._toolbar)
 			this._createToolBar();
