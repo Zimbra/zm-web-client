@@ -56,7 +56,7 @@ function ZmLoginDialog(parent, appCtxt, className) {
 	htmlElement.innerHTML = html.join("");
 
     this.setReloginMode(false);
-}
+};
 
 ZmLoginDialog.prototype = new DwtComposite;
 ZmLoginDialog.prototype.constructor = ZmLoginDialog;
@@ -64,23 +64,23 @@ ZmLoginDialog.prototype.constructor = ZmLoginDialog;
 ZmLoginDialog.prototype.toString = 
 function() {
 	return "ZmLoginDialog";
-}
+};
 
 ZmLoginDialog.prototype.registerCallback =
 function(func, obj) {
 	this._callback = new AjxCallback(obj, func);
-}
+};
 
 ZmLoginDialog.prototype.clearAll =
 function() {
 	ZLoginFactory.get(ZLoginFactory.USER_ID).value = "";
 	ZLoginFactory.get(ZLoginFactory.PASSWORD_ID).value = "";
-}
+};
 
 ZmLoginDialog.prototype.clearPassword =
 function() {
 	ZLoginFactory.get(ZLoginFactory.PASSWORD_ID).value = "";
-}
+};
 
 ZmLoginDialog.prototype.setError =
 function(errorStr) {
@@ -89,21 +89,21 @@ function(errorStr) {
 	} else {
 		ZLoginFactory.hideErrorMsg();
 	}
-}
+};
 
 ZmLoginDialog.prototype.setFocus =
 function(username, bReloginMode) {
 	ZLoginFactory.showUserField(username);
 	this.setReloginMode(username && username.length && bReloginMode);
- }
+};
 
 ZmLoginDialog.prototype.setVisible = 
 function(visible, transparentBg) {
 	DwtComposite.prototype.setVisible.call(this, visible);
 	Dwt._ffOverflowHack(this._htmlElId, this.getZIndex(), null, visible);
 
-	if (!visible)
-		return;
+	this.shell.getKeyboardMgr().enable(!visible);
+	if (!visible) return;
 		
 	this.setCursor("default");
 	if ((transparentBg == null || !transparentBg) && this._className != this._origClassName) {
@@ -115,22 +115,18 @@ function(visible, transparentBg) {
 	}
 
 	Dwt.setHandler(this.getHtmlElement(), DwtEvent.ONKEYDOWN, ZLoginFactory.handleKeyPress);
-}
+};
 
 ZmLoginDialog.prototype.addChild =
 function(child, childHtmlElement) {
     this._children.add(child);
-}
+};
 
 ZmLoginDialog.prototype.setReloginMode = 
-function(bReloginMode, app, obj) {
-	if (bReloginMode) {
-		ZLoginFactory.showLogOff();
-	} else {
-		ZLoginFactory.hideLogOff();
-	}
-	ZLoginFactory.get(ZLoginFactory.USER_ID).disabled = true;
-}
+function(bReloginMode) {
+	bReloginMode ? ZLoginFactory.showLogOff() : ZLoginFactory.hideLogOff();
+	ZLoginFactory.get(ZLoginFactory.USER_ID).disabled = bReloginMode;
+};
 
 ZmLoginDialog.prototype._loginSelListener =
 function() {
@@ -145,7 +141,7 @@ function() {
 		var rememberMe = this._appCtxt.rememberMe();
 		this._callback.run(username, password, rememberMe);		
 	}
-}
+};
 
 ZmLoginDialog._loginListener =
 function(target) {

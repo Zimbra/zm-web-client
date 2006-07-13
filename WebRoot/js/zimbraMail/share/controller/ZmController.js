@@ -278,7 +278,7 @@ function(ex, method, params, restartOnError, obj) {
 			this._loginDialog.setError(null);
 			bReloginMode = false;
 		}
-		this._loginDialog.setReloginMode(bReloginMode, this._appCtxt.getAppController(), this);
+		this._loginDialog.setReloginMode(bReloginMode);
 		this._showLoginDialog(bReloginMode);
 	} else {
 		// remember the last search attempted for all other exceptions
