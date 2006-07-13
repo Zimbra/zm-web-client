@@ -202,7 +202,8 @@ function(event) {
 			batchCmd.add(cmd);
 		}
 	}
-	var respCallback = new AjxCallback(this, this._handleResponseBatchCmd, [shares]);
+	var respCallback = !isPublicShare
+		? (new AjxCallback(this, this._handleResponseBatchCmd, [shares])) : null;
 	batchCmd.run(respCallback);
 	
 	this.popdown();
