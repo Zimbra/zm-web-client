@@ -5,9 +5,9 @@
 		<file>steel_subs.txt</file>
 	</substitutions>
 	<css>
-		<file>../_base/base/base.css</file>
+		<file>steel.css</file>
 	</css>
 	<html>
-		<file>../_base/base/base.html</file>
+		<file>steel.html</file>
 	</html>
 </skin>
