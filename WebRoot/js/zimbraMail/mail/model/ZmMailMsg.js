@@ -770,11 +770,8 @@ function(attachment) {
 		return false;
 	}
 
-	if (type.match(/^image/) &&
-		((attachment.ci != null) || ((attachment.cl != null) && !attachment.cl.match(".*//"))))
-	{
+	if (type.match(/^image/) && attachment.foundInMsgBody)
 		return false;
-	}
 
 	return true;
 };

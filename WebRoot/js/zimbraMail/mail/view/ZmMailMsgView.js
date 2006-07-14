@@ -450,7 +450,7 @@ function(doc) {
 
 	// This inner function does the actual work.  BEWARE that it return-s
 	// in various places, not only at the end.
-	function recurse(node, handlers) {
+	function recurse(node, handlers, self) {
 		var tmp, i, val;
 		switch (node.nodeType) {
 		    case 1:	// ELEMENT_NODE
@@ -461,6 +461,11 @@ function(doc) {
 				    && (ZmMailMsgView._URL_RE.test(node.href)
 					|| ZmMailMsgView._MAILTO_RE.test(node.href)))
 				{
+					if (node.firstChild && node.firstChild.tagName &&
+						node.firstChild.tagName.toLowerCase() == "img")
+					{
+						self._checkImgInAttachments(node.firstChild);
+					}
 					// tricky.
 					var txt = RegExp.$1;
 					tmp = doc.createElement("div");
@@ -479,6 +484,8 @@ function(doc) {
 					tmp.innerHTML = "";
 					tmp.appendChild(node); // we have the original link now
 					return tmp.nextSibling;	// move on
+				} else if (tmp == "img") {
+					self._checkImgInAttachments(node);
 				}
 				handlers = false;
 			} else if (/^(script|link|object|iframe|applet)$/.test(tmp)) {
@@ -506,7 +513,7 @@ function(doc) {
 				if (!val || val.test(node.style[i]))
 					node.style[i] = "";
 			}
-			for (i = node.firstChild; i; i = recurse(i, handlers));
+			for (i = node.firstChild; i; i = recurse(i, handlers, self));
 			return node.nextSibling;
 
 		    case 3:	// TEXT_NODE
@@ -562,11 +569,41 @@ function(doc) {
 	var df = doc.createDocumentFragment();
 	while (node.firstChild) {
 		df.appendChild(node.firstChild); // NODE now out of the displayable DOM
-		recurse(df.lastChild, true);	 // parse tree and findObjects()
+		recurse(df.lastChild, true, this);	 // parse tree and findObjects()
 	}
 	node.appendChild(df);	// put nodes back in the document
 
 	DBG.timePt("-- END _processHtmlDoc");
+
+	// bug fix #8632 - finally, set the attachment links
+	this._setAttachmentLinks();
+};
+
+ZmMailMsgView.prototype._checkImgInAttachments =
+function(img) {
+	var attachments = this._msg.getAttachments();
+	var csfeMsgFetch = this._appCtxt.getCsfeMsgFetcher();
+
+	for (var i = 0; i < attachments.length; i++) {
+		var att = attachments[i];
+
+		if (att.foundInMsgBody) continue;
+
+		var src = img.getAttribute("src") || img.getAttribute("dfsrc");
+		if (src.indexOf(csfeMsgFetch) == 0) {
+			var mpId = src.substring(src.lastIndexOf("=")+1);
+			if (mpId == att.part) {
+				att.foundInMsgBody = true;
+				break;
+			}
+		} else if (att.cl) {
+			var filename = src.substring(src.lastIndexOf("/")+1);
+			if (filename == att.filename) {
+				att.foundInMsgBody = true;
+				break;
+			}
+		}
+	}
 };
 
 ZmMailMsgView.prototype._fixMultipartRelatedImages =
@@ -774,6 +811,8 @@ function(container, html, isTextMsg) {
 			var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
 			func.call();
 		}
+	} else {
+		this._setAttachmentLinks();
 	}
 
 	// set height of view according to height of iframe on timer
@@ -884,9 +923,6 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "</table>";
 	htmlArr[idx++] = "</div></td></tr>";
 
-	// Attachments
-	idx = this._getAttachmentHtml(msg, htmlArr, idx);
-
 	htmlArr[idx++] = "</table>";
 	var el = container ? container : this.getHtmlElement();
 	el.appendChild(Dwt.parseHtmlFragment(htmlArr.join("")));
@@ -915,21 +951,23 @@ function(msg, container, callback) {
 	if (bodyPart) {
 		if (bodyPart.ct == ZmMimeTable.TEXT_HTML && this._appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
 			this._makeIframeProxy(el, bodyPart.content, false);
-			if (callback)
-				callback.run();
 		} else {
 			// otherwise, get the text part if necessary
 			if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
 				// try to go retrieve the text part
 				var respCallback = new AjxCallback(this, this._handleResponseRenderMessage, [el, bodyPart, callback]);
 				msg.getTextPart(respCallback);
+				return;
 			} else {
 				this._makeIframeProxy(el, bodyPart.content, true);
-				if (callback)
-					callback.run();
 			}
 		}
+	} else {
+		this._setAttachmentLinks();
 	}
+
+	if (callback)
+		callback.run();
 };
 
 ZmMailMsgView.prototype._handleResponseRenderMessage =
@@ -1067,16 +1105,24 @@ function(msg) {
 	tagCell.innerHTML = html.join("");
 };
 
-ZmMailMsgView.prototype._getAttachmentHtml =
-function(msg, htmlArr, idx) {
-	var attLinks = msg.getAttachmentLinks(true);
+ZmMailMsgView.prototype._setAttachmentLinks =
+function() {
+	var attLinks = this._msg.getAttachmentLinks(true);
 	if (attLinks.length == 0)
-		return idx;
-	htmlArr[idx++] = "<tr>";
-	htmlArr[idx++] = "<td width=100 class='LabelColName'>";
-	htmlArr[idx++] = ZmMsg.attachments;
-	htmlArr[idx++] = ": </td>";
-	htmlArr[idx++] = "<td colspan=3>";
+		return;
+
+	var headerTable = document.getElementById(this._hdrTableId);
+	var row = headerTable.insertRow(-1);
+	var cell = row.insertCell(-1);
+	cell.width = "100";
+	cell.className = "LabelColName";
+	cell.innerHTML = ZmMsg.attachments + ":";
+
+	cell = row.insertCell(-1);
+	cell.colSpan = 3;
+
+	var htmlArr = new Array();
+	var idx = 0;
 
 	var dividx = idx;	// we might get back here
 	htmlArr[idx++] = "<div style='overflow: auto;'>";
@@ -1133,22 +1179,19 @@ function(msg, htmlArr, idx) {
 
 			htmlArr[idx++] = ")";
 		}
-		htmlArr[idx++] = "</td>";
-		htmlArr[idx++] = "</tr></table>";
+		htmlArr[idx++] = "</td></tr></table>";
 		htmlArr[idx++] = "</td>";
 	}
-	if (ZmMailMsgView.LIMIT_ATTACHMENTS != 0 && rows > ZmMailMsgView.LIMIT_ATTACHMENTS)
-		// limit display size.  seems like an attc. row has exactly
-		// 16px; we set it to 56px so that it becomes obvious that
-		// there are more attachments.
-		htmlArr[dividx] = "<div style='height: " + ZmMailMsgView.ATTC_MAX_SIZE + "px; overflow: auto;'>";
-	htmlArr[idx++] = "</tr>"; // hopefully ;-)
-	htmlArr[idx++] = "</table>";
-	htmlArr[idx++] = "</div>";
-	htmlArr[idx++] = "</td>";
-	htmlArr[idx++] = "</tr>";
+	// limit display size.  seems like an attc. row has exactly 16px; we set it
+	// to 56px so that it becomes obvious that there are more attachments.
+	if (ZmMailMsgView.LIMIT_ATTACHMENTS != 0 && rows > ZmMailMsgView.LIMIT_ATTACHMENTS) {
+		htmlArr[dividx] = "<div style='height:";
+		htmlArr[dividx] = ZmMailMsgView.ATTC_MAX_SIZE;
+		htmlArr[dividx] = "px; overflow:auto;' />";
+	}
+	htmlArr[idx++] = "</tr></table></div>";
 
-	return idx;
+	cell.innerHTML = htmlArr.join("");
 };
 
 
