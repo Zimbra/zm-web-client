@@ -443,11 +443,11 @@ ZmContactListController.prototype._listSelectionListener =
 function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 	
-	if (ev.detail == DwtListView.ITEM_SELECTED && 
-		this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
+	if (ev.detail == DwtListView.ITEM_SELECTED)
 	{
 		this._resetNavToolBarButtons(this._currentView);
-		this._parentView[this._currentView].setContact(ev.item, this.isGalSearch());
+		if (this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
+			this._parentView[this._currentView].setContact(ev.item, this.isGalSearch());
 	} 
 	else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) 
 	{
