@@ -1137,7 +1137,7 @@ function(items) {
 			folderRequest.appendChild(folderNode);
 		}
 
-		var respCallback = new AjxCallback(this, this._handleResponseGetShares);
+		var respCallback = new AjxCallback(this, this._handleResponseGetShares, [items]);
 		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 	}
 };
@@ -1155,9 +1155,155 @@ function(needPermArr, item) {
 	}
 };
 
+/*
+* Common exception handling entry point.
+*
+* @param ex	[Object]		the exception
+* 
+*/
+ZmZimbraMail.prototype._handleException =
+function(ex, method, params, restartOnError, obj) {
+	var handled = false;
+	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
+// TODO Need to use more than just the rid to identify these thins.
+// Waiting for enhancement from server team.
+// Commenting the whole thing out till then.
+/*
+		var organizerTypes = [ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
+		var rid = ex.data.itemId;
+		for (var type = 0; type < organizerTypes.length; type++) {
+			handled |= this._handleNoSuchFolderError(organizerTypes[type], rid, true);
+		}
+*/ 
+	}
+	if (!handled) {
+		ZmController.prototype._handleException.call(this, ex, method, params, restartOnError, obj);
+	}
+};
+
+/*
+* Takes care of letting the user know that a linked organizer generated a "no such folder",
+* error, giving him a chance to delete it.
+*
+* @param organizer	[ZmOrganizer]	organizer
+* 
+*/
+ZmZimbraMail.prototype.handleDeleteNoSuchFolder =
+function(organizer) {
+	var ds = this._appCtxt.getYesNoMsgDialog();
+	ds.reset();
+	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteOrganizerYesCallback, this, [organizer, ds]);
+	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, ds);
+	var msg = AjxMessageFormat.format(ZmMsg.confirmDeleteMissingFolder, organizer.getName(false, 0, true));
+	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	ds.popup();
+};
+
+// Handles the "Yes" button in the delete organizer dialog.
+ZmZimbraMail.prototype._deleteOrganizerYesCallback =
+function(organizer, dialog) {
+	organizer._delete();
+	this._clearDialog(dialog);
+};
+
+/*
+ * Handles a missing link by marking its organizer as not there, redrawing it in
+ * any tree views, and asking to delete it.
+ * 
+ * @param organizerType		[int]		the type of organizer (constants defined in ZmOrganizer)
+ * @param rid				[string]	the rid of the missing folder
+ * 
+ */
+ZmZimbraMail.prototype._handleNoSuchFolderError =
+function(organizerType, rid) {
+	var treeData = this._appCtxt.getTree(organizerType);
+	var items = treeData && treeData.root
+		? treeData.root.children.getArray()
+		: null;
+	var treeView;
+
+	var handled = false;
+	for (var i = 0; i < items.length; i++) {
+		if (items[i].rid == rid) {
+			// Mark that the item is not there any more.
+			items[i].noSuchFolder = true;
+			
+			// Change its appearance in the tree.
+			if (!treeView) {
+				treeView = this._appCtxt.getOverviewController().getTreeView(ZmZimbraMail._OVERVIEW_ID, organizerType);
+			}
+			var node = treeView.getTreeItemById(items[i].id);
+			node.setText(items[i].getName(true));
+			
+			// Ask if it should be deleted now.
+			this.handleDeleteNoSuchFolder(items[i]);
+			handled = true;
+		}
+	}
+	return handled;
+};
+
+/*
+ * Handles missing links by marking the organizers as not there
+ * 
+ * @param organizerType		[int]		the type of organizer (constants defined in ZmOrganizer)
+ * @param rids				[array]		the rids of the missing folders
+ * 
+ */
+ZmZimbraMail.prototype._markNoSuchFolder =
+function(organizerType, rids) {
+	var treeData = this._appCtxt.getTree(organizerType);
+	var items = treeData && treeData.root
+		? treeData.root.children.getArray()
+		: null;
+
+	for (var i = 0; i < items.length; i++) {
+		for (var j = 0; j < rids.length; j++) {
+			if (items[i].rid == rids[j]) {
+				items[i].noSuchFolder = true;
+			}
+		}
+	}
+};
+
+/*
+ * Handles errors that come back from the GetShares batch request.
+ * 
+ * @param organizerTypes	[array]		the types of organizer (constants defined in ZmOrganizer)
+ * @param batchResp			[object]	the response
+ * 
+ */
+ZmZimbraMail.prototype._handleErrorGetShares =
+function(organizerTypes, batchResp) {
+// TODO Need to use more than just the rid to identify these thins.
+// Waiting for enhancement from server team.
+// Commenting the whole thing out till then.
+/*
+	var faults = batchResp.Fault;
+	if (faults) {
+// Total hack for figuring out the folder rid.....Need more info from server team.
+		var regExp = new RegExp("no such folder id: ([0-9]+)*", "i");
+		var rids = []
+		for (var i = 0, length = faults.length; i < length; i++) {
+			if (faults[i].Detail.Error.Code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
+				var match = regExp.exec(faults[i].Reason.Text);
+				if (match) {
+					rids.push(match[1]);
+				}
+			}
+		}
+		for (var type = 0; type < organizerTypes.length; type++) {
+			this._markNoSuchFolder(organizerTypes[type], rids);
+		}
+	}
+*/
+};
+
 ZmZimbraMail.prototype._handleResponseGetShares =
-function(result) {
-	var resp = result.getResponse().BatchResponse.GetFolderResponse;
+function(organizerTypes, result) {
+	var batchResp = result.getResponse().BatchResponse;
+	this._handleErrorGetShares(organizerTypes, batchResp);		
+	var resp = batchResp.GetFolderResponse;
 	if (resp) {
 		for (var i = 0; i < resp.length; i++) {
 			var link = resp[i].link ? resp[i].link[0] : null;

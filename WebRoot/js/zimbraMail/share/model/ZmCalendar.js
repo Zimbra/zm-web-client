@@ -104,8 +104,9 @@ function(url, name, ex) {
 };
 
 ZmCalendar.prototype.getName = 
-function() {
-	return this.id == ZmOrganizer.ID_ROOT ? ZmMsg.calendars : this.name;
+function(showUnread, maxLength, noMarkup) {
+	var name = this.id == ZmOrganizer.ID_ROOT ? ZmMsg.calendars : this.name;
+	return this._markupName(name, showUnread, noMarkup);
 };
 
 ZmCalendar.prototype.getIcon = 

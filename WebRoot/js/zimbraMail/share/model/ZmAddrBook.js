@@ -63,8 +63,9 @@ function() {
 };
 
 ZmAddrBook.prototype.getName = 
-function() {
-	return this.id == ZmOrganizer.ID_ROOT ? ZmMsg.addressBooks : this.name;
+function(showUnread, maxLength, noMarkup) {
+	var name = this.id == ZmOrganizer.ID_ROOT ? ZmMsg.addressBooks : this.name;
+	return this._markupName(name, showUnread, noMarkup);
 };
 
 ZmAddrBook.prototype.getIcon = 

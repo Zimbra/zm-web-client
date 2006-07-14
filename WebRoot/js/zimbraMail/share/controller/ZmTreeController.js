@@ -347,8 +347,13 @@ function(ev) {
 	if (!type) return;
 	
 	var item = ev.item.getData(Dwt.KEY_OBJECT);
-	if (item)
+	if (item) {
 		this._actionedOrganizer = item;
+		if (item.noSuchFolder) {
+			this._appCtxt.getAppController().handleDeleteNoSuchFolder(item);
+			return;
+		}
+	}
 	var id = ev.item.getData(Dwt.KEY_ID);
 	var overviewId = ev.item.getData(ZmTreeView.KEY_ID);
 	if (overviewId)

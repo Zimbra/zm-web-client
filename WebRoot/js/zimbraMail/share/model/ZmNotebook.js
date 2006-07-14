@@ -70,8 +70,9 @@ function() {
 };
 
 ZmNotebook.prototype.getName = 
-function() {
-	return this.id == ZmOrganizer.ID_ROOT ? ZmMsg.notebooks : this.name;
+function(showUnread, maxLength, noMarkup) {
+	var name = this.id == ZmOrganizer.ID_ROOT ? ZmMsg.notebooks : this.name;
+	return this._markupName(name, showUnread, noMarkup);
 };
 
 ZmNotebook.prototype.getIcon = 

@@ -64,6 +64,7 @@ function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, own
 	this.zid = zid;
 	this.rid = rid;
 	this.restUrl = restUrl;
+	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 
 	if (id && tree)
 		tree._appCtxt.cacheSet(id, this);
@@ -283,14 +284,7 @@ function() {
 ZmOrganizer.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
 	var name = (maxLength && this.name.length > maxLength) ? this.name.substring(0, maxLength - 3) + "..." : this.name;
-	if (!noMarkup)
-		name = AjxStringUtil.htmlEncode(name, true);
-	if (showUnread && this.numUnread > 0) {
-		name = [name, " (", this.numUnread, ")"].join("");
-		if (!noMarkup)
-			name = ["<b>", name, "</b>"].join("");
-	}
-	return name;
+	return this._markupName(name, showUnread, noMarkup);
 };
 
 /**
@@ -858,3 +852,26 @@ function(event, details) {
 		details = {organizers: [this]};
 	this.tree._notify(event, details);
 };
+
+/**
+* Returns a marked-up version of the name.
+*
+* @param name			the name to mark up
+* @param showUnread		whether to display the number of unread items (in parens)
+* @param noMarkup		if true, don't return any HTML
+*/
+ZmOrganizer.prototype._markupName = 
+function(name, showUnread, noMarkup) {
+	if (!noMarkup)
+		name = AjxStringUtil.htmlEncode(name, true);
+	if (showUnread && this.numUnread > 0) {
+		name = [name, " (", this.numUnread, ")"].join("");
+		if (!noMarkup)
+			name = ["<b>", name, "</b>"].join("");
+	}
+	if (this.noSuchFolder && !noMarkup) {
+		name = ["<del>", name, "</del>"].join("");
+	}
+	return name;
+};
+

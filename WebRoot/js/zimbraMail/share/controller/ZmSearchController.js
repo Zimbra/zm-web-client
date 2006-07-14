@@ -432,8 +432,7 @@ function(search, isMixed, ex) {
 		this._searchToolBar.setEnabled(true);
 	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
 
-	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER ||
-		ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
+	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
 		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR ||
 		ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS)
 	{
