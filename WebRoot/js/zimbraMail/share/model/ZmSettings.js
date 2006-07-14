@@ -97,10 +97,11 @@ function(node) {
 		var name = child.getAttribute("name");
 		var value = child.firstChild.nodeValue;
 		var setting = this._settings[this._nameToId[name]];
-		if (setting)
+		if (setting) {
 			setting.setValue(value);
-		else
+		} else {
 			DBG.println(AjxDebug.DBG1, "*** Unrecognized setting: " + name);
+		}
 	}
 };
 
@@ -115,10 +116,11 @@ function(list) {
 	for (i = 0; i < list.length; i++) {
 		var obj = list[i];
 		var setting = this._settings[this._nameToId[obj.name]];
-		if (setting)
+		if (setting) {
 			setting.setValue(obj._content);
-		else
+		} else {
 			DBG.println(AjxDebug.DBG1, "*** Unrecognized setting: " + obj.name);
+		}
 	}
 };
 
@@ -140,26 +142,37 @@ ZmSettings.prototype._handleResponseLoadUserSettings =
 function(callback, result) {
 	var response = result.getResponse();
 	var obj = response.GetInfoResponse;
-	if (obj.name)
+	if (obj.name) {
 		this._settings[ZmSetting.USERNAME].setValue(obj.name);
-	if (obj.lifetime)
+	}
+	if (obj.lifetime) {
 		this._settings[ZmSetting.TOKEN_LIFETIME].setValue(obj.lifetime);
-	if (obj.used)
+	}
+	if (obj.used) {
 		this._settings[ZmSetting.QUOTA_USED].setValue(obj.used);
-	if (obj.prefs && obj.prefs.pref)
+	}
+	if (obj.prefs && obj.prefs.pref) {
 		this.createFromJs(obj.prefs.pref);
-	if (obj.attrs && obj.attrs.attr)
+	}
+	if (obj.attrs && obj.attrs.attr) {
 		this.createFromJs(obj.attrs.attr);
+	}
+	if (obj.license) {
+		this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status);
+	}
 
 	// handle settings whose values may depend on other settings
 	this._settings[ZmSetting.GROUP_MAIL_BY].setValue(this.get(ZmSetting.INITIAL_GROUP_MAIL_BY), null, true);
-	if ((this.get(ZmSetting.GROUP_MAIL_BY) == ZmSetting.GROUP_BY_CONV) && !this.get(ZmSetting.CONVERSATIONS_ENABLED))
+	if ((this.get(ZmSetting.GROUP_MAIL_BY) == ZmSetting.GROUP_BY_CONV) && !this.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 		this._settings[ZmSetting.GROUP_MAIL_BY].setValue(ZmSetting.GROUP_BY_MESSAGE, null, true);
+	}
 	this._settings[ZmSetting.REPLY_TO_ADDRESS].defaultValue = this.get(ZmSetting.USERNAME);
-	if (!this.get(ZmSetting.SEARCH_ENABLED))
+	if (!this.get(ZmSetting.SEARCH_ENABLED)) {
 		this._settings[ZmSetting.BROWSE_ENABLED].setValue(false, null, true);
-	if (this.get(ZmSetting.FORCE_CAL_OFF))
+	}
+	if (this.get(ZmSetting.FORCE_CAL_OFF)) {
 		this._settings[ZmSetting.CALENDAR_ENABLED].setValue(false, null, true);
+	}
 
 	// bug fix #6787 - disable HTML compose in Safari until design mode is more stable
 	if (AjxEnv.isSafari) {
@@ -174,8 +187,9 @@ function(callback, result) {
 
 	this.userSettingsLoaded = true;
 	
-	if (callback)
-		callback.run();
+	if (callback) {
+		callback.run(result);
+	}
 };
 
 ZmSettings.prototype.loadAvailableSkins =

@@ -78,6 +78,10 @@ ZmSetting.COMPOSE_TEXT 		= "text";					// zimbraPrefComposeFormat
 ZmSetting.COMPOSE_HTML 		= "html";
 ZmSetting.CV_CARDS			= "cards"; 					// zimbraPrefContactsInitialView
 ZmSetting.CV_LIST			= "list";
+ZmSetting.DEDUPE_NONE		= "dedupeNone";				// zimbraPrefDedupeMessagesSentToSelf
+ZmSetting.DEDUPE_SECOND		= "secondCopyifOnToOrCC";
+ZmSetting.DEDUPE_INBOX		= "moveSentMessageToInbox";
+ZmSetting.DEDUPE_ALL		= "dedupeAll";
 ZmSetting.GROUP_BY_CONV		= "conversation";			// zimbraPrefGroupMailBy
 ZmSetting.GROUP_BY_MESSAGE	= "message";
 ZmSetting.INCLUDE_NONE		= "includeNone";			// zimbraPrefForwardIncludeOriginalText
@@ -85,10 +89,9 @@ ZmSetting.INCLUDE			= "includeBody";
 ZmSetting.INCLUDE_PREFIX	= "includeBodyWithPrefix";
 ZmSetting.INCLUDE_ATTACH	= "includeAsAttachment";
 ZmSetting.INCLUDE_SMART		= "includeSmart";
-ZmSetting.DEDUPE_NONE		= "dedupeNone";				// zimbraPrefDedupeMessagesSentToSelf
-ZmSetting.DEDUPE_SECOND		= "secondCopyifOnToOrCC";
-ZmSetting.DEDUPE_INBOX		= "moveSentMessageToInbox";
-ZmSetting.DEDUPE_ALL		= "dedupeAll";
+ZmSetting.LICENSE_BAD		= "bad";					// license status (network only)
+ZmSetting.LICENSE_GOOD		= "good";
+ZmSetting.LICENSE_GRACE		= "inGracePeriod";
 ZmSetting.SIG_INTERNET		= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK		= "outlook";
 
@@ -163,6 +166,7 @@ ZmSetting.VACATION_MSG_FEATURE_ENABLED	= i++;
 ZmSetting.VIEW_ATTACHMENT_AS_HTML 		= i++;
 
 // USER METADATA
+ZmSetting.LICENSE_STATUS				= i++;
 ZmSetting.QUOTA_USED					= i++;
 ZmSetting.TOKEN_LIFETIME				= i++;
 ZmSetting.USERNAME						= i++;
@@ -336,6 +340,7 @@ ZmSetting.INIT[ZmSetting.SHARING_ENABLED]		 		= ["zimbraFeatureSharingEnabled", 
 ZmSetting.INIT[ZmSetting.NOTEBOOK_ENABLED]				= ["zimbraFeatureNotebookEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 
 // user metadata (included with COS since the user can't change them)
+ZmSetting.INIT[ZmSetting.LICENSE_STATUS]				= [null, ZmSetting.T_COS, ZmSetting.D_STRING, ZmSetting.LICENSE_GOOD];
 ZmSetting.INIT[ZmSetting.QUOTA_USED]					= [null, ZmSetting.T_COS, ZmSetting.D_INT];
 ZmSetting.INIT[ZmSetting.TOKEN_LIFETIME]				= [null, ZmSetting.T_COS, ZmSetting.D_INT];
 ZmSetting.INIT[ZmSetting.USERNAME]						= [null, ZmSetting.T_COS, ZmSetting.D_STRING];

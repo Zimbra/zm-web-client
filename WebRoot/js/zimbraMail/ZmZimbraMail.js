@@ -431,6 +431,13 @@ function() {
 	kbMgr.setTabGroup(this._appCtxt.getRootTabGroup());
 	var startupFocusItem = this._appViewMgr.getCurrentView().getController().getCurrentView();	// returns a list view
 	kbMgr.grabFocus(startupFocusItem);
+	
+	if (this._appCtxt.get(ZmSetting.LICENSE_STATUS) != ZmSetting.LICENSE_GOOD) {
+		var dlg = this._appCtxt.getMsgDialog();
+		dlg.reset();
+		dlg.setMessage(ZmMsg.licenseExpired, DwtMessageDialog.WARNING_STYLE);
+		dlg.popup();
+	}
 };
 
 /**
