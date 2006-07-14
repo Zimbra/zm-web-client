@@ -618,26 +618,33 @@ ZmContact.prototype.notifyModify =
 function(obj) {
 	ZmItem.prototype.notifyModify.call(this, obj);
 
+	// cache old fileAs/fullName before resetting them
 	var oldFileAs = this.getFileAs();
 	var oldFullName = this.getFullName();
 	this._resetCachedFields();
-	var oldAttr = {};
-	for (var a in obj._attrs) {
-		oldAttr[a] = this.getAttr(a);
-		if (obj._attrs[a] == undefined || obj._attrs[a] == "") {
-			this.removeAttr(a);
-		} else {
-			this.setAttr(a, obj._attrs[a]);
+
+	var oldAttrCache = {};
+	if (obj._attrs) {
+		// remove attrs that were not returned back from the server
+		var oldAttrs = this.getAttrs();
+		for (var a in oldAttrs) {
+			oldAttrCache[a] = oldAttrs[a];
+			if (obj._attrs[a] == null)
+				this.removeAttr(a);
 		}
+
+		// set attrs returned by server
+		for (var a in obj._attrs)
+			this.setAttr(a, obj._attrs[a]);
 	}
-	var details = {attr:obj._attrs, oldAttr:oldAttr,
+
+	var details = {attr:obj._attrs, oldAttr:oldAttrCache,
 				   fullNameChanged:this.getFullName() != oldFullName,
 				   fileAsChanged:this.getFileAs() != oldFileAs,
 				   contact:this};
 
 	// update this contact's list per old/new attrs
 	this.list.modifyLocal(obj, details);
-
 	this._notify(ZmEvent.E_MODIFY, obj);
 };
 
