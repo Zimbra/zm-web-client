@@ -773,6 +773,10 @@ function(attachment) {
 	if (type.match(/^image/) && attachment.foundInMsgBody)
 		return false;
 
+	// bug fix #8751 - dont ignore text/calendar type if msg is not an invite
+	if (type == ZmMimeTable.TEXT_CAL && this.isInvite())
+		return false;
+
 	return true;
 };
 

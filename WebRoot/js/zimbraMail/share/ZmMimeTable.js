@@ -127,7 +127,6 @@ function(type) {
 		type == ZmMimeTable.MULTI_RELATED || 
 		type == ZmMimeTable.MULTI_APPLE_DBL ||
 		type == ZmMimeTable.APP_APPLE_DOUBLE ||
-		type == ZmMimeTable.TEXT_CAL ||
 		type == ZmMimeTable.APP_MS_TNEF ||
 		type == ZmMimeTable.APP_MS_TNEF2)
 	{
