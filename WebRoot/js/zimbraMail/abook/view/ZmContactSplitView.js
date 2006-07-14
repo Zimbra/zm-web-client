@@ -51,6 +51,7 @@ function ZmContactSplitView(parent, className, posStyle, controller, dropTgt) {
 
 	this._listPart = new ZmContactSimpleView(this, null, posStyle, controller, dropTgt);
 	this._contactPart = new DwtComposite(this, "ZmContactInfoView", posStyle);
+	this._contactPart._setAllowSelection();
 
 	this._changeListener = new AjxListener(this, this._contactChangeListener);
 
