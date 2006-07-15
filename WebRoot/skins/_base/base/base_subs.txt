@@ -665,7 +665,7 @@ BigIconSize					= width:@SmallIconWidth@; height:@SmallIconHeight@;
 
 
 # CONTACTS STUFF
-ContactsCardSize			= width:300px; height:140px;
+ContactsCardSize			= height:140px;
 
 # RANDOM CRAP
 

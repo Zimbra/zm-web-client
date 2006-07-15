@@ -739,6 +739,7 @@ function(ev) {
 ZmContactView._onKeyUp =
 function(ev) {
 
+	ev = DwtUiEvent.getEvent(ev);
 	if (ev.metaKey || ev.altKey || ev.ctrlKey)
 		return;
 

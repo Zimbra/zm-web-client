@@ -38,8 +38,12 @@ function ZmContactCardsView(parent, className, posStyle, controller, dropTgt) {
 		this._alphabetBar = new ZmContactAlphabetBar(this, this._appCtxt, "ZmContactAlphabetBar");
 	}
 
+	this.addControlListener(new AjxListener(this, this._controlListener));
+
 	this._addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
 	this._addrbookTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
+
+	this._initialResized = false;
 };
 
 ZmContactCardsView.prototype = new ZmContactsBaseView;
@@ -75,14 +79,15 @@ function(defaultColumnSort) {
 };
 
 ZmContactCardsView.prototype.set = 
-function(contacts) {
+function(contacts, sortField, folderId) {
 	if (this._objectManager)
 		this._objectManager.reset();
 
 	// XXX: optimize later - switch view always forces layout unnecessarily
-	ZmContactsBaseView.prototype.set.call(this, contacts, null, this._controller.getFolderId());
+	ZmContactsBaseView.prototype.set.call(this, contacts, sortField, folderId);
 
-	this._layout();
+	if (this._initialResized)
+		this._layout();
 
 	// disable alphabet bar for gal searches
 	this._alphabetBar.enable(!contacts.isGal);
@@ -121,6 +126,8 @@ function(contact, now, isDndIcon, getHtml) {
 		html[idx++] = AjxCore.assignId(contact);
 		html[idx++] = "' _type='";
 		html[idx++] = DwtListView.TYPE_LIST_ITEM;
+		html[idx++] = "' style='width:";
+		html[idx++] = this._cardWidth;
 		html[idx++] = "'>";
 	} else {
 		// create div for DnD
@@ -162,21 +169,7 @@ function(contact, now, isDndIcon, getHtml) {
 	var value = contact.getCompanyField() || "&nbsp;";
 	html[idx++] = value;
 	html[idx++] = "</td></tr>";
-/*
-	if (contact.isGal) {
-		html[idx++] = "<tr><td style='white-space:nowrap'>";
-		html[idx++] = AjxImg.getImageSpanHtml("GAL");
-		html[idx++] = "&nbsp;";
-		html[idx++] = ZmMsg.GAL;
-		html[idx++] = "</td></tr>";
-	} else if (contact.addrbook) {
-		html[idx++] = "<tr><td style='white-space:nowrap'>";
-		html[idx++] = AjxImg.getImageSpanHtml(contact.addrbook.getIcon());
-		html[idx++] = "&nbsp;";
-		html[idx++] = contact.addrbook.getName();
-		html[idx++] = "</td></tr>";
-	}
-*/
+
 	html[idx++] = "<tr height=100%><td valign=top colspan=10>";
 
 	html[idx++] = "<table height=100% border=0 cellpadding=1 cellspacing=1>";
@@ -439,6 +432,18 @@ function(ev) {
 		ZmContactsBaseView.prototype._changeListener.call(this, ev);
 	}
 	this.setSelection(this.getList().get(0));
+};
+
+ZmContactCardsView.prototype._controlListener =
+function(ev) {
+	if (ev.newWidth < 0 || ev.oldWidth == ev.newWidth)
+		return;
+
+	// calc. width of card based on width of window
+	this._cardWidth = Math.round((ev.newWidth / 2) - 40);
+
+	this._initialResized = true;
+	this._layout();
 };
 
 ZmContactCardsView.prototype._addrbookTreeListener =
