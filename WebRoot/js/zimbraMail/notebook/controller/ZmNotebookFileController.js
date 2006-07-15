@@ -276,6 +276,10 @@ ZmNotebookFileController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
 	this._actionMenu.popup(0, ev.docX, ev.docY);
+	if (ev.ersatz) {
+		// menu popped up via keyboard nav
+		this._actionMenu.setSelectedItem(0);
+	}
 };
 
 ZmNotebookFileController.prototype._undeleteListener =

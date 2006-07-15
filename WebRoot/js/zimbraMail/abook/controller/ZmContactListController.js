@@ -471,6 +471,10 @@ function(ev) {
 	this._actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MESSAGE], enableNewEmail);
 	this._setContactText(!this.isGalSearch());
 	this._actionMenu.popup(0, ev.docX, ev.docY);
+	if (ev.ersatz) {
+		// menu popped up via keyboard nav
+		this._actionMenu.setSelectedItem(0);
+	}
 };
 
 ZmContactListController.prototype._dropListener =
