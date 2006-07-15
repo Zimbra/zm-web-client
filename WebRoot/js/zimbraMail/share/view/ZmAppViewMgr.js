@@ -331,9 +331,12 @@ function(viewId, appName, elements, callbacks, isAppView, isPoppable) {
 */
 ZmAppViewMgr.prototype.pushView =
 function(viewId, force) {
+
 	// if same view, no need to go through hide/show
 	if (viewId == this._currentView) {
 		this._setTitle(viewId);
+		// make sure the new content has focus
+		this._shell.getKeyboardMgr().grabFocus(this._views[viewId][ZmAppViewMgr.C_APP_CONTENT]);
 		return true;
 	}
 
