@@ -1850,6 +1850,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmAutocompleteListView .Row, 
 .ZmAutocompleteListView .Row-selected {
 	@TextPadding@
+    height:auto;
 }
 .ZmAutocompleteListView .Row-selected { 
 	/* color: white; */
