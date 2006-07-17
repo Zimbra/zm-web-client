@@ -137,6 +137,8 @@ function() {
 * @param callback		[AjxCallback]*		callback to run when response is received
 * @param errorCallback	[AjxCallback]*		callback to run if there is an exception
 * @param batchCmd		[ZmBatchCommand]*	batch command that contains this request
+* @param timeout		[int]*				timeout value (in seconds)
+* @param noBusyOverlay	[boolean]*			if true, don't use the busy overlay
 */
 ZmSearch.prototype.execute =
 function(params) {
@@ -207,7 +209,8 @@ function(params) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, execFrame);
 	} else {
 		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback,
-													  errorCallback: params.errorCallback, execFrame: execFrame});
+													  errorCallback: params.errorCallback, execFrame: execFrame,
+													  timeout: params.timeout, noBusyOverlay: params.noBusyOverlay});
 	}
 };
 

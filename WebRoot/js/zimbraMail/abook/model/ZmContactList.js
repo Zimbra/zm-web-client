@@ -63,6 +63,7 @@ function ZmContactList(appCtxt, search, isGal, type) {
 	this._loadCount = 0;
 	this._loaded = false;
 	this._showStatus = true;
+	this._galFailures = 0;
 
 	this._acMatchFields = ZmContactList.AC_FIELDS;
 };
@@ -82,6 +83,8 @@ ZmContactList.AC_VALUE_EMAIL	= "email";
 ZmContactList.AC_VALUE_NAME		= "name";
 ZmContactList.AC_MAX 			= 20;	// max # of autocomplete matches to return
 ZmContactList.AC_PREMATCH		= 2;	// # of characters to do pre-matching for
+ZmContactList.AC_GAL_TIMEOUT	= 0.5;	// GAL autocomplete timeout (in seconds)
+ZmContactList.AC_GAL_FAILURES	= 5;	// # of GAL autocomplete timeouts before disabling it
 
 // Load contacts in chunks so browser remains reasonably responsive.
 // To increase browser responsiveness, lower the chunk size and increase the
@@ -972,7 +975,9 @@ function(str, callback) {
 	var params = {query: str, types: types, sortBy: sortBy, offset: 0, limit: ZmContactList.AC_MAX, isGalAutocompleteSearch: true};
 	var search = new ZmSearch(this._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseGetGalMatches, [str, callback]);
-	search.execute({callback: respCallback});
+	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches);
+	search.execute({callback: respCallback, errorCallback: errorCallback, timeout: ZmContactList.AC_GAL_TIMEOUT,
+					noBusyOverlay: true});
 };
 
 ZmContactList.prototype._handleResponseGetGalMatches =
@@ -991,5 +996,27 @@ function(str, callback, result) {
 	this._galResults[str].ts = (new Date()).getTime();
 	this._galResults[str].more = resp._respEl.more;
 
+	this._galFailures = 0;	// successful response, reset counter
 	callback.run();
+};
+
+/**
+ * Handle timeout. A timeout cancels the current GAL autocomplete request. After a
+ * certain number of consecutive timeouts, we turn off GAL autocomplete via
+ * preferences.
+ */
+ZmContactList.prototype._handleErrorGetGalMatches =
+function(ex) {
+	if (ex.code == AjxException.CANCELED) {
+		this._galFailures++;
+		this._appCtxt.setStatusMsg(ZmMsg.galAutocompleteTimedOut);
+		if (this._galFailures >= ZmContactList.AC_GAL_FAILURES) {
+			this._appCtxt.setStatusMsg(ZmMsg.galAutocompleteFailure);
+			var settings = this._appCtxt.getSettings();
+			var setting = settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE);
+			setting.setValue(false);
+			settings.save([setting]);
+			this._galFailures = 0;
+		}
+	}
 };

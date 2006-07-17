@@ -69,11 +69,12 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	kbMgr.registerKeyMap(new ZmKeyMap());
 	kbMgr.registerApplicationKeyActionHandler(this);
 
-	if (location.search && (location.search.indexOf("nss=1") != -1))
-   	    this._splashScreen = null;
-    else
+	if (location.search && (location.search.indexOf("nss=1") != -1)) {
+		this._splashScreen = null;
+	} else {
    	    this._splashScreen = new ZmSplashScreen(this._shell, "SplashScreen");
- 
+	}
+
 	this._apps = {};
 	this._activeApp = null;
     this._highestNotifySeen = 0;
@@ -81,6 +82,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.logOff);
 	this._sessionTimerId = -1;
 	this._shell.setBusyDialogText(ZmMsg.askCancel);
+	this._cancelActionId = {};
 	this._pendingRequests = {};
 
 	this._pollActionId = null;
@@ -483,13 +485,13 @@ function() {
 * handled the exception, and false if standard exception handling should still
 * be performed.
 *
-* @param soapDoc		[AjxSoapDoc]	SOAP document that represents the request
-* @param asyncMode		[boolean]*		if true, request will be made asynchronously
-* @param callback		[AjxCallback]*	next callback in chain for async request
-* @param errorCallback	[Object]*		callback to run if there is an exception
-* @param execFrame		[AjxCallback]*	the calling method, object, and args
-* @param timeout		[int]*			timeout value (in seconds)
-* @param noBusyOverlay	[boolean]*		if true, don't use the busy overlay
+* @param soapDoc			[AjxSoapDoc]	SOAP document that represents the request
+* @param asyncMode			[boolean]*		if true, request will be made asynchronously
+* @param callback			[AjxCallback]*	next callback in chain for async request
+* @param errorCallback		[AjxCallback]*	callback to run if there is an exception
+* @param execFrame			[AjxCallback]*	the calling method, object, and args
+* @param timeout			[int]*			timeout value (in seconds)
+* @param noBusyOverlay		[boolean]*		if true, don't use the busy overlay
 */
 ZmZimbraMail.prototype.sendRequest =
 function(params) {
@@ -503,15 +505,20 @@ function(params) {
 					 highestNotifySeen: this._highestNotifySeen };
 
 	DBG.println(AjxDebug.DBG2, "sendRequest: " + params.soapDoc._methodEl.nodeName);
-	if (params.asyncMode && !params.noBusyOverlay) {
+	var cancelParams = timeout ? [reqId, params.errorCallback, params.noBusyOverlay] : null;
+	if (!params.noBusyOverlay) {
 		var cancelCallback = null;
 		var showBusyDialog = false;
 		if (timeout) {
 			DBG.println(AjxDebug.DBG1, "ZmZimbraMail.sendRequest: timeout for " + reqId + " is " + timeout);
-			cancelCallback = new AjxCallback(this, this.cancelRequest, [reqId, params.errorCallback]);
+			cancelCallback = new AjxCallback(this, this.cancelRequest, cancelParams);
 			showBusyDialog = true;
 		}
-		this._shell.setBusy(true, reqId, showBusyDialog, timeout, cancelCallback); // put up busy overlay to block user input
+		// put up busy overlay to block user input
+		this._shell.setBusy(true, reqId, showBusyDialog, timeout, cancelCallback);
+	} else if (timeout) {
+		var action = new AjxTimedAction(this, this.cancelRequest, cancelParams);
+		this._cancelActionId[reqId] = AjxTimedAction.scheduleAction(action, timeout);
 	}
 
 	this._pendingRequests[reqId] = command;
@@ -540,6 +547,9 @@ function(params, result) {
 
 	if (!params.noBusyOverlay) {
 		this._shell.setBusy(false, params.reqId); // remove busy overlay
+	} else if (params.timeout) {
+		AjxTimedAction.cancelAction(this._cancelActionId[params.reqId]);
+		this._cancelActionId[params.reqId] = -1;
 	}
 
 	// we just got activity, cancel current poll timer
@@ -590,12 +600,14 @@ function(params, result) {
 };
 
 ZmZimbraMail.prototype.cancelRequest =
-function(reqId, errorCallback) {
+function(reqId, errorCallback, noBusyOverlay) {
 	if (!this._pendingRequests[reqId]) return;
 	if (this._pendingRequests[reqId].state == ZmZimbraMail._RESPONSE) return;
 
 	this._pendingRequests[reqId].state = ZmZimbraMail._CANCEL;
-	this._shell.setBusy(false, reqId); // remove busy overlay
+	if (!noBusyOverlay) {
+		this._shell.setBusy(false, reqId);
+	}
 	DBG.println(AjxDebug.DBG1, "ZmZimbraMail.cancelRequest: " + reqId);
 	this._pendingRequests[reqId].cancel();
 	if (errorCallback) {
@@ -607,8 +619,9 @@ function(reqId, errorCallback) {
 
 ZmZimbraMail.prototype._clearPendingRequest =
 function(reqId) {
-	if (this._pendingRequests[reqId])
+	if (this._pendingRequests[reqId]) {
 		delete this._pendingRequests[reqId];
+	}
 };
 
 /**
