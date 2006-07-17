@@ -615,9 +615,9 @@ ZmTimeSelect.getDateFromFields =
 function(hours, minutes, ampm, date) {
 	hours = Number(hours);
 	if (ampm) {
-		if (ampm == "AM") {
+		if (ampm == "AM" || ampm === 0) {
 			hours = (hours == 12) ? 0 : hours;
-		} else if (ampm == "PM") {
+		} else if (ampm == "PM" || ampm == 1) {
 			hours = (hours < 12) ? hours + 12 : hours;
 		}
 	}
