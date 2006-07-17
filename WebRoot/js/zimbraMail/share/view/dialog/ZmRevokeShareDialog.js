@@ -74,7 +74,8 @@ ZmRevokeShareDialog.prototype._yesButtonCallback =
 function() {
 	var share = this._share;
 	var replyType = this._reply.getReplyType();
-	if (replyType != ZmShareReply.NONE) {
+	var sendMail = !(share.isAll() || share.isPublic()); 
+	if (replyType != ZmShareReply.NONE && sendMail) {
 		// initialize rest of share information
 		share.grantee.email = share.grantee.name;
 		share.grantor.id = this._appCtxt.get(ZmSetting.USERID);
