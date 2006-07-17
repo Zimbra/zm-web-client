@@ -516,6 +516,9 @@ function(ev) {
 			manager.hoverOver(ev.docX, ev.docY);
 		}
 	}
+
+	ev._returnValue = false;
+	ev._dontCallPreventDefault = true;
 	return false;
 };
 
