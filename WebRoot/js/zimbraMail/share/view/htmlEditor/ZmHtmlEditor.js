@@ -711,9 +711,10 @@ function(parent) {
 ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {
 	var tblListener = new AjxListener(this, this._tableOperationsListener);
 	var tblCommands = [ "tableProperties...", "cellProperties...", null,
-			    "insertRow", "deleteRow", "insertColumn", "deleteColumn", null,
-			    "mergeCells", "splitCells", null,
-			    "deleteTable" ];
+			    "insertRow", "deleteRow", "insertColumn", "deleteColumn", null ];
+	if (AjxEnv.isGeckoBased)
+		tblCommands.push("mergeCells", "splitCells", null);
+	tblCommands.push("deleteTable");
 	var tblIcons = [ "TableProperties", "CellProperties", null,
 			 "InsertRowBefore", "DeleteRow", "InsertColBefore", "DeleteCol", null,
 			 "MergeCells", "SplitCells", null,
@@ -751,7 +752,8 @@ ZmHtmlEditor.prototype.__onTableOperationsPopup = function(menu) {
 	var td = this.getNearestElement("td");
 	var splitEnabled = td && ((td.colSpan && td.colSpan > 1)
 				  || (td.rowSpan && td.rowSpan > 1));
-	items.splitCells.setEnabled(splitEnabled);
+	if (items.splitCells)
+		items.splitCells.setEnabled(splitEnabled);
 };
 
 ZmHtmlEditor.prototype._tableOperationsListener =
