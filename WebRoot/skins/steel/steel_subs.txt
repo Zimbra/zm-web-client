@@ -100,6 +100,7 @@ AppTabContainer				= @_AppTabStyle_@
 AppTabContainer-hover		= @_AppTabStyle_@
 AppTabContainer-selected	= @_AppTabStyle_@
 
+HSashContents				= display:none;
 
 ToolbarBg					= background-image:url(@SkinImgDir@/Toolbar__BG.gif);
 MiniCalBg					= @ToolbarBg@
