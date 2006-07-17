@@ -170,7 +170,7 @@ body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
 .ImgAppChicletSel DIV					{	margin-top:9px;	}
 
 
-#IFDEF GECKO
+#IFNDEF MSIE
 	.ImgAppBanner{background-image:url("@AppBannerImg@");width:@AppBannerWidth@;height:@AppBannerHeight@;}
 	.ImgLoginBanner{background-image:url("@LoginBannerImg@");width:@LoginBannerWidth@;height:@LoginBannerHeight@;}	
 #ENDIF
