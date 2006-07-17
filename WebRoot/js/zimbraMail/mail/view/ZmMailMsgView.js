@@ -1474,6 +1474,8 @@ function(appCtxt, result) {
 	var resp = result.getResponse().GetMsgResponse;
 	var msg = new ZmMailMsg(appCtxt, resp.m[0].id);
 	msg._loadFromDom(resp.m[0]);
+	// bug fix #8868 - force load for rfc822 msgs since they may not return any content
+	msg._loaded = true;
 
 	var newWinObj = appCtxt.getNewWindow(true);
 	newWinObj.command = "msgViewDetach";
