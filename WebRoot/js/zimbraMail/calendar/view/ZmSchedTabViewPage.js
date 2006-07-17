@@ -380,14 +380,11 @@ function() {
 	html[i++] = "<td>";
 	
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmSchedulerGridHeaderTable'><tr>";
-	for (var j = 0; j < 2; j++) {
-		for (var k = 12; k < 24; k++) {
-			var hour = k - 12;
-			if (hour == 0) hour = 12;
-			html[i++] = "<td><div class='ZmSchedulerGridHeaderCell'>";
-			html[i++] = hour;
-			html[i++] = "</div></td></td>";
-		}
+	for (var j = 0; j <= 24; j++) {
+		var hour = (j % 12) || 12;
+		html[i++] = "<td><div class='ZmSchedulerGridHeaderCell'>";
+		html[i++] = hour;
+		html[i++] = "</div></td></td>";
 	}
 	html[i++] = "</tr></table>";
 	html[i++] = "</td></tr>";

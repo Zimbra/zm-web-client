@@ -1525,7 +1525,7 @@ HTML>BODY .appt-selected .appt_allday_body
 /* Table that contains the hour labels -- scootch it to the right a little bit */
 .ZmSchedulerGridHeaderTable {
 	position:relative;
-	left:-3px;
+	left:-13px;
 	top:4px;
 }
 
@@ -1533,7 +1533,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@FreeBusyViewHeaderWidth@;
 	@NoWrap@
 	@Label@
-	padding-right:1px;
+	text-align: center;
 }
 
 .ZmSchedulerOrgIconTd {
@@ -1615,10 +1615,16 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmSchedulerGridDiv-start {
 	border-right:3px solid green;
+	#IFNDEF MSIE
+	width: 10px;
+	#ENDIF
 }
 
 .ZmSchedulerGridDiv-end {
 	border-right:3px solid darkred;
+	#IFNDEF MSIE
+	width: 10px;
+	#ENDIF
 }
 
 
