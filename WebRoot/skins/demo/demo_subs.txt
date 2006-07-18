@@ -14,6 +14,36 @@
 SkinName			 = demo
 
 
+##########################################################################
+#                           Logo Licensing Rules 	   		 	         #
+#------------------------------------------------------------------------#
+#
+#  If you are using the Zimbra Collaboration Suite (ZCS) under the 
+#  open source license, and you have not modifed the software, 
+#  then you are required to use the Zimbra logo (the default). 
+#
+#	LogoImgDir		= /zimbra/skins/_base/logos
+#	LogoURL			= http://www.zimbra.com
+#
+#-------------------------------------------------------------------------
+#  If you are using ZCS under the open source license, 
+#  and you have modified the software, 
+#  then you are required to use the Zimbra Inside logo. 
+#
+#	LogoImgDir		= /zimbra/skins/_base/logos/ZimbraInside
+#	LogoURL			= http://www.zimbra.com
+#
+#-------------------------------------------------------------------------
+#  If you are using ZCS under the network (commercial) license, 
+#  then you are welcome to use your own logo in place of the Zimbra logo,
+#  or to retain the original Zimbra logo. 
+#
+#	LogoImgDir		= /zimbra/skins/@SkinName@/logos
+#	LogoURL			= http://www.yourcompany.com
+#
+#========================================================================#
+
+
 
 ##########################################################################
 #                               Skin Colors                              #
@@ -104,33 +134,3 @@ _SelColorL95_		=	#fffef6
 #
 #========================================================================#
 
-
-
-##########################################################################
-#                           Logo Licensing Rules 	   		 	         #
-#------------------------------------------------------------------------#
-#
-#  If you are using the Zimbra Collaboration Suite (ZCS) under the 
-#  open source license, and you have not modifed the software, 
-#  then you are required to use the Zimbra logo (the default). 
-#
-	LogoImgDir		= /zimbra/skins/_base/logos
-	LogoURL			= http://www.zimbra.com
-#
-#-------------------------------------------------------------------------
-#  If you are using ZCS under the open source license, 
-#  and you have modified the software, 
-#  then you are required to use the Zimbra Inside logo. 
-#
-#	LogoImgDir		= /zimbra/skins/_base/logos/ZimbraInside
-#	LogoURL			= http://www.zimbra.com
-#
-#-------------------------------------------------------------------------
-#  If you are using ZCS under the network (commercial) license, 
-#  then you are welcome to use your own logo in place of the Zimbra logo,
-#  or to retain the original Zimbra logo. 
-#
-#	LogoImgDir		= /zimbra/skins/@SkinName@/logos
-#	LogoURL			= http://www.yourcompany.com
-#
-#========================================================================#
