@@ -1476,7 +1476,7 @@ function() {
 		case "YEA": {
 			if (this.repeatCustomType == "S") {
 				var month = new Date();
-				month.setMonth(Number(this.repeatYearlyMonthsList));
+				month.setMonth(Number(this.repeatYearlyMonthsList) - 1);
 				var day = Number(this.repeatCustomMonthDay);
 				
 				var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryDate);
