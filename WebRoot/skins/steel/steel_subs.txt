@@ -139,6 +139,10 @@ SkinName			= steel
 ChromeBg					= background-image:url(@SkinImgDir@/Console__BG.gif);
 
 _AppTabStyle_			 	= border-width:0px; padding-left:10px; margin-top:9px; margin-bottom:-8px;
+#IFDEF MSIE
+_AppTabStyle_			 	= border-width:0px; padding-right:14px; margin-top:9px; margin-bottom:-8px;
+#ENDIF
+
 AppTabContainer				= @_AppTabStyle_@	
 AppTabContainer-hover		= @_AppTabStyle_@
 AppTabContainer-selected	= @_AppTabStyle_@
