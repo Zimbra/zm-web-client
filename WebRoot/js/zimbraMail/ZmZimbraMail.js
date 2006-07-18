@@ -1185,16 +1185,14 @@ ZmZimbraMail.prototype._handleException =
 function(ex, method, params, restartOnError, obj) {
 	var handled = false;
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
-// TODO Need to use more than just the rid to identify these thins.
-// Waiting for enhancement from server team.
-// Commenting the whole thing out till then.
-/*
 		var organizerTypes = [ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
-		var rid = ex.data.itemId;
+		var itemId = ex.data.itemId[0];
+		var index = itemId.lastIndexOf(':');
+		var zid = itemId.substring(0, index);
+		var rid = itemId.substring(index + 1, itemId.length);
 		for (var type = 0; type < organizerTypes.length; type++) {
-			handled |= this._handleNoSuchFolderError(organizerTypes[type], rid, true);
+			handled |= this._handleNoSuchFolderError(organizerTypes[type], zid, rid, true);
 		}
-*/ 
 	}
 	if (!handled) {
 		ZmController.prototype._handleException.call(this, ex, method, params, restartOnError, obj);
@@ -1231,11 +1229,12 @@ function(organizer, dialog) {
  * any tree views, and asking to delete it.
  * 
  * @param organizerType		[int]		the type of organizer (constants defined in ZmOrganizer)
+ * @param zid				[string]	the zid of the missing folder
  * @param rid				[string]	the rid of the missing folder
  * 
  */
 ZmZimbraMail.prototype._handleNoSuchFolderError =
-function(organizerType, rid) {
+function(organizerType, zid, rid) {
 	var treeData = this._appCtxt.getTree(organizerType);
 	var items = treeData && treeData.root
 		? treeData.root.children.getArray()
@@ -1244,7 +1243,7 @@ function(organizerType, rid) {
 
 	var handled = false;
 	for (var i = 0; i < items.length; i++) {
-		if (items[i].rid == rid) {
+		if ((items[i].zid == zid) && (items[i].rid == rid)) {
 			// Mark that the item is not there any more.
 			items[i].noSuchFolder = true;
 			
@@ -1267,11 +1266,12 @@ function(organizerType, rid) {
  * Handles missing links by marking the organizers as not there
  * 
  * @param organizerType		[int]		the type of organizer (constants defined in ZmOrganizer)
- * @param rids				[array]		the rids of the missing folders
+ * @param zids				[array]		the zids of the missing folders
+ * @param rids				[array]		the rids of the missing folders. rids and zids must have the same length
  * 
  */
 ZmZimbraMail.prototype._markNoSuchFolder =
-function(organizerType, rids) {
+function(organizerType, zids, rids) {
 	var treeData = this._appCtxt.getTree(organizerType);
 	var items = treeData && treeData.root
 		? treeData.root.children.getArray()
@@ -1279,7 +1279,7 @@ function(organizerType, rids) {
 
 	for (var i = 0; i < items.length; i++) {
 		for (var j = 0; j < rids.length; j++) {
-			if (items[i].rid == rids[j]) {
+			if ((items[i].zid == zids[j]) && (items[i].rid == rids[j])) {
 				items[i].noSuchFolder = true;
 			}
 		}
@@ -1295,28 +1295,25 @@ function(organizerType, rids) {
  */
 ZmZimbraMail.prototype._handleErrorGetShares =
 function(organizerTypes, batchResp) {
-// TODO Need to use more than just the rid to identify these thins.
-// Waiting for enhancement from server team.
-// Commenting the whole thing out till then.
-/*
 	var faults = batchResp.Fault;
 	if (faults) {
-// Total hack for figuring out the folder rid.....Need more info from server team.
-		var regExp = new RegExp("no such folder id: ([0-9]+)*", "i");
-		var rids = []
+		var rids = [];
+		var zids = [];
 		for (var i = 0, length = faults.length; i < length; i++) {
-			if (faults[i].Detail.Error.Code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
-				var match = regExp.exec(faults[i].Reason.Text);
-				if (match) {
-					rids.push(match[1]);
-				}
+			var ex = ZmCsfeCommand.faultToEx(faults[i]);
+			if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
+				var itemId = ex.data.itemId[0];
+				var index = itemId.lastIndexOf(':');
+				zids.push(itemId.substring(0, index));
+				rids.push(itemId.substring(index + 1, itemId.length));
 			}
 		}
-		for (var type = 0; type < organizerTypes.length; type++) {
-			this._markNoSuchFolder(organizerTypes[type], rids);
+		if (zids.length) {
+			for (var type = 0; type < organizerTypes.length; type++) {
+				this._markNoSuchFolder(organizerTypes[type], zids, rids);
+			}
 		}
 	}
-*/
 };
 
 ZmZimbraMail.prototype._handleResponseGetShares =
