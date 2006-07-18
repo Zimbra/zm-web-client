@@ -272,7 +272,8 @@ function(conv, fieldId) {
 	var origLen = part1.length;
 	// might get a weird case where there are no participants in message
 	if (origLen > 0) {
-		var part2 = this._fitParticipants(part1, conv.participantsElided, 145);
+		var partColWidth = this._headerList[this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT])]._width;
+		var part2 = this._fitParticipants(part1, conv.participantsElided, partColWidth);
 		for (var j = 0; j < part2.length; j++) {
 			if (j == 1 && (conv.participantsElided || part2.length < origLen)) {
 				html[idx++] = AjxStringUtil.ELLIPSIS;
