@@ -234,10 +234,12 @@ function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_COUNT])) {
 		for (var i = 0; i < items.length; i++) {
 			var countField = document.getElementById(this._getFieldId(items[i], ZmItem.F_COUNT));
-			if (countField)
+			if (countField) {
 				countField.innerHTML = items[i].numMsgs > 1 ? "(" + items[i].numMsgs + ")" : "";
+			}
 		}
-	} else if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_ID])) {
+	}
+	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_ID])) {
 		// a virtual conv has become real, and changed its ID
 		for (var i = 0; i < items.length; i++) {
 			var conv = items[i];
@@ -248,18 +250,47 @@ function(ev) {
 				DBG.println(AjxDebug.DBG1, "conv updated from ID " + conv._oldId + " to ID " + conv.id);
 			}
 		}
-	} else if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_PARTICIPANT])) {
+	}
+	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_PARTICIPANT])) {
 		for (var i = 0; i < items.length; i++) {
 			var fieldId = this._getFieldId(items[i], ZmItem.F_PARTICIPANT);
 			var participantField = document.getElementById(fieldId);
-			if (participantField)
+			if (participantField) {
 				participantField.innerHTML = this._getParticipantHtml(items[i], fieldId);
+			}
 		}
-	} else {
-		ZmMailListView.prototype._changeListener.call(this, ev);
-		if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE)	{
-			this._resetColWidth();
+	}
+	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_DATE])) {
+debugger;
+		for (var i = 0; i < items.length; i++) {
+			var fieldId = this._getFieldId(items[i], ZmItem.F_DATE);
+			var dateField = document.getElementById(fieldId);
+			if (dateField) {
+				var html = [];
+				this._getField(html, 0, items[i], ZmItem.F_DATE, 6, new Date());
+				dateField.innerHTML = html.join("");
+			}
 		}
+	}
+	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_INDEX])) {
+		// a conv had gotten a new msg and may need to be moved to top or bottom of list
+		var addToTop = ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC));
+		var addToBottom = addToTop ? false : ((this._controller.getList().hasMore() === false) &&
+											  (!this._sortByString || this._sortByString == ZmSearch.DATE_ASC)) &&
+											  (this.size() < this.getLimit());
+		if (addToTop || addToBottom) {
+			for (var i = 0; i < items.length; i++) {
+				var item = items[i];
+				var curIndex = this._list.indexOf(item);
+				if (addToTop && curIndex == 0) continue;
+				this.removeItem(item);
+				this.addItem(item, addToTop ? 0 : null);
+			}
+		}
+	}
+	ZmMailListView.prototype._changeListener.call(this, ev);
+	if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE)	{
+		this._resetColWidth();
 	}
 };
 

@@ -124,6 +124,7 @@ ZmItem.F_FREE_BUSY		= i++;
 ZmItem.F_ITEM_TYPE		= i++;
 ZmItem.F_TAG_CELL		= i++;
 ZmItem.F_SIZE			= i++;
+ZmItem.F_INDEX			= i++;
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};

@@ -76,7 +76,7 @@ function(items, folder, attrs) {
 		return;
 	}
 	
-	var attrs = new Object();
+	var attrs = {};
 	attrs.tcon = this._getTcon();
 	attrs.l = folder.id;
 	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder]);
@@ -107,7 +107,7 @@ function(items, markAsSpam, folder) {
 
 	var action = markAsSpam ? "spam" : "!spam";
 
-	var attrs = new Object();
+	var attrs = {};
 	attrs.tcon = this._getTcon();
 	if (folder) attrs.l = folder.id;
 
@@ -169,7 +169,7 @@ function(items, folderId) {
 	ZmList.prototype.moveLocal.call(this, items, folderId);
 	if (folderId != ZmFolder.ID_TRASH) return;
 
-	var flaggedItems = new Array();
+	var flaggedItems = [];
 	for (var i = 0; i < items.length; i++) {
 		if (items[i].isUnread) {
 			items[i].flagLocal(ZmItem.FLAG_UNREAD, false);
@@ -183,15 +183,17 @@ function(items, folderId) {
 ZmMailList.prototype.notifyCreate = 
 function(convs, msgs) {
 	var searchFolder = this.search ? this.search.folderId : null;
-	var createdItems = new Array();
-	var flaggedItems = new Array();
-	var modifiedItems = new Array();
-	var fields = new Object();
+	var createdItems = [];
+	var flaggedItems = [];
+	var modifiedItems = [];
+	var newConvs = {};
+	var fields = {};
 	if (this.type == ZmItem.CONV && searchFolder) {
 		// handle new convs first so we can set their fragments from new msgs
 		var sortBy = this.search ? this.search.sortBy : null;
 		for (var id in convs) {
 			if (this.getById(id)) continue;
+			newConvs[id] = true;
 			var conv = convs[id];
 			if (conv.folders && conv.folders[searchFolder]) {
 				var index = this._getSortIndex(conv, sortBy);
@@ -205,8 +207,6 @@ function(convs, msgs) {
 			var cid = msg.cid;
 			var conv = this.getById(cid);
 			if (conv && !(conv.msgs && conv.msgs.getById(id))) {
-				// got a new msg for a conv that has no msg list - happens when virt conv
-				// becomes real (on its second msg) - create a msg list
 				if (!conv.msgs) {
 					conv.msgs = new ZmMailList(ZmItem.MSG, this._appCtxt);
 					conv.msgs.addChangeListener(conv._listChangeListener);
@@ -221,6 +221,14 @@ function(convs, msgs) {
 				if (conv.fragment != msg.fragment) {
 					conv.fragment = msg.fragment;
 					fields[ZmItem.F_FRAGMENT] = true;
+				}
+				if (conv.date != msg.date) {
+					conv.date = msg.date;
+					fields[ZmItem.F_DATE] = true;
+				}
+				// conv gained a msg, may need to be moved to top/bottom
+				if (!newConvs[conv.id] && this._vector.contains(conv)) {
+					fields[ZmItem.F_INDEX] = true;
 				}
 				modifiedItems.push(conv);
 			}
@@ -244,12 +252,15 @@ function(convs, msgs) {
 			}
 		}
 	}
-	if (createdItems.length)
+	if (createdItems.length) {
 		this._notify(ZmEvent.E_CREATE, {items: createdItems});
-	if (flaggedItems.length)
+	}
+	if (flaggedItems.length) {
 		this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [ZmItem.FLAG_UNREAD]});
-	if (modifiedItems.length)
+	}
+	if (modifiedItems.length) {
 		this._notify(ZmEvent.E_MODIFY, {items: modifiedItems, fields: fields});
+	}
 };
 
 /**
@@ -261,7 +272,7 @@ function(convs, msgs) {
 */
 ZmMailList.prototype.addMsgs =
 function(msgs) {
-	var addedMsgs = new Array();
+	var addedMsgs = [];
 	for (var id in msgs) {
 		var msg = msgs[id];
 		if (msg.cid == this.convId) {
@@ -302,17 +313,18 @@ function() {
 */
 ZmMailList.prototype._getSortIndex =
 function(item, sortBy) {
-	if (!sortBy || (sortBy != ZmSearch.DATE_DESC && sortBy != ZmSearch.DATE_DESC))
+	if (!sortBy || (sortBy != ZmSearch.DATE_DESC && sortBy != ZmSearch.DATE_DESC)) {
 		return 0;
+	}
 	
 	var itemDate = parseInt(item.date);
 	var a = this.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var date = parseInt(a[i].date);
-		if (sortBy == ZmSearch.DATE_DESC && (itemDate > date))
+		if ((sortBy == ZmSearch.DATE_DESC && (itemDate > date)) ||
+			(sortBy == ZmSearch.DATE_ASC && (itemDate < date))) {
 			return i;
-		if (sortBy == ZmSearch.DATE_ASC && (itemDate < date))
-			return i;
+		}
 	}
 	return i;
 };
@@ -348,7 +360,7 @@ function(ev) {
 			} else {
 				var on = ev.getDetail("state");
 				var organizer = ev.getDetail("item");
-				var flaggedItems = new Array();
+				var flaggedItems = [];
 				var list = this.getArray();
 				for (var i = 0; i < list.length; i++) {
 					var msg = list[i];

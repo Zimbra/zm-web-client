@@ -168,9 +168,11 @@ function(obj) {
 		if (this.msgs) {
 			this.msgs.convId = this.id;
 			var a = this.msgs.getArray();
-			for (var i = 0; i < a.length; i++)
+			for (var i = 0; i < a.length; i++) {
 				a[i].cid = this.id;
+			}
 		}
+		this.list._idHash[this.id] = this.list._idHash[this._oldId];
 		fields[ZmItem.F_ID] = true;
 		this._notify(ZmEvent.E_MODIFY, {fields : fields});
 	}
