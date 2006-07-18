@@ -430,7 +430,6 @@ function(newWidth, newHeight) {
 
 	if (newHeight) {
 		this.setSize(Dwt.DEFAULT, newHeight - 30);
-		Dwt.setSize(this.getHtmlElement().firstChild, Dwt.DEFAULT, newHeight - 30);
 		this._resizeNotes();
 	}
 };
@@ -629,7 +628,7 @@ function() {
 	var html = [];
 	var i = 0;
 
-	html[i++] = "<table border=0 style='table-layout:fixed; height:";
+	html[i++] = "<div><table border=0 style='table-layout:fixed; height:";
 	html[i++] = dims.y - 30;
 	html[i++] = "px'><colgroup><col width='";
 	html[i++] = AjxEnv.is800x600orLower ? "235" : "335";
@@ -649,12 +648,9 @@ function() {
 	html[i++] = "</div></fieldset>";
 	html[i++] = "</td></tr><tr><td colspan=2>";
 	html[i++] = this._getSchedulingHtml();
-	html[i++] = "</td></tr><tr><td valign=top colspan=2 id='";
+	html[i++] = "</td></tr></table></div><div id='";
 	html[i++] = this._notesHtmlEditorId;
-	html[i++] = "'>";
-	html[i++] = "</td></tr>";
-	html[i++] = "</table>";
-
+	html[i++] = "'></div>";
 	this.getHtmlElement().innerHTML = html.join("");
 };
 
@@ -1023,7 +1019,7 @@ function(appt, mode) {
 ZmApptTabViewPage.prototype._initAttachContainer =
 function() {
 	// create new table row which will contain parent fieldset
-	var table = this.getHtmlElement().firstChild;
+	var table = this.getHtmlElement().firstChild.firstChild;
 	this._attachmentRow = table.insertRow(2);
 	this._attachmentRow.style.height = AjxEnv.isIE ? "auto" : 22;
 	var cell = this._attachmentRow.insertCell(-1);
@@ -1092,7 +1088,7 @@ function() {
 	delete this._attachDiv;
 	this._attachDiv = this._attachRemoveId = this._attachDivId = this._uploadFormId = null;
 	// finally, nuke the whole table row
-	var table = this.getHtmlElement().firstChild;
+	var table = this.getHtmlElement().firstChild.firstChild;
 	table.deleteRow(2);
 	delete this._attachmentRow;
 	this._attachmentRow = null;
@@ -1166,17 +1162,13 @@ function() {
 		this._bodyField = document.getElementById(this._bodyFieldId);
 	}
 
-	// init html editor heights
-	var rows = this.getHtmlElement().firstChild.rows;
-	var lastRowIdx = rows.length - 1;
-	var rowHeight = 0;
-	for (var i = 0; i < lastRowIdx; i++) {
-		// safari can't handle heights for TR's so get from TD's instead
-		rowHeight += AjxEnv.isSafari 
-			? Dwt.getSize(rows[i].cells[0]).y
-			: Dwt.getSize(rows[i]).y;
-	}
-	rowHeight = this.getSize().y - rowHeight;
+	var size = this.getSize();
+	if (size.x <= 0 || size.y <= 0)
+		return;
+
+	var topDiv = this.getHtmlElement().firstChild;
+	var topHeight = Dwt.getSize(topDiv).y;
+	var rowHeight = size.y - topHeight;
 	var fudge = (this._composeMode == DwtHtmlEditor.HTML) ? 75 : 15;
 	Dwt.setSize(this._bodyField, Dwt.DEFAULT, rowHeight - fudge);
 };
