@@ -243,7 +243,7 @@ function(name, color, url, search) {
 	} else {
 		var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 		var folderNode = soapDoc.set("folder");
-		folderNode.setAttribute("name", name);
+		folderNode.setAttribute("name", AjxEnv.isSafari ? AjxStringUtil.xmlEncode(name) : name);
 		folderNode.setAttribute("l", this.id);
 		if (url) folderNode.setAttribute("url", url);
 	}

@@ -69,7 +69,7 @@ ZmCalendar.prototype.create =
 function(name, color, url, excludeFreeBusy) {
 	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 	var folderNode = soapDoc.set("folder");
-	folderNode.setAttribute("name", name);
+	folderNode.setAttribute("name", AjxEnv.isSafari ? AjxStringUtil.xmlEncode(name) : name);
 	folderNode.setAttribute("l", this.id);
 	folderNode.setAttribute("color", color || ZmOrganizer.DEFAULT_COLOR);
 	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]);

@@ -406,6 +406,7 @@ ZmOrganizer.prototype.getIcon = function() {};
 ZmOrganizer.prototype.rename =
 function(name, callback, errorCallback) {
 	if (name == this.name) return;
+	name = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(name) : name;
 	this._organizerAction({action: "rename", attrs: {name: name}, callback: callback, errorCallback: errorCallback});
 };
 
