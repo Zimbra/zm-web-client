@@ -142,7 +142,7 @@
       </path>
     </pathconvert>
     <taskdef name='imagemerge' 
-      classname='org.apache.kabuki.tools.img.ImageMergeTask' 
+      classname='com.zimbra.kabuki.tools.img.ImageMergeTask'
       classpath='${imagemerge.cp}'
       />
 
@@ -154,7 +154,7 @@
       </path>
     </pathconvert>
     <taskdef name='imagesort' 
-      classname='org.apache.kabuki.tools.img.ImageSortTask' 
+      classname='com.zimbra.kabuki.tools.img.ImageSortTask'
       classpath='${sortimages.cp}'
       />
   </target>
@@ -168,7 +168,7 @@
 
 	<target name='i18n-check' depends='compile'>
 		<taskdef name='i18ncheck' 
-				 classname='org.apache.kabuki.tools.i18n.ComparePropsTask' 
+				 classname='com.zimbra.kabuki.tools.i18n.ComparePropsTask'
 				 classpath='${build.dir}/classes'
 		/>
 
@@ -211,7 +211,7 @@
 
 	<target name='i18n' depends='i18n-init,compile' unless='i18n-done'>
 		<taskdef name='i18n' 
-				 classname='org.apache.kabuki.tools.i18n.GenerateDataTask' 
+				 classname='com.zimbra.kabuki.tools.i18n.GenerateDataTask'
 				 classpath='${build.dir}/classes'
 		/>
 		<mkdir dir='${build.dir}/i18n/msgs' />

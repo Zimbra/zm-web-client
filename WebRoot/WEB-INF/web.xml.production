@@ -85,7 +85,7 @@
 	<servlet>
 		<servlet-name>Properties2Javascript</servlet-name>
 		<servlet-class>
-			org.apache.kabuki.servlets.Props2JsServlet
+			com.zimbra.kabuki.servlets.Props2JsServlet
 		</servlet-class>
 	</servlet>
 
