@@ -1510,13 +1510,18 @@ function(isDraft, status, attId) {
 	DBG.println(AjxDebug.DBG1, "Attachments: isDraft = " + isDraft + ", status = " + status + ", attId = " + attId);
 	if (status == AjxPost.SC_OK) {
 		this._controller.sendMsg(attId, isDraft);
+	} else if (status == AjxPost.SC_UNAUTHORIZED) {
+		// auth failed during att upload - let user relogin, continue with compose action
+		var ex = new AjxException("401 response during attachment upload", ZmCsfeException.SVC_AUTH_EXPIRED);
+		var execFrame = new AjxCallback(this._controller,
+							isDraft ? this._controller._saveDraft : this._controller._send);
+		this._controller._handleException(ex, execFrame);
 	} else {
 		// bug fix #2131 - handle errors during attachment upload.
 		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, status);
 		switch (status) {
 			// add other error codes/message here as necessary
 			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
-			case AjxPost.SC_UNAUTHORIZED: 				msg += " " + ZmMsg.errorNotAuthenticated + "<br><br>"; break;
 			default: 									msg += " "; break;
 		}
 
