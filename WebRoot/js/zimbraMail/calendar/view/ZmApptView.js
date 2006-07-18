@@ -304,6 +304,11 @@ function(appt) {
 	return str.join("");
 };
 
+ZmApptView.prototype._setAttachmentLinks =
+function() {
+	// do nothing since appt view renders attachments differently
+};
+
 // returns true if given dates are w/in a single day
 ZmApptView.prototype._isOneDayAppt = 
 function(sd, ed) {
