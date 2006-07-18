@@ -1,7 +1,7 @@
 <skin>
 	<substitutions>
 		<file>../_base/base/base_subs.txt</file>
-		<file>../_base/consumer/consumer_subs.txt</file>
+		<file>../_base/white/white_subs.txt</file>
 		<file>bare_subs.txt</file>
 	</substitutions>
 	<css>

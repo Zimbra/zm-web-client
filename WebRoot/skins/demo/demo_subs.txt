@@ -1,8 +1,26 @@
+##########################################################################
+#                            Skin Substitutions                          #
+#------------------------------------------------------------------------#
+#
+#  Add or change entries below to customize this skin.  
+#     See:  http://wiki.zimbra.com/?title=Themes
+#
+#  NOTE: Substitutions that begin and end with "_" (eg: "_BaseColor_") 
+#  should only be used within this file -- never in a CSS or HTML file
+#
+#========================================================================#
+
+
 SkinName			 = demo
 
 
-_BaseColor_			=	#ff6600
 
+##########################################################################
+#                               Skin Colors                              #
+##########################################################################
+
+#### Base color and variants ####
+_BaseColor_			=	#ff6600
 _BaseColorD95_		=	#0d0500
 _BaseColorD90_		=	#1a0a00
 _BaseColorD85_		=	#260f00
@@ -22,7 +40,6 @@ _BaseColorD20_		=	#cc5200
 _BaseColorD15_		=	#d95700
 _BaseColorD10_		=	#e65c00
 _BaseColorD5_		=	#f26100
-
 _BaseColorL5_		=	#ff6e0d
 _BaseColorL10_		=	#ff751a
 _BaseColorL15_		=	#ff7d26
@@ -43,9 +60,8 @@ _BaseColorL85_		=	#ffe8d9
 _BaseColorL90_		=	#fff0e6
 _BaseColorL95_		=	#fff7f2
 
-
+#### Selection color and variants ####
 _SelColor_			=	#fff34d
-
 _SelColorD95_		=	#0d0c04
 _SelColorD90_		=	#1a1808
 _SelColorD85_		=	#26240c
@@ -65,7 +81,6 @@ _SelColorD20_		=	#ccc23e
 _SelColorD15_		=	#d9cf41
 _SelColorD10_		=	#e6db45
 _SelColorD5_		=	#f2e749
-
 _SelColorL5_		=	#fff456
 _SelColorL10_		=	#fff45f
 _SelColorL15_		=	#fff568
@@ -86,5 +101,36 @@ _SelColorL85_		=	#fffde4
 _SelColorL90_		=	#fffeed
 _SelColorL95_		=	#fffef6
 
+#
+#========================================================================#
 
-ChromeBg			= background-color:@_BaseColorL80_@;
+
+
+##########################################################################
+#                           Logo Licensing Rules 	   		 	         #
+#------------------------------------------------------------------------#
+#
+#  If you are using the Zimbra Collaboration Suite (ZCS) under the 
+#  open source license, and you have not modifed the software, 
+#  then you are required to use the Zimbra logo (the default). 
+#
+	LogoImgDir		= /zimbra/skins/_base/logos
+	LogoURL			= http://www.zimbra.com
+#
+#-------------------------------------------------------------------------
+#  If you are using ZCS under the open source license, 
+#  and you have modified the software, 
+#  then you are required to use the Zimbra Inside logo. 
+#
+#	LogoImgDir		= /zimbra/skins/_base/logos/ZimbraInside
+#	LogoURL			= http://www.zimbra.com
+#
+#-------------------------------------------------------------------------
+#  If you are using ZCS under the network (commercial) license, 
+#  then you are welcome to use your own logo in place of the Zimbra logo,
+#  or to retain the original Zimbra logo. 
+#
+#	LogoImgDir		= /zimbra/skins/@SkinName@/logos
+#	LogoURL			= http://www.yourcompany.com
+#
+#========================================================================#
