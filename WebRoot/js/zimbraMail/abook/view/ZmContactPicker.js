@@ -261,7 +261,7 @@ function(result) {
 		var contact = a[i];
 		var emails = contact.getEmails();
 		for (var j = 0; j < emails.length; j++) {
-			var email = new ZmEmailAddress(emails[j], null, contact.getFullName());
+			var email = new ZmEmailAddress(emails[j], null, contact.getFileAs());
 			email.id = Dwt.getNextId();
 			email.icon = contact.isGal ? "GAL" : contact.addrbook.getIcon();
 			list.push(email);
