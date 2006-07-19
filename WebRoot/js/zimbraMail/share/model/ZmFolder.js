@@ -138,6 +138,9 @@ function(parent, obj, tree) {
 
 	var name = ZmFolder.MSG_KEY[obj.id] ? ZmMsg[ZmFolder.MSG_KEY[obj.id]] : obj.name;
 	var folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n, obj.url);
+	if (ZmFolder.MSG_KEY[obj.id]) {
+		folder._systemName = obj.name;
+	}
 	folder._setSharesFromJs(obj);
 
 	// a folder may contain other folders or searches
@@ -386,19 +389,20 @@ function(pathOnly) {
 };
 
 ZmFolder.prototype.getName = 
-function(showUnread, maxLength, noMarkup) {
+function(showUnread, maxLength, noMarkup, useSystemName) {
+	var name = (useSystemName && this._systemName) ? this._systemName : this.name;
 	if (this.id == ZmOrganizer.ID_ROOT) {
 		return ZmMsg.folders;
 	} else if (this.id == ZmFolder.ID_DRAFTS) {
-		var name = this.name;
 		if (showUnread && this.numTotal > 0) {
 			name = [name, " (", this.numTotal, ")"].join("");
-			if (!noMarkup)
+			if (!noMarkup) {
 				name = ["<b>", name, "</b>"].join("");
+			}
 		}
 		return name;
 	} else {
-		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
+		return this._fixUpName(name, showUnread, maxLength, noMarkup);
 	}
 };
 
@@ -420,13 +424,14 @@ function() {
 * @param showUnread		[boolean]*	whether to display the number of unread items (in parens)
 * @param maxLength		[int]*		length in chars to truncate the name to
 * @param noMarkup		[boolean]*	if true, don't return any HTML
+* @param useSystemName	[boolean]*	if true, use untranslated version of system folder names
 */
 ZmFolder.prototype.getPath = 
-function(includeRoot, showUnread, maxLength, noMarkup) {
+function(includeRoot, showUnread, maxLength, noMarkup, useSystemName) {
 	var parent = this.parent;
-	var path = this.getName(showUnread, maxLength, noMarkup);
+	var path = this.getName(showUnread, maxLength, noMarkup, useSystemName);
 	while (parent && ((parent.id != ZmOrganizer.ID_ROOT) || includeRoot)) {
-		path = parent.getName() + ZmFolder.SEP + path;
+		path = parent.getName(showUnread, maxLength, noMarkup, useSystemName) + ZmFolder.SEP + path;
 		parent = parent.parent;
 	}
 	
@@ -514,26 +519,27 @@ function(what) {
 /**
 * Returns the folder with the given path
 *
-* @param path		the path to search for
+* @param path			[string]	the path to search for
+* @param useSystemName	[boolean]*	if true, use untranslated version of system folder names
 */
 ZmFolder.prototype.getByPath =
-function(path) {
-	return this._getByPath(path.toLowerCase());
+function(path, useSystemName) {
+	return this._getByPath(path.toLowerCase(), useSystemName);
 };
 
 // Test the path of this folder and then descendants against the given path, case insensitively
 ZmFolder.prototype._getByPath =
-function(path) {
+function(path, useSystemName) {
 	if (this.id == ZmFolder.ID_TAGS) return null;
 
-	if (path == this.getPath().toLowerCase())
+	if (path == this.getPath(false, false, null, false, useSystemName).toLowerCase())
 		return this;
 		
 	var organizer;
 	var a = this.children.getArray();
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++) {
-		if (organizer = a[i]._getByPath(path))
+		if (organizer = a[i]._getByPath(path, useSystemName))
 			return organizer;
 	}
 	return null;	

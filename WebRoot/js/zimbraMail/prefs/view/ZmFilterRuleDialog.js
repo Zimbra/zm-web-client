@@ -444,7 +444,7 @@ function(conf, field, options, dataValue, rowId, data) {
 		var organizer = null;
 		if (dataValue) {
 			if (type == ZmFilterRule.TYPE_FOLDER_PICKER)
-				organizer = this._appCtxt.getTree(ZmOrganizer.FOLDER).getByPath(dataValue.substring(1));
+				organizer = this._appCtxt.getTree(ZmOrganizer.FOLDER).getByPath(dataValue.substring(1), true);
 			else
 				organizer = this._appCtxt.getTree(ZmOrganizer.TAG).getByName(dataValue);
 		}
@@ -634,7 +634,8 @@ function(button, organizer) {
 	var dialog = isFolder ? this._appCtxt.getMoveToDialog() : this._tagPicker;
 	if (organizer) {
 		button.setText(organizer.getName(false, null, true));
-		var value = isFolder ? "/" + organizer.getPath(false, false, null, true) : organizer.getName(false, null, true);
+		var value = isFolder ? "/" + organizer.getPath(false, false, null, true, true) :
+							   organizer.getName(false, null, true);
 		button.setData(ZmFilterRuleDialog.DATA, value);
 	}
 	dialog.popdown();

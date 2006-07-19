@@ -211,13 +211,21 @@ function() {
 */
 ZmOrganizer.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
-	var name = (maxLength && this.name.length > maxLength) ? this.name.substring(0, maxLength - 3) + "..." : this.name;
-	if (!noMarkup)
+	return this._fixUpName(this.name, showUnread, maxLength, noMarkup);
+};
+
+ZmOrganizer.prototype._fixUpName = 
+function(name, showUnread, maxLength, noMarkup) {
+	name = (maxLength && name.length > maxLength) ?
+				name.substring(0, maxLength - 3) + "..." : name;
+	if (!noMarkup) {
 		name = AjxStringUtil.htmlEncode(name, true);
+	}
 	if (showUnread && this.numUnread > 0) {
 		name = [name, " (", this.numUnread, ")"].join("");
-		if (!noMarkup)
+		if (!noMarkup) {
 			name = ["<b>", name, "</b>"].join("");
+		}
 	}
 	return name;
 };
