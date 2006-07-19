@@ -501,11 +501,19 @@ function(appCtxt, item, type, strict) {
 	 		attendee = (type == ZmAppt.PERSON) ? contacts.getContactByEmail(addr) :
 	 											 resources ? resources.getResourceByEmail(addr) : null;
 	 		if (attendee) {
+				if (type == ZmAppt.PERSON) {
+					// remember actual address (in case it's email2 or email3)
+					attendee._inviteAddress = addr;
+				}
 	 			return attendee;
 	 		}
 			attendee = (type == ZmAppt.PERSON) ? new ZmContact(appCtxt) :
 												 new ZmResource(appCtxt);
 			attendee.initFromEmail(email, true);
+			if (type == ZmAppt.PERSON) {
+				// remember actual address (in case it's email2 or email3)
+				attendee._inviteAddress = addr;
+			}
 		} else if (type != ZmAppt.PERSON) {
 			// check if it's a location we know by name somehow
 			attendee = resources ? resources.getResourceByName(item) : null;
