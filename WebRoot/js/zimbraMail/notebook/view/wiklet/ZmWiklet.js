@@ -513,11 +513,11 @@ ZmWiklet.register(
 			}
 			else switch (params.format || "list") {
 				case "list": {
-					content.push("<ul class='_toc_list'>");
+					content.push("<ul class='zmwiki-tocList'>");
 					for (var i = 0; i < items.length; i++) {
 						var item = items[i];
 						content.push(
-							"<li class='_pageLink'>",
+							"<li class='zmwiki-pageLink'>",
 								"[[", item.name, "]]",
 							"</li>"
 						);
@@ -548,11 +548,11 @@ ZmWiklet.register(
 					break;
 				}
 				case "simple": default: {
-					content.push("<span class='_toc_simple'>");
+					content.push("<span class='zmwiki-tocSimple'>");
 					for (var i = 0; i < items.length; i++) {
 						var item = items[i];
 						content.push(
-							"<span class='_pageLink'>",
+							"<span class='zmwiki-pageLink'>",
 								"[[", items.name, "]]",
 							"</span>"
 						);
@@ -621,7 +621,7 @@ ZmWiklet.register(
 				case "template": {
 					var folderId = item.folderId;
 
-					var separator = params.separator || "<td class='_path_separator'>&nbsp;&raquo;&nbsp;</td>";
+					var separator = params.separator || "<td class='zmwiki-path_separator'>&nbsp;&raquo;&nbsp;</td>";
 
 					var itemTemplate = context.getPageByName(folderId, (params.itemTemplate || ZmNotebook.PATH_ITEM_TEMPLATE), true);
 					var itemContent = itemTemplate.getContent();
@@ -648,7 +648,7 @@ ZmWiklet.register(
 				case "simple": default: {
 					var separator = params.separator || " &raquo; ";
 
-					content.push("<span class='_path_simple'>");
+					content.push("<span class='zmwiki-pathSimple'>");
 					for (var i = 0; i < trail.length; i++) {
 						if (i > 0) {
 							content.push(separator);
@@ -656,7 +656,7 @@ ZmWiklet.register(
 						var crumb = trail[i];
 						var path = crumb.name; // TODO !!!
 						content.push(
-							"<span class='_pageLink'>",
+							"<span class='zmwiki-pageLink'>",
 								(makeLinks ? "[[" : ""),
 								path,
 								(makeLinks ? "]]" : ""),

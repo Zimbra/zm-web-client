@@ -4,31 +4,31 @@
 	font-family: inherit;
 	font-size: inherit;
 }
-#ZimbraWikiPage ._chromeTable,
-#ZimbraWikiPage ._tocTable {
+#ZimbraWikiPage .zmwiki-chromeTable,
+#ZimbraWikiPage .zmwiki-tocTable {
 	width:100%;
 }
 
-#ZimbraWikiPage ._headerContainer {
+#ZimbraWikiPage .zmwiki-headerContainer {
 	Xheight:30px;
 }
 
-#ZimbraWikiPage ._breadcrumbHeader,
-#ZimbraWikiPage ._logoHeader,
-#ZimbraWikiPage ._titleHeader {
+#ZimbraWikiPage .zmwiki-breadcrumbHeader,
+#ZimbraWikiPage .zmwiki-logoHeader,
+#ZimbraWikiPage .zmwiki-titleHeader {
 	background-color:#eeeeee;
 }
 
-#ZimbraWikiPage ._logoHeader {
+#ZimbraWikiPage .zmwiki-logoHeader {
 	border-bottom:1px solid #cccccc;	
 }
 
-#ZimbraWikiPage ._breadcrumbHeader {
+#ZimbraWikiPage .zmwiki-breadcrumbHeader {
 	padding-top:2px;
 	height:10px;	
 }
 
-#ZimbraWikiPage ._titleHeader {
+#ZimbraWikiPage .zmwiki-titleHeader {
 	padding-top:2px;
 	height:10px;
 	padding-bottom:5px;
@@ -36,37 +36,37 @@
 }
 
 
-#ZimbraWikiPage ._footerContainer {
+#ZimbraWikiPage .zmwiki-footerContainer {
 	height:15px;
 	border-top:1px solid #cccccc;
 	border-bottom:1px solid #cccccc;
 }
 
-#ZimbraWikiPage ._sideBarContainer {
+#ZimbraWikiPage .zmwiki-sideBarContainer {
 	Xwidth:150px;
 	background-color:#eeeeee;
 	border-right:1px solid #cccccc;
 }
 
-#ZimbraWikiPage ._titleBarContainer {
+#ZimbraWikiPage .zmwiki-titleBarContainer {
 	
 }
 
-#ZimbraWikiPage ._contentContainer {
+#ZimbraWikiPage .zmwiki-contentContainer {
 	padding:5px;
 	padding-bottom:20px;
 	width:100%;
 	height:100%;
 }
 
-#ZimbraWikiPage ._pageName {
+#ZimbraWikiPage .zmwiki-pageName {
 	white-space:nowrap; overflow:hidden;
 	font-size:18px;
 	font-weight:bold;
 	vertical-align:bottom;
 }
 
-#ZimbraWikiPage ._author {
+#ZimbraWikiPage .zmwiki-author {
 	white-space:nowrap; overflow:hidden;
 	padding-left:10px;
 	padding-right:5px;
@@ -76,7 +76,7 @@
 	color:#666666;
 }
 
-#ZimbraWikiPage ._history {
+#ZimbraWikiPage .zmwiki-history {
 	text-align:right;
 	white-space:nowrap; overflow:hidden;
 	padding-right:5px;
@@ -86,34 +86,37 @@
 
 
 /* Use the following to make links have a small, gray appearance when not rolled over */
-#ZimbraWikiPage ._smallGrayLinks A,
-#ZimbraWikiPage ._smallGrayLinks span.Object {
+#ZimbraWikiPage .zmwiki-smallGrayLinks A,
+#ZimbraWikiPage .zmwiki-smallGrayLinks span.Object {
 	font-size:9px;
 	color:#999999;
 }
-#ZimbraWikiPage ._smallGrayLinks span.Object-activated {
+#ZimbraWikiPage .zmwiki-smallGrayLinks span.Object-activated {
 	font-size:9px;
 	color:#666666;
 }
 
-#ZimbraWikiPage ._copyright {
+#ZimbraWikiPage .zmwiki-copyright {
 	white-space:nowrap; overflow:hidden;
 	font-size:9px;
 	color:#999999;
 }
 
 
-#ZimbraWikiPage ._tags {
+#ZimbraWikiPage .zmwiki-tags {
 	text-align:right;
 	font-size:9px;
 }
 
 
-#ZimbraWikiPage ._breadcrumbs {
+#ZimbraWikiPage .zmwiki-breadcrumbs {
 	font-size:9px;		
 }
 
-#ZimbraWikiPage ._breadCrumbSeparator {
+#ZimbraWikiPage .zmwiki-breadcrumbsSimple {
+}
+
+#ZimbraWikiPage .zmwiki-breadCrumbSeparator {
 	padding-left:3px;
 	padding-right:3px;
 	font-size:9px;	
@@ -122,33 +125,38 @@
 
 
 /* container for the entire TOC */
-#ZimbraWikiPage ._toc {
+#ZimbraWikiPage .zmwiki-toc {
 	margin:10px;	
 	border:1px solid #cccccc;
 }
 
-#ZimbraWikiPage ._tocTable {
+#ZimbraWikiPage .zmwiki-tocTable {
 	width:100%
 	padding:5px;	
 }
 
-#ZimbraWikiPage ._tocHeader {
+#ZimbraWikiPage .zmwiki-tocIconTable {
+	width:100%
+	padding:5px;	
+}
+
+#ZimbraWikiPage .zmwiki-tocHeader {
 	background-color:#eeeeee;
 	font-size:13px;
 	font-weight:bold;
 }
 
-#ZimbraWikiPage ._tocLineSeparator {
+#ZimbraWikiPage .zmwiki-tocLineSeparator {
 	border-top:1px dotted #cccccc;
 }
 
 
-#ZimbraWikiPage ._tocPageInfo {
+#ZimbraWikiPage .zmwiki-tocPageInfo {
 	font-size:9px;
 	color:#999999;
 }
 
-#ZimbraWikiPage ._tocFragment{
+#ZimbraWikiPage .zmwiki-tocFragment{
 	font-size:9px;
 	color:#999999;
 }
@@ -156,25 +164,26 @@
 
 
 
-#ZimbraWikiPage ._pageLink {
+#ZimbraWikiPage .zmwiki-pageLink {
 	font-size:9px;	
 	cursor:pointer;
 }
 
-#ZimbraWikiPage ._tag {
+#ZimbraWikiPage .zmwiki-tag {
 	font-size:9px;
 	color:darkblue;
 	padding-right:10px;
 }
 
-#ZimbraWikiPage ._pageIcon {
+
+#ZimbraWikiPage .zmwiki-pageIcon {
 	width:16;
 	padding-left:3px;
 	Xpadding-right:3px;
 	cursor:pointer;
 }
 
-#ZimbraWikiPage ._attachments {
+#ZimbraWikiPage .zmwiki-attachments {
 	white-space:nowrap; overflow:hidden;
 	font-size:11px;
 	cursor:pointer;
