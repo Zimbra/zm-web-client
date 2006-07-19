@@ -906,7 +906,7 @@ function() {
 		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var contactsLoader = contactsClass.getContactList;
 		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader,
-					  matchValue: ZmContactList.AC_VALUE_NAME, compCallback: acCallback};
+					  matchValue: ZmContactList.AC_VALUE_FULL, compCallback: acCallback};
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acContactsList.handle(this._attInputField[ZmAppt.PERSON].getInputElement());
 	}
