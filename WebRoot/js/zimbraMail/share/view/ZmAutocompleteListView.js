@@ -309,7 +309,8 @@ function(info) {
 		var chunk = this._nextChunk(info.text, info.start);
 		this._autocomplete(chunk, callback);
 	} else if (info.text != this._element.value) {
-		this._updateField(info.text);
+		DBG.println(AjxDebug.DBG2, "autocomplete, new text: " + info.text + "; element: " + this._element.value);
+		this._updateField(info.text, info.match);
 	}
 };
 
@@ -497,16 +498,18 @@ function(str, chunk, text, start, callback, list) {
 		this._set(); // populate the list view
 
 		// if the current segment ends in a delimiter, complete immediately without showing the list
+		var match;
 		if (chunk.delim) {
 			DBG.println(AjxDebug.DBG2, "performing quick completion");
 			var result = this._complete(text, true);
 			text = result.text;
 			start = result.start;
+			match = result.match;
 		}
 		// show the list (unless we're doing completion)
 		this.show(!chunk.delim, this._loc);
 	
-		results = {text: text, start: start};
+		results = {text: text, start: start, match: match};
 	}
 	
 	if (callback) {
