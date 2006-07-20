@@ -1347,6 +1347,9 @@ function() {
 
 	if (this.repeatWeeklyDays == null)
 		this.resetRepeatWeeklyDays();
+
+	if (this.repeatMonthlyDayList == null)
+		this.resetRepeatMonthlyDayList();
 };
 
 ZmAppt.prototype._frequencyToDisplayString = 
