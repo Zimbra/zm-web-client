@@ -332,10 +332,7 @@ function(params, noRender, callback, errorCallback) {
 
 	// XXX: hack -- we have to hack the query string in order for this search to work
 	if (this._searchFor == ZmSearchToolBar.FOR_PAS_MI) {
-		this._origQuery = params.query;
-		var addrbookList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getAddrbookList();
-		if (addrbookList.length)
-			params.query += " (" + addrbookList.join(" or ") + ")";
+		params.query += " (is:remote OR is:local)";
 	}
 
 	// only set contact source if we are searching for contacts
@@ -364,10 +361,6 @@ function(params, noRender, callback, errorCallback) {
 ZmSearchController.prototype._handleResponseDoSearch =
 function(search, noRender, isMixed, callback, result) {
 	var results = result.getResponse();
-
-	// revert the query to original before we hacked it :(
-	if (this._searchFor == ZmSearchToolBar.FOR_PAS_MI)
-		search.query = this._origQuery;
 
 	this._appCtxt.setCurrentSearch(search);
 	DBG.timePt("execute search", true);
