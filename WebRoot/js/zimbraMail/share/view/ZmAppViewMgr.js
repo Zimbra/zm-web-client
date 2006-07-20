@@ -463,6 +463,11 @@ function(show) {
 	this._pendingAction = this._pendingView = null;
 }
 
+ZmAppViewMgr.prototype.fitAll =
+function() {
+	this._fitToContainer(ZmAppViewMgr.ALL_COMPONENTS);
+};
+
 /**
 * Returns the currently pending view waiting to get pushed
 */
@@ -684,12 +689,13 @@ function(ev) {
 			if (appContent)
 				appContent.setSize(ev.newWidth, ev.newHeight - topToolbar.getH());
 		} else {
-			if (deltaHeight) {
+			if (deltaHeight && deltaWidth) {
+				this.fitAll();
+			} else if (deltaHeight) {
 				var list = [ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
 							ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_STATUS];
 				this._fitToContainer(list);
-			}
-			if (deltaWidth) {
+			} else if (deltaWidth) {
 				var list = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_USER_INFO,
 							ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
 							ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_TOOLBAR_BOTTOM];
