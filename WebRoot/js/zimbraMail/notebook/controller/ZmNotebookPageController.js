@@ -27,7 +27,6 @@ function ZmNotebookPageController(appCtxt, container, app) {
 	ZmNotebookController.call(this, appCtxt, container, app);
 
 	this._listeners[ZmOperation.PAGE_BACK] = new AjxListener(this, this._pageBackListener);
-	this._listeners[ZmOperation.PAGE_DBL_BACK] = new AjxListener(this, this._homeListener);
 	this._listeners[ZmOperation.PAGE_FORWARD] = new AjxListener(this, this._pageForwardListener);
 
 	this._history = [];
@@ -167,7 +166,7 @@ ZmNotebookPageController.prototype._getNaviToolBarOps = function() {
 	var list = ZmNotebookController.prototype._getNaviToolBarOps.call(this);
 	list = list.concat(
 		ZmOperation.SEP,
-		ZmOperation.PAGE_BACK, ZmOperation.PAGE_DBL_BACK, ZmOperation.PAGE_FORWARD,
+		ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD,
 		ZmOperation.CLOSE
 	);
 	return list;
@@ -180,11 +179,6 @@ ZmNotebookPageController.prototype._initializeToolBar = function(view) {
 	button.setVisible(this._fromSearch);
 
 	var button = toolbar.getButton(ZmOperation.PAGE_BACK);
-	button.setToolTipContent("");
-
-	var button = toolbar.getButton(ZmOperation.PAGE_DBL_BACK);
-	button.setImage("UpArrow");
-	button.setDisabledImage("UpArrowDis");
 	button.setToolTipContent("");
 
 	var button = toolbar.getButton(ZmOperation.PAGE_FORWARD);
@@ -208,10 +202,6 @@ ZmNotebookPageController.prototype._enableNaviButtons = function() {
 	button.setEnabled(enabled && this._place > 0);
 	ZmNotebookPageController.__setButtonToolTip(this._appCtxt, button, this._history[this._place - 1]);
 
-	var button = toolbar.getButton(ZmOperation.PAGE_DBL_BACK);
-	button.setEnabled(enabled && this._place > 0);
-	ZmNotebookPageController.__setButtonToolTip(this._appCtxt, button, this._history[0]);
-
 	var button = toolbar.getButton(ZmOperation.PAGE_FORWARD);
 	button.setEnabled(enabled && this._place + 1 < this._history.length);
 	ZmNotebookPageController.__setButtonToolTip(this._appCtxt, button, this._history[this._place + 1]);
@@ -222,11 +212,6 @@ ZmNotebookPageController.prototype._enableNaviButtons = function() {
 ZmNotebookPageController.prototype._pageBackListener = function(event) {
 	if (this._place > 0) {
 		this.gotoPage(this._history[--this._place]);
-	}
-};
-ZmNotebookPageController.prototype._homeListener = function(event) {
-	if (this._place > 0) {
-		this.gotoPage(this._history[this._place = 0]);
 	}
 };
 ZmNotebookPageController.prototype._pageForwardListener = function(event) {
