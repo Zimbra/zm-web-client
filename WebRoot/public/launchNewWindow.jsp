@@ -1,4 +1,4 @@
-<%
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 
@@ -42,7 +42,7 @@
 
     String skin = request.getParameter("skin");
     if (skin == null) {
-        skin = "steel";
+        skin = "sand";
     }
 
 	String mode = (String) request.getAttribute("mode");
@@ -54,7 +54,7 @@
 	String ext = (String) request.getAttribute("fileExtension");
 	if (ext == null) ext = "";
 %>
-<title>Zimbra</title>
+<title><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
 <script type="text/javascript" language="javascript">
 	appContextPath = "<%= contextPath %>";
 	appCurrentSkin = "<%=skin %>";
@@ -89,15 +89,15 @@
 	<% } %>
 <% } %>
 
-<script type="text/javascript" language="JavaScript">
-    var cacheKillerVersion = "<%= vers %>";
-	function launch() {
-		DBG = new AjxDebug(AjxDebug.NONE, null, false);
-		ZmNewWindow.run(document.domain);
-	}
-	AjxCore.addOnloadListener(launch);
-	AjxCore.addOnunloadListener(ZmNewWindow.unload);
-</script>
+	<script type="text/javascript" language="JavaScript">
+		var cacheKillerVersion = "<%= vers %>";
+		function launch() {
+			DBG = new AjxDebug(AjxDebug.NONE, null, false);
+			ZmNewWindow.run(document.domain);
+		}
+		AjxCore.addOnloadListener(launch);
+		AjxCore.addOnunloadListener(ZmNewWindow.unload);
+	</script>
 </head>
-<body></body>
+<body/>
 </html>

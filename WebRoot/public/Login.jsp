@@ -1,4 +1,5 @@
-<%@ page language="java" import="javax.naming.*"%><%
+<%@ page language="java" import="javax.naming.*"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%
 	String portsCSV = application.getInitParameter("admin.allowed.ports");
 	if (portsCSV != null) {
 		// Split on zero-or-more spaces followed by comma followed by zero-or-more spaces.
@@ -150,8 +151,7 @@
 -->
 <link rel="ICON" type="image/gif" href="<%= contextPath %>/img/loRes/logo/favicon.gif">
 <link rel="SHORTCUT ICON" href="<%= contextPath %>/img/loRes/logo/favicon.ico">
-
-<title>Zimbra Login</title>
+<title><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
 
 <style type="text/css">
 	@import url(<%= contextPath %>/css/common,login,skin.css?v=<%= vers %>&skin=<%= skin %><%= inDevMode ? "&debug=1" : "" %>);

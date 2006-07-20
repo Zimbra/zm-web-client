@@ -1,27 +1,4 @@
-<!-- 
-***** BEGIN LICENSE BLOCK *****
-Version: ZPL 1.2
-
-The contents of this file are subject to the Zimbra Public License
-Version 1.2 ("License"); you may not use this file except in
-compliance with the License. You may obtain a copy of the License at
-http://www.zimbra.com/license
-
-Software distributed under the License is distributed on an "AS IS"
-basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
-the License for the specific language governing rights and limitations
-under the License.
-
-The Original Code is: Zimbra Collaboration Suite Web Client
-
-The Initial Developer of the Original Code is Zimbra, Inc.
-Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
-All Rights Reserved.
-
-Contributor(s):
-
-***** END LICENSE BLOCK *****
--->
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%
    	Cookie[] cookies = request.getCookies();
@@ -93,11 +70,34 @@ Contributor(s):
     if(contextPath == null || contextPath.equals("/")) {
 		response.sendRedirect("/zimbraAdmin?mode="+mode+"&version="+vers+"&fileExtension="+ext);    	
     }
-%>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+%><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-  <head>
-    <title>Zimbra Admin</title>
+<head>
+<!--
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.2
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.2 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ *
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
+ * All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK *****
+-->
+    <title><fmt:setBundle basename="/msgs/ZaMsg"/><fmt:message key="zimbraAdminTitle"/></title>
     <link rel="ICON" type="image/gif" href="/zimbra/img/loRes/logo/favicon.gif"/>
     <link rel="SHORTCUT ICON" href="/zimbra/img/loRes/logo/favicon.ico"/>
     

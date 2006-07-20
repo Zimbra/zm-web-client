@@ -290,9 +290,9 @@ function(uname, pword, result) {
                 }
             }
         } else {
-            // Default to steel
-            skin = 'steel';
-            DBG.println(AjxDebug.DBG1, "default skin to: steel");
+            // Default to sand
+            skin = 'sand';
+            DBG.println(AjxDebug.DBG1, "default skin to: sand");
         }
     }
 

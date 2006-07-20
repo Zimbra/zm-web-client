@@ -1,4 +1,4 @@
-<%
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 
@@ -47,10 +47,10 @@
 	Cookie[] cookies = request.getCookies();
 	if (authToken == null) {
 		if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(AUTH_TOKEN_COOKIE_NAME))
-                    authToken = cookie.getValue();
-            }
+			for (Cookie cookie : cookies) {
+				if (cookie.getName().equals(AUTH_TOKEN_COOKIE_NAME))
+					authToken = cookie.getValue();
+			}
 		}
 
 		if (authToken == null) {
@@ -70,14 +70,12 @@
 	if (requestSkin != null) {
 		skin = requestSkin;
 	} else if (cookies != null) {
-        for (Cookie cookie : cookies) {
-            if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
-                skin = cookie.getValue();
-            }
-        }
-    }
-	String skinPreCacheFile = "../skins/" + skin + "/CacheLoRes.html";
-
+		for (Cookie cookie : cookies) {
+			if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
+				skin = cookie.getValue();
+			}
+		}
+	}
 	String mode = (String) request.getAttribute("mode");
 	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
 
@@ -90,15 +88,13 @@
 <link rel="SHORTCUT ICON" href="<%=contextPath %>/img/loRes/logo/favicon.ico">
 <link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
 <link rel="alternate" type="application/rss+xml"  title="RSS Feed for Mail" href="/service/user/~/inbox.rss">
-
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-
-<title>Zimbra</title>
+<title><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
 
 <script type="text/javascript" language="JavaScript">
 	var zJSloading = (new Date()).getTime();
 	appContextPath = "<%=contextPath %>";
-    appCurrentSkin = "<%=skin %>";
+	appCurrentSkin = "<%=skin %>";
 </script>
 
 <script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext %>?v=<%=vers %>"></script>
@@ -123,7 +119,7 @@
 	zJSloading = (new Date()).getTime() - zJSloading;
 </script>
 
-<script  type="text/javascript" language="JavaScript">
+<script type="text/javascript" language="JavaScript">
 	var cacheKillerVersion = "<%=vers%>";
 	function launch() {
 		// quit if this function has already been called
@@ -181,21 +177,20 @@
 <!--[if IE]><script defer src="javascript:'launch()'"></script><![endif]-->
 </head>
 <body>
-	<jsp:include page="/public/pre-cache.jsp" />
-    <%
-		// NOTE: This inserts raw HTML files from the user's skin
-		//       into the JSP output. It's done *this* way so that
-		//       the SkinResources servlet sees the request URI as
-		//       "/html/skin.html" and not as "/public/launch...".
-		out.flush();
-
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/html/");
-		HttpServletRequest wrappedReq = new HttpServletRequestWrapper(request) {
-			public String getRequestURI() {
-				return "/html/skin.html";
-			}
-		};
-		dispatcher.include(wrappedReq, response);
-	%>
+<jsp:include page="/public/pre-cache.jsp"/>
+<%
+	// NOTE: This inserts raw HTML files from the user's skin
+	//       into the JSP output. It's done *this* way so that
+	//       the SkinResources servlet sees the request URI as
+	//       "/html/skin.html" and not as "/public/launch...".
+	out.flush();
+	RequestDispatcher dispatcher = request.getRequestDispatcher("/html/");
+	HttpServletRequest wrappedReq = new HttpServletRequestWrapper(request) {
+		public String getRequestURI() {
+			return "/html/skin.html";
+		}
+	};
+	dispatcher.include(wrappedReq, response);
+%>
 </body>
 </html>
