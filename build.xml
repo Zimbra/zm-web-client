@@ -45,8 +45,8 @@
   <property name="ajax.src.dir" value="${ajax.dir}/src"/>
   <property name="ajax.jars.dir" value="${ajax.dir}/jars"/>
   <property name="ajax.dwtimg.dir" value="${ajax.dir}/img"/>
-  <property name='ajax.imagemerge.dir' location='${ajax.src.dir}/org/apache/kabuki/tools/img'/>
-  <property name='ajax.i18n.dir' location='${ajax.src.dir}/org/apache/kabuki/tools/i18n'/>
+  <property name='ajax.imagemerge.dir' location='${ajax.src.dir}/com/zimbra/kabuki/tools/img'/>
+  <property name='ajax.i18n.dir' location='${ajax.src.dir}/com/zimbra/kabuki/tools/i18n'/>
   
   <condition property="deploy.dir" value="${env.DEPLOY_DIR}">
     <isset property="env.DEPLOY_DIR" />
@@ -659,7 +659,7 @@
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar"/>
-      <classes dir="${build.dir}/classes" includes="**/*.class" excludes="org/apache/kabuki/tools/**,**/build/*"/>
+      <classes dir="${build.dir}/classes" includes="**/*.class" excludes="com/zimbra/kabuki/tools/**,**/build/*"/>
       <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
@@ -779,7 +779,7 @@
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
-      <classes dir="${build.dir}/classes" includes="**/*.class" excludes="org/apache/kabuki/tools/**,**/build/*"/>
+      <classes dir="${build.dir}/classes" includes="**/*.class" excludes="com/zimbra/kabuki/tools/**,**/build/*"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
       <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheLoRes.html,public/pre-cache.jsp,public/blank.html"/>
