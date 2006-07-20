@@ -556,6 +556,8 @@ ZmSpreadSheetClipboard.prototype.paste = function(row, col, dest, dr, dc) {
 		var e = src._expr;
 		var formulae = e.shift(this.delta.rows + dr,
 				       this.delta.cols + dc);
+		dest._type = src._type;
+		dest._decimals = src._decimals;
 		dest.setEditValue("=" + formulae);
 	} else {
 		dest._type = src._type;
