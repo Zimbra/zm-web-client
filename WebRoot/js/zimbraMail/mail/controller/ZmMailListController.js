@@ -574,12 +574,12 @@ function(type, componentId, instanceDate) {
 		var dummyAppt = new ZmAppt(this._appCtxt);
 		dummyAppt.setFromMessage(msg._origMsg);
 
-		var tcontent = replyBody + dummyAppt.getTextSummary();
+		var tcontent = dummyAppt.getTextSummary() + "\n" + replyBody;
 		var textPart = new ZmMimePart();
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		textPart.setContent(tcontent);
 
-		var hcontent = replyBody + dummyAppt.getHtmlSummary();
+		var hcontent = dummyAppt.getHtmlSummary() + "<p>" + replyBody + "</p>";
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
 		htmlPart.setContent(hcontent);
