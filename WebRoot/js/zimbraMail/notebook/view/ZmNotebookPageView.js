@@ -69,16 +69,7 @@ function(page) {
 			return;
 		}
 
-		var cache = this._controller._app.getNotebookCache();
-		var chrome = cache.getPageByName(page.folderId, ZmNotebook.PAGE_CHROME, true);
-		var chromeContent = chrome.getContent();
-
-		var content = chromeContent;
-		if (page.name != ZmNotebook.PAGE_CHROME) {
-			var pageContent = page.getContent();
-			content = chromeContent.replace(ZmWiklet.RE_CONTENT, pageContent);
-		}
-		content = ZmWikletProcessor.process(this._appCtxt, page, content);
+		var content = ZmNotebookPageView._generateContent(page, this._appCtxt);
 
 		//DBG.showTiming(true);
 		//DBG.timePt("-- ZmNotebookPageView#set --")
@@ -90,38 +81,24 @@ function(page) {
 		//DBG.timePt("set innerHTML");
 		//DBG.showTiming(false);
 
-		var links = element.getElementsByTagName("A");
-		for (var i = 0; i < links.length; i++) {
-			var link = links[i];
-			if (!link.href) continue;
-
-			if (!link.target) {
-				link.target = "_new";
-			}
-		}
-
-		this._findObjects(element);
+		ZmNotebookPageView._fixLinks(element);
+		ZmNotebookPageView._findObjects(this._getObjectMgr(), element);
 	}
 };
 
 ZmNotebookPageView.getPrintHtml =
-function(item, callback) {
-	var url = item.getRestUrl();
-	try {
-		AjxRpc.invoke(null, url, null, new AjxCallback(this, this._handleResponseGetPrintHtml, [callback, url]), true);
-	} catch (e) {
-		var message = e.dump ? e.dump() : e.toString();
-		DBG.println("Unable to open URL for page. URL: " + url + " Exception: " + message);
+function(page, appCtxt) {
+	if (!ZmNotebookPageView._objectMgr) {
+		ZmNotebookPageView._objectMgr = new ZmObjectManager(null, appCtxt, null, true);
+		var handler = new ZmNotebookObjectHandler(this._appCtxt);
+		ZmNotebookPageView._objectMgr.addHandler(handler, ZmNotebookObjectHandler.TYPE, 1);
+		ZmNotebookPageView._objectMgr.sortHandlers();
 	}
-};
-
-ZmNotebookPageView._handleResponseGetPrintHtml =
-function(callback, url, response) {
-	// If an error occurs, log it, and then proceed to show the 404 message or whatever came back.
-	if (!response.success) {
-		DBG.println(AjxDebug.DBG1, "Request for print html failed. URL: " + url);
-	}
-	callback.run(response.text);	
+	var html = ZmNotebookPageView._generateContent(page, appCtxt);
+	var node = Dwt.parseHtmlFragment("<div>" + html + "</div>");
+	ZmNotebookPageView._fixLinks(node);
+	ZmNotebookPageView._findObjects(ZmNotebookPageView._objectMgr, node);
+	return node.innerHTML;
 };
 
 ZmNotebookPageView.prototype.getTitle =
@@ -167,6 +144,45 @@ function(x, y, width, height) {
 
 // Protected methods
 
+ZmNotebookPageView._fixLinks =
+function(element) {
+	var links = element.getElementsByTagName("A");
+	for (var i = 0; i < links.length; i++) {
+		var link = links[i];
+		if (!link.href) continue;
+
+		if (!link.target) {
+			link.target = "_new";
+		}
+	}
+};
+
+ZmNotebookPageView._generateContent =
+function(page, appCtxt) {
+	if (!page) {
+		return "";
+	}
+
+	var cache = appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP).getNotebookCache();
+	var chrome = cache.getPageByName(page.folderId, ZmNotebook.PAGE_CHROME, true);
+	var chromeContent = chrome.getContent();
+
+	var content = chromeContent;
+	if (page.name != ZmNotebook.PAGE_CHROME) {
+		var pageContent = page.getContent();
+		content = chromeContent.replace(ZmWiklet.RE_CONTENT, pageContent);
+	}
+	return ZmWikletProcessor.process(appCtxt, page, content);
+};
+
+ZmNotebookPageView._findObjects =
+function(objectMgr, element) {
+	objectMgr.reset();
+	var discard = [];
+	var ignore = "nolink";
+	objectMgr.processHtmlNode(element, true, discard, ignore);
+};
+
 ZmNotebookPageView.prototype._createHtml = function() {
 	var element = this.getHtmlElement();
 	Dwt.setScrollStyle(element, Dwt.SCROLL);
@@ -184,18 +200,15 @@ ZmNotebookPageView.prototype._createHtml = function() {
 	}
 };
 
-ZmNotebookPageView.prototype._findObjects = function(element) {
+ZmNotebookPageView.prototype._getObjectMgr =
+function() {
 	if (!this._objectMgr) {
 		this._objectMgr = new ZmObjectManager(this, this._appCtxt);
 		var handler = new ZmNotebookObjectHandler(this._appCtxt);
 		this._objectMgr.addHandler(handler, ZmNotebookObjectHandler.TYPE, 1);
 		this._objectMgr.sortHandlers();
 	}
-	this._objectMgr.reset();
-
-	var discard = [];
-	var ignore = "nolink";
-	this._objectMgr.processHtmlNode(element, true, discard, ignore);
+	return this._objectMgr;
 };
 
 ZmNotebookPageView._iframeOnLoad = function(iframe) {
@@ -206,5 +219,5 @@ ZmNotebookPageView._iframeOnLoad = function(iframe) {
 	// highlight objects
 	var doc = Dwt.Dwt.getIframeDoc(iframe);
 	var element = doc.body;
-	view._findObjects(element);
+	ZmNotebookPageView._findObjects(this._getObjectMgr(), element);
 };

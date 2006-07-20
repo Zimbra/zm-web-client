@@ -34,8 +34,9 @@
 * @param selectCallback AjxCallback triggered when user clicks on hilited object 
 * 						(provide if you want to do something before the clicked 
 * 						on object opens its corresponding view)
+* @param skipHandlers 	true to avoid adding the standard handlers
 */
-function ZmObjectManager(view, appCtxt, selectCallback) {
+function ZmObjectManager(view, appCtxt, selectCallback, skipHandlers) {
 
 	if (arguments.length < 1) {return;}
 	DBG.println(AjxDebug.DBG2, "ZmObjectManager created by: " + view);
@@ -49,13 +50,15 @@ function ZmObjectManager(view, appCtxt, selectCallback) {
 	this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler(appCtxt);
 
 	// create handlers (see registerHandler below)
-	this._createHandlers();
+	if (!skipHandlers) {
+		this._createHandlers();
 	
-	// get Zimlet handler's
-	if (this._appCtxt != null) {
-		var zimlets = this._appCtxt._settings._zmm.getContentZimlets();
-		for (var i = 0; i < zimlets.length; i++) {
-			this.addHandler(zimlets[i], zimlets[i].type, zimlets[i].prio);
+		// get Zimlet handler's
+		if (this._appCtxt != null) {
+			var zimlets = this._appCtxt._settings._zmm.getContentZimlets();
+			for (var i = 0; i < zimlets.length; i++) {
+				this.addHandler(zimlets[i], zimlets[i].type, zimlets[i].prio);
+			}
 		}
 	}
 

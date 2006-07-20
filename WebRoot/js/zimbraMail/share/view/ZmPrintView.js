@@ -53,9 +53,7 @@ function(item) {
 	} else if (item instanceof ZmCalViewMgr) {
 		this._html = ZmCalViewMgr.getPrintHtml(item);
 	} else if (item instanceof ZmPage) {
-		var respCallback = new AjxCallback(this, this._handleResponsePageRender);
-		ZmNotebookPageView.getPrintHtml(item, respCallback);
-		return;
+		this._html = ZmNotebookPageView.getPrintHtml(item, this._appCtxt);
 	}
 
 	this._printWindow = this._getNewWindow();
@@ -70,12 +68,6 @@ function(type, list) {
 		this._html = ZmContactCardsView.getPrintHtml(list);
 	}
 
-	this._printWindow = this._getNewWindow();
-};
-
-ZmPrintView.prototype._handleResponsePageRender =
-function(html) {
-	this._html = html;
 	this._printWindow = this._getNewWindow();
 };
 
@@ -119,12 +111,7 @@ function(onloadStr) {
 	html[idx++] = "</title>";
 	html[idx++] = "<link rel='stylesheet' href='";
 	html[idx++] = appContextPath;
-	html[idx++] = "/css/msgview.css?v=";
-	html[idx++] = cacheKillerVersion;
-	html[idx++] = "' media='screen'></link>";
-	html[idx++] = "<link rel='stylesheet' href='";
-	html[idx++] = appContextPath;
-	html[idx++] = "/css/zm.css?v=";
+	html[idx++] = "/css/msgview,zm,wiki.css?v=";
 	html[idx++] = cacheKillerVersion;
 	html[idx++] = "' media='screen'></link>";
 	if (onloadStr) {
