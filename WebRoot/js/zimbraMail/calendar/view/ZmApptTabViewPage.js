@@ -61,6 +61,7 @@ function ZmApptTabViewPage(parent, appCtxt, attendees, dateInfo) {
 	}
 	
 	parent.addChangeListener(new AjxListener(this, this._attendeesChangeListener));
+	this._kbMgr = this._appCtxt.getShell().getKeyboardMgr();
 };
 
 ZmApptTabViewPage.prototype = new DwtTabViewPage;
@@ -454,6 +455,18 @@ function() {
 
 // Private / protected methods
 
+ZmApptTabViewPage.prototype._addTabGroupMembers =
+function(tabGroup) {
+	tabGroup.addMember(this._subjectField);
+	tabGroup.addMember(this._attInputField[ZmAppt.LOCATION]);
+	tabGroup.addMember(this._attInputField[ZmAppt.PERSON]);
+	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		tabGroup.addMember(this._attInputField[ZmAppt.EQUIPMENT]);
+	}
+	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
+	tabGroup.addMember(document.getElementById(bodyFieldId));
+};
+
 ZmApptTabViewPage.prototype._reset =
 function(appt, mode) {
 	// reset the date/time values based on current time
@@ -482,7 +495,7 @@ function(appt, mode) {
 	this._enableRepeat(mode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
 
 	// set focus to first input element
-	this._subjectField.focus();
+	this._kbMgr.grabFocus(this._subjectField);
 
 	// save the original form data in its initialized state
 	this._origFormValue = this._formValue(false);
@@ -1362,7 +1375,7 @@ function(type, name) {
 
 ZmApptTabViewPage.prototype._badAttendeeCallback =
 function(type) {
-	this._attInputField[type].focus();
+	this._kbMgr.grabFocus(this._attInputField[type]);
 	this.parent._msgDialog.popdown();
 };
 

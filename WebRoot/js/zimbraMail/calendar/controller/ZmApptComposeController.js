@@ -141,6 +141,7 @@ function(initHide) {
 		this._apptView = new ZmApptComposeView(this._container, null, this._app, this);
 		var callbacks = {};
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
+		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		var elements = {};
 		if (!this._toolbar)
 			this._createToolBar();
@@ -150,7 +151,23 @@ function(initHide) {
 	    if (initHide) {
 	    	this._apptView.preload();
 	    }
+	    this._setApptComposeTabGroup();
 	}
+};
+
+ZmApptComposeController.prototype._setApptComposeTabGroup =
+function() {
+
+	this._saveFocus();
+
+	var tg = this._createTabGroup();
+	var rootTg = this._appCtxt.getRootTabGroup();
+	tg.newParent(rootTg);
+	tg.addMember(this._toolbar);
+	var tabView = this._apptView.getTabView(this._apptView.getCurrentTab());
+	tabView._addTabGroupMembers(tg);
+
+	this._restoreFocus();
 };
 
 ZmApptComposeController.prototype.getKeyMapName =

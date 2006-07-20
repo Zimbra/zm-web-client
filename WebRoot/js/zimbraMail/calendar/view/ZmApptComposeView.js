@@ -259,6 +259,7 @@ function(tabKey) {
 		this._tabPages[this._curTabId].tabBlur();
 	}
 	this._curTabId = this._tabIdByKey[tabKey];
+	this._controller._setApptComposeTabGroup();
 };
 
 ZmApptComposeView.prototype.getAppt = 

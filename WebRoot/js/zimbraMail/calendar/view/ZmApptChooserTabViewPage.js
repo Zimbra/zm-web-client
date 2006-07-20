@@ -50,6 +50,7 @@ function ZmApptChooserTabViewPage(parent, appCtxt, attendees, type) {
 	this._searchFields = {};
 	this._searchFieldIds = {};
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
+	this._kbMgr = this._appCtxt.getShell().getKeyboardMgr();
 };
 
 // List view columns
@@ -195,6 +196,9 @@ function() {
 
 	this.parent.tabSwitched(this._tabKey);
 	this._setAttendees();
+	
+	var sf = ZmApptChooserTabViewPage.SEARCH_FIELDS[this.type][0];
+	this._kbMgr.grabFocus(this._searchFields[sf]);
 };
 
 ZmApptChooserTabViewPage.prototype.tabBlur =
@@ -432,6 +436,16 @@ function() {
 	if (this._multLocsCheckboxId) {
 		var cb = document.getElementById(this._multLocsCheckboxId);
 		Dwt.setHandler(cb, DwtEvent.ONCLICK, ZmApptChooserTabViewPage._multLocsCheckboxHdlr);
+	}
+};
+
+ZmApptChooserTabViewPage.prototype._addTabGroupMembers =
+function(tabGroup) {
+	var fields = ZmApptChooserTabViewPage.SEARCH_FIELDS[this.type];
+	for (var i = 0; i < fields.length; i++) {
+		if (fields[i] != ZmApptChooserTabViewPage.SF_SOURCE) {
+			tabGroup.addMember(this._searchFields[fields[i]]);
+		}
 	}
 };
 

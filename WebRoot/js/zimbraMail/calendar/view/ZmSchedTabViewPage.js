@@ -63,6 +63,7 @@ function ZmSchedTabViewPage(parent, appCtxt, attendees, controller, dateInfo) {
 	}
 
 	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
+	this._kbMgr = this._appCtxt.getShell().getKeyboardMgr();
 };
 
 ZmSchedTabViewPage.prototype = new DwtTabViewPage;
@@ -423,7 +424,9 @@ function() {
 // Add the attendee, then create a new empty slot since we've now filled one.
 ZmSchedTabViewPage.prototype._autocompleteCallback =
 function(text, el, match) {
-	this._handleAttendeeField(el, match.item);
+	if (match && match.item) {
+		this._handleAttendeeField(el, match.item);
+	}
 };
 
 // Enter listener. If the user types a return when no autocomplete list is showing,
@@ -434,6 +437,16 @@ function(ev, aclv, result) {
 	if ((key == 3 || key == 13) && !aclv.getVisible()) {
 		var el = DwtUiEvent.getTargetWithProp(ev, "id");
 		this._handleAttendeeField(el);
+	}
+};
+
+ZmSchedTabViewPage.prototype._addTabGroupMembers =
+function(tabGroup) {
+	for (var i = 0; i < this._schedTable.length; i++) {
+		var sched = this._schedTable[i];
+		if (sched && sched.inputObj) {
+			tabGroup.addMember(sched.inputObj);
+		}
 	}
 };
 
@@ -543,7 +556,6 @@ function(isAllAttendees, organizer, drawBorder, index) {
 		var attendeeInput = document.getElementById(sched.dwtInputId);
 		if (attendeeInput) {
 			this._activeInputIdx = null;
-			attendeeInput.focus();
 			this._activeInputIdx = index;
 			// handle focus moving to/from an enabled input
 			Dwt.setHandler(attendeeInput, DwtEvent.ONFOCUS, ZmSchedTabViewPage._onFocus);
@@ -555,12 +567,17 @@ function(isAllAttendees, organizer, drawBorder, index) {
 				this._acContactsList.handle(attendeeInput);
 			}
 		}
+		if (sched.inputObj) {
+//			sched.inputObj.focus();
+			this._kbMgr.grabFocus(sched.inputObj);
+		}
 	}
 
 	if (drawBorder) {
 		this._updateBorders(sched, isAllAttendees);
 	}
-
+	this._controller._setApptComposeTabGroup();
+	
 	return index;
 };
 
@@ -568,6 +585,7 @@ ZmSchedTabViewPage.prototype._removeAttendeeRow =
 function(index) {
 	this._attendeesTable.deleteRow(index);
 	this._schedTable.splice(index, 1);
+	this._controller._setApptComposeTabGroup();
 };
 
 ZmSchedTabViewPage.prototype._createDwtObjects = 
@@ -615,6 +633,8 @@ function() {
 	this._allAttendeesIndex = this._addAttendeeRow(true, null, false);
 	this._allAttendeesSlot = this._schedTable[this._allAttendeesIndex];
 	this._allAttendeesTable = document.getElementById(this._allAttendeesSlot.dwtTableId);
+
+	this._selectChangeListener = new AjxListener(this, this._selectChangeListener);
 };
 
 ZmSchedTabViewPage.prototype._addEventHandlers = 
@@ -627,12 +647,6 @@ function() {
 	Dwt.setHandler(this._startDateField, DwtEvent.ONBLUR, ZmSchedTabViewPage._onBlur);
 	Dwt.setHandler(this._endDateField, DwtEvent.ONBLUR, ZmSchedTabViewPage._onBlur);
 	this._startDateField._schedViewPageId = this._endDateField._schedViewPageId = this._svpId;
-
-	this._selectChangeListener = new AjxListener(this, this._selectChangeListener);
-	for (var i = 0; i < this._schedTable.length; i++) {
-		var sched = this._schedTable[i];
-		if (!sched || i == this._allAttendeesIndex || i == this._organizerIndex) continue;
-	}
 };
 
 ZmSchedTabViewPage.prototype._showTimeFields = 
