@@ -137,10 +137,28 @@ function(name, color) {
 	folderNode.setAttribute("color", color || ZmOrganizer.DEFAULT_COLOR);
 	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]);
 
+	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [name]);
 	var appController = this.tree._appCtxt.getAppController();
-	return appController.sendRequest({soapDoc:soapDoc, asyncMode:true});
+	return appController.sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
 };
 
+ZmNotebook.prototype._handleErrorCreate =
+function(name, ex) {
+	if (!name) return false;
+	
+	var msgDialog = this.tree._appCtxt.getMsgDialog();
+	var msg;
+	if (name && (ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS)) {
+		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [ZmMsg.notebook, name]);
+	}
+	if (msg) {
+		msgDialog.reset();
+		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+		msgDialog.popup();
+	}
+
+	return true;
+};
 
 // Static methods
 
