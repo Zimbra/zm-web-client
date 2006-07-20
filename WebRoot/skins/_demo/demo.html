@@ -52,6 +52,7 @@ skin.setTreeWidth = function(newWidth) {
 
 skin.showTopAd = function (state) {
 	skin._showEl("skin_tr_top_ad", state);
+	skin._reflowApp();
 }
 skin.hideTopAd = function () {
 	this.showTopAd(false);
@@ -68,12 +69,11 @@ skin.showSidebarAd = function () {
 						"<\/div>"+
 					"<\/div>";
 	skin._showEl("skin_td_sidebar_ad");
-	//
-	//  appViewManager.reflowComponents();
-	//
+	skin._reflowApp();
 }
 skin.hideSidebarAd = function () {
 	skin._hideEl("skin_td_sidebar_ad");
+	skin._reflowApp();
 }
 
 skin.getSidebarAdContainer = function() {
@@ -106,6 +106,9 @@ skin._showEl = function(id, state) {
 }
 skin._hideEl = function(id, state) {
 	skin._showEl(id, false);
+}
+skin._reflowApp = function () {
+	window._zimbraMail.getAppViewMgr().fitAll();
 }
 </script>
 
