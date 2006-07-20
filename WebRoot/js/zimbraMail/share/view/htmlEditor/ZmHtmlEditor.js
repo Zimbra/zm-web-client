@@ -711,12 +711,14 @@ function(parent) {
 ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {
 	var tblListener = new AjxListener(this, this._tableOperationsListener);
 	var tblCommands = [ "tableProperties...", "cellProperties...", null,
-			    "insertRow", "deleteRow", "insertColumn", "deleteColumn", null ];
+			    "insertRowAbove", "insertRowUnder", "deleteRow", null,
+			    "insertColumnBefore", "insertColumnAfter", "deleteColumn", null ];
 	if (AjxEnv.isGeckoBased)
 		tblCommands.push("mergeCells", "splitCells", null);
 	tblCommands.push("deleteTable");
 	var tblIcons = [ "TableProperties", "CellProperties", null,
-			 "InsertRowBefore", "DeleteRow", "InsertColBefore", "DeleteCol", null,
+			 "InsertRowBefore", "InsertRowAfter", "DeleteRow", null,
+			 "InsertColBefore", "InsertColAfter", "DeleteCol", null,
 			 "MergeCells", "SplitCells", null,
 			 "DeleteTable" ];
 	menu._tblItems = {};
