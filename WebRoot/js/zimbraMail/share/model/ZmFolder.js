@@ -146,6 +146,9 @@ function(parent, obj, tree) {
 
 	var name = ZmFolder.MSG_KEY[obj.id] ? ZmMsg[ZmFolder.MSG_KEY[obj.id]] : obj.name;
 	var folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n, obj.url, null, null, obj.rest);
+	if (ZmFolder.MSG_KEY[obj.id]) {
+		folder._systemName = obj.name;
+	}
 	folder._setSharesFromJs(obj);
 
 	// a folder may contain other folders or searches
@@ -381,19 +384,21 @@ function(pathOnly) {
 };
 
 ZmFolder.prototype.getName = 
-function(showUnread, maxLength, noMarkup) {
+function(showUnread, maxLength, noMarkup, useSystemName) {
+	var name = (useSystemName && this._systemName) ? this._systemName : this.name;
+	name = (maxLength && name.length > maxLength) ? name.substring(0, maxLength - 3) + "..." : name;
 	if (this.id == ZmOrganizer.ID_ROOT) {
 		return ZmMsg.folders;
 	} else if (this.id == ZmFolder.ID_DRAFTS) {
-		var name = this.name;
 		if (showUnread && this.numTotal > 0) {
 			name = [name, " (", this.numTotal, ")"].join("");
-			if (!noMarkup)
+			if (!noMarkup) {
 				name = ["<b>", name, "</b>"].join("");
+			}
 		}
 		return name;
 	} else {
-		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
+		return this._markupName(name, showUnread, noMarkup);
 	}
 };
 
@@ -500,26 +505,27 @@ function() {
 /**
 * Returns the folder with the given path
 *
-* @param path		the path to search for
+* @param path			[string]	the path to search for
+* @param useSystemName	[boolean]*	if true, use untranslated version of system folder names
 */
 ZmFolder.prototype.getByPath =
-function(path) {
-	return this._getByPath(path.toLowerCase());
+function(path, useSystemName) {
+	return this._getByPath(path.toLowerCase(), useSystemName);
 };
 
 // Test the path of this folder and then descendants against the given path, case insensitively
 ZmFolder.prototype._getByPath =
-function(path) {
+function(path, useSystemName) {
 	if (this.id == ZmFolder.ID_TAGS) return null;
 
-	if (path == this.getPath(false, false, null, true).toLowerCase())
+	if (path == this.getPath(false, false, null, true, useSystemName).toLowerCase())
 		return this;
 		
 	var organizer;
 	var a = this.children.getArray();
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++) {
-		if (organizer = a[i]._getByPath(path))
+		if (organizer = a[i]._getByPath(path, useSystemName))
 			return organizer;
 	}
 	return null;	

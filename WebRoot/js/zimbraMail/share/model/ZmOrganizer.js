@@ -294,18 +294,20 @@ function(showUnread, maxLength, noMarkup) {
 * @param showUnread		[boolean]*	whether to display the number of unread items (in parens)
 * @param maxLength		[int]*		length in chars to truncate the name to
 * @param noMarkup		[boolean]*	if true, don't return any HTML
+* @param useSystemName	[boolean]*	if true, use untranslated version of system folder names
 */
 ZmOrganizer.prototype.getPath = 
-function(includeRoot, showUnread, maxLength, noMarkup) {
+function(includeRoot, showUnread, maxLength, noMarkup, useSystemName) {
 	var parent = this.parent;
-	var path = this.getName(showUnread, maxLength, noMarkup);
+	var path = this.getName(showUnread, maxLength, noMarkup, useSystemName);
 	while (parent && ((parent.id != ZmOrganizer.ID_ROOT) || includeRoot)) {
-		path = parent.getName(showUnread, maxLength, noMarkup) + ZmFolder.SEP + path;
+		path = parent.getName(showUnread, maxLength, noMarkup, useSystemName) + ZmFolder.SEP + path;
 		parent = parent.parent;
 	}
-
+	
 	return path;
 };
+
 
 /** Returns the full path, suitable for use in search expressions. */
 ZmOrganizer.prototype.getSearchPath = function() {

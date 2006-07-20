@@ -55,8 +55,8 @@ function(rootFolderObj) {
 };
 
 ZmFolderTree.prototype.getByPath =
-function(path) {
-	return this.root ? this.root.getByPath(path) : null;
+function(path, useSystemName) {
+	return this.root ? this.root.getByPath(path, useSystemName) : null;
 };
 
 ZmFolderTree.prototype._sortFolder =
