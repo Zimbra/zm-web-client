@@ -62,7 +62,10 @@ ZmUploadDialog.prototype.popup = function(folder, callback, title, loc) {
 
 	// reset input fields
 	var table = document.getElementById(this._tableId);
-	table.innerHTML = "";
+	var rows = table.rows;
+	while (rows.length) {
+		table.deleteRow(rows.length - 1);
+	}
 	this._addFileInputRow();
 	
 	// enable buttons
@@ -89,7 +92,9 @@ ZmUploadDialog.prototype.popdown = function() {
 ZmUploadDialog.prototype._upload = function(){ 
 	var form = document.getElementById(this._formId);
 	var files = [];
-	for (var i in form.elements) {
+	
+	var elements = form.elements;
+	for (var i = 0; i < elements.length; i++) {
 		var element = form.elements[i];
 		if (element.name != ZmUploadDialog.UPLOAD_FIELD_NAME) continue;
 		if (!element.value) continue;
@@ -320,7 +325,7 @@ ZmUploadDialog.prototype._createUploadHtml = function() {
 	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	container.innerHTML = [
 		"<form id='",this._formId,"' method='POST' action='",uri,"' enctype='multipart/form-data'>",
-			"<table id='",this._tableId," cellspacing=4 cellpadding=0 border=0>",
+			"<table id='",this._tableId,"' cellspacing=4 cellpadding=0 border=0>",
 			"</table>",
 		"</form>"
 	].join("");
