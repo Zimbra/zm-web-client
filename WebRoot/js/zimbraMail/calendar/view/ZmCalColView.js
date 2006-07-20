@@ -2157,7 +2157,6 @@ function(ev) {
         	var scrollOffset = data.view._handleApptScrollRegion(mouseEv.docX, mouseEv.docY, ZmCalColView._HOUR_HEIGHT);
         	if (scrollOffset != 0) {
         		data.startY -= scrollOffset;	
-        		deltaY += scrollOffset;
         	}
 
         	var delta15 = Math.floor(delta/ZmCalColView._15_MINUTE_HEIGHT);
