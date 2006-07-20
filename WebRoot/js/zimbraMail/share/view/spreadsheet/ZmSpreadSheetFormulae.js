@@ -281,8 +281,17 @@ ZmSpreadSheetFormulae.DEF = function(name, n_args, callback, help) {
 	ZmSpreadSheetFormulae.DEF([ "average", "avg" ], -1, function() {
 		var cnt = arguments.length;
 		var sum = 0;
-		for (var i = cnt; --i >= 0;)
-			sum += arguments[i];
+		for (var i = cnt; --i >= 0;) {
+			var val = arguments[i];
+			if (!/\S/.test(val))
+				val = NaN;
+			if (!isNaN(val))
+				val = ZmSpreadSheetFormulae.parseFloat(val, NaN);
+			if (!isNaN(val))
+				sum += val;
+			else
+				--cnt;
+		}
 		return sum/cnt;
 	}, ZmMsg.SS.func.average);
 
