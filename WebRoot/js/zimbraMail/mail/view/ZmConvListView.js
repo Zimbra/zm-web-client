@@ -261,7 +261,6 @@ function(ev) {
 		}
 	}
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_DATE])) {
-debugger;
 		for (var i = 0; i < items.length; i++) {
 			var fieldId = this._getFieldId(items[i], ZmItem.F_DATE);
 			var dateField = document.getElementById(fieldId);
