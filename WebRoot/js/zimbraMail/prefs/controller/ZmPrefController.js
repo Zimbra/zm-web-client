@@ -127,11 +127,13 @@ function() {
 		this._initializeToolBar();
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
+		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
 		this._prefsView = new ZmPrefView(this._container, this._appCtxt, Dwt.ABSOLUTE_STYLE, this, this._passwordDialog);
 		var elements = new Object();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
 		this._app.createView(ZmController.PREF_VIEW, elements, callbacks, true, true);
+		this._initializeTabGroup();
 	}
 };
 
@@ -149,6 +151,14 @@ function () {
 			this._toolbar.addSelectionListener(buttons[i], this._listeners[buttons[i]]);
 	}
 	this._toolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
+};
+
+ZmPrefController.prototype._initializeTabGroup = 
+function () {
+	var tg = this._createTabGroup();
+	var rootTg = this._appCtxt.getRootTabGroup();
+	tg.newParent(rootTg);
+	tg.addMember(this._toolbar);
 };
 
 /*
