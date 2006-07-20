@@ -49,17 +49,49 @@ skin.setTreeWidth = function(newWidth) {
 	skin.setSize("skin_col_tree", newWidth, null);
 }
 
+
+skin.showTopAd = function (state) {
+	skin._showEl("skin_tr_top_ad", state);
+}
+skin.hideTopAd = function () {
+	this.showTopAd(false);
+}
+skin.getTopAdContainer = function () {
+	return skin.$("skin_container_top_ad");
+}
+
+skin.showSidebarAd = function () {
+	var el = skin.$("skin_td_sidebar_ad");
+	el.innerHTML = "<div style='position:relative;width:160px;height:100%;overflow:hidden;'>" +
+						"<div id='skin_container_sidebar_ad' style='position:absolute;'>"+
+							"<div class='ImgSidebarAd'><\/div>"+
+						"<\/div>"+
+					"<\/div>";
+	skin._showEl("skin_td_sidebar_ad");
+	//
+	//  appViewManager.reflowComponents();
+	//
+}
+skin.hideSidebarAd = function () {
+	skin._hideEl("skin_td_sidebar_ad");
+}
+
+skin.getSidebarAdContainer = function() {
+	return skin.$("skin_container_sidebar_ad");
+}
+
+
 skin.setSize = function(id, width, height) {
-	var el = skin._getEl(id);
+	var el = skin.$(id);
 	if (width != null) el.style.width = width;
 	if (height != null) el.style.height = height;
 }
 
-skin._getEl = function(id) {
+skin.$ = function(id) {
 	return document.getElementById(id);
 }
 skin._showEl = function(id, state) {
-	var el = skin._getEl(id);
+	var el = skin.$(id);
 	var value;
 	if (!el) return;
 	if (state == false) {
@@ -72,15 +104,19 @@ skin._showEl = function(id, state) {
 	}
 	el.style.display = value;
 }
+skin._hideEl = function(id, state) {
+	skin._showEl(id, false);
+}
 </script>
 
 <!-- BEGIN SKIN -->
 <div id='skin_outer'>
 	<table border=0 style='width:100%;height:100%' cellpadding=0 cellspacing=0>
-	<tr id='skin_tr_banner_ad'>
-		<td id='skin_td_banner_ad' colspan=2>
-			<center>
-				<div class='ImgTopAd'></div>
+	<tr id='skin_tr_top_ad'>
+		<td id='skin_td_top_ad' colspan=2>
+			<center><span id='skin_container_top_ad'>
+ 				<div class='ImgTopAd' onclick='skin.showSidebarAd()'></div>
+				</span>
 			</center>
 		</td>
 	</tr>
@@ -222,8 +258,13 @@ skin._showEl = function(id, state) {
 	</table>
 
 	</td>
-	<td id='skin_td_sidebar_ad' rowspan=5 style='padding-top:48px;padding-right:5px;vertical-align:top;'>
-		<div class='ImgSidebarAd'></div>
+	<td id='skin_td_sidebar_ad' style='padding-top:48px;padding-right:5px;padding-bottom:5px;vertical-align:top;'>
+<!--		<div style='position:relative;width:160px;height:100%;overflow:hidden;'>
+			<div id='skin_container_sidebar_ad' style='position:absolute;'>
+				<div class='ImgSidebarAd'></div>
+			</div>
+		</div>
+-->
 	</td>
 	</tr></table>
 </div>
