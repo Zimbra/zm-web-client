@@ -371,6 +371,10 @@ ZmSpreadSheet.prototype._cellClicked = function(td, ev) {
 	var is_mousedown = /mousedown/i.test(ev.type);
 	this._hideRange();
 	this._selectCell(td);
+	// <BUG 9037>
+	if (AjxEnv.isIE && DwtMenu._activeMenu)
+		DwtMenu._activeMenu.popdown();
+	// </BUG>
 	if (is_mousedown) {
 		ev._stopPropagation = true;
 		ev._returnValue = false;
