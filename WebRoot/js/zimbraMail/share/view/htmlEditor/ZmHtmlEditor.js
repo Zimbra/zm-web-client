@@ -751,11 +751,37 @@ ZmHtmlEditor.prototype.__onTableOperationsPopup = function(menu) {
 	for (var i in items) {
 		items[i].setEnabled(!!table);
 	}
-	var td = this.getNearestElement("td");
-	var splitEnabled = td && ((td.colSpan && td.colSpan > 1)
-				  || (td.rowSpan && td.rowSpan > 1));
-	if (items.splitCells)
+	if (!table)
+		return;
+
+	if (!AjxEnv.isIE) {
+		// Can we split? (the cell has to be a merged cell)
+		var td = this.getNearestElement("td");
+		var splitEnabled = td && ((td.colSpan && td.colSpan > 1)
+					  || (td.rowSpan && td.rowSpan > 1));
 		items.splitCells.setEnabled(splitEnabled);
+
+		// Can we merge? (multiple cells are selected and none of them is previously merged)
+		var a = this.getSelectedCells();
+		var canMerge = true;
+		var howMany = 0;
+		try {
+			for (var i = a.length; --i >= 0;) {
+				var r = a[i];
+				for (var j = r.length; --j >= 0;) {
+					var td = r[j];
+					++howMany;
+					if (td.rowSpan > 1 || td.colSpan > 1)
+						throw "can't merge";
+				}
+			}
+		} catch(ex) {
+			canMerge = false;
+		}
+		if (howMany < 2)
+			canMerge = false;
+		items.mergeCells.setEnabled(canMerge);
+	}
 };
 
 ZmHtmlEditor.prototype._tableOperationsListener =
