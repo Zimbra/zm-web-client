@@ -215,7 +215,8 @@ function(ev) {
 ZmPageEditController.prototype._doSave =
 function(popViewWhenSaved) {
 	var name = this._pageEditView.getPageName();
-	if (!name || name.replace(/^\s+/,"").replace(/\s+$/,"") == "") {
+	name = name.replace(/^\s+/,"").replace(/\s+$/,"");
+	if (name == "") {
 		var dialog = this._appCtxt.getMsgDialog();
 		var message = ZmMsg.errorSavingPageNameRequired;
 		var style = DwtMessageDialog.WARNING_STYLE;
