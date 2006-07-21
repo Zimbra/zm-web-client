@@ -56,16 +56,18 @@ function(defaultColumnSort) {
 	var isFolder = this._isSentOrDraftsFolder();
 
 	// set the from column name based on query string
+	var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
 	var fromColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]);
 	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
-	if (fromColSpan)
-		fromColSpan.innerHTML = "&nbsp;" + (isFolder.sent || isFolder.drafts ? ZmMsg.to : ZmMsg.from);
+	if (fromColSpan) fromColSpan.innerHTML = "&nbsp;" + colLabel;
+	this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
 
 	// bug fix #4786
+	colLabel = isFolder.sent ? ZmMsg.sent : ZmMsg.received;
 	var dateColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]);
 	var dateColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[dateColIdx]._id);
-	if (dateColSpan)
-		dateColSpan.innerHTML = "&nbsp;" + (isFolder.sent ? ZmMsg.sent : ZmMsg.received);
+	if (dateColSpan) dateColSpan.innerHTML = "&nbsp;" + colLabel;
+	this._colHeaderActionMenu.getItem(dateColIdx).setText(colLabel);
 };
 
 ZmConvListView.prototype.markUIAsRead = 

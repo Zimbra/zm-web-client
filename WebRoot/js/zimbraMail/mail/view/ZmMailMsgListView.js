@@ -60,25 +60,19 @@ function(defaultColumnSort) {
 		var isFolder = this._isSentOrDraftsFolder();
 
 		// set the from column name based on query string
+		var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
 		var fromColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_FROM]);
 		var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
-		if (fromColSpan)
-			fromColSpan.innerHTML = "&nbsp;" + (isFolder.sent || isFolder.drafts ? ZmMsg.to : ZmMsg.from);
+		if (fromColSpan) fromColSpan.innerHTML = "&nbsp;" + colLabel;
+		this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
 
 		// set the received column name based on query string
+		colLabel = isFolder.sent
+			? ZmMsg.sent : (isFolder.drafts ? ZmMsg.lastSaved : ZmMsg.received);
 		var recdColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]);
 		var recdColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[recdColIdx]._id);
-		if (recdColSpan) {
-			var html = "&nbsp;";
-			if (isFolder.sent) {
-				html += ZmMsg.sent;
-			} else if (isFolder.drafts) {
-				html += ZmMsg.lastSaved;
-			} else {
-				html += ZmMsg.received;
-			}
-			recdColSpan.innerHTML = html;
-		}
+		if (recdColSpan) recdColSpan.innerHTML = "&nbsp;" + colLabel;
+		this._colHeaderActionMenu.getItem(recdColIdx).setText(colLabel);
 	}
 };
 
