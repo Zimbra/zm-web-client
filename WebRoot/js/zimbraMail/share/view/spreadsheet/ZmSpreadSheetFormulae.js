@@ -194,6 +194,10 @@ ZmSpreadSheetFormulae.OPERATORS = {
 
 ZmSpreadSheetFormulae.FUNCTIONS = {};
 
+ZmSpreadSheetFormulae.getFunc = function(name) {
+	return ZmSpreadSheetFormulae.FUNCTIONS[name.toLowerCase()];
+};
+
 ZmSpreadSheetFormulae.HELP = {};
 
 ZmSpreadSheetFormulae.getHelp = function(funcname) {
@@ -234,27 +238,27 @@ ZmSpreadSheetFormulae.DEF = function(name, n_args, callback, help) {
 	if (name instanceof Array) {
 		// let's make it easy to define aliases, shall we
 		var alias = name[0];
-        var i;
-        ZmSpreadSheetFormulae.DEF(alias, n_args, callback, help);
+		var i;
+		ZmSpreadSheetFormulae.DEF(alias, n_args, callback, help);
 		if (help && name.length > 1) {
 			var tmp = { alias: alias };
 			for (i in help) {
 				tmp[i] = help[i];
-            }
-            help = tmp;
+			}
+			help = tmp;
 		}
 		for (i = 1; i < name.length; ++i) {
 			ZmSpreadSheetFormulae.DEF(name[i], n_args, callback, help);
-        }
-    } else {
+		}
+	} else {
 		var funcdef = { name   : name,
 				n_args : n_args,
 				func   : callback };
-		ZmSpreadSheetFormulae.FUNCTIONS[name] = funcdef;
+		ZmSpreadSheetFormulae.FUNCTIONS[name.toLowerCase()] = funcdef;
 		if (help) {
 			ZmSpreadSheetFormulae.HELP[name] = help;
-        }
-    }
+		}
+	}
 };
 
 ///------------------- BEGIN FUNCTION DEFINITIONS -------------------
@@ -445,7 +449,7 @@ ZmSpreadSheetFormulae.prototype.depends = function(ident) {
 };
 
 ZmSpreadSheetFormulae.prototype.callFunction = function(func, args) {
-	var f = ZmSpreadSheetFormulae.FUNCTIONS[func];
+	var f = ZmSpreadSheetFormulae.getFunc(func);
 	if (!f)
 		throw "No such function: " + func;
 	return f.func.apply(this, args);
@@ -597,7 +601,7 @@ ZmSpreadSheetFormulae.parseTokens = function(formula, nothrow) {
 
 				if (t === TYPE.IDENTIFIER) {
 					// FIXME [1]: currently the only identifiers we allow are function calls
-					var func = ZmSpreadSheetFormulae.FUNCTIONS[val];
+					var func = ZmSpreadSheetFormulae.getFunc(val);
 					if (!func && !nothrow)
 						throw "No such function: \"" + val + "\"";
 					tok.priority = 100;
@@ -793,7 +797,7 @@ ZmSpreadSheetFormulae.prototype.compile = function(formula) {
 				func.n_args++;
 				output.push(func);
 				// check number of arguments
-				var expected_args = ZmSpreadSheetFormulae.FUNCTIONS[func.val].n_args;
+				var expected_args = ZmSpreadSheetFormulae.getFunc(func.val).n_args;
 				if (expected_args != null) {
 					if (expected_args >= 0 && func.n_args != expected_args)
 						throw "Function " + func.val + " expects exactly " + expected_args + " arguments.";
@@ -807,7 +811,7 @@ ZmSpreadSheetFormulae.prototype.compile = function(formula) {
 	while (stack.length > 0) {
 		var t = stack.pop();
 		if ((t.type !== TYPE.OPERATOR && t.type !== TYPE.IDENTIFIER) ||
-		    (t.type === TYPE.IDENTIFIER && ZmSpreadSheetFormulae.FUNCTIONS[t.val].n_args > 0))
+		    (t.type === TYPE.IDENTIFIER && ZmSpreadSheetFormulae.getFunc(t.val).n_args > 0))
 			throw "Expecting only operators or constants at ZmSpreadSheetFormulae.compile";
 		output.push(t);
 	}
