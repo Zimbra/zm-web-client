@@ -838,7 +838,10 @@ function() {
 		this.sendMsg(null, true);
 	} else {
 		// cancel
-		this._composeView.reset(false);
+		if (this.isChildWindow && window.parentController)
+			window.onbeforeunload = null;
+		else
+			this._composeView.reset(false);
 	}
 	this._app.getAppViewMgr().showPendingView(true);
 };
@@ -850,7 +853,10 @@ function() {
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
-		this._composeView.reset(false);
+		if (this.isChildWindow && window.parentController)
+			window.onbeforeunload = null;
+		else
+			this._composeView.reset(false);
 
 		// bug fix #5282
 		// check if the pending view is poppable - if so, force-pop this view first!
