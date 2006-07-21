@@ -221,16 +221,17 @@ function(event) {
 			var notebookId = this._notebookSelect.getValue();
 			var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 			var notebook = tree.getById(notebookId);
+			var value = AjxStringUtil.trim(this._pageInput.getValue());
 			link = [
 				"[[",
-					"/",notebook.getSearchPath(),"/",this._pageInput.getValue(),
+					"/",notebook.getSearchPath(),"/",value,
 					(title ? "|" : ""),title,
 				"]]"
 			].join("");
 		}
 		else {
 			link = document.createElement("A");
-			link.href = this._urlInput.getValue();
+			link.href = AjxStringUtil.trim(this._urlInput.getValue());
 			link.innerHTML = AjxStringUtil.htmlEncode(title || link.href);
 		}
 
