@@ -229,7 +229,7 @@ function(name, color, url, search) {
 	if (search) {
 		var soapDoc = AjxSoapDoc.create("CreateSearchFolderRequest", "urn:zimbraMail");
 		var searchNode = soapDoc.set("search");
-		searchNode.setAttribute("name", name);
+		searchNode.setAttribute("name", AjxEnv.isSafari ? AjxStringUtil.xmlEncode(name) : name);
 		searchNode.setAttribute("query", search.query);
 		if (search.types) {
 			var a = search.types.getArray();

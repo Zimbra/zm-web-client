@@ -116,7 +116,7 @@ function(name, color, callback, errorCallback) {
 	color = ZmOrganizer.checkColor(color);
 	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:zimbraMail");
 	var tagNode = soapDoc.set("tag");
-	tagNode.setAttribute("name", name);
+	tagNode.setAttribute("name", AjxEnv.isSafari ? AjxStringUtil.xmlEncode(name) : name);
 	tagNode.setAttribute("color", color);
 	this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback});
 };
