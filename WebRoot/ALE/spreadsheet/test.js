@@ -19,6 +19,8 @@ function create(data) {
 	spreadSheet.setZIndex(Dwt.Z_VIEW);
 	window.onresize = _resize;
 	_resize();
+	spreadSheet._selectedCell = null;
+	spreadSheet.focus();
 };
 
 function _resize() {

@@ -851,9 +851,22 @@ function(name, target, data) {
 		ifr.style.height = "400px";
 		// Avoid bug 8523 in IE.
 		ifr.ondragstart = AjxCallback.returnFalse;
-		if (!target)
-			this._insertNodeAtSelection(ifr);
-		else
+		if (!target) {
+			// embed it into 2 paragraphs to make it easy
+			// to type text before or after the
+			// spreadsheet
+			var p = doc.createElement("p");
+			p.innerHTML = AjxEnv.isIE ? "&nbsp;" : "<br/>";
+			var df = doc.createDocumentFragment();
+			df.appendChild(p);
+			df.appendChild(ifr);
+			df.appendChild(p.cloneNode(true));
+			this._insertNodeAtSelection(df);
+			if (!AjxEnv.isIE) {
+				ifr.contentWindow.focus();
+				ifr.contentWindow.document.focus();
+			}
+		} else
 			target.parentNode.replaceChild(ifr, target);
 		var handler = AjxCallback.simpleClosure(this._ace_finishedLoading, this, ifr, name, data);
 		if (AjxEnv.isIE) {
