@@ -1169,7 +1169,18 @@ function() {
 
 	// save reference to DOM objects per ID's
 	this._subjectField = document.getElementById(subjectFieldId);
+	this._subjectField.onkeydown = AjxCallback.simpleClosure(this.__checkTabInSubject, this);
 	this._attcDiv = document.getElementById(attcDivId);
+};
+
+ZmComposeView.prototype.__checkTabInSubject = function(ev) {
+	if (AjxEnv.isIE)
+		ev = window.event;
+	if (ev.keyCode == 9 /* TAB */) {
+		this._htmlEditor.focus();
+		setTimeout(AjxCallback.simpleClosure(this._htmlEditor.focus, this._htmlEditor), 10);
+		return false;
+	}
 };
 
 ZmComposeView.prototype._submitAttachments =
