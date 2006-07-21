@@ -43,7 +43,7 @@ Contributor(s):
 
 	@import url(/zimbra/img/loRes/imgs.css?v=<%=vers%>);
 	@import url(/zimbra/img/loRes/skins/steel/steel.css?v=<%=vers%>);
-	@import url(/zimbra/css/dwt,common,msgview,login,zm,spellcheck,skin.css?v=<%=vers%>&skin=steel);
+	@import url(/zimbra/css/dwt,common,skin.css?v=<%=vers%>&skin=steel);
 
 
     @import url(<%=contextPath %>/ALE/spreadsheet/style.css?v=<%=vers%>);
