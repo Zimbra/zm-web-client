@@ -823,7 +823,7 @@ function(container, html, isTextMsg) {
 
 ZmMailMsgView.prototype._addAddressHeaderHtml =
 function(htmlArr, idx, addrs, prefix) {
-	htmlArr[idx++] = "<tr><td width=100 class='LabelColName'>";
+	htmlArr[idx++] = "<tr><td width=100 valign='top' class='LabelColName'>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(prefix);
 	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
 	for (var i = 0; i < addrs.size(); i++) {
@@ -852,6 +852,7 @@ function(msg, container, callback) {
 
 	var closeBtnCellId = Dwt.getNextId();
 	this._hdrTableId = Dwt.getNextId();
+	this._expandRowId = Dwt.getNextId();
 	this._expandHeaderId = Dwt.getNextId();
 
 	var idx = 0;
@@ -883,7 +884,9 @@ function(msg, container, callback) {
 		var addr = addrs.get(0);
 		var dateString = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
 
-		htmlArr[idx++] = "<tr><td valign=middle>";
+		htmlArr[idx++] = "<tr id='";
+		htmlArr[idx++] = this._expandRowId;
+		htmlArr[idx++] = "'><td valign=middle>";
 		htmlArr[idx++] = "<table align=right border=0 cellpadding=0 cellspacing=0><tr><td id='";
 		htmlArr[idx++] = this._expandHeaderId;
 		htmlArr[idx++] = "'></td><td class='LabelColName'>";
@@ -904,13 +907,6 @@ function(msg, container, callback) {
 	   	htmlArr[idx++] = "</span></td></tr>";
 	}
 
-	htmlArr[idx++] = "<tr><td colspan=100><div style='display:";
-	htmlArr[idx++] = this._expandHeader ? "block" : "none";
-	htmlArr[idx++] = "' id='";
-	htmlArr[idx++] = this._expandDivId;
-	htmlArr[idx++] = "'>";
-	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0>";
-
 	// To/CC/Reply-to
 	for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
@@ -920,8 +916,6 @@ function(msg, container, callback) {
 			idx = this._addAddressHeaderHtml(htmlArr, idx, addrs, prefix);
 		}
 	}
-	htmlArr[idx++] = "</table>";
-	htmlArr[idx++] = "</div></td></tr>";
 
 	htmlArr[idx++] = "</table>";
 	var el = container ? container : this.getHtmlElement();
@@ -937,6 +931,8 @@ function(msg, container, callback) {
 		this._expandButton.reparentHtmlElement(this._expandHeaderId);
 		this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener))
 	}
+
+	this._expandRows(this._expandHeader);
 
 	// add the close button if applicable
 	if (this._hasHeaderCloseBtn) {
@@ -1263,15 +1259,28 @@ function(ev) {
 
 ZmMailMsgView.prototype._expandButtonListener =
 function(ev) {
-	this._expandHeader = !this._expandHeader;
+	this._expandRows(!this._expandHeader);
+};
+ZmMailMsgView.prototype._expandRows = function(expand) {
+	this._expandHeader = expand;
+	this._expandButton.setImage(expand ? "HeaderExpanded" : "HeaderCollapsed");
 
-	var newImage = this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed";
-	ev.item.setImage(newImage);
-
-	var expandDiv = document.getElementById(this._expandDivId);
-	if (expandDiv) {
-		expandDiv.style.display = this._expandHeader
-		? "block" : "none";
+	var expandRow = document.getElementById(this._expandRowId);
+	var table = expandRow.parentNode;
+	if (!expand) {
+		this._addressRows = [];
+		while (expandRow.nextSibling) {
+			var addressRow = expandRow.nextSibling;
+			this._addressRows.push(addressRow);
+			table.removeChild(addressRow);
+		}
+	}
+	else if (this._addressRows) {
+		for (var i = 0; i < this._addressRows.length; i++) {
+			var addressRow = this._addressRows[i];
+			table.appendChild(addressRow);
+		}
+		this._addressRows = null;
 	}
 };
 
