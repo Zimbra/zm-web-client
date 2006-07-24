@@ -202,12 +202,21 @@ ZmComposeController.prototype.sendMsg =
 function(attId, isDraft, callback) {
 	var msg = this._composeView.getMsg(attId, isDraft);
 	if (!msg) return;
-	
-	if (msg.inviteMode == ZmOperation.REPLY_CANCEL) {
+
+	var inviteMode = msg.inviteMode;
+	var isCancel = inviteMode == ZmOperation.REPLY_CANCEL;
+	var isModify = inviteMode == ZmOperation.REPLY_MODIFY;
+	debugger;
+	if (isCancel || isModify) {
 		var origMsg = msg._origMsg;
 		var appt = origMsg._appt;
-		var respCallback = new AjxCallback(this, this._handleResponseCancelAppt);
-		appt.cancel(origMsg._mode, msg, respCallback);
+		var respCallback = new AjxCallback(this, this._handleResponseCancelOrModifyAppt);
+		if (isCancel) {
+			appt.cancel(origMsg._mode, msg, respCallback);
+		}
+		else {
+			appt.save();
+		}
 		return;
 	}
 
@@ -233,7 +242,7 @@ function(isDraft, msg, callback, result) {
 	if (callback) callback.run(result);
 };
 
-ZmComposeController.prototype._handleResponseCancelAppt =
+ZmComposeController.prototype._handleResponseCancelOrModifyAppt =
 function() {
 	this._composeView.reset(false);
 	this._app.popView(true);
@@ -413,8 +422,14 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 
 	this._initializeToolBar();
 	this._toolbar.enableAll(true);
-	if (action == ZmOperation.REPLY_CANCEL) {
-		this._toolbar.enable([ZmOperation.ATTACHMENT, ZmOperation.SAVE_DRAFT], false);
+	var isCancel = action == ZmOperation.REPLY_CANCEL;
+	var isModify = action == ZmOperation.REPLY_MODIFY;
+	if (isCancel || isModify) {
+		var ops = [ ZmOperation.SAVE_DRAFT ];
+		if (isCancel) {
+			ops.push(ZmOperation.ATTACHMENT);
+		}
+		this._toolbar.enable(ops, false);
 	}
 
 	this.initComposeView(null, composeMode);

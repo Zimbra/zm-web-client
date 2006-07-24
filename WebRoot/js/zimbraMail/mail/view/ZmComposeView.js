@@ -666,6 +666,7 @@ function(action){
 			action == ZmOperation.REPLY_CANCEL ||
 			action == ZmOperation.REPLY_DECLINE ||
 			action == ZmOperation.REPLY_TENTATIVE ||
+			action == ZmOperation.REPLY_MODIFY ||
 			action == ZmOperation.REPLY_NEW_TIME);
 };
 

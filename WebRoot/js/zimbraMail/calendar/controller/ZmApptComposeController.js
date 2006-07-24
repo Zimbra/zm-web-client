@@ -409,6 +409,8 @@ function(ev) {
 // Cancel button was pressed
 ZmApptComposeController.prototype._cancelListener =
 function(ev) {
+	var controller = this._app.getCalController();
+	controller.setNeedsRefresh(true);
 	this._app.popView();
 };
 

@@ -660,9 +660,9 @@ ZmCalViewController.prototype._postShowCallback =
 function() {
 	ZmController.prototype._postShowCallback.call(this);
 	this._viewVisible = true;
-//	if (this._needFullRefresh) {
-//		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW);	
-//	}
+	if (this._viewMgr.getNeedsRefresh()) {
+		this._scheduleMaintenance(ZmCalViewController.MAINT_MINICAL|ZmCalViewController.MAINT_VIEW);
+	}
 };
 
 ZmCalViewController.prototype._postHideCallback =
@@ -1089,14 +1089,52 @@ function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
 
 ZmCalViewController.prototype._handleResponseUpdateApptDate =
 function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result) {
-    // see 4789 
-	if (result == null) return;
-	
+	// skip prompt if no attendees
+	if (!appt.hasOtherAttendees()) {
+		this._handleResponseUpdateApptDateSave.apply(this, arguments);
+		return;
+	}
+
+	// NOTE: We copy the arguments into an array because arguments
+	//       is *not* technically an array. So if anyone along the
+	//       line considers it such it will blow up -- this prevents
+	//       that at the expense of having to keep this array and
+	//       the actual argument list in sync.
+	var args = [appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result];
+	var edit = new AjxCallback(this, this._handleResponseUpdateApptDateEdit, args);
+	var save = new AjxCallback(this, this._handleResponseUpdateApptDateSave, args);
+	var ignore = new AjxCallback(this, this._handleResponseUpdateApptDateIgnore, args);
+
+	var dialog = this._appCtxt.getConfirmationDialog();
+	dialog.popup(ZmMsg.confirmModifyApptReply, edit, save, ignore);
+};
+
+ZmCalViewController.prototype._handleResponseUpdateApptDateEdit =
+function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result) {
+	var clone = ZmAppt.quickClone(appt);
+	if (startDateOffset) clone.setStartDate(new Date(clone.getStartTime() + startDateOffset));
+	if (endDateOffset) clone.setEndDate(new Date(clone.getEndTime() + endDateOffset));
+	this._showAppointmentDetails(clone);
+};
+ZmCalViewController.prototype._handleResponseUpdateApptDateEdit2 =
+function(appt, action, mode, startDateOffset, endDateOffset) {
+	if (startDateOffset) appt.setStartDate(new Date(appt.getStartTime() + startDateOffset));
+	if (endDateOffset) appt.setEndDate(new Date(appt.getEndTime() + endDateOffset));
+	this._continueDeleteReplyRespondAction(appt, action, mode);
+};
+
+ZmCalViewController.prototype._handleResponseUpdateApptDateSave =
+function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result) {
 	try {
-		result.getResponse();
+		// NOTE: If the appt was already populated (perhaps by
+		//       dragging it once, canceling the change, and then
+		//       dragging it again), then the result will be null.
+		if (result) {
+			result.getResponse();
+		}
 		appt.setViewMode(viewMode);
 		if (startDateOffset) appt.setStartDate(new Date(appt.getStartTime() + startDateOffset));
-		if (endDateOffset) appt.setEndDate(new Date(appt.getEndTime() + endDateOffset));		
+		if (endDateOffset) appt.setEndDate(new Date(appt.getEndTime() + endDateOffset));
 		appt.save(null, callback, errorCallback);
 	} catch (ex) {
 		if (ex.msg) {
@@ -1106,6 +1144,12 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		}
 		if (errorCallback) errorCallback.run(ex);
 	}
+	if (callback) callback.run(result);
+};
+
+ZmCalViewController.prototype._handleResponseUpdateApptDateIgnore =
+function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback, result) {
+	this._refreshAction(true);
 	if (callback) callback.run(result);
 };
 
@@ -1490,6 +1534,13 @@ function(ids) {
 		var act = new AjxTimedAction(this, this._refreshAction);
 		AjxTimedAction.scheduleAction(act, 0);
 		this._clearCache = false;			
+	}
+};
+
+ZmCalViewController.prototype.setNeedsRefresh =
+function(refresh) {
+	if (this._viewMgr != null) {
+		this._viewMgr.setNeedsRefresh(refresh);
 	}
 };
 

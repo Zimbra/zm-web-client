@@ -65,7 +65,12 @@ function() {
 		if (name != ZmController.CAL_APPT_VIEW)
 			this._views[name].setNeedsRefresh(true);
 	}
-}
+};
+ZmCalViewMgr.prototype.getNeedsRefresh =
+function(viewId) {
+	viewId = viewId || this._currentViewName;
+	return this._views[viewId].getNeedsRefresh();
+};
 
 ZmCalViewMgr.prototype.getCurrentView =
 function() {

@@ -415,7 +415,11 @@ function() {
 ZmCalBaseView.prototype.setNeedsRefresh = 
 function(refresh) {
 	 this._needsRefresh = refresh;
-}
+};
+ZmCalBaseView.prototype.getNeedsRefresh =
+function() {
+	return this._needsRefresh;
+};
 
 ZmCalBaseView.prototype._getItemId =
 function(item) {

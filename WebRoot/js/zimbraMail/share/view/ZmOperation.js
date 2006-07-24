@@ -732,6 +732,9 @@ ZmOperation.SETUP[ZmOperation.REPLY_MENU] = {
 	image:		"Reply"
 };
 
+ZmOperation.REPLY_MODIFY = i++;
+ZmOperation.SETUP[ZmOperation.REPLY_MODIFY] = {};
+
 ZmOperation.REPLY_NEW_TIME = i++;
 ZmOperation.SETUP[ZmOperation.REPLY_NEW_TIME] = {
 	textKey:	"replyNewTime",
