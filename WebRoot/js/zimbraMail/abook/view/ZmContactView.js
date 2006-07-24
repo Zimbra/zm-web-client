@@ -322,8 +322,9 @@ function(html, idx) {
 
 ZmContactView.prototype._addSelectOptions =
 function() {
+	var scl = new AjxListener(this, this._selectChangeListener);
 	if (this._fileAsSelectCellId) {
-		// add all the options for file as...
+		// add select widget for user to choose FileAs
 		this._fileAsSelect = new DwtSelect(this);
 		var fileAsSelectOptions = ZmContactView._selectFields["fileAs"];
 		var count = 0;
@@ -331,16 +332,16 @@ function() {
 			this._fileAsSelect.addOption(fileAsSelectOptions[i].name, fileAsSelectOptions[i].selected, ++count);
 		}
 		this._fileAsSelect.reparentHtmlElement(this._fileAsSelectCellId);
-
-		// add change listener for this select
-		this._fileAsSelect.addChangeListener(new AjxListener(this, this._selectChangeListener));
-		this._fileAsSelect._cv = this; // add back pointer to compose view
+		this._fileAsSelect.addChangeListener(scl);
+		this._fileAsSelect._cv = this;
 	}
 
 	if (this._folderCellId) {
-		// add all the options for folders user can choose from
+		// add select widget for user to choose folder
 		this._folderSelect = new DwtSelect(this);
 		this._folderSelect.reparentHtmlElement(this._folderCellId);
+		this._folderSelect.addChangeListener(scl);
+		this._folderSelect._cv = this;
 	}
 };
 
@@ -725,9 +726,12 @@ function(ev) {
 	var cv = selectObj ? selectObj._cv : null;
 
 	if (cv) {
-		if (selectObj == this._fileAsSelect) {
+		if (selectObj == cv._fileAsSelect) {
 			cv._attr[ZmContact.F_fileAs] = newValue;
 			cv._setTitle(ZmContact.computeFileAs(cv._attr));
+			cv._isDirty = true;
+		} else if (selectObj == cv._folderSelect) {
+			cv._attr[ZmContact.F_fileAs] = newValue;
 			cv._isDirty = true;
 		}
 	}
