@@ -172,7 +172,9 @@ function(obj) {
 				a[i].cid = this.id;
 			}
 		}
-		this.list._idHash[this.id] = this.list._idHash[this._oldId];
+		if (this.list && this._oldId) {
+			this.list._idHash[this.id] = this.list._idHash[this._oldId];
+		}
 		fields[ZmItem.F_ID] = true;
 		this._notify(ZmEvent.E_MODIFY, {fields : fields});
 	}
