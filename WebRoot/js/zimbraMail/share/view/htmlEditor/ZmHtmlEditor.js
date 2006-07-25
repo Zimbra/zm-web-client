@@ -862,10 +862,12 @@ function(name, target, data) {
 			df.appendChild(ifr);
 			df.appendChild(p.cloneNode(true));
 			this._insertNodeAtSelection(df);
-			if (!AjxEnv.isIE) {
-				ifr.contentWindow.focus();
-				ifr.contentWindow.document.focus();
-			}
+
+			// this causes problems in Firefox too! :-(
+// 			if (!AjxEnv.isIE) {
+// 				ifr.contentWindow.focus();
+// 				ifr.contentWindow.document.focus();
+// 			}
 		} else
 			target.parentNode.replaceChild(ifr, target);
 		var handler = AjxCallback.simpleClosure(this._ace_finishedLoading, this, ifr, name, data);
