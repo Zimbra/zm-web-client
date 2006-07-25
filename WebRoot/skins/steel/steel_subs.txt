@@ -155,18 +155,4 @@ MiniCalBg					= @ToolbarBg@
 
 HoverBorder					= padding:0px;	border:2px solid; border-color:@_SelColorD20_@ @_SelColorD50_@ @_SelColorD50_@ @_SelColorD20_@;
 
-_BtnUpImg_					= background-image:url(@SkinImgDir@/ButtonUp__H.gif);
-_BtnDownImg_				= background-image:url(@SkinImgDir@/ButtonDown__H.gif);
-_BtnUpDefaultImg_			= background-image:url(@SkinImgDir@/ButtonUpDefault__H.gif);
-_BtnDownDefaultImg_			= background-image:url(@SkinImgDir@/ButtonDownDefault__H.gif);
-
-_WidgetContainer_			= @_BtnUpImg_@						@OutsetBorder@		@_WidgetContainerStyle_@
-_WidgetContainer-disabled_ 	= background-color:@Transparent@;	@DisabledBorder@	@_WidgetContainerStyle_@
-_WidgetContainer-hover_		= @_BtnUpImg_@						@HoverBorder@		@_WidgetContainerStyle_@
-_WidgetContainer-selected_	= @_BtnDownDefaultImg_@				@OutsetBorder@		@_WidgetContainerStyle_@
-_WidgetContainer-clicked_	= @_BtnDownImg_@					@InsetBorder@		@_WidgetContainerStyle_@
-_WidgetContainer-default_	= @_BtnUpDefaultImg_@				@DefaultBorder@		@_WidgetContainerStyle_@
-_WidgetContainer-focused_	= @_BtnUpDefaultImg_@				@FocusBorder@		@_WidgetContainerStyle_@
-_WidgetContainer-toggled_	= @_BtnDownDefaultImg_@				@InsetBorder@		@_WidgetContainerStyle_@
-
 MenuContainer			 	= @WindowOuterContainer-light@
