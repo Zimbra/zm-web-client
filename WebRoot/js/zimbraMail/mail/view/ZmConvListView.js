@@ -108,10 +108,6 @@ function(conv, now, isDndIcon, isMixedView, div) {
 
 	var	div = div ? div : this._getDiv(conv, isDndIcon);
 	div.className = div._styleClass;
-	// XXX: for some reason, we need to explicitly set the height of the div
-	// since FF barfs if u remove the flag column.. too busy to figure out why
-//MOW	if (AjxEnv.isMozilla)
-//MOW		div.style.height = "20px";
 
 	var htmlArr = new Array();
 	var idx = 0;
@@ -137,7 +133,11 @@ function(conv, now, isDndIcon, isMixedView, div) {
 			// Participants
 			var width = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
 			var fieldId = this._getFieldId(conv, ZmItem.F_PARTICIPANT);
-			htmlArr[idx++] = "<td width=" + width + " id='" + fieldId + "'>";
+			htmlArr[idx++] = "<td width=";
+			htmlArr[idx++] = width;
+			htmlArr[idx++] = " id='";
+			htmlArr[idx++] = fieldId;
+			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 			htmlArr[idx++] = this._getParticipantHtml(conv, fieldId);
 			htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
@@ -147,7 +147,9 @@ function(conv, now, isDndIcon, isMixedView, div) {
 			idx = this._getField(htmlArr, idx, conv, ZmItem.F_ATTACHMENT, i);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
 			// Subject
-			htmlArr[idx++] = "<td id='" + this._getFieldId(conv, ZmItem.F_SUBJECT) + "'>";
+			htmlArr[idx++] = "<td id='";
+			htmlArr[idx++] = this._getFieldId(conv, ZmItem.F_SUBJECT);
+			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 			htmlArr[idx++] = conv.subject ? AjxStringUtil.htmlEncode(conv.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
 			if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && conv.fragment) {
@@ -160,8 +162,11 @@ function(conv, now, isDndIcon, isMixedView, div) {
 			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT]) == 0) {
 			var width = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
-			htmlArr[idx++] = "<td id='" + this._getFieldId(conv, ZmItem.F_COUNT) + "'";
-			htmlArr[idx++] = " width=" + width + ">";
+			htmlArr[idx++] = "<td id='";
+			htmlArr[idx++] = this._getFieldId(conv, ZmItem.F_COUNT);
+			htmlArr[idx++] = "' width=";
+			htmlArr[idx++] = width;
+			htmlArr[idx++] = ">";
 			htmlArr[idx++] = conv.numMsgs > 1 ? ("(" + conv.numMsgs + ")") : "";
 			htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
 			htmlArr[idx++] = "</td>";
@@ -171,7 +176,9 @@ function(conv, now, isDndIcon, isMixedView, div) {
 		} else if (isMixedView && id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ICON]) == 0) {
 			// Type icon (mixed view only)
 			if (conv.isDraft) {
-				htmlArr[idx++] = "<td width=" + this._headerList[i]._width + " class='Icon'>";
+				htmlArr[idx++] = "<td width=";
+				htmlArr[idx++] = this._headerList[i]._width;
+				htmlArr[idx++] = " class='Icon'>";
 				htmlArr[idx++] = AjxImg.getImageHtml("MsgStatusDraft", null, ["id='", this._getFieldId(conv, ZmItem.F_STATUS), "'"].join(""));
 				htmlArr[idx++] = "</td>";
 			} else {
@@ -313,7 +320,9 @@ function(conv, fieldId) {
 				html[idx++] = ", ";
 			}
 			var partId = fieldId + "_" + part2[j].index;
-			html[idx++] = "<span style='white-space: nowrap' id='" + partId + "'>";
+			html[idx++] = "<span style='white-space: nowrap' id='";
+			html[idx++] = partId;
+			html[idx++] = "'>";
 			html[idx++] = part2[j].name;
 			html[idx++] = "</span>";
 		}
@@ -389,8 +398,10 @@ function(conv, preferHtml, callback, result) {
 	var html = new Array();
 	var idx = 0;
 	
-	html[idx++] = "<font size=+2>" + conv.subject + "</font><br>";
-	html[idx++] = "<font size=+1>" + conv.numMsgs;
+	html[idx++] = "<font size=+2>";
+	html[idx++] = conv.subject;
+	html[idx++] = "</font><br><font size=+1>";
+	html[idx++] = conv.numMsgs;
 	html[idx++] = (conv.numMsgs > 1) ? " messages" : " message";
 	html[idx++] = "</font><hr>";
 	
