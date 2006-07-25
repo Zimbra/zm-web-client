@@ -175,7 +175,9 @@ function() {
 	list = list.concat(this._standardActionMenuOps());
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.SHOW_ORIG);
-	list.push(ZmOperation.ADD_FILTER_RULE);
+	if (this._appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
+		list.push(ZmOperation.ADD_FILTER_RULE);
+	}
 	return list;
 };
 
@@ -322,7 +324,9 @@ ZmDoublePaneController.prototype._resetOperations =
 function(parent, num) {
 	ZmMailListController.prototype._resetOperations.call(this, parent, num);
 	parent.enable(ZmOperation.SHOW_ORIG, num == 1);
-	parent.enable(ZmOperation.ADD_FILTER_RULE, num == 1);
+	if (this._appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
+		parent.enable(ZmOperation.ADD_FILTER_RULE, num == 1);
+	}
 };
 
 // top level view means this view is allowed to get shown when user clicks on 
