@@ -123,6 +123,18 @@ ZmNotebookCache.prototype.putPage = function(page) {
 	
 	page.addChangeListener(this._changeListener);
 };
+
+ZmNotebookCache.prototype.renamePage = function(page, newName) {
+	var pages = this._foldersMap[page.folderId];
+	if (pages) {
+		if (pages[page.name]) {
+			delete pages[page.name];
+			pages[newName] = page;
+			page.name = newName;
+		}
+	}
+};
+
 ZmNotebookCache.prototype.removePage = function(page) {
 	if (page.id) { 
 		delete this._idMap[page.id]; 

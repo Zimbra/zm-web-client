@@ -2007,6 +2007,11 @@ HTML>BODY .appt-selected .appt_allday_body
  	@PageBg@
 }
 
+.ZmPageEditView .RenameWarning {
+	background-color: #ffffcc;
+	@Text-important@
+}
+
 .ZmNotebookPageView {
 	overflow: auto;
 }

@@ -55,6 +55,9 @@ ZmPageEditView.prototype._locationEl;
 ZmPageEditView.prototype._pageNameInput;
 ZmPageEditView.prototype._pageEditor;
 ZmPageEditView.prototype._page;
+ZmPageEditView.prototype._isNewPage;
+ZmPageEditView.prototype._renameWarningId;
+
 
 // Public methods
 
@@ -104,7 +107,8 @@ ZmPageEditView.prototype._setResponse = function(page) {
 	// set name
 	var name = page.name || "";
 	this._pageNameInput.setValue(name);
-	this._pageNameInput.setEnabled(!name);
+	this._isNewPage = !name;
+	this._showRenameWarning(false);
 
 	// set content
 	var content = page.getContent() || "";
@@ -200,11 +204,15 @@ function() {
 
 ZmPageEditView.prototype._createHtml =
 function() {
+	this._renameWarningId = Dwt.getNextId();
+	
 	// create components
 	this._pageNameInput = new DwtInputField({parent:this});
 	this._pageNameInput.setRequired(true);
 	var titleInputEl = this._pageNameInput.getInputElement();
 	titleInputEl.size = 50;
+	Dwt.setHandler(titleInputEl, DwtEvent.ONCHANGE, ZmPageEditView._onNameChange);
+	Dwt.setHandler(titleInputEl, DwtEvent.ONKEYPRESS, ZmPageEditView._onNameChange);
 
 	this._pageEditor = new ZmPageEditor(this, null, null, DwtHtmlEditor.HTML, this._appCtxt, this._controller);
 	// HACK: Notes are always HTML format, regardless of the COS setting.
@@ -233,11 +241,50 @@ function() {
 	labelCell.className = "Label";
 	labelCell.innerHTML = ZmMsg.pageLabel;
 	var inputCell = row.insertCell(-1);
+	inputCell.width = "1%";
 	inputCell.appendChild(this._pageNameInput.getHtmlElement());
 
+	var warningCell = row.insertCell(-1);
+	var warningDiv = document.createElement("DIV");
+	warningCell.appendChild(warningDiv);
+	warningDiv.id = this._renameWarningId;
+	Dwt.setVisible(warningDiv, false);
+	warningDiv.className = "RenameWarning";
+	warningDiv.innerHTML = "<table><tr><td>" + AjxImg.getImageHtml("Warning") + "</td><td>" + ZmMsg.wikiChangeNameWarning + "</td></tr></table>";
+	
 	var element = this.getHtmlElement();
 	element.appendChild(table);
 	element.appendChild(textAreaEl);
+};
+
+ZmPageEditView._onNameChange =
+function(ev) {
+    var control = DwtUiEvent.getDwtObjFromEvent(ev);
+    while (control) {
+    	if (control instanceof ZmPageEditView) {
+    		// Update the warning text on a timer, after the keyboard event has 
+    		// changed the value of the input field.
+			var action = new AjxTimedAction(control, control._updateRenameWarning);
+			AjxTimedAction.scheduleAction(action, 0);
+    		break;
+    	}
+    	control = control.parent;
+    }
+};
+
+ZmPageEditView.prototype._updateRenameWarning =
+function(show) {
+    if (!this._isNewPage) {
+    	var name = this.getPageName();
+    	var pageName = this._page.name;
+	    this._showRenameWarning(name != pageName);
+    }
+};
+
+ZmPageEditView.prototype._showRenameWarning =
+function(show) {
+	var element = document.getElementById(this._renameWarningId);
+	Dwt.setVisible(element, show);
 };
 
 ZmPageEditView.prototype._getDialogXY =

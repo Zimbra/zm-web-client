@@ -240,6 +240,13 @@ ZmPageEditController.prototype._saveResponseHandler = function(response) {
 	this._exitViewAfterSave();
 	this._isHandlingSave = false;
 
+	// Update the cache if the page name changed.
+	var cache = this._app.getNotebookCache();
+	var cachedPage = cache.getPageById(this._page.id);
+	if (cachedPage && (cachedPage.name != this._page.name)) {
+		cache.renamePage(cachedPage, this._page.name);
+	}
+
 	var saveResp = response._data && response._data.SaveWikiResponse;
 	if (saveResp && saveResp.w[0].ver == 1) {
 		// NOTE: Need to let this call stack return and
