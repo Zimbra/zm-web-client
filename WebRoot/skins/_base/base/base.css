@@ -254,3 +254,8 @@ body						{	@ChromeBg@	}
 	.ImgAppBanner{filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='@AppBannerImg@',sizingMethod='scale');width:@AppBannerWidth@;height:@AppBannerHeight@;}
 	.ImgLoginBanner{filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='@LoginBannerImg@',sizingMethod='scale');width:@LoginBannerWidth@;height:@LoginBannerHeight@;}
 #ENDIF
+
+/* Specify the width of a sidebar ads when using the "ads" skin */
+#skin_sidebar_ad_width	{
+	width:@SidebarAdWidth@;
+}

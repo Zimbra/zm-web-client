@@ -147,6 +147,9 @@ AppBannerImg        =	@LogoImgDir@/AppBanner.png
 AppBannerWidth      =	120px
 AppBannerHeight     =	35px
 
+# Specify the width of a sidebar ads when using the "ads" skin
+SidebarAdWidth		=	160px
+
 
 
 # a list item that is selected, but its container is unfocused
