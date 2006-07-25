@@ -528,6 +528,7 @@ function(params) {
 		command.state = ZmZimbraMail._SENT;
 	} catch (ex) {
 		this._handleResponseSendRequest(params, new ZmCsfeResult(ex, true));
+		return;
 	}
 	if (!params.asyncMode) {
 		return this._handleResponseSendRequest(params, response);
@@ -559,7 +560,15 @@ function(params, result) {
 
 	var response;
 	try {
-		response = params.asyncMode ? result.getResponse() : result;	// may throw exception
+		if (params.asyncMode) {
+			response = result.getResponse(); // may throw exception
+		} else {
+			// for sync responses, manually throw exception if necessary
+			if (result._isException)
+				throw result._data;
+			else
+				response = result;
+		}
 		this._handleHeader(response.Header);
 	} catch (ex) {
 		DBG.println(AjxDebug.DBG2, "Request " + params.reqId + " got an exception");
