@@ -56,8 +56,7 @@ ZmComposeView.prototype.constructor = ZmComposeView;
 
 // Consts related to compose fields
 ZmComposeView.ADDRS = [ZmEmailAddress.TO, ZmEmailAddress.CC, ZmEmailAddress.BCC];
-ZmComposeView.ADDR_SETTING = {};
-ZmComposeView.ADDR_SETTING[ZmEmailAddress.CC]	= ZmSetting.SHOW_CC;
+ZmComposeView.ADDR_SETTING = {}; // XXX: may not be necessary anymore?
 ZmComposeView.ADDR_SETTING[ZmEmailAddress.BCC]	= ZmSetting.SHOW_BCC;
 ZmComposeView.QUOTED_HDRS = [ZmMailMsg.HDR_FROM, ZmMailMsg.HDR_TO, ZmMailMsg.HDR_CC,
 							 ZmMailMsg.HDR_DATE, ZmMailMsg.HDR_SUBJECT];
@@ -116,7 +115,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 
 	// reset To/Cc/Bcc fields
 	this._showAddressField(ZmEmailAddress.TO, true, true, true);
-	this._showAddressField(ZmEmailAddress.CC, this._appCtxt.get(ZmSetting.SHOW_CC), true, true);
+	this._showAddressField(ZmEmailAddress.CC, true, true, true);
 	this._showAddressField(ZmEmailAddress.BCC, this._appCtxt.get(ZmSetting.SHOW_BCC), true, true);
 
 	// populate fields based on the action and user prefs
@@ -376,6 +375,7 @@ function(type, addr) {
 		this._showAddressField(type, true);
 	}
 	this._field[type].value = addr;
+	this._adjustAddrHeight(this._field[type]);
 };
 
 // Sets the mode ZmHtmlEditor should be in.
@@ -462,8 +462,11 @@ function(bEnableInputs) {
 	}
 
 	// reset To/CC/BCC fields
-	for (var i = 0; i < ZmComposeView.ADDRS.length; i++)
-		this._field[ZmComposeView.ADDRS[i]].value = "";
+	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
+		var textarea = this._field[ZmComposeView.ADDRS[i]];
+		textarea.value = "";
+		this._adjustAddrHeight(textarea, true);
+	}
 
 	// reset subject / body fields
 	this._subjectField.value = "";
@@ -764,6 +767,56 @@ function(cv, ev) {
 	// 70 = button width + 2 borders + 2 cell spacing
 	// 54 = textarea height + 1 cell spacing
 	return new DwtPoint(70, 54 + (num * size.y));
+};
+
+ZmComposeView.prototype._acCompHandler =
+function(text, el, match) {
+	this._adjustAddrHeight(el);
+};
+
+ZmComposeView.prototype._acKeyupHandler =
+function(ev, acListView, result) {
+	var key = DwtKeyEvent.getCharCode(ev);
+	// process any printable character or enter/backspace/delete keys
+	if (result && AjxStringUtil.isPrintKey(key) ||
+		key == 3 || key == 13 || key == 8 || key == 46)
+	{
+		this._adjustAddrHeight(DwtUiEvent.getTargetWithProp(ev, "id"));
+	}
+};
+
+ZmComposeView.prototype._adjustAddrHeight =
+function(textarea, skipResetBodySize) {
+	if (AjxEnv.isSafari) return;
+
+	if (textarea.value.length == 0) {
+		textarea.style.height = "21px";
+
+		if (AjxEnv.isIE) // for IE use overflow-y
+			textarea.style.overflowY = "hidden";
+		else
+			textarea.style.overflow = "hidden";
+
+		if (!skipResetBodySize)
+			this._resetBodySize();
+
+		return;
+	}
+
+	if (textarea.scrollHeight > textarea.clientHeight) {
+		var taHeight = parseInt(textarea.style.height) || 0;
+		if (taHeight <= 65) {
+			textarea.style.height = textarea.scrollHeight + 13;
+			this._resetBodySize();
+		} else {
+			if (AjxEnv.isIE) // for IE use overflow-y
+				textarea.style.overflowY = "scroll";
+			else
+				textarea.style.overflow = "auto";
+
+			textarea.scrollTop = textarea.scrollHeight;
+		}
+	}
 };
 
 /*
@@ -1078,8 +1131,11 @@ function(composeMode) {
 		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 		var contactsLoader = contactsClass.getContactList;
 		var locCallback = new AjxCallback(this, this._getAcListLoc, [this]);
+		var compCallback = !AjxEnv.isSafari ? (new AjxCallback(this, this._acCompHandler)) : null;
+		var keyupCallback = !AjxEnv.isSafari ? (new AjxCallback(this, this._acKeyupHandler)) : null;
 		var params = {parent: this, dataClass: contactsClass, dataLoader: contactsLoader,
-					  matchValue: ZmContactList.AC_VALUE_FULL, locCallback: locCallback};
+					  matchValue: ZmContactList.AC_VALUE_FULL, locCallback: locCallback,
+					  compCallback:compCallback, keyUpCallback: keyupCallback};
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
 
@@ -1144,13 +1200,17 @@ function() {
 		}
 		html[idx++] = "<td><textarea id='";
 		html[idx++] = this._fieldId[type];
-		html[idx++] = "' rows=2 class='addresses'></textarea></td>";
+		html[idx++] = "' rows=1 class='addresses' style='";
+		html[idx++] = AjxEnv.isSafari ? "height:52px;" : "height:21px; overflow:hidden";
+		html[idx++] = "'></textarea></td>";
 		html[idx++] = "</tr></table></div></td></tr>";
 	}
 
 	// create subject field
 	html[idx++] = "<tr><td><table cellspacing=4 cellpadding=0 border=0 width=100%><tr>";
-	html[idx++] = "<td width=60 align='right'>";
+	html[idx++] = "<td width=";
+	html[idx++] = AjxEnv.isIE ? "60" : "64";
+	html[idx++] = " align='right'>";
 	html[idx++] = ZmMsg.subject;
 	html[idx++] = ":</td>";
 	html[idx++] = "<td><input autocomplete='off' type='text' id='";

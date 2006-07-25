@@ -516,13 +516,15 @@ td.DDSepInvisible div {
 
 .ZmComposeView .subjectField {
 	@FullWidth@
+	border: 1px solid rgb(206,209,201);
+	padding: 3 6 0 6;
 }
 
 /* to/cc/bcc textareas */
 .ZmComposeView .addresses {
 	@FullWidth@
-	height: 50px;		/* ??? SIZE */
-	overflow: auto;
+	border: 1px solid rgb(206,209,201);
+	padding: 3 6 3 6;
 }
 
 /* textarea where you type in the message? */

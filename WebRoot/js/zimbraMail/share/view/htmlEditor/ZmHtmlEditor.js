@@ -547,7 +547,6 @@ function(parent) {
 	this._createStyleSelect(tb);
 	this._createFontFamilySelect(tb);
 	this._createFontSizeMenu(tb);
-	new DwtControl(tb, "vertSep");
 
 	var listener = new AjxListener(this, this._justificationListener);
 	var b = this._leftJustifyButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");

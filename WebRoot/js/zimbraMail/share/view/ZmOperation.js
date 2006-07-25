@@ -152,7 +152,8 @@ ZmOperation.SETUP[ZmOperation.COMPOSE_FORMAT] = {
 
 ZmOperation.COMPOSE_OPTIONS = i++;
 ZmOperation.SETUP[ZmOperation.COMPOSE_OPTIONS] = {
-	textKey:	"options"
+	textKey:	"options",
+	image:		"Preferences"
 };
 
 ZmOperation.CONTACT = i++;
@@ -194,7 +195,6 @@ ZmOperation.SETUP[ZmOperation.DETACH] = {
 
 ZmOperation.DETACH_COMPOSE = i++;
 ZmOperation.SETUP[ZmOperation.DETACH_COMPOSE] = {
-	textKey:	"detach",
 	tooltipKey:	"detachTooltip",
 	image:		"OpenInNewWindow"
 };
@@ -850,11 +850,6 @@ ZmOperation.SETUP[ZmOperation.SHOW_ALL_ITEM_TYPES] = {
 ZmOperation.SHOW_BCC = i++;
 ZmOperation.SETUP[ZmOperation.SHOW_BCC] = {
 	textKey:	"showBcc"
-};
-
-ZmOperation.SHOW_CC = i++;
-ZmOperation.SETUP[ZmOperation.SHOW_CC] = {
-	textKey:	"showCc"
 };
 
 ZmOperation.SHOW_ONLY_CONTACTS = i++;

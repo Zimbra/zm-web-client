@@ -58,8 +58,7 @@ function ZmComposeController(appCtxt, container, mailApp) {
 };
 
 // settings whose changes affect us (so we add a listener to them)
-ZmComposeController.SETTINGS = [ZmSetting.SHOW_CC, ZmSetting.SHOW_BCC,
-								ZmSetting.SIGNATURE_ENABLED, ZmSetting.SIGNATURE];
+ZmComposeController.SETTINGS = [ZmSetting.SHOW_BCC, ZmSetting.SIGNATURE_ENABLED, ZmSetting.SIGNATURE];
 
 // radio groups for options items
 ZmComposeController.RADIO_GROUP = {};
@@ -206,7 +205,7 @@ function(attId, isDraft, callback) {
 	var inviteMode = msg.inviteMode;
 	var isCancel = inviteMode == ZmOperation.REPLY_CANCEL;
 	var isModify = inviteMode == ZmOperation.REPLY_MODIFY;
-	debugger;
+
 	if (isCancel || isModify) {
 		var origMsg = msg._origMsg;
 		var appt = origMsg._appt;
@@ -452,9 +451,9 @@ function() {
 		buttons.push(ZmOperation.SAVE_DRAFT);
 	buttons.push(ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK);
 	buttons.push(ZmOperation.ADD_SIGNATURE);
+	buttons.push(ZmOperation.COMPOSE_OPTIONS);
 
 	buttons.push(ZmOperation.FILLER); // right-align remaining buttons
-	buttons.push(ZmOperation.COMPOSE_OPTIONS);
 	if (!this.isChildWindow) {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
 	}
@@ -505,7 +504,7 @@ function(action) {
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		list.push(ZmOperation.FORMAT_HTML, ZmOperation.FORMAT_TEXT, ZmOperation.SEP);
 	}
-	list.push(ZmOperation.SHOW_CC, ZmOperation.SHOW_BCC);
+	list.push(ZmOperation.SHOW_BCC);
 	if (isReply) {
 		list.push(ZmOperation.SEP, ZmOperation.INC_NONE, ZmOperation.INC_ATTACHMENT, ZmOperation.INC_NO_PREFIX,
 				  ZmOperation.INC_PREFIX, ZmOperation.INC_SMART);
@@ -521,7 +520,7 @@ function(action) {
 		if (op == ZmOperation.SEP) {
 			menu.createSeparator();
 		} else {
-			var style = (op == ZmOperation.SHOW_CC || op == ZmOperation.SHOW_BCC) ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
+			var style = op == ZmOperation.SHOW_BCC ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
 			var radioGroup = (style == DwtMenuItem.RADIO_STYLE) ? ZmComposeController.RADIO_GROUP[op] : null;
 			var text = (op == ZmOperation.REPLY) ? ZmMsg.replySender : ZmMsg[ZmOperation.getProp(op, "textKey")];
 			var mi = menu.createMenuItem(op, ZmOperation.getProp(op, "image"), text, null, true, style, radioGroup);
@@ -557,7 +556,6 @@ function(composeMode) {
 			menu.checkItem(ZmOperation.KEY_ID, this._action, true);
 		}
 	}
-	menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_CC).setChecked(this._appCtxt.get(ZmSetting.SHOW_CC), true);
 	menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(this._appCtxt.get(ZmSetting.SHOW_BCC), true);
 	
 	button.setMenu(menu);
@@ -706,11 +704,10 @@ ZmComposeController.prototype._optionsListener =
 function(ev) {
 	var op = ev.item.getData(ZmOperation.KEY_ID);
 
-	// Show CC/BCC are checkboxes
-	if (op == ZmOperation.SHOW_CC || op == ZmOperation.SHOW_BCC) {
+	// Show BCC is checkbox
+	if (op == ZmOperation.SHOW_BCC) {
 		var showField = (ev.detail == DwtMenuItem.CHECKED);
-		var addrType = (op == ZmOperation.SHOW_CC) ? ZmEmailAddress.CC : ZmEmailAddress.BCC;
-		this._composeView._showAddressField(addrType, showField);
+		this._composeView._showAddressField(ZmEmailAddress.BCC, showField);
 		return;
 	}
 
@@ -803,10 +800,6 @@ function(ev) {
 		var canAddSig = (!this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED) && this._appCtxt.get(ZmSetting.SIGNATURE));
 		var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
 		signatureButton.setVisible(canAddSig);
-	} else if (id == ZmSetting.SHOW_CC) {
-		var menu = this._optionsMenu[this._action];
-		if (menu)
-			menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_CC).setChecked(this._appCtxt.get(ZmSetting.SHOW_CC), true);
 	} else if (id == ZmSetting.SHOW_BCC) {
 		var menu = this._optionsMenu[this._action];
 		if (menu)
