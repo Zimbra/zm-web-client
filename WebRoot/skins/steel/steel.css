@@ -89,7 +89,15 @@ body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
 	
 #skin_td_top						{														}
 #skin_td_logo						{	text-align:center; vertical-align:middle;			}
+#IFDEF MSIE
+	#skin_td_logo					{	padding-bottom: 8px;			}
+#ENDIF
+
 #skin_td_quota						{	width:180;  text-align:right;						}
+#IFDEF MSIE
+	#skin_td_quota					{	padding-bottom: 1px;			}
+#ENDIF
+
 #skin_td_quota_spacer				{	width:20;											}
 #skin_td_search						{	background-color:white;								}
 #skin_td_search_builder				{	background-color:white;								}

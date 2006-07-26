@@ -205,9 +205,15 @@ _SashContentsColor_			= @_BaseColorD20_@
 #######
 
 SkinOuter					= @ChromeBg@
-SkinBorderLogo				= 
+SkinBorderLogo				=
+#IFDEF MSIE
+	SkinBorderLogo			= padding-bottom:12px;
+#ENDIF
 SkinBorderSearch			= @InsetBg@ @OutsetBorder@ -moz-border-radius:3 3 3 3;
 SkinBorderQuota				= 
+#IFDEF MSIE
+	SkinBorderQuota			= padding-bottom:8px;
+#ENDIF
 SkinBorderSBToolbar			= @ToolbarContainer@
 SkinBorderSB				= @InsetBg@ @OutsetBorder@								border-top-width:0px;
 SkinBorderCurrentApp		= @InsetBg@ @OutsetBorder@ 	-moz-border-radius:3 3 0 3;	margin-bottom:-1px;
