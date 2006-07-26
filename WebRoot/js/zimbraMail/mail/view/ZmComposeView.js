@@ -749,24 +749,10 @@ function() {
 ZmComposeView.prototype._getAcListLoc =
 function(cv, ev) {
 	var element = ev.element;
-	var id = element.id;
+	var field = document.getElementById(cv._divId[element.addrType]);
+	var offset = Dwt.getLocation(field).y - this.getLocation().y
 
-	// Figure out proper location for autocomplete list. A bit hacky since the address fields are
-	// statically positioned within tables (Dwt.getLocation() returns offset from window).
-	var type = element.addrType;
-	var field = document.getElementById(cv._divId[type]);
-
-	// find out how many address fields visible above this one
-	var num = 0;
-	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
-		var t = ZmComposeView.ADDRS[i];
-		if (cv._using[t] && t < type)
-			num++;
-	}
-	var size = Dwt.getSize(field);
-	// 70 = button width + 2 borders + 2 cell spacing
-	// 54 = textarea height + 1 cell spacing
-	return new DwtPoint(70, 54 + (num * size.y));
+	return new DwtPoint(75, offset + Dwt.getSize(element).y + 6);
 };
 
 ZmComposeView.prototype._acCompHandler =
