@@ -154,13 +154,19 @@ function(ev) {
 	// just a selection mechanism
 	if (key == 3 || key == 13) {
 		var element = DwtUiEvent.getTargetWithProp(ev, "id");
-		if (!element) return true;
+		if (!element) {
+			return ZmAutocompleteListView._echoKey(true, ev);
+		}
 		var aclv = AjxCore.objectWithId(element._acListViewId);
-		if (aclv.getVisible()) {
-			return false;
+		if (aclv && aclv.getVisible()) {
+			return ZmAutocompleteListView._echoKey(false, ev);
 		}
 	}
-	return (key == DwtKeyEvent.KEY_TAB || key == DwtKeyEvent.KEY_ESCAPE) ? ZmAutocompleteListView._onKeyUp(ev) : true;
+	if (key == 9 || key == 27) {
+		return ZmAutocompleteListView._onKeyUp(ev);
+	} else {
+		return ZmAutocompleteListView._echoKey(true, ev);
+	}
 };
 
 /**
@@ -175,7 +181,9 @@ function(ev) {
 		DBG.println(AjxDebug.DBG3, "onKeyUp");
 	}
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return true;
+	if (!element) {
+		return ZmAutocompleteListView._echoKey(true, ev);
+	}
 
 	var aclv = AjxCore.objectWithId(element._acListViewId);
 	
@@ -183,8 +191,10 @@ function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
 
 	// Tab/Esc handled in keydown for IE
-	if (AjxEnv.isIE && ev.type == "keyup" && (key == 9 || key == 27))
-		return true;
+	if (AjxEnv.isIE && ev.type == "keyup" && (key == 9 || key == 27)) {
+		return ZmAutocompleteListView._echoKey(true, ev);
+	}
+
 	var value = element.value;
 	DBG.println(AjxDebug.DBG3, ev.type + " event, key = " + key + ", value = " + value);
 
@@ -201,30 +211,35 @@ function(ev) {
 	// don't let the browser handle are ones that control the features of the autocomplete
 	// list.
 
-	if (key == 16 || key == 17 || key == 18) // SHIFT, ALT, or CTRL
-		return true;
-	if (ev.altKey || ev.ctrlKey) // ALT and CTRL combos
-		return true;
+	if (key == 16 || key == 17 || key == 18) { // SHIFT, ALT, or CTRL
+		return ZmAutocompleteListView._echoKey(true, ev);
+	}
+	if (ev.altKey || ev.ctrlKey) { // ALT and CTRL combos
+		return ZmAutocompleteListView._echoKey(true, ev);
+	}
 	// if the field is empty, clear the list
 	if (!value) {
 		aclv.reset();
-		return true;
+		return ZmAutocompleteListView._echoKey(true, ev);
 	}
-	if (key == 37 || key == 39) // left/right arrow key
-		return true;
+	if (key == 37 || key == 39) { // left/right arrow key
+		return ZmAutocompleteListView._echoKey(true, ev);
+	}
 	// Pass tab through if there's no list (will transfer focus)
-	if ((key == 9) && !aclv.size())
-		return true;
+	if ((key == 9) && !aclv.size()) {
+		return ZmAutocompleteListView._echoKey(true, ev);
+	}
 
-	if (AjxStringUtil.isPrintKey(key) || (key == 3 || key == 9 || key == 13))
+	if (AjxStringUtil.isPrintKey(key) || (key == 3 || key == 9 || key == 13)) {
 		aclv._numChars++;
+	}
 		
 	// if the user types a single delimiting character with the list showing, do completion
 	var isDelim = (aclv.getVisible() && (aclv._numChars == 1) && 
 				   ((key == 3 || key == 9 || key == 13) || (!ev.shiftKey && (key == 59 || key == 186 || key == 188))));
 
 	DBG.println(AjxDebug.DBG3, "numChars = " + aclv._numChars + ", key = " + key + ", isDelim: " + isDelim);
-	if (isDelim || (key == 27 || key == 38 || key == 40)) {
+	if (isDelim || (key == 27 || (aclv.getVisible() && (key == 38 || key == 40)))) {
 		aclv.handleAction(key, isDelim);
 		// In Firefox, focus shifts on Tab even if we return false (and stop propagation and prevent default),
 		// so make sure the focus stays in this element.
@@ -232,14 +247,13 @@ function(ev) {
 			aclv._focusAction.args = [ element ];
 			AjxTimedAction.scheduleAction(aclv._focusAction, 0);
 		}
-		DwtUiEvent.setBehaviour(ev, true, false);
-		return false;
+		return ZmAutocompleteListView._echoKey(false, ev);
 	}
 
 	// skip if it's some weird character
-	if (!AjxStringUtil.isPrintKey(key) && 
-		(key != 3 && key != 13 && key != 9 && key != 8 && key != 46))
-		return true;
+	if (!AjxStringUtil.isPrintKey(key) && (key != 3 && key != 13 && key != 9 && key != 8 && key != 46)) {
+		return ZmAutocompleteListView._echoKey(true, ev);
+	}
 
 	// regular input, schedule autocomplete
 	var ev1 = new DwtKeyEvent();
@@ -251,7 +265,19 @@ function(ev) {
 	DBG.println(AjxDebug.DBG2, "scheduling autocomplete");
 	aclv._acActionId = AjxTimedAction.scheduleAction(aclv._acAction, aclv._acInterval);
 	
-	return true;
+	return ZmAutocompleteListView._echoKey(true, ev);
+};
+
+/**
+ * Invokes or prevents the browser's default behavior (which is to echo the typed key).
+ * 
+ * @param echo	[boolean]		if true, echo the key
+ * @param ev	[Event]			the UI event
+ */
+ZmAutocompleteListView._echoKey =
+function(echo, ev) {
+	DwtUiEvent.setBehaviour(ev, !echo, echo);
+	return echo;
 };
 
 // Hides list if there is a click elsewhere.
