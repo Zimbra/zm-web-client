@@ -2021,9 +2021,10 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /* ??? I THINK THIS SHOULD BE DYNAMICALLY WRITTEN ACCORDING TO THEIR PREFERENCES...? */
 .ZmNotebookPageView, .ZmNotebookPageView P, .ZmNotebookPageView TD, .ZmNotebookPageView DIV,
-.ZmNotebookPageView SPAN, .ZmNotebookPageView SELECT, .ZmNotebookPageView INPUT, 
-.ZmNotebookPageView TEXTAREA, .ZmNotebookPageView BUTTON {
-	@FontFamily-html@
+.ZmNotebookPageView SPAN, .ZmNotebookPageView SELECT, .ZmNotebookPageView INPUT,
+.ZmNotebookPageView TEXTAREA, .ZmNotebookPageView BUTTON, .ZmNotebookPageView A {
+	font-family:inherit;
+	font-size:inherit;
 }
 .ZmNotebookPageView H1 {
 	margin-top: 0;
@@ -2034,10 +2035,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-bottom: @BoxMarginSize@;
 }
 
-/* This makes everything under the ZmNotebookPageView item use the same font family */
-.ZmNotebookPageView * {
-	font-family: inherit;
-}
 .ZmNotebookPageView SPAN.Object, .ZmNotebookPageView SPAN.Object-activated {}
 
 .ZmPageEditView {

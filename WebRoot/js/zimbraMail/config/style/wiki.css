@@ -1,9 +1,5 @@
 #ZimbraWikiPage {}
 
-#ZimbraWikiPage * {
-	font-family: inherit;
-	font-size: inherit;
-}
 #ZimbraWikiPage .zmwiki-chromeTable,
 #ZimbraWikiPage .zmwiki-tocTable {
 	width:100%;
