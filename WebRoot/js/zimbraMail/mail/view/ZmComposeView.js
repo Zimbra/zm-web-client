@@ -1161,7 +1161,6 @@ function(composeMode) {
 		// autocomplete-related handlers
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._acAddrSelectList.handle(this._field[type]);
-			this._setEventHandler(this._fieldId[type], "onClick");
 		} else {
 			if (!AjxEnv.isSafari)
 				this._setEventHandler(this._fieldId[type], "onKeyUp");
@@ -1608,22 +1607,19 @@ function(isDraft, status, attId) {
 
 // Static methods
 
-// Click event will either be on an add address link, or in an address textarea field.
-// If the former, show the address element. If the latter, hide the autocomplete list.
 ZmComposeView._onClick =
 function(ev) {
 	ev || (ev = window.event);
 
 	var element = DwtUiEvent.getTargetWithProp(ev, "id");
-	if (!element) return true;
+	var id = element ? element.id : null;
 
-	var id = element.id;
-	var cv = AjxCore.objectWithId(element._composeView);
-
-	if (id.indexOf("_att_") == 0) {
-		// click on attachment remove link, get att div id
+	// if clicked on remove attachment link
+	if (id && id.indexOf("_att_") == 0) {
+		var cv = AjxCore.objectWithId(element._composeView);
 		var attId = id.slice(0, -2);
 		var row = document.getElementById(attId);
+
 		cv._attachmentTable.deleteRow(row.rowIndex);
 		if (--cv._attachCount < ZmComposeView.SHOW_MAX_ATTACHMENTS) {
 			cv._attcDiv.style.overflow = "";
@@ -1634,8 +1630,10 @@ function(ev) {
 			}
 		}
 		cv._resetBodySize();
-		return false; // disable following of link
+		return false; // disables following of link
 	}
+
+	return true;
 };
 
 ZmComposeView._onKeyDown =
