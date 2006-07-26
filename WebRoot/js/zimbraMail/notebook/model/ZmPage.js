@@ -35,6 +35,10 @@ function() {
 	return "ZmPage";
 };
 
+// Constants
+
+ZmPage.DEFAULT_FOLDER = ZmOrganizer.ID_NOTEBOOK;
+
 // Data
 
 ZmPage.prototype.fragment;
