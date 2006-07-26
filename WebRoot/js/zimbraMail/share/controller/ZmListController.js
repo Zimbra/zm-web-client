@@ -548,7 +548,7 @@ function(ev, id) {
 
 			var notebook = treeView ? treeView.getSelected() : null;
 			var page = new ZmPage(this._appCtxt);
-			page.folderId = notebook ? notebook.id : ZmPage.DEFAULT_FOLDER;
+			page.folderId = notebook ? notebook.id : ZmNotebookItem.DEFAULT_FOLDER;
 
 			var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 			var controller = app.getPageEditController();
