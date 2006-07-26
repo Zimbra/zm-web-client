@@ -289,6 +289,8 @@ function(id) {
 
 ZmCalViewController.prototype._updateCheckedCalendars =
 function() {
+	if (!this._calTreeController)
+		return [];
 	var cc = this._calTreeController.getCheckedCalendars(ZmZimbraMail._OVERVIEW_ID);
 	this._checkedCalendars = cc;
 	this._checkedCalendarFolderIds = [];
