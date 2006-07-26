@@ -356,6 +356,10 @@ function() {
 	return !this.isOrganizer() || isLinkAndReadOnly;
 };
 
+ZmAppt.prototype.isShared =
+function() {
+	return this.id.indexOf(":") != -1;
+};
 
 ZmAppt.prototype.resetRepeatWeeklyDays = 
 function() {
@@ -1825,6 +1829,10 @@ function(respName, callback, result) {
 	var response = resp[respName];
 	if (response.uid != null)
 		this.uid = response.uid;
+
+	// set ID now if appt is shared since we wont get CREATE notification (see bug 6082)
+	if (response.apptId && response.apptId.indexOf(":") != -1)
+		this.id = response.apptId;
 
 	if (response.m != null) {
 		var oldInvId = this.invId;

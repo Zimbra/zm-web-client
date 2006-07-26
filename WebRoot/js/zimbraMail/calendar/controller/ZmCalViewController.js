@@ -959,6 +959,14 @@ function(appt, mode) {
 	}
 };
 
+// XXX: this method is temporary until bug 6082 is fixed!
+ZmCalViewController.prototype.checkForRefresh =
+function(appt) {
+	if (appt.isShared()) {
+		this._refreshAction(false);
+	}
+};
+
 ZmCalViewController.prototype._showAppointmentDetails =
 function(appt) {
 	try {
@@ -1026,8 +1034,10 @@ function(ev) {
 		if (this._quickAddDialog.isValid()) {
 			this._quickAddDialog.popdown();
 			var appt = this._quickAddDialog.getAppt();
-			if (appt)
-				appt.save();
+			if (appt) {
+				var callback = new AjxCallback(this, this._refreshActionCallback, [appt]);
+				appt.save(null, callback);
+			}
 		}
 	} catch(ex) {
 		if (typeof ex == "string") {
@@ -1037,6 +1047,13 @@ function(ev) {
 			errorDialog.popup();
 		}
 	}
+};
+
+// XXX: remove once bug 6082 is fixed!
+ZmCalViewController.prototype._refreshActionCallback =
+function(appt) {
+	if (appt.isShared())
+		this._refreshAction(false);
 };
 
 ZmCalViewController.prototype._quickAddMoreListener = 
@@ -1059,7 +1076,8 @@ function(appt, mode) {
 * endDate - new or null to leave alone
 * changeSeries - if recurring, change the whole series
 *
-* TODO: change this to work with _handleException, and take callback so view can restore appt location/size on failure
+* TODO: change this to work with _handleException, and take callback so view can
+*       restore appt location/size on failure
 */
 ZmCalViewController.prototype.dndUpdateApptDate =
 function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
@@ -1135,7 +1153,8 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		appt.setViewMode(viewMode);
 		if (startDateOffset) appt.setStartDate(new Date(appt.getStartTime() + startDateOffset));
 		if (endDateOffset) appt.setEndDate(new Date(appt.getEndTime() + endDateOffset));
-		appt.save(null, callback, errorCallback);
+		var respCallback = callback || (new AjxCallback(this, this._refreshActionCallback, [appt]));
+		appt.save(null, respCallback, errorCallback);
 	} catch (ex) {
 		if (ex.msg) {
 			this.popupErrorDialog(AjxMessageFormat.format(ZmMsg.mailSendFailure, ex.msg));

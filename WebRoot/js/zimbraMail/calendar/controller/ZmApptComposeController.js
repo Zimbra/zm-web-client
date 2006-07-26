@@ -293,11 +293,11 @@ function(errorMsg) {
 
 ZmApptComposeController.prototype._saveApptFoRealz = 
 function(appt, attId, notifyList) {
-	var args = null;
+	var args = [appt];
 	var mode = appt.getViewMode();
 	if (mode != ZmAppt.MODE_NEW && appt._orig && appt._orig.folderId != appt.folderId) {
-		// pass along appt and folderId for appt move
-		args = [ appt, appt.folderId ];
+		// pass along folderId for appt move
+		args.push(appt.folderId);
 	}
 	var callback = new AjxCallback(this, this._handleResponseSave, args);
 	var errorCallback = new AjxCallback(this, this._handleErrorSave);
@@ -313,6 +313,9 @@ function(appt, folderId) {
 	} else {
 		this._handleResponseCleanup();
 	}
+
+	// XXX: remove once bug 6082 is fixed!
+	this._app.getCalController().checkForRefresh(appt);
 };
 
 ZmApptComposeController.prototype._handleResponseCleanup = 
