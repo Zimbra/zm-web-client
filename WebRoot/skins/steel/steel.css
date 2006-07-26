@@ -186,3 +186,9 @@ body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
 	.ImgAppBanner{filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='@AppBannerImg@',sizingMethod='scale');width:@AppBannerWidth@;height:@AppBannerHeight@;}
 	.ImgLoginBanner{filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='@LoginBannerImg@',sizingMethod='scale');width:@LoginBannerWidth@;height:@LoginBannerHeight@;}
 #ENDIF
+
+
+/* Specify the width of sidebar ads when using a skin with ads */
+.skin_sidebar_ad	{
+	width:@SidebarAdWidth@;
+}

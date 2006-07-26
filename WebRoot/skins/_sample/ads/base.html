@@ -261,10 +261,11 @@ skin._reflowApp = function () {
 
 	</td>
 	<td id='skin_td_sidebar_ad' style='padding-top:48px;padding-right:5px;padding-bottom:5px;vertical-align:top;'>
-		<!-- AD NOTE: set the width below ("160px") to the width of your ad space.  
-						You *must* leave the two nested DIVs in place or a long ad
-						will cause the app to resize improperly.					-->
-		<div style='position:relative;width:160px;height:100%;overflow:hidden;'>
+		<!-- AD NOTES: 
+				* Set "SidebarAdWidth" in your "skin_subs.txt" file to the width of your ads
+				* You *must* leave the two nested DIVs in place or a long ad
+					will cause the app to resize improperly.					-->
+		<div class='skin_sidebar_ad' style='position:relative;height:100%;overflow:hidden;'>
 			<div id='skin_container_sidebar_ad' style='position:absolute;'>
 				<!-- replace this text with code to invoke your sidebar ad -->
 				Your sidebar ad here
