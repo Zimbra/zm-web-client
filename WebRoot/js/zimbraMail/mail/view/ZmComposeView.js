@@ -1162,6 +1162,9 @@ function(composeMode) {
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._acAddrSelectList.handle(this._field[type]);
 			this._setEventHandler(this._fieldId[type], "onClick");
+		} else {
+			if (!AjxEnv.isSafari)
+				this._setEventHandler(this._fieldId[type], "onKeyUp");
 		}
 	}
 };
@@ -1647,4 +1650,16 @@ function(ev) {
 	// ignore return in attachment input field (bug 961)
 	if (id.indexOf("_att_") == 0)
 		return (key != DwtKeyEvent.KEY_ENTER && key != DwtKeyEvent.KEY_END_OF_TEXT);
+};
+
+// NOTE: this handler should only get triggered if/when contacts are DISABLED!
+ZmComposeView._onKeyUp =
+function(ev) {
+	ev || (ev = window.event);
+
+	var element = DwtUiEvent.getTargetWithProp(ev, "id");
+	if (!element) return true;
+
+	var cv = AjxCore.objectWithId(element._composeView);
+	cv._adjustAddrHeight(element);
 };
