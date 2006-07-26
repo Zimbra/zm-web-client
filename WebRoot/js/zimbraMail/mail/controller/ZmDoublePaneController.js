@@ -223,6 +223,10 @@ function() {
 			this._doGetMsg(msg);
 		} else {
 			this._doublePaneView.setMsg(msg);
+			if (msg.isUnread) {
+				// msg was cached, then marked unread
+				this._list.markRead([msg], true);
+			}
 		}
 	}
 };
