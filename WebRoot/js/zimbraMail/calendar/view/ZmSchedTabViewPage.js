@@ -1037,6 +1037,7 @@ function(ev) {
 	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 	this._outlineAppt(this._dateInfo);
+	this._apptTab.updateTimeField(this._dateInfo);
 };
 
 ZmSchedTabViewPage.prototype._selectChangeListener = 

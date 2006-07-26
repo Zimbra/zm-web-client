@@ -95,7 +95,6 @@ function() {
 	this.parent.tabSwitched(this._tabKey);
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
-	this.updateTimeField(this._dateInfo);
 	this._setAttendees();
 };
 
