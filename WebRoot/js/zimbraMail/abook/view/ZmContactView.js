@@ -731,7 +731,7 @@ function(ev) {
 			cv._setTitle(ZmContact.computeFileAs(cv._attr));
 			cv._isDirty = true;
 		} else if (selectObj == cv._folderSelect) {
-			cv._attr[ZmContact.F_fileAs] = newValue;
+			cv._attr[ZmContact.F_folderId] = newValue;
 			cv._isDirty = true;
 		}
 	}
