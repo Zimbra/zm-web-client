@@ -61,12 +61,12 @@ function(actionCode) {
 	
 	switch (actionCode) {
 		case ZmKeyMap.EDIT:
-			if (this._object && this._object.name != ZmNotebook.PAGE_INDEX) {
+			if (this._object && !this._object.isReadOnly()) {
 				this._editListener();
 			}
 			break;
 		case ZmKeyMap.DEL:
-			if (this._object && this._object.name != ZmNotebook.PAGE_INDEX) {
+			if (this._object && !this._object.isReadOnly()) {
 				return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 			}
 			break;

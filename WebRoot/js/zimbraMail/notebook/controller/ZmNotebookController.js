@@ -149,7 +149,7 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
 	//toolbarOrActionMenu.enable(ZmOperation.DETACH, false);
 
 	var buttons = [ZmOperation.EDIT, ZmOperation.TAG_MENU, ZmOperation.DELETE];
-	var enabled = this._object && this._object.name != ZmNotebook.PAGE_INDEX;
+	var enabled = this._object && !this._object.isReadOnly();
 	toolbarOrActionMenu.enable(buttons, enabled);
 };
 

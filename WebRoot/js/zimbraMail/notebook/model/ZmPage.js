@@ -39,6 +39,7 @@ function() {
 
 ZmPage.prototype.fragment;
 ZmPage.prototype._content; // NOTE: content loading can be deferred
+ZmPage.prototype._notebook;
 
 // Static functions
 
@@ -92,6 +93,44 @@ ZmPage.prototype.getContent = function(callback, errorCallback) {
 	}
 	return this._content;
 };
+
+/**
+* Returns the notebook that owns this page. If this item's owning folder is a section,
+* we will go up the hierarchy of folders till we get to the top-level notebook.
+*/
+ZmPage.prototype.getNotebook =
+function() {
+	if (!this._notebook) {
+		var folder = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK).getById(this.folderId);
+		while (folder && folder.parent && (folder.parent.id != ZmOrganizer.ID_ROOT)) {
+			folder = folder.parent;
+		}
+		this._notebook = folder;
+	}
+	return this._notebook;
+};
+
+ZmPage.prototype.isShared =
+function() {
+	var notebook = this.getNotebook();
+	return notebook && notebook.link;
+};
+
+ZmPage.prototype.isReadOnly =
+function() {
+	if (this.isIndex())
+		return true;
+		
+	return this.isShared()
+		? this.getNotebook().isReadOnly()
+		: false;
+};
+
+ZmPage.prototype.isIndex =
+function() {
+	return this.name == ZmNotebook.PAGE_INDEX;
+};
+
 
 // i/o
 
