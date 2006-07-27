@@ -943,10 +943,15 @@ function() {
 				headContent.push(win.getHeadHTML());
 			}
 			var holder = doc.createElement("div");
-			iframe.parentNode.replaceChild(holder, iframe);
 			holder.innerHTML = html;
 			holder.appendChild(doc.createComment(data));
 			holder.className = "ACE " + component_name;
+			if (!AjxEnv.isIE)
+				iframe.parentNode.replaceChild(holder, iframe);
+			else {
+				iframe.parentNode.insertBefore(holder, iframe);
+				iframe.parentNode.removeChild(iframe);
+			}
 		} catch(ex) {
 			// FIXME: for now we just drop the iframe; should we do something else?
 			iframe.parentNode.removeChild(iframe);
