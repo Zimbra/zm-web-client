@@ -395,6 +395,8 @@ function(composeMode) {
 
 		// for now, always reset message body size
 		this._resetBodySize();
+		// recalculate form value since HTML mode inserts HTML tags
+		this._origFormValue = this._formValue();
 	}
 };
 
