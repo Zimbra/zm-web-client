@@ -44,16 +44,6 @@ function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt, withAce) {
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));
 
-/* This listener is causing some ugly problems when switching between Html & Text modes
-	// only add listener if this is not a child window
-	if (window.parentController == null) {
-		var settings = this._appCtxt.getSettings();
-		var listener = new AjxListener(this, this._settingsChangeListener);
-		settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_COLOR).addChangeListener(listener);
-		settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_FAMILY).addChangeListener(listener);
-		settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).addChangeListener(listener);
-	}
-*/
 	// spell checker init
 	this._spellChecker = new ZmSpellChecker(this, appCtxt);
 	this._spellCheck = null;
@@ -101,9 +91,8 @@ function(mode, convert) {
 // 		this._createToolbars();
 
 	if (mode == DwtHtmlEditor.HTML) {
-		this._fontFamilyButton.setText(this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
+		this._fontFamilyButton.setText(DwtHtmlEditor.FONT_FAMILY[1].name);
 		this._fontSizeButton.setText(this._defaultFontSizeLabel);
-		var fontSize = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 		this._styleMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.PARAGRAPH, true);
 		this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT, true);
 	}
@@ -1015,14 +1004,13 @@ function(tb) {
 	b.setAlign(DwtLabel.ALIGN_LEFT);
 	var menu = new ZmPopupMenu(b);
 	var listener = new AjxListener(this, this._fontNameListener);
-	var defaultFont = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
 
 	for (var i = 0; i < DwtHtmlEditor.FONT_FAMILY.length; i++) {
 		var item = DwtHtmlEditor.FONT_FAMILY[i];
 		var mi = menu.createMenuItem(item.name, null, item.name, null, true);
 		mi.addSelectionListener(listener);
 		mi.setData(ZmHtmlEditor._VALUE, i);
-		if (item.name == defaultFont) {
+		if (i == 1) { // default to Times
 			b.setText(item.name);
 		}
 	}
@@ -1036,7 +1024,6 @@ function(tb) {
 	b.dontStealFocus();
 	var menu = new ZmPopupMenu(b);
 	var listener = new AjxListener(this, this._fontSizeListener);
-	var defaultFontSize = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
 	var menuItems = [ "", "8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt" ];
 
 	for (var i = 1; i < menuItems.length; i++) {
@@ -1045,7 +1032,7 @@ function(tb) {
 		var mi = menu.createMenuItem(i, null, label, null, true);
 		mi.addSelectionListener(listener);
 		mi.setData(ZmHtmlEditor._VALUE, i);
-		if (item == defaultFontSize) {
+		if (i == 3) { // default to 12pt
 			this._defaultFontSizeLabel = label;
 			b.setText(label);
 		}
@@ -1110,33 +1097,6 @@ function(ev) {
 		}, 100);
 	}
 	return rv;
-};
-
-ZmHtmlEditor.prototype._getInitialFontFamily =
-function() {
-	// get font family user preference
-	var familyPref = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY);
-	familyPref = familyPref.toLowerCase(); // normalize value
-
-	var fontFamily = DwtHtmlEditor._TIMES;
-	if (familyPref.search(DwtHtmlEditor._VERDANA_RE) != -1)
-		fontFamily = DwtHtmlEditor._VERDANA;
-	else if (familyPref.search(DwtHtmlEditor._ARIAL_RE) != -1)
-		fontFamily = DwtHtmlEditor._ARIAL;
-	else if (familyPref.search(DwtHtmlEditor._COURIER_RE) != -1)
-		fontFamily = DwtHtmlEditor._COURIER;
-
-	return fontFamily;
-};
-
-ZmHtmlEditor.prototype._getInitialFontSize =
-function() {
-	return this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE);
-};
-
-ZmHtmlEditor.prototype._getInitialFontColor =
-function() {
-	return this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
 };
 
 

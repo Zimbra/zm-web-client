@@ -100,9 +100,7 @@ function() {
 		var value = this._getPrefValue(id, false, true);
 		if (id == ZmSetting.SHOW_FRAGMENTS && !this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED))
 			setup.displayName = ZmMsg.showFragmentsMsg;
-		// bug fix #4519 - only show html font settings if html compose is enabled
-		if (id == ZmSetting.COMPOSE_INIT_FONT_FAMILY && !this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
-			continue;
+
 		DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
 		var type = setup ? setup.displayContainer : null;
@@ -131,10 +129,7 @@ function() {
 				html[j++] = "wrap='on' style='width:402' rows='4' cols='60'>";
 				html[j++] = value;
 				html[j++] = "</textarea>";
-			} else if (type == ZmPref.TYPE_PASSWORD || type == ZmPref.TYPE_FONT ||
-					   type == ZmPref.TYPE_IMPORT || type == ZmPref.TYPE_EXPORT) {
-				if (id == ZmSetting.COMPOSE_INIT_FONT_SIZE)
-					continue;
+			} else if (type == ZmPref.TYPE_PASSWORD || type == ZmPref.TYPE_IMPORT || type == ZmPref.TYPE_EXPORT) {
 				buttonId = Dwt.getNextId();
 				html[j++] = "<div id='";
 				html[j++] = buttonId;
@@ -150,10 +145,6 @@ function() {
 				this._addImportWidgets(this._importDiv);
 			} else if (type == ZmPref.TYPE_EXPORT) {
 				this._addButton(buttonId, ZmMsg._export, 65, new AjxListener(this, this._exportContactsListener));
-			} else if (type == ZmPref.TYPE_FONT && this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {	
-				this._fontDiv = document.getElementById(buttonId);
-				var fontSizeValue = settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_SIZE).getValue();
-				this._addFontPrefs(this._fontDiv, id, setup, value, fontSizeValue);
 			}
 		}
 	}
@@ -166,7 +157,7 @@ function(id) {
 	var value = null;
 	var setup = ZmPref.SETUP[id];
 	var type = setup ? setup.displayContainer : null;
-	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_FONT) {
+	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_INPUT) {
 		var object = this._dwtObjects[id];
 		if (object)
 			value = object.getValue();
@@ -208,7 +199,7 @@ function(useDefaults) {
 		if (type == ZmPref.TYPE_PASSWORD) continue; // ignore non-form elements
 		var pref = settings.getSetting(id);
 		var newValue = this._getPrefValue(id, useDefaults, true);
-		if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_FONT) {
+		if (type == ZmPref.TYPE_SELECT) {
 			var input = this._dwtObjects[id];
 			if (!input) continue;
 			
@@ -231,12 +222,6 @@ function(useDefaults) {
 			} else {
 				if (newValue == null) newValue = "";
 				element.value = newValue;
-				// XXX: nicer way to do this? do something special for font color
-				if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
-					var colorBox = document.getElementById(this._defaultFontColorId);
-					if (colorBox)
-						colorBox.style.backgroundColor = newValue;
-				}
 			}
 		}
 	}
@@ -273,10 +258,12 @@ function() {
 	var tableId = Dwt.getNextId();
 	this._resetId = Dwt.getNextId();
 	
-	html[i++] = "<div class='TitleBar'>";
-	html[i++] = "<table id='" + tableId + "' cellpadding=0 cellspacing=5 class='prefTable'>";
-	html[i++] = "</table></div>";
-	html[i++] = "<div id='" + this._resetId + "' style='padding-left:5px'></div>";
+	html[i++] = "<div class='TitleBar'><table id='";
+	html[i++] = tableId;
+	html[i++] = "' cellpadding=0 cellspacing=5 class='prefTable'></table></div>";
+	html[i++] = "<div id='";
+	html[i++] = this._resetId;
+	html[i++] = "' style='padding-left:5px'></div>";
 	this.getHtmlElement().innerHTML = html.join("");
 	
 	this._table = document.getElementById(tableId);
@@ -376,9 +363,16 @@ function(buttonDiv) {
 	
 	var html = new Array();
 	var idx = 0;
-	html[idx++] = "<form style='margin: 0px; padding: 0px;' method='POST' action='" + uri + "' id='" + this._uploadFormId + "' enctype='multipart/form-data'>";
-	html[idx++] = "<input style='font-family:Tahoma; font-size:10px' name='" + ZmPreferencesPage.IMPORT_FIELD_NAME + "' type='file' id='" + this._attInputId + "'>";
-	html[idx++] = "</form>";
+	html[idx++] = "<form style='margin: 0px; padding: 0px;' method='POST' action='";
+	html[idx++] = uri;
+	html[idx++] = "' id='";
+	html[idx++] = this._uploadFormId;
+	html[idx++] = "' enctype='multipart/form-data'>";
+	html[idx++] = "<input style='font-family:Tahoma; font-size:10px' name='";
+	html[idx++] = ZmPreferencesPage.IMPORT_FIELD_NAME;
+	html[idx++] = "' type='file' id='";
+	html[idx++] = this._attInputId;
+	html[idx++] = "'></form>";
 
 	var div = document.createElement("div");
 	div.innerHTML = html.join("");
@@ -389,84 +383,13 @@ function(buttonDiv) {
 	this._importBtn = this._addButton(buttonDiv.id, ZmMsg._import, 65, new AjxListener(this, this._importContactsListener));
 };
 
-ZmPreferencesPage.prototype._addFontPrefs = 
-function(fontDiv, id, setup, value, fontSizeValue) {
-	var table = document.createElement("table");
-	table.border = table.cellPadding = table.cellSpacing = 0;
-	var row = table.insertRow(-1);
-	
-	var fontFamilyCell = row.insertCell(-1);
-	var sepCell1 = row.insertCell(-1);
-	var fontSizeCell = row.insertCell(-1);
-	var sepCell2 = row.insertCell(-1);
-	var fontColorPickerCell = row.insertCell(-1);
-	var sepCell3 = row.insertCell(-1);
-	var fontColorCell = row.insertCell(-1);
-
-	// get the Select options for font family
-	var div = this._setupSelect(id, setup, value);
-	fontFamilyCell.appendChild(div);
-
-	// get the Select options for font size
-	id = ZmSetting.COMPOSE_INIT_FONT_SIZE;
-	setup = ZmPref.SETUP[id];
-	var div = this._setupSelect(id, setup, fontSizeValue);
-	fontSizeCell.appendChild(div);
-	
-	// add color picker
-	var b = new DwtButton(this, null, "DwtSelect");
-	b.setImage("FontColor");
-	b.setToolTipContent(ZmMsg.fontColor);
-	var m = new DwtMenu(b, DwtMenu.COLOR_PICKER_STYLE);
-	var cp = new DwtColorPicker(m);
-	cp.addSelectionListener(new AjxListener(this, this._fontColorListener));
-	b.setMenu(m);
-	fontColorPickerCell.style.width = "40px";
-	fontColorPickerCell.appendChild(b.getHtmlElement());
-
-	// add color box showing current color
-	var defaultColor = this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR);
-	this._defaultFontColorId = Dwt.getNextId();
-	fontColorCell.style.verticalAlign = "bottom";
-	var html = new Array();
-	var i = 0;
-	html[i++] = "<div class='colorBox' id='";
-	html[i++] = this._defaultFontColorId;
-	html[i++] = "' style='background-color:";
-	html[i++] = defaultColor;
-	html[i++] = ";'></div>";
-	html[i++] = "<input type='hidden' id='";
-	html[i++] = ZmPref.KEY_ID + ZmSetting.COMPOSE_INIT_FONT_COLOR;
-	html[i++] = "' value='";
-	html[i++] = defaultColor
-	html[i++] = "'>";
-	fontColorCell.innerHTML = html.join("");
-	
-	// add separators
-	sepCell1.innerHTML = sepCell2.innerHTML = sepCell3.innerHTML = "&nbsp;";
-
-	fontDiv.appendChild(table);	
-};
-
 // Popup the change password dialog.
 ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
 	this._passwordDialog.popup();
 };
 
-ZmPreferencesPage.prototype._fontColorListener = 
-function(ev) {
-	var colorBox = document.getElementById(this._defaultFontColorId);
-	if (colorBox) {
-		colorBox.style.backgroundColor = ev.detail;
-		var fontColorInputId = ZmPref.KEY_ID + ZmSetting.COMPOSE_INIT_FONT_COLOR;
-		var input = document.getElementById(fontColorInputId);
-		if (input)
-			input.value = ev.detail;
-	}
-};
-
-ZmPreferencesPage.prototype._exportContactsListener = 
+ZmPreferencesPage.prototype._exportContactsListener =
 function(ev) {
 	var dialog = this._appCtxt.getChooseFolderDialog();
 	dialog.reset();
