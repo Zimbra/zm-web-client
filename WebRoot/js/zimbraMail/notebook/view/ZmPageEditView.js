@@ -535,12 +535,12 @@ ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	button.setToolTipContent(ZmMsg.insertImage);
 	button.addSelectionListener(new AjxListener(this, this._insertImagesListener));
 
-	var button = new DwtButton(this._toolbar2, null, "TBButton")
+	button = new DwtButton(this._toolbar2, null, "TBButton")
 	button.setImage("Attachment");
 	button.setToolTipContent(ZmMsg.insertAttachment);
 	button.addSelectionListener(new AjxListener(this, this._insertAttachmentsListener));
 
-	var button = new DwtButton(this._toolbar2, null, "TBButton");
+	button = new DwtButton(this._toolbar2, null, "TBButton");
 	button.setImage("URL");
 	button.setToolTipContent(ZmMsg.insertLink);
 	button.addSelectionListener(new AjxListener(this, this._insertLinkListener));
@@ -578,6 +578,7 @@ ZmPageEditor.prototype.insertLink = function(href) {
 ZmPageEditor.prototype._insertImagesListener = function(event) {
 	this._insertObjectsListener(event, this.insertImage, ZmMsg.insertImage);
 };
+
 ZmPageEditor.prototype._insertAttachmentsListener = function(event) {
 	//this._insertObjectsListener(event, this.insertText);
 	this._insertObjectsListener(event, this.insertLink, ZmMsg.insertAttachment);
@@ -606,6 +607,19 @@ ZmPageEditor.prototype._insertObjects = function(func, folder, filenames) {
 		var name = AjxStringUtil.urlComponentEncode(filenames[i]);
 		var src = [ baseUrl,"/",name ].join("");
 		func.call(this, src);
+	}
+};
+
+ZmPageEditor.prototype._fontStyleListener =
+function(ev) {
+	ZmHtmlEditor.prototype._fontStyleListener.call(this, ev);
+
+	// bug fix 9216 - toggle subscript/superscript if other is already enabled
+	if (ev.item == this._superscriptButton && this._subscriptButton.isToggled()) {
+		this.setFont(null, DwtHtmlEditor.SUBSCRIPT_STYLE);
+	}
+	else if (ev.item == this._subscriptButton && this._superscriptButton.isToggled()) {
+		this.setFont(null, DwtHtmlEditor.SUPERSCRIPT_STYLE);
 	}
 };
 

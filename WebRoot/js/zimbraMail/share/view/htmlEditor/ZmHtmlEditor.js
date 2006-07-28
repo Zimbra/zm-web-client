@@ -594,7 +594,7 @@ function(tb) {
 
 	new DwtControl(tb, "vertSep");
 
-	var listener = new AjxListener(this, this._fontStyleListener);
+	listener = new AjxListener(this, this._fontStyleListener);
 	var b = this._boldButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	b.setImage("Bold");
 	b.setToolTipContent(ZmMsg.boldText);
