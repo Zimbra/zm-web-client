@@ -484,7 +484,42 @@ function(html) {
 };
 
 ZmPageEditor.prototype._createToolbars = function() {
-	ZmHtmlEditor.prototype._createToolbars.call(this);
+	// notebook page editor will have two separate toolbars
+	if (!this._toolbar1) {
+		var tb = this._toolbar1 = new DwtToolBar(this, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
+		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
+		this._createToolBar1(tb);
+		this._toolbars.push(tb);
+	}
+	if (!this._toolbar2) {
+		var tb = this._toolbar2 = new DwtToolBar(this, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
+		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
+
+		// add extra buttons here
+		var listener = new AjxListener(this, this._fontStyleListener);
+		b = this._strikeThruButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+		b.setImage("StrikeThru");
+		b.setToolTipContent(ZmMsg.strikeThruText);
+		b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.STRIKETHRU_STYLE);
+		b.addSelectionListener(listener);
+
+		b = this._superscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+		b.setImage("SuperScript");
+		b.setToolTipContent(ZmMsg.superscript);
+		b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUPERSCRIPT_STYLE);
+		b.addSelectionListener(listener);
+
+		b = this._subscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+		b.setImage("Subscript");
+		b.setToolTipContent(ZmMsg.subscript);
+		b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUBSCRIPT_STYLE);
+		b.addSelectionListener(listener);
+
+		new DwtControl(tb, "vertSep");
+
+		this._createToolBar2(tb);
+		this._toolbars.push(tb);
+	}
 	/*** TODO: Add this back later...
 	if (!this._wikiToolBar) {
 		this._createWikiToolBar(this);

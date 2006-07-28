@@ -556,7 +556,7 @@ NormalButton-default		= @_WidgetContainer-default_@		@ActiveCursor@		@_NormalBut
 NormalButton-focused		= @_WidgetContainer-focused_@		@ActiveCursor@		@_NormalButtonStyle_@
 NormalButton-toggled		= @_WidgetContainer-toggled_@		@ActiveCursor@		@_NormalButtonStyle_@
 
-_NormalButtonTextStyle_		= text-align:center;	@NoWrap@
+_NormalButtonTextStyle_		= @NoWrap@
 NormalButtonText			= @Text@	 		@_NormalButtonTextStyle_@
 NormalButtonText-disabled	= @Text-disabled@ 	@_NormalButtonTextStyle_@
 NormalButtonText-hover		= @Text-hover@ 		@_NormalButtonTextStyle_@

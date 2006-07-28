@@ -429,7 +429,7 @@ function(newWidth, newHeight) {
 	}
 
 	if (newHeight) {
-		this.setSize(Dwt.DEFAULT, newHeight - 30);
+		this.setSize(Dwt.DEFAULT, newHeight - 35);
 		this._resizeNotes();
 	}
 };
@@ -1181,7 +1181,7 @@ function() {
 	var topDiv = this.getHtmlElement().firstChild;
 	var topHeight = Dwt.getSize(topDiv).y;
 	var rowHeight = size.y - topHeight;
-	var fudge = (this._composeMode == DwtHtmlEditor.HTML) ? 75 : 15;
+	var fudge = (this._composeMode == DwtHtmlEditor.HTML) ? 50 : 15;
 	Dwt.setSize(this._bodyField, Dwt.DEFAULT, rowHeight - fudge);
 };
 

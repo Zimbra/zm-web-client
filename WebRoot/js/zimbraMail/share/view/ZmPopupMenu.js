@@ -94,11 +94,6 @@ function(enabled) {
 	}
 };
 
-ZmPopupMenu.prototype.addMenuItem =
-function(menuItemId, menuItem) {
-	this._menuItems[menuItemId] = menuItem;
-};
-
 ZmPopupMenu.prototype.createMenuItem =
 function(menuItemId, imageInfo, text, disImageInfo, enabled, style, radioGroupId) {
 	var mi = this._menuItems[menuItemId] = new DwtMenuItem(this, style, radioGroupId);
