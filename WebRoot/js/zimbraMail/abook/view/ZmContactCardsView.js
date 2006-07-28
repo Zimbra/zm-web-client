@@ -137,6 +137,8 @@ function(contact, now, isDndIcon, getHtml) {
 		if (AjxEnv.isMozilla) div.style.overflow = "visible";
 		div.style.position = "absolute";
 		div.className = div._styleClass;
+		if (isDndIcon)
+			div.style.width = this._cardWidth;
 		this.associateItemWithElement(contact, div, DwtListView.TYPE_LIST_ITEM);
 	}
 
