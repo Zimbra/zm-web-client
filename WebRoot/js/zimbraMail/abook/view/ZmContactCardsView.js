@@ -84,7 +84,7 @@ function(contacts, sortField, folderId) {
 		this._objectManager.reset();
 
 	// XXX: optimize later - switch view always forces layout unnecessarily
-	ZmContactsBaseView.prototype.set.call(this, contacts, sortField, folderId);
+	ZmContactsBaseView.prototype.set.call(this, contacts, sortField, this._controller.getFolderId());
 
 	if (this._initialResized)
 		this._layout();
