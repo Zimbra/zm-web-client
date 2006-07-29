@@ -851,6 +851,11 @@ function(findHits) {
 			} else {
 				// set the anchor html for the link to this attachment on the server
 				var url = useCL ? attach.cl : (hrefRoot + attach.part);
+
+				// bug fix #6500 - append filename w/in so "Save As" wont append .html at the end
+				var insertIdx = url.indexOf("?auth=co&");
+				url = url.substring(0,insertIdx) + AjxStringUtil.urlEncode(attach.filename) + url.substring(insertIdx);
+
 				props.link = "<a target='_blank' class='AttLink' href='" + url + "'>";
 				if (!useCL) {
 					if (attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct) &&
