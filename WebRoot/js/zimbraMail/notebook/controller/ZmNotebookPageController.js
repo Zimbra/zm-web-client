@@ -98,9 +98,17 @@ ZmNotebookPageController.prototype.getPage = function() {
 
 ZmNotebookPageController.prototype.showLink = function(link) {
 	var cache = this._app.getNotebookCache();
-	var page = cache.getPageByLink(link);
-	if (page) {
-		this.show(page);
+	try {
+		var page = cache.getPageByLink(link);
+		if (page) {
+			this.show(page);
+		}
+	}
+	catch (e) {
+		if (!this._formatter) {
+			this._formatter = new AjxMessageFormat(ZmMsg.pageNotFound);
+		}
+		this.popupErrorDialog(this._formatter.format(link), null, null, true);
 	}
 };
 

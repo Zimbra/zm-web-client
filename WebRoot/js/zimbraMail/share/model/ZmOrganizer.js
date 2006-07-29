@@ -204,11 +204,106 @@ ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] = "appointment";
 ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK] = "contact";
 ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK] = "wiki";
 
+ZmOrganizer.TYPES = {};
+for (var i in ZmOrganizer.VIEWS) {
+	ZmOrganizer.TYPES[ZmOrganizer.VIEWS[i]] = i;
+}
+delete i;
+
 // Abstract methods
 
 ZmOrganizer.sortCompare = function(organizerA, organizerB) {};
-ZmOrganizer.prototype.create = function() {};
 
+ZmOrganizer.prototype.create =
+function(name, attrs, callback, errorCallback, postCallback) {
+	// create SOAP command
+	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
+	var folderNode = soapDoc.set("folder");
+	folderNode.setAttribute("name", AjxEnv.isSafari ? AjxStringUtil.xmlEncode(name) : name);
+	folderNode.setAttribute("l", this.id);
+
+	// set attributes
+	attrs = attrs || {};
+	attrs.view = attrs.view || ZmOrganizer.VIEWS[this.type];
+	for (var attr in attrs) {
+		folderNode.setAttribute(attr, attrs[attr]);
+	}
+
+	// send request
+	var params = {
+		soapDoc: soapDoc,
+		asyncMode: Boolean(callback),
+		callback: callback,
+		errorCallback: errorCallback,
+		postCallback: postCallback
+	};
+
+	var appController = this.tree._appCtxt.getAppController();
+	return appController.sendRequest(params);
+};
+
+/**
+ * This method creates a sub-tree of organizers of a given view type
+ * as specified by a path (e.g. "foo/bar/baz").
+ *
+ * @param path			[string]		Path of new folder.
+ * @param attrs			[object]		Attributes of the folder object
+ *										to set at creation. If no view
+ *										is specified, the view of this
+ *										organizer is used.
+ * @param callback		[AjxCallback]	Optional. The first argument
+ *										passed to the post-processing
+ *										callback will be the last organizer
+ *										object created in the path.
+ * @param errorCallback	[AjxCallback]	Optional.
+ */
+/*** TODO ***
+ZmOrganizer.prototype.createPath =
+function(path, attrs, callback, errorCallback) {
+	var organizer = this;
+	if (path.match(/^\//)) {
+		while (organizer.id != ZmOrganizer.ID_ROOT) {
+			organizer = organizer.parent;
+		}
+		path = path.substr(1);
+	}
+	var parts = path.replace(/\/$/,"").split('/');
+	var rest = parts.slice(1).join('/');
+	var name = parts[0];
+
+	var child = this.getChild(name);
+	if (child) {
+		child.createPath(rest, attrs, callback, errorCallback, postCallback);
+	}
+
+	var createCallback = new AjxCallback(this, this._handleCreatePath, [callback]);
+	var createPostCallback = new AjxCallback(this, this._handlePostCreatePath, [rest, attrs, callback, errorCallback]);
+	this.create(name, attrs, createCallback, errorCallback, createPostCallback);
+};
+ZmOrganizer.prototype._handleCreatePath =
+function(callback, result) {
+	// NOTE: The user callback is not called at each
+	//       folder creation stage; rather, it is called
+	//       at the end and is passed the leaf organizer
+	//       so that it can operate on it.
+	//if (callback) {
+	//	callback.run(result);
+	//}
+};
+ZmOrganizer.prototype._handlePostCreatePath =
+function(path, attrs, callback, errorCallback, response) {
+	debugger;
+	var folderId = response.CreateFolderResponse.folder.id;
+	var tree = this._appCtxt.getTree(ZmOrganizer.TYPES[attrs.view || this.type]);
+	var organizer = tree.getById(folderId);
+	if (path != "") {
+		organizer.create(path, attrs, callback, errorCallback, postCallback);
+	}
+	else if (callback) {
+		callback.run(organizer, response);
+	}
+};
+/***/
 
 // Static methods
 
@@ -608,6 +703,36 @@ function(name) {
 
 	return null;
 };
+
+/***
+ZmOrganizer.prototype.getChildByPath =
+function(path) {
+	// get starting organizer
+	var organizer = this;
+	if (path.match(/^\//)) {
+		while (organizer.id != ZmOrganizer.ID_ROOT) {
+			organizer = organizer.parent;
+		}
+		path = path.substr(1);
+	}
+
+	// if no path, return current organizer
+	if (path.length == 0) return organizer;
+
+	// walk descendent axis to find organizer specified by path
+	var parts = path.split('/');
+	var i = 0;
+	while (i < parts.length) {
+		var part = parts[i++];
+		var child = organizer.getChild(part);
+		if (child == null) {
+			break;
+		}
+		organizer = child;
+	}
+	return i == parts.length ? organizer : null;
+};
+/***/
 
 ZmOrganizer.prototype.reparent =
 function(newParent) {

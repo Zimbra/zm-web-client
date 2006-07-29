@@ -118,23 +118,16 @@ function(line, startIndex) {
 
 ZmNotebookObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
-	var appController = this._appCtxt.getAppController();
-	var notebookApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
-	var cache = notebookApp.getNotebookCache();
-	// REVISIT: ZmNotebookCache#getPageByLink has to create an empty
-	//          page object in the case where the item can't be found
-	//          in a sub-folder! Otherwise, the page we'll be editing
-	//          won't have the right folder!
-	var page = cache.getPageByLink(context.keyword);
+	var page = this._getPage(context);
 	if (!page) {
-		var notebookController = notebookApp.getNotebookController();
-		var currentPage = notebookController.getPage();
-
-		// NOTE: We assume the page is new if there's no entry in the cache.
-		page = new ZmPage(this._appCtxt);
-		page.name = context.keyword;
-		page.folderId = (currentPage && currentPage.folderId) || ZmNotebookItem.DEFAULT_FOLDER;
-	}	
+		if (!this._formatter) {
+			this._formatter = new AjxMessageFormat(ZmMsg.pageNotFound);
+		}
+		var appController = this._appCtxt.getAppController();
+		var message = this._formatter.format(context.keyword);
+		appController.popupErrorDialog(message, null, null, true);
+		return;
+	}
 	this._selectedHandleResponse(page);
 };
 
@@ -143,13 +136,13 @@ function(page) {
 	var appController = this._appCtxt.getAppController();
 	var notebookApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
 
-	var isNew = !page;
+	var isNew = !page || (page.version == 0 && page.name != ZmNotebook.PAGE_INDEX);
 	var controller = isNew ? notebookApp.getPageEditController() : notebookApp.getNotebookController();
 	controller.show(page);
 };
 
 ZmNotebookObjectHandler.prototype.getToolTipText =
-function(keyword, context) {
+function(label, context) {
 	var page = this._getPage(context);
 
 	var imageClass = (page && page.name == ZmNotebook.PAGE_INDEX) ? 'ImgSection': 'ImgPage';
@@ -159,7 +152,7 @@ function(keyword, context) {
 				"<div style='border-bottom:solid black 1px;margin-bottom:0.25em'>",
 				"<table width=100% border=0 cellpadding=0 cellspacing=0>",
 					"<tr valign=top>",
-						"<td><b>",keyword,"</b></td>",
+						"<td><b>",label,"</b></td>",
 						"<td align=right style='padding-left:0.5em'><div class='", imageClass, "'></div></td>",
 					"</tr>",
 				"</table>",
@@ -167,14 +160,16 @@ function(keyword, context) {
 			"</td></tr>",
 			"<tr><td>"
 	];
-	if (page.fragment) {
+	if (page && page.fragment) {
 		var fragment = AjxStringUtil.htmlEncode(page.fragment);
 		html.push(fragment, "<br>&nbsp;");
 	}
 	html.push("<table border=0 cellpadding=0 cellspacing=0>");
-	this._appendPropertyToTooltip(html, page.creator, ZmMsg.userLabel);
-	this._appendPropertyToTooltip(html, page.getRestUrl(), ZmMsg.urlLabel);
-	this._appendPropertyToTooltip(html, page.getPath(), ZmMsg.pathLabel);
+	if (page) {
+		this._appendPropertyToTooltip(html, page.creator, ZmMsg.userLabel);
+		this._appendPropertyToTooltip(html, page.getRestUrl(), ZmMsg.urlLabel);
+	}
+	this._appendPropertyToTooltip(html, page ? page.getPath() : context.keyword, ZmMsg.pathLabel);
 	html.push("</table></td></tr></table>");
 	
 	return html.join("");
@@ -192,29 +187,49 @@ function(context) {
 	var appController = this._appCtxt.getAppController();
 	var notebookApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var cache = notebookApp.getNotebookCache();
-
-	// REVISIT: Need some structured syntax for wiki links	
-	var notebookController = notebookApp.getNotebookController();
-	var visiblePage = notebookController.getPage();
-	var folderId = visiblePage ? visiblePage.folderId : ZmOrganizer.ID_NOTEBOOK;
-
-	var page = cache.getPageByName(folderId, context.keyword);
-	if (!page) {
-		// No page exists in the cache. Generate a page for a section.
-		var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-		var notebook = tree.getById(folderId);
-		var section = notebook.getChild(context.keyword);
-		if (section) {
-			page = cache.getPageByName(section.id, ZmNotebook.PAGE_INDEX);
+	// REVISIT: ZmNotebookCache#getPageByLink has to create an empty
+	//          page object in the case where the item can't be found
+	//          in a sub-folder! Otherwise, the page we'll be editing
+	//          won't have the right folder!
+	var page = null;
+	try {
+		var path = context.keyword;
+		page = cache.getPageByLink(path);
+		if (!page && !path.match(/^\/\//)) {
+			var notebookController = notebookApp.getNotebookController();
+			var currentPage = notebookController.getPage();
+			var folderId = path.match(/^\//) ? ZmOrganizer.ID_ROOT : (currentPage && currentPage.folderId) || ZmNotebookItem.DEFAULT_FOLDER;
+			var notebook = this._getNotebook(folderId, path);
+			if (notebook) {
+				// NOTE: We assume the page is new if there's no entry in the cache.
+				page = new ZmPage(this._appCtxt);
+				page.name = path.replace(/^.*\//,"");
+				page.folderId = notebook.id;
+			}
 		}
 	}
-	if (!page) {
-		// NOTE: We assume the page is new if there's no entry in the cache.
-		page = new ZmPage(this._appCtxt);
-		page.name = context.keyword;
-		page.folderId = folderId;
-	}	
+	catch (e) {
+		// ignore
+	}
 	return page;
+};
+
+ZmNotebookObjectHandler.prototype._getNotebook = function(folderId, path) {
+	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var organizer = tree.getById(folderId);
+	if (path.match('/')) {
+		var parts = path.replace(/^\//,"").replace(/\/[^\/]*$/,"").split('/');
+		for (var i = 0; i < parts.length; i++) {
+			var part = parts[i];
+			var child = organizer.getChild(part);
+			if (child == null) {
+				organizer = null;
+				break;
+			}
+			organizer = child;
+		}
+	}
+	return organizer;
 };
 
 ZmNotebookObjectHandler.prototype._appendPropertyToTooltip =

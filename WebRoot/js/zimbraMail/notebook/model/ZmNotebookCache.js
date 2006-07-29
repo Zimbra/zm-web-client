@@ -310,7 +310,7 @@ ZmNotebookCache.prototype.getPageByLink = function(link) {
 
 	// link: Foo/Bar
 	if (link.match(/\//)) {
-		var names = link.split('/');
+		var names = link.replace(/\/$/,"").split('/');
 		for (var i = 0; i < names.length - 1; i++) {
 			var name = names[i];
 			notebook = ZmNotebookCache.__getNotebookByName(notebook, name);

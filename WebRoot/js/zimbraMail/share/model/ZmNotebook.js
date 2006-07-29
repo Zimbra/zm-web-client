@@ -130,18 +130,13 @@ function(obj) {
 /** Caller is responsible to catch exception. */
 ZmNotebook.prototype.create =
 function(name, color) {
-	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
-	var folderNode = soapDoc.set("folder");
-	folderNode.setAttribute("name", AjxEnv.isSafari ? AjxStringUtil.xmlEncode(name) : name);
-	folderNode.setAttribute("l", this.id);
-	folderNode.setAttribute("color", color || ZmOrganizer.DEFAULT_COLOR);
-	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]);
-
+	var attrs = { color: color || ZmOrganizer.DEFAULT_COLOR };
+	var callback = new AjxCallback(this, this._handleCreate);
 	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [name]);
-	var appController = this.tree._appCtxt.getAppController();
-	return appController.sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
+	return ZmOrganizer.prototype.create.call(this, name, attrs, callback, errorCallback);
 };
 
+ZmNotebook.prototype._handleCreate = function() {}
 ZmNotebook.prototype._handleErrorCreate =
 function(name, ex) {
 	if (!name) return false;
@@ -161,23 +156,6 @@ function(name, ex) {
 };
 
 // Static methods
-
-/** Caller is responsible to catch exception. */
-/***
-ZmNotebook.create =
-function(appCtxt, name, parentFolderId) {
-	parentFolderId = parentFolderId || ZmOrganizer.ID_ROOT;
-
-	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
-	var folderNode = soapDoc.set("folder");
-	folderNode.setAttribute("name", name);
-	folderNode.setAttribute("l", parentFolderId);
-	folderNode.setAttribute("view", ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]);
-
-	var appController = appCtxt.getAppController();
-	return appController.sendRequest({soapDoc: soapDoc, asyncMode: false});
-};
-/***/
 
 ZmNotebook.createFromJs =
 function(parent, obj, tree) {
