@@ -123,9 +123,6 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 	this._setSubject(action, msg, subjOverride);
 	this._setBody(action, msg, extraBodyText);
 
-	// save form state (to check for change later)
-	this._origFormValue = this._formValue();
-
 	// save extra mime parts
 	var bodyParts = msg ? msg.getBodyParts() : [];
 	for (var i = 0; i < bodyParts.length; i++) {
@@ -137,6 +134,14 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 			mimePart.setContent(bodyPart.content);
 			this.addMimePart(mimePart);
 		}
+	}
+	
+	// save form state (to check for change later)
+	if (this._composeMode == DwtHtmlEditor.HTML) {
+		var ta = new AjxTimedAction(this, this._setFormValue);
+		AjxTimedAction.scheduleAction(ta, 10);
+	} else {
+		this._setFormValue();
 	}
 };
 
@@ -1592,6 +1597,10 @@ function(isDraft, status, attId) {
 	}
 };
 
+ZmComposeView.prototype._setFormValue =
+function() {
+	this._origFormValue = this._formValue();
+};
 
 // Static methods
 
