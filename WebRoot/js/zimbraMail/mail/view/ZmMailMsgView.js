@@ -151,16 +151,43 @@ function(msg) {
 			// We need an inviteComponentView. Ughhh.
 		}
 	}
-	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) && msg.share && msg.share.action == ZmShare.NEW && msg.folderId != ZmFolder.ID_TRASH) {
-		var topToolbar = this._getShareToolbar();
-		var tEl = topToolbar.getHtmlElement();
-		if (tEl && tEl.parentNode) {
-			tEl.parentNode.removeChild(tEl);
+	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) && msg.share && msg.folderId != ZmFolder.ID_TRASH) {
+		var action = msg.share.action;
+		if (action == ZmShare.NEW || (action == ZmShare.EDIT && !this.__hasMountpoint(msg.share))) {
+			var topToolbar = this._getShareToolbar();
+			var tEl = topToolbar.getHtmlElement();
+			if (tEl && tEl.parentNode) {
+				tEl.parentNode.removeChild(tEl);
+			}
+			contentDiv.appendChild(tEl);
 		}
-		contentDiv.appendChild(tEl);
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseSet, [msg, oldMsg]);
 	this._renderMessage(msg, contentDiv, respCallback);
+};
+
+ZmMailMsgView.prototype.__hasMountpoint = function(share) {
+	var tree = this._appCtxt.getTree(ZmOrganizer.TYPES[share.link.view]);
+	if (!tree) {
+		DBG.println("ZmMailMsgView#__hasMountpoint: no tree for view "+share.link.view);
+		return false;
+	}
+	return this.__hasMountpoint2(tree.root, share.grantor.id, share.link.id);
+};
+ZmMailMsgView.prototype.__hasMountpoint2 = function(organizer, zid, rid) {
+	if (organizer.zid == zid && organizer.rid == rid) {
+		return true;
+	}
+	if (organizer.children) {
+		var children = organizer.children.getArray();
+		for (var i = 0; i < children.length; i++) {
+			var found = this.__hasMountpoint2(children[i], zid, rid);
+			if (found) {
+				return true;
+			}
+		}
+	}
+	return false;
 };
 
 ZmMailMsgView.prototype.highlightObjects =
