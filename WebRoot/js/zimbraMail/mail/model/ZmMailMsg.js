@@ -912,7 +912,6 @@ function(msgNode) {
 	if (msgNode.sd) 	this.sentDate = msgNode.sd;
 	if (msgNode.l) 		this.folderId = msgNode.l;
 	if (msgNode.t) 		this._parseTags(msgNode.t);
-	if (msgNode.f) 		this._parseFlags(msgNode.f);
 	if (msgNode.cm) 	this._inHitList = msgNode.cm;
 	if (msgNode.su) 	this.subject = msgNode.su;
 	if (msgNode.fr) 	this.fragment = msgNode.fr;
@@ -920,6 +919,9 @@ function(msgNode) {
 	if (msgNode.origid) this.origId = msgNode.origid;
 	if (msgNode.hp) 	this._attHitList = msgNode.hp;
 	if (msgNode.mid)	this.messageId = msgNode.mid;
+
+	// always call parseFlags even if server didnt return any
+	this._parseFlags(msgNode.f);
 
 	if (msgNode.mp) {
 		var params = {attachments: this._attachments, bodyParts: this._bodyParts};
