@@ -358,7 +358,8 @@ function() {
 
 ZmAppt.prototype.isShared =
 function() {
-	return this.id.indexOf(":") != -1;
+	return (this.id && this.id != -1)
+		? (this.id.indexOf(":") != -1) : false;
 };
 
 ZmAppt.prototype.resetRepeatWeeklyDays = 
