@@ -69,7 +69,8 @@ function() {
 ZmCalViewMgr.prototype.getNeedsRefresh =
 function(viewId) {
 	viewId = viewId || this._currentViewName;
-	return this._views[viewId].getNeedsRefresh();
+	var view = this._views[viewId];
+	return view.getNeedsRefresh ? view.getNeedsRefresh() : false;
 };
 
 ZmCalViewMgr.prototype.getCurrentView =
