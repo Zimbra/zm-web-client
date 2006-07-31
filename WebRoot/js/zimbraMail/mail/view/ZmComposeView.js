@@ -123,6 +123,9 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 	this._setSubject(action, msg, subjOverride);
 	this._setBody(action, msg, extraBodyText);
 
+	// save form state (to check for change later)
+	this._origFormValue = this._formValue();
+
 	// save extra mime parts
 	var bodyParts = msg ? msg.getBodyParts() : [];
 	for (var i = 0; i < bodyParts.length; i++) {
@@ -134,14 +137,6 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 			mimePart.setContent(bodyPart.content);
 			this.addMimePart(mimePart);
 		}
-	}
-	
-	// save form state (to check for change later)
-	if (this._composeMode == DwtHtmlEditor.HTML) {
-		var ta = new AjxTimedAction(this, this._setFormValue);
-		AjxTimedAction.scheduleAction(ta, 10);
-	} else {
-		this._setFormValue();
 	}
 };
 
@@ -400,8 +395,6 @@ function(composeMode) {
 
 		// for now, always reset message body size
 		this._resetBodySize();
-		// recalculate form value since HTML mode inserts HTML tags
-		this._origFormValue = this._formValue();
 	}
 };
 
@@ -1595,11 +1588,6 @@ function(isDraft, status, attId) {
 		this._controller.popupErrorDialog(msg + ZmMsg.errorTryAgain, null, null, true);
 		this._controller._toolbar.enableAll(true);
 	}
-};
-
-ZmComposeView.prototype._setFormValue =
-function() {
-	this._origFormValue = this._formValue();
 };
 
 // Static methods
