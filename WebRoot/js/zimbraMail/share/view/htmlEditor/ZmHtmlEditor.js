@@ -976,6 +976,7 @@ function(tb) {
 	var b = new DwtButton(tb, null, "DwtToolbarButton");
 	b.dontStealFocus();
 	b.setImage("LeftJustify");
+	b.setToolTipContent(ZmMsg.alignment);
 	var menu = this._justifyMenu = new ZmPopupMenu(b);
 	var listener = new AjxListener(this, this._justificationListener);
 	var menuItems = [
