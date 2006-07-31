@@ -67,7 +67,8 @@ function() {
 ZmMailAssistant.prototype.okHandler =
 function(dialog) {
 	var bad = new AjxVector();	
-	var msg = this.getMessage(bad);
+	var good = new AjxVector();
+	var msg = this.getMessage(bad, good);
 
 	var cd = this._confirmDialog = this._appCtxt.getOkCancelMsgDialog();
 	cd.reset();
@@ -78,6 +79,11 @@ function(dialog) {
 		cd.registerCallback(DwtDialog.OK_BUTTON, this._noSubjectOkCallback, this, dialog);
 		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._noSubjectCancelCallback, this, dialog);
 	    cd.popup();
+		return false;
+	}
+
+	if (good.size() == 0) {
+		dialog.messageDialog(ZmMsg.noAddresses, DwtMessageDialog.CRITICAL_STYLE);
 		return false;
 	}
 
@@ -161,16 +167,19 @@ function(dialog) {
 };
 
 ZmMailAssistant.prototype._getAddrs =
-function(msg, type, value, bad) {
+function(msg, type, value, bad, good) {
 	if (value == null || value == "") return;
 	var result = ZmEmailAddress.parseEmailString(value, type, false)
 	if (result.bad.size() > 0 && bad != null) bad.addList(result.bad);
-	if (result.all.size() > 0) 	msg.setAddresses(type, result.all);
+	if (result.all.size() > 0) 	{
+		msg.setAddresses(type, result.all);
+		if (good != null) good.addList(result.all);
+	}
 };
 
 // bad is a vector that gets filled with bad addresses
 ZmMailAssistant.prototype.getMessage =
-function(bad) { 
+function(bad, good) { 
 	var msg = new ZmMailMsg(this._appCtxt);
 	var body = new ZmMimePart();
 	body.setContentType(ZmMimeTable.TEXT_PLAIN);
@@ -186,9 +195,9 @@ function(bad) {
 	body.setContent(bodyText);
 	msg.setTopPart(body);
 	if (this._mailFields.subject) msg.setSubject(this._mailFields.subject);
-	this._getAddrs(msg, ZmEmailAddress.TO, this._mailFields.to, bad);
-	this._getAddrs(msg, ZmEmailAddress.CC, this._mailFields.cc, bad);
-	this._getAddrs(msg, ZmEmailAddress.BCC, this._mailFields.bcc, bad);		
+	this._getAddrs(msg, ZmEmailAddress.TO, this._mailFields.to, bad, good);
+	this._getAddrs(msg, ZmEmailAddress.CC, this._mailFields.cc, bad, good);
+	this._getAddrs(msg, ZmEmailAddress.BCC, this._mailFields.bcc, bad, good);		
 	return msg;
 }
 
