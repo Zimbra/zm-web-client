@@ -27,7 +27,7 @@
 * HTML elements - use for global declarations
 */
 
-P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
+P, TD, DIV, SELECT, INPUT, TEXTAREA, BUTTON, A {
 	@FontFamily-default@
 	@FontSize-normal@
 }
