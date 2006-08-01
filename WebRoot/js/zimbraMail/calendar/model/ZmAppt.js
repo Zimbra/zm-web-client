@@ -704,11 +704,11 @@ function(message, subject) {
 	// Only unique names in the attendee list, plus omit our own name
 	var used = {};
 	used[this._appCtxt.get(ZmSetting.USERNAME)] = true;
-	var addrs = message.getAddresses(ZmEmailAddress.FROM, used);
-	addrs.addList(message.getAddresses(ZmEmailAddress.CC, used));
-	addrs.addList(message.getAddresses(ZmEmailAddress.TO, used));
-	this._attendees[ZmAppt.PERSON] = addrs;
-	
+	var addrs = message.getAddresses(ZmEmailAddress.FROM, used, true);
+	addrs.addList(message.getAddresses(ZmEmailAddress.CC, used, true));
+	addrs.addList(message.getAddresses(ZmEmailAddress.TO, used, true));
+	this._attendees[ZmAppt.PERSON] = addrs.getArray();
+
 	this._setNotes(message);
 }
 

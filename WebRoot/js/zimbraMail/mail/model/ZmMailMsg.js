@@ -120,13 +120,14 @@ function() {
 /**
 * Returns a vector of addresses of the given type
 *
-* @param type		an email address type
-* @param used		array of addressed that have been used. If not null,
+* @param type	[Integer]	an email address type
+* @param used	[Array]		array of addressed that have been used. If not null,
 *		then this method will omit those addresses from the returned vector and
 *		will populate used with the additional new addresses
+* @param addAsContact	[boolean]	true if emails should be converted to ZmContact's
 */
 ZmMailMsg.prototype.getAddresses =
-function(type, used) {
+function(type, used, addAsContact) {
 	if (!used) {
 		return this._addrs[type];
 	} else {
@@ -135,8 +136,18 @@ function(type, used) {
 		for (var i = 0; i < a.length; i++) {
 			var addr = a[i];
 			var email = addr.getAddress();
-			if (!used[email])
-				addrs.push(addr);
+			if (!used[email]) {
+				var contact = addr;
+				if (addAsContact) {
+					var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+					contact = clc.getContactByEmail(email);
+					if (contact == null) {
+						contact = new ZmContact(this._appCtxt);
+						contact.initFromEmail(addr);
+					}
+				}
+				addrs.push(contact);
+			}
 			used[email] = true;
 		}
 		return AjxVector.fromArray(addrs);
