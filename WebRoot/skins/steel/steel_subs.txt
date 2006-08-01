@@ -152,6 +152,7 @@ HSashContents				= display:none;
 ToolbarBg					= background-image:url(@SkinImgDir@/Toolbar__BG.gif);
 MiniCalBg					= @ToolbarBg@
 
+SearchHelperToolbarMargin	= margin-top:-3px;
 
 HoverBorder					= padding:0px;	border:2px solid; border-color:@_SelColorD20_@ @_SelColorD50_@ @_SelColorD50_@ @_SelColorD20_@;
 

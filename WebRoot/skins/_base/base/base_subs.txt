@@ -745,7 +745,10 @@ VSashContents				= text-align:center; vertical-align:middle; font-size:9px; line
 # SEARCH BUILDER
 
 PickerContainer				= @PageBg@ @RightSeparator@ @_PickerSize_@
-
+SearchHelperToolbarMargin	= margin-top:3px;
+#IFDEF MSIE
+SearchHelperToolbarMargin	= margin-top:-1px;
+#ENDIF
 
 # IMAGE STUFF
 SmallIconSize				= width:@SmallIconWidth@; height:@SmallIconHeight@;
