@@ -138,11 +138,12 @@
 		if (location.search && (location.search.indexOf("debug=") != -1)) {
 			var m = location.search.match(/debug=(\w+)/);
 			if (m && m.length) {
-				var level = parseInt(m[1]);
-				if (level)
-					DBG.setDebugLevel(level);
-				else if (m[1] == 't')
+				var level = m[1];
+				if (level == 't') {
 					DBG.showTiming(true);
+				} else {
+					DBG.setDebugLevel(level);
+				}
 			}
 		}
 			ZaZimbraAdmin.run(document.domain);

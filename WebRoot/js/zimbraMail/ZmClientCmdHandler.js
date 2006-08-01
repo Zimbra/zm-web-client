@@ -49,13 +49,9 @@ function(cmdStr, searchController) {
 			this._alert("Turning timing info " + newState);
 			DBG.showTiming(!on);
 		} else {
-			var level = Number(argv[1]);
-			if (level) {
-				this._alert("Setting Debug to level: " + level);
-				DBG.setDebugLevel(level);
-			} else {
-				this._alert("Invalid debug level", ZmStatusView.LEVEL_WARN);
-			}
+			var level = argv[1];
+			DBG.setDebugLevel(level);
+			this._alert("Setting debug level to: " + level);
 		}
 	} else if (arg0 == "support") {
 		if (!argv[1]) return;
