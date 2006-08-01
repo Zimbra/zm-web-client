@@ -1040,9 +1040,12 @@ function(el, bodyPart, callback, result) {
 				content = content.replace(/\\(.)/g, "$1");
 			}
 			/***/
+		} else if (bodyPart.ct == ZmMimeTable.TEXT_HTML) {
+			// bug fix #8960 - convert the html content to text using the DOM
+			var div = document.createElement("div");
+			div.innerHTML = bodyPart.content;
+			content = AjxStringUtil.convertHtml2Text(div);
 		}
-		else if (bodyPart.ct == ZmMimeTable.TEXT_HTML)
-			content = bodyPart.content;
 	}
 
 	this._makeIframeProxy(el, (content || ""), true);
