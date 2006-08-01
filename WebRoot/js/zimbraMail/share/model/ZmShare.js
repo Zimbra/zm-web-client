@@ -494,19 +494,20 @@ function(operation, actionAttrs, grantAttrs, callback, batchCmd) {
 		actionNode.setAttribute(attr, actionAttrs[attr]);
 	}
 
-	var shareNode = soapDoc.set("grant", null, actionNode);
-	shareNode.setAttribute("gt", this.grantee.type);
-	if (this.link.inh) {
-		shareNode.setAttribute("inh", "1");
+	if (operation != "!grant") {
+		var shareNode = soapDoc.set("grant", null, actionNode);
+		shareNode.setAttribute("gt", this.grantee.type);
+		if (this.link.inh) {
+			shareNode.setAttribute("inh", "1");
+		}
+		if (!this.isPublic()) {
+			shareNode.setAttribute("d", this.grantee.name);
+		}
+		for (var attr in grantAttrs) {
+			if (grantAttrs[attr] != null)
+				shareNode.setAttribute(attr, grantAttrs[attr]);
+		}
 	}
-	if (!this.isPublic()) {
-		shareNode.setAttribute("d", this.grantee.name);
-	}
-	for (var attr in grantAttrs) {
-		if (grantAttrs[attr] != null)
-			shareNode.setAttribute(attr, grantAttrs[attr]);
-	}
-	
 	var respCallback = new AjxCallback(this, this._handleResponseShareAction, [callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorShareAction);
 	
