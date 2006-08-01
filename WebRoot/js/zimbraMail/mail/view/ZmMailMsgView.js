@@ -907,32 +907,35 @@ function(msg, container, callback) {
 
 	// add non-collapsable header info (Sent by and date)
 	var addrs = msg.getAddresses(ZmEmailAddress.FROM);
-	if (addrs.size() > 0) {
-		var addr = addrs.get(0);
-		var dateString = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
+	var addr = addrs.size() > 0 ? addrs.get(0) : ZmMsg.unknown;
+	var dateString = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
 
-		htmlArr[idx++] = "<tr id='";
-		htmlArr[idx++] = this._expandRowId;
-		htmlArr[idx++] = "'><td valign=middle>";
-		htmlArr[idx++] = "<table align=right border=0 cellpadding=0 cellspacing=0><tr><td id='";
-		htmlArr[idx++] = this._expandHeaderId;
-		htmlArr[idx++] = "'></td><td class='LabelColName'>";
-		htmlArr[idx++] = ZmMsg.sentBy;
-		htmlArr[idx++] = ": </td></tr></table></td>";
-		htmlArr[idx++] = "<td class='LabelColValue' style='vertical-align:bottom'>";
+	htmlArr[idx++] = "<tr id='";
+	htmlArr[idx++] = this._expandRowId;
+	htmlArr[idx++] = "'><td valign=middle>";
+	htmlArr[idx++] = "<table align=right border=0 cellpadding=0 cellspacing=0><tr><td id='";
+	htmlArr[idx++] = this._expandHeaderId;
+	htmlArr[idx++] = "'></td><td class='LabelColName'>";
+	htmlArr[idx++] = ZmMsg.sentBy;
+	htmlArr[idx++] = ": </td></tr></table></td>";
+	htmlArr[idx++] = "<td class='LabelColValue' style='vertical-align:bottom'>";
+	if (addr instanceof ZmEmailAddress) {
 		if (this._objectManager && addr.address) {
 			htmlArr[idx++] = this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
 		} else {
 			htmlArr[idx++] = addr.address || (AjxStringUtil.htmlEncode(addr.name));
 		}
-	   	htmlArr[idx++] = "&nbsp;&nbsp;<span class='LabelColName'>";
-	   	htmlArr[idx++] = ZmMsg.on;
-	   	htmlArr[idx++] = ": </span><span class='LabelColValue'>";
-		htmlArr[idx++] = this._objectManager
-			? this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE)
-			: dateString;
-	   	htmlArr[idx++] = "</span></td></tr>";
 	}
+	else {
+		htmlArr[idx++] = addr;
+	}
+	htmlArr[idx++] = "&nbsp;&nbsp;<span class='LabelColName'>";
+	htmlArr[idx++] = ZmMsg.on;
+	htmlArr[idx++] = ": </span><span class='LabelColValue'>";
+	htmlArr[idx++] = this._objectManager
+		? this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE)
+		: dateString;
+	htmlArr[idx++] = "</span></td></tr>";
 
 	// To/CC/Reply-to
 	for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
