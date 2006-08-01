@@ -43,6 +43,11 @@ function(dialog) {
 	return true;
 };
 
+ZmCalendarAssistant.prototype.getHelp =
+function() {
+	return ZmMsg.ASST_CALENDAR_HELP;
+};
+
 ZmCalendarAssistant.prototype.handle =
 function(dialog, verb, args) {
 	
