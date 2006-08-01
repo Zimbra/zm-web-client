@@ -1312,6 +1312,11 @@ ZmMailMsgView.prototype._expandRows = function(expand) {
 		}
 		this._addressRows = null;
 	}
+	if (ZmMailMsgView.SCROLL_WITH_IFRAME) {
+		var iframe = document.getElementById(this._iframeId);
+		if (iframe)
+			ZmMailMsgView._resetIframeHeight(this, iframe);
+	}
 };
 
 ZmMailMsgView.prototype._closeButtonListener =
@@ -1473,7 +1478,7 @@ function(self, iframe) {
 				if (typeof el == "string")
 					el = document.getElementById(el);
 				if (el)
-					h -= Dwt.getSize(el, true).y;
+					h -= Dwt.getSize(el).y;
 			}
 		};
 		substract(self._hdrTableId);
