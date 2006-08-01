@@ -134,6 +134,7 @@ function(callback) {
 
 ZmHtmlEditor.prototype._onContentInitialized =
 function() {
+	this._loadExternalStyle("/css/editor.css");
 	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML) {
 		setTimeout(AjxCallback.simpleClosure(this._deserializeAceObjects, this), 100);
 	}
@@ -219,6 +220,31 @@ function(keepModeDiv) {
 
 	if (this.onExitSpellChecker)
 		this.onExitSpellChecker.run();
+};
+
+ZmHtmlEditor.prototype._loadExternalStyle =
+function(path) {
+	var doc = this._getIframeDoc();
+	// check if already loaded
+	var style = doc.getElementById(path);
+	if (!style) {
+		style = doc.createElement("link");
+		style.id = path;
+		style.rel = "stylesheet";
+		style.type = "text/css";
+		var style_url = appContextPath + path + "?v=" + cacheKillerVersion;
+		if (AjxEnv.isGeckoBased) {
+			style_url = document.baseURI.replace(
+					/^(https?:\x2f\x2f[^\x2f]+).*$/, "$1") + style_url;
+		}
+		style.href = style_url;
+		var head = doc.getElementsByTagName("head")[0];
+		if (!head) {
+			head = doc.createElement("head");
+			doc.documentElement.insertBefore(head, doc.documentElement.firstChild);
+		}
+		head.appendChild(style);
+	}
 };
 
 ZmHtmlEditor.prototype.highlightMisspelledWords =
@@ -330,26 +356,9 @@ function(words, keepModeDiv) {
 
 		doc = this._getIframeDoc();
 		body = doc.body;
+
 		// load the spell check styles, if not already there.
-		style = doc.getElementById("ZM-SPELLCHECK-STYLE");
-		if (!style) {
-			style = doc.createElement("link");
-			style.id = "ZM-SPELLCHECK-STYLE";
-			style.rel = "stylesheet";
-			style.type = "text/css";
-			var style_url = appContextPath+"/css/spellcheck.css?v="+cacheKillerVersion;
-			if (AjxEnv.isGeckoBased) {
-				style_url = document.baseURI.replace(
-					/^(https?:\x2f\x2f[^\x2f]+).*$/, "$1") + style_url;
-			}
-			style.href = style_url;
-			var head = doc.getElementsByTagName("head")[0];
-			if (!head) {
-				head = doc.createElement("head");
-				doc.documentElement.insertBefore(head, doc.documentElement.firstChild);
-			}
-			head.appendChild(style);
-		}
+		this._loadExternalStyle("/css/spellcheck.css");
 
 		body.style.display = "none"; // seems to have a good impact on speed,
 		// since we may modify a lot of the DOM
