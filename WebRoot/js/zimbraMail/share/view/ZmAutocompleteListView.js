@@ -553,9 +553,11 @@ function(text, hasDelim) {
 	var start = this._start;
 	var end = hasDelim ? this._end + 1 : this._end;
 	DBG.println(AjxDebug.DBG2, "update replace range: " + start + " - " + end);
-	var value = match[this._matchValue];
+	var value = match[this._matchValue] || "";
 	var newText = [text.substring(0, start), value, this._separator, text.substring(end, text.length)].join("");
-	this._done[value] = true;
+	if (value) {
+		this._done[value] = true;
+	}
 	DBG.display(AjxDebug.DBG2, newText);
 	return {text: newText, start: start + value.length + this._separator.length, match: match};
 };
