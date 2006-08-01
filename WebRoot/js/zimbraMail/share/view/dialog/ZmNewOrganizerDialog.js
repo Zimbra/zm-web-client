@@ -275,12 +275,14 @@ function() {
 
 	// make sure a parent was selected
 	var parentFolder = this._folderTreeView.getSelected();
-	if (!msg && !parentFolder)
+	if (!msg && !parentFolder) {
 		msg = ZmMsg.folderNameNoLocation;
+	}
 
 	// make sure parent doesn't already have a child by this name
-	if (!msg && parentFolder.hasChild(name))
-		msg = this._getAlreadyExistsMsg(name);
+	if (!msg && parentFolder.hasChild(name)) {
+		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
+	}
 
 	// if we're creating a top-level folder, check for conflict with top-level search
 	if (!msg && (parentFolder.id == ZmOrganizer.ID_ROOT)) {
@@ -334,21 +336,4 @@ function(event) {
 	if (target.checked) {
 		urlField.focus();
 	}
-};
-
-// overload to return a more specific error message
-ZmNewOrganizerDialog.prototype._getAlreadyExistsMsg =
-function(name) {
-	var orgName = null;
-
-	switch (this._organizerType) {
-		case ZmOrganizer.ADDRBOOK:	orgName = ZmMsg.addressBook; break;
-		case ZmOrganizer.CALENDAR:	orgName = ZmMsg.calendar; break;
-		case ZmOrganizer.FOLDER:	orgName = ZmMsg.folder; break;
-		case ZmOrganizer.NOTEBOOK:	orgName = ZmMsg.notebook; break;
-	}
-
-	return orgName
-		? AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [orgName.toLowerCase(), name])
-		: ZmMsg.folderOrSearchNameExists;
 };

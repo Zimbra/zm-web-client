@@ -426,7 +426,7 @@ ZmShare.prototype._handleErrorAccept =
 function(name, ex) {
 	var message = ZmMsg.unknownError;
 	if (ex instanceof ZmCsfeException && ex.code == "mail.ALREADY_EXISTS") {
-		message = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [ZmMsg.folderLc, name]);
+		message = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
 		// NOTE: This prevents details from being shown
 		ex = null;
 	}

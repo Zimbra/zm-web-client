@@ -144,7 +144,7 @@ function(name, ex) {
 	var msgDialog = this.tree._appCtxt.getMsgDialog();
 	var msg;
 	if (name && (ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS)) {
-		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [ZmMsg.notebook, name]);
+		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
 	}
 	if (msg) {
 		msgDialog.reset();

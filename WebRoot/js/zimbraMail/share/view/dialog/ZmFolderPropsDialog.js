@@ -217,9 +217,8 @@ ZmFolderPropsDialog.prototype._handleRenameError = function(response) {
 	//          send back the information necessary to generate the error
 	//          message.
 	var controller = this._appCtxt.getAppController();
-	var type = ZmMsg.folderLc;
 	var name = this._nameInputEl.value;
-	var msg = AjxMessageFormat.format(ZMsg.errorAlreadyExists, [type, name]);
+	var msg = AjxMessageFormat.format(ZMsg.errorAlreadyExists, [name]);
 	controller.popupErrorDialog(msg, null, null, true);
 	return true;
 };

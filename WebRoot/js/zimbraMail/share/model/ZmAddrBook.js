@@ -98,7 +98,7 @@ function(name, color) {
 ZmAddrBook.prototype._handleErrorCreate =
 function(name, ex) {
 	if (name && ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS) {
-		var msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [ZmMsg.folderLc, name]);
+		var msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
 	
 		var msgDialog = this.tree._appCtxt.getMsgDialog();
 		msgDialog.reset();

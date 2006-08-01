@@ -88,7 +88,7 @@ function(url, name, ex) {
 	var msgDialog = this.tree._appCtxt.getMsgDialog();
 	var msg;
 	if (name && (ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS)) {
-		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [ZmMsg.folderLc, name]);
+		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
 	} else if (url) {
 		var errorMsg = (ex.code == ZmCsfeException.SVC_PARSE_ERROR) ? ZmMsg.calFeedInvalid : ZmMsg.feedUnreachable;
 		msg = AjxMessageFormat.format(errorMsg, url);
