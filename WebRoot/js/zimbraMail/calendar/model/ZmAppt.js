@@ -845,15 +845,15 @@ function() {
 ZmAppt.prototype.save = 
 function(attachmentId, callback, errorCallback, notifyList) {
 	var soapDoc = null;
-	var needsExceptionId = false;
+	var needsExceptionId = true;
 
 	if (this._viewMode == ZmAppt.MODE_NEW) {
 		soapDoc = AjxSoapDoc.create("CreateAppointmentRequest", "urn:zimbraMail");
+		needsExceptionId = false;
 	} else if (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE && !this.isException()) {
 		soapDoc = AjxSoapDoc.create("CreateAppointmentExceptionRequest", "urn:zimbraMail");
 		this._addInviteAndCompNum(soapDoc);
 		soapDoc.setMethodAttribute("s", this.getOrigStartTime());
-		needsExceptionId = true;
 	} else {
 		soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest", "urn:zimbraMail");
 		this._addInviteAndCompNum(soapDoc);
