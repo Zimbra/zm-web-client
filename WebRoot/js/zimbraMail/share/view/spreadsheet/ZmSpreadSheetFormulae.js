@@ -674,8 +674,7 @@ ZmSpreadSheetFormulae.prototype.compile = function(formula) {
 // 				throw "Consecutive operators not allowed";
 			if (t.type === TYPE.COMMA &&
 			    ( last.type === TYPE.COMMA ||
-			      last.type === TYPE.OPENPAREN ||
-			      last.type === TYPE.CLOSEPAREN ))
+			      last.type === TYPE.OPENPAREN ))
 				throw "Misplaced comma";
 		}
 		if (t.type === TYPE.CELL) {
