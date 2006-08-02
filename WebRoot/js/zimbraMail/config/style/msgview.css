@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
+BODY {
 	@Text@
 }
 
