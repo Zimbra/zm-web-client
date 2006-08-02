@@ -26,7 +26,7 @@
 function ZmPageEditController(appCtxt, container, app) {
 	ZmListController.call(this, appCtxt, container, app);
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
-	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
+	this._listeners[ZmOperation.CLOSE] = new AjxListener(this, this._closeListener);
 	//this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._addDocsListener);
 	this._listeners[ZmOperation.SPELL_CHECK] = new AjxListener(this, this._spellCheckListener);
 	this._listeners[ZmOperation.COMPOSE_FORMAT] = new AjxListener(this, this._formatListener);
@@ -34,8 +34,6 @@ function ZmPageEditController(appCtxt, container, app) {
 	this._saveCallback = new AjxCallback(this, this._saveResponseHandler);
 	this._saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler);
 	this._conflictCallback = new AjxCallback(this, this._saveConflictHandler);
-
-	this._isHandlingSave = false;
 }
 ZmPageEditController.prototype = new ZmListController;
 ZmPageEditController.prototype.constructor = ZmPageEditController;
@@ -60,6 +58,7 @@ ZmPageEditController.prototype._wikletParamDialog;
 ZmPageEditController.prototype._uploadCallback;
 
 ZmPageEditController.prototype._pageEditView;
+ZmPageEditController.prototype._popViewWhenSaved;
 
 // Public methods
 
@@ -94,7 +93,7 @@ ZmPageEditController.prototype._getToolBarOps =
 function() {
 	var list = [];
 	list.push(
-		ZmOperation.SAVE, ZmOperation.CANCEL,
+		ZmOperation.SAVE, ZmOperation.CLOSE,
 		ZmOperation.SEP
 	);
 	/***
@@ -209,7 +208,7 @@ function() {
 
 ZmPageEditController.prototype._saveListener =
 function(ev) {
-	this._doSave(true);
+	this._doSave(false);
 };
 
 ZmPageEditController.prototype._doSave =
@@ -235,35 +234,54 @@ function(popViewWhenSaved) {
 	this._page.save(this._saveCallback, this._saveErrorCallback);
 };
 
-ZmPageEditController.prototype._saveResponseHandler = function(response) {
-	this._isHandlingSave = true; // Prevents "pop shield" from asking user to save.
-	this._exitViewAfterSave();
-	this._isHandlingSave = false;
+ZmPageEditController.prototype._showCurrentPage = function() {
+	if (this._page && this._page.id) {
+		var cache = this._app.getNotebookCache();
+		var page = cache.getPageById(this._page.id);
+		var notebookController = this._app.getNotebookController();
+		notebookController.gotoPage(page);
+	}
+};
 
+ZmPageEditController.prototype._saveResponseHandler = function(response) {
+	var saveResp = response._data && response._data.SaveWikiResponse;
+	if (saveResp) {
+		var data = saveResp.w[0];
+		if (!this._page.id) {
+			this._page.set(data);
+		}
+		else {
+			this._page.version = data.ver;
+		}
+	}
+	
 	// Update the cache if the page name changed.
 	var cache = this._app.getNotebookCache();
 	var cachedPage = cache.getPageById(this._page.id);
 	if (cachedPage && (cachedPage.name != this._page.name)) {
 		cache.renamePage(cachedPage, this._page.name);
 	}
+	
+	this._pageEditView.pageSaved(this._page);
+	this._appCtxt.setStatusMsg(ZmMsg.pageSaved);
 
-	var saveResp = response._data && response._data.SaveWikiResponse;
-	if (saveResp && saveResp.w[0].ver == 1) {
+	if (this._popViewWhenSaved) {
 		// NOTE: Need to let this call stack return and
 		//       process the notifications.
+		this._popViewWhenSaved = false;
 		var args = [ this._page.folderId, this._page.name ];
 		var action = new AjxTimedAction(this, this._saveResponseHandlerShowNote, args);
 		AjxTimedAction.scheduleAction(action, 0);
 	}
-
-	this._appCtxt.setStatusMsg(ZmMsg.pageSaved);
 };
+
 ZmPageEditController.prototype._saveResponseHandlerShowNote = 
 function(folderId, name) {
-		var cache = this._app.getNotebookCache();
-		var page = cache.getPageByName(folderId, name);
-		var notebookController = this._app.getNotebookController();
-		notebookController.show(page);
+	var cache = this._app.getNotebookCache();
+	var page = cache.getPageByName(folderId, name);
+	var notebookController = this._app.getNotebookController();
+	notebookController.show(page);
+	this._app.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._saveErrorResponseHandler =
@@ -298,20 +316,11 @@ function(mineOrTheirs, conflict) {
 		return;
 	}
 	if (mineOrTheirs == ZmPageConflictDialog.KEEP_THEIRS) {
-		this._exitViewAfterSave();
 		return;
 	}
 };
 
-ZmPageEditController.prototype._exitViewAfterSave = function() {
-	if (this._popViewWhenSaved) {
-		this._app.popView();
-	} else {
-		this._app.getAppViewMgr().showPendingView(true);
-	}
-};
-
-ZmPageEditController.prototype._cancelListener =
+ZmPageEditController.prototype._closeListener =
 function(ev) {
 	this._app.popView();
 };
@@ -375,10 +384,12 @@ ZmPageEditController.prototype._preHideCallback =
 function(view, force) {
 	ZmController.prototype._preHideCallback.call(this);
 	if (force) {
+		this._showCurrentPage();
 		return true;
 	}
 	
-	if (this._isHandlingSave || !this._pageEditView.isDirty()) {
+	if (!this._pageEditView.isDirty()) {
+		this._showCurrentPage();
 		return true;
 	}
 	
@@ -395,7 +406,7 @@ function(view, force) {
 ZmPageEditController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
-	this._doSave(false);
+	this._doSave(true);
 };
 
 ZmPageEditController.prototype._popShieldNoCallback =
@@ -408,6 +419,7 @@ function() {
 	if (avm.isPoppable(avm.getPendingViewId()))
 		this._app.popView(true);
 
+	this._showCurrentPage();
 	this._app.getAppViewMgr().showPendingView(true);
 };
 

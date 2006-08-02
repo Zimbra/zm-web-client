@@ -126,6 +126,12 @@ function() {
 	this._originalContent = this.getContent();
 };
 
+ZmPageEditView.prototype.pageSaved =
+function(page) {
+	this._originalContent = page.getContent();
+	this._updateRenameWarning();
+};
+
 ZmPageEditView.prototype.getTitle =
 function() {
 	var pageName = this.getPageName();
@@ -187,9 +193,6 @@ function() {
 	if (this._page) {
 		var pageName = this.getPageName();
 		var content = this.getContent();
-		if ((content.length == 0) && (pageName.length == 0)) {
-			return false;
-		}
 		if ((this._page.name || '') != pageName) {
 			return true;
 		}
