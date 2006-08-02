@@ -143,7 +143,6 @@ function(view, force, initialized) {
 		if (!initialized)
 			this._initializeAlphabetBar(view);
 
-		this._setTabGroup(this._tabGroups[view]);
 		if (this._setView(view, elements, true))
 			this._setViewMenu(view);
 
@@ -152,6 +151,9 @@ function(view, force, initialized) {
 		// HACK: reset search toolbar icon (its a hack we're willing to live with)
 		if (this.isGalSearch())
 			this._appCtxt.getSearchController().setDefaultSearchType(ZmSearchToolBar.FOR_GAL_MI, true);
+
+		this._setTabGroup(this._tabGroups[view]);
+		this._restoreFocus();
 
 		if (!initialized) {
 			var list = this._listView[view].getList();
