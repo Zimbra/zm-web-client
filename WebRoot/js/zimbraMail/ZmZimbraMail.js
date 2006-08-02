@@ -1130,8 +1130,8 @@ function(refresh) {
 	}
 
 	// LAME:
-	var calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-	calController.refreshHandler();
+	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED))
+		this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController().refreshHandler();
 
 	// XXX: temp, get additional share info (see bug #4434)
 	if (refresh.folder) {
