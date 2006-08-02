@@ -272,3 +272,8 @@ ZmContactController.prototype._popdownActionListener =
 function(ev) {
 	// bug fix #3719 - do nothing
 };
+
+ZmContactController.prototype._getDefaultFocusItem = 
+function() {
+	return this._toolbar[this._currentView];
+};

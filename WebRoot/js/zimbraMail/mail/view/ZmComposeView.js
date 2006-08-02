@@ -123,9 +123,6 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 	this._setSubject(action, msg, subjOverride);
 	this._setBody(action, msg, extraBodyText);
 
-	// save form state (to check for change later)
-	this._origFormValue = this._formValue();
-
 	// save extra mime parts
 	var bodyParts = msg ? msg.getBodyParts() : [];
 	for (var i = 0; i < bodyParts.length; i++) {
@@ -137,6 +134,14 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 			mimePart.setContent(bodyPart.content);
 			this.addMimePart(mimePart);
 		}
+	}
+
+	// save form state (to check for change later)
+	if (this._composeMode == DwtHtmlEditor.HTML) {
+		var ta = new AjxTimedAction(this, this._setFormValue);
+		AjxTimedAction.scheduleAction(ta, 10);
+	} else {
+		this._setFormValue();
 	}
 };
 
@@ -382,19 +387,36 @@ function(type, addr) {
 ZmComposeView.prototype.setComposeMode =
 function(composeMode) {
 	if (composeMode == DwtHtmlEditor.TEXT ||
-		(composeMode == DwtHtmlEditor.HTML && this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)))
-	{
+		(composeMode == DwtHtmlEditor.HTML && this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))) {
+
+		var curMember = (this._composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
+
 		this._composeMode = composeMode;
 
 		this._htmlEditor.setMode(composeMode, true);
-		// dont forget to reset the body field Id and object ref
+		// reset the body field Id and object ref
 		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 		this._bodyField = document.getElementById(this._bodyFieldId);
-		if (this._bodyField.disabled)
+		DBG.println("***** body field is a " + this._bodyField);
+		if (this._bodyField.disabled) {
 			this._bodyField.disabled = false;
+		}
 
 		// for now, always reset message body size
 		this._resetBodySize();
+		// recalculate form value since HTML mode inserts HTML tags
+		this._origFormValue = this._formValue();
+
+		// swap new body field into tab group
+		var newMember = (composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
+		if (curMember && newMember && (curMember != newMember)) {
+			this._controller._tabGroup.replaceMember(curMember, newMember);
+			if (composeMode == DwtHtmlEditor.HTML && this._htmlEditor.hasFocus()) {
+				// focus via replaceMember() doesn't take, try again
+				var ta = new AjxTimedAction(this, this._focusHtmlEditor);
+				AjxTimedAction.scheduleAction(ta, 10);
+			}
+		}
 	}
 };
 
@@ -1041,10 +1063,10 @@ function(id, event, addrType) {
 	field[lcEvent] = ZmComposeView["_" + event];
 };
 
-ZmComposeView.prototype._setBodyFieldFocus =
+ZmComposeView.prototype._setBodyFieldCursor =
 function(extraBodyText) {
 	if (this._composeMode == DwtHtmlEditor.HTML) {
-		this._htmlEditor.focus();
+//		this._htmlEditor.focus();
 		return;
 	}
 
@@ -1063,7 +1085,7 @@ function(extraBodyText) {
 	}
 
 //    this._bodyField.focus();
-	this.shell.getKeyboardMgr().grabFocus(this._bodyField);
+//	this.shell.getKeyboardMgr().grabFocus(this._bodyField);
 };
 
 /**
@@ -1099,9 +1121,10 @@ function(composeMode) {
 
 	// init html editor
 	this._htmlEditor = new ZmHtmlEditor(this, DwtControl.RELATIVE_STYLE, null, this._composeMode, this._appCtxt);
-	this._htmlEditor.addEventCallback(new AjxCallback(this, this._htmlEditorEventCallback));
+//	this._htmlEditor.addEventCallback(new AjxCallback(this, this._htmlEditorEventCallback));
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 	this._bodyField = document.getElementById(this._bodyFieldId);
+	DBG.println("***** body field is a " + this._bodyField);
 
 	// misc. inits
 	this._msgDialog = this._appCtxt.getMsgDialog();
@@ -1218,19 +1241,21 @@ function() {
 
 	// save reference to DOM objects per ID's
 	this._subjectField = document.getElementById(subjectFieldId);
-	this._subjectField.onkeydown = AjxCallback.simpleClosure(this.__checkTabInSubject, this);
+//	this._subjectField.onkeydown = AjxCallback.simpleClosure(this.__checkTabInSubject, this);
 	this._attcDiv = document.getElementById(attcDivId);
 };
 
+/*
 ZmComposeView.prototype.__checkTabInSubject = function(ev) {
 	if (AjxEnv.isIE)
 		ev = window.event;
-	if (ev.keyCode == 9 /* TAB */) {
+	if (ev.keyCode == 9) {
 		this._htmlEditor.focus();
 		setTimeout(AjxCallback.simpleClosure(this._htmlEditor.focus, this._htmlEditor), 10);
 		return false;
 	}
 };
+*/
 
 ZmComposeView.prototype._submitAttachments =
 function(isDraft) {
@@ -1354,12 +1379,13 @@ function(type, show, skipNotify, skipFocus) {
 	this._using[type] = show;
 	Dwt.setVisible(document.getElementById(this._divId[type]), show);
 	this._field[type].value = ""; // bug fix #750 and #3680
+	this._field[type].noTab = !show;
 	var setting = ZmComposeView.ADDR_SETTING[type];
 	if (setting) {
 		this._appCtxt.set(setting, show, null, false, skipNotify);
 	}
 	this._resetBodySize();
-	if (!skipFocus) {
+	if (false && !skipFocus) {
 		var field = show ? this._field[type] : null;	// set focus if visible
 		this._controller._setComposeTabGroup(field);
 	}
@@ -1589,6 +1615,17 @@ function(isDraft, status, attId) {
 		this._controller._toolbar.enableAll(true);
 	}
 };
+
+ZmComposeView.prototype._setFormValue =
+function() {
+	this._origFormValue = this._formValue();
+};
+
+ZmComposeView.prototype._focusHtmlEditor =
+function() {
+	this._htmlEditor.focus();
+};
+
 
 // Static methods
 

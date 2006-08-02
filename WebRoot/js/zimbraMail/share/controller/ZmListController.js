@@ -1346,3 +1346,8 @@ function(event) {
 	delete toolbar._ZmListController_this;
 	delete toolbar._ZmListController_newDropDownListener;
 };
+
+ZmListController.prototype._getDefaultFocusItem = 
+function() {
+	return this._listView[this._currentView];
+};

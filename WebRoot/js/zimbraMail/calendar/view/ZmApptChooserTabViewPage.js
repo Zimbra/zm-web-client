@@ -562,6 +562,12 @@ function(result) {
 	this._chooser.setItems(resp.getResults(ZmItem.RESOURCE).getVector());
 };
 
+ZmApptChooserTabViewPage.prototype._getDefaultFocusItem = 
+function() {
+	var fields = ZmApptChooserTabViewPage.SEARCH_FIELDS[this.type];
+	return this._searchFields[fields[0]];
+};
+
 ZmApptChooserTabViewPage._keyPressHdlr =
 function(ev) {
     var tvp = DwtUiEvent.getDwtObjFromEvent(ev);

@@ -43,6 +43,7 @@ function ZmApptComposeController(appCtxt, container, calApp) {
 	this._removedAttendees = [];
 	
 	calApp.loadResources();	// make sure resources are available for autocomplete
+	this._kbMgr = this._shell.getKeyboardMgr();
 };
 
 ZmApptComposeController.prototype = new ZmController();
@@ -150,15 +151,16 @@ function(initHide) {
 	    this._app.createView(ZmController.APPOINTMENT_VIEW, elements, callbacks, null, true);
 	    if (initHide) {
 	    	this._apptView.preload();
+	    } else {
+			this._setApptComposeTabGroup();
 	    }
-	    this._setApptComposeTabGroup();
 	}
 };
 
 ZmApptComposeController.prototype._setApptComposeTabGroup =
 function() {
 
-	this._saveFocus();
+//	this._saveFocus();
 
 	var tg = this._createTabGroup();
 	var rootTg = this._appCtxt.getRootTabGroup();
@@ -167,7 +169,18 @@ function() {
 	var tabView = this._apptView.getTabView(this._apptView.getCurrentTab());
 	tabView._addTabGroupMembers(tg);
 
-	this._restoreFocus();
+	var focusItem = tabView._savedFocusMember || tabView._getDefaultFocusItem() || tg.getFirstMember(true);
+	DBG.println("kbnav", "ZmApptComposeController._setApptComposeTabGroup: setting focus to " + focusItem);
+	this._restoreFocus(focusItem);
+
+	var ta = new AjxTimedAction(this, this._setFocus, [focusItem]);
+//	AjxTimedAction.scheduleAction(ta, 10);
+};
+
+ZmApptComposeController.prototype._setFocus =
+function(focusItem) {
+	DBG.println("kbnav", "timed action setting focus to " + focusItem);
+	this._kbMgr.grabFocus(focusItem);	
 };
 
 ZmApptComposeController.prototype.getKeyMapName =

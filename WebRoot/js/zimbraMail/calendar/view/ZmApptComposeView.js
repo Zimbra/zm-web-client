@@ -257,6 +257,8 @@ function(tabKey) {
 	}
 	if (this._curTabId && (this._curTabId != this._tabIdByKey[tabKey])) {
 		this._tabPages[this._curTabId].tabBlur();
+		var xxx = this._tabPages[this._curTabId]._savedFocusMember = this._controller._saveFocus();
+		DBG.println("kbnav", "ZmApptComposeView.tabSwitched: appt compose tab saved focus member for tab " + this._curTabId + " is " + xxx);
 	}
 	this._curTabId = this._tabIdByKey[tabKey];
 	this._controller._setApptComposeTabGroup();

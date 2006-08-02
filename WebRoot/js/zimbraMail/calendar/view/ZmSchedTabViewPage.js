@@ -671,7 +671,9 @@ function(inputEl, attendee, useException) {
 	if (idx != this._activeInputIdx) return;
 
 	var sched = this._schedTable[idx];
+	if (!sched) return;
 	var input = sched.inputObj;
+	if (!input) return;
 
 	var value = input.getValue();
 	if (value) {
@@ -1298,6 +1300,17 @@ function(vec) {
 	}
 
 	this._contactPicker.popdown();
+};
+
+ZmSchedTabViewPage.prototype._getDefaultFocusItem = 
+function() {
+	for (var i = 0; i < this._schedTable.length; i++) {
+		var sched = this._schedTable[i];
+		if (sched && sched.inputObj && !sched.inputObj.disabled) {
+			return sched.inputObj;
+		}
+	}
+	return null;
 };
 
 

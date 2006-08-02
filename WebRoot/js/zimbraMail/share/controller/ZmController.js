@@ -208,25 +208,31 @@ function(bReloginMode) {
 // Remember the currently focused item before this view is hidden
 ZmController.prototype._saveFocus = 
 function() {
-	this._savedFocusMember = this._appCtxt.getRootTabGroup().getFocusMember();
+	var currentFocusMember = this._appCtxt.getRootTabGroup().getFocusMember();
+	var myTg = this.getTabGroup();
+	this._savedFocusMember = (currentFocusMember && myTg && myTg.contains(currentFocusMember)) ? currentFocusMember : null;
+	return this._savedFocusMember;
 };
 
 // Make our tab group the current app view tab group, and restore focus to
 // whatever had it last time we were visible
 ZmController.prototype._restoreFocus = 
-function() {
+function(focusItem) {
 	var rootTg = this._appCtxt.getRootTabGroup();
 	var myTg = this.getTabGroup();
 	var kbMgr = this._shell.getKeyboardMgr();
 
-	// TODO - define proper tab grouping for new window when ready!
 	if (rootTg && myTg) {
-		rootTg.replaceMember(ZmController._getCurrentAppViewTabGroup(), myTg);
-		var focusItem = this._savedFocusMember ? this._savedFocusMember : rootTg.getFocusMember();
-		focusItem = focusItem ? focusItem : myTg.getFirstMember(true);
-		kbMgr.grabFocus(focusItem);
+		focusItem = focusItem || this._savedFocusMember || this._getDefaultFocusItem() || rootTg.getFocusMember();
+		rootTg.replaceMember(ZmController._getCurrentAppViewTabGroup(), myTg, false, false, focusItem);
 		ZmController._setCurrentAppViewTabGroup(myTg);
 	}
+};
+
+ZmController.prototype._getDefaultFocusItem = 
+function() {
+	var myTg = this.getTabGroup();
+	return myTg ? myTg.getFirstMember(true) : null;
 };
 
 ZmController.prototype._preHideCallback = 

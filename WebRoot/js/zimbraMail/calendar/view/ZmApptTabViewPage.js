@@ -494,7 +494,7 @@ function(appt, mode) {
 	this._enableRepeat(mode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
 
 	// set focus to first input element
-	this._kbMgr.grabFocus(this._subjectField);
+//	this._kbMgr.grabFocus(this._subjectField);
 
 	// save the original form data in its initialized state
 	this._origFormValue = this._formValue(false);
@@ -1418,6 +1418,10 @@ function(value) {
 	return value;
 };
 
+ZmApptTabViewPage.prototype._getDefaultFocusItem = 
+function() {
+	return this._subjectField;
+};
 
 // Static methods
 

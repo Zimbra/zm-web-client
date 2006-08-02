@@ -67,7 +67,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	// Register our keymap and global key action handler with the shell's keyboard manager 
 	var kbMgr = this._shell.getKeyboardMgr();
 	kbMgr.registerKeyMap(new ZmKeyMap());
-	kbMgr.registerApplicationKeyActionHandler(this);
+	kbMgr.registerDefaultKeyActionHandler(this);
 
 	if (location.search && (location.search.indexOf("nss=1") != -1)) {
 		this._splashScreen = null;
@@ -391,6 +391,8 @@ function(params) {
 	ZmController._setCurrentAppViewTabGroup(dummyTg);
 	rootTg.addMember(dummyTg);
 	rootTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
+	var kbMgr = this._shell.getKeyboardMgr();
+	kbMgr.setTabGroup(rootTg);
 
 	this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
@@ -428,11 +430,6 @@ function() {
 	this.setSessionTimer(true);
 	this._killSplash();
 	this._appViewMgr.addComponents(this._components, true);
-
-	var kbMgr = this._shell.getKeyboardMgr();
-	kbMgr.setTabGroup(this._appCtxt.getRootTabGroup());
-	var startupFocusItem = this._appViewMgr.getCurrentView().getController().getCurrentView();	// returns a list view
-	kbMgr.grabFocus(startupFocusItem);
 	
 	if (this._appCtxt.get(ZmSetting.LICENSE_STATUS) != ZmSetting.LICENSE_GOOD) {
 		var dlg = this._appCtxt.getMsgDialog();

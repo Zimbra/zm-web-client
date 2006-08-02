@@ -272,3 +272,8 @@ function(params) {
 	// XXX: remove this when replenishment is fixed for msg controller!
 	DBG.println("SORRY. NO REPLENISHMENT FOR YOU.");
 };
+
+ZmMsgController.prototype._getDefaultFocusItem = 
+function() {
+	return this._toolbar[this._currentView];
+};

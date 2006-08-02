@@ -191,7 +191,12 @@ function(view, force) {
 ZmComposeController.prototype._postShowCallback = 
 function() {
 	ZmController.prototype._postShowCallback.call(this);
-	this._composeView.setFocus();
+	if (this._action != ZmOperation.NEW_MESSAGE && 
+		this._action != ZmOperation.FORWARD_INLINE && 
+		this._action != ZmOperation.FORWARD_ATT) {
+	
+		this._composeView._setBodyFieldCursor();
+	}
 };
 
 /**
@@ -203,8 +208,8 @@ function(attId, isDraft, callback) {
 	if (!msg) return;
 
 	var inviteMode = msg.inviteMode;
-	var isCancel = inviteMode == ZmOperation.REPLY_CANCEL;
-	var isModify = inviteMode == ZmOperation.REPLY_MODIFY;
+	var isCancel = (inviteMode == ZmOperation.REPLY_CANCEL);
+	var isModify = (inviteMode == ZmOperation.REPLY_MODIFY);
 
 	if (isCancel || isModify) {
 		var origMsg = msg._origMsg;
@@ -212,8 +217,7 @@ function(attId, isDraft, callback) {
 		var respCallback = new AjxCallback(this, this._handleResponseCancelOrModifyAppt);
 		if (isCancel) {
 			appt.cancel(origMsg._mode, msg, respCallback);
-		}
-		else {
+		} else {
 			appt.save();
 		}
 		return;
@@ -298,30 +302,20 @@ function(initHide, composeMode) {
 /**
  * Sets the tab stops for the compose form based on what's showing. Called any
  * time an address field is hidden/shown, as well as when the view is set.
- * 
- * @param field		[DwtControl|input]*		element to set focus to
  */
 ZmComposeController.prototype._setComposeTabGroup =
-function(field) {
-
-	this._saveFocus();
-
+function() {
 	var tg = this._createTabGroup();
 	var rootTg = this._appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
 	tg.addMember(this._toolbar);
-	var addrFields = this._composeView.getAddrFields();
-	for (var i = 0; i < addrFields.length; i++) {
-		tg.addMember(addrFields[i]);
+	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
+		tg.addMember(this._composeView._field[ZmComposeView.ADDRS[i]]);
 	}
 	tg.addMember(this._composeView._subjectField);
-	tg.addMember(this._composeView._bodyField);
-	
-	this._restoreFocus();
-
-	if (field) {
-		this._shell.getKeyboardMgr().grabFocus(field);
-	}
+	var mode = this._composeView.getComposeMode();
+	var member = (mode == DwtHtmlEditor.TEXT) ? this._composeView._bodyField : this._composeView.getHtmlEditor();
+	tg.addMember(member);
 };
 
 ZmComposeController.prototype.getKeyMapName =
@@ -437,8 +431,8 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	this._setOptionsMenu(this._composeMode);
 
 	this._composeView.set(action, msg, toOverride, subjOverride, extraBodyText);
-	this._app.pushView(ZmController.COMPOSE_VIEW);
 	this._setComposeTabGroup();
+	this._app.pushView(ZmController.COMPOSE_VIEW);
 	this._composeView.reEnableDesignMode();
 };
 
@@ -612,9 +606,7 @@ function(mode) {
 			this._htmlToTextDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._htmlToTextCancelCallback, this);
 		}
 		this._htmlToTextDialog.popup(this._composeView._getDialogXY());
-	}
-	else
-	{
+	} else {
 		this._composeView.setComposeMode(mode);
 	}
 };
@@ -902,4 +894,17 @@ function() {
 	var menu = this._optionsMenu[this._action];
 	if (!menu) return;
 	menu.checkItem(ZmOperation.KEY_ID, this._curIncOption, true);
+};
+
+ZmComposeController.prototype._getDefaultFocusItem = 
+function() {
+	if (this._action == ZmOperation.NEW_MESSAGE || 
+		this._action == ZmOperation.FORWARD_INLINE || 
+		this._action == ZmOperation.FORWARD_ATT) {
+
+		return this._composeView._field[ZmEmailAddress.TO];
+		this.shell.getKeyboardMgr().grabFocus(this._field[ZmEmailAddress.TO]);
+	} else {
+		return (composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
+	}
 };
