@@ -1708,3 +1708,8 @@ function(actionCode) {
 	}
 	return true;
 };
+
+ZmCalViewController.prototype._getDefaultFocusItem = 
+function() {
+	return this._toolbar[ZmController.CAL_VIEW];
+};

@@ -277,3 +277,8 @@ function() {
 	this._popShield.popdown();
 	this._app.getAppViewMgr().showPendingView(false);
 };
+
+ZmPrefController.prototype._getDefaultFocusItem = 
+function() {
+	return this._toolbar;
+};

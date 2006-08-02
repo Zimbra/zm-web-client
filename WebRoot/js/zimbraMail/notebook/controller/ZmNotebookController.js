@@ -321,6 +321,11 @@ ZmNotebookController.prototype._detachListener = function(event) {
 	}
 };
 
+ZmNotebookController.prototype._getDefaultFocusItem = 
+function() {
+	return this._toolbar[this._currentView];
+};
+
 //
 // Private functions
 //
