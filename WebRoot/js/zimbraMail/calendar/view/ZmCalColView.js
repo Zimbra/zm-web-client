@@ -705,12 +705,9 @@ function(appt) {
 	if (appt.isAllDayEvent()) {
 		var dataId = appt.getUniqueId();
 		var startTime = Math.max(appt.getStartTime(), this._timeRangeStart);
-		var endTime = Math.min(appt.getEndTime(), this._timeRangeEnd);
-		var numDays = Math.floor((endTime-startTime)/AjxDateUtil.MSEC_PER_DAY);
 		var data = this._allDayAppts[dataId] = {
 			appt: appt,
-			startTime: startTime,
-			numDays: numDays
+			startTime: startTime
 		};
 		this._allDayApptsList.push(appt);
 	}
@@ -1077,6 +1074,12 @@ function(row, colIndex, data) {
  */
 ZmCalColView.prototype._findAllDaySlot = 
 function(colIndex, data) {
+	if (data.appt) {
+		var appt = data.appt;
+		var startTime = appt.getStartTime();
+		var endTime = appt.getEndTime();
+		data.numDays = startTime != endTime ? Math.floor((endTime-startTime)/AjxDateUtil.MSEC_PER_DAY) : 1;
+	}
 	var rows = this._allDayApptsRowLayouts;
 	var row = null;
 	for (var i=0; i < rows.length; i++) {
