@@ -251,6 +251,7 @@ ZmNotebookController.prototype._refreshListener = function(event) {
 			var cache = this._app.getNotebookCache();
 			var page = cache.getPageByName(pageRef.folderId, pageRef.name);
 			page.load();
+			page.folderId = pageRef.folderId; // Bug 9524
 			this._listView[this._currentView].set(page);
 		}
 	}
