@@ -198,7 +198,7 @@ ZmSectionLabel {
 	@TextPadding@
 	text-align:left;
 	font-weight:bold;
-	vertical-align:center;
+	vertical-align:middle;
 }
 
 .ZmGraphKeyBody {

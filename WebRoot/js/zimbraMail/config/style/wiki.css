@@ -6,7 +6,6 @@
 }
 
 #ZimbraWikiPage .zmwiki-headerContainer {
-	Xheight:30px;
 }
 
 #ZimbraWikiPage .zmwiki-breadcrumbHeader,
@@ -39,7 +38,6 @@
 }
 
 #ZimbraWikiPage .zmwiki-sideBarContainer {
-	Xwidth:150px;
 	background-color:#eeeeee;
 	border-right:1px solid #cccccc;
 }
@@ -127,12 +125,12 @@
 }
 
 #ZimbraWikiPage .zmwiki-tocTable {
-	width:100%
+	width:100%;
 	padding:5px;	
 }
 
 #ZimbraWikiPage .zmwiki-tocIconTable {
-	width:100%
+	width:100%;
 	padding:5px;	
 }
 
@@ -175,7 +173,6 @@
 #ZimbraWikiPage .zmwiki-pageIcon {
 	width:16;
 	padding-left:3px;
-	Xpadding-right:3px;
 	cursor:pointer;
 }
 

@@ -601,18 +601,23 @@ td.DDSepInvisible div {
 .ZmHEDialog .Cursor-Pointer, .ZmHEDialog .Cursor-Pointer * { cursor: pointer !important; }
 
 
-
-
 /* ??? USED? */
-.ZmComposeTBButton {
-	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);
-}
-
+#IFDEF MSIE
+.ZmComposeTBButton {filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);}
+#ENDIF
 /* ??? USED? */
+#IFDEF MSIE
 .ZmComposeTBButton.toggled {
 	filter:progid:DXImageTransform.Microsoft.Gradient(startColorStr=#FFFFFFFF,endColorStr=#20808080);
 	background-color: white;
 }
+#ENDIF
+
+#IFNDEF MSIE
+.ZmComposeTBButton.toggled {
+	background-color: white;
+}
+#ENDIF
 
 
 
@@ -674,7 +679,9 @@ td.DDSepInvisible div {
 }
 
 .AlphabetBarDisabled {
+	#IFDEF MSIE
 	filter:alpha(opacity=50);
+	#ENDIF
 	-moz-opacity:0.5;
 	opacity:0.5;
 	cursor: default;

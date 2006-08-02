@@ -319,9 +319,9 @@ DarkSeparatorColor	= @_BaseColorD55_@
 
 # Drag and drop colors
 DragBg				= background-color:@HilightColor@;
-DragText			= color:@Text@;
+DragText			= @Text@
 DropBg				= background-color:@HilightColor@;
-DropText			= color:@Text@;
+DropText			= @Text@
 DropAllowedColor	= green;
 DropNotAllowedColor = red;
 
@@ -661,7 +661,7 @@ ListHeaderBg			 	= @WidgetHeaderSize@
 
 	_ListColHeaderStyle_		= padding-left:@TextPaddingSize@;	@NoWrap@
 #IFDEF MSIE
-	_ListColHeaderStyle_		= padding-left:@TextPaddingSize@;	@NoWrap@	text-overflow: ellipsis;
+	_ListColHeaderStyle_		= padding-left:@TextPaddingSize@;	@NoWrap@	@OverflowEllipsis@;
 #ENDIF
 ListColHeaderContainer		= @WidgetHeaderContainer@			@InactiveCursor@	@_ListColHeaderStyle_@
 ListColHeaderContainer-hover= @WidgetHeaderContainer-hover@		@ActiveCursor@		@_ListColHeaderStyle_@
@@ -674,9 +674,9 @@ ListItemContainer-matched		= @_ItemContainer-matched_@			@ItemBottomBorder@		@_L
 ListItemContainer-rightClicked	= @_ItemContainer-rightClicked_@	@ItemBottomBorder@		@_ListItemContainerStyle_@
 ListItemContainer-focused		= @_ItemContainer-focused_@									@_ListItemContainerStyle_@
 
-	_ListItemTextStyle_		= vertical-align:center; white-space: nowrap; overflow: hidden;	text-overflow: ellipsis;
+	_ListItemTextStyle_		= vertical-align:middle; white-space: nowrap; overflow: hidden;	@OverflowEllipsis@;
 #IFDEF MSIE
-	_ListItemTextStyle_		= vertical-align:center; white-space: nowrap; overflow: hidden;
+	_ListItemTextStyle_		= vertical-align:middle; white-space: nowrap; overflow: hidden;
 #ENDIF
 ListItemText				= @Text@	@_ListItemTextStyle_@
 ListItemText-focused		= @Text@	@_ListItemTextStyle_@
@@ -761,11 +761,24 @@ ContactsCardSize			= height:140px;
 
 # RANDOM CRAP
 
+#IFDEF MSIE
 DndOpacity					= filter:alpha(opacity=70); -moz-opacity:0.7; opacity:0.7;
-DndAllowedContainer			= border: 2px solid @DropAllowedColor@; 	@DragBg@;	
+#ENDIF
+#IFNDEF MSIE
+DndOpacity					= -moz-opacity:0.7; opacity:0.7;
+#ENDIF
+
+
+DndAllowedContainer			= border: 2px solid @DropAllowedColor@; 	@DragBg@;
 DndNotAllowedContainer		= border: 2px solid @DropNotAllowedColor@; 	@DragBg@;	
 
+#IFDEF MSIE
 VeilOpacity					= filter:alpha(opacity=50); -moz-opacity:0.5; opacity:0.5;
+#ENDIF
+#IFNDEF MSIE
+VeilOpacity					= -moz-opacity:0.5; opacity:0.5;
+#ENDIF
+
 VeilColor					= background-color:white;
 
 
