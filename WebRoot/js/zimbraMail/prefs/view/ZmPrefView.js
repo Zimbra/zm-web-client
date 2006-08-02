@@ -47,7 +47,7 @@ function ZmPrefView(parent, appCtxt, posStyle, controller, passwordDialog) {
 	this._passwordDialog = passwordDialog;
 
     this.setScrollStyle(DwtControl.SCROLL);
-	this.prefView = new Object();
+	this.prefView = {};
 	this._hasRendered = false;
 };
 
@@ -152,7 +152,7 @@ function(view) {
 ZmPrefView.prototype.getChangedPrefs =
 function(dirtyCheck, noValidation) {
 	var settings = this._appCtxt.getSettings();
-	var list = new Array();
+	var list = [];
 	var errorStr = "";
 	for (var i = 0; i < ZmPrefView.VIEWS.length; i++) {
 		var view = ZmPrefView.VIEWS[i];
@@ -165,9 +165,10 @@ function(dirtyCheck, noValidation) {
 		var prefs = ZmPrefView.PREFS[view];
 		for (var j = 0; j < prefs.length; j++) {
 			var id = prefs[j];
+			if (!viewPage._prefPresent[id]) continue;
 			var setup = ZmPref.SETUP[id];
 			var pre = setup.precondition;
-			if (pre && !(this._appCtxt.get(pre))) continue;		
+			if (pre && !(this._appCtxt.get(pre))) continue;
 			
 			var type = setup ? setup.displayContainer : null;
 			if (type == ZmPref.TYPE_PASSWORD) continue; // ignore non-form elements
@@ -182,9 +183,11 @@ function(dirtyCheck, noValidation) {
 										  (pref.origValue == null || 
 										   pref.origValue == ""));
 			}
+			// don't try to update on server if it's client-side pref
+			var addToList = (!unchanged && (pref.name != null));
 
 			if (dirtyCheck) {
-				if (!unchanged) {
+				if (addToList) {
 					return true;
 				}
 			} else if (!unchanged) {
@@ -196,10 +199,15 @@ function(dirtyCheck, noValidation) {
 				} else if (!noValidation && validationFunc) {
 					isValid = validationFunc(value);
 				}
-				if (!isValid)
+				if (!isValid) {
 					errorStr += "\n" + AjxMessageFormat.format(setup.errorMessage, value);
+				}
 				pref.setValue(value);
-				list.push(pref);
+				if (addToList) {
+					list.push(pref);
+				} else {
+					this._controller.setDirty(view, true);
+				}
 			}
 		}
 		// errorStr can only be non-null if noValidation is false

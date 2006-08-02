@@ -60,6 +60,7 @@ ZmPref.MAIL_PREFS = [ZmSetting.INITIAL_GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSet
 					 ZmSetting.COMPOSE_AS_FORMAT, ZmSetting.COMPOSE_SAME_FORMAT, ZmSetting.NEW_WINDOW_COMPOSE];
 					 
 ZmPref.ADDR_BOOK_PREFS = [ZmSetting.AUTO_ADD_ADDRESS, ZmSetting.GAL_AUTOCOMPLETE,
+						  ZmSetting.GAL_AUTOCOMPLETE_SESSION,
 						  ZmSetting.CONTACTS_VIEW, ZmSetting.CONTACTS_PER_PAGE,
 						  ZmSetting.IMPORT, ZmSetting.EXPORT];
 						  
@@ -75,6 +76,7 @@ ZmPref.TYPE_TEXTAREA	= i++;
 ZmPref.TYPE_PASSWORD	= i++;
 ZmPref.TYPE_IMPORT		= i++;
 ZmPref.TYPE_EXPORT		= i++;
+delete i;
 
 // custom functions for loading and validation
 
@@ -118,15 +120,17 @@ ZmPref.MAX_LENGTH[ZmSetting.INITIAL_SEARCH]	= 512;
 ZmPref.MAX_LENGTH[ZmSetting.SIGNATURE]		= 1024;
 ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE]	= 8192;
 
-// The SETUP object for a pref gets translated into a form input. Available properties are:
-//
-// displayName			descriptive text
-// displayContainer		type of form input: checkbox, select, input, or textarea
-// options				values for a select input
-// displayOptions		text for the select input's values
-// validationFunction	function to validate the value
-// errorMessage			message to show if validation fails
-// displaySeparator		if true, a line will be drawn below this pref
+/* The SETUP object for a pref gets translated into a form input. Available properties are:
+
+displayName			descriptive text
+displayContainer	type of form input: checkbox, select, input, or textarea
+options				values for a select input
+displayOptions		text for the select input's values
+validationFunction	function to validate the value
+errorMessage		message to show if validation fails
+displaySeparator	if true, a line will be drawn below this pref
+precondition		pref will not be displayed unless precondition is true
+*/
 
 ZmPref.SETUP = {};
 
@@ -302,7 +306,12 @@ ZmPref.SETUP[ZmSetting.AUTO_ADD_ADDRESS] = {
 ZmPref.SETUP[ZmSetting.GAL_AUTOCOMPLETE] = {
 	displayName:		ZmMsg.galAutocomplete,
 	displayContainer:	ZmPref.TYPE_CHECKBOX,
-	precondition:		ZmSetting.GAL_AUTOCOMPLETE_ENABLED,
+	precondition:		ZmSetting.GAL_AUTOCOMPLETE_ENABLED};
+
+ZmPref.SETUP[ZmSetting.GAL_AUTOCOMPLETE_SESSION] = {
+	displayName:		ZmMsg.galAutocompleteSession,
+	displayContainer:	ZmPref.TYPE_CHECKBOX,
+	precondition:		ZmSetting.GAL_AUTOCOMPLETE,
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.CONTACTS_VIEW] = {

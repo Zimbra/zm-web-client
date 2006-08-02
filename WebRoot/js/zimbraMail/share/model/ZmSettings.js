@@ -222,6 +222,7 @@ function(list, callback) {
     if (!(list && list.length)) return;
     
     var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
+    var gotOne = false;
 	for (var i = 0; i < list.length; i++) {
 		var setting = list[i];
 		if (setting.type != ZmSetting.T_PREF) {
@@ -229,18 +230,22 @@ function(list, callback) {
 			continue;
 		}
 		if (!setting.name) {
-			DBG.println(AjxDebug.DBG1, "*** Attempt to modify internal pref: " + setting.id);
+			DBG.println(AjxDebug.DBG2, "Modify internal pref: " + setting.id);
 			continue;
 		}
 		var value = setting.getValue();
-		if (setting.dataType == ZmSetting.D_BOOLEAN)
+		if (setting.dataType == ZmSetting.D_BOOLEAN) {
 			value = value ? "TRUE" : "FALSE";
+		}
 		var node = soapDoc.set("pref", value);
 		node.setAttribute("name", setting.name);
+		gotOne = true;
 	}
 
-	var respCallback = new AjxCallback(this, this._handleResponseSave, [list, callback]);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	if (gotOne) {
+		var respCallback = new AjxCallback(this, this._handleResponseSave, [list, callback]);
+		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	}
 };
 
 ZmSettings.prototype._handleResponseSave =

@@ -630,7 +630,7 @@ function(str, callback) {
 	DBG.println(AjxDebug.DBG3, "str = " + str);
 
 	// see if we have GAL results we can use
-	if (this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE)) {
+	if (this._galAutocompleteEnabled()) {
 		var old = (new Date()).getTime() - ZmContactList.GAL_RESULTS_TTL;
 		if (this._galResults[str] && (this._galResults[str].ts > old)) {
 			DBG.println(AjxDebug.DBG3, "Found GAL results for " + str);
@@ -750,7 +750,7 @@ function(str) {
 ZmContactList.prototype._matchingDone =
 function(str) {
 	var localDone = (this._acAddrList[str] && this._acAddrList[str].matchingDone);
-	var galDone = (!this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE) ||
+	var galDone = (!this._galAutocompleteEnabled ||
 				   ((this._acAddrList[str] && this._acAddrList[str].galMatchingDone)));
 	return (localDone && galDone);
 };
@@ -980,6 +980,12 @@ function(str, callback) {
 					noBusyOverlay: true});
 };
 
+ZmContactList.prototype._galAutocompleteEnabled =
+function() {
+	return (this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE) &&
+			this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_SESSION));
+};
+
 ZmContactList.prototype._handleResponseGetGalMatches =
 function(str, callback, result) {
 	var resp = result.getResponse();
@@ -1013,9 +1019,9 @@ function(ex) {
 		if (this._galFailures >= ZmContactList.AC_GAL_FAILURES) {
 			this._appCtxt.setStatusMsg(ZmMsg.galAutocompleteFailure);
 			var settings = this._appCtxt.getSettings();
-			var setting = settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE);
+			var setting = settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE_SESSION);
 			setting.setValue(false);
-			settings.save([setting]);
+			this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController().setDirty(ZmPrefView.ADDR_BOOK, true);
 			this._galFailures = 0;
 		}
 	}

@@ -195,6 +195,7 @@ ZmSetting.CONTACTS_PER_PAGE 			= i++;
 ZmSetting.CONTACTS_VIEW					= i++;
 ZmSetting.EXPORT 						= i++;
 ZmSetting.GAL_AUTOCOMPLETE				= i++;
+ZmSetting.GAL_AUTOCOMPLETE_SESSION		= i++;
 ZmSetting.IMPORT 						= i++;
 
 // calendar preferences
@@ -364,6 +365,7 @@ ZmSetting.INIT[ZmSetting.CONTACTS_PER_PAGE] 			= ["zimbraPrefContactsPerPage", Z
 ZmSetting.INIT[ZmSetting.CONTACTS_VIEW]					= ["zimbraPrefContactsInitialView", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.CV_LIST];
 ZmSetting.INIT[ZmSetting.EXPORT] 						= [null, ZmSetting.T_PREF];
 ZmSetting.INIT[ZmSetting.GAL_AUTOCOMPLETE]				= ["zimbraPrefGalAutoCompleteEnabled", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.GAL_AUTOCOMPLETE_SESSION]		= [null, ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.IMPORT] 						= [null, ZmSetting.T_PREF];
 
 // calendar preferences

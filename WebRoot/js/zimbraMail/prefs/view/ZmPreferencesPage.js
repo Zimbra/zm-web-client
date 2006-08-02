@@ -60,6 +60,11 @@ ZmPreferencesPage.prototype.constructor = ZmPreferencesPage;
 ZmPreferencesPage.IMPORT_FIELD_NAME = "importUpload";
 ZmPreferencesPage.IMPORT_TIMEOUT = 300;
 
+ZmPreferencesPage.prototype.toString =
+function () {
+    return "ZmPreferencesPage";
+};
+
 ZmPreferencesPage.prototype.hasRendered =
 function () {
 	return this._hasRendered;
@@ -74,10 +79,14 @@ ZmPreferencesPage.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
 	this._controller._resetOperations(this._controller._toolbar, this._view);
-	if (this._hasRendered) return;
+	if (this._hasRendered && !this._controller.isDirty(this._view)) return;
+	if (this._hasRendered) {
+		this._table.innerHTML = "";
+	}
 
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._view);
 
+	this._prefPresent = {};
 	var prefs = ZmPrefView.PREFS[this._view];
 	var settings = this._appCtxt.getSettings();
 	for (var i = 0; i < prefs.length; i++) {
@@ -91,6 +100,9 @@ function() {
 		if (setup.loadFunction) {
 			setup.loadFunction(this._appCtxt, setup);
 			if (setup.options.length <= 1) {
+				if (setup.displaySeparator) {
+					this._addSep();
+				}
 				continue;
 			}
 		}
@@ -98,9 +110,18 @@ function() {
 		// save the current value (for checking later if it changed)
 		pref.origValue = this._getPrefValue(id);
 		var value = this._getPrefValue(id, false, true);
-		if (id == ZmSetting.SHOW_FRAGMENTS && !this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED))
+		if (id == ZmSetting.SHOW_FRAGMENTS && !this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 			setup.displayName = ZmMsg.showFragmentsMsg;
+		}
+		// we only show this one if it's false
+		if ((id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) && value) {
+			if (setup.displaySeparator) {
+				this._addSep();
+			}
+			continue;
+		}		
 
+		this._prefPresent[id] = true;
 		DBG.println(AjxDebug.DBG3, "adding pref " + pref.name + " / " + value);
 
 		var type = setup ? setup.displayContainer : null;
@@ -148,8 +169,12 @@ function() {
 			}
 		}
 	}
-	this._addButton(this._resetId, ZmMsg.restoreDefaults, 100, new AjxListener(this, this._resetListener));
-	this._hasRendered = true;
+	if (!this._hasRendered) {
+		this._addButton(this._resetId, ZmMsg.restoreDefaults, 100, new AjxListener(this, this._resetListener));
+		this._hasRendered = true;
+	} else {
+		this._controller.setDirty(this._view, false);
+	}
 };
 
 ZmPreferencesPage.prototype.getFormValue =
@@ -240,10 +265,11 @@ function(id, useDefault, convert) {
 	var pref = this._appCtxt.getSettings().getSetting(id);
 	var value = useDefault ? pref.getDefaultValue() : pref.getValue();
 	if (convert) {
-		if (id == ZmSetting.SIGNATURE_STYLE)
+		if (id == ZmSetting.SIGNATURE_STYLE) {
 			value = (value == ZmSetting.SIG_INTERNET);
-		if (id == ZmSetting.POLLING_INTERVAL)
+		} else if (id == ZmSetting.POLLING_INTERVAL) {
 			value = parseInt(value / 60); // setting stored as seconds, displayed as minutes
+		}
 	}
 
 	return value;
@@ -253,7 +279,7 @@ function(id, useDefault, convert) {
 // the reset button.
 ZmPreferencesPage.prototype._createHtml =
 function() {
-	var html = new Array();
+	var html = [];
 	var i = 0;
 	var tableId = Dwt.getNextId();
 	this._resetId = Dwt.getNextId();
@@ -291,10 +317,7 @@ function(label, content, addSep) {
 	cell3.innerHTML = "<div>&nbsp;</div>";
     
 	if (addSep) {
-		var sepTr = this._table.insertRow(-1);
-		var sepCell = sepTr.insertCell(0);
-		sepCell.colSpan = "3";
-		sepCell.innerHTML = "<div class='horizSep'></div>";
+		this._addSep();
 	}
 
 	return tr;
@@ -312,6 +335,14 @@ function(parentId, text, width, listener) {
 	var parent = document.getElementById(parentId);
 	parent.appendChild(element);
 	return button;
+};
+
+ZmPreferencesPage.prototype._addSep =
+function() {
+	var sepTr = this._table.insertRow(-1);
+	var sepCell = sepTr.insertCell(0);
+	sepCell.colSpan = "3";
+	sepCell.innerHTML = "<div class='horizSep'></div>";
 };
 
 ZmPreferencesPage.prototype._setupSelect = 
@@ -361,7 +392,7 @@ function(buttonDiv) {
 
 	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
 	
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 	html[idx++] = "<form style='margin: 0px; padding: 0px;' method='POST' action='";
 	html[idx++] = uri;

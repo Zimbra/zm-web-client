@@ -39,10 +39,12 @@ function ZmPrefController(appCtxt, container, prefsApp) {
 
 	ZmController.call(this, appCtxt, container, prefsApp);
 
-	this._listeners = new Object();
+	this._listeners = {};
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._backListener);
+
 	this._filtersEnabled = appCtxt.get(ZmSetting.FILTERS_ENABLED);
+	this._dirty = {};
 };
 
 ZmPrefController.prototype = new ZmController();
@@ -99,6 +101,16 @@ function(actionCode) {
 ZmPrefController.prototype.getTabView =
 function() {
 	return this.getPrefsView();
+};
+
+ZmPrefController.prototype.setDirty =
+function(view, dirty) {
+	this._dirty[view] = dirty;
+};
+
+ZmPrefController.prototype.isDirty =
+function(view) {
+	return this._dirty[view];
 };
 
 /*
@@ -236,6 +248,16 @@ ZmPrefController.prototype._preHideCallback =
 function(view, force) {
 	ZmController.prototype._preHideCallback.call(this);
 	return force ? true : this.popShield();
+};
+
+ZmPrefController.prototype._postShowCallback = 
+function() {
+	ZmController.prototype._postShowCallback.call(this);
+	var tabKey = this._prefsView.getCurrentTab();
+	var viewPage = this._prefsView.getTabView(tabKey);
+	if (this.isDirty(viewPage._view)) {
+		viewPage.showMe();
+	}
 };
 
 ZmPrefController.prototype.popShield =
