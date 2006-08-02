@@ -306,6 +306,14 @@ function() {
 ZmZimbraMail.prototype.startup =
 function(params) {
 
+	if (typeof(skin) == "undefined") {
+		DBG.println(AjxDebug.DBG1, "No skin!");
+		var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
+					  "" : ":" + location.port) + "/zimbra/public/skinError.jsp?skin=" + appCurrentSkin;
+		ZmZimbraMail.sendRedirect(locationStr);
+        return;
+    }
+
 	if (!this._appViewMgr) {
 		this._appViewMgr = new ZmAppViewMgr(this._shell, this, false, true);
 	}
