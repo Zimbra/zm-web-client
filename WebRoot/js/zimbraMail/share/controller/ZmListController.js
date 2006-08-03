@@ -97,6 +97,7 @@ ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_FOLDER]		= ZmOperation.NEW_FOLDE
 ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE]	= ZmOperation.NEW_MESSAGE;
 ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_PAGE]		= ZmOperation.NEW_PAGE;
 ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_TAG]		= ZmOperation.NEW_TAG;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_NOTEBOOK]	= ZmOperation.NEW_NOTEBOOK;
 
 ZmListController.ACTION_TAG_RE = new RegExp("ToggleTag" + "(\\d+)");
 
@@ -210,6 +211,7 @@ function(actionCode) {
 		case ZmKeyMap.NEW_APPT:
 		case ZmKeyMap.NEW_TAG:
 		case ZmKeyMap.NEW_PAGE:
+		case ZmKeyMap.NEW_NOTEBOOK:
 			this._newListener(null, ZmListController.ACTION_CODE_TO_OP[actionCode]);
 			break;
 

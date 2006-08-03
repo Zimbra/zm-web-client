@@ -59,6 +59,7 @@ function ZmKeyMap() {
 			"N,M":					ZmKeyMap.NEW_MESSAGE,
 			"N,P":					ZmKeyMap.NEW_PAGE,
 			"N,T":					ZmKeyMap.NEW_TAG,
+			"N,W":					ZmKeyMap.NEW_NOTEBOOK,
 
 			"G,M":					ZmKeyMap.GOTO_MAIL,
 			"G,A":					ZmKeyMap.GOTO_CONTACTS,
@@ -310,6 +311,7 @@ ZmKeyMap.NEW_CALENDAR		= "NewCalendar";
 ZmKeyMap.NEW_CONTACT		= "NewContact";
 ZmKeyMap.NEW_FOLDER			= "NewFolder";
 ZmKeyMap.NEW_MESSAGE		= "NewMessage";
+ZmKeyMap.NEW_NOTEBOOK		= "NewNotebook";
 ZmKeyMap.NEW_PAGE			= "NewPage";
 ZmKeyMap.NEW_TAG			= "NewTag";
 ZmKeyMap.NEW_WINDOW			= "OpenInNewWindow";

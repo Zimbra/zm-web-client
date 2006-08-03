@@ -49,7 +49,7 @@ function ZmNewWindow(appCtxt, domain) {
 	// Register keymap and global key action handler w/ shell's keyboard manager
 	this._kbMgr = this._shell.getKeyboardMgr();
 	this._kbMgr.registerKeyMap(new ZmKeyMap());
-	this._kbMgr.registerDefaultKeyActionHandler(this);
+	this._kbMgr.pushDefaultHandler(this);
 
 	this._apps = {};
 	this.startup();

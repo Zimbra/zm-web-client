@@ -60,6 +60,7 @@ function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 	
 	this._treeView = {};
 	this._opc = this._appCtxt.getOverviewController();
+	this._tabGroupComplete = false;
 	DBG.timePt("ZmDialog constructor");
 };
 
@@ -82,6 +83,15 @@ function(newView, noReset) {
 ZmDialog.prototype.popup =
 function(data, loc) {
 	DBG.timePt("ZmDialog popup start");
+	if (!this._tabGroupComplete) {
+		// tab group filled in here rather than in the constructor
+		// because we need all the content fields to have been created
+		var members = this._getTabGroupMembers();
+		for (var i = 0; i < members.length; i++) {
+			this._tabGroup.addMember(members[i], i);
+		}
+		this._tabGroupComplete = true;
+	}
 	DwtDialog.prototype.popup.call(this, loc);
 	DBG.timePt("ZmDialog popup end");
 };
@@ -148,4 +158,9 @@ function(msg, loc) {
     this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
     this._msgDialog.popup(loc);
     return null;
+};
+
+ZmDialog.prototype._getTabGroupMembers =
+function() {
+	return [this._nameField];
 };

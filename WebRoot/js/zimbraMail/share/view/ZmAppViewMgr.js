@@ -661,6 +661,10 @@ function(view) {
 ZmAppViewMgr.prototype._setTitle =
 function(view) {
 	var elements = this._views[view];
+	if (!elements) {
+		DBG.println(AjxDebug.DBG1, "No elements found for view " + view);
+		return;
+	}
 	var content = elements[ZmAppViewMgr.C_APP_CONTENT];
 	if (content && content.getTitle) {
 		var title = content.getTitle();
