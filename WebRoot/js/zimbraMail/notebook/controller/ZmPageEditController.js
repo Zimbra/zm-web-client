@@ -66,13 +66,13 @@ ZmPageEditController.prototype.show =
 function(page) {
 	// NOTE: Need to protect against changes happening behind our backs
 	this._page = AjxUtil.createProxy(page);
-	this._page.version = page.version; 
+	this._page.version = page.version;
 
 	var elements;
 	if (!this._currentView) {
 		this._currentView = this._defaultView();
 		this._setup(this._currentView);
-		
+
 		elements = new Object();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
@@ -82,14 +82,14 @@ function(page) {
 	this._setView(this._currentView, elements, false);
 };
 
-ZmPageEditController.prototype.getPage = 
+ZmPageEditController.prototype.getPage =
 function() {
 	return this._page;
 };
 
 // Protected methods
 
-ZmPageEditController.prototype._getToolBarOps = 
+ZmPageEditController.prototype._getToolBarOps =
 function() {
 	var list = [];
 	list.push(
@@ -121,7 +121,7 @@ function() {
 ZmPageEditController.prototype._initializeToolBar =
 function(view) {
 	if (this._toolbar[view]) return;
-	
+
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
 	var toolbar = this._toolbar[view];
@@ -130,7 +130,7 @@ function(view) {
 	button.setText(AjxEnv.is800x600orLower ? "" : ZmMsg.addDocuments);
 	button.setToolTipContent(ZmMsg.addDocumentsTT);
 	/***/
-	
+
 	var spellCheckButton = toolbar.getButton(ZmOperation.SPELL_CHECK);
 	spellCheckButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
 	if (AjxEnv.is800x600orLower) {
@@ -157,11 +157,11 @@ function(view) {
 		var group = ZmPageEditController.RADIO_GROUP[op];
 
 		var menuItem = menu.createMenuItem(op, icon, text, null, true, style, group);
-		menuItem.setData(ZmOperation.KEY_ID, op);		
-		menuItem.setData(ZmPageEditor.KEY_FORMAT, item.format);		
+		menuItem.setData(ZmOperation.KEY_ID, op);
+		menuItem.setData(ZmPageEditor.KEY_FORMAT, item.format);
 		menuItem.addSelectionListener(this._listeners[ZmOperation.COMPOSE_FORMAT]);
 	}
-	
+
 	button.setMenu(menu);
 };
 
@@ -170,7 +170,7 @@ function() {
 	return ZmController.NOTEBOOK_PAGE_EDIT_VIEW;
 };
 
-ZmPageEditController.prototype._getViewType = 
+ZmPageEditController.prototype._getViewType =
 function() {
 	return ZmItem.NOTE;
 };
@@ -178,18 +178,18 @@ function() {
 ZmPageEditController.prototype._createNewView =
 function(view) {
 	if (!this._pageEditView) {
-		this._pageEditView = new ZmPageEditView(this._container, this._appCtxt, this); 
+		this._pageEditView = new ZmPageEditView(this._container, this._appCtxt, this);
 	}
 	return this._pageEditView;
 };
 
-ZmPageEditController.prototype._setView = 
+ZmPageEditController.prototype._setView =
 function(view, elements, isAppView, clear, pushOnly, isPoppable) {
 	ZmListController.prototype._setView.apply(this, arguments);
 	//this._app._setViewMenu(view);
 
 	this._format = this._format || ZmPageEditor.RICH_TEXT;
-	
+
 	var toolbar = this._toolbar[view];
 	var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 	var menu = button.getMenu();
@@ -201,7 +201,7 @@ function(view) {
 	this._listView[view].set(this._page);
 };
 
-ZmPageEditController.prototype._getTagMenuMsg = 
+ZmPageEditController.prototype._getTagMenuMsg =
 function() {
 	return ZmMsg.tagPage;
 };
@@ -228,7 +228,7 @@ function(popViewWhenSaved) {
 	// set fields on page object
 	this._page.name = name;
 	this._page.setContent(this._pageEditView.getContent());
-	
+
 	// save
 	this._popViewWhenSaved = popViewWhenSaved;
 	this._page.save(this._saveCallback, this._saveErrorCallback);
@@ -254,31 +254,54 @@ ZmPageEditController.prototype._saveResponseHandler = function(response) {
 			this._page.version = data.ver;
 		}
 	}
-	
+
 	// Update the cache if the page name changed.
 	var cache = this._app.getNotebookCache();
 	var cachedPage = cache.getPageById(this._page.id);
 	if (cachedPage && (cachedPage.name != this._page.name)) {
 		cache.renamePage(cachedPage, this._page.name);
 	}
-	
+
 	this._pageEditView.pageSaved(this._page);
 	this._appCtxt.setStatusMsg(ZmMsg.pageSaved);
 
-	if (this._popViewWhenSaved) {
+	var popViewWhenSaved = this._popViewWhenSaved;
+	// NOTE: If this is conditionalized based on pop view when saved,
+	//       it breaks when the user presses the Close button. So I'm
+	//       leaving this commented out for now.
+	//if (popViewWhenSaved) {
+		this._popViewWhenSaved = false;
+
+		var saveResp = response._data && response._data.SaveWikiResponse;
+		var wiki = saveResp && saveResp.w && saveResp.w[0];
 		// NOTE: Need to let this call stack return and
 		//       process the notifications.
-		this._popViewWhenSaved = false;
-		var args = [ this._page.folderId, this._page.name ];
-		var action = new AjxTimedAction(this, this._saveResponseHandlerShowNote, args);
-		AjxTimedAction.scheduleAction(action, 0);
-	}
+		if (wiki && wiki.ver == 1 && !/:/.test(wiki.id)) {
+			var args = [ wiki.id ];
+			var action = new AjxTimedAction(this, this._saveResponseHandlerShowNote, args);
+			AjxTimedAction.scheduleAction(action, 0);
+		}
+		// NOTE: We don't get create notifications for remote items,
+		//       so we force it to load and display.
+		else if (wiki && /:/.test(wiki.id)) {
+			wiki.l = this._page.folderId;
+			wiki.name = this._page.name;
+
+			var page = new ZmPage(this._appCtxt);
+			page.set(wiki);
+			cache.putPage(page);
+
+			var args = [ wiki.id ];
+			var callback = new AjxCallback(this, this._saveResponseHandlerShowNote, args);
+			page.load(null, callback);
+		}
+	//}
 };
 
-ZmPageEditController.prototype._saveResponseHandlerShowNote = 
-function(folderId, name) {
+ZmPageEditController.prototype._saveResponseHandlerShowNote =
+function(id) {
 	var cache = this._app.getNotebookCache();
-	var page = cache.getPageByName(folderId, name);
+	var page = cache.getPageById(id);
 	var notebookController = this._app.getNotebookController();
 	notebookController.show(page);
 	this._app.getAppViewMgr().showPendingView(true);
@@ -337,7 +360,7 @@ function(ev) {
 };
 /***/
 
-ZmPageEditController.prototype._spellCheckListener = 
+ZmPageEditController.prototype._spellCheckListener =
 function(ev) {
 	var toolbar = this._toolbar[this._currentView];
 	var spellCheckButton = toolbar.getButton(ZmOperation.SPELL_CHECK);
@@ -351,7 +374,7 @@ function(ev) {
 		pageEditor.discardMisspelledWords();
 	}
 };
-ZmPageEditController.prototype.toggleSpellCheckButton = 
+ZmPageEditController.prototype.toggleSpellCheckButton =
 function(toggled) {
 	var toolbar = this._toolbar[this._currentView];
 	var spellCheckButton = toolbar.getButton(ZmOperation.SPELL_CHECK);
@@ -372,7 +395,7 @@ ZmPageEditController.prototype._formatListener = function(ev) {
 	if (ev.item.getChecked() == false) {
 		return;
 	}
-	
+
 	// handle selection
 	var content = this._pageEditView.getContent();
 	this._format = ev.item.getData(ZmPageEditor.KEY_FORMAT);
@@ -387,12 +410,12 @@ function(view, force) {
 		this._showCurrentPage();
 		return true;
 	}
-	
+
 	if (!this._pageEditView.isDirty()) {
 		this._showCurrentPage();
 		return true;
 	}
-	
+
 	var ps = this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
 	ps.reset();
 	ps.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
