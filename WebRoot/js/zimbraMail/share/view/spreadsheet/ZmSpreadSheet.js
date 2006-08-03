@@ -376,13 +376,22 @@ ZmSpreadSheet.prototype._cellClicked = function(td, ev) {
 		DwtMenu._activeMenu.popdown();
 	// </BUG>
 	if (is_mousedown) {
-		ev._stopPropagation = true;
-		ev._returnValue = false;
-		this._selectRangeCapture.capture();
-		if (this._editingCell && this._hasExpression)
-			this._updateCellRangeToken();
-		else
+		var stopEvent = true;
+		if (this._editingCell && this._hasExpression) {
+			var input = this._getInputField();
+			var start = Dwt.getSelectionStart(input);
+			var str = input.value.substr(0, start);
+			if (/\)\s*$/.test(str))
+				stopEvent = false;
+			else
+				this._updateCellRangeToken();
+		} else
 			this.focus();
+		if (stopEvent) {
+			ev._stopPropagation = true;
+			ev._returnValue = false;
+			this._selectRangeCapture.capture();
+		}
 	}
 	if (/dblclick/i.test(ev.type)) {
 		ev._stopPropagation = true;
