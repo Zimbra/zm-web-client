@@ -332,11 +332,13 @@ function(viewId, appName, elements, callbacks, isAppView, isPoppable) {
 ZmAppViewMgr.prototype.pushView =
 function(viewId, force) {
 
+	var viewController = this._views[viewId][ZmAppViewMgr.C_APP_CONTENT].getController();
+
 	// if same view, no need to go through hide/show
 	if (viewId == this._currentView) {
 		this._setTitle(viewId);
 		// make sure the new content has focus
-		this._shell.getKeyboardMgr().grabFocus(this._views[viewId][ZmAppViewMgr.C_APP_CONTENT]);
+		viewController._restoreFocus()
 		return true;
 	}
 
@@ -370,7 +372,6 @@ function(viewId, force) {
 
 	this._layout(this._currentView);
 
-	var viewController = this._views[viewId][ZmAppViewMgr.C_APP_CONTENT].getController();
 	if (viewController && viewController.setCurrentView) {
 		viewController.setCurrentView(viewId);
 	}

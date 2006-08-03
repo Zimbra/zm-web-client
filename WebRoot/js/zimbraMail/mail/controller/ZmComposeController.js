@@ -182,15 +182,20 @@ function() {
 	return false;
 };
 
+// We don't call ZmController._preHideCallback here because it saves
+// the current focus member, and we want to start over each time
 ZmComposeController.prototype._preHideCallback =
 function(view, force) {
-	ZmController.prototype._preHideCallback.call(this);
 	return force ? true : this.popShield();
 };
 
 ZmComposeController.prototype._postShowCallback = 
 function() {
 	ZmController.prototype._postShowCallback.call(this);
+	var composeMode = this._composeView.getComposeMode();
+	if (composeMode == DwtHtmlEditor.HTML) {
+		this._composeView._retryHtmlEditorFocus();
+	}
 	if (this._action != ZmOperation.NEW_MESSAGE && 
 		this._action != ZmOperation.FORWARD_INLINE && 
 		this._action != ZmOperation.FORWARD_ATT) {
@@ -903,8 +908,9 @@ function() {
 		this._action == ZmOperation.FORWARD_ATT) {
 
 		return this._composeView._field[ZmEmailAddress.TO];
-		this.shell.getKeyboardMgr().grabFocus(this._field[ZmEmailAddress.TO]);
 	} else {
-		return (composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
+		var composeMode = this._composeView.getComposeMode();
+		return (composeMode == DwtHtmlEditor.TEXT) ? this._composeView._bodyField :
+													 this._composeView._htmlEditor;
 	}
 };

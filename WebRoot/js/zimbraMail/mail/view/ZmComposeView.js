@@ -410,12 +410,19 @@ function(composeMode) {
 		var newMember = (composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
 		if (curMember && newMember && (curMember != newMember) && this._controller._tabGroup) {
 			this._controller._tabGroup.replaceMember(curMember, newMember);
-			if (composeMode == DwtHtmlEditor.HTML && this._htmlEditor.hasFocus()) {
-				// focus via replaceMember() doesn't take, try again
-				var ta = new AjxTimedAction(this, this._focusHtmlEditor);
-				AjxTimedAction.scheduleAction(ta, 10);
+			// focus via replaceMember() doesn't take, try again
+			if (composeMode == DwtHtmlEditor.HTML) {
+				this._retryHtmlEditorFocus();
 			}
 		}
+	}
+};
+
+ZmComposeView.prototype._retryHtmlEditorFocus =
+function() {
+	if (this._htmlEditor.hasFocus()) {
+		var ta = new AjxTimedAction(this, this._focusHtmlEditor);
+		AjxTimedAction.scheduleAction(ta, 10);
 	}
 };
 
