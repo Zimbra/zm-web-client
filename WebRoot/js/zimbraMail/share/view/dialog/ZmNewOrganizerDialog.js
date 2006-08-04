@@ -307,6 +307,15 @@ function() {
 	return (msg ? this._showError(msg) : [parentFolder, name, color, url]);
 };
 
+ZmNewOrganizerDialog.prototype._getTabGroupMembers =
+function() {
+	var list = [this._nameField];
+	if (this._colorSelect) {
+		list.push(this._colorSelect);
+	}
+	return list;
+};
+
 // dwt event listeners
 
 ZmNewOrganizerDialog.prototype._okButtonListener =

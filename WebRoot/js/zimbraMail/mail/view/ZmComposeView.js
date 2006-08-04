@@ -397,7 +397,6 @@ function(composeMode) {
 		// reset the body field Id and object ref
 		this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 		this._bodyField = document.getElementById(this._bodyFieldId);
-		DBG.println("***** body field is a " + this._bodyField);
 		if (this._bodyField.disabled) {
 			this._bodyField.disabled = false;
 		}
@@ -409,7 +408,7 @@ function(composeMode) {
 
 		// swap new body field into tab group
 		var newMember = (composeMode == DwtHtmlEditor.TEXT) ? this._bodyField : this._htmlEditor;
-		if (curMember && newMember && (curMember != newMember)) {
+		if (curMember && newMember && (curMember != newMember) && this._controller._tabGroup) {
 			this._controller._tabGroup.replaceMember(curMember, newMember);
 			if (composeMode == DwtHtmlEditor.HTML && this._htmlEditor.hasFocus()) {
 				// focus via replaceMember() doesn't take, try again
@@ -1124,7 +1123,6 @@ function(composeMode) {
 //	this._htmlEditor.addEventCallback(new AjxCallback(this, this._htmlEditorEventCallback));
 	this._bodyFieldId = this._htmlEditor.getBodyFieldId();
 	this._bodyField = document.getElementById(this._bodyFieldId);
-	DBG.println("***** body field is a " + this._bodyField);
 
 	// misc. inits
 	this._msgDialog = this._appCtxt.getMsgDialog();

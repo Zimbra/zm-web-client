@@ -67,7 +67,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	// Register our keymap and global key action handler with the shell's keyboard manager 
 	var kbMgr = this._shell.getKeyboardMgr();
 	kbMgr.registerKeyMap(new ZmKeyMap());
-	kbMgr.registerDefaultKeyActionHandler(this);
+	kbMgr.pushDefaultHandler(this);
 
 	if (location.search && (location.search.indexOf("nss=1") != -1)) {
 		this._splashScreen = null;
