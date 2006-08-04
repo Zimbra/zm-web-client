@@ -538,12 +538,12 @@ ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	button.setToolTipContent(ZmMsg.insertImage);
 	button.addSelectionListener(new AjxListener(this, this._insertImagesListener));
 
-	button = new DwtButton(this._toolbar2, null, "TBButton")
+	button = new DwtButton(this._toolbar2, null, "DwtToolbarButton")
 	button.setImage("Attachment");
 	button.setToolTipContent(ZmMsg.insertAttachment);
 	button.addSelectionListener(new AjxListener(this, this._insertAttachmentsListener));
 
-	button = new DwtButton(this._toolbar2, null, "TBButton");
+	button = new DwtButton(this._toolbar2, null, "DwtToolbarButton");
 	button.setImage("URL");
 	button.setToolTipContent(ZmMsg.insertLink);
 	button.addSelectionListener(new AjxListener(this, this._insertLinkListener));
