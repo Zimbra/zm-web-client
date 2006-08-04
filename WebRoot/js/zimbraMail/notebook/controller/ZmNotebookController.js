@@ -134,6 +134,9 @@ ZmNotebookController.prototype._initializeToolBar = function(view) {
 	button.setImage("SendReceive");
 	button.setDisabledImage("SendReceiveDis");
 
+	var button = toolbar.getButton(ZmOperation.DELETE);
+	button.setToolTipContent(ZmMsg.deletePermanentTooltip);
+
 	/***
 	var button = toolbar.getButton(ZmOperation.ATTACHMENT);
 	button.setText(ZmMsg.addDocuments);
@@ -158,6 +161,22 @@ ZmNotebookController.prototype._getTagMenuMsg = function() {
 };
 
 ZmNotebookController.prototype._doDelete = function(items) {
+	var items = this._listView[this._currentView].getSelection();
+	var dialog = this._appCtxt.getConfirmationDialog();
+	var message = items instanceof Array && items.length > 1 ? ZmMsg.confirmDeleteItemList : null;
+	if (!message) {
+		if (!this._confirmDeleteFormatter) {
+			this._confirmDeleteFormatter = new AjxMessageFormat(ZmMsg.confirmDeleteItem);
+		}
+
+		var item = items instanceof Array ? items[0] : items;
+		message = this._confirmDeleteFormatter.format(item.name);
+	}
+	var callback = new AjxCallback(this, this._doDelete2, [items]);
+	dialog.popup(message, callback);
+};
+
+ZmNotebookController.prototype._doDelete2 = function(items) {
 	var ids = ZmNotebookController.__itemize(items);
 	if (!ids) return;
 
