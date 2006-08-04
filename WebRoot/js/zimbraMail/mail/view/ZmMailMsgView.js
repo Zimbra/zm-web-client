@@ -60,7 +60,8 @@ function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 	if (!controller.isChildWindow) {
 		// this manages all the detected objects within the view
 		this._objectManager = new ZmObjectManager(this, this._appCtxt);
-		this._objectsCount = this._objectManager.objectsCount();
+		// Set the count to 0 so it forces the first view to reload the Object Mgr
+		this._objectsCount = 0;
 	}
 
 	this._changeListener = new AjxListener(this, this._msgChangeListener);
@@ -409,7 +410,8 @@ ZmMailMsgView._MAILTO_RE = /^mailto:[\x27\x22]?([^@?&\x22\x27]+@[^@?&]+\.[^@?&\x
 // Check for new ones and load a new ZmObjectManager if things change.
 ZmMailMsgView.prototype._checkForNewObjects =
 function() {
-	if(this._objectsCount && (this._objectsCount != this._objectManager.objectsCount())) {
+	// The count will be 0 on the first message viewed, after that we check to see if new Zimlets are added
+	if((this._objectsCount === 0) || (this._objectsCount != this._objectManager.objectsCount())) {
 		DBG.println(AjxDebug.DBG2, "New objects create new ZmObjectManager");
 		// this manages all the detected objects within the view
 		this._objectManager = new ZmObjectManager(this, this._appCtxt);
@@ -427,7 +429,7 @@ ZmMailMsgView.__localLinkClicked = function(msgView, ev) {
 	var doc = this.ownerDocument;
 	if (/^#(.*)$/.test(id)) {
 		id = RegExp.$1;
-		var el = doc.getElementById(id);
+		el = doc.getElementById(id);
 		if (!el) try {
 			el = doc.getElementsByName(id)[0];
 		} catch(ex) {};
