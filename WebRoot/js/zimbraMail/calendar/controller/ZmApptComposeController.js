@@ -159,9 +159,6 @@ function(initHide) {
 
 ZmApptComposeController.prototype._setApptComposeTabGroup =
 function() {
-
-//	this._saveFocus();
-
 	var tg = this._createTabGroup();
 	var rootTg = this._appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
@@ -170,17 +167,14 @@ function() {
 	tabView._addTabGroupMembers(tg);
 
 	var focusItem = tabView._savedFocusMember || tabView._getDefaultFocusItem() || tg.getFirstMember(true);
-	DBG.println("kbnav", "ZmApptComposeController._setApptComposeTabGroup: setting focus to " + focusItem);
-	this._restoreFocus(focusItem);
-
 	var ta = new AjxTimedAction(this, this._setFocus, [focusItem]);
-//	AjxTimedAction.scheduleAction(ta, 10);
+	AjxTimedAction.scheduleAction(ta, 10);
 };
 
 ZmApptComposeController.prototype._setFocus =
 function(focusItem) {
-	DBG.println("kbnav", "timed action setting focus to " + focusItem);
-	this._kbMgr.grabFocus(focusItem);	
+//	DBG.println("kbnav", "timed action restoring focus to " + focusItem);
+	this._restoreFocus(focusItem);
 };
 
 ZmApptComposeController.prototype.getKeyMapName =

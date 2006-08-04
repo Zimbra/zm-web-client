@@ -196,9 +196,6 @@ function() {
 
 	this.parent.tabSwitched(this._tabKey);
 	this._setAttendees();
-	
-	var sf = ZmApptChooserTabViewPage.SEARCH_FIELDS[this.type][0];
-	this._kbMgr.grabFocus(this._searchFields[sf]);
 };
 
 ZmApptChooserTabViewPage.prototype.tabBlur =
