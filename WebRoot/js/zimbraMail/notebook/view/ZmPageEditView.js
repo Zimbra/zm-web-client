@@ -571,7 +571,7 @@ ZmPageEditor.prototype._createWikiToolBar = function(parent) {
 /***/
 
 ZmPageEditor.prototype.insertLink = function(href) {
-	var link = document.createElement("A");
+	var link = this._getIframeDoc().createElement("A");
 	link.href = href;
 	link.innerHTML = AjxStringUtil.htmlEncode(href);
 
