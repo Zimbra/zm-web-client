@@ -975,7 +975,7 @@ function(str, callback) {
 	var params = {query: str, types: types, sortBy: sortBy, offset: 0, limit: ZmContactList.AC_MAX, isGalAutocompleteSearch: true};
 	var search = new ZmSearch(this._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseGetGalMatches, [str, callback]);
-	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches);
+	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches, [callback]);
 	search.execute({callback: respCallback, errorCallback: errorCallback, timeout: ZmContactList.AC_GAL_TIMEOUT,
 					noBusyOverlay: true});
 };
@@ -1008,11 +1008,11 @@ function(str, callback, result) {
 
 /**
  * Handle timeout. A timeout cancels the current GAL autocomplete request. After a
- * certain number of consecutive timeouts, we turn off GAL autocomplete via
- * preferences.
+ * certain number of consecutive timeouts, we turn off GAL autocomplete off for the
+ * current session. The user can re-enable it in Options.
  */
 ZmContactList.prototype._handleErrorGetGalMatches =
-function(ex) {
+function(callback, ex) {
 	if (ex.code == AjxException.CANCELED) {
 		this._galFailures++;
 		this._appCtxt.setStatusMsg(ZmMsg.galAutocompleteTimedOut);
@@ -1025,4 +1025,5 @@ function(ex) {
 			this._galFailures = 0;
 		}
 	}
+	callback.run();
 };
