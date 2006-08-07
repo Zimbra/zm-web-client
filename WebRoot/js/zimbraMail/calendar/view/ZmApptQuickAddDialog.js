@@ -77,17 +77,6 @@ function() {
 	return "ZmApptQuickAddDialog";
 };
 
-ZmApptQuickAddDialog.prototype.handleKeyAction =
-function(actionCode, ev) {
-	switch (actionCode) {
-		case DwtKeyMap.ENTER:
-			return true;
-		
-		default:
-			return ZmDialog.prototype.handleKeyAction.call(this. actionCode, ev);
-	}
-}
-
 ZmApptQuickAddDialog.prototype.initialize = 
 function(appt) {
 	this._appt = appt;
