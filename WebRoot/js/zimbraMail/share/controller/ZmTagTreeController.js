@@ -140,9 +140,14 @@ function(tag) {
 	var sc = this._appCtxt.getSearchController();
 	var app = this._appCtxt.getAppController().getActiveApp();
 
-	var searchFor = app == ZmZimbraMail.CONTACTS_APP
-		? ZmItem.CONTACT
-		: ZmSearchToolBar.FOR_MAIL_MI;
+	var searchFor;
+	if (app == ZmZimbraMail.CONTACTS_APP) {
+		searchFor = ZmItem.CONTACT;
+	} else if (app == ZmZimbraMail.NOTEBOOK_APP) {
+		searchFor = ZmItem.PAGE;
+	} else {
+		searchFor = ZmSearchToolBar.FOR_MAIL_MI;
+	}
 
 	var types = sc.getTypes(searchFor);
 	sc.search({query: 'tag:"' + tag.name + '"', types: types});
