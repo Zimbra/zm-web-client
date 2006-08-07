@@ -1807,7 +1807,7 @@ function(soapDoc, m, cancel) {
 		soapDoc.set("content", AjxBuffer.concat(tprefix, tcontent), textPart);
 
 		// bug fix #9592 - html encode the text before setting it as the "HTML" part
-		var hcontent = AjxStringUtil.htmlEncode(AjxStringUtil.nl2br(tcontent));
+		var hcontent = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(tcontent));
 		var htmlPart = soapDoc.set("mp", null, mp);
 		htmlPart.setAttribute("ct", ZmMimeTable.TEXT_HTML);
 		soapDoc.set("content", AjxBuffer.concat(hprefix, hcontent), htmlPart);
