@@ -653,6 +653,7 @@ ZmPageEditor.prototype._insertLink = function(link, target) {
 };
 
 ZmPageEditor._handleLinkClick = function(event) {
+	event = DwtUiEvent.getEvent(event, this);
 	var target = DwtUiEvent.getTarget(event);
 	var dialog = Dwt.getObjectFromElement(target);
 
