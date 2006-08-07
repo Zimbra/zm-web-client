@@ -68,14 +68,15 @@ function() {
 
 ZmTree.prototype.asList =
 function() {
-	var list = new Array();
+	var list = [];
 	return this.root ? this._addToList(this.root, list) : list;
 };
 
 ZmTree.prototype.getUnreadHash =
 function(unread) {
-	if (!unread)
-		unread = new Object();
+	if (!unread) {
+		unread = {};
+	}
 	return this.root ? this._getUnreadHash(this.root, unread) : unread;
 };
 
@@ -83,25 +84,29 @@ ZmTree.prototype._addToList =
 function(organizer, list) {
 	list.push(organizer);
 	var children = organizer.children.getArray();
-	for (var i = 0; i < children.length; i++)
-		this._addToList(children[i], list)
+	for (var i = 0; i < children.length; i++) {
+		this._addToList(children[i], list);
+	}
 
 	return list;
 };
 
 ZmTree.prototype._asString =
 function(organizer, str) {
-	if (organizer.id)
+	if (organizer.id) {
 		str = str + organizer.id;
-	var children = organizer.children.getArray();
+	}
+	var children = organizer.children.clone().getArray();
 	if (children.length) {
 		children.sort(function(a,b){return a.id - b.id;});
 		str = str + "[";
 		for (var i = 0; i < children.length; i++) {
-			if (children[i].id == ZmFolder.ID_TAGS) // Tags "folder" added when view is set
+			if (children[i].id == ZmFolder.ID_TAGS) { // Tags "folder" added when view is set
 				continue;
-			if (i > 0)
+			}
+			if (i > 0) {
 				str = str + ",";
+			}
 			str = this._asString(children[i], str);
 		}
 		str = str + "]";
@@ -113,8 +118,9 @@ ZmTree.prototype._getUnreadHash =
 function(organizer, unread) {
 	unread[organizer.id] = organizer.numUnread;
 	var children = organizer.children.getArray();
-	for (var i = 0; i < children.length; i++)
-		this._getUnreadHash(children[i], unread)
+	for (var i = 0; i < children.length; i++) {
+		this._getUnreadHash(children[i], unread);
+	}
 
 	return unread;
 };
