@@ -119,13 +119,19 @@ ZmZimbraMail.MIXED_APP			= "mixed";
 
 ZmZimbraMail.APP_CLASS = {};
 
+// REVISIT: This is done so that we when we switch from being "beta"
+//          to production, we don't have to ensure that all of the
+//          translations are changed at the same time. We can simply
+//          remove the beta suffix from the app name.
+ZmMsg.BETA_documents = [ZmMsg.documents, ZmMsg.beta].join(" ");
+
 // app names
 ZmZimbraMail.MSG_KEY = {};
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]				= "mail";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]			= "addressBook";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CALENDAR_APP]			= "calendar";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.IM_APP]				= "imAppTitle";
-ZmZimbraMail.MSG_KEY[ZmZimbraMail.NOTEBOOK_APP]			= "documents";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.NOTEBOOK_APP]			= "BETA_documents";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.PREFERENCES_APP]		= "options";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MIXED_APP]			= "zimbraTitle";
 
