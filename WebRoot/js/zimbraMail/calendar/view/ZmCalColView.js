@@ -1064,8 +1064,10 @@ function() {
 ZmCalColView.prototype._fillAllDaySlot = 
 function(row, colIndex, data) {
 	for (var j=0; j < data.numDays; j++) {
-		row[colIndex+j].data = j==0 ? data : null;
-		row[colIndex+j].free = false;
+		var col = colIndex + j;
+		if (col == row.length) break;
+		row[col].data = j==0 ? data : null;
+		row[col].free = false;
 	}
 }
 
@@ -1085,7 +1087,9 @@ function(colIndex, data) {
 	for (var i=0; i < rows.length; i++) {
 		row = rows[i];
 		for (var j=0; j < data.numDays; j++) {
-			if (!row[colIndex+j].free) {
+			var col = colIndex + j;
+			if (col == row.length) break;
+			if (!row[col].free) {
 				row = null;
 				break;
 			}
