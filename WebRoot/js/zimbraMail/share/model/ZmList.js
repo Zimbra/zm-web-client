@@ -516,6 +516,7 @@ function(params, batchCmd) {
 	}
 
 	var type = (this.type == ZmList.MIXED) ? this._mixedType : this.type;
+	if (!type) return;
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
 	var soapDoc = AjxSoapDoc.create(soapCmd, "urn:zimbraMail");
 	var actionNode = soapDoc.set("action");

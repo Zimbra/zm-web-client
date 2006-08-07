@@ -75,14 +75,15 @@ function() {
 ZmSearchResult.prototype.getResults =
 function(type) {
 	if (type == ZmList.MIXED) {
-		var list = new ZmList(ZmList.MIXED, this._appCtxt, this.search);
+		var list = new ZmMailList(ZmList.MIXED, this._appCtxt, this.search);
 		for (var i = 0; i < ZmList.TYPES.length; i++) {
 			var type = ZmList.TYPES[i];
 			var results = this._results[type];
 			if (results && results.size()) {
 				var a = results.getArray();
-				for (var j = 0; j < a.length; j++)
+				for (var j = 0; j < a.length; j++) {
 					list.add(a[j]);
+				}
 			}
 		}
 		return list;
