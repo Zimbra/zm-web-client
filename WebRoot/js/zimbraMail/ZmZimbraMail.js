@@ -1206,12 +1206,14 @@ function(ex, method, params, restartOnError, obj) {
 	var handled = false;
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
 		var organizerTypes = [ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
-		var itemId = ex.data.itemId[0];
-		var index = itemId.lastIndexOf(':');
-		var zid = itemId.substring(0, index);
-		var rid = itemId.substring(index + 1, itemId.length);
-		for (var type = 0; type < organizerTypes.length; type++) {
-			handled |= this._handleNoSuchFolderError(organizerTypes[type], zid, rid, true);
+		if (ex.data.itemId && ex.data.itemId.length) {
+			var itemId = ex.data.itemId[0];
+			var index = itemId.lastIndexOf(':');
+			var zid = itemId.substring(0, index);
+			var rid = itemId.substring(index + 1, itemId.length);
+			for (var type = 0; type < organizerTypes.length; type++) {
+				handled |= this._handleNoSuchFolderError(organizerTypes[type], zid, rid, true);
+			}
 		}
 	}
 	if (!handled) {
