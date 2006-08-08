@@ -236,9 +236,15 @@ function(popViewWhenSaved) {
 
 ZmPageEditController.prototype._showCurrentPage = function() {
 	if (this._page && this._page.id) {
+		this._showPage(this._page.id);
+	}
+};
+
+ZmPageEditController.prototype._showPage = function(id) {
+	var notebookController = this._app.getNotebookController();
+	if (notebookController.getCurrentView()) {
 		var cache = this._app.getNotebookCache();
-		var page = cache.getPageById(this._page.id);
-		var notebookController = this._app.getNotebookController();
+		var page = cache.getPageById(id);
 		notebookController.gotoPage(page);
 	}
 };
@@ -266,44 +272,41 @@ ZmPageEditController.prototype._saveResponseHandler = function(response) {
 	this._appCtxt.setStatusMsg(ZmMsg.pageSaved);
 
 	var popViewWhenSaved = this._popViewWhenSaved;
-	// NOTE: If this is conditionalized based on pop view when saved,
-	//       it breaks when the user presses the Close button. So I'm
-	//       leaving this commented out for now.
-	//if (popViewWhenSaved) {
+
+	var saveResp = response._data && response._data.SaveWikiResponse;
+	var wiki = saveResp && saveResp.w && saveResp.w[0];
+	var isRemote = /:/.test(wiki.id);
+	if (isRemote) {
+		wiki.l = this._page.folderId;
+		wiki.name = this._page.name;
+
+		var page = new ZmPage(this._appCtxt);
+		page.set(wiki);
+		cache.putPage(page);
+	}
+	if (popViewWhenSaved) {
 		this._popViewWhenSaved = false;
 
-		var saveResp = response._data && response._data.SaveWikiResponse;
-		var wiki = saveResp && saveResp.w && saveResp.w[0];
 		// NOTE: Need to let this call stack return and
 		//       process the notifications.
-		if (wiki && wiki.ver == 1 && !/:/.test(wiki.id)) {
+		if (!isRemote) {
 			var args = [ wiki.id ];
 			var action = new AjxTimedAction(this, this._saveResponseHandlerShowNote, args);
 			AjxTimedAction.scheduleAction(action, 0);
 		}
 		// NOTE: We don't get create notifications for remote items,
 		//       so we force it to load and display.
-		else if (wiki && /:/.test(wiki.id)) {
-			wiki.l = this._page.folderId;
-			wiki.name = this._page.name;
-
-			var page = new ZmPage(this._appCtxt);
-			page.set(wiki);
-			cache.putPage(page);
-
+		else {
 			var args = [ wiki.id ];
 			var callback = new AjxCallback(this, this._saveResponseHandlerShowNote, args);
 			page.load(null, callback);
 		}
-	//}
+	}
 };
 
 ZmPageEditController.prototype._saveResponseHandlerShowNote =
 function(id) {
-	var cache = this._app.getNotebookCache();
-	var page = cache.getPageById(id);
-	var notebookController = this._app.getNotebookController();
-	notebookController.show(page);
+	this._showPage(id);
 	this._app.getAppViewMgr().showPendingView(true);
 };
 
