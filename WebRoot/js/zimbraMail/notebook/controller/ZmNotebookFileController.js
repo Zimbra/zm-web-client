@@ -53,7 +53,7 @@ ZmNotebookFileController.prototype.show = function(searchResults, fromUserSearch
 
 	this._setup(this._currentView);
 
-	this._list = searchResults.getResults(ZmItem.PAGE);
+	this._list = searchResults.getResults(ZmList.MIXED);
 	if (this._activeSearch) {
 		if (this._list)
 			this._list.setHasMore(this._activeSearch.getAttribute("more"));
