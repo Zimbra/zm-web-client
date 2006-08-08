@@ -212,6 +212,7 @@ function() {
 	// create components
 	this._pageNameInput = new DwtInputField({parent:this});
 	this._pageNameInput.setRequired(true);
+	this._pageNameInput.setValidatorFunction(null, ZmPageEditView._validatePageName);
 	var titleInputEl = this._pageNameInput.getInputElement();
 	titleInputEl.size = 50;
 	Dwt.setHandler(titleInputEl, DwtEvent.ONCHANGE, ZmPageEditView._onNameChange);
@@ -258,6 +259,15 @@ function() {
 	var element = this.getHtmlElement();
 	element.appendChild(table);
 	element.appendChild(textAreaEl);
+};
+
+ZmPageEditView._validatePageName =
+function(name) {
+	if (name == "") {
+		throw AjxMsg.valueIsRequired;
+	} else if (!ZmOrganizer.VALID_NAME_RE.test(name)) {
+		throw AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
+	}
 };
 
 ZmPageEditView._onNameChange =

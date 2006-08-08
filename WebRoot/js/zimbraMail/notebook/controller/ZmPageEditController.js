@@ -223,10 +223,15 @@ ZmPageEditController.prototype._doSave =
 function(popViewWhenSaved) {
 	var name = this._pageEditView.getPageName();
 	name = name.replace(/^\s+/,"").replace(/\s+$/,"");
+	var message;
 	if (name == "") {
-		var dialog = this._appCtxt.getMsgDialog();
-		var message = ZmMsg.errorSavingPageNameRequired;
+		message = ZmMsg.errorSavingPageNameRequired;
+	} else if (!ZmOrganizer.VALID_NAME_RE.test(name)) {
+		message = AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
+	}
+	if (message) {
 		var style = DwtMessageDialog.WARNING_STYLE;
+		var dialog = this._appCtxt.getMsgDialog();
 		dialog.setMessage(message, style);
 		dialog.popup();
 		this._pageEditView.focus();
