@@ -321,7 +321,7 @@ ZmPageEditor.MEDIA_WIKI = "mediawiki";
 ZmPageEditor.RICH_TEXT = "richtext";
 ZmPageEditor.TWIKI = "twiki";
 
-ZmPageEditor.DEFAULT = ZmPageEditor.RICH_TEXT;
+ZmPageEditor.DEFAULT = AjxEnv.isSafari ? ZmPageEditor.HTML_SOURCE : ZmPageEditor.RICH_TEXT;
 
 ZmPageEditor._MODES = {};
 ZmPageEditor._MODES[ZmPageEditor.HTML_SOURCE] = DwtHtmlEditor.TEXT;

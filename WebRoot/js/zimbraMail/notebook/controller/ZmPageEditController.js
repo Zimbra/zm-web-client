@@ -113,9 +113,12 @@ function() {
 	list.push(
 		//ZmOperation.ATTACHMENT,
 		ZmOperation.SPELL_CHECK,
-		ZmOperation.FILLER,
-		ZmOperation.COMPOSE_FORMAT
+		ZmOperation.FILLER
 	);
+
+	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
+		list.push(ZmOperation.COMPOSE_FORMAT);
+
 	return list;
 };
 ZmPageEditController.prototype._initializeToolBar =
@@ -137,32 +140,35 @@ function(view) {
 		spellCheckButton.setText("");
 	}
 
-	var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-	var menu = new ZmPopupMenu(button);
-	var items = [
-		{ op: ZmOperation.FORMAT_RICH_TEXT, format: ZmPageEditor.RICH_TEXT },
-		{ op: ZmOperation.FORMAT_HTML_SOURCE, format: ZmPageEditor.HTML_SOURCE }
-		/*** REVISIT: These will be exposed later.
-		{ op: ZmOperation.FORMAT_MEDIA_WIKI, format: ZmPageEditor.MEDIA_WIKI },
-		{ op: ZmOperation.FORMAT_TWIKI, format: ZmPageEditor.TWIKI }
-		/***/
-	];
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		var op = item.op;
+	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+		var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+		var menu = new ZmPopupMenu(button);
+		var items = [
+			{ op: ZmOperation.FORMAT_RICH_TEXT, format: ZmPageEditor.RICH_TEXT },
+			{ op: ZmOperation.FORMAT_HTML_SOURCE, format: ZmPageEditor.HTML_SOURCE }
+			/*** REVISIT: These will be exposed later.
+			{ op: ZmOperation.FORMAT_MEDIA_WIKI, format: ZmPageEditor.MEDIA_WIKI },
+			{ op: ZmOperation.FORMAT_TWIKI, format: ZmPageEditor.TWIKI }
+			/***/
+		];
 
-		var icon = ZmOperation.getProp(op, "image");
-		var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
-		var style = DwtMenuItem.RADIO_STYLE;
-		var group = ZmPageEditController.RADIO_GROUP[op];
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			var op = item.op;
 
-		var menuItem = menu.createMenuItem(op, icon, text, null, true, style, group);
-		menuItem.setData(ZmOperation.KEY_ID, op);
-		menuItem.setData(ZmPageEditor.KEY_FORMAT, item.format);
-		menuItem.addSelectionListener(this._listeners[ZmOperation.COMPOSE_FORMAT]);
+			var icon = ZmOperation.getProp(op, "image");
+			var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
+			var style = DwtMenuItem.RADIO_STYLE;
+			var group = ZmPageEditController.RADIO_GROUP[op];
+
+			var menuItem = menu.createMenuItem(op, icon, text, null, true, style, group);
+			menuItem.setData(ZmOperation.KEY_ID, op);
+			menuItem.setData(ZmPageEditor.KEY_FORMAT, item.format);
+			menuItem.addSelectionListener(this._listeners[ZmOperation.COMPOSE_FORMAT]);
+		}
+
+		button.setMenu(menu);
 	}
-
-	button.setMenu(menu);
 };
 
 ZmPageEditController.prototype._defaultView =
@@ -188,12 +194,14 @@ function(view, elements, isAppView, clear, pushOnly, isPoppable) {
 	ZmListController.prototype._setView.apply(this, arguments);
 	//this._app._setViewMenu(view);
 
-	this._format = this._format || ZmPageEditor.RICH_TEXT;
+	this._format = this._format || ZmPageEditor.DEFAULT;
 
-	var toolbar = this._toolbar[view];
-	var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-	var menu = button.getMenu();
-	menu.checkItem(ZmPageEditor.KEY_FORMAT, this._format, true);
+	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+		var toolbar = this._toolbar[view];
+		var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+		var menu = button.getMenu();
+		menu.checkItem(ZmPageEditor.KEY_FORMAT, this._format, true);
+	}
 };
 
 ZmPageEditController.prototype._setViewContents =
