@@ -715,6 +715,8 @@ ZmHtmlEditor.prototype.__onTableOperationsPopup = function(menu) {
 	if (!table)
 		return;
 
+	menu.setData("table", table);
+
 	if (!AjxEnv.isIE) {
 		// Can we split? (the cell has to be a merged cell)
 		var td = this.getNearestElement("td");
@@ -748,11 +750,12 @@ ZmHtmlEditor.prototype.__onTableOperationsPopup = function(menu) {
 ZmHtmlEditor.prototype._tableOperationsListener =
 function(ev) {
 	var item = ev.item;
+	var table = item.parent.getData("table");
 	var data = item.getData("TableOperations");
 	this.focus();
 	switch (data) {
 	    case "mergeCells":
-		this.doTableOperation("mergeCells", { cells: this.getSelectedCells() });
+		this.doTableOperation("mergeCells", { table: table, cells: this.getSelectedCells() });
 		break;
 	    case "tableProperties":
 		var dlg = ZmTableEditor.getTablePropsDialog(this, this.getNearestElement("table"));
@@ -764,7 +767,7 @@ function(ev) {
 		// alert("Not yet implemented");
 		break;
 	    default:
-		this.doTableOperation(data);
+		this.doTableOperation(data, { table: table });
 	}
 };
 
