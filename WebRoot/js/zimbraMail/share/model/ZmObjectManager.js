@@ -65,8 +65,6 @@ function ZmObjectManager(view, appCtxt, selectCallback, skipHandlers) {
 	this.sortHandlers();
 	this.reset();
 
-	DBG.println(AjxDebug.DBG3, "ZmObjectManager " + zimlets.length + " Zimlets loaded");
-
 	// install handlers
 	if (view != null) {
 	    view.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
