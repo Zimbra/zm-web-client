@@ -332,13 +332,16 @@ function(viewId, appName, elements, callbacks, isAppView, isPoppable) {
 ZmAppViewMgr.prototype.pushView =
 function(viewId, force) {
 
-	var viewController = this._views[viewId][ZmAppViewMgr.C_APP_CONTENT].getController();
+	var viewController = (viewId == ZmAppViewMgr.PENDING_VIEW) ? null :
+							this._views[viewId][ZmAppViewMgr.C_APP_CONTENT].getController();
 
 	// if same view, no need to go through hide/show
 	if (viewId == this._currentView) {
 		this._setTitle(viewId);
 		// make sure the new content has focus
-		viewController._restoreFocus()
+		if (viewController) {
+			viewController._restoreFocus();
+		}
 		return true;
 	}
 
