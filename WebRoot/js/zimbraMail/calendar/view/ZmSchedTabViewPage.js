@@ -460,7 +460,7 @@ function(tabGroup) {
 * @param index				[int]		index at which to add the row
 */
 ZmSchedTabViewPage.prototype._addAttendeeRow =
-function(isAllAttendees, organizer, drawBorder, index) {
+function(isAllAttendees, organizer, drawBorder, index, resetFocus) {
 	index = index ? index : this._attendeesTable.rows.length;
 	
 	// store some meta data about this table row
@@ -568,7 +568,6 @@ function(isAllAttendees, organizer, drawBorder, index) {
 			}
 		}
 		if (sched.inputObj) {
-//			sched.inputObj.focus();
 			this._kbMgr.grabFocus(sched.inputObj);
 		}
 	}
@@ -576,16 +575,20 @@ function(isAllAttendees, organizer, drawBorder, index) {
 	if (drawBorder) {
 		this._updateBorders(sched, isAllAttendees);
 	}
-	this._controller._setApptComposeTabGroup();
+	if (resetFocus) {
+		this._controller._setApptComposeTabGroup();
+	}
 	
 	return index;
 };
 
 ZmSchedTabViewPage.prototype._removeAttendeeRow =
-function(index) {
+function(index, resetFocus) {
 	this._attendeesTable.deleteRow(index);
 	this._schedTable.splice(index, 1);
-	this._controller._setApptComposeTabGroup();
+	if (resetFocus) {
+		this._controller._setApptComposeTabGroup();
+	}
 };
 
 ZmSchedTabViewPage.prototype._createDwtObjects = 
@@ -705,7 +708,7 @@ function(inputEl, attendee, useException) {
 			this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
 			if (!curAttendee) {
 				// user added attendee in empty slot
-				this._addAttendeeRow(false, null, true); // add new empty slot
+				this._addAttendeeRow(false, null, true, null, true); // add new empty slot
 			}
 		} else {
 			this._activeInputIdx = null;
@@ -724,7 +727,7 @@ function(inputEl, attendee, useException) {
 	} else if (curAttendee) {
 		// user erased an attendee
 		this._resetRow(sched, false, type);
-		this._removeAttendeeRow(idx);
+		this._removeAttendeeRow(idx, true);
 	}
 };
 
@@ -744,7 +747,7 @@ function(index, sched) {
 	this.parent._msgDialog.popdown();
 	this._activeInputIdx = null;
 	if (sched && sched.attendee) {	
-		this._removeAttendeeRow(index);
+		this._removeAttendeeRow(index, true);
 	} else {
 		this._resetRow(sched, false, sched.attType, true);
 	}
@@ -828,7 +831,7 @@ function(organizer, attendees) {
 	}
 	
 	// make sure there's always an empty slot
-	this._addAttendeeRow(false, false, false);
+	this._addAttendeeRow(false, false, false, null, true);
 
 	if (emails.length) {
 		this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), emails.join(","), this._fbCallback);

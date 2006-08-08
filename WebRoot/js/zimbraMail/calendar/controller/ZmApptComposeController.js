@@ -75,6 +75,12 @@ function(view, force) {
 	return force ? true : this.popShield();
 };
 
+ZmApptComposeController.prototype._postShowCallback =
+function(view, force) {
+	var ta = new AjxTimedAction(this, this._setFocus);
+	AjxTimedAction.scheduleAction(ta, 10);
+};
+
 ZmApptComposeController.prototype.popShield =
 function() {
 	if (!this._apptView.isDirty()) {
@@ -159,6 +165,7 @@ function(initHide) {
 
 ZmApptComposeController.prototype._setApptComposeTabGroup =
 function() {
+	DBG.println(AjxDebug.DBG2, "_setApptComposeTabGroup");
 	var tg = this._createTabGroup();
 	var rootTg = this._appCtxt.getRootTabGroup();
 	tg.newParent(rootTg);
