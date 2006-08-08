@@ -24,14 +24,16 @@
  */
 
 function ZmNotebookFileView(parent, appCtxt, controller) {
-	DwtComposite.call(this, parent, "ZmNotebookFileView", DwtControl.ABSOLUTE_STYLE);
-	
+	var className = null;
+	var posStyle = null;
+	var mode = null;
+	var dropTgt = null;
+	ZmListView.call(this, parent, className, posStyle, mode, controller, dropTgt);
+
 	this._appCtxt = appCtxt;
 	this._controller = controller;
-
-	this._createHtml();	
 }
-ZmNotebookFileView.prototype = new DwtComposite;
+ZmNotebookFileView.prototype = new ZmListView;
 ZmNotebookFileView.prototype.constructor = ZmNotebookFileView;
 
 ZmNotebookFileView.prototype.toString = function() {
@@ -51,102 +53,4 @@ ZmNotebookFileView.prototype._fileListView;
 // Public methods
 //
 
-ZmNotebookFileView.prototype.getController =
-function() {
-	return this._controller;
-};
-
-/***
-ZmNotebookFileView.prototype.set =
-function(page) {
-	var folderId = page ? page.folderId : ZmPage.DEFAULT_FOLDER;
-	
-	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
-	soapDoc.setMethodAttribute("types", "wiki,document");
-	var queryNode = soapDoc.set("query", "is:anywhere"); // REVISIT
-	
-	var params = {
-		soapDoc: soapDoc,
-		asyncMode: false,
-		callback: null,
-		errorCallback: null,
-		execFrame: null
-	};
-	var appController = this._appCtxt.getAppController();
-	var response = appController.sendRequest(params);
-	
-	var list = new AjxVector();
-	if (response.SearchResponse) {
-		var words = response.SearchResponse.w || [];
-		ZmNotebookFileView.__typify(words, "wiki");
-		var docs = response.SearchResponse.doc || [];
-		ZmNotebookFileView.__typify(docs, "document");
-		var items = words.concat(docs).sort(ZmWiklet.__byItemName);
-		for (var i = 0; i < items.length; i++) {
-			list.add(items[i]);
-		}
-	}
-	this._fileListView.set(list);
-};
-/***/
-ZmNotebookFileView.prototype.set = function(list) {
-	this._fileListView.set(list);
-};
-/***/
-
-// methods delegated to internal list view
-
-ZmNotebookFileView.prototype.addSelectionListener = function(listener) {
-	this._fileListView.addSelectionListener(listener);
-};
-ZmNotebookFileView.prototype.addActionListener = function(listener) {
-	this._fileListView.addActionListener(listener);
-};
-
 ZmNotebookFileView.prototype.handleActionPopdown = function(ev) { /*TODO*/ };
-
-ZmNotebookFileView.prototype.getSelection =
-function() {
-	return this._fileListView.getSelection();
-};
-ZmNotebookFileView.prototype.getSelectedItems =
-function() {
-	return this._fileListView.getSelectedItems();
-};
-ZmNotebookFileView.prototype.getSelectionCount = function() {
-	return this._fileListView.getSelectionCount();
-};
-
-ZmNotebookFileView.prototype.setOffset = function(offset) {
-	this._fileListView.setOffset(offset);
-};
-ZmNotebookFileView.prototype.getOffset = function() {
-	return this._fileListView.getOffset();
-};
-ZmNotebookFileView.prototype.getLimit = function() {
-	return this._fileListView.getLimit();
-};
-ZmNotebookFileView.prototype.getList = function() {
-	return this._fileListView.getList();
-};
-ZmNotebookFileView.prototype.setSelection = function(item) {
-	this._fileListView.setSelection(item);
-};
-
-//
-// Protected methods
-//
-
-ZmNotebookFileView.prototype._createHtml = function() {
-	var parent = this;
-	var className = null;
-	var posStyle = null;
-	var mode = null; // ???
-	var controller = this._controller;
-	var dropTgt = null; // ???
-	this._fileListView = new ZmFileListView(parent, className, posStyle, mode, controller, dropTgt);
-
-	var element = this.getHtmlElement();
-	Dwt.setScrollStyle(element, Dwt.SCROLL);
-	element.appendChild(this._fileListView.getHtmlElement());
-};

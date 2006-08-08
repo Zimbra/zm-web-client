@@ -132,7 +132,7 @@ ZmNotebookFileController.prototype._initializeToolBar =
 function(view) {
 	if (this._toolbar[view]) return;
 
-	ZmListController.prototype._initializeToolBar.call(this, view);
+	ZmNotebookController.prototype._initializeToolBar.call(this, view);
 	this._toolbar[view].addFiller();
 
 	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
@@ -250,6 +250,27 @@ function(op, setChecked) {
 
 
 // List listeners
+
+ZmNotebookFileController.prototype._editListener = function(event) {
+	var pageEditController = this._app.getPageEditController();
+	var page = this._listView[this._currentView].getSelection()[0];
+	pageEditController.show(page);
+};
+ZmNotebookFileController.prototype._resetOperations =
+function(toolbarOrActionMenu, num) {
+	if (!toolbarOrActionMenu) return;
+	ZmNotebookController.prototype._resetOperations.call(this, toolbarOrActionMenu, num);
+
+	var selection = this._listView[this._currentView].getSelection();
+
+	var buttons = [ZmOperation.TAG_MENU, ZmOperation.DELETE];
+	var enabled = selection.length > 0;
+	toolbarOrActionMenu.enable(buttons, enabled);
+
+	var buttons = [ZmOperation.EDIT];
+	var enabled = selection.length == 1 && selection[0].type == ZmItem.PAGE;
+	toolbarOrActionMenu.enable(buttons, enabled);
+};
 
 // Double click displays an item.
 ZmNotebookFileController.prototype._listSelectionListener =
