@@ -360,7 +360,6 @@ function(actionCode) {
 				var mode = this._composeView.getComposeMode();
 				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 				this._setFormat(newMode);
-				this._setOptionsMenu(newMode);
 			}
 			break;
 
