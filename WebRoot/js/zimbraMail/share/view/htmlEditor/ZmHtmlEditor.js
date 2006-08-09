@@ -707,6 +707,7 @@ ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {
 };
 
 ZmHtmlEditor.prototype.__onTableOperationsPopup = function(menu) {
+	this.focus();
 	var table = this.getNearestElement("table");
 	var items = menu._tblItems;
 	for (var i in items) {
