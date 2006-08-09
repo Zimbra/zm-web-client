@@ -754,7 +754,9 @@ SearchHelperToolbarMargin	= margin-top:-1px;
 SmallIconSize				= width:@SmallIconWidth@; height:@SmallIconHeight@;
 BigIconSize					= width:@SmallIconWidth@; height:@SmallIconHeight@;
 
-
+# MAIL STUFF
+# This sets the default background color for mail message bodies
+MailMsgBg					= background-color: white;
 
 # CONTACTS STUFF
 ContactsCardSize			= height:140px;

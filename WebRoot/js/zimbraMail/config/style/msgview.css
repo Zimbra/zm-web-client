@@ -39,7 +39,8 @@ BODY {
 
 body.MsgBody { 
 	@Text@
-	padding: 10px; 
+	padding: 10px;
+	@MailMsgBg@
 }
 
 .MsgBody .SignatureText { color: gray; }

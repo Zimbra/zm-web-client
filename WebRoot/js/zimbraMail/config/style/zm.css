@@ -395,7 +395,7 @@ td.DDSepInvisible div {
 	-- there can be two instances, one for "conversation" view and one for "messages" view */
 .ZmMailMsgView {
 	@FullWidth@
-	@AppBg@
+	@MailMsgBg@
 	@Text@
 }
 
