@@ -645,6 +645,7 @@ function(ev, startSelect, endSelect, startDateField, endDateField) {
 	var endDate = AjxDateUtil.simpleParseDateStr(endDateField.value);
 	var startDateOrig = startDateField.value;
 	var endDateOrig = endDateField.value;
+	var changedDateField = null;
 	if (select.id == ZmTimeSelect.START) {
 		var hours = (select.compId == ZmTimeSelect.HOUR) ? ev._args.oldValue : startSelect.getHours();
 		var minutes = (select.compId == ZmTimeSelect.MINUTE) ? ev._args.oldValue : startSelect.getMinutes();
@@ -653,17 +654,15 @@ function(ev, startSelect, endSelect, startDateField, endDateField) {
 		var newStartDateMs = ZmTimeSelect.getDateFromFields(startSelect.getHours(), startSelect.getMinutes(), startSelect.getAmPm(), startDate).getTime();
 		var oldEndDateMs = ZmTimeSelect.getDateFromFields(endSelect.getHours(), endSelect.getMinutes(), endSelect.getAmPm(), endDate).getTime();
 		var delta = oldEndDateMs - oldStartDateMs;
-		if (!delta) return null;
 		var newEndDateMs = newStartDateMs + delta;
 		var newEndDate = new Date(newEndDateMs);
 		endSelect.set(newEndDate);
 		endDateField.value = AjxDateUtil.simpleComputeDateStr(newEndDate);
 		if (endDateField.value != endDateOrig) {
-			return endDateField;
+			changedDateField = endDateField;
 		}
-	} else {
-		return null;
 	}
+	return changedDateField;
 };
 
 /**
