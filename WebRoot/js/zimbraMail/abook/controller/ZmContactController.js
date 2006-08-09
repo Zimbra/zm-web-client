@@ -104,8 +104,9 @@ function() {
 
 ZmContactController.prototype._initializeListView =
 function(view) {
-	if (!this._listView[view])
+	if (!this._listView[view]) {
 		this._listView[view] = new ZmContactView(this._container, this._appCtxt, this);
+	}
 };
 
 ZmContactController.prototype._initializeToolBar =
@@ -132,6 +133,24 @@ ZmContactController.prototype._setViewContents =
 function(view) {
 	this._listView[view].set(this._contact, this._contactDirty);
 	if (this._contactDirty) delete this._contactDirty;
+	// can't add all the fields until the view has been created
+	if (!this._tabGroupDone) {
+		var list = this._listView[view]._getTabGroupMembers();
+		for (var i = 0; i < list.length; i++) {
+			this._tabGroups[view].addMember(list[i]);
+		}
+		this._tabGroupDone = true;
+	}
+};
+
+ZmContactController.prototype._initializeTabGroup =
+function(view) {
+	if (this._tabGroups[view]) return;
+	
+	this._tabGroups[view] = this._createTabGroup();
+	var rootTg = this._appCtxt.getRootTabGroup();
+	this._tabGroups[view].newParent(rootTg);
+	this._tabGroups[view].addMember(this._toolbar[view]);
 };
 
 ZmContactController.prototype._paginate =
@@ -222,14 +241,12 @@ function(items, hardDelete, attrs, skipPostProcessing) {
 
 ZmContactController.prototype._preHideCallback =
 function(view, force) {
-	ZmController.prototype._preHideCallback.call(this);
-	if (force) {
-		return true;
-	}
+	if (force) return true;
 	
 	var view = this._listView[this._currentView];
-	if (!view.isDirty())
+	if (!view.isDirty()) {
 		return true;
+	}
 
 	var ps = this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
 	ps.reset();
@@ -275,5 +292,5 @@ function(ev) {
 
 ZmContactController.prototype._getDefaultFocusItem = 
 function() {
-	return this._toolbar[this._currentView];
+	return this._listView[this._currentView]._getDefaultFocusItem();
 };
