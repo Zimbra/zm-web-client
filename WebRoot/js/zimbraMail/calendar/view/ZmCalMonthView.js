@@ -486,7 +486,8 @@ function() {
 	this._daysId = Dwt.getNextId();	
 	this._bodyId = Dwt.getNextId();
 	this._headerColId = [];
-	this._bodyColId = [];	
+	this._dayNameId = [];
+	this._bodyColId = [];
 
 	var html = new AjxBuffer();
 			
@@ -505,9 +506,9 @@ function() {
 	html.append("</tr>");
 	html.append("<tr>");
 	
-	var fdow = this.firstDayOfWeek();	
 	for (var day=0; day < 7; day++) {
-		html.append("<td class=calendar_month_header_cells_text>", AjxDateUtil.WEEKDAY_LONG[(day+fdow)%7], "</td>");
+		this._dayNameId[day] = Dwt.getNextId();
+		html.append("<td class=calendar_month_header_cells_text id='",this._dayNameId[day],"'></td>");
 	}
 
 	html.append("</tr>");
@@ -646,11 +647,15 @@ function() {
 
 	var colWidth = Math.floor(w/7) - 1;
 
+	var fdow = this.firstDayOfWeek();
 	for (var i=0; i < 7; i++) {
 		var col = document.getElementById(this._headerColId[i]);
 		Dwt.setSize(col, colWidth, Dwt.DEFAULT);
 		col = document.getElementById(this._bodyColId[i]);
 		Dwt.setSize(col, colWidth, Dwt.DEFAULT);		
+
+		var dayName = document.getElementById(this._dayNameId[i]);
+		dayName.innerHTML = AjxDateUtil.WEEKDAY_LONG[(i+fdow)%7];
 	}
 
 	this._layoutAllDay(h);

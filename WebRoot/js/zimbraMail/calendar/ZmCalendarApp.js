@@ -141,6 +141,13 @@ function(ev) {
 			this.showMiniCalendar(false);
 		}
 	} else if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK) {
-		this._appCtxt.setStatusMsg(ZmMsg.afterReload);
+		var controller = this.getCalController();
+		var minical = controller.getMiniCalendar();
+
+		var firstDayOfWeek = setting.getValue();
+		minical.setFirstDayOfWeek(firstDayOfWeek);
+
+		var date = minical.getDate();
+		controller.setDate(date, 0, true);
 	}
 };

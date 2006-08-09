@@ -1362,6 +1362,7 @@ function(width, numCols) {
 ZmCalColView.prototype._layout =
 function() {
 	DBG.println("ZmCalColView in layout!");
+	this._updateDays();
 
 	var numCols = this._columns.length;
 
