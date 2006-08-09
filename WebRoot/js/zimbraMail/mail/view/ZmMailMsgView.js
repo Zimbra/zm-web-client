@@ -781,7 +781,8 @@ function(container, html, isTextMsg) {
 		}
 	}
 
-	var inner_styles = "";
+	// bug fix #9475 - IE isnt resolving MsgBody class in iframe so set styles explicitly
+	var inner_styles = AjxEnv.isIE ? ".MsgBody-text, .MsgBody-text * { font: 10pt monospace; }" : "";
 	var params = {parent: this, className: "MsgBody", hidden: true, html: html,
 				  styles: inner_styles, noscroll: !ZmMailMsgView.SCROLL_WITH_IFRAME,
 				  posStyle: DwtControl.STATIC_STYLE, processHtmlCallback: callback,
