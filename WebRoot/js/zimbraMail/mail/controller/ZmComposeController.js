@@ -305,8 +305,9 @@ function(initHide, composeMode) {
 };
 
 /**
- * Sets the tab stops for the compose form based on what's showing. Called any
- * time an address field is hidden/shown, as well as when the view is set.
+ * Sets the tab stops for the compose form. All address fields are added; they're
+ * not actual tab stops unless they're visible. The textarea for plain text and
+ * the HTML editor for HTML compose are swapped in and out depending on the mode.
  */
 ZmComposeController.prototype._setComposeTabGroup =
 function() {

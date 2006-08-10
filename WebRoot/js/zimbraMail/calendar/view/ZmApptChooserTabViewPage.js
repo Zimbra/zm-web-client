@@ -32,17 +32,19 @@
 *
 * @author Conrad Damon
 *
-* @param parent		[DwtComposite]	the element that created this view
-* @param appCtxt 	[ZmAppCtxt]		app context
-* @param attendees	[hash]			attendees/locations/equipment
-* @param type		[constant]		chooser page type
+* @param parent		[DwtComposite]				the element that created this view
+* @param appCtxt 	[ZmAppCtxt]					app context
+* @param attendees	[hash]						attendees/locations/equipment
+* @param controller	[ZmApptComposeController]	the appt compose controller
+* @param type		[constant]					chooser page type
 */
-function ZmApptChooserTabViewPage(parent, appCtxt, attendees, type) {
+function ZmApptChooserTabViewPage(parent, appCtxt, attendees, controller, type) {
 
 	DwtTabViewPage.call(this, parent, "ZmApptChooserTabViewPage");
 
 	this._appCtxt = appCtxt;
 	this._attendees = attendees;
+	this._controller = controller;
 	this.type = type;
 
 	this.setScrollStyle(DwtControl.CLIP);
@@ -196,6 +198,7 @@ function() {
 
 	this.parent.tabSwitched(this._tabKey);
 	this._setAttendees();
+	this._controller._setApptComposeTabGroup(true);
 };
 
 ZmApptChooserTabViewPage.prototype.tabBlur =

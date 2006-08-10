@@ -144,7 +144,7 @@ function(toggled) {
 
 ZmApptComposeController.prototype.initApptComposeView = 
 function(initHide) {
-	if (this._apptView == null) {
+	if (!this._apptView) {
 		this._apptView = new ZmApptComposeView(this._container, null, this._app, this);
 		var callbacks = {};
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
@@ -164,7 +164,7 @@ function(initHide) {
 };
 
 ZmApptComposeController.prototype._setApptComposeTabGroup =
-function() {
+function(setFocus) {
 	DBG.println(AjxDebug.DBG2, "_setApptComposeTabGroup");
 	var tg = this._createTabGroup();
 	var rootTg = this._appCtxt.getRootTabGroup();
@@ -172,16 +172,16 @@ function() {
 	tg.addMember(this._toolbar);
 	var tabView = this._apptView.getTabView(this._apptView.getCurrentTab());
 	tabView._addTabGroupMembers(tg);
-
+	
 	var focusItem = tabView._savedFocusMember || tabView._getDefaultFocusItem() || tg.getFirstMember(true);
-	var ta = new AjxTimedAction(this, this._setFocus, [focusItem]);
+	var ta = new AjxTimedAction(this, this._setFocus, [focusItem, !setFocus]);
 	AjxTimedAction.scheduleAction(ta, 10);
 };
 
 ZmApptComposeController.prototype._setFocus =
-function(focusItem) {
-//	DBG.println("kbnav", "timed action restoring focus to " + focusItem);
-	this._restoreFocus(focusItem);
+function(focusItem, noFocus) {
+	DBG.println("kbnav", "timed action restoring focus to " + focusItem + "; noFocus = " + noFocus);
+	this._restoreFocus(focusItem, noFocus);
 };
 
 ZmApptComposeController.prototype.getKeyMapName =
