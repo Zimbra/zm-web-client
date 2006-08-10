@@ -209,6 +209,19 @@ function(actionCode) {
 			}
 			break;
 
+		case ZmKeyMap.HTML_FORMAT:
+			if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+				var mode = this._apptView.getComposeMode();
+				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+				this._formatListener(null, newMode);
+				// reset the radio button for the format button menu
+				var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+				if (formatBtn) {
+					formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, newMode, true);
+				}
+			}
+			break;
+
 		default:
 			return ZmController.prototype.handleKeyAction.call(this, actionCode);
 			break;
@@ -438,13 +451,11 @@ function(ev) {
 };
 
 ZmApptComposeController.prototype._formatListener = 
-function(ev) {
-	if (!ev.item.getChecked()) 
-		return;
+function(ev, mode) {
+	if (!mode && !(ev && ev.item.getChecked())) return;
 	
-	var mode = ev.item.getData(ZmHtmlEditor._VALUE);
-	if (mode == this._apptView.getComposeMode())
-		return;
+	mode = mode || ev.item.getData(ZmHtmlEditor._VALUE);
+	if (mode == this._apptView.getComposeMode()) return;
 	
 	if (mode == DwtHtmlEditor.TEXT) {
 		// if formatting from html to text, confirm w/ user!
@@ -544,8 +555,9 @@ function(ev) {
 	this._textModeOkCancel.popdown();
 	// reset the radio button for the format button menu
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-	if (formatBtn)
+	if (formatBtn) {
 		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
+	}
 	this._apptView.reEnableDesignMode();
 };
 

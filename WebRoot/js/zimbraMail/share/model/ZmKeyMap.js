@@ -209,6 +209,7 @@ function ZmKeyMap() {
 
 			"Esc":					ZmKeyMap.CANCEL,
 			"Alt+A":				ZmKeyMap.ALL_DAY,
+			"Alt+H":				ZmKeyMap.HTML_FORMAT,
 			"Alt+S":				ZmKeyMap.SAVE
 	};
 
