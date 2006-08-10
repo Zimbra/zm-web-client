@@ -190,6 +190,29 @@ function(actionCode) {
 			this.switchView(ZmController.READING_PANE_VIEW, true);
 			break;
 
+		case ZmKeyMap.SHOW_FRAGMENT:
+			if (num == 1) {
+				var view = this._listView[this._currentView];
+				var item = view.getSelection()[0];
+				var id = this._listView[this._currentView]._getFieldId(item, ZmItem.F_SUBJECT);
+				var subjectField = document.getElementById(id);
+				if (subjectField) {
+					var loc = Dwt.getLocation(subjectField);
+					var frag;
+					if (item instanceof ZmMailMsg && item.isInvite() && item.needsRsvp()) {
+						frag = item.getInvite().getToolTip();
+					} else {
+						frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
+						view.setToolTipContent(AjxStringUtil.htmlEncode(frag));
+					}
+					var tooltip = this._shell.getToolTip()
+					tooltip.popdown();
+					tooltip.setContent(AjxStringUtil.htmlEncode(frag));
+					tooltip.popup(loc.x, loc.y);
+				}
+			}
+			break;
+
 		default:
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 			break;
