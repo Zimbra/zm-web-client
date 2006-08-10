@@ -211,10 +211,10 @@ function(ev) {
 	// don't let the browser handle are ones that control the features of the autocomplete
 	// list.
 
-	if (key == 16 || key == 17 || key == 18) { // SHIFT, ALT, or CTRL
+	if (DwtKeyMapMgr.isModifier(key)) {
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
-	if (ev.altKey || ev.ctrlKey) { // ALT and CTRL combos
+	if (ev.altKey || ev.ctrlKey || ev.metaKey) { // non-input key combos
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 	// if the field is empty, clear the list
@@ -225,8 +225,8 @@ function(ev) {
 	if (key == 37 || key == 39) { // left/right arrow key
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
-	// Pass tab through if there's no list (will transfer focus)
-	if ((key == 9) && !aclv.size()) {
+	// Pass tab/esc through if there's no list
+	if ((key == 9 || key == 27) && !aclv.size()) {
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 
