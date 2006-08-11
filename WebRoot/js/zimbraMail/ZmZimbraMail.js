@@ -404,9 +404,7 @@ function(params) {
 	var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
 	ZmController._setCurrentAppViewTabGroup(dummyTg);
 	rootTg.addMember(dummyTg);
-	var appChooserTg = new DwtTabGroup("ZmAppChooser");
-	appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
-	rootTg.addMember(appChooserTg);
+	rootTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
 	var kbMgr = this._shell.getKeyboardMgr();
 	kbMgr.setTabGroup(rootTg);
 
@@ -1208,14 +1206,12 @@ function(ex, method, params, restartOnError, obj) {
 	var handled = false;
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
 		var organizerTypes = [ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
-		if (ex.data.itemId && ex.data.itemId.length) {
-			var itemId = ex.data.itemId[0];
-			var index = itemId.lastIndexOf(':');
-			var zid = itemId.substring(0, index);
-			var rid = itemId.substring(index + 1, itemId.length);
-			for (var type = 0; type < organizerTypes.length; type++) {
-				handled |= this._handleNoSuchFolderError(organizerTypes[type], zid, rid, true);
-			}
+		var itemId = ex.data.itemId[0];
+		var index = itemId.lastIndexOf(':');
+		var zid = itemId.substring(0, index);
+		var rid = itemId.substring(index + 1, itemId.length);
+		for (var type = 0; type < organizerTypes.length; type++) {
+			handled |= this._handleNoSuchFolderError(organizerTypes[type], zid, rid, true);
 		}
 	}
 	if (!handled) {

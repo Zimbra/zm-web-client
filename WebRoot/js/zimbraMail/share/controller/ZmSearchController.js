@@ -417,22 +417,18 @@ function(results, search, isMixed) {
 /*
 * Handle a few minor errors where we show an empty result set and issue a 
 * status message to indicate why the query failed. Those errors are: no such
-* folder, no such tag, and bad query. If it's a "no such folder" error caused
-* by the deletion of a folder backing a mountpoint, we pass it along for
-* special handling by ZmZimbraMail.
+* folder, no such tag, and bad query.
 */
 ZmSearchController.prototype._handleErrorDoSearch =
 function(search, isMixed, ex) {
-	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
-	if (this._searchToolBar) {
+	if (this._searchToolBar)
 		this._searchToolBar.setEnabled(true);
-	}
+	DBG.println(AjxDebug.DBG1, "Search exception: " + ex.code);
 
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG ||
 		ex.code == ZmCsfeException.MAIL_QUERY_PARSE_ERROR ||
-		ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS ||
-		(ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER && !(ex.data.itemId && ex.data.itemId.length))) {
-
+		ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS)
+	{
 		var msg = ex.getErrorMsg();
 		this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 		var results = new ZmSearchResult(this._appCtxt);

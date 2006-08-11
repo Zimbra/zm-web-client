@@ -60,9 +60,6 @@ ZmHtmlEditor.prototype.constructor = ZmHtmlEditor;
 // Consts
 ZmHtmlEditor._VALUE = "value";
 
-// Big ugly RegExp, looking for iframe tags where the id starts with "ACE-"
-ZmHtmlEditor.ACE_IFRAME_RE = new RegExp("<iframe\\s+.*?\\bid\\s*=\\s*[\"']?(ace-[^\"'\\s]*).*?>.*?</iframe(\\s.*?)?>", "ig");
-
 // Data
 
 ZmHtmlEditor._toolbars;
@@ -146,10 +143,9 @@ function() {
 ZmHtmlEditor.prototype.getContent =
 function() {
 	this.discardMisspelledWords();
-	var content = DwtHtmlEditor.prototype.getContent.call(this);
 	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML)
-		content = this._serializeAceObjects(content);
-	return content;	
+		this._serializeAceObjects();
+	return DwtHtmlEditor.prototype.getContent.call(this);
 };
 
 ZmHtmlEditor.prototype.spellCheck =
@@ -893,32 +889,40 @@ function(html) {
 };
 
 ZmHtmlEditor.prototype._serializeAceObjects =
-function(content) {
-	this._headContent = [];
+function() {
+	var headContent = this._headContent = [];
 	var done = {};
-	var replaceCallback = AjxCallback.simpleClosure(this._replaceAceIframes, this, done);
-	return content.replace(ZmHtmlEditor.ACE_IFRAME_RE, replaceCallback);
-};
-
-ZmHtmlEditor.prototype._replaceAceIframes =
-function(done, match, iframeId) {
-	var iframe = this._getIframeDoc().getElementById(iframeId);
-	var win = Dwt.getIframeWindow(iframe);
-	var html = win.getHTML();
-	var data = win.serialize()
-		.replace(/&/g, "&amp;")
-		.replace(/>/g, "&gt;");
-	var component_name = win.ZmACE_COMPONENT_NAME;
-	if (!done[component_name] && typeof win.getHeadHTML == "function") {
-		done[component_name] = true;
-		this._headContent.push(win.getHeadHTML());
+	var objects = this._getAceObjects();
+	var doc = this._getIframeDoc();
+	for (var i = 0; i < objects.length; ++i) {
+		var iframe = objects[i];
+		if (/^ACE-/.test(iframe.id)) try {
+			var win = Dwt.getIframeWindow(iframe);
+			var data = win.serialize()
+				.replace(/&/g, "&amp;")
+				.replace(/>/g, "&gt;");
+			var html = win.getHTML();
+			var component_name = win.ZmACE_COMPONENT_NAME;
+			data = [ "ACE[", component_name, "]:", data ].join("");
+			if (!done[component_name] && typeof win.getHeadHTML == "function") {
+				done[component_name] = true;
+				headContent.push(win.getHeadHTML());
+			}
+			var holder = doc.createElement("div");
+			holder.innerHTML = html;
+			holder.appendChild(doc.createComment(data));
+			holder.className = "ACE " + component_name;
+			if (!AjxEnv.isIE)
+				iframe.parentNode.replaceChild(holder, iframe);
+			else {
+				iframe.parentNode.insertBefore(holder, iframe);
+				iframe.parentNode.removeChild(iframe);
+			}
+		} catch(ex) {
+			// FIXME: for now we just drop the iframe; should we do something else?
+			iframe.parentNode.removeChild(iframe);
+		}
 	}
-	return ["<div class=\"ACE ", component_name, "\">", 
-	        html, 
-	        "<!--",
-	        "ACE[", component_name, "]:", data,
-	        "-->",
-	        "</div>"].join("");
 };
 
 ZmHtmlEditor.prototype._deserializeAceObjects =

@@ -141,8 +141,6 @@ function ZmKeyMap() {
 			"T":					ZmKeyMap.GOTO_TRASH,
 			
 			"O":					DwtKeyMap.DBLCLICK,
-
-			"X":					ZmKeyMap.SHOW_FRAGMENT,
 			
 			"Shift+1":				ZmKeyMap.SPAM,
 
@@ -211,7 +209,6 @@ function ZmKeyMap() {
 
 			"Esc":					ZmKeyMap.CANCEL,
 			"Alt+A":				ZmKeyMap.ALL_DAY,
-			"Alt+H":				ZmKeyMap.HTML_FORMAT,
 			"Alt+S":				ZmKeyMap.SAVE
 	};
 
@@ -336,7 +333,6 @@ ZmKeyMap.REPLY				= "ReplyToSender";
 ZmKeyMap.REPLY_ALL			= "ReplyToAll";
 ZmKeyMap.SAVE				= "Save";
 ZmKeyMap.SEND				= "Send";
-ZmKeyMap.SHOW_FRAGMENT		= "ShowFragment";
 ZmKeyMap.SPAM				= "MarkAsSpam";
 ZmKeyMap.SPELLCHECK			= "Spellcheck";
 ZmKeyMap.TAG1				= "ToggleTag1";

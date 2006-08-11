@@ -34,16 +34,14 @@
 * @param parent				[DwtComposite]				the appt compose view
 * @param appCtxt 			[ZmAppCtxt]					app context
 * @param attendees			[hash]						attendees/locations/equipment
-* @param controller			[ZmApptComposeController]	the appt compose controller
 * @param dateInfo			[object]					hash of date info
 */
-function ZmApptTabViewPage(parent, appCtxt, attendees, controller, dateInfo) {
+function ZmApptTabViewPage(parent, appCtxt, attendees, dateInfo) {
 
 	DwtTabViewPage.call(this, parent);
 
 	this._appCtxt = appCtxt;
 	this._attendees = attendees;
-	this._controller = controller;
 	this._dateInfo = dateInfo;
 
 	this.setScrollStyle(DwtControl.CLIP);
@@ -98,7 +96,6 @@ function() {
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
 	this._setAttendees();
-	this._controller._setApptComposeTabGroup(true);
 };
 
 ZmApptTabViewPage.prototype.tabBlur =

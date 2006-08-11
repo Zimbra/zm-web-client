@@ -591,17 +591,6 @@ function(mode, callback, errorCallback, result) {
 	this.getDetails(mode, callback, errorCallback, ignoreOutOfDate);
 };
 
-// REVISIT: Move to AjxDateUtil function
-ZmAppt.__adjustDateForTimezone = function(date, timezoneServerId, inUTC) {
-	var currentOffset = AjxTimezone.getOffset(AjxTimezone.DEFAULT, date);
-	var timezoneOffset = currentOffset;
-	if (!inUTC) {
-		var timezoneClientId = AjxTimezone.getClientId(timezoneServerId);
-		timezoneOffset = AjxTimezone.getOffset(timezoneClientId, date);
-	}
-	var offset = currentOffset - timezoneOffset;
-	date.setMinutes(date.getMinutes() + offset);
-};
 
 ZmAppt.prototype.setFromMessage = 
 function(message, viewMode) {
@@ -614,28 +603,23 @@ function(message, viewMode) {
 		// if instance of recurring appointment, start date is generated from 
 		// unique start time sent in appointment summaries. Associated message 
 		// will contain only the original start time.
-		var start = message.invite.getServerStartTime(0);
-		var end = message.invite.getServerEndTime(0);
 		if (viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
 			this.setStartDate(this.getUniqueStartDate());
 			this.setEndDate(this.getUniqueEndDate());
 		} else {
-			this.setStartDate(AjxDateUtil.parseServerDateTime(start));
-			this.setEndDate(AjxDateUtil.parseServerDateTime(end));
+			this.setStartDate(AjxDateUtil.parseServerDateTime(message.invite.getServerStartTime(0)));
+			this.setEndDate(AjxDateUtil.parseServerDateTime(message.invite.getServerEndTime(0)));
 		}
 
 		// record whether the start/end dates are in UTC
+		var start = message.invite.getServerStartTime(0);
+		var end = message.invite.getServerEndTime(0);
 		this.startsInUTC = start.charAt(start.length-1) == "Z";
 		this.endsInUTC = end.charAt(start.length-1) == "Z";
 
 		// record timezone if given, otherwise, guess
 		this.timezone = (message.invite.getServerStartTimeTz(0)) || (AjxTimezone.getServerId(AjxTimezone.DEFAULT));
-
-		// adjust start/end times based on UTC/timezone
-		ZmAppt.__adjustDateForTimezone(this.startDate, this.timezone, this.startsInUTC);
-		ZmAppt.__adjustDateForTimezone(this.endDate, this.timezone, this.endsInUTC);
-		this.timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-
+		
 		this.repeatCustomMonthDay = this.startDate.getDate();
 
 		// parse out attendees for this invite
