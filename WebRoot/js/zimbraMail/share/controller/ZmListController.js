@@ -518,10 +518,9 @@ function(ev, id) {
 	switch (id) {
 		// new items
 		case ZmOperation.NEW_MESSAGE: {
-			var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || (ev && ev.shiftKey);
 			var app = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
 			var controller = app.getComposeController();
-			controller.doAction(ZmOperation.NEW_MESSAGE, inNewWindow);
+			controller.doAction(ZmOperation.NEW_MESSAGE, this._inNewWindow(ev));
 			break;
 		}
 		case ZmOperation.NEW_CONTACT: {
@@ -682,9 +681,8 @@ function(ev) {
 ZmListController.prototype._participantComposeListener =
 function(ev) {
 	var name = this._actionEv.address.toString() + ZmEmailAddress.SEPARATOR;
-	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
 	var cc = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
-	cc.doAction(ZmOperation.NEW_MESSAGE, inNewWindow, null, name);
+	cc.doAction(ZmOperation.NEW_MESSAGE, this._inNewWindow(ev), null, name);
 };
 
 // IM the participant (if enabled via config)
@@ -1037,6 +1035,14 @@ function(parent, num) {
 ZmListController.prototype._resetToolbarOperations =
 function() {
 	this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());
+};
+
+// depending on "Always in New Window" option and whether Shift key is pressed,
+// determine whether action should be in new window or not
+ZmListController.prototype._inNewWindow =
+function(ev) {
+	return (!this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) && ev && ev.shiftKey) ||
+			(this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) && ev && !ev.shiftKey);
 };
 
 // Pagination

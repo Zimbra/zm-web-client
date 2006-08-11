@@ -434,8 +434,7 @@ function(ev, action, extraBodyText, instanceDate) {
 	var prefersHtml = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML;
 	var sameFormat = this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
 	var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg.isLoaded() && sameFormat)))));
-		
-	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || (ev && ev.shiftKey);
+	var inNewWindow = this._inNewWindow(ev);
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText]);
 	msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
 };
