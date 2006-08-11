@@ -78,9 +78,9 @@ function() {
 ZmNewWindow.run =
 function(domain) {
 
-	// inherit parent window's debug level
-	DBG.setDebugLevel(window.opener.DBG._level);
-	
+	// inherit parent window's debug level but only enable debug window if not already open
+	DBG.setDebugLevel(window.opener.DBG._level, true);
+
 	// Create the global app context
 	var appCtxt = new ZmAppCtxt();
 
