@@ -44,7 +44,7 @@ function ZmObjectManager(view, appCtxt, selectCallback, skipHandlers) {
 	this._appCtxt = appCtxt;
 	this._selectCallback = selectCallback;
 	this._uuid = Dwt.getNextId();
-	this._objectIdPrefix = "OBJ_" + this._uuid + "_";
+	this._objectIdPrefix = "OBJ_PREFIX_";
 	this._objectHandlers = {};
 	// don't include when looking for objects. only used to provide tool tips for images
 	this._imageAttachmentHandler = new ZmImageAttachmentObjectHandler(appCtxt);

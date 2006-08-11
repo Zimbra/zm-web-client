@@ -30,8 +30,6 @@ function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 
 	this._mode = mode;
 	this._controller = controller;
-	// Set to false in case objects are turned off
-	this._objectsCount = false;
 
 	this._displayImagesId = Dwt.getNextId();
 	this._tagRowId = Dwt.getNextId();
@@ -56,12 +54,9 @@ function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 
 	this._setMouseEventHdlrs(); // needed by object manager
 
-	// XXX: for now, turn off object handling :(
+	// XXX: for now, turn off object handling in new window
 	if (!controller.isChildWindow) {
-		// this manages all the detected objects within the view
-		this._objectManager = new ZmObjectManager(this, this._appCtxt);
-		// Set the count to 0 so it forces the first view to reload the Object Mgr
-		this._objectsCount = 0;
+		this._objectManager = true;
 	}
 
 	this._changeListener = new AjxListener(this, this._msgChangeListener);
@@ -111,7 +106,7 @@ function() {
 	this._msg = null;
 	this._htmlBody = null;
 	this.getHtmlElement().innerHTML = "";
-	if (this._objectManager)
+	if (this._objectManager && this._objectManager.reset)
 		this._objectManager.reset();
 };
 
@@ -199,6 +194,7 @@ function(origText) {
 		// faster to call findObjects on the whole text rather
 		// than parsing the DOM.
 		DBG.timePt("START - highlight objects on-demand, text msg.");
+		this._lazyCreateObjectManager();
 		var html = this._objectManager.findObjects(origText, true, null, true);
 		html = html.replace(/^ /mg, "&nbsp;")
 			.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
@@ -406,16 +402,14 @@ ZmMailMsgView._dangerousCSS = {
 ZmMailMsgView._URL_RE = /^((https?|ftps?):\x2f\x2f.+)$/;
 ZmMailMsgView._MAILTO_RE = /^mailto:[\x27\x22]?([^@?&\x22\x27]+@[^@?&]+\.[^@?&\x22\x27]+)[\x27\x22]?/;
 
-// New Zimlets or Objects may have been added after view was created.
-// Check for new ones and load a new ZmObjectManager if things change.
-ZmMailMsgView.prototype._checkForNewObjects =
+// Create the ObjectManager at the last minute just before we scan the message
+ZmMailMsgView.prototype._lazyCreateObjectManager =
 function() {
-	// The count will be 0 on the first message viewed, after that we check to see if new Zimlets are added
-	if((this._objectsCount === 0) || (this._objectsCount != this._objectManager.objectsCount())) {
-		DBG.println(AjxDebug.DBG2, "New objects create new ZmObjectManager");
+	// objectManager will be 'true' at create time, after that it will be the real object
+	if(this._objectManager === true) {
+		DBG.println(AjxDebug.DBG2, "Create new ZmObjectManager");
 		// this manages all the detected objects within the view
 		this._objectManager = new ZmObjectManager(this, this._appCtxt);
-		this._objectsCount = this._objectManager.objectsCount();
 	}
 };
 
@@ -472,7 +466,7 @@ function(doc) {
 	DBG.timePt("Starting ZmMailMsgView.prototype._processHtmlDoc");
 
 	// var T1 = new Date().getTime();
-	this._checkForNewObjects();
+	this._lazyCreateObjectManager();
 	var objectManager = this._objectManager,
 		tmpdiv = doc.createElement("div"),
 		node = doc.body;
@@ -753,7 +747,7 @@ function(container, html, isTextMsg) {
 		if (this._objectManager) {
 			if (msgSize <= ZmMailMsgView.OBJ_SIZE_TEXT) {
 				// better process objects directly rather than scanning the DOM afterwards.
-				this._checkForNewObjects();
+				this._lazyCreateObjectManager();
 				DBG.timePt("START: small text msg -- findObjects");
 				html = this._objectManager.findObjects(html, true, null, true);
 				DBG.timePt("END: small text msg -- findObjects");
@@ -862,6 +856,7 @@ function(htmlArr, idx, addrs, prefix) {
 
 		var addr = addrs.get(i);
 		if (this._objectManager && addr.address) {
+			this._lazyCreateObjectManager();
 			htmlArr[idx++] = this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
 		} else {
 			htmlArr[idx++] = addr.address ? addr.address : (AjxStringUtil.htmlEncode(addr.name));
@@ -875,7 +870,8 @@ function(htmlArr, idx, addrs, prefix) {
 ZmMailMsgView.prototype._renderMessage =
 function(msg, container, callback) {
 	if (this._objectManager) {
-	    this._objectManager.setHandlerAttr(ZmObjectManager.DATE,
+		this._lazyCreateObjectManager();
+		this._objectManager.setHandlerAttr(ZmObjectManager.DATE,
 	    								   ZmObjectManager.ATTR_CURRENT_DATE,
 	    								   this._dateObjectHandlerDate);
 	}
@@ -1186,6 +1182,7 @@ function() {
 
 		// objectify if this attachment is an image
 		if (att.objectify && this._objectManager) {
+			this._lazyCreateObjectManager();
 			var imgHandler = this._objectManager.getImageAttachmentHandler();
 			idx = this._objectManager.generateSpan(imgHandler, htmlArr, idx, link, {url:att.url});
 		} else {
