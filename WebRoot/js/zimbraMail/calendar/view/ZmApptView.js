@@ -124,6 +124,7 @@ function() {
 
 ZmApptView.prototype._renderAppt =
 function(appt) {
+	this._lazyCreateObjectManager();
 	if (this._objectManager) {
 	    this._objectManager.setHandlerAttr(ZmObjectManager.DATE, 
 	    								   ZmObjectManager.ATTR_CURRENT_DATE, 
