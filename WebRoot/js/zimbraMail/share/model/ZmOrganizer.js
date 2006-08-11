@@ -143,6 +143,7 @@ ZmOrganizer.F_COLOR		= i++;
 ZmOrganizer.F_QUERY		= i++;
 ZmOrganizer.F_SHARES	= i++;
 ZmOrganizer.F_FLAGS		= i++;
+ZmOrganizer.F_REST_URL	= i++;
 
 ZmOrganizer.FLAG_CHECKED			= "#";
 ZmOrganizer.FLAG_IMAP_SUBSCRIBED	= "*";
@@ -639,6 +640,11 @@ function(obj) {
 			fields[ZmOrganizer.F_FLAGS] = true;
 			doNotify = true;
 		}
+	}
+	if (obj.rest != null && this.restUrl != obj.rest) {
+		this.restUrl = obj.rest;
+		fields[ZmOrganizer.F_REST_URL] = true;
+		doNotify = true;
 	}
 	// if shares changed, do wholesale replace
 	if (obj.acl) {
