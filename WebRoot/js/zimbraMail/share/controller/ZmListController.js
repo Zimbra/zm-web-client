@@ -435,10 +435,10 @@ function(view) {
 * @param isAppView		this view is a top-level app view
 * @param clear			if true, clear the hidden stack of views
 * @param pushOnly		don't reset the view's data, just swap the view in
-* @param isPoppable		whether the view is "poppable" from the view stack
+* @param isTransient	this view doesn't go on the hidden stack
 */
 ZmListController.prototype._setView =
-function(view, elements, isAppView, clear, pushOnly, isPoppable) {
+function(view, elements, isAppView, clear, pushOnly, isTransient) {
 
 	// create the view (if we haven't yet)
 	if (!this._appViews[view]) {
@@ -454,7 +454,7 @@ function(view, elements, isAppView, clear, pushOnly, isPoppable) {
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] =
 			this._postShowCallback ? new AjxCallback(this, this._postShowCallback) : null;
 
-		this._app.createView(view, elements, callbacks, isAppView, isPoppable);
+		this._app.createView(view, elements, callbacks, isAppView, isTransient);
 		this._appViews[view] = 1;
 	}
 

@@ -297,7 +297,7 @@ function(initHide, composeMode) {
 	this._initializeToolBar();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks, null, true);
+    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks, false, true);
     if (initHide) {
 	    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	    this._composeView.enableInputs(false);
@@ -852,11 +852,7 @@ function() {
 		}
 	}
 
-	// clear compose view out of view stack
-	var avm = this._app.getAppViewMgr();
-	if (avm.isPoppable(avm.getPendingViewId())) {
-		this._app.popView(true);
-	}
+	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
 };
 
@@ -873,12 +869,7 @@ function() {
 			this._composeView.reset(false);
 		}
 
-		// clear compose view out of view stack
-		var avm = this._app.getAppViewMgr();
-		if (avm.isPoppable(avm.getPendingViewId())) {
-			this._app.popView(true);
-		}
-
+		this._app.popView(true);
 		this._app.getAppViewMgr().showPendingView(true);
 	} else {
 		this._app.getAppViewMgr().showPendingView(false);

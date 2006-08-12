@@ -83,7 +83,7 @@ function() {
 	var elements = new Object();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
-	this._setView(this._currentView, elements, null, this.isChildWindow);
+	this._setView(this._currentView, elements, false, this.isChildWindow);
 };
 
 ZmMsgController.prototype.getKeyMapName =

@@ -154,7 +154,7 @@ function(initHide) {
 			this._createToolBar();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._apptView;
-	    this._app.createView(ZmController.APPOINTMENT_VIEW, elements, callbacks, null, true);
+	    this._app.createView(ZmController.APPOINTMENT_VIEW, elements, callbacks, false, true);
 	    if (initHide) {
 	    	this._apptView.preload();
 	    } else {
@@ -520,12 +520,7 @@ ZmApptComposeController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
 	if (this._doSave()) {
-		// bug fix #5282
-		// check if the pending view is poppable - if so, force-pop this view first!
-		var avm = this._app.getAppViewMgr();
-		if (avm.isPoppable(avm.getPendingViewId()))
-			this._app.popView(true);
-
+		this._app.popView(true);
 		this._app.getAppViewMgr().showPendingView(true);
 	}
 };
@@ -533,13 +528,7 @@ function() {
 ZmApptComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
-
-	// bug fix #5282
-	// check if the pending view is poppable - if so, force-pop this view first!
-	var avm = this._app.getAppViewMgr();
-	if (avm.isPoppable(avm.getPendingViewId()))
-		this._app.popView(true);
-
+	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
 	this._apptView.cleanup();
 };

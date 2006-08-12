@@ -1944,7 +1944,7 @@ function(ev) {
 	try {
 		var searchController = this._appCtxt.getSearchController();
 		var id = ev.item.getData(Dwt.KEY_ID);
-		DBG.println("ZmZimbraMail button press: " + id);
+		DBG.println(AjxDebug.DBG1, "ZmZimbraMail button press: " + id);
 		if (id == ZmAppChooser.B_EMAIL) {
 			this.activateApp(ZmZimbraMail.MAIL_APP);
 		} else if (id == ZmAppChooser.B_CONTACTS) {
