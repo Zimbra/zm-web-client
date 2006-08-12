@@ -446,6 +446,8 @@ ZmPageEditController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
 	this._doSave(true);
+	this._app.popView(true);
+	this._app.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._popShieldNoCallback =
