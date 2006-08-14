@@ -1225,7 +1225,7 @@ function(parent, num) {
 	var currViewName = this._viewMgr.getCurrentViewName();
 	if (currViewName == ZmController.CAL_APPT_VIEW) {
 		// disable DELETE since CAL_APPT_VIEW is a read-only view
-		parent.enable([ZmOperation.DELETE, ZmOperation.CAL_REFRESH, ZmOperation.PRINT, ZmOperation.TODAY], false);
+		parent.enable([ZmOperation.DELETE, ZmOperation.CAL_REFRESH, ZmOperation.TODAY], false);
 	}
 	else {
 		this._navToolBar[ZmController.CAL_VIEW].setVisible(true);
