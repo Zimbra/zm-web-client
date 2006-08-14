@@ -102,6 +102,9 @@ function(mode, convert) {
 
 	DwtHtmlEditor.prototype.setMode.call(this, mode, convert);
 
+	if (mode == DwtHtmlEditor.HTML)
+		setTimeout(AjxCallback.simpleClosure(this._loadExternalStyle, this, "/css/editor.css"), 250);
+
 	// show/hide toolbars based on mode
 	for (var i = 0; i < this._toolbars.length; i++) {
 		var toolbar = this._toolbars[i];
