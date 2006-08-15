@@ -160,11 +160,12 @@ function(participants, participantsElided, width) {
 				tmp.push(list[i].name);
 			text = originator.name + AjxStringUtil.ELLIPSIS + tmp.join(", ");
 		}
-		DBG.println(AjxDebug.DBG3, "calc width of [" + text + "] = " + w);
-		if (w <= width)
+		//DBG.println(AjxDebug.DBG3, "calc width of [" + text + "] = " + w);
+		if (w <= width) {
 			return test;
-		else
+		} else {
 			list.shift();
+		}
 	}
 	return [originator];
 };
