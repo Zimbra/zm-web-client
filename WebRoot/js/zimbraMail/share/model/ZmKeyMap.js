@@ -49,7 +49,7 @@ function ZmKeyMap() {
 			"Alt+Shift+D,1":		ZmKeyMap.DBG_1,
 			"Alt+Shift+D,2":		ZmKeyMap.DBG_2,
 			"Alt+Shift+D,3":		ZmKeyMap.DBG_3,
-			"Alt+Shift+D,t":		ZmKeyMap.DBG_TIMING,
+			"Alt+Shift+D,T":		ZmKeyMap.DBG_TIMING,
 
 			"N":					ZmKeyMap.NEW,
 			"N,A":					ZmKeyMap.NEW_APPT,
