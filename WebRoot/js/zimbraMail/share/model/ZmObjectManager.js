@@ -39,7 +39,7 @@
 function ZmObjectManager(view, appCtxt, selectCallback, skipHandlers) {
 
 	if (arguments.length < 1) {return;}
-	DBG.println(AjxDebug.DBG2, "ZmObjectManager created by: " + view);
+	//DBG.println(AjxDebug.DBG2, "ZmObjectManager created by: " + view);
 	this._view = view;
 	this._appCtxt = appCtxt;
 	this._selectCallback = selectCallback;
@@ -65,7 +65,7 @@ function ZmObjectManager(view, appCtxt, selectCallback, skipHandlers) {
 	this.sortHandlers();
 	this.reset();
 
-	DBG.println(AjxDebug.DBG3, "ZmObjectManager " + zimlets.length + " Zimlets loaded");
+	//DBG.println(AjxDebug.DBG3, "ZmObjectManager " + zimlets.length + " Zimlets loaded");
 
 	// install handlers
 	if (view != null) {
@@ -131,7 +131,7 @@ function(h, type, priority) {
 	type = type ? type : (h.getTypeName() ? h.getTypeName() : "none");
 	priority = priority ? priority : -1;
 	h._prio = priority;
-	DBG.println(AjxDebug.DBG3, "addHandler " + h + " type: " + type + " prio: " + priority);
+	//DBG.println(AjxDebug.DBG3, "addHandler " + h + " type: " + type + " prio: " + priority);
 	var oh = this._objectHandlers;
 	if (!oh[type]) {oh[type] = [];}
 	oh[type].push(h);
@@ -220,11 +220,11 @@ function(content, htmlEncode, type, isTextMsg) {
 		var chunk;
 		var result = null;
 		if (type) {
-			DBG.println(AjxDebug.DBG3, "findObjects type [" + type + "]");
+			//DBG.println(AjxDebug.DBG3, "findObjects type [" + type + "]");
 			handlers = this._objectHandlers[type];
 			if (handlers) {
 				for (i = 0; i < handlers.length; i++) {
-					DBG.println(AjxDebug.DBG3, "findObjects by TYPE (" + handlers[i] + ")");
+					//DBG.println(AjxDebug.DBG3, "findObjects by TYPE (" + handlers[i] + ")");
 					result = handlers[i].findObject(content, lastIndex);
 					// No match keep trying.
 					if(!result) {continue;}
@@ -247,7 +247,7 @@ function(content, htmlEncode, type, isTextMsg) {
 		} else {
 			for (var j = 0; j < this._allObjectHandlers.length; j++) {
 				var handler = this._allObjectHandlers[j];
-				DBG.println(AjxDebug.DBG3, "findObjects trying (" + handler + ")");
+				//DBG.println(AjxDebug.DBG3, "findObjects trying (" + handler + ")");
 				result = handler.findObject(content, lastIndex);
 				if (result && result.index < lowestIndex) {
 					lowestResult = result;
@@ -314,11 +314,11 @@ function(content, type) {
 
 	var result = null;
 	if (type) {
-		DBG.println(AjxDebug.DBG3, "findObjects type [" + type + "]");
+		//DBG.println(AjxDebug.DBG3, "findObjects type [" + type + "]");
 		var handlers = this._objectHandlers[type];
 		if (handlers) {
 			for (i = 0; i < handlers.length; i++) {
-				DBG.println(AjxDebug.DBG3, "findObjects by TYPE (" + handlers[i] + ")");
+				//DBG.println(AjxDebug.DBG3, "findObjects by TYPE (" + handlers[i] + ")");
 				result = handlers[i].findObject(content, lastIndex);
 				// No match keep trying.
 				if(!result) {continue;}
@@ -332,7 +332,7 @@ function(content, type) {
 	} else {
 		for (var j = 0; j < this._allObjectHandlers.length; j++) {
 			var handler = this._allObjectHandlers[j];
-			DBG.println(AjxDebug.DBG3, "findObjects trying (" + handler + ")");
+			//DBG.println(AjxDebug.DBG3, "findObjects trying (" + handler + ")");
 			result = handler.findObject(content, lastIndex);
 			if (result && result.index < lowestIndex) {
 				lowestResult = result;
