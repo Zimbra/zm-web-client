@@ -16,7 +16,7 @@
   <property name="jars.archive.dir"   location="../ZimbraServer/jars"/>
   <property name="src.dir"            location="src"/>
   <property name="gzipExtension" value=".zgz"/>	
-  <property name="jsminExtension" value=".jsmin"/>	
+  <property name="rhinoExtension" value=".rhino"/>
   <property name="licenseExtension" value=".license"/>	
 
   <condition property="ajax.dir" value="${env.AJAX_DIR}">
@@ -25,22 +25,6 @@
   <condition property="ajax.dir" value="../Ajax">
     <not><isset property="env.AJAX_DIR"/></not>
   </condition>	
-
-   <condition property="platform.tag" value="MACOSXx86">
-       <os name="Mac OS X" arch="i386"/>
-   </condition>
-   <condition property="platform.tag" value="MACOSX">
-       <os name="Mac OS X"/>
-   </condition>
-   <condition property="platform.tag" value="">
-       <os family="unix"/>
-   </condition>
-   <condition property="platform.tag" value="">
-       <os family="windows"/>
-   </condition>
-   <condition property="plat.tag" value="${platform.tag}">
-     <not><isset property="plat.tag"/></not>
-   </condition>
 
   <property name="ajax.src.dir" value="${ajax.dir}/src"/>
   <property name="ajax.jars.dir" value="${ajax.dir}/jars"/>
@@ -162,7 +146,7 @@
   <target name="clean" depends="build-init" description="Removes any temporary files">
     <delete dir="${build.dir}"/>
     <delete>
-      <fileset dir="WebRoot" includes="js/**/*${jsminExtension}, js/**/*${gzipExtension}, js/*_all.js*"/>
+      <fileset dir="WebRoot" includes="js/**/*${rhinoExtension}, js/**/*${gzipExtension}, js/*_all.js*"/>
     </delete>
   </target>
 
@@ -245,36 +229,48 @@
   </target>
 
   <target name="gzip-js">
-    <gzip src="${var}${jsminExtension}${licenseExtension}" zipfile="${var}${gzipExtension}"/>
+    <gzip src="${var}${rhinoExtension}${licenseExtension}" zipfile="${var}${gzipExtension}"/>
   </target>
 
   <target name="rm-temp-file">
-    <delete file="${var}${jsminExtension}" />
-    <delete file="${var}${jsminExtension}${licenseExtension}" />
+    <delete file="${var}${rhinoExtension}" />
+    <delete file="${var}${rhinoExtension}${licenseExtension}" />
   </target>
 
-  <target name="jsmin">
-    <exec executable="bin/${plat.tag}/jsmin">
-      <redirector input="${var}" output="${var}${jsminExtension}"/>
-    </exec>
-    <echo>Strip whitespace: ${var}</echo>
+  <target name="rhino-compress">
+    <echo>Strip whitespace, comments and debug calls: ${var}</echo>
+    <!-- Strip all debug calls prior to rhino -->
+    <replaceregexp byline="true">
+      <regexp pattern="DBG.print(.*);|DBG.time(.*);|DBG.dump(.*);"/>
+      <substitution expression=" "/>
+      <fileset file="${var}"/>
+    </replaceregexp>
+    <java jar="${jars.dir}/custom_rhino.jar" fork="true" failonerror="true" output="${var}${rhinoExtension}">
+      <jvmarg  value="-Xmn100M"/>
+      <jvmarg  value="-Xms500M"/>
+      <jvmarg  value="-Xmx500M"/>
+      <arg value="-opt" />
+      <arg value="-1" />
+      <arg value="-c" />
+      <arg value="${var}" />
+    </java>
   </target>
 
   <target name="prepend-ZPL">
-    <concat destfile="${var}${jsminExtension}${licenseExtension}">
+    <concat destfile="${var}${rhinoExtension}${licenseExtension}">
       <header filtering="no" file="${build.dir}/preamble-zpl.txt"/>
       <path>
-	<fileset file="${var}${jsminExtension}"/>
+	<fileset file="${var}${rhinoExtension}"/>
       </path>
     </concat>
     <echo>Prepend ZPL: ${var}</echo>
   </target>
 
   <target name="prepend-ASL">
-    <concat destfile="${var}${jsminExtension}${licenseExtension}">
+    <concat destfile="${var}${rhinoExtension}${licenseExtension}">
       <header filtering="no" file="${build.dir}/preamble-asl.txt"/>
       <path>
-	<fileset file="${var}${jsminExtension}"/>
+	<fileset file="${var}${rhinoExtension}"/>
       </path>
     </concat>
     <echo>Prepend ASL: ${var}</echo>
@@ -304,20 +300,20 @@
         <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js">
           <filelist dir="${build.dir}/WebRoot/ALE/spreadsheet" files="../../public/Ajax.jsp,index_js.jsp"/>
         </jammer>
-        <antcall target="jsmin">
+        <antcall target="rhino-compress">
             <param name="var" value="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js"/>
         </antcall>
-        <gzip src="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js${jsminExtension}" zipfile="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js${gzipExtension}"/>
-        <delete file="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js${jsminExtension}"/>
+        <gzip src="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js${rhinoExtension}" zipfile="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js${gzipExtension}"/>
+        <delete file="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js${rhinoExtension}"/>
 
         <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js">
           <filelist dir="${build.dir}/WebRoot/ALE/spreadsheet" files="../../public/Ajax.jsp,embed_js.jsp"/>
         </jammer>
-        <antcall target="jsmin">
+        <antcall target="rhino-compress">
             <param name="var" value="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js"/>
         </antcall>
-        <gzip src="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js${jsminExtension}" zipfile="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js${gzipExtension}"/>
-        <delete file="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js${jsminExtension}"/>
+        <gzip src="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js${rhinoExtension}" zipfile="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js${gzipExtension}"/>
+        <delete file="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js${rhinoExtension}"/>
     </target>
 
     <target name="compress-js-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, jam-files,generate-preambles">
@@ -325,7 +321,7 @@
 		<copy todir="${build.dir}/WebRoot">
 			<fileset refid="js-includes" />
 		</copy>
-		<foreach target="jsmin" param="var">
+		<foreach target="rhino-compress" param="var">
 			<path>
 				<fileset refid="js-includes" />
 			</path>

@@ -72,7 +72,7 @@ function(page) {
 		var content = ZmNotebookPageView._generateContent(page, this._appCtxt);
 
 		//DBG.showTiming(true);
-		//DBG.timePt("-- ZmNotebookPageView#set --")
+		//DBG.timePt("-- ZmNotebookPageView#set --");
 		/*** remove all styles ***
 		var re = /<style(.|\n)*?>(.|\n)*?<\/style(.|\n)*?>/gi;
 		content = content.replace(re);

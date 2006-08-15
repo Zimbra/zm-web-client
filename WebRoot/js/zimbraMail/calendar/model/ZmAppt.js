@@ -1827,8 +1827,8 @@ function(soapDoc, m, cancel) {
 		var hcontent = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(tcontent));
 		var htmlPart = soapDoc.set("mp", null, mp);
 		htmlPart.setAttribute("ct", ZmMimeTable.TEXT_HTML);
-		var final = "<html><body>" + AjxBuffer.concat(hprefix, hcontent) + "</body></html>";
-		soapDoc.set("content", final, htmlPart);
+		var result = "<html><body>" + AjxBuffer.concat(hprefix, hcontent) + "</body></html>";
+		soapDoc.set("content", result, htmlPart);
 	}
 };
 

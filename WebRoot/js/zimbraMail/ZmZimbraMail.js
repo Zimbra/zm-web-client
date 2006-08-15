@@ -396,7 +396,7 @@ function(params) {
 	/* Appview manager is the place for these. the issue is that the skins will need to provide the
 	 * tabgroup index location of each of the top level views
 	 */
-	DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP")
+	DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
 	var rootTg = this._appCtxt.getRootTabGroup();
 	rootTg.addMember(this._appCtxt.getSearchController().getTabGroup());
 	// Add dummy app view tab group. This will get replaced right away when the

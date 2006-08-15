@@ -426,7 +426,7 @@ function(force) {
 	
 	DBG.println(AjxDebug.DBG2, "app view mgr: current view is now " + this._currentView);
 	if (!this._showView(this._currentView, this._popCallback, null, force, true)) {
-		AjxDebug.println(AjxDebug.DBG1, "ERROR: pop with no view to show");
+		DBG.println(AjxDebug.DBG1, "ERROR: pop with no view to show");
 		return;
 	}
 	this._removeFromHidden(this._currentView);
@@ -728,8 +728,7 @@ function(components) {
 		var cont = this._containers[cid];
 		if (cont) {
 			var contBds = Dwt.getBounds(cont);
-			DBG.println("Container bounds for " + cid + ": " + contBds.x + ", " + contBds.y + 
-						" | " + contBds.width + " x " + contBds.height);
+			DBG.println("Container bounds for " + cid + ": " + contBds.x + ", " + contBds.y + " | " + contBds.width + " x " + contBds.height);
 		}
 	}
 }

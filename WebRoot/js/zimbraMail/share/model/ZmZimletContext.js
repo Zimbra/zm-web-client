@@ -224,8 +224,8 @@ ZmZimletContext.prototype.getOrganizer = function() {
 ZmZimletContext.prototype.getUrl = function() { return this._url; };
 
 ZmZimletContext.prototype.getVal = function(key) {
-	var zimlet = this.json.zimlet;
-	return eval("zimlet." + key);
+	var zim = this.json.zimlet;
+	return eval("zim." + key);
 };
 
 ZmZimletContext.prototype.callHandler = function(funcname, args) {
