@@ -656,7 +656,6 @@ function(contact, now, isDndIcon) {
 ZmContactSimpleView.prototype._createContactHtmlForMixed =
 function(contact, now, isDndIcon) {
 	var	div = this._getDiv(contact, isDndIcon);
-	div.className = div._styleClass;
 
 	var htmlArr = new Array();
 	var idx = 0;

@@ -139,7 +139,6 @@ function(msg, now, isDndIcon, isMixedView) {
 	// bug fix #3595 - dont hilite if search was in:<folder name>
 	var isMatched = msg.isInHitList() && this._mode == ZmController.CONV_VIEW && this._appCtxt.getCurrentSearch().folderId == null;
 	var	div = this._getDiv(msg, isDndIcon, isMatched);
-	div.className = div._styleClass;
 
 	var htmlArr = new Array();
 	var idx = 0;
