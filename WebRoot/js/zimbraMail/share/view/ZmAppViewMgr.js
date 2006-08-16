@@ -720,8 +720,7 @@ function(components) {
 		var cont = this._containers[cid];
 		if (cont) {
 			var contBds = Dwt.getBounds(cont);
-			DBG.println("Container bounds for " + cid + ": " + contBds.x + ", " + contBds.y + 
-						" | " + contBds.width + " x " + contBds.height);
+			DBG.println("Container bounds for " + cid + ": " + contBds.x + ", " + contBds.y + " | " + contBds.width + " x " + contBds.height);
 		}
 	}
 }
