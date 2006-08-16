@@ -449,6 +449,18 @@ function() {
 		dlg.setMessage(ZmMsg.licenseExpired, DwtMessageDialog.WARNING_STYLE);
 		dlg.popup();
 	}
+
+	// check for jump to compose page
+	if (location.search && (location.search.match(/\bview=compose\b/))) {
+		var cc = this.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
+		var match = location.search.match(/\bsubject=([^&]+)/);
+		var subject = match ? decodeURIComponent(match[1]) : null;
+		match = location.search.match(/\bto=([^&]+)/);
+		var to = match ? decodeURIComponent(match[1]) : null;
+		match = location.search.match(/\bbody=([^&]+)/);
+		var body = match ? decodeURIComponent(match[1]) : null;
+		cc.doAction(ZmOperation.NEW_MESSAGE, false, null, to, subject, body);
+	}
 	// Setup an async load of the views we precreate
 	var ta = new AjxTimedAction(this, ZmZimbraMail.prototype._preloadViews);
 	AjxTimedAction.scheduleAction(ta, 500);
