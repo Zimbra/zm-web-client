@@ -134,8 +134,10 @@ function(callback, result) {
 	var response = result.getResponse();
 	var resp = response.GetConvResponse.c[0];
 	var msgIds = new Array();
-	for (var i = 0; i < resp.m.length; i++)
+	var len = resp.m.length;
+	for (var i = 0; i < len; i++) {
 		msgIds.push(resp.m[i].id);
+	}
 	this.msgIds = msgIds;
 	
 	if (callback) callback.run(result);
@@ -189,7 +191,7 @@ function(obj) {
 
 ZmConv.prototype._checkFlags = 
 function(flags) {
-	var msgs = this.msgs.getArray();
+	var msgs = t
 	var convOn = new Object();
 	var msgsOn = new Object();
 	for (var i = 0; i < flags.length; i++) {
@@ -366,7 +368,8 @@ ZmConv.prototype._loadMsgs =
 function(convNode) {
 	// for all messages in this conversation,
 	var childNodes = convNode.childNodes;
-	for (var i = 0; i < childNodes.length; i++) {
+	var len = childNodes.length;
+	for (var i = 0; i < len; i++) {
 		if (childNodes[i].nodeName == "m")
 			this.msgs.addFromDom(childNodes[i], {addressHash: this._participantHash});
 	}	
