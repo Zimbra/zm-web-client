@@ -362,7 +362,8 @@ ZmConvListView._handleResponseGetPrintHtml =
 function(conv, preferHtml, callback, result) {
 	var resp = result.getResponse().GetConvResponse.c[0];
 	var msgIds = new Array();
-	for (var i = 0; i < resp.m.length; i++)
+	var len = resp.m.length;
+	for (var i = 0; i < len; i++)
 		msgIds.push(resp.m[i].id);
 	conv.msgIds = msgIds;
 	ZmConvListView._printMessages(conv, preferHtml, callback);
