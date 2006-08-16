@@ -199,6 +199,7 @@ function(item, isDndIcon, isMatched) {
 	var	div = document.createElement("div");
 
 	var base = "Row";
+	div.className = base;
 	div._kbFocusClass = "Row-Focus";
 	div._styleClass = base;
 	div._selectedStyleClass = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
@@ -233,8 +234,8 @@ function(htmlArr, idx, isDndIcon) {
 // A table row for one item
 ZmListView.prototype._getRow =
 function(htmlArr, idx, item, className) {
-	htmlArr[idx++] = "<tr id='" + this._getFieldId(item, ZmItem.F_ITEM_ROW) + "'";
-	htmlArr[idx++] = className ? " class='" + className + "'>" : ">";
+	htmlArr[idx++] = ["<tr id='", this._getFieldId(item, ZmItem.F_ITEM_ROW), "'"].join("");
+	htmlArr[idx++] = className ? ([" class='", className, "'>"].join("")) : ">";
 	return idx;
 }
 
@@ -249,29 +250,42 @@ function(htmlArr, idx, item, field, colIdx, now) {
 	var fieldId = this._getFieldId(item, field);
 	var width = this._getFieldWidth(colIdx);
 	if (field == ZmItem.F_ITEM_TYPE) {
-		htmlArr[idx++] = "<td width=" + width + " class='Icon'>";
+		htmlArr[idx++] = "<td width=";
+		htmlArr[idx++] = width;
+		htmlArr[idx++] = " class='Icon'>";
 		htmlArr[idx++] = AjxImg.getImageHtml(ZmItem.ICON[item.type], null, ["id='", fieldId, "'"].join(""));
 		htmlArr[idx++] = "</td>";					
 	} else if (field == ZmItem.F_FLAG) {
 		var flagImageInfo = item.isFlagged ? "FlagRed" : "Blank_16";
-		htmlArr[idx++] = "<td width=" + width + " class='Flag'>";
+		htmlArr[idx++] = "<td width=";
+		htmlArr[idx++] = width;
+		htmlArr[idx++] = " class='Flag'>";
 		htmlArr[idx++] = AjxImg.getImageHtml(flagImageInfo, null, ["id='", fieldId, "'"].join(""));
 		htmlArr[idx++] = "</td>";
 	} else if (field == ZmItem.F_TAG) {
 		if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 			return idx;
 		var cellId = this._getFieldId(item, ZmItem.F_TAG_CELL);
-		htmlArr[idx++] = ["<td width=", width, " class='Tag' id='", cellId, "'>"].join("");
+		htmlArr[idx++] = "<td width=";
+		htmlArr[idx++] = width;
+		htmlArr[idx++] = " class='Tag' id='";
+		htmlArr[idx++] = cellId;
+		htmlArr[idx++] = "'>";
 		htmlArr[idx++] = this._getTagImgHtml(item, fieldId);
 		htmlArr[idx++] = "</td>";
 	} else if (field == ZmItem.F_ATTACHMENT) {
 		var attImageInfo = item.hasAttach ? "Attachment" : "Blank_16";
-		htmlArr[idx++] = "<td width=" + width + " class='Attach'>";
+		htmlArr[idx++] = "<td width=";
+		htmlArr[idx++] = width;
+		htmlArr[idx++] = " class='Attach'>";
 		htmlArr[idx++] = AjxImg.getImageHtml(attImageInfo, null, ["id='", fieldId, "'"].join(""));
 		htmlArr[idx++] = "</td>";					
 	} else if (field == ZmItem.F_DATE) {
-		htmlArr[idx++] = "<td id='" + fieldId + "'";
-		htmlArr[idx++] = " width=" + width + ">";
+		htmlArr[idx++] = "<td id='";
+		htmlArr[idx++] = fieldId;
+		htmlArr[idx++] = "' width=";
+		htmlArr[idx++] = width;
+		htmlArr[idx++] = ">";
 		htmlArr[idx++] = AjxDateUtil.computeDateStr(now, item.date);
 		if (AjxEnv.isNav)
 			htmlArr[idx++] = ZmListView._fillerString;
@@ -601,12 +615,12 @@ function(columnItem, bSortAsc) {
 
 ZmListView.prototype._getViewPrefix = 
 function() { 
-	return "V" + this.view + "_";
+	return ["V", this.view, "_"].join("");
 }
 
 ZmListView.prototype._getFieldId =
 function(item, field) {
-	return this._getViewPrefix() + ZmListView.FIELD_PREFIX[field] + item.id;
+	return [this._getViewPrefix(), ZmListView.FIELD_PREFIX[field], item.id].join("");
 }
 
 ZmListView.prototype._getDnDIcon =

@@ -97,7 +97,6 @@ ZmFileListView.prototype._createItemHtml =
 function(item, now, isDndIcon) {
 	var isMatched = false; // ???
 	var	div = this._getDiv(item, isDndIcon, isMatched);
-	div.className = div._styleClass;
 
 	var htmlArr = new Array();
 	var idx = 0;
