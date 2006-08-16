@@ -718,9 +718,9 @@ function(appt) {
 	div.style.position = 'absolute';
 	div.style.cursor = 'default';
 	Dwt.setSize(div, 10, 10);
-	div._styleClass = "appt";	
-	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
-	div.className = div._styleClass;
+	div[DwtListView._STYLE_CLASS] = "appt";	
+	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
+	div.className = div[DwtListView._STYLE_CLASS];
 
 	ZmCalColView._setApptOpacity(appt, div);
 

@@ -140,7 +140,7 @@ function(msg, now, isDndIcon, isMixedView) {
 	var isMatched = msg.isInHitList() && this._mode == ZmController.CONV_VIEW && this._appCtxt.getCurrentSearch().folderId == null;
 	var	div = this._getDiv(msg, isDndIcon, isMatched);
 
-	var htmlArr = new Array();
+	var htmlArr = [];
 	var idx = 0;
 	
 	// Table

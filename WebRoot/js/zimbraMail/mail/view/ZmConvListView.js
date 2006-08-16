@@ -108,7 +108,7 @@ function(conv, now, isDndIcon, isMixedView, myDiv) {
 
 	var	div = myDiv || this._getDiv(conv, isDndIcon);
 
-	var htmlArr = new Array();
+	var htmlArr = [];
 	var idx = 0;
 
 	// Table

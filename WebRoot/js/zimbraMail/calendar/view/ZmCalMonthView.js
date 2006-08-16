@@ -380,9 +380,9 @@ function(appt, apptEnd) {
 
 	div.style.position = 'absolute';
 	Dwt.setSize(div, 10, 10);
-	div._styleClass = "appt";	
-	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
-	div.className = div._styleClass;
+	div[DwtListView._STYLE_CLASS] = "appt";	
+	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
+	div.className = div[DwtListView._STYLE_CLASS];
 
 	ZmCalColView._setApptOpacity(appt, div);
 
@@ -402,9 +402,9 @@ ZmCalMonthView.prototype._createAllDayFillerHtml =
 function(day) {
 	var dayTable = document.getElementById( day.dayId);
 	var	result = dayTable.insertRow(-1);
-	result._styleClass = "allday";
-	result._selectedStyleClass = result._styleClass + '-' + DwtCssStyle.SELECTED;
-	result.className = result._styleClass;	
+	result[DwtListView._STYLE_CLASS] = "allday";
+	result[DwtListView._SELECTED_STYLE_CLASS] = result[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
+	result.className = result[DwtListView._STYLE_CLASS];	
 	var cell = result.insertCell(-1);
 	//cell.innerHTML = "HELLO";
 	cell.innerHTML = "<table class=allday><tr><td><div class=allday_item_filler></div></td></tr></table>";	
@@ -416,10 +416,10 @@ function(day) {
 ZmCalMonthView.prototype._createItemHtml =	
 function(appt) {
 	var result = this._getDivForAppt(appt).insertRow(-1);
-	result._styleClass = "calendar_month_day_item_row";
-	result._selectedStyleClass = result._styleClass + '-' + DwtCssStyle.SELECTED;
+	result[DwtListView._STYLE_CLASS] = "calendar_month_day_item_row";
+	result[DwtListView._SELECTED_STYLE_CLASS] = result[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
 
-	result.className = result._styleClass;	
+	result.className = result[DwtListView._STYLE_CLASS];	
 		
 	this.associateItemWithElement(appt, result, ZmCalBaseView.TYPE_APPT);
 	

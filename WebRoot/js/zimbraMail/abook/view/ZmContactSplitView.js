@@ -604,8 +604,8 @@ function(contact, now, isDndIcon) {
 		div.style.width = "175px";
 		div.style.padding = "4px";
 	}
-	div.className = div._styleClass = div._styleClass + " SimpleContact";
-	div._selectedStyleClass += " SimpleContact";
+	div.className = div[DwtListView._STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + " SimpleContact";
+	div[DwtListView._SELECTED_STYLE_CLASS] += " SimpleContact";
 	// XXX: commented out b/c slows down loading contact (DOM tree is too deep!)
 	//div._hoverStyleClass = "SimpleContactHover";
 	div.id = this._getItemId(contact);
@@ -657,7 +657,7 @@ ZmContactSimpleView.prototype._createContactHtmlForMixed =
 function(contact, now, isDndIcon) {
 	var	div = this._getDiv(contact, isDndIcon);
 
-	var htmlArr = new Array();
+	var htmlArr = [];
 	var idx = 0;
 
 	// Table

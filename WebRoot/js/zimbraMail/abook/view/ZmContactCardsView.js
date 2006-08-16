@@ -110,17 +110,23 @@ ZmContactCardsView.prototype._createItemHtml =
 function(contact, now, isDndIcon, getHtml) {
 
 	var style = AjxEnv.isLinux ? " style='line-height:13px'" : "";
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 	var div = null;
 
 	if (getHtml) {
 		html[idx++] = "<div name='";
 		html[idx++] = ZmContactCardsView.CARD_NAME;
-		html[idx++] = "' class='ZmContactCard' _styleClass='ZmContactCard' _selectedStyleClass='ZmContactCard-";
+		html[idx++] = "' class='ZmContactCard' ";
+		html[idx++] = DwtListView._STYLE_CLASS;
+		html[idx++] = "='ZmContactCard' ";
+		html[idx++] = DwtListView._SELECTED_STYLE_CLASS;
+		html[idx++] = "='ZmContactCard-";
 		html[idx++] = DwtCssStyle.SELECTED;
 		// manually associate item with element :(
-		html[idx++] = "' _kbFocusClass='ZmContactCard-focused' id='";
+		html[idx++] = "' ";
+		html[idx++] = DwtListView._KBFOCUS_CLASS;
+		html[idx++] = "='ZmContactCard-focused' id='";
 		html[idx++] = this._getItemId(contact);
 		html[idx++] = "' _itemIndex='";
 		html[idx++] = AjxCore.assignId(contact);
@@ -132,13 +138,16 @@ function(contact, now, isDndIcon, getHtml) {
 	} else {
 		// create div for DnD
 		div = document.createElement("div");
-		div._styleClass = "ZmContactCard-dnd";
+		div[DwtListView._STYLE_CLASS] = "ZmContactCard-dnd";
 		// bug fix #3654 - yuck
-		if (AjxEnv.isMozilla) div.style.overflow = "visible";
+		if (AjxEnv.isMozilla) {
+			div.style.overflow = "visible";
+		}
 		div.style.position = "absolute";
-		div.className = div._styleClass;
-		if (isDndIcon)
+		div.className = div[DwtListView._STYLE_CLASS];
+		if (isDndIcon) {
 			div.style.width = this._cardWidth;
+		}
 		this.associateItemWithElement(contact, div, DwtListView.TYPE_LIST_ITEM);
 	}
 
@@ -180,10 +189,11 @@ function(contact, now, isDndIcon, getHtml) {
 	html[idx++] = style;
 	html[idx++] = ">";
 	// add first column of work info here
-	if (value = contact.getWorkAddrField())
+	if (value = contact.getWorkAddrField()) {
 		html[idx++] = this._getField("W", value, isDndIcon);
-	else if (value = contact.getHomeAddrField())
+	} else if (value = contact.getHomeAddrField()) {
 		html[idx++] = this._getField("H", value, isDndIcon);
+	}
 	html[idx++] = "</tr>";
 
 	if (value = contact.getAttr("email")) {

@@ -98,7 +98,7 @@ function(item, now, isDndIcon) {
 	var isMatched = false; // ???
 	var	div = this._getDiv(item, isDndIcon, isMatched);
 
-	var htmlArr = new Array();
+	var htmlArr = [];
 	var idx = 0;
 
 	// Table

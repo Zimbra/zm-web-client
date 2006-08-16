@@ -643,9 +643,9 @@ function(sel) {
 		var div = document.createElement("div");
 		var match = this._matches.get(i);
 		div._pos = i;
-		div._styleClass = "Row";
-		div._selectedStyleClass = div._styleClass + "-" + DwtCssStyle.SELECTED;
-		div.className = div._styleClass;
+		div[DwtListView._STYLE_CLASS] = "Row";
+		div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + "-" + DwtCssStyle.SELECTED;
+		div.className = div[DwtListView._STYLE_CLASS];
 		div.innerHTML = match.text;
 		thisHtmlElement.appendChild(div);
 	}
@@ -687,10 +687,10 @@ function(sel) {
 	for (var i = 0; i < len; i++) {
 		var div = children[i];
 		var curStyle = div.className;
-		if (i == sel && curStyle != div._selectedStyleClass) {
-			div.className = div._selectedStyleClass;
-		} else if (curStyle != div._styleClass) {
-			div.className = div._styleClass;
+		if (i == sel && curStyle != div[DwtListView._SELECTED_STYLE_CLASS]) {
+			div.className = div[DwtListView._SELECTED_STYLE_CLASS];
+		} else if (curStyle != div[DwtListView._STYLE_CLASS]) {
+			div.className = div[DwtListView._STYLE_CLASS];
 		}
 	}
 	this._selected = sel;

@@ -366,9 +366,9 @@ ZmContactChooserSourceListView.prototype._createItemHtml =
 function(item) {
 
 	var div = document.createElement("div");
-	div._styleClass = "Row";
-	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
-	div.className = div._styleClass;
+	div[DwtListView._STYLE_CLASS] = "Row";
+	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
+	div.className = div[DwtListView._STYLE_CLASS];
 			
 	var html = [];
 	var idx = 0;
@@ -441,9 +441,9 @@ function(item) {
 	item.setType(item._buttonId);
 
 	var div = document.createElement("div");
-	div._styleClass = "Row";
-	div._selectedStyleClass = div._styleClass + '-' + DwtCssStyle.SELECTED;
-	div.className = div._styleClass;
+	div[DwtListView._STYLE_CLASS] = "Row";
+	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
+	div.className = div[DwtListView._STYLE_CLASS];
 
 	var html = [];
 	var idx = 0;
