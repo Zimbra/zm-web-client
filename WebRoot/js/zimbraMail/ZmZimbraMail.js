@@ -63,8 +63,8 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	appCtxt.setClientCmdHdlr(new ZmClientCmdHandler(appCtxt));
 
 	this._shell = appCtxt.getShell();
-	
-	// Register our keymap and global key action handler with the shell's keyboard manager 
+
+	// Register our keymap and global key action handler with the shell's keyboard manager
 	var kbMgr = this._shell.getKeyboardMgr();
 	kbMgr.registerKeyMap(new ZmKeyMap());
 	kbMgr.pushDefaultHandler(this);
@@ -78,7 +78,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._apps = {};
 	this._activeApp = null;
     this._highestNotifySeen = 0;
-	
+
 	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.logOff);
 	this._sessionTimerId = -1;
 	this._shell.setBusyDialogText(ZmMsg.askCancel);
@@ -102,7 +102,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._stdTimeout = this._appCtxt.get(ZmSetting.TIMEOUT);
 
 	this._keyMap = new ZmKeyMap();
-	
+
 	this.startup({app: app});
 };
 
@@ -413,8 +413,6 @@ function(params) {
 		this.getApp(ZmZimbraMail.CALENDAR_APP).showMiniCalendar(true);
 	}
 
-	this._preloadViews();
-
 	// reset the user's time zone (save to prefs) if it has changed
 	var respCallback = new AjxCallback(this, this._handleResponseStartup1, [params]);
 	ZmTimezones.initializeServerTimezone(respCallback);
@@ -444,13 +442,16 @@ function() {
 	this.setSessionTimer(true);
 	this._killSplash();
 	this._appViewMgr.addComponents(this._components, true);
-	
+
 	if (this._appCtxt.get(ZmSetting.LICENSE_STATUS) != ZmSetting.LICENSE_GOOD) {
 		var dlg = this._appCtxt.getMsgDialog();
 		dlg.reset();
 		dlg.setMessage(ZmMsg.licenseExpired, DwtMessageDialog.WARNING_STYLE);
 		dlg.popup();
 	}
+	// Setup an async load of the views we precreate
+	var ta = new AjxTimedAction(this, ZmZimbraMail.prototype._preloadViews);
+	AjxTimedAction.scheduleAction(ta, 500);
 };
 
 /**
