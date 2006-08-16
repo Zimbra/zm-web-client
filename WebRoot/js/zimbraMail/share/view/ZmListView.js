@@ -200,23 +200,25 @@ function(item, isDndIcon, isMatched) {
 
 	var base = "Row";
 	div.className = base;
-	div._kbFocusClass = "Row-Focus";
-	div._styleClass = base;
-	div._selectedStyleClass = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
+	div[DwtListView._KBFOCUS_CLASS] = "Row-Focus";
+	div[DwtListView._STYLE_CLASS] = base;
+	div[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
 	if (isDndIcon && isMatched) {
 		var one = [base, DwtCssStyle.MATCHED, DwtCssStyle.DND].join("-");
 		var two = [base, DwtCssStyle.DND].join("-");
-		div._styleClass = [one, two].join(" ");							// Row-matched-dnd Row-dnd
+		div[DwtListView._STYLE_CLASS] = [one, two].join(" ");							// Row-matched-dnd Row-dnd
 	} else if (isMatched) {
-		div._styleClass = [base, DwtCssStyle.MATCHED].join("-");		// Row-matched
+		div[DwtListView._STYLE_CLASS] = [base, DwtCssStyle.MATCHED].join("-");		// Row-matched
 	} else if (isDndIcon) {
-		div._styleClass = [base, DwtCssStyle.DND].join("-");			// Row-dnd
+		div[DwtListView._STYLE_CLASS] = [base, DwtCssStyle.DND].join("-");			// Row-dnd
 		// bug fix #3654 - yuck
-		if (AjxEnv.isMozilla)
+		if (AjxEnv.isMozilla) {
 			div.style.overflow = "visible";
+		}
 	}
-	if (isDndIcon)
+	if (isDndIcon) {
 		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
+	}
 
 	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
 

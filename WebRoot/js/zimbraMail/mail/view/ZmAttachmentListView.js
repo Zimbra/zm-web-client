@@ -47,9 +47,9 @@ function(attachment, now) {
 	var msg = attachment.getMessage();
 	var id = attachment.getMessageId();
 	var div = document.createElement("div");
-	div._styleClass = "Row";
-	div._selectedStyleClass = div._styleClass + "-" + DwtCssStyle.SELECTED;
-	div.className = div._styleClass;
+	div[DwtListView._STYLE_CLASS] = "Row";
+	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + "-" + DwtCssStyle.SELECTED;
+	div.className = div[DwtListView._STYLE_CLASS];
 	this.associateItemWithElement(attachment, div, DwtList.TYPE_LIST_ITEM);
 	htmlArr[idx++] = "<table width='100%' cellspacing='0' cellpadding='1'>";
 	htmlArr[idx++] = "<col style='width: 21px;'/>";		// icon

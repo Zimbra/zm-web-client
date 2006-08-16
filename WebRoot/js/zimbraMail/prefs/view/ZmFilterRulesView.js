@@ -118,9 +118,9 @@ ZmFilterListView.prototype._createItemHtml =
 function(item) {
 	var	div = document.createElement("div");
 	var base = "Row";
-	div._styleClass = base;
-	div._selectedStyleClass = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
-	div.className = div._styleClass;
+	div[DwtListView._STYLE_CLASS] = base;
+	div[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
+	div.className = div[DwtListView._STYLE_CLASS];
 	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
 
 	var html = [];

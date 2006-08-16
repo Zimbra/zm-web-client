@@ -154,8 +154,9 @@ ZmCalBaseView.prototype.deselectAll =
 function() {
 	var a = this._selectedItems.getArray();
 	var sz = this._selectedItems.size();
-	for (var i = 0; i < sz; i++)
-		a[i].className = a[i]._styleClass;
+	for (var i = 0; i < sz; i++) {
+		a[i].className = a[i][DwtListView._STYLE_CLASS];
+	}
 	this._selectedItems.removeAll();
 }
 
@@ -305,18 +306,19 @@ function(clickedEl, ev) {
 
 	if (ev.shiftKey && bContained) {
 		this._selectedItems.remove(clickedEl);
-		clickedEl.className = clickedEl._styleClass;
+		clickedEl.className = clickedEl[DwtListView._STYLE_CLASS];
 		this._selEv.detail = DwtListView.ITEM_DESELECTED;
 		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
 	} else if (!bContained) {
 		// clear out old left click selection(s)
-		for (i = 0; i < numSelectedItems; i++)
-			a[i].className = a[i]._styleClass;
+		for (i = 0; i < numSelectedItems; i++) {
+			a[i].className = a[i][DwtListView._STYLE_CLASS];
+		}
 		this._selectedItems.removeAll();
 			
 		// save new left click selection
 		this._selectedItems.add(clickedEl);
-		clickedEl.className = clickedEl._selectedStyleClass;
+		clickedEl.className = clickedEl[DwtListView._SELECTED_STYLE_CLASS];
 		this._selEv.detail = DwtListView.ITEM_SELECTED;
 		this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
 	}
@@ -349,11 +351,13 @@ function(item, skipNotify) {
 		var i;
 		var a = this._selectedItems.getArray();
 		var sz = this._selectedItems.size();
-		for (i = 0; i < sz; i++)
-			a[i].className = a[i]._styleClass;
+		for (i = 0; i < sz; i++) {
+			a[i].className = a[i][DwtListView._STYLE_CLASS];
+		}
 		this._selectedItems.removeAll();
 		this._selectedItems.add(el);
-		el.className = this.getEnabled() ? el._selectedStyleClass : el._selectedDisabledStyleClass;
+		el.className = this.getEnabled() ? el[DwtListView._SELECTED_STYLE_CLASS] :
+										   el[DwtListView._SELECTED_DIS_STYLE_CLASS];
 		if (!skipNotify && this._evtMgr.isListenerRegistered(DwtEvent.SELECTION)) {
 			var selEv = new DwtSelectionEvent(true);
 			selEv.button = DwtMouseEvent.LEFT;
