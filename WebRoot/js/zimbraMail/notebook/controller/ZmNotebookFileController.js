@@ -169,6 +169,7 @@ function(view) {
 ZmNotebookFileController.prototype._initializeActionMenu =
 function() {
 	ZmListController.prototype._initializeActionMenu.call(this);
+
 	// based on current search, show/hide undelete menu option
 	var showUndelete = false;
 	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
@@ -177,7 +178,8 @@ function() {
 		var folder = tree ? tree.getById(folderId) : null;
 		showUndelete = folder && folder.isInTrash();
 	}
-	var mi = this._actionMenu.getMenuItem(ZmOperation.UNDELETE);
+	var actionMenu = this._actionMenu;
+	var mi = actionMenu.getMenuItem(ZmOperation.UNDELETE);
 	mi.setVisible(showUndelete);
 };
 
@@ -296,10 +298,11 @@ ZmNotebookFileController.prototype._doSelectDblClicked = function(item, fromSear
 ZmNotebookFileController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
-	this._actionMenu.popup(0, ev.docX, ev.docY);
+	var actionMenu = this.getActionMenu();
+	actionMenu.popup(0, ev.docX, ev.docY);
 	if (ev.ersatz) {
 		// menu popped up via keyboard nav
-		this._actionMenu.setSelectedItem(0);
+		actionMenu.setSelectedItem(0);
 	}
 };
 

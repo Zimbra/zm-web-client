@@ -151,6 +151,7 @@ function(view) {
 ZmMixedController.prototype._initializeActionMenu = 
 function() {
 	ZmListController.prototype._initializeActionMenu.call(this);
+
 	// based on current search, show/hide undelete menu option
 	var showUndelete = false;
 	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
@@ -159,7 +160,8 @@ function() {
 		var folder = folderTree ? folderTree.getById(folderId) : null;
 		showUndelete = folder && folder.isInTrash();
 	}
-	var mi = this._actionMenu.getMenuItem(ZmOperation.UNDELETE);
+	var actionMenu = this._actionMenu;
+	var mi = actionMenu.getMenuItem(ZmOperation.UNDELETE);
 	mi.setVisible(showUndelete);
 };
 
@@ -278,10 +280,11 @@ function(ev) {
 			numTypes++;
 		}
 	}
-	
-	var miUndelete = this._actionMenu.getMenuItem(ZmOperation.UNDELETE);
-	var miMoveTo = this._actionMenu.getMenuItem(ZmOperation.MOVE);
-	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
+
+	var actionMenu = this.getActionMenu();
+	var miUndelete = actionMenu.getMenuItem(ZmOperation.UNDELETE);
+	var miMoveTo = actionMenu.getMenuItem(ZmOperation.MOVE);
+	var folderId = activeSearch ? this._activeSearch.search.folderId : null;
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 	var folder = folderTree && folderId ? folderTree.getById(folderId) : null;
 
@@ -296,18 +299,18 @@ function(ev) {
 		miMoveTo.setVisible((showMoveTo || showBoth) && !isDraft);
 	
 		// if >1 item is selected and they're not all the same type, disable both menu items
-		this._actionMenu.enable([ZmOperation.UNDELETE, ZmOperation.MOVE], numTypes == 1);
+		actionMenu.enable([ZmOperation.UNDELETE, ZmOperation.MOVE], numTypes == 1);
 	} else {
  		miUndelete.setVisible(false);	// never show Undelete option when not in Trash
  		miMoveTo.setVisible(true);		// always show Move To option
  		// show MoveTo only if one type has been selected and its not contacts
 		var enableMoveTo = numTypes == 1 && selItems[0].type != ZmItem.CONTACT;
-		this._actionMenu.enable(ZmOperation.MOVE, enableMoveTo);
+		actionMenu.enable(ZmOperation.MOVE, enableMoveTo);
 	}
-	this._actionMenu.popup(0, ev.docX, ev.docY);
+	actionMenu.popup(0, ev.docX, ev.docY);
 	if (ev.ersatz) {
 		// menu popped up via keyboard nav
-		this._actionMenu.setSelectedItem(0);
+		actionMenu.setSelectedItem(0);
 	}
 };
 

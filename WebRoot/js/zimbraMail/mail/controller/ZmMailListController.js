@@ -190,6 +190,29 @@ function(actionCode) {
 			this.switchView(ZmController.READING_PANE_VIEW, true);
 			break;
 
+		case ZmKeyMap.SHOW_FRAGMENT:
+			if (num == 1) {
+				var view = this._listView[this._currentView];
+				var item = view.getSelection()[0];
+				var id = this._listView[this._currentView]._getFieldId(item, ZmItem.F_SUBJECT);
+				var subjectField = document.getElementById(id);
+				if (subjectField) {
+					var loc = Dwt.getLocation(subjectField);
+					var frag;
+					if (item instanceof ZmMailMsg && item.isInvite() && item.needsRsvp()) {
+						frag = item.getInvite().getToolTip();
+					} else {
+						frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
+						view.setToolTipContent(AjxStringUtil.htmlEncode(frag));
+					}
+					var tooltip = this._shell.getToolTip()
+					tooltip.popdown();
+					tooltip.setContent(AjxStringUtil.htmlEncode(frag));
+					tooltip.popup(loc.x, loc.y);
+				}
+			}
+			break;
+
 		default:
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
 			break;
@@ -272,12 +295,12 @@ function(view, arrowStyle) {
 
 ZmMailListController.prototype._initializeActionMenu = 
 function() {
-	if (this._actionMenu) return;
-	
 	ZmListController.prototype._initializeActionMenu.call(this);
-	this._propagateMenuListeners(this._actionMenu, ZmOperation.REPLY_MENU);
-	this._propagateMenuListeners(this._actionMenu, ZmOperation.FORWARD_MENU);
-	this._setReplyText(this._actionMenu);
+
+	var actionMenu = this._actionMenu;
+	this._propagateMenuListeners(actionMenu, ZmOperation.REPLY_MENU);
+	this._propagateMenuListeners(actionMenu, ZmOperation.FORWARD_MENU);
+	this._setReplyText(actionMenu);
 };
 
 // Groups of mail-related operations
@@ -353,11 +376,12 @@ function(ev) {
 		this._enableFlags(this._participantActionMenu, bHasUnread, bHasRead);
 		this._participantActionMenu.popup(0, ev.docX, ev.docY);
 	} else {
-		this._enableFlags(this._actionMenu, bHasUnread, bHasRead);
-		this._actionMenu.popup(0, ev.docX, ev.docY);
+		var actionMenu = this.getActionMenu();
+		this._enableFlags(actionMenu, bHasUnread, bHasRead);
+		actionMenu.popup(0, ev.docX, ev.docY);
 		if (ev.ersatz) {
 			// menu popped up via keyboard nav
-			this._actionMenu.setSelectedItem(0);
+			actionMenu.setSelectedItem(0);
 		}
 	}
 };
@@ -411,8 +435,7 @@ function(ev, action, extraBodyText, instanceDate) {
 	var prefersHtml = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML;
 	var sameFormat = this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
 	var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg.isLoaded() && sameFormat)))));
-		
-	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || (ev && ev.shiftKey);
+	var inNewWindow = this._inNewWindow(ev);
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText]);
 	msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
 };

@@ -293,17 +293,20 @@ ZmListController.prototype._getItemType			= function() {};
 ZmListController.prototype._setup =
 function(view) {
 	this._initialize(view);
+	//DBG.timePt("this._initialize");
 	this._resetOperations(this._toolbar[view], 0);
-	this._resetOperations(this._actionMenu, 0);
+	//DBG.timePt("this._resetOperation(toolbar)");
 };
 
 // Creates the basic elements: toolbar, list view, and action menu
 ZmListController.prototype._initialize =
 function(view) {
 	this._initializeToolBar(view);
+	//DBG.timePt("_initializeToolBar");
 	this._initializeListView(view);
-	this._initializeActionMenu();
+	//DBG.timePt("_initializeListView");
 	this._initializeTabGroup(view);
+	//DBG.timePt("_initializeTabGroup");
 };
 
 // Below are functions that return various groups of operations, for cafeteria-style
@@ -403,8 +406,6 @@ function(view) {
 // action menu: menu items and listeners
 ZmListController.prototype._initializeActionMenu =
 function() {
-	if (this._actionMenu) return;
-
 	var menuItems = this._getActionMenuOps();
 	if (!menuItems) return;
 	this._actionMenu = new ZmActionMenu(this._shell, menuItems);
@@ -435,10 +436,10 @@ function(view) {
 * @param isAppView		this view is a top-level app view
 * @param clear			if true, clear the hidden stack of views
 * @param pushOnly		don't reset the view's data, just swap the view in
-* @param isPoppable		whether the view is "poppable" from the view stack
+* @param isTransient	this view doesn't go on the hidden stack
 */
 ZmListController.prototype._setView =
-function(view, elements, isAppView, clear, pushOnly, isPoppable) {
+function(view, elements, isAppView, clear, pushOnly, isTransient) {
 
 	// create the view (if we haven't yet)
 	if (!this._appViews[view]) {
@@ -454,7 +455,7 @@ function(view, elements, isAppView, clear, pushOnly, isPoppable) {
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] =
 			this._postShowCallback ? new AjxCallback(this, this._postShowCallback) : null;
 
-		this._app.createView(view, elements, callbacks, isAppView, isPoppable);
+		this._app.createView(view, elements, callbacks, isAppView, isTransient);
 		this._appViews[view] = 1;
 	}
 
@@ -493,9 +494,10 @@ function(ev) {
 ZmListController.prototype._listActionListener =
 function(ev) {
 	this._actionEv = ev;
+	var actionMenu = this.getActionMenu();
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		this._setTagMenu(this._actionMenu);
-	this._resetOperations(this._actionMenu, this._listView[this._currentView].getSelectionCount());
+		this._setTagMenu(actionMenu);
+	this._resetOperations(actionMenu, this._listView[this._currentView].getSelectionCount());
 };
 
 ZmListController.prototype._popdownActionListener =
@@ -518,10 +520,9 @@ function(ev, id) {
 	switch (id) {
 		// new items
 		case ZmOperation.NEW_MESSAGE: {
-			var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || (ev && ev.shiftKey);
 			var app = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
 			var controller = app.getComposeController();
-			controller.doAction(ZmOperation.NEW_MESSAGE, inNewWindow);
+			controller.doAction(ZmOperation.NEW_MESSAGE, this._inNewWindow(ev));
 			break;
 		}
 		case ZmOperation.NEW_CONTACT: {
@@ -682,9 +683,8 @@ function(ev) {
 ZmListController.prototype._participantComposeListener =
 function(ev) {
 	var name = this._actionEv.address.toString() + ZmEmailAddress.SEPARATOR;
-	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
 	var cc = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
-	cc.doAction(ZmOperation.NEW_MESSAGE, inNewWindow, null, name);
+	cc.doAction(ZmOperation.NEW_MESSAGE, this._inNewWindow(ev), null, name);
 };
 
 // IM the participant (if enabled via config)
@@ -1014,7 +1014,7 @@ function(isContact) {
 	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
 	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
 	ZmOperation.setOperation(this._toolbar[this._currentView], ZmOperation.CONTACT, newOp, ZmMsg.AB_ADD_CONTACT);
-	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, newOp, newText);
+	ZmOperation.setOperation(this.getActionMenu(), ZmOperation.CONTACT, newOp, newText);
 };
 
 // Resets the available options on a toolbar or action menu.
@@ -1037,6 +1037,14 @@ function(parent, num) {
 ZmListController.prototype._resetToolbarOperations =
 function() {
 	this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());
+};
+
+// depending on "Always in New Window" option and whether Shift key is pressed,
+// determine whether action should be in new window or not
+ZmListController.prototype._inNewWindow =
+function(ev) {
+	return (!this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) && ev && ev.shiftKey) ||
+			(this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) && ev && !ev.shiftKey);
 };
 
 // Pagination
@@ -1352,4 +1360,15 @@ function(event) {
 ZmListController.prototype._getDefaultFocusItem = 
 function() {
 	return this._listView[this._currentView];
+};
+
+ZmListController.prototype.getActionMenu =
+function() {
+	if (!this._actionMenu) {
+		this._initializeActionMenu();
+		//DBG.timePt("_initializeActionMenu");
+		this._resetOperations(this._actionMenu, 0);
+		//DBG.timePt("this._resetOperation(actionMenu)");
+	}
+	return this._actionMenu;
 };

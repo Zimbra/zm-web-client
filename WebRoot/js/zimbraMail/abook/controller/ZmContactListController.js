@@ -301,15 +301,14 @@ function(view) {
 
 ZmContactListController.prototype._initializeActionMenu = 
 function(view) {
-	if (this._actionMenu) return;
-
 	ZmListController.prototype._initializeActionMenu.call(this);
 
 	// reset the default listener for print action in action menu
-	this._actionMenu.removeSelectionListener(ZmOperation.PRINT, this._listeners[ZmOperation.PRINT]);
-	this._actionMenu.addSelectionListener(ZmOperation.PRINT, this._listeners[ZmOperation.PRINT_MENU]);
+	var actionMenu = this._actionMenu;
+	actionMenu.removeSelectionListener(ZmOperation.PRINT, this._listeners[ZmOperation.PRINT]);
+	actionMenu.addSelectionListener(ZmOperation.PRINT, this._listeners[ZmOperation.PRINT_MENU]);
 
-	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT);
+	ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT);
 };
 
 ZmContactListController.prototype._initializeAlphabetBar =
@@ -470,12 +469,13 @@ function(ev) {
 	this._actionEv.address = new ZmEmailAddress(email);
 	// enable/disable New Email menu item per valid email found for this contact
 	var enableNewEmail = email != null && this._listView[this._currentView].getSelectionCount() == 1;
-	this._actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MESSAGE], enableNewEmail);
+	var actionMenu = this.getActionMenu();
+	actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MESSAGE], enableNewEmail);
 	this._setContactText(!this.isGalSearch());
-	this._actionMenu.popup(0, ev.docX, ev.docY);
+	actionMenu.popup(0, ev.docX, ev.docY);
 	if (ev.ersatz) {
 		// menu popped up via keyboard nav
-		this._actionMenu.setSelectedItem(0);
+		actionMenu.setSelectedItem(0);
 	}
 };
 

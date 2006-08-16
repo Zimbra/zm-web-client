@@ -177,12 +177,17 @@ function(viewId) {
 
 		var newDate = this._miniCalendar ? this._miniCalendar.getDate() : new Date();
 		
-		if (!this._miniCalendar)
+		if (!this._miniCalendar) {
 			this._createMiniCalendar(newDate);
+			//DBG.timePt("_createMiniCalendar");
+		}
 
 		this._viewMgr = new ZmCalViewMgr(this._container, this);
+		//DBG.timePt("created view manager");
 		this._viewMgr.setDate(newDate);
+		//DBG.timePt("_viewMgr.setDate");
 		this._setup(viewId);
+		//DBG.timePt("this._setup");
 		this._viewMgr.addTimeSelectionListener(new AjxListener(this, this._timeSelectionListener));
 		this._viewMgr.addDateRangeListener(new AjxListener(this, this._dateRangeListener));
 		this._viewMgr.addViewActionListener(new AjxListener(this, this._viewActionListener));
@@ -1225,7 +1230,7 @@ function(parent, num) {
 	var currViewName = this._viewMgr.getCurrentViewName();
 	if (currViewName == ZmController.CAL_APPT_VIEW) {
 		// disable DELETE since CAL_APPT_VIEW is a read-only view
-		parent.enable([ZmOperation.DELETE, ZmOperation.CAL_REFRESH, ZmOperation.PRINT, ZmOperation.TODAY], false);
+		parent.enable([ZmOperation.DELETE, ZmOperation.CAL_REFRESH, ZmOperation.TODAY], false);
 	}
 	else {
 		this._navToolBar[ZmController.CAL_VIEW].setVisible(true);
@@ -1260,8 +1265,9 @@ function(ev) {
 
 ZmCalViewController.prototype._handleMenuViewAction = 
 function(ev) {
-	var appt = this._actionMenu.__appt;
-	delete this._actionMenu.__appt;
+	var actionMenu = this.getActionMenu();
+	var appt = actionMenu.__appt;
+	delete actionMenu.__appt;
 
 	var tree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
 	var calendar = tree.getById(appt.folderId);
@@ -1386,33 +1392,31 @@ function () {
  */
 ZmCalViewController.prototype._initializeActionMenu = 
 function() {
-	if (this._actionMenu) return;
-
 	var menuItems = this._getActionMenuOps();
 	if (menuItems && menuItems.length > 0) {
-		this._actionMenu = new ZmActionMenu(this._shell, menuItems);
+		var actionMenu = this._actionMenu = new ZmActionMenu(this._shell, menuItems);
 		for (var i = 0; i < menuItems.length; i++) {
 			if (menuItems[i] > 0) {
 				if (menuItems[i] == ZmOperation.INVITE_REPLY_MENU) {
-					var menu = this._actionMenu.getOp(ZmOperation.INVITE_REPLY_MENU).getMenu();
+					var menu = actionMenu.getOp(ZmOperation.INVITE_REPLY_MENU).getMenu();
 					menu.addSelectionListener(ZmOperation.EDIT_REPLY_ACCEPT, this._listeners[ZmOperation.EDIT_REPLY_ACCEPT]);
 					menu.addSelectionListener(ZmOperation.EDIT_REPLY_DECLINE, this._listeners[ZmOperation.EDIT_REPLY_DECLINE]);
 					menu.addSelectionListener(ZmOperation.EDIT_REPLY_TENTATIVE, this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE]);
 				} else if (menuItems[i] == ZmOperation.CAL_VIEW_MENU) {
-					var menu = this._actionMenu.getOp(ZmOperation.CAL_VIEW_MENU).getMenu();			
+					var menu = actionMenu.getOp(ZmOperation.CAL_VIEW_MENU).getMenu();
 					this._initCalViewMenu(menu);
 				}
-				this._actionMenu.addSelectionListener(menuItems[i],this._listeners[menuItems[i]]);
+				actionMenu.addSelectionListener(menuItems[i],this._listeners[menuItems[i]]);
 			}
 		}
-		this._actionMenu.addPopdownListener(this._popdownListener);
+		actionMenu.addPopdownListener(this._popdownListener);
 
 		var menuItems = this._getRecurringActionMenuOps();
 		if (menuItems && menuItems.length > 0) {
 			this._recurringActionMenu = new ZmActionMenu(this._shell, menuItems);
 			for (var i = 0; i < menuItems.length; i++) {
 				var item = this._recurringActionMenu.getMenuItem(menuItems[i]);
-				item.setMenu(this._actionMenu);
+				item.setMenu(actionMenu);
 				// NOTE: Target object for listener is menu item
 				var menuItemListener = new AjxListener(item, this._recurringMenuPopup);
 				item.addListener(DwtEvent.ONMOUSEOVER, menuItemListener);
@@ -1460,10 +1464,11 @@ function (appt) {
 	var isSynced = Boolean(calendar.url);
 
 	// action menu options
-	var accept = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_ACCEPT);
-	var decline = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_DECLINE);
-	var tent = this._actionMenu.getItemById(ZmOperation.KEY_ID,ZmOperation.REPLY_TENTATIVE);
-	var editReply = this._actionMenu.getItemById(ZmOperation.KEY_ID,ZmOperation.INVITE_REPLY_MENU);
+	var actionMenu = this.getActionMenu();
+	var accept = actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_ACCEPT);
+	var decline = actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.REPLY_DECLINE);
+	var tent = actionMenu.getItemById(ZmOperation.KEY_ID,ZmOperation.REPLY_TENTATIVE);
+	var editReply = actionMenu.getItemById(ZmOperation.KEY_ID,ZmOperation.INVITE_REPLY_MENU);
 
 	var workflow = share ? share.isWorkflow() : true;
 	var enabled = !isOrganizer && workflow;
@@ -1472,7 +1477,7 @@ function (appt) {
 	tent.setEnabled(enabled);
 	editReply.setEnabled(enabled);
 	
-	var del = this._actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.DELETE);
+	var del = actionMenu.getItemById(ZmOperation.KEY_ID, ZmOperation.DELETE);
 	if (isOrganizer && otherAttendees) {
 		del.setText(ZmMsg.cancel);
 		//del.setImage("CancelAppointment");
@@ -1493,8 +1498,9 @@ function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
 	var appt = ev.item;
 	this._enableActionMenuReplyOptions(appt);
-	var menu = appt.isRecurring() ? this._recurringActionMenu : this._actionMenu;
-	this._actionMenu.__appt = appt;
+	var actionMenu = this.getActionMenu();
+	var menu = appt.isRecurring() ? this._recurringActionMenu : actionMenu;
+	actionMenu.__appt = appt;
 	menu.setData(ZmOperation.KEY_ID, null);
 	menu.popup(0, ev.docX, ev.docY);
 };
@@ -1526,7 +1532,7 @@ function(start,end, fanoutAllDay, folderIds, callback) {
 // TODO: appt is null for now. we are just clearing our caches...
 ZmCalViewController.prototype.notifyCreate =
 function(appt) {
-	DBG.println("ZmCalViewController: notifyCreate! 1 "+this._clearCache);
+	DBG.println(AjxDebug.DBG1, "ZmCalViewController: notifyCreate! 1 " + this._clearCache);
 	if (!this._clearCache) {
 		this._clearCache = true;
 	}
@@ -1550,7 +1556,7 @@ function(items) {
 // this gets called afer all the above notify* methods get called
 ZmCalViewController.prototype.notifyComplete =
 function(ids) {
-	DBG.println("ZmCalViewController: notifyComplete: " + this._clearCache);
+	DBG.println(AjxDebug.DBG2, "ZmCalViewController: notifyComplete: " + this._clearCache);
 	if (this._clearCache) {
 		var act = new AjxTimedAction(this, this._refreshAction);
 		AjxTimedAction.scheduleAction(act, 0);
