@@ -295,12 +295,12 @@ function(view, arrowStyle) {
 
 ZmMailListController.prototype._initializeActionMenu = 
 function() {
-	if (this._actionMenu) return;
-	
 	ZmListController.prototype._initializeActionMenu.call(this);
-	this._propagateMenuListeners(this._actionMenu, ZmOperation.REPLY_MENU);
-	this._propagateMenuListeners(this._actionMenu, ZmOperation.FORWARD_MENU);
-	this._setReplyText(this._actionMenu);
+
+	var actionMenu = this._actionMenu;
+	this._propagateMenuListeners(actionMenu, ZmOperation.REPLY_MENU);
+	this._propagateMenuListeners(actionMenu, ZmOperation.FORWARD_MENU);
+	this._setReplyText(actionMenu);
 };
 
 // Groups of mail-related operations
@@ -376,11 +376,12 @@ function(ev) {
 		this._enableFlags(this._participantActionMenu, bHasUnread, bHasRead);
 		this._participantActionMenu.popup(0, ev.docX, ev.docY);
 	} else {
-		this._enableFlags(this._actionMenu, bHasUnread, bHasRead);
-		this._actionMenu.popup(0, ev.docX, ev.docY);
+		var actionMenu = this.getActionMenu();
+		this._enableFlags(actionMenu, bHasUnread, bHasRead);
+		actionMenu.popup(0, ev.docX, ev.docY);
 		if (ev.ersatz) {
 			// menu popped up via keyboard nav
-			this._actionMenu.setSelectedItem(0);
+			actionMenu.setSelectedItem(0);
 		}
 	}
 };

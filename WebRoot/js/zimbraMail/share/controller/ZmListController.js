@@ -293,17 +293,20 @@ ZmListController.prototype._getItemType			= function() {};
 ZmListController.prototype._setup =
 function(view) {
 	this._initialize(view);
+	//DBG.timePt("this._initialize");
 	this._resetOperations(this._toolbar[view], 0);
-	this._resetOperations(this._actionMenu, 0);
+	//DBG.timePt("this._resetOperation(toolbar)");
 };
 
 // Creates the basic elements: toolbar, list view, and action menu
 ZmListController.prototype._initialize =
 function(view) {
 	this._initializeToolBar(view);
+	//DBG.timePt("_initializeToolBar");
 	this._initializeListView(view);
-	this._initializeActionMenu();
+	//DBG.timePt("_initializeListView");
 	this._initializeTabGroup(view);
+	//DBG.timePt("_initializeTabGroup");
 };
 
 // Below are functions that return various groups of operations, for cafeteria-style
@@ -403,8 +406,6 @@ function(view) {
 // action menu: menu items and listeners
 ZmListController.prototype._initializeActionMenu =
 function() {
-	if (this._actionMenu) return;
-
 	var menuItems = this._getActionMenuOps();
 	if (!menuItems) return;
 	this._actionMenu = new ZmActionMenu(this._shell, menuItems);
@@ -493,9 +494,10 @@ function(ev) {
 ZmListController.prototype._listActionListener =
 function(ev) {
 	this._actionEv = ev;
+	var actionMenu = this.getActionMenu();
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		this._setTagMenu(this._actionMenu);
-	this._resetOperations(this._actionMenu, this._listView[this._currentView].getSelectionCount());
+		this._setTagMenu(actionMenu);
+	this._resetOperations(actionMenu, this._listView[this._currentView].getSelectionCount());
 };
 
 ZmListController.prototype._popdownActionListener =
@@ -1012,7 +1014,7 @@ function(isContact) {
 	var newOp = isContact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
 	var newText = isContact ? null : ZmMsg.AB_ADD_CONTACT;
 	ZmOperation.setOperation(this._toolbar[this._currentView], ZmOperation.CONTACT, newOp, ZmMsg.AB_ADD_CONTACT);
-	ZmOperation.setOperation(this._actionMenu, ZmOperation.CONTACT, newOp, newText);
+	ZmOperation.setOperation(this.getActionMenu(), ZmOperation.CONTACT, newOp, newText);
 };
 
 // Resets the available options on a toolbar or action menu.
@@ -1358,4 +1360,15 @@ function(event) {
 ZmListController.prototype._getDefaultFocusItem = 
 function() {
 	return this._listView[this._currentView];
+};
+
+ZmListController.prototype.getActionMenu =
+function() {
+	if (!this._actionMenu) {
+		this._initializeActionMenu();
+		//DBG.timePt("_initializeActionMenu");
+		this._resetOperations(this._actionMenu, 0);
+		//DBG.timePt("this._resetOperation(actionMenu)");
+	}
+	return this._actionMenu;
 };
