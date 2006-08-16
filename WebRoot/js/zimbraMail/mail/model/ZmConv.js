@@ -191,7 +191,7 @@ function(obj) {
 
 ZmConv.prototype._checkFlags = 
 function(flags) {
-	var msgs = t
+	var msgs = this.msgs.getArray();
 	var convOn = new Object();
 	var msgsOn = new Object();
 	for (var i = 0; i < flags.length; i++) {
