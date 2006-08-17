@@ -199,7 +199,6 @@ function(item, isDndIcon, isMatched) {
 	var	div = document.createElement("div");
 
 	var base = "Row";
-	div.className = base;
 	div[DwtListView._KBFOCUS_CLASS] = "Row-Focus";
 	div[DwtListView._STYLE_CLASS] = base;
 	div[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
@@ -216,6 +215,8 @@ function(item, isDndIcon, isMatched) {
 			div.style.overflow = "visible";
 		}
 	}
+	div.className = div[DwtListView._STYLE_CLASS];
+
 	if (isDndIcon) {
 		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
 	}
