@@ -109,16 +109,14 @@ function ZmAppViewMgr(shell, controller, isNewWindow, hasSkin) {
 	this._isAppView = {};		// names of top-level app views
 	this._isTransient = {};		// views we don't put on hidden stack
 
-	this._compList = [];		// list of component IDs
 	this._components = {};		// component objects (widgets)
-	this._htmlEl = {};			// their HTML elements
 	this._containers = {};		// containers within the skin
 	this._contBounds = {};		// bounds for the containers
 
 	// view preemption
 	this._pushCallback = new AjxCallback(this, this.pushView);
 	this._popCallback = new AjxCallback(this, this.popView);
-}
+};
 
 // components
 ZmAppViewMgr.C_BANNER					= "BANNER";
@@ -174,7 +172,7 @@ ZmAppViewMgr.PENDING_VIEW = "ZmAppViewMgr.PENDING_VIEW";
 ZmAppViewMgr.prototype.toString = 
 function() {
 	return "ZmAppViewMgr";
-}
+};
 
 /**
 * Registers the given components with the app view manager. This method should only be
@@ -188,34 +186,33 @@ ZmAppViewMgr.prototype.addComponents =
 function(components, doFit, noSetZ) {
 	var list = [];
 	for (var cid in components) {
-		this._compList.push(cid);
 		var comp = components[cid];
 		this._components[cid] = comp;
-		var htmlEl = comp.getHtmlElement();
-		this._htmlEl[cid] = htmlEl;
 		if (this._hasSkin) {
-			var contId = this._appCtxt.get(ZmAppViewMgr.CONT_ID_KEY[cid]);
-			var contEl = document.getElementById(contId);
-			if (contEl == null) {
-				throw new AjxException("Skin container '" + contId + "' not found.");
+			if (!this._containers[cid]) {
+				var contId = this._appCtxt.get(ZmAppViewMgr.CONT_ID_KEY[cid]);
+				var contEl = document.getElementById(contId);
+				if (!contEl) {
+					throw new AjxException("Skin container '" + contId + "' not found.");
+				}
+				this._containers[cid] = contEl;
 			}
-			this._containers[cid] = contEl;
-			if (Dwt.contains(contEl, htmlEl))
-				throw new AjxException("element already added to container: " + cid);		
-			Dwt.removeChildren(contEl);
 			list.push(cid);
 		}
 
-		if (!noSetZ)
+		if (!noSetZ) {
 			comp.zShow(true);
+		}
 
-		if (cid == ZmAppViewMgr.C_SASH)
+		if (cid == ZmAppViewMgr.C_SASH) {
 //			comp.registerCallback(this._sashCallback, this);
 			comp.setCursor("default");
+		}
 	}
-	if (doFit)
+	if (doFit) {
 		this._fitToContainer(list);
-}
+	}
+};
 
 /**
 * Shows/hides the search builder.
@@ -233,9 +230,10 @@ function(visible) {
 				ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT];
 	this._fitToContainer(list);
 	// search builder contains forms, and browsers have quirks around form fields and z-index
-	if (!visible)
+	if (!visible) {
 		this._components[ZmAppViewMgr.C_SEARCH_BUILDER].setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-}
+	}
+};
 
 /**
 * Shows/hides the tree footer (mini-calendar).
@@ -248,7 +246,7 @@ function(visible) {
 	skin.showTreeFooter(visible);
 	this._components[ZmAppViewMgr.C_TREE_FOOTER].zShow(visible);
 	this._fitToContainer([ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER]);
-}
+};
 
 /**
 * Returns the ID of the app view currently being displayed.
@@ -256,7 +254,7 @@ function(visible) {
 ZmAppViewMgr.prototype.getCurrentViewId =
 function() {
 	return this._currentView;
-}
+};
 
 /**
 * Returns the ID of the app view last displayed.
@@ -264,7 +262,7 @@ function() {
 ZmAppViewMgr.prototype.getLastViewId =
 function() {
 	return this._lastView;
-}
+};
 
 /**
 * Returns the app view currently being displayed.
@@ -273,7 +271,7 @@ ZmAppViewMgr.prototype.getCurrentView =
 function() {
 	var curView = this._views[this._currentView];
 	return curView ? curView[ZmAppViewMgr.C_APP_CONTENT] : null;
-}
+};
 
 /**
 * Returns the current top-level view for the given app.
@@ -283,7 +281,7 @@ function() {
 ZmAppViewMgr.prototype.getAppView =
 function(app) {
 	return this._appView[app];
-}
+};
 
 /**
 * Sets the current top-level view for the given app. Should be called by an app (or controller) that
@@ -295,7 +293,7 @@ function(app) {
 ZmAppViewMgr.prototype.setAppView =
 function(app, viewId) {
 	this._appView[app] = viewId;
-}
+};
 
 /**
 * Registers a set of elements comprising an app view.
@@ -316,8 +314,7 @@ function(viewId, appName, elements, callbacks, isAppView, isTransient) {
 	this._viewApp[viewId] = appName;
 	this._isAppView[viewId] = isAppView;
 	this._isTransient[viewId] = isTransient;
-	this.addComponents(elements, false, true);
-}
+};
 
 // XXX: should we have a destroyView() ?
 
@@ -344,6 +341,8 @@ function(viewId, force) {
 		}
 		return true;
 	}
+
+	this.addComponents(this._views[viewId]);
 
 	DBG.println(AjxDebug.DBG1, "pushView: " + viewId);
 	DBG.println(AjxDebug.DBG2, "hidden (before): " + this._hidden);
@@ -388,7 +387,7 @@ function(viewId, force) {
 	}
 	
 	return true;
-}
+};
 
 /**
 * Hides the currently visible view, and makes the view on top of the hidden stack visible.
@@ -432,12 +431,13 @@ function(force) {
 	this._removeFromHidden(this._currentView);
 	DBG.println(AjxDebug.DBG2, "hidden (after): " + this._hidden);
 
+	this.addComponents(this._views[this._currentView]);
 	this._layout(this._currentView);	
 	
 	this._controller.setActiveApp(this._viewApp[this._currentView], this._currentView);
 
 	return true;
-}
+};
 
 /**
 * Makes the given view visible, and clears the hidden stack.
@@ -458,12 +458,12 @@ function(viewId, force) {
 		this._hidden = [];
 	}
 	return result;
-}
+};
 
 ZmAppViewMgr.prototype.isAppView = 
 function(viewId) {
 	return this._isAppView[viewId];
-}
+};
 
 /**
 * Shows the view that was waiting for return from a popped view's callback. Typically, the
@@ -480,7 +480,7 @@ function(show) {
 		}
 	}
 	this._pendingAction = this._pendingView = null;
-}
+};
 
 ZmAppViewMgr.prototype.fitAll =
 function() {
@@ -493,7 +493,7 @@ function() {
 ZmAppViewMgr.prototype.getPendingViewId = 
 function() {
 	return this._pendingView;
-}
+};
 
 /**
 * Destructor for this object.
@@ -505,15 +505,13 @@ function() {
 		var elements = this._views[i];
 		for (var j = 0; j < elements.length; j++) {
 			for (var cid in elements[j]) {
-//				this._components[cid].getHtmlElement().innerHTML = "";
 				this._components[cid].dispose();
 				this._components[cid] = null;
 				this._containers[cid] = null;
-				this._htmlEl[cid] = null;
 			}
 		}
 	}
-}
+};
 
 /**
 * Shows the current view's title in the title bar.
@@ -548,7 +546,7 @@ ZmAppViewMgr.prototype._fitToContainer =
 function(components) {
 	for (var i = 0; i < components.length; i++) {
 		var cid = components[i];
-		//DBG.println(AjxDebug.DBG3, "fitting to container: " + cid);
+		DBG.println(AjxDebug.DBG3, "fitting to container: " + cid);
 		var cont = this._containers[cid];
 		if (cont) {
 			var contBds = Dwt.getBounds(cont);
@@ -562,7 +560,7 @@ function(components) {
 	if (DBG.getDebugLevel() >= AjxDebug.DBG2) {
 		this._debugShowMetrics(components);
 	}
-}
+};
 
 // Performs manual layout of the components, absent a containing skin. Currently assumes
 // that there will be a top toolbar and app content.
@@ -600,7 +598,7 @@ function(view, force) {
 	}
 
 	return okToContinue;
-}
+};
 
 // Makes the given view visible.
 ZmAppViewMgr.prototype._showView =
@@ -621,7 +619,7 @@ function(view, force, isNewView) {
 	}
 
 	return okToContinue;
-}
+};
 
 // Makes elements visible/hidden by locating them off- or onscreen and setting
 // their z-index.
@@ -635,8 +633,9 @@ function(view, show) {
 			elements[cid].zShow(true);
 			this._components[cid] = elements[cid];
 		}
-		if (this._hasSkin)
+		if (this._hasSkin) {
 			this._fitToContainer(list);
+		}
 		this._setTitle(view);
 		this._controller.setActiveApp(this._viewApp[view], view);
 	} else {
@@ -646,7 +645,7 @@ function(view, show) {
 			elements[cid].zShow(false);
 		}
 	}
-}
+};
 
 // Removes a view from the hidden stack.
 ZmAppViewMgr.prototype._removeFromHidden =
@@ -658,17 +657,18 @@ function(view) {
 		}
 	}
 	this._hidden = newHidden;
-}
+};
 
 // Tells a view that it has been hidden.
 ZmAppViewMgr.prototype._deactivateView =
 function(view) {
 	for (var cid in view) {
 		var comp = this._components[cid];
-		if (comp.deactivate)
+		if (comp.deactivate) {
 			comp.deactivate();
+		}
 	}
-}
+};
 
 ZmAppViewMgr.prototype._setTitle =
 function(view) {
@@ -682,7 +682,7 @@ function(view) {
 		var title = content.getTitle();
 		Dwt.setTitle(title ? title : ZmMsg.zimbraTitle);
 	}
-}
+};
 
 // Listeners
 
@@ -698,12 +698,14 @@ function(ev) {
 		if (this._isNewWindow) {
 			// reset width of top toolbar
 			var topToolbar = this._views[this._currentView][ZmAppViewMgr.C_TOOLBAR_TOP];
-			if (topToolbar)
+			if (topToolbar) {
 				topToolbar.setSize(ev.newWidth, Dwt.DEFAULT);
+			}
 			// make sure to remove height of top toolbar for height of app content
 			var appContent = this._views[this._currentView][ZmAppViewMgr.C_APP_CONTENT];
-			if (appContent)
+			if (appContent) {
 				appContent.setSize(ev.newWidth, ev.newHeight - topToolbar.getH());
+			}
 		} else {
 			if (deltaHeight && deltaWidth) {
 				this.fitAll();
@@ -719,7 +721,7 @@ function(ev) {
 			}
 		}
 	}
-}
+};
 
 ZmAppViewMgr.prototype._debugShowMetrics =
 function(components) {
@@ -731,7 +733,7 @@ function(components) {
 			DBG.println("Container bounds for " + cid + ": " + contBds.x + ", " + contBds.y + " | " + contBds.width + " x " + contBds.height);
 		}
 	}
-}
+};
 
 // Handles sash movement. An attempt to move the sash beyond the extent of the overview 
 // panel or the view results in no movement at all.
@@ -766,7 +768,6 @@ function(delta) {
 	var list = [ZmAppViewMgr.C_CURRENT_APP, ZmAppViewMgr.C_TREE,
 				ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_STATUS];
 	this._fitToContainer(list);
-//	this._fitToContainer(this._compList);
 
 	list = [ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT];
 	for (var i = 0; i < list.length; i++) {
@@ -836,4 +837,4 @@ function(delta) {
 	Dwt.setSize(this._overviewContainer, ovSz.x + delta, Dwt.DEFAULT);
 
 	return delta;
-}
+};
