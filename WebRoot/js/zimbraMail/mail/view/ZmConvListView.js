@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -43,13 +43,14 @@ ZmConvListView.CLV_COLWIDTH_DATE 			= 60;
 
 // Public methods
 
-ZmConvListView.prototype.toString = 
+ZmConvListView.prototype.toString =
 function() {
 	return "ZmConvListView";
 };
 
-ZmConvListView.prototype.createHeaderHtml = 
+ZmConvListView.prototype.createHeaderHtml =
 function(defaultColumnSort) {
+
 	ZmMailListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
 
 	// Show "From" or "To" depending on which folder we're looking at
@@ -104,17 +105,23 @@ function() {
 // Private / protected methods
 
 ZmConvListView.prototype._createItemHtml =
-function(conv, now, isDndIcon, isMixedView, myDiv) {
+function(conv, now, isDndIcon, isMixedView) {
 
-	var	div = myDiv || this._getDiv(conv, isDndIcon);
+	var	div = this._getDiv(conv, isDndIcon);
 
 	var htmlArr = [];
 	var idx = 0;
 
-	// Table
-	idx = this._getTable(htmlArr, idx, isDndIcon);
+	idx = this._createHtml(htmlArr, idx, conv, now, isDndIcon, isMixedView);
+	div.innerHTML = htmlArr.join("");
 
-	// Row
+	return div;
+};
+
+ZmConvListView.prototype._createHtml =
+function(htmlArr, idx, conv, now, isDndIcon, isMixedView) {
+
+	idx = this._getTable(htmlArr, idx, isDndIcon);
 	idx = this._getRow(htmlArr, idx, conv, conv.isUnread ? "Unread" : null);
 
 	for (var i = 0; i < this._headerList.length; i++) {
@@ -130,16 +137,17 @@ function(conv, now, isDndIcon, isMixedView, myDiv) {
 			idx = this._getField(htmlArr, idx, conv, ZmItem.F_TAG, i);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) == 0) {
 			// Participants
-			var width = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
 			var fieldId = this._getFieldId(conv, ZmItem.F_PARTICIPANT);
 			htmlArr[idx++] = "<td width=";
-			htmlArr[idx++] = width;
+			htmlArr[idx++] = this._getFieldWidth(i);
 			htmlArr[idx++] = " id='";
 			htmlArr[idx++] = fieldId;
 			htmlArr[idx++] = "'>";
-			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
+			if (AjxEnv.isSafari)
+				htmlArr[idx++] = "<div style='overflow:hidden'>";
 			htmlArr[idx++] = this._getParticipantHtml(conv, fieldId);
-			htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
+			if (AjxEnv.isSafari)
+				htmlArr[idx++] = "</div>";
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
 			// Attachments icon
@@ -152,22 +160,27 @@ function(conv, now, isDndIcon, isMixedView, myDiv) {
 			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 			htmlArr[idx++] = conv.subject ? AjxStringUtil.htmlEncode(conv.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
 			if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && conv.fragment) {
-				htmlArr[idx++] = "<span class='ZmConvListFragment'>";
-				htmlArr[idx++] = " - ";
+				htmlArr[idx++] = "<span class='ZmConvListFragment'> - ";
 				htmlArr[idx++] = AjxStringUtil.htmlEncode(conv.fragment, true);
 				htmlArr[idx++] = "</span>";
 			}
-			htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
+			if (AjxEnv.isNav)
+				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT]) == 0) {
-			var width = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
+			// Conversation count
 			htmlArr[idx++] = "<td id='";
 			htmlArr[idx++] = this._getFieldId(conv, ZmItem.F_COUNT);
 			htmlArr[idx++] = "' width=";
-			htmlArr[idx++] = width;
+			htmlArr[idx++] = this._getFieldWidth(i);
 			htmlArr[idx++] = ">";
-			htmlArr[idx++] = conv.numMsgs > 1 ? ("(" + conv.numMsgs + ")") : "";
-			htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
+			if (conv.numMsgs > 1) {
+				htmlArr[idx++] = "(";
+				htmlArr[idx++] = conv.numMsgs;
+				htmlArr[idx++] = ")";
+			}
+			if (AjxEnv.isNav)
+				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
 			// Date
@@ -188,8 +201,7 @@ function(conv, now, isDndIcon, isMixedView, myDiv) {
 
 	htmlArr[idx++] = "</tr></table>";
 
-	div.innerHTML = htmlArr.join("");
-	return div;
+	return idx;
 };
 
 ZmConvListView.prototype._getHeaderList =
@@ -253,7 +265,10 @@ function(ev) {
 			var conv = items[i];
 			var div = document.getElementById(this._getItemId({id: conv._oldId}));
 			if (div) {
-				this._createItemHtml(conv, this._now, false, false, div);
+				var html = [];
+				var idx = 0;
+				idx = this._createHtml(html, idx, conv, this._now);
+				div.innerHTML = html.join("");
 				this.associateItemWithElement(conv, div, DwtListView.TYPE_LIST_ITEM);
 				DBG.println(AjxDebug.DBG1, "conv updated from ID " + conv._oldId + " to ID " + conv.id);
 			}
@@ -301,7 +316,7 @@ function(ev) {
 	}
 };
 
-ZmConvListView.prototype._getParticipantHtml = 
+ZmConvListView.prototype._getParticipantHtml =
 function(conv, fieldId) {
 	var html = new Array();
 	var idx = 0;
@@ -318,9 +333,10 @@ function(conv, fieldId) {
 			} else if (part2.length > 1 && j > 0) {
 				html[idx++] = ", ";
 			}
-			var partId = fieldId + "_" + part2[j].index;
 			html[idx++] = "<span style='white-space: nowrap' id='";
-			html[idx++] = partId;
+			html[idx++] = fieldId;
+			html[idx++] = "_";
+			html[idx++] = part2[j].index;
 			html[idx++] = "'>";
 			html[idx++] = part2[j].name;
 			html[idx++] = "</span>";
@@ -335,14 +351,14 @@ function(conv, fieldId) {
 	}
 	if (AjxEnv.isNav)
 		html[idx++] = ZmListView._fillerString;
-		
+
 	return html.join("");
 };
 
 
 // Static methods
 
-ZmConvListView.getPrintHtml = 
+ZmConvListView.getPrintHtml =
 function(conv, preferHtml, callback) {
 
 	// first, get list of all msg id's for this conversation
@@ -350,7 +366,7 @@ function(conv, preferHtml, callback) {
 		var soapDoc = AjxSoapDoc.create("GetConvRequest", "urn:zimbraMail");
 		var msgNode = soapDoc.set("c");
 		msgNode.setAttribute("id", conv.id);
-		
+
 		var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetPrintHtml, [conv, preferHtml, callback]);
 		window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	} else {
@@ -374,7 +390,7 @@ function(conv, preferHtml, callback) {
 	// XXX: optimize? Once these msgs are d/l'ed should they be cached?
 	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
 	soapDoc.setMethodAttribute("onerror", "continue");
-	
+
 	for (var i = 0; i < conv.msgIds.length; i++) {
 		// make a request to get this mail message from the server
 		var msgRequest = soapDoc.set("GetMsgRequest");
@@ -397,14 +413,14 @@ function(conv, preferHtml, callback, result) {
 
 	var html = new Array();
 	var idx = 0;
-	
+
 	html[idx++] = "<font size=+2>";
 	html[idx++] = conv.subject;
 	html[idx++] = "</font><br><font size=+1>";
 	html[idx++] = conv.numMsgs;
 	html[idx++] = (conv.numMsgs > 1) ? " messages" : " message";
 	html[idx++] = "</font><hr>";
-	
+
 	for (var i = 0; i < resp.length; i++) {
 		var msgNode = resp[i].m[0];
 		var msg = ZmMailMsg.createFromDom(msgNode, {appCtxt: null, list: null});
@@ -412,7 +428,7 @@ function(conv, preferHtml, callback, result) {
 		if (i < resp.length - 1)
 			html[idx++] = "<hr>";
 	}
-	
+
 	result.set(html.join(""));
 	if (callback) callback.run(result);
 };
