@@ -144,7 +144,7 @@ function() {
 		var elements = new Object();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
-		this._app.createView(ZmController.PREF_VIEW, elements, callbacks, true, true);
+		this._app.createView(ZmController.PREF_VIEW, elements, callbacks, true);
 		this._initializeTabGroup();
 	}
 };
@@ -284,6 +284,7 @@ function() {
 ZmPrefController.prototype._handleResponsePopShieldYesCallback =
 function() {
 	this._popShield.popdown();
+	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
 };
 
@@ -291,6 +292,7 @@ ZmPrefController.prototype._popShieldNoCallback =
 function() {
 	this._prefsView.reset();
 	this._popShield.popdown();
+	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
 };
 

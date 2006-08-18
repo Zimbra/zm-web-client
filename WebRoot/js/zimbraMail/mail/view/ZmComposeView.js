@@ -1390,10 +1390,6 @@ function(type, show, skipNotify, skipFocus) {
 		this._appCtxt.set(setting, show, null, false, skipNotify);
 	}
 	this._resetBodySize();
-	if (false && !skipFocus) {
-		var field = show ? this._field[type] : null;	// set focus if visible
-		this._controller._setComposeTabGroup(field);
-	}
 };
 
 // Grab the addresses out of the form. Optionally, they can be returned broken out into good and

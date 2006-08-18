@@ -113,6 +113,7 @@ function() {
 	this.resize(pSize.x, pSize.y);
 
 	this.set(this._dateInfo, this._apptTab.getOrganizer(), this._attendees);
+	this._controller._setApptComposeTabGroup();
 };
 
 ZmSchedTabViewPage.prototype.tabBlur =
@@ -454,13 +455,15 @@ function(tabGroup) {
 * Adds a new, empty slot with a select for the attendee type, an input field, and
 * cells for free/busy info.
 *
-* @param isAllAttendees		[boolean]	if true, this is the "All Attendees" row
-* @param organizer			[string]	organizer
-* @param drawBorder			[boolean]	if true, draw borders to indicate appt time
-* @param index				[int]		index at which to add the row
+* @param isAllAttendees		[boolean]*	if true, this is the "All Attendees" row
+* @param organizer			[string]*	organizer
+* @param drawBorder			[boolean]*	if true, draw borders to indicate appt time
+* @param index				[int]*		index at which to add the row
+* @param updateTabGroup		[boolean]*	if true, add this row to the tab group
+* @param setFocus			[boolean]*	if true, set focus to this row's input field
 */
 ZmSchedTabViewPage.prototype._addAttendeeRow =
-function(isAllAttendees, organizer, drawBorder, index, resetFocus) {
+function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus) {
 	index = index ? index : this._attendeesTable.rows.length;
 	
 	// store some meta data about this table row
@@ -567,27 +570,27 @@ function(isAllAttendees, organizer, drawBorder, index, resetFocus) {
 				this._acContactsList.handle(attendeeInput);
 			}
 		}
-		if (sched.inputObj) {
-			this._kbMgr.grabFocus(sched.inputObj);
-		}
 	}
 
 	if (drawBorder) {
 		this._updateBorders(sched, isAllAttendees);
 	}
-	if (resetFocus) {
+	if (updateTabGroup) {
 		this._controller._setApptComposeTabGroup();
+	}
+	if (setFocus && sched.inputObj) {
+		this._kbMgr.grabFocus(sched.inputObj);
 	}
 	
 	return index;
 };
 
 ZmSchedTabViewPage.prototype._removeAttendeeRow =
-function(index, resetFocus) {
+function(index, updateTabGroup) {
 	this._attendeesTable.deleteRow(index);
 	this._schedTable.splice(index, 1);
-	if (resetFocus) {
-		this._controller._setApptComposeTabGroup();
+	if (updateTabGroup) {
+		this._controller._setApptComposeTabGroup(true);
 	}
 };
 
@@ -708,7 +711,7 @@ function(inputEl, attendee, useException) {
 			this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
 			if (!curAttendee) {
 				// user added attendee in empty slot
-				this._addAttendeeRow(false, null, true, null, true); // add new empty slot
+				this._addAttendeeRow(false, null, true, null, true, true); // add new empty slot
 			}
 		} else {
 			this._activeInputIdx = null;
@@ -824,14 +827,14 @@ function(organizer, attendees) {
 		var att = attendees[type].getArray();
 		for (var i = 0; i < att.length; i++) {
 			if (att[i] && att[i].getEmail()) {
-				var index = this._addAttendeeRow(false, false, false); // create a slot for this attendee
+				var index = this._addAttendeeRow(false, null, false); // create a slot for this attendee
 				emails.push(this._setAttendee(index, att[i], type, false));
 			}
 		}
 	}
 	
 	// make sure there's always an empty slot
-	this._addAttendeeRow(false, false, false, null, true);
+	this._addAttendeeRow(false, null, false, null, true, true);
 
 	if (emails.length) {
 		this._controller.getFreeBusyInfo(this._getStartTime(), this._getEndTime(), emails.join(","), this._fbCallback);
@@ -926,10 +929,13 @@ function(sched) {
 		sched._coloredCells[0].className = ZmSchedTabViewPage.FREE_CLASS;
 		sched._coloredCells.shift();
 	}
-
 	var allAttColors = this._allAttendeesSlot._coloredCells;
 	while (allAttColors.length > 0) {
-		allAttColors[0].className = ZmSchedTabViewPage.FREE_CLASS;
+		var idx = allAttColors[0].cellIndex;
+		// clear all attendees cell if it's now free
+		if (this._allAttendees[idx] == 0) {
+			allAttColors[0].className = ZmSchedTabViewPage.FREE_CLASS;
+		}
 		allAttColors.shift();
 	}
 };

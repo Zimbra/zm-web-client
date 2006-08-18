@@ -297,7 +297,7 @@ function(initHide, composeMode) {
 	this._initializeToolBar();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks, null, true);
+    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks, false, true);
     if (initHide) {
 	    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	    this._composeView.enableInputs(false);
@@ -305,8 +305,9 @@ function(initHide, composeMode) {
 };
 
 /**
- * Sets the tab stops for the compose form based on what's showing. Called any
- * time an address field is hidden/shown, as well as when the view is set.
+ * Sets the tab stops for the compose form. All address fields are added; they're
+ * not actual tab stops unless they're visible. The textarea for plain text and
+ * the HTML editor for HTML compose are swapped in and out depending on the mode.
  */
 ZmComposeController.prototype._setComposeTabGroup =
 function() {
@@ -360,6 +361,7 @@ function(actionCode) {
 				var mode = this._composeView.getComposeMode();
 				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 				this._setFormat(newMode);
+				this._setOptionsMenu(newMode);
 			}
 			break;
 
@@ -843,11 +845,14 @@ function() {
 		this.sendMsg(null, true);
 	} else {
 		// cancel
-		if (this.isChildWindow && window.parentController)
+		if (this.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
-		else
+		} else {
 			this._composeView.reset(false);
+		}
 	}
+
+	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
 };
 
@@ -858,17 +863,13 @@ function() {
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
-		if (this.isChildWindow && window.parentController)
+		if (this.isChildWindow && window.parentController) {
 			window.onbeforeunload = null;
-		else
+		} else {
 			this._composeView.reset(false);
+		}
 
-		// bug fix #5282
-		// check if the pending view is poppable - if so, force-pop this view first!
-		var avm = this._app.getAppViewMgr();
-		if (avm.isPoppable(avm.getPendingViewId()))
-			this._app.popView(true);
-
+		this._app.popView(true);
 		this._app.getAppViewMgr().showPendingView(true);
 	} else {
 		this._app.getAppViewMgr().showPendingView(false);

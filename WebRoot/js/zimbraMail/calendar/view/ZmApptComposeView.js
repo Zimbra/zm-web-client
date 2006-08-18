@@ -259,7 +259,6 @@ function(tabKey) {
 		this._tabPages[this._curTabId].tabBlur();
 	}
 	this._curTabId = this._tabIdByKey[tabKey];
-	this._controller._setApptComposeTabGroup();
 };
 
 ZmApptComposeView.prototype.getAppt = 
@@ -414,15 +413,15 @@ ZmApptComposeView.prototype._createTabViewPage =
 function(id) {
 	switch (id) {
 		case ZmApptComposeView.TAB_APPOINTMENT :
-			return new ZmApptTabViewPage(this, this._appCtxt, this._attendees, this._dateInfo);
+			return new ZmApptTabViewPage(this, this._appCtxt, this._attendees, this._controller, this._dateInfo);
 		case ZmApptComposeView.TAB_SCHEDULE :
 			return new ZmSchedTabViewPage(this, this._appCtxt, this._attendees, this._controller, this._dateInfo);
 		case ZmApptComposeView.TAB_ATTENDEES :
-			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, ZmAppt.PERSON);
+			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.PERSON);
 		case ZmApptComposeView.TAB_LOCATIONS :
-			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, ZmAppt.LOCATION);
+			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.LOCATION);
 		case ZmApptComposeView.TAB_EQUIPMENT :
-			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, ZmAppt.EQUIPMENT);
+			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.EQUIPMENT);
 	}
 };
 

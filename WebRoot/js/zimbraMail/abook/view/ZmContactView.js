@@ -99,16 +99,19 @@ ZmContactView.prototype.set =
 function(contact, isDirty) {
 
 	this._attr = new Object();
-	for (var a in contact.getAttrs())
+	for (var a in contact.getAttrs()) {
 		this._attr[a] = contact.getAttr(a);
+	}
 
-	if (!this._htmlInitialized)
+	if (!this._htmlInitialized) {
 		this._createHtml(contact);
+	}
 
 	if (this._isReadOnly) return;
 
-	if (this._contact)
+	if (this._contact) {
 		this._contact.removeChangeListener(this._changeListener);
+	}
 	contact.addChangeListener(this._changeListener);
 	this._contact = contact;
 
@@ -396,7 +399,7 @@ ZmContactView.prototype._createNotesHtml =
 function(html, idx) {
 	// add label
 	html[idx++] = "<tr><td colspan=10 valign=top class='sectionLabel'>";
-	html[idx++] = "Notes";
+	html[idx++] = ZmMsg.notes;
 	html[idx++] = "</td></tr>";
 
 	// add textarea
@@ -662,6 +665,26 @@ function(contact) {
 		this._installOnKeyUpHandler(i);
 
 	this._htmlInitialized = true;
+};
+
+ZmContactView.prototype._getTabGroupMembers =
+function() {
+	var ids = [];
+	ids = ids.concat(ZmContactView.primaryInfoOne, ZmContactView.primaryInfoTwo, ZmContactView.emailInfo,
+					 ZmContactView.workAddrInfo, ZmContactView.workPhoneInfo, ZmContactView.homeAddrInfo,
+					 ZmContactView.homePhoneInfo, ZmContactView.otherAddrInfo, ZmContactView.otherPhoneInfo,
+					 ZmContact.F_notes);
+	var fields = [];
+	for (var i = 0; i < ids.length; i++) {
+		fields.push(document.getElementById(this._fieldIds[ids[i]]));
+	}
+
+	return fields;
+};
+
+ZmContactView.prototype._getDefaultFocusItem =
+function() {
+	return document.getElementById(this._fieldIds[ZmContact.F_lastName]);
 };
 
 ZmContactView.prototype._setFolder =
