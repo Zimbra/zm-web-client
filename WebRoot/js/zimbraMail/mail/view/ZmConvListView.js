@@ -105,21 +105,12 @@ function() {
 // Private / protected methods
 
 ZmConvListView.prototype._createItemHtml =
-function(conv, now, isDndIcon, isMixedView) {
+function(conv, now, isDndIcon, isMixedView, myDiv) {
 
-	var	div = this._getDiv(conv, isDndIcon);
+	var	div = myDiv || this._getDiv(conv, isDndIcon);
 
 	var htmlArr = [];
 	var idx = 0;
-
-	idx = this._createHtml(htmlArr, idx, conv, now, isDndIcon, isMixedView);
-	div.innerHTML = htmlArr.join("");
-
-	return div;
-};
-
-ZmConvListView.prototype._createHtml =
-function(htmlArr, idx, conv, now, isDndIcon, isMixedView) {
 
 	idx = this._getTable(htmlArr, idx, isDndIcon);
 	idx = this._getRow(htmlArr, idx, conv, conv.isUnread ? "Unread" : null);
@@ -201,7 +192,8 @@ function(htmlArr, idx, conv, now, isDndIcon, isMixedView) {
 
 	htmlArr[idx++] = "</tr></table>";
 
-	return idx;
+	div.innerHTML = htmlArr.join("");
+	return div;
 };
 
 ZmConvListView.prototype._getHeaderList =
@@ -265,10 +257,7 @@ function(ev) {
 			var conv = items[i];
 			var div = document.getElementById(this._getItemId({id: conv._oldId}));
 			if (div) {
-				var html = [];
-				var idx = 0;
-				idx = this._createHtml(html, idx, conv, this._now);
-				div.innerHTML = html.join("");
+				this._createItemHtml(conv, this._now, false, false, div);
 				this.associateItemWithElement(conv, div, DwtListView.TYPE_LIST_ITEM);
 				DBG.println(AjxDebug.DBG1, "conv updated from ID " + conv._oldId + " to ID " + conv.id);
 			}
