@@ -161,8 +161,9 @@ function(emailStr, type, strict) {
 					var name = temp.replace(ZmEmailAddress.addrAnglePat, '');
 					var newAddr = ['"', name, '" ', parts[0]].join("");
 					addr = ZmEmailAddress.parse(newAddr);
-					if (addr)
+					if (addr) {
 						addr.name = name; // reset name to original unquoted form
+					}
 				}
 			}
 			if (addr) {
@@ -277,8 +278,9 @@ function(str) {
 				if (!doIgnore) {
 					var doAdd = true;
 					var test = sub.substring(0, pos);
-					if (ch == ",") {
-						// comma is allowed as non-delimeter outside quote/comment
+					if (ch == "," || ch == " ") {
+						// comma/space allowed as non-delimeter outside quote/comment,
+						// so we make sure it follows an actual address
 						doAdd = test.match(ZmEmailAddress.boundAddrPat);
 					}
 					if (doAdd) {
