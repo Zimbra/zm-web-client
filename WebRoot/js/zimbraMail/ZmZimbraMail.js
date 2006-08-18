@@ -293,6 +293,7 @@ function() {
 		// close all child windows
 		for (var i = 0; i < childWinList.size(); i++) {
 			var childWin = childWinList.get(i);
+			childWin.win.onbeforeunload = null;
 			childWin.win.parentController = null;
 			childWin.win.close();
 		}
