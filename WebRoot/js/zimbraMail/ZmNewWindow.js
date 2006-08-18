@@ -107,7 +107,10 @@ function(domain) {
 * Allows this child window to inform parent it's going away
 */
 ZmNewWindow.unload = 
-function(ev) {	
+function(ev) {
+	if (!window.opener)
+		return;
+	
 	// compose controller adds listeners to parent window's list so we need to 
 	// remove them before closing this window!
 	if (window.command == "compose" || window.command == "composeDetach") {
