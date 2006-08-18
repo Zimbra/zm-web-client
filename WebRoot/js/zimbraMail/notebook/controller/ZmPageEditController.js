@@ -79,7 +79,7 @@ function(page) {
 	}
 
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
-	this._setView(this._currentView, elements, false);
+	this._setView(this._currentView, elements, false, false, false, true);
 };
 
 ZmPageEditController.prototype.getPage =
@@ -190,7 +190,7 @@ function(view) {
 };
 
 ZmPageEditController.prototype._setView =
-function(view, elements, isAppView, clear, pushOnly, isPoppable) {
+function(view, elements, isAppView, clear, pushOnly, isTransient) {
 	ZmListController.prototype._setView.apply(this, arguments);
 	//this._app._setViewMenu(view);
 
@@ -446,18 +446,14 @@ ZmPageEditController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
 	this._doSave(true);
+	this._app.popView(true);
+	this._app.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
-
-	// bug fix #5282
-	// check if the pending view is poppable - if so, force-pop this view first!
-	var avm = this._app.getAppViewMgr();
-	if (avm.isPoppable(avm.getPendingViewId()))
-		this._app.popView(true);
-
+	this._app.popView(true);
 	this._showCurrentPage();
 	this._app.getAppViewMgr().showPendingView(true);
 };
