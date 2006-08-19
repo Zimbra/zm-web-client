@@ -143,6 +143,7 @@ function() {
 
 ZmApptComposeView.prototype.set =
 function(appt, mode, isDirty) {
+	this._setData = [appt, mode, isDirty];
 	var button = this.getTabButton(this._apptTabKey);
 	if (mode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
 		button.setImage("ApptException");
@@ -158,7 +159,10 @@ function(appt, mode, isDirty) {
 
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
-		this._tabPages[id].initialize(appt, mode, isDirty);
+		var tabPage = this._tabPages[id];
+		if (!(tabPage instanceof AjxCallback)) {
+			tabPage.initialize(appt, mode, isDirty);
+		}
 	}
 	this._addChooserListener(this._tabPages[ZmApptComposeView.TAB_ATTENDEES]);
 	this._addChooserListener(this._tabPages[ZmApptComposeView.TAB_LOCATIONS]);
@@ -259,7 +263,6 @@ function(tabKey) {
 		this._tabPages[this._curTabId].tabBlur();
 	}
 	this._curTabId = this._tabIdByKey[tabKey];
-	this._controller._setApptComposeTabGroup();
 };
 
 ZmApptComposeView.prototype.getAppt = 
@@ -394,7 +397,7 @@ ZmApptComposeView.prototype._initialize =
 function() {
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
-		this._tabPages[id] = this._createTabViewPage(id);
+		this._tabPages[id] = i == 0 ? this._createTabViewPage(id) : new AjxCallback(this, this._initializeAddTab, [id]);
 		this._tabKeys[id] = this.addTab(ZmMsg[ZmApptComposeView.TAB_NAME[id]], this._tabPages[id]);
 		this._tabIdByKey[this._tabKeys[id]] = id;
 		var image = ZmApptComposeView.TAB_IMAGE[id];
@@ -410,19 +413,27 @@ function() {
 	this.addControlListener(new AjxListener(this, this._controlListener));
 };
 
+ZmApptComposeView.prototype._initializeAddTab = function(id, tabKey) {
+	var tabPage = this._createTabViewPage(id);
+	this._tabPages[id] = tabPage;
+	this.setTabView(tabKey, this._tabPages[id]);
+	tabPage.initialize.apply(tabPage, this._setData);
+	return tabPage;
+};
+
 ZmApptComposeView.prototype._createTabViewPage =
 function(id) {
 	switch (id) {
 		case ZmApptComposeView.TAB_APPOINTMENT :
-			return new ZmApptTabViewPage(this, this._appCtxt, this._attendees, this._dateInfo);
+			return new ZmApptTabViewPage(this, this._appCtxt, this._attendees, this._controller, this._dateInfo);
 		case ZmApptComposeView.TAB_SCHEDULE :
 			return new ZmSchedTabViewPage(this, this._appCtxt, this._attendees, this._controller, this._dateInfo);
 		case ZmApptComposeView.TAB_ATTENDEES :
-			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, ZmAppt.PERSON);
+			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.PERSON);
 		case ZmApptComposeView.TAB_LOCATIONS :
-			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, ZmAppt.LOCATION);
+			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.LOCATION);
 		case ZmApptComposeView.TAB_EQUIPMENT :
-			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, ZmAppt.EQUIPMENT);
+			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.EQUIPMENT);
 	}
 };
 
