@@ -369,7 +369,7 @@ function(item) {
 	div[DwtListView._STYLE_CLASS] = "Row";
 	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
 	div.className = div[DwtListView._STYLE_CLASS];
-			
+
 	var html = [];
 	var idx = 0;
 
@@ -385,7 +385,7 @@ function(item) {
 		} else if (id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
 			html[idx++] = "<td width=";
 			html[idx++] = this._headerList[i]._width;
-			html[idx++] = ">&nbsp;";
+			html[idx++] = "><nobr>&nbsp;";
 			html[idx++] = item.name;
 			html[idx++] = "</td>";
 		} else if (id.indexOf(ZmContactPicker.ID_EMAIL) == 0) {
@@ -395,11 +395,11 @@ function(item) {
 		}
 	}
 	html[idx++] = "</tr></table>";
-		
+
 	div.innerHTML = html.join("");
-		
+
 	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
-		
+
 	return div;
 };
 
@@ -417,12 +417,12 @@ function ZmContactChooserTargetListView(parent, showType) {
 ZmContactChooserTargetListView.prototype = new DwtChooserListView;
 ZmContactChooserTargetListView.prototype.constructor = ZmContactChooserTargetListView;
 
-ZmContactChooserTargetListView.prototype.toString = 
+ZmContactChooserTargetListView.prototype.toString =
 function() {
 	return "ZmContactChooserTargetListView";
 };
 
-ZmContactChooserTargetListView.prototype._getHeaderList = 
+ZmContactChooserTargetListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
 	if (this._showType) {
@@ -460,7 +460,7 @@ function(item) {
 		} else if (id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
 			html[idx++] = "<td width=";
 			html[idx++] = this._headerList[i]._width;
-			html[idx++] = ">&nbsp;";
+			html[idx++] = "><nobr>&nbsp;";
 			html[idx++] = item.name;
 			html[idx++] = "</td>";
 		} else if (id.indexOf(ZmContactPicker.ID_EMAIL) == 0) {
