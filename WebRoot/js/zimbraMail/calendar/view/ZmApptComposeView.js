@@ -164,9 +164,6 @@ function(appt, mode, isDirty) {
 			tabPage.initialize(appt, mode, isDirty);
 		}
 	}
-	this._addChooserListener(this._tabPages[ZmApptComposeView.TAB_ATTENDEES]);
-	this._addChooserListener(this._tabPages[ZmApptComposeView.TAB_LOCATIONS]);
-	this._addChooserListener(this._tabPages[ZmApptComposeView.TAB_EQUIPMENT]);
 };
 
 ZmApptComposeView.prototype.cleanup = 
@@ -182,7 +179,10 @@ function() {
 
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
-		this._tabPages[id].cleanup();
+		var tabPage = this._tabPages[id];
+		if (!(tabPage instanceof AjxCallback)) {
+			tabPage.cleanup();
+		}
 	}
 };
 
@@ -216,7 +216,8 @@ ZmApptComposeView.prototype.isDirty =
 function() {
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
-		if (this._tabPages[id].isDirty()) {
+		var tabPage = this._tabPages[id];
+		if (!(tabPage instanceof AjxCallback) && tabPage.isDirty()) {
 			return true;
 		}
 	}
@@ -227,7 +228,8 @@ ZmApptComposeView.prototype.isValid =
 function() {
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
-		if (!this._tabPages[id].isValid()) {
+		var tabPage = this._tabPages[id];
+		if (!(tabPage instanceof AjxCallback) && !tabPage.isValid()) {
 			return false;
 		}
 	}
@@ -283,7 +285,12 @@ function() {
 
 ZmApptComposeView.prototype.getTabPage =
 function(id) {
-	return this._tabPages[id];
+	var tabPage = this._tabPages[id];
+	if (tabPage instanceof AjxCallback) {
+		var tabKey = this._tabKeys[id];
+		tabPage = this._initializeAddTab(id, tabKey);
+	}
+	return tabPage;
 };
 
 ZmApptComposeView.prototype.switchToTab =
@@ -414,7 +421,10 @@ function() {
 };
 
 ZmApptComposeView.prototype._initializeAddTab = function(id, tabKey) {
-	var tabPage = this._createTabViewPage(id);
+	var tabPage = this._tabPages[id];
+	if (!(tabPage instanceof AjxCallback)) return tabPage;
+
+	tabPage = this._createTabViewPage(id);
 	this._tabPages[id] = tabPage;
 	this.setTabView(tabKey, this._tabPages[id]);
 	tabPage.initialize.apply(tabPage, this._setData);
@@ -423,18 +433,35 @@ ZmApptComposeView.prototype._initializeAddTab = function(id, tabKey) {
 
 ZmApptComposeView.prototype._createTabViewPage =
 function(id) {
+	var tabPage;
 	switch (id) {
-		case ZmApptComposeView.TAB_APPOINTMENT :
-			return new ZmApptTabViewPage(this, this._appCtxt, this._attendees, this._controller, this._dateInfo);
-		case ZmApptComposeView.TAB_SCHEDULE :
-			return new ZmSchedTabViewPage(this, this._appCtxt, this._attendees, this._controller, this._dateInfo);
-		case ZmApptComposeView.TAB_ATTENDEES :
-			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.PERSON);
-		case ZmApptComposeView.TAB_LOCATIONS :
-			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.LOCATION);
-		case ZmApptComposeView.TAB_EQUIPMENT :
-			return new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.EQUIPMENT);
+		case ZmApptComposeView.TAB_APPOINTMENT : {
+			tabPage = new ZmApptTabViewPage(this, this._appCtxt, this._attendees, this._controller, this._dateInfo);
+			break;
+		}
+		case ZmApptComposeView.TAB_SCHEDULE : {
+			tabPage = new ZmSchedTabViewPage(this, this._appCtxt, this._attendees, this._controller, this._dateInfo);
+			break;
+		}
+		case ZmApptComposeView.TAB_ATTENDEES : {
+			tabPage = new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.PERSON);
+			break;
+		}
+		case ZmApptComposeView.TAB_LOCATIONS : {
+			tabPage = new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.LOCATION);
+			break;
+		}
+		case ZmApptComposeView.TAB_EQUIPMENT : {
+			tabPage = new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.EQUIPMENT);
+			break;
+		}
 	}
+	if (id == ZmApptComposeView.TAB_ATTENDEES ||
+		id == ZmApptComposeView.TAB_LOCATIONS ||
+		id == ZmApptComposeView.TAB_EQUIPMENT) {
+		this._addChooserListener(tabPage);
+	}
+	return tabPage;
 };
 
 ZmApptComposeView.prototype._repeatChangeListener =
