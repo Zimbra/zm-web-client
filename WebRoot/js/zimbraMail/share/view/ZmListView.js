@@ -253,9 +253,9 @@ function(htmlArr, idx, item, field, colIdx, now) {
 	var fieldId = this._getFieldId(item, field);
 	var width = this._getFieldWidth(colIdx);
 	if (field == ZmItem.F_ITEM_TYPE) {
-		htmlArr[idx++] = "<td width=";
+		htmlArr[idx++] = "<td style='width:";
 		htmlArr[idx++] = width;
-		htmlArr[idx++] = " class='Icon'>";
+		htmlArr[idx++] = "' class='Icon'>";
 		htmlArr[idx++] = AjxImg.getImageHtml(ZmItem.ICON[item.type], null, ["id='", fieldId, "'"].join(""));
 		htmlArr[idx++] = "</td>";					
 	} else if (field == ZmItem.F_FLAG) {
@@ -268,11 +268,10 @@ function(htmlArr, idx, item, field, colIdx, now) {
 	} else if (field == ZmItem.F_TAG) {
 		if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
 			return idx;
-		var cellId = this._getFieldId(item, ZmItem.F_TAG_CELL);
 		htmlArr[idx++] = "<td width=";
 		htmlArr[idx++] = width;
 		htmlArr[idx++] = " class='Tag' id='";
-		htmlArr[idx++] = cellId;
+		htmlArr[idx++] = this._getFieldId(item, ZmItem.F_TAG_CELL);
 		htmlArr[idx++] = "'>";
 		htmlArr[idx++] = this._getTagImgHtml(item, fieldId);
 		htmlArr[idx++] = "</td>";
