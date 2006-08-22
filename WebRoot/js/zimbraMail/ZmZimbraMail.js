@@ -413,6 +413,8 @@ function(params) {
 		this.getApp(ZmZimbraMail.CALENDAR_APP).showMiniCalendar(true);
 	}
 
+	this._preloadViews();
+
 	// reset the user's time zone (save to prefs) if it has changed
 	var respCallback = new AjxCallback(this, this._handleResponseStartup1, [params]);
 	ZmTimezones.initializeServerTimezone(respCallback);
@@ -461,9 +463,11 @@ function() {
 		var body = match ? decodeURIComponent(match[1]) : null;
 		cc.doAction(ZmOperation.NEW_MESSAGE, false, null, to, subject, body);
 	}
+
+	// Back out code below (bug 10140) pending further investigation
 	// Setup an async load of the views we precreate
-	var ta = new AjxTimedAction(this, ZmZimbraMail.prototype._preloadViews);
-	AjxTimedAction.scheduleAction(ta, 500);
+//	var ta = new AjxTimedAction(this, ZmZimbraMail.prototype._preloadViews);
+//	AjxTimedAction.scheduleAction(ta, 500);
 };
 
 /**
