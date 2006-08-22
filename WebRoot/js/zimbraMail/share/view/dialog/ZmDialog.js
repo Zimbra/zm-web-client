@@ -41,12 +41,9 @@
 function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 
 	if (arguments.length == 0) return;
-	DBG.timePt("ZmDialog start", true);
 	DwtDialog.call(this, parent, className, title, null, extraButtons);
-	DBG.timePt("DwtDialog constructor");
 	if (!view) {
 		this.setContent(this._contentHtml());
-		DBG.timePt("setContent(_contentHtml())");
 	} else {
 		this.setView(view);
 	}
@@ -57,11 +54,10 @@ function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 		this._msgDialog = this._appCtxt.getMsgDialog();
 	}
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
-	
+
 	this._treeView = {};
 	this._opc = this._appCtxt.getOverviewController();
 	this._tabGroupComplete = false;
-	DBG.timePt("ZmDialog constructor");
 };
 
 ZmDialog.prototype = new DwtDialog;
@@ -82,7 +78,6 @@ function(newView, noReset) {
 
 ZmDialog.prototype.popup =
 function(data, loc) {
-	DBG.timePt("ZmDialog popup start");
 	if (!this._tabGroupComplete) {
 		// tab group filled in here rather than in the constructor
 		// because we need all the content fields to have been created
@@ -93,7 +88,6 @@ function(data, loc) {
 		this._tabGroupComplete = true;
 	}
 	DwtDialog.prototype.popup.call(this, loc);
-	DBG.timePt("ZmDialog popup end");
 };
 
 ZmDialog.prototype.reset =

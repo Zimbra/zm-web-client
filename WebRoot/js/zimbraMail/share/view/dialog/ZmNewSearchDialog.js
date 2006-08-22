@@ -27,7 +27,6 @@ function ZmNewSearchDialog(parent, msgDialog, className) {
 
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.saveSearch);
 
-	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
 	var omit = new Object();
 	omit[ZmFolder.ID_SPAM] = true;

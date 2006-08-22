@@ -27,7 +27,6 @@ function ZmRenameTagDialog(parent, msgDialog, className) {
 
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.renameTag);
 
-	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
 }
 
