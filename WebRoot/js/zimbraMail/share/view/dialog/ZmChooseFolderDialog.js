@@ -26,7 +26,6 @@
 function ZmChooseFolderDialog(parent, className) {
 	ZmDialog.call(this, parent, null, className, ZmMsg.chooseFolder);
 
-	this.setContent(this._contentHtml());
 	this._createOverview(ZmChooseFolderDialog._OVERVIEW_ID, this._folderTreeCellId);
 };
 

@@ -137,8 +137,9 @@ function() {
 */
 ZmAppCtxt.prototype.getSearchController =
 function() {
-	if (!this._searchController)
-		this._searchController = new ZmSearchController(this, this.getShell());
+	if (!this._searchController) {
+		this._searchController = new ZmSearchController(this, this._shell);
+	}
 	return this._searchController;
 };
 
@@ -147,29 +148,32 @@ function() {
 */
 ZmAppCtxt.prototype.getOverviewController =
 function() {
-	if (!this._overviewController)
-		this._overviewController = new ZmOverviewController(this, this.getShell());
+	if (!this._overviewController) {
+		this._overviewController = new ZmOverviewController(this, this._shell);
+	}
 	return this._overviewController;
 };
 
 ZmAppCtxt.prototype.getLoginDialog =
 function() {
-	if (!this._loginDialog)
-		this._loginDialog = new ZmLoginDialog(this.getShell(), this);
+	if (!this._loginDialog) {
+		this._loginDialog = new ZmLoginDialog(this._shell, this);
+	}
 	return this._loginDialog;
 };
 
 ZmAppCtxt.prototype.getMsgDialog =
 function() {
-	if (!this._msgDialog)
-		this._msgDialog = new DwtMessageDialog(this.getShell());
+	if (!this._msgDialog) {
+		this._msgDialog = new DwtMessageDialog(this._shell);
+	}
 	return this._msgDialog;
 };
 
 ZmAppCtxt.prototype.getYesNoMsgDialog =
 function() {
 	if (!this._yesNoMsgDialog) {
-		this._yesNoMsgDialog = new DwtMessageDialog(this.getShell(), null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
+		this._yesNoMsgDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
 	}	
 	return this._yesNoMsgDialog;
 };
@@ -177,7 +181,7 @@ function() {
 ZmAppCtxt.prototype.getYesNoCancelMsgDialog =
 function() {
 	if (!this._yesNoCancelMsgDialog) {
-		this._yesNoCancelMsgDialog = new DwtMessageDialog(this.getShell(), null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
+		this._yesNoCancelMsgDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON, DwtDialog.CANCEL_BUTTON]);
 	}	
 	return this._yesNoCancelMsgDialog;
 };
@@ -185,24 +189,23 @@ function() {
 ZmAppCtxt.prototype.getOkCancelMsgDialog =
 function() {
 	if (!this._okCancelMsgDialog) {
-		this._okCancelMsgDialog = new DwtMessageDialog(this.getShell(), null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
+		this._okCancelMsgDialog = new DwtMessageDialog(this._shell, null, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);
 	}	
 	return this._okCancelMsgDialog;
 };
 
 ZmAppCtxt.prototype.getErrorDialog = 
 function() {
-	if (!this._errorDialog)
-		this._errorDialog = new ZmErrorDialog(this.getShell(), this, ZmMsg);
+	if (!this._errorDialog) {
+		this._errorDialog = new ZmErrorDialog(this._shell, this, ZmMsg);
+	}
 	return this._errorDialog;
 };
 
 ZmAppCtxt.prototype.getNewTagDialog =
 function() {
 	if (!this._newTagDialog) {
-		var parent = this.getShell();
-		var msgDialog = this.getMsgDialog();
-		this._newTagDialog = new ZmNewTagDialog(parent, msgDialog);
+		this._newTagDialog = new ZmNewTagDialog(this._shell, this.getMsgDialog());
 	}
 	return this._newTagDialog;
 };
@@ -210,9 +213,7 @@ function() {
 ZmAppCtxt.prototype.getRenameTagDialog =
 function() {
 	if (!this._renameTagDialog) {
-		var parent = this.getShell();
-		var msgDialog = this.getMsgDialog();
-		this._renameTagDialog = new ZmRenameTagDialog(parent, msgDialog);
+		this._renameTagDialog = new ZmRenameTagDialog(this._shell, this.getMsgDialog());
 	}
 	return this._renameTagDialog;
 };
@@ -220,9 +221,7 @@ function() {
 ZmAppCtxt.prototype.getNewFolderDialog =
 function() {
 	if (!this._newFolderDialog) {
-		var parent = this.getShell();
-		var msgDialog = this.getMsgDialog();
-		this._newFolderDialog = new ZmNewFolderDialog(parent, msgDialog);
+		this._newFolderDialog = new ZmNewFolderDialog(this._shell, this.getMsgDialog());
 	}
 	return this._newFolderDialog;
 };
@@ -230,8 +229,7 @@ function() {
 ZmAppCtxt.prototype.getNewAddrBookDialog = 
 function() {
 	if (!this._newAddrBookDialog) {
-		var parent = this.getShell();
-		this._newAddrBookDialog = new ZmNewAddrBookDialog(parent);
+		this._newAddrBookDialog = new ZmNewAddrBookDialog(this._shell);
 	}
 	return this._newAddrBookDialog;
 }
@@ -239,9 +237,7 @@ function() {
 ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
 	if (!this._newCalendarDialog) {
-		var parent = this.getShell();
-		var msgDialog = this.getMsgDialog();
-		this._newCalendarDialog = new ZmNewCalendarDialog(parent, msgDialog);
+		this._newCalendarDialog = new ZmNewCalendarDialog(this._shell, this.getMsgDialog());
 	}
 	return this._newCalendarDialog;
 };
@@ -249,9 +245,7 @@ function() {
 ZmAppCtxt.prototype.getNewNotebookDialog =
 function() {
 	if (!this._newNotebookDialog) {
-		var parent = this.getShell();
-		var msgDialog = this.getMsgDialog();
-		this._newNotebookDialog = new ZmNewNotebookDialog(parent, msgDialog);
+		this._newNotebookDialog = new ZmNewNotebookDialog(this._shell, this.getMsgDialog());
 	}
 	return this._newNotebookDialog;
 };
@@ -259,7 +253,7 @@ function() {
 ZmAppCtxt.prototype.getPageConflictDialog =
 function() {
 	if (!this._pageConflictDialog) {
-		this._pageConflictDialog = new ZmPageConflictDialog(this, this.getShell());
+		this._pageConflictDialog = new ZmPageConflictDialog(this, this._shell);
 	}
 	return this._pageConflictDialog;
 };
@@ -267,9 +261,7 @@ function() {
 ZmAppCtxt.prototype.getNewRosterItemDialog =
 function() {
 	if (!this._newRosterItemDialog) {
-		var parent = this.getShell();
-		var msgDialog = this.getMsgDialog();
-		this._newRosterItemDialog = new ZmNewRosterItemDialog(parent, this, msgDialog);
+		this._newRosterItemDialog = new ZmNewRosterItemDialog(this._shell, this, this.getMsgDialog());
 	}
 	return this._newRosterItemDialog;
 };
@@ -277,9 +269,7 @@ function() {
 ZmAppCtxt.prototype.getNewSearchDialog =
 function() {
 	if (!this._newSearchDialog) {
-		var parent = this.getShell();
-		var msgDialog = this.getMsgDialog();
-		this._newSearchDialog = new ZmNewSearchDialog(parent, msgDialog);
+		this._newSearchDialog = new ZmNewSearchDialog(this._shell, this.getMsgDialog());
 	}
 	return this._newSearchDialog;
 };
@@ -287,9 +277,7 @@ function() {
 ZmAppCtxt.prototype.getRenameFolderDialog =
 function() {
 	if (!this._renameFolderDialog) {
-		var parent = this.getShell();
-		var msgDialog = this.getMsgDialog();
-		this._renameFolderDialog = new ZmRenameFolderDialog(parent, msgDialog);
+		this._renameFolderDialog = new ZmRenameFolderDialog(this._shell, this.getMsgDialog());
 	}
 	return this._renameFolderDialog;
 };
@@ -297,9 +285,7 @@ function() {
 ZmAppCtxt.prototype.getMoveToDialog =
 function() {
 	if (!this._moveToDialog) {
-		var parent = this.getShell();
-		var msgDialog = this.getMsgDialog();
-		this._moveToDialog = new ZmMoveToDialog(parent, msgDialog);
+		this._moveToDialog = new ZmMoveToDialog(this._shell, this.getMsgDialog());
 	}
 	return this._moveToDialog;
 };
@@ -307,54 +293,63 @@ function() {
 ZmAppCtxt.prototype.getChooseFolderDialog =
 function() {
 	if (!this._chooseFolderDialog) {
-		var parent = this.getShell();
-		this._chooseFolderDialog = new ZmChooseFolderDialog(parent);
+		this._chooseFolderDialog = new ZmChooseFolderDialog(this._shell);
 	}
 	return this._chooseFolderDialog;
 };
 
 ZmAppCtxt.prototype.getFolderPropsDialog =
 function() {
-	if (!this._folderPropsDialog)
-		this._folderPropsDialog = new ZmFolderPropsDialog(this, this.getShell());
+	if (!this._folderPropsDialog) {
+		this._folderPropsDialog = new ZmFolderPropsDialog(this, this._shell);
+	}
 	return this._folderPropsDialog;
 };
 
 ZmAppCtxt.prototype.getLinkPropsDialog =
 function() {
-	if (!this._linkPropsDialog)
-		this._linkPropsDialog = new ZmLinkPropsDialog(this, this.getShell());
+	if (!this._linkPropsDialog) {
+		this._linkPropsDialog = new ZmLinkPropsDialog(this, this._shell);
+	}
 	return this._linkPropsDialog;
 };
 
 ZmAppCtxt.prototype.getSharePropsDialog =
 function() {
-	if (!this._sharePropsDialog)
-		this._sharePropsDialog = new ZmSharePropsDialog(this, this.getShell());
+	if (!this._sharePropsDialog) {
+		this._sharePropsDialog = new ZmSharePropsDialog(this, this._shell);
+	}
 	return this._sharePropsDialog;
 };
 
-ZmAppCtxt.prototype.getAcceptShareDialog = function() {
-	if (!this._acceptShareDialog)
-		this._acceptShareDialog = new ZmAcceptShareDialog(this, this.getShell());
+ZmAppCtxt.prototype.getAcceptShareDialog =
+function() {
+	if (!this._acceptShareDialog) {
+		this._acceptShareDialog = new ZmAcceptShareDialog(this, this._shell);
+	}
 	return this._acceptShareDialog;
 };
 
-ZmAppCtxt.prototype.getDeclineShareDialog = function() { 
-	if (!this._declineShareDialog)
-		this._declineShareDialog = new ZmDeclineShareDialog(this, this.getShell());
+ZmAppCtxt.prototype.getDeclineShareDialog =
+function() {
+	if (!this._declineShareDialog) {
+		this._declineShareDialog = new ZmDeclineShareDialog(this, this._shell);
+	}
 	return this._declineShareDialog;
 };
 
-ZmAppCtxt.prototype.getRevokeShareDialog = function() {
-	if (!this._revokeShareDialog)
-		this._revokeShareDialog = new ZmRevokeShareDialog(this, this.getShell());
+ZmAppCtxt.prototype.getRevokeShareDialog =
+function() {
+	if (!this._revokeShareDialog) {
+		this._revokeShareDialog = new ZmRevokeShareDialog(this, this._shell);
+	}
 	return this._revokeShareDialog;
 };
 
-ZmAppCtxt.prototype.getMountFolderDialog = function() {
+ZmAppCtxt.prototype.getMountFolderDialog =
+function() {
 	if (!this._mountFolderDialog) {
-		this._mountFolderDialog = new ZmMountFolderDialog(this, this.getShell());
+		this._mountFolderDialog = new ZmMountFolderDialog(this, this._shell);
 	}
 	return this._mountFolderDialog;
 };
@@ -364,28 +359,32 @@ ZmAppCtxt.prototype.getMountFolderDialog = function() {
 */
 ZmAppCtxt.prototype.getFilterRuleDialog =
 function() {
-	if (!this._filterRuleDialog)
+	if (!this._filterRuleDialog) {
 		this._filterRuleDialog = new ZmFilterRuleDialog(this);
+	}
 	return this._filterRuleDialog;
 };
 
 ZmAppCtxt.prototype.getConfirmationDialog =
 function() {
-	if (!this._confirmDialog)
-		this._confirmDialog = new DwtConfirmDialog(this.getShell());
+	if (!this._confirmDialog) {
+		this._confirmDialog = new DwtConfirmDialog(this._shell);
+	}
 	return this._confirmDialog;
 };
 
 ZmAppCtxt.prototype.getUploadDialog =
 function() {
-	if (!this._uploadDialog)
-		this._uploadDialog = new ZmUploadDialog(this, this.getShell());
+	if (!this._uploadDialog) {
+		this._uploadDialog = new ZmUploadDialog(this, this._shell);
+	}
 	return this._uploadDialog;
 };
 ZmAppCtxt.prototype.getUploadConflictDialog =
 function() {
-	if (!this._uploadConflictDialog)
-		this._uploadConflictDialog = new ZmUploadConflictDialog(this, this.getShell());
+	if (!this._uploadConflictDialog) {
+		this._uploadConflictDialog = new ZmUploadConflictDialog(this, this._shell);
+	}
 	return this._uploadConflictDialog;
 };
 

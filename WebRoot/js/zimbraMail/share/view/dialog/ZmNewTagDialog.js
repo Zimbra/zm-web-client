@@ -26,7 +26,6 @@
 function ZmNewTagDialog(parent, msgDialog, className) {
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.createNewTag);
 
-	this.setContent(this._contentHtml());
 	this._setNameField(this._nameFieldId);
 	this._setTagColorMenu(this._tagColorButtonCellId);
 	DBG.timePt("set content");

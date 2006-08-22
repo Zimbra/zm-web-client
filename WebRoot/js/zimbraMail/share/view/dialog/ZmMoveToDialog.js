@@ -27,15 +27,12 @@ function ZmMoveToDialog(parent, msgDialog, className) {
 	var newButton = new DwtDialog_ButtonDescriptor(ZmMoveToDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.move, [newButton]);
 
-	this.setContent(this._contentHtml());
 	this._createOverview(ZmMoveToDialog._OVERVIEW_ID, this._folderTreeCellId);
-	DBG.timePt("setting content");
 
 	this.registerCallback(ZmMoveToDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._changeListener = new AjxListener(this, this._folderTreeChangeListener);
 
 	this._creatingFolder = false;
-	DBG.timePt("done");
 };
 
 ZmMoveToDialog._OVERVIEW_ID = "ZmMoveToFolderDialog";
@@ -98,7 +95,6 @@ function(data, loc) {
 	// this listener has to be added after folder tree view is set
 	// (so that it comes after the view's standard change listener)
 	folderTree.addChangeListener(this._changeListener);
-	DBG.timePt("render and register listeners", true);
 
 	ZmDialog.prototype.popup.call(this, loc);
 	for (var i = 0; i < treeIds.length; i++) {
@@ -111,7 +107,6 @@ function(data, loc) {
 			treeView.setSelected(tree.root);
 		}
 	}
-	DBG.timePt("expanded and selected");
 };
 
 ZmMoveToDialog.prototype.reset =

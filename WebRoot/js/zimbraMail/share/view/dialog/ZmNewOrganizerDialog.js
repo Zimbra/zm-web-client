@@ -28,8 +28,6 @@ function ZmNewOrganizerDialog(parent, msgDialog, className, title, type) {
 	
 	ZmDialog.call(this, parent, msgDialog, className, title);
 	this._organizerType = type;
-
-	this.setContent(this._contentHtml());
 	this._setupControls();
 };
 

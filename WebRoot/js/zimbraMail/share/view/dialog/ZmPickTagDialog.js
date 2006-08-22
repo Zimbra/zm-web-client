@@ -30,7 +30,6 @@ function ZmPickTagDialog(parent, msgDialog, className) {
 	var newButton = new DwtDialog_ButtonDescriptor(ZmPickTagDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.pickATag, [newButton]);
 
-	this.setContent(this._contentHtml());
 	this._setOverview(ZmPickTagDialog._OVERVIEW_ID, this._tagTreeCellId, [ZmOrganizer.TAG]);
 	this._tagTreeView = this._treeView[ZmOrganizer.TAG];
 	this._tagTree = this._appCtxt.getTree(ZmOrganizer.TAG);
