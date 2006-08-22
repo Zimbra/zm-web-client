@@ -420,7 +420,8 @@ function() {
 	this.addControlListener(new AjxListener(this, this._controlListener));
 };
 
-ZmApptComposeView.prototype._initializeAddTab = function(id, tabKey) {
+ZmApptComposeView.prototype._initializeAddTab =
+function(id, tabKey) {
 	var tabPage = this._tabPages[id];
 	if (!(tabPage instanceof AjxCallback)) return tabPage;
 
@@ -428,6 +429,13 @@ ZmApptComposeView.prototype._initializeAddTab = function(id, tabKey) {
 	this._tabPages[id] = tabPage;
 	this.setTabView(tabKey, this._tabPages[id]);
 	tabPage.initialize.apply(tabPage, this._setData);
+	if (id == ZmApptComposeView.TAB_ATTENDEES ||
+		id == ZmApptComposeView.TAB_LOCATIONS ||
+		id == ZmApptComposeView.TAB_EQUIPMENT) {
+
+		this._addChooserListener(tabPage);
+	}
+
 	return tabPage;
 };
 
@@ -456,11 +464,7 @@ function(id) {
 			break;
 		}
 	}
-	if (id == ZmApptComposeView.TAB_ATTENDEES ||
-		id == ZmApptComposeView.TAB_LOCATIONS ||
-		id == ZmApptComposeView.TAB_EQUIPMENT) {
-		this._addChooserListener(tabPage);
-	}
+
 	return tabPage;
 };
 
