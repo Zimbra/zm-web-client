@@ -288,7 +288,7 @@ function() {
 	html[i++] = "<td class='ZmFieldLabelCenter'>@</td><td id='";
 	html[i++] = this._startTimeSelectId;
 	html[i++] = "'></td>";
-	html[i++] = "<td width=100%></td></tr><tr><td class='ZmFieldLabelRight'>";
+	html[i++] = "</tr><tr><td class='ZmFieldLabelRight'>";
 	html[i++] = ZmMsg.endTime;
 	html[i++] = "</td><td>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
