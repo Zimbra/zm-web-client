@@ -94,6 +94,7 @@
 
 .BannerBar .quotabar {
 	@ProgressBarContainer@
+	background-color: #FFFFFF;
 	width: 100px;
 	height: 6px;
 }
