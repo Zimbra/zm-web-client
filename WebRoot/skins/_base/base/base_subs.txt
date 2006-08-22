@@ -717,7 +717,7 @@ MiniCalDay-gray				= @Text-disabled@
 
 # PROGRESS BARS
 
-ProgressBarContainer		= @PageBg@ @InsetBorder@ border-width:1px;
+ProgressBarContainer		= @InsetBorder@ border-width:1px; padding:1px;
 ProgressBarBg-info			= @InfoBg@		@FixIESizeQuirk@
 ProgressBarBg-warning		= @WarningBg@	@FixIESizeQuirk@
 ProgressBarBg-critical		= @CriticalBg@	@FixIESizeQuirk@

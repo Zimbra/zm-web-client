@@ -929,8 +929,11 @@ function() {
 	var idx = 0;
 	
 	var style = AjxEnv.isLinux ? " style='line-height: 13px'" : ""; 	// bug fix #3355
-	html[idx++] = "<center><table border=0 cellpadding=0 cellspacing=0><tr" + style + ">";
-	html[idx++] = "<td class='BannerText'>" + ZmMsg.quota + ": </td>";
+	html[idx++] = "<center><table border=0 cellpadding=0 cellspacing=0><tr";
+	html[idx++] = style;
+	html[idx++] = "><td class='BannerText'>";
+	html[idx++] = ZmMsg.quota;
+	html[idx++] = ": </td>";
 	var quotaTooltip = null;
 	if (quota) {
 		var limit = AjxUtil.formatSize(quota);
@@ -943,10 +946,16 @@ function() {
 		else if (percent >= 85)
 			progressClassName = "quotaCritical";
 		
-		html[idx++] = "<td><div class='quotabar'><div style='width: " + percent + ";' class='" + progressClassName + "'></div></div></td>";
-		quotaTooltip = ZmMsg.quota + ": " + percent + "% (" + size + " of " + limit + ")";
+		html[idx++] = "<td><div class='quotabar'><div style='width: ";
+		html[idx++] = percent;
+		html[idx++] = ";' class='";
+		html[idx++] = progressClassName;
+		html[idx++] = "'></div></div></td>";
+		quotaTooltip = [ZmMsg.quota, ": ", percent, "% (", size, " of ", limit, ")"].join("");
 	} else {
-		html[idx++] = "<td class='BannerText'> " + size + " of unlimited</td>";
+		html[idx++] = "<td class='BannerText'> ";
+		html[idx++] = size;
+		html[idx++] = " of unlimited</td>";
 	}
 	html[idx++] = "</tr></table></center>";
 	
@@ -956,10 +965,16 @@ function() {
 		var tooltip = [];
 		idx = 0;
 		tooltip[idx++] = "<table>";
-		if (userTooltip)
-			tooltip[idx++] = "<tr><td>" + userTooltip + "</td></tr>";
-		if (quotaTooltip)
-			tooltip[idx++] = "<tr><td>" + quotaTooltip + "</td></tr>";
+		if (userTooltip) {
+			tooltip[idx++] = "<tr><td>";
+			tooltip[idx++] = userTooltip;
+			tooltip[idx++] = "</td></tr>";
+		}
+		if (quotaTooltip) {
+			tooltip[idx++] = "<tr><td>";
+			tooltip[idx++] = quotaTooltip;
+			tooltip[idx++] = "</td></tr>";
+		}
 		tooltip[idx++] = "</table>";
 		this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(tooltip.join(""));
 	}
