@@ -1,3 +1,4 @@
+
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
@@ -670,12 +671,16 @@ td.DDSepInvisible div {
 	background-color:@WidgetBgColor@
 }
 
+.AlphabetBarCellFirst {
+	text-align:center;
+	@ActiveCursor@
+}
+
 .AlphabetBarCell {
-	@LeftSeparator@
 	text-align:center;
 	@ActiveCursor@
 	width:30px;
-	cursor: pointer;
+	min-width:30px;
 }
 
 .AlphabetBarDisabled {
