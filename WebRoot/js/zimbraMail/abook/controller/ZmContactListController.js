@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -28,7 +28,7 @@
 * @constructor
 * @class
 * This class manages list views of contacts. So far there are two different list
-* views, one that shows the contacts in a traditional list format, and the other 
+* views, one that shows the contacts in a traditional list format, and the other
 * which shows them as business cards. Since there are two views, we need to keep
 * track of which is the current view.
 *
@@ -45,10 +45,10 @@ function ZmContactListController(appCtxt, container, contactsApp) {
 	this._viewFactory = {};
 	this._viewFactory[ZmController.CONTACT_CARDS_VIEW] = ZmContactCardsView;
 	this._viewFactory[ZmController.CONTACT_SIMPLE_VIEW] = ZmContactSplitView;
-	
+
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
-	
+
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 	this._listeners[ZmOperation.PRINT_MENU] = new AjxListener(this, this._printContactListener);
 
@@ -74,7 +74,7 @@ ZmContactListController.SEARCH_TYPE_ANYWHERE	= 1 << 3;
 
 ZmContactListController.VIEWS = [ZmController.CONTACT_SIMPLE_VIEW, ZmController.CONTACT_CARDS_VIEW];
 
-ZmContactListController.prototype.toString = 
+ZmContactListController.prototype.toString =
 function() {
 	return "ZmContactListController";
 };
@@ -119,7 +119,7 @@ function(searchResult, bIsGalSearch, folderId) {
 
 		ZmListController.prototype.show.apply(this, [searchResult, this._currentView]);
 	}
-		
+
 	// reset offset if list view has been created
 	var view = this._currentView;
 	if (this._listView[view])
@@ -163,7 +163,7 @@ function(view, force, initialized) {
 	}
 };
 
-ZmContactListController.prototype.getFolderId = 
+ZmContactListController.prototype.getFolderId =
 function() {
 	return this._folderId;
 };
@@ -205,13 +205,13 @@ function() {
 ZmContactListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmContactListController.handleKeyAction");
-	
+
 	switch (actionCode) {
 
 		case ZmKeyMap.EDIT:
 			this._editListener();
 			break;
-			
+
 		case ZmKeyMap.PRINT:
 			if (this._appCtxt.get(ZmSetting.PRINT_ENABLED)) {
 				this._printContactListener();
@@ -256,7 +256,7 @@ function() {
 	return list;
 };
 
-ZmContactListController.prototype._getViewType = 
+ZmContactListController.prototype._getViewType =
 function() {
 	return this._currentView;
 };
@@ -266,7 +266,7 @@ function() {
 	return (this._appCtxt.get(ZmSetting.CONTACTS_VIEW) == "cards") ? ZmController.CONTACT_CARDS_VIEW : ZmController.CONTACT_SIMPLE_VIEW;
 };
 
-ZmContactListController.prototype._createNewView = 
+ZmContactListController.prototype._createNewView =
 function(view) {
 	this._parentView[view] = new this._viewFactory[view](this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
 	var listView = this._parentView[view].getListView();
@@ -275,17 +275,17 @@ function(view) {
 	return listView;
 };
 
-ZmContactListController.prototype._getTagMenuMsg = 
+ZmContactListController.prototype._getTagMenuMsg =
 function(num) {
 	return (num == 1) ? ZmMsg.AB_TAG_CONTACT : ZmMsg.AB_TAG_CONTACTS;
 };
 
-ZmContactListController.prototype._getMoveDialogTitle = 
+ZmContactListController.prototype._getMoveDialogTitle =
 function(num) {
 	return (num == 1) ? ZmMsg.AB_MOVE_CONTACT : ZmMsg.AB_MOVE_CONTACTS;
 };
 
-ZmContactListController.prototype._initializeToolBar = 
+ZmContactListController.prototype._initializeToolBar =
 function(view) {
 	if (this._toolbar[view]) return;
 
@@ -299,7 +299,7 @@ function(view) {
 	this._setNavToolBar(tb, view);
 };
 
-ZmContactListController.prototype._initializeActionMenu = 
+ZmContactListController.prototype._initializeActionMenu =
 function(view) {
 	ZmListController.prototype._initializeActionMenu.call(this);
 
@@ -313,10 +313,13 @@ function(view) {
 
 ZmContactListController.prototype._initializeAlphabetBar =
 function(view) {
+	if (view == this._currentView)
+		return;
+
 	var pv = this._parentView[this._currentView];
 	var alphaBar = pv ? pv.getAlphabetBar() : null;
 	var current = alphaBar ? alphaBar.getCurrent() : null;
-	var idx = current ? current.getData(Dwt.KEY_ID) : null;
+	var idx = current ? current.getAttribute("_idx") : null;
 	if (idx) {
 		var newAlphaBar = this._parentView[view].getAlphabetBar();
 		if (newAlphaBar)
@@ -352,12 +355,12 @@ function(view) {
 	return menu;
 };
 
-ZmContactListController.prototype._setupPrintMenu = 
+ZmContactListController.prototype._setupPrintMenu =
 function(view) {
 	var printButton = this._toolbar[view].getButton(ZmOperation.PRINT_MENU);
 	var menu = new ZmPopupMenu(printButton);
 	printButton.setMenu(menu);
-	
+
 	var id = ZmOperation.PRINT_CONTACTLIST;
 	var mi = menu.createMenuItem(id, ZmOperation.getProp(id, "image"), ZmMsg[ZmOperation.getProp(id, "textKey")]);
 	mi.setData(ZmOperation.MENUITEM_ID, id);
@@ -365,7 +368,7 @@ function(view) {
 };
 
 // Resets the available options on a toolbar or action menu.
-ZmContactListController.prototype._resetOperations = 
+ZmContactListController.prototype._resetOperations =
 function(parent, num) {
 	var printMenuItem;
 	if (parent instanceof ZmButtonToolBar) {
@@ -407,7 +410,7 @@ function(parent, num) {
 	}
 };
 
-ZmContactListController.prototype._resetNavToolBarButtons = 
+ZmContactListController.prototype._resetNavToolBarButtons =
 function(view) {
 	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
 
@@ -443,14 +446,14 @@ function(view) {
 ZmContactListController.prototype._listSelectionListener =
 function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
-	
+
 	if (ev.detail == DwtListView.ITEM_SELECTED)
 	{
 		this._resetNavToolBarButtons(this._currentView);
 		if (this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
 			this._parentView[this._currentView].setContact(ev.item, this.isGalSearch());
-	} 
-	else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) 
+	}
+	else if (ev.detail == DwtListView.ITEM_DBL_CLICKED)
 	{
 		var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(ev.item.folderId);
 		if (!this.isGalSearch() && (folder == null || !folder.isReadOnly()))
@@ -502,16 +505,16 @@ function(ev) {
 	this._app.getContactController().show(contact, false);
 };
 
-ZmContactListController.prototype._settingsChangeListener = 
+ZmContactListController.prototype._settingsChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
-	
+
 	// mark flag for relayout if contacts per page setting changed
 	if (ev.source.id == ZmSetting.CONTACTS_PER_PAGE)
 		this._searchType |= ZmContactListController.SEARCH_TYPE_NEW;
 };
 
-ZmContactListController.prototype._printListener = 
+ZmContactListController.prototype._printListener =
 function(ev) {
 	if (!this._printView)
 		this._printView = new ZmPrintView(this._appCtxt);
@@ -527,11 +530,11 @@ function(ev) {
 	}
 };
 
-ZmContactListController.prototype._printContactListener = 
+ZmContactListController.prototype._printContactListener =
 function(ev) {
 	if (!this._printView)
 		this._printView = new ZmPrintView(this._appCtxt);
-	
+
 	var contacts = this._listView[this._currentView].getSelection();
 	if (contacts.length == 1) {
 		var contact = contacts[0];
@@ -554,7 +557,7 @@ function(result, contact) {
 };
 
 // Returns the type of item in the underlying list
-ZmContactListController.prototype._getItemType = 
+ZmContactListController.prototype._getItemType =
 function() {
 	return ZmItem.CONTACT;
 };
@@ -583,10 +586,10 @@ function(view, bPageForward) {
 	}
 };
 
-ZmContactListController.prototype._doDelete = 
+ZmContactListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
-	// if more contacts to show, 
+	// if more contacts to show,
 	var size = this._listView[this._currentView].getSelectedItems().size();
 	if (size == 0) {
 		// and if in split view allow split view to clear
@@ -597,7 +600,7 @@ function(items, hardDelete, attrs) {
 	}
 };
 
-ZmContactListController.prototype._checkReplenish = 
+ZmContactListController.prototype._checkReplenish =
 function() {
 	// reset the listview
 	var listview = this._listView[this._currentView];
