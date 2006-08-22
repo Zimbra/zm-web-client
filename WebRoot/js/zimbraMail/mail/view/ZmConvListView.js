@@ -179,9 +179,9 @@ function(conv, now, isDndIcon, isMixedView, myDiv) {
 		} else if (isMixedView && id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ICON]) == 0) {
 			// Type icon (mixed view only)
 			if (conv.isDraft) {
-				htmlArr[idx++] = "<td width=";
-				htmlArr[idx++] = this._headerList[i]._width;
-				htmlArr[idx++] = " class='Icon'>";
+				htmlArr[idx++] = "<td style='width:";
+				htmlArr[idx++] = this._getFieldWidth(i);
+				htmlArr[idx++] = "' class='Icon'>";
 				htmlArr[idx++] = AjxImg.getImageHtml("MsgStatusDraft", null, ["id='", this._getFieldId(conv, ZmItem.F_STATUS), "'"].join(""));
 				htmlArr[idx++] = "</td>";
 			} else {
