@@ -681,7 +681,7 @@ function(ev) {
 		var a = this.getArray();
 		var taggedItems = [];
 		for (var i = 0; i < a.length; i++) {
-			var item = this.getById(a[i].id);	// make sure item is realized (contact may not be)
+			var item = a[i];
 			if (item && item.hasTag(tag.id)) {
 				item.tagLocal(tag.id, false);
 				taggedItems.push(item);
