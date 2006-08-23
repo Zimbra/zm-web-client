@@ -51,7 +51,6 @@ ZmLogin.skinCookieLifetime = 63072000000; // two years
 
 ZmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + location.port + "/service/soap/";
 ZmLogin.ZIMBRA_APP_URI  = location.port == "80" ? appContextPath+"/mail" : ":" + location.port + appContextPath+"/mail";
-ZmLogin.MAILBOX_REGEX =/^([a-zA-Z0-9_\.\-])+(\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+)?$/;
 
 /**
 * Puts up the auth screen, first checking to see if the browser is one we support.
@@ -309,7 +308,7 @@ function(uname, pword, result) {
 
 ZmLogin.isValidUsername =
 function(uname) {
-	return uname.match(ZmLogin.MAILBOX_REGEX);
+	return uname.match(ZmEmailAddress.accountPat) || ZmEmailAddress.isValid(uname);
 };
 
 ZmLogin.handleLogin =
