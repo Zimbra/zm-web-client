@@ -244,6 +244,7 @@ function(htmlArr, idx, item, className) {
 
 ZmListView.prototype._getFieldWidth =
 function(colIdx) {
+	// IE/Safari do not obey box model properly so we over compensate :(
 	return AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[colIdx]._width + 4): this._headerList[colIdx]._width;
 };
 

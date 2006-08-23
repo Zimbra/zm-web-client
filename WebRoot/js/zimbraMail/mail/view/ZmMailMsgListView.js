@@ -98,18 +98,12 @@ function(items, on) {
 		if (img && img.parentNode) {
 			if (on) {
 				var imageInfo;
-				if (item.isInvite())
-					imageInfo = "Appointment";
-				else if (item.isDraft)
-					imageInfo = "MsgStatusDraft";
-				else if (item.isReplied)
-					imageInfo = "MsgStatusReply";
-				else if (item.isForwarded)
-					imageInfo = "MsgStatusForward";
-				else if (item.isSent)
-					imageInfo = "MsgStatusSent";
-				else
-					imageInfo = "MsgStatusRead";
+				if (item.isInvite())		imageInfo = "Appointment";
+				else if (item.isDraft)		imageInfo = "MsgStatusDraft";
+				else if (item.isReplied)	imageInfo = "MsgStatusReply";
+				else if (item.isForwarded)	imageInfo = "MsgStatusForward";
+				else if (item.isSent)		imageInfo = "MsgStatusSent";
+				else						imageInfo = "MsgStatusRead";
 			} else {
 				imageInfo = item.isInvite() ? "Appointment" : "MsgStatusUnread";
 			}
@@ -163,8 +157,7 @@ function(msg, now, isDndIcon, isMixedView) {
 			continue;
 
 		var id = this._headerList[i]._id;
-		// IE/Safari do not obey box model properly so we over compensate :(
-		var width = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
+		var width = this._getFieldWidth(i);
 		
 		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) == 0) {
 			// Flags
@@ -174,25 +167,23 @@ function(msg, now, isDndIcon, isMixedView) {
 			idx = this._getField(htmlArr, idx, msg, ZmItem.F_TAG, i);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) == 0) {
 			// Status
-			htmlArr[idx++] = "<td width=" + width + "><center>";
+			htmlArr[idx++] = "<td width=";
+			htmlArr[idx++] = width;
+			htmlArr[idx++] = "><center>";
 			var imageInfo;
-			if (msg.isInvite())
-				imageInfo = "Appointment";
-			else if (msg.isDraft)
-				imageInfo = "MsgStatusDraft";
-			else if (msg.isReplied)
-				imageInfo = "MsgStatusReply";
-			else if (msg.isForwarded)
-				imageInfo = "MsgStatusForward";
-			else if (msg.isSent)
-				imageInfo = "MsgStatusSent";
-			else
-				imageInfo = msg.isUnread ? "MsgStatusUnread" : "MsgStatusRead";
+			if (msg.isInvite())			imageInfo = "Appointment";
+			else if (msg.isDraft)		imageInfo = "MsgStatusDraft";
+			else if (msg.isReplied)		imageInfo = "MsgStatusReply";
+			else if (msg.isForwarded)	imageInfo = "MsgStatusForward";
+			else if (msg.isSent)		imageInfo = "MsgStatusSent";
+			else						imageInfo = msg.isUnread ? "MsgStatusUnread" : "MsgStatusRead";
 			htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, ["id='", this._getFieldId(msg, ZmItem.F_STATUS), "'"].join(""));	
 			htmlArr[idx++] = "</center></td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) == 0) {
 			// Participants
-			htmlArr[idx++] = "<td width=" + width + ">";
+			htmlArr[idx++] = "<td width=";
+			htmlArr[idx++] = width;
+			htmlArr[idx++] = ">";
 			if (this._mode == ZmController.TRAD_VIEW && 
 				(msg.folderId == ZmFolder.ID_SENT || msg.folderId == ZmFolder.ID_DRAFTS)) 
 			{
@@ -213,9 +204,12 @@ function(msg, now, isDndIcon, isMixedView) {
 						} else if (parts.length > 1 && j > 0) {
 							htmlArr[idx++] = ", ";
 						}
-						// bug fix #3001 - always add one to the index value (to take FROM: address into account)
-						var partId = fieldId + "_" + (parts[j].index+1);
-						htmlArr[idx++] = "<span style='white-space: nowrap' id='" + partId + "'>";
+						htmlArr[idx++] = "<span style='white-space: nowrap' id='";
+						htmlArr[idx++] = fieldId;
+						htmlArr[idx++] = "_";
+						// bug fix #3001 - always add one to index value (to take FROM: address into account)
+						htmlArr[idx++] = parts[j].index+1;
+						htmlArr[idx++] = "'>";
 						htmlArr[idx++] = parts[j].name;
 						htmlArr[idx++] = "</span>";
 						if (parts.length == 1 && parts.length < origLen)
@@ -225,7 +219,9 @@ function(msg, now, isDndIcon, isMixedView) {
 			} else {
 				var fromAddr = msg.getAddress(ZmEmailAddress.FROM);
 				if (fromAddr) {
-					htmlArr[idx++] = "<span style='white-space:nowrap' id='" + this._getFieldId(msg, ZmItem.F_FROM) + "'>";
+					htmlArr[idx++] = "<span style='white-space:nowrap' id='";
+					htmlArr[idx++] = this._getFieldId(msg, ZmItem.F_FROM);
+					htmlArr[idx++] = "'>";
 					var name = fromAddr.getName() || fromAddr.getDispName();
 					htmlArr[idx++] = AjxStringUtil.htmlEncode(name);
 					htmlArr[idx++] = "</span>";
@@ -240,11 +236,15 @@ function(msg, now, isDndIcon, isMixedView) {
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
 			// Fragment
 			if (this._mode == ZmController.CONV_VIEW) {
-				htmlArr[idx++] = "<td id='" + this._getFieldId(msg, ZmItem.F_FRAGMENT) + "'";
+				htmlArr[idx++] = "<td id='";
+				htmlArr[idx++] = this._getFieldId(msg, ZmItem.F_FRAGMENT);
+				htmlArr[idx++] = "'";
 				htmlArr[idx++] = AjxEnv.isSafari ? " style='width:auto;'><div style='overflow:hidden'>" : " width=100%>";
 				htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
 			} else {
-				htmlArr[idx++] = "<td id='" + this._getFieldId(msg, ZmItem.F_SUBJECT) + "'";
+				htmlArr[idx++] = "<td id='";
+				htmlArr[idx++] = this._getFieldId(msg, ZmItem.F_SUBJECT);
+				htmlArr[idx++] = "'";
 				htmlArr[idx++] = AjxEnv.isSafari ? " style='width:auto;'><div style='overflow:hidden'>" : " width=100%>";
 				var subj = msg.getSubject() || ZmMsg.noSubject;
 				htmlArr[idx++] = AjxStringUtil.htmlEncode(subj);
@@ -254,22 +254,31 @@ function(msg, now, isDndIcon, isMixedView) {
 					htmlArr[idx++] = "</span>";
 				}
 			}
-			htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
-			htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
+			if (AjxEnv.isNav)
+				htmlArr[idx++] = ZmListView._fillerString;
+			if (AjxEnv.isSafari)
+				htmlArr[idx++] = "</div>";
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER]) == 0) {
 			// Folder
-			htmlArr[idx++] = "<td width=" + width + ">";
-			htmlArr[idx++] = "<nobr id='" + this._getFieldId(msg, ZmItem.F_FOLDER) + "'>"; // required for IE bug
+			htmlArr[idx++] = "<td width=";
+			htmlArr[idx++] = width;
+			htmlArr[idx++] = ">";
+			htmlArr[idx++] = "<nobr id='";
+			htmlArr[idx++] = this._getFieldId(msg, ZmItem.F_FOLDER);
+			htmlArr[idx++] = "'>"; // required for IE bug
 			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(msg.folderId);
-			htmlArr[idx++] = folder ? folder.getName() : "";
+			if (folder)
+				htmlArr[idx++] = folder.getName();
 			htmlArr[idx++] = "</nobr>";
 			if (AjxEnv.isNav)
 				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]) == 0) {
 			// Size
-			htmlArr[idx++] = "<td width=" + this._headerList[i]._width + "><nobr>";
+			htmlArr[idx++] = "<td width=";
+			htmlArr[idx++] = width;
+			htmlArr[idx++] = "><nobr>";
 			htmlArr[idx++] = AjxUtil.formatSize(msg.size);
 			if (AjxEnv.isNav)
 				htmlArr[idx++] = ZmListView._fillerString;
