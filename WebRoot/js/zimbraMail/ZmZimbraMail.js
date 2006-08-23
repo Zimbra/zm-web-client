@@ -404,7 +404,9 @@ function(params) {
 	var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
 	ZmController._setCurrentAppViewTabGroup(dummyTg);
 	rootTg.addMember(dummyTg);
-	rootTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
+	var appChooserTg = new DwtTabGroup("ZmAppChooser");
+	appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
+	rootTg.addMember(appChooserTg);
 	var kbMgr = this._shell.getKeyboardMgr();
 	kbMgr.setTabGroup(rootTg);
 
