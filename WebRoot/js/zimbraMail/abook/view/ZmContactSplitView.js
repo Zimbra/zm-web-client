@@ -285,7 +285,6 @@ function(contact, isGal) {
 
 	// set body
 	var contactBodyDiv = document.getElementById(this._contactBodyId);
-
 	var width = this._contactPart.getSize().x / 2;
 
 	var html = new Array();
@@ -354,8 +353,12 @@ function(contact, isGal) {
 
 		if (workField || workURL) {
 			html[idx++] = "<div class='contactOutput'>";
-			if (workField) 	html[idx++] = (workField + "<br>");
-			if (workURL) 	html[idx++] = this._generateObject(workURL, ZmObjectManager.URL);
+			if (workField) {
+				html[idx++] = workField;
+				html[idx++] = "<br>";
+			}
+			if (workURL)
+				html[idx++] = this._generateObject(workURL, ZmObjectManager.URL);
 			html[idx++] = "</div>";
 		}
 		html[idx++] = "</td>";
@@ -395,8 +398,12 @@ function(contact, isGal) {
 
 		if (homeField || homeURL) {
 			html[idx++] = "<div class='contactOutput'>";
-			if (homeField) 	html[idx++] = homeField + "<br>";
-			if (homeURL) 	html[idx++] = this._generateObject(homeURL, ZmObjectManager.URL);
+			if (homeField) {
+				html[idx++] = homeField;
+				html[idx++] = "<br>";
+			}
+			if (homeURL)
+				html[idx++] = this._generateObject(homeURL, ZmObjectManager.URL);
 			html[idx++] = "</div>";
 		}
 		html[idx++] = "</td>";
@@ -431,8 +438,12 @@ function(contact, isGal) {
 
 		if (otherField || otherURL) {
 			html[idx++] = "<div class='contactOutput'>";
-			if (otherField) html[idx++] = otherField + "<br>";
-			if (otherURL) 	html[idx++] = this._generateObject(otherURL, ZmObjectManager.URL);
+			if (otherField) {
+				html[idx++] = otherField;
+				html[idx++] = "<br>";
+			}
+			if (otherURL)
+				html[idx++] = this._generateObject(otherURL, ZmObjectManager.URL);
 			html[idx++] = "</div>";
 		}
 		html[idx++] = "</td>";
@@ -455,8 +466,7 @@ function(contact, isGal) {
 		html[idx++] = "<br><br></td></tr>";
 	}
 
-	html[idx++] = "</table>";
-	html[idx++] = "</div>";
+	html[idx++] = "</table></div>";
 
 	contactBodyDiv.innerHTML = html.join("");
 };
@@ -479,7 +489,9 @@ function(contact) {
 		var attr = ["id='", this._tagCellId, tag.id, "'"].join("");
 		// XXX: set proper class name for link once defined!
 		html[idx++] = "<a href='javascript:;' class='' onclick='ZmContactSplitView._tagClicked(";
-		html[idx++] = '"' + tag.id + '"';
+		html[idx++] = '"';
+		html[idx++] = tag.id;
+		html[idx++] = '"';
 		html[idx++] = "); return false;'>"
 		html[idx++] = AjxImg.getImageSpanHtml(icon, null, attr, tag.name);
 		html[idx++] = "</a>&nbsp;";
@@ -566,7 +578,7 @@ function(list, defaultColumnSort) {
 ZmContactSimpleView.prototype._modifyContact =
 function(ev) {
 	ZmContactsBaseView.prototype._modifyContact.call(this, ev);
-	
+
 	if (ev.getDetail("fileAsChanged")) {
 		var selected = this.getSelection()[0];
 		this._layout();
@@ -625,7 +637,8 @@ function(contact, now, isDndIcon) {
 	// file as
 	htmlArr[idx++] = "<td style='vertical-align:middle;'>&nbsp;";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
-	htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
+	if (AjxEnv.isNav)
+		htmlArr[idx++] = ZmListView._fillerString;
 	htmlArr[idx++] = "</td>";
 
 	if (!isDndIcon) {
@@ -660,16 +673,12 @@ function(contact, now, isDndIcon) {
 	var htmlArr = [];
 	var idx = 0;
 
-	// Table
 	idx = this._getTable(htmlArr, idx, isDndIcon);
-
-	// Row
 	idx = this._getRow(htmlArr, idx, contact);
 	
 	for (var i = 0; i < this._headerList.length; i++) {
 		var id = this._headerList[i]._id;
-		// IE does not obey box model properly so we over compensate :(
-		var width = AjxEnv.isIE ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
+		var width = this._getFieldWidth(i);
 
 		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ICON]) == 0) {
 			// Type icon
@@ -682,8 +691,11 @@ function(contact, now, isDndIcon) {
 			idx = this._getField(htmlArr, idx, contact, ZmItem.F_TAG, i);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) == 0) {
 			// Name (fileAs)
-			htmlArr[idx++] = "<td width=" + width;
-			htmlArr[idx++] = " id='" + this._getFieldId(contact, ZmItem.F_PARTICIPANT) + "'>";
+			htmlArr[idx++] = "<td width=";
+			htmlArr[idx++] = width;
+			htmlArr[idx++] = " id='";
+			htmlArr[idx++] = this._getFieldId(contact, ZmItem.F_PARTICIPANT);
+			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
 			if (AjxEnv.isNav)
 				htmlArr[idx++] = ZmListView._fillerString;
@@ -693,13 +705,19 @@ function(contact, now, isDndIcon) {
 			idx = this._getField(htmlArr, idx, contact, ZmItem.F_ATTACHMENT, i);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
 			// Company
-			htmlArr[idx++] = "<td id='" + this._getFieldId(contact, ZmItem.F_COMPANY) + "'>";
+			htmlArr[idx++] = "<td id='";
+			htmlArr[idx++] = this._getFieldId(contact, ZmItem.F_COMPANY);
+			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getCompanyField());
-			htmlArr[idx++] = AjxEnv.isNav ? ZmListView._fillerString : "";
+			if (AjxEnv.isNav)
+				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
-			htmlArr[idx++] = "<td width=" + width;
-			htmlArr[idx++] = " id='" + this._getFieldId(contact, ZmItem.F_DATE) + "'>";
+			htmlArr[idx++] = "<td width=";
+			htmlArr[idx++] = width;
+			htmlArr[idx++] = " id='";
+			htmlArr[idx++] = this._getFieldId(contact, ZmItem.F_DATE);
+			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = AjxDateUtil.computeDateStr(now, contact.modified);
 			if (AjxEnv.isNav)
 				htmlArr[idx++] = ZmListView._fillerString;
