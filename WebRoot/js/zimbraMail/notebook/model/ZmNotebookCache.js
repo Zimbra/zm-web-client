@@ -47,6 +47,22 @@ ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PATH_BODY_TEMPLATE] = true;
 ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PATH_ITEM_TEMPLATE] = true;
 ZmNotebookCache._SPECIAL_NAMES[ZmNotebook.PATH_SEPARATOR] = true;
 
+ZmNotebookCache._SPECIAL_CONTENT = {};
+ZmNotebookCache._SPECIAL_CONTENT[ZmNotebook.PAGE_INDEX] =
+	"<wiklet class='TOC'/>"
+;
+ZmNotebookCache._SPECIAL_CONTENT[ZmNotebook.PAGE_CHROME] = [
+	"<div style='margin:0.5em'>",
+		"<h1><wiklet class='NAME'/></h1>",
+		"<div class='ZmStatusWarningToast' style='margin:1em'>",
+			ZmMsg.wikiTemplatesMissing,
+		"</div>",
+		"<div>",
+			"<wiklet class='CONTENT'/>",
+		"</div>",
+	"</div>"
+].join("");
+
 //
 // Data
 //
@@ -226,6 +242,16 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 					page.folderId = folderId;
 				}
 			}
+		}
+
+		// check for mandatory pages
+		for (var specialName in ZmNotebookCache._SPECIAL_CONTENT) {
+			if (this._foldersMap[folderId][specialName]) continue;
+			var page = new ZmPage(this._appCtxt);
+			page.name = specialName;
+			page.folderId = folderId;
+			page.setContent(ZmNotebookCache._SPECIAL_CONTENT[specialName]);
+			this.putPage(page);
 		}
 
 		return this._foldersMap[folderId][name];
