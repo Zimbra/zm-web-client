@@ -321,7 +321,7 @@ ZmZimletContext.prototype._handleMenuItemSelected = function(ev) {
 	if (data.actionUrl) {
 		this.handleActionUrl(data.actionUrl[0], data.canvas);
 	} else {
-		this.callHandler("menuItemSelected", [ data.id, data, ev ]);
+		this.callHandler("menuItemSelected", [ data.id, data ]);
 	}
 };
 

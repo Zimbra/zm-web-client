@@ -313,12 +313,13 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 	var controller = app.getComposeController();
 
 	var action = ZmOperation.NEW_MESSAGE;
+	var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
 	var msg = new ZmMailMsg(this._appCtxt);
 	var toOverride = null;
 	var subjOverride = new AjxListFormat().format(names);
 	var extraBodyText = urls.join("\n");
 
-	controller.doAction(action, this._inNewWindow(event), msg, toOverride, subjOverride, extraBodyText);
+	controller.doAction(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText);
 };
 
 ZmNotebookController.prototype._detachListener = function(event) {

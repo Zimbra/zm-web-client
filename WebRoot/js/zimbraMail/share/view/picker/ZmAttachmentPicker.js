@@ -25,7 +25,7 @@
 
 function ZmAttachmentPicker(parent) {
 	ZmPicker.call(this, parent, ZmPicker.ATTACHMENT);
-    this._checkedItems = {};
+    this._checkedItems = new Object();
 };
 
 ZmAttachmentPicker.prototype = new ZmPicker;
@@ -38,10 +38,10 @@ ZmAttachmentPicker.ANY	= 2;
 ZmAttachmentPicker.SPEC	= 3;
 ZmAttachmentPicker.RADIO_BUTTONS = [ZmAttachmentPicker.NONE, ZmAttachmentPicker.ANY, ZmAttachmentPicker.SPEC];
 ZmAttachmentPicker.MSG_KEY = new Object();
-ZmAttachmentPicker.MSG_KEY[ZmAttachmentPicker.NONE]	= "noAtt";
-ZmAttachmentPicker.MSG_KEY[ZmAttachmentPicker.ANY]	= "anyAtt";
-ZmAttachmentPicker.MSG_KEY[ZmAttachmentPicker.SPEC]	= "specAtt";
-ZmAttachmentPicker.RADIO_CHECKED = ZmAttachmentPicker.SPEC;
+ZmAttachmentPicker.MSG_KEY[ZmAttachmentPicker.NONE] = "noAtt";
+ZmAttachmentPicker.MSG_KEY[ZmAttachmentPicker.ANY] = "anyAtt";
+ZmAttachmentPicker.MSG_KEY[ZmAttachmentPicker.SPEC] = "specAtt";
+ZmAttachmentPicker.RADIO_CHECKED = ZmAttachmentPicker.ANY;
 
 ZmAttachmentPicker.ATT_KEY = "_att_";
 
@@ -57,9 +57,8 @@ function(tree, atts) {
 	ti.setData(ZmAttachmentPicker.ATT_KEY, atts[0].desc);
 	ti.setText(atts[0].desc);
 	var types = new Array();
-	for (var i = 0; i < atts.length; i++) {
+	for (var i = 0; i < atts.length; i++)
 		types.push(atts[i].type);
-	}
 	ti.setToolTipContent(types.join("<br />"));
 	return ti;
 };
@@ -94,28 +93,25 @@ function(parent) {
 
 	var picker = new DwtComposite(parent);
 
-    this._radio = {};
-    this._radioId = {};
+    this._radio = new Object();
+    this._radioId = new Object();
 
-	for (var i = 0; i < ZmAttachmentPicker.RADIO_BUTTONS.length; i++) {
+	for (var i = 0; i < ZmAttachmentPicker.RADIO_BUTTONS.length; i++)
 		this._radioId[ZmAttachmentPicker.RADIO_BUTTONS[i]] = Dwt.getNextId();
-	}
 
 	var treeId = Dwt.getNextId();
 	
 	var html = new Array(10);
 	var idx = 0;
 	html[idx++] = "<table cellpadding='2' cellspacing='0' border='0'>";
-	for (var i = 0; i < ZmAttachmentPicker.RADIO_BUTTONS.length; i++) {
+	for (var i = 0; i < ZmAttachmentPicker.RADIO_BUTTONS.length; i++)
 		html[idx++] = this._newRadio(ZmAttachmentPicker.RADIO_BUTTONS[i]);
-	}
 	html[idx++] = "</table>";
 	html[idx++] = "<div id='" + treeId + "'><hr /></div>";
 	picker.getHtmlElement().innerHTML = html.join("");
 
-	for (var i = 0; i < ZmAttachmentPicker.RADIO_BUTTONS.length; i++) {
+	for (var i = 0; i < ZmAttachmentPicker.RADIO_BUTTONS.length; i++)
 		this._setupRadio(ZmAttachmentPicker.RADIO_BUTTONS[i]);
-	}
 	
     var tti, ti;
 	var tree = this._tree = new DwtTree(picker, DwtTree.CHECKEDITEM_STYLE);
@@ -128,8 +124,8 @@ function(parent) {
 ZmAttachmentPicker.prototype._handleResponseSetupPicker =
 function(attachTypeList, tree, treeId) {
 	var attachments = attachTypeList.getAttachments();
-	this._attsByDesc = {};
-	var attDesc = [];
+	this._attsByDesc = new Object();
+	var attDesc = new Array();
 	var curDesc = null;
 	for (var i = 0; i < attachments.length; i++) {
 		var desc = attachments[i].desc;
@@ -140,13 +136,12 @@ function(attachTypeList, tree, treeId) {
 		this._attsByDesc[desc].push(attachments[i]);
 		curDesc = desc;
 	}
-	for (var i = 0; i < attDesc.length; i++) {
+	for (var i = 0; i < attDesc.length; i++)
 		this._newType(tree, this._attsByDesc[attDesc[i]]);
-	}
 
 	this._treeDiv = document.getElementById(treeId);
 	this._treeDiv.appendChild(tree.getHtmlElement());
-	Dwt.setVisible(this._treeDiv, ZmAttachmentPicker.RADIO_CHECKED == ZmAttachmentPicker.RADIO_CHECKED);
+	Dwt.setVisible(this._treeDiv, false);
 	
 	this._updateQuery();
 };
@@ -166,18 +161,16 @@ function() {
 	} else if (this._radio[ZmAttachmentPicker.NONE].checked) {
 		this.setQuery("attachment:none");	
 	} else {
-		var types = [];
+		var types = new Array();
 		for (var desc in this._checkedItems) {
 			var atts = this._attsByDesc[desc];
-			for (var i = 0; i < atts.length; i++) {
+			for (var i = 0; i < atts.length; i++)
 				types.push('"' + atts[i].type + '"');
-			}
 		}
 		if (types.length) {
 			var attStr = types.join(" OR ");
-			if (types.length > 1) {
+			if (types.length > 1)
 				attStr = "(" + attStr + ")";
-			}
 			this.setQuery("attachment:" + attStr);
 		} else {
 			this.setQuery("");
@@ -191,16 +184,14 @@ function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED) {
  		// bug fix #7057 - remove when new version of safari is release
  		// see http://bugzilla.opendarwin.org/show_bug.cgi?id=7279
- 		if (AjxEnv.isSafari) {
+ 		if (AjxEnv.isSafari)
  			ev.item._checkBox.checked = !ev.item._checkBox.checked;
- 		}
  		var ti = ev.item;
  		var checked = ti.getChecked();
-		if (checked) {
+		if (checked)
 			this._checkedItems[ti.getData(ZmAttachmentPicker.ATT_KEY)] = true;
-		} else {
+		else
 			delete this._checkedItems[ti.getData(ZmAttachmentPicker.ATT_KEY)];
-		}
 		this._updateQuery();
  	}
 };
