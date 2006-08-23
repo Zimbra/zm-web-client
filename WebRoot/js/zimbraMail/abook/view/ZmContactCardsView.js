@@ -264,7 +264,9 @@ function(contact, now, isDndIcon, getHtml) {
 	html[idx++] = "</td></tr>";
 	if (!contact.isLoaded()) {
 		html[idx++] = "<tr><td colspan=10 class='FinishLoading' onclick='ZmContactCardsView._loadContact(this, ";
-		html[idx++] = '"' + contact.id + '"';
+		html[idx++] = '"';
+		html[idx++] = contact.id;
+		html[idx++] = '"';
 		html[idx++] = ")'><center>";
 		html[idx++] = ZmMsg.finishLoading;
 		html[idx++] = "</center></td></tr>";
@@ -475,7 +477,7 @@ function(list) {
 	var idx = 0;
 	var list = list.getArray();
 
-	html[idx++] = "<table border=0 style='width: 6.5in'>";
+	html[idx++] = "<table border=0 style='width:6.5in'>";
 
 	for (var i = 0; i < list.length; i++) {
 		var contact = list[i];
@@ -489,7 +491,7 @@ function(list) {
 			html[idx++] = "<tr>";
 		html[idx++] = "<td valign=top height=100%>";
 
-		html[idx++] = "<div style='height: 100%; width: 2.2in; border: 1px solid #CCCCCC;'>";
+		html[idx++] = "<div style='height:100%; width:2.2in; border:1px solid #CCCCCC; overflow-x:hidden'>";
 		html[idx++] = ZmContactView.getPrintHtml(contact, true);
 		html[idx++] = "</div>";
 
