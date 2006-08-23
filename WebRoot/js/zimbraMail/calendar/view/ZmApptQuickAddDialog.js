@@ -197,8 +197,8 @@ function() {
 	var html = [];
 	var i = 0;
 
-	html[i++] = "<table border=0 width=325>";
-	html[i++] = "<tr><td class='ZmApptTabViewPageField'><div style='width:75px'><sup>*</sup>";
+	html[i++] = "<table border=0 width=330>";
+	html[i++] = "<tr><td class='ZmApptTabViewPageField'><div style='width:70px'><sup>*</sup>";
 	html[i++] = ZmMsg.subject;
 	html[i++] = ":</div></td><td colspan=2 id='";
 	html[i++] = this._subjectFieldId;

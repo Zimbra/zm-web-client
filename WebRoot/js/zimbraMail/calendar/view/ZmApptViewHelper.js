@@ -69,12 +69,13 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 	// create button
 	var dateButton = new DwtButton(parent, null, "DwtSelect");
 	dateButton.addDropDownSelectionListener(dateButtonListener);
-
-    //	MOW: don't set height explicitly -- allow to default to smallest size possible
-    // 	dateButton.setSize(20, null);
+	if (AjxEnv.isIE)
+		dateButton.setSize("20");
 
 	// create menu for button
-	var calMenu = new DwtMenu(dateButton, DwtMenu.CALENDAR_PICKER_STYLE, null, null, isInDialog);
+	var calMenu = new DwtMenu(dateButton, null, null, null, isInDialog);
+	calMenu.setSize("150");
+	calMenu._table.width = "100%";
 	dateButton.setMenu(calMenu, true);
 
 	// create mini cal for menu for button
@@ -83,9 +84,7 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 	cal.addSelectionListener(dateCalSelectionListener);
 
 	// reparent and cleanup
-	var buttonCell = document.getElementById(buttonId);
-	if (buttonCell)
-		buttonCell.appendChild(dateButton.getHtmlElement());
+	dateButton.reparentHtmlElement(buttonId);
 	delete buttonId;
 
 	return dateButton;
