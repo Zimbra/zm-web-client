@@ -865,9 +865,9 @@ function(findHits) {
 
 				// bug fix #6500 - append filename w/in so "Save As" wont append .html at the end
 				var insertIdx = url.indexOf("?auth=co&");
-				url = url.substring(0,insertIdx) +
-					  window.escape(AjxStringUtil.urlComponentEncode(attach.filename)) +
-					  url.substring(insertIdx);
+				var fn = AjxStringUtil.urlComponentEncode(attach.filename);
+				fn = fn.replace(/'/g, "%27");
+				url = url.substring(0,insertIdx) + fn + url.substring(insertIdx);
 
 				props.link = "<a target='_blank' class='AttLink' href='" + url + "'>";
 				if (!useCL) {
