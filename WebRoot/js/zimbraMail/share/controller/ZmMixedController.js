@@ -284,7 +284,7 @@ function(ev) {
 	var actionMenu = this.getActionMenu();
 	var miUndelete = actionMenu.getMenuItem(ZmOperation.UNDELETE);
 	var miMoveTo = actionMenu.getMenuItem(ZmOperation.MOVE);
-	var folderId = activeSearch ? this._activeSearch.search.folderId : null;
+	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
 	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 	var folder = folderTree && folderId ? folderTree.getById(folderId) : null;
 
