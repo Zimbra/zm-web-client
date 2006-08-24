@@ -685,31 +685,6 @@ function(parent) {
 };
 
 /*
-* This override is here because some moves are actually "spam" or
-* "not spam" operations.
-*
-* @param items		[Array]			a list of items to move
-* @param folder		[ZmFolder]		destination folder
-* @param attrs		[Object]		additional attrs for SOAP command
-*/
-ZmMailListController.prototype._doMove = 
-function(items, folder, attrs) {
-	// check to make sure user isn't actually trying to spam/unspam
-	if (folder.id == ZmFolder.ID_SPAM) {
-		this._doSpam(items, true);
-		return;
-	} 
-
-	// if we're already in the spam folder, and we're not moving spam to trash, unspam!
-	if (this._getSearchFolderId() == ZmFolder.ID_SPAM && folder.id != ZmFolder.ID_TRASH) {
-		this._doSpam(items, false, folder);
-	} else {
-		// otherwise just call base class
-		ZmListController.prototype._doMove.call(this, items, folder, attrs);
-	}
-};
-
-/*
 * Marks the given items as "spam" or "not spam". Items marked as spam are moved to
 * the Junk folder. If items are being moved out of the Junk folder, they will be
 * marked "not spam", and the destination folder may be provided. It defaults to Inbox
