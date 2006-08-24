@@ -154,7 +154,7 @@ function(initHide) {
 			this._createToolBar();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._apptView;
-	    this._app.createView(ZmController.APPOINTMENT_VIEW, elements, callbacks, null, true);
+	    this._app.createView(ZmController.APPOINTMENT_VIEW, elements, callbacks, false, true);
 	    if (initHide) {
 	    	this._apptView.preload();
 	    } else {
@@ -206,6 +206,19 @@ function(actionCode) {
 			var tabView = this._apptView.getTabView(this._apptView.getCurrentTab());
 			if (tabView && tabView.toggleAllDayField) {
 				tabView.toggleAllDayField();
+			}
+			break;
+
+		case ZmKeyMap.HTML_FORMAT:
+			if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+				var mode = this._apptView.getComposeMode();
+				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
+				this._formatListener(null, newMode);
+				// reset the radio button for the format button menu
+				var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
+				if (formatBtn) {
+					formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, newMode, true);
+				}
 			}
 			break;
 
@@ -438,13 +451,11 @@ function(ev) {
 };
 
 ZmApptComposeController.prototype._formatListener = 
-function(ev) {
-	if (!ev.item.getChecked()) 
-		return;
+function(ev, mode) {
+	if (!mode && !(ev && ev.item.getChecked())) return;
 	
-	var mode = ev.item.getData(ZmHtmlEditor._VALUE);
-	if (mode == this._apptView.getComposeMode())
-		return;
+	mode = mode || ev.item.getData(ZmHtmlEditor._VALUE);
+	if (mode == this._apptView.getComposeMode()) return;
 	
 	if (mode == DwtHtmlEditor.TEXT) {
 		// if formatting from html to text, confirm w/ user!
@@ -509,12 +520,7 @@ ZmApptComposeController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
 	if (this._doSave()) {
-		// bug fix #5282
-		// check if the pending view is poppable - if so, force-pop this view first!
-		var avm = this._app.getAppViewMgr();
-		if (avm.isPoppable(avm.getPendingViewId()))
-			this._app.popView(true);
-
+		this._app.popView(true);
 		this._app.getAppViewMgr().showPendingView(true);
 	}
 };
@@ -522,13 +528,7 @@ function() {
 ZmApptComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
-
-	// bug fix #5282
-	// check if the pending view is poppable - if so, force-pop this view first!
-	var avm = this._app.getAppViewMgr();
-	if (avm.isPoppable(avm.getPendingViewId()))
-		this._app.popView(true);
-
+	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
 	this._apptView.cleanup();
 };
@@ -544,8 +544,9 @@ function(ev) {
 	this._textModeOkCancel.popdown();
 	// reset the radio button for the format button menu
 	var formatBtn = this._toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
-	if (formatBtn)
+	if (formatBtn) {
 		formatBtn.getMenu().checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML, true);
+	}
 	this._apptView.reEnableDesignMode();
 };
 

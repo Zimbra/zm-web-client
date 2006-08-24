@@ -218,9 +218,9 @@ function(content, startIndex) {
 // - spanElement
 // - contentObjText
 // - matchContext
-// - canvas
+// - event
 ZmZimletBase.prototype.clicked =
-function(spanElement, contentObjText, matchContext, canvas) {
+function(spanElement, contentObjText, matchContext, event) {
 	var c = this.xmlObj("contentObject.onClick");
 	if (c && c.actionUrl) {
 		var obj = { objectContent: contentObjText };

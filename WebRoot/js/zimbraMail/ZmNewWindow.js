@@ -78,9 +78,9 @@ function() {
 ZmNewWindow.run =
 function(domain) {
 
-	// inherit parent window's debug level
-	DBG.setDebugLevel(window.opener.DBG._level);
-	
+	// inherit parent window's debug level but only enable debug window if not already open
+	DBG.setDebugLevel(window.opener.DBG._level, true);
+
 	// Create the global app context
 	var appCtxt = new ZmAppCtxt();
 
@@ -107,7 +107,10 @@ function(domain) {
 * Allows this child window to inform parent it's going away
 */
 ZmNewWindow.unload = 
-function(ev) {	
+function(ev) {
+	if (window.opener == null || window.parentController == null)
+		return;
+
 	// compose controller adds listeners to parent window's list so we need to 
 	// remove them before closing this window!
 	if (window.command == "compose" || window.command == "composeDetach") {
@@ -125,7 +128,7 @@ function(ev) {
 
 ZmNewWindow._confirmExitMethod =
 function(ev) {
-	if (window.command == "compose" || window.command == "composeDetach") {
+	if (window.parentController && (window.command == "compose" || window.command == "composeDetach")) {
 		// is there a better way to get a ref to the compose controller?
 		var shell = AjxCore.objectWithId(window._dwtShell);
 		var appCtxt = shell ? shell.getData(ZmAppCtxt.LABEL) : null;
