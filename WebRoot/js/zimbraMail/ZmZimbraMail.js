@@ -293,7 +293,6 @@ function() {
 		// close all child windows
 		for (var i = 0; i < childWinList.size(); i++) {
 			var childWin = childWinList.get(i);
-			childWin.win.onbeforeunload = null;
 			childWin.win.parentController = null;
 			childWin.win.close();
 		}
@@ -1241,14 +1240,12 @@ function(ex, method, params, restartOnError, obj) {
 	var handled = false;
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
 		var organizerTypes = [ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
-		if (ex.data.itemId && ex.data.itemId.length) {
-			var itemId = ex.data.itemId[0];
-			var index = itemId.lastIndexOf(':');
-			var zid = itemId.substring(0, index);
-			var rid = itemId.substring(index + 1, itemId.length);
-			for (var type = 0; type < organizerTypes.length; type++) {
-				handled |= this._handleNoSuchFolderError(organizerTypes[type], zid, rid, true);
-			}
+		var itemId = ex.data.itemId[0];
+		var index = itemId.lastIndexOf(':');
+		var zid = itemId.substring(0, index);
+		var rid = itemId.substring(index + 1, itemId.length);
+		for (var type = 0; type < organizerTypes.length; type++) {
+			handled |= this._handleNoSuchFolderError(organizerTypes[type], zid, rid, true);
 		}
 	}
 	if (!handled) {
@@ -1977,7 +1974,7 @@ function(ev) {
 	try {
 		var searchController = this._appCtxt.getSearchController();
 		var id = ev.item.getData(Dwt.KEY_ID);
-		DBG.println(AjxDebug.DBG1, "ZmZimbraMail button press: " + id);
+		DBG.println("ZmZimbraMail button press: " + id);
 		if (id == ZmAppChooser.B_EMAIL) {
 			this.activateApp(ZmZimbraMail.MAIL_APP);
 		} else if (id == ZmAppChooser.B_CONTACTS) {

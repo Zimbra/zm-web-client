@@ -120,74 +120,6 @@ function() {
 	this._controller._resetToolbarOperations();
 };
 
-ZmApptView.prototype.getPrintHtml =
-function() {
-	var idx = 0;
-	var html = [];
-
-	html[idx++] = "<div style='width: 100%; background-color: #EEEEEE'>";
-	html[idx++] = "<table border=0 width=100%><tr>";
-
-	// print subject and date
-	html[idx++] = "<td><font size=+1>";
-	html[idx++] = this._appt.getName();
-	html[idx++] = "</font></td><td align=right><font size=+1>";
-	html[idx++] = this._getTimeString(this._appt);
-	html[idx++] = "</font></td></tr></table>";
-
-	html[idx++] = "<table border=0 width=100%>";
-
-	// print location
-	var location = this._appt.getLocation(true);
-	if (location) {
-		idx = this._printField(ZmMsg.location, location, html, idx);
-	}
-
-	// print resources
-	var equipment = this._appt.getEquipmentText(true);
-	if (equipment) {
-		idx = this._printField(ZmMsg.resources, equipment, html, idx);
-	}
-
-	// print organizer/attendees
-	var attendees = this._appt.getAttendeesText();
-	if (attendees) {
-		var organizer = this._appt.getOrganizer();
-		if (organizer) {
-			idx = this._printField(ZmMsg.organizer, organizer, html, idx);
-		}
-		idx = this._printField(ZmMsg.attendees, attendees, html, idx);
-	}
-
-	// print recurrence blurb
-	var repeatStr = this._appt._getRecurrenceBlurbForSave();
-	if (repeatStr) {
-		idx = this._printField(ZmMsg.repeats, repeatStr, html, idx);
-	}
-
-	// print attachments
-	var attachStr = this._getAttachString(this._appt);
-	if (attachStr) {
-		idx = this._printField(ZmMsg.attachments, attachStr, html, idx, true);
-	}
-
-	html[idx++] = "</table></div>";
-
-	// finally, print notes
-	var hasHtmlPart = (this._appt.notesTopPart && this._appt.notesTopPart.getContentType() == ZmMimeTable.MULTI_ALT);
-	var mode = (hasHtmlPart && this._appCtxt.get(ZmSetting.VIEW_AS_HTML))
-			? ZmMimeTable.TEXT_HTML : ZmMimeTable.TEXT_PLAIN;
-	var bodyPart = this._appt.getNotesPart(mode);
-	if (bodyPart) {
-		html[idx++] = "<div style='padding:10px; font-size:12px'>";
-		html[idx++] = bodyPart;
-		html[idx++] = "</div>";
-	}
-
-	return html.join("");
-};
-
-
 // Private / protected methods
 
 ZmApptView.prototype._renderAppt =
@@ -305,17 +237,6 @@ function(label, value, html, i) {
 	html[i++] = "</td></tr>";
 	
 	return i;
-};
-
-ZmApptView.prototype._printField =
-function(label, value, html, idx, dontEncode) {
-	html[idx++] = "<tr><td valign=top style='text-align:right; font-size:14px'>";
-	html[idx++] = label;
-	html[idx++] = ": </td><td width=100% style='font-size:14px'>";
-	html[idx++] = !dontEncode ? AjxStringUtil.htmlEncode(value) : value;
-	html[idx++] = "</td></tr>";
-
-	return idx;
 };
 
 ZmApptView.prototype._getTimeString = 

@@ -929,13 +929,10 @@ function(sched) {
 		sched._coloredCells[0].className = ZmSchedTabViewPage.FREE_CLASS;
 		sched._coloredCells.shift();
 	}
+
 	var allAttColors = this._allAttendeesSlot._coloredCells;
 	while (allAttColors.length > 0) {
-		var idx = allAttColors[0].cellIndex;
-		// clear all attendees cell if it's now free
-		if (this._allAttendees[idx] == 0) {
-			allAttColors[0].className = ZmSchedTabViewPage.FREE_CLASS;
-		}
+		allAttColors[0].className = ZmSchedTabViewPage.FREE_CLASS;
 		allAttColors.shift();
 	}
 };
