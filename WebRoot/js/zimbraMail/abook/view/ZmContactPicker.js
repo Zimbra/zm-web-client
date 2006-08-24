@@ -246,7 +246,8 @@ function(columnItem, ascending) {
 	var types = AjxVector.fromArray([ZmItem.CONTACT]);
 	var params = {query: this._query, types: types, sortBy: sortBy, offset: 0, limit: ZmContactPicker.SEARCHFOR_MAX, contactSource: this._contactSource};
 	var search = new ZmSearch(this._appCtxt, params);
-	search.execute({callback: new AjxCallback(this, this._handleResponseSearch)});
+	search.execute({callback: new AjxCallback(this, this._handleResponseSearch),
+					errorCallback: new AjxCallback(this, this._handleErrorSearch)});
 };
 
 ZmContactPicker.prototype._handleResponseSearch = 
@@ -270,6 +271,12 @@ function(result) {
 	this._chooser.setItems(AjxVector.fromArray(list));
 
 	this._searchButton.setEnabled(true);
+};
+
+ZmContactPicker.prototype._handleErrorSearch = 
+function() {
+	this._searchButton.setEnabled(true);
+	return false;
 };
 
 // Done choosing addresses, add them to the compose form
