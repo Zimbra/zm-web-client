@@ -71,11 +71,12 @@ ZmEmailAddress.toSoapType[ZmEmailAddress.CC]		= "c";
 ZmEmailAddress.toSoapType[ZmEmailAddress.BCC]		= "b";
 ZmEmailAddress.toSoapType[ZmEmailAddress.REPLY_TO]	= "r";
 
-ZmEmailAddress.SEPARATOR = "; ";			// used to join addresses
-ZmEmailAddress.DELIMS = [';', ',', '\n'];	// recognized as address delimiters
+ZmEmailAddress.SEPARATOR = "; ";				// used to join addresses
+ZmEmailAddress.DELIMS = [';', ',', '\n', ' '];	// recognized as address delimiters
 ZmEmailAddress.IS_DELIM = {};
-for (var i = 0; i < ZmEmailAddress.DELIMS.length; i++)
+for (var i = 0; i < ZmEmailAddress.DELIMS.length; i++) {
 	ZmEmailAddress.IS_DELIM[ZmEmailAddress.DELIMS[i]] = true;
+}
 
 // validation patterns
 
@@ -212,7 +213,13 @@ function(str) {
 * semicolon		must not be inside quoted or comment text
 * comma			must not be inside quoted or comment text, and must follow an address (which
 *				may be in angle brackets)
+* space			can only separate plain addresses (no quoted or comment text)
 * </pre></p>
+* <p>
+* The requirement that a comma follow an address allows us to be lenient when a mailer
+* doesn't quote the friendly part, so that a string such as the one below is split correctly:
+* 	<code>Smith, John &lt;jsmith@aol.com&gt;</code>
+* </p>
 *
 * @param str	the string to be split
 */
@@ -220,7 +227,7 @@ ZmEmailAddress.split =
 function(str) {
 	str = AjxStringUtil.trim(str);
 	// first, construct a list of ranges to ignore because they are quoted or comment text
-	var ignore = new Array();
+	var ignore = [];
 	var pos = 0, startPos = 0;
 	var prevCh = "", startCh = "";
 	var inside = false;
@@ -245,11 +252,14 @@ function(str) {
 		}
 		prevCh = ch;
 	}
+	if (ignore.length) {
+		ZmEmailAddress.IS_DELIM[" "] = false;
+	}
 	
 	// Progressively scan the string for delimiters. Once an email string has been found, continue with
 	// the remainder of the original string.
 	startPos = 0;
-	var addrList = new Array();
+	var addrList = [];
 	while (startPos < str.length) {
 		var sub = str.substring(startPos, str.length);
 		pos = 0;
@@ -269,13 +279,21 @@ function(str) {
 				if (!doIgnore) {
 					var doAdd = true;
 					var test = sub.substring(0, pos);
-					if (ch == ",")
+					if (ch == ",") {
+						// comma is allowed as non-delimeter outside quote/comment
 						doAdd = test.match(ZmEmailAddress.boundAddrPat);
+					}
 					if (doAdd) {
 						addrList.push(test);
 						delimPos = pos;
 						startPos += test.length + 1;
 					}
+				}
+				// strip extra delimeters
+				ch = str.charAt(startPos);
+				while ((startPos < str.length) && ZmEmailAddress.IS_DELIM[ch]) {
+					startPos++;
+					ch = str.charAt(startPos);
 				}
 				pos++;
 			} else {
@@ -287,6 +305,8 @@ function(str) {
 			startPos += sub.length + 1;
 		}
 	}
+	ZmEmailAddress.IS_DELIM[" "] = true;
+
 	return addrList;
 };
 
