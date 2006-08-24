@@ -69,12 +69,13 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 	// create button
 	var dateButton = new DwtButton(parent, null, "DwtSelect");
 	dateButton.addDropDownSelectionListener(dateButtonListener);
-
-    //	MOW: don't set height explicitly -- allow to default to smallest size possible
-    // 	dateButton.setSize(20, null);
+	if (AjxEnv.isIE)
+		dateButton.setSize("20");
 
 	// create menu for button
-	var calMenu = new DwtMenu(dateButton, DwtMenu.CALENDAR_PICKER_STYLE, null, null, isInDialog);
+	var calMenu = new DwtMenu(dateButton, null, null, null, isInDialog);
+	calMenu.setSize("150");
+	calMenu._table.width = "100%";
 	dateButton.setMenu(calMenu, true);
 
 	// create mini cal for menu for button
@@ -83,9 +84,7 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 	cal.addSelectionListener(dateCalSelectionListener);
 
 	// reparent and cleanup
-	var buttonCell = document.getElementById(buttonId);
-	if (buttonCell)
-		buttonCell.appendChild(dateButton.getHtmlElement());
+	dateButton.reparentHtmlElement(buttonId);
 	delete buttonId;
 
 	return dateButton;
@@ -647,7 +646,6 @@ function(ev, startSelect, endSelect, startDateField, endDateField) {
 	var endDate = AjxDateUtil.simpleParseDateStr(endDateField.value);
 	var startDateOrig = startDateField.value;
 	var endDateOrig = endDateField.value;
-	var changedDateField = null;
 	if (select.id == ZmTimeSelect.START) {
 		var hours = (select.compId == ZmTimeSelect.HOUR) ? ev._args.oldValue : startSelect.getHours();
 		var minutes = (select.compId == ZmTimeSelect.MINUTE) ? ev._args.oldValue : startSelect.getMinutes();
@@ -656,15 +654,17 @@ function(ev, startSelect, endSelect, startDateField, endDateField) {
 		var newStartDateMs = ZmTimeSelect.getDateFromFields(startSelect.getHours(), startSelect.getMinutes(), startSelect.getAmPm(), startDate).getTime();
 		var oldEndDateMs = ZmTimeSelect.getDateFromFields(endSelect.getHours(), endSelect.getMinutes(), endSelect.getAmPm(), endDate).getTime();
 		var delta = oldEndDateMs - oldStartDateMs;
+		if (!delta) return null;
 		var newEndDateMs = newStartDateMs + delta;
 		var newEndDate = new Date(newEndDateMs);
 		endSelect.set(newEndDate);
 		endDateField.value = AjxDateUtil.simpleComputeDateStr(newEndDate);
 		if (endDateField.value != endDateOrig) {
-			changedDateField = endDateField;
+			return endDateField;
 		}
+	} else {
+		return null;
 	}
-	return changedDateField;
 };
 
 /**

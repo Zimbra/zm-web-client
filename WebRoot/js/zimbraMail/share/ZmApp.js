@@ -78,8 +78,8 @@ function(view) {
 }
 
 ZmApp.prototype.createView =
-function(viewName, elements, callbacks, isAppView, isPoppable) {
-	return this._appViewMgr.createView(viewName, this._name, elements, callbacks, isAppView, isPoppable);
+function(viewName, elements, callbacks, isAppView, isTransient) {
+	return this._appViewMgr.createView(viewName, this._name, elements, callbacks, isAppView, isTransient);
 }
 
 ZmApp.prototype.pushView =
