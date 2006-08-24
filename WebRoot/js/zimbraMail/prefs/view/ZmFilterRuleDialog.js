@@ -83,18 +83,6 @@ ZmFilterRuleDialog.INPUT_NUM_CHARS = 15;
 ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH		= 120;
 ZmFilterRuleDialog.PLUS_MINUS_BUTTON_WIDTH	= 20;
 
-// column widths
-ZmFilterRuleDialog.COL_WIDTH = {};
-ZmFilterRuleDialog.COL_WIDTH["subject"]		= 120;
-ZmFilterRuleDialog.COL_WIDTH["subjectMod"]	= 120;
-ZmFilterRuleDialog.COL_WIDTH["ops"]			= 100;
-ZmFilterRuleDialog.COL_WIDTH["value"]		= ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH;
-ZmFilterRuleDialog.COL_WIDTH["valueMod"]	= 20;
-ZmFilterRuleDialog.COL_WIDTH["Plus"]		= ZmFilterRuleDialog.PLUS_MINUS_BUTTON_WIDTH;
-ZmFilterRuleDialog.COL_WIDTH["Minus"]		= ZmFilterRuleDialog.PLUS_MINUS_BUTTON_WIDTH;
-ZmFilterRuleDialog.COL_WIDTH["name"]		= 180;
-ZmFilterRuleDialog.COL_WIDTH["param"]		= ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH;
-
 /**
 * Shows the dialog and displays either a given rule for editing, or a dummy rule
 * that is the base for adding a new rule.
@@ -186,17 +174,9 @@ function() {
 
 	html[i++] = "<div class='vSpace' />";
 	
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 id='";
+	html[i++] = "<table width='100%' border=0 cellpadding=0 cellspacing=0 id='";
 	html[i++] = this._conditionsTableId;
 	html[i++] = "'>";
-	html[i++] = "<colgroup>";
-	for (var j = 0; j < ZmFilterRuleDialog.CONDITION_COLS.length; j++) {
-		var col = ZmFilterRuleDialog.CONDITION_COLS[j];
-		if (j == (ZmFilterRuleDialog.CONDITION_COLS.length - 2))
-			html[i++] = "<col style='width:100%'></col>";
-		html[i++] = "<col style='width:" + ZmFilterRuleDialog.COL_WIDTH[col] + "px'></col>"
-	}
-	html[i++] = "</colgroup>";
 	html[i++] = "<tbody></tbody>";
 	html[i++] = "</table>";
 
@@ -211,17 +191,9 @@ function() {
 	html[i++] = ZmMsg.filterActions;
 	html[i++] = "</legend>";
 
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 id='";
+	html[i++] = "<table width='100%' border=0 cellpadding=0 cellspacing=0 id='";
 	html[i++] = this._actionsTableId;
 	html[i++] = "'>";
-	html[i++] = "<colgroup>";
-	for (var j = 0; j < ZmFilterRuleDialog.ACTION_COLS.length; j++) {
-		var col = ZmFilterRuleDialog.ACTION_COLS[j];
-		if (j == (ZmFilterRuleDialog.ACTION_COLS.length - 2))
-			html[i++] = "<col style='width:100%'></col>";
-		html[i++] = "<col style='width:" + ZmFilterRuleDialog.COL_WIDTH[col] + "px'></col>"
-	}
-	html[i++] = "</colgroup>";
 	html[i++] = "<tbody></tbody>";
 	html[i++] = "</table>";
 
@@ -290,8 +262,10 @@ function(data, isCondition) {
 			stopField.checked = true;
 			return;
 		}
+		html[i++] = "<td><table><tr>";
 		html[i++] = this._createRowComponent(false, "name", ZmFilterRule.ACTIONS_LIST, data.name, rowId);
 		html[i++] = this._createRowComponent(conf, "param", conf.pOptions, data.arg, rowId);
+		html[i++] = "</tr></table></td>";
 	}
 	html[i++] = this._getPlusMinusHtml(rowId, isCondition);
 	html[i++] = "</tr>";
@@ -386,9 +360,6 @@ function(conf, field, options, dataValue, rowId, data) {
 
 	} else if (type == ZmFilterRule.TYPE_SELECT) {
 		var select = new DwtSelect(this);
-		var width = ZmFilterRuleDialog.COL_WIDTH[field];
-		if (width)
-			select.setWidth(width);
 		select.setData(ZmFilterRuleDialog.ROW_ID, rowId);
 		this._inputs[rowId][field] = {id: id, dwtObj: select};
 		if (isMainSelect) {
@@ -470,7 +441,8 @@ function(conf, field, options, dataValue, rowId, data) {
 ZmFilterRuleDialog.prototype._getPlusMinusHtml =
 function(rowId, isCondition) {
 	var html = [];
-	html.push("<td width='100%'></td>"); // right-justify the plus/minus buttons
+	html.push("<td style='align:right;'><table border=0 cellpadding=0 cellspacing=0><tr>");
+	html.push("<td width='100%' style=''></td>"); // right-justify the plus/minus buttons
 	var buttons = ["Plus", "Minus"];
 	for (var i = 0; i < buttons.length; i++) {
 		var b = buttons[i];
@@ -485,6 +457,7 @@ function(rowId, isCondition) {
 		this._inputs[rowId][b] = {id: id, dwtObj: button};
 		html.push("<td id='" + id + "' valign='center' class='paddedTableCell'></td>");
 	}
+	html.push("</tr></table></td>");
 	return html.join("");
 };
 
