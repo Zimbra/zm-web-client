@@ -174,7 +174,7 @@ function() {
 			cc._setView(window.args[0], msg, window.args[2], window.args[3], window.args[4]);
 		} else {
 			var op = window.args.action ? window.args.action : ZmOperation.NEW_MESSAGE;
-			if (window.args.msg) {
+			if (window.args.msg && window.args.msg._mode) {
 				switch (window.args.msg._mode) {
 					case ZmAppt.MODE_DELETE: 
 					case ZmAppt.MODE_DELETE_INSTANCE: 
@@ -184,6 +184,10 @@ function() {
 					}
 				}
 			}
+
+			if (window.args["action"] == ZmOperation.REPLY_ALL)
+				window.args.msg = this._deepCopyMsg(window.args.msg);
+
 			cc._setView(op, window.args.msg, null, null, null, window.args.composeMode);
 			cc._composeView.setDetach(window.args);
 
