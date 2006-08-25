@@ -452,11 +452,13 @@ function (ev) {
 	if (type == ZmOperation.INVITE_REPLY_ACCEPT ||
 		type == ZmOperation.EDIT_REPLY_CANCEL || 
 		type == ZmOperation.INVITE_REPLY_DECLINE ||
-		type == ZmOperation.INVITE_REPLY_TENTATIVE) {
+		type == ZmOperation.INVITE_REPLY_TENTATIVE)
+	{
 		type = ZmMailListController.INVITE_REPLY_MAP[type];
 		this._editInviteReply(type, compId);
 	}
-	else {
+	else
+	{
 		this._sendInviteReply(type, compId);
 	}
 	return false;
