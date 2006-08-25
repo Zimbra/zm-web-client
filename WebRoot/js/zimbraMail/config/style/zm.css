@@ -313,6 +313,10 @@ td.DDSepInvisible div {
 	@PickerContainer@
 }
 
+.ZmPicker .DwtTree {
+	@PageBg@;
+}
+
 /* Header for each picker */
 .ZmPicker .DwtToolBar {
 	@WidgetHeaderContainer@
