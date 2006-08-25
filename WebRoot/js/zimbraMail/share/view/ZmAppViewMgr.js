@@ -342,8 +342,6 @@ function(viewId, force) {
 		return true;
 	}
 
-	this.addComponents(this._views[viewId]);
-
 	DBG.println(AjxDebug.DBG1, "pushView: " + viewId);
 	DBG.println(AjxDebug.DBG2, "hidden (before): " + this._hidden);
 	
@@ -358,6 +356,7 @@ function(viewId, force) {
 		this._pendingView = viewId;
 	 	return false;
 	}
+	this.addComponents(this._views[viewId]);
 	if (this._currentView && (this._currentView != viewId) && !this._isTransient[this._currentView]) {
 		this._hidden.push(this._currentView);
 	}
