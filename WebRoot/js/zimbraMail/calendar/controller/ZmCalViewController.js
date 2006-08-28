@@ -497,32 +497,42 @@ function(date) {
 
 ZmCalViewController.prototype._miniCalDropTargetListener =
 function(ev) {
-	var data = ev.srcData.data;
-	// This code is a hack because of the fact that in some instances ZmMailMsg is reported as being
-	// an Array of length 1 (as well as a ZmMailMsg) under FF1.5
-	if (data instanceof Array) {
-		if (data.length > 1) {
-			ev.doIt = false;
-			return;
-		}
-		data = data[0];
-	}
-	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		if (!this._miniCalDropTarget.isValidTarget(data)) {
-			ev.doIt = false;
-			return;
-		}
+	var data = ((ev.srcData.data instanceof Array) && ev.srcData.data.length == 1)
+		? ev.srcData.data[0] : ev.srcData.data;
 
-		// If we are dealing with a contact make sure it has a valid email address
-		if (data instanceof ZmContact) {
-			var emailAddr = data.getAttr(ZmContact.F_email);
-			if (!emailAddr || emailAddr == "") {
-				emailAddr = data.getAttr(ZmContact.F_email1);
-				if (!emailAddr || emailAddr == "") {
-					emailAddr = data.getAttr(ZmContact.F_email2);
-					if (!emailAddr || emailAddr == "")
-						ev.doIt = false;
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		// Hack: in some instances ZmMailMsg is reported as being an Array of
+		//       length 1 (as well as a ZmMailMsg) under FF1.5
+		if (data instanceof Array && data.length > 1) {
+			var foundValid = false;
+			for (var i = 0; i < data.length; i++) {
+				if (data[i] instanceof ZmContact) {
+					var email = data[i].getEmail();
+					if (email && email != "")
+						foundValid = true;
+				} else {
+					// theres other stuff besides contacts in here.. bail
+					ev.doIt = false;
+					return;
 				}
+			}
+
+			// if not a single valid email was found in list of contacts, bail
+			if (!foundValid) {
+				ev.doIt = false;
+				return;
+			}
+		} else {
+			if (!this._miniCalDropTarget.isValidTarget(data)) {
+				ev.doIt = false;
+				return;
+			}
+
+			// If dealing with a contact, make sure it has a valid email address
+			if (data instanceof ZmContact) {
+				var email = data.getEmail();
+				if (!email || email == "")
+					ev.doIt = false;
 			}
 		}
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
@@ -535,10 +545,15 @@ function(ev) {
 			dropDate.setMinutes(now.getMinutes());
 			dropDate = AjxDateUtil.roundTimeMins(dropDate, 30);
 
-			if (!(data instanceof ZmContact))
-				this.newApptFromMailItem(data, dropDate);
-			else
+			if ((data instanceof ZmContact) ||
+				((data instanceof Array) && data[0] instanceof ZmContact))
+			{
 				this.newApptFromContact(data, dropDate);
+			}
+			else
+			{
+				this.newApptFromMailItem(data, dropDate);
+			}
 		}
 	}
 };
@@ -575,12 +590,20 @@ function(mailItem, date, subject) {
  */ 
 ZmCalViewController.prototype.newApptFromContact =
 function(contact, date) {
-	var emailAddr = contact.getAttr([ZmContact.F_email]) || contact.getAttr([ZmContact.F_email2]) || contact.getAttr([ZmContact.F_email3]);
-	if (!emailAddr || emailAddr == "")
-		return;		
-	var newAppt = this._newApptObject(date);
-	newAppt.setAttendees(emailAddr, ZmAppt.PERSON);
-	this.newAppointment(newAppt, ZmAppt.MODE_NEW);
+	var emails = [];
+	var list = (contact instanceof ZmContact) ? [contact] : contact;
+	for (var i = 0; i < list.length; i++) {
+		// grab the first valid email address for this contact
+		var e = list[i].getEmail();
+		if (e && e != "")
+			emails.push(e);
+	}
+
+	if (emails.length > 0) {
+		var newAppt = this._newApptObject(date);
+		newAppt.setAttendees(emails, ZmAppt.PERSON);
+		this.newAppointment(newAppt, ZmAppt.MODE_NEW);
+	}
 };
 
 /*
