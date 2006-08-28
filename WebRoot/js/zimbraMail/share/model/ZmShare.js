@@ -165,35 +165,12 @@ ZmShare._SUBJECTS[ZmShare.DELETE] = ZmMsg.shareRevokedSubject;
 ZmShare._SUBJECTS[ZmShare.ACCEPT] = ZmMsg.shareAcceptedSubject;
 ZmShare._SUBJECTS[ZmShare.DECLINE] = ZmMsg.shareDeclinedSubject;
 	
-// text formatters
-ZmShare._TEXT = {};
-ZmShare._TEXT[ZmShare.NEW] = new AjxMessageFormat(ZmMsg.shareCreatedText);
-ZmShare._TEXT[ZmShare.EDIT] = new AjxMessageFormat(ZmMsg.shareModifiedText);
-ZmShare._TEXT[ZmShare.DELETE] = new AjxMessageFormat(ZmMsg.shareRevokedText);
-ZmShare._TEXT[ZmShare.ACCEPT] = new AjxMessageFormat(ZmMsg.shareAcceptedText);
-ZmShare._TEXT[ZmShare.DECLINE] = new AjxMessageFormat(ZmMsg.shareDeclinedText);
-	
-// html formatters
-ZmShare._HTML = {};
-ZmShare._HTML[ZmShare.NEW] = new AjxMessageFormat(ZmMsg.shareCreatedHtml);
-ZmShare._HTML[ZmShare.EDIT] = new AjxMessageFormat(ZmMsg.shareModifiedHtml);
-ZmShare._HTML[ZmShare.DELETE] = new AjxMessageFormat(ZmMsg.shareRevokedHtml);
-ZmShare._HTML[ZmShare.ACCEPT] = new AjxMessageFormat(ZmMsg.shareAcceptedHtml);
-ZmShare._HTML[ZmShare.DECLINE] = new AjxMessageFormat(ZmMsg.shareDeclinedHtml);
-	
-ZmShare._HTML_NOTE = new AjxMessageFormat(ZmMsg.shareNotesHtml);
 
-// xml formatter
-var pattern = [
-	'<share xmlns="{0}" version="{1}" action="{2}" >',
-	'  <grantee id="{3}" email="{4}" name="{5}" />',
-	'  <grantor id="{6}" email="{7}" name="{8}" />',
-	'  <link id="{9}" name="{10}" view="{11}" perm="{12}" />',
-	'  <notes>{13}</notes>',
-	'</share>'
-].join("\n");
-ZmShare._XML = new AjxMessageFormat(pattern);
-delete pattern;
+// formatters
+ZmShare._TEXT = null;
+ZmShare._HTML = null;
+ZmShare._HTML_NOTE = null;
+ZmShare._XML = null;
 
 // Utility methods
 
@@ -477,6 +454,60 @@ function(mode, addrs) {
 
 // Protected methods
 
+// text formatters
+ZmShare._getText =
+function(mode) {
+	if (!ZmShare._TEXT) {
+		ZmShare._TEXT = {};
+		ZmShare._TEXT[ZmShare.NEW] = new AjxMessageFormat(ZmMsg.shareCreatedText);
+		ZmShare._TEXT[ZmShare.EDIT] = new AjxMessageFormat(ZmMsg.shareModifiedText);
+		ZmShare._TEXT[ZmShare.DELETE] = new AjxMessageFormat(ZmMsg.shareRevokedText);
+		ZmShare._TEXT[ZmShare.ACCEPT] = new AjxMessageFormat(ZmMsg.shareAcceptedText);
+		ZmShare._TEXT[ZmShare.DECLINE] = new AjxMessageFormat(ZmMsg.shareDeclinedText);
+	}
+	return ZmShare._TEXT[mode];
+};
+	
+// html formatters
+ZmShare._getHtml =
+function(mode) {
+	if (!ZmShare._HTML) {
+		ZmShare._HTML = {};
+		ZmShare._HTML[ZmShare.NEW] = new AjxMessageFormat(ZmMsg.shareCreatedHtml);
+		ZmShare._HTML[ZmShare.EDIT] = new AjxMessageFormat(ZmMsg.shareModifiedHtml);
+		ZmShare._HTML[ZmShare.DELETE] = new AjxMessageFormat(ZmMsg.shareRevokedHtml);
+		ZmShare._HTML[ZmShare.ACCEPT] = new AjxMessageFormat(ZmMsg.shareAcceptedHtml);
+		ZmShare._HTML[ZmShare.DECLINE] = new AjxMessageFormat(ZmMsg.shareDeclinedHtml);
+	}
+	return ZmShare._HTML[mode];
+}
+	
+ZmShare._getHtmlNote =
+function() {
+	if (!ZmShare._HTML_NOTE) {
+		ZmShare._HTML_NOTE = new AjxMessageFormat(ZmMsg.shareNotesHtml);
+	}
+	return ZmShare._HTML_NOTE;
+};
+
+// xml formatter
+ZmShare._getXml =
+function() {
+	if (!ZmShare._XML) {
+		var pattern = [
+			'<share xmlns="{0}" version="{1}" action="{2}" >',
+			'  <grantee id="{3}" email="{4}" name="{5}" />',
+			'  <grantor id="{6}" email="{7}" name="{8}" />',
+			'  <link id="{9}" name="{10}" view="{11}" perm="{12}" />',
+			'  <notes>{13}</notes>',
+			'</share>'
+		].join("\n");
+		ZmShare._XML = new AjxMessageFormat(pattern);
+	}
+	return ZmShare._XML;
+}
+
+
 /**
  * General method for handling the SOAP call. 
  * <p>
@@ -575,7 +606,7 @@ function(mode, isCompose, addrs) {
 
 ZmShare.prototype._createTextPart =
 function(mode, isCompose) {
-	var formatter = ZmShare._TEXT[mode];
+	var formatter = ZmShare._getText(mode);
 	var content = this._createContent(formatter);
 	if (this.notes || isCompose) {
 		content += ZmAppt.NOTES_SEPARATOR + this.notes;
@@ -590,10 +621,10 @@ function(mode, isCompose) {
 
 ZmShare.prototype._createHtmlPart =
 function(mode, isCompose) {
-	var formatter = ZmShare._HTML[mode];
+	var formatter = ZmShare._getHtml(mode);
 	var content = this._createContent(formatter);
 	if (this.notes || isCompose) {
-		content += ZmShare._HTML_NOTE.format(this.notes);
+		content += ZmShare._getHtmlNote().format(this.notes);
 	}
 
 	var mimePart = new ZmMimePart();
@@ -621,7 +652,7 @@ function(mode) {
 		this.link.perm,
 		AjxStringUtil.xmlEncode(this.notes)
 	];
-	var content = ZmShare._XML.format(params);
+	var content = ZmShare._getXml().format(params);
 
 	var mimePart = new ZmMimePart();
 	mimePart.setContentType(ZmMimeTable.XML_ZIMBRA_SHARE);
