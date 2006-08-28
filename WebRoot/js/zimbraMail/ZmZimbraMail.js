@@ -945,17 +945,20 @@ function() {
 			progressClassName = "quotaWarning";
 		else if (percent >= 85)
 			progressClassName = "quotaCritical";
-		
+
 		html[idx++] = "<td><div class='quotabar'><div style='width: ";
 		html[idx++] = percent;
 		html[idx++] = ";' class='";
 		html[idx++] = progressClassName;
 		html[idx++] = "'></div></div></td>";
-		quotaTooltip = [ZmMsg.quota, ": ", percent, "% (", size, " of ", limit, ")"].join("");
+
+		var desc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [size, limit]);
+		quotaTooltip = [ZmMsg.quota, ": ", percent, "% ", desc].join("");
 	} else {
-		html[idx++] = "<td class='BannerText'> ";
-		html[idx++] = size;
-		html[idx++] = " of unlimited</td>";
+		var desc = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [size]);
+		html[idx++] = "<td class='BannerText'>";
+		html[idx++] = desc;
+		html[idx++] = "</td>";
 	}
 	html[idx++] = "</tr></table></center>";
 	
@@ -971,9 +974,9 @@ function() {
 			tooltip[idx++] = "</td></tr>";
 		}
 		if (quotaTooltip) {
-			tooltip[idx++] = "<tr><td>";
+			tooltip[idx++] = "<tr><td><center>";
 			tooltip[idx++] = quotaTooltip;
-			tooltip[idx++] = "</td></tr>";
+			tooltip[idx++] = "</center></td></tr>";
 		}
 		tooltip[idx++] = "</table>";
 		this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(tooltip.join(""));
