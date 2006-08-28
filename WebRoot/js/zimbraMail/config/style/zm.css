@@ -676,16 +676,12 @@ td.DDSepInvisible div {
 	background-color:@WidgetBgColor@
 }
 
-.AlphabetBarCellFirst {
-	text-align:center;
-	@ActiveCursor@
-}
-
 .AlphabetBarCell {
 	text-align:center;
 	@ActiveCursor@
 	width:30px;
 	min-width:30px;
+	border-right-width: 1px;
 }
 
 .AlphabetBarDisabled {
