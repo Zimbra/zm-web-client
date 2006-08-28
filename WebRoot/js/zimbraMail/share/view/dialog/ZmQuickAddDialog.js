@@ -78,17 +78,16 @@ function(buttonId, listener) {
 ZmQuickAddDialog.prototype._createHtml =
 function() {
 	this._contentId = Dwt.getNextId();
-	this._titleId = Dwt.getNextId();
+	this._titleHandleId = Dwt.getNextId();
 
-	var html = new Array();
+	var html = new Array(3);
 	var idx = 0;
 
-	html[idx++] = DwtBorder.getBorderStartHtml("DwtSemiModalDialog", {id:this._titleId});
+	html[idx++] = DwtBorder.getBorderStartHtml("DwtSemiModalDialog", {titleId:this._titleHandleId, titleTextId:this._titleCellId});
 	html[idx++] = this._getContentHtml();
 	html[idx++] = DwtBorder.getBorderEndHtml("DwtSemiModalDialog");
 
 	this.getHtmlElement().innerHTML = html.join("");
 
 	this._contentDiv = document.getElementById(this._contentId);
-	this._titleCellId = this._titleId + "_title";
 };
