@@ -92,6 +92,7 @@
 	<script type="text/javascript" language="JavaScript">
 		var cacheKillerVersion = "<%= vers %>";
 		function launch() {
+			AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp"
 			DBG = new AjxDebug(AjxDebug.NONE, null, false);
 			ZmNewWindow.run(document.domain);
 		}
