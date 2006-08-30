@@ -975,12 +975,15 @@ function(abook) {
 ZmCalColView.prototype._computeMaxCols =
 function(layout, max) {
 	//DBG.println("compute max cols for "+layout.appt.id+" col="+layout.col);
+	if (layout.maxDone) return layout.maxcol;
 	layout.maxcol = Math.max(layout.col, layout.maxcol, max);
-	for (var r in layout.right) {
-		var m = this._computeMaxCols(layout.right[r], layout.maxcol);
-		layout.maxcol = Math.max(layout.col, m);
+	if (layout.right) {
+		for (var r in layout.right) {
+			layout.maxcol = Math.max(layout.col, this._computeMaxCols(layout.right[r], layout.maxcol));
+		}
 	}
-	//DBG.println("max cols for "+layout.appt.id+" was: "+layout.maxcol);	
+	//DBG.println("max cols for "+layout.appt.id+" was: "+layout.maxcol);
+	layout.maxDone = true;
 	return layout.maxcol;	
 }
 
@@ -990,12 +993,16 @@ function(layout, max) {
 ZmCalColView.prototype._computeApptLayout =
 function() {
 //	DBG.println("_computeApptLayout");
+	DBG.timePt("_computeApptLayout: start", true);
 	var layouts = this._layouts = new Array();
 	var list = this.getList();
 	if (!list) return;
 	
 	var size = list.size();
 	if (size == 0) return;
+
+	var overlap = null;
+	var overlappingCol = null;
 
 	for (var i=0; i < size; i++) {
 		var ao = list.get(i);
@@ -1004,15 +1011,19 @@ function() {
 			continue;
 		}
 
-		var st = ao.getStartTime();
-		var et = ao.getEndTime();		
-		var newLayout = { appt: ao, col: 0, maxcol: -1, left: [], right: [] };
+		var newLayout = { appt: ao, col: 0, maxcol: -1};
+
+		overlap = null;
+		overlappingCol = null;
+		
 		// look for overlapping appts
-		var overlap = [];
-		var overlappingCol = [];
 		for (var j=0; j < layouts.length; j++) {
 			var layout = layouts[j];
 			if (ao.isOverlapping(layout.appt, this._scheduleMode)) {
+				if (overlap == null) {
+					overlap = [];
+					overlappingCol = [];
+				}
 				overlap.push(layout);
 				overlappingCol[layout.col] = true;
 				// while we overlap, update our col
@@ -1022,15 +1033,17 @@ function() {
 			}
 		}
 
-		// figure out who is left and who is right
-		for (var c in overlap) {
-			var l = overlap[c];
-			if (newLayout.col < l.col) {
-				newLayout.right.push(l);
-				l.left.push(newLayout);
-			} else {
-				newLayout.left.push(l);
-				l.right.push(newLayout);
+		// figure out who is on our right
+		if (overlap != null) {
+			for (var c in overlap) {
+				var l = overlap[c];
+				if (newLayout.col < l.col) {
+					if (!newLayout.right) newLayout.right = [l];
+					else newLayout.right.push(l);
+				} else {
+					if (!l.right) l.right = [newLayout];
+					else l.right.push(newLayout);
+				}
 			}
 		}
 		layouts.push(newLayout);
@@ -1039,7 +1052,9 @@ function() {
 	// compute maxcols
 	for (var i=0; i < layouts.length; i++) {
 		this._computeMaxCols(layouts[i], -1);
+//		DBG.timePt("_computeApptLayout: computeMaxCol "+i, false);				
 	}
+		DBG.timePt("_computeApptLayout: end", false);	
 }
 
 /*
