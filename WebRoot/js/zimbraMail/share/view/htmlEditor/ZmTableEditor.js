@@ -29,6 +29,8 @@
 
 ZmTableEditor = {
 
+	RE_THICK_BORDERS : /^(double|groove|ridge|inset|outset)$/i,
+
 	getTablePropsDialog : function(editor, table) {
 		if (!this._tablePropsDialog)
 			this._createTablePropsDialog();
@@ -145,7 +147,7 @@ ZmTableEditor = {
 	__onBorderStyleChange : function(ev) {
 		var data = ev._args;
 		var borderStyle = data.newValue;
-		if (/^(double|groove|ridge|inset|outset)$/i.test(borderStyle)) {
+		if (ZmTableEditor.RE_THICK_BORDERS.test(borderStyle)) {
 			var w = this._wBorderWidth.getValue();
 			if (w < 3) {
 				this._wBorderWidth.setValue(3);
@@ -386,6 +388,8 @@ ZmTablePropsDialog.prototype.getValues = function() {
 		cellPadding     : this._wCellPadding.getValue(),
 		cellSpacing     : this._wBorderSpacing.getValue()
 	};
+	if (val.borderWidth < 3 && ZmTableEditor.RE_THICK_BORDERS.test(val.borderStyle))
+		val.borderWidth = 3;
 	return val;
 };
 
@@ -816,11 +820,18 @@ ZmCellPropsDialog.prototype._grid_applyBorderStyles = function(border, force) {
 		break;
 	}
 
+	var width = this._wBorderWidth.getValue();
+	var style = this._wBorderStyle.getValue();
+	if (width < 3 && ZmTableEditor.RE_THICK_BORDERS.test(style)) {
+		this._wBorderWidth.setValue(3);
+		width = 3;
+	}
+
 	var s = this._grid_borderStyles[border];
 	var new_style = force || {
-	    width : this._wBorderWidth.getValue() + "px",
+	    width : width + "px",
 	    color : this._wBorderColor.getColor(),
-	    style : this._wBorderStyle.getValue()
+	    style : style
 	};
 	if (force || s == null || ( s.width != new_style.width ||
 				    s.color != new_style.color ||
