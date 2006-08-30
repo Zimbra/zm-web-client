@@ -84,6 +84,19 @@ ZmNotebookController.prototype.switchView = function(view, force) {
 
 // initialization
 
+// Overrides ZmListController method, leaving ZmOperation.MOVE off the menu.
+ZmNotebookController.prototype._standardActionMenuOps =
+function() {
+	var list = [];
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+		list.push(ZmOperation.TAG_MENU);
+	list.push(ZmOperation.DELETE);
+	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+		list.push(ZmOperation.PRINT);
+	return list;
+};
+
+
 ZmNotebookController.prototype._getToolBarOps = function() {
 	var list = [];
 	list = list.concat(this._getBasicToolBarOps())
