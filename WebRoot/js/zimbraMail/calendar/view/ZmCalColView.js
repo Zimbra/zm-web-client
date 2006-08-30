@@ -993,7 +993,7 @@ function(layout, max) {
 ZmCalColView.prototype._computeApptLayout =
 function() {
 //	DBG.println("_computeApptLayout");
-	DBG.timePt("_computeApptLayout: start", true);
+//	DBG.timePt("_computeApptLayout: start", true);
 	var layouts = this._layouts = new Array();
 	var list = this.getList();
 	if (!list) return;
@@ -1054,7 +1054,7 @@ function() {
 		this._computeMaxCols(layouts[i], -1);
 //		DBG.timePt("_computeApptLayout: computeMaxCol "+i, false);				
 	}
-		DBG.timePt("_computeApptLayout: end", false);	
+	//DBG.timePt("_computeApptLayout: end", false);	
 }
 
 /*
