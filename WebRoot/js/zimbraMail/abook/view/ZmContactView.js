@@ -676,7 +676,10 @@ function() {
 					 ZmContact.F_notes);
 	var fields = [];
 	for (var i = 0; i < ids.length; i++) {
-		fields.push(document.getElementById(this._fieldIds[ids[i]]));
+		var field = document.getElementById(this._fieldIds[ids[i]]);
+		if (field) {
+			fields.push(field);
+		}
 	}
 
 	return fields;
