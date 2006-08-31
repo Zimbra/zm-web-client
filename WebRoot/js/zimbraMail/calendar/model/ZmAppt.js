@@ -1789,6 +1789,16 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 			e.setAttribute("p", dispName);
 		}
 		e.setAttribute("t", ZmEmailAddress.toSoapType[ZmEmailAddress.TO]);
+
+		// bug fix #9768 - auto add attendee if not in addrbook
+		if (type == ZmAppt.PERSON &&
+			this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+			this._appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS))
+		{
+			var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+			if (!clc.getContactByEmail(address))
+				e.setAttribute("add", "1");
+		}
 	}
 };
 
