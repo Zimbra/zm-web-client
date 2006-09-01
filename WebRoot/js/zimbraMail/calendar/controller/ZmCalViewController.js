@@ -920,7 +920,6 @@ function(appt, mode) {
 		this._typeDialog = new ZmApptTypeDialog(this._shell);
 		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener));
 		this._typeDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._typeCancelListener));
-		this._typeDialog._disableFFhack();
 	}
 	this._typeDialog.initialize(mode, appt);
 	this._typeDialog.popup();

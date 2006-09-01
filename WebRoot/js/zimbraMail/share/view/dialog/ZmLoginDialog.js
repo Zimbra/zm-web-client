@@ -100,7 +100,6 @@ function(username, bReloginMode) {
 ZmLoginDialog.prototype.setVisible = 
 function(visible, transparentBg) {
 	DwtComposite.prototype.setVisible.call(this, visible);
-	Dwt._ffOverflowHack(this._htmlElId, this.getZIndex(), null, visible);
 
 	this.shell.getKeyboardMgr().enable(!visible);
 	if (!visible) return;
