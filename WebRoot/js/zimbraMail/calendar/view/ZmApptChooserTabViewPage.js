@@ -360,9 +360,12 @@ function(id, html, i, addButton, addMultLocsCheckbox) {
 		html[i++] = ZmMsg[ZmApptChooserTabViewPage.SF_LABEL[id]];
 		html[i++] = ":&nbsp;</td><td>";
 
+		html[i++] = Dwt.CARET_HACK_BEGIN;
 		html[i++] = "<input type='text' autocomplete='off' size=30 nowrap id='";
 		html[i++] = this._searchFieldIds[id];
-		html[i++] = "' />&nbsp;</td>";
+		html[i++] = "' />";
+		html[i++] = Dwt.CARET_HACK_END;
+		html[i++] = "&nbsp;</td>";
 	}
 
 	if (addButton) {

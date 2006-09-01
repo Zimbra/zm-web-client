@@ -210,7 +210,7 @@ function() {
 	this._renameWarningId = Dwt.getNextId();
 	
 	// create components
-	this._pageNameInput = new DwtInputField({parent:this});
+	this._pageNameInput = new DwtInputField({parent:this, skipCaretHack:true});
 	this._pageNameInput.setRequired(true);
 	this._pageNameInput.setValidatorFunction(null, ZmPageEditView._validatePageName);
 	var titleInputEl = this._pageNameInput.getInputElement();

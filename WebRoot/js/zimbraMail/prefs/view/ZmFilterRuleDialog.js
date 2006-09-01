@@ -151,12 +151,16 @@ function() {
 	var i = 0;
 	
 	html[i++] = "<div>";
-	html[i++] = "<table><tr><td nowrap>";
+	html[i++] = "<table width='100%'><tr><td width='1%' nowrap>";
 	html[i++] = ZmMsg.filterName;
-	html[i++] = ":</td><td><input type='text' width=100 id='";
+	html[i++] = ":</td><td>";
+    html[i++] = Dwt.CARET_HACK_BEGIN;
+	html[i++] = "<input type='text' width=100 id='";
 	html[i++] = this._nameInputId;
-	html[i++] = "'/></td><td width='100%' />";
-	html[i++] = "<td><input type='checkbox' name='cbActive' checked id='";
+	html[i++] = "'/>";
+    html[i++] = Dwt.CARET_HACK_END;
+	html[i++] = "</td>";
+	html[i++] = "<td width='1%' style='align:right;'><input type='checkbox' name='cbActive' checked id='";
 	html[i++] = this._activeCheckboxId;
 	html[i++] = "'> ";
 	html[i++] = ZmMsg.active;

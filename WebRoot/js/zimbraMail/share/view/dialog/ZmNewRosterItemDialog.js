@@ -56,13 +56,25 @@ function() {
 	html.append("<table border='0' width=325>");
 
 	html.append("<tr valign='center'><td class='ZmChatDialogField'>", ZmMsg.imAddressLabel, "</td>");
-	html.append("<td><input autocomplete=OFF type='text' style='width:100%; height:22px' id='", this._addressFieldId, "' /></td></tr>");
+	html.append("<td>");
+    html.append(Dwt.CARET_HACK_BEGIN);
+	html.append("<input autocomplete=OFF type='text' style='width:100%; height:22px' id='", this._addressFieldId, "' />");
+    html.append(Dwt.CARET_HACK_END);
+	html.append("</td></tr>");
 
 	html.append("<tr valign='center'><td class='ZmChatDialogField'>", ZmMsg.imNameLabel, "</td>");
-	html.append("<td><input autocomplete=OFF type='text' style='width:100%; height:22px' id='", this._nameFieldId, "' /></td></tr>");
+	html.append("<td>");
+    html.append(Dwt.CARET_HACK_BEGIN);
+	html.append("<input autocomplete=OFF type='text' style='width:100%; height:22px' id='", this._nameFieldId, "' />");
+    html.append(Dwt.CARET_HACK_END);
+	html.append("</td></tr>");
 	
 	html.append("<tr valign='center'><td class='ZmChatDialogField'>", ZmMsg.imGroupsLabel, "</td>");
-	html.append("<td><input autocomplete=OFF type='text' style='width:100%; height:22px' id='", this._groupsFieldId, "' /></td></tr>");		
+	html.append("<td>");
+    html.append(Dwt.CARET_HACK_BEGIN);
+	html.append("<input autocomplete=OFF type='text' style='width:100%; height:22px' id='", this._groupsFieldId, "' />");
+    html.append(Dwt.CARET_HACK_END);
+	html.append("</td></tr>");		
 	html.append("</table>");
 	
 	return html.toString();
