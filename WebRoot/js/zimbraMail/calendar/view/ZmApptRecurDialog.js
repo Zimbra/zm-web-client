@@ -821,6 +821,7 @@ function() {
 	var formatter = new AjxMessageFormat(ZmMsg.recurYearlyEveryDate);
 	var monthFormatter = formatter.getFormatsByArgumentIndex()[0];
 	var month = new Date();
+	month.setDate(1);
 	for (var i = 0; i < 12; i++) {
 		month.setMonth(i);
 		this._yearlyMonthSelect.addOption(monthFormatter.format(month), false, i);
