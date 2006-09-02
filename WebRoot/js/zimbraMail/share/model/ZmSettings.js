@@ -272,7 +272,7 @@ function(list, callback, result) {
 */
 ZmSettings.prototype.getGroupMailBy =
 function() {
-	var setting = this.get(ZmSetting.GROUP_MAIL_BY);
+	var setting = this.get(ZmSetting.PREFS_ENABLED) ? this.get(ZmSetting.GROUP_MAIL_BY) : null;
 	if (!setting) {
 		DBG.println(AjxDebug.DBG1, "GROUP_MAIL_BY setting not found!");
 	}

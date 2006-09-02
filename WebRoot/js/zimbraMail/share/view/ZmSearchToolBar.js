@@ -47,40 +47,48 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
     var menu = new DwtMenu(menuParent, null, "ActionMenu");
     menuParent.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 
+	var numTypes = 0;
     var mi = DwtMenuItem.create(menu, "SearchMail", ZmMsg.searchMail, null, true, DwtMenuItem.RADIO_STYLE, 0);
 	mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_MAIL_MI);
-
+	numTypes++;
+	
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 	    mi = DwtMenuItem.create(menu, "SearchContacts", ZmMsg.searchPersonalContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.CONTACT);
+		numTypes++;
 
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 			mi = DwtMenuItem.create(menu, "SearchSharedContacts", ZmMsg.searchPersonalAndShared, null, true, DwtMenuItem.RADIO_STYLE, 0);
 			mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_PAS_MI);
+			numTypes++;
 		}
 	}
 
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 	    mi = DwtMenuItem.create(menu, "SearchGAL", ZmMsg.searchGALContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_GAL_MI);
+		numTypes++;
 	}
 /*
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 	    mi = DwtMenuItem.create(menu, "SearchCalendar", ZmMsg.searchCalendar, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.APPT);
+		numTypes++;
 	}
 */
 	if (this._appCtxt.get(ZmSetting.NOTES_ENABLED)) {
 	    mi = DwtMenuItem.create(menu, "SearchNotes", ZmMsg.searchNotes, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.NOTE);
+		numTypes++;
 	}
 
 	if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
 	    mi = DwtMenuItem.create(menu, "SearchNotes", ZmMsg.searchNotebooks, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.PAGE);
+		numTypes++;
 	}
 
-	if (this._appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED)) {
+	if ((numTypes > 1) && this._appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED)) {
 		mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
 		mi = DwtMenuItem.create(menu, "SearchAll", ZmMsg.searchAll, null, true, DwtMenuItem.RADIO_STYLE, 0);
 		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_ANY_MI);

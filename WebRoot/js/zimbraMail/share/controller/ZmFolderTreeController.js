@@ -39,7 +39,11 @@ function ZmFolderTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length == 0) return;
 
 	type = type ? type : ZmOrganizer.FOLDER;
-	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(ZmFolder, ZmSearchFolder, ZmConv, ZmMailMsg, ZmContact);
+	var list =[ZmFolder, ZmSearchFolder, ZmConv, ZmMailMsg];
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		list.push(ZmContact);
+	}
+	drpTgt = dropTgt ? dropTgt : new DwtDropTarget(list);
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
