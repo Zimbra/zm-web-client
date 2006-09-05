@@ -180,6 +180,7 @@ ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CONTACTS_APP]	= ZmItem.CONTACT;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.IM_APP]    	= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MIXED_APP]		= ZmSearchToolBar.FOR_ANY_MI;
+ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.NOTEBOOK_APP]	= ZmItem.PAGE;
 
 // trees shown in overview panel for each app
 ZmZimbraMail.OVERVIEW_TREES = {};
