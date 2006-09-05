@@ -73,8 +73,6 @@ function ZmKeyMap() {
 			"S":					ZmKeyMap.SAVE,
 
 			"Del":					ZmKeyMap.DEL,
-			"Backspace":			ZmKeyMap.DEL, // MacBook keyboard
-
 			"Esc":					ZmKeyMap.CANCEL,
 
 			"ArrowRight":			ZmKeyMap.NEXT_PAGE,
@@ -91,6 +89,10 @@ function ZmKeyMap() {
 			"G,9":					ZmKeyMap.TAG9,
 			"U":					ZmKeyMap.UNTAG
 	};
+	
+	if (AjxEnv.isMac) {
+		this._map[ZmKeyMap.GLOBAL_KEYMAP]["Backspace"] = ZmKeyMap.DEL;	// MacBook keyboard
+	}
 	
 	// for these to work, controller must implement getTabView()
 	this._map[ZmKeyMap.TABVIEW_KEYMAP] = {
