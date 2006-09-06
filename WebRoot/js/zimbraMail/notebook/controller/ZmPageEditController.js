@@ -234,7 +234,7 @@ function(popViewWhenSaved) {
 	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var notebook = tree.getById(this._page.folderId || ZmOrganizer.ID_NOTEBOOK);
 	if (notebook && notebook.getChild(name)) {
-		message = AjxMessageFormat.format(ZmMsg.errorInvalidPageName, name);
+		message = AjxMessageFormat.format(ZmMsg.errorInvalidPageOrSectionName, name);
 	}
 
 	if (message) {

@@ -333,6 +333,23 @@ function(overviewId, type, items, detail, srcEv, destEv) {
 
 ZmNotebookTreeController.prototype._doCreate =
 function(parent, name, color/*, url*/) {
+	var message;
+
+	// bug: 9406 (short term fix, waiting for backend support)
+	var folderId = (parent && parent.id) || ZmOrganizer.ID_NOTEBOOK;
+	var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	var cache = app.getNotebookCache();
+	if (cache.getPageByName(folderId, name)) {
+		message = AjxMessageFormat.format(ZmMsg.errorInvalidPageOrSectionName, name);
+	}
+
+	if (message) {
+		var dialog = this._appCtxt.getMsgDialog();
+		dialog.setMessage(message, DwtMessageDialog.WARNING_STYLE);
+		dialog.popup();
+		return;
+	}
+
 	parent.create(name, color);
 };
 
