@@ -229,6 +229,14 @@ function(popViewWhenSaved) {
 	} else if (!ZmOrganizer.VALID_NAME_RE.test(name)) {
 		message = AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
 	}
+
+	// bug: 9406 (short term fix, waiting for backend support)
+	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var notebook = tree.getById(this._page.folderId || ZmOrganizer.ID_NOTEBOOK);
+	if (notebook && notebook.getChild(name)) {
+		message = AjxMessageFormat.format(ZmMsg.errorInvalidPageName, name);
+	}
+
 	if (message) {
 		var style = DwtMessageDialog.WARNING_STYLE;
 		var dialog = this._appCtxt.getMsgDialog();
