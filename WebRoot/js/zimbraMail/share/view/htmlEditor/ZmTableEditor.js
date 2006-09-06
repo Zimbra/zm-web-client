@@ -403,8 +403,6 @@ function ZmCellPropsDialog(parent) {
 		       [ DwtDialog.OK_BUTTON,
 			 DwtDialog.CANCEL_BUTTON ]);
 
-	this._disableFFhack();
-
 	var ids;
 	var html;
 
