@@ -194,12 +194,8 @@ function(viewId) {
 		DBG.timePt("created view manager");
 	}
 
-	var needResetOps = false;
 	if (!this._viewMgr.getView(viewId)) {
-		// _resetOperations() called as part of _setup()
 		this._setup(viewId);
-	} else {
-		needResetOps = true;
 	}
 
 	this._viewMgr.setView(viewId);
@@ -217,13 +213,12 @@ function(viewId) {
 		}
 	}
 	this._currentView = this._viewMgr.getCurrentViewName();
+	menuItem = this._view_menu_item[this._currentView];
 	if (menuItem) {
 		menuItem.setChecked(true, true);
 	}
 	this._listView[this._currentView] = this._viewMgr.getCurrentView();
-	if (needResetOps) {
-		this._resetToolbarOperations();
-	}
+	this._resetToolbarOperations();
 	
 	switch(viewId) {
 		case ZmController.CAL_DAY_VIEW: 
