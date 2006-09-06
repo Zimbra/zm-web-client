@@ -272,12 +272,18 @@ function(width, height) {
 ZmContactView.prototype._addEntryRow =
 function(field, html, idx) {
 	html[idx++] = "<tr>";
-	html[idx++] = "<td class='editLabel' style='width:18em;'>" + AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]) + ":" + "</td>";
+	html[idx++] = "<td class='editLabel' style='width:18em;'>";
+	html[idx++] = AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]);
+	html[idx++] = ":</td>";
 	if (!this._isReadOnly) {
 		var id = this._fieldIds[field] = Dwt.getNextId();
-		html[idx++] = "<td><input type='text' autocomplete='off' size=35 id='" + id + "'></td>";
+		html[idx++] = "<td><input type='text' autocomplete='off' size=35 id='";
+		html[idx++] = id;
+		html[idx++] = "'></td>";
 	} else {
-		html[idx++] = "<td class='contactOutput'>" + (this._attr[field] || "") + "</td>";
+		html[idx++] = "<td class='contactOutput'>";
+		html[idx++] = (this._attr[field] || "");
+		html[idx++] = "</td>";
 	}
 	html[idx++] = "</tr>";
 	return idx;
@@ -286,14 +292,20 @@ function(field, html, idx) {
 ZmContactView.prototype._addStreetRow =
 function(field, html, idx) {
 	html[idx++] = "<tr>";
-	html[idx++] = "<td class='editLabel' valign=top style='width:18em;'>" + AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]) + ":" + "</td>";
+	html[idx++] = "<td class='editLabel' valign=top style='width:18em;'>";
+	html[idx++] = AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]);
+	html[idx++] = ":</td>";
 	html[idx++] = "<td";
 	html[idx++] = this._isReadOnly ? ">" : " align=right>";
 
 	if (!this._isReadOnly) {
 		var id = this._fieldIds[field] = Dwt.getNextId();
 		var rows = AjxEnv.isIE ? 3 : 2;
-		html[idx++] = "<textarea wrap='hard' cols=32 rows=" + rows + " id='" + id + "'></textarea>";
+		html[idx++] = "<textarea wrap='hard' cols=32 rows=";
+		html[idx++] = rows;
+		html[idx++] = " id='";
+		html[idx++] = id;
+		html[idx++] = "'></textarea>";
 	} else {
 		html[idx++] = this._attr[field] ? AjxStringUtil.convertToHtml(this._attr[field]) : "";
 	}
@@ -406,7 +418,9 @@ function(html, idx) {
 	html[idx++] = "<tr><td valign=top colspan=10>";
 	if (!this._isReadOnly) {
 		var notesId = this._fieldIds[ZmContact.F_notes] = Dwt.getNextId();
-		html[idx++] = "<textarea wrap='hard' rows=8 style='width:100%;' id='" + notesId + "'></textarea>";
+		html[idx++] = "<textarea wrap='hard' rows=8 style='width:100%;' id='";
+		html[idx++] = notesId;
+		html[idx++] = "'></textarea>";
 	}
 	else {
 		html[idx++] = AjxStringUtil.convertToHtml(this._attr[ZmContact.F_notes]);

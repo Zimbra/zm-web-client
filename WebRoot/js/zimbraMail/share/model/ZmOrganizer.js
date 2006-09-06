@@ -1001,7 +1001,7 @@ function(name, showUnread, noMarkup) {
 	if (showUnread && this.numUnread > 0) {
 		name = [name, " (", this.numUnread, ")"].join("");
 		if (!noMarkup)
-			name = ["<b>", name, "</b>"].join("");
+			name = ["<span style='font-weight:bold'>", name, "</span>"].join("");
 	}
 	if (this.noSuchFolder && !noMarkup) {
 		name = ["<del>", name, "</del>"].join("");

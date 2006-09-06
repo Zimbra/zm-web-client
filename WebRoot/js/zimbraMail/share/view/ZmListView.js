@@ -505,8 +505,9 @@ function(address) {
 		
 		if (!toolTip) {
 			var addrstr = address.toString();
-			if (addrstr)
-			    toolTip = "<div style='white-space:nowrap'><b>" + ZmMsg.email + ": </b>" + AjxStringUtil.htmlEncode(addrstr) + "</div>";
+			if (addrstr) {
+			    toolTip = ["<div style='white-space:nowrap;'><span style='font-weight:bold'", ZmMsg.email, ": </span>", AjxStringUtil.htmlEncode(addrstr), "</div>"].join("");
+			}
 	    }
 	    
 	    if (toolTip) {

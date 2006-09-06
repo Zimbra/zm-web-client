@@ -393,7 +393,7 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 		if (showUnread && this.numTotal > 0) {
 			name = [name, " (", this.numTotal, ")"].join("");
 			if (!noMarkup) {
-				name = ["<b>", name, "</b>"].join("");
+				name = ["<span style='font-weight:bold'>", name, "</span>"].join("");
 			}
 		}
 		return name;
