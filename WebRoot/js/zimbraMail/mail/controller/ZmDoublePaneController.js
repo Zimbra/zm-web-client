@@ -359,6 +359,10 @@ function(ev) {
 			} else if (!this._readingPaneOn) {
 				try {
 					this._app.getMsgController().show(msg, currView._mode);
+
+					// if msg is cached, then mark read if unread
+					if (msg.isLoaded() && msg.isUnread)
+						this._list.markRead([msg], true);
 				} catch (ex) {
 					this._handleException(ex, this._listSelectionListener, ev, false);
 				}
