@@ -30,10 +30,6 @@ function ZmPageEditController(appCtxt, container, app) {
 	//this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._addDocsListener);
 	this._listeners[ZmOperation.SPELL_CHECK] = new AjxListener(this, this._spellCheckListener);
 	this._listeners[ZmOperation.COMPOSE_FORMAT] = new AjxListener(this, this._formatListener);
-
-	this._saveCallback = new AjxCallback(this, this._saveResponseHandler);
-	this._saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler);
-	this._conflictCallback = new AjxCallback(this, this._saveConflictHandler);
 }
 ZmPageEditController.prototype = new ZmListController;
 ZmPageEditController.prototype.constructor = ZmPageEditController;
@@ -247,12 +243,15 @@ function(popViewWhenSaved) {
 	}
 
 	// set fields on page object
+	var content = this._pageEditView.getContent();
 	this._page.name = name;
-	this._page.setContent(this._pageEditView.getContent());
+	this._page.setContent(content);
 
 	// save
 	this._popViewWhenSaved = popViewWhenSaved;
-	this._page.save(this._saveCallback, this._saveErrorCallback);
+	var saveCallback = new AjxCallback(this, this._saveResponseHandler, [content]);
+	var saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler, [content]);
+	this._page.save(saveCallback, saveErrorCallback);
 };
 
 ZmPageEditController.prototype._showCurrentPage = function() {
@@ -270,7 +269,7 @@ ZmPageEditController.prototype._showPage = function(id) {
 	}
 };
 
-ZmPageEditController.prototype._saveResponseHandler = function(response) {
+ZmPageEditController.prototype._saveResponseHandler = function(content, response) {
 	var saveResp = response._data && response._data.SaveWikiResponse;
 	if (saveResp) {
 		var data = saveResp.w[0];
@@ -289,7 +288,7 @@ ZmPageEditController.prototype._saveResponseHandler = function(response) {
 		cache.renamePage(cachedPage, this._page.name);
 	}
 
-	this._pageEditView.pageSaved(this._page);
+	this._pageEditView.pageSaved(content);
 	this._appCtxt.setStatusMsg(ZmMsg.pageSaved);
 
 	var popViewWhenSaved = this._popViewWhenSaved;
@@ -332,7 +331,7 @@ function(id) {
 };
 
 ZmPageEditController.prototype._saveErrorResponseHandler =
-function(response) {
+function(content, response) {
 	var code = response.code;
 	if (code == ZmCsfeException.MAIL_ALREADY_EXISTS ||
 		code == ZmCsfeException.MODIFY_CONFLICT) {
@@ -344,7 +343,8 @@ function(response) {
 		};
 
 		var dialog = this._appCtxt.getPageConflictDialog();
-		dialog.popup(conflict, this._conflictCallback);
+		var conflictCallback = new AjxCallback(this, this._saveConflictHandler, [content]);
+		dialog.popup(conflict, conflictCallback);
 
 		// tell app we've handled the error
 		return true;
@@ -354,12 +354,14 @@ function(response) {
 	return false;
 };
 ZmPageEditController.prototype._saveConflictHandler =
-function(mineOrTheirs, conflict) {
+function(content, mineOrTheirs, conflict) {
 	if (mineOrTheirs == ZmPageConflictDialog.KEEP_MINE) {
 		var page = conflict.page;
 		page.id = conflict.id;
 		page.version = conflict.version;
-		page.save(this._saveCallback, this._saveErrorCallback);
+		var saveCallback = new AjxCallback(this, this._saveResponseHandler, [content]);
+		var saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler, [content]);
+		page.save(saveCallback, saveErrorCallback);
 		return;
 	}
 	if (mineOrTheirs == ZmPageConflictDialog.KEEP_THEIRS) {
