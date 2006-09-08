@@ -369,7 +369,7 @@ function() {
 
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmSchedulerGridHeaderTable'><tr>";
 	for (var j = 0; j <= 24; j++) {
-		var hour = (j % 12) || 12;
+		var hour = AjxDateUtil.isLocale24Hour() ? j : ((j % 12) || 12);
 		html[i++] = "<td><div class='ZmSchedulerGridHeaderCell'>";
 		html[i++] = hour;
 		html[i++] = "</div></td>";
@@ -1136,8 +1136,9 @@ function(sched, isAllAttendees) {
 	div = document.getElementById(sched.dwtNameId);
 	if (div) {
 		curClass = div.className;
-		newClass = (this._dateBorder.start == -1) ? "ZmSchedulerNameTdBorder" :
-													"ZmSchedulerNameTd";
+		newClass = (this._dateBorder.start == -1)
+			? "ZmSchedulerNameTdBorder"
+			: "ZmSchedulerNameTd";
 		if (curClass != newClass) {
 			div.className = newClass;
 		}
@@ -1203,10 +1204,11 @@ ZmSchedTabViewPage.prototype._getBordersFromDateInfo =
 function(dateInfo) {
 	var index = {start: -99, end: -99};
 	if (dateInfo.showTime) {
-		var startDate = ZmTimeSelect.getDateFromFields(dateInfo.startHourIdx + 1, dateInfo.startMinuteIdx * 5,
+		var idx = AjxDateUtil.isLocale24Hour() ? 0 : 1;
+		var startDate = ZmTimeSelect.getDateFromFields(dateInfo.startHourIdx + idx, dateInfo.startMinuteIdx * 5,
 													   dateInfo.startAmPmIdx,
 													   AjxDateUtil.simpleParseDateStr(dateInfo.startDate));
-		var endDate = ZmTimeSelect.getDateFromFields(dateInfo.endHourIdx + 1, dateInfo.endMinuteIdx * 5,
+		var endDate = ZmTimeSelect.getDateFromFields(dateInfo.endHourIdx + idx, dateInfo.endMinuteIdx * 5,
 													 dateInfo.endAmPmIdx,
 													 AjxDateUtil.simpleParseDateStr(dateInfo.endDate));
 		// subtract 1 from index since we're marking right borders
