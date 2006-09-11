@@ -646,7 +646,7 @@ function() {
 	var html = [];
 	var i = 0;
 
-	html[i++] = "<div><table border=0 style='table-layout:fixed; height:";
+	html[i++] = "<div><table border=0 width=100% style='table-layout:fixed; height:";
 	html[i++] = dims.y - 30;
 	html[i++] = "px'><colgroup><col width='";
 	html[i++] = AjxEnv.is800x600orLower ? "235" : "335";
