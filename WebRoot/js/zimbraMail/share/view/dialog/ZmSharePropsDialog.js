@@ -357,6 +357,10 @@ ZmSharePropsDialog.prototype._handleShareWith = function(type) {
 	this._props.setPropertyVisible(this._shareWithOptsId, !isPublicShare);
 	this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
 	this._props.setPropertyVisible(this._shareWithBreakId, !isPublicShare);
+
+	if (!isUserShare) {
+		this._viewerRadioEl.checked = true;
+	}
 };
 
 ZmSharePropsDialog.prototype._getSelectedRole =
