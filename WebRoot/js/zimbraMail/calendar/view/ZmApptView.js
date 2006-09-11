@@ -265,7 +265,7 @@ function(appt) {
 		i = this._showField(ZmMsg.attendees, this._objectManager.findObjects(attendees, true), html, i);
 	}
 
-	var repeatStr = appt._getRecurrenceBlurbForSave();
+	var repeatStr = appt.isRecurring() ? appt._getRecurrenceBlurbForSave() : null;
 	if (repeatStr) {
 		i = this._showField(ZmMsg.repeats, repeatStr, html, i);
 	}
