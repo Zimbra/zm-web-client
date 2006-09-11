@@ -478,11 +478,17 @@ function(appt, mode) {
 	if (isAllDayAppt) {
 		this._allDayCheckbox.checked = true;
 		this._showTimeFields(false);
-	}
 
-	// if all day appt, set time anyway in case user changes mind
-	this._startTimeSelect.set(appt.getStartDate());
-	this._endTimeSelect.set(appt.getEndDate());
+		// set time anyway to current time and default duration (in case user changes mind)
+		var sd = new Date();
+		this._startTimeSelect.set(AjxDateUtil.roundTimeMins(sd, 30));
+
+		var ed = new Date(sd.getTime() + ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
+		this._endTimeSelect.set(ed);
+	} else {
+		this._startTimeSelect.set(appt.getStartDate());
+		this._endTimeSelect.set(appt.getEndDate());
+	}
 
 	this._resetTimezoneSelect(appt, isAllDayAppt);
 	this._resetCalendarSelect(appt, mode);
@@ -495,9 +501,6 @@ function(appt, mode) {
 
 	// disable the recurrence select object for editing single instance
 	this._enableRepeat(mode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
-
-	// set focus to first input element
-//	this._kbMgr.grabFocus(this._subjectField);
 
 	// save the original form data in its initialized state
 	this._origFormValue = this._formValue(false);
