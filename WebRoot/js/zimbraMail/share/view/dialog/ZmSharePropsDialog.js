@@ -56,10 +56,6 @@ ZmSharePropsDialog.prototype.constructor = ZmSharePropsDialog;
 ZmSharePropsDialog.NEW	= ZmShare.NEW;
 ZmSharePropsDialog.EDIT	= ZmShare.EDIT;
 
-ZmSharePropsDialog._NO_COMPOSE_OPTIONS = [
-	ZmShareReply.STANDARD, ZmShareReply.QUICK
-];
-
 // Data
 ZmSharePropsDialog.prototype._mode = ZmSharePropsDialog.NEW;
 
@@ -119,7 +115,6 @@ function(mode, object, share, loc) {
 	}
 
 	// Force a reply if new share
-	this._reply.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 
@@ -255,8 +250,6 @@ function(shares, result) {
 			tmpShare.notes = notes;
 
 			if (replyType == ZmShareReply.COMPOSE) {
-				// NOTE: This will never be used if more than one email
-				//       address is specified.
 				tmpShare.composeMessage(this._shareMode, addrs);
 			} else {
 				tmpShare.sendMessage(this._shareMode, addrs);
@@ -278,7 +271,6 @@ function(share) {
 ZmSharePropsDialog.prototype._acKeyUpListener =
 function(event, aclv, result) {
 	var dialog = aclv.parent;
-	ZmSharePropsDialog._setReplyOptions(dialog);
 	ZmSharePropsDialog._enableFieldsOnEdit(dialog);
 };
 
@@ -298,25 +290,8 @@ function(event) {
 		dialog = dialog.getData(Dwt.KEY_OBJECT);
 	}
 
-	ZmSharePropsDialog._setReplyOptions(dialog);
 	ZmSharePropsDialog._enableFieldsOnEdit(dialog);
 	return true;
-};
-
-ZmSharePropsDialog._setReplyOptions = function(dialog) {
-	var email = dialog._granteeInput.getValue();
-	var hasMultiple = email.match(/;\s*\S/);
-
-	var ooptions = dialog._reply.getReplyOptions();
-	var noptions = hasMultiple ? ZmSharePropsDialog._NO_COMPOSE_OPTIONS : ZmShareReply.DEFAULT_OPTIONS;
-	if (ooptions != noptions) {
-		var option = dialog._reply.getReplyType();
-		if (noptions == ZmSharePropsDialog._NO_COMPOSE_OPTIONS && option == ZmShareReply.COMPOSE) {
-			option = ZmShareReply.QUICK;
-		}
-		dialog._reply.setReplyOptions(noptions);
-		dialog._reply.setReplyType(option);
-	}
 };
 
 ZmSharePropsDialog._enableFieldsOnEdit =
