@@ -439,13 +439,24 @@ function(params) {
 	var respCallback = new AjxCallback(this, this._handleResponseStartup2);
 	var startApp = (params && params.app) ? params.app :
 				   (params && params.isRelogin && this._activeApp) ? this._activeApp : ZmZimbraMail.defaultStartApp;
-	this.activateApp(startApp, false, respCallback, this._errorCallback);
+
+	// check for jump to compose page or msg view
+	var checkQS = false;
+	var match;
+	if (location.search && (match = location.search.match(/\bview=(\w+)\b/))) {
+		var view = match[1];
+		if (view == "compose" || view == "msg") {
+			startApp = ZmZimbraMail.MAIL_APP;
+			checkQS = true;
+		}
+	}
+	this.activateApp(startApp, false, respCallback, this._errorCallback, checkQS);
 	this.setStatusMsg(ZmMsg.initializationComplete, null, null, null, ZmStatusView.TRANSITION_INVISIBLE);
 };
 
 /*
 * Startup: part 4
-* Does a couple housecleaning tasks, then sets focus.
+* Kills the splash screen, checks license
 */
 ZmZimbraMail.prototype._handleResponseStartup2 =
 function() {
@@ -458,18 +469,6 @@ function() {
 		dlg.reset();
 		dlg.setMessage(ZmMsg.licenseExpired, DwtMessageDialog.WARNING_STYLE);
 		dlg.popup();
-	}
-
-	// check for jump to compose page
-	if (location.search && (location.search.match(/\bview=compose\b/))) {
-		var cc = this.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
-		var match = location.search.match(/\bsubject=([^&]+)/);
-		var subject = match ? decodeURIComponent(match[1]) : null;
-		match = location.search.match(/\bto=([^&]+)/);
-		var to = match ? decodeURIComponent(match[1]) : null;
-		match = location.search.match(/\bbody=([^&]+)/);
-		var body = match ? decodeURIComponent(match[1]) : null;
-		cc.doAction(ZmOperation.NEW_MESSAGE, false, null, to, subject, body);
 	}
 
 	// Back out code below (bug 10140) pending further investigation
@@ -753,9 +752,10 @@ function() {
 * @param force			[boolean]*		if true, launch the app
 * @param callback		[AjxCallback]*	callback
 * @param errorCallback	[AjxCallback]*	error callback
+* @param checkQS		[boolean]*		if true, check query string for launch args
 */
 ZmZimbraMail.prototype.activateApp =
-function(appName, force, callback, errorCallback) {
+function(appName, force, callback, errorCallback, checkQS) {
     DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
 
     var view = this._appViewMgr.getAppView(appName);
@@ -768,11 +768,12 @@ function(appName, force, callback, errorCallback) {
 		}
     } else {
     	// launch the app
-    	if (!this._apps[appName])
+    	if (!this._apps[appName]) {
 			this._createApp(appName);
+    	}
 		DBG.println(AjxDebug.DBG1, "Launching app " + appName);
 		var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback]);
-		this._apps[appName].launch(respCallback, errorCallback);
+		this._apps[appName].launch(respCallback, errorCallback, checkQS);
     }
 };
 
