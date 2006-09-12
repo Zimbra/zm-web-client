@@ -52,7 +52,6 @@ function ZmContactListController(appCtxt, container, contactsApp) {
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 	this._listeners[ZmOperation.PRINT_MENU] = new AjxListener(this, this._printContactListener);
 
-	this._appCtxt.getSettings().getSetting(ZmSetting.CONTACTS_PER_PAGE).addChangeListener(new AjxListener(this, this._settingsChangeListener));
 	this._parentView = {};
 };
 
@@ -503,15 +502,6 @@ ZmContactListController.prototype._editListener =
 function(ev) {
 	var contact = this._listView[this._currentView].getSelection()[0];
 	this._app.getContactController().show(contact, false);
-};
-
-ZmContactListController.prototype._settingsChangeListener =
-function(ev) {
-	if (ev.type != ZmEvent.S_SETTING) return;
-
-	// mark flag for relayout if contacts per page setting changed
-	if (ev.source.id == ZmSetting.CONTACTS_PER_PAGE)
-		this._searchType |= ZmContactListController.SEARCH_TYPE_NEW;
 };
 
 ZmContactListController.prototype._printListener =
