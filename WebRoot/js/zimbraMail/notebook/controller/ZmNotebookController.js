@@ -315,13 +315,43 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 
 	var names = [];
 	var urls = [];
+	var inNewWindow = this._inNewWindow(event);
+
 	var content = "<wiklet class='NAME'/>";
+
+	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var notebook, shares;
+	var noprompt = false;
+
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		urls.push(item.getRestUrl());
 		names.push(ZmWikletProcessor.process(this._appCtxt, item, content));
+		if (noprompt) continue;
+
+		notebook = tree.getById(item.folderId);
+		shares = notebook && notebook.shares;
+		if (shares) {
+			for (var j = 0; j < shares.length; j++) {
+				noprompt = noprompt || shares[j].grantee.type == ZmShare.TYPE_PUBLIC;
+			}
+		}
 	}
 
+	if (!shares || !noprompt) {
+		var args = [names, urls, inNewWindow];
+		var callback = new AjxCallback(this, this._sendPageListener2, args);
+
+		var dialog = this._appCtxt.getConfirmationDialog();
+		dialog.popup(ZmMsg.errorPermissionRequired, callback);
+	}
+	else {
+		this._sendPageListener2(names, urls);
+	}
+};
+
+ZmNotebookController.prototype._sendPageListener2 =
+function(names, urls, inNewWindow) {
 	var app = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
 	var controller = app.getComposeController();
 
@@ -331,7 +361,7 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 	var subjOverride = new AjxListFormat().format(names);
 	var extraBodyText = urls.join("\n");
 
-	controller.doAction(action, this._inNewWindow(event), msg, toOverride, subjOverride, extraBodyText);
+	controller.doAction(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText);
 };
 
 ZmNotebookController.prototype._detachListener = function(event) {
