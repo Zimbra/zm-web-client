@@ -98,8 +98,8 @@
  * ***** END LICENSE BLOCK *****
 -->
     <title><fmt:setBundle basename="/msgs/ZaMsg"/><fmt:message key="zimbraAdminTitle"/></title>
-    <link rel="ICON" type="image/gif" href="/zimbra/img/loRes/logo/favicon.gif"/>
-    <link rel="SHORTCUT ICON" href="/zimbra/img/loRes/logo/favicon.ico"/>
+    <link rel="ICON" type="image/gif" href="/img/loRes/logo/favicon.gif"/>
+    <link rel="SHORTCUT ICON" href="/img/loRes/logo/favicon.ico"/>
     
 	<script>
 		appContextPath = "<%= contextPath %>";
