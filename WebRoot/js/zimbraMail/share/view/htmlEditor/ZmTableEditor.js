@@ -167,8 +167,6 @@ function ZmTablePropsDialog(parent) {
 			 DwtDialog.CANCEL_BUTTON ],
 		       [ advancedBtn ] );
 
-	this._disableFFhack();
-
 	var ids;
 	var html;
 

@@ -49,7 +49,6 @@ function ZmReminderDialog(parent, appCtxt, reminderController, calController) {
 	this._appCtxt = appCtxt;
 	this.setContent(this._contentHtml(selectId));
 	this.setTitle(ZmMsg.apptReminders);
-	this._disableFFhack();	
 	this._reminderController = reminderController;
 	this._calController = calController;
 	this.registerCallback(ZmReminderDialog.SNOOZE_BUTTON, this._handleSnoozeButton, this);

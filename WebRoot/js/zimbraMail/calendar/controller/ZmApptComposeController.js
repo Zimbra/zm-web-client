@@ -393,7 +393,6 @@ function(appt, attId, attendees, origAttendees) {
 			this._notifyDialog = new ZmApptNotifyDialog(this._shell);
 			this._notifyDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._notifyDlgOkListener));
 			this._notifyDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._notifyDlgCancelListener));
-			this._notifyDialog._disableFFhack();
 		}
 		this._notifyDialog.initialize(appt, attId, this._addedAttendees, this._removedAttendees);
 		this._notifyDialog.popup();

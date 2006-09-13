@@ -34,7 +34,6 @@ function ZmStatusHistoryDialog(parent, appCtxt) {
 	this._appCtxt = appCtxt;
 	this.setContent(this._contentHtml());
 	this.setTitle(ZmMsg.statusHistory);	
-	this._disableFFhack();	
 };
 
 ZmStatusHistoryDialog.prototype = new DwtDialog;
