@@ -117,10 +117,13 @@ function(html, idx) {
 
 	html[idx++] = "<tr valign='center'><td class='Label'>";
 	html[idx++] = ZmMsg.nameLabel;
-	html[idx++] = "</td>";
-	html[idx++] = "<td><input autocomplete='off' type='text' class='Field' id='";
+	html[idx++] = "</td><td>";
+    html[idx++] = Dwt.CARET_HACK_BEGIN;
+	html[idx++] = "<input autocomplete='off' type='text' class='Field' id='";
 	html[idx++] = this._nameFieldId;
-	html[idx++] = "' /></td></tr>";
+	html[idx++] = "' />";
+    html[idx++] = Dwt.CARET_HACK_END;
+	html[idx++] = "</td></tr>";
 
 	return idx;
 };

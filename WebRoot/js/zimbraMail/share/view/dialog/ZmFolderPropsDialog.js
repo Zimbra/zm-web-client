@@ -357,27 +357,35 @@ function() {
 	var view = new DwtComposite(this);
 
 	// create html elements
-	this._nameOutputEl = document.createElement("SPAN");
-	this._nameInputEl = document.createElement("INPUT");
+	var doc = document;
+	this._nameOutputEl = doc.createElement("SPAN");
+	this._nameInputEl = doc.createElement("INPUT");
 	this._nameInputEl.style.width = "20em";
 	this._nameInputEl._dialog = this;
-	this._ownerEl = document.createElement("DIV");
-	this._typeEl = document.createElement("DIV");
-	this._urlEl = document.createElement("DIV");
-	this._permEl = document.createElement("DIV");
+	var nameElement = this._nameInputEl;
+	if (Dwt.CARET_HACK_ENABLED) {
+		nameElement = doc.createElement("DIV");
+		nameElement.style.overflow = "auto";
+		nameElement.appendChild(this._nameInputEl);
+	}
+	
+	this._ownerEl = doc.createElement("DIV");
+	this._typeEl = doc.createElement("DIV");
+	this._urlEl = doc.createElement("DIV");
+	this._permEl = doc.createElement("DIV");
 
-	var nameEl = document.createElement("DIV");
+	var nameEl = doc.createElement("DIV");
 	nameEl.appendChild(this._nameOutputEl);
-	nameEl.appendChild(this._nameInputEl);
+	nameEl.appendChild(nameElement);
 
-	this._excludeFbCheckbox = document.createElement("INPUT");
+	this._excludeFbCheckbox = doc.createElement("INPUT");
 	this._excludeFbCheckbox.type = "checkbox";
 	this._excludeFbCheckbox._dialog = this;
 	
-	this._excludeFbEl = document.createElement("DIV");
+	this._excludeFbEl = doc.createElement("DIV");
 	this._excludeFbEl.style.display = "none";
 	this._excludeFbEl.appendChild(this._excludeFbCheckbox);
-	this._excludeFbEl.appendChild(document.createTextNode(ZmMsg.excludeFromFreeBusy));
+	this._excludeFbEl.appendChild(doc.createTextNode(ZmMsg.excludeFromFreeBusy));
 
 	// setup properties group
 	var propsGroup = new DwtGrouper(view);
@@ -397,7 +405,7 @@ function() {
 	this._permId = this._props.addProperty(ZmMsg.permissions, this._permEl)
 	this._props.addProperty(ZmMsg.colorLabel, this._color);
 
-	var propsContainer = document.createElement("DIV");
+	var propsContainer = doc.createElement("DIV");
 	propsContainer.appendChild(this._props.getHtmlElement());
 	propsContainer.appendChild(this._excludeFbEl);
 	

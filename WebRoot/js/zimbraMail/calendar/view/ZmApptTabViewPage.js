@@ -675,7 +675,8 @@ function() {
 
 	this._subjectField = new DwtInputField({parent: this, type:DwtInputField.STRING,
 											errorIconStyle: DwtInputField.ERROR_ICON_NONE,
-											validationStyle: DwtInputField.CONTINUAL_VALIDATION});
+											validationStyle: DwtInputField.CONTINUAL_VALIDATION,
+											skipCaretHack:true});
 	this._subjectField.setRequired();
 	Dwt.setSize(this._subjectField.getInputElement(), width, "22px");
 	this._subjectField.reparentHtmlElement(this._subjectFieldId);
@@ -685,7 +686,7 @@ function() {
 	this._attInputCurVal = {};
 	for (var t = 0; t < this._attTypes.length; t++) {
 		var type = this._attTypes[t];
-		var params = {parent: this, type: DwtInputField.STRING};
+		var params = {parent: this, type: DwtInputField.STRING, skipCaretHack:true};
 		if (type == ZmAppt.PERSON) {
 			params.rows = 3;
 		}

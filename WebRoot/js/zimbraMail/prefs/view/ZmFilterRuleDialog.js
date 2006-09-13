@@ -151,12 +151,20 @@ function() {
 	var i = 0;
 	
 	html[i++] = "<div>";
-	html[i++] = "<table><tr><td nowrap>" + ZmMsg.filterName + ":</td>";
-	html[i++] = "<td><input type='text' width=100 id='" + this._nameInputId + "'/></td>";
-	html[i++] = "<td width='100%' />";
-	html[i++] = "<td><input type='checkbox' name='cbActive' checked id='" + this._activeCheckboxId + "'/> ";
-	html[i++] = ZmMsg.active + "</td></tr></table>";
-	html[i++] = "<div class='vSpace' />";
+	html[i++] = "<table width='100%'><tr><td width='1%' nowrap>";
+	html[i++] = ZmMsg.filterName;
+	html[i++] = ":</td><td>";
+    html[i++] = Dwt.CARET_HACK_BEGIN;
+	html[i++] = "<input type='text' width=100 id='";
+	html[i++] = this._nameInputId;
+	html[i++] = "'/>";
+    html[i++] = Dwt.CARET_HACK_END;
+	html[i++] = "</td>";
+	html[i++] = "<td width='1%' style='align:right;'><input type='checkbox' name='cbActive' checked id='";
+	html[i++] = this._activeCheckboxId;
+	html[i++] = "'> ";
+	html[i++] = ZmMsg.active;
+	html[i++] = "</td></tr></table><div class='vSpace'></div>";
 
 	html[i++] = "<fieldset";
 	if (AjxEnv.isMozilla)

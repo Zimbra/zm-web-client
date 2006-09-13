@@ -65,7 +65,11 @@ function() {
 	var idx = 0;
 	html[idx++] = "<table cellpadding='0' cellspacing='0' border='0'>";
 	html[idx++] = "<tr><td class='Label' colspan=2 style='padding: 0px 0px 5px 0px;'>" + ZmMsg.searchName + ": </td></tr>";
-	html[idx++] = "<tr><td><input autocomplete=OFF type='text' class='Field' id='" + this._nameFieldId + "' /></td></tr>";
+	html[idx++] = "<tr><td>";
+    html[idx++] = Dwt.CARET_HACK_BEGIN;
+    html[idx++] = "<input autocomplete=OFF type='text' class='Field' id='" + this._nameFieldId + "' />";
+    html[idx++] = Dwt.CARET_HACK_END;
+	html[idx++] = "</td></tr>";
 	html[idx++] = "<tr><td>&nbsp;</td></tr>";
 	html[idx++] = "<tr><td class='Label' colspan=2>" + ZmMsg.newSearchParent + ":</td></tr>";
 	html[idx++] = "<tr><td colspan=2 id='" + this._folderTreeCellId + "'/></tr>";

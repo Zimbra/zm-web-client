@@ -111,24 +111,30 @@ function() {
 	this.setReplyOptions(ZmShareReply.DEFAULT_OPTIONS);
 	this._replyType.addChangeListener(new AjxListener(this, this._handleReplyType));
 	
-	this._replyTypeEl = document.createElement("DIV");
+	var doc = document;
+	this._replyTypeEl = doc.createElement("DIV");
 	this._replyTypeEl.style.paddingBottom = "0.125em";
 	this._replyTypeEl.appendChild(this._replyType.getHtmlElement());
 	
-	this._replyStandardMailNoteEl = document.createElement("DIV");
+	this._replyStandardMailNoteEl = doc.createElement("DIV");
 	this._replyStandardMailNoteEl.style.paddingBottom = "0.125em";
 	this._replyStandardMailNoteEl.style.width = "30em";
 	this._replyStandardMailNoteEl.innerHTML = ZmMsg.sendMailAboutShareNote;
 	
-	this._replyNoteEl = document.createElement("TEXTAREA");
+	var div = doc.createElement("DIV");
+	if (Dwt.CARET_HACK_ENABLED) {
+		div.style.overflowY="auto";
+	}
+	this._replyNoteEl = doc.createElement("TEXTAREA");
 	this._replyNoteEl.cols = 50;
 	this._replyNoteEl.rows = 4;
+	div.appendChild(this._replyNoteEl);
 	
-	this._replyControlsEl = document.createElement("DIV");
+	this._replyControlsEl = doc.createElement("DIV");
 	this._replyControlsEl.style.marginLeft = "1.5em";
 	this._replyControlsEl.appendChild(this._replyTypeEl);
 	this._replyControlsEl.appendChild(this._replyStandardMailNoteEl);
-	this._replyControlsEl.appendChild(this._replyNoteEl);
+	this._replyControlsEl.appendChild(div);
 
 	// append controls
 	var element = this.getHtmlElement();

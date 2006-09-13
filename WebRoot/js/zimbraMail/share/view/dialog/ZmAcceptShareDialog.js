@@ -118,14 +118,21 @@ ZmAcceptShareDialog.prototype._createView =
 function() {
 	var view = new DwtComposite(this);
 	
-	this._headerEl = document.createElement("DIV");
+	var doc = document;
+	this._headerEl = doc.createElement("DIV");
 	this._headerEl.style.marginBottom = "0.5em";
-	this._detailsEl = document.createElement("DIV");
+	this._detailsEl = doc.createElement("DIV");
 	this._detailsEl.style.marginBottom = "1em";
-	this._questionEl = document.createElement("DIV");
+	this._questionEl = doc.createElement("DIV");
 	this._questionEl.style.marginBottom = "0.5em";
-	this._nameEl = document.createElement("INPUT");
+	this._nameEl = doc.createElement("INPUT");
 	this._nameEl.style.width = "20em";
+	var nameElement = this._nameEl;
+	if (Dwt.CARET_HACK_ENABLED) {
+		nameElement = doc.createElement("DIV");
+		nameElement.style.overflow = "auto";
+		nameElement.appendChild(this._nameEl);
+	}
 
 	this._color = new DwtSelect(view);
 	for (var i = 0; i < ZmOrganizer.COLOR_CHOICES.length; i++) {
@@ -136,12 +143,12 @@ function() {
 	var props = this._propSheet = new DwtPropertySheet(view);
 	var propsEl = props.getHtmlElement();
 	propsEl.style.marginBottom = "0.5em";
-	props.addProperty(ZmMsg.nameLabel, this._nameEl);
+	props.addProperty(ZmMsg.nameLabel, nameElement);
 	props.addProperty(ZmMsg.colorLabel, this._color);
 	
 	this._reply = new ZmShareReply(view);
 
-	var settings = document.createElement("DIV");
+	var settings = doc.createElement("DIV");
 	settings.style.marginLeft = "1.5em";
 	settings.appendChild(propsEl);
 	settings.appendChild(this._reply.getHtmlElement());	

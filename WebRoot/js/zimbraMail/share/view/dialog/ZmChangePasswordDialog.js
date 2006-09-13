@@ -67,14 +67,20 @@ function() {
 	var idx = 0;
     html[idx++] = "<div style='width: 250px'>";
     html[idx++] = "<div>" + ZmMsg.oldPassword + ":</div>";
+    html[idx++] = Dwt.CARET_HACK_BEGIN;
     html[idx++] = "<div><input class='ZmChangePasswordDialogInput' id=";
 	html[idx++] = this._oldPasswordId + " type='password'/></div><br>";
     html[idx++] = "<div>" + ZmMsg.newPassword + ":</div>";
+    html[idx++] = Dwt.CARET_HACK_END;
+    html[idx++] = Dwt.CARET_HACK_BEGIN;
     html[idx++] = "<div><input class='ZmChangePasswordDialogInput' id=";
 	html[idx++] = this._newPasswordId + " type='password'/></div><br>";
     html[idx++] = "<div>" + ZmMsg.confirmPassword + ":</div>";
+    html[idx++] = Dwt.CARET_HACK_END;
+    html[idx++] = Dwt.CARET_HACK_BEGIN;
     html[idx++] = "<div><input class='ZmChangePasswordDialogInput' id="; 
 	html[idx++] = this._confirmPasswordId + " type='password'/></div>";
+    html[idx++] = Dwt.CARET_HACK_END;
     html[idx++] = "</div>";
 	
 	return html.join("");
