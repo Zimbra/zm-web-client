@@ -69,6 +69,10 @@
 %><%
 	Cookie[] cookies = request.getCookies();
 	String contextPath = request.getContextPath();
+	if(contextPath.equals("/")) {
+		contextPath = "";
+	}
+
 	String currentProto = request.getScheme();
 	String initMode = request.getParameter("initMode");
 	initMode = (initMode != null)? initMode : "";

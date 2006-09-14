@@ -38,6 +38,10 @@
  * ***** END LICENSE BLOCK *****
 --><%
 	String contextPath = request.getContextPath();
+	if(contextPath.equals("/")) {
+		contextPath = "";
+	}
+
 	String full = request.getParameter("full");
 
     String skin = request.getParameter("skin");

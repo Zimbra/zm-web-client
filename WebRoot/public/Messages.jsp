@@ -23,7 +23,11 @@ Contributor(s):
 ***** END LICENSE BLOCK *****
 -->
 <% 
-   String contextPath = (String)request.getContextPath(); 
+	String contextPath = request.getContextPath();
+	if(contextPath.equals("/")) {
+		contextPath = "";
+	}
+
    String vers = (String)request.getAttribute("version");
    String ext = (String)request.getAttribute("fileExtension");
    if (vers == null){

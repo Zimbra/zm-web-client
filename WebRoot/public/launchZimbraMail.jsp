@@ -39,6 +39,9 @@
 --><%
 	final String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
 	String contextPath = request.getContextPath();
+	if(contextPath.equals("/")) {
+		contextPath = "";
+	}
 	String authToken = request.getParameter("auth");
 	if (authToken != null && authToken.equals("")) {
 		authToken = null;
