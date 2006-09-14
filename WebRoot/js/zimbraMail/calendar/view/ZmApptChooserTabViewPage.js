@@ -178,9 +178,9 @@ ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmAppt.EQUIPMENT]	= ZmMsg.apptResources;
 
 // images for the bottom fieldset legend
 ZmApptChooserTabViewPage.ICON = {};
-ZmApptChooserTabViewPage.ICON[ZmAppt.PERSON]	= "/zimbra/img/hiRes/calendar/ApptMeeting.gif";
-ZmApptChooserTabViewPage.ICON[ZmAppt.LOCATION]	= "/zimbra/img/hiRes/calendar/Location.gif";
-ZmApptChooserTabViewPage.ICON[ZmAppt.EQUIPMENT]	= "/zimbra/img/hiRes/calendar/Resource.gif";
+ZmApptChooserTabViewPage.ICON[ZmAppt.PERSON]	= appContextPath+"/img/hiRes/calendar/ApptMeeting.gif";
+ZmApptChooserTabViewPage.ICON[ZmAppt.LOCATION]	= appContextPath+"/img/hiRes/calendar/Location.gif";
+ZmApptChooserTabViewPage.ICON[ZmAppt.EQUIPMENT]	= appContextPath+"/img/hiRes/calendar/Resource.gif";
 
 
 ZmApptChooserTabViewPage.prototype = new DwtTabViewPage;
@@ -288,7 +288,6 @@ function() {
 	if (AjxEnv.isMozilla)
 		html[i++] = " style='border: 1px dotted #555555'";
 	html[i++] = "><legend style='color:#555555'>";
-//	html[i++] = "<img src='/zimbra/img/hiRes/common/Search.gif' />&nbsp;";
 	html[i++] = ZmApptChooserTabViewPage.TOP_LEGEND[this.type];
 	html[i++] = "</legend>";
 	

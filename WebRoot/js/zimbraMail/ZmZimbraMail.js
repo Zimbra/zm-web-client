@@ -317,7 +317,7 @@ function(params) {
 	if (typeof(skin) == "undefined") {
 		DBG.println(AjxDebug.DBG1, "No skin!");
 		var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
-					  "" : ":" + location.port) + "/zimbra/public/skinError.jsp?skin=" + appCurrentSkin;
+					  "" : ":" + location.port) + "/public/skinError.jsp?skin=" + appCurrentSkin;
 		ZmZimbraMail.sendRedirect(locationStr);
         return;
     }
@@ -1003,7 +1003,7 @@ function() {
 	window.onbeforeunload = null;
 	
 	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
-					  "" : ":" + location.port) + "/zimbra/" + window.location.search;
+					  "" : ":" + location.port) + "/" + window.location.search;
 	ZmZimbraMail.sendRedirect(locationStr);
 };
 

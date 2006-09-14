@@ -95,7 +95,7 @@
 
 	if (currentProto.equals(PROTO_HTTPS) && protocolMode.equals(PROTO_HTTP)) {
 		qs = emptyQs? "?initMode=" + currentProto: qs + "&initMode=" + currentProto;
-		response.sendRedirect(PROTO_HTTP + "://" + request.getServerName() + httpPort + "/zimbra" + qs);
+		response.sendRedirect(PROTO_HTTP + "://" + request.getServerName() + httpPort + "/" + qs);
 		return;
 	}
 

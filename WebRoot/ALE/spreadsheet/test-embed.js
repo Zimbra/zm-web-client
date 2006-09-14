@@ -20,7 +20,7 @@ function Test() {
 
 		var editor = new DwtHtmlEditor(container, "ZmHtmlEditor",
 					       null, "<h1>Check This Out</h1><p>paragraph</p>",
-					       DwtHtmlEditor.HTML, "/zimbra/public/blank.html");
+					       DwtHtmlEditor.HTML, "/public/blank.html");
 
 		container.setLocation(20, 20);
 		editor.setSize(800, 600);
@@ -43,7 +43,7 @@ function Test() {
 			if (AjxEnv.isGeckoBased)
 				doc.designMode = "off";
 			var ifr = doc.createElement("iframe");
-            ifr.src = location.protocol + "//" + location.hostname + ((location.port == '80')? "" : ":" +location.port) + "/zimbra/ALE/spreadsheet/index.jsp";
+            ifr.src = location.protocol + "//" + location.hostname + ((location.port == '80')? "" : ":" +location.port) + "/ALE/spreadsheet/index.jsp";
 			ifr.style.width = "100%";
 			ifr.style.height = "400px";
 			editor._insertNodeAtSelection(ifr);
