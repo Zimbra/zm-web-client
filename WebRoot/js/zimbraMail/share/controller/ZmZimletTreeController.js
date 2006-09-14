@@ -26,7 +26,14 @@
 function ZmZimletTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length === 0) {return;}
 	type = type ? type : ZmOrganizer.ZIMLET;
-	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(ZmAppt, ZmConv, ZmMailMsg, ZmContact, ZmFolder);
+	var list =[ZmFolder, ZmConv, ZmMailMsg];
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		list.push(ZmContact);
+	}
+	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+		list.push(ZmAppt);
+	}
+	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(list);
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 	this._eventMgrs = {};
 }

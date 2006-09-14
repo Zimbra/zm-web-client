@@ -410,16 +410,20 @@ function(params) {
 	var kbMgr = this._shell.getKeyboardMgr();
 	kbMgr.setTabGroup(rootTg);
 
-	this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
+		this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
 		this.getApp(ZmZimbraMail.CALENDAR_APP).showMiniCalendar(true);
 	}
 
 	this._preloadViews();
 
-	// reset the user's time zone (save to prefs) if it has changed
-	var respCallback = new AjxCallback(this, this._handleResponseStartup1, [params]);
-	ZmTimezones.initializeServerTimezone(respCallback);
+	if (this._appCtxt.get(ZmSetting.PREFS_ENABLED)) {
+		// reset the user's time zone (save to prefs) if it has changed
+		var respCallback = new AjxCallback(this, this._handleResponseStartup1, [params]);
+		ZmTimezones.initializeServerTimezone(respCallback);
+	} else {
+		this._handleResponseStartup1(params);
+	}
 };
 
 /*
@@ -1945,7 +1949,11 @@ function() {
 			buttons.push(ZmZimbraMail.APP_BUTTON[app]);
 		}
 	}
-	buttons.push(ZmAppChooser.SPACER, ZmAppChooser.B_HELP, ZmAppChooser.B_OPTIONS, ZmAppChooser.B_LOGOUT);
+	buttons.push(ZmAppChooser.SPACER, ZmAppChooser.B_HELP);
+	if (this._appCtxt.get(ZmSetting.PREFS_ENABLED)) {
+		buttons.push(ZmAppChooser.B_OPTIONS);
+	}
+	buttons.push(ZmAppChooser.B_LOGOUT);
 	var appChooser = new ZmAppChooser(this._shell, null, buttons);
 	
 	var buttonListener = new AjxListener(this, this._appButtonListener);

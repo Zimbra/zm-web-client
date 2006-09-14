@@ -798,6 +798,7 @@ function(view, saveSelection, loadIndex, offset, result) {
 
 ZmMailListController.prototype._setGroupMailBy =
 function(id) {
+	if (!this._appCtxt.get(ZmSetting.PREFS_ENABLED)) return;
 	this._appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmPref.GROUP_MAIL_BY_VALUE[id]);
 	var searchCtlr = this._appCtxt.getSearchController();
 	if (searchCtlr)

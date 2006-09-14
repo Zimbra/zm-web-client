@@ -34,7 +34,14 @@
 */
 function ZmTagTreeController(appCtxt) {
 
-	var dropTgt = new DwtDropTarget(ZmConv, ZmMailMsg, ZmContact, ZmPage, ZmDocument);
+	var list = [ZmConv, ZmMailMsg];
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		list.push(ZmContact);
+	}
+	if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+		list.push(ZmPage, ZmDocument);
+	}
+	var dropTgt = new DwtDropTarget(list);
 	ZmTreeController.call(this, appCtxt, ZmOrganizer.TAG, dropTgt);
 
 	this._listeners[ZmOperation.NEW_TAG] = new AjxListener(this, this._newListener);
