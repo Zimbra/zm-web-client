@@ -1,4 +1,3 @@
-<%String contextPath = request.getContextPath();%>
 <script type="text/javascript" language="JavaScript">
 var zImgLoading = (new Date()).getTime();
 </script>

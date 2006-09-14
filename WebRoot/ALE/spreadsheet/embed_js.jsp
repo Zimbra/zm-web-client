@@ -25,7 +25,11 @@ Contributor(s):
 <%
    String vers = (String)request.getAttribute("version");
    String ext = (String)request.getAttribute("fileExtension");
-   String contextPath = request.getContextPath();
+	String contextPath = request.getContextPath();
+	if(contextPath.equals("/")) {
+		contextPath = "";
+	}
+
    if (vers == null){
       vers = "";
    }
