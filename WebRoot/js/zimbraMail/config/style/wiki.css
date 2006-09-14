@@ -66,7 +66,7 @@
 	padding-right:5px;
 	padding-bottom:2px;
 	vertical-align:bottom;
-	@FontSize-normal@
+	font-size:9px;
 	color:#666666;
 }
 
@@ -74,7 +74,7 @@
 	text-align:right;
 	white-space:nowrap; overflow:hidden;
 	padding-right:5px;
-	@FontSize-normal@
+	font-size:9px;
 	color:#999999;
 }
 
@@ -82,29 +82,29 @@
 /* Use the following to make links have a small, gray appearance when not rolled over */
 #ZimbraWikiPage .zmwiki-smallGrayLinks A,
 #ZimbraWikiPage .zmwiki-smallGrayLinks span.Object {
-	@FontSize-normal@
+	font-size:9px;
 	color:#999999;
 }
 #ZimbraWikiPage .zmwiki-smallGrayLinks span.Object-activated {
-	@FontSize-normal@
+	font-size:9px;
 	color:#666666;
 }
 
 #ZimbraWikiPage .zmwiki-copyright {
 	white-space:nowrap; overflow:hidden;
-	@FontSize-normal@
+	font-size:9px;
 	color:#999999;
 }
 
 
 #ZimbraWikiPage .zmwiki-tags {
 	text-align:right;
-	@FontSize-normal@
+	font-size:9px;
 }
 
 
 #ZimbraWikiPage .zmwiki-breadcrumbs {
-	@FontSize-normal@		
+	font-size:9px;		
 }
 
 #ZimbraWikiPage .zmwiki-breadcrumbsSimple {
@@ -113,7 +113,7 @@
 #ZimbraWikiPage .zmwiki-breadCrumbSeparator {
 	padding-left:3px;
 	padding-right:3px;
-	@FontSize-normal@	
+	font-size:9px;	
 	color:#999999;
 }
 
@@ -146,12 +146,12 @@
 
 
 #ZimbraWikiPage .zmwiki-tocPageInfo {
-	@FontSize-normal@
+	font-size:9px;
 	color:#999999;
 }
 
 #ZimbraWikiPage .zmwiki-tocFragment{
-	@FontSize-normal@
+	font-size:9px;
 	color:#999999;
 }
 
@@ -159,12 +159,12 @@
 
 
 #ZimbraWikiPage .zmwiki-pageLink {
-	@FontSize-normal@	
+	font-size:9px;	
 	cursor:pointer;
 }
 
 #ZimbraWikiPage .zmwiki-tag {
-	@FontSize-normal@
+	font-size:9px;
 	color:darkblue;
 	padding-right:10px;
 }

@@ -18,6 +18,7 @@
   <property name="gzipExtension" value=".zgz"/>	
   <property name="rhinoExtension" value=".rhino"/>
   <property name="licenseExtension" value=".license"/>	
+  <property name="mail.url" value="/zimbra"/>
 
   <condition property="ajax.dir" value="${env.AJAX_DIR}">
     <isset property="env.AJAX_DIR" />
@@ -647,12 +648,14 @@
     </copy>
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+    <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
   </target>
 
   <target name="war" depends="copy-files-to-build-area, jam-files, inject-build-info, images, i18n">
     <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
     <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar"/>
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="com/zimbra/kabuki/tools/**,**/build/*"/>
@@ -671,6 +674,7 @@
     <copy file="WebRoot/WEB-INF/web.xml.production" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="true"/>
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
     <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar,gifencoder.jar,commons-cli-1.0.jar"/>
   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
@@ -743,6 +747,7 @@
     </copy>
     <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+    <replace file="${deploy.dir}${deploy.admin.path}/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
   </target>
 
   <!-- this is the production war file target for the admin webapp -->
@@ -750,6 +755,7 @@
     <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar,gifencoder.jar,commons-cli-1.0.jar"/>
   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
@@ -769,6 +775,7 @@
     <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar"/>
    	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />

@@ -316,16 +316,8 @@ function(ev) {
 			if (ev.event == ZmEvent.E_DELETE) {
 				ZmMailListView.prototype._changeListener.call(this, ev);
 			} else {
-				// bug fix #2362 - you can only move to a single folder at a time so
-				// just check folderId of 1st item, and if spam, remove it from listview
-				if (items[0].folderId == ZmFolder.ID_SPAM) {
-					for (var i=0; i<items.length; i++)
-						this._controller._list.remove(items[i], true);
-					ZmMailListView.prototype._changeListener.call(this, ev);
-				} else {
-					this._changeTrashStatus(items);
-					this._changeFolderName(items);
-				}
+				this._changeTrashStatus(items);
+				this._changeFolderName(items);
 			}
 		}
 	} else if (this._mode == ZmController.CONV_VIEW && ev.event == ZmEvent.E_CREATE) {

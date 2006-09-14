@@ -250,10 +250,12 @@ function() {
 			html[idx++] = '"';
 		}
 		html[idx++] = "); return false;' class='DwtButton AlphabetBarCell' onmouseover='ZmContactAlphabetBar._onMouseOver(this)' onmouseout='ZmContactAlphabetBar._onMouseOut(this)'";
-		if (i > 0) {
-			html[idx++] = " style='border-left-width:0;'";
-		}
-		html[idx++] = ">";
+		var style = "";
+		if (i > 0) 					style = "border-left-width:0;";
+		if (i < (cellCount - 1)) 	style += "border-right-width:0;";
+		html[idx++] = " style='";
+		html[idx++] = style;
+		html[idx++] = "'>";
 		html[idx++] = alphabet[i];
 		html[idx++] = "</td>";
 	}

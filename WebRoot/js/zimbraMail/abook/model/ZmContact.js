@@ -735,11 +735,11 @@ function(email) {
 		html[idx++] = "<div style='border-bottom: 1px solid black;'>";
 		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
 		html[idx++] = "<tr valign='center'>";
-		html[idx++] = "<td style='font-weight:bold'>";
-		html[idx++] = AjxStringUtil.htmlEncode(entryTitle);
-		html[idx++] = "</td><td align='right'>";
+		html[idx++] = "<td><b>" + AjxStringUtil.htmlEncode(entryTitle) + "</b></td>";
+		html[idx++] = "<td align='right'>";
 		html[idx++] = AjxImg.getImageHtml("Contact"); // could use different icon if GAL
-		html[idx++] = "</td></table></div>";
+		html[idx++] = "</td>";
+		html[idx++] = "</table></div>";
 		html[idx++] = "</td></tr>";
 		idx = this._addEntryRow("fullName", null, html, idx);
 		idx = this._addEntryRow("jobTitle", null, html, idx);
@@ -928,12 +928,14 @@ function(field, data, html, idx) {
 		data = field == "fullName" ? this.getFullName() : this.getAttr(field);
 	}
 	if (data != null && data != "") {
-		html[idx++] = "<tr valign=top><td align=right style='white-space:nowrap; padding-right:5px; font-weight:bold'>";
-		html[idx++] = AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]);
-		html[idx++] = ":</td>";
+		html[idx++] = "<tr valign=top>";
+		html[idx++] = "<td align=right style='white-space:nowrap; padding-right:5px;'><b>";
+		html[idx++] = AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]) + ":";
+		html[idx++] = "</b></td>";
 		html[idx++] = "<td style='white-space:nowrap;'>";
 		html[idx++] = AjxStringUtil.htmlEncode(data);
-		html[idx++] = "</td></tr>";
+		html[idx++] = "</td>";
+		html[idx++] = "</tr>";
 	}
 	return idx;
 };

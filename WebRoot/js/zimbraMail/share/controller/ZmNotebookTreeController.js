@@ -185,18 +185,6 @@ function(ev, treeView) {
 
 	if (ev.type != this.type) return;
 
-	var fields = ev.getDetail("fields");
-	if (!fields || !(fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_REST_URL])) {
-		return;
-	}
-
-	var notebookApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
-	var notebookController = notebookApp.getNotebookController();
-	var shownPage = notebookController.getPage();
-	if (!shownPage) {
-		return;
-	}
-	
 	var organizers = ev.getDetail("organizers");
 	if (!organizers && ev.source)
 		organizers = [ev.source];
@@ -204,13 +192,10 @@ function(ev, treeView) {
 	for (var i = 0; i < organizers.length; i++) {
 		var organizer = organizers[i];
 		var id = organizer.id;
-		if (id == shownPage.id || id == shownPage.folderId) {
-			notebookController.gotoPage(shownPage);
-		}
-
-		/***
 		var node = treeView.getTreeItemById(id);
 		if (!node) continue;
+
+		/***
 		var fields = ev.getDetail("fields");
 		// NOTE: ZmTreeController#_changeListener re-inserts the node if the
 		//		 name changes so we need to reset the color in that case, too.
@@ -333,23 +318,6 @@ function(overviewId, type, items, detail, srcEv, destEv) {
 
 ZmNotebookTreeController.prototype._doCreate =
 function(parent, name, color/*, url*/) {
-	var message;
-
-	// bug: 9406 (short term fix, waiting for backend support)
-	var folderId = (parent && parent.id) || ZmOrganizer.ID_NOTEBOOK;
-	var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
-	var cache = app.getNotebookCache();
-	if (cache.getPageByName(folderId, name)) {
-		message = AjxMessageFormat.format(ZmMsg.errorInvalidPageOrSectionName, name);
-	}
-
-	if (message) {
-		var dialog = this._appCtxt.getMsgDialog();
-		dialog.setMessage(message, DwtMessageDialog.WARNING_STYLE);
-		dialog.popup();
-		return;
-	}
-
 	parent.create(name, color);
 };
 

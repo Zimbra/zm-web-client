@@ -178,11 +178,6 @@ function(handlerName) {
 ZmZimletBase.prototype.singleClicked =
 function(canvas) {};
 
-// Called when a new message is being viewed.
-// msg and oldMsg are ZmMailMsg objects; oldMsg can be null.
-ZmZimletBase.prototype.onMsgView =
-function(msg, oldMsg) {};
-
 /* Content Object methods */
 
 // This method is called when content (e.g. a mail message) is being
@@ -223,9 +218,9 @@ function(content, startIndex) {
 // - spanElement
 // - contentObjText
 // - matchContext
-// - event
+// - canvas
 ZmZimletBase.prototype.clicked =
-function(spanElement, contentObjText, matchContext, event) {
+function(spanElement, contentObjText, matchContext, canvas) {
 	var c = this.xmlObj("contentObject.onClick");
 	if (c && c.actionUrl) {
 		var obj = { objectContent: contentObjText };

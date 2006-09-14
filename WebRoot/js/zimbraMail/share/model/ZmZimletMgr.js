@@ -101,16 +101,6 @@ function() {
 	return this._CONTENT_ZIMLETS;
 };
 
-ZmZimletMgr.prototype.getZimlets =
-function() {
-	return this._ZIMLETS;
-};
-
-ZmZimletMgr.prototype.getZimletsHash =
-function() {
-	return this._ZIMLETS_BY_ID;
-};
-
 ZmZimletMgr.prototype.toString =
 function() {
 	return "ZmZimletMgr";

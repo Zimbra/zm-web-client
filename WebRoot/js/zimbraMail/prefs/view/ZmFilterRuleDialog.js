@@ -175,23 +175,22 @@ function() {
 
 	html[i++] = "<input checked value='anyof' type='radio' name='anyAll' id='";
 	html[i++] = this._anyRadioId;
-	html[i++] = "'>";
-	html[i++] = ZmMsg.anyCondition;
+	html[i++] = "'>" + ZmMsg.anyCondition + "</input>";
 	html[i++] = "<input value='allof' type='radio' name='anyAll' id='";
 	html[i++] = this._allRadioId;
-	html[i++] = "'>";
-	html[i++] = ZmMsg.allConditions;
+	html[i++] = "'>" + ZmMsg.allConditions + "</input>";
 
-	html[i++] = "<div class='vSpace'></div>";
+	html[i++] = "<div class='vSpace' />";
 	
 	html[i++] = "<table width='100%' border=0 cellpadding=0 cellspacing=0 id='";
 	html[i++] = this._conditionsTableId;
 	html[i++] = "'>";
-	html[i++] = "<tbody></tbody></table>";
+	html[i++] = "<tbody></tbody>";
+	html[i++] = "</table>";
 
 	html[i++] = "</fieldset>";
 
-	html[i++] = "<div class='vSpace'></div>";
+	html[i++] = "<div class='vSpace' />";
 
 	html[i++] = "<fieldset";
 	if (AjxEnv.isMozilla)
@@ -203,13 +202,12 @@ function() {
 	html[i++] = "<table width='100%' border=0 cellpadding=0 cellspacing=0 id='";
 	html[i++] = this._actionsTableId;
 	html[i++] = "'>";
-	html[i++] = "<tbody></tbody></table>";
+	html[i++] = "<tbody></tbody>";
+	html[i++] = "</table>";
 
-	html[i++] = "<div class='vSpace'></div>";
+	html[i++] = "<div class='vSpace' />";
 
-	html[i++] = "<input type='checkbox' name='cbStop' checked id='";
-	html[i++] = this._stopCheckboxId;
-	html[i++] = "'> ";
+	html[i++] = "<input type='checkbox' name='cbStop' checked id='" + this._stopCheckboxId + "'/> ";
 	html[i++] = ZmMsg.stopFilterProcessing;
 	html[i++] = "</fieldset>";
 

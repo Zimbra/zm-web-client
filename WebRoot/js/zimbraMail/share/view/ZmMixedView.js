@@ -93,25 +93,27 @@ function(ev) {
 	if (this._appCtxt.getAppViewMgr().getCurrentViewId() != this.view)
 		return;
 
-	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
-		var items = ev.getDetail("items");
-		var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+	ZmListView.prototype._changeListener.call(this, ev);
 
-		// walk the list of items and if any are contacts,
+	var items = ev.getDetail("items");
+	var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
+		// walk the list of items and if any are contacts, 
 		for (var i = 0; i < items.length; i++) {
-			if (items[i].type == ZmItem.CONTACT &&
-				ev.event == ZmEvent.E_DELETE)
-			{
-				// and is hard delete, remove from canonical list
+			if (items[i].type != ZmItem.CONTACT) continue;
+
+			// if hard delete, remove from canonical list
+			if (ev.event == ZmEvent.E_DELETE) {
 				contactList.remove(items[i]);
+			} else {
+				// otherwise, change folder ID in canonical list
+				var contact = contactList.getById(items[i].id);
+				if (contact && contact.folderId != ZmOrganizer.ID_ADDRBOOK)
+					contact.folderId = ZmOrganizer.ID_ADDRBOOK;
 			}
-			// also remove from controller's list
-			this._controller.getList().remove(items[i]);
 		}
 	}
-
-	// call base class last
-	ZmListView.prototype._changeListener.call(this, ev);
 };
 
 ZmMixedView.prototype._getHeaderList =
