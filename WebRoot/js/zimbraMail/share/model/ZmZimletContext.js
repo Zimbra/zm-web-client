@@ -290,7 +290,7 @@ ZmZimletContext.prototype.getConfig = function(name) {
 	if (this.config.global && this.config.global[name]) {
 		return this.config.global[name];
 	}
-	return undef;
+	return null;
 };
 
 ZmZimletContext.prototype.getPanelActionMenu = function() {
