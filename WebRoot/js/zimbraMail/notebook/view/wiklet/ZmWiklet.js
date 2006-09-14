@@ -162,6 +162,20 @@ ZmWiklet.register(
 		}
 	},
 	{
+		name: "ID",
+		label: ZmMsg.wikletName,
+		tooltip: ZmMsg.wikletNameTT,
+		func: function(name, value, params, context) {
+			var item = context.getItem();
+			var cache = context.getCache();
+			if (item instanceof ZmPage) {
+				return [':', item.folderId, '/', item.name].join("");
+			} else {
+				return [':', item.id, '/', ZmNotebook.PAGE_INDEX].join("");
+			}
+		}
+	},
+	{
 		name: "ICON",
 		label: ZmMsg.wikletIcon,
 		tooltip: ZmMsg.wikletIconTT,

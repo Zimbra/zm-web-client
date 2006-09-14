@@ -194,7 +194,18 @@ function(context) {
 	var page = null;
 	try {
 		var path = context.keyword;
-		page = cache.getPageByLink(path);
+		// The expected contents of a link keyword are ":folderId/PageName".
+		if (path != context.label) {
+			if (path.indexOf(':') == 0) {
+				var slashIndex = path.indexOf('/', 1)
+				var folderId = path.substring(1, slashIndex);
+				var pageName = path.substring(slashIndex + 1);
+				return cache.getPageByName(folderId, pageName);
+			}
+		}
+		if (!page) {
+			page = cache.getPageByLink(path);
+		}
 		if (!page && !path.match(/^\/\//)) {
 			var notebookController = notebookApp.getNotebookController();
 			var currentPage = notebookController.getPage();

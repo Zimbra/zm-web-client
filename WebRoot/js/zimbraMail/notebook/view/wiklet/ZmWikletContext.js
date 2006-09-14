@@ -76,6 +76,9 @@ ZmWikletContext.prototype.getSections = function(notebookId) {
 ZmWikletContext.prototype.getFiles = function(notebookId) {
 	return []; // TODO
 };
+ZmWikletContext.prototype.getCache = function() {
+	return this._notebookCache;
+};
 
 ZmWikletContext.prototype.getTagById = function(tagId) {
 	var tree = this._appCtxt.getTree(ZmOrganizer.TAG);
