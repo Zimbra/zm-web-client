@@ -210,10 +210,13 @@ function(appt, mode, isDirty) {
 	this._appt = appt;
 	this._isDirty = isDirty;
 
-	this._createHtml();
-	this._addDwtObjects();
-	this._chooser.reset();
-	this._rendered = true;
+	if (this._rendered) {
+		this._chooser.reset();
+	} else {
+		this._createHtml();
+		this._addDwtObjects();
+		this._rendered = true;
+	}
 };
 
 ZmApptChooserTabViewPage.prototype.resize =
