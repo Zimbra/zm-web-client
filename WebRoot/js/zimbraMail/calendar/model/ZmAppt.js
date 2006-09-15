@@ -53,7 +53,7 @@ function ZmAppt(appCtxt, list, noinit) {
 	this.repeatEndCount = 1; 													// maps to "count" (when there is no end date specified)
 	this.repeatEndType = "N";
 	this.attachments = null;
-	this.timezone = AjxTimezone.DEFAULT;
+	this.timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 	this._viewMode = ZmAppt.MODE_NEW;
 	this.folderId = ZmOrganizer.ID_CALENDAR;
 	
