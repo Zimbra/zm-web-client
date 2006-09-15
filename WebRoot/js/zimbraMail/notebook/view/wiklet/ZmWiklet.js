@@ -163,8 +163,8 @@ ZmWiklet.register(
 	},
 	{
 		name: "ID",
-		label: ZmMsg.wikletName,
-		tooltip: ZmMsg.wikletNameTT,
+		label: ZmMsg.wikletId,
+		tooltip: ZmMsg.wikletIdTT,
 		func: function(name, value, params, context) {
 			var item = context.getItem();
 			var cache = context.getCache();
