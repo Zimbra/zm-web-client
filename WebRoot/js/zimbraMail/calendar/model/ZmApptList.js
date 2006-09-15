@@ -33,7 +33,7 @@
 function ZmApptList(appCtxt) {
 	
 	ZmList.call(this, ZmItem.APPT, appCtxt);
-};
+}
 
 ZmApptList.prototype = new ZmList;
 ZmApptList.prototype.constructor = ZmApptList;
@@ -41,7 +41,7 @@ ZmApptList.prototype.constructor = ZmApptList;
 ZmApptList.prototype.toString = 
 function() {
 	return "ZmApptList";
-};
+}
 
 ZmApptList._fba2ptst = {
 	B: ZmAppt.PSTATUS_ACCEPT,
@@ -50,10 +50,11 @@ ZmApptList._fba2ptst = {
 };
 			
 ZmApptList.prototype._getAttr =
-function(appt, inst, name) {
+function(appt, inst, name)
+{
 	var v = inst[name];
-	return (v != undefined) ? v : ((appt[name] != null) ? appt[name] : null);
-};
+	return (v !=  undefined) ? v : ( (appt[name] != null)? appt[name]: null);
+}
 
 ZmApptList.prototype.loadFromSummaryJs =
 function(resp) {
@@ -63,6 +64,7 @@ function(resp) {
 	var appts = resp.appt;
 	for (var i = 0; i < appts.length; i++) {
 		var apptNode = appts[i];
+		//DBG.println(" appt = "+apptNode.uid);
 		if (!apptNode.inst) continue;
 		// Now deal with instances		
 		var instances = apptNode.inst;
@@ -79,13 +81,14 @@ function(resp) {
 			if (apptNode.allDay && instNode.tzo != null && instNode.tzo != tzo) {
 				startTime = startTime + parseInt(instNode.tzo,10) + tzo;
 			}
-			if (instanceStartTimes.contains(startTime)) {
+			if (instanceStartTimes.contains(startTime)){
+				DBG.println("Found multiple instances with startTime = ", startTime);
 				continue;
 			}
 			instanceStartTimes.add(startTime);
 			var appt = new ZmAppt(this._appCtxt, this);
 			appt.uid =  apptNode.uid;
-			appt.folderId = apptNode.l || ZmOrganizer.ID_CALENDAR;
+			appt.folderId = apptNode.l ? apptNode.l : ZmOrganizer.ID_CALENDAR;
 
 			appt.fragment = this._getAttr(apptNode, instNode, "fr");			
 			var duration = parseInt(this._getAttr(apptNode, instNode, "d"));
@@ -103,7 +106,7 @@ function(resp) {
 			if (appt.allDayEvent == null) appt.allDayEvent = '0';
 			appt.otherAttendees = this._getAttr(apptNode, instNode, "otherAtt");
 			appt.alarm = this._getAttr(apptNode, instNode, "alarm");
-			appt.recurring = apptNode.recur;
+			appt.recurring = apptNode.recur;//this._getAttr(apptNode, instNode, "recur");
 			if (appt.recurring) {
 				appt._seriesInvId = apptNode.invId;
 			}
@@ -120,6 +123,7 @@ function(resp) {
 			appt.endDate = new Date(endTime);
 			this.add(appt);
 		}
+		//DBG.println("   added: "+appt);
 	}
 }
 
@@ -131,7 +135,7 @@ function (obj) {
 ZmApptList.sortVector = 
 function(vec) {
 	vec.sort(ZmAppt.compareByTimeAndDuration);
-};
+}
 
 // merge all the sorted vectors in the specified array into a single sorted vector
 ZmApptList.mergeVectors = 
@@ -142,15 +146,18 @@ function(vecArray) {
 	for (var i=0; i < vecArray.length; i++) result.addList(vecArray[i]);
 	ZmApptList.sortVector(result);
 	return result;
-};
+}
 
 ZmApptList.toVector =
-function(apptList, startTime, endTime, fanoutAllDay) {
+function(apptList, startTime, endTime, fanoutAllDay)
+{
+	//var _st = new Date();
 	var result  = new AjxVector();
 	var list = apptList.getVector();
 	var size = list.size();
 	for (var i=0; i < size; i++) {
 		var ao = list.get(i);
+		//DBG.println("_appListToVector: "+ao);
 		if (ao.isInRange(startTime, endTime)) {
 			if (ao.isAllDayEvent() && !fanoutAllDay) {
 				result.add(ZmAppt.quickClone(ao));
@@ -160,13 +167,15 @@ function(apptList, startTime, endTime, fanoutAllDay) {
 		}
 	}
 	ZmApptList.sortVector(result);
+	//DBG.println("ZmApptList.toVector took " + (new Date() - _st.getTime()) + "ms");		
 	return result;
-};
+}
 
 // fanout multi-day appoints into multiple single day appts. This has nothing to do with recurrence...
 // TODO: should be more efficient by not fanning out appts in if part of the while if they are not in the range.
 ZmApptList._fanout =
 function(orig, result, startTime, endTime) {
+//	DBG.println("fanout>>>>>>>>>>>>>>>>>>>>");
 	var appt = ZmAppt.quickClone(orig);
 	var fanoutNum = 0;
 	while (appt.isInRange(startTime,endTime)) {
@@ -183,6 +192,7 @@ function(orig, result, startTime, endTime) {
 				slice._fanoutNum = fanoutNum;
 				slice._uniqStartTime = slice.getStartTime(); // neede to construct uniq id later							
 				result.add(slice);
+				//DBG.println("_fanout add: "+slice);
 			}
 			fanoutNum++;
 			appt.setStartDate(nextDay);
@@ -197,16 +207,20 @@ function(orig, result, startTime, endTime) {
 				appt._fanoutNum = fanoutNum;
 				appt._uniqStartTime = appt.getStartTime(); // neede to construct uniq id later
 				result.add(appt);
+				//DBG.println("_fanout add: "+appt);
 			}
 			break;
 		}
 	}
-};
+//	DBG.println("fanout<<<<<<<<<<<<<<<<<<<<");
+}
+
 
 // given an app list, return a new appt list containing only appts in the given range.
 // doesn't clone appts
 ZmApptList.prototype.getSubset =
-function(startTime, endTime) {
+function(startTime, endTime)
+{
 	var result  = new ZmApptList(this._appCtxt);
 	var list = this.getVector();
 	var size = list.size();
@@ -217,4 +231,5 @@ function(startTime, endTime) {
 		}
 	}
 	return result;
-};
+}
+

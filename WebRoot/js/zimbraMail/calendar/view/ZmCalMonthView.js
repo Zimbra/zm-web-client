@@ -117,7 +117,7 @@ function() {
 	var numAppts = 0;
 
 	html[idx++] = "<div style='width:100%'>";
-	html[idx++] = "<table width=100% cellpadding=3 cellspacing=3 bgcolor='#EEEEEE' style='border:2px solid black; margin-bottom:2px'><tr>";
+	html[idx++] = "<table width=100% cellpadding=3 cellspacing=3 bgcolor='#EEEEEE' style='border: 2px solid black; margin-bottom: 2px'><tr>";
 	html[idx++] = "<td valign=top width=100% style='font-size:22px; font-weight:bold; white-space:nowrap'>";
 	html[idx++] = this._getDateHdrForPrintView();
 	html[idx++] = "</td></tr></table>";
@@ -127,13 +127,10 @@ function() {
 	html[idx++] = "<table border=0>";
 	// print the weekdays
 	html[idx++] = "<tr>";
-
-	var fdow = this.firstDayOfWeek();
-
 	for (var i = 0; i < AjxDateUtil.WEEKDAY_LONG.length; i++) {
-		html[idx++] = "<td valign=top style='width:120px; font-family:Arial; font-size:11px; white-space:nowrap; overflow:hidden; border:1px solid black;'><center><b>";
-		html[idx++] = AjxDateUtil.WEEKDAY_LONG[(i+fdow)%7]
-		html[idx++] = "</b></center></td>";
+		html[idx++] = "<td valign=top style='";
+		html[idx++] = "width:120px; font-family:Arial; font-size:11px; white-space:nowrap; overflow:hidden; border:1px solid black;";
+		html[idx++] = "'><center><b>" + AjxDateUtil.WEEKDAY_LONG[i] + "</b></center></td>";
 	}
 	html[idx++] = "</tr>";
 	
@@ -159,21 +156,16 @@ function() {
 		var rowHeight = numOfWeeks == 5 ? "100px" : "85px";
 		var maxNumAppts = numOfWeeks == 5 ? 6 : 4;
 		
-		html[idx++] = "<tr style='height:";
-		html[idx++] = rowHeight;
-		html[idx++] = ";'>";
+		html[idx++] = "<tr style='height:" + rowHeight + ";'>";
 		for (var i = 0; i < AjxDateUtil.WEEKDAY_LONG.length; i++) {
-			html[idx++] = "<td valign=top style='border:1px solid black;'><div style='text-align:right; color:#AAAAAA; "
-			html[idx++] = style;
-			html[idx++] = "'>";
+			html[idx++] = "<td valign=top style='border:1px solid black;'>"
+			html[idx++] = "<div style='text-align:right; color:#AAAAAA; " + style + "'>";
 			
 			var dateHdr = (i == 0 && currDate.getMonth() != currMonth) || (currDate.getDate() == 1)
 				? dayFormatter.format(currDate)
 				: currDate.getDate();
 			
-			html[idx++] = "<b>";
-			html[idx++] = dateHdr;
-			html[idx++] = "</b></div>";
+			html[idx++] = "<b>" + dateHdr + "</b></div>";
 			numAppts = 0;
 			var appt = list.get(count);
 			while (appt && appt.startDate.getDate() == currDate.getDate()) {
@@ -184,40 +176,26 @@ function() {
 						if (currDate.getMonth() != currMonth)
 							html[idx++] = "color:#AAAAAA; ";
 						html[idx++] = style + "'>";
-						html[idx++] = "<b>";
-						html[idx++] = appt.getName();
-						html[idx++] = "</b>";
-						if (loc) {
-							html[idx++] = " (";
-							html[idx++] = loc;
-							html[idx++] = ")";
-						}
+						html[idx++] = "<b>" + appt.getName() + "</b>";
+						if (loc)
+							html[idx++] = " (" + loc+ ")";
 						html[idx++] = "</div>";
 					} else {
 						var startTime = timeFormatter.format(appt.startDate);
-						html[idx++] = "<div style='";
-						html[idx++] = style;
+						html[idx++] = "<div style='" + style;
 						if (currDate.getMonth() != currMonth)
 							html[idx++] = " color:#AAAAAA;";
 						html[idx++] = "'>";
-						html[idx++] = startTime;
-						html[idx++] = "&nbsp;";
+						html[idx++] = startTime + "&nbsp;";
 						html[idx++] = appt.getName();
-						if (loc) {
-							html[idx++] = " (";
-							html[idx++] = loc;
-							html[idx++] = ")";
-						}
+						if (loc)
+							html[idx++] = " (" + loc+ ")";
 						html[idx++] = "</div>";
 					}
 					appt = list.get(++count);
 					numAppts++;
 				} else {
-					html[idx++] = "<div style='";
-					html[idx++] = style;
-					html[idx++] = "'>";
-					html[idx++] = ZmMsg.more;
-					html[idx++] = "</div>";
+					html[idx++] = "<div style='" + style + "'>More...</div>";
 					// move passed this day
 					while (appt && appt.startDate.getDate() == currDate.getDate())
 						appt = list.get(++count);
@@ -412,7 +390,7 @@ function(appt, apptEnd) {
 	var bs = "";
 	if (!appt._fanoutFirst) bs = "border-left:none;";
 	if (!apptEnd._fanoutLast) bs += "border-right:none;";
-	var body_style = (bs != "") ? ("style='" + bs + "'") : "";
+	var body_style = (bs != "") ? "style='"+bs+"'" : "";
 
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
 	div.innerHTML = ZmCalMonthView._allDayItemHtml(appt, this._getItemId(appt), body_style, this._controller);
@@ -428,7 +406,9 @@ function(day) {
 	result[DwtListView._SELECTED_STYLE_CLASS] = result[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
 	result.className = result[DwtListView._STYLE_CLASS];	
 	var cell = result.insertCell(-1);
-	cell.innerHTML = "<table class=allday><tr><td><div class=allday_item_filler></div></td></tr></table>";
+	//cell.innerHTML = "HELLO";
+	cell.innerHTML = "<table class=allday><tr><td><div class=allday_item_filler></div></td></tr></table>";	
+	//cell.colSpan = 2;
 	cell.className = "calendar_month_day_item";
 	return result;
 };
@@ -446,12 +426,14 @@ function(appt) {
 	var html = new AjxBuffer();
 
 	/*includeDuration */
+	//var dur = appt.getDurationText(true, true);
 	var dur = appt.getShortStartHour();
 	var color = ZmCalBaseView.COLORS[this._controller.getCalendarColor(appt.getFolderId())];
 
 	var pstatus = appt.getParticipationStatus();
 	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
 	
+	//html.append("<LI class='", color, "' style='color:black'>");
 	html.append("<div class='", color, isNew ? "DarkC" : "C", "'>");
 	html.append("&bull;&nbsp;");
 	html.append(dur);
@@ -462,8 +444,13 @@ function(appt) {
 	html.append("</div>");	
 	/* */
 
+	//html.append("<LI>"+AjxStringUtil.htmlEncode(appt.getName())+"</LI>";
+
+	//if (appt.getLocation() != "")	html.append("&nbsp;("+AjxStringUtil.htmlEncode(appt.getLocation())+")";
+	
 	var cell = result.insertCell(-1);
 	cell.innerHTML = html.toString();
+	//cell.colSpan = 2;
 	cell.className = "calendar_month_day_item";
 
 	return result;
@@ -499,8 +486,7 @@ function() {
 	this._daysId = Dwt.getNextId();	
 	this._bodyId = Dwt.getNextId();
 	this._headerColId = [];
-	this._dayNameId = [];
-	this._bodyColId = [];
+	this._bodyColId = [];	
 
 	var html = new AjxBuffer();
 			
@@ -519,9 +505,9 @@ function() {
 	html.append("</tr>");
 	html.append("<tr>");
 	
+	var fdow = this.firstDayOfWeek();	
 	for (var day=0; day < 7; day++) {
-		this._dayNameId[day] = Dwt.getNextId();
-		html.append("<td class=calendar_month_header_cells_text id='",this._dayNameId[day],"'></td>");
+		html.append("<td class=calendar_month_header_cells_text>", AjxDateUtil.WEEKDAY_LONG[(day+fdow)%7], "</td>");
 	}
 
 	html.append("</tr>");
@@ -660,15 +646,11 @@ function() {
 
 	var colWidth = Math.floor(w/7) - 1;
 
-	var fdow = this.firstDayOfWeek();
 	for (var i=0; i < 7; i++) {
 		var col = document.getElementById(this._headerColId[i]);
 		Dwt.setSize(col, colWidth, Dwt.DEFAULT);
 		col = document.getElementById(this._bodyColId[i]);
 		Dwt.setSize(col, colWidth, Dwt.DEFAULT);		
-
-		var dayName = document.getElementById(this._dayNameId[i]);
-		dayName.innerHTML = AjxDateUtil.WEEKDAY_LONG[(i+fdow)%7];
 	}
 
 	this._layoutAllDay(h);

@@ -290,7 +290,7 @@ ZmZimletContext.prototype.getConfig = function(name) {
 	if (this.config.global && this.config.global[name]) {
 		return this.config.global[name];
 	}
-	return null;
+	return undef;
 };
 
 ZmZimletContext.prototype.getPanelActionMenu = function() {
@@ -321,7 +321,7 @@ ZmZimletContext.prototype._handleMenuItemSelected = function(ev) {
 	if (data.actionUrl) {
 		this.handleActionUrl(data.actionUrl[0], data.canvas);
 	} else {
-		this.callHandler("menuItemSelected", [ data.id, data, ev ]);
+		this.callHandler("menuItemSelected", [ data.id, data ]);
 	}
 };
 

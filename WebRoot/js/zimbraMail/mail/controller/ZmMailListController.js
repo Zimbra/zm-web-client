@@ -452,13 +452,11 @@ function (ev) {
 	if (type == ZmOperation.INVITE_REPLY_ACCEPT ||
 		type == ZmOperation.EDIT_REPLY_CANCEL || 
 		type == ZmOperation.INVITE_REPLY_DECLINE ||
-		type == ZmOperation.INVITE_REPLY_TENTATIVE)
-	{
+		type == ZmOperation.INVITE_REPLY_TENTATIVE) {
 		type = ZmMailListController.INVITE_REPLY_MAP[type];
 		this._editInviteReply(type, compId);
 	}
-	else
-	{
+	else {
 		this._sendInviteReply(type, compId);
 	}
 	return false;
@@ -633,14 +631,13 @@ function(ev) {
 
 ZmMailListController.prototype._checkMailListener = 
 function(ev) {
-	this._folderSearch(ZmFolder.ID_INBOX, ZmSearchToolBar.FOR_MAIL_MI);
+	this._folderSearch(ZmFolder.ID_INBOX);
 };
 
 ZmMailListController.prototype._folderSearch = 
-function(folderId, optionalType) {
+function(folderId) {
 	var searchController = this._appCtxt.getSearchController();
-	var type = optionalType || ZmSearchToolBar.FOR_ANY_MI;
-	var types = searchController.getTypes(type);
+	var types = searchController.getTypes(ZmSearchToolBar.FOR_ANY_MI);
 	searchController.search({query: "in:"+ ZmFolder.QUERY_NAME[folderId], types: types});
 };
 

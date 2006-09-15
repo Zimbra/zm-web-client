@@ -77,7 +77,7 @@ function() {
 	var sendMail = !(share.isAll() || share.isPublic()); 
 	if (replyType != ZmShareReply.NONE && sendMail) {
 		// initialize rest of share information
-		share.grantee.email = share.grantee.name || share.grantee.id;
+		share.grantee.email = share.grantee.name;
 		share.grantor.id = this._appCtxt.get(ZmSetting.USERID);
 		share.grantor.email = this._appCtxt.get(ZmSetting.USERNAME);
 		share.grantor.name = this._appCtxt.get(ZmSetting.DISPLAY_NAME) || share.grantor.email;
