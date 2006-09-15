@@ -1569,33 +1569,10 @@ function(soapDoc, method,  attachmentId, notifyList) {
 		m.setAttribute("l", this.folderId);
 	}
 
-	var inv = soapDoc.set("inv", null, m);
-	switch (method) {
-		case ZmAppt.SOAP_METHOD_REQUEST: inv.setAttribute('method', "REQUEST"); break;
-		case ZmAppt.SOAP_METHOD_CANCEL:  inv.setAttribute('method', "CANCEL"); break;
-	}
-	
-	inv.setAttribute("type", "event");
-
-	if (this.isOrganizer()) {
-		this._addAttendeesToSoap(soapDoc, inv, m, notifyList);
-	}
-
-	this._addNotesToSoap(soapDoc, m);
-
-	if (this.uid !== void 0 && this.uid != null && this.uid != -1)
-		inv.setAttribute("uid", this.uid);
-
-	inv.setAttribute("type", "event");
-	inv.setAttribute("fb", this.freeBusy);
-	inv.setAttribute("transp", "O");
-	inv.setAttribute("status","CONF");
-	inv.setAttribute("allDay", this.allDayEvent);
-
 	if (this.timezone) {
 		var rule = AjxTimezone.getRule(AjxTimezone.getClientId(this.timezone));
 		if (rule.autoDetected) {
-			var tz = soapDoc.set("tz", null, inv);
+			var tz = soapDoc.set("tz", null, m);
 			tz.setAttribute("id", this.timezone);
 			tz.setAttribute("stdoff", rule.stdOffset);
 			if (rule.dstOffset) {
@@ -1620,6 +1597,29 @@ function(soapDoc, method,  attachmentId, notifyList) {
 			}
 		}
 	}
+
+	var inv = soapDoc.set("inv", null, m);
+	switch (method) {
+		case ZmAppt.SOAP_METHOD_REQUEST: inv.setAttribute('method', "REQUEST"); break;
+		case ZmAppt.SOAP_METHOD_CANCEL:  inv.setAttribute('method', "CANCEL"); break;
+	}
+	
+	inv.setAttribute("type", "event");
+
+	if (this.isOrganizer()) {
+		this._addAttendeesToSoap(soapDoc, inv, m, notifyList);
+	}
+
+	this._addNotesToSoap(soapDoc, m);
+
+	if (this.uid !== void 0 && this.uid != null && this.uid != -1)
+		inv.setAttribute("uid", this.uid);
+
+	inv.setAttribute("type", "event");
+	inv.setAttribute("fb", this.freeBusy);
+	inv.setAttribute("transp", "O");
+	inv.setAttribute("status","CONF");
+	inv.setAttribute("allDay", this.allDayEvent);
 
 	var s = soapDoc.set("s", null, inv);
 	var e = soapDoc.set("e", null, inv);
