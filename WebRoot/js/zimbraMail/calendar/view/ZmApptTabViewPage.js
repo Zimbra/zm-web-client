@@ -573,7 +573,7 @@ function(appt, mode) {
 			tp._chooser.transfer(locations, null, true);
 		}
 	}
-	
+
 	// equipment
 	var equipment = appt.getEquipment();
 	if (equipment && equipment.length && this._attInputField[ZmAppt.EQUIPMENT]) {
@@ -593,7 +593,7 @@ function(appt, mode) {
 	}
 
 	// set notes/content (based on compose mode per user prefs)
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && 
+	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) &&
 		(this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT) ||
 		 this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML))
 	{
@@ -731,11 +731,12 @@ function() {
 	delete this._endTimeSelectId;
 
 	this._tzoneSelect = new DwtSelect(this);
-	var timezones = ZmTimezones.getAbbreviatedZoneChoices(); 					// XXX: this seems like overkill, list all 75 timezones!?
-	for (var i = 0; i < timezones.length; i++)
-		this._tzoneSelect.addOption(timezones[i].label, false, timezones[i].value);
+	var timezones = AjxTimezone.getAbbreviatedZoneChoices(); 					// XXX: this seems like overkill, list all 75 timezones!?
+	for (var i = 0; i < timezones.length; i++) {
+		this._tzoneSelect.addOption(timezones[i]);
+	}
 	// init timezone to the local machine's time zone
-	this._tzoneSelect.setSelectedValue(ZmTimezones.guessMachineTimezone());
+	this._tzoneSelect.setSelectedValue(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 	this._tzoneSelect.reparentHtmlElement(this._tzoneSelectId);
 	delete this._tzoneSelectId;
 

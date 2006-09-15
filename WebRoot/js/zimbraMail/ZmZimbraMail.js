@@ -419,13 +419,7 @@ function(params) {
 
 	this._preloadViews();
 
-	if (this._appCtxt.get(ZmSetting.PREFS_ENABLED)) {
-		// reset the user's time zone (save to prefs) if it has changed
-		var respCallback = new AjxCallback(this, this._handleResponseStartup1, [params]);
-		ZmTimezones.initializeServerTimezone(respCallback);
-	} else {
-		this._handleResponseStartup1(params);
-	}
+	this._handleResponseStartup1(params);
 };
 
 /*

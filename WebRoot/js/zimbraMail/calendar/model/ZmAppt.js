@@ -53,7 +53,7 @@ function ZmAppt(appCtxt, list, noinit) {
 	this.repeatEndCount = 1; 													// maps to "count" (when there is no end date specified)
 	this.repeatEndType = "N";
 	this.attachments = null;
-	this.timezone = ZmTimezones.getDefault();
+	this.timezone = AjxTimezone.DEFAULT;
 	this._viewMode = ZmAppt.MODE_NEW;
 	this.folderId = ZmOrganizer.ID_CALENDAR;
 	
@@ -1236,7 +1236,7 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 
 		if (showingTimezone) {
 			buf[i++] = " ";
-			buf[i++] = ZmTimezones.valueToDisplay[this.timezone];
+			buf[i++] = AjxTimezone.getLongName(AjxTimezone.getClientId(this.timezone));
 		}
 	}
 	// NOTE: This relies on the fact that setModel creates a clone of the
@@ -1591,6 +1591,35 @@ function(soapDoc, method,  attachmentId, notifyList) {
 	inv.setAttribute("transp", "O");
 	inv.setAttribute("status","CONF");
 	inv.setAttribute("allDay", this.allDayEvent);
+
+	if (this.timezone) {
+		var rule = AjxTimezone.getRule(AjxTimezone.getClientId(this.timezone));
+		if (rule.autoDetected) {
+			var tz = soapDoc.set("tz", null, inv);
+			tz.setAttribute("id", this.timezone);
+			tz.setAttribute("stdoff", rule.stdOffset);
+			if (rule.dstOffset) {
+				tz.setAttribute("dayoff", rule.dstOffset);
+				var trans = [
+					{ ename: "standard", change: rule.changeStd },
+					{ ename: "daylight", change: rule.changeD }
+				];
+				for (var i = 0; i < trans.length; i++) {
+					var tran = trans[i];
+					var ename = tran.ename;
+					var change = tran.change;
+
+					var el = soapDoc.set(ename, null, tz);
+					// NOTE: JS months are 0-based but SOAP is 1-based.
+					el.setAttribute("mon", change[1] + 1);
+					el.setAttribute("mday", change[2]);
+					el.setAttribute("hour", change[3]);
+					el.setAttribute("min", change[4]);
+					el.setAttribute("sec", change[5]);
+				}
+			}
+		}
+	}
 
 	var s = soapDoc.set("s", null, inv);
 	var e = soapDoc.set("e", null, inv);

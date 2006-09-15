@@ -202,7 +202,7 @@ ZmPref.SETUP[ZmSetting.DEDUPE_MSG_TO_SELF] = {
 // ZmPref.SETUP[ZmSetting.DEFAULT_CALENDAR_TIMEZONE] = {
 // 	displayName:		ZmMsg.defaultCalendarTimezone,
 // 	displayContainer:	ZmPref.TYPE_SELECT,
-// 	choices:            ZmTimezones.getFullZoneChoices(),
+// 	choices:            ZmTimezones.getFullZoneChoices(), // ZmTimezones no longer exists!
 // 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.EXPORT] = {

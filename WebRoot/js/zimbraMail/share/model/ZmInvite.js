@@ -292,7 +292,7 @@ function(compNum) {
 	if (this._serverStartTimeZone == null) {
 		var startTime = this.getServerStartTime();
 		this._serverStartTimeZone = startTime && startTime.charAt(startTime.length -1) == 'Z'
-			? ZmTimezones.GMT
+			? AjxTimezone.GMT_NO_DST
 			: this.components[compNum].s[0].tz;
 	}
 	return this._serverStartTimeZone;
@@ -305,7 +305,7 @@ function(compNum) {
 	if (this._serverEndTimeZone == null) {
 		var endTime = this.getServerEndTime();
 		this._serverEndTimeZone = endTime && startTime.charAt(endTime.length -1) == 'Z'
-			? ZmTimezones.GMT
+			? AjxTimezone.GMT_NO_DST
 			: this.components[compNum].e[0].tz;
 	}
 	return this._serverEndTimeZone;
