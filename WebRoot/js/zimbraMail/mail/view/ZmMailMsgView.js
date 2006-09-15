@@ -351,18 +351,20 @@ function() {
 
 ZmMailMsgView.prototype._handleResponseSet =
 function(msg, oldMsg) {
-	if (this._mode == ZmController.TRAD_VIEW) {
-		if (oldMsg != null)
-			oldMsg.list.removeChangeListener(this._listChangeListener);
-		msg.list.addChangeListener(new AjxListener(this, this._listChangeListener));
-	} else {
-		this._setTags(msg);
-		// Remove listener for current msg if it exists
-		if (oldMsg != null)
-			oldMsg.removeChangeListener(this._changeListener);
-		msg.addChangeListener(this._changeListener);
+	if (!this._controller.isChildWindow) {
+		if (this._mode == ZmController.TRAD_VIEW) {
+			if (oldMsg != null)
+				oldMsg.list.removeChangeListener(this._listChangeListener);
+			msg.list.addChangeListener(new AjxListener(this, this._listChangeListener));
+		} else {
+			this._setTags(msg);
+			// Remove listener for current msg if it exists
+			if (oldMsg != null)
+				oldMsg.removeChangeListener(this._changeListener);
+			msg.addChangeListener(this._changeListener);
+		}
 	}
-
+	
 	// reset scroll view to top most
 	this.getHtmlElement().scrollTop = 0;
 
