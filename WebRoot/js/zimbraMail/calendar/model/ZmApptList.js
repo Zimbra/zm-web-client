@@ -70,15 +70,10 @@ function(resp) {
 		// When the server side is fixed, we can remove the few lines containing
 		// instanceStartTimes.
 		var instanceStartTimes = new AjxVector();
-		var tzo = new Date().getTimezoneOffset() * 60 * 1000; // ms
 		for (var j = 0; j < instances.length; j++) {
 			var instNode = instances[j];
-			var startTime = parseInt(this._getAttr(apptNode, instNode, "s"),10);
-			// NOTE: For all-day appts from a different timezone, adjust
-			//       this instance so that it appears correctly when viewed.
-			if (apptNode.allDay && instNode.tzo != null && instNode.tzo != tzo) {
-				startTime = startTime + parseInt(instNode.tzo,10) + tzo;
-			}
+			var adjustMs = instNode.tzo ? instNode.tzo + new Date(instNode.s).getTimezoneOffset()*60*1000 : 0;
+			var startTime = parseInt(this._getAttr(apptNode, instNode, "s"),10) + adjustMs;
 			if (instanceStartTimes.contains(startTime)) {
 				continue;
 			}
