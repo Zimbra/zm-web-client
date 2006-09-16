@@ -180,6 +180,7 @@ ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CONTACTS_APP]	= ZmItem.CONTACT;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.IM_APP]    	= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MIXED_APP]		= ZmSearchToolBar.FOR_ANY_MI;
+ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.NOTEBOOK_APP]	= ZmItem.PAGE;
 
 // trees shown in overview panel for each app
 ZmZimbraMail.OVERVIEW_TREES = {};
@@ -293,6 +294,7 @@ function() {
 		// close all child windows
 		for (var i = 0; i < childWinList.size(); i++) {
 			var childWin = childWinList.get(i);
+			childWin.win.onbeforeunload = null;
 			childWin.win.parentController = null;
 			childWin.win.close();
 		}
@@ -417,13 +419,7 @@ function(params) {
 
 	this._preloadViews();
 
-	if (this._appCtxt.get(ZmSetting.PREFS_ENABLED)) {
-		// reset the user's time zone (save to prefs) if it has changed
-		var respCallback = new AjxCallback(this, this._handleResponseStartup1, [params]);
-		ZmTimezones.initializeServerTimezone(respCallback);
-	} else {
-		this._handleResponseStartup1(params);
-	}
+	this._handleResponseStartup1(params);
 };
 
 /*
@@ -437,13 +433,24 @@ function(params) {
 	var respCallback = new AjxCallback(this, this._handleResponseStartup2);
 	var startApp = (params && params.app) ? params.app :
 				   (params && params.isRelogin && this._activeApp) ? this._activeApp : ZmZimbraMail.defaultStartApp;
-	this.activateApp(startApp, false, respCallback, this._errorCallback);
+
+	// check for jump to compose page or msg view
+	var checkQS = false;
+	var match;
+	if (location.search && (match = location.search.match(/\bview=(\w+)\b/))) {
+		var view = match[1];
+		if (view == "compose" || view == "msg") {
+			startApp = ZmZimbraMail.MAIL_APP;
+			checkQS = true;
+		}
+	}
+	this.activateApp(startApp, false, respCallback, this._errorCallback, checkQS);
 	this.setStatusMsg(ZmMsg.initializationComplete, null, null, null, ZmStatusView.TRANSITION_INVISIBLE);
 };
 
 /*
 * Startup: part 4
-* Does a couple housecleaning tasks, then sets focus.
+* Kills the splash screen, checks license
 */
 ZmZimbraMail.prototype._handleResponseStartup2 =
 function() {
@@ -456,18 +463,6 @@ function() {
 		dlg.reset();
 		dlg.setMessage(ZmMsg.licenseExpired, DwtMessageDialog.WARNING_STYLE);
 		dlg.popup();
-	}
-
-	// check for jump to compose page
-	if (location.search && (location.search.match(/\bview=compose\b/))) {
-		var cc = this.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
-		var match = location.search.match(/\bsubject=([^&]+)/);
-		var subject = match ? decodeURIComponent(match[1]) : null;
-		match = location.search.match(/\bto=([^&]+)/);
-		var to = match ? decodeURIComponent(match[1]) : null;
-		match = location.search.match(/\bbody=([^&]+)/);
-		var body = match ? decodeURIComponent(match[1]) : null;
-		cc.doAction(ZmOperation.NEW_MESSAGE, false, null, to, subject, body);
 	}
 
 	// Back out code below (bug 10140) pending further investigation
@@ -751,9 +746,10 @@ function() {
 * @param force			[boolean]*		if true, launch the app
 * @param callback		[AjxCallback]*	callback
 * @param errorCallback	[AjxCallback]*	error callback
+* @param checkQS		[boolean]*		if true, check query string for launch args
 */
 ZmZimbraMail.prototype.activateApp =
-function(appName, force, callback, errorCallback) {
+function(appName, force, callback, errorCallback, checkQS) {
     DBG.println(AjxDebug.DBG1, "activateApp: " + appName + ", current app = " + this._activeApp);
 
     var view = this._appViewMgr.getAppView(appName);
@@ -766,11 +762,12 @@ function(appName, force, callback, errorCallback) {
 		}
     } else {
     	// launch the app
-    	if (!this._apps[appName])
+    	if (!this._apps[appName]) {
 			this._createApp(appName);
+    	}
 		DBG.println(AjxDebug.DBG1, "Launching app " + appName);
 		var respCallback = new AjxCallback(this, this._handleResponseActivateApp, [callback]);
-		this._apps[appName].launch(respCallback, errorCallback);
+		this._apps[appName].launch(respCallback, errorCallback, checkQS);
     }
 };
 
@@ -948,17 +945,20 @@ function() {
 			progressClassName = "quotaWarning";
 		else if (percent >= 85)
 			progressClassName = "quotaCritical";
-		
+
 		html[idx++] = "<td><div class='quotabar'><div style='width: ";
 		html[idx++] = percent;
 		html[idx++] = ";' class='";
 		html[idx++] = progressClassName;
 		html[idx++] = "'></div></div></td>";
-		quotaTooltip = [ZmMsg.quota, ": ", percent, "% (", size, " of ", limit, ")"].join("");
+
+		var desc = AjxMessageFormat.format(ZmMsg.quotaDescLimited, [size, limit]);
+		quotaTooltip = [ZmMsg.quota, ": ", percent, "% ", desc].join("");
 	} else {
-		html[idx++] = "<td class='BannerText'> ";
-		html[idx++] = size;
-		html[idx++] = " of unlimited</td>";
+		var desc = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [size]);
+		html[idx++] = "<td class='BannerText'>";
+		html[idx++] = desc;
+		html[idx++] = "</td>";
 	}
 	html[idx++] = "</tr></table></center>";
 	
@@ -974,9 +974,9 @@ function() {
 			tooltip[idx++] = "</td></tr>";
 		}
 		if (quotaTooltip) {
-			tooltip[idx++] = "<tr><td>";
+			tooltip[idx++] = "<tr><td><center>";
 			tooltip[idx++] = quotaTooltip;
-			tooltip[idx++] = "</td></tr>";
+			tooltip[idx++] = "</center></td></tr>";
 		}
 		tooltip[idx++] = "</table>";
 		this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(tooltip.join(""));
@@ -1244,12 +1244,14 @@ function(ex, method, params, restartOnError, obj) {
 	var handled = false;
 	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
 		var organizerTypes = [ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
-		var itemId = ex.data.itemId[0];
-		var index = itemId.lastIndexOf(':');
-		var zid = itemId.substring(0, index);
-		var rid = itemId.substring(index + 1, itemId.length);
-		for (var type = 0; type < organizerTypes.length; type++) {
-			handled |= this._handleNoSuchFolderError(organizerTypes[type], zid, rid, true);
+		if (ex.data.itemId && ex.data.itemId.length) {
+			var itemId = ex.data.itemId[0];
+			var index = itemId.lastIndexOf(':');
+			var zid = itemId.substring(0, index);
+			var rid = itemId.substring(index + 1, itemId.length);
+			for (var type = 0; type < organizerTypes.length; type++) {
+				handled |= this._handleNoSuchFolderError(organizerTypes[type], zid, rid, true);
+			}
 		}
 	}
 	if (!handled) {
@@ -1982,7 +1984,7 @@ function(ev) {
 	try {
 		var searchController = this._appCtxt.getSearchController();
 		var id = ev.item.getData(Dwt.KEY_ID);
-		DBG.println("ZmZimbraMail button press: " + id);
+		DBG.println(AjxDebug.DBG1, "ZmZimbraMail button press: " + id);
 		if (id == ZmAppChooser.B_EMAIL) {
 			this.activateApp(ZmZimbraMail.MAIL_APP);
 		} else if (id == ZmAppChooser.B_CONTACTS) {

@@ -478,11 +478,17 @@ function(appt, mode) {
 	if (isAllDayAppt) {
 		this._allDayCheckbox.checked = true;
 		this._showTimeFields(false);
-	}
 
-	// if all day appt, set time anyway in case user changes mind
-	this._startTimeSelect.set(appt.getStartDate());
-	this._endTimeSelect.set(appt.getEndDate());
+		// set time anyway to current time and default duration (in case user changes mind)
+		var sd = new Date();
+		this._startTimeSelect.set(AjxDateUtil.roundTimeMins(sd, 30));
+
+		var ed = new Date(sd.getTime() + ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
+		this._endTimeSelect.set(ed);
+	} else {
+		this._startTimeSelect.set(appt.getStartDate());
+		this._endTimeSelect.set(appt.getEndDate());
+	}
 
 	this._resetTimezoneSelect(appt, isAllDayAppt);
 	this._resetCalendarSelect(appt, mode);
@@ -495,9 +501,6 @@ function(appt, mode) {
 
 	// disable the recurrence select object for editing single instance
 	this._enableRepeat(mode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE);
-
-	// set focus to first input element
-//	this._kbMgr.grabFocus(this._subjectField);
 
 	// save the original form data in its initialized state
 	this._origFormValue = this._formValue(false);
@@ -570,7 +573,7 @@ function(appt, mode) {
 			tp._chooser.transfer(locations, null, true);
 		}
 	}
-	
+
 	// equipment
 	var equipment = appt.getEquipment();
 	if (equipment && equipment.length && this._attInputField[ZmAppt.EQUIPMENT]) {
@@ -590,7 +593,7 @@ function(appt, mode) {
 	}
 
 	// set notes/content (based on compose mode per user prefs)
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) && 
+	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED) &&
 		(this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT) ||
 		 this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML))
 	{
@@ -643,7 +646,7 @@ function() {
 	var html = [];
 	var i = 0;
 
-	html[i++] = "<div><table border=0 style='table-layout:fixed; height:";
+	html[i++] = "<div><table border=0 width=100% style='table-layout:fixed; height:";
 	html[i++] = dims.y - 30;
 	html[i++] = "px'><colgroup><col width='";
 	html[i++] = AjxEnv.is800x600orLower ? "235" : "335";
@@ -728,11 +731,12 @@ function() {
 	delete this._endTimeSelectId;
 
 	this._tzoneSelect = new DwtSelect(this);
-	var timezones = ZmTimezones.getAbbreviatedZoneChoices(); 					// XXX: this seems like overkill, list all 75 timezones!?
-	for (var i = 0; i < timezones.length; i++)
-		this._tzoneSelect.addOption(timezones[i].label, false, timezones[i].value);
+	var timezones = AjxTimezone.getAbbreviatedZoneChoices(); 					// XXX: this seems like overkill, list all 75 timezones!?
+	for (var i = 0; i < timezones.length; i++) {
+		this._tzoneSelect.addOption(timezones[i]);
+	}
 	// init timezone to the local machine's time zone
-	this._tzoneSelect.setSelectedValue(ZmTimezones.guessMachineTimezone());
+	this._tzoneSelect.setSelectedValue(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 	this._tzoneSelect.reparentHtmlElement(this._tzoneSelectId);
 	delete this._tzoneSelectId;
 

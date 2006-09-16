@@ -279,7 +279,6 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/notebook/ZmNotebookApp.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- Preferences Application -->
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/model/ZmTimezones.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/model/ZmPref.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/ZmPreferencesApp.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/controller/ZmFilterRulesController.js<%= ext %>?v=<%= vers %>"></script>
