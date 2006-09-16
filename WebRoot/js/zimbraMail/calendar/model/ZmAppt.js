@@ -53,7 +53,7 @@ function ZmAppt(appCtxt, list, noinit) {
 	this.repeatEndCount = 1; 													// maps to "count" (when there is no end date specified)
 	this.repeatEndType = "N";
 	this.attachments = null;
-	this.timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+	this.timezone = ZmTimezones.getDefault();
 	this._viewMode = ZmAppt.MODE_NEW;
 	this.folderId = ZmOrganizer.ID_CALENDAR;
 	
@@ -1236,7 +1236,7 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 
 		if (showingTimezone) {
 			buf[i++] = " ";
-			buf[i++] = AjxTimezone.getLongName(AjxTimezone.getClientId(this.timezone));
+			buf[i++] = ZmTimezones.valueToDisplay[this.timezone];
 		}
 	}
 	// NOTE: This relies on the fact that setModel creates a clone of the
@@ -1569,35 +1569,6 @@ function(soapDoc, method,  attachmentId, notifyList) {
 		m.setAttribute("l", this.folderId);
 	}
 
-	if (this.timezone) {
-		var rule = AjxTimezone.getRule(AjxTimezone.getClientId(this.timezone));
-		if (rule.autoDetected) {
-			var tz = soapDoc.set("tz", null, m);
-			tz.setAttribute("id", this.timezone);
-			tz.setAttribute("stdoff", rule.stdOffset);
-			if (rule.dstOffset) {
-				tz.setAttribute("dayoff", rule.dstOffset);
-				var trans = [
-					{ ename: "standard", change: rule.changeStd },
-					{ ename: "daylight", change: rule.changeD }
-				];
-				for (var i = 0; i < trans.length; i++) {
-					var tran = trans[i];
-					var ename = tran.ename;
-					var change = tran.change;
-
-					var el = soapDoc.set(ename, null, tz);
-					// NOTE: JS months are 0-based but SOAP is 1-based.
-					el.setAttribute("mon", change[1] + 1);
-					el.setAttribute("mday", change[2]);
-					el.setAttribute("hour", change[3]);
-					el.setAttribute("min", change[4]);
-					el.setAttribute("sec", change[5]);
-				}
-			}
-		}
-	}
-
 	var inv = soapDoc.set("inv", null, m);
 	switch (method) {
 		case ZmAppt.SOAP_METHOD_REQUEST: inv.setAttribute('method', "REQUEST"); break;
@@ -1818,16 +1789,6 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 			e.setAttribute("p", dispName);
 		}
 		e.setAttribute("t", ZmEmailAddress.toSoapType[ZmEmailAddress.TO]);
-
-		// bug fix #9768 - auto add attendee if not in addrbook
-		if (type == ZmAppt.PERSON &&
-			this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
-			this._appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS))
-		{
-			var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
-			if (!clc.getContactByEmail(address))
-				e.setAttribute("add", "1");
-		}
 	}
 };
 

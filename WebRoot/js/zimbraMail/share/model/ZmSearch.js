@@ -293,7 +293,7 @@ ZmSearch.prototype._getStandardMethod =
 function(soapDoc) {
 
 	var method = soapDoc.getMethod();
-
+	
 	if (this.sortBy)
 		method.setAttribute("sortBy", ZmSearch.SORT_BY[this.sortBy]);
 
@@ -308,11 +308,9 @@ function(soapDoc) {
 	method.setAttribute("offset", this.offset);
 
 	// always set limit (init to user pref for page size if not provided)
-	this.limit = this.limit || ((this.contactSource && this.types.size() == 1)
-			? this._appCtxt.get(ZmSetting.CONTACTS_PER_PAGE)
-			: this._appCtxt.get(ZmSetting.PAGE_SIZE));
+	this.limit = this.limit ? this.limit : this._appCtxt.get(ZmSetting.PAGE_SIZE);
 	method.setAttribute("limit", this.limit);
-
+	
 	// and of course, always set the query
 	soapDoc.set("query", this.query);
 

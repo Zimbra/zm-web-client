@@ -50,6 +50,7 @@ ZmLogin.skinCookie = "ZM_SKIN";
 ZmLogin.skinCookieLifetime = 63072000000; // two years
 
 ZmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + location.port + "/service/soap/";
+ZmLogin.ZIMBRA_APP_URI  = location.port == "80" ? appContextPath+"/mail" : ":" + location.port + appContextPath+"/mail";
 
 /**
 * Puts up the auth screen, first checking to see if the browser is one we support.
@@ -340,6 +341,7 @@ function() {
 
 ZmLogin.handleSuccess =
 function(authToken, tokenLifetime, mailServer, uname, password, rememberMe, skin) {
+	var uri = ZmLogin.getMailUrl(mailServer);
 	// save the username for later use
 	if (uname) {
 		AjxCookie.setCookie(document, ZmLogin.lastGoodUserNameCookie, uname, null, "/");
@@ -465,7 +467,13 @@ function(mailServer, authToken, tokenLifetime, rememberMe) {
 	form.submit();
 };
 
-ZmLogin.getAuthUrl =
+ZmLogin.getMailUrl = 
+function (mailServer) {
+	var ms = mailServer || location.hostname;
+	return (location.protocol + "//" + ms + ZmLogin.ZIMBRA_APP_URI + window.location.search);
+};
+
+ZmLogin.getAuthUrl = 
 function (mailServer) {
 	var ms = mailServer ? mailServer : location.hostname;
 	return (location.protocol + "//" + ms + ((location.port == 80) 

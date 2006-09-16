@@ -265,7 +265,7 @@ function(appt) {
 		i = this._showField(ZmMsg.attendees, this._objectManager.findObjects(attendees, true), html, i);
 	}
 
-	var repeatStr = appt.isRecurring() ? appt._getRecurrenceBlurbForSave() : null;
+	var repeatStr = appt._getRecurrenceBlurbForSave();
 	if (repeatStr) {
 		i = this._showField(ZmMsg.repeats, repeatStr, html, i);
 	}
@@ -329,7 +329,7 @@ function(appt) {
 	var dateFormatter = AjxDateFormat.getDateInstance();
 	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
 	var timezone = appt.getTimezone();
-	var localTimezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+	var localTimzone = ZmTimezones.guessMachineTimezone();
 
 	if (this._isOneDayAppt(sd, ed)) {
 		str[i++] = dateFormatter.format(sd);
@@ -341,7 +341,7 @@ function(appt) {
 			str[i++] = " - ";
 			str[i++] = timeFormatter.format(ed);
 			// bug fix #4762
-			if (timezone && timezone != localTimezone) {
+			if (timezone && timezone != localTimzone) {
 				str[i++] = " ";
 				str[i++] = appt.getTimezone();
 			}
@@ -360,7 +360,7 @@ function(appt) {
 			str[i++] = ", ";
 			str[i++] = timeFormatter.format(ed);
 			// bug fix #4762
-			if (timezone && timezone != localTimezone) {
+			if (timezone && timezone != localTimzone) {
 				str[i++] = " ";
 				str[i++] = appt.getTimezone();
 			}

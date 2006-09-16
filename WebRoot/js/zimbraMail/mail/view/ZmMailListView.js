@@ -215,7 +215,7 @@ function(ev) {
 				if (this.size() > this.getLimit()) {
 					this.removeLastItem();
 				}
-			} else if ((this._controller.getList().hasMore() === false) && (this._sortByString == ZmSearch.DATE_ASC)) {
+			} else if ((this._controller.getList().hasMore() === false) && (!this._sortByString || this._sortByString == ZmSearch.DATE_ASC)) {
 				if (this.size() < this.getLimit()) {
 					// add new item at the end of list view's internal list
 					this.addItem(item);

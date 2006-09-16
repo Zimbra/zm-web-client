@@ -30,6 +30,10 @@ function ZmPageEditController(appCtxt, container, app) {
 	//this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._addDocsListener);
 	this._listeners[ZmOperation.SPELL_CHECK] = new AjxListener(this, this._spellCheckListener);
 	this._listeners[ZmOperation.COMPOSE_FORMAT] = new AjxListener(this, this._formatListener);
+
+	this._saveCallback = new AjxCallback(this, this._saveResponseHandler);
+	this._saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler);
+	this._conflictCallback = new AjxCallback(this, this._saveConflictHandler);
 }
 ZmPageEditController.prototype = new ZmListController;
 ZmPageEditController.prototype.constructor = ZmPageEditController;
@@ -75,7 +79,7 @@ function(page) {
 	}
 
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
-	this._setView(this._currentView, elements, false, false, false, true);
+	this._setView(this._currentView, elements, false);
 };
 
 ZmPageEditController.prototype.getPage =
@@ -186,7 +190,7 @@ function(view) {
 };
 
 ZmPageEditController.prototype._setView =
-function(view, elements, isAppView, clear, pushOnly, isTransient) {
+function(view, elements, isAppView, clear, pushOnly, isPoppable) {
 	ZmListController.prototype._setView.apply(this, arguments);
 	//this._app._setViewMenu(view);
 
@@ -225,14 +229,6 @@ function(popViewWhenSaved) {
 	} else if (!ZmOrganizer.VALID_NAME_RE.test(name)) {
 		message = AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
 	}
-
-	// bug: 9406 (short term fix, waiting for backend support)
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(this._page.folderId || ZmOrganizer.ID_NOTEBOOK);
-	if (notebook && notebook.getChild(name)) {
-		message = AjxMessageFormat.format(ZmMsg.errorInvalidPageOrSectionName, name);
-	}
-
 	if (message) {
 		var style = DwtMessageDialog.WARNING_STYLE;
 		var dialog = this._appCtxt.getMsgDialog();
@@ -243,15 +239,12 @@ function(popViewWhenSaved) {
 	}
 
 	// set fields on page object
-	var content = this._pageEditView.getContent();
 	this._page.name = name;
-	this._page.setContent(content);
+	this._page.setContent(this._pageEditView.getContent());
 
 	// save
 	this._popViewWhenSaved = popViewWhenSaved;
-	var saveCallback = new AjxCallback(this, this._saveResponseHandler, [content]);
-	var saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler, [content]);
-	this._page.save(saveCallback, saveErrorCallback);
+	this._page.save(this._saveCallback, this._saveErrorCallback);
 };
 
 ZmPageEditController.prototype._showCurrentPage = function() {
@@ -269,7 +262,7 @@ ZmPageEditController.prototype._showPage = function(id) {
 	}
 };
 
-ZmPageEditController.prototype._saveResponseHandler = function(content, response) {
+ZmPageEditController.prototype._saveResponseHandler = function(response) {
 	var saveResp = response._data && response._data.SaveWikiResponse;
 	if (saveResp) {
 		var data = saveResp.w[0];
@@ -288,7 +281,7 @@ ZmPageEditController.prototype._saveResponseHandler = function(content, response
 		cache.renamePage(cachedPage, this._page.name);
 	}
 
-	this._pageEditView.pageSaved(content);
+	this._pageEditView.pageSaved(this._page);
 	this._appCtxt.setStatusMsg(ZmMsg.pageSaved);
 
 	var popViewWhenSaved = this._popViewWhenSaved;
@@ -331,7 +324,7 @@ function(id) {
 };
 
 ZmPageEditController.prototype._saveErrorResponseHandler =
-function(content, response) {
+function(response) {
 	var code = response.code;
 	if (code == ZmCsfeException.MAIL_ALREADY_EXISTS ||
 		code == ZmCsfeException.MODIFY_CONFLICT) {
@@ -343,8 +336,7 @@ function(content, response) {
 		};
 
 		var dialog = this._appCtxt.getPageConflictDialog();
-		var conflictCallback = new AjxCallback(this, this._saveConflictHandler, [content]);
-		dialog.popup(conflict, conflictCallback);
+		dialog.popup(conflict, this._conflictCallback);
 
 		// tell app we've handled the error
 		return true;
@@ -354,14 +346,12 @@ function(content, response) {
 	return false;
 };
 ZmPageEditController.prototype._saveConflictHandler =
-function(content, mineOrTheirs, conflict) {
+function(mineOrTheirs, conflict) {
 	if (mineOrTheirs == ZmPageConflictDialog.KEEP_MINE) {
 		var page = conflict.page;
 		page.id = conflict.id;
 		page.version = conflict.version;
-		var saveCallback = new AjxCallback(this, this._saveResponseHandler, [content]);
-		var saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler, [content]);
-		page.save(saveCallback, saveErrorCallback);
+		page.save(this._saveCallback, this._saveErrorCallback);
 		return;
 	}
 	if (mineOrTheirs == ZmPageConflictDialog.KEEP_THEIRS) {
@@ -456,14 +446,18 @@ ZmPageEditController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
 	this._doSave(true);
-	this._app.popView(true);
-	this._app.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
-	this._app.popView(true);
+
+	// bug fix #5282
+	// check if the pending view is poppable - if so, force-pop this view first!
+	var avm = this._app.getAppViewMgr();
+	if (avm.isPoppable(avm.getPendingViewId()))
+		this._app.popView(true);
+
 	this._showCurrentPage();
 	this._app.getAppViewMgr().showPendingView(true);
 };

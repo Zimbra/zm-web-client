@@ -116,7 +116,7 @@ function() {
 };
 
 ZmComposeController.prototype.doAction =
-function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText, callback) {
+function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText) {
 	if (inNewWindow) {
 		var newWinObj = this._appCtxt.getNewWindow();
 
@@ -125,9 +125,6 @@ function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText, call
 		newWinObj.args = [action, msg, toOverride, subjOverride, extraBodyText, null];
 	} else {
 		this._setView(action, msg, toOverride, subjOverride, extraBodyText, null);
-	}
-	if (callback) {
-		callback.run();
 	}
 };
 
@@ -300,7 +297,7 @@ function(initHide, composeMode) {
 	this._initializeToolBar();
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._composeView;
-    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks, false, true);
+    this._app.createView(ZmController.COMPOSE_VIEW, elements, callbacks, null, true);
     if (initHide) {
 	    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	    this._composeView.enableInputs(false);
@@ -364,7 +361,6 @@ function(actionCode) {
 				var mode = this._composeView.getComposeMode();
 				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 				this._setFormat(newMode);
-				this._setOptionsMenu(newMode);
 			}
 			break;
 
@@ -848,14 +844,11 @@ function() {
 		this.sendMsg(null, true);
 	} else {
 		// cancel
-		if (this.isChildWindow && window.parentController) {
+		if (this.isChildWindow && window.parentController)
 			window.onbeforeunload = null;
-		} else {
+		else
 			this._composeView.reset(false);
-		}
 	}
-
-	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
 };
 
@@ -866,13 +859,17 @@ function() {
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
-		if (this.isChildWindow && window.parentController) {
+		if (this.isChildWindow && window.parentController)
 			window.onbeforeunload = null;
-		} else {
+		else
 			this._composeView.reset(false);
-		}
 
-		this._app.popView(true);
+		// bug fix #5282
+		// check if the pending view is poppable - if so, force-pop this view first!
+		var avm = this._app.getAppViewMgr();
+		if (avm.isPoppable(avm.getPendingViewId()))
+			this._app.popView(true);
+
 		this._app.getAppViewMgr().showPendingView(true);
 	} else {
 		this._app.getAppViewMgr().showPendingView(false);

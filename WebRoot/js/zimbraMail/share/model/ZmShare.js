@@ -609,8 +609,7 @@ function(mode, isCompose) {
 	var formatter = ZmShare._getText(mode);
 	var content = this._createContent(formatter);
 	if (this.notes || isCompose) {
-		var notes = this.notes;
-		content = [content, ZmAppt.NOTES_SEPARATOR, notes].join("\n");
+		content += ZmAppt.NOTES_SEPARATOR + this.notes;
 	}
 
 	var mimePart = new ZmMimePart();
@@ -625,9 +624,7 @@ function(mode, isCompose) {
 	var formatter = ZmShare._getHtml(mode);
 	var content = this._createContent(formatter);
 	if (this.notes || isCompose) {
-		var formatter = ZmShare._getHtmlNote();
-		var notes = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(this.notes));
-		content = [content, formatter.format(notes)].join("");
+		content += ZmShare._getHtmlNote().format(this.notes);
 	}
 
 	var mimePart = new ZmMimePart();
