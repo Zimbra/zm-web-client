@@ -743,13 +743,13 @@ function(str) {
 ZmContactList.prototype._matchingDone =
 function(str, which, checkMore) {
 	if (which == ZmContactList.AC_LOCAL) {
-		return ((this._acAddrList[str] != "undefined") && this._acAddrList[str].localMatchingDone);
+		return (this._acAddrList[str] && this._acAddrList[str].localMatchingDone);
 	} else if (which == ZmContactList.AC_GAL) {
 		if (!this._galAutocompleteEnabled) {return true;}
 		var old = (new Date()).getTime() - ZmContactList.GAL_RESULTS_TTL;
 		// GAL results must be fresh and complete
-		return ((this._galResults[str] != "undefined") && this._acAddrList[str].galMatchingDone &&
-				(this._galResults[str].ts > old) && (!this._galResults[str].more));
+		return (this._acAddrList[str] && this._acAddrList[str].galMatchingDone &&
+				this._galResults[str] && (this._galResults[str].ts > old) && (!this._galResults[str].more));
 	}
 };
 
