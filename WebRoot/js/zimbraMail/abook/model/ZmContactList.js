@@ -83,8 +83,11 @@ ZmContactList.AC_VALUE_EMAIL	= "email";
 ZmContactList.AC_VALUE_NAME		= "name";
 ZmContactList.AC_MAX 			= 20;	// max # of autocomplete matches to return
 ZmContactList.AC_PREMATCH		= 2;	// # of characters to do pre-matching for
-ZmContactList.AC_GAL_TIMEOUT	= 0.5;	// GAL autocomplete timeout (in seconds)
+ZmContactList.AC_GAL_TIMEOUT	= 15;	// GAL autocomplete timeout (in seconds)
 ZmContactList.AC_GAL_FAILURES	= 5;	// # of GAL autocomplete timeouts before disabling it
+
+ZmContactList.AC_LOCAL	= 1;
+ZmContactList.AC_GAL	= 2;
 
 // Load contacts in chunks so browser remains reasonably responsive.
 // To increase browser responsiveness, lower the chunk size and increase the
@@ -134,6 +137,12 @@ function(callback, result) {
 	} else {
 		this._loaded = true; // user has no contacts
 	}
+	this._setGalAutocompleteEnabled();
+    var listener = new AjxListener(this, this._settingsChangeListener);
+	var settings = this._appCtxt.getSettings();
+	settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE).addChangeListener(listener);
+	settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE_SESSION).addChangeListener(listener);
+
 	if (callback) callback.run();
 };
 
@@ -604,16 +613,18 @@ function(item, result) {
 * Returns a list of matching contacts for a given string. The first name, last
 * name, full name, first/last name, and email addresses are matched against.
 *
-* @param str		[string]		string to match against
-* @param callback	[AjxCallback]	callback to run with results
+* @param str		[string]					string to match against
+* @param callback	[AjxCallback]				callback to run with results
+* @param aclv		[ZmAutocompleteListView]*	needed for GAL matching
 */
 ZmContactList.prototype.autocompleteMatch =
-function(str, callback) {
+function(str, callback, aclv) {
+
 	DBG.println(AjxDebug.DBG3, "begin contact matching");
 	str = str.toLowerCase();
 	this._acAddrList[str] = this._acAddrList[str] ? this._acAddrList[str] : [];
 
-	// if personal contacts haven't finished loading, don't return any results (even
+	// if local contacts haven't finished loading, don't return any results (even
 	// though we could still search the GAL)
 	if (!this.isLoaded()) {
 		if (this._showStatus) {
@@ -624,54 +635,53 @@ function(str, callback) {
 		return;
 	}
 
-	var strLen = str.length;
-	var gotData = false;
-
-	DBG.println(AjxDebug.DBG3, "str = " + str);
-
-	// see if we have GAL results we can use
-	if (this._galAutocompleteEnabled()) {
-		var old = (new Date()).getTime() - ZmContactList.GAL_RESULTS_TTL;
-		if (this._galResults[str] && (this._galResults[str].ts > old)) {
-			DBG.println(AjxDebug.DBG3, "Found GAL results for " + str);
-			gotData = true;
-		} else {
-			// do we have recent and complete GAL results for part of this string?
-			var tmp = str;
-			var list = null;
-			while (tmp && !list) {
-				tmp = tmp.slice(0, -1); // remove last character
-				if (tmp && this._galResults[tmp] && (this._galResults[tmp].ts > old) && !this._galResults[tmp].more) {
-					DBG.println(AjxDebug.DBG3, "Found GAL results for substring " + tmp);
-					gotData = true;
-					break;
-				}
+	var gotLocal = this._checkExistingResults(str, ZmContactList.AC_LOCAL);
+	if (!gotLocal) {
+		// initial matching against all local contacts
+		DBG.println(AjxDebug.DBG2, "creating new match list for '" + str + "'");
+		list = this.getArray();
+		for (var i = 0; i < list.length; i++) {
+			var contact = list[i];
+			if (this._testAcMatch(contact, str)) {
+				this._acAddrList[str].push(contact.id);
 			}
 		}
-	} else {
-		gotData = true;
 	}
+	
+	// return local results
+	var results = this._matchList(str);
+	callback.run(results);
 
-	if (!gotData && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+	var gotGal = this._checkExistingResults(str, ZmContactList.AC_GAL);
+	if (!gotGal) {
+		aclv.setWaiting(true);
 		var respCallback = new AjxCallback(this, this._handleResponseAutocompleteMatch, [str, callback]);
-		this._getGalMatches(str, respCallback);
-	} else {
-		this._handleResponseAutocompleteMatch(str, callback);
+		this._getGalMatches(str, aclv, respCallback);
 	}
 };
 
 ZmContactList.prototype._handleResponseAutocompleteMatch =
 function(str, callback) {
+	// GAL results have been added in to local results
+	this._acAddrList[str].galMatchingDone = true;
+	DBG.timePt("end autocomplete GAL matching");
+	DBG.println(AjxDebug.DBG3, "Returning list of GAL matches");
 
-	// by this point, we have GAL results
+	// return GAL results
+	if (this._acAddrList[str].hasGalMatches) {
+		var results = this._matchList(str);
+		callback.run(results);
+	}
+};
 
+ZmContactList.prototype._checkExistingResults =
+function(str, which) {
+	
 	// have we already done this string?
-	if (this._matchingDone(str)) {
+	if (this._matchingDone(str, which)) {
 		DBG.println(AjxDebug.DBG3, "found previous match for " + str);
 		DBG.timePt("end autocomplete match - found previous match");
-		var matchList = this._matchList(str);
-		callback.run(matchList);
-		return;
+		return true;
 	}
 
 	var newList = [];
@@ -681,55 +691,36 @@ function(str, callback) {
 	var list = null;
 	while (tmp && !list) {
 		tmp = tmp.slice(0, -1); // remove last character
-		list = (tmp && this._matchingDone(tmp)) ? this._acAddrList[tmp] : null;
+		list = (tmp && this._matchingDone(tmp, which, true)) ? this._acAddrList[tmp] : null;
 		if (list && list.length == 0) {
 			// substring had no matches, so this string has none
 			DBG.println(AjxDebug.DBG3, "Found empty results for substring " + tmp);
 			DBG.timePt("end autocomplete match - no matches");
-			callback.run(null);
-			return;
+			return true;
 		}
 	}
 
 	if (list) {
-		// found a substring that we've already done matching for
+		// found a substring that we've already done matching for, so we just need
+		// to narrow those results
 		DBG.println(AjxDebug.DBG3, "working forward from '" + tmp + "'");
 		var len = list.length;
 		// test each of the substring's matches to see if it also matches this string
 		for (var i = 0; i < len; i++) {
 			var contact = list[i];
-			if ((!contact.isGal && this._acAddrList[str].matchingDone) ||
-				(contact.isGal && this._acAddrList[str].galMatchingDone)) {
-				continue;
-			}
 			if (this._testAcMatch(contact, str)) {
 				this._acAddrList[str].push(contact);
 			}
 		}
-	} else {
-		// initial matching against all contacts
-		DBG.println(AjxDebug.DBG2, "creating new match list for '" + str + "'");
-		list = this.getArray();
-		for (var i = 0; i < list.length; i++) {
-			var contact = list[i];
-			if ((!contact.isGal && this._acAddrList[str].matchingDone) ||
-				(contact.isGal && this._acAddrList[str].galMatchingDone)) {
-				continue;
-			}
-			if (this._testAcMatch(contact, str)) {
-				this._acAddrList[str].push(contact.id);
-			}
+		if (which == ZmContactList.AC_LOCAL) {
+			this._acAddrList[str].localMatchingDone = true;
+		} else {
+			this._acAddrList[str].galMatchingDone = true;
 		}
+		return true;
 	}
-	this._acAddrList[str].matchingDone = true;
-	this._acAddrList[str].galMatchingDone = true;
-
-	// by this point all matching has been done and we should have
-	// a list of zero or more matches for this string
-	DBG.timePt("end autocomplete match");
-	var matchList = this._matchList(str);
-	DBG.println(AjxDebug.DBG3, "Returning list of matches");
-	callback.run(matchList);
+	
+	return false;
 };
 
 /**
@@ -746,13 +737,20 @@ function(str) {
  * Returns true if both local and GAL matching have been done for the given string.
  *
  * @param str		[string]		string to match against
+ * @param which		[constant]		LOCAL or GAL
+ * @param checkMore	[boolean]*		if true, check if results are complete (GAL only)
  */
 ZmContactList.prototype._matchingDone =
-function(str) {
-	var localDone = (this._acAddrList[str] && this._acAddrList[str].matchingDone);
-	var galDone = (!this._galAutocompleteEnabled ||
-				   ((this._acAddrList[str] && this._acAddrList[str].galMatchingDone)));
-	return (localDone && galDone);
+function(str, which, checkMore) {
+	if (which == ZmContactList.AC_LOCAL) {
+		return ((this._acAddrList[str] != "undefined") && this._acAddrList[str].localMatchingDone);
+	} else if (which == ZmContactList.AC_GAL) {
+		if (!this._galAutocompleteEnabled) {return true;}
+		var old = (new Date()).getTime() - ZmContactList.GAL_RESULTS_TTL;
+		// GAL results must be fresh and complete
+		return ((this._galResults[str] != "undefined") && this._acAddrList[str].galMatchingDone &&
+				(this._galResults[str].ts > old) && (!this._galResults[str].more));
+	}
 };
 
 /*
@@ -776,7 +774,7 @@ function(contact) {
 					this._acAddrList[str] = this._acAddrList[str] ? this._acAddrList[str] : [];
 					this._acAddrList[str].push(contact.id);
 					strings[str] = true;
-					this._acAddrList[str].matchingDone = true;
+					this._acAddrList[str].localMatchingDone = true;
 				}
 			}
 		}
@@ -930,6 +928,9 @@ function(nameHL, emailHL, name, email, contact) {
 	result.text = [nameHL, " &lt;", emailHL, "&gt;"].join("");
 	result.plain = result.text.replace(/<\/?b>/g, "");	// for sorting results
 	result.item = contact;
+	if (this._galAutocompleteEnabled) {
+		result.icon = contact.isGal ? "GALContact" : "Contact";
+	}
 	result[ZmContactList.AC_VALUE_FULL] = ['"', name, '" <', email, ">"].join("");
 	result[ZmContactList.AC_VALUE_EMAIL] = email;
 	result[ZmContactList.AC_VALUE_NAME] = name;
@@ -963,31 +964,31 @@ function(contact, doAdd) {
 	}
 };
 
+ZmContactList.prototype._setGalAutocompleteEnabled =
+function() {
+	this._galAutocompleteEnabled = (this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE) &&
+									this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_SESSION));
+};
+
 /*
  * Fetches GAL matches for the given string from the server.
  *
  * @param str		[string]	string to match against
  */
 ZmContactList.prototype._getGalMatches =
-function(str, callback) {
+function(str, aclv, callback) {
 	var sortBy = ZmSearch.NAME_DESC;
 	var types = AjxVector.fromArray([ZmItem.CONTACT]);
 	var params = {query: str, types: types, sortBy: sortBy, offset: 0, limit: ZmContactList.AC_MAX, isGalAutocompleteSearch: true};
 	var search = new ZmSearch(this._appCtxt, params);
-	var respCallback = new AjxCallback(this, this._handleResponseGetGalMatches, [str, callback]);
-	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches, [callback]);
+	var respCallback = new AjxCallback(this, this._handleResponseGetGalMatches, [str, aclv, callback]);
+	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches, [aclv, callback]);
 	search.execute({callback: respCallback, errorCallback: errorCallback, timeout: ZmContactList.AC_GAL_TIMEOUT,
 					noBusyOverlay: true});
 };
 
-ZmContactList.prototype._galAutocompleteEnabled =
-function() {
-	return (this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE) &&
-			this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_SESSION));
-};
-
 ZmContactList.prototype._handleResponseGetGalMatches =
-function(str, callback, result) {
+function(str, aclv, callback, result) {
 	var resp = result.getResponse();
 	var list = resp.getResults(ZmItem.CONTACT);
 	var a = list ? list.getArray() : [];
@@ -996,6 +997,7 @@ function(str, callback, result) {
 	for (var i = 0; i < a.length; i++) {
 		this._acAddrList[str].push(a[i]);
 	}
+	this._acAddrList[str].hasGalMatches = (a.length > 0);
 	this._acAddrList[str].galMatchingDone = true;
 
 	this._galResults[str] = {};
@@ -1003,6 +1005,7 @@ function(str, callback, result) {
 	this._galResults[str].more = resp._respEl.more;
 
 	this._galFailures = 0;	// successful response, reset counter
+	aclv.setWaiting(false);
 	callback.run();
 };
 
@@ -1012,7 +1015,8 @@ function(str, callback, result) {
  * current session. The user can re-enable it in Options.
  */
 ZmContactList.prototype._handleErrorGetGalMatches =
-function(callback, ex) {
+function(aclv, callback, ex) {
+	aclv.setWaiting(false);
 	if (ex.code == AjxException.CANCELED) {
 		this._galFailures++;
 		this._appCtxt.setStatusMsg(ZmMsg.galAutocompleteTimedOut);
@@ -1026,4 +1030,16 @@ function(callback, ex) {
 		}
 	}
 	callback.run();
+};
+
+ZmContactList.prototype._settingsChangeListener =
+function(ev) {
+	if (ev.type != ZmEvent.S_SETTING) {return};
+	var setting = ev.source;
+	if (setting.id == ZmSetting.GAL_AUTOCOMPLETE ||
+		setting.id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) {
+	
+		this._acAddrList = {};	
+		this._setGalAutocompleteEnabled();
+	}
 };
