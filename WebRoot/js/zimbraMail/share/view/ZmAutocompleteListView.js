@@ -536,17 +536,18 @@ function(str, chunk, text, start, callback, list) {
 	if (!results) {
 		this._set(list); // populate the list view
 
-		// if the current segment ends in a delimiter, complete immediately without showing the list
+		// if text ends in a delimiter, complete immediately without showing the list
 		var match;
-		if (chunk.delim) {
+		if (chunk.delim && (chunk.end == chunk.text.length - 1)) {
 			DBG.println(AjxDebug.DBG2, "performing quick completion");
 			var result = this._complete(text, true);
 			text = result.text;
 			start = result.start;
 			match = result.match;
+		} else {
+			// show the list
+			this.show(true, this._loc);
 		}
-		// show the list (unless we're doing completion)
-		this.show(!chunk.delim, this._loc);
 	
 		results = {text: text, start: start, match: match};
 	}
