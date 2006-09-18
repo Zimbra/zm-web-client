@@ -98,8 +98,7 @@ function ZmAutocompleteListView(params) {
 
 	this._internalId = AjxCore.assignId(this);
 	this._numChars = 0;
-	this._matches = new AjxVector();
-	this._done = new Object();
+	this._done = {};
 	this.setVisible(false);
 };
 
@@ -108,7 +107,7 @@ ZmAutocompleteListView.prototype.constructor = ZmAutocompleteListView;
 
 // map of characters that are completion characters
 ZmAutocompleteListView.DELIMS = [',', ';', '\n', '\r', '\t'];
-ZmAutocompleteListView.IS_DELIM = new Object();
+ZmAutocompleteListView.IS_DELIM = {};
 for (var i = 0; i < ZmAutocompleteListView.DELIMS.length; i++) {
 	ZmAutocompleteListView.IS_DELIM[ZmAutocompleteListView.DELIMS[i]] = true;
 }
@@ -345,7 +344,7 @@ function(info) {
 */
 ZmAutocompleteListView.prototype.reset =
 function() {
-	this._matches.removeAll();
+	this._matches = null;
 	this.show(false);
 };
 
@@ -387,6 +386,23 @@ function(key, isDelim) {
 		}
 	} else if (key == 27) {
 		this.reset(); // ESC hides the list
+	}
+};
+
+ZmAutocompleteListView.prototype.setWaiting =
+function(on) {
+	if (on) {
+		if (!this.size()) {
+			// make sure we're visible if "waiting" row is the only one
+			this.show(true, this._loc);
+		}
+		this._waitDivId = Dwt.getNextId();
+		var div = this._getDiv(this._waitDivId);
+		this._addRow(div, ZmMsg.galAutocompleteWaiting, "DwtWait16Icon");
+		this.getHtmlElement().appendChild(div);
+	} else {
+		var ta = new AjxTimedAction(this, this._clearWaiting);
+		AjxTimedAction.scheduleAction(ta, 1000);
 	}
 };
 
@@ -495,13 +511,14 @@ function(chunk, callback) {
 	this._removeAll();
 
 	var respCallback = new AjxCallback(this, this._handleResponseAutocomplete, [str, chunk, text, start, callback]);
-	this._data.autocompleteMatch(str, respCallback);
+	this._data.autocompleteMatch(str, respCallback, this);
 
 };
 
 ZmAutocompleteListView.prototype._handleResponseAutocomplete =
 function(str, chunk, text, start, callback, list) {
 	var results;
+	// see if it's already a complete address
 	if (list && list.length == 1 && this._data.isUniqueValue(str)) {
 		DBG.println(AjxDebug.DBG2, "unique match, hiding autocomplete list");
 		results = {text: text, start: start};
@@ -511,17 +528,13 @@ function(str, chunk, text, start, callback, list) {
 		if (list && list.length > 0) {
 			var len = list.length;
 			DBG.println(AjxDebug.DBG2, "found " + len + " match" + len > 1 ? "es" : "");
-			for (var i = 0; i < len; i++) {
-				var match = list[i];
-				this._append(match);
-			}
 		} else {
 			results = {text: text, start: start};
 		}
 	}
 
 	if (!results) {
-		this._set(); // populate the list view
+		this._set(list); // populate the list view
 
 		// if the current segment ends in a delimiter, complete immediately without showing the list
 		var match;
@@ -635,22 +648,57 @@ function(ev) {
 // Creates the list and its member elements based on the matches we have. Each match becomes a 
 // DIV. The first match is automatically selected.
 ZmAutocompleteListView.prototype._set =
-function(sel) {
+function(list, sel) {
 	var thisHtmlElement = this.getHtmlElement();
 	thisHtmlElement.innerHTML = "";
-	var len = this._matches.size();
+	this._matches = list;
+	var len = this._matches.length;
 	for (var i = 0; i < len; i++) {
-		var div = document.createElement("div");
-		var match = this._matches.get(i);
+		var div = this._getDiv();
 		div._pos = i;
-		div[DwtListView._STYLE_CLASS] = "Row";
-		div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + "-" + DwtCssStyle.SELECTED;
-		div.className = div[DwtListView._STYLE_CLASS];
-		div.innerHTML = match.text;
+		var match = this._matches[i];
+		this._addRow(div, match.text, match.icon);
 		thisHtmlElement.appendChild(div);
 	}
 	this._selected = sel || 0;
 	this._setSelected(this._selected);
+};
+
+ZmAutocompleteListView.prototype._getDiv = 
+function(id) {
+	var div = document.createElement("div");
+	div[DwtListView._STYLE_CLASS] = "Row";
+	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + "-" + DwtCssStyle.SELECTED;
+	div.className = div[DwtListView._STYLE_CLASS];
+	div.id = id;
+
+	return div;
+};
+
+// Adds a row with text and possibly an icon for the left column
+ZmAutocompleteListView.prototype._addRow = 
+function(div, text, icon) {
+	if (icon) {
+		var html = [];
+		var idx = 0;
+		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0>";
+		html[idx++] = "<tr>";
+		html[idx++] = "<td style='width:";
+		html[idx++] = 20;
+		html[idx++] = "' class='Icon'>";
+		if (icon.indexOf('Dwt') != -1) {
+			html[idx++] = ["<div class='", icon, "'></div>"].join("");
+		} else {
+			html[idx++] = AjxImg.getImageHtml(icon);
+		}
+		html[idx++] = "</td>";
+		html[idx++] = "<td>";
+		html[idx++] = text;
+		html[idx++] = "</td></tr></table>";
+		div.innerHTML = html.join("");
+	} else {
+		div.innerHTML = text;
+	}
 };
 
 // Displays the list
@@ -698,25 +746,20 @@ function(sel) {
 
 // Miscellaneous
 
-// Adds a match to the internal list of matches
-ZmAutocompleteListView.prototype._append =
-function(match) {
-	this._matches.add(match);
-};
-
 // Clears the internal list of matches
 ZmAutocompleteListView.prototype._removeAll =
 function() {
-	this._matches.removeAll();
+	this._matches = null;
 	var htmlElement = this.getHtmlElement();
-	while (htmlElement.hasChildNodes())
+	while (htmlElement.hasChildNodes()) {
 		htmlElement.removeChild(htmlElement.firstChild);
+	}
 };
 
 // Returns the number of matches
 ZmAutocompleteListView.prototype.size =
 function() {
-	return this._matches.size();
+	return this._matches ? this._matches.length : 0;
 };
 
 // Returns the index of the currently selected match
@@ -728,25 +771,8 @@ function() {
 // Returns the currently selected match
 ZmAutocompleteListView.prototype._getSelected =
 function() {
-	return this._matches.get(this._selected);
+	return this._matches ? this._matches[this._selected] : null;
 };
-
-// Calls the data class's matching function to get a list of matches for the given string. The data
-// is loaded lazily here.
-/*
-ZmAutocompleteListView.prototype._getMatches =
-function(str, callback) {
-	var respCallback = new AjxCallback(this, this._handleResponseGetMatches, [callback]);
-	this._data.autocompleteMatch(str, callback);
-};
-
-ZmAutocompleteListView.prototype._handleResponseGetMatches =
-function(callback, results) {
-	if (callback) {
-		callback.run(results);
-	}
-};
-*/
 
 // Force focus to the input element (handle Tab in Firefox)
 ZmAutocompleteListView.prototype._autocompleteFocus =
@@ -760,4 +786,16 @@ function(ev) {
 	var loc = Dwt.getLocation(element);
 	var height = Dwt.getSize(element).y;
 	return (new DwtPoint(loc.x, loc.y + height));
+};
+
+ZmAutocompleteListView.prototype._clearWaiting =
+function() {
+	var div = document.getElementById(this._waitDivId);
+	if (div) {
+		this.getHtmlElement().removeChild(div);
+	}
+	if (!this.size()) {
+		// hide if "waiting" row was only one
+		this.show(false);
+	}
 };

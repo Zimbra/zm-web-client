@@ -78,6 +78,7 @@ function(result) {
 		this._idHash[resource.id] = resource;
 	}
 	this._loaded = true;
+	this._galAutocompleteEnabled = false;
 };
 
 ZmResourceList.prototype.updateHashes = 
@@ -177,9 +178,4 @@ function(match, resource) {
 	result[ZmContactList.AC_VALUE_NAME] = resource.getFullName();
 
 	return result;
-};
-
-ZmResourceList.prototype._galAutocompleteEnabled =
-function() {
-	return false;
 };
