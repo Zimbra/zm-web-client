@@ -210,10 +210,10 @@ function(ev) {
 	// don't let the browser handle are ones that control the features of the autocomplete
 	// list.
 
-	if (DwtKeyMapMgr.isModifier(key)) {
+	if (key == 16 || key == 17 || key == 18) { // SHIFT, ALT, or CTRL
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
-	if (ev.altKey || ev.ctrlKey || ev.metaKey) { // non-input key combos
+	if (ev.altKey || ev.ctrlKey) { // ALT and CTRL combos
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 	// if the field is empty, clear the list
@@ -224,8 +224,8 @@ function(ev) {
 	if (key == 37 || key == 39) { // left/right arrow key
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
-	// Pass tab/esc through if there's no list
-	if ((key == 9 || key == 27) && !aclv.size()) {
+	// Pass tab through if there's no list (will transfer focus)
+	if ((key == 9) && !aclv.size()) {
 		return ZmAutocompleteListView._echoKey(true, ev);
 	}
 
@@ -536,18 +536,17 @@ function(str, chunk, text, start, callback, list) {
 	if (!results) {
 		this._set(list); // populate the list view
 
-		// if text ends in a delimiter, complete immediately without showing the list
+		// if the current segment ends in a delimiter, complete immediately without showing the list
 		var match;
-		if (chunk.delim && (chunk.end == chunk.text.length - 1)) {
+		if (chunk.delim) {
 			DBG.println(AjxDebug.DBG2, "performing quick completion");
 			var result = this._complete(text, true);
 			text = result.text;
 			start = result.start;
 			match = result.match;
-		} else {
-			// show the list
-			this.show(true, this._loc);
 		}
+		// show the list (unless we're doing completion)
+		this.show(!chunk.delim, this._loc);
 	
 		results = {text: text, start: start, match: match};
 	}

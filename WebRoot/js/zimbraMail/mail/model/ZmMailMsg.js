@@ -963,13 +963,8 @@ function(msgNode) {
 	}
 
 	if (msgNode.inv) {
-		try {
-			this.invite = ZmInvite.createFromDom(msgNode.inv);
-			this.invite.setMessageId (this.id);
-		} catch (ex) {
-			// do nothing - this means we're trying to load an ZmInvite in new
-			// window, which we dont currently load (re: support).
-		}
+		this.invite = ZmInvite.createFromDom(msgNode.inv);
+		this.invite.setMessageId (this.id);
 	}
 };
 

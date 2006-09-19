@@ -143,7 +143,6 @@ ZmOrganizer.F_COLOR		= i++;
 ZmOrganizer.F_QUERY		= i++;
 ZmOrganizer.F_SHARES	= i++;
 ZmOrganizer.F_FLAGS		= i++;
-ZmOrganizer.F_REST_URL	= i++;
 
 ZmOrganizer.FLAG_CHECKED			= "#";
 ZmOrganizer.FLAG_IMAP_SUBSCRIBED	= "*";
@@ -641,11 +640,6 @@ function(obj) {
 			doNotify = true;
 		}
 	}
-	if (obj.rest != null && this.restUrl != obj.rest) {
-		this.restUrl = obj.rest;
-		fields[ZmOrganizer.F_REST_URL] = true;
-		doNotify = true;
-	}
 	// if shares changed, do wholesale replace
 	if (obj.acl) {
 		this.clearShares();
@@ -1001,7 +995,7 @@ function(name, showUnread, noMarkup) {
 	if (showUnread && this.numUnread > 0) {
 		name = [name, " (", this.numUnread, ")"].join("");
 		if (!noMarkup)
-			name = ["<span style='font-weight:bold'>", name, "</span>"].join("");
+			name = ["<b>", name, "</b>"].join("");
 	}
 	if (this.noSuchFolder && !noMarkup) {
 		name = ["<del>", name, "</del>"].join("");

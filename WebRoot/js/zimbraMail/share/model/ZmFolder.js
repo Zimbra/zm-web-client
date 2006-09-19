@@ -58,7 +58,7 @@ ZmFolder.SEP = "/";
 ZmFolder.ID_OTHER			= -2;	// used for tcon value (see below)
 ZmFolder.ID_SEP				= -1;	// separator
 ZmFolder.ID_ROOT			= ZmOrganizer.ID_ROOT;
-ZmFolder.ID_INBOX			= ZmOrganizer.ID_INBOX;
+ZmFolder.ID_INBOX			= 2;
 ZmFolder.ID_TRASH			= ZmOrganizer.ID_TRASH;
 ZmFolder.ID_SPAM			= ZmOrganizer.ID_SPAM;
 ZmFolder.ID_SENT			= 5;
@@ -393,7 +393,7 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 		if (showUnread && this.numTotal > 0) {
 			name = [name, " (", this.numTotal, ")"].join("");
 			if (!noMarkup) {
-				name = ["<span style='font-weight:bold'>", name, "</span>"].join("");
+				name = ["<b>", name, "</b>"].join("");
 			}
 		}
 		return name;

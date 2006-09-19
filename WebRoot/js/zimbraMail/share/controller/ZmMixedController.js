@@ -303,9 +303,8 @@ function(ev) {
 	} else {
  		miUndelete.setVisible(false);	// never show Undelete option when not in Trash
  		miMoveTo.setVisible(true);		// always show Move To option
- 		// show MoveTo only if one type has been selected and its not contacts or wiki thing
-		var enableMoveTo = numTypes == 1 && selItems[0].type != ZmItem.CONTACT && 
-			selItems[0].type != ZmItem.PAGE && selItems[0].type != ZmItem.DOCUMENT;
+ 		// show MoveTo only if one type has been selected and its not contacts
+		var enableMoveTo = numTypes == 1 && selItems[0].type != ZmItem.CONTACT;
 		actionMenu.enable(ZmOperation.MOVE, enableMoveTo);
 	}
 	actionMenu.popup(0, ev.docX, ev.docY);

@@ -1275,7 +1275,7 @@ function(d, duration, col) {
 	var m = d.getMinutes();
 	if (col == null && !this._scheduleMode) {
 		var day = this._getDayForDate(d);
-		col = day ? this._columns[day.index] : null;
+		col = this._columns[day.index];
 	}
 	if (col == null) return null;
 	return new DwtRectangle(col.apptX, ((h+m/60) * ZmCalColView._HOUR_HEIGHT), 

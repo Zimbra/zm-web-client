@@ -942,9 +942,10 @@ function(action, msg, extraBodyText, incOption) {
 	var sigStyle = (this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED) && this._appCtxt.get(ZmSetting.SIGNATURE))
 				   ? this._appCtxt.get(ZmSetting.SIGNATURE_STYLE) : null;
 
-	var value = sigStyle == ZmSetting.SIG_OUTLOOK
-		? (this._getSignatureSeparator() + this._getSignature())
-		: "";
+	var value = "";
+	if (sigStyle == ZmSetting.SIG_OUTLOOK)
+		value = this._getSignatureSeparator() + this._getSignature();
+
 
 	// get reply/forward prefs as necessary
 	if (!incOption) {
@@ -963,7 +964,7 @@ function(action, msg, extraBodyText, incOption) {
 
 	if (incOption == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
 		if (extraBodyText)
-			value = extraBodyText + value;
+			value += extraBodyText;
 	} else if (incOption == ZmSetting.INCLUDE_ATTACH) {
 		this._msgAttId = this._msg.id;
 	} else {
@@ -1017,22 +1018,16 @@ function(action, msg, extraBodyText, incOption) {
 				preface = ZmComposeView._replyPrefixFormatter.format(from.toString());
 			}
 			var prefix = this._appCtxt.get(ZmSetting.REPLY_PREFIX);
-			if (incOption == ZmSetting.INCLUDE_PREFIX ||
-				incOption == ZmSetting.INCLUDE_PREFIX)
-			{
+			if (incOption == ZmSetting.INCLUDE_PREFIX || incOption == ZmSetting.INCLUDE_PREFIX) {
 				value += leadingText + preface + AjxStringUtil.wordWrap(body, ZmComposeView.WRAP_LENGTH, prefix + " ");
-			}
-			else if (incOption == ZmSetting.INCLUDE_SMART)
-			{
+			} else if (incOption == ZmSetting.INCLUDE_SMART) {
 				var chunks = AjxStringUtil.getTopLevel(body);
 				for (var i = 0; i < chunks.length; i++)
 					chunks[i] = AjxStringUtil.wordWrap(chunks[i], ZmComposeView.WRAP_LENGTH, prefix + " ");
 				var text = chunks.length ? chunks.join('\n\n') : body;
 				value += leadingText + preface + text;
-			} else if (action == ZmOperation.REPLY_ACCEPT ||
-						action == ZmOperation.REPLY_DECLINE ||
-						action == ZmOperation.REPLY_TENTATIVE)
-			{
+			} else if (action == ZmOperation.REPLY_ACCEPT || action == ZmOperation.REPLY_DECLINE ||
+				action == ZmOperation.REPLY_TENTATIVE) {
 				var notes;
 		
 				var bodyPart = msg.getBodyPart(ZmMimeTable.TEXT_PLAIN);
@@ -1077,6 +1072,7 @@ function(id, event, addrType) {
 ZmComposeView.prototype._setBodyFieldCursor =
 function(extraBodyText) {
 	if (this._composeMode == DwtHtmlEditor.HTML) {
+//		this._htmlEditor.focus();
 		return;
 	}
 
@@ -1093,6 +1089,9 @@ function(extraBodyText) {
 		var index = extraBodyText ? (extraBodyText.length + 1) : 0;
 		this._bodyField.setSelectionRange(index, index);
 	}
+
+//    this._bodyField.focus();
+//	this.shell.getKeyboardMgr().grabFocus(this._bodyField);
 };
 
 /**

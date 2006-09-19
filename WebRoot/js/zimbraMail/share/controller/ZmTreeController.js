@@ -464,7 +464,7 @@ function(ev, treeView, overviewId) {
 						treeItem.setChecked(organizer.isChecked);
 					}
 					var checked = node.getChecked();
-					node.setText(organizer.getName(treeView._showUnread));
+					node.setText(organizer.getName(true));
 					if (fields && fields[ZmOrganizer.F_NAME]) {
 						if (parentNode && (parentNode.getNumChildren() > 1)) {
 							// remove and re-insert the node (if parent has more than one child)

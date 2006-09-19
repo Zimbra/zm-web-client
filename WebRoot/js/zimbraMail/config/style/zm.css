@@ -313,10 +313,6 @@ td.DDSepInvisible div {
 	@PickerContainer@
 }
 
-.ZmPicker .DwtTree {
-	@PageBg@;
-}
-
 /* Header for each picker */
 .ZmPicker .DwtToolBar {
 	@WidgetHeaderContainer@
@@ -676,12 +672,16 @@ td.DDSepInvisible div {
 	background-color:@WidgetBgColor@
 }
 
+.AlphabetBarCellFirst {
+	text-align:center;
+	@ActiveCursor@
+}
+
 .AlphabetBarCell {
 	text-align:center;
 	@ActiveCursor@
 	width:30px;
 	min-width:30px;
-	border-right-width: 1px;
 }
 
 .AlphabetBarDisabled {
@@ -1980,11 +1980,9 @@ HTML>BODY .appt-selected .appt_allday_body
 /*
  *	Change password dialog
  */
-.ZmChangePasswordDialogCell {
-	white-space: nowrap;
-	overflow: hidden;
-	text-align: right;
-	width: 1%;
+.ZmChangePasswordDialogInput {
+	@BoxMargin@
+	width:200px;
 }
 
 
