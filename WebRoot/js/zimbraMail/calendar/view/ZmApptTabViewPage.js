@@ -472,23 +472,41 @@ function(tabGroup) {
 ZmApptTabViewPage.prototype._reset =
 function(appt, mode) {
 	// reset the date/time values based on current time
-	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getStartDate());
-	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getEndDate());
+	var sd = new Date(appt.getStartDate().getTime());
+	var ed = new Date(appt.getEndDate().getTime());
 	var isAllDayAppt = appt.isAllDayEvent();
 	if (isAllDayAppt) {
 		this._allDayCheckbox.checked = true;
 		this._showTimeFields(false);
 
 		// set time anyway to current time and default duration (in case user changes mind)
-		var sd = new Date();
-		this._startTimeSelect.set(AjxDateUtil.roundTimeMins(sd, 30));
+		var now = AjxDateUtil.roundTimeMins(new Date(), 30);
+		this._startTimeSelect.set(now);
 
-		var ed = new Date(sd.getTime() + ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
-		this._endTimeSelect.set(ed);
+		now.setTime(now.getTime() + ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
+		this._endTimeSelect.set(now);
+
+		// bug 9969: remove the all day durtion for display
+		// HACK: This is a total hack because there are two types
+		//       of all day appointment objects. Non-recurring ones
+		//       have there start time set to the current time (for
+		//       some unknown reason) and their end time set to the
+		//       the start time + the default appointment duration.
+		//       Recurring appointments have their start time and
+		//       end time set to 00:00:00 which means that when
+		//       editing it will look like the event ends on the
+		//       day *following* the actual end day. So this hack
+		//       is here until I can figure out why the two are
+		//       different.
+		if (ed.getHours() == 0 && ed.getMinutes() == 0 && ed.getSeconds() == 0) {
+			ed.setHours(-12);
+		}
 	} else {
 		this._startTimeSelect.set(appt.getStartDate());
 		this._endTimeSelect.set(appt.getEndDate());
 	}
+	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
+	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
 
 	this._resetTimezoneSelect(appt, isAllDayAppt);
 	this._resetCalendarSelect(appt, mode);
