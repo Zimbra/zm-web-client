@@ -1980,9 +1980,11 @@ HTML>BODY .appt-selected .appt_allday_body
 /*
  *	Change password dialog
  */
-.ZmChangePasswordDialogInput {
-	@BoxMargin@
-	width:200px;
+.ZmChangePasswordDialogCell {
+	white-space: nowrap;
+	overflow: hidden;
+	text-align: right;
+	width: 1%;
 }
 
 

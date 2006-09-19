@@ -28,23 +28,9 @@ function ZmChangePasswordDialog(parent, msgDialog, className) {
 	DwtDialog.call(this, parent, className, ZmMsg.changePassword);
 
 	this._msgDialog = msgDialog;
-
-	this._oldPasswordId = Dwt.getNextId();
-	this._newPasswordId = Dwt.getNextId();
-	this._confirmPasswordId = Dwt.getNextId();	
-
-	this.setContent(this._contentHtml());
-
-	this._oldPasswordField = document.getElementById(this._oldPasswordId);
-	this._newPasswordField = document.getElementById(this._newPasswordId);
-	this._confirmPasswordField = document.getElementById(this._confirmPasswordId);
-
+	this._setContent();
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
-//	this.setTabOrder([this._oldPasswordId, this._newPasswordId, this._confirmPasswordId]);
-	
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	this._minPwdLength = this._appCtxt.get(ZmSetting.PWD_MIN_LENGTH);
-	this._maxPwdLength = this._appCtxt.get(ZmSetting.PWD_MAX_LENGTH);
 };
 
 ZmChangePasswordDialog.prototype = new DwtDialog;
@@ -61,32 +47,7 @@ function(loc) {
 	this._oldPasswordField.focus();
 };
 
-ZmChangePasswordDialog.prototype._contentHtml = 
-function() {
-	var html = new Array();
-	var idx = 0;
-    html[idx++] = "<div style='width: 250px'>";
-    html[idx++] = "<div>" + ZmMsg.oldPassword + ":</div>";
-    html[idx++] = Dwt.CARET_HACK_BEGIN;
-    html[idx++] = "<div><input class='ZmChangePasswordDialogInput' id=";
-	html[idx++] = this._oldPasswordId + " type='password'/></div><br>";
-    html[idx++] = "<div>" + ZmMsg.newPassword + ":</div>";
-    html[idx++] = Dwt.CARET_HACK_END;
-    html[idx++] = Dwt.CARET_HACK_BEGIN;
-    html[idx++] = "<div><input class='ZmChangePasswordDialogInput' id=";
-	html[idx++] = this._newPasswordId + " type='password'/></div><br>";
-    html[idx++] = "<div>" + ZmMsg.confirmPassword + ":</div>";
-    html[idx++] = Dwt.CARET_HACK_END;
-    html[idx++] = Dwt.CARET_HACK_BEGIN;
-    html[idx++] = "<div><input class='ZmChangePasswordDialogInput' id="; 
-	html[idx++] = this._confirmPasswordId + " type='password'/></div>";
-    html[idx++] = Dwt.CARET_HACK_END;
-    html[idx++] = "</div>";
-	
-	return html.join("");
-};
-
-ZmChangePasswordDialog.prototype.showMessageDialog = 
+ZmChangePasswordDialog.prototype.showMessageDialog =
 function(message, loc, style) {
 	if (!loc) {
 		var myLoc = this.getLocation();
@@ -94,6 +55,44 @@ function(message, loc, style) {
 	}
 	this._msgDialog.setMessage(message, (style || DwtMessageDialog.CRITICAL_STYLE));
 	this._msgDialog.popup(loc);
+};
+
+ZmChangePasswordDialog.prototype._setContent =
+function() {
+	var oldId = Dwt.getNextId();
+	var newId = Dwt.getNextId();
+	var confirmId = Dwt.getNextId();
+
+	var html = new Array();
+	var idx = 0;
+
+	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1 width=250>";
+	idx = this._getPasswordRowHtml(html, idx, oldId, ZmMsg.oldPassword);
+	html[idx++] = "<tr height=10><td></td></tr>";
+	idx = this._getPasswordRowHtml(html, idx, newId, ZmMsg.newPassword);
+	idx = this._getPasswordRowHtml(html, idx, confirmId, ZmMsg.confirm);
+	html[idx++] = "</table>";
+
+	this.setContent(html.join(""));
+
+	this._oldPasswordField = document.getElementById(oldId);
+	this._newPasswordField = document.getElementById(newId);
+	this._confirmPasswordField = document.getElementById(confirmId);
+};
+
+ZmChangePasswordDialog.prototype._getPasswordRowHtml =
+function(html, idx, id, msg) {
+	html[idx++] = "<tr><td class='ZmChangePasswordDialogCell'>";
+	html[idx++] = msg;
+	html[idx++] = ":</td><td>";
+	html[idx++] = Dwt.CARET_HACK_BEGIN;
+	html[idx++] = "<input type='password' id=";
+	html[idx++] = id;
+	html[idx++] = ">";
+	html[idx++] = Dwt.CARET_HACK_END;
+	html[idx++] = "</td></tr>";
+
+	return idx;
 };
 
 ZmChangePasswordDialog.prototype._okButtonListener =
@@ -113,6 +112,7 @@ function() {
 	var oldPassword = this._oldPasswordField.value;
 	var newPassword = this._newPasswordField.value;
 	var confirmPassword = this._confirmPasswordField.value;
+
 	if (!oldPassword || !newPassword || !confirmPassword) {
 		this.showMessageDialog(ZmMsg.passwordFieldMissing);
 		return null;
@@ -132,8 +132,11 @@ function() {
 	}
 
 	// check that the length is okay
-	if (newPassword.length < this._minPwdLength || newPassword.length > this._maxPwdLength) {
-		this.showMessageDialog(AjxMessageFormat.format(ZmMsg.newPasswordBadLength, [this._minPwdLength, this._maxPwdLength]));
+	var minPwdLength = this._appCtxt.get(ZmSetting.PWD_MIN_LENGTH);
+	var maxPwdLength = this._appCtxt.get(ZmSetting.PWD_MAX_LENGTH);
+
+	if (newPassword.length < minPwdLength || newPassword.length > maxPwdLength) {
+		this.showMessageDialog(AjxMessageFormat.format(ZmMsg.newPasswordBadLength, [minPwdLength, maxPwdLength]));
 		return null;
 	}
 
