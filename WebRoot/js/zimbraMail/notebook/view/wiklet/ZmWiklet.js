@@ -148,8 +148,17 @@ ZmWiklet.register(
 		tooltip: ZmMsg.wikletUrlTT,
 		func: function(name, value, params, context) {
 			var item = context.getItem();
-			// REVISIT: What about remote ids? (e.g. item.remoteFolderId)
-			return item.getRestUrl();
+			var displayName = name == ZmNotebook.PAGE_INDEX ? ZmMsg.wikiToc : item.name;
+			var folderId;
+			var name;
+			if (item instanceof ZmPage) {
+				folderId = item.folderId;
+				name = item.name;				
+			} else {
+				folderId = item.id;
+				name = ZmNotebook.PAGE_INDEX;
+			}
+			return ["[[:", folderId, '/', name, "|", displayName, "]]"].join("");
 		}
 	},
 	{
