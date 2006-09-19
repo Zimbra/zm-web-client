@@ -160,11 +160,13 @@ function(doSearch) {
 		}
 	}
 	
-	// so we can select search folder in overview
-	var a = this._pickers[ZmPicker.SEARCH].getArray();
-	this._searchId = null;
-	if (a && (a.length == 1) && (queryStr.length == 1)) {
-		this._searchId = a[0]._searchId;
+	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
+		// so we can select search folder in overview
+		var a = this._pickers[ZmPicker.SEARCH].getArray();
+		this._searchId = null;
+		if (a && (a.length == 1) && (queryStr.length == 1)) {
+			this._searchId = a[0]._searchId;
+		}
 	}
 
 	var newQuery = queryStr.join(" ");
