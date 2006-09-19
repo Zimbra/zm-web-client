@@ -287,7 +287,7 @@ function(ev) {
 		// a conv had gotten a new msg and may need to be moved to top or bottom of list
 		var addToTop = ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC));
 		var addToBottom = addToTop ? false : ((this._controller.getList().hasMore() === false) &&
-											  (!this._sortByString || this._sortByString == ZmSearch.DATE_ASC)) &&
+											  (this._sortByString == ZmSearch.DATE_ASC)) &&
 											  (this.size() < this.getLimit());
 		if (addToTop || addToBottom) {
 			for (var i = 0; i < items.length; i++) {
