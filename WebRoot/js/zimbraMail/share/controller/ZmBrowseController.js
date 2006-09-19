@@ -40,11 +40,13 @@ function ZmBrowseController(appCtxt, parent) {
 	this._resetPickers();
 	this._browseViewVisible = false;
 
-	var components = new Object();
+	var components = {};
 	components[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR] = this._toolbar;
 	components[ZmAppViewMgr.C_SEARCH_BUILDER] = this._browseView;
 	this._appCtxt.getAppViewMgr().addComponents(components, true);
-}
+	
+	this._searchBuilderOpened = false;
+};
 
 ZmBrowseController.prototype = new ZmController;
 ZmBrowseController.prototype.constructor = ZmBrowseController;
@@ -52,7 +54,7 @@ ZmBrowseController.prototype.constructor = ZmBrowseController;
 ZmBrowseController.prototype.toString = 
 function() {
 	return "ZmBrowseController";
-}
+};
 
 ZmBrowseController.prototype._getPickers =
 function() {
@@ -61,48 +63,59 @@ function() {
 				ZmPicker.DATE,
 				ZmPicker.DOMAIN,
 				ZmPicker.FOLDER];
-	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED))
+	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		list.push(ZmPicker.SEARCH);
+	}
     list.push(ZmPicker.SIZE);
     var idxZimlets = this._appCtxt._settings._zmm.getIndexedZimlets();
-    if (idxZimlets.length)
+    if (idxZimlets.length) {
     	list.push(ZmPicker.ZIMLET);
+    }
 	list.push(ZmPicker.FLAG);
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		list.push(ZmPicker.TAG);
+	}
 	list.push(ZmPicker.TIME);
 
 	return list;
-}
+};
 
 ZmBrowseController.prototype.getBrowseView =
 function() {
 	return (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) ? this._browseView : null;
-}
+};
 
 ZmBrowseController.prototype.getBrowseViewVisible =
 function() {
 	return this._browseViewVisible;
-}
+};
 
 ZmBrowseController.prototype.setBrowseViewVisible =
 function(visible) {
-	if (this._browseViewVisible == visible) return;
+	if (this._browseViewVisible == visible) {return;}
 
 	this._appCtxt.getAppViewMgr().showSearchBuilder(visible);
+	// hack to fix bug 10222 - skin doesn't size correctly first time
+	if (visible && !this._searchBuilderOpened) {
+		this._appCtxt.getAppViewMgr().showSearchBuilder(!visible);
+		this._appCtxt.getAppViewMgr().showSearchBuilder(visible);
+		this._searchBuilderOpened = true;
+	}
 	
 	var searchCtlr = this._appCtxt.getSearchController();
 	this._browseViewVisible = visible;
 	if (visible) {
-		if (this._browseView.getPickers().size() == 0)
+		if (this._browseView.getPickers().size() == 0) {
 			this.addPicker(ZmPicker.DEFAULT_PICKER);
-		if (this._query)
+		}
+		if (this._query) {
 			searchCtlr.setSearchField(this._query);
+		}
 	}
 	var browseButton = searchCtlr.getSearchToolbar().getButton(ZmSearchToolBar.BROWSE_BUTTON);
 	browseButton.setToolTipContent(visible ? ZmMsg.closeSearchBuilder : ZmMsg.openSearchBuilder);
 	browseButton.setToggled(visible);
-}
+};
 
 /*
 * The point of the mess below is to safely construct queries. Some pickers (right now, just
@@ -120,7 +133,7 @@ function(doSearch) {
 			var pq = a[i]._query;
 			if (pq && pq.length) {
 				if (!queries[id]) {
-					queries[id] = new Array();
+					queries[id] = [];
 					numPickers++;
 				}
 				queries[id].push(pq);
@@ -132,7 +145,7 @@ function(doSearch) {
 		var a = queries[id];
 		if (a && a.length) {
 			if (a.length > 1) {
-				var q = new Array();
+				var q = [];
 				var j = ZmPicker.MULTI_JOIN[id];
 				var needParen = (j != " ");
 				for (var i = 0; i < a.length; i++)
@@ -150,54 +163,56 @@ function(doSearch) {
 	// so we can select search folder in overview
 	var a = this._pickers[ZmPicker.SEARCH].getArray();
 	this._searchId = null;
-	if (a && (a.length == 1) && (queryStr.length == 1))
+	if (a && (a.length == 1) && (queryStr.length == 1)) {
 		this._searchId = a[0]._searchId;
+	}
 
 	var newQuery = queryStr.join(" ");
 	if (newQuery != this._query) {
 		this._query = newQuery;
 		DBG.println(AjxDebug.DBG3, "Browse query: " + this._query);
-		if (doSearch)
+		if (doSearch) {
 			this._appCtxt.getSearchController().search({query: this._query, searchId: this._searchId});
-		else
+		} else {
 			this._appCtxt.getSearchController().setSearchField(this._query);
+		}
 	}
 }
 
 ZmBrowseController.prototype._executeQuery =
 function() {
 	this._appCtxt.getSearchController().search({query: this._query, searchId: this._searchId});
-}
+};
 
 ZmBrowseController.prototype._resetListener =
 function(ev) {
 	this.removeAllPickers();
-}
+};
 
 ZmBrowseController.prototype._closeListener =
 function(ev) {
 	this.setBrowseViewVisible(false);
-}
+};
 
 ZmBrowseController.prototype.removeAllPickers =
 function(ev) {
 	this._browseView.removeAllPickers();
 	this._clearQuery();
 	this._resetPickers();
-}
+};
 
 ZmBrowseController.prototype.addPicker =
 function(id) {
-	if (ZmPicker.LIMIT[id] != -1 && this._pickers[id].size() >= ZmPicker.LIMIT[id])
-		return;
+	if (ZmPicker.LIMIT[id] != -1 && this._pickers[id].size() >= ZmPicker.LIMIT[id]) {return;}
 
 	var ctor = ZmPicker.CTOR[id];
 	var picker = new ctor(this._browseView);
 	this._browseView.addPicker(picker, id);
 	this._pickers[id].add(picker);
 	this._numPickers++;
-	if (id == ZmPicker.DATE && this._pickers[id].size() == ZmPicker.LIMIT[id])
+	if (id == ZmPicker.DATE && this._pickers[id].size() == ZmPicker.LIMIT[id]) {
 		picker.secondDate();
+	}
     var cb = picker.getCloseButton();
     cb.setData(ZmPicker.KEY_ID, id);
     cb.setData(ZmPicker.KEY_PICKER, picker);
@@ -206,12 +221,12 @@ function(id) {
 	this._updateQuery(true);
 	
 	// disable picker button if max instances of this picker has been reached
-	if (ZmPicker.LIMIT[id] != -1 && this._pickers[id].size() == ZmPicker.LIMIT[id])
+	if (ZmPicker.LIMIT[id] != -1 && this._pickers[id].size() == ZmPicker.LIMIT[id]) {
 		this._toolbar.enable(id, false);
-	
+	}	
 	
 	return picker;
-}
+};
 
 ZmBrowseController.prototype._addPickerListener =
 function(ev) {
@@ -221,7 +236,7 @@ function(ev) {
 	} catch (ex) {
 		this._handleException(ex, this._addPickerListener, ev, false);
 	}
-}
+};
 
 ZmBrowseController.prototype._pickerCloseListener =
 function(ev) {
@@ -237,35 +252,34 @@ function(ev) {
 		this._updateQuery(true);
 	}
 	// enable picker button if max instances of this picker has not been reached
-	if (ZmPicker.LIMIT[id] != -1 && this._pickers[id].size() < ZmPicker.LIMIT[id])
+	if (ZmPicker.LIMIT[id] != -1 && this._pickers[id].size() < ZmPicker.LIMIT[id]) {
 		this._toolbar.enable(id, true);
-	
-}
+	}
+};
 
 ZmBrowseController.prototype._clearQuery =
 function() {
 	this._query = "";
 	this._appCtxt.getSearchController().setSearchField("");
-}
+};
 
 ZmBrowseController.prototype._pickerListener =
 function(ev) {
-	if (ev.type != ZmEvent.S_PICKER)
-		return;
+	if (ev.type != ZmEvent.S_PICKER) {return;}
 	if (ev.event == ZmEvent.E_MODIFY) {
 		this._updateQuery(false);
 	} else if (ev.event == ZmEvent.E_LOAD) {
 		this._executeQuery();
 	}
-}
+};
 
 ZmBrowseController.prototype._resetPickers =
 function() {
-	this._pickers = new Object();
+	this._pickers = {};
 	for (var i = 0; i < this._allPickers.length; i++) {
 		var id = this._allPickers[i];
 		this._pickers[id] = new AjxVector();
 		this._toolbar.enable(id, true);
 	}
 	this._numPickers = 0;
-}
+};
