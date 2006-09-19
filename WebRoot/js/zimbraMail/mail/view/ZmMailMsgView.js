@@ -844,7 +844,9 @@ function(container, html, isTextMsg) {
 			var func = this._createDisplayImageClickClosure(this._msg, idoc, this._displayImagesId, ifw.getIframe());
 			func.call();
 		}
-	} else {
+	}
+
+	if (isTextMsg || this._controller.isChildWindow) {
 		this._setAttachmentLinks();
 	}
 
