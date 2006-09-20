@@ -83,8 +83,9 @@ ZmFilterRule.C_VALUE[ZmFilterRule.C_ATT]		= "attachment";
 ZmFilterRule.C_VALUE[ZmFilterRule.C_ADDRBOOK]	= "addressbook";
 
 ZmFilterRule.C_VALUE_MAP = {};
-for (var i in ZmFilterRule.C_VALUE)
+for (var i in ZmFilterRule.C_VALUE) {
 	ZmFilterRule.C_VALUE_MAP[ZmFilterRule.C_VALUE[i]] = i;
+}
 
 ZmFilterRule.C_LABEL = {};
 ZmFilterRule.C_LABEL[ZmFilterRule.C_FROM]		= ZmMsg.from;
@@ -140,8 +141,9 @@ ZmFilterRule.OP_VALUE[ZmFilterRule.OP_IN]			= ":in";
 ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_IN]		= "not :in";
 
 ZmFilterRule.OP_VALUE_MAP = {};
-for (var i in ZmFilterRule.OP_VALUE)
+for (var i in ZmFilterRule.OP_VALUE) {
 	ZmFilterRule.OP_VALUE_MAP[ZmFilterRule.OP_VALUE[i]] = i;
+}
 
 ZmFilterRule.OP_LABEL = {};
 ZmFilterRule.OP_LABEL[ZmFilterRule.OP_IS]			= ZmMsg.exactMatch;
@@ -170,8 +172,6 @@ ZmFilterRule.MATCHING_OPS = [ZmFilterRule.OP_IS, ZmFilterRule.OP_NOT_IS, ZmFilte
 ZmFilterRule.ADDR_OPTIONS = [{label: ZmMsg.entireAddress, value: ":all"}, {label: ZmMsg.localPart, value: ":localpart"},
 							 {label: ZmMsg.domainPart, value: ":domain"}];
 
-delete i;
-						  
 /*
 * Conditions
 *
@@ -290,8 +290,10 @@ ZmFilterRule.A_VALUE[ZmFilterRule.A_TAG]		= "tag";
 ZmFilterRule.A_VALUE[ZmFilterRule.A_FORWARD]	= "redirect";
 
 ZmFilterRule.A_VALUE_MAP = {};
-for (var i in ZmFilterRule.A_VALUE)
+for (var i in ZmFilterRule.A_VALUE) {
 	ZmFilterRule.A_VALUE_MAP[ZmFilterRule.A_VALUE[i]] = i;
+}
+delete i;
 
 ZmFilterRule.A_LABEL = {};
 ZmFilterRule.A_LABEL[ZmFilterRule.A_KEEP]		= ZmMsg.keepInInbox;
@@ -307,27 +309,31 @@ ZmFilterRule.A_LABEL[ZmFilterRule.A_FORWARD]	= ZmMsg.forwardTo;
 *
 * The key is known as the action's "name". It may or may not take an argument.
 *
-* param		[constant]		type of input widget for the action's argument
+* param			[constant]		type of input widget for the action's argument
+* pOptions		[hash]*			name/value pairs for args
+* precondition	[constant]*		setting that must be enabled for action to be available
 */
 ZmFilterRule.ACTIONS = {};
 ZmFilterRule.ACTIONS[ZmFilterRule.A_KEEP] = {
 };
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FOLDER] = {
-		param:		ZmFilterRule.TYPE_FOLDER_PICKER
+		param:			ZmFilterRule.TYPE_FOLDER_PICKER
 };
 ZmFilterRule.ACTIONS[ZmFilterRule.A_DISCARD] = {
 };
 ZmFilterRule.ACTIONS[ZmFilterRule.A_STOP] = {
 };
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG] = {
-		param:		ZmFilterRule.TYPE_SELECT,
-		pOptions:	[{label: ZmMsg.asRead, value: "read"}, {label: ZmMsg.asFlagged, value: "flagged"}]
+		param:			ZmFilterRule.TYPE_SELECT,
+		pOptions:		[{label: ZmMsg.asRead, value: "read"}, {label: ZmMsg.asFlagged, value: "flagged"}]
 };
 ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG] = {
-		param:		ZmFilterRule.TYPE_TAG_PICKER
+		param:			ZmFilterRule.TYPE_TAG_PICKER,
+		precondition:	ZmSetting.TAGGING_ENABLED
 };
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD] = {
-		param:		ZmFilterRule.TYPE_INPUT
+		param:			ZmFilterRule.TYPE_INPUT,
+		precondition:	ZmSetting.MAIL_FORWARDING_ENABLED
 };
 
 ZmFilterRule.ACTIONS_LIST = [ZmFilterRule.A_KEEP, ZmFilterRule.A_DISCARD, ZmFilterRule.A_FOLDER,
@@ -424,7 +430,7 @@ function(condition) {
 ZmFilterRule.prototype.clearConditions =
 function() {
 	this.conditions = null;
-	this.conditions = new Array();
+	this.conditions = [];
 };
 
 /**
@@ -451,7 +457,25 @@ function(action) {
 ZmFilterRule.prototype.clearActions =
 function() {
 	this.actions = null;
-	this.actions = new Array();
+	this.actions = [];
+};
+
+/**
+* Returns true if the rule is enabled.
+*/
+ZmFilterRule.prototype.hasValidAction =
+function(appCtxt) {
+	var len = this.actions.length;
+	for (var i = 0; i < len; i++) {
+		var action = this.actions[i].name;
+		var actionCfg = ZmFilterRule.ACTIONS[action];
+		if ((action != ZmFilterRule.A_STOP) &&
+			(!actionCfg.precondition || appCtxt.get(actionCfg.precondition))) {
+
+			return true;
+		}
+	}
+	return false;
 };
 
 // placeholder rule used for adding a new rule

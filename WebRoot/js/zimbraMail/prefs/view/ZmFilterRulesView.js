@@ -77,6 +77,7 @@ function ZmFilterListView(parent, appCtxt, controller) {
 	var headerList = this._getHeaderList();
 	DwtListView.call(this, parent, "ZmFilterListView", null, headerList);	
 
+	this._appCtxt = appCtxt;
 	this._rules = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getFilterRules();
 	
 	this._controller = controller;
@@ -98,17 +99,29 @@ function() {
 	return "ZmFilterListView";
 };
 
+/**
+ * Only show rules that have at least one valid action (eg, if the only action
+ * is "tag" and tagging is disabled, don't show the rule).
+ */
 ZmFilterListView.prototype.set =
 function(list) {
 	this._checkboxIds = [];
-	DwtListView.prototype.set.call(this, list);
+	var list1 = new AjxVector();
+	var len = list.size();
+	for (var i = 0; i < len; i++) {
+		var rule = list.get(i);
+		if (rule.hasValidAction(this._appCtxt)) {
+			list1.add(rule);
+		}
+	}
+	DwtListView.prototype.set.call(this, list1);
 	// can't add handlers until item divs have been added to DOM
 	this._addCheckboxHandlers();
 };
 
 ZmFilterListView.prototype._getHeaderList =
 function() {
-	var headerList = new Array();
+	var headerList = [];
 	headerList.push(new DwtListHeaderItem(ZmFilterListView.COL_ACTIVE, ZmMsg.active, null, ZmFilterListView.COL_WIDTH_ACTIVE));
 	headerList.push(new DwtListHeaderItem(ZmFilterListView.COL_NAME, ZmMsg.filterName));
 	return headerList;

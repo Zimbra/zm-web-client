@@ -228,9 +228,18 @@ ZmFilterRuleDialog.prototype._renderTable =
 function(rule, isCondition) {
 	var table = document.getElementById(isCondition ? this._conditionsTableId : this._actionsTableId);
 	var rowData = isCondition ? rule.getConditions() : rule.getActions();
-	var row;
-	for (var i = 0; i < rowData.length; i++) {
-		var html = this._getRowHtml(rowData[i], isCondition);
+	var row, len = rowData.length;
+	for (var i = 0; i < len; i++) {
+		var o = rowData[i];
+		if (!isCondition) {
+			// don't show action if it's disabled
+			var action = o.name;
+			var actionCfg = ZmFilterRule.ACTIONS[action];
+			if (actionCfg.precondition && !this._appCtxt.get(actionCfg.precondition)) {
+				continue;
+			}
+		}
+		var html = this._getRowHtml(o, isCondition);
 		if (html) {
 			row = Dwt.parseHtmlFragment(html, true);
 			table.tBodies[0].appendChild(row);
@@ -383,10 +392,13 @@ function(conf, field, options, dataValue, rowId, data) {
 		}
 		for (var i = 0; i < options.length; i++) {
 			var o = options[i];
-			if (isMainSelect && (o == ZmFilterRule.A_TAG) && !this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-				continue;
-			if (isMainSelect && (o == ZmFilterRule.A_FORWARD) && !this._appCtxt.get(ZmSetting.MAIL_FORWARDING_ENABLED))
-				continue;
+			if (isMainSelect && !isCondition) {
+				// skip action if it's disabled
+				var actionCfg = ZmFilterRule.ACTIONS[o];
+				if (actionCfg.precondition && !this._appCtxt.get(actionCfg.precondition)) {
+					continue;
+				}
+			}
 			var value, label;
 			if (isMainSelect) {
 				value = o;
@@ -401,8 +413,9 @@ function(conf, field, options, dataValue, rowId, data) {
 			var selected = (dataValue && (value == dataValue));
 			select.addOption(new DwtSelectOptionData(value, label, selected));
 		}
-		if (!select.getValue())
+		if (!select.getValue()) {
 			select.setSelected(0);
+		}
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 
 	} else if (type == ZmFilterRule.TYPE_CALENDAR) {
