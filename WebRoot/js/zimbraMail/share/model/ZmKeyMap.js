@@ -120,6 +120,10 @@ function ZmKeyMap() {
 			"Alt+T":				ZmKeyMap.ADDRESS_PICKER
 	};
 	
+	if (AjxEnv.isMac) {
+		this._map["ZmComposeController"]["Ctrl+Enter"] = ZmKeyMap.SEND;
+	}
+	
 	this._map["ZmMailListController"] = {
 
 			"INHERIT": ZmKeyMap.GLOBAL_KEYMAP,
