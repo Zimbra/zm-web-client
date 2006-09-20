@@ -72,7 +72,7 @@ function(resp) {
 		var instanceStartTimes = new AjxVector();
 		for (var j = 0; j < instances.length; j++) {
 			var instNode = instances[j];
-			var adjustMs = instNode.tzo ? instNode.tzo + new Date(instNode.s).getTimezoneOffset()*60*1000 : 0;
+			var adjustMs = apptNode.allDay ? instNode.tzo + new Date(instNode.s).getTimezoneOffset()*60*1000 : 0;
 			var startTime = parseInt(this._getAttr(apptNode, instNode, "s"),10) + adjustMs;
 			if (instanceStartTimes.contains(startTime)) {
 				continue;
