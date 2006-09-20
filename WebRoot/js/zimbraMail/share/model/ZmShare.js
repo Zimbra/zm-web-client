@@ -100,6 +100,9 @@ ZmShare.PERM_DELETE		= "d";
 ZmShare.PERM_ADMIN		= "a";
 ZmShare.PERM_WORKFLOW	= "x";
 
+// virtual permissions
+ZmShare.PERM_CREATE_SUBDIR	= "c";
+
 // restricted permission bits
 ZmShare.PERM_NOREAD		= "-r";
 ZmShare.PERM_NOWRITE	= "-w";

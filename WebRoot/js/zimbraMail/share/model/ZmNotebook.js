@@ -163,6 +163,9 @@ function(parent, obj, tree) {
 
 	// create calendar, populate, and return
 	var notebook = new ZmNotebook(obj.id, obj.name, parent, tree, obj.color, obj.d, obj.zid, obj.rid, obj.rest);
+	if (obj.perm != null) {
+		notebook.setPermissions(obj.perm); // REVISIT: bug 10801
+	}
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
