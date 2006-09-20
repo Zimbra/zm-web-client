@@ -60,37 +60,55 @@ function(actionMenu, type, id) {
 	if (actionMenu && id != ZmOrganizer.ID_ROOT) {
 		var overviewController = this._appCtxt.getOverviewController();
 		var treeData = overviewController.getTreeData(ZmOrganizer.NOTEBOOK);
-
-		// TODO: enable actions based on effective permissions
-
 		var notebook = treeData.getById(id);
-		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-			actionMenu.enable(ZmOperation.MOUNT_NOTEBOOK, !notebook.link);
-			actionMenu.enable(ZmOperation.SHARE_NOTEBOOK, !notebook.link);
-		}
-		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_NOTEBOOK);
+
+		var isRoot = notebook.id == ZmOrganizer.ID_ROOT;
+		var isNotebook = notebook.id == ZmOrganizer.ID_NOTEBOOK;
+		var isTopLevel = !isRoot && notebook.parent.id == ZmOrganizer.ID_ROOT;
+		var isLink = notebook.link;
+		var isLinkOrRemote = isLink || notebook.isRemote();
+
+		var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE);
+		menuItem.setEnabled(!isNotebook && (!isLinkOrRemote || (isLink && isTopLevel) || ZmNotebookTreeController.__isAllowed(notebook.parent, ZmShare.PERM_DELETE)));
 
 		var menuItem = actionMenu.getMenuItem(ZmOperation.NEW_NOTEBOOK);
 		menuItem.setText(ZmMsg.newSection);
 		menuItem.setImage("NewSection");
 		menuItem.setDisabledImage("NewSectionDis");
+		menuItem.setEnabled(!isLinkOrRemote || ZmNotebookTreeController.__isAllowed(notebook, ZmShare.PERM_CREATE_SUBDIR));
 
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-			var isRoot = notebook.id == ZmOrganizer.ID_ROOT;
 			var isNotebook = !isRoot && notebook.parent.id == ZmOrganizer.ID_ROOT;
 			var menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_NOTEBOOK);
 			//menuItem.setText(isRoot ? ZmMsg.mountNotebook : ZmMsg.mountSection);
 			menuItem.setImage(isRoot ? "SharedNotebook" : "SharedSection");
 			menuItem.setDisabledImage(menuItem.getImage()+"Dis");
+			menuItem.setEnabled(!isLinkOrRemote || ZmNotebookTreeController.__isAllowed(notebook, ZmShare.PERM_CREATE_SUBDIR));
+
 			var menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_NOTEBOOK);
 			menuItem.setText(isNotebook ? ZmMsg.shareNotebook : ZmMsg.shareSection);
 			menuItem.setImage(isNotebook ? "Notebook" : "Section");
 			menuItem.setDisabledImage(menuItem.getImage()+"Dis");
+			menuItem.setEnabled(!isLinkOrRemote);
 		}
 
 		var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
 		menuItem.setImage("SendReceive");
 	}
+};
+
+ZmNotebookTreeController.__isAllowed = function(organizer, perm) {
+	var allowed = true;
+	if (organizer.link || organizer.isRemote()) {
+		// change assumption to not allowed
+		allowed = false;
+		// REVISIT: bug 10801
+		var share = organizer.shares && organizer.shares[0];
+		if (share && !share.isPermRestricted(perm)) {
+			allowed = share.isPermAllowed(perm);
+		}
+	}
+	return allowed;
 };
 
 // Returns a list of desired header action menu operations
@@ -185,6 +203,18 @@ function(ev, treeView) {
 
 	if (ev.type != this.type) return;
 
+	var fields = ev.getDetail("fields");
+	if (!fields || !(fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_REST_URL])) {
+		return;
+	}
+
+	var notebookApp = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	var notebookController = notebookApp.getNotebookController();
+	var shownPage = notebookController.getPage();
+	if (!shownPage) {
+		return;
+	}
+	
 	var organizers = ev.getDetail("organizers");
 	if (!organizers && ev.source)
 		organizers = [ev.source];
@@ -192,10 +222,13 @@ function(ev, treeView) {
 	for (var i = 0; i < organizers.length; i++) {
 		var organizer = organizers[i];
 		var id = organizer.id;
-		var node = treeView.getTreeItemById(id);
-		if (!node) continue;
+		if (id == shownPage.id || id == shownPage.folderId) {
+			notebookController.gotoPage(shownPage);
+		}
 
 		/***
+		var node = treeView.getTreeItemById(id);
+		if (!node) continue;
 		var fields = ev.getDetail("fields");
 		// NOTE: ZmTreeController#_changeListener re-inserts the node if the
 		//		 name changes so we need to reset the color in that case, too.
@@ -318,6 +351,23 @@ function(overviewId, type, items, detail, srcEv, destEv) {
 
 ZmNotebookTreeController.prototype._doCreate =
 function(parent, name, color/*, url*/) {
+	var message;
+
+	// bug: 9406 (short term fix, waiting for backend support)
+	var folderId = (parent && parent.id) || ZmOrganizer.ID_NOTEBOOK;
+	var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	var cache = app.getNotebookCache();
+	if (cache.getPageByName(folderId, name)) {
+		message = AjxMessageFormat.format(ZmMsg.errorInvalidPageOrSectionName, name);
+	}
+
+	if (message) {
+		var dialog = this._appCtxt.getMsgDialog();
+		dialog.setMessage(message, DwtMessageDialog.WARNING_STYLE);
+		dialog.popup();
+		return;
+	}
+
 	parent.create(name, color);
 };
 

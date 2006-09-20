@@ -100,6 +100,9 @@ ZmShare.PERM_DELETE		= "d";
 ZmShare.PERM_ADMIN		= "a";
 ZmShare.PERM_WORKFLOW	= "x";
 
+// virtual permissions
+ZmShare.PERM_CREATE_SUBDIR	= "c";
+
 // restricted permission bits
 ZmShare.PERM_NOREAD		= "-r";
 ZmShare.PERM_NOWRITE	= "-w";
@@ -609,7 +612,8 @@ function(mode, isCompose) {
 	var formatter = ZmShare._getText(mode);
 	var content = this._createContent(formatter);
 	if (this.notes || isCompose) {
-		content += ZmAppt.NOTES_SEPARATOR + this.notes;
+		var notes = this.notes;
+		content = [content, ZmAppt.NOTES_SEPARATOR, notes].join("\n");
 	}
 
 	var mimePart = new ZmMimePart();
@@ -624,7 +628,9 @@ function(mode, isCompose) {
 	var formatter = ZmShare._getHtml(mode);
 	var content = this._createContent(formatter);
 	if (this.notes || isCompose) {
-		content += ZmShare._getHtmlNote().format(this.notes);
+		var formatter = ZmShare._getHtmlNote();
+		var notes = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(this.notes));
+		content = [content, formatter.format(notes)].join("");
 	}
 
 	var mimePart = new ZmMimePart();
