@@ -569,6 +569,11 @@ function(ev, id) {
 			this._showDialog(dialog, this._newTagCallback, null, null, false);
 			break;
 		}
+		case ZmOperation.NEW_ADDRBOOK: {
+			var dialog = this._appCtxt.getNewAddrBookDialog();
+			this._showDialog(dialog, this._newAddrBookCallback);
+			break;
+		}
 		case ZmOperation.NEW_CALENDAR: {
 			var dialog = this._appCtxt.getNewCalendarDialog();
 			this._showDialog(dialog, this._newCalendarCallback);
@@ -810,6 +815,18 @@ function(creatingTag, name, color) {
 	tagController._doCreate(name, color);
 
 	this._creatingTag = creatingTag;
+};
+
+ZmListController.prototype._newAddrBookCallback =
+function(parent, name, color) {
+	// REVISIT: Do we really want to close the dialog before we
+	//          know if the create succeeds or fails?
+	var dialog = this._appCtxt.getNewAddrBookDialog();
+	dialog.popdown();
+
+	var overviewController = this._appCtxt.getOverviewController();
+	var controller = overviewController.getTreeController(ZmOrganizer.ADDRBOOK);
+	controller._doCreate(parent, name, color);
 };
 
 ZmListController.prototype._newCalendarCallback =

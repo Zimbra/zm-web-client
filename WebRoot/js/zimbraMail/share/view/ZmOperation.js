@@ -1186,6 +1186,9 @@ function(parent) {
 	if (taggingEnabled) {
 		list.push(ZmOperation.defineOperation(ZmOperation.NEW_TAG, {id: ZmOperation.NEW_TAG, textKey: "tag"}));
 	}
+	if (contactsEnabled) {
+		list.push(ZmOperation.defineOperation(ZmOperation.NEW_ADDRBOOK, {id: ZmOperation.NEW_ADDRBOOK, textKey: "addressBook"}));
+	}
 	if (calendarEnabled) {
 		list.push(ZmOperation.defineOperation(ZmOperation.NEW_CALENDAR, {id: ZmOperation.NEW_CALENDAR, textKey: "calendar"}));
 	}
