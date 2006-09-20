@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -27,9 +27,9 @@
 * Creates a dialog that lets the user select addresses from a contact list.
 * @constructor
 * @class
-* This class creates and manages a dialog that lets the user select addresses 
-* from a contact list. Two lists are maintained, one with contacts to select 
-* from, and one that contains the selected addresses. Between them are buttons 
+* This class creates and manages a dialog that lets the user select addresses
+* from a contact list. Two lists are maintained, one with contacts to select
+* from, and one that contains the selected addresses. Between them are buttons
 * to shuffle addresses back and forth between the two lists.
 *
 * @author Conrad Damon
@@ -39,7 +39,7 @@
 function ZmContactPicker(appCtxt, buttonInfo) {
 
 	DwtDialog.call(this, appCtxt.getShell(), null, ZmMsg.selectAddresses);
-	
+
 	this._appCtxt = appCtxt;
 	this._buttonInfo = buttonInfo;
 	this._initialized = false;
@@ -63,15 +63,15 @@ ZmContactPicker.CHOOSER_HEIGHT = 300;
 
 // Public methods
 
-ZmContactPicker.prototype.toString = 
+ZmContactPicker.prototype.toString =
 function() {
 	return "ZmContactPicker";
 };
 
 /**
-* Displays the contact picker dialog. The source list is populated with 
-* contacts, and the target list is populated with any addresses that are 
-* passed in. The address button that was used to popup the dialog is set 
+* Displays the contact picker dialog. The source list is populated with
+* contacts, and the target list is populated with any addresses that are
+* passed in. The address button that was used to popup the dialog is set
 * as the active button.
 *
 * @param buttonId	[string]*	button ID of the button that called us
@@ -93,7 +93,7 @@ function(buttonId, addrs, str) {
 	if (buttonId) {
 		this._chooser._setActiveButton(buttonId);
 	}
-	
+
 	// populate target list if addrs were passed in
 	if (addrs) {
 		for (var id in addrs) {
@@ -106,7 +106,7 @@ function(buttonId, addrs, str) {
 	searchField.disabled = false;
 	searchField.focus();
 	searchField.value = str ? str : "";
-	
+
 	DwtDialog.prototype.popup.call(this);
 };
 
@@ -124,7 +124,7 @@ function() {
 	DwtDialog.prototype.popdown.call(this);
 };
 
-ZmContactPicker.prototype._contentHtml = 
+ZmContactPicker.prototype._contentHtml =
 function() {
 	this._searchFieldId	= Dwt.getNextId();
 	this._searchBtnTdId	= Dwt.getNextId();
@@ -133,7 +133,7 @@ function() {
 
 	var html = [];
 	var idx = 0;
-	
+
 	html[idx++] = "<div class='ZmContactPicker'>";
 	html[idx++] = "<table border=0 cellpadding=1 cellspacing=1 width=100%><tr><td>";
 	// add search input field and search button
@@ -154,24 +154,24 @@ function() {
 		html[idx++] = "'></td></tr></table>";
 	}
 	html[idx++] = "</td></tr></table>";
-	
+
 	// placeholder for the chooser
 	html[idx++] = "<div id='";
 	html[idx++] = this._chooserDivId;
 	html[idx++] = "'></div>";
-	
+
 	html[idx++] = "</div>";
 
 	return html.join("");
 };
 
 // called only when ZmContactPicker is first created. Sets up initial layout.
-ZmContactPicker.prototype._initialize = 
+ZmContactPicker.prototype._initialize =
 function() {
 
-	// create static content and append to dialog parent	
+	// create static content and append to dialog parent
 	this.setContent(this._contentHtml());
-	
+
 	// add search button
 	var searchSpan = document.getElementById(this._searchBtnTdId);
 	this._searchButton = new DwtButton(this);
@@ -189,7 +189,7 @@ function() {
 		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactPicker.SEARCHFOR_GAL);
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
 	}
-   
+
 	// add chooser
 	this._chooser = new ZmContactChooser(this, this._buttonInfo);
 	var chooserDiv = document.getElementById(this._chooserDivId);
@@ -199,7 +199,7 @@ function() {
     // init listeners
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this.setButtonListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._cancelButtonListener));
-	
+
 	var searchField = document.getElementById(this._searchFieldId);
 	Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmContactPicker._keyPressHdlr);
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
@@ -207,7 +207,7 @@ function() {
 
 // Listeners
 
-ZmContactPicker.prototype._searchButtonListener = 
+ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
 	this._query = AjxStringUtil.trim(document.getElementById(this._searchFieldId).value);
 	if (this._query.length) {
@@ -238,7 +238,7 @@ function(ev) {
 * @param columnItem		[constant]		ID of column to sort by
 * @param ascending		[boolean]		if true, sort in ascending order
 */
-ZmContactPicker.prototype.search = 
+ZmContactPicker.prototype.search =
 function(columnItem, ascending) {
 	this._searchButton.setEnabled(false);
 
@@ -250,11 +250,11 @@ function(columnItem, ascending) {
 					errorCallback: new AjxCallback(this, this._handleErrorSearch)});
 };
 
-ZmContactPicker.prototype._handleResponseSearch = 
+ZmContactPicker.prototype._handleResponseSearch =
 function(result) {
 	var resp = result.getResponse();
 	var vec = resp.getResults(ZmItem.CONTACT);
-	
+
 	// Take the contacts and create a list of their email addresses (a contact may have more than one)
 	var list = [];
 	var a = vec.getArray();
@@ -346,32 +346,31 @@ function(item, list) {
 * This class creates a specialized source list view for the contact chooser.
 */
 function ZmContactChooserSourceListView(parent) {
-
 	DwtChooserListView.call(this, parent, DwtChooserListView.SOURCE);
+	this.getHtmlElement().style.overflowX = "hidden";
 };
 
 ZmContactChooserSourceListView.prototype = new DwtChooserListView;
 ZmContactChooserSourceListView.prototype.constructor = ZmContactChooserSourceListView;
 
-ZmContactChooserSourceListView.prototype.toString = 
+ZmContactChooserSourceListView.prototype.toString =
 function() {
 	return "ZmContactChooserSourceListView";
 };
 
-ZmContactChooserSourceListView.prototype._getHeaderList = 
+ZmContactChooserSourceListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
 	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_ICON, null, "Folder", 20));
 	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_PARTICIPANT, ZmMsg._name, null, 100, ZmItem.F_PARTICIPANT));
 	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_EMAIL, ZmMsg.email));
-	
+
 	return headerList;
 };
 
 // The items are ZmEmailAddress objects
 ZmContactChooserSourceListView.prototype._createItemHtml =
 function(item) {
-
 	var div = document.createElement("div");
 	div[DwtListView._STYLE_CLASS] = "Row";
 	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
@@ -385,18 +384,18 @@ function(item) {
 		var id = this._headerList[i]._id;
 		if (id.indexOf(ZmContactPicker.ID_ICON) == 0) {
 			html[idx++] = "<td width=";
-			html[idx++] = this._headerList[i]._width;
+			html[idx++] = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4): this._headerList[i]._width;
 			html[idx++] = ">";
 			html[idx++] = AjxImg.getImageHtml(item.icon);
 			html[idx++] = "</td>";
 		} else if (id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
 			html[idx++] = "<td width=";
-			html[idx++] = this._headerList[i]._width;
-			html[idx++] = "><nobr>&nbsp;";
+			html[idx++] = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4): this._headerList[i]._width;
+			html[idx++] = "><nobr>";
 			html[idx++] = item.name;
 			html[idx++] = "</td>";
 		} else if (id.indexOf(ZmContactPicker.ID_EMAIL) == 0) {
-			html[idx++] = "<td>&nbsp;";
+			html[idx++] = "<td>";
 			html[idx++] = item.address;
 			html[idx++] = "</td>";
 		}
@@ -416,9 +415,11 @@ function(item) {
 * This class creates a specialized target list view for the contact chooser.
 */
 function ZmContactChooserTargetListView(parent, showType) {
-
 	this._showType = showType;
+
 	DwtChooserListView.call(this, parent, DwtChooserListView.TARGET);
+
+	this.getHtmlElement().style.overflowX = "hidden";
 };
 
 ZmContactChooserTargetListView.prototype = new DwtChooserListView;
@@ -460,27 +461,27 @@ function(item) {
 		var id = this._headerList[i]._id;
 		if (id.indexOf(ZmContactPicker.ID_ICON) == 0 && this._showType) {
 			html[idx++] = "<td width=";
-			html[idx++] = this._headerList[i]._width;
+			html[idx++] = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4): this._headerList[i]._width;
 			html[idx++] = ">";
 			html[idx++] = ZmMsg[item.getTypeAsString()];
 			html[idx++] = ":</td>";
 		} else if (id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
 			html[idx++] = "<td width=";
-			html[idx++] = this._headerList[i]._width;
-			html[idx++] = "><nobr>&nbsp;";
+			html[idx++] = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4): this._headerList[i]._width;
+			html[idx++] = "><nobr>";
 			html[idx++] = item.name;
 			html[idx++] = "</td>";
 		} else if (id.indexOf(ZmContactPicker.ID_EMAIL) == 0) {
-			html[idx++] = "<td>&nbsp;";
+			html[idx++] = "<td>";
 			html[idx++] = item.address;
 			html[idx++] = "</td>";
 		}
 	}
 	html[idx++] = "</tr></table>";
-		
+
 	div.innerHTML = html.join("");
-		
+
 	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
-		
+
 	return div;
 };
