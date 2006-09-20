@@ -65,7 +65,7 @@ ZmApptViewHelper.REPEAT_OPTIONS = [
  * @isInDialog 					true if mini cal is inside a DwtDialog (otherwise z-index will be too low)
 */
 ZmApptViewHelper.createMiniCalButton =
-function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDialog) {
+function(parent, buttonId, dateButtonListener, dateCalSelectionListener, appCtxt, isInDialog) {
 	// create button
 	var dateButton = new DwtButton(parent, null, "DwtSelect");
 	dateButton.addDropDownSelectionListener(dateButtonListener);
@@ -81,13 +81,26 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, isInDia
 	// create mini cal for menu for button
 	var cal = new DwtCalendar(calMenu);
 	cal.setSkipNotifyOnPage(true);
+	cal.setFirstDayOfWeek(appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK));
 	cal.addSelectionListener(dateCalSelectionListener);
+	// add settings change listener on mini cal in case first day of week setting changes
+	var listener = new AjxListener(null, ZmApptViewHelper._settingsChangeListener, cal);
+	appCtxt.getSettings().getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK).addChangeListener(listener);
 
 	// reparent and cleanup
 	dateButton.reparentHtmlElement(buttonId);
 	delete buttonId;
 
 	return dateButton;
+};
+
+ZmApptViewHelper._settingsChangeListener =
+function(cal, ev) {
+	if (ev.type != ZmEvent.S_SETTING) return;
+
+	var setting = ev.source;
+	if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK)
+		cal.setFirstDayOfWeek(setting.getValue());
 };
 
 /**
