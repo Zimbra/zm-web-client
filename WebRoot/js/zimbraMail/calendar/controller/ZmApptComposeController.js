@@ -67,6 +67,7 @@ function(appt, mode, isDirty) {
 	this._app.pushView(ZmController.APPOINTMENT_VIEW);
 	this._apptView.set(appt, mode, isDirty);
 	this._apptView.reEnableDesignMode();
+	this._apptView.applyCaretHack();
 };
 
 ZmApptComposeController.prototype._preHideCallback =
