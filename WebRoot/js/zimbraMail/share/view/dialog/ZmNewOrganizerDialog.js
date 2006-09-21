@@ -169,9 +169,13 @@ function(html, idx) {
 	html[idx++] = "URLrow' valign='center'><td class='Label'>";
 	html[idx++] = ZmMsg.urlLabel;
 	html[idx++] = "</td>";
-	html[idx++] = "<td><input autocomplete='off' type='text' class='Field' id='";
+	html[idx++] = "<td>";
+	html[idx++] = Dwt.CARET_HACK_BEGIN;
+	html[idx++] = "<input autocomplete='off' type='text' class='Field' id='";
 	html[idx++] = this._remoteCheckboxFieldId;
-	html[idx++] = "URLfield'/></td></tr>";
+	html[idx++] = "URLfield'/>";
+	html[idx++] = Dwt.CARET_HACK_END;
+	html[idx++] = "</td></tr>";
 
 	return idx;
 };
