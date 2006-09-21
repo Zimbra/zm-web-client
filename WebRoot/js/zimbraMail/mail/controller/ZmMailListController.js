@@ -126,7 +126,8 @@ function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmMailListController.handleKeyAction");
 	
 	var isDrafts = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
-	var num = this._listView[this._currentView].getSelectionCount();
+	var lv = this._listView[this._currentView];
+	var num = lv.getSelectionCount();
 
 	switch (actionCode) {
 		case ZmKeyMap.REPLY:
@@ -159,7 +160,7 @@ function(actionCode) {
 			if (num && !(isDrafts && actionCode != ZmKeyMap.MOVE_TO_TRASH)) {
 				var folderId = ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[actionCode];
 				var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
-				var items = this._listView[this._currentView].getSelection();
+				var items = lv.getSelection();
 				this._doMove(items, folder);
 			}
 			break;
@@ -192,9 +193,8 @@ function(actionCode) {
 
 		case ZmKeyMap.SHOW_FRAGMENT:
 			if (num == 1) {
-				var view = this._listView[this._currentView];
-				var item = view.getSelection()[0];
-				var id = this._listView[this._currentView]._getFieldId(item, ZmItem.F_SUBJECT);
+				var item = lv.getSelection()[0];
+				var id = lv._getFieldId(item, ZmItem.F_SUBJECT);
 				var subjectField = document.getElementById(id);
 				if (subjectField) {
 					var loc = Dwt.getLocation(subjectField);
@@ -209,6 +209,47 @@ function(actionCode) {
 					tooltip.popdown();
 					tooltip.setContent(AjxStringUtil.htmlEncode(frag));
 					tooltip.popup(loc.x, loc.y);
+				}
+			}
+			break;
+			
+		case ZmKeyMap.NEXT_UNREAD:
+		case ZmKeyMap.PREV_UNREAD:
+			var size = lv.size();
+			if (size) {
+				var list = lv.getList().getArray();
+				var sel = lv.getSelection();
+				var start, index;
+				if (sel && sel.length) {
+					start = (actionCode == ZmKeyMap.NEXT_UNREAD) ? sel[sel.length - 1] : sel[0];
+				} else {
+					start = (actionCode == ZmKeyMap.NEXT_UNREAD) ? list[0] : list[list.length - 1];
+				}
+				if (start) {
+					if (sel && sel.length) {
+						index = (actionCode == ZmKeyMap.NEXT_UNREAD) ? lv._getItemIndex(start) + 1 :
+																	   lv._getItemIndex(start) - 1;
+					} else {
+						index = lv._getItemIndex(start);
+					}
+					var unreadItem = null;
+					while ((index >= 0 && index < size) && !unreadItem) {
+						var item = list[index];
+						if (item.isUnread) {
+							unreadItem = item;
+						} else {
+							(actionCode == ZmKeyMap.NEXT_UNREAD) ? index++ : index--;
+						}
+					}
+					if (unreadItem) {
+						lv._unmarkKbAnchorElement(true);
+						lv.setSelection(unreadItem);
+						lv.setSelectedItems([unreadItem]);
+						var el = lv._getElFromItem(unreadItem);
+						if (el) {
+							lv._scrollList(el);
+						}
+					}
 				}
 			}
 			break;

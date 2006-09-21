@@ -159,6 +159,9 @@ function ZmKeyMap() {
 			"Shift+.,T":			ZmKeyMap.MOVE_TO_TRASH,
 			"Shift+.,J":			ZmKeyMap.MOVE_TO_JUNK,
 			
+			"[":					ZmKeyMap.NEXT_UNREAD,
+			"]":					ZmKeyMap.PREV_UNREAD,
+
 			"V,C":					ZmKeyMap.VIEW_BY_CONV,
 			"V,M":					ZmKeyMap.VIEW_BY_MSG,
 			"R,P":					ZmKeyMap.READING_PANE
@@ -306,6 +309,11 @@ ZmKeyMap.GOTO_NOTEBOOK		= "GoToNotebook";
 ZmKeyMap.GOTO_OPTIONS		= "GoToOptions";
 ZmKeyMap.GOTO_PREV_TAB		= "PrevTab";
 ZmKeyMap.GOTO_SENT			= "GoToSentFolder";
+ZmKeyMap.GOTO_TAB1			= "GoToTab1";
+ZmKeyMap.GOTO_TAB2			= "GoToTab2";
+ZmKeyMap.GOTO_TAB3			= "GoToTab3";
+ZmKeyMap.GOTO_TAB4			= "GoToTab4";
+ZmKeyMap.GOTO_TAB5			= "GoToTab5";
 ZmKeyMap.GOTO_TRASH			= "GoToTrashFolder";
 ZmKeyMap.HTML_FORMAT		= "ToggleHTMLCompose";
 ZmKeyMap.LOGOFF				= "LogOff";
@@ -326,13 +334,10 @@ ZmKeyMap.NEW_TAG			= "NewTag";
 ZmKeyMap.NEW_WINDOW			= "OpenInNewWindow";
 ZmKeyMap.NEXT_CONV			= "NextConversation";
 ZmKeyMap.NEXT_PAGE			= "NextPage";
-ZmKeyMap.GOTO_TAB1			= "GoToTab1";
-ZmKeyMap.GOTO_TAB2			= "GoToTab2";
-ZmKeyMap.GOTO_TAB3			= "GoToTab3";
-ZmKeyMap.GOTO_TAB4			= "GoToTab4";
-ZmKeyMap.GOTO_TAB5			= "GoToTab5";
+ZmKeyMap.NEXT_UNREAD		= "NextUnread";
 ZmKeyMap.PREV_CONV			= "PreviousConversation";
 ZmKeyMap.PREV_PAGE			= "PreviousPage";
+ZmKeyMap.PREV_UNREAD		= "PrevUnread";
 ZmKeyMap.PRINT				= "Print";
 ZmKeyMap.PRINT_ALL			= "PrintAll";
 ZmKeyMap.QUICK_ADD			= "QuickAddAppointment";
