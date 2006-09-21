@@ -203,7 +203,7 @@ function(actionCode) {
 						frag = item.getInvite().getToolTip();
 					} else {
 						frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
-						view.setToolTipContent(AjxStringUtil.htmlEncode(frag));
+						lv.setToolTipContent(AjxStringUtil.htmlEncode(frag));
 					}
 					var tooltip = this._shell.getToolTip()
 					tooltip.popdown();
