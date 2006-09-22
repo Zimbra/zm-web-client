@@ -120,12 +120,22 @@ ZmUploadDialog.prototype._upload = function(){
 };
 
 ZmUploadDialog.prototype._uploadSaveDocs = function(files, status, guids) {
-	guids = guids.split(",");
-	for (var i = 0; i < files.length; i++) {
-		DBG.println("guids["+i+"]: "+guids[i]+", files["+i+"]: "+files[i]);
-		files[i].guid = guids[i];
+	if (status != AjxPost.SC_OK) {
+		this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
+		this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
+
+		var dialog = this._appCtxt.getMsgDialog();
+		var message = AjxMessageFormat.format(ZmMsg.uploadError, status);
+		dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, this._title);
+		dialog.popup();
+	} else {
+		guids = guids.split(",");
+		for (var i = 0; i < files.length; i++) {
+			DBG.println("guids["+i+"]: "+guids[i]+", files["+i+"]: "+files[i]);
+			files[i].guid = guids[i];
+		}
+		this._uploadSaveDocs2(files, status, guids);
 	}
-	this._uploadSaveDocs2(files, status, guids);
 };
 
 ZmUploadDialog.prototype._uploadSaveDocs2 = 
