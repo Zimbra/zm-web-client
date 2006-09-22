@@ -98,7 +98,7 @@ function(searchResults) {
 ZmMixedController.prototype._resetOperations =
 function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
-	parent.enable(ZmOperation.SHOW_ALL_MENU, true);
+	parent.enable([ZmOperation.CHECK_MAIL, ZmOperation.SHOW_ALL_MENU], true);
 	
 	// Disallow printing of ZmDocuments.
 	if (num == 1) {
