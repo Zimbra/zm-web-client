@@ -59,7 +59,10 @@ function(callback, errorCallback, checkQS) {
 		}
 	}
 	query = query ? query : this._appCtxt.get(ZmSetting.INITIAL_SEARCH);
-	var params = {query: query, callback: respCallback, errorCallback: errorCallback};
+	var types = new AjxVector();
+	types.add(this._appCtxt.getSettings().getGroupMailBy());
+	
+	var params = {query: query, callback: respCallback, errorCallback: errorCallback, types:types};
 	this._appCtxt.getSearchController().search(params);
 };
 
