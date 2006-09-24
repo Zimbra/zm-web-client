@@ -360,6 +360,13 @@ function() {
 	return this.dispName;
 };
 
+ZmEmailAddress.prototype.clone =
+function() {
+	var addr = new ZmEmailAddress(this.address, this.type, this.name, this.dispName);
+	addr.icon = this.icon;
+	return addr;
+};
+
 ZmEmailAddress.prototype._setName =
 function(name) {
 	if (!name) return "";
