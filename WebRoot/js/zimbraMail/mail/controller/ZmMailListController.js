@@ -244,7 +244,6 @@ function(actionCode) {
 					if (unreadItem) {
 						lv._unmarkKbAnchorElement(true);
 						lv.setSelection(unreadItem);
-						lv.setSelectedItems([unreadItem]);
 						var el = lv._getElFromItem(unreadItem);
 						if (el) {
 							lv._scrollList(el);
