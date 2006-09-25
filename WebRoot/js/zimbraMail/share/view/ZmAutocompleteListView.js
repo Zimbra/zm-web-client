@@ -517,51 +517,68 @@ function(chunk, callback) {
 
 ZmAutocompleteListView.prototype._handleResponseAutocomplete =
 function(str, chunk, text, start, callback, list) {
-	var results;
+	var retValue;
 	// see if it's already a complete address
 	if (list && list.length == 1 && this._data.isUniqueValue(str)) {
 		DBG.println(AjxDebug.DBG2, "unique match, hiding autocomplete list");
-		results = {text: text, start: start};
+		retValue = {text: text, start: start};
 	}
-
-	if (!results) {
-		if (list && list.length > 0) {
+/*
+	if (!retValue) {
+		if (list && list.length) {
 			var len = list.length;
 			DBG.println(AjxDebug.DBG2, "found " + len + " match" + len > 1 ? "es" : "");
 		} else {
-			results = {text: text, start: start};
+			retValue = {text: text, start: start};
 		}
 	}
-
-	if (!results) {
-		this._set(list); // populate the list view
+*/
+	if (!retValue) {
+		if (list && list.length) {
+			var len = list.length;
+			DBG.println(AjxDebug.DBG2, "found " + len + " match" + len > 1 ? "es" : "");
+			// done now in case of quick complete
+			this._set(list); // populate the list view
+		}
 
 		// if text ends in a delimiter, complete immediately without showing the list
 		var match;
 		if (chunk.delim && (chunk.end == chunk.text.length - 1)) {
 			DBG.println(AjxDebug.DBG2, "performing quick completion");
-			var result = this._complete(text, true);
+			var result = this._complete(text, str, true);
 			text = result.text;
 			start = result.start;
 			match = result.match;
-		} else {
+		} else if (list && list.length) {
 			// show the list
 			this.show(true, this._loc);
 		}
 	
-		results = {text: text, start: start, match: match};
+		retValue = {text: text, start: start, match: match};
 	}
 	
 	if (callback) {
-		callback.run(results);
+		callback.run(retValue);
 	}
 };
 
-// Replaces a string within some text from the selected address match.
+/**
+ * Replaces the current chunk of text with the selected match (even if the list
+ * is not visible), or with replacement text returned by the data class. If the
+ * given text ends with a delimiter, "quick complete" is triggered, which does
+ * the replacement without showing the list.
+ * 
+ * @param text		[string]		current input text
+ * @param str		[string]*		current chunk
+ * @param hasDelim	[boolean]*		current chunk ends with a delimiter
+ */
 ZmAutocompleteListView.prototype._complete =
-function(text, hasDelim) {
+function(text, str, hasDelim) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _complete: selected is " + this._selected);
 	var match = this._getSelected();
+	if (!match && str && hasDelim && this._data.quickComplete) {
+		match = this._data.quickComplete(str);
+	}
 	if (!match)	return;
 
 	var start = this._start;
@@ -596,7 +613,7 @@ function(text, match) {
 // Updates the element with the currently selected match.
 ZmAutocompleteListView.prototype._update =
 function(hasDelim) {
-	var result = this._complete(this._element.value, hasDelim);
+	var result = this._complete(this._element.value, null, hasDelim);
 	this._updateField(result.text, result.match);
 };
 

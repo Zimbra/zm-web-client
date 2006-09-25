@@ -733,6 +733,35 @@ function(str) {
 	return ZmEmailAddress.isValid(str);
 };
 
+/**
+ * Quick completion of a string when there are no matches. Appends the
+ * user's domain to the given string.
+ * 
+ * @param str	[string]	text that was typed in
+ */
+ZmContactList.prototype.quickComplete =
+function(str) {
+	if (str.indexOf("@") != -1) {
+		return null;
+	}
+	var result = {};
+	if (!this._userDomain) {
+		var a = this._appCtxt.get(ZmSetting.USERNAME).split("@");
+		if (a && a.length) {
+			this._userDomain = a[a.length - 1];
+		}
+	}
+	if (this._userDomain) {
+		var text = [str, this._userDomain].join("@");
+		result[ZmContactList.AC_VALUE_FULL] = text;
+		result[ZmContactList.AC_VALUE_EMAIL] = text;
+		result[ZmContactList.AC_VALUE_NAME] = text;
+		return result;
+	} else {
+		return null;
+	}
+};
+
 /*
  * Returns true if both local and GAL matching have been done for the given string.
  *
@@ -931,7 +960,7 @@ function(nameHL, emailHL, name, email, contact) {
 	if (this._galAutocompleteEnabled) {
 		result.icon = contact.isGal ? "GALContact" : "Contact";
 	}
-	result[ZmContactList.AC_VALUE_FULL] = ['"', name, '" <', email, ">"].join("");
+	result[ZmContactList.AC_VALUE_FULL] = name ? ['"', name, '" <', email, ">"].join("") : email;
 	result[ZmContactList.AC_VALUE_EMAIL] = email;
 	result[ZmContactList.AC_VALUE_NAME] = name;
 
