@@ -82,6 +82,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaKeyMap.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ACLXFormItem.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaSkinPoolChooser.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaZimletPoolChooser.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaXProgressDialog.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- Admin UI Specific components -->
