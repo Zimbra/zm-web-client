@@ -93,6 +93,7 @@ function(appt) {
 		this._startTimeSelect.set(appt.getStartDate());
 		this._endTimeSelect.set(appt.getEndDate());
 	}
+	this._showAsSelect.setSelectedValue("B");
 	this._resetCalendarSelect(appt);
 	this._repeatSelect.setSelectedValue("NON");
 	this._repeatDescField.innerHTML = "";
@@ -120,7 +121,7 @@ function() {
 
 	// save field values of this view w/in given appt
 	appt.setName(this._subjectField.getValue());
-
+	appt.freeBusy = this._showAsSelect.getValue();
 	var calId = this._calendarSelect.getValue();
 	appt.setFolderId(calId);
 	appt.setOrganizer(this._calendarOrgs[calId]);
@@ -183,6 +184,7 @@ ZmApptQuickAddDialog.prototype._setHtml =
 function() {
 	this._subjectFieldId	= Dwt.getNextId();
 	this._locationFieldId	= Dwt.getNextId();
+	this._showAsSelectId	= Dwt.getNextId();
 	this._calSelectId		= Dwt.getNextId();
 	this._calLabelId		= Dwt.getNextId();
 	this._startDateFieldId	= Dwt.getNextId();
@@ -207,6 +209,11 @@ function() {
 	html[i++] = ZmMsg.location;
 	html[i++] = ":</td><td colspan=2 id='";
 	html[i++] = this._locationFieldId;
+	html[i++] = "'></td></tr>";
+	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
+	html[i++] = ZmMsg.showAs;
+	html[i++] = ":</td><td colspan=2 id='";
+	html[i++] = this._showAsSelectId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr><td class='ZmApptTabViewPageField' id='";
 	html[i++] = this._calLabelId;
@@ -276,11 +283,16 @@ function() {
 	this._locationField.reparentHtmlElement(this._locationFieldId);
 	delete this._locationFieldId;
 
-	// create selects for details section
+	// create DwtSelects
+	this._showAsSelect = new DwtSelect(this);
+	for (var i = 0; i < ZmApptTabViewPage.SHOWAS_OPTIONS.length; i++) {
+		var option = ZmApptTabViewPage.SHOWAS_OPTIONS[i];
+		this._showAsSelect.addOption(option.label, option.selected, option.value);
+	}
+	this._showAsSelect.reparentHtmlElement(this._showAsSelectId);
+
 	this._calendarSelect = new DwtSelect(this);
-	var calCell = document.getElementById(this._calSelectId);
-	if (calCell)
-		calCell.appendChild(this._calendarSelect.getHtmlElement());
+	this._calendarSelect.reparentHtmlElement(this._calSelectId);
 	delete this._calSelectId;
 
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
