@@ -81,6 +81,30 @@ ZmZimletBase.prototype.getAppCtxt = function() {
 	return this._appCtxt;
 };
 
+/// Adds a new item in the search domain drop-down.  Pass an icon
+/// class (null for no icon), a label and optionally a listener that
+/// will be called when the item is selected.
+ZmZimletBase.prototype.addSearchDomainItem = function(icon, label, listener) {
+	var searchToolbar = this.getAppCtxt().getSearchController().getSearchToolbar();
+	return searchToolbar.createCustomSearchBtn(icon, label, listener);
+
+// 	var menu = searchToolbar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON).getMenu();
+// 	var item;
+// 	if (arguments.length == 0 || icon == "separator") {
+// 		item = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+// 	} else {
+// 		item = DwtMenuItem.create(menu, icon, label, null, true);
+// 		if (listener != null)
+// 			item.addSelectionListener(listener);
+// 	}
+// 	return item;
+};
+
+/// Returns the text entered in the search bar
+ZmZimletBase.prototype.getSearchQuery = function() {
+	return this.getAppCtxt().getSearchController().getSearchToolbar().getSearchFieldValue();
+};
+
 ZmZimletBase.prototype.xmlObj =
 function(key) {
 	return !key ? this._zimletContext : this._zimletContext.getVal(key);
@@ -544,10 +568,10 @@ function(object, context, span) {
 ZmZimletBase.prototype.makeCanvas = function(canvasData, url) {
 	var canvas = null;
 	var div;
-	
+
 	div = document.createElement("div");
 	div.id = "zimletCanvasDiv";
-	
+
 	// HACK #1: if an actionUrl was specified and there's no <canvas>, we
 	// assume a <canvas type="window">
 	if (!canvasData && url)

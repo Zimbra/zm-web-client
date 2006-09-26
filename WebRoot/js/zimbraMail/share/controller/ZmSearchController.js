@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -28,7 +28,7 @@ function ZmSearchController(appCtxt, container) {
 	ZmController.call(this, appCtxt, container);
 
 	this._inited = false;
-	
+
 	// default menu values
 	this._searchFor = ZmSearchToolBar.FOR_MAIL_MI;
 	this._contactSource = ZmItem.CONTACT;
@@ -41,7 +41,7 @@ function ZmSearchController(appCtxt, container) {
 ZmSearchController.prototype = new ZmController;
 ZmSearchController.prototype.constructor = ZmSearchController;
 
-ZmSearchController.prototype.toString = 
+ZmSearchController.prototype.toString =
 function() {
 	return "ZmSearchController";
 }
@@ -51,12 +51,12 @@ function() {
 	return this._searchPanel;
 }
 
-ZmSearchController.prototype.getSearchToolbar = 
+ZmSearchController.prototype.getSearchToolbar =
 function() {
 	return this._searchToolBar;
 }
 
-ZmSearchController.prototype.dateSearch = 
+ZmSearchController.prototype.dateSearch =
 function(d) {
     if (d == null) d = new Date();
     var date = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
@@ -64,14 +64,14 @@ function(d) {
 	this.search({query: "date:"+date, types: [groupBy]});
 }
 
-ZmSearchController.prototype.fromSearch = 
+ZmSearchController.prototype.fromSearch =
 function(address) {
 	// always search for mail when doing a "from: <address>" search
 	var groupBy = this._appCtxt.getSettings().getGroupMailBy();
 	this.search({query: "from:(" + address + ")", types: [groupBy]});
 }
 
-ZmSearchController.prototype.fromBrowse = 
+ZmSearchController.prototype.fromBrowse =
 function(name) {
 	var bv = this.showBrowseView(true);
 	bv.removeAllPickers();
@@ -81,7 +81,7 @@ function(name) {
 	picker.execute();
 }
 
-ZmSearchController.prototype.showBrowseView = 
+ZmSearchController.prototype.showBrowseView =
 function(forceShow) {
 	var bvc = this._browseViewController;
 	var show, bv;
@@ -95,7 +95,7 @@ function(forceShow) {
 		bvc.setBrowseViewVisible(show);
 		bv = bvc.getBrowseView();
 	}
-	
+
    	return bv;
 }
 
@@ -142,21 +142,21 @@ function(type, force) {
 		this._defaultSearchType = type;
 	}
 }
-	
+
 ZmSearchController.prototype._setView =
 function() {
-	// Create search panel - a composite is needed because the search builder 
+	// Create search panel - a composite is needed because the search builder
 	// element (ZmBrowseView) is added to it (can't add it to the toolbar)
 	this._searchPanel = new DwtComposite(this._container, "SearchPanel", Dwt.ABSOLUTE_STYLE);
 	this._searchToolBar = new ZmSearchToolBar(this._appCtxt, this._searchPanel);
-	
+
 	var tg = this._createTabGroup();
 	tg.addMember(this._searchToolBar);
 	tg.addMember(this._searchToolBar.getSearchField());
-	
+
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);
-	
+
     // Menu and button listeners
     var searchMenuListener = new AjxListener(this, this._searchMenuListener);
     var m = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON).getMenu();
@@ -170,7 +170,7 @@ function() {
     		item.setChecked(true, true);
     }
 
-	this._searchToolBar.addSelectionListener(ZmSearchToolBar.SEARCH_BUTTON, new AjxListener(this, this._searchButtonListener));
+	this._searchToolBar.addSelectionListener(ZmSearchToolBar.SEARCH_MENU_BUTTON, new AjxListener(this, this._searchButtonListener));
 	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED))
 		this._searchToolBar.addSelectionListener(ZmSearchToolBar.BROWSE_BUTTON, new AjxListener(this, this._browseButtonListener));
 	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED))
@@ -196,8 +196,8 @@ function() {
 ZmSearchController.prototype.search =
 function(params) {
 	if (!(params.query && params.query.length)) return;
-	
-	// if the search string starts with "$set:" then it is a command to the client 
+
+	// if the search string starts with "$set:" then it is a command to the client
 	if (params.query.indexOf("$set:") == 0 || params.query.indexOf("$cmd:") == 0) {
 		this._appCtxt.getClientCmdHdlr().execute((params.query.substr(5)), this);
 		return;
@@ -236,9 +236,9 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.searchId		= search.searchId;
 	params.lastSortVal	= search.lastSortVal;
 	params.lastId		= search.lastId;
-	
+
 	if (changes) {
-		for (var key in changes) 
+		for (var key in changes)
 			params[key] = changes[key];
 	}
 
@@ -284,10 +284,10 @@ function(searchFor) {
 	return types;
 }
 
-ZmSearchController.prototype._getSuitableSortBy = 
+ZmSearchController.prototype._getSuitableSortBy =
 function(types) {
 	var sortBy = null;
-	
+
 	if (types.size() == 1) {
 		var type = types.get(0);
 		var viewType = null;
@@ -297,11 +297,11 @@ function(types) {
 			case ZmItem.CONTACT:	viewType = ZmController.CONTACT_SIMPLE_VIEW; break;
 			// more types go here as they are suported...
 		}
-		
+
 		if (viewType)
 			sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, viewType);
 	}
-	
+
 	return sortBy;
 }
 
@@ -326,7 +326,7 @@ function(params, noRender, callback, errorCallback) {
 	var types = params.types || this.getTypes();
 	if (types instanceof Array) // convert array to AjxVector if necessary
 		types = AjxVector.fromArray(types);
-		
+
 	// if the user explicitly searched for all types, force mixed view
 	var isMixed = (this._searchFor == ZmSearchToolBar.FOR_ANY_MI);
 
@@ -370,9 +370,9 @@ function(search, noRender, isMixed, callback, result) {
 
 	if (!results.type)
 		results.type = search.types.get(0);
-	
+
 	if (!noRender)
-		this._showResults(results, search, isMixed);		
+		this._showResults(results, search, isMixed);
 
 	if (callback) callback.run(result);
 };
@@ -415,7 +415,7 @@ function(results, search, isMixed) {
 };
 
 /*
-* Handle a few minor errors where we show an empty result set and issue a 
+* Handle a few minor errors where we show an empty result set and issue a
 * status message to indicate why the query failed. Those errors are: no such
 * folder, no such tag, and bad query. If it's a "no such folder" error caused
 * by the deletion of a folder backing a mountpoint, we pass it along for
@@ -477,7 +477,7 @@ function(ev) {
 	}
 }
 
-ZmSearchController.prototype._searchMenuListener = 
+ZmSearchController.prototype._searchMenuListener =
 function(ev) {
 	if (ev.detail != DwtMenuItem.CHECKED) return;
 
@@ -491,19 +491,24 @@ function(ev) {
 		var groupBy = this._appCtxt.getSettings().getGroupMailBy();
 		tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
 	}
-	if (tooltip) {
-		var button = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_BUTTON);
-		button.setToolTipContent(tooltip);
-	}
+// 	if (tooltip) {
+// 		var button = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_BUTTON);
+// 		button.setToolTipContent(tooltip);
+// 	}
+
+	var btn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
+	btn.setText(ev.item.getText());
 
 	// clear system default now that user has spoken
 	this._defaultSearchType = null;
+
+	this._searchButtonListener(ev);
 }
 
 ZmSearchController.prototype.setGroupMailBy =
 function(id) {
-	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
-	this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_BUTTON).setToolTipContent(tooltip);
+// 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
+// 	this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_BUTTON).setToolTipContent(tooltip);
 }
 
 /*
