@@ -660,10 +660,10 @@ function(contact) {
 	html[idx++] = "<table cellpadding=0 cellspacing=10 border=0>";
 
 	idx = this._generateHtml(html, idx, null, ZmContactView.primaryInfoOne, ZmContactView.primaryInfoTwo);
-	idx = this._generateHtml(html, idx, "Email", ZmContactView.emailInfo);
-	idx = this._generateHtml(html, idx, "Work", ZmContactView.workAddrInfo, ZmContactView.workPhoneInfo);
-	idx = this._generateHtml(html, idx, "Home", ZmContactView.homeAddrInfo, ZmContactView.homePhoneInfo);
-	idx = this._generateHtml(html, idx, "Other", ZmContactView.otherAddrInfo, ZmContactView.otherPhoneInfo);
+	idx = this._generateHtml(html, idx, ZmMsg.email, ZmContactView.emailInfo);
+	idx = this._generateHtml(html, idx, ZmMsg.work, ZmContactView.workAddrInfo, ZmContactView.workPhoneInfo);
+	idx = this._generateHtml(html, idx, ZmMsg.home, ZmContactView.homeAddrInfo, ZmContactView.homePhoneInfo);
+	idx = this._generateHtml(html, idx, ZmMsg.other, ZmContactView.otherAddrInfo, ZmContactView.otherPhoneInfo);
 	idx = this._createNotesHtml(html, idx);
 
 	html[idx++] = "</table>";
