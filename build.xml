@@ -13,7 +13,7 @@
   <property name="adminwarfile"      location="${dist.tomcat.webapps.dir}/zimbraAdmin.war"/>		
   
   <property name="jars.dir"           location="jars"/>
-  <property name="jars.archive.dir"   location="../ZimbraServer/jars"/>
+  <property name="jars.archive.dir"   location="../ZimbraComomon/jars"/>
   <property name="src.dir"            location="src"/>
   <property name="gzipExtension" value=".zgz"/>	
   <property name="rhinoExtension" value=".rhino"/>
