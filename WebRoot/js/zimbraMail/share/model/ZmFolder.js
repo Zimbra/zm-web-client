@@ -70,13 +70,15 @@ ZmFolder.ID_TAGS	 		= 8;
 
 // system folder names
 ZmFolder.MSG_KEY = new Object();
-ZmFolder.MSG_KEY[ZmFolder.ID_INBOX]		= "inbox";
-ZmFolder.MSG_KEY[ZmFolder.ID_TRASH]		= "trash";
-ZmFolder.MSG_KEY[ZmFolder.ID_SPAM]		= "junk";
-ZmFolder.MSG_KEY[ZmFolder.ID_SENT]		= "sent";
-ZmFolder.MSG_KEY[ZmFolder.ID_DRAFTS]	= "drafts";
-ZmFolder.MSG_KEY[ZmFolder.ID_CONTACTS]	= "contacts";
-ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]		= "tags";
+ZmFolder.MSG_KEY[ZmFolder.ID_INBOX]			= "inbox";
+ZmFolder.MSG_KEY[ZmFolder.ID_TRASH]			= "trash";
+ZmFolder.MSG_KEY[ZmFolder.ID_SPAM]			= "junk";
+ZmFolder.MSG_KEY[ZmFolder.ID_SENT]			= "sent";
+ZmFolder.MSG_KEY[ZmFolder.ID_DRAFTS]		= "drafts";
+ZmFolder.MSG_KEY[ZmFolder.ID_CONTACTS]		= "contacts";
+ZmFolder.MSG_KEY[ZmFolder.ID_AUTO_ADDED]	= "emailedContacts";
+ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]			= "tags";
+ZmFolder.MSG_KEY[ZmOrganizer.ID_CALENDAR]	= "calendar";
 
 // system folder icons
 ZmFolder.IMAGE = new Object();
@@ -144,8 +146,7 @@ function(parent, obj, tree) {
 		return;
 	}
 
-	var name = ZmFolder.MSG_KEY[obj.id] ? ZmMsg[ZmFolder.MSG_KEY[obj.id]] : obj.name;
-	var folder = new ZmFolder(obj.id, name, parent, tree, obj.u, obj.n, obj.url, null, null, obj.rest);
+	var folder = new ZmFolder(obj.id, obj.name, parent, tree, obj.u, obj.n, obj.url, null, null, obj.rest);
 	if (ZmFolder.MSG_KEY[obj.id]) {
 		folder._systemName = obj.name;
 	}

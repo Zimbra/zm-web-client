@@ -53,7 +53,7 @@ function ZmOrganizer(type, id, name, parent, tree, numUnread, numTotal, url, own
 	
 	this.type = type;
 	this.id = id;
-	this.name = name;
+	this.name = ZmFolder.MSG_KEY[id] ? ZmMsg[ZmFolder.MSG_KEY[id]] : name;
 	this.parent = parent;
 	this.tree = tree;
 	this.numUnread = numUnread || 0;
