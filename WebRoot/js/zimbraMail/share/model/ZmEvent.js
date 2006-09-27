@@ -52,6 +52,7 @@ ZmEvent.S_CONV				= i++;
 ZmEvent.S_MSG				= i++;
 ZmEvent.S_ATT				= i++;
 ZmEvent.S_CONTACT			= i++;
+ZmEvent.S_GROUP				= i++;
 ZmEvent.S_APPT				= i++;
 ZmEvent.S_NOTE				= i++;
 ZmEvent.S_PAGE				= i++;

@@ -588,6 +588,13 @@ ZmOperation.SETUP[ZmOperation.NEW_FOLDER] = {
 	image:		"NewFolder"
 };
 
+ZmOperation.NEW_GROUP = i++;
+ZmOperation.SETUP[ZmOperation.NEW_GROUP] = {
+	textKey:	"newGroup",
+	tooltipKey:	"newGroupTooltip",
+	image:		"NewGroup"
+};
+
 ZmOperation.NEW_MENU = i++;
 ZmOperation.SETUP[ZmOperation.NEW_MENU] = {
 	textKey:	"_new"
@@ -1168,6 +1175,7 @@ function(parent) {
 	list.push(ZmOperation.defineOperation(ZmOperation.NEW_MESSAGE, {id: ZmOperation.NEW_MESSAGE, textKey: "message"}));
 	if (contactsEnabled) {
 		list.push(ZmOperation.defineOperation(ZmOperation.NEW_CONTACT, {id: ZmOperation.NEW_CONTACT, textKey: "contact"}));
+//		list.push(ZmOperation.defineOperation(ZmOperation.NEW_GROUP, {id: ZmOperation.NEW_GROUP, textKey: "group"}));
 	}
 	if (calendarEnabled) {
 		list.push(ZmOperation.defineOperation(ZmOperation.NEW_APPT, {id: ZmOperation.NEW_APPT, textKey: "appointment"}));

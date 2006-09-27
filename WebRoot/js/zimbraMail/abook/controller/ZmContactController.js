@@ -27,6 +27,10 @@ function ZmContactController(appCtxt, container, abApp) {
 
 	ZmListController.call(this, appCtxt, container, abApp);
 
+	this._viewFactory = {};
+	this._viewFactory[ZmController.CONTACT_VIEW] = ZmContactView;
+	this._viewFactory[ZmController.GROUP_VIEW] = ZmGroupView;
+
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
 };
@@ -41,8 +45,8 @@ function() {
 
 ZmContactController.prototype.show =
 function(contact, isDirty) {
-	this._currentView = this._getViewType();
 	this._contact = contact;
+	this._currentView = this._getViewType();
 	if (isDirty) this._contactDirty = true;
 	this._list = contact.list;
 	// re-enable input fields if list view exists
@@ -99,13 +103,15 @@ function() {
 
 ZmContactController.prototype._getViewType =
 function() {
-	return ZmController.CONTACT_VIEW;
+	return this._contact.type == ZmItem.GROUP
+		? ZmController.GROUP_VIEW
+		: ZmController.CONTACT_VIEW;
 };
 
 ZmContactController.prototype._initializeListView =
 function(view) {
 	if (!this._listView[view]) {
-		this._listView[view] = new ZmContactView(this._container, this._appCtxt, this);
+		this._listView[view] = new this._viewFactory[view](this._container, this._appCtxt, this);
 	}
 };
 

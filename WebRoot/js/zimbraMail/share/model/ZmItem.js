@@ -67,6 +67,7 @@ ZmItem.CONV			= ZmEvent.S_CONV;
 ZmItem.MSG			= ZmEvent.S_MSG;
 ZmItem.ATT			= ZmEvent.S_ATT;
 ZmItem.CONTACT		= ZmEvent.S_CONTACT;
+ZmItem.GROUP		= ZmEvent.S_GROUP;
 ZmItem.APPT			= ZmEvent.S_APPT;
 ZmItem.NOTE			= ZmEvent.S_NOTE;
 ZmItem.PAGE			= ZmEvent.S_PAGE;

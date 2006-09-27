@@ -525,11 +525,13 @@ function(ev, id) {
 			controller.doAction(ZmOperation.NEW_MESSAGE, this._inNewWindow(ev));
 			break;
 		}
-		case ZmOperation.NEW_CONTACT: {
+		case ZmOperation.NEW_CONTACT:
+		case ZmOperation.NEW_GROUP: {
 			// bug fix #5373
 			// - dont allow adding new contacts after searching GAL if contacts disabled
 			if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-				var contact = new ZmContact(this._appCtxt);
+				var type = id == ZmOperation.NEW_GROUP ? ZmItem.GROUP : null;
+				var contact = new ZmContact(this._appCtxt, null, null, type);
 				var app = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
 				var controller = app.getContactController();
 				controller.show(contact);

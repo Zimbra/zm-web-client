@@ -236,6 +236,7 @@ Contributor(s):
 
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/abook/model/ZmContact.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/abook/view/ZmContactView.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/abook/view/ZmGroupView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/abook/view/ZmContactsBaseView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/abook/view/ZmContactCardsView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/abook/view/ZmContactSplitView.js<%= ext %>?v=<%= vers %>"></script>
