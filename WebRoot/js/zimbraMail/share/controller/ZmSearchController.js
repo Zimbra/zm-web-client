@@ -137,7 +137,9 @@ function(type, force) {
 	if (this._defaultSearchType || force) {
 		if (this._searchToolBar) {
 			var menu = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON).getMenu();
+			this._preventSearch = true;
 			menu.checkItem(ZmSearchToolBar.MENUITEM_ID, type);
+			this._preventSearch = false;
 		}
 		this._defaultSearchType = type;
 	}
@@ -502,7 +504,8 @@ function(ev) {
 	// clear system default now that user has spoken
 	this._defaultSearchType = null;
 
-	this._searchButtonListener(ev);
+	if (!this._preventSearch)
+		this._searchButtonListener(ev);
 }
 
 ZmSearchController.prototype.setGroupMailBy =
