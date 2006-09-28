@@ -43,7 +43,7 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	Dwt.setHandler(this._searchField, DwtEvent.ONKEYPRESS, ZmSearchToolBar._keyPressHdlr);
 
 	this._searchMenuButton = this._createButton(ZmSearchToolBar.SEARCH_MENU_BUTTON, "MailFolder", ZmMsg.searchMail,
-						    null, ZmMsg.chooseSearchType, true, "DwtToolbarButton");
+						    null, ZmMsg.chooseSearchType, true, "DwtButton");
     document.getElementById(searchMenuColId).appendChild(this._searchMenuButton.getHtmlElement());
 	var menuParent = this._searchMenuButton;
     var menu = new DwtMenu(menuParent, null, "ActionMenu");
@@ -221,7 +221,7 @@ function(fieldId, searchColId, browseColId, saveColId, navColId, searchMenuColId
 	var html = new Array();
 	var i = 0;
 	html[i++] = "<table style='height:auto;width:100%;height:100%;border-collapse:collapse;'>";
-	html[i++] = "<tr><td>&nbsp;" + ZmMsg.find + ":&nbsp;</td>";
+	html[i++] = "<tr><td><label for='" + fieldId + "'>&nbsp;&nbsp;" + ZmMsg.find + ":&nbsp;</label></td>";
 	html[i++] = "<td width='100%'><input type='text' autocomplete='off' nowrap id='";
 	html[i++] = fieldId;
 	html[i++] = "' class='search_input'></td><td>&nbsp;" + ZmMsg.searchIn + "&nbsp;</td>";
@@ -230,7 +230,9 @@ function(fieldId, searchColId, browseColId, saveColId, navColId, searchMenuColId
 	html[i++] = "'></td>";
 	html[i++] = "<td id='";
 	html[i++] = searchColId;
-	html[i++] = "'></td><td id='";
+	html[i++] = "'></td>";
+	html[i++] = "<td><div class='vertSep'></div></td>";
+	html[i++] = "<td id='";
 	html[i++] = saveColId;
 	html[i++] = "'></td>";
 	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
@@ -246,11 +248,12 @@ function(fieldId, searchColId, browseColId, saveColId, navColId, searchMenuColId
 
 ZmSearchToolBar.prototype.createCustomSearchBtn = function(icon, label, listener) {
 	var td = document.getElementById(this._saveColId);
+	td = td.previousSibling; // skip the separator too
 	var newcell = document.createElement("td");
 	td.parentNode.insertBefore(newcell, td);
 	var btn = this.getButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON);
 	if (!btn) {
-		btn = this._createButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON, icon, null, null, label, true, "DwtToolbarButton");
+		btn = this._createButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON, icon, null, null, label, true, "DwtButton");
 		btn.setData("CustomSearchItem", [ icon, label, listener ]);
 		newcell.appendChild(btn.getHtmlElement());
 		btn.addSelectionListener(this._customSearchBtnListener);
