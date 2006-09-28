@@ -30,9 +30,6 @@ function ZmApptCache(calViewController, appCtxt) {
 	this.clearCache();
 }
 
-ZmApptCache.prototype = new ZmApptCache();
-ZmApptCache.prototype.constructor = ZmApptCache;
-
 ZmApptCache.prototype.toString =
 function() {
 	return "ZmApptCache";
