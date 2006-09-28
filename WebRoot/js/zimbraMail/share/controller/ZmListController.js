@@ -1062,8 +1062,8 @@ function() {
 // determine whether action should be in new window or not
 ZmListController.prototype._inNewWindow =
 function(ev) {
-	return (!this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) && ev && ev.shiftKey) ||
-			(this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) && ev && !ev.shiftKey);
+	var setting = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
+	return !ev ? setting : ((!setting && ev && ev.shiftKey) || (setting && ev && !ev.shiftKey));
 };
 
 // Pagination
