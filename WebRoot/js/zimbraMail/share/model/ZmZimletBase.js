@@ -105,6 +105,10 @@ ZmZimletBase.prototype.getSearchQuery = function() {
 	return this.getAppCtxt().getSearchController().getSearchToolbar().getSearchFieldValue();
 };
 
+ZmZimletBase.prototype.getZimletManager = function() {
+	return this.getAppCtxt().getSettings().getZimletManager();
+};
+
 ZmZimletBase.prototype.xmlObj =
 function(key) {
 	return !key ? this._zimletContext : this._zimletContext.getVal(key);

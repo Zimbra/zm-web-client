@@ -36,6 +36,8 @@ ZmZimletMgr.prototype.constructor = ZmZimletMgr;
 ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps) {
 	if(!zimletArray || !zimletArray.length) {return;}
+	for (var i = 0; i < zimletArray.length; i++)
+		this._ZIMLETS_BY_ID[zimletArray[i].zimlet[0].name] = true;
 	for(var i=0; i < zimletArray.length; i++) {
 		var z = new ZmZimletContext(i, zimletArray[i], this._appCtxt);
 		this._ZIMLETS[i] = this._ZIMLETS_BY_ID[z.name] = z;
@@ -111,7 +113,24 @@ function() {
 	return this._ZIMLETS_BY_ID;
 };
 
+ZmZimletMgr.prototype.zimletExists =
+function(name) {
+	return this._ZIMLETS_BY_ID[name];
+};
+
 ZmZimletMgr.prototype.toString =
 function() {
 	return "ZmZimletMgr";
+};
+
+ZmZimletMgr.prototype.notifyZimlets = function(event) {
+	var args = new Array(arguments.length - 1);
+	for (var i = 0; i < args.length;)
+		args[i] = arguments[++i];
+	var a = this._ZIMLETS;
+	for (var i = 0; i < a.length; ++i) {
+		var z = a[i].handlerObject;
+		if (z && typeof z[event] == "function")
+			z[event].apply(z, args);
+	}
 };

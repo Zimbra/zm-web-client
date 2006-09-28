@@ -364,16 +364,13 @@ function(msg, oldMsg) {
 			msg.addChangeListener(this._changeListener);
 		}
 	}
-	
+
 	// reset scroll view to top most
 	this.getHtmlElement().scrollTop = 0;
 
 	// notify zimlets that a new message has been opened
 	var zmmgr = this._appCtxt.getSettings().getZimletManager();
-	var zimlets = zmmgr.getZimlets();
-	for (var i = zimlets.length; --i >= 0;) {
-		zimlets[i].handlerObject.onMsgView(msg, oldMsg);
-	}
+	zmmgr.notifyZimlets("onMsgView", msg, oldMsg);
 };
 
 // Values in this hash MUST be null or RegExp.  If "null" is passed, then that
