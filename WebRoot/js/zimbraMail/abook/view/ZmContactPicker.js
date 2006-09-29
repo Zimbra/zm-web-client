@@ -312,9 +312,9 @@ function(ev) {
 * @param parent			[DwtComposite]	the contact picker
 * @param buttonInfo		[array]			transfer button IDs and labels
 */
-function ZmContactChooser(parent, buttonInfo) {
+function ZmContactChooser(parent, buttonInfo, hasTextField) {
 	DwtChooser.call(this, {parent: parent, buttonInfo: buttonInfo, layoutStyle: DwtChooser.HORIZ_STYLE,
-						   hasTextField: false});
+						   hasTextField: hasTextField});
 };
 
 ZmContactChooser.prototype = new DwtChooser;
