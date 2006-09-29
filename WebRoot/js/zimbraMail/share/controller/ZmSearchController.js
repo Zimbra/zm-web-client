@@ -318,6 +318,8 @@ function(types) {
 ZmSearchController.prototype._doSearch =
 function(params, noRender, callback, errorCallback) {
 
+	this._appCtxt.getSettings().getZimletManager().notifyZimlets("onSearch", params.query);
+
 	if (this._searchToolBar) {
 		var value = (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING) || params.userText) ? params.query : "";
 		this._searchToolBar.setSearchFieldValue(value);
