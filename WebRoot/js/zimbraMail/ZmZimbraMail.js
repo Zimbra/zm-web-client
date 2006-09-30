@@ -58,7 +58,8 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._settings.getSetting(ZmSetting.SKIN_NAME).addChangeListener(listener);
 
 	ZmCsfeCommand.setServerUri(location.protocol + "//" + domain + appCtxt.get(ZmSetting.CSFE_SERVER_URI));
-
+	ZmCsfeCommand.clientVersion = appCtxt.get(ZmSetting.CLIENT_VERSION);
+	
 	appCtxt.setAppController(this);
 	appCtxt.setClientCmdHdlr(new ZmClientCmdHandler(appCtxt));
 
@@ -313,7 +314,7 @@ function() {
 */
 ZmZimbraMail.prototype.startup =
 function(params) {
-
+	
 	if (typeof(skin) == "undefined") {
 		DBG.println(AjxDebug.DBG1, "No skin!");
 		var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
