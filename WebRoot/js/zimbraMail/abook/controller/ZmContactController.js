@@ -271,6 +271,8 @@ function() {
 
 	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
+
+	this._listView[this._currentView].cleanup();
 };
 
 ZmContactController.prototype._popShieldNoCallback =
@@ -279,6 +281,8 @@ function() {
 
 	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
+
+	this._listView[this._currentView].cleanup();
 };
 
 ZmContactController.prototype._popdownActionListener = 

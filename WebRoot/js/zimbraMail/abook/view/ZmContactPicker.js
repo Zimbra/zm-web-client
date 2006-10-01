@@ -191,7 +191,7 @@ function() {
 	}
 
 	// add chooser
-	this._chooser = new ZmContactChooser(this, this._buttonInfo);
+	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo});
 	var chooserDiv = document.getElementById(this._chooserDivId);
 	chooserDiv.appendChild(this._chooser.getHtmlElement());
 	this._chooser.resize(this.getSize().x, ZmContactPicker.CHOOSER_HEIGHT);
@@ -312,9 +312,8 @@ function(ev) {
 * @param parent			[DwtComposite]	the contact picker
 * @param buttonInfo		[array]			transfer button IDs and labels
 */
-function ZmContactChooser(parent, buttonInfo, hasTextField) {
-	DwtChooser.call(this, {parent: parent, buttonInfo: buttonInfo, layoutStyle: DwtChooser.HORIZ_STYLE,
-						   hasTextField: hasTextField});
+function ZmContactChooser(params) {
+	DwtChooser.call(this, params);
 };
 
 ZmContactChooser.prototype = new DwtChooser;

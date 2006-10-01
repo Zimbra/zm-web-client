@@ -671,12 +671,12 @@ function() {
 	html[i++] = "'><col></colgroup>";
 	html[i++] = "<tr style='height:";
 	html[i++] = rowHeight;
-	html[i++] = "px'><td valign=top><fieldset class='ZmFieldset'><legend class='ZmLegend'>";
+	html[i++] = "px'><td valign=top><fieldset><legend>";
 	html[i++] = ZmMsg.details;
 	html[i++] = "</legend><div>";
 	html[i++] = this._getDetailsHtml();
 	html[i++] = "</div></fieldset></td>";
-	html[i++] = "<td valign=top><fieldset class='ZmFieldset'><legend class='ZmLegend'>";
+	html[i++] = "<td valign=top><fieldset><legend>";
 	html[i++] = ZmMsg.time;
 	html[i++] = "</legend><div style='overflow:hidden; ";
 	html[i++] = AjxEnv.isIE ? " width:99%'>" : "'>";

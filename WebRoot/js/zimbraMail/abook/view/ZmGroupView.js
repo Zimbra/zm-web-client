@@ -65,7 +65,8 @@ function(contact) {
 
 	if (!this._htmlInitialized) {
 		this._createHtml(contact);
-		this._installOnKeyupHandler();
+		this._addWidgets(contact);
+		this._installKeyHandlers();
 	}
 
 	if (this._contact) {
@@ -85,7 +86,8 @@ function() {
 ZmGroupView.prototype.enableInputs =
 function(bEnable) {
 	document.getElementById(this._groupNameId).disabled = !bEnable;
-	document.getElementById(this._groupMembersId).disabled = !bEnable;
+	document.getElementById(this._searchFieldId).disabled = !bEnable;
+	this._picker.getTextField().setEnabled(bEnable);
 };
 
 // Following two overrides are a hack to allow this view to pretend it's a list view
@@ -113,10 +115,13 @@ function() {
 ZmGroupView.prototype.setBounds =
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
-	var groupTable = document.getElementById(this._groupMembersId);
-	if (groupTable) {
-		Dwt.setSize(groupTable, Dwt.DEFAULT, height-90);
-	}
+	this._picker.resize(width-10, height-160);
+};
+
+ZmGroupView.prototype.cleanup  =
+function() {
+	this._picker.reset();
+	document.getElementById(this._searchFieldId).value = "";
 };
 
 
@@ -128,6 +133,17 @@ ZmGroupView.prototype._getDialogXY =
 function() {
 	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
 	return new DwtPoint(loc.x + 50, loc.y + 100);
+};
+
+ZmGroupView.prototype._setFields =
+function() {
+
+	// TODO - set fields from this._contact
+
+	this._setHeaderColor();
+	this._setTitle();
+	this._setTags();
+	this._setFolder();
 };
 
 ZmGroupView.prototype._setHeaderColor =
@@ -170,24 +186,46 @@ function() {
 	tagCell.innerHTML = html.join("");
 };
 
-ZmGroupView.prototype._setFields =
+ZmGroupView.prototype._setFolder =
 function() {
+	var match;
+	if (this._contact.id == null) {
+		var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+		match = clc._folderId;
+	} else {
+		match = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
+	}
 
-	// TODO - set fields from this._contact
+	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
 
-	this._setHeaderColor();
-	this._setTitle();
-	this._setTags();
+	// for now, always re-populate folders DwtSelect
+	this._folderSelect.clearOptions();
+
+	for (var i = 0; i < folders.length; i++) {
+		var folder = folders[i];
+		if (folder.id == ZmFolder.ID_ROOT ||
+			folder.isInTrash() ||
+			folder.isReadOnly())
+		{
+			continue;
+		}
+
+		this._folderSelect.addOption(folder.name, folder.id == match, folder.id);
+	}
 };
 
 ZmGroupView.prototype._createHtml =
 function(contact) {
-	this._titleId = Dwt.getNextId();
-	this._tagsId = Dwt.getNextId();
 	this._contactHeaderId = Dwt.getNextId();
 	this._contactHeaderRowId = Dwt.getNextId();
+	this._titleId = Dwt.getNextId();
+	this._tagsId = Dwt.getNextId();
 	this._groupNameId = Dwt.getNextId();
-	this._groupMembersId = Dwt.getNextId();
+	this._contactPickerId = Dwt.getNextId();
+	this._folderCellId = Dwt.getNextId();
+	this._searchFieldId = Dwt.getNextId();
+	this._searchBtnTdId = Dwt.getNextId();
+	this._listSelectId = Dwt.getNextId();
 
 	var idx = 0;
 	var html = [];
@@ -204,53 +242,96 @@ function(contact) {
 	html[idx++] = "' class='contactHeader'></div></td><td align='right' id='";
 	html[idx++] = this._tagsId;
 	html[idx++] = "'></td></tr></table>";
+
 	// content
-	html[idx++] = "<table border=0 width=100% cellpadding=1 cellspacing=1><td width=50% valign=top>";
-	html[idx++] = "<table border=0 width=100% cellpadding=2 cellspacing=2><tr><td colspan=2>";
+	html[idx++] = "<table border=0 cellpadding=3 cellspacing=2 width=100%><tr>";
+	html[idx++] = "<td width=50% valign=top>";
+	html[idx++] = "<table border=0>";
+	html[idx++] = "<tr><td class='editLabel'>";
+	html[idx++] = ZmMsg.find;
+	html[idx++] = ":</td><td><input type='text' autocomplete='off' size=30 nowrap id='";
+	html[idx++] = this._searchFieldId;
+	html[idx++] = "'></td><td id='";
+	html[idx++] = this._searchBtnTdId;
+	html[idx++] = "'></td><td width=100%></td></tr>";
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		html[idx++] = "<tr><td class='editLabel'>";
+		html[idx++] = ZmMsg.searchIn;
+		html[idx++] = ":</td><td colspan=2 id='";
+		html[idx++] = this._listSelectId;
+		html[idx++] = "'></td></tr>";
+	}
+	html[idx++] = "</table></td><td width=50% valign=top align=right>";
+	html[idx++] = "<table border=0>";
+	html[idx++] = "<tr><td class='editLabel' align=right>";
 	html[idx++] = ZmMsg.groupName;
-	html[idx++] = ": <input type='text' id='";
+	html[idx++] = ":</td><td><input type='text' size=35 id='";
 	html[idx++] = this._groupNameId;
-	html[idx++] = "'></td></tr><tr><td>";
-	html[idx++] = ZmMsg.groupMembers;
-	html[idx++] = ":</td><td class='editLabel' style='color:#666666'>";
-	html[idx++] = ZmMsg.enterAddresses;
+	html[idx++] = "'></td></tr><tr><td class='editLabel' align=right>";
+	html[idx++] = ZmMsg.addressBook;
+	html[idx++] = ":</td><td id='";
+	html[idx++] = this._folderCellId;
+	html[idx++] = "'></td></tr></table>";
 	html[idx++] = "</td></tr></table>";
-	html[idx++] = "<textarea class='groupMembers' id='";
-	html[idx++] = this._groupMembersId;
-	html[idx++] = "'></textarea></td><td valign=top>";
 
-	// TODO
-	html[idx++] = "...list view goes here...";
-
-	html[idx++] = "</td>";
-	html[idx++] = "</tr></table>";
+	html[idx++] = "<div id='";
+	html[idx++] = this._contactPickerId;
+	html[idx++] = "'></div>";
 
 	this.getHtmlElement().innerHTML = html.join("");
 
 	this._htmlInitialized = true;
 };
 
-ZmGroupView.prototype._installOnKeyupHandler =
+ZmGroupView.prototype._addWidgets =
+function(contact) {
+	// add select widget for user to choose folder
+	this._folderSelect = new DwtSelect(this);
+	this._folderSelect.reparentHtmlElement(this._folderCellId);
+
+	// add search button
+	this._searchButton = new DwtButton(this);
+	this._searchButton.setText(ZmMsg.search);
+	this._searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
+	this._searchButton.reparentHtmlElement(this._searchBtnTdId);
+
+	// add select menu
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+		this._selectDiv = new DwtSelect(this);
+		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactPicker.SEARCHFOR_CONTACTS);
+		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+			this._selectDiv.addOption(ZmMsg.searchPersonalAndShared, false, ZmContactPicker.SEARCHFOR_PAS);
+		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactPicker.SEARCHFOR_GAL);
+		this._selectDiv.reparentHtmlElement(this._listSelectId);
+	}
+
+	this._picker = new ZmContactChooser({parent:this, allButtons:true, hasTextField:true});
+	this._picker.reparentHtmlElement(this._contactPickerId);
+};
+
+ZmGroupView.prototype._installKeyHandlers =
 function() {
 	var groupName = document.getElementById(this._groupNameId);
 	Dwt.setHandler(groupName, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
 	Dwt.associateElementWithObject(groupName, this);
-	groupName._field = field;
+
+	var searchField = document.getElementById(this._searchFieldId);
+	Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmGroupView._keyPressHdlr);
+	Dwt.associateElementWithObject(searchField, this);
 };
 
 ZmGroupView.prototype._getTabGroupMembers =
 function() {
 	var fields = [];
-
+	fields.push(document.getElementById(this._searchFieldId));
+	fields.push(this._picker.getTextField().getInputElement());
 	fields.push(document.getElementById(this._groupNameId));
-	fields.push(document.getElementById(this._groupMembersId));
-
 	return fields;
 };
 
 ZmGroupView.prototype._getDefaultFocusItem =
 function() {
-	return document.getElementById(this._groupNameId);
+	return document.getElementById(this._searchFieldId);
 };
 
 
@@ -280,6 +361,74 @@ function(ev) {
 	}
 };
 
+ZmGroupView.prototype._searchButtonListener =
+function(ev) {
+	this._query = AjxStringUtil.trim(document.getElementById(this._searchFieldId).value);
+	if (this._query.length) {
+		if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+			var searchFor = this._selectDiv.getSelectedOption().getValue();
+			this._contactSource = (searchFor == ZmContactPicker.SEARCHFOR_CONTACTS || searchFor == ZmContactPicker.SEARCHFOR_PAS)
+				? ZmItem.CONTACT
+				: ZmSearchToolBar.FOR_GAL_MI;
+			// hack the query if searching for personal and shared contacts
+			if (searchFor == ZmContactPicker.SEARCHFOR_PAS) {
+				var addrbookList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getAddrbookList();
+				this._query += " (" + addrbookList.join(" or ") + ")";
+			}
+		} else {
+			this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
+		}
+		this.search(ZmItem.F_PARTICIPANT, true);
+	}
+};
+
+/**
+* Performs a contact search (in either personal contacts or in the GAL) and populates
+* the source list view with the results.
+*
+* @param columnItem		[constant]		ID of column to sort by
+* @param ascending		[boolean]		if true, sort in ascending order
+*/
+ZmGroupView.prototype.search =
+function(columnItem, ascending) {
+	this._searchButton.setEnabled(false);
+
+	var sortBy = ascending ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC;
+	var types = AjxVector.fromArray([ZmItem.CONTACT]);
+	var params = {query: this._query, types: types, sortBy: sortBy, offset: 0, limit: ZmContactPicker.SEARCHFOR_MAX, contactSource: this._contactSource};
+	var search = new ZmSearch(this._appCtxt, params);
+	search.execute({callback: new AjxCallback(this, this._handleResponseSearch),
+					errorCallback: new AjxCallback(this, this._handleErrorSearch)});
+};
+
+ZmGroupView.prototype._handleResponseSearch =
+function(result) {
+	var resp = result.getResponse();
+	var vec = resp.getResults(ZmItem.CONTACT);
+
+	// Take the contacts and create a list of their email addresses (a contact may have more than one)
+	var list = [];
+	var a = vec.getArray();
+	for (var i = 0; i < a.length; i++) {
+		var contact = a[i];
+		var emails = contact.getEmails();
+		for (var j = 0; j < emails.length; j++) {
+			var email = new ZmEmailAddress(emails[j], null, contact.getFileAs());
+			email.id = Dwt.getNextId();
+			email.icon = contact.isGal ? "GAL" : contact.addrbook.getIcon();
+			list.push(email);
+		}
+	}
+	this._picker.setItems(AjxVector.fromArray(list));
+	this._searchButton.setEnabled(true);
+};
+
+ZmGroupView.prototype._handleErrorSearch =
+function() {
+	this._searchButton.setEnabled(true);
+	return false;
+};
+
 
 // Static methods
 
@@ -295,6 +444,24 @@ function(ev) {
 		view._setTitle(e.value);
 	}
 
+	return true;
+};
+
+ZmGroupView._keyPressHdlr =
+function(ev) {
+	ev = DwtUiEvent.getEvent(ev);
+	if (ev.metaKey || ev.altKey || ev.ctrlKey)
+		return;
+
+	var e = DwtUiEvent.getTarget(ev);
+	var view = e ? Dwt.getObjectFromElement(e) : null;
+	if (view) {
+		var charCode = DwtKeyEvent.getCharCode(ev);
+		if (charCode == 13 || charCode == 3) {
+			view._searchButtonListener(ev);
+			return false;
+		}
+	}
 	return true;
 };
 

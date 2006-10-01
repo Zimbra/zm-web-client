@@ -244,6 +244,11 @@ function() {
 	return [ZmMsg.zimbraTitle, ZmMsg.contact].join(": ");
 };
 
+ZmContactView.prototype.cleanup  =
+function() {
+	// leave empty since set() does this for us
+};
+
 
 // Private / protected methods
 
