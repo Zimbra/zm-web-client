@@ -47,7 +47,9 @@ function(item) {
 		ZmMailMsgView.getPrintHtml(item, preferHtml, respCallback);
 		return;
 	} else if (item instanceof ZmContact) {
-		this._html = ZmContactView.getPrintHtml(item, false, this._appCtxt);
+		this._html = item.isGroup()
+			? ZmGroupView.getPrintHtml(item, false, this._appCtxt)
+			: ZmContactView.getPrintHtml(item, false, this._appCtxt);
 	} else if (item instanceof ZmContactList) {
 		this._html = ZmContactCardsView.getPrintHtml(item);
 	} else if (item instanceof ZmCalViewMgr) {

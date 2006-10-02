@@ -825,7 +825,9 @@ function(contact, abridged, appCtxt) {
 		html[idx++] = "<tr><td colspan=2 style='font-family:Arial; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-weight:bold; background-color:#DDDDDD'>";
 		html[idx++] = contact.getFileAs();
 		html[idx++] = "</td></tr>";
-		html[idx++] = "<tr><td valign=top style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden;'>Full Name:</td>";
+		html[idx++] = "<tr><td valign=top style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden;'>";
+		html[idx++] = ZmMsg.AB_FIELD_fullName;
+		html[idx++] = ":</td>";
 		html[idx++] = "<td style='font-family:Arial; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;'>";
 		html[idx++] = contact.getFullName();
 		html[idx++] = "</td></tr>";

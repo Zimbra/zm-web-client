@@ -523,7 +523,7 @@ function(ev, treeView) {
 ZmContactCardsView.getPrintHtml =
 function(list) {
 
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 	var list = list.getArray();
 
@@ -542,7 +542,9 @@ function(list) {
 		html[idx++] = "<td valign=top height=100%>";
 
 		html[idx++] = "<div style='height:100%; width:2.2in; border:1px solid #CCCCCC; overflow-x:hidden'>";
-		html[idx++] = ZmContactView.getPrintHtml(contact, true);
+		html[idx++] = contact.isGroup()
+			? ZmGroupView.getPrintHtml(contact, true)
+			: ZmContactView.getPrintHtml(contact, true);
 		html[idx++] = "</div>";
 
 		html[idx++] = "</td>";
