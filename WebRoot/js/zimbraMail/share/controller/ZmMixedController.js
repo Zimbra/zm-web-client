@@ -242,7 +242,7 @@ ZmMixedController.prototype._listSelectionListener =
 function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-		if (ev.item.type == ZmItem.CONTACT) {
+		if (ev.item.type == ZmItem.CONTACT || ev.item.type == ZmItem.GROUP) {
 			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(ev.item);
 		} else if (ev.item.type == ZmItem.CONV) {
 			var mailApp = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);

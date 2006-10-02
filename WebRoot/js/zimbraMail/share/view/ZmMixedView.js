@@ -67,7 +67,7 @@ function(list, sortField) {
 
 ZmMixedView.prototype._createItemHtml =
 function(item, now, isDndIcon) {
-	if (item.type == ZmItem.CONTACT) {
+	if (item.type == ZmItem.CONTACT || item.type == ZmItem.GROUP) {
 		return ZmContactSimpleView.prototype._createContactHtmlForMixed.call(this, item, now, isDndIcon);
 	} else if (item.type == ZmItem.CONV) {
 		return ZmConvListView.prototype._createItemHtml.call(this, item, now, isDndIcon, true);

@@ -133,8 +133,9 @@ ZmItem.SOAP_CMD[ZmItem.CONV]	= "ConvAction";
 ZmItem.SOAP_CMD[ZmItem.MSG]		= "MsgAction";
 ZmItem.SOAP_CMD[ZmItem.ATT]		= "unsupported";
 ZmItem.SOAP_CMD[ZmItem.CONTACT]	= "ContactAction";
+ZmItem.SOAP_CMD[ZmItem.GROUP]	= "ContactAction";
 ZmItem.SOAP_CMD[ZmItem.PAGE]	= "ItemAction";
-ZmItem.SOAP_CMD[ZmItem.DOCUMENT]	= "ItemAction";
+ZmItem.SOAP_CMD[ZmItem.DOCUMENT]= "ItemAction";
 
 // Item fields (for modify events)
 ZmItem.TAGS_FIELD = 1;

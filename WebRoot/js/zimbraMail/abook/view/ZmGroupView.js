@@ -140,7 +140,6 @@ ZmGroupView.prototype.cleanup  =
 function() {
 	this._picker.reset();
 	document.getElementById(this._searchFieldId).value = "";
-	this._attr = null;
 };
 
 
