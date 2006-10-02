@@ -638,7 +638,7 @@ function(contact) {
 	html[idx++] = "' cellspacing=0 cellpadding=0><tr class='contactHeaderRow' id='";
 	html[idx++] = this._contactHeaderRowId;
 	html[idx++] = "'><td width=20><center>";
-	html[idx++] = AjxImg.getImageHtml("Person");
+	html[idx++] = AjxImg.getImageHtml(contact.getIcon());
 	html[idx++] = "</center></td>";
 	if (this._isReadOnly) {
 		html[idx++] = "<td><div>";

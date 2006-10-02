@@ -465,15 +465,20 @@ ZmContactListController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
 	var contact = this._actionEv.contact = ev.item;
-	var email = ev.item.getAttr(ZmContact.F_email) ||
-				ev.item.getAttr(ZmContact.F_email2) ||
-				ev.item.getAttr(ZmContact.F_email3);
-	this._actionEv.address = new ZmEmailAddress(email);
+	var email = this._actionEv.address = contact.isGroup()
+		? contact.getGroupMembers().good
+		: (new ZmEmailAddress(contact.getEmail()));
 	// enable/disable New Email menu item per valid email found for this contact
 	var enableNewEmail = email != null && this._listView[this._currentView].getSelectionCount() == 1;
 	var actionMenu = this.getActionMenu();
 	actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MESSAGE], enableNewEmail);
-	this._setContactText(!this.isGalSearch());
+
+	if (contact.isGroup()) {
+		ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT, ZmMsg.AB_EDIT_GROUP);
+	} else {
+		this._setContactText(!this.isGalSearch());
+	}
+
 	actionMenu.popup(0, ev.docX, ev.docY);
 	if (ev.ersatz) {
 		// menu popped up via keyboard nav

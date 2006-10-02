@@ -108,8 +108,6 @@ function(data, type) {
 
 ZmContactCardsView.prototype._createItemHtml =
 function(contact, now, isDndIcon, getHtml) {
-
-	var style = AjxEnv.isLinux ? " style='line-height:13px'" : "";
 	var html = [];
 	var idx = 0;
 	var div = null;
@@ -158,7 +156,7 @@ function(contact, now, isDndIcon, getHtml) {
 	html[idx++] = ZmOrganizer.COLOR_TEXT[color] + "Bg";
 	html[idx++] = "'>";
 	html[idx++] = "<td width=16>";
-	html[idx++] = AjxImg.getImageHtml("Person", "width:16"); // XXX: set icon per contact type
+	html[idx++] = AjxImg.getImageHtml(contact.getIcon(), "width:16");
 	html[idx++] = "</td>";
 	html[idx++] = "<td width=100% valign=top><div class='contactHeader'>";
 	html[idx++] = contact.getFileAs();
@@ -167,12 +165,71 @@ function(contact, now, isDndIcon, getHtml) {
 	// Tag
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		var cellId = this._getFieldId(contact, ZmItem.F_TAG_CELL);
-		html[idx++] = "<td width=16 id='" + cellId + "'>";
+		html[idx++] = "<td width=16 id='";
+		html[idx++] = cellId;
+		html[idx++] = "'>";
 		var fieldId = this._getFieldId(contact, ZmItem.F_TAG);
 		html[idx++] = AjxImg.getImageHtml(contact.getTagImageInfo(), null, ["id='", fieldId, "'"].join(""));
 		html[idx++] = "</td>";
 	}
-	html[idx++] = "</tr><tr";
+	html[idx++] = "</tr>";
+
+	idx = contact.isGroup()
+		? this._getGroupHtml(contact, html, idx, isDndIcon)
+		: this._getContactHtml(contact, html, idx, isDndIcon);
+
+	html[idx++] = "</table>";
+
+	if (div) {
+		div.innerHTML = html.join("");
+		return div;
+	} else {
+		html[idx++] = "</div>";
+		return html.join("");
+	}
+};
+
+ZmContactCardsView.prototype._getGroupHtml =
+function(contact, html, idx, isDndIcon) {
+	var style = AjxEnv.isLinux ? " style='line-height:13px'" : "";
+	var members = contact.getGroupMembers().good.getArray();
+	var size = members.length <= 5 ? members.length : Math.min(members.length, 5);
+
+	html[idx++] = "<tr height=100%";
+	html[idx++] = style;
+	html[idx++] = ">";
+
+	html[idx++] = "<td colspan=3 valign=top width=100% style='padding-left:2px'><table border=0>";
+
+	for (var i = 0; i < size; i++) {
+		html[idx++] = "<tr";
+		html[idx++] = style;
+		html[idx++] = ">";
+		html[idx++] = "<td width=20>";
+		html[idx++] = AjxImg.getImageHtml("Message");
+		html[idx++] = "</td><td><nobr>";
+		html[idx++] = AjxStringUtil.htmlEncode(members[i].toString());
+		html[idx++] = "</nobr></td></tr>";
+	}
+	if (size < members.length) {
+		// TODO - make link do something when clicked!
+		html[idx++] = "<tr";
+		html[idx++] = style;
+		html[idx++] = ">";
+		html[idx++] = "<td colspan=2><a href='javascript:;'>";
+		html[idx++] = ZmMsg.more;
+		html[idx++] = "</a></td></tr>";
+	}
+	html[idx++] = "</table></td></tr>";
+
+	return idx;
+};
+
+ZmContactCardsView.prototype._getContactHtml =
+function(contact, html, idx, isDndIcon) {
+	var style = AjxEnv.isLinux ? " style='line-height:13px'" : "";
+
+	html[idx++] = "<tr";
 	html[idx++] = style;
 	html[idx++] = ">";
 
@@ -271,15 +328,15 @@ function(contact, now, isDndIcon, getHtml) {
 		html[idx++] = ZmMsg.finishLoading;
 		html[idx++] = "</center></td></tr>";
 	}
-	html[idx++] = "</table>";
 
-	if (div) {
-		div.innerHTML = html.join("");
-		return div;
-	} else {
-		html[idx++] = "</div>";
-		return html.join("");
-	}
+	return idx;
+};
+
+// override so that we don't get back ZmListView._fillerString
+ZmContactCardsView.prototype._getTagImgHtml =
+function(item, id) {
+	var idStr = id ? ["id='", id, "'"].join("") : null;
+	return AjxImg.getImageHtml(item.getTagImageInfo(), null, idStr);
 };
 
 ZmContactCardsView.prototype._getField =
@@ -295,13 +352,6 @@ function(fname, value, skipObjectify, type) {
 	html[i++] = "</td>";
 
 	return html.join("");
-};
-
-// override so that we don't get back ZmListView._fillerString
-ZmContactCardsView.prototype._getTagImgHtml =
-function(item, id) {
-	var idStr = id ? ["id='", id, "'"].join("") : null;
-	return AjxImg.getImageHtml(item.getTagImageInfo(), null, idStr);
 };
 
 ZmContactCardsView.prototype._layout =

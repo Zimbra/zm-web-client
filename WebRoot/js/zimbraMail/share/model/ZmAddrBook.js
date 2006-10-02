@@ -135,7 +135,7 @@ function(what) {
 			var items = (what instanceof Array) ? what : [what];
 			var item = items[0];
 
-			if (item.type != ZmItem.CONTACT) {
+			if (item.type != ZmItem.CONTACT && item.type != ZmItem.GROUP) {
 				// only contacts are valid for addr books.
 				invalid = true;
 			} else {

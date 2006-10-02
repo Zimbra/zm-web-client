@@ -346,6 +346,14 @@ function() {
 	return this.getAttr(ZmContact.F_dlist) != null;
 };
 
+// parses "dlist" attr into ZmEmailAddress objects stored in 3 vectors (all, good, and bad)
+ZmContact.prototype.getGroupMembers =
+function() {
+	return this.isGroup()
+		? ZmEmailAddress.parseEmailString(this.getAttr(ZmContact.F_dlist))
+		: null;
+};
+
 ZmContact.prototype.getDefaultDndAction =
 function() {
 	return (this.isShared() || this.isReadOnly())
@@ -363,6 +371,7 @@ function() {
 	var icon;
 	if (this.isGal)				icon = "GALContact";
 	else if (this.isShared())	icon = "SharedContact";
+	else if (this.isGroup())	icon = "Group";
 	else 						icon = "Contact";
 
 	return icon;
@@ -686,12 +695,9 @@ function(phone) {
 
 ZmContact.prototype.getEmail =
 function() {
-	for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
-		var value = this.getAttr(ZmContact.F_EMAIL_FIELDS[i]);
-		if (value)
-			return value;
-	}
-	return null;
+	return (this.getAttr(ZmContact.F_email) ||
+			this.getAttr(ZmContact.F_email2) ||
+			this.getAttr(ZmContact.F_email3));
 };
 
 // returns a list (array) of all valid emails for this contact
@@ -998,6 +1004,9 @@ function(node) {
 		if (node.email) this.attr[ZmContact.F_email] = node.email;
 		if (node.email2) this.attr[ZmContact.F_email2] = node.email2;
 		if (node.email3) this.attr[ZmContact.F_email3] = node.email3;
+
+		this.type = this.attr[ZmContact.F_dlist] != null
+			? ZmItem.GROUP : ZmItem.CONTACT;
 
 		// check if the folderId is found in our address book (otherwise, we
 		// assume this contact to be a shared contact)

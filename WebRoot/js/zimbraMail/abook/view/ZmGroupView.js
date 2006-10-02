@@ -189,7 +189,7 @@ function(contact) {
 	html[idx++] = "' cellspacing=0 cellpadding=0 width=100%><tr class='contactHeaderRow' id='";
 	html[idx++] = this._contactHeaderRowId;
 	html[idx++] = "'><td width=20><center>";
-	html[idx++] = AjxImg.getImageHtml("Group");
+	html[idx++] = AjxImg.getImageHtml(contact.getIcon());
 	html[idx++] = "</center></td><td><div id='";
 	html[idx++] = this._titleId;
 	html[idx++] = "' class='contactHeader'></div></td><td align='right' id='";
@@ -307,9 +307,8 @@ function() {
 
 ZmGroupView.prototype._setGroupMembers =
 function() {
-	var dlist = this._contact.getAttr(ZmContact.F_dlist);
-	var members = ZmEmailAddress.split(dlist);
-	this._picker.addItems(members, DwtChooserListView.TARGET, true);
+	var members = this._contact.getGroupMembers();
+	this._picker.addItems(members.good, DwtChooserListView.TARGET, true);
 };
 
 

@@ -287,8 +287,43 @@ function(contact, isGal) {
 	var contactBodyDiv = document.getElementById(this._contactBodyId);
 	var width = this._contactPart.getSize().x / 2;
 
-	var html = new Array();
-	idx = 0;
+	contactBodyDiv.innerHTML = contact.isGroup()
+		? this._getGroupHtml(contact, width)
+		: this._getContactHtml(contact, isGal);
+};
+
+ZmContactSplitView.prototype._getGroupHtml =
+function(contact, width) {
+	var html = [];
+	var idx = 0;
+
+	var members = contact.getGroupMembers().good.getArray();
+
+	// set company name and folder this contact belongs to
+	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100%><tr>";
+	html[idx++] = "<td width=100%><table border=0>";
+	for (var i = 0; i < members.length; i++) {
+		html[idx++] = "<tr><td width=20>";
+		html[idx++] = AjxImg.getImageHtml("Message");
+		html[idx++] = "</td><td><nobr>";
+		html[idx++] = AjxStringUtil.htmlEncode(members[i].toString());
+		html[idx++] = "</nobr></td></tr>";
+	}
+	html[idx++] = "</table></td>";
+	html[idx++] = "<td width=20 valign=top>";
+	html[idx++] = AjxImg.getImageHtml(contact.addrbook.getIcon());
+	html[idx++] = "</td><td class='companyFolder' valign=top>";
+	html[idx++] = contact.addrbook.getName();
+	html[idx++] = "</td>";
+	html[idx++] = "</tr></table>";
+
+	return html.join("");
+};
+
+ZmContactSplitView.prototype._getContactHtml =
+function(contact, isGal, width) {
+	var html = [];
+	var idx = 0;
 
 	// set company name and folder this contact belongs to
 	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100%><tr>";
@@ -309,7 +344,6 @@ function(contact, isGal) {
 		html[idx++] = "</td>";
 	}
 	html[idx++] = "</tr></table>";
-
 
 	html[idx++] = "<table border=0 width=100% cellpadding=3 cellspacing=3>";
 
@@ -468,7 +502,7 @@ function(contact, isGal) {
 
 	html[idx++] = "</table></div>";
 
-	contactBodyDiv.innerHTML = html.join("");
+	return html.join("");
 };
 
 ZmContactSplitView.prototype._getTagHtml =
