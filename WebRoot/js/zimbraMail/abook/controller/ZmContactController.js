@@ -259,6 +259,7 @@ function(view, force) {
 	
 	var view = this._listView[this._currentView];
 	if (!view.isDirty()) {
+		this._listView[this._currentView].cleanup();
 		return true;
 	}
 
