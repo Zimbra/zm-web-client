@@ -101,6 +101,7 @@
 </script>
 
 <script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext %>?v=<%=vers %>"></script>
+<script type="text/javascript" src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %>"></script>
 <style type="text/css">
 <!--
 	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);

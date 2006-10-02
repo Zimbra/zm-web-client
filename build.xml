@@ -59,8 +59,8 @@
   <property name="images.loRes.destDir" value="${build.dir}/WebRoot/img/loRes"/>
   <property name="images.cssFile" value="imgs.css"/>
 
-  <property name='l10n.includes' value='msgs/*.properties' />
-  <property name='l10n.excludes' value='msgs/*_*.properties' />
+  <property name='l10n.includes' value='msgs/*.properties,keys/*.properties' />
+  <property name='l10n.excludes' value='msgs/*_*.properties,keys/*_*.properties' />
 
   <!-- list all the skins with custom images to build here -->
   <property name='skins' value='steel,_demo' />
@@ -634,12 +634,16 @@
       <fileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
       <fileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
       <fileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
+      <fileset dir='${ajax.dir}/WebRoot/js/config' includes='keys/*.properties'/>
+      <fileset dir='WebRoot/js/zimbraMail/config' includes='keys/*.properties'/>
     </copy>
     <dependset>
       <srcfileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
       <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
       <srcfileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
       <srcfileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
+      <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='keys/*.properties'/>
+      <srcfileset dir='WebRoot/js/zimbraMail/config' includes='keys/*.properties'/>
       <targetfilelist dir='${deploy.dir}${deploy.path}/WEB-INF' files='web.xml'/>
     </dependset>
     <copy todir="${deploy.dir}${deploy.path}/WEB-INF">
@@ -664,8 +668,8 @@
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="ALE/**,public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/config/keys/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="ALE/**,public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
 	</war>
   </target>
 
@@ -685,8 +689,8 @@
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
       <fileset dir="${build.dir}/WebRoot" includes="ALE/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/xforms/**,**/test/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/config/keys/**,**/xforms/**,**/test/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
     </war>
   </target>
 
