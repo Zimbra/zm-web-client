@@ -25,6 +25,8 @@
 
 function ZmContactView(parent, appCtxt, controller, isReadOnly) {
 
+	if (arguments.length == 0) return;
+
 	DwtComposite.call(this, parent, "ZmContactView", DwtControl.ABSOLUTE_STYLE);
 
 	this._appCtxt = appCtxt;
@@ -130,18 +132,17 @@ function(contact, isDirty) {
 ZmContactView.prototype.getModifiedAttrs =
 function() {
 	this._getFields();
-	var mods = new Object();
+	var mods = {};
 	var foundOne = false;
 
 	// bug fix #648 - always re-compute the full name and add to mods list
-	var fn = new Array();
-	var idx = 0;
+	var fn = [];
 	var first = this._attr[ZmContact.F_firstName];
 	var middle = this._attr[ZmContact.F_middleName];
 	var last = this._attr[ZmContact.F_lastName];
-	if (first) fn[idx++] = first;
-	if (middle) fn[idx++] = middle;
-	if (last) fn[idx++] = last;
+	if (first) fn.push(first);
+	if (middle) fn.push(middle);
+	if (last) fn.push(last);
 	var fullName = fn.join(" ");
 
 	// creating new contact (possibly some fields - but not ID - prepopulated)
@@ -186,10 +187,7 @@ function() {
 		}
 
 		// only set the folder Id if changed
-		var folderId = this._contact.isShared()
-			? this._contact.folderId.split(":")[0]
-			: this._contact.folderId;
-		if (folderId != this._folderId) {
+		if (this._contact.getFolderId() != this._folderId) {
 			mods[ZmContact.F_folderId] = this._folderId;
 			foundOne = true;
 		}
@@ -501,8 +499,12 @@ function() {
 		html[i++] = "&nbsp;";
 	}
 
-	var tagCell = document.getElementById(this._fieldIds[ZmContactView.F_contactTags]);
-	tagCell.innerHTML = html.join("");
+	this._getTagCell().innerHTML = html.join("");
+};
+
+ZmContactView.prototype._getTagCell =
+function() {
+	return document.getElementById(this._fieldIds[ZmContactView.F_contactTags]);
 };
 
 ZmContactView.prototype._setFields =

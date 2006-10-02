@@ -187,41 +187,49 @@ function(ev, bIsPopCallback) {
 		var mods = this._listView[view].getModifiedAttrs();
 		this._listView[view].enableInputs(false);
 
-		if (!bIsPopCallback)
+		if (!bIsPopCallback) {
 			this._app.popView(true);
+			this._listView[view].cleanup();
+		}
 
 		if (mods) {
-			// Make sure at least one form field has a value (otherwise, delete the contact). The call
-			// to getModifiedAttrs() above populates _attrs with form field values.
-			var doDelete = true;
-			var formAttrs = this._listView[view]._attr;
-			for (var i in formAttrs) {
-				if (i == ZmContact.F_fileAs || i == ZmContact.X_fullName) continue;
-				if (formAttrs[i]) {
-					doDelete = false;
-					break;
-				}
-			}
-
 			var contact = this._listView[view].getContact();
 
-			if (doDelete) {
-				this._doDelete([contact], null, null, true);
-			} else {
-				if (contact.id == undefined || contact.isGal) {
-					var list = this._app.getContactList();
-					this._doCreate(list, mods);
+			if (contact.id && !contact.isGal) {
+				var doDelete = true;
+				// Make sure at least one form field has a value (otherwise,
+				// delete the contact). NOTE: getModifiedAttrs() populates
+				// _attrs with form field values.
+				var formAttrs = this._listView[view]._attr;
+				for (var i in formAttrs) {
+					if (i == ZmContact.F_fileAs || i == ZmContact.X_fullName) continue;
+					if (formAttrs[i]) {
+						doDelete = false;
+						break;
+					}
+				}
+
+				if (doDelete) {
+					this._doDelete([contact], null, null, true);
 				} else {
 					this._doModify(contact, mods);
 				}
+			} else {
+				this._doCreate(this._app.getContactList(), mods);
 			}
 		} else {
 			// bug fix #5829 - differentiate betw. an empty contact and saving
 			//                 an existing contact w/o editing
 			if (this._contact.isEmpty()) {
-				this._appCtxt.setStatusMsg(ZmMsg.emptyContact, ZmStatusView.LEVEL_WARNING);
+				var msg = view == ZmController.GROUP_VIEW
+					? ZmMsg.emptyGroup
+					: ZmMsg.emptyContact;
+				this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 			} else {
-				this._appCtxt.setStatusMsg(ZmMsg.contactSaved, ZmStatusView.LEVEL_INFO);
+				var msg = view == ZmController.GROUP_VIEW
+					? ZmMsg.groupSaved
+					: ZmMsg.contactSaved;
+				this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);
 			}
 		}
 	} catch (ex) {

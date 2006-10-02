@@ -73,7 +73,7 @@ ZmContact.F_email2			= "email2";
 ZmContact.F_email3			= "email3";
 ZmContact.F_fileAs			= "fileAs";
 ZmContact.F_firstName		= "firstName";
-ZmContact.F_folderId        = "folderId";
+ZmContact.F_folderId		= "folderId";
 ZmContact.F_homeCity		= "homeCity";
 ZmContact.F_homeCountry		= "homeCountry";
 ZmContact.F_homeFax			= "homeFax";
@@ -108,6 +108,9 @@ ZmContact.F_workPostalCode	= "workPostalCode";
 ZmContact.F_workState		= "workState";
 ZmContact.F_workStreet		= "workStreet";
 ZmContact.F_workURL			= "workURL";
+
+// Group fields
+ZmContact.F_dlist			= "dlist";
 
 // extra fields
 ZmContact.X_fileAs			= "fileAs";
@@ -338,6 +341,11 @@ function() {
 		: false;
 };
 
+ZmContact.prototype.isGroup = 
+function() {
+	return this.getAttr(ZmContact.F_dlist) != null;
+};
+
 ZmContact.prototype.getDefaultDndAction =
 function() {
 	return (this.isShared() || this.isReadOnly())
@@ -358,6 +366,13 @@ function() {
 	else 						icon = "Contact";
 
 	return icon;
+};
+
+ZmContact.prototype.getFolderId =
+function() {
+	return this.isShared()
+		? this.folderId.split(":")[0]
+		: this.folderId;
 };
 
 ZmContact.prototype.getAttr =
