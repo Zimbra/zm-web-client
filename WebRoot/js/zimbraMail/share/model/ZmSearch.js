@@ -297,6 +297,10 @@ function(soapDoc) {
 	if (this.sortBy)
 		method.setAttribute("sortBy", ZmSearch.SORT_BY[this.sortBy]);
 
+	// bug 5771: add timezone and locale info
+	ZmTimezone.set(soapDoc, AjxTimezone.DEFAULT, null);
+	soapDoc.set("locale", AjxEnv.DEFAULT_LOCALE, null);
+
 	if (this.lastId != null && this.lastSortVal) {
 		// cursor is used for paginated searches
 		var cursor = soapDoc.set("cursor");
