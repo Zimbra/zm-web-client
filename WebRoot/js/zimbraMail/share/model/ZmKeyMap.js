@@ -42,9 +42,12 @@ function ZmKeyMap() {
 	
 	DwtKeyMap.call(this);
 	this._load(this._map, ZmKeys, ZmKeyMap.MAP_NAME);
-	if (AjxEnv.isMac) {
-		this._map["ZmComposeController"]["Ctrl+Enter"] = ZmKeyMap.SEND;
-	}
+
+	this._map["Global"]["Alt+Shift+D,0"] = ZmKeyMap.DBG_NONE;
+	this._map["Global"]["Alt+Shift+D,1"] = ZmKeyMap.DBG_1;
+	this._map["Global"]["Alt+Shift+D,2"] = ZmKeyMap.DBG_2;
+	this._map["Global"]["Alt+Shift+D,3"] = ZmKeyMap.DBG_3;
+	this._map["Global"]["Alt+Shift+D,T"] = ZmKeyMap.DBG_TIMING;
 };
 
 ZmKeyMap.prototype = new DwtKeyMap(true);
