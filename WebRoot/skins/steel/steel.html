@@ -59,15 +59,45 @@ skin.hideTreeFooter = function () {
 	this.showTreeFooter(false);
 }
 
-skin.setSize = function(id, width, height) {
 
+
+skin.showTopAd = function (state) {
+	skin._showEl("skin_tr_top_ad", state);
+	skin._reflowApp();
+}
+skin.hideTopAd = function () {
+	this.showTopAd(false);
+}
+skin.getTopAdContainer = function () {
+	return skin.$("skin_container_top_ad");
 }
 
-skin._getEl = function(id) {
+skin.showSidebarAd = function () {
+	var el = skin.$("skin_td_sidebar_ad");
+	skin._showEl("skin_td_sidebar_ad");
+	skin._reflowApp();
+}
+skin.hideSidebarAd = function () {
+	skin._hideEl("skin_td_sidebar_ad");
+	skin._reflowApp();
+}
+
+skin.getSidebarAdContainer = function() {
+	return skin.$("skin_container_sidebar_ad");
+}
+
+
+skin.setSize = function(id, width, height) {
+	var el = skin.$(id);
+	if (width != null) el.style.width = width;
+	if (height != null) el.style.height = height;
+}
+
+skin.$ = function(id) {
 	return document.getElementById(id);
 }
 skin._showEl = function(id, state) {
-	var el = skin._getEl(id);
+	var el = skin.$(id);
 	var value;
 	if (!el) return;
 	if (state == false) {
@@ -80,8 +110,12 @@ skin._showEl = function(id, state) {
 	}
 	el.style.display = value;
 }
-
-
+skin._hideEl = function(id, state) {
+	skin._showEl(id, false);
+}
+skin._reflowApp = function () {
+	window._zimbraMail.getAppViewMgr().fitAll();
+}
 </script>
 
 <!-- BEGIN SKIN -->
@@ -92,10 +126,20 @@ skin._showEl = function(id, state) {
 		<td class="ConsoleOutsetCorner"><div class="ImgConsoleOutset_TR"></div></td>
 	</tr>
 	<tr><td class="ConsoleVertical"><div class="ImgConsoleOutset_L__V" style='height:100%'></div></td>
-		<td><div class="ConsoleOutsetContents">
+		<td>
+		<div class="ConsoleOutsetContents">			
+			<table id="skin_table_outer" class="skin_table" cellpadding=0 border=0>
+			<colgroup><col id="skin_col_left"><col id="skin_col_main"><col id="skin_col_ads"></colgroup>
+<!-- top ad row -->
 
-		<table id="skin_table_outer" class="skin_table" cellpadding=0>
-			<colgroup><col id="skin_col_left"><col id="skin_col_main"></colgroup>
+	<tr id='skin_tr_top_ad'><td colspan=3>
+			<center><span id='skin_container_top_ad'>
+ 					Your top ad goes here
+				</span>
+			</center>
+		</td>
+	</tr>
+
 			
 <!-- BEGIN TOP SECTION -->
 			<tr id="skin_tr_outer_top">
@@ -107,7 +151,7 @@ skin._showEl = function(id, state) {
 				</td>
 <!-- END LOGO -->
 <!-- BEGIN SEARCH CONTROLS AND QUOTA -->
-				<td>
+				<td colspan=2>
 					<table cellspacing=0 cellpadding=0 width=100%><tr>
 						<td id="skin_td_search" width="*">
 						<div class="XConsoleInset">
@@ -142,17 +186,19 @@ QUOTA
 						</div></td>
 					</tr></table>
 				</td>
+			</tr>
+
 <!-- END SEARCH CONTROLS -->
 
 
 <!-- BEGIN SEARCH BUILDER -->
 			<tr id="skin_tr_search_builder">
-				<td colspan=4 id="skin_td_search_builder">
+				<td colspan=2 id="skin_td_search_builder">
 					<div id="skin_div_search_builder" class="ConsoleInset">
 						<table class="ConsoleInsetTable" cellpadding=0>
 						<tr class='ToolbarBg'>
 							<td class="ConsoleToolbarCorner_L" align=right><div class="ImgConsoleSearchBuilderToolbar_L"></div></td>
-							<td class="ConsoleHorizontal"      ><div class="ImgConsoleTopToolbar__H" style='width:100%;'>
+							<td class="ConsoleHorizontal"><div class="ImgConsoleTopToolbar__H" style='width:100%;'>
 									<div id="skin_container_search_builder_toolbar" class="skin_container">
 <!--
 SEARCH BUILDER TOOLBAR
@@ -182,7 +228,6 @@ SEARCH BUILDER
 						</table>
 					</div xid="search_control_inset">
 				</td>
-			
 			</tr>
 <!-- END SEARCH BUILDER -->
 
@@ -315,7 +360,7 @@ Watch this space for important news!
 
 
 <!-- BEGIN App -->
-				<td id="skin_td_right_frame" colspan=3>
+				<td id="skin_td_right_frame">
 					<table id='skin_table_main' class=skin_table cellpadding=0 Xborder=1>
 					<tr id="skin_tr_top_toolbar" class="ImgToolbar__BG">
 						<td class="ConsoleToolbarCorner_L_1"><div class="ImgConsoleTopToolbar_L_1"></div></td>
@@ -333,7 +378,7 @@ Watch this space for important news!
 						<td class="ConsoleToolbarCorner_R_1"><div class="ImgConsoleTopToolbar_R_1"></div></td>
 						<td class="ConsoleToolbarCorner_R_2"><div class="ImgConsoleTopToolbar_R_2"></div></td>
 					</tr>
-				<tr id="skin_tr_top_toolbar_shim">
+					<tr id="skin_tr_top_toolbar_shim">
 						<td class="ConsoleToolbarCorner_L_1"><div class="ImgConsoleInsetApp_TL"></div></td>
 						<td class="ConsoleToolbarCorner_L_2"><div class="ImgConsoleInsetApp_T__H"></div></td>
 						<td class="ConsoleHorizontal"      ><div class="ImgConsoleInsetApp_T__H" style='width:100%'></div></td>
@@ -378,13 +423,37 @@ Watch this space for important news!
 
 					</table>
 				</td>
+
+				<td id='skin_td_sidebar_ad' style='vertical-align:top;background-color:#EEEEEE;'>
+					<table class="ConsoleInsetTable" cellpadding=0 id="search_control_inset">
+					<tr><td class="ConsoleInsetCorner"><div class="ImgConsoleInset_TL"></div></td>
+						<td class="ConsoleHorizontal" ><div class="ImgConsoleInset_T__H" style='width:100%'></div></td>
+						<td class="ConsoleInsetCorner"><div class="ImgConsoleInset_TR"></div></td>
+					</tr>
+					<tr><td class="ConsoleVertical"  ><div class="ImgConsoleInset_L__V" style='height:100%'></div></td>
+						<td>
+							<div class='skin_sidebar_ad' style='height:100%;overflow:hidden;'>
+								<div id='skin_container_sidebar_ad'>
+									Your sidebar ad here
+								</div>
+							</div>
+						</td>
+						<td><div class="ImgConsoleInset_R__V" style='height:100%'></div></td>
+					</tr>
+					<tr><td><div class="ImgConsoleInset_BL"></div></td>
+						<td><div class="ImgConsoleInset_B__H" style='width:100%'></div></td>
+						<td><div class="ImgConsoleInset_BR"></div></td>
+					</tr>
+					</table>
+				</td>
 			</tr>
 
 		</table>
 
 
 <!-- BEGIN OUTSET END -->
-		</div></td>
+		</div>
+		</td>
 		<td><div class="ImgConsoleOutset_R__V" style='height:100%'></div></td>
 	</tr>
 	<tr><td><div class="ImgConsoleOutset_BL"></div></td>
