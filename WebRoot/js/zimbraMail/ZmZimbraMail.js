@@ -1670,13 +1670,20 @@ function(creates, modifies) {
 			var page = new ZmPage(this._appCtxt);
 			page.set(create);
 			cache.putPage(page);
-			
+
 			// re-render current page, if necessary
 			var notebookController = notebookApp.getNotebookController();
 			var shownPage = notebookController.getPage();
 			if (shownPage && shownPage.name == ZmNotebook.PAGE_INDEX) {
 				notebookController.gotoPage(shownPage);
 			}
+		} else if (name == "doc") {
+			// REVISIT: use app context item cache
+			var notebookApp = this.getApp(ZmZimbraMail.NOTEBOOK_APP);
+			var cache = notebookApp.getNotebookCache();
+			var doc = new ZmDocument(this._appCtxt);
+			doc.set(create);
+			cache.putDocument(doc);
 		} else if (name == "m") {
 			var msg = ZmMailMsg.createFromDom(create, {appCtxt: this._appCtxt}, true);
 			msgs[msg.id] = msg;
@@ -1760,6 +1767,22 @@ function(modifies) {
 				if (shownPage.name == ZmNotebook.PAGE_INDEX || shownPage.name == page.name) {
 					notebookController.gotoPage(shownPage);
 				}
+			}
+			continue;
+		}
+		if (name == "doc" && id) {
+			// REVISIT: Use app context item cache
+			var notebookApp = this.getApp(ZmZimbraMail.NOTEBOOK_APP);
+			var cache = notebookApp.getNotebookCache();
+			var doc = cache.getDocumentById(mod.id);
+			if (!doc) {
+				doc = new ZmDocument(this._appCtxt);
+				doc.set(mod);
+				cache.putDocument(doc);
+			}
+			else {
+				doc.notifyModify(mod);
+				doc.set(mod);
 			}
 			continue;
 		}

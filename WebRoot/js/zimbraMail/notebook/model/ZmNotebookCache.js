@@ -71,7 +71,6 @@ ZmNotebookCache.prototype._appCtxt;
 
 ZmNotebookCache.prototype._idMap;
 ZmNotebookCache.prototype._foldersMap;
-ZmNotebookCache.prototype._creatorsMap;
 
 ZmNotebookCache.prototype._changeListener;
 
@@ -93,7 +92,11 @@ function(folderId, callback, errorCallback) {
 	/***/
 
 	var soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
-	soapDoc.setMethodAttribute("types", "wiki");
+	var types = [
+		ZmSearch.TYPE[ZmItem.PAGE],
+		ZmSearch.TYPE[ZmItem.DOCUMENT]
+	];
+	soapDoc.setMethodAttribute("types", types.join());
 	soapDoc.setMethodAttribute("limit", "250");
 	var queryNode = soapDoc.set("query", search);
 		
@@ -119,60 +122,87 @@ function(folderId, callback, errorCallback) {
 	}
 };
 
-ZmNotebookCache.prototype.putPage = function(page) {
-	if (page.id) { 
-		this._idMap[page.id] = page; 
+ZmNotebookCache.prototype.putItem = function(item) {
+	if (item.id) {
+		this._idMap[item.id] = item;
 	}
-	var folderId = page.folderId || ZmNotebookItem.DEFAULT_FOLDER;
-	this.getPagesInFolder(folderId)[page.name] = page;
+	var folderId = item.folderId || ZmNotebookItem.DEFAULT_FOLDER;
+	var items = this.getItemsInFolder(folderId);
+	items.all[item.name] = item;
+	if (item instanceof ZmPage) {
+		items.pages[item.name] = item;
+	}
+	else if (item instanceof ZmDocument) {
+		items.docs[item.name] = item;
+	}
 	/*** REVISIT ***/
-	var remoteFolderId = page.remoteFolderId;
+	var remoteFolderId = item.remoteFolderId;
 	if (remoteFolderId) {
 		if (!this._foldersMap[remoteFolderId]) {
 			this._foldersMap[remoteFolderId] = this._foldersMap[folderId];
 		}
 	}
 	/***/
-	if (page.creator) {
-		this.getPagesByCreator(page.creator)[page.name] = page;
-	}
-	
-	page.addChangeListener(this._changeListener);
+
+	item.addChangeListener(this._changeListener);
+};
+ZmNotebookCache.prototype.putPage = function(page) {
+	this.putItem(page);
+};
+ZmNotebookCache.prototype.putDocument = function(doc) {
+	this.putItem(doc);
 };
 
+ZmNotebookCache.prototype.renameItem = function(item, newName) {
+	this.removeItem(item);
+	item.name = newName;
+	this.putItem(item);
+};
 ZmNotebookCache.prototype.renamePage = function(page, newName) {
-	var pages = this._foldersMap[page.folderId];
-	if (pages) {
-		if (pages[page.name]) {
-			delete pages[page.name];
-			pages[newName] = page;
-			page.name = newName;
+	this.renameItem(page, newName);
+};
+ZmNotebookCache.prototype.renameDocument = function(doc, newName) {
+	this.renameItem(doc, newName);
+};
+
+ZmNotebookCache.prototype.removeItem = function(item) {
+	if (item.id) {
+		delete this._idMap[item.id];
+	}
+	var items = this.getItemsInFolder(item.folderId);
+	delete items.all[item.name];
+	if (item instanceof ZmPage) {
+		delete items.pages[item.name];
+	}
+	else if (item instanceof ZmDocument) {
+		delete items.docs[item.name];
+	}
+	/*** REVISIT ***/
+	var remoteFolderId = item.remoteFolderId;
+	if (remoteFolderId) {
+		var items = this.getItemsInFolder(remoteFolderId);
+		delete items.all[item.name];
+		if (item instanceof ZmPage) {
+			delete items.pages[item.name];
+		}
+		else if (item instanceof ZmDocument) {
+			delete items.docs[item.name];
 		}
 	}
-};
-
-ZmNotebookCache.prototype.removePage = function(page) {
-	if (page.id) { 
-		delete this._idMap[page.id]; 
-	}
-	delete this.getPagesInFolder(page.folderId)[page.name];
-	/*** REVISIT ***/
-	var remoteFolderId = page.remoteFolderId;
-	if (remoteFolderId) {
-		delete this.getPagesInFolder(remoteFolderId)[page.name];
-	}
 	/***/
-	if (page.creator) {
-		delete this.getPagesByCreator(page.creator)[page.name];
-	}
-	
-	page.removeChangeListener(this._changeListener);
+
+	item.removeChangeListener(this._changeListener);
+};
+ZmNotebookCache.prototype.removePage = function(page) {
+	this.removeItem(page);
+};
+ZmNotebookCache.prototype.removeDocument = function(doc) {
+	this.removeItem(doc);
 };
 
 ZmNotebookCache.prototype.clearCache = function() {
 	this._idMap = {};
 	this._foldersMap = {};
-	this._creatorsMap = {};
 };
 
 // query methods
@@ -183,17 +213,29 @@ ZmNotebookCache.prototype.getIds = function() {
 ZmNotebookCache.prototype.getFolders = function() {
 	return this._foldersMap;
 };
-ZmNotebookCache.prototype.getCreators = function() {
-	return this._creatorsMap;
-};
 
-ZmNotebookCache.prototype.getPageById = function(id) {
+ZmNotebookCache.prototype.getItemById = function(id) {
 	return this._idMap[id];
 };
+ZmNotebookCache.prototype.getPageById = function(id) {
+	var item = this._idMap[id];
+	return item instanceof ZmPage ? item : null;
+};
+ZmNotebookCache.prototype.getDocumentById = function(id) {
+	var item = this._idMap[id];
+	return item instanceof ZmDocument ? item : null;
+};
+
+ZmNotebookCache.prototype.getItemByName = function(folderId, name, traverseUp) {
+	var items = this.getItemsInFolder(folderId);
+	var item = items.pages[name] || items.docs[name];
+	return item;
+};
 ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
-	var pages = this.getPagesInFolder(folderId);
-	var page = pages[name];
-	if (page != null) return page;
+	var item = this.getItemByName(folderId, name, traverseUp);
+	if (item) {
+		return item instanceof ZmPage ? item : null;
+	}
 
 	// one of the "special" pages was requested so load them all at once
 	if (name in ZmNotebookCache._SPECIAL_NAMES) {
@@ -260,28 +302,34 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 	// page not found
 	return null;
 };
+ZmNotebookCache.prototype.getDocumentByName = function(folderId, name, traverseUp) {
+	var item = this.getItemByName(folderId, name, traverseUp);
+	return item instanceof ZmDocument ? item : null;
+};
 
 /**
- * Returns a page by link. This method will attempt to locate the page in
- * cache and, if not found, will attempt to get the page from the server.
+ * Returns an item by link. This method will attempt to locate the item in
+ * cache and, if not found, will attempt to get the item from the server.
  * <p>
  * Links can be one of the following formats:
  * <dl>
  * <dt> Foo
- *   <dd> Link to section/page in current notebook
+ *   <dd> Link to section/item in current notebook
  * <dt> Foo/Bar
- *   <dd> Link to section/page in sub-section of current notebook
+ *   <dd> Link to section/item in sub-section of current notebook
  * <dt> /Foo/Bar
- *   <dd> Link to section/page in top-level notebook of owner of current
+ *   <dd> Link to section/item in top-level notebook of owner of current
  *        notebook
  * <dt> //User/Foo/Bar
- *   <dd> Link to section/page in top-level notebook of specific user
+ *   <dd> Link to section/item in top-level notebook of specific user
  * </dl>
  */
-ZmNotebookCache.prototype.getPageByLink = function(link) {
+ZmNotebookCache.prototype.getItemByLink = function(link) {
 	// link: //User/Foo/Bar
 	var m;
 	if (m = link.match(/^\/\/([^\/]+)(?:\/(.*))?/)) {
+		// TODO: What if remote link is a document???
+
 		// normalize link
 		if (!m[2]) {
 			link = link.replace(/\/?$/,"/Notebook/"+ZmNotebook.PAGE_INDEX);
@@ -355,11 +403,20 @@ ZmNotebookCache.prototype.getPageByLink = function(link) {
 		link = ZmNotebook.PAGE_INDEX;
 	}
 
-	// link: Foo (page)
+	// link: Foo (item)
 	var traverseUp = Boolean(link.match(/^_/));
-	var page = this.getPageByName(notebook.id, link, traverseUp);
-	return page;
+	var item = this.getItemByName(notebook.id, link, traverseUp);
+	return item;
 };
+ZmNotebookCache.prototype.getPageByLink = function(link) {
+	var item = this.getItemByLink(link);
+	return item instanceof ZmPage ? item : null;
+};
+ZmNotebookCache.prototype.getDocumentByLink = function(link) {
+	var item = this.getItemByLink(link);
+	return item instanceof ZmDocument ? item : null;
+};
+
 ZmNotebookCache.prototype._getPageByLinkResponse = function(response) {
 	var batchResp = response && response._data && response._data.BatchResponse;
 	var wikiResp = batchResp && batchResp.GetWikiResponse;
@@ -392,15 +449,20 @@ ZmNotebookCache.__getNotebookByName = function(parent, name) {
 	return null;
 };
 
-ZmNotebookCache.prototype.getPagesInFolder = function(folderId) {
+ZmNotebookCache.prototype.getItemsInFolder = function(folderId) {
 	folderId = folderId || ZmNotebookItem.DEFAULT_FOLDER;
 	if (!this._foldersMap[folderId]) {
-		this._foldersMap[folderId] = {};
+		this._foldersMap[folderId] = { all: {}, pages: {}, docs: {} };
 		this.fillCache(folderId);
 	}
 	return this._foldersMap[folderId];
 };
-
+ZmNotebookCache.prototype.getPagesInFolder = function(folderId) {
+	return this.getItemsInFolder(folderId).pages;
+};
+ZmNotebookCache.prototype.getDocumentsInFolder = function(folderId) {
+	return this.getItemsInFolder(folderId).docs;
+};
 
 // make a proxy of a page in a different folder
 ZmNotebookCache.prototype.makeProxyPage = function(page, folderId) {
@@ -417,13 +479,6 @@ ZmNotebookCache.prototype.makeProxyPage = function(page, folderId) {
 }
 
 
-ZmNotebookCache.prototype.getPagesByCreator = function(creator) {
-	if (!this._creatorsMap[creator]) {
-		this._creatorsMap[creator] = {};
-	}
-	return this._creatorsMap[creator];
-};
-
 // Protected methods
 
 ZmNotebookCache.prototype._fillCacheResponse = 
@@ -438,16 +493,31 @@ function(requestParams, folderId, callback, errorCallback, response) {
 		var words = searchResponse.w || [];
 		for (var i = 0; i < words.length; i++) {
 			var word = words[i];
-			var page = this.getPageById(word.id);
-			if (!page) {
-				page = new ZmPage(this._appCtxt);
-				page.set(word);
-				page.folderId = folderId;
-				page.remoteFolderId = remoteFolderId; // REVISIT
-				this.putPage(page);
+			var item = this.getPageById(word.id);
+			if (!item) {
+				item = new ZmPage(this._appCtxt);
+				item.set(word);
+				item.folderId = folderId;
+				item.remoteFolderId = remoteFolderId; // REVISIT
+				this.putPage(item);
 			}
 			else {
-				page.set(word);
+				item.set(word);
+			}
+		}
+		var docs = searchResponse.doc || [];
+		for (var i = 0; i < docs.length; i++) {
+			var doc = docs[i];
+			var item = this.getDocumentById(doc.id);
+			if (!item) {
+				item = new ZmDocument(this._appCtxt);
+				item.set(doc);
+				item.folderId = folderId;
+				item.remoteFolderId = remoteFolderId; // REVISIT
+				this.putDocument(item);
+			}
+			else {
+				item.set(doc);
 			}
 		}
 
