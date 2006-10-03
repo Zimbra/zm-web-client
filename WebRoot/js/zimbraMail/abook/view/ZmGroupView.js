@@ -70,14 +70,14 @@ function() {
 	// creating new contact (possibly some fields - but not ID - prepopulated)
 	if (this._contact.id == null || this._contact.isGal) {
 		mods[ZmContact.F_folderId] = folderId
-		mods[ZmContact.F_fileAs] = ZmContact.FA_COMPANY;
-		mods[ZmContact.F_company] = groupName;
+		mods[ZmContact.F_fileAs] = ZmContact.FA_LAST_C_FIRST;
+		mods[ZmContact.F_lastName] = groupName;
 		mods[ZmContact.F_dlist] = groupMembers
 		foundOne = true;
 	} else {
 		// modifying existing contact
-		if (this._contact.getAttr(ZmContact.F_company) != groupName) {
-			mods[ZmContact.F_company] = groupName;
+		if (this._contact.getAttr(ZmContact.F_lastName) != groupName) {
+			mods[ZmContact.F_lastName] = groupName;
 			foundOne = true;
 		}
 
@@ -109,7 +109,7 @@ function() {
 	var folderId = this._folderSelect.getValue();
 
 	// modifying existing contact
-	if (this._contact.getAttr(ZmContact.F_company) != groupName ||
+	if (this._contact.getAttr(ZmContact.F_lastName) != groupName ||
 		this._contact.getAttr(ZmContact.F_dlist) != groupMembers ||
 		folderId != this._contact.getFolderId())
 	{
@@ -301,7 +301,7 @@ function() {
 
 ZmGroupView.prototype._setGroupName =
 function() {
-	var groupName = this._contact.getAttr(ZmContact.F_company);
+	var groupName = this._contact.getAttr(ZmContact.F_lastName);
 	document.getElementById(this._groupNameId).value = groupName || "";
 };
 

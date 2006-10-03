@@ -103,7 +103,7 @@ function() {
 
 ZmContactController.prototype._getViewType =
 function() {
-	return this._contact.type == ZmItem.GROUP
+	return this._contact.isGroup()
 		? ZmController.GROUP_VIEW
 		: ZmController.CONTACT_VIEW;
 };

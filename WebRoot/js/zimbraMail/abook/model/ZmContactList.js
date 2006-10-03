@@ -823,7 +823,7 @@ function(contact, str, doMarkup) {
 	contact = (contact instanceof ZmContact) ? contact : (contact && contact.id) ? this.getById(contact.id) : this.getById(contact);
 	if (!contact || ZmContact.isInTrash(contact)) return false;
 
-	for (var i = 0; i < this._acMatchFields.length;i++) {
+	for (var i = 0; i < this._acMatchFields.length; i++) {
 		var field = this._acMatchFields[i];
 		var value = ZmContact.getAttr(contact, field);
 		if (value && (value.toLowerCase().indexOf(str) == 0)) {
@@ -931,11 +931,9 @@ function(contact, str) {
 	if (match.matchedField == ZmContact.F_email || match.matchedField == ZmContact.F_email2 || match.matchedField == ZmContact.F_email3) {
 		results.push(this._createMatch(name, match.savedMatch, fullName, ZmContact.getAttr(contact, match.matchedField), contact));
 	} else {
-		for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
-			var val = ZmContact.getAttr(contact, ZmContact.F_EMAIL_FIELDS[i]);
-			if (val) {
-				results.push(this._createMatch(name, val, fullName, val, contact));
-			}
+		var val = contact.isGroup() ? contact.getGroupMembers().good : contact.getEmail();
+		if (val) {
+			results.push(this._createMatch(name, val, fullName, val, contact));
 		}
 	}
 
@@ -954,15 +952,33 @@ function(contact, str) {
 ZmContactList.prototype._createMatch =
 function(nameHL, emailHL, name, email, contact) {
 	var result = {};
-	result.text = [nameHL, " &lt;", emailHL, "&gt;"].join("");
+	result.text = contact.isGroup() ? nameHL : ([nameHL, " &lt;", emailHL, "&gt;"].join(""));
 	result.plain = result.text.replace(/<\/?b>/g, "");	// for sorting results
 	result.item = contact;
-	if (this._galAutocompleteEnabled) {
-		result.icon = contact.isGal ? "GALContact" : "Contact";
+	result.icon = contact.isGroup()
+		? "Group"
+		: (contact.isGal ? "GALContact" : "Contact");
+
+	if (contact.isGroup()) {
+		result[ZmContactList.AC_VALUE_FULL] = emailHL.toString(ZmEmailAddress.SEPARATOR);
+
+		var members = emailHL.getArray();
+		var emailArr = [];
+		var nameArr = [];
+
+		var e = null;
+		for (var i = 0; i < members.length; i++) {
+			e = members[i].address;
+			emailArr.push(e);
+			nameArr.push(members[i].name || e);
+		}
+		result[ZmContactList.AC_VALUE_EMAIL] = emailArr.join(ZmEmailAddress.SEPARATOR);
+		result[ZmContactList.AC_VALUE_NAME] = nameArr.join(ZmEmailAddress.SEPARATOR);
+	} else {
+		result[ZmContactList.AC_VALUE_FULL] = name ? ['"', name, '" <', email, ">"].join("") : email;
+		result[ZmContactList.AC_VALUE_EMAIL] = email;
+		result[ZmContactList.AC_VALUE_NAME] = name || email;
 	}
-	result[ZmContactList.AC_VALUE_FULL] = name ? ['"', name, '" <', email, ">"].join("") : email;
-	result[ZmContactList.AC_VALUE_EMAIL] = email;
-	result[ZmContactList.AC_VALUE_NAME] = name;
 
 	return result;
 };
