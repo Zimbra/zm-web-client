@@ -106,6 +106,7 @@
 	 	appCurrentSkin = "<%= skin %>";
 	</script>
 <script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZaMsg.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%=contextPath %>/js/keys/AjxKeys.js<%=ext %>?v=<%=vers %>"></script>
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
 		<!--
