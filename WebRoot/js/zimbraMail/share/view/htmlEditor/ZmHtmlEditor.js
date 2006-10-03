@@ -152,7 +152,7 @@ function() {
 	var content = DwtHtmlEditor.prototype.getContent.call(this);
 	if (this.ACE_ENABLED && this._mode == DwtHtmlEditor.HTML)
 		content = this._serializeAceObjects(content);
-	return content;	
+	return content;
 };
 
 ZmHtmlEditor.prototype.spellCheck =
@@ -915,8 +915,8 @@ function(done, match, iframeId) {
 		done[component_name] = true;
 		this._headContent.push(win.getHeadHTML());
 	}
-	return ["<div class=\"ACE ", component_name, "\">", 
-	        html, 
+	return ["<div class=\"ACE ", component_name, "\">",
+	        html,
 	        "<!--",
 	        "ACE[", component_name, "]:", data,
 	        "-->",
@@ -1461,16 +1461,16 @@ ZmHtmlEditor.prototype._enableDesignMode = function(doc) {
 				}
 				doc.designMode = "off";
 			}, this);
+		// bug 8508 - start off with disabled toolbars
+		this._designModeHack_blur();
 	}
 
 	if (!this._designModeHack_focus) {
 		this._designModeHack_focus = AjxCallback.simpleClosure(
 			function() {
 				var a = [];
-				if (this._toolbar1)
-					a = a.concat(this._toolbar1.getChildren());
-				if (this._toolbar2)
-					a = a.concat(this._toolbar2.getChildren());
+				for (var i = 0; i < this._toolbars.length; i++)
+					a = a.concat(this._toolbars[i].getChildren());
 				for (var i = 0; i < a.length; ++i)
 					a[i].setEnabled(true);
 				if (this._ace_componentsLoading > 0)
