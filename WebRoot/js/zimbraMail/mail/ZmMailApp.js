@@ -36,9 +36,30 @@ function() {
 };
 
 ZmMailApp.prototype.launch =
-function(callback, errorCallback) {
+function(callback, errorCallback, checkQS) {
 	var respCallback = new AjxCallback(this, this._handleResponseLaunch, callback);
-	var params = {query: this._appCtxt.get(ZmSetting.INITIAL_SEARCH), callback: respCallback, errorCallback: errorCallback};
+	var query = null;
+	if (checkQS) {
+		if (location && (location.search.match(/\bview=compose\b/))) {
+			var cc = this.getComposeController();
+			var match = location.search.match(/\bsubject=([^&]+)/);
+			var subject = match ? decodeURIComponent(match[1]) : null;
+			match = location.search.match(/\bto=([^&]+)/);
+			var to = match ? decodeURIComponent(match[1]) : null;
+			match = location.search.match(/\bbody=([^&]+)/);
+			var body = match ? decodeURIComponent(match[1]) : null;
+			cc.doAction(ZmOperation.NEW_MESSAGE, false, null, to, subject, body, respCallback);
+			return;
+		} else if (location.search && (location.search.match(/\bview=msg\b/))) {
+			var match = location.search.match(/\bid=(\d+)/);
+			var id = match ? match[1] : null;
+			if (id) {
+				query = ["item:", id].join("");
+			}
+		}
+	}
+	query = query ? query : this._appCtxt.get(ZmSetting.INITIAL_SEARCH);
+	var params = {query: query, callback: respCallback, errorCallback: errorCallback};
 	this._appCtxt.getSearchController().search(params);
 };
 

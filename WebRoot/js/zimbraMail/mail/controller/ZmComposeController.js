@@ -116,7 +116,7 @@ function() {
 };
 
 ZmComposeController.prototype.doAction =
-function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText) {
+function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText, callback) {
 	if (inNewWindow) {
 		var newWinObj = this._appCtxt.getNewWindow();
 
@@ -125,6 +125,9 @@ function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText) {
 		newWinObj.args = [action, msg, toOverride, subjOverride, extraBodyText, null];
 	} else {
 		this._setView(action, msg, toOverride, subjOverride, extraBodyText, null);
+	}
+	if (callback) {
+		callback.run();
 	}
 };
 
