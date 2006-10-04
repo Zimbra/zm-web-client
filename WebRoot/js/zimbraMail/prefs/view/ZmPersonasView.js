@@ -25,7 +25,7 @@
 
  function ZmPersonasView(parent, appCtxt, controller) {
 
-	DwtTabViewPage.call(this, parent, "ZmPersonasView");
+	ZmPrefListView.call(this, parent, appCtxt, controller, "ZmPersonasView");
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;
@@ -33,11 +33,11 @@
 	
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.PERSONAS]].join(": ");
 
-	this._rendered = false;
-	this._hasRendered = false;
+	this._personaNameInput = null;
+	this._personaPage = null;
 };
 
-ZmPersonasView.prototype = new DwtTabViewPage;
+ZmPersonasView.prototype = new ZmPrefListView;
 ZmPersonasView.prototype.constructor = ZmPersonasView;
  
 ZmPersonasView.prototype.toString =
@@ -45,114 +45,20 @@ function() {
 	return "ZmPersonasView";
 };
 
-ZmPersonasView.prototype.showMe =
-function() {
-	Dwt.setTitle(this._title);
-	this._prefsController._resetOperations(this._prefsController._toolbar, ZmPrefView.PERSONAS);
-	if (this._hasRendered) return;
-
-	this._createHtml();
-	this._hasRendered = true;
-};
-
 ZmPersonasView.prototype.getTitle =
 function() {
 	return this._title;
 };
 
-ZmPersonasView.prototype.hasRendered =
-function () {
-	return this._hasRendered;
-};
-
-ZmPersonasView.prototype.getAddButton =
-function() {
-	return this._addButton;
-};
-
-ZmPersonasView.prototype.getRemoveButton =
-function() {
-	return this._removeButton;
-};
-
-ZmPersonasView.prototype.getPersonaListView =
-function() {
-	return this._personaListView;
-};
-
-ZmPersonasView.prototype._createHtml =
-function() {
-	var html = [];
-	var i = 0;
-	var listCellId = Dwt.getNextId();
-	this._personasCell = Dwt.getNextId();
-	var newPersonaButtonCellId = Dwt.getNextId();
-	var removePersonaButtonCellId = Dwt.getNextId();
-	
-	html[i++] = "<table width='100%' height='100%' cellspacing=10><tr><td class='OutsetPanel' width='100px'><table class='ZmPersonasBox'><tr><td id='";
-	html[i++] = listCellId;
-	html[i++] = "'></td></tr><tr><td><table width='100%'><tr>";
-	html[i++] = "<td id='";
-	html[i++] = newPersonaButtonCellId;
-	html[i++] = "'></td>"
-	html[i++] = "<td id='";
-	html[i++] = removePersonaButtonCellId;
-	html[i++] = "'></td>";
-	html[i++] = "</tr></table></td></tr></table></td><td style='vertical-align:top;'>";
-	i = this._createInfoBox(html, i, ZmMsg.personaInfoTitle, ZmMsg.personaInfoContent);
-	html[i++] = "<div id = '";
-	html[i++] = this._personasCell;
-	html[i++] = "'></div></td></tr></table>";
-	this.getHtmlElement().innerHTML = html.join("");
-
-//Dave: this can be done inline
-	this._createTabView();		
-
-	// Create the list of personas.
-	this._personaListView = new ZmPersonaListView(this, this._appCtxt);
-	var listCell = document.getElementById(listCellId);
-	this._personaListView.reparentHtmlElement(listCell);
-	this._personaListView.setSize(200, 600);
-	
-	// Create the Add & remove buttons.
-	this._addButton = new DwtButton(this, DwtLabel.ALIGN_CENTER);
-	this._addButton.reparentHtmlElement(newPersonaButtonCellId)
-	this._addButton.setText(ZmMsg.add);
-	this._removeButton = new DwtButton(this, DwtLabel.ALIGN_CENTER);
-	this._removeButton.reparentHtmlElement(removePersonaButtonCellId)
-	this._removeButton.setText(ZmMsg.remove);
-	
-	this._controller._setup();
-};
-
-ZmPersonasView.prototype._createInfoBox =
-function(html, i, title, contents) {
-	html[i++] = "<div class='infoBox'><div class='InfoTitle'><div class='infoTitleClose'>";
-	html[i++] = ZmMsg.close;
-	html[i++] = "</div>";
-	html[i++] = title;
-	html[i++] = "</div>";
-	html[i++] = contents;
-	html[i++] = "</div>";
-	return i;
-};
-
-ZmPersonasView.prototype.showPersona =
-function(persona) {
-	this._personaNameInput.setValue(persona.name);
-	this._personaPage.setPersona(persona);
-};
-
-ZmPersonasView.prototype._createTabView =
-function() {
+ZmPersonasView.prototype._createDetails =
+function(parentElement) {
 	var inputId = Dwt.getNextId();
-	
-	var cell = document.getElementById(this._personasCell);
+
 	var html = ["<div><table cellspacing=1 cellpadding=1 class='nestedOptionTable'>",
 				"<tr><td colspan=2><div class='PanelHead'>", ZmMsg.personasLabel, "</div></td></tr>",
 				"<tr><td style='text-align:right;' width='200px'>", 
 	            ZmMsg.personaNameLabel, "</td><td id='", inputId, "'></td></tr></table></div>"].join("");
-	cell.innerHTML = html;
+	parentElement.innerHTML = html;
 	
 	var inputCell = document.getElementById(inputId);
 	var params = { parent: this.parent, type: DwtInputField.STRING, size: 50 };
@@ -161,12 +67,28 @@ function() {
 	this._personaNameInput.reparentHtmlElement(inputCell);
 
 	var tabView = new DwtTabView(this, null, Dwt.STATIC_STYLE);
-	tabView.reparentHtmlElement(cell);
+	tabView.reparentHtmlElement(parentElement);
 	
 	this._personaPage = new ZmPersonaPage(this.parent, ZmPersonaPage.SENDING);
 	tabView.addTab(ZmMsg.personaOptions, this._personaPage);
 	var tab = new ZmPersonaPage(this.parent, ZmPersonaPage.REPLYING);
 	tabView.addTab(ZmMsg.personaAdvanced, tab);
+};
+
+ZmPersonasView.prototype._getInfoTitle =
+function() {
+	return ZmMsg.personaInfoTitle;
+};
+
+ZmPersonasView.prototype._getInfoContents =
+function() {
+	return ZmMsg.personaInfoContent;
+};
+
+ZmPersonasView.prototype.showItem =
+function(persona) {
+	this._personaNameInput.setValue(persona.name);
+	this._personaPage.setPersona(persona);
 };
 
 /*
@@ -289,7 +211,7 @@ function() {
 	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
 	html[i++] = ZmMsg.sendWithPersona;
 	html[i++] = "</legend>";
-	html[i++] = "<table width='100%'>";
+	html[i++] = "<table style='width:100%'>";
 
 	html[i++] = "<tr><td class='Label'>";
 	html[i++] = ZmMsg.sendFrom;
@@ -323,7 +245,7 @@ function() {
 	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
 	html[i++] = ZmMsg.selectPersonaWhen;
 	html[i++] = "</legend>";
-	html[i++] = "<table width='100%'>";
+	html[i++] = "<table style='width:100%'>";
 
 	html[i++] = "<tr><td style='text-align:right;'><input type='checkbox' id='";
 	html[i++] = this._whenSentToCheckboxId;
@@ -407,11 +329,23 @@ function(controls, event) {
 
 ZmPersonaPage.prototype._initializeReplying =
 function() {
-	this.getHtmlElement().innerHTML = "" + this._page;
-};
-
-ZmPersonaPage.prototype._initializeSelection =
-function() {
-	this.getHtmlElement().innerHTML = "" + this._page;
+	
+	this._useDefaults = Dwt.getNextId();
+	
+	var html = [];
+	var i = 0;
+	html[i++] = "<input type='checkbox' id='";
+	html[i++] = this._useDefaults;
+	html[i++] = "'>";
+	html[i++] = ZmMsg.personasUseDefault;
+	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
+	html[i++] = ZmMsg.sendWithPersona;
+	html[i++] = "</legend>";
+	html[i++] = "</fieldset>";
+	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
+	html[i++] = ZmMsg.replyWithPersona;
+	html[i++] = "</legend>";
+	html[i++] = "</fieldset>";
+	this.getHtmlElement().innerHTML = html.join("");
 };
 

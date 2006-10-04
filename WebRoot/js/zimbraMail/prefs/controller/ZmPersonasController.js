@@ -37,48 +37,31 @@
 * @param prefsView		[ZmPreferencesView]	the preferences view
 */
 function ZmPersonasController(appCtxt, container, prefsApp, prefsView) {
-	ZmController.call(this, appCtxt, container, prefsApp);
+	ZmPrefListController.call(this, appCtxt, container, prefsApp, prefsView);
 
-	this._prefsView = prefsView;
-	this._personasView = new ZmPersonasView(this._prefsView._parent, appCtxt, this);
+	this._listView = new ZmPersonasView(prefsView._parent, appCtxt, this);
 };
 
-ZmPersonasController.prototype = new ZmController();
+ZmPersonasController.prototype = new ZmPrefListController();
 ZmPersonasController.prototype.constructor = ZmPersonasController;
-
-/**
-* Returns the personas view.
-*/
-ZmPersonasController.prototype.getPersonasView =
-function() {
-	return this._personasView;
-};
 
 ZmPersonasController.prototype._setup =
 function() {
-	// Fill in the list view.	
-	var listView = this._personasView.getPersonaListView();
-	listView.addSelectionListener(new AjxListener(this, this._listSelectionListener));
-	listView.set(AjxVector.fromArray(ZmPersonaCollection.HACK.getPersonas()));
-	
-	// Set up the Add/remove buttons.
-	var addButton = this._personasView.getAddButton();
-	addButton.addSelectionListener(new AjxListener(this, this._addPersonaHandler));
-	var removeButton = this._personasView.getRemoveButton();
-	removeButton.addSelectionListener(new AjxListener(this, this._removePersonaHandler));
+	ZmPrefListController.prototype._setup.call(this);
+	this._listView.getList().setSelection(ZmPersonaCollection.HACK.defaultPersona);
 };
 
-ZmPersonasController.prototype._addPersonaHandler =
+ZmPersonasController.prototype._addHandler =
 function() {
 	var persona = new ZmPersona("New Persona");
-	var listView = this._personasView.getPersonaListView();
+	var listView = this.getListView().getList();
 	listView.addItem(persona);
 	listView.setSelection(persona);
 };
 
-ZmPersonasController.prototype._removePersonaHandler =
+ZmPersonasController.prototype._removeHandler =
 function() {
-	var listView = this._personasView.getPersonaListView();
+	var listView = this.getListView().getList();
 	var persona = listView.getSelection()[0];
 	if (persona) {
 		listView.removeItem(persona);
@@ -86,17 +69,9 @@ function() {
 	}
 };
 
-/*
-* Handles left-clicking on an item.
-*
-* @param	[DwtEvent]		the click event
-*/
-ZmPersonasController.prototype._listSelectionListener =
-function(ev) {
-	if (ev.detail == DwtListView.ITEM_SELECTED) {
-		var listView = this._personasView.getPersonaListView();
-		var selection = listView.getSelection()[0];
-		this._personasView.showPersona(selection);
-	}
+ZmPrefListController.prototype._getListData =
+function() {
+	return AjxVector.fromArray(ZmPersonaCollection.HACK.getPersonas())
 };
+
 
