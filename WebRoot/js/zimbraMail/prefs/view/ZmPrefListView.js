@@ -29,7 +29,7 @@
  * @constructor
  * @class
  * Abstract class that displays pages with lists of preferences, such as
- * personas, signatures, and accounts.
+ * identities, signatures, and accounts.
  *
  * @author Dave Comfort
  * 
@@ -94,7 +94,7 @@ function() {
 
 ZmPrefListView.prototype.getList =
 function() {
-	return this._personaListView;
+	return this._list;
 };
 
 ZmPrefListView.prototype._createHtml =
@@ -103,19 +103,19 @@ function() {
 	var i = 0;
 	var listCellId = Dwt.getNextId();
 	this._detailsElementId = Dwt.getNextId();
-	var newPersonaButtonCellId = Dwt.getNextId();
-	var removePersonaButtonCellId = Dwt.getNextId();
+	var newIdentityButtonCellId = Dwt.getNextId();
+	var removeIdentityButtonCellId = Dwt.getNextId();
 	var closeLinkId = Dwt.getNextId();
 	this._infoBoxId = Dwt.getNextId();
 	
-	html[i++] = "<table width='100%' height='100%' cellspacing=10><tr><td class='OutsetPanel' width='100px'><table class='ZmPersonasBox'><tr><td id='";
+	html[i++] = "<table width='100%' height='100%' cellspacing=10><tr><td class='OutsetPanel' width='100px'><table class='ZmIdentitiesBox'><tr><td id='";
 	html[i++] = listCellId;
 	html[i++] = "'></td></tr><tr><td><table width='100%'><tr>";
 	html[i++] = "<td id='";
-	html[i++] = newPersonaButtonCellId;
+	html[i++] = newIdentityButtonCellId;
 	html[i++] = "'></td>"
 	html[i++] = "<td id='";
-	html[i++] = removePersonaButtonCellId;
+	html[i++] = removeIdentityButtonCellId;
 	html[i++] = "'></td>";
 	html[i++] = "</tr></table></td></tr></table></td><td style='vertical-align:top;'>";
 
@@ -138,14 +138,14 @@ function() {
 
 	// Create the list view and the contents of the detail pane.
 	this._createDetails(document.getElementById(this._detailsElementId));		
-	this._personaListView = this._createList(document.getElementById(listCellId));
+	this._list = this._createList(document.getElementById(listCellId));
 	
 	// Create Add/Remove buttons.
 	this._addButton = new DwtButton(this, DwtLabel.ALIGN_CENTER);
-	this._addButton.reparentHtmlElement(newPersonaButtonCellId)
+	this._addButton.reparentHtmlElement(newIdentityButtonCellId)
 	this._addButton.setText(ZmMsg.add);
 	this._removeButton = new DwtButton(this, DwtLabel.ALIGN_CENTER);
-	this._removeButton.reparentHtmlElement(removePersonaButtonCellId)
+	this._removeButton.reparentHtmlElement(removeIdentityButtonCellId)
 	this._removeButton.setText(ZmMsg.remove);
 	
 	// Handle the link to close the info box.
@@ -158,7 +158,7 @@ function() {
 
 ZmPrefListView.prototype._createList =
 function(parentElement) {
-	var result = new ZmPersonaListView(this, this._appCtxt);
+	var result = new ZmPrefList(this, this._appCtxt);
 	result.reparentHtmlElement(parentElement);
 	result.setSize(200, 600);
 	return result;
@@ -170,3 +170,42 @@ function() {
 	var visible = Dwt.getVisible(infoBox);
 	Dwt.setVisible(infoBox, !visible);
 };
+
+/*
+* ZmPrefList
+* The list on the left side of the view.
+*/
+function ZmPrefList(parent, appCtxt) {
+	var headerList = [new DwtListHeaderItem(ZmPrefList.COLUMN, ZmMsg.identities, null, ZmPrefList.COLUMN_WIDTH)];
+	DwtListView.call(this, parent, "ZmPrefList", null, headerList);	
+
+	this._appCtxt = appCtxt;
+	
+	this.setMultiSelect(false);
+};
+
+ZmPrefList.COLUMN	= 1;
+ZmPrefList.COLUMN_WIDTH = 50;
+
+ZmPrefList.prototype = new DwtListView;
+ZmPrefList.prototype.constructor = ZmPrefList;
+
+ZmPrefList.prototype.toString = 
+function() {
+	return "ZmPrefList";
+};
+
+ZmPrefList.prototype._createItemHtml =
+function(identity) {
+	var	div = document.createElement("div");
+	var base = "Row";
+	div[DwtListView._STYLE_CLASS] = base;
+	div[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
+	div.className = div[DwtListView._STYLE_CLASS];
+	div.innerHTML = AjxStringUtil.htmlEncode(identity.name, true);
+
+	this.associateItemWithElement(identity, div, DwtListView.TYPE_LIST_ITEM);
+
+	return div;
+};
+

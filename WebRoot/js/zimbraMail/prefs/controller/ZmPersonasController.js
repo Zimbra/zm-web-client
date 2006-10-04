@@ -24,10 +24,10 @@
  */
 
 /**
-* Creates a new, empty personas controller.
+* Creates a new, empty identities controller.
 * @constructor
 * @class
-* Manages the personas page.
+* Manages the identities page.
 *
 * @author Dave Comfort
 *
@@ -36,42 +36,42 @@
 * @param prefsApp		[ZmPreferencesApp]	the preferences app
 * @param prefsView		[ZmPreferencesView]	the preferences view
 */
-function ZmPersonasController(appCtxt, container, prefsApp, prefsView) {
+function ZmIdentitiesController(appCtxt, container, prefsApp, prefsView) {
 	ZmPrefListController.call(this, appCtxt, container, prefsApp, prefsView);
 
-	this._listView = new ZmPersonasView(prefsView._parent, appCtxt, this);
+	this._listView = new ZmIdentitiesView(prefsView._parent, appCtxt, this);
 };
 
-ZmPersonasController.prototype = new ZmPrefListController();
-ZmPersonasController.prototype.constructor = ZmPersonasController;
+ZmIdentitiesController.prototype = new ZmPrefListController();
+ZmIdentitiesController.prototype.constructor = ZmIdentitiesController;
 
-ZmPersonasController.prototype._setup =
+ZmIdentitiesController.prototype._setup =
 function() {
 	ZmPrefListController.prototype._setup.call(this);
-	this._listView.getList().setSelection(ZmPersonaCollection.HACK.defaultPersona);
+	this._listView.getList().setSelection(ZmIdentityCollection.HACK.defaultIdentity);
 };
 
-ZmPersonasController.prototype._addHandler =
+ZmIdentitiesController.prototype._addHandler =
 function() {
-	var persona = new ZmPersona("New Persona");
+	var identity = new ZmIdentity("New Identity");
 	var listView = this.getListView().getList();
-	listView.addItem(persona);
-	listView.setSelection(persona);
+	listView.addItem(identity);
+	listView.setSelection(identity);
 };
 
-ZmPersonasController.prototype._removeHandler =
+ZmIdentitiesController.prototype._removeHandler =
 function() {
 	var listView = this.getListView().getList();
-	var persona = listView.getSelection()[0];
-	if (persona) {
-		listView.removeItem(persona);
-		listView.setSelection(ZmPersonaCollection.HACK.defaultPersona);
+	var identity = listView.getSelection()[0];
+	if (identity) {
+		listView.removeItem(identity);
+		listView.setSelection(ZmIdentityCollection.HACK.defaultIdentity);
 	}
 };
 
 ZmPrefListController.prototype._getListData =
 function() {
-	return AjxVector.fromArray(ZmPersonaCollection.HACK.getPersonas())
+	return AjxVector.fromArray(ZmIdentityCollection.HACK.getIdentities())
 };
 
 

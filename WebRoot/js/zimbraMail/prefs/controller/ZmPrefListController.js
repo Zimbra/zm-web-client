@@ -28,7 +28,7 @@
 * @constructor
 * @class
 * Abstract class that manages pages that show lists of preferences, 
-* such as personas, signatures, and accounts.
+* such as identities, signatures, and accounts.
 *
 * @author Dave Comfort
 *

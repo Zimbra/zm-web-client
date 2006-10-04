@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
- function ZmPersonasView(parent, appCtxt, controller) {
+ function ZmIdentitiesView(parent, appCtxt, controller) {
 
-	ZmPrefListView.call(this, parent, appCtxt, controller, "ZmPersonasView");
+	ZmPrefListView.call(this, parent, appCtxt, controller, "ZmIdentitiesView");
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;
@@ -33,148 +33,111 @@
 	
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.PERSONAS]].join(": ");
 
-	this._personaNameInput = null;
-	this._personaPage = null;
+	this._identityNameInput = null;
+	this._identityPage = null;
 };
 
-ZmPersonasView.prototype = new ZmPrefListView;
-ZmPersonasView.prototype.constructor = ZmPersonasView;
+ZmIdentitiesView.prototype = new ZmPrefListView;
+ZmIdentitiesView.prototype.constructor = ZmIdentitiesView;
  
-ZmPersonasView.prototype.toString =
+ZmIdentitiesView.prototype.toString =
 function() {
-	return "ZmPersonasView";
+	return "ZmIdentitiesView";
 };
 
-ZmPersonasView.prototype.getTitle =
+ZmIdentitiesView.prototype.getTitle =
 function() {
 	return this._title;
 };
 
-ZmPersonasView.prototype._createDetails =
+ZmIdentitiesView.prototype._createDetails =
 function(parentElement) {
 	var inputId = Dwt.getNextId();
 
 	var html = ["<div><table cellspacing=1 cellpadding=1 class='nestedOptionTable'>",
-				"<tr><td colspan=2><div class='PanelHead'>", ZmMsg.personasLabel, "</div></td></tr>",
+				"<tr><td colspan=2><div class='PanelHead'>", ZmMsg.identitiesLabel, "</div></td></tr>",
 				"<tr><td style='text-align:right;' width='200px'>", 
-	            ZmMsg.personaNameLabel, "</td><td id='", inputId, "'></td></tr></table></div>"].join("");
+	            ZmMsg.identityNameLabel, "</td><td id='", inputId, "'></td></tr></table></div>"].join("");
 	parentElement.innerHTML = html;
 	
 	var inputCell = document.getElementById(inputId);
 	var params = { parent: this.parent, type: DwtInputField.STRING, size: 50 };
-	this._personaNameInput = new DwtInputField(params);
-	this._personaNameInput.setRequired(true);
-	this._personaNameInput.reparentHtmlElement(inputCell);
+	this._identityNameInput = new DwtInputField(params);
+	this._identityNameInput.setRequired(true);
+	this._identityNameInput.reparentHtmlElement(inputCell);
 
 	var tabView = new DwtTabView(this, null, Dwt.STATIC_STYLE);
 	tabView.reparentHtmlElement(parentElement);
 	
-	this._personaPage = new ZmPersonaPage(this.parent, ZmPersonaPage.SENDING);
-	tabView.addTab(ZmMsg.personaOptions, this._personaPage);
-	var tab = new ZmPersonaPage(this.parent, ZmPersonaPage.REPLYING);
-	tabView.addTab(ZmMsg.personaAdvanced, tab);
+	this._identityPage = new ZmIdentityPage(this.parent, ZmIdentityPage.SENDING);
+	tabView.addTab(ZmMsg.identityOptions, this._identityPage);
+	var tab = new ZmIdentityPage(this.parent, ZmIdentityPage.REPLYING);
+	tabView.addTab(ZmMsg.identityAdvanced, tab);
 };
 
-ZmPersonasView.prototype._getInfoTitle =
+ZmIdentitiesView.prototype._getInfoTitle =
 function() {
-	return ZmMsg.personaInfoTitle;
+	return ZmMsg.identityInfoTitle;
 };
 
-ZmPersonasView.prototype._getInfoContents =
+ZmIdentitiesView.prototype._getInfoContents =
 function() {
-	return ZmMsg.personaInfoContent;
+	return ZmMsg.identityInfoContent;
 };
 
-ZmPersonasView.prototype.showItem =
-function(persona) {
-	this._personaNameInput.setValue(persona.name);
-	this._personaPage.setPersona(persona);
-};
-
-/*
-* ZmPersonaListView
-*/
-function ZmPersonaListView(parent, appCtxt) {
-	var headerList = [new DwtListHeaderItem(ZmPersonaListView.COLUMN, ZmMsg.personas, null, ZmPersonaListView.COLUMN_WIDTH)];
-	DwtListView.call(this, parent, "ZmPersonaListView", null, headerList);	
-
-	this._appCtxt = appCtxt;
-	
-	this.setMultiSelect(false);
-};
-
-ZmPersonaListView.COLUMN	= 1;
-ZmPersonaListView.COLUMN_WIDTH = 40;
-
-ZmPersonaListView.prototype = new DwtListView;
-ZmPersonaListView.prototype.constructor = ZmPersonaListView;
-
-ZmPersonaListView.prototype.toString = 
-function() {
-	return "ZmPersonaListView";
-};
-
-ZmPersonaListView.prototype._createItemHtml =
-function(persona) {
-	var	div = document.createElement("div");
-	var base = "Row";
-	div[DwtListView._STYLE_CLASS] = base;
-	div[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
-	div.className = div[DwtListView._STYLE_CLASS];
-	div.innerHTML = AjxStringUtil.htmlEncode(persona.name, true);
-
-	this.associateItemWithElement(persona, div, DwtListView.TYPE_LIST_ITEM);
-
-	return div;
+ZmIdentitiesView.prototype.showItem =
+function(identity) {
+	this._identityNameInput.setValue(identity.name);
+	this._identityPage.setIdentity(identity);
 };
 
 /**
 * @class
 * @constructor
-* A page inside of the personas preferences
+* A page inside of the identities preferences
 */
-function ZmPersonaPage(parent, page, className, posStyle) {
+function ZmIdentityPage(parent, page, className, posStyle) {
 	DwtTabViewPage.call(this, parent, className, posStyle);
 	this._page = page;
 	this._hasRendered = false;
 };
 
-ZmPersonaPage.prototype = new DwtTabViewPage;
-ZmPersonaPage.prototype.constructor = ZmPersonaPage;
+ZmIdentityPage.prototype = new DwtTabViewPage;
+ZmIdentityPage.prototype.constructor = ZmIdentityPage;
 
-ZmPersonaPage.SENDING = 0;
-ZmPersonaPage.REPLYING = 1;
+ZmIdentityPage.SENDING = 0;
+ZmIdentityPage.REPLYING = 1;
 
-ZmPersonaPage.toString =
+ZmIdentityPage.toString =
 function() {
-	return "ZmPersonaPage";
+	return "ZmIdentityPage";
 };
 
-ZmPersonaPage.prototype.showMe =
+ZmIdentityPage.prototype.showMe =
 function() {
 	if (!this._hasRendered) {
 		switch (this._page) {
-			case ZmPersonaPage.SENDING: this._initializeSending(); break;
-			case ZmPersonaPage.REPLYING: this._initializeReplying(); break;
+			case ZmIdentityPage.SENDING: this._initializeSending(); break;
+			case ZmIdentityPage.REPLYING: this._initializeReplying(); break;
 		}
 		this._hasRendered = true;
 	}
 };
 
-ZmPersonaPage.prototype.setPersona =
-function(persona) {
-	this._persona = persona;
-	this._sendFromName.setValue(persona.sendFromDisplay);
-	this._sendFromAddress.setValue(persona.sendFromAddress);
+ZmIdentityPage.prototype.setIdentity =
+function(identity) {
+	this._identity = identity;
+	this._sendFromName.setValue(identity.sendFromDisplay);
+	this._sendFromAddress.setValue(identity.sendFromAddress);
 
 	var doc = document;
 	var whenSentToCheckbox = doc.getElementById(this._whenSentToCheckboxId);
-	whenSentToCheckbox.checked = persona.useWhenSentTo();
-	this._whenSentToInput.setValue(persona.getWhenSentToAddresses().join("; "));
+	whenSentToCheckbox.checked = identity.useWhenSentTo();
+	this._whenSentToInput.setValue(identity.getWhenSentToAddresses().join("; "));
 
 	var whenInFolderCheckbox = doc.getElementById(this._whenInFolderCheckboxId);
-	whenInFolderCheckbox.checked = persona.useWhenInFolder();
-	this._whenInFolderInput.setValue(persona.getWhenInFolderIds().join("; "));
+	whenInFolderCheckbox.checked = identity.useWhenInFolder();
+	this._whenInFolderInput.setValue(identity.getWhenInFolderIds().join("; "));
 
 	var setReplyToCheckbox = doc.getElementById(this._setReplyToCheckboxId);
 	var useSignatureCheckbox = doc.getElementById(this._useSignatureCheckboxId);
@@ -185,11 +148,12 @@ function(persona) {
 	this._applyCheckbox(whenInFolderCheckbox, [this._whenInFolderInput]);
 };
 
-ZmPersonaPage.prototype.getPersona =
-function(persona) {
+ZmIdentityPage.prototype.getIdentity =
+function(identity) {
+	// Save the this here...
 };
 
-ZmPersonaPage.prototype._initializeSending =
+ZmIdentityPage.prototype._initializeSending =
 function() {
 	var sendFromNameId = Dwt.getNextId();
 	var sendFromAddressId = Dwt.getNextId();
@@ -209,7 +173,7 @@ function() {
 	var html = [];
 	var i = 0;
 	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
-	html[i++] = ZmMsg.sendWithPersona;
+	html[i++] = ZmMsg.sendWithIdentity;
 	html[i++] = "</legend>";
 	html[i++] = "<table style='width:100%'>";
 
@@ -243,7 +207,7 @@ function() {
 	html[i++] = "</table>";
 	html[i++] = "</fieldset>";
 	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
-	html[i++] = ZmMsg.selectPersonaWhen;
+	html[i++] = ZmMsg.selectIdentityWhen;
 	html[i++] = "</legend>";
 	html[i++] = "<table style='width:100%'>";
 
@@ -288,7 +252,7 @@ function() {
 
 	this._useSignatureSelect = new DwtSelect(this);
 	this._useSignatureSelect.reparentHtmlElement(useSignatureNameId);
-	this._useSignatureSelect.addOption(new DwtSelectOptionData("Personal", "Personal", true));
+	this._useSignatureSelect.addOption(new DwtSelectOptionData("Identityl", "Identityl", true));
 	this._useSignatureSelect.addOption(new DwtSelectOptionData("Professional", "Professional", true));
 	this._useSignatureSelect.addOption(new DwtSelectOptionData("Random", "Random", false));
 	this._associateCheckbox(this._useSignatureCheckboxId, [this._useSignatureSelect]);
@@ -304,7 +268,7 @@ function() {
 };
 
 
-ZmPersonaPage.prototype._associateCheckbox =
+ZmIdentityPage.prototype._associateCheckbox =
 function(checkboxId, controls) {
 	var checkbox = document.getElementById(checkboxId);
 	this._applyCheckbox(checkbox, controls);
@@ -312,7 +276,7 @@ function(checkboxId, controls) {
 	Dwt.setHandler(checkbox, DwtEvent.ONCLICK, handler);
 };
 
-ZmPersonaPage.prototype._applyCheckbox =
+ZmIdentityPage.prototype._applyCheckbox =
 function(checkbox, controls) {
 	var isChecked = checkbox.checked;
 	for (var i = 0, count = controls.length; i < count; i++) {
@@ -321,13 +285,13 @@ function(checkbox, controls) {
 	}
 };
 
-ZmPersonaPage.prototype._checkboxHandler =
+ZmIdentityPage.prototype._checkboxHandler =
 function(controls, event) {
 	var checkbox = event.target;
 	this._applyCheckbox(checkbox, controls);
 };
 
-ZmPersonaPage.prototype._initializeReplying =
+ZmIdentityPage.prototype._initializeReplying =
 function() {
 	
 	this._useDefaults = Dwt.getNextId();
@@ -337,13 +301,13 @@ function() {
 	html[i++] = "<input type='checkbox' id='";
 	html[i++] = this._useDefaults;
 	html[i++] = "'>";
-	html[i++] = ZmMsg.personasUseDefault;
+	html[i++] = ZmMsg.identitiesUseDefault;
 	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
-	html[i++] = ZmMsg.sendWithPersona;
+	html[i++] = ZmMsg.sendWithIdentity;
 	html[i++] = "</legend>";
 	html[i++] = "</fieldset>";
 	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
-	html[i++] = ZmMsg.replyWithPersona;
+	html[i++] = ZmMsg.replyWithIdentity;
 	html[i++] = "</legend>";
 	html[i++] = "</fieldset>";
 	this.getHtmlElement().innerHTML = html.join("");
