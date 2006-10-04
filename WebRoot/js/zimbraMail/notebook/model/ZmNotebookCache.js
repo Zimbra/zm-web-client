@@ -243,7 +243,7 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 		var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
 		soapDoc.setMethodAttribute("onerror", "continue");
 		for (var specialName in ZmNotebookCache._SPECIAL_NAMES) {
-			if (this._foldersMap[folderId][specialName]) continue;
+			if (this._foldersMap[folderId].pages[specialName]) continue;
 			var requestNode = soapDoc.set("GetWikiRequest",null,null,"urn:zimbraMail");
 			requestNode.setAttribute("id", specialName);
 			var wordNode = soapDoc.set("w", null, requestNode);
@@ -288,7 +288,7 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 
 		// check for mandatory pages
 		for (var specialName in ZmNotebookCache._SPECIAL_CONTENT) {
-			if (this._foldersMap[folderId][specialName]) continue;
+			if (this._foldersMap[folderId].pages[specialName]) continue;
 			var page = new ZmPage(this._appCtxt);
 			page.name = specialName;
 			page.folderId = folderId;
@@ -296,7 +296,7 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 			this.putPage(page);
 		}
 
-		return this._foldersMap[folderId][name];
+		return this._foldersMap[folderId].pages[name];
 	}
 
 	// page not found
