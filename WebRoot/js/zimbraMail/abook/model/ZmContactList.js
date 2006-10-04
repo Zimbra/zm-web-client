@@ -76,7 +76,7 @@ ZmContactList.prototype.constructor = ZmContactList;
 
 // fields used for autocomplete matching
 ZmContactList.AC_FIELDS 		= [ZmContact.F_firstName, ZmContact.F_lastName, ZmContact.X_fullName, ZmContact.X_firstLast,
-								   ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
+								   ZmContact.F_fileAs, ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
 ZmContactList.AC_NAME_FIELDS	= [ZmContact.F_firstName, ZmContact.F_lastName];
 ZmContactList.AC_VALUE_FULL 	= "fullAddress";
 ZmContactList.AC_VALUE_EMAIL	= "email";
@@ -789,13 +789,27 @@ function(str, which, checkMore) {
 */
 ZmContactList.prototype._preMatch =
 function(contact) {
-	if (!ZmContactList.AC_PREMATCH) {return;}
+	if (!ZmContactList.AC_PREMATCH) return;
 	var strings = {};
+
 	for (var i = 0; i < this._acMatchFields.length; i++) {
-		// placeholder objects (ZmContactList) will have _attrs
-		// realized objects (ZmResourceList) will have attr
-		var value = contact._attrs ? contact._attrs[this._acMatchFields[i]] :
-									 contact.attr ? contact.attr[this._acMatchFields[i]] : null;
+		// resolve values to use for prematch
+		var value = null;
+		if (this._acMatchFields[i] == ZmContact.F_fileAs) {
+			var fileAs = contact._attrs
+				? contact._attrs[ZmContact.F_fileAs]
+				: contact.attr[ZmContact.F_fileAs];
+			if (fileAs == null || fileAs.charAt(0) != ZmContact.FA_CUSTOM)
+				continue;
+			value = fileAs.substring(2);
+		} else {
+			// placeholder objects (ZmContactList) will have _attrs
+			// realized objects (ZmResourceList) will have attr
+			value = contact._attrs
+				? contact._attrs[this._acMatchFields[i]]
+				: (contact.attr ? contact.attr[this._acMatchFields[i]] : null);
+		}
+
 		if (value) {
 			for (var j = 1; j <= ZmContactList.AC_PREMATCH; j++) {
 				var str = value.substring(0, j).toLowerCase();
@@ -821,11 +835,22 @@ function(contact) {
 ZmContactList.prototype._testAcMatch =
 function(contact, str, doMarkup) {
 	contact = (contact instanceof ZmContact) ? contact : (contact && contact.id) ? this.getById(contact.id) : this.getById(contact);
+
 	if (!contact || ZmContact.isInTrash(contact)) return false;
 
 	for (var i = 0; i < this._acMatchFields.length; i++) {
+		var value = null;
 		var field = this._acMatchFields[i];
-		var value = ZmContact.getAttr(contact, field);
+
+		if (field == ZmContact.F_fileAs) {
+			var fileAs = ZmContact.getAttr(contact, field);
+			if (fileAs == null || fileAs.charAt(0) != ZmContact.FA_CUSTOM)
+				continue;
+			value = fileAs.substring(2);
+		} else {
+			value = ZmContact.getAttr(contact, field);
+		}
+
 		if (value && (value.toLowerCase().indexOf(str) == 0)) {
 			if (doMarkup) {
 				try {
@@ -838,6 +863,7 @@ function(contact, str, doMarkup) {
 			}
 		}
 	}
+
 	if (contact.isGal && doMarkup) {
 		// if GAL match doesn't also match manually, assume full name matched
 		return {savedMatch: ZmContact.getAttr(ZmContact.X_fullName, contact), matchField: ZmContact.X_fullName};
@@ -911,10 +937,15 @@ function(contact, str) {
 	}
 
 	var name;
-	if (match.matchedField == ZmContact.X_fullName || match.matchedField == ZmContact.X_firstLast) {
+	if (match.matchedField == ZmContact.X_fullName ||
+		match.matchedField == ZmContact.X_firstLast ||
+		match.matchedField == ZmContact.F_fileAs)
+	{
 		// if one of these matched, it will already be highlighted
 		name = match.savedMatch;
-	} else {
+	}
+	else
+	{
 		// construct name - first or last may have matched and been highlighted
 		var names = [];
 		for (var i = 0; i < ZmContactList.AC_NAME_FIELDS.length; i++) {
@@ -927,7 +958,7 @@ function(contact, str) {
 		name = names.join(" ");
 	}
 	var results = [];
-	var fullName = ZmContact.getAttr(contact, ZmContact.X_fullName);
+	var fullName = contact.getFullName();
 	if (match.matchedField == ZmContact.F_email || match.matchedField == ZmContact.F_email2 || match.matchedField == ZmContact.F_email3) {
 		results.push(this._createMatch(name, match.savedMatch, fullName, ZmContact.getAttr(contact, match.matchedField), contact));
 	} else {

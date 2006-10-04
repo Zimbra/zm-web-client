@@ -130,6 +130,7 @@ ZmContact.FA_LAST_C_FIRST_COMPANY	= i++;
 ZmContact.FA_FIRST_LAST_COMPANY		= i++;
 ZmContact.FA_COMPANY_LAST_C_FIRST	= i++;
 ZmContact.FA_COMPANY_FIRST_LAST		= i++;
+ZmContact.FA_CUSTOM					= i++;
 
 ZmContact.F_EMAIL_FIELDS = [ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
 
@@ -191,29 +192,34 @@ function(contact) {
 	if (!attr) return;
 
 	var val = parseInt(attr.fileAs);
-
 	var fa = [];
 	var idx = 0;
 
 	switch (val) {
-		case ZmContact.FA_LAST_C_FIRST: /* Last, First */
-		default:
+		case ZmContact.FA_LAST_C_FIRST: 										// Last, First
+		default: {
 			// if GAL contact, use full name instead (bug fix #4850,4009)
 			if (contact && contact.isGal)
 				return attr.fullName;
 			if (attr.lastName) fa[idx++] = attr.lastName;
 			if (attr.lastName && attr.firstName) fa[idx++] = ", ";
 			if (attr.firstName) fa[idx++] = attr.firstName;
-			break;
-		case ZmContact.FA_FIRST_LAST: /* First Last */
+		}
+		break;
+
+		case ZmContact.FA_FIRST_LAST: { 										// First Last
 			if (attr.firstName) fa[idx++] = attr.firstName;
 			if (attr.lastName && attr.firstName) fa[idx++] = " ";
 			if (attr.lastName) fa[idx++] = attr.lastName;
-			break;
-		case ZmContact.FA_COMPANY: /* Company */
+		}
+		break;
+
+		case ZmContact.FA_COMPANY: {											// Company
 			if (attr.company) fa[idx++] = attr.company;
-			break;
-		case ZmContact.FA_LAST_C_FIRST_COMPANY: /* Last, First (Company) */
+		}
+		break;
+
+		case ZmContact.FA_LAST_C_FIRST_COMPANY: {								// Last, First (Company)
 			if (attr.lastName) fa[idx++] = attr.lastName;
 			if (attr.lastName && attr.firstName) fa[idx++] = ", ";
 			if (attr.firstName) fa[idx++] = attr.firstName;
@@ -223,8 +229,10 @@ function(contact) {
 				fa[idx++] = attr.company;
 				fa[idx++] = ")";
 			}
-			break;
-		case ZmContact.FA_FIRST_LAST_COMPANY: /* First Last (Company) */
+		}
+		break;
+
+		case ZmContact.FA_FIRST_LAST_COMPANY: {									// First Last (Company)
 			if (attr.firstName) fa[idx++] = attr.firstName;
 			if (attr.lastName && attr.firstName) fa[idx++] = " ";
 			if (attr.lastName) fa[idx++] = attr.lastName;
@@ -234,8 +242,10 @@ function(contact) {
 				fa[idx++] = attr.company;
 				fa[idx++] = ")";
 			}
-			break;
-		case ZmContact.FA_COMPANY_LAST_C_FIRST: /* Company (Last,  First) */
+		}
+		break;
+
+		case ZmContact.FA_COMPANY_LAST_C_FIRST: {								// Company (Last,  First)
 			if (attr.company) fa[idx++] = attr.company;
 			if (attr.lastName || attr.firstName) {
 				fa[idx++] = " (";
@@ -244,8 +254,10 @@ function(contact) {
 				if (attr.firstName) fa[idx++] = attr.firstName;
 				fa[idx++] = ")";
 			}
-			break;
-		case ZmContact.FA_COMPANY_FIRST_LAST: /* Company (First Last) */
+		}
+		break;
+
+		case ZmContact.FA_COMPANY_FIRST_LAST: {									// Company (First Last)
 			if (attr.company) fa[idx++] = attr.company;
 			if (attr.lastName || attr.firstName) {
 				fa[idx++] = " (";
@@ -254,9 +266,25 @@ function(contact) {
 				if (attr.lastName) fa[idx++] = attr.lastName;
 				fa[idx++] = ")";
 			}
-			break;
+		}
+		break;
+
+		case ZmContact.FA_CUSTOM: {												// custom looks like this: "8:foobar"
+			return attr.fileAs.substring(2);
+		}
+		break;
 	}
 	return fa.join("");
+};
+
+/**
+* Basically prepends "8:" to the given custom fileAs str
+*
+* @param contact	[hash]		a set of contact attributes
+*/
+ZmContact.computeCustomFileAs =
+function(customFileAs) {
+	return [ZmContact.FA_CUSTOM, ":", customFileAs].join("");
 };
 
 /* These next few static methods handle a contact that is either an anonymous object or an actual
@@ -264,8 +292,9 @@ function(contact) {
 * ZmContact when needed. */
 ZmContact.getAttr =
 function(contact, attr) {
-	return (contact instanceof ZmContact) ? contact.getAttr(attr) :
-			(contact && contact._attrs) ? contact._attrs[attr] : null;
+	return (contact instanceof ZmContact)
+		? contact.getAttr(attr)
+		: (contact && contact._attrs) ? contact._attrs[attr] : null;
 };
 
 ZmContact.setAttr =

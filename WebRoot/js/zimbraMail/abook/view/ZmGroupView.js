@@ -70,14 +70,13 @@ function() {
 	// creating new contact (possibly some fields - but not ID - prepopulated)
 	if (this._contact.id == null || this._contact.isGal) {
 		mods[ZmContact.F_folderId] = folderId
-		mods[ZmContact.F_fileAs] = ZmContact.FA_LAST_C_FIRST;
-		mods[ZmContact.F_lastName] = groupName;
+		mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
 		mods[ZmContact.F_dlist] = groupMembers
 		foundOne = true;
 	} else {
 		// modifying existing contact
-		if (this._contact.getAttr(ZmContact.F_lastName) != groupName) {
-			mods[ZmContact.F_lastName] = groupName;
+		if (this._contact.getFileAs() != groupName) {
+			mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
 			foundOne = true;
 		}
 
@@ -109,7 +108,7 @@ function() {
 	var folderId = this._folderSelect.getValue();
 
 	// modifying existing contact
-	if (this._contact.getAttr(ZmContact.F_lastName) != groupName ||
+	if (this._contact.getFileAs() != groupName ||
 		this._contact.getAttr(ZmContact.F_dlist) != groupMembers ||
 		folderId != this._contact.getFolderId())
 	{
@@ -301,8 +300,8 @@ function() {
 
 ZmGroupView.prototype._setGroupName =
 function() {
-	var groupName = this._contact.getAttr(ZmContact.F_lastName);
-	document.getElementById(this._groupNameId).value = groupName || "";
+	var groupName = document.getElementById(this._groupNameId);
+	if (groupName) groupName.value = this._contact.getFileAs() || "";
 };
 
 ZmGroupView.prototype._setGroupMembers =
