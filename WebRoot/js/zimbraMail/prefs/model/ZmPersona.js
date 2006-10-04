@@ -22,7 +22,7 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-function ZmPersona(name) {
+function ZmIdentity(name) {
 	this.name = name;
 	this.id = "";
 	this.sendFromDisplay = "";
@@ -38,7 +38,7 @@ function ZmPersona(name) {
 	this._whenInFolderIds = [];
 };
 
-ZmPersona.prototype._loadFromDom =
+ZmIdentity.prototype._loadFromDom =
 function(data) {
 	if (data.name) this.name = data.name;
 	if (data.id) this.id = data.id;
@@ -55,138 +55,138 @@ function(data) {
 	if (data.whenInFolderIds) this._whenInFolderIds = data.whenInFolderIds;
 };
 
-ZmPersona.prototype.toString =
+ZmIdentity.prototype.toString =
 function() {
-	return "ZmPersona";
+	return "ZmIdentity";
 };
 
-ZmPersona.prototype.useWhenSentTo =
+ZmIdentity.prototype.useWhenSentTo =
 function() {
 	return this._whenSentTo;
 };
 
-ZmPersona.prototype.getWhenSentToAddresses =
+ZmIdentity.prototype.getWhenSentToAddresses =
 function() {
 	return this._whenSentToAddresses;
 };
 
-ZmPersona.prototype.useWhenInFolder =
+ZmIdentity.prototype.useWhenInFolder =
 function() {
 	return this._useWhenInFolder;
 };
 
-ZmPersona.prototype.getWhenInFolderIds =
+ZmIdentity.prototype.getWhenInFolderIds =
 function() {
 	return this._whenInFolderIds;
 };
 
-function ZmPersonaCollection() {
-	this.defaultPersona = null;
-	this._idToPersona = {};
-	this._addressToPersona = {};
-	this._folderToPersona = {};
+function ZmIdentityCollection() {
+	this.defaultIdentity = null;
+	this._idToIdentity = {};
+	this._addressToIdentity = {};
+	this._folderToIdentity = {};
 };
 
-ZmPersonaCollection.prototype.getPersonas =
+ZmIdentityCollection.prototype.getIdentities =
 function() {
 	var i = 0;
 	var result = [];
-	for (var id in this._idToPersona) {
-		result[i++] = this._idToPersona[id];
+	for (var id in this._idToIdentity) {
+		result[i++] = this._idToIdentity[id];
 	}
 	return result;
 };
 
-ZmPersonaCollection.prototype.add =
-function(persona, isDefault) {
-	this._idToPersona[persona.id] = persona;
+ZmIdentityCollection.prototype.add =
+function(identity, isDefault) {
+	this._idToIdentity[identity.id] = identity;
 	if (isDefault) {
-		this.defaultPersona = persona;
+		this.defaultIdentity = identity;
 	}
 	
 	// Update map of sent to addresses.
-	if (persona.useWhenSentTo()) {
-		var addresses = persona.getWhenSentToAddresses();
+	if (identity.useWhenSentTo()) {
+		var addresses = identity.getWhenSentToAddresses();
 		for (var i = 0, count = addresses.length; i < count; i++) {
-			this._addressToPersona[addresses[i]] = persona;
+			this._addressToIdentity[addresses[i]] = identity;
 		}
 	}
 
 	// Update map of folders.
-	if (persona.useWhenInFolder()) {
-		var folders = persona.getWhenInFolderIds();
+	if (identity.useWhenInFolder()) {
+		var folders = identity.getWhenInFolderIds();
 		for (var i = 0, count = folders.length; i < count; i++) {
-			this._folderToPersona[folders[i]] = persona;
+			this._folderToIdentity[folders[i]] = identity;
 		}
 	}
 };
 
-ZmPersonaCollection.prototype.remove =
-function(persona) {
-	this._removeFromAddressMap(persona);
-	this._removeFromFolderMap(persona);
-	delete this._idToPersona[persona.id];
+ZmIdentityCollection.prototype.remove =
+function(identity) {
+	this._removeFromAddressMap(identity);
+	this._removeFromFolderMap(identity);
+	delete this._idToIdentity[identity.id];
 };
 
-ZmPersonaCollection.prototype._removeFromAddressMap =
-function(persona) {
-	for (var i = 0, count = persona._whenSentToAddresses.length; i < count; i++) {
-		var address = persona._whenSentToAddresses[i];
-		delete this._addressToPersona[address];
+ZmIdentityCollection.prototype._removeFromAddressMap =
+function(identity) {
+	for (var i = 0, count = identity._whenSentToAddresses.length; i < count; i++) {
+		var address = identity._whenSentToAddresses[i];
+		delete this._addressToIdentity[address];
 	}
 };
 
-ZmPersonaCollection.prototype._removeFromFolderMap =
-function(persona) {
-	for (var i = 0, count = persona._whenInFolderIds.length; i < count; i++) {
-		var folderId = persona._whenInFolderIds[i];
-		delete this._folderToPersona[folderId];
+ZmIdentityCollection.prototype._removeFromFolderMap =
+function(identity) {
+	for (var i = 0, count = identity._whenInFolderIds.length; i < count; i++) {
+		var folderId = identity._whenInFolderIds[i];
+		delete this._folderToIdentity[folderId];
 	}
 };
 
-ZmPersonaCollection.prototype.selectPersona =
+ZmIdentityCollection.prototype.selectIdentity =
 function(mailMsg) {
 
-	// Check if the a persona's address was in the to field.
-	var persona = this._selectPersonaFromAddresses(mailMsg, ZmEmailAddress.TO);
-	if (persona) {
-		return persona;
+	// Check if the a identity's address was in the to field.
+	var identity = this._selectIdentityFromAddresses(mailMsg, ZmEmailAddress.TO);
+	if (identity) {
+		return identity;
 	}
 
-	// Check if the a persona's address was in the cc field.
-	persona = this._selectPersonaFromAddresses(mailMsg, ZmEmailAddress.CC);
-	if (persona) {
-		return persona;
+	// Check if the a identity's address was in the cc field.
+	identity = this._selectIdentityFromAddresses(mailMsg, ZmEmailAddress.CC);
+	if (identity) {
+		return identity;
 	}
 	
-	// Check if a persona's folder is the same as where the message lives.
+	// Check if a identity's folder is the same as where the message lives.
 	var folder = mailMsg.folderId;
-	persona = this._folderToPersona[folder];
-	if(persona) {
-		return persona;
+	identity = this._folderToIdentity[folder];
+	if(identity) {
+		return identity;
 	}
 	
-	return this.defaultPersona;
+	return this.defaultIdentity;
 };
 
-ZmPersonaCollection.prototype._selectPersonaFromAddresses =
+ZmIdentityCollection.prototype._selectIdentityFromAddresses =
 function(mailMsg, type) {
-	var persona;
+	var identity;
 	var addresses = mailMsg.getAddresses(type).getArray();
 	for (var i = 0, count = addresses.length; i < count; i++) {
 		var address = addresses[i].getAddress();
-		persona = this._addressToPersona[address];
-		if(persona) {
-			return persona;
+		identity = this._addressToIdentity[address];
+		if(identity) {
+			return identity;
 		}
 	}
 	return null;
 };
 
-// Make up some fake persona data..
-ZmPersonaCollection.buildHack =
+// Make up some fake identity data..
+ZmIdentityCollection.buildHack =
 function() {
-	var dave = new ZmPersona("Dave");
+	var dave = new ZmIdentity("Dave");
 	dave.id = 11111;
 	dave.sendFromDisplay = "Dave Comfort";
 	dave.sendFromAddress = "dcomfort@zimbra.com";
@@ -195,12 +195,12 @@ function() {
 	dave._useWhenInFolder = true;
 	dave._whenInFolderIds = [538];
 
-	var otis = new ZmPersona("Otis");
+	var otis = new ZmIdentity("Otis");
 	otis.id = 22222;
 	otis.sendFromDisplay = "Otis";
 	otis.sendFromAddress = "otis@elevator.com";
 	
-	var rufus = new ZmPersona("Rufus");
+	var rufus = new ZmIdentity("Rufus");
 	rufus.id = 33333;
 	rufus.sendFromDisplay = "rufus";
 	rufus.sendFromAddress = "rufus@dogma.com";
@@ -208,10 +208,10 @@ function() {
 	var data = { sendFromDisplay:"Rufusmeister", useWhenInFolder:true, whenInFolderIds:["2"] };
 	rufus._loadFromDom(data);
 	
-	ZmPersonaCollection.HACK = new ZmPersonaCollection();
-	ZmPersonaCollection.HACK.add(otis, true);
-	ZmPersonaCollection.HACK.add(dave, false);
-	ZmPersonaCollection.HACK.add(rufus);
+	ZmIdentityCollection.HACK = new ZmIdentityCollection();
+	ZmIdentityCollection.HACK.add(otis, true);
+	ZmIdentityCollection.HACK.add(dave, false);
+	ZmIdentityCollection.HACK.add(rufus);
 };
-ZmPersonaCollection.buildHack();
+ZmIdentityCollection.buildHack();
 
