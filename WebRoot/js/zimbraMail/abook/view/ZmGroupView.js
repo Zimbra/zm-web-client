@@ -39,7 +39,7 @@ function() {
 };
 
 ZmGroupView.prototype.set =
-function(contact) {
+function(contact, isDirty) {
 
 	if (!this._htmlInitialized) {
 		this._createHtml(contact);
@@ -54,6 +54,8 @@ function(contact) {
 	this._contact = contact;
 
 	this._setFields();
+
+	this._isDirty = isDirty || false;
 };
 
 ZmGroupView.prototype.getModifiedAttrs =
@@ -103,19 +105,7 @@ function(bEnable) {
 
 ZmGroupView.prototype.isDirty =
 function() {
-	var groupName = AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
-	var groupMembers = this._getGroupMembers();
-	var folderId = this._folderSelect.getValue();
-
-	// modifying existing contact
-	if (this._contact.getFileAs() != groupName ||
-		this._contact.getAttr(ZmContact.F_dlist) != groupMembers ||
-		folderId != this._contact.getFolderId())
-	{
-		return true;
-	}
-
-	return false;
+	return this._isDirty;
 };
 
 ZmGroupView.prototype.getTitle =
@@ -240,6 +230,7 @@ function(contact) {
 	// add select widget for user to choose folder
 	this._folderSelect = new DwtSelect(this);
 	this._folderSelect.reparentHtmlElement(this._folderCellId);
+	this._folderSelect.addChangeListener(new AjxListener(this, this._selectChangeListener));
 
 	// add search button
 	this._searchButton = new DwtButton(this);
@@ -259,6 +250,7 @@ function(contact) {
 
 	this._picker = new ZmContactChooser({parent:this, allButtons:true, hasTextField:true});
 	this._picker.reparentHtmlElement(this._contactPickerId);
+	this._picker.addStateChangeListener(new AjxListener(this, this._pickerChangeListener));
 };
 
 ZmGroupView.prototype._installKeyHandlers =
@@ -312,6 +304,11 @@ function() {
 
 
 // Listeners
+
+ZmGroupView.prototype._selectChangeListener =
+function(ev) {
+	this._isDirty = true;
+};
 
 ZmGroupView.prototype._searchButtonListener =
 function(ev) {
@@ -382,6 +379,11 @@ function() {
 };
 
 
+ZmGroupView.prototype._pickerChangeListener =
+function(ev) {
+	this._isDirty = true;
+};
+
 // Static methods
 
 ZmGroupView._onKeyUp =
@@ -393,6 +395,7 @@ function(ev) {
 	var e = DwtUiEvent.getTarget(ev);
 	var view = e ? Dwt.getObjectFromElement(e) : null;
 	if (view) {
+		view._isDirty = true;
 		view._setTitle(e.value);
 	}
 
