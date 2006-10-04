@@ -195,7 +195,7 @@ ZmMountFolderDialog.prototype._handleOkButton = function(event) {
 	var params = {
 		"l": this._folderId,
 		"name": this._nameInput.getValue(),
-		"d": this._userInput.getValue(),
+		"owner": this._userInput.getValue(),
 		"path": this._pathInput.getValue(),
 		"view": ZmOrganizer.VIEWS[this._organizerType] || ZmOrganizer.VIEWS[ZmOrganizer.FOLDER],
 		"color": this._colorSelect.getValue()

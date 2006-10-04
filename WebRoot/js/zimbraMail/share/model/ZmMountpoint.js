@@ -44,7 +44,7 @@ ZmMountpoint.prototype.toString = function() {
 // Constants
 //
 
-ZmMountpoint.__CREATE_PARAMS = { "l":1, "name":1, "zid":1, "rid":1, "d":1, "path":1, "view":1, "color":1, "f":1 };
+ZmMountpoint.__CREATE_PARAMS = { "l":1, "name":1, "zid":1, "rid":1, "owner":1, "path":1, "view":1, "color":1, "f":1 };
 
 //
 // Data
