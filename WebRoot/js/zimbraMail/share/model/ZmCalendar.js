@@ -169,7 +169,7 @@ function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 
 	// create calendar, populate, and return
-	var calendar = new ZmCalendar(obj.id, obj.name, parent, tree, obj.color, obj.url, obj.d, obj.zid, obj.rid, obj.rest);
+	var calendar = new ZmCalendar(obj.id, obj.name, parent, tree, obj.color, obj.url, obj.owner, obj.zid, obj.rid, obj.rest);
 	if (obj.f) {
 		calendar._parseFlags(obj.f);
 	}

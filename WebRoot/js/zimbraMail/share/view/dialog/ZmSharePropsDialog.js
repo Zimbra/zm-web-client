@@ -405,7 +405,7 @@ function() {
 		var propId = shareWith.addProperty(property.label, property.field);
 	}
 
-	this._granteeInput = new DwtInputField({parent: this, size: 40});
+	this._granteeInput = new DwtInputField({parent: this, size: 38});
 	this._granteeInput.setData(Dwt.KEY_OBJECT, this);
 
 	var password = new DwtComposite(this);

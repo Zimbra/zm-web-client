@@ -162,7 +162,7 @@ function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 
 	// create calendar, populate, and return
-	var notebook = new ZmNotebook(obj.id, obj.name, parent, tree, obj.color, obj.d, obj.zid, obj.rid, obj.rest);
+	var notebook = new ZmNotebook(obj.id, obj.name, parent, tree, obj.color, obj.owner, obj.zid, obj.rid, obj.rest);
 	if (obj.perm != null) {
 		notebook.setPermissions(obj.perm); // REVISIT: bug 10801
 	}

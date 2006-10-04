@@ -180,7 +180,7 @@ function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 
 	// create addrbook, populate, and return
-	var ab = new ZmAddrBook(obj.id, obj.name, parent, tree, obj.color, obj.d, obj.zid, obj.rid, obj.rest);
+	var ab = new ZmAddrBook(obj.id, obj.name, parent, tree, obj.color, obj.owner, obj.zid, obj.rid, obj.rest);
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
