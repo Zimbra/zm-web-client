@@ -192,6 +192,15 @@
 			<sourcefile file='${zimbraMail.msgs.dir}/ZmMsg.properties' />
 			<targetfileset dir='${zimbraMail.msgs.dir}' includes='ZmMsg_*.properties' />
 		</i18ncheck>
+
+        <echo />
+        <echo>Checking Zimbra Server messages</echo>
+        <echo />
+        <property name='zimbraServer.msgs.dir' value='../ZimbraServer/conf/msgs' />
+        <i18ncheck>
+            <sourcefile file='${zimbraServer.msgs.dir}/ZsMsg.properties' />
+            <targetfileset dir='${zimbraServer.msgs.dir}' includes='ZsMsg_*.properties' />
+        </i18ncheck>
 	</target>
 
 	<target name='i18n' depends='i18n-init,compile' unless='i18n-done'>
