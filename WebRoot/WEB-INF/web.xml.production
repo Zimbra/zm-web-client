@@ -115,6 +115,11 @@
 	</servlet-mapping>
 
 	<servlet-mapping>
+		<servlet-name>Properties2Javascript</servlet-name>
+		<url-pattern>/js/keys/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
 		<servlet-name>SkinResources</servlet-name>
 		<url-pattern>/css/*</url-pattern>
 	</servlet-mapping>
