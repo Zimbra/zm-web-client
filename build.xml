@@ -107,7 +107,7 @@
     <mkdir dir="${build.dir}/WebRoot/js"/>
   </target>
 
-  <target name="compile" depends="build-init" description="compile the filter source" >
+  <target name="compile" depends="build-init" >
     <!-- Compile the java code from ${src} into ${build} -->
     <mkdir dir='${build.dir}/classes'/>
     <javac srcdir="${src.dir}" destdir="${build.dir}/classes" debug="on">
@@ -144,7 +144,7 @@
       />
   </target>
 
-  <target name="clean" depends="build-init" description="Removes any temporary files">
+  <target name="clean" depends="build-init" description="Removes any built/temp files">
     <delete dir="${build.dir}"/>
     <delete>
       <fileset dir="WebRoot" includes="js/**/*${rhinoExtension}, js/**/*${gzipExtension}, js/*_all.js*"/>
@@ -461,7 +461,7 @@
   </target>
 
 
-  <target name='images-are-dirty' description='checks to see if images need to be processed' unless='images.force'>
+  <target name='images-are-dirty' unless='images.force'>
     <dependset>
       <srcfileset dir='img' includes='**/*'/>
       <srcfileset dir='${ajax.dwtimg.dir}' includes='**/*'/>
@@ -615,7 +615,7 @@
   ZimbraWebClient webapp, so if there are any java changes, another
   deploy will have to be run.
   -->
-  <target name="dev-sync">
+  <target name="dev-sync" description="Web Client Quick Sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
       <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**,ALE/**" excludes="**/style/*.css"/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
@@ -694,21 +694,17 @@
     </war>
   </target>
 
-  <target name="deploy" depends="war">
+  <target name="deploy" depends="war" description="Deploy Web Client">
     <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
       path="${deploy.path}" war="${deploy.war}" update="true"/>
   </target>
 
-  <target name="prod-deploy" depends="prod-war">
+  <target name="prod-deploy" depends="prod-war" description="Deploy Production Web Client">
     <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
       path="${deploy.path}" war="${deploy.war}" update="true"/>
   </target>
 
-  <target name="console-deploy" depends="deploy">
-    <echo message="Please use 'deploy' instead of 'console-deploy' and goto '/zimbra' instead of '/ZimbraConsole'"/>
-  </target>
-
-  <target name="dev-dist" description="build tar file of dev build to unpack over RPM install" depends="war">
+  <target name="dev-dist" depends="war">
     <delete>
       <fileset dir="${dist.dir}" includes="${dist.tarfile}"/>
     </delete>
@@ -720,7 +716,7 @@
   </target>
 
   <!-- admin console targets -->
-  <target name="admin-dev-sync">
+  <target name="admin-dev-sync" description="Admin Quick Sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}">
       <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="js/zimbraMail/**,public/Login.jsp,public/launchZimbraMail.jsp,public/ZimbraMail.jsp,public/ZimbraMailNewCompose.jsp,public/Messages.jsp"/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
@@ -802,12 +798,12 @@
     </copy>
   </target>
   
-  <target name="admin-deploy" depends="admin-dev-war">
+  <target name="admin-deploy" depends="admin-dev-war" description="Deploy Admin">
     <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
       path="${deploy.admin.path}" war="${deploy.admin.war}" update="true"/>
   </target>  
 	
-  <target name="admin-prod-deploy" depends="admin-war">
+  <target name="admin-prod-deploy" depends="admin-war" description="Deploy Production Admin">
     <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
       path="${deploy.admin.path}" war="${deploy.admin.war}" update="true"/>
   </target>  
