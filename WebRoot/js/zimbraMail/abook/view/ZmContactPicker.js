@@ -260,12 +260,20 @@ function(result) {
 	var a = vec.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var contact = a[i];
-		var emails = contact.getEmails();
-		for (var j = 0; j < emails.length; j++) {
-			var email = new ZmEmailAddress(emails[j], null, contact.getFileAs());
+		if (contact.isGroup()) {
+			var members = contact.getGroupMembers().good.toString(ZmEmailAddress.SEPARATOR);
+			var email = new ZmEmailAddress(members, null, contact.getFileAs(), null, true);
 			email.id = Dwt.getNextId();
-			email.icon = contact.isGal ? "GAL" : contact.addrbook.getIcon();
+			email.icon = "Group";
 			list.push(email);
+		} else {
+			var emails = contact.getEmails();
+			for (var j = 0; j < emails.length; j++) {
+				var email = new ZmEmailAddress(emails[j], null, contact.getFileAs());
+				email.id = Dwt.getNextId();
+				email.icon = contact.isGal ? "GAL" : contact.addrbook.getIcon();
+				list.push(email);
+			}
 		}
 	}
 	this._chooser.setItems(AjxVector.fromArray(list));

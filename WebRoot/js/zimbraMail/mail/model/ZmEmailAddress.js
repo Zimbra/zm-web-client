@@ -35,12 +35,14 @@
 * @param type		[constant]*		from, to, cc, bcc, or reply-to
 * @param name		[string]*		the personal name portion
 * @param dispName	[string]*		a brief display version of the name
+* @param isGroup	[boolean]*		whether the address param is really a list of email addresses
 */
-function ZmEmailAddress(address, type, name, dispName) {
+function ZmEmailAddress(address, type, name, dispName, isGroup) {
 	this.address = address;
 	this.name = this._setName(name);
 	this.dispName = dispName;
-	this.type = type ? type : ZmEmailAddress.TO;
+	this.type = type || ZmEmailAddress.TO;
+	this.isGroup = isGroup;
 };
 
 ZmEmailAddress.FROM			= 1;
@@ -314,7 +316,7 @@ function(str) {
 
 ZmEmailAddress.prototype.toString =
 function() {
-	if (this.name) {
+	if (this.name && !this.isGroup) {
 		var name = this.name.replace(/"/g, '\\"', this.name); // escape double quotes
 		var addr = [name, " <", this.address, ">"].join("");
 		if (!ZmEmailAddress.parse(addr))
