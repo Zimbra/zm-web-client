@@ -1095,8 +1095,16 @@ function(colIndex, data) {
 		var appt = data.appt;
 		var startTime = appt.getStartTime();
 		var endTime = appt.getEndTime();
-		data.numDays = startTime != endTime ? Math.floor((endTime-startTime)/AjxDateUtil.MSEC_PER_DAY) : 1;
-	}
+		data.numDays = 1;
+        if (this.view != ZmController.CAL_SCHEDULE_VIEW) {
+            if (startTime != endTime) {
+                data.numDays = Math.floor((endTime-startTime) / AjxDateUtil.MSEC_PER_DAY);
+            }
+            if (startTime < data.startTime) {
+                data.numDays -= Math.floor(data.startTime - startTime) / AjxDateUtil.MSEC_PER_DAY;
+            }
+        }
+    }
 	var rows = this._allDayApptsRowLayouts;
 	var row = null;
 	for (var i=0; i < rows.length; i++) {
