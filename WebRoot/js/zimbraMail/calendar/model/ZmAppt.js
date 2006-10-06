@@ -632,9 +632,11 @@ function(message, viewMode) {
 		this.timezone = (message.invite.getServerStartTimeTz(0)) || (AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 
 		// adjust start/end times based on UTC/timezone
-		ZmAppt.__adjustDateForTimezone(this.startDate, this.timezone, this.startsInUTC);
-		ZmAppt.__adjustDateForTimezone(this.endDate, this.timezone, this.endsInUTC);
-		this.timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+        if (viewMode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
+            ZmAppt.__adjustDateForTimezone(this.startDate, this.timezone, this.startsInUTC);
+            ZmAppt.__adjustDateForTimezone(this.endDate, this.timezone, this.endsInUTC);
+        }
+        this.timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 
 		this.repeatCustomMonthDay = this.startDate.getDate();
 
