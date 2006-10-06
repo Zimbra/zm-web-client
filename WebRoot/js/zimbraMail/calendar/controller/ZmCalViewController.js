@@ -980,7 +980,8 @@ function(newAppt, mode, isDirty, startDate) {
 ZmCalViewController.prototype.editAppointment = 
 function(appt, mode) {
 	if (mode != ZmAppt.MODE_NEW) {
-		appt.getDetails(mode, new AjxCallback(this, this._showApptComposeView, [appt, mode]));
+        var clone = ZmAppt.quickClone(appt);
+        clone.getDetails(mode, new AjxCallback(this, this._showApptComposeView, [clone, mode]));
 	} else {
 		this._app.getApptComposeController().show(appt, mode);
 	}
