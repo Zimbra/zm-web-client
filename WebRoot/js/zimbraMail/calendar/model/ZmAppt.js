@@ -632,9 +632,11 @@ function(message, viewMode) {
 		this.timezone = (message.invite.getServerStartTimeTz(0)) || (AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 
 		// adjust start/end times based on UTC/timezone
-		ZmAppt.__adjustDateForTimezone(this.startDate, this.timezone, this.startsInUTC);
-		ZmAppt.__adjustDateForTimezone(this.endDate, this.timezone, this.endsInUTC);
-		this.timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+        if (viewMode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
+            ZmAppt.__adjustDateForTimezone(this.startDate, this.timezone, this.startsInUTC);
+            ZmAppt.__adjustDateForTimezone(this.endDate, this.timezone, this.endsInUTC);
+        }
+        this.timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 
 		this.repeatCustomMonthDay = this.startDate.getDate();
 
@@ -1570,32 +1572,8 @@ function(soapDoc, method,  attachmentId, notifyList) {
 	}
 
 	if (this.timezone) {
-		var rule = AjxTimezone.getRule(AjxTimezone.getClientId(this.timezone));
-		if (rule.autoDetected) {
-			var tz = soapDoc.set("tz", null, m);
-			tz.setAttribute("id", this.timezone);
-			tz.setAttribute("stdoff", rule.stdOffset);
-			if (rule.dstOffset) {
-				tz.setAttribute("dayoff", rule.dstOffset);
-				var trans = [
-					{ ename: "standard", change: rule.changeStd },
-					{ ename: "daylight", change: rule.changeD }
-				];
-				for (var i = 0; i < trans.length; i++) {
-					var tran = trans[i];
-					var ename = tran.ename;
-					var change = tran.change;
-
-					var el = soapDoc.set(ename, null, tz);
-					// NOTE: JS months are 0-based but SOAP is 1-based.
-					el.setAttribute("mon", change[1] + 1);
-					el.setAttribute("mday", change[2]);
-					el.setAttribute("hour", change[3]);
-					el.setAttribute("min", change[4]);
-					el.setAttribute("sec", change[5]);
-				}
-			}
-		}
+		var clientId = AjxTimezone.getClientId(this.timezone);
+		ZmTimezone.set(soapDoc, clientId, m, true);
 	}
 
 	var inv = soapDoc.set("inv", null, m);
