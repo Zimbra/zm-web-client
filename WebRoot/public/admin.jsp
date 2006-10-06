@@ -149,21 +149,36 @@
 		}
 			ZaZimbraAdmin.run(document.domain);
 		}
-		/* for Mozilla */
-		if (document.addEventListener) {
-			document.addEventListener("DOMContentLoaded", launch, null);
-		}
-		/* for Safari */
-		if (/WebKit/i.test(navigator.userAgent)) { // sniff
-			var _timer = setInterval(function() {
-				if (/loaded|complete/.test(document.readyState)) {
-					launch();
-				}
-			}, 10);
-		}				
-		AjxCore.addOnloadListener(launch);
+
+       //	START DOMContentLoaded
+       // Mozilla and Opera 9 expose the event we could use
+       if (document.addEventListener) {
+           document.addEventListener("DOMContentLoaded", launch, null);
+
+           //	mainly for Opera 8.5, won't be fired if DOMContentLoaded fired already.
+           document.addEventListener("load", launch, null);
+       }
+
+       // 	for Internet Explorer. readyState will not be achieved on init call
+       if (AjxEnv.isIE && AjxEnv.isWindows) {
+           document.attachEvent("onreadystatechange", function(e) {
+               if (document.readyState == "complete") {
+                   launch();
+               }
+           });
+       }
+
+       if (/(WebKit|khtml)/i.test(navigator.userAgent)) { // sniff
+           var _timer = setInterval(function() {
+               if (/loaded|complete/.test(document.readyState)) {
+                   launch();
+                   // call the onload handler
+               }
+           }, 10);
+       }
+       //	END DOMContentLoaded
+       AjxCore.addOnloadListener(launch);
     </script>
-<!--[if IE]><script defer src="javascript:'launch()'"></script><![endif]-->    
   </head>
   <body>
   <jsp:include page="/public/pre-cache.jsp"/>  

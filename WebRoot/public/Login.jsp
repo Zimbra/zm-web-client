@@ -207,27 +207,42 @@ appContextPath = "<%= contextPath %>";
 		ZmLogin.handleOnload();
 	}
 
-	/* for Mozilla */
-	if (document.addEventListener) {
-		document.addEventListener("DOMContentLoaded", init, null);
-	}
+    //	START DOMContentLoaded
+    // Mozilla and Opera 9 expose the event we could use
+    if (document.addEventListener) {
+        document.addEventListener("DOMContentLoaded", init, null);
 
-	/* for Safari */
-	if (/WebKit/i.test(navigator.userAgent)) { // sniff
-		var _timer = setInterval(function() {
-			if (/loaded|complete/.test(document.readyState)) {
-				init();
-			}
-		}, 10);
-	}
+        //	mainly for Opera 8.5, won't be fired if DOMContentLoaded fired already.
+        document.addEventListener("load", init, null);
+    }
 
-	/* for other browsers */
-	window.onload = init;
+    // 	for Internet Explorer. readyState will not be achieved on init call
+    if (AjxEnv.isIE && AjxEnv.isWindows) {
+        document.attachEvent("onreadystatechange", function(e) {
+            if (document.readyState == "complete") {
+                init();
+            }
+        });
+    }
 
-	// XXX: DO NOT REMOVE - THIS PREVENTS MEM LEAK IN IE
-	window.onunload = function() { window.onload = window.onunload = null; }
+    if (/(WebKit|khtml)/i.test(navigator.userAgent)) { // sniff
+        var _timer = setInterval(function() {
+            if (/loaded|complete/.test(document.readyState)) {
+                init();
+                // call the onload handler
+            }
+        }, 10);
+    }
+
+    // for the rest
+    window.onload = init;
+    //	END DOMContentLoaded
+
+    // XXX: DO NOT REMOVE - THIS PREVENTS MEM LEAK IN IE
+    window.onunload = function() {
+        window.onload = window.onunload = null;
+    }
 </script>
-<!--[if IE]><script defer src="javascript:'init()'"></script><![endif]-->
 </head>
 <body>
 <% if ((mode != null) && (mode.equalsIgnoreCase("mjsf"))) { %>
