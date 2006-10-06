@@ -757,7 +757,7 @@ function() {
 	// create mini calendar button for end by field
 	var dateButtonListener = new AjxListener(this, this._endByButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
-	ZmApptViewHelper.createMiniCalButton(this, this._endByButtonId, dateButtonListener, dateCalSelectionListener, true);
+	ZmApptViewHelper.createMiniCalButton(this, this._endByButtonId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
 
 	// create all DwtInputField's
 	this._createInputs();
@@ -1175,8 +1175,8 @@ function(ev) {
 	var menu = ev.item.getMenu();
 	var cal = menu.getItem(0);
 	var initDate = this._endByField.isValid()
-		? (new Date(this._endByField.getValue()))
-		: (new Date());
+		? new Date(AjxDateUtil.simpleParseDateStr(this._endByField.getValue()))
+		: new Date();
 	cal.setDate(initDate, true);
 	ev.item.popup();
 };
