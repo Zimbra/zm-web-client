@@ -1095,8 +1095,16 @@ function(colIndex, data) {
 		var appt = data.appt;
 		var startTime = appt.getStartTime();
 		var endTime = appt.getEndTime();
-		data.numDays = startTime != endTime ? Math.floor((endTime-startTime)/AjxDateUtil.MSEC_PER_DAY) : 1;
-	}
+		data.numDays = 1;
+        if (this.view != ZmController.CAL_SCHEDULE_VIEW) {
+            if (startTime != endTime) {
+                data.numDays = Math.floor((endTime-startTime) / AjxDateUtil.MSEC_PER_DAY);
+            }
+            if (startTime < data.startTime) {
+                data.numDays -= Math.floor(data.startTime - startTime) / AjxDateUtil.MSEC_PER_DAY;
+            }
+        }
+    }
 	var rows = this._allDayApptsRowLayouts;
 	var row = null;
 	for (var i=0; i < rows.length; i++) {
@@ -1275,7 +1283,7 @@ function(d, duration, col) {
 	var m = d.getMinutes();
 	if (col == null && !this._scheduleMode) {
 		var day = this._getDayForDate(d);
-		col = this._columns[day.index];
+		col = day ? this._columns[day.index] : null;
 	}
 	if (col == null) return null;
 	return new DwtRectangle(col.apptX, ((h+m/60) * ZmCalColView._HOUR_HEIGHT), 
