@@ -160,7 +160,7 @@
        }
 
        // 	for Internet Explorer. readyState will not be achieved on init call
-       if (AjxEnv.isIE && AjxEnv.isWindows) {
+       if (!AjxEnv || (AjxEnv.isIE && AjxEnv.isWindows)) {
            document.attachEvent("onreadystatechange", function(e) {
                if (document.readyState == "complete") {
                    launch();
