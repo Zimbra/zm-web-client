@@ -55,7 +55,7 @@ function(contact, isDirty) {
 
 	this._setFields();
 
-	this._isDirty = isDirty || false;
+	this._isDirty = isDirty;
 };
 
 ZmGroupView.prototype.getModifiedAttrs =
@@ -65,7 +65,6 @@ function() {
 
 	// get field values
 	var groupName = AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
-	if (!groupName.length) return null;
 	var folderId = this._folderSelect.getValue();
 	var groupMembers = this._getGroupMembers();
 
@@ -94,6 +93,14 @@ function() {
 	}
 
 	return foundOne ? mods : null;
+};
+
+ZmGroupView.prototype.isEmpty =
+function() {
+	var groupName = AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
+	var targetSize = this._picker.targetListView.getList().size();
+
+	return groupName == "" && targetSize == 0;
 };
 
 ZmGroupView.prototype.enableInputs =
@@ -290,16 +297,16 @@ function() {
 	return members.length > 0 ? members.join(",") : null;
 };
 
-ZmGroupView.prototype._setGroupName =
-function() {
-	var groupName = document.getElementById(this._groupNameId);
-	if (groupName) groupName.value = this._contact.getFileAs() || "";
-};
-
 ZmGroupView.prototype._setGroupMembers =
 function() {
 	var members = this._contact.getGroupMembers();
 	this._picker.addItems(members.good, DwtChooserListView.TARGET, true);
+};
+
+ZmGroupView.prototype._setGroupName =
+function() {
+	var groupName = document.getElementById(this._groupNameId);
+	if (groupName) groupName.value = this._contact.getFileAs() || "";
 };
 
 

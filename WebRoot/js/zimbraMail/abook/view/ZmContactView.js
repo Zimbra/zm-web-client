@@ -123,10 +123,7 @@ function(contact, isDirty) {
 	Dwt.setVisibility(contentDiv, true);
 	contentDiv.scrollTop = 0; // bug fix #3362
 
-	var lastNameInput = document.getElementById(this._fieldIds[ZmContact.F_lastName]);
-	lastNameInput.focus(); // bug fix #937
-
-	this._isDirty = isDirty || false;
+	this._isDirty = isDirty;
 };
 
 ZmContactView.prototype.getModifiedAttrs =
@@ -198,6 +195,19 @@ function() {
 	}
 
 	return foundOne ? mods : null;
+};
+
+ZmContactView.prototype.isEmpty =
+function() {
+	// Make sure at least one form field has a value (otherwise,
+	// delete the contact). NOTE: getModifiedAttrs() populates
+	// _attrs with form field values.
+	var formAttrs = this._listView[view]._attr;
+	for (var i in formAttrs) {
+		if (i == ZmContact.F_fileAs || i == ZmContact.X_fullName) continue;
+		if (formAttrs[i]) return false;
+	}
+	return true;
 };
 
 ZmContactView.prototype.enableInputs =
