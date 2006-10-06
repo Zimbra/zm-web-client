@@ -615,7 +615,7 @@ function(img) {
 		if (att.foundInMsgBody) continue;
 
 		var src = img.getAttribute("src") || img.getAttribute("dfsrc");
-		if (src.indexOf(csfeMsgFetch) == 0) {
+		if (src && src.indexOf(csfeMsgFetch) == 0) {
 			var mpId = src.substring(src.lastIndexOf("=")+1);
 			if (mpId == att.part) {
 				att.foundInMsgBody = true;
