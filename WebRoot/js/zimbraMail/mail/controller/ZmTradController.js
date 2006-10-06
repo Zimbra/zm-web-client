@@ -85,8 +85,7 @@ function(view, toggle) {
 
 ZmTradController.prototype._createDoublePaneView = 
 function() {
-	var view = new ZmTradView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
-	return view;
+	return (new ZmTradView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt));
 };
 
 ZmTradController.prototype._getViewType =
@@ -110,7 +109,7 @@ function(view) {
 		var menu = this._setupGroupByMenuItems(this, view);
 		new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
 	}
-	this._setupReadingPaneMenuItem(view, menu, true);
+	this._setupReadingPaneMenuItem(view, menu, this._appCtxt.get(ZmSetting.READING_PANE_ENABLED));
 };
 
 ZmTradController.prototype._paginate = 

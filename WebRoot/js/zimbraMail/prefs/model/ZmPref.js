@@ -49,7 +49,7 @@ ZmPref.GENERAL_PREFS = [ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDE
 						ZmSetting.PASSWORD, ZmSetting.SKIN_NAME];
 
 ZmPref.MAIL_PREFS = [ZmSetting.INITIAL_GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSetting.SHOW_FRAGMENTS,
-					 ZmSetting.INITIAL_SEARCH, ZmSetting.POLLING_INTERVAL,
+					 ZmSetting.INITIAL_SEARCH, ZmSetting.POLLING_INTERVAL, ZmSetting.READING_PANE_ENABLED,
 					 ZmSetting.SAVE_TO_SENT, ZmSetting.REPLY_TO_ADDRESS, ZmSetting.REPLY_INCLUDE_ORIG, 
 					 ZmSetting.FORWARD_INCLUDE_ORIG, ZmSetting.REPLY_PREFIX,
 					 ZmSetting.SIGNATURE_ENABLED, ZmSetting.SIGNATURE_STYLE, ZmSetting.SIGNATURE,
@@ -291,7 +291,11 @@ ZmPref.SETUP[ZmSetting.PASSWORD] = {
 ZmPref.SETUP[ZmSetting.POLLING_INTERVAL] = {
 	displayName:		ZmMsg.pollingInterval,
 	displayContainer:	ZmPref.TYPE_INPUT,
-	validationFunction: ZmPref.validatePollingInterval,
+	validationFunction: ZmPref.validatePollingInterval};
+
+ZmPref.SETUP[ZmSetting.READING_PANE_ENABLED] = {
+	displayName:		ZmMsg.alwaysShowReadingPane,
+	displayContainer:	ZmPref.TYPE_CHECKBOX,
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.REPLY_INCLUDE_ORIG] = {

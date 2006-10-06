@@ -39,7 +39,7 @@ function ZmDoublePaneController(appCtxt, container, mailApp) {
 
 	if (arguments.length == 0) return;
 	ZmMailListController.call(this, appCtxt, container, mailApp);
-	this._readingPaneOn = true;
+	this._readingPaneOn = appCtxt.get(ZmSetting.READING_PANE_ENABLED);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));	
@@ -102,10 +102,10 @@ function(view, toggle) {
 	} else {
 		if (this._readingPaneOn == mi.getChecked()) return;
 	}
-	
+
 	this._readingPaneOn = mi.getChecked();
 	this._doublePaneView.toggleView();
-		
+
 	// set msg in msg view if reading pane is being shown
 	if (this._readingPaneOn) {
 		var currentMsg = this._doublePaneView.getSelection()[0];
