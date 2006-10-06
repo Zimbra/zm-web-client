@@ -1175,8 +1175,8 @@ function(ev) {
 	var menu = ev.item.getMenu();
 	var cal = menu.getItem(0);
 	var initDate = this._endByField.isValid()
-		? (new Date(this._endByField.getValue()))
-		: (new Date());
+		? new Date(AjxDateUtil.simpleParseDateStr(this._endByField.getValue()))
+		: new Date();
 	cal.setDate(initDate, true);
 	ev.item.popup();
 };
