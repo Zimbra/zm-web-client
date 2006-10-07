@@ -58,6 +58,8 @@ ZmNotebookObjectHandler.MEDIAWIKI_KEYWORD_RE = new RegExp(
 
 ZmNotebookObjectHandler.WIKIPATH_RE = /^(?:\/\/([^\/]+))?(.*\/([^\/]+)?|.*)/;
 
+ZmNotebookObjectHandler.URL_RE = /^((telnet:|mailto:|callto:)|((https?|ftp|gopher|news|file):\/\/))[^\s\r\n]*?$/gi;
+
 // Public methods
 
 ZmNotebookObjectHandler.prototype.match =
@@ -118,7 +120,12 @@ function(line, startIndex) {
 
 ZmNotebookObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
-	var item = this._getItem(context);
+    if (ZmNotebookObjectHandler.URL_RE.test(context.keyword)) {
+        ZmNotebookObjectHandler.__openWindow(context.keyword);
+        return;
+    }
+
+    var item = this._getItem(context);
 	if (!item) {
 		if (!this._formatter) {
 			this._formatter = new AjxMessageFormat(ZmMsg.pageNotFound);
@@ -138,16 +145,8 @@ function(item) {
 
 	if (item instanceof ZmDocument) {
 		var winurl = item.getRestUrl();
-		var winname = "_new";
-		var winfeatures = [
-			"width=",(window.outerWidth || 640),",",
-			"height=",(window.outerHeight || 480),",",
-			"location,menubar,",
-			"resizable,scrollbars,status,toolbar"
-		].join("");
-
-		var win = open(winurl, winname, winfeatures);
-		return;
+        ZmNotebookObjectHandler.__openWindow(winurl);
+        return;
 	}
 
 	var isNew = !item || (item.version == 0 && item.name != ZmNotebook.PAGE_INDEX);
@@ -155,12 +154,29 @@ function(item) {
 	controller.show(item);
 };
 
+ZmNotebookObjectHandler.__openWindow =
+function(winurl) {
+    var winname = "_new";
+    var winfeatures = [
+        "width=",(window.outerWidth || 640),",",
+        "height=",(window.outerHeight || 480),",",
+        "location,menubar,",
+        "resizable,scrollbars,status,toolbar"
+    ].join("");
+
+    var win = open(winurl, winname, winfeatures);
+};
+
 ZmNotebookObjectHandler.prototype.getToolTipText =
 function(label, context) {
 	var item = this._getItem(context);
+    var isUrl = !item && ZmNotebookObjectHandler.URL_RE.test(context.keyword); 
 
-	var imageClass = null;
-	if (item instanceof ZmDocument) {
+    var imageClass = null;
+    if (isUrl) {
+        imageClass = "ImgHtmlDoc";
+    }
+    else if (item instanceof ZmDocument) {
 		imageClass = "ImgGenericDoc";
 	}
 	else if (item) {
@@ -180,17 +196,22 @@ function(label, context) {
 			"</td></tr>",
 			"<tr><td>"
 	];
-	if (item && item.fragment) {
-		var fragment = AjxStringUtil.htmlEncode(item.fragment);
-		html.push(fragment, "<br>&nbsp;");
-	}
-	html.push("<table border=0 cellpadding=0 cellspacing=0>");
-	if (item) {
-		this._appendPropertyToTooltip(html, item.creator, ZmMsg.userLabel);
-		this._appendPropertyToTooltip(html, item.getRestUrl(), ZmMsg.urlLabel);
-	}
-	this._appendPropertyToTooltip(html, item ? item.getPath() : context.keyword, ZmMsg.pathLabel);
-	html.push("</table></td></tr></table>");
+    if (item && item.fragment) {
+        var fragment = AjxStringUtil.htmlEncode(item.fragment);
+        html.push(fragment, "<br>&nbsp;");
+    }
+    html.push("<table border=0 cellpadding=0 cellspacing=0>");
+    if (isUrl) {
+        this._appendPropertyToTooltip(html, context.keyword, ZmMsg.urlLabel);
+    }
+    else {
+        if (item) {
+            this._appendPropertyToTooltip(html, item.creator, ZmMsg.userLabel);
+            this._appendPropertyToTooltip(html, item.getRestUrl(), ZmMsg.urlLabel);
+        }
+        this._appendPropertyToTooltip(html, item ? item.getPath() : context.keyword, ZmMsg.pathLabel);
+    }
+    html.push("</table></td></tr></table>");
 	
 	return html.join("");
 };

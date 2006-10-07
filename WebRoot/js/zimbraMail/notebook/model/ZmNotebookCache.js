@@ -387,7 +387,13 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 		var names = link.replace(/\/$/,"").split('/');
 		for (var i = 0; i < names.length - 1; i++) {
 			var name = names[i];
-			notebook = ZmNotebookCache.__getNotebookByName(notebook, name);
+            if (name == ".") continue;
+            if (name == "..") {
+                notebook = notebook.parent;
+                if (notebook == null) return null;
+                continue;
+            }
+            notebook = ZmNotebookCache.__getNotebookByName(notebook, name);
 			if (notebook == null) {
 				// TODO: handle this case!
 				throw "subfolder doesn't exist: "+(names.slice(0, i+1).join('/'));
