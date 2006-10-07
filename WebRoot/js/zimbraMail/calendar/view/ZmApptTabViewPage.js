@@ -498,7 +498,8 @@ function(appt, mode) {
 		//       day *following* the actual end day. So this hack
 		//       is here until I can figure out why the two are
 		//       different.
-		if (ed.getHours() == 0 && ed.getMinutes() == 0 && ed.getSeconds() == 0) {
+        var isNewFromQuickAdd = mode == ZmAppt.MODE_NEW_FROM_QUICKADD;
+        if (!isNewFromQuickAdd && ed.getHours() == 0 && ed.getMinutes() == 0 && ed.getSeconds() == 0) {
 			ed.setHours(-12);
 		}
 	} else {
@@ -671,12 +672,12 @@ function() {
 	html[i++] = "'><col></colgroup>";
 	html[i++] = "<tr style='height:";
 	html[i++] = rowHeight;
-	html[i++] = "px'><td valign=top><fieldset class='ZmFieldset'><legend class='ZmLegend'>";
+	html[i++] = "px'><td valign=top><fieldset><legend>";
 	html[i++] = ZmMsg.details;
 	html[i++] = "</legend><div>";
 	html[i++] = this._getDetailsHtml();
 	html[i++] = "</div></fieldset></td>";
-	html[i++] = "<td valign=top><fieldset class='ZmFieldset'><legend class='ZmLegend'>";
+	html[i++] = "<td valign=top><fieldset><legend>";
 	html[i++] = ZmMsg.time;
 	html[i++] = "</legend><div style='overflow:hidden; ";
 	html[i++] = AjxEnv.isIE ? " width:99%'>" : "'>";
@@ -773,8 +774,8 @@ function() {
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
-	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener);
-	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener);
+	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt);
+	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt);
 };
 
 ZmApptTabViewPage.prototype._getDetailsHtml =
