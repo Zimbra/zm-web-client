@@ -498,7 +498,8 @@ function(appt, mode) {
 		//       day *following* the actual end day. So this hack
 		//       is here until I can figure out why the two are
 		//       different.
-		if (ed.getHours() == 0 && ed.getMinutes() == 0 && ed.getSeconds() == 0) {
+        var isNewFromQuickAdd = mode == ZmAppt.MODE_NEW_FROM_QUICKADD;
+        if (!isNewFromQuickAdd && ed.getHours() == 0 && ed.getMinutes() == 0 && ed.getSeconds() == 0) {
 			ed.setHours(-12);
 		}
 	} else {
