@@ -58,6 +58,8 @@ ZmNotebookObjectHandler.MEDIAWIKI_KEYWORD_RE = new RegExp(
 
 ZmNotebookObjectHandler.WIKIPATH_RE = /^(?:\/\/([^\/]+))?(.*\/([^\/]+)?|.*)/;
 
+ZmNotebookObjectHandler.URL_RE = /^((telnet:|mailto:|callto:)|((https?|ftp|gopher|news|file):\/\/))[^\s\r\n]*?$/gi;
+
 // Public methods
 
 ZmNotebookObjectHandler.prototype.match =
@@ -118,8 +120,13 @@ function(line, startIndex) {
 
 ZmNotebookObjectHandler.prototype.selected =
 function(obj, span, ev, context) {
-	var page = this._getPage(context);
-	if (!page) {
+    if (ZmNotebookObjectHandler.URL_RE.test(context.keyword)) {
+        ZmNotebookObjectHandler.__openWindow(context.keyword);
+        return;
+    }
+
+    var item = this._getItem(context);
+	if (!item) {
 		if (!this._formatter) {
 			this._formatter = new AjxMessageFormat(ZmMsg.pageNotFound);
 		}
@@ -128,24 +135,53 @@ function(obj, span, ev, context) {
 		appController.popupErrorDialog(message, null, null, true);
 		return;
 	}
-	this._selectedHandleResponse(page);
+	this._selectedHandleResponse(item);
 };
 
 ZmNotebookObjectHandler.prototype._selectedHandleResponse =
-function(page) {
+function(item) {
 	var appController = this._appCtxt.getAppController();
 	var notebookApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
 
-	var isNew = !page || (page.version == 0 && page.name != ZmNotebook.PAGE_INDEX);
+	if (item instanceof ZmDocument) {
+		var winurl = item.getRestUrl();
+        ZmNotebookObjectHandler.__openWindow(winurl);
+        return;
+	}
+
+	var isNew = !item || (item.version == 0 && item.name != ZmNotebook.PAGE_INDEX);
 	var controller = isNew ? notebookApp.getPageEditController() : notebookApp.getNotebookController();
-	controller.show(page);
+	controller.show(item);
+};
+
+ZmNotebookObjectHandler.__openWindow =
+function(winurl) {
+    var winname = "_new";
+    var winfeatures = [
+        "width=",(window.outerWidth || 640),",",
+        "height=",(window.outerHeight || 480),",",
+        "location,menubar,",
+        "resizable,scrollbars,status,toolbar"
+    ].join("");
+
+    var win = open(winurl, winname, winfeatures);
 };
 
 ZmNotebookObjectHandler.prototype.getToolTipText =
 function(label, context) {
-	var page = this._getPage(context);
+	var item = this._getItem(context);
+    var isUrl = !item && ZmNotebookObjectHandler.URL_RE.test(context.keyword); 
 
-	var imageClass = (page && page.name == ZmNotebook.PAGE_INDEX) ? 'ImgSection': 'ImgPage';
+    var imageClass = null;
+    if (isUrl) {
+        imageClass = "ImgHtmlDoc";
+    }
+    else if (item instanceof ZmDocument) {
+		imageClass = "ImgGenericDoc";
+	}
+	else if (item) {
+		imageClass = item.name == ZmNotebook.PAGE_INDEX ? 'ImgSection': 'ImgPage';
+	}
 	var html = [
 		"<table border=0 cellpadding=0 cellspacing=0>",
 			"<tr><td>",
@@ -160,17 +196,22 @@ function(label, context) {
 			"</td></tr>",
 			"<tr><td>"
 	];
-	if (page && page.fragment) {
-		var fragment = AjxStringUtil.htmlEncode(page.fragment);
-		html.push(fragment, "<br>&nbsp;");
-	}
-	html.push("<table border=0 cellpadding=0 cellspacing=0>");
-	if (page) {
-		this._appendPropertyToTooltip(html, page.creator, ZmMsg.userLabel);
-		this._appendPropertyToTooltip(html, page.getRestUrl(), ZmMsg.urlLabel);
-	}
-	this._appendPropertyToTooltip(html, page ? page.getPath() : context.keyword, ZmMsg.pathLabel);
-	html.push("</table></td></tr></table>");
+    if (item && item.fragment) {
+        var fragment = AjxStringUtil.htmlEncode(item.fragment);
+        html.push(fragment, "<br>&nbsp;");
+    }
+    html.push("<table border=0 cellpadding=0 cellspacing=0>");
+    if (isUrl) {
+        this._appendPropertyToTooltip(html, context.keyword, ZmMsg.urlLabel);
+    }
+    else {
+        if (item) {
+            this._appendPropertyToTooltip(html, item.creator, ZmMsg.userLabel);
+            this._appendPropertyToTooltip(html, item.getRestUrl(), ZmMsg.urlLabel);
+        }
+        this._appendPropertyToTooltip(html, item ? item.getPath() : context.keyword, ZmMsg.pathLabel);
+    }
+    html.push("</table></td></tr></table>");
 	
 	return html.join("");
 };
@@ -182,16 +223,16 @@ function(obj) {
 
 // Protected methods
 
-ZmNotebookObjectHandler.prototype._getPage =
+ZmNotebookObjectHandler.prototype._getItem =
 function(context) {
 	var appController = this._appCtxt.getAppController();
 	var notebookApp = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var cache = notebookApp.getNotebookCache();
-	// REVISIT: ZmNotebookCache#getPageByLink has to create an empty
+	// REVISIT: ZmNotebookCache#getItemByLink has to create an empty
 	//          page object in the case where the item can't be found
 	//          in a sub-folder! Otherwise, the page we'll be editing
 	//          won't have the right folder!
-	var page = null;
+	var item = null;
 	try {
 		var path = context.keyword;
 		// The expected contents of a link keyword are ":folderId/PageName".
@@ -200,29 +241,29 @@ function(context) {
 				var slashIndex = path.indexOf('/', 1)
 				var folderId = path.substring(1, slashIndex);
 				var pageName = path.substring(slashIndex + 1);
-				return cache.getPageByName(folderId, pageName);
+				return cache.getItemByName(folderId, pageName);
 			}
 		}
-		if (!page) {
-			page = cache.getPageByLink(path);
+		if (!item) {
+			item = cache.getItemByLink(path);
 		}
-		if (!page && !path.match(/^\/\//)) {
+		if (!item && !path.match(/^\/\//)) {
 			var notebookController = notebookApp.getNotebookController();
 			var currentPage = notebookController.getPage();
 			var folderId = path.match(/^\//) ? ZmOrganizer.ID_ROOT : (currentPage && currentPage.folderId) || ZmNotebookItem.DEFAULT_FOLDER;
 			var notebook = this._getNotebook(folderId, path);
 			if (notebook) {
 				// NOTE: We assume the page is new if there's no entry in the cache.
-				page = new ZmPage(this._appCtxt);
-				page.name = path.replace(/^.*\//,"");
-				page.folderId = notebook.id;
+				item = new ZmPage(this._appCtxt);
+				item.name = path.replace(/^.*\//,"");
+				item.folderId = notebook.id;
 			}
 		}
 	}
 	catch (e) {
 		// ignore
 	}
-	return page;
+	return item;
 };
 
 ZmNotebookObjectHandler.prototype._getNotebook = function(folderId, path) {
