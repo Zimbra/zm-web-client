@@ -69,6 +69,8 @@ ZmPref.CALENDAR_PREFS = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DA
 						 ZmSetting.CAL_SHOW_TIMEZONE, ZmSetting.CAL_USE_QUICK_ADD, ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL,
 						 ZmSetting.CAL_REMINDER_WARNING_TIME];
 
+ZmPref.SHORTCUT_PREFS = [ZmSetting.SHORTCUTS];
+
 var i = 1;
 ZmPref.TYPE_INPUT		= i++;
 ZmPref.TYPE_CHECKBOX	= i++;
@@ -77,6 +79,7 @@ ZmPref.TYPE_TEXTAREA	= i++;
 ZmPref.TYPE_PASSWORD	= i++;
 ZmPref.TYPE_IMPORT		= i++;
 ZmPref.TYPE_EXPORT		= i++;
+ZmPref.TYPE_SHORTCUTS	= i++;
 delete i;
 
 // custom functions for loading and validation
@@ -331,6 +334,10 @@ ZmPref.SETUP[ZmSetting.SEARCH_INCLUDES_TRASH] = {
 	displayName:		ZmMsg.includeTrashFolder,
 	displayContainer:	ZmPref.TYPE_CHECKBOX,
 	displaySeparator:	true};
+
+ZmPref.SETUP[ZmSetting.SHORTCUTS] = {
+	displayContainer:	ZmPref.TYPE_SHORTCUTS};
+//	precondition:		ZmSetting.USE_KEYBOARD_SHORTCUTS};
 
 ZmPref.SETUP[ZmSetting.SHOW_FRAGMENTS] = {
 	displayName:		ZmMsg.showFragments,

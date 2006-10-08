@@ -34,7 +34,7 @@
 *
 * @author Conrad Damon
 *
-* @param type		[constant]		folder or tag
+* @param type		[constant]		organizer type
 * @param id			[int]			numeric ID
 * @param name		[string]		name
 * @param parent		[ZmOrganizer]	parent organizer
@@ -132,6 +132,14 @@ ZmOrganizer.FIRST_USER_ID[ZmOrganizer.SEARCH]	= 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.CALENDAR]	= 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.ADDRBOOK] = 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.NOTEBOOK] = 256;
+
+ZmOrganizer.TEXT = {};
+ZmOrganizer.TEXT[ZmOrganizer.FOLDER]	= ZmMsg.folder;
+ZmOrganizer.TEXT[ZmOrganizer.TAG]		= ZmMsg.tag;
+ZmOrganizer.TEXT[ZmOrganizer.SEARCH]	= ZmMsg.savedSearch;
+ZmOrganizer.TEXT[ZmOrganizer.CALENDAR]	= ZmMsg.calendar;
+ZmOrganizer.TEXT[ZmOrganizer.ADDRBOOK]	= ZmMsg.addressBook;
+ZmOrganizer.TEXT[ZmOrganizer.NOTEBOOK]	= ZmMsg.notebook;
 
 // fields that can be part of a displayed organizer
 var i = 1;

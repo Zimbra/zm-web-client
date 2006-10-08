@@ -60,23 +60,27 @@ ZmPrefView.MAIL			= 2;
 ZmPrefView.FILTER_RULES	= 3;
 ZmPrefView.ADDR_BOOK	= 4;
 ZmPrefView.CALENDAR		= 5;
-ZmPrefView.VIEWS = [ZmPrefView.GENERAL, ZmPrefView.MAIL, 
-					ZmPrefView.ADDR_BOOK, ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES];
+ZmPrefView.SHORTCUTS	= 6;
+ZmPrefView.VIEWS = [ZmPrefView.GENERAL, ZmPrefView.MAIL, ZmPrefView.ADDR_BOOK,
+					ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES];
+//					ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES, ZmPrefView.SHORTCUTS];
 
 // list of prefs for each page
-ZmPrefView.PREFS = new Object();
+ZmPrefView.PREFS = {};
 ZmPrefView.PREFS[ZmPrefView.GENERAL]			= ZmPref.GENERAL_PREFS;
 ZmPrefView.PREFS[ZmPrefView.MAIL]				= ZmPref.MAIL_PREFS;
 ZmPrefView.PREFS[ZmPrefView.ADDR_BOOK]			= ZmPref.ADDR_BOOK_PREFS;
 ZmPrefView.PREFS[ZmPrefView.CALENDAR]			= ZmPref.CALENDAR_PREFS;
+ZmPrefView.PREFS[ZmPrefView.SHORTCUTS]			= ZmPref.SHORTCUT_PREFS;
 
 // title for the page's tab
-ZmPrefView.TAB_NAME = new Object();
+ZmPrefView.TAB_NAME = {};
 ZmPrefView.TAB_NAME[ZmPrefView.GENERAL]			= ZmMsg.general;
 ZmPrefView.TAB_NAME[ZmPrefView.MAIL]			= ZmMsg.mail;
 ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]	= ZmMsg.filterRules;
 ZmPrefView.TAB_NAME[ZmPrefView.ADDR_BOOK]		= ZmMsg.addressBook;
 ZmPrefView.TAB_NAME[ZmPrefView.CALENDAR]		= ZmMsg.calendar;
+ZmPrefView.TAB_NAME[ZmPrefView.SHORTCUTS]		= ZmMsg.shortcuts;
 
 ZmPrefView.prototype.toString =
 function () {
@@ -109,6 +113,8 @@ function() {
 		var viewObj = null;
 		if (view == ZmPrefView.FILTER_RULES) {
 			viewObj = this._controller.getFilterRulesController().getFilterRulesView();
+		} else if (view == ZmPrefView.SHORTCUTS) {
+			viewObj = new ZmShortcutsPage(this._parent, this._appCtxt, view, this._controller);
 		} else {
 			viewObj = new ZmPreferencesPage(this._parent, this._appCtxt, view, this._controller, this._passwordDialog);
 		}
@@ -117,6 +123,7 @@ function() {
 
 		this.addTab(ZmPrefView.TAB_NAME[view], this.prefView[view]);
 	}
+	this.resetKeyBindings();
 	this._hasRendered = true;
 };
 

@@ -56,6 +56,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._settings.getSetting(ZmSetting.QUOTA_USED).addChangeListener(listener);
 	this._settings.getSetting(ZmSetting.POLLING_INTERVAL).addChangeListener(listener);
 	this._settings.getSetting(ZmSetting.SKIN_NAME).addChangeListener(listener);
+	this._settings.getSetting(ZmSetting.SHORTCUTS).addChangeListener(listener);
 
 	ZmCsfeCommand.setServerUri(location.protocol + "//" + domain + appCtxt.get(ZmSetting.CSFE_SERVER_URI));
 	ZmCsfeCommand.clientVersion = appCtxt.get(ZmSetting.CLIENT_VERSION);
@@ -1854,18 +1855,20 @@ ZmZimbraMail.prototype._settingsChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 	
-	var setting = ev.source;
-	if (setting.id == ZmSetting.QUOTA_USED) {
+	var id = ev.source.id;
+	if (id == ZmSetting.QUOTA_USED) {
 		this._setUserInfo();
-	} else if (setting.id == ZmSetting.POLLING_INTERVAL) {
+	} else if (id == ZmSetting.POLLING_INTERVAL) {
 		this.setPollInterval();
-	} else if (setting.id == ZmSetting.SKIN_NAME) {
+	} else if (id == ZmSetting.SKIN_NAME) {
 		var cd = this._confirmDialog = this._appCtxt.getYesNoMsgDialog();
 		cd.reset();
 		var skin = setting.getValue();
 		cd.registerCallback(DwtDialog.YES_BUTTON, this._newSkinYesCallback, this, [skin]);
 		cd.setMessage(ZmMsg.skinChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
+	} else if (id == ZmSetting.SHORTCUTS) {
+		this._settings._loadShortcuts();
 	}
 };
 

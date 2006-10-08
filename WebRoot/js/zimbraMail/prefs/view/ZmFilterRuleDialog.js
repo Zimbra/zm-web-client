@@ -240,10 +240,8 @@ function(rule, isCondition) {
 			}
 		}
 		var html = this._getRowHtml(o, isCondition);
-		if (html) {
-			row = Dwt.parseHtmlFragment(html, true);
-			table.tBodies[0].appendChild(row);
-		}
+		row = Dwt.parseHtmlFragment(html, true);
+		table.tBodies[0].appendChild(row);
 	}
 	this._resetOperations(isCondition);
 	return row.id;
@@ -262,9 +260,8 @@ function(data, isCondition) {
 	var html = [];
 	var i = 0;
 
-	rowId = Dwt.getNextId();
-	if (!this._inputs[rowId])
-		this._inputs[rowId] = {};
+	var rowId = Dwt.getNextId();
+	this._inputs[rowId] = {};
 
 	html[i++] = "<tr id='" + rowId + "'>";
 

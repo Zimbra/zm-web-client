@@ -236,6 +236,7 @@ ZmSetting.REPLY_PREFIX					= i++;
 ZmSetting.REPLY_TO_ADDRESS				= i++;
 ZmSetting.SAVE_TO_SENT					= i++;
 ZmSetting.SENT_FOLDER_NAME				= i++;
+ZmSetting.SHORTCUTS						= i++;
 ZmSetting.SHOW_BCC						= i++;
 ZmSetting.SHOW_FRAGMENTS				= i++;
 ZmSetting.SIGNATURE						= i++;
@@ -412,10 +413,13 @@ ZmSetting.INIT[ZmSetting.SHOW_FRAGMENTS]				= ["zimbraPrefShowFragments", ZmSett
 ZmSetting.INIT[ZmSetting.SIGNATURE]						= ["zimbraPrefMailSignature", ZmSetting.T_PREF];
 ZmSetting.INIT[ZmSetting.SIGNATURE_ENABLED]				= ["zimbraPrefMailSignatureEnabled", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.SIGNATURE_STYLE]				= ["zimbraPrefMailSignatureStyle", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.SIG_OUTLOOK];
-ZmSetting.INIT[ZmSetting.USE_KEYBOARD_SHORTCUTS]		= ["zimbraPrefUseKeyboardShortcuts", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.USE_KEYBOARD_SHORTCUTS]		= ["zimbraPrefUseKeyboardShortcuts", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.VACATION_MSG]					= ["zimbraPrefOutOfOfficeReply", ZmSetting.T_PREF];
 ZmSetting.INIT[ZmSetting.VACATION_MSG_ENABLED]			= ["zimbraPrefOutOfOfficeReplyEnabled", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.VIEW_AS_HTML]					= ["zimbraPrefMessageViewHtmlPreferred", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
+
+// Keyboard shortcuts
+ZmSetting.INIT[ZmSetting.SHORTCUTS]						= ["zimbraPrefShortcuts", ZmSetting.T_PREF, ZmSetting.D_STRING];
 
 ZmSetting.prototype.toString =
 function() {
@@ -486,7 +490,11 @@ function(value, key, setDefault, skipNotify) {
 			this.value[key] = value;
 		}
 	} else if (this.dataType == ZmSetting.D_LIST) {
-		this.value.push(value);
+		if (value instanceof Array) {
+			this.value = value;
+		} else {
+			this.value.push(value);
+		}
 	}
 
 	if (setDefault) {

@@ -48,9 +48,10 @@ function() {
 };
 
 ZmMoveToDialog.prototype.popup =
-function(data, loc) {
-	var omit = new Object();
-	var treeIds = [ZmOrganizer.FOLDER];
+function(data, loc, treeIds) {
+	var omit = {};
+	omit[ZmFolder.ID_DRAFTS] = true;
+	treeIds = treeIds ? treeIds : [ZmOrganizer.FOLDER];
 
 	// contacts have their own tree view so find out what kind of data we're dealing with
 	var item = (data instanceof Array) ? data[0] : null;
@@ -58,11 +59,10 @@ function(data, loc) {
 
 	if (data instanceof ZmSearchFolder) {
 		this._folder = data;
-		omit[ZmFolder.ID_DRAFTS] = true;
+		omit[ZmFolder.ID_SPAM] = true;
 		treeIds = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH];
 	} else if (data instanceof ZmFolder) {
 		this._folder = data;
-		omit[ZmFolder.ID_DRAFTS] = true;
 		omit[ZmFolder.ID_SPAM] = true;
 	} else if (this._isContact) {
 		treeIds = [ZmOrganizer.ADDRBOOK];
@@ -72,11 +72,11 @@ function(data, loc) {
 
 		for (var i = 0; i < folders.length; i++) {
 			var folder = folders[i];
-			if (folder.link && folder.isReadOnly())
+			if (folder.link && folder.isReadOnly()) {
 				omit[folder.id] = true;
+			}
 		}
 	} else {
-		omit[ZmFolder.ID_DRAFTS] = true;
 		this._items = data;
 	}
 

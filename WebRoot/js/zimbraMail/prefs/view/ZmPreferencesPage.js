@@ -79,8 +79,9 @@ ZmPreferencesPage.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
 	this._controller._resetOperations(this._controller._toolbar, this._view);
-	if (this._hasRendered && !this._controller.isDirty(this._view)) return;
-	if (this._hasRendered) {
+	var dirty = this._controller.isDirty(this._view);
+	if (this._hasRendered && !dirty) return;
+	if (dirty) {
 		this._table.innerHTML = "";
 	}
 

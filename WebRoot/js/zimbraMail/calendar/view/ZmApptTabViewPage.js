@@ -669,7 +669,7 @@ function() {
 	html[i++] = dims.y - 30;
 	html[i++] = "px'><colgroup><col width='";
 	html[i++] = AjxEnv.is800x600orLower ? "235" : "335";
-	html[i++] = "'><col></colgroup>";
+	html[i++] = "' /><col /></colgroup>";
 	html[i++] = "<tr style='height:";
 	html[i++] = rowHeight;
 	html[i++] = "px'><td valign=top><fieldset><legend>";

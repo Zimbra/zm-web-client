@@ -413,6 +413,8 @@ function() {
 			button.setImage(image);
 		}
 	}
+	this.resetKeyBindings();
+
 	this._apptTab = this._tabPages[ZmApptComposeView.TAB_APPOINTMENT];
 	this._apptTabKey = this._tabKeys[ZmApptComposeView.TAB_APPOINTMENT];
 	

@@ -128,6 +128,13 @@ function(actionCode) {
 	var isDrafts = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
 	var lv = this._listView[this._currentView];
 	var num = lv.getSelectionCount();
+	
+	// check for action code with argument, eg MoveToFolder3
+	var origActionCode = actionCode;
+	var shortcut = ZmShortcut.parseAction(this._appCtxt, "ZmMailListController", actionCode);
+	if (shortcut) {
+		actionCode = shortcut.baseAction;
+	}
 
 	switch (actionCode) {
 		case ZmKeyMap.REPLY:
@@ -179,6 +186,10 @@ function(actionCode) {
 			this._markUnreadListener();
 			break;
 		
+		case ZmKeyMap.FLAG:
+			this._doFlag(listView.getSelection());
+			break;
+
 		case ZmKeyMap.VIEW_BY_CONV:
 			this.switchView(ZmController.CONVLIST_VIEW);
 			break;
@@ -253,9 +264,22 @@ function(actionCode) {
 			}
 			break;
 
-		default:
-			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
+		case ZmKeyMap.GOTO_FOLDER:
+			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(shortcut.arg);
+			this._appCtxt.getSearchController().search({query: folder.createQuery()});
 			break;
+
+		case ZmKeyMap.MOVE_TO_FOLDER:
+			// Handle action code like "MoveToFolder3"
+			if (num && !isDrafts) {
+				var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(shortcut.arg);
+				var items = lv.getSelection();
+				this._doMove(items, folder);
+			}
+			break;
+
+		default:
+			return ZmListController.prototype.handleKeyAction.call(this, origActionCode);
 	}
 	return true;
 };

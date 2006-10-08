@@ -109,6 +109,7 @@ function(node) {
 * Populates settings values.
 *
 * @param list		a list of preference or attribute objects
+* TODO: handle multivalue
 */
 ZmSettings.prototype.createFromJs = 
 function(list) {
@@ -160,6 +161,8 @@ function(callback, result) {
 	if (obj.license) {
 		this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status);
 	}
+	
+	this._loadShortcuts();
 
 	// handle settings whose values may depend on other settings
 	this._settings[ZmSetting.GROUP_MAIL_BY].setValue(this.get(ZmSetting.INITIAL_GROUP_MAIL_BY), null, true);
@@ -329,4 +332,26 @@ function() {
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_TGT_VIEW, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SIMPLE_VIEW, true, true);
 	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_CARDS_VIEW, true, true);
+};
+
+ZmSettings.prototype._loadShortcuts =
+function() {
+	var kbm = this._appCtxt.getKeyboardMgr();
+	if (!kbm.isEnabled()) { return; }
+
+	var maps = {};
+	var kmm = kbm.__keyMapMgr;
+	var scString = this.get(ZmSetting.SHORTCUTS);
+	if (!scString) { return; }
+	var shortcuts = scString.split('|');
+	var len = shortcuts.length;
+	for (var i = 0; i < len; i++) {
+		var sc = ZmShortcut.parse(shortcuts[i]);
+		kmm.setMapping(sc.mapName, sc.keySequence, sc.action);
+		kmm.setArg(sc.mapName, sc.action, sc.arg);
+		maps[sc.mapName] = true;
+	}
+	for (var map in maps) {
+		kmm.reloadMap(map);
+	}
 };

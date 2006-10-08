@@ -605,3 +605,8 @@ function() {
 	}
 	return this._csfeMsgFetchSvc;
 };
+
+ZmAppCtxt.prototype.getKeyboardMgr =
+function() {
+	return this._shell.getKeyboardMgr();
+};
