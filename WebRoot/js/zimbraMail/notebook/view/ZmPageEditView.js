@@ -580,21 +580,42 @@ ZmPageEditor.prototype._createWikiToolBar = function(parent) {
 };
 /***/
 
-ZmPageEditor.prototype.insertLink = function(href) {
-	var link = this._getIframeDoc().createElement("A");
-	link.href = href;
-	link.innerHTML = AjxStringUtil.htmlEncode(href);
+ZmPageEditor.prototype.insertLinks = function(filenames) {
+	if (!(filenames instanceof Array)) {
+		filenames = [filenames];
+	}
+	
+	if (!filenames.length)
+		return;
 
-	this._insertLink(link);
+	var insertTarget = null;
+	for (var i = 0; i < filenames.length; i++) {
+		if (i > 0) {
+			// Put spaces between each link.
+			var space = this._getIframeDoc().createTextNode(" ");
+			insertTarget.parentNode.insertBefore(space, insertTarget.nextSibling);
+			insertTarget = space;
+		}
+		var link = this._getIframeDoc().createElement("A");
+		link.href = filenames[i];
+		link.innerHTML = AjxStringUtil.htmlEncode(filenames[i]);
+		this._insertLink(link, insertTarget, true);
+		insertTarget = link;
+	}
+};
+
+ZmPageEditor.prototype._insertImages = function(filenames) {
+	for (var i = 0; i < filenames.length; i++) {
+		this.insertImage(filenames[i]);
+	}
 };
 
 ZmPageEditor.prototype._insertImagesListener = function(event) {
-	this._insertObjectsListener(event, this.insertImage, ZmMsg.insertImage);
+	this._insertObjectsListener(event, this._insertImages, ZmMsg.insertImage);
 };
 
 ZmPageEditor.prototype._insertAttachmentsListener = function(event) {
-	//this._insertObjectsListener(event, this.insertText);
-	this._insertObjectsListener(event, this.insertLink, ZmMsg.insertAttachment);
+	this._insertObjectsListener(event, this.insertLinks, ZmMsg.insertAttachment);
 };
 
 ZmPageEditor.prototype._insertObjectsListener = function(event, func, title) {
@@ -618,9 +639,9 @@ ZmPageEditor.prototype._insertObjects = function(func, folder, filenames) {
 	var baseUrl = folder.getRestUrl();
 	for (var i = 0; i < filenames.length; i++) {
 		var name = AjxStringUtil.urlComponentEncode(filenames[i]);
-		var src = [ baseUrl,"/",name ].join("");
-		func.call(this, src);
+		filenames[i] = [ baseUrl,"/",name ].join("");
 	}
+	func.call(this, filenames);
 };
 
 ZmPageEditor.prototype._fontStyleListener =
@@ -640,7 +661,8 @@ ZmPageEditor.prototype._insertLinkListener = function(event) {
 	this._popupLinkPropsDialog();
 };
 
-ZmPageEditor.prototype._insertLink = function(link, target) {
+// @param afterTarget	true: insert link after target, false: replace target with link
+ZmPageEditor.prototype._insertLink = function(link, target, afterTarget) {
 	if (typeof link == "string") {
 		if (target) {
 			var text = document.createTextNode(link);
@@ -654,7 +676,12 @@ ZmPageEditor.prototype._insertLink = function(link, target) {
 		Dwt.setHandler(link, DwtEvent.ONCLICK, ZmPageEditor._handleLinkClick);
 		Dwt.associateElementWithObject(link, this);
 		if (target) {
-			target.parentNode.replaceChild(link, target);
+			if (afterTarget) {
+				target.parentNode.insertBefore(link, target.nextSibling);
+			}
+			else {
+				target.parentNode.replaceChild(link, target);
+			}
 		}
 		else {
 			this._insertNodeAtSelection(link);
