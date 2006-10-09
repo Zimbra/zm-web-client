@@ -176,6 +176,7 @@ function(files, status, guids, response) {
 		for (var i = 0; i < resp.SaveDocumentResponse.length; i++) {
 			var saveDocResp = resp.SaveDocumentResponse[i];
 			files[saveDocResp.id].done = true;
+			files[saveDocResp.id].rest = saveDocResp.doc[0].rest;
 		}
 	}
 
@@ -232,7 +233,7 @@ function(files, status, guids, response) {
 	else if (this._uploadCallback) {
 		var filenames = [];
 		for (var i = 0; i < files.length; i++) {
-			filenames.push(files[i].name);
+			filenames.push(files[i].rest);
 		}
 		this._uploadCallback.run(this._uploadFolder, filenames);
 	}
