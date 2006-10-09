@@ -184,6 +184,11 @@ ZmContactController.prototype._saveListener =
 function(ev, bIsPopCallback) {
 	try {
 		var view = this._listView[this._currentView];
+
+		// isValid should throw an String containing error message, otherwise returns true
+		if (!view.isValid())
+			return;
+
 		var mods = view.getModifiedAttrs();
 		view.enableInputs(false);
 
@@ -220,7 +225,14 @@ function(ev, bIsPopCallback) {
 			view.cleanup();
 		}
 	} catch (ex) {
-		this._handleException(ex, this._saveListener, ev, false);
+		if (AjxUtil.isString(ex)) {
+			var ed = this._appCtxt.getMsgDialog();
+			var msg = ZmMsg.errorSaving + (ex ? (":<p>" + ex) : ".");
+			ed.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+			ed.popup();
+		} else {
+			this._handleException(ex, this._saveListener, ev, false);
+		}
 	}
 };
 

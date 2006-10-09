@@ -310,13 +310,10 @@ function(skipNotify) {
 
 ZmApptComposeController.prototype._showErrorMessage = 
 function(errorMsg) {
-	if (this._apptErrorDialog == null) {
-		this._apptErrorDialog = new DwtMessageDialog(this._shell);
-	}
-
-	var msg = ZmMsg.errorSavingAppt + (errorMsg ? (":<p>" + errorMsg) : ".");
-	this._apptErrorDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-	this._apptErrorDialog.popup();
+	var dialog = this._appCtxt.getMsgDialog();
+	var msg = ZmMsg.errorSaving + (errorMsg ? (":<p>" + errorMsg) : ".");
+	dialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+	dialog.popup();
 };
 
 ZmApptComposeController.prototype._saveApptFoRealz = 
@@ -493,7 +490,7 @@ function() {
 			return this.saveAppt();
 		}
 	} catch(ex) {
-		if (typeof ex == "string") {
+		if (AjxUtil.isString(ex)) {
 			this._showErrorMessage(ex);
 		} else {
 			DBG.dumpObj(AjxDebug.DBG1, ex);

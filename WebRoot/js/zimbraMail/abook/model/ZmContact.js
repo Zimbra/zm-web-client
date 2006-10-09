@@ -522,9 +522,11 @@ function(attr, isBatchMode, result) {
 			if (!(attr[a] == undefined || attr[a] == ''))
 				this.setAttr(a, attr[a]);
 		}
-		this._appCtxt.getAppController().setStatusMsg(ZmMsg.contactCreated);
+		var msg = this.isGroup() ? ZmMsg.groupCreated : ZmMsg.contactCreated;
+		this._appCtxt.getAppController().setStatusMsg(msg);
 	} else {
-		var msg = ZmMsg.errorCreateContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
+		var err = this.isGroup() ? ZmMsg.errorCreateGroup : ZmMsg.errorCreateContact;
+		var msg = err + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
 		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
 	}
 };
@@ -607,7 +609,7 @@ function(attr, callback, result) {
 	var id = cn ? cn.id : null;
 
 	if (id && id == this.id) {
-		this._appCtxt.getAppController().setStatusMsg(ZmMsg.contactSaved);
+		this._appCtxt.getAppController().setStatusMsg(this.isGroup() ? ZmMsg.groupSaved : ZmMsg.contactSaved);
 		// the revision for this contact has changed -- we should refetch it
 		// ONLY DO THIS FOR SHARED CONTACT since normal contacts are handled by notifications
 		if (cn.rev && cn.rev != this.rev && this.isShared()) {

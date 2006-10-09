@@ -209,6 +209,11 @@ function() {
 	return true;
 };
 
+ZmContactView.prototype.isValid =
+function() {
+	return true;
+};
+
 ZmContactView.prototype.enableInputs =
 function(bEnable) {
 	for (var i in this._fieldIds) {

@@ -60,6 +60,8 @@ function(contact, isDirty) {
 
 ZmGroupView.prototype.getModifiedAttrs =
 function() {
+	if (!this.isDirty()) return null;
+
 	var mods = this._attr = {};
 	var foundOne = false;
 
@@ -72,7 +74,7 @@ function() {
 	if (this._contact.id == null || this._contact.isGal) {
 		mods[ZmContact.F_folderId] = folderId
 		mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
-		mods[ZmContact.F_dlist] = groupMembers
+		mods[ZmContact.F_dlist] = groupMembers;
 		foundOne = true;
 	} else {
 		// modifying existing contact
@@ -96,11 +98,23 @@ function() {
 };
 
 ZmGroupView.prototype.isEmpty =
-function() {
+function(checkEither) {
 	var groupName = AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
-	var targetSize = this._picker.targetListView.getList().size();
+	var list = this._picker.targetListView.getList();
+	var targetSize = list ? list.size() : 0;
 
-	return groupName == "" && targetSize == 0;
+	return checkEither
+		? (groupName == "" || targetSize == 0)
+		: (groupName == "" && targetSize == 0);
+};
+
+ZmGroupView.prototype.isValid =
+function() {
+	if (this.isDirty() && this.isEmpty(true)) {
+		throw ZmMsg.errorMissingGroup;
+	}
+			
+	return true;
 };
 
 ZmGroupView.prototype.enableInputs =
@@ -212,7 +226,7 @@ function(contact) {
 	}
 	html[idx++] = "</table></td><td width=50% valign=top align=right>";
 	html[idx++] = "<table border=0>";
-	html[idx++] = "<tr><td class='editLabel' align=right>";
+	html[idx++] = "<tr><td class='editLabel' align=right>*&nbsp;";
 	html[idx++] = ZmMsg.groupName;
 	html[idx++] = ":</td><td><input type='text' size=35 id='";
 	html[idx++] = this._groupNameId;
@@ -255,7 +269,7 @@ function(contact) {
 		this._selectDiv.reparentHtmlElement(this._listSelectId);
 	}
 
-	this._picker = new ZmContactChooser({parent:this, allButtons:true, hasTextField:true});
+	this._picker = new ZmContactChooser({parent:this, allButtons:true, hasTextField:true, noDuplicates:false});
 	this._picker.reparentHtmlElement(this._contactPickerId);
 	this._picker.addStateChangeListener(new AjxListener(this, this._pickerChangeListener));
 };
