@@ -224,15 +224,24 @@ ZmUploadConflictDialog.prototype.__addFileRow = function(table, file) {
 ZmUploadConflictDialog.prototype.__createRadio =
 function(name, value, checked, handler, object) {
 	var radio;
-	if (AjxEnv.isIE && checked) {
-		radio = document.createElement("<INPUT type=radio checked>");
+	if (AjxEnv.isIE) {
+		var html = [];
+		var i = 0;
+		html[i++] = "<INPUT type=radio name='";
+		html[i++] = name;
+		html[i++] = "'";
+		if (checked) {
+			html[i++] = " checked"
+		}
+		html[i++] = ">";
+		radio = document.createElement(html.join(""));
 	}
 	else {
 		radio = document.createElement("INPUT");
 		radio.type = 'radio';
 		radio.checked = checked;
+		radio.name = name;
 	}
-	radio.name = name;
 	radio.value = value;
 
 	if (handler) {
