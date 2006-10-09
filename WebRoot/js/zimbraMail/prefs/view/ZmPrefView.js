@@ -62,7 +62,6 @@ ZmPrefView.ADDR_BOOK	= 4;
 ZmPrefView.CALENDAR		= 5;
 ZmPrefView.SHORTCUTS	= 6;
 ZmPrefView.VIEWS = [ZmPrefView.GENERAL, ZmPrefView.MAIL, ZmPrefView.ADDR_BOOK,
-//					ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES];
 					ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES, ZmPrefView.SHORTCUTS];
 
 // list of prefs for each page
