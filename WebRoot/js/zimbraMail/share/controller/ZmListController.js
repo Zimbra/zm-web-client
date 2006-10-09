@@ -158,8 +158,6 @@ ZmListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmListController.handleKeyAction");
 	var listView = this._listView[this._currentView];
-	var app = this._appCtxt.getAppController().getActiveApp();
-	var trees = this._appCtxt.getOverviewController().getCurrentTrees(ZmZimbraMail._OVERVIEW_ID, app);
 
 	// check for action code with argument, eg MoveToFolder3
 	var origActionCode = actionCode;
@@ -232,8 +230,8 @@ function(actionCode) {
 			break;
 		
 		case ZmKeyMap.UNTAG:
-			if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED) && trees[ZmOrganizer.TAG]) {
-				var items = istView.getSelection();
+			if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+				var items = listView.getSelection();
 				if (items && items.length) {
 					this._doRemoveAllTags(items);
 				}
@@ -242,24 +240,20 @@ function(actionCode) {
 			
 		case ZmKeyMap.TAG:
 			var items = listView.getSelection();
-			if (items && items.length && trees[ZmOrganizer.TAG]) {
+			if (items && items.length) {
 				var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getById(shortcut.arg);
 				this._doTag(items, tag, true);
 			}
 			break;
 			
 		case ZmKeyMap.GOTO_TAG:
-			if (trees[ZmOrganizer.TAG]) {
-				var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getById(shortcut.arg);
-				this._appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
-			}
+			var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getById(shortcut.arg);
+			this._appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
 			break;
 
 		case ZmKeyMap.SAVED_SEARCH:
-			if (trees[ZmOrganizer.SEARCH]) {
-				var searchFolder = this._appCtxt.getTree(ZmOrganizer.SEARCH).getById(shortcut.arg);
-				this._appCtxt.getSearchController().redoSearch(searchFolder.search);
-			}
+			var searchFolder = this._appCtxt.getTree(ZmOrganizer.SEARCH).getById(shortcut.arg);
+			this._appCtxt.getSearchController().redoSearch(searchFolder.search);
 			break;
 			
 		default:

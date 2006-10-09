@@ -47,7 +47,7 @@ function ZmNewWindow(appCtxt, domain) {
 	this._shell = appCtxt.getShell();
 
 	// Register keymap and global key action handler w/ shell's keyboard manager
-	this._kbMgr = this._shell.getKeyboardMgr();
+	this._kbMgr = appCtxt.getKeyboardMgr();
 	this._kbMgr.registerKeyMap(new ZmKeyMap());
 	this._kbMgr.pushDefaultHandler(this);
 
@@ -212,7 +212,7 @@ function() {
 		startupFocusItem = msgController.getCurrentView();
 	}
 
-	var kbMgr = this._shell.getKeyboardMgr();
+	var kbMgr = this._appCtxt.getKeyboardMgr();
 	kbMgr.setTabGroup(rootTg);
 	kbMgr.grabFocus(startupFocusItem);
 };

@@ -194,7 +194,7 @@ ZmController.prototype._restoreFocus =
 function(focusItem, noFocus) {
 	var rootTg = this._appCtxt.getRootTabGroup();
 	var myTg = this.getTabGroup();
-	var kbMgr = this._shell.getKeyboardMgr();
+	var kbMgr = this._appCtxt.getKeyboardMgr();
 
 	if (rootTg && myTg) {
 		focusItem = focusItem || this._savedFocusMember || this._getDefaultFocusItem() || rootTg.getFocusMember();

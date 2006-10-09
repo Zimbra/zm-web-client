@@ -67,7 +67,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._shell = appCtxt.getShell();
 
 	// Register our keymap and global key action handler with the shell's keyboard manager
-	var kbMgr = this._shell.getKeyboardMgr();
+	var kbMgr = appCtxt.getKeyboardMgr();
 	kbMgr.registerKeyMap(new ZmKeyMap());
 	kbMgr.pushDefaultHandler(this);
 
@@ -102,8 +102,6 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._useXml = this._appCtxt.get(ZmSetting.USE_XML);
 	this._logRequest = this._appCtxt.get(ZmSetting.LOG_REQUEST);
 	this._stdTimeout = this._appCtxt.get(ZmSetting.TIMEOUT);
-
-	this._keyMap = new ZmKeyMap();
 
 	this.startup({app: app});
 };
@@ -411,7 +409,7 @@ function(params) {
 	var appChooserTg = new DwtTabGroup("ZmAppChooser");
 	appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
 	rootTg.addMember(appChooserTg);
-	var kbMgr = this._shell.getKeyboardMgr();
+	var kbMgr = this._appCtxt.getKeyboardMgr();
 	kbMgr.setTabGroup(rootTg);
 
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
@@ -1868,6 +1866,7 @@ function(ev) {
 		cd.setMessage(ZmMsg.skinChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
 	} else if (id == ZmSetting.SHORTCUTS) {
+		this._appCtxt.getKeyboardMgr().registerKeyMap(new ZmKeyMap());
 		this._settings._loadShortcuts();
 	}
 };

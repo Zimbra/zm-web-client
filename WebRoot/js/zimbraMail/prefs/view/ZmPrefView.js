@@ -62,8 +62,8 @@ ZmPrefView.ADDR_BOOK	= 4;
 ZmPrefView.CALENDAR		= 5;
 ZmPrefView.SHORTCUTS	= 6;
 ZmPrefView.VIEWS = [ZmPrefView.GENERAL, ZmPrefView.MAIL, ZmPrefView.ADDR_BOOK,
-					ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES];
-//					ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES, ZmPrefView.SHORTCUTS];
+//					ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES];
+					ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES, ZmPrefView.SHORTCUTS];
 
 // list of prefs for each page
 ZmPrefView.PREFS = {};
@@ -212,9 +212,8 @@ function(dirtyCheck, noValidation) {
 				pref.setValue(value);
 				if (addToList) {
 					list.push(pref);
-				} else {
-					this._controller.setDirty(view, true);
 				}
+				this._controller.setDirty(view, true);
 			}
 		}
 		// errorStr can only be non-null if noValidation is false

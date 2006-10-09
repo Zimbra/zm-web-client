@@ -451,7 +451,7 @@ function() {
 		this._action == ZmOperation.FORWARD_INLINE || 
 		this._action == ZmOperation.FORWARD_ATT) {
 
-		this.shell.getKeyboardMgr().grabFocus(this._field[ZmEmailAddress.TO]);
+		this._appCtxt.getKeyboardMgr().grabFocus(this._field[ZmEmailAddress.TO]);
 	} else {
 		// otherwise set cursor to the beginning of first line
 		this._setBodyFieldFocus();
@@ -1516,7 +1516,7 @@ function(args) {
 		if (key == DwtKeyEvent.KEY_TAB) {
 			var toField = document.getElementById(this._fieldId[ZmEmailAddress.TO]);
 			if (toField) {
-				this.shell.getKeyboardMgr().grabFocus(toField);
+				this._appCtxt.getKeyboardMgr().grabFocus(toField);
 			}
 			rv = false;
 		}
@@ -1565,7 +1565,7 @@ ZmComposeView.prototype._noSubjectCancelCallback =
 function() {
 	this.enableInputs(true);
 	this._confirmDialog.popdown();
-	this.shell.getKeyboardMgr().grabFocus(this._subjectField);
+	this._appCtxt.getKeyboardMgr().grabFocus(this._subjectField);
 	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();
 };
@@ -1586,7 +1586,7 @@ function(type) {
 	this._badAddrsOkay = false;
 	this._confirmDialog.popdown();
 	if (this._using[type]) {
-		this.shell.getKeyboardMgr().grabFocus(this._field[type]);
+		this._appCtxt.getKeyboardMgr().grabFocus(this._field[type]);
 	}
 	this._controller._toolbar.enableAll(true);
 	this.reEnableDesignMode();

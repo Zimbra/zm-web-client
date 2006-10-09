@@ -101,7 +101,7 @@ ZmLoginDialog.prototype.setVisible =
 function(visible, transparentBg) {
 	DwtComposite.prototype.setVisible.call(this, visible);
 
-	this.shell.getKeyboardMgr().enable(!visible);
+	this._appCtxt.getKeyboardMgr().enable(!visible);
 	if (!visible) return;
 		
 	this.setCursor("default");

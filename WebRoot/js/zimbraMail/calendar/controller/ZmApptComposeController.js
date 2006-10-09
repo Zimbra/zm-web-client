@@ -43,7 +43,7 @@ function ZmApptComposeController(appCtxt, container, calApp) {
 	this._removedAttendees = [];
 	
 	calApp.loadResources();	// make sure resources are available for autocomplete
-	this._kbMgr = this._shell.getKeyboardMgr();
+	this._kbMgr = appCtxt.getKeyboardMgr();
 };
 
 ZmApptComposeController.prototype = new ZmController();
