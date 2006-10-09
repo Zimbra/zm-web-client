@@ -202,10 +202,9 @@ function() {
 	// Make sure at least one form field has a value (otherwise,
 	// delete the contact). NOTE: getModifiedAttrs() populates
 	// _attrs with form field values.
-	var formAttrs = this._listView[view]._attr;
-	for (var i in formAttrs) {
+	for (var i in this._attr) {
 		if (i == ZmContact.F_fileAs || i == ZmContact.X_fullName) continue;
-		if (formAttrs[i]) return false;
+		if (this._attr[i]) return false;
 	}
 	return true;
 };
