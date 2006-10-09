@@ -179,7 +179,9 @@ function(msg, now, isDndIcon, isMixedView) {
 			else						imageInfo = msg.isUnread ? "MsgStatusUnread" : "MsgStatusRead";
 			htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, ["id='", this._getFieldId(msg, ZmItem.F_STATUS), "'"].join(""));	
 			htmlArr[idx++] = "</center></td>";
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) == 0) {
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) == 0 ||
+				   id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) == 0)
+		{
 			// Participants
 			htmlArr[idx++] = "<td width=";
 			htmlArr[idx++] = width;
