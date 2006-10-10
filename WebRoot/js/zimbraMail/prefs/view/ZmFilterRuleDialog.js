@@ -240,8 +240,10 @@ function(rule, isCondition) {
 			}
 		}
 		var html = this._getRowHtml(o, isCondition);
-		row = Dwt.parseHtmlFragment(html, true);
-		table.tBodies[0].appendChild(row);
+		if (html) {
+			row = Dwt.parseHtmlFragment(html, true);
+			table.tBodies[0].appendChild(row);
+		}
 	}
 	this._resetOperations(isCondition);
 	return row.id;
