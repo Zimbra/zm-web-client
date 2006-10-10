@@ -38,6 +38,8 @@ function ZmComposeView(parent, controller, composeMode) {
 
 	DwtComposite.call(this, parent, "ZmComposeView", Dwt.ABSOLUTE_STYLE);
 
+	this._onMsgDataChange = new AjxCallback(this, this._onMsgDataChange);
+
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._controller = controller;
 	this._contactPickerEnabled = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
@@ -106,7 +108,10 @@ function() {
 ZmComposeView.prototype.set =
 function(action, msg, toOverride, subjOverride, extraBodyText) {
 	this._action = action;
+	if (this._msg)
+		this._msg.onChange = null;
 	this._msg = msg;
+	msg.onChange = this._onMsgDataChange;
 
 	this.reset(true);
 
@@ -142,6 +147,20 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 		AjxTimedAction.scheduleAction(ta, 10);
 	} else {
 		this._setFormValue();
+	}
+};
+
+/**
+* Called automatically by the attached ZmMailMsg object when data is
+* changed, in order to support Zimlets modify subject or other values
+* (bug: 10540)
+*/
+ZmComposeView.prototype._onMsgDataChange =
+function(what, val) {
+	switch (what) {
+	    case "subject":
+		this._subjectField.value = val;
+		break;
 	}
 };
 

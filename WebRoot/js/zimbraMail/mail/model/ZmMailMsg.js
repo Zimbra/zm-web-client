@@ -287,6 +287,7 @@ function() {
 */
 ZmMailMsg.prototype.setAddresses =
 function(type, addrs) {
+	this._onChange("adresses", type, addrs);
 	this._addrs[type] = addrs;
 };
 
@@ -298,6 +299,7 @@ function(type, addrs) {
 */
 ZmMailMsg.prototype.setAddress =
 function(type, addr) {
+	this._onChange("address", type, addr);
 	this._addrs[type].removeAll();
 	this._addrs[type] = new AjxVector();
 	this._addrs[type].add(addr);
@@ -335,6 +337,7 @@ function(addr) {
 */
 ZmMailMsg.prototype.setSubject =
 function(subject) {
+	this._onChange("subject", subject);
 	this.subject = subject;
 };
 
@@ -345,6 +348,7 @@ function(subject) {
 */
 ZmMailMsg.prototype.setTopPart =
 function(part) {
+	this._onChange("topPart", part);
 	this._topPart = part;
 };
 
@@ -356,6 +360,7 @@ function(part) {
  */
 ZmMailMsg.prototype.setBodyParts =
 function(parts) {
+	this._onChange("bodyParts", parts);
 	this._bodyParts = parts;
 }
 
@@ -366,6 +371,7 @@ function(parts) {
 */
 ZmMailMsg.prototype.setAttachmentId =
 function(id) {
+	this._onChange("attachmentId", id);
 	this._attId = id;
 };
 
@@ -376,6 +382,7 @@ function(id) {
 */
 ZmMailMsg.prototype.setMessageAttachmentId =
 function(id) {
+	this._onChange("messageAttachmentId", id);
 	this._msgAttId = id;
 };
 
@@ -387,6 +394,7 @@ function(id) {
 */
 ZmMailMsg.prototype.setForwardAttIds =
 function(forAttIds) {
+	this._onChange("forwardAttIds", forAttIds);
 	this._forAttIds = forAttIds;
 };
 
@@ -515,6 +523,7 @@ function(callback, result) {
 // (i.e. if we already have the HTML part)
 ZmMailMsg.prototype.setTextPart =
 function(textPartStr) {
+	this._onChange("textPart", textPartStr);
 	var textPart = new Object();
 	textPart.ct = ZmMimeTable.TEXT_PLAIN;
 	textPart.s = textPartStr.length;
@@ -527,6 +536,7 @@ function(textPartStr) {
 
 ZmMailMsg.prototype.setHtmlContent =
 function(content) {
+	this._onChange("htmlContent", content);
 	this._htmlBody = content;
 };
 
@@ -1021,4 +1031,10 @@ function(attach) {
 	}
 
 	return false;
+};
+
+ZmMailMsg.prototype._onChange =
+function(what, a, b, c) {
+	if (this.onChange && this.onChange instanceof AjxCallback)
+		this.onChange.run(what, a, b, c);
 };
