@@ -111,7 +111,8 @@ function(action, msg, toOverride, subjOverride, extraBodyText) {
 	if (this._msg)
 		this._msg.onChange = null;
 	this._msg = msg;
-	msg.onChange = this._onMsgDataChange;
+	if (msg)
+		msg.onChange = this._onMsgDataChange;
 
 	this.reset(true);
 
