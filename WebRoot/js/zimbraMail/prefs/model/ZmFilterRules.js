@@ -407,13 +407,16 @@ function(node, rule) {
 		subjectMod = null;
 	}
 	var comparator = ZmFilterRule.OP_VALUE_MAP[node.op];
-	if (node.mod)
+	if (node.mod) {
 		subjectMod = node.mod.substring(1, node.mod.length);
+	}
 	var value = node.k1 ? node.k1.substring(2, node.k1.length - 2) : null;
 	var valueMod = null;
-	if (subject == ZmFilterRule.C_SIZE && value.match(/(K|M)$/)) {
-		valueMod = value.substring(value.length - 2, 1);
-		value = value.substring(0, value.length - 2);
+	if (subject == ZmFilterRule.C_SIZE) {
+		value = node.k1;
+		var m = value.match(/(\d+)([A-Z]+)/);
+		value = m[1];
+		valueMod = m[2];
 	} else if (node.name == ZmFilterRule.OP_VALUE[ZmFilterRule.OP_EXISTS] ||
 			   node.name == ZmFilterRule.OP_VALUE[ZmFilterRule.OP_NOT_EXISTS]) {
 		if (node.k0) {

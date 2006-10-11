@@ -231,7 +231,12 @@ function(rule, isCondition) {
 	var row, len = rowData.length;
 	for (var i = 0; i < len; i++) {
 		var o = rowData[i];
-		if (!isCondition) {
+		if (isCondition) {
+			if (o.subject == ZmFilterRule.C_HEADER && o.subjectModifier && ZmFilterRule.C_VALUE_MAP[o.subjectModifier]) {
+				o.subject = ZmFilterRule.C_VALUE_MAP[o.subjectModifier];
+				o.subjectModifier = null;
+			}
+		} else {
 			// don't show action if it's disabled
 			var action = o.name;
 			var actionCfg = ZmFilterRule.ACTIONS[action];
