@@ -179,14 +179,9 @@ function() {
 
 ZmContactListController.prototype.searchAlphabet =
 function(letter) {
-	var query = null;
-	if (this._folderId) {
-		var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this._folderId);
-		if (folder)
-			query = folder.createQuery();
-	} else if (this._activeSearch) {
-		query = this._activeSearch.search.query;
-	}
+	var folderId = this._folderId || ZmFolder.ID_CONTACTS;
+	var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId);
+	var query = folder ? folder.createQuery() : null;
 
 	if (query) {
 		var limit = this._listView[this._currentView].getLimit();
