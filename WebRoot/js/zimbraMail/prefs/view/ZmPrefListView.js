@@ -47,7 +47,7 @@
 	this._controller = controller;
 	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
 	
-	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.PERSONAS]].join(": ");
+	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]].join(": ");
 
 	this._rendered = false;
 	this._hasRendered = false;
@@ -70,7 +70,7 @@ function() {
 ZmPrefListView.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
-	this._prefsController._resetOperations(this._prefsController._toolbar, ZmPrefView.PERSONAS);
+	this._prefsController._resetOperations(this._prefsController._toolbar, ZmPrefView.IDENTITY);
 	if (this._hasRendered) return;
 
 	this._createHtml();
@@ -161,6 +161,7 @@ function(parentElement) {
 	var result = new ZmPrefList(this, this._appCtxt);
 	result.reparentHtmlElement(parentElement);
 	result.setSize(200, 600);
+	result.enableSorting(false);
 	return result;
 };
 

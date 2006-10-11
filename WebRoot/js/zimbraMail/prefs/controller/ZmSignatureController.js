@@ -24,10 +24,10 @@
  */
 
 /**
-* Creates a new, empty identities controller.
+* Creates a new, empty signature controller.
 * @constructor
 * @class
-* Manages the identities page.
+* Manages the signature page.
 *
 * @author Dave Comfort
 *
@@ -36,44 +36,45 @@
 * @param prefsApp		[ZmPreferencesApp]	the preferences app
 * @param prefsView		[ZmPreferencesView]	the preferences view
 */
-function ZmIdentityController(appCtxt, container, prefsApp, prefsView) {
+function ZmSignatureController(appCtxt, container, prefsApp, prefsView) {
 	ZmPrefListController.call(this, appCtxt, container, prefsApp, prefsView);
 
-	this._listView = new ZmIdentityView(prefsView._parent, appCtxt, this);
+	this._listView = new ZmSignatureView(prefsView._parent, appCtxt, this);
 };
 
-ZmIdentityController.prototype = new ZmPrefListController();
-ZmIdentityController.prototype.constructor = ZmIdentityController;
+ZmSignatureController.prototype = new ZmPrefListController();
+ZmSignatureController.prototype.constructor = ZmSignatureController;
 
-ZmIdentityController.prototype._setup =
+ZmSignatureController.prototype._setup =
 function() {
 	ZmPrefListController.prototype._setup.call(this);
-	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
-	this._listView.getList().setSelection(identityCollection.defaultIdentity);
+	var signatureCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getSignatureCollection();
+	this._listView.getList().setSelection(signatureCollection.defaultSignature);
 };
 
-ZmIdentityController.prototype._addHandler =
+ZmSignatureController.prototype._addHandler =
 function() {
-	var identity = new ZmIdentity("New Identity");
+	var signature = new ZmSignature("New Signature");
 	var listView = this.getListView().getList();
-	listView.addItem(identity);
-	listView.setSelection(identity);
+	listView.addItem(signature);
+	listView.setSelection(signature);
 };
 
-ZmIdentityController.prototype._removeHandler =
+ZmSignatureController.prototype._removeHandler =
 function() {
 	var listView = this.getListView().getList();
-	var identity = listView.getSelection()[0];
-	if (identity) {
-		listView.removeItem(identity);
-		listView.setSelection(identityCollection.defaultIdentity);
+	var signature = listView.getSelection()[0];
+	if (signature) {
+		listView.removeItem(signature);
+		var signatureCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getSignatureCollection();
+		listView.setSelection(signatureCollection.defaultSignature);
 	}
 };
 
-ZmIdentityController.prototype._getListData =
+ZmSignatureController.prototype._getListData =
 function() {
-	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
-	return AjxVector.fromArray(identityCollection.getIdentities())
+	var signatureCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getSignatureCollection();
+	return AjxVector.fromArray(signatureCollection.getSignatures())
 };
 
 

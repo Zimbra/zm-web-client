@@ -23,34 +23,35 @@
  * ***** END LICENSE BLOCK *****
  */
 
- function ZmIdentitiesView(parent, appCtxt, controller) {
+ function ZmIdentityView(parent, appCtxt, controller) {
 
-	ZmPrefListView.call(this, parent, appCtxt, controller, "ZmIdentitiesView");
+	ZmPrefListView.call(this, parent, appCtxt, controller, "ZmIdentityView");
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
 	
-	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.PERSONAS]].join(": ");
+	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]].join(": ");
 
 	this._identityNameInput = null;
 	this._identityPage = null;
+	this._advancedPage = null;
 };
 
-ZmIdentitiesView.prototype = new ZmPrefListView;
-ZmIdentitiesView.prototype.constructor = ZmIdentitiesView;
+ZmIdentityView.prototype = new ZmPrefListView;
+ZmIdentityView.prototype.constructor = ZmIdentityView;
  
-ZmIdentitiesView.prototype.toString =
+ZmIdentityView.prototype.toString =
 function() {
-	return "ZmIdentitiesView";
+	return "ZmIdentityView";
 };
 
-ZmIdentitiesView.prototype.getTitle =
+ZmIdentityView.prototype.getTitle =
 function() {
 	return this._title;
 };
 
-ZmIdentitiesView.prototype._createDetails =
+ZmIdentityView.prototype._createDetails =
 function(parentElement) {
 	var inputId = Dwt.getNextId();
 
@@ -69,26 +70,40 @@ function(parentElement) {
 	var tabView = new DwtTabView(this, null, Dwt.STATIC_STYLE);
 	tabView.reparentHtmlElement(parentElement);
 	
-	this._identityPage = new ZmIdentityPage(this.parent, ZmIdentityPage.SENDING);
+	this._identityPage = new ZmIdentityPage(this.parent, this._appCtxt, ZmIdentityPage.SENDING);
 	tabView.addTab(ZmMsg.identityOptions, this._identityPage);
-	var tab = new ZmIdentityPage(this.parent, ZmIdentityPage.REPLYING);
-	tabView.addTab(ZmMsg.identityAdvanced, tab);
+	this._advancedPage = new ZmIdentityPage(this.parent, this._appCtxt, ZmIdentityPage.REPLYING);
+	tabView.addTab(ZmMsg.identityAdvanced, this._advancedPage);
 };
 
-ZmIdentitiesView.prototype._getInfoTitle =
+ZmIdentityView.prototype._getInfoTitle =
 function() {
 	return ZmMsg.identityInfoTitle;
 };
 
-ZmIdentitiesView.prototype._getInfoContents =
+ZmIdentityView.prototype._getInfoContents =
 function() {
 	return ZmMsg.identityInfoContent;
 };
 
-ZmIdentitiesView.prototype.showItem =
+ZmIdentityView.prototype.showItem =
 function(identity) {
+	if (this._identity) {
+		this.getChanges();
+	}
+	this._identity = identity;
 	this._identityNameInput.setValue(identity.name);
 	this._identityPage.setIdentity(identity);
+	this._advancedPage.setIdentity(identity);
+};
+
+ZmIdentityView.prototype.getChanges =
+function() {
+//	var identity = {};
+	var identity = this._identity;
+	this._identityPage.getChanges(identity);
+	this._advancedPage.getChanges(identity);
+	return identity;
 };
 
 /**
@@ -96,10 +111,18 @@ function(identity) {
 * @constructor
 * A page inside of the identities preferences
 */
-function ZmIdentityPage(parent, page, className, posStyle) {
+function ZmIdentityPage(parent, appCtxt, pageId, className, posStyle) {
 	DwtTabViewPage.call(this, parent, className, posStyle);
-	this._page = page;
+	this._appCtxt = appCtxt;
+	this._pageId = pageId;
 	this._hasRendered = false;
+	
+	this._checkboxClosure = AjxCallback.simpleClosure(this._checkboxHandler, this);
+	
+	this._inputs = {}; // Map of field name in ZmIdentity to DwtInputField
+	this._checkboxIds = {}; // Map of field name in ZmIdentity to checkbox ids
+	this._selects = {}; // Map of field name in ZmIdentity to DwtSelect
+	this._associations = {}; // Map of checkbox ids to the controls they enable/disable
 };
 
 ZmIdentityPage.prototype = new DwtTabViewPage;
@@ -116,7 +139,7 @@ function() {
 ZmIdentityPage.prototype.showMe =
 function() {
 	if (!this._hasRendered) {
-		switch (this._page) {
+		switch (this._pageId) {
 			case ZmIdentityPage.SENDING: this._initializeSending(); break;
 			case ZmIdentityPage.REPLYING: this._initializeReplying(); break;
 		}
@@ -127,44 +150,78 @@ function() {
 ZmIdentityPage.prototype.setIdentity =
 function(identity) {
 	this._identity = identity;
-	this._sendFromName.setValue(identity.sendFromDisplay);
-	this._sendFromAddress.setValue(identity.sendFromAddress);
+	
+	for (var field in this._inputs) {
+		var input = this._inputs[field];
+		var value = identity[field];
+		input.setValue(value);
+	}
+
+	for (var field in this._selects) {
+		var select = this._selects[field];
+		var value = identity[field];
+		if (value) {
+			select.setSelectedValue(value);
+		} else {
+			select.setSelected(0);
+		}
+	}
 
 	var doc = document;
-	var whenSentToCheckbox = doc.getElementById(this._whenSentToCheckboxId);
-	whenSentToCheckbox.checked = identity.useWhenSentTo();
-	this._whenSentToInput.setValue(identity.getWhenSentToAddresses().join("; "));
-
-	var whenInFolderCheckbox = doc.getElementById(this._whenInFolderCheckboxId);
-	whenInFolderCheckbox.checked = identity.useWhenInFolder();
-	this._whenInFolderInput.setValue(identity.getWhenInFolderIds().join("; "));
-
-	var setReplyToCheckbox = doc.getElementById(this._setReplyToCheckboxId);
-	var useSignatureCheckbox = doc.getElementById(this._useSignatureCheckboxId);
-
-	this._applyCheckbox(setReplyToCheckbox, [this._setReplyToName, this._setReplyToAddress]);
-	this._applyCheckbox(useSignatureCheckbox, [this._useSignatureSelect]);
-	this._applyCheckbox(whenSentToCheckbox, [this._whenSentToInput]);
-	this._applyCheckbox(whenInFolderCheckbox, [this._whenInFolderInput]);
+	for (var field in this._checkboxIds) {
+		var id = this._checkboxIds[field];
+		var value = identity[field];
+		var checkbox = doc.getElementById(id);
+		checkbox.checked = value ? true : false;
+		this._applyCheckbox(checkbox);
+	}
 };
 
-ZmIdentityPage.prototype.getIdentity =
-function(identity) {
-	// Save the this here...
+ZmIdentityPage.prototype.getChanges =
+function(changedIdentity) {
+	var dirty = false;
+	for (var field in this._inputs) {
+		var input = this._inputs[field];
+		var value = AjxStringUtil.trim(input.getValue());
+		if (this._identity[field] != value) {
+			changedIdentity[field] = value;
+			dirty = true;
+		}
+	}
+
+	for (var field in this._selects) {
+		var select = this._selects[field];
+		var value = select.getValue();
+		if (this._identity[field] != value) {
+			changedIdentity[field] = value;
+			dirty = true;
+		}
+	}
+	
+	var doc = document;
+	for (var field in this._checkboxIds) {
+		var id = this._checkboxIds[field];
+		var value = doc.getElementById(id).checked;
+		if (this._identity[field] != value) {
+			changedIdentity[field] = value;
+			dirty = true;
+		}
+	}
+	return dirty;	
 };
 
 ZmIdentityPage.prototype._initializeSending =
 function() {
 	var sendFromNameId = Dwt.getNextId();
 	var sendFromAddressId = Dwt.getNextId();
-	this._setReplyToCheckboxId = Dwt.getNextId();
+	var setReplyToCheckboxId = Dwt.getNextId();
 	var setReplyToNameId = Dwt.getNextId();
 	var setReplyToAddressId = Dwt.getNextId();
-	this._useSignatureCheckboxId = Dwt.getNextId();
+	var useSignatureCheckboxId = Dwt.getNextId();
 	var useSignatureNameId = Dwt.getNextId();
-	this._whenSentToCheckboxId = Dwt.getNextId();
+	var whenSentToCheckboxId = Dwt.getNextId();
 	var whenSentToInputId = Dwt.getNextId();
-	this._whenInFolderCheckboxId = Dwt.getNextId();
+	whenInFolderCheckboxId = Dwt.getNextId();
 	var whenInFolderInputId = Dwt.getNextId();
 
 	var sendBCCToCheckboxId = Dwt.getNextId();
@@ -186,7 +243,7 @@ function() {
 	html[i++] = "'></td></tr>";
 
 	html[i++] = "<tr><td><input type='checkbox' id='";
-	html[i++] = this._setReplyToCheckboxId;
+	html[i++] = setReplyToCheckboxId;
 	html[i++] = "'>";
 	html[i++] = ZmMsg.setReplyTo;
 	html[i++] = "</td><td id='";
@@ -196,7 +253,7 @@ function() {
 	html[i++] = "'></td></tr>";
 
 	html[i++] = "<tr><td><input type='checkbox' id='"
-	html[i++] = this._useSignatureCheckboxId;
+	html[i++] = useSignatureCheckboxId;
 	html[i++] = "'>";
 	html[i++] = ZmMsg.useSignature;
 	html[i++] = "</td><td colspan=2 id='";
@@ -212,7 +269,7 @@ function() {
 	html[i++] = "<table style='width:100%'>";
 
 	html[i++] = "<tr><td style='text-align:right;'><input type='checkbox' id='";
-	html[i++] = this._whenSentToCheckboxId;
+	html[i++] = whenSentToCheckboxId;
 	html[i++] = "'><td>";
 	html[i++] = ZmMsg.whenSentTo;
 	html[i++] = "<td></tr><tr><td>&nbsp;</td><td id='";
@@ -222,7 +279,7 @@ function() {
 	html[i++] = "</td></tr>";
 
 	html[i++] = "<tr><td style='text-align:right;'><input type='checkbox' id='";
-	html[i++] = this._whenInFolderCheckboxId;
+	html[i++] = whenInFolderCheckboxId;
 	html[i++] = "'><td>";
 	html[i++] = ZmMsg.whenInFolder;
 	html[i++] = "<td></tr><tr><td>&nbsp;</td><td id='";
@@ -237,69 +294,93 @@ function() {
 	this.getHtmlElement().innerHTML = html.join("");
 
 	var params = { parent:this };
-	this._sendFromName = new DwtInputField(params);
-	this._sendFromName.setRequired(true);
-	this._sendFromName.reparentHtmlElement(sendFromNameId);
-	this._sendFromAddress = new DwtInputField(params);
-	this._sendFromAddress.setRequired(true);
-	this._sendFromAddress.reparentHtmlElement(sendFromAddressId);
+	var sendFromName = new DwtInputField(params);
+	sendFromName.setRequired(true);
+	sendFromName.reparentHtmlElement(sendFromNameId);
+	this._inputs["sendFromDisplay"] = sendFromName;
+	
+	var sendFromAddress = new DwtInputField(params);
+	sendFromAddress.setRequired(true);
+	sendFromAddress.reparentHtmlElement(sendFromAddressId);
+	this._inputs["sendFromAddress"] = sendFromAddress;
 
-	this._setReplyToName = new DwtInputField(params);
-	this._setReplyToName.reparentHtmlElement(setReplyToNameId);
-	this._setReplyToAddress = new DwtInputField(params);
-	this._setReplyToAddress.reparentHtmlElement(setReplyToAddressId);
-	this._associateCheckbox(this._setReplyToCheckboxId, [this._setReplyToName, this._setReplyToAddress]);
+	var setReplyToName = new DwtInputField(params);
+	setReplyToName.reparentHtmlElement(setReplyToNameId);
+	this._inputs["_setReplyToDisplay"] = setReplyToName;
+	var setReplyToAddress = new DwtInputField(params);
+	setReplyToAddress.reparentHtmlElement(setReplyToAddressId);
+	this._inputs["_setReplyToAddress"] = setReplyToAddress;
+	this._associateCheckbox(setReplyToCheckboxId, [setReplyToName, setReplyToAddress]);
+	this._checkboxIds["_setReplyTo"] = setReplyToCheckboxId;
 
-	this._useSignatureSelect = new DwtSelect(this);
-	this._useSignatureSelect.reparentHtmlElement(useSignatureNameId);
-	this._useSignatureSelect.addOption(new DwtSelectOptionData("Identityl", "Identityl", true));
-	this._useSignatureSelect.addOption(new DwtSelectOptionData("Professional", "Professional", true));
-	this._useSignatureSelect.addOption(new DwtSelectOptionData("Random", "Random", false));
-	this._associateCheckbox(this._useSignatureCheckboxId, [this._useSignatureSelect]);
+	var options = [];
+	var signatureCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getSignatureCollection();
+	var signatures = signatureCollection.getSignatures();
+	for (var i = 0, count = signatures.length; i < count; i++) {
+		var signature = signatures[i];
+		options[i] = new DwtSelectOptionData(signature.id, signature.name);
+	}
+	var useSignatureSelect = new DwtSelect(this, options);
+	useSignatureSelect.reparentHtmlElement(useSignatureNameId);
+	this._selects["_signature"] = useSignatureSelect;
+	this._associateCheckbox(useSignatureCheckboxId, [useSignatureSelect]);
+	this._checkboxIds["_useSignature"] = useSignatureCheckboxId;
 
 	params.size = 50;
-	this._whenSentToInput = new DwtInputField(params);
-	this._whenSentToInput.reparentHtmlElement(whenSentToInputId);
-	this._associateCheckbox(this._whenSentToCheckboxId, [this._whenSentToInput]);
+	var whenSentToInput = new DwtInputField(params);
+	whenSentToInput.reparentHtmlElement(whenSentToInputId);
+	this._inputs["_whenSentToAddresses"] = whenSentToInput;
+	this._associateCheckbox(whenSentToCheckboxId, [whenSentToInput]);
+	this._checkboxIds["_useWhenSentTo"] = whenSentToCheckboxId;
 
-	this._whenInFolderInput = new DwtInputField(params);
-	this._whenInFolderInput.reparentHtmlElement(whenInFolderInputId);
-	this._associateCheckbox(this._whenInFolderCheckboxId, [this._whenInFolderInput]);
+	whenInFolderInput = new DwtInputField(params);
+	whenInFolderInput.reparentHtmlElement(whenInFolderInputId);
+	this._inputs["_whenInFolderIds"] = whenInFolderInput;
+	this._associateCheckbox(whenInFolderCheckboxId, [whenInFolderInput]);
+	this._checkboxIds["_useWhenInFolder"] = whenInFolderCheckboxId;
 };
 
-
+// Sets up a relationship where the controls' enabledness is toggled by the checkbox
 ZmIdentityPage.prototype._associateCheckbox =
-function(checkboxId, controls) {
+function(checkboxId, controls, checkedIsDisabled) {
+	this._associations[checkboxId] = { controls: controls, checkedIsDisabled: checkedIsDisabled };
 	var checkbox = document.getElementById(checkboxId);
 	this._applyCheckbox(checkbox, controls);
-	var handler = AjxCallback.simpleClosure(this._checkboxHandler, this, controls);
-	Dwt.setHandler(checkbox, DwtEvent.ONCLICK, handler);
+	Dwt.setHandler(checkbox, DwtEvent.ONCLICK, this._checkboxClosure);
 };
 
 ZmIdentityPage.prototype._applyCheckbox =
-function(checkbox, controls) {
+function(checkbox) {
+	var data = this._associations[checkbox.id];
 	var isChecked = checkbox.checked;
-	for (var i = 0, count = controls.length; i < count; i++) {
-		var control = controls[i];
-		control.setEnabled(isChecked);
+	var enabled = data.checkedIsDisabled ? !isChecked : isChecked;
+	for (var i = 0, count = data.controls.length; i < count; i++) {
+		var control = data.controls[i];
+		control.setEnabled(enabled);
 	}
 };
 
 ZmIdentityPage.prototype._checkboxHandler =
-function(controls, event) {
+function(event) {
 	var checkbox = event.target;
-	this._applyCheckbox(checkbox, controls);
+	this._applyCheckbox(checkbox);
 };
 
 ZmIdentityPage.prototype._initializeReplying =
 function() {
 	
-	this._useDefaults = Dwt.getNextId();
+	var useDefaultsCheckboxId = Dwt.getNextId();
+	
+	var replyForwardSelectId = Dwt.getNextId();
+	var signatureStyleSelectId = Dwt.getNextId();
+	var prefixSelectId = Dwt.getNextId();
+	var replyOptionSelectId = Dwt.getNextId();
+	var forwardOptionSelectId = Dwt.getNextId();
 	
 	var html = [];
 	var i = 0;
 	html[i++] = "<input type='checkbox' id='";
-	html[i++] = this._useDefaults;
+	html[i++] = useDefaultsCheckboxId;
 	html[i++] = "'>";
 	html[i++] = ZmMsg.identitiesUseDefault;
 	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
@@ -309,7 +390,86 @@ function() {
 	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
 	html[i++] = ZmMsg.replyWithIdentity;
 	html[i++] = "</legend>";
+	html[i++] = "<table style='width:100%'>";
+
+	html[i++] = "<tr><td>";
+	html[i++] = ZmMsg.replyForwardFormat;
+	html[i++] = "</td><td id='";
+	html[i++] = replyForwardSelectId;
+	html[i++] = "'></td></tr>";
+	
+	html[i++] = "<tr><td>";
+	html[i++] = ZmMsg.placeSignature;
+	html[i++] = "</td><td id='";
+	html[i++] = signatureStyleSelectId;
+	html[i++] = "'></td></tr>";
+	
+	html[i++] = "<tr><td>";
+	html[i++] = ZmMsg.prefixTextWith;
+	html[i++] = "</td><td id='";
+	html[i++] = prefixSelectId;
+	html[i++] = "'></td></tr>";
+	
+	html[i++] = "<tr><td>";
+	html[i++] = ZmMsg.whenReplying;
+	html[i++] = "</td><td id='";
+	html[i++] = replyOptionSelectId;
+	html[i++] = "'></td></tr>";
+	
+	html[i++] = "<tr><td>";
+	html[i++] = ZmMsg.whenForwarding;
+	html[i++] = "</td><td id='";
+	html[i++] = forwardOptionSelectId;
+	html[i++] = "'></td></tr>";
+	
+	html[i++] = "</table>";
 	html[i++] = "</fieldset>";
 	this.getHtmlElement().innerHTML = html.join("");
+
+	var options = [];
+	var i = 0;
+	options[i++] = new DwtSelectOptionData(ZmIdentity.COMPOSE_SAME, ZmMsg.originalFormat);
+	options[i++] = new DwtSelectOptionData(ZmIdentity.COMPOSE_TEXT, ZmMsg.text);
+	options[i++] = new DwtSelectOptionData(ZmIdentity.COMPOSE_HTML, ZmMsg.htmlDocument);
+	var replyForwardSelect = new DwtSelect(this, options);
+	replyForwardSelect.reparentHtmlElement(replyForwardSelectId);
+	this._selects["_composeFormat"] = replyForwardSelect;
+
+	var options = [];
+	var i = 0;
+	options[i++] = new DwtSelectOptionData(ZmSetting.SIG_OUTLOOK, ZmMsg.aboveQuotedText);
+	options[i++] = new DwtSelectOptionData(ZmSetting.SIG_INTERNET, ZmMsg.atBottomOfMessage);
+	var signatureStyleSelect = new DwtSelect(this, options);
+	signatureStyleSelect.reparentHtmlElement(signatureStyleSelectId);
+	this._selects["_signatureStyle"] = signatureStyleSelect;
+
+	var options = [];
+	var i = 0;
+	options[i++] = new DwtSelectOptionData(">", ">");
+	options[i++] = new DwtSelectOptionData("|", "|");
+	var prefixSelect = new DwtSelect(this, options);
+	prefixSelect.reparentHtmlElement(prefixSelectId);
+	this._selects["_prefix"] = prefixSelect;
+
+	var options = [];
+	var i = 0;
+	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_NONE, ZmMsg.dontInclude);
+	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE, ZmMsg.includeInBody);
+	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_PREFIX, ZmMsg.includePrefix);
+	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_ATTACH, ZmMsg.includeAsAttach);
+	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_SMART, ZmMsg.smartInclude);
+	var replyOptionSelect = new DwtSelect(this, options);
+	replyOptionSelect.reparentHtmlElement(replyOptionSelectId);
+	this._selects["_replyOption"] = replyOptionSelect;
+
+	var options = [];
+	var i = 0;
+	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE, ZmMsg.includeInBody);
+	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_PREFIX, ZmMsg.includePrefix);
+	var forwardOptionSelect = new DwtSelect(this, options);
+	forwardOptionSelect.reparentHtmlElement(forwardOptionSelectId);
+	this._selects["_forwardOption"] = forwardOptionSelect;
+	
+	this._associateCheckbox(useDefaultsCheckboxId, [replyForwardSelect, signatureStyleSelect, prefixSelect, replyOptionSelect, forwardOptionSelect], true);
 };
 

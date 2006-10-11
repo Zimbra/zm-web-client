@@ -22,9 +22,11 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-function ZmIdentity(name) {
+function ZmIdentity(appCtxt, name) {
+	this._appCtxt = appCtxt;
 	this.name = name;
 	this.id = "";
+
 	this.sendFromDisplay = "";
 	this.sendFromAddress = "";
 	this._setReplyTo = false;
@@ -36,7 +38,19 @@ function ZmIdentity(name) {
 	this._whenSentToAddresses = [];
 	this._useWhenInFolder = false;
 	this._whenInFolderIds = [];
+	
+	this.useDefaultAdvanced = true;
+	
+	this._composeFormat = ZmIdentity.COMPOSE_TEXT;
+	this._prefix = ">";
+	this._forwardOption = ZmSetting.INCLUDE_PREFIX;
+	this._replyOption = ZmSetting.INCLUDE_PREFIX;
+	this._signatureStyle = ZmSetting.SIG_INTERNET;
 };
+
+ZmIdentity.COMPOSE_SAME = 1;
+ZmIdentity.COMPOSE_TEXT = 2;
+ZmIdentity.COMPOSE_HTML = 3;
 
 ZmIdentity.prototype._loadFromDom =
 function(data) {
@@ -53,6 +67,13 @@ function(data) {
 	if (data.whenSentToAddresses) this._whenSentToAddresses = data.whenSentToAddresses;
 	if (data.useWhenInFolder) this._useWhenInFolder = data.useWhenInFolder;
 	if (data.whenInFolderIds) this._whenInFolderIds = data.whenInFolderIds;
+
+	if (data.useDefaultAdvanced) this.useDefaultAdvanced = data.useDefaultAdvanced;
+	if (data.composeFormat) this._composeFormat = data.composeFormat;
+	if (data.prefix) this._prefix = data.prefix;
+	if (data.forwardOption) this._forwardOption = data.forwardOption;
+	if (data.replyOption) this._replyOption = data.replyOption;
+	if (data.signatureStyle) this._signatureStyle = data.signatureStyle;
 };
 
 ZmIdentity.prototype.toString =
@@ -62,7 +83,7 @@ function() {
 
 ZmIdentity.prototype.useWhenSentTo =
 function() {
-	return this._whenSentTo;
+	return this._useWhenSentTo;
 };
 
 ZmIdentity.prototype.getWhenSentToAddresses =
@@ -80,7 +101,56 @@ function() {
 	return this._whenInFolderIds;
 };
 
-function ZmIdentityCollection() {
+ZmIdentity.prototype.getWhenInFolderIds =
+function() {
+	return this._whenInFolderIds;
+};
+	
+ZmIdentity.prototype.getComposeSameFormat =
+function() {
+	var format = this._getAdvancedIdentity()._composeFormat;
+	return format == ZmIdentity.COMPOSE_SAME ? true : false;
+};
+ZmIdentity.prototype.getComposeAsFormat =
+function() {
+	var format = this._getAdvancedIdentity()._composeFormat;
+	return format == ZmIdentity.COMPOSE_HTML ? ZmSetting.COMPOSE_HTML : ZmSetting.COMPOSE_TEXT;
+};
+ZmIdentity.prototype.getPrefix =
+function() {
+	return this._getAdvancedIdentity()._prefix;
+};
+ZmIdentity.prototype.getForwardOption =
+function() {
+	return this._getAdvancedIdentity()._forwardOption;
+};
+ZmIdentity.prototype.getReplyOption =
+function() {
+	return this._getAdvancedIdentity()._replyOption;
+};
+
+// ZmSetting.SIG_OUTLOOK: signature above quoted text.
+ZmIdentity.prototype.getSignatureStyle =
+function() {
+	return this._getAdvancedIdentity()._signatureStyle;
+};
+
+// Returns the identity that owns the advanced options for this identity
+// (If the Use Settings From Default) is checked, then this returns the
+// default identity, otherwise it returns this.
+ZmIdentity.prototype._getAdvancedIdentity =
+function() {
+	if (this.useDefaultAdvanced) {
+		var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+		return identityCollection.defaultIdentity;
+	} else {
+		return this;
+	}
+};
+
+
+function ZmIdentityCollection(appCtxt) {
+	this._appCtxt = appCtxt;
 	this.defaultIdentity = null;
 	this._idToIdentity = {};
 	this._addressToIdentity = {};
@@ -146,6 +216,9 @@ function(identity) {
 
 ZmIdentityCollection.prototype.selectIdentity =
 function(mailMsg) {
+	if (!mailMsg) {
+		return this.defaultIdentity;
+	}
 
 	// Check if the a identity's address was in the to field.
 	var identity = this._selectIdentityFromAddresses(mailMsg, ZmEmailAddress.TO);
@@ -184,34 +257,32 @@ function(mailMsg, type) {
 };
 
 // Make up some fake identity data..
-ZmIdentityCollection.buildHack =
+ZmIdentityCollection.prototype.buildHack =
 function() {
-	var dave = new ZmIdentity("Dave");
+	var dave = new ZmIdentity(this._appCtxt, "Dave");
 	dave.id = 11111;
 	dave.sendFromDisplay = "Dave Comfort";
 	dave.sendFromAddress = "dcomfort@zimbra.com";
-	dave._whenSentTo = true;
+	dave._useWhenSentTo = true;
 	dave._whenSentToAddresses = ["dave@comfort.com", "qqquser1@example.zimbra.com", "whoever@junk.nothing"];
 	dave._useWhenInFolder = true;
 	dave._whenInFolderIds = [538];
 
-	var otis = new ZmIdentity("Otis");
+	var otis = new ZmIdentity(this._appCtxt, "Otis");
 	otis.id = 22222;
 	otis.sendFromDisplay = "Otis";
 	otis.sendFromAddress = "otis@elevator.com";
 	
-	var rufus = new ZmIdentity("Rufus");
+	var rufus = new ZmIdentity(this._appCtxt, "Rufus");
 	rufus.id = 33333;
 	rufus.sendFromDisplay = "rufus";
-	rufus.sendFromAddress = "rufus@dogma.com";
+	rufus.sendFromAddress = "rufus@moop.liquidsys.com";
 	// Ficticious JSON response object.....
 	var data = { sendFromDisplay:"Rufusmeister", useWhenInFolder:true, whenInFolderIds:["2"] };
 	rufus._loadFromDom(data);
 	
-	ZmIdentityCollection.HACK = new ZmIdentityCollection();
-	ZmIdentityCollection.HACK.add(otis, true);
-	ZmIdentityCollection.HACK.add(dave, false);
-	ZmIdentityCollection.HACK.add(rufus);
+	this.add(otis, true);
+	this.add(dave, false);
+	this.add(rufus);
 };
-ZmIdentityCollection.buildHack();
 
