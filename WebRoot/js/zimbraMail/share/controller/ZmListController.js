@@ -90,16 +90,15 @@ ZmListController.prototype.constructor = ZmListController;
 
 // convert key mapping to operation
 ZmListController.ACTION_CODE_TO_OP = {};
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_APPT]		= ZmOperation.NEW_APPT;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CALENDAR]	= ZmOperation.NEW_CALENDAR;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CONTACT]	= ZmOperation.NEW_CONTACT;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_FOLDER]		= ZmOperation.NEW_FOLDER;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE]	= ZmOperation.NEW_MESSAGE;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_PAGE]		= ZmOperation.NEW_PAGE;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_TAG]		= ZmOperation.NEW_TAG;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_NOTEBOOK]	= ZmOperation.NEW_NOTEBOOK;
-
-ZmListController.ACTION_TAG_RE = new RegExp("ToggleTag" + "(\\d+)");
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_APPT]			= ZmOperation.NEW_APPT;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CALENDAR]		= ZmOperation.NEW_CALENDAR;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CONTACT]		= ZmOperation.NEW_CONTACT;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_FOLDER]			= ZmOperation.NEW_FOLDER;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE]		= ZmOperation.NEW_MESSAGE;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE_WIN]	= ZmOperation.NEW_MESSAGE;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_PAGE]			= ZmOperation.NEW_PAGE;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_TAG]			= ZmOperation.NEW_TAG;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_NOTEBOOK]		= ZmOperation.NEW_NOTEBOOK;
 
 // abstract public methods
 
@@ -220,6 +219,10 @@ function(actionCode) {
 		case ZmKeyMap.NEW_PAGE:
 		case ZmKeyMap.NEW_NOTEBOOK:
 			this._newListener(null, ZmListController.ACTION_CODE_TO_OP[actionCode]);
+			break;
+
+		case ZmKeyMap.NEW_MESSAGE_WIN:
+			this._newListener(null, ZmListController.ACTION_CODE_TO_OP[actionCode], true);
 			break;
 
 		case ZmKeyMap.PRINT:
@@ -515,7 +518,7 @@ function() {
 // Create some new thing, via a dialog. If just the button has been pressed (rather than
 // a menu item), the action taken depends on the app.
 ZmListController.prototype._newListener =
-function(ev, id) {
+function(ev, id, newWin) {
 	id = id ? id : ev.item.getData(ZmOperation.KEY_ID);
 	if (!id || id == ZmOperation.NEW_MENU) {
 		id = this._defaultNewId;
@@ -526,7 +529,7 @@ function(ev, id) {
 		case ZmOperation.NEW_MESSAGE: {
 			var app = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
 			var controller = app.getComposeController();
-			controller.doAction(ZmOperation.NEW_MESSAGE, this._inNewWindow(ev));
+			controller.doAction(ZmOperation.NEW_MESSAGE, newWin || this._inNewWindow(ev));
 			break;
 		}
 		case ZmOperation.NEW_CONTACT:

@@ -117,6 +117,7 @@ ZmKeyMap.NEW_CALENDAR		= "NewCalendar";
 ZmKeyMap.NEW_CONTACT		= "NewContact";
 ZmKeyMap.NEW_FOLDER			= "NewFolder";
 ZmKeyMap.NEW_MESSAGE		= "NewMessage";
+ZmKeyMap.NEW_MESSAGE_WIN	= "NewMessageWindow";
 ZmKeyMap.NEW_NOTEBOOK		= "NewNotebook";
 ZmKeyMap.NEW_PAGE			= "NewPage";
 ZmKeyMap.NEW_TAG			= "NewTag";
