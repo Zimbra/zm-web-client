@@ -28,89 +28,91 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	this._appCtxt = appCtxt;
 	ZmToolBar.call(this, parent, "ZmSearchToolbar");
 
-	var fieldId = Dwt.getNextId();
-	var searchColId = Dwt.getNextId();
-	var browseColId = Dwt.getNextId();
-	var saveColId = this._saveColId = Dwt.getNextId();
-	var navColId = Dwt.getNextId();
-	var searchMenuColId = Dwt.getNextId();
+    // TODO: Handle this!
+    var saveColId = this._saveColId = Dwt.getNextId();
 
 	this._customSearchBtnListener = new AjxListener(this, this._customSearchBtnListener);
 
-	this._createHtml(fieldId, searchColId, browseColId, saveColId, navColId, searchMenuColId);
+    this._search = new DwtMessageComposite(this);
 
-	this._searchField = document.getElementById(fieldId);
-	Dwt.setHandler(this._searchField, DwtEvent.ONKEYPRESS, ZmSearchToolBar._keyPressHdlr);
+    this._searchField = new DwtInputField({parent:this._search});
+    var searchFieldEl = this._searchField.getInputElement();
+    searchFieldEl.className = "search_input";
+    Dwt.setHandler(searchFieldEl, DwtEvent.ONKEYPRESS, ZmSearchToolBar._keyPressHdlr);
 
-	this._searchMenuButton = this._createButton(ZmSearchToolBar.SEARCH_MENU_BUTTON, "MailFolder", ZmMsg.searchMail,
-						    null, ZmMsg.chooseSearchType, true, "DwtButton");
-    document.getElementById(searchMenuColId).appendChild(this._searchMenuButton.getHtmlElement());
-	var menuParent = this._searchMenuButton;
+    this._searchMenuButton = this._createButton(
+        ZmSearchToolBar.SEARCH_MENU_BUTTON, "MailFolder", ZmMsg.searchMail,
+        null, ZmMsg.chooseSearchType, true, "DwtButton"
+    );
+    var menuParent = this._searchMenuButton;
+
     var menu = new DwtMenu(menuParent, null, "ActionMenu");
     menuParent.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 
-	var numTypes = 0;
+    var numTypes = 0;
     var mi = DwtMenuItem.create(menu, "SearchMail", ZmMsg.searchMail, null, true, DwtMenuItem.RADIO_STYLE, 0);
-	mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_MAIL_MI);
-	numTypes++;
+    mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_MAIL_MI);
+    numTypes++;
 
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-	    mi = DwtMenuItem.create(menu, "SearchContacts", ZmMsg.searchPersonalContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
-		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.CONTACT);
-		numTypes++;
+    if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+        mi = DwtMenuItem.create(menu, "SearchContacts", ZmMsg.searchPersonalContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
+        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.CONTACT);
+        numTypes++;
 
-		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-			mi = DwtMenuItem.create(menu, "SearchSharedContacts", ZmMsg.searchPersonalAndShared, null, true, DwtMenuItem.RADIO_STYLE, 0);
-			mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_PAS_MI);
-			numTypes++;
-		}
-	}
+        if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+            mi = DwtMenuItem.create(menu, "SearchSharedContacts", ZmMsg.searchPersonalAndShared, null, true, DwtMenuItem.RADIO_STYLE, 0);
+            mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_PAS_MI);
+            numTypes++;
+        }
+    }
 
-	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-	    mi = DwtMenuItem.create(menu, "SearchGAL", ZmMsg.searchGALContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
-		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_GAL_MI);
-		numTypes++;
-	}
+    if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+        mi = DwtMenuItem.create(menu, "SearchGAL", ZmMsg.searchGALContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
+        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_GAL_MI);
+        numTypes++;
+    }
 /*
-	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-	    mi = DwtMenuItem.create(menu, "SearchCalendar", ZmMsg.searchCalendar, null, true, DwtMenuItem.RADIO_STYLE, 0);
-		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.APPT);
-		numTypes++;
-	}
+    if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+        mi = DwtMenuItem.create(menu, "SearchCalendar", ZmMsg.searchCalendar, null, true, DwtMenuItem.RADIO_STYLE, 0);
+        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.APPT);
+        numTypes++;
+    }
 */
-	if (this._appCtxt.get(ZmSetting.NOTES_ENABLED)) {
-	    mi = DwtMenuItem.create(menu, "SearchNotes", ZmMsg.searchNotes, null, true, DwtMenuItem.RADIO_STYLE, 0);
-		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.NOTE);
-		numTypes++;
-	}
+    if (this._appCtxt.get(ZmSetting.NOTES_ENABLED)) {
+        mi = DwtMenuItem.create(menu, "SearchNotes", ZmMsg.searchNotes, null, true, DwtMenuItem.RADIO_STYLE, 0);
+        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.NOTE);
+        numTypes++;
+    }
 
-	if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
-	    mi = DwtMenuItem.create(menu, "SearchNotes", ZmMsg.searchNotebooks, null, true, DwtMenuItem.RADIO_STYLE, 0);
-		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.PAGE);
-		numTypes++;
-	}
+    if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+        mi = DwtMenuItem.create(menu, "SearchNotes", ZmMsg.searchNotebooks, null, true, DwtMenuItem.RADIO_STYLE, 0);
+        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.PAGE);
+        numTypes++;
+    }
 
-	if ((numTypes > 1) && this._appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED)) {
-		mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
-		mi = DwtMenuItem.create(menu, "SearchAll", ZmMsg.searchAll, null, true, DwtMenuItem.RADIO_STYLE, 0);
-		mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_ANY_MI);
-	}
+    if ((numTypes > 1) && this._appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED)) {
+        mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+        mi = DwtMenuItem.create(menu, "SearchAll", ZmMsg.searchAll, null, true, DwtMenuItem.RADIO_STYLE, 0);
+        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_ANY_MI);
+    }
 
-	var groupBy = this._appCtxt.getSettings().getGroupMailBy();
-	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
-// 	this._searchButton = this._createButton(ZmSearchToolBar.SEARCH_BUTTON, null, ZmMsg.search, null, tooltip, true, "DwtToolbarButton");
-// 	document.getElementById(searchColId).appendChild(this._searchButton.getHtmlElement());
+    this._search.setFormat(ZmMsg.searchToolBar, new AjxCallback(this, this._createControl));
 
-	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-		this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, "Save", null, "SaveDis", ZmMsg.saveCurrentSearch, true, "DwtToolbarButton");
-	    document.getElementById(saveColId).appendChild(this._saveButton.getHtmlElement());
-	}
+    //var searchColId = Dwt.getNextId();
+    //var groupBy = this._appCtxt.getSettings().getGroupMailBy();
+    //var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
+    //this._searchButton = this._createButton(ZmSearchToolBar.SEARCH_BUTTON, null, ZmMsg.search, null, tooltip, true, "DwtToolbarButton");
+    //document.getElementById(searchColId).appendChild(this._searchButton.getHtmlElement());
 
-	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
-		var buttonStyle = DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE;
-		this._browseButton = this._createButton(ZmSearchToolBar.BROWSE_BUTTON, null, ZmMsg.searchBuilder, null, ZmMsg.openSearchBuilder, true, "DwtToolbarButton", buttonStyle);
-	    document.getElementById(browseColId).appendChild(this._browseButton.getHtmlElement());
-	}
+    if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
+        this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, "Save", null, "SaveDis", ZmMsg.saveCurrentSearch, true, "DwtToolbarButton");
+    }
+
+    if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
+        this.addSeparator("vertSep");
+        var buttonStyle = DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE;
+        this._browseButton = this._createButton(ZmSearchToolBar.BROWSE_BUTTON, null, ZmMsg.searchBuilder, null, ZmMsg.openSearchBuilder, true, "DwtToolbarButton", buttonStyle);
+    }
 };
 
 ZmSearchToolBar.BROWSE_BUTTON 		= 1;
@@ -124,10 +126,10 @@ ZmSearchToolBar.UNICODE_CHAR_RE 	= /\S/;
 
 ZmSearchToolBar.MENUITEM_ID = "_menuItemId";
 
-ZmSearchToolBar.FOR_MAIL_MI	= ZmItem.MAX + 1;
-ZmSearchToolBar.FOR_PAS_MI 	= ZmItem.MAX + 2; // Personal and Shared
-ZmSearchToolBar.FOR_GAL_MI	= ZmItem.MAX + 3; // Global Address List
-ZmSearchToolBar.FOR_ANY_MI	= ZmItem.MAX + 4;
+ZmSearchToolBar.FOR_MAIL_MI	= ++ZmItem.MAX;
+ZmSearchToolBar.FOR_PAS_MI 	= ++ZmItem.MAX; // Personal and Shared
+ZmSearchToolBar.FOR_GAL_MI	= ++ZmItem.MAX; // Global Address List
+ZmSearchToolBar.FOR_ANY_MI	= ++ZmItem.MAX;
 
 // XXX: are these used anywhere??
 ZmSearchToolBar.MSG_KEY = new Object();
@@ -169,7 +171,7 @@ function() {
 
 ZmSearchToolBar.prototype.getSearchField =
 function() {
-	return this._searchField;
+	return this._searchField.getInputElement();
 };
 
 ZmSearchToolBar.prototype.getNavToolBar =
@@ -189,76 +191,49 @@ function() {
 
 ZmSearchToolBar.prototype.setEnabled =
 function(enable) {
-	this._searchField.disabled = !enable;
+	this._searchField.setEnabled(enable);
 	// this._searchButton.setEnabled(enable);
 	this._searchMenuButton.setEnabled(enable);
 };
 
 ZmSearchToolBar.prototype.setSearchFieldValue =
 function(value) {
-	if (value != this._searchField.value)
-		this._searchField.value = value;
+    if (value != this.getSearchFieldValue())
+		this._searchField.setValue(value);
 };
 
 ZmSearchToolBar.prototype.getSearchFieldValue =
 function() {
-	return this._searchField.value;
+	return this._searchField.getValue();
 };
 
 ZmSearchToolBar._keyPressHdlr =
 function(ev) {
-    var stb = DwtUiEvent.getDwtObjFromEvent(ev); // get ZmSearchToolBar object
-	var charCode = DwtKeyEvent.getCharCode(ev);
+    // DwtInputField > DwtMessageComposite > ZmSearchToolBar
+    var inputField = DwtUiEvent.getDwtObjFromEvent(ev);
+    var stb = inputField.parent.parent;
+    
+    var charCode = DwtKeyEvent.getCharCode(ev);
 	if (charCode == 13 || charCode == 3) {
-		stb._callback.run(stb._searchField.value);
+		stb._callback.run(stb.getSearchFieldValue());
 	    return false;
 	}
 	return true;
 };
 
-ZmSearchToolBar.prototype._createHtml =
-function(fieldId, searchColId, browseColId, saveColId, navColId, searchMenuColId) {
-	var html = new Array();
-	var i = 0;
-	html[i++] = "<table style='height:auto;width:100%;height:100%;border-collapse:collapse;'>";
-	html[i++] = "<tr><td><label for='" + fieldId + "'>&nbsp;&nbsp;" + ZmMsg.find + ":&nbsp;</label></td>";
-	html[i++] = "<td width='100%'><input type='text' autocomplete='off' nowrap id='";
-	html[i++] = fieldId;
-	html[i++] = "' class='search_input'></td><td>&nbsp;" + ZmMsg.searchIn + "&nbsp;</td>";
-	html[i++] = "<td id='";
-	html[i++] = searchMenuColId;
-	html[i++] = "'></td>";
-	html[i++] = "<td id='";
-	html[i++] = searchColId;
-	html[i++] = "'></td>";
-	html[i++] = "<td><div class='vertSep'></div></td>";
-	html[i++] = "<td id='";
-	html[i++] = saveColId;
-	html[i++] = "'></td>";
-	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
-		html[i++] = "<td><div class='vertSep'></div></td>";
-		html[i++] = "<td id='";
-		html[i++] = browseColId;
-		html[i++] = "'></td>";
-	}
-	html[i++] = "</tr></table>";
-
-	this.getHtmlElement().innerHTML = html.join("");
+ZmSearchToolBar.prototype._createControl = function(parent, segment, i) {
+    return [this._searchField, this._searchMenuButton][segment.getIndex()];
 };
 
 ZmSearchToolBar.prototype.createCustomSearchBtn = function(icon, label, listener) {
-	var td = document.getElementById(this._saveColId);
-	td = td.previousSibling; // skip the separator too
-	var newcell = document.createElement("td");
-	td.parentNode.insertBefore(newcell, td);
 	var btn = this.getButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON);
 	if (!btn) {
-		btn = this._createButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON, icon, null, null, label, true, "DwtButton");
+		btn = this._createButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON, icon, null, null, label, true, "DwtButton", null, 1);
 		btn.setData("CustomSearchItem", [ icon, label, listener ]);
-		newcell.appendChild(btn.getHtmlElement());
 		btn.addSelectionListener(this._customSearchBtnListener);
 	} else {
-		var menu = btn.getMenu(), item;
+		var menu = btn.getMenu();
+        var item;
 		if (!menu) {
 			var data = btn.getData("CustomSearchItem");
 			menu = new DwtMenu(btn, null, "ActionMenu");
