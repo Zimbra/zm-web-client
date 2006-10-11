@@ -31,7 +31,8 @@ function ZmReminderDialog(parent, appCtxt, reminderController, calController) {
 	var selectId = Dwt.getNextId();
 	var html = new Array(5);
 	var i = 0;
-	html[i++] = "<td valign='middle' class='ZmReminderField'>";
+    // TODO: i18n
+    html[i++] = "<td valign='middle' class='ZmReminderField'>";
 	html[i++] = ZmMsg.snoozeAll;
 	html[i++] = "</td><td valign='middle' id='";
 	html[i++] = selectId;
@@ -78,8 +79,9 @@ function(selectId) {
 
 	var snooze = [1, 5, 10, 15, 30, 45, 60];
 	this._select = new DwtSelect(this);
-	for (var i = 0; i < snooze.length; i++) {
-		var label = snooze[i] + " " + (i==0 ? AjxMsg.minute : AjxMsg.minutes);
+    var snoozeFormatter = new AjxMessageFormat(ZmMsg.reminderSnoozeMinutes);
+    for (var i = 0; i < snooze.length; i++) {
+		var label = snoozeFormatter.format(snooze[i]);
 		this._select.addOption(label, i==0, snooze[i]);
 	}
 	this._select.reparentHtmlElement(selectId);
@@ -103,15 +105,16 @@ function(data) {
 	if (td == null) return;
 	
 	var startDelta = ZmReminderDialog._computeDelta(data.appt);
-	var deltaStr = ZmReminderDialog._getDeltaString(startDelta);
-	if (startDelta >= 0) {
-		td.className = 'ZmReminderOverdue';
-		td.innerHTML = ZmMsg.overdueBy + " " + deltaStr;
-	} else {
-		if (startDelta > ZmReminderDialog.SOON) td.className = 'ZmReminderSoon';
-		else td.className = 'ZmReminderFuture';
-		td.innerHTML = ZmMsg.inTime + " " + deltaStr;
-	}
+    if (startDelta >= 0) {
+        td.className = 'ZmReminderOverdue';
+    }
+    else if (startDelta > ZmReminderDialog.SOON) {
+        td.className = 'ZmReminderSoon';
+    }
+    else {
+        td.className = 'ZmReminderFuture';
+    }
+    td.innerHTML = ZmReminderDialog._formatReminderString(startDelta);
 };
 
 ZmReminderDialog.prototype._rowId = 
@@ -275,11 +278,13 @@ function() {
 	}
 };
 	
-ZmReminderDialog._getDeltaString =
+ZmReminderDialog._formatReminderString =
 function(deltaMSec) {
-	deltaMSec = Math.abs(deltaMSec);
+    var prefix = deltaMSec < 0 ? "In" : "OverdueBy";
+    deltaMSec = Math.abs(deltaMSec);
 
-	var years =  Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 365));
+    // calculate parts
+    var years =  Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 365));
 	if (years != 0)
 		deltaMSec -= years * AjxDateUtil.MSEC_PER_DAY * 365;
 	var months = Math.floor(deltaMSec / (AjxDateUtil.MSEC_PER_DAY * 30.42));
@@ -289,7 +294,7 @@ function(deltaMSec) {
 	if (days > 0)
 		deltaMSec -= days * AjxDateUtil.MSEC_PER_DAY;
 	var hours = Math.floor(deltaMSec / AjxDateUtil.MSEC_PER_HOUR);
-	if (hours > 0) 
+	if (hours > 0)
 		deltaMSec -= hours * AjxDateUtil.MSEC_PER_HOUR;
 	var mins = Math.floor(deltaMSec / 60000);
 	if (mins > 0)
@@ -299,39 +304,34 @@ function(deltaMSec) {
 
 	var secs = 0;
 
-	var deltaStr = new AjxBuffer();	
+    // determine message
+    var amount;
+    if (years > 0) {
+        amount = "Years";
+        if (years <= 3 && months > 0) {
+            amount = "YearsMonths";
+        }
+    } else if (months > 0) {
+        amount = "Months";
+        if (months <= 3 && days > 0) {
+            amount = "MonthsDays";
+        }
+    } else if (days > 0) {
+        amount = "Days";
+        if (days <= 2 && hours > 0) {
+            amount = "DaysHours";
+        }
+    } else if (hours > 0) {
+        amount = "Hours";
+        if (hours < 5 && mins > 0) {
+            amount = "HoursMinutes";
+        }
+    } else {
+        amount = "Minutes";        
+    }
 
-	if (years > 0) {
-		deltaStr.append(years, " ");
-		deltaStr.append((years > 1) ? AjxMsg.years : AjxMsg.year);
-		if (years <= 3 && months > 0) {
-    		deltaStr.append(" ", months);
-    		deltaStr.append(" ", ((months > 1) ? AjxMsg.months : AjxMsg.months));
-		}
-	} else if (months > 0) {
-		deltaStr.append(months, " ");
-		deltaStr.append((months > 1) ? AjxMsg.months : AjxMsg.month);
-		if (months <= 3 && days > 0) {
-    		deltaStr.append(" ", days);
-    		deltaStr.append(" " , ((days > 1) ? AjxMsg.days : AjxMsg.day));
-		}
-	} else if (days > 0) {
-		deltaStr.append(days, " ");
-		deltaStr.append((days > 1) ? AjxMsg.days : AjxMsg.day);
-		if (days <= 2 && hours > 0) {
-    		deltaStr.append(" ", hours);
-    		deltaStr.append(" ", ((hours > 1) ? AjxMsg.hours : AjxMsg.hour));
-		}
-	} else if (hours > 0) {
-		deltaStr.append(hours, " ");
-		deltaStr.append((hours > 1) ? AjxMsg.hours : AjxMsg.hour);
-		if (hours < 5 && mins > 0) {
-    		deltaStr.append(" ", mins);
-    		deltaStr.append(" ", ((mins > 1) ? AjxMsg.minutes : AjxMsg.minute));
-		}
-	} else {
-		deltaStr.append(mins, " ");
-		deltaStr.append(((mins != 1) ? AjxMsg.minutes : AjxMsg.minute));
-	}
-	return deltaStr.toString();
+    // format message
+    var key = ["reminder",prefix,amount].join("");
+    var args = [deltaMSec, years, months, days, hours, mins, secs];
+    return AjxMessageFormat.format(ZmMsg[key], args);
 };
