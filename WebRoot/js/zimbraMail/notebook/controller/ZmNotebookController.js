@@ -53,7 +53,7 @@ ZmNotebookController._VIEWS[ZmController.NOTEBOOK_PAGE_VIEW] = ZmNotebookPageVie
 // view management
 
 ZmNotebookController.prototype.show = function(arg) {
-	throw "TODO: show method not implemented"
+	throw "TODO: show method not implemented";
 };
 
 ZmNotebookController.prototype.switchView = function(view, force) {
