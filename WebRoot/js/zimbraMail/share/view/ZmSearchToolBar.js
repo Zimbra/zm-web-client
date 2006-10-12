@@ -28,12 +28,10 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	this._appCtxt = appCtxt;
 	ZmToolBar.call(this, parent, "ZmSearchToolbar");
 
-    // TODO: Handle this!
-    var saveColId = this._saveColId = Dwt.getNextId();
-
 	this._customSearchBtnListener = new AjxListener(this, this._customSearchBtnListener);
 
     this._search = new DwtMessageComposite(this);
+    this._search.getHtmlElement().parentNode.style.width = "100%";
 
     this._searchField = new DwtInputField({parent:this._search});
     var searchFieldEl = this._searchField.getInputElement();
@@ -96,7 +94,9 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
         mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_ANY_MI);
     }
 
-    this._search.setFormat(ZmMsg.searchToolBar, new AjxCallback(this, this._createControl));
+    var callback = new AjxCallback(this, this._getControl);
+    var hintsCallback = new AjxCallback(this, this._getControlHints);
+    this._search.setFormat(ZmMsg.searchToolBar, callback, hintsCallback);
 
     //var searchColId = Dwt.getNextId();
     //var groupBy = this._appCtxt.getSettings().getGroupMailBy();
@@ -221,8 +221,11 @@ function(ev) {
 	return true;
 };
 
-ZmSearchToolBar.prototype._createControl = function(parent, segment, i) {
+ZmSearchToolBar.prototype._getControl = function(parent, segment, i) {
     return [this._searchField, this._searchMenuButton][segment.getIndex()];
+};
+ZmSearchToolBar.prototype._getControlHints = function(parent, segment, i) {
+    return segment.getIndex() == 0 ? { width: "100%" } : null;
 };
 
 ZmSearchToolBar.prototype.createCustomSearchBtn = function(icon, label, listener) {
