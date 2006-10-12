@@ -465,6 +465,8 @@ ZmZimletBase.prototype.setBusyIcon = function() {
  * the framework to provide visual feedback during sendRequest() calls.
  */
 ZmZimletBase.prototype.setIcon = function(icon) {
+	if (!this.xmlObj("zimletPanelItem"))
+		return;
 	this.xmlObj().icon = icon;
 	var appCtxt = this.getAppCtxt();
 	var ctrl = appCtxt.getOverviewController();
