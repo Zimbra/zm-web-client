@@ -36,11 +36,13 @@ ZmPicker.CTOR[ZmPicker.ATTACHMENT] = ZmAttachmentPicker;
 ZmAttachmentPicker.NONE	= 1;
 ZmAttachmentPicker.ANY	= 2;
 ZmAttachmentPicker.SPEC	= 3;
-ZmAttachmentPicker.RADIO_BUTTONS = [ZmAttachmentPicker.NONE, ZmAttachmentPicker.ANY, ZmAttachmentPicker.SPEC];
+ZmAttachmentPicker.FILE	= 4;
+ZmAttachmentPicker.RADIO_BUTTONS = [ZmAttachmentPicker.NONE, ZmAttachmentPicker.ANY, ZmAttachmentPicker.SPEC, ZmAttachmentPicker.FILE];
 ZmAttachmentPicker.MSG_KEY = new Object();
 ZmAttachmentPicker.MSG_KEY[ZmAttachmentPicker.NONE]	= "noAtt";
 ZmAttachmentPicker.MSG_KEY[ZmAttachmentPicker.ANY]	= "anyAtt";
 ZmAttachmentPicker.MSG_KEY[ZmAttachmentPicker.SPEC]	= "specAtt";
+ZmAttachmentPicker.MSG_KEY[ZmAttachmentPicker.FILE]	= "specFile";
 ZmAttachmentPicker.RADIO_CHECKED = ZmAttachmentPicker.SPEC;
 
 ZmAttachmentPicker.ATT_KEY = "_att_";
@@ -71,11 +73,14 @@ function(radioId) {
 	var checked = (radioId == ZmAttachmentPicker.RADIO_CHECKED) ? "checked" : "";
 	var id = this._radioId[radioId];
 	var i = 0;
-	html[i++] = "<tr valign='middle'>";
-	html[i++] = "<td align='left'>";
-	html[i++] = "<input type='radio' name='r'" + checked + " id='" + id + "'></td>";
-	html[i++] = "<td align='left'>" + text + "</td>";
-	html[i++] = "</tr>";
+	html[i++] = "<tr valign='middle'><td align='left'>";
+	html[i++] = "<input type='radio' name='r'";
+	html[i++] = checked;
+	html[i++] = " id='";
+	html[i++] = id;
+	html[i++] = "'></td><td align='left'>";
+	html[i++] = text;
+	html[i++] = "</td></tr>";
 
 	return html.join("");
 };
@@ -102,6 +107,8 @@ function(parent) {
 	}
 
 	var treeId = Dwt.getNextId();
+	var fileDivId = Dwt.getNextId();
+	var fileInputId = Dwt.getNextId();
 	
 	var html = new Array(10);
 	var idx = 0;
@@ -110,18 +117,37 @@ function(parent) {
 		html[idx++] = this._newRadio(ZmAttachmentPicker.RADIO_BUTTONS[i]);
 	}
 	html[idx++] = "</table>";
-	html[idx++] = "<div id='" + treeId + "'><hr /></div>";
+	html[idx++] = "<div style='display:none; padding: 0 5' id='";
+	html[idx++] = fileDivId;
+	html[idx++] = "'><hr /><table border=0><tr><td width=1%>";
+	html[idx++] = ZmMsg.filename;
+	html[idx++] = ":</td><td>";
+	html[idx++] = Dwt.CARET_HACK_BEGIN;
+	html[idx++] = "<input type='text' autocomplete='off' nowrap style='width:90%' id='";
+	html[idx++] = fileInputId;
+	html[idx++] = "'>";
+	html[idx++] = Dwt.CARET_HACK_END;
+	html[idx++] = "</td></tr></table></div>";
+	html[idx++] = "<div id='";
+	html[idx++] = treeId;
+	html[idx++] = "'><hr /></div>";
 	picker.getHtmlElement().innerHTML = html.join("");
 
 	for (var i = 0; i < ZmAttachmentPicker.RADIO_BUTTONS.length; i++) {
 		this._setupRadio(ZmAttachmentPicker.RADIO_BUTTONS[i]);
 	}
-	
-    var tti, ti;
-	var tree = this._tree = new DwtTree(picker, DwtTree.CHECKEDITEM_STYLE);
-	tree.addSelectionListener(new AjxListener(this, this._treeListener));	
+
+	// set up filename input field
+	this._fileNameDiv = document.getElementById(fileDivId);
+	this._fileNameInput = document.getElementById(fileInputId);
+	Dwt.setHandler(this._fileNameInput, DwtEvent.ONKEYUP, ZmAttachmentPicker._onChange);
+	Dwt.associateElementWithObject(this._fileNameInput, this);
+
+	// set up attachment tree widget
+	this._tree = new DwtTree(picker, DwtTree.CHECKEDITEM_STYLE);
+	this._tree.addSelectionListener(new AjxListener(this, this._treeListener));	
 	var attachTypeList = new ZmAttachmentTypeList(this.shell.getData(ZmAppCtxt.LABEL));
-	var respCallback = new AjxCallback(this, this._handleResponseSetupPicker, [attachTypeList, tree, treeId]);
+	var respCallback = new AjxCallback(this, this._handleResponseSetupPicker, [attachTypeList, this._tree, treeId]);
 	attachTypeList.load(respCallback);
 };
 
@@ -147,24 +173,20 @@ function(attachTypeList, tree, treeId) {
 	this._treeDiv = document.getElementById(treeId);
 	this._treeDiv.appendChild(tree.getHtmlElement());
 	Dwt.setVisible(this._treeDiv, ZmAttachmentPicker.RADIO_CHECKED == ZmAttachmentPicker.RADIO_CHECKED);
-	
+
 	this._updateQuery();
 };
 
-ZmAttachmentPicker._radioChange = 
-function(ev) {
-	var element = DwtUiEvent.getTarget(ev);
-	var picker = element._picker;
-	Dwt.setVisible(picker._treeDiv, (element._radioId == ZmAttachmentPicker.SPEC));
-	picker._updateQuery();
-};
-
-ZmAttachmentPicker.prototype._updateQuery = 
+ZmAttachmentPicker.prototype._updateQuery =
 function() {
 	if (this._radio[ZmAttachmentPicker.ANY].checked) {
 		this.setQuery("attachment:any");
 	} else if (this._radio[ZmAttachmentPicker.NONE].checked) {
-		this.setQuery("attachment:none");	
+		this.setQuery("attachment:none");
+	} else if (this._radio[ZmAttachmentPicker.FILE].checked) {
+		var query = "filename:(" + this._fileNameInput.value + ")";
+		this.setQuery(query);
+		return; // DONT execute right away
 	} else {
 		var types = [];
 		for (var desc in this._checkedItems) {
@@ -203,4 +225,36 @@ function(ev) {
 		}
 		this._updateQuery();
  	}
+};
+
+ZmAttachmentPicker._radioChange =
+function(ev) {
+	var element = DwtUiEvent.getTarget(ev);
+	var picker = element._picker;
+
+	Dwt.setVisible(picker._treeDiv, (element._radioId == ZmAttachmentPicker.SPEC));
+
+	var dispFilename = element._radioId == ZmAttachmentPicker.FILE ? Dwt.DISPLAY_BLOCK : Dwt.DISPLAY_NONE;
+	Dwt.setDisplay(picker._fileNameDiv, dispFilename);
+	if (element._radioId == ZmAttachmentPicker.FILE) {
+		picker._fileNameInput.focus();
+		return;
+	}
+
+	picker._updateQuery();
+};
+
+ZmAttachmentPicker._onChange =
+function(ev) {
+	var element = DwtUiEvent.getTarget(ev);
+	var picker = Dwt.getObjectFromElement(element);
+
+	var charCode = DwtKeyEvent.getCharCode(ev);
+	if (charCode == 13 || charCode == 3 || charCode == 9) {
+		picker.execute();
+	    return false;
+	} else {
+		picker._updateQuery();
+		return true;
+	}
 };

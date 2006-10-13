@@ -49,8 +49,14 @@ function(text, id) {
     var html = [];
     var i = 0;
     html[i++] = "<tr valign='middle'>";
-    html[i++] = "<td align='right' nowrap>" + text + ":</td>";
-    html[i++] = "<td align='left' nowrap><input type='text' autocomplete='off' nowrap size='" + size + "' id='" + id + "'/></td>";
+    html[i++] = "<td align='right' nowrap>";
+	html[i++] = text;
+	html[i++] = ":</td>";
+    html[i++] = "<td align='left' nowrap><input type='text' autocomplete='off' nowrap size='";
+	html[i++] = size;
+	html[i++] = "' id='";
+	html[i++] = id;
+	html[i++] = "'/></td>";
     html[i++] = "</tr>";
 
 	return html.join("");		
@@ -80,14 +86,26 @@ function(parent) {
 		inSpamId = Dwt.getNextId();
 		checked = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_SPAM) ? " checked" : "";
 		html[i++] = "<tr valign='middle'>";
-		html[i++] = "<td align='right'><input type='checkbox'" + checked + " id='" + inSpamId + "' /></td>";
-		html[i++] = "<td align='left' nowrap>" + ZmMsg.includeJunk + "</td>";
+		html[i++] = "<td align='right'><input type='checkbox'";
+		html[i++] = checked;
+		html[i++] = " id='";
+		html[i++] = inSpamId;
+		html[i++] = "' /></td>";
+		html[i++] = "<td align='left' nowrap>";
+		html[i++] = ZmMsg.includeJunk;
+		html[i++] = "</td>";
 		html[i++] = "</tr>";
 	}
 	checked = this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH) ? " checked" : "";
 	html[i++] = "<tr valign='middle'>";
-	html[i++] = "<td align='right'><input type='checkbox'" + checked + " id='" + inTrashId + "' /></td>";
-	html[i++] = "<td align='left' nowrap>" + ZmMsg.includeTrash + "</td>";
+	html[i++] = "<td align='right'><input type='checkbox'";
+	html[i++] = checked;
+	html[i++] = " id='";
+	html[i++] = inTrashId;
+	html[i++] = "' /></td>";
+	html[i++] = "<td align='left' nowrap>";
+	html[i++] = ZmMsg.includeTrash;
+	html[i++] = "</td>";
 	html[i++] = "</tr>";
 	html[i++] = "</table>";
 	picker.getHtmlElement().innerHTML = html.join("");
@@ -130,7 +148,7 @@ ZmBasicPicker.prototype._setupField =
 function(id) {
 	var f = document.getElementById(id);
 	Dwt.setHandler(f, DwtEvent.ONKEYUP, ZmBasicPicker._onChange);
-	f._picker = this;
+	Dwt.associateElementWithObject(f, this);
 	return f;
 };
 
@@ -138,14 +156,14 @@ ZmBasicPicker.prototype._setupCheckbox =
 function(id) {
 	var f = document.getElementById(id);
 	Dwt.setHandler(f, DwtEvent.ONCLICK, ZmBasicPicker._onChange);
-	f._picker = this;
+	Dwt.associateElementWithObject(f, this);
 	return f;
 };
 
 ZmBasicPicker._onChange =
 function(ev) {
 	var element = DwtUiEvent.getTarget(ev);
-	var picker = element._picker;
+	var picker = Dwt.getObjectFromElement(element);
 
 	var charCode = DwtKeyEvent.getCharCode(ev);
 	if (charCode == 13 || charCode == 3 || charCode == 9) {
