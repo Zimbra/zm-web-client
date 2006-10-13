@@ -150,7 +150,12 @@ function() {
 		}
 		this._renderTable(org);
 	}
-	this._hasRendered ? this._controller.setDirty(this._view, false) : this._hasRendered = true;
+	if (!this._hasRendered){
+		this._showKeys();
+		this._hasRendered = true;
+	} else {
+		this._controller.setDirty(this._view, false);
+	}
 
 	// save the current value (for checking later if it changed)
 	var pref = this._appCtxt.getSettings().getSetting(this._prefId);
@@ -247,6 +252,11 @@ function() {
 		html[i++] = tableId[org];
 		html[i++] = "'><tbody></tbody></table>";
 	}
+	
+	this._keysDivId = Dwt.getNextId();
+	html[i++] = "<div id='";
+	html[i++] = this._keysDivId;
+	html[i++] = "'</div>";
 	
 	this.getHtmlElement().innerHTML = html.join("");
 	
@@ -404,4 +414,72 @@ function(rowId) {
 			}
 		}
 	}
+};
+
+ZmShortcutsPage.prototype._showKeys =
+function() {
+	var html = [];
+	var i = this._getKeysHtml(AjxKeys, html, 0);
+	this._getKeysHtml(ZmKeys, html, i);
+	
+	document.getElementById(this._keysDivId).innerHTML = html.join("");
+};
+
+ZmShortcutsPage.prototype._getKeysHtml =
+function(keys, html, i) {
+	var mapDesc = {};
+	var maps = [];
+	var actionDesc = {};
+	var keySequences = {};
+	for (var propName in keys) {
+		var propValue = keys[propName];
+		if (typeof propValue != "string") { continue; }
+		var parts = propName.split(".");
+		var map = parts[0];
+		if (parts[1] == "description" || parts[2] == "description") {
+			if (parts[1] == "description") {
+				maps.push(map);
+				mapDesc[map] = propValue;
+			} else if (parts[2] == "description") {
+				var action = parts[1];
+				if (!actionDesc[map]) {
+					actionDesc[map] = {};
+					keySequences[map] = [];
+				}
+				var scKey = [map, action].join(".");
+				var scValue = keys[scKey];
+				var keySeq = scValue.split(/\s*;\s*/);
+				var keySeq1 = [];
+				for (var j = 0; j < keySeq.length; j++) {
+					var ks = ZmKeyMap.cleanup(keySeq[j]);
+					keySeq1.push(ks);
+				}
+				var scValue1 = keySeq1.join(" <i>or</i><br />");
+				keySequences[map].push(scValue1);
+				actionDesc[map][scValue1] = propValue;
+			}
+		}
+	}
+	
+	maps.sort();
+	for (var j = 0; j < maps.length; j++) {
+		var map = maps[j];
+		html[i++] = "<h4>";
+		html[i++] = mapDesc[map];
+		html[i++] = "</h4>";
+		html[i++] = "<table border=1 cellPadding=2 style='table-layout:fixed'>";
+		keySequences[map].sort();
+		for (var k = 0; k < keySequences[map].length; k++) {
+			var ks = keySequences[map][k];
+			var desc = actionDesc[map][ks];
+			html[i++] = "<tr><td width=80>";
+			html[i++] = ks;
+			html[i++] = "</td><td width=500>";
+			html[i++] = desc;
+			html[i++] = "</td></tr>";
+		}
+		html[i++] = "</table>";
+	}
+	
+	return i;
 };

@@ -147,6 +147,57 @@ ZmKeyMap.UNTAG				= "Untag";
 ZmKeyMap.VIEW_BY_CONV		= "ViewByConversation";
 ZmKeyMap.VIEW_BY_MSG		= "ViewByMessage";
 
+ZmKeyMap.SHIFT = {};
+ZmKeyMap.SHIFT["`"] = "~";
+ZmKeyMap.SHIFT["1"] = "!";
+ZmKeyMap.SHIFT["2"] = "@";
+ZmKeyMap.SHIFT["3"] = "#";
+ZmKeyMap.SHIFT["4"] = "$";
+ZmKeyMap.SHIFT["5"] = "%";
+ZmKeyMap.SHIFT["6"] = "^";
+ZmKeyMap.SHIFT["7"] = "&";
+ZmKeyMap.SHIFT["8"] = "*";
+ZmKeyMap.SHIFT["9"] = "(";
+ZmKeyMap.SHIFT["0"] = ")";
+ZmKeyMap.SHIFT["-"] = "_";
+ZmKeyMap.SHIFT["="] = "+";
+ZmKeyMap.SHIFT["["] = "{";
+ZmKeyMap.SHIFT["]"] = "}";
+ZmKeyMap.SHIFT["\\"] = "|";
+ZmKeyMap.SHIFT[";"] = ":";
+ZmKeyMap.SHIFT["'"] = "\"";
+ZmKeyMap.SHIFT[","] = "<";
+ZmKeyMap.SHIFT["."] = ">";
+ZmKeyMap.SHIFT["/"] = "?";
+
+// Translates a key sequence into a friendlier, more readable version
+ZmKeyMap.cleanup =
+function(ks) {
+	var keys = ks.split(",");
+	var keys1 = [];
+	for (var i = 0; i < keys.length; i++) {
+		var key = keys[i];
+		if (key.indexOf("NNN") != -1) {
+			key = key.replace("NNN", "[n]");
+		}
+		if (/^[A-Z]$/.test(key)) {
+			keys1.push(key.toLowerCase());
+		} else if (key.indexOf("Shift") == 0) {
+			var parts = key.split("+");
+			var ch = parts[1];
+			var ch1 = (ch.length > 1) ? ch : (ZmKeyMap.SHIFT[ch]) ? ZmKeyMap.SHIFT[ch] : ch;
+			keys1.push(ch1);
+		} else if (key.indexOf("Ctrl") == 0 || key.indexOf("Alt") == 0) {
+			var parts = key.split("+");
+			var ch = (/^[A-Z]$/.test(parts[1])) ? parts[1].toLowerCase() : parts[1];
+			keys1.push([parts[0], ch].join("-"));
+		} else {
+			keys1.push(key);
+		}
+	}
+	return keys1.join(",");
+};
+
 /**
  * Creates a shortcut.
  * @constructor
