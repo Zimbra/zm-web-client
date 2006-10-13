@@ -185,12 +185,14 @@ function(perm) {
 ZmShare.getRoleActions =
 function(perm) {
 	var actions = [];
-	for (var i = 0; i < perm.length; i++) {
-		var c = perm.charAt(i);
-		if (c == "-") {
-			c += perm.charAt(++i);
+	if (perm) {
+		for (var i = 0; i < perm.length; i++) {
+			var c = perm.charAt(i);
+			if (c == "-") {
+				c += perm.charAt(++i);
+			}
+			actions.push(ZmShare.PERMS[c]);
 		}
-		actions.push(ZmShare.PERMS[c]);
 	}
 	return actions.length > 0 ? actions.join(", ") : ZmMsg.shareActionNone;
 };
