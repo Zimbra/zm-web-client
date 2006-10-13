@@ -1986,6 +1986,67 @@ HTML>BODY .appt-selected .appt_allday_body
 	vertical-align: middle;
 }
 
+.ZmIdentitiesBox {
+	background-color:@ItemBgColor@;
+}
+
+.ZmIdentityView .Label {
+	text-align: right;
+}
+
+.ZmIdentityView .Hint {
+	@FontSize-smaller@
+}
+.ZmIdentityView .DwtTabBar {
+	@PageBg@
+}
+
+.infoBox {
+	margin:0px 5px 10px 0px;
+	padding:10px;
+	background-image:url("../common/img/loRes/dwt/Information_32.gif");
+	background-repeat:no-repeat;
+	background-position: 10px 10px;
+	background-color:#FFF6BF;
+	border:1px solid #FFDD00;
+	-moz-border-radius:10px;
+	padding:10px 10px 10px 50px;
+}
+
+.infoTitle {
+	padding-left:5px;
+	font-weight:bold;
+	border-bottom:1px solid #FFDD00;
+	margin-bottom:10px;
+}
+
+.infoTitleClose {
+	margin-right:5px;
+	float:right;
+	font-weight:normal;
+	cursor:pointer;
+}
+
+.SubHead,
+.PanelHead {
+	font-size:12px; font-weight:bold;
+	padding:3 10 5 7;
+}
+
+.DarkBg,
+.PanelHead {
+	background-color:#bab09a;
+}
+
+.OutsetPanel {
+	padding:0px;
+	border:1px solid; 
+	border-color:#a29a87 #746e61 #746e61 #a29a87;
+	-moz-border-left-colors:#a29a87 #eae0c7; 	
+	-moz-border-top-colors: #a29a87 #eae0c7; 	
+	-moz-border-bottom-colors: #746e61 #bab09a;		
+	-moz-border-right-colors: #746e61 #bab09a;
+}
 
 /*
  *	Change password dialog
