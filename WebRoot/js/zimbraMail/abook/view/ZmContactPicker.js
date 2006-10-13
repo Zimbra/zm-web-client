@@ -191,7 +191,7 @@ function() {
 	}
 
 	// add chooser
-	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo});
+	this._chooser = new ZmContactChooser({parent:this, buttonInfo:this._buttonInfo, appCtxt:this._appCtxt});
 	var chooserDiv = document.getElementById(this._chooserDivId);
 	chooserDiv.appendChild(this._chooser.getHtmlElement());
 	this._chooser.resize(this.getSize().x, ZmContactPicker.CHOOSER_HEIGHT);
@@ -264,6 +264,7 @@ function(result) {
 			var members = contact.getGroupMembers().good.toString(ZmEmailAddress.SEPARATOR);
 			var email = new ZmEmailAddress(members, null, contact.getFileAs(), null, true);
 			email.id = Dwt.getNextId();
+			email.contactId = contact.id;
 			email.icon = "Group";
 			list.push(email);
 		} else {
@@ -271,6 +272,7 @@ function(result) {
 			for (var j = 0; j < emails.length; j++) {
 				var email = new ZmEmailAddress(emails[j], null, contact.getFileAs());
 				email.id = Dwt.getNextId();
+				email.contactId = contact.id;
 				email.icon = contact.isGal ? "GAL" : contact.addrbook.getIcon();
 				list.push(email);
 			}
@@ -321,6 +323,7 @@ function(ev) {
 * @param buttonInfo		[array]			transfer button IDs and labels
 */
 function ZmContactChooser(params) {
+	this._appCtxt = params.appCtxt;
 	DwtChooser.call(this, params);
 };
 
@@ -329,12 +332,12 @@ ZmContactChooser.prototype.constructor = ZmContactChooser;
 
 ZmContactChooser.prototype._createSourceListView =
 function() {
-	return new ZmContactChooserSourceListView(this);
+	return new ZmContactChooserSourceListView(this, this._appCtxt);
 };
 
 ZmContactChooser.prototype._createTargetListView =
 function() {
-	return new ZmContactChooserTargetListView(this, (this._buttonInfo.length > 1));
+	return new ZmContactChooserTargetListView(this, (this._buttonInfo.length > 1), this._appCtxt);
 };
 
 /*
@@ -353,9 +356,10 @@ function(item, list) {
 /**
 * This class creates a specialized source list view for the contact chooser.
 */
-function ZmContactChooserSourceListView(parent) {
+function ZmContactChooserSourceListView(parent, appCtxt) {
 	DwtChooserListView.call(this, parent, DwtChooserListView.SOURCE);
 	this.getHtmlElement().style.overflowX = "hidden";
+	this._appCtxt = appCtxt;
 };
 
 ZmContactChooserSourceListView.prototype = new DwtChooserListView;
@@ -374,6 +378,28 @@ function() {
 	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_EMAIL, ZmMsg.email));
 
 	return headerList;
+};
+
+ZmContactChooserSourceListView.prototype._mouseOverAction =
+function(ev, div) {
+	DwtChooserListView.prototype._mouseOverAction.call(this, ev, div);
+	var id = ev.target.id || div.id;
+	var item = this.getItemFromElement(div);
+
+	if (id && item) {
+		var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+		var contact = contactList ? contactList.getById(item.contactId) : null;
+		if (contact) {
+			var tt = contact.getToolTip(item.address);
+			this.setToolTipContent(tt);
+		} else {
+			this.setToolTipContent(item.address);
+		}
+	} else {
+		this.setToolTipContent(null);
+	}
+
+	return true;
 };
 
 // The items are ZmEmailAddress objects
@@ -422,12 +448,13 @@ function(item) {
 /**
 * This class creates a specialized target list view for the contact chooser.
 */
-function ZmContactChooserTargetListView(parent, showType) {
-	this._showType = showType;
+function ZmContactChooserTargetListView(parent, showType, appCtxt) {
+	this._showType = showType; // call before base class since base calls getHeaderList
 
 	DwtChooserListView.call(this, parent, DwtChooserListView.TARGET);
 
 	this.getHtmlElement().style.overflowX = "hidden";
+	this._appCtxt = appCtxt;
 };
 
 ZmContactChooserTargetListView.prototype = new DwtChooserListView;
@@ -448,6 +475,28 @@ function() {
 	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_EMAIL, ZmMsg.email));
 
 	return headerList;
+};
+
+ZmContactChooserTargetListView.prototype._mouseOverAction =
+function(ev, div) {
+	DwtChooserListView.prototype._mouseOverAction.call(this, ev, div);
+	var id = ev.target.id || div.id;
+	var item = this.getItemFromElement(div);
+
+	if (id && item) {
+		var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+		var contact = contactList ? contactList.getById(item.contactId) : null;
+		if (contact) {
+			var tt = contact.getToolTip(item.address);
+			this.setToolTipContent(tt);
+		} else {
+			this.setToolTipContent(item.address);
+		}
+	} else {
+		this.setToolTipContent(null);
+	}
+
+	return true;
 };
 
 // The items are ZmEmailAddress objects

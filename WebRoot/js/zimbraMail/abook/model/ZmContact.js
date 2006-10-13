@@ -790,16 +790,27 @@ function(email) {
 		html[idx++] = "<td style='font-weight:bold'>";
 		html[idx++] = AjxStringUtil.htmlEncode(entryTitle);
 		html[idx++] = "</td><td align='right'>";
-		html[idx++] = AjxImg.getImageHtml("Contact"); // could use different icon if GAL
+		html[idx++] = AjxImg.getImageHtml(this.getIcon());
 		html[idx++] = "</td></table></div>";
 		html[idx++] = "</td></tr>";
-		idx = this._addEntryRow("fullName", null, html, idx);
-		idx = this._addEntryRow("jobTitle", null, html, idx);
-		idx = this._addEntryRow("company", null, html, idx);
-		idx = this._addEntryRow("mobilePhone", null, html, idx);
-		idx = this._addEntryRow("workPhone", null, html, idx);
-		idx = this._addEntryRow("homePhone", null, html, idx);
-		idx = this._addEntryRow("email", email, html, idx);
+		if (this.isGroup()) {
+			var members = this.getGroupMembers().good.getArray();
+			for (var i = 0; i < members.length; i++) {
+				html[idx++] = "<tr><td width=20>";
+				html[idx++] = AjxImg.getImageHtml("Message");
+				html[idx++] = "</td><td>";
+				html[idx++] = AjxStringUtil.htmlEncode(members[i].toString());
+				html[idx++] = "</td></tr>";
+			}
+		} else {
+			idx = this._addEntryRow("fullName", null, html, idx);
+			idx = this._addEntryRow("jobTitle", null, html, idx);
+			idx = this._addEntryRow("company", null, html, idx);
+			idx = this._addEntryRow("mobilePhone", null, html, idx);
+			idx = this._addEntryRow("workPhone", null, html, idx);
+			idx = this._addEntryRow("homePhone", null, html, idx);
+			idx = this._addEntryRow("email", email, html, idx);
+		}
 		html[idx++] = "</table>";
 		this._toolTip = html.join("");
 		this._toolTipEmail = email;
