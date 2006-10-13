@@ -220,7 +220,7 @@ function(actionCode, ev) {
     DBG.println("ZmChicletButton.prototype.handleKeyAction");
 	switch (actionCode) {
 
-		case DwtKeyMap.SELECT_CURRENT:
+		case DwtKeyMap.SELECT:
 			if (this.isListenerRegistered(DwtEvent.SELECTION)) {
 				var selEv = DwtShell.selectionEvent;
 				selEv.item = this;
