@@ -91,7 +91,6 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/ZmTagMenu.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/ZmListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/ZmPrintView.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/ZmMixedView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/ZmChicletButton.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/ZmAppChooser.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/view/ZmCurrentAppToolBar.js<%= ext %>?v=<%= vers %>"></script>
@@ -170,7 +169,6 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/controller/ZmSearchController.js<%= ext %>?v=<%= vers %>"></script>
 
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/ZmApp.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/ZmMixedApp.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/ZmAppCtxt.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/ZmMimeTable.js<%= ext %>?v=<%= vers %>"></script>
 
@@ -293,8 +291,12 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/model/ZmFilterRule.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/model/ZmFilterRules.js<%= ext %>?v=<%= vers %>"></script>
 
+<!-- Mixed Application -->
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mixed/ZmMixedApp.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mixed/controller/ZmMixedController.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/mixed/view/ZmMixedView.js<%= ext %>?v=<%= vers %>"></script>
+
 <!-- Dependent on previous class definitions -->
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/controller/ZmMixedController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/share/model/ZmList.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/model/ZmResource.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/im/model/ZmRosterItemList.js<%= ext %>?v=<%= vers %>"></script>
