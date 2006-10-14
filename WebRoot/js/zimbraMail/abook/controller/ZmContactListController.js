@@ -460,9 +460,10 @@ ZmContactListController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
 	var contact = this._actionEv.contact = ev.item;
-	var email = this._actionEv.address = contact.isGroup()
-		? contact.getGroupMembers().good
-		: (new ZmEmailAddress(contact.getEmail()));
+	var email = contact.isGroup()
+		? contact.getGroupMembers().good : contact.getEmail();
+	this._actionEv.address = contact.isGroup()
+		? email : new ZmEmailAddress(email);
 	// enable/disable New Email menu item per valid email found for this contact
 	var enableNewEmail = email != null && this._listView[this._currentView].getSelectionCount() == 1;
 	var actionMenu = this.getActionMenu();
