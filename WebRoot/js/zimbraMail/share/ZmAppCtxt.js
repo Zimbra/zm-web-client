@@ -610,3 +610,12 @@ ZmAppCtxt.prototype.getKeyboardMgr =
 function() {
 	return this._shell.getKeyboardMgr();
 };
+
+ZmAppCtxt.prototype.getZimletMgr =
+function() {
+	if (!this._zimletMgr) {
+		this._zimletMgr = new ZmZimletMgr(this);
+	}
+	return this._zimletMgr;
+};
+

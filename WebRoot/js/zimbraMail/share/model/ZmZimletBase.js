@@ -106,7 +106,7 @@ ZmZimletBase.prototype.getSearchQuery = function() {
 };
 
 ZmZimletBase.prototype.getZimletManager = function() {
-	return this.getAppCtxt().getSettings().getZimletManager();
+	return this.getAppCtxt().getZimletMgr();
 };
 
 ZmZimletBase.prototype.xmlObj =

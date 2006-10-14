@@ -617,7 +617,7 @@ function(view, force, isNewView) {
 		}
 	}
 
-	this._appCtxt.getSettings().getZimletManager().notifyZimlets("onShowView", view, isNewView);
+	this._appCtxt.getZimletMgr().notifyZimlets("onShowView", view, isNewView);
 
 	return okToContinue;
 };

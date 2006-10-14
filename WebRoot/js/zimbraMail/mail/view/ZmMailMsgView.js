@@ -369,8 +369,7 @@ function(msg, oldMsg) {
 	this.getHtmlElement().scrollTop = 0;
 
 	// notify zimlets that a new message has been opened
-	var zmmgr = this._appCtxt.getSettings().getZimletManager();
-	zmmgr.notifyZimlets("onMsgView", msg, oldMsg);
+	this._appCtxt.getZimletMgr().notifyZimlets("onMsgView", msg, oldMsg);
 };
 
 // Values in this hash MUST be null or RegExp.  If "null" is passed, then that

@@ -43,7 +43,6 @@ function ZmSettings(appCtxt) {
 	this._initialize();
 	this._setDefaults();
 	this.userSettingsLoaded = false;
-	this._zmm = new ZmZimletMgr(appCtxt);
 };
 
 ZmSettings.prototype = new ZmModel;
@@ -82,11 +81,6 @@ function(id, key) {
 ZmSettings.prototype.getSetting =
 function(id) {
 	return this._settings[id];
-};
-
-ZmSettings.prototype.getZimletManager = 
-function() {
-	return this._zmm;
 };
 
 ZmSettings.prototype.createFromDom = 
@@ -185,7 +179,7 @@ function(callback, result) {
 	// load Zimlets
 	if(obj.zimlets && obj.zimlets.zimlet) {
 		DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + obj.zimlets.zimlet.length + " Zimlets");
-		this._zmm.loadZimlets(obj.zimlets.zimlet, obj.props.prop);
+		this._appCtxt.getZimletMgr().loadZimlets(obj.zimlets.zimlet, obj.props.prop);
 	}
 
 	this.userSettingsLoaded = true;
