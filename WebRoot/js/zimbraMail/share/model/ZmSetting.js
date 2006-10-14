@@ -148,10 +148,12 @@ ZmSetting.HTML_COMPOSE_ENABLED 			= i++;
 ZmSetting.IDLE_SESSION_TIMEOUT 			= i++;
 ZmSetting.IM_ENABLED					= i++;
 ZmSetting.INITIAL_SEARCH_ENABLED		= i++;
+ZmSetting.MAIL_ENABLED					= i++;
 ZmSetting.MAX_CONTACTS					= i++;
 ZmSetting.MIN_POLLING_INTERVAL			= i++;
 ZmSetting.NOTEBOOK_ENABLED				= i++;
 ZmSetting.NOTIF_FEATURE_ENABLED			= i++;
+ZmSetting.OPTIONS_ENABLED				= i++;
 ZmSetting.PWD_MAX_LENGTH				= i++;
 ZmSetting.PWD_MIN_LENGTH				= i++;
 ZmSetting.QUOTA							= i++;
@@ -320,20 +322,22 @@ ZmSetting.INIT[ZmSetting.HTML_COMPOSE_ENABLED] 			= ["zimbraFeatureHtmlComposeEn
 ZmSetting.INIT[ZmSetting.IM_ENABLED]					= ["zimbraFeatureIMEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.IDLE_SESSION_TIMEOUT] 			= ["zimbraMailIdleSessionTimeout", ZmSetting.T_COS, ZmSetting.D_LDAP_TIME, 0];
 ZmSetting.INIT[ZmSetting.INITIAL_SEARCH_ENABLED]		= ["zimbraFeatureInitialSearchPreferenceEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.MAIL_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.MAIL_FORWARDING_ENABLED]		= ["zimbraFeatureMailForwardingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.MAX_CONTACTS]					= ["zimbraContactMaxNumEntries", ZmSetting.T_COS, ZmSetting.D_INT, 0];
 ZmSetting.INIT[ZmSetting.MIN_POLLING_INTERVAL]			= ["zimbraMailMinPollingInterval", ZmSetting.T_COS, ZmSetting.D_LDAP_TIME, 120];
+ZmSetting.INIT[ZmSetting.NOTEBOOK_ENABLED]				= ["zimbraFeatureNotebookEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.NOTIF_FEATURE_ENABLED]			= ["zimbraFeatureNewMailNotificationEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.OPTIONS_ENABLED]				= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.PWD_MAX_LENGTH]				= ["zimbraPasswordMaxLength", ZmSetting.T_COS, ZmSetting.D_INT, 64];
 ZmSetting.INIT[ZmSetting.PWD_MIN_LENGTH]				= ["zimbraPasswordMinLength", ZmSetting.T_COS, ZmSetting.D_INT, 6];
 ZmSetting.INIT[ZmSetting.QUOTA]							= ["zimbraMailQuota", ZmSetting.T_COS, ZmSetting.D_INT, 0];
 ZmSetting.INIT[ZmSetting.SAVED_SEARCHES_ENABLED]		= ["zimbraFeatureSavedSearchesEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.SHARING_ENABLED]		 		= ["zimbraFeatureSharingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.SKIN_CHANGE_ENABLED]			= ["zimbraFeatureSkinChangeEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["zimbraFeatureTaggingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.VACATION_MSG_FEATURE_ENABLED]	= ["zimbraFeatureOutOfOfficeReplyEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.VIEW_ATTACHMENT_AS_HTML] 		= ["zimbraFeatureViewInHtmlEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
-ZmSetting.INIT[ZmSetting.SHARING_ENABLED]		 		= ["zimbraFeatureSharingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
-ZmSetting.INIT[ZmSetting.NOTEBOOK_ENABLED]				= ["zimbraFeatureNotebookEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 
 // user metadata (included with COS since the user can't change them)
 ZmSetting.INIT[ZmSetting.LICENSE_STATUS]				= [null, ZmSetting.T_COS, ZmSetting.D_STRING, ZmSetting.LICENSE_GOOD];
@@ -420,6 +424,29 @@ ZmSetting.INIT[ZmSetting.VIEW_AS_HTML]					= ["zimbraPrefMessageViewHtmlPreferre
 
 // Keyboard shortcuts
 ZmSetting.INIT[ZmSetting.SHORTCUTS]						= ["zimbraPrefShortcuts", ZmSetting.T_PREF, ZmSetting.D_STRING];
+
+/**
+ * Returns the name of the setting with the given ID. Abstract method that's
+ * available before ZmSettings has been constructed.
+ * 
+ * @param id	[constant]		setting ID
+ */
+ZmSetting.getName =
+function(id) {
+	return ZmSetting.INIT[id] ? ZmSetting.INIT[id][0] : null;
+};
+
+/**
+ * Returns true if the setting with the given ID is a user preference as
+ * opposed to a COS feature.
+ * 
+ * @param id	[constant]		setting ID
+ */
+ZmSetting.isPref =
+function(id) {
+	var name = ZmSetting.getName(id);
+	return name ? (name.indexOf("zimbraPref") == 0) : false;
+};
 
 ZmSetting.prototype.toString =
 function() {

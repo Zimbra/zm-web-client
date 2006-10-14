@@ -51,6 +51,13 @@ ZmLogin.skinCookieLifetime = 63072000000; // two years
 
 ZmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + location.port + "/service/soap/";
 
+ZmLogin.DEFAULT_SKIN = "sand";
+
+// prefs to fetch on login
+ZmLogin.FETCH = [ZmSetting.SKIN_NAME, ZmSetting.MAIL_ENABLED, ZmSetting.CALENDAR_ENABLED,
+				 ZmSetting.CONTACTS_ENABLED, ZmSetting.OPTIONS_ENABLED,
+				 ZmSetting.IM_ENABLED, ZmSetting.NOTEBOOK_ENABLED];
+
 /**
 * Puts up the auth screen, first checking to see if the browser is one we support.
 *
@@ -234,13 +241,34 @@ function(uname, pword) {
     el.setAttribute("by", "name");
     soapDoc.set("password", pword);
     soapDoc.set("virtualHost", location.hostname);
-    el = soapDoc.set("prefs");
-    el = soapDoc.set("pref", null, el);
-    el.setAttribute("name", "zimbraPrefSkin");
+    var prefs = [], attrs = [];
+    if (ZmLogin.FETCH.length) {
+		for (var i = 0; i < ZmLogin.FETCH.length; i++) {
+			var id = ZmLogin.FETCH[i];
+			var setting = ZmSetting.getName(id);
+			if (setting) {
+				ZmSetting.isPref(id) ? prefs.push(setting) : attrs.push(setting);
+			}
+		}
+		if (prefs.length) {
+			var prefsEl = soapDoc.set("prefs");
+			for (var i = 0; i < prefs.length; i++) {
+				var prefEl = soapDoc.set("pref", null, prefsEl);
+				prefEl.setAttribute("name", prefs[i]);
+			}
+		}
+		if (attrs.length) {
+			var attrsEl = soapDoc.set("attrs");
+			for (var i = 0; i < attrs.length; i++) {
+				var attrEl = soapDoc.set("attr", null, attrsEl);
+				attrEl.setAttribute("name", attrs[i]);
+			}
+		}
+    }
 
 	var command = new ZmCsfeCommand();
 	var respCallback = new AjxCallback(null, ZmLogin._handleResponseSubmitAuthRequest, [uname, pword]);
-	command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true, asyncMode: true, callback: respCallback});
+	command.invoke({soapDoc: soapDoc, noAuthToken: true,noSession: true, asyncMode: true, callback: respCallback});
 }
 
 ZmLogin._handleResponseSubmitAuthRequest =
@@ -276,24 +304,16 @@ function(uname, pword, result) {
 	ZmLogin._authTokenLifetime = resp.lifetime;
 	var mailServer = resp.refer;
 
-	var skin = null;
-    if (resp.prefs) {
-        var prefs = (resp.prefs instanceof Array) ? resp.prefs[0] : [resp.prefs];
-        var pref = prefs.pref;
-        if (pref) {
-            for (var i = 0; i < pref.length; i++) {
-                if (pref[i].name == 'zimbraPrefSkin') {
-                    skin = pref[i]._content;
-                    DBG.println(AjxDebug.DBG1, "got skin from prefs: " + skin);
-                }
-            }
-        } else {
-            // Default to sand
-            skin = 'sand';
-            DBG.println(AjxDebug.DBG1, "default skin to: sand");
-        }
-    }
-
+	var settings = new ZmSettings();
+	var prefs = !resp.prefs ? null : (resp.prefs instanceof Array) ? resp.prefs[0].pref : resp.prefs.pref;
+	if (prefs && prefs.length) {
+		settings.createFromJs(prefs);
+	}
+	var attrs = !resp.attrs ? null : (resp.attrs instanceof Array) ? resp.attrs[0].attr : resp.attrs.attr;
+	if (attrs && attrs.length) {
+		settings.createFromJs(attrs);
+	}
+	
     var match = location.search ? location.search.match(/\bredirect=([01])/) : null;
 	var redirect = match ? match[1] : null;
 	if (redirect == '0' || (location.hostname == "localhost") || (location.hostname && location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/))) {
@@ -301,7 +321,7 @@ function(uname, pword, result) {
 	}
 
 	var rmChecked = document.getElementById(ZLoginFactory.REMEMBER_ME_ID).checked;
-	ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword, rmChecked, skin);
+	ZmLogin.handleSuccess(ZmLogin._authToken, ZmLogin._authTokenLifetime, mailServer, uname, pword, rmChecked, settings);
 	ZmLogin._authToken = ZmLogin._authTokenLifetime = null;
 };
 
@@ -339,7 +359,7 @@ function() {
 };
 
 ZmLogin.handleSuccess =
-function(authToken, tokenLifetime, mailServer, uname, password, rememberMe, skin) {
+function(authToken, tokenLifetime, mailServer, uname, password, rememberMe, settings) {
 	// save the username for later use
 	if (uname) {
 		AjxCookie.setCookie(document, ZmLogin.lastGoodUserNameCookie, uname, null, "/");
@@ -350,8 +370,8 @@ function(authToken, tokenLifetime, mailServer, uname, password, rememberMe, skin
 	if (window.initMode != "" && (window.initMode != location.protocol)) {
 		AjxDebug.deleteWindowCookie();
 	}
-	if (skin) {
-		ZmLogin.setSkinCookie(skin);
+	if (settings) {
+		ZmLogin.setSkinCookie(settings.get(ZmSetting.SKIN_NAME) || ZmLogin.DEFAULT_SKIN);
 	}
 
 	// make sure we add the query string to the new page

@@ -168,6 +168,7 @@ appContextPath = "<%= contextPath %>";
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 <jsp:include page="Ajax.jsp"/>
 <jsp:include page="Zimbra.jsp"/>
+<jsp:include page="LoginFiles.jsp"/>
 <% } else { %>
 <script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
 <% } %>

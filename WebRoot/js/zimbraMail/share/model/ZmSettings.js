@@ -24,14 +24,16 @@
  */
 
 /**
-* Creates a collection of settings with defaults values.
+* Creates a collection of settings with default values. If no app context is given,
+* then this is a skeletal, non-live version of settings which can provide default
+* settings and parse SOAP settings.
 * @constructor
 * @class
 * This class is a collection of various sorts of settings: config values, preferences,
 * and COS features. Each setting has an ID which can be used to retrieve it.
 *
 * @author Conrad Damon
-* @param appCtxt	the app context
+* @param appCtxt	[ZmAppCtxt]*	the app context
 */
 function ZmSettings(appCtxt) {
 
@@ -319,13 +321,15 @@ function() {
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
 	
 	// default sorting preferences
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONVLIST_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONV_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.TRAD_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SRC_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_TGT_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SIMPLE_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_CARDS_VIEW, true, true);
+	if (this._appCtxt) {
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONVLIST_VIEW, true, true);
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONV_VIEW, true, true);
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.TRAD_VIEW, true, true);
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SRC_VIEW, true, true);
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_TGT_VIEW, true, true);
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SIMPLE_VIEW, true, true);
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_CARDS_VIEW, true, true);
+	}
 };
 
 ZmSettings.prototype._loadShortcuts =
