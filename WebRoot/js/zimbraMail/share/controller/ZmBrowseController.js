@@ -67,7 +67,7 @@ function() {
 		list.push(ZmPicker.SEARCH);
 	}
     list.push(ZmPicker.SIZE);
-    var idxZimlets = this._appCtxt._settings._zmm.getIndexedZimlets();
+    var idxZimlets = this._appCtxt.getZimletMgr().getIndexedZimlets();
     if (idxZimlets.length) {
     	list.push(ZmPicker.ZIMLET);
     }

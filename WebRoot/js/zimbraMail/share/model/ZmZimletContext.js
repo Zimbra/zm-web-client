@@ -177,7 +177,7 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	}
 	this.handlerObject._init(this, DwtShell.getShell(window));
 	if (this.contentObject) {
-		this._appCtxt._settings._zmm.registerContentZimlet(this.handlerObject, this.type, this.priority);
+		this._appCtxt.getZimletMgr().registerContentZimlet(this.handlerObject, this.type, this.priority);
 	}
 	this.handlerObject.init();
 	this.handlerObject._zimletContext = this;

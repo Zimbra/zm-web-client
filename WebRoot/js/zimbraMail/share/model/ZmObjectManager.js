@@ -55,7 +55,7 @@ function ZmObjectManager(view, appCtxt, selectCallback, skipHandlers) {
 	
 		// get Zimlet handler's
 		if (this._appCtxt != null) {
-			var zimlets = this._appCtxt._settings._zmm.getContentZimlets();
+			var zimlets = this._appCtxt.getZimletMgr().getContentZimlets();
 			for (var i = 0; i < zimlets.length; i++) {
 				this.addHandler(zimlets[i], zimlets[i].type, zimlets[i].prio);
 			}
@@ -184,7 +184,7 @@ function() {
 
 ZmObjectManager.prototype.objectsCount =
 function() {
-	return this._appCtxt._settings._zmm.getContentZimlets().length;
+	return this._appCtxt.getZimletMgr().getContentZimlets().length;
 };
 
 ZmObjectManager.prototype.getImageAttachmentHandler =
