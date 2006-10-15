@@ -187,7 +187,7 @@ function(actionCode) {
 			break;
 		
 		case ZmKeyMap.FLAG:
-			this._doFlag(listView.getSelection());
+			this._doFlag(lv.getSelection());
 			break;
 
 		case ZmKeyMap.VIEW_BY_CONV:

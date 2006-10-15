@@ -350,7 +350,7 @@ function(ev) {
 	if (item) {
 		this._actionedOrganizer = item;
 		if (item.noSuchFolder) {
-			this._appCtxt.getAppController().handleDeleteNoSuchFolder(item);
+			this._appCtxt.getRequestMgr().handleDeleteNoSuchFolder(item);
 			return;
 		}
 	}

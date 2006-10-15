@@ -74,6 +74,16 @@ function() {
 	return this._appController;
 };
 
+ZmAppCtxt.prototype.setRequestMgr =
+function(requestMgr) {
+	this._requestMgr = requestMgr;
+};
+
+ZmAppCtxt.prototype.getRequestMgr =
+function() {
+	return this._requestMgr;
+};
+
 ZmAppCtxt.prototype.setStatusMsg =
 function(msg, level, detail, delay, transition) {
 	this._appController.setStatusMsg(msg, level, detail, delay, transition);
