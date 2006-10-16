@@ -145,8 +145,8 @@ ZmNotebookController.prototype._initializeToolBar = function(view) {
 	var toolbar = this._toolbar[this._currentView];
 	var button = toolbar.getButton(ZmOperation.REFRESH);
 	if (button) {
-		button.setImage("SendReceive");
-		button.setDisabledImage("SendReceiveDis");
+		button.setImage("Refresh");
+		button.setDisabledImage("RefreshDis");
 	}
 
 	var button = toolbar.getButton(ZmOperation.DELETE);

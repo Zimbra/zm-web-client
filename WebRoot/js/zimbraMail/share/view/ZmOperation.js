@@ -96,7 +96,7 @@ ZmOperation.CAL_REFRESH = i++;
 ZmOperation.SETUP[ZmOperation.CAL_REFRESH] = {
 	textKey:	"refresh",
 	tooltipKey:	"calRefreshTooltip",
-	image:		"SendReceive"
+	image:		"Refresh"
 };
 
 ZmOperation.CAL_VIEW_MENU = i++;
@@ -122,7 +122,7 @@ ZmOperation.CHECK_MAIL = i++;
 ZmOperation.SETUP[ZmOperation.CHECK_MAIL] = {
 	textKey:	"checkMail",
 	tooltipKey:	"checkMailTooltip",
-	image:		"SendReceive"
+	image:		"Refresh"
 };
 
 ZmOperation.CLEAR_ALL = i++;
@@ -675,7 +675,7 @@ ZmOperation.SETUP[ZmOperation.PRINT_MENU] = {
 ZmOperation.REFRESH = i++;
 ZmOperation.SETUP[ZmOperation.REFRESH] = {
 	textKey:	"refresh",
-	img:		"SendReceive"
+	img:		"Refresh"
 };
 
 ZmOperation.REMOVE_FILTER_RULE = i++;
