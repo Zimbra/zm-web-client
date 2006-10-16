@@ -978,7 +978,7 @@ function(ev) {
 	} else if (id == ZmSetting.SKIN_NAME) {
 		var cd = this._confirmDialog = this._appCtxt.getYesNoMsgDialog();
 		cd.reset();
-		var skin = setting.getValue();
+		var skin = ev.source.getValue();
 		cd.registerCallback(DwtDialog.YES_BUTTON, this._newSkinYesCallback, this, [skin]);
 		cd.setMessage(ZmMsg.skinChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
