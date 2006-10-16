@@ -23,6 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 function ZmIdentity(appCtxt, name) {
+	if (arguments.length == 0) return;
+	
 	this._appCtxt = appCtxt;
 	this.name = name;
 	this.id = "";
@@ -48,33 +50,131 @@ function ZmIdentity(appCtxt, name) {
 	this._signatureStyle = ZmSetting.SIG_INTERNET;
 };
 
+var i = 0;
+ZmIdentity.SEND_FROM_DISPLAY = i++;
+ZmIdentity.SEND_FROM_ADDRESS = i++;
+ZmIdentity.SET_REPLY_TO = i++;
+ZmIdentity.SET_REPLY_TO_DISPLAY = i++;
+ZmIdentity.SET_REPLY_TO_ADDRESS = i++;
+ZmIdentity.USE_SIGNATURE = i++;
+ZmIdentity.SIGNATURE = i++;
+ZmIdentity.USE_WHEN_SENT_TO = i++;
+ZmIdentity.WHEN_SENT_TO_ADDRESSES = i++;
+ZmIdentity.USE_WHEN_IN_FOLDER = i++;
+ZmIdentity.WHEN_IN_FOLDERIDS = i++;
+ZmIdentity.USE_DEFAULT_ADVANCED = i++;
+ZmIdentity.COMPOSE_FORMAT = i++;
+ZmIdentity.PREFIX = i++;
+ZmIdentity.FORWARD_OPTION = i++;
+ZmIdentity.REPLY_OPTION = i++;
+ZmIdentity.SIGNATURE_STYLE = i++;
+delete i;
+
+ZmIdentity.STRING = 1;
+ZmIdentity.ARRAY = 2;
+ZmIdentity.BOOLEAN = 3;
+
+ZmIdentity.FIELDS = {};
+ZmIdentity.FIELDS[ZmIdentity.SEND_FROM_DISPLAY] = { name: "sendFromDisplay", soap: "sendFromDisplay", type: ZmIdentity.STRING };
+ZmIdentity.FIELDS[ZmIdentity.SEND_FROM_ADDRESS] = { name: "sendFromAddress", soap: "sendFromAddress", type: ZmIdentity.STRING };
+ZmIdentity.FIELDS[ZmIdentity.SET_REPLY_TO] = { name: "_setReplyTo", soap: "setReplyTo", type: ZmIdentity.BOOLEAN };
+ZmIdentity.FIELDS[ZmIdentity.SET_REPLY_TO_DISPLAY] = { name: "_setReplyToDisplay", soap: "setReplyToDisplay", type: ZmIdentity.STRING };
+ZmIdentity.FIELDS[ZmIdentity.SET_REPLY_TO_ADDRESS] = { name: "_setReplyToAddress", soap: "setReplyToAddress", type: ZmIdentity.STRING };
+ZmIdentity.FIELDS[ZmIdentity.USE_SIGNATURE] = { name: "_useSignature", soap: "useSignature", type: ZmIdentity.BOOLEAN };
+ZmIdentity.FIELDS[ZmIdentity.SIGNATURE] = { name: "_signature", soap: "signature", type: ZmIdentity.STRING };
+ZmIdentity.FIELDS[ZmIdentity.USE_WHEN_SENT_TO] = { name: "_useWhenSentTo", soap: "useWhenSentTo", type: ZmIdentity.BOOLEAN };
+ZmIdentity.FIELDS[ZmIdentity.WHEN_SENT_TO_ADDRESSES] = { name: "_whenSentToAddresses", soap: "whenSentToAddresses", type: ZmIdentity.ARRAY };
+ZmIdentity.FIELDS[ZmIdentity.USE_WHEN_IN_FOLDER] = { name: "_useWhenInFolder", soap: "useWhenInFolder", type: ZmIdentity.BOOLEAN };
+ZmIdentity.FIELDS[ZmIdentity.WHEN_IN_FOLDERIDS] = { name: "_whenInFolderIds", soap: "whenInFolderIds", type: ZmIdentity.ARRAY };
+ZmIdentity.FIELDS[ZmIdentity.USE_DEFAULT_ADVANCED] = { name: "useDefaultAdvanced", soap: "useDefaultAdvanced", type: ZmIdentity.BOOLEAN };
+ZmIdentity.FIELDS[ZmIdentity.COMPOSE_FORMAT] = { name: "_composeFormat", soap: "composeFormat", type: ZmIdentity.STRING };
+ZmIdentity.FIELDS[ZmIdentity.PREFIX] = { name: "_prefix", soap: "prefix", type: ZmIdentity.STRING };
+ZmIdentity.FIELDS[ZmIdentity.FORWARD_OPTION] = { name: "_forwardOption", soap: "forwardOption", type: ZmIdentity.STRING };
+ZmIdentity.FIELDS[ZmIdentity.REPLY_OPTION] = { name: "_replyOption", soap: "replyOption", type: ZmIdentity.STRING };
+ZmIdentity.FIELDS[ZmIdentity.SIGNATURE_STYLE] = { name: "_signatureStyle", soap: "signatureStyle", type: ZmIdentity.STRING };
+
+
 ZmIdentity.COMPOSE_SAME = 1;
 ZmIdentity.COMPOSE_TEXT = 2;
 ZmIdentity.COMPOSE_HTML = 3;
+
+ZmIdentity.prototype.getField =
+function(fieldId) {
+	return this[ZmIdentity.FIELDS[fieldId].name];
+};
+
+ZmIdentity.prototype.setField =
+function(fieldId, value) {
+	this[ZmIdentity.FIELDS[fieldId].name] = value;
+};
 
 ZmIdentity.prototype._loadFromDom =
 function(data) {
 	if (data.name) this.name = data.name;
 	if (data.id) this.id = data.id;
-	if (data.sendFromDisplay) this.sendFromDisplay = data.sendFromDisplay;
-	if (data.sendFromAddress) this.sendFromAddress = data.sendFromAddress;
-	if (data.setReplyTo) this._setReplyTo = data.setReplyTo;
-	if (data.setReplyToDisplay) this._setReplyToDisplay = data.setReplyToDisplay;
-	if (data.setReplyToAddress) this._setReplyToAddress = data.setReplyToAddress;
-	if (data.useSignature) this._useSignature = data.useSignature;
-	if (data.signature) this._signature = data.signature;
-	if (data.useWhenSentTo) this._useWhenSentTo = data.useWhenSentTo;
-	if (data.whenSentToAddresses) this._whenSentToAddresses = data.whenSentToAddresses;
-	if (data.useWhenInFolder) this._useWhenInFolder = data.useWhenInFolder;
-	if (data.whenInFolderIds) this._whenInFolderIds = data.whenInFolderIds;
-
-	if (data.useDefaultAdvanced) this.useDefaultAdvanced = data.useDefaultAdvanced;
-	if (data.composeFormat) this._composeFormat = data.composeFormat;
-	if (data.prefix) this._prefix = data.prefix;
-	if (data.forwardOption) this._forwardOption = data.forwardOption;
-	if (data.replyOption) this._replyOption = data.replyOption;
-	if (data.signatureStyle) this._signatureStyle = data.signatureStyle;
+	for (var i in ZmIdentity.FIELDS) {
+		var field = ZmIdentity.FIELDS[i];
+		var value = data[field.soap];
+		if (value != undefined) {
+			if (field.type== ZmIdentity.BOOLEAN) {
+				this[field.name] = (value.toLowerCase() == "true");
+			} else {
+				this[field.name] = value;
+			}
+		}
+	}
 };
+
+ZmIdentity.prototype.createRequest =
+function(op, batchCommand) {
+    var soapDoc = AjxSoapDoc.create("IdentityActionRequest", "urn:zimbraMail");
+    var actionNode = soapDoc.set("action");
+    actionNode.setAttribute("op", op);
+    if (this.id) {
+	    actionNode.setAttribute("id", this.id);
+    }
+    var identityNode = soapDoc.set("identity", null, actionNode);
+    if (op != "delete") {
+		if (this.name != undefined) identityNode.setAttribute("name", this.name);
+
+		for (var i in ZmIdentity.FIELDS) {
+			var value = this.getField(i);
+			if (value != undefined) {
+				var field = ZmIdentity.FIELDS[i];
+				identityNode.setAttribute(field.soap, value);
+			}
+		}
+    }
+	var respCallback = new AjxCallback(this, this._handleAction, [op]);
+	var errorCallback = new AjxCallback(this, this._handleErrorAction, [op]);
+	batchCommand.addRequestParams(soapDoc, respCallback, errorCallback);
+};
+
+ZmIdentity.prototype._handleAction =
+function(op, result) {
+	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+	var action = result._data.IdentityActionResponse.action;
+	if (op == "update") {
+		var identity = identityCollection.getById(this.id);
+		for (var i in ZmIdentity.FIELDS) {
+			var value = this.getField(i);
+			if (value != undefined) {
+// TODO: update maps.
+				identity.setField(i, value);
+			}
+		}
+	} else if (op == "create") {
+		identityCollection.add(this, false);
+	} else if (op == "delete") {
+		identityCollection.remove(this);
+	}
+};
+
+ZmIdentity.prototype._handleErrorAction =
+function() {
+//	debugger;
+};
+
 
 ZmIdentity.prototype.toString =
 function() {
@@ -259,30 +359,62 @@ function(mailMsg, type) {
 // Make up some fake identity data..
 ZmIdentityCollection.prototype.buildHack =
 function() {
-	var dave = new ZmIdentity(this._appCtxt, "Dave");
-	dave.id = 11111;
-	dave.sendFromDisplay = "Dave Comfort";
-	dave.sendFromAddress = "dcomfort@zimbra.com";
-	dave._useWhenSentTo = true;
-	dave._whenSentToAddresses = ["dave@comfort.com", "qqquser1@example.zimbra.com", "whoever@junk.nothing"];
-	dave._useWhenInFolder = true;
-	dave._whenInFolderIds = [538];
-
-	var otis = new ZmIdentity(this._appCtxt, "Otis");
-	otis.id = 22222;
-	otis.sendFromDisplay = "Otis";
-	otis.sendFromAddress = "otis@elevator.com";
-	
-	var rufus = new ZmIdentity(this._appCtxt, "Rufus");
-	rufus.id = 33333;
-	rufus.sendFromDisplay = "rufus";
-	rufus.sendFromAddress = "rufus@moop.liquidsys.com";
-	// Ficticious JSON response object.....
-	var data = { sendFromDisplay:"Rufusmeister", useWhenInFolder:true, whenInFolderIds:["2"] };
-	rufus._loadFromDom(data);
-	
-	this.add(otis, true);
-	this.add(dave, false);
-	this.add(rufus);
+//	var dave = new ZmIdentity(this._appCtxt, "Dave");
+//	dave.id = 11111;
+//	dave.sendFromDisplay = "Dave Comfort";
+//	dave.sendFromAddress = "dcomfort@zimbra.com";
+//	dave._useWhenSentTo = true;
+//	dave._whenSentToAddresses = ["dave@comfort.com", "qqquser1@example.zimbra.com", "whoever@junk.nothing"];
+//	dave._useWhenInFolder = true;
+//	dave._whenInFolderIds = [538];
+//
+//	var otis = new ZmIdentity(this._appCtxt, "Otis");
+//	otis.id = 22222;
+//	otis.sendFromDisplay = "Otis";
+//	otis.sendFromAddress = "otis@elevator.com";
+//	
+//	var rufus = new ZmIdentity(this._appCtxt, "Rufus");
+//	rufus.id = 33333;
+//	rufus.sendFromDisplay = "rufus";
+//	rufus.sendFromAddress = "rufus@moop.liquidsys.com";
+//	// Ficticious JSON response object.....
+//	var data = { sendFromDisplay:"Rufusmeister", useWhenInFolder:true, whenInFolderIds:["2"] };
+//	rufus._loadFromDom(data);
+//	
+//	this.add(otis, true);
+//	this.add(dave, false);
+//	this.add(rufus);
+//
+//    var soapDoc = AjxSoapDoc.create("IdentityActionRequest", "urn:zimbraMail");
+//    var create = soapDoc.set("action");
+//    create.setAttribute("op", "create");
+//    var node = soapDoc.set("identity", null, create);
+//    node.setAttribute("name", rufus.name);
+//    node.setAttribute("sendFromDisplay", rufus.sendFromDisplay);
+//    node.setAttribute("sendFromAddress", rufus.sendFromAddress);
+//    
+//    var callback = new AjxCallback(this, this._handleAction);
+//    var errorCallback = new AjxCallback(this, this._handleActionError);
+//	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+//												  callback: callback, errorCallback: errorCallback});
 };
 
+//ZmIdentityCollection.prototype._handleAction =
+//function() {
+//	debugger;
+//};
+//	
+//ZmIdentityCollection.prototype._handleActionError =
+//function() {
+//	debugger;
+//};
+
+ZmIdentityCollection.prototype.initialize =
+function(data) {
+	var identities = data.identity;
+	for (var i = 0, count = identities.length; i < count; i++) {
+		var identity = new ZmIdentity(this._appCtxt, '');
+		identity._loadFromDom(identities[i]);
+		this.add(identity, i == 0);
+	}
+};

@@ -172,6 +172,19 @@ function() {
 	Dwt.setVisible(infoBox, !visible);
 };
 
+ZmPrefListView.prototype._createItemHtml =
+function(item) {
+	var	div = document.createElement("div");
+	var base = "Row";
+	div[DwtListView._STYLE_CLASS] = base;
+	div[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
+	div.className = div[DwtListView._STYLE_CLASS];
+	div.innerHTML = AjxStringUtil.htmlEncode(item.name, true);
+
+	return div;
+};
+
+
 /*
 * ZmPrefList
 * The list on the left side of the view.
@@ -197,16 +210,9 @@ function() {
 };
 
 ZmPrefList.prototype._createItemHtml =
-function(identity) {
-	var	div = document.createElement("div");
-	var base = "Row";
-	div[DwtListView._STYLE_CLASS] = base;
-	div[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
-	div.className = div[DwtListView._STYLE_CLASS];
-	div.innerHTML = AjxStringUtil.htmlEncode(identity.name, true);
-
-	this.associateItemWithElement(identity, div, DwtListView.TYPE_LIST_ITEM);
-
+function(item) {
+	var div = this.parent._createItemHtml(item);
+	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
 	return div;
 };
 

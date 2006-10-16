@@ -26,7 +26,6 @@
  function ZmIdentityView(parent, appCtxt, controller) {
 
 	ZmPrefListView.call(this, parent, appCtxt, controller, "ZmIdentityView");
-
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
@@ -36,6 +35,11 @@
 	this._identityNameInput = null;
 	this._identityPage = null;
 	this._advancedPage = null;
+
+	// Arrays of items that have been added, deleted, modified.
+	this._adds = [];
+	this._deletes = [];
+	this._updates = [];
 };
 
 ZmIdentityView.prototype = new ZmPrefListView;
@@ -97,13 +101,95 @@ function(identity) {
 	this._advancedPage.setIdentity(identity);
 };
 
+ZmIdentityView.prototype.addNew =
+function(identity) {
+	this._adds[this._adds.length] = identity;
+};
+
+ZmIdentityView.prototype.remove =
+function(identity) {
+	this._deletes[this._deletes.length] = identity;
+};
+
+ZmIdentityView.prototype.sendChanges =
+function() {
+	this.getChanges();
+	if (!this._adds.length && !this._deletes.length && !this._updates.length) {
+		return;
+	}
+
+	var batchCommand = new ZmBatchCommand(this._appCtxt);
+	this._addCommands(this._adds, "create", batchCommand);
+	this._addCommands(this._updates, "update", batchCommand);
+	this._addCommands(this._deletes, "delete", batchCommand);
+    var callback = new AjxCallback(this, this._handleAction);
+	batchCommand.run(callback);
+};
+
+ZmIdentityView.prototype._addCommands =
+function(list, op, batchCommand) {
+	for (var i = 0, count = list.length; i < count; i++) {
+		var identity = list[i];
+		var command = new AjxCallback(identity, identity.createRequest, [op]);
+		batchCommand.add(command);
+	}
+};
+
+ZmIdentityView.prototype._handleAction =
+function(result) {
+// Dumb approach.
+	var listView = this.getList();
+	listView.set(this._controller._getListData());
+	
+	this._adds.length = 0;
+	this._deletes.length = 0;
+	this._updates.length = 0;
+};
+	
+ZmIdentityView.prototype._handleActionError =
+function(a, b, c) {
+//	debugger;
+};
+
 ZmIdentityView.prototype.getChanges =
 function() {
-//	var identity = {};
-	var identity = this._identity;
-	this._identityPage.getChanges(identity);
-	this._advancedPage.getChanges(identity);
-	return identity;
+	var dirty = false;
+	if (!this._identity) {
+		return dirty;
+	}
+	var identity = null;
+	for (var i = 0, count = this._adds.length; i < count && !identity; i++) {
+		if (this._adds[i] == this._identity) {
+			identity = this._identity;
+		}
+	}
+	for (var i = 0, count = this._deletes.length; i < count && !identity; i++) {
+		if (this._deletes[i] == this._identity) {
+			identity = this._identity;
+		}
+	}
+	for (var i = 0, count = this._updates.length; i < count && !identity; i++) {
+		if (this._updates[i].id == this._identity.id) {
+			identity = this._identity;
+		}
+	}
+	var newModify = !identity;
+	if (newModify) {
+		identity = new ZmIdentity();
+		identity._appCtxt = this._appCtxt;
+		identity.id = this._identity.id;
+	}
+	var name = AjxStringUtil.trim(this._identityNameInput.getValue());
+	if (this._identity.name != name) {
+		identity.name = name;
+		dirty = true;
+	}
+	dirty = this._identityPage.getChanges(identity) || dirty;
+	dirty = this._advancedPage.getChanges(identity) || dirty;
+	if (newModify && dirty) {
+		this._updates[this._updates.length] = identity;
+	}
+	return dirty;
 };
 
 /**
@@ -143,6 +229,9 @@ function() {
 			case ZmIdentityPage.SENDING: this._initializeSending(); break;
 			case ZmIdentityPage.REPLYING: this._initializeReplying(); break;
 		}
+		if (this._identity) {
+			this.setIdentity(this._identity);
+		}
 		this._hasRendered = true;
 	}
 };
@@ -153,13 +242,13 @@ function(identity) {
 	
 	for (var field in this._inputs) {
 		var input = this._inputs[field];
-		var value = identity[field];
+		var value = identity.getField(field);
 		input.setValue(value);
 	}
 
 	for (var field in this._selects) {
 		var select = this._selects[field];
-		var value = identity[field];
+		var value = identity.getField(field);
 		if (value) {
 			select.setSelectedValue(value);
 		} else {
@@ -170,21 +259,21 @@ function(identity) {
 	var doc = document;
 	for (var field in this._checkboxIds) {
 		var id = this._checkboxIds[field];
-		var value = identity[field];
+		var value = identity.getField(field);
 		var checkbox = doc.getElementById(id);
 		checkbox.checked = value ? true : false;
 		this._applyCheckbox(checkbox);
 	}
 };
-
+	
 ZmIdentityPage.prototype.getChanges =
 function(changedIdentity) {
 	var dirty = false;
 	for (var field in this._inputs) {
 		var input = this._inputs[field];
 		var value = AjxStringUtil.trim(input.getValue());
-		if (this._identity[field] != value) {
-			changedIdentity[field] = value;
+		if (this._identity.getField(field) != value) {
+			changedIdentity.setField(field, value);
 			dirty = true;
 		}
 	}
@@ -192,8 +281,8 @@ function(changedIdentity) {
 	for (var field in this._selects) {
 		var select = this._selects[field];
 		var value = select.getValue();
-		if (this._identity[field] != value) {
-			changedIdentity[field] = value;
+		if (this._identity.getField(field) != value) {
+			changedIdentity.setField(field, value);
 			dirty = true;
 		}
 	}
@@ -202,8 +291,8 @@ function(changedIdentity) {
 	for (var field in this._checkboxIds) {
 		var id = this._checkboxIds[field];
 		var value = doc.getElementById(id).checked;
-		if (this._identity[field] != value) {
-			changedIdentity[field] = value;
+		if (this._identity.getField(field) != value) {
+			changedIdentity.setField(field, value);
 			dirty = true;
 		}
 	}
@@ -221,9 +310,9 @@ function() {
 	var useSignatureNameId = Dwt.getNextId();
 	var whenSentToCheckboxId = Dwt.getNextId();
 	var whenSentToInputId = Dwt.getNextId();
-	whenInFolderCheckboxId = Dwt.getNextId();
+	var whenInFolderCheckboxId = Dwt.getNextId();
 	var whenInFolderInputId = Dwt.getNextId();
-
+	var folderBrowseButtonId = Dwt.getNextId();
 	var sendBCCToCheckboxId = Dwt.getNextId();
 	var sendBCCToNameId = Dwt.getNextId();
 
@@ -270,9 +359,9 @@ function() {
 
 	html[i++] = "<tr><td style='text-align:right;'><input type='checkbox' id='";
 	html[i++] = whenSentToCheckboxId;
-	html[i++] = "'><td>";
+	html[i++] = "'></td><td>";
 	html[i++] = ZmMsg.whenSentTo;
-	html[i++] = "<td></tr><tr><td>&nbsp;</td><td id='";
+	html[i++] = "</td></tr><tr><td>&nbsp;</td><td id='";
 	html[i++] = whenSentToInputId;
 	html[i++] = "'></td></tr><tr><td>&nbsp;</td><td class='Hint'>";
 	html[i++] = ZmMsg.whenSentToHint;
@@ -280,11 +369,13 @@ function() {
 
 	html[i++] = "<tr><td style='text-align:right;'><input type='checkbox' id='";
 	html[i++] = whenInFolderCheckboxId;
-	html[i++] = "'><td>";
+	html[i++] = "'></td><td>";
 	html[i++] = ZmMsg.whenInFolder;
-	html[i++] = "<td></tr><tr><td>&nbsp;</td><td id='";
+	html[i++] = "</td></tr><tr><td>&nbsp;</td><td><div id='";
 	html[i++] = whenInFolderInputId;
-	html[i++] = "'></td></tr><tr><td>&nbsp;</td><td class='Hint'>";
+	html[i++] = "'></div><div id='";
+	html[i++] = folderBrowseButtonId;
+	html[i++] = "'></div></td></tr><tr><td>&nbsp;</td><td class='Hint'>";
 	html[i++] = ZmMsg.whenInFolderHint;
 	html[i++] = "</td></tr>";
 
@@ -297,21 +388,21 @@ function() {
 	var sendFromName = new DwtInputField(params);
 	sendFromName.setRequired(true);
 	sendFromName.reparentHtmlElement(sendFromNameId);
-	this._inputs["sendFromDisplay"] = sendFromName;
+	this._inputs[ZmIdentity.SEND_FROM_DISPLAY] = sendFromName;
 	
 	var sendFromAddress = new DwtInputField(params);
 	sendFromAddress.setRequired(true);
 	sendFromAddress.reparentHtmlElement(sendFromAddressId);
-	this._inputs["sendFromAddress"] = sendFromAddress;
+	this._inputs[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
 
 	var setReplyToName = new DwtInputField(params);
 	setReplyToName.reparentHtmlElement(setReplyToNameId);
-	this._inputs["_setReplyToDisplay"] = setReplyToName;
+	this._inputs[ZmIdentity.SET_REPLY_TO_DISPLAY] = setReplyToName;
 	var setReplyToAddress = new DwtInputField(params);
 	setReplyToAddress.reparentHtmlElement(setReplyToAddressId);
-	this._inputs["_setReplyToAddress"] = setReplyToAddress;
+	this._inputs[ZmIdentity.SET_REPLY_TO_ADDRESS] = setReplyToAddress;
 	this._associateCheckbox(setReplyToCheckboxId, [setReplyToName, setReplyToAddress]);
-	this._checkboxIds["_setReplyTo"] = setReplyToCheckboxId;
+	this._checkboxIds[ZmIdentity.SET_REPLY_TO] = setReplyToCheckboxId;
 
 	var options = [];
 	var signatureCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getSignatureCollection();
@@ -322,22 +413,27 @@ function() {
 	}
 	var useSignatureSelect = new DwtSelect(this, options);
 	useSignatureSelect.reparentHtmlElement(useSignatureNameId);
-	this._selects["_signature"] = useSignatureSelect;
+	this._selects[ZmIdentity.SIGNATURE] = useSignatureSelect;
 	this._associateCheckbox(useSignatureCheckboxId, [useSignatureSelect]);
-	this._checkboxIds["_useSignature"] = useSignatureCheckboxId;
+	this._checkboxIds[ZmIdentity.USE_SIGNATURE] = useSignatureCheckboxId;
 
 	params.size = 50;
 	var whenSentToInput = new DwtInputField(params);
 	whenSentToInput.reparentHtmlElement(whenSentToInputId);
-	this._inputs["_whenSentToAddresses"] = whenSentToInput;
+	this._inputs[ZmIdentity.WHEN_SENT_TO_ADDRESSES] = whenSentToInput;
 	this._associateCheckbox(whenSentToCheckboxId, [whenSentToInput]);
-	this._checkboxIds["_useWhenSentTo"] = whenSentToCheckboxId;
+	this._checkboxIds[ZmIdentity.USE_WHEN_SENT_TO] = whenSentToCheckboxId;
 
 	whenInFolderInput = new DwtInputField(params);
 	whenInFolderInput.reparentHtmlElement(whenInFolderInputId);
-	this._inputs["_whenInFolderIds"] = whenInFolderInput;
-	this._associateCheckbox(whenInFolderCheckboxId, [whenInFolderInput]);
-	this._checkboxIds["_useWhenInFolder"] = whenInFolderCheckboxId;
+	this._inputs[ZmIdentity.WHEN_IN_FOLDERIDS] = whenInFolderInput;
+	var folderBrowseButton = new DwtButton(this);
+	folderBrowseButton.reparentHtmlElement(folderBrowseButtonId);
+	folderBrowseButton.setImage("Folder");
+	folderBrowseButton.setToolTipContent(ZmMsg.chooseFolder);
+	folderBrowseButton.addSelectionListener(new AjxListener(this, this._folderBrowseListener, whenInFolderInput));
+	this._associateCheckbox(whenInFolderCheckboxId, [whenInFolderInput, folderBrowseButton]);
+	this._checkboxIds[ZmIdentity.USE_WHEN_IN_FOLDER] = whenInFolderCheckboxId;
 };
 
 // Sets up a relationship where the controls' enabledness is toggled by the checkbox
@@ -433,7 +529,7 @@ function() {
 	options[i++] = new DwtSelectOptionData(ZmIdentity.COMPOSE_HTML, ZmMsg.htmlDocument);
 	var replyForwardSelect = new DwtSelect(this, options);
 	replyForwardSelect.reparentHtmlElement(replyForwardSelectId);
-	this._selects["_composeFormat"] = replyForwardSelect;
+	this._selects[ZmIdentity.COMPOSE_FORMAT] = replyForwardSelect;
 
 	var options = [];
 	var i = 0;
@@ -441,7 +537,7 @@ function() {
 	options[i++] = new DwtSelectOptionData(ZmSetting.SIG_INTERNET, ZmMsg.atBottomOfMessage);
 	var signatureStyleSelect = new DwtSelect(this, options);
 	signatureStyleSelect.reparentHtmlElement(signatureStyleSelectId);
-	this._selects["_signatureStyle"] = signatureStyleSelect;
+	this._selects[ZmIdentity.SIGNATURE_STYLE] = signatureStyleSelect;
 
 	var options = [];
 	var i = 0;
@@ -449,7 +545,7 @@ function() {
 	options[i++] = new DwtSelectOptionData("|", "|");
 	var prefixSelect = new DwtSelect(this, options);
 	prefixSelect.reparentHtmlElement(prefixSelectId);
-	this._selects["_prefix"] = prefixSelect;
+	this._selects[ZmIdentity.PREFIX] = prefixSelect;
 
 	var options = [];
 	var i = 0;
@@ -460,7 +556,7 @@ function() {
 	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_SMART, ZmMsg.smartInclude);
 	var replyOptionSelect = new DwtSelect(this, options);
 	replyOptionSelect.reparentHtmlElement(replyOptionSelectId);
-	this._selects["_replyOption"] = replyOptionSelect;
+	this._selects[ZmIdentity.REPLY_OPTION] = replyOptionSelect;
 
 	var options = [];
 	var i = 0;
@@ -468,8 +564,31 @@ function() {
 	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_PREFIX, ZmMsg.includePrefix);
 	var forwardOptionSelect = new DwtSelect(this, options);
 	forwardOptionSelect.reparentHtmlElement(forwardOptionSelectId);
-	this._selects["_forwardOption"] = forwardOptionSelect;
+	this._selects[ZmIdentity.FORWARD_OPTION] = forwardOptionSelect;
 	
+	this._checkboxIds[ZmIdentity.USE_DEFAULT_ADVANCED] = useDefaultsCheckboxId;
 	this._associateCheckbox(useDefaultsCheckboxId, [replyForwardSelect, signatureStyleSelect, prefixSelect, replyOptionSelect, forwardOptionSelect], true);
+};
+
+ZmIdentityPage.prototype._folderBrowseListener =
+function(folderInput) {
+	var dialog = this._appCtxt.getChooseFolderDialog();
+	dialog.reset();
+	dialog.registerCallback(DwtDialog.OK_BUTTON, this._chooseFolderOkCallback, this, [dialog, folderInput]);
+	var omit = {};
+	dialog.popup([ZmOrganizer.FOLDER], omit, false, ZmMsg.chooseFolder);
+};
+
+ZmIdentityPage.prototype._chooseFolderOkCallback =
+function(dialog, folderInput, folder) {
+	if (folder && folder.id) {
+		var value = folderInput.getValue();
+		if (AjxStringUtil.trim(value)) {
+			folderInput.setValue([value, folder.name].join(", "));
+		} else {
+			folderInput.setValue(folder.name);
+		}
+		dialog.popdown();
+	}
 };
 

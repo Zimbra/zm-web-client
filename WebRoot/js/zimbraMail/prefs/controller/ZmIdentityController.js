@@ -54,19 +54,24 @@ function() {
 
 ZmIdentityController.prototype._addHandler =
 function() {
-	var identity = new ZmIdentity("New Identity");
-	var listView = this.getListView().getList();
-	listView.addItem(identity);
-	listView.setSelection(identity);
+	var identity = new ZmIdentity(this._appCtxt, ZmMsg.newIdentity);
+	var listView = this.getListView();
+	listView.addNew(identity);
+	var list = listView.getList();
+	list.addItem(identity);
+	list.setSelection(identity);
 };
 
 ZmIdentityController.prototype._removeHandler =
 function() {
-	var listView = this.getListView().getList();
-	var identity = listView.getSelection()[0];
+	var listView = this.getListView();
+	var list =listView.getList();
+	var identity = list.getSelection()[0];
 	if (identity) {
-		listView.removeItem(identity);
-		listView.setSelection(identityCollection.defaultIdentity);
+		listView.remove(identity);
+		list.removeItem(identity);
+		var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+		list.setSelection(identityCollection.defaultIdentity);
 	}
 };
 
@@ -75,5 +80,3 @@ function() {
 	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
 	return AjxVector.fromArray(identityCollection.getIdentities())
 };
-
-
