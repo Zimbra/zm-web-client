@@ -314,7 +314,7 @@ function(attId, isDraft) {
 
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
-		var defangedContent = this._htmlEditor.getContent();
+		var defangedContent = this._htmlEditor.getContent(true);
 		var refangedContent = defangedContent.replace(ZmComposeView.REFANG_RE, ZmComposeView.REFANG_RE_REPLACE);
 		htmlPart.setContent(refangedContent);
 		top.children.add(htmlPart);

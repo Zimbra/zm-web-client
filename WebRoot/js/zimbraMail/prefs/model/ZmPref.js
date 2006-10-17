@@ -46,6 +46,7 @@ ZmPref.GROUP_MAIL_BY_VALUE[ZmItem.MSG] = ZmSetting.GROUP_BY_MESSAGE;
 
 ZmPref.GENERAL_PREFS = [ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH,
 						ZmSetting.SHOW_SEARCH_STRING, ZmSetting.COMPOSE_AS_FORMAT,
+						ZmSetting.COMPOSE_INIT_FONT_FAMILY, ZmSetting.COMPOSE_INIT_FONT_SIZE, ZmSetting.COMPOSE_INIT_FONT_COLOR,
 						ZmSetting.PASSWORD, ZmSetting.SKIN_NAME];
 
 ZmPref.MAIL_PREFS = [ZmSetting.INITIAL_GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSetting.SHOW_FRAGMENTS,
@@ -77,6 +78,7 @@ ZmPref.TYPE_CHECKBOX	= i++;
 ZmPref.TYPE_SELECT		= i++;
 ZmPref.TYPE_TEXTAREA	= i++;
 ZmPref.TYPE_PASSWORD	= i++;
+ZmPref.TYPE_FONT		= i++;
 ZmPref.TYPE_IMPORT		= i++;
 ZmPref.TYPE_EXPORT		= i++;
 ZmPref.TYPE_SHORTCUTS	= i++;
@@ -179,6 +181,25 @@ ZmPref.SETUP[ZmSetting.COMPOSE_AS_FORMAT] = {
 	options: 			[ZmSetting.COMPOSE_TEXT, ZmSetting.COMPOSE_HTML],
 	precondition:		ZmSetting.HTML_COMPOSE_ENABLED,
 	displaySeparator:	true};
+
+ZmPref.SETUP[ZmSetting.COMPOSE_INIT_FONT_FAMILY] = {
+	displayName:		ZmMsg.defaultFontSettings,
+	displayContainer:	ZmPref.TYPE_FONT,
+	displayOptions: 	["Arial", "Times New Roman", "Courier", "Verdana"],
+	options: 			["Arial", "Times New Roman", "Courier", "Verdana"],
+	precondition:		ZmSetting.HTML_COMPOSE_ENABLED,
+	displaySeparator:	true};
+
+ZmPref.SETUP[ZmSetting.COMPOSE_INIT_FONT_SIZE] = {
+	displayName:		null,
+	displayContainer:	ZmPref.TYPE_FONT,
+	displayOptions: 	["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"],
+	precondition:		ZmSetting.HTML_COMPOSE_ENABLED};
+
+ZmPref.SETUP[ZmSetting.COMPOSE_INIT_FONT_COLOR] = {
+	displayOptions: 	["rgb(0, 0, 0)"],
+	displayContainer:	ZmPref.TYPE_FONT,
+	precondition:		ZmSetting.HTML_COMPOSE_ENABLED};
 
 ZmPref.SETUP[ZmSetting.COMPOSE_SAME_FORMAT] = {
 	displayName:		ZmMsg.replyForwardInSameFormat,

@@ -137,26 +137,38 @@ function() {
 			var j = 0;
 			var buttonId;
 			var prefId = ZmPref.KEY_ID + id;
-			if (type == ZmPref.TYPE_CHECKBOX) {
+			if (type == ZmPref.TYPE_CHECKBOX)
+			{
 				var checked = value ? "checked " : "";
 				html[j++] = "<input id='";
 				html[j++] = prefId;
 				html[j++] = "' ";
 				html[j++] = checked;
 				html[j++] = "type='checkbox'/>";
-			} else if (type == ZmPref.TYPE_TEXTAREA) {
+			}
+			else if (type == ZmPref.TYPE_TEXTAREA)
+			{
 				html[j++] = "<textarea id='";
 				html[j++] = prefId;
 				html[j++] = "' ";
 				html[j++] = "wrap='on' style='width:402' rows='4' cols='60'>";
 				html[j++] = value;
 				html[j++] = "</textarea>";
-			} else if (type == ZmPref.TYPE_PASSWORD || type == ZmPref.TYPE_IMPORT || type == ZmPref.TYPE_EXPORT) {
+			}
+			else if (type == ZmPref.TYPE_PASSWORD ||
+					 type == ZmPref.TYPE_IMPORT ||
+					 type == ZmPref.TYPE_FONT ||
+					 type == ZmPref.TYPE_EXPORT)
+			{
+				if (id == ZmSetting.COMPOSE_INIT_FONT_SIZE || id == ZmSetting.COMPOSE_INIT_FONT_COLOR)
+					continue;
 				buttonId = Dwt.getNextId();
 				html[j++] = "<div id='";
 				html[j++] = buttonId;
 				html[j++] = "'></div>";
-			} else {
+			}
+			else
+			{
 				continue;
 			}
 			this._createRow(setup.displayName, html.join(""), setup.displaySeparator);
@@ -167,6 +179,8 @@ function() {
 				this._addImportWidgets(this._importDiv);
 			} else if (type == ZmPref.TYPE_EXPORT) {
 				this._addButton(buttonId, ZmMsg._export, 65, new AjxListener(this, this._exportContactsListener));
+			} else if (type == ZmPref.TYPE_FONT) {
+				this._addFontPrefs(buttonId, setup);
 			}
 		}
 	}
@@ -183,10 +197,13 @@ function(id) {
 	var value = null;
 	var setup = ZmPref.SETUP[id];
 	var type = setup ? setup.displayContainer : null;
-	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_INPUT) {
+	if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_INPUT || type == ZmPref.TYPE_FONT) {
 		var object = this._dwtObjects[id];
-		if (object)
-			value = object.getValue();
+		if (object) {
+			value = id == ZmSetting.COMPOSE_INIT_FONT_COLOR
+				? object.getColor()
+				: object.getValue();
+		}
 		if (id == ZmSetting.POLLING_INTERVAL)
 			value = value * 60; // convert minutes to seconds
 	} else {
@@ -225,13 +242,17 @@ function(useDefaults) {
 		if (type == ZmPref.TYPE_PASSWORD) continue; // ignore non-form elements
 		var pref = settings.getSetting(id);
 		var newValue = this._getPrefValue(id, useDefaults, true);
-		if (type == ZmPref.TYPE_SELECT) {
-			var input = this._dwtObjects[id];
-			if (!input) continue;
+		if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_FONT) {
+			var obj = this._dwtObjects[id];
+			if (!obj) continue;
 			
-			var curValue = input.getValue();
-			if (newValue != null && (curValue != newValue))
-				this._dwtObjects[id].setSelectedValue(newValue);
+			if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
+				obj.setColor(newValue);
+			} else {
+				var curValue = obj.getValue();
+				if (newValue != null && (curValue != newValue))
+					obj.setSelectedValue(newValue);
+			}
 		} else if (type == ZmPref.TYPE_INPUT) {
 			var input = this._dwtObjects[id];
 			if (!input) continue;
@@ -413,6 +434,50 @@ function(buttonDiv) {
 	
 	// set up import button
 	this._importBtn = this._addButton(buttonDiv.id, ZmMsg._import, 65, new AjxListener(this, this._importContactsListener));
+};
+
+ZmPreferencesPage.prototype._addFontPrefs =
+function(buttonId, setup) {
+	// setup HTML table
+	var table = document.createElement("table");
+	table.border = table.cellPadding = table.cellSpacing = 0;
+	var row = table.insertRow(-1);
+
+	var fontFamilyCell = row.insertCell(-1);
+	var sepCell1 = row.insertCell(-1);
+	var fontSizeCell = row.insertCell(-1);
+	var sepCell2 = row.insertCell(-1);
+	var fontColorPickerCell = row.insertCell(-1);
+	var sepCell3 = row.insertCell(-1);
+	var fontColorCell = row.insertCell(-1);
+
+	// add DwtSelect for font family
+	id = ZmSetting.COMPOSE_INIT_FONT_FAMILY;
+	var div = this._setupSelect(id, setup, this._appCtxt.get(id));
+	fontFamilyCell.appendChild(div);
+
+	// add DwtSelect for font size
+	id = ZmSetting.COMPOSE_INIT_FONT_SIZE;
+	setup = ZmPref.SETUP[id];
+	div = this._setupSelect(id, setup, this._appCtxt.get(id));
+	fontSizeCell.appendChild(div);
+
+	// add color picker
+	id = ZmSetting.COMPOSE_INIT_FONT_COLOR;
+	var cp = new DwtButtonColorPicker(this, null, "DwtButton");
+	cp.setImage("FontColor");
+	cp.showColorDisplay(true);
+	cp.setToolTipContent(ZmMsg.fontColor);
+	cp.setColor(this._appCtxt.get(id));
+	this._dwtObjects[id] = cp;
+	fontColorPickerCell.appendChild(cp.getHtmlElement());
+
+	// add separators
+	sepCell1.innerHTML = sepCell2.innerHTML = sepCell3.innerHTML = "&nbsp;";
+
+	var fontDiv = document.getElementById(buttonId);
+	if (fontDiv)
+		fontDiv.appendChild(table);
 };
 
 // Popup the change password dialog.

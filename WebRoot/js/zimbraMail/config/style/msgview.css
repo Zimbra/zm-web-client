@@ -23,11 +23,6 @@
  * ***** END LICENSE BLOCK *****
  */
 
-BODY {
-	@Text@
-}
-
-
 .MsgHeader .Object, .MsgHeader .Object-activated {
 	white-space: nowrap;
 }
@@ -38,7 +33,6 @@ BODY {
 }
 
 body.MsgBody { 
-	@Text@
 	padding: 10px;
 	@MailMsgBg@
 }
@@ -62,8 +56,7 @@ body.MsgBody {
 }
 
 
-.FakeAnchor, 
-a:link, a:visited {
+.FakeAnchor, a:link, a:visited {
 	@Anchor@
 }
 
@@ -75,14 +68,9 @@ a:active {
 	@Anchor-clicked@
 }
 
-
-
-
 .POObject {color: blue;}
 .POObjectApproved {color: green;}
 .POObjectRejected {color: red;}
-
-
 
 .zimbraHide {
 	display: none;

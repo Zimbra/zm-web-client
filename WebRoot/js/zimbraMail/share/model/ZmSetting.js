@@ -71,6 +71,9 @@ ZmSetting.CAL_MONTH			= "month";
 ZmSetting.CAL_WEEK			= "week";
 ZmSetting.CAL_WORK_WEEK		= "workWeek";
 ZmSetting.CAL_SCHEDULE		= "schedule";
+ZmSetting.COMPOSE_FONT_COLOR= "#000000";	 			// zimbraPrefHtmlEditorDefaultFontColor
+ZmSetting.COMPOSE_FONT_FAM 	= "Times New Roman";		// zimbraPrefHtmlEditorDefaultFontFamily
+ZmSetting.COMPOSE_FONT_SIZE = "12pt"; 					// zimbraPrefHtmlEditorDefaultFontSize
 ZmSetting.COMPOSE_TEXT 		= "text";					// zimbraPrefComposeFormat
 ZmSetting.COMPOSE_HTML 		= "html";
 ZmSetting.CV_CARDS			= "cards"; 					// zimbraPrefContactsInitialView
@@ -219,6 +222,9 @@ ZmSetting.SORTING_PREF 					= i++;
 
 // mail preferences
 ZmSetting.COMPOSE_AS_FORMAT				= i++;
+ZmSetting.COMPOSE_INIT_FONT_COLOR 		= i++;
+ZmSetting.COMPOSE_INIT_FONT_FAMILY 		= i++;
+ZmSetting.COMPOSE_INIT_FONT_SIZE 		= i++;
 ZmSetting.COMPOSE_SAME_FORMAT 			= i++;
 ZmSetting.DEDUPE_MSG_TO_SELF			= i++;
 ZmSetting.FORWARD_INCLUDE_ORIG			= i++;
@@ -393,6 +399,9 @@ ZmSetting.INIT[ZmSetting.SORTING_PREF] 					= [null, ZmSetting.T_PREF, ZmSetting
 
 // mail preferences
 ZmSetting.INIT[ZmSetting.COMPOSE_AS_FORMAT] 			= ["zimbraPrefComposeFormat", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.COMPOSE_TEXT];
+ZmSetting.INIT[ZmSetting.COMPOSE_INIT_FONT_COLOR] 		= ["zimbraPrefHtmlEditorDefaultFontColor", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.COMPOSE_FONT_COLOR];
+ZmSetting.INIT[ZmSetting.COMPOSE_INIT_FONT_FAMILY] 		= ["zimbraPrefHtmlEditorDefaultFontFamily", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.COMPOSE_FONT_FAM];
+ZmSetting.INIT[ZmSetting.COMPOSE_INIT_FONT_SIZE] 		= ["zimbraPrefHtmlEditorDefaultFontSize", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.COMPOSE_FONT_SIZE];
 ZmSetting.INIT[ZmSetting.COMPOSE_SAME_FORMAT] 			= ["zimbraPrefForwardReplyInOriginalFormat", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.DEDUPE_MSG_TO_SELF]			= ["zimbraPrefDedupeMessagesSentToSelf", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.DEDUPE_NONE];
 ZmSetting.INIT[ZmSetting.FORWARD_INCLUDE_ORIG]			= ["zimbraPrefForwardIncludeOriginalText", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.INCLUDE];
