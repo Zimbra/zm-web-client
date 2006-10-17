@@ -40,6 +40,8 @@
 	this._adds = [];
 	this._deletes = [];
 	this._updates = [];
+
+	this._nameChangeTimedAction = new AjxTimedAction(this, this._nameChangeAction);
 };
 
 ZmIdentityView.prototype = new ZmPrefListView;
@@ -66,10 +68,12 @@ function(parentElement) {
 	parentElement.innerHTML = html;
 	
 	var inputCell = document.getElementById(inputId);
-	var params = { parent: this.parent, type: DwtInputField.STRING, size: 50 };
+	var params = { parent: this.parent, type: DwtInputField.STRING, size: 50, validationStyle: DwtInputField.CONTINUAL_VALIDATION };
 	this._identityNameInput = new DwtInputField(params);
 	this._identityNameInput.setRequired(true);
 	this._identityNameInput.reparentHtmlElement(inputCell);
+	this._identityNameInput.setHandler(DwtEvent.ONCHANGE, AjxCallback.simpleClosure(this._nameChangeHandler, this));
+	this._identityNameInput.setHandler(DwtEvent.ONKEYPRESS, AjxCallback.simpleClosure(this._nameChangeHandler, this));
 
 	var tabView = new DwtTabView(this, null, Dwt.STATIC_STYLE);
 	tabView.reparentHtmlElement(parentElement);
@@ -78,6 +82,25 @@ function(parentElement) {
 	tabView.addTab(ZmMsg.identityOptions, this._identityPage);
 	this._advancedPage = new ZmIdentityPage(this.parent, this._appCtxt, ZmIdentityPage.REPLYING);
 	tabView.addTab(ZmMsg.identityAdvanced, this._advancedPage);
+};
+
+ZmIdentityView.prototype._nameChangeHandler =
+function() {
+	// Change the list contents on a timer...otherwise keypresses don't show up.
+	AjxTimedAction.scheduleAction(this._nameChangeTimedAction, 0);
+};
+
+ZmIdentityView.prototype._nameChangeAction =
+function() {
+	var value = AjxStringUtil.trim(this._identityNameInput.getValue());
+	if (this._identity.id) {
+		// The item in the list is the actual permanent identity. We don't
+		// want to change its name right now.
+	} else {
+		// This is a newly created identity that hasn't been saved to the server yet.
+		this._identity.name = value;
+		this.getList().setUI(); // Redraw.
+	}
 };
 
 ZmIdentityView.prototype._getInfoTitle =
@@ -109,6 +132,17 @@ function(identity) {
 ZmIdentityView.prototype.remove =
 function(identity) {
 	this._deletes[this._deletes.length] = identity;
+};
+
+ZmIdentityView.prototype.validate =
+function() {
+	var errorMessage = '';
+	if (!this._identityNameInput.isValid()) {
+		errorMessage += "\n" + identityNameError;
+	}
+	errorMessage += this._identityPage.validate();
+	errorMessage += this._advancedPage.validate();
+	return errorMessage
 };
 
 ZmIdentityView.prototype.sendChanges =
@@ -209,6 +243,7 @@ function ZmIdentityPage(parent, appCtxt, pageId, className, posStyle) {
 	this._checkboxIds = {}; // Map of field name in ZmIdentity to checkbox ids
 	this._selects = {}; // Map of field name in ZmIdentity to DwtSelect
 	this._associations = {}; // Map of checkbox ids to the controls they enable/disable
+	this._errorMessages = {} // Map of fields to validation error messages
 };
 
 ZmIdentityPage.prototype = new DwtTabViewPage;
@@ -299,6 +334,18 @@ function(changedIdentity) {
 	return dirty;	
 };
 
+ZmIdentityPage.prototype.validate =
+function() {
+	var errorMessage = "";
+	for (var field in this._inputs) {
+		var input = this._inputs[field];
+		if (input.getEnabled() && !input.isValid()) {
+			errorMessage += "\n" + this._errorMessages[field];
+		}
+	}
+	return errorMessage;
+};
+
 ZmIdentityPage.prototype._initializeSending =
 function() {
 	var sendFromNameId = Dwt.getNextId();
@@ -384,16 +431,19 @@ function() {
 
 	this.getHtmlElement().innerHTML = html.join("");
 
-	var params = { parent:this };
+	var params = { parent:this, validationStyle: DwtInputField.CONTINUAL_VALIDATION };
 	var sendFromName = new DwtInputField(params);
 	sendFromName.setRequired(true);
 	sendFromName.reparentHtmlElement(sendFromNameId);
 	this._inputs[ZmIdentity.SEND_FROM_DISPLAY] = sendFromName;
-	
+	this._errorMessages[ZmIdentity.SEND_FROM_DISPLAY] = ZmMsg.sendFromError;
+
 	var sendFromAddress = new DwtInputField(params);
 	sendFromAddress.setRequired(true);
+	sendFromAddress.setValidatorFunction(null, ZmIdentityPage._validateEmailAddress);
 	sendFromAddress.reparentHtmlElement(sendFromAddressId);
 	this._inputs[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
+	this._errorMessages[ZmIdentity.SEND_FROM_ADDRESS] = ZmMsg.sendFromAddressError;
 
 	var setReplyToName = new DwtInputField(params);
 	setReplyToName.reparentHtmlElement(setReplyToNameId);
@@ -590,5 +640,15 @@ function(dialog, folderInput, folder) {
 		}
 		dialog.popdown();
 	}
+};
+
+ZmIdentityPage._validateEmailAddress =
+function(value) {
+	if (value == "") {
+		throw AjxMsg.valueIsRequired;
+	} else if (!ZmEmailAddress.isValid(value)) {
+		throw AjxMessageFormat.format(ZmMsg.errorInvalidEmail);
+	}
+	return value;
 };
 
