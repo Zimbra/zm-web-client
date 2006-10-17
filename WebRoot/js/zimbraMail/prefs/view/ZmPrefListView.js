@@ -97,6 +97,32 @@ function() {
 	return this._list;
 };
 
+ZmPrefListView.prototype.validate =
+function() {
+// TODO: Expand this to also check if there are unselected items with errors.
+	var tabButton = this._controller.getPrefsView().getTabButton(this._tabKey);
+	var errors = [];
+	this._validateSelectedItem(errors);
+	if (errors.length) {
+		tabButton.setImage("Critical");
+		tabButton.setToolTipContent(errors.join("<br>"));
+		return false;
+	} else {
+		tabButton.setImage("");
+		tabButton.setToolTipContent("");
+		return true;
+	}
+};
+
+/**
+ * Override this method to perform validation on the item that is currentlty
+ * selected in the list. If there's anything wrong in the input, return an
+ * error message.
+ */
+ZmPrefListView.prototype._validateSelectedItem =
+function(errors) {
+};
+
 ZmPrefListView.prototype._createHtml =
 function() {
 	var html = [];

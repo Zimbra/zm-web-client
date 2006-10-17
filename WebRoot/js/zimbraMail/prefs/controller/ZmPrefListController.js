@@ -62,6 +62,11 @@ function() {
 	return this._listView;
 };
 
+ZmPrefListController.prototype.getPrefsView =
+function() {
+	return this._prefsView;
+};
+
 ZmPrefListController.prototype._setup =
 function() {
 	// Fill in the list view.	
@@ -86,6 +91,7 @@ function(ev) {
 	if (ev.detail == DwtListView.ITEM_SELECTED) {
 		var listView = this._listView.getList();
 		var selection = listView.getSelection()[0];
+		this._listView.validate();
 		this._listView.showItem(selection);
 	}
 };

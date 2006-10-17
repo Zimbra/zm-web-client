@@ -134,30 +134,30 @@ function(identity) {
 	this._deletes[this._deletes.length] = identity;
 };
 
-ZmIdentityView.prototype.validate =
-function() {
-	var errorMessage = '';
-	if (!this._identityNameInput.isValid()) {
-		errorMessage += "\n" + identityNameError;
+ZmIdentityView.prototype._validateSelectedItem =
+function(errors) {
+	if (!this._identity) {
+		return;
 	}
-	errorMessage += this._identityPage.validate();
-	errorMessage += this._advancedPage.validate();
-	return errorMessage
+	if (!this._identityNameInput.isValid()) {
+		errors[errors.length] = ZmMsg.identityNameError;
+	}
+	this._identityPage._validateSelectedItem(errors);
+	this._advancedPage._validateSelectedItem(errors);
 };
 
-ZmIdentityView.prototype.sendChanges =
-function() {
+ZmIdentityView.prototype.addCommand =
+function(batchCommand) {
 	this.getChanges();
 	if (!this._adds.length && !this._deletes.length && !this._updates.length) {
 		return;
 	}
 
-	var batchCommand = new ZmBatchCommand(this._appCtxt);
 	this._addCommands(this._adds, "create", batchCommand);
 	this._addCommands(this._updates, "update", batchCommand);
 	this._addCommands(this._deletes, "delete", batchCommand);
     var callback = new AjxCallback(this, this._handleAction);
-	batchCommand.run(callback);
+	batchCommand.addCallback(callback);
 };
 
 ZmIdentityView.prototype._addCommands =
@@ -334,16 +334,14 @@ function(changedIdentity) {
 	return dirty;	
 };
 
-ZmIdentityPage.prototype.validate =
-function() {
-	var errorMessage = "";
+ZmIdentityPage.prototype._validateSelectedItem =
+function(errors) {
 	for (var field in this._inputs) {
 		var input = this._inputs[field];
 		if (input.getEnabled() && !input.isValid()) {
-			errorMessage += "\n" + this._errorMessages[field];
+			errors[errors.length] = this._errorMessages[field];
 		}
 	}
-	return errorMessage;
 };
 
 ZmIdentityPage.prototype._initializeSending =

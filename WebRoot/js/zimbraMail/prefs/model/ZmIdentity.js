@@ -156,6 +156,7 @@ function(op, result) {
 	var action = result._data.IdentityActionResponse.action;
 	if (op == "update") {
 		var identity = identityCollection.getById(this.id);
+		identity.name = this.name;
 		for (var i in ZmIdentity.FIELDS) {
 			var value = this.getField(i);
 			if (value != undefined) {
@@ -265,6 +266,11 @@ function() {
 		result[i++] = this._idToIdentity[id];
 	}
 	return result;
+};
+
+ZmIdentityCollection.prototype.getById =
+function(id) {
+	return this._idToIdentity[id];
 };
 
 ZmIdentityCollection.prototype.add =
