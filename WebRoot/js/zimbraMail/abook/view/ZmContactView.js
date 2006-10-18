@@ -805,7 +805,9 @@ ZmContactView._onKeyUp =
 function(ev) {
 
 	ev = DwtUiEvent.getEvent(ev);
-	if (ev.metaKey || ev.altKey || ev.ctrlKey)
+
+	var key = DwtKeyEvent.getCharCode(ev);
+	if (ev.metaKey || ev.altKey || ev.ctrlKey || DwtKeyMapMgr.isModifier(key))
 		return;
 
 	var e = DwtUiEvent.getTarget(ev);
@@ -814,7 +816,7 @@ function(ev) {
 		view._isDirty = true;
 
 		if (e._field == ZmContact.F_firstName ||
-		  	e._field == ZmContact.F_lastName ||
+			e._field == ZmContact.F_lastName ||
 			e._field == ZmContact.F_company)
 		{
 			view._attr[e._field] = e.value;

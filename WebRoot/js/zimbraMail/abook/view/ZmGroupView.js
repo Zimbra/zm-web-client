@@ -418,7 +418,9 @@ function(ev) {
 ZmGroupView._onKeyUp =
 function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
-	if (ev.metaKey || ev.altKey || ev.ctrlKey)
+
+	var key = DwtKeyEvent.getCharCode(ev);
+	if (ev.metaKey || ev.altKey || ev.ctrlKey || DwtKeyMapMgr.isModifier(key))
 		return;
 
 	var e = DwtUiEvent.getTarget(ev);
