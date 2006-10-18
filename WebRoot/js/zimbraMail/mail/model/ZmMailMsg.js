@@ -880,6 +880,8 @@ function(findHits) {
 				url = url.substring(0,insertIdx) + fn + url.substring(insertIdx);
 
 				props.link = "<a target='_blank' class='AttLink' href='" + url + "'>";
+				props.download = "<a style='text-decoration:underline' class='AttLink' href='" + url + "&disp=a' onclick='ZmMailMsgView.unloadHackCallback();'>";
+
 				if (!useCL) {
 					if (attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct) &&
 						this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML))

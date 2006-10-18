@@ -1196,8 +1196,8 @@ function() {
 			htmlArr[idx++] = link;
 		}
 
+		htmlArr[idx++] = "&nbsp;(";
 		if (att.size || att.htmlLink || att.vcardLink) {
-			htmlArr[idx++] = "&nbsp;(";
 			if (att.size) {
 				htmlArr[idx++] = att.size;
 				if (att.htmlLink || att.vcardLink)
@@ -1212,9 +1212,14 @@ function() {
 				htmlArr[idx++] = ZmMsg.addToAddrBook;
 				htmlArr[idx++] = "</a>";
 			}
-
-			htmlArr[idx++] = ")";
+			htmlArr[idx++] = ", ";
 		}
+
+		htmlArr[idx++] = att.download;
+		htmlArr[idx++] = ZmMsg.download;
+		htmlArr[idx++] = "</a>";
+		htmlArr[idx++] = ")";
+
 		htmlArr[idx++] = "</td></tr></table>";
 		htmlArr[idx++] = "</td>";
 	}
@@ -1554,4 +1559,16 @@ function(msgId, vcardPartId) {
 		: window._zimbraMail._appCtxt;
 
 	appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).createFromVCard(msgId, vcardPartId);
+};
+
+ZmMailMsgView.unloadHackCallback =
+function() {
+	window.onbeforeunload = null;
+	var t = new AjxTimedAction(null, ZmMailMsgView.resetUnloadHack);
+	AjxTimedAction.scheduleAction(t, 3000);
+};
+
+ZmMailMsgView.resetUnloadHack =
+function() {
+	window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
 };
