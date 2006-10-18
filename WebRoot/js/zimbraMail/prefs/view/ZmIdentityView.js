@@ -93,14 +93,8 @@ function() {
 ZmIdentityView.prototype._nameChangeAction =
 function() {
 	var value = AjxStringUtil.trim(this._identityNameInput.getValue());
-	if (this._identity.id) {
-		// The item in the list is the actual permanent identity. We don't
-		// want to change its name right now.
-	} else {
-		// This is a newly created identity that hasn't been saved to the server yet.
-		this._identity.name = value;
-		this.getList().setUI(); // Redraw.
-	}
+	this._identity.name = value;
+	this.getList().setUI(); // Redraw the whole list.
 };
 
 ZmIdentityView.prototype._getInfoTitle =
@@ -191,37 +185,25 @@ function() {
 	if (!this._identity) {
 		return dirty;
 	}
-	var identity = null;
-	for (var i = 0, count = this._adds.length; i < count && !identity; i++) {
-		if (this._adds[i] == this._identity) {
-			identity = this._identity;
-		}
-	}
-	for (var i = 0, count = this._deletes.length; i < count && !identity; i++) {
-		if (this._deletes[i] == this._identity) {
-			identity = this._identity;
-		}
-	}
-	for (var i = 0, count = this._updates.length; i < count && !identity; i++) {
-		if (this._updates[i].id == this._identity.id) {
-			identity = this._identity;
-		}
-	}
-	var newModify = !identity;
-	if (newModify) {
-		identity = new ZmIdentity();
-		identity._appCtxt = this._appCtxt;
-		identity.id = this._identity.id;
-	}
 	var name = AjxStringUtil.trim(this._identityNameInput.getValue());
 	if (this._identity.name != name) {
 		identity.name = name;
 		dirty = true;
 	}
-	dirty = this._identityPage.getChanges(identity) || dirty;
-	dirty = this._advancedPage.getChanges(identity) || dirty;
-	if (newModify && dirty) {
-		this._updates[this._updates.length] = identity;
+	dirty = this._identityPage.getChanges(this._identity) || dirty;
+	dirty = this._advancedPage.getChanges(this._identity) || dirty;
+	
+	if (dirty && this._identity.id) {
+		var found = false;
+		for (var i = 0, count = this._updates.length; i < count; i++) {
+			if (this._updates[i].id == this._identity.id) {
+				found = true; 
+				break;
+			}
+		}
+		if (!found) {
+			this._updates[this._updates.length] = this._identity;
+		}
 	}
 	return dirty;
 };
@@ -302,13 +284,13 @@ function(identity) {
 };
 	
 ZmIdentityPage.prototype.getChanges =
-function(changedIdentity) {
+function() {
 	var dirty = false;
 	for (var field in this._inputs) {
 		var input = this._inputs[field];
 		var value = AjxStringUtil.trim(input.getValue());
 		if (this._identity.getField(field) != value) {
-			changedIdentity.setField(field, value);
+			this._identity.setField(field, value);
 			dirty = true;
 		}
 	}
@@ -317,7 +299,7 @@ function(changedIdentity) {
 		var select = this._selects[field];
 		var value = select.getValue();
 		if (this._identity.getField(field) != value) {
-			changedIdentity.setField(field, value);
+			this._identity.setField(field, value);
 			dirty = true;
 		}
 	}
@@ -327,7 +309,7 @@ function(changedIdentity) {
 		var id = this._checkboxIds[field];
 		var value = doc.getElementById(id).checked;
 		if (this._identity.getField(field) != value) {
-			changedIdentity.setField(field, value);
+			this._identity.setField(field, value);
 			dirty = true;
 		}
 	}

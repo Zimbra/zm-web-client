@@ -115,7 +115,7 @@ function(data) {
 	for (var i in ZmIdentity.FIELDS) {
 		var field = ZmIdentity.FIELDS[i];
 		var value = data[field.soap];
-		if (value != undefined) {
+		if (typeof(value) != "undefined") {
 			if (field.type== ZmIdentity.BOOLEAN) {
 				this[field.name] = (value.toLowerCase() == "true");
 			} else {
@@ -135,12 +135,14 @@ function(op, batchCommand) {
     }
     var identityNode = soapDoc.set("identity", null, actionNode);
     if (op != "delete") {
-		if (this.name != undefined) identityNode.setAttribute("name", this.name);
+		if (this.hasOwnProperty("name")) {
+			identityNode.setAttribute("name", this.name);
+		}
 
 		for (var i in ZmIdentity.FIELDS) {
-			var value = this.getField(i);
-			if (value != undefined) {
-				var field = ZmIdentity.FIELDS[i];
+			var field = ZmIdentity.FIELDS[i];
+			if (this.hasOwnProperty(field.name)) {
+				var value = this.getField(i);
 				identityNode.setAttribute(field.soap, value);
 			}
 		}
@@ -158,9 +160,10 @@ function(op, result) {
 		var identity = identityCollection.getById(this.id);
 		identity.name = this.name;
 		for (var i in ZmIdentity.FIELDS) {
-			var value = this.getField(i);
-			if (value != undefined) {
+			var field = ZmIdentity.FIELDS[i];
+			if (this.hasOwnProperty(field.name)) {
 // TODO: update maps.
+				var value = this.getField(i);
 				identity.setField(i, value);
 			}
 		}

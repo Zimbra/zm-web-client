@@ -92,7 +92,7 @@ function(ev) {
 		var listView = this._listView.getList();
 		var selection = listView.getSelection()[0];
 		this._listView.validate();
-		this._listView.showItem(selection);
+		this._listView.setItem(selection);
 	}
 };
 

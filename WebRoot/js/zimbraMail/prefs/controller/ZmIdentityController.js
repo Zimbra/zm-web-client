@@ -65,7 +65,7 @@ function() {
 ZmIdentityController.prototype._removeHandler =
 function() {
 	var listView = this.getListView();
-	var list =listView.getList();
+	var list = listView.getList();
 	var identity = list.getSelection()[0];
 	if (identity) {
 		listView.remove(identity);
@@ -78,5 +78,11 @@ function() {
 ZmIdentityController.prototype._getListData =
 function() {
 	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
-	return AjxVector.fromArray(identityCollection.getIdentities())
+	var result = new AjxVector();
+	var identities = identityCollection.getIdentities();
+	for (var i = 0, count = identities.length; i < count; i++) {
+		var proxy = AjxUtil.createProxy(identities[i]);
+		result.add(proxy);
+	}
+	return result;
 };

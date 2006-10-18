@@ -57,6 +57,9 @@
 	this._detailsElementId = null;
 	this._addButton = null;
 	this._removeButton = null;
+
+	this._errors = {}; // index to item	
+	this._item = null;
 };
 
 ZmPrefListView.prototype = new DwtTabViewPage;
@@ -97,21 +100,73 @@ function() {
 	return this._list;
 };
 
+ZmPrefListView.prototype.setItem =
+function(item) {
+	this._item = item;
+	this.showItem(item);
+};
+
 ZmPrefListView.prototype.validate =
 function() {
-// TODO: Expand this to also check if there are unselected items with errors.
+	if (!this._item) {
+		return true;
+	}
 	var tabButton = this._controller.getPrefsView().getTabButton(this._tabKey);
 	var errors = [];
 	this._validateSelectedItem(errors);
 	if (errors.length) {
-		tabButton.setImage("Critical");
-		tabButton.setToolTipContent(errors.join("<br>"));
+		this.setError(this._item, errors.join("<br>"));
 		return false;
+	} else {
+		this.clearError(this._item);
+		return true;
+	}
+};
+
+ZmPrefListView.prototype.setError =
+function(item, message) {
+	var index = this._list._getItemIndex(item);
+	var existingMessage = this._errors[index];
+	if (message != existingMessage) {
+		this._errors[index] = message;
+		this._redrawErrors();
+	}
+};
+
+ZmPrefListView.prototype.clearError =
+function(item) {
+	var index = this._list._getItemIndex(item);
+	if (this._errors[index]) {
+		delete this._errors[index];
+		this._redrawErrors();
+	}
+};
+
+ZmPrefListView.prototype.findError =
+function(item) {
+	var index = this._list._getItemIndex(item);
+	return this._errors[index];
+};
+
+ZmPrefListView.prototype._redrawErrors =
+function() {
+	var messages = null;
+	for (var i in this._errors) {
+		if (!messages) {
+			messages = [];
+		}
+		messages[messages.length] = this._errors[i];
+	}
+
+	var tabButton = this._controller.getPrefsView().getTabButton(this._tabKey);
+	if (messages) {
+		tabButton.setImage("Critical");
+		tabButton.setToolTipContent(messages.join("<br>"));
 	} else {
 		tabButton.setImage("");
 		tabButton.setToolTipContent("");
-		return true;
 	}
+	this._list.setUI(); // Redraw the list.
 };
 
 /**
@@ -205,11 +260,15 @@ function(item) {
 	div[DwtListView._STYLE_CLASS] = base;
 	div[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
 	div.className = div[DwtListView._STYLE_CLASS];
-	div.innerHTML = AjxStringUtil.htmlEncode(item.name, true);
+	var error = this.findError(item);
+	var iconClass = error ? "Critical" : "";
+	div.innerHTML = [
+		"<table cellspacing=0 cellpadding=0><tr><td>", AjxImg.getImageHtml(iconClass), "</td><td>",
+		AjxStringUtil.htmlEncode(item.name, true), "</td></tr></table>"
+	].join("");
 
 	return div;
 };
-
 
 /*
 * ZmPrefList
@@ -242,3 +301,10 @@ function(item) {
 	return div;
 };
 
+ZmPrefList.prototype._mouseOverAction =
+function(ev, div) {
+	DwtListView.prototype._mouseOverAction.call(this, ev, div);
+	var item = this.getItemFromElement(div);
+	var message = this.parent.findError(item);
+	this.setToolTipContent(message);
+};
