@@ -1288,7 +1288,11 @@ function(isDraft) {
 	var callback = new AjxCallback(this, this._attsDoneCallback, [isDraft]);
 	var um = this._appCtxt.getUploadManager();
 	window._uploadManager = um;
-	um.execute(callback, this._uploadForm);
+	try {
+		um.execute(callback, this._uploadForm);
+	} catch (ex) {
+		callback.run();
+	}
 };
 
 ZmComposeView.prototype._createAttachmentsContainer =
@@ -1626,7 +1630,7 @@ function(isDraft, status, attId) {
 		this._controller._handleException(ex, execFrame);
 	} else {
 		// bug fix #2131 - handle errors during attachment upload.
-		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, status);
+		var msg = AjxMessageFormat.format(ZmMsg.errorAttachment, (status || AjxPost.SC_NO_CONTENT));
 		switch (status) {
 			// add other error codes/message here as necessary
 			case AjxPost.SC_REQUEST_ENTITY_TOO_LARGE: 	msg += " " + ZmMsg.errorAttachmentTooBig + "<br><br>"; break;
