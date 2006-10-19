@@ -24,8 +24,12 @@
  */
 
  function ZmIdentityView(parent, appCtxt, controller) {
+	var labels = { 
+		infoTitle: ZmMsg.identityInfoTitle, infoContents: ZmMsg.identityInfoContent,
+		listHeader: ZmMsg.identities, detailsHeader: ZmMsg.identitiesLabel
+	};
 
-	ZmPrefListView.call(this, parent, appCtxt, controller, "ZmIdentityView");
+	ZmPrefListView.call(this, parent, appCtxt, controller, labels, "ZmIdentityView");
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
@@ -61,10 +65,9 @@ ZmIdentityView.prototype._createDetails =
 function(parentElement) {
 	var inputId = Dwt.getNextId();
 
-	var html = ["<div><table cellspacing=1 cellpadding=1 class='nestedOptionTable'>",
-				"<tr><td colspan=2><div class='PanelHead'>", ZmMsg.identitiesLabel, "</div></td></tr>",
+	var html = ["<table cellspacing=0 cellpadding=0>",
 				"<tr><td style='text-align:right;' width='200px'>", 
-	            ZmMsg.identityNameLabel, "</td><td id='", inputId, "'></td></tr></table></div>"].join("");
+	            ZmMsg.identityNameLabel, "</td><td id='", inputId, "'></td></tr></table>"].join("");
 	parentElement.innerHTML = html;
 	
 	var inputCell = document.getElementById(inputId);
@@ -95,16 +98,6 @@ function() {
 	var value = AjxStringUtil.trim(this._identityNameInput.getValue());
 	this._identity.name = value;
 	this.getList().setUI(); // Redraw the whole list.
-};
-
-ZmIdentityView.prototype._getInfoTitle =
-function() {
-	return ZmMsg.identityInfoTitle;
-};
-
-ZmIdentityView.prototype._getInfoContents =
-function() {
-	return ZmMsg.identityInfoContent;
 };
 
 ZmIdentityView.prototype.showItem =

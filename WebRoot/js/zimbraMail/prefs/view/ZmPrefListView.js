@@ -38,13 +38,14 @@
  * _getInfoTitle() return the title of the info box.
  * _getInfoContents() returns the html contents of the info box.
  */
- function ZmPrefListView(parent, appCtxt, controller, className) {
+ function ZmPrefListView(parent, appCtxt, controller, labels, className) {
 	if (arguments.length == 0) return;
 
 	DwtTabViewPage.call(this, parent, className);
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;
+	this._labels = labels;
 	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
 	
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]].join(": ");
@@ -187,6 +188,7 @@ function() {
 	var newIdentityButtonCellId = Dwt.getNextId();
 	var removeIdentityButtonCellId = Dwt.getNextId();
 	var closeLinkId = Dwt.getNextId();
+	var helpButtonId = Dwt.getNextId();
 	this._infoBoxId = Dwt.getNextId();
 	
 	html[i++] = "<table width='100%' height='100%' cellspacing=10><tr><td class='OutsetPanel' width='100px'><table class='ZmIdentitiesBox'><tr><td id='";
@@ -207,19 +209,26 @@ function() {
 	html[i++] = "'>";
 	html[i++] = ZmMsg.close;
 	html[i++] = "</div>";
-	html[i++] = this._getInfoTitle();
+	html[i++] = this._labels.infoTitle;
 	html[i++] = "</div>";
-	html[i++] = this._getInfoContents();
+	html[i++] = this._labels.infoContents;
 	html[i++] = "</div>";
 
-	html[i++] = "<div id = '";
+	html[i++] = "<table cellspacing=0 cellpadding=0 class='nestedOptionTable'>";
+	html[i++] = "<tr class='PanelHead'><td>";
+	html[i++] = this._labels.detailsHeader;
+	html[i++] = "</td><td style='width:1%' id='";
+	html[i++] = helpButtonId;
+	html[i++] = "'></td></tr>";
+	html[i++] = "<tr><td style='text-align:right;' colspan=2 id='";
 	html[i++] = this._detailsElementId;
-	html[i++] = "'></div></td></tr></table>";
+	html[i++] = "'></td></tr></table>";
 	this.getHtmlElement().innerHTML = html.join("");
 
 	// Create the list view and the contents of the detail pane.
 	this._createDetails(document.getElementById(this._detailsElementId));		
 	this._list = this._createList(document.getElementById(listCellId));
+	this._updateListSize();
 	
 	// Create Add/Remove buttons.
 	this._addButton = new DwtButton(this, DwtLabel.ALIGN_CENTER);
@@ -234,14 +243,22 @@ function() {
 	var linkCallback = AjxCallback.simpleClosure(this._toggleInfoBoxHandler, this);
 	Dwt.setHandler(linkElement, DwtEvent.ONCLICK, linkCallback);
 
+	// Create the help button.
+	var helpButton = new DwtButton(this, DwtLabel.ALIGN_RIGHT, "DwtToolbarButton");
+	helpButton.setImage("Information");
+	helpButton.reparentHtmlElement(helpButtonId);
+	helpButton.addSelectionListener(new AjxListener(this, this._toggleInfoBoxHandler));
+
+	this._controller.getPrefsView().addControlListener(new AjxListener(this, this._controlListener));
+
 	this._controller._setup();
 };
 
 ZmPrefListView.prototype._createList =
 function(parentElement) {
-	var result = new ZmPrefList(this, this._appCtxt);
+	var listHeader = this._labels.listHeader;
+	var result = new ZmPrefList(this, this._appCtxt, listHeader);
 	result.reparentHtmlElement(parentElement);
-	result.setSize(200, 600);
 	result.enableSorting(false);
 	return result;
 };
@@ -251,6 +268,11 @@ function() {
 	var infoBox = document.getElementById(this._infoBoxId);
 	var visible = Dwt.getVisible(infoBox);
 	Dwt.setVisible(infoBox, !visible);
+};
+
+ZmPrefListView.prototype._getListHeader =
+function() {
+	return "";	
 };
 
 ZmPrefListView.prototype._createItemHtml =
@@ -270,12 +292,27 @@ function(item) {
 	return div;
 };
 
+ZmPrefListView.prototype._updateListSize = 
+function() {
+	var viewHeight = this._controller.getPrefsView().getSize().y
+	this._list.setSize(Dwt.DEFAULT, viewHeight - 100);
+};
+
+ZmPrefListView.prototype._controlListener = 
+function(ev) {
+	var newHeight = (ev.oldHeight == ev.newHeight) ? null : ev.newHeight;
+	if (newHeight) {
+		this._updateListSize();
+	}
+};
+
+
 /*
 * ZmPrefList
 * The list on the left side of the view.
 */
-function ZmPrefList(parent, appCtxt) {
-	var headerList = [new DwtListHeaderItem(ZmPrefList.COLUMN, ZmMsg.identities, null, ZmPrefList.COLUMN_WIDTH)];
+function ZmPrefList(parent, appCtxt, listHeader) {
+	var headerList = [new DwtListHeaderItem(ZmPrefList.COLUMN, listHeader, null, ZmPrefList.COLUMN_WIDTH)];
 	DwtListView.call(this, parent, "ZmPrefList", null, headerList);	
 
 	this._appCtxt = appCtxt;
@@ -284,7 +321,7 @@ function ZmPrefList(parent, appCtxt) {
 };
 
 ZmPrefList.COLUMN	= 1;
-ZmPrefList.COLUMN_WIDTH = 50;
+ZmPrefList.COLUMN_WIDTH = 150;
 
 ZmPrefList.prototype = new DwtListView;
 ZmPrefList.prototype.constructor = ZmPrefList;
@@ -305,6 +342,6 @@ ZmPrefList.prototype._mouseOverAction =
 function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
 	var item = this.getItemFromElement(div);
-	var message = this.parent.findError(item);
+	var message = item ? this.parent.findError(item) : null;
 	this.setToolTipContent(message);
 };
