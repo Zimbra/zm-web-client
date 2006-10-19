@@ -3,6 +3,12 @@
 <script type="text/javascript" language="JavaScript">
 function skin() {}
 
+skin.hints = {
+	app_chooser		: {	style:"chiclet", 	direction:"TB"	},
+	help_button		: {	style:"link", 		container:"app_chooser"	},
+	logout_button	: { style:"link", 		container:"app_chooser"	}
+}
+
 /* PUBLIC API FOR SHOWING/HIDING PIECES OF THE SKIN */
 
 skin.showSkin = function (state) {

@@ -1,0 +1,11 @@
+<skin>
+	<substitutions>
+		<file>ttt_subs.txt</file>
+	</substitutions>
+	<css>
+		<file>ttt.css</file>
+	</css>
+	<html>
+		<file>ttt.html</file>
+	</html>
+</skin>
