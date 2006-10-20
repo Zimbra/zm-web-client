@@ -269,7 +269,7 @@ function(contact) {
 		this._selectDiv.reparentHtmlElement(this._listSelectId);
 	}
 
-	this._picker = new ZmContactChooser({parent:this, allButtons:true, hasTextField:true, noDuplicates:false});
+	this._picker = new ZmContactChooser({parent:this, allButtons:true, hasTextField:true, noDuplicates:false, appCtxt:this._appCtxt});
 	this._picker.reparentHtmlElement(this._contactPickerId);
 	this._picker.addStateChangeListener(new AjxListener(this, this._pickerChangeListener));
 };
@@ -301,14 +301,8 @@ function() {
 
 ZmGroupView.prototype._getGroupMembers =
 function() {
-	var members = [];
-
-	var addrs = this._picker.getItems().getArray();
-	for (var i = 0; i < addrs.length; i++) {
-		members.push(addrs[i].toString());
-	}
-
-	return members.length > 0 ? members.join(",") : null;
+	var addrs = this._picker.getItems();
+	return addrs.size() > 0 ? addrs.toString(", ") : null;
 };
 
 ZmGroupView.prototype._setGroupMembers =
@@ -385,6 +379,7 @@ function(result) {
 			var members = contact.getGroupMembers().good.toString(ZmEmailAddress.SEPARATOR);
 			var email = new ZmEmailAddress(members, null, contact.getFileAs(), null, true);
 			email.id = Dwt.getNextId();
+			email.contactId = contact.id;
 			email.icon = "Group";
 			list.push(email);
 		} else {
@@ -392,6 +387,7 @@ function(result) {
 			for (var j = 0; j < emails.length; j++) {
 				var email = new ZmEmailAddress(emails[j], null, contact.getFileAs());
 				email.id = Dwt.getNextId();
+				email.contactId = contact.id;
 				email.icon = contact.isGal ? "GAL" : contact.addrbook.getIcon();
 				list.push(email);
 			}
