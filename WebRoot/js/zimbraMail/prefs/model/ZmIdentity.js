@@ -118,6 +118,10 @@ function(data) {
 		if (typeof(value) != "undefined") {
 			if (field.type== ZmIdentity.BOOLEAN) {
 				this[field.name] = (value.toLowerCase() == "true");
+			} else if (field.type == ZmIdentity.ARRAY) {
+				if (value.split) {
+					this[field.name] = value.split(",");
+				}
 			} else {
 				this[field.name] = value;
 			}

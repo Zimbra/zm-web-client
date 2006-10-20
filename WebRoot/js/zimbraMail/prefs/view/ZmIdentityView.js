@@ -217,6 +217,7 @@ function ZmIdentityPage(parent, appCtxt, pageId, className, posStyle) {
 	this._inputs = {}; // Map of field name in ZmIdentity to DwtInputField
 	this._checkboxIds = {}; // Map of field name in ZmIdentity to checkbox ids
 	this._selects = {}; // Map of field name in ZmIdentity to DwtSelect
+	this._arrays = {}; // Map of field name in ZmIdentity to objects with inputs & callbacks
 	this._associations = {}; // Map of checkbox ids to the controls they enable/disable
 	this._errorMessages = {} // Map of fields to validation error messages
 };
@@ -266,6 +267,13 @@ function(identity) {
 		}
 	}
 
+	for (var field in this._arrays) {
+		var data = this._arrays[field];
+		var arrayValue = identity.getField(field);
+		var stringValue = data.toText.call(this, arrayValue);
+		data.input.setValue(stringValue);
+	}
+	
 	var doc = document;
 	for (var field in this._checkboxIds) {
 		var id = this._checkboxIds[field];
@@ -293,6 +301,16 @@ function() {
 		var value = select.getValue();
 		if (this._identity.getField(field) != value) {
 			this._identity.setField(field, value);
+			dirty = true;
+		}
+	}
+	
+	for (var field in this._arrays) {
+		var data = this._arrays[field];
+		var stringValue = data.input.getValue();
+		var arrayValue = data.toArray.call(this, stringValue);
+		if (this._identity.getField(field) != arrayValue) {
+			this._identity.setField(field, arrayValue);
 			dirty = true;
 		}
 	}
@@ -443,13 +461,13 @@ function() {
 	params.size = 50;
 	var whenSentToInput = new DwtInputField(params);
 	whenSentToInput.reparentHtmlElement(whenSentToInputId);
-	this._inputs[ZmIdentity.WHEN_SENT_TO_ADDRESSES] = whenSentToInput;
+	this._arrays[ZmIdentity.WHEN_SENT_TO_ADDRESSES] = { input: whenSentToInput, toArray: this._stringToArray, toText: this._arrayToString };
 	this._associateCheckbox(whenSentToCheckboxId, [whenSentToInput]);
 	this._checkboxIds[ZmIdentity.USE_WHEN_SENT_TO] = whenSentToCheckboxId;
 
 	whenInFolderInput = new DwtInputField(params);
 	whenInFolderInput.reparentHtmlElement(whenInFolderInputId);
-	this._inputs[ZmIdentity.WHEN_IN_FOLDERIDS] = whenInFolderInput;
+	this._arrays[ZmIdentity.WHEN_IN_FOLDERIDS] = { input: whenInFolderInput, toArray: this._stringToFolderArray, toText: this._folderArrayToString };
 	var folderBrowseButton = new DwtButton(this);
 	folderBrowseButton.reparentHtmlElement(folderBrowseButtonId);
 	folderBrowseButton.setImage("Folder");
@@ -457,6 +475,55 @@ function() {
 	folderBrowseButton.addSelectionListener(new AjxListener(this, this._folderBrowseListener, whenInFolderInput));
 	this._associateCheckbox(whenInFolderCheckboxId, [whenInFolderInput, folderBrowseButton]);
 	this._checkboxIds[ZmIdentity.USE_WHEN_IN_FOLDER] = whenInFolderCheckboxId;
+};
+
+ZmIdentityPage.prototype._stringToArray =
+function(value) {
+	var result = value.split(",");
+	for (var i = 0, count = result.length; i < count; i++) {
+		result[i] = AjxStringUtil.trim(result[i]);
+	}
+	return result;
+};
+
+ZmIdentityPage.prototype._arrayToString =
+function(value) {
+//TODO: get rid of check. It's there because of my bad test data...	
+	return value.join ? value.join(", ") : "";
+};
+
+ZmIdentityPage.prototype._stringToFolderArray =
+function(value) {
+	var result = [];
+// TODO : fix data, remove this line.....	
+	if (!value.split) return[]; 
+	var names = value.split(",");
+	if (names.length) {
+		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		for (var i = 0, count = names.length; i < count; i++) {
+			var name = AjxStringUtil.trim(names[i]);
+			var folder = tree.getByName(name);
+			if (folder) {
+				result[result.length] = folder.id;
+			} // else we just don't show the folder.
+		}
+	}
+	return result;
+};
+
+ZmIdentityPage.prototype._folderArrayToString =
+function(value) {
+	var result = [];
+	if (value.length) {
+		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		for (var i = 0, count = value.length; i < count; i++) {
+			var folder = tree.getById(value[i]);
+			if (folder) {
+				result[result.length] = folder.name;
+			}
+		}
+	}
+	return result.join(", ");
 };
 
 // Sets up a relationship where the controls' enabledness is toggled by the checkbox

@@ -33,10 +33,8 @@
  *
  * @author Dave Comfort
  * 
- *  Abstract methods:
+ *  Abstract method:
  * _createDetails() creates the contents of the details pane.
- * _getInfoTitle() return the title of the info box.
- * _getInfoContents() returns the html contents of the info box.
  */
  function ZmPrefListView(parent, appCtxt, controller, labels, className) {
 	if (arguments.length == 0) return;
