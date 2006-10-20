@@ -231,7 +231,7 @@ function(contact) {
 	html[idx++] = ":</td><td><input type='text' size=35 id='";
 	html[idx++] = this._groupNameId;
 	html[idx++] = "'></td></tr><tr><td class='editLabel' align=right>";
-	html[idx++] = ZmMsg.addressBook;
+	html[idx++] = ZmMsg.saveIn;
 	html[idx++] = ":</td><td id='";
 	html[idx++] = this._folderCellId;
 	html[idx++] = "'></td></tr></table>";

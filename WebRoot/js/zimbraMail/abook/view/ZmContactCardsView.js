@@ -212,11 +212,13 @@ function(contact, html, idx, isDndIcon) {
 		html[idx++] = "</nobr></td></tr>";
 	}
 	if (size < members.length) {
-		// TODO - make link do something when clicked!
 		html[idx++] = "<tr";
 		html[idx++] = style;
-		html[idx++] = ">";
-		html[idx++] = "<td colspan=2><a href='javascript:;'>";
+		html[idx++] = "><td colspan=2><a href='javascript:;' onclick='ZmContactCardsView._moreDetailsCallback(";
+		html[idx++] = '"';
+		html[idx++] = contact.id;
+		html[idx++] = '"';
+		html[idx++] = ")'>";
 		html[idx++] = ZmMsg.more;
 		html[idx++] = "</a></td></tr>";
 	}
@@ -467,6 +469,18 @@ function(result, contact) {
 	div.innerHTML = newDiv.innerHTML;
 };
 
+ZmContactCardsView.prototype._getSiblingElement =
+function(element, next){
+	var item = this.getItemFromElement(this._kbAnchor);
+	if (!item) return element;
+	var index = this._list.indexOf(item);
+	if ((next && (index >= this._list.size() - 1)) || (!next && index <= 0)) return element;
+	index = next ? index + 1 : index - 1;
+	var id = this._getItemId(this._list.get(index));
+	var el = document.getElementById(id);
+	return el ? el : element;
+};
+
 
 // Listeners
 
@@ -575,14 +589,13 @@ function(cell, contactId) {
 	cell.parentNode.parentNode.removeChild(cell.parentNode);
 };
 
-ZmContactCardsView.prototype._getSiblingElement =
-function(element, next){
-	var item = this.getItemFromElement(this._kbAnchor);
-	if (!item) return element;
-	var index = this._list.indexOf(item);
-	if ((next && (index >= this._list.size() - 1)) || (!next && index <= 0)) return element;
-	index = next ? index + 1 : index - 1;
-	var id = this._getItemId(this._list.get(index));
-	var el = document.getElementById(id);
-	return el ? el : element;
+ZmContactCardsView._moreDetailsCallback =
+function(contactId) {
+	var appCtxt = window.parentController
+		? window.parentController._appCtxt
+		: window._zimbraMail._appCtxt;
+
+	var capp = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+	var contact = capp.getContactList().getById(contactId);
+	capp.getContactController().show(contact);
 };
