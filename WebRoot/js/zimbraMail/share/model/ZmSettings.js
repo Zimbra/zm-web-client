@@ -332,11 +332,15 @@ function() {
 	}
 };
 
+/**
+ * Loads the user's custom shortcuts, which consist of key bindings for organizers
+ * that has aliases. Note that we don't check to see if KB nav is enabled, since it
+ * gets disabled during a SOAP request (we don't want to process KB input while the
+ * busy veil is up).
+ */
 ZmSettings.prototype._loadShortcuts =
 function() {
 	var kbm = this._appCtxt.getKeyboardMgr();
-	if (!kbm.isEnabled()) { return; }
-
 	var maps = {};
 	var kmm = kbm.__keyMapMgr;
 	var scString = this.get(ZmSetting.SHORTCUTS);
