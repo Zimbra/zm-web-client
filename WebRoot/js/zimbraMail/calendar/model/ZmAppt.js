@@ -888,12 +888,15 @@ function(attachmentId, callback, errorCallback, notifyList) {
 			var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate(), this.startsInUTC);
 			// bug fix #4697 (part 2)
 			if (!this.startsInUTC && this.timezone) {
-				exceptId.setAttribute("tz", this.timezone);
+				var tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
+				exceptId.setAttribute("tz", tz);
 			}
-
+			if (AjxEnv.isSafari) sd = AjxStringUtil.xmlEncode(sd);
 			exceptId.setAttribute("d", sd);
 		} else {
-			exceptId.setAttribute("d", AjxDateUtil.getServerDateTime(this.getOrigStartDate()));
+			var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate());
+			if (AjxEnv.isSafari) sd = AjxStringUtil.xmlEncode(sd);
+			exceptId.setAttribute("d", sd);
 		}
 	} else {
 		// set recurrence rules for appointment (but not for exceptions!)
