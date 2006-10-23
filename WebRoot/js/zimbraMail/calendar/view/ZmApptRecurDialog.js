@@ -947,10 +947,10 @@ function() {
 											  initialValue: "1", size: 2, maxLen: 2,
 											  errorIconStyle: DwtInputField.ERROR_ICON_NONE,
 											  validationStyle: DwtInputField.ONEXIT_VALIDATION,
+											  validator: this._yearlyDayValidator,
 											  validatorCtxtObj: this});
 	this._yearlyDayField.setDisplay(Dwt.DISPLAY_INLINE);
 	this._yearlyDayField.reparentHtmlElement(this._yearlyDayFieldId);
-	this._yearlyDayField.setValidNumberRange(1, 31);
 	delete this._yearlyDayFieldId;
 };
 
@@ -1163,7 +1163,10 @@ function(ev) {
 		case this._weeklySelect:			this._weeklyDefaultRadio.checked = true; break;
 		case this._monthlyDaySelect:
 		case this._monthlyWeekdaySelect:	this._monthlyFieldRadio.checked = true; break;
-		case this._yearlyMonthSelect:		this._yearlyDefaultRadio.checked = true; break;
+		case this._yearlyMonthSelect:
+			this._yearlyDefaultRadio.checked = true;
+			this._yearlyDayField.validate();
+			break;
 		case this._yearlyDaySelect:
 		case this._yearlyWeekdaySelect:
 		case this._yearlyMonthSelectEx: 	this._yearlyFieldRadio.checked = true; break;
@@ -1205,6 +1208,18 @@ function(value) {
 	DwtInputField.validateInteger(value);
 	if (parseInt(value) < 1) {
 		throw ZmMsg.errorLessThanOne;
+	}
+	return value;
+};
+
+ZmApptRecurDialog.prototype._yearlyDayValidator =
+function(value) {
+	DwtInputField.validateInteger(value);
+	var dpm = AjxDateUtil._daysPerMonth[this._yearlyMonthSelect.getValue()];
+	if (value < 1)
+		throw AjxMessageFormat.format(AjxMsg.numberLessThanMin, 1);
+	if (value > dpm) {
+		throw AjxMessageFormat.format(AjxMsg.numberMoreThanMax, dpm);
 	}
 	return value;
 };
