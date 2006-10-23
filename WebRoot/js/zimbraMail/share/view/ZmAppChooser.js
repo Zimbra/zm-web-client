@@ -23,10 +23,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAppChooser(parent, className, buttons) {
+function ZmAppChooser(parent, className, buttons, toolbarStyle) {
 
-	className = className ? className : "ZmAppChooser";
-	DwtToolBar.call(this, parent, className, Dwt.ABSOLUTE_STYLE, null, null, DwtToolBar.VERT_STYLE);
+	className = className || "ZmAppChooser";
+	toolbarStyle = toolbarStyle || DwtToolBar.VERT_STYLE;
+	DwtToolBar.call(this, parent, className, Dwt.ABSOLUTE_STYLE, null, null, toolbarStyle);
 
 	this.setScrollStyle(Dwt.CLIP);
 

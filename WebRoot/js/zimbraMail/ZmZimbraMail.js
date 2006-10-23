@@ -306,6 +306,7 @@ function(params) {
 	}
 
 	skin.showSkin(true);
+	this._TTT_SKIN_ENABLED = skin.hints.app_chooser.direction == "LR";
 	if (!this._components) {
 		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE,
@@ -713,21 +714,31 @@ function(app) {
 
 ZmZimbraMail.prototype._setUserInfo = 
 function() {
-
-	var login = this._appCtxt.get(ZmSetting.USERNAME);
-	var displayName = this._appCtxt.get(ZmSetting.DISPLAY_NAME);
-	var username;
-	username = displayName ? displayName : login;
-	if (username) {
-		this._userNameField.innerHTML = username;
-		if (AjxEnv.isLinux)	// bug fix #3355
-			this._userNameField.style.lineHeight = "13px";
+	var userTooltip = null;
+	// XXX bug: 10740 - HACK HACK HACK - remove when we go to horiz tabs in toolbar
+	if (this._TTT_SKIN_ENABLED) {
+		var html = [];
+		var i = 0;
+		html[i++] = "<table border=0 cellpadding=0 cellspacing=0 width=55% align=center><tr><td align=left style='white-space:nowrap; font-weight:bold'><a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'>";
+		html[i++] = ZmMsg.help;
+		html[i++] = "</a></td><td align=right style='white-space:nowrap; font-weight:bold'>";
+		html[i++] = "<a href='javascript:;' onclick='ZmZimbraMail.conditionalLogOff();'>";
+		html[i++] = ZmMsg.logOff;
+		html[i++] = "</a></td></tr></table>";
+		this._userNameField.innerHTML = html.join("");
+	} else {
+		var login = this._appCtxt.get(ZmSetting.USERNAME);
+		var username = (this._appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
+		if (username) {
+			this._userNameField.innerHTML = username;
+			if (AjxEnv.isLinux)	// bug fix #3355
+				this._userNameField.style.lineHeight = "13px";
+		}
+		userTooltip = (username != login) ? login : null;
 	}
-	var userTooltip = (username != login) ? login : null;
 
 	var quota = this._appCtxt.get(ZmSetting.QUOTA);
-	var usedQuota = this._appCtxt.get(ZmSetting.QUOTA_USED);
-	usedQuota = usedQuota ? usedQuota : 0;
+	var usedQuota = (this._appCtxt.get(ZmSetting.QUOTA_USED)) || 0;
 
 	var size = AjxUtil.formatSize(usedQuota, false, 1);
 	var html = [];
@@ -814,6 +825,15 @@ function() {
 		return;
 	}
 	ZmZimbraMail.logOff();
+};
+
+ZmZimbraMail.helpLinkCallback =
+function() {
+	var appCtxt = window.parentController
+		? window.parentController._appCtxt
+		: window._zimbraMail._appCtxt;
+
+	window.open(appCtxt.get(ZmSetting.HELP_URI));
 };
 
 ZmZimbraMail.sendRedirect =
@@ -1094,12 +1114,21 @@ function() {
 			buttons.push(ZmZimbraMail.APP_BUTTON[app]);
 		}
 	}
-	buttons.push(ZmAppChooser.SPACER, ZmAppChooser.B_HELP);
-	if (this._appCtxt.get(ZmSetting.PREFS_ENABLED)) {
-		buttons.push(ZmAppChooser.B_OPTIONS);
+
+	if (!this._TTT_SKIN_ENABLED) {
+		buttons.push(ZmAppChooser.SPACER, ZmAppChooser.B_HELP);
+		if (this._appCtxt.get(ZmSetting.PREFS_ENABLED)) {
+			buttons.push(ZmAppChooser.B_OPTIONS);
+		}
+		buttons.push(ZmAppChooser.B_LOGOUT);
+	} else {
+		if (this._appCtxt.get(ZmSetting.PREFS_ENABLED)) {
+			buttons.push(ZmAppChooser.B_OPTIONS);
+		}
 	}
-	buttons.push(ZmAppChooser.B_LOGOUT);
-	var appChooser = new ZmAppChooser(this._shell, null, buttons);
+
+	var appChooserStyle = this._TTT_SKIN_ENABLED ? DwtToolBar.HORIZ_STYLE : DwtToolBar.VERT_STYLE;
+	var appChooser = new ZmAppChooser(this._shell, null, buttons, appChooserStyle);
 	
 	var buttonListener = new AjxListener(this, this._appButtonListener);
 	for (var i = 0; i < buttons.length; i++) {
