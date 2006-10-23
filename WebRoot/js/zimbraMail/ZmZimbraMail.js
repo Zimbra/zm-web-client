@@ -320,13 +320,21 @@ function(params) {
 	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseStartup, params);
-	this._errorCallback = new AjxCallback(this, this._handleErrorStartup);
+	this._errorCallback = new AjxCallback(this, this._handleErrorStartup, params);
 	this._settings.loadUserSettings(respCallback, this._errorCallback); // load user prefs and COS data
 };
 
 ZmZimbraMail.prototype._handleErrorStartup =
-function(ex) {
-	this._killSplash();
+function(params, ex) {
+	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
+		// temporarily change the value of initial search to "in:inbox"
+		var oldInitSearch = this._appCtxt.get(ZmSetting.INITIAL_SEARCH);
+		this._appCtxt.set(ZmSetting.INITIAL_SEARCH, "in:inbox", null, null, true);
+		this._handleResponseStartup(params);
+		this._appCtxt.set(ZmSetting.INITIAL_SEARCH, oldInitSearch, null, null, true);
+	} else {
+		this._killSplash();
+	}
 	return false;
 };
 
@@ -958,7 +966,7 @@ function(ex, method, params, restartOnError, obj) {
 			var zid = itemId.substring(0, index);
 			var rid = itemId.substring(index + 1, itemId.length);
 			for (var type = 0; type < organizerTypes.length; type++) {
-				handled |= this._handleNoSuchFolderError(organizerTypes[type], zid, rid, true);
+				handled |= this._requestMgr._handleNoSuchFolderError(organizerTypes[type], zid, rid, true);
 			}
 		}
 	}
