@@ -1680,7 +1680,6 @@ function(soapDoc, inv) {
 	if (this.repeatEndDate != null && this.repeatEndType == "D") {
 		var until = soapDoc.set("until", null, rule);
 		until.setAttribute("d", AjxDateUtil.getServerDate(this.repeatEndDate));
-		until.setAttribute("tz", this.timezone);
 	} else if (this.repeatEndType == "A"){
 		var c = soapDoc.set("count",null, rule);
 		c.setAttribute("num", this.repeatEndCount);
