@@ -324,7 +324,8 @@ function(contentType) {
 		if (content == null || content == "") {
 			if (ct == ZmMimeTable.TEXT_PLAIN) {
 				var div = document.createElement("div");
-				div.innerHTML = this.notesTopPart.getContentForType(ZmMimeTable.TEXT_HTML);
+				content = this.notesTopPart.getContentForType(ZmMimeTable.TEXT_HTML);
+				div.innerHTML = content || "";
 				var text = AjxStringUtil.convertHtml2Text(div);
 				return text.substring(1); // above func prepends \n due to div
 			} else if (ct == ZmMimeTable.TEXT_HTML) {
