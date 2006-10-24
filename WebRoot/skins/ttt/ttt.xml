@@ -1,5 +1,7 @@
 <skin>
 	<substitutions>
+		<file>../_base/base/base_subs.txt</file>
+		<file>../_base/light/light_subs.txt</file>
 		<file>ttt_subs.txt</file>
 	</substitutions>
 	<css>

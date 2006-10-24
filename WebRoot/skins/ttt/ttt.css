@@ -37,7 +37,7 @@ body						{	@ChromeBg@	}
 
 
 
-#skin_outer							{	Xdisplay:none; 	@SkinOuter@			}
+#skin_outer							{	display:none; 	@SkinOuter@			}
 #skin_table_outer					{				}
 	/*	 all columns are sized with the following classes	*/
 	#skin_col_tree					{	width:170px;										}
@@ -147,7 +147,7 @@ body						{	@ChromeBg@	}
 #skin_container_app_chooser				{	
 	height:100%;
 #IFDEF MSIE
-	margin:4 0 0 0;
+	margin:2 0 0 0;
 #ENDIF
 }
 
@@ -169,7 +169,7 @@ body						{	@ChromeBg@	}
 }
 
 
-#skin_tr_tree_footer					{	Xdisplay:none;			}
+#skin_tr_tree_footer					{	display:none;			}
 #skin_td_tree_footer					{	
 	vertical-align:top;
 	padding-left:4px;
@@ -232,9 +232,12 @@ body						{	@ChromeBg@	}
 .ImgAppChicletHover,						
 .ImgAppChicletSel {	
 		position:relative; 		
-		width:16px; height:16px; margin:0 1 0 0;	padding:2px 4px 2px 4px;
+		width:16px; height:16px; margin:3 1 0 0;	padding:2px 4px 2px 4px;
+#IFDEF SAFARI 
+		margin:2 1 0 0;
+#ENDIF
 #IFDEF MSIE
-		width:24px; height:20px; margin:0 1 0 0;	padding:2px 4px 2px 4px;
+		width:26px; height:20px; margin:0 0 0 0;	padding:2px 0px 2px 1px;
 #ENDIF
 }
 .ImgAppChiclet							{	@AppTabContainer@			}
