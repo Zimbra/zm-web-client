@@ -2165,6 +2165,50 @@ HTML>BODY .appt-selected .appt_allday_body
 	@BottomSeparator@
 }
 
+
+/*
+ *   Shortcut key display
+ */
+ 
+.ZmShortcutList {
+	width:100%;
+	border-collapse:collapse;
+	margin-bottom:10px;
+}
+
+.ZmShortcutKeys {
+	text-align:right;
+	padding:6px;
+	vertical-align:top;
+	@SeparatorBorder@
+	width:250px;
+	font-weight:bold;
+	@Text-disabled@;
+}
+
+.ZmShortcutDescription {
+	@SeparatorBorder@
+	padding:5px;
+	width:auto;
+}
+
+.ZmShortcutKeyCombo { 
+	white-space:nowrap;
+	margin-right:5px;
+	margin-left:5px;
+}
+
+.ZmShortcutKey {
+	@SeparatorBorder@
+	@Text@
+	font-weight:bold;
+	padding:2px 4px 2px 4px;
+	margin:1px 1px 1px 1px;
+	line-height:22px;
+}
+
+
+
 /*
  * Colors, for use in calendar and elsewhere.
  *
