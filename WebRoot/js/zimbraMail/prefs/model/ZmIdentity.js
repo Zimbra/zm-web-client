@@ -88,24 +88,24 @@ function(fieldId, field) {
 	ZmIdentity._SOAP[field.soap] = field;
 };
 
-ZmIdentity.addField(ZmIdentity.SEND_FROM_DISPLAY, { name: "sendFromDisplay", soap: "sendFromDisplay", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.SEND_FROM_ADDRESS, { name: "sendFromAddress", soap: "sendFromAddress", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.SET_REPLY_TO, { name: "_setReplyTo", soap: "setReplyTo", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_DISPLAY, { name: "_setReplyToDisplay", soap: "setReplyToDisplay", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_ADDRESS, { name: "_setReplyToAddress", soap: "setReplyToAddress", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.USE_SIGNATURE, { name: "_useSignature", soap: "useSignature", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.SIGNATURE, { name: "_signature", soap: "signature", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.USE_WHEN_SENT_TO, { name: "_useWhenSentTo", soap: "useWhenSentTo", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.WHEN_SENT_TO_ADDRESSES, { name: "_whenSentToAddresses", soap: "whenSentToAddresses", type: ZmIdentity.ARRAY });
-ZmIdentity.addField(ZmIdentity.USE_WHEN_IN_FOLDER, { name: "_useWhenInFolder", soap: "useWhenInFolder", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.WHEN_IN_FOLDERIDS, { name: "_whenInFolderIds", soap: "whenInFolderIds", type: ZmIdentity.ARRAY });
-ZmIdentity.addField(ZmIdentity.USE_DEFAULT_ADVANCED, { name: "useDefaultAdvanced", soap: "useDefaultAdvanced", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.COMPOSE_FORMAT, { name: "_composeFormat", soap: "composeFormat", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.PREFIX, { name: "_prefix", soap: "prefix", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.FORWARD_OPTION, { name: "_forwardOption", soap: "forwardOption", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.REPLY_OPTION, { name: "_replyOption", soap: "replyOption", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.SIGNATURE_STYLE, { name: "_signatureStyle", soap: "signatureStyle", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.IS_DEFAULT, { name: "isDefault", soap: "isDefault", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.SEND_FROM_DISPLAY, { name: "sendFromDisplay", node: "a", soap: "sendFromDisplay", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.SEND_FROM_ADDRESS, { name: "sendFromAddress", node: "a", soap: "sendFromAddress", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.SET_REPLY_TO, { name: "_setReplyTo", node: "a", soap: "setReplyTo", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_DISPLAY, { name: "_setReplyToDisplay", node: "a", soap: "setReplyToDisplay", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_ADDRESS, { name: "_setReplyToAddress", node: "a", soap: "setReplyToAddress", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.USE_SIGNATURE, { name: "_useSignature", node: "a", soap: "useSignature", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.SIGNATURE, { name: "_signature", node: "signature", soap: "signature", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.USE_WHEN_SENT_TO, { name: "_useWhenSentTo", node: "a", soap: "useWhenSentTo", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.WHEN_SENT_TO_ADDRESSES, { name: "_whenSentToAddresses", node: "a", soap: "whenSentToAddresses", type: ZmIdentity.ARRAY });
+ZmIdentity.addField(ZmIdentity.USE_WHEN_IN_FOLDER, { name: "_useWhenInFolder", node: "a", soap: "useWhenInFolder", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.WHEN_IN_FOLDERIDS, { name: "_whenInFolderIds", node: "a", soap: "whenInFolderIds", type: ZmIdentity.ARRAY });
+ZmIdentity.addField(ZmIdentity.USE_DEFAULT_ADVANCED, { name: "useDefaultAdvanced", node: "a", soap: "useDefaultAdvanced", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.COMPOSE_FORMAT, { name: "_composeFormat", node: "a", soap: "composeFormat", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.PREFIX, { name: "_prefix", node: "a", soap: "prefix", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.FORWARD_OPTION, { name: "_forwardOption", node: "a", soap: "forwardOption", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.REPLY_OPTION, { name: "_replyOption", node: "a", soap: "replyOption", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.SIGNATURE_STYLE, { name: "_signatureStyle", node: "a", soap: "signatureStyle", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.IS_DEFAULT, { name: "isDefault", node: "a", soap: "isDefault", type: ZmIdentity.BOOLEAN });
 
 ZmIdentity.prototype.getField =
 function(fieldId) {
@@ -137,7 +137,13 @@ function(data) {
 			}
 		}
 	}
-// Do the signature here...
+	var props = data.signature;
+	if (props && props.length) {
+		var name = props[0].name;
+		var field = ZmIdentity._SOAP[name];
+		var value = props[0]._content;
+		this[field.name] = value;
+	}
 };
 
 ZmIdentity.prototype.createRequest =
@@ -158,18 +164,15 @@ function(request, batchCommand) {
 				var value = this.getField(i);
 				if (field.type == ZmIdentity.ARRAY) {
 					for (var j = 0, count = value.length; j < count; j++) {
-						var propertyNode = soapDoc.set("a", value[j], identityNode);
+						var propertyNode = soapDoc.set(field.node, value[j], identityNode);
 						propertyNode.setAttribute("name", field.soap);
 					}
 				} else {
-					var propertyNode = soapDoc.set("a", value, identityNode);
+					var propertyNode = soapDoc.set(field.node, value, identityNode);
 					propertyNode.setAttribute("name", field.soap);
 				}
 			}
 		}		
-// Do the signature here...
-//		var signatureNode = soapDoc.set("signature", "My name, My Title, My phone number", identityNode);
-//		signatureNode.setAttribute("name", "_0_");
     }
 	var respCallback = new AjxCallback(this, this._handleAction, [request]);
 	var errorCallback = new AjxCallback(this, this._handleErrorAction, [request]);

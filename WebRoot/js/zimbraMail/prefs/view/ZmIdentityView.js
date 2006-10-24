@@ -369,8 +369,6 @@ function() {
 	var setReplyToCheckboxId = Dwt.getNextId();
 	var setReplyToNameId = Dwt.getNextId();
 	var setReplyToAddressId = Dwt.getNextId();
-	var useSignatureCheckboxId = Dwt.getNextId();
-	var useSignatureNameId = Dwt.getNextId();
 	var whenSentToCheckboxId = Dwt.getNextId();
 	var whenSentToInputId = Dwt.getNextId();
 	var whenInFolderCheckboxId = Dwt.getNextId();
@@ -403,15 +401,6 @@ function() {
 	html[i++] = "'></td><td id='";
 	html[i++] = setReplyToAddressId;
 	html[i++] = "'></td></tr>";
-
-	html[i++] = "<tr><td><input type='checkbox' id='"
-	html[i++] = useSignatureCheckboxId;
-	html[i++] = "'>";
-	html[i++] = ZmMsg.useSignature;
-	html[i++] = "</td><td colspan=2 id='";
-	html[i++] = useSignatureNameId;
-	html[i++] = "'></td>";
-	html[i++] = "</tr>";
 
 	html[i++] = "</table>";
 	html[i++] = "</fieldset>";
@@ -469,19 +458,6 @@ function() {
 	this._inputs[ZmIdentity.SET_REPLY_TO_ADDRESS] = setReplyToAddress;
 	this._associateCheckbox(setReplyToCheckboxId, [setReplyToName, setReplyToAddress]);
 	this._checkboxIds[ZmIdentity.SET_REPLY_TO] = setReplyToCheckboxId;
-
-	var options = [];
-	var signatureCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getSignatureCollection();
-	var signatures = signatureCollection.getSignatures();
-	for (var i = 0, count = signatures.length; i < count; i++) {
-		var signature = signatures[i];
-		options[i] = new DwtSelectOptionData(signature.id, signature.name);
-	}
-	var useSignatureSelect = new DwtSelect(this, options);
-	useSignatureSelect.reparentHtmlElement(useSignatureNameId);
-	this._selects[ZmIdentity.SIGNATURE] = useSignatureSelect;
-	this._associateCheckbox(useSignatureCheckboxId, [useSignatureSelect]);
-	this._checkboxIds[ZmIdentity.USE_SIGNATURE] = useSignatureCheckboxId;
 
 	params.size = 50;
 	var whenSentToInput = new DwtInputField(params);

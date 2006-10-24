@@ -88,16 +88,6 @@ function() {
 	return this._identityController;
 };
 
-/**
-* Returns the signature controller.
-*/
-ZmPrefController.prototype.getSignatureController =
-function() {
-	if (!this._SignatureController)
-		this._signatureController = new ZmSignatureController(this._appCtxt, this._container, this._app, this._prefsView);
-	return this._signatureController;
-};
-
 ZmPrefController.prototype.getKeyMapName =
 function() {
 	return "ZmPrefController";

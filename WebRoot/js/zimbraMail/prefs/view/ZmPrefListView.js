@@ -284,7 +284,7 @@ function(item) {
 	var iconClass = error ? "Critical" : "";
 	div.innerHTML = [
 		"<table cellspacing=0 cellpadding=0><tr><td>", AjxImg.getImageHtml(iconClass), "</td><td>",
-		AjxStringUtil.htmlEncode(item.name, true), "</td></tr></table>"
+		AjxStringUtil.htmlEncode(item.name, true), item.isDefault ? "*" : "", "</td></tr></table>"
 	].join("");
 
 	return div;

@@ -283,12 +283,10 @@ Contributor(s):
 <!-- Preferences Application -->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/model/ZmPref.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/model/ZmIdentity.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/model/ZmSignature.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/ZmPreferencesApp.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/controller/ZmFilterRulesController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/controller/ZmPrefListController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/controller/ZmIdentityController.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/controller/ZmSignatureController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/controller/ZmPrefController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/view/ZmPreferencesPage.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/view/ZmShortcutsPage.js<%= ext %>?v=<%= vers %>"></script>
@@ -297,7 +295,6 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/view/ZmFilterRuleDialog.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/view/ZmPrefListView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/view/ZmIdentityView.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/view/ZmSignatureView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/model/ZmFilterRule.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/prefs/model/ZmFilterRules.js<%= ext %>?v=<%= vers %>"></script>
 

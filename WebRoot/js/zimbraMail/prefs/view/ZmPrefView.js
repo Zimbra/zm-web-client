@@ -62,10 +62,9 @@ ZmPrefView.ADDR_BOOK	= 4;
 ZmPrefView.CALENDAR		= 5;
 ZmPrefView.SHORTCUTS	= 6;
 ZmPrefView.IDENTITY		= 7;
-ZmPrefView.SIGNATURE	= 8;
 ZmPrefView.VIEWS = [ZmPrefView.GENERAL, ZmPrefView.MAIL, ZmPrefView.ADDR_BOOK,
 					ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES, ZmPrefView.SHORTCUTS,
-					ZmPrefView.IDENTITY, ZmPrefView.SIGNATURE];
+					ZmPrefView.IDENTITY];
 
 // list of prefs for each page
 ZmPrefView.PREFS = {};
@@ -84,7 +83,6 @@ ZmPrefView.TAB_NAME[ZmPrefView.ADDR_BOOK]		= ZmMsg.addressBook;
 ZmPrefView.TAB_NAME[ZmPrefView.CALENDAR]		= ZmMsg.calendar;
 ZmPrefView.TAB_NAME[ZmPrefView.SHORTCUTS]		= ZmMsg.shortcuts;
 ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]		= ZmMsg.identitiesTab;
-ZmPrefView.TAB_NAME[ZmPrefView.SIGNATURE]		= ZmMsg.signaturesTab;
 
 ZmPrefView.prototype.toString =
 function () {
@@ -121,8 +119,6 @@ function() {
 			viewObj = new ZmShortcutsPage(this._parent, this._appCtxt, view, this._controller);
 		} else if (view == ZmPrefView.IDENTITY) {
 			viewObj = this._controller.getIdentityController().getListView();
-		} else if (view == ZmPrefView.SIGNATURE) {
-			viewObj = this._controller.getSignatureController().getListView();
 		} else {
 			viewObj = new ZmPreferencesPage(this._parent, this._appCtxt, view, this._controller, this._passwordDialog);
 		}

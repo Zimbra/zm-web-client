@@ -84,12 +84,3 @@ function() {
 	return this._identityCollection;
 };
 
-ZmPreferencesApp.prototype.getSignatureCollection =
-function() {
-	if (!this._signatureCollection) {
-		this._signatureCollection = new ZmSignatureCollection(this._appCtxt);
-		this._signatureCollection.buildHack();
-	}
-	return this._signatureCollection;
-};
-
