@@ -243,7 +243,7 @@ function(popViewWhenSaved) {
 	}
 
 	// set fields on page object
-	var content = this._pageEditView.getContent();
+	var content = this._pageEditView.getContent(true);
 	this._page.name = name;
 	this._page.setContent(content);
 

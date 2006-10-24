@@ -389,11 +389,11 @@ ZmPageEditor.prototype.setContent = function(content) {
 		this._patchLinks(root);
 	}
 };
-ZmPageEditor.prototype.getContent = function() {
+ZmPageEditor.prototype.getContent = function(insertFontStyle) {
 	if (this._mode == DwtHtmlEditor.HTML) {
 		this._serializeWiklets();
 	}
-	var content = ZmHtmlEditor.prototype.getContent.call(this);
+	var content = ZmHtmlEditor.prototype.getContent.call(this, insertFontStyle);
 	var converter = ZmPageEditor._CONVERTERS[this._format];
 	if (converter) {
 		content = converter.toHtml(content);
