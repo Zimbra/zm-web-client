@@ -61,8 +61,11 @@ ZmPrefView.FILTER_RULES	= 3;
 ZmPrefView.ADDR_BOOK	= 4;
 ZmPrefView.CALENDAR		= 5;
 ZmPrefView.SHORTCUTS	= 6;
+ZmPrefView.IDENTITY		= 7;
+ZmPrefView.SIGNATURE	= 8;
 ZmPrefView.VIEWS = [ZmPrefView.GENERAL, ZmPrefView.MAIL, ZmPrefView.ADDR_BOOK,
-					ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES, ZmPrefView.SHORTCUTS];
+					ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES, ZmPrefView.SHORTCUTS,
+					ZmPrefView.IDENTITY, ZmPrefView.SIGNATURE];
 
 // list of prefs for each page
 ZmPrefView.PREFS = {};
@@ -80,6 +83,8 @@ ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]	= ZmMsg.filterRules;
 ZmPrefView.TAB_NAME[ZmPrefView.ADDR_BOOK]		= ZmMsg.addressBook;
 ZmPrefView.TAB_NAME[ZmPrefView.CALENDAR]		= ZmMsg.calendar;
 ZmPrefView.TAB_NAME[ZmPrefView.SHORTCUTS]		= ZmMsg.shortcuts;
+ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]		= ZmMsg.identitiesTab;
+ZmPrefView.TAB_NAME[ZmPrefView.SIGNATURE]		= ZmMsg.signaturesTab;
 
 ZmPrefView.prototype.toString =
 function () {
@@ -114,6 +119,10 @@ function() {
 			viewObj = this._controller.getFilterRulesController().getFilterRulesView();
 		} else if (view == ZmPrefView.SHORTCUTS) {
 			viewObj = new ZmShortcutsPage(this._parent, this._appCtxt, view, this._controller);
+		} else if (view == ZmPrefView.IDENTITY) {
+			viewObj = this._controller.getIdentityController().getListView();
+		} else if (view == ZmPrefView.SIGNATURE) {
+			viewObj = this._controller.getSignatureController().getListView();
 		} else {
 			viewObj = new ZmPreferencesPage(this._parent, this._appCtxt, view, this._controller, this._passwordDialog);
 		}
@@ -160,6 +169,7 @@ function(dirtyCheck, noValidation) {
 	var settings = this._appCtxt.getSettings();
 	var list = [];
 	var errorStr = "";
+	var batchCommand = new ZmBatchCommand(this._appCtxt);
 	for (var i = 0; i < ZmPrefView.VIEWS.length; i++) {
 		var view = ZmPrefView.VIEWS[i];
 		if (view == ZmPrefView.FILTER_RULES) continue;
@@ -168,8 +178,20 @@ function(dirtyCheck, noValidation) {
 		if (!viewPage) continue; // if feature is disabled, may not have a view page
 		if (!viewPage.hasRendered()) continue; // if page hasn't rendered, nothing has changed
 
+		if (view == ZmPrefView.IDENTITY) {
+// TODO Dave: 
+// 1) Implement similar handling for older pref pages.
+// 2) Implement dirty check (prefs use noValidation parameter)
+			if (!noValidation) {
+				var valid = viewPage.validate();
+				if (valid) {
+					this.prefView[view].addCommand(batchCommand);
+				}
+			}
+		}
+
 		var prefs = ZmPrefView.PREFS[view];
-		for (var j = 0; j < prefs.length; j++) {
+		for (var j = 0, count = prefs ? prefs.length : 0; j < count; j++) {
 			var id = prefs[j];
 			if (!viewPage._prefPresent[id]) continue;
 			var setup = ZmPref.SETUP[id];
@@ -219,6 +241,9 @@ function(dirtyCheck, noValidation) {
 		if (errorStr != "") {
 			throw new AjxException(errorStr);
 		}
+	}
+	if (batchCommand.size()) {
+		batchCommand.run(this._batchCommandCallback);
 	}
 	return dirtyCheck ? false : list;
 };

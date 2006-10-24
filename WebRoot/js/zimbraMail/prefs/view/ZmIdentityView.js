@@ -38,6 +38,7 @@
 
 	this._identityNameInput = null;
 	this._identityPage = null;
+	this._signaturePage = null;
 	this._advancedPage = null;
 
 	// Arrays of items that have been added, deleted, modified.
@@ -81,9 +82,11 @@ function(parentElement) {
 	var tabView = new DwtTabView(this, null, Dwt.STATIC_STYLE);
 	tabView.reparentHtmlElement(parentElement);
 	
-	this._identityPage = new ZmIdentityPage(this.parent, this._appCtxt, ZmIdentityPage.SENDING);
+	this._identityPage = new ZmIdentityPage(this.parent, this._appCtxt, ZmIdentityPage.OPTIONS);
 	tabView.addTab(ZmMsg.identityOptions, this._identityPage);
-	this._advancedPage = new ZmIdentityPage(this.parent, this._appCtxt, ZmIdentityPage.REPLYING);
+	this._signaturePage = new ZmIdentityPage(this.parent, this._appCtxt, ZmIdentityPage.SIGNATURE);
+	tabView.addTab(ZmMsg.signature, this._signaturePage);
+	this._advancedPage = new ZmIdentityPage(this.parent, this._appCtxt, ZmIdentityPage.ADVANCED);
 	tabView.addTab(ZmMsg.identityAdvanced, this._advancedPage);
 };
 
@@ -107,8 +110,11 @@ function(identity) {
 	}
 	this._identity = identity;
 	this._identityNameInput.setValue(identity.name);
+	this._identityNameInput.setEnabled(!identity.isDefault);
 	this._identityPage.setIdentity(identity);
+	this._signaturePage.setIdentity(identity);
 	this._advancedPage.setIdentity(identity);
+	this.getRemoveButton().setEnabled(!identity.isDefault);
 };
 
 ZmIdentityView.prototype.addNew =
@@ -130,6 +136,7 @@ function(errors) {
 		errors[errors.length] = ZmMsg.identityNameError;
 	}
 	this._identityPage._validateSelectedItem(errors);
+	this._signaturePage._validateSelectedItem(errors);
 	this._advancedPage._validateSelectedItem(errors);
 };
 
@@ -140,9 +147,18 @@ function(batchCommand) {
 		return;
 	}
 
-	this._addCommands(this._adds, "create", batchCommand);
-	this._addCommands(this._updates, "update", batchCommand);
-	this._addCommands(this._deletes, "delete", batchCommand);
+	// Create a default account if there is nothing already defined.
+	// This is a little hack until we know the server always creates a default for us.
+	if (this._adds.length) {
+		var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+		if (!identityCollection.getIdentities().length) {
+			this._adds[0].isDefault = true;
+		}
+	}
+
+	this._addCommands(this._adds, "CreateIdentityRequest", batchCommand);
+	this._addCommands(this._updates, "ModifyIdentityRequest", batchCommand);
+	this._addCommands(this._deletes, "DeleteIdentityRequest", batchCommand);
     var callback = new AjxCallback(this, this._handleAction);
 	batchCommand.addCallback(callback);
 };
@@ -158,7 +174,7 @@ function(list, op, batchCommand) {
 
 ZmIdentityView.prototype._handleAction =
 function(result) {
-// Dumb approach.
+	// Just redraw the whole list.
 	var listView = this.getList();
 	listView.set(this._controller._getListData());
 	
@@ -167,11 +183,6 @@ function(result) {
 	this._updates.length = 0;
 };
 	
-ZmIdentityView.prototype._handleActionError =
-function(a, b, c) {
-//	debugger;
-};
-
 ZmIdentityView.prototype.getChanges =
 function() {
 	var dirty = false;
@@ -184,6 +195,7 @@ function() {
 		dirty = true;
 	}
 	dirty = this._identityPage.getChanges(this._identity) || dirty;
+	dirty = this._signaturePage.getChanges(this._identity) || dirty;
 	dirty = this._advancedPage.getChanges(this._identity) || dirty;
 	
 	if (dirty && this._identity.id) {
@@ -225,8 +237,9 @@ function ZmIdentityPage(parent, appCtxt, pageId, className, posStyle) {
 ZmIdentityPage.prototype = new DwtTabViewPage;
 ZmIdentityPage.prototype.constructor = ZmIdentityPage;
 
-ZmIdentityPage.SENDING = 0;
-ZmIdentityPage.REPLYING = 1;
+ZmIdentityPage.OPTIONS = 0;
+ZmIdentityPage.SIGNATURE = 1;
+ZmIdentityPage.ADVANCED = 2;
 
 ZmIdentityPage.toString =
 function() {
@@ -237,13 +250,14 @@ ZmIdentityPage.prototype.showMe =
 function() {
 	if (!this._hasRendered) {
 		switch (this._pageId) {
-			case ZmIdentityPage.SENDING: this._initializeSending(); break;
-			case ZmIdentityPage.REPLYING: this._initializeReplying(); break;
+			case ZmIdentityPage.OPTIONS: this._initializeOptions(); break;
+			case ZmIdentityPage.SIGNATURE: this._initializeSignature(); break;
+			case ZmIdentityPage.ADVANCED: this._initializeAdvanced(); break;
 		}
+		this._hasRendered = true;
 		if (this._identity) {
 			this.setIdentity(this._identity);
 		}
-		this._hasRendered = true;
 	}
 };
 
@@ -281,6 +295,17 @@ function(identity) {
 		var checkbox = doc.getElementById(id);
 		checkbox.checked = value ? true : false;
 		this._applyCheckbox(checkbox);
+	}
+	
+	if ((this._pageId == ZmIdentityPage.ADVANCED) && this._hasRendered) {
+		var checkbox = document.getElementById(this._useDefaultsCheckboxId);
+		if (identity.isDefault) {
+			checkbox.checked = true;
+			Dwt.setVisibility(checkbox.parentNode, false);
+		} else {
+			checkbox.checked = false;
+			Dwt.setVisibility(checkbox.parentNode, true);
+		}
 	}
 };
 	
@@ -331,13 +356,13 @@ ZmIdentityPage.prototype._validateSelectedItem =
 function(errors) {
 	for (var field in this._inputs) {
 		var input = this._inputs[field];
-		if (input.getEnabled() && !input.isValid()) {
+		if (input.getEnabled() && (input.isValid() === null)) {
 			errors[errors.length] = this._errorMessages[field];
 		}
 	}
 };
 
-ZmIdentityPage.prototype._initializeSending =
+ZmIdentityPage.prototype._initializeOptions =
 function() {
 	var sendFromNameId = Dwt.getNextId();
 	var sendFromAddressId = Dwt.getNextId();
@@ -552,10 +577,10 @@ function(event) {
 	this._applyCheckbox(checkbox);
 };
 
-ZmIdentityPage.prototype._initializeReplying =
+ZmIdentityPage.prototype._initializeAdvanced =
 function() {
 	
-	var useDefaultsCheckboxId = Dwt.getNextId();
+	this._useDefaultsCheckboxId = Dwt.getNextId();
 	
 	var replyForwardSelectId = Dwt.getNextId();
 	var signatureStyleSelectId = Dwt.getNextId();
@@ -565,14 +590,11 @@ function() {
 	
 	var html = [];
 	var i = 0;
-	html[i++] = "<input type='checkbox' id='";
-	html[i++] = useDefaultsCheckboxId;
+	html[i++] = "<div><input type='checkbox' id='";
+	html[i++] = this._useDefaultsCheckboxId;
 	html[i++] = "'>";
 	html[i++] = ZmMsg.identitiesUseDefault;
-	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
-	html[i++] = ZmMsg.sendWithIdentity;
-	html[i++] = "</legend>";
-	html[i++] = "</fieldset>";
+	html[i++] = "</div>";
 	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
 	html[i++] = ZmMsg.replyWithIdentity;
 	html[i++] = "</legend>";
@@ -656,8 +678,8 @@ function() {
 	forwardOptionSelect.reparentHtmlElement(forwardOptionSelectId);
 	this._selects[ZmIdentity.FORWARD_OPTION] = forwardOptionSelect;
 	
-	this._checkboxIds[ZmIdentity.USE_DEFAULT_ADVANCED] = useDefaultsCheckboxId;
-	this._associateCheckbox(useDefaultsCheckboxId, [replyForwardSelect, signatureStyleSelect, prefixSelect, replyOptionSelect, forwardOptionSelect], true);
+	this._checkboxIds[ZmIdentity.USE_DEFAULT_ADVANCED] = this._useDefaultsCheckboxId;
+	this._associateCheckbox(this._useDefaultsCheckboxId, [replyForwardSelect, signatureStyleSelect, prefixSelect, replyOptionSelect, forwardOptionSelect], true);
 };
 
 ZmIdentityPage.prototype._folderBrowseListener =
@@ -680,6 +702,13 @@ function(dialog, folderInput, folder) {
 		}
 		dialog.popdown();
 	}
+};
+
+ZmIdentityPage.prototype._initializeSignature =
+function() {
+	var params = { parent: this, type: DwtInputField.STRING, size: 80, rows:12 };
+	var input = new DwtInputField(params);
+	this._inputs[ZmIdentity.SIGNATURE] = input;
 };
 
 ZmIdentityPage._validateEmailAddress =

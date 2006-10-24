@@ -75,3 +75,21 @@ function() {
 		this._filterRules = new ZmFilterRules(this._appCtxt);
 	return this._filterRules;
 };
+
+ZmPreferencesApp.prototype.getIdentityCollection =
+function() {
+	if (!this._identityCollection) {
+		this._identityCollection = new ZmIdentityCollection(this._appCtxt);
+	}
+	return this._identityCollection;
+};
+
+ZmPreferencesApp.prototype.getSignatureCollection =
+function() {
+	if (!this._signatureCollection) {
+		this._signatureCollection = new ZmSignatureCollection(this._appCtxt);
+		this._signatureCollection.buildHack();
+	}
+	return this._signatureCollection;
+};
+

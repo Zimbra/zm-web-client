@@ -183,6 +183,9 @@ function(callback, result) {
 		DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + obj.zimlets.zimlet.length + " Zimlets");
 		this._appCtxt.getZimletMgr().loadZimlets(obj.zimlets.zimlet, obj.props.prop);
 	}
+	
+	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+	identityCollection.initialize(obj.identities);
 
 	this.userSettingsLoaded = true;
 	
