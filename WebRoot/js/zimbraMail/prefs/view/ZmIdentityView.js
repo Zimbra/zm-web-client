@@ -303,7 +303,6 @@ function(identity) {
 			checkbox.checked = true;
 			Dwt.setVisibility(checkbox.parentNode, false);
 		} else {
-			checkbox.checked = false;
 			Dwt.setVisibility(checkbox.parentNode, true);
 		}
 	}
@@ -559,7 +558,6 @@ function() {
 	this._useDefaultsCheckboxId = Dwt.getNextId();
 	
 	var replyForwardSelectId = Dwt.getNextId();
-	var signatureStyleSelectId = Dwt.getNextId();
 	var prefixSelectId = Dwt.getNextId();
 	var replyOptionSelectId = Dwt.getNextId();
 	var forwardOptionSelectId = Dwt.getNextId();
@@ -580,12 +578,6 @@ function() {
 	html[i++] = ZmMsg.replyForwardFormat;
 	html[i++] = "</td><td id='";
 	html[i++] = replyForwardSelectId;
-	html[i++] = "'></td></tr>";
-	
-	html[i++] = "<tr><td>";
-	html[i++] = ZmMsg.placeSignature;
-	html[i++] = "</td><td id='";
-	html[i++] = signatureStyleSelectId;
 	html[i++] = "'></td></tr>";
 	
 	html[i++] = "<tr><td>";
@@ -621,14 +613,6 @@ function() {
 
 	var options = [];
 	var i = 0;
-	options[i++] = new DwtSelectOptionData(ZmSetting.SIG_OUTLOOK, ZmMsg.aboveQuotedText);
-	options[i++] = new DwtSelectOptionData(ZmSetting.SIG_INTERNET, ZmMsg.atBottomOfMessage);
-	var signatureStyleSelect = new DwtSelect(this, options);
-	signatureStyleSelect.reparentHtmlElement(signatureStyleSelectId);
-	this._selects[ZmIdentity.SIGNATURE_STYLE] = signatureStyleSelect;
-
-	var options = [];
-	var i = 0;
 	options[i++] = new DwtSelectOptionData(">", ">");
 	options[i++] = new DwtSelectOptionData("|", "|");
 	var prefixSelect = new DwtSelect(this, options);
@@ -655,7 +639,7 @@ function() {
 	this._selects[ZmIdentity.FORWARD_OPTION] = forwardOptionSelect;
 	
 	this._checkboxIds[ZmIdentity.USE_DEFAULT_ADVANCED] = this._useDefaultsCheckboxId;
-	this._associateCheckbox(this._useDefaultsCheckboxId, [replyForwardSelect, signatureStyleSelect, prefixSelect, replyOptionSelect, forwardOptionSelect], true);
+	this._associateCheckbox(this._useDefaultsCheckboxId, [replyForwardSelect, prefixSelect, replyOptionSelect, forwardOptionSelect], true);
 };
 
 ZmIdentityPage.prototype._folderBrowseListener =
@@ -682,8 +666,33 @@ function(dialog, folderInput, folder) {
 
 ZmIdentityPage.prototype._initializeSignature =
 function() {
+	var signatureStyleSelectId = Dwt.getNextId();
+	var signatureId = Dwt.getNextId();
+
+	var html = [];
+	var i = 0;
+	html[i++] = "<table><tr><td>";
+	html[i++] = ZmMsg.placeSignature;
+	html[i++] = "</td><td id='";
+	html[i++] = signatureStyleSelectId;
+	html[i++] = "'></td></tr></table>";
+	html[i++] = "<div id='";
+	html[i++] = signatureId;
+	html[i++] = "'></div>";
+
+	this.getHtmlElement().innerHTML = html.join("");
+	
+	var options = [];
+	var i = 0;
+	options[i++] = new DwtSelectOptionData(ZmSetting.SIG_OUTLOOK, ZmMsg.aboveQuotedText);
+	options[i++] = new DwtSelectOptionData(ZmSetting.SIG_INTERNET, ZmMsg.atBottomOfMessage);
+	var signatureStyleSelect = new DwtSelect(this, options);
+	signatureStyleSelect.reparentHtmlElement(signatureStyleSelectId);
+	this._selects[ZmIdentity.SIGNATURE_STYLE] = signatureStyleSelect;
+
 	var params = { parent: this, type: DwtInputField.STRING, size: 80, rows:12 };
 	var input = new DwtInputField(params);
+	input.reparentHtmlElement(signatureId);
 	this._inputs[ZmIdentity.SIGNATURE] = input;
 };
 
