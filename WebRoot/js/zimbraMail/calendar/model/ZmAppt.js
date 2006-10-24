@@ -1191,8 +1191,8 @@ function(attach, hasCheckbox) {
 	var addHtmlLink = (this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) && 
 					  attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct));
 
-	html[i++] = "&nbsp;(";
 	if (sizeText || addHtmlLink) {
+		html[i++] = "&nbsp;(";
 		if (sizeText) {
 			html[i++] = sizeText;
 			if (addHtmlLink)
@@ -1207,15 +1207,17 @@ function(attach, hasCheckbox) {
 			html[i++] = ZmMsg.viewAsHtml;
 			html[i++] = "</a>";
 		}
-		html[i++] = ", ";
+		if (attach.ct != ZmMimeTable.MSG_RFC822) {
+			html[i++] = ", ";
+			html[i++] = "<a style='text-decoration:underline' class='AttLink' onclick='ZmMailMsgView.unloadHackCallback();' ";
+			html[i++] = hrefRoot;
+			html[i++] = attach.part;
+			html[i++] = "&disp=a'>";
+			html[i++] = ZmMsg.download;
+			html[i++] = "</a>";
+		}
+		html[i++] = ")";
 	}
-	html[i++] = "<a style='text-decoration:underline' class='AttLink' onclick='ZmMailMsgView.unloadHackCallback();' ";
-	html[i++] = hrefRoot;
-	html[i++] = attach.part;
-	html[i++] = "&disp=a'>";
-	html[i++] = ZmMsg.download;
-	html[i++] = "</a>";
-	html[i++] = ")";
 
 	html[i++] = "</td></tr>";
 	html[i++] = "</table>";

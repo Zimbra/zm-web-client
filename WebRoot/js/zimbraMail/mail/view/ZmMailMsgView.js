@@ -1179,7 +1179,7 @@ function() {
 		htmlArr[idx++] = AjxImg.getImageHtml(att.linkIcon, "position:relative;");
 		htmlArr[idx++] = "</td><td style='white-space:nowrap'>";
 
-		var linkArr = new Array();
+		var linkArr = [];
 		var j = 0;
 		linkArr[j++] = att.isHit ? "<span class='AttName-matched'>" : "";
 		linkArr[j++] = att.link;
@@ -1196,8 +1196,8 @@ function() {
 			htmlArr[idx++] = link;
 		}
 
-		htmlArr[idx++] = "&nbsp;(";
-		if (att.size || att.htmlLink || att.vcardLink) {
+		if (att.size || att.htmlLink || att.vcardLink || att.download) {
+			htmlArr[idx++] = "&nbsp;(";
 			if (att.size) {
 				htmlArr[idx++] = att.size;
 				if (att.htmlLink || att.vcardLink)
@@ -1212,13 +1212,17 @@ function() {
 				htmlArr[idx++] = ZmMsg.addToAddrBook;
 				htmlArr[idx++] = "</a>";
 			}
-			htmlArr[idx++] = ", ";
-		}
 
-		htmlArr[idx++] = att.download;
-		htmlArr[idx++] = ZmMsg.download;
-		htmlArr[idx++] = "</a>";
-		htmlArr[idx++] = ")";
+			if (att.download) {
+				if (att.size || att.htmlLink || att.vcardLink)
+					htmlArr[idx++] = ", ";
+
+				htmlArr[idx++] = att.download;
+				htmlArr[idx++] = ZmMsg.download;
+				htmlArr[idx++] = "</a>";
+			}
+			htmlArr[idx++] = ")";
+		}
 
 		htmlArr[idx++] = "</td></tr></table>";
 		htmlArr[idx++] = "</td>";
