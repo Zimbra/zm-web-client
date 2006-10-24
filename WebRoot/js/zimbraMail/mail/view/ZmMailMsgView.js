@@ -988,7 +988,9 @@ function(msg, container, callback) {
 			if (bodyPart.ct != ZmMimeTable.TEXT_PLAIN) {
 				// try to go retrieve the text part
 				var respCallback = new AjxCallback(this, this._handleResponseRenderMessage, [el, bodyPart, callback]);
-				msg.getTextPart(respCallback);
+				var content = msg.getTextPart(respCallback);
+				if (content != null)
+					this._makeIframeProxy(el, content, true);
 				return;
 			} else {
 				this._makeIframeProxy(el, bodyPart.content, true);
