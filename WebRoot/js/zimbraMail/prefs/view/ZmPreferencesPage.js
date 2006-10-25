@@ -82,7 +82,9 @@ function() {
 	var dirty = this._controller.isDirty(this._view);
 	if (this._hasRendered && !dirty) return;
 	if (dirty) {
-		this._table.innerHTML = "";
+		// bug fix #11533 - dont clear TABLE contents by setting innerHTML to "" - IE7 barfs!
+		while (this._table.rows.length > 0)
+			this._table.deleteRow(0);
 	}
 
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._view);
