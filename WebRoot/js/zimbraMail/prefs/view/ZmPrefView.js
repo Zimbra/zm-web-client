@@ -55,34 +55,49 @@ ZmPrefView.prototype = new DwtTabView;
 ZmPrefView.prototype.constructor = ZmPrefView;
 
 // preference pages
-ZmPrefView.GENERAL		= 1;
-ZmPrefView.MAIL			= 2;
-ZmPrefView.FILTER_RULES	= 3;
-ZmPrefView.ADDR_BOOK	= 4;
-ZmPrefView.CALENDAR		= 5;
-ZmPrefView.SHORTCUTS	= 6;
-ZmPrefView.IDENTITY		= 7;
-ZmPrefView.VIEWS = [ZmPrefView.GENERAL, ZmPrefView.MAIL, ZmPrefView.ADDR_BOOK,
-					ZmPrefView.CALENDAR, ZmPrefView.FILTER_RULES, ZmPrefView.SHORTCUTS,
-					ZmPrefView.IDENTITY];
+var i = 1;
+ZmPrefView.ADDR_BOOK	= i++;
+ZmPrefView.CALENDAR		= i++;
+ZmPrefView.FILTER_RULES	= i++;
+ZmPrefView.GENERAL		= i++;
+ZmPrefView.IDENTITY	= i++;
+ZmPrefView.MAIL			= i++;
+ZmPrefView.POP_ACCOUNTS = i++;
+ZmPrefView.SHORTCUTS	= i++;
+ZmPrefView.SIGNATURE	= i++;
+delete i;
+
+ZmPrefView.VIEWS = [
+    ZmPrefView.GENERAL,
+    ZmPrefView.MAIL, 
+    ZmPrefView.IDENTITY,
+    ZmPrefView.POP_ACCOUNTS,
+    ZmPrefView.SIGNATURE,
+    ZmPrefView.FILTER_RULES,
+    ZmPrefView.ADDR_BOOK,
+    ZmPrefView.CALENDAR,
+    ZmPrefView.SHORTCUTS
+];
 
 // list of prefs for each page
 ZmPrefView.PREFS = {};
-ZmPrefView.PREFS[ZmPrefView.GENERAL]			= ZmPref.GENERAL_PREFS;
-ZmPrefView.PREFS[ZmPrefView.MAIL]				= ZmPref.MAIL_PREFS;
 ZmPrefView.PREFS[ZmPrefView.ADDR_BOOK]			= ZmPref.ADDR_BOOK_PREFS;
 ZmPrefView.PREFS[ZmPrefView.CALENDAR]			= ZmPref.CALENDAR_PREFS;
+ZmPrefView.PREFS[ZmPrefView.GENERAL]			= ZmPref.GENERAL_PREFS;
+ZmPrefView.PREFS[ZmPrefView.MAIL]				= ZmPref.MAIL_PREFS;
+ZmPrefView.PREFS[ZmPrefView.POP_ACCOUNTS]       = ZmPref.POP_ACCOUNTS_PREFS;
 ZmPrefView.PREFS[ZmPrefView.SHORTCUTS]			= ZmPref.SHORTCUT_PREFS;
 
 // title for the page's tab
 ZmPrefView.TAB_NAME = {};
-ZmPrefView.TAB_NAME[ZmPrefView.GENERAL]			= ZmMsg.general;
-ZmPrefView.TAB_NAME[ZmPrefView.MAIL]			= ZmMsg.mail;
-ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]	= ZmMsg.filterRules;
 ZmPrefView.TAB_NAME[ZmPrefView.ADDR_BOOK]		= ZmMsg.addressBook;
 ZmPrefView.TAB_NAME[ZmPrefView.CALENDAR]		= ZmMsg.calendar;
-ZmPrefView.TAB_NAME[ZmPrefView.SHORTCUTS]		= ZmMsg.shortcuts;
+ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]	= ZmMsg.filterRules;
+ZmPrefView.TAB_NAME[ZmPrefView.GENERAL]			= ZmMsg.general;
 ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]		= ZmMsg.identitiesTab;
+ZmPrefView.TAB_NAME[ZmPrefView.MAIL]			= ZmMsg.mail;
+ZmPrefView.TAB_NAME[ZmPrefView.POP_ACCOUNTS]    = ZmMsg.popAccounts;
+ZmPrefView.TAB_NAME[ZmPrefView.SHORTCUTS]		= ZmMsg.shortcuts;
 
 ZmPrefView.prototype.toString =
 function () {
@@ -111,15 +126,18 @@ function() {
 		if ((view == ZmPrefView.FILTER_RULES) && (!this._appCtxt.get(ZmSetting.FILTERS_ENABLED))) continue;
 		if (view == ZmPrefView.ADDR_BOOK && (!this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))) continue;
 		if (view == ZmPrefView.CALENDAR && (!this._appCtxt.get(ZmSetting.CALENDAR_ENABLED))) continue;
+        if (view == ZmPrefView.POP_ACCOUNTS && !this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) continue;
 
-		var viewObj = null;
+        var viewObj = null;
 		if (view == ZmPrefView.FILTER_RULES) {
 			viewObj = this._controller.getFilterRulesController().getFilterRulesView();
 		} else if (view == ZmPrefView.SHORTCUTS) {
 			viewObj = new ZmShortcutsPage(this._parent, this._appCtxt, view, this._controller);
 		} else if (view == ZmPrefView.IDENTITY) {
 			viewObj = this._controller.getIdentityController().getListView();
-		} else {
+        } else if (view == ZmPrefView.POP_ACCOUNTS) {
+            viewObj = this._controller._app.getPopAccountsController().getListView();
+        } else {
 			viewObj = new ZmPreferencesPage(this._parent, this._appCtxt, view, this._controller, this._passwordDialog);
 		}
 
@@ -174,13 +192,15 @@ function(dirtyCheck, noValidation) {
 		if (!viewPage) continue; // if feature is disabled, may not have a view page
 		if (!viewPage.hasRendered()) continue; // if page hasn't rendered, nothing has changed
 
-		if (view == ZmPrefView.IDENTITY) {
-// TODO Dave: 
-// 1) Implement similar handling for older pref pages.
-// 2) Implement dirty check (prefs use noValidation parameter)
+		if (view == ZmPrefView.IDENTITY || view == ZmPrefView.POP_ACCOUNTS) {
+// TODO:
+// 1) Generalize error handling for all of these list views
+// 2) Keep track of errors in items that are not the active ones listed
+// 3) Implement similar handling for older pref pages.
+// 4) Implement dirty check (prefs use noValidation parameter)
 			if (!noValidation) {
 				var valid = viewPage.validate();
-				if (valid) {
+                if (valid && this.prefView[view].addCommand) {
 					this.prefView[view].addCommand(batchCommand);
 				}
 			}
@@ -193,10 +213,10 @@ function(dirtyCheck, noValidation) {
 			var setup = ZmPref.SETUP[id];
 			var pre = setup.precondition;
 			if (pre && !(this._appCtxt.get(pre))) continue;
-			
+
 			var type = setup ? setup.displayContainer : null;
 			if (type == ZmPref.TYPE_PASSWORD) continue; // ignore non-form elements
-				
+
 			// check if value has changed
 			var value = viewPage.getFormValue(id);
 			var pref = settings.getSetting(id);
@@ -204,7 +224,7 @@ function(dirtyCheck, noValidation) {
 			// null and "" are the same string for our purposes
 			if (pref.dataType == ZmSetting.D_STRING) {
 				unchanged = unchanged || ((value == null || value == "") &&
-										  (pref.origValue == null || 
+										  (pref.origValue == null ||
 										   pref.origValue == ""));
 			}
 			// don't try to update on server if it's client-side pref
@@ -239,7 +259,7 @@ function(dirtyCheck, noValidation) {
 		}
 	}
 	if (batchCommand.size()) {
-		batchCommand.run(this._batchCommandCallback);
+		batchCommand.run();
 	}
 	return dirtyCheck ? false : list;
 };

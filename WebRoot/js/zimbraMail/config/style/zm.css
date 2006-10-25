@@ -2012,6 +2012,16 @@ HTML>BODY .appt-selected .appt_allday_body
 	@PageBg@
 }
 
+.ZmPopAccountsView {}
+.ZmPopAccountsViewLink {
+    margin-top: 1em;
+    margin-left: 2em;
+}
+.ZmPopAccountsViewLinkOpts {
+    margin-top: 1em;
+    margin-left: 2em;
+}
+
 .infoBox {
 	margin:0px 5px 10px 0px;
 	padding:10px;

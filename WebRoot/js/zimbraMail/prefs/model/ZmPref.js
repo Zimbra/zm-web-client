@@ -72,6 +72,8 @@ ZmPref.CALENDAR_PREFS = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DA
 
 ZmPref.SHORTCUT_PREFS = [ZmSetting.SHORTCUTS];
 
+ZmPref.POP_ACCOUNTS_PREFS = [];
+
 var i = 1;
 ZmPref.TYPE_INPUT		= i++;
 ZmPref.TYPE_CHECKBOX	= i++;

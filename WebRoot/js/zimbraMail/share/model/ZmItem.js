@@ -76,6 +76,7 @@ ZmItem.CHAT			= ZmEvent.S_CHAT;
 ZmItem.ROSTER_ITEM	= ZmEvent.S_ROSTER_ITEM;
 ZmItem.RESOURCE		= ZmEvent.S_RESOURCE;		// calendar resource
 ZmItem.MAX			= ZmEvent.S_MAX;
+ZmItem.DATA_SOURCE  = ZmEvent.S_DATA_SOURCE;
 
 // Type names
 ZmItem.MSG_KEY = {};

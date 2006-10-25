@@ -62,6 +62,16 @@ function() {
 	return this._prefController;
 };
 
+ZmPreferencesApp.prototype.getPopAccountsController =
+function() {
+    if (!this._popAccountsController) {
+        var prefController = this.getPrefController();
+        var prefsView = prefController.getPrefsView();
+        this._popAccountsController = new ZmPopAccountsController(this._appCtxt, this._container, this, prefsView);
+    }
+    return this._popAccountsController;
+};
+
 ZmPreferencesApp.prototype.getFilterController =
 function() {
 	if (!this._filterController)
@@ -74,6 +84,13 @@ function() {
 	if (!this._filterRules)
 		this._filterRules = new ZmFilterRules(this._appCtxt);
 	return this._filterRules;
+};
+
+ZmPreferencesApp.prototype.getDataSourceCollection = function() {
+    if (!this._dataSourceCollection) {
+        this._dataSourceCollection = new ZmDataSourceCollection(this._appCtxt);
+    }
+    return this._dataSourceCollection;
 };
 
 ZmPreferencesApp.prototype.getIdentityCollection =

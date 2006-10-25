@@ -70,6 +70,7 @@ ZmEvent.S_ROSTER_TREE_ITEM	= i++;
 ZmEvent.S_ROSTER_TREE_GROUP	= i++;
 ZmEvent.S_RESOURCE			= i++;
 ZmEvent.S_MOUNTPOINT		= i++;
+ZmEvent.S_DATA_SOURCE       = i++;
 
 //Source types for admin
 ZmEvent.S_ACCOUNT		= i++;
