@@ -64,7 +64,6 @@ ZmPrefView.IDENTITY	= i++;
 ZmPrefView.MAIL			= i++;
 ZmPrefView.POP_ACCOUNTS = i++;
 ZmPrefView.SHORTCUTS	= i++;
-ZmPrefView.SIGNATURE	= i++;
 delete i;
 
 ZmPrefView.VIEWS = [
@@ -72,7 +71,6 @@ ZmPrefView.VIEWS = [
     ZmPrefView.MAIL, 
     ZmPrefView.IDENTITY,
     ZmPrefView.POP_ACCOUNTS,
-    ZmPrefView.SIGNATURE,
     ZmPrefView.FILTER_RULES,
     ZmPrefView.ADDR_BOOK,
     ZmPrefView.CALENDAR,

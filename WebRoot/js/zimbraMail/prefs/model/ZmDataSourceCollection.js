@@ -74,35 +74,10 @@ ZmDataSourceCollection.prototype.remove = function(item) {
     this._notify(ZmEvent.E_DELETE, {item:item});
 };
 
-ZmDataSourceCollection.prototype.initialize = function(datasources) {
+ZmDataSourceCollection.prototype.initialize = function(dataSources) {
+    if (!dataSources) return;
 
-    /*** DEBUG: waiting for getinfo data ***/
-    var soapDoc = AjxSoapDoc.create("GetDataSourcesRequest", "urn:zimbraMail");
-
-    var params = {
-        soapDoc: soapDoc,
-        asyncMode: false
-    };
-    var resp;
-    try {
-        resp = this._appCtxt.getAppController().sendRequest(params);
-        resp = resp && resp.GetDataSourcesResponse;
-    }
-    catch (e) {
-        // DEBUG: ignore
-    }
-
-    if (resp && resp.pop3) {
-        for (var i = 0; i < resp.pop3.length; i++) {
-            var account = new ZmPopAccount(this._appCtxt);
-            account.set(resp.pop3[i]);
-            this.add(account);
-        }
-    }
-    /***/
-
-    if (!datasources) return;
-    var popAccounts = datasources.pop3 || [];
+    var popAccounts = dataSources.pop3 || [];
     for (var i = 0; i < popAccounts.length; i++) {
         var pop3 = new ZmPopAccount(this._appCtxt);
         pop3.set(popAccounts[i]);

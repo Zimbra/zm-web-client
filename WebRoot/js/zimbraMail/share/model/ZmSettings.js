@@ -189,7 +189,7 @@ function(callback, result) {
 	identityCollection.initialize(obj.identities);
 
     var dataSourceCollection = prefsApp.getDataSourceCollection();
-    dataSourceCollection.initialize(obj.datasources);
+    dataSourceCollection.initialize(obj.dataSources);
 
     this.userSettingsLoaded = true;
 	
