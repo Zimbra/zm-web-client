@@ -174,7 +174,7 @@ ZmPopAccountsView.prototype._commandResult = function(account, result) {
     }
 };
 ZmPopAccountsView.prototype._commandException = function(ex) {
-    debugger;
+//    debugger;
 };
 
 ZmPopAccountsView.prototype._validateSelectedItem = function(errors) {
