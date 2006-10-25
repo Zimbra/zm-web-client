@@ -54,10 +54,6 @@ body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
 .ConsoleToolbarCorner_R_2	{	width:6;	}
 
 
-/* add to the dynamically generated chiclet styles to space things out and push the inner icon over a scooch */
-.ImgAppChiclet,
-.ImgAppChicletHover,
-.ImgAppChicletSel 			{	margin-bottom:3px; padding-left:1px;		}
 
 
 
@@ -67,11 +63,10 @@ body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
 .skin_table_fullsize				{	border-collapse:collapse; width:100%; height:100%;	}
 
 	
-#skin_table_outer					{	width:100%;	height:100%;table-layout:fixed;			}
+#skin_table_outer					{	width:100%;	height:100%;							}
 	#skin_col_left					{	width:210;											}
 	#skin_col_main					{	width:auto;											}
-	#skin_col_ads					{	width:@SidebarAdWidth@;								}
-	
+
 	#skin_tr_outer_top				{														}
 	#skin_tr_outer_main				{	height:100%;										}
 
@@ -191,5 +186,5 @@ body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
 
 /* Specify the width of sidebar ads when using a skin with ads */
 .skin_sidebar_ad	{
-	width:@SidebarAdWidth@px;
+	width:@SidebarAdWidth@;
 }

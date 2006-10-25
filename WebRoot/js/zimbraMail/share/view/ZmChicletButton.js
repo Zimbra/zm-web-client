@@ -43,7 +43,7 @@ function ZmChicletButton(parent, outerClass, innerClass) {
 	this._innerDiv = document.createElement("div");
 	this._innerDiv.className = AjxImg.getClassForImage(innerClass);
 	this._innerDiv.style.position = DwtControl.ABSOLUTE_STYLE;
-	this._innerDiv.style.left = "4px"; // need for IE when toolbar is HORiZ
+//	this._innerDiv.style.left = "4px"; // need for IE when toolbar is HORiZ
 	this.getHtmlElement().appendChild(this._innerDiv);
 	
 	this._origClassName = outerClass;

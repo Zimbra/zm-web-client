@@ -245,7 +245,11 @@ body						{	@ChromeBg@	}
 .ImgAppChicletSel						{	@AppTabContainer-selected@	}
 
 
-.ImgAppChiclet							{				}
+#IFDEF MSIE
+.ImgAppChiclet DIV,
+.ImgAppChicletHover DIV,
+.ImgAppChicletSel DIV					{	left:4px;	}
+#ENDIF
 
 
 

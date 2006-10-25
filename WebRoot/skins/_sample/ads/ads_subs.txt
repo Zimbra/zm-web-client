@@ -13,7 +13,8 @@
 
 SkinName			 = ads
 
-SidebarAdWidth		= 160px;
+SidebarAdWidth		= 160px
+TopAdHeight			= 40px
 
 
 ##########################################################################
