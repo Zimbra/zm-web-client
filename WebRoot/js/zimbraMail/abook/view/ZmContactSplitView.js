@@ -458,7 +458,8 @@ function(contact, isGal, width) {
 	var otherPhone = contact.getAttr(ZmContact.F_otherPhone);
 	var otherFax = contact.getAttr(ZmContact.F_otherFax);
 	var otherURL = contact.getAttr(ZmContact.F_otherURL);
-	var hasOther = otherField || otherPhone || otherFax || otherURL;
+	var birthday = contact.getAttr(ZmContact.F_birthday);
+	var hasOther = otherField || otherPhone || otherFax || otherURL || birthday;
 
 	if (hasOther) {
 		html[idx++] = "<tr><td colspan=4 valign=top class='sectionLabel'>";
@@ -486,6 +487,10 @@ function(contact, isGal, width) {
 		html[idx++] = "<td valign=top><table border=0>";
 		if (otherPhone)		idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_otherPhone, otherPhone, ZmObjectManager.PHONE);
 		if (otherFax)		idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_otherFax, otherFax, ZmObjectManager.PHONE);
+		if (birthday) {
+			var dateStr = AjxDateUtil.simpleComputeDateStr(new Date(parseInt(birthday)));
+			idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_birthday, dateStr, ZmObjectManager.DATE);
+		}
 		html[idx++] = "</table></td></tr>";
 		html[idx++] = "<tr><td><br></td></tr>";
 	}

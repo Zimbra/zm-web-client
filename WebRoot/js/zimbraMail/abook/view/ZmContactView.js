@@ -59,6 +59,9 @@ ZmContactView.homeAddrInfo		= [ZmContact.F_homeStreet, ZmContact.F_homeCity, ZmC
 ZmContactView.homePhoneInfo		= [ZmContact.F_homePhone, ZmContact.F_homePhone2, ZmContact.F_homeFax, ZmContact.F_mobilePhone, ZmContact.F_pager, ZmContact.F_carPhone];
 ZmContactView.otherAddrInfo		= [ZmContact.F_otherStreet, ZmContact.F_otherCity, ZmContact.F_otherState, ZmContact.F_otherPostalCode, ZmContact.F_otherCountry, ZmContact.F_otherURL];
 ZmContactView.otherPhoneInfo	= [ZmContact.F_otherPhone, ZmContact.F_otherFax];
+ZmContactView.miscInfo			= [ZmContact.F_birthday];
+
+ZmContactView.BIRTHDAY_ID		= "--b";
 
 ZmContactView._selectFields = {
 	"fileAs": [
@@ -211,6 +214,14 @@ function() {
 
 ZmContactView.prototype.isValid =
 function() {
+	var dateField = document.getElementById(this._fieldIds[ZmContact.F_birthday]);
+	var dateStr = AjxStringUtil.trim(dateField.value);
+	if (dateStr.length) {
+		var aDate = AjxDateUtil.simpleParseDateStr(dateStr);
+		if (isNaN(aDate) || aDate == null)
+			throw ZmMsg.errorBirthdayDate;
+	}
+
 	return true;
 };
 
@@ -306,6 +317,29 @@ function(field, html, idx) {
 	return idx;
 };
 
+ZmContactView.prototype._addDateRow =
+function(field, html, idx) {
+	html[idx++] = "<tr>";
+	html[idx++] = "<td class='editLabel' style='width:18em;'>";
+	html[idx++] = AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]);
+	html[idx++] = ":</td>";
+	if (!this._isReadOnly) {
+		var id = this._fieldIds[field] = Dwt.getNextId();
+		html[idx++] = "<td><table border=0 cellpadding=0 cellspacing=0><tr><td><input type='text' autocomplete='off' size=8 id='";
+		html[idx++] = id;
+		html[idx++] = "'></td><td id='";
+		html[idx++] = id;
+		html[idx++] = ZmContactView.BIRTHDAY_ID;
+		html[idx++] = "'></td></tr></table></td>";
+	} else {
+		html[idx++] = "<td class='contactOutput'>";
+		html[idx++] = (this._attr[field] || "");
+		html[idx++] = "</td>";
+	}
+	html[idx++] = "</tr>";
+	return idx;
+};
+
 ZmContactView.prototype._addStreetRow =
 function(field, html, idx) {
 	html[idx++] = "<tr>";
@@ -377,8 +411,16 @@ function() {
 	}
 };
 
+ZmContactView.prototype._addDateCalendars =
+function() {
+	var id = this._fieldIds[ZmContact.F_birthday] + ZmContactView.BIRTHDAY_ID;
+	var dateBtnListener = new AjxListener(this, this._dateButtonListener);
+	var dateSelListener = new AjxListener(this, this._dateSelectionListener);
+	ZmApptViewHelper.createMiniCalButton(this, id, dateBtnListener, dateSelListener, this._appCtxt);
+};
+
 ZmContactView.prototype._generateHtml =
-function(html, idx, label, colOneInfo, colTwoInfo) {
+function(html, idx, label, colOneInfo, colTwoInfo, miscInfo) {
 	// add label
 	if (label) {
 		html[idx++] = "<tr><td colspan=10 valign=top class='sectionLabel'>";
@@ -404,16 +446,25 @@ function(html, idx, label, colOneInfo, colTwoInfo) {
 	html[idx++] = "</table>";
 	html[idx++] = "</td>";
 
-	if (colTwoInfo) {
+	if (colTwoInfo || miscInfo) {
 		// add phone numbers in second column
 		html[idx++] = "<td valign=top>";
 		html[idx++] = "<table cellpadding=0 cellspacing=2 border=0>";
-		for (var i=0; i<colTwoInfo.length; i++) {
-			if (colTwoInfo[i] == ZmContact.F_folderId) {
-				if (!this._isReadOnly)
-					idx = this._addFolderRow(html, idx);
-			} else {
-				idx = this._addEntryRow(colTwoInfo[i], html, idx);
+		if (colTwoInfo) {
+			for (var i=0; i<colTwoInfo.length; i++) {
+				if (colTwoInfo[i] == ZmContact.F_folderId) {
+					if (!this._isReadOnly)
+						idx = this._addFolderRow(html, idx);
+				} else {
+					idx = this._addEntryRow(colTwoInfo[i], html, idx);
+				}
+			}
+		}
+		if (miscInfo) {
+			for (var i=0; i<miscInfo.length; i++) {
+				idx = miscInfo[i] == ZmContact.F_birthday
+					? this._addDateRow(miscInfo[i], html, idx)
+					: this._addEntryRow(miscInfo[i], html, idx);
 			}
 		}
 		html[idx++] = "</table>";
@@ -462,18 +513,30 @@ function(field) {
 };
 
 ZmContactView.prototype._setValue =
-function(field) {
-	var value = this._attr[field];
+function(field, isDate) {
+	var value = (this._attr[field]) || "";
 	var e = document.getElementById(this._fieldIds[field]);
-	if (e != null)
-		e.value = value || "";
+	if (e != null) {
+		if (isDate && value && value != "") {
+			e.value = AjxDateUtil.simpleComputeDateStr(new Date(parseInt(value)));
+		} else {
+			e.value = value;
+		}
+	}
 };
 
 ZmContactView.prototype._getValue =
-function(field) {
-	var e =  document.getElementById(this._fieldIds[field]);
-	if (e && e.value != undefined)
-		this._attr[field] = e.value != "" ? e.value : undefined;
+function(field, isDate) {
+	var e = document.getElementById(this._fieldIds[field]);
+	if (e && e.value != undefined) {
+		if (e.value != "") {
+			this._attr[field] = isDate
+				? (AjxDateUtil.simpleParseDateStr(e.value)).getTime()
+				: e.value;
+		} else {
+			this._attr[field] = undefined;
+		}
+	}
 };
 
 
@@ -563,6 +626,10 @@ function() {
 	for (var i=0; i<ZmContactView.otherPhoneInfo.length; i++)
 		this._setValue(ZmContactView.otherPhoneInfo[i]);
 
+	// set misc. info
+	for (var i=0; i<ZmContactView.miscInfo.length; i++)
+		this._setValue(ZmContactView.miscInfo[i], true);
+
 	// set file as
 	if (this._attr.fileAs) {
 		var fa = parseInt(this._attr.fileAs) - 1;
@@ -624,6 +691,10 @@ function() {
 	for (var i=0; i<ZmContactView.otherPhoneInfo.length; i++)
 		this._getValue(ZmContactView.otherPhoneInfo[i]);
 
+	// get dates
+	for (var i=0; i<ZmContactView.miscInfo.length; i++)
+		this._getValue(ZmContactView.miscInfo[i], true);
+
 	// get notes
 	this._getValue(ZmContact.F_notes);
 };
@@ -684,7 +755,7 @@ function(contact) {
 	idx = this._generateHtml(html, idx, ZmMsg.email, ZmContactView.emailInfo);
 	idx = this._generateHtml(html, idx, ZmMsg.work, ZmContactView.workAddrInfo, ZmContactView.workPhoneInfo);
 	idx = this._generateHtml(html, idx, ZmMsg.home, ZmContactView.homeAddrInfo, ZmContactView.homePhoneInfo);
-	idx = this._generateHtml(html, idx, ZmMsg.other, ZmContactView.otherAddrInfo, ZmContactView.otherPhoneInfo);
+	idx = this._generateHtml(html, idx, ZmMsg.other, ZmContactView.otherAddrInfo, ZmContactView.otherPhoneInfo, ZmContactView.miscInfo);
 	idx = this._createNotesHtml(html, idx);
 
 	html[idx++] = "</table>";
@@ -695,6 +766,7 @@ function(contact) {
 	if (this._isReadOnly) return;			// dont bother w/ rest if read only
 
 	this._addSelectOptions(); 				// add DwtSelect's
+	this._addDateCalendars();
 
 	for (var i in this._fieldIds) 			// add onKeyUp handlers
 		this._installOnKeyUpHandler(i);
@@ -797,6 +869,30 @@ function(ev) {
 		}
 	}
 };
+
+ZmContactView.prototype._dateButtonListener =
+function(ev) {
+	var dateField = document.getElementById(this._fieldIds[ZmContact.F_birthday]);
+	var aDate = AjxDateUtil.simpleParseDateStr(dateField.value);
+
+	// if date was input by user and its fubar, reset to today's date
+	if (isNaN(aDate) || aDate == null) {
+		aDate = new Date();
+	}
+
+	// always reset the date to current field's date
+	var menu = ev.item.getMenu();
+	var cal = menu.getItem(0);
+	cal.setDate(aDate, true);
+	ev.item.popup();
+};
+
+ZmContactView.prototype._dateSelectionListener =
+function(ev) {
+	var dateField = document.getElementById(this._fieldIds[ZmContact.F_birthday]);
+	dateField.value = AjxDateUtil.simpleComputeDateStr(ev.detail);
+};
+
 
 
 // Static methods

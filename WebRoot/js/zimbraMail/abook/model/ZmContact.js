@@ -63,6 +63,7 @@ ZmContact.prototype.constructor = ZmContact;
 
 // fields
 ZmContact.F_assistantPhone	= "assistantPhone";
+ZmContact.F_birthday		= "birthday";
 ZmContact.F_callbackPhone	= "callbackPhone";
 ZmContact.F_carPhone		= "carPhone";
 ZmContact.F_company			= "company";
@@ -1140,7 +1141,10 @@ ZmContact._AB_FIELD = {
 
 	// other phone numbers
 	otherPhone: ZmMsg.AB_FIELD_otherPhone,
-	otherFax: ZmMsg.AB_FIELD_otherFax
+	otherFax: ZmMsg.AB_FIELD_otherFax,
+
+	// misc fields
+	birthday: ZmMsg.AB_FIELD_birthday
 };
 
 ZmContact._AB_FILE_AS = {
