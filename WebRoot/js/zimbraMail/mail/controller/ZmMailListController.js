@@ -794,7 +794,7 @@ function(items, markAsSpam, folder) {
 ZmMailListController.prototype._resetOperations = 
 function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
-	if (parent) {
+	if (parent && parent instanceof ZmToolBar) {
         var folderId = this._getSearchFolderId();
         var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
 
