@@ -893,7 +893,7 @@ ZmOperation.SETUP[ZmOperation.SPELL_CHECK] = {
 ZmOperation.SYNC = i++;
 ZmOperation.SETUP[ZmOperation.SYNC] = {
 	textKey:	"reload",
-	image:		"redo"
+	image:		"Refresh"
 };
 
 ZmOperation.TAG = i++;
