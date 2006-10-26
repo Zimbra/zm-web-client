@@ -114,6 +114,27 @@ function(parent, type, id) {
 	var op = parent.getOp(ZmOperation.DELETE);
 	if (op)
 		op.setText(deleteText);
+
+    // are there any pop accounts associated to this folder?
+    var button = parent.getOp(ZmOperation.SYNC);
+    if (button) {
+        button.setEnabled(true);
+        button.setVisible(true);
+        if (folder.isFeed()) {
+            button.setText(ZmMsg.checkFeed);
+        }
+        else {
+            var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
+            var dsCollection = prefsApp.getDataSourceCollection();
+            var popAccounts = dsCollection.getPopAccountsFor(folder.id);
+            if (popAccounts.length > 0) {
+                button.setText(ZmMsg.checkPopMail);
+            }
+            else {
+                button.setVisible(false);
+            }
+        }
+    }
 };
 
 // Private methods
@@ -200,6 +221,19 @@ function(folder) {
 ZmFolderTreeController.prototype._doCreate =
 function(parent, name, color, url, search) {
 	parent.create(name, color, url, search);
+};
+
+ZmFolderTreeController.prototype._doSync = function(folder) {
+    var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
+    var dsCollection = prefsApp.getDataSourceCollection();
+    var popAccounts = dsCollection.getPopAccountsFor(folder.id);
+
+    if (popAccounts.length > 0) {
+        dsCollection.importPopMailFor(folder.id);
+    }
+    else {
+        ZmTreeController.prototype._doSync.call(this, folder);
+    }
 };
 
 /*

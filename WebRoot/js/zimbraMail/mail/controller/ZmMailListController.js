@@ -697,10 +697,35 @@ function(ev) {
 
 ZmMailListController.prototype._checkMailListener = 
 function(ev) {
-	this._folderSearch(ZmFolder.ID_INBOX, ZmSearchToolBar.FOR_MAIL_MI);
+    var folderId = this._getSearchFolderId();
+    var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
+    var dsCollection;
+
+    var isInbox = folderId == ZmFolder.ID_INBOX;
+    var isFeed = folder && folder.isFeed();
+    var hasPopAccounts = false;
+
+    if (folder && !isFeed) {
+        var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
+        dsCollection = prefsApp.getDataSourceCollection();
+        var dataSources = dsCollection.getPopAccountsFor(folderId);
+        hasPopAccounts = dataSources.length > 0;
+    }
+
+    if (isFeed) {
+        folder.sync();
+    }
+    else {
+        if (hasPopAccounts) {
+            dsCollection.importPopMailFor(folderId);
+        }
+        if (isInbox || !hasPopAccounts) {
+            this._folderSearch(ZmFolder.ID_INBOX, ZmSearchToolBar.FOR_MAIL_MI);
+        }
+    }
 };
 
-ZmMailListController.prototype._folderSearch = 
+ZmMailListController.prototype._folderSearch =
 function(folderId, optionalType) {
 	var searchController = this._appCtxt.getSearchController();
 	var type = optionalType || ZmSearchToolBar.FOR_ANY_MI;
@@ -770,7 +795,32 @@ ZmMailListController.prototype._resetOperations =
 function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 	if (parent) {
-		var isDrafts = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
+        var folderId = this._getSearchFolderId();
+        var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
+
+        var isInbox = folderId == ZmFolder.ID_INBOX;
+        var isFeed = folder && folder.isFeed();
+        var hasPopAccounts = false;
+
+        if (folder && !isInbox && !isFeed) {
+            var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
+            var dsCollection = prefsApp.getDataSourceCollection();
+            var popAccounts = dsCollection.getPopAccountsFor(folderId);
+            hasPopAccounts = popAccounts.length > 0;
+        }
+
+        var checkMailBtn = parent.getButton(ZmOperation.CHECK_MAIL);
+        if (!isInbox && isFeed) {
+            checkMailBtn.setText(ZmMsg.checkFeed);
+        }
+        else if (!isInbox && hasPopAccounts) {
+            checkMailBtn.setText(ZmMsg.checkPopMail);
+        }
+        else {
+            checkMailBtn.setText(ZmMsg.checkMail);
+        }
+        
+        var isDrafts = folderId == ZmFolder.ID_DRAFTS;
 		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD], !isDrafts && num == 1);
 		parent.enable(ZmOperation.SPAM, !isDrafts && num > 0);
 		parent.enable(ZmOperation.MOVE, !isDrafts && num > 0);

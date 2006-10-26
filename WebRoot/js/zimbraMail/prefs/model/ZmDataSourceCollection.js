@@ -52,6 +52,89 @@ ZmDataSourceCollection.prototype.getPopAccounts = function() {
     return AjxUtil.values(this._pop3Map);
 };
 
+ZmDataSourceCollection.prototype.getPopAccountsFor = function(folderId) {
+    var popAccounts = [];
+    for (var id in this._pop3Map) {
+        var account = this._pop3Map[id];
+        if (account.folderId == folderId && account.enabled) {
+            popAccounts.push(account);
+        }
+    }
+    return popAccounts;
+};
+
+ZmDataSourceCollection.prototype.importPopMailFor = function(folderId) {
+    var popAccounts = this.getPopAccountsFor(folderId);
+    if (popAccounts.length > 0) {
+        var sourceMap = {};
+        var soapDoc = AjxSoapDoc.create("ImportDataRequest", "urn:zimbraMail");
+        for (var i = 0; i < popAccounts.length; i++) {
+            var account = popAccounts[i];
+            sourceMap[account.id] = account;
+
+            var pop3 = soapDoc.set("pop3");
+            pop3.setAttribute("id", account.id);
+        }
+
+        /*** REVISIT: enable when GetDataSourceStatus is implemented ***
+        var callback = new AjxCallback(this, this._checkStatus, [sourceMap, 4000]);
+        /***/
+        var callback = null;
+        /***/
+        var params = {
+            soapDoc: soapDoc,
+            asyncMode: true,
+            callback: callback,
+            errorCallback: null
+        };
+        this._appCtxt.getAppController().sendRequest(params);
+    }
+};
+
+ZmDataSourceCollection.prototype._checkStatus =
+function(sourceMap, delayMs) {
+    var soapDoc = AjxSoapDoc.create("GetDataSourceStatusRequest", "urn:zimbraMail");
+
+    var callback = new AjxCallback(this, this._checkStatusResponse, [sourceMap]); 
+    var params = {
+        soapDoc: soapDoc,
+        asyncMode: true,
+        callback: callback,
+        errorCallback: null
+    };
+
+    var appController = this._appCtxt.getAppController();
+    var action = new AjxTimedAction(appController, appController.sendRequest, [params]);
+    AjxTimedAction.scheduleAction(action, delayMs || 2000);
+};
+
+ZmDataSourceCollection.prototype._checkStatusResponse =
+function(sourceMap, resp) {
+    var popStatus = resp.GetDataSourceStatusResponse.pop3;
+    if (!popStatus) return;
+
+    for (var i = 0; i < popStatus; i++) {
+        var pop3 = popStatus[i];
+        if (!pop3.isRunning) {
+            var source = sourceMap[pop3.id];
+            if (sourceMap[pop3.id]) {
+                delete sourceMap[pop3.id];
+                // TODO: show toast?
+                if (pop3.success) {
+                    alert("POP account \""+source.name+"\" loaded."); // TODO: i18n
+                }
+                else {
+                    alert("POP account \""+source.name+"\" failed.\nerror: "+pop3.error); // TODO: i18n
+                }
+            }
+        }
+    }
+
+    if (AjxUtil.keys(sourceMap).length > 0) {
+        this._checkStatus(sourceMap, 2000);
+    }
+};
+
 ZmDataSourceCollection.prototype.getById = function(id) {
 	return this._itemMap[id];
 };
