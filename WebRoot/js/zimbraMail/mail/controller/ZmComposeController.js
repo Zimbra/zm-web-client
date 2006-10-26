@@ -305,7 +305,21 @@ function(initHide, composeMode) {
 	    this._composeView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 	    this._composeView.enableInputs(false);
 	}
+	this._composeView.getIdentitySelect().addChangeListener(new AjxListener(this, this._identityChangeListener));
 };
+
+ZmComposeController.prototype._identityChangeListener =
+function(event) {
+	var identity = this._composeView.getIdentity();
+	
+	var newMode = this._getComposeMode(this._msg, identity);
+	if (newMode != this._composeView.getComposeMode()) {
+		this._setFormat(newMode);
+	}
+
+	this._composeView.resetBody(this._action, this._msg, this._extraBodyText, null);
+};
+
 
 /**
  * Sets the tab stops for the compose form. All address fields are added; they're
@@ -422,6 +436,10 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	this._toOverride = toOverride;
 	this._subjOverride = subjOverride;
 	this._extraBodyText = extraBodyText;
+	
+	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+	var identity = identityCollection.selectIdentity(msg);
+
 
 	this._initializeToolBar();
 	this._toolbar.enableAll(true);
@@ -437,10 +455,12 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 
 	this.initComposeView(null, composeMode);
 
-	this._composeMode = composeMode ? composeMode : this._setComposeMode(msg);
+	this._composeMode = composeMode ? composeMode : this._getComposeMode(msg, identity);
+	this._composeView.setComposeMode(this._composeMode);
+
 	this._setOptionsMenu(this._composeMode);
 
-	this._composeView.set(action, msg, toOverride, subjOverride, extraBodyText);
+	this._composeView.set(action, msg, toOverride, subjOverride, extraBodyText, identity);
 	this._setComposeTabGroup();
 	this._app.pushView(ZmController.COMPOSE_VIEW);
 	this._composeView.reEnableDesignMode();
@@ -565,14 +585,14 @@ function(composeMode) {
 	button.setMenu(menu);
 };
 
-ZmComposeController.prototype._setComposeMode =
-function(msg) {
+ZmComposeController.prototype._getComposeMode =
+function(msg, identity) {
 	// depending on COS/user preference set compose format
 	var composeMode = DwtHtmlEditor.TEXT;
 
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		var bComposeSameFormat = this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
-		var bComposeAsFormat = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+		var bComposeSameFormat = identity.getComposeSameFormat();
+		var bComposeAsFormat = identity.getComposeAsFormat();
 
 		if (this._action == ZmOperation.REPLY ||
 			this._action == ZmOperation.REPLY_ALL ||
@@ -595,8 +615,6 @@ function(msg) {
 				composeMode = DwtHtmlEditor.HTML;
 		}
 	}
-
-	this._composeView.setComposeMode(composeMode);
 
 	return composeMode;
 };

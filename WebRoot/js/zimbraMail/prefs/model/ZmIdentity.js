@@ -176,7 +176,7 @@ function(request, batchCommand) {
     }
 	var respCallback = new AjxCallback(this, this._handleAction, [request]);
 	var errorCallback = new AjxCallback(this, this._handleErrorAction, [request]);
-	batchCommand.addRequestParams(soapDoc, respCallback, errorCallback, request);
+	batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback, request);
 };
 
 ZmIdentity.prototype._handleAction =
@@ -263,7 +263,7 @@ function() {
 // ZmSetting.SIG_OUTLOOK: signature above quoted text.
 ZmIdentity.prototype.getSignatureStyle =
 function() {
-	return this._getAdvancedIdentity()._signatureStyle;
+	return this._signatureStyle;
 };
 
 // Returns the identity that owns the advanced options for this identity
@@ -290,7 +290,10 @@ function ZmIdentityCollection(appCtxt) {
 };
 
 ZmIdentityCollection.prototype.getIdentities =
-function() {
+function(includeFakeDefault) {
+	if (!includeFakeDefault && this._hasFakeDefault) {
+		return [];
+	}
 	var i = 0;
 	var result = [];
 	for (var id in this._idToIdentity) {
@@ -306,9 +309,18 @@ function(id) {
 
 ZmIdentityCollection.prototype.add =
 function(identity) {
+	if (identity.isDefault && this._hasFakeDefault) {
+		this.remove(this.defaultIdentity);
+		this.defaultIdentity = null;
+		this._hasFakeDefault = false;
+	}
+
 	identity.id = this._nextId++;
 	this._idToIdentity[identity.id] = identity;
 	if (identity.isDefault || !this.defaultIdentity) {
+		if (this._hasFakeDefault) {
+			this.remove
+		}
 		this.defaultIdentity = identity;
 	}
 
@@ -378,6 +390,7 @@ function(mailMsg) {
 	
 	return this.defaultIdentity;
 };
+
 
 ZmIdentityCollection.prototype._selectIdentityFromAddresses =
 function(mailMsg, type) {
@@ -454,4 +467,14 @@ function(data) {
 		identity._loadFromDom(identities[i]);
 		this.add(identity);
 	}
+	if (!count) {
+		// This is a hack to make sure there is always a default identity, even though
+		// the server isn't yet creating one for us.
+		var identity = new ZmIdentity(this._appCtxt, "Fake Identity");
+		identity.isDefault = true;
+		this.add(identity);		
+		this._hasFakeDefault = true;
+	}
 };
+
+

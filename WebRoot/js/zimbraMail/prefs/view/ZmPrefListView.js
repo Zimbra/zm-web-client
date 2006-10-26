@@ -36,10 +36,10 @@
  *  Abstract method:
  * _createDetails() creates the contents of the details pane.
  */
- function ZmPrefListView(parent, appCtxt, controller, labels, className) {
+ function ZmPrefListView(parent, appCtxt, controller, labels, className, posStyle) {
 	if (arguments.length == 0) return;
 
-	DwtTabViewPage.call(this, parent, className);
+	DwtTabViewPage.call(this, parent, className, posStyle);
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;
@@ -284,7 +284,7 @@ function(item) {
 	var iconClass = error ? "Critical" : "";
 	div.innerHTML = [
 		"<table cellspacing=0 cellpadding=0><tr><td>", AjxImg.getImageHtml(iconClass), "</td><td>",
-		AjxStringUtil.htmlEncode(item.name, true), item.isDefault ? "*" : "", "</td></tr></table>"
+		AjxStringUtil.htmlEncode(item.name, true), "</td></tr></table>"
 	].join("");
 
 	return div;

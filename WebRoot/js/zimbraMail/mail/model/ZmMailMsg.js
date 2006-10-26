@@ -677,6 +677,7 @@ function(soapDoc, contactList, isDraft) {
 		var type = ZmComposeView.ADDRS[i];
 		this._addAddressNodes(soapDoc, msgNode, type, contactList, isDraft);
 	}
+	this._addFrom(soapDoc, msgNode);
 
 	soapDoc.set("su", this.subject, msgNode);
 
@@ -1022,6 +1023,22 @@ function(soapDoc, parent, type, contactList, isDraft) {
 		var name = addr.getName();
 		if (name)
 			e.setAttribute("p", name);
+	}
+};
+
+ZmMailMsg.prototype._addFrom =
+function(soapDoc, parent) {
+	if (this._identity) {
+		var address = this._identity.sendFromAddress;
+		var name = this._identity.sendFromDisplay;
+		//TODO: The following null check shouldn't be necessary, but for now I need
+		// to make it because proper default identites are not being created.
+		if (address && name) {
+			var e = soapDoc.set("e", null, parent);
+			e.setAttribute("t", "f");
+			e.setAttribute("a", address);
+			e.setAttribute("p", name);
+		}
 	}
 };
 

@@ -104,15 +104,17 @@ function() {
 * @param toOverride 	init's To: field w/ given value
 * @param subjOverride 	init's Subject field w/ given value
 * @param extraBodyText 	body text that gets prepended before real msg body gets addded (invites)
+* @param identity		the identity sending the message
 */
 ZmComposeView.prototype.set =
-function(action, msg, toOverride, subjOverride, extraBodyText) {
+function(action, msg, toOverride, subjOverride, extraBodyText, identity) {
 	this._action = action;
 	if (this._msg)
 		this._msg.onChange = null;
 	this._msg = msg;
 	if (msg)
 		msg.onChange = this._onMsgDataChange;
+	this._identitySelect.setSelectedValue(identity.id);
 
 	this.reset(true);
 
@@ -346,6 +348,8 @@ function(attId, isDraft) {
 		if (addrs[type] && addrs[type].all.size() > 0)
 			msg.setAddresses(type, addrs[type].all);
 	}
+	var identity = this.getIdentity();
+	msg._identity = identity;
 
 	// save a reference to the original message
 	msg._origMsg = this._msg;
@@ -627,7 +631,8 @@ function(content) {
 	var sig = this._getSignature();
 	var sep = this._getSignatureSeparator();
 	var newLine = this._getSignatureNewLine();
-	if (this._appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_OUTLOOK) {
+	var identity = this.getIdentity();
+	if (identity.getSignatureStyle() == ZmSetting.SIG_OUTLOOK) {
 		var regexp = ZmComposeView.QUOTED_CONTENT_RE;
 		var repl = "----- ";
 
@@ -649,7 +654,9 @@ function(content) {
 
 ZmComposeView.prototype._getSignature =
 function() {
-	var sig = this._appCtxt.get(ZmSetting.SIGNATURE);
+	var identity = this.getIdentity();
+	
+	var sig = identity._signature;
 	if (!sig) return;
 
 	var newLine = this._getSignatureNewLine();
@@ -959,8 +966,8 @@ function(action, msg, extraBodyText, incOption) {
 		}
 	}
 
-	var sigStyle = (this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED) && this._appCtxt.get(ZmSetting.SIGNATURE))
-				   ? this._appCtxt.get(ZmSetting.SIGNATURE_STYLE) : null;
+	var identity = this.getIdentity();
+	var sigStyle = identity._signature ? identity.getSignatureStyle() : null;
 
 	var value = sigStyle == ZmSetting.SIG_OUTLOOK
 		? (this._getSignatureSeparator() + this._getSignature())
@@ -970,9 +977,9 @@ function(action, msg, extraBodyText, incOption) {
 	if (!incOption) {
 		var isReply = action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL;
 		if (isReply || isInviteReply) {
-			incOption = this._appCtxt.get(ZmSetting.REPLY_INCLUDE_ORIG);
+			incOption = identity.getReplyOption();
 		} else if (action == ZmOperation.FORWARD_INLINE) {
-			incOption = this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG);
+			incOption = identity.getForwardOption();
 			if (incOption == ZmSetting.INCLUDE_ATTACH) {
 				incOption = ZmSetting.INCLUDE;
 			}
@@ -1036,10 +1043,8 @@ function(action, msg, extraBodyText, incOption) {
 				}
 				preface = ZmComposeView._replyPrefixFormatter.format(from.toString());
 			}
-			var prefix = this._appCtxt.get(ZmSetting.REPLY_PREFIX);
-			if (incOption == ZmSetting.INCLUDE_PREFIX ||
-				incOption == ZmSetting.INCLUDE_PREFIX)
-			{
+			var prefix = identity.getPrefix();
+			if (incOption == ZmSetting.INCLUDE_PREFIX) {
 				value += leadingText + preface + AjxStringUtil.wordWrap(body, ZmComposeView.WRAP_LENGTH, prefix + " ");
 			}
 			else if (incOption == ZmSetting.INCLUDE_SMART)
@@ -1207,6 +1212,7 @@ ZmComposeView.prototype._createHtml =
 function() {
 	var subjectFieldId = Dwt.getNextId();
 	var attcDivId = Dwt.getNextId();
+	var identityDivId = Dwt.getNextId();
 	var div = document.createElement("div");
 
 	var html = [];
@@ -1250,9 +1256,17 @@ function() {
 	html[idx++] = " align='right'>";
 	html[idx++] = ZmMsg.subject;
 	html[idx++] = ":</td>";
+	html[idx++] = "<td><table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
 	html[idx++] = "<td><input autocomplete='off' type='text' id='";
 	html[idx++] = subjectFieldId;
 	html[idx++] = "' class='subjectField'></td>";
+
+	// create identity selector
+	html[idx++] = "<td style='padding-left:4px;width:15%;'><div id='";
+	html[idx++] = identityDivId;
+	html[idx++] = "'></div></td>";
+
+	html[idx++] = "</tr></table></td>";
 	html[idx++] = "</tr></table></td></tr>";
 
 	// create element for adding attachments
@@ -1269,6 +1283,30 @@ function() {
 	this._subjectField = document.getElementById(subjectFieldId);
 //	this._subjectField.onkeydown = AjxCallback.simpleClosure(this.__checkTabInSubject, this);
 	this._attcDiv = document.getElementById(attcDivId);
+	this._identityDiv = document.getElementById(identityDivId);
+	
+	var options = [];
+	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+	var identities = identityCollection.getIdentities(true);
+	for (var i = 0, count = identities.length; i < count; i++) {
+		var identity = identities[i];
+		options[i] = new DwtSelectOptionData(identity.id, identity.name);
+	}
+	this._identitySelect = new DwtSelect(this, options);
+	this._identitySelect.reparentHtmlElement(this._identityDiv);
+};
+
+ZmComposeView.prototype.getIdentitySelect =
+function() {
+	return this._identitySelect;
+};
+
+ZmComposeView.prototype.getIdentity =
+function() {
+	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+	var id = this._identitySelect.getValue();
+	var result = identityCollection.getById(id);
+	return result ? result : identityCollection.defaultIdentity;
 };
 
 /*

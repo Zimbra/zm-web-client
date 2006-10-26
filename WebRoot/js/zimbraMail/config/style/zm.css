@@ -2011,6 +2011,17 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmIdentityView .DwtTabBar {
 	@PageBg@
 }
+/* Browse button */
+.ZmIdentityView .DwtButton,
+.ZmIdentityView .DwtButton-activated,
+.ZmIdentityView .DwtButton-triggered,
+.ZmIdentityView .DwtButton-toggled,
+.ZmIdentityView .DwtButton-disabled,
+.ZmIdentityView .DwtButton-active,
+.ZmIdentityView .DwtButton-focused {
+	min-width: 0;
+	margin-left: 5px;
+}
 
 .ZmPopAccountsView {}
 .ZmPopAccountsViewLink {

@@ -495,9 +495,12 @@ function(ev, action, extraBodyText, instanceDate) {
 	//   then if opening draft always request html 
 	// 	 otherwise just check if user prefers html or
 	//   msg hasnt been loaded yet and user prefers format of orig. msg
+	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+	var identity = identityCollection.selectIdentity(msg);
 	var htmlEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
-	var prefersHtml = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML;
-	var sameFormat = this._appCtxt.get(ZmSetting.COMPOSE_SAME_FORMAT);
+	var prefersHtml = identity.getComposeAsFormat() == ZmSetting.COMPOSE_HTML;
+	var sameFormat = identity.getComposeSameFormat();
+	
 	var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg.isLoaded() && sameFormat)))));
 	var inNewWindow = this._inNewWindow(ev);
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText]);

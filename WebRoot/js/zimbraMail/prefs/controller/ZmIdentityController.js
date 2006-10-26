@@ -84,5 +84,17 @@ function() {
 		var proxy = AjxUtil.createProxy(identities[i]);
 		result.add(proxy);
 	}
+	result.sort(ZmIdentityController._comparator);
 	return result;
+};
+
+ZmIdentityController._comparator =
+function(a, b) {
+	if (a.isDefault) {
+		return -1;
+	} else if (b.isDefault) {
+		return 1;
+	} else {
+		return a.name == b.name ? 0 : a.name < b.name ? -1 : 1;
+	}
 };

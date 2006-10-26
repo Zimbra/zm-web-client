@@ -29,7 +29,7 @@
 		listHeader: ZmMsg.identities, detailsHeader: ZmMsg.identitiesLabel
 	};
 
-	ZmPrefListView.call(this, parent, appCtxt, controller, labels, "ZmIdentityView");
+	ZmPrefListView.call(this, parent, appCtxt, controller, labels, "ZmIdentityView", DwtControl.STATIC_STYLE);
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
@@ -67,7 +67,7 @@ function(parentElement) {
 	var inputId = Dwt.getNextId();
 
 	var html = ["<table cellspacing=0 cellpadding=0>",
-				"<tr><td style='text-align:right;' width='200px'>", 
+				"<tr><td style='text-align:right;' width='120px'>", 
 	            ZmMsg.identityNameLabel, "</td><td id='", inputId, "'></td></tr></table>"].join("");
 	parentElement.innerHTML = html;
 	
@@ -167,8 +167,7 @@ ZmIdentityView.prototype._addCommands =
 function(list, op, batchCommand) {
 	for (var i = 0, count = list.length; i < count; i++) {
 		var identity = list[i];
-		var command = new AjxCallback(identity, identity.createRequest, [op]);
-		batchCommand.add(command);
+		identity.createRequest(op, batchCommand);
 	}
 };
 
@@ -422,11 +421,11 @@ function() {
 	html[i++] = whenInFolderCheckboxId;
 	html[i++] = "'></td><td>";
 	html[i++] = ZmMsg.whenInFolder;
-	html[i++] = "</td></tr><tr><td>&nbsp;</td><td><div id='";
+	html[i++] = "</td></tr><tr><td>&nbsp;</td><td><table cellspacing=0 cellpadding=0><tr><td id='";
 	html[i++] = whenInFolderInputId;
-	html[i++] = "'></div><div id='";
+	html[i++] = "'></td><td id='";
 	html[i++] = folderBrowseButtonId;
-	html[i++] = "'></div></td></tr><tr><td>&nbsp;</td><td class='Hint'>";
+	html[i++] = "'></td></tr></table></td></tr><tr><td>&nbsp;</td><td class='Hint'>";
 	html[i++] = ZmMsg.whenInFolderHint;
 	html[i++] = "</td></tr>";
 
@@ -435,13 +434,15 @@ function() {
 
 	this.getHtmlElement().innerHTML = html.join("");
 
-	var params = { parent:this, validationStyle: DwtInputField.CONTINUAL_VALIDATION };
+	var params = { parent:this, size: 30, validationStyle: DwtInputField.CONTINUAL_VALIDATION };
+	params.hint = ZmMsg.nameHint;
 	var sendFromName = new DwtInputField(params);
 	sendFromName.setRequired(true);
 	sendFromName.reparentHtmlElement(sendFromNameId);
 	this._inputs[ZmIdentity.SEND_FROM_DISPLAY] = sendFromName;
 	this._errorMessages[ZmIdentity.SEND_FROM_DISPLAY] = ZmMsg.sendFromError;
 
+	params.hint = ZmMsg.addressHint;
 	var sendFromAddress = new DwtInputField(params);
 	sendFromAddress.setRequired(true);
 	sendFromAddress.setValidatorFunction(null, ZmIdentityPage._validateEmailAddress);
@@ -449,16 +450,19 @@ function() {
 	this._inputs[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
 	this._errorMessages[ZmIdentity.SEND_FROM_ADDRESS] = ZmMsg.sendFromAddressError;
 
+	params.hint = ZmMsg.nameHint;
 	var setReplyToName = new DwtInputField(params);
 	setReplyToName.reparentHtmlElement(setReplyToNameId);
 	this._inputs[ZmIdentity.SET_REPLY_TO_DISPLAY] = setReplyToName;
+	params.hint = ZmMsg.addressHint;
 	var setReplyToAddress = new DwtInputField(params);
 	setReplyToAddress.reparentHtmlElement(setReplyToAddressId);
 	this._inputs[ZmIdentity.SET_REPLY_TO_ADDRESS] = setReplyToAddress;
 	this._associateCheckbox(setReplyToCheckboxId, [setReplyToName, setReplyToAddress]);
 	this._checkboxIds[ZmIdentity.SET_REPLY_TO] = setReplyToCheckboxId;
 
-	params.size = 50;
+	params.size = 70;
+	params.hint = null;
 	var whenSentToInput = new DwtInputField(params);
 	whenSentToInput.reparentHtmlElement(whenSentToInputId);
 	this._arrays[ZmIdentity.WHEN_SENT_TO_ADDRESSES] = { input: whenSentToInput, toArray: this._stringToArray, toText: this._arrayToString };
