@@ -201,6 +201,9 @@ function(ev, bIsPopCallback) {
 				} else {
 					this._doModify(contact, mods);
 				}
+				this._appCtxt.getZimletMgr().notifyZimlets(
+					"onContactModified",
+					ZmZimletContext._translateZMObject(contact), mods);
 			} else {
 				this._doCreate(this._app.getContactList(), mods);
 			}
