@@ -488,7 +488,8 @@ function(contact, isGal, width) {
 		if (otherPhone)		idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_otherPhone, otherPhone, ZmObjectManager.PHONE);
 		if (otherFax)		idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_otherFax, otherFax, ZmObjectManager.PHONE);
 		if (birthday) {
-			var dateStr = AjxDateUtil.simpleComputeDateStr(new Date(parseInt(birthday)));
+			var formatter = new AjxDateFormat("yyyy-MM-dd");
+			var dateStr = AjxDateUtil.simpleComputeDateStr(formatter.parse(birthday));
 			idx = this._getObjectHtml(html, idx, ZmMsg.AB_FIELD_birthday, dateStr, ZmObjectManager.DATE);
 		}
 		html[idx++] = "</table></td></tr>";

@@ -40,6 +40,8 @@ function ZmContactView(parent, appCtxt, controller, isReadOnly) {
 	this.getHtmlElement().style.overflow = "hidden";
 	if (!isReadOnly)
 		this._changeListener = new AjxListener(this, this._contactChangeListener);
+
+	this._bdateFormatter = new AjxDateFormat("yyyy-MM-dd");
 };
 
 ZmContactView.prototype = new DwtComposite;
@@ -518,7 +520,7 @@ function(field, isDate) {
 	var e = document.getElementById(this._fieldIds[field]);
 	if (e != null) {
 		if (isDate && value && value != "") {
-			e.value = AjxDateUtil.simpleComputeDateStr(new Date(parseInt(value)));
+			e.value = AjxDateUtil.simpleComputeDateStr(this._bdateFormatter.parse(value));
 		} else {
 			e.value = value;
 		}
@@ -530,9 +532,12 @@ function(field, isDate) {
 	var e = document.getElementById(this._fieldIds[field]);
 	if (e && e.value != undefined) {
 		if (e.value != "") {
-			this._attr[field] = isDate
-				? (AjxDateUtil.simpleParseDateStr(e.value)).getTime()
-				: e.value;
+			if (isDate) {
+				var bdate = AjxDateUtil.simpleParseDateStr(e.value);
+				this._attr[field] = this._bdateFormatter.format(bdate);
+			} else {
+				this._attr[field] = e.value;
+			}
 		} else {
 			this._attr[field] = undefined;
 		}
