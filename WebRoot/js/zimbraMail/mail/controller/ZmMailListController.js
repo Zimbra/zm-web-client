@@ -813,17 +813,19 @@ function(parent, num) {
         }
 
         var checkMailBtn = parent.getButton(ZmOperation.CHECK_MAIL);
-        if (!isInbox && isFeed) {
-            checkMailBtn.setText(ZmMsg.checkFeed);
-        }
-        else if (!isInbox && hasPopAccounts) {
-            checkMailBtn.setText(ZmMsg.checkPopMail);
-        }
-        else {
-            checkMailBtn.setText(ZmMsg.checkMail);
-        }
+		if (checkMailBtn) {
+			if (!isInbox && isFeed) {
+				checkMailBtn.setText(ZmMsg.checkFeed);
+			}
+			else if (!isInbox && hasPopAccounts) {
+				checkMailBtn.setText(ZmMsg.checkPopMail);
+			}
+			else {
+				checkMailBtn.setText(ZmMsg.checkMail);
+			}
+		}
         
-        var isDrafts = folderId == ZmFolder.ID_DRAFTS;
+		var isDrafts = folderId == ZmFolder.ID_DRAFTS;
 		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD], !isDrafts && num == 1);
 		parent.enable(ZmOperation.SPAM, !isDrafts && num > 0);
 		parent.enable(ZmOperation.MOVE, !isDrafts && num > 0);
