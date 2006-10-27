@@ -76,11 +76,7 @@ ZmDataSourceCollection.prototype.importPopMailFor = function(folderId) {
             pop3.setAttribute("id", account.id);
         }
 
-        /*** REVISIT: enable when GetDataSourceStatus is implemented ***
         var callback = new AjxCallback(this, this._checkStatus, [sourceMap, 4000]);
-        /***/
-        var callback = null;
-        /***/
         var params = {
             soapDoc: soapDoc,
             asyncMode: true,
@@ -93,7 +89,7 @@ ZmDataSourceCollection.prototype.importPopMailFor = function(folderId) {
 
 ZmDataSourceCollection.prototype._checkStatus =
 function(sourceMap, delayMs) {
-    var soapDoc = AjxSoapDoc.create("GetDataSourceStatusRequest", "urn:zimbraMail");
+    var soapDoc = AjxSoapDoc.create("GetImportStatusRequest", "urn:zimbraMail");
 
     var callback = new AjxCallback(this, this._checkStatusResponse, [sourceMap]); 
     var params = {
@@ -109,22 +105,26 @@ function(sourceMap, delayMs) {
 };
 
 ZmDataSourceCollection.prototype._checkStatusResponse =
-function(sourceMap, resp) {
-    var popStatus = resp.GetDataSourceStatusResponse.pop3;
+function(sourceMap, result) {
+    var popStatus = result._data.GetImportStatusResponse.pop3;
     if (!popStatus) return;
 
-    for (var i = 0; i < popStatus; i++) {
+    for (var i = 0; i < popStatus.length; i++) {
         var pop3 = popStatus[i];
         if (!pop3.isRunning) {
             var source = sourceMap[pop3.id];
             if (sourceMap[pop3.id]) {
                 delete sourceMap[pop3.id];
-                // TODO: show toast?
                 if (pop3.success) {
-                    alert("POP account \""+source.name+"\" loaded."); // TODO: i18n
+                    var message = AjxMessageFormat.format(ZmMsg.popAccountLoadSuccess, source.name);
+                    this._appCtxt.setStatusMsg(message);
                 }
                 else {
-                    alert("POP account \""+source.name+"\" failed.\nerror: "+pop3.error); // TODO: i18n
+                    var message = AjxMessageFormat.format(ZmMsg.popAccountLoadFailure, source.name);
+                    this._appCtxt.setStatusMsg(message, ZmStatusView.LEVEL_CRITICAL);
+                    var dialog = this._appCtxt.getErrorDialog();
+                    dialog.setMessage(message, pop3.error, DwtMessageDialog.CRITICAL_STYLE);
+                    dialog.popup();
                 }
             }
         }
