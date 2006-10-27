@@ -470,6 +470,7 @@ function(ev) {
 	actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE, ZmOperation.NEW_MESSAGE], enableNewEmail);
 
 	if (contact.isGroup()) {
+		actionMenu.enable([ZmOperation.SEARCH, ZmOperation.BROWSE], false);
 		ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT, ZmMsg.AB_EDIT_GROUP);
 	} else {
 		this._setContactText(!this.isGalSearch());
