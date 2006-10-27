@@ -95,9 +95,6 @@ ZmPreferencesApp.prototype.getDataSourceCollection = function() {
 
 ZmPreferencesApp.prototype.getIdentityCollection =
 function() {
-	if (!this._identityCollection) {
-		this._identityCollection = new ZmIdentityCollection(this._appCtxt);
-	}
-	return this._identityCollection;
+	return this._appCtxt.getIdentityCollection();
 };
 

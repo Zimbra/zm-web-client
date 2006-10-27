@@ -90,7 +90,9 @@ function(domain) {
 
 	// set any global references in parent w/in child window
 	if (window.parentController) {
-		appCtxt.setSettings(window.parentController._appCtxt.getSettings());
+		var parentCtxt = window.parentController._appCtxt;
+		appCtxt.setSettings(parentCtxt.getSettings());
+		appCtxt.setIdentityCollection(parentCtxt.getIdentityCollection());
 	}
 
 	var shell = new DwtShell("MainShell", false, ZmNewWindow._confirmExitMethod);

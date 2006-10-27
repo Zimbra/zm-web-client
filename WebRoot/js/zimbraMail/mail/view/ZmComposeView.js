@@ -1288,14 +1288,14 @@ function() {
 	var options = this._getIdentityOptions();
 	this._identitySelect = new DwtSelect(this, options);
 	this._identitySelect.reparentHtmlElement(this._identityDiv);
-	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+	var identityCollection = this._appCtxt.getIdentityCollection();
 	identityCollection.addChangeListener(new AjxListener(this, this._identityChangeListener));
 };
 
 ZmComposeView.prototype._getIdentityOptions =
 function() {
 	var options = [];
-	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+	var identityCollection = this._appCtxt.getIdentityCollection();
 	var identities = identityCollection.getIdentities(true);
 	for (var i = 0, count = identities.length; i < count; i++) {
 		var identity = identities[i];
@@ -1333,7 +1333,7 @@ function() {
 
 ZmComposeView.prototype.getIdentity =
 function() {
-	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+	var identityCollection = this._appCtxt.getIdentityCollection();
 	var id = this._identitySelect.getValue();
 	var result = identityCollection.getById(id);
 	return result ? result : identityCollection.defaultIdentity;

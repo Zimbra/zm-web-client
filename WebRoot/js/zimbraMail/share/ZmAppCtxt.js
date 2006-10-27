@@ -629,3 +629,17 @@ function() {
 	return this._zimletMgr;
 };
 
+ZmAppCtxt.prototype.getIdentityCollection =
+function() {
+	if (!this._identityCollection) {
+		this._identityCollection = new ZmIdentityCollection(this);
+	}
+	return this._identityCollection;
+};
+
+ZmAppCtxt.prototype.setIdentityCollection =
+function(collection) {
+	this._identityCollection = collection;
+};
+
+

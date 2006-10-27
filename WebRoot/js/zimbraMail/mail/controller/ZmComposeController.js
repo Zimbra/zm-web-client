@@ -437,7 +437,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	this._subjOverride = subjOverride;
 	this._extraBodyText = extraBodyText;
 	
-	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+	var identityCollection = this._appCtxt.getIdentityCollection();
 	var identity = identityCollection.selectIdentity(msg);
 
 
