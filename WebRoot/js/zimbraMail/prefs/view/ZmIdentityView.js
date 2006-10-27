@@ -177,9 +177,23 @@ function(result) {
 	var listView = this.getList();
 	listView.set(this._controller._getListData());
 	
+	// Clear the lists of changes.
 	this._adds.length = 0;
 	this._deletes.length = 0;
 	this._updates.length = 0;
+	
+	// Make sure the correct proxy identity is now selected.
+	if (this._identity) {
+		var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+		var list = this.getList().getList();
+		for (var i = 0, count = list.size(); i < count; i++) {
+			var identity = list.get(i);
+			if (identity.id == this._identity.id) {
+				this.getList().setSelection(identity);
+				break;
+			}
+		}
+	}
 };
 	
 ZmIdentityView.prototype.getChanges =

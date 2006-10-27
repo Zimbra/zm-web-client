@@ -1285,6 +1285,15 @@ function() {
 	this._attcDiv = document.getElementById(attcDivId);
 	this._identityDiv = document.getElementById(identityDivId);
 	
+	var options = this._getIdentityOptions();
+	this._identitySelect = new DwtSelect(this, options);
+	this._identitySelect.reparentHtmlElement(this._identityDiv);
+	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+	identityCollection.addChangeListener(new AjxListener(this, this._identityChangeListener));
+};
+
+ZmComposeView.prototype._getIdentityOptions =
+function() {
 	var options = [];
 	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
 	var identities = identityCollection.getIdentities(true);
@@ -1292,8 +1301,29 @@ function() {
 		var identity = identities[i];
 		options[i] = new DwtSelectOptionData(identity.id, identity.name);
 	}
-	this._identitySelect = new DwtSelect(this, options);
-	this._identitySelect.reparentHtmlElement(this._identityDiv);
+	return options;
+};
+
+ZmComposeView.prototype._identityChangeListener =
+function(ev) {
+	if (ev.event == ZmEvent.E_CREATE) {
+		var identity = ev.getDetail("item");
+		var option = new DwtSelectOptionData(identity.id, identity.name);
+		this._identitySelect.addOption(option);
+	} else if (ev.event == ZmEvent.E_DELETE) {
+		// DwtSelect doesn't support removing an option, so recreate the whole thing.		
+		this._identitySelect.clearOptions();
+		var options = this._getIdentityOptions();
+		for (var i = 0, count = options.length; i < count; i++)	 {
+			this._identitySelect.addOption(options[i]);
+		}
+	} else if (ev.event == ZmEvent.E_MODIFY) {
+		var rename = ev.getDetail("rename");
+		if (rename) {
+			var identity = ev.getDetail("item");
+			this._identitySelect.rename(identity.id, identity.name);
+		}
+	}
 };
 
 ZmComposeView.prototype.getIdentitySelect =

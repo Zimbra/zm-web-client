@@ -185,7 +185,11 @@ function(request, result) {
 	if (request == "ModifyIdentityRequest") {
 		var identity = identityCollection.getById(this.id);
 		identityCollection._removeFromMaps(identity);
-		identity.name = this.name;
+		var rename = false;
+		if (this.hasOwnProperty("name")) {
+			identity.name = this.name;
+			rename = true;
+		}
 		for (var i in ZmIdentity.FIELDS) {
 			var field = ZmIdentity.FIELDS[i];
 			if (this.hasOwnProperty(field.name)) {
@@ -194,8 +198,9 @@ function(request, result) {
 			}
 		}
 		identityCollection._addToMaps(identity);
+		identityCollection._notify(ZmEvent.E_MODIFY, { item: identity, rename: rename } );
 	} else if (request == "CreateIdentityRequest") {
-		identityCollection.add(this, false);
+		identityCollection.add(this);
 	} else if (request == "DeleteIdentityRequest") {
 		identityCollection.remove(this);
 	}
@@ -281,6 +286,7 @@ function() {
 
 
 function ZmIdentityCollection(appCtxt) {
+	ZmModel.call(this, ZmEvent.S_IDENTITY);
 	this._appCtxt = appCtxt;
 	this._nextId = 1;
 	this.defaultIdentity = null;
@@ -288,6 +294,9 @@ function ZmIdentityCollection(appCtxt) {
 	this._addressToIdentity = {};
 	this._folderToIdentity = {};
 };
+
+ZmIdentityCollection.prototype = new ZmModel;
+ZmIdentityCollection.prototype.constructor = ZmIdentityCollection;
 
 ZmIdentityCollection.prototype.getIdentities =
 function(includeFakeDefault) {
@@ -318,19 +327,18 @@ function(identity) {
 	identity.id = this._nextId++;
 	this._idToIdentity[identity.id] = identity;
 	if (identity.isDefault || !this.defaultIdentity) {
-		if (this._hasFakeDefault) {
-			this.remove
-		}
 		this.defaultIdentity = identity;
 	}
 
 	this._addToMaps(identity);	
+	this._notify(ZmEvent.E_CREATE, { item: identity } );
 };
 
 ZmIdentityCollection.prototype.remove =
 function(identity) {
 	this._removeFromMaps(identity);
 	delete this._idToIdentity[identity.id];
+	this._notify(ZmEvent.E_DELETE, { item: identity } );
 };
 
 ZmIdentityCollection.prototype._addToMaps =
@@ -405,59 +413,6 @@ function(mailMsg, type) {
 	}
 	return null;
 };
-
-// Make up some fake identity data..
-//ZmIdentityCollection.prototype.buildHack =
-//function() {
-//	var dave = new ZmIdentity(this._appCtxt, "Dave");
-//	dave.id = 11111;
-//	dave.sendFromDisplay = "Dave Comfort";
-//	dave.sendFromAddress = "dcomfort@zimbra.com";
-//	dave._useWhenSentTo = true;
-//	dave._whenSentToAddresses = ["dave@comfort.com", "qqquser1@example.zimbra.com", "whoever@junk.nothing"];
-//	dave._useWhenInFolder = true;
-//	dave._whenInFolderIds = [538];
-//
-//	var otis = new ZmIdentity(this._appCtxt, "Otis");
-//	otis.id = 22222;
-//	otis.sendFromDisplay = "Otis";
-//	otis.sendFromAddress = "otis@elevator.com";
-//	
-//	var rufus = new ZmIdentity(this._appCtxt, "Rufus");
-//	rufus.id = 33333;
-//	rufus.sendFromDisplay = "rufus";
-//	rufus.sendFromAddress = "rufus@moop.liquidsys.com";
-//	// Ficticious JSON response object.....
-//	var data = { sendFromDisplay:"Rufusmeister", useWhenInFolder:true, whenInFolderIds:["2"] };
-//	rufus._loadFromDom(data);
-	
-//	this.add(otis, true);
-//	this.add(dave, false);
-//	this.add(rufus);
-//
-//    var soapDoc = AjxSoapDoc.create("IdentityActionRequest", "urn:zimbraMail");
-//    var create = soapDoc.set("action");
-//    create.setAttribute("op", "create");
-//    var node = soapDoc.set("identity", null, create);
-//    node.setAttribute("name", rufus.name);
-//    node.setAttribute("sendFromDisplay", rufus.sendFromDisplay);
-//    node.setAttribute("sendFromAddress", rufus.sendFromAddress);
-//    
-//    var callback = new AjxCallback(this, this._handleAction);
-//    var errorCallback = new AjxCallback(this, this._handleActionError);
-//	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
-//												  callback: callback, errorCallback: errorCallback});
-//};
-
-//ZmIdentityCollection.prototype._handleAction =
-//function() {
-//	debugger;
-//};
-//	
-//ZmIdentityCollection.prototype._handleActionError =
-//function() {
-//	debugger;
-//};
 
 ZmIdentityCollection.prototype.initialize =
 function(data) {
