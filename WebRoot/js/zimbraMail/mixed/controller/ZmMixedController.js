@@ -272,11 +272,13 @@ function(ev) {
 	
 	// based on the items selected, enable/disable and/or show/hide appropriate menu items
 	var selItems = this._listView[this._currentView].getSelection();
-	var selTypes = new Object();
+	var selTypes = {};
 	var numTypes = 0;
 	for (var i = 0; i < selItems.length; i++) {
-		if (!selTypes[selItems[i].type]) {
-			selTypes[selItems[i].type] = true;
+		// bug fix #11577 - if we get GROUP type, just treat it as a contact
+		var t = selItems[i].type == ZmItem.GROUP ? ZmItem.CONTACT : selItems[i].type;
+		if (!selTypes[t]) {
+			selTypes[t] = true;
 			numTypes++;
 		}
 	}
