@@ -221,10 +221,11 @@ function(callback, result) {
 /**
 * Saves one or more settings.
 *
-* @param list	[array]		a list of ZmSetting
+* @param list			[array]				a list of ZmSetting
+* @param batchCommand	[ZmBatchCommand]	Batch command. Optional
 */
 ZmSettings.prototype.save =
-function(list, callback) {
+function(list, callback, batchCommand) {
     if (!(list && list.length)) return;
     
     var soapDoc = AjxSoapDoc.create("ModifyPrefsRequest", "urn:zimbraAccount");
@@ -250,7 +251,11 @@ function(list, callback) {
 
 	if (gotOne) {
 		var respCallback = new AjxCallback(this, this._handleResponseSave, [list, callback]);
-		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+		if (batchCommand) {
+			batchCommand.addNewRequestParams(soapDoc, respCallback, null, "ModifyPrefsRequest");
+		} else {
+			this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+		}
 	}
 };
 

@@ -122,6 +122,26 @@ function() {
 	}
 };
 
+ZmPrefListView.prototype.getErrorMessage =
+function(plainText) {
+	var messages;
+	for (var i in this._errors) {
+		if (!messages) {
+			messages = [];
+		}
+		messages[messages.length] = this._errors[i];
+	}
+	if (!messages) {
+		return "";
+	} else {
+		var message = messages.join(plainText ? "\n" : "<br>");
+		if (plainText) {
+			message = message.replace(/<br>/gi, "\n");
+		}
+		return message;
+	}
+};
+
 ZmPrefListView.prototype.setError =
 function(item, message) {
 	var index = this._list._getItemIndex(item);
@@ -149,21 +169,13 @@ function(item) {
 
 ZmPrefListView.prototype._redrawErrors =
 function() {
-	var messages = null;
-	for (var i in this._errors) {
-		if (!messages) {
-			messages = [];
-		}
-		messages[messages.length] = this._errors[i];
-	}
-
+	var message = this.getErrorMessage(false);
 	var tabButton = this._controller.getPrefsView().getTabButton(this._tabKey);
-	if (messages) {
+	tabButton.setToolTipContent(message);
+	if (message) {
 		tabButton.setImage("Critical");
-		tabButton.setToolTipContent(messages.join("<br>"));
 	} else {
 		tabButton.setImage("");
-		tabButton.setToolTipContent("");
 	}
 	this._list.setUI(); // Redraw the list.
 };

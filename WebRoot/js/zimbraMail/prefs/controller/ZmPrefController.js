@@ -193,8 +193,9 @@ function () {
 ZmPrefController.prototype._saveListener = 
 function(ev, callback, noPop) {
 	var list;
+	var batchCommand = new ZmBatchCommand(this._appCtxt);
 	try {
-		list = this._prefsView.getChangedPrefs();
+		list = this._prefsView.getChangedPrefs(false, false, batchCommand);
 	} catch (e) {
 		// getChangedPrefs throws an AjxException if any of the values have not passed validation.
 		if (e instanceof AjxException)
@@ -203,8 +204,12 @@ function(ev, callback, noPop) {
 	}
 	if (list && list.length) {
 		var respCallback = new AjxCallback(this, this._handleResponseSaveListener, [list, callback, noPop]);
-		this._appCtxt.getSettings().save(list, respCallback);
-	} else {
+		this._appCtxt.getSettings().save(list, respCallback, batchCommand);
+	} 
+	if (batchCommand.size()) {
+		batchCommand.run();
+	}
+	else {
 		this._handleResponseSaveListener(list, callback, noPop);
 	}
 };

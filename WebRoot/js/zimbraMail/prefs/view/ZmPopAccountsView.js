@@ -147,6 +147,14 @@ ZmPopAccountsView.prototype.getAccount = function() {
     return this._account;
 };
 
+ZmPopAccountsView.prototype.isDirty = function() {
+    return this._accountView.isDirty();
+};
+
+ZmPopAccountsView.prototype.reset = function() {
+	//TODO: Implement this. It gets called by the pop shield-no callback. 
+};
+
 // Protected methods
 
 ZmPopAccountsView.prototype._commandResult = function(account, result) {
@@ -335,6 +343,10 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
 
 ZmPopAccountBasicPage.prototype.getAccount = function() {
     return this._account;
+};
+
+ZmPopAccountsView.prototype.isDirty = function() {
+    return this._isDirty;
 };
 
 ZmPopAccountBasicPage.prototype._validateSelectedItem = function(errors) {

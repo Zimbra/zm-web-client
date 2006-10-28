@@ -173,15 +173,15 @@ function(view) {
 * simply whether _any_ prefs have changed, in which case it short-circuits as
 * soon as it finds one that has changed.
 *
-* @param dirtyCheck		[boolean]* 		if true, only check if any prefs have changed
-* @param noValidation	[boolean]*		if true, don't perform any validation
+* @param dirtyCheck		[boolean]* 			if true, only check if any prefs have changed
+* @param noValidation	[boolean]*			if true, don't perform any validation
+* @param batchCommand	[ZmBatchCommand]*	if not null, add soap docs to this batch command
 */
 ZmPrefView.prototype.getChangedPrefs =
-function(dirtyCheck, noValidation) {
+function(dirtyCheck, noValidation, batchCommand) {
 	var settings = this._appCtxt.getSettings();
 	var list = [];
 	var errorStr = "";
-	var batchCommand = new ZmBatchCommand(this._appCtxt);
 	for (var i = 0; i < ZmPrefView.VIEWS.length; i++) {
 		var view = ZmPrefView.VIEWS[i];
 		if (view == ZmPrefView.FILTER_RULES) continue;
@@ -191,16 +191,21 @@ function(dirtyCheck, noValidation) {
 		if (!viewPage.hasRendered()) continue; // if page hasn't rendered, nothing has changed
 
 		if (view == ZmPrefView.IDENTITY || view == ZmPrefView.POP_ACCOUNTS) {
-// TODO:
-// 1) Generalize error handling for all of these list views
-// 2) Keep track of errors in items that are not the active ones listed
-// 3) Implement similar handling for older pref pages.
-// 4) Implement dirty check (prefs use noValidation parameter)
-			if (!noValidation) {
-				var valid = viewPage.validate();
-                if (valid && this.prefView[view].addCommand) {
-					this.prefView[view].addCommand(batchCommand);
+			var isDirty = viewPage.isDirty();
+			if (isDirty) {
+				if (dirtyCheck) {
+					return true;
+				} else {
+					this._controller.setDirty(view, true);
 				}
+			}
+			if (!noValidation) {
+				if (!viewPage.validate()) {
+					throw new AjxException(viewPage.getErrorMessage(true));
+				}
+			}
+            if (!dirtyCheck && batchCommand) {
+				this.prefView[view].addCommand(batchCommand);
 			}
 		}
 
@@ -255,9 +260,6 @@ function(dirtyCheck, noValidation) {
 		if (errorStr != "") {
 			throw new AjxException(errorStr);
 		}
-	}
-	if (batchCommand.size()) {
-		batchCommand.run();
 	}
 	return dirtyCheck ? false : list;
 };

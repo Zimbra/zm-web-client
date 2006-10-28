@@ -37,9 +37,7 @@
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]].join(": ");
 
 	this._identityNameInput = null;
-	this._identityPage = null;
-	this._signaturePage = null;
-	this._advancedPage = null;
+	this._pages = [];
 
 	// Arrays of items that have been added, deleted, modified.
 	this._adds = [];
@@ -62,6 +60,22 @@ function() {
 	return this._title;
 };
 
+ZmIdentityView.prototype.isDirty =
+function() {
+	if (this._identity) {
+		this.getChanges();
+	}
+	return (this._adds.length > 0) || (this._deletes.length > 0) || (this._updates.length > 0);
+};
+
+ZmIdentityView.prototype.reset =
+function() {
+	var listView = this.getList();
+	listView.set(this._controller._getListData());
+	listView.setSelection(this._appCtxt.getIdentityCollection().defaultIdentity);
+	this._clearChanges();
+};
+
 ZmIdentityView.prototype._createDetails =
 function(parentElement) {
 	var inputId = Dwt.getNextId();
@@ -82,12 +96,16 @@ function(parentElement) {
 	var tabView = new DwtTabView(this, null, Dwt.STATIC_STYLE);
 	tabView.reparentHtmlElement(parentElement);
 	
-	this._identityPage = new ZmIdentityPage(this.parent, this._appCtxt, ZmIdentityPage.OPTIONS);
-	tabView.addTab(ZmMsg.identityOptions, this._identityPage);
-	this._signaturePage = new ZmIdentityPage(this.parent, this._appCtxt, ZmIdentityPage.SIGNATURE);
-	tabView.addTab(ZmMsg.signature, this._signaturePage);
-	this._advancedPage = new ZmIdentityPage(this.parent, this._appCtxt, ZmIdentityPage.ADVANCED);
-	tabView.addTab(ZmMsg.identityAdvanced, this._advancedPage);
+	this._addPage(ZmIdentityPage.OPTIONS, ZmMsg.identityOptions, tabView);
+	this._addPage(ZmIdentityPage.SIGNATURE, ZmMsg.signature, tabView);
+	this._addPage(ZmIdentityPage.ADVANCED, ZmMsg.identityAdvanced, tabView);
+};
+
+ZmIdentityView.prototype._addPage =
+function(pageId, title, tabView) {
+	var page = new ZmIdentityPage(this.parent, this._appCtxt, pageId);
+	tabView.addTab(title, page);
+	this._pages.push(page);
 };
 
 ZmIdentityView.prototype._nameChangeHandler =
@@ -111,9 +129,9 @@ function(identity) {
 	this._identity = identity;
 	this._identityNameInput.setValue(identity.name);
 	this._identityNameInput.setEnabled(!identity.isDefault);
-	this._identityPage.setIdentity(identity);
-	this._signaturePage.setIdentity(identity);
-	this._advancedPage.setIdentity(identity);
+	for (var i = 0, count = this._pages.length; i < count; i++) {
+		this._pages[i].setIdentity(identity);
+	}
 	this.getRemoveButton().setEnabled(!identity.isDefault);
 };
 
@@ -135,9 +153,9 @@ function(errors) {
 	if (!this._identityNameInput.isValid()) {
 		errors[errors.length] = ZmMsg.identityNameError;
 	}
-	this._identityPage._validateSelectedItem(errors);
-	this._signaturePage._validateSelectedItem(errors);
-	this._advancedPage._validateSelectedItem(errors);
+	for (var i = 0, count = this._pages.length; i < count; i++) {
+		this._pages[i]._validateSelectedItem(errors);
+	}
 };
 
 ZmIdentityView.prototype.addCommand =
@@ -176,11 +194,8 @@ function(result) {
 	// Just redraw the whole list.
 	var listView = this.getList();
 	listView.set(this._controller._getListData());
-	
-	// Clear the lists of changes.
-	this._adds.length = 0;
-	this._deletes.length = 0;
-	this._updates.length = 0;
+
+	this._clearChanges();
 	
 	// Make sure the correct proxy identity is now selected.
 	if (this._identity) {
@@ -196,6 +211,13 @@ function(result) {
 	}
 };
 	
+ZmIdentityView.prototype._clearChanges =
+function() {
+	this._adds.length = 0;
+	this._deletes.length = 0;
+	this._updates.length = 0;
+};
+
 ZmIdentityView.prototype.getChanges =
 function() {
 	var dirty = false;
@@ -207,9 +229,9 @@ function() {
 		identity.name = name;
 		dirty = true;
 	}
-	dirty = this._identityPage.getChanges(this._identity) || dirty;
-	dirty = this._signaturePage.getChanges(this._identity) || dirty;
-	dirty = this._advancedPage.getChanges(this._identity) || dirty;
+	for (var i = 0, count = this._pages.length; i < count; i++) {
+		dirty = this._pages[i].getChanges(this._identity) || dirty;
+	}
 	
 	if (dirty && this._identity.id) {
 		var found = false;
