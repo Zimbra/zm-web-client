@@ -402,6 +402,10 @@ function(force) {
 	}
 	if (!this._hidden.length && !this._isNewWindow) {
 		DBG.println(AjxDebug.DBG1, "ERROR: no view to replace popped view");
+		// bug fix #11264 - if logged in w/ view=compose, popView should reload mail app
+		if (location && (location.search.match(/\bview=compose\b/))) {
+			this._controller.activateApp(ZmZimbraMail.MAIL_APP);
+		}
 		return;
 	}
 
