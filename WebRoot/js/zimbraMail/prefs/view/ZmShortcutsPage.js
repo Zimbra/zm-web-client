@@ -184,11 +184,14 @@ function() {
 		var len = actions.length;
 		for (var i = 0; i < len; i++) {
 			var left = [mapName, actions[i] + num, organizer.id].join(".");
-			var ks = kmm.getKeySequence(ZmKeyMap.MAP_NAME[mapName], actions[i]);
-			var digits = num.split("");
-			var right = ks.replace(/NNN/, digits.join(","));
-			var sc = [left, right].join("=");
-			shortcuts.push(sc);
+			var seqs = kmm.getKeySequences(ZmKeyMap.MAP_NAME[mapName], actions[i]);
+			for (var j = 0; j < seqs.length; j++) {
+				var ks = seqs[j];
+				var digits = num.split("");
+				var right = ks.replace(/NNN/, digits.join(","));
+				var sc = [left, right].join("=");
+				shortcuts.push(sc);
+			}
 		}
 	}
 	shortcuts.sort();
@@ -385,8 +388,8 @@ ZmShortcutsPage.prototype._browseSelectionCallback =
 function(button, dialog, organizer) {
 	if (organizer) {
 		button.setText(organizer.getName(false, null, true));
-		var value = (org.type == ZmOrganizer.FOLDER) ? organizer.getPath(false, false, null, true, true) :
-													   organizer.getName(false, null, true);
+		var value = (organizer.type == ZmOrganizer.FOLDER) ? organizer.getPath(false, false, null, true, true) :
+													 		 organizer.getName(false, null, true);
 		button.setData(ZmShortcutsPage.DATA, value);
 	}
 	dialog.popdown();
@@ -448,6 +451,7 @@ function(keys, html, i) {
 				}
 				var scKey = [map, action].join(".");
 				var scValue = keys[scKey];
+				if (!scValue) { continue; }
 				var keySeq = scValue.split(/\s*;\s*/);
 				var keySeq1 = [];
 				for (var j = 0; j < keySeq.length; j++) {
