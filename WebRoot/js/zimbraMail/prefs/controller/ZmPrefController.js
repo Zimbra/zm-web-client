@@ -203,11 +203,11 @@ function(ev, callback, noPop) {
 		return;
 	}
 	if (list && list.length) {
-		var respCallback = new AjxCallback(this, this._handleResponseSaveListener, [list, callback, noPop]);
-		this._appCtxt.getSettings().save(list, respCallback, batchCommand);
+		this._appCtxt.getSettings().save(list, null, batchCommand);
 	} 
 	if (batchCommand.size()) {
-		batchCommand.run();
+		var respCallback = new AjxCallback(this, this._handleResponseSaveListener, [list, callback, noPop]);
+		batchCommand.run(respCallback);
 	}
 	else {
 		this._handleResponseSaveListener(list, callback, noPop);
