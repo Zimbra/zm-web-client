@@ -99,6 +99,9 @@ function(parentElement) {
 	this._addPage(ZmIdentityPage.OPTIONS, ZmMsg.identityOptions, tabView);
 	this._addPage(ZmIdentityPage.SIGNATURE, ZmMsg.signature, tabView);
 	this._addPage(ZmIdentityPage.ADVANCED, ZmMsg.identityAdvanced, tabView);
+	
+	var identityCollection = this._appCtxt.getIdentityCollection();
+	identityCollection.addChangeListener(new AjxListener(this, this._identityChangeListener));
 };
 
 ZmIdentityView.prototype._addPage =
@@ -191,12 +194,15 @@ function(list, op, batchCommand) {
 
 ZmIdentityView.prototype._handleAction =
 function(result) {
+	this._clearChanges();
+};
+
+ZmIdentityView.prototype._updateList =
+function() {
 	// Just redraw the whole list.
 	var listView = this.getList();
 	listView.set(this._controller._getListData());
 
-	this._clearChanges();
-	
 	// Make sure the correct proxy identity is now selected.
 	if (this._identity) {
 		var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
@@ -210,12 +216,22 @@ function(result) {
 		}
 	}
 };
-	
+
 ZmIdentityView.prototype._clearChanges =
 function() {
 	this._adds.length = 0;
 	this._deletes.length = 0;
 	this._updates.length = 0;
+};
+
+ZmIdentityView.prototype._identityChangeListener =
+function(ev) {
+	if ((ev.event == ZmEvent.E_CREATE) || 
+		(ev.event == ZmEvent.E_DELETE) ||
+		((ev.event == ZmEvent.E_MODIFY) && ev.getDetail("rename")))
+	{
+		this._updateList();
+	}
 };
 
 ZmIdentityView.prototype.getChanges =
@@ -335,8 +351,9 @@ function(identity) {
 	if ((this._pageId == ZmIdentityPage.ADVANCED) && this._hasRendered) {
 		var checkbox = document.getElementById(this._useDefaultsCheckboxId);
 		if (identity.isDefault) {
-			checkbox.checked = true;
+			checkbox.checked = false;
 			Dwt.setVisibility(checkbox.parentNode, false);
+			this._applyCheckbox(checkbox, this._associations[this._useDefaultsCheckboxId]);
 		} else {
 			Dwt.setVisibility(checkbox.parentNode, true);
 		}
@@ -368,7 +385,7 @@ function() {
 		var data = this._arrays[field];
 		var stringValue = data.input.getValue();
 		var arrayValue = data.toArray.call(this, stringValue);
-		if (this._identity.getField(field) != arrayValue) {
+		if (!this._areArraysEqual(this._identity.getField(field), arrayValue)) {
 			this._identity.setField(field, arrayValue);
 			dirty = true;
 		}
@@ -384,6 +401,19 @@ function() {
 		}
 	}
 	return dirty;	
+};
+
+ZmIdentityPage.prototype._areArraysEqual =
+function (a, b) {
+	if (a.length != b.length) {
+		return false;
+	}
+	for (var i = 0, count = a.length; i < count; i++) {
+		if (a[i] != b[i]) {
+			return false;
+		}
+	};
+	return true;
 };
 
 ZmIdentityPage.prototype._validateSelectedItem =

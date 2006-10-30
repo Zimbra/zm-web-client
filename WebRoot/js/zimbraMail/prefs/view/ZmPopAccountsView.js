@@ -128,7 +128,7 @@ ZmPopAccountsView.prototype.addCommand = function(batchCommand) {
             identity._useWhenInFolder = account._identity.linkFolder;
             identity._whenInFolderIds = [account.folderId];
 
-            batchCommand.add(new AjxCallback(identity, identity.createRequest, ["CreateIdentityRequest"]));
+            identity.createRequest("CreateIdentityRequest", batchCommand);
         }
     }
     for (var i = 0; i < modifies.length; i++) {
