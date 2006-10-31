@@ -646,18 +646,11 @@
       <fileset dir='${ajax.dir}/WebRoot/js/config' includes='keys/*.properties'/>
       <fileset dir='WebRoot/js/zimbraMail/config' includes='keys/*.properties'/>
     </copy>
-    <dependset>
-      <srcfileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
-      <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
-      <srcfileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
-      <srcfileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
-      <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='keys/*.properties'/>
-      <srcfileset dir='WebRoot/js/zimbraMail/config' includes='keys/*.properties'/>
-      <targetfilelist dir='${deploy.dir}${deploy.path}/WEB-INF' files='web.xml'/>
-    </dependset>
     <copy todir="${deploy.dir}${deploy.path}/WEB-INF">
-      <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
       <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>
+    </copy>
+    <copy todir="${deploy.dir}${deploy.path}/WEB-INF" overwrite="true">
+      <fileset dir="${build.dir}/WebRoot/WEB-INF" includes="web.xml"/>
     </copy>
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
