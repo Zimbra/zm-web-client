@@ -346,7 +346,8 @@ function(identity) {
 	if (identity.useWhenSentTo()) {
 		var addresses = identity.getWhenSentToAddresses();
 		for (var i = 0, count = addresses.length; i < count; i++) {
-			this._addressToIdentity[addresses[i]] = identity;
+			var address = addresses[i].toLowerCase();
+			this._addressToIdentity[address] = identity;
 		}
 	}
 
@@ -405,7 +406,7 @@ function(mailMsg, type) {
 	var identity;
 	var addresses = mailMsg.getAddresses(type).getArray();
 	for (var i = 0, count = addresses.length; i < count; i++) {
-		var address = addresses[i].getAddress();
+		var address = addresses[i].getAddress().toLowerCase();
 		identity = this._addressToIdentity[address];
 		if(identity) {
 			return identity;
