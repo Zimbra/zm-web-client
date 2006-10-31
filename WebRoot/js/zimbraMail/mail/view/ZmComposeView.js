@@ -348,8 +348,7 @@ function(attId, isDraft) {
 		if (addrs[type] && addrs[type].all.size() > 0)
 			msg.setAddresses(type, addrs[type].all);
 	}
-	var identity = this.getIdentity();
-	msg._identity = identity;
+	msg.identity = this.getIdentity();
 
 	// save a reference to the original message
 	msg._origMsg = this._msg;

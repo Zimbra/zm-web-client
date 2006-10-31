@@ -47,6 +47,7 @@ function ZmMailMsg(appCtxt, id, list) {
 		var type = ZmMailMsg.ADDRS[i];
 		this._addrs[type] = new AjxVector();
 	}
+	this.identity = null;
 };
 
 ZmMailMsg.prototype = new ZmMailItem;
@@ -678,6 +679,7 @@ function(soapDoc, contactList, isDraft) {
 		this._addAddressNodes(soapDoc, msgNode, type, contactList, isDraft);
 	}
 	this._addFrom(soapDoc, msgNode);
+	this._addReplyTo(soapDoc, msgNode);
 
 	soapDoc.set("su", this.subject, msgNode);
 
@@ -1028,9 +1030,9 @@ function(soapDoc, parent, type, contactList, isDraft) {
 
 ZmMailMsg.prototype._addFrom =
 function(soapDoc, parent) {
-	if (this._identity) {
-		var address = this._identity.sendFromAddress;
-		var name = this._identity.sendFromDisplay;
+	if (this.identity) {
+		var address = this.identity.sendFromAddress;
+		var name = this.identity.sendFromDisplay;
 		//TODO: The following null check shouldn't be necessary, but for now I need
 		// to make it because proper default identites are not being created.
 		if (address && name) {
@@ -1038,6 +1040,20 @@ function(soapDoc, parent) {
 			e.setAttribute("t", "f");
 			e.setAttribute("a", address);
 			e.setAttribute("p", name);
+		}
+	}
+};
+
+ZmMailMsg.prototype._addReplyTo =
+function(soapDoc, parent) {
+	if (this.identity) {
+		if (this.identity.setReplyTo && this.identity.setReplyToAddress) {
+			var e = soapDoc.set("e", null, parent);
+			e.setAttribute("t", "r");
+			e.setAttribute("a", this.identity.setReplyToAddress);
+			if (this.identity.setReplyToDisplay) {
+				e.setAttribute("p", name);
+			}
 		}
 	}
 };
