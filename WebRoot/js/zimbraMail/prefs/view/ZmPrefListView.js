@@ -132,7 +132,7 @@ function(plainText) {
 		messages[messages.length] = this._errors[i];
 	}
 	if (!messages) {
-		return "";
+		return null;
 	} else {
 		var message = messages.join(plainText ? "\n" : "<br>");
 		if (plainText) {
