@@ -31,23 +31,22 @@ function ZmIdentity(appCtxt, name) {
 
 	this.sendFromDisplay = "";
 	this.sendFromAddress = "";
-	this._setReplyTo = false;
-	this._setReplyToDisplay = "";
-	this._setReplyToAddress = "";
-	this._useSignature = false;
-	this._signature = "";
-	this._useWhenSentTo = false;
-	this._whenSentToAddresses = [];
-	this._useWhenInFolder = false;
-	this._whenInFolderIds = [];
+	this.setReplyTo = false;
+	this.setReplyToDisplay = "";
+	this.setReplyToAddress = "";
+	this.signature = "";
+	this.useWhenSentTo = false;
+	this.whenSentToAddresses = [];
+	this.useWhenInFolder = false;
+	this.whenInFolderIds = [];
 	
 	this.useDefaultAdvanced = true;
 	
-	this._composeFormat = ZmIdentity.COMPOSE_TEXT;
-	this._prefix = ">";
-	this._forwardOption = ZmSetting.INCLUDE_PREFIX;
-	this._replyOption = ZmSetting.INCLUDE_PREFIX;
-	this._signatureStyle = ZmSetting.SIG_INTERNET;
+	this.composeFormat = ZmIdentity.COMPOSE_TEXT;
+	this.prefix = ">";
+	this.forwardOption = ZmSetting.INCLUDE_PREFIX;
+	this.replyOption = ZmSetting.INCLUDE_PREFIX;
+	this.signatureStyle = ZmSetting.SIG_INTERNET;
 };
 
 ZmIdentity.COMPOSE_SAME = 1;
@@ -64,7 +63,6 @@ ZmIdentity.SEND_FROM_ADDRESS = i++;
 ZmIdentity.SET_REPLY_TO = i++;
 ZmIdentity.SET_REPLY_TO_DISPLAY = i++;
 ZmIdentity.SET_REPLY_TO_ADDRESS = i++;
-ZmIdentity.USE_SIGNATURE = i++;
 ZmIdentity.SIGNATURE = i++;
 ZmIdentity.USE_WHEN_SENT_TO = i++;
 ZmIdentity.WHEN_SENT_TO_ADDRESSES = i++;
@@ -90,21 +88,20 @@ function(fieldId, field) {
 
 ZmIdentity.addField(ZmIdentity.SEND_FROM_DISPLAY, { name: "sendFromDisplay", node: "a", soap: "sendFromDisplay", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.SEND_FROM_ADDRESS, { name: "sendFromAddress", node: "a", soap: "sendFromAddress", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.SET_REPLY_TO, { name: "_setReplyTo", node: "a", soap: "setReplyTo", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_DISPLAY, { name: "_setReplyToDisplay", node: "a", soap: "setReplyToDisplay", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_ADDRESS, { name: "_setReplyToAddress", node: "a", soap: "setReplyToAddress", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.USE_SIGNATURE, { name: "_useSignature", node: "a", soap: "useSignature", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.SIGNATURE, { name: "_signature", node: "signature", soap: "signature", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.USE_WHEN_SENT_TO, { name: "_useWhenSentTo", node: "a", soap: "useWhenSentTo", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.WHEN_SENT_TO_ADDRESSES, { name: "_whenSentToAddresses", node: "a", soap: "whenSentToAddresses", type: ZmIdentity.ARRAY });
-ZmIdentity.addField(ZmIdentity.USE_WHEN_IN_FOLDER, { name: "_useWhenInFolder", node: "a", soap: "useWhenInFolder", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.WHEN_IN_FOLDERIDS, { name: "_whenInFolderIds", node: "a", soap: "whenInFolderIds", type: ZmIdentity.ARRAY });
+ZmIdentity.addField(ZmIdentity.SET_REPLY_TO, { name: "setReplyTo", node: "a", soap: "setReplyTo", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_DISPLAY, { name: "setReplyToDisplay", node: "a", soap: "setReplyToDisplay", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_ADDRESS, { name: "setReplyToAddress", node: "a", soap: "setReplyToAddress", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.SIGNATURE, { name: "signature", node: "signature", soap: "signature", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.USE_WHEN_SENT_TO, { name: "useWhenSentTo", node: "a", soap: "useWhenSentTo", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.WHEN_SENT_TO_ADDRESSES, { name: "whenSentToAddresses", node: "a", soap: "whenSentToAddresses", type: ZmIdentity.ARRAY });
+ZmIdentity.addField(ZmIdentity.USE_WHEN_IN_FOLDER, { name: "useWhenInFolder", node: "a", soap: "useWhenInFolder", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.WHEN_IN_FOLDERIDS, { name: "whenInFolderIds", node: "a", soap: "whenInFolderIds", type: ZmIdentity.ARRAY });
 ZmIdentity.addField(ZmIdentity.USE_DEFAULT_ADVANCED, { name: "useDefaultAdvanced", node: "a", soap: "useDefaultAdvanced", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.COMPOSE_FORMAT, { name: "_composeFormat", node: "a", soap: "composeFormat", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.PREFIX, { name: "_prefix", node: "a", soap: "prefix", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.FORWARD_OPTION, { name: "_forwardOption", node: "a", soap: "forwardOption", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.REPLY_OPTION, { name: "_replyOption", node: "a", soap: "replyOption", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.SIGNATURE_STYLE, { name: "_signatureStyle", node: "a", soap: "signatureStyle", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.COMPOSE_FORMAT, { name: "composeFormat", node: "a", soap: "composeFormat", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.PREFIX, { name: "prefix", node: "a", soap: "prefix", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.FORWARD_OPTION, { name: "forwardOption", node: "a", soap: "forwardOption", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.REPLY_OPTION, { name: "replyOption", node: "a", soap: "replyOption", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.SIGNATURE_STYLE, { name: "signatureStyle", node: "a", soap: "signatureStyle", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.IS_DEFAULT, { name: "isDefault", node: "a", soap: "isDefault", type: ZmIdentity.BOOLEAN });
 
 ZmIdentity.prototype.getField =
@@ -217,58 +214,38 @@ function() {
 	return "ZmIdentity";
 };
 
-ZmIdentity.prototype.useWhenSentTo =
+ZmIdentity.prototype.getUseWhenSentTo =
 function() {
-	return this._useWhenSentTo;
+	return this.useWhenSentTo;
 };
 
-ZmIdentity.prototype.getWhenSentToAddresses =
-function() {
-	return this._whenSentToAddresses;
-};
-
-ZmIdentity.prototype.useWhenInFolder =
-function() {
-	return this._useWhenInFolder;
-};
-
-ZmIdentity.prototype.getWhenInFolderIds =
-function() {
-	return this._whenInFolderIds;
-};
-
-ZmIdentity.prototype.getWhenInFolderIds =
-function() {
-	return this._whenInFolderIds;
-};
-	
 ZmIdentity.prototype.getComposeSameFormat =
 function() {
-	var format = this._getAdvancedIdentity()._composeFormat;
+	var format = this._getAdvancedIdentity().composeFormat;
 	return format == ZmIdentity.COMPOSE_SAME ? true : false;
 };
 ZmIdentity.prototype.getComposeAsFormat =
 function() {
-	var format = this._getAdvancedIdentity()._composeFormat;
+	var format = this._getAdvancedIdentity().composeFormat;
 	return format == ZmIdentity.COMPOSE_HTML ? ZmSetting.COMPOSE_HTML : ZmSetting.COMPOSE_TEXT;
 };
 ZmIdentity.prototype.getPrefix =
 function() {
-	return this._getAdvancedIdentity()._prefix;
+	return this._getAdvancedIdentity().prefix;
 };
 ZmIdentity.prototype.getForwardOption =
 function() {
-	return this._getAdvancedIdentity()._forwardOption;
+	return this._getAdvancedIdentity().forwardOption;
 };
 ZmIdentity.prototype.getReplyOption =
 function() {
-	return this._getAdvancedIdentity()._replyOption;
+	return this._getAdvancedIdentity().replyOption;
 };
 
 // ZmSetting.SIG_OUTLOOK: signature above quoted text.
 ZmIdentity.prototype.getSignatureStyle =
 function() {
-	return this._signatureStyle;
+	return this.signatureStyle;
 };
 
 // Returns the identity that owns the advanced options for this identity
@@ -343,16 +320,16 @@ function(identity) {
 
 ZmIdentityCollection.prototype._addToMaps =
 function(identity) {
-	if (identity.useWhenSentTo()) {
-		var addresses = identity.getWhenSentToAddresses();
+	if (identity.useWhenSentTo) {
+		var addresses = identity.whenSentToAddresses;
 		for (var i = 0, count = addresses.length; i < count; i++) {
 			var address = addresses[i].toLowerCase();
 			this._addressToIdentity[address] = identity;
 		}
 	}
 
-	if (identity.useWhenInFolder()) {
-		var folders = identity.getWhenInFolderIds();
+	if (identity.useWhenInFolder) {
+		var folders = identity.whenInFolderIds;
 		for (var i = 0, count = folders.length; i < count; i++) {
 			this._folderToIdentity[folders[i]] = identity;
 		}
@@ -361,13 +338,13 @@ function(identity) {
 
 ZmIdentityCollection.prototype._removeFromMaps =
 function(identity) {
-	for (var i = 0, count = identity._whenSentToAddresses.length; i < count; i++) {
-		var address = identity._whenSentToAddresses[i];
+	for (var i = 0, count = identity.whenSentToAddresses.length; i < count; i++) {
+		var address = identity.whenSentToAddresses[i];
 		delete this._addressToIdentity[address];
 	}
 
-	for (var i = 0, count = identity._whenInFolderIds.length; i < count; i++) {
-		var folderId = identity._whenInFolderIds[i];
+	for (var i = 0, count = identity.whenInFolderIds.length; i < count; i++) {
+		var folderId = identity.whenInFolderIds[i];
 		delete this._folderToIdentity[folderId];
 	}
 };

@@ -656,7 +656,7 @@ ZmComposeView.prototype._getSignature =
 function() {
 	var identity = this.getIdentity();
 	
-	var sig = identity._signature;
+	var sig = identity.signature;
 	if (!sig) return;
 
 	var newLine = this._getSignatureNewLine();
@@ -967,7 +967,7 @@ function(action, msg, extraBodyText, incOption) {
 	}
 
 	var identity = this.getIdentity();
-	var sigStyle = identity._signature ? identity.getSignatureStyle() : null;
+	var sigStyle = identity.signature ? identity.getSignatureStyle() : null;
 
 	var value = sigStyle == ZmSetting.SIG_OUTLOOK
 		? (this._getSignatureSeparator() + this._getSignature())

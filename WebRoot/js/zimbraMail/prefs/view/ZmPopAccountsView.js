@@ -120,13 +120,13 @@ ZmPopAccountsView.prototype.addCommand = function(batchCommand) {
             identity.name = account.name;
             identity.sendFromDisplay = display;
             identity.sendFromAddress = email;
-            identity._setReplyTo = true;
-            identity._setReplyToDisplay = display;
-            identity._setReplyToAddress = email;
-            identity._useWhenSentTo = account._identity.linkAddr;
+            identity.setReplyTo = true;
+            identity.setReplyToDisplay = display;
+            identity.setReplyToAddress = email;
+            identity.useWhenSentTo = account._identity.linkAddr;
             identity._whenSentoAddresses = [email];
-            identity._useWhenInFolder = account._identity.linkFolder;
-            identity._whenInFolderIds = [account.folderId];
+            identity.useWhenInFolder = account._identity.linkFolder;
+            identity.whenInFolderIds = [account.folderId];
 
             identity.createRequest("CreateIdentityRequest", batchCommand);
         }
