@@ -834,8 +834,9 @@ function(name, target, data) {
 		var doc = this._getIframeDoc();
 		this.focus();
 		++this._ace_componentsLoading;
-		if (AjxEnv.isGeckoBased)
+		if (AjxEnv.isGeckoBased) {
 			doc.designMode = "off";
+		}
 		var ifr = doc.createElement("iframe");
 		ifr.id = "ACE-" + Dwt.getNextId();
 		ifr.frameBorder = 0;
@@ -1498,74 +1499,87 @@ function(doc) {
 	// Gecko needs special attention here. (https://bugzilla.mozilla.org/show_bug.cgi?id=326600)
 	// :-(
 
-	// REVISIT! are we adding these events multiple times?
+	if (!this._hasGeckoFocusHacks)
+		this.__enableGeckoFocusHacks();
+
 	// -- findings suggest that Firefox loses these events on certain
 	//    occasions (i.e. iframe.style.display = "none"), so we DO need to
 	//    add them multiple times.  Crap.
+	this._getIframeWin().addEventListener("blur", this._designModeHack_blur, true);
+	this._getIframeWin().addEventListener("focus", this._designModeHack_focus, true);
+	// this._getIframeWin().addEventListener("mousedown", this._designModeHack_focus, true);
+};
 
-//	if (!this._hasDesignModeHack) {
-
-	this._hasDesignModeHack = true;
+// this should be called ONLY ONCE (if !this._hasGeckoFocusHacks)
+ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 	var bookmark = null;
+	var state = 0;
+	this._hasGeckoFocusHacks = true;
 
-	if (!this._designModeHack_blur) {
-		this._designModeHack_blur = AjxCallback.simpleClosure(
-			function() {
-				var a = [];
-				for (var i = 0; i < this._toolbars.length; i++)
-					a = a.concat(this._toolbars[i].getChildren());
-				for (var i = 0; i < a.length; ++i)
-					a[i].setEnabled(false);
-				if (this._ace_componentsLoading > 0)
-					return;
-				var doc = this._getIframeDoc();
+	function enableToolbars(enable) {
+		var a = [];
+		for (var i = 0; i < this._toolbars.length; i++)
+			a = a.concat(this._toolbars[i].getChildren());
+		for (var i = 0; i < a.length; ++i)
+			a[i].setEnabled(enable);
+	};
+
+	this._designModeHack_blur = AjxCallback.simpleClosure(
+		function() {
+			if (state < 0)
+				return;
+			// console.log("BLUR!");
+			enableToolbars.call(this, false);
+			var doc = this._getIframeDoc();
+			doc.designMode = "off";
+			state = -1;
+			if (this._ace_componentsLoading > 0)
+				return;
+			try {
+				var sel = this._getIframeWin().getSelection();
+				var i = 0, r;
 				try {
-					var sel = this._getIframeWin().getSelection();
-					var i = 0, r;
-					try {
-						bookmark = [];
-						while (r = sel.getRangeAt(i++))
-							bookmark.push(r);
-					} catch(ex) {};
-					sel.removeAllRanges();
-				} catch(ex) {
-					bookmark = null;
-				}
-				doc.designMode = "off";
-			}, this);
-		// bug 8508 - start off with disabled toolbars
-		this._designModeHack_blur();
-	}
+					bookmark = [];
+					while (r = sel.getRangeAt(i++))
+						bookmark.push(r);
+				} catch(ex) {};
+				sel.removeAllRanges();
+			} catch(ex) {
+				bookmark = null;
+			}
+		}, this);
 
-	if (!this._designModeHack_focus) {
-		this._designModeHack_focus = AjxCallback.simpleClosure(
-			function() {
-				var a = [];
-				for (var i = 0; i < this._toolbars.length; i++)
-					a = a.concat(this._toolbars[i].getChildren());
-				for (var i = 0; i < a.length; ++i)
-					a[i].setEnabled(true);
-				if (this._ace_componentsLoading > 0)
-					return;
-				var doc = this._getIframeDoc();
-				doc.designMode = "on";
-				// Probably a regression of FF 1.5.0.1/Linux requires us to
-				// reset event handlers here (Zimbra bug: 6545).
-				if (AjxEnv.isGeckoBased && (AjxEnv.isLinux || AjxEnv.isMac))
-					this._registerEditorEventHandlers(document.getElementById(this._iFrameId), doc);
-				if (bookmark) {
-					var sel = this._getIframeWin().getSelection();
-					sel.removeAllRanges();
-					for (var i = 0; i < bookmark.length; ++i)
-						sel.addRange(bookmark[i]);
-					bookmark = null;
-				}
-			}, this);
-	}
-
-	doc.addEventListener("blur", this._designModeHack_blur, true);
-	doc.addEventListener("focus", this._designModeHack_focus, true);
-//	}
+	// bug 8508 - start off with disabled toolbars
+	enableToolbars.call(this, false);
+	
+	this._designModeHack_focus = AjxCallback.simpleClosure(
+		function(ev) {
+			if (state > 0)
+				return;
+			// console.log("FOCUS!");
+			var doc = this._getIframeDoc();
+			var sel = this._getIframeWin().getSelection();
+			enableToolbars.call(this, true);
+			if (this._ace_componentsLoading > 0)
+				return;
+			// Probably a regression of FF 1.5.0.1/Linux requires us to
+			// reset event handlers here (Zimbra bug: 6545).
+//  			if (AjxEnv.isGeckoBased && (AjxEnv.isLinux || AjxEnv.isMac))
+//  				this._registerEditorEventHandlers(document.getElementById(this._iFrameId), doc);
+			doc.designMode = "on";
+			if (!bookmark || bookmark.length == 0) {
+				r = doc.createRange();
+ 				r.selectNodeContents(doc.body);
+ 				r.collapse(true);
+				bookmark = [ r ];
+			}
+			sel.removeAllRanges();
+			for (var i = 0; i < bookmark.length; ++i) {
+				sel.addRange(bookmark[i]);
+			}
+			bookmark = null;
+			state = 1;
+		}, this);
 };
 
 ZmHtmlEditor.prototype.__contextMenuSelectionListener =
