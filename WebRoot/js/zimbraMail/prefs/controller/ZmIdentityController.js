@@ -68,10 +68,10 @@ function() {
 	var list = listView.getList();
 	var identity = list.getSelection()[0];
 	if (identity) {
+		var identityCollection = this._appCtxt.getIdentityCollection();
+		list.setSelection(identityCollection.defaultIdentity);
 		listView.remove(identity);
 		list.removeItem(identity);
-		var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
-		list.setSelection(identityCollection.defaultIdentity);
 	}
 };
 

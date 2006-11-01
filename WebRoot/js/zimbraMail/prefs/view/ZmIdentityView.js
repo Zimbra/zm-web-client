@@ -145,6 +145,7 @@ function(identity) {
 
 ZmIdentityView.prototype.remove =
 function(identity) {
+	this.clearError(identity);
 	this._deletes[this._deletes.length] = identity;
 };
 
