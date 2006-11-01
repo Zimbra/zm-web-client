@@ -958,7 +958,8 @@ function(mode, callback, msg, result) {
 			var inst = soapDoc.set("inst");
 			inst.setAttribute("d", AjxDateUtil.getServerDateTime(this.getOrigStartDate()));
 			if (this.timezone) {
-				inst.setAttribute("tz", this.timezone);
+                var tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
+				inst.setAttribute("tz", tz);
 			}
 		}
 

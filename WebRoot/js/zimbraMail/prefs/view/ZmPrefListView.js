@@ -230,7 +230,7 @@ function() {
 	html[i++] = "</td><td style='width:1%' id='";
 	html[i++] = helpButtonId;
 	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td style='text-align:right;' colspan=2 id='";
+	html[i++] = "<tr><td colspan=2 id='";
 	html[i++] = this._detailsElementId;
 	html[i++] = "'></td></tr></table>";
 	this.getHtmlElement().innerHTML = html.join("");
@@ -295,7 +295,7 @@ function(item) {
 	var error = this.findError(item);
 	var iconClass = error ? "Critical" : "";
 	div.innerHTML = [
-		"<table cellspacing=0 cellpadding=0><tr><td>", AjxImg.getImageHtml(iconClass), "</td><td>",
+		"<table cellspacing=0 cellpadding=0><tr><td",AjxEnv.isIE?" width='20px'":"",">", AjxImg.getImageHtml(iconClass), "</td><td>",
 		AjxStringUtil.htmlEncode(item.name, true), "</td></tr></table>"
 	].join("");
 

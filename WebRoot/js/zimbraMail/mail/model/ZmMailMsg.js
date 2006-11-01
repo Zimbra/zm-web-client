@@ -586,7 +586,8 @@ function (contactList, edited, componentId, callback, errorCallback, instanceDat
 		var exceptIdNode = soapDoc.set("exceptId");
 		var serverDateTime = AjxDateUtil.getServerDateTime(instanceDate);
 		var timeZone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-		exceptIdNode.setAttribute("d", serverDateTime);
+        if (AjxEnv.isSafari) timeZone = AjxStringUtil.xmlEncode(timeZone);
+        exceptIdNode.setAttribute("d", serverDateTime);
 		exceptIdNode.setAttribute("tz", timeZone);
 	}
 	if (edited)

@@ -164,6 +164,10 @@ ZmPopAccountsView.prototype._commandResult = function(account, result) {
     var data = result._data;
     if (data.CreateDataSourceResponse) {
         var pop3 = data.CreateDataSourceResponse.pop3[0];
+
+        var itemEl = this.getList()._getElFromItem(account);
+        itemEl.id = pop3.id;
+
         account.id = pop3.id;
         account.password = "";
         delete account._new;
@@ -216,6 +220,9 @@ ZmPopAccountsView.prototype._createItemHtml = function(item) {
     var table = div.firstChild;
     var row = table.rows[0];
     var cell = row.insertCell(0);
+    if (AjxEnv.isIE) {
+        cell.width = "24px";
+    }
     cell.appendChild(input);
     return div;
 };
@@ -230,7 +237,6 @@ ZmPopAccountsView._handleItemCheckbox = function(event) {
     var item = object.item;
     item.enabled = target.checked;
     view._accountView._dirtyListener(null);
-    view.validate();
 };
 
 //
@@ -295,7 +301,7 @@ ZmPopAccountBasicPage._handleLinkAddrOrFolder = function(pname, event) {
 ZmPopAccountBasicPage._handleShowPassword = function(event) {
     var target = DwtUiEvent.getTarget(event);
     var page = Dwt.getObjectFromElement(target);
-    page._password1Field.getInputElement().type = target.checked ? "text" : "password";
+    page._password1Field.setInputType(target.checked ? DwtInputField.STRING : DwtInputField.PASSWORD);
 };
 
 // Public methods
@@ -316,7 +322,7 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
     this._usernameField.setValue(account.userName);
     this._password1Field.setRequired(isNew);
     this._password1Field.setValue(account.password);
-    this._password1Field.getInputElement().type = "password";
+    this._password1Field.setInputType(DwtInputField.PASSWORD);
     this._showPasswordEl.checked = false;
 
     var folderId = account.folderId || ZmPopAccountBasicPage.DEFAULT_FOLDER_ID;
@@ -345,7 +351,7 @@ ZmPopAccountBasicPage.prototype.getAccount = function() {
     return this._account;
 };
 
-ZmPopAccountsView.prototype.isDirty = function() {
+ZmPopAccountBasicPage.prototype.isDirty = function() {
     return this._isDirty;
 };
 
@@ -650,6 +656,7 @@ ZmPopAccountBasicPage.prototype._folderOkListener = function(dialog, folder) {
 ZmPopAccountBasicPage.prototype._dirtyListener = function(evt) {
     // REVISIT: Do something with this information?
     this._isDirty = true;
+    this.parent.validate();
 };
 
 ZmPopAccountBasicPage.prototype._testListener = function(evt) {
@@ -658,16 +665,17 @@ ZmPopAccountBasicPage.prototype._testListener = function(evt) {
     account.testConnection(callback);
 };
 ZmPopAccountBasicPage.prototype._testResponse = function(account, resp) {
-    var response = resp && resp.TestDataSourceResponse;
-    var pop3 = response && response.pop3;
+    var response = resp && resp._data && resp._data.TestDataSourceResponse;
+    var pop3 = response && response.pop3 && response.pop3[0];
     var success = pop3.success;
 
-    var message = success ? ZmMsg.popAccountSuccess : ZmMsg.popAccountFailure;
+    var key = success ? ZmMsg.popAccountTestSuccess : ZmMsg.popAccountTestFailure; 
+    var message = AjxMessageFormat.format(key, account.name);
     var details = !success ? pop3.error : null;
     var style = success ? DwtMessageDialog.INFO_STYLE : DwtMessageDialog.WARNING_STYLE;
     var title = ZmMsg.popAccountTest;
 
-    var dialog = this._appCtxt.getMsgDialog();
+    var dialog = this._appCtxt.getErrorDialog();
     dialog.setMessage(message, details, style, title);
     dialog.popup();
 };
