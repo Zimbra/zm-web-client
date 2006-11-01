@@ -317,11 +317,8 @@ function(str) {
 ZmEmailAddress.prototype.toString =
 function() {
 	if (this.name && !this.isGroup) {
-		var name = this.name.replace(/"/g, '\\"', this.name); // escape double quotes
-		var addr = [name, " <", this.address, ">"].join("");
-		if (!ZmEmailAddress.parse(addr))
-			addr = ['"', name, '" <', this.address, ">"].join("");
-		return addr;
+		var name = this.name.replace(/"/g, '\\"', this.name);	// escape double quotes
+		return ['"', name, '" <', this.address, ">"].join("");	// quote friendly part
 	} else {
 		return this.address;
 	}
