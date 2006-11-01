@@ -124,7 +124,7 @@ ZmPopAccountsView.prototype.addCommand = function(batchCommand) {
             identity.setReplyToDisplay = display;
             identity.setReplyToAddress = email;
             identity.useWhenSentTo = account._identity.linkAddr;
-            identity._whenSentoAddresses = [email];
+            identity.whenSentToAddresses = [email];
             identity.useWhenInFolder = account._identity.linkFolder;
             identity.whenInFolderIds = [account.folderId];
 

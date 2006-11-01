@@ -49,9 +49,9 @@ function ZmIdentity(appCtxt, name) {
 	this.signatureStyle = ZmSetting.SIG_INTERNET;
 };
 
-ZmIdentity.COMPOSE_SAME = 1;
-ZmIdentity.COMPOSE_TEXT = 2;
-ZmIdentity.COMPOSE_HTML = 3;
+ZmIdentity.COMPOSE_SAME = "same";
+ZmIdentity.COMPOSE_TEXT = "text";
+ZmIdentity.COMPOSE_HTML = "html";
 
 ZmIdentity.STRING = 1;
 ZmIdentity.ARRAY = 2;
@@ -86,23 +86,23 @@ function(fieldId, field) {
 	ZmIdentity._SOAP[field.soap] = field;
 };
 
-ZmIdentity.addField(ZmIdentity.SEND_FROM_DISPLAY, { name: "sendFromDisplay", node: "a", soap: "sendFromDisplay", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.SEND_FROM_ADDRESS, { name: "sendFromAddress", node: "a", soap: "sendFromAddress", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.SET_REPLY_TO, { name: "setReplyTo", node: "a", soap: "setReplyTo", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_DISPLAY, { name: "setReplyToDisplay", node: "a", soap: "setReplyToDisplay", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_ADDRESS, { name: "setReplyToAddress", node: "a", soap: "setReplyToAddress", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.SIGNATURE, { name: "signature", node: "signature", soap: "signature", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.USE_WHEN_SENT_TO, { name: "useWhenSentTo", node: "a", soap: "useWhenSentTo", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.WHEN_SENT_TO_ADDRESSES, { name: "whenSentToAddresses", node: "a", soap: "whenSentToAddresses", type: ZmIdentity.ARRAY });
-ZmIdentity.addField(ZmIdentity.USE_WHEN_IN_FOLDER, { name: "useWhenInFolder", node: "a", soap: "useWhenInFolder", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.WHEN_IN_FOLDERIDS, { name: "whenInFolderIds", node: "a", soap: "whenInFolderIds", type: ZmIdentity.ARRAY });
-ZmIdentity.addField(ZmIdentity.USE_DEFAULT_ADVANCED, { name: "useDefaultAdvanced", node: "a", soap: "useDefaultAdvanced", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.COMPOSE_FORMAT, { name: "composeFormat", node: "a", soap: "composeFormat", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.PREFIX, { name: "prefix", node: "a", soap: "prefix", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.FORWARD_OPTION, { name: "forwardOption", node: "a", soap: "forwardOption", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.REPLY_OPTION, { name: "replyOption", node: "a", soap: "replyOption", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.SIGNATURE_STYLE, { name: "signatureStyle", node: "a", soap: "signatureStyle", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.IS_DEFAULT, { name: "isDefault", node: "a", soap: "isDefault", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.SEND_FROM_DISPLAY, { name: "sendFromDisplay", node: "a", soap: "zimbraPrefFromDisplay", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.SEND_FROM_ADDRESS, { name: "sendFromAddress", node: "a", soap: "zimbraPrefFromAddress", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.SET_REPLY_TO, { name: "setReplyTo", node: "a", soap: "zimbraPrefReplyToEnabled", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_DISPLAY, { name: "setReplyToDisplay", node: "a", soap: "zimbraPrefReplyToDisplay", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.SET_REPLY_TO_ADDRESS, { name: "setReplyToAddress", node: "a", soap: "zimbraPrefReplyToAddress", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.SIGNATURE, { name: "signature", node: "a", soap: "zimbraPrefMailSignature", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.USE_WHEN_SENT_TO, { name: "useWhenSentTo", node: "a", soap: "zimbraPrefWhenSentToEnabled", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.WHEN_SENT_TO_ADDRESSES, { name: "whenSentToAddresses", node: "a", soap: "zimbraPrefWhenSentToAddresses", type: ZmIdentity.ARRAY });
+ZmIdentity.addField(ZmIdentity.USE_WHEN_IN_FOLDER, { name: "useWhenInFolder", node: "a", soap: "zimbraPrefWhenInFoldersEnabled", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.WHEN_IN_FOLDERIDS, { name: "whenInFolderIds", node: "a", soap: "zimbraPrefWhenInFolderIds", type: ZmIdentity.ARRAY });
+ZmIdentity.addField(ZmIdentity.USE_DEFAULT_ADVANCED, { name: "useDefaultAdvanced", node: "a", soap: "zimbraPrefUseDefaultIdentitySettings", type: ZmIdentity.BOOLEAN });
+ZmIdentity.addField(ZmIdentity.COMPOSE_FORMAT, { name: "composeFormat", node: "a", soap: "zimbraPrefForwardReplyInOriginalFormat", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.PREFIX, { name: "prefix", node: "a", soap: "zimbraPrefForwardReplyPrefixChar", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.FORWARD_OPTION, { name: "forwardOption", node: "a", soap: "zimbraPrefForwardIncludeOriginalText", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.REPLY_OPTION, { name: "replyOption", node: "a", soap: "zimbraPrefReplyIncludeOriginalText", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.SIGNATURE_STYLE, { name: "signatureStyle", node: "a", soap: "zimbraPrefMailSignatureStyle", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.IS_DEFAULT, { name: "isDefault", node: "a", soap: "zimbraPrefDefaultIdentity", type: ZmIdentity.BOOLEAN });
 
 ZmIdentity.prototype.getField =
 function(fieldId) {
@@ -134,13 +134,13 @@ function(data) {
 			}
 		}
 	}
-	var props = data.signature;
-	if (props && props.length) {
-		var name = props[0].name;
-		var field = ZmIdentity._SOAP[name];
-		var value = props[0]._content;
-		this[field.name] = value;
-	}
+//	var props = data.signature;
+//	if (props && props.length) {
+//		var name = props[0].name;
+//		var field = ZmIdentity._SOAP[name];
+//		var value = props[0]._content;
+//		this[field.name] = value;
+//	}
 };
 
 ZmIdentity.prototype.createRequest =
