@@ -262,6 +262,7 @@ Text-unread					= @Text@ font-weight:bold;
 Text-deleted				= @Text-disabled@ font-style:italic;
 Text-important				= color:darkred;
 Text-error					= color:darkred;
+Text-success				= color:green;
 Text-matched				= color:black;
 
 
