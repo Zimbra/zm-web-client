@@ -212,7 +212,7 @@ function() {
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr><td class='ZmApptTabViewPageField'>";
 	html[i++] = ZmMsg.showAs;
-	html[i++] = ":</td><td colspan=2 id='";
+	html[i++] = "</td><td colspan=2 id='";
 	html[i++] = this._showAsSelectId;
 	html[i++] = "'></td></tr>";
 	html[i++] = "<tr><td class='ZmApptTabViewPageField' id='";
