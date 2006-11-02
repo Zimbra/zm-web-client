@@ -97,7 +97,7 @@ ZmIdentity.addField(ZmIdentity.WHEN_SENT_TO_ADDRESSES, { name: "whenSentToAddres
 ZmIdentity.addField(ZmIdentity.USE_WHEN_IN_FOLDER, { name: "useWhenInFolder", node: "a", soap: "zimbraPrefWhenInFoldersEnabled", type: ZmIdentity.BOOLEAN });
 ZmIdentity.addField(ZmIdentity.WHEN_IN_FOLDERIDS, { name: "whenInFolderIds", node: "a", soap: "zimbraPrefWhenInFolderIds", type: ZmIdentity.ARRAY });
 ZmIdentity.addField(ZmIdentity.USE_DEFAULT_ADVANCED, { name: "useDefaultAdvanced", node: "a", soap: "zimbraPrefUseDefaultIdentitySettings", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.COMPOSE_FORMAT, { name: "composeFormat", node: "a", soap: "zimbraPrefForwardReplyInOriginalFormat", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.COMPOSE_FORMAT, { name: "composeFormat", node: "a", soap: "zimbraPrefFowardReplyFormat", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.PREFIX, { name: "prefix", node: "a", soap: "zimbraPrefForwardReplyPrefixChar", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.FORWARD_OPTION, { name: "forwardOption", node: "a", soap: "zimbraPrefForwardIncludeOriginalText", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.REPLY_OPTION, { name: "replyOption", node: "a", soap: "zimbraPrefReplyIncludeOriginalText", type: ZmIdentity.STRING });
