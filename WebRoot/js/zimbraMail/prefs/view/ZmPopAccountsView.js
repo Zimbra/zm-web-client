@@ -64,6 +64,178 @@ function(account) {
     }
 };
 
+ZmPopAccountsView.prototype.getPreSaveCallback = function() {
+    // get list of accounts to test
+    var accounts = [];
+    var list = this.getList();
+    var items = list.getList().getArray();
+    for (var i = 0; i < items.length; i++) {
+        var account = items[i];
+        if (!account.enabled) continue;
+
+        var isNew = account._new;
+        if (isNew) {
+            accounts.push(account);
+        }
+        else {
+            var modified = false;
+            for (var p in account) {
+                if (!p.match(/^_/) && account.hasOwnProperty(p)) {
+                    modified = true;
+                    break;
+                }
+            }
+            if (modified) {
+                accounts.push(account);
+            }
+        }
+    }
+
+    // is there anything to do?
+    if (accounts.length == 0) {
+        return null;
+    }
+
+    // return callback
+    return new AjxCallback(this, this._preSaveTestAccounts, [accounts]);
+};
+
+ZmPopAccountsView.prototype._preSaveTestAccounts =
+function(accounts, continueCallback) {
+    var successes = new Array(accounts.length);
+
+    // setup test dialog
+    if (!this._testDialog) {
+        var shell = DwtShell.getShell(window);
+        var className = "ZmDataSourceTestDialog";
+        var title = ZmMsg.popAccountTestTitle; 
+        var buttons = [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON];
+        this._testDialog = new DwtDialog(shell, className, title, buttons);
+    }
+
+    var html = [
+        "<table border='0' cellspacing='0' cellpadding='3' ",
+                "id='",this._htmlElId,"_accts","' class='ZmDataSourceTestTable'>",
+            "<tr><th>",ZmMsg.account,"</th><th>",ZmMsg.status,"</th></tr>"
+    ];
+    for (var i = 0; i < accounts.length; i++) {
+        var account = accounts[i];
+        html.push(
+            "<tr>",
+                "<td class='ZmTestItem'>",account.name,"</td>",
+                "<td class='ZmTestStatus' id='",this._htmlElId,"_acct_",account.id,"'></td>",
+            "</tr>"
+        );
+    }
+    html.push("</table>");
+    this._testDialog.setContent(html.join(""));
+
+    this._testDialog.setButtonListener(
+        DwtDialog.CANCEL_BUTTON,
+        new AjxListener(this, this._preSaveTestButtonListener, [continueCallback, accounts, successes, false])
+    );
+    this._testDialog.setButtonListener(
+        DwtDialog.OK_BUTTON,
+        new AjxListener(this, this._preSaveTestButtonListener, [continueCallback, accounts, successes, true])
+    );
+    this._testDialog.setButtonEnabled(DwtDialog.OK_BUTTON, false);
+
+    this._testDialog.popup();
+
+    // start test
+    var testCallback = new AjxCallback(this, this._preSaveTestResults);
+    testCallback.args = [testCallback, accounts, 0, successes, continueCallback];
+    this._preSaveTestResults.apply(this, testCallback.args);
+};
+
+ZmPopAccountsView.prototype._preSaveTestResults =
+function(testCallback, accounts, index, successes, continueCallback, result) {
+    // show results
+    if (result) {
+        var account = accounts[index - 1];
+        var el = this.__getAcctEl(account);
+
+        var error = null;
+        if (result._data.TestDataSourceResponse) {
+            successes[index - 1] = true;
+            var pop3 = result._data.TestDataSourceResponse.pop3[0];
+            if (pop3.success) {
+                el.className = [el.className,"ZmTestSucceeded"].join(" ");
+                el.innerHTML = ZmMsg.popAccountTestSuccess;
+            }
+            else {
+                error = pop3.error;
+            }
+        }
+
+        if (error) {
+            successes[index - 1] = false;
+
+            el.className = [el.className,"ZmTestFailed"].join(" ");
+            el.innerHTML = ZmMsg.popAccountTestFailure;
+
+            var row = el.parentNode;
+            var rowIndex = 0;
+            while (row) {
+                rowIndex++;
+                row = row.previousSibling;
+            }
+            var table = document.getElementById(this._htmlElId+"_accts");
+            var row = table.insertRow(rowIndex);
+            var cell = row.insertCell(-1);
+            cell.colSpan = 2;
+            cell.className = "ZmTestDetails";
+
+            cell.innerHTML = [
+                "<table border='0'>",
+                    "<tr valign='top'>",
+                        "<td class='ZmTestError'>",ZmMsg.errorLabel,"</td>",
+                        "<td class='ZmTestError'>",error,"</td>",
+                    "</tr>",
+                    "<tr valign='top'>",
+                        "<td class='ZmTestNote'>",ZmMsg.noteLabel,"</td>",
+                        "<td class='ZmTestNote'>",ZmMsg.popAccountTestNote,"</td>",
+                    "</tr>",
+                "</table>"
+            ].join("");
+        }
+    }
+
+    // finish
+    if (accounts.length == index) {
+        this._testDialog.setButtonEnabled(DwtDialog.OK_BUTTON, true);
+        return;
+    }
+
+    // continue testing
+    var account = accounts[ testCallback.args[2]++ ];
+    var el = this.__getAcctEl(account);
+    /***
+    el.innerHTML = [
+        ZmMsg.popAccountTestInProgress,
+        " <a href='javascript:void 0'>", // TODO: hook up click handler
+            ZmMsg.popAccountTestSkip,
+        "</a>"
+    ].join("");
+    /***/
+    el.innerHTML = ZmMsg.popAccountTestInProgress; 
+    /***/
+    account.testConnection(testCallback, testCallback);
+};
+
+ZmPopAccountsView.prototype.__getAcctEl = function(account) {
+    return document.getElementById([this._htmlElId,"_acct_",account.id].join(""));
+};
+
+ZmPopAccountsView.prototype._preSaveTestButtonListener =
+function(continueCallback, accounts, successes, success) {
+    this._testDialog.popdown();
+    for (var i = 0; i < successes.length; i++) {
+        accounts[i].enabled = successes[i];
+    }
+    continueCallback.run(success);
+};
+
 ZmPopAccountsView.prototype.addCommand = function(batchCommand) {
     // gather up creates, updates, and deletes
     var creates = [];
@@ -669,7 +841,7 @@ ZmPopAccountBasicPage.prototype._testResponse = function(account, resp) {
     var pop3 = response && response.pop3 && response.pop3[0];
     var success = pop3.success;
 
-    var key = success ? ZmMsg.popAccountTestSuccess : ZmMsg.popAccountTestFailure; 
+    var key = success ? ZmMsg.popAccountTestSuccessMsg : ZmMsg.popAccountTestFailureMsg; 
     var message = AjxMessageFormat.format(key, account.name);
     var details = !success ? pop3.error : null;
     var style = success ? DwtMessageDialog.INFO_STYLE : DwtMessageDialog.WARNING_STYLE;

@@ -168,6 +168,52 @@ function(view) {
 };
 
 /**
+ * This method iterates over the preference pages to see if any
+ * of them have actions to perform <em>before</em> saving. If
+ * the page has a <code>getPreSaveCallback</code> method and it
+ * returns a callback, the pref controller will call it before
+ * performing any save. This is done for each page that returns
+ * a callback.
+ * <p>
+ * The pre-save callback is passed a callback that <em>MUST</em>
+ * be called upon completion of the pre-save code. This is so
+ * the page can perform its pre-save behavior asynchronously
+ * without the need to immediately return to the pref controller.
+ * <p>
+ * <strong>Note:</strong>
+ * When calling the continue callback, the pre-save code <em>MUST</em>
+ * pass a single boolean signifying the success of the the pre-save
+ * operation.
+ * <p>
+ * An example pre-save callback implementation:
+ * <pre>
+ * MyPrefView.prototype.getPreSaveCallback = function() {
+ *    return new AjxCallback(this, this._preSaveAction, []);
+ * };
+ *
+ * MyPrefView.prototype._preSaveAction = function(continueCallback) {
+ *    var success = true;
+ *    // perform some operation
+ *    continueCallback.run(success);
+ * };
+ * </pre>
+ */
+ZmPrefView.prototype.getPreSaveCallbacks = function() {
+    var callbacks = [];
+    for (var i = 0; i < ZmPrefView.VIEWS.length; i++) {
+        var view = ZmPrefView.VIEWS[i];
+        var viewPage = this.prefView[view];
+        if (viewPage && viewPage.getPreSaveCallback) {
+            var callback = viewPage.getPreSaveCallback();
+            if (callback) {
+                callbacks.push(callback);
+            }
+        }
+    }
+    return callbacks;
+};
+
+/**
 * Returns a list of prefs whose values have changed due to user form input.
 * Each prefs page is checked in turn. This method can also be used to check 
 * simply whether _any_ prefs have changed, in which case it short-circuits as

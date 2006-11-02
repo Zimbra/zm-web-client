@@ -24,7 +24,7 @@
  */
  
  
-P, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
+P, TH, TD, DIV, SPAN, SELECT, INPUT, TEXTAREA, BUTTON, A {
 	@FontFamily-default@
 }
 

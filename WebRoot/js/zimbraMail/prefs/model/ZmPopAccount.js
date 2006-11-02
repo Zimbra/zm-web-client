@@ -151,26 +151,40 @@ function(callback, errorCallback, batchCommand) {
     if (batchCommand) {
         var execFrame = null; // REVISIT: What should this be?
         batchCommand.addNewRequestParams(soapDoc, callback, errorCallback, execFrame);
+        return;
     }
-    else {
-        var params = {
-            soapDoc: soapDoc,
-            asyncMode: Boolean(callback),
-            callback: callback,
-            errorCallback: errorCallback
-        };
-        return this._appCtxt.getAppController().sendRequest(params);
-    }
+
+    var params = {
+        soapDoc: soapDoc,
+        asyncMode: Boolean(callback),
+        callback: callback,
+        errorCallback: errorCallback
+    };
+    return this._appCtxt.getAppController().sendRequest(params);
 };
 
 ZmPopAccount.prototype.testConnection =
-function(callback, errorCallback) {
+function(callback, errorCallback, batchCommand) {
     var soapDoc = AjxSoapDoc.create("TestDataSourceRequest", "urn:zimbraMail");
     var pop3 = soapDoc.set("pop3");
     pop3.setAttribute("host", this.mailServer);
     pop3.setAttribute("port", this.port || ZmPopAccount.PORT_DEFAULT);
     pop3.setAttribute("username", this.userName);
     pop3.setAttribute("password", this.password);
+
+    if (this._new) {
+        pop3.setAttribute("id");
+        if (!this.hasOwnProperty("mailServer")) pop3.removeAttribute("host");
+        if (!this.hasOwnProperty("port")) pop3.removeAttribute("port");
+        if (!this.hasOwnProperty("userName")) pop3.removeAttribute("username");
+        if (!this.hasOwnProperty("password")) pop3.removeAttribute("password");
+    }
+
+    if (batchCommand) {
+        var execFrame = null;
+        batchCommand.addNewRequestParams(soapDoc, callback, errorCallback, execFrame);
+        return;
+    }
 
     var params = {
         soapDoc: soapDoc,

@@ -2197,6 +2197,36 @@ HTML>BODY .appt-selected .appt_allday_body
 	@BottomSeparator@
 }
 
+/* POP Accounts */
+.ZmDataSourceTestDialog {
+    min-width: 300px;
+}
+.ZmDataSourceTestTable {
+    margin: 0.5em;
+}
+.ZmDataSourceTestTable TH {
+    text-align: left;
+}
+.ZmTestItem, .ZmTestStatus {
+    border-top: solid black 1px;
+}
+.ZmTestDetails {
+    padding-left: 1em;
+}
+.ZmTestSucceeded {
+    font-weight: bold;
+    @Text-success@
+}
+.ZmTestFailed {
+    font-weight:bold;
+    @Text-error@ 
+}
+.ZmTestError {
+    @Text-error@
+}
+.ZmTestNote {
+    @Text-disabled@
+}
 
 /*
  *   Shortcut key display
