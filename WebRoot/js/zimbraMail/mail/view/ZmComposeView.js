@@ -1286,6 +1286,7 @@ function() {
 	
 	var options = this._getIdentityOptions();
 	this._identitySelect = new DwtSelect(this, options);
+	this._identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
 	this._identitySelect.reparentHtmlElement(this._identityDiv);
 	var identityCollection = this._appCtxt.getIdentityCollection();
 	identityCollection.addChangeListener(new AjxListener(this, this._identityChangeListener));
