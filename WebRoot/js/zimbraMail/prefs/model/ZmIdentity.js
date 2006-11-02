@@ -120,7 +120,7 @@ function(data) {
 	var props = data.a;
 	if (props) {
 		for (var i = 0, count = props.length; i < count; i++) {
-			var name = props[i].n;
+			var name = props[i].name;
 			var field = ZmIdentity._SOAP[name];
 			if (field) {
 				var value = props[i]._content;
@@ -134,13 +134,6 @@ function(data) {
 			}
 		}
 	}
-//	var props = data.signature;
-//	if (props && props.length) {
-//		var name = props[0].name;
-//		var field = ZmIdentity._SOAP[name];
-//		var value = props[0]._content;
-//		this[field.name] = value;
-//	}
 };
 
 ZmIdentity.prototype.createRequest =
