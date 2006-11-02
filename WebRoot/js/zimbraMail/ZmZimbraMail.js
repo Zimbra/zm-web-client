@@ -453,7 +453,12 @@ function() {
 		dlg.popup();
 	}
 
-	// Back out code below (bug 10140) pending further investigation
+    if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+        var controller = this.getApp(ZmZimbraMail.CALENDAR_APP).getReminderController();
+        controller.refresh();
+    }
+
+    // Back out code below (bug 10140) pending further investigation
 	// Setup an async load of the views we precreate
 //	var ta = new AjxTimedAction(this, ZmZimbraMail.prototype._preloadViews);
 //	AjxTimedAction.scheduleAction(ta, 500);
