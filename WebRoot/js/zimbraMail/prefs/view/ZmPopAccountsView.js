@@ -631,7 +631,7 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
         "<table border='0' style='border-collapse:collapse'>",
             "<tr><td id='",testId,"'></td></tr>",
         "</table>"
-    ].join("");
+    ].join("");                                                                                 
     this._testButton.setText(ZmMsg.popAccountTest);
 
     this._folderButton = new DwtButton(props);
@@ -648,7 +648,7 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
         "<table border='0' cellPadding='0' cellSpacing='0' style='border-collapse:collapse'>",
             "<tr>",
                 "<td id='",serverId,"'></td>",
-                "<td style='padding-left:0.5em;padding-right:0.25em'>","Port:","</td>",
+                "<td style='padding-left:0.5em;padding-right:0.25em'>",ZmMsg.portLabel,"</td>",
                 "<td id='",portId,"'></td>",
                 "<td style='padding-left:0.5em'>",ZmMsg.defLabel," 110</td>",
             "</tr>",
