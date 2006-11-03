@@ -97,7 +97,7 @@ ZmIdentity.addField(ZmIdentity.WHEN_SENT_TO_ADDRESSES, { name: "whenSentToAddres
 ZmIdentity.addField(ZmIdentity.USE_WHEN_IN_FOLDER, { name: "useWhenInFolder", node: "a", soap: "zimbraPrefWhenInFoldersEnabled", type: ZmIdentity.BOOLEAN });
 ZmIdentity.addField(ZmIdentity.WHEN_IN_FOLDERIDS, { name: "whenInFolderIds", node: "a", soap: "zimbraPrefWhenInFolderIds", type: ZmIdentity.ARRAY });
 ZmIdentity.addField(ZmIdentity.USE_DEFAULT_ADVANCED, { name: "useDefaultAdvanced", node: "a", soap: "zimbraPrefUseDefaultIdentitySettings", type: ZmIdentity.BOOLEAN });
-ZmIdentity.addField(ZmIdentity.COMPOSE_FORMAT, { name: "composeFormat", node: "a", soap: "zimbraPrefFowardReplyFormat", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.COMPOSE_FORMAT, { name: "composeFormat", node: "a", soap: "zimbraPrefForwardReplyFormat", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.PREFIX, { name: "prefix", node: "a", soap: "zimbraPrefForwardReplyPrefixChar", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.FORWARD_OPTION, { name: "forwardOption", node: "a", soap: "zimbraPrefForwardIncludeOriginalText", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.REPLY_OPTION, { name: "replyOption", node: "a", soap: "zimbraPrefReplyIncludeOriginalText", type: ZmIdentity.STRING });
@@ -125,7 +125,7 @@ function(data) {
 			if (field) {
 				var value = props[i]._content;
 				if (field.type == ZmIdentity.BOOLEAN) {
-					this[field.name] = (value.toString().toLowerCase() == "true");
+					this[field.name] = (value.toString().toUpperCase() == "TRUE");
 				} else if (field.type == ZmIdentity.ARRAY) {
 					this[field.name].push(value);
 				} else {
@@ -138,14 +138,14 @@ function(data) {
 
 ZmIdentity.prototype.createRequest =
 function(request, batchCommand) {
-    var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
+    var soapDoc = AjxSoapDoc.create(request, "urn:zimbraAccount");
     var identityNode = soapDoc.set("identity");
     var name = this._object_ ? this._object_.name : this.name; 
     identityNode.setAttribute("name", name);
     if (request != "DeleteIdentityRequest") {
 		if (this.hasOwnProperty("name")) {
 			var propertyNode = soapDoc.set("a", this.name, identityNode);
-			propertyNode.setAttribute("name", "name");
+			propertyNode.setAttribute("name", "zimbraPrefIdentityName");
 		}
 
 		for (var i in ZmIdentity.FIELDS) {
@@ -154,12 +154,19 @@ function(request, batchCommand) {
 				var value = this.getField(i);
 				if (field.type == ZmIdentity.ARRAY) {
 					for (var j = 0, count = value.length; j < count; j++) {
-						var propertyNode = soapDoc.set(field.node, value[j], identityNode);
-						propertyNode.setAttribute("name", field.soap);
+						if (value[j]) {
+							var propertyNode = soapDoc.set(field.node, value[j], identityNode);
+							propertyNode.setAttribute("name", field.soap);
+						}
 					}
 				} else {
-					var propertyNode = soapDoc.set(field.node, value, identityNode);
-					propertyNode.setAttribute("name", field.soap);
+					if (field.type == ZmIdentity.BOOLEAN) {
+						value = value ? "TRUE" : "FALSE";
+					}
+					if (value) {
+						var propertyNode = soapDoc.set(field.node, value, identityNode);
+						propertyNode.setAttribute("name", field.soap);
+					}
 				}
 			}
 		}		
