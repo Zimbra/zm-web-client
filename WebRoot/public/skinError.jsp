@@ -1,5 +1,8 @@
-<!-- 
-/*
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+	<!--
+ /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
  *
@@ -23,28 +26,43 @@
  *
  * ***** END LICENSE BLOCK *****
  */
--->
-<%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<HTML>
-<HEAD>
-<jsp:include page="./Messages.jsp"/>
-<jsp:include page="./Ajax.jsp"/>
+ --><%
 
-<SCRIPT language=JavaScript>
-function onLoad() {
-	var skin;
-	if (location.search && (location.search.indexOf("skin=") != -1)) {
-		var m = location.search.match(/skin=(\w+)/);
-		if (m && m.length)
-			skin = m[1];
+
+	String contextPath = request.getContextPath();
+	if(contextPath.equals("/")) {
+		contextPath = "";
 	}
-	document.title = ZmMsg.skinDeletedErrorTitle;
-	document.body.innerHTML = AjxMessageFormat.format(ZmMsg.skinDeletedError, [skin]);
-};
-</SCRIPT>
-
-
-<BODY ONLOAD='onLoad();'>
-</BODY>
-
+	String vers = (String) request.getAttribute("version");
+	if (vers == null) vers = "";
+	String ext = (String) request.getAttribute("fileExtension");
+	if (ext == null) ext = "";
+	String mode = (String) request.getAttribute("mode");
+	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
+ if (inDevMode) {
+	%>
+	<jsp:include page="Messages.jsp"/>
+	<jsp:include page="Ajax.jsp"/>
+ <% } else { %>
+	<script type="text/javascript" src="<%=contextPath%>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext%>?v=<%=vers%>"></script>
+	<script type="text/javascript" src="<%=contextPath%>/js/Ajax_all.js<%=ext%>?v=<%=vers%>"></script>
+	<% } %>
+	<SCRIPT type="text/javascript">
+		function onLoad() {
+			var skin;
+			if (location.search && (location.search.indexOf("skin=") != -1)) {
+				var m = location.search.match(/skin=(\w+)/);
+				if (m && m.length)
+					skin = m[1];
+			}
+			document.title = ZmMsg.skinDeletedErrorTitle;
+			var htmlArr = [];
+			var idx = 0;
+			htmlArr[idx++] = "<br/><br/><center>"
+			htmlArr[idx++] = AjxMessageFormat.format(ZmMsg.skinDeletedError, [skin]);
+			htmlArr[idx++] = "</center>"
+			document.body.innerHTML = htmlArr.join("");
+		}
+	</SCRIPT>
+<BODY ONLOAD='onLoad()'></BODY>
+</HTML>
