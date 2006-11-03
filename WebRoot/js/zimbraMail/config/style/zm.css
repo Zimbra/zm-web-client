@@ -2035,14 +2035,14 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .infoBox {
 	margin:0px 5px 10px 0px;
-	padding:10px;
-	background-image:url("../common/img/loRes/dwt/Information_32.gif");
-	background-repeat:no-repeat;
-	background-position: 10px 10px;
 	background-color:#FFF6BF;
 	border:1px solid #FFDD00;
 	-moz-border-radius:10px;
-	padding:10px 10px 10px 50px;
+	padding:10px 10px 10px 10px;
+}
+
+.infoBoxImg {
+    padding-right: 10px;
 }
 
 .infoTitle {

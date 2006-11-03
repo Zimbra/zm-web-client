@@ -212,9 +212,13 @@ function() {
 	html[i++] = "'></td>";
 	html[i++] = "</tr></table></td></tr></table></td><td style='vertical-align:top;'>";
 
-	html[i++] = "<div class='infoBox' id='";
+    html[i++] = "<div class='infoBox' id='";
 	html[i++] = this._infoBoxId;
-	html[i++] = "'><div class='InfoTitle'><div class='infoTitleClose' id='";
+	html[i++] = "'>";
+    html[i++] = "<table border='0' cellpadding='0' cellspacing='4'>";
+    html[i++] = "<tr valign='top'>";
+    html[i++] = "<td class='infoBoxImg'><div class='ImgInformation_32'></div></td><td>";
+    html[i++] = "<div class='InfoTitle'><div class='infoTitleClose' id='";
 	html[i++] = closeLinkId;
 	html[i++] = "'>";
 	html[i++] = ZmMsg.close;
@@ -222,9 +226,10 @@ function() {
 	html[i++] = this._labels.infoTitle;
 	html[i++] = "</div>";
 	html[i++] = this._labels.infoContents;
+    html[i++] = "</td></tr></table>";
 	html[i++] = "</div>";
 
-	html[i++] = "<table cellspacing=0 cellpadding=0 class='nestedOptionTable'>";
+    html[i++] = "<table cellspacing=0 cellpadding=0 class='nestedOptionTable'>";
 	html[i++] = "<tr class='PanelHead'><td>";
 	html[i++] = this._labels.detailsHeader;
 	html[i++] = "</td><td style='width:1%' id='";

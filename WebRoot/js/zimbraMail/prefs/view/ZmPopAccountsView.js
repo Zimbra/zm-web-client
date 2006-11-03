@@ -25,7 +25,7 @@
 
 function ZmPopAccountsView(parent, appCtxt, controller) {
     var labels = {
-        infoTitle: ZmMsg.popAccounts,
+        infoTitle: ZmMsg.popAccountsInfoHeader,
         infoContents: ZmMsg.popAccountsInfo,
         detailsHeader: ZmMsg.popAccountSettings,
         listHeader: ZmMsg.popAccounts
