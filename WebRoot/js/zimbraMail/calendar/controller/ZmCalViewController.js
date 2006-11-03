@@ -1080,6 +1080,7 @@ function(ev) {
 // XXX: remove once bug 6082 is fixed!
 ZmCalViewController.prototype._refreshActionCallback =
 function(appt) {
+    this._appCtxt.getShell().setBusy(false);
 	if (appt.isShared())
 		this._refreshAction(false);
 };
@@ -1181,9 +1182,14 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		appt.setViewMode(viewMode);
 		if (startDateOffset) appt.setStartDate(new Date(appt.getStartTime() + startDateOffset));
 		if (endDateOffset) appt.setEndDate(new Date(appt.getEndTime() + endDateOffset));
-		var respCallback = callback || (new AjxCallback(this, this._refreshActionCallback, [appt]));
-		appt.save(null, respCallback, errorCallback);
+		var respCallback = callback != null 
+            ? new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [callback])
+            : new AjxCallback(this, this._refreshActionCallback, [appt]);
+        var respErrCallback = new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [errorCallback]);
+        this._appCtxt.getShell().setBusy(true);
+        appt.save(null, respCallback, respErrCallback);
 	} catch (ex) {
+        this._appCtxt.getShell().setBusy(false);
 		if (ex.msg) {
 			this.popupErrorDialog(AjxMessageFormat.format(ZmMsg.mailSendFailure, ex.msg));
 		} else {
@@ -1192,6 +1198,12 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 		if (errorCallback) errorCallback.run(ex);
 	}
 	if (callback) callback.run(result);
+};
+
+ZmCalViewController.prototype._handleResponseUpdateApptDateSave2 =
+function(callback) {
+    this._appCtxt.getShell().setBusy(false);
+    callback.run();
 };
 
 ZmCalViewController.prototype._handleResponseUpdateApptDateIgnore =
