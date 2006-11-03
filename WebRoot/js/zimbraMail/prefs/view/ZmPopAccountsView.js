@@ -66,8 +66,10 @@ function(account) {
 
 ZmPopAccountsView.prototype.getPreSaveCallback = function() {
     // get list of accounts to test
-    var accounts = [];
     var list = this.getList();
+    if (!list) return null;
+
+    var accounts = [];
     var items = list.getList().getArray();
     for (var i = 0; i < items.length; i++) {
         var account = items[i];
