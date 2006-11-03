@@ -984,7 +984,7 @@ ZmContactList.prototype._createMatch =
 function(nameHL, emailHL, name, email, contact) {
 	var result = {};
 	result.text = contact.isGroup() ? nameHL : ([nameHL, " &lt;", emailHL, "&gt;"].join(""));
-	result.plain = result.text.replace(/<\/?b>/g, "");	// for sorting results
+	result.plain = result.text ? result.text.replace(/<\/?b>/g, "") : "";	// for sorting results
 	result.item = contact;
 	result.icon = contact.isGroup()
 		? "Group"

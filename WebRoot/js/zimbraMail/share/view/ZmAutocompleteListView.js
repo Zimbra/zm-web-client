@@ -321,6 +321,7 @@ function(element) {
 ZmAutocompleteListView.prototype.autocomplete =
 function(info) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: autocomplete");
+	if (!info || (info.text == "undefined")) { return; }
 	if (!this._dataLoaded) {
 		this._data = this._dataLoader.call(this._dataClass);
 		this._dataLoaded = true;
@@ -489,6 +490,7 @@ ZmAutocompleteListView.prototype._autocomplete =
 function(chunk, callback) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _autocomplete");
 
+	if (!chunk) { return; }
 	var str = AjxStringUtil.trim(chunk.str);
 
 	// if string is empty or already a delimited address, no reason to look for matches
@@ -512,7 +514,6 @@ function(chunk, callback) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseAutocomplete, [str, chunk, text, start, callback]);
 	this._data.autocompleteMatch(str, respCallback, this);
-
 };
 
 ZmAutocompleteListView.prototype._handleResponseAutocomplete =
@@ -523,16 +524,7 @@ function(str, chunk, text, start, callback, list) {
 		DBG.println(AjxDebug.DBG2, "unique match, hiding autocomplete list");
 		retValue = {text: text, start: start};
 	}
-/*
-	if (!retValue) {
-		if (list && list.length) {
-			var len = list.length;
-			DBG.println(AjxDebug.DBG2, "found " + len + " match" + len > 1 ? "es" : "");
-		} else {
-			retValue = {text: text, start: start};
-		}
-	}
-*/
+
 	if (!retValue) {
 		if (list && list.length) {
 			var len = list.length;
@@ -543,7 +535,7 @@ function(str, chunk, text, start, callback, list) {
 
 		// if text ends in a delimiter, complete immediately without showing the list
 		var match;
-		if (chunk.delim && (chunk.end == chunk.text.length - 1)) {
+		if (chunk && chunk.delim && (chunk.end == chunk.text.length - 1)) {
 			DBG.println(AjxDebug.DBG2, "performing quick completion");
 			var result = this._complete(text, str, true);
 			text = result.text;
@@ -614,7 +606,9 @@ function(text, match) {
 ZmAutocompleteListView.prototype._update =
 function(hasDelim) {
 	var result = this._complete(this._element.value, null, hasDelim);
-	this._updateField(result.text, result.match);
+	if (result) {
+		this._updateField(result.text, result.match);
+	}
 };
 
 // Listeners
@@ -675,8 +669,10 @@ function(list, sel) {
 		var div = this._getDiv();
 		div._pos = i;
 		var match = this._matches[i];
-		this._addRow(div, match.text, match.icon);
-		thisHtmlElement.appendChild(div);
+		if (match) {
+			this._addRow(div, match.text, match.icon);
+			thisHtmlElement.appendChild(div);
+		}
 	}
 	this._selected = sel || 0;
 	this._setSelected(this._selected);
