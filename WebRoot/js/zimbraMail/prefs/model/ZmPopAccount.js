@@ -49,7 +49,13 @@ ZmPopAccount.REMOVE_UPON_DELETE = 5;
 /***/
 
 ZmPopAccount.PORT_DEFAULT = 110;
-ZmPopAccount.PORT_SSL = 443;
+ZmPopAccount.PORT_SSL = 995;
+
+ZmPopAccount.CONNECT_CLEAR = "cleartext";
+ZmPopAccount.CONNECT_SSL = "ssl";
+/***
+ZmPopAccount.CONNECT_START_TLS = "starttls";
+/***/
 
 ZmPopAccount._ANAME2PNAME = {
     id: "id",
@@ -59,7 +65,8 @@ ZmPopAccount._ANAME2PNAME = {
     port: "port",
     username: "userName",
     password: "password",
-    l: "folderId"
+    l: "folderId",
+    connectionType: "connectionType"
 };
 
 //
@@ -80,9 +87,12 @@ ZmPopAccount.prototype.folderId = ZmOrganizer.ID_INBOX;
 /***
 ZmPopAccount.prototype.maxDownloadSizeKb;
 ZmPopAccount.prototype.removeMessages = ZmPopAccount.REMOVE_NEVER;
-ZmPopAccount.prototype.useSSL = false;
 /***/
 ZmPopAccount.prototype.port = ZmPopAccount.PORT_DEFAULT;
+ZmPopAccount.prototype.connectionType = ZmPopAccount.CONNECT_CLEAR;
+/***
+ZmPopAccount.prototype.trustSelfSignedCerts = false;
+/***/
 
 //
 // Public methods
@@ -171,6 +181,7 @@ function(callback, errorCallback, batchCommand) {
     pop3.setAttribute("port", this.port || ZmPopAccount.PORT_DEFAULT);
     pop3.setAttribute("username", this.userName);
     pop3.setAttribute("password", this.password);
+    pop3.setAttribute("connectionType", this.connectionType);
 
     if (this._new) {
         pop3.setAttribute("id");
@@ -178,6 +189,7 @@ function(callback, errorCallback, batchCommand) {
         if (!this.hasOwnProperty("port")) pop3.removeAttribute("port");
         if (!this.hasOwnProperty("userName")) pop3.removeAttribute("username");
         if (!this.hasOwnProperty("password")) pop3.removeAttribute("password");
+        if (!this.hasOwnProperty("connectionType")) pop3.removeAttribute("connectionType");
     }
 
     if (batchCommand) {
@@ -209,6 +221,7 @@ ZmPopAccount.prototype.set = function(obj) {
     this.userName = obj.username || this.userName;
     this.password = obj.password != null ? obj.password : this.password;
     this.folderId = obj.l || this.folderId;
+    this.connectionType = obj.connectionType || this.connectionType;
 };
 
 //

@@ -441,6 +441,12 @@ ZmPopAccountBasicPage.prototype._password1Field;
 ZmPopAccountBasicPage.prototype._showPasswordEl;
 ZmPopAccountBasicPage.prototype._folderButton;
 ZmPopAccountBasicPage.prototype._portField;
+ZmPopAccountBasicPage.prototype._portDefEl;
+ZmPopAccountBasicPage.prototype._sslEl;
+/***
+ZmPopAccountBasicPage.prototype._sslTrustDiv;
+ZmPopAccountBasicPage.prototype._sslTrustEl;
+/***/
 
 ZmPopAccountBasicPage.prototype._createIdentityEl;
 ZmPopAccountBasicPage.prototype._identityProps;
@@ -454,6 +460,26 @@ ZmPopAccountBasicPage.prototype._isLinkEmailDirty;
 
 // HTML Handlers
 
+ZmPopAccountBasicPage._handleSsl = function(event) {
+    var target = DwtUiEvent.getTarget(event);
+    var page = Dwt.getObjectFromElement(target);
+    var checked = target.checked ;
+    var port = checked ? ZmPopAccount.PORT_SSL : ZmPopAccount.PORT_DEFAULT;
+    page._account.connectionType = checked ? ZmPopAccount.CONNECT_SSL : ZmPopAccount.CONNECT_CLEAR;
+    page._account.port = port;
+    page._portField.setValue(port);
+    page._portDefEl.innerHTML = port;
+    /***
+    Dwt.setVisible(page._sslTrustDiv, checked);
+    /***/
+    page._dirtyListener();
+};
+ZmPopAccountBasicPage._handleSslTrust = function(event) {
+    var target = DwtUiEvent.getTarget(event);
+    var page = Dwt.getObjectFromElement(target);
+    page._account.trustSelfSignedCerts = target.checked;
+    page._dirtyListener();
+};
 ZmPopAccountBasicPage._handleCreateIdentity = function(event) {
     var target = DwtUiEvent.getTarget(event);
     var page = Dwt.getObjectFromElement(target);
@@ -504,7 +530,16 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
     var folder = tree.getById(folderId);
 
     this._folderButton.setText(folder.name);
-    this._portField.setValue(account.port || ZmAccount.PORT_DEFAULT);
+    var useSSL = account.connectionType == ZmPopAccount.CONNECT_SSL;
+    var portDef = useSSL ? ZmPopAccount.PORT_SSL : ZmPopAccount.PORT_DEFAULT;
+    this._portField.setValue(account.port || portDef);
+    this._portDefEl.innerHTML = portDef;
+
+    this._sslEl.checked = useSSL;
+    /***
+    Dwt.setVisible(this._sslTrustDiv, useSSL);
+    this._sslTrustEl.checked = account.trustSelfSignedCerts;
+    /***/
 
     // initialize other form state
     var createIdentityDiv = this._createIdentityEl.parentNode;
@@ -646,14 +681,40 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
 
     var serverId = [this._htmlElId,"server"].join("_");
     var portId = [this._htmlElId,"port"].join("_");
+    var portDefId = [portId,"def"].join("_");
+    var sslId = [this._htmlElId,"ssl"].join("_");
+    /***
+    var sslTrustDivId = [sslId,"trust","div"].join("_");
+    var sslTrustId = [sslId,"trust"].join("_");
+    /***/
     var serverHtml = [
         "<table border='0' cellPadding='0' cellSpacing='0' style='border-collapse:collapse'>",
             "<tr>",
                 "<td id='",serverId,"'></td>",
                 "<td style='padding-left:0.5em;padding-right:0.25em'>",ZmMsg.portLabel,"</td>",
                 "<td id='",portId,"'></td>",
-                "<td style='padding-left:0.5em'>",ZmMsg.defLabel," 110</td>",
+                "<td style='padding-left:0.5em'>",
+                    ZmMsg.defLabel,
+                    " ",
+                    "<span id='",portDefId,"'></span>",
+                "</td>",
             "</tr>",
+            "<tr>",
+                "<td colspan='4'>",
+                    "<input type='checkbox' id='",sslId,"'> ",
+                    ZmMsg.popAccountUseSSL,
+                "</td>",
+            "</tr>",
+            /***
+            "<tr>",
+                "<td colspan='4'>",
+                    "<div id='",sslTrustDivId,"'>",
+                        "<input type='checkbox' id='",sslTrustId,"'> ",
+                        ZmMsg.popAccountUseSSLTrust,
+                    "</div>",
+                "</td>",
+            "</tr>",
+            /***/
         "</table>"
     ].join("");
 
@@ -733,6 +794,12 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
     testEl.appendChild(this._testButton.getHtmlElement());
 
     // save refs to elements
+    this._portDefEl = document.getElementById(portDefId);
+    this._sslEl = document.getElementById(sslId);
+    /***
+    this._sslTrustDiv = document.getElementById(sslTrustDivId);
+    this._sslTrustEl = document.getElementById(sslTrustId);
+    /***/
     this._createIdentityEl = document.getElementById(createIdentityId);
     this._identityNameEl = identityNameEl;
     this._linkAddrEl = document.getElementById(linkAddrId);
@@ -740,10 +807,18 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
     this._showPasswordEl = document.getElementById(showPasswordId);
 
     // register handlers and associate elements
+    Dwt.setHandler(this._sslEl, DwtEvent.ONCLICK, ZmPopAccountBasicPage._handleSsl);
+    /***
+    Dwt.setHandler(this._sslTrustEl, DwtEvent.ONCLICK, ZmPopAccountBasicPage._handleSslTrust);
+    /***/
     Dwt.setHandler(this._createIdentityEl, DwtEvent.ONCLICK, ZmPopAccountBasicPage._handleCreateIdentity);
     Dwt.setHandler(this._linkAddrEl, DwtEvent.ONCLICK, ZmPopAccountBasicPage._handleLinkAddr);
     Dwt.setHandler(this._linkFolderEl, DwtEvent.ONCLICK, ZmPopAccountBasicPage._handleLinkFolder);
     Dwt.setHandler(this._showPasswordEl, DwtEvent.ONCLICK, ZmPopAccountBasicPage._handleShowPassword);
+    Dwt.associateElementWithObject(this._sslEl, this);
+    /***
+    Dwt.associateElementWithObject(this._sslTrustEl, this);
+    /***/
     Dwt.associateElementWithObject(this._createIdentityEl, this);
     Dwt.associateElementWithObject(this._linkAddrEl, this);
     Dwt.associateElementWithObject(this._linkFolderEl, this);
