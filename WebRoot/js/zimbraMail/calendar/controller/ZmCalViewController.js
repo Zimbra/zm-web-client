@@ -870,7 +870,7 @@ function(appt, mode) {
 ZmCalViewController.prototype._deleteAppointment = 
 function(appt) {
 	if (!appt) return;
-	if (appt.isRecurring()) {
+	if (appt.isRecurring() && !appt.isException()) {
 		this._showTypeDialog(appt, ZmAppt.MODE_DELETE);
 	} else {
 		this._promptDeleteAppt(appt, ZmAppt.MODE_DELETE);
@@ -1029,22 +1029,30 @@ function(appt) {
 
 ZmCalViewController.prototype._typeOkListener = 
 function(ev) {
-	var appt = this._typeDialog.getAppt();
+    var appt = this._typeDialog.getAppt();
+    var mode = this._typeDialog.getApptMode();
+    var isInstance = this._typeDialog.isInstance();
+    this._performApptAction(appt, mode, isInstance);
+};
 
-	if (this._typeDialog.getApptMode() == ZmAppt.MODE_DELETE) {
-		var mode = this._typeDialog.isInstance() ? ZmAppt.MODE_DELETE_INSTANCE : ZmAppt.MODE_DELETE_SERIES;
-		this._continueDelete(appt, mode);
-	} else if (this._typeDialog.getApptMode() == ZmAppt.MODE_DRAG_OR_SASH) {
+ZmCalViewController.prototype._performApptAction =
+function(appt, mode, isInstance) {
+	if (mode == ZmAppt.MODE_DELETE) {
+		var delMode = isInstance ? ZmAppt.MODE_DELETE_INSTANCE : ZmAppt.MODE_DELETE_SERIES;
+		this._continueDelete(appt, delMode);
+	}
+    else if (mode == ZmAppt.MODE_DRAG_OR_SASH) {
 		// {appt:appt, startDate: startDate, endDate: endDate, callback: callback, errorCallback: errorCallback };		
-		var viewMode =  this._typeDialog.isInstance() ? ZmAppt.MODE_EDIT_SINGLE_INSTANCE : ZmAppt.MODE_EDIT_SERIES;
+		var viewMode =  isInstance ? ZmAppt.MODE_EDIT_SINGLE_INSTANCE : ZmAppt.MODE_EDIT_SERIES;
 		var state = this._updateApptDateState; 
 		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, 
 								[state.appt, viewMode, state.startDateOffset, state.endDateOffset, state.callback, state.errorCallback]);
 		delete this._updateApptDateState;
 		appt.getDetails(viewMode, respCallback, state.errorCallback);
-	} else {
-		var mode = this._typeDialog.isInstance() ? ZmAppt.MODE_EDIT_SINGLE_INSTANCE : ZmAppt.MODE_EDIT_SERIES;
-		this.editAppointment(appt, mode);
+	}
+    else {
+		var editMode = isInstance ? ZmAppt.MODE_EDIT_SINGLE_INSTANCE : ZmAppt.MODE_EDIT_SERIES;
+		this.editAppointment(appt, editMode);
 	}
 };
 
@@ -1122,15 +1130,22 @@ function(appt, startDateOffset, endDateOffset, callback, errorCallback, ev) {
 		var viewMode = ZmAppt.MODE_EDIT;
 		var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback]);
 		appt.getDetails(viewMode, respCallback, errorCallback);
-	} else {
+	}
+    else {
 		if (ev.shiftKey || ev.altKey) {
 			var viewMode = ev.altKey ? ZmAppt.MODE_EDIT_SERIES : ZmAppt.MODE_EDIT_SINGLE_INSTANCE;
 			var respCallback = new AjxCallback(this, this._handleResponseUpdateApptDate, [appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback]);
 			appt.getDetails(viewMode, respCallback, errorCallback);
-		} else {
-			this._updateApptDateState = {appt:appt, startDateOffset: startDateOffset, endDateOffset: endDateOffset, callback: callback, errorCallback: errorCallback };
-			this._showTypeDialog(appt, ZmAppt.MODE_DRAG_OR_SASH);
 		}
+        else {
+			this._updateApptDateState = {appt:appt, startDateOffset: startDateOffset, endDateOffset: endDateOffset, callback: callback, errorCallback: errorCallback };
+            if (appt.isException()) {
+                this._performApptAction(appt, ZmAppt.MODE_DRAG_OR_SASH, true);
+            }
+            else {
+                this._showTypeDialog(appt, ZmAppt.MODE_DRAG_OR_SASH);
+            }
+        }
 	}
 };
 
