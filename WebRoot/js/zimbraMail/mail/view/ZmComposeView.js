@@ -1211,7 +1211,8 @@ ZmComposeView.prototype._createHtml =
 function() {
 	var subjectFieldId = Dwt.getNextId();
 	var attcDivId = Dwt.getNextId();
-	var identityDivId = Dwt.getNextId();
+	var identityCellId = Dwt.getNextId();
+	var identityRowId = Dwt.getNextId();
 	var div = document.createElement("div");
 
 	var html = [];
@@ -1255,15 +1256,17 @@ function() {
 	html[idx++] = " align='right'>";
 	html[idx++] = ZmMsg.subject;
 	html[idx++] = ":</td>";
-	html[idx++] = "<td><table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
+	html[idx++] = "<td><table cellspacing=0 cellpadding=0 border=0 width=100%><tr id='";
+	html[idx++] = identityRowId;
+	html[idx++] = "'>";
 	html[idx++] = "<td><input autocomplete='off' type='text' id='";
 	html[idx++] = subjectFieldId;
 	html[idx++] = "' class='subjectField'></td>";
 
 	// create identity selector
-	html[idx++] = "<td style='padding-left:4px;width:15%;'><div id='";
-	html[idx++] = identityDivId;
-	html[idx++] = "'></div></td>";
+	html[idx++] = "<td style='padding-left:4px;width:15%;' id='";
+	html[idx++] = identityCellId;
+	html[idx++] = "'></td>";
 
 	html[idx++] = "</tr></table></td>";
 	html[idx++] = "</tr></table></td></tr>";
@@ -1282,14 +1285,16 @@ function() {
 	this._subjectField = document.getElementById(subjectFieldId);
 //	this._subjectField.onkeydown = AjxCallback.simpleClosure(this.__checkTabInSubject, this);
 	this._attcDiv = document.getElementById(attcDivId);
-	this._identityDiv = document.getElementById(identityDivId);
+	this._identityCell = document.getElementById(identityCellId);
+	this._identityRow = document.getElementById(identityRowId);
 	
 	var options = this._getIdentityOptions();
 	this._identitySelect = new DwtSelect(this, options);
 	this._identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
-	this._identitySelect.reparentHtmlElement(this._identityDiv);
+	this._identitySelect.reparentHtmlElement(this._identityCell);
 	var identityCollection = this._appCtxt.getIdentityCollection();
 	identityCollection.addChangeListener(new AjxListener(this, this._identityChangeListener));
+	this._setIdentityVisibility();
 };
 
 ZmComposeView.prototype._getIdentityOptions =
@@ -1307,6 +1312,7 @@ function() {
 ZmComposeView.prototype._identityChangeListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_CREATE) {
+		this._setIdentityVisibility();
 		var identity = ev.getDetail("item");
 		var option = new DwtSelectOptionData(identity.id, identity.name);
 		this._identitySelect.addOption(option);
@@ -1317,6 +1323,7 @@ function(ev) {
 		for (var i = 0, count = options.length; i < count; i++)	 {
 			this._identitySelect.addOption(options[i]);
 		}
+		this._setIdentityVisibility();
 	} else if (ev.event == ZmEvent.E_MODIFY) {
 		var rename = ev.getDetail("rename");
 		if (rename) {
@@ -1325,6 +1332,18 @@ function(ev) {
 		}
 	}
 };
+
+ZmComposeView.prototype._setIdentityVisibility =
+function() {
+	var identityCount = this._appCtxt.getIdentityCollection().getSize();
+	if ((identityCount < 2) && this._identityCell.parentNode) {
+		this._identityRow.removeChild(this._identityCell);
+	} else if ((identityCount >= 2) && !this._identityCell.parentNode) {
+		this._identityRow.appendChild(this._identityCell);
+	}
+	
+};
+
 
 ZmComposeView.prototype.getIdentitySelect =
 function() {

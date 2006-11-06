@@ -283,13 +283,20 @@ function ZmIdentityCollection(appCtxt) {
 	this._idToIdentity = {};
 	this._addressToIdentity = {};
 	this._folderToIdentity = {};
+	this._size = 0;
 };
 
 ZmIdentityCollection.prototype = new ZmModel;
 ZmIdentityCollection.prototype.constructor = ZmIdentityCollection;
 
+
+ZmIdentityCollection.prototype.getSize =
+function() {
+	return this._size;
+};
+
 ZmIdentityCollection.prototype.getIdentities =
-function(includeFakeDefault) {
+function() {
 	var i = 0;
 	var result = [];
 	for (var id in this._idToIdentity) {
@@ -305,21 +312,27 @@ function(id) {
 
 ZmIdentityCollection.prototype.add =
 function(identity) {
-	identity.id = this._nextId++;
-	this._idToIdentity[identity.id] = identity;
-	if (identity.isDefault) {
-		this.defaultIdentity = identity;
+	if (!this._idToIdentity[identity.id]) {
+		identity.id = this._nextId++;
+		this._idToIdentity[identity.id] = identity;
+		if (identity.isDefault) {
+			this.defaultIdentity = identity;
+		}
+	
+		this._addToMaps(identity);	
+		this._size++;
+		this._notify(ZmEvent.E_CREATE, { item: identity } );
 	}
-
-	this._addToMaps(identity);	
-	this._notify(ZmEvent.E_CREATE, { item: identity } );
 };
 
 ZmIdentityCollection.prototype.remove =
 function(identity) {
-	this._removeFromMaps(identity);
-	delete this._idToIdentity[identity.id];
-	this._notify(ZmEvent.E_DELETE, { item: identity } );
+	if (this._idToIdentity[identity.id]) {
+		this._removeFromMaps(identity);
+		delete this._idToIdentity[identity.id];
+		this._size--;
+		this._notify(ZmEvent.E_DELETE, { item: identity } );
+	}
 };
 
 ZmIdentityCollection.prototype._addToMaps =
