@@ -161,7 +161,19 @@ function(item) {
 	}
 };
 
-ZmPrefListView.prototype.findError =
+ZmPrefListView.prototype.clearAllErrors =
+function(item) {
+	var hasError = false;
+	for (var i in this._errors) {
+		hasError = true;
+		break;
+	}
+	if (hasError) {
+		this._errors = {};
+		this._redrawErrors();
+	}
+};
+ZmPrefListView.prototype.findError =
 function(item) {
 	var index = this._list._getItemIndex(item);
 	return this._errors[index];

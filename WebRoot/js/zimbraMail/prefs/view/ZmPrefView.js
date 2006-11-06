@@ -203,7 +203,7 @@ ZmPrefView.prototype.getPreSaveCallbacks = function() {
     for (var i = 0; i < ZmPrefView.VIEWS.length; i++) {
         var view = ZmPrefView.VIEWS[i];
         var viewPage = this.prefView[view];
-        if (viewPage && viewPage.getPreSaveCallback) {
+        if (viewPage && viewPage.getPreSaveCallback && viewPage.hasRendered()) {
             var callback = viewPage.getPreSaveCallback();
             if (callback) {
                 callbacks.push(callback);

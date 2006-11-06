@@ -834,13 +834,13 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
     var emailListener = new AjxListener(this, this._emailListener);
     var testListener = new AjxListener(this, this._testListener);
 
-    this._nameField.addListener(DwtUiEvent.ONKEYUP, nameListener);
-    this._serverField.addListener(DwtUiEvent.ONKEYUP, serverListener);
-    this._portField.addListener(DwtUiEvent.ONKEYUP, portListener);
-    this._usernameField.addListener(DwtUiEvent.ONKEYUP, userNameListener);
-    this._password1Field.addListener(DwtUiEvent.ONKEYUP, passwordListener);
+    this._nameField.addListener(DwtEvent.ONKEYUP, nameListener);
+    this._serverField.addListener(DwtEvent.ONKEYUP, serverListener);
+    this._portField.addListener(DwtEvent.ONKEYUP, portListener);
+    this._usernameField.addListener(DwtEvent.ONKEYUP, userNameListener);
+    this._password1Field.addListener(DwtEvent.ONKEYUP, passwordListener);
     this._folderButton.addSelectionListener(folderListener);
-    this._emailField.addListener(DwtUiEvent.ONKEYUP, emailListener);
+    this._emailField.addListener(DwtEvent.ONKEYUP, emailListener);
     this._testButton.addSelectionListener(testListener);
 };
 

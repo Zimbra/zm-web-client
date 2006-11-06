@@ -43,8 +43,6 @@
 	this._adds = [];
 	this._deletes = [];
 	this._updates = [];
-
-	this._nameChangeTimedAction = new AjxTimedAction(this, this._nameChangeAction);
 };
 
 ZmIdentityView.prototype = new ZmPrefListView;
@@ -74,6 +72,7 @@ function() {
 	listView.set(this._controller._getListData());
 	listView.setSelection(this._appCtxt.getIdentityCollection().defaultIdentity);
 	this._clearChanges();
+	this.clearAllErrors();
 };
 
 ZmIdentityView.prototype._createDetails =
@@ -91,7 +90,7 @@ function(parentElement) {
 	this._identityNameInput.setRequired(true);
 	this._identityNameInput.reparentHtmlElement(inputCell);
 	this._identityNameInput.setHandler(DwtEvent.ONCHANGE, AjxCallback.simpleClosure(this._nameChangeHandler, this));
-	this._identityNameInput.setHandler(DwtEvent.ONKEYPRESS, AjxCallback.simpleClosure(this._nameChangeHandler, this));
+	this._identityNameInput.setHandler(DwtEvent.ONKEYUP, AjxCallback.simpleClosure(this._nameChangeHandler, this));
 
 	var tabView = new DwtTabView(this, null, Dwt.STATIC_STYLE);
 	tabView.reparentHtmlElement(parentElement);
@@ -106,21 +105,16 @@ function(parentElement) {
 
 ZmIdentityView.prototype._addPage =
 function(pageId, title, tabView) {
-	var page = new ZmIdentityPage(this.parent, this._appCtxt, pageId);
+	var page = new ZmIdentityPage(this, this._appCtxt, pageId);
 	tabView.addTab(title, page);
 	this._pages.push(page);
 };
 
 ZmIdentityView.prototype._nameChangeHandler =
 function() {
-	// Change the list contents on a timer...otherwise keypresses don't show up.
-	AjxTimedAction.scheduleAction(this._nameChangeTimedAction, 0);
-};
-
-ZmIdentityView.prototype._nameChangeAction =
-function() {
 	var value = AjxStringUtil.trim(this._identityNameInput.getValue());
 	this._identity.name = value;
+    this.validate();
 	this.getList().setUI(); // Redraw the whole list.
 };
 
@@ -141,6 +135,7 @@ function(identity) {
 ZmIdentityView.prototype.addNew =
 function(identity) {
 	this._adds[this._adds.length] = identity;
+	this._identityNameInput.focus();
 };
 
 ZmIdentityView.prototype.remove =
@@ -277,6 +272,7 @@ function ZmIdentityPage(parent, appCtxt, pageId, className, posStyle) {
 	this._hasRendered = false;
 	
 	this._checkboxClosure = AjxCallback.simpleClosure(this._checkboxHandler, this);
+	this._changeListenerObj = new AjxListener(this, this._changeListener);
 	
 	this._inputs = {}; // Map of field name in ZmIdentity to DwtInputField
 	this._checkboxIds = {}; // Map of field name in ZmIdentity to checkbox ids
@@ -505,6 +501,7 @@ function() {
 	params.hint = ZmMsg.nameHint;
 	var sendFromName = new DwtInputField(params);
 	sendFromName.setRequired(true);
+	sendFromName.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
 	sendFromName.reparentHtmlElement(sendFromNameId);
 	this._inputs[ZmIdentity.SEND_FROM_DISPLAY] = sendFromName;
 	this._errorMessages[ZmIdentity.SEND_FROM_DISPLAY] = ZmMsg.sendFromError;
@@ -512,6 +509,7 @@ function() {
 	params.hint = ZmMsg.addressHint;
 	var sendFromAddress = new DwtInputField(params);
 	sendFromAddress.setRequired(true);
+	sendFromAddress.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
 	sendFromAddress.setValidatorFunction(null, ZmIdentityPage._validateEmailAddress);
 	sendFromAddress.reparentHtmlElement(sendFromAddressId);
 	this._inputs[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
@@ -523,6 +521,8 @@ function() {
 	this._inputs[ZmIdentity.SET_REPLY_TO_DISPLAY] = setReplyToName;
 	params.hint = ZmMsg.addressHint;
 	var setReplyToAddress = new DwtInputField(params);
+	sendFromAddress.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
+	sendFromAddress.setValidatorFunction(null, ZmIdentityPage._validateEmailAddress);
 	setReplyToAddress.reparentHtmlElement(setReplyToAddressId);
 	this._inputs[ZmIdentity.SET_REPLY_TO_ADDRESS] = setReplyToAddress;
 	this._associateCheckbox(setReplyToCheckboxId, [setReplyToName, setReplyToAddress]);
@@ -550,6 +550,9 @@ function() {
 
 ZmIdentityPage.prototype._stringToArray =
 function(value) {
+	if (!value) {
+		return [];
+	}
 	var result = value.split(",");
 	for (var i = 0, count = result.length; i < count; i++) {
 		result[i] = AjxStringUtil.trim(result[i]);
@@ -775,5 +778,10 @@ function(value) {
 		throw AjxMessageFormat.format(ZmMsg.errorInvalidEmail);
 	}
 	return value;
+};
+
+ZmIdentityPage.prototype._changeListener =
+function(evt) {
+    this.parent.validate();
 };
 

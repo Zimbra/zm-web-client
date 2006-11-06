@@ -57,6 +57,8 @@ ZmIdentity.STRING = 1;
 ZmIdentity.ARRAY = 2;
 ZmIdentity.BOOLEAN = 3;
 
+ZmIdentity.DEFAULT_NAME = "DEFAULT";
+
 var i = 0;
 ZmIdentity.SEND_FROM_DISPLAY = i++;
 ZmIdentity.SEND_FROM_ADDRESS = i++;
@@ -102,7 +104,6 @@ ZmIdentity.addField(ZmIdentity.PREFIX, { name: "prefix", node: "a", soap: "zimbr
 ZmIdentity.addField(ZmIdentity.FORWARD_OPTION, { name: "forwardOption", node: "a", soap: "zimbraPrefForwardIncludeOriginalText", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.REPLY_OPTION, { name: "replyOption", node: "a", soap: "zimbraPrefReplyIncludeOriginalText", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.SIGNATURE_STYLE, { name: "signatureStyle", node: "a", soap: "zimbraPrefMailSignatureStyle", type: ZmIdentity.STRING });
-ZmIdentity.addField(ZmIdentity.IS_DEFAULT, { name: "isDefault", node: "a", soap: "zimbraPrefDefaultIdentity", type: ZmIdentity.BOOLEAN });
 
 ZmIdentity.prototype.getField =
 function(fieldId) {
@@ -116,7 +117,14 @@ function(fieldId, value) {
 
 ZmIdentity.prototype._loadFromDom =
 function(data) {
-	if (data.name) this.name = data.name;
+	if (data.name) {
+		if (data.name == ZmIdentity.DEFAULT_NAME) {
+			this.isDefault = true;
+			this.name = ZmMsg.defaultIdentity;
+		} else {
+			this.name = data.name;
+		}
+	}
 	var props = data.a;
 	if (props) {
 		for (var i = 0, count = props.length; i < count; i++) {
@@ -140,7 +148,12 @@ ZmIdentity.prototype.createRequest =
 function(request, batchCommand) {
     var soapDoc = AjxSoapDoc.create(request, "urn:zimbraAccount");
     var identityNode = soapDoc.set("identity");
-    var name = this._object_ ? this._object_.name : this.name; 
+    var name;
+    if (this.isDefault) {
+    	name = ZmIdentity.DEFAULT_NAME;
+    } else {
+	    name = this._object_ ? this._object_.name : this.name; 
+	}
     identityNode.setAttribute("name", name);
     if (request != "DeleteIdentityRequest") {
 		if (this.hasOwnProperty("name")) {
@@ -277,9 +290,6 @@ ZmIdentityCollection.prototype.constructor = ZmIdentityCollection;
 
 ZmIdentityCollection.prototype.getIdentities =
 function(includeFakeDefault) {
-	if (!includeFakeDefault && this._hasFakeDefault) {
-		return [];
-	}
 	var i = 0;
 	var result = [];
 	for (var id in this._idToIdentity) {
@@ -295,15 +305,9 @@ function(id) {
 
 ZmIdentityCollection.prototype.add =
 function(identity) {
-	if (identity.isDefault && this._hasFakeDefault) {
-		this.remove(this.defaultIdentity);
-		this.defaultIdentity = null;
-		this._hasFakeDefault = false;
-	}
-
 	identity.id = this._nextId++;
 	this._idToIdentity[identity.id] = identity;
-	if (identity.isDefault || !this.defaultIdentity) {
+	if (identity.isDefault) {
 		this.defaultIdentity = identity;
 	}
 
@@ -399,14 +403,6 @@ function(data) {
 		var identity = new ZmIdentity(this._appCtxt, '');
 		identity._loadFromDom(identities[i]);
 		this.add(identity);
-	}
-	if (!count) {
-		// This is a hack to make sure there is always a default identity, even though
-		// the server isn't yet creating one for us.
-		var identity = new ZmIdentity(this._appCtxt, "Fake Identity");
-		identity.isDefault = true;
-		this.add(identity);		
-		this._hasFakeDefault = true;
 	}
 };
 

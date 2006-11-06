@@ -60,6 +60,7 @@ function() {
 	var list = listView.getList();
 	list.addItem(identity);
 	list.setSelection(identity);
+	listView.validate();
 };
 
 ZmIdentityController.prototype._removeHandler =

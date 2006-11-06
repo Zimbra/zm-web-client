@@ -1296,7 +1296,7 @@ ZmComposeView.prototype._getIdentityOptions =
 function() {
 	var options = [];
 	var identityCollection = this._appCtxt.getIdentityCollection();
-	var identities = identityCollection.getIdentities(true);
+	var identities = identityCollection.getIdentities();
 	for (var i = 0, count = identities.length; i < count; i++) {
 		var identity = identities[i];
 		options[i] = new DwtSelectOptionData(identity.id, identity.name);
