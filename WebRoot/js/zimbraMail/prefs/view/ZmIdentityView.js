@@ -501,28 +501,33 @@ function() {
 	params.hint = ZmMsg.nameHint;
 	var sendFromName = new DwtInputField(params);
 	sendFromName.setRequired(true);
+	this._errorMessages[ZmIdentity.SEND_FROM_DISPLAY] = ZmMsg.sendFromError;
 	sendFromName.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
 	sendFromName.reparentHtmlElement(sendFromNameId);
 	this._inputs[ZmIdentity.SEND_FROM_DISPLAY] = sendFromName;
-	this._errorMessages[ZmIdentity.SEND_FROM_DISPLAY] = ZmMsg.sendFromError;
 
 	params.hint = ZmMsg.addressHint;
 	var sendFromAddress = new DwtInputField(params);
 	sendFromAddress.setRequired(true);
 	sendFromAddress.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
 	sendFromAddress.setValidatorFunction(null, ZmIdentityPage._validateEmailAddress);
+	this._errorMessages[ZmIdentity.SEND_FROM_ADDRESS] = ZmMsg.sendFromAddressError;
 	sendFromAddress.reparentHtmlElement(sendFromAddressId);
 	this._inputs[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
-	this._errorMessages[ZmIdentity.SEND_FROM_ADDRESS] = ZmMsg.sendFromAddressError;
 
 	params.hint = ZmMsg.nameHint;
 	var setReplyToName = new DwtInputField(params);
+	setReplyToName.setRequired(true);
+	this._errorMessages[ZmIdentity.SET_REPLY_TO_DISPLAY] = ZmMsg.replyToError;
+	setReplyToName.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
 	setReplyToName.reparentHtmlElement(setReplyToNameId);
 	this._inputs[ZmIdentity.SET_REPLY_TO_DISPLAY] = setReplyToName;
 	params.hint = ZmMsg.addressHint;
 	var setReplyToAddress = new DwtInputField(params);
-	sendFromAddress.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
-	sendFromAddress.setValidatorFunction(null, ZmIdentityPage._validateEmailAddress);
+	setReplyToAddress.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
+	setReplyToAddress.setValidatorFunction(null, ZmIdentityPage._validateEmailAddress);
+	this._errorMessages[ZmIdentity.SET_REPLY_TO_ADDRESS] = ZmMsg.replyToAddressError;
+	setReplyToAddress.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
 	setReplyToAddress.reparentHtmlElement(setReplyToAddressId);
 	this._inputs[ZmIdentity.SET_REPLY_TO_ADDRESS] = setReplyToAddress;
 	this._associateCheckbox(setReplyToCheckboxId, [setReplyToName, setReplyToAddress]);
@@ -624,6 +629,7 @@ ZmIdentityPage.prototype._checkboxHandler =
 function(event) {
 	var checkbox = event.target;
 	this._applyCheckbox(checkbox);
+    this.parent.validate();
 };
 
 ZmIdentityPage.prototype._initializeAdvanced =
@@ -772,7 +778,7 @@ function() {
 
 ZmIdentityPage._validateEmailAddress =
 function(value) {
-	if (value == "") {
+	if (value == ""){
 		throw AjxMsg.valueIsRequired;
 	} else if (!ZmEmailAddress.isValid(value)) {
 		throw AjxMessageFormat.format(ZmMsg.errorInvalidEmail);
