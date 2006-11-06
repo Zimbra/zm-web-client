@@ -238,13 +238,12 @@
     </jammer>
   </target>
 
-  <target name="gzip-js">
+  <target name="gzip-copy-js">
+    <!-- gzip then copy source file to the .js extension for use when gzip=false -->
     <gzip src="${var}${rhinoExtension}${licenseExtension}" zipfile="${var}${gzipExtension}"/>
-  </target>
-
-  <target name="rm-temp-file">
-    <delete file="${var}${rhinoExtension}" />
-    <delete file="${var}${rhinoExtension}${licenseExtension}" />
+    <copyfile src="${var}${rhinoExtension}${licenseExtension}" dest="${var}" forceoverwrite="true"/>
+    <delete file="${var}${rhinoExtension}"/>
+    <delete file="${var}${rhinoExtension}${licenseExtension}"/>
   </target>
 
   <target name="rhino-compress">
@@ -353,12 +352,7 @@
 				</fileset>
 			</path>
 		</foreach>
-		<foreach target="gzip-js" param="var">
-			<path>
-				<fileset refid="js-includes" />
-			</path>
-		</foreach>
-		<foreach target="rm-temp-file" param="var">
+		<foreach target="gzip-copy-js" param="var">
 			<path>
 				<fileset refid="js-includes" />
 			</path>
