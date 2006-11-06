@@ -183,8 +183,8 @@ function(callback, errorCallback, batchCommand) {
     pop3.setAttribute("password", this.password);
     pop3.setAttribute("connectionType", this.connectionType);
 
-    if (this._new) {
-        pop3.setAttribute("id");
+    if (!this._new) {
+        pop3.setAttribute("id", this.id);
         if (!this.hasOwnProperty("mailServer")) pop3.removeAttribute("host");
         if (!this.hasOwnProperty("port")) pop3.removeAttribute("port");
         if (!this.hasOwnProperty("userName")) pop3.removeAttribute("username");
