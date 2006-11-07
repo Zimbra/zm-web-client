@@ -1053,7 +1053,7 @@ function(soapDoc, parent) {
 			e.setAttribute("t", "r");
 			e.setAttribute("a", this.identity.setReplyToAddress);
 			if (this.identity.setReplyToDisplay) {
-				e.setAttribute("p", name);
+				e.setAttribute("p", this.identity.setReplyToDisplay);
 			}
 		}
 	}
