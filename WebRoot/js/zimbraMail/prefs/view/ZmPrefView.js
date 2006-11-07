@@ -192,7 +192,8 @@ function(view) {
  *    return new AjxCallback(this, this._preSaveAction, []);
  * };
  *
- * MyPrefView.prototype._preSaveAction = function(continueCallback) {
+ * MyPrefView.prototype._preSaveAction =
+ * function(continueCallback, batchCommand) {
  *    var success = true;
  *    // perform some operation
  *    continueCallback.run(success);

@@ -103,7 +103,7 @@ ZmPopAccountsView.prototype.getPreSaveCallback = function() {
 };
 
 ZmPopAccountsView.prototype._preSaveTestAccounts =
-function(accounts, continueCallback) {
+function(accounts, continueCallback, batchCommand) {
     var successes = new Array(accounts.length);
 
     // setup test dialog
@@ -134,11 +134,11 @@ function(accounts, continueCallback) {
 
     this._testDialog.setButtonListener(
         DwtDialog.CANCEL_BUTTON,
-        new AjxListener(this, this._preSaveTestButtonListener, [continueCallback, accounts, successes, false])
+        new AjxListener(this, this._preSaveTestButtonListener, [continueCallback, batchCommand, accounts, successes, false])
     );
     this._testDialog.setButtonListener(
         DwtDialog.OK_BUTTON,
-        new AjxListener(this, this._preSaveTestButtonListener, [continueCallback, accounts, successes, true])
+        new AjxListener(this, this._preSaveTestButtonListener, [continueCallback, batchCommand, accounts, successes, true])
     );
     this._testDialog.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 
@@ -146,12 +146,12 @@ function(accounts, continueCallback) {
 
     // start test
     var testCallback = new AjxCallback(this, this._preSaveTestResults);
-    testCallback.args = [testCallback, accounts, 0, successes, continueCallback];
+    testCallback.args = [testCallback, accounts, 0, successes, continueCallback, batchCommand];
     this._preSaveTestResults.apply(this, testCallback.args);
 };
 
 ZmPopAccountsView.prototype._preSaveTestResults =
-function(testCallback, accounts, index, successes, continueCallback, result) {
+function(testCallback, accounts, index, successes, continueCallback, batchCommand, result) {
     // show results
     if (result) {
         var account = accounts[index - 1];
@@ -230,10 +230,48 @@ ZmPopAccountsView.prototype.__getAcctEl = function(account) {
 };
 
 ZmPopAccountsView.prototype._preSaveTestButtonListener =
-function(continueCallback, accounts, successes, success) {
+function(continueCallback, batchCommand, accounts, successes, success) {
     this._testDialog.popdown();
-    for (var i = 0; i < successes.length; i++) {
-        accounts[i].enabled = successes[i];
+    if (success) {
+        for (var i = 0; i < successes.length; i++) {
+            var account = accounts[i]; 
+
+            // disable accounts that failed
+            if (successes[i] == false) {
+                account.enabled = false;
+            }
+
+            // add
+            var errorCallback = new AjxCallback(this, this._commandException);
+            if (account._new) {
+                var callback = new AjxCallback(this, this._commandResult, [account]);
+                account.create(callback, errorCallback, batchCommand);
+
+                // create identity
+                if (account._identity.checked) {
+                    var email = account._identity.email;
+                    var display = email.replace(/@.*$/,"");
+
+                    var identity = new ZmIdentity(this._appCtxt);
+                    identity.name = account.name;
+                    identity.sendFromDisplay = display;
+                    identity.sendFromAddress = email;
+                    identity.setReplyTo = true;
+                    identity.setReplyToDisplay = display;
+                    identity.setReplyToAddress = email;
+                    identity.useWhenSentTo = account._identity.linkAddr;
+                    identity.whenSentToAddresses = [email];
+                    identity.useWhenInFolder = account._identity.linkFolder;
+                    identity.whenInFolderIds = [account.folderId];
+
+                    identity.createRequest("CreateIdentityRequest", batchCommand);
+                }
+            }
+            else {
+                var callback = new AjxCallback(this, this._commandResult, [account]);
+                account.save(callback, errorCallback, batchCommand);
+            }
+        }
     }
     continueCallback.run(success);
 };
@@ -280,6 +318,7 @@ ZmPopAccountsView.prototype.addCommand = function(batchCommand) {
     // add soap docs to batch request
     var errorCallback = new AjxCallback(this, this._commandException);
     var execFrame;
+    /***
     for (var i = 0; i < creates.length; i++) {
         var account = creates[i];
         var callback = new AjxCallback(this, this._commandResult, [account]);
@@ -310,6 +349,7 @@ ZmPopAccountsView.prototype.addCommand = function(batchCommand) {
         var callback = new AjxCallback(this, this._commandResult, [account]);
         account.save(callback, errorCallback, batchCommand);
     }
+    /***/
     for (var i = 0; i < deletes.length; i++) {
         var account = deletes[i];
         var callback = new AjxCallback(this, this._commandResult, [account]);
@@ -555,6 +595,8 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
     this._linkAddrEl.checked = account._identity && account._identity.linkAddr;
     this._linkFolderEl.checked = account._identity && account._identity.linkFolder;
     this._setCreateIdentity(this._createIdentityEl.checked);
+
+    this.parent.validate();
 };
 
 ZmPopAccountBasicPage.prototype.getAccount = function() {
@@ -570,7 +612,9 @@ ZmPopAccountBasicPage.prototype._validateSelectedItem = function(errors) {
     var account = this._account;
     if (account.enabled) {
         var isNew = account._new;
+        var isDirty = this.isDirty();
         var requiredFields = account.name && account.mailServer && account.userName;
+        requiredFields = requiredFields && (isNew || !isDirty || account.password);
         var requiredNewFields = !isNew || (account.password && account._identity.email);
         if (!requiredFields || !requiredNewFields) {
             errors.push(ZmMsg.errorMissingRequired);
@@ -906,6 +950,7 @@ ZmPopAccountBasicPage.prototype._folderOkListener = function(dialog, folder) {
 ZmPopAccountBasicPage.prototype._dirtyListener = function(evt) {
     // REVISIT: Do something with this information?
     this._isDirty = true;
+    this._password1Field.setRequired(true);
     this.parent.validate();
 };
 

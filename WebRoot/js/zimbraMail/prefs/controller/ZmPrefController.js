@@ -194,34 +194,7 @@ function () {
 */
 ZmPrefController.prototype._saveListener = 
 function(ev, callback, noPop) {
-    var preSaveCallbacks = this._prefsView.getPreSaveCallbacks();
-    if (preSaveCallbacks && preSaveCallbacks.length > 0) {
-        var continueCallback = new AjxCallback(this, this._doPreSave);
-        continueCallback.args = [continueCallback, preSaveCallbacks, callback, noPop];
-        this._doPreSave.apply(this, continueCallback.args);
-    }
-    else {
-        this._doSave(callback, noPop);
-    }
-};
-
-ZmPrefController.prototype._doPreSave =
-function(continueCallback, preSaveCallbacks, callback, noPop, success) {
-    // cancel save
-    if (success != null && !success) {
-        return;
-    }
-    // perform save
-    if (preSaveCallbacks.length == 0) {
-        this._doSave(callback, noPop);
-        return;
-    }
-    // continue pre-save operations
-    var preSaveCallback = preSaveCallbacks.shift();
-    preSaveCallback.run(continueCallback);
-};
-
-ZmPrefController.prototype._doSave = function(callback, noPop) {
+    //  try to validate first
     var list;
 	var batchCommand = new ZmBatchCommand(this._appCtxt);
 	try {
@@ -232,6 +205,36 @@ ZmPrefController.prototype._doSave = function(callback, noPop) {
 			this._appCtxt.setStatusMsg(e.msg, ZmStatusView.LEVEL_CRITICAL);
 		return;
 	}
+
+    // now handle pre-save ops, if needed
+    var preSaveCallbacks = this._prefsView.getPreSaveCallbacks();
+    if (preSaveCallbacks && preSaveCallbacks.length > 0) {
+        var continueCallback = new AjxCallback(this, this._doPreSave);
+        continueCallback.args = [continueCallback, preSaveCallbacks, list, batchCommand, callback, noPop];
+        this._doPreSave.apply(this, continueCallback.args);
+    }
+    else {
+        this._doSave(list, batchCommand, callback, noPop);
+    }
+};
+
+ZmPrefController.prototype._doPreSave =
+function(continueCallback, preSaveCallbacks, list, batchCommand, callback, noPop, success) {
+    // cancel save
+    if (success != null && !success) {
+        return;
+    }
+    // perform save
+    if (preSaveCallbacks.length == 0) {
+        this._doSave(list, batchCommand, callback, noPop);
+        return;
+    }
+    // continue pre-save operations
+    var preSaveCallback = preSaveCallbacks.shift();
+    preSaveCallback.run(continueCallback, batchCommand);
+};
+
+ZmPrefController.prototype._doSave = function(list, batchCommand, callback, noPop) {
 	if (list && list.length) {
 		this._appCtxt.getSettings().save(list, null, batchCommand);
 	} 
