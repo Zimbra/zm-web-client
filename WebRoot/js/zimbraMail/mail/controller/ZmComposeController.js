@@ -310,22 +310,31 @@ function(initHide, composeMode) {
 
 ZmComposeController.prototype._identityChangeListener =
 function(event) {
-	var dialog = this._appCtxt.getYesNoMsgDialog();
-	dialog.reset();
-	dialog.registerCallback(DwtDialog.YES_BUTTON, this._identityChangeYesCallback, this, [dialog]);
-	dialog.setMessage(ZmMsg.identityChangeWarning, DwtMessageDialog.WARNING_STYLE);
-	dialog.popup();
+	if (!this._composeView.isDirty()) {
+		this._applyIdentityToBody();
+	} else {
+		var dialog = this._appCtxt.getYesNoMsgDialog();
+		dialog.reset();
+		dialog.registerCallback(DwtDialog.YES_BUTTON, this._identityChangeYesCallback, this, [dialog]);
+		dialog.setMessage(ZmMsg.identityChangeWarning, DwtMessageDialog.WARNING_STYLE);
+		dialog.popup();
+	}
 };
 
 ZmComposeController.prototype._identityChangeYesCallback =
 function(dialog) {
+	this._applyIdentityToBody();
+	dialog.popdown();
+};
+
+ZmComposeController.prototype._applyIdentityToBody =
+function() {
 	var identity = this._composeView.getIdentity();
 	var newMode = this._getComposeMode(this._msg, identity);
 	if (newMode != this._composeView.getComposeMode()) {
 		this._composeView.setComposeMode(newMode);
 	}
 	this._composeView.resetBody(this._action, this._msg, this._extraBodyText, null);
-	dialog.popdown();
 };
 
 /**
