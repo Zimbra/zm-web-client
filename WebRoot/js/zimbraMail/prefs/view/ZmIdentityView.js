@@ -592,8 +592,8 @@ function(value) {
 	if (names.length) {
 		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		for (var i = 0, count = names.length; i < count; i++) {
-			var name = AjxStringUtil.trim(names[i]);
-			var folder = tree.getByName(name);
+			var path = AjxStringUtil.trim(names[i]);
+			var folder = tree.root.getChildByPath(path);
 			if (folder) {
 				result[result.length] = folder.id;
 			} // else we just don't show the folder.
@@ -609,10 +609,10 @@ function(value) {
 	if (names.length) {
 		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		for (var i = 0, count = names.length; i < count; i++) {
-			var name = AjxStringUtil.trim(names[i]);
-			var folder = tree.getByName(name);
+			var path = AjxStringUtil.trim(names[i]);
+			var folder = tree.root.getChildByPath(path);
 			if (!folder) {
-				return name;
+				return path;
 			}
 		}
 	}
@@ -627,7 +627,7 @@ function(value) {
 		for (var i = 0, count = value.length; i < count; i++) {
 			var folder = tree.getById(value[i]);
 			if (folder) {
-				result[result.length] = folder.name;
+				result[result.length] = folder.getPath(false, false, null, true, true);
 			}
 		}
 	}
@@ -764,11 +764,13 @@ ZmIdentityPage.prototype._chooseFolderOkCallback =
 function(dialog, folderInput, folder) {
 	if (folder && folder.id) {
 		var value = folderInput.getValue();
+		var path = folder.getPath(false, false, null, true, true);
 		if (AjxStringUtil.trim(value)) {
-			folderInput.setValue([value, folder.name].join(", "));
+			folderInput.setValue([value, path].join(", "));
 		} else {
-			folderInput.setValue(folder.name);
+			folderInput.setValue(path);
 		}
+	    this.parent.validate();
 		dialog.popdown();
 	}
 };

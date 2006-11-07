@@ -718,7 +718,11 @@ function(name) {
 	return null;
 };
 
-/***
+/**
+* Returns the child with the given path, or null if no child has the path.
+*
+* @param path		the path of the organizer to look for
+*/
 ZmOrganizer.prototype.getChildByPath =
 function(path) {
 	// get starting organizer
@@ -740,13 +744,12 @@ function(path) {
 		var part = parts[i++];
 		var child = organizer.getChild(part);
 		if (child == null) {
-			break;
+			return null;
 		}
 		organizer = child;
 	}
-	return i == parts.length ? organizer : null;
+	return organizer;
 };
-/***/
 
 ZmOrganizer.prototype.reparent =
 function(newParent) {
