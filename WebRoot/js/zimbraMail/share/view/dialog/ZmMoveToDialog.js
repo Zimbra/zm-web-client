@@ -48,7 +48,7 @@ function() {
 };
 
 ZmMoveToDialog.prototype.popup =
-function(data, loc, treeIds) {
+function(data, loc, treeIds, clearOverview) {
 	var omit = {};
 	omit[ZmFolder.ID_DRAFTS] = true;
 	treeIds = treeIds ? treeIds : [ZmOrganizer.FOLDER];
@@ -80,6 +80,9 @@ function(data, loc, treeIds) {
 		this._items = data;
 	}
 
+	if (clearOverview) {
+		this._opc.clearOverview(ZmMoveToDialog._OVERVIEW_ID);
+	}
 	this._renderOverview(ZmMoveToDialog._OVERVIEW_ID, treeIds, omit);
 
 	var folderTree = null;

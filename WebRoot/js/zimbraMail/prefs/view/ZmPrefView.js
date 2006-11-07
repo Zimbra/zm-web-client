@@ -60,7 +60,7 @@ ZmPrefView.ADDR_BOOK	= i++;
 ZmPrefView.CALENDAR		= i++;
 ZmPrefView.FILTER_RULES	= i++;
 ZmPrefView.GENERAL		= i++;
-ZmPrefView.IDENTITY	= i++;
+ZmPrefView.IDENTITY		= i++;
 ZmPrefView.MAIL			= i++;
 ZmPrefView.POP_ACCOUNTS = i++;
 ZmPrefView.SHORTCUTS	= i++;
@@ -68,7 +68,7 @@ delete i;
 
 ZmPrefView.VIEWS = [
     ZmPrefView.GENERAL,
-    ZmPrefView.MAIL, 
+    ZmPrefView.MAIL,
     ZmPrefView.IDENTITY,
     ZmPrefView.POP_ACCOUNTS,
     ZmPrefView.FILTER_RULES,
@@ -125,6 +125,7 @@ function() {
 		if (view == ZmPrefView.ADDR_BOOK && (!this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))) continue;
 		if (view == ZmPrefView.CALENDAR && (!this._appCtxt.get(ZmSetting.CALENDAR_ENABLED))) continue;
         if (view == ZmPrefView.POP_ACCOUNTS && !this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) continue;
+        if (view == ZmPrefView.SHORTCUTS && !this._appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) continue;
 
         var viewObj = null;
 		if (view == ZmPrefView.FILTER_RULES) {

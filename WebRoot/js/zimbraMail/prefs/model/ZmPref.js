@@ -354,8 +354,8 @@ ZmPref.SETUP[ZmSetting.SEARCH_INCLUDES_TRASH] = {
 	displaySeparator:	true};
 
 ZmPref.SETUP[ZmSetting.SHORTCUTS] = {
-	displayContainer:	ZmPref.TYPE_SHORTCUTS};
-//	precondition:		ZmSetting.USE_KEYBOARD_SHORTCUTS};
+	displayContainer:	ZmPref.TYPE_SHORTCUTS,
+	precondition:		ZmSetting.USE_KEYBOARD_SHORTCUTS};
 
 ZmPref.SETUP[ZmSetting.SHOW_FRAGMENTS] = {
 	displayName:		ZmMsg.showFragments,

@@ -147,6 +147,9 @@ function(overviewId, treeIds, omit, reset) {
 	// clear current tree views out of the overview
 	var curTreeIds = this._treeIds[overviewId];
 	var overview = this.getOverview(overviewId);
+	// TODO: following line results in a bug if you're switching overviews
+	// but not apps (eg shortcuts); need to differentiate tree IDs some
+	// other way; should probably redesign and simplify
 	var oldApp = this._appCtxt.getAppController().getPreviousApp();
 	if (curTreeIds && curTreeIds.length) {
 		for (var i = 0; i < curTreeIds.length; i++) {

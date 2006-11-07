@@ -163,44 +163,30 @@ ZmKeyMap.SHIFT["-"] = "_";
 ZmKeyMap.SHIFT["="] = "+";
 ZmKeyMap.SHIFT["["] = "{";
 ZmKeyMap.SHIFT["]"] = "}";
-ZmKeyMap.SHIFT["\\"] = "|";
 ZmKeyMap.SHIFT[";"] = ":";
 ZmKeyMap.SHIFT["'"] = "\"";
-ZmKeyMap.SHIFT[","] = "<";
 ZmKeyMap.SHIFT["."] = ">";
 ZmKeyMap.SHIFT["/"] = "?";
+ZmKeyMap.SHIFT[DwtKeyMap.COMMA]		= "<";
+ZmKeyMap.SHIFT[DwtKeyMap.SEMICOLON]	= ":";
+ZmKeyMap.SHIFT[DwtKeyMap.BACKSLASH] = "|";
 
-// Translates a key sequence into a friendlier, more readable version
-ZmKeyMap.cleanup =
-function(ks) {
-	var keys = ks.split(",");
-	var keys1 = [];
-	for (var i = 0; i < keys.length; i++) {
-		var key = keys[i];
-		if (key.indexOf("NNN") != -1) {
-			key = key.replace("NNN", "[n]");
-		}
-		if (/^[A-Z]$/.test(key)) {
-			keys1.push(key.toLowerCase());
-		} else if (key.indexOf("Shift") == 0) {
-			var parts = key.split("+");
-			var ch = parts[1];
-			var ch1 = (ch.length > 1) ? ch : (ZmKeyMap.SHIFT[ch]) ? ZmKeyMap.SHIFT[ch] : ch;
-			keys1.push(ch1);
-		} else if (key.indexOf("Ctrl") == 0 || key.indexOf("Alt") == 0) {
-			var parts = key.split("+");
-			var ch = (/^[A-Z]$/.test(parts[1])) ? parts[1].toLowerCase() : parts[1];
-			keys1.push([parts[0], ch].join("-"));
-		} else {
-			keys1.push(key);
-		}
-	}
-	return keys1.join(",");
-};
+ZmKeyMap.ENTITY = {};
+ZmKeyMap.ENTITY[DwtKeyMap.ARROW_LEFT]	= "&larr;"
+ZmKeyMap.ENTITY[DwtKeyMap.ARROW_RIGHT]	= "&rarr;"
+ZmKeyMap.ENTITY[DwtKeyMap.ARROW_UP]		= "&uarr;"
+ZmKeyMap.ENTITY[DwtKeyMap.ARROW_DOWN]	= "&darr;"
+ZmKeyMap.ENTITY['"'] = "&quot;"
+ZmKeyMap.ENTITY['&'] = "&amp;"
+ZmKeyMap.ENTITY['<'] = "&lt;"
+ZmKeyMap.ENTITY['>'] = "&gt;"
+ZmKeyMap.ENTITY[DwtKeyMap.COMMA]		= ",";
+ZmKeyMap.ENTITY[DwtKeyMap.SEMICOLON]	= ";";
+ZmKeyMap.ENTITY[DwtKeyMap.BACKSLASH] 	= "\\";
 
 /**
- * Creates a shortcut.
- * @constructor
+ * Creates a shortcut
+ * @cnstructor
  * @class
  * This class represents a keyboard shortcut that can be saved with a user's
  * preferences. The saved preference takes the form:

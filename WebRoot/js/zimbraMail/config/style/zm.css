@@ -2231,13 +2231,17 @@ HTML>BODY .appt-selected .appt_allday_body
  *   Shortcut key display
  */
  
-.ZmShortcutList {
+.shortcutList {
 	width:100%;
 	border-collapse:collapse;
 	margin-bottom:10px;
 }
 
-.ZmShortcutKeys {
+.shortcutListHeader {
+	border:1px solid #999999;
+}
+
+.shortcutKeys {
 	text-align:right;
 	padding:6px;
 	vertical-align:top;
@@ -2247,19 +2251,19 @@ HTML>BODY .appt-selected .appt_allday_body
 	@Text-disabled@;
 }
 
-.ZmShortcutDescription {
+.shortcutDescription {
 	@SeparatorBorder@
 	padding:5px;
 	width:auto;
 }
 
-.ZmShortcutKeyCombo { 
+.shortcutKeyCombo { 
 	white-space:nowrap;
 	margin-right:5px;
 	margin-left:5px;
 }
 
-.ZmShortcutKey {
+.shortcutKey {
 	@SeparatorBorder@
 	@Text@
 	font-weight:bold;
@@ -2268,7 +2272,40 @@ HTML>BODY .appt-selected .appt_allday_body
 	line-height:22px;
 }
 
+.shortcutTable {
+	table-layout:fixed;
+	border-collapse:collapse;
+	margin-bottom:10px;
+	border:1px solid #999999;
+}
 
+.shortcutTable TH {
+	font-size:11px;
+	text-align:left;
+	font-weight:bold;
+	padding-left:5px;
+	color:#666666;
+	border-bottom:1px solid #999999;
+}
+
+
+/*
+ * Temporary styles for the shortcuts tab. These should be
+ * replaced with the proper substitutions from skin files.
+ */
+
+.ZmShortcutsPage {
+  width:100%;
+}
+
+.BigHead {
+	font-size:18px; font-weight:bold;
+	padding:3 10 5 7;
+}
+
+.bottomSeparator {
+	@BottomSeparator@
+}
 
 /*
  * Colors, for use in calendar and elsewhere.

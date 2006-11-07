@@ -246,17 +246,20 @@ ZmPrefController.prototype._doSave = function(callback, noPop) {
 
 ZmPrefController.prototype._handleResponseSaveListener = 
 function(list, callback, noPop, result) {
-	if (list.length)
+	if (list.length) {
 		this._appCtxt.setStatusMsg(ZmMsg.optionsSaved);
-	if (!noPop)
-		this._backListener();
+	}
+	if (!noPop) {
+		// pass force flag - we just saved, so we know view isn't dirty
+		this._backListener(true);
+	}
 	
 	if (callback) callback.run(result);
 };
 
 ZmPrefController.prototype._backListener = 
-function() {
-	this._app.getAppViewMgr().popView();
+function(force) {
+	this._app.getAppViewMgr().popView(force);
 };
 
 ZmPrefController.prototype._changePassword =
