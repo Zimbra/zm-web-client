@@ -41,6 +41,7 @@ Contributor(s):
 
 <!-- BEGIN SCRIPT BLOCK -->
 <!-- Shared Components -->
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaUtil.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/Lifetime_XFormItem.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaEvent.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraAdmin/common/ZaModel.js<%= ext %>?v=<%= vers %>"></script>
