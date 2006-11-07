@@ -123,7 +123,7 @@ function(parent, type, id) {
         if (folder.isFeed()) {
             button.setText(ZmMsg.checkFeed);
         }
-        else {
+        else if (this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
             var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
             var dsCollection = prefsApp.getDataSourceCollection();
             var popAccounts = dsCollection.getPopAccountsFor(folder.id);
@@ -133,6 +133,9 @@ function(parent, type, id) {
             else {
                 button.setVisible(false);
             }
+        }
+        else {
+            button.setVisible(false);
         }
     }
 };

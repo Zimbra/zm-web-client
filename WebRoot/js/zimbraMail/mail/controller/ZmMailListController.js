@@ -708,7 +708,7 @@ function(ev) {
     var isFeed = folder && folder.isFeed();
     var hasPopAccounts = false;
 
-    if (folder && !isFeed) {
+    if (folder && !isFeed && this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
         var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
         dsCollection = prefsApp.getDataSourceCollection();
         var dataSources = dsCollection.getPopAccountsFor(folderId);
@@ -805,7 +805,7 @@ function(parent, num) {
         var isFeed = folder && folder.isFeed();
         var hasPopAccounts = false;
 
-        if (folder && !isInbox && !isFeed) {
+        if (folder && !isInbox && !isFeed && this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
             var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
             var dsCollection = prefsApp.getDataSourceCollection();
             var popAccounts = dsCollection.getPopAccountsFor(folderId);
