@@ -313,6 +313,15 @@ ZmIdentityPage.prototype.setIdentity =
 function(identity) {
 	this._identity = identity;
 	
+	var doc = document;
+	for (var field in this._checkboxIds) {
+		var id = this._checkboxIds[field];
+		var value = identity.getField(field);
+		var checkbox = doc.getElementById(id);
+		checkbox.checked = value ? true : false;
+		this._applyCheckbox(checkbox);
+	}
+	
 	for (var field in this._inputs) {
 		var input = this._inputs[field];
 		var value = identity.getField(field);
@@ -334,15 +343,6 @@ function(identity) {
 		var arrayValue = identity.getField(field);
 		var stringValue = data.toText.call(this, arrayValue);
 		data.input.setValue(stringValue);
-	}
-	
-	var doc = document;
-	for (var field in this._checkboxIds) {
-		var id = this._checkboxIds[field];
-		var value = identity.getField(field);
-		var checkbox = doc.getElementById(id);
-		checkbox.checked = value ? true : false;
-		this._applyCheckbox(checkbox);
 	}
 	
 	if ((this._pageId == ZmIdentityPage.ADVANCED) && this._hasRendered) {
@@ -417,6 +417,12 @@ ZmIdentityPage.prototype._validateSelectedItem =
 function(errors) {
 	for (var field in this._inputs) {
 		var input = this._inputs[field];
+		if (input.getEnabled() && (input.isValid() === null)) {
+			errors[errors.length] = this._errorMessages[field];
+		}
+	}
+	for (var field in this._arrays) {
+		var input = this._arrays[field].input;
 		if (input.getEnabled() && (input.isValid() === null)) {
 			errors[errors.length] = this._errorMessages[field];
 		}
@@ -536,12 +542,18 @@ function() {
 	params.size = 70;
 	params.hint = null;
 	var whenSentToInput = new DwtInputField(params);
+	whenSentToInput.setValidatorFunction(null, ZmIdentityPage._validateEmailList);
+	this._errorMessages[ZmIdentity.WHEN_SENT_TO_ADDRESSES] = ZmMsg.whenSentToError;
+	whenSentToInput.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
 	whenSentToInput.reparentHtmlElement(whenSentToInputId);
 	this._arrays[ZmIdentity.WHEN_SENT_TO_ADDRESSES] = { input: whenSentToInput, toArray: this._stringToArray, toText: this._arrayToString };
 	this._associateCheckbox(whenSentToCheckboxId, [whenSentToInput]);
 	this._checkboxIds[ZmIdentity.USE_WHEN_SENT_TO] = whenSentToCheckboxId;
 
 	whenInFolderInput = new DwtInputField(params);
+	whenInFolderInput.setValidatorFunction(this, this._validateFolderList);
+	this._errorMessages[ZmIdentity.WHEN_IN_FOLDERIDS] = ZmMsg.whenInFolderError;
+	whenInFolderInput.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
 	whenInFolderInput.reparentHtmlElement(whenInFolderInputId);
 	this._arrays[ZmIdentity.WHEN_IN_FOLDERIDS] = { input: whenInFolderInput, toArray: this._stringToFolderArray, toText: this._folderArrayToString };
 	var folderBrowseButton = new DwtButton(this);
@@ -588,6 +600,23 @@ function(value) {
 		}
 	}
 	return result;
+};
+
+// Returns the name of an invalid folder, or null if all is good.
+ZmIdentityPage.prototype._containsInvalidFolders =
+function(value) {
+	var names = value.split(",");
+	if (names.length) {
+		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		for (var i = 0, count = names.length; i < count; i++) {
+			var name = AjxStringUtil.trim(names[i]);
+			var folder = tree.getByName(name);
+			if (!folder) {
+				return name;
+			}
+		}
+	}
+	return null;
 };
 
 ZmIdentityPage.prototype._folderArrayToString =
@@ -778,11 +807,39 @@ function() {
 
 ZmIdentityPage._validateEmailAddress =
 function(value) {
-	if (value == ""){
+	if (value == "") {
 		throw AjxMsg.valueIsRequired;
 	} else if (!ZmEmailAddress.isValid(value)) {
-		throw AjxMessageFormat.format(ZmMsg.errorInvalidEmail);
+		throw ZmMsg.errorInvalidEmail;
 	}
+	return value;
+};
+
+ZmIdentityPage._validateEmailList =
+function(value) {
+	if (value == "") {
+		throw AjxMsg.valueIsRequired;
+	} else {
+		var addresses = ZmEmailAddress.split(value);
+		for (var i = 0, count = addresses.length; i < count; i++) {
+			if (!ZmEmailAddress.isValid(addresses[i])) {
+				throw AjxMessageFormat.format(ZmMsg.errorInvalidEmail, addresses[i]);
+			}
+		}
+	}
+	return value;
+};
+
+ZmIdentityPage.prototype._validateFolderList =
+function(value) {
+	if (value == "") {
+		throw AjxMsg.valueIsRequired;
+	} else {
+		var invalid = this._containsInvalidFolders(value)
+		if (invalid) {
+			throw AjxMessageFormat.format(ZmMsg.errorInvalidFolder, invalid);
+		}
+	}	
 	return value;
 };
 
