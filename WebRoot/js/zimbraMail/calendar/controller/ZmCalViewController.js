@@ -1477,6 +1477,7 @@ function() {
 /** The <code>this</code> in this method is the menu item. */
 ZmCalViewController.prototype._recurringMenuPopup =
 function(ev) {
+    if (!this.getEnabled()) return;
 	var menu = this.getMenu();
 	var opId = this.getData(ZmOperation.KEY_ID);
 	menu.setData(ZmOperation.KEY_ID, opId);
