@@ -740,31 +740,31 @@ function(notes) {
 
 ZmAppt.prototype._setNotes = 
 function(message) {
-	this.notesTopPart = new ZmMimePart();
-	// get text part and remove any previous canned text
 	var text = message.getBodyPart(ZmMimeTable.TEXT_PLAIN);
-	var isObject = AjxUtil.isObject(text);
-	var notes = isObject ? (text.content ? text.content : "") : text;
-	notes = this._trimNotesSummary(notes);
-	// check if notes has html part
 	var html = message.getBodyPart(ZmMimeTable.TEXT_HTML);
 
+    this.notesTopPart = new ZmMimePart();
 	if (html) {
-		this.notesTopPart.setContentType(ZmMimeTable.MULTI_ALT);
+        var htmlContent = this._trimNotesSummary(html.content, true);
+        var textContent = AjxStringUtil.convertHtml2Text(htmlContent);
 
 		// create two more mp's for text and html content types
 		var textPart = new ZmMimePart();
 		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-		textPart.setContent(notes);
-		this.notesTopPart.children.add(textPart);
+		textPart.setContent(textContent);
 
 		var htmlPart = new ZmMimePart();
 		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
-		htmlPart.setContent(this._trimNotesSummary(html.content, true));
+		htmlPart.setContent(htmlContent);
+
+        this.notesTopPart.setContentType(ZmMimeTable.MULTI_ALT);
+        this.notesTopPart.children.add(textPart);
 		this.notesTopPart.children.add(htmlPart);
 	} else {
+        var textContent = this._trimNotesSummary(text.content || "");
+
 		this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-		this.notesTopPart.setContent(notes);
+		this.notesTopPart.setContent(textContent);
 	}
 }
 
