@@ -492,7 +492,7 @@ function() {
 	html[i++] = ZmMsg.whenInFolder;
 	html[i++] = "</td></tr><tr><td>&nbsp;</td><td><table cellspacing=0 cellpadding=0><tr><td id='";
 	html[i++] = whenInFolderInputId;
-	html[i++] = "'></td><td id='";
+	html[i++] = "'></td><td style='padding-left:5px' id='";
 	html[i++] = folderBrowseButtonId;
 	html[i++] = "'></td></tr></table></td></tr><tr><td>&nbsp;</td><td class='Hint'>";
 	html[i++] = ZmMsg.whenInFolderHint;
@@ -503,7 +503,9 @@ function() {
 
 	this.getHtmlElement().innerHTML = html.join("");
 
-	var params = { parent:this, size: 30, validationStyle: DwtInputField.CONTINUAL_VALIDATION };
+	var inputSizeInChars = 30;
+	var inputSizeInPixels = 167;
+	var params = { parent:this, size: inputSizeInChars, validationStyle: DwtInputField.CONTINUAL_VALIDATION };
 	params.hint = ZmMsg.nameHint;
 	var sendFromName = new DwtInputField(params);
 	sendFromName.setRequired(true);
@@ -512,7 +514,8 @@ function() {
 	sendFromName.reparentHtmlElement(sendFromNameId);
 	this._inputs[ZmIdentity.SEND_FROM_DISPLAY] = sendFromName;
 
-	if (this._appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS)) {
+	var allowAnyFromAddress = this._appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS);
+	if (allowAnyFromAddress) {
 		params.hint = ZmMsg.addressHint;
 		var sendFromAddress = new DwtInputField(params);
 		sendFromAddress.setRequired(true);
@@ -533,6 +536,7 @@ function() {
 			options.push(new DwtSelectOptionData(aliases[i], aliases[i]));
 		}
 		var sendFromAddress = new DwtSelect(this, options);
+		sendFromAddress.getButton().getHtmlElement().style.minWidth = inputSizeInPixels;
 		sendFromAddress.reparentHtmlElement(sendFromAddressId);
 		this._selects[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
 	}
@@ -554,6 +558,10 @@ function() {
 	this._inputs[ZmIdentity.SET_REPLY_TO_ADDRESS] = setReplyToAddress;
 	this._associateCheckbox(setReplyToCheckboxId, [setReplyToName, setReplyToAddress]);
 	this._checkboxIds[ZmIdentity.SET_REPLY_TO] = setReplyToCheckboxId;
+	if (!allowAnyFromAddress) {
+		// Make this input a variable size, to align it with the From select.
+		setReplyToAddress.getInputElement().style.width='100%';
+	}
 
 	params.size = 70;
 	params.hint = null;

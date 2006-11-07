@@ -2020,7 +2020,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmIdentityView .DwtButton-active,
 .ZmIdentityView .DwtButton-focused {
 	min-width: 0;
-	margin-left: 5px;
 }
 
 .ZmPopAccountsView {}
