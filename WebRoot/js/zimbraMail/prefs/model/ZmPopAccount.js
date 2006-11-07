@@ -105,7 +105,7 @@ function(callback, errorCallback, batchCommand) {
     for (var aname in ZmPopAccount._ANAME2PNAME) {
         var pname = ZmPopAccount._ANAME2PNAME[aname];
         var avalue = this[pname];
-        pop3.setAttribute(aname, avalue);
+        pop3.setAttribute(aname, String(avalue));
     }
 
     if (batchCommand) {
@@ -134,7 +134,7 @@ function(callback, errorCallback, batchCommand) {
             continue;
         }
         var avalue = this[pname];
-        pop3.setAttribute(aname, avalue);
+        pop3.setAttribute(aname, String(avalue));
     }
 
     if (batchCommand) {

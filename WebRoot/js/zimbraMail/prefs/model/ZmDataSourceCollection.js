@@ -76,7 +76,7 @@ ZmDataSourceCollection.prototype.importPopMailFor = function(folderId) {
             pop3.setAttribute("id", account.id);
         }
 
-        var callback = new AjxCallback(this, this._checkStatus, [sourceMap, 4000]);
+        var callback = new AjxCallback(this, this._checkStatus, [sourceMap, 2000]);
         var params = {
             soapDoc: soapDoc,
             asyncMode: true,
