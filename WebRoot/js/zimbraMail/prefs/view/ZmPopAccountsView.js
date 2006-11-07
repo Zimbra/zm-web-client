@@ -543,7 +543,8 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
 
     // initialize other form state
     var createIdentityDiv = this._createIdentityEl.parentNode;
-    createIdentityDiv.style.display = isNew ? "block" : "none";
+    var identitiesEnabled = this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED);
+    Dwt.setVisible(createIdentityDiv, isNew && identitiesEnabled);
 
     this._isDirty = false;
     this._isLinkEmailDirty = account._identity && account._identity._emailDirty;

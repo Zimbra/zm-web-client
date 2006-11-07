@@ -167,6 +167,7 @@ ZmSetting.TAGGING_ENABLED				= i++;
 ZmSetting.VACATION_MSG_FEATURE_ENABLED	= i++;
 ZmSetting.VIEW_ATTACHMENT_AS_HTML 		= i++;
 ZmSetting.POP_ACCOUNTS_ENABLED          = i++;
+ZmSetting.IDENTITIES_ENABLED            = i++;
 
 // USER METADATA
 ZmSetting.LICENSE_STATUS				= i++;
@@ -346,6 +347,7 @@ ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["zimbraFeatureTaggingEnabled", Z
 ZmSetting.INIT[ZmSetting.VACATION_MSG_FEATURE_ENABLED]	= ["zimbraFeatureOutOfOfficeReplyEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.VIEW_ATTACHMENT_AS_HTML] 		= ["zimbraFeatureViewInHtmlEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.POP_ACCOUNTS_ENABLED]   		= ["zimbraFeaturePop3DataSourceEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.IDENTITIES_ENABLED]   	    	= ["zimbraFeatureIdentitiesEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 
 // user metadata (included with COS since the user can't change them)
 ZmSetting.INIT[ZmSetting.LICENSE_STATUS]				= [null, ZmSetting.T_COS, ZmSetting.D_STRING, ZmSetting.LICENSE_GOOD];

@@ -124,6 +124,7 @@ function() {
 		if ((view == ZmPrefView.FILTER_RULES) && (!this._appCtxt.get(ZmSetting.FILTERS_ENABLED))) continue;
 		if (view == ZmPrefView.ADDR_BOOK && (!this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))) continue;
 		if (view == ZmPrefView.CALENDAR && (!this._appCtxt.get(ZmSetting.CALENDAR_ENABLED))) continue;
+        if (view == ZmPrefView.IDENTITY && !this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) continue;
         if (view == ZmPrefView.POP_ACCOUNTS && !this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) continue;
         if (view == ZmPrefView.SHORTCUTS && !this._appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) continue;
 
