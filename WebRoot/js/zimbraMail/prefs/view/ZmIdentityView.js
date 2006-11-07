@@ -512,15 +512,31 @@ function() {
 	sendFromName.reparentHtmlElement(sendFromNameId);
 	this._inputs[ZmIdentity.SEND_FROM_DISPLAY] = sendFromName;
 
-	params.hint = ZmMsg.addressHint;
-	var sendFromAddress = new DwtInputField(params);
-	sendFromAddress.setRequired(true);
-	sendFromAddress.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
-	sendFromAddress.setValidatorFunction(null, ZmIdentityPage._validateEmailAddress);
-	this._errorMessages[ZmIdentity.SEND_FROM_ADDRESS] = ZmMsg.sendFromAddressError;
-	sendFromAddress.reparentHtmlElement(sendFromAddressId);
-	this._inputs[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
-
+	if (this._appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS)) {
+		params.hint = ZmMsg.addressHint;
+		var sendFromAddress = new DwtInputField(params);
+		sendFromAddress.setRequired(true);
+		sendFromAddress.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
+		sendFromAddress.setValidatorFunction(null, ZmIdentityPage._validateEmailAddress);
+		this._errorMessages[ZmIdentity.SEND_FROM_ADDRESS] = ZmMsg.sendFromAddressError;
+		sendFromAddress.reparentHtmlElement(sendFromAddressId);
+		this._inputs[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
+	} else {
+		var accountAddress = this._appCtxt.get(ZmSetting.USERNAME);
+		var options = [new DwtSelectOptionData(accountAddress, accountAddress)];
+		var addresses = this._appCtxt.get(ZmSetting.ALLOW_FROM_ADDRESSES);
+		for (var i = 0, count = addresses.length; i < count; i++) {
+			options.push(new DwtSelectOptionData(addresses[i], addresses[i]));
+		}
+		var aliases = this._appCtxt.get(ZmSetting.MAIL_ALIASES);
+		for (var i = 0, count = aliases.length; i < count; i++) {
+			options.push(new DwtSelectOptionData(aliases[i], aliases[i]));
+		}
+		var sendFromAddress = new DwtSelect(this, options);
+		sendFromAddress.reparentHtmlElement(sendFromAddressId);
+		this._selects[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
+	}
+	
 	params.hint = ZmMsg.nameHint;
 	var setReplyToName = new DwtInputField(params);
 	setReplyToName.setRequired(true);

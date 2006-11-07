@@ -168,6 +168,9 @@ ZmSetting.VACATION_MSG_FEATURE_ENABLED	= i++;
 ZmSetting.VIEW_ATTACHMENT_AS_HTML 		= i++;
 ZmSetting.POP_ACCOUNTS_ENABLED          = i++;
 ZmSetting.IDENTITIES_ENABLED            = i++;
+ZmSetting.ALLOW_ANY_FROM_ADDRESS		= i++;
+ZmSetting.ALLOW_FROM_ADDRESSES			= i++;
+ZmSetting.MAIL_ALIASES					= i++;
 
 // USER METADATA
 ZmSetting.LICENSE_STATUS				= i++;
@@ -348,6 +351,9 @@ ZmSetting.INIT[ZmSetting.VACATION_MSG_FEATURE_ENABLED]	= ["zimbraFeatureOutOfOff
 ZmSetting.INIT[ZmSetting.VIEW_ATTACHMENT_AS_HTML] 		= ["zimbraFeatureViewInHtmlEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.POP_ACCOUNTS_ENABLED]   		= ["zimbraFeaturePop3DataSourceEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.IDENTITIES_ENABLED]   	    	= ["zimbraFeatureIdentitiesEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.ALLOW_FROM_ADDRESSES]			= ["zimbraAllowFromAddress", ZmSetting.T_COS, ZmSetting.D_LIST];
+ZmSetting.INIT[ZmSetting.ALLOW_ANY_FROM_ADDRESS]		= ["zimbraAllowAnyFromAddress", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.MAIL_ALIASES]					= ["zimbraMailAlias", ZmSetting.T_COS, ZmSetting.D_LIST];
 
 // user metadata (included with COS since the user can't change them)
 ZmSetting.INIT[ZmSetting.LICENSE_STATUS]				= [null, ZmSetting.T_COS, ZmSetting.D_STRING, ZmSetting.LICENSE_GOOD];
