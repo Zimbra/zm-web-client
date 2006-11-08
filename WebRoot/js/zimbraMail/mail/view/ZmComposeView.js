@@ -1336,14 +1336,16 @@ function(ev) {
 ZmComposeView.prototype._setIdentityVisibility =
 function() {
 	var identityCount = this._appCtxt.getIdentityCollection().getSize();
-	if ((identityCount < 2) && this._identityCell.parentNode) {
-		this._identityRow.removeChild(this._identityCell);
-	} else if ((identityCount >= 2) && !this._identityCell.parentNode) {
-		this._identityRow.appendChild(this._identityCell);
+	if (this._identityCell.parentNode) {
+		if (!this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED) || (identityCount < 2)) {
+			this._identityRow.removeChild(this._identityCell);
+		}
+	} else {
+		if (identityCount >= 2) {
+			this._identityRow.appendChild(this._identityCell);
+		}
 	}
-	
 };
-
 
 ZmComposeView.prototype.getIdentitySelect =
 function() {

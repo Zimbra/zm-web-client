@@ -50,6 +50,11 @@ function() {
 	ZmPrefListController.prototype._setup.call(this);
 	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
 	this._listView.getList().setSelection(identityCollection.defaultIdentity);
+	
+	if (!this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) {
+		this._listView.getAddButton().setVisible(false);
+		this._listView.getRemoveButton().setVisible(false);
+	}
 };
 
 ZmIdentityController.prototype._addHandler =

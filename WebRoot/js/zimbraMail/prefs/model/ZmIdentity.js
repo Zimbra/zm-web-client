@@ -368,6 +368,10 @@ function(identity) {
 
 ZmIdentityCollection.prototype.selectIdentity =
 function(mailMsg) {
+	if (!this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) {
+		return this.defaultIdentity;
+	}
+	
 	if (!mailMsg) {
 		return this.defaultIdentity;
 	}
