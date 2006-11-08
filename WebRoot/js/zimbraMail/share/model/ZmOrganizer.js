@@ -107,6 +107,7 @@ ZmOrganizer.ID_ADDRBOOK			= 7;
 ZmOrganizer.ID_CALENDAR			= 10;
 ZmOrganizer.ID_NOTEBOOK			= 12;
 ZmOrganizer.ID_AUTO_ADDED 		= 13;
+ZmOrganizer.ID_OUTBOX    		= 254;
 ZmOrganizer.ID_ZIMLET			= -1000;  // zimlets need a range.  start from -1000 incrementing up.
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
@@ -673,7 +674,7 @@ function(obj) {
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
-	if (obj.l != null && obj.l != this.parent.id) {
+	if (this.parent && obj.l != null && obj.l != this.parent.id) {
 		var newParent = this._getNewParent(obj.l);
 		this.reparent(newParent);
 		this._notify(ZmEvent.E_MOVE);
