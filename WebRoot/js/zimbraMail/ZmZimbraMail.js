@@ -306,7 +306,7 @@ function(params) {
 	}
 
 	skin.showSkin(true);
-	this._TTT_SKIN_ENABLED = skin.hints.app_chooser.direction == "LR";
+	this._TTT_SKIN_ENABLED = skin.hints && skin.hints.app_chooser.direction == "LR";
 	if (!this._components) {
 		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE,

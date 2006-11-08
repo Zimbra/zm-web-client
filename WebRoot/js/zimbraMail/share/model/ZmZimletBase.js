@@ -544,6 +544,28 @@ function(configName) {
 	return this.xmlObj().getConfig(configName);
 };
 
+ZmZimletBase.prototype.getBoolConfig = function(key, defaultValue) {
+	var val = AjxStringUtil.trim(this.getConfig(key));
+	if (val != null) {
+		if (arguments.length < 2)
+			defaultValue = false;
+		if (defaultValue) {
+			// the default is TRUE, check if explicitely disabled
+			val = /^(0|false|off|no)$/i.test(val)
+				? false
+				: true;
+		} else {
+			// default FALSE, check if explicitely enabled
+			val = /^(1|true|on|yes)$/i.test(val)
+				? true
+				: false;
+		}
+	} else {
+		val = defaultValue;
+	}
+	return val;
+};
+
 ZmZimletBase.prototype.getUsername =
 function() {
 	return this.getAppCtxt().getUsername();
