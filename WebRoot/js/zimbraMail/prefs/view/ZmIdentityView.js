@@ -141,7 +141,17 @@ function(identity) {
 ZmIdentityView.prototype.remove =
 function(identity) {
 	this.clearError(identity);
-	this._deletes[this._deletes.length] = identity;
+	var isAdd = false;
+	for (var i = 0, count = this._adds.length; i < count; i++) {
+		if (identity == this._adds[i]) {
+			isAdd = true;
+			this._adds.splice(i,1);
+			break;
+		}
+	}
+	if (!isAdd) {
+		this._deletes[this._deletes.length] = identity;
+	}
 };
 
 ZmIdentityView.prototype._validateSelectedItem =
