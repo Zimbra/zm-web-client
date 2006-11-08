@@ -1336,13 +1336,29 @@ function(ev) {
 ZmComposeView.prototype._setIdentityVisibility =
 function() {
 	var identityCount = this._appCtxt.getIdentityCollection().getSize();
-	if (this._identityCell.parentNode) {
-		if (!this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED) || (identityCount < 2)) {
-			this._identityRow.removeChild(this._identityCell);
+	
+	if (AjxEnv.isIE) {
+		// In IE, toggle the visibility of the select's cell.
+		var visible = Dwt.getVisible(this._identityCell);
+		if (visible) {
+			if (!this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED) || (identityCount < 2)) {
+				Dwt.setVisible(this._identityCell, false);
+			}
+		} else {
+			if (identityCount >= 2) {
+				Dwt.setVisible(this._identityCell, true);
+			}
 		}
 	} else {
-		if (identityCount >= 2) {
-			this._identityRow.appendChild(this._identityCell);
+		// In Firefox, remove the select's cell from its parent row.
+		if (this._identityCell.parentNode) {
+			if (!this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED) || (identityCount < 2)) {
+				this._identityRow.removeChild(this._identityCell);
+			}
+		} else {
+			if (identityCount >= 2) {
+				this._identityRow.appendChild(this._identityCell);
+			}
 		}
 	}
 };
