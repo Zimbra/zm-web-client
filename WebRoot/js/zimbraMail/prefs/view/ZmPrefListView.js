@@ -118,7 +118,7 @@ function() {
 		return false;
 	} else {
 		this.clearError(this._item);
-		return true;
+		return !this.hasErrors();
 	}
 };
 
@@ -163,17 +163,20 @@ function(item) {
 
 ZmPrefListView.prototype.clearAllErrors =
 function(item) {
-	var hasError = false;
-	for (var i in this._errors) {
-		hasError = true;
-		break;
-	}
-	if (hasError) {
+	if (this.hasErrors()) {
 		this._errors = {};
 		this._redrawErrors();
 	}
 };
-ZmPrefListView.prototype.findError =
+ZmPrefListView.prototype.hasErrors =
+function() {
+	for (var i in this._errors) {
+		return true;
+	}
+	return false;
+};
+
+ZmPrefListView.prototype.findError =
 function(item) {
 	var index = this._list._getItemIndex(item);
 	return this._errors[index];
@@ -273,6 +276,9 @@ function() {
 	// Create the help button.
 	var helpButton = new DwtButton(this, DwtLabel.ALIGN_RIGHT, "DwtToolbarButton");
 	helpButton.setImage("Information");
+// This is supposed to help the raised look, but it causes badness when
+// hiding the help bubble.	
+//	helpButton._activatedClassName = helpButton._origClassName;
 	helpButton.reparentHtmlElement(helpButtonId);
 	helpButton.addSelectionListener(new AjxListener(this, this._toggleInfoBoxHandler));
 
