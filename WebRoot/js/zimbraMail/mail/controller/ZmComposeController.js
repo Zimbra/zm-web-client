@@ -607,13 +607,12 @@ function(msg, identity) {
 	var composeMode = DwtHtmlEditor.TEXT;
 
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		var bComposeSameFormat = identity.getComposeSameFormat();
-		var bComposeAsFormat = identity.getComposeAsFormat();
-
 		if (this._action == ZmOperation.REPLY ||
 			this._action == ZmOperation.REPLY_ALL ||
 			this._action == ZmOperation.FORWARD_INLINE)
 		{
+			var bComposeSameFormat = identity.getComposeSameFormat();
+			var bComposeAsFormat = identity.getComposeAsFormat();
 			if ((!bComposeSameFormat && bComposeAsFormat == ZmSetting.COMPOSE_HTML) ||
 			    (bComposeSameFormat && msg.isHtmlMail()))
 			{
@@ -622,7 +621,7 @@ function(msg, identity) {
 		}
 		else if (this._action == ZmOperation.NEW_MESSAGE)
 		{
-			if (bComposeAsFormat == ZmSetting.COMPOSE_HTML)
+			if (this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT) == ZmSetting.COMPOSE_HTML)
 				composeMode = DwtHtmlEditor.HTML;
 		}
 		else if (this._action == ZmOperation.DRAFT)
