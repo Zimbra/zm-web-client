@@ -272,6 +272,7 @@ function(contact) {
 	this._picker = new ZmContactChooser({parent:this, allButtons:true, hasTextField:true, noDuplicates:false, appCtxt:this._appCtxt});
 	this._picker.reparentHtmlElement(this._contactPickerId);
 	this._picker.addStateChangeListener(new AjxListener(this, this._pickerChangeListener));
+	this._picker.reset();
 };
 
 ZmGroupView.prototype._installKeyHandlers =
