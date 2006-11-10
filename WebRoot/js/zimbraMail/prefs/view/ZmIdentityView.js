@@ -79,7 +79,7 @@ ZmIdentityView.prototype._createDetails =
 function(parentElement) {
 	var inputId = Dwt.getNextId();
 
-	var html = ["<table cellspacing=0 cellpadding=0>",
+	var html = ["<table>",
 				"<tr><td style='text-align:right;' width='120px'>", 
 	            ZmMsg.identityNameLabel, "</td><td id='", inputId, "'></td></tr></table>"].join("");
 	parentElement.innerHTML = html;
