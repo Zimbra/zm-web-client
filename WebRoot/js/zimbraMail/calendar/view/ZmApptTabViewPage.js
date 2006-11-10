@@ -659,7 +659,7 @@ function() {
 ZmApptTabViewPage.prototype._createApptHtml =
 function() {
 	var dims = this.parent.getSize();
-	var rowHeight = AjxEnv.isIE ? 140 : 110;
+	var rowHeight = AjxEnv.isIE ? 150 : 110;
 	this._notesHtmlEditorId = Dwt.getNextId();
 
 	var html = [];
