@@ -966,7 +966,7 @@ function(action, msg, extraBodyText, incOption) {
 	}
 
 	var identity = this.getIdentity();
-	var sigStyle = identity.signature ? identity.getSignatureStyle() : null;
+	var sigStyle = identity.signatureEnabled && identity.signature ? identity.getSignatureStyle() : null;
 
 	var value = sigStyle == ZmSetting.SIG_OUTLOOK
 		? (this._getSignatureSeparator() + this._getSignature())

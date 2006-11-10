@@ -47,6 +47,7 @@ function ZmIdentity(appCtxt, name) {
 	this.forwardOption = ZmSetting.INCLUDE_PREFIX;
 	this.replyOption = ZmSetting.INCLUDE_PREFIX;
 	this.signatureStyle = ZmSetting.SIG_INTERNET;
+	this.signatureEnabled = true;
 };
 
 ZmIdentity.COMPOSE_SAME = "same";
@@ -76,6 +77,7 @@ ZmIdentity.PREFIX = i++;
 ZmIdentity.FORWARD_OPTION = i++;
 ZmIdentity.REPLY_OPTION = i++;
 ZmIdentity.SIGNATURE_STYLE = i++;
+ZmIdentity.SIGNATURE_ENABLED = i++;
 ZmIdentity.IS_DEFAULT = i++;
 delete i;
 
@@ -104,6 +106,7 @@ ZmIdentity.addField(ZmIdentity.PREFIX, { name: "prefix", node: "a", soap: "zimbr
 ZmIdentity.addField(ZmIdentity.FORWARD_OPTION, { name: "forwardOption", node: "a", soap: "zimbraPrefForwardIncludeOriginalText", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.REPLY_OPTION, { name: "replyOption", node: "a", soap: "zimbraPrefReplyIncludeOriginalText", type: ZmIdentity.STRING });
 ZmIdentity.addField(ZmIdentity.SIGNATURE_STYLE, { name: "signatureStyle", node: "a", soap: "zimbraPrefMailSignatureStyle", type: ZmIdentity.STRING });
+ZmIdentity.addField(ZmIdentity.SIGNATURE_ENABLED, { name: "signatureEnabled", node: "a", soap: "zimbraPrefMailSignatureEnabled", type: ZmIdentity.BOOLEAN });
 
 ZmIdentity.prototype.getField =
 function(fieldId) {

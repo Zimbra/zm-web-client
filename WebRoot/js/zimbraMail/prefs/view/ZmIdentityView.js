@@ -684,11 +684,13 @@ function(checkboxId, controls, checkedIsDisabled) {
 ZmIdentityPage.prototype._applyCheckbox =
 function(checkbox) {
 	var data = this._associations[checkbox.id];
-	var isChecked = checkbox.checked;
-	var enabled = data.checkedIsDisabled ? !isChecked : isChecked;
-	for (var i = 0, count = data.controls.length; i < count; i++) {
-		var control = data.controls[i];
-		control.setEnabled(enabled);
+	if (data) {
+		var isChecked = checkbox.checked;
+		var enabled = data.checkedIsDisabled ? !isChecked : isChecked;
+		for (var i = 0, count = data.controls.length; i < count; i++) {
+			var control = data.controls[i];
+			control.setEnabled(enabled);
+		}
 	}
 };
 
@@ -817,17 +819,22 @@ ZmIdentityPage.prototype._initializeSignature =
 function() {
 	var signatureStyleSelectId = Dwt.getNextId();
 	var signatureId = Dwt.getNextId();
+	var signatureEnabledCheckboxId = Dwt.getNextId();
 
 	var html = [];
 	var i = 0;
+	html[i++] = "<div id='";
+	html[i++] = signatureId;
+	html[i++] = "'></div>";
 	html[i++] = "<table><tr><td>";
 	html[i++] = ZmMsg.placeSignature;
 	html[i++] = "</td><td id='";
 	html[i++] = signatureStyleSelectId;
-	html[i++] = "'></td></tr></table>";
-	html[i++] = "<div id='";
-	html[i++] = signatureId;
-	html[i++] = "'></div>";
+	html[i++] = "'></td></tr><tr><td style='text-align:right'><input type='checkbox' id='";
+	html[i++] = signatureEnabledCheckboxId;
+	html[i++] = "'><td>";
+	html[i++] = ZmMsg.signatureEnabled;
+	html[i++] = "</td></tr></table>";
 
 	this.getHtmlElement().innerHTML = html.join("");
 	
@@ -843,6 +850,8 @@ function() {
 	var input = new DwtInputField(params);
 	input.reparentHtmlElement(signatureId);
 	this._inputs[ZmIdentity.SIGNATURE] = input;
+	
+	this._checkboxIds[ZmIdentity.SIGNATURE_ENABLED] = signatureEnabledCheckboxId;
 };
 
 ZmIdentityPage._validateEmailAddress =

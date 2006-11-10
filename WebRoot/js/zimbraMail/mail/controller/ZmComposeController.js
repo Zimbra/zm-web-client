@@ -58,7 +58,7 @@ function ZmComposeController(appCtxt, container, mailApp) {
 };
 
 // settings whose changes affect us (so we add a listener to them)
-ZmComposeController.SETTINGS = [ZmSetting.SHOW_BCC, ZmSetting.SIGNATURE_ENABLED, ZmSetting.SIGNATURE];
+ZmComposeController.SETTINGS = [ZmSetting.SHOW_BCC];
 
 // radio groups for options items
 ZmComposeController.RADIO_GROUP = {};
@@ -316,6 +316,7 @@ function(event) {
 		var dialog = this._appCtxt.getYesNoMsgDialog();
 		dialog.reset();
 		dialog.registerCallback(DwtDialog.YES_BUTTON, this._identityChangeYesCallback, this, [dialog]);
+		dialog.registerCallback(DwtDialog.NO_BUTTON, this._identityChangeNoCallback, this, [dialog]);
 		dialog.setMessage(ZmMsg.identityChangeWarning, DwtMessageDialog.WARNING_STYLE);
 		dialog.popup();
 	}
@@ -327,6 +328,13 @@ function(dialog) {
 	dialog.popdown();
 };
 
+ZmComposeController.prototype._identityChangeNoCallback =
+function(dialog) {
+	var identity = this._composeView.getIdentity();
+	this._setAddSignatureVisibility(identity);
+	dialog.popdown();
+};
+
 ZmComposeController.prototype._applyIdentityToBody =
 function() {
 	var identity = this._composeView.getIdentity();
@@ -335,6 +343,7 @@ function() {
 		this._composeView.setComposeMode(newMode);
 	}
 	this._composeView.resetBody(this._action, this._msg, this._extraBodyText, null);
+	this._setAddSignatureVisibility(identity);
 };
 
 /**
@@ -505,9 +514,8 @@ function() {
 		if (buttons[i] > 0 && this._listeners[buttons[i]])
 			this._toolbar.addSelectionListener(buttons[i], this._listeners[buttons[i]]);
 
-	var canAddSig = (!this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED) && this._appCtxt.get(ZmSetting.SIGNATURE));
-	var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
-	signatureButton.setVisible(canAddSig);
+	var identity = this._appCtxt.getIdentityCollection().defaultIdentity;
+	var canAddSig = this._setAddSignatureVisibility(identity);
 
 	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY, ZmOperation.FORWARD_ATT, ZmOperation.DRAFT, ZmOperation.REPLY_CANCEL];
 	this._optionsMenu = {};
@@ -531,6 +539,14 @@ function() {
 			attachmentButton.setText("");
 		}
 	}
+};
+
+ZmComposeController.prototype._setAddSignatureVisibility =
+function(identity) {
+	var canAddSig = (!identity.signatureEnabled && identity.signature);
+	var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
+	signatureButton.setVisible(canAddSig);
+	return canAddSig;
 };
 
 ZmComposeController.prototype._createOptionsMenu =
@@ -831,11 +847,7 @@ function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
 
 	var id = ev.source.id;
-	if (id == ZmSetting.SIGNATURE_ENABLED || id == ZmSetting.SIGNATURE) {
-		var canAddSig = (!this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED) && this._appCtxt.get(ZmSetting.SIGNATURE));
-		var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
-		signatureButton.setVisible(canAddSig);
-	} else if (id == ZmSetting.SHOW_BCC) {
+	if (id == ZmSetting.SHOW_BCC) {
 		var menu = this._optionsMenu[this._action];
 		if (menu)
 			menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(this._appCtxt.get(ZmSetting.SHOW_BCC), true);
