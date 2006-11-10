@@ -627,10 +627,12 @@ function(value) {
 		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		for (var i = 0, count = names.length; i < count; i++) {
 			var path = AjxStringUtil.trim(names[i]);
-			var folder = tree.root.getChildByPath(path);
-			if (folder) {
-				result[result.length] = folder.id;
-			} // else we just don't show the folder.
+			if (path) {
+				var folder = tree.root.getChildByPath(path);
+				if (folder) {
+					result[result.length] = folder.id;
+				}
+			}
 		}
 	}
 	return result;
@@ -644,9 +646,11 @@ function(value) {
 		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		for (var i = 0, count = names.length; i < count; i++) {
 			var path = AjxStringUtil.trim(names[i]);
-			var folder = tree.root.getChildByPath(path);
-			if (!folder) {
-				return path;
+			if (path) {
+				var folder = tree.root.getChildByPath(path);
+				if (!folder) {
+					return path;
+				}
 			}
 		}
 	}
