@@ -275,7 +275,8 @@ function(ev) {
 		ds.reset();
 		ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
 		ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
-		var msg = AjxMessageFormat.format(ZmMsg.confirmEmptyFolder, organizer.getName());
+		var confirm = organizer.type == ZmOrganizer.SEARCH ? ZmMsg.confirmDeleteSavedSearch : ZmMsg.confirmEmptyFolder;
+		var msg = AjxMessageFormat.format(confirm, organizer.getName());
 		ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		ds.popup();
     } else {
