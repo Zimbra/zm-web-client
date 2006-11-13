@@ -465,6 +465,9 @@ function(params) {
 
 	if (params.forwardHtml)
 		this._attcDiv.innerHTML = params.forwardHtml;
+	if (params.identityId) {
+		this._identitySelect.setSelectedValue(params.identityId);
+	}
 };
 
 ZmComposeView.prototype.setFocus =

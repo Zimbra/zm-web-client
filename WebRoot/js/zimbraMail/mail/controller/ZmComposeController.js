@@ -153,13 +153,15 @@ function() {
 	var forAttHtml = this._composeView.getForwardLinkHtml();
 	var body = this._composeView.getHtmlEditor().getContent();
 	var composeMode = this._composeView.getComposeMode();
+	var identityId = this._composeView.getIdentity().id;
 
 	var newWinObj = this._appCtxt.getNewWindow();
 
 	// this is how child window knows what to do once loading:
 	newWinObj.command = "composeDetach";
 
-	newWinObj.args = {action: this._action, msg: msg, addrs: addrs, subj: subj, forwardHtml: forAttHtml, body: body, composeMode: composeMode };
+	newWinObj.args = {action: this._action, msg: msg, addrs: addrs, subj: subj, forwardHtml: forAttHtml, 
+					  body: body, composeMode: composeMode, identityId: identityId};
 };
 
 ZmComposeController.prototype.popShield =
