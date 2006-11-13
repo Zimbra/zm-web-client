@@ -99,6 +99,7 @@ function(username, bReloginMode) {
 
 ZmLoginDialog.prototype.setVisible = 
 function(visible, transparentBg) {
+	this.applyCaretHack();
 	DwtComposite.prototype.setVisible.call(this, visible);
 
 	this._appCtxt.getKeyboardMgr().enable(!visible);
