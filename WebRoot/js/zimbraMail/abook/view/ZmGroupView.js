@@ -74,12 +74,14 @@ function() {
 	if (this._contact.id == null || this._contact.isGal) {
 		mods[ZmContact.F_folderId] = folderId
 		mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
+		mods[ZmContact.F_nickname] = groupName;
 		mods[ZmContact.F_dlist] = groupMembers;
 		foundOne = true;
 	} else {
 		// modifying existing contact
 		if (this._contact.getFileAs() != groupName) {
 			mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
+			mods[ZmContact.F_nickname] = groupName;
 			foundOne = true;
 		}
 

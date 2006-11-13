@@ -90,6 +90,7 @@ ZmContact.F_middleName		= "middleName";
 ZmContact.F_mobilePhone		= "mobilePhone";
 ZmContact.F_namePrefix		= "namePrefix";
 ZmContact.F_nameSuffix		= "nameSuffix";
+ZmContact.F_nickname		= "nickname";
 ZmContact.F_notes			= "notes";
 ZmContact.F_otherCity		= "otherCity";
 ZmContact.F_otherCountry	= "otherCountry";
