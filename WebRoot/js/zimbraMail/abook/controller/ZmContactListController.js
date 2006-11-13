@@ -475,6 +475,7 @@ function(ev) {
 	} else {
 		this._setContactText(!this.isGalSearch());
 	}
+	ZmOperation.setOperation(actionMenu, ZmOperation.TAG_MENU, ZmOperation.TAG_MENU, contact.isGroup() ? ZmMsg.AB_TAG_GROUP : ZmMsg.AB_TAG_CONTACT);
 
 	actionMenu.popup(0, ev.docX, ev.docY);
 	if (ev.ersatz) {
