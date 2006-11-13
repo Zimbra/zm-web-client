@@ -76,6 +76,7 @@ function() {
 		mods[ZmContact.F_fileAs] = ZmContact.computeCustomFileAs(groupName);
 		mods[ZmContact.F_nickname] = groupName;
 		mods[ZmContact.F_dlist] = groupMembers;
+		mods[ZmContact.F_type] = "group";
 		foundOne = true;
 	} else {
 		// modifying existing contact

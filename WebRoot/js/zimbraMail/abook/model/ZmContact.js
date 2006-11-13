@@ -101,6 +101,7 @@ ZmContact.F_otherState		= "otherState";
 ZmContact.F_otherStreet		= "otherStreet";
 ZmContact.F_otherURL		= "otherURL";
 ZmContact.F_pager			= "pager";
+ZmContact.F_type			= "type";
 ZmContact.F_workCity		= "workCity";
 ZmContact.F_workCountry		= "workCountry";
 ZmContact.F_workFax			= "workFax";
