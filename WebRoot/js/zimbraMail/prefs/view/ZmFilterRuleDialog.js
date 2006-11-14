@@ -184,10 +184,9 @@ function() {
 
 	html[i++] = "<div class='vSpace'></div>";
 	
-	html[i++] = "<table width='100%' border=0 cellpadding=0 cellspacing=0 id='";
+	html[i++] = "<div style='overflow:auto; height:72px'><table width='100%' border=0 cellpadding=0 cellspacing=0 id='";
 	html[i++] = this._conditionsTableId;
-	html[i++] = "'>";
-	html[i++] = "<tbody></tbody></table>";
+	html[i++] = "'><tbody></tbody></table></div>";
 
 	html[i++] = "</fieldset>";
 
@@ -200,10 +199,9 @@ function() {
 	html[i++] = ZmMsg.filterActions;
 	html[i++] = "</legend>";
 
-	html[i++] = "<table width='100%' border=0 cellpadding=0 cellspacing=0 id='";
+	html[i++] = "<div style='overflow:auto; height:60px'><table width='100%' border=0 cellpadding=0 cellspacing=0 id='";
 	html[i++] = this._actionsTableId;
-	html[i++] = "'>";
-	html[i++] = "<tbody></tbody></table>";
+	html[i++] = "'><tbody></tbody></table></div>";
 
 	html[i++] = "<div class='vSpace'></div>";
 
