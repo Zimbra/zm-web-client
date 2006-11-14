@@ -230,7 +230,7 @@ function(event) {
 			].join("");
 		}
 		else {
-			var doc = this._linkInfo.target ? this._linkInfo.target.document : document;
+			var doc = this._linkInfo.document || document;
 			link = doc.createElement("A");
 			link.href = AjxStringUtil.trim(this._urlInput.getValue());
 			link.innerHTML = AjxStringUtil.htmlEncode(title || link.href);

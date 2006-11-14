@@ -703,7 +703,7 @@ ZmPageEditor._handleLinkClick = function(event) {
 
 ZmPageEditor.prototype._popupLinkPropsDialog = function(target, url, text) {
 	var linkInfo = {
-		target: target, url: url, text: text
+		target: target, url: url, text: text, document: this._getIframeDoc()
 	}
 	if (!this._insertLinkCallback) {
 		this._insertLinkCallback = new AjxCallback(this, this._insertLink);
