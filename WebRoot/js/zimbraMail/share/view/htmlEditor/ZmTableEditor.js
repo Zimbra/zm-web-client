@@ -242,12 +242,6 @@ ZmTablePropsDialog.prototype.popdown = function() {
 };
 
 ZmTablePropsDialog.prototype.setup = function(editor, table) {
-	// for some reason we need to reset this here, otherwise the dialog
-	// won't properly display a second time (and generates an error in IE)
-	// :-/  Calling this.reset() would null _loc, but would also clear
-	// button-press event handlers, which we don't want to happen.
-	this._loc = null;
-
 	this._editor = editor;
 	this._table  = table;
 
