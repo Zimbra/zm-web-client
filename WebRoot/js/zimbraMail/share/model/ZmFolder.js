@@ -79,6 +79,7 @@ ZmFolder.MSG_KEY[ZmFolder.ID_CONTACTS]		= "contacts";
 ZmFolder.MSG_KEY[ZmFolder.ID_AUTO_ADDED]	= "emailedContacts";
 ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]			= "tags";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CALENDAR]	= "calendar";
+ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]	= "notebook";
 
 // system folder icons
 ZmFolder.IMAGE = new Object();
@@ -97,6 +98,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]		= "sent";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]		= "drafts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]	= "contacts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_AUTO_ADDED] = "\"Emailed Contacts\"";
+ZmFolder.QUERY_NAME[ZmOrganizer.ID_NOTEBOOK] = "notebook";
 
 // order within the overview panel
 ZmFolder.SORT_ORDER = new Object();
