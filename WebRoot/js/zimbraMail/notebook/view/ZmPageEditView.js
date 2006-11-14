@@ -780,4 +780,5 @@ ZmPageEditor.prototype._onContentInitialized =
 function() {
 	ZmHtmlEditor.prototype._onContentInitialized.call(this); // otherwise ALE objects won't be deserialized
 	this.parent._onEditorContentInitialized();	
+	this._resetFormatControls();
 };

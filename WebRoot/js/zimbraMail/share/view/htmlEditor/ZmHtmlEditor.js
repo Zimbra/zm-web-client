@@ -103,14 +103,7 @@ function(mode, convert) {
 	DwtHtmlEditor.prototype.setMode.call(this, mode, convert);
 
 	if (mode == DwtHtmlEditor.HTML) {
-		this._fontFamilyButton.setText(this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
-		this._fontSizeButton.setText(this._getFontSizeLabel(this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE)));
-		this._fontColorButton.setColor(this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR));
-		this._styleMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.PARAGRAPH, true);
-		this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT, true);
-
-		setTimeout(AjxCallback.simpleClosure(this._loadExternalStyle, this, "/css/editor.css"), 250);
-		setTimeout(AjxCallback.simpleClosure(this._setFontStyles, this), 250);
+		this._resetFormatControls();
 	}
 
 	// show/hide toolbars based on mode
@@ -248,6 +241,18 @@ function(keepModeDiv) {
 
 	if (this.onExitSpellChecker)
 		this.onExitSpellChecker.run();
+};
+
+ZmHtmlEditor.prototype._resetFormatControls =
+function() {
+	this._fontFamilyButton.setText(this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_FAMILY));
+	this._fontSizeButton.setText(this._getFontSizeLabel(this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_SIZE)));
+	this._fontColorButton.setColor(this._appCtxt.get(ZmSetting.COMPOSE_INIT_FONT_COLOR));
+	this._styleMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.PARAGRAPH, true);
+	this._justifyMenu.checkItem(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT, true);
+
+	setTimeout(AjxCallback.simpleClosure(this._loadExternalStyle, this, "/css/editor.css"), 250);
+	setTimeout(AjxCallback.simpleClosure(this._setFontStyles, this), 250);
 };
 
 ZmHtmlEditor.prototype._loadExternalStyle =
