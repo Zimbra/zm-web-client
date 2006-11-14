@@ -400,9 +400,11 @@ function(params) {
 	var kbMgr = this._appCtxt.getKeyboardMgr();
 	kbMgr.setTabGroup(rootTg);
 
-	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED) && this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
+	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-		this.getApp(ZmZimbraMail.CALENDAR_APP).showMiniCalendar(true);
+		if (this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
+			this.getApp(ZmZimbraMail.CALENDAR_APP).showMiniCalendar(true);
+		}
 	}
 
 	this._preloadViews();
