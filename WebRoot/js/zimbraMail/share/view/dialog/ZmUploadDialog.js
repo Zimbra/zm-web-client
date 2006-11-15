@@ -116,18 +116,30 @@ ZmUploadDialog.prototype._upload = function(){
 
 	var uploadMgr = this._appCtxt.getUploadManager();
 	window._uploadManager = uploadMgr;
-	uploadMgr.execute(callback, uploadForm);
+	try {
+		uploadMgr.execute(callback, uploadForm);
+	} catch (ex) {
+		if (ex.msg) {
+			this._popupErrorDialog(ex.msg);
+		} else {
+			this._popupErrorDialog(ZmMsg.unknownError);
+		}
+	}
+};
+
+ZmUploadDialog.prototype._popupErrorDialog = function(message) {
+	this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
+	this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
+
+	var dialog = this._appCtxt.getMsgDialog();
+	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, this._title);
+	dialog.popup();
 };
 
 ZmUploadDialog.prototype._uploadSaveDocs = function(files, status, guids) {
 	if (status != AjxPost.SC_OK) {
-		this.setButtonEnabled(DwtDialog.OK_BUTTON, true);
-		this.setButtonEnabled(DwtDialog.CANCEL_BUTTON, true);
-
-		var dialog = this._appCtxt.getMsgDialog();
 		var message = AjxMessageFormat.format(ZmMsg.uploadError, status);
-		dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE, this._title);
-		dialog.popup();
+		this._popupErrorDialog(message);
 	} else {
 		guids = guids.split(",");
 		for (var i = 0; i < files.length; i++) {
