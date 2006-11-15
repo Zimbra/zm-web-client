@@ -254,15 +254,15 @@ function(list, callback, noPop, result) {
 	}
 	if (!noPop) {
 		// pass force flag - we just saved, so we know view isn't dirty
-		this._backListener(true);
+		this._app.getAppViewMgr().popView(true);
 	}
 	
 	if (callback) callback.run(result);
 };
 
 ZmPrefController.prototype._backListener = 
-function(force) {
-	this._app.getAppViewMgr().popView(force);
+function() {
+	this._app.getAppViewMgr().popView();
 };
 
 ZmPrefController.prototype._changePassword =
