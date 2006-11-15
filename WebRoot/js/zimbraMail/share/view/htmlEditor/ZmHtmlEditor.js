@@ -788,9 +788,6 @@ function(ev) {
 	var data = item.getData("TableOperations");
 	this.focus();
 	switch (data) {
-	    case "mergeCells":
-		this.doTableOperation("mergeCells", { table: table, cells: this.getSelectedCells() });
-		break;
 	    case "tableProperties":
 		var dlg = ZmTableEditor.getTablePropsDialog(this, this.getNearestElement("table"));
 		dlg.popup();
@@ -801,7 +798,7 @@ function(ev) {
 		// alert("Not yet implemented");
 		break;
 	    default:
-		this.doTableOperation(data, { table: table });
+		this.doTableOperation(data, { table: table, cells: this.getSelectedCells() });
 	}
 };
 
