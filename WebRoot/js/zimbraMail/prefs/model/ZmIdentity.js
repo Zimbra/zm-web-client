@@ -299,11 +299,14 @@ function() {
 };
 
 ZmIdentityCollection.prototype.getIdentities =
-function() {
+function(sort) {
 	var i = 0;
 	var result = [];
 	for (var id in this._idToIdentity) {
 		result[i++] = this._idToIdentity[id];
+	}
+	if (sort) {
+		result.sort(ZmIdentityCollection._comparator);
 	}
 	return result;
 };
@@ -366,6 +369,17 @@ function(identity) {
 	for (var i = 0, count = identity.whenInFolderIds.length; i < count; i++) {
 		var folderId = identity.whenInFolderIds[i];
 		delete this._folderToIdentity[folderId];
+	}
+};
+
+ZmIdentityCollection._comparator =
+function(a, b) {
+	if (a.isDefault) {
+		return -1;
+	} else if (b.isDefault) {
+		return 1;
+	} else {
+		return a.name == b.name ? 0 : a.name < b.name ? -1 : 1;
 	}
 };
 

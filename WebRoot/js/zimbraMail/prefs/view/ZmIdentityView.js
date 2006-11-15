@@ -246,9 +246,7 @@ function() {
 	if (!this._identity) {
 		return dirty;
 	}
-	var name = AjxStringUtil.trim(this._identityNameInput.getValue());
-	if (this._identity.name != name) {
-		identity.name = name;
+	if (this._identity.hasOwnProperty("name")) {
 		dirty = true;
 	}
 	for (var i = 0, count = this._pages.length; i < count; i++) {
@@ -459,9 +457,9 @@ function() {
 	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
 	html[i++] = ZmMsg.sendWithIdentity;
 	html[i++] = "</legend>";
-	html[i++] = "<table style='width:100%'>";
+	html[i++] = "<table>";
 
-	html[i++] = "<tr><td class='Label'>";
+	html[i++] = "<tr><td></td><td class='Label'>";
 	html[i++] = ZmMsg.sendFrom;
 	html[i++] = "</td><td id='";
 	html[i++] = sendFromNameId;
@@ -471,7 +469,7 @@ function() {
 
 	html[i++] = "<tr><td><input type='checkbox' id='";
 	html[i++] = setReplyToCheckboxId;
-	html[i++] = "'>";
+	html[i++] = "'></td><td>";
 	html[i++] = ZmMsg.setReplyTo;
 	html[i++] = "</td><td id='";
 	html[i++] = setReplyToNameId;
@@ -484,7 +482,7 @@ function() {
 	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
 	html[i++] = ZmMsg.selectIdentityWhen;
 	html[i++] = "</legend>";
-	html[i++] = "<table style='width:100%'>";
+	html[i++] = "<table>";
 
 	html[i++] = "<tr><td style='text-align:right;'><input type='checkbox' id='";
 	html[i++] = whenSentToCheckboxId;

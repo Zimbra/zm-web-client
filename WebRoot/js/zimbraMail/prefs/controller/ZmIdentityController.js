@@ -40,6 +40,7 @@ function ZmIdentityController(appCtxt, container, prefsApp, prefsView) {
 	ZmPrefListController.call(this, appCtxt, container, prefsApp, prefsView);
 
 	this._listView = new ZmIdentityView(prefsView._parent, appCtxt, this);
+    this._count = 0;
 };
 
 ZmIdentityController.prototype = new ZmPrefListController();
@@ -59,7 +60,9 @@ function() {
 
 ZmIdentityController.prototype._addHandler =
 function() {
-	var identity = new ZmIdentity(this._appCtxt, ZmMsg.newIdentity);
+    var count = ++this._count;
+    var name = AjxMessageFormat.format(ZmMsg.newIdentity, count);
+	var identity = new ZmIdentity(this._appCtxt, name);
 	var listView = this.getListView();
 	listView.addNew(identity);
 	var list = listView.getList();
@@ -85,22 +88,11 @@ ZmIdentityController.prototype._getListData =
 function() {
 	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
 	var result = new AjxVector();
-	var identities = identityCollection.getIdentities();
+	var identities = identityCollection.getIdentities(true);
 	for (var i = 0, count = identities.length; i < count; i++) {
 		var proxy = AjxUtil.createProxy(identities[i]);
 		result.add(proxy);
 	}
-	result.sort(ZmIdentityController._comparator);
 	return result;
 };
 
-ZmIdentityController._comparator =
-function(a, b) {
-	if (a.isDefault) {
-		return -1;
-	} else if (b.isDefault) {
-		return 1;
-	} else {
-		return a.name == b.name ? 0 : a.name < b.name ? -1 : 1;
-	}
-};
