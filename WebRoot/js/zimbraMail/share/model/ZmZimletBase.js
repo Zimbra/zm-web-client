@@ -49,6 +49,7 @@ function(zimletContext, shell) {
 	this._dwtShell = shell;
 	this._appCtxt = shell.getData(ZmAppCtxt.LABEL);
 	this._origIcon = this.xmlObj().icon;
+	this.__zimletEnabled = true;
 	this.name = this.xmlObj().name;
 
 	var contentObj = this.xmlObj("contentObject");
@@ -564,6 +565,16 @@ ZmZimletBase.prototype.getBoolConfig = function(key, defaultValue) {
 		val = defaultValue;
 	}
 	return val;
+};
+
+ZmZimletBase.prototype.setEnabled = function(enabled) {
+	if (arguments.length == 0)
+		enabled = true;
+	this.__zimletEnabled = enabled;
+};
+
+ZmZimletBase.prototype.getEnabled = function() {
+	return this.__zimletEnabled;
 };
 
 ZmZimletBase.prototype.getUsername =

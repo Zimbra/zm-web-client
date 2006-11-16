@@ -130,7 +130,10 @@ ZmZimletMgr.prototype.notifyZimlets = function(event) {
 	var a = this._ZIMLETS;
 	for (var i = 0; i < a.length; ++i) {
 		var z = a[i].handlerObject;
-		if (z && typeof z[event] == "function")
+		if (z
+		    && z instanceof ZmZimletBase // we might get here even if Zimlets were not initialized
+		    && z.getEnabled()		 // avoid calling any hooks on disabled Zimlets
+		    && typeof z[event] == "function")
 			z[event].apply(z, args);
 	}
 };
