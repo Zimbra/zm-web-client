@@ -196,7 +196,7 @@ FontSize-html				= font-size:10pt;
 #######
 Text					 	= color: white;
 Label-wrap				 	= color: white; 
-Label				 		= @Label-wrap@ white-space:nowrap; overflow:hidden;
+Label				 		= @Label-wrap@ overflow:hidden;
 Text-light				 	= color: @_BaseColorL25_@;
 Text-required			 	= color: darkred;
 Text-disabled				= color: #aaaaaa;
