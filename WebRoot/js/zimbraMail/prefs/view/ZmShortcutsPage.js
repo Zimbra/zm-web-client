@@ -899,7 +899,7 @@ function(ev) {
 		treeIds = [this._organizer];
 	}
 	dialog.reset();
-	dialog.setTitle(ZmShortcutsPageTabViewCustom.DIALOG_TEXT[org]);
+	dialog.setTitle(ZmShortcutsPageTabViewCustom.DIALOG_TEXT[this._organizer]);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._browseSelectionCallback, this, [ev.item, dialog]);
 	dialog.popup(null, null, treeIds, true);
 };
