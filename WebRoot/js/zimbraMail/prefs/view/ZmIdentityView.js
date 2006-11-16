@@ -88,9 +88,9 @@ function(parentElement) {
 	var params = { parent: this.parent, type: DwtInputField.STRING, size: 50, validationStyle: DwtInputField.CONTINUAL_VALIDATION };
 	this._identityNameInput = new DwtInputField(params);
 	this._identityNameInput.setRequired(true);
+	this._identityNameInput.setValidatorFunction(this, this._validateIdentityName);
 	this._identityNameInput.reparentHtmlElement(inputCell);
-	this._identityNameInput.setHandler(DwtEvent.ONCHANGE, AjxCallback.simpleClosure(this._nameChangeHandler, this));
-	this._identityNameInput.setHandler(DwtEvent.ONKEYUP, AjxCallback.simpleClosure(this._nameChangeHandler, this));
+	this._identityNameInput.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._nameChangeHandler));
 
 	var tabView = new DwtTabView(this, null, Dwt.STATIC_STYLE);
 	tabView.reparentHtmlElement(parentElement);
@@ -159,7 +159,8 @@ function(errors) {
 	if (!this._identity) {
 		return;
 	}
-	if (!this._identityNameInput.isValid()) {
+
+	if (this._identityNameInput.getEnabled() && (this._identityNameInput.isValid() === null)) {
 		errors[errors.length] = ZmMsg.identityNameError;
 	}
 	for (var i = 0, count = this._pages.length; i < count; i++) {
@@ -186,21 +187,49 @@ function(batchCommand) {
 	this._addCommands(this._adds, "CreateIdentityRequest", batchCommand);
 	this._addCommands(this._updates, "ModifyIdentityRequest", batchCommand);
 	this._addCommands(this._deletes, "DeleteIdentityRequest", batchCommand);
-    var callback = new AjxCallback(this, this._handleAction);
-	batchCommand.addCallback(callback);
 };
 
 ZmIdentityView.prototype._addCommands =
 function(list, op, batchCommand) {
+	if (!this._errorCallback) {
+		this._errorCallback = new AjxCallback(this, this._handleResponseError);
+	}
+	if (!this._responseCallback) {
+		this._responseCallback = new AjxCallback(this, this._handleResponse);
+	}
+	
 	for (var i = 0, count = list.length; i < count; i++) {
 		var identity = list[i];
-		identity.createRequest(op, batchCommand);
+		identity.createRequest(op, batchCommand, this._responseCallback, this._errorCallback);
 	}
 };
 
-ZmIdentityView.prototype._handleAction =
-function(result) {
-	this._clearChanges();
+ZmIdentityView.prototype._handleResponse =
+function(identity, request, result) {
+	var list;
+	switch (request) {
+		case "CreateIdentityRequest": list = this._adds; break;
+		case "ModifyIdentityRequest": list = this._updates; break;
+		case "DeleteIdentityRequest": list = this._deletes; break;
+	}
+	for (var i = 0, count = list.length; i < count; i++) {
+		if (list[i] == identity) {
+			list.splice(i,1);
+			break;
+		}
+	}
+};
+
+ZmIdentityView.prototype._handleResponseError =
+function(identity, request, result) {
+	var message;
+	if (result.code == ZmCsfeException.IDENTITY_EXISTS) {
+	    var message = AjxMessageFormat.format(ZmMsg.errorIdentityAlreadyExists, identity.name);
+	    var dialog = this._appCtxt.getMsgDialog();
+		dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
+		dialog.popup();
+	    return true;
+	}
 };
 
 ZmIdentityView.prototype._updateList =
@@ -266,6 +295,22 @@ function() {
 		}
 	}
 	return dirty;
+};
+
+ZmIdentityView.prototype._validateIdentityName =
+function(originalValue) {
+	var value = AjxStringUtil.trim(originalValue);
+	if (value == "") {
+		throw AjxMsg.valueIsRequired;
+	} else if (value.toUpperCase() == ZmIdentity.DEFAULT_NAME.toUpperCase()) {
+	    throw AjxMessageFormat.format(ZmMsg.errorDefaultIdentityName, value);
+	} else {
+		var existing = this._appCtxt.getIdentityCollection().getByName(value);
+		if (existing && (existing.id != this._identity.id)) {
+	    	throw AjxMessageFormat.format(ZmMsg.errorIdentityAlreadyExists, existing.name);
+		}
+	}	
+	return originalValue;
 };
 
 /**

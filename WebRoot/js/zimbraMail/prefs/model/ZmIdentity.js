@@ -148,7 +148,7 @@ function(data) {
 };
 
 ZmIdentity.prototype.createRequest =
-function(request, batchCommand) {
+function(request, batchCommand, callback, errorCallback) {
     var soapDoc = AjxSoapDoc.create(request, "urn:zimbraAccount");
     var identityNode = soapDoc.set("identity");
     var name;
@@ -187,13 +187,13 @@ function(request, batchCommand) {
 			}
 		}		
     }
-	var respCallback = new AjxCallback(this, this._handleAction, [request]);
-	var errorCallback = new AjxCallback(this, this._handleErrorAction, [request]);
+	var respCallback = new AjxCallback(this, this._handleAction, [request, callback]);
+	var errorCallback = errorCallback ? new AjxCallback(this, this._handleErrorAction, [request, errorCallback]) : null;
 	batchCommand.addNewRequestParams(soapDoc, respCallback, errorCallback, request);
 };
 
 ZmIdentity.prototype._handleAction =
-function(request, result) {
+function(request, callback, result) {
 	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
 	if (request == "ModifyIdentityRequest") {
 		var identity = identityCollection.getById(this.id);
@@ -217,11 +217,14 @@ function(request, result) {
 	} else if (request == "DeleteIdentityRequest") {
 		identityCollection.remove(this);
 	}
+	if (callback) {
+		callback.run(this, request, result);
+	}
 };
 
 ZmIdentity.prototype._handleErrorAction =
-function() {
-//	debugger;
+function(request, errorCallback, result) {
+	return errorCallback.run(this, request, result);
 };
 
 
@@ -314,6 +317,18 @@ function(sort) {
 ZmIdentityCollection.prototype.getById =
 function(id) {
 	return this._idToIdentity[id];
+};
+
+ZmIdentityCollection.prototype.getByName =
+function(name) {
+	name = name.toLowerCase();
+	for (var id in this._idToIdentity) {
+		var identity = this._idToIdentity[id];
+		if (identity.name.toLowerCase() == name) {
+			return identity;
+		}
+	}
+	return null;
 };
 
 ZmIdentityCollection.prototype.add =
