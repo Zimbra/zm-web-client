@@ -1710,5 +1710,14 @@ ZmHtmlEditor.prototype.__onContextMenu = function(ev) {
 	// but do display table operations only if we're in some table
 	menu.Item_tableOperations.setDisplay(table ? "" : "none");
 
+	if (!AjxEnv.isGeckoBased) {
+		if (AjxEnv.isIE) {
+			var hasSelection = this._getSelection().type != "None";
+		} else {
+			var hasSelection = this._getSelection().toString().length > 0;
+		}
+		menu.getItemById(ZmHtmlEditor._VALUE, "cut").setEnabled(hasSelection);
+		menu.getItemById(ZmHtmlEditor._VALUE, "copy").setEnabled(hasSelection);
+	}
 	menu.popup(0, ev.docX, ev.docY);
 };
