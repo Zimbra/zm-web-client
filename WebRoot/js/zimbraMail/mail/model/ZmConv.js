@@ -352,9 +352,11 @@ function(convNode) {
 	this._parseFlags(convNode.f);
 	this._parseTags(convNode.t);	
 	if (convNode.e) {
-		for (var i = 0; i < convNode.e.length; i++)
+		for (var i = 0; i < convNode.e.length; i++) {
 			this._parseParticipantNode(convNode.e[i]);
+		}
 	}
+	this.participantsElided = convNode.elided;
 	this.subject = convNode.su;
 	this.fragment = convNode.fr;
 
