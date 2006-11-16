@@ -767,7 +767,7 @@ function() {
 	html[idx++] = ": </td>";
 	var quotaTooltip = null;
 	if (quota) {
-		var limit = AjxUtil.formatSize(quota);
+		var limit = AjxUtil.formatSize(quota, false, 1);
 		var percent = Math.min(Math.round((usedQuota / quota) * 100), 100);
 		
 		// set background color based on percent used
