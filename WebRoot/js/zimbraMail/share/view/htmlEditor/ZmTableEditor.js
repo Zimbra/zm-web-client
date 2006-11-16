@@ -618,12 +618,6 @@ ZmCellPropsDialog.prototype.getPreviewGrid = function() {
 };
 
 ZmCellPropsDialog.prototype.setup = function(editor, table, cells) {
-	// for some reason we need to reset this here, otherwise the dialog
-	// won't properly display a second time (and generates an error in IE)
-	// :-/  Calling this.reset() would null _loc, but would also clear
-	// button-press event handlers, which we don't want to happen.
-	this._loc = null;
-
 	var grid = this.getPreviewGrid();
 	grid.style.border = "1px dashed #ccc";
 	var tds = grid.getElementsByTagName("td");
