@@ -827,7 +827,7 @@ function(args) {
 
 ZmComposeController.prototype._addSignatureListener =
 function(ev) {
-	this._composeView.addSignature();
+	this._composeView.addSignature(this._composeView.getHtmlEditor().getContent());
 };
 
 ZmComposeController.prototype._spellCheckListener = 

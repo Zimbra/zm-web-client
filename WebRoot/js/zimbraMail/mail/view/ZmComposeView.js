@@ -622,14 +622,14 @@ function(mimePart) {
 * is prefixed by a special line and added to the bottom. An "outlook" style
 * signature is added before quoted content.
 * 
-* @content 			optional content to use otherwise get it from html editor widget
+* @content 			optional content to use
 */
 ZmComposeView.prototype.addSignature =
 function(content) {
 	// bug fix #6821 - we need to pass in "content" param
 	// since HTML composing in new window doesnt guarantee the html editor
 	// widget will be initialized when this code is running.
-	var content = content || this._htmlEditor.getContent();
+	var content = content || "";
 	var sig = this._getSignature();
 	var sep = this._getSignatureSeparator();
 	var newLine = this._getSignatureNewLine();
