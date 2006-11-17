@@ -1043,7 +1043,8 @@ function(contact, doAdd) {
 ZmContactList.prototype._setGalAutocompleteEnabled =
 function() {
 	this._galAutocompleteEnabled = (this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE) &&
-									this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_SESSION));
+									this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_SESSION) &&
+									this._appCtxt.get(ZmSetting.GAL_AUTOCOMPLETE_ENABLED));
 };
 
 /*
