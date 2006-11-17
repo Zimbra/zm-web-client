@@ -31,6 +31,12 @@ ZmGroupView.prototype = new ZmContactView;
 ZmGroupView.prototype.constructor = ZmGroupView;
 
 
+// Consts
+ZmGroupListView.ID_ICON  = "i--";
+ZmGroupListView.ID_NAME  = "n--";
+ZmGroupListView.ID_EMAIL = "e--";
+
+
 // Public Methods
 
 ZmGroupView.prototype.toString =
@@ -42,8 +48,8 @@ ZmGroupView.prototype.set =
 function(contact, isDirty) {
 
 	if (!this._htmlInitialized) {
-		this._createHtml(contact);
-		this._addWidgets(contact);
+		this._createHtml();
+		this._addWidgets();
 		this._installKeyHandlers();
 	}
 
@@ -67,8 +73,8 @@ function() {
 
 	// get field values
 	var groupName = AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
-	var folderId = this._folderSelect.getValue();
 	var groupMembers = this._getGroupMembers();
+	var folderId = this._getFolderId();
 
 	// creating new contact (possibly some fields - but not ID - prepopulated)
 	if (this._contact.id == null || this._contact.isGal) {
@@ -103,12 +109,11 @@ function() {
 ZmGroupView.prototype.isEmpty =
 function(checkEither) {
 	var groupName = AjxStringUtil.trim(document.getElementById(this._groupNameId).value);
-	var list = this._picker.targetListView.getList();
-	var targetSize = list ? list.size() : 0;
+	var members = AjxStringUtil.trim(this._groupMembers.value);
 
 	return checkEither
-		? (groupName == "" || targetSize == 0)
-		: (groupName == "" && targetSize == 0);
+		? (groupName == "" || members == "")
+		: (groupName == "" && members == "");
 };
 
 ZmGroupView.prototype.isValid =
@@ -123,8 +128,8 @@ function() {
 ZmGroupView.prototype.enableInputs =
 function(bEnable) {
 	document.getElementById(this._groupNameId).disabled = !bEnable;
+	this._groupMembers.disabled = !bEnable;
 	document.getElementById(this._searchFieldId).disabled = !bEnable;
-	this._picker.getTextField().setEnabled(bEnable);
 };
 
 ZmGroupView.prototype.isDirty =
@@ -146,13 +151,16 @@ function(width, height) {
 ZmGroupView.prototype.setBounds =
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
-	this._picker.resize(width-10, height-160);
+	Dwt.setSize(this._groupMembers, Dwt.DEFAULT, height-100);
+	this._listview.setSize(Dwt.DEFAULT, height-185);
 };
 
 ZmGroupView.prototype.cleanup  =
 function() {
-	this._picker.reset();
 	document.getElementById(this._searchFieldId).value = "";
+	this._listview.removeAll(true);
+	this._addButton.setEnabled(false);
+	this._addAllButton.setEnabled(false);
 };
 
 
@@ -165,7 +173,6 @@ function() {
 	this._setHeaderColor();
 	this._setTitle();
 	this._setTags();
-	this._setFolder();
 };
 
 ZmGroupView.prototype._setTitle =
@@ -181,17 +188,19 @@ function() {
 };
 
 ZmGroupView.prototype._createHtml =
-function(contact) {
+function() {
 	this._contactHeaderId = Dwt.getNextId();
 	this._contactHeaderRowId = Dwt.getNextId();
 	this._titleId = Dwt.getNextId();
 	this._tagsId = Dwt.getNextId();
 	this._groupNameId = Dwt.getNextId();
-	this._contactPickerId = Dwt.getNextId();
-	this._folderCellId = Dwt.getNextId();
+	this._groupMembersId = Dwt.getNextId();
 	this._searchFieldId = Dwt.getNextId();
-	this._searchBtnTdId = Dwt.getNextId();
 	this._listSelectId = Dwt.getNextId();
+	this._searchButtonId = Dwt.getNextId();
+	this._listViewId = Dwt.getNextId();
+	this._addButtonId = Dwt.getNextId();
+	this._addAllButtonId = Dwt.getNextId();
 
 	var idx = 0;
 	var html = [];
@@ -202,47 +211,52 @@ function(contact) {
 	html[idx++] = "' cellspacing=0 cellpadding=0 width=100%><tr class='contactHeaderRow' id='";
 	html[idx++] = this._contactHeaderRowId;
 	html[idx++] = "'><td width=20><center>";
-	html[idx++] = AjxImg.getImageHtml(contact.getIcon());
+	html[idx++] = AjxImg.getImageHtml("Group");
 	html[idx++] = "</center></td><td><div id='";
 	html[idx++] = this._titleId;
 	html[idx++] = "' class='contactHeader'></div></td><td align='right' id='";
 	html[idx++] = this._tagsId;
 	html[idx++] = "'></td></tr></table>";
 
-	// content
-	html[idx++] = "<table border=0 cellpadding=3 cellspacing=2 width=100%><tr>";
+	// content - left pane
+	html[idx++] = "<table border=0 cellpadding=5 cellspacing=5 width=100% height=100%><tr>";
 	html[idx++] = "<td width=50% valign=top>";
-	html[idx++] = "<table border=0>";
-	html[idx++] = "<tr><td class='editLabel'>";
-	html[idx++] = ZmMsg.find;
-	html[idx++] = ":</td><td><input type='text' autocomplete='off' size=30 nowrap id='";
-	html[idx++] = this._searchFieldId;
-	html[idx++] = "'></td><td id='";
-	html[idx++] = this._searchBtnTdId;
-	html[idx++] = "'></td><td width=100%></td></tr>";
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		html[idx++] = "<tr><td class='editLabel'>";
-		html[idx++] = ZmMsg.searchIn;
-		html[idx++] = ":</td><td colspan=2 id='";
-		html[idx++] = this._listSelectId;
-		html[idx++] = "'></td></tr>";
-	}
-	html[idx++] = "</table></td><td width=50% valign=top align=right>";
-	html[idx++] = "<table border=0>";
-	html[idx++] = "<tr><td class='editLabel' align=right>*&nbsp;";
+	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100%><tr><td colspan=2 nowrap>*&nbsp;";
 	html[idx++] = ZmMsg.groupName;
-	html[idx++] = ":</td><td><input type='text' size=35 id='";
+	html[idx++] = ":&nbsp;<input type='text' autocomplete='off' size=25 id='";
 	html[idx++] = this._groupNameId;
-	html[idx++] = "'></td></tr><tr><td class='editLabel' align=right>";
-	html[idx++] = ZmMsg.saveIn;
-	html[idx++] = ":</td><td id='";
-	html[idx++] = this._folderCellId;
-	html[idx++] = "'></td></tr></table>";
+	html[idx++] = "'></td></tr><tr><td nowrap>*&nbsp;";
+	html[idx++] = ZmMsg.groupMembers;
+	html[idx++] = ":</td><td class='hintLabel'>";
+	html[idx++] = ZmMsg.groupHint;
 	html[idx++] = "</td></tr></table>";
+	html[idx++] = "<textarea wrap=off class='groupMembers' id='";
+	html[idx++] = this._groupMembersId;
+	html[idx++] = "'></textarea></td>";
 
-	html[idx++] = "<div id='";
-	html[idx++] = this._contactPickerId;
-	html[idx++] = "'></div>";
+	// content - right pane
+	html[idx++] = "<td width=50% valign=top>";
+	html[idx++] = "<fieldset><legend class='groupFieldset'>";
+	html[idx++] = ZmMsg.addMembers;
+	html[idx++] = "</legend><table border=0><tr><td class='editLabel'>";
+	html[idx++] = ZmMsg.find;
+	html[idx++] = ":</td><td><input type='text' style='width:100%' id='";
+	html[idx++] = this._searchFieldId;
+	html[idx++] = "'></td></tr><tr><td class='editLabel'>";
+	html[idx++] = ZmMsg.searchIn;
+	html[idx++] = ":</td><td id='";
+	html[idx++] = this._listSelectId;
+	html[idx++] = "'></td><td id='";
+	html[idx++] = this._searchButtonId;
+	html[idx++] = "'></tr></table>";
+	html[idx++] = "<div class='groupMembers' id='";
+	html[idx++] = this._listViewId;
+	html[idx++] = "'></div><table border=0 cellpadding=3 cellspacing=2><tr><td id='";
+	html[idx++] = this._addButtonId;
+	html[idx++] = "'></td><td id='";
+	html[idx++] = this._addAllButtonId;
+	html[idx++] = "'></td></tr></table>";
+	html[idx++] = "</fieldset></td></tr></table>";
 
 	this.getHtmlElement().innerHTML = html.join("");
 
@@ -250,20 +264,13 @@ function(contact) {
 };
 
 ZmGroupView.prototype._addWidgets =
-function(contact) {
-	// add select widget for user to choose folder
-	this._folderSelect = new DwtSelect(this);
-	this._folderSelect.reparentHtmlElement(this._folderCellId);
-	this._folderSelect.addChangeListener(new AjxListener(this, this._selectChangeListener));
-
-	// add search button
-	this._searchButton = new DwtButton(this);
-	this._searchButton.setText(ZmMsg.search);
-	this._searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
-	this._searchButton.reparentHtmlElement(this._searchBtnTdId);
+function() {
+	this._groupMembers = document.getElementById(this._groupMembersId);
 
 	// add select menu
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+		this._appCtxt.get(ZmSetting.GAL_ENABLED))
+	{
 		this._selectDiv = new DwtSelect(this);
 		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactPicker.SEARCHFOR_CONTACTS);
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
@@ -272,10 +279,33 @@ function(contact) {
 		this._selectDiv.reparentHtmlElement(this._listSelectId);
 	}
 
-	this._picker = new ZmContactChooser({parent:this, allButtons:true, hasTextField:true, noDuplicates:false, appCtxt:this._appCtxt});
-	this._picker.reparentHtmlElement(this._contactPickerId);
-	this._picker.addStateChangeListener(new AjxListener(this, this._pickerChangeListener));
-	this._picker.reset();
+	// add "Search" button
+	this._searchButton = new DwtButton(this);
+	this._searchButton.setText(ZmMsg.search);
+	this._searchButton.addSelectionListener(new AjxListener(this, this._searchButtonListener));
+	this._searchButton.reparentHtmlElement(this._searchButtonId);
+
+	// add list view for search results
+	this._listview = new ZmGroupListView(this);
+	this._listview.reparentHtmlElement(this._listViewId);
+	this._listview.addSelectionListener(new AjxListener(this, this._selectionListener));
+	this._listview.setUI(null, true); // renders headers and empty list
+	this._listview._initialized = true;
+
+	var addListener = new AjxListener(this, this._addListener);
+	// add "Add" button
+	this._addButton = new DwtButton(this);
+	this._addButton.setText(ZmMsg.add);
+	this._addButton.addSelectionListener(addListener);
+	this._addButton.reparentHtmlElement(this._addButtonId);
+	this._addButton.setEnabled(false);
+
+	// add "Add All" button
+	this._addAllButton = new DwtButton(this);
+	this._addAllButton.setText(ZmMsg.addAll);
+	this._addAllButton.addSelectionListener(addListener);
+	this._addAllButton.reparentHtmlElement(this._addAllButtonId);
+	this._addAllButton.setEnabled(false);
 };
 
 ZmGroupView.prototype._installKeyHandlers =
@@ -283,6 +313,9 @@ function() {
 	var groupName = document.getElementById(this._groupNameId);
 	Dwt.setHandler(groupName, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
 	Dwt.associateElementWithObject(groupName, this);
+
+	Dwt.setHandler(this._groupMembers, DwtEvent.ONKEYUP, ZmGroupView._onKeyUp);
+	Dwt.associateElementWithObject(this._groupMembers, this);
 
 	var searchField = document.getElementById(this._searchFieldId);
 	Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmGroupView._keyPressHdlr);
@@ -292,27 +325,45 @@ function() {
 ZmGroupView.prototype._getTabGroupMembers =
 function() {
 	var fields = [];
-	fields.push(document.getElementById(this._searchFieldId));
-	fields.push(this._picker.getTextField().getInputElement());
 	fields.push(document.getElementById(this._groupNameId));
+	fields.push(this._groupMembers);
+	fields.push(document.getElementById(this._searchFieldId));
 	return fields;
 };
 
 ZmGroupView.prototype._getDefaultFocusItem =
 function() {
-	return document.getElementById(this._searchFieldId);
+	return document.getElementById(this._groupNameId);
 };
 
 ZmGroupView.prototype._getGroupMembers =
 function() {
-	var addrs = this._picker.getItems();
-	return addrs.size() > 0 ? addrs.toString(", ") : null;
+	var addrs = AjxStringUtil.split(this._groupMembers.value, ['\n', ';', ',']);
+
+	// sometimes "split" returns an empty element at the end of the array
+	if (addrs[addrs.length-1] == "") addrs.pop();
+
+	return addrs.length > 0 ? addrs.join(", ") : null;
+};
+
+ZmGroupView.prototype._getFolderId =
+function() {
+	var id = ZmFolder.ID_CONTACTS;
+	if (this._contact.id == null) {
+		var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+		id = clc._folderId;
+	} else {
+		if (this._contact.addrbook)
+			id = this._contact.addrbook.id;
+	}
+	return id;
 };
 
 ZmGroupView.prototype._setGroupMembers =
 function() {
-	var members = this._contact.getGroupMembers();
-	this._picker.addItems(members.good, DwtChooserListView.TARGET, true);
+	var members = this._contact.getGroupMembers().good.getArray();
+	this._groupMembers.value = members.join("\n");
+	this._appendNewline();
 };
 
 ZmGroupView.prototype._setGroupName =
@@ -323,11 +374,6 @@ function() {
 
 
 // Listeners
-
-ZmGroupView.prototype._selectChangeListener =
-function(ev) {
-	this._isDirty = true;
-};
 
 ZmGroupView.prototype._searchButtonListener =
 function(ev) {
@@ -347,6 +393,58 @@ function(ev) {
 			this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 		}
 		this.search(ZmItem.F_PARTICIPANT, true);
+	}
+};
+
+ZmGroupView.prototype._selectionListener =
+function(ev) {
+	var selection = this._listview.getSelection();
+
+	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
+		this._addItems(selection);
+	} else {
+		this._addButton.setEnabled(selection.length > 0);
+	}
+};
+
+ZmGroupView.prototype._addListener =
+function(ev) {
+
+	var list = ev.dwtObj == this._addButton
+		? this._listview.getSelection()
+		: this._listview.getList().getArray();
+
+	this._addItems(list);
+};
+
+ZmGroupView.prototype._addItems =
+function(list) {
+	if (list.length == 0) return;
+
+	this._appendNewline();
+
+	// we have to walk the results in case we hit a group which needs to be split
+	var items = new Array();
+	for (var i = 0; i < list.length; i++) {
+		if (list[i].isGroup) {
+			var emails = list[i].address.split(ZmEmailAddress.SEPARATOR);
+			for (var j = 0; j < emails.length; j++)
+				items.push(emails[j]);
+		} else {
+			items.push(list[i]);
+		}
+	}
+	this._groupMembers.value += (items.join("\n") + "\n");
+	this._isDirty = true;
+};
+
+// appends newline at the end of textarea if one does not already exist
+ZmGroupView.prototype._appendNewline =
+function() {
+	var members = this._groupMembers.value;
+	if (members.length) {
+		if (members.charAt(members.length-1) != "\n")
+			this._groupMembers.value += "\n";
 	}
 };
 
@@ -397,7 +495,9 @@ function(result) {
 			}
 		}
 	}
-	this._picker.setItems(AjxVector.fromArray(list));
+	this._listview.setItems(list);
+	this._addButton.setEnabled(a.length > 0);
+	this._addAllButton.setEnabled(a.length > 0);
 	this._searchButton.setEnabled(true);
 };
 
@@ -407,11 +507,6 @@ function() {
 	return false;
 };
 
-
-ZmGroupView.prototype._pickerChangeListener =
-function(ev) {
-	this._isDirty = true;
-};
 
 // Static methods
 
@@ -427,7 +522,8 @@ function(ev) {
 	var view = e ? Dwt.getObjectFromElement(e) : null;
 	if (view) {
 		view._isDirty = true;
-		view._setTitle(e.value);
+		if (e.tagName.toLowerCase() == "input")
+			view._setTitle(e.value);
 	}
 
 	return true;
@@ -481,4 +577,90 @@ function(contact, abridged, appCtxt) {
 	html[idx++] = "</table>";
 
 	return html.join("");
+};
+
+
+
+/**
+* Creates a group list view for search results
+* @constructor
+* @class
+*
+* @param parent			[ZmGroupView]	containing widget
+*/
+function ZmGroupListView(parent) {
+	if (arguments.length == 0) return;
+	DwtListView.call(this, parent, "DwtChooserListView", null, this._getHeaderList(parent));
+};
+
+ZmGroupListView.prototype = new DwtListView;
+ZmGroupListView.prototype.constructor = ZmGroupListView;
+
+
+ZmGroupListView.prototype.setItems =
+function(items) {
+	this._resetList();
+	this.addItems(items);
+	var list = this.getList();
+	if (list && list.size() > 0) {
+		this.setSelection(list.get(0));
+	}
+};
+
+ZmGroupListView.prototype._getHeaderList =
+function() {
+	var headerList = [];
+	headerList.push(new DwtListHeaderItem(ZmGroupListView.ID_ICON, null, "Contact", 20));
+	headerList.push(new DwtListHeaderItem(ZmGroupListView.ID_NAME, ZmMsg._name, null, 100));
+	headerList.push(new DwtListHeaderItem(ZmGroupListView.ID_EMAIL, ZmMsg.email));
+	return headerList;
+};
+
+// The items are ZmEmailAddress objects
+ZmGroupListView.prototype._createItemHtml =
+function(item) {
+	var div = document.createElement("div");
+	div[DwtListView._STYLE_CLASS] = "Row";
+	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
+	div.className = div[DwtListView._STYLE_CLASS];
+
+	var html = [];
+	var idx = 0;
+
+	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>";
+	for (var i = 0; i < this._headerList.length; i++) {
+		var id = this._headerList[i]._id;
+		if (id.indexOf(ZmGroupListView.ID_ICON) == 0) {
+			html[idx++] = "<td width=";
+			html[idx++] = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4): this._headerList[i]._width;
+			html[idx++] = ">";
+			html[idx++] = AjxImg.getImageHtml(item.icon);
+			html[idx++] = "</td>";
+		} else if (id.indexOf(ZmGroupListView.ID_NAME) == 0) {
+			html[idx++] = "<td width=";
+			html[idx++] = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
+			html[idx++] = "><nobr>";
+			html[idx++] = item.name;
+			html[idx++] = "</td>";
+		} else if (id.indexOf(ZmGroupListView.ID_EMAIL) == 0) {
+			html[idx++] = "<td>";
+			html[idx++] = item.address;
+			html[idx++] = "</td>";
+		}
+	}
+	html[idx++] = "</tr></table>";
+	div.innerHTML = html.join("");
+
+	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
+	return div;
+};
+
+ZmGroupListView.prototype._itemClicked =
+function(clickedEl, ev) {
+	// Ignore right-clicks, we don't support action menus
+	if (!ev.shiftKey && !ev.ctrlKey && ev.button == DwtMouseEvent.RIGHT) {
+		return;
+	} else {
+		DwtListView.prototype._itemClicked.call(this, clickedEl, ev);
+	}
 };

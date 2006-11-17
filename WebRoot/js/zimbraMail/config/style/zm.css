@@ -794,13 +794,22 @@ td.DDSepInvisible div {
 
 .ZmContactView .groupMembers {
 	width: 100%;
-	margin-left: 4px;
 }
 
 /* ??? -> ZmFieldLabelRight */
 .ZmContactView .editLabel {
 	@Label@
 	text-align:right;
+}
+
+.ZmContactView .hintLabel {
+	@Label@
+	text-align:right;
+	color: #5A5A5A;
+}
+
+.ZmContactView .groupFieldset {
+	font-weight: bold;
 }
 
 
