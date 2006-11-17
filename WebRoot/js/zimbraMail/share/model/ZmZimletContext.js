@@ -580,7 +580,7 @@ ZmZimletContext._zmObjectTransformers = {
 		ret.isInTrash    = oi.isInTrash();
 		ret.unread       = oi.numUnread;
 		ret.total        = oi.numTotal;
-		ret.url          = oi.url;
+		ret.url          = oi.getRestUrl();
 		return ret;
 	},
 
