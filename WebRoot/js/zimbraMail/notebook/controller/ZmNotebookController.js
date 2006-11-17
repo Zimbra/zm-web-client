@@ -166,9 +166,10 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
 	//toolbarOrActionMenu.enable(ZmOperation.ATTACHMENT, true);
 	//toolbarOrActionMenu.enable(ZmOperation.DETACH, false);
 
-	var buttons = [ZmOperation.EDIT, ZmOperation.TAG_MENU, ZmOperation.DELETE];
-	var enabled = this._object && !this._object.isReadOnly();
-	toolbarOrActionMenu.enable(buttons, enabled);
+	var writable = this._object && !this._object.isReadOnly();
+	toolbarOrActionMenu.enable([ZmOperation.EDIT, ZmOperation.DELETE], writable);
+	var taggable = this._object && !this._object.isShared();
+	toolbarOrActionMenu.enable([ZmOperation.TAG_MENU], taggable);
 };
 
 ZmNotebookController.prototype._getTagMenuMsg = function() {
