@@ -447,6 +447,10 @@ function(mailMsg, type) {
 
 ZmIdentityCollection.prototype.initialize =
 function(data) {
+	if (this.getSize()) {
+		// This can be called unnecessarily after auth token expires.
+		return;
+	}
 	var identities = data.identity;
 	for (var i = 0, count = identities ? identities.length : 0; i < count; i++) {
 		var identity = new ZmIdentity(this._appCtxt, '');
