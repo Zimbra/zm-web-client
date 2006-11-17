@@ -150,6 +150,7 @@ ZmPicker.MULTI_JOIN = new Object();
 for (var i = 1; i <= ZmPicker.CLOSE; i++)
 	ZmPicker.MULTI_JOIN[i] = " ";
 ZmPicker.MULTI_JOIN[ZmPicker.BASIC] = " OR ";
+ZmPicker.MULTI_JOIN[ZmPicker.FLAG] = " OR ";
 
 ZmPicker.CTOR = new Object();
 
