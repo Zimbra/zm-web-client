@@ -340,8 +340,18 @@ ZmGroupView.prototype._getGroupMembers =
 function() {
 	var addrs = AjxStringUtil.split(this._groupMembers.value, ['\n', ';', ',']);
 
-	// sometimes "split" returns an empty element at the end of the array
-	if (addrs[addrs.length-1] == "") addrs.pop();
+	// if there are any empty values, remove them
+	var i = 0;
+	while (true) {
+		var email = AjxStringUtil.trim(addrs[i]);
+		if (email == "") {
+			addrs.splice(i,1);
+		} else {
+			i++;
+		}
+		if (i == addrs.length)
+			break;
+	}
 
 	return addrs.length > 0 ? addrs.join(", ") : null;
 };
