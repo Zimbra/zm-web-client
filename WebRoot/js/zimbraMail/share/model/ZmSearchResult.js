@@ -106,7 +106,6 @@ function(respEl, contactSource) {
 		this._results[ZmItem.CONTACT].setIsGal(true);
 	}
 
-	var addressHash = {};
 	var foundType = {};
 	var numTypes = 0;
 	var currentType = null;
@@ -120,7 +119,7 @@ function(respEl, contactSource) {
 		if (data) {
 			for (var j = 0; j < data.length; j++) {
 				if (this._results[currentType]) {
-					this._results[currentType].addFromDom(data[j], {addressHash: addressHash});
+					this._results[currentType].addFromDom(data[j]);
 				}
 			}
 			_count = data.length;
@@ -138,7 +137,7 @@ function(respEl, contactSource) {
 				for (var j = 0; j < data.length; j++) {
 					var item = data[j];
 					item._type = type;
-					this._results[type].addFromDom(item, {addressHash: addressHash});
+					this._results[type].addFromDom(item);
 				}
 
 				if (!foundType[type]) {

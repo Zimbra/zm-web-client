@@ -220,7 +220,7 @@ function(contact, idx) {
 	if (contact instanceof ZmContact)
 		return contact;
 
-	var args = {appCtxt:this._appCtxt, addressHash:{}, list:this};
+	var args = {appCtxt: this._appCtxt, list: this};
 	var obj = eval(ZmList.ITEM_CLASS[this.type]);
 	var realContact = obj ? obj.createFromDom(contact, args) : null;
 
@@ -1059,8 +1059,8 @@ function(str, aclv, callback) {
 	var search = new ZmSearch(this._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseGetGalMatches, [str, aclv, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches, [aclv, callback]);
-	search.execute({callback: respCallback, errorCallback: errorCallback, timeout: ZmContactList.AC_GAL_TIMEOUT,
-					noBusyOverlay: true});
+	var reqId = search.execute({callback: respCallback, errorCallback: errorCallback, timeout: ZmContactList.AC_GAL_TIMEOUT,
+								noBusyOverlay: true});
 };
 
 ZmContactList.prototype._handleResponseGetGalMatches =

@@ -233,7 +233,7 @@ ZmList.prototype.set =
 function(respNode) {
 	this.clear();
 	var nodes = respNode.childNodes;
-	var args = {appCtxt: this._appCtxt, list: this, addressHash: new Object()};
+	var args = {appCtxt: this._appCtxt, list: this};
 	for (var i = 0; i < nodes.length; i++) {
 		var node = nodes[i];
 		if (node.nodeName == ZmList.NODE[this.type]) {

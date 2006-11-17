@@ -125,7 +125,9 @@ function(params) {
 		this._handleResponseSendRequest(params, new ZmCsfeResult(ex, true));
 		return;
 	}
-	if (!params.asyncMode) {
+	if (params.asyncMode) {
+		return reqId;
+	} else {
 		return this._handleResponseSendRequest(params, response);
 	}
 };

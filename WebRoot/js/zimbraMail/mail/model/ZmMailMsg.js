@@ -448,8 +448,6 @@ function(callback, result) {
 	// clear all participants (since it'll get re-parsed w/ diff. ID's)
 	if (this.participants)
 		this.participants.removeAll();
-	for (var i in this._participantHash)
-		delete this._participantHash[i];
 
 	// clear all attachments
 	this._attachments.length = 0;

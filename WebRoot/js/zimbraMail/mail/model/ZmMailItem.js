@@ -94,7 +94,6 @@ function(obj) {
 ZmMailItem.prototype._initializeParticipants =
 function() {
 	this.participants = new AjxVector();
-	this._participantHash = new Object();
 	this.participantsElided = false;
 }
 
@@ -103,11 +102,6 @@ function() {
 	if (this.participants) {
 		this.participants.removeAll();
 		this.participants = null;
-		if (this._participantHash) {
-			for (var i in this._participantHash)
-				this._participantHash[i] = null;
-			this._participantHash = null;
-		}
 		this.participantsElided = false;
 	}
 }
@@ -127,21 +121,6 @@ function(on) {
 
 ZmMailItem.prototype._parseParticipantNode = 
 function(node) {
-	var address = null;
-	if (node.ref) {
-		address = this._participantHash[node.ref];
-	} else {
-		var addr = node.a;
-		var type = ZmEmailAddress.fromSoapType[node.t];
-		var name = node.p;
-		var dispName = node.d;
-		address = new ZmEmailAddress(addr, type, name, dispName);
-		if (node.id) {
-			this._participantHash[node.id] = address;
-		}
-	}
-
-	if (address) {
-		this.participants.add(address);
-	}
+	var type = ZmEmailAddress.fromSoapType[node.t];
+	this.participants.add(new ZmEmailAddress(node.a, type, node.p, node.d));
 }

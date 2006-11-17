@@ -56,7 +56,6 @@ function() {
 ZmConv.createFromDom =
 function(node, args) {
 	var conv = new ZmConv(args.appCtxt, node.id, args.list);
-	conv._participantHash = args.addressHash ? args.addressHash : new Object();
 	conv._loadFromDom(node);
 	return conv;
 };
@@ -373,7 +372,7 @@ function(convNode) {
 	var len = childNodes.length;
 	for (var i = 0; i < len; i++) {
 		if (childNodes[i].nodeName == "m")
-			this.msgs.addFromDom(childNodes[i], {addressHash: this._participantHash});
+			this.msgs.addFromDom(childNodes[i]);
 	}	
 };
 
