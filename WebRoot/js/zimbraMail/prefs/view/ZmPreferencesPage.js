@@ -588,7 +588,7 @@ function(dialog, folder) {
 	if (folder && folder.id) {
 		var portPrefix = (location.port == "" || location.port == "80")
 			? "" : (":" + location.port);
-		var uri = [location.protocol, "//", document.domain, portPrefix, "service/home/~/", folder.name, "?auth=co&fmt=csv"].join("");
+		var uri = [location.protocol, "//", document.domain, portPrefix, "/service/home/~/", folder.name, "?auth=co&fmt=csv"].join("");
 		window.open(uri, "_blank");
 
 		dialog.popdown();
