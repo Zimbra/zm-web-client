@@ -99,7 +99,7 @@ function(ev) {
 
 		// walk the list of items and if any are contacts,
 		for (var i = 0; i < items.length; i++) {
-			if (items[i].type == ZmItem.CONTACT &&
+			if ((items[i].type == ZmItem.CONTACT || items[i].type == ZmItem.GROUP) &&
 				ev.event == ZmEvent.E_DELETE)
 			{
 				// and is hard delete, remove from canonical list
