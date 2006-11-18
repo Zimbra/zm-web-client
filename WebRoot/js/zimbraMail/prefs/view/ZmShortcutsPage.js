@@ -564,7 +564,7 @@ ZmShortcutsPageTabViewCustom.prototype.getShortcuts =
 function() {
 	var kbm = this._appCtxt.getKeyboardMgr();
 	var kmm = kbm.__keyMapMgr;
-	var shortcuts = [];
+	var shortcuts = [], numToData = {}, dataToNum = {};
 	for (var id in this._inputs) {
 		var row = this._inputs[id];
 		var num = row["num"].dwtObj.getValue();
@@ -583,9 +583,22 @@ function() {
 		} else if (!AjxUtil.isNumeric(num)) {
 			errorStr = AjxMessageFormat.format(ZmMsg.nonnumericShortcut, [ZmOrganizer.TEXT[this._organizer], data]);
 		}
+		if (numToData[num]) {
+			if (numToData[num] != data) {
+				errorStr = AjxMessageFormat.format(ZmMsg.duplicateShortcutNumber, [num]);
+			} else {
+				continue;
+			}
+		}
+		if (dataToNum[data] && (dataToNum[data] != num)) {
+			errorStr = AjxMessageFormat.format(ZmMsg.duplicateShortcutOrg, [data]);
+		}
 		if (errorStr) {
 			throw new AjxException(errorStr);
 		}
+
+		numToData[num] = data;
+		dataToNum[data] = num;
 
 		var tree = this._appCtxt.getTree(this._organizer);
 		var organizer = (this._organizer == ZmOrganizer.FOLDER) ? tree.getByPath(data, true) :
