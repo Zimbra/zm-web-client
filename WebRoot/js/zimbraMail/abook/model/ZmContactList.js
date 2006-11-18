@@ -60,6 +60,7 @@ function ZmContactList(appCtxt, search, isGal, type) {
 	this._emailToContact = {};
 	this._acAddrList = {};
 	this._galResults = {};
+	this._galRequests = {};
 	this._loadCount = 0;
 	this._loaded = false;
 	this._showStatus = true;
@@ -622,6 +623,7 @@ function(str, callback, aclv) {
 
 	DBG.println(AjxDebug.DBG3, "begin contact matching");
 	str = str.toLowerCase();
+	this._curAcStr = str;
 	this._acAddrList[str] = this._acAddrList[str] ? this._acAddrList[str] : [];
 
 	// if local contacts haven't finished loading, don't return any results (even
@@ -663,13 +665,13 @@ function(str, callback, aclv) {
 ZmContactList.prototype._handleResponseAutocompleteMatch =
 function(str, callback) {
 	// GAL results have been added in to local results
-	this._acAddrList[str].galMatchingDone = true;
 	DBG.timePt("end autocomplete GAL matching");
 	DBG.println(AjxDebug.DBG3, "Returning list of GAL matches");
 
-	// return GAL results
-	if (this._acAddrList[str].hasGalMatches) {
-		var results = this._matchList(str);
+	// return GAL results - we look at curAcStr because we want to
+	// return results for the most recent query
+	if (this._acAddrList[this._curAcStr].hasGalMatches) {
+		var results = this._matchList(this._curAcStr);
 		callback.run(results);
 	}
 };
@@ -763,7 +765,8 @@ function(str) {
 };
 
 /*
- * Returns true if both local and GAL matching have been done for the given string.
+ * Returns true if matching has been done for the given string,
+ * for the given type of results.
  *
  * @param str		[string]		string to match against
  * @param which		[constant]		LOCAL or GAL
@@ -774,7 +777,7 @@ function(str, which, checkMore) {
 	if (which == ZmContactList.AC_LOCAL) {
 		return (this._acAddrList[str] && this._acAddrList[str].localMatchingDone);
 	} else if (which == ZmContactList.AC_GAL) {
-		if (!this._galAutocompleteEnabled) {return true;}
+		if (!this._galAutocompleteEnabled) { return true; }
 		var old = (new Date()).getTime() - ZmContactList.GAL_RESULTS_TTL;
 		// GAL results must be fresh and complete
 		return (this._acAddrList[str] && this._acAddrList[str].galMatchingDone &&
@@ -943,9 +946,7 @@ function(contact, str) {
 	{
 		// if one of these matched, it will already be highlighted
 		name = match.savedMatch;
-	}
-	else
-	{
+	} else {
 		// construct name - first or last may have matched and been highlighted
 		var names = [];
 		for (var i = 0; i < ZmContactList.AC_NAME_FIELDS.length; i++) {
@@ -1054,18 +1055,28 @@ function() {
  */
 ZmContactList.prototype._getGalMatches =
 function(str, aclv, callback) {
+	// cancel any outstanding GAL requests for substrings of current string
+	for (var substr in this._galRequests) {
+		if (str.indexOf(substr) === 0) {
+			DBG.println(AjxDebug.DBG1, "bypassing GAL request for '" + str + 
+						"' due to outstanding request for '" + substr + "'");
+			return;
+		}
+	}
 	var sortBy = ZmSearch.NAME_DESC;
 	var types = AjxVector.fromArray([ZmItem.CONTACT]);
 	var params = {query: str, types: types, sortBy: sortBy, offset: 0, limit: ZmContactList.AC_MAX, isGalAutocompleteSearch: true};
 	var search = new ZmSearch(this._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseGetGalMatches, [str, aclv, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches, [aclv, callback]);
-	var reqId = search.execute({callback: respCallback, errorCallback: errorCallback, timeout: ZmContactList.AC_GAL_TIMEOUT,
-								noBusyOverlay: true});
+	search.execute({callback: respCallback, errorCallback: errorCallback, timeout: ZmContactList.AC_GAL_TIMEOUT,
+					noBusyOverlay: true});
+	this._galRequests[str] = true;
 };
 
 ZmContactList.prototype._handleResponseGetGalMatches =
 function(str, aclv, callback, result) {
+	delete this._galRequests[str];
 	var resp = result.getResponse();
 	var list = resp.getResults(ZmItem.CONTACT);
 	var a = list ? list.getArray() : [];
@@ -1074,6 +1085,23 @@ function(str, aclv, callback, result) {
 	for (var i = 0; i < a.length; i++) {
 		this._acAddrList[str].push(a[i]);
 	}
+	
+	// check to see if the GAL results that came back are for the string we're
+	// currently matching - if not, propagate its matches forward to the current
+	// string
+	if (str != this._curAcStr && (this._curAcStr.indexOf(str) == 0)) {
+		this._acAddrList[this._curAcStr] = this._acAddrList[this._curAcStr] ? this._acAddrList[this._curAcStr] : [];
+		var superList = this._acAddrList[str];
+		for (var i = 0; i < superList.length; i++) {
+			var contact = superList[i];
+			if (this._testAcMatch(contact, this._curAcStr)) {
+				this._acAddrList[this._curAcStr].push(contact);
+			}
+		}
+		this._acAddrList[this._curAcStr].hasGalMatches = (this._acAddrList[this._curAcStr].length > 0);
+		this._acAddrList[this._curAcStr].galMatchingDone = true;
+	}
+	
 	this._acAddrList[str].hasGalMatches = (a.length > 0);
 	this._acAddrList[str].galMatchingDone = true;
 
@@ -1084,6 +1112,33 @@ function(str, aclv, callback, result) {
 	this._galFailures = 0;	// successful response, reset counter
 	aclv.setWaiting(false);
 	callback.run();
+};
+
+ZmContactList.prototype._addGalResults =
+function(str, list, substr) {
+	if (list && list.length) {
+		this._acAddrList[str] = this._acAddrList[str] ? this._acAddrList[str] : [];
+		for (var i = 0; i < lis.length; i++) {
+			this._acAddrList[str].push(list[i]);
+		}
+	} else if (substr) {
+		this._acAddrList[substr] = this._acAddrList[substr] ? this._acAddrList[substr] : [];
+		var superList = this._acAddrList[str];
+		for (var i = 0; i < superList.length; i++) {
+			var contact = superList[i];
+			if (this._testAcMatch(contact, substr)) {
+				this._acAddrList[substr].push(contact);
+			}
+		}
+		str = substr;
+	}
+
+	this._acAddrList[str].hasGalMatches = (a.length > 0);
+	this._acAddrList[str].galMatchingDone = true;
+
+	this._galResults[str] = {};
+	this._galResults[str].ts = (new Date()).getTime();
+	this._galResults[str].more = resp._respEl.more;
 };
 
 /**

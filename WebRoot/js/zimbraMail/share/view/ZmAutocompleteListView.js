@@ -334,7 +334,8 @@ function(info) {
 	if (info.start < info.text.length) {
 		var chunk = this._nextChunk(info.text, info.start);
 		this._autocomplete(chunk, callback);
-	} else if (info.text != this._element.value) {
+	} else if (info.change) {
+		// quick completion was done
 		DBG.println(AjxDebug.DBG2, "autocomplete, new text: " + info.text + "; element: " + this._element.value);
 		this._updateField(info.text, info.match);
 	}
@@ -519,6 +520,7 @@ function(chunk, callback) {
 ZmAutocompleteListView.prototype._handleResponseAutocomplete =
 function(str, chunk, text, start, callback, list) {
 	var retValue;
+	var change = false;
 	// see if it's already a complete address
 	if (list && list.length == 1 && this._data.isUniqueValue(str)) {
 		DBG.println(AjxDebug.DBG2, "unique match, hiding autocomplete list");
@@ -528,7 +530,7 @@ function(str, chunk, text, start, callback, list) {
 	if (!retValue) {
 		if (list && list.length) {
 			var len = list.length;
-			DBG.println(AjxDebug.DBG2, "found " + len + " match" + len > 1 ? "es" : "");
+			DBG.println(AjxDebug.DBG2, "matches found: " + len);
 			// done now in case of quick complete
 			this._set(list); // populate the list view
 		}
@@ -541,12 +543,13 @@ function(str, chunk, text, start, callback, list) {
 			text = result.text;
 			start = result.start;
 			match = result.match;
+			change = true;
 		} else if (list && list.length) {
 			// show the list
 			this.show(true, this._loc);
 		}
 	
-		retValue = {text: text, start: start, match: match};
+		retValue = {text: text, start: start, match: match, change: change};
 	}
 	
 	if (callback) {
@@ -590,6 +593,7 @@ ZmAutocompleteListView.prototype._updateField =
 function(text, match) {
 	DBG.println(AjxDebug.DBG3, "ZmAutocompleteListView: _updateField");
 	var el = this._element;
+	DBG.println(AjxDebug.DBG3, "update with new text: " + text);
 	el.value = text;
 	el.focus();
 	// bug fix #8776
