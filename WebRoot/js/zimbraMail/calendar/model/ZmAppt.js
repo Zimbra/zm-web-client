@@ -1286,9 +1286,9 @@ function(notes, isHtml) {
 
 ZmAppt.prototype._resetCached =
 function() {
-	delete this._startTimeUniqId;
-	delete this._validAttachments;
-	delete this.tooltip;
+	delete this._startTimeUniqId; this._startTimeUniqId = null;
+	delete this._validAttachments; this._validAttachments = null;
+	delete this.tooltip; this.tooltip = null;
 };
 
 ZmAppt.prototype._createRangeIfNecessary = 
