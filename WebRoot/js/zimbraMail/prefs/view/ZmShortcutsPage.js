@@ -404,6 +404,9 @@ function(ks) {
 				newParts.push(base);
 			} else if (ZmKeyMap.SHIFT[base]) {
 				newParts.push(ZmKeyMap.SHIFT[base]);
+			} else if (ZmKeyMap.ENTITY[base]) {
+				newParts.push(mod.toLowerCase());
+				newParts.push(ZmKeyMap.ENTITY[base]);
 			} else {
 				newParts.push(mod.toLowerCase());
 				newParts.push(base);
