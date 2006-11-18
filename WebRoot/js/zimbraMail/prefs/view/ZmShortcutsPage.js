@@ -626,11 +626,9 @@ function() {
 	i = this._getInfoBoxHtml(html, i, closeLinkId);
 
 	html[i++] = "<div style='margin:10px;border:1px solid #666666;'>";
-	html[i++] = "<table width=100% cellspacing=0 cellpadding=4>";
-	html[i++] = "<tr class='DarkBg'><td style='vertical-align:top;padding:0px;'>";
-	html[i++] = "<div class='PanelHead'>";
+	html[i++] = "<table width=100% cellspacing=0 cellpadding=0>";
+	html[i++] = "<tr class='PanelHead'><td>";
 	html[i++] = ZmShortcutsPageTabView.TAB_NAME[this._organizer];
-	html[i++] = "</div>";
 	html[i++] = "</td>";
 	html[i++] = "<td style='width:1%' id='";
 	html[i++] = helpButtonId;
@@ -685,7 +683,7 @@ function(html, i, closeLinkId) {
 	html[i++] = AjxMessageFormat.format(ZmMsg.aboutShortcuts, [ZmShortcutsPageTabViewCustom.ORG_TEXT[this._organizer]]);
 	html[i++] = "</div>";
 	html[i++] = AjxMessageFormat.format(ZmMsg.assignShortcuts, [ZmShortcutsPageTabViewCustom.ORG_TEXT_PLURAL[this._organizer]]);
-	html[i++] = "<div style='margin-top:5px'>";
+	html[i++] = "<div>";
 	var key = ZmShortcutsPageTabViewList._formatKey(ZmShortcutsPageTabViewCustom.SAMPLE_KEY);
 	var org = ZmOrganizer.TEXT[this._organizer];
 	var exampleOrg = ["<i>", ZmShortcutsPageTabViewCustom.SAMPLE_ORG[this._organizer], "</i>"].join("");
@@ -693,11 +691,7 @@ function(html, i, closeLinkId) {
 	html[i++] = "<ul>";
 	var shortcuts = ZmShortcutsPageTabViewCustom.SAMPLE_SHORTCUTS[this._organizer];
 	for (var j = 0; j < shortcuts.length; j++) {
-		html[i++] = "<li class='shortcutLI' style='margin-left:20px;";
-		if (j == 0) {
-			html[i++] = "margin-top:3px;";
-		}
-		html[i++] = "'>";
+		html[i++] = "<li>";
 		var propName = shortcuts[j];
 		var value = ZmKeys[propName];
 		if (value) {
