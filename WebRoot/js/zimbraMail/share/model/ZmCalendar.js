@@ -105,8 +105,9 @@ function(url, name, ex) {
 
 ZmCalendar.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
-	var name = this.id == ZmOrganizer.ID_ROOT ? ZmMsg.calendars : this.name;
-	return this._markupName(name, showUnread, noMarkup);
+    if (this.id == ZmOrganizer.ID_ROOT) return ZmMsg.calendars;
+    if (this.path) return [this.path, this.name].join("/");
+    return this.name;
 };
 
 ZmCalendar.prototype.getIcon = 
@@ -165,37 +166,48 @@ function(obj) {
 // Static methods
 
 ZmCalendar.createFromJs =
-function(parent, obj, tree) {
+function(parent, obj, tree, path) {
 	if (!(obj && obj.id)) return;
 
 	// create calendar, populate, and return
 	var calendar = new ZmCalendar(obj.id, obj.name, parent, tree, obj.color, obj.url, obj.owner, obj.zid, obj.rid, obj.rest);
-	if (obj.f) {
+    if (path) {
+        calendar.path = path.join("/");
+    }
+    if (obj.f) {
 		calendar._parseFlags(obj.f);
 	}
-	if (obj.folder && obj.folder.length) {
-		for (var i = 0; i < obj.folder.length; i++) {
-			var folder = obj.folder[i];
-			if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
-				var childCalendar = ZmCalendar.createFromJs(calendar, folder, tree);
-				calendar.children.add(childCalendar);
-			}
-		}
-	}
-	if (obj.link && obj.link.length) {
-		for (var i = 0; i < obj.link.length; i++) {
-			var link = obj.link[i];
-			if (link.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
-				var childCalendar = ZmCalendar.createFromJs(calendar, link, tree);
-				calendar.children.add(childCalendar);
-			}
-		}
-	}
-	
-	// set shares
+    ZmCalendar.__traverse(calendar, parent, obj, tree, path || []);
+
+    // set shares
 	calendar._setSharesFromJs(obj);
 	
 	return calendar;
+};
+
+ZmCalendar.__traverse = function(calendar, parent, obj, tree, path) {
+    var isRoot = obj.id == ZmOrganizer.ID_ROOT;
+    if (obj.folder && obj.folder.length) {
+        if (!isRoot) path.push(obj.name);
+        for (var i = 0; i < obj.folder.length; i++) {
+            var folder = obj.folder[i];
+            if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
+                var childCalendar = ZmCalendar.createFromJs(calendar, folder, tree, path);
+                calendar.children.add(childCalendar);
+            }
+            ZmCalendar.__traverse(calendar, parent, folder, tree, path);
+        }
+        if (!isRoot) path.pop();
+    }
+    if (obj.link && obj.link.length) {
+        for (var i = 0; i < obj.link.length; i++) {
+            var link = obj.link[i];
+            if (link.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
+                var childCalendar = ZmCalendar.createFromJs(calendar, link, tree, path);
+                calendar.children.add(childCalendar);
+            }
+        }
+    }
 };
 
 ZmCalendar.checkName =
