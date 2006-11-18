@@ -803,7 +803,8 @@ function(shortcut) {
 
 	var button = new DwtButton(this, DwtLabel.ALIGN_CENTER);
 	var bWidth = AjxEnv.isIE ? ZmShortcutsPageTabViewCustom.COL1_WIDTH - 5 : ZmShortcutsPageTabViewCustom.COL1_WIDTH;
-	button.setSize(bWidth, Dwt.DEFAULT);
+	var bHeight = AjxEnv.isIE ? 24 : Dwt.DEFAULT;
+	button.setSize(bWidth, bHeight);
 	var organizer = null, value = "";
 	if (shortcut) {
 		organizer = this._appCtxt.getTree(org).getById(shortcut.arg);
@@ -838,7 +839,7 @@ function(shortcut) {
 	html[i++] = ZmShortcutsPageTabViewCustom.COL2_WIDTH;
 	html[i++] = "><span id='";
 	html[i++] = removeId;
-	html[i++] = "' onuseover='this.style.cursor=\"pointer\"' onmouseout='this.style.cursor=\"default\"' style='color:blue;text-decoration:underline;'>";
+	html[i++] = "' class='removeLink'>";
 	html[i++] = ZmMsg.remove;
 	html[i++] = "</span></td>";
 

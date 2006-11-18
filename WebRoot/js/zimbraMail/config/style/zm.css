@@ -2315,6 +2315,12 @@ HTML>BODY .appt-selected .appt_allday_body
 	@BottomSeparator@
 }
 
+.removeLink {
+	cursor: pointer;
+	color: blue;
+	text-decoration: underline;
+}
+
 /*
  * Colors, for use in calendar and elsewhere.
  *

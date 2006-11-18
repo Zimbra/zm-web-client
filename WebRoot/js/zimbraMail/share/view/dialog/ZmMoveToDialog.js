@@ -52,6 +52,11 @@ function(data, loc, treeIds, clearOverview) {
 	var omit = {};
 	omit[ZmFolder.ID_DRAFTS] = true;
 	treeIds = treeIds ? treeIds : [ZmOrganizer.FOLDER];
+	
+	// New button doesn't make sense if we're only showing saved searches
+	var newButton = this.getButton(ZmMoveToDialog.NEW_BUTTON);
+	var searchOnly = (treeIds.length == 1 && treeIds[0] == ZmOrganizer.SEARCH);
+	newButton.setVisible(!searchOnly);
 
 	// contacts have their own tree view so find out what kind of data we're dealing with
 	var item = (data instanceof Array) ? data[0] : null;
