@@ -670,8 +670,7 @@ function() {
 	Dwt.setHandler(linkElement, DwtEvent.ONCLICK, linkCallback);
 
 	// Create the help button.
-	var helpButton = new DwtButton(this, DwtLabel.ALIGN_RIGHT, "DwtToolbarButton");
-	helpButton._activatedClassName = helpButton._triggeredClassName = helpButton._origClassName;
+	var helpButton = new DwtButton(this, DwtLabel.ALIGN_RIGHT | DwtButton.ALWAYS_FLAT, "DwtToolbarButton");
 	helpButton.setImage("Information");
 	helpButton.reparentHtmlElement(helpButtonId);
 	helpButton.addSelectionListener(new AjxListener(this, this._toggleInfoBoxHandler));

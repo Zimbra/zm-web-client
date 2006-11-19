@@ -230,7 +230,7 @@ function() {
     html[i++] = "<div class='infoBox' id='";
 	html[i++] = this._infoBoxId;
 	html[i++] = "'>";
-    html[i++] = "<table border='0' cellpadding='0' cellspacing='4'>";
+    html[i++] = "<table width='100%' border='0' cellpadding='0' cellspacing='4'>";
     html[i++] = "<tr valign='top'>";
     html[i++] = "<td class='infoBoxImg'><div class='ImgInformation_32'></div></td><td>";
     html[i++] = "<div class='InfoTitle'><div class='infoTitleClose' id='";
@@ -274,11 +274,8 @@ function() {
 	Dwt.setHandler(linkElement, DwtEvent.ONCLICK, linkCallback);
 
 	// Create the help button.
-	var helpButton = new DwtButton(this, DwtLabel.ALIGN_RIGHT, "DwtToolbarButton");
+	var helpButton = new DwtButton(this, DwtLabel.ALIGN_RIGHT | DwtButton.ALWAYS_FLAT, "DwtToolbarButton");
 	helpButton.setImage("Information");
-// This is supposed to help the raised look, but it causes badness when
-// hiding the help bubble.	
-//	helpButton._activatedClassName = helpButton._origClassName;
 	helpButton.reparentHtmlElement(helpButtonId);
 	helpButton.addSelectionListener(new AjxListener(this, this._toggleInfoBoxHandler));
 
