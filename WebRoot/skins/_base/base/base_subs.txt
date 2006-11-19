@@ -765,7 +765,7 @@ ContactsCardSize			= height:140px;
 # RANDOM CRAP
 
 #IFDEF MSIE
-DndOpacity					= filter:alpha(opacity=70); -moz-opacity:0.7; opacity:0.7;
+DndOpacity					= filter:alpha(opacity=70);
 #ENDIF
 #IFNDEF MSIE
 DndOpacity					= -moz-opacity:0.7; opacity:0.7;
@@ -776,7 +776,7 @@ DndAllowedContainer			= border: 2px solid @DropAllowedColor@; 	@DragBg@;
 DndNotAllowedContainer		= border: 2px solid @DropNotAllowedColor@; 	@DragBg@;	
 
 #IFDEF MSIE
-VeilOpacity					= filter:alpha(opacity=50); -moz-opacity:0.5; opacity:0.5;
+VeilOpacity					= filter:alpha(opacity=50); opacity:0.5;
 #ENDIF
 #IFNDEF MSIE
 VeilOpacity					= -moz-opacity:0.5; opacity:0.5;

@@ -57,6 +57,7 @@
 
 	String ext = (String) request.getAttribute("fileExtension");
 	if (ext == null) ext = "";
+    Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
 %>
 <title><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
 <script type="text/javascript" language="javascript">
@@ -68,10 +69,8 @@
 <script type="text/javascript" src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %>"></script>
 <style type="text/css">
 	<!--
-	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/css/dwt,common,zm,spellcheck,skin.css?v=<%= vers %>&skin=<%= skin %>);
-	-->
+    @import url(<%= contextPath %>/css/common,dwt,zm,spellcheck,imgs,<%= skin %>,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+    -->
 </style>
 
 <% if (inDevMode) { %>

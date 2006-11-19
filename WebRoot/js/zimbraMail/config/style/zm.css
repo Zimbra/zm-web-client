@@ -699,8 +699,10 @@ td.DDSepInvisible div {
 	#IFDEF MSIE
 	filter:alpha(opacity=50);
 	#ENDIF
-	-moz-opacity:0.5;
-	opacity:0.5;
+    #IFDEF GECKO
+    -moz-opacity:0.5;
+    #ENDIF
+    opacity:0.5;
 	cursor: default;
 }
 

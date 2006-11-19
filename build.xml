@@ -435,7 +435,7 @@
       <dirset dir='img/loRes' includes='**/logo,**/translate'/>
     </imagemerge>
     <echo/>
-
+    <copy file="${images.loRes.destDir}/${images.cssFile}" todir="${build.dir}/WebRoot/css" overwrite="true"/>
     <antcall target="skin-images"></antcall>
 
   </target>
@@ -460,6 +460,7 @@
       cachefile='${dir.skincache}/CacheLoRes.html'>
       <dirset dir='WebRoot/skins/${skindir}' includes='**/img/**'/>
     </imagemerge>
+    <copy file="${images.loRes.destDir}/skins/${skindir}/${skindir}.css" todir="${build.dir}/WebRoot/css" overwrite="true"/>      
     <echo/>
   </target>
 

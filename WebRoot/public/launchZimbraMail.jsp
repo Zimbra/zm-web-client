@@ -105,9 +105,7 @@
 <script type="text/javascript" src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %>"></script>
 <style type="text/css">
 <!--
-	@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-	@import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+	@import url(<%= contextPath %>/css/common,dwt,msgview,login,zm,spellcheck,wiki,imgs,<%= skin %>,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
 -->
 </style>
 

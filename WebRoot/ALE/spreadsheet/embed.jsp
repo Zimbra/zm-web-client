@@ -28,6 +28,19 @@ Contributor(s):
 		contextPath = "";
 	}
 
+	final String SKIN_COOKIE_NAME = "ZM_SKIN";
+	String skin = "sand";
+    Cookie[] cookies = request.getCookies();
+	String requestSkin = request.getParameter("skin");
+	if (requestSkin != null) {
+		skin = requestSkin;
+	} else if (cookies != null) {
+		for (Cookie cookie : cookies) {
+			if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
+				skin = cookie.getValue();
+			}
+		}
+	}
     String vers = (String)request.getAttribute("version");
     String ext = (String)request.getAttribute("fileExtension");
     String mode = (String) request.getAttribute("mode");
@@ -37,6 +50,8 @@ Contributor(s):
     if (ext == null){
        ext = "";
     }
+    Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
+    Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
@@ -44,14 +59,7 @@ Contributor(s):
     <title>Zimbra ALE - Prototype</title>
       <style type="text/css">
         <!--
-        @import url(<%=contextPath %>/img/loRes/imgs.css?v=<%=vers%>);
-        @import url(<%=contextPath %>/img/loRes/skins/steel/steel.css?v=<%=vers%>);
-        @import url(<%=contextPath %>/skins/steel/dwt.css?v=<%=vers%>);
-        @import url(<%=contextPath %>/skins/steel/common.css?v=<%=vers%>);
-        @import url(<%=contextPath %>/skins/steel/msgview.css?v=<%=vers%>);
-        @import url(<%=contextPath %>/skins/steel/zm.css?v=<%=vers%>);
-        @import url(<%=contextPath %>/skins/steel/spellcheck.css?v=<%=vers%>);
-        @import url(<%=contextPath %>/skins/steel/steel.css?v=<%=vers%>);
+        @import url(<%= contextPath %>/css/common,dwt,msgview,zm,spellcheck,imgs,<%= skin %>,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
         @import url( style.css );
         -->
       </style>

@@ -110,9 +110,7 @@
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
 		<!--
-		@import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-		@import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,skin.css?v=<%= vers %>&skin=<%= skin %>);
+		@import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>,skin.css?v=<%= vers %>&skin=<%= skin %>);
 		-->
 	</style>
 	<jsp:include page="/public/Ajax.jsp"/>
@@ -122,9 +120,7 @@
 <% } else { %>
 	<style type="text/css">
 	  <!--
-	  @import url(<%= contextPath %>/img/loRes/imgs.css?v=<%= vers %>);
-	  @import url(<%= contextPath %>/img/loRes/skins/<%= skin %>/<%= skin %>.css?v=<%= vers %>);
-	  @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,skin.css?v=<%= vers %>);
+	  @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>,skin.css?v=<%= vers %>);
 	  -->
 	</style>
 	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
