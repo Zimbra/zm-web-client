@@ -779,13 +779,13 @@ function() {
 	html[i++] = "'></td></tr>";
 	
 	html[i++] = "<tr><td>";
-	html[i++] = ZmMsg.whenReplying;
+	html[i++] = ZmMsg.replyInclude;
 	html[i++] = "</td><td id='";
 	html[i++] = replyOptionSelectId;
 	html[i++] = "'></td></tr>";
 	
 	html[i++] = "<tr><td>";
-	html[i++] = ZmMsg.whenForwarding;
+	html[i++] = ZmMsg.forwardInclude;
 	html[i++] = "</td><td id='";
 	html[i++] = forwardOptionSelectId;
 	html[i++] = "'></td></tr>";
@@ -826,6 +826,7 @@ function() {
 	var i = 0;
 	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE, ZmMsg.includeInBody);
 	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_PREFIX, ZmMsg.includePrefix);
+	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_ATTACH, ZmMsg.includeAsAttach);
 	var forwardOptionSelect = new DwtSelect(this, options);
 	forwardOptionSelect.reparentHtmlElement(forwardOptionSelectId);
 	this._selects[ZmIdentity.FORWARD_OPTION] = forwardOptionSelect;

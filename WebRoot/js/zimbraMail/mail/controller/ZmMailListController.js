@@ -148,9 +148,7 @@ function(actionCode) {
 			
 		case ZmKeyMap.FORWARD:
 			if (!isDrafts && num == 1) {
-				action = (this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INCLUDE_ATTACH) ?
-							ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
-				this._doAction(null, action);
+				this._doAction(null, ZmOperation.FORWARD);
 			}
 			break;
 			
@@ -474,12 +472,6 @@ function(ev) {
 ZmMailListController.prototype._forwardListener =
 function(ev) {
 	var action = ev.item.getData(ZmOperation.KEY_ID);
-	// always re-resolve forward action if forward toolbar button is clicked
-	if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD) {
-		action = this._appCtxt.get(ZmSetting.FORWARD_INCLUDE_ORIG) == ZmSetting.INCLUDE_ATTACH 
-			? ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
-	}
-
 	this._doAction(ev, action);
 };
 
@@ -497,6 +489,13 @@ function(ev, action, extraBodyText, instanceDate) {
 	//   msg hasnt been loaded yet and user prefers format of orig. msg
 	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
 	var identity = identityCollection.selectIdentity(msg);
+
+	// always re-resolve forward action if forward toolbar button is clicked
+	if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD) {
+		action = identity.getForwardOption() == ZmSetting.INCLUDE_ATTACH 
+			? ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
+	}
+
 	var htmlEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var prefersHtml = identity.getComposeAsFormat() == ZmSetting.COMPOSE_HTML;
 	var sameFormat = identity.getComposeSameFormat();
