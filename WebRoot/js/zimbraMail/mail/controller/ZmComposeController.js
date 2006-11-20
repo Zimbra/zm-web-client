@@ -403,9 +403,10 @@ function(actionCode) {
 		case ZmKeyMap.HTML_FORMAT:
 			if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 				var mode = this._composeView.getComposeMode();
+				var identity = this._composeView.getIdentity();
 				var newMode = (mode == DwtHtmlEditor.TEXT) ? DwtHtmlEditor.HTML : DwtHtmlEditor.TEXT;
 				this._setFormat(newMode);
-				this._setOptionsMenu(newMode);
+				this._setOptionsMenu(newMode, identity);
 			}
 			break;
 
@@ -485,7 +486,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	this._composeMode = composeMode ? composeMode : this._getComposeMode(msg, identity);
 	this._composeView.setComposeMode(this._composeMode);
 
-	this._setOptionsMenu(this._composeMode);
+	this._setOptionsMenu(this._composeMode, identity);
 
 	this._composeView.set(action, msg, toOverride, subjOverride, extraBodyText, identity);
 	this._setComposeTabGroup();
@@ -595,7 +596,7 @@ function(action) {
 };
 
 ZmComposeController.prototype._setOptionsMenu =
-function(composeMode) {
+function(composeMode, identity) {
 	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 	button.setToolTipContent(ZmMsg[ZmComposeController.OPTIONS_TT[this._action]]);
 	var menu = this._optionsMenu[this._action];
@@ -607,7 +608,7 @@ function(composeMode) {
 	var isReply = (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL);
 	var isForward = (this._action == ZmOperation.FORWARD_ATT || this._action == ZmOperation.FORWARD_INLINE);
 	if (isReply || isForward) {
-		var includePref = this._appCtxt.get(isReply ? ZmSetting.REPLY_INCLUDE_ORIG : ZmSetting.FORWARD_INCLUDE_ORIG);
+		var includePref = isReply ? identity.getReplyOption() : identity.getForwardOption();
 		this._curIncOption = ZmComposeController.INC_OP[includePref];
 		menu.checkItem(ZmOperation.KEY_ID, this._curIncOption, true);
 		if (isReply) {
