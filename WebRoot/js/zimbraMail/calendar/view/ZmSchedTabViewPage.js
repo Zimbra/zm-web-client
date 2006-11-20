@@ -410,7 +410,19 @@ function() {
 ZmSchedTabViewPage.prototype._autocompleteCallback =
 function(text, el, match) {
 	if (match && match.item) {
-		this._handleAttendeeField(el, match.item);
+		if (match.item.isGroup()) {
+			var members = match.item.getGroupMembers().good.getArray();
+			for (var i = 0; i < members.length; i++) {
+				el.value = members[i].address;
+				var index = this._handleAttendeeField(el);
+
+				if (index && ((i+1) < members.length)) {
+					el = this._schedTable[index].inputObj.getInputElement();
+				}
+			}
+		} else {
+			this._handleAttendeeField(el, match.item);
+		}
 	}
 };
 
@@ -705,7 +717,7 @@ function(inputEl, attendee, useException) {
 			this.parent.updateAttendees(attendee, type, ZmApptComposeView.MODE_ADD);
 			if (!curAttendee) {
 				// user added attendee in empty slot
-				this._addAttendeeRow(false, null, true, null, true, true); // add new empty slot
+				return this._addAttendeeRow(false, null, true, null, true, true); // add new empty slot
 			}
 		} else {
 			this._activeInputIdx = null;
