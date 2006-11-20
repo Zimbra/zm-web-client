@@ -149,7 +149,9 @@ function(msg) {
 	}
 	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) && msg.share && msg.folderId != ZmFolder.ID_TRASH) {
 		var action = msg.share.action;
-		if (action == ZmShare.NEW || (action == ZmShare.EDIT && !this.__hasMountpoint(msg.share))) {
+        var isNew = action == ZmShare.NEW;
+        var isEdit = action == ZmShare.EDIT;
+        if ((isNew || (isEdit && !this.__hasMountpoint(msg.share))) && msg.share.link.perm) {
 			var topToolbar = this._getShareToolbar();
 			var tEl = topToolbar.getHtmlElement();
 			if (tEl && tEl.parentNode) {
