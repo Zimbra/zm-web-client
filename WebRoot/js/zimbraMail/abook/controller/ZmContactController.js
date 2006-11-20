@@ -33,6 +33,8 @@ function ZmContactController(appCtxt, container, abApp) {
 
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
+
+	this._tabGroupDone = {};
 };
 
 ZmContactController.prototype = new ZmListController();
@@ -140,19 +142,21 @@ function(view) {
 	this._listView[view].set(this._contact, this._contactDirty);
 	if (this._contactDirty) delete this._contactDirty;
 	// can't add all the fields until the view has been created
-	if (!this._tabGroupDone) {
+	if (!this._tabGroupDone[view]) {
 		var list = this._listView[view]._getTabGroupMembers();
 		for (var i = 0; i < list.length; i++) {
 			this._tabGroups[view].addMember(list[i]);
 		}
-		this._tabGroupDone = true;
+		this._tabGroupDone[view] = true;
+	} else {
+		this._setTabGroup(this._tabGroups[view]);
 	}
 };
 
 ZmContactController.prototype._initializeTabGroup =
 function(view) {
 	if (this._tabGroups[view]) return;
-	
+
 	this._tabGroups[view] = this._createTabGroup();
 	var rootTg = this._appCtxt.getRootTabGroup();
 	this._tabGroups[view].newParent(rootTg);

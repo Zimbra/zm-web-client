@@ -525,7 +525,7 @@ function(ev) {
 	ev = DwtUiEvent.getEvent(ev);
 
 	var key = DwtKeyEvent.getCharCode(ev);
-	if (ev.metaKey || ev.altKey || ev.ctrlKey || DwtKeyMapMgr.isModifier(key))
+	if (ev.metaKey || ev.altKey || ev.ctrlKey || DwtKeyMapMgr.isModifier(key) || key == DwtKeyMapMgr.TAB_KEYCODE)
 		return;
 
 	var e = DwtUiEvent.getTarget(ev);
