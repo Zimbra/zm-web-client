@@ -561,7 +561,6 @@ function() {
 	var params = { parent:this, size: inputSizeInChars, validationStyle: DwtInputField.CONTINUAL_VALIDATION };
 	params.hint = ZmMsg.nameHint;
 	var sendFromName = new DwtInputField(params);
-	sendFromName.setRequired(true);
 	this._errorMessages[ZmIdentity.SEND_FROM_DISPLAY] = ZmMsg.sendFromError;
 	sendFromName.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
 	sendFromName.reparentHtmlElement(sendFromNameId);

@@ -1030,14 +1030,12 @@ function(soapDoc, parent, type, contactList, isDraft) {
 ZmMailMsg.prototype._addFrom =
 function(soapDoc, parent) {
 	if (this.identity) {
+		var e = soapDoc.set("e", null, parent);
+		e.setAttribute("t", "f");
 		var address = this.identity.sendFromAddress;
+		e.setAttribute("a", address);
 		var name = this.identity.sendFromDisplay;
-		//TODO: The following null check shouldn't be necessary, but for now I need
-		// to make it because proper default identites are not being created.
-		if (address && name) {
-			var e = soapDoc.set("e", null, parent);
-			e.setAttribute("t", "f");
-			e.setAttribute("a", address);
+		if (name) {
 			e.setAttribute("p", name);
 		}
 	}
