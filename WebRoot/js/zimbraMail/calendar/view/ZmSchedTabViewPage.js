@@ -217,7 +217,7 @@ ZmSchedTabViewPage.prototype.toggleAllDayField =
 function() {
 	var el = this._allDayCheckbox;
 	el.checked = !el.checked;
-	this._showTimeFields(el.checked ? false : true);
+	this._showTimeFields(!el.checked);
 	this._apptTab.updateAllDayField(el.checked);
 	this._outlineAppt();
 };
@@ -523,7 +523,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		"'></div></td>"
 	].join("");
 
-	for (var k = 0; k < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; k++) {
+	for (k = 0; k < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; k++) {
 		html[i++] = cellContents;
 	}
 	html[i++] = "</tr></table>";
@@ -832,7 +832,8 @@ function(organizer, attendees) {
 		var type = this._attTypes[t];
 		var att = attendees[type].getArray();
 		for (var i = 0; i < att.length; i++) {
-			if (att[i] && att[i].getEmail()) {
+			var email = att[i] ? att[i].getEmail() : null;
+			if (email && !this._emailToIdx[email]) {
 				var index = this._addAttendeeRow(false, null, false); // create a slot for this attendee
 				emails.push(this._setAttendee(index, att[i], type, false));
 			}
@@ -866,11 +867,6 @@ function(index, attendee, type, isOrganizer) {
 	}
 	var email = attendee.getEmail();
 	this._emailToIdx[email] = index;
-
-//	if (input && isOrganizer) {
-//		input.setEnabled(false);
-//		input.className = "ZmSchedulerInputDisabled"
-//	}
 
 	return email;
 };
@@ -1340,7 +1336,7 @@ function(ev) {
 	if (!svp) return;
 	// figure out which object was clicked
 	if (el.id == svp._allDayCheckboxId) {
-		svp._showTimeFields(el.checked ? false : true);
+		svp._showTimeFields(!el.checked);
 		svp._apptTab.updateAllDayField(el.checked);
 		svp._outlineAppt();
 	} else if (el.id == svp._startDateFieldId || el.id == svp._endDateFieldId) {
