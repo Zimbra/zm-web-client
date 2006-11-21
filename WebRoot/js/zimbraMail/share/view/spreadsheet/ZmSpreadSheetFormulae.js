@@ -448,6 +448,10 @@ ZmSpreadSheetFormulae.prototype.depends = function(ident) {
 		: this._deps;
 };
 
+ZmSpreadSheetFormulae.prototype.dependsArray = function() {
+	return this._depsArray;
+};
+
 ZmSpreadSheetFormulae.prototype.callFunction = function(func, args) {
 	var f = ZmSpreadSheetFormulae.getFunc(func);
 	if (!f)
@@ -479,7 +483,11 @@ ZmSpreadSheetFormulae.prototype._analyzeRange = function(tok) {
 		for (var j = startCol; j <= endCol; ++j) {
 			var c = this._model.data[i][j];
 			cells.push(c);
-			this._deps[ZmSpreadSheetModel.getCellName(i + 1, j + 1)] = c;
+			var name = ZmSpreadSheetModel.getCellName(i + 1, j + 1);
+			if (!this._deps[name]) {
+				this._deps[name] = c;
+				this._depsArray.push(c);
+			}
 		}
 	}
 };
@@ -645,6 +653,7 @@ ZmSpreadSheetFormulae.prototype.compile = function(formula) {
 
 	// initialize the dependencies table
 	this._deps = {};
+	this._depsArray = [];
 	this._cellTokens = [];
 	this._running = false;
 
@@ -681,7 +690,11 @@ ZmSpreadSheetFormulae.prototype.compile = function(formula) {
 			t.val = t.val.toUpperCase();
 			var pos = ZmSpreadSheetModel.identifyCell(t.val);
 			this._model.checkBounds(pos.row, pos.col);
-			t.cell = this._deps[t.val] = this._model.data[pos.row][pos.col];
+			t.cell = this._deps[t.val];
+			if (!t.cell) {
+				t.cell = this._deps[t.val] = this._model.data[pos.row][pos.col];
+				this._depsArray.push(t.cell);
+			}
 			this._cellTokens.push(t);
 		}
 		if (t.type === TYPE.CELLRANGE) {

@@ -104,14 +104,14 @@ ZmSpreadSheet.prototype.setModel = function(model) {
 	model.reset();
 	this._model = model;
 
+	this._init();
+
 //	model.setViewListener("onCellEdit", new AjxCallback(this, this._model_cellEdited));
 	model.setViewListener("onCellValue", new AjxCallback(this, this._model_cellComputed));
 	model.setViewListener("onInsertRow", new AjxCallback(this, this._model_insertRow));
 	model.setViewListener("onInsertCol", new AjxCallback(this, this._model_insertCol));
 	model.setViewListener("onDeleteRow", new AjxCallback(this, this._model_deleteRow));
 	model.setViewListener("onDeleteCol", new AjxCallback(this, this._model_deleteCol));
-
-	this._init();
 };
 
 ZmSpreadSheet.prototype._model_cellEdited = function(row, col, cell) {
@@ -259,19 +259,19 @@ ZmSpreadSheet.prototype._init = function() {
 	this._inputFieldID = null;
 	this._spanFieldID = null;
 
-	for (var i = COLS; --i >= 0;)
-		row.push("<td class='cell'></td>");
-	row.push("</tr>");
+	for (var i = COLS; i > 0;)
+		row[i--] = "<td class='cell'></td>";
+	row[COLS+1] = "</tr>";
 
 	row = row.join("");
 
 	// one more row for the header
 	for (var i = ROWS; i-- >= 0;)
-		html.push(row);
-	html.push("</table>");
+		html[html.length] = row;
+	html[html.length] = "</table>";
 
 	if (!was_initialized) {
-		html.push("</div>");
+		html[html.length] = "</div>";
 		var div = this.getHtmlElement();
 		div.innerHTML = html.join("");
 	} else {
@@ -287,15 +287,6 @@ ZmSpreadSheet.prototype._init = function() {
 	row = table.rows[0];
 	for (var i = 1; i < row.cells.length; ++i)
 		row.cells[i].innerHTML = "<div>" + ZmSpreadSheetModel.getColName(i) + "</div>";
-
-	for (var i = 0; i < ROWS; ++i) {
-		var row = table.rows[i + 1];
-		for (var j = 0; j < COLS; ++j) {
-			var mc = this._model.data[i][j];
-			var td = mc._td = row.cells[j + 1];
-			mc.setToElement(td);
-		}
-	}
 
 	table.onmouseup = AjxCallback.simpleClosure(this._table_onMouseUp, this);
 	table.onmousedown = AjxCallback.simpleClosure(this._table_onClick, this);
@@ -326,12 +317,34 @@ ZmSpreadSheet.prototype._init = function() {
 	header.onmousemove = AjxCallback.simpleClosure(this._header_onMouseMove, this);
 	header.onmousedown = AjxCallback.simpleClosure(this._header_onMouseDown, this);
 
-	this._header_resetColWidths();
  	this._getRelDiv().onscroll = AjxCallback.simpleClosure(this._header_resetScrollTop, this);
 
 	this.getHtmlElement().style.display = "none"; // things may be recomputed 1-2 times, let's disable refresh for better performance
+
+	if (!this._model.version) {
+		if (ZmSpreadSheetModel.DEBUG)
+			console.log("Loading old spreadsheet file -- slower");
+		for (var i = 0; i < ROWS; ++i) {
+			var row = table.rows[i + 1];
+			for (var j = 0; j < COLS; ++j)
+				this._model.data[i][j]._td = row.cells[j + 1];
+		}
+	}
+
 	this._model.doneSetView();
+
+	for (var i = 0; i < ROWS; ++i) {
+		var row = table.rows[i + 1];
+		for (var j = 0; j < COLS; ++j) {
+			var mc = this._model.data[i][j];
+			var td = mc._td = row.cells[j + 1];
+			mc._savedRow = mc._savedCol = null;
+			mc.setToElement(td);
+		}
+	}
+
 	this.getHtmlElement().style.display = "";
+	this._header_resetColWidths();
 };
 
 // called when a cell from the top header was clicked or mousedown

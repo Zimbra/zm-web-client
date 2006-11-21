@@ -38,6 +38,7 @@
 function ZmSpreadSheetModel(rows, cols) {
 	this.ROWS = rows;
 	this.COLS = cols;
+	this.version = 1;
 
 	var d = this.data = new Array(rows);
 	for (var i = 0; i < rows; ++i) {
@@ -55,7 +56,47 @@ function ZmSpreadSheetModel(rows, cols) {
 	this.reset();
 };
 
+// Note that debug and profile code might require Firebug (FF extension)
 ZmSpreadSheetModel.DEBUG = false;
+ZmSpreadSheetModel.PROFILE = false;
+
+if (ZmSpreadSheetModel.PROFILE && console.log) {
+	ZmSpreadSheetModel.PROFILE = function(funcName) {
+		var f = eval(funcName);
+		var calls = 0;
+		var minTime = null;
+		var maxTime = null;
+		var avgTime = 0;
+		var totTime = 0;
+		var timer = null;
+		var prof = function() {
+			var TIME = new Date().getTime();
+			var ret = f.apply(this, arguments);
+			var diff = (new Date().getTime() - TIME) / 1000;
+			totTime += diff;
+			if (minTime == null || minTime > diff)
+				minTime = diff;
+			if (maxTime == null || maxTime < diff)
+				maxTime = diff;
+			avgTime = (avgTime * calls + diff) / ++calls;
+			if (timer)
+				clearTimeout(timer);
+			timer = setTimeout(function() {
+				console.log("%s: %f | %f | %f (%d, %f)", funcName, minTime, avgTime, maxTime, calls, totTime);
+				calls = 0;
+				minTime = null;
+				maxTime = null;
+				avgTime = 0;
+				totTime = 0;
+				timer = null;
+			}, 100);
+			return ret;
+		};
+		eval(funcName + " = prof");
+	};
+} else {
+	ZmSpreadSheetModel.PROFILE = AjxCallback.returnFalse;
+}
 
 ZmSpreadSheetModel.getDefaultColProp = function() {
 	var prop = {
@@ -279,32 +320,36 @@ ZmSpreadSheetModel.prototype.getCellByID = function(ident) {
 ZmSpreadSheetModel.prototype._orderExpressionCells = function(cells) {
 	var ordered = [];
 	var count = {};
-	function pushCells(a) {
-		// BEWARE that a may be an array or an object
-		for (var i in a) {
-			var cell = a[i];
-			if (!(cell instanceof ZmSpreadSheetCellModel))
-				continue;
-			// since we're playing with dependencies, not all cells
-			// have an expression
-			if (cell._expr) {
-				pushCells(cell._expr.depends());
-				// don't add a cell a second time
-				var name = cell.getName();
-				if (!count[name]) {
-					count[name] = true;
-					ordered.unshift(cell);
-				}
-			}
+	var a = cells || this._expressionCells;
+
+	while (a.length > 0) {
+		var cell = a.shift();
+		var name = cell.getName();
+		if (cell._expr && !count[name]) {
+			// a.splice.apply(a, [ 0, 0 ].concat(cell._expr.dependsArray()));
+			a.unshift.apply(a, cell._expr.dependsArray());
+			count[name] = true;
+			ordered.push(cell);
 		}
-	};
-	if (cells) {
-		pushCells(cells);
-		return ordered;
-	} else {
-		pushCells(this._expressionCells);
-		this._expressionCells = ordered;
 	}
+
+// 	for (var i = 0; i < a.length; ++i) {
+// 		var cell = a[i];
+// 		// since we're playing with dependencies, not all cells
+// 		// have an expression
+// 		if (cell._expr) {
+// 			a.splice(i + 1, 0, cell._expr.dependsArray());
+// 			// don't add a cell a second time
+// 			var name = cell.getName();
+// 			if (!count[name]) {
+// 				count[name] = true;
+// 				ordered.unshift(cell);
+// 			}
+// 		}
+// 	}
+	if (!cells)
+		this._expressionCells = ordered;
+	return ordered;
 };
 
 ZmSpreadSheetModel.prototype.recompute = function(reset) {
@@ -465,6 +510,7 @@ ZmSpreadSheetModel.prototype.serialize = function() {
 	var tmp = {
 		ROWS     : this.ROWS,
 		COLS     : this.COLS,
+		version  : 1,
 		colProps : this.colProps,
 		data     : this.data
 	};
@@ -476,6 +522,7 @@ ZmSpreadSheetModel.prototype.deserialize = function(str) {
 	this.ROWS = tmp.ROWS;
 	this.COLS = tmp.COLS;
 	this.colProps = tmp.colProps;
+	this.version = tmp.version || 0;
 	var data = this.data = tmp.data;
 	for (var i = 0; i < this.ROWS; ++i) {
 		var row = data[i];
@@ -501,6 +548,12 @@ ZmSpreadSheetModel.prototype.doneSetView = function() {
 	// step 2.  Recompute the formulas in the appropriate order
 	this._orderExpressionCells();
 	var a = this._expressionCells;
+	if (ZmSpreadSheetModel.DEBUG) {
+		var debug = [];
+		for (var i = 0; i < a.length; ++i)
+			debug[i] = a[i].getName();
+		console.log("Computing: %s", debug.join(", "));
+	}
 	for (var i = 0; i < a.length; ++i)
 		a[i].recompute();
 };
@@ -610,7 +663,9 @@ ZmSpreadSheetCellModel.prototype.serialize = function() {
 		decimals  : this._decimals,
 		type      : this._type,
 		editValue : this._editValue,
-		style     : this._style
+		style     : this._style,
+		row       : this.getRow(),
+		col       : this.getCol()
 	};
 	return ZmSpreadSheetModel.serializeJSObject(tmp);
 };
@@ -618,6 +673,8 @@ ZmSpreadSheetCellModel.prototype.serialize = function() {
 ZmSpreadSheetCellModel.deserialize = function(model, obj) {
 	var cell = new ZmSpreadSheetCellModel(model, obj.type, obj.editValue, obj.style);
 	cell._decimals = obj.decimals;
+ 	cell._savedRow = obj.row;
+ 	cell._savedCol = obj.col;
 	return cell;
 };
 
@@ -687,15 +744,18 @@ ZmSpreadSheetCellModel.prototype.getHtml = function() {
 };
 
 ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
-	if (!el.firstChild)
+	var div = el.firstChild;
+	if (!div) {
 		el.innerHTML = "<div class='Wrapper'></div>";
+		div = el.firstChild;
+	}
 	var val = this.getDisplayValue();
 	if (!/\S/.test(val))
 		val = "\xA0";
 	else
-		val = (val+"").replace(/\s/g, "\xA0");
-	el.firstChild.innerHTML = "";
-	el.firstChild.appendChild(document.createTextNode(val));
+		val = val.toString().replace(/\s/g, "\xA0");
+	div.innerHTML = "";
+	div.appendChild(document.createTextNode(val));
 	if (AjxEnv.isGeckoBased) {
 		// A stupid Gecko bug don't trigger onmouseover events on the
 		// table cells when we capture events for range selection,
@@ -703,7 +763,7 @@ ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
 		// hours to debug. x-(
 		//
 		// OTOH, if we don't set this in IE then layout will be broken
-		el.firstChild.style.overflow = "visible";
+		div.style.overflow = "visible";
 	}
 	this.setStyleToElement(el);
 	if (this._expr)
@@ -715,7 +775,7 @@ ZmSpreadSheetCellModel.prototype.setToElement = function(el) {
 		el.className = el.className.replace(/(^|\s)SpreadSheet-Type-.*?(\s|$)/g, " ");
 		Dwt.addClass(el, "SpreadSheet-Type-" + type);
 	}
-	el.firstChild.style.width = this._model.getColWidth(this.getCol() - 1) - 2 + "px";
+	div.style.width = this._model.getColWidth(this.getCol() - 1) - 2 + "px";
 };
 
 ZmSpreadSheetCellModel.prototype.setStyleToElement = function(el, special) {
@@ -995,11 +1055,17 @@ ZmSpreadSheetCellModel.prototype.getEditValue = function() {
 };
 
 ZmSpreadSheetCellModel.prototype.getRow = function() {
-	return this._getTD().parentNode.rowIndex;
+	if (this._td)
+		return this._td.parentNode.rowIndex;
+	else
+		return this._savedRow;
 };
 
 ZmSpreadSheetCellModel.prototype.getCol = function() {
-	return this._getTD().cellIndex;
+	if (this._td)
+		return this._td.cellIndex;
+	else
+		return this._savedCol;
 };
 
 ZmSpreadSheetCellModel.prototype._getTD = function() {
@@ -1007,7 +1073,7 @@ ZmSpreadSheetCellModel.prototype._getTD = function() {
 };
 
 ZmSpreadSheetCellModel.prototype.getName = function() {
-	if (this._td)
+	if (this._td || (this._savedRow && this._savedCol))
 		return ZmSpreadSheetModel.getCellName(this.getRow(), this.getCol());
 	else
 		return "##";
@@ -1064,3 +1130,12 @@ ZmSpreadSheetCellModel.prototype.getTooltipText = function() {
 	html.push("</div>");
 	return html.join("");
 };
+
+
+
+
+ZmSpreadSheetModel.PROFILE("ZmSpreadSheetModel.prototype.deserialize");
+ZmSpreadSheetModel.PROFILE("ZmSpreadSheetModel.prototype.doneSetView");
+ZmSpreadSheetModel.PROFILE("ZmSpreadSheetCellModel.prototype.setToElement");
+ZmSpreadSheetModel.PROFILE("ZmSpreadSheetModel.prototype._orderExpressionCells");
+ZmSpreadSheetModel.PROFILE("ZmSpreadSheetCellModel.prototype.setValue");
