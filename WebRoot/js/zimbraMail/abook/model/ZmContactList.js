@@ -166,11 +166,14 @@ function(list) {
 		// note that we don't create a ZmContact here (optimization)
 		contact.list = this;
 		this._updateEmailHash(contact, true);
-		contact._attrs[ZmContact.X_fullName] = AjxStringUtil.trim(([contact._attrs[ZmContact.F_firstName],
-		                                       contact._attrs[ZmContact.F_middleName],
-		                                       contact._attrs[ZmContact.F_lastName]]).join(" "));
-		contact._attrs[ZmContact.X_firstLast] = AjxStringUtil.trim(([contact._attrs[ZmContact.F_firstName],
-		                                        contact._attrs[ZmContact.F_lastName]]).join(" "));
+		var fn = [], fl = [];
+		if (contact._attrs[ZmContact.F_firstName])	{ fn.push(contact._attrs[ZmContact.F_firstName]); }
+		if (contact._attrs[ZmContact.F_middleName])	{ fn.push(contact._attrs[ZmContact.F_middleName]); }
+		if (contact._attrs[ZmContact.F_lastName])	{ fn.push(contact._attrs[ZmContact.F_lastName]); }
+		contact._attrs[ZmContact.X_fullName] = fn.join(" ");
+		if (contact._attrs[ZmContact.F_firstName])	{ fl.push(contact._attrs[ZmContact.F_firstName]); }
+		if (contact._attrs[ZmContact.F_lastName])	{ fl.push(contact._attrs[ZmContact.F_lastName]); }
+		contact._attrs[ZmContact.X_firstLast] = fl.join(" ");
 		if (!ZmContact.isInTrash(contact)) {
 			this._preMatch(contact);
 		}
