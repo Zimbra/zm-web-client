@@ -70,6 +70,8 @@ function ZmShortcutsPage(parent, appCtxt, view, controller) {
 	var parent = document.getElementById(this._scTabViewId);
 	parent.appendChild(element);
 
+//	controller.getPrefsView().addControlListener(new AjxListener(this, this._controlListener));
+
 	this._rendered = false;
 	this._hasRendered = false;
 };
@@ -152,7 +154,6 @@ function() {
 	this._headerId = Dwt.getNextId();
 	this._scTabViewId = Dwt.getNextId();
 	
-	html[i++] = "<div class='ChromeBg'>";
 	html[i++] = "<div class='BigHead' id='";
 	html[i++] = this._headerId;
 	html[i++] = "'>";
@@ -161,7 +162,6 @@ function() {
 	html[i++] = "<div id='";
 	html[i++] = this._scTabViewId;
 	html[i++] = "'></div>";
-	html[i++] = "</div>";
 
 	this.getHtmlElement().innerHTML = html.join("");
 };
@@ -170,6 +170,13 @@ ZmShortcutsPage.prototype._getHeaderHeight =
 function() {
 	var header = document.getElementById(this._headerId);
 	return header ? Dwt.getSize(header).y : 0;
+};
+
+ZmShortcutsPage.prototype._controlListener = 
+function(ev) {
+	if (ev.oldHeight != ev.newHeight) {
+		this._scTabView._resetSize(ev.oldHeight - ev.newHeight);
+	}
 };
 
 /**
@@ -229,16 +236,7 @@ function() {
 		this._scTabView[view] = viewObj;
 		this.addTab(ZmShortcutsPageTabView.TAB_NAME[view], this._scTabView[view]);
 	}
-
-	// HACK: set height. Should be done via styles, but I kept winding up with either
-	// zero height or a scroll bar. Need to fudge for IE.
-	var pv = this._controller.getPrefsView();
-	var prefsHeight = pv.getSize().y;
-	var prefsTabBarHeight = pv._tabBar.getSize().y;
-	var headerHeight = this._parent._getHeaderHeight();
-	var height = prefsHeight - (prefsTabBarHeight + headerHeight);
-	this.setSize(Dwt.DEFAULT, AjxEnv.isIE ? height - 10 : height);
-	
+	this._resetSize();
 	this._hasRendered = true;
 };
 
@@ -251,6 +249,22 @@ function() {
 		shortcuts = shortcuts.concat(tv.getShortcuts());
 	}
 	return shortcuts;
+};
+
+// HACK: set height. Should be done via styles, but I kept winding up with either
+// zero height or a scroll bar. Need to fudge for IE.
+ZmShortcutsPageTabView.prototype._resetSize =
+function(delta) {
+	delta = delta || 0;
+	var pv = this._controller.getPrefsView();
+	var prefsHeight = pv.getSize().y;
+	var prefsTabBarHeight = pv._tabBar.getSize().y;
+	var headerHeight = this._parent._getHeaderHeight();
+	if (!headerHeight) { return; }
+	var height = prefsHeight - (prefsTabBarHeight + headerHeight) - delta;
+	DBG.println(AjxDebug.DBG2, "shortcuts page resize: " + [delta, prefsHeight, prefsTabBarHeight, headerHeight, height].join(" / "));
+	this.setSize(Dwt.DEFAULT, AjxEnv.isIE ? height - 10 : height);
+//	this.setBounds(Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT, AjxEnv.isIE ? height - 10 : height);
 };
 
 /**
