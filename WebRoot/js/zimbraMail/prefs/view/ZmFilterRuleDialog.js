@@ -438,7 +438,6 @@ function(conf, field, options, dataValue, rowId, data) {
 
 	} else if (type == ZmFilterRule.TYPE_FOLDER_PICKER || type == ZmFilterRule.TYPE_TAG_PICKER) {
 		var button = new DwtButton(this);
-		button.setSize(ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH, Dwt.DEFAULT);
 		var organizer = null;
 		if (dataValue) {
 			if (type == ZmFilterRule.TYPE_FOLDER_PICKER)
@@ -452,7 +451,6 @@ function(conf, field, options, dataValue, rowId, data) {
 		button.setData(ZmFilterRuleDialog.DATA, dataValue);
 		this._inputs[rowId][field] = {id: id, dwtObj: button};
 		button.addSelectionListener(this._browseLstnr);
-		button.setScrollStyle(Dwt.CLIP);
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
 	}
 };
