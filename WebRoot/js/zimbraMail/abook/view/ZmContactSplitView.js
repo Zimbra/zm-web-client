@@ -646,9 +646,13 @@ function() {
 ZmContactSimpleView.prototype._createItemHtml =
 function(contact, now, isDndIcon) {
 
-	// in canonical view, don't show contacts in the Trash
-	if (contact.list.isCanonical && (contact.folderId == ZmFolder.ID_TRASH))
+	// in canonical view, don't show contacts in the Trash unless explicitly set in prefs
+	if (contact.list.isCanonical &&
+		(contact.folderId == ZmFolder.ID_TRASH &&
+		 !this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH)))
+	{
 		return null;
+	}
 
 	var div = this._getDiv(contact, isDndIcon);
 	
