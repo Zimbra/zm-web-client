@@ -184,9 +184,9 @@ function(batchCommand) {
 		}
 	}
 
-	this._addCommands(this._adds, "CreateIdentityRequest", batchCommand);
-	this._addCommands(this._updates, "ModifyIdentityRequest", batchCommand);
 	this._addCommands(this._deletes, "DeleteIdentityRequest", batchCommand);
+	this._addCommands(this._updates, "ModifyIdentityRequest", batchCommand);
+	this._addCommands(this._adds, "CreateIdentityRequest", batchCommand);
 };
 
 ZmIdentityView.prototype._addCommands =
@@ -224,7 +224,11 @@ ZmIdentityView.prototype._handleResponseError =
 function(identity, request, result) {
 	var message;
 	if (result.code == ZmCsfeException.IDENTITY_EXISTS) {
-	    var message = AjxMessageFormat.format(ZmMsg.errorIdentityAlreadyExists, identity.name);
+	    message = AjxMessageFormat.format(ZmMsg.errorIdentityAlreadyExists, identity.name);
+	} else {
+		message = ZmCsfeException.getErrorMsg(result.code);
+	}
+	if (message) {
 	    var dialog = this._appCtxt.getMsgDialog();
 		dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
 		dialog.popup();
