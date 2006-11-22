@@ -84,6 +84,9 @@ function(mode, object, share, loc) {
 	this._publicRadioEl.checked = isPublicShare;
 	this._publicRadioEl.disabled = !isNewShare;
 
+	var type = this._getType(isUserShare, isGuestShare, isPublicShare);
+	this._handleShareWith(type);
+
 	this._granteeInput.setValue(share ? (share.grantee.name || share.grantee.id) : "", true);
 	this._granteeInput.setEnabled(isNewShare);
 
@@ -102,8 +105,6 @@ function(mode, object, share, loc) {
 		this._inheritEl.checked = share ? share.link.inh : isNewShare;
 	}
 
-	var type = this._getType(isUserShare, isGuestShare, isPublicShare);
-	this._handleShareWith(type);
 
 	var perm = share ? share.link.perm : null;
 	if (perm == null || perm == this._viewerRadioEl.value) {
