@@ -401,7 +401,8 @@ function(uname, oldPass) {
     el.setAttribute("by", "name");
     soapDoc.set("oldPassword", oldPass);
     soapDoc.set("password", newPass);
-    var resp = null;
+	soapDoc.set("virtualHost", location.hostname);
+	var resp = null;
     try {
 		var command = new ZmCsfeCommand();
 		resp = command.invoke({soapDoc: soapDoc, noAuthToken: true, noSession: true}).Body.ChangePasswordResponse;
