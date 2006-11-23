@@ -1,0 +1,96 @@
+<template id="ListOptionPage" xml:space="strip">
+<table id='${id}_outer'>
+<tr>
+	<td colspan=2>${data.title}</td>
+</tr>
+<tr>
+	<td rowspan=2 id="list"></td>
+	<td id="${bubble.id}"><$= AjxTemplate.expand("ajx.widgets#bubble", data.bubble) $></td>
+</tr>
+<tr id="${form.id}_outer_tr">
+	<td id="${form.id}_outer_td">
+		<table cellspacing=0 cellpadding=0 height="100%">
+			<tr><td><div class='ImgInformation' style='float:right;'></div>
+					<span class="">${form.title}</span>
+				</td>
+			</tr>
+			<tr><td style='height:100%'><$= AjxTemplate.expand(data.form.template, data.form.data) $></td></tr>				
+		</table>
+	</td>
+</tr>
+</table>
+</template>
+
+
+<template id="PopForm" xml:space="strip">
+<form id="${id}" onsubmit='return false'>
+	<table class="" cellspacing=0 cellpadding=0>	
+	<tr><td><label for="${id}_name">Account name:</label></td>
+		<td><input id="${id}_name" type=text></td>
+	</tr>
+
+	<tr><td><div class=smallSpacer></div></td></tr>
+
+	<tr><td><label for="${id}_server">Mail server:</label></td>
+		<td><input id="${id}_server" type=text></td>
+	</tr>
+
+	<tr><td><label for="${id}_username">Username:</label></td>
+		<td><input id="${id}_username" type=text></td>
+	</tr>
+
+	<tr><td><label for="${id}_password">Password:</label></td>
+		<td><input id="${id}_password_text" type='password'>
+			<input id="${id}_password_pass" type='text'><label for='${id}_show_password'><input for='${id}_show_password' type='checkbox'>Show password</label></td>
+	</tr>
+
+	<tr><td><label for="${id}_port">Port:</label></td>
+		<td><input id="${id}_port" type=text>
+			<span class='helpText'>(default is <span id="${id}_port_label">110</span>)</span>
+		</td>
+	</tr>
+	<tr><td><input id="${id}_ssl" type=checkbox></td>
+		<td><label for="${id}_ssl">Use SSL to connect securely</label></td>
+	</tr>
+
+	<tr><td></td>
+		<td id='${id}_testButton'><button>Test Account Settings</button></td>
+	</tr>
+
+	<tr><td><div class=smallSpacer></div></td></tr>
+
+	<tr><td><label for="${id}_location">Place messages in folder:</label></td>
+		<td><button id="${id}_location" type=text>Inbox</button></td>
+	</tr>
+
+
+	<tr><td><input id="${id}_create_identity" type=checkbox></td>
+		<td><label for="${id}_create_identity">Create a new identity for this account</label></td>
+	</tr>
+	
+	<tr id="${id}_identity_sub_form"><td></td>
+		<td>
+			<table cellspacing=0 cellpadding=0>			
+				<tr><td><label for="${id}_identity_name">Identity name:</label></td>
+					<td id="${id}_identity_name">New Account 1</td>
+				</tr>
+
+				<tr><td><label for="${id}_email">Email address:</label></td>
+					<td><input id="${id}_email" type=text></td>
+				</tr>
+
+				<tr><td><label>Link to new identity:</label></td>
+					<td><input id="${id}_identity_use_address" type=checkbox><label for="${id}_identity_use_address">When replying to messages sent to this email address</label></td>
+				</tr>
+
+				<tr><td></td>
+					<td><input id="${id}_identity_use_folder" type=checkbox><label for="${id}_identity_use_folder">When reading or replying to messages in this folder</label></td>
+				</tr>
+
+			</table>
+		</td>
+	</tr>
+	</table>
+</form>
+</template>
+
