@@ -597,14 +597,14 @@ function() {
 		} else if (!AjxUtil.isNumeric(num)) {
 			errorStr = AjxMessageFormat.format(ZmMsg.nonnumericShortcut, [ZmOrganizer.TEXT[this._organizer], data]);
 		}
-		if (numToData[num]) {
+		if (!errorStr && numToData[num]) {
 			if (numToData[num] != data) {
 				errorStr = AjxMessageFormat.format(ZmMsg.duplicateShortcutNumber, [num]);
 			} else {
 				continue;
 			}
 		}
-		if (dataToNum[data] && (dataToNum[data] != num)) {
+		if (!errorStr && dataToNum[data] && (dataToNum[data] != num)) {
 			errorStr = AjxMessageFormat.format(ZmMsg.duplicateShortcutOrg, [data]);
 		}
 		if (errorStr) {

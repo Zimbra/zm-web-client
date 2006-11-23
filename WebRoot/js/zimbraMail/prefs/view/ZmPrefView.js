@@ -269,7 +269,15 @@ function(dirtyCheck, noValidation, batchCommand) {
 			if (type == ZmPref.TYPE_PASSWORD) continue; // ignore non-form elements
 
 			// check if value has changed
-			var value = viewPage.getFormValue(id);
+			try {
+				var value = viewPage.getFormValue(id);
+			} catch (e) {
+				if (dirtyCheck) {
+					return true;
+				} else {
+					throw e;
+				}
+			}
 			var pref = settings.getSetting(id);
 			var unchanged = (value == pref.origValue);
 			// null and "" are the same string for our purposes

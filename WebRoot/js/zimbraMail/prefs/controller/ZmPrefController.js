@@ -330,11 +330,11 @@ ZmPrefController.prototype._popShieldYesCallback =
 function() {
 	var respCallback = new AjxCallback(this, this._handleResponsePopShieldYesCallback);
 	this._saveListener(null, respCallback, true);
+	this._popShield.popdown();
 };
 
 ZmPrefController.prototype._handleResponsePopShieldYesCallback =
 function() {
-	this._popShield.popdown();
 	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
 };
