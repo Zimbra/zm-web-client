@@ -42,6 +42,7 @@
  if (inDevMode) {
 	%>
 	<jsp:include page="Messages.jsp"/>
+    <jsp:include page="Boot.jsp"/>
 	<jsp:include page="Ajax.jsp"/>
  <% } else { %>
 	<script type="text/javascript" src="<%=contextPath%>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext%>?v=<%=vers%>"></script>

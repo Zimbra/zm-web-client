@@ -113,6 +113,7 @@
 		@import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>,skin.css?v=<%= vers %>&skin=<%= skin %>);
 		-->
 	</style>
+    <jsp:include page="Boot.jsp"/>
 	<jsp:include page="/public/Ajax.jsp"/>
 	<jsp:include page="/public/XForms.jsp"/>
    	<jsp:include page="/public/Zimbra.jsp"/>

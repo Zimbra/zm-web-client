@@ -110,6 +110,7 @@
 </style>
 
 <% if (inDevMode) { %>
+    <jsp:include page="Boot.jsp"/>
 	<jsp:include page="Ajax.jsp" />
 	<jsp:include page="Zimbra.jsp" />
 	<jsp:include page="ZimbraMail.jsp" />

@@ -74,6 +74,7 @@
 </style>
 
 <% if (inDevMode) { %>
+    <jsp:include page="Boot.jsp"/>
 	<%if (full != null) {%>
 		<jsp:include page="Ajax.jsp"/>
 		<jsp:include page="Zimbra.jsp"/>
