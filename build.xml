@@ -741,7 +741,8 @@
       <fileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
       <fileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
       <fileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
-      <fileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
+        <fileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
+        <fileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
     </copy>
 
     <dependset>
@@ -749,6 +750,7 @@
       <srcfileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
       <srcfileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
       <srcfileset dir='WebRoot/js/zimbraAdmin/config' includes='msgs/*.properties'/>
+      <srcfileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
       <targetfilelist dir='${deploy.dir}${deploy.admin.path}/WEB-INF' files='web.xml'/>
     </dependset>
     <copy todir="${deploy.dir}${deploy.admin.path}/WEB-INF">  	
@@ -772,6 +774,7 @@
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
+      <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class,**/servlets/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
@@ -792,6 +795,7 @@
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/WebRoot/js/zimbraAdmin/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
+      <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="com/zimbra/kabuki/tools/**,**/build/*"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
