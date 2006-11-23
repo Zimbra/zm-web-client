@@ -36,9 +36,11 @@ Contributor(s):
       ext = "";
    }
 %>
+<!-- BEGIN SCRIPT BLOCK -->
 <!-- bootstrap classes -->
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/boot/AjxEnv.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/boot/AjxCallback.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/boot/AjxLoader.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/boot/AjxPackage.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/boot/AjxTemplate.js"></script>
+<!-- END SCRIPT BLOCK -->
