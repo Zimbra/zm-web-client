@@ -235,7 +235,7 @@
   <target name="jam-files" depends="compile">
     <taskdef name="jammer" classname="com.zimbra.webClient.build.JammerTask" classpath="${build.dir}/classes"/>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/Ajax_all.js">
-      <filelist dir="${build.dir}/WebRoot/public" files="Ajax.jsp,Zimbra.jsp"/>
+      <filelist dir="${build.dir}/WebRoot/public" files="Boot.jsp,Ajax.jsp,Zimbra.jsp"/>
     </jammer>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraMail_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="ZimbraMail.jsp"/>
@@ -244,7 +244,7 @@
       <filelist dir="${build.dir}/WebRoot/public" files="XForms.jsp,ZimbraAdmin.jsp"/>
     </jammer> 
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/AjaxNewWindow_all.js">
-      <filelist dir="${build.dir}/WebRoot/public" files="AjaxNewWindow.jsp,Zimbra.jsp"/>
+      <filelist dir="${build.dir}/WebRoot/public" files="Boot.jsp,AjaxNewWindow.jsp,Zimbra.jsp"/>
     </jammer>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraNewWindow_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="ZimbraNewWindow.jsp"/>
@@ -320,7 +320,7 @@
     <target name="compress-ale-files" depends="copy-files-to-build-area, compile">
         <taskdef name="jammer" classname="com.zimbra.webClient.build.JammerTask" classpath="${build.dir}/classes"/>
         <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js">
-          <filelist dir="${build.dir}/WebRoot/ALE/spreadsheet" files="../../public/Ajax.jsp,index_js.jsp"/>
+          <filelist dir="${build.dir}/WebRoot/ALE/spreadsheet" files="../../public/Boot.jsp,../../public/Ajax.jsp,index_js.jsp"/>
         </jammer>
         <antcall target="rhino-compress">
             <param name="var" value="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js"/>
@@ -329,7 +329,7 @@
         <delete file="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js${rhinoExtension}"/>
 
         <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js">
-          <filelist dir="${build.dir}/WebRoot/ALE/spreadsheet" files="../../public/Ajax.jsp,embed_js.jsp"/>
+          <filelist dir="${build.dir}/WebRoot/ALE/spreadsheet" files="../../public/Boot.jsp,../../public/Ajax.jsp,embed_js.jsp"/>
         </jammer>
         <antcall target="rhino-compress">
             <param name="var" value="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js"/>
@@ -775,7 +775,7 @@
       <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class,**/servlets/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
-      <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheLoRes.html,public/pre-cache.jsp,public/blank.html"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Boot.jsp,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheLoRes.html,public/pre-cache.jsp,public/blank.html"/>
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
     </war>
@@ -795,7 +795,7 @@
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="com/zimbra/kabuki/tools/**,**/build/*"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/ZimbraMail*all.*,js/zimbraMail/**,**/config/msgs/**,**/*.psd"/>
-      <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheLoRes.html,public/pre-cache.jsp,public/blank.html"/>
+      <fileset dir="${build.dir}/WebRoot" includes="public/admin.jsp,public/Boot.jsp,public/Ajax.jsp,public/XForms.jsp,public/Zimbra.jsp,public/ZimbraAdmin.jsp,public/frameOpenerHelper.jsp,public/CacheLoRes.html,public/pre-cache.jsp,public/blank.html"/>
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/html/**"/>		
       <fileset dir="${build.dir}/WebRoot" includes="adminhelp/pdf/*.pdf"/>		
     </war>
