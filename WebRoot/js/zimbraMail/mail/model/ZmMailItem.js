@@ -47,6 +47,22 @@ function ZmMailItem(appCtxt, type, id, list) {
 ZmMailItem.prototype = new ZmItem;
 ZmMailItem.prototype.constructor = ZmMailItem;
 
+ZmMailItem.sortBy = ZmSearch.DATE_DESC;
+ZmMailItem.sortCompare =
+function(itemA, itemB) {
+	var sortBy = ZmMailItem.sortBy;
+	if (!sortBy || (sortBy != ZmSearch.DATE_DESC && sortBy != ZmSearch.DATE_ASC)) { return 0; }
+	
+	var itemDateA = parseInt(itemA.date);
+	var itemDateB = parseInt(itemB.date);
+	if (sortBy == ZmSearch.DATE_DESC) {
+		return (itemDateA > itemDateB) ? -1 : (itemDateA < itemDateB) ? 1 : 0;
+	}
+	if (sortBy == ZmSearch.DATE_ASC) {
+		return (itemDateA > itemDateB) ? 1 : (itemDateA < itemDateB) ? -1 : 0;
+	}
+};
+
 ZmMailItem.prototype.toString = 
 function() {
 	return "ZmMailItem";

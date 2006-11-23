@@ -201,10 +201,16 @@ function(convs, msgs) {
 			var conv = convs[id];
 			if (conv.folders && conv.folders[searchFolder]) {
 				var index = this._getSortIndex(conv, sortBy);
-				this.add(conv, index); // add to beginning for now
+				this.add(conv, index);
 				conv.list = this;
 				createdItems.push(conv);
 			}
+		}
+		// sort item list so they show up in correct order when processed
+		if (createdItems.length > 1) {
+			ZmMailItem.sortBy = sortBy;
+			createdItems.sort(ZmMailItem.sortCompare);
+			createdItems.reverse();
 		}
 		for (var id in msgs) {
 			var msg = msgs[id];
@@ -317,7 +323,7 @@ function() {
 */
 ZmMailList.prototype._getSortIndex =
 function(item, sortBy) {
-	if (!sortBy || (sortBy != ZmSearch.DATE_DESC && sortBy != ZmSearch.DATE_DESC)) {
+	if (!sortBy || (sortBy != ZmSearch.DATE_DESC && sortBy != ZmSearch.DATE_ASC)) {
 		return 0;
 	}
 	
