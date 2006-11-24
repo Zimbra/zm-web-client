@@ -102,7 +102,19 @@ function(visible, transparentBg) {
 	this.applyCaretHack();
 	DwtComposite.prototype.setVisible.call(this, visible);
 
-	this._appCtxt.getKeyboardMgr().enable(!visible);
+	// Disable keyboard nav for re-login dialog
+	if (visible) {
+	   	if (this._keyboardMgr.isEnabled()) {
+   			this._keyboardMgr.enable(false);
+   			this._kbnavDisabled = true;
+   		}
+	} else {
+   	    if (this._kbnavDisabled) {
+	    	this._keyboardMgr.enable(true);
+	    	this._kbnavDisabled = false;
+	    }
+	}
+   	
 	if (!visible) return;
 		
 	this.setCursor("default");

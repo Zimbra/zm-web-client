@@ -65,11 +65,6 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 
 	this._shell = appCtxt.getShell();
 
-	// Register our keymap and global key action handler with the shell's keyboard manager
-	var kbMgr = appCtxt.getKeyboardMgr();
-	kbMgr.registerKeyMap(new ZmKeyMap());
-	kbMgr.pushDefaultHandler(this);
-
 	if (location.search && (location.search.indexOf("nss=1") != -1)) {
 		this._splashScreen = null;
 	} else {
@@ -382,23 +377,29 @@ function(params) {
 		this._components[ZmAppViewMgr.C_APP_CHOOSER] = this._createAppChooser();
 	}
 
-	// ROSSD - TEMPORARY - WILL BE MOVED
-	/* Appview manager is the place for these. the issue is that the skins will need to provide the
-	 * tabgroup index location of each of the top level views
-	 */
-	DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
-	var rootTg = this._appCtxt.getRootTabGroup();
-	rootTg.addMember(this._appCtxt.getSearchController().getTabGroup());
-	// Add dummy app view tab group. This will get replaced right away when the
-	// app view comes into play
-	var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
-	ZmController._setCurrentAppViewTabGroup(dummyTg);
-	rootTg.addMember(dummyTg);
-	var appChooserTg = new DwtTabGroup("ZmAppChooser");
-	appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
-	rootTg.addMember(appChooserTg);
 	var kbMgr = this._appCtxt.getKeyboardMgr();
-	kbMgr.setTabGroup(rootTg);
+	if (this._appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
+		// Register our keymap and global key action handler with the shell's keyboard manager
+		kbMgr.enable(true);
+		kbMgr.registerKeyMap(new ZmKeyMap());
+		kbMgr.pushDefaultHandler(this);
+
+		DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
+		var rootTg = this._appCtxt.getRootTabGroup();
+		rootTg.addMember(this._appCtxt.getSearchController().getTabGroup());
+		// Add dummy app view tab group. This will get replaced right away when the
+		// app view comes into play
+		var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
+		ZmController._setCurrentAppViewTabGroup(dummyTg);
+		rootTg.addMember(dummyTg);
+		var appChooserTg = new DwtTabGroup("ZmAppChooser");
+		appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
+		rootTg.addMember(appChooserTg);
+		var kbMgr = this._appCtxt.getKeyboardMgr();
+		kbMgr.setTabGroup(rootTg);
+	} else {
+		kbMgr.enable(false);
+	}
 
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		this._calController = this.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
