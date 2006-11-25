@@ -103,6 +103,9 @@ var i = 1;
 ZmSetting.AC_TIMER_INTERVAL				= i++;
 ZmSetting.ASYNC_MODE					= i++;
 ZmSetting.BRANCH						= i++;
+ZmSetting.CLIENT_DATETIME 				= i++;
+ZmSetting.CLIENT_RELEASE 				= i++;
+ZmSetting.CLIENT_VERSION				= i++;
 ZmSetting.CONFIG_PATH					= i++;
 ZmSetting.CSFE_MSG_FETCHER_URI			= i++;
 ZmSetting.CSFE_SERVER_URI				= i++;
@@ -114,9 +117,6 @@ ZmSetting.LOGO_URI						= i++;
 ZmSetting.LOG_REQUEST					= i++;
 ZmSetting.TIMEOUT						= i++;
 ZmSetting.USE_XML						= i++;
-ZmSetting.CLIENT_VERSION				= i++;
-ZmSetting.CLIENT_RELEASE 				= i++;
-ZmSetting.CLIENT_DATETIME 				= i++;
 
 // IDs FOR HTML COMPONENTS IN THE SKIN
 ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID	= i++;
@@ -137,6 +137,8 @@ ZmSetting.SKIN_TREE_FOOTER_ID			= i++;
 ZmSetting.SKIN_USER_INFO_ID				= i++;
 
 // COS SETTINGS
+ZmSetting.ALLOW_ANY_FROM_ADDRESS		= i++;
+ZmSetting.ALLOW_FROM_ADDRESSES			= i++;
 ZmSetting.AVAILABLE_SKINS				= i++;
 ZmSetting.BROWSE_ENABLED				= i++;
 ZmSetting.CALENDAR_ENABLED				= i++;
@@ -148,15 +150,18 @@ ZmSetting.FILTERS_ENABLED				= i++;
 ZmSetting.GAL_AUTOCOMPLETE_ENABLED		= i++;
 ZmSetting.GAL_ENABLED					= i++;
 ZmSetting.HTML_COMPOSE_ENABLED 			= i++;
+ZmSetting.IDENTITIES_ENABLED            = i++;
 ZmSetting.IDLE_SESSION_TIMEOUT 			= i++;
 ZmSetting.IM_ENABLED					= i++;
 ZmSetting.INITIAL_SEARCH_ENABLED		= i++;
+ZmSetting.MAIL_ALIASES					= i++;
 ZmSetting.MAIL_ENABLED					= i++;
 ZmSetting.MAX_CONTACTS					= i++;
 ZmSetting.MIN_POLLING_INTERVAL			= i++;
 ZmSetting.NOTEBOOK_ENABLED				= i++;
 ZmSetting.NOTIF_FEATURE_ENABLED			= i++;
 ZmSetting.OPTIONS_ENABLED				= i++;
+ZmSetting.POP_ACCOUNTS_ENABLED          = i++;
 ZmSetting.PWD_MAX_LENGTH				= i++;
 ZmSetting.PWD_MIN_LENGTH				= i++;
 ZmSetting.QUOTA							= i++;
@@ -166,18 +171,13 @@ ZmSetting.SKIN_CHANGE_ENABLED			= i++;
 ZmSetting.TAGGING_ENABLED				= i++;
 ZmSetting.VACATION_MSG_FEATURE_ENABLED	= i++;
 ZmSetting.VIEW_ATTACHMENT_AS_HTML 		= i++;
-ZmSetting.POP_ACCOUNTS_ENABLED          = i++;
-ZmSetting.IDENTITIES_ENABLED            = i++;
-ZmSetting.ALLOW_ANY_FROM_ADDRESS		= i++;
-ZmSetting.ALLOW_FROM_ADDRESSES			= i++;
-ZmSetting.MAIL_ALIASES					= i++;
 
 // USER METADATA
 ZmSetting.LICENSE_STATUS				= i++;
 ZmSetting.QUOTA_USED					= i++;
 ZmSetting.TOKEN_LIFETIME				= i++;
-ZmSetting.USERNAME						= i++;
 ZmSetting.USERID						= i++;
+ZmSetting.USERNAME						= i++;
 
 // CLIENT SIDE FEATURE SUPPORT
 ZmSetting.ATT_VIEW_ENABLED				= i++;
@@ -209,13 +209,13 @@ ZmSetting.GAL_AUTOCOMPLETE_SESSION		= i++;
 ZmSetting.IMPORT 						= i++;
 
 // calendar preferences
+ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL		= i++;
 ZmSetting.CAL_FIRST_DAY_OF_WEEK 		= i++;
+ZmSetting.CAL_REMINDER_WARNING_TIME		= i++;
 ZmSetting.CAL_SHOW_TIMEZONE				= i++;
 ZmSetting.CAL_USE_QUICK_ADD 			= i++;
-ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL		= i++;
 ZmSetting.CALENDAR_INITIAL_VIEW			= i++;
 ZmSetting.DEFAULT_CALENDAR_TIMEZONE		= i++;
-ZmSetting.CAL_REMINDER_WARNING_TIME		= i++;
 
 // general preferences
 ZmSetting.PASSWORD						= i++;
@@ -285,6 +285,9 @@ ZmSetting.INIT = {};
 ZmSetting.INIT[ZmSetting.AC_TIMER_INTERVAL]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_INT, 300];
 ZmSetting.INIT[ZmSetting.ASYNC_MODE]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.BRANCH]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "mail"];
+ZmSetting.INIT[ZmSetting.CLIENT_DATETIME] 				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildDateTime@"]; // this gets replaced during deploy
+ZmSetting.INIT[ZmSetting.CLIENT_RELEASE]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildRelease@"];  // this gets replaced during deploy
+ZmSetting.INIT[ZmSetting.CLIENT_VERSION]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildVersion@"];  // this gets replaced during deploy
 ZmSetting.INIT[ZmSetting.CONFIG_PATH]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, appContextPath+"/js/zimbraMail/config"];
 ZmSetting.INIT[ZmSetting.CSFE_MSG_FETCHER_URI]			= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING];
 ZmSetting.INIT[ZmSetting.CSFE_SERVER_URI]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING];
@@ -296,9 +299,6 @@ ZmSetting.INIT[ZmSetting.LOG_REQUEST]					= [null, ZmSetting.T_CONFIG, ZmSetting
 ZmSetting.INIT[ZmSetting.LOGO_URI]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "http://www.zimbra.com"];
 ZmSetting.INIT[ZmSetting.TIMEOUT]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_INT, 30];
 ZmSetting.INIT[ZmSetting.USE_XML]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, false];
-ZmSetting.INIT[ZmSetting.CLIENT_VERSION]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildVersion@"];  // this gets replaced during deploy
-ZmSetting.INIT[ZmSetting.CLIENT_RELEASE]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildRelease@"];  // this gets replaced during deploy
-ZmSetting.INIT[ZmSetting.CLIENT_DATETIME] 				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildDateTime@"]; // this gets replaced during deploy
 
 // IDs FOR HTML COMPONENTS IN THE SKIN
 ZmSetting.INIT[ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID]	= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_app_bottom_toolbar"];
@@ -319,6 +319,8 @@ ZmSetting.INIT[ZmSetting.SKIN_TREE_FOOTER_ID]			= [null, ZmSetting.T_CONFIG, ZmS
 ZmSetting.INIT[ZmSetting.SKIN_USER_INFO_ID]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_quota"];
 
 // COS SETTINGS
+ZmSetting.INIT[ZmSetting.ALLOW_ANY_FROM_ADDRESS]		= ["zimbraAllowAnyFromAddress", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.ALLOW_FROM_ADDRESSES]			= ["zimbraAllowFromAddress", ZmSetting.T_COS, ZmSetting.D_LIST];
 ZmSetting.INIT[ZmSetting.AVAILABLE_SKINS]				= [null, ZmSetting.T_COS, ZmSetting.D_LIST];
 ZmSetting.INIT[ZmSetting.BROWSE_ENABLED]				= ["zimbraFeatureAdvancedSearchEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.CALENDAR_ENABLED]				= ["zimbraFeatureCalendarEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
@@ -330,9 +332,11 @@ ZmSetting.INIT[ZmSetting.FILTERS_ENABLED]				= ["zimbraFeatureFiltersEnabled", Z
 ZmSetting.INIT[ZmSetting.GAL_AUTOCOMPLETE_ENABLED]		= ["zimbraFeatureGalAutoCompleteEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.GAL_ENABLED]					= ["zimbraFeatureGalEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.HTML_COMPOSE_ENABLED] 			= ["zimbraFeatureHtmlComposeEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
-ZmSetting.INIT[ZmSetting.IM_ENABLED]					= ["zimbraFeatureIMEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.IDENTITIES_ENABLED]   	    	= ["zimbraFeatureIdentitiesEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.IDLE_SESSION_TIMEOUT] 			= ["zimbraMailIdleSessionTimeout", ZmSetting.T_COS, ZmSetting.D_LDAP_TIME, 0];
+ZmSetting.INIT[ZmSetting.IM_ENABLED]					= ["zimbraFeatureIMEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.INITIAL_SEARCH_ENABLED]		= ["zimbraFeatureInitialSearchPreferenceEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.MAIL_ALIASES]					= ["zimbraMailAlias", ZmSetting.T_COS, ZmSetting.D_LIST];
 ZmSetting.INIT[ZmSetting.MAIL_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.MAIL_FORWARDING_ENABLED]		= ["zimbraFeatureMailForwardingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.MAX_CONTACTS]					= ["zimbraContactMaxNumEntries", ZmSetting.T_COS, ZmSetting.D_INT, 0];
@@ -340,6 +344,7 @@ ZmSetting.INIT[ZmSetting.MIN_POLLING_INTERVAL]			= ["zimbraMailMinPollingInterva
 ZmSetting.INIT[ZmSetting.NOTEBOOK_ENABLED]				= ["zimbraFeatureNotebookEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.NOTIF_FEATURE_ENABLED]			= ["zimbraFeatureNewMailNotificationEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.OPTIONS_ENABLED]				= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.POP_ACCOUNTS_ENABLED]   		= ["zimbraFeaturePop3DataSourceEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.PWD_MAX_LENGTH]				= ["zimbraPasswordMaxLength", ZmSetting.T_COS, ZmSetting.D_INT, 64];
 ZmSetting.INIT[ZmSetting.PWD_MIN_LENGTH]				= ["zimbraPasswordMinLength", ZmSetting.T_COS, ZmSetting.D_INT, 6];
 ZmSetting.INIT[ZmSetting.QUOTA]							= ["zimbraMailQuota", ZmSetting.T_COS, ZmSetting.D_INT, 0];
@@ -349,11 +354,6 @@ ZmSetting.INIT[ZmSetting.SKIN_CHANGE_ENABLED]			= ["zimbraFeatureSkinChangeEnabl
 ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["zimbraFeatureTaggingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.VACATION_MSG_FEATURE_ENABLED]	= ["zimbraFeatureOutOfOfficeReplyEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.VIEW_ATTACHMENT_AS_HTML] 		= ["zimbraFeatureViewInHtmlEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
-ZmSetting.INIT[ZmSetting.POP_ACCOUNTS_ENABLED]   		= ["zimbraFeaturePop3DataSourceEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
-ZmSetting.INIT[ZmSetting.IDENTITIES_ENABLED]   	    	= ["zimbraFeatureIdentitiesEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
-ZmSetting.INIT[ZmSetting.ALLOW_FROM_ADDRESSES]			= ["zimbraAllowFromAddress", ZmSetting.T_COS, ZmSetting.D_LIST];
-ZmSetting.INIT[ZmSetting.ALLOW_ANY_FROM_ADDRESS]		= ["zimbraAllowAnyFromAddress", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
-ZmSetting.INIT[ZmSetting.MAIL_ALIASES]					= ["zimbraMailAlias", ZmSetting.T_COS, ZmSetting.D_LIST];
 
 // user metadata (included with COS since the user can't change them)
 ZmSetting.INIT[ZmSetting.LICENSE_STATUS]				= [null, ZmSetting.T_COS, ZmSetting.D_STRING, ZmSetting.LICENSE_GOOD];
@@ -391,13 +391,13 @@ ZmSetting.INIT[ZmSetting.GAL_AUTOCOMPLETE_SESSION]		= [null, ZmSetting.T_PREF, Z
 ZmSetting.INIT[ZmSetting.IMPORT] 						= [null, ZmSetting.T_PREF];
 
 // calendar preferences
+ZmSetting.INIT[ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL]		= ["zimbraPrefCalendarAlwaysShowMiniCal", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.CAL_FIRST_DAY_OF_WEEK] 		= ["zimbraPrefCalendarFirstDayOfWeek", ZmSetting.T_PREF, ZmSetting.D_INT, 0];
+ZmSetting.INIT[ZmSetting.CAL_REMINDER_WARNING_TIME]		= ["zimbraPrefCalendarApptReminderWarningTime", ZmSetting.T_PREF, ZmSetting.D_INT, 0];
 ZmSetting.INIT[ZmSetting.CAL_SHOW_TIMEZONE]	 			= ["zimbraPrefUseTimeZoneListInCalendar", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.CAL_USE_QUICK_ADD] 			= ["zimbraPrefCalendarUseQuickAdd", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, true];
-ZmSetting.INIT[ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL]		= ["zimbraPrefCalendarAlwaysShowMiniCal", ZmSetting.T_PREF, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.CALENDAR_INITIAL_VIEW]			= ["zimbraPrefCalendarInitialView", ZmSetting.T_PREF, ZmSetting.D_STRING, ZmSetting.CAL_DAY];
 ZmSetting.INIT[ZmSetting.DEFAULT_CALENDAR_TIMEZONE]		= ["zimbraPrefTimeZoneId", ZmSetting.T_PREF, ZmSetting.D_STRING];
-ZmSetting.INIT[ZmSetting.CAL_REMINDER_WARNING_TIME]		= ["zimbraPrefCalendarApptReminderWarningTime", ZmSetting.T_PREF, ZmSetting.D_INT, 0];
 
 // general preferences
 ZmSetting.INIT[ZmSetting.PASSWORD]						= [null, ZmSetting.T_PREF];

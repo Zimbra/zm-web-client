@@ -381,7 +381,7 @@ function(params) {
 	if (this._appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
 		// Register our keymap and global key action handler with the shell's keyboard manager
 		kbMgr.enable(true);
-		kbMgr.registerKeyMap(new ZmKeyMap());
+		kbMgr.registerKeyMap(new ZmKeyMap(this._appCtxt));
 		kbMgr.pushDefaultHandler(this);
 
 		DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");

@@ -317,15 +317,16 @@ function() {
 	var html = [];
 	var i = 0;
 	html[i++] = "<div style='padding:10px'>";
-	i = this._getKeysHtml(ZmKeys, html, i);
-	i = this._getKeysHtml(AjxKeys, html, i);
+	i = this._getKeysHtml(ZmKeys, ZmKeyMap.MAP_NAME, html, i);
+	i = this._getKeysHtml(AjxKeys, DwtKeyMap.MAP_NAME, html, i);
 	html[i++] = "</div>";
 	
 	this.getHtmlElement().innerHTML = html.join("");
 };
 
 ZmShortcutsPageTabViewList.prototype._getKeysHtml =
-function(keys, html, i) {
+function(keys, mapNames, html, i) {
+	var kmm = this._appCtxt.getKeyboardMgr().__keyMapMgr;	
 	var mapDesc = {};
 	var maps = [];
 	var actionDesc = {};
@@ -335,12 +336,18 @@ function(keys, html, i) {
 		if (typeof propValue != "string") { continue; }
 		var parts = propName.split(".");
 		var map = parts[0];
-		if (parts[1] == "description" || parts[2] == "description") {
+		var action = (DwtKeyMap.IS_DOC_KEY[parts[1]]) ? null : parts[1];
+		var skip = false;
+		// make sure shortcut is defined
+		if (action) {
+			var ks = kmm.getKeySequences(mapNames[map], action);
+			skip = !(ks && ks.length);
+		}
+		if (!skip && (parts[1] == "description" || parts[2] == "description")) {
 			if (parts[1] == "description") {
 				maps.push(map);
 				mapDesc[map] = propValue;
-			} else if (parts[2] == "description") {
-				var action = parts[1];
+			} else {
 				if (!actionDesc[map]) {
 					actionDesc[map] = {};
 					keySequences[map] = [];

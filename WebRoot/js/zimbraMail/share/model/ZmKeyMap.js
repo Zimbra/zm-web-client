@@ -37,10 +37,13 @@
  * file. The identifiers used in the properties file must match those used here.
  * 
  * @author Ross Dargahi
+ * 
+ * @param appCtxt		[ZmAppCtxt]		the app context
  */
-function ZmKeyMap() {
+function ZmKeyMap(appCtxt) {
 	
 	DwtKeyMap.call(this);
+	this._appCtxt = appCtxt;
 	this._load(this._map, ZmKeys, ZmKeyMap.MAP_NAME);
 
 	this._map["Global"]["Alt+Shift+D,0"] = ZmKeyMap.DBG_NONE;
@@ -147,6 +150,7 @@ ZmKeyMap.UNTAG				= "Untag";
 ZmKeyMap.VIEW_BY_CONV		= "ViewByConversation";
 ZmKeyMap.VIEW_BY_MSG		= "ViewByMessage";
 
+// shifted chars
 ZmKeyMap.SHIFT = {};
 ZmKeyMap.SHIFT["`"] = "~";
 ZmKeyMap.SHIFT["1"] = "!";
@@ -171,6 +175,7 @@ ZmKeyMap.SHIFT[DwtKeyMap.COMMA]		= "<";
 ZmKeyMap.SHIFT[DwtKeyMap.SEMICOLON]	= ":";
 ZmKeyMap.SHIFT[DwtKeyMap.BACKSLASH] = "|";
 
+// HTML entities (used to display keys)
 ZmKeyMap.ENTITY = {};
 ZmKeyMap.ENTITY[DwtKeyMap.ARROW_LEFT]	= "&larr;"
 ZmKeyMap.ENTITY[DwtKeyMap.ARROW_RIGHT]	= "&rarr;"
@@ -183,6 +188,90 @@ ZmKeyMap.ENTITY['>'] = "&gt;"
 ZmKeyMap.ENTITY[DwtKeyMap.COMMA]		= ",";
 ZmKeyMap.ENTITY[DwtKeyMap.SEMICOLON]	= ";";
 ZmKeyMap.ENTITY[DwtKeyMap.BACKSLASH] 	= "\\";
+
+// preconditions for maps
+ZmKeyMap.MAP_PRECONDITION = {};
+ZmKeyMap.MAP_PRECONDITION["ZmComposeController"]		= ZmSetting.MAIL_ENABLED;
+ZmKeyMap.MAP_PRECONDITION["ZmMailListController"]		= ZmSetting.MAIL_ENABLED;
+ZmKeyMap.MAP_PRECONDITION["ZmConvController"]			= ZmSetting.MAIL_ENABLED;
+ZmKeyMap.MAP_PRECONDITION["ZmMsgController"]			= ZmSetting.MAIL_ENABLED;
+ZmKeyMap.MAP_PRECONDITION["ZmContactListController"]	= ZmSetting.CONTACTS_ENABLED;
+ZmKeyMap.MAP_PRECONDITION["ZmContactController"]		= ZmSetting.CONTACTS_ENABLED;
+ZmKeyMap.MAP_PRECONDITION["ZmCalViewController"]		= ZmSetting.CALENDAR_ENABLED;
+ZmKeyMap.MAP_PRECONDITION["ZmApptComposeController"]	= ZmSetting.CALENDAR_ENABLED;
+ZmKeyMap.MAP_PRECONDITION["ZmPrefController"]			= ZmSetting.OPTIONS_ENABLED;
+ZmKeyMap.MAP_PRECONDITION["ZmNotebookPageController"]	= ZmSetting.NOTEBOOK_ENABLED;
+
+// preconditions for specific shortcuts
+ZmKeyMap.ACTION_PRECONDITION = {};
+ZmKeyMap.ACTION_PRECONDITION["Global"] = {};
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_APPT]			= ZmSetting.CALENDAR_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_CONTACTS]		= ZmSetting.CONTACTS_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_CONTACT]		= ZmSetting.CONTACTS_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_MAIL]			= ZmSetting.MAIL_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_MESSAGE]		= ZmSetting.MAIL_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_MESSAGE_WIN]	= ZmSetting.MAIL_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_OPTIONS]		= ZmSetting.OPTIONS_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_NOTEBOOK]		= ZmSetting.NOTEBOOK_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_NOTEBOOK]		= ZmSetting.NOTEBOOK_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_PAGE]			= ZmSetting.NOTEBOOK_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_IM]			= ZmSetting.IM_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_TAG]			= ZmSetting.TAGGING_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TAG]			= ZmSetting.TAGGING_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.TAG]				= ZmSetting.TAGGING_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.UNTAG]				= ZmSetting.TAGGING_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.SAVED_SEARCH]		= ZmSetting.SAVED_SEARCHES_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"] = {};
+ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.SAVE]				= ZmSetting.SAVE_DRAFT_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.HTML_FORMAT]		= ZmSetting.HTML_COMPOSE_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.NEW_WINDOW]		= ZmSetting.NEW_WINDOW_COMPOSE;
+ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.ADDRESS_PICKER]	= ZmSetting.CONTACTS_ENABLED;
+ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"] = {};
+ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"][ZmKeyMap.HTML_FORMAT]	= ZmSetting.HTML_COMPOSE_ENABLED;
+
+/**
+ * Returns true if this map is valid. A map may have a precondition,
+ * which is either a setting that must be true, or a function that returns
+ * true.
+ *
+ * @param mapName	[string]	name of map
+ */
+ZmKeyMap.prototype._checkMap =
+function(mapName) {
+	var mapPre = ZmKeyMap.MAP_PRECONDITION[mapName];
+	if (!mapPre) { return true; }
+	if (typeof mapPre == "string" || typeof mapPre == "number") {
+		return this._appCtxt.get(mapPre)
+	} else if (typeof mapPre == "function") {
+		return mapPre();
+	}
+	return true;
+};
+
+/**
+ * Returns true if this action is valid. A map or an action may have a precondition,
+ * which is either a setting that must be true, or a function that returns
+ * true.
+ *
+ * @param mapName	[string]	name of map
+ * @param action	[string]	action to check
+ */
+ZmKeyMap.prototype._checkAction =
+function(mapName, action) {
+	if (!this._checkMap(mapName)) { return false; }
+	var mapPre = ZmKeyMap.ACTION_PRECONDITION[mapName];
+	if (!mapPre) { return true; }
+	var pre = mapPre[action];
+	if (!pre) { return true; }
+	if (typeof pre == "string" || typeof pre == "number") {
+		return this._appCtxt.get(pre);
+	} else if (typeof pre == "function") {
+		return pre();
+	}
+	return true;
+};
 
 /**
  * Creates a shortcut
