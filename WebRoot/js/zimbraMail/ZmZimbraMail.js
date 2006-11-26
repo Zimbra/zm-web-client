@@ -828,8 +828,12 @@ function() {
 	
 	window.onbeforeunload = null;
 	
-	var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
-					  "" : ":" + location.port) + "/" + window.location.search;
+	var port = (location.port == '80') ? "" : [":", location.port].join("");
+	var locationStr = [location.protocol, "//", location.hostname, port].join("");
+	if (appContextPath) {
+		locationStr = [locationStr, appContextPath].join("/");
+	}
+	locationStr = [locationStr, location.search].join("");
 	ZmZimbraMail.sendRedirect(locationStr);
 };
 
