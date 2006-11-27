@@ -458,7 +458,7 @@ function(ev, treeView, overviewId) {
 			if (node && fields) {
 				if (fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_UNREAD] ||
 					fields[ZmOrganizer.F_FLAGS] ||
-					(id == ZmFolder.ID_DRAFTS && fields[ZmOrganizer.F_TOTAL])) {
+					((id == ZmFolder.ID_DRAFTS || id == ZmFolder.ID_OUTBOX) && fields[ZmOrganizer.F_TOTAL])) {
 					if (fields[ZmOrganizer.F_FLAGS] && (treeView.getStyle() & DwtTree.CHECKEDITEM_STYLE) != 0) {
 						var treeItem = treeView.getTreeItemById(id);
 						treeItem.setChecked(organizer.isChecked);

@@ -190,7 +190,7 @@ function(params) {
 					typeStr.push(ZmSearch.TYPE[a[i]]);
 				method.setAttribute("types", typeStr.join(","));
 				// special handling for showing participants ("To" instead of "From")
-				if (this.folderId == ZmFolder.ID_SENT || this.folderId == ZmFolder.ID_DRAFTS)
+				if (this.folderId == ZmFolder.ID_SENT || this.folderId == ZmFolder.ID_DRAFTS || this.folderId == ZmFolder.ID_OUTBOX)
 					method.setAttribute("recip", "1");
 				// if we're prefetching the first hit message, also mark it as read
 				if (this.fetch)

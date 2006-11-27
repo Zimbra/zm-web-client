@@ -67,6 +67,7 @@ ZmFolder.ID_CONTACTS		= ZmOrganizer.ID_ADDRBOOK;
 ZmFolder.ID_AUTO_ADDED		= ZmOrganizer.ID_AUTO_ADDED;
 ZmFolder.LAST_SYSTEM_ID		= 6;
 ZmFolder.ID_TAGS	 		= 8;
+ZmFolder.ID_OUTBOX	 		= ZmOrganizer.ID_OUTBOX;
 
 // system folder names
 ZmFolder.MSG_KEY = new Object();
@@ -87,6 +88,7 @@ ZmFolder.IMAGE[ZmFolder.ID_INBOX]		= "Inbox";
 ZmFolder.IMAGE[ZmFolder.ID_TRASH]		= "Trash";
 ZmFolder.IMAGE[ZmFolder.ID_SPAM]		= "SpamFolder";
 ZmFolder.IMAGE[ZmFolder.ID_SENT]		= "SentFolder";
+ZmFolder.IMAGE[ZmFolder.ID_OUTBOX]		= "SentFolder";
 ZmFolder.IMAGE[ZmFolder.ID_DRAFTS]		= "DraftFolder";
 
 // name to use within the query language
@@ -95,6 +97,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_INBOX]		= "inbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TRASH]		= "trash";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]		= "junk";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SENT]		= "sent";
+ZmFolder.QUERY_NAME[ZmFolder.ID_OUTBOX]		= "outbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_DRAFTS]		= "drafts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]	= "contacts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_AUTO_ADDED] = "\"Emailed Contacts\"";
@@ -107,7 +110,8 @@ ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]		= 2;
 ZmFolder.SORT_ORDER[ZmFolder.ID_DRAFTS]		= 3;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SPAM]		= 4;
 ZmFolder.SORT_ORDER[ZmFolder.ID_TRASH]		= 5;
-ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]		= 6;
+ZmFolder.SORT_ORDER[ZmFolder.ID_OUTBOX]		= 6;
+ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]		= 7;
 
 // character codes for "tcon" attribute in conv action request, which
 // controls which folders are affected
@@ -121,7 +125,7 @@ ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]	= "o";
 ZmFolder.HIDE = {};
 ZmFolder.HIDE["Journal"]	= true;
 ZmFolder.HIDE["Notes"]		= true;
-ZmFolder.HIDE["Outbox"]		= true;
+//ZmFolder.HIDE["Outbox"]		= true;
 ZmFolder.HIDE["Tasks"]		= true;
 
 // The extra-special, visible but untouchable outlook folder
@@ -137,9 +141,10 @@ function(parent, obj, tree) {
 	if (!(obj && obj.id)) return;
 
 	// check ID - can't be lower than root, or in tag range
-	if (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID &&
-		obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER])) return;
-	
+    // Allow Outbox ID... breaks some assumptions :(
+    if (obj.id != ZmFolder.ID_OUTBOX && (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID &&
+		obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]))) return;
+
 	// ignore non-mail folders
 	if (obj.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] ||
 		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK] ||
@@ -179,7 +184,7 @@ function(parent, obj, tree) {
 * @param	folderA		a folder
 * @param	folderB		a folder
 */
-ZmFolder.sortCompare = 
+ZmFolder.sortCompare =
 function(folderA, folderB) {
 	var check = ZmOrganizer.checkSortArgs(folderA, folderB);
 	if (check != null) return check;
@@ -205,7 +210,7 @@ function(name) {
 	var error = ZmOrganizer.checkName(name);
 	if (error) return error;
 
-	// make sure name isn't a system folder (possibly not displayed)	
+	// make sure name isn't a system folder (possibly not displayed)
 	for (var id in ZmFolder.MSG_KEY) {
 		if (name == ZmMsg[ZmFolder.MSG_KEY[id]])
 			return ZmMsg.folderNameReserved;
@@ -213,11 +218,11 @@ function(name) {
 	if (name.toLowerCase() == ZmFolder.SYNC_ISSUES.toLowerCase()) {
 		return ZmMsg.folderNameReserved;
 	}
-	
+
 	return null;
 };
 
-ZmFolder.prototype.toString = 
+ZmFolder.prototype.toString =
 function() {
 	return "ZmFolder";
 };
@@ -261,7 +266,7 @@ function(name, color, url, search) {
 ZmFolder.prototype._handleErrorCreate =
 function(url, name, ex) {
 	if (!url && !name) return false;
-	
+
 	var msgDialog = this.tree._appCtxt.getMsgDialog();
 	var msg;
 	if (name && (ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS)) {
@@ -296,7 +301,7 @@ ZmFolder.prototype.hasSearch =
 function(id) {
 	if (this.type == ZmOrganizer.SEARCH)
 		return true;
-	
+
 	var a = this.children.getArray();
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++)
@@ -319,8 +324,8 @@ function(obj, isSearch) {
 	// ignore creates of system folders
 	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]) return;
 
-	var folder = isSearch 
-		? ZmSearchFolder.createFromJs(this, obj, this.tree) 
+	var folder = isSearch
+		? ZmSearchFolder.createFromJs(this, obj, this.tree)
 		: ZmFolder.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
 	this.children.add(folder, index);
@@ -352,7 +357,7 @@ function(obj) {
 		details.fields = fields;
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
-	
+
 	if (obj.l != null && obj.l != this.parent.id) {
 		details.oldPath = this.getPath();
 		var newParent = this._getNewParent(obj.l);
@@ -360,7 +365,7 @@ function(obj) {
 		this._notify(ZmEvent.E_MOVE, details);
 		// could be moving search between Folders and Searches - make sure
 		// it has the correct tree
-		this.tree = newParent.tree; 
+		this.tree = newParent.tree;
 		obj.l = null;
 	}
 
@@ -386,13 +391,13 @@ function(pathOnly) {
 	return query;
 };
 
-ZmFolder.prototype.getName = 
+ZmFolder.prototype.getName =
 function(showUnread, maxLength, noMarkup, useSystemName) {
 	var name = (useSystemName && this._systemName) ? this._systemName : this.name;
 	name = (maxLength && name.length > maxLength) ? name.substring(0, maxLength - 3) + "..." : name;
 	if (this.id == ZmOrganizer.ID_ROOT) {
 		return ZmMsg.folders;
-	} else if (this.id == ZmFolder.ID_DRAFTS) {
+	} else if (this.id == ZmFolder.ID_DRAFTS || this.id == ZmFolder.ID_OUTBOX) {
 		if (showUnread && this.numTotal > 0) {
 			name = [name, " (", this.numTotal, ")"].join("");
 			if (!noMarkup) {

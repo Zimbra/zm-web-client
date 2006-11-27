@@ -187,7 +187,7 @@ function(msg, now, isDndIcon, isMixedView) {
 			htmlArr[idx++] = width;
 			htmlArr[idx++] = ">";
 			if (this._mode == ZmController.TRAD_VIEW && 
-				(msg.folderId == ZmFolder.ID_SENT || msg.folderId == ZmFolder.ID_DRAFTS)) 
+				(msg.folderId == ZmFolder.ID_SENT || msg.folderId == ZmFolder.ID_DRAFTS || msg.folderId == ZmFolder.ID_OUTBOX)) 
 			{
 				var addrs = msg.getAddresses(ZmEmailAddress.TO).getArray();
 		
