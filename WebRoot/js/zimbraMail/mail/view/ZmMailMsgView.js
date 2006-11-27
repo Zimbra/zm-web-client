@@ -675,7 +675,7 @@ function(msg, idoc, id, iframe) {
 				// doesn't fetch the image. By launching them off in the
 				// background we seem to kick IE's engine a bit.
 				if (AjxEnv.isIE) {
-					var args = [images[i], i, images.length, msg, idoc];
+					var args = [images[i], i, images.length, msg, idoc, iframe, self];
 					var act = new AjxTimedAction(null, ZmMailMsgView._swapIdAndSrc, args);
 					AjxTimedAction.scheduleAction(act, 0);
 				} else {
@@ -687,11 +687,23 @@ function(msg, idoc, id, iframe) {
 		if (diEl)
 			diEl.style.display = "none";
 		this._htmlBody = idoc.documentElement.innerHTML;
+		if (!AjxEnv.isIE) {
+			self._resetIframeHeightOnTimer(iframe);
+		}
+		
 		ZmMailMsgView._resetIframeHeight(self, iframe);
 		msg.setHtmlContent(this._htmlBody);
 		msg.showImages = true;
 	};
 	return func;
+};
+
+ZmMailMsgView.prototype._resetIframeHeightOnTimer =
+function(iframe) {
+	// Because sometimes our view contains images that are slow to download, wait a
+	// little while before resizing the iframe.
+	var act = new AjxTimedAction(this, ZmMailMsgView._resetIframeHeight, [this, iframe]);
+	AjxTimedAction.scheduleAction(act, 200);
 };
 
 ZmMailMsgView.prototype._makeHighlightObjectsDiv =
@@ -1484,10 +1496,11 @@ function(msg, preferHtml, callback) {
 };
 
 ZmMailMsgView._swapIdAndSrc =
-function (image, i, len, msg, idoc) {
+function (image, i, len, msg, idoc, iframe, view) {
 	image.src = image.getAttribute("dfsrc");
 	if (i == len - 1) {
 		msg.setHtmlContent(idoc.documentElement.innerHTML);
+		view._resetIframeHeightOnTimer(iframe);
 	}
 };
 
