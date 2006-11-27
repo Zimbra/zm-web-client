@@ -113,6 +113,7 @@ function() {
 	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
 		settings.getSetting(ZmComposeController.SETTINGS[i]).removeChangeListener(this._settingsChangeListener);
 	}
+	this._composeView._dispose();
 };
 
 ZmComposeController.prototype.doAction =

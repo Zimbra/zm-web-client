@@ -654,6 +654,14 @@ function(content) {
 	this._htmlEditor.setContent(content);
 };
 
+ZmComposeView.prototype._dispose =
+function() {
+	if (this._identityChangeListenerObj) {
+		var identityCollection = this._appCtxt.getIdentityCollection();
+		identityCollection.removeChangeListener(this._identityChangeListenerObj);
+	}
+};
+
 ZmComposeView.prototype._getSignature =
 function() {
 	var identity = this.getIdentity();
@@ -1296,7 +1304,10 @@ function() {
 	this._identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
 	this._identitySelect.reparentHtmlElement(this._identityCell);
 	var identityCollection = this._appCtxt.getIdentityCollection();
-	identityCollection.addChangeListener(new AjxListener(this, this._identityChangeListener));
+	if (!this._identityChangeListenerObj) {
+		this._identityChangeListenerObj = new AjxListener(this, this._identityChangeListener);
+	}
+	identityCollection.addChangeListener(this._identityChangeListenerObj);
 	this._setIdentityVisibility();
 };
 
