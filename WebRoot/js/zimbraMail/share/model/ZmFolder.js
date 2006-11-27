@@ -88,7 +88,7 @@ ZmFolder.IMAGE[ZmFolder.ID_INBOX]		= "Inbox";
 ZmFolder.IMAGE[ZmFolder.ID_TRASH]		= "Trash";
 ZmFolder.IMAGE[ZmFolder.ID_SPAM]		= "SpamFolder";
 ZmFolder.IMAGE[ZmFolder.ID_SENT]		= "SentFolder";
-ZmFolder.IMAGE[ZmFolder.ID_OUTBOX]		= "SentFolder";
+ZmFolder.IMAGE[ZmFolder.ID_OUTBOX]		= "Outbox";
 ZmFolder.IMAGE[ZmFolder.ID_DRAFTS]		= "DraftFolder";
 
 // name to use within the query language
