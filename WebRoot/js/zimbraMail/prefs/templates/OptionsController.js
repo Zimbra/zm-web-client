@@ -1,5 +1,6 @@
-var optionsPages = {
-	general:{},
+var data = {
+    id: "Options",
+    general:{},
 	mail:{},
 	identity:{},
 	pop:{},
@@ -10,19 +11,19 @@ var optionsPages = {
 	zimlets:{}
 };
 
-optionsPages.pop.data = {
-		id:"PopAccounts",
+data.pop.data = {
+		id: data.id+"_pop",
 		title:"POP Accounts"
 };
-optionsPages.pop.data.bubble = {	
-		id: optionsPages.pop.data.id+"_bubble", 
+data.pop.data.bubble = {
+		id: data.pop.data.id+"_bubble",
 		title: ZmMsg.AboutPopAccountsTitle, 
 		body: ZmMsg.AboutPopAccountsBody
 };
 
-optionsPages.pop.data.form = {
-		id:optionsPages.pop.data+id+"_form",
-		template:"options#PopForm",
+data.pop.data.form = {
+		id: data.pop.data.id+"_form",
+		template: "zimbraMail.prefs.templates.Options#PopForm",
 		title:"Account Settings",
 		
 		// list of required fields
@@ -33,7 +34,7 @@ optionsPages.pop.data.form = {
 		relevant: {
 			"identity_sub_form" : {field:"create_identity", test:"==true", behavior:"hide"},
 			"password_text" : {field:"show_password", test:"==true", behavior:"hide"},
-			"password_pass" : {field:"show_password", test:"==false", behavior:"hide"},
+			"password_pass" : {field:"show_password", test:"==false", behavior:"hide"}
 		},
 		
 
@@ -43,7 +44,7 @@ optionsPages.pop.data.form = {
 			"ssl" 		: "form.setValue('port', newValue ? '995' : '110');",
 			"name" 		: "form.setValue('identity_name', newValue);",
 			"server" 	: "form.setValue('email', form.getValue('username') + '@' + form.getValue('server'));",
-			"username"	: "form.setValue('email', form.getValue('username') + '@' + form.getValue('server'));",
+			"username"	: "form.setValue('email', form.getValue('username') + '@' + form.getValue('server'));"
 		},
 		
 		// default values for items not in our data model or for a new instance
@@ -56,3 +57,7 @@ optionsPages.pop.data.form = {
 			identity_use_folder	: true
 		}
 };
+
+// Make POP Accounts default page
+data.bubble = data.pop.data.bubble;
+data.form = data.pop.data.form;

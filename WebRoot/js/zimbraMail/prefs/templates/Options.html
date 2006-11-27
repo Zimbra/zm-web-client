@@ -1,11 +1,11 @@
 <template id="ListOptionPage" xml:space="strip">
 <table id='${id}_outer'>
 <tr>
-	<td colspan=2>${data.title}</td>
+	<td colspan=2>${title}</td>
 </tr>
 <tr>
 	<td rowspan=2 id="list"></td>
-	<td id="${bubble.id}"><$= AjxTemplate.expand("ajx.widgets#bubble", data.bubble) $></td>
+	<td id="${bubble.id}"><$= AjxTemplate.expand("zimbraMail.prefs.templates.Widgets#bubble", data.bubble) $></td>
 </tr>
 <tr id="${form.id}_outer_tr">
 	<td id="${form.id}_outer_td">
@@ -14,7 +14,7 @@
 					<span class="">${form.title}</span>
 				</td>
 			</tr>
-			<tr><td style='height:100%'><$= AjxTemplate.expand(data.form.template, data.form.data) $></td></tr>				
+			<tr><td style='height:100%'><$= AjxTemplate.expand(data.form.template, data.form) $></td></tr>				
 		</table>
 	</td>
 </tr>
