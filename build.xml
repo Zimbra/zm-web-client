@@ -225,7 +225,7 @@
                  classpath='${build.dir}/classes'
         />
         <template destdir='${build.dir}/WebRoot/js/ajax'>
-            <fileset dir='${build.dir}/WebRoot/js' includes='**/templates/**/*.html'/>
+            <fileset dir='${ajax.dir}/WebRoot/js' includes='**/templates/**/*.html'/>
         </template>
         <template destdir='${build.dir}/WebRoot/js'>
             <fileset dir='WebRoot/js' includes='**/templates/**/*.html'/>
@@ -532,7 +532,7 @@
       <fileset dir="WebRoot/public" includes="**/*"/>
     </copy>
     <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
-      <fileset dir="WebRoot/" excludes="**/help/**,**/adminhelp/**"/>
+      <fileset dir="WebRoot/" excludes="**/help/**,**/adminhelp/**,js/*.js"/>
     </copy>
     <copy todir="${build.dir}/WebRoot/js/ajax" overwrite="${isProduction}" >
       <fileset dir="${ajax.dir}/WebRoot/js"/>
@@ -632,7 +632,7 @@
   ZimbraWebClient webapp, so if there are any java changes, another
   deploy will have to be run.
   -->
-  <target name="dev-sync" description="Web Client Quick Sync">
+  <target name="dev-sync" depends='templates' description="Web Client Quick Sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
       <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**,ALE/**" excludes="**/style/*.css"/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
@@ -645,6 +645,7 @@
 	</copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}/js/ajax">
       <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js,**/*.css" excludes="**/img/"/>
+      <fileset dir="${build.dir}/WebRoot/js/ajax" includes="**/*.js" />
     </copy>
     <copy verbose='true' todir='${deploy.dir}${deploy.path}/WEB-INF/classes'>
       <fileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
@@ -665,7 +666,7 @@
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
   </target>
 
-  <target name="war" depends="copy-files-to-build-area, jam-files, inject-build-info, images, i18n">
+  <target name="war" depends="copy-files-to-build-area, templates, jam-files, inject-build-info, images, i18n">
     <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
@@ -683,7 +684,7 @@
 	</war>
   </target>
 
-	<target name="prod-war" depends="copy-files-to-build-area, inject-build-info, compress-js-files, images, i18n, compress-ale-files">
+	<target name="prod-war" depends="copy-files-to-build-area, templates, inject-build-info, compress-js-files, images, i18n, compress-ale-files">
     <property file="${build.dir}/build.properties" />
     <copy file="WebRoot/WEB-INF/web.xml.production" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="true"/>
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
