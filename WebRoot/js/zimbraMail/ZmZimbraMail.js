@@ -397,6 +397,8 @@ function(params) {
 		rootTg.addMember(appChooserTg);
 		var kbMgr = this._appCtxt.getKeyboardMgr();
 		kbMgr.setTabGroup(rootTg);
+		
+		this._settings._loadShortcuts();
 	} else {
 		kbMgr.enable(false);
 	}
@@ -1023,7 +1025,7 @@ function(ev) {
 		cd.setMessage(ZmMsg.skinChangeRestart, DwtMessageDialog.WARNING_STYLE);
 		cd.popup();
 	} else if (id == ZmSetting.SHORTCUTS) {
-		this._appCtxt.getKeyboardMgr().registerKeyMap(new ZmKeyMap());
+		this._appCtxt.getKeyboardMgr().registerKeyMap(new ZmKeyMap(this._appCtxt));
 		this._settings._loadShortcuts();
 	}
 };

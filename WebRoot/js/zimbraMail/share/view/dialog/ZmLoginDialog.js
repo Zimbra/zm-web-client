@@ -103,16 +103,19 @@ function(visible, transparentBg) {
 	DwtComposite.prototype.setVisible.call(this, visible);
 
 	// Disable keyboard nav for re-login dialog
-	if (visible) {
-	   	if (this._keyboardMgr.isEnabled()) {
-   			this._keyboardMgr.enable(false);
-   			this._kbnavDisabled = true;
-   		}
-	} else {
-   	    if (this._kbnavDisabled) {
-	    	this._keyboardMgr.enable(true);
-	    	this._kbnavDisabled = false;
-	    }
+	var kbm = this._appCtxt.getKeyboardMgr();
+	if (kbm) {
+		if (visible) {
+		   	if (kbm.isEnabled()) {
+   				kbm.enable(false);
+   				this._kbnavDisabled = true;
+   			}
+		} else {
+   		    if (this._kbnavDisabled) {
+		    	kbm.enable(true);
+		    	this._kbnavDisabled = false;
+		    }
+		}
 	}
    	
 	if (!visible) return;

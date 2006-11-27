@@ -42,8 +42,8 @@
  */
 function ZmKeyMap(appCtxt) {
 	
-	DwtKeyMap.call(this);
 	this._appCtxt = appCtxt;
+	DwtKeyMap.call(this);
 	this._load(this._map, ZmKeys, ZmKeyMap.MAP_NAME);
 
 	this._map["Global"]["Alt+Shift+D,0"] = ZmKeyMap.DBG_NONE;

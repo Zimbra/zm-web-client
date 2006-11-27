@@ -158,8 +158,6 @@ function(callback, result) {
 		this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status);
 	}
 	
-	this._loadShortcuts();
-
 	// handle settings whose values may depend on other settings
 	this._settings[ZmSetting.GROUP_MAIL_BY].setValue(this.get(ZmSetting.INITIAL_GROUP_MAIL_BY), null, true);
 	if ((this.get(ZmSetting.GROUP_MAIL_BY) == ZmSetting.GROUP_BY_CONV) && !this.get(ZmSetting.CONVERSATIONS_ENABLED)) {
@@ -356,7 +354,7 @@ function() {
 	var maps = {};
 	var kmm = kbm.__keyMapMgr;
 	var scString = this.get(ZmSetting.SHORTCUTS);
-	if (!scString) { return; }
+	if (!scString || !kmm) { return; }
 	var shortcuts = scString.split('|');
 	var len = shortcuts.length;
 	for (var i = 0; i < len; i++) {
