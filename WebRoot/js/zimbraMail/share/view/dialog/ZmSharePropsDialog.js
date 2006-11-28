@@ -488,6 +488,7 @@ function() {
 	this._urlGroup = new DwtGrouper(view);
 	this._urlGroup.setLabel(ZmMsg.url);
 	this._urlGroup.setContent(urlHtml);
+	this._urlGroup._setAllowSelection();
 
 	// save information elements
 	this._nameEl = document.getElementById(nameId)
