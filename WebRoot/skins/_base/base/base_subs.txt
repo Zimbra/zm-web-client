@@ -297,6 +297,7 @@ SashSize					= 8px
 MiniCalButtonSize			= 
 
 TextPaddingSize				= 3px
+PanelPaddingSize			= 10px
 BoxPaddingSize				= 5px
 BoxMarginSize				= 5px
 SmallBoxPaddingSize			= 2px
@@ -508,6 +509,7 @@ VerticalScrollOverflow		= overflow:-moz-scrollbars-vertical; overflow-x:hidden; 
 TextPadding					= padding-left:@TextPaddingSize@; padding-right:@TextPaddingSize@;
 BoxMargin					= margin:@BoxMarginSize@;
 BoxPadding				 	= padding:@BoxPaddingSize@;
+PanelPadding				= padding:@PanelPaddingSize@;
 LeftBoxPadding				= padding-left:@BoxPaddingSize@;
 SmallBoxPadding				= padding:@SmallBoxPaddingSize@;
 BoxSpacing					= @BoxPadding@ @BoxMargin@

@@ -1,20 +1,78 @@
+<template id="OptionsOuter">
+<table id='' class='fullSize' cellspacing=0 cellpadding=0>
+	<tr><td>
+		<table class='ZTabTable' cellspacing=0 cellpadding=0>
+			<tr>
+				<td><div class='ZTabStart'></div></td>
+				<td><div id='${id}_tab_General' class='ZTab'>General</div></td>
+				<td><div id='${id}_tab_Mail' class='ZTab'>Mail</div></td>
+				<td><div id='${id}_tab_Identities' class='ZTab'>Mail Identities</div></td>
+				<td><div id='${id}_tab_Pop' class='ZTab selected'>Pop Accounts</div></td>
+				<td><div id='${id}_tab_Filters' class='ZTab'>Mail Filters</div></td>
+				<td><div id='${id}_tab_AddressBook' class='ZTab'>Address Book</div></td>
+				<td><div id='${id}_tab_Calendar' class='ZTab'>Calendar</div></td>
+				<td><div id='${id}_tab_Shortcuts' class='ZTab'>Shortcuts</div></td>
+				<td width=100%><div class='ZTabEnd'></div></td>
+			</tr>
+		</table>
+	</td></tr>
+	<tr>
+		<td colspan=2 style='padding:0px'><div class='ZmPanelHead'>POP Accounts</div></td>
+	</tr>
+	<tr><td style='height:100%' valign=top>
+		<div class='ZScrollContainerOuter'>
+			<div class='ZScrollContainerInner'>
+	<$= AjxTemplate.expand("zimbraMail.prefs.templates.Options#ListOptionPage", data.pop) $>
+			</div>
+		</div>
+	</td><tr>
+</table>
+</template>
+
+
+
+
 <template id="ListOptionPage" xml:space="strip">
-<table id='${id}_outer'>
+<table id='${id}_outer' class='fullSize' cellspacing=0 cellpadding=0>
 <tr>
-	<td colspan=2>${title}</td>
-</tr>
-<tr>
-	<td rowspan=2 id="list"></td>
-	<td id="${bubble.id}"><$= AjxTemplate.expand("zimbraMail.prefs.templates.Widgets#bubble", data.bubble) $></td>
-</tr>
-<tr id="${form.id}_outer_tr">
-	<td id="${form.id}_outer_td">
-		<table cellspacing=0 cellpadding=0 height="100%">
-			<tr><td><div class='ImgInformation' style='float:right;'></div>
-					<span class="">${form.title}</span>
+	<td class='ZmOptionsFormListCell'>
+		<table class='ZmOptionsFormListTable' cellspacing=0 cellpadding=0>
+			<colgroup><col width=50%><col width=50%></colgroup>
+			<tr><td height=100% colspan=2>
+				<div id='${id}_list' class='ZmOptionsFormList'>List</div>
+			</td></tr>
+			<tr><td class='ZmOptionsFormListButtonCell'  style='padding-right:5px;'>
+					<button id='${id}_add_button' style='width:100%;'>Add</button>
+				</td>
+				<td class='ZmOptionsFormListButtonCell' style='padding-left:5px;'>
+					<button id='${id}_remove_button' style='width:100%;'>Remove</button>
 				</td>
 			</tr>
-			<tr><td style='height:100%'><$= AjxTemplate.expand(data.form.template, data.form) $></td></tr>				
+
+		</table>
+	</td>
+	<td class='ZmOptionsFormFormCell' valign=bottom>
+		<table style='height:100%;width:100%;' cellspacing=0 cellpadding=0 >
+			<tr id="${bubble.id}">
+				<td><$= AjxTemplate.expand("zimbraMail.prefs.templates.Widgets#bubble", data.bubble) $></td>
+			</tr>
+			<tr>
+				<td>
+					<div class='ZSubPanelHead'>
+						<div class='ImgInformation ZInfoBoxImg' onclick='controller.toggle("${bubble.id}")'></div>
+						<$= ZmMsg.popAccountSettings $>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class='ZmOptionsFormCell' style='height:100%;' valign=top>
+					<div class='ZScrollContainerOuter'>
+						<div class='ZScrollContainerInner'>
+							<$= AjxTemplate.expand(data.form.template, data.form) $>
+						</div>
+					</div>
+				</td>
+			</tr>
 		</table>
 	</td>
 </tr>
@@ -22,75 +80,114 @@
 </template>
 
 
+
+<!--
+	@param		id 				Outer id of the entire form, applied to field names etc
+	@content	${id}_foo		Foo label
+	@replace	${id}_name 		Name field
+
+
+-->
 <template id="PopForm" xml:space="strip">
-<form id="${id}" onsubmit='return false'>
-	<table class="" cellspacing=0 cellpadding=0>	
-	<tr><td><label for="${id}_name">Account name:</label></td>
-		<td><input id="${id}_name" type=text></td>
+<table class="ZFormTable" cellspacing=0 cellpadding=0>
+	<colgroup><col width=30%><col width=70%></colgroup>
+	<tr><td><div class='ZSmallSpacer'></div></td></tr>
+	<tr><td class='ZLabelCell'><$= ZmMsg.popAccountNameLabel $></td>
+		<td><input id="${id}_name" type=text style='width:35em'></td>
+	</tr>
+	<tr><td class='ZLabelCell'><$= ZmMsg.popAccountFolderLabel $></td>
+		<td><button id="${id}_location" type=text  style='width:35em'>Inbox</button></td>
 	</tr>
 
-	<tr><td><div class=smallSpacer></div></td></tr>
 
-	<tr><td><label for="${id}_server">Mail server:</label></td>
-		<td><input id="${id}_server" type=text></td>
+	<tr><td colspan=2><div class=ZLineDivider>
+		<span class=ZLineDividerTitle>Account Settings</span>
+		<span class='ZLineDividerFloatRight'>
+			<label for='${id}_show_advanced' class='ZCheckboxLabelInline'>
+				<input id='${id}_show_advanced' type='checkbox' class='ZCheckbox'
+					onchange='controller.toggleAdvanced(this.checked);'
+				>&nbsp;Show Advanced Options</label>		
+		</span>
+	</div></td></tr>
+
+	<tr><td class='ZLabelCell'><$= ZmMsg.popAccountServerLabel $></td>
+		<td><input id="${id}_server" type=text style='width:35em'></td>
 	</tr>
 
-	<tr><td><label for="${id}_username">Username:</label></td>
-		<td><input id="${id}_username" type=text></td>
+	<tr><td class='ZLabelCell'><$= ZmMsg.usernameLabel $></td>
+		<td><input id="${id}_username" type=text style='width:35em'></td>
 	</tr>
 
-	<tr><td><label for="${id}_password">Password:</label></td>
-		<td><input id="${id}_password_text" type='password'>
-			<input id="${id}_password_pass" type='text'><label for='${id}_show_password'><input for='${id}_show_password' type='checkbox'>Show password</label></td>
+	<tr><td class='ZLabelCell'><$= ZmMsg.passwordLabel $></td>
+		<td><input id="${id}_password" type='password' style='width:10em'>
+			<label for='${id}_show_password' class='ZCheckboxLabelInline'>
+				<input id='${id}_show_password' type='checkbox' class='ZCheckbox'>&nbsp;<$= ZmMsg.showPassword $></label>
+		</td>
 	</tr>
 
-	<tr><td><label for="${id}_port">Port:</label></td>
-		<td><input id="${id}_port" type=text>
+	<tr id='${id}_ssl_row'><td class='ZCheckboxCell'><input id="${id}_ssl" type=checkbox></td>
+		<td><label for='${id}_ssl' class='ZCheckboxLabel'><$= ZmMsg.popAccountUseSSL $></label></td>
+	</tr>
+
+	<tr id='${id}_port_row'><td class='ZLabelCell'><$= ZmMsg.portLabel $></td>
+		<td><input id="${id}_port" type=text style='width:6em'>
 			<span class='helpText'>(default is <span id="${id}_port_label">110</span>)</span>
 		</td>
 	</tr>
-	<tr><td><input id="${id}_ssl" type=checkbox></td>
-		<td><label for="${id}_ssl">Use SSL to connect securely</label></td>
-	</tr>
+
+	<tr><td><div class='ZSmallSpacer'></div></td></tr>
 
 	<tr><td></td>
-		<td id='${id}_testButton'><button>Test Account Settings</button></td>
-	</tr>
-
-	<tr><td><div class=smallSpacer></div></td></tr>
-
-	<tr><td><label for="${id}_location">Place messages in folder:</label></td>
-		<td><button id="${id}_location" type=text>Inbox</button></td>
+		<td><button id='${id}_testButton'><$= ZmMsg.popAccountTest $></button></td>
 	</tr>
 
 
-	<tr><td><input id="${id}_create_identity" type=checkbox></td>
-		<td><label for="${id}_create_identity">Create a new identity for this account</label></td>
+	<tr id='${id}_identity_title_row'><td colspan=2><div class=ZLineDivider><span class=ZLineDividerTitle>Identities</span></div></td></tr>
+	<tr id='${id}_identity_help_row'><td colspan=2>
+		<div class='ZHelpLabelIndent'>
+			Create a new identity if you wish to respond to mail received from this account
+			using the name of the account rather than your default Zimbra name.
+			[Text will change]
+			<div class='ZSmallSpacer'></div>
+		</div>
+	</td></tr>
+
+
+	<tr id='${id}_identity_create_row'>
+		<td class='ZCheckboxLabelCell' colspan=2 style='padding-left:50px;'>
+		<input id="${id}_create_identity" type=checkbox onchange='controller.toggleIdentityFields(this.checked)'>
+		<label for='${id}_create_identity' class='ZCheckboxLabelInline'>
+				<$= ZmMsg.popAccountCreateNewIdentity $></label></td>
 	</tr>
-	
-	<tr id="${id}_identity_sub_form"><td></td>
-		<td>
-			<table cellspacing=0 cellpadding=0>			
-				<tr><td><label for="${id}_identity_name">Identity name:</label></td>
-					<td id="${id}_identity_name">New Account 1</td>
-				</tr>
 
-				<tr><td><label for="${id}_email">Email address:</label></td>
-					<td><input id="${id}_email" type=text></td>
-				</tr>
+	<tr id='${id}_identity_spacer_row'><td><div class='ZSmallSpacer'></div></td></tr>
 
-				<tr><td><label>Link to new identity:</label></td>
-					<td><input id="${id}_identity_use_address" type=checkbox><label for="${id}_identity_use_address">When replying to messages sent to this email address</label></td>
-				</tr>
-
-				<tr><td></td>
-					<td><input id="${id}_identity_use_folder" type=checkbox><label for="${id}_identity_use_folder">When reading or replying to messages in this folder</label></td>
-				</tr>
-
-			</table>
-		</td>
+	<tr id='${id}_identity_name_row'><td class='ZLabelCell'><$= ZmMsg.identityNameLabel $></td>
+		<td id="${id}_identity_name">New Account 1</td>
 	</tr>
-	</table>
-</form>
+
+	<tr id='${id}_identity_email_row'><td class='ZLabelCell'><$= ZmMsg.emailAddrLabel $></td>
+		<td><input id="${id}_email" type=text style='width:35em'></td>
+	</tr>
+
+	<tr id='${id}_identity_use_address_row'><td class='ZLabelCell'>Link to new identity:</td>
+		<td><input id="${id}_identity_use_address" type=checkbox>
+			<label for="${id}_identity_use_address" class='ZCheckboxLabel'>
+				When replying to messages sent to this email address
+			</label></td>
+	</tr>
+
+	<tr id='${id}_identity_use_folder_row'><td></td>
+		<td><input id="${id}_identity_use_folder" type=checkbox>
+			<label for="${id}_identity_use_folder" class='ZCheckboxLabel'>
+				When reading or replying to messages in this folder
+			</label></td>
+	</tr>
+	<tr><td><div class='ZSmallSpacer'></div></td></tr>
+
+</table>
 </template>
+
+
+
 

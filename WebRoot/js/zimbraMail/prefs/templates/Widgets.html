@@ -1,8 +1,9 @@
 <template id="bubble" xml:space="strip">
-<div id="${id}_bubble">
-	<table id='${id}_bubble_outer'>
+<div id="${id}_bubble" class='ZInfoBox'>
+	<table id='${id}_bubble_outer' width='100%' cellspacing=0 cellpadding=0>
 	<tr>
-		<td class=""><div id="${id}_bubble_close" class="floatRight"><$= AjxMsg.close $></div><span id="${id}_title">${title}</span></td>
+		<td rowspan=2 style='vertical-align:top'><div class='ImgInformation_32'></div></td>
+		<td><div id="${id}_bubble_close" class="ZInfoTitleClose" onclick='controller.hide("${id}")'><$= ZmMsg.close $></div><div id="${id}_title" class='ZInfoTitle'>${title}</div></td>
 	</tr>
 	<tr>
 		<td id="${id}_body">${body}</td>

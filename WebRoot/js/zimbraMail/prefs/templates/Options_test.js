@@ -1,5 +1,81 @@
+var controller = {
+	id : "Options",
+	
+	afterInit : function(templateId) {
+		this.current = data.pop;
+		//this.toggleIdentitySection();
+		this.toggleIdentityFields(false);
+		this.toggleAdvanced(false);
+	},
+	
+	
+	// hide the entire identities section (for 'edit')
+	toggleIdentitySection : function(newState) {
+		this.toggle("form_identity_title_row",newState);
+		this.toggle("form_identity_help_row",newState);
+		this.toggle("form_identity_create_row",newState);
+		this.toggleIdentityFields(newState);
+	},
+	
+	// hide the identity fields dependent on the checkbox
+	toggleIdentityFields : function(newState) {
+		this.toggle("form_identity_spacer_row",newState);
+		this.toggle("form_identity_name_row",newState);
+		this.toggle("form_identity_email_row",newState);
+		this.toggle("form_identity_use_address_row",newState);
+		this.toggle("form_identity_use_folder_row",newState);
+	},
+
+	// show advanced options
+	toggleAdvanced : function(newState) {
+		this.toggle("form_ssl_row",newState);
+		this.toggle("form_port_row",newState);
+	},
+	
+	//
+	//	generic stuff
+	//
+	
+	
+	byId : function(id) {
+		var el = id;
+		if (typeof id == "string") {
+			el = document.getElementById(id);
+			if (el == null) el = document.getElementById(this.current.id + "_" + id);
+		}
+		return el;	
+	},
+	
+	
+	toggle : function (el, makeVisible) {
+		if (makeVisible == null) makeVisible = (this.getStyle(el, "display") == "none");
+		if (makeVisible) this.show(el);
+		else this.hide(el);
+	},
+	
+	show : function(el){
+		this.setStyle(el, "display", "");
+	},
+
+	hide : function(el){
+		this.setStyle(el, "display", "none");
+	},
+	
+	getStyle : function(el, styleProp) {
+		el = this.byId(el);
+		if (!el) return null;
+		return el.style[styleProp];
+	},
+
+	setStyle : function(el, styleProp, newValue) {
+		el = this.byId(el);
+		if (!el) return;
+		el.style[styleProp] = newValue;
+	}
+}
+
 var data = {
-    id: "Options",
+    id: controller.id,
     general:{},
 	mail:{},
 	identity:{},
@@ -11,18 +87,18 @@ var data = {
 	zimlets:{}
 };
 
-data.pop.data = {
+data.pop = {
 		id: data.id+"_pop",
 		title:"POP Accounts"
 };
-data.pop.data.bubble = {
-		id: data.pop.data.id+"_bubble",
-		title: ZmMsg.AboutPopAccountsTitle, 
-		body: ZmMsg.AboutPopAccountsBody
+data.pop.bubble = {
+		id: data.pop.id+"_bubble",
+		title: ZmMsg.popAccountsInfoHeader, 
+		body: ZmMsg.popAccountsInfo
 };
 
-data.pop.data.form = {
-		id: data.pop.data.id+"_form",
+data.pop.form = {
+		id: data.pop.id+"_form",
 		template: "zimbraMail.prefs.templates.Options#PopForm",
 		title:"Account Settings",
 		
@@ -58,6 +134,3 @@ data.pop.data.form = {
 		}
 };
 
-// Make POP Accounts default page
-data.bubble = data.pop.data.bubble;
-data.form = data.pop.data.form;

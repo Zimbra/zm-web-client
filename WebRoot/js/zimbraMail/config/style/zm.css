@@ -2417,3 +2417,232 @@ HTML>BODY .appt-selected .appt_allday_body
 .GrayDarkC			{ color:#A9A9A9; }
 .GrayLightC			{ color:#D4D4D4; }
 .GrayBgC			{ color:#E9E9E9; }
+
+
+
+
+
+/*  NEW TEMPLATE STYLES */
+
+.ZScrollContainerOuter {
+	height:100%;
+	width:100%;
+	position:relative;
+	overflow:auto;
+}
+
+.ZScrollContainerInner {
+	height:100%;
+	position:absolute;
+	overflow:auto
+	padding-right:16px;
+}
+
+.ZmOptionsFormCell {
+	@InsetBg@
+	@SeparatorBorder@
+}
+
+
+.ZmOptionsFormListCell {
+	@PanelPadding@
+	vertical-align:top;
+}
+.ZmOptionsFormListTable {
+	height:100%;
+	table-layout:fixed;
+	@SeparatorBorder@
+}
+
+.ZmOptionsFormList {
+	@InsetBg@
+	width:200px;
+	height:100%;
+}
+
+.ZmOptionsFormListButtonCell {
+	@PanelPadding@
+	background-color:@_SelColorL30_@;
+	@TopSeparator@
+}
+
+.ZmOptionsFormFormCell {
+	height:100%;
+	width:100%;
+	@PanelPadding@
+	padding-left:0px;
+}
+
+
+.ZFormTable {
+	width:100%;
+}
+
+.ZFormTable TD {
+	padding:2px;
+}
+
+/* checkbox element */
+.ZCheckbox {}
+
+
+.ZLabelCell {
+	text-align:right;
+}
+.ZCheckboxCell {
+	text-align:right;
+}
+
+.ZCheckboxLabel {
+	cursor:pointer;
+}
+ 
+.ZCheckboxLabelCell {}
+
+.ZCheckboxLabelInline {
+	cursor:pointer;
+}
+
+
+.ZSpacer {
+	height:7px; 
+	margin-bottom:7px;
+}
+.ZSmallSpacer {
+	height:3px; 
+	margin-bottom:3px;
+}
+.ZSectionSeparator {
+	border-bottom:3px double #666666;
+	height:10px; 
+	margin-bottom:10px;
+}
+
+
+.ZmPanelHead {
+	@FontSize-bigger@
+	background-color:@_SelColor_@;
+	@BoxPadding@
+	padding-left:@PanelPaddingSize@;
+	font-weight:bold;
+}
+
+.ZSubPanelHead	 {
+	@FontSize-big@
+	@SeparatorBorder@
+	border-bottom-width:0px;
+	@ToolbarBg@
+	@BoxPadding@
+	font-weight:bold;
+}
+
+
+.ZSubItemFieldset {
+	padding:7px 10px 12px 10px;
+}
+
+.ZLineDivider {
+	@BottomSeparator@
+	margin-top:1em;
+	margin-bottom:1em;
+	position:relative;
+}
+
+.ZLineDividerTitle {
+	position:absolute;
+	@InsetBg@
+	font-weight:bold;
+	left:10px;
+	top:-.6em;
+	padding-left:3px;
+	padding-right:3px;
+}
+
+.ZLineDividerFloatRight {
+	@InsetBg@
+	float:right;
+	margin-right:10px;
+	margin-top:-.5em;
+	padding-left:3px;
+	padding-right:3px;
+}	
+
+.ZHelpLabel,
+.ZHelpLabelIndent {
+	@FontSize-smaller@
+	color:#666666;
+}
+.ZHelpLabelIndent {
+	padding-left:20px;
+	padding-right:20px;
+}
+
+
+.ZInfoBox {
+	margin:0px 0px 10px 0px;
+	background-color:#FFF6BF;
+	border:1px solid #FFDD00;
+	-moz-border-radius:10px;
+	padding:10px;
+}
+
+.ZInfoBoxImg {
+    float:right;
+	cursor:pointer;
+}
+
+.ZInfoTitle {
+	padding-left:5px;
+	font-weight:bold;
+	border-bottom:1px solid #FFDD00;
+	margin-bottom:10px;
+}
+
+.ZInfoTitleClose {
+	margin-right:5px;
+	float:right;
+	font-weight:normal;
+	cursor:pointer;
+}
+
+.ZSeparatorBorder {
+	@SeparatorBorder@
+}
+
+
+.ZTabTable {
+	width:100%;
+	padding-top:3px;
+	@ToolbarBg@
+}
+
+.ZTab {
+	position:relative;
+	height:15px;
+	padding:3px 10px 3px 10px;
+	@SeparatorBorder@
+	border-bottom-width:0px;
+	-moz-border-radius:8px 8px 0px 0px;
+	min-width:40px;
+	text-align:center;
+	white-space:nowrap;
+	@InsetBg@
+	margin:3px 0px 1px 0px;
+}
+
+.ZTabTable .selected {
+	background-color:@_SelColor_@;
+	border-bottom-color:@_SelColor_@;
+	height:18px;
+	padding-top:6px;
+	padding-bottom:0px;
+	margin:1px 0px 0px 0px;
+}
+
+.ZTabStart {
+	width:5px;
+}
+
+.ZTabEnd {
+	width:100%;
+}
