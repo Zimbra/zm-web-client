@@ -21,7 +21,7 @@
 	</tr>
 	<tr><td style='height:100%' valign=top>
 		<div class='ZScrollContainerOuter'>
-			<div class='ZScrollContainerInner'>
+			<div id='${id}_page_conatiner' class='ZScrollContainerInner'>
 	<$= AjxTemplate.expand("zimbraMail.prefs.templates.Options#ListOptionPage", data.pop) $>
 			</div>
 		</div>
@@ -67,7 +67,7 @@
 			<tr>
 				<td class='ZmOptionsFormCell' style='height:100%;' valign=top>
 					<div class='ZScrollContainerOuter'>
-						<div class='ZScrollContainerInner'>
+						<div id='${id}_form_container' class='ZScrollContainerInner'>
 							<$= AjxTemplate.expand(data.form.template, data.form) $>
 						</div>
 					</div>
