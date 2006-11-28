@@ -748,6 +748,8 @@ ZmContactList.prototype.quickComplete =
 function(str) {
 	if (str.indexOf("@") != -1) {
 		return null;
+	} else if (this.type == ZmItem.RESOURCE) {
+		return null;
 	}
 	var result = {};
 	if (!this._userDomain) {

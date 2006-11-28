@@ -540,10 +540,12 @@ function(str, chunk, text, start, callback, list) {
 		if (chunk && chunk.delim && (chunk.end == chunk.text.length - 1)) {
 			DBG.println(AjxDebug.DBG2, "performing quick completion");
 			var result = this._complete(text, str, true);
-			text = result.text;
-			start = result.start;
-			match = result.match;
-			change = true;
+			if (result) {
+				text = result.text;
+				start = result.start;
+				match = result.match;
+				change = true;
+			}
 		} else if (list && list.length) {
 			// show the list
 			this.show(true, this._loc);
