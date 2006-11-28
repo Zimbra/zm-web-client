@@ -202,7 +202,6 @@ function ZmShortcutsPageTabView(parent, appCtxt, controller, organizers, prefId)
 	this._controller = controller;
 	this._organizers = organizers;
 
-    this.setScrollStyle(DwtControl.SCROLL);
 	this._scTabView = {};
 	this._hasRendered = false;
 	this._setting = appCtxt.get(prefId);
