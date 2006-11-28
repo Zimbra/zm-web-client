@@ -105,22 +105,15 @@ function() {
 	this._toastContentDivId = Dwt.getNextId();
 	
 	var html = new AjxBuffer();
-/*	
-	html.append("<table style='width:100%;height:100%;' align='center'><tr><td align=center>");
-	html.append("<div class='ZmStatusMainText' id='"+this._mainContentDivId+"'></div></td></tr></table>");
-*/
-	html.append("<table vorder=0 cellpadding=0 cellspacing=0 style='width:100%;'> ");
+
+	html.append("<table border=0 cellpadding=0 cellspacing=0 style='width:100%;'> ");
 	html.append("<tr>");
 	html.append("<td style='width:20px;' align='center'><div id='",inboxId,"'", AjxImg.getImageHtml("Inbox"), "</div></td>");
 	html.append("<td style='width:20px;' align='center'><div id='",imId,"'", AjxImg.getImageHtml("ImStartChat"), "</div></td>");	
 	html.append("<td style='height:16px' align='center'><div class='ZmStatusMainText' id='"+this._mainContentDivId+"'></div></td>");
-//	html.append("<td style='width:20px;' align='center'>", AjxImg.getImageHtml("Appointment"), "</td>");
 	html.append("<td style='width:20px;' align='center'><div id='", busyId, "' class='DwtWait16Icon'/></td>");
 	html.append("<td style='width:20px;' align='center'><div id='", blankId, "' class='Blank_16'/></td>");	
-//	html.append("<td style='width:20px;' align='center'>", AjxImg.getImageHtml("SendReceive"), "</td>");
-
 	html.append("</tr></table>");
-
 	html.append("<div id='", this._toastDivId, "'>");
 	html.append("<table style='width:100%;height:100%;' align='center'><tr><td align=center>");
 	html.append("<div class='ZmStatusToastText' id='"+this._toastContentDivId+"'></div></td></tr></table></div>");
@@ -135,7 +128,7 @@ ZmStatusView.prototype._getToastEl = function () {	return document.getElementByI
 ZmStatusView.prototype._getToastContentEl = function () {	return document.getElementById(this._toastContentDivId); };
 
 ZmStatusView.prototype._setMainText = function(text) {
-	 this._getMainContentEl().innerHTML = AjxStringUtil.htmlEncode(text);
+	this._getMainContentEl().innerHTML = AjxStringUtil.htmlEncode(text);
 }
 
 ZmStatusView.prototype._setToastText =
@@ -294,11 +287,6 @@ function(state) {
 	state.x -= state.xDelta;	
 	state.opacity += state.opacityDelta;
 
-//DBG.println("state.y = "+state.y);	
-//DBG.println("state.yDelta = "+state.yDelta);	
-//DBG.println("state.num = "+state.num);
-//DBG.println("state.showing= "+state.showing);
-
 	if (--state.num == 0) {
 		if (state.showing) {
 			state.showing = false;
@@ -356,13 +344,11 @@ ZmStatusView.prototype._mouseOverListener =
 function(ev) {
 	this._mouseOver = true;
 	if (this._statusQueue.length == 0) this._replayHistory(0);
-	//DBG.println("over ====" +this._counter++);
 };
 
 ZmStatusView.prototype._mouseOutListener = 
 function(ev) {
 	this._mouseOver = false;
-	//DBG.println("out");
 };
 
 ZmStatusView.prototype._mouseDownListener = 
@@ -377,5 +363,4 @@ function(ev) {
 	}
 	this._historyDialog.initialize(AjxVector.fromArray(this._statusHistory).clone());
 	this._historyDialog.popup();
-	DBG.println("double click");
 };
