@@ -371,6 +371,7 @@ function(keys, mapNames, html, i) {
 	var or = [" ", ZmMsg.or, " "].join("");
 	for (var j = 0; j < maps.length; j++) {
 		var map = maps[j];
+		if (!keySequences[map]) { continue; }
 		html[i++] = "<table class='shortcutList' cellspacing=0 cellpadding=0>";
 		html[i++] = "<tr><td class='shortcutListHeader' colspan=2><div class='PanelHead'>";
 		html[i++] = mapDesc[map];
