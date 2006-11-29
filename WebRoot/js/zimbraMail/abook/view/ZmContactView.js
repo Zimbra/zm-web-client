@@ -785,7 +785,7 @@ function() {
 	ids = ids.concat(ZmContactView.primaryInfoOne, ZmContactView.primaryInfoTwo, ZmContactView.emailInfo,
 					 ZmContactView.workAddrInfo, ZmContactView.workPhoneInfo, ZmContactView.homeAddrInfo,
 					 ZmContactView.homePhoneInfo, ZmContactView.otherAddrInfo, ZmContactView.otherPhoneInfo,
-					 ZmContact.F_notes);
+					 ZmContact.F_birthday, ZmContact.F_notes);
 	var fields = [];
 	for (var i = 0; i < ids.length; i++) {
 		var field = document.getElementById(this._fieldIds[ids[i]]);
