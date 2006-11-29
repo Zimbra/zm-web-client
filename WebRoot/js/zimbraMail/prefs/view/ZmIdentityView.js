@@ -742,7 +742,7 @@ function(checkbox) {
 
 ZmIdentityPage.prototype._checkboxHandler =
 function(event) {
-	var checkbox = event.target;
+	var checkbox = DwtUiEvent.getTarget(event);
 	this._applyCheckbox(checkbox);
     this.parent.validate();
 };
