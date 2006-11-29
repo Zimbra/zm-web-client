@@ -66,6 +66,7 @@ Contributor(s):
 	</style>
     <script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext %>?v=<%=vers %>"></script>
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
+    <jsp:include page="../../public/Boot.jsp"/>
     <jsp:include page="../../public/Ajax.jsp"/>
     <jsp:include page="index_js.jsp"/>
 <% } else { %>
