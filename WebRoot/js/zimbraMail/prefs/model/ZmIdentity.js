@@ -436,10 +436,12 @@ function(mailMsg, type) {
 	var identity;
 	var addresses = mailMsg.getAddresses(type).getArray();
 	for (var i = 0, count = addresses.length; i < count; i++) {
-		var address = addresses[i].getAddress().toLowerCase();
-		identity = this._addressToIdentity[address];
-		if(identity) {
-			return identity;
+		var address = addresses[i].getAddress();
+		if (address) {
+			identity = this._addressToIdentity[address.toLowerCase()];
+			if(identity) {
+				return identity;
+			}
 		}
 	}
 	return null;
