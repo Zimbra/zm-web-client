@@ -248,6 +248,11 @@ function() {
 			html[idx++] = ', "';
 			html[idx++] = alphabet[i];
 			html[idx++] = '"';
+			if (i+1 < cellCount) {
+				html[idx++] = ', "';
+				html[idx++] = alphabet[i+1];
+				html[idx++] = '"';
+			}
 		}
 		html[idx++] = "); return false;' class='DwtButton AlphabetBarCell' onmouseover='ZmContactAlphabetBar._onMouseOver(this)' onmouseout='ZmContactAlphabetBar._onMouseOut(this)'";
 		if (i > 0) {
@@ -264,14 +269,14 @@ function() {
 };
 
 ZmContactAlphabetBar._alphabetClicked =
-function(cell, letter) {
+function(cell, letter, endLetter) {
 	// get reference to alphabet bar - ugh
 	var appCtxt = window._zimbraMail._appCtxt;
 	var clc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
 	var alphabetBar = clc.getParentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
 		alphabetBar.reset(cell);
-		clc.searchAlphabet(letter);
+		clc.searchAlphabet(letter, endLetter);
 	}
 };
 

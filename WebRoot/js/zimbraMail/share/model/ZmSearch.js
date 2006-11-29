@@ -60,6 +60,7 @@ function ZmSearch(appCtxt, params) {
 		this.isGalAutocompleteSearch	= params.isGalAutocompleteSearch;
 		this.lastId						= params.lastId;
 		this.lastSortVal				= params.lastSortVal;
+		this.endSortVal					= params.endSortVal;
 		this.fetch 						= params.fetch;
 		this.markRead       			= params.markRead;
 		this.searchId					= params.searchId;
@@ -306,6 +307,8 @@ function(soapDoc) {
 		var cursor = soapDoc.set("cursor");
 		cursor.setAttribute("id", this.lastId);
 		cursor.setAttribute("sortVal", this.lastSortVal);
+		if (this.endSortVal)
+			cursor.setAttribute("endSortVal", this.endSortVal);
 	}
 
 	this.offset = this.offset || 0;

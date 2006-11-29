@@ -178,14 +178,14 @@ function() {
 };
 
 ZmContactListController.prototype.searchAlphabet =
-function(letter) {
+function(letter, endLetter) {
 	var folderId = this._folderId || ZmFolder.ID_CONTACTS;
 	var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId);
 	var query = folder ? folder.createQuery() : null;
 
 	if (query) {
 		var limit = this._listView[this._currentView].getLimit();
-		var params = {query:query, offset:0, limit:limit, lastId:0, lastSortVal:letter};
+		var params = {query:query, offset:0, limit:limit, lastId:0, lastSortVal:letter, endSortVal:endLetter};
 		var sc = this._appCtxt.getSearchController();
 		sc.search(params);
 	}
