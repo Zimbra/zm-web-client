@@ -278,6 +278,10 @@ function(result) {
 			}
 		}
 	}
+
+	// bug fix #2269 - enable/disable sort column per type of search
+	this._resetColHeaders();
+
 	this._chooser.setItems(AjxVector.fromArray(list));
 
 	this._searchButton.setEnabled(true);
@@ -287,6 +291,26 @@ ZmContactPicker.prototype._handleErrorSearch =
 function() {
 	this._searchButton.setEnabled(true);
 	return false;
+};
+
+ZmContactPicker.prototype._resetColHeaders =
+function() {
+	var slv = this._chooser.sourceListView;
+	slv._headerColCreated = false;
+
+	// find the participant column
+	var part = 0;
+	for (var i = 0; i < slv._headerList.length; i++) {
+		if (slv._headerList[i]._id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
+			part = i;
+			break;
+		}
+	}
+
+	var sortable = this._selectDiv.getValue() == ZmContactPicker.SEARCHFOR_GAL
+			? null : ZmContactPicker.ID_PARTICIPANT;
+	slv._headerList[part]._sortable = sortable;
+	slv.createHeaderHtml(sortable);
 };
 
 // Done choosing addresses, add them to the compose form
@@ -374,7 +398,7 @@ ZmContactChooserSourceListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
 	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_ICON, null, "Folder", 20));
-	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_PARTICIPANT, ZmMsg._name, null, 100, ZmItem.F_PARTICIPANT));
+	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_PARTICIPANT, ZmMsg._name, null, 100));
 	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_EMAIL, ZmMsg.email));
 
 	return headerList;
