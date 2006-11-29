@@ -110,7 +110,7 @@
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
 		<!--
-		@import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>,skin.css?v=<%= vers %>&skin=<%= skin %>);
+		@import url(<%= contextPath %>/css/imgs,<%= skin %>,dwt,common,zmadmin,login,msgview,spellcheck,skin.css?v=<%= vers %>&skin=<%= skin %>);
 		-->
 	</style>
     <jsp:include page="Boot.jsp"/>

@@ -60,7 +60,7 @@ Contributor(s):
     <title>Zimbra Spreadsheet Prototype</title>
 	<style type="text/css">
 	<!--
-    @import url(<%= contextPath %>/css/common,dwt,msgview,zm,spellcheck,imgs,<%= skin %>,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+    @import url(<%= contextPath %>/css/imgs,<%= skin %>,common,dwt,msgview,zm,spellcheck,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
     @import url(<%=contextPath %>/ALE/spreadsheet/style.css?v=<%=vers%>);
 	-->
 	</style>
