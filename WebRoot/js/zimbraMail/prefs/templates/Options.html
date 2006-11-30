@@ -1,20 +1,16 @@
 <template id="OptionsOuter">
 <table id='' class='fullSize' cellspacing=0 cellpadding=0>
 	<tr><td>
-		<table class='ZTabTable' cellspacing=0 cellpadding=0>
-			<tr>
-				<td><div class='ZTabStart'></div></td>
-				<td><div id='${id}_tab_General' class='ZTab'>General</div></td>
-				<td><div id='${id}_tab_Mail' class='ZTab'>Mail</div></td>
-				<td><div id='${id}_tab_Identities' class='ZTab'>Mail Identities</div></td>
-				<td><div id='${id}_tab_Pop' class='ZTab selected'>Pop Accounts</div></td>
-				<td><div id='${id}_tab_Filters' class='ZTab'>Mail Filters</div></td>
-				<td><div id='${id}_tab_AddressBook' class='ZTab'>Address Book</div></td>
-				<td><div id='${id}_tab_Calendar' class='ZTab'>Calendar</div></td>
-				<td><div id='${id}_tab_Shortcuts' class='ZTab'>Shortcuts</div></td>
-				<td width=100%><div class='ZTabEnd'></div></td>
-			</tr>
-		</table>
+		<ul class='ZTabList'>
+				<li id='${id}_tab_General' class='ZTab'>General</li>
+				<li id='${id}_tab_Mail' class='ZTab'>Mail</li>
+				<li id='${id}_tab_Identities' class='ZTab'>Mail Identities</li>
+				<li id='${id}_tab_Pop' class='ZTab selected'>Pop Accounts</li>
+				<li id='${id}_tab_Filters' class='ZTab'>Mail Filters</li>
+				<li id='${id}_tab_AddressBook' class='ZTab'>Address Book</li>
+				<li id='${id}_tab_Calendar' class='ZTab'>Calendar</li>
+				<li id='${id}_tab_Shortcuts' class='ZTab'>Shortcuts</li>
+		</ul>
 	</td></tr>
 	<tr>
 		<td colspan=2 style='padding:0px'><div class='ZmPanelHead'>POP Accounts</div></td>
@@ -89,7 +85,7 @@
 
 -->
 <template id="PopForm" xml:space="strip">
-<table class="ZFormTable" cellspacing=0 cellpadding=0>
+<table class="ZFormTable" cellspacing=0 cellpadding=2 border=0>
 	<colgroup><col width=30%><col width=70%></colgroup>
 	<tr><td><div class='ZSmallSpacer'></div></td></tr>
 	<tr><td class='ZLabelCell'><$= ZmMsg.popAccountNameLabel $></td>
@@ -103,10 +99,12 @@
 	<tr><td colspan=2><div class=ZLineDivider>
 		<span class=ZLineDividerTitle>Account Settings</span>
 		<span class='ZLineDividerFloatRight'>
-			<label for='${id}_show_advanced' class='ZCheckboxLabelInline'>
-				<input id='${id}_show_advanced' type='checkbox' class='ZCheckbox'
-					onchange='controller.toggleAdvanced(this.checked);'
-				>&nbsp;Show Advanced Options</label>		
+			<table cellspacing=0 cellpadding=0><tr>
+				<td><input id='${id}_show_advanced' type='checkbox' class='ZCheckbox'
+					onchange='controller.toggleAdvanced(this.checked);'></td>
+				<td><label for='${id}_show_advanced' class='ZCheckboxLabelInline'>
+						Show Advanced Options</label></td>
+			</tr></table>
 		</span>
 	</div></td></tr>
 
@@ -119,9 +117,12 @@
 	</tr>
 
 	<tr><td class='ZLabelCell'><$= ZmMsg.passwordLabel $></td>
-		<td><input id="${id}_password" type='password' style='width:10em'>
-			<label for='${id}_show_password' class='ZCheckboxLabelInline'>
-				<input id='${id}_show_password' type='checkbox' class='ZCheckbox'>&nbsp;<$= ZmMsg.showPassword $></label>
+		<td>
+			<table cellspacing=0 cellpadding=0><tr>
+				<td><input id="${id}_password" type='password' style='width:10em'></td>
+				<td>&nbsp;<input id='${id}_show_password' type='checkbox' class='ZCheckbox'></td>
+				<td><label for='${id}_show_password' class='ZCheckboxLabelInline'><$= ZmMsg.showPassword $></label></td>
+			</tr></table>
 		</td>
 	</tr>
 
@@ -130,8 +131,11 @@
 	</tr>
 
 	<tr id='${id}_port_row'><td class='ZLabelCell'><$= ZmMsg.portLabel $></td>
-		<td><input id="${id}_port" type=text style='width:6em'>
-			<span class='helpText'>(default is <span id="${id}_port_label">110</span>)</span>
+		<td>
+			<table cellspacing=0 cellpadding=0><tr>
+				<td><input id="${id}_port" type=text style='width:6em'></td>
+				<td><span class='ZHelpLabel'>&nbsp;(default is <span id="${id}_port_label">110</span>)</span></td>
+			</tr></table>
 		</td>
 	</tr>
 
@@ -155,9 +159,12 @@
 
 	<tr id='${id}_identity_create_row'>
 		<td class='ZCheckboxLabelCell' colspan=2 style='padding-left:50px;'>
-		<input id="${id}_create_identity" type=checkbox onchange='controller.toggleIdentityFields(this.checked)'>
-		<label for='${id}_create_identity' class='ZCheckboxLabelInline'>
-				<$= ZmMsg.popAccountCreateNewIdentity $></label></td>
+			<table><tr>
+				<td><input id="${id}_create_identity" type=checkbox onchange='controller.toggleIdentityFields(this.checked)'></td>
+				<td width=100%><label for='${id}_create_identity' class='ZCheckboxLabelInline'>
+								<$= ZmMsg.popAccountCreateNewIdentity $></label></td>
+			</tr></table>
+		</td>
 	</tr>
 
 	<tr id='${id}_identity_spacer_row'><td><div class='ZSmallSpacer'></div></td></tr>
@@ -171,17 +178,25 @@
 	</tr>
 
 	<tr id='${id}_identity_use_address_row'><td class='ZLabelCell'>Link to new identity:</td>
-		<td><input id="${id}_identity_use_address" type=checkbox>
-			<label for="${id}_identity_use_address" class='ZCheckboxLabel'>
-				When replying to messages sent to this email address
-			</label></td>
+		<td>
+			<table cellspacing=0 cellpadding=0><tr>
+				<td><input id="${id}_identity_use_address" type=checkbox></td>
+				<td><label for="${id}_identity_use_address" class='ZCheckboxLabel'>
+					When replying to messages sent to this email address
+				</label></td>
+			</tr></table>
+		</td>
 	</tr>
 
 	<tr id='${id}_identity_use_folder_row'><td></td>
-		<td><input id="${id}_identity_use_folder" type=checkbox>
-			<label for="${id}_identity_use_folder" class='ZCheckboxLabel'>
-				When reading or replying to messages in this folder
-			</label></td>
+		<td>
+			<table cellspacing=0 cellpadding=0 border=0><tr>
+				<td><input id="${id}_identity_use_folder" type=checkbox></td>
+				<td><label for="${id}_identity_use_folder" class='ZCheckboxLabel'>
+						When reading or replying to messages in this folder
+				</label></td>
+			</tr></table>
+		</td>
 	</tr>
 	<tr><td><div class='ZSmallSpacer'></div></td></tr>
 

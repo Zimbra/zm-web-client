@@ -2478,9 +2478,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:100%;
 }
 
-.ZFormTable TD {
-	padding:2px;
-}
 
 /* checkbox element */
 .ZCheckbox {}
@@ -2525,6 +2522,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	@BoxPadding@
 	padding-left:@PanelPaddingSize@;
 	font-weight:bold;
+	@BottomSeparator@
 }
 
 .ZSubPanelHead	 {
@@ -2610,39 +2608,32 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 
-.ZTabTable {
-	width:100%;
-	padding-top:3px;
-	@ToolbarBg@
+
+.ZTabList {
+	list-style-type:none;
+	padding-bottom:28px;
+	@BottomSeparator@
+	margin:0px;
 }
 
-.ZTab {
-	position:relative;
-	height:15px;
-	padding:3px 10px 3px 10px;
-	@SeparatorBorder@
-	border-bottom-width:0px;
+.ZTab,
+.ZTab.selected {
 	-moz-border-radius:8px 8px 0px 0px;
+	padding:3px 10px 3px 10px;
+	margin:6px 1px 0px 0px;
 	min-width:40px;
+	float:left;
+	@InsetBg@
+	@SeparatorBorder@
 	text-align:center;
 	white-space:nowrap;
-	@InsetBg@
-	margin:3px 0px 1px 0px;
+	height:15px;
+	cursor:pointer;
 }
 
-.ZTabTable .selected {
-	background-color:@_SelColor_@;
+.ZTab.selected {
 	border-bottom-color:@_SelColor_@;
-	height:18px;
-	padding-top:6px;
-	padding-bottom:0px;
-	margin:1px 0px 0px 0px;
-}
-
-.ZTabStart {
-	width:5px;
-}
-
-.ZTabEnd {
-	width:100%;
+	background-color:@_SelColor_@;
+	margin-top:2px;
+	padding-top:7px;
 }
