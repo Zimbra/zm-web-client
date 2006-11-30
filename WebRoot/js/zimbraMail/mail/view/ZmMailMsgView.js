@@ -1532,11 +1532,7 @@ function(self, iframe) {
 			return;
 		}
 		var doc = iframe.contentWindow.document;
-		if (AjxEnv.isIE) {
-			h = doc.body.scrollHeight;
-		} else {
-			h = doc.documentElement.scrollHeight;
-		}
+		h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
 		iframe.style.height = h + "px";
 		var w = doc.body.scrollWidth;
 		iframe.style.width = w + "px";
