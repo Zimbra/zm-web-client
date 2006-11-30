@@ -59,7 +59,7 @@ Contributor(s):
     <title>Zimbra ALE - Prototype</title>
       <style type="text/css">
         <!--
-        @import url(<%= contextPath %>/css/imgs,<%= skin %>,common,dwt,msgview,zm,spellcheck,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
+        @import url(<%= contextPath %>/css/imgs,common,dwt,msgview,login,zm,spellcheck,wiki,<%= skin %>_imgs,skin.css?v=<%= vers %><%= inSkinDebugMode || inDevMode ? "&debug=1" : "" %>&skin=<%= skin %>);
         @import url( style.css );
         -->
       </style>

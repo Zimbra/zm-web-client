@@ -2434,7 +2434,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZScrollContainerInner {
 	height:100%;
 	position:absolute;
-	overflow:auto
+	overflow:auto;
 	padding-right:16px;
 }
 

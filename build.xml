@@ -473,7 +473,8 @@
       cachefile='${dir.skincache}/CacheLoRes.html'>
       <dirset dir='WebRoot/skins/${skindir}' includes='**/img/**'/>
     </imagemerge>
-    <copy file="${images.loRes.destDir}/skins/${skindir}/${skindir}.css" todir="${build.dir}/WebRoot/css" overwrite="true"/>      
+    <copy file="${images.loRes.destDir}/skins/${skindir}/${skindir}.css"
+          tofile="${build.dir}/WebRoot/skins/${skindir}/${skindir}_imgs.css" overwrite="true"/>      
     <echo/>
   </target>
 

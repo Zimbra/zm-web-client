@@ -17,7 +17,7 @@
 %><html>
 <head>
 <link rel='stylesheet' type="text/css"
-	  href='<%=path%>/css/common,dwt,msgview,login,zm,spellcheck,wiki,imgs,<%=skin%>,skin.css?debug=true'
+	  href='<%=path%>/css/common,dwt,msgview,login,zm,spellcheck,wiki,imgs,<%=skin%>_imgs,skin.css?debug=true'
 >
 <script src='<%=path%>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZaMsg,ZmMsg.js?debug=true'></script>
 <script src='<%=path%>/js/ajax/boot/AjxEnv.js'></script>
