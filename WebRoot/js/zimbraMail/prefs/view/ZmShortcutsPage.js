@@ -551,7 +551,7 @@ ZmShortcutsPageTabViewCustom.SAMPLE_KEY = 3;
 
 // widths for the table columns (organizer, shortcut, remove link)
 ZmShortcutsPageTabViewCustom.COL1_WIDTH = 300;
-ZmShortcutsPageTabViewCustom.COL2_WIDTH = 80;
+ZmShortcutsPageTabViewCustom.COL2_WIDTH = 130;
 ZmShortcutsPageTabViewCustom.COL3_WIDTH = 60;
 
 ZmShortcutsPageTabViewCustom.prototype = new DwtTabViewPage;
@@ -858,7 +858,8 @@ function(shortcut) {
 
 	id = Dwt.getNextId();
 	var value = shortcut ? shortcut.num : null;
-	var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: value, size: 20});
+	var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: value});
+	Dwt.setSize(input.getInputElement(), '100%', Dwt.DEFAULT);
 	this._inputs[rowId]["num"] = {id: id, dwtObj: input};
 	html[i++] = "<td width=";
 	html[i++] = ZmShortcutsPageTabViewCustom.COL2_WIDTH;
