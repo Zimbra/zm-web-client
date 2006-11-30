@@ -69,8 +69,13 @@ function(ev, skipBrowserCheck) {
 	if (!skipBrowserCheck && !ZmLogin.isSupportedBrowser()) {
 		ZmLogin.showUnsupported();
 	} else {
-		if (ZmLogin.shouldReAuth())
-			ZmLogin.showPanel();
+		if (ZmLogin.shouldReAuth()) {
+			var errorMessage = null;
+			if (!AjxCookie.areCookiesEnabled(document)) {
+				errorMessage = ZmMsg.errorCookiesDisabled;
+			}
+			ZmLogin.showPanel(errorMessage);
+		} 
 	}
 };
 
@@ -144,7 +149,7 @@ function() {
 * Displays the login screen.
 */
 ZmLogin.showPanel =
-function() {
+function(errorMessage) {
 	var html = [];
 	var idx = 0;
 	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td align='center' valign='center'>";
@@ -156,6 +161,10 @@ function() {
 	params.showLicenseMsg = true;
 	params.showRememberMeCheckbox = true;
 	params.showButton = true;
+	if (errorMessage) {
+		params.errorMsg = errorMessage;
+		params.showError = true;
+	}
 	html[idx++] = ZLoginFactory.getLoginDialogHTML(params);
 
 	html[idx++] = "</td></tr></table>";
