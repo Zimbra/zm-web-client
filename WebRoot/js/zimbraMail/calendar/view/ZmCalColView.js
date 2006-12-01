@@ -231,8 +231,7 @@ function(list, numAppts) {
 		soapDoc.setMethodAttribute("onerror", "continue");
 
 		for (var i in needToLoad) {
-			var msgRequest = soapDoc.set("GetMsgRequest");
-			msgRequest.setAttribute("xmlns", "urn:zimbraMail");
+			var msgRequest = soapDoc.set("GetMsgRequest", null, null, "urn:zimbraMail");
 
 			var doc = soapDoc.getDoc();
 			var msgNode = doc.createElement("m");

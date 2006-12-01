@@ -372,8 +372,7 @@ function(items) {
 
 		var doc = soapDoc.getDoc();
 		for (var j = 0; j < needPermArr.length; j++) {
-			var folderRequest = soapDoc.set("GetFolderRequest");
-			folderRequest.setAttribute("xmlns", "urn:zimbraMail");
+			var folderRequest = soapDoc.set("GetFolderRequest", null, null, "urn:zimbraMail");
 			var folderNode = doc.createElement("folder");
 			folderNode.setAttribute("l", needPermArr[j]);
 			folderRequest.appendChild(folderNode);

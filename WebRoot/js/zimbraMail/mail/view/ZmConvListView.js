@@ -382,8 +382,7 @@ function(conv, preferHtml, callback) {
 
 	for (var i = 0; i < conv.msgIds.length; i++) {
 		// make a request to get this mail message from the server
-		var msgRequest = soapDoc.set("GetMsgRequest");
-		msgRequest.setAttribute("xmlns", "urn:zimbraMail");
+		var msgRequest = soapDoc.set("GetMsgRequest", null, null, "urn:zimbraMail");
 
 		var doc = soapDoc.getDoc();
 		var msgNode = doc.createElement("m");
