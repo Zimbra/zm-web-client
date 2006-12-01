@@ -211,8 +211,7 @@ function(start,end, fanoutAllDay, folderIds, callback) {
 	soapDoc.setMethodAttribute("onerror", "continue");
 
 	for (var i=0; i < context.needToFetch.length; i++) {
-		var req = soapDoc.set("GetApptSummariesRequest");
-		req.setAttribute("xmlns", "urn:zimbraMail");
+		var req = soapDoc.set("GetApptSummariesRequest", null, null, "urn:zimbraMail");
 		req.setAttribute("s", start);
 		req.setAttribute("e", end);
 		req.setAttribute("l", context.needToFetch[i]);
