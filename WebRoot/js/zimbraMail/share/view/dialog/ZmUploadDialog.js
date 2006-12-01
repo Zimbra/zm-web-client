@@ -159,8 +159,7 @@ function(files, status, guids) {
 		var file = files[i];
 		if (file.done) continue;
 
-		var saveDocNode = soapDoc.set("SaveDocumentRequest");
-		saveDocNode.setAttribute("xmlns", "urn:zimbraMail");
+		var saveDocNode = soapDoc.set("SaveDocumentRequest", null, null, "urn:zimbraMail");
 		saveDocNode.setAttribute("id", i);
 		
 		var docNode = soapDoc.set("doc", null, saveDocNode);
