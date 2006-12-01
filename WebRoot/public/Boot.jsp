@@ -43,4 +43,9 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/boot/AjxLoader.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/boot/AjxPackage.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/boot/AjxTemplate.js"></script>
+<script type="text/javascript">
+AjxPackage.setBasePath("<%=contextPath%>/js");
+AjxPackage.setExtension(".js<%=ext%>");
+AjxPackage.setQueryString("v=<%=vers%>");
+</script>
 <!-- END SCRIPT BLOCK -->

@@ -224,7 +224,7 @@
                  classname='com.zimbra.kabuki.tools.templates.TemplateTask'
                  classpath='${build.dir}/classes'
         />
-        <template destdir='${build.dir}/WebRoot/js/ajax'>
+        <template destdir='${build.dir}/WebRoot/js/ajax' prefix='ajax'>
             <fileset dir='${ajax.dir}/WebRoot/js' includes='**/templates/**/*.html'/>
         </template>
         <template destdir='${build.dir}/WebRoot/js'>
@@ -236,18 +236,23 @@
     <taskdef name="jammer" classname="com.zimbra.webClient.build.JammerTask" classpath="${build.dir}/classes"/>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/Ajax_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="Boot.jsp,Ajax.jsp,Zimbra.jsp"/>
+      <fileset dir='${build.dir}/WebRoot/js' includes='ajax/**/templates/*.js'/>
     </jammer>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraMail_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="ZimbraMail.jsp"/>
+      <fileset dir='${build.dir}/WebRoot/js' includes='zimbraMail/**/templates/*.js'/>
     </jammer>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebApp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraAdmin_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="XForms.jsp,ZimbraAdmin.jsp"/>
-    </jammer> 
+      <fileset dir='${build.dir}/WebRoot/js' includes='zimbraAdmin/**/templates/*.js'/>
+    </jammer>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/AjaxNewWindow_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="Boot.jsp,AjaxNewWindow.jsp,Zimbra.jsp"/>
+      <fileset dir='${build.dir}/WebRoot/js' includes='ajax/**/templates/*.js'/>
     </jammer>
     <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/js/ZimbraNewWindow_all.js">
       <filelist dir="${build.dir}/WebRoot/public" files="ZimbraNewWindow.jsp"/>
+      <fileset dir='${build.dir}/WebRoot/js' includes='ajax/**/templates/*.js,zimbraMail/**/templates/*.js'/>
     </jammer>
   </target>
 

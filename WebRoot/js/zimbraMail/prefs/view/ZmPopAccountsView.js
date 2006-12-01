@@ -475,21 +475,24 @@ ZmPopAccountBasicPage.DEFAULT_FOLDER_ID = ZmOrganizer.ID_INBOX;
 ZmPopAccountBasicPage.prototype._account;
 
 ZmPopAccountBasicPage.prototype._nameField;
+ZmPopAccountBasicPage.prototype._folderButton;
+
 ZmPopAccountBasicPage.prototype._serverField;
 ZmPopAccountBasicPage.prototype._usernameField;
 ZmPopAccountBasicPage.prototype._password1Field;
-ZmPopAccountBasicPage.prototype._showPasswordEl;
-ZmPopAccountBasicPage.prototype._folderButton;
-ZmPopAccountBasicPage.prototype._portField;
-ZmPopAccountBasicPage.prototype._portDefEl;
+
+ZmPopAccountBasicPage.prototype._advancedCheckbox;
 ZmPopAccountBasicPage.prototype._sslEl;
 /***
 ZmPopAccountBasicPage.prototype._sslTrustDiv;
 ZmPopAccountBasicPage.prototype._sslTrustEl;
 /***/
+ZmPopAccountBasicPage.prototype._portField;
+ZmPopAccountBasicPage.prototype._portDefEl;
+
+ZmPopAccountBasicPage.prototype._testButton;
 
 ZmPopAccountBasicPage.prototype._createIdentityEl;
-ZmPopAccountBasicPage.prototype._identityProps;
 ZmPopAccountBasicPage.prototype._identityNameEl;
 ZmPopAccountBasicPage.prototype._emailField;
 ZmPopAccountBasicPage.prototype._linkAddrEl;
@@ -498,53 +501,9 @@ ZmPopAccountBasicPage.prototype._linkFolderEl;
 ZmPopAccountBasicPage.prototype._isDirty;
 ZmPopAccountBasicPage.prototype._isLinkEmailDirty;
 
-// HTML Handlers
-
-ZmPopAccountBasicPage._handleSsl = function(event) {
-    var target = DwtUiEvent.getTarget(event);
-    var page = Dwt.getObjectFromElement(target);
-    var checked = target.checked ;
-    var port = checked ? ZmPopAccount.PORT_SSL : ZmPopAccount.PORT_DEFAULT;
-    page._account.connectionType = checked ? ZmPopAccount.CONNECT_SSL : ZmPopAccount.CONNECT_CLEAR;
-    page._account.port = port;
-    page._portField.setValue(port);
-    page._portDefEl.innerHTML = port;
-    /***
-    Dwt.setVisible(page._sslTrustDiv, checked);
-    /***/
-    page._dirtyListener();
-};
-ZmPopAccountBasicPage._handleSslTrust = function(event) {
-    var target = DwtUiEvent.getTarget(event);
-    var page = Dwt.getObjectFromElement(target);
-    page._account.trustSelfSignedCerts = target.checked;
-    page._dirtyListener();
-};
-ZmPopAccountBasicPage._handleCreateIdentity = function(event) {
-    var target = DwtUiEvent.getTarget(event);
-    var page = Dwt.getObjectFromElement(target);
-    page._account._identity.checked = target.checked;
-    page._setCreateIdentity(target.checked);
-    page.parent.validate();
-};
-ZmPopAccountBasicPage._handleLinkAddr = function(event) {
-    ZmPopAccountBasicPage._handleLinkAddrOrFolder("linkAddr", event);
-};
-ZmPopAccountBasicPage._handleLinkFolder = function(event) {
-    ZmPopAccountBasicPage._handleLinkAddrOrFolder("linkFolder", event);
-};
-ZmPopAccountBasicPage._handleLinkAddrOrFolder = function(pname, event) {
-    var target = DwtUiEvent.getTarget(event);
-    var page = Dwt.getObjectFromElement(target);
-    page._account._identity[pname] = target.checked;
-};
-ZmPopAccountBasicPage._handleShowPassword = function(event) {
-    var target = DwtUiEvent.getTarget(event);
-    var page = Dwt.getObjectFromElement(target);
-    page._password1Field.setInputType(target.checked ? DwtInputField.STRING : DwtInputField.PASSWORD);
-};
-
+//
 // Public methods
+//
 
 ZmPopAccountBasicPage.prototype.setAccount = function(account) {
     // save account object
@@ -558,43 +517,42 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
 
     // initialize input fields
     this._nameField.setValue(account.name);
+    var folderId = account.folderId || ZmPopAccountBasicPage.DEFAULT_FOLDER_ID;
+    var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+    var folder = tree.getById(folderId);
+    this._folderButton.setText(folder.name);
+
     this._serverField.setValue(account.mailServer);
     this._usernameField.setValue(account.userName);
     this._password1Field.setRequired(isNew);
     this._password1Field.setValue(account.password);
     this._password1Field.setInputType(DwtInputField.PASSWORD);
-    this._showPasswordEl.checked = false;
+    this._showPasswordCheckbox.setSelected(false);
 
-    var folderId = account.folderId || ZmPopAccountBasicPage.DEFAULT_FOLDER_ID;
-    var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-    var folder = tree.getById(folderId);
-
-    this._folderButton.setText(folder.name);
     var useSSL = account.connectionType == ZmPopAccount.CONNECT_SSL;
-    var portDef = useSSL ? ZmPopAccount.PORT_SSL : ZmPopAccount.PORT_DEFAULT;
-    this._portField.setValue(account.port || portDef);
-    this._portDefEl.innerHTML = portDef;
-
-    this._sslEl.checked = useSSL;
+    var advanced = useSSL || !account.port || account.port != portDef;
+    this._sslCheckbox.setSelected(useSSL);
     /***
     Dwt.setVisible(this._sslTrustDiv, useSSL);
     this._sslTrustEl.checked = account.trustSelfSignedCerts;
     /***/
+    var portDef = useSSL ? ZmPopAccount.PORT_SSL : ZmPopAccount.PORT_DEFAULT;
+    this._portField.setValue(account.port || portDef);
+    this._portDefEl.innerHTML = portDef;
+    this._advancedCheckbox.setSelected(advanced);
+    this._setAdvancedVisible(advanced);
 
     // initialize other form state
-    var createIdentityDiv = this._createIdentityEl.parentNode;
     var identitiesEnabled = this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED);
-    Dwt.setVisible(createIdentityDiv, isNew && identitiesEnabled);
+    this._createIdentityCheckbox.setSelected(false);
+    this._updateLinkName();
+    this._updateLinkEmail();
+    this._linkAddrCheckbox.setSelected(account._identity && account._identity.linkAddr);
+    this._linkFolderCheckbox.setSelected(account._identity && account._identity.linkFolder);
+    this._setCreateIdentityVisible(identitiesEnabled && isNew);
 
     this._isDirty = false;
     this._isLinkEmailDirty = account._identity && account._identity._emailDirty;
-
-    this._createIdentityEl.checked = account._identity && account._identity.checked;
-    this._updateLinkName();
-    this._updateLinkEmail();
-    this._linkAddrEl.checked = account._identity && account._identity.linkAddr;
-    this._linkFolderEl.checked = account._identity && account._identity.linkFolder;
-    this._setCreateIdentity(this._createIdentityEl.checked);
 
     this.parent.validate();
 };
@@ -653,8 +611,42 @@ ZmPopAccountBasicPage.prototype._updateLinkEmail = function() {
     var value = userName && mailServer ? [userName,mailServer].join("@") : "";
     this._emailField.setValue(value);
 };
-ZmPopAccountBasicPage.prototype._setCreateIdentity = function(state) {
-    this._identityProps.setVisible(state);
+ZmPopAccountBasicPage.prototype._setAdvancedVisible = function(visible) {
+    var id = this._htmlElId;
+    var ids = [
+        id+"_ssl_row",
+        id+"_port_row"
+    ];
+    this.__setVisible(ids, visible);
+};
+ZmPopAccountBasicPage.prototype._setCreateIdentityVisible = function(visible) {
+    var id = this._htmlElId;
+    var ids = [
+        id+"_identity_title_row",
+        id+"_identity_help_row",
+        id+"_identity_create_row"
+    ];
+    this.__setVisible(ids, visible);
+    this._setIdentityVisible(false);
+};
+ZmPopAccountBasicPage.prototype._setIdentityVisible = function(visible) {
+    var id = this._htmlElId;
+    var ids = [
+        id+"_identity_spacer_row",
+        id+"_identity_name_row",
+        id+"_identity_email_row",
+        id+"_identity_use_address_row",
+        id+"_identity_use_folder_row"
+    ];
+    this.__setVisible(ids, visible);
+};
+
+ZmPopAccountBasicPage.prototype.__setVisible = function(ids, visible) {
+    ids = AjxUtil.isArray(ids) ? ids : [ ids ];
+    for (var i = 0; i < ids.length; i++) {
+        var el = document.getElementById(ids[i]);
+        Dwt.setVisible(el, visible);
+    }
 };
 
 ZmPopAccountBasicPage.prototype._validateName = function(value) {
@@ -683,211 +675,126 @@ ZmPopAccountBasicPage.prototype._validateEmail = function(value) {
 
 ZmPopAccountBasicPage.prototype._createHtml = function() {
     // create controls
-    var props = new DwtPropertySheet(this);
-
     this._nameField = new DwtInputField({
-        parent:props, size:30, required:true,
+        parent:this, required:true,
         validationStyle:DwtInputField.CONTINUAL_VALIDATION,
         validatorCtxtObj:this, validator: this._validateName
     });
+    this._folderButton = new DwtButton(this);
+
     this._serverField = new DwtInputField({
-        parent:props, size:30, required:true,
-        validationStyle:DwtInputField.CONTINUAL_VALIDATION
-    });
-    this._portField = new DwtInputField({
-        parent:props, type:DwtInputField.INTEGER, size:5,
+        parent:this, required:true,
         validationStyle:DwtInputField.CONTINUAL_VALIDATION
     });
     this._usernameField = new DwtInputField({
-        parent:props, size:20, required:true,
+        parent:this, required:true,
+        validationStyle:DwtInputField.CONTINUAL_VALIDATION
+    });
+    this._password1Field = new DwtInputField({
+        parent:this, type:DwtInputField.PASSWORD, required:true,
+        validationStyle:DwtInputField.CONTINUAL_VALIDATION
+    });
+    this._showPasswordCheckbox = new DwtCheckbox(this);
+
+    this._advancedCheckbox = new DwtCheckbox(this);
+    this._sslCheckbox = new DwtCheckbox(this);
+    this._portField = new DwtInputField({
+        parent:this, type:DwtInputField.INTEGER,
         validationStyle:DwtInputField.CONTINUAL_VALIDATION
     });
 
-    this._password1Field = new DwtInputField({
-        parent:props, type:DwtInputField.PASSWORD, size:20, required:true,
-        validationStyle:DwtInputField.CONTINUAL_VALIDATION
-    });
-    this._testButton = new DwtButton(props);
-    var testId = [this._htmlElId,"test"].join("_");
-    var testHtml = [
-        "<table border='0' style='border-collapse:collapse'>",
-            "<tr><td id='",testId,"'></td></tr>",
-        "</table>"
-    ].join("");                                                                                 
+    this._testButton = new DwtButton(this);
     this._testButton.setText(ZmMsg.popAccountTest);
 
-    this._folderButton = new DwtButton(props);
-    var folderId = [this._htmlElId,"folder"].join("_");
-    var folderHtml = [
-        "<table border='0' style='border-collapse:collapse'>",
-            "<tr><td id='",folderId,"'></td></tr>",
-        "</table>"
-    ].join("");
-
-    var serverId = [this._htmlElId,"server"].join("_");
-    var portId = [this._htmlElId,"port"].join("_");
-    var portDefId = [portId,"def"].join("_");
-    var sslId = [this._htmlElId,"ssl"].join("_");
-    /***
-    var sslTrustDivId = [sslId,"trust","div"].join("_");
-    var sslTrustId = [sslId,"trust"].join("_");
-    /***/
-    var serverHtml = [
-        "<table border='0' cellPadding='0' cellSpacing='0' style='border-collapse:collapse'>",
-            "<tr>",
-                "<td id='",serverId,"'></td>",
-                "<td style='padding-left:0.5em;padding-right:0.25em'>",ZmMsg.portLabel,"</td>",
-                "<td id='",portId,"'></td>",
-                "<td style='padding-left:0.5em'>",
-                    ZmMsg.defLabel,
-                    " ",
-                    "<span id='",portDefId,"'></span>",
-                "</td>",
-            "</tr>",
-            "<tr>",
-                "<td colspan='4'>",
-                    "<input type='checkbox' id='",sslId,"'> ",
-                    ZmMsg.popAccountUseSSL,
-                "</td>",
-            "</tr>",
-            /***
-            "<tr>",
-                "<td colspan='4'>",
-                    "<div id='",sslTrustDivId,"'>",
-                        "<input type='checkbox' id='",sslTrustId,"'> ",
-                        ZmMsg.popAccountUseSSLTrust,
-                    "</div>",
-                "</td>",
-            "</tr>",
-            /***/
-        "</table>"
-    ].join("");
-
-    var passwordId = [this._htmlElId,"password"].join("_");
-    var showPasswordId = [this._htmlElId,"showPassword"].join("_");
-    var passwordHtml = [
-        "<table border='0' style='border-collapse:collapse'>",
-            "<tr>",
-                "<td id='",passwordId,"'></td>",
-                "<td style='padding-left:0.5em'>",
-                    "<input type='checkbox' id='",showPasswordId,"'> ",
-                    ZmMsg.showPassword,
-                "</td>",
-            "</tr>",
-        "</table>"
-    ].join("");
-
-    var createIdentityId = [this._htmlElId,"createIdentity"].join("_");
-    var createIdentityHtml = [
-        "<input type='checkbox' id='",createIdentityId,"'> ",
-        ZmMsg.popAccountCreateNewIdentity
-    ].join("");
-
-    var createIdentityEl = document.createElement("DIV");
-    createIdentityEl.className = "ZmPopAccountsViewLink";
-    createIdentityEl.innerHTML = createIdentityHtml;
-    this.getHtmlElement().appendChild(createIdentityEl);
-
-    var identityProps = new DwtPropertySheet(this, "ZmPopAccountsViewLinkOpts");
-    this._identityProps = identityProps;
-    createIdentityEl.appendChild(this._identityProps.getHtmlElement());
-
-    var identityNameEl = document.createElement("SPAN");
-
+    this._createIdentityCheckbox = new DwtCheckbox(this);
     this._emailField = new DwtInputField({
-        parent:identityProps, size:30, required:true,
+        parent:this, required:true,
         validationStyle:DwtInputField.CONTINUAL_VALIDATION,
         validatorCtxtObj: this, validator: this._validateEmail
     });
+    this._linkAddrCheckbox = new DwtCheckbox(this);
+    this._linkFolderCheckbox = new DwtCheckbox(this);
 
-    var linkAddrId = [this._htmlElId,"linkAddr"].join("_");
-    var linkAddrHtml = [
-        "<input type='checkbox' checked id='",linkAddrId,"'> ",
-        ZmMsg.popAccountLinkForAddr
-    ].join("");
-    var linkFolderId = [this._htmlElId,"linkFolder"].join("_");
-    var linkFolderHtml = [
-        "<input type='checkbox' checked id='",linkFolderId,"'> ",
-        ZmMsg.popAccountLinkForFolder
-    ].join("");
+    // set html
+    var id = this._htmlElId;
+    var div = document.createElement("DIV");
+    div.innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Options#PopForm", id);
+    this.getHtmlElement().appendChild(div);
 
-    // add properties
-    props.addProperty(ZmMsg.popAccountNameLabel, this._nameField);
-    props.addProperty("", "<hr>");
-    props.addProperty(ZmMsg.popAccountServerLabel, serverHtml);
-    props.addProperty(ZmMsg.usernameLabel, this._usernameField);
-    props.addProperty(ZmMsg.passwordLabel, passwordHtml);
-    props.addProperty("", testHtml);
-    props.addProperty("", "<hr>");
-    props.addProperty(ZmMsg.popAccountFolderLabel, folderHtml);
+    // insert dwt controls
+    this._nameField.replaceElement(id+"_name");
+    this._folderButton.replaceElement(id+"_location");
 
-    identityProps.addProperty(ZmMsg.identityNameLabel, identityNameEl);
-    identityProps.addProperty(ZmMsg.emailAddrLabel, this._emailField);
-    identityProps.addProperty(ZmMsg.popAccountLinkLabel, linkAddrHtml);
-    identityProps.addProperty("", linkFolderHtml);
+    this._serverField.replaceElement(id+"_server");
+    this._usernameField.replaceElement(id+"_username");
+    this._password1Field.replaceElement(id+"_password");
+    this._showPasswordCheckbox.replaceElement(id+"_show_password");
 
-    // attach components
-    var serverEl = document.getElementById(serverId);
-    serverEl.appendChild(this._serverField.getHtmlElement());
-    var portEl = document.getElementById(portId);
-    portEl.appendChild(this._portField.getHtmlElement());
-    var passwordEl = document.getElementById(passwordId);
-    passwordEl.appendChild(this._password1Field.getHtmlElement());
-    var folderEl = document.getElementById(folderId);
-    folderEl.appendChild(this._folderButton.getHtmlElement());
-    var testEl = document.getElementById(testId);
-    testEl.appendChild(this._testButton.getHtmlElement());
+    this._advancedCheckbox.replaceElement(id+"_show_advanced");
+    this._sslCheckbox.replaceElement(id+"_ssl");
+    this._portField.replaceElement(id+"_port");
+
+    this._testButton.replaceElement(id+"_testButton");
+
+    this._createIdentityCheckbox.replaceElement(id+"_create_identity");
+    this._emailField.replaceElement(id+"_email");
+    this._linkAddrCheckbox.replaceElement(id+"_identity_use_address");
+    this._linkFolderCheckbox.replaceElement(id+"_identity_use_folder");
 
     // save refs to elements
-    this._portDefEl = document.getElementById(portDefId);
-    this._sslEl = document.getElementById(sslId);
-    /***
-    this._sslTrustDiv = document.getElementById(sslTrustDivId);
-    this._sslTrustEl = document.getElementById(sslTrustId);
-    /***/
-    this._createIdentityEl = document.getElementById(createIdentityId);
-    this._identityNameEl = identityNameEl;
-    this._linkAddrEl = document.getElementById(linkAddrId);
-    this._linkFolderEl = document.getElementById(linkFolderId);
-    this._showPasswordEl = document.getElementById(showPasswordId);
+    this._portDefEl = document.getElementById(id+"_port_label");
+//    this._sslTrustDiv = document.getElementById(sslTrustDivId);
+//    this._sslTrustEl = document.getElementById(sslTrustId);
+    this._identityNameEl = document.getElementById(id+"_identity_name");
 
     // register handlers and associate elements
-    Dwt.setHandler(this._sslEl, DwtEvent.ONCLICK, ZmPopAccountBasicPage._handleSsl);
-    /***
-    Dwt.setHandler(this._sslTrustEl, DwtEvent.ONCLICK, ZmPopAccountBasicPage._handleSslTrust);
-    /***/
-    Dwt.setHandler(this._createIdentityEl, DwtEvent.ONCLICK, ZmPopAccountBasicPage._handleCreateIdentity);
-    Dwt.setHandler(this._linkAddrEl, DwtEvent.ONCLICK, ZmPopAccountBasicPage._handleLinkAddr);
-    Dwt.setHandler(this._linkFolderEl, DwtEvent.ONCLICK, ZmPopAccountBasicPage._handleLinkFolder);
-    Dwt.setHandler(this._showPasswordEl, DwtEvent.ONCLICK, ZmPopAccountBasicPage._handleShowPassword);
-    Dwt.associateElementWithObject(this._sslEl, this);
-    /***
-    Dwt.associateElementWithObject(this._sslTrustEl, this);
-    /***/
-    Dwt.associateElementWithObject(this._createIdentityEl, this);
-    Dwt.associateElementWithObject(this._linkAddrEl, this);
-    Dwt.associateElementWithObject(this._linkFolderEl, this);
-    Dwt.associateElementWithObject(this._showPasswordEl, this);
+//    Dwt.setHandler(this._sslTrustEl, DwtEvent.ONCLICK, ZmPopAccountBasicPage._handleSslTrust);
+//    Dwt.associateElementWithObject(this._sslTrustEl, this);
 
-    // add listeners
+    // create listeners
     var nameListener = new AjxListener(this, this._nameListener);
+    var folderListener = new AjxListener(this, this._folderListener);
+
     var serverListener = new AjxListener(this, this._serverOrUserNameListener, [this._serverField, "mailServer"]);
-    var portListener = new AjxListener(this, this._portListener);
     var userNameListener = new AjxListener(this, this._serverOrUserNameListener, [this._usernameField, "userName"]);
     var passwordListener = new AjxListener(this, this._passwordListener);
-    var folderListener = new AjxListener(this, this._folderListener);
-    var emailListener = new AjxListener(this, this._emailListener);
+    var showPasswordListener = new AjxListener(this, this._showPasswordListener);
+
+    var advancedListener = new AjxListener(this, this._advancedListener);
+    var portListener = new AjxListener(this, this._portListener);
+    var sslListener = new AjxListener(this, this._sslListener);
+
     var testListener = new AjxListener(this, this._testListener);
 
+    var createIdentityListener = new AjxListener(this, this._createIdentityListener);
+    var emailListener = new AjxListener(this, this._emailListener);
+    var linkAddrListener = new AjxListener(this, this._linkAddrListener);
+    var linkFolderListener = new AjxListener(this, this._linkFolderListener);
+
+    // register listeners
     this._nameField.addListener(DwtEvent.ONKEYUP, nameListener);
+    this._folderButton.addSelectionListener(folderListener);
+
     this._serverField.addListener(DwtEvent.ONKEYUP, serverListener);
-    this._portField.addListener(DwtEvent.ONKEYUP, portListener);
     this._usernameField.addListener(DwtEvent.ONKEYUP, userNameListener);
     this._password1Field.addListener(DwtEvent.ONKEYUP, passwordListener);
-    this._folderButton.addSelectionListener(folderListener);
-    this._emailField.addListener(DwtEvent.ONKEYUP, emailListener);
+    this._showPasswordCheckbox.addSelectionListener(showPasswordListener);
+
+    this._advancedCheckbox.addSelectionListener(advancedListener);
+    this._sslCheckbox.addSelectionListener(sslListener);
+    this._portField.addListener(DwtEvent.ONKEYUP, portListener);
+
     this._testButton.addSelectionListener(testListener);
+
+    this._createIdentityCheckbox.addSelectionListener(createIdentityListener);
+    this._emailField.addListener(DwtEvent.ONKEYUP, emailListener);
+    this._linkAddrCheckbox.addSelectionListener(linkAddrListener);
+    this._linkFolderCheckbox.addSelectionListener(linkFolderListener);
 };
+
+//
+// Listeners
+//
 
 ZmPopAccountBasicPage.prototype._fieldListener =
 function(field, pname, evt) {
@@ -901,39 +808,6 @@ ZmPopAccountBasicPage.prototype._nameListener = function(evt) {
     this.parent.getList().redrawItem(this._account);
     this._dirtyListener(evt);
 };
-
-ZmPopAccountBasicPage.prototype._serverOrUserNameListener =
-function(field, pname, evt) {
-    this._fieldListener(field, pname, evt);
-    if (this._account._new && !this._isLinkEmailDirty) {
-        var uname = this._usernameField.getValue();
-        var server = this._serverField.getValue();
-
-        var email = uname && server ? [uname,server].join("@") : ""; 
-        this._account._identity.email = email;
-        this._emailField.setValue(email);
-    }
-    this._dirtyListener(evt);
-};
-
-ZmPopAccountBasicPage.prototype._portListener =
-function(evt) {
-    this._fieldListener(this._portField, "port", evt);
-    this._dirtyListener(evt);
-};
-
-ZmPopAccountBasicPage.prototype._passwordListener =
-function(evt) {
-    this._fieldListener(this._password1Field, "password", evt);
-    this._dirtyListener(evt);
-};
-
-ZmPopAccountBasicPage.prototype._emailListener = function(evt) {
-    this._account._identity.email = this._emailField.getValue();
-    this._isLinkEmailDirty = true;
-    this._dirtyListener(evt);
-};
-
 ZmPopAccountBasicPage.prototype._folderListener = function(evt) {
     var dialog = this._appCtxt.getChooseFolderDialog();
     dialog.reset();
@@ -947,11 +821,57 @@ ZmPopAccountBasicPage.prototype._folderOkListener = function(dialog, folder) {
     this._dirtyListener(null);
 };
 
-ZmPopAccountBasicPage.prototype._dirtyListener = function(evt) {
-    // REVISIT: Do something with this information?
-    this._isDirty = true;
-    this._password1Field.setRequired(true);
-    this.parent.validate();
+ZmPopAccountBasicPage.prototype._serverOrUserNameListener =
+function(field, pname, evt) {
+    this._fieldListener(field, pname, evt);
+    if (this._account._new && !this._isLinkEmailDirty) {
+        var uname = this._usernameField.getValue();
+        var server = this._serverField.getValue();
+
+        var email = uname && server ? [uname,server].join("@") : "";
+        this._account._identity.email = email;
+        this._emailField.setValue(email);
+    }
+    this._dirtyListener(evt);
+};
+ZmPopAccountBasicPage.prototype._passwordListener =
+function(evt) {
+    this._fieldListener(this._password1Field, "password", evt);
+    this._dirtyListener(evt);
+};
+ZmPopAccountBasicPage.prototype._showPasswordListener = function(event) {
+    var checked = event.detail;
+    this._password1Field.setInputType(checked ? DwtInputField.STRING : DwtInputField.PASSWORD);
+};
+
+ZmPopAccountBasicPage.prototype._advancedListener = function(event) {
+    var checked = event.detail;
+    this._setAdvancedVisible(checked);
+};
+ZmPopAccountBasicPage.prototype._sslListener = function(event) {
+    var checked = event.detail;
+    var port = checked ? ZmPopAccount.PORT_SSL : ZmPopAccount.PORT_DEFAULT;
+    this._account.connectionType = checked ? ZmPopAccount.CONNECT_SSL : ZmPopAccount.CONNECT_CLEAR;
+    this._account.port = port;
+    this._portField.setValue(port);
+    this._portDefEl.innerHTML = port;
+    /***
+    Dwt.setVisible(page._sslTrustDiv, checked);
+    /***/
+    this._dirtyListener();
+};
+/***
+ZmPopAccountBasicPage._handleSslTrust = function(event) {
+    var target = DwtUiEvent.getTarget(event);
+    var page = Dwt.getObjectFromElement(target);
+    page._account.trustSelfSignedCerts = target.checked;
+    page._dirtyListener();
+};
+/***/
+ZmPopAccountBasicPage.prototype._portListener =
+function(evt) {
+    this._fieldListener(this._portField, "port", evt);
+    this._dirtyListener(evt);
 };
 
 ZmPopAccountBasicPage.prototype._testListener = function(evt) {
@@ -964,7 +884,7 @@ ZmPopAccountBasicPage.prototype._testResponse = function(account, resp) {
     var pop3 = response && response.pop3 && response.pop3[0];
     var success = pop3.success;
 
-    var key = success ? ZmMsg.popAccountTestSuccessMsg : ZmMsg.popAccountTestFailureMsg; 
+    var key = success ? ZmMsg.popAccountTestSuccessMsg : ZmMsg.popAccountTestFailureMsg;
     var message = AjxMessageFormat.format(key, account.name);
     var details = !success ? pop3.error : null;
     var style = success ? DwtMessageDialog.INFO_STYLE : DwtMessageDialog.WARNING_STYLE;
@@ -973,6 +893,35 @@ ZmPopAccountBasicPage.prototype._testResponse = function(account, resp) {
     var dialog = this._appCtxt.getErrorDialog();
     dialog.setMessage(message, details, style, title);
     dialog.popup();
+};
+
+ZmPopAccountBasicPage.prototype._createIdentityListener = function(event) {
+    var checked = event.detail;
+    this._account._identity.checked = checked;
+    this._setIdentityVisible(checked);
+    this.parent.validate();
+};
+ZmPopAccountBasicPage.prototype._emailListener = function(evt) {
+    this._account._identity.email = this._emailField.getValue();
+    this._isLinkEmailDirty = true;
+    this._dirtyListener(evt);
+};
+ZmPopAccountBasicPage.prototype._linkAddrListener = function(event) {
+    this._linkAddrOrFolderListener("linkAddr", event);
+};
+ZmPopAccountBasicPage.prototype._linkFolderListener = function(event) {
+    this._linkAddrOrFolderListener("linkFolder", event);
+};
+ZmPopAccountBasicPage.prototype._linkAddrOrFolderListener = function(pname, event) {
+    var checked = event.detail;
+    this._account._identity[pname] = checked;
+};
+
+ZmPopAccountBasicPage.prototype._dirtyListener = function(evt) {
+    // REVISIT: Do something with this information?
+    this._isDirty = true;
+    this._password1Field.setRequired(true);
+    this.parent.validate();
 };
 
 /***
