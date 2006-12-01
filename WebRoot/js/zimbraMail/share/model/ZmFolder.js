@@ -416,6 +416,8 @@ function() {
 		return null;
 	} else if (ZmFolder.IMAGE[this.id]) {
 		return ZmFolder.IMAGE[this.id];
+	} else if (this.isFeed()) {
+		return "RSS";
 	} else {
 		return "Folder";
 	}
