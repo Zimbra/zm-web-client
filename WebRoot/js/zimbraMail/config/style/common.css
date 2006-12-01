@@ -31,6 +31,12 @@ P, TH, TD, DIV, SELECT, INPUT[type=text], INPUT[type=password], INPUT[type=file]
 	@FontFamily-default@
 	@FontSize-normal@
 }
+#IFDEF MSIE
+P, TH, TD, DIV, SELECT, INPUT, TEXTAREA, BUTTON, A {
+	@FontFamily-default@
+	@FontSize-normal@
+}
+#ENDIF
 
 INPUT[readonly] {
 	@InputField-disabled@
