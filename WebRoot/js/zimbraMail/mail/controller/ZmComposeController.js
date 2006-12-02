@@ -521,7 +521,8 @@ function() {
 	var identity = this._appCtxt.getIdentityCollection().defaultIdentity;
 	var canAddSig = this._setAddSignatureVisibility(identity);
 
-	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY, ZmOperation.FORWARD_ATT, ZmOperation.DRAFT, ZmOperation.REPLY_CANCEL];
+	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY, ZmOperation.FORWARD_ATT, ZmOperation.DRAFT,
+					ZmOperation.REPLY_CANCEL, ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE];
 	this._optionsMenu = {};
 	for (var i = 0; i < actions.length; i++) {
 		this._optionsMenu[actions[i]] = this._createOptionsMenu(actions[i]);
@@ -629,7 +630,11 @@ function(msg, identity) {
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		if (this._action == ZmOperation.REPLY ||
 			this._action == ZmOperation.REPLY_ALL ||
-			this._action == ZmOperation.FORWARD_INLINE)
+			this._action == ZmOperation.FORWARD_INLINE ||
+			this._action == ZmOperation.REPLY_ACCEPT ||
+			this._action == ZmOperation.REPLY_CANCEL ||
+			this._action == ZmOperation.REPLY_DECLINE ||
+			this._action == ZmOperation.REPLY_TENTATIVE)
 		{
 			var bComposeSameFormat = identity.getComposeSameFormat();
 			var bComposeAsFormat = identity.getComposeAsFormat();
