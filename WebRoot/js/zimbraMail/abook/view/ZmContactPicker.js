@@ -105,7 +105,15 @@ function(buttonId, addrs, str) {
 	var searchField = document.getElementById(this._searchFieldId);
 	searchField.disabled = false;
 	searchField.focus();
-	searchField.value = str ? str : "";
+	if (str) {
+		searchField.className = "";
+		searchField.value = str;
+		this._searchCleared = true;
+	} else {
+		searchField.className = "searchFieldHint";
+		searchField.value = ZmMsg.contactPickerHint;
+		this._searchCleared = false;
+	}
 
 	DwtDialog.prototype.popup.call(this);
 };
@@ -202,6 +210,7 @@ function() {
 
 	var searchField = document.getElementById(this._searchFieldId);
 	Dwt.setHandler(searchField, DwtEvent.ONKEYPRESS, ZmContactPicker._keyPressHdlr);
+	Dwt.setHandler(searchField, DwtEvent.ONCLICK, ZmContactPicker._onclickHdlr);
 	this._keyPressCallback = new AjxCallback(this, this._searchButtonListener);
 };
 
@@ -209,7 +218,8 @@ function() {
 
 ZmContactPicker.prototype._searchButtonListener =
 function(ev) {
-	this._query = AjxStringUtil.trim(document.getElementById(this._searchFieldId).value);
+	this._query = this._searchCleared
+		? AjxStringUtil.trim(document.getElementById(this._searchFieldId).value) : "";
 	if (this._query.length) {
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			var searchFor = this._selectDiv.getSelectedOption().getValue();
@@ -336,6 +346,16 @@ function(ev) {
 	    return false;
 	}
 	return true;
+};
+
+ZmContactPicker._onclickHdlr =
+function(ev) {
+	var stb = DwtUiEvent.getDwtObjFromEvent(ev);
+	if (!stb._searchCleared) {
+		var searchField = document.getElementById(stb._searchFieldId);
+		searchField.className = searchField.value = "";
+		stb._searchCleared = true;
+	}
 };
 
 /***********************************************************************************/

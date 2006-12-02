@@ -1877,9 +1877,9 @@ HTML>BODY .appt-selected .appt_allday_body
  * Contact picker from the email compose screen
  */
 
-.ZmContactPicker  {}
-
-
+.ZmContactPicker .searchFieldHint {
+	@Text-light@
+}
 
 /*
  *  Autocompletion
