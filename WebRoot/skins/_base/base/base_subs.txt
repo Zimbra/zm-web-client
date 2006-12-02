@@ -175,7 +175,7 @@ ItemBgColor			= @_BaseColorL75_@
 ChromeBg					= background-color:@_BaseColor_@;
 ChromeText					= @Text@
 
-InsetBg						= background-color:@1_BaseColorL75_@;
+InsetBg						= background-color:@_BaseColorL75_@;
 InsetText					= @Text@
 
 ToolbarBg					= background-color: @_BaseColorD20_@;
@@ -460,7 +460,8 @@ WidgetHeaderContainer-hover	= background-color:@HeaderColor-hover@; @_WidgetHead
 _ToolbarButtonContainer_	= background-color:@Transparent@;		@TransparentBorder@
 
 # "Items" means listItems and menuItems
-_ItemContainerStyle_		= border-left-width:0; border-right-width:0;
+_
+ItemContainerStyle_		= border-left-width:0; border-right-width:0;
 _ItemContainer_				= background-color:@ItemBgColor@;		@TransparentBorder@	@_ItemContainerStyle_@
 _ItemContainer-disabled		= @_ItemContainer_@
 _ItemContainer-selected_	= background-color:@_SelColor_@;		@TransparentBorder@	@_ItemContainerStyle_@
