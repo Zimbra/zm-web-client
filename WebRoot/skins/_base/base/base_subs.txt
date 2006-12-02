@@ -175,7 +175,7 @@ ItemBgColor			= @_BaseColorL75_@
 ChromeBg					= background-color:@_BaseColor_@;
 ChromeText					= @Text@
 
-InsetBg						= background-color:@_BaseColorL75_@;
+InsetBg						= background-color:@1_BaseColorL75_@;
 InsetText					= @Text@
 
 ToolbarBg					= background-color: @_BaseColorD20_@;
