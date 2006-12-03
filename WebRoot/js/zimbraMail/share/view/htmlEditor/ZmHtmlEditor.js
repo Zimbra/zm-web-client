@@ -297,7 +297,7 @@ function(words, keepModeDiv) {
 	var word, style, doc, body, self = this,
 		spanIds     = {},
 		wordIds     = {},
-		regexp      = [ "\\b(" ],
+		regexp      = [ "(\\W|^)(" ],
 		suggestions = {};
 
 	// preparations: initialize some variables that we then save in
@@ -315,23 +315,26 @@ function(words, keepModeDiv) {
 				suggestions[word].length = 5;
 		}
 	}
-	regexp.push(")\\b");
+	regexp.push(")(\\W|$)");
 	regexp = new RegExp(regexp.join(""), "gm");
 
 	function hiliteWords(text, textWhiteSpace) {
 		text = textWhiteSpace
 			? AjxStringUtil.convertToHtml(text)
 			: AjxStringUtil.htmlEncode(text);
-		return text.replace(regexp, function(str, word) {
+		return text.replace(regexp, function(str, prefix, word, suffix) {
 			// return suggestions[word];
 			var id = Dwt.getNextId();
 			spanIds[id] = word;
 			if (!wordIds[word])
 				wordIds[word] = [];
 			wordIds[word].push(id);
-			return [ '<span word="',
+			return [ prefix,
+				 '<span word="',
 				 word, '" id="', id, '" class="ZM-SPELLCHECK-MISSPELLED">',
-				 word, '</span>'].join("");
+				 word, '</span>',
+				 suffix
+			       ].join("");
 		});
 	};
 
@@ -1553,7 +1556,7 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 
 	// bug 8508 - start off with disabled toolbars
 	enableToolbars.call(this, false);
-	
+
 	this._designModeHack_focus = AjxCallback.simpleClosure(
 		function(ev) {
 			if (state > 0)
