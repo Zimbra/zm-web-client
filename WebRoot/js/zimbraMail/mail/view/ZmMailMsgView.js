@@ -770,9 +770,7 @@ function(container, html, isTextMsg) {
 				DBG.timePt("START: small text msg -- findObjects");
 				html = this._objectManager.findObjects(html, true, null, true);
 				DBG.timePt("END: small text msg -- findObjects");
-				html = html.replace(/^ /mg, "&nbsp;")
-					.replace(/\t/g, "<pre style='display:inline;'>\t</pre>")
-					.replace(/\n/g, "<br>");
+				html = AjxStringUtil.nl2br(html);
 			} else {
 				this._makeHighlightObjectsDiv(html);
 				html = AjxStringUtil.convertToHtml(html);
