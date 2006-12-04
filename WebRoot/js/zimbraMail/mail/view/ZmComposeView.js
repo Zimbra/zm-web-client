@@ -751,7 +751,7 @@ function(addrVec, used) {
 	var addrs = [];
 	for (var i = 0; i < a.length; i++) {
 		var addr = a[i];
-		var email = addr.getAddress();
+		var email = addr.getAddress().toLowerCase();
 		if (!used[email])
 			addrs.push(addr);
 		used[email] = true;
@@ -882,14 +882,20 @@ function(action, toOverride) {
 	} else if (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL ||
 			   this._isInviteReply(action)) {
 
+		// Prevent user's login name and aliases from going into To: or Cc:
 		var used = {};
-		used[this._appCtxt.get(ZmSetting.USERNAME)] = true; // don't add user addr to To: or Cc:
+		used[this._appCtxt.get(ZmSetting.USERNAME).toLowerCase()] = true;
+		var aliases = this._appCtxt.get(ZmSetting.MAIL_ALIASES);
+		for (var i = 0, count = aliases.length; i < count; i++) {
+			used[aliases[i].toLowerCase()] = true;
+		}
+		
 		if (!this._msg.isSent) {
-			var addr = this._getAddrString(this._msg.getReplyAddresses(action), used);
+			var addr = this._getAddrString(this._msg.getReplyAddresses(action), {});
 			this.setAddress(ZmEmailAddress.TO, addr);
 		} else if (action == ZmOperation.REPLY) {
 			var toAddrs = this._msg.getAddresses(ZmEmailAddress.TO);
-			this.setAddress(ZmEmailAddress.TO, this._getAddrString(toAddrs, used));
+			this.setAddress(ZmEmailAddress.TO, this._getAddrString(toAddrs, {}));
 		}
 
 		// reply to all senders if reply all (includes To: and Cc:)
