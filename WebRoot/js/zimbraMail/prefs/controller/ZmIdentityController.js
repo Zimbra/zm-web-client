@@ -63,6 +63,7 @@ function() {
     var count = ++this._count;
     var name = AjxMessageFormat.format(ZmMsg.newIdentity, count);
 	var identity = new ZmIdentity(this._appCtxt, name);
+	identity.useDefaultAdvanced = true;
 	var listView = this.getListView();
 	listView.addNew(identity);
 	var list = listView.getList();

@@ -40,14 +40,14 @@ function ZmIdentity(appCtxt, name) {
 	this.useWhenInFolder = false;
 	this.whenInFolderIds = [];
 	
-	this.useDefaultAdvanced = true;
+	this.useDefaultAdvanced = false;
 	
 	this.composeFormat = ZmIdentity.COMPOSE_TEXT;
 	this.prefix = ">";
 	this.forwardOption = ZmSetting.INCLUDE_PREFIX;
 	this.replyOption = ZmSetting.INCLUDE_PREFIX;
 	this.signatureStyle = ZmSetting.SIG_INTERNET;
-	this.signatureEnabled = true;
+	this.signatureEnabled = false;
 };
 
 ZmIdentity.COMPOSE_SAME = "same";
