@@ -197,6 +197,7 @@
 </script>
 </head>
 <body>
+<noscript><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="errorJavaScriptRequired"/></noscript>
 <jsp:include page="/public/pre-cache.jsp"/>
 <%
 	// NOTE: This inserts raw HTML files from the user's skin

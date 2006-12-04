@@ -247,6 +247,7 @@ appContextPath = "<%= contextPath %>";
 </script>
 </head>
 <body>
+<noscript><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="errorJavaScriptRequired"/></noscript>
 <% if ((mode != null) && (mode.equalsIgnoreCase("mjsf"))) { %>
 <jsp:include page="ZimbraMail.jsp"/>
 <% } else { %>
