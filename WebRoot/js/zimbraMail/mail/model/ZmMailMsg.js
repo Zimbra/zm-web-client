@@ -672,6 +672,9 @@ function(soapDoc, contactList, isDraft) {
 	} else if (this.isReplied) {
 		msgNode.setAttribute("rt", "r");
 	}
+	if (this.identity) {
+		msgNode.setAttribute("idnt", this.identity.id);
+	}
 
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
 		var type = ZmComposeView.ADDRS[i];
@@ -943,6 +946,7 @@ function(msgNode) {
 	if (msgNode.su) 	this.subject = msgNode.su;
 	if (msgNode.fr) 	this.fragment = msgNode.fr;
 	if (msgNode.rt) 	this.rt = msgNode.rt;
+	if (msgNode.idnt)	this.identity = this._appCtxt.getIdentityCollection().getById(msgNode.idnt);
 	if (msgNode.origid) this.origId = msgNode.origid;
 	if (msgNode.hp) 	this._attHitList = msgNode.hp;
 	if (msgNode.mid)	this.messageId = msgNode.mid;
