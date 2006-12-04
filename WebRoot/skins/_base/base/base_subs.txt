@@ -460,8 +460,7 @@ WidgetHeaderContainer-hover	= background-color:@HeaderColor-hover@; @_WidgetHead
 _ToolbarButtonContainer_	= background-color:@Transparent@;		@TransparentBorder@
 
 # "Items" means listItems and menuItems
-_
-ItemContainerStyle_		= border-left-width:0; border-right-width:0;
+_ItemContainerStyle_		= border-left-width:0; border-right-width:0;
 _ItemContainer_				= background-color:@ItemBgColor@;		@TransparentBorder@	@_ItemContainerStyle_@
 _ItemContainer-disabled		= @_ItemContainer_@
 _ItemContainer-selected_	= background-color:@_SelColor_@;		@TransparentBorder@	@_ItemContainerStyle_@
