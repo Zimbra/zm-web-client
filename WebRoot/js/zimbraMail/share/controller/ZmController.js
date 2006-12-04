@@ -267,8 +267,14 @@ function(ex, method, params, restartOnError, obj) {
 		// bug fix #5603 - error msg for mail.SEND_FAILURE takes an argument
 		var args = (ex.code == ZmCsfeException.MAIL_SEND_FAILURE) ? ex.code : null;
 		var msg = ex.getErrorMsg ? ex.getErrorMsg(args) : ex.msg ? ex.msg : ex.message;
-		this.popupErrorDialog(msg, ex, true, ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS);
+		this.popupErrorDialog(msg, ex, true, this._hideSendReportBtn(ex));
 	}
+};
+
+ZmController.prototype._hideSendReportBtn =
+function(ex) {
+	return ex.code == ZmCsfeException.MAIL_TOO_MANY_TERMS ||
+		   ex.code == ZmCsfeException.MAIL_MAINTENANCE_MODE;
 };
 
 /*
