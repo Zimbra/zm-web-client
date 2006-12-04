@@ -467,8 +467,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	this._extraBodyText = extraBodyText;
 	
 	var identityCollection = this._appCtxt.getIdentityCollection();
-	var identity = identityCollection.selectIdentity(msg);
-
+	var identity = (msg && msg.identity) ? identity = msg.identity : identityCollection.selectIdentity(msg);
 
 	this._initializeToolBar();
 	this._toolbar.enableAll(true);

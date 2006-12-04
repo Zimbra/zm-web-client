@@ -128,6 +128,7 @@ function(data) {
 			this.name = data.name;
 		}
 	}
+	this.id = data.id;
 	var props = data.a;
 	if (props) {
 		for (var i = 0, count = props.length; i < count; i++) {
@@ -193,7 +194,7 @@ function(request, batchCommand, callback, errorCallback) {
 };
 
 ZmIdentity.prototype._handleAction =
-function(request, callback, result) {
+function(request, callback, result, response) {
 	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
 	if (request == "ModifyIdentityRequest") {
 		var identity = identityCollection.getById(this.id);
@@ -213,6 +214,7 @@ function(request, callback, result) {
 		identityCollection._addToMaps(identity);
 		identityCollection._notify(ZmEvent.E_MODIFY, { item: identity, rename: rename } );
 	} else if (request == "CreateIdentityRequest") {
+		this.id = response.identity[0].id;
 		identityCollection.add(this);
 	} else if (request == "DeleteIdentityRequest") {
 		identityCollection.remove(this);
@@ -284,7 +286,6 @@ function() {
 function ZmIdentityCollection(appCtxt) {
 	ZmModel.call(this, ZmEvent.S_IDENTITY);
 	this._appCtxt = appCtxt;
-	this._nextId = 1;
 	this.defaultIdentity = null;
 	this._idToIdentity = {};
 	this._addressToIdentity = {};
@@ -334,7 +335,6 @@ function(name) {
 ZmIdentityCollection.prototype.add =
 function(identity) {
 	if (!this._idToIdentity[identity.id]) {
-		identity.id = this._nextId++;
 		this._idToIdentity[identity.id] = identity;
 		if (identity.isDefault) {
 			this.defaultIdentity = identity;
