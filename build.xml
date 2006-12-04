@@ -538,7 +538,7 @@
       <fileset dir="WebRoot/public" includes="**/*"/>
     </copy>
     <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
-      <fileset dir="WebRoot/" excludes="**/help/**,**/adminhelp/**,js/*.js"/>
+      <fileset dir="WebRoot/" excludes="**/help/**,**/adminhelp/**,**/templates/**,js/*.js"/>
     </copy>
     <copy todir="${build.dir}/WebRoot/js/ajax" overwrite="${isProduction}" >
       <fileset dir="${ajax.dir}/WebRoot/js"/>
