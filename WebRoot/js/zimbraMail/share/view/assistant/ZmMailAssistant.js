@@ -184,11 +184,12 @@ function(bad, good) {
 	var body = new ZmMimePart();
 	body.setContentType(ZmMimeTable.TEXT_PLAIN);
 	var bodyText = this._mailFields.body != null ? this._mailFields.body : "";
-	if (this._appCtxt.get(ZmSetting.SIGNATURE_ENABLED)) {
-		var sig = this._appCtxt.get(ZmSetting.SIGNATURE);
+	var identity = this._appCtxt.getIdentityCollection().defaultIdentity;
+	if (identity.signatureEnabled) {
+		var sig = identity.signature;
 		if (sig != null && sig != "") {
 			bodyText = bodyText + "\n" + 
-				((this._appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET) ? "--\n" : "") +
+				((identity.signatureStyle == ZmSetting.SIG_INTERNET) ? "--\n" : "") +
 				sig + "\n";
 		}
 	}

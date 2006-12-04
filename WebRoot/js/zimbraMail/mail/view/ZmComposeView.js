@@ -680,7 +680,7 @@ ZmComposeView.prototype._getSignatureSeparator =
 function() {
 	var newLine = this._getSignatureNewLine();
 	var sep = newLine + newLine;
-	if (this._appCtxt.get(ZmSetting.SIGNATURE_STYLE) == ZmSetting.SIG_INTERNET)
+	if (this.getIdentity().getSignatureStyle() == ZmSetting.SIG_INTERNET)
 		sep = sep + "-- " + newLine;
 		
 	return sep;

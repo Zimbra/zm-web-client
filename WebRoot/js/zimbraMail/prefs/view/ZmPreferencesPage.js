@@ -214,8 +214,6 @@ function(id) {
 		if (!element) return null;
 		if (type == ZmPref.TYPE_CHECKBOX) {
 			value = element.checked;
-			if (id == ZmSetting.SIGNATURE_STYLE)
-				value = value ? ZmSetting.SIG_INTERNET : ZmSetting.SIG_OUTLOOK;
 		} else {
 			value = element.value;
 		}
