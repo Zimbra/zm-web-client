@@ -25,6 +25,14 @@
 <script src='<%=path%>/js/ajax/boot/AjxPackage.js'></script>
 <script src='<%=path%>/js/ajax/boot/AjxTemplate.js'></script>
 <script src='<%=path%>/js/ajax/util/AjxCookie.js'></script>
+<script src='<%=path%>/js/ajax/util/AjxUtil.js'></script>
+<script src='<%=path%>/js/ajax/core/AjxCore.js'></script>
+<script src='<%=path%>/js/ajax/dwt/core/Dwt.js'></script>
+<script src='<%=path%>/js/ajax/dwt/graphics/DwtCssStyle.js'></script>
+
+<!-- load the "common" scripts for all controllers:  creates an "util" object w/convenience methods -->
+<script src='common.js'></script>
+
 <script language='JavaScript'>
 function onLoad() {
 	var body = document.getElementsByTagName("BODY")[0];

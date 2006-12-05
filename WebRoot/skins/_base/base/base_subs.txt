@@ -489,14 +489,16 @@ BigIconHeight				= 32px
 #IFNDEF GECKO
 	_WidgetContainerStyle_	=
 #ENDIF
-_WidgetContainer_			= background-color:@WidgetBgColor@;		@OutsetBorder@		@_WidgetContainerStyle_@
-_WidgetContainer-disabled_ 	= background-color:@Transparent@;		@DisabledBorder@	@_WidgetContainerStyle_@
-_WidgetContainer-hover_		= background-color:@_BaseColor_@;		@OutsetBorder@		@_WidgetContainerStyle_@
-_WidgetContainer-selected_	= background-color:@_BaseColorL75_@;		@OutsetBorder@		@_WidgetContainerStyle_@
-_WidgetContainer-clicked_	= background-color:@_BaseColorL75_@;		@InsetBorder@		@_WidgetContainerStyle_@
-_WidgetContainer-default_	= background-color:@_SelColorL50_@;		@DefaultBorder@		@_WidgetContainerStyle_@
-_WidgetContainer-focused_	= background-color:@_SelColor_@;		@FocusBorder@		@_WidgetContainerStyle_@
-_WidgetContainer-toggled_	= background-color:@HilightColor@;		@InsetBorder@		@_WidgetContainerStyle_@
+_WidgetContainer_			= background-color:@WidgetBgColor@;		@OutsetBorder@		@_WidgetContainerStyle_@	@ActiveCursor@
+_WidgetContainer-disabled_ 	= background-color:@Transparent@;		@DisabledBorder@	@_WidgetContainerStyle_@	@DisabledCursor@
+_WidgetContainer-hover_		= background-color:@_BaseColor_@;		@OutsetBorder@		@_WidgetContainerStyle_@	@ActiveCursor@
+_WidgetContainer-selected_	= background-color:@_BaseColorL75_@;	@OutsetBorder@		@_WidgetContainerStyle_@	@ActiveCursor@
+_WidgetContainer-clicked_	= background-color:@_BaseColorL75_@;	@InsetBorder@		@_WidgetContainerStyle_@	@ActiveCursor@
+_WidgetContainer-default_	= background-color:@_SelColorL50_@;		@DefaultBorder@		@_WidgetContainerStyle_@	@ActiveCursor@
+_WidgetContainer-focused_	= background-color:@_SelColor_@;		@FocusBorder@		@_WidgetContainerStyle_@	@ActiveCursor@
+_WidgetContainer-toggled_	= background-color:@HilightColor@;		@InsetBorder@		@_WidgetContainerStyle_@	@ActiveCursor@
+
+_WidgetContainer-light_		= background-color:@ChromeBg@;			@OutsetBorder@		@_WidgetContainerStyle_@	@ActiveCursor@
 
 
 # "WidgetHeader" means headers of trees, lists, message header, etc
@@ -505,7 +507,9 @@ WidgetHeaderContainer-hover	= background-color:@HeaderColor-hover@; @_WidgetHead
 
 
 # special case for toolbar buttons that don't have a border normally
-_ToolbarButtonContainer_	= background-color:@Transparent@;		@TransparentBorder@
+_ToolbarButtonContainer_			= background-color:@Transparent@;		@TransparentBorder@	@ActiveCursor@
+_ToolbarButtonContainer-disabled_	= background-color:@Transparent@;		@TransparentBorder@	@DisabledCursor@
+
 
 # "Items" means listItems and menuItems
 _ItemContainerStyle_		= border-left-width:0; border-right-width:0;
@@ -599,15 +603,15 @@ FieldSetLabel				= @Label@ font-weight:bold;
 
 
 _NormalButtonStyle_			= @_NormalButtonSize_@
-NormalButton				= @_WidgetContainer_@				@ActiveCursor@		@_NormalButtonStyle_@
-NormalButton-disabled		= @_WidgetContainer-disabled_@		@DisabledCursor@	@_NormalButtonStyle_@
-NormalButton-hover			= @_WidgetContainer-hover_@			@ActiveCursor@		@_NormalButtonStyle_@
-NormalButton-clicked		= @_WidgetContainer-clicked_@		@ActiveCursor@		@_NormalButtonStyle_@
-NormalButton-default		= @_WidgetContainer-default_@		@ActiveCursor@		@_NormalButtonStyle_@
-NormalButton-focused		= @_WidgetContainer-focused_@		@ActiveCursor@		@_NormalButtonStyle_@
-NormalButton-toggled		= @_WidgetContainer-toggled_@		@ActiveCursor@		@_NormalButtonStyle_@
+NormalButton				= @_WidgetContainer_@				@_NormalButtonStyle_@
+NormalButton-disabled		= @_WidgetContainer-disabled_@		@_NormalButtonStyle_@
+NormalButton-hover			= @_WidgetContainer-hover_@			@_NormalButtonStyle_@
+NormalButton-clicked		= @_WidgetContainer-clicked_@		@_NormalButtonStyle_@
+NormalButton-default		= @_WidgetContainer-default_@		@_NormalButtonStyle_@
+NormalButton-focused		= @_WidgetContainer-focused_@		@_NormalButtonStyle_@
+NormalButton-toggled		= @_WidgetContainer-toggled_@		@_NormalButtonStyle_@
 
-_NormalButtonTextStyle_		= @NoWrap@
+_ButtonTextStyle_			= @NoWrap@
 NormalButtonText			= @Text@	 		@_NormalButtonTextStyle_@
 NormalButtonText-disabled	= @Text-disabled@ 	@_NormalButtonTextStyle_@
 NormalButtonText-hover		= @Text-hover@ 		@_NormalButtonTextStyle_@
@@ -615,13 +619,18 @@ NormalButtonText-clicked	= @Text-clicked@ 	@_NormalButtonTextStyle_@
 NormalButtonText-default	= @Text-default@	@_NormalButtonTextStyle_@
 NormalButtonText-focused	= @Text-focused@	@_NormalButtonTextStyle_@
 
-ToolbarButton				= @_ToolbarButtonContainer_@		@ActiveCursor@
-ToolbarButton-disabled		= @_ToolbarButtonContainer_@		@DisabledCursor@
-ToolbarButton-hover			= @_WidgetContainer-hover_@			@ActiveCursor@
-ToolbarButton-clicked		= @_WidgetContainer-clicked_@		@ActiveCursor@
-ToolbarButton-default		= @_WidgetContainer-default_@		@ActiveCursor@
-ToolbarButton-focused		= @_WidgetContainer-focused_@		@ActiveCursor@
-ToolbarButton-toggled		= @_WidgetContainer-toggled_@		@ActiveCursor@
+
+LightButton					= @_WidgetContainer-light@
+LightButton-disabled		= @_WidgetContainer-disabled_@
+
+
+ToolbarButton				= @_ToolbarButtonContainer_@
+ToolbarButton-disabled		= @_ToolbarButtonContainer-disabled_@
+ToolbarButton-hover			= @_WidgetContainer-hover_@
+ToolbarButton-clicked		= @_WidgetContainer-clicked_@
+ToolbarButton-default		= @_WidgetContainer-default_@
+ToolbarButton-focused		= @_WidgetContainer-focused_@
+ToolbarButton-toggled		= @_WidgetContainer-toggled_@
 
 _ToolbarButtonTextStyle_	= @NoWrap@
 ToolbarButtonText			= @Text@	 		@_ToolbarButtonTextStyle_@
@@ -632,14 +641,15 @@ ToolbarButtonText-default	= @Text-default@	@_ToolbarButtonTextStyle_@
 ToolbarButtonText-focused	= @Text-focused@	@_ToolbarButtonTextStyle_@
 
 
+
 _SelectStyle_				= @_SelectSize_@
-Select						= @_WidgetContainer_@				@ActiveCursor@		@_SelectStyle_@
-Select-disabled				= @_WidgetContainer-disabled_@		@DisabledCursor@	@_SelectStyle_@
-Select-hover				= @_WidgetContainer-hover_@			@ActiveCursor@		@_SelectStyle_@
-Select-clicked				= @_WidgetContainer-clicked_@		@ActiveCursor@		@_SelectStyle_@
-Select-default				= @_WidgetContainer-default_@		@ActiveCursor@		@_SelectStyle_@
-Select-focused				= @_WidgetContainer-focused_@		@ActiveCursor@		@_SelectStyle_@
-Select-toggled				= @_WidgetContainer-toggled_@		@ActiveCursor@		@_SelectStyle_@
+Select						= @_WidgetContainer_@			@_SelectStyle_@
+Select-disabled				= @_WidgetContainer-disabled_@	@_SelectStyle_@
+Select-hover				= @_WidgetContainer-hover_@		@_SelectStyle_@
+Select-clicked				= @_WidgetContainer-clicked_@	@_SelectStyle_@
+Select-default				= @_WidgetContainer-default_@	@_SelectStyle_@
+Select-focused				= @_WidgetContainer-focused_@	@_SelectStyle_@
+Select-toggled				= @_WidgetContainer-toggled_@	@_SelectStyle_@
 
 _SelectTextStyle_			= text-align:left;	@TextPadding@	@NoWrap@
 SelectText					= @Text@	 		@_SelectTextStyle_@

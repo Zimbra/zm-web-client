@@ -2440,13 +2440,15 @@ HTML>BODY .appt-selected .appt_allday_body
 	height:100%;
 	width:100%;
 	position:relative;
-	overflow:auto;
+	overflow-x:hidden;
+	overflow-y:auto;
 }
 
 .ZScrollContainerInner {
 	height:100%;
+	width:100%;
 	position:absolute;
-	overflow:auto;
+	overflow:visible;
 	padding-right:16px;
 }
 
@@ -2486,18 +2488,40 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 
+
+.ZFixedTable {
+	table-layout:fixed;
+}
 .ZFormTable {
 	width:100%;
 }
 
 
 /* checkbox element */
-.ZCheckbox {}
+.ZCheckbox {
+	cursor:pointer;
+}
 
+.ZRadioButton {
+	cursor:pointer;
+}
 
 .ZLabelCell {
 	text-align:right;
+	vertical-align:top;
+	padding-top:5px;
 }
+
+.ZLabelCellLeft {
+	text-align:left;
+	vertical-align:top;
+	padding-top:5px;
+}
+
+.ZDisabled {
+	@Text-disabled@
+}
+
 .ZCheckboxCell {
 	text-align:right;
 }
@@ -2544,6 +2568,21 @@ HTML>BODY .appt-selected .appt_allday_body
 	@ToolbarBg@
 	@BoxPadding@
 	font-weight:bold;
+}
+
+.ZFieldset {
+	width:99%;
+	padding:7px 10px 12px 10px;
+	margin:10px;
+}
+
+.ZNestedFieldset {
+	width:auto;
+	padding:0px 0px 5px 0px;	
+}
+
+.ZLegend {
+
 }
 
 
@@ -2617,6 +2656,13 @@ HTML>BODY .appt-selected .appt_allday_body
 	cursor:pointer;
 }
 
+/* info button which appears to the right and shows context-sensitive help */
+.ZInfoContextButton {
+	position:absolute;
+	right:0px;
+	cursor:pointer;
+}
+
 .ZSeparatorBorder {
 	@SeparatorBorder@
 }
@@ -2653,3 +2699,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-top:2px;
 	padding-top:7px;
 }
+
+
+
+.ZFieldSizeSmall 	{	width:100px;	}
+.ZFieldSizeMedium 	{	width:200px;	}
+.ZFieldSizeLarge	{	width:300px;	}
+.ZFieldSizeFull		{	width:100%;		}
