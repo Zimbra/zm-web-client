@@ -490,77 +490,8 @@ function(errors) {
 
 ZmIdentityPage.prototype._initializeOptions =
 function() {
-	var sendFromNameId = Dwt.getNextId();
-	var sendFromAddressId = Dwt.getNextId();
-	var setReplyToCheckboxId = Dwt.getNextId();
-	var setReplyToNameId = Dwt.getNextId();
-	var setReplyToAddressId = Dwt.getNextId();
-	var whenSentToCheckboxId = Dwt.getNextId();
-	var whenSentToInputId = Dwt.getNextId();
-	var whenInFolderCheckboxId = Dwt.getNextId();
-	var whenInFolderInputId = Dwt.getNextId();
-	var folderBrowseButtonId = Dwt.getNextId();
-	var sendBCCToCheckboxId = Dwt.getNextId();
-	var sendBCCToNameId = Dwt.getNextId();
-
-	var html = [];
-	var i = 0;
-	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
-	html[i++] = ZmMsg.sendWithIdentity;
-	html[i++] = "</legend>";
-	html[i++] = "<table>";
-
-	html[i++] = "<tr><td></td><td class='Label'>";
-	html[i++] = ZmMsg.sendFrom;
-	html[i++] = "</td><td id='";
-	html[i++] = sendFromNameId;
-	html[i++] = "'></td><td id='";
-	html[i++] = sendFromAddressId;
-	html[i++] = "'></td></tr>";
-
-	html[i++] = "<tr><td><input type='checkbox' id='";
-	html[i++] = setReplyToCheckboxId;
-	html[i++] = "'></td><td>";
-	html[i++] = ZmMsg.setReplyTo;
-	html[i++] = "</td><td id='";
-	html[i++] = setReplyToNameId;
-	html[i++] = "'></td><td id='";
-	html[i++] = setReplyToAddressId;
-	html[i++] = "'></td></tr>";
-
-	html[i++] = "</table>";
-	html[i++] = "</fieldset>";
-	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
-	html[i++] = ZmMsg.selectIdentityWhen;
-	html[i++] = "</legend>";
-	html[i++] = "<table>";
-
-	html[i++] = "<tr><td style='text-align:right;'><input type='checkbox' id='";
-	html[i++] = whenSentToCheckboxId;
-	html[i++] = "'></td><td>";
-	html[i++] = ZmMsg.whenSentTo;
-	html[i++] = "</td></tr><tr><td>&nbsp;</td><td id='";
-	html[i++] = whenSentToInputId;
-	html[i++] = "'></td></tr><tr><td>&nbsp;</td><td class='Hint'>";
-	html[i++] = ZmMsg.whenSentToHint;
-	html[i++] = "</td></tr>";
-
-	html[i++] = "<tr><td style='text-align:right;'><input type='checkbox' id='";
-	html[i++] = whenInFolderCheckboxId;
-	html[i++] = "'></td><td>";
-	html[i++] = ZmMsg.whenInFolder;
-	html[i++] = "</td></tr><tr><td>&nbsp;</td><td><table cellspacing=0 cellpadding=0><tr><td id='";
-	html[i++] = whenInFolderInputId;
-	html[i++] = "'></td><td style='padding-left:5px' id='";
-	html[i++] = folderBrowseButtonId;
-	html[i++] = "'></td></tr></table></td></tr><tr><td>&nbsp;</td><td class='Hint'>";
-	html[i++] = ZmMsg.whenInFolderHint;
-	html[i++] = "</td></tr>";
-
-	html[i++] = "</table>";
-	html[i++] = "</fieldset>";
-
-	this.getHtmlElement().innerHTML = html.join("");
+	var id = this._htmlElId;
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Options#IdentityForm_options", id);
 
 	var inputSizeInChars = 30;
 	var inputSizeInPixels = 167;
@@ -569,7 +500,7 @@ function() {
 	var sendFromName = new DwtInputField(params);
 	this._errorMessages[ZmIdentity.SEND_FROM_DISPLAY] = ZmMsg.sendFromError;
 	sendFromName.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
-	sendFromName.reparentHtmlElement(sendFromNameId);
+	sendFromName.replaceElement(id + "_sendFromName");
 	this._inputs[ZmIdentity.SEND_FROM_DISPLAY] = sendFromName;
 
 	var allowAnyFromAddress = this._appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS);
@@ -580,7 +511,7 @@ function() {
 		sendFromAddress.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
 		sendFromAddress.setValidatorFunction(null, ZmIdentityPage._validateEmailAddress);
 		this._errorMessages[ZmIdentity.SEND_FROM_ADDRESS] = ZmMsg.sendFromAddressError;
-		sendFromAddress.reparentHtmlElement(sendFromAddressId);
+		sendFromAddress.replaceElement(id + "_sendFromAddress");
 		this._inputs[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
 	} else {
 		var accountAddress = this._appCtxt.get(ZmSetting.USERNAME);
@@ -595,7 +526,7 @@ function() {
 		}
 		var sendFromAddress = new DwtSelect(this, options);
 		sendFromAddress.getButton().getHtmlElement().style.minWidth = inputSizeInPixels;
-		sendFromAddress.reparentHtmlElement(sendFromAddressId);
+		sendFromAddress.replaceElement(id + "_sendFromAddress");
 		this._selects[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
 	}
 	
@@ -604,7 +535,7 @@ function() {
 	setReplyToName.setRequired(true);
 	this._errorMessages[ZmIdentity.SET_REPLY_TO_DISPLAY] = ZmMsg.replyToError;
 	setReplyToName.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
-	setReplyToName.reparentHtmlElement(setReplyToNameId);
+	setReplyToName.replaceElement(id + "_setReplyToName");
 	this._inputs[ZmIdentity.SET_REPLY_TO_DISPLAY] = setReplyToName;
 	params.hint = ZmMsg.addressHint;
 	var setReplyToAddress = new DwtInputField(params);
@@ -612,8 +543,9 @@ function() {
 	setReplyToAddress.setValidatorFunction(null, ZmIdentityPage._validateEmailAddress);
 	this._errorMessages[ZmIdentity.SET_REPLY_TO_ADDRESS] = ZmMsg.replyToAddressError;
 	setReplyToAddress.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
-	setReplyToAddress.reparentHtmlElement(setReplyToAddressId);
+	setReplyToAddress.replaceElement(id + "_setReplyToAddress");
 	this._inputs[ZmIdentity.SET_REPLY_TO_ADDRESS] = setReplyToAddress;
+	var setReplyToCheckboxId = id + "_setReplyToCheckbox";
 	this._associateCheckbox(setReplyToCheckboxId, [setReplyToName, setReplyToAddress]);
 	this._checkboxIds[ZmIdentity.SET_REPLY_TO] = setReplyToCheckboxId;
 	if (!allowAnyFromAddress) {
@@ -627,8 +559,9 @@ function() {
 	whenSentToInput.setValidatorFunction(null, ZmIdentityPage._validateEmailList);
 	this._errorMessages[ZmIdentity.WHEN_SENT_TO_ADDRESSES] = ZmMsg.whenSentToError;
 	whenSentToInput.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
-	whenSentToInput.reparentHtmlElement(whenSentToInputId);
+	whenSentToInput.replaceElement(id + "_whenSentToInput");
 	this._arrays[ZmIdentity.WHEN_SENT_TO_ADDRESSES] = { input: whenSentToInput, toArray: this._stringToArray, toText: this._arrayToString };
+	var whenSentToCheckboxId = id + "_whenSentToCheckbox";
 	this._associateCheckbox(whenSentToCheckboxId, [whenSentToInput]);
 	this._checkboxIds[ZmIdentity.USE_WHEN_SENT_TO] = whenSentToCheckboxId;
 
@@ -636,13 +569,14 @@ function() {
 	whenInFolderInput.setValidatorFunction(this, this._validateFolderList);
 	this._errorMessages[ZmIdentity.WHEN_IN_FOLDERIDS] = ZmMsg.whenInFolderError;
 	whenInFolderInput.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
-	whenInFolderInput.reparentHtmlElement(whenInFolderInputId);
+	whenInFolderInput.replaceElement(id + "_whenInFolderInput");
 	this._arrays[ZmIdentity.WHEN_IN_FOLDERIDS] = { input: whenInFolderInput, toArray: this._stringToFolderArray, toText: this._folderArrayToString };
 	var folderBrowseButton = new DwtButton(this);
-	folderBrowseButton.reparentHtmlElement(folderBrowseButtonId);
+	folderBrowseButton.replaceElement(id + "_folderBrowseButton");
 	folderBrowseButton.setImage("Folder");
 	folderBrowseButton.setToolTipContent(ZmMsg.chooseFolder);
 	folderBrowseButton.addSelectionListener(new AjxListener(this, this._folderBrowseListener, whenInFolderInput));
+	var whenInFolderCheckboxId = id + "_whenInFolderCheckbox";
 	this._associateCheckbox(whenInFolderCheckboxId, [whenInFolderInput, folderBrowseButton]);
 	this._checkboxIds[ZmIdentity.USE_WHEN_IN_FOLDER] = whenInFolderCheckboxId;
 };
