@@ -172,9 +172,16 @@ MonoDarkBorder 				= border:2px solid @_MonoDarkColor_@;
 _ToolbarBorder_				= border:2px solid @_MonoDarkColor_@; @RoundTopCorners@
 ToolbarContainer			= @MonoDarkBg@ @_ToolbarBorder_@
 
+#IFDEF GECKO
 RoundCorners				= -moz-border-radius:3 3 3 3;
 RoundTopCorners				= -moz-border-radius:3 3 0 0;
 RoundBottomCorners			= -moz-border-radius:0 0 3 3;
+#ENDIF
+#IFNDEF GECKO
+RoundCorners				=
+RoundTopCorners				=
+RoundBottomCorners			=
+#ENDIF
 
 ChromeBg					= @WhiteBg@
 
@@ -184,8 +191,13 @@ SkinBorderSearch			= @MonoBg@ @MonoBorder@ @RoundCorners@
 SkinBorderQuota				= 
 SkinBorderSBToolbar			= @ToolbarContainer@
 SkinBorderSB				= @MonoBg@ @MonoBorder@									border-top-width:0px;
-SkinBorderCurrentApp		= @MonoDarkBg@ @MonoDarkBorder@ 	-moz-border-radius:3 3 0 3;	
-SkinBorderTreeSash			= 
+#IFDEF GECKO
+SkinBorderCurrentApp		= @MonoDarkBg@ @MonoDarkBorder@ 	-moz-border-radius:3 3 0 3;
+#ENDIF
+#IFNDEF GECKO
+SkinBorderCurrentApp		= @MonoDarkBg@ @MonoDarkBorder@
+#ENDIF
+SkinBorderTreeSash			=
 SkinBorderAppToolbar		= @ToolbarContainer@
 SkinBorderAppChooser		= height:100%;
 SkinBorderTree				= @WhiteBg@ @MonoDarkBorder@	border-top-width:0px;
@@ -194,11 +206,15 @@ SkinBorderApp				= @WhiteBg@  @MonoDarkBorder@ 	@RoundBottomCorners@	border-top-
 SkinBorderStatus			= @MonoBg@ @MonoBorder@ 	@RoundCorners@
 
 
-
+#IFDEF GECKO
 _AppTabStyle_			 	= border-right-width:0px;	-moz-border-radius:3 0 0 3; margin-bottom:1px;
+#ENDIF
+#IFNDEF GECKO
+_AppTabStyle_			 	= border-right-width:0px; margin-bottom:1px;
+#ENDIF
 AppTabContainer				= @_ToolbarBorder_@ 	@MonoDarkBg@ 						@_AppTabStyle_@
 AppTabContainer-hover		= @_ToolbarBorder_@ 	background-color:@_BaseColor_@;		@_AppTabStyle_@
-AppTabContainer-selected	= @_ToolbarBorder_@ 	background-color:@_BaseColorL2_@;	@_AppTabStyle_@
+AppTabContainer-selected	= @_ToolbarBorder_@ 	background-color:@_BaseColorL25_@;	@_AppTabStyle_@
 
 
 MiniCalBg					= @WhiteBg@
