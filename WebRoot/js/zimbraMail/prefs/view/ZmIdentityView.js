@@ -77,23 +77,25 @@ function() {
 
 ZmIdentityView.prototype._createDetails =
 function(parentElement) {
+    var id = this._htmlElId;
+    parentElement.innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Options#IdentityForm", id);
+    
+    
+
 	var inputId = Dwt.getNextId();
 
-	var html = ["<table>",
-				"<tr><td style='text-align:right;' width='120px'>", 
-	            ZmMsg.identityNameLabel, "</td><td id='", inputId, "'></td></tr></table>"].join("");
-	parentElement.innerHTML = html;
-	
+
 	var inputCell = document.getElementById(inputId);
 	var params = { parent: this.parent, type: DwtInputField.STRING, size: 50, validationStyle: DwtInputField.CONTINUAL_VALIDATION };
 	this._identityNameInput = new DwtInputField(params);
 	this._identityNameInput.setRequired(true);
 	this._identityNameInput.setValidatorFunction(this, this._validateIdentityName);
-	this._identityNameInput.reparentHtmlElement(inputCell);
+	this._identityNameInput.replaceElement(id + "_name");
 	this._identityNameInput.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._nameChangeHandler));
 
+
 	var tabView = new DwtTabView(this, null, Dwt.STATIC_STYLE);
-	tabView.reparentHtmlElement(parentElement);
+	tabView.replaceElement(id + "_tabs");
 	
 	this._addPage(ZmIdentityPage.OPTIONS, ZmMsg.identityOptions, tabView);
 	this._addPage(ZmIdentityPage.SIGNATURE, ZmMsg.signature, tabView);
