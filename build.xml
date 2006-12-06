@@ -453,8 +453,12 @@
       <dirset dir='img/loRes' includes='**/logo,**/translate'/>
     </imagemerge>
     <echo/>
+    <replace token="@jsVersion@" value="${build.simpleDate}" file='${build.dir}/WebRoot/public/CacheLoRes.html' />
+    <replace token="@jsVersion@" value="${build.simpleDate}" file='${images.loRes.destDir}/${images.cssFile}' />
     <copy file="${images.loRes.destDir}/${images.cssFile}" todir="${build.dir}/WebRoot/css" overwrite="true"/>
-    <antcall target="skin-images"></antcall>
+    <antcall target="skin-images">
+        <param name='build.simpleDate' value='${build.simpleDate}'/>
+    </antcall>
 
   </target>
 
@@ -478,6 +482,8 @@
       cachefile='${dir.skincache}/CacheLoRes.html'>
       <dirset dir='WebRoot/skins/${skindir}' includes='**/img/**'/>
     </imagemerge>
+    <replace token="@jsVersion@" value="${build.simpleDate}" file='${images.loRes.destDir}/skins/${skindir}/${dir.skincache}/CacheLoRes.html' />
+    <replace token="@jsVersion@" value="${build.simpleDate}" file='${images.loRes.destDir}/skins/${skindir}/${skindir}.css' />
     <copy file="${images.loRes.destDir}/skins/${skindir}/${skindir}.css"
           tofile="${build.dir}/WebRoot/skins/${skindir}/${skindir}_imgs.css" overwrite="true"/>      
     <echo/>
@@ -624,6 +630,7 @@
       <entry  key="build.simpleDate" type="date" value="now" pattern="yyMMddHHmmss"/>
       <entry  key="date.format" value="yyyyMMddHHmmss" />
     </propertyfile>
+    <property file="${build.dir}/build.properties" />
   </target>
 
   <target name="inject-build-info" depends="set-buildinfo-vars,generate-build-info">
@@ -675,7 +682,6 @@
   </target>
 
   <target name="war" depends="copy-files-to-build-area, templates, jam-files, inject-build-info, images, i18n">
-    <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
@@ -693,7 +699,6 @@
   </target>
 
 	<target name="prod-war" depends="copy-files-to-build-area, templates, inject-build-info, compress-js-files, images, i18n, compress-ale-files">
-    <property file="${build.dir}/build.properties" />
     <copy file="WebRoot/WEB-INF/web.xml.production" tofile="${build.dir}/WebRoot/WEB-INF/web.xml" overwrite="true"/>
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
@@ -773,7 +778,6 @@
 
   <!-- this is the production war file target for the admin webapp -->
   <target name="admin-war" depends="compress-js-files, generate-build-info, admin-images, copy-common-css-to-admin, i18n">
-    <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
@@ -794,7 +798,6 @@
   </target>
 
   <target name="admin-dev-war" depends="copy-files-to-build-area, jam-files, generate-build-info, admin-images, copy-common-css-to-admin, i18n">
-    <property file="${build.dir}/build.properties" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
