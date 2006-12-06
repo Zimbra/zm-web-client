@@ -458,7 +458,7 @@ ZmPopAccountsView._handleItemCheckbox = function(event) {
 //
 
 function ZmPopAccountBasicPage(parent, appCtxt, pageId, className, posStyle) {
-	DwtTabViewPage.call(this, parent, className, posStyle);
+	DwtTabViewPage.call(this, parent, className, posStyle || DwtControl.STATIC_STYLE);
 	this._appCtxt = appCtxt;
 	this._pageId = pageId;
     this._createHtml();
