@@ -761,7 +761,7 @@ function(message) {
         this.notesTopPart.children.add(textPart);
 		this.notesTopPart.children.add(htmlPart);
 	} else {
-        var textContent = this._trimNotesSummary(text.content || "");
+        var textContent = this._trimNotesSummary((text && text.content) || "");
 
 		this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
 		this.notesTopPart.setContent(textContent);
