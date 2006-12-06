@@ -24,9 +24,15 @@
  */
 
 function ZmChooseFolderDialog(parent, className) {
-	ZmDialog.call(this, parent, null, className, ZmMsg.chooseFolder);
+    var newButton = new DwtDialog_ButtonDescriptor(ZmChooseFolderDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
+	ZmDialog.call(this, parent, null, className, ZmMsg.chooseFolder, [newButton]);
 
 	this._createOverview(ZmChooseFolderDialog._OVERVIEW_ID, this._folderTreeCellId);
+
+    this.registerCallback(ZmChooseFolderDialog.NEW_BUTTON, this._showNewDialog, this);
+    this._changeListener = new AjxListener(this, this._folderTreeChangeListener);
+
+    this._creatingFolder = false;
 };
 
 ZmChooseFolderDialog.prototype = new ZmDialog;
@@ -34,6 +40,7 @@ ZmChooseFolderDialog.prototype.constructor = ZmChooseFolderDialog;
 
 ZmChooseFolderDialog._OVERVIEW_ID = "ZmChooseFolderDialog";
 
+ZmChooseFolderDialog.NEW_BUTTON = ++DwtDialog.LAST_BUTTON;
 
 // Public Methods
 
@@ -72,14 +79,19 @@ function(treeIds, omit, skipReadOnly, description) {
 
 	ZmDialog.prototype.popup.call(this);
 
-	for (var i = 0; i < treeIds.length; i++) {
+    for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
-		var treeView = this._treeView[treeId] = this._opc.getTreeView(ZmChooseFolderDialog._OVERVIEW_ID, treeId);
+        var treeView = this._treeView[treeId] = this._opc.getTreeView(ZmChooseFolderDialog._OVERVIEW_ID, treeId);
 		var tree = this._opc.getTreeData(treeId);
 		var ti = treeView.getTreeItemById(tree.root.id);
 		ti.setExpanded(true);
 		if (this._folder && treeId == this._folder.type)
 			treeView.setSelected(tree.root);
+
+        tree.removeChangeListener(this._changeListener);
+        // this listener has to be added after folder tree view is set
+        // (so that it comes after the view's standard change listener)
+        tree.addChangeListener(this._changeListener);
 	}
 };
 
@@ -114,4 +126,40 @@ ZmChooseFolderDialog.prototype._okButtonListener =
 function(ev) {
 	var tgtFolder = this._opc.getSelected(ZmChooseFolderDialog._OVERVIEW_ID);
 	DwtDialog.prototype._buttonListener.call(this, ev, [tgtFolder]);
+};
+
+ZmChooseFolderDialog.prototype._showNewDialog =
+function() {
+    // REVISIT: Set the type based on the currently selected folder item.
+    var type = ZmOrganizer.FOLDER;
+    var dialog = type == ZmOrganizer.ADDRBOOK
+		? this._appCtxt.getNewAddrBookDialog()
+		: this._appCtxt.getNewFolderDialog();
+	dialog.reset();
+	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this);
+
+    var folder = this._treeView[type].getSelected();
+    dialog.popup(folder, this);
+};
+
+ZmChooseFolderDialog.prototype._newCallback =
+function(parent, name) {
+    var type = parent.type;
+    var ftc = this._opc.getTreeController(type);
+	ftc._doCreate(parent, name);
+	var dialog = type == ZmOrganizer.ADDRBOOK
+		? this._appCtxt.getNewAddrBookDialog()
+		: this._appCtxt.getNewFolderDialog();
+	dialog.popdown();
+	this._creatingFolder = true;
+};
+
+ZmChooseFolderDialog.prototype._folderTreeChangeListener =
+function(ev) {
+	if (ev.event == ZmEvent.E_CREATE && this._creatingFolder) {
+        var treeView = this._treeView[ev.source.type];
+        var organizer = ev.getDetail("organizers")[0];
+        treeView.setSelected(organizer, true);
+		this._creatingFolder = false;
+	}
 };
