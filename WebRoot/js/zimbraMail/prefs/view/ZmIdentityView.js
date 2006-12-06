@@ -107,7 +107,7 @@ function(parentElement) {
 
 ZmIdentityView.prototype._addPage =
 function(pageId, title, tabView) {
-	var page = new ZmIdentityPage(this, this._appCtxt, pageId);
+	var page = new ZmIdentityPage(this, this._appCtxt, pageId, null, DwtControl.STATIC_STYLE);
 	tabView.addTab(title, page);
 	this._pages.push(page);
 };
@@ -288,7 +288,7 @@ function() {
 		dirty = this._pages[i].getChanges(this._identity) || dirty;
 	}
 	
-	if (dirty && this._identity.id) {
+	if (dirty && this._identity._object_) {
 		var found = false;
 		for (var i = 0, count = this._updates.length; i < count; i++) {
 			if (this._updates[i].id == this._identity.id) {
@@ -363,6 +363,7 @@ function() {
 		}
 		this._hasRendered = true;
 		if (this._identity) {
+			// Make all controls up to date with model.
 			this.setIdentity(this._identity);
 		}
 	}
@@ -800,41 +801,24 @@ function(dialog, folderInput, folder) {
 
 ZmIdentityPage.prototype._initializeSignature =
 function() {
-	var signatureStyleSelectId = Dwt.getNextId();
-	var signatureId = Dwt.getNextId();
-	var signatureEnabledCheckboxId = Dwt.getNextId();
+	var id = this._htmlElId;
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Options#IdentityForm_signature", id);
 
-	var html = [];
-	var i = 0;
-	html[i++] = "<div id='";
-	html[i++] = signatureId;
-	html[i++] = "'></div>";
-	html[i++] = "<table><tr><td>";
-	html[i++] = ZmMsg.placeSignature;
-	html[i++] = "</td><td id='";
-	html[i++] = signatureStyleSelectId;
-	html[i++] = "'></td></tr><tr><td style='text-align:right'><input type='checkbox' id='";
-	html[i++] = signatureEnabledCheckboxId;
-	html[i++] = "'><td>";
-	html[i++] = ZmMsg.signatureEnabled;
-	html[i++] = "</td></tr></table>";
-
-	this.getHtmlElement().innerHTML = html.join("");
-	
 	var options = [];
 	var i = 0;
 	options[i++] = new DwtSelectOptionData(ZmSetting.SIG_OUTLOOK, ZmMsg.aboveQuotedText);
 	options[i++] = new DwtSelectOptionData(ZmSetting.SIG_INTERNET, ZmMsg.atBottomOfMessage);
 	var signatureStyleSelect = new DwtSelect(this, options);
-	signatureStyleSelect.reparentHtmlElement(signatureStyleSelectId);
+	var signatureStyleSelectId = id + "_signatureStyleSelect";
+	signatureStyleSelect.replaceElement(signatureStyleSelectId);
 	this._selects[ZmIdentity.SIGNATURE_STYLE] = signatureStyleSelect;
 
 	var params = { parent: this, type: DwtInputField.STRING, size: 80, rows:12 };
 	var input = new DwtInputField(params);
-	input.reparentHtmlElement(signatureId);
+	input.replaceElement(id + "_signature");
 	this._inputs[ZmIdentity.SIGNATURE] = input;
 	
-	this._checkboxIds[ZmIdentity.SIGNATURE_ENABLED] = signatureEnabledCheckboxId;
+	this._checkboxIds[ZmIdentity.SIGNATURE_ENABLED] = id + "_signatureEnabledCheckbox";
 };
 
 ZmIdentityPage._validateEmailAddress =
