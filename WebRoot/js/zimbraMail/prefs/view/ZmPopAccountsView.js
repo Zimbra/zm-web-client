@@ -891,6 +891,7 @@ ZmPopAccountBasicPage.prototype._testResponse = function(account, resp) {
     var title = ZmMsg.popAccountTest;
 
     var dialog = this._appCtxt.getErrorDialog();
+    dialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
     dialog.setMessage(message, details, style, title);
     dialog.popup();
 };
