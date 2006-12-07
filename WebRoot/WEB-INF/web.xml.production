@@ -16,11 +16,6 @@
 
     <!-- ============= -->
 	<context-param>
-	   <param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
-	   <param-value>/msgs/ZhMsg</param-value>
-	</context-param>
-
-	<context-param>
 	   <param-name>zimbra.soap.url</param-name>
 	   <param-value>http://localhost/service/soap</param-value>
 	</context-param>

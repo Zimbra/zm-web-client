@@ -6,6 +6,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <c:choose>
     <c:when test="${(!empty param.newPassword or !empty param.confirmNewPassword) and (param.newPassword ne param.confirmNewPassword)}">
         <c:set var="errorCode" value="account.CHANGE_PASSWORD"/>

@@ -7,7 +7,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-
+<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <app:handleError>
     <zm:computeSearchContext var="context" types="contact" usecache="true"/>
     <c:set var="isCreate" value="${empty param.id}"/>

@@ -7,6 +7,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
+<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <c:if test="${!empty param.doAction}"><app:tagAction/></c:if>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
