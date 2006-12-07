@@ -48,12 +48,10 @@
 	
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]].join(": ");
 
+	this._templateId = null;
 	this._rendered = false;
 	this._hasRendered = false;
 
-	this._closeLinkId = null;
-	this._infoBoxId = null;
-	this._detailsElementId = null;
 	this._addButton = null;
 	this._removeButton = null;
 
@@ -206,79 +204,34 @@ function(errors) {
 
 ZmPrefListView.prototype._createHtml =
 function() {
-	var html = [];
-	var i = 0;
-	var listCellId = Dwt.getNextId();
-	this._detailsElementId = Dwt.getNextId();
-	var newIdentityButtonCellId = Dwt.getNextId();
-	var removeIdentityButtonCellId = Dwt.getNextId();
-	var closeLinkId = Dwt.getNextId();
-	var helpButtonId = Dwt.getNextId();
-	this._infoBoxId = Dwt.getNextId();
-	
-	html[i++] = "<table width='100%' height='100%' cellspacing=10><tr><td class='OutsetPanel' width='100px'><table class='ZmIdentitiesBox'><tr><td id='";
-	html[i++] = listCellId;
-	html[i++] = "'></td></tr><tr><td><table width='100%'><tr>";
-	html[i++] = "<td id='";
-	html[i++] = newIdentityButtonCellId;
-	html[i++] = "'></td>"
-	html[i++] = "<td id='";
-	html[i++] = removeIdentityButtonCellId;
-	html[i++] = "'></td>";
-	html[i++] = "</tr></table></td></tr></table></td><td style='vertical-align:top;'>";
-
-    html[i++] = "<div class='infoBox' id='";
-	html[i++] = this._infoBoxId;
-	html[i++] = "'>";
-    html[i++] = "<table width='100%' border='0' cellpadding='0' cellspacing='4'>";
-    html[i++] = "<tr valign='top'>";
-    html[i++] = "<td class='infoBoxImg'><div class='ImgInformation_32'></div></td><td>";
-    html[i++] = "<div class='InfoTitle'><div class='infoTitleClose' id='";
-	html[i++] = closeLinkId;
-	html[i++] = "'>";
-	html[i++] = ZmMsg.close;
-	html[i++] = "</div>";
-	html[i++] = this._labels.infoTitle;
-	html[i++] = "</div>";
-	html[i++] = this._labels.infoContents;
-    html[i++] = "</td></tr></table>";
-	html[i++] = "</div>";
-
-    html[i++] = "<table cellspacing=0 cellpadding=0 class='nestedOptionTable'>";
-	html[i++] = "<tr class='PanelHead'><td>";
-	html[i++] = this._labels.detailsHeader;
-	html[i++] = "</td><td style='width:1%' id='";
-	html[i++] = helpButtonId;
-	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td colspan=2 id='";
-	html[i++] = this._detailsElementId;
-	html[i++] = "'></td></tr></table>";
-	this.getHtmlElement().innerHTML = html.join("");
+	this._templateId = Dwt.getNextId();
+	var id = this._templateId;
+	var data = { id: id, _labels: this._labels };
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Options#ListOptionPage", data);
 
 	// Create the list view and the contents of the detail pane.
-	this._createDetails(document.getElementById(this._detailsElementId));		
-	this._list = this._createList(document.getElementById(listCellId));
+	this._list = new ZmPrefList(this, this._appCtxt, this._labels.listHeader);
+	this._list.replaceElement(id + "_list");
+	this._list.enableSorting(false);
 	this._updateListSize();
+	this._createDetails(document.getElementById(id + "_form_container"));		
 	
 	// Create Add/Remove buttons.
 	this._addButton = new DwtButton(this, DwtLabel.ALIGN_CENTER);
-	this._addButton.reparentHtmlElement(newIdentityButtonCellId)
+	this._addButton.replaceElement(id + "_add_button")
 	this._addButton.setText(ZmMsg.add);
 	this._removeButton = new DwtButton(this, DwtLabel.ALIGN_CENTER);
-	this._removeButton.reparentHtmlElement(removeIdentityButtonCellId)
+	this._removeButton.replaceElement(id + "_remove_button")
 	this._removeButton.setText(ZmMsg.remove);
 	
 	// Handle the link to close the info box.
-	var linkElement = document.getElementById(closeLinkId);
-	var linkCallback = AjxCallback.simpleClosure(this._toggleInfoBoxHandler, this);
-	Dwt.setHandler(linkElement, DwtEvent.ONCLICK, linkCallback);
+	var infoBoxHandler = AjxCallback.simpleClosure(this._toggleInfoBoxHandler, this);
+	var linkElement = document.getElementById(id + "_infoBox_close");
+	Dwt.setHandler(linkElement, DwtEvent.ONCLICK, infoBoxHandler);
 
-	// Create the help button.
-	var helpButton = new DwtButton(this, DwtLabel.ALIGN_RIGHT | DwtButton.ALWAYS_FLAT, "DwtToolbarButton");
-	helpButton.setImage("Information");
-	helpButton.reparentHtmlElement(helpButtonId);
-	helpButton.addSelectionListener(new AjxListener(this, this._toggleInfoBoxHandler));
-
+	var helpButtonElement = document.getElementById(id + "_help_button");
+	Dwt.setHandler(helpButtonElement, DwtEvent.ONCLICK, infoBoxHandler);
+	
 	this._controller.getPrefsView().addControlListener(new AjxListener(this, this._controlListener));
 
 	this._controller._setup();
@@ -295,7 +248,7 @@ function(parentElement) {
 
 ZmPrefListView.prototype._toggleInfoBoxHandler =
 function() {
-	var infoBox = document.getElementById(this._infoBoxId);
+	var infoBox = document.getElementById(this._templateId + "_infoBox");
 	var visible = Dwt.getVisible(infoBox);
 	Dwt.setVisible(infoBox, !visible);
 };
