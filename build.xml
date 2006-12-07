@@ -679,6 +679,12 @@
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
+    <copy verbose="true" todir="${deploy.dir}${deploy.path}/h">
+        <fileset dir="WebRoot/h" includes="**"/>
+    </copy>
+    <copy verbose="true" todir="${deploy.dir}${deploy.path}/WEB-INF/tags">
+        <fileset dir="WebRoot/WEB-INF/tags" includes="**"/>
+    </copy>
   </target>
 
     <!-- ======= HTML ========== -->
