@@ -1,0 +1,129 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<c:if test="${!empty param.doAction}"><app:addressBookAction/></c:if>
+
+<app:handleError>
+    <zm:getMailbox var="mailbox"/>
+</app:handleError>
+
+<c:set var="toolbar">
+    <table width=100% cellspacing=0 class='Tb'>
+        <tr><td align=left class=TbBt><input type=hidden class='tbButton' name="zzz">&nbsp;</td></tr>
+    </table>
+    
+</c:set>
+
+<app:head title="${zm:message(pageContext,'manageAddressBooks')}"/>
+
+<body>
+
+<app:view context="${null}" selected='manageaddressbooks' contacts="true" editmode="true">
+    
+<form action="" method="post">
+<div class='TbTop'>${toolbar}</div>
+
+<div class='ZhAppContent'>
+<%--
+<table width=100% cellspacing=0 cellpadding=0>
+    <tr class='contactHeaderRow'>
+        <td align=center>
+            <div class='contactHeader'>
+                <fmt:message key="manageAddressBooks"/>
+            </div>
+        </td>
+    </tr>
+</table>
+<br />
+--%>
+
+<table border="0" cellpadding="0" cellspacing="10" width=100%>
+<tbody>
+
+<tr>
+    <td colspan="2" class="sectionLabel" valign="top">
+        <fmt:message key="createNewAddressBook"/>
+    </td>
+</tr>
+<tr>
+    <td nowrap align=right><fmt:message key="addressBookName"/> :</td>
+    <td><input name='newFolderName' type='text' autocomplete='off' size='35' value=""></td>
+</tr>
+<tr>
+    <td>&nbsp;</td>
+    <td valign="top">
+        <input class='tbButton' type="submit" name="actionCreate" value="<fmt:message key="createAddressBook"/>">
+    </td>
+</tr>
+
+<tr>
+    <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="renameAddressBook"/></td>
+</tr>
+<tr>
+    <td nowrap align='right'><fmt:message key="currentName"/> :</td>
+    <td>
+        <select name="folderToRename">
+            <option value="" selected/>
+            <fmt:message key="chooseAddressBookToRename"/>
+            <option disabled/>
+            <fmt:message key="actionOptSep"/>
+            <zm:forEachFolder var="folder">
+                <c:if test="${folder.isContactView and not folder.isSystemFolder}">
+                    <option value="f:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
+                </c:if>
+            </zm:forEachFolder>
+        </select>
+    </td>
+</tr>
+<tr>
+    <td nowrap align='right'><fmt:message key="newName"/> :</td>
+    <td><input name='newName' type='text' autocomplete='off' size='35' value=""></td>
+</tr>
+
+<tr>
+    <td>&nbsp;</td>
+    <td><input class='tbButton' type="submit" name="actionRename" value="<fmt:message key="renameAddressBook"/>"></td>
+</tr>
+
+
+<tr>
+    <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="deleteAddressBook"/></td>
+</tr>
+<tr>
+    <td align='right' nowrap><fmt:message key="addressBookName"/>:</td>
+    <td>
+        <select name="folderToDelete">
+            <option value="" selected/><fmt:message key="chooseAddressBookToDelete"/>
+            <option disabled/><fmt:message key="actionOptSep"/>
+             <zm:forEachFolder var="folder">
+                <c:if test="${folder.isContactView and not folder.isSystemFolder}">
+                    <option value="f:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
+                </c:if>
+            </zm:forEachFolder>
+        </select>
+    </td>
+</tr>
+<tr>
+    <td>&nbsp;</td>
+    <td><input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="deleteAddressBook"/>"></td>
+</tr>
+
+<tr>
+    <td colspan='2'>&nbsp;</td>
+</tr>
+
+</tbody>
+</table>
+<input type="hidden" name="doAction" value="1"/>
+</div>    
+</form>
+</app:view>
+</body>
+</html>

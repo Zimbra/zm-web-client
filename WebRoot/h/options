@@ -1,0 +1,324 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<c:set var="toolbar">
+    <table width=100% cellspacing=0 class='Tb'>
+        <tr>
+            <td align=left class=TbBt>
+                <input type=hidden class='tbButton' name="zzz">&nbsp;
+            </td>
+        </tr>
+    </table>
+</c:set>
+
+<c:set var="selected" value="${empty param.selected ? 'general' : param.selected}"/>
+
+<c:if test="${!empty param.doAction}"><app:optAction selected="${selected}"/></c:if>
+
+<c:choose>
+    <%------------------- GENERAL ------------------%>
+    <c:when test="${selected eq 'general'}">
+        <app:head title="${zm:message(pageContext,'generalOptions')}"/>
+    </c:when>
+    <%------------------- MAIL ------------------%>
+    <c:when test="${selected eq 'mail'}">
+        <app:head title="${zm:message(pageContext,'mailOptions')}"/>
+    </c:when>
+    <%------------------- ADDRESS BOOK ------------------%>
+    <c:when test="${selected eq 'addressbook'}">
+        <app:head title="${zm:message(pageContext,'addressBookOptions')}"/>
+    </c:when>
+    <%------------------- SHORTCUTS ------------------%>
+    <c:when test="${selected eq 'shortcuts'}">
+        <app:head title="${zm:message(pageContext,'shortcuts')}"/>
+    </c:when>
+    <c:otherwise>
+        <app:head title="${zm:message(pageContext,'options')}"/>        
+    </c:otherwise>
+</c:choose>
+
+<body>
+
+<app:handleError>
+    <zm:getMailbox var="mailbox"/>
+</app:handleError>
+
+<app:view context="${null}" selected='options' folders="true" searches="true" tags="true">
+
+<form action="" method="post">
+<div class='TbTop'>${toolbar}</div>
+
+<div class='ZhAppContent'>
+<br>
+<table cellpadding=0 cellspacing=0>
+    <tr class='Tabs'>
+        <td class='TabSpacer'/>
+        <td class='TabSpacer'/>        
+        <td class='Tab ${selected=='general' ? 'TabSelected' :'TabNormal'}'>
+            <a href="<c:url value="/h/options?selected=general"/>" accesskey="1">
+                <span><fmt:message key="general"/></span>
+            </a>
+        </td>
+        <td class='TabSpacer'/>
+        <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
+            <a href="<c:url value="/h/options?selected=mail"/>" accesskey="2">
+                <span><fmt:message key="mail"/></span></a>
+        </td>
+        <td class='TabSpacer'/>
+        <td class='Tab ${selected=='addressbook' ? 'TabSelected' :'TabNormal'}'>
+            <a href="<c:url value="/h/options?selected=addressbook"/>" accesskey="3">
+                <span><fmt:message key="addressBook"/></span></a>
+        </td>
+        <td class='TabSpacer'/>
+        <td class='Tab ${selected=='shortcuts' ? 'TabSelected' :'TabNormal'}'>
+            <a href="<c:url value="/h/options?selected=shortcuts"/>" accesskey="4">
+                <span><fmt:message key="shortcuts"/></span></a>
+        </td>
+        <td class='TabFiller'>
+            &nbsp;
+        </td>
+    </tr>
+</table>
+
+<div class='TbTop'>
+    <table width=100% cellspacing=0 class='Tb'>
+        <tr>
+            <td align=left class=TbBt>
+
+                <input <c:if test="${selected eq 'shortcuts'}"> DISABLED </c:if> class='tbButton' type="submit" name="actionSave" value="<fmt:message key="save"/>">
+
+            </td>
+            <td align=right>
+                &nbsp;
+            </td>
+        </tr>
+    </table>
+</div>
+
+<br>
+<table border="0" cellpadding="0" cellspacing="4" width=100%>
+<tbody>
+
+<c:choose>
+    <%------------------- GENERAL ------------------%>
+    <c:when test="${selected eq 'general'}">
+
+        <app:optSection label="generalOptions"/>
+        <app:optSeparator/>
+        <app:optCheckbox label="includeJunkFolder" pref="zimbraPrefIncludeSpamInSearch" checked="${mailbox.prefs.includeSpamInSearch}"/>
+        <app:optCheckbox label="includeTrashFolder" pref="zimbraPrefIncludeTrashInSearch" checked="${mailbox.prefs.includeTrashInSearch}"/>
+        <app:optSeparator/>
+        <app:optCheckbox label="alwaysShowSearchString" pref="zimbraPrefShowSearchString" checked="${mailbox.prefs.showSearchString}"/>
+        <app:optSeparator/>
+        <c:if test="${mailbox.features.skinChange}">
+            <tr>
+                <td nowrap align=right><fmt:message key="SKIN_uiTheme"/> :</td>
+                <td>
+                    <select name="zimbraPrefSkin">
+                        <c:set var="skin" value="${mailbox.prefs.skin}"/>
+                        <c:forEach var="name" items="${mailbox.availableSkins}">
+                            <fmt:message var="displayName" key="SKIN_${name}"/>
+                            <option <c:if test="${name eq skin}">selected</c:if> value="${fn:escapeXml(name)}">${fn:escapeXml(empty displayName ? name : displayName)}</option>                            
+                        </c:forEach>
+                    </select>
+                </td>
+            </tr>
+            <app:optSeparator/>
+        </c:if>
+
+    </c:when>
+    <%------------------- MAIL ------------------%>
+    <c:when test="${selected eq 'mail'}">
+        <app:optSection label="mailOptions"/>
+         <app:optSeparator/>
+
+        <c:if test="${mailbox.features.conversations}">
+            <tr>
+                <td nowrap align=right><fmt:message key="groupMailBy"/> :</td>
+                <td>
+                    <select name="zimbraPrefGroupMailBy">
+                        <c:set var="groupMailBy" value="${mailbox.prefs.groupMailBy}"/>
+                        <option <c:if test="${groupMailBy eq 'conversation'}">selected</c:if> value="conversation"><fmt:message key="conversation"/></option>
+                        <option <c:if test="${groupMailBy eq 'message'}">selected</c:if> value="message"><fmt:message key="message"/></option>
+                    </select>
+                </td>
+            </tr>
+        </c:if>
+
+
+         <tr>
+             <td nowrap align=right><fmt:message key="numberOfItemsPerPage"/> :</td>
+             <td>
+                 <select name="zimbraPrefMailItemsPerPage">
+                     <c:set var="mailItemsPP" value="${mailbox.prefs.mailItemsPerPage}"/>
+                     <option <c:if test="${mailItemsPP eq 10}"> selected</c:if>>10</option>
+                     <option <c:if test="${mailItemsPP eq 25}"> selected</c:if>>25</option>
+                     <option <c:if test="${mailItemsPP eq 50}"> selected</c:if>>50</option>
+                     <option <c:if test="${mailItemsPP eq 100}"> selected</c:if>>100</option>
+                 </select>
+             </td>
+         </tr>
+
+         <app:optCheckbox label="showFragments" pref="zimbraPrefShowFragments" checked="${mailbox.prefs.showFragments}"/>
+
+        <c:if test="${mailbox.features.initialSearchPreference}">
+            <app:optText label="initialMailSearch" pref="zimbraPrefMailInitialSearch" size="40" value="${mailbox.prefs.mailInitialSearch}"/>
+        </c:if>
+         <app:optSeparator/>
+
+         <app:optCheckbox label="saveCopiesOfMessagesToSentFolder" pref="zimbraPrefSaveToSent" checked="${mailbox.prefs.saveToSent}"/>
+
+        <c:if test="${mailbox.features.outOfOfficeReply}">
+            <app:optCheckbox label="awayMessageEnabled" pref="zimbraPrefOutOfOfficeReplyEnabled" checked="${mailbox.prefs.outOfOfficeReplyEnabled}"/>
+
+            <app:optTextArea label="awayMessage" pref="zimbraPrefOutOfOfficeReply" rows='4' cols='60' value="${mailbox.prefs.outOfOfficeReply}"/>
+        </c:if>
+
+        <app:optSeparator/>
+
+        <c:if test="${mailbox.features.newMailNotification}">
+            <app:optCheckbox label="enableAddressForNewMailNotifications" pref="zimbraPrefNewMailNotificationEnabled" checked="${mailbox.prefs.newMailNotificationsEnabled}"/>
+
+            <app:optText label="addressForNewMailNotifications" pref="zimbraPrefNewMailNotificationAddress" size="40" value="${mailbox.prefs.newMailNotificationAddress}"/>
+
+            <app:optSeparator/>
+        </c:if>
+
+        <c:if test="${mailbox.features.mailForwarding}">
+            <app:optText label="addressToForwardMailTo" pref="zimbraPrefMailForwardingAddress" size="40" value="${mailbox.prefs.mailForwardingAddress}"/>
+
+            <app:optCheckbox label="dontKeepALocalCopyOfMessages" pref="zimbraPrefMailLocalDeliveryDisabled"  checked="${mailbox.prefs.mailLocalDeliveryDisabled}"/>
+
+            <app:optSeparator/>
+        </c:if>
+        
+         <app:optCheckbox label="viewMailAsHtml" pref="zimbraPrefMessageViewHtmlPreferred" checked="${mailbox.prefs.messageViewHtmlPreferred}"/>
+
+         <tr>
+             <td nowrap align=right><fmt:message key="ifISendAMessageThatIThenReceive"/> :</td>
+             <td>
+                 <select name="zimbraPrefDedupeMessagesSentToSelf">
+                     <c:set var="dedupe" value="${mailbox.prefs.dedupeMessagesSentToSelf}"/>
+                     <option <c:if test="${dedupe eq 'dedupeNone'}"> selected</c:if> value="dedupeNone"><fmt:message key="receiveTheMessageAsNormal"/></option>
+                     <option <c:if test="${dedupe eq 'secondCopyifOnToOrCC'}"> selected</c:if> value="secondCopyifOnToOrCC"><fmt:message key="onlyReceiveTheMessageIfImInToOrCc"/></option>
+                     <option <c:if test="${dedupe eq 'dedupeAll'}"> selected</c:if> value="dedupeAll"><fmt:message key="doNotReceiveTheMessage"/></option>
+                 </select>
+             </td>
+         </tr>
+        <app:optSeparator/>
+    </c:when>
+    <%------------------- ADDRESS BOOK ------------------%>
+    <c:when test="${selected eq 'addressbook'}">
+        <app:optSection label="addressBookOptions"/>
+
+         <app:optSeparator/>
+
+         <app:optCheckbox label="enableAutoAddingOfContacts" pref="zimbraPrefAutoAddAddressEnabled" checked="${mailbox.prefs.autoAddAddressEnabled}"/>
+
+        <tr>
+             <td nowrap align=right><fmt:message key="numberOfContactsToDisplayPerPage"/> :</td>
+             <td>
+                 <select name="zimbraPrefContactsPerPage">
+                     <c:set var="contactsPP" value="${mailbox.prefs.contactsPerPage}"/>
+                     <option <c:if test="${contactsPP eq 10}"> selected</c:if>>10</option>
+                     <option <c:if test="${contactsPP eq 25}"> selected</c:if>>25</option>
+                     <option <c:if test="${contactsPP eq 50}"> selected</c:if>>50</option>
+                     <option <c:if test="${contactsPP eq 100}"> selected</c:if>>100</option>
+                 </select>
+             </td>
+         </tr>
+        <app:optSeparator/>                
+    </c:when>
+    <%------------------- SHORTCUTS ------------------%>
+    <c:when test="${selected eq 'shortcuts'}">
+        <tr>
+            <td colspan=2 class='shortcutIntro'>
+               <fmt:message key="SC_shortcutsIntro"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2>
+                <div style="padding:10px">
+
+                    <table class='shortcutList' cellspacing=0 cellpadding=0>
+                        <app:optShortcutSection description="SC_shortcutsForAllApplications"/>
+                        <app:optShortcutKey key="m" description="SC_GLOBAL_MAIL"/>
+                        <app:optShortcutKey key="e" description="SC_GLOBAL_COMPOSE"/>
+                        <app:optShortcutKey key="c" description="SC_GLOBAL_CONTACTS"/>
+                        <app:optShortcutKey key="y" description="SC_GLOBAL_OPTIONS"/>
+                        <app:optShortcutKey key="q" description="SC_GLOBAL_QUERY"/>
+                    </table>
+                    <br>
+                    <table class='shortcutList' cellspacing=0 cellpadding=0>
+                        <app:optShortcutSection description="SC_shortcutsForList"/>
+                        <app:optShortcutKey key="o" description="SC_LIST_OPEN"/>
+                        <app:optShortcutKey key="j" description="SC_LIST_DOWN"/>
+                        <app:optShortcutKey key="k" description="SC_LIST_UP"/>
+                        <app:optShortcutKey key="n" description="SC_LIST_NEXT_PAGE"/>
+                        <app:optShortcutKey key="p" description="SC_LIST_PREV_PAGE"/>
+                        <app:optShortcutKey key="r" description="SC_LIST_REFRESH"/>
+                        <app:optShortcutKey key="z" description="SC_LIST_CLOSE"/>
+                    </table>
+                    <br>
+                    <table class='shortcutList' cellspacing=0 cellpadding=0>
+                        <app:optShortcutSection description="SC_shortcutsForConvView"/>
+                        <app:optShortcutKey key="f" description="SC_CONV_NEXT_PAGE"/>
+                        <app:optShortcutKey key="b" description="SC_CONV_NEXT_PAGE"/>
+                        <app:optShortcutKey key="z" description="SC_CONV_CLOSE"/>
+                        <app:optShortcutKey key="x" description="SC_MSG_SHOW_EXTERNAL_IMAGES"/>
+                        <app:optShortcutKey key="1" description="SC_MSG_REPLY"/>
+                        <app:optShortcutKey key="2" description="SC_MSG_REPLYALL"/>
+                        <app:optShortcutKey key="3" description="SC_MSG_FORWARD"/>
+                        <app:optShortcutKey key="0" description="SC_MSG_SHOW_ORIG"/>
+                    </table>
+                    <br>
+                    <table class='shortcutList' cellspacing=0 cellpadding=0>
+                        <app:optShortcutSection description="SC_shortcutsForMessageView"/>
+                        <app:optShortcutKey key="z" description="SC_MSG_CLOSE"/>
+                        <app:optShortcutKey key="x" description="SC_MSG_SHOW_EXTERNAL_IMAGES"/>
+                        <app:optShortcutKey key="1" description="SC_MSG_REPLY"/>
+                        <app:optShortcutKey key="2" description="SC_MSG_REPLYALL"/>
+                        <app:optShortcutKey key="3" description="SC_MSG_FORWARD"/>
+                        <app:optShortcutKey key="0" description="SC_MSG_SHOW_ORIG"/>
+                    </table>
+                    <br>
+                    <table class='shortcutList' cellspacing=0 cellpadding=0>
+                        <app:optShortcutSection description="SC_shortcutsForFoldersTree"/>
+                        <app:optShortcutKey key="i" description="SC_FOLDER_INBOX"/>
+                        <app:optShortcutKey key="s" description="SC_FOLDER_SENT"/>
+                        <app:optShortcutKey key="d" description="SC_FOLDER_DRAFTS"/>
+                        <app:optShortcutKey key="u" description="SC_FOLDER_JUNK"/>
+                        <app:optShortcutKey key="t" description="SC_FOLDER_TRASH"/>
+                    </table>
+                    <br>
+                    <table class='shortcutList' cellspacing=0 cellpadding=0>
+                        <app:optShortcutSection description="SC_shortcutsForOptionsView"/>
+                        <app:optShortcutKey key="1" description="SC_OPTION_GENERAL"/>
+                        <app:optShortcutKey key="2" description="SC_OPTION_MAIL"/>
+                        <app:optShortcutKey key="3" description="SC_OPTION_ADDRESSBOOK"/>
+                        <app:optShortcutKey key="4" description="SC_OPTION_SHORTCUTS"/>                        
+                    </table>
+                    <br>
+                </div>
+            </td>
+        </tr>
+    </c:when>
+</c:choose>
+ 
+</tbody>
+</table>
+<br>
+<br>
+<input type="hidden" name="doAction" value="1"/>
+</div>
+</form>
+</app:view>
+</body>
+</html>

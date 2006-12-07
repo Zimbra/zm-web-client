@@ -1,0 +1,485 @@
+
+IMG {
+border: none;
+vertical-align: middle;
+
+}
+
+.tbButton, .searchButton {
+    padding:2px;
+    /* couldn't find a good match in base_subs for this */
+    @_WidgetContainer_@;
+    @FontSize-normal@
+}
+
+/* ------- tabs --------------- */
+
+.TabFiller {
+padding:5px;
+border: none;
+}
+
+.TabSpacer {
+padding:2px; 
+width: 2px;
+border: none;
+}
+
+.Tabs { margin-right: 10px; }
+.Tab {  }
+.TabNormal {
+ @ToolbarContainer@;
+ border-bottom: none;
+ background-color: @ItemBgColor@;
+ width: 8em;
+ text-align: center;
+ vertical-align: middle;
+ font-weight:bold;
+
+}
+
+.TabSelected {
+@ToolbarContainer@
+ border-bottom: none;
+ @ToolbarBg@;
+ width: 8em;
+ text-align: center;
+ vertical-align: middle;
+ font-weight:bold;    
+}
+
+.Tabs A:link, .Tabs A:visited  {
+	color: black;
+	text-decoration: none;
+}
+
+/* ------- tree --------------- */
+
+.Tree {
+ @OutsetBorder@
+@TreeContainer@
+/*padding-bottom: 5px;*/
+}
+
+.Tree TD {
+    @TreeContainer@
+    @TreeItem@
+    padding: 2px 0px 2px 10px;
+}
+
+.Tree TH {
+  @WidgetHeaderContainer@    
+}
+
+.Tree .Header {
+    text-align: left;
+	font-weight:bold;
+	height:18px;
+    padding: 1px 5px 0px 0px;
+}
+
+.Tree a:link, .Tree a:visited { color: black; text-decoration: none; }
+
+/* ------- list --------------- */
+
+.List TD {
+    @ItemBottomBorder@
+    padding-right: 6px;
+}
+
+.List TH {
+	text-align: left;
+    background-color: @HeaderColor@;
+	font-weight:normal;
+    padding: 5px 5px 5px 0;
+}
+
+.List {
+    @ListContainer@;
+}
+
+.List A:link, .List A:visited  {
+	color: black;
+	text-decoration: none;
+}
+
+.List TH A:link, .List TH A:visited  {
+	text-decoration: underline;
+}
+
+.List .Img {
+    width: 20px;
+    padding-right: 0px;
+}
+
+.List .CB {
+    width: 20px;
+    padding-right: 0px;
+}
+
+.List .Radio {
+    width: 20px;
+    padding-right: 0px;
+    text-align: center;
+}
+
+/* --------------- */
+
+.MsgStatusImg {
+ width: 20px;
+ padding-right: 6px;    
+}
+
+A:visited { color: blue; }
+
+
+
+.ConvSummary A {
+	color: black;
+	text-decoration: none;    
+}
+
+.Overview { width: 150px; padding:0px 10px 0px 10px; }
+
+.TopContent {
+    padding:0 5px 0 0;
+ /*   border-bottom: 1px solid #98adbe;*/ 
+}
+
+.ZhAppContent {
+   @PageBg@  @OutsetBorder@
+   border-top-width:0px;
+}
+
+.MainContent {
+/*    @PageBg@  @OutsetBorder@   border-top-width:0px; */
+    padding:0px 0px 0px 0px;
+    margin-right: 10px;
+}
+
+.InlinedMessage {
+    padding:0px 0px 0px 0px;
+    border: 3px solid #98adbe;
+    margin-right: 10px;
+}
+
+.SearchBar {
+    @SkinBorderSearch@;
+padding: 5px;
+}
+
+.TbTop {
+   @ToolbarContainer@
+    padding:5px;
+}
+
+.TbBottom {
+   @InlineToolbarContainer@
+    padding:5px;
+}
+
+.TbBt A {
+padding: 0px 5px 0px 5px;
+}
+
+.Tb SPAN { vertical-align: middle; }
+
+.Tags SPAN { vertical-align: middle;  padding-right:5px;}
+
+.Unread {	font-weight:bold; }
+
+.RowSelected { @SelectedBg@ }
+.RowMatched { background-color: @HilightColor@; }
+
+
+.Folder { padding-bottom: 2px;  }
+
+.Folder SPAN, .Tab SPAN { vertical-align: middle; padding-left: 3px; }
+.Folder.Selected {  @SelectedBg-blurred@}
+
+.Paging {
+padding: 0px 5px 0px 5px;
+}
+
+.Compose {
+@PageBg@;
+border: 1px solid;
+border-color: #98adbe #555555 #555555 #E0E0E0;
+    
+}
+
+.ConvSummary  {
+    	@PageHeaderBg@
+	@BottomSeparator@
+/*background-color: @_BaseColorD10_@; */
+    
+padding: 5px 0px 5px 0px; 
+}
+
+.ConvSummary SPAN, .CompOrigAtt SPAN { vertical-align: middle; }
+
+.MsgHdr {
+    @WidgetHeaderContainer@
+}
+.MsgHdr TABLE {
+background-color: @HeaderColor@;
+padding: 5px 0 5px 0;
+
+
+}
+
+.MsgOps {
+    background-color: @HeaderColor@;
+    padding-left: 5px;
+    padding-bottom: 2px;
+}
+
+.Msg { }
+
+.MsgHdrName {
+    width: 10%;
+  padding: 3px 0px 3px 0px;
+  vertical-align: top;
+  text-align: right;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.MsgHdrValue {
+  padding: 3px 3px 3px 3px;
+  vertical-align: top;
+  overflow: hidden;
+}
+
+.MsgHdrValue IMG { vertical-align: top; }
+
+.MsgHdrSub {
+  font-size: 15px;
+  font-weight:bold;
+}
+
+.MsgHdrSender {
+  font-size: 13px;
+  font-weight:bold;
+  padding: 3px 3px 3px 3px;
+  vertical-align: top;
+  overflow: hidden;
+}
+
+.MsgHdrSent {
+  padding: 3px 3px 3px 3px;
+  vertical-align: top;
+  overflow: hidden; 
+  white-space: nowrap;
+}
+
+.MsgHdrAttAnchor {
+  padding: 3px 3px 3px 3px;
+  vertical-align: top;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.MsgHdrAttAnchor A, .CompOrigAtt A {
+	color: black;
+	text-decoration: none;
+}
+
+.MsgBody {
+ @AppBorder@
+ background-color: #FFFFFF;
+ font-family:monospace;
+ font-size:13px;
+ padding: 10px;
+ overflow: auto;
+}
+
+.MsgBody .zUrl {
+ font-family:monospace;
+ font-size:13px;
+}
+
+.MsgCompose {
+ font-family:monospace;
+ font-size:13px;
+}
+
+.Fragment {
+	color: gray; 
+	font-weight: normal; 
+}
+
+.contactLabel {
+   color: black;  white-space:nowrap; overflow:hidden;
+   width: 1%;
+   text-align: right;
+}
+
+.editContactLabel {
+   color: black;  white-space:nowrap; overflow:hidden;
+   width: 18em;
+   text-align: right;
+}
+
+.optionSectionLabel {
+        color: black;  white-space:nowrap; overflow:hidden; font-size:15px; font-weight:bold;
+}
+
+
+.sectionLabel {
+        color: black;  white-space:nowrap; overflow:hidden; border-bottom: 1px solid #8597a7; font-size:15px; font-weight:bold;
+}
+
+.companyName {
+        font-size:15px; font-weight:bold;
+}
+
+.companyFolder {
+        font-size:13px;
+        white-space:nowrap; overflow:hidden;
+        width: 1%;
+}
+
+.contactHeaderRow {
+        background-color:#E9E9E9; /* TODO: dynamic based on folder */
+        height:36px;
+}
+
+.contactTagsRow {
+        background-color:#E9E9E9; /* TODO: dynamic based on folder */
+}
+
+.contactHeader {
+        font-size:18px; 
+        font-weight:bold;
+        color: black;
+        white-space:nowrap; overflow:hidden;
+        padding: 3 0 3 2;
+}
+
+.searchField {
+    @InputField@
+}
+
+.NoResults { 
+	text-align: center;	
+	padding: 20px 0px 20px 0px;
+	font-weight: bold;
+}
+
+.InitialContactSearch {
+	text-align: center;
+	padding: 20px 0px 20px 0px;
+    color: gray;
+}
+
+.ImgDisabled {
+    opacity: 0.3;
+#IFDEF MSIE
+    filter:alpha(opacity=30);
+#ENDIF
+}
+
+.Displayimages {
+        cursor: pointer;
+        background-color: #FFFFCC;
+        padding: 7px;
+        font-size: 10pt;
+        border-bottom: 1px solid #777777;
+}
+
+.AttachmentImage {
+  width: 120px;
+  height: 80px;
+}
+
+.Status  {
+padding: 2px 0px 2px 0px;
+}
+
+.StatusEmpty  {
+padding: 8px 0px 6px 0px;
+}
+
+.Status DIV {
+    padding: 2px 25px 4px 25px;
+    font-weight: bold;
+
+
+}
+
+.StatusInfo     { @WindowOuterContainer@ @ToastBg-info@ }
+.StatusWarning  { @WindowOuterContainer@ @ToastBg-warning@}
+.StatusCritical { @windowOuterContainer@ @ToastBg-critical@ }
+
+/*
+ *   Shortcut key display
+ */
+
+.shortcutList {
+	width:100%;
+	border-collapse:collapse;
+	margin-bottom:10px;
+}
+
+.shortcutListHeader {
+	border:1px solid #999999;
+}
+
+.shortcutKeys {
+	text-align:right;
+	padding:6px;
+	vertical-align:top;
+	@SeparatorBorder@
+	width:250px;
+	font-weight:bold;
+	@Text-disabled@;
+}
+
+.shortcutDescription {
+	@SeparatorBorder@
+	padding:5px;
+	width:auto;
+}
+
+.shortcutKeyCombo {
+	white-space:nowrap;
+	margin-right:5px;
+	margin-left:5px;
+}
+
+.shortcutKey {
+	@SeparatorBorder@
+	@Text@
+	font-weight:bold;
+	padding:2px 4px 2px 4px;
+	margin:1px 1px 1px 1px;
+	line-height:22px;
+}
+
+.shortcutTable {
+	table-layout:fixed;
+	border-collapse:collapse;
+	margin-bottom:10px;
+	border:1px solid #999999;
+}
+
+.shortcutTable TH {
+	font-size:11px;
+	text-align:left;
+	font-weight:bold;
+	padding-left:5px;
+	color:#666666;
+	border-bottom:1px solid #999999;
+}
+
+.SubHead,
+.PanelHead {
+	font-size:12px; font-weight:bold;
+	padding:3 10 5 7;
+}
+
+
+.PanelHead {
+	background-color:#bab09a;
+}

@@ -1,0 +1,47 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<app:handleError>
+    <zm:computeSearchContext var="context" types="contact" usecache="true"/>
+    <c:set var="isCreate" value="${empty param.id}"/>
+
+    <c:choose>
+        <c:when test="${isCreate}">
+            <c:set var="contact" value="${null}"/>
+            <fmt:message var="title" key="newContact"/>
+        </c:when>
+        <c:otherwise>
+            <zm:getContact id="${param.id}" var="contact"/>
+            <fmt:message var="title" key="editContact">
+                <fmt:param>${contact.displayFileAs}</fmt:param>
+            </fmt:message>
+        </c:otherwise>
+    </c:choose>
+</app:handleError>
+
+<app:head title="${title}"/>
+
+<body>
+<app:view context="${context}" selected="contacts" contacts="true" tags="true">
+    <zm:currentResultUrl var="currentUrl" disp="${isCreate ? 0 : 1}" value="" context="${context}"/>
+    <form action="${currentUrl}" method="post">
+        <input type="hidden" name="id" value="${contact.id}"/>
+        <app:editContactToolbar top='true' create="${isCreate}"context="${context}" keys="true"/>
+        <div class='ZhAppContent'>
+                <app:editContact title="${title}" contact="${contact}" context="${context}"/>
+        </div>            
+        <app:editContactToolbar top='false' create="${isCreate}" context="${context}" keys="false"/>
+        <input type="hidden" name="doAction" value="1"/>        
+    </form>
+
+</app:view>
+
+</body>
+</html>
