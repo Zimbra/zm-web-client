@@ -65,6 +65,11 @@ function(account) {
 };
 
 ZmPopAccountsView.prototype.getPreSaveCallback = function() {
+    return new AjxCallback(this, this._preSaveTestAccounts);
+};
+
+ZmPopAccountsView.prototype._preSaveTestAccounts =
+function(continueCallback, batchCommand) {
     // get list of accounts to test
     var list = this.getList();
     if (!list) return null;
@@ -73,11 +78,15 @@ ZmPopAccountsView.prototype.getPreSaveCallback = function() {
     var items = list.getList().getArray();
     for (var i = 0; i < items.length; i++) {
         var account = items[i];
-        if (!account.enabled) continue;
 
         var isNew = account._new;
         if (isNew) {
-            accounts.push(account);
+            if (account.enabled) {
+                accounts.push(account);
+            }
+            else {
+                this._doCreateAccount(account, batchCommand);
+            }
         }
         else {
             var modified = false;
@@ -88,22 +97,22 @@ ZmPopAccountsView.prototype.getPreSaveCallback = function() {
                 }
             }
             if (modified) {
-                accounts.push(account);
+                if (account.enabled) {
+                    accounts.push(account);
+                }
+                else {
+                    this._doSaveAccount(account, batchCommand);
+                }
             }
         }
     }
 
     // is there anything to do?
     if (accounts.length == 0) {
-        return null;
+        continueCallback.run(true);
+        return;
     }
 
-    // return callback
-    return new AjxCallback(this, this._preSaveTestAccounts, [accounts]);
-};
-
-ZmPopAccountsView.prototype._preSaveTestAccounts =
-function(accounts, continueCallback, batchCommand) {
     var successes = new Array(accounts.length);
 
     // setup test dialog
@@ -241,39 +250,53 @@ function(continueCallback, batchCommand, accounts, successes, success) {
                 account.enabled = false;
             }
 
-            // add
-            var errorCallback = new AjxCallback(this, this._commandException);
+            // add command
             if (account._new) {
-                var callback = new AjxCallback(this, this._commandResult, [account]);
-                account.create(callback, errorCallback, batchCommand);
-
-                // create identity
-                if (account._identity.checked) {
-                    var email = account._identity.email;
-                    var display = email.replace(/@.*$/,"");
-
-                    var identity = new ZmIdentity(this._appCtxt);
-                    identity.name = account.name;
-                    identity.sendFromDisplay = display;
-                    identity.sendFromAddress = email;
-                    identity.setReplyTo = true;
-                    identity.setReplyToDisplay = display;
-                    identity.setReplyToAddress = email;
-                    identity.useWhenSentTo = account._identity.linkAddr;
-                    identity.whenSentToAddresses = [email];
-                    identity.useWhenInFolder = account._identity.linkFolder;
-                    identity.whenInFolderIds = [account.folderId];
-
-                    identity.createRequest("CreateIdentityRequest", batchCommand);
-                }
+                this._doCreateAccount(account, batchCommand);
             }
             else {
-                var callback = new AjxCallback(this, this._commandResult, [account]);
-                account.save(callback, errorCallback, batchCommand);
+                this._doSaveAccount(account, batchCommand);
             }
         }
     }
     continueCallback.run(success);
+};
+
+ZmPopAccountsView.prototype._doCreateAccount =
+function(account, batchCommand) {
+    var callback = new AjxCallback(this, this._commandResult, [account]);
+    var errorCallback = new AjxCallback(this, this._commandException);
+
+    // create account
+    account.create(callback, errorCallback, batchCommand);
+
+    // create identity
+    if (account._identity.checked) {
+        var email = account._identity.email;
+        var display = email.replace(/@.*$/,"");
+
+        var identity = new ZmIdentity(this._appCtxt);
+        identity.name = account.name;
+        identity.sendFromDisplay = display;
+        identity.sendFromAddress = email;
+        identity.setReplyTo = true;
+        identity.setReplyToDisplay = display;
+        identity.setReplyToAddress = email;
+        identity.useWhenSentTo = account._identity.linkAddr;
+        identity.whenSentToAddresses = [email];
+        identity.useWhenInFolder = account._identity.linkFolder;
+        identity.whenInFolderIds = [account.folderId];
+
+        identity.createRequest("CreateIdentityRequest", batchCommand);
+    }
+};
+
+ZmPopAccountsView.prototype._doSaveAccount =
+function(account, batchCommand) {
+    var callback = new AjxCallback(this, this._commandResult, [account]);
+    var errorCallback = new AjxCallback(this, this._commandException);
+
+    account.save(callback, errorCallback, batchCommand);
 };
 
 ZmPopAccountsView.prototype.addCommand = function(batchCommand) {
@@ -374,6 +397,10 @@ ZmPopAccountsView.prototype.reset = function() {
 ZmPopAccountsView.prototype._commandResult = function(account, result) {
     var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
     var collection = prefsApp.getDataSourceCollection();
+
+    if (this._account === account) {
+        this._password1Field.setValue("");
+    }
 
     var data = result._data;
     if (data.CreateDataSourceResponse) {
