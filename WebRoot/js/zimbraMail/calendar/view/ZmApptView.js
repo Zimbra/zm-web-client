@@ -103,8 +103,6 @@ function(appt) {
 	this.reset();
 	this._appt = appt;
 	this._renderAppt(appt);
-
-	return;
 };
 
 ZmApptView.prototype.setBounds =
@@ -224,7 +222,6 @@ function(appt) {
 	html[i++] = "<td width=1% id='";
 	html[i++] = closeBtnCellId;
 	html[i++] = "'></td>"; // add extra cell for padding since CSS does not play well in IE
-
 	html[i++] = "</tr></table>";
 	html[i++] = "</td></tr>";
 
@@ -261,6 +258,11 @@ function(appt) {
 		var organizer = appt.getOrganizer();
 		if (organizer) {
 			i = this._showField(ZmMsg.organizer, this._objectManager.findObjects(organizer, true), html, i);
+			var inv = appt.getMessage().getInvite();
+			var sentBy = inv ? inv.getSentBy() : null;
+			if (sentBy) {
+				i = this._showField(ZmMsg.sentBy, this._objectManager.findObjects(sentBy, true), html, i);
+			}
 		}
 		i = this._showField(ZmMsg.attendees, this._objectManager.findObjects(attendees, true), html, i);
 	}

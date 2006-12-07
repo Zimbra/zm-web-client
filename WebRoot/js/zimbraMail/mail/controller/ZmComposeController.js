@@ -117,15 +117,15 @@ function() {
 };
 
 ZmComposeController.prototype.doAction =
-function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText, callback) {
+function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText, callback, accountName) {
 	if (inNewWindow) {
 		var newWinObj = this._appCtxt.getNewWindow();
 
 		// this is how child window knows what to do once loading:
 		newWinObj.command = "compose";
-		newWinObj.args = [action, msg, toOverride, subjOverride, extraBodyText, null];
+		newWinObj.args = [action, msg, toOverride, subjOverride, extraBodyText, null, accountName];
 	} else {
-		this._setView(action, msg, toOverride, subjOverride, extraBodyText, null);
+		this._setView(action, msg, toOverride, subjOverride, extraBodyText, null, accountName);
 	}
 	if (callback) {
 		callback.run();
@@ -140,8 +140,6 @@ function(toggled) {
 
 /**
 * Detaches compose view to child window
-*
-* @param msg	the original message
 */
 ZmComposeController.prototype.detach =
 function() {
@@ -155,14 +153,12 @@ function() {
 	var body = this._composeView.getHtmlEditor().getContent();
 	var composeMode = this._composeView.getComposeMode();
 	var identityId = this._composeView.getIdentity().id;
-
 	var newWinObj = this._appCtxt.getNewWindow();
 
 	// this is how child window knows what to do once loading:
 	newWinObj.command = "composeDetach";
-
-	newWinObj.args = {action: this._action, msg: msg, addrs: addrs, subj: subj, forwardHtml: forAttHtml, 
-					  body: body, composeMode: composeMode, identityId: identityId};
+	newWinObj.args = {action:this._action, msg:msg, addrs:addrs, subj:subj, forwardHtml:forAttHtml,
+					  body:body, composeMode:composeMode, identityId:identityId, accountName:this._accountName};
 };
 
 ZmComposeController.prototype.popShield =
@@ -239,7 +235,7 @@ function(attId, isDraft, callback) {
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
-	var resp = msg.send(contactList, isDraft, respCallback, errorCallback);
+	var resp = msg.send(contactList, isDraft, respCallback, errorCallback, this._accountName);
 
 	// XXX: temp bug fix #4325 - if resp returned, we're processing sync request
 	//      REVERT this bug fix once mozilla fixes bug #295422!
@@ -457,7 +453,7 @@ function(delMsg) {
 // Creates the compose view based on the mode we're in. Lazily creates the
 // compose toolbar, a contact picker, and the compose view itself.
 ZmComposeController.prototype._setView =
-function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
+function(action, msg, toOverride, subjOverride, extraBodyText, composeMode, accountName) {
 
 	// save args in case we need to re-display (eg go from Reply to Reply All)
 	this._action = action;
@@ -465,6 +461,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode) {
 	this._toOverride = toOverride;
 	this._subjOverride = subjOverride;
 	this._extraBodyText = extraBodyText;
+	this._accountName = accountName;
 	
 	var identityCollection = this._appCtxt.getIdentityCollection();
 	var identity = (msg && msg.identity) ? identity = msg.identity : identityCollection.selectIdentity(msg);
@@ -700,14 +697,11 @@ function(isDraft, msg, resp) {
 		}
 	} else {
 		// TODO - disable save draft button indicating a draft was saved
-		//        ** new UI will show in toaster section
 		if (this.isChildWindow && window.parentController) {
 			window.parentController.setStatusMsg(ZmMsg.draftSaved);
 		} else {
 			this._appCtxt.setStatusMsg(ZmMsg.draftSaved);
 		}
-		this._composeView.reEnableDesignMode();
-		// save message draft so it can be reused if user saves draft again
 		this._composeView.processMsgDraft(msg);
 	}
 };

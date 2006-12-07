@@ -87,6 +87,7 @@ function() {
 * @param execFrame			[AjxCallback]*	the calling method, object, and args
 * @param timeout			[int]*			timeout value (in seconds)
 * @param noBusyOverlay		[boolean]*		if true, don't use the busy overlay
+* @param accountName		[string]*		name of account to execute on behalf of
 */
 ZmRequestMgr.prototype.sendRequest =
 function(params) {
@@ -95,9 +96,12 @@ function(params) {
 	if (timeout) timeout = timeout * 1000; // convert seconds to ms
 	var asyncCallback = params.asyncMode ? new AjxCallback(this, this._handleResponseSendRequest, [params]) : null;
 	var command = new ZmCsfeCommand();
-	var cmdParams = {soapDoc: params.soapDoc, useXml: this._useXml, changeToken: this._changeToken,
-					 asyncMode: params.asyncMode, callback: asyncCallback, logRequest: this._logRequest,
-					 highestNotifySeen: this._highestNotifySeen };
+	// bug fix #10652 - dont set change token if accountName is specified
+	// (since we're executing on someone else's mbox)
+	var changeToken = params.accountName != null ? null : this._changeToken;
+	var cmdParams = {soapDoc:params.soapDoc, accountName:params.accountName, useXml:this._useXml,
+					 changeToken:changeToken, asyncMode:params.asyncMode, callback:asyncCallback,
+					 logRequest:this._logRequest, highestNotifySeen:this._highestNotifySeen };
 
 	DBG.println(AjxDebug.DBG2, "sendRequest: " + params.soapDoc._methodEl.nodeName);
 	var cancelParams = timeout ? [reqId, params.errorCallback, params.noBusyOverlay] : null;

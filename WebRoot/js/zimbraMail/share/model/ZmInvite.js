@@ -100,65 +100,63 @@ function() {
 
 ZmInvite.prototype.hasOtherAttendees =
 function(compNum) {
-	var component = this.components[compNum];
-	return component.at && component.at.length > 0;
+	var cn = compNum || 0;
+	return this.components[cn].at && this.components[cn].at.length > 0;
 };
 
 ZmInvite.prototype.getEventName = 
 function(compNum) {
-	return this.components[compNum] ? this.components[compNum].name : null;
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn].name : null;
 };
 
 ZmInvite.prototype.getOrganizerEmail = 
 function(compNum) {
-	if (this.components[compNum] != null &&
-		this.components[compNum].or != null &&
-		this.components[compNum].or.url != null) 
-	{
-		return this.components[compNum].or.url.replace("MAILTO:", "");
-	}
-	return null;
+	var cn = compNum || 0;
+	return (this.components[cn] && this.components[cn].or && this.components[cn].or.url)
+		? (this.components[cn].or.url.replace("MAILTO:", "")) : null;
 };
 
 ZmInvite.prototype.getOrganizerName = 
 function(compNum) {
-	var org = null;
-	if (this.components[compNum] != null &&
-		this.components[compNum].or != null) 
-	{
-		org = this.components[compNum].or.d;
-		if (org == null || org == "")
-			org = this.components[compNum].or.url;
-	}
-	return org;
+	var cn = compNum || 0;
+	return (this.components[cn] && this.components[cn].or)
+		? (this.components[cn].or.d || this.components[cn].or.url) : null;
 };
 
-ZmInvite.prototype.isOrganizer = 
+ZmInvite.prototype.getSentBy =
 function(compNum) {
-	if (this.components[compNum] != null) {
-		return ((this.components[compNum].isOrg != null) ? this.components[compNum].isOrg : false);
-	}
-	return false;
+	var cn = compNum || 0;
+	return (this.components[cn] && this.components[cn].or)
+		? this.components[cn].or.sentBy : null;
+};
+
+ZmInvite.prototype.isOrganizer =
+function(compNum) {
+	var cn = compNum || 0;
+	return this.components[cn] ? (!!this.components[cn].isOrg) : false;
 };
 
 ZmInvite.prototype.shouldRsvp =
-function (compNum){
-	return this.components[compNum] != null 
-		? this.components[compNum].rsvp 
-		: null;
+function(compNum){
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn].rsvp : null;
 };
 
 ZmInvite.prototype.getRecurrenceRules = 
 function(compNum) {
-	return this.components[compNum].recur;
+	var cn = compNum || 0;
+	return this.components[cn].recur;
 };
 
 ZmInvite.prototype.getAttendees =
 function(compNum) {
-	compNum = compNum ? compNum : 0;
-	var att = this.components[compNum].at;
+	var cn = compNum || 0;
+	var att = this.components[cn].at;
 	var list = [];
+
 	if (!(att && att.length)) return list;
+
 	for (var i = 0; i < att.length; i++) {
 		if (!att[i].cutype || (att[i].cutype == ZmAppt.CUTYPE_INDIVIDUAL)) {
 			list.push(att[i]);
@@ -169,10 +167,12 @@ function(compNum) {
 
 ZmInvite.prototype.getResources =
 function(compNum) {
-	compNum = compNum ? compNum : 0;
-	var att = this.components[compNum].at;
+	var cn = compNum || 0;
+	var att = this.components[cn].at;
 	var list = [];
+
 	if (!(att && att.length)) return list;
+
 	for (var i = 0; i < att.length; i++) {
 		if (att[i].cutype == ZmAppt.CUTYPE_RESOURCE) {
 			list.push(att[i]);
@@ -183,8 +183,8 @@ function(compNum) {
 
 ZmInvite.prototype.getStatus =
 function(compNum) {
-	compNum = compNum ? compNum : 0;
-	return this.components[compNum].status;
+	var cn = compNum || 0;
+	return this.components[cn].status;
 };
 
 ZmInvite.prototype.isEmpty =
@@ -194,27 +194,27 @@ function() {
 
 ZmInvite.prototype.isException = 
 function(compNum) {
-	return this.components[compNum] != null 
-		? this.components[compNum].ex 
-		: false;
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn].ex : false;
 };
 
 ZmInvite.prototype.isRecurring =
 function(compNum) {
-	var component = this.components[compNum];
-	return component.recur;
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn].recur : false;
 };
 
 ZmInvite.prototype.isAllDayEvent = 
-function(compNum) { 
-	var component = this.components[compNum];
-	return component.allDay == "1"; 
+function(compNum) {
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn].allDay == "1" : false;
 };
 
 ZmInvite.prototype.isMultiDay =
 function(compNum) {
-	var sd = this.getServerStartDate(compNum);
-	var ed = this.getServerEndDate(compNum);
+	var cn = compNum || 0;
+	var sd = this.getServerStartDate(cn);
+	var ed = this.getServerEndDate(cn);
 	return (sd.getDate() != ed.getDate()) || (sd.getMonth() != ed.getMonth()) || (sd.getFullYear() != ed.getFullYear());
 };
 
@@ -261,26 +261,27 @@ function(compNum) {
 	}
 	return this._serverEndTime;
 };
+
 ZmInvite.prototype.getServerEndDate =
 function(compNum) {
+	var cn = compNum || 0;
 	if (this._serverEndDate == null) {
-		var time = this.getServerEndTime(compNum);
-		this._serverEndDate = AjxDateUtil.parseServerDateTime(time);
+		this._serverEndDate = AjxDateUtil.parseServerDateTime(this.getServerEndTime(cn));
 	}
 	return this._serverEndDate;
 };
 
 ZmInvite.prototype.getServerStartTime = 
 function(compNum) {
-	return this.components[compNum] != null
-		? this.components[compNum].s[0].d
-		: null;
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn].s[0].d : null;
 };
+
 ZmInvite.prototype.getServerStartDate =
 function(compNum) {
+	var cn = compNum || 0;
 	if (this._serverStartDate == null) {
-		var time = this.getServerStartTime(compNum);
-		this._serverStartDate = AjxDateUtil.parseServerDateTime(time);
+		this._serverStartDate = AjxDateUtil.parseServerDateTime(this.getServerStartTime(cn));
 	}
 	return this._serverStartDate;
 };
@@ -365,22 +366,20 @@ function(compNum, emptyAllDay,startOnly) {
 
 ZmInvite.prototype.getName = 
 function(compNum) {
-	return this.components[compNum] != null
-		? this.components[compNum].name
-		: null;
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn].name : null;
 };
 
 ZmInvite.prototype.getFreeBusy =
 function(compNum) {
-	return this.components[compNum] != null
-		? this.components[compNum].fb
-		: null;
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn].fb : null;
 };
 
 ZmInvite.prototype.getLocation =
 function(compNum) {
-	compNum = compNum ? compNum : 0;
-	return this.components[compNum] ? this.components[compNum].loc : null;
+	var cn = compNum || 0;
+	return this.components[cn] ? this.components[cn].loc : null;
 };
 
 /** 
@@ -408,14 +407,20 @@ function(/*calController*/) {
 		// IMGHACK - added outer table for new image changes...
 		html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
 		if (this.hasOtherAttendees(compNum)) {
-			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptMeeting") + "</td>";
+			html[idx++] = "<td>";
+			html[idx++] = AjxImg.getImageHtml("ApptMeeting");
+			html[idx++] = "</td>";
 		}
 		
 		if (this.isException(compNum)) {
-			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptException") + "</td>";
+			html[idx++] = "<td>";
+			html[idx++] = AjxImg.getImageHtml("ApptException");
+			html[idx++] = "</td>";
 		}
 		else if (this.isRecurring(compNum)) {
-			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptRecur") + "</td>";
+			html[idx++] = "<td>";
+			html[idx++] = AjxImg.getImageHtml("ApptRecur");
+			html[idx++] = "</td>";
 		}
 			
 //		if (this.hasAlarm()) 
@@ -475,10 +480,14 @@ ZmInvite.prototype._addEntryRow =
 function(field, data, html, idx, wrap, width, asIs) {
 	if (data != null && data != "") {
 		html[idx++] = "<tr valign='top'><td align='right' style='padding-right: 5px;'><b><div style='white-space:nowrap'>";
-		html[idx++] = AjxStringUtil.htmlEncode(field) + ":";
-		html[idx++] = "</div></b></td><td align='left'><div style='white-space:";
+		html[idx++] = AjxStringUtil.htmlEncode(field);
+		html[idx++] = ":</div></b></td><td align='left'><div style='white-space:";
 		html[idx++] = wrap ? "wrap;" : "nowrap;";
-		if (width) html[idx++] = "width:"+width+"px;";
+		if (width) {
+			html[idx++] = "width:";
+			html[idx++] = width;
+			html[idx++] = "px;";
+		}
 		html[idx++] = "'>";
 		html[idx++] = asIs ? data : AjxStringUtil.htmlEncode(data);
 		html[idx++] = "</div></td></tr>";

@@ -353,7 +353,7 @@ function(attId, isDraft) {
 	// save a reference to the original message
 	msg._origMsg = this._msg;
 	if (this._msg && this._msg._instanceDate) {
-		msg._instanceDate = this._msg._instanceDate; 
+		msg._instanceDate = this._msg._instanceDate;
 	}
 
 	if (this._action != ZmOperation.NEW_MESSAGE) {
@@ -493,6 +493,7 @@ function() {
 // user just saved draft, update compose view as necessary
 ZmComposeView.prototype.processMsgDraft =
 function(msgDraft) {
+	this.reEnableDesignMode();
 	this._action = ZmOperation.DRAFT;
 	this._msg = msgDraft;
 	this._msgAttId = null;
@@ -877,11 +878,16 @@ function(textarea, skipResetBodySize) {
 ZmComposeView.prototype._setAddresses =
 function(action, toOverride) {
 	this._action = action;
-	if (action == ZmOperation.NEW_MESSAGE && toOverride) {
-		this.setAddress(ZmEmailAddress.TO, toOverride);
-	} else if (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL ||
-			   this._isInviteReply(action)) {
 
+	if (action == ZmOperation.NEW_MESSAGE &&
+		toOverride)
+	{
+		this.setAddress(ZmEmailAddress.TO, toOverride);
+	}
+	else if (action == ZmOperation.REPLY ||
+			 action == ZmOperation.REPLY_ALL ||
+			 this._isInviteReply(action))
+	{
 		// Prevent user's login name and aliases from going into To: or Cc:
 		var used = {};
 		used[this._appCtxt.get(ZmSetting.USERNAME).toLowerCase()] = true;
@@ -913,7 +919,10 @@ function(action, toOverride) {
 			}
 			this.setAddress(ZmEmailAddress.CC, this._getAddrString(addrs, used));
 		}
-	} else if (action == ZmOperation.DRAFT || action == ZmOperation.SHARE) {
+	}
+	else if (action == ZmOperation.DRAFT ||
+			 action == ZmOperation.SHARE)
+	{
 		for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
 			var addrs = this._msg.getAddresses(ZmComposeView.ADDRS[i]);
 			this.setAddress(ZmComposeView.ADDRS[i], addrs.getArray().join(ZmEmailAddress.SEPARATOR));

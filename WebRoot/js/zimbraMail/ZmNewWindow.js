@@ -176,7 +176,7 @@ function() {
 			// bug fix #4681
 			var action = window.args[0];
 			var msg = (action == ZmOperation.REPLY_ALL) ? this._deepCopyMsg(window.args[1]) : window.args[1];
-			cc._setView(window.args[0], msg, window.args[2], window.args[3], window.args[4]);
+			cc._setView(window.args[0], msg, window.args[2], window.args[3], window.args[4], null, window.args[6]);
 		} else {
 			var op = window.args.action ? window.args.action : ZmOperation.NEW_MESSAGE;
 			if (window.args.msg && window.args.msg._mode) {
@@ -193,7 +193,7 @@ function() {
 			if (window.args["action"] == ZmOperation.REPLY_ALL)
 				window.args.msg = this._deepCopyMsg(window.args.msg);
 
-			cc._setView(op, window.args.msg, null, null, null, window.args.composeMode);
+			cc._setView(op, window.args.msg, null, null, null, window.args.composeMode, window.args.accountName);
 			cc._composeView.setDetach(window.args);
 
 			// bug fix #5887 - get the parent window's compose controller

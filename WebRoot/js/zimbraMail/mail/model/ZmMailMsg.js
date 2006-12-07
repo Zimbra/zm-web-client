@@ -162,9 +162,7 @@ function() {
 
 ZmMailMsg.prototype.getInviteOrganizer =
 function() {
-	return this.isInvite()
-		? this.invite.getOrganizerEmail(0)
-		: null;
+	return this.isInvite() ? this.invite.getOrganizerEmail() : null;
 };
 
 /**
@@ -177,22 +175,24 @@ ZmMailMsg.prototype.getReplyAddresses =
 function(mode) {
 	var addrVec = this._addrs[ZmEmailAddress.REPLY_TO];
 	var invAddr = null;
-	if (this.isInvite() && this.needsRsvp()) {
-		var invEmail = this.invite.getOrganizerEmail(0);
-		if (invEmail)
-			invAddr = new ZmEmailAddress(invEmail);
+	if (this.isInvite()) {
+		// if invite and has sentBy, then is on-behalf-of
+		var email = this.invite.getSentBy();
+		if (email == null && this.needsRsvp()) {
+			email = this.invite.getOrganizerEmail();
+		}
+		if (email) {
+			invAddr = new ZmEmailAddress(email);
+		}
 	}
 
 	if (invAddr) {
 		return AjxVector.fromArray([invAddr]);
 	} else {
 		if (!(addrVec && addrVec.size())) {
-			if (mode == ZmOperation.REPLY_CANCEL || this.isSent && mode == ZmOperation.REPLY_ALL) {
-				addrVec = this._addrs[ZmEmailAddress.TO];
-			}
-			else {
-				addrVec = this._addrs[ZmEmailAddress.FROM];
-			}
+			addrVec = (mode == ZmOperation.REPLY_CANCEL || this.isSent && mode == ZmOperation.REPLY_ALL)
+				? this._addrs[ZmEmailAddress.TO]
+				: this._addrs[ZmEmailAddress.FROM];
 		}
 		return addrVec;
 	}
@@ -543,20 +543,18 @@ function(content) {
 };
 
 ZmMailMsg.prototype.sendInviteReply =
-function(contactList, edited, componentId, callback, errorCallback, instanceDate) {
-	var ed = edited || false;
-	if (!this._origMsg) {
-		this._origMsg = this;
-	}
+function(contactList, edited, componentId, callback, errorCallback, instanceDate, accountName) {
+	this._origMsg = this._origMsg || this;
+
 	if (!this._origMsg.invite.hasMultipleComponents()) {
-		return this._sendInviteReply(contactList, ed, 0, callback, errorCallback, instanceDate);
+		return this._sendInviteReply(contactList, edited, 0, callback, errorCallback, instanceDate, accountName);
 	} else {
 		// TODO ... don't understand multiple invites too well yet.
 	}
 };
 
 ZmMailMsg.prototype._sendInviteReply =
-function (contactList, edited, componentId, callback, errorCallback, instanceDate) {
+function(contactList, edited, componentId, callback, errorCallback, instanceDate, accountName) {
 	var soapDoc = AjxSoapDoc.create("SendInviteReplyRequest", "urn:zimbraMail");
 
 	var id = this._origMsg.id;
@@ -568,15 +566,15 @@ function (contactList, edited, componentId, callback, errorCallback, instanceDat
 		case ZmOperation.REPLY_ACCEPT: 		verb = "ACCEPT"; break;
 		case ZmOperation.REPLY_DECLINE:		verb = "DECLINE"; break;
 		case ZmOperation.REPLY_TENTATIVE: 	verb = "TENTATIVE";	break;
-		case ZmOperation.REPLY_NEW_TIME: 	verb = "DELEGATED"; break; // ?? IS THIS MAPPING RIGHT
+		case ZmOperation.REPLY_NEW_TIME: 	verb = "DELEGATED"; break; // XXX: WRONG MAPPING!
 	}
 
 	soapDoc.setMethodAttribute("verb", verb);
 
-	if (this.getAddress(ZmEmailAddress.TO) == null && !this._origMsg.invite.isOrganizer(0)) {
-		var toEmail = this._origMsg.getInvite().getOrganizerEmail(0);
-		var to = new ZmEmailAddress(toEmail, ZmEmailAddress.TO, null, null);
-		this.setAddress(ZmEmailAddress.TO, to);
+	var inv = this._origMsg.getInvite();
+	if (this.getAddress(ZmEmailAddress.TO) == null && !inv.isOrganizer()) {
+		var to = inv.getSentBy() || inv.getOrganizerEmail();
+		this.setAddress(ZmEmailAddress.TO, (new ZmEmailAddress(to)));
 	}
 
 	soapDoc.setMethodAttribute("updateOrganizer", "TRUE" );
@@ -588,13 +586,20 @@ function (contactList, edited, componentId, callback, errorCallback, instanceDat
         exceptIdNode.setAttribute("d", serverDateTime);
 		exceptIdNode.setAttribute("tz", timeZone);
 	}
-	if (edited)
-		this._createMessageNode(soapDoc, contactList);
+
+	if (edited) {
+		this._createMessageNode(soapDoc, contactList, null, accountName);
+	}
 
 	var respCallback = new AjxCallback(this, this._handleResponseSendInviteReply, [callback]);
 	var execFrame = new AjxCallback(this, this._sendInviteReply, [contactList, edited, componentId, callback, errorCallback, instanceDate]);
-	var params = {soapDoc:soapDoc, isInvite:true, isDraft:false, callback:respCallback, errorCallback:errorCallback, execFrame:execFrame };
-	return this._sendMessage(params);
+	return this._sendMessage({ soapDoc:soapDoc,
+								isInvite:true,
+								isDraft:false,
+								callback:respCallback,
+								errorCallback:errorCallback,
+								execFrame:execFrame,
+								accountName:accountName });
 };
 
 ZmMailMsg.prototype._handleResponseSendInviteReply =
@@ -616,19 +621,15 @@ function(callback, result) {
 * Sends the message out into the world.
 */
 ZmMailMsg.prototype.send =
-function(contactList, isDraft, callback, errorCallback) {
-	// TODO - allow invite replies when the server gets updated.
+function(contactList, isDraft, callback, errorCallback, accountName) {
 	// if we have an invite reply, we have to send a different soap message
-
-	////////////////////////////////////////////////////////////////////////////////////////
-	// XXX: not sure how saving a invite draft works?!
-	////////////////////////////////////////////////////////////////////////////////////////
+	// TODO: disable Save Draft for invite replies!
 	if (this.isInviteReply && !isDraft) {
-		return this.sendInviteReply(contactList, true, 0, callback, errorCallback, this._instanceDate);
+		return this.sendInviteReply(contactList, true, 0, callback, errorCallback, this._instanceDate, accountName);
 	} else {
 		var request = isDraft ? "SaveDraftRequest" : "SendMsgRequest";
 		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
-		this._createMessageNode(soapDoc, contactList, isDraft);
+		this._createMessageNode(soapDoc, contactList, isDraft, accountName);
 
 		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
 		var execFrame = new AjxCallback(this, this.send, [contactList, isDraft, callback, errorCallback]);
@@ -654,7 +655,7 @@ function(isDraft, callback, result) {
 }
 
 ZmMailMsg.prototype._createMessageNode =
-function(soapDoc, contactList, isDraft) {
+function(soapDoc, contactList, isDraft, accountName) {
 
 	var msgNode = soapDoc.set("m");
 
@@ -680,7 +681,7 @@ function(soapDoc, contactList, isDraft) {
 		var type = ZmComposeView.ADDRS[i];
 		this._addAddressNodes(soapDoc, msgNode, type, contactList, isDraft);
 	}
-	this._addFrom(soapDoc, msgNode);
+	this._addFrom(soapDoc, msgNode, accountName);
 	this._addReplyTo(soapDoc, msgNode);
 
 	soapDoc.set("su", this.subject, msgNode);
@@ -755,8 +756,12 @@ function(params) {
 			return resp.SendMsgResponse;
 		}
 	} else {
-		var params2 = { soapDoc:params.soapDoc, asyncMode:true, callback:respCallback, errorCallback:params.errorCallback, execFrame:params.execFrame };
-		this._appCtxt.getAppController().sendRequest(params2);
+		this._appCtxt.getAppController().sendRequest({ soapDoc:params.soapDoc,
+														asyncMode:true,
+														callback:respCallback,
+														errorCallback:params.errorCallback,
+														execFrame:params.execFrame,
+														accountName:params.accountName });
 	}
 };
 
@@ -983,7 +988,7 @@ function(msgNode) {
 	if (msgNode.inv) {
 		try {
 			this.invite = ZmInvite.createFromDom(msgNode.inv);
-			this.invite.setMessageId (this.id);
+			this.invite.setMessageId(this.id);
 		} catch (ex) {
 			// do nothing - this means we're trying to load an ZmInvite in new
 			// window, which we dont currently load (re: support).
@@ -998,7 +1003,7 @@ function () {
 
 ZmMailMsg.prototype.needsRsvp =
 function () {
-	return (this.isInvite() && this.invite.shouldRsvp(0) && !this.invite.isOrganizer(0));
+	return (this.isInvite() && this.invite.shouldRsvp() && !this.invite.isOrganizer());
 };
 
 /**
@@ -1032,8 +1037,12 @@ function(soapDoc, parent, type, contactList, isDraft) {
 };
 
 ZmMailMsg.prototype._addFrom =
-function(soapDoc, parent) {
-	if (this.identity) {
+function(soapDoc, parent, accountName) {
+	if (accountName) {
+		var e = soapDoc.set("e", null, parent);
+		e.setAttribute("t", "f");
+		e.setAttribute("a", accountName);
+	} else if (this.identity) {
 		var e = soapDoc.set("e", null, parent);
 		e.setAttribute("t", "f");
 		var address = this.identity.sendFromAddress;

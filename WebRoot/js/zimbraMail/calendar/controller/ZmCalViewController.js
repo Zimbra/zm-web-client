@@ -1352,7 +1352,7 @@ function(appt, type, op) {
 	msgController.setMsg(appt.getMessage());
 	// poke the msgController
 	var instanceDate = op == ZmOperation.VIEW_APPT_INSTANCE ? new Date(appt._uniqStartTime) : null;
-	msgController._sendInviteReply(type, 0, instanceDate);
+	msgController._sendInviteReply(type, 0, instanceDate, appt.getRemoteCalendarOwner());
 };
 
 ZmCalViewController.prototype._handleApptEditRespondAction = 
@@ -1376,7 +1376,7 @@ function(appt, id, op) {
 		case ZmOperation.EDIT_REPLY_TENTATIVE: 	id = ZmOperation.REPLY_TENTATIVE; break;
 	}
 	var instanceDate = op == ZmOperation.VIEW_APPT_INSTANCE ? new Date(appt._uniqStartTime) : null;
-	msgController._editInviteReply(id, 0, instanceDate);
+	msgController._editInviteReply(id, 0, instanceDate, appt.getRemoteCalendarOwner());
 };
 
 ZmCalViewController.prototype._handleError =
@@ -1390,6 +1390,7 @@ function(ex) {
 	}
 	return false;
 };
+
 ZmCalViewController.prototype._handleError2 =
 function(msgDialog) {
 	msgDialog.unregisterCallback(DwtDialog.OK_BUTTON);

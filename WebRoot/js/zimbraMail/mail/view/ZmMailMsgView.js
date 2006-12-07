@@ -129,7 +129,7 @@ function(msg) {
 		// in the single component case, which I think is going to be 90%
 		// of the time, we will just show a single toobar.
 		if (!invite.isEmpty() && !invite.hasMultipleComponents() &&
-			invite.getStatus(0) != ZmAppt.STATUS_CANCELLED &&
+			invite.getStatus() != ZmAppt.STATUS_CANCELLED &&
 			msg.folderId != ZmFolder.ID_TRASH) {
 			// create toolbar
 			var topToolbar = this._getInviteToolbar();
@@ -690,7 +690,7 @@ function(msg, idoc, id, iframe) {
 		if (!AjxEnv.isIE) {
 			self._resetIframeHeightOnTimer(iframe);
 		}
-		
+
 		ZmMailMsgView._resetIframeHeight(self, iframe);
 		msg.setHtmlContent(this._htmlBody);
 		msg.showImages = true;
@@ -923,11 +923,15 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "</tr></table>";
 	htmlArr[idx++] = "</td></tr>";
 
-	// add non-collapsable header info (Sent by and date)
+	// bug fix #10652 - check invite if sentBy is set (which means on-behalf-of)
+	var invite = msg.getInvite();
+	var sentBy = invite ? invite.getSentBy() : null;
+
 	var addrs = msg.getAddresses(ZmEmailAddress.FROM);
 	var addr = addrs.size() > 0 ? addrs.get(0) : ZmMsg.unknown;
 	var dateString = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
 
+	// add non-collapsable header info (Sent by and date)
 	htmlArr[idx++] = "<tr id='";
 	htmlArr[idx++] = this._expandRowId;
 	htmlArr[idx++] = "'><td valign=middle>";
@@ -939,14 +943,12 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "<td class='LabelColValue' style='vertical-align:bottom'>";
 	if (addr instanceof ZmEmailAddress) {
 		if (this._objectManager && addr.address) {
-			htmlArr[idx++] = this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
+			addr = this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
 		} else {
-			htmlArr[idx++] = addr.address || (AjxStringUtil.htmlEncode(addr.name));
+			addr = addr.address || (AjxStringUtil.htmlEncode(addr.name));
 		}
 	}
-	else {
-		htmlArr[idx++] = addr;
-	}
+	htmlArr[idx++] = sentBy || addr;
 	htmlArr[idx++] = "&nbsp;&nbsp;<span class='LabelColName'>";
 	htmlArr[idx++] = ZmMsg.on;
 	htmlArr[idx++] = ": </span><span class='LabelColValue'>";
@@ -954,6 +956,15 @@ function(msg, container, callback) {
 		? this._objectManager.findObjects(dateString, true, ZmObjectManager.DATE)
 		: dateString;
 	htmlArr[idx++] = "</span></td></tr>";
+
+	if (sentBy) {
+		// on behalf of (if applicable)
+		htmlArr[idx++] = "<tr><td width=100 valign='top' class='LabelColName'>";
+		htmlArr[idx++] = ZmMsg.onBehalfOf;
+		htmlArr[idx++] = ":</td><td class='LabelColValue'>";
+		htmlArr[idx++] = addr;
+		htmlArr[idx++] = "</td></tr>";
+	}
 
 	// To/CC/Reply-to
 	for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
@@ -1268,8 +1279,7 @@ function(ev) {
 	var iframe = document.getElementById(this._iframeId);
 	// we get here before we have a chance to initialize the IFRAME
 	if (iframe) {
-		var args = [this, iframe];
-		var act = new AjxTimedAction(null, ZmMailMsgView._resetIframeHeight, args);
+		var act = new AjxTimedAction(null, ZmMailMsgView._resetIframeHeight, [this, iframe]);
 		AjxTimedAction.scheduleAction(act, 5);
 	}
 };

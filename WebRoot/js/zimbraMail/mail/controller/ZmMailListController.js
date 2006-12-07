@@ -477,13 +477,13 @@ function(ev) {
 
 // This method may be called with a null ev parameter
 ZmMailListController.prototype._doAction = 
-function(ev, action, extraBodyText, instanceDate) {
+function(ev, action, extraBodyText, instanceDate, accountName) {
 	// retrieve msg and make sure it's loaded
 	var msg = this._getMsg(ev ? ev.item : null);
 	if (!msg) return;
 	msg._instanceDate = instanceDate;
 
-	// if html compose is allowed, 
+	// if html compose is allowed,
 	//   then if opening draft always request html 
 	// 	 otherwise just check if user prefers html or
 	//   msg hasnt been loaded yet and user prefers format of orig. msg
@@ -502,17 +502,18 @@ function(ev, action, extraBodyText, instanceDate) {
 	
 	var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg.isLoaded() && sameFormat)))));
 	var inNewWindow = this._inNewWindow(ev);
-	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText]);
+	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText, accountName]);
 	msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
 };
 
 ZmMailListController.prototype._handleResponseDoAction = 
-function(action, inNewWindow, msg, extraBodyText) {
-	this._app.getComposeController().doAction(action, inNewWindow, msg, null, null, extraBodyText);
+function(action, inNewWindow, msg, extraBodyText, accountName) {
+	// ugh... param-itize this shiznat
+	this._app.getComposeController().doAction(action, inNewWindow, msg, null, null, extraBodyText, null, accountName);
 };
 
 ZmMailListController.prototype._inviteReplyHandler = 
-function (ev) {
+function(ev) {
 	var type = ev._inviteReplyType;
 	var compId = ev._inviteComponentId;
 	if (type == ZmOperation.INVITE_REPLY_ACCEPT ||
@@ -520,8 +521,7 @@ function (ev) {
 		type == ZmOperation.INVITE_REPLY_DECLINE ||
 		type == ZmOperation.INVITE_REPLY_TENTATIVE)
 	{
-		type = ZmMailListController.INVITE_REPLY_MAP[type];
-		this._editInviteReply(type, compId);
+		this._editInviteReply(ZmMailListController.INVITE_REPLY_MAP[type], compId);
 	}
 	else
 	{
@@ -645,13 +645,13 @@ function(type) {
 };
 
 ZmMailListController.prototype._editInviteReply =
-function (action , componentId, instanceDate) {
+function(action, componentId, instanceDate, accountName) {
 	var replyBody = this._getInviteReplyBody(action, instanceDate);
-	this._doAction(null, action, replyBody, instanceDate);
+	this._doAction(null, action, replyBody, instanceDate, accountName);
 };
 
 ZmMailListController.prototype._sendInviteReply = 
-function(type, componentId, instanceDate) {
+function(type, componentId, instanceDate, accountName) {
 	var msg = new ZmMailMsg(this._appCtxt);
 	var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 	
@@ -682,12 +682,11 @@ function(type, componentId, instanceDate) {
 		
 		msg.setTopPart(topPart);
 	}
-	var subject = this._getInviteReplySubject(type);
-	subject  = subject + msg._origMsg.getInvite().getEventName(0);
+	var subject = this._getInviteReplySubject(type) + msg._origMsg.getInvite().getEventName();
 	if (subject != null) {
 		msg.setSubject(subject);
 	}
-	msg.sendInviteReply(contactList, true, componentId, null, null, instanceDate);
+	msg.sendInviteReply(contactList, true, componentId, null, null, instanceDate, accountName);
 };
 
 ZmMailListController.prototype._spamListener = 
