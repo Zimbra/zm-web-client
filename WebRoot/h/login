@@ -143,6 +143,13 @@
                                     </table>
                                     <table width=100%>
                                         <tr>
+                                            <td id='ZloginClientLevelContainer'>
+                                                <fmt:message key="basicClientLoginNotice">
+                                                    <fmt:param><c:url value='/'/></fmt:param>
+                                                </fmt:message>
+                                            </td>
+                                        </tr>
+                                        <tr>
                                             <td id='ZloginLicenseContainer'>
                                                 <fmt:message key="splashScreenCopyright"/>
                                             </td>

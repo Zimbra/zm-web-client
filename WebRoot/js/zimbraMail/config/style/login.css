@@ -95,7 +95,14 @@ FORM {
 	font-size:9px;
 }
 
-
+/* Cell for the client level (basic/advanced) */
+#ZLoginClientLevelContainer {
+	padding-top:5px;
+	padding-bottom:5px;
+	text-align:center;
+	vertical-align:bottom;
+	font-size:9px;
+}
 
 /*
  *	Banner (top) zone
