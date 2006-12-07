@@ -100,7 +100,7 @@
     <filter>
         <filter-name>CharEncodingFilter</filter-name>
         <filter-class>
-            com.zimbra.cs.taglib.CharEncodingFilter
+            com.zimbra.webClient.filters.CharEncodingFilter
         </filter-class>
     </filter>
 
