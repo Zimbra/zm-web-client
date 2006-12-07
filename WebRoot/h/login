@@ -6,7 +6,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+<fmt:setBundle basename="/msgs/ZhMsg" scope="request"/>
 <c:choose>
     <c:when test="${(!empty param.newPassword or !empty param.confirmNewPassword) and (param.newPassword ne param.confirmNewPassword)}">
         <c:set var="errorCode" value="account.CHANGE_PASSWORD"/>
@@ -86,7 +86,7 @@
                                     <table width=100%>
                                         <tr>
                                             <td valign='top' width='40'>
-                                                <img alt='error' src="images/dwt/Critical_32.gif"/>
+                                                <img alt='error' src="<c:url value='/images/dwt/Critical_32.gif'/>"/>
                                             </td>
                                             <td class='errorText'>
                                                 <c:out value="${errorMessage}"/> 
