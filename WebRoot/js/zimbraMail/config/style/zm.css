@@ -2453,7 +2453,6 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmOptionsFormCell {
-	@InsetBg@
 	@SeparatorBorder@
 }
 
@@ -2672,7 +2671,6 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZTabList {
 	list-style-type:none;
 	padding-bottom:28px;
-	@BottomSeparator@
 	margin:0px;
 }
 

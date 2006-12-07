@@ -15,10 +15,11 @@
 	<tr>
 		<td colspan=2 style='padding:0px'><div id='${id}_page_title' class='ZmPanelHead'></div></td>
 	</tr>
-	<tr><td style='height:100%' valign=top>
-		<div class='ZScrollContainerOuter'>
+	<tr><td id='${id}_page_container' style='height:100%' valign=top >
+<!--		<div class='ZScrollContainerOuter'>
 			<div id='${id}_page_container' class='ZScrollContainerInner'></div>
 		</div>
+-->
 	</td><tr>
 </table>
 </template>
@@ -59,8 +60,8 @@
 				</td>
 			</tr>
 			<tr>
-				<td class='ZmOptionsFormCell' style='height:100%;' valign=top>
-					<div class='ZScrollContainerOuter' id='${id}_form_container'></div>
+				<td id='${id}_form_container' class='ZmOptionsFormCell' style='height:100%;' valign=top >
+<!--					<div class='ZScrollContainerOuter' id='${id}_form_container'></div>	-->
 				</td>
 			</tr>
 		</table>
@@ -79,6 +80,7 @@
 
 -->
 <template id="PopForm" xml:space="strip">
+<!--<div class='ZScrollContainerInner'>	-->
 	<table class="ZFormTable ZFixedTable" cellspacing=0 cellpadding=2 border=0>
 		<colgroup><col width=30%><col width=70%></colgroup>
 		<tr><td><div class='ZSmallSpacer'></div></td></tr>
@@ -192,6 +194,7 @@
 		<tr><td><div class='ZSmallSpacer'></div></td></tr>
 	
 	</table>
+</div>
 </template>
 
 
@@ -200,7 +203,7 @@
 
 <template id="IdentityForm" xml:space="strip">
 <table class="ZFormTable ZFixedTable" cellspacing=0 cellpadding=2 border=0 style='height:100%'>
-	<colgroup><col width=143><col width='100%'></colgroup>
+	<colgroup><col width=103><col width='100%'></colgroup>
 
 	<tr><td><div class='ZSmallSpacer'></div></td></tr>
 
@@ -215,13 +218,10 @@
 				<li id='${id}_tabs_options' class='ZTab' onclick='pageController.showPage("options")'>Identity Options</li>
 				<li id='${id}_tabs_signature' class='ZTab' onclick='pageController.showPage("signature")'>Signature</li>
 				<li id='${id}_tabs_advanced' class='ZTab' onclick='pageController.showPage("advanced")'>Advanced</li>
-				<li id='${id}_tabs_advanced_default' class='ZTab' onclick='pageController.showPage("advanced_default")'>Advanced [default]</li>
 		</ul>	
 	</td></tr>
 	<tr><td style='height:100%' valign=top colspan=2>
-		<div class='ZScrollContainerOuter'>
-			<div id='${id}_subFormContainer' class='ZScrollContainerInner' style='width:95%;'></div>
-		</div>
+			<div id='${id}_subFormContainer' style='width:95%;position:relative;'></div>
 	</td></tr>
 </table>
 </template>
@@ -231,7 +231,7 @@
 <fieldset class='ZFieldset' style='width:99%'>
 	<legend class='ZLegend'><$= ZmMsg.sendWithIdentity $></legend>
 	<table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
-		<colgroup><col width=40><col width=80><col width='50%'><col width='50%'></colgroup>
+		<colgroup><col width=20><col width=60><col width='50%'><col width='50%'></colgroup>
 		<tr><td class='ZLabelCell' colspan=2><$= ZmMsg.sendFrom $></td>
 			<td><input id='${id}_sendFromName' style='width:100%'></td>
 			<td><select id='${id}_sendFromAddress' style='width:100%'><option>bob@zimbra.com</option></select></td>
@@ -248,14 +248,14 @@
 <fieldset class='ZFieldset' style='width:99%'>
 	<legend class='ZLegend'><$= ZmMsg.selectIdentityWhen $></legend>
 	<table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
-		<colgroup><col width=40><col width='100%'><col width=40></colgroup>
+		<colgroup><col width=20><col width='100%'><col width=40></colgroup>
 
 		<tr><td class='ZCheckboxCell'><input id='${id}_whenSentToCheckbox' type='checkbox'></td>
 			<td class='ZCheckboxLabelCell'><$= ZmMsg.whenSentTo $></td>
 		</tr>
 
 		<tr><td></td>
-			<td><input id='${id}_whenSentToInput' style='width:100%'></td>
+			<td><input id='${id}_whenSentToInput' class='ZFieldSizeLarge'></td>
 		</tr>
 
 		<tr><td></td>
@@ -268,7 +268,7 @@
 		</tr>
 
 		<tr><td></td>
-			<td><input id='${id}_whenInFolderInput' style='width:100%'></td>
+			<td><input id='${id}_whenInFolderInput' class='ZFieldSizeLarge'></td>
 			<td><button id='${id}_folderBrowseButton' style='width:30px'><div class='ImgFolder'></div></button></td>
 		</tr>
 
@@ -281,7 +281,7 @@
 
 <template id="IdentityForm_signature" xml:space="strip">
 <table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
-	<colgroup><col width=143><col width='100%'></colgroup>
+	<colgroup><col width=103><col width='100%'></colgroup>
 
 	<tr><td><div class='ZSmallSpacer'></div></td></tr>
 	<tr><td class='ZLabelCell'><$= ZmMsg.placeSignature $></td>
@@ -304,69 +304,65 @@
 </template>
 
 <template id="IdentityForm_advanced" xml:space="strip">
-<fieldset class='ZFieldset' style='width:99%'>
-	<legend class='ZLegend'><$= ZmMsg.replyWithIdentity $></legend>
 	<table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
-		<colgroup><col width=40><col width='100%'></colgroup>
-		<tr><td class='ZCheckboxCell'><input id='${id}_useDefaultsCheckbox_default' class='ZRadioButton' type='radio' onclick='${controller}._toggleAdvancedSettings(false)'></td>
-			<td class='ZCheckboxLabelCell'><label for='${id}_useDefaultsCheckbox_default' class='ZCheckboxLabel'><$= ZmMsg.identitiesUseDefault $></label></td>
+		<colgroup><col width='200'><col width='100%'</colgroup>
+		<tr><td><div class='ZSmallSpacer'></div></td></tr>
+		<tr>
+			<td class='ZLabelCell'><$= ZmMsg.replyWithIdentity $></td>
+			<td style='padding:0px'>
+				<table>
+					<tr><td class='ZCheckboxCell'><input id='${id}_useDefaultsCheckbox_default' class='ZRadioButton' type='radio' onclick='${controller}._toggleAdvancedSettings(false)'></td>
+						<td class='ZCheckboxLabelCell' colspan='2'><label for='${id}_useDefaultsCheckbox_default' class='ZCheckboxLabel'><$= ZmMsg.identitiesUseDefault $></label></td>
+					</tr>
+					<tr><td class='ZCheckboxCell'><input id='${id}_useDefaultsCheckbox_custom' class='ZRadioButton' type='radio' onclick='${controller}._toggleAdvancedSettings(true)'></td>
+						<td class='ZCheckboxLabelCell' colspan='2'><label for='${id}_useDefaultsCheckbox_custom' class='ZCheckboxLabel'><$= ZmMsg.customizeSettings $></label></td>
+					</tr>					
+				</table>
+			</td>
 		</tr>
-		<tr><td class='ZCheckboxCell'><input id='${id}_useDefaultsCheckbox_custom' class='ZRadioButton' type='radio' onclick='${controller}._toggleAdvancedSettings(true)'></td>
-			<td class='ZCheckboxLabelCell'><label for='${id}_useDefaultsCheckbox_custom' class='ZCheckboxLabel'>Customize settings:</label></td>
+		
+		<tr><td><div class='ZSmallSpacer'></div></td></tr>
+		
+		<tr id='${id}_replyForwardSelect_row'><td class='ZLabelCell' ><label id='${id}_replyForwardSelect_label' for='${id}_replyForwardSelect'><$= ZmMsg.replyForwardFormat $></label></td>
+			<td>
+				<select id='${id}_replyForwardSelect' class='ZFieldSizeLarge'>
+					<option><$= ZmMsg.originalFormat $></option>
+					<option><$= ZmMsg.text $></option>
+					<option><$= ZmMsg.htmlDocument $></option>
+				</select>
+			</td>
 		</tr>
-		<tr id='${id}_advancedSettingsRow'><td></td><td>
-			<fieldset class='ZNestedFieldset'>
-				<$= AjxTemplate.expand(controller.masterTemplateId +'#IdentityForm_advanced_default', data) $>
-			</fieldset>
-		</td></tr>
-	</table>
-</fieldset>
-</template>
-
-
-<template id="IdentityForm_advanced_default">
-	<table class='ZFormTable' cellspacing=0 cellpadding=2 style='width:auto' border=0>
-	<colgroup><col width=42%><col width=58%></colgroup>
-	<tr><td><div class='ZSmallSpacer'></div></td></tr>
-	<tr><td class='ZLabelCell'><label id='${id}_replyForwardSelect_label' for='${id}_replyForwardSelect'><$= ZmMsg.replyForwardFormat $></label></td>
-		<td>
-			<select id='${id}_replyForwardSelect' class='ZFieldSizeFull'>
-				<option><$= ZmMsg.originalFormat $></option>
-				<option><$= ZmMsg.text $></option>
-				<option><$= ZmMsg.htmlDocument $></option>
-			</select>
-		</td>
-	</tr>
-	<tr><td class='ZLabelCell' id='${id}_replyIncludeSelect_label'><$= ZmMsg.replyInclude $></td>
-		<td>
-			<select id='${id}_replyIncludeSelect' class='ZFieldSizeFull'>
-				<option><$= ZmMsg.dontIncludeMessage $></option>
-				<option><$= ZmMsg.includeInBody $></option>
-				<option><$= ZmMsg.includePrefix $></option>
-				<option><$= ZmMsg.includeOriginalAsAttach $></option>
-				<option><$= ZmMsg.smartInclude $></option>
-			</select>
-		</td>
-	</tr>
-	<tr><td class='ZLabelCell' id='${id}_forwardIncludeSelect_label'><$= ZmMsg.forwardInclude $></td>
-		<td>
-			<select id='${id}_forwardIncludeSelect' class='ZFieldSizeFull'>
-				<option><$= ZmMsg.includeOriginalInBody $></option>
-				<option><$= ZmMsg.includePrefix $></option>
-				<option><$= ZmMsg.includeOriginalAsAttach $></option>
-			</select>
-		</td>
-	</tr>
-	<tr><td class='ZLabelCell' id='${id}_prefixSelect_label'><$= ZmMsg.prefixTextWith $></td>
-		<td>
-			<select id='${id}_prefixSelect' class='ZFieldSizeSmall'>
-				<option>&gt;</option>
-				<option>|</option>
-			</select>
-		</td>
-	</tr>
+		<tr id='${id}_replyIncludeSelect_row'><td class='ZLabelCell' id='${id}_replyIncludeSelect_label' ><$= ZmMsg.replyInclude $></td>
+			<td>
+				<select id='${id}_replyIncludeSelect' class='ZFieldSizeLarge'>
+					<option><$= ZmMsg.dontIncludeMessage $></option>
+					<option><$= ZmMsg.includeInBody $></option>
+					<option><$= ZmMsg.includePrefix $></option>
+					<option><$= ZmMsg.includeOriginalAsAttach $></option>
+					<option><$= ZmMsg.smartInclude $></option>
+				</select>
+			</td>
+		</tr>
+		<tr id='${id}_forwardIncludeSelect_row'><td class='ZLabelCell' id='${id}_forwardIncludeSelect_label' ><$= ZmMsg.forwardInclude $></td>
+			<td>
+				<select id='${id}_forwardIncludeSelect' class='ZFieldSizeLarge'>
+					<option><$= ZmMsg.includeOriginalInBody $></option>
+					<option><$= ZmMsg.includePrefix $></option>
+					<option><$= ZmMsg.includeOriginalAsAttach $></option>
+				</select>
+			</td>
+		</tr>
+		<tr id='${id}_prefixSelect_row'><td class='ZLabelCell' id='${id}_prefixSelect_label' ><$= ZmMsg.prefixTextWith $></td>
+			<td>
+				<select id='${id}_prefixSelect' class='ZFieldSizeSmall'>
+					<option>&gt;</option>
+					<option>|</option>
+				</select>
+			</td>
+		</tr>
 	</table>
 </template>
+
 
 <template id="GeneralForm" xml:space="strip">
 
