@@ -25,24 +25,26 @@
 <c:choose>
     <%------------------- GENERAL ------------------%>
     <c:when test="${selected eq 'general'}">
-        <app:head title="${zm:message(pageContext,'generalOptions')}"/>
+        <c:set var="subKey" value="general"/>
     </c:when>
-    <%------------------- MAIL ------------------%>
     <c:when test="${selected eq 'mail'}">
-        <app:head title="${zm:message(pageContext,'mailOptions')}"/>
+        <c:set var="subKey" value="mail"/>
     </c:when>
     <%------------------- ADDRESS BOOK ------------------%>
     <c:when test="${selected eq 'addressbook'}">
-        <app:head title="${zm:message(pageContext,'addressBookOptions')}"/>
+        <c:set var="subKey" value="addressBook"/>
     </c:when>
     <%------------------- SHORTCUTS ------------------%>
     <c:when test="${selected eq 'shortcuts'}">
-        <app:head title="${zm:message(pageContext,'shortcuts')}"/>
+        <c:set var="subKey" value="shortcuts"/>
     </c:when>
     <c:otherwise>
-        <app:head title="${zm:message(pageContext,'options')}"/>        
+        <c:set var="subKey" value=""/>                
     </c:otherwise>
 </c:choose>
+
+<c:set var="title"><fmt:message key="options"/><c:if test="${not empty subKey}">: <fmt:message key="${subKey}"/></c:if></c:set>
+<app:head title="${title}"/>
 
 <body>
 
@@ -110,8 +112,6 @@
     <%------------------- GENERAL ------------------%>
     <c:when test="${selected eq 'general'}">
 
-        <app:optSection label="generalOptions"/>
-        <app:optSeparator/>
         <app:optCheckbox label="includeJunkFolder" pref="zimbraPrefIncludeSpamInSearch" checked="${mailbox.prefs.includeSpamInSearch}"/>
         <app:optCheckbox label="includeTrashFolder" pref="zimbraPrefIncludeTrashInSearch" checked="${mailbox.prefs.includeTrashInSearch}"/>
         <app:optSeparator/>
@@ -136,8 +136,6 @@
     </c:when>
     <%------------------- MAIL ------------------%>
     <c:when test="${selected eq 'mail'}">
-        <app:optSection label="mailOptions"/>
-         <app:optSeparator/>
 
         <c:if test="${mailbox.features.conversations}">
             <tr>
@@ -216,9 +214,9 @@
     </c:when>
     <%------------------- ADDRESS BOOK ------------------%>
     <c:when test="${selected eq 'addressbook'}">
-        <app:optSection label="addressBookOptions"/>
 
-         <app:optSeparator/>
+
+
 
          <app:optCheckbox label="enableAutoAddingOfContacts" pref="zimbraPrefAutoAddAddressEnabled" checked="${mailbox.prefs.autoAddAddressEnabled}"/>
 
