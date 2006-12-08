@@ -9,7 +9,11 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <tr><td nowrap colspan='3' class='Folder ${tag.hasUnread ? ' Unread':''}<c:if test="${tag.id eq requestScope.context.selectedId}"> Selected</c:if>'>
-    <zm:tagUrl var="url" tag="${tag}"/>
+    <c:url value="/h/search" var="url">
+        <c:param name="sti" value="${tag.id}"/>
+        <c:if test="${!empty param.st}"><c:param name='st' value='${param.st}'/></c:if>
+    </c:url>
+
     <a href='${url}'>
         <app:img src="${tag.image}"/>
         <span>

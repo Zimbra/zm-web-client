@@ -10,7 +10,7 @@
 <c:choose>
     <c:when test="${(!empty param.newPassword or !empty param.confirmNewPassword) and (param.newPassword ne param.confirmNewPassword)}">
         <c:set var="errorCode" value="account.CHANGE_PASSWORD"/>
-        <fmt:message var="errorMessage" key="confirmMismatch"/>
+        <fmt:message var="errorMessage" key="bothNewPasswordsMustMatch"/>
     </c:when>
     <c:when test="${param.op eq 'relogin'}">
         <zm:logout/>

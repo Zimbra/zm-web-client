@@ -115,7 +115,7 @@
         <app:optCheckbox label="includeJunkFolder" pref="zimbraPrefIncludeSpamInSearch" checked="${mailbox.prefs.includeSpamInSearch}"/>
         <app:optCheckbox label="includeTrashFolder" pref="zimbraPrefIncludeTrashInSearch" checked="${mailbox.prefs.includeTrashInSearch}"/>
         <app:optSeparator/>
-        <app:optCheckbox label="alwaysShowSearchString" pref="zimbraPrefShowSearchString" checked="${mailbox.prefs.showSearchString}"/>
+        <app:optCheckbox label="showSearchString" pref="zimbraPrefShowSearchString" checked="${mailbox.prefs.showSearchString}"/>
         <app:optSeparator/>
         <c:if test="${mailbox.features.skinChange}">
             <tr>
@@ -184,13 +184,13 @@
         <c:if test="${mailbox.features.newMailNotification}">
             <app:optCheckbox label="enableAddressForNewMailNotifications" pref="zimbraPrefNewMailNotificationEnabled" checked="${mailbox.prefs.newMailNotificationsEnabled}"/>
 
-            <app:optText label="addressForNewMailNotifications" pref="zimbraPrefNewMailNotificationAddress" size="40" value="${mailbox.prefs.newMailNotificationAddress}"/>
+            <app:optText label="mailNotifAddress" pref="zimbraPrefNewMailNotificationAddress" size="40" value="${mailbox.prefs.newMailNotificationAddress}"/>
 
             <app:optSeparator/>
         </c:if>
 
         <c:if test="${mailbox.features.mailForwarding}">
-            <app:optText label="addressToForwardMailTo" pref="zimbraPrefMailForwardingAddress" size="40" value="${mailbox.prefs.mailForwardingAddress}"/>
+            <app:optText label="mailForwardingAddress" pref="zimbraPrefMailForwardingAddress" size="40" value="${mailbox.prefs.mailForwardingAddress}"/>
 
             <app:optCheckbox label="dontKeepALocalCopyOfMessages" pref="zimbraPrefMailLocalDeliveryDisabled"  checked="${mailbox.prefs.mailLocalDeliveryDisabled}"/>
 

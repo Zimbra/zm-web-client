@@ -89,7 +89,7 @@
                     <app:contactPhone label="fax" phone="${contact.workFax}"/>
                     <app:contactPhone label="assistant" phone="${contact.assistantPhone}"/>
                     <app:contactPhone label="company" phone="${contact.companyPhone}"/>
-                    <app:contactPhone label="callback" phone="${contact.callbackPhone}"/>
+                    <app:contactPhone label="AB_FIELD_callbackPhone" phone="${contact.callbackPhone}"/>
                 </tbody>
             </table>
         </td>
@@ -125,7 +125,7 @@
                     <app:contactPhone label="fax" phone="${contact.homeFax}"/>
                     <app:contactPhone label="mobile" phone="${contact.mobilePhone}"/>
                     <app:contactPhone label="pager" phone="${contact.pager}"/>
-                    <app:contactPhone label="car" phone="${contact.carPhone}"/>
+                    <app:contactPhone label="AB_FIELD_carPhone" phone="${contact.carPhone}"/>
                 </tbody>
             </table>
         </td>
