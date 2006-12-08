@@ -84,7 +84,7 @@ function(ev, skipBrowserCheck) {
 */
 ZmLogin.isSupportedBrowser =
 function() {
-	return AjxEnv.isIE6up || AjxEnv.isMozilla1_4up || AjxEnv.isFirefox || AjxEnv.isSafari;
+	return AjxEnv.isIE6up || AjxEnv.isMozilla1_4up || AjxEnv.isFirefox1up || AjxEnv.isSafari;
 };
 
 /**
@@ -108,10 +108,11 @@ function() {
 	if (ZmLogin.isAlmostSupportedBrowser()) {
 		params.aboutMsg = AjxMessageFormat.format(ZmMsg.almostSupportedBrowserTip, ["ZmLogin.handleOnload(null, true);"]);
 	} else {
-		params.aboutMsg = ZmMsg.unsupportedBrowserTip;
+        params.aboutMsg = ZmMsg.unsupportedBrowserTip;
 	}
-	
-	var html = [];
+    params.clientLevelNotice = AjxMessageFormat.format(ZmMsg.clientLoginNotice, [appContextPath+"/h/"]);
+
+    var html = [];
 	var idx = 0;
 	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td align='center' valign='center'>";
 	html[idx++] = ZLoginFactory.getLoginDialogHTML(params);
@@ -165,6 +166,7 @@ function(errorMessage) {
 		params.errorMsg = errorMessage;
 		params.showError = true;
 	}
+    params.clientLevelNotice = AjxMessageFormat.format(ZmMsg.clientLoginNotice, [appContextPath+"/h/"]);
 	html[idx++] = ZLoginFactory.getLoginDialogHTML(params);
 
 	html[idx++] = "</td></tr></table>";
@@ -334,9 +336,28 @@ function(uname, pword, result) {
 	ZmLogin._authToken = ZmLogin._authTokenLifetime = null;
 };
 
+// XXX Lame copy from ZmEmailAddress since we don't want to bring in all of ZmMail for 10 lines of code.
+// This will go away with LAZY loading.
+ZmLogin.accountPat = /((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))/;
+ZmLogin.addrPat = /(((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*"(([^\\"])|(\\([^\x0A\x0D])))+"\s*))\@((\s*([^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+(\.[^\x00-\x1F\x7F()<>\[\]:;@\,."\s]+)*)\s*)|(\s*\[(\s*(([^\[\]\\])|(\\([^\x0A\x0D])))+)*\s*\]\s*)))/;
+ZmLogin._prelimCheck =
+function(str) {
+	var atIndex = str.indexOf('@');
+	var dotIndex = str.lastIndexOf('.');
+	return ((atIndex != -1) && (dotIndex != -1) && (dotIndex > atIndex));
+};
+ZmLogin.isValid =
+function(str) {
+	str = AjxStringUtil.trim(str);
+	var prelimOkay = ZmLogin._prelimCheck(str);
+	return (prelimOkay && (str.match(ZmLogin.addrPat) != null));
+};
+// XXX end LAME copy
+
+
 ZmLogin.isValidUsername =
 function(uname) {
-	return uname.match(ZmEmailAddress.accountPat) || ZmEmailAddress.isValid(uname);
+	return uname.match(ZmLogin.accountPat) || ZmLogin.isValid(uname);
 };
 
 ZmLogin.handleLogin =
@@ -354,13 +375,13 @@ function() {
 	}
 
     // check uname and pword first
-    if (!ZmLogin.isValidUsername(uname)) {
-		ZmLogin._setErrorMessage(ZmMsg.badUsername);
+    if (!uname || !pword) {
+		ZmLogin._setErrorMessage(ZmMsg.enterUsername);
 		return;
     }
 
-    if (!uname || !pword) {
-		ZmLogin._setErrorMessage(ZmMsg.enterUsername);
+    if (!ZmLogin.isValidUsername(uname)) {
+		ZmLogin._setErrorMessage(ZmMsg.badUsername);
 		return;
     }
 

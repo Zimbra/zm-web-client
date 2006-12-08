@@ -14,10 +14,9 @@
     <c:set var="skin" value="${empty mailbox.prefs.skin ? 'sand' : mailbox.prefs.skin}"/>
     <!-- skin is ${skin} -->
     <style type="text/css">
-        <%-- @import url( "<c:url value="/style/style.css"/>" ); --%>
-<%--        @import url( "/zimbra/css/common,login,zhtml,sand,skin.css?debug=1&skin=${empty param.skin ? 'sand' : param.skin}" );
---%>
        @import url( "<c:url value='/css/common,login,zhtml,${skin},skin.css?skin=${skin}'/>" );
     </style>
+    <link rel="ICON" type="image/gif" href="<c:url value='/img/loRes/logo/favicon.gif'/>">
+    <link rel="SHORTCUT ICON" href="<c:url value='/img/loRes/logo/favicon.ico'/>">
     <jsp:doBody/>
 </head>

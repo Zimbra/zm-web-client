@@ -1,5 +1,6 @@
 <%@ page language="java" import="javax.naming.*"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%
 	String portsCSV = application.getInitParameter("admin.allowed.ports");
 	if (portsCSV != null) {
 		// Split on zero-or-more spaces followed by comma followed by zero-or-more spaces.
@@ -247,12 +248,8 @@ appContextPath = "<%= contextPath %>";
 </script>
 </head>
 <body>
-<noscript><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="errorJavaScriptRequired"/></noscript>
-<% if ((mode != null) && (mode.equalsIgnoreCase("mjsf"))) { %>
-<jsp:include page="ZimbraMail.jsp"/>
-<% } else { %>
-<script type="text/javascript" src="<%= contextPath %>/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
-<% } %>
-<jsp:include page="/public/pre-cache.jsp"/>
+<noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
+    <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url value='/h/'/></fmt:param></fmt:message>
+</noscript>
 </body>
 </html>

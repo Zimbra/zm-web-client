@@ -1,4 +1,5 @@
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 
@@ -197,7 +198,9 @@
 </script>
 </head>
 <body>
-<noscript><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="errorJavaScriptRequired"/></noscript>
+<noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
+    <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url value='/h/'/></fmt:param></fmt:message>
+</noscript>
 <jsp:include page="/public/pre-cache.jsp"/>
 <%
 	// NOTE: This inserts raw HTML files from the user's skin

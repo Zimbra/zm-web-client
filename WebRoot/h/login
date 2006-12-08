@@ -48,12 +48,13 @@
 
 <html>
 <head>
-    <title>Zimbra</title>
+    <title><fmt:message key="zimbraTitle"/></title>
     <c:set var="skin" value="${empty cookie.ZM_SKIN ? 'sand' : cookie.ZM_SKIN.value}"/>
     <style type="text/css">
-        <%--@import url( "<c:url value="/style/style.css"/>" );--%>
          @import url( "<c:url value='/css/common,login,zhtml,${skin},skin.css?skin=${skin}'/>" );
     </style>
+    <link rel="ICON" type="image/gif" href="<c:url value='/img/loRes/logo/favicon.gif'/>">
+    <link rel="SHORTCUT ICON" href="<c:url value='/img/loRes/logo/favicon.ico'/>">
 </head>
 <body onload="document.loginForm.username.focus();">
 <table width=100% height=100%>
@@ -66,7 +67,7 @@
                             <table width=100%>
                                 <tr>
                                     <td align=center valign=middle>
-                                        <img alt='login banner' src="<c:url value='/images/logos/LoginBanner.png'/>"/>
+                                        <a href="http://www.zimbra.com/" target="_new"><img alt='login banner' src="<c:url value='/images/logos/LoginBanner.png'/>"/></a>
                                     </td>
                                 </tr>
                                 <tr>
