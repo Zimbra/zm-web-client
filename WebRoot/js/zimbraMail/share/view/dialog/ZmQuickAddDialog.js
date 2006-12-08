@@ -24,7 +24,8 @@
  */
 /**
 * Creates a generic quick add dialog (which basically mean it has different 
-* than regular dialogs). See "DwtSemiModalDialog" in DwtBorder for cosmetics.
+* than regular dialogs). See "DwtSemiModalDialog" in Ajax widgets templates
+* for cosmetics.
 * @constructor
 * @class
 * This class represents a modal dialog which has at least a title and the 
@@ -50,13 +51,20 @@ function ZmQuickAddDialog(parent, title, standardButtons, extraButtons, loc) {
 ZmQuickAddDialog.prototype = new DwtDialog;
 ZmQuickAddDialog.prototype.constructor = ZmQuickAddDialog;
 
-
-// Public
-
-ZmQuickAddDialog.prototype.toString = 
+ZmQuickAddDialog.prototype.toString =
 function() {
 	return "ZmQuickAddDialog";
 };
+
+//
+// Data
+//
+
+ZmQuickAddDialog.prototype._borderStyle = "DwtSemiModalDialog";
+
+//
+// Public methods
+//
 
 ZmQuickAddDialog.prototype.setContent =
 function(text) {
@@ -71,23 +79,4 @@ function(title) {
 ZmQuickAddDialog.prototype.addSelectionListener = 
 function(buttonId, listener) {
 	this._button[buttonId].addSelectionListener(listener);
-};
-
-
-// Private / protected methods
-ZmQuickAddDialog.prototype._createHtml =
-function() {
-	this._contentId = Dwt.getNextId();
-	this._titleHandleId = Dwt.getNextId();
-
-	var html = new Array(3);
-	var idx = 0;
-
-	html[idx++] = DwtBorder.getBorderStartHtml("DwtSemiModalDialog", {titleId:this._titleHandleId, titleTextId:this._titleCellId});
-	html[idx++] = this._getContentHtml();
-	html[idx++] = DwtBorder.getBorderEndHtml("DwtSemiModalDialog");
-
-	this.getHtmlElement().innerHTML = html.join("");
-
-	this._contentDiv = document.getElementById(this._contentId);
 };

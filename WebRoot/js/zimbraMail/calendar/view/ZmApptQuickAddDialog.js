@@ -24,7 +24,8 @@
  */
 /**
 * Creates a generic quick add dialog (which basically mean it has different 
-* than regular dialogs). See "DwtSemiModalDialog" in DwtBorder for cosmetics.
+* than regular dialogs). See "DwtSemiModalDialog" in Ajax widget templates
+* for cosmetics.
 * @constructor
 * @class
 * This class represents a modal dialog which has at least a title and the 

@@ -693,8 +693,10 @@ function(div, allDay, folderId) {
 		location: "",
 		statusKey: "",
 		status: ""
-	};	
-	div.innerHTML = DwtBorder.getBorderHtml(allDay ? "calendar_appt_allday" : "calendar_appt", subs, null);
+	};
+
+    var template = allDay ? "calendar_appt_allday" : "calendar_appt";
+    div.innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#"+template, subs);
 	return div;
 }
 
@@ -765,7 +767,7 @@ function(appt) {
 		template = "calendar_appt";
 	}
 
-	div.innerHTML = DwtBorder.getBorderHtml(template, subs, null);
+	div.innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#"+template, subs);
 
 	// if (we can edit this appt) then create sash....
 	var tree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);

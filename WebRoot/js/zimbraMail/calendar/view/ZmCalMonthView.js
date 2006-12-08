@@ -390,7 +390,7 @@ function(appt,id, body_style, controller) {
 		status: appt.isOrganizer() ? "" : appt.getParticipationStatusString()
 	};	
 	var template = "calendar_appt_allday";
-	return DwtBorder.getBorderHtml(template, subs, null);
+    return AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#"+template, subs);
 };
 
 ZmCalMonthView.prototype._createAllDayItemHtml =

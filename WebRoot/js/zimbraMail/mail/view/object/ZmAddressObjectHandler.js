@@ -105,18 +105,4 @@ ZmAddressObjectHandler.displayMap = function(lng, lat, obj) {
 	}
 };
 
-/* Sticky tool tips not ready yet.
-ZmAddressObjectHandler.prototype.hoverOver = function(object, context, x, y) {
-	var shell = DwtShell.getShell(window);
-	var tooltip = new DwtStickyToolTip(shell);
-	tooltip.setTitle(object); // NOTE: object is address string
-	tooltip.setContent(this.getToolTipText(object, context));
-	this.populateToolTip(object, context);
-	tooltip.popup(x, y);
-
-}
-ZmAddressObjectHandler.prototype.hoverOut = function(object, context) {
-	// no-op
-}
-*/
 //ZmObjectManager.registerHandler("ZmAddressObjectHandler",ZmAddressObjectHandler.TYPE, 27);

@@ -810,6 +810,9 @@
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/ajax">
       <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js,**/*.css" excludes="**/img/"/>
     </copy>
+    <copy verbose="true" todir="${deploy.dir}${deploy.path}/js">
+      <fileset dir="${build.dir}/WebRoot/js" includes="**/templates/*.js" />
+    </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/zimbraAdmin/config/style">
       <fileset dir="WebRoot/js/zimbraMail/config/style" includes="*.css" excludes="zm.css"/>
     </copy>
@@ -839,7 +842,7 @@
   </target>
 
   <!-- this is the production war file target for the admin webapp -->
-  <target name="admin-war" depends="compress-js-files, generate-build-info, admin-images, copy-common-css-to-admin, i18n">
+  <target name="admin-war" depends="templates, compress-js-files, generate-build-info, admin-images, copy-common-css-to-admin, i18n">
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
@@ -859,7 +862,7 @@
     </war>
   </target>
 
-  <target name="admin-dev-war" depends="copy-files-to-build-area, jam-files, generate-build-info, admin-images, copy-common-css-to-admin, i18n">
+  <target name="admin-dev-war" depends="copy-files-to-build-area, templates, jam-files, generate-build-info, admin-images, copy-common-css-to-admin, i18n">
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
