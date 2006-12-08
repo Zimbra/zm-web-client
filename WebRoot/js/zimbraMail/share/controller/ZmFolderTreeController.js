@@ -155,15 +155,13 @@ function() {
 */
 ZmFolderTreeController.prototype._getActionMenuOps =
 function() {
-	var list = new Array();
-	list.push(ZmOperation.NEW_FOLDER,
-			  ZmOperation.MARK_ALL_READ,
-			  ZmOperation.DELETE,
-			  ZmOperation.RENAME_FOLDER,
-			  ZmOperation.MOVE,
-			  ZmOperation.EXPAND_ALL,
-			  ZmOperation.SYNC);
-	return list;
+	return [ZmOperation.NEW_FOLDER,
+			ZmOperation.MARK_ALL_READ,
+			ZmOperation.DELETE,
+			ZmOperation.RENAME_FOLDER,
+			ZmOperation.MOVE,
+			ZmOperation.EXPAND_ALL,
+			ZmOperation.SYNC];
 };
 
 /*

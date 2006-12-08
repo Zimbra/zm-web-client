@@ -65,8 +65,7 @@ function ZmTreeController(appCtxt, type, dropTgt) {
 	// change listening
 	this._dataTree = appCtxt.getTree(type);
 	if (this._dataTree) {
-		this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
-		this._dataTree.addChangeListener(this._dataChangeListener);
+		this._dataTree.addChangeListener(new AjxListener(this, this._treeChangeListener));
 	}
 	
 	this._treeView = {};	// hash of tree views of this type, by overview ID

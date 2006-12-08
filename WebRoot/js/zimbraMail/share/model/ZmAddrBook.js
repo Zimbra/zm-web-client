@@ -184,11 +184,13 @@ function(parent, obj, tree) {
 	if (obj.folder && obj.folder.length) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folder = obj.folder[i];
-			if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK] ||
-				folder.id == ZmOrganizer.ID_TRASH)
+			if (folder.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK])
 			{
 				var childAB = ZmAddrBook.createFromJs(ab, folder, tree);
 				ab.children.add(childAB);
+			} else if (folder.id == ZmOrganizer.ID_TRASH) {
+				// get trash folder from cache and add it instead of creating new one
+				ab.children.add(tree._appCtxt.cacheGet(ZmOrganizer.ID_TRASH));
 			}
 		}
 	}

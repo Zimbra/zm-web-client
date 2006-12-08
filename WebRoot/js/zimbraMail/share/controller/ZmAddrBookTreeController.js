@@ -170,7 +170,7 @@ function(event) {
 
 ZmAddrBookTreeController.prototype._changeListener =
 function(ev, treeView) {
-	ZmTreeController.prototype._changeListener.call(this, ev, treeView);
+	ZmFolderTreeController.prototype._changeListener.call(this, ev, treeView);
 
 	if (ev.type != this.type) return;
 

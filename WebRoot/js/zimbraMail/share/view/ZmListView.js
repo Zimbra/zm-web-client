@@ -146,7 +146,7 @@ function(ev) {
 				this._parentEl.removeChild(row);
 				this._selectedItems.remove(row);
 			}
-			this._list.remove(items[i]);
+			if (this._list) this._list.remove(items[i]);
 		}
 		if (ev.getDetail("replenish")) {
 			var respCallback = new AjxCallback(this, this._handleResponseChangeListener);
