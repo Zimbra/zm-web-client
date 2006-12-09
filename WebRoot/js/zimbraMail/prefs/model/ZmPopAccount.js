@@ -48,14 +48,16 @@ ZmPopAccount.REMOVE_AFTER_1_MONTH = 4;
 ZmPopAccount.REMOVE_UPON_DELETE = 5;
 /***/
 
-ZmPopAccount.PORT_DEFAULT = 110;
+ZmPopAccount.PORT_CLEAR = 110;
 ZmPopAccount.PORT_SSL = 995;
+ZmPopAccount.PORT_DEFAULT = ZmPopAccount.PORT_CLEAR;
 
 ZmPopAccount.CONNECT_CLEAR = "cleartext";
 ZmPopAccount.CONNECT_SSL = "ssl";
 /***
 ZmPopAccount.CONNECT_START_TLS = "starttls";
 /***/
+ZmPopAccount.CONNECT_DEFAULT = ZmPopAccount.CONNECT_CLEAR;
 
 ZmPopAccount._ANAME2PNAME = {
     id: "id",
@@ -67,6 +69,17 @@ ZmPopAccount._ANAME2PNAME = {
     password: "password",
     l: "folderId",
     connectionType: "connectionType"
+};
+ZmPopAccount._ATTR_DEFAULTS = {
+    port: function(value) {
+        if (!value) {
+            value = ZmPopAccount.PORT_DEFAULT;
+            if (this.connectionType == ZmPopAccount.CONNECT_SSL) {
+                value = ZmPopAccount.PORT_SSL;
+            }
+        }
+        return value;
+    }
 };
 
 //
@@ -178,7 +191,7 @@ function(callback, errorCallback, batchCommand) {
     var soapDoc = AjxSoapDoc.create("TestDataSourceRequest", "urn:zimbraMail");
     var pop3 = soapDoc.set("pop3");
     pop3.setAttribute("host", this.mailServer);
-    pop3.setAttribute("port", this.port || ZmPopAccount.PORT_DEFAULT);
+    pop3.setAttribute("port", this.getPort());
     pop3.setAttribute("username", this.userName);
     pop3.setAttribute("password", this.password);
     pop3.setAttribute("connectionType", this.connectionType);
@@ -212,6 +225,10 @@ function(callback, errorCallback) {
     alert("removeMessages"); // TODO
 };
 
+ZmPopAccount.prototype.getPort = function() {
+    return this.port || this.__getAttrDefault("port", this.port);
+};
+
 ZmPopAccount.prototype.set = function(obj) {
     this.id = obj.id;
     this.name = obj.name || this.name;
@@ -231,4 +248,17 @@ ZmPopAccount.prototype.set = function(obj) {
 ZmPopAccount.prototype._loadFromDom =
 function(data) {
     this.set(data);
+};
+
+//
+// Private methods
+//
+
+ZmPopAccount.prototype.__getAttrDefault = function(aname, value) {
+    var defValue = ZmPopAccount._ATTR_DEFAULTS[aname];
+    if (AjxUtil.isFunction(defValue)) {
+        var func = defValue;
+        defValue = func.call(this, value);
+    }
+    return defValue;
 };

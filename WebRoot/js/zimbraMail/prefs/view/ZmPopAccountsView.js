@@ -868,7 +868,7 @@ ZmPopAccountBasicPage._handleSslTrust = function(event) {
 /***/
 ZmPopAccountBasicPage.prototype._portListener =
 function(evt) {
-    this._fieldListener(this._portField, "port", evt);
+    this._account.port = parseInt(this._portField.getValue()) || this._account.getPort();
     this._dirtyListener(evt);
 };
 
