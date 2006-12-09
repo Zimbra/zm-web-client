@@ -23,7 +23,7 @@
                     &nbsp;
                 </c:when>
                 <c:when test="${context.folder.isFeed}">
-                    <input class='tbButton' type="submit" name="actionLoadFeed" value="<fmt:message key="loadFeed"/>">
+                    <input class='tbButton' type="submit" name="actionLoadFeed" value="<fmt:message key="checkFeed"/>">
                     &nbsp;
                 </c:when>
             </c:choose>

@@ -83,7 +83,7 @@
                             <td nowrap><a href="${msgUrl}">${fn:escapeXml(hit.displaySender)}</a></td>
                             <td class='Img' ><app:attachmentImage attachment="${hit.hasAttachment}"/></td>
                             <td ><%-- allow this column to wrap --%>
-                                <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.fragment ? zm:m(pageContext, 'noFragment') : zm:truncate(hit.fragment,100, true))}</span></a>
+                                <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.fragment ? zm:m(pageContext, 'fragmentIsEmpty') : zm:truncate(hit.fragment,100, true))}</span></a>
                                 <c:if test="${hit.id == message.id}">
                                     <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                     <c:if test="${messCursor.hasPrev}">

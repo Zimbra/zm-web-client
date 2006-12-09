@@ -109,8 +109,8 @@
                     &nbsp;<fmt:message key="in"/>&nbsp;
 
                     <select name="contactLocation">
-                        <option <c:if test="${empty uploader.contactLocation or uploader.contactLocation eq 'personal'}">selected </c:if>value="contact"/><fmt:message key="personalContacts"/>
-                        <option <c:if test="${uploader.contactLocation eq 'gal'}">selected </c:if>value="gal"/><fmt:message key="globalAddressList"/>
+                        <option <c:if test="${empty uploader.contactLocation or uploader.contactLocation eq 'personal'}">selected </c:if>value="contact"/><fmt:message key="searchPersonalContacts"/>
+                        <option <c:if test="${uploader.contactLocation eq 'gal'}">selected </c:if>value="gal"/><fmt:message key="GAL"/>
                     </select>
                     <input class="SearchButton" type=submit name='actionContactSearch' value="<fmt:message key="searchContacts"/>">
                 </div>

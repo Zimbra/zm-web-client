@@ -117,7 +117,7 @@
                         <a accesskey='9' href="${convUrl}"><fmt:message key="showConversation"/></a> |
                     </c:if>
                     <c:if test="${!isPart}">
-                        <a accesskey='0' target="_blank" href="/home/~/?id=${message.id}&auth=co"><fmt:message key="showOriginal"/></a>
+                        <a accesskey='0' target="_blank" href="/home/~/?id=${message.id}&auth=co"><fmt:message key="showOrig"/></a>
                     </c:if>
                 </td>
             </tr>

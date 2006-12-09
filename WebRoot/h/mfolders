@@ -113,32 +113,6 @@
         <input class='tbButton' type="submit" name="actionSubscribe" value="<fmt:message key="subscribe"/>">
     </td>
 </tr>
-<%--
-<tr>
-    <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="markAllItemsRead"/></td>
-</tr>
-<tr>
-    <td align='right' nowrap><fmt:message key="folderName"/>:</td>
-    <td>
-        <select name="folderToMarkRead">
-            <option value="" selected/>
-            <fmt:message key="chooseFolderToMarkRead"/>
-            <option disabled/>
-            <fmt:message key="actionOptSep"/>
-            <zm:forEachFolder var="folder">
-                <c:if test="${folder.isMessageFolderMarkReadTarget}">
-                    <option value="f:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
-                </c:if>
-            </zm:forEachFolder>
-        </select>
-    </td>
-
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td><input class='tbButton' type="submit" name="actionMarkRead" value="<fmt:message key="markFolderRead"/>"></td>
-</tr>
---%>
 <tr>
     <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="renameFolder"/></td>
 </tr>

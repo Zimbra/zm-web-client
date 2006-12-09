@@ -24,8 +24,8 @@
                 <c:otherwise><c:set var="isMail" value="${true}"/></c:otherwise>
             </c:choose>
             <select name="st">
-                <option <c:if test="${isMail}">selected </c:if>value="${mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message'}"/><fmt:message key="emailMessages"/>
-                <option <c:if test="${isContact}">selected </c:if>value="contact"/><fmt:message key="personalContacts"/>
+                <option <c:if test="${isMail}">selected </c:if>value="${mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message'}"/><fmt:message key="searchMail"/>
+                <option <c:if test="${isContact}">selected </c:if>value="contact"/><fmt:message key="searchPersonalContacts"/>
             </select>
 <input class="SearchButton" type=submit name=search value="<fmt:message key="search"/>">
 

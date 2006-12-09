@@ -97,33 +97,6 @@
 </tr>
 <c:if test="${mailbox.hasTags}">
 
-<%--
-<tr>
-    <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="markAllItemsRead"/></td>
-</tr>
-<tr>
-    <td align='right' nowrap><fmt:message key="tagName"/>:</td>
-    <td>
-        <select name="tagToMarkRead">
-            <option value="" selected/>
-            <fmt:message key="chooseTagToMarkRead"/>
-            <option disabled/>
-            <fmt:message key="actionOptSep"/>
-            <zm:forEachTag var="tag">
-                <c:if test="${tag.hasUnread}">
-                    <option value="t:${tag.id}"/> ${fn:escapeXml(tag.name)}
-                </c:if>
-            </zm:forEachTag>
-        </select>
-    </td>
-
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td><input class='tbButton' type="submit" name="actionMarkRead" value="<fmt:message key="markTagRead"/>"></td>
-</tr>
---%>
-
 <tr>
     <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="renameTag"/></td>
 </tr>
