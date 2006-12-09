@@ -20,7 +20,8 @@
     </table>
 </c:set>
 
-<app:head title="${zm:message(pageContext,'manageFolders')}"/>
+<fmt:message var="title" key="manageFolders"/>
+<app:head title="${title}"/>
 
 <body>
 

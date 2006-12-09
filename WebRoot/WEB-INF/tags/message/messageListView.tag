@@ -7,6 +7,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <app:view context="${context}" selected='mail' folders="true" tags="true" searches="true">
+<fmt:message key="noSubject" var="noSubject"/>
 <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
 <zm:getMailbox var="mailbox"/>
 <form action="${currentUrl}" method="post">
@@ -63,7 +64,7 @@
                     <td > <%-- allow this col to wrap --%>
 
                         <a href="${currentItemUrl}" <c:if test="${msg.id == context.currentItem.id}">accesskey='o'</c:if>>
-                            <c:set var="subj" value="${empty msg.subject ? zm:m(pageContext, 'noSubject') : msg.subject}"/>
+                            <c:set var="subj" value="${empty msg.subject ? noSubject : msg.subject}"/>
                             <c:out value="${subj}"/>
                             <c:if test="${mailbox.prefs.showFragments and not empty msg.fragment and fn:length(subj) lt 90}">
                                 <span class='Fragment'> - <c:out value="${zm:truncate(msg.fragment,100-fn:length(subj),true)}"/></span>

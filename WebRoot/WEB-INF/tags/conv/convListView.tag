@@ -7,6 +7,9 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <c:set var="cid" value="${empty param.id ? context.searchResult.hits[0].id : param.id}"/>
+<fmt:message var="unknownRecipient" key="unknownRecipient"/>
+<fmt:message var="unknownSubject" key="noSubject"/>
+
 <zm:getMailbox var="mailbox"/>
 <app:view selected='mail' folders="true" tags="true" searches="true" context="${context}">
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
@@ -48,12 +51,12 @@
                         <td class='Img'><app:flagImage flagged="${conv.isFlagged}"/></td>
                         <td class='Img'><app:miniTagImage ids="${conv.tagIds}"/></td>
                         <td><%-- allow this column to wrap --%>
-                            <a href="${convUrl}"><c:out value="${conv.displayRecipients}"
-                                           default="${zm:m(pageContext, 'unknownRecipient')}"/></a></td>
+                            <a href="${convUrl}">${fn:escapeXml(empty conv.displayRecipients ? unknownRecipient : conv.displayRecipients)}</a>
+                        </td>
                         <td class='Img'><app:attachmentImage attachment="${conv.hasAttachment}"/></td>
                         <td><%-- allow this column to wrap --%>
                             <a href="${convUrl}" <c:if test="${conv.id == context.currentItem.id}">accesskey='o'</c:if>>
-                                <c:set var='subj' value="${empty conv.subject ? zm:m(pageContext, 'noSubject') : zm:truncate(conv.subject,100,true)}"/>
+                                <c:set var='subj' value="${empty conv.subject ? unknownSubject : zm:truncate(conv.subject,100,true)}"/>
                                 <c:out value="${subj}"/>
                                 <c:if test="${mailbox.prefs.showFragments and not empty conv.fragment and fn:length(subj) lt 90}">
                                     <span class='Fragment'> - <c:out value="${zm:truncate(conv.fragment,100-fn:length(subj),true)}"/></span>

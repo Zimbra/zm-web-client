@@ -12,7 +12,8 @@
     <zm:getMailbox var="mailbox"/>
 </app:handleError>
 
-<app:head title="${zm:m(pageContext, 'compose')}"/>
+<fmt:message var="title" key="compose"/>
+<app:head title="${title}"/>
 <zm:composeUploader var="uploader"/>
 <c:set var="compose" value="${uploader.compose}"/>
 
@@ -98,7 +99,12 @@
                                 <c:set var="firstAttachment" value="${false}"/>
                             </c:if>
                         </td>
-                        <td colspan=2>${fn:escapeXml(empty ma.subject ? zm:m(pageContext, 'noSubject') : zm:truncate(ma.subject,100,true))}
+                        <td colspan=2>
+                            <c:choose>
+                                <c:when test="${empty ma.subject}"><fmt:message var="subj" key="noSubject"/></c:when>
+                                <c:otherwise><c:set var="subj" value="${zm:truncate(ma.subject,100,true)}"/></c:otherwise>
+                            </c:choose>
+                        ${fn:escapeXml(subj)}
                             <input type="hidden" name="messageAttachment" value="${ma.id}:${fn:escapeXml(ma.subject)}"/>
                         </td>
                     </tr>

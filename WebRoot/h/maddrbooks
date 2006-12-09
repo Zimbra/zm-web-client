@@ -21,7 +21,8 @@
     
 </c:set>
 
-<app:head title="${zm:message(pageContext,'manageAddressBooks')}"/>
+<fmt:message var="title" key="manageAddressBooks"/>
+<app:head title="${title}"/>
 
 <body>
 

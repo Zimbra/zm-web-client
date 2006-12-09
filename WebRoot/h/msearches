@@ -19,7 +19,8 @@
     </table>
 </c:set>
 
-<app:head title="${zm:message(pageContext,'manageSearches')}"/>
+<fmt:message var="title" key="manageSearches"/>
+<app:head title="${title}"/>
 
 <body>
 

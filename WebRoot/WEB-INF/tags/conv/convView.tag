@@ -7,6 +7,8 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
+<fmt:message var="emptyFragment" key="fragmentIsEmpty"/>
+
 <zm:getMailbox var="mailbox"/>
 <c:set var="csi" value="${param.csi}"/>
 <zm:searchConv var="convSearchResult" conv="${convHit}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
@@ -83,7 +85,7 @@
                             <td nowrap><a href="${msgUrl}">${fn:escapeXml(hit.displaySender)}</a></td>
                             <td class='Img' ><app:attachmentImage attachment="${hit.hasAttachment}"/></td>
                             <td ><%-- allow this column to wrap --%>
-                                <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.fragment ? zm:m(pageContext, 'fragmentIsEmpty') : zm:truncate(hit.fragment,100, true))}</span></a>
+                                <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.fragment ? emptyFragment : zm:truncate(hit.fragment,100, true))}</span></a>
                                 <c:if test="${hit.id == message.id}">
                                     <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                     <c:if test="${messCursor.hasPrev}">

@@ -20,7 +20,8 @@
 
 </c:set>
 
-<app:head title="${zm:message(pageContext,'manageTags')}"/>
+<fmt:message var="title" key="manageTags"/>
+<app:head title="${title}"/>
 
 <body>
 

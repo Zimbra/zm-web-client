@@ -12,7 +12,8 @@
     <zm:getMailbox var="mailbox"/>
 </app:handleError>
 
-<app:head title="${zm:m(pageContext, 'addFromContacts')}"/>
+<fmt:message var="title" key="addFromContacts"/>
+<app:head title="${title}"/>
 <zm:composeUploader var="uploader"/>
 <c:set var="compose" value="${uploader.compose}"/>
 

@@ -12,7 +12,9 @@
     <zm:getMailbox var="mailbox"/>
 </app:handleError>
 
-<app:head title="${zm:m(pageContext, 'attachFiles')}"/>
+<fmt:message var="title" key="attachFiles"/>
+<app:head title="${title}"/>
+
 <zm:composeUploader var="uploader"/>
 <c:set var="compose" value="${uploader.compose}"/>
 

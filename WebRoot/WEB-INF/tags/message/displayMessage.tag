@@ -23,6 +23,8 @@
         </c:if>
 </c:set>        
 
+<fmt:message var="unknownSender" key="unknownSender"/>
+
 <c:set var="isPart" value="${!empty message.partName}"/>
 <div width=100% height=100% class=Msg>
     <div class=MsgHdr>
@@ -33,7 +35,7 @@
 
                         <tr>
                             <td class='MsgHdrName'><fmt:message key="from"/>:</td>
-                            <td class='MsgHdrValue'><c:out value="${message.displayFrom}" default="${zm:m(pageContext, 'unknownSender')}"/></td>
+                            <td class='MsgHdrValue'><c:out value="${message.displayFrom}" default="${unknownSender}"/></td>
                         </tr>
                         <c:if test="${true or !nosubject}">
                             <tr><td class='MsgHdrName'><fmt:message key="subject"/>:</td><td
