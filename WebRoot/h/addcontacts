@@ -24,7 +24,7 @@
                 <zm:searchGal var="searchGal" query="${uploader.contactSearchQuery}" type="account"/>
             </c:when>
             <c:otherwise>
-                <zm:search var="search" query="${uploader.contactSearchQuery}" types="contact"/>
+                <zm:search var="search" query="${zm:contactQuery(uploader.contactSearchQuery)}" types="contact"/>
             </c:otherwise>
         </c:choose>
         <c:set var="query" value="${uploader.contactSearchQuery}"/>

@@ -33,8 +33,8 @@
         <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
         <fmt:message var="unlimited" key="unlimited"/>
         <fmt:message key="quotaUsage">
-            <fmt:param value="${zm:displaySize(mailbox.size)}"/>
-            <fmt:param value="${max==0 ? unlimited : zm:displaySize(max)}"/>
+            <fmt:param value="${zm:displaySizeFractions(mailbox.size,2)}"/>
+            <fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(max,2)}"/>
         </fmt:message>
     </td>
 </tr>
