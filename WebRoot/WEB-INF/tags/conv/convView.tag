@@ -8,7 +8,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <fmt:message var="emptyFragment" key="fragmentIsEmpty"/>
-
+<fmt:message var="emptySubject" key="noSubject"/>
 <zm:getMailbox var="mailbox"/>
 <c:set var="csi" value="${param.csi}"/>
 <zm:searchConv var="convSearchResult" conv="${convHit}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
@@ -40,7 +40,7 @@
                 <table width=100% cellpadding=1 cellspacing=0>
                     <tr>
                         <td>
-                            <app:img src="mail/Conversation.gif"/> <span class='MsgHdrSub'>${fn:escapeXml(convHit.subject)}</span>
+                            <app:img src="mail/Conversation.gif"/> <span class='MsgHdrSub'>${fn:escapeXml(empty convHit.subject ? emptySubject : convHit.subject)}</span>
                         </td>
                         <td align="right">
                             <span class='Tags'>
@@ -114,7 +114,7 @@
             </c:if>
             <zm:currentResultUrl var="composeUrl" value="" context="${context}" id="${message.id}"
                                  action="compose" cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}"/>
-            <app:displayMessage mailbox="${mailbox}" message="${message}" nosubject="true" externalImageUrl="${extImageUrl}" composeUrl="${composeUrl}"/>
+            <app:displayMessage mailbox="${mailbox}" message="${message}" externalImageUrl="${extImageUrl}" composeUrl="${composeUrl}"/>
         </div>
         <app:convToolbar top='false' context="${context}" convSearchResult="${convSearchResult}" convCursor="${convCursor}" convHit="${convHit}" keys="false"/>
         <input type="hidden" name="doAction" value="1"/>

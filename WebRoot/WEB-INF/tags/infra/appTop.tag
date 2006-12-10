@@ -13,7 +13,6 @@
         <div class='SearchBar'>
             <c:url var="searchUrl" value="/h/search"/>
             <form method="get" action="${searchUrl}">
-                <%-- the "\"" drives IDEA crazy, but it is correct --%>
                 <c:set var="query">${fn:escapeXml((!empty query and mailbox.prefs.showSearchString) ? query : param.sq)}</c:set>
                     &nbsp;<fmt:message key="find"/> :
                     <input class="searchField" style='width:50%' maxlength=2048 name=sq accesskey="q" value="${query}">

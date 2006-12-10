@@ -1,7 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="message" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMessageBean" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
-<%@ attribute name="nosubject" rtexprvalue="true" required="false" %>
 <%@ attribute name="showconvlink" rtexprvalue="true" required="false" %>
 <%@ attribute name="externalImageUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ attribute name="composeUrl" rtexprvalue="true" required="true" type="java.lang.String" %>
@@ -37,11 +36,10 @@
                             <td class='MsgHdrName'><fmt:message key="from"/>:</td>
                             <td class='MsgHdrValue'><c:out value="${message.displayFrom}" default="${unknownSender}"/></td>
                         </tr>
-                        <c:if test="${true or !nosubject}">
-                            <tr><td class='MsgHdrName'><fmt:message key="subject"/>:</td><td
-                                    class='MsgHdrValue'>${fn:escapeXml(message.subject)}</td>
-                            </tr>
-                        </c:if>
+                        <c:if test="${empty message.subject}"><fmt:message var="noSubject" key="noSubject"/></c:if>
+                        <tr><td class='MsgHdrName'><fmt:message key="subject"/>:</td><td
+                                class='MsgHdrValue'>${fn:escapeXml(empty message.subject ? noSubject : message.subject)}</td>
+                        </tr>
                         <c:set var="to" value="${message.displayTo}"/>
                         <c:if test="${!(empty to)}">
                             <tr><td class='MsgHdrName'><fmt:message key="to"/>:</td><td class='MsgHdrValue'><c:out
