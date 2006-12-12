@@ -301,11 +301,10 @@ function(params) {
 	}
 
 	skin.showSkin(true);
-	this._TTT_SKIN_ENABLED = skin.hints && skin.hints.app_chooser.direction == "LR";
+	this._TAB_SKIN_ENABLED = skin.hints && skin.hints.app_chooser.direction == "LR";
 	if (!this._components) {
 		this._components = {};
-		this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE,
-											 				"console_inset_app_l", 20);
+		this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE, "console_inset_app_l", 20);
 		this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
 		this._components[ZmAppViewMgr.C_USER_INFO] = this._createUserInfo();
 		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell);
@@ -733,8 +732,7 @@ function(app) {
 ZmZimbraMail.prototype._setUserInfo = 
 function() {
 	var userTooltip = null;
-	// XXX bug: 10740 - HACK HACK HACK - remove when we go to horiz tabs in toolbar
-	if (this._TTT_SKIN_ENABLED) {
+	if (this._TAB_SKIN_ENABLED) {
 		var html = [];
 		var i = 0;
 		html[i++] = "<table border=0 cellpadding=0 cellspacing=0 width=55% align=center><tr><td align=left style='white-space:nowrap; font-weight:bold'><a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'>";
@@ -1137,7 +1135,7 @@ function() {
 		}
 	}
 
-	if (!this._TTT_SKIN_ENABLED) {
+	if (!this._TAB_SKIN_ENABLED) {
 		buttons.push(ZmAppChooser.SPACER, ZmAppChooser.B_HELP);
 		if (this._appCtxt.get(ZmSetting.PREFS_ENABLED)) {
 			buttons.push(ZmAppChooser.B_OPTIONS);
@@ -1149,8 +1147,7 @@ function() {
 		}
 	}
 
-	var appChooserStyle = this._TTT_SKIN_ENABLED ? DwtToolBar.HORIZ_STYLE : DwtToolBar.VERT_STYLE;
-	var appChooser = new ZmAppChooser(this._shell, null, buttons, appChooserStyle);
+	var appChooser = new ZmAppChooser(this._shell, null, buttons, this._TAB_SKIN_ENABLED);
 	
 	var buttonListener = new AjxListener(this, this._appButtonListener);
 	for (var i = 0; i < buttons.length; i++) {

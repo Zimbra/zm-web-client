@@ -35,24 +35,24 @@
 *
 * @author Conrad Damon
 */
-function ZmChicletButton(parent, outerClass, innerClass) {
+function ZmChicletButton(parent, outerClass, innerClass, text) {
 
 	if (arguments.length == 0) return;
 	DwtControl.call(this, parent, outerClass, DwtControl.RELATIVE_STYLE);
 
-	this._innerDiv = document.createElement("div");
-	this._innerDiv.className = AjxImg.getClassForImage(innerClass);
-//	this._innerDiv.style.position = DwtControl.ABSOLUTE_STYLE;
-//	this._innerDiv.style.left = "4px"; // need for IE when toolbar is HORiZ
-	this.getHtmlElement().appendChild(this._innerDiv);
-	
+	if (text) {
+		this._setHtml(innerClass, text);
+	} else {
+		this._innerDiv = document.createElement("div");
+		this._innerDiv.className = AjxImg.getClassForImage(innerClass);
+		this.getHtmlElement().appendChild(this._innerDiv);
+	}
+
 	this._origClassName = outerClass;
 	this._activatedClassName = this._origClassName + " " + DwtCssStyle.ACTIVATED;
 	this._triggeredClassName = this._origClassName + " " + DwtCssStyle.TRIGGERED;
 
-	// borrowed/modified from DwtButton...
-	
-	// add custom mouse handlers to standard ones
+	// add custom mouse handlers to standard ones (borrowed/modified from DwtButton)
 	this._setMouseEventHdlrs();
 	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
 	this.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(this, this._mouseOutListener));
@@ -61,7 +61,7 @@ function ZmChicletButton(parent, outerClass, innerClass) {
 
 	this._mouseOutAction = new AjxTimedAction(this, this._setMouseOutClassName);
 	this._mouseOutActionId = -1;
-}
+};
 
 ZmChicletButton.prototype = new DwtControl;
 ZmChicletButton.prototype.constructor = ZmChicletButton;
@@ -69,29 +69,29 @@ ZmChicletButton.prototype.constructor = ZmChicletButton;
 ZmChicletButton.prototype.toString =
 function() {
 	return "ZmChicletButton";
-}
+};
 
 
 
 ZmChicletButton.prototype.setOuterImage =
 function(className) {
 	this._outerDiv.className = className;
-}
+};
 
 ZmChicletButton.prototype.setInnerImage =
 function(className) {
 	this._innerDiv.className = AjxImg.getClassForImage(className);
-}
+};
 
 ZmChicletButton.prototype.setActivatedImage =
 function(className) {
 	this._activatedClassName = className;
-}
+};
 
 ZmChicletButton.prototype.setTriggeredImage =
 function(className) {
 	this._triggeredClassName = className;
-}
+};
 
 // from DwtButton...
 
@@ -103,7 +103,7 @@ function(className) {
 ZmChicletButton.prototype.addSelectionListener = 
 function(listener) {
 	this.addListener(DwtEvent.SELECTION, listener);
-}
+};
 
 /**
 * Removes a selection listener.
@@ -113,7 +113,7 @@ function(listener) {
 ZmChicletButton.prototype.removeSelectionListener = 
 function(listener) { 
 	this.removeListener(DwtEvent.SELECTION, listener);
-}
+};
 
 /**
 * Removes all the selection listeners.
@@ -121,7 +121,7 @@ function(listener) {
 ZmChicletButton.prototype.removeSelectionListeners = 
 function() { 
 	this.removeAllListeners(DwtEvent.SELECTION);
-}
+};
 
 /**
 * Returns the button display to normal (not activated or triggered).
@@ -129,7 +129,7 @@ function() {
 ZmChicletButton.prototype.resetClassName = 
 function() {
 	this.setClassName(this._origClassName);	
-}
+};
 
 /**
 * Activates/inactivates the button. A button is activated when the mouse is over it.
@@ -142,7 +142,25 @@ function(activated) {
 		this.setClassName(this._activatedClassName);
 	else
 		this.setClassName(this._origClassName);
-}
+};
+
+ZmChicletButton.prototype._setHtml =
+function(innerClass, text) {
+	var html = [];
+	var i = 0;
+	var divId = Dwt.getNextId();
+
+	html[i++] = "<div id='";
+	html[i++] = divId;
+	html[i++] = "'><table border=0 cellpadding=0 cellspacing=0><tr><td nowrap class='";
+	html[i++] = AjxImg.getClassForImage(innerClass);
+	html[i++] = "'></td><td>&nbsp;</td><td nowrap>";
+	html[i++] = text;
+	html[i++] = "</td></tr></table></div>";
+
+	this.getHtmlElement().innerHTML = html.join("");
+	this._innerDiv = document.getElementById(divId);
+};
 
 // Activates the button.
 ZmChicletButton.prototype._mouseOverListener = 
@@ -153,19 +171,19 @@ function(ev) {
 	}
     this.setClassName(this._activatedClassName);
     ev._stopPropagation = true;
-}
+};
 
 // Triggers the button.
 ZmChicletButton.prototype._mouseDownListener = 
 function(ev) {
 	this.trigger();
-}
+};
 
 ZmChicletButton.prototype.trigger =
 function() {
 	this.setClassName(this._triggeredClassName);
 	this.isTriggered = true;	
-}
+};
 
 // Button has been pressed, notify selection listeners.
 ZmChicletButton.prototype._mouseUpListener = 
@@ -181,14 +199,14 @@ function(ev) {
 		}
 	}
 	el.className = this._origClassName;	
-}
+};
 
 ZmChicletButton.prototype._setMouseOutClassName =
 function() {
 	this._mouseOutActionId = -1;
     this.setClassName(this._origClassName);
     this.isTriggered = false;
-}
+};
 
 // Button no longer activated/triggered.
 ZmChicletButton.prototype._mouseOutListener = 
@@ -199,17 +217,17 @@ function(ev) {
 	} else {
 		this._setMouseOutClassName();
 	}
-}
+};
 
 ZmChicletButton.prototype._focus =
 function() {
 	this.setActivated(true);
-}
+};
 
 ZmChicletButton.prototype._blur =
 function() {
 	this.setActivated(false);
-}
+};
 
 ZmChicletButton.prototype.getKeyMapName = 
 function() {
