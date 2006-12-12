@@ -814,12 +814,15 @@ function(parent, num) {
 		if (checkMailBtn) {
 			if (!isInbox && isFeed) {
 				checkMailBtn.setText(ZmMsg.checkFeed);
+				checkMailBtn.setToolTipContent(ZmMsg.checkRssTooltip);
 			}
 			else if (!isInbox && hasPopAccounts) {
 				checkMailBtn.setText(ZmMsg.checkPopMail);
+				checkMailBtn.setToolTipContent(ZmMsg.checkPopMail);
 			}
 			else {
 				checkMailBtn.setText(ZmMsg.checkMail);
+				checkMailBtn.setToolTipContent(ZmMsg.checkMailTooltip);
 			}
 		}
         
