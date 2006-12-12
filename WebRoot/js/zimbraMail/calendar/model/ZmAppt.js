@@ -1231,7 +1231,7 @@ function(attach, hasCheckbox) {
 		}
 		if (attach.ct != ZmMimeTable.MSG_RFC822) {
 			html[i++] = ", ";
-			html[i++] = "<a style='text-decoration:underline' class='AttLink' onclick='ZmMailMsgView.unloadHackCallback();' ";
+			html[i++] = "<a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' ";
 			html[i++] = hrefRoot;
 			html[i++] = attach.part;
 			html[i++] = "&disp=a'>";

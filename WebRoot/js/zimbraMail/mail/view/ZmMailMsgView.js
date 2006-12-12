@@ -1579,21 +1579,11 @@ function(msgId, msgPartId) {
 
 ZmMailMsgView.vcardCallback =
 function(msgId, vcardPartId) {
+	ZmZimbraMail.unloadHackCallback();
+
 	var appCtxt = window.parentController
 		? window.parentController._appCtxt
 		: window._zimbraMail._appCtxt;
 
 	appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).createFromVCard(msgId, vcardPartId);
-};
-
-ZmMailMsgView.unloadHackCallback =
-function() {
-	window.onbeforeunload = null;
-	var t = new AjxTimedAction(null, ZmMailMsgView.resetUnloadHack);
-	AjxTimedAction.scheduleAction(t, 3000);
-};
-
-ZmMailMsgView.resetUnloadHack =
-function() {
-	window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
 };

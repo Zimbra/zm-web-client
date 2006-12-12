@@ -890,7 +890,7 @@ function(findHits) {
 				url = url.substring(0,insertIdx) + fn + url.substring(insertIdx);
 
 				props.link = "<a target='_blank' class='AttLink' href='" + url + "'>";
-				props.download = "<a style='text-decoration:underline' class='AttLink' href='" + url + "&disp=a' onclick='ZmMailMsgView.unloadHackCallback();'>";
+				props.download = "<a style='text-decoration:underline' class='AttLink' href='" + url + "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>";
 
 				if (!useCL) {
 					if (attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct) &&
@@ -902,7 +902,7 @@ function(findHits) {
 					else if (attach.ct == ZmMimeTable.TEXT_VCARD)
 					{
 						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.getId() + "," + attach.part + ");";
-						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='ZmMailMsgView.unloadHackCallback(); " + onclickStr + "'>";
+						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
 					}
 					else
 					{

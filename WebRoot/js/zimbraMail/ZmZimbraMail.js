@@ -849,6 +849,8 @@ function() {
 
 ZmZimbraMail.helpLinkCallback =
 function() {
+	ZmZimbraMail.unloadHackCallback();
+
 	var appCtxt = window.parentController
 		? window.parentController._appCtxt
 		: window._zimbraMail._appCtxt;
@@ -990,8 +992,15 @@ function(ex, method, params, restartOnError, obj) {
 // This method is called by the window.onbeforeunload method.
 ZmZimbraMail._confirmExitMethod =
 function() {
-	DBG.println(AjxDebug.DBG1, "_confirmExitMethod, received unload event");
 	return ZmMsg.appExitWarning;
+};
+
+ZmZimbraMail.unloadHackCallback =
+function() {
+	window.onbeforeunload = null;
+	var f = function() { window.onbeforeunload = ZmZimbraMail._confirmExitMethod; };
+	var t = new AjxTimedAction(null, f);
+	AjxTimedAction.scheduleAction(t, 3000);
 };
 
 ZmZimbraMail._userEventHdlr =
