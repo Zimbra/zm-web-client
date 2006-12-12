@@ -90,6 +90,13 @@
 		<tr><td class='ZLabelCell'><$= ZmMsg.popAccountFolderLabel $></td>
 			<td><button id="${id}_location" type=text  class='ZFieldSizeMedium'>Inbox</button></td>
 		</tr>
+		<tr><td class='ZLabelCell'>When messages are downloaded:</td>
+			<td><select id="${id}_download" class='ZFieldSizeMedium'>
+					<option>Leave a copy on the POP server</option>
+					<option>Remove from the POP server</option>
+				</select>
+			</td>
+		</tr>
 	
 	
 		<tr><td colspan=2><div class=ZLineDivider>
@@ -105,11 +112,11 @@
 		</div></td></tr>
 	
 		<tr><td class='ZLabelCell'><$= ZmMsg.popAccountServerLabel $></td>
-			<td><input id="${id}_server" type=text class='ZFieldSizeLarge'></td>
+			<td><input id="${id}_server" type=text class='ZFieldSizeHusky'></td>
 		</tr>
 	
 		<tr><td class='ZLabelCell'><$= ZmMsg.usernameLabel $></td>
-			<td><input id="${id}_username" type=text class='ZFieldSizeLarge'></td>
+			<td><input id="${id}_username" type=text class='ZFieldSizeHusky'></td>
 		</tr>
 	
 		<tr><td class='ZLabelCell'><$= ZmMsg.passwordLabel $></td>
@@ -167,7 +174,7 @@
 		</tr>
 	
 		<tr id='${id}_identity_email_row'><td class='ZLabelCell'><$= ZmMsg.emailAddrLabel $></td>
-			<td><input id="${id}_email" type=text  class='ZFieldSizeLarge'></td>
+			<td><input id="${id}_email" type=text  class='ZFieldSizeHusky'></td>
 		</tr>
 	
 		<tr id='${id}_identity_use_address_row'><td class='ZLabelCell'><$= ZmMsg.linkToNewIdentity $></td>

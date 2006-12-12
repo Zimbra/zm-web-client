@@ -215,7 +215,7 @@ data.pop = {
 	init : function() {
 		//this.toggleIdentitySection();
 		this.toggleIdentityFields(false);
-		this.toggleAdvanced(false);	
+//		this.toggleAdvanced(false);	
 	},
 	
 

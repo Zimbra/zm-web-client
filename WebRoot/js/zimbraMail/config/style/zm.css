@@ -2700,7 +2700,9 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 
+.ZFieldSizeTiny 	{	width:50px;		}
 .ZFieldSizeSmall 	{	width:100px;	}
 .ZFieldSizeMedium 	{	width:200px;	}
+.ZFieldSizeHusky	{	width:250px;	}
 .ZFieldSizeLarge	{	width:300px;	}
 .ZFieldSizeFull		{	width:100%;		}
