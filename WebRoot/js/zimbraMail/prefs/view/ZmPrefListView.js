@@ -166,7 +166,8 @@ function(item) {
 		this._redrawErrors();
 	}
 };
-ZmPrefListView.prototype.hasErrors =
+
+ZmPrefListView.prototype.hasErrors =
 function() {
 	for (var i in this._errors) {
 		return true;
@@ -215,7 +216,7 @@ function() {
 	this._list.enableSorting(false);
 	this._updateListSize();
 	this._createDetails(document.getElementById(id + "_form_container"));		
-	
+
 	// Create Add/Remove buttons.
 	this._addButton = new DwtButton(this, DwtLabel.ALIGN_CENTER);
 	this._addButton.replaceElement(id + "_add_button")
@@ -223,15 +224,7 @@ function() {
 	this._removeButton = new DwtButton(this, DwtLabel.ALIGN_CENTER);
 	this._removeButton.replaceElement(id + "_remove_button")
 	this._removeButton.setText(ZmMsg.remove);
-	
-	// Handle the link to close the info box.
-	var infoBoxHandler = AjxCallback.simpleClosure(this._toggleInfoBoxHandler, this);
-	var linkElement = document.getElementById(id + "_infoBox_close");
-	Dwt.setHandler(linkElement, DwtEvent.ONCLICK, infoBoxHandler);
 
-	var helpButtonElement = document.getElementById(id + "_help_button");
-	Dwt.setHandler(helpButtonElement, DwtEvent.ONCLICK, infoBoxHandler);
-	
 	this._controller.getPrefsView().addControlListener(new AjxListener(this, this._controlListener));
 
 	this._controller._setup();
@@ -244,13 +237,6 @@ function(parentElement) {
 	result.reparentHtmlElement(parentElement);
 	result.enableSorting(false);
 	return result;
-};
-
-ZmPrefListView.prototype._toggleInfoBoxHandler =
-function() {
-	var infoBox = document.getElementById(this._templateId + "_infoBox");
-	var visible = Dwt.getVisible(infoBox);
-	Dwt.setVisible(infoBox, !visible);
 };
 
 ZmPrefListView.prototype._getListHeader =

@@ -135,10 +135,6 @@ data.identity = {
 		}
 	},
 	
-	_toggleInfoBoxHandler : function() {
-		Dwt.toggle(this.id + "_infoBox_container");
-	},
-	
 	_advancedEnabled : true,
 	_advancedRows : [
 		"_replyForwardSelect_row",
