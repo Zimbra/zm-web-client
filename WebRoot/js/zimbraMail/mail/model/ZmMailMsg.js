@@ -902,7 +902,7 @@ function(findHits) {
 					else if (attach.ct == ZmMimeTable.TEXT_VCARD)
 					{
 						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.getId() + "," + attach.part + ");";
-						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
+						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='ZmMailMsgView.unloadHackCallback(); " + onclickStr + "'>";
 					}
 					else
 					{
