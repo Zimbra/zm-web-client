@@ -75,7 +75,9 @@ LEGEND {
 	input[type="password"] {
 		@InputField@
 	}
-	
+	INPUT[disabled] {
+		@InputField-disabled@
+	}
 	textarea {
 		@TextArea@
 	}
