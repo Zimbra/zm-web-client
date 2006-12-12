@@ -297,7 +297,7 @@ function(words, keepModeDiv) {
 	var word, style, doc, body, self = this,
 		spanIds     = {},
 		wordIds     = {},
-		regexp      = [ "(\\W|^)(" ],
+		regexp      = [ "([^A-Za-z0-9']|^)(" ],
 		suggestions = {};
 
 	// preparations: initialize some variables that we then save in
@@ -315,27 +315,62 @@ function(words, keepModeDiv) {
 				suggestions[word].length = 5;
 		}
 	}
-	regexp.push(")(\\W|$)");
+	regexp.push(")([^A-Za-z0-9']|$)");
 	regexp = new RegExp(regexp.join(""), "gm");
 
 	function hiliteWords(text, textWhiteSpace) {
 		text = textWhiteSpace
 			? AjxStringUtil.convertToHtml(text)
 			: AjxStringUtil.htmlEncode(text);
-		return text.replace(regexp, function(str, prefix, word, suffix) {
-			// return suggestions[word];
+
+		var m;
+
+		regexp.lastIndex = 0;
+		while (m = regexp.exec(text)) {
+			var str = m[0];
+			var prefix = m[1];
+			var word = m[2];
+			var suffix = m[3];
+
 			var id = Dwt.getNextId();
 			spanIds[id] = word;
 			if (!wordIds[word])
 				wordIds[word] = [];
 			wordIds[word].push(id);
-			return [ prefix,
-				 '<span word="',
-				 word, '" id="', id, '" class="ZM-SPELLCHECK-MISSPELLED">',
-				 word, '</span>',
-				 suffix
-			       ].join("");
-		});
+
+			var repl = [ prefix,
+				     '<span word="',
+				     word, '" id="', id, '" class="ZM-SPELLCHECK-MISSPELLED">',
+				     word, '</span>',
+				     suffix
+				   ].join("");
+			text = [ text.substr(0, m.index),
+				 repl,
+				 text.substr(m.index + str.length) ].join("");
+
+			// All this crap necessary because the suffix
+			// must be taken into account at the next
+			// match and JS regexps don't have look-ahead
+			// constructs (except \b, which sucks).  Oh well.
+			regexp.lastIndex = m.index + repl.length - suffix.length;
+		}
+
+		return text;
+
+// 		return text.replace(regexp, function(str, prefix, word, suffix) {
+// 			// return suggestions[word];
+// 			var id = Dwt.getNextId();
+// 			spanIds[id] = word;
+// 			if (!wordIds[word])
+// 				wordIds[word] = [];
+// 			wordIds[word].push(id);
+// 			return [ prefix,
+// 				 '<span word="',
+// 				 word, '" id="', id, '" class="ZM-SPELLCHECK-MISSPELLED">',
+// 				 word, '</span>',
+// 				 suffix
+// 			       ].join("");
+// 		});
 	};
 
 	var doc;
