@@ -26,13 +26,27 @@
 <app:view selected="contacts" contacts="true" tags="true" context="${context}">
     <zm:currentResultUrl var="currentUrl" value="contact" context="${context}"/>
     <form action="${currentUrl}" method="post">
-        <input type="hidden" name="id" value="${contact.id}"/>
-        <app:contactToolbar top='true' context="${context}" cursor="${cursor}" keys="true" closeurl="${closeUrl}"/>
-        <div class='ZhAppContent'>
-            <app:displayContact contact="${contact}"/>
-        </div>
-        <app:contactToolbar top='false' context="${context}" cursor="${cursor}" keys="false" closeurl="${closeUrl}"/>
+        <table width=100% cellpadding="0" cellspacing="0">
+            <tr>
+                <td class='TbTop'>
+                    <app:contactToolbar context="${context}" cursor="${cursor}" keys="true" closeurl="${closeUrl}"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class='ZhAppContent'>
+                        <app:displayContact contact="${contact}"/>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td class='TbBottom'>
+                    <app:contactToolbar context="${context}" cursor="${cursor}" keys="false" closeurl="${closeUrl}"/>
+                </td>
+            </tr>
+            </table>
         <input type="hidden" name="doAction" value="1"/>
+        <input type="hidden" name="id" value="${contact.id}"/>
     </form>
 </app:view>
 

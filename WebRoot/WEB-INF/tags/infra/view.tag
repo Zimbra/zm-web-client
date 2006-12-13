@@ -51,9 +51,7 @@
                 <tr>
 </c:if>        
                     <td valign='top'>
-                        <div class='MainContent'>
-                            <jsp:doBody/>
-                        </div>
+                        <jsp:doBody/>
                     </td>
 <c:if test="${adsOn}" >
                     <td valign='top' style='border-top: 1px solid #98adbe; width: 180px;'>

@@ -2,7 +2,6 @@
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ attribute name="cursor" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.NextPrevItemBean"%>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
-<%@ attribute name="top" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -49,30 +48,28 @@
     </c:set>
 </c:if>
 
-<div class="${top ? 'TbTop' : 'TbBottom'}">
-   <table width=100% cellspacing=0 class='Tb'>
-        <tr>
-            <td align=left class=TbBt>
-                <zm:currentResultUrl var="closeUrl" value="/h/search" context="${context}"/>
-                ${requestScope.mvToolbarCache}
-            </td>
-            <td align=right>
-                <c:if test="${context.hasPrevItem}">
-                    <zm:prevItemUrl var="prevItemUrl" value="/h/mv" cursor="${cursor}" context="${context}"/>
-                    <a  <c:if test="${keys}">accesskey="p"</c:if> href="${prevItemUrl}"><img src="<c:url value='/images/arrows/LeftArrow.gif'/>" border="0" alt='left'/></a>
-                </c:if>
-                <c:if test="${!context.hasPrevItem}">
-                    <app:img disabled='true' src="arrows/LeftArrow.gif" border="0"/>
-                </c:if>
-                <span class='Paging'>${context.searchResult.offset+context.currentItemIndex+1}</span>
-                <c:if test="${context.hasNextItem}">
-                    <zm:nextItemUrl var="nextItemUrl" value="/h/mv" cursor="${cursor}" context="${context}"/>
-                    <a  <c:if test="${keys}">accesskey="n"</c:if> href="${nextItemUrl}"><img src="<c:url value='/images/arrows/RightArrow.gif'/>" border="0" alt='right'/></a>
-                </c:if>
-                <c:if test="${!context.hasNextItem}">
-                    <app:img disabled='true' src="arrows/RightArrow.gif" border="0"/>
-                </c:if>
-            </td>
-        </tr>
-    </table>
-</div>
+<table width=100% cellspacing=0 class='Tb'>
+    <tr>
+        <td align=left class=TbBt>
+            <zm:currentResultUrl var="closeUrl" value="/h/search" context="${context}"/>
+            ${requestScope.mvToolbarCache}
+        </td>
+        <td align=right>
+            <c:if test="${context.hasPrevItem}">
+                <zm:prevItemUrl var="prevItemUrl" value="/h/mv" cursor="${cursor}" context="${context}"/>
+                <a  <c:if test="${keys}">accesskey="p"</c:if> href="${prevItemUrl}"><img src="<c:url value='/images/arrows/LeftArrow.gif'/>" border="0" alt='left'/></a>
+            </c:if>
+            <c:if test="${!context.hasPrevItem}">
+                <app:img disabled='true' src="arrows/LeftArrow.gif" border="0"/>
+            </c:if>
+            <span class='Paging'>${context.searchResult.offset+context.currentItemIndex+1}</span>
+            <c:if test="${context.hasNextItem}">
+                <zm:nextItemUrl var="nextItemUrl" value="/h/mv" cursor="${cursor}" context="${context}"/>
+                <a  <c:if test="${keys}">accesskey="n"</c:if> href="${nextItemUrl}"><img src="<c:url value='/images/arrows/RightArrow.gif'/>" border="0" alt='right'/></a>
+            </c:if>
+            <c:if test="${!context.hasNextItem}">
+                <app:img disabled='true' src="arrows/RightArrow.gif" border="0"/>
+            </c:if>
+        </td>
+    </tr>
+</table>
