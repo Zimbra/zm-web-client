@@ -124,24 +124,31 @@ function() {
 };
 
 /**
-* Returns the button display to normal (not activated or triggered).
-*/
-ZmChicletButton.prototype.resetClassName = 
-function() {
-	this.setClassName(this._origClassName);	
-};
-
-/**
 * Activates/inactivates the button. A button is activated when the mouse is over it.
 *
 * @param activated		whether the button is activated
 */
 ZmChicletButton.prototype.setActivated =
 function(activated) {
+	if (this.isSelected) return;
+
 	if (activated)
 		this.setClassName(this._activatedClassName);
 	else
 		this.setClassName(this._origClassName);
+};
+
+ZmChicletButton.prototype.setSelected =
+function(selected) {
+	if (selected) {
+		this._tempOrigClassName = this._origClassName;
+		this._origClassName = this._triggeredClassName;
+		this.setClassName(this._triggeredClassName);
+	} else {
+		this._origClassName = this._tempOrigClassName;
+		this.setClassName(this._origClassName);
+	}
+	this.isSelected = selected;
 };
 
 ZmChicletButton.prototype._setHtml =
@@ -165,6 +172,8 @@ function(innerClass, text) {
 // Activates the button.
 ZmChicletButton.prototype._mouseOverListener = 
 function(ev) {
+	if (this.isSelected) return;
+
 	if (this._mouseOutActionId != -1) {
 		AjxTimedAction.cancelAction(this._mouseOutActionId);
 		this._mouseOutActionId = -1;
@@ -211,6 +220,8 @@ function() {
 // Button no longer activated/triggered.
 ZmChicletButton.prototype._mouseOutListener = 
 function(ev) {
+	if (this.isSelected) return;
+
 	if (AjxEnv.isIE) {
 		this._mouseOutActionId = 
  		   AjxTimedAction.scheduleAction(this._mouseOutAction, 6);

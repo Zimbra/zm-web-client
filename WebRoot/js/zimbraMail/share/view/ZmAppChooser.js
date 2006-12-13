@@ -77,7 +77,7 @@ ZmAppChooser.TEXT[ZmAppChooser.B_EMAIL]			= ZmMsg.mail;
 ZmAppChooser.TEXT[ZmAppChooser.B_CONTACTS]		= ZmMsg.addressBook;
 ZmAppChooser.TEXT[ZmAppChooser.B_CALENDAR]		= ZmMsg.calendar;
 ZmAppChooser.TEXT[ZmAppChooser.B_IM]			= ZmMsg.chat;
-ZmAppChooser.TEXT[ZmAppChooser.B_NOTEBOOK]		= ZmMsg.documents + " [beta]";
+ZmAppChooser.TEXT[ZmAppChooser.B_NOTEBOOK]		= ZmMsg.documents + " " + ZmMsg.beta;
 ZmAppChooser.TEXT[ZmAppChooser.B_HELP]			= ZmMsg.help;
 ZmAppChooser.TEXT[ZmAppChooser.B_OPTIONS]		= ZmMsg.options;
 ZmAppChooser.TEXT[ZmAppChooser.B_LOGOUT]		= ZmMsg.logOff;
@@ -105,6 +105,17 @@ function() {
 ZmAppChooser.prototype.getButton =
 function(id) {
 	return this._buttons[id];
+};
+
+ZmAppChooser.prototype.setSelected =
+function(id) {
+	if (this._selectedId && this._buttons[this._selectedId])
+		this._buttons[this._selectedId].setSelected(false);
+
+	if (this._buttons[id])
+		this._buttons[id].setSelected(true);
+
+	this._selectedId = id;
 };
 
 ZmAppChooser.prototype._createButton =

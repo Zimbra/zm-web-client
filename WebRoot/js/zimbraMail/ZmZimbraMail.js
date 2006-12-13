@@ -609,6 +609,9 @@ function(callback) {
 */
 ZmZimbraMail.prototype.setActiveApp =
 function(appName, view) {
+	// update app chooser
+	this._components[ZmAppViewMgr.C_APP_CHOOSER].setSelected(ZmZimbraMail.APP_BUTTON[appName]);
+
 	// update view menu
 	var toolbar = this._appCtxt.getCurrentAppToolbar();
 	toolbar.showViewMenu(view);
