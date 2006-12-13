@@ -67,100 +67,103 @@
     </c:set>
 
     <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-        <div class='TbTop'>${toolbar}</div>
-        <div class='ZhAppContent'>
-        <table cellpadding=2 cellspacing=5 height=80% width=100% class='Compose'>
+        <table width=100% cellpadding="0" cellspacing="0">
             <tr>
-                <td valign='top' width=1% align=right nowrap> <fmt:message key="to"/>: </td>
-                <td colspan=2 nowrap><textarea rows="2" style='width:99%' cols="80"
-                                               name="to">${fn:escapeXml(compose.to)}</textarea></td>
-            </tr>
-            <tr>
-                <td valign='top' align=right nowrap> <fmt:message key="cc"/>: </td>
-                <td colspan=2 nowrap><input style='width:99%' type="text" value="${fn:escapeXml(compose.cc)}" size=100 name="cc"></td>                
-            </tr>
-            <tr>
-                <td valign='top' align=right nowrap> <fmt:message key="bcc"/>: </td>
-                <td colspan=2 nowrap><input style='width:99%' type="text" value="${fn:escapeXml(compose.bcc)}" size=100 name="bcc"></td>
-            </tr>
-            <tr>
-                <td valign='top' align=right nowrap> <fmt:message key="subject"/>: </td>
-                <td colspan=2 nowrap><input style='width:99%' type="text" size=100 name="subject"
-                                            value="${fn:escapeXml(compose.subject)}"></td>
-            </tr>
-            <c:set var="firstAttachment" value="${true}"/>
-            <c:if test="${!empty compose.messageAttachments}">
-                <c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
-                    <tr>
-                        <td align='right'>
-                            <c:if test="${firstAttachment}">
-                                <app:img src="common/Attachment.gif"/>
-                                <c:set var="firstAttachment" value="${false}"/>
-                            </c:if>
-                        </td>
-                        <td colspan=2>
-                            <c:choose>
-                                <c:when test="${empty ma.subject}"><fmt:message var="subj" key="noSubject"/></c:when>
-                                <c:otherwise><c:set var="subj" value="${zm:truncate(ma.subject,100,true)}"/></c:otherwise>
-                            </c:choose>
-                        ${fn:escapeXml(subj)}
-                            <input type="hidden" name="messageAttachment" value="${ma.id}:${fn:escapeXml(ma.subject)}"/>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </c:if>
-            <c:if test="${!empty compose.originalAttachments}">
-                <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
-                    <tr class="CompOrigAtt" valign="middle">
-                        <td align='right'>
-                            <c:if test="${firstAttachment}">
-                                <app:img src="common/Attachment.gif"/>
-                                <c:set var="firstAttachment" value="${false}"/>
-                            </c:if>
-                        </td>
-                        <c:set var="url" value="/home/~/?id=${message.id}&part=${part.partName}&auth=co"/>
-                        <c:set var="pname" value="${part.displayName}"/>
-                        <c:if test="${empty pname}">
-                            <fmt:message key="unknownContentType" var="pname">
-                                <fmt:param value="${part.contentType}"/>
-                            </fmt:message>
-                        </c:if>
-                        <td>
-                            <table cellpadding=0 cellspacing=0 border="0">
-                            <tr valign="middle">
-                                <td>
-                                    <input <c:if test="${compose.checkedAttachmentNames[part.partName]}">checked </c:if>type=checkbox name="originalAttachment" value="${part.partName}">
-                                </td>
-                                <td>&nbsp;</td>
-                                <td>
-                                    <a target="_blank" href="${url}&disp=i">${fn:escapeXml(pname)}</a>&nbsp;(${part.displaySize})
-                                </td>                             
-                            </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </c:if>
-            <%--
-            <tr>
-                <td align='right'>
-                    <c:if test="${firstAttachment}">
-                        <app:img src="common/Attachment.gif"/>
-                        <c:set var="firstAttachment" value="${false}"/>
-                    </c:if>
+                <td>
+                    <div class='TbTop'>${toolbar}</div>
                 </td>
-                <td colspan=2><input type=file size="40" name="fileUpload"></td>
             </tr>
-            --%>
             <tr>
-                <td colspan="3" >
-                    <textarea class='MsgCompose' rows="30" cols="80" style='width:100%'
-                              name="body">${fn:escapeXml(compose.content)}</textarea>
+                <td>
+                    <div class='ZhAppContent'>
+                        <table cellpadding=2 cellspacing=5 height=80% width=100% class='Compose'>
+                            <tr>
+                                <td valign='top' width=1% align=right nowrap> <fmt:message key="to"/>: </td>
+                                <td colspan=2 nowrap><textarea rows="2" style='width:99%' cols="80"
+                                                               name="to">${fn:escapeXml(compose.to)}</textarea></td>
+                            </tr>
+                            <tr>
+                                <td valign='top' align=right nowrap> <fmt:message key="cc"/>: </td>
+                                <td colspan=2 nowrap><input style='width:99%' type="text" value="${fn:escapeXml(compose.cc)}" size=100 name="cc"></td>
+                            </tr>
+                            <tr>
+                                <td valign='top' align=right nowrap> <fmt:message key="bcc"/>: </td>
+                                <td colspan=2 nowrap><input style='width:99%' type="text" value="${fn:escapeXml(compose.bcc)}" size=100 name="bcc"></td>
+                            </tr>
+                            <tr>
+                                <td valign='top' align=right nowrap> <fmt:message key="subject"/>: </td>
+                                <td colspan=2 nowrap><input style='width:99%' type="text" size=100 name="subject"
+                                                            value="${fn:escapeXml(compose.subject)}"></td>
+                            </tr>
+                            <c:set var="firstAttachment" value="${true}"/>
+                            <c:if test="${!empty compose.messageAttachments}">
+                                <c:forEach var="ma" items="${compose.messageAttachments}" varStatus="status">
+                                    <tr>
+                                        <td align='right'>
+                                            <c:if test="${firstAttachment}">
+                                                <app:img src="common/Attachment.gif"/>
+                                                <c:set var="firstAttachment" value="${false}"/>
+                                            </c:if>
+                                        </td>
+                                        <td colspan=2>
+                                            <c:choose>
+                                                <c:when test="${empty ma.subject}"><fmt:message var="subj" key="noSubject"/></c:when>
+                                                <c:otherwise><c:set var="subj" value="${zm:truncate(ma.subject,100,true)}"/></c:otherwise>
+                                            </c:choose>
+                                                ${fn:escapeXml(subj)}
+                                            <input type="hidden" name="messageAttachment" value="${ma.id}:${fn:escapeXml(ma.subject)}"/>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </c:if>
+                            <c:if test="${!empty compose.originalAttachments}">
+                                <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
+                                    <tr class="CompOrigAtt" valign="middle">
+                                        <td align='right'>
+                                            <c:if test="${firstAttachment}">
+                                                <app:img src="common/Attachment.gif"/>
+                                                <c:set var="firstAttachment" value="${false}"/>
+                                            </c:if>
+                                        </td>
+                                        <c:set var="url" value="/home/~/?id=${message.id}&part=${part.partName}&auth=co"/>
+                                        <c:set var="pname" value="${part.displayName}"/>
+                                        <c:if test="${empty pname}">
+                                            <fmt:message key="unknownContentType" var="pname">
+                                                <fmt:param value="${part.contentType}"/>
+                                            </fmt:message>
+                                        </c:if>
+                                        <td>
+                                            <table cellpadding=0 cellspacing=0 border="0">
+                                                <tr valign="middle">
+                                                    <td>
+                                                        <input <c:if test="${compose.checkedAttachmentNames[part.partName]}">checked </c:if>type=checkbox name="originalAttachment" value="${part.partName}">
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <a target="_blank" href="${url}&disp=i">${fn:escapeXml(pname)}</a>&nbsp;(${part.displaySize})
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </c:if>
+                            <tr>
+                                <td colspan="3" >
+                                    <textarea class='MsgCompose' rows="30" cols="80" style='width:100%'
+                                              name="body">${fn:escapeXml(compose.content)}</textarea>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <div class='TbBottom'>${toolbar}</div>
                 </td>
             </tr>
         </table>
-        </div>            
-        <div class='TbBottom'>${toolbar}</div>
         <input type="hidden" name="replyto" value="${fn:escapeXml(compose.replyTo)}"/>
         <input type="hidden" name="from" value="${fn:escapeXml(compose.from)}"/>
         <input type="hidden" name="inreplyto" value="${fn:escapeXml(compose.inReplyTo)}"/>

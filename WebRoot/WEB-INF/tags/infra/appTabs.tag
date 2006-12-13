@@ -5,7 +5,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<table width=100% cellpadding=0 cellspacing=0>
+<table cellpadding=0 cellspacing=0>
     <tr class='Tabs'>
         <td class='TabSpacer'/>
         <td class='TabSpacer'/>        
