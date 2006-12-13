@@ -52,15 +52,14 @@
 <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
     <table width=100% cellpadding="0" cellspacing="0">
         <tr>
-            <td>
-                <div class='TbTop'>${toolbar}</div>
+            <td class='TbTop'>
+                ${toolbar}
             </td>
         </tr>
         <tr>
-            <td>
-            <div class='ZhAppContent'>
-            <div style='padding:20px 10px'>
-            <table width=100% cellpadding="0" cellspacing="0">
+            <td class='ZhAppContent'>
+
+            <table width=100% cellpadding="0" cellspacing="10">
                 <c:if test="${not (empty compose.to and empty compose.cc and empty compose.bcc and empty uploader.pendingBcc and empty uploader.pendingCc and empty uploader.pendingTo)}">
                     <tr>
                         <td>
@@ -127,15 +126,9 @@
                             </div>
                         </td>
                     </tr>
-                    <tr>
-                        <td>
-                            &nbsp;
-                        </td>
-                    </tr>
                 </c:if>
                 <tr>
-                    <td>
-                        <div class='SearchBar'>
+                    <td class='SearchBar'>
                             &nbsp;
                             <fmt:message key="find"/>
                             :
@@ -157,29 +150,20 @@
                             </select>
                             <input class="SearchButton" type=submit name='actionContactSearch'
                                    value="<fmt:message key="searchContacts"/>">
-                        </div>
                     </td>
                 </tr>
                 <tr>
-                    <td>
-                        &nbsp;
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div style='padding-top:20px' class='List'>
-                            <app:contactAddListView searchResult="${search}" searchGalResult="${searchGal}"/>
-                        </div>
+                    <td class='List'>
+                        <app:contactAddListView searchResult="${search}" searchGalResult="${searchGal}"/>
                     </td>
                 </tr>
             </table>
-            </div>
-            </div>
+
             </td>
         </tr>
         <tr>
-            <td>
-                <div class='TbBottom'>${toolbar}</div>
+            <td class='TbBottom'>
+                ${toolbar}
             </td>
         </tr>
     </table>

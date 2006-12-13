@@ -9,7 +9,7 @@
 
 
 <table width=100% cellpadding=2 cellspacing=0>
-    <tr>
+    <tr valign='top'>
         <th width=1%>&nbsp;
         <th width=2%><fmt:message key="to"/>:
         <th width=2%><fmt:message key="cc"/>:
