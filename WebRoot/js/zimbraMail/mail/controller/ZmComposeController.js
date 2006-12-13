@@ -153,12 +153,15 @@ function() {
 	var body = this._composeView.getHtmlEditor().getContent();
 	var composeMode = this._composeView.getComposeMode();
 	var identityId = this._composeView.getIdentity().id;
-	var newWinObj = this._appCtxt.getNewWindow();
+	var backupForm = this._composeView.backupForm;
+	var sendUID = this._composeView.getSendUID();
 
 	// this is how child window knows what to do once loading:
+	var newWinObj = this._appCtxt.getNewWindow();
 	newWinObj.command = "composeDetach";
-	newWinObj.args = {action:this._action, msg:msg, addrs:addrs, subj:subj, forwardHtml:forAttHtml,
-					  body:body, composeMode:composeMode, identityId:identityId, accountName:this._accountName};
+	newWinObj.args = {action:this._action, msg:msg, addrs:addrs, subj:subj, forwardHtml:forAttHtml, body:body,
+					  composeMode:composeMode, identityId:identityId, accountName:this._accountName, 
+					  backupForm:backupForm, sendUID:sendUID};
 };
 
 ZmComposeController.prototype.popShield =
@@ -227,20 +230,19 @@ function(attId, isDraft, callback) {
 		} else {
 			appt.save();
 		}
-		return;
-	}
+	} else {
+		var contactList = !isDraft
+			? this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList() : null;
 
-	var contactList = !isDraft
-		? this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList() : null;
+		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
+		var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
+		var resp = msg.send(contactList, isDraft, respCallback, errorCallback, this._accountName);
 
-	var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
-	var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
-	var resp = msg.send(contactList, isDraft, respCallback, errorCallback, this._accountName);
-
-	// XXX: temp bug fix #4325 - if resp returned, we're processing sync request
-	//      REVERT this bug fix once mozilla fixes bug #295422!
-	if (resp) {
-		this._processSendMsg(isDraft, msg, resp);
+		// XXX: temp bug fix #4325 - if resp returned, we're processing sync
+		//      request REVERT this bug fix once mozilla fixes bug #295422!
+		if (resp) {
+			this._processSendMsg(isDraft, msg, resp);
+		}
 	}
 };
 
@@ -261,16 +263,23 @@ function() {
 ZmComposeController.prototype._handleErrorSendMsg =
 function(ex) {
 	this._toolbar.enableAll(true);
+
 	var msg = null;
 	if (ex.code == ZmCsfeException.MAIL_SEND_ABORTED_ADDRESS_FAILURE) {
 		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
-		var invalidMsg = (invalid && invalid.length) ? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses,
-														AjxStringUtil.htmlEncode(invalid.join(", "))) : null;
+		var invalidMsg = (invalid && invalid.length)
+			? AjxMessageFormat.format(ZmMsg.sendErrorInvalidAddresses, AjxStringUtil.htmlEncode(invalid.join(", ")))
+			: null;
 		msg = ZmMsg.sendErrorAbort + "<br/>" + invalidMsg;
 	} else if (ex.code == ZmCsfeException.MAIL_SEND_PARTIAL_ADDRESS_FAILURE) {
 		var invalid = ex.getData(ZmCsfeException.MAIL_SEND_ADDRESS_FAILURE_INVALID);
-		msg = (invalid && invalid.length) ? AjxMessageFormat.format(ZmMsg.sendErrorPartial,
-											AjxStringUtil.htmlEncode(invalid.join(", "))) : ZmMsg.sendErrorAbort;
+		msg = (invalid && invalid.length)
+			? AjxMessageFormat.format(ZmMsg.sendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
+			: ZmMsg.sendErrorAbort;
+	} else if (ex.code == AjxException.CANCELED) {
+		// TODO - alert user not to worry about dupes if try to re-send (unless they make changes) ??
+		this._composeView.setBackupForm();
+		return true;
 	}
 	if (msg) {
 		this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
