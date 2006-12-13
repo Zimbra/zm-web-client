@@ -201,8 +201,7 @@ function() {
 		text = ZmMsg.forward;
 	else
 		text = ZmMsg.compose;
-	var title = [ZmMsg.zimbraTitle, text].join(": ");
-	return title;
+	return [ZmMsg.zimbraTitle, text].join(": ");
 };
 
 // returns the field values for each of the addr fields
@@ -241,6 +240,39 @@ function() {
 		attList.push(atts[i].value);
 
 	return attList;
+};
+
+ZmComposeView.prototype.getSendUID =
+function() {
+	return this._sendUID;
+};
+
+ZmComposeView.prototype.setBackupForm =
+function() {
+	this.backupForm = this._backupForm();
+};
+
+/**
+* Saves *ALL* form value data to test against whether user made any changes
+* since canceling SendMsgRequest. If user attempts to send again, we compare
+* form data with this value and if not equal, send a new UID otherwise, re-use.
+*/
+ZmComposeView.prototype._backupForm =
+function() {
+	var val = this._formValue(true, true);
+
+	// keep track of attachments as well
+	var atts = document.getElementsByName(ZmComposeView.UPLOAD_FIELD_NAME);
+	for (var i = 0; i < atts.length; i++) {
+		if (atts[i].value.length) {
+			val += atts[i].value;
+		}
+	}
+
+	// keep track of "uploaded" attachments as well :/
+	val += this._getForwardAttIds().join("");
+
+	return val;
 };
 
 /**
@@ -293,6 +325,16 @@ function(attId, isDraft) {
 	if (!attId && this._gotAttachments()) {
 		this._submitAttachments(isDraft);
 		return;
+	}
+
+	// check if this is a resend
+	if (this._sendUID && this.backupForm) {
+		// if so, check if user changed anything since canceling the send
+		if (isDraft || this._backupForm() != this.backupForm) {
+			this._sendUID = (new Date()).getTime();
+		}
+	} else {
+		this._sendUID = (new Date()).getTime();
 	}
 
 	// get list of message part id's for any forwarded attachements
@@ -349,6 +391,7 @@ function(attId, isDraft) {
 			msg.setAddresses(type, addrs[type].all);
 	}
 	msg.identity = this.getIdentity();
+	msg.sendUID = this._sendUID;
 
 	// save a reference to the original message
 	msg._origMsg = this._msg;
@@ -468,6 +511,9 @@ function(params) {
 	if (params.identityId) {
 		this._identitySelect.setSelectedValue(params.identityId);
 	}
+
+	this.backupForm = params.backupForm;
+	this._sendUID = params.sendUID;
 };
 
 ZmComposeView.prototype.setFocus =
@@ -510,6 +556,9 @@ function(msgDraft) {
 */
 ZmComposeView.prototype.reset =
 function(bEnableInputs) {
+	this.backupForm = null;
+	this._sendUID = null;
+
 	// reset autocomplete list
 	if (this._acAddrSelectList) {
 		this._acAddrSelectList.reset();
@@ -799,7 +848,6 @@ function() {
 ZmComposeView.prototype._getForwardAttIds =
 function() {
 	var forAttIds = [];
-	// XXX: should getElementsByName be added to dwt?
 	var forAttList = document.getElementsByName(ZmComposeView.FORWARD_ATT_NAME);
 
 	// walk collection of input elements

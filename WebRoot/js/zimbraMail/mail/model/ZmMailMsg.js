@@ -629,6 +629,8 @@ function(contactList, isDraft, callback, errorCallback, accountName) {
 	} else {
 		var request = isDraft ? "SaveDraftRequest" : "SendMsgRequest";
 		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
+		if (!isDraft && this.sendUID)
+			soapDoc.setMethodAttribute("suid", this.sendUID);
 		this._createMessageNode(soapDoc, contactList, isDraft, accountName);
 
 		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
