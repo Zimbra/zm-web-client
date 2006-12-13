@@ -2463,8 +2463,10 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 .ZmOptionsFormListTable {
 	height:100%;
-	table-layout:fixed;
-	@SeparatorBorder@
+    #IFNDEF MSIE
+    table-layout:fixed;
+    #ENDIF
+    @SeparatorBorder@
 }
 
 .ZmOptionsFormList {
