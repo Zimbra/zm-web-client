@@ -2636,6 +2636,9 @@ HTML>BODY .appt-selected .appt_allday_body
     -moz-border-radius:10px;
 #ENDIF
     padding:10px;
+    #IFDEF MSIE
+    width: 100%;
+    #ENDIF
 }
 
 .ZInfoBoxImg {
