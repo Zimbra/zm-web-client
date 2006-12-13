@@ -277,7 +277,7 @@ function(ex) {
 			? AjxMessageFormat.format(ZmMsg.sendErrorPartial, AjxStringUtil.htmlEncode(invalid.join(", ")))
 			: ZmMsg.sendErrorAbort;
 	} else if (ex.code == AjxException.CANCELED) {
-		// TODO - alert user not to worry about dupes if try to re-send (unless they make changes) ??
+		msg = ZmMsg.cancelSendMsgWarning;
 		this._composeView.setBackupForm();
 		return true;
 	}
