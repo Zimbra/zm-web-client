@@ -34,8 +34,8 @@
 
         <table width=100% cellpadding="0" cellspacing="0">
             <tr>
-                <td>
-                    <app:messageViewToolbar top='true' context="${context}" cursor="${cursor}" keys="true"/>
+                <td class='TbTop'>
+                    <app:messageViewToolbar context="${context}" cursor="${cursor}" keys="true"/>
                 </td>
             </tr>
             <tr>
@@ -53,8 +53,8 @@
                 </td>
             </tr>
             <tr>
-                <td>
-                    <app:messageViewToolbar top='false' context="${context}" cursor="${cursor}" keys="false"/>
+                <td class='TbBottom'>
+                    <app:messageViewToolbar context="${context}" cursor="${cursor}" keys="false"/>
                 </td>
             </tr>
         </table>
