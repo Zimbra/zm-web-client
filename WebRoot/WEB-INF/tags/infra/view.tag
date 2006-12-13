@@ -54,7 +54,6 @@
                         <div class='MainContent'>
                             <jsp:doBody/>
                         </div>
-                        <app:footer/>
                     </td>
 <c:if test="${adsOn}" >
                     <td valign='top' style='border-top: 1px solid #98adbe; width: 180px;'>
