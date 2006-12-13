@@ -16,8 +16,7 @@
                </td>
            </tr>
            <tr>
-               <td>
-                   <div class=List>
+               <td class='List'>
                        <table width=100% cellpadding=2 cellspacing=0>
                            <tr>
                                <th class='CB'>&nbsp;
@@ -61,7 +60,6 @@
                        <c:if test="${context.searchResult.contactSize == 0}">
                            <div class='NoResults'><fmt:message key="noResultsFound"/></div>
                        </c:if>
-                   </div> <%-- list --%>
                </td>
            </tr>
            <tr>

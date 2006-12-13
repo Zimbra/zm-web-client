@@ -6,13 +6,11 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<div class='ZmContactInfoView'>
 <c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
 <table width=100% cellspacing=0 cellpadding=0>
     <tr class='contactHeaderRow'>
         <td width=20><center><app:img src="${contact.isGroup ? 'contacts/Group.gif' : 'contacts/Contact.gif'}"/></center></td>
-        <td><div
-                class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : contact.displayFileAs)}</div>
+        <td class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : contact.displayFileAs)}
         </td>
         <td nowrap align='right' class='Tags'>
             <c:if test="${contact.hasTags}">
@@ -69,8 +67,7 @@
     <tr><td colspan="4" class="sectionLabel" valign="top"><fmt:message key="work"/></td></tr>
     <tr>
         <td width="5">&nbsp;</td>
-        <td valign="top" width="385">
-            <div class="contactOutput">
+        <td valign="top" width="385" class="contactOutput">
                 <app:contactLine line="${contact.workStreet}"/>
                 <app:contactLine line="${contact.workCity}"/>
                 <app:contactLine line="${contact.workState}"/>
@@ -79,7 +76,6 @@
                 <c:if test="${!empty contact.workURL}">
                     <a target=_new href="<c:url value="${contact.workURL}"/>">${fn:escapeXml(contact.workURL)}</a>
                 </c:if>
-            </div>
         </td>
         <td valign="top" width="385">
             <table width=100% border="0" cellspacing='3'>
@@ -105,8 +101,7 @@
     </tr>
     <tr>
         <td width="5">&nbsp;</td>
-        <td valign="top" width="385">
-            <div class="contactOutput">
+        <td valign="top" width="385" class="contactOutput">
                 <app:contactLine line="${contact.homeStreet}"/>
                 <app:contactLine line="${contact.homeCity}"/>
                 <app:contactLine line="${contact.homeState}"/>
@@ -115,7 +110,6 @@
                 <c:if test="${!empty contact.homeURL}">
                     <a target=_new href="<c:url value="${contact.homeURL}"/>">${fn:escapeXml(contact.homeURL)}</a>
                 </c:if>
-            </div>
         </td>
         <td valign="top">
             <table width=100% border="0" cellspacing='3'>
@@ -141,8 +135,7 @@
     </tr>
     <tr>
         <td width="5">&nbsp;</td>
-        <td valign="top" width="385">
-            <div class="contactOutput">
+        <td valign="top" width="385" class="contactOutput">
                 <app:contactLine line="${contact.otherStreet}"/>
                 <app:contactLine line="${contact.otherCity}"/>
                 <app:contactLine line="${contact.otherState}"/>
@@ -151,7 +144,6 @@
                 <c:if test="${!empty contact.otherURL}">
                     <a target=_new href="<c:url value="${contact.otherURL}"/>">${fn:escapeXml(contact.otherURL)}</a>
                 </c:if>
-            </div>
         </td>
         <td valign="top" width="385">
             <table width=100% border="0" cellspacing='3'>
@@ -177,4 +169,4 @@
 </c:if>
 </tbody>
 </table>
-</div>
+

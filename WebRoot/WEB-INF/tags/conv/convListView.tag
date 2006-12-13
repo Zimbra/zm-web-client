@@ -21,8 +21,7 @@
                 </td>
             </tr>
             <tr>
-                <td>
-                    <div class='List'>
+                <td class='List'>
                         <table width=100% cellpadding=2 cellspacing=0>
                             <tr class='Header'>
                                 <th class='CB' nowrap>&nbsp;
@@ -90,7 +89,6 @@
                         <c:if test="${context.searchResult.size == 0}">
                             <div class='NoResults'><fmt:message key="noResultsFound"/></div>
                         </c:if>
-                    </div> <%-- list --%>
                 </td>
             </tr>
             <tr>

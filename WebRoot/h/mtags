@@ -28,8 +28,12 @@
 <app:view context="${null}" selected='managetags' tags="true" editmode="true">
 
 <form action="" method="post">
-<div class='TbTop'>${toolbar}</div>
-<div class='ZhAppContent'>
+<table width=100% cellspacing="0" cellpadding="0">
+<tr>
+<td class='TbTop'>${toolbar}</td>
+</tr>
+<tr>
+<td class='ZhAppContent'>
 <%--
 <table width=100% cellspacing=0 cellpadding=0>
     <tr align=center class='contactHeaderRow'>
@@ -212,8 +216,10 @@
 
 </tbody>
 </table>
+</td>
+</tr>
+</table>
 <input type="hidden" name="doAction" value="1"/>
-</div>
 </form>
 </app:view>
 </body>

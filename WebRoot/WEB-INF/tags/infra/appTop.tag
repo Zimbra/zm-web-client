@@ -9,8 +9,7 @@
 <zm:getMailbox var="mailbox"/>
 
 <tr height=35 >
-    <td style='width:80%' height=25 nowrap>
-        <div class='SearchBar'>
+    <td style='width:80%' height=25 nowrap class='SearchBar'>
             <c:url var="searchUrl" value="/h/search"/>
             <form method="get" action="${searchUrl}">
                 <c:set var="query">${fn:escapeXml((!empty query and mailbox.prefs.showSearchString) ? query : param.sq)}</c:set>
@@ -27,7 +26,6 @@
                     </select>
                     <input class="SearchButton" type=submit name=search value="<fmt:message key="search"/>">
             </form>
-        </div>
     </td>
     <td align=right>
         <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>

@@ -29,9 +29,13 @@
 <app:view context="${null}" selected='manageaddressbooks' contacts="true" editmode="true">
     
 <form action="" method="post">
-<div class='TbTop'>${toolbar}</div>
 
-<div class='ZhAppContent'>
+<table width=100% cellspacing="0" cellpadding="0">
+    <tr>
+        <td class='TbTop'>${toolbar}</td>
+    </tr>
+    <tr>
+<td class='ZhAppContent'>
 <%--
 <table width=100% cellspacing=0 cellpadding=0>
     <tr class='contactHeaderRow'>
@@ -122,8 +126,11 @@
 
 </tbody>
 </table>
-<input type="hidden" name="doAction" value="1"/>
-</div>    
+
+</td>
+    </tr>
+</table>
+<input type="hidden" name="doAction" value="1"/>    
 </form>
 </app:view>
 </body>

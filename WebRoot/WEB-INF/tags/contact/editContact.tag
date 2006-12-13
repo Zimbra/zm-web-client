@@ -8,14 +8,11 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<div class='ZmContactInfoView'>
-
 <c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
 <table width=100% cellspacing=0 cellpadding=0>
     <tr class='contactHeaderRow'>
         <td width=20><center><app:img src="contacts/Contact.gif"/></center></td>
-        <td><div
-                class='contactHeader'>${fn:escapeXml(title)}</div>
+        <td class='contactHeader'>${fn:escapeXml(title)}
         </td>
     </tr>
 
@@ -195,5 +192,3 @@
         </tr>
     </tbody>
 </table>
-
-</div>

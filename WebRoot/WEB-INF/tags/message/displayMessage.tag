@@ -26,14 +26,12 @@
 
 <c:set var="isPart" value="${!empty message.partName}"/>
 <table width=100% cellpadding=0 cellspacing=0 class=Msg>
-<tr>
-    <td>
-        <div class=MsgHdr>
+    <tr>
+        <td class='MsgHdr'>
             <table width=100% cellpadding=0 cellspacing=0 border=0>
                 <tr>
                     <td>
                         <table width=100% cellpadding=2 cellspacing=0 border=0>
-
                             <tr>
                                 <td class='MsgHdrName'>
                                     <fmt:message key="from"/>
@@ -146,73 +144,68 @@
                     </td>
                 </tr>
             </table>
-        </div>
-    </td>
-</tr>
-<tr>
-    <td>
-        <table width=100% class='MsgOps'>
-            <tr valign="middle">
-                <td nowrap align=left style='padding-left: 5px'>
-                    <a
-                            <c:if test="${!isPart}">accesskey="1"</c:if> href="${composeUrl}&op=reply">
-                        <fmt:message key="reply"/>
-                    </a> |
-                    <a
-                            <c:if test="${!isPart}">accesskey="2"</c:if> href="${composeUrl}&op=replyAll">
-                        <fmt:message key="replyAll"/>
-                    </a> |
-                    <a
-                            <c:if test="${!isPart}">accesskey="3"</c:if> href="${composeUrl}&op=forward">
-                        <fmt:message key="forward"/>
-                    </a>
-                    <%-- <c:if test="${isPart}"> | <a href="${composeUrl}&op=resend"><fmt:message key="resend"/></a></c:if> --%>
-                </td>
-                <td nowrap align=right style='padding-right: 5px;'>
-                    <c:if test="${showconvlink and not fn:startsWith(message.conversationId, '-')}">
-                        <c:url var="convUrl" value="/h/cv">
-                            <c:param name="st" value="conversation"/>
-                            <c:param name="sq" value='conv:"${message.conversationId}"'/>
-                        </c:url>
-                        <a accesskey='9' href="${convUrl}">
-                            <fmt:message key="showConversation"/>
-                        </a> |
-                    </c:if>
-                    <c:if test="${!isPart}">
-                        <a accesskey='0' target="_blank" href="/home/~/?id=${message.id}&auth=co">
-                            <fmt:message key="showOrig"/>
-                        </a>
-                    </c:if>
-                </td>
-            </tr>
-        </table>
-    </td>
-</tr>
-<c:if test="${!empty externalImageUrl and (message.externalImageCount gt 0)}">
+        </td>
+    </tr>
     <tr>
-        <td>
-            <div class='DisplayImages'>
+        <td class='MsgOps'>
+            <table width=100% >
+                <tr valign="middle">
+                    <td nowrap align=left style='padding-left: 5px'>
+                        <a
+                                <c:if test="${!isPart}">accesskey="1"</c:if> href="${composeUrl}&op=reply">
+                            <fmt:message key="reply"/>
+                        </a> |
+                        <a
+                                <c:if test="${!isPart}">accesskey="2"</c:if> href="${composeUrl}&op=replyAll">
+                            <fmt:message key="replyAll"/>
+                        </a> |
+                        <a
+                                <c:if test="${!isPart}">accesskey="3"</c:if> href="${composeUrl}&op=forward">
+                            <fmt:message key="forward"/>
+                        </a>
+                        <%-- <c:if test="${isPart}"> | <a href="${composeUrl}&op=resend"><fmt:message key="resend"/></a></c:if> --%>
+                    </td>
+                    <td nowrap align=right style='padding-right: 5px;'>
+                        <c:if test="${showconvlink and not fn:startsWith(message.conversationId, '-')}">
+                            <c:url var="convUrl" value="/h/cv">
+                                <c:param name="st" value="conversation"/>
+                                <c:param name="sq" value='conv:"${message.conversationId}"'/>
+                            </c:url>
+                            <a accesskey='9' href="${convUrl}">
+                                <fmt:message key="showConversation"/>
+                            </a> |
+                        </c:if>
+                        <c:if test="${!isPart}">
+                            <a accesskey='0' target="_blank" href="/home/~/?id=${message.id}&auth=co">
+                                <fmt:message key="showOrig"/>
+                            </a>
+                        </c:if>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <c:if test="${!empty externalImageUrl and (message.externalImageCount gt 0)}">
+        <tr>
+            <td class='DisplayImages'>
                 <fmt:message key="externalImages"/>
                 &nbsp;<a accesskey='x' href="${externalImageUrl}">
                 <fmt:message key="displayExternalImages"/>
             </a>
-            </div>
-        </td>
-    </tr>
-</c:if>
-<tr>
-    <td>
-        <div class=MsgBody>
+            </td>
+        </tr>
+    </c:if>
+    <tr>
+        <td class=MsgBody>
             ${theBody}
             <c:if test="${!empty message.attachments}">
                 <hr/>
                 <a name="attachments${message.partName}"/>
                 <app:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
             </c:if>
-            <c:if test="${!empty param.debug}">
-                <pre>${message.mimeStructure}</pre>
-            </c:if>
-        </div>
-    </td>
-</tr>
+                <c:if test="${!empty param.debug}">
+                    <pre>${message.mimeStructure}</pre>
+                </c:if>
+        </td>
+    </tr>
 </table>

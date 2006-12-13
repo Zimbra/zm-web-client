@@ -64,62 +64,67 @@
 <form action="" method="post">
 <table width=100% cellpadding="0" cellspacing="0">
 <tr>
-    <td>
-        <div class='TbTop'>${toolbar}</div>
+    <td class='TbTop'>${toolbar}
     </td>
 </tr>
 <tr>
+<td class='ZhAppContent'>
+
+<table width=100% cellpadding=0 cellspacing=0>
+<tr>
+    <td>
+        <table cellpadding=0 cellspacing=0>
+            <tr class='Tabs'>
+                <td class='TabSpacer'/>
+                <td class='TabSpacer'/>
+                <td class='Tab ${selected=='general' ? 'TabSelected' :'TabNormal'}'>
+                    <a href="<c:url value="/h/options?selected=general"/>" accesskey="1">
+                        <span><fmt:message key="general"/></span>
+                    </a>
+                </td>
+                <td class='TabSpacer'/>
+                <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
+                    <a href="<c:url value="/h/options?selected=mail"/>" accesskey="2">
+                        <span><fmt:message key="mail"/></span></a>
+                </td>
+                <td class='TabSpacer'/>
+                <td class='Tab ${selected=='addressbook' ? 'TabSelected' :'TabNormal'}'>
+                    <a href="<c:url value="/h/options?selected=addressbook"/>" accesskey="3">
+                        <span><fmt:message key="addressBook"/></span></a>
+                </td>
+                <td class='TabSpacer'/>
+                <td class='Tab ${selected=='shortcuts' ? 'TabSelected' :'TabNormal'}'>
+                    <a href="<c:url value="/h/options?selected=shortcuts"/>" accesskey="4">
+                        <span><fmt:message key="shortcuts"/></span></a>
+                </td>
+                <td class='TabFiller'>
+                    &nbsp;
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+
+<tr>
+    <td class='TbTop'>
+        <table width=100% cellspacing=0 class='Tb'>
+            <tr>
+                <td align=left class=TbBt>
+                    <input
+                    <c:if test="${selected eq 'shortcuts'}"> DISABLED </c:if> class='tbButton' type="submit"
+                                                             name="actionSave" value="<fmt:message key="save"/>">
+                </td>
+                <td align=right>
+                    &nbsp;
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+
+<tr>
 <td>
-<div class='ZhAppContent'>
-<br>
-<table cellpadding=0 cellspacing=0>
-    <tr class='Tabs'>
-        <td class='TabSpacer'/>
-        <td class='TabSpacer'/>
-        <td class='Tab ${selected=='general' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options?selected=general"/>" accesskey="1">
-                <span><fmt:message key="general"/></span>
-            </a>
-        </td>
-        <td class='TabSpacer'/>
-        <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options?selected=mail"/>" accesskey="2">
-                <span><fmt:message key="mail"/></span></a>
-        </td>
-        <td class='TabSpacer'/>
-        <td class='Tab ${selected=='addressbook' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options?selected=addressbook"/>" accesskey="3">
-                <span><fmt:message key="addressBook"/></span></a>
-        </td>
-        <td class='TabSpacer'/>
-        <td class='Tab ${selected=='shortcuts' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options?selected=shortcuts"/>" accesskey="4">
-                <span><fmt:message key="shortcuts"/></span></a>
-        </td>
-        <td class='TabFiller'>
-            &nbsp;
-        </td>
-    </tr>
-</table>
 
-<div class='TbTop'>
-    <table width=100% cellspacing=0 class='Tb'>
-        <tr>
-            <td align=left class=TbBt>
-
-                <input
-                <c:if test="${selected eq 'shortcuts'}"> DISABLED </c:if> class='tbButton' type="submit"
-                                                         name="actionSave" value="<fmt:message key="save"/>">
-
-            </td>
-            <td align=right>
-                &nbsp;
-            </td>
-        </tr>
-    </table>
-</div>
-
-<br>
 <table border="0" cellpadding="0" cellspacing="4" width=100%>
 <tbody>
 
@@ -318,15 +323,12 @@
 <%------------------- SHORTCUTS ------------------%>
 <c:when test="${selected eq 'shortcuts'}">
     <tr>
-        <td colspan=2>
-            <div class='shortcutIntro'>
+        <td colspan=2 class='shortcutIntro'>
                 <fmt:message key="SC_shortcutsIntro"/>
-            </div>
         </td>
     </tr>
     <tr>
-        <td colspan=2>
-            <div style="padding:10px">
+        <td colspan=2 style="padding:10px">
 
                 <table class='shortcutList' cellspacing=0 cellpadding=0>
                     <app:optShortcutSection description="SC_shortcutsForAllApplications"/>
@@ -387,7 +389,6 @@
                     <app:optShortcutKey key="4" description="SC_OPTION_SHORTCUTS"/>
                 </table>
                 <br>
-            </div>
         </td>
     </tr>
 </c:when>
@@ -395,10 +396,11 @@
 
 </tbody>
 </table>
+</td>
+</tr>
 <br>
 <br>
 
-</div>
 </td>
 </tr>
 </table>

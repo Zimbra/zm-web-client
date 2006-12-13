@@ -39,8 +39,7 @@
                 </td>
             </tr>
             <tr>
-                <td>
-                    <div class='ZhAppContent'>
+                <td class='ZhAppContent'>
                         <c:set var="extImageUrl" value=""/>
                         <c:if test="${empty param.xim}">
                             <zm:currentResultUrl var="extImageUrl" value="mv" context="${context}" xim="1"/>
@@ -49,7 +48,6 @@
                                              action="compose" part="${msg.partName}" id="${msg.id}"/>
 
                         <app:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}"/>
-                    </div>
                 </td>
             </tr>
             <tr>

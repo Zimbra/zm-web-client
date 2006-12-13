@@ -40,12 +40,10 @@
                 </td>
             </tr>
             <tr>
-                <td>
-                    <div class='ZhAppContent'>
+                <td class='ZhAppContent'>
                         <table width=100% cellpadding=0 cellspacing=0>
                             <tr>
-                                <td>
-                                <div class='ConvSummary'>
+                                <td class='ConvSummary'>
                                     <table width=100% cellpadding=1 cellspacing=0>
                                         <tr>
                                             <td>
@@ -64,12 +62,10 @@
                                             </td>
                                         </tr>
                                     </table>
-                                </div>
                                 </td>
                             </tr>
                             <tr>
-                                <td>
-                                    <div class=List>
+                                <td class='List'>
                                         <table width=100% cellpadding=0 cellspacing=0>
                                             <tr>
                                                 <th class='CB'nowrap>
@@ -118,7 +114,6 @@
                                             </c:forEach>
                                             <tr><td colspan=10>&nbsp;</td></tr>
                                         </table>
-                                    </div> <%-- list --%>
                                 </td>
                             </tr>
                                 <c:set var="extImageUrl" value=""/>
@@ -134,7 +129,6 @@
                                 </td>
                             </tr>
                         </table>
-                    </div>
                 </td>
             </tr>
             <tr>

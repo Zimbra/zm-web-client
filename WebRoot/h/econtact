@@ -39,10 +39,8 @@
                 </td>
             </tr>
             <tr>
-                <td>
-                    <div class='ZhAppContent'>
+                <td class='ZhAppContent'>
                         <app:editContact title="${title}" contact="${contact}" context="${context}"/>
-                    </div>
                 </td>
             </tr>
             <tr>
