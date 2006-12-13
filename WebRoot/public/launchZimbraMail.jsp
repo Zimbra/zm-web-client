@@ -199,7 +199,7 @@
 </head>
 <body>
 <noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
-    <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url value='/h/'/></fmt:param></fmt:message>
+    <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="/zimbra" value='/h/'/></fmt:param></fmt:message>
 </noscript>
 <jsp:include page="/public/pre-cache.jsp"/>
 <%
