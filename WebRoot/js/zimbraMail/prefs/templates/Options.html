@@ -90,10 +90,10 @@
 		<tr><td class='ZLabelCell'><$= ZmMsg.popAccountFolderLabel $></td>
 			<td><button id="${id}_location" type=text  class='ZFieldSizeMedium'>Inbox</button></td>
 		</tr>
-		<tr><td class='ZLabelCell'>When messages are downloaded:</td>
+		<tr><td class='ZLabelCell'><$= ZmMsg.popAccountDownloadLabel $></td>
 			<td><select id="${id}_download" class='ZFieldSizeMedium'>
-					<option>Leave a copy on the POP server</option>
-					<option>Remove from the POP server</option>
+					<option><$= ZmMsg.popAccountDownloadLeave $></option>
+					<option><$= ZmMsg.popAccountDownloadRemove $></option>
 				</select>
 			</td>
 		</tr>
