@@ -844,12 +844,12 @@ function(ev) {
  */
 ZmCalViewController.prototype._doDelete =
 function(items, hardDelete, attrs, op) {
+	// since base view has multiple selection turned off, always select first item
 	var appt = items[0];
-	if (op == ZmOperation.VIEW_APPT_INSTANCE  || op == ZmOperation.VIEW_APPT_SERIES) {
+	if (op == ZmOperation.VIEW_APPT_INSTANCE || op == ZmOperation.VIEW_APPT_SERIES) {
 		var mode = (op == ZmOperation.VIEW_APPT_INSTANCE) ? ZmAppt.MODE_DELETE_INSTANCE : ZmAppt.MODE_DELETE_SERIES;
 		this._promptDeleteAppt(appt, mode);
 	} else {
-		// since base view has multiple selection turned off, always select first item
 		this._deleteAppointment(appt);
 	}
 };

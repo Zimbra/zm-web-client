@@ -175,15 +175,10 @@ ZmMailMsg.prototype.getReplyAddresses =
 function(mode) {
 	var addrVec = this._addrs[ZmEmailAddress.REPLY_TO];
 	var invAddr = null;
-	if (this.isInvite()) {
-		// if invite and has sentBy, then is on-behalf-of
-		var email = this.invite.getSentBy();
-		if (email == null && this.needsRsvp()) {
-			email = this.invite.getOrganizerEmail();
-		}
-		if (email) {
-			invAddr = new ZmEmailAddress(email);
-		}
+	if (this.isInvite() && this.needsRsvp()) {
+		var invEmail = this.invite.getOrganizerEmail(0);
+		if (invEmail)
+			invAddr = new ZmEmailAddress(invEmail);
 	}
 
 	if (invAddr) {
