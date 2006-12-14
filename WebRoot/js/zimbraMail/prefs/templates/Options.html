@@ -251,7 +251,9 @@
 		</tr>
 	</table>
 </fieldset>
-
+<$ if (AjxEnv.isIE) { $>
+<br>
+<$ } $>
 <fieldset class='ZFieldset' style='width:99%'>
 	<legend class='ZLegend'><$= ZmMsg.selectIdentityWhen $></legend>
 	<table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
@@ -262,7 +264,7 @@
 		</tr>
 
 		<tr><td></td>
-			<td><input id='${id}_whenSentToInput' class='ZFieldSizeLarge'></td>
+			<td><input id='${id}_whenSentToInput' class='ZFieldSizeHusky'></td>
 		</tr>
 
 		<tr><td></td>
@@ -275,7 +277,7 @@
 		</tr>
 
 		<tr><td></td>
-			<td><input id='${id}_whenInFolderInput' class='ZFieldSizeLarge'></td>
+			<td><input id='${id}_whenInFolderInput' class='ZFieldSizeHusky'></td>
 			<td><button id='${id}_folderBrowseButton' style='width:30px'><div class='ImgFolder'></div></button></td>
 		</tr>
 
