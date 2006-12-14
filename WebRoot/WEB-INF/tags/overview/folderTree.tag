@@ -5,6 +5,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ attribute name="keys" rtexprvalue="true" required="true" %>
 
 <zm:getMailbox var="mailbox"/>
 <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
@@ -27,19 +28,19 @@
         </tr>
 
         <c:if test="${expanded}">
-        <app:overviewFolder folder="${mailbox.inbox}" key="i" label="inbox" icon="mail/Inbox.gif"/>
+        <app:overviewFolder folder="${mailbox.inbox}" keys="${keys}" key="i" label="inbox" icon="mail/Inbox.gif"/>
         <app:doFolderTree skiproot="${true}" parentid="${mailbox.inbox.id}" skipsystem="false"/>
 
-        <app:overviewFolder folder="${mailbox.sent}" key="s" label="sent" icon="mail/SentFolder.gif"/>
+        <app:overviewFolder folder="${mailbox.sent}" keys="${keys}" key="s" label="sent" icon="mail/SentFolder.gif"/>
         <app:doFolderTree skiproot="${true}" parentid="${mailbox.sent.id}" skipsystem="false"/>
 
-        <app:overviewFolder folder="${mailbox.drafts}" key="d" label="drafts" icon="mail/DraftFolder.gif"/>
+        <app:overviewFolder folder="${mailbox.drafts}" keys="${keys}" key="d" label="drafts" icon="mail/DraftFolder.gif"/>
         <app:doFolderTree skiproot="${true}" parentid="${mailbox.drafts.id}" skipsystem="false"/>
 
-        <app:overviewFolder folder="${mailbox.spam}" key="u" label="junk" icon="mail/SpamFolder.gif"/>
+        <app:overviewFolder folder="${mailbox.spam}" keys="${keys}" key="u" label="junk" icon="mail/SpamFolder.gif"/>
         <app:doFolderTree skiproot="${true}" parentid="${mailbox.spam.id}" skipsystem="false"/>
 
-        <app:overviewFolder folder="${mailbox.trash}" key="t" label="trash" icon="common/Trash.gif"/>
+        <app:overviewFolder folder="${mailbox.trash}" keys="${keys}" key="t" label="trash" icon="common/Trash.gif"/>
         <app:doFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>        
 
         <tr><td colspan=2>&nbsp;</td></tr>

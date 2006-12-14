@@ -25,7 +25,7 @@
 
 <body>
 
-<app:view context="${null}" selected='managetags' tags="true" editmode="true">
+<app:view context="${null}" selected='managetags' tags="true" editmode="true" keys="true">
 
 <form action="" method="post">
 <table width=100% cellspacing="0" cellpadding="0">

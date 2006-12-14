@@ -7,6 +7,7 @@
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
 <%@ attribute name="ads" rtexprvalue="true" required="false" %>
 <%@ attribute name="tags" rtexprvalue="true" required="false" %>
+<%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
@@ -28,7 +29,7 @@
         </td>
         <td colspan=2 valign=top class='TopContent'>
             <table width=100% cellspacing=0>
-                <app:appTop query="${empty context.query ? param.sq : context.query}"/>
+                <app:appTop keys="${keys}" query="${empty context.query ? param.sq : context.query}"/>
                 <app:appStatus/>
             </table>
         </td>
@@ -36,12 +37,12 @@
     <tr>
         <td class='Overview'>&nbsp;</td>
         <td colspan=2>
-            <app:appTabs selected='${selected}'/>
+            <app:appTabs keys="${keys}" selected='${selected}'/>
         </td>
     </tr>
     <tr>
         <td valign=top class='Overview'>
-            <app:overviewTree contacts="${contacts}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}"/>
+            <app:overviewTree keys="${keys}" contacts="${contacts}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}"/>
         </td>
 <c:set var="adsOn" value="${!empty ads}"/>
 <c:if test="${adsOn}" >

@@ -1,5 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="selected" rtexprvalue="true" required="false" %>
+<%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -10,24 +11,24 @@
         <td class='TabSpacer'/>
         <td class='TabSpacer'/>        
         <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/search"/>" accesskey="m">
+            <a href="<c:url value="/h/search"/>" <c:if test="${keys}">accesskey="m"</c:if>>
                 <app:img src="mail/MailApp.gif"/>
                 <span><fmt:message key="mail"/></span>
             </a>
         </td>
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='compose' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/search?action=compose"/>" accesskey="e"><app:img src="mail/NewMessage.gif"/><span><fmt:message
+            <a href="<c:url value="/h/search?action=compose"/>" <c:if test="${keys}">accesskey="e"</c:if>><app:img src="mail/NewMessage.gif"/><span><fmt:message
                     key="compose"/></span></a>
         </td>
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='contacts' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/search?st=contact"/>" accesskey="c"><app:img src="contacts/Contact.gif"/><span><fmt:message
+            <a href="<c:url value="/h/search?st=contact"/>" <c:if test="${keys}">accesskey="c"</c:if>><app:img src="contacts/Contact.gif"/><span><fmt:message
                     key="contacts"/></span></a>
         </td>
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='options' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options"/>" accesskey="y"><app:img src="common/Preferences.gif"/><span><fmt:message
+            <a href="<c:url value="/h/options"/>" <c:if test="${keys}">accesskey="y"</c:if>><app:img src="common/Preferences.gif"/><span><fmt:message
                     key="options"/></span></a>
         </td>
         <td class='TabSpacer'/>

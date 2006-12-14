@@ -28,7 +28,7 @@
 <body>
 
 <c:set var="ads" value='${msg.subject} ${msghit.fragment}'/>
-<app:view context="${context}" selected='mail' folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}">
+<app:view context="${context}" selected='mail' folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="" context="${context}"/>
     <form action="${currentUrl}" method="post">
 

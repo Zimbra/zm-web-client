@@ -6,7 +6,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<app:view selected='contacts' contacts="true" tags="true"  context="${context}">
+<app:view selected='contacts' contacts="true" tags="true"  context="${context}" keys="true">
    <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
    <form action="${currentUrl}" method="post" name="zform">
        <table width=100% cellspacing="0" cellpadding="0">
