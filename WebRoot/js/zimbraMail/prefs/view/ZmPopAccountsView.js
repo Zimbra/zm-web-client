@@ -529,13 +529,13 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
     this._showPasswordCheckbox.setSelected(false);
 
     var useSSL = account.connectionType == ZmPopAccount.CONNECT_SSL;
+    var portDef = useSSL ? ZmPopAccount.PORT_SSL : ZmPopAccount.PORT_DEFAULT;
     var advanced = useSSL || !account.port || account.port != portDef;
     this._sslCheckbox.setSelected(useSSL);
     /***
     Dwt.setVisible(this._sslTrustDiv, useSSL);
     this._sslTrustEl.checked = account.trustSelfSignedCerts;
     /***/
-    var portDef = useSSL ? ZmPopAccount.PORT_SSL : ZmPopAccount.PORT_DEFAULT;
     this._portField.setValue(account.port || portDef);
     this._portDefEl.innerHTML = portDef;
     this._advancedCheckbox.setSelected(advanced);
