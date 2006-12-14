@@ -32,7 +32,7 @@
 
 <app:view selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}">
     <zm:currentResultUrl var="currentUrl" value="cv" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
-    <form action="${currentUrl}" method="post">
+    <form action="${currentUrl}" method="post" name="zform">
         <table width=100% cellpadding=0 cellspacing=0>
             <tr>
                 <td class='TbTop'>
@@ -68,7 +68,7 @@
                                 <td class='List'>
                                         <table width=100% cellpadding=0 cellspacing=0>
                                             <tr>
-                                                <th class='CB'nowrap>
+                                                <th class='CB'nowrap><input onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                                 <th class='Img' nowrap><app:img src="tag/FlagRed.gif"alt="Starred"/>
                                                 <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif"alt="Tagged"/>
                                                 <th class='MsgStatusImg' nowrap>

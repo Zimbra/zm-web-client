@@ -10,7 +10,7 @@
 <fmt:message key="noSubject" var="noSubject"/>
 <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
 <zm:getMailbox var="mailbox"/>
-<form action="${currentUrl}" method="post">
+<form action="${currentUrl}" method="post" name="zform">
     <table width=100% cellpadding="0" cellspacing="0">
         <tr>
             <td class='TbTop'>
@@ -21,7 +21,7 @@
             <td class='List'>
                     <table width=100% cellpadding=2 cellspacing=0>
                         <tr>
-                            <th class='CB' nowrap>&nbsp;
+                            <th class='CB' nowrap><input onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                             <th class='Img' nowrap><app:img src="tag/FlagRed.gif"alt="Starred"/>
                             <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif"alt="Tagged"/>
                             <th class='MsgStatusImg' nowrap>

@@ -8,7 +8,7 @@
 
 <app:view selected='contacts' contacts="true" tags="true"  context="${context}">
    <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
-   <form action="${currentUrl}" method="post">
+   <form action="${currentUrl}" method="post" name="zform">
        <table width=100% cellspacing="0" cellpadding="0">
            <tr>
                <td class='TbTop'>
@@ -19,7 +19,7 @@
                <td class='List'>
                        <table width=100% cellpadding=2 cellspacing=0>
                            <tr>
-                               <th class='CB'>&nbsp;
+                               <th class='CB'><input onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                <th class='Img'>&nbsp;
                                <th class='Img'>&nbsp;
                                <th width=35% nowrap>
