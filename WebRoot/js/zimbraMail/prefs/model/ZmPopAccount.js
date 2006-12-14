@@ -39,7 +39,14 @@ function() {
 // Constants
 //
 
-ZmPopAccount.LEAVE_ON_SERVER_DEFAULT = true;
+/***
+ZmPopAccount.REMOVE_NEVER = 0;
+ZmPopAccount.REMOVE_UPON_DOWNLOAD = 1;
+ZmPopAccount.REMOVE_AFTER_1_DAY = 2;
+ZmPopAccount.REMOVE_AFTER_1_WEEK = 3;
+ZmPopAccount.REMOVE_AFTER_1_MONTH = 4;
+ZmPopAccount.REMOVE_UPON_DELETE = 5;
+/***/
 
 ZmPopAccount.PORT_CLEAR = 110;
 ZmPopAccount.PORT_SSL = 995;
@@ -61,8 +68,7 @@ ZmPopAccount._ANAME2PNAME = {
     username: "userName",
     password: "password",
     l: "folderId",
-    connectionType: "connectionType",
-    leaveOnServer: "leaveOnServer"
+    connectionType: "connectionType"
 };
 ZmPopAccount._ATTR_DEFAULTS = {
     port: function(value) {
@@ -93,10 +99,10 @@ ZmPopAccount.prototype.folderId = ZmOrganizer.ID_INBOX;
 // advanced settings
 /***
 ZmPopAccount.prototype.maxDownloadSizeKb;
+ZmPopAccount.prototype.removeMessages = ZmPopAccount.REMOVE_NEVER;
 /***/
-ZmPopAccount.prototype.leaveOnServer = ZmPopAccount.LEAVE_ON_SERVER_DEFAULT;
 ZmPopAccount.prototype.port = ZmPopAccount.PORT_DEFAULT;
-ZmPopAccount.prototype.connectionType = ZmPopAccount.CONNECT_DEFAULT;
+ZmPopAccount.prototype.connectionType = ZmPopAccount.CONNECT_CLEAR;
 /***
 ZmPopAccount.prototype.trustSelfSignedCerts = false;
 /***/
@@ -233,7 +239,6 @@ ZmPopAccount.prototype.set = function(obj) {
     this.password = obj.password != null ? obj.password : this.password;
     this.folderId = obj.l || this.folderId;
     this.connectionType = obj.connectionType || this.connectionType;
-    this.leaveOnServer = obj.leaveOnServer != null ? Boolean(obj.leaveOnServer) : this.leaveOnServer;
 };
 
 //

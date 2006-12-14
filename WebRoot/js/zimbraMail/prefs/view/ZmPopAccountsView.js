@@ -519,7 +519,6 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
     var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
     var folder = tree.getById(folderId);
     this._folderButton.setText(folder.name);
-    this._downloadSelect.setSelectedValue(account.leaveOnServer);
 
     this._serverField.setValue(account.mailServer);
     this._usernameField.setValue(account.userName);
@@ -680,9 +679,6 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
         validatorCtxtObj:this, validator: this._validateName
     });
     this._folderButton = new DwtButton(this);
-    this._downloadSelect = new DwtSelect(this);
-    this._downloadSelect.addOption(ZmMsg.popAccountDownloadLeave, false, true);
-    this._downloadSelect.addOption(ZmMsg.popAccountDownloadRemove, false, false);
 
     this._serverField = new DwtInputField({
         parent:this, required:true,
@@ -726,7 +722,6 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
     // insert dwt controls
     this._nameField.replaceElement(id+"_name");
     this._folderButton.replaceElement(id+"_location");
-    this._downloadSelect.replaceElement(id+"_download");
 
     this._serverField.replaceElement(id+"_server");
     this._usernameField.replaceElement(id+"_username");
@@ -757,7 +752,6 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
     // create listeners
     var nameListener = new AjxListener(this, this._nameListener);
     var folderListener = new AjxListener(this, this._folderListener);
-    var downloadListener = new AjxListener(this, this._downloadListener);
 
     var serverListener = new AjxListener(this, this._serverOrUserNameListener, [this._serverField, "mailServer"]);
     var userNameListener = new AjxListener(this, this._serverOrUserNameListener, [this._usernameField, "userName"]);
@@ -778,7 +772,6 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
     // register listeners
     this._nameField.addListener(DwtEvent.ONKEYUP, nameListener);
     this._folderButton.addSelectionListener(folderListener);
-    this._downloadSelect.addChangeListener(downloadListener);
 
     this._serverField.addListener(DwtEvent.ONKEYUP, serverListener);
     this._usernameField.addListener(DwtEvent.ONKEYUP, userNameListener);
@@ -825,10 +818,6 @@ ZmPopAccountBasicPage.prototype._folderOkListener = function(dialog, folder) {
     this._account.folderId = folder.id;
     this._dirtyListener(null);
 };
-ZmPopAccountBasicPage.prototype._downloadListener = function(evt) {
-    this._account.leaveOnServer = this._downloadSelect.getValue();
-    this._dirtyListener(evt);
-};
 
 ZmPopAccountBasicPage.prototype._serverOrUserNameListener =
 function(field, pname, evt) {
@@ -841,7 +830,6 @@ function(field, pname, evt) {
         this._account._identity.email = email;
         this._emailField.setValue(email);
     }
-    this._password1Field.setRequired(true);
     this._dirtyListener(evt);
 };
 ZmPopAccountBasicPage.prototype._passwordListener =
@@ -931,6 +919,7 @@ ZmPopAccountBasicPage.prototype._linkAddrOrFolderListener = function(pname, even
 ZmPopAccountBasicPage.prototype._dirtyListener = function(evt) {
     // REVISIT: Do something with this information?
     this._isDirty = true;
+    this._password1Field.setRequired(true);
     this.parent.validate();
 };
 
