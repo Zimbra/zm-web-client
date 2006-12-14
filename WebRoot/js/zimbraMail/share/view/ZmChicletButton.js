@@ -44,6 +44,7 @@ function ZmChicletButton(parent, outerClass, innerClass, text) {
 		this._setHtml(innerClass, text);
 	} else {
 		this._innerDiv = document.createElement("div");
+		this._innerDiv.style.position = DwtControl.ABSOLUTE_STYLE;
 		this._innerDiv.className = AjxImg.getClassForImage(innerClass);
 		this.getHtmlElement().appendChild(this._innerDiv);
 	}

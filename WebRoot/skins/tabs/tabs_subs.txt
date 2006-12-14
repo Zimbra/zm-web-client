@@ -169,4 +169,4 @@ TreeHeaderContainer		= background-color:@HeaderColor@;
 _AppTabStyle_				= border-bottom-width:0px; padding:3px 5px 4px 5px;
 AppTabContainer				= @_WidgetContainer_@ opacity:.6;	@_AppTabStyle_@
 AppTabContainer-hover		= @_WidgetContainer_@				@_AppTabStyle_@
-AppTabContainer-selected	= @_WidgetContainer-default_@		@_AppTabStyle_@
+AppTabContainer-selected	= @ToolbarContainer@				@_AppTabStyle_@
