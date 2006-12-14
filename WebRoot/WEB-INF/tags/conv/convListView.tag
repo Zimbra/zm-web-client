@@ -13,7 +13,7 @@
 <zm:getMailbox var="mailbox"/>
 <app:view selected='mail' folders="true" tags="true" searches="true" context="${context}">
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
-    <form action="${currentUrl}" method="post">
+    <form name="zform" action="${currentUrl}" method="post">
         <table width=100% cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
@@ -24,7 +24,7 @@
                 <td class='List'>
                         <table width=100% cellpadding=2 cellspacing=0>
                             <tr class='Header'>
-                                <th class='CB' nowrap>&nbsp;
+                                <th class='CB' nowrap><input onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                 <th class='Img' nowrap><app:img src="tag/FlagRed.gif"alt="Starred"/>
                                 <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif"alt="Tagged"/>
                                 <th width=10% nowrap><fmt:message key="from"/>

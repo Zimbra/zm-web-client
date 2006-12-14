@@ -19,4 +19,12 @@
     <link rel="ICON" type="image/gif" href="<c:url value='/img/loRes/logo/favicon.gif'/>">
     <link rel="SHORTCUT ICON" href="<c:url value='/img/loRes/logo/favicon.ico'/>">
     <jsp:doBody/>
+    <script type="text/javascript">
+        <!--
+        function checkAll(cb, allbox) {
+            for (i = 0; i < cb.length; i++)
+                cb[i].checked = allbox.checked;
+        }
+        // -->
+</script>
 </head>
