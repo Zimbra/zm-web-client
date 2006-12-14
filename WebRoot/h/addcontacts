@@ -43,6 +43,8 @@
             <td align=left class=TbBt>
                 <input class='tbButton' name="actionContactDone" type=submit value="<fmt:message key="done"/>">
                 &nbsp;
+                <input class='tbButton' name="actionContactAdd" type=submit value="<fmt:message key="addSelected"/>">
+                &nbsp;
                 <input class='tbButton' name="actionContactCancel" type=submit value="<fmt:message key="cancel"/>">
             </td>
         </tr>
