@@ -56,7 +56,7 @@
                                                         <app:img src="${tag.miniImage}"/> <span>${fn:escapeXml(tag.name)}</span>
                                                     </c:forEach>
                                                     <c:if test="${convHit.isFlagged}">
-                                                        n<app:img src="tag/FlagRed.gif"/>
+                                                        <app:img src="tag/FlagRed.gif"/>
                                                     </c:if>
                                                     </span>
                                             </td>
