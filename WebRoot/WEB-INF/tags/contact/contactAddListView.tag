@@ -28,6 +28,7 @@
         </c:choose>
     </tr>
     <c:forEach items="${searchResult.contactHits}" var="contactHit" varStatus="status">
+        <c:if test="${not empty contactHit.displayEmail}">
         <tr>
             <td width=1%>&nbsp;</td>
             <td width=2% nowrap><input type=checkbox  name="addTo" value="${fn:escapeXml(contactHit.fullAddress)}"></td>
@@ -39,11 +40,12 @@
             <td width=20%>
                     ${fn:escapeXml(empty contactHit.fileAsStr ? '' : contactHit.fileAsStr)}
             </td>
-            <td ><c:if test="${empty contactHit.displayEmail}">
-                &nbsp;</c:if>${fn:escapeXml(contactHit.displayEmail)}</td>
+            <td >&nbsp;${fn:escapeXml(contactHit.displayEmail)}</td>
         </tr>
+        </c:if>
     </c:forEach>
     <c:forEach items="${searchGalResult.contacts}" var="contact" varStatus="status">
+        <c:if test="${not empty contact.displayEmail}">
         <tr>
             <td width=1%>&nbsp;</td>
             <td width=2% nowrap><input type=checkbox  name="addTo" value="${fn:escapeXml(contact.galFullAddress)}"></td>
@@ -56,6 +58,7 @@
                     ${fn:escapeXml(contact.galFullAddress)}
             </td>
         </tr>
+        </c:if>
     </c:forEach>
 </table>
 <c:choose>
