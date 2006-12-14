@@ -153,7 +153,7 @@
                         <fmt:message var="displayName" key="SKIN_${name}"/>
                         <option
                                 <c:if test="${name eq skin}">selected</c:if>
-                                value="${fn:escapeXml(name)}">${fn:escapeXml(empty displayName ? name : displayName)}</option>
+                                value="${fn:escapeXml(name)}">${fn:escapeXml(fn:startsWith(displayName,'???') ? name : displayName)}</option>
                     </c:forEach>
                 </select>
             </td>
