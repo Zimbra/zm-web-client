@@ -11,7 +11,7 @@
 <fmt:message var="unknownSubject" key="noSubject"/>
 
 <zm:getMailbox var="mailbox"/>
-<app:view selected='mail' folders="true" tags="true" searches="true" context="${context}">
+<app:view selected='mail' folders="true" tags="true" searches="true" context="${context}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
     <form name="zform" action="${currentUrl}" method="post">
         <table width=100% cellpadding="0" cellspacing="0">

@@ -30,7 +30,7 @@
 <%-- get the message up front, so when we output the overview tree unread counts are correctly reflected --%>
 <c:set var="ads" value='${convHit.subject} ${convHit.fragment}'/>
 
-<app:view selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}">
+<app:view selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="cv" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
     <form action="${currentUrl}" method="post" name="zform">
         <table width=100% cellpadding=0 cellspacing=0>

@@ -4,6 +4,7 @@
 <%@ attribute name="icon" rtexprvalue="true" required="false" %>
 <%@ attribute name="base" rtexprvalue="true" required="false" %>
 <%@ attribute name="types" rtexprvalue="true" required="false" %>
+<%@ attribute name="keys" rtexprvalue="true" required="false" %>
 <%@ attribute name="key" rtexprvalue="true" required="false" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -32,7 +33,7 @@
         </c:if>
 
         <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="dwt/NodeExpanded.gif"/></c:if></span>--%>
-        <a href='${url}' <c:if test="${!empty key}">accesskey="${key}" </c:if> >
+        <a href='${url}' <c:if test="${(not empty key) and keys}">accesskey="${key}" </c:if> >
             <app:img src="${not empty icon ? icon : (folder.isFeed ? 'mail/RSS.gif' : 'common/Folder.gif')}"/>
             <span>${fn:escapeXml(empty label ? folder.name : label)} <c:if test="${folder.hasUnread}">
                 (${folder.unreadCount}) </c:if></span>

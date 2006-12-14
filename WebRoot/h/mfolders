@@ -29,7 +29,7 @@
 
 <body>
 
-<app:view context="${null}" selected='managefolders' folders="true" editmode="true">
+<app:view context="${null}" selected='managefolders' folders="true" editmode="true" keys="true">
 
 
 <form action="" method="post">

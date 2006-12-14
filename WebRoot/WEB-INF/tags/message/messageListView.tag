@@ -6,7 +6,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<app:view context="${context}" selected='mail' folders="true" tags="true" searches="true">
+<app:view context="${context}" selected='mail' folders="true" tags="true" searches="true" keys="true">
 <fmt:message key="noSubject" var="noSubject"/>
 <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
 <zm:getMailbox var="mailbox"/>

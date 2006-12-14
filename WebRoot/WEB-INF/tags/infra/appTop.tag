@@ -1,5 +1,6 @@
 <%@ tag body-content="scriptless" %>
 <%@ attribute name="query" rtexprvalue="true" required="false" %>
+<%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -14,7 +15,7 @@
             <form method="get" action="${searchUrl}">
                 <c:set var="query">${fn:escapeXml((!empty query and mailbox.prefs.showSearchString) ? query : param.sq)}</c:set>
                     &nbsp;<fmt:message key="find"/> :
-                    <input class="searchField" style='width:50%' maxlength=2048 name=sq accesskey="q" value="${query}">
+                    <input class="searchField" style='width:50%' maxlength=2048 name=sq <c:if test="${keys}">accesskey="q" </c:if> value="${query}">
                     &nbsp;<fmt:message key="in"/>&nbsp;
                     <c:choose>
                         <c:when test="${param.st eq 'contact'}"><c:set var="isContact" value="${true}"/></c:when>
