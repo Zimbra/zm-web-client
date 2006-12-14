@@ -307,7 +307,7 @@ function(params) {
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE, "console_inset_app_l", 20);
 		this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
 		this._components[ZmAppViewMgr.C_USER_INFO] = this._createUserInfo();
-		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell);
+		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell, this._TAB_SKIN_ENABLED);
 		this._appCtxt.setCurrentAppToolbar(currentAppToolbar);
 		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
 		this._components[ZmAppViewMgr.C_STATUS] = this._statusView = new ZmStatusView(this._shell, "ZmStatus", Dwt.ABSOLUTE_STYLE);
@@ -738,10 +738,13 @@ function() {
 	if (this._TAB_SKIN_ENABLED) {
 		var html = [];
 		var i = 0;
-		html[i++] = "<table border=0 cellpadding=0 cellspacing=0 width=55% align=center><tr><td align=left style='white-space:nowrap; font-weight:bold'><a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'>";
+		html[i++] = "<table border=0 cellpadding=0 cellspacing=0 width=90% align=center><tr><td align=left><a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'>";
+		html[i++] = AjxImg.getImageHtml("Help", null, "border=0");
+		html[i++] = "</a></td><td align=left style='white-space:nowrap; font-weight:bold'><a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'>";
 		html[i++] = ZmMsg.help;
-		html[i++] = "</a></td><td align=right style='white-space:nowrap; font-weight:bold'>";
-		html[i++] = "<a href='javascript:;' onclick='ZmZimbraMail.conditionalLogOff();'>";
+		html[i++] = "</a></td><td width=100%></td><td align=right><a href='javascript:;' onclick='ZmZimbraMail.conditionalLogOff();'>";
+		html[i++] = AjxImg.getImageHtml("Logoff", null, "border=0");
+		html[i++] = "</a></td><td align=right style='white-space:nowrap; font-weight:bold'><a href='javascript:;' onclick='ZmZimbraMail.conditionalLogOff();'>";
 		html[i++] = ZmMsg.logOff;
 		html[i++] = "</a></td></tr></table>";
 		this._userNameField.innerHTML = html.join("");
@@ -1120,7 +1123,7 @@ function() {
 
 	var html = [];
 	var i = 0;
-	html[i++] = "<table border=0 cellpadding=1 cellspacing=0 width=100%>";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
 	html[i++] = "<tr><td><div class='BannerTextUser' id='";
 	html[i++] = userNameId;
 	html[i++] = "'></div></td></tr>";
