@@ -67,7 +67,7 @@
                             <table width=100%>
                                 <tr>
                                     <td align=center valign=middle>
-                                        <a href="http://www.zimbra.com/" target="_new"><img alt='login banner' src="<c:url value='/images/logos/LoginBanner.png'/>"/></a>
+                                        <a href="http://www.zimbra.com/" target="_new"><div class='ImgLoginBanner'/></a>
                                     </td>
                                 </tr>
                                 <tr>

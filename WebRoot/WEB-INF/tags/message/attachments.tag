@@ -10,7 +10,7 @@
 
 <c:forEach var="part" items="${message.attachments}">
 <c:if test="${part.isMssage}">
-    <div class='InlinedMessage'>
+    <div class='ZhAppContent'>
     <zm:getMessage var="partMessage" id="${message.id}" part="${part.partName}"/>
     <app:displayMessage mailbox="${mailbox}" message="${partMessage}" composeUrl="${composeUrl}&part=${part.partName}"/>
     </div>
