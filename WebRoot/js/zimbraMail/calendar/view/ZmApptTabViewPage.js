@@ -937,6 +937,7 @@ ZmApptTabViewPage.prototype._initAutocomplete =
 function() {
 	var shell = this._appCtxt.getShell();
 	var acCallback = new AjxCallback(this, this._autocompleteCallback);
+	this._acList = {};
 
 	// autocomplete for attendees
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
@@ -946,6 +947,7 @@ function() {
 					  matchValue: ZmContactList.AC_VALUE_FULL, compCallback: acCallback};
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acContactsList.handle(this._attInputField[ZmAppt.PERSON].getInputElement());
+		this._acList[ZmAppt.PERSON] = this._acContactsList;
 	}
 	// autocomplete for locations/equipment
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
@@ -954,9 +956,11 @@ function() {
 					  matchValue: ZmContactList.AC_VALUE_NAME, compCallback: acCallback};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._attInputField[ZmAppt.LOCATION].getInputElement());
+		this._acList[ZmAppt.LOCATION] = this._acLocationsList;
 		params.dataLoader = resourcesClass.getEquipment;
 		this._acEquipmentList = new ZmAutocompleteListView(params);
 		this._acEquipmentList.handle(this._attInputField[ZmAppt.EQUIPMENT].getInputElement());
+		this._acList[ZmAppt.EQUIPMENT] = this._acEquipmentList;
 	}
 };
 
@@ -1519,6 +1523,11 @@ ZmApptTabViewPage._onBlur =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);
-	tvp._handleAttendeeField(el._attType);
+	// don't check attendees if autocomplete list is up, since this
+	// handler will be called before completion happens
+	var acList = tvp._acList[el._attType];
+	if (!(acList && acList.getVisible())) {
+		tvp._handleAttendeeField(el._attType);
+	}
 	tvp._activeInputField = null;
 };

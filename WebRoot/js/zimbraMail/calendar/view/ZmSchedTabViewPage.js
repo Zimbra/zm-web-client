@@ -386,6 +386,7 @@ function() {
 	var shell = this._appCtxt.getShell();
 	var acCallback = new AjxCallback(this, this._autocompleteCallback);
 	var keyUpCallback = new AjxCallback(this, this._autocompleteKeyUpCallback);
+	this._acList = {};
 
 	// autocomplete for attendees
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
@@ -394,6 +395,7 @@ function() {
 		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader, separator: "",
 					  matchValue: ZmContactList.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback};
 		this._acContactsList = new ZmAutocompleteListView(params);
+		this._acList[ZmAppt.PERSON] = this._acContactsList;
 	}
 	// autocomplete for locations/equipment
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
@@ -401,8 +403,10 @@ function() {
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations, separator: "",
 					  matchValue: ZmContactList.AC_VALUE_NAME, compCallback: acCallback};
 		this._acLocationsList = new ZmAutocompleteListView(params);
+		this._acList[ZmAppt.LOCATION] = this._acLocationsList;
 		params.dataLoader = resourcesClass.getEquipment;
 		this._acEquipmentList = new ZmAutocompleteListView(params);
+		this._acList[ZmAppt.EQUIPMENT] = this._acEquipmentList;
 	}
 };
 
@@ -1364,6 +1368,11 @@ function(ev) {
 		svp._handleDateChange(el == svp._startDateField);
 		svp._activeDateField = null;
 	} else {
-		svp._handleAttendeeField(el);
+		// don't check attendees if autocomplete list is up, since this
+		// handler will be called before completion happens
+		var acList = svp._acList[el._attType];
+		if (!(acList && acList.getVisible())) {
+			svp._handleAttendeeField(el);
+		}
 	}
 };
