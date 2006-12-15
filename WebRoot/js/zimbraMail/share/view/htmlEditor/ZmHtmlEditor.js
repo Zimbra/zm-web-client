@@ -914,24 +914,29 @@ function(name, target, data) {
 };
 
 ZmHtmlEditor.prototype._ace_finishedLoading = function(ifr, name, data) {
-	if (!AjxEnv.isIE || ifr.readyState == "complete") {
-		try {
-			var win = Dwt.getIframeWindow(ifr);
-			win.ZmACE = true;
-			win.ZmACE_COMPONENT_NAME = name;
-			ifr.onload = null;
-			ifr.onreadystatechange = null;
-			win.create(data);
-			--this._ace_componentsLoading;
-		} catch(ex) {
-			--this._ace_componentsLoading;
-			// throw new DwtException("Can't deserialize ALE component", DwtException.INTERNAL_ERROR, ex);
-			var dlg = this._appCtxt.getErrorDialog();
-			dlg.setMessage("Can't deserialize component", ex, DwtMessageDialog.WARNING_STYLE, "ALE error");
-			dlg.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
-			dlg.popup();
+	// We have to delay execution (bug 12870).  Seems to affect
+	// Firefox only.  10ms should be quite enough.
+	var self = this;
+	setTimeout(function() {
+		if (!AjxEnv.isIE || ifr.readyState == "complete") {
+			try {
+				var win = Dwt.getIframeWindow(ifr);
+				win.ZmACE = true;
+				win.ZmACE_COMPONENT_NAME = name;
+				ifr.onload = null;
+				ifr.onreadystatechange = null;
+				win.create(data);
+				--self._ace_componentsLoading;
+			} catch(ex) {
+				--self._ace_componentsLoading;
+				// throw new DwtException("Can't deserialize ALE component", DwtException.INTERNAL_ERROR, ex);
+				var dlg = self._appCtxt.getErrorDialog();
+				dlg.setMessage("Can't deserialize component", ex, DwtMessageDialog.WARNING_STYLE, "ALE error");
+				dlg.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
+				dlg.popup();
+			}
 		}
-	}
+	}, 10);
 };
 
 // Returns an array of embedded objects (each one is a reference to its containing IFRAME)
