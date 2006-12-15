@@ -53,24 +53,27 @@ function ZmMailMsg(appCtxt, id, list) {
 ZmMailMsg.prototype = new ZmMailItem;
 ZmMailMsg.prototype.constructor = ZmMailMsg;
 
-ZmMailMsg.ADDRS = [ZmEmailAddress.FROM, ZmEmailAddress.TO, ZmEmailAddress.CC, ZmEmailAddress.BCC, ZmEmailAddress.REPLY_TO];
+ZmMailMsg.ADDRS = [ZmEmailAddress.FROM, ZmEmailAddress.TO, ZmEmailAddress.CC,
+				   ZmEmailAddress.BCC, ZmEmailAddress.REPLY_TO, ZmEmailAddress.SENDER];
 
 ZmMailMsg.HDR_FROM		= ZmEmailAddress.FROM;
 ZmMailMsg.HDR_TO		= ZmEmailAddress.TO;
 ZmMailMsg.HDR_CC		= ZmEmailAddress.CC;
 ZmMailMsg.HDR_BCC		= ZmEmailAddress.BCC;
 ZmMailMsg.HDR_REPLY_TO	= ZmEmailAddress.REPLY_TO;
+ZmMailMsg.HDR_SENDER	= ZmEmailAddress.SENDER;
 ZmMailMsg.HDR_DATE		= ZmEmailAddress.LAST_ADDR + 1;
 ZmMailMsg.HDR_SUBJECT	= ZmEmailAddress.LAST_ADDR + 2;
 
 ZmMailMsg.HDR_KEY = new Object();
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_FROM] = ZmMsg.from;
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_TO] = ZmMsg.to;
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_CC] = ZmMsg.cc;
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_BCC] = ZmMsg.bcc;
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_REPLY_TO] = ZmMsg.replyTo;
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_DATE] = ZmMsg.sent;
-ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT] = ZmMsg.subject;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_FROM]		= ZmMsg.from;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_TO]			= ZmMsg.to;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_CC]			= ZmMsg.cc;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_BCC]		= ZmMsg.bcc;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_REPLY_TO]	= ZmMsg.replyTo;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SENDER]		= ZmMsg.sender;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_DATE]		= ZmMsg.sent;
+ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_SUBJECT]	= ZmMsg.subject;
 
 ZmMailMsg.URL_RE = /((telnet:)|((https?|ftp|gopher|news|file):\/\/)|(www\.[\w\.\_\-]+))[^\s\xA0\(\)\<\>\[\]\{\}\'\"]*/i;
 
@@ -175,7 +178,7 @@ ZmMailMsg.prototype.getReplyAddresses =
 function(mode) {
 	var addrVec = this._addrs[ZmEmailAddress.REPLY_TO];
 	var invAddr = null;
-	if (this.isInvite() && this.needsRsvp()) {
+	if (!addrVec && this.isInvite() && this.needsRsvp()) {
 		var invEmail = this.invite.getOrganizerEmail(0);
 		if (invEmail)
 			invAddr = new ZmEmailAddress(invEmail);

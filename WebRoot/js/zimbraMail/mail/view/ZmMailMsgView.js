@@ -924,11 +924,8 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "</td></tr>";
 
 	// bug fix #10652 - check invite if sentBy is set (which means on-behalf-of)
-	var invite = msg.getInvite();
-	var sentBy = invite ? invite.getSentBy() : null;
-
-	var addrs = msg.getAddresses(ZmEmailAddress.FROM);
-	var addr = addrs.size() > 0 ? addrs.get(0) : ZmMsg.unknown;
+	var sentBy = msg.getAddress(ZmEmailAddress.SENDER);
+	var addr = msg.getAddress(ZmEmailAddress.FROM) || ZmMsg.unknown; 
 	var dateString = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
 
 	// add non-collapsable header info (Sent by and date)
@@ -942,13 +939,11 @@ function(msg, container, callback) {
 	htmlArr[idx++] = ": </td></tr></table></td>";
 	htmlArr[idx++] = "<td class='LabelColValue' style='vertical-align:bottom'>";
 	if (addr instanceof ZmEmailAddress) {
-		if (this._objectManager && addr.address) {
-			addr = this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL);
-		} else {
-			addr = addr.address || (AjxStringUtil.htmlEncode(addr.name));
-		}
+		addr = addr.address || (AjxStringUtil.htmlEncode(addr.name));
 	}
-	htmlArr[idx++] = sentBy || addr;
+	htmlArr[idx++] = this._objectManager
+		? this._objectManager.findObjects((sentBy || addr), true, ZmObjectManager.EMAIL)
+		: (sentBy || addr);
 	htmlArr[idx++] = "&nbsp;&nbsp;<span class='LabelColName'>";
 	htmlArr[idx++] = ZmMsg.on;
 	htmlArr[idx++] = ": </span><span class='LabelColValue'>";
@@ -962,13 +957,16 @@ function(msg, container, callback) {
 		htmlArr[idx++] = "<tr><td width=100 valign='top' class='LabelColName'>";
 		htmlArr[idx++] = ZmMsg.onBehalfOf;
 		htmlArr[idx++] = ":</td><td class='LabelColValue'>";
-		htmlArr[idx++] = addr;
+		htmlArr[idx++] = this._objectManager
+			? this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL)
+			: addr;
 		htmlArr[idx++] = "</td></tr>";
 	}
 
 	// To/CC/Reply-to
 	for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
+		if (type == ZmEmailAddress.SENDER) continue;
 		var addrs = msg.getAddresses(type);
 		if (addrs.size() > 0) {
 			var prefix = ZmMsg[ZmEmailAddress.TYPE_STRING[type]];

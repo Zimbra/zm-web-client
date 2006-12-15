@@ -50,7 +50,8 @@ ZmEmailAddress.TO			= 2;
 ZmEmailAddress.CC			= 3;
 ZmEmailAddress.BCC			= 4;
 ZmEmailAddress.REPLY_TO		= 5;
-ZmEmailAddress.LAST_ADDR	= 5;
+ZmEmailAddress.SENDER		= 6;
+ZmEmailAddress.LAST_ADDR	= 6;
 
 ZmEmailAddress.TYPE_STRING = {};
 ZmEmailAddress.TYPE_STRING[ZmEmailAddress.FROM]		= "from";
@@ -58,6 +59,7 @@ ZmEmailAddress.TYPE_STRING[ZmEmailAddress.TO]		= "to";
 ZmEmailAddress.TYPE_STRING[ZmEmailAddress.CC]		= "cc";
 ZmEmailAddress.TYPE_STRING[ZmEmailAddress.BCC]		= "bcc";
 ZmEmailAddress.TYPE_STRING[ZmEmailAddress.REPLY_TO]	= "replyTo";
+ZmEmailAddress.TYPE_STRING[ZmEmailAddress.SENDER]	= "sender";
 
 ZmEmailAddress.fromSoapType = {};
 ZmEmailAddress.fromSoapType["f"] = ZmEmailAddress.FROM;
@@ -65,6 +67,7 @@ ZmEmailAddress.fromSoapType["t"] = ZmEmailAddress.TO;
 ZmEmailAddress.fromSoapType["c"] = ZmEmailAddress.CC;
 ZmEmailAddress.fromSoapType["b"] = ZmEmailAddress.BCC;
 ZmEmailAddress.fromSoapType["r"] = ZmEmailAddress.REPLY_TO;
+ZmEmailAddress.fromSoapType["s"] = ZmEmailAddress.SENDER;
 
 ZmEmailAddress.toSoapType = {};
 ZmEmailAddress.toSoapType[ZmEmailAddress.FROM]		= "f";
@@ -72,6 +75,7 @@ ZmEmailAddress.toSoapType[ZmEmailAddress.TO]		= "t";
 ZmEmailAddress.toSoapType[ZmEmailAddress.CC]		= "c";
 ZmEmailAddress.toSoapType[ZmEmailAddress.BCC]		= "b";
 ZmEmailAddress.toSoapType[ZmEmailAddress.REPLY_TO]	= "r";
+ZmEmailAddress.toSoapType[ZmEmailAddress.SENDER]	= "s";
 
 ZmEmailAddress.SEPARATOR = "; ";				// used to join addresses
 ZmEmailAddress.DELIMS = [';', ',', '\n', ' '];	// recognized as address delimiters

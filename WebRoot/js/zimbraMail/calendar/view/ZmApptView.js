@@ -256,12 +256,14 @@ function(appt) {
 	var attendees = appt.getAttendeesText();
 	if (attendees) {
 		var organizer = appt.getOrganizer();
-		if (organizer) {
-			i = this._showField(ZmMsg.organizer, this._objectManager.findObjects(organizer, true), html, i);
-			var inv = appt.getMessage().getInvite();
-			var sentBy = inv ? inv.getSentBy() : null;
-			if (sentBy) {
-				i = this._showField(ZmMsg.sentBy, this._objectManager.findObjects(sentBy, true), html, i);
+		var sender = appt.getMessage().getAddress(ZmEmailAddress.SENDER);
+		if (sender || organizer) {
+			var or = sender ? sender.toString() : organizer;
+			var ob = this._objectManager.findObjects(or, true, ZmObjectManager.EMAIL);
+			i = this._showField(ZmMsg.organizer, ob, html, i);
+			if (sender && organizer) {
+				ob = this._objectManager.findObjects(organizer, true, ZmObjectManager.EMAIL);
+				i = this._showField(ZmMsg.onBehalfOf, ob, html, i);
 			}
 		}
 		i = this._showField(ZmMsg.attendees, this._objectManager.findObjects(attendees, true), html, i);
