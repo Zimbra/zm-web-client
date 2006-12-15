@@ -27,12 +27,12 @@
 * HTML elements - use for global declarations
 */
 
-P, TH, TD, DIV, SELECT, INPUT[type=text], INPUT[type=password], INPUT[type=file], TEXTAREA, BUTTON, A {
+P, TH, TD, DIV, SELECT, INPUT[type=text], INPUT[type=password], INPUT[type=file], TEXTAREA, BUTTON {
 	@FontFamily-default@
 	@FontSize-normal@
 }
 #IFDEF MSIE
-P, TH, TD, DIV, SELECT, INPUT, TEXTAREA, BUTTON, A {
+P, TH, TD, DIV, SELECT, INPUT, TEXTAREA, BUTTON {
 	@FontFamily-default@
 	@FontSize-normal@
 }
