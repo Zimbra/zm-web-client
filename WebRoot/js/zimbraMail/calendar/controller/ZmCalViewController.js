@@ -1747,6 +1747,12 @@ function(actionCode) {
 				this._listSelectionListener(ev);
 			}
 			break;
+			
+		case ZmKeyMap.CANCEL:
+			if (this._currentView == ZmController.CAL_APPT_VIEW) {
+				this._listView[this._currentView].close();
+			}
+			break;
 
 		default:
 			return ZmListController.prototype.handleKeyAction.call(this, actionCode);
