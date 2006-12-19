@@ -40,6 +40,7 @@ body						{	@ChromeBg@	}
 #skin_outer							{	display:none; 	@SkinOuter@			}
 #skin_table_outer					{				}
 	/*	 all columns are sized with the following classes	*/
+	#skin_col_app_chooser			{	width:40px;											}
 	#skin_col_tree					{	width:170px;										}
 	#skin_col_tree_app_sash			{	width:8px;											}
 	#skin_col_main					{	width:auto;											}
@@ -91,7 +92,7 @@ body						{	@ChromeBg@	}
 }
 
 #skin_tr_search_builder					{							}
-#skin_td_search_builder					{	padding:0 4 3 4;		}
+#skin_td_search_builder					{	padding:0 6 3 6;		}
 #skin_border_search_builder				{	@SkinBorderSB@			}
 #skin_container_search_builder			{	
 	height:225;		margin:0 5 0 4;
@@ -107,8 +108,8 @@ body						{	@ChromeBg@	}
 
 /* current app, tree-app sash, top toolbar */
 #skin_tr_toolbar						{		}
-#skin_td_current_app					{	padding:0 0 0 0; 		}
-#skin_border_current_app				{	padding-right:10px;		}
+#skin_td_current_app					{	padding:0 0 0 6; 		}
+#skin_border_current_app				{	@SkinBorderCurrentApp@	}
 #skin_container_current_app				{	
 	height:22;	 	margin:4 2 0 5;
 #IFDEF MSIE
@@ -124,16 +125,15 @@ body						{	@ChromeBg@	}
 #skin_border_tree_app_sash				{	@SkinBorderTreeSash@ 	}
 #skin_container_tree_app_sash			{							}
 
-#skin_td_app_top_toolbar				{	padding:0px;	margin-bottom:-1px;	}
-#skin_border_app_top_toolbar			{	padding-right:6px;		}
-.skin_border_app_top_toolbar			{	@SkinBorderAppToolbar@	}
+#skin_td_app_top_toolbar				{	padding:0 6 0 0;		}
+#skin_border_app_top_toolbar			{	@SkinBorderAppToolbar@	}
 #skin_container_app_top_toolbar			{	
 	height:22;		margin:4 2 0 5;	
 #IFDEF MSIE
 	height:25;		margin:0 0 0 1;
 #ENDIF
 #IFDEF SAFARI
-	height:24;		margin:-1 0 0 0;
+	height:26;		margin:0 0 0 0;
 #ENDIF
 }
 
@@ -143,23 +143,23 @@ body						{	@ChromeBg@	}
 
 #skin_tr_main							{	height:100%;			}
 
-#skin_td_app_chooser					{	height:25px;	padding:0 4 0 8; vertical-align:bottom; text-align:center;	}
+#skin_td_app_chooser					{	padding:2 2 0 0; vertical-align:top;	}
 #skin_border_app_chooser				{	@SkinBorderAppChooser@	}
 #skin_container_app_chooser				{	
 	height:100%;
 #IFDEF MSIE
-	margin:2 0 0 0;
+	margin:4 0 0 0;
 #ENDIF
 }
 
 #skin_tr_tree							{	height:100%;			}
 #skin_td_tree							{	
 	height:100%;
-	padding:6px 0px 2px 4px;
+	padding-bottom:2px;
 }
 #skin_border_tree						{	@SkinBorderTree@	height:100%;	}
 #skin_container_tree					{	
-	height:100%;	margin:4 -4 2 4; 
+	height:100%;	margin:0 -4 2 4; 
 #IFDEF MSIE
 					margin:0 -2 2 2;
 #ENDIF
@@ -170,10 +170,7 @@ body						{	@ChromeBg@	}
 
 
 #skin_tr_tree_footer					{	display:none;			}
-#skin_td_tree_footer					{	
-	vertical-align:top;
-	padding-left:4px;
-}
+#skin_td_tree_footer					{	vertical-align:top;		}
 #skin_border_tree_footer				{	@SkinBorderMiniCal@		}
 
 #skin_container_tree_footer				{	
@@ -189,14 +186,14 @@ body						{	@ChromeBg@	}
 
 
 #skin_td_app_main						{	
-	padding:6 6 7 0;	 
+	padding:0 6 7 0;	 
 #IFDEF MSIE
-	padding:4 6 4 0;
+	padding:0 6 4 0;
 #ENDIF
 }
 #skin_border_app_main					{	@SkinBorderApp@		height:100%;		}
 #skin_container_app_main				{	
-	height:100%;	margin:4 -4 -3 4;	
+	height:100%;	margin:0 -4 -3 4;	
 #IFDEF MSIE
 					margin:0 -2 0 1;
 #ENDIF
@@ -212,7 +209,7 @@ body						{	@ChromeBg@	}
 
 #skin_tr_status	{	}
 #skin_td_status {	
-		padding:5 0 5 4;
+		padding:5 0 5 6;
 }
 #skin_border_status 					{	@SkinBorderStatus@		}
 #skin_container_status					{	
@@ -230,20 +227,22 @@ body						{	@ChromeBg@	}
 /* Hack the AppChiclets to do them with CSS instead of images */
 .ImgAppChiclet, 
 .ImgAppChicletHover,						
-.ImgAppChicletSel {	
-	position:relative; 		
-	margin-right:1px;
+.ImgAppChicletSel						{	
+		position:relative; 		right:1;
+		width:20; height:20;	margin:0 0 0 9; 	padding:4 2 0 6; 
+#IFDEF MSIE
+		width:30; height:28;	margin:1 0 0 11;	padding:5 13 0 0;
+#ENDIF
+#IFDEF SAFARI
+		width:20; height:20;	margin:1 0 0 24;	padding:4 0 0 6;
+#ENDIF
 }
 .ImgAppChiclet							{	@AppTabContainer@			}
 .ImgAppChicletHover						{	@AppTabContainer-hover@		}
 .ImgAppChicletSel						{	@AppTabContainer-selected@	}
 
 
-#IFDEF MSIE
-.ImgAppChiclet DIV,
-.ImgAppChicletHover DIV,
-.ImgAppChicletSel DIV					{	left:4px;	}
-#ENDIF
+.ImgAppChiclet							{				}
 
 
 
@@ -260,8 +259,4 @@ body						{	@ChromeBg@	}
 /* Specify the width of sidebar ads when using a skin with ads */
 .skin_sidebar_ad	{
 	width:@SidebarAdWidth@;
-}
-
-.ZmAppChooser {
-	margin:0px;
 }

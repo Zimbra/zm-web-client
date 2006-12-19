@@ -870,31 +870,3 @@ FreeBusyViewGridHeight		= height:22px; line-height:21px;
 WindowBg					= @AppBg@
 WindowContainer				= @WindowBg@	@WindowOuterContainer-light@
 WindowContainer-focused		= @WindowBg@	@WindowOuterContainer@
-
-
-
-
-
-
-### STUFF FROM TABS
-
-
-SkinBorderCurrentApp		= @InsetBg@ @OutsetBorder@ 	-moz-border-radius:3 3 0 0;	margin-bottom:-1px;
-_AppTabStyle_			 	= border-bottom-width:0px;	-moz-border-radius:3 3 0 0;
-
-
-	_TopToolbarBorder_			= border: 1px solid @_BaseColorD25_@;  border-width:2px 0px 2px 0px; border-color:@_BaseColorD30_@ @_BaseColorD50_@ @_BaseColorD50_@ @_BaseColorD30_@;
-#IFDEF GECKO
-	_TopToolbarBorder_			= border: 2px solid @_BaseColorD25_@;  border-width:2px 0px 2px 0px; -moz-border-left-colors:@_BaseColorD30_@ @_BaseColorD10_@;	-moz-border-top-colors: @_BaseColorD30_@ @_BaseColorD10_@;	-moz-border-bottom-colors: @_BaseColorD55_@ @_BaseColorD25_@;	-moz-border-right-colors: @_BaseColorD40_@ @_BaseColorD25_@;
-#ENDIF
-
-SkinBorderAppToolbar	= @ToolbarBg@ @_TopToolbarBorder_@
-SkinBorderTree			= @InsetBg@ @OutsetBorder@	height:100%;
-SkinBorderApp			= @PageBg@  @OutsetBorder@ height:100%;
-TreeHeaderContainer		= background-color:@HeaderColor@;
-
-
-_AppTabStyle_				= border-bottom-width:0px; padding:3px 5px 4px 5px;
-AppTabContainer				= @_WidgetContainer_@ opacity:.6;	@_AppTabStyle_@
-AppTabContainer-hover		= @_WidgetContainer_@				@_AppTabStyle_@
-AppTabContainer-selected	= @ToolbarContainer@				@_AppTabStyle_@
