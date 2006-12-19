@@ -301,7 +301,7 @@ function(params) {
 	}
 
 	skin.showSkin(true);
-	this._TAB_SKIN_ENABLED = skin.hints && skin.hints.app_chooser.direction == "LR";
+	this._TAB_SKIN_ENABLED = skin.hints && skin.hints.app_chooser.style == "tabs";
 	if (!this._components) {
 		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE, "console_inset_app_l", 20);
@@ -734,45 +734,32 @@ function(app) {
 
 ZmZimbraMail.prototype._setUserInfo = 
 function() {
-	var userTooltip = null;
 	if (this._TAB_SKIN_ENABLED) {
-		var html = [];
-		var i = 0;
-		html[i++] = "<table border=0 cellpadding=0 cellspacing=0 width=90% align=center><tr><td align=left><a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'>";
-		html[i++] = AjxImg.getImageHtml("Help", null, "border=0");
-		html[i++] = "</a></td><td align=left style='white-space:nowrap; font-weight:bold'><a href='javascript:;' onclick='ZmZimbraMail.helpLinkCallback();'>";
-		html[i++] = ZmMsg.help;
-		html[i++] = "</a></td><td width=100%></td><td align=right><a href='javascript:;' onclick='ZmZimbraMail.conditionalLogOff();'>";
-		html[i++] = AjxImg.getImageHtml("Logoff", null, "border=0");
-		html[i++] = "</a></td><td align=right style='white-space:nowrap; font-weight:bold'><a href='javascript:;' onclick='ZmZimbraMail.conditionalLogOff();'>";
-		html[i++] = ZmMsg.logOff;
-		html[i++] = "</a></td></tr></table>";
-		this._userNameField.innerHTML = html.join("");
-	} else {
-		var login = this._appCtxt.get(ZmSetting.USERNAME);
-		var username = (this._appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
-		if (username) {
-			this._userNameField.innerHTML = username;
-			if (AjxEnv.isLinux)	// bug fix #3355
-				this._userNameField.style.lineHeight = "13px";
-		}
-		userTooltip = (username != login) ? login : null;
+		this._setUserInfoLink("ZmZimbraMail.helpLinkCallback();", "Help", ZmMsg.help, "skin_container_help");
+		this._setUserInfoLink("ZmZimbraMail.conditionalLogOff();", "Logoff", ZmMsg.logOff, "skin_container_logoff");
 	}
 
+	var login = this._appCtxt.get(ZmSetting.USERNAME);
+	var username = (this._appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
+	if (username) {
+		this._userNameField.innerHTML = username;
+		if (AjxEnv.isLinux)	// bug fix #3355
+			this._userNameField.style.lineHeight = "13px";
+	}
+
+	var userTooltip = (username != login) ? login : null;
 	var quota = this._appCtxt.get(ZmSetting.QUOTA);
 	var usedQuota = (this._appCtxt.get(ZmSetting.QUOTA_USED)) || 0;
-
 	var size = AjxUtil.formatSize(usedQuota, false, 1);
+	var quotaTooltip = null;
+
 	var html = [];
 	var idx = 0;
-	
-	var style = AjxEnv.isLinux ? " style='line-height: 13px'" : ""; 	// bug fix #3355
 	html[idx++] = "<center><table border=0 cellpadding=0 cellspacing=0><tr";
-	html[idx++] = style;
+	html[idx++] = AjxEnv.isLinux ? " style='line-height: 13px'" : ""; // bug #3355;
 	html[idx++] = "><td class='BannerText'>";
 	html[idx++] = ZmMsg.quota;
 	html[idx++] = ": </td>";
-	var quotaTooltip = null;
 	if (quota) {
 		var limit = AjxUtil.formatSize(quota, false, 1);
 		var percent = Math.min(Math.round((usedQuota / quota) * 100), 100);
@@ -819,6 +806,24 @@ function() {
 		tooltip[idx++] = "</table>";
 		this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(tooltip.join(""));
 	}
+};
+
+ZmZimbraMail.prototype._setUserInfoLink =
+function(staticFunc, icon, lbl, id) {
+	var html = [];
+	var i = 0;
+	html[i++] = "<table border=0 cellpadding=1 cellspacing=1 width=90% align=center><tr><td align=right><a href='javascript:;' onclick='";
+	html[i++] = staticFunc;
+	html[i++] = "'>";
+	html[i++] = AjxImg.getImageHtml(icon, null, "border=0");
+	html[i++] = "</a></td><td width=1% style='white-space:nowrap; font-weight:bold'><a href='javascript:;' onclick='";
+	html[i++] = staticFunc;
+	html[i++] = "'>";
+	html[i++] = lbl;
+	html[i++] = "</a></td></tr></table>";
+
+	var cell = document.getElementById(id);
+	if (cell) cell.innerHTML = html.join("");
 };
 
 // Listeners
