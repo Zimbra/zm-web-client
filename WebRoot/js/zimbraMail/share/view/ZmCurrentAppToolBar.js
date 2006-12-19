@@ -35,19 +35,30 @@ function ZmCurrentAppToolBar(parent, tabStyle) {
 
 	if (!tabStyle) {
 		this._currentAppLabel = new DwtLabel(this, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "currentAppLabel");
+		this.addFiller();
+	} else {
+		this._viewLabel = new DwtLabel(this, DwtLabel.ALIGN_RIGHT, "viewLabel");
+		this._viewLabel.setText(ZmMsg.view + ":");
+		// HACK - expand out the parent table and shrink first child so view
+		// button can be as wide as possible
+		this._table.width = "100%";
+		this._table.rows[0].cells[0].width = "1%";
 	}
 
-	this.addFiller();
 	this._viewButton = new DwtButton(this, null, "DwtToolbarButton");
-	this._viewButton.setText(ZmMsg.view);
-	this._viewButton.setToolTipContent(ZmMsg.view);
+	if (this._currentAppLabel) {
+		this._viewButton.setText(ZmMsg.view);
+		this._viewButton.setToolTipContent(ZmMsg.view);
+	} else {
+		this._viewButton.setSize("100%");
+	}
 	this._viewButton.setEnabled(true);
 	this._viewButton.setVisible(false);
 	this._viewButton.noMenuBar = true;
-	
-	this._viewIcon = new Object();
-	this._viewTooltip = new Object();
-	this._viewMenu = new Object();
+
+	this._viewIcon = {};
+	this._viewTooltip = {};
+	this._viewMenu = {};
 };
 
 ZmCurrentAppToolBar.prototype = new DwtToolBar;
@@ -76,7 +87,7 @@ function(view, tooltip) {
 	this._viewTooltip[view] = tooltip;
 };
 
-ZmCurrentAppToolBar.prototype.getViewMenu = 
+ZmCurrentAppToolBar.prototype.getViewMenu =
 function(view) {
 	return this._viewMenu[view];
 };
@@ -96,9 +107,12 @@ function(view) {
 		this._viewButton.setMenu(viewMenu, false, DwtMenuItem.RADIO_STYLE);
 		var mi = viewMenu.getSelectedItem(DwtMenuItem.RADIO_STYLE);
 		var icon = mi ? mi.getImage() : null;
-		if (icon)
-			this._viewButton.setImage(icon);
+		if (icon) this._viewButton.setImage(icon);
+		if (mi && this._viewLabel) this._viewButton.setText(mi.getText());
 	} else {
 		this._viewButton.setVisible(false);
 	}
+
+	if (this._viewLabel)
+		this._viewLabel.setVisible(viewMenu != null);
 };

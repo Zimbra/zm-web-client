@@ -453,9 +453,8 @@ function(view) {
 
 ZmCalViewController.prototype._setViewContents =
 function(viewId) {
-	// Ignore viewId since this will always be ZmController.CAL_VIEW as we are fooling the
+	// Ignore since this will always be ZmController.CAL_VIEW as we are fooling
 	// ZmListController (see our show method)
-	var viewId = this._viewMgr.getCurrentViewName();
 };
 
 ZmCalViewController.prototype._createNewView =

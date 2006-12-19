@@ -1872,6 +1872,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	@InsetText@
 }
 
+.viewLabel .Text {
+	white-space: nowrap;
+	width: 1%;
+}
 
 
 
