@@ -64,11 +64,14 @@ Contributor(s):
         -->
       </style>
     <script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext %>?v=<%=vers %>"></script>
+    <jsp:include page="../../public/Boot.jsp"/>
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
-     <jsp:include page="../../public/Boot.jsp"/>
      <jsp:include page="../../public/Ajax.jsp"/>
      <jsp:include page="embed_js.jsp"/>
 <% } else { %>
+     <script type='text/javascript'>
+      AjxPackage.setExtension(".js");
+     </script>
      <script type="text/javascript" src="<%=contextPath %>/ALE/spreadsheet/embed_all.js<%=ext%>?v=<%=vers%>"></script>
 <% } %>
   </head>

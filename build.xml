@@ -325,7 +325,7 @@
     <target name="compress-ale-files" depends="copy-files-to-build-area, compile">
         <taskdef name="jammer" classname="com.zimbra.webClient.build.JammerTask" classpath="${build.dir}/classes"/>
         <jammer webrootDir="${build.dir}/WebRoot/" pathToWebapp="/zimbra" destFile="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js">
-          <filelist dir="${build.dir}/WebRoot/ALE/spreadsheet" files="../../public/Boot.jsp,../../public/Ajax.jsp,index_js.jsp"/>
+          <filelist dir="${build.dir}/WebRoot/ALE/spreadsheet" files="../../public/Ajax.jsp,index_js.jsp"/>
         </jammer>
         <antcall target="rhino-compress">
             <param name="var" value="${build.dir}/WebRoot/ALE/spreadsheet/spreadsheet_all.js"/>
