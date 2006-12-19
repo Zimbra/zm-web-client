@@ -221,6 +221,9 @@ function(components, doFit, noSetZ) {
 */
 ZmAppViewMgr.prototype.showSearchBuilder =
 function(visible) {
+	if (skin.hints && skin.hints.app_chooser.style == "tabs")
+		this._components[ZmAppViewMgr.C_USER_INFO].setVisible(!visible);
+
 	DBG.println(AjxDebug.DBG1, "show search builder: " + visible);
 	skin.showSearchBuilder(visible);
 	this._components[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR].zShow(visible);
@@ -329,8 +332,8 @@ function(viewId, appName, elements, callbacks, isAppView, isTransient) {
 ZmAppViewMgr.prototype.pushView =
 function(viewId, force) {
 
-	var viewController = (viewId == ZmAppViewMgr.PENDING_VIEW) ? null :
-							this._views[viewId][ZmAppViewMgr.C_APP_CONTENT].getController();
+	var viewController = viewId == ZmAppViewMgr.PENDING_VIEW
+		? null : this._views[viewId][ZmAppViewMgr.C_APP_CONTENT].getController();
 
 	// if same view, no need to go through hide/show
 	if (viewId == this._currentView) {
@@ -771,7 +774,6 @@ function(delta) {
 
 	Dwt.setSize(table, tableSz.x + delta, Dwt.DEFAULT);
 
-
 	var list = [ZmAppViewMgr.C_CURRENT_APP, ZmAppViewMgr.C_TREE,
 				ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_STATUS];
 	this._fitToContainer(list);
@@ -786,8 +788,6 @@ function(delta) {
 
 	return delta;
 
-
-
 //	var x = this._shellSz.x - (tableSz.x + delta);
 //	DBG.println("inferred right side width (after) = " + x);
 
@@ -796,8 +796,6 @@ function(delta) {
 	tableSz = Dwt.getSize(table);
 	DBG.println("right table width = " + tableSz.x);
 	Dwt.setSize(table, tableSz.x - delta, Dwt.DEFAULT);
-
-
 
 	var contSz = Dwt.getSize(this._appContentContainer);
 //	var width = contSz.x;
