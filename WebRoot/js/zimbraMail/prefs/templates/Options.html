@@ -33,7 +33,7 @@
 	<td class='ZmOptionsFormListCell'>
 		<table class='ZmOptionsFormListTable' cellspacing=0 cellpadding=0>
 			<colgroup><col width=50%><col width=50%></colgroup>
-			<tr><td height=100% colspan=2>
+			<tr><td height=100% colspan=2 valign=top>
 				<div id='${id}_list' class='ZmOptionsFormList'>List</div>
 			</td></tr>
 			<tr><td class='ZmOptionsFormListButtonCell'  style='padding-right:5px;'>
@@ -237,17 +237,17 @@
 <template id="IdentityForm_options" xml:space="strip">
 <fieldset class='ZFieldset' style='width:99%'>
 	<legend class='ZLegend'><$= ZmMsg.sendWithIdentity $></legend>
-	<table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
+	<table class='ZFormTable XZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
 		<colgroup><col width=20><col width=60><col width='50%'><col width='50%'></colgroup>
 		<tr><td class='ZLabelCell' colspan=2><$= ZmMsg.sendFrom $></td>
 			<td><input id='${id}_sendFromName' style='width:100%'></td>
-			<td><select id='${id}_sendFromAddress' style='width:100%'><option>bob@zimbra.com</option></select></td>
+			<td><select id='${id}_sendFromAddress' style='width:90%'><option>bob@zimbra.com</option></select></td>
 		</tr>
 
 		<tr><td class='ZCheckboxCell'><input id='${id}_setReplyToCheckbox' type='checkbox'></td>
 			<td class='ZCheckboxLabelCell'><$= ZmMsg.setReplyTo $></td>
 			<td><input id='${id}_setReplyToName' style='width:100%'></td>
-			<td><select id='${id}_setReplyToAddress' style='width:100%'><option>bob@zimbra.com</option></select></td>
+			<td><select id='${id}_setReplyToAddress' style='width:90%'><option>bob@zimbra.com</option></select></td>
 		</tr>
 	</table>
 </fieldset>

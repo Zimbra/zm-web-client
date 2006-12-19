@@ -115,12 +115,11 @@ skin._showEl = function(id, state) {
 					</div>
 				</div>
 			</td>
-			<td id='skin_td_quota'>
-				<div id='skin_border_quota' class='skin_container'>
-					<div id='skin_container_quota' class='skin_container'>
-						<!-- quota area -->
-					</div>
-				</div>
+			<td id='skin_td_quota' style='padding:0px'>
+				<table><tr>
+					<td id='skin_container_help'>&nbsp;</td>
+					<td id='skin_container_logoff'>&nbsp;</td>
+				</tr></table>
 			</td>
 		</tr>
 
@@ -145,10 +144,20 @@ skin._showEl = function(id, state) {
 
 
 		<tr id='skin_tr_app_chooser'>
-			<td id='skin_td_app_chooser' colspan=4>
+			<td id='skin_td_app_chooser' colspan=3>
 				<div id='skin_border_app_chooser' class='skin_container'>
 					<div id='skin_container_app_chooser' class='skin_container'>
 					<!-- app chooser -->
+					</div>
+				</div>
+			</td>
+			<td id='skin_td_quota'>
+				<div id='skin_border_quota' class='skin_container'>
+					<div id='skin_container_username' class='skin_container'>
+						<!-- user name -->
+					</div>
+					<div id='skin_container_quota' class='skin_container'>
+						<!-- quota area -->
 					</div>
 				</div>
 			</td>

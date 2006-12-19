@@ -2458,6 +2458,15 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmOptionsFormCell {
 	@SeparatorBorder@
+	@InsetBg@
+}
+
+.ZmOptionsFormCell .DwtTabBar {
+	@InsetBg@
+}
+
+.ZmOptionsFormCell .DwtTabViewPage {
+	@InsetBg@
 }
 
 
