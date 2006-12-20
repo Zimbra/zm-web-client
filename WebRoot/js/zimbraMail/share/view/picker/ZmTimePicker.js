@@ -93,14 +93,14 @@ function(parent) {
 
 	this._installOnClick(lastHourId, "after:-1hour");
 	this._installOnClick(last4HoursId, "after:-4hour");
-	this._installOnClick(todayId, "after:-1day");
-	this._installOnClick(yesterdayId, "(after:-2day AND before:-1day)");
-	this._installOnClick(thisWeekId, "after:-1week");
-	this._installOnClick(lastWeekId, "(after:-2week AND before:-1week)");
-	this._installOnClick(thisMonthId, "after:-1month");
-	this._installOnClick(lastMonthId,"(after:-2month AND before:-1month)"); 
-	this._installOnClick(thisYearId, "after:-1year"); 
-	this._installOnClick(lastYearId, "(after:-2year AND before:-1year)"); 
+	this._installOnClick(todayId, "date:-0day");
+	this._installOnClick(yesterdayId, "date:yesterday");
+	this._installOnClick(thisWeekId, "date:-0week");
+	this._installOnClick(lastWeekId, "date:-1week");
+	this._installOnClick(thisMonthId, "date:-0month");
+	this._installOnClick(lastMonthId,"date:-1month"); 
+	this._installOnClick(thisYearId, "date:-0year"); 
+	this._installOnClick(lastYearId, "date:-1year"); 
 }
 
 ZmTimePicker.prototype._installOnClick =
