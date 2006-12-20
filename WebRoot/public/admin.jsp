@@ -110,7 +110,7 @@
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
 		<!--
-        @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>_imgs,skin.css?v=<%= vers %>);
+        @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>_imgs,skin.css?v=<%= vers %>&skin=<%= skin %>);
 		-->
 	</style>
     <jsp:include page="Boot.jsp"/>
@@ -121,7 +121,7 @@
 <% } else { %>
 	<style type="text/css">
 	  <!--
-	  @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>_imgs,skin.css?v=<%= vers %>);
+	  @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>_imgs,skin.css?v=<%= vers %>&skin=<%= skin %>);
 	  -->
 	</style>
 	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
