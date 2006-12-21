@@ -14,12 +14,12 @@
 		<param-value>7071</param-value>
 	</context-param>
 
-    <!-- ============= -->
+    <!-- =============
 	<context-param>
 	   <param-name>zimbra.soap.url</param-name>
 	   <param-value>http://localhost:7070/service/soap</param-value>
 	</context-param>
-
+    -->
 	<context-param>
 	   <param-name>zimbra.jsp.session.timeout</param-name>
 	   <param-value>14400</param-value>
@@ -29,8 +29,6 @@
 	   <param-name>zimbraShowAds</param-name>
 	   <param-value>0</param-value>
 	</context-param>
-
-    <!-- ============= -->
 
     <filter>
 		<filter-name>Set Header Filter</filter-name>
@@ -91,7 +89,6 @@
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
-    <!-- ============= -->
     <filter>
         <filter-name>CharEncodingFilter</filter-name>
         <filter-class>
@@ -103,7 +100,7 @@
         <filter-name>CharEncodingFilter</filter-name>
         <url-pattern>/h/*</url-pattern>
     </filter-mapping>
-    <!-- ============= -->
+
     <servlet>
 		<servlet-name>Forwarder</servlet-name>
 		<servlet-class>
@@ -160,9 +157,7 @@
 	</servlet-mapping>
 
 	<welcome-file-list>
-        <!-- ============= -->
         <welcome-file>login</welcome-file>
-        <!-- ============= -->
         <welcome-file>public/Login.jsp</welcome-file>
 		<welcome-file>public/admin.jsp</welcome-file>
     </welcome-file-list>
@@ -199,11 +194,10 @@
         <env-entry-value>@mailUrl@</env-entry-value>
 	</env-entry>
 
-    <!-- ============= -->
     <jsp-config>
       <jsp-property-group>
           <url-pattern>/h/*</url-pattern>
       </jsp-property-group>
     </jsp-config>
-    <!-- ============= -->
+
 </web-app>
