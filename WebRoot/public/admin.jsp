@@ -52,7 +52,7 @@
 	}
 
 //	final String SKIN_COOKIE_NAME = "ZM_SKIN";
-	String skin = "steel";
+	String skin = "sand";
 
 	String requestSkin = request.getParameter("skin");
 	if (requestSkin != null) {
