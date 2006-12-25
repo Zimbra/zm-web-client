@@ -54,6 +54,7 @@ ZmEvent.S_ATT				= i++;
 ZmEvent.S_CONTACT			= i++;
 ZmEvent.S_GROUP				= i++;
 ZmEvent.S_APPT				= i++;
+ZmEvent.S_TASK				= i++;
 ZmEvent.S_NOTE				= i++;
 ZmEvent.S_PAGE				= i++;
 ZmEvent.S_DOCUMENT			= i++;

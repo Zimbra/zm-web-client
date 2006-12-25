@@ -118,7 +118,7 @@ function() {
 */
 ZmListController.prototype.show	=
 function(searchResults, view) {
-	this._currentView = view ? view : this._defaultView();
+	this._currentView = view || this._defaultView();
 	this._activeSearch = searchResults;
 	// save current search for use by replenishment
 	if (searchResults)
@@ -300,20 +300,15 @@ ZmListController.prototype._getItemType			= function() {};
 ZmListController.prototype._setup =
 function(view) {
 	this._initialize(view);
-	//DBG.timePt("this._initialize");
 	this._resetOperations(this._toolbar[view], 0);
-	//DBG.timePt("this._resetOperation(toolbar)");
 };
 
 // Creates the basic elements: toolbar, list view, and action menu
 ZmListController.prototype._initialize =
 function(view) {
 	this._initializeToolBar(view);
-	//DBG.timePt("_initializeToolBar");
 	this._initializeListView(view);
-	//DBG.timePt("_initializeListView");
 	this._initializeTabGroup(view);
-	//DBG.timePt("_initializeTabGroup");
 };
 
 // Below are functions that return various groups of operations, for cafeteria-style
@@ -553,6 +548,11 @@ function(ev, id, newWin) {
 			controller.newAppointment(null, null, null, new Date());
 			break;
 		}
+		case ZmOperation.NEW_TASK: {
+			// TODO
+			DBG.println("TODO- new task");
+			break;
+		}
 		case ZmOperation.NEW_PAGE: {
 			var overviewController = this._appCtxt.getOverviewController();
 			var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
@@ -586,6 +586,11 @@ function(ev, id, newWin) {
 		case ZmOperation.NEW_CALENDAR: {
 			var dialog = this._appCtxt.getNewCalendarDialog();
 			this._showDialog(dialog, this._newCalendarCallback);
+			break;
+		}
+		case ZmOperation.NEW_TASK_FOLDER: {
+			// TODO
+			DBG.println("TODO- new task folder");
 			break;
 		}
 		case ZmOperation.NEW_NOTEBOOK: {

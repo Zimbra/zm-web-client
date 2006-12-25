@@ -51,19 +51,19 @@
 		mode= "";
 	}
 
-//	final String SKIN_COOKIE_NAME = "ZM_SKIN";
+	final String SKIN_COOKIE_NAME = "ZM_SKIN";
 	String skin = "sand";
 
 	String requestSkin = request.getParameter("skin");
 	if (requestSkin != null) {
 		skin = requestSkin;
-	}/* else if (cookies != null) {
+	} else if (cookies != null) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
                 skin = cookie.getValue();
             }
         }
-    }*/
+    }
 	String skinPreCacheFile = "../skins/" + skin + "/CacheLoRes.html";
 
     String contextPath = request.getContextPath();
@@ -110,7 +110,7 @@
 <% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
 	<style type="text/css">
 		<!--
-        @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>_imgs,skin.css?v=<%= vers %>&skin=<%= skin %>);
+        @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>_imgs,skin.css?v=<%= vers %>);
 		-->
 	</style>
     <jsp:include page="Boot.jsp"/>
@@ -121,7 +121,7 @@
 <% } else { %>
 	<style type="text/css">
 	  <!--
-	  @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>_imgs,skin.css?v=<%= vers %>&skin=<%= skin %>);
+	  @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>_imgs,skin.css?v=<%= vers %>);
 	  -->
 	</style>
 	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>

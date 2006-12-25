@@ -544,7 +544,7 @@
       <fileset dir="WebRoot/public" includes="**/*"/>
     </copy>
     <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
-      <fileset dir="WebRoot/" excludes="**/help/**,**/adminhelp/**,**/admin_skins/**,**/templates/**,js/*.js"/>
+      <fileset dir="WebRoot/" excludes="**/help/**,**/adminhelp/**,**/templates/**,js/*.js"/>
     </copy>
     <copy todir="${build.dir}/WebRoot/js/ajax" overwrite="${isProduction}" >
       <fileset dir="${ajax.dir}/WebRoot/js"/>
@@ -557,11 +557,6 @@
 	</copy>
   </target>
 
-  <target name="copy-admin-skins-to-build-area">
-    <copy todir="${build.dir}/WebRoot/skins" overwrite="true" >
-      <fileset dir="WebRoot/admin_skins" />
-    </copy>
-  </target>
   <target name="copy-imgs-to-tmp-area" depends="check4zimbraajax">
     <copy todir="${tmp.dir}" overwrite="true">
       <fileset dir="img/loRes"/>
@@ -847,7 +842,7 @@
   </target>
 
   <!-- this is the production war file target for the admin webapp -->
-  <target name="admin-war" depends="templates, compress-js-files, generate-build-info, admin-images, copy-common-css-to-admin, copy-admin-skins-to-build-area, i18n">
+  <target name="admin-war" depends="templates, compress-js-files, generate-build-info, admin-images, copy-common-css-to-admin, i18n">
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
@@ -867,7 +862,7 @@
     </war>
   </target>
 
-  <target name="admin-dev-war" depends="copy-files-to-build-area,copy-admin-skins-to-build-area, templates, jam-files, generate-build-info, admin-images, copy-common-css-to-admin, i18n">
+  <target name="admin-dev-war" depends="copy-files-to-build-area, templates, jam-files, generate-build-info, admin-images, copy-common-css-to-admin, i18n">
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
