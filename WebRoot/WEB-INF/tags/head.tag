@@ -22,8 +22,11 @@
     <script type="text/javascript">
         <!--
         function checkAll(cb, allbox) {
-            for (i = 0; i < cb.length; i++)
-                cb[i].checked = allbox.checked;
+            if (cb.length)
+                for (i = 0; i < cb.length; i++)
+                    cb[i].checked = allbox.checked;
+            else
+                cb.checked = allbox.checked;
         }
         // -->
 </script>
