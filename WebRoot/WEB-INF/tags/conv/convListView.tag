@@ -42,33 +42,33 @@
                                 </a>
                             </tr>
 
-                            <c:forEach items="${context.searchResult.convHits}" var="conv" varStatus="status">
+                            <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                                 <c:choose>
-                                    <c:when test="${conv.isDraft}">
-                                        <zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(conv.id,'-')}" action="compose"/>
+                                    <c:when test="${hit.conversationHit.isDraft}">
+                                        <zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(hit.conversationHit.id,'-')}" action="compose"/>
                                     </c:when>
                                     <c:otherwise>
                                         <zm:currentResultUrl var="convUrl" value="cv" index="${status.index}" context="${context}" usecache="true"/>
                                     </c:otherwise>
                                 </c:choose>
 
-                                <tr class='ZhRow ${conv.isUnread ? ' Unread':''}${conv.id == context.currentItem.id ? ' RowSelected' : ''}'>
-                                    <td class='CB' nowrap><input  type=checkbox name="id" value="${conv.id}"></td>
-                                    <td class='Img'><app:flagImage flagged="${conv.isFlagged}"/></td>
-                                    <td class='Img'><app:miniTagImage ids="${conv.tagIds}"/></td>
+                                <tr class='ZhRow ${hit.conversationHit.isUnread ? ' Unread':''}${hit.conversationHit.id == context.currentItem.id ? ' RowSelected' : ''}'>
+                                    <td class='CB' nowrap><input  type=checkbox name="id" value="${hit.conversationHit.id}"></td>
+                                    <td class='Img'><app:flagImage flagged="${hit.conversationHit.isFlagged}"/></td>
+                                    <td class='Img'><app:miniTagImage ids="${hit.conversationHit.tagIds}"/></td>
                                     <td><%-- allow this column to wrap --%>
-                                        <a href="${convUrl}">${fn:escapeXml(empty conv.displayRecipients ? unknownRecipient : conv.displayRecipients)}</a>
+                                        <a href="${convUrl}">${fn:escapeXml(empty hit.conversationHit.displayRecipients ? unknownRecipient : hit.conversationHit.displayRecipients)}</a>
                                     </td>
-                                    <td class='Img'><app:attachmentImage attachment="${conv.hasAttachment}"/></td>
+                                    <td class='Img'><app:attachmentImage attachment="${hit.conversationHit.hasAttachment}"/></td>
                                     <td><%-- allow this column to wrap --%>
-                                        <a href="${convUrl}" <c:if test="${conv.id == context.currentItem.id}">accesskey='o'</c:if>>
-                                            <c:set var='subj' value="${empty conv.subject ? unknownSubject : zm:truncate(conv.subject,100,true)}"/>
+                                        <a href="${convUrl}" <c:if test="${hit.conversationHit.id == context.currentItem.id}">accesskey='o'</c:if>>
+                                            <c:set var='subj' value="${empty hit.conversationHit.subject ? unknownSubject : zm:truncate(hit.conversationHit.subject,100,true)}"/>
                                             <c:out value="${subj}"/>
-                                            <c:if test="${mailbox.prefs.showFragments and not empty conv.fragment and fn:length(subj) lt 90}">
-                                                <span class='Fragment'> - <c:out value="${zm:truncate(conv.fragment,100-fn:length(subj),true)}"/></span>
+                                            <c:if test="${mailbox.prefs.showFragments and not empty hit.conversationHit.fragment and fn:length(subj) lt 90}">
+                                                <span class='Fragment'> - <c:out value="${zm:truncate(hit.conversationHit.fragment,100-fn:length(subj),true)}"/></span>
                                             </c:if>
                                         </a>
-                                        <c:if test="${conv.id == context.currentItem.id}">
+                                        <c:if test="${hit.conversationHit.id == context.currentItem.id}">
                                             <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
                                             <c:if test="${cursor.hasPrev}">
                                                 <zm:prevItemUrl var="prevItemUrl" value="search" cursor="${cursor}" context="${context}" usecache="true"/>
@@ -80,9 +80,9 @@
                                             </c:if>
                                         </c:if>
                                     </td>
-                                    <td nowrap><c:if test="${conv.messageCount > 1}">(${conv.messageCount})&nbsp;</c:if><c:if
-                                            test="${conv.messageCount < 2}">&nbsp</c:if></td>
-                                    <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, conv.date))}</td>
+                                    <td nowrap><c:if test="${hit.conversationHit.messageCount > 1}">(${hit.conversationHit.messageCount})&nbsp;</c:if><c:if
+                                            test="${hit.conversationHit.messageCount < 2}">&nbsp</c:if></td>
+                                    <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.conversationHit.date))}</td>
                                 </tr>
                             </c:forEach>
                         </table>

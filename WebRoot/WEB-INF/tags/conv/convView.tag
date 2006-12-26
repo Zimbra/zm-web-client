@@ -17,14 +17,14 @@
 <c:if test="${empty csi}">
     <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
      <c:if test="${csi ge 0}">
-         <c:set var="message" value="${convSearchResult.messageHits[csi].message}"/>
+         <c:set var="message" value="${convSearchResult.hits[csi].messageHit.message}"/>
     </c:if>
 </c:if>
 <c:if test="${message eq null}">
     <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
             <c:set var="csi" value="0"/>
     </c:if>
-    <zm:getMessage var="message" id="${convSearchResult.messageHits[csi].id}" markread="true" neuterimages="${empty param.xim}"/>
+    <zm:getMessage var="message" id="${convSearchResult.hits[csi].id}" markread="true" neuterimages="${empty param.xim}"/>
 </c:if>
 
 <%-- get the message up front, so when we output the overview tree unread counts are correctly reflected --%>
@@ -83,18 +83,18 @@
                                                     <zm:currentResultUrl var="dateSortUrl" value="cv" context="${context}" csi="${param.csi}" css="${param.css eq 'dateDesc' ? 'dateAsc' : 'dateDesc'}"/>
                                                 <a href="${dateSortUrl}"><fmt:message key="received"/></a>
                                             </tr>
-                                            <c:forEach items="${convSearchResult.messageHits}" var="hit" varStatus="status">
+                                            <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
                                                 <zm:currentResultUrl var="msgUrl" value="cv"  context="${context}"
                                                                      cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-                                                <tr class='ZhRow${(hit.isUnread and (hit.id != message.id)) ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageMatched) ? ' RowMatched' : '')}'>
+                                                <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != message.id)) ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                                     <td class='CB' nowrap><input <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
-                                                    <td class='Img'><app:flagImage flagged="${hit.isFlagged}"/></td>
-                                                    <td class='Img'><app:miniTagImage ids="${hit.tagIds}"/></td>
-                                                    <td class='MsgStatusImg' align=center><app:img src="${(hit.isUnread and hit.id == message.id) ? 'mail/MsgStatusRead.gif' : hit.statusImage}"/></td>
-                                                    <td nowrap><a href="${msgUrl}">${fn:escapeXml(hit.displaySender)}</a></td>
-                                                    <td class='Img' ><app:attachmentImage attachment="${hit.hasAttachment}"/></td>
+                                                    <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
+                                                    <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
+                                                    <td class='MsgStatusImg' align=center><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'mail/MsgStatusRead.gif' : hit.messageHit.statusImage}"/></td>
+                                                    <td nowrap><a href="${msgUrl}">${fn:escapeXml(hit.messageHit.displaySender)}</a></td>
+                                                    <td class='Img' ><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                                     <td ><%-- allow this column to wrap --%>
-                                                        <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.fragment ? emptyFragment : zm:truncate(hit.fragment,100, true))}</span></a>
+                                                        <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>
                                                         <c:if test="${hit.id == message.id}">
                                                             <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                             <c:if test="${messCursor.hasPrev}">
@@ -107,9 +107,9 @@
                                                             </c:if>
                                                         </c:if>
                                                     </td>
-                                                    <td nowrap>${fn:escapeXml(zm:getFolderName(pageContext, hit.folderId))}</td>
-                                                    <td nowrap>${fn:escapeXml(zm:displaySize(hit.size))}</td>
-                                                    <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.date))}</td>
+                                                    <td nowrap>${fn:escapeXml(zm:getFolderName(pageContext, hit.messageHit.folderId))}</td>
+                                                    <td nowrap>${fn:escapeXml(zm:displaySize(hit.messageHit.size))}</td>
+                                                    <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}</td>
                                                 </tr>
                                             </c:forEach>
                                             <tr><td colspan=10>&nbsp;</td></tr>
