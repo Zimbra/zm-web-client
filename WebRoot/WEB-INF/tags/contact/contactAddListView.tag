@@ -27,20 +27,20 @@
         </c:otherwise>
         </c:choose>
     </tr>
-    <c:forEach items="${searchResult.contactHits}" var="contactHit" varStatus="status">
-        <c:if test="${not empty contactHit.displayEmail}">
+    <c:forEach items="${searchResult.hits}" var="hit" varStatus="status">
+        <c:if test="${not empty hit.contactHit.displayEmail}">
         <tr>
             <td width=1%>&nbsp;</td>
-            <td width=2% nowrap><input type=checkbox  name="addTo" value="${fn:escapeXml(contactHit.fullAddress)}"></td>
-            <td width=2% nowrap><input type=checkbox name="addCc" value="${fn:escapeXml(contactHit.fullAddress)}"></td>
-            <td width=2% nowrap><input type=checkbox  name="addBcc" value="${fn:escapeXml(contactHit.fullAddress)}"></td>
-            <td width=1%><app:miniTagImage ids="${contactHit.tagIds}"/></td>
-            <td width=1%><app:img src="${contactHit.image}" alt="Contact"/></td>
+            <td width=2% nowrap><input type=checkbox  name="addTo" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
+            <td width=2% nowrap><input type=checkbox name="addCc" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
+            <td width=2% nowrap><input type=checkbox  name="addBcc" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
+            <td width=1%><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
+            <td width=1%><app:img src="${hit.contactHit.image}" alt="Contact"/></td>
             <td width=1%>&nbsp;</td>
             <td width=20%>
-                    ${fn:escapeXml(empty contactHit.fileAsStr ? '' : contactHit.fileAsStr)}
+                    ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
             </td>
-            <td >&nbsp;${fn:escapeXml(contactHit.displayEmail)}</td>
+            <td >&nbsp;${fn:escapeXml(hit.contactHit.displayEmail)}</td>
         </tr>
         </c:if>
     </c:forEach>
@@ -65,7 +65,7 @@
     <c:when test="${searchResult eq null and searchGalResult eq null}">
         <div class='InitialContactSearch'><fmt:message key="enterContactToSearchFor"/></div>
     </c:when>
-    <c:when test="${(searchResult ne null and searchResult.contactSize eq 0) or (searchGalResult ne null and searchGalResult.size eq 0)}">
+    <c:when test="${(searchResult ne null and searchResult.size eq 0) or (searchGalResult ne null and searchGalResult.size eq 0)}">
         <div class='NoResults'><fmt:message key="noResultsFound"/></div>
     </c:when>
 </c:choose>

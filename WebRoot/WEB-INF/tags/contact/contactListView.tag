@@ -29,17 +29,17 @@
                                </a>
                                <th ><fmt:message key="email"/>
                            </tr>
-                           <c:forEach items="${context.searchResult.contactHits}" var="contact" varStatus="status">
-                               <tr <c:if test="${contact.id == context.currentItem.id}">class='RowSelected'</c:if>>
-                                   <td class='CB' nowrap><input type=checkbox  name="id" value="${contact.id}"></td>
-                                   <td class='Img'><app:miniTagImage ids="${contact.tagIds}"/></td>
-                                   <td class='Img'><app:img src="${contact.image}" alt="Contact"/></td>
+                           <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
+                               <tr <c:if test="${hit.contactHit.id == context.currentItem.id}">class='RowSelected'</c:if>>
+                                   <td class='CB' nowrap><input type=checkbox  name="id" value="${hit.contactHit.id}"></td>
+                                   <td class='Img'><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
+                                   <td class='Img'><app:img src="${hit.contactHit.image}" alt="Contact"/></td>
                                    <td ><span style='padding:3px'>
-                                       <zm:currentResultUrl var="contactUrl" value="/h/contact"  id="${contact.id}" index="${status.index}" context="${context}"/>
-                                       <a href="${contactUrl}" <c:if test="${contact.id == context.currentItem.id}">accesskey='o'</c:if>>
-                                               ${fn:escapeXml(empty contact.fileAsStr ? '<None>' : contact.fileAsStr)}
+                                       <zm:currentResultUrl var="contactUrl" value="/h/contact"  id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
+                                       <a href="${contactUrl}" <c:if test="${hit.contactHit.id == context.currentItem.id}">accesskey='o'</c:if>>
+                                               ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '<None>' : hit.contactHit.fileAsStr)}
                                        </a></span>
-                                       <c:if test="${contact.id == context.currentItem.id}">
+                                       <c:if test="${hit.contactHit.id == context.currentItem.id}">
                                            <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
 
                                            <c:if test="${cursor.hasPrev}">
@@ -52,12 +52,12 @@
                                            </c:if>
                                        </c:if>
                                    </td>
-                                   <td ><c:if test="${empty contact.displayEmail}">
-                                       &nbsp;</c:if><a href="${contactUrl}">${fn:escapeXml(contact.displayEmail)}</a></td>
+                                   <td ><c:if test="${empty hit.contactHit.displayEmail}">
+                                       &nbsp;</c:if><a href="${contactUrl}">${fn:escapeXml(hit.contactHit.displayEmail)}</a></td>
                                </tr>
                            </c:forEach>
                        </table>
-                       <c:if test="${context.searchResult.contactSize == 0}">
+                       <c:if test="${context.searchResult.size == 0}">
                            <div class='NoResults'><fmt:message key="noResultsFound"/></div>
                        </c:if>
                </td>
