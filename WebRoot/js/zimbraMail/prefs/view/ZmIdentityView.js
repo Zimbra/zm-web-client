@@ -335,6 +335,7 @@ function ZmIdentityPage(parent, appCtxt, pageId, className, posStyle) {
 	
 	this._inputs = {}; // Map of field name in ZmIdentity to DwtInputField
 	this._checkboxIds = {}; // Map of field name in ZmIdentity to checkbox ids
+	this._radioGroups = {}; // Map of field name in ZmIdentity to DwtRadioButtonGroup
 	this._selects = {}; // Map of field name in ZmIdentity to DwtSelect
 	this._arrays = {}; // Map of field name in ZmIdentity to objects with inputs & callbacks
 	this._associations = {}; // Map of checkbox ids to the controls they enable/disable
@@ -382,6 +383,12 @@ function(identity) {
 		this._applyCheckbox(checkbox);
 	}
 	
+	for (var field in this._radioGroups) {
+		var group = this._radioGroups[field];
+		var value = identity.getField(field);
+		group.setSelectedValue(value);
+	}
+	
 	for (var field in this._inputs) {
 		var input = this._inputs[field];
 		var value = identity.getField(field);
@@ -406,13 +413,12 @@ function(identity) {
 	}
 	
 	if ((this._pageId == ZmIdentityPage.ADVANCED) && this._hasRendered) {
-		var checkbox = document.getElementById(this._useDefaultsCheckboxId);
+		var useDefaultElement = document.getElementById(this._htmlElId + "_useDefaultsRadios");
 		if (identity.isDefault) {
-			checkbox.checked = false;
-			Dwt.setVisibility(checkbox.parentNode, false);
+			Dwt.setVisible(useDefaultElement, false);
 			this._applyCheckbox(checkbox, this._associations[this._useDefaultsCheckboxId]);
 		} else {
-			Dwt.setVisibility(checkbox.parentNode, true);
+			Dwt.setVisible(useDefaultElement, true);
 		}
 	}
 };
@@ -444,6 +450,15 @@ function() {
 		var arrayValue = data.toArray.call(this, stringValue);
 		if (!this._areArraysEqual(this._identity.getField(field), arrayValue)) {
 			this._identity.setField(field, arrayValue);
+			dirty = true;
+		}
+	}
+	
+	for (var field in this._radioGroups) {
+		var group = this._radioGroups[field];
+		var value = group.getSelectedValue();
+		if (this._identity.getField(field) != value) {
+			this._identity.setField(field, value);
 			dirty = true;
 		}
 	}
@@ -657,8 +672,8 @@ function(value) {
 
 // Sets up a relationship where the controls' enabledness is toggled by the checkbox
 ZmIdentityPage.prototype._associateCheckbox =
-function(checkboxId, controls, checkedIsDisabled) {
-	this._associations[checkboxId] = { controls: controls, checkedIsDisabled: checkedIsDisabled };
+function(checkboxId, controls) {
+	this._associations[checkboxId] = controls;
 	var checkbox = document.getElementById(checkboxId);
 	this._applyCheckbox(checkbox, controls);
 	Dwt.setHandler(checkbox, DwtEvent.ONCLICK, this._checkboxClosure);
@@ -666,12 +681,11 @@ function(checkboxId, controls, checkedIsDisabled) {
 
 ZmIdentityPage.prototype._applyCheckbox =
 function(checkbox) {
-	var data = this._associations[checkbox.id];
-	if (data) {
-		var isChecked = checkbox.checked;
-		var enabled = data.checkedIsDisabled ? !isChecked : isChecked;
-		for (var i = 0, count = data.controls.length; i < count; i++) {
-			var control = data.controls[i];
+	var controls = this._associations[checkbox.id];
+	if (controls) {
+		var enabled = checkbox.checked;
+		for (var i = 0, count = controls.length; i < count; i++) {
+			var control = controls[i];
 			control.setEnabled(enabled);
 		}
 	}
@@ -686,53 +700,18 @@ function(event) {
 
 ZmIdentityPage.prototype._initializeAdvanced =
 function() {
-	
+	var id = this._htmlElId;
 	this._useDefaultsCheckboxId = Dwt.getNextId();
 	
-	var replyForwardSelectId = Dwt.getNextId();
-	var prefixSelectId = Dwt.getNextId();
-	var replyOptionSelectId = Dwt.getNextId();
-	var forwardOptionSelectId = Dwt.getNextId();
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Options#IdentityForm_advanced", id);
 	
-	var html = [];
-	var i = 0;
-	html[i++] = "<div><input type='checkbox' id='";
-	html[i++] = this._useDefaultsCheckboxId;
-	html[i++] = "'>";
-	html[i++] = ZmMsg.identitiesUseDefault;
-	html[i++] = "</div>";
-	html[i++] = "<fieldset class='ZmFieldset'><legend class='ZmLegend'>";
-	html[i++] = ZmMsg.replyWithIdentity;
-	html[i++] = "</legend>";
-	html[i++] = "<table style='width:100%'>";
-
-	html[i++] = "<tr><td>";
-	html[i++] = ZmMsg.replyForwardFormat;
-	html[i++] = "</td><td id='";
-	html[i++] = replyForwardSelectId;
-	html[i++] = "'></td></tr>";
-	
-	html[i++] = "<tr><td>";
-	html[i++] = ZmMsg.prefixTextWith;
-	html[i++] = "</td><td id='";
-	html[i++] = prefixSelectId;
-	html[i++] = "'></td></tr>";
-	
-	html[i++] = "<tr><td>";
-	html[i++] = ZmMsg.replyInclude;
-	html[i++] = "</td><td id='";
-	html[i++] = replyOptionSelectId;
-	html[i++] = "'></td></tr>";
-	
-	html[i++] = "<tr><td>";
-	html[i++] = ZmMsg.forwardInclude;
-	html[i++] = "</td><td id='";
-	html[i++] = forwardOptionSelectId;
-	html[i++] = "'></td></tr>";
-	
-	html[i++] = "</table>";
-	html[i++] = "</fieldset>";
-	this.getHtmlElement().innerHTML = html.join("");
+	var radios = {};
+	radios[id + "_useDefaultsCheckbox_default"] = true;
+	radios[id + "_useDefaultsCheckbox_custom"] = false;
+	var group = new DwtRadioButtonGroup(radios);
+	group.setSelectedId(id + "_useDefaultsCheckbox_custom");
+	group.addSelectionListener(new AjxListener(this, this._radioListener));
+	this._radioGroups[ZmIdentity.USE_DEFAULT_ADVANCED] = group;
 
 	var options = [];
 	var i = 0;
@@ -740,7 +719,7 @@ function() {
 	options[i++] = new DwtSelectOptionData(ZmIdentity.COMPOSE_TEXT, ZmMsg.text);
 	options[i++] = new DwtSelectOptionData(ZmIdentity.COMPOSE_HTML, ZmMsg.htmlDocument);
 	var replyForwardSelect = new DwtSelect(this, options);
-	replyForwardSelect.reparentHtmlElement(replyForwardSelectId);
+	replyForwardSelect.replaceElement(id + "_replyForwardSelect");
 	this._selects[ZmIdentity.COMPOSE_FORMAT] = replyForwardSelect;
 
 	var options = [];
@@ -748,7 +727,7 @@ function() {
 	options[i++] = new DwtSelectOptionData(">", ">");
 	options[i++] = new DwtSelectOptionData("|", "|");
 	var prefixSelect = new DwtSelect(this, options);
-	prefixSelect.reparentHtmlElement(prefixSelectId);
+	prefixSelect.replaceElement(id + "_prefixSelect");
 	this._selects[ZmIdentity.PREFIX] = prefixSelect;
 
 	var options = [];
@@ -756,23 +735,29 @@ function() {
 	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_NONE, ZmMsg.dontIncludeMessage);
 	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE, ZmMsg.includeInBody);
 	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_PREFIX, ZmMsg.includePrefix);
-	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_ATTACH, ZmMsg.includeAsAttach);
+	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_ATTACH, ZmMsg.includeOriginalAsAttach);
 	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_SMART, ZmMsg.smartInclude);
 	var replyOptionSelect = new DwtSelect(this, options);
-	replyOptionSelect.reparentHtmlElement(replyOptionSelectId);
+	replyOptionSelect.replaceElement(id + "_replyIncludeSelect");
 	this._selects[ZmIdentity.REPLY_OPTION] = replyOptionSelect;
 
 	var options = [];
 	var i = 0;
 	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE, ZmMsg.includeInBody);
 	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_PREFIX, ZmMsg.includePrefix);
-	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_ATTACH, ZmMsg.includeAsAttach);
+	options[i++] = new DwtSelectOptionData(ZmSetting.INCLUDE_ATTACH, ZmMsg.includeOriginalAsAttach);
 	var forwardOptionSelect = new DwtSelect(this, options);
-	forwardOptionSelect.reparentHtmlElement(forwardOptionSelectId);
+	forwardOptionSelect.replaceElement(id + "_forwardIncludeSelect");
 	this._selects[ZmIdentity.FORWARD_OPTION] = forwardOptionSelect;
-	
-	this._checkboxIds[ZmIdentity.USE_DEFAULT_ADVANCED] = this._useDefaultsCheckboxId;
-	this._associateCheckbox(this._useDefaultsCheckboxId, [replyForwardSelect, prefixSelect, replyOptionSelect, forwardOptionSelect], true);
+};
+
+ZmIdentityPage.prototype._radioListener =
+function(event) {
+	var enable = !event.detail.value;
+	for (var i in this._selects) {
+		var select = this._selects[i];
+		select.setEnabled(enable);
+	}
 };
 
 ZmIdentityPage.prototype._folderBrowseListener =
