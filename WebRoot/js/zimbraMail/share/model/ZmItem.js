@@ -132,6 +132,9 @@ ZmItem.F_ITEM_TYPE		= i++;
 ZmItem.F_TAG_CELL		= i++;
 ZmItem.F_SIZE			= i++;
 ZmItem.F_INDEX			= i++;
+ZmItem.F_COMPLETE		= i++;
+ZmItem.F_CREATED_ON		= i++;
+ZmItem.F_NOTES			= i++;
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};

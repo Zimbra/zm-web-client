@@ -26,6 +26,9 @@
 function ZmTaskListController(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmListController.call(this, appCtxt, container, app);
+
+	// TEMP:
+	this._list = new AjxVector();
 };
 
 ZmTaskListController.prototype = new ZmListController;
@@ -88,4 +91,10 @@ TODO
 	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
 	this._setNavToolBar(tb, view);
 */
+};
+
+// Load contacts into the given view and perform layout.
+ZmTaskListController.prototype._setViewContents =
+function(view) {
+	this._listView[view].set(this._list, null, this._folderId);
 };
