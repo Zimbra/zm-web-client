@@ -71,7 +71,13 @@ function(view) {
 
 ZmTaskListController.prototype._getToolBarOps =
 function() {
-	var list = this._standardToolBarOps();
+	var list = [ZmOperation.NEW_MENU];
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+		list.push(ZmOperation.TAG_MENU);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.DELETE, ZmOperation.MOVE);
+	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+		list.push(ZmOperation.PRINT_MENU);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.EDIT);
 	return list;

@@ -279,7 +279,9 @@ Contributor(s):
 <!-- Tasks Application -->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/tasks/model/ZmTask.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/tasks/view/ZmTaskListView.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/tasks/view/ZmTaskEditView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/tasks/controller/ZmTaskListController.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/tasks/controller/ZmTaskController.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/tasks/ZmTasksApp.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- Preferences Application -->

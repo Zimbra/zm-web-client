@@ -56,6 +56,8 @@ function(item) {
 		this._html = ZmCalViewMgr.getPrintHtml(item);
 	} else if (item instanceof ZmPage) {
 		this._html = ZmNotebookPageView.getPrintHtml(item, this._appCtxt);
+	} else if (item instanceof ZmTask) {
+		this._html = ZmTaskEditView.getPrintHtml(item, this._appCtxt);
 	}
 
 	this._printWindow = this._getNewWindow();

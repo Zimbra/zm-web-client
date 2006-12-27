@@ -523,8 +523,7 @@ function(ev, id, newWin) {
 		// new items
 		case ZmOperation.NEW_MESSAGE: {
 			var app = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
-			var controller = app.getComposeController();
-			controller.doAction(ZmOperation.NEW_MESSAGE, newWin || this._inNewWindow(ev));
+			app.getComposeController().doAction(ZmOperation.NEW_MESSAGE, newWin || this._inNewWindow(ev));
 			break;
 		}
 		case ZmOperation.NEW_CONTACT:
@@ -535,8 +534,7 @@ function(ev, id, newWin) {
 				var type = id == ZmOperation.NEW_GROUP ? ZmItem.GROUP : null;
 				var contact = new ZmContact(this._appCtxt, null, null, type);
 				var app = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
-				var controller = app.getContactController();
-				controller.show(contact);
+				app.getContactController().show(contact);
 			} else if (ev) {
 				ev.item.popup();
 			}
@@ -544,13 +542,12 @@ function(ev, id, newWin) {
 		}
 		case ZmOperation.NEW_APPT: {
 			var app = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
-			var controller = app.getCalController();
-			controller.newAppointment(null, null, null, new Date());
+			app.getCalController().newAppointment(null, null, null, new Date());
 			break;
 		}
 		case ZmOperation.NEW_TASK: {
-			// TODO
-			DBG.println("TODO- new task");
+			var app = this._appCtxt.getApp(ZmZimbraMail.TASKS_APP);
+			app.getTaskController().show();
 			break;
 		}
 		case ZmOperation.NEW_PAGE: {
@@ -563,8 +560,7 @@ function(ev, id, newWin) {
 			page.folderId = notebook ? notebook.id : ZmNotebookItem.DEFAULT_FOLDER;
 
 			var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
-			var controller = app.getPageEditController();
-			controller.show(page);
+			app.getPageEditController().show(page);
 			break;
 		}
 		// new organizers

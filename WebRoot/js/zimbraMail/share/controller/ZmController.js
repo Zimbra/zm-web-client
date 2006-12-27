@@ -80,6 +80,7 @@ ZmController.NOTEBOOK_PAGE_EDIT_VIEW	= i++;
 ZmController.NOTEBOOK_FILE_VIEW			= i++;
 ZmController.NOTEBOOK_SITE_VIEW			= i++;
 ZmController.TASKLIST_VIEW				= i++;
+ZmController.TASKEDIT_VIEW				= i++;
 
 /* ROSSD - It feels like we may need a ZmAppViewController class to help with
  * the tab group work. Delaying this until I have more experience pushing the 

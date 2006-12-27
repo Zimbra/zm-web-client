@@ -52,7 +52,14 @@ function(active, view) {
 
 ZmTasksApp.prototype.getTaskListController =
 function() {
-	if (!this._tasksController)
-		this._tasksController = new ZmTaskListController(this._appCtxt, this._container, this);
-	return this._tasksController;
+	if (!this._taskListController)
+		this._taskListController = new ZmTaskListController(this._appCtxt, this._container, this);
+	return this._taskListController;
+};
+
+ZmTasksApp.prototype.getTaskController =
+function() {
+	if (!this._taskController)
+		this._taskController = new ZmTaskController(this._appCtxt, this._container, this);
+	return this._taskController;
 };
