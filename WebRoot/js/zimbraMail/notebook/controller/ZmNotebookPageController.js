@@ -208,11 +208,11 @@ ZmNotebookPageController.prototype._enableNaviButtons = function() {
 	var toolbar = this._toolbar[this._currentView];
 	var button = toolbar.getButton(ZmOperation.PAGE_BACK);
 	button.setEnabled(enabled && this._place > 0);
-	ZmNotebookPageController.__setButtonToolTip(this._appCtxt, button, this._history[this._place - 1]);
+	ZmNotebookPageController.__setButtonToolTip(this._appCtxt, button, this._history[this._place - 1], ZmMsg.goBack);
 
 	var button = toolbar.getButton(ZmOperation.PAGE_FORWARD);
 	button.setEnabled(enabled && this._place + 1 < this._history.length);
-	ZmNotebookPageController.__setButtonToolTip(this._appCtxt, button, this._history[this._place + 1]);
+	ZmNotebookPageController.__setButtonToolTip(this._appCtxt, button, this._history[this._place + 1], ZmMsg.goForward);
 };
 
 // listeners
@@ -251,8 +251,8 @@ ZmNotebookPageController.prototype._showIndex = function(folderId) {
 // Private functions
 //
 
-ZmNotebookPageController.__setButtonToolTip = function(appCtxt, button, pageRef) {
-	var text = pageRef ? pageRef.name : "";
+ZmNotebookPageController.__setButtonToolTip = function(appCtxt, button, pageRef, defaultValue) {
+	var text = pageRef ? pageRef.name : defaultValue;
 	if (text == ZmNotebook.PAGE_INDEX) {
 		var notebook = appCtxt.getTree(ZmOrganizer.NOTEBOOK).getById(pageRef.folderId);
 		if (notebook) {
