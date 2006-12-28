@@ -493,6 +493,7 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode, acco
 	this._composeView.setComposeMode(this._composeMode);
 
 	this._setOptionsMenu(this._composeMode, identity);
+	this._setAddSignatureVisibility(identity);
 
 	this._composeView.set(action, msg, toOverride, subjOverride, extraBodyText, identity);
 	this._setComposeTabGroup();
