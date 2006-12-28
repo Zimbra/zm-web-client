@@ -100,7 +100,7 @@ function(parentElement) {
 	this._addPage(ZmIdentityPage.OPTIONS, ZmMsg.identityOptions, tabView);
 	this._addPage(ZmIdentityPage.SIGNATURE, ZmMsg.signature, tabView);
 	this._addPage(ZmIdentityPage.ADVANCED, ZmMsg.identityAdvanced, tabView);
-	
+
 	var identityCollection = this._appCtxt.getIdentityCollection();
 	identityCollection.addChangeListener(new AjxListener(this, this._identityChangeListener));
 };
@@ -395,15 +395,8 @@ function(identity) {
 		input.setValue(value);
 	}
 
-	for (var field in this._selects) {
-		var select = this._selects[field];
-		var value = identity.getField(field);
-		if (value) {
-			select.setSelectedValue(value);
-		} else {
-			select.setSelected(0);
-		}
-	}
+	var selectIdentity = this._pageId == ZmIdentityPage.ADVANCED ? identity.getAdvancedIdentity() : identity;
+	this._populateSelects(selectIdentity);
 
 	for (var field in this._arrays) {
 		var data = this._arrays[field];
@@ -437,10 +430,12 @@ function() {
 
 	for (var field in this._selects) {
 		var select = this._selects[field];
-		var value = select.getValue();
-		if (this._identity.getField(field) != value) {
-			this._identity.setField(field, value);
-			dirty = true;
+		if (select.getEnabled()) {
+			var value = select.getValue();
+			if (this._identity.getField(field) != value) {
+				this._identity.setField(field, value);
+				dirty = true;
+			}
 		}
 	}
 	
@@ -473,6 +468,20 @@ function() {
 		}
 	}
 	return dirty;	
+};
+
+ZmIdentityPage.prototype._populateSelects =
+function(identity) {
+	this._appCtxt.getIdentityCollection().defaultIdentity;
+	for (var field in this._selects) {
+		var select = this._selects[field];
+		var value = identity.getField(field);
+		if (value) {
+			select.setSelectedValue(value);
+		} else {
+			select.setSelected(0);
+		}
+	}
 };
 
 ZmIdentityPage.prototype._areArraysEqual =
@@ -753,10 +762,13 @@ function() {
 
 ZmIdentityPage.prototype._radioListener =
 function(event) {
-	var enable = !event.detail.value;
+	var useDefault = event.detail.value;
+	var identity = useDefault ? this._appCtxt.getIdentityCollection().defaultIdentity : this._identity;
+	this._populateSelects(identity);
+		
 	for (var i in this._selects) {
 		var select = this._selects[i];
-		select.setEnabled(enable);
+		select.setEnabled(!useDefault);
 	}
 };
 
