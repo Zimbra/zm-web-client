@@ -689,6 +689,7 @@ ZmOperation.SETUP[ZmOperation.PRINT_MENU] = {
 ZmOperation.REFRESH = i++;
 ZmOperation.SETUP[ZmOperation.REFRESH] = {
 	textKey:	"refresh",
+	tooltipKey:	"refreshTooltip",
 	img:		"Refresh"
 };
 
