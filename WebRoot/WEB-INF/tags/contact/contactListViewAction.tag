@@ -11,6 +11,7 @@
     <c:when test="${!empty param.actionCreate}">
         <app:editContactAction id="${param.id}"/>
         <app:status><fmt:message key="contactCreated"/></app:status>
+        <zm:clearSearchCache type="contact"/>
     </c:when>
     <c:when test="${!empty param.actionModify}">
         <app:editContactAction id="${param.id}"/>

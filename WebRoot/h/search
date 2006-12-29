@@ -41,7 +41,7 @@
 
      </c:if>
 
-     <zm:computeSearchContext var="context" usecache="false"/>
+     <zm:computeSearchContext var="context" usecache="true"/>
      
 </app:handleError>
 
