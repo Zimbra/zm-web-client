@@ -296,7 +296,7 @@ function(width, height) {
 
 	var contactHeaderDiv = document.getElementById(this._fieldIds[ZmContactView.F_contactTitle]);
 	if (contactHeaderDiv)
-		Dwt.setSize(contactHeaderDiv, "100%");//-50); // offet by 50px to allow tag icon!
+		Dwt.setSize(contactHeaderDiv, "100%");
 };
 
 ZmContactView.prototype._addEntryRow =

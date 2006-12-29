@@ -35,12 +35,50 @@
 */
 function ZmTask(appCtxt, list) {
 	ZmAppt.call(this, appCtxt, ZmItem.TASK, list);
+	this.folderId = ZmOrganizer.ID_TASKS;
 };
 
 ZmTask.prototype = new ZmAppt;
 ZmTask.prototype.constructor = ZmTask;
 
+
+// Public Methods
 ZmTask.prototype.toString =
 function() {
 	return "ZmTask";
+};
+
+ZmTask.prototype.getFolderId =
+function() {
+	return this.folderId;
+};
+
+ZmTask.prototype.getSubject =
+function() {
+	return this._subject || "";
+};
+
+ZmTask.prototype.getDateDue =
+function() {
+	return this._dateDue;
+};
+
+ZmTask.prototype.getNotes =
+function() {
+	return this._notes || "";
+};
+
+ZmTask.prototype.getPercentComplete =
+function() {
+	return this._percentComplete;
+};
+
+ZmTask.prototype.getPriority =
+function() {
+	return this._priority;
+};
+
+ZmTask.prototype.getIcon =
+function() {
+	return "Task";
 };

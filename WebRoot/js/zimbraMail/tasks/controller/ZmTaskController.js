@@ -130,7 +130,7 @@ function() {
 ZmTaskController.prototype._setViewContents =
 function(view) {
 	this._listView[view].set(this._task);
-/*
+
 	// can't add all the fields until the view has been created
 	if (!this._tabGroupDone[view]) {
 		var list = this._listView[view]._getTabGroupMembers();
@@ -141,7 +141,6 @@ function(view) {
 	} else {
 		this._setTabGroup(this._tabGroups[view]);
 	}
-*/
 };
 
 ZmTaskController.prototype._initializeTabGroup =
@@ -217,27 +216,26 @@ function(items, hardDelete, attrs, skipPostProcessing) {
 		this._app.popView(true);
 	}
 };
+*/
 
 ZmTaskController.prototype._preHideCallback =
 function(view, force) {
 	if (force) return true;
 
-	var view = this._listView[this._currentView];
-	if (!view.isDirty()) {
-		this._listView[this._currentView].cleanup();
+	var v = this._listView[this._currentView];
+	if (!v.isDirty()) {
+		v.cleanup();
 		return true;
 	}
 
-	var ps = this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
-	ps.reset();
-	ps.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
-	ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
-	ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
-	ps.popup(view._getDialogXY());
-
+	this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
+	this._popShield.reset();
+	this._popShield.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
+	this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
+	this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
+	this._popShield.popup();
 	return false;
 };
-*/
 
 ZmTaskController.prototype._popShieldYesCallback =
 function() {

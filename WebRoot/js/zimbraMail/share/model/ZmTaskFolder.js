@@ -50,6 +50,10 @@ ZmTaskFolder.prototype = new ZmOrganizer;
 ZmTaskFolder.prototype.constructor = ZmTaskFolder;
 
 
+// Consts
+ZmTaskFolder.DEFAULT_COLOR = ZmOrganizer.C_GRAY;
+
+
 // Public methods
 
 ZmTaskFolder.prototype.toString =
