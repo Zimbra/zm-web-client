@@ -8,6 +8,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <c:if test="${empty requestScope.contactsToolbarCache}">
+     <zm:getMailbox var="mailbox"/>
     <c:set var="contactsToolbarCache" scope="request">
         <input class='tbButton' type="submit" name="actionNew" value="<fmt:message key="newContact"/>">
         &nbsp;
@@ -24,20 +25,22 @@
         </select>
         <input class='tbButton' type="submit" name="actionMove" value="<fmt:message key="actionMove"/>">
         &nbsp;
-        <select name="actionOp">
-            <option value="" selected/><fmt:message key="moreActions"/>
-            <option disabled /><fmt:message key="actionOptSep"/>
-            <option disabled /><fmt:message key="actionAddTag"/>
-            <zm:forEachTag var="tag">
+        <c:if test="${mailbox.features.tagging}">
+            <select name="actionOp">
+                <option value="" selected/><fmt:message key="moreActions"/>
+                <option disabled /><fmt:message key="actionOptSep"/>
+                <option disabled /><fmt:message key="actionAddTag"/>
+                <zm:forEachTag var="tag">
                 <option value="t:${tag.id}" />${fn:escapeXml(tag.name)}
-            </zm:forEachTag>
-            <option disabled /><fmt:message key="actionOptSep"/>
-            <option disabled /><fmt:message key="actionRemoveTag"/>
-            <zm:forEachTag var="tag">
-                <option value="u:${tag.id}" />${fn:escapeXml(tag.name)}
-            </zm:forEachTag>
-        </select>
-        <input class='tbButton' type="submit" name="action" value="<fmt:message key="actionGo"/>">
+                </zm:forEachTag>
+                <option disabled /><fmt:message key="actionOptSep"/>
+                <option disabled /><fmt:message key="actionRemoveTag"/>
+                <zm:forEachTag var="tag">
+                    <option value="u:${tag.id}" />${fn:escapeXml(tag.name)}
+                </zm:forEachTag>
+            </select>
+            <input class='tbButton' type="submit" name="action" value="<fmt:message key="actionGo"/>">
+        </c:if>
     </c:set>
 </c:if>
 

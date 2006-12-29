@@ -29,7 +29,7 @@
         </td>
         <td colspan=2 valign=top class='TopContent'>
             <table width=100% cellspacing=0>
-                <app:appTop keys="${keys}" query="${empty context.query ? param.sq : context.query}"/>
+                <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}"/>
                 <app:appStatus/>
             </table>
         </td>
@@ -37,7 +37,7 @@
     <tr>
         <td class='Overview'>&nbsp;</td>
         <td colspan=2>
-            <app:appTabs keys="${keys}" selected='${selected}'/>
+            <app:appTabs mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
         </td>
     </tr>
     <tr>

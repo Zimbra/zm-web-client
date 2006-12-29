@@ -11,6 +11,7 @@
 
 
 <c:if test="${empty requestScope.contactToolbarCache}">
+    <zm:getMailbox var="mailbox"/>
     <c:set var="contactToolbarCache" scope="request">
         <input class='tbButton' type="submit" name="actionEdit" value="<fmt:message key="edit"/>">
         &nbsp;        
@@ -27,20 +28,22 @@
         </select>
         <input class='tbButton' type="submit" name="actionMove" value="<fmt:message key="actionMove"/>">
         &nbsp;
-        <select name="actionOp">
-            <option value="" selected/><fmt:message key="moreActions"/>
-            <option disabled /><fmt:message key="actionOptSep"/>
-            <option disabled /><fmt:message key="actionAddTag"/>
-            <zm:forEachTag var="tag">
-                <option value="t:${tag.id}" />${fn:escapeXml(tag.name)}
-            </zm:forEachTag>
-            <option disabled /><fmt:message key="actionOptSep"/>
-            <option disabled /><fmt:message key="actionRemoveTag"/>
-            <zm:forEachTag var="tag">
-                <option value="u:${tag.id}" />${fn:escapeXml(tag.name)}
-            </zm:forEachTag>
-        </select>
-        <input class='tbButton' type="submit" name="action" value="<fmt:message key="actionGo"/>">
+        <c:if test="${mailbox.features.tagging}">
+            <select name="actionOp">
+                <option value="" selected/><fmt:message key="moreActions"/>
+                <option disabled /><fmt:message key="actionOptSep"/>
+                <option disabled /><fmt:message key="actionAddTag"/>
+                <zm:forEachTag var="tag">
+                    <option value="t:${tag.id}" />${fn:escapeXml(tag.name)}
+                </zm:forEachTag>
+                <option disabled /><fmt:message key="actionOptSep"/>
+                <option disabled /><fmt:message key="actionRemoveTag"/>
+                <zm:forEachTag var="tag">
+                    <option value="u:${tag.id}" />${fn:escapeXml(tag.name)}
+                </zm:forEachTag>
+            </select>
+            <input class='tbButton' type="submit" name="action" value="<fmt:message key="actionGo"/>">
+        </c:if>
     </c:set>
 </c:if>
 
@@ -53,7 +56,7 @@
         <td nowrap align=right>
             <c:if test="${context.hasPrevItem}">
                 <zm:prevItemUrl var="prevItemUrl" disp="1" value="" cursor="${cursor}" context="${context}" usecache="true"/>
-                <a <c:if test="${keys}">accesskey="p"</c:if> href="${prevItemUrl}"><img src="/images/arrows/LeftArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}">accesskey="p"</c:if> href="${prevItemUrl}"><img alt="left" src="/images/arrows/LeftArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
                 <app:img disabled='true' src="arrows/LeftArrow.gif" border="0"/>
@@ -61,7 +64,7 @@
             <span class='Paging'>${context.searchResult.offset+context.currentItemIndex+1}</span>
             <c:if test="${context.hasNextItem}">
                 <zm:nextItemUrl var="nextItemUrl" disp="1" value="" cursor="${cursor}" context="${context}" usecache="true"/>
-                <a <c:if test="${keys}">accesskey="n"</c:if>href="${nextItemUrl}"><img src="/images/arrows/RightArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}">accesskey="n"</c:if>href="${nextItemUrl}"><img alt="right" src="/images/arrows/RightArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">
                 <app:img disabled='true' src="arrows/RightArrow.gif" border="0"/>

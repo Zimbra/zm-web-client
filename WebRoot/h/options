@@ -87,11 +87,13 @@
                     <a href="<c:url value="/h/options?selected=mail"/>" accesskey="2">
                         <span><fmt:message key="mail"/></span></a>
                 </td>
-                <td class='TabSpacer'/>
-                <td class='Tab ${selected=='addressbook' ? 'TabSelected' :'TabNormal'}'>
-                    <a href="<c:url value="/h/options?selected=addressbook"/>" accesskey="3">
-                        <span><fmt:message key="addressBook"/></span></a>
-                </td>
+                <c:if test="${mailbox.features.contacts}">
+                    <td class='TabSpacer'/>
+                    <td class='Tab ${selected=='addressbook' ? 'TabSelected' :'TabNormal'}'>
+                        <a href="<c:url value="/h/options?selected=addressbook"/>" accesskey="3">
+                            <span><fmt:message key="addressBook"/></span></a>
+                    </td>
+                </c:if>
                 <td class='TabSpacer'/>
                 <td class='Tab ${selected=='shortcuts' ? 'TabSelected' :'TabNormal'}'>
                     <a href="<c:url value="/h/options?selected=shortcuts"/>" accesskey="4">

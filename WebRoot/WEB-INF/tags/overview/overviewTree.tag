@@ -12,10 +12,14 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<zm:getMailbox var="mailbox"/>
+
 <c:if test="${folders}"><app:folderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
 
 <c:if test="${contacts}"><app:contactFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
-
+<c:if test="${mailbox.features.savedSearches}">
 <c:if test="${searches}"><app:searchFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
-
+</c:if>
+<c:if test="${mailbox.features.tagging}">
 <c:if test="${tags}"><app:tagTree keys="${keys}" editmode="${editmode}"/></c:if>
+</c:if>
