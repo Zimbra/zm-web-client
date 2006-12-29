@@ -1,13 +1,12 @@
 <%@ tag body-content="scriptless" %>
 <%@ attribute name="query" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
+<%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
-<zm:getMailbox var="mailbox"/>
 
 <tr height=35 >
     <td style='width:80%' height=25 nowrap class='SearchBar'>
@@ -23,7 +22,9 @@
                     </c:choose>
                     <select name="st">
                         <option <c:if test="${isMail}">selected </c:if>value="${mailbox.features.conversations ? mailbox.prefs.groupMailBy : 'message'}"/><fmt:message key="searchMail"/>
-                        <option <c:if test="${isContact}">selected </c:if>value="contact"/><fmt:message key="searchPersonalContacts"/>
+                        <c:if test="${mailbox.features.contacts}">
+                            <option <c:if test="${isContact}">selected </c:if>value="contact"/><fmt:message key="searchPersonalContacts"/>
+                        </c:if>
                     </select>
                     <input class="SearchButton" type=submit name=search value="<fmt:message key="search"/>">
             </form>

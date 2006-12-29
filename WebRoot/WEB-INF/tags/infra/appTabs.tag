@@ -1,11 +1,13 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="selected" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
+<%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+
 <table cellpadding=0 cellspacing=0>
     <tr class='Tabs'>
         <td class='TabSpacer'/>
@@ -16,11 +18,13 @@
                 <span><fmt:message key="mail"/></span>
             </a>
         </td>
-        <td class='TabSpacer'/>
-        <td class='Tab ${selected=='contacts' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/search?st=contact"/>" <c:if test="${keys}">accesskey="c"</c:if>><app:img src="contacts/Contact.gif"/><span><fmt:message
-                    key="contacts"/></span></a>
-        </td>
+        <c:if test="${mailbox.features.contacts}">
+            <td class='TabSpacer'/>
+            <td class='Tab ${selected=='contacts' ? 'TabSelected' :'TabNormal'}'>
+                <a href="<c:url value="/h/search?st=contact"/>" <c:if test="${keys}">accesskey="c"</c:if>><app:img src="contacts/Contact.gif"/><span><fmt:message
+                        key="contacts"/></span></a>
+            </td>
+        </c:if>             
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='options' ? 'TabSelected' :'TabNormal'}'>
             <a href="<c:url value="/h/options"/>" <c:if test="${keys}">accesskey="y"</c:if>><app:img src="common/Preferences.gif"/><span><fmt:message

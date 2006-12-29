@@ -26,7 +26,9 @@
                             <tr class='Header'>
                                 <th class='CB' nowrap><input onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                 <th class='Img' nowrap><app:img src="tag/FlagRed.gif"alt="Starred"/>
+                                <c:if test="${mailbox.features.tagging}">
                                 <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif"alt="Tagged"/>
+                                </c:if>
                                 <th width=10% nowrap><fmt:message key="from"/>
                                 <th class='Img' nowrap><app:img src="common/Attachment.gif"alt="Attachment"/>
                                 <th nowrap>
@@ -55,7 +57,9 @@
                                 <tr class='ZhRow ${hit.conversationHit.isUnread ? ' Unread':''}${hit.conversationHit.id == context.currentItem.id ? ' RowSelected' : ''}'>
                                     <td class='CB' nowrap><input  type=checkbox name="id" value="${hit.conversationHit.id}"></td>
                                     <td class='Img'><app:flagImage flagged="${hit.conversationHit.isFlagged}"/></td>
-                                    <td class='Img'><app:miniTagImage ids="${hit.conversationHit.tagIds}"/></td>
+                                    <c:if test="${mailbox.features.tagging}">
+                                        <td class='Img'><app:miniTagImage ids="${hit.conversationHit.tagIds}"/></td>
+                                    </c:if>
                                     <td><%-- allow this column to wrap --%>
                                         <a href="${convUrl}">${fn:escapeXml(empty hit.conversationHit.displayRecipients ? unknownRecipient : hit.conversationHit.displayRecipients)}</a>
                                     </td>

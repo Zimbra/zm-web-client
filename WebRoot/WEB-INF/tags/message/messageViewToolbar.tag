@@ -9,6 +9,7 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <c:if test="${empty requestScope.mvToolbarCache}">
+    <zm:getMailbox var="mailbox"/>
     <c:set var="mvToolbarCache" scope="request">
         <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
          <a href="${closeurl}" <c:if test="${keys}">accesskey="z"</c:if>>${fn:escapeXml(context.backTo)}</a>
@@ -33,16 +34,18 @@
             <option value="unread"/><fmt:message key="actionMarkUnread"/>
             <option value="flag"/><fmt:message key="actionAddFlag"/>
             <option value="unflag"/><fmt:message key="actionRemoveFlag"/>
-            <option disabled /><fmt:message key="actionOptSep"/>
-            <option disabled /><fmt:message key="actionAddTag"/>
-            <zm:forEachTag var="tag">
-                <option value="t:${tag.id}" />${fn:escapeXml(tag.name)}
-            </zm:forEachTag>
-            <option disabled /><fmt:message key="actionOptSep"/>
-            <option disabled /><fmt:message key="actionRemoveTag"/>
-            <zm:forEachTag var="tag">
-                <option value="u:${tag.id}" />${fn:escapeXml(tag.name)}
-            </zm:forEachTag>
+            <c:if test="${mailbox.features.tagging}">
+                <option disabled /><fmt:message key="actionOptSep"/>
+                <option disabled /><fmt:message key="actionAddTag"/>
+                <zm:forEachTag var="tag">
+                    <option value="t:${tag.id}" />${fn:escapeXml(tag.name)}
+                </zm:forEachTag>
+                <option disabled /><fmt:message key="actionOptSep"/>
+                <option disabled /><fmt:message key="actionRemoveTag"/>
+                <zm:forEachTag var="tag">
+                    <option value="u:${tag.id}" />${fn:escapeXml(tag.name)}
+                </zm:forEachTag>
+            </c:if>
         </select>
         <input class='tbButton' type="submit" name="action" value="<fmt:message key="actionGo"/>">
     </c:set>

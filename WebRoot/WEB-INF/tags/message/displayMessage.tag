@@ -117,11 +117,13 @@
                             <c:if test="${message.hasTags or message.isFlagged}">
                                 <tr>
                                     <td nowrap align='right' class='Tags'>
-                                        <c:set var="tags" value="${zm:getTags(pageContext, message.tagIds)}"/>
-                                        <c:forEach items="${tags}" var="tag">
-                                            <app:img src="${tag.miniImage}"/>
-                                            <span>${fn:escapeXml(tag.name)}</span>
-                                        </c:forEach>
+                                        <c:if test="${mailbox.features.tagging}">
+                                            <c:set var="tags" value="${zm:getTags(pageContext, message.tagIds)}"/>
+                                            <c:forEach items="${tags}" var="tag">
+                                                <app:img src="${tag.miniImage}"/>
+                                                <span>${fn:escapeXml(tag.name)}</span>
+                                            </c:forEach>
+                                        </c:if> 
                                         <c:if test="${message.isFlagged}">
                                             <app:img src="tag/FlagRed.gif"/>
                                         </c:if>

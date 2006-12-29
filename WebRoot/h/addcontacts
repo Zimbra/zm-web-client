@@ -139,14 +139,18 @@
                             &nbsp;
 
                             <select name="contactLocation">
+                                <c:if test="${mailbox.features.contacts}">
                                 <option
                                         <c:if test="${empty uploader.contactLocation or uploader.contactLocation eq 'personal'}">
                                             selected
                                         </c:if> value="contact"/>
                                 <fmt:message key="searchPersonalContacts"/>
+                                </c:if>
+                                <c:if test="${mailbox.features.gal}">
                                 <option
                                         <c:if test="${uploader.contactLocation eq 'gal'}">selected</c:if> value="gal"/>
                                 <fmt:message key="GAL"/>
+                                </c:if>
                             </select>
                             <input class="SearchButton" type=submit name='actionContactSearch'
                                    value="<fmt:message key="searchContacts"/>">

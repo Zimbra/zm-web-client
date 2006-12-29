@@ -51,14 +51,16 @@
                                             </td>
                                             <td align="right">
                                                 <span class='Tags'>
-                                                    <c:set var="tags" value="${zm:getTags(pageContext, convHit.tagIds)}"/>
-                                                    <c:forEach items="${tags}" var="tag">
-                                                        <app:img src="${tag.miniImage}"/> <span>${fn:escapeXml(tag.name)}</span>
-                                                    </c:forEach>
+                                                     <c:if test="${mailbox.features.tagging}">
+                                                         <c:set var="tags" value="${zm:getTags(pageContext, convHit.tagIds)}"/>
+                                                         <c:forEach items="${tags}" var="tag">
+                                                             <app:img src="${tag.miniImage}"/> <span>${fn:escapeXml(tag.name)}</span>
+                                                         </c:forEach>
+                                                     </c:if>
                                                     <c:if test="${convHit.isFlagged}">
                                                         <app:img src="tag/FlagRed.gif"/>
                                                     </c:if>
-                                                    </span>
+                                                </span>
                                             </td>
                                         </tr>
                                     </table>
@@ -70,7 +72,9 @@
                                             <tr>
                                                 <th class='CB'nowrap><input onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                                 <th class='Img' nowrap><app:img src="tag/FlagRed.gif"alt="Starred"/>
+                                                 <c:if test="${mailbox.features.tagging}">
                                                 <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif"alt="Tagged"/>
+                                                </c:if>
                                                 <th class='MsgStatusImg' nowrap>
                                                 <th width=10% nowrap>
                                                     <zm:currentResultUrl var="fromSortUrl" value="cv" context="${context}" csi="${param.csi}" css="${param.css eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
@@ -89,7 +93,9 @@
                                                 <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != message.id)) ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                                     <td class='CB' nowrap><input <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
                                                     <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
-                                                    <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
+                                                    <c:if test="${mailbox.features.tagging}">
+                                                        <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
+                                                    </c:if>
                                                     <td class='MsgStatusImg' align=center><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'mail/MsgStatusRead.gif' : hit.messageHit.statusImage}"/></td>
                                                     <td nowrap><a href="${msgUrl}">${fn:escapeXml(hit.messageHit.displaySender)}</a></td>
                                                     <td class='Img' ><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
@@ -112,7 +118,7 @@
                                                     <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}</td>
                                                 </tr>
                                             </c:forEach>
-                                            <tr><td colspan=10>&nbsp;</td></tr>
+                                            <tr><td colspan=${mailbox.features.tagging ? "10" : "9"}>&nbsp;</td></tr>
                                         </table>
                                 </td>
                             </tr>

@@ -59,8 +59,10 @@
                     <input class='tbButton' name="actionDraft" type=submit value="<fmt:message key="saveDraft"/>">
                     &nbsp;
                     <input class='tbButton' name="actionAttachAdd" type=submit value="<fmt:message key="addAttachments"/>">
-                    &nbsp;
-                    <input class='tbButton' name="actionContactAdd" type=submit value="<fmt:message key="addFromContacts"/>">
+                    <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
+                        &nbsp;
+                        <input class='tbButton' name="actionContactAdd" type=submit value="<fmt:message key="addFromContacts"/>">
+                    </c:if>                     
                 </td>
             </tr>
         </table>

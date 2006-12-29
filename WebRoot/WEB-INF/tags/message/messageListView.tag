@@ -23,7 +23,9 @@
                         <tr>
                             <th class='CB' nowrap><input onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                             <th class='Img' nowrap><app:img src="tag/FlagRed.gif"alt="Starred"/>
+                             <c:if test="${mailbox.features.tagging}">
                             <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif"alt="Tagged"/>
+                            </c:if>
                             <th class='MsgStatusImg' nowrap>
                             <th width=10%>
                                 <zm:newSortUrl var="fromSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
@@ -61,7 +63,9 @@
                             <tr class='ZhRow ${hit.messageHit.isUnread ? ' Unread':''}${hit.messageHit.id == context.currentItem.id ? ' RowSelected' : ''}'>
                                 <td class='CB' nowrap><input type=checkbox name="id" value="${hit.messageHit.id}"></td>
                                 <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
-                                <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
+                                 <c:if test="${mailbox.features.tagging}">
+                                     <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
+                                </c:if>
                                 <td class='MsgStatusImg' align=center><app:img src="${hit.messageHit.statusImage}"/></td>
                                 <td><%-- allow wrap --%> <a href="${currentItemUrl}"><c:out value="${hit.messageHit.displaySender}" default="<Unknown>"/></a></td>
                                 <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
