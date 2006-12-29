@@ -87,7 +87,7 @@
 <table width=100% cellspacing=0 class='Tb'>
     <tr>
         <td align=left class=TbBt>
-            <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" />
+            <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
             <a href="${refreshUrl}" <c:if test="${keys}">accesskey="r"</c:if>><fmt:message key="refresh"/></a>
             ${requestScope.clvToolbarCache}
         </td>
