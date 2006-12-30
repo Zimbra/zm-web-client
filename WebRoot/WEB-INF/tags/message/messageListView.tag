@@ -6,10 +6,25 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<app:view context="${context}" selected='mail' folders="true" tags="true" searches="true" keys="true">
-<fmt:message key="noSubject" var="noSubject"/>
-<zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
-<zm:getMailbox var="mailbox"/>
+<app:handleError>
+    <c:choose>
+        <c:when test="${context.isFolderSearch and context.folder.hasUnread}">
+            <c:set var="title" value="${context.title} (${context.folder.unreadCount})"/>
+        </c:when>
+        <c:when test="${context.isTagSearch and context.tag.hasUnread}">
+            <c:set var="title" value="${context.title} (${context.tag.unreadCount})"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="title" value="${context.title}"/>
+        </c:otherwise>
+    </c:choose>
+    <fmt:message key="noSubject" var="noSubject"/>
+    <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
+    <zm:getMailbox var="mailbox"/>
+</app:handleError>
+
+<app:view title="${title}" context="${context}" selected='mail' folders="true" tags="true" searches="true" keys="true">
+
 <form action="${currentUrl}" method="post" name="zform">
     <table width=100% cellpadding="0" cellspacing="0">
         <tr>

@@ -5,6 +5,7 @@
 <%@ attribute name="contacts" rtexprvalue="true" required="false" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
+<%@ attribute name="title" rtexprvalue="true" required="true" %>
 <%@ attribute name="ads" rtexprvalue="true" required="false" %>
 <%@ attribute name="tags" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
@@ -14,9 +15,12 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
 <zm:getMailbox var="mailbox"/>
+<app:head title="${title}"/>
 
+<body>
 <table width=100% cellpadding="0" cellspacing="0">
     <tr>
         <td class='TopContent' colspan=3  align=right valign=top><b>${fn:escapeXml(mailbox.name)}</b> |
@@ -67,3 +71,5 @@
         </td>
     </tr>
 </table>
+</body>
+</html>

@@ -6,12 +6,15 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<zm:getMailbox var="mailbox"/>
-<c:set var="msghit" value="${context.currentItem.messageHit}"/>
-<zm:getMessage var="msg" id="${msghit.id}" markread="true" neuterimages="${empty param.xim}"/>
-<zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
-<c:set var="ads" value='${msg.subject} ${msghit.fragment}'/>
-<app:view context="${context}" selected='mail' folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
+<app:handleError>
+    <zm:getMailbox var="mailbox"/>
+    <c:set var="msghit" value="${context.currentItem.messageHit}"/>
+    <zm:getMessage var="msg" id="${msghit.id}" markread="true" neuterimages="${empty param.xim}"/>
+    <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
+    <c:set var="ads" value='${msg.subject} ${msghit.fragment}'/>
+</app:handleError>
+
+<app:view title="${msghit.subject}" context="${context}" selected='mail' folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="" action="view" context="${context}"/>
     <form action="${currentUrl}" method="post">
 

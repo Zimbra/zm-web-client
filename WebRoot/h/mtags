@@ -5,27 +5,19 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
-<c:if test="${!empty param.doAction}"><app:tagAction/></c:if>
 <app:handleError>
+    <c:if test="${!empty param.doAction}"><app:tagAction/></c:if>
     <zm:getMailbox var="mailbox"/>
+    <c:set var="toolbar">
+        <table width=100% cellspacing=0 class='Tb'>
+            <tr><td align=left class=TbBt><input type=hidden class='tbButton' name="zzz">&nbsp;</td></tr>
+        </table>
+    </c:set>
+    <fmt:message var="title" key="manageTags"/>
 </app:handleError>
 
-<c:set var="toolbar">
-    <table width=100% cellspacing=0 class='Tb'>
-        <tr><td align=left class=TbBt><input type=hidden class='tbButton' name="zzz">&nbsp;</td></tr>
-    </table>
-
-</c:set>
-
-<fmt:message var="title" key="manageTags"/>
-<app:head title="${title}"/>
-
-<body>
-
-<app:view context="${null}" selected='managetags' tags="true" editmode="true" keys="true">
+<app:view title="${title}" context="${null}" selected='managetags' tags="true" editmode="true" keys="true">
 
 <form action="" method="post">
 <table width=100% cellspacing="0" cellpadding="0">
@@ -34,18 +26,6 @@
 </tr>
 <tr>
 <td class='ZhAppContent'>
-<%--
-<table width=100% cellspacing=0 cellpadding=0>
-    <tr align=center class='contactHeaderRow'>
-        <td>
-            <div class='contactHeader'>
-                <fmt:message key="manageTags"/>
-            </div>
-        </td>
-    </tr>
-</table>
-<br />
---%>
 
 <table border="0" cellpadding="0" cellspacing="10" width=100%>
 <tbody>
@@ -222,5 +202,3 @@
 <input type="hidden" name="doAction" value="1"/>
 </form>
 </app:view>
-</body>
-</html>
