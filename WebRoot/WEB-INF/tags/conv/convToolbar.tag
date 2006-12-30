@@ -64,14 +64,14 @@
         </td>
         <td nowrap align=right>
             <c:if test="${context.hasPrevItem}">
-                <zm:prevItemUrl var="prevItemUrl" value="" cursor="${convCursor}" context="${context}" css="${param.css}"/>
+                <zm:prevItemUrl var="prevItemUrl" value="" action="view" cursor="${convCursor}" context="${context}" css="${param.css}"/>
                 <a <c:if test="${keys}">accesskey="p"</c:if> href="${prevItemUrl}"><img alt='dblleft' src="<c:url value='/images/arrows/LeftDoubleArrow.gif'/>" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
                 <app:img disabled='true' src="arrows/LeftDoubleArrow.gif" border="0"/>
             </c:if>
             <c:if test="${convSearchResult.hasPrevPage}">
-                <zm:currentResultUrl var="prevPageUrl" value=""  context="${context}"
+                <zm:currentResultUrl var="prevPageUrl" value=""  action="view" context="${context}"
                                      cso="${convSearchResult.prevOffset}" css="${param.css}"/>
                 <a <c:if test="${keys}">accesskey="b"</c:if> href="${prevPageUrl}"><img alt='left' src="<c:url value='/images/arrows/LeftArrow.gif'/>" border="0"/></a>
             </c:if>
@@ -80,7 +80,7 @@
             </c:if>
             <app:searchPageOffset searchResult="${convSearchResult}" max="${convHit.messageCount}"/>
             <c:if test="${convSearchResult.hasNextPage}">
-                <zm:currentResultUrl var="nextPageUrl" value=""  context="${context}"
+                <zm:currentResultUrl var="nextPageUrl" value=""  action="view" context="${context}"
                                      cso="${convSearchResult.nextOffset}" css="${param.css}"/>
                 <a <c:if test="${keys}">accesskey="f"</c:if> href="${nextPageUrl}"><img alt='right' src="<c:url value='/images/arrows/RightArrow.gif'/>" border="0"/></a>
             </c:if>
@@ -88,7 +88,7 @@
                 <app:img disabled='true' src="arrows/RightArrow.gif" border="0"/>
             </c:if>
             <c:if test="${context.hasNextItem}">
-                <zm:nextItemUrl var="nextItemUrl" value="" cursor="${convCursor}" context="${context}" css="${param.css}"/>
+                <zm:nextItemUrl var="nextItemUrl" value="" action="view" cursor="${convCursor}" context="${context}" css="${param.css}"/>
                 <a <c:if test="${keys}">accesskey="n"</c:if> href="${nextItemUrl}"><img alt='dblright' src="<c:url value='/images/arrows/RightDoubleArrow.gif'/>" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">

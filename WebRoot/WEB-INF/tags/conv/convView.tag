@@ -1,6 +1,5 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
-<%@ attribute name="convHit" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZConversationHitBean"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -11,6 +10,7 @@
 <fmt:message var="emptySubject" key="noSubject"/>
 <zm:getMailbox var="mailbox"/>
 <c:set var="csi" value="${param.csi}"/>
+<c:set var="convHit" value="${context.currentItem.conversationHit}"/>
 <zm:searchConv var="convSearchResult" conv="${convHit}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
 <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
 <c:set var="message" value="${null}"/>
@@ -31,7 +31,7 @@
 <c:set var="ads" value='${convHit.subject} ${convHit.fragment}'/>
 
 <app:view selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
-    <zm:currentResultUrl var="currentUrl" value="cv" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
+    <zm:currentResultUrl var="currentUrl" value="search" action="view" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
     <form action="${currentUrl}" method="post" name="zform">
         <table width=100% cellpadding=0 cellspacing=0>
             <tr>
@@ -77,18 +77,18 @@
                                                 </c:if>
                                                 <th class='MsgStatusImg' nowrap>
                                                 <th width=10% nowrap>
-                                                    <zm:currentResultUrl var="fromSortUrl" value="cv" context="${context}" csi="${param.csi}" css="${param.css eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
+                                                    <zm:currentResultUrl var="fromSortUrl" value="search" action="view" context="${context}" csi="${param.csi}" css="${param.css eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
                                                 <a href="${fromSortUrl}"><fmt:message key="from"/></a>
                                                 <th class='Img' nowrap><app:img src="common/Attachment.gif"alt="Attachment"/>
                                                 <th nowrap><fmt:message key="fragment"/>
                                                 <th width=1% nowrap><fmt:message key="folder"/>
                                                 <th width=1% nowrap><fmt:message key="size"/>
                                                 <th width=1% nowrap>
-                                                    <zm:currentResultUrl var="dateSortUrl" value="cv" context="${context}" csi="${param.csi}" css="${param.css eq 'dateDesc' ? 'dateAsc' : 'dateDesc'}"/>
+                                                    <zm:currentResultUrl var="dateSortUrl" value="search" action="view" context="${context}" csi="${param.csi}" css="${param.css eq 'dateDesc' ? 'dateAsc' : 'dateDesc'}"/>
                                                 <a href="${dateSortUrl}"><fmt:message key="received"/></a>
                                             </tr>
                                             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
-                                                <zm:currentResultUrl var="msgUrl" value="cv"  context="${context}"
+                                                <zm:currentResultUrl var="msgUrl" value="search" action='view' context="${context}"
                                                                      cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
                                                 <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != message.id)) ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                                     <td class='CB' nowrap><input <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
@@ -104,11 +104,11 @@
                                                         <c:if test="${hit.id == message.id}">
                                                             <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                             <c:if test="${messCursor.hasPrev}">
-                                                                <zm:currentResultUrl var="prevMsgUrl" value="cv" context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
+                                                                <zm:currentResultUrl var="prevMsgUrl" value="search" actin='view' context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
                                                                 <a href="${prevMsgUrl}" accesskey='k'></a>
                                                             </c:if>
                                                             <c:if test="${messCursor.hasNext}">
-                                                                <zm:currentResultUrl var="nextMsgUrl" value="cv"  context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
+                                                                <zm:currentResultUrl var="nextMsgUrl" value="search"  action="view" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
                                                                 <a href="${nextMsgUrl}" accesskey='j'></a>
                                                             </c:if>
                                                         </c:if>
@@ -124,11 +124,11 @@
                             </tr>
                                 <c:set var="extImageUrl" value=""/>
                             <c:if test="${empty param.xim}">
-                                <zm:currentResultUrl var="extImageUrl" value="cv" context="${context}"
+                                <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}"
                                                      cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}" xim="1"/>
                             </c:if>
-                                <zm:currentResultUrl var="composeUrl" value="" context="${context}" id="${message.id}"
-                                                     action="compose" cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}"/>
+                                <zm:currentResultUrl var="composeUrl" value="search" context="${context}" id="${message.id}"
+                                                     action="compose" paction="view" cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}"/>
                             <tr>
                                 <td>
                                 <app:displayMessage mailbox="${mailbox}" message="${message}" externalImageUrl="${extImageUrl}" composeUrl="${composeUrl}"/>
@@ -142,7 +142,7 @@
                     <app:convToolbar context="${context}" convSearchResult="${convSearchResult}" convCursor="${convCursor}" convHit="${convHit}" keys="false"/>
                 </td>
             </tr>
-            <input type="hidden" name="doAction" value="1"/>
+            <input type="hidden" name="doMessageAction" value="1"/>
         </table>
     </form>
 </app:view>

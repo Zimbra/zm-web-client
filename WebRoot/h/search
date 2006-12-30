@@ -9,43 +9,50 @@
 <html>
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
  <app:composeCheck/>
+
+<c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
+
 <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
  <app:handleError>
 
      <c:if test="${not empty param.expand}">
-
          <c:set target="${sessionScope.expanded}" property="${param.expand}" value="expand"/>
      </c:if>
      <c:if test="${not empty param.collapse}">
-         
          <c:set target="${sessionScope.expanded}" property="${param.collapse}" value="collapse"/>
      </c:if>
      
      <%-- switch based on context saerch types --%>
-     <c:if test="${not empty param.doAction}">
-         <zm:computeSearchContext var="context" usecache="true"/>
-         <c:choose>
-             <c:when test="${context.isConversationSearch}">
-                 <app:convListViewAction/>
-             </c:when>
-             <c:when test="${context.isMessageSearch}">
-                 <app:messageAction/>
+
+     <c:choose>
+         <c:when test="${not empty param.doConvListViewAction}">
+             <app:convListViewAction/>
          </c:when>
-         <c:when test="${context.isContactSearch}">
+         <c:when test="${not empty param.doMessageAction}">
+             <app:messageAction/>             
+         </c:when>
+         <c:when test="${not empty param.doContactListViewAction}">
              <app:contactListViewAction/>
          </c:when>
-         <c:otherwise>
-             <%--mixed view Types (${context.types}) --%>
-         </c:otherwise>
-         </c:choose>
-
-     </c:if>
+     </c:choose>
 
      <zm:computeSearchContext var="context" usecache="true"/>
      
 </app:handleError>
 
      <c:choose>
+         <c:when test="${action eq 'view' and context.isConversationSearch}">
+             <c:set var="convHit" value="${context.currentItem.conversationHit}"/>
+             <app:head title="${convHit.subject}"/>
+         </c:when>
+         <c:when test="${action eq 'view' and context.isMessageSearch}">
+             <c:set var="msghit" value="${context.currentItem.messageHit}"/>
+             <app:head title="${msghit.subject}"/>
+         </c:when>
+         <c:when test="${action eq 'view' and context.isContactSearch}">
+             <zm:getContact id="${empty param.id ? context.currentItem.id : param.id}" var="contact"/>
+             <app:head title="${contact.displayFileAs}"/>  
+         </c:when>
          <c:when test="${context.isFolderSearch and context.folder.hasUnread}">
              <app:head title="${context.title} (${context.folder.unreadCount})"/>
          </c:when>
@@ -60,11 +67,20 @@
 <body>
  <%-- switch based on context saerch types --%>
  <c:choose>
+     <c:when test="${context.isConversationSearch and action eq 'view'}">
+         <app:convView context="${context}"/>
+     </c:when>
      <c:when test="${context.isConversationSearch}">
          <app:convListView context="${context}"/>
      </c:when>
+     <c:when test="${context.isMessageSearch and action eq 'view'}">
+         <app:messageView context="${context}"/>
+     </c:when>
      <c:when test="${context.isMessageSearch}">
          <app:messageListView context="${context}"/>
+     </c:when>
+     <c:when test="${context.isContactSearch and action eq 'view'}">
+         <app:contactView context="${context}" contact="${contact}"/>
      </c:when>
      <c:when test="${context.isContactSearch}">
          <app:contactListView context="${context}"/>

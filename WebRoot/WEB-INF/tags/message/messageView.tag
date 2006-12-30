@@ -1,35 +1,18 @@
-<%@ page buffer="8kb" autoFlush="true" %>
-<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ tag body-content="empty" %>
+<%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
-<app:composeCheck/>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-
-<c:if test="${!empty param.doAction}">
-    <app:messageAction/>
-</c:if>
-
-<app:handleError>
-    <zm:computeSearchContext var="context" types="message" usecache="${true}"/>
-    <c:set var="msghit" value="${context.currentItem.messageHit}"/>
-    <zm:getMessage var="msg" id="${msghit.id}" markread="true" neuterimages="${empty param.xim}"/>
-    <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
-    <zm:getMailbox var="mailbox"/>
-</app:handleError>
-
-<app:head title="${msg.subject}"/>
-
-<body>
-
+<zm:getMailbox var="mailbox"/>
+<c:set var="msghit" value="${context.currentItem.messageHit}"/>
+<zm:getMessage var="msg" id="${msghit.id}" markread="true" neuterimages="${empty param.xim}"/>
+<zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
 <c:set var="ads" value='${msg.subject} ${msghit.fragment}'/>
 <app:view context="${context}" selected='mail' folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
-    <zm:currentResultUrl var="currentUrl" value="" context="${context}"/>
+    <zm:currentResultUrl var="currentUrl" value="" action="view" context="${context}"/>
     <form action="${currentUrl}" method="post">
 
         <table width=100% cellpadding="0" cellspacing="0">
@@ -42,10 +25,10 @@
                 <td class='ZhAppContent'>
                         <c:set var="extImageUrl" value=""/>
                         <c:if test="${empty param.xim}">
-                            <zm:currentResultUrl var="extImageUrl" value="mv" context="${context}" xim="1"/>
+                            <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
                         </c:if>
                         <zm:currentResultUrl var="composeUrl" value="" context="${context}"
-                                             action="compose" part="${msg.partName}" id="${msg.id}"/>
+                                             action="compose" paction="view" part="${msg.partName}" id="${msg.id}"/>
 
                         <app:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}"/>
                 </td>
@@ -57,9 +40,6 @@
             </tr>
         </table>
         <input type="hidden" name="id" value="${msg.id}"/>
-        <input type="hidden" name="doAction" value="1"/>
+        <input type="hidden" name="doMessageAction" value="1"/>
     </form>
 </app:view>
-
-</body>
-</html>

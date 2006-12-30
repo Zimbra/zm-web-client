@@ -55,7 +55,7 @@
         </td>
         <td nowrap align=right>
             <c:if test="${context.hasPrevItem}">
-                <zm:prevItemUrl var="prevItemUrl" disp="1" value="" cursor="${cursor}" context="${context}" usecache="true"/>
+                <zm:prevItemUrl var="prevItemUrl" disp="1" value="" action="view" cursor="${cursor}" context="${context}" usecache="true"/>
                 <a <c:if test="${keys}">accesskey="p"</c:if> href="${prevItemUrl}"><img alt="left" src="/images/arrows/LeftArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
@@ -63,7 +63,7 @@
             </c:if>
             <span class='Paging'>${context.searchResult.offset+context.currentItemIndex+1}</span>
             <c:if test="${context.hasNextItem}">
-                <zm:nextItemUrl var="nextItemUrl" disp="1" value="" cursor="${cursor}" context="${context}" usecache="true"/>
+                <zm:nextItemUrl var="nextItemUrl" disp="1" value="" action="view" cursor="${cursor}" context="${context}" usecache="true"/>
                 <a <c:if test="${keys}">accesskey="n"</c:if>href="${nextItemUrl}"><img alt="right" src="/images/arrows/RightArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">
