@@ -25,19 +25,12 @@
         </select>
         <input class='tbButton' type="submit" name="actionMove" value="<fmt:message key="actionMove"/>">
         &nbsp;
-        <c:if test="${mailbox.features.tagging}">
+        <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             <select name="actionOp">
                 <option value="" selected/><fmt:message key="moreActions"/>
-                <option disabled /><fmt:message key="actionOptSep"/>
-                <option disabled /><fmt:message key="actionAddTag"/>
-                <zm:forEachTag var="tag">
-                <option value="t:${tag.id}" />${fn:escapeXml(tag.name)}
-                </zm:forEachTag>
-                <option disabled /><fmt:message key="actionOptSep"/>
-                <option disabled /><fmt:message key="actionRemoveTag"/>
-                <zm:forEachTag var="tag">
-                    <option value="u:${tag.id}" />${fn:escapeXml(tag.name)}
-                </zm:forEachTag>
+        </c:if>
+        <app:tagOptions mailbox="${mailbox}"/>
+        <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             </select>
             <input class='tbButton' type="submit" name="action" value="<fmt:message key="actionGo"/>">
         </c:if>

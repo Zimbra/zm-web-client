@@ -185,6 +185,16 @@
     </tag-file>
 
     <tag-file>
+         <name>searchTitle</name>
+         <path>/WEB-INF/tags/infra/searchTitle.tag</path>
+     </tag-file>
+
+    <tag-file>
+         <name>tagOptions</name>
+         <path>/WEB-INF/tags/infra/tagOptions.tag</path>
+     </tag-file>
+
+    <tag-file>
         <name>handleError</name>
         <path>/WEB-INF/tags/infra/handleError.tag</path>
     </tag-file>

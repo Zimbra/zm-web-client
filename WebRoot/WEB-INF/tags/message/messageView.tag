@@ -30,8 +30,8 @@
                         <c:if test="${empty param.xim}">
                             <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
                         </c:if>
-                        <zm:currentResultUrl var="composeUrl" value="" context="${context}"
-                                             action="compose" paction="view" part="${msg.partName}" id="${msg.id}"/>
+                        <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
+                                             action="compose" paction="view" id="${msg.id}"/>
 
                         <app:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}"/>
                 </td>

@@ -6,23 +6,13 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<c:choose>
-    <c:when test="${context.isFolderSearch and context.folder.hasUnread}">
-        <c:set var="title" value="${context.title} (${context.folder.unreadCount})"/>
-    </c:when>
-    <c:when test="${context.isTagSearch and context.tag.hasUnread}">
-        <c:set var="title" value="${context.title} (${context.tag.unreadCount})"/>
-    </c:when>
-    <c:otherwise>
-        <c:set var="title" value="${context.title}"/>
-    </c:otherwise>
-</c:choose>
-
-<c:set var="cid" value="${empty param.id ? context.searchResult.hits[0].id : param.id}"/>
-<fmt:message var="unknownRecipient" key="unknownRecipient"/>
-<fmt:message var="unknownSubject" key="noSubject"/>
-
-<zm:getMailbox var="mailbox"/>
+<app:handleError>
+    <app:searchTitle var="title" context="${context}"/>
+    <c:set var="cid" value="${empty param.id ? context.searchResult.hits[0].id : param.id}"/>
+    <fmt:message var="unknownRecipient" key="unknownRecipient"/>
+    <fmt:message var="unknownSubject" key="noSubject"/>
+    <zm:getMailbox var="mailbox"/>
+</app:handleError>
 <app:view title="${title}" selected='mail' folders="true" tags="true" searches="true" context="${context}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
     <form name="zform" action="${currentUrl}" method="post">
