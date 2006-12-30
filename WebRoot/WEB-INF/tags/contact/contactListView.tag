@@ -40,7 +40,7 @@
                                    </c:if>
                                    <td class='Img'><app:img src="${hit.contactHit.image}" alt="Contact"/></td>
                                    <td ><span style='padding:3px'>
-                                       <zm:currentResultUrl var="contactUrl" value="/h/contact"  id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
+                                       <zm:currentResultUrl var="contactUrl" value="/h/search" action="view" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
                                        <a href="${contactUrl}" <c:if test="${hit.contactHit.id == context.currentItem.id}">accesskey='o'</c:if>>
                                                ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '<None>' : hit.contactHit.fileAsStr)}
                                        </a></span>
@@ -73,7 +73,7 @@
                </td>
            </tr>
        </table>
-    <input type="hidden" name="doAction" value="1"/>
+    <input type="hidden" name="doContactListViewAction" value="1"/>
   </form>
 </app:view>
 

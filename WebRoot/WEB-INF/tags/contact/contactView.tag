@@ -1,30 +1,17 @@
-<%@ page buffer="8kb" autoFlush="true" %>
-<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ tag body-content="empty" %>
+<%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
+<%@ attribute name="contact" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZContactBean"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
-<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<c:if test="${!empty param.doAction}"><app:contactListViewAction/></c:if>
+<zm:currentResultUrl var="closeUrl" value="/h/search" context="${context}"/>
+<zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
 
-<app:handleError>
-    <zm:computeSearchContext var="context" types="contact" usecache="true"/>
-    <zm:currentResultUrl var="closeUrl" value="/h/search" context="${context}"/>
-
-    <zm:getContact id="${empty param.id ? context.currentItem.id : param.id}" var="contact"/>
-    <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
-
-</app:handleError>
-
-<app:head title="${contact.displayFileAs}"/>
-
-<body>
 <app:view selected="contacts" contacts="true" tags="true" context="${context}" keys="true">
-    <zm:currentResultUrl var="currentUrl" value="contact" context="${context}"/>
+    <zm:currentResultUrl var="currentUrl" value="search" action="view" context="${context}"/>
     <form action="${currentUrl}" method="post">
         <table width=100% cellpadding="0" cellspacing="0">
             <tr>
@@ -43,10 +30,8 @@
                 </td>
             </tr>
             </table>
-        <input type="hidden" name="doAction" value="1"/>
+        <input type="hidden" name="doContactListViewAction" value="1"/>
         <input type="hidden" name="id" value="${contact.id}"/>
     </form>
 </app:view>
 
-</body>
-</html>

@@ -50,7 +50,7 @@
                                         <zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(hit.conversationHit.id,'-')}" action="compose"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <zm:currentResultUrl var="convUrl" value="cv" index="${status.index}" context="${context}" usecache="true"/>
+                                        <zm:currentResultUrl var="convUrl" value="search" action='view' index="${status.index}" context="${context}" usecache="true"/>
                                     </c:otherwise>
                                 </c:choose>
 
@@ -101,6 +101,6 @@
                 </td>
             </tr>
         </table>
-        <input type="hidden" name="doAction" value="1"/>
+        <input type="hidden" name="doConvListViewAction" value="1"/>
     </form>
 </app:view>

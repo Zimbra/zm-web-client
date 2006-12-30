@@ -81,6 +81,11 @@
     </tag-file>
 
     <tag-file>
+        <name>contactView</name>
+        <path>/WEB-INF/tags/contact/contactView.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>contactToolbar</name>
         <path>/WEB-INF/tags/contact/contactToolbar.tag</path>
     </tag-file>
@@ -108,6 +113,11 @@
     <tag-file>
         <name>messageListViewToolbar</name>
         <path>/WEB-INF/tags/message/messageListViewToolbar.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>messageView</name>
+        <path>/WEB-INF/tags/message/messageView.tag</path>
     </tag-file>
 
     <tag-file>

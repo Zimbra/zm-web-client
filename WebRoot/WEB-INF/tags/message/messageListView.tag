@@ -56,7 +56,7 @@
                                     <zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" context="${context}" action="compose" id="${hit.messageHit.id}"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/mv" context="${context}" id="${hit.messageHit.id}"/>
+                                    <zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="view" context="${context}" id="${hit.messageHit.id}"/>
                                 </c:otherwise>
                             </c:choose>
 
@@ -109,6 +109,6 @@
             </td>
         </tr>
     </table>
-    <input type="hidden" name="doAction" value="1"/>
+    <input type="hidden" name="doMessageAction" value="1"/>
   </form>
 </app:view>

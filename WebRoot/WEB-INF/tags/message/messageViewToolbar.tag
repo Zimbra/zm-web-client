@@ -59,7 +59,7 @@
         </td>
         <td align=right>
             <c:if test="${context.hasPrevItem}">
-                <zm:prevItemUrl var="prevItemUrl" value="/h/mv" cursor="${cursor}" context="${context}"/>
+                <zm:prevItemUrl var="prevItemUrl" value="/h/search" action="view" cursor="${cursor}" context="${context}"/>
                 <a  <c:if test="${keys}">accesskey="p"</c:if> href="${prevItemUrl}"><img src="<c:url value='/images/arrows/LeftArrow.gif'/>" border="0" alt='left'/></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
@@ -67,7 +67,7 @@
             </c:if>
             <span class='Paging'>${context.searchResult.offset+context.currentItemIndex+1}</span>
             <c:if test="${context.hasNextItem}">
-                <zm:nextItemUrl var="nextItemUrl" value="/h/mv" cursor="${cursor}" context="${context}"/>
+                <zm:nextItemUrl var="nextItemUrl" value="/h/search" action="view" cursor="${cursor}" context="${context}"/>
                 <a  <c:if test="${keys}">accesskey="n"</c:if> href="${nextItemUrl}"><img src="<c:url value='/images/arrows/RightArrow.gif'/>" border="0" alt='right'/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">
