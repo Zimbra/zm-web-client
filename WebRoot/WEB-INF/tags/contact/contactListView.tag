@@ -6,7 +6,19 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<app:view selected='contacts' contacts="true" tags="true"  context="${context}" keys="true">
+<c:choose>
+    <c:when test="${context.isFolderSearch and context.folder.hasUnread}">
+        <c:set var="title" value="${context.title} (${context.folder.unreadCount})"/>
+    </c:when>
+    <c:when test="${context.isTagSearch and context.tag.hasUnread}">
+        <c:set var="title" value="${context.title} (${context.tag.unreadCount})"/>
+    </c:when>
+    <c:otherwise>
+        <c:set var="title" value="${context.title}"/>
+    </c:otherwise>
+</c:choose>
+
+<app:view title="${title}" selected='contacts' contacts="true" tags="true"  context="${context}" keys="true">
     <zm:getMailbox var="mailbox"/>
    <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
    <form action="${currentUrl}" method="post" name="zform">

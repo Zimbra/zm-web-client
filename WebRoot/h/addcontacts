@@ -5,37 +5,36 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+
 <fmt:setBundle basename="/msgs/ZhMsg" scope="request"/>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
+
+
+    <fmt:message var="title" key="addFromContacts"/>
+
+    <zm:composeUploader var="uploader"/>
+    <c:set var="compose" value="${uploader.compose}"/>
+
+    <c:choose>
+        <c:when test="${uploader.isContactSearch}">
+            <c:choose>
+                <c:when test="${uploader.contactLocation eq 'gal'}">
+                    <zm:searchGal var="searchGal" query="${uploader.contactSearchQuery}" type="account"/>
+                </c:when>
+                <c:otherwise>
+                    <zm:search var="search" query="${uploader.contactSearchQuery}" types="contact" field="contact:"/>
+                </c:otherwise>
+            </c:choose>
+            <c:set var="query" value="${uploader.contactSearchQuery}"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="query" value=""/>
+        </c:otherwise>
+    </c:choose>
 </app:handleError>
 
-<fmt:message var="title" key="addFromContacts"/>
-<app:head title="${title}"/>
-<zm:composeUploader var="uploader"/>
-<c:set var="compose" value="${uploader.compose}"/>
-
-<c:choose>
-    <c:when test="${uploader.isContactSearch}">
-        <c:choose>
-            <c:when test="${uploader.contactLocation eq 'gal'}">
-                <zm:searchGal var="searchGal" query="${uploader.contactSearchQuery}" type="account"/>
-            </c:when>
-            <c:otherwise>
-                <zm:search var="search" query="${uploader.contactSearchQuery}" types="contact" field="contact:"/>
-            </c:otherwise>
-        </c:choose>
-        <c:set var="query" value="${uploader.contactSearchQuery}"/>
-    </c:when>
-    <c:otherwise>
-        <c:set var="query" value=""/>
-    </c:otherwise>
-</c:choose>
-
-<body>
-<app:view selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
+<app:view title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
 
 <c:set var="toolbar">
     <table width=100% cellspacing=0 class='Tb'>
@@ -194,5 +193,3 @@
            value="${fn:escapeXml(empty requestScope.draftid ? compose.draftId : requestScope.draftid)}"/>
 </form>
 </app:view>
-</body>
-</html>

@@ -6,31 +6,33 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<fmt:message var="emptyFragment" key="fragmentIsEmpty"/>
-<fmt:message var="emptySubject" key="noSubject"/>
-<zm:getMailbox var="mailbox"/>
-<c:set var="csi" value="${param.csi}"/>
-<c:set var="convHit" value="${context.currentItem.conversationHit}"/>
-<zm:searchConv var="convSearchResult" conv="${convHit}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
-<zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
-<c:set var="message" value="${null}"/>
-<c:if test="${empty csi}">
-    <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
-     <c:if test="${csi ge 0}">
-         <c:set var="message" value="${convSearchResult.hits[csi].messageHit.message}"/>
+<app:handleError>
+    <fmt:message var="emptyFragment" key="fragmentIsEmpty"/>
+    <fmt:message var="emptySubject" key="noSubject"/>
+    <zm:getMailbox var="mailbox"/>
+    <c:set var="csi" value="${param.csi}"/>
+    <c:set var="convHit" value="${context.currentItem.conversationHit}"/>
+    <zm:searchConv var="convSearchResult" conv="${convHit}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
+    <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
+    <c:set var="message" value="${null}"/>
+    <c:if test="${empty csi}">
+        <c:set var="csi" value="${convSearchResult.fetchedMessageIndex}"/>
+        <c:if test="${csi ge 0}">
+            <c:set var="message" value="${convSearchResult.hits[csi].messageHit.message}"/>
+        </c:if>
     </c:if>
-</c:if>
-<c:if test="${message eq null}">
-    <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
+    <c:if test="${message eq null}">
+        <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
             <c:set var="csi" value="0"/>
+        </c:if>
+        <zm:getMessage var="message" id="${convSearchResult.hits[csi].id}" markread="true" neuterimages="${empty param.xim}"/>
     </c:if>
-    <zm:getMessage var="message" id="${convSearchResult.hits[csi].id}" markread="true" neuterimages="${empty param.xim}"/>
-</c:if>
+</app:handleError>
 
 <%-- get the message up front, so when we output the overview tree unread counts are correctly reflected --%>
 <c:set var="ads" value='${convHit.subject} ${convHit.fragment}'/>
 
-<app:view selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
+<app:view title="${convHit.subject}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="search" action="view" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
     <form action="${currentUrl}" method="post" name="zform">
         <table width=100% cellpadding=0 cellspacing=0>
@@ -118,7 +120,7 @@
                                                     <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.messageHit.date))}</td>
                                                 </tr>
                                             </c:forEach>
-                                            <tr><td colspan=${mailbox.features.tagging ? "10" : "9"}>&nbsp;</td></tr>
+                                            <tr><td colspan='${mailbox.features.tagging ? "10" : "9"}'>&nbsp;</td></tr>
                                         </table>
                                 </td>
                             </tr>

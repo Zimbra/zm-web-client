@@ -5,21 +5,15 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
+    <fmt:message var="title" key="attachFiles"/>
+    <zm:composeUploader var="uploader"/>
+    <c:set var="compose" value="${uploader.compose}"/>
 </app:handleError>
 
-<fmt:message var="title" key="attachFiles"/>
-<app:head title="${title}"/>
-
-<zm:composeUploader var="uploader"/>
-<c:set var="compose" value="${uploader.compose}"/>
-
-<body>
-<app:view selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
+<app:view title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
 
     <c:set var="toolbar">
         <table width=100% cellspacing=0 class='Tb'>
@@ -81,5 +75,3 @@
         <input type="hidden" name="draftid" value="${fn:escapeXml(empty requestScope.draftid ? compose.draftId : requestScope.draftid)}"/>
     </form>
 </app:view>
-</body>
-</html>
