@@ -169,7 +169,8 @@
                     </td>
                     <td nowrap align=right style='padding-right: 5px;'>
                         <c:if test="${showconvlink and not fn:startsWith(message.conversationId, '-')}">
-                            <c:url var="convUrl" value="/h/cv">
+                            <c:url var="convUrl" value="/h/search">
+                                <c:param name="action" value="view"/>
                                 <c:param name="st" value="conversation"/>
                                 <c:param name="sq" value='conv:"${message.conversationId}"'/>
                             </c:url>
