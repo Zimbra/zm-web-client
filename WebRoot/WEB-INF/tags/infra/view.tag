@@ -66,7 +66,7 @@
             </table>
         </td>
 </c:if>
-        <td style='width:18px;'>
+        <td style='width:10px;'>
             &nbsp; <%-- for IE's scrollbar, this should be CSS browser-specific --%>
         </td>
     </tr>
