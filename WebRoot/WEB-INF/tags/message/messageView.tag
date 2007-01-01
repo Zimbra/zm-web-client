@@ -8,13 +8,12 @@
 
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    <c:set var="msghit" value="${context.currentItem.messageHit}"/>
-    <zm:getMessage var="msg" id="${msghit.id}" markread="true" neuterimages="${empty param.xim}"/>
+    <zm:getMessage var="msg" id="${context.currentItem.id}" markread="true" neuterimages="${empty param.xim}"/>
     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
-    <c:set var="ads" value='${msg.subject} ${msghit.fragment}'/>
+    <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
 </app:handleError>
 
-<app:view title="${msghit.subject}" context="${context}" selected='mail' folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
+<app:view title="${msg.subject}" context="${context}" selected='mail' folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="" action="view" context="${context}"/>
     <form action="${currentUrl}" method="post">
 
