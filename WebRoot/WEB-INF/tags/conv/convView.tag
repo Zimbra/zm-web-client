@@ -11,8 +11,9 @@
     <fmt:message var="emptySubject" key="noSubject"/>
     <zm:getMailbox var="mailbox"/>
     <c:set var="csi" value="${param.csi}"/>
-    <c:set var="convHit" value="${context.currentItem.conversationHit}"/>
-    <zm:searchConv var="convSearchResult" conv="${convHit}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
+    
+    <zm:searchConv var="convSearchResult" id="${context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
+    <c:set var="convSummary" value="${convSearchResult.conversationSummary}"/>
     <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
     <c:set var="message" value="${null}"/>
     <c:if test="${empty csi}">
@@ -30,15 +31,15 @@
 </app:handleError>
 
 <%-- get the message up front, so when we output the overview tree unread counts are correctly reflected --%>
-<c:set var="ads" value='${convHit.subject} ${convHit.fragment}'/>
+<c:set var="ads" value='${message.subject} ${message.fragment}'/>
 
-<app:view title="${convHit.subject}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
+<app:view title="${message.subject}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="search" action="view" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
     <form action="${currentUrl}" method="post" name="zform">
         <table width=100% cellpadding=0 cellspacing=0>
             <tr>
                 <td class='TbTop'>
-                    <app:convToolbar context="${context}" convSearchResult="${convSearchResult}" convCursor="${convCursor}" convHit="${convHit}" keys="true"/>
+                    <app:convToolbar context="${context}" convSearchResult="${convSearchResult}" convCursor="${convCursor}" keys="true"/>
                 </td>
             </tr>
             <tr>
@@ -49,17 +50,17 @@
                                     <table width=100% cellpadding=1 cellspacing=0>
                                         <tr>
                                             <td>
-                                                <app:img src="mail/Conversation.gif"/> <span class='MsgHdrSub'>${fn:escapeXml(empty convHit.subject ? emptySubject : convHit.subject)}</span>
+                                                <app:img src="mail/Conversation.gif"/> <span class='MsgHdrSub'>${fn:escapeXml(empty message.subject ? emptySubject : message.subject)}</span>
                                             </td>
                                             <td align="right">
                                                 <span class='Tags'>
                                                      <c:if test="${mailbox.features.tagging}">
-                                                         <c:set var="tags" value="${zm:getTags(pageContext, convHit.tagIds)}"/>
+                                                         <c:set var="tags" value="${zm:getTags(pageContext, convSummary.tagIds)}"/>
                                                          <c:forEach items="${tags}" var="tag">
                                                              <app:img src="${tag.miniImage}"/> <span>${fn:escapeXml(tag.name)}</span>
                                                          </c:forEach>
                                                      </c:if>
-                                                    <c:if test="${convHit.isFlagged}">
+                                                    <c:if test="${convSummary.flagged}">
                                                         <app:img src="tag/FlagRed.gif"/>
                                                     </c:if>
                                                 </span>
@@ -141,7 +142,7 @@
             </tr>
             <tr>
                 <td class='TbBottom'>
-                    <app:convToolbar context="${context}" convSearchResult="${convSearchResult}" convCursor="${convCursor}" convHit="${convHit}" keys="false"/>
+                    <app:convToolbar context="${context}" convSearchResult="${convSearchResult}" convCursor="${convCursor}" keys="false"/>
                 </td>
             </tr>
             <input type="hidden" name="doMessageAction" value="1"/>
