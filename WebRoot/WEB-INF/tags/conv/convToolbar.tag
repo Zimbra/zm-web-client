@@ -2,7 +2,6 @@
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ attribute name="convSearchResult" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZSearchResultBean"%>
 <%@ attribute name="convCursor" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.NextPrevItemBean"%>
-<%@ attribute name="convHit" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZConversationHitBean"%>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -38,7 +37,7 @@
                 </select>
                 <input class='tbButton' type="submit" name="action" value="<fmt:message key="actionGo"/>">
         &nbsp;&nbsp;
-                <input type="hidden" name="contextConvId" value="${convHit.id}">
+                <input type="hidden" name="contextConvId" value="${convSearchResult.conversationSummary.id}">
                 <input class='tbButton' type="submit" name="actionMarkConvRead" value="<fmt:message key="actionMarkAllRead"/>">
 
     </c:set>
@@ -67,7 +66,7 @@
             <c:if test="${!convSearchResult.hasPrevPage}">
                 <app:img disabled='true' src="arrows/LeftArrow.gif" border="0"/>
             </c:if>
-            <app:searchPageOffset searchResult="${convSearchResult}" max="${convHit.messageCount}"/>
+            <app:searchPageOffset searchResult="${convSearchResult}" max="${convSearchResult.conversationSummary.messageCount}"/>
             <c:if test="${convSearchResult.hasNextPage}">
                 <zm:currentResultUrl var="nextPageUrl" value=""  action="view" context="${context}"
                                      cso="${convSearchResult.nextOffset}" css="${param.css}"/>
