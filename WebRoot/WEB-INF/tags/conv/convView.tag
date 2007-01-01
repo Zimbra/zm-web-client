@@ -107,7 +107,7 @@
                                                         <c:if test="${hit.id == message.id}">
                                                             <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                             <c:if test="${messCursor.hasPrev}">
-                                                                <zm:currentResultUrl var="prevMsgUrl" value="search" actin='view' context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
+                                                                <zm:currentResultUrl var="prevMsgUrl" value="search" action='view' context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
                                                                 <a href="${prevMsgUrl}" accesskey='k'></a>
                                                             </c:if>
                                                             <c:if test="${messCursor.hasNext}">
