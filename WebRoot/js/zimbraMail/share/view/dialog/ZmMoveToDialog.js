@@ -99,6 +99,11 @@ function(data, loc, treeIds, clearOverview) {
 		folderTree = this._opc.getTreeData(ZmOrganizer.FOLDER);
 	}
 
+	// bug fix #13159 (regression of #10676)
+	// - small hack to get selecting Trash folder working again
+	var ti = this._folderTreeView.getTreeItemById(ZmOrganizer.ID_TRASH);
+	ti.setData(ZmTreeView.KEY_TYPE, this._isContact ? ZmEvent.S_CONTACT : ZmEvent.S_FOLDER);
+
 	folderTree.removeChangeListener(this._changeListener);
 	// this listener has to be added after folder tree view is set
 	// (so that it comes after the view's standard change listener)
