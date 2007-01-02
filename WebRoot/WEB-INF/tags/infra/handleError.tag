@@ -12,7 +12,7 @@
     <zm:getException var="error" exception="${actionException}"/>
     <c:choose>
         <c:when test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
-            <c:redirect url="/h/login?op=relogin&code=${error.code}"/>
+            <c:redirect url="/h/login?loginOp=relogin&loginCode=${error.code}"/>
         </c:when>
         <c:otherwise>
             <app:status style="Critical">

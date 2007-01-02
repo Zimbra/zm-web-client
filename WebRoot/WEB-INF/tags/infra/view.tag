@@ -24,7 +24,7 @@
 <table width=100% cellpadding="0" cellspacing="0">
     <tr>
         <td class='TopContent' colspan=3  align=right valign=top><b>${fn:escapeXml(mailbox.name)}</b> |
-                        <a href="<c:url value="/h/login?op=logout"/>"><fmt:message key="logOff"/></a>
+                        <a href="<c:url value="/h/login?loginOp=logout"/>"><fmt:message key="logOff"/></a>
         </td>
     </tr>
     <tr>
