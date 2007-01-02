@@ -357,7 +357,7 @@ ZmPageEditController.prototype._saveConflictHandler =
 function(content, mineOrTheirs, conflict) {
 	if (mineOrTheirs == ZmPageConflictDialog.KEEP_MINE) {
 		var page = conflict.page;
-		page.id = conflict.id;
+		page.id = ZmItem.getItemId(conflict.id);
 		page.version = conflict.version;
 		var saveCallback = new AjxCallback(this, this._saveResponseHandler, [content]);
 		var saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler, [content]);

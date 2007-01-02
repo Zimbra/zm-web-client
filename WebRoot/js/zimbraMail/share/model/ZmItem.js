@@ -169,6 +169,22 @@ ZmItem.DND_ACTION_MOVE = 1 << 0;
 ZmItem.DND_ACTION_COPY = 1 << 1;
 ZmItem.DND_ACTION_BOTH = ZmItem.DND_ACTION_MOVE | ZmItem.DND_ACTION_COPY;
 
+/**
+* Takes a normalized id or an item id, and returns the item id.
+*/
+ZmItem.getItemId =
+function(id) {
+	if (!id) {
+		return id;
+	}
+	if (!ZmItem.SHORT_ID_RE) {
+		var shell = DwtShell.getShell(window);
+		var appCtxt = ZmAppCtxt.getFromShell(shell);
+		ZmItem.SHORT_ID_RE = new RegExp(appCtxt.get(ZmSetting.USERID) + ':', "gi");
+	}
+	return id.replace(ZmItem.SHORT_ID_RE, '');
+};
+
 // abstract methods
 ZmItem.prototype.create = function(args) {}
 ZmItem.prototype.modify = function(mods) {}
