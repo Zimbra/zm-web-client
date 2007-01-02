@@ -8,23 +8,32 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setBundle basename="/msgs/ZhMsg" scope="request"/>
 <c:choose>
-    <c:when test="${(!empty param.newPassword or !empty param.confirmNewPassword) and (param.newPassword ne param.confirmNewPassword)}">
+    <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
         <c:set var="errorCode" value="account.CHANGE_PASSWORD"/>
         <fmt:message var="errorMessage" key="bothNewPasswordsMustMatch"/>
     </c:when>
-    <c:when test="${param.op eq 'relogin'}">
+    <c:when test="${param.loginOp eq 'relogin'}">
         <zm:logout/>
-        <c:set var="errorCode" value="${param.code}"/>
+        <c:set var="errorCode" value="${param.loginErrorCode}"/>
         <fmt:message var="errorMessage" key="${errorCode}"/>
     </c:when>
-    <c:when test="${param.op eq 'logout' || param.op eq 'relogin'}">
+    <c:when test="${param.loginOp eq 'logout' || param.loginOp eq 'relogin'}">
         <zm:logout/>
     </c:when>
-    <c:when test="${(param.op eq 'login') && !(empty param.username) && !(empty param.password)}">
+    <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
         <c:catch var="loginException">
             <zm:login username="${param.username}" password="${param.password}"
-                    newpassword="${param.newPassword}" rememberme="${param.rememberme == 'on'}"/>
-        <c:redirect url="/h/search"/>
+                    newpassword="${param.loginNewPassword}" rememberme="${param.loginRememberme == 'on'}"/>
+            <c:set var="postLoginUrl" value="${zm:getPostLoginRedirectUrl(pageContext, '/h/search')}"/>
+            <c:choose>
+                <c:when test="${empty postLoginUrl}">
+                    <c:set var="loginUrl" value="/h/search"/>
+                </c:when>
+                <c:otherwise>
+                    <c:url var="loginUrl" value="${postLoginUrl}"/>
+                </c:otherwise>
+            </c:choose>
+            <c:redirect url="${loginUrl}"/>
         </c:catch>
         <c:if test="${loginException != null}">
             <zm:getException var="error" exception="${loginException}"/>
@@ -32,6 +41,7 @@
             <fmt:message var="errorMessage" key="${errorCode}"/>
         </c:if>
     </c:when>
+
     <c:otherwise>
         <%-- try and use existing cookie if possible --%>
         <c:catch>
@@ -46,7 +56,23 @@
     </c:otherwise>
 </c:choose>
 
+<c:set var="loginRedirectUrl" value="${zm:getPreLoginRedirectUrl(pageContext, '/h/login')}"/>
+<c:if test="${not empty loginRedirectUrl}"><c:redirect url="${loginRedirectUrl}"/></c:if>
+
+<c:url var="formActionUrl" value="/h/login">
+    <c:forEach var="p" items="${paramValues}">
+        <c:forEach var='value' items='${p.value}'>
+            <c:if test="${(not fn:startsWith(p.key, 'login')) and (p.key ne 'username') and (p.key ne 'password')}">
+                <c:param name="${p.key}" value='${value}'/>
+            </c:if>
+        </c:forEach>
+    </c:forEach>
+</c:url>
+
 <html>
+
+<!-- ${zm:getEnvString("protocolMode", "")}  redirect(${loginRedirectUrl}) -->
+
 <head>
     <title><fmt:message key="zimbraTitle"/></title>
     <c:set var="skin" value="${empty cookie.ZM_SKIN ? 'sand' : cookie.ZM_SKIN.value}"/>
@@ -98,8 +124,8 @@
                             </c:if>
 
                             <div id='ZloginFormPanel'>
-                                <form method='post' name="loginForm" action='<c:url value="/h/login"/>'>
-                                    <input type="hidden" name="op" value="login"/>
+                                <form method='post' name="loginForm" action="${formActionUrl}">
+                                    <input type="hidden" name="loginOp" value="login"/>
                                     <table width=100% cellpadding=4>
                                         <tr>
                                             <td class='zLoginLabelContainer'><fmt:message key="username"/>:</td>
@@ -113,17 +139,17 @@
                                                 <input class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
                                             </td>
                                         </tr>
-                                        <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.newPassword }">
+                                        <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
                                            <tr>
                                                <td class='zLoginLabelContainer'><fmt:message key="newPassword"/>:</td>
                                                <td colspan=2 class='zLoginFieldContainer'>
-                                                   <input class='zLoginField' name='newPassword' type='password' value="${fn:escapeXml(param.newPassword)}"/>
+                                                   <input class='zLoginField' name='loginNewPassword' type='password' value="${fn:escapeXml(param.loginNewPassword)}"/>
                                                </td>
                                            </tr>
                                             <tr>
                                                 <td class='zLoginLabelContainer'><fmt:message key="confirm"/>:</td>
                                                 <td colspan=2 class='zLoginFieldContainer'>
-                                                    <input class='zLoginField' name='confirmNewPassword' type='password' value="${fn:escapeXml(param.confirmNewPassword)}"/>
+                                                    <input class='zLoginField' name='loginConfirmNewPassword' type='password' value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
                                                 </td>
                                             </tr>
                                         </c:if>
@@ -132,7 +158,7 @@
                                             <td>
                                                 <table width=100%>
                                                     <tr>
-                                                        <td><input type=checkbox name='rememberme' /></td>
+                                                        <td><input type=checkbox name='loginRememberme' /></td>
                                                         <td class='zLoginCheckboxLabelContainer'><fmt:message
                                                                 key="rememberMe"/></td>
                                                     </tr>
