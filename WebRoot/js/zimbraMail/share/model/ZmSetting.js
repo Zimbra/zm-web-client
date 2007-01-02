@@ -169,7 +169,6 @@ ZmSetting.SAVED_SEARCHES_ENABLED		= i++;
 ZmSetting.SHARING_ENABLED				= i++;
 ZmSetting.SKIN_CHANGE_ENABLED			= i++;
 ZmSetting.TAGGING_ENABLED				= i++;
-ZmSetting.TASKS_ENABLED					= i++;
 ZmSetting.VACATION_MSG_FEATURE_ENABLED	= i++;
 ZmSetting.VIEW_ATTACHMENT_AS_HTML 		= i++;
 
@@ -353,7 +352,6 @@ ZmSetting.INIT[ZmSetting.SAVED_SEARCHES_ENABLED]		= ["zimbraFeatureSavedSearches
 ZmSetting.INIT[ZmSetting.SHARING_ENABLED]		 		= ["zimbraFeatureSharingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.SKIN_CHANGE_ENABLED]			= ["zimbraFeatureSkinChangeEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["zimbraFeatureTaggingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
-ZmSetting.INIT[ZmSetting.TASKS_ENABLED]					= ["zimbraFeatureTasksEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.VACATION_MSG_FEATURE_ENABLED]	= ["zimbraFeatureOutOfOfficeReplyEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.VIEW_ATTACHMENT_AS_HTML] 		= ["zimbraFeatureViewInHtmlEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 

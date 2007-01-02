@@ -22,9 +22,8 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-function ZmAppt(appCtxt, list, noinit, type) {
-
-	ZmItem.call(this, appCtxt, (type || ZmItem.APPT), list);
+function ZmAppt(appCtxt, list, noinit) {
+	ZmItem.call(this, appCtxt, ZmItem.APPT, list);
 
 	if (noinit) return;
 
