@@ -41,6 +41,19 @@
                                     <c:out value="${message.displayFrom}" default="${unknownSender}"/>
                                 </td>
                             </tr>
+                            <c:set var="sender" value="${message.displaySender}"/>
+                            <c:if test="${not empty sender}">
+                                 <tr>
+                                    <td class='MsgHdrName'>
+                                        <fmt:message key="sender"/>
+                                        :
+                                    </td>
+                                    <td class='MsgHdrValue'>
+                                        <c:out
+                                                value="${sender}"/>
+                                    </td>
+                                </tr>
+                            </c:if>
                             <c:if test="${empty message.subject}">
                                 <fmt:message var="noSubject" key="noSubject"/>
                             </c:if>
@@ -53,7 +66,7 @@
                                         class='MsgHdrValue'>${fn:escapeXml(empty message.subject ? noSubject : message.subject)}</td>
                             </tr>
                             <c:set var="to" value="${message.displayTo}"/>
-                            <c:if test="${!(empty to)}">
+                            <c:if test="${not empty to}">
                                 <tr>
                                     <td class='MsgHdrName'>
                                         <fmt:message key="to"/>
@@ -66,7 +79,7 @@
                                 </tr>
                             </c:if>
                             <c:set var="cc" value="${message.displayCc}"/>
-                            <c:if test="${!(empty cc)}">
+                            <c:if test="${not empty cc}">
                                 <tr>
                                     <td class='MsgHdrName'>
                                         <fmt:message key="cc"/>
@@ -79,7 +92,7 @@
                                 </tr>
                             </c:if>
                             <c:set var="bcc" value="${message.displayBcc}"/>
-                            <c:if test="${!(empty bcc)}">
+                            <c:if test="${not empty bcc}">
                                 <tr>
                                     <td class='MsgHdrName'>
                                         <fmt:message key="bcc"/>
@@ -92,7 +105,7 @@
                                 </tr>
                             </c:if>
                             <c:set var="replyto" value="${message.displayReplyTo}"/>
-                            <c:if test="${!(empty replyto)}">
+                            <c:if test="${not empty replyto}">
                                 <tr>
                                     <td class='MsgHdrName'>
                                         <fmt:message key="replyTo"/>
@@ -130,7 +143,7 @@
                                     </td>
                                 </tr>
                             </c:if>
-                            <c:if test="${!empty message.attachments}">
+                            <c:if test="${not empty message.attachments}">
                                 <tr>
                                     <td nowrap align="right" class='MsgHdrAttAnchor'>
                                         <a href="#attachments${message.partName}">
@@ -154,15 +167,15 @@
                 <tr valign="middle">
                     <td nowrap align=left style='padding-left: 5px'>
                         <a
-                                <c:if test="${!isPart}">accesskey="1"</c:if> href="${composeUrl}&op=reply">
+                                <c:if test="${not isPart}">accesskey="1"</c:if> href="${composeUrl}&op=reply">
                             <fmt:message key="reply"/>
                         </a> |
                         <a
-                                <c:if test="${!isPart}">accesskey="2"</c:if> href="${composeUrl}&op=replyAll">
+                                <c:if test="${not isPart}">accesskey="2"</c:if> href="${composeUrl}&op=replyAll">
                             <fmt:message key="replyAll"/>
                         </a> |
                         <a
-                                <c:if test="${!isPart}">accesskey="3"</c:if> href="${composeUrl}&op=forward">
+                                <c:if test="${not isPart}">accesskey="3"</c:if> href="${composeUrl}&op=forward">
                             <fmt:message key="forward"/>
                         </a>
                         <%-- <c:if test="${isPart}"> | <a href="${composeUrl}&op=resend"><fmt:message key="resend"/></a></c:if> --%>
@@ -178,7 +191,7 @@
                                 <fmt:message key="showConversation"/>
                             </a> |
                         </c:if>
-                        <c:if test="${!isPart}">
+                        <c:if test="${not isPart}">
                             <a accesskey='0' target="_blank" href="/home/~/?id=${message.id}&auth=co">
                                 <fmt:message key="showOrig"/>
                             </a>
@@ -188,7 +201,7 @@
             </table>
         </td>
     </tr>
-    <c:if test="${!empty externalImageUrl and (message.externalImageCount gt 0)}">
+    <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
         <tr>
             <td class='DisplayImages'>
                 <fmt:message key="externalImages"/>
@@ -201,12 +214,12 @@
     <tr>
         <td class=MsgBody>
             ${theBody}
-            <c:if test="${!empty message.attachments}">
+            <c:if test="${not empty message.attachments}">
                 <hr/>
                 <a name="attachments${message.partName}"/>
                 <app:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
             </c:if>
-                <c:if test="${!empty param.debug}">
+                <c:if test="${not empty param.debug}">
                     <pre>${message.mimeStructure}</pre>
                 </c:if>
         </td>
