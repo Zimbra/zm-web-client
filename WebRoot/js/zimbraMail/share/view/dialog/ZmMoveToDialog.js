@@ -81,6 +81,7 @@ function(data, loc, treeIds, clearOverview) {
 				omit[folder.id] = true;
 			}
 		}
+		this._items = data;
 	} else {
 		this._items = data;
 	}
