@@ -71,8 +71,6 @@
 
 <html>
 
-<!-- ${zm:getEnvString("protocolMode", "")}  redirect(${loginRedirectUrl}) -->
-
 <head>
     <title><fmt:message key="zimbraTitle"/></title>
     <c:set var="skin" value="${empty cookie.ZM_SKIN ? 'sand' : cookie.ZM_SKIN.value}"/>

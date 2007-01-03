@@ -136,6 +136,19 @@
     <app:optCheckbox label="showSearchString" pref="zimbraPrefShowSearchString"
                      checked="${mailbox.prefs.showSearchString}"/>
     <app:optSeparator/>
+    <c:if test="${mailbox.features.changePassword}">
+         <tr>
+            <td nowrap align=right>
+                <fmt:message key="changePassword"/>
+                :
+            </td>
+            <td>
+                <c:url var="changePassUrl" value="${zm:getChangePasswordUrl(pageContext, '/h/changepass')}"/>
+                <a href="${changePassUrl}" target="_blank"><fmt:message key="changePassword"/></a>
+            </td>
+        </tr>
+        <app:optSeparator/>
+    </c:if>
     <c:if test="${mailbox.features.skinChange}">
         <tr>
             <td nowrap align=right>
