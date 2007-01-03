@@ -144,7 +144,7 @@ ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.IM_APP]	        = "displayIM";
 
 // apps for the app chooser
 ZmZimbraMail.APPS = [ZmZimbraMail.MAIL_APP, ZmZimbraMail.CONTACTS_APP, ZmZimbraMail.CALENDAR_APP,
-					 ZmZimbraMail.TASKS_APP, ZmZimbraMail.IM_APP, ZmZimbraMail.NOTEBOOK_APP];
+					 ZmZimbraMail.IM_APP, ZmZimbraMail.NOTEBOOK_APP];
 
 // app button IDs
 ZmZimbraMail.APP_BUTTON = {};
@@ -296,7 +296,7 @@ function() {
 */
 ZmZimbraMail.prototype.startup =
 function(params) {
-	
+
 	if (typeof(skin) == "undefined") {
 		DBG.println(AjxDebug.DBG1, "No skin!");
 		var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
@@ -405,7 +405,7 @@ function(params) {
 		rootTg.addMember(appChooserTg);
 		var kbMgr = this._appCtxt.getKeyboardMgr();
 		kbMgr.setTabGroup(rootTg);
-		
+
 		this._settings._loadShortcuts();
 	} else {
 		kbMgr.enable(false);
@@ -524,7 +524,7 @@ function(params) {
 ZmZimbraMail.prototype._doPoll =
 function(now) {
 	this._pollActionId = null; // so we don't try to cancel
-	
+
 	// It'd be more efficient to make these instance variables, but for some
 	// reason that breaks polling in IE.
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
@@ -712,7 +712,7 @@ ZmZimbraMail.prototype._getOverviewTrees =
 function(app) {
 	var list = ZmZimbraMail.OVERVIEW_TREES[app];
 	if (!(list && list.length)) return null;
-	
+
 	var trees = [];
 	for (var i = 0; i < list.length; i++) {
 		var id = list[i];
@@ -720,7 +720,7 @@ function(app) {
 			(id == ZmOrganizer.CALENDAR && !this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) ||
 			(id == ZmOrganizer.TASK_FOLDER && !this._appCtxt.get(ZmSetting.TASKS_ENABLED)) ||
 			(id == ZmOrganizer.NOTEBOOK && !this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) ||
-			(id == ZmOrganizer.ROSTER_TREE_ITEM && !this._appCtxt.get(ZmSetting.IM_ENABLED)) ||			
+			(id == ZmOrganizer.ROSTER_TREE_ITEM && !this._appCtxt.get(ZmSetting.IM_ENABLED)) ||
 			(id == ZmOrganizer.TAG && !this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) ||
 			(id == ZmOrganizer.ADDRBOOK && !this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)))
 		{
@@ -742,7 +742,7 @@ function(app) {
 	return trees;
 };
 
-ZmZimbraMail.prototype._setUserInfo = 
+ZmZimbraMail.prototype._setUserInfo =
 function() {
 	if (this._TAB_SKIN_ENABLED) {
 		this._setUserInfoLink("ZmZimbraMail.helpLinkCallback();", "Help", ZmMsg.help, "skin_container_help");
@@ -773,7 +773,7 @@ function() {
 	if (quota) {
 		var limit = AjxUtil.formatSize(quota, false, 1);
 		var percent = Math.min(Math.round((usedQuota / quota) * 100), 100);
-		
+
 		// set background color based on percent used
 		var progressClassName = "quotaUsed";
 		if (percent < 85 && percent > 65)
@@ -796,7 +796,7 @@ function() {
 		html[idx++] = "</td>";
 	}
 	html[idx++] = "</tr></table></center>";
-	
+
 	this._usedQuotaField.innerHTML = html.join("");
 
 	if (userTooltip || quotaTooltip) {
@@ -846,9 +846,9 @@ function() {
 		window._zimbraMail.setSessionTimer(false);
 
 	ZmCsfeCommand.clearAuthToken();
-	
+
 	window.onbeforeunload = null;
-	
+
 	var port = (location.port == '80') ? "" : [":", location.port].join("");
 	var locationStr = [location.protocol, "//", location.hostname, port].join("");
 	if (appContextPath) {
@@ -914,8 +914,8 @@ function(bStartTimer) {
 
 	// ALWAYS set back reference into our world (also used by unload handler)
 	window._zimbraMail = this;
-	
-	// if no timeout value, user's client never times out from inactivity	
+
+	// if no timeout value, user's client never times out from inactivity
 	var timeout = this._appCtxt.get(ZmSetting.IDLE_SESSION_TIMEOUT) * 1000;
 	if (timeout <= 0)
 		return;
@@ -923,7 +923,7 @@ function(bStartTimer) {
 	if (bStartTimer) {
 		DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER SET (" + (new Date()).toLocaleString() + ")");
 		this._sessionTimerId = AjxTimedAction.scheduleAction(this._sessionTimer, timeout);
-		
+
 		DwtEventManager.addListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		this._shell.setHandler(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		if (AjxEnv.isIE)
@@ -932,7 +932,7 @@ function(bStartTimer) {
 			window.onkeydown = ZmZimbraMail._userEventHdlr;
 	} else {
 		DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER CANCELED (" + (new Date()).toLocaleString() + ")");
-		
+
 		AjxTimedAction.cancelAction(this._sessionTimerId);
 		this._sessionTimerId = -1;
 
@@ -945,7 +945,7 @@ function(bStartTimer) {
 	}
 };
 
-ZmZimbraMail.prototype.addChildWindow = 
+ZmZimbraMail.prototype.addChildWindow =
 function(childWin) {
 	if (this._childWinList == null)
 		this._childWinList = new AjxVector();
@@ -960,7 +960,7 @@ function(childWin) {
 	return newWinObj;
 };
 
-ZmZimbraMail.prototype.getChildWindow = 
+ZmZimbraMail.prototype.getChildWindow =
 function(childWin) {
 	if (this._childWinList) {
 		for (var i = 0; i < this._childWinList.size(); i++) {
@@ -988,7 +988,7 @@ function(childWin) {
 * Common exception handling entry point.
 *
 * @param ex	[Object]		the exception
-* 
+*
 */
 ZmZimbraMail.prototype._handleException =
 function(ex, method, params, restartOnError, obj) {
@@ -1039,7 +1039,7 @@ function(ev) {
 ZmZimbraMail.prototype._settingsChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
-	
+
 	var id = ev.source.id;
 	if (id == ZmSetting.QUOTA_USED) {
 		this._setUserInfo();
@@ -1087,7 +1087,7 @@ function(ev) {
 			if (id == ZmFolder.ID_INBOX) {
 				this._statusView.setIconVisible(ZmStatusView.ICON_INBOX,  organizer.numUnread > 0);
 			}
-		}		
+		}
 	}
 };
 
@@ -1150,7 +1150,7 @@ function() {
 
 	this._userNameField = document.getElementById(userNameId);
 	this._usedQuotaField = document.getElementById(usedQuotaId);
-	
+
 	return userInfo;
 };
 
@@ -1178,7 +1178,7 @@ function() {
 	}
 
 	var appChooser = new ZmAppChooser(this._shell, null, buttons, this._TAB_SKIN_ENABLED);
-	
+
 	var buttonListener = new AjxListener(this, this._appButtonListener);
 	for (var i = 0; i < buttons.length; i++) {
 		var id = buttons[i];
@@ -1232,6 +1232,47 @@ function() {
 	return "Global";
 };
 
+
+function ZmOfflineDialog(appCtxt) {
+	DwtDialog.call(this, appCtxt.getShell(), "ZmOfflineDialog", "Zimbra Offline - Now Connected", DwtDialog.NO_BUTTONS);
+	this._appCtxt = appCtxt;
+	this.setContent(this._contentHtml());
+};
+ZmOfflineDialog.prototype = new DwtDialog;
+ZmOfflineDialog.prototype.constructor = ZmOfflineDialog;
+ZmOfflineDialog.prototype._contentHtml =
+function() {
+	var html = new AjxBuffer();
+	html.append("<table cellspacing=3 border=0 width=300>");
+	html.append("<tr><td colspan=3><div>");
+    html.append("<center><b><font size='+2'>Synchronizing<span id='countIt'></span></font></b><br/>");
+    html.append("<img src='/zimbra/img/animated/wait_64.gif'/></center>");
+    html.append("</div></td></tr>");
+	html.append("</table>");
+	return html.toString();
+};
+
+ZmOfflineDialog.prototype.countDown =
+function(args) {
+    var last = args[0];
+    var tot = args[1];
+    var el = document.getElementById('countIt');
+    el.innerHTML = ' ';
+    if (last <= tot) {
+        el.innerHTML = "<br/>Sending " + last + " of " + tot;
+        last++;
+    }
+    if (last <= tot) {
+        var action = new AjxTimedAction(this, ZmOfflineDialog.prototype.countDown, {0:last,1:tot});
+        AjxTimedAction.scheduleAction(action, 1800);
+    }
+}
+
+ZmOfflineDialog.dummyCallback =
+function(args) {
+    //do nothing
+}
+
 ZmZimbraMail.prototype.handleKeyAction =
 function(actionCode, ev) {
 	switch (actionCode) {
@@ -1239,22 +1280,22 @@ function(actionCode, ev) {
 			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.NONE);
 			DBG.setDebugLevel(AjxDebug.NONE);
 			break;
-			
+
 		case ZmKeyMap.DBG_1:
 			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG1);
 			DBG.setDebugLevel(AjxDebug.DBG1);
 			break;
-			
+
 		case ZmKeyMap.DBG_2:
 			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG2);
 			DBG.setDebugLevel(AjxDebug.DBG2);
 			break;
-			
+
 		case ZmKeyMap.DBG_3:
 			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG3);
 			DBG.setDebugLevel(AjxDebug.DBG3);
 			break;
-			
+
 		case ZmKeyMap.DBG_TIMING: {
 			var on = DBG._showTiming;
 			var newState = on ? "off" : "on";
@@ -1262,8 +1303,25 @@ function(actionCode, ev) {
 			DBG.showTiming(!on);
 			break;
 		}
-		
-		case ZmKeyMap.GOTO_MAIL:
+        case ZmKeyMap.GO_ONLINE: {
+            if (this._offlineDialog == null)
+                this._offlineDialog = new ZmOfflineDialog(this._appCtxt);
+            this._offlineDialog.popup();
+            var tot = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_OUTBOX).numTotal;
+            this._offlineDialog.countDown({0:1,1:tot});
+            var soapDoc = AjxSoapDoc.create("SyncRequest", "urn:zimbraOffline");
+            var dummyCallback = new AjxCallback(this, ZmOfflineDialog.dummyCallback, {1:1});
+            this._appCtxt.getAppController().sendRequest({
+                soapDoc: soapDoc,
+                asyncMode: true,
+                noBusyOverlay: true,
+                callback: dummyCallback,
+                timeout: 6
+            });
+            break;
+        }
+
+        case ZmKeyMap.GOTO_MAIL:
 		case ZmKeyMap.GOTO_CONTACTS:
 		case ZmKeyMap.GOTO_CALENDAR:
 		case ZmKeyMap.GOTO_IM:

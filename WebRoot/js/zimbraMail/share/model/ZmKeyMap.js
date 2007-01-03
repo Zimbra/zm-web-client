@@ -51,6 +51,7 @@ function ZmKeyMap(appCtxt) {
 	this._map["Global"]["Alt+Shift+D,2"] = ZmKeyMap.DBG_2;
 	this._map["Global"]["Alt+Shift+D,3"] = ZmKeyMap.DBG_3;
 	this._map["Global"]["Alt+Shift+D,T"] = ZmKeyMap.DBG_TIMING;
+	this._map["Global"]["0"] = ZmKeyMap.GO_ONLINE;
 };
 
 ZmKeyMap.prototype = new DwtKeyMap(true);
@@ -149,6 +150,7 @@ ZmKeyMap.TODAY				= "Today";
 ZmKeyMap.UNTAG				= "Untag";
 ZmKeyMap.VIEW_BY_CONV		= "ViewByConversation";
 ZmKeyMap.VIEW_BY_MSG		= "ViewByMessage";
+ZmKeyMap.GO_ONLINE  		= "GoOnline";
 
 // shifted chars
 ZmKeyMap.SHIFT = {};
