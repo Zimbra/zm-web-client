@@ -1,35 +1,31 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2004, 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmContactController(appCtxt, container, abApp) {
+function ZmTaskController(appCtxt, container, app) {
 
-	ZmListController.call(this, appCtxt, container, abApp);
-
-	this._viewFactory = {};
-	this._viewFactory[ZmController.CONTACT_VIEW] = ZmContactView;
-	this._viewFactory[ZmController.GROUP_VIEW] = ZmGroupView;
+	ZmListController.call(this, appCtxt, container, app);
 
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
@@ -37,55 +33,51 @@ function ZmContactController(appCtxt, container, abApp) {
 	this._tabGroupDone = {};
 };
 
-ZmContactController.prototype = new ZmListController();
-ZmContactController.prototype.constructor = ZmContactController;
+ZmTaskController.prototype = new ZmListController;
+ZmTaskController.prototype.constructor = ZmTaskController;
 
-ZmContactController.prototype.toString =
+ZmTaskController.prototype.toString =
 function() {
-	return "ZmContactController";
+	return "ZmTaskController";
 };
 
-ZmContactController.prototype.show =
-function(contact, isDirty) {
-	this._contact = contact;
+ZmTaskController.prototype.show =
+function(task) {
+	this._task = task || (new ZmTask(this._appCtxt));
 	this._currentView = this._getViewType();
-	if (isDirty) this._contactDirty = true;
-	this._list = contact.list;
+	this._list = this._task.list;
+
 	// re-enable input fields if list view exists
 	if (this._listView[this._currentView])
 		this._listView[this._currentView].enableInputs(true);
 	this._setup(this._currentView);
 	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
-	var elements = new Object();
+
+	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+
 	this._setView(this._currentView, elements, false, false, false, true);
 };
 
-ZmContactController.prototype.getKeyMapName =
+ZmTaskController.prototype.getKeyMapName =
 function() {
-	return "ZmContactController";
+	return "ZmTaskController";
 };
 
-ZmContactController.prototype.handleKeyAction =
+ZmTaskController.prototype.handleKeyAction =
 function(actionCode) {
-	DBG.println("ZmContactController.handleKeyAction");
 	switch (actionCode) {
-
-		case ZmKeyMap.SAVE:
-			this._saveListener();
-			break;
-
-		case ZmKeyMap.CANCEL:
-			this._cancelListener();
-			break;
+		case ZmKeyMap.SAVE:		this._saveListener(); break;
+		case ZmKeyMap.CANCEL:	this._cancelListener(); break;
 	}
 	return true;
 };
 
+
 // Private methods (mostly overrides of ZmListController protected methods)
 
-ZmContactController.prototype._getToolBarOps =
+ZmTaskController.prototype._getToolBarOps =
 function() {
 	var list = [ZmOperation.SAVE];
 	list.push(ZmOperation.CANCEL);
@@ -98,32 +90,30 @@ function() {
 	return list;
 };
 
-ZmContactController.prototype._getActionMenuOps =
+ZmTaskController.prototype._getActionMenuOps =
 function() {
 	return null;
 };
 
-ZmContactController.prototype._getViewType =
+ZmTaskController.prototype._getViewType =
 function() {
-	return this._contact.isGroup()
-		? ZmController.GROUP_VIEW
-		: ZmController.CONTACT_VIEW;
+	return ZmController.TASKEDIT_VIEW;
 };
 
-ZmContactController.prototype._initializeListView =
+ZmTaskController.prototype._initializeListView =
 function(view) {
 	if (!this._listView[view]) {
-		this._listView[view] = new this._viewFactory[view](this._container, this._appCtxt, this);
+		this._listView[view] = new ZmTaskEditView(this._container, this._appCtxt, this);
 	}
 };
 
-ZmContactController.prototype._initializeToolBar =
+ZmTaskController.prototype._initializeToolBar =
 function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 
 	// change the cancel button to "close" if editing existing contact
 	var cancelButton = this._toolbar[view].getButton(ZmOperation.CANCEL);
-	if (this._contact.id == undefined || this._contact.isGal) {
+	if (this._task.id == -1) {
 		cancelButton.setText(ZmMsg.cancel);
 		cancelButton.setImage("Cancel");
 	} else {
@@ -132,15 +122,15 @@ function(view) {
 	}
 };
 
-ZmContactController.prototype._getTagMenuMsg =
+ZmTaskController.prototype._getTagMenuMsg =
 function() {
-	return ZmMsg.AB_TAG_CONTACT;
+	return ZmMsg.tagTask;
 };
 
-ZmContactController.prototype._setViewContents =
+ZmTaskController.prototype._setViewContents =
 function(view) {
-	this._listView[view].set(this._contact, this._contactDirty);
-	if (this._contactDirty) delete this._contactDirty;
+	this._listView[view].set(this._task);
+
 	// can't add all the fields until the view has been created
 	if (!this._tabGroupDone[view]) {
 		var list = this._listView[view]._getTabGroupMembers();
@@ -153,7 +143,7 @@ function(view) {
 	}
 };
 
-ZmContactController.prototype._initializeTabGroup =
+ZmTaskController.prototype._initializeTabGroup =
 function(view) {
 	if (this._tabGroups[view]) return;
 
@@ -163,20 +153,19 @@ function(view) {
 	this._tabGroups[view].addMember(this._toolbar[view]);
 };
 
-ZmContactController.prototype._paginate =
+ZmTaskController.prototype._paginate =
 function(view, bPageForward) {
-	// TODO
-	DBG.println("TODO - page to next/previous contact");
+	// do nothing
 };
 
-ZmContactController.prototype._resetOperations =
+ZmTaskController.prototype._resetOperations =
 function(parent, num) {
 	if (!parent) return;
-	if (this._contact.id == undefined || this._contact.isGal) {
+	if (this._task.id == -1) {
 		// disble all buttons except SAVE and CANCEL
 		parent.enableAll(false);
 		parent.enable([ZmOperation.SAVE, ZmOperation.CANCEL], true);
-	} else if (this._contact.isShared()) {
+	} else if (this._task.isShared()) {
 		parent.enableAll(true);
 		parent.enable(ZmOperation.TAG_MENU, false);
 	} else {
@@ -184,7 +173,7 @@ function(parent, num) {
 	}
 };
 
-ZmContactController.prototype._saveListener =
+ZmTaskController.prototype._saveListener =
 function(ev, bIsPopCallback) {
 	try {
 		var view = this._listView[this._currentView];
@@ -193,39 +182,7 @@ function(ev, bIsPopCallback) {
 		if (!view.isValid())
 			return;
 
-		var mods = view.getModifiedAttrs();
-		view.enableInputs(false);
-
-		if (mods) {
-			var contact = view.getContact();
-
-			if (contact.id && !contact.isGal) {
-				if (view.isEmpty()) {
-					this._doDelete([contact], null, null, true);
-				} else {
-					this._doModify(contact, mods);
-				}
-				this._appCtxt.getZimletMgr().notifyZimlets(
-					"onContactModified",
-					ZmZimletContext._translateZMObject(contact), mods);
-			} else {
-				this._doCreate(this._app.getContactList(), mods);
-			}
-		} else {
-			// bug fix #5829 - differentiate betw. an empty contact and saving
-			//                 an existing contact w/o editing
-			if (this._contact.isEmpty()) {
-				var msg = this._currentView == ZmController.GROUP_VIEW
-					? ZmMsg.emptyGroup
-					: ZmMsg.emptyContact;
-				this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
-			} else {
-				var msg = this._currentView == ZmController.GROUP_VIEW
-					? ZmMsg.groupSaved
-					: ZmMsg.contactSaved;
-				this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_INFO);
-			}
-		}
+		// TODO
 
 		if (!bIsPopCallback) {
 			this._app.popView(true);
@@ -243,12 +200,13 @@ function(ev, bIsPopCallback) {
 	}
 };
 
-ZmContactController.prototype._cancelListener = 
+ZmTaskController.prototype._cancelListener =
 function(ev) {
 	this._app.popView();
 };
 
-ZmContactController.prototype._doDelete = 
+/*
+ZmTaskController.prototype._doDelete =
 function(items, hardDelete, attrs, skipPostProcessing) {
 	ZmListController.prototype._doDelete.call(this, items, hardDelete, attrs);
 
@@ -258,54 +216,50 @@ function(items, hardDelete, attrs, skipPostProcessing) {
 		this._app.popView(true);
 	}
 };
+*/
 
-ZmContactController.prototype._preHideCallback =
+ZmTaskController.prototype._preHideCallback =
 function(view, force) {
 	if (force) return true;
-	
-	var view = this._listView[this._currentView];
-	if (!view.isDirty()) {
-		this._listView[this._currentView].cleanup();
+
+	var v = this._listView[this._currentView];
+	if (!v.isDirty()) {
+		v.cleanup();
 		return true;
 	}
 
-	var ps = this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
-	ps.reset();
-	ps.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
-	ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
-	ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
-	ps.popup(view._getDialogXY());
-	
+	this._popShield = this._appCtxt.getYesNoCancelMsgDialog();
+	this._popShield.reset();
+	this._popShield.setMessage(ZmMsg.askToSave, DwtMessageDialog.WARNING_STYLE);
+	this._popShield.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
+	this._popShield.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
+	this._popShield.popup();
 	return false;
 };
 
-ZmContactController.prototype._popShieldYesCallback =
+ZmTaskController.prototype._popShieldYesCallback =
 function() {
 	this._saveListener(null, true);
 	this._popShield.popdown();
-
 	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
-
 	this._listView[this._currentView].cleanup();
 };
 
-ZmContactController.prototype._popShieldNoCallback =
+ZmTaskController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
-
 	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
-
 	this._listView[this._currentView].cleanup();
 };
 
-ZmContactController.prototype._popdownActionListener = 
+ZmTaskController.prototype._popdownActionListener =
 function(ev) {
 	// bug fix #3719 - do nothing
 };
 
-ZmContactController.prototype._getDefaultFocusItem = 
+ZmTaskController.prototype._getDefaultFocusItem =
 function() {
 	return this._listView[this._currentView]._getDefaultFocusItem();
 };

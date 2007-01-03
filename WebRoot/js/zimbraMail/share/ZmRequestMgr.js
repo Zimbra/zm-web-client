@@ -294,8 +294,9 @@ function(refresh) {
 		var treeId = ZmZimbraMail.REFRESH_TREES[i];
 		var tree = this._appCtxt.getTree(treeId);
 		if (!tree) {
-			tree = (treeId == ZmOrganizer.TAG) ? new ZmTagTree(this._appCtxt) :
-												 new ZmFolderTree(this._appCtxt, treeId);
+			tree = treeId == ZmOrganizer.TAG
+				? (new ZmTagTree(this._appCtxt))
+				: (new ZmFolderTree(this._appCtxt, treeId));
 			tree.addChangeListener(this._controller._treeListener[treeId]);
 			this._appCtxt.setTree(treeId, tree);
 		}
@@ -319,6 +320,7 @@ function(refresh) {
 	if (refresh.tags) {
 		this._appCtxt.getTree(ZmOrganizer.TAG).loadFromJs(refresh.tags);
 	}
+
 	// everything but tags comes in the <folder> block
 	if (refresh.folder) {
 		for (var i = 0; i < ZmZimbraMail.REFRESH_TREES.length; i++) {
@@ -355,7 +357,7 @@ function(refresh) {
 
 	// XXX: temp, get additional share info (see bug #4434)
 	if (refresh.folder) {
-		this._getFolderPermissions([ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK]);
+		this._getFolderPermissions([ZmOrganizer.CALENDAR, /*ZmOrganizer.TASKS,*/ ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK]);
 	}
 
 	return resetTree;

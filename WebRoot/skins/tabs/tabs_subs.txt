@@ -1,0 +1,172 @@
+##########################################################################
+#                            Skin Substitutions                          #
+#------------------------------------------------------------------------#
+#
+#  Add or change entries below to customize this skin.  
+#     See:  http://wiki.zimbra.com/?title=Themes
+#
+#  NOTE: Substitutions that begin and end with "_" (eg: "_BaseColor_") 
+#  should only be used within this file -- never in a CSS or HTML file
+#
+#========================================================================#
+
+
+SkinName			= base
+
+
+##########################################################################
+#                           Logo Licensing Rules 	   		 	         #
+#------------------------------------------------------------------------#
+#
+#  If you are using the Zimbra Collaboration Suite (ZCS) under the 
+#  open source license, and you have not modifed the software, 
+#  then you are required to use the Zimbra logo (the default). 
+#
+#	LogoImgDir		= /zimbra/skins/_base/logos
+#	LogoURL			= http://www.zimbra.com
+#
+#-------------------------------------------------------------------------
+#  If you are using ZCS under the open source license, 
+#  and you have modified the software, 
+#  then you are required to use the Zimbra Inside logo. 
+#
+#	LogoImgDir		= /zimbra/skins/_base/logos/ZimbraInside
+#	LogoURL			= http://www.zimbra.com
+#
+#-------------------------------------------------------------------------
+#  If you are using ZCS under the network (commercial) license, 
+#  then you are welcome to use your own logo in place of the Zimbra logo,
+#  or to retain the original Zimbra logo. 
+#
+#	LogoImgDir		= /zimbra/skins/@SkinName@/logos
+#	LogoURL			= http://www.yourcompany.com
+#
+#========================================================================#
+
+
+##########################################################################
+#                               Skin Colors                              #
+#------------------------------------------------------------------------#
+#
+#### Base color and variants ####
+	_BaseColor_			=	#e8dcc1
+	_BaseColorD95_		=	#0c0b0a
+	_BaseColorD90_		=	#171613
+	_BaseColorD85_		=	#23211d
+	_BaseColorD80_		=	#2e2c27
+	_BaseColorD75_		=	#3a3730
+	_BaseColorD70_		=	#46423a
+	_BaseColorD65_		=	#514d44
+	_BaseColorD60_		=	#5d584d
+	_BaseColorD55_		=	#686357
+	_BaseColorD50_		=	#746e61
+	_BaseColorD45_		=	#80796a
+	_BaseColorD40_		=	#8b8474
+	_BaseColorD35_		=	#978f7d
+	_BaseColorD30_		=	#a29a87
+	_BaseColorD25_		=	#aea591
+	_BaseColorD20_		=	#bab09a
+	_BaseColorD15_		=	#c5bba4
+	_BaseColorD10_		=	#d1c6ae
+	_BaseColorD5_		=	#dcd1b7
+	_BaseColorL5_		=	#e9dec4
+	_BaseColorL10_		=	#eae0c7
+	_BaseColorL15_		=	#ebe1ca
+	_BaseColorL20_		=	#ede3cd
+	_BaseColorL25_		=	#eee5d1
+	_BaseColorL30_		=	#efe7d4
+	_BaseColorL35_		=	#f0e8d7
+	_BaseColorL40_		=	#f1eada
+	_BaseColorL45_		=	#f2ecdd
+	_BaseColorL50_		=	#f4eee0
+	_BaseColorL55_		=	#f5efe3
+	_BaseColorL60_		=	#f6f1e6
+	_BaseColorL65_		=	#f7f3e9
+	_BaseColorL70_		=	#f8f5ec
+	_BaseColorL75_		=	#f9f6f0
+	_BaseColorL80_		=	#faf8f3
+	_BaseColorL85_		=	#fcfaf6
+	_BaseColorL90_		=	#fdfcf9
+	_BaseColorL95_		=	#fefdfc
+#### Selection color and variants ####
+	_SelColor_			=	#acc0dd
+	_SelColorD95_		=	#090a0b
+	_SelColorD90_		=	#111316
+	_SelColorD85_		=	#1a1d21
+	_SelColorD80_		=	#22262c
+	_SelColorD75_		=	#2b3037
+	_SelColorD70_		=	#343a42
+	_SelColorD65_		=	#3c434d
+	_SelColorD60_		=	#454d58
+	_SelColorD55_		=	#4d5663
+	_SelColorD50_		=	#56606f
+	_SelColorD45_		=	#5f6a7a
+	_SelColorD40_		=	#677385
+	_SelColorD35_		=	#707d90
+	_SelColorD30_		=	#78869b
+	_SelColorD25_		=	#8190a6
+	_SelColorD20_		=	#8a9ab1
+	_SelColorD15_		=	#92a3bc
+	_SelColorD10_		=	#9badc7
+	_SelColorD5_		=	#a3b6d2
+	_SelColorL5_		=	#b0c3df
+	_SelColorL10_		=	#b4c6e0
+	_SelColorL15_		=	#b8c9e2
+	_SelColorL20_		=	#bdcde4
+	_SelColorL25_		=	#c1d0e6
+	_SelColorL30_		=	#c5d3e7
+	_SelColorL35_		=	#c9d6e9
+	_SelColorL40_		=	#cdd9eb
+	_SelColorL45_		=	#d1dcec
+	_SelColorL50_		=	#d6e0ee
+	_SelColorL55_		=	#dae3f0
+	_SelColorL60_		=	#dee6f1
+	_SelColorL65_		=	#e2e9f3
+	_SelColorL70_		=	#e6ecf5
+	_SelColorL75_		=	#eaeff7
+	_SelColorL80_		=	#eef2f8
+	_SelColorL85_		=	#f3f6fa
+	_SelColorL90_		=	#f7f9fc
+	_SelColorL95_		=	#fbfcfd
+#
+#========================================================================#
+
+
+
+
+SkinImgDir			= /zimbra/skins/@SkinName@/img
+SkinAnimatedImgDir	= /zimbra/img/animated
+ImgDir				= /zimbra/img/loRes
+DwtImgDir			= /zimbra/img/loRes/dwt
+
+LoginBannerImg      =	@LogoImgDir@/LoginBanner.png
+LoginBannerWidth    =	450px
+LoginBannerHeight   =	100px
+
+AppBannerImg        =	@LogoImgDir@/AppBanner.png
+AppBannerWidth      =	120px
+AppBannerHeight     =	35px
+
+# Specify the width of a sidebar ads when using the "ads" skin
+SidebarAdWidth		=	160px
+
+
+SkinBorderCurrentApp		= @InsetBg@ @OutsetBorder@ 	-moz-border-radius:3 3 0 0;	margin-bottom:-1px;
+_AppTabStyle_			 	= border-bottom-width:0px;	-moz-border-radius:3 3 0 0;
+
+
+	_TopToolbarBorder_			= border: 1px solid @_BaseColorD25_@;  border-width:2px 0px 2px 0px; border-color:@_BaseColorD30_@ @_BaseColorD50_@ @_BaseColorD50_@ @_BaseColorD30_@;
+#IFDEF GECKO
+	_TopToolbarBorder_			= border: 2px solid @_BaseColorD25_@;  border-width:2px 0px 2px 0px; -moz-border-left-colors:@_BaseColorD30_@ @_BaseColorD10_@;	-moz-border-top-colors: @_BaseColorD30_@ @_BaseColorD10_@;	-moz-border-bottom-colors: @_BaseColorD55_@ @_BaseColorD25_@;	-moz-border-right-colors: @_BaseColorD40_@ @_BaseColorD25_@;
+#ENDIF
+
+SkinBorderAppToolbar	= @ToolbarBg@ @_TopToolbarBorder_@
+SkinBorderTree			= @InsetBg@ @OutsetBorder@	height:100%;
+SkinBorderApp			= @PageBg@  @OutsetBorder@ height:100%;
+TreeHeaderContainer		= background-color:@HeaderColor@;
+
+
+_AppTabStyle_				= border-bottom-width:0px; padding:3px 5px 4px 5px;
+AppTabContainer				= @_WidgetContainer_@ opacity:.6;	@_AppTabStyle_@
+AppTabContainer-hover		= @_WidgetContainer_@				@_AppTabStyle_@
+AppTabContainer-selected	= @ToolbarContainer@		@_AppTabStyle_@
