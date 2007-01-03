@@ -44,6 +44,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.MAIL_APP]			= ZmMailApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.CONTACTS_APP]		= ZmContactsApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.CALENDAR_APP]		= ZmCalendarApp;
+	ZmZimbraMail.APP_CLASS[ZmZimbraMail.TASKS_APP]			= ZmTasksApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.IM_APP]				= ZmImApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.NOTEBOOK_APP]		= ZmNotebookApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.PREFERENCES_APP]	= ZmPreferencesApp;
@@ -95,13 +96,14 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 ZmZimbraMail.prototype = new ZmController;
 ZmZimbraMail.prototype.constructor = ZmZimbraMail;
 
-ZmZimbraMail.MAIL_APP			= "mail";
-ZmZimbraMail.CONTACTS_APP		= "contacts";
 ZmZimbraMail.CALENDAR_APP		= "calendar";
+ZmZimbraMail.CONTACTS_APP		= "contacts";
 ZmZimbraMail.IM_APP				= "im";
+ZmZimbraMail.MAIL_APP			= "mail";
+ZmZimbraMail.MIXED_APP			= "mixed";
 ZmZimbraMail.NOTEBOOK_APP		= "notebook";
 ZmZimbraMail.PREFERENCES_APP	= "options";
-ZmZimbraMail.MIXED_APP			= "mixed";
+ZmZimbraMail.TASKS_APP			= "tasks";
 
 ZmZimbraMail.APP_CLASS = {};
 
@@ -116,6 +118,7 @@ ZmZimbraMail.MSG_KEY = {};
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]				= "mail";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]			= "addressBook";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CALENDAR_APP]			= "calendar";
+ZmZimbraMail.MSG_KEY[ZmZimbraMail.TASKS_APP]			= "tasks";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.IM_APP]				= "imAppTitle";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.NOTEBOOK_APP]			= "BETA_documents";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.PREFERENCES_APP]		= "options";
@@ -126,6 +129,7 @@ ZmZimbraMail.APP_ICON = {};
 ZmZimbraMail.APP_ICON[ZmZimbraMail.MAIL_APP]			= "MailApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.CONTACTS_APP]		= "ContactsApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.CALENDAR_APP]		= "CalendarApp";
+ZmZimbraMail.APP_ICON[ZmZimbraMail.TASKS_APP]			= "Task";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.IM_APP]				= "ImStartChat";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.NOTEBOOK_APP]		= "NoteApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.PREFERENCES_APP]		= "Preferences";
@@ -147,6 +151,7 @@ ZmZimbraMail.APP_BUTTON = {};
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.MAIL_APP]			= ZmAppChooser.B_EMAIL;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CONTACTS_APP]		= ZmAppChooser.B_CONTACTS;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CALENDAR_APP]		= ZmAppChooser.B_CALENDAR;
+ZmZimbraMail.APP_BUTTON[ZmZimbraMail.TASKS_APP]			= ZmAppChooser.B_TASKS;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.IM_APP]			= ZmAppChooser.B_IM;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.NOTEBOOK_APP]		= ZmAppChooser.B_NOTEBOOK;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.PREFERENCES_APP]	= ZmAppChooser.B_OPTIONS;
@@ -155,6 +160,7 @@ ZmZimbraMail.APP_BUTTON[ZmZimbraMail.PREFERENCES_APP]	= ZmAppChooser.B_OPTIONS;
 ZmZimbraMail.APP_SETTING = {};
 ZmZimbraMail.APP_SETTING[ZmZimbraMail.CONTACTS_APP]		= ZmSetting.CONTACTS_ENABLED;
 ZmZimbraMail.APP_SETTING[ZmZimbraMail.CALENDAR_APP]		= ZmSetting.CALENDAR_ENABLED;
+ZmZimbraMail.APP_SETTING[ZmZimbraMail.TASKS_APP]		= ZmSetting.TASKS_ENABLED;
 ZmZimbraMail.APP_SETTING[ZmZimbraMail.IM_APP]			= ZmSetting.IM_ENABLED;
 ZmZimbraMail.APP_SETTING[ZmZimbraMail.NOTEBOOK_APP]		= ZmSetting.NOTEBOOK_ENABLED;
 
@@ -162,8 +168,8 @@ ZmZimbraMail.APP_SETTING[ZmZimbraMail.NOTEBOOK_APP]		= ZmSetting.NOTEBOOK_ENABLE
 ZmZimbraMail.DEFAULT_SEARCH = {};
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MAIL_APP]		= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CONTACTS_APP]	= ZmItem.CONTACT;
-//ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmItem.APPT;
-ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmSearchToolBar.FOR_MAIL_MI;
+ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmSearchToolBar.FOR_MAIL_MI; //= ZmItem.APPT;
+ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.TASKS_APP]		= ZmSearchToolBar.FOR_MAIL_MI; //= ZmItem.TASK;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.IM_APP]    	= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MIXED_APP]		= ZmSearchToolBar.FOR_ANY_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.NOTEBOOK_APP]	= ZmItem.PAGE;
@@ -173,6 +179,7 @@ ZmZimbraMail.OVERVIEW_TREES = {};
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]			= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]		= [ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]		= [ZmOrganizer.CALENDAR, ZmOrganizer.ZIMLET];
+ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.TASKS_APP]			= [ZmOrganizer.TASKS, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]	= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]			= [ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTEBOOK_APP]		= [ZmOrganizer.NOTEBOOK, /*ZmOrganizer.SEARCH,*/ ZmOrganizer.TAG,ZmOrganizer.ZIMLET];
@@ -203,13 +210,15 @@ ZmZimbraMail.ACTION_CODE_TO_APP = {};
 ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_MAIL]		= ZmZimbraMail.MAIL_APP;
 ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_CONTACTS]	= ZmZimbraMail.CONTACTS_APP;
 ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_CALENDAR]	= ZmZimbraMail.CALENDAR_APP;
+//ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_TASKS]	= ZmZimbraMail.TASKS_APP;
 ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_IM]		= ZmZimbraMail.IM_APP;
 ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_NOTEBOOK]	= ZmZimbraMail.NOTEBOOK_APP;
 ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_OPTIONS]	= ZmZimbraMail.PREFERENCES_APP;
 
 // trees whose data comes in a <refresh> block
 ZmZimbraMail.REFRESH_TREES = [ZmOrganizer.FOLDER, ZmOrganizer.TAG, ZmOrganizer.SEARCH,
-							  ZmOrganizer.ADDRBOOK, ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK];
+							  ZmOrganizer.ADDRBOOK, ZmOrganizer.CALENDAR,
+							  ZmOrganizer.TASKS, ZmOrganizer.NOTEBOOK];
 
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
 
@@ -287,7 +296,7 @@ function() {
 */
 ZmZimbraMail.prototype.startup =
 function(params) {
-	
+
 	if (typeof(skin) == "undefined") {
 		DBG.println(AjxDebug.DBG1, "No skin!");
 		var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
@@ -396,7 +405,7 @@ function(params) {
 		rootTg.addMember(appChooserTg);
 		var kbMgr = this._appCtxt.getKeyboardMgr();
 		kbMgr.setTabGroup(rootTg);
-		
+
 		this._settings._loadShortcuts();
 	} else {
 		kbMgr.enable(false);
@@ -515,7 +524,7 @@ function(params) {
 ZmZimbraMail.prototype._doPoll =
 function(now) {
 	this._pollActionId = null; // so we don't try to cancel
-	
+
 	// It'd be more efficient to make these instance variables, but for some
 	// reason that breaks polling in IE.
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
@@ -703,14 +712,15 @@ ZmZimbraMail.prototype._getOverviewTrees =
 function(app) {
 	var list = ZmZimbraMail.OVERVIEW_TREES[app];
 	if (!(list && list.length)) return null;
-	
+
 	var trees = [];
 	for (var i = 0; i < list.length; i++) {
 		var id = list[i];
 		if ((id == ZmOrganizer.SEARCH && !this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) ||
 			(id == ZmOrganizer.CALENDAR && !this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) ||
+			(id == ZmOrganizer.TASK_FOLDER && !this._appCtxt.get(ZmSetting.TASKS_ENABLED)) ||
 			(id == ZmOrganizer.NOTEBOOK && !this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) ||
-			(id == ZmOrganizer.ROSTER_TREE_ITEM && !this._appCtxt.get(ZmSetting.IM_ENABLED)) ||			
+			(id == ZmOrganizer.ROSTER_TREE_ITEM && !this._appCtxt.get(ZmSetting.IM_ENABLED)) ||
 			(id == ZmOrganizer.TAG && !this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) ||
 			(id == ZmOrganizer.ADDRBOOK && !this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)))
 		{
@@ -732,7 +742,7 @@ function(app) {
 	return trees;
 };
 
-ZmZimbraMail.prototype._setUserInfo = 
+ZmZimbraMail.prototype._setUserInfo =
 function() {
 	if (this._TAB_SKIN_ENABLED) {
 		this._setUserInfoLink("ZmZimbraMail.helpLinkCallback();", "Help", ZmMsg.help, "skin_container_help");
@@ -763,7 +773,7 @@ function() {
 	if (quota) {
 		var limit = AjxUtil.formatSize(quota, false, 1);
 		var percent = Math.min(Math.round((usedQuota / quota) * 100), 100);
-		
+
 		// set background color based on percent used
 		var progressClassName = "quotaUsed";
 		if (percent < 85 && percent > 65)
@@ -786,7 +796,7 @@ function() {
 		html[idx++] = "</td>";
 	}
 	html[idx++] = "</tr></table></center>";
-	
+
 	this._usedQuotaField.innerHTML = html.join("");
 
 	if (userTooltip || quotaTooltip) {
@@ -836,9 +846,9 @@ function() {
 		window._zimbraMail.setSessionTimer(false);
 
 	ZmCsfeCommand.clearAuthToken();
-	
+
 	window.onbeforeunload = null;
-	
+
 	var port = (location.port == '80') ? "" : [":", location.port].join("");
 	var locationStr = [location.protocol, "//", location.hostname, port].join("");
 	if (appContextPath) {
@@ -904,8 +914,8 @@ function(bStartTimer) {
 
 	// ALWAYS set back reference into our world (also used by unload handler)
 	window._zimbraMail = this;
-	
-	// if no timeout value, user's client never times out from inactivity	
+
+	// if no timeout value, user's client never times out from inactivity
 	var timeout = this._appCtxt.get(ZmSetting.IDLE_SESSION_TIMEOUT) * 1000;
 	if (timeout <= 0)
 		return;
@@ -913,7 +923,7 @@ function(bStartTimer) {
 	if (bStartTimer) {
 		DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER SET (" + (new Date()).toLocaleString() + ")");
 		this._sessionTimerId = AjxTimedAction.scheduleAction(this._sessionTimer, timeout);
-		
+
 		DwtEventManager.addListener(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		this._shell.setHandler(DwtEvent.ONMOUSEUP, ZmZimbraMail._userEventHdlr);
 		if (AjxEnv.isIE)
@@ -922,7 +932,7 @@ function(bStartTimer) {
 			window.onkeydown = ZmZimbraMail._userEventHdlr;
 	} else {
 		DBG.println(AjxDebug.DBG3, "INACTIVITY TIMER CANCELED (" + (new Date()).toLocaleString() + ")");
-		
+
 		AjxTimedAction.cancelAction(this._sessionTimerId);
 		this._sessionTimerId = -1;
 
@@ -935,7 +945,7 @@ function(bStartTimer) {
 	}
 };
 
-ZmZimbraMail.prototype.addChildWindow = 
+ZmZimbraMail.prototype.addChildWindow =
 function(childWin) {
 	if (this._childWinList == null)
 		this._childWinList = new AjxVector();
@@ -950,7 +960,7 @@ function(childWin) {
 	return newWinObj;
 };
 
-ZmZimbraMail.prototype.getChildWindow = 
+ZmZimbraMail.prototype.getChildWindow =
 function(childWin) {
 	if (this._childWinList) {
 		for (var i = 0; i < this._childWinList.size(); i++) {
@@ -978,7 +988,7 @@ function(childWin) {
 * Common exception handling entry point.
 *
 * @param ex	[Object]		the exception
-* 
+*
 */
 ZmZimbraMail.prototype._handleException =
 function(ex, method, params, restartOnError, obj) {
@@ -1029,7 +1039,7 @@ function(ev) {
 ZmZimbraMail.prototype._settingsChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
-	
+
 	var id = ev.source.id;
 	if (id == ZmSetting.QUOTA_USED) {
 		this._setUserInfo();
@@ -1077,7 +1087,7 @@ function(ev) {
 			if (id == ZmFolder.ID_INBOX) {
 				this._statusView.setIconVisible(ZmStatusView.ICON_INBOX,  organizer.numUnread > 0);
 			}
-		}		
+		}
 	}
 };
 
@@ -1140,7 +1150,7 @@ function() {
 
 	this._userNameField = document.getElementById(userNameId);
 	this._usedQuotaField = document.getElementById(usedQuotaId);
-	
+
 	return userInfo;
 };
 
@@ -1168,7 +1178,7 @@ function() {
 	}
 
 	var appChooser = new ZmAppChooser(this._shell, null, buttons, this._TAB_SKIN_ENABLED);
-	
+
 	var buttonListener = new AjxListener(this, this._appButtonListener);
 	for (var i = 0; i < buttons.length; i++) {
 		var id = buttons[i];
@@ -1193,26 +1203,17 @@ function(icon, visible) {
 ZmZimbraMail.prototype._appButtonListener =
 function(ev) {
 	try {
-		var searchController = this._appCtxt.getSearchController();
 		var id = ev.item.getData(Dwt.KEY_ID);
-		DBG.println(AjxDebug.DBG1, "ZmZimbraMail button press: " + id);
-		if (id == ZmAppChooser.B_EMAIL) {
-			this.activateApp(ZmZimbraMail.MAIL_APP);
-		} else if (id == ZmAppChooser.B_CONTACTS) {
-			// force launch to display all contacts
-			this.activateApp(ZmZimbraMail.CONTACTS_APP);
-		} else if (id == ZmAppChooser.B_CALENDAR) {
-			this.activateApp(ZmZimbraMail.CALENDAR_APP);
-		} else if (id == ZmAppChooser.B_IM) {
-			this.activateApp(ZmZimbraMail.IM_APP);			
-		} else if (id == ZmAppChooser.B_NOTEBOOK) {
-			this.activateApp(ZmZimbraMail.NOTEBOOK_APP);
-		} else if (id == ZmAppChooser.B_HELP) {
-			window.open(this._appCtxt.get(ZmSetting.HELP_URI));
-		} else if (id == ZmAppChooser.B_OPTIONS) {
-			this.activateApp(ZmZimbraMail.PREFERENCES_APP);
-		} else if (id == ZmAppChooser.B_LOGOUT) {
-			ZmZimbraMail.conditionalLogOff();
+		switch (id) {
+			case ZmAppChooser.B_EMAIL:		this.activateApp(ZmZimbraMail.MAIL_APP); break;
+			case ZmAppChooser.B_CONTACTS:	this.activateApp(ZmZimbraMail.CONTACTS_APP); break;
+			case ZmAppChooser.B_CALENDAR:	this.activateApp(ZmZimbraMail.CALENDAR_APP); break;
+			case ZmAppChooser.B_TASKS:		this.activateApp(ZmZimbraMail.TASKS_APP); break;
+			case ZmAppChooser.B_IM:			this.activateApp(ZmZimbraMail.IM_APP); break;
+			case ZmAppChooser.B_NOTEBOOK:	this.activateApp(ZmZimbraMail.NOTEBOOK_APP); break;
+			case ZmAppChooser.B_OPTIONS:	this.activateApp(ZmZimbraMail.PREFERENCES_APP); break;
+			case ZmAppChooser.B_HELP:		window.open(this._appCtxt.get(ZmSetting.HELP_URI)); break;
+			case ZmAppChooser.B_LOGOUT:		ZmZimbraMail.conditionalLogOff(); break;
 		}
 	} catch (ex) {
 		this._handleException(ex, this._appButtonListener, ev, false);
@@ -1231,6 +1232,47 @@ function() {
 	return "Global";
 };
 
+
+function ZmOfflineDialog(appCtxt) {
+	DwtDialog.call(this, appCtxt.getShell(), "ZmOfflineDialog", "Zimbra Offline - Now Connected", DwtDialog.NO_BUTTONS);
+	this._appCtxt = appCtxt;
+	this.setContent(this._contentHtml());
+};
+ZmOfflineDialog.prototype = new DwtDialog;
+ZmOfflineDialog.prototype.constructor = ZmOfflineDialog;
+ZmOfflineDialog.prototype._contentHtml =
+function() {
+	var html = new AjxBuffer();
+	html.append("<table cellspacing=3 border=0 width=300>");
+	html.append("<tr><td colspan=3><div>");
+    html.append("<center><b><font size='+2'>Synchronizing<span id='countIt'></span></font></b><br/>");
+    html.append("<img src='/zimbra/img/animated/wait_64.gif'/></center>");
+    html.append("</div></td></tr>");
+	html.append("</table>");
+	return html.toString();
+};
+
+ZmOfflineDialog.prototype.countDown =
+function(args) {
+    var last = args[0];
+    var tot = args[1];
+    var el = document.getElementById('countIt');
+    el.innerHTML = ' ';
+    if (last <= tot) {
+        el.innerHTML = "<br/>Sending " + last + " of " + tot;
+        last++;
+    }
+    if (last <= tot) {
+        var action = new AjxTimedAction(this, ZmOfflineDialog.prototype.countDown, {0:last,1:tot});
+        AjxTimedAction.scheduleAction(action, 1800);
+    }
+}
+
+ZmOfflineDialog.dummyCallback =
+function(args) {
+    //do nothing
+}
+
 ZmZimbraMail.prototype.handleKeyAction =
 function(actionCode, ev) {
 	switch (actionCode) {
@@ -1238,22 +1280,22 @@ function(actionCode, ev) {
 			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.NONE);
 			DBG.setDebugLevel(AjxDebug.NONE);
 			break;
-			
+
 		case ZmKeyMap.DBG_1:
 			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG1);
 			DBG.setDebugLevel(AjxDebug.DBG1);
 			break;
-			
+
 		case ZmKeyMap.DBG_2:
 			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG2);
 			DBG.setDebugLevel(AjxDebug.DBG2);
 			break;
-			
+
 		case ZmKeyMap.DBG_3:
 			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.DBG3);
 			DBG.setDebugLevel(AjxDebug.DBG3);
 			break;
-			
+
 		case ZmKeyMap.DBG_TIMING: {
 			var on = DBG._showTiming;
 			var newState = on ? "off" : "on";
@@ -1261,8 +1303,25 @@ function(actionCode, ev) {
 			DBG.showTiming(!on);
 			break;
 		}
-		
-		case ZmKeyMap.GOTO_MAIL:
+        case ZmKeyMap.GO_ONLINE: {
+            if (this._offlineDialog == null)
+                this._offlineDialog = new ZmOfflineDialog(this._appCtxt);
+            this._offlineDialog.popup();
+            var tot = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_OUTBOX).numTotal;
+            this._offlineDialog.countDown({0:1,1:tot});
+            var soapDoc = AjxSoapDoc.create("SyncRequest", "urn:zimbraOffline");
+            var dummyCallback = new AjxCallback(this, ZmOfflineDialog.dummyCallback, {1:1});
+            this._appCtxt.getAppController().sendRequest({
+                soapDoc: soapDoc,
+                asyncMode: true,
+                noBusyOverlay: true,
+                callback: dummyCallback,
+                timeout: 6
+            });
+            break;
+        }
+
+        case ZmKeyMap.GOTO_MAIL:
 		case ZmKeyMap.GOTO_CONTACTS:
 		case ZmKeyMap.GOTO_CALENDAR:
 		case ZmKeyMap.GOTO_IM:
