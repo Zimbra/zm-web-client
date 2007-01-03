@@ -409,9 +409,12 @@ function(identity) {
 		var useDefaultElement = document.getElementById(this._htmlElId + "_useDefaultsRadios");
 		if (identity.isDefault) {
 			Dwt.setVisible(useDefaultElement, false);
-			this._applyCheckbox(checkbox, this._associations[this._useDefaultsCheckboxId]);
 		} else {
 			Dwt.setVisible(useDefaultElement, true);
+		}
+		for (var i in this._selects) {
+			var select = this._selects[i];
+			select.setEnabled(!identity.useDefaultAdvanced);
 		}
 	}
 };
