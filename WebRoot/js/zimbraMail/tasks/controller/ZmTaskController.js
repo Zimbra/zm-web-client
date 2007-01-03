@@ -29,6 +29,7 @@ function ZmTaskController(appCtxt, container, app) {
 
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
+	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._attachmentListener);
 
 	this._tabGroupDone = {};
 };
@@ -87,6 +88,8 @@ function() {
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
 		list.push(ZmOperation.PRINT);
 	list.push(ZmOperation.DELETE);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.ATTACHMENT);
 	return list;
 };
 
@@ -164,7 +167,7 @@ function(parent, num) {
 	if (this._task.id == -1) {
 		// disble all buttons except SAVE and CANCEL
 		parent.enableAll(false);
-		parent.enable([ZmOperation.SAVE, ZmOperation.CANCEL], true);
+		parent.enable([ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.ATTACHMENT], true);
 	} else if (this._task.isShared()) {
 		parent.enableAll(true);
 		parent.enable(ZmOperation.TAG_MENU, false);
@@ -182,7 +185,7 @@ function(ev, bIsPopCallback) {
 		if (!view.isValid())
 			return;
 
-		// TODO
+		view.getTask().save();
 
 		if (!bIsPopCallback) {
 			this._app.popView(true);
@@ -203,6 +206,12 @@ function(ev, bIsPopCallback) {
 ZmTaskController.prototype._cancelListener =
 function(ev) {
 	this._app.popView();
+};
+
+ZmTaskController.prototype._attachmentListener =
+function(ev) {
+	// TODO
+	DBG.println("TODO");
 };
 
 /*

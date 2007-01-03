@@ -857,6 +857,12 @@ ZmOperation.SETUP[ZmOperation.SHARE_NOTEBOOK] = {
 	image:		"Notebook"
 };
 
+ZmOperation.SHARE_TASKFOLDER = i++;
+ZmOperation.SETUP[ZmOperation.SHARE_TASKFOLDER] = {
+	textKey:	"shareTaskFolder",
+	image:		"Task"
+};
+
 ZmOperation.SHOW_ALL_MENU = i++;
 ZmOperation.SETUP[ZmOperation.SHOW_ALL_MENU] = {
 	textKey:	"showAllItemTypes",

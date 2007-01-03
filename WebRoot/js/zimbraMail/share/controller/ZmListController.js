@@ -585,8 +585,8 @@ function(ev, id, newWin) {
 			break;
 		}
 		case ZmOperation.NEW_TASK_FOLDER: {
-			// TODO
-			DBG.println("TODO- new task folder");
+			var dialog = this._appCtxt.getNewTaskFolderDialog();
+			this._showDialog(dialog, this._newTaskFolderCallback);
 			break;
 		}
 		case ZmOperation.NEW_NOTEBOOK: {
@@ -808,9 +808,8 @@ function(parent, name, color, url) {
 	var dialog = this._appCtxt.getNewFolderDialog();
 	dialog.popdown();
 
-	var overviewController = this._appCtxt.getOverviewController();
-	var controller = overviewController.getTreeController(ZmOrganizer.FOLDER);
-	controller._doCreate(parent, name, color, url);
+	var oc = this._appCtxt.getOverviewController();
+	oc.getTreeController(ZmOrganizer.FOLDER)._doCreate(parent, name, color, url);
 };
 
 ZmListController.prototype._newTagCallback =
@@ -820,9 +819,8 @@ function(creatingTag, name, color) {
 	var dialog = this._appCtxt.getNewTagDialog();
 	dialog.popdown();
 
-	var overviewController = this._appCtxt.getOverviewController();
-	var tagController = overviewController.getTreeController(ZmOrganizer.TAG);
-	tagController._doCreate(name, color);
+	var oc = this._appCtxt.getOverviewController();
+	oc.getTreeController(ZmOrganizer.TAG)._doCreate(name, color);
 
 	this._creatingTag = creatingTag;
 };
@@ -834,9 +832,8 @@ function(parent, name, color) {
 	var dialog = this._appCtxt.getNewAddrBookDialog();
 	dialog.popdown();
 
-	var overviewController = this._appCtxt.getOverviewController();
-	var controller = overviewController.getTreeController(ZmOrganizer.ADDRBOOK);
-	controller._doCreate(parent, name, color);
+	var oc = this._appCtxt.getOverviewController();
+	oc.getTreeController(ZmOrganizer.ADDRBOOK)._doCreate(parent, name, color);
 };
 
 ZmListController.prototype._newCalendarCallback =
@@ -846,9 +843,8 @@ function(parent, name, color, url, excludeFb) {
 	var dialog = this._appCtxt.getNewCalendarDialog();
 	dialog.popdown();
 
-	var overviewController = this._appCtxt.getOverviewController();
-	var controller = overviewController.getTreeController(ZmOrganizer.CALENDAR);
-	controller._doCreate(parent, name, color, url, excludeFb);
+	var oc = this._appCtxt.getOverviewController();
+	oc.getTreeController(ZmOrganizer.CALENDAR)._doCreate(parent, name, color, url, excludeFb);
 };
 
 ZmListController.prototype._newNotebookCallback =
@@ -858,9 +854,19 @@ function(parent, name, color/*, url*/) {
 	var dialog = this._appCtxt.getNewNotebookDialog();
 	dialog.popdown();
 
-	var overviewController = this._appCtxt.getOverviewController();
-	var controller = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
-	controller._doCreate(parent, name, color);
+	var oc = this._appCtxt.getOverviewController();
+	oc.getTreeController(ZmOrganizer.NOTEBOOK)._doCreate(parent, name, color);
+};
+
+ZmListController.prototype._newTaskFolderCallback =
+function(parent, name, color) {
+	// REVISIT: Do we really want to close the dialog before we
+	//          know if the create succeeds or fails?
+	var dialog = this._appCtxt.getNewTaskFolderDialog();
+	dialog.popdown();
+
+	var oc = this._appCtxt.getOverviewController();
+	oc.getTreeController(ZmOrganizer.TASKS)._doCreate(parent, name, color);
 };
 
 // Move stuff to a new folder.

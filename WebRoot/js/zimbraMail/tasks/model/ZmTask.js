@@ -43,6 +43,25 @@ ZmTask.prototype.constructor = ZmTask;
 
 
 // Public Methods
+/**
+* Used to make our own copy because the form will modify the date object by 
+* calling its setters instead of replacing it with a new date object.
+*/
+ZmTaskClone = function() { }
+ZmTask.quickClone =
+function(task) {
+	ZmTaskClone.prototype = task;
+
+	var newTask = new ZmTaskClone();
+	newTask.startDate = new Date(task.startDate.getTime());
+	newTask.endDate = new Date(task.endDate.getTime());
+
+	if (!newTask._orig)
+		newTask._orig = task;
+
+	return newTask;
+};
+
 ZmTask.prototype.toString =
 function() {
 	return "ZmTask";

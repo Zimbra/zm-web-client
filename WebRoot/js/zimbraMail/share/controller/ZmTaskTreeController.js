@@ -31,8 +31,7 @@ function ZmTaskTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.NEW_TASK_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.CHECK_ALL] = new AjxListener(this, this._checkAllListener);
 	this._listeners[ZmOperation.CLEAR_ALL] = new AjxListener(this, this._clearAllListener);
-
-//	this._listeners[ZmOperation.SHARE_CALENDAR] = new AjxListener(this, this._shareCalListener);
+	this._listeners[ZmOperation.SHARE_TASKFOLDER] = new AjxListener(this, this._shareCalListener);
 //	this._listeners[ZmOperation.MOUNT_CALENDAR] = new AjxListener(this, this._mountCalListener);
 
 	this._eventMgrs = {};
@@ -51,7 +50,7 @@ function(actionMenu, type, id) {
 	if (actionMenu) {
 		var treeData = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.TASKS);
 		var tf = treeData.getById(id);
-//		actionMenu.enable(ZmOperation.SHARE_CALENDAR, !calendar.link);
+		actionMenu.enable(ZmOperation.SHARE_TASKFOLDER, !tf.link);
 		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_TASKS);
 		actionMenu.enable(ZmOperation.SYNC, tf.isFeed());
 		if (id == ZmOrganizer.ID_ROOT) {
@@ -75,20 +74,15 @@ function(actionMenu, type, id) {
 */
 ZmTaskTreeController.prototype._getNewDialog =
 function() {
-	// TODO
-	DBG.println("TODO- new task folder dialog");
-	//return this._appCtxt.getNewCalendarDialog();
+	return this._appCtxt.getNewTaskFolderDialog();
 };
 
 // Returns a list of desired header action menu operations
 ZmTaskTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	var ops = [ ZmOperation.NEW_TASK_FOLDER ];
-/*
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-		ops.push(ZmOperation.MOUNT_CALENDAR);
-	}
-*/
+//	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+//		ops.push(ZmOperation.MOUNT_CALENDAR);
 	ops.push(ZmOperation.CHECK_ALL, ZmOperation.CLEAR_ALL);
 	return ops;
 };
@@ -97,11 +91,8 @@ function() {
 ZmTaskTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [];
-/*
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-		ops.push(ZmOperation.SHARE_CALENDAR);
-	}
-*/
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+		ops.push(ZmOperation.SHARE_TASKFOLDER);
 	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.SYNC);
 	return ops;
 };

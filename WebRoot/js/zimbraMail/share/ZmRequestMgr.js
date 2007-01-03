@@ -746,19 +746,17 @@ function(creates, modifies) {
 			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
 			var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 			var addrBookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+			var tasksTree = this._appCtxt.getTree(ZmOrganizer.TASKS);
 			// parent could be a folder or a search
 			if (parentId == ZmOrganizer.ID_ROOT) {
 				if (name == "folder") {
-					if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR])
-						parent = calendarTree.getById(parentId);
-					else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
-						DBG.println("notebook tree");
-						parent = notebookTree.getById(parentId);
+					switch (create.view) {
+						case ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]:	parent = calendarTree.getById(parentId); break;
+						case ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]:	parent = notebookTree.getById(parentId); break;
+						case ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]:	parent = addrBookTree.getById(parentId); break;
+						case ZmOrganizer.VIEWS[ZmOrganizer.TASKS]:		parent = tasksTree.getById(parentId); break;
+						default:										parent = folderTree.getById(parentId); break;
 					}
-					else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK])
-						parent = addrBookTree.getById(parentId);
-					else
-						parent = folderTree.getById(parentId);
 				} else {
 					parent = searchTree.getById(parentId);
 				}
@@ -772,26 +770,20 @@ function(creates, modifies) {
 				if (!parent) parent = calendarTree.getById(parentId);
 				if (!parent) parent = notebookTree.getById(parentId);
 				if (!parent) parent = addrBookTree.getById(parentId);
+				if (!parent) parent = tasksTree.getById(parentId);
 			}
 			if (parent)
 				parent.notifyCreate(create, (name == "search"));
 		} else if (name == "link") {
-			var parentId = create.l;
-			var parent;
 			var share;
-			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
-				var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-				parent = calendarTree.getById(parentId);
-				share = ZmOrganizer.CALENDAR;
-			} else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
-				var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-				parent = notebookTree.getById(parentId);
-				share = ZmOrganizer.NOTEBOOK;
-			} else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]) {
-				var addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
-				parent = addrbookTree.getById(parentId);
-				share = ZmOrganizer.ADDRBOOK;
+			switch (create.view) {
+				case ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]:	share = ZmOrganizer.CALENDAR; break;
+				case ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]:	share = ZmOrganizer.NOTEBOOK; break;
+				case ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]:	share = ZmOrganizer.ADDRBOOK; break;
+				case ZmOrganizer.VIEWS[ZmOrganizer.TASKS]:		share = ZmOrganizer.TASKS; break;
 			}
+			var tree = share ? this._appCtxt.getTree(share) : null;
+			var parent = tree ? tree.getById(create.l) : null;
 
 			if (parent) {
 				parent.notifyCreate(create, true);

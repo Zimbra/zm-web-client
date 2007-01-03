@@ -52,6 +52,14 @@ ZmTaskEditView.PRIORITY_MEDIUM	= "!! (" + ZmMsg.medium + ")";
 ZmTaskEditView.PRIORITY_HIGH	= "!!! (" + ZmMsg.high + ")";
 ZmTaskEditView.PRIORITY_VALUES = [ZmTaskEditView.PRIORITY_NONE, ZmTaskEditView.PRIORITY_LOW, ZmTaskEditView.PRIORITY_MEDIUM, ZmTaskEditView.PRIORITY_HIGH];   
 
+ZmTaskEditView.STATUS_VALUES = [
+	{ v:"TENT",		l:ZmMsg.notStarted },
+	{ v:"COMP",		l:ZmMsg.completed },
+	{ v:"INPR",		l:ZmMsg.inProgress},
+	{ v:"WAITING",	l:ZmMsg.waitingOn },
+	{ v:"DEFERRED",	l:ZmMsg.deferred }];
+
+
 // Public Methods
 
 ZmTaskEditView.prototype.toString =
@@ -85,6 +93,22 @@ function(task) {
 	this._isDirty = false;
 };
 
+ZmTaskEditView.prototype.getTask =
+function(attId) {
+	// attempt to submit attachments first!
+	if (!attId && this._gotAttachments()) {
+		this._submitAttachments();
+		return null;
+	}
+
+	// create a copy of the appointment so we don't muck w/ the original
+	var task = ZmTask.quickClone(this._task);
+
+	task.setName(this._subjectField.getValue());
+	task.setFolderId(this._folderSelect.getValue());
+
+};
+
 ZmTaskEditView.prototype.setSize =
 function(width, height) {
 	DwtComposite.prototype.setSize.call(this, width, height);
@@ -99,7 +123,12 @@ function(x, y, width, height) {
 
 ZmTaskEditView.prototype.isValid =
 function() {
-	// TODO
+	var val = AjxStringUtil.trim(document.getElementById(this._subjectId).value);
+	if (val.length == 0) {
+		throw ZmMsg.errorMissingSubject;
+	}
+
+	return true;
 };
 
 ZmTaskEditView.prototype.isDirty =
@@ -154,6 +183,7 @@ function(task) {
 	this._contentId		= this._htmlElId + "_content";
 	this._subjectId		= this._htmlElId + "_subject";
 	this._folderLabelId = this._htmlElId + "_folderLabel";
+	this._dateStartId	= this._htmlElId + "_dateStart";
 	this._dateDueId		= this._htmlElId + "_dateDue";
 	this._notesId		= this._htmlElId + "_notes";
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.tasks.templates.Tasks#TasksEdit", {id:this._htmlElId, task:task});
@@ -163,6 +193,11 @@ function(task) {
 ZmTaskEditView.prototype._addSelectOptions =
 function() {
 	var listener = new AjxListener(this, this._selectListener);
+
+	// add task folder DwtSelect
+	this._folderSelect = new DwtSelect(this);
+	this._folderSelect.reparentHtmlElement(this._htmlElId + "_folder");
+	this._folderSelect.addChangeListener(listener);
 
 	// add percent complete DwtSelect
 	this._pCompleteSelect = new DwtSelect(this);
@@ -180,18 +215,22 @@ function() {
 	this._prioritySelect.addChangeListener(listener);
 	this._prioritySelect.reparentHtmlElement(this._htmlElId + "_priority");
 
-	// add task folder DwtSelect
-	this._folderSelect = new DwtSelect(this);
-	this._folderSelect.reparentHtmlElement(this._htmlElId + "_folder");
-	this._folderSelect.addChangeListener(listener);
+	// add status DwtSelect
+	this._statusSelect = new DwtSelect(this);
+	for (var i = 0; i < ZmTaskEditView.STATUS_VALUES.length; i++) {
+		this._statusSelect.addOption(ZmTaskEditView.STATUS_VALUES[i].l, i==0, ZmTaskEditView.STATUS_VALUES[i].v);
+	}
+	this._statusSelect.addChangeListener(listener);
+	this._statusSelect.reparentHtmlElement(this._htmlElId + "_status");
 };
 
 ZmTaskEditView.prototype._addDateCalendars =
 function() {
-	var id = this._htmlElId + "_dateDueBtn";
 	var dateBtnListener = new AjxListener(this, this._dateButtonListener);
 	var dateSelListener = new AjxListener(this, this._dateSelectionListener);
-	ZmApptViewHelper.createMiniCalButton(this, id, dateBtnListener, dateSelListener, this._appCtxt);
+
+	ZmApptViewHelper.createMiniCalButton(this, (this._htmlElId + "_dateStartBtn"), dateBtnListener, dateSelListener, this._appCtxt);
+	ZmApptViewHelper.createMiniCalButton(this, (this._htmlElId + "_dateDueBtn"), dateBtnListener, dateSelListener, this._appCtxt);
 };
 
 ZmTaskEditView.prototype._installOnKeyUpHandler =
@@ -214,9 +253,10 @@ function() {
 
 ZmTaskEditView.prototype._getTabGroupMembers =
 function() {
-	// TODO - add other widgets
+	// TODO - add other non-text widgets if possible
 	var fields = [];
 	fields.push(document.getElementById(this._subjectId));
+	fields.push(document.getElementById(this._dateStartId));
 	fields.push(document.getElementById(this._dateDueId));
 	fields.push(document.getElementById(this._notesId));
 	return fields;
@@ -288,23 +328,19 @@ function() {
 				break;
 			}
 		}
-		var visible = len > 1;
 		var enabled = !taskFolder.link;
-		if (visible) {
-			for (var i = 0; i < len; i++) {
-				var t = children[i];
-				this._taskOrgs[t.id] = t.owner;
-				if (enabled) {
-					// don't show task folder if remote or don't have write perms
-					if (t.isFeed()) continue;
-					if (t.link && t.shares && t.shares.length > 0 && !t.shares[0].isWrite()) continue;
-				}
-				this._folderSelect.addOption(t.getName(), false, t.id);
+		for (var i = 0; i < len; i++) {
+			var t = children[i];
+			this._taskOrgs[t.id] = t.owner;
+			if (enabled) {
+				// don't show task folder if remote or don't have write perms
+				if (t.isFeed()) continue;
+				if (t.link && t.shares && t.shares.length > 0 && !t.shares[0].isWrite()) continue;
 			}
+			this._folderSelect.addOption(t.getName(), false, t.id);
 		}
-		Dwt.setVisibility(this._folderSelect.getHtmlElement(), visible);
-		Dwt.setVisibility(document.getElementById(this._folderLabelId), visible);
-		if (enabled) {
+
+		if (enabled && len > 1) {
 			this._folderSelect.enable();
 		} else {
 			this._folderSelect.disable();
@@ -337,6 +373,17 @@ function(width, height) {
 	var title = document.getElementById(this._titleId);
 	if (title)
 		Dwt.setSize(title, "100%");
+};
+
+ZmTaskEditView.prototype._gotAttachments =
+function() {
+	// TODO
+	return false;
+};
+
+ZmTaskEditView.prototype._submitAttachments =
+function() {
+	// TODO
 };
 
 
