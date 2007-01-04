@@ -1285,14 +1285,25 @@ ZmComposeView.prototype._createHtml =
 function() {
 	var subjectFieldId = Dwt.getNextId();
 	var attcDivId = Dwt.getNextId();
+	this._identityDivId = Dwt.getNextId();
 	var identityCellId = Dwt.getNextId();
-	var identityRowId = Dwt.getNextId();
 	var div = document.createElement("div");
 
 	var html = [];
 	var idx = 0;
 
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
+
+	// create identity selector
+	html[idx++] = "<tr><td><div id='";
+	html[idx++] = this._identityDivId;
+	html[idx++] = "'><table cellspacing=4 cellpadding=0 border=0 width=100%><tr><td width=";
+	html[idx++] = AjxEnv.isIE ? "60" : "64";
+	html[idx++] = " align=right>";
+	html[idx++] = ZmMsg.from;
+	html[idx++] = ":</td><td id='";
+	html[idx++] = identityCellId;
+	html[idx++] = "'></td></tr></div></table></div></td></tr>";
 
 	// create address elements
 	for (var i = 0; i < ZmComposeView.ADDRS.length; i++) {
@@ -1330,18 +1341,10 @@ function() {
 	html[idx++] = " align='right'>";
 	html[idx++] = ZmMsg.subject;
 	html[idx++] = ":</td>";
-	html[idx++] = "<td><table cellspacing=0 cellpadding=0 border=0 width=100%><tr id='";
-	html[idx++] = identityRowId;
-	html[idx++] = "'>";
+	html[idx++] = "<td><table cellspacing=0 cellpadding=0 border=0 width=100%><tr>";
 	html[idx++] = "<td><input autocomplete='off' type='text' id='";
 	html[idx++] = subjectFieldId;
 	html[idx++] = "' class='subjectField'></td>";
-
-	// create identity selector
-	html[idx++] = "<td style='padding-left:4px;width:15%;' id='";
-	html[idx++] = identityCellId;
-	html[idx++] = "'></td>";
-
 	html[idx++] = "</tr></table></td>";
 	html[idx++] = "</tr></table></td></tr>";
 
@@ -1360,11 +1363,11 @@ function() {
 //	this._subjectField.onkeydown = AjxCallback.simpleClosure(this.__checkTabInSubject, this);
 	this._attcDiv = document.getElementById(attcDivId);
 	this._identityCell = document.getElementById(identityCellId);
-	this._identityRow = document.getElementById(identityRowId);
 	
 	var options = this._getIdentityOptions();
 	this._identitySelect = new DwtSelect(this, options);
 	this._identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
+	this._identitySelect.getButton().getHtmlElement().style.width='100%';
 	this._identitySelect.reparentHtmlElement(this._identityCell);
 	var identityCollection = this._appCtxt.getIdentityCollection();
 	if (!this._identityChangeListenerObj) {
@@ -1381,9 +1384,19 @@ function() {
 	var identities = identityCollection.getIdentities();
 	for (var i = 0, count = identities.length; i < count; i++) {
 		var identity = identities[i];
-		options[i] = new DwtSelectOptionData(identity.id, identity.name);
+		var text = this._getIdentityText(identity);
+		options[i] = new DwtSelectOptionData(identity.id, text);
 	}
 	return options;
+};
+
+ZmComposeView.prototype._getIdentityText =
+function(identity) {
+	if (identity.sendFromDisplay) {
+		return [identity.name,  ' ("', identity.sendFromDisplay, '" <', identity.sendFromAddress, '>)'].join("");
+	} else {
+		return [identity.name,  ' (', identity.sendFromAddress, ')'].join("");
+	}
 };
 
 ZmComposeView.prototype._identityChangeListener =
@@ -1391,7 +1404,8 @@ function(ev) {
 	if (ev.event == ZmEvent.E_CREATE) {
 		this._setIdentityVisibility();
 		var identity = ev.getDetail("item");
-		var option = new DwtSelectOptionData(identity.id, identity.name);
+		var text = this._getIdentityText(identity);
+		var option = new DwtSelectOptionData(identity.id, text);
 		this._identitySelect.addOption(option);
 	} else if (ev.event == ZmEvent.E_DELETE) {
 		// DwtSelect doesn't support removing an option, so recreate the whole thing.		
@@ -1402,40 +1416,24 @@ function(ev) {
 		}
 		this._setIdentityVisibility();
 	} else if (ev.event == ZmEvent.E_MODIFY) {
-		var rename = ev.getDetail("rename");
-		if (rename) {
-			var identity = ev.getDetail("item");
-			this._identitySelect.rename(identity.id, identity.name);
-		}
+		var identity = ev.getDetail("item");
+		var text = this._getIdentityText(identity);
+		this._identitySelect.rename(identity.id, text);
 	}
 };
 
 ZmComposeView.prototype._setIdentityVisibility =
 function() {
 	var identityCount = this._appCtxt.getIdentityCollection().getSize();
-	
-	if (AjxEnv.isIE) {
-		// In IE, toggle the visibility of the select's cell.
-		var visible = Dwt.getVisible(this._identityCell);
-		if (visible) {
-			if (!this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED) || (identityCount < 2)) {
-				Dwt.setVisible(this._identityCell, false);
-			}
-		} else {
-			if (identityCount >= 2) {
-				Dwt.setVisible(this._identityCell, true);
-			}
+	var div = document.getElementById(this._identityDivId);
+	var visible = Dwt.getVisible(div);
+	if (visible) {
+		if ((identityCount < 2) || !this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) {
+			Dwt.setVisible(div, false);
 		}
 	} else {
-		// In Firefox, remove the select's cell from its parent row.
-		if (this._identityCell.parentNode) {
-			if (!this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED) || (identityCount < 2)) {
-				this._identityRow.removeChild(this._identityCell);
-			}
-		} else {
-			if (identityCount >= 2) {
-				this._identityRow.appendChild(this._identityCell);
-			}
+		if (identityCount >= 2) {
+			Dwt.setVisible(div, true);
 		}
 	}
 };
