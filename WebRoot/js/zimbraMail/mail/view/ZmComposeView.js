@@ -1088,6 +1088,11 @@ function(action, msg, extraBodyText, incOption) {
 
 		body = body || ""; // prevent from printing "null" if no body found
 
+		// Bug 7160: Strip off the ~*~*~*~ from invite replies.
+		if (isInviteReply) {
+			body = body.replace(ZmAppt.NOTES_SEPARATOR, "");
+		}
+
 		// bug fix# 3215 - dont allow prefixing for html msgs
 		if ((action == ZmOperation.FORWARD_INLINE && incOption != ZmSetting.INCLUDE_PREFIX) || 
 			 incOption == ZmSetting.INCLUDE || composingHtml) 
