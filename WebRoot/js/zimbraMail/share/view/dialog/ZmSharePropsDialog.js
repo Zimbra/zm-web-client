@@ -98,7 +98,7 @@ function(mode, object, share, loc) {
 	this._props.setPropertyVisible(this._shareWithBreakId, true);
 
 	this._passwordButton.setVisible(!isNewShare);
-	this._passwordInput.setVisible(isNewShare);
+	this._shareWithOptsProps.setPropertyVisible(this._passwordId, isGuestShare);
 	this._passwordInput.setValue((share && share.grantee.id) || "", true);
 
 	if (this._inheritEl) {
