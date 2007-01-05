@@ -884,13 +884,16 @@ function(findHits) {
 				var url = useCL ? attach.cl : (hrefRoot + attach.part);
 
 				// bug fix #6500 - append filename w/in so "Save As" wont append .html at the end
-				var insertIdx = url.indexOf("?auth=co&");
-				var fn = AjxStringUtil.urlComponentEncode(attach.filename);
-				fn = fn.replace(/'/g, "%27");
-				url = url.substring(0,insertIdx) + fn + url.substring(insertIdx);
+				if (!useCL) {
+					var insertIdx = url.indexOf("?auth=co&");
+					var fn = AjxStringUtil.urlComponentEncode(attach.filename);
+					fn = fn.replace(/'/g, "%27");
+					url = url.substring(0,insertIdx) + fn + url.substring(insertIdx);
+				}
 
 				props.link = "<a target='_blank' class='AttLink' href='" + url + "'>";
-				props.download = "<a style='text-decoration:underline' class='AttLink' href='" + url + "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>";
+				if (!useCL)
+					props.download = "<a style='text-decoration:underline' class='AttLink' href='" + url + "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>";
 
 				if (!useCL) {
 					if (attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct) &&
