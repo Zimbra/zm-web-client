@@ -51,6 +51,20 @@
             <zm:pref name="zimbraPrefMessageViewHtmlPreferred" value="${param.zimbraPrefMessageViewHtmlPreferred eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             <zm:pref name="zimbraPrefDedupeMessagesSentToSelf" value="${param.zimbraPrefDedupeMessagesSentToSelf}"/>
         </c:when>
+        <%-- MAIL IDENTITY --%>
+        <c:when test="${selected eq 'identity'}">
+            <zm:pref name="zimbraPrefFromDisplay" value="${param.zimbraPrefFromDisplay}"/>
+            <zm:pref name="zimbraPrefFromAddress" value="${param.zimbraPrefFromAddress}"/>
+            <zm:pref name="zimbraPrefReplyToDisplay" value="${param.zimbraPrefReplyToDisplay}"/>
+            <zm:pref name="zimbraPrefReplyToAddress" value="${param.zimbraPrefReplyToAddress}"/>
+            <zm:pref name="zimbraPrefReplyToEnabled" value="${param.zimbraPrefReplyToEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
+            <zm:pref name="zimbraPrefMailSignature" value="${param.zimbraPrefMailSignature}"/>            
+            <zm:pref name="zimbraPrefMailSignatureStyle" value="${param.zimbraPrefMailSignatureStyle}"/>
+            <zm:pref name="zimbraPrefMailSignatureEnabled" value="${param.zimbraPrefMailSignatureEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
+            <zm:pref name="zimbraPrefReplyIncludeOriginalText" value="${param.zimbraPrefReplyIncludeOriginalText}"/>
+            <zm:pref name="zimbraPrefForwardIncludeOriginalText" value="${param.zimbraPrefForwardIncludeOriginalText}"/>
+            <zm:pref name="zimbraPrefForwardReplyPrefixChar" value="${param.zimbraPrefForwardReplyPrefixChar}"/>
+        </c:when>
         <%-- ADDRESS BOOK --%>
         <c:when test="${selected eq 'addressbook'}">
             <zm:pref name="zimbraPrefAutoAddAddressEnabled" value="${param.zimbraPrefAutoAddAddressEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
