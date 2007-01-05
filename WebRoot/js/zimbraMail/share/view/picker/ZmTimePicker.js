@@ -91,8 +91,8 @@ function(parent) {
 	html[i++] = "</table>";
 	picker.getHtmlElement().innerHTML = html.join("");
 
-	this._installOnClick(lastHourId, "after:-1hour");
-	this._installOnClick(last4HoursId, "after:-4hour");
+	this._installOnClick(lastHourId, "date:>-60min");
+	this._installOnClick(last4HoursId, "date:>-240min");
 	this._installOnClick(todayId, "date:-0day");
 	this._installOnClick(yesterdayId, "date:yesterday");
 	this._installOnClick(thisWeekId, "date:-0week");
