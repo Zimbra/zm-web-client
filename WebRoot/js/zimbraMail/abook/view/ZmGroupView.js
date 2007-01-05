@@ -152,7 +152,9 @@ ZmGroupView.prototype.setBounds =
 function(x, y, width, height) {
 	DwtComposite.prototype.setBounds.call(this, x, y, width, height);
 	Dwt.setSize(this._groupMembers, Dwt.DEFAULT, height-100);
-	this._listview.setSize(Dwt.DEFAULT, height-185);
+	var fudge = (this._appCtxt.get(ZmSetting.GAL_ENABLED) || this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+		? 185 : 160;
+	this._listview.setSize(Dwt.DEFAULT, height-fudge);
 };
 
 ZmGroupView.prototype.cleanup  =
@@ -189,77 +191,22 @@ function() {
 
 ZmGroupView.prototype._createHtml =
 function() {
-	this._contactHeaderId = Dwt.getNextId();
-	this._contactHeaderRowId = Dwt.getNextId();
-	this._titleId = Dwt.getNextId();
-	this._tagsId = Dwt.getNextId();
-	this._groupNameId = Dwt.getNextId();
-	this._groupMembersId = Dwt.getNextId();
-	this._searchFieldId = Dwt.getNextId();
-	this._listSelectId = Dwt.getNextId();
-	this._searchButtonId = Dwt.getNextId();
-	this._listViewId = Dwt.getNextId();
-	this._addButtonId = Dwt.getNextId();
-	this._addAllButtonId = Dwt.getNextId();
+	this._contactHeaderId = 	this._htmlElId + "_header";
+	this._contactHeaderRowId = 	this._htmlElId + "_headerRow";
+	this._titleId = 			this._htmlElId + "_title";
+	this._tagsId = 				this._htmlElId + "_tags";
+	this._groupNameId = 		this._htmlElId + "_groupName";
+	this._groupMembersId = 		this._htmlElId + "_groupMembers";
+	this._searchFieldId = 		this._htmlElId + "_searchField";
+	this._listSelectId = 		this._htmlElId + "_listSelect";
+	this._searchButtonId = 		this._htmlElId + "_searchButton";
+	this._listViewId = 			this._htmlElId + "_listView";
+	this._addButtonId = 		this._htmlElId + "_addButton";
+	this._addAllButtonId = 		this._htmlElId + "_addAllButton";
 
-	var idx = 0;
-	var html = [];
-
-	// Title bar
-	html[idx++] = "<table id='";
-	html[idx++] = this._contactHeaderId;
-	html[idx++] = "' cellspacing=0 cellpadding=0 width=100%><tr class='contactHeaderRow' id='";
-	html[idx++] = this._contactHeaderRowId;
-	html[idx++] = "'><td width=20><center>";
-	html[idx++] = AjxImg.getImageHtml("Group");
-	html[idx++] = "</center></td><td><div id='";
-	html[idx++] = this._titleId;
-	html[idx++] = "' class='contactHeader'></div></td><td align='right' id='";
-	html[idx++] = this._tagsId;
-	html[idx++] = "'></td></tr></table>";
-
-	// content - left pane
-	html[idx++] = "<table border=0 cellpadding=5 cellspacing=5 width=100% height=100%><tr>";
-	html[idx++] = "<td width=50% valign=top>";
-	html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100%><tr><td colspan=2 nowrap>*&nbsp;";
-	html[idx++] = ZmMsg.groupName;
-	html[idx++] = ":&nbsp;<input type='text' autocomplete='off' size=25 id='";
-	html[idx++] = this._groupNameId;
-	html[idx++] = "'></td></tr><tr><td nowrap>*&nbsp;";
-	html[idx++] = ZmMsg.groupMembers;
-	html[idx++] = ":</td><td class='hintLabel'>";
-	html[idx++] = ZmMsg.groupHint;
-	html[idx++] = "</td></tr></table>";
-	html[idx++] = "<textarea wrap=off class='groupMembers' id='";
-	html[idx++] = this._groupMembersId;
-	html[idx++] = "'></textarea></td>";
-
-	// content - right pane
-	html[idx++] = "<td width=50% valign=top>";
-	html[idx++] = "<fieldset><legend class='groupFieldset'>";
-	html[idx++] = ZmMsg.addMembers;
-	html[idx++] = "</legend><table border=0><tr><td class='editLabel'>";
-	html[idx++] = ZmMsg.find;
-	html[idx++] = ":</td><td><input type='text' style='width:100%' id='";
-	html[idx++] = this._searchFieldId;
-	html[idx++] = "'></td></tr><tr><td class='editLabel'>";
-	html[idx++] = ZmMsg.searchIn;
-	html[idx++] = ":</td><td id='";
-	html[idx++] = this._listSelectId;
-	html[idx++] = "'></td><td id='";
-	html[idx++] = this._searchButtonId;
-	html[idx++] = "'></tr></table>";
-	html[idx++] = "<div class='groupMembers' id='";
-	html[idx++] = this._listViewId;
-	html[idx++] = "'></div><table border=0 cellpadding=3 cellspacing=2><tr><td id='";
-	html[idx++] = this._addButtonId;
-	html[idx++] = "'></td><td id='";
-	html[idx++] = this._addAllButtonId;
-	html[idx++] = "'></td></tr></table>";
-	html[idx++] = "</fieldset></td></tr></table>";
-
-	this.getHtmlElement().innerHTML = html.join("");
-
+	var showSearchIn = this._appCtxt.get(ZmSetting.SHARING_ENABLED) || this._appCtxt.get(ZmSetting.GAL_ENABLED);
+	var params = {id:this._htmlElId, showSearchIn:showSearchIn};
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#GroupView", params);
 	this._htmlInitialized = true;
 };
 
@@ -268,15 +215,16 @@ function() {
 	this._groupMembers = document.getElementById(this._groupMembersId);
 
 	// add select menu
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) ||
 		this._appCtxt.get(ZmSetting.GAL_ENABLED))
 	{
-		this._selectDiv = new DwtSelect(this);
-		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactPicker.SEARCHFOR_CONTACTS);
+		this._searchInSelect = new DwtSelect(this);
+		this._searchInSelect.addOption(ZmMsg.contacts, true, ZmContactPicker.SEARCHFOR_CONTACTS);
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
-			this._selectDiv.addOption(ZmMsg.searchPersonalAndShared, false, ZmContactPicker.SEARCHFOR_PAS);
-		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactPicker.SEARCHFOR_GAL);
-		this._selectDiv.reparentHtmlElement(this._listSelectId);
+			this._searchInSelect.addOption(ZmMsg.searchPersonalAndShared, false, ZmContactPicker.SEARCHFOR_PAS);
+		if (this._appCtxt.get(ZmSetting.GAL_ENABLED))
+			this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactPicker.SEARCHFOR_GAL);
+		this._searchInSelect.reparentHtmlElement(this._listSelectId);
 	}
 
 	// add "Search" button
@@ -390,10 +338,11 @@ function(ev) {
 	this._query = AjxStringUtil.trim(document.getElementById(this._searchFieldId).value);
 	if (this._query.length) {
 		if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-			var searchFor = this._selectDiv.getSelectedOption().getValue();
+			var searchFor = this._searchInSelect
+				? this._searchInSelect.getSelectedOption().getValue()
+				: ZmContactPicker.SEARCHFOR_CONTACTS;
 			this._contactSource = (searchFor == ZmContactPicker.SEARCHFOR_CONTACTS || searchFor == ZmContactPicker.SEARCHFOR_PAS)
-				? ZmItem.CONTACT
-				: ZmSearchToolBar.FOR_GAL_MI;
+				? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 			// hack the query if searching for personal and shared contacts
 			if (searchFor == ZmContactPicker.SEARCHFOR_PAS) {
 				var addrbookList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getAddrbookList();

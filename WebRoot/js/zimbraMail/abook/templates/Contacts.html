@@ -1,0 +1,55 @@
+<template id="GroupView">
+	<!-- title bar -->
+	<table id='${id}_header' cellspacing=0 cellpadding=0 width=100%>
+		<tr class='contactHeaderRow' id='${id}_headerRow'>
+			<td width=20><center><$= AjxImg.getImageHtml("Group") $></center></td>
+			<td><div id='${id}_title' class='contactHeader'></div></td>
+			<td align='right' id='${id}_tags'></td>
+		</tr>
+	</table>
+
+	<table border=0 cellpadding=5 cellspacing=5 width=100% height=100%>
+		<tr>
+			<!-- content: left pane -->
+			<td width=50% valign=top>
+				<table border=0 cellpadding=2 cellspacing=2 width=100%>
+					<tr>
+						<td colspan=2 nowrap>*&nbsp;<$= ZmMsg.groupName $>:&nbsp;<input type='text' autocomplete='off' size=25 id='${id}_groupName'></td>
+					</tr>
+					<tr>
+						<td nowrap>*&nbsp;<$= ZmMsg.groupMembers $>:</td>
+						<td class='hintLabel'><$= ZmMsg.groupHint $></td>
+					</tr>
+				</table>
+				<textarea wrap=off class='groupMembers' id='${id}_groupMembers'></textarea>
+			</td>
+
+			<!-- content: right pane -->
+			<td width=50% valign=top>
+				<fieldset>
+					<legend class='groupFieldset'><$= ZmMsg.addMembers $></legend>
+					<table border=0>
+						<tr>
+							<td class='editLabel'><$= ZmMsg.find $>:</td>
+							<td><input type='text' id='${id}_searchField'></td>
+							<td id='${id}_searchButton'></td>
+						</tr>
+						<$ if (data.showSearchIn) { $>
+						<tr>
+							<td class='editLabel'><$= ZmMsg.searchIn $>:</td>
+							<td colspan=2 id='${id}_listSelect'></td>
+						</tr>
+						<$ } $>
+					</table>
+					<div class='groupMembers' id='${id}_listView'></div>
+					<table border=0 cellpadding=3 cellspacing=2>
+						<tr>
+							<td id='${id}_addButton'></td>
+							<td id='${id}_addAllButton'></td>
+						</tr>
+					</table>
+				</fieldset>
+			</td>
+		</tr>
+	</table>
+</template>
