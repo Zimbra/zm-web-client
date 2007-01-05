@@ -51,19 +51,19 @@
 		mode= "";
 	}
 
-//	final String SKIN_COOKIE_NAME = "ZM_SKIN";
+	final String SKIN_COOKIE_NAME = "ZA_SKIN";
 	String skin = "sand";
 
 	String requestSkin = request.getParameter("skin");
 	if (requestSkin != null) {
 		skin = requestSkin;
-	}/* else if (cookies != null) {
+	} else if (cookies != null) {
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(SKIN_COOKIE_NAME)) {
                 skin = cookie.getValue();
             }
         }
-    }*/
+    }
 	String skinPreCacheFile = "../skins/" + skin + "/CacheLoRes.html";
 
     String contextPath = request.getContextPath();

@@ -528,5 +528,5 @@ ZmLogin.setSkinCookie =
 function(skin) {
 	var exp = new Date();
 	exp.setTime(exp.getTime() + ZmLogin.skinCookieLifetime);
-	AjxCookie.setCookie(document, ZmLogin.skinCookie, skin, exp, "/zimbra");
+	AjxCookie.setCookie(document, ZmLogin.skinCookie, skin, exp, "/");
 };
