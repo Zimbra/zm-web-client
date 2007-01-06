@@ -12,7 +12,7 @@
     <zm:getMailbox var="mailbox"/>
     <c:set var="csi" value="${param.csi}"/>
     
-    <zm:searchConv var="convSearchResult" id="${context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
+    <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
     <c:set var="convSummary" value="${convSearchResult.conversationSummary}"/>
     <zm:computeNextPrevItem var="convCursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
     <c:set var="message" value="${null}"/>
@@ -26,7 +26,7 @@
         <c:if test="${csi lt 0 or csi ge convSearchResult.size}">
             <c:set var="csi" value="0"/>
         </c:if>
-        <zm:getMessage var="message" id="${convSearchResult.hits[csi].id}" markread="true" neuterimages="${empty param.xim}"/>
+        <zm:getMessage var="message" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="true" neuterimages="${empty param.xim}"/>
     </c:if>
 </app:handleError>
 
@@ -34,7 +34,7 @@
 <c:set var="ads" value='${message.subject} ${message.fragment}'/>
 
 <app:view title="${message.subject}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
-    <zm:currentResultUrl var="currentUrl" value="search" action="view" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
+    <zm:currentResultUrl var="currentUrl" value="search" action="view" cid="${convSummary.id}" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
     <form action="${currentUrl}" method="post" name="zform">
         <table width=100% cellpadding=0 cellspacing=0>
             <tr>
@@ -91,7 +91,7 @@
                                                 <a href="${dateSortUrl}"><fmt:message key="received"/></a>
                                             </tr>
                                             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
-                                                <zm:currentResultUrl var="msgUrl" value="search" action='view' context="${context}"
+                                                <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='view' context="${context}"
                                                                      cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
                                                 <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != message.id)) ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                                     <td class='CB' nowrap><input <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>

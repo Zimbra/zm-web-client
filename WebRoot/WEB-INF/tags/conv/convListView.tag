@@ -52,7 +52,7 @@
                                         <zm:currentResultUrl var="convUrl" value="search" index="${status.index}" context="${context}" usecache="true" id="${fn:substringAfter(hit.conversationHit.id,'-')}" action="compose"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <zm:currentResultUrl var="convUrl" value="search" action='view' index="${status.index}" context="${context}" usecache="true"/>
+                                        <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true"/>
                                     </c:otherwise>
                                 </c:choose>
 
