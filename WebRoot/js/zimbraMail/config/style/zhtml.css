@@ -151,6 +151,11 @@ A:visited { color: blue; }
    border-top-width:0px;
 }
 
+.ZhAppViewContent {
+   @AppBg@  @OutsetBorder@
+   border-top-width:0px;
+}
+
 .SearchBar {
     @SkinBorderSearch@;
 padding: 5px;
