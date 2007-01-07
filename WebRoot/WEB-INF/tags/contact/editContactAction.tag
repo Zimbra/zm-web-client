@@ -62,5 +62,11 @@
     <zm:field name="otherFax" value="${param.otherFax}"/>
     <zm:field name="notes" value="${param.notes}"/>
 
+    <c:if test="${not empty param.dlist}">
+        <zm:field name="fileAs" value="8:${param.nickname}"/>
+        <zm:field name="nickname" value="${param.nickname}"/>
+        <zm:field name="dlist" value="${zm:joinLines(param.dlist,', ')}"/>
+    </c:if>
+    
 </zm:modifyContact>
 </app:handleError>

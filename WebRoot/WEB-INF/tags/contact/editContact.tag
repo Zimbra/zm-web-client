@@ -2,6 +2,7 @@
 <%@ attribute name="contact" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZContactBean" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext" %>
 <%@ attribute name="title" rtexprvalue="true" required="true" type="java.lang.String" %>
+<%@ attribute name="isgroup" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -20,7 +21,56 @@
 
 <table border="0" cellpadding="0" cellspacing="3" width="100%">
     <tbody>
-
+    <c:choose>
+    <c:when test="${contact.isGroup or isgroup}">
+        <tr>
+            <td>
+                <table border="0" cellpadding="0" cellspacing="3" width="100%">
+                    <tr>
+                        <td class="editContactGroupLabel"><fmt:message key="AB_GROUP_NAME"/>:
+                            <input name='nickname' type='text' autocomplete='off' size='35' value="${fn:escapeXml(contact.nickname)}">
+                        </td>
+                        <td align=right>
+                            <table  border="0" cellspacing='5'>
+                                <tbody>
+                                    <tr>
+                                        <td valign='center' class="editContactLabel"><fmt:message key="addressBook"/> :</td>
+                                        <td>
+                                            <input type="hidden" name="origFolderId" value="${empty contact ? '': contact.folderId}"/>
+                                            <select name="folderid">
+                                                <zm:forEachFolder var="folder">
+                                                    <c:if test="${folder.isContactCreateTarget}">
+                                                        <option <c:if test="${(empty contact and ((context.selectedId eq folder.id) or (empty context.selectedId and folder.isContacts))) or (!empty contact and contact.folderId eq folder.id)}">selected </c:if> value="${folder.id}" />
+                                                        ${fn:escapeXml(folder.rootRelativePath)}
+                                                    </c:if>
+                                                </zm:forEachFolder>
+                                            </select>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table border="0" cellpadding="0" cellspacing="3" width="100%">
+                    <tr>
+                        <td class="editContactGroupLabel"><fmt:message key="AB_GROUP_MEMBERS"/>:</td>
+                        <td class="editContactGroupHintLabel"><fmt:message key="enterAddresses"/></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <textarea rows="40" cols="60" style="width:100%" name="dlist">${contact.groupMembersPerLine}</textarea>
+            </td>
+        </tr>
+    </c:when>
+    <c:otherwise>
         <tr>
             <td width="5">&nbsp;</td>
             <td valign="top" width="385">
@@ -190,6 +240,8 @@
                 <textarea rows="8" cols="60" style="width:90%" name="notes">${contact != null ? contact.notes : ''}</textarea>
             </td>
         </tr>
+    </c:otherwise>
+    </c:choose>
     </tbody>
 </table>
 

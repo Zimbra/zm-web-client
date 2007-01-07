@@ -12,6 +12,8 @@
     <c:set var="contactsToolbarCache" scope="request">
         <input class='tbButton' type="submit" name="actionNew" value="<fmt:message key="newContact"/>">
         &nbsp;
+        <input class='tbButton' type="submit" name="actionNewGroup" value="<fmt:message key="newContactGroup"/>">
+        &nbsp;
         <input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="actionTrash"/>">
         &nbsp;
         <select name="folderId">

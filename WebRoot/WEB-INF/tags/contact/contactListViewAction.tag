@@ -26,6 +26,9 @@
     <c:when test="${!empty param.actionNew}">
         <jsp:forward page="/h/econtact"/>
     </c:when>
+    <c:when test="${!empty param.actionNewGroup}">
+        <jsp:forward page="/h/econtact"/>
+    </c:when>
     <c:when test="${!empty param.actionEdit}">
         <jsp:forward page="/h/econtact"/>
     </c:when>

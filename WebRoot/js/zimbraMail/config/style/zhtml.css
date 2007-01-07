@@ -310,6 +310,17 @@ padding: 5px 0 5px 0;
    text-align: right;
 }
 
+.editContactGroupLabel {
+width: 18em;    
+   color: black;  white-space:nowrap; overflow:hidden;
+   text-align: left;
+}
+
+.editContactGroupHintLabel {
+   color: gray;  white-space:nowrap; overflow:hidden;
+   text-align: right;
+}
+
 .optionSectionLabel {
         color: black;  white-space:nowrap; overflow:hidden; font-size:15px; font-weight:bold;
 }
