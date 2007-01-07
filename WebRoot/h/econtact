@@ -8,17 +8,35 @@
 
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <app:handleError>
+    <c:choose>
+        <c:when test="${not empty param.actionNew}">
+            <c:set var="contactId" value=""/>
+            <fmt:message var="title" key="newContact"/>
+        </c:when>
+        <c:when test="${not empty param.actionNewGroup}">
+            <c:set var="contactId" value=""/>
+            <fmt:message var="title" key="newGroup"/>
+            <!--- yeah -->
+        </c:when>
+        <c:when test="${not empty param.actionEdit and not empty param.actionEditId}">
+            <c:set var="contactId" value="${param.actionEditId}"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="contactId" value="${param.id}"/>            
+        </c:otherwise>
+    </c:choose>
+    
     <zm:computeSearchContext var="context" types="contact" usecache="true"/>
-    <c:set var="isCreate" value="${empty param.id}"/>
+    <c:set var="isCreate" value="${empty contactId}"/>
 
     <c:choose>
         <c:when test="${isCreate}">
             <c:set var="contact" value="${null}"/>
-            <fmt:message var="title" key="newContact"/>
         </c:when>
         <c:otherwise>
-            <zm:getContact id="${param.id}" var="contact"/>
-            <fmt:message var="title" key="editContact">
+            <zm:getContact id="${contactId}" var="contact"/>
+            <c:set var="messageKey" value="${contact.isGroup ? 'editGroup': 'editContact'}"/>
+            <fmt:message var="title" key="${messageKey}">
                 <fmt:param>${contact.displayFileAs}</fmt:param>
             </fmt:message>
         </c:otherwise>

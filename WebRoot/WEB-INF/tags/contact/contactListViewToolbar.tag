@@ -1,5 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
+<%@ attribute name="contact" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZContactBean" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -12,8 +13,13 @@
     <c:set var="contactsToolbarCache" scope="request">
         <input class='tbButton' type="submit" name="actionNew" value="<fmt:message key="newContact"/>">
         &nbsp;
-        <input class='tbButton' type="submit" name="actionNewGroup" value="<fmt:message key="newContactGroup"/>">
+        <input class='tbButton' type="submit" name="actionNewGroup" value="<fmt:message key="newGroup"/>">
         &nbsp;
+        <c:if test="${not empty contact}">
+        <input class='tbButton' type="submit" name="actionEdit" value="<fmt:message key="edit"/>">
+        <input type='hidden' name="actionEditId" value="${contact.id}"/>
+        &nbsp;
+        </c:if>
         <input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="actionTrash"/>">
         &nbsp;
         <select name="folderId">

@@ -38,7 +38,7 @@
     </tr>
 </tbody></table>
 
-<table border="0" cellpadding="3" cellspacing="3" width="100%">
+<table border="0" cellspacing="3" cellpadding="${contact.isGroup ? 1 : 3}" width="100%">
 <tbody>
 
 <c:if test="${contact.isGroup}">

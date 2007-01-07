@@ -22,7 +22,7 @@
                 </td>
             </tr>
             <tr>
-                <td class='ZhAppContent'>
+                <td class='ZhAppViewContent'>
                         <app:displayContact contact="${contact}"/>
                 </td>
             </tr>
