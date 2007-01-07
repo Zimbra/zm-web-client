@@ -19,7 +19,7 @@
             <!--- yeah -->
         </c:when>
         <c:when test="${not empty param.actionEdit and not empty param.actionEditId}">
-            <c:set var="contactId" value="${param.actionEditId}"/>
+            <c:set var="contactId" value="${not empty param.id ? param.id : param.actionEditId}"/>
         </c:when>
         <c:otherwise>
             <c:set var="contactId" value="${param.id}"/>            
