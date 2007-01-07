@@ -45,7 +45,7 @@
     <c:forEach var="member" items="${contact.groupMembers}">
         <tr>
             <td width='20px'><app:img src="mail/Message.gif"/></td>
-            <td><nobr>${fn:escapeXml(member.fullAddress)}</nobr></td>            
+            <td><nobr>${fn:escapeXml(member.fullAddressQuoted)}</nobr></td>            
         </tr>
     </c:forEach>
     <tr><td><br></td></tr>

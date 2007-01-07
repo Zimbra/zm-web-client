@@ -61,7 +61,9 @@
                                        </c:if>
                                    </td>
                                    <td ><c:if test="${empty hit.contactHit.displayEmail}">
-                                       &nbsp;</c:if><a href="${contactUrl}">${fn:escapeXml(hit.contactHit.displayEmail)}</a></td>
+                                       &nbsp;</c:if><a href="${contactUrl}">${fn:escapeXml(hit.contactHit.displayEmail)}</a>
+
+                                       </td>
                                </tr>
                            </c:forEach>
                        </table>

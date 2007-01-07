@@ -28,7 +28,7 @@
         </c:choose>
     </tr>
     <c:forEach items="${searchResult.hits}" var="hit" varStatus="status">
-        <c:if test="${not empty hit.contactHit.displayEmail}">
+        <c:if test="${not empty hit.contactHit.displayEmail or hit.contactHit.isGroup}">
         <tr>
             <td width=1%>&nbsp;</td>
             <td width=2% nowrap><input type=checkbox  name="addTo" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
