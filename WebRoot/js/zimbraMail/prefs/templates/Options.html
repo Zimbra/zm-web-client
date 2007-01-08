@@ -145,7 +145,7 @@
 		<tr><td><div class='ZSmallSpacer'></div></td></tr>
 	
 		<tr><td></td>
-			<td><button id='${id}_testButton'><$= ZmMsg.popAccountTest $></button></td>
+			<td><div class='ZFieldSizeHusky'><button id='${id}_testButton'><$= ZmMsg.popAccountTest $></button></div></td>
 		</tr>
 	
 	
@@ -235,7 +235,7 @@
 
 
 <template id="IdentityForm_options" xml:space="strip">
-<fieldset class='ZFieldset' style='width:99%'>
+<fieldset class='ZFieldset' style='width:auto'>
 	<legend class='ZLegend'><$= ZmMsg.sendWithIdentity $></legend>
 	<table class='ZFormTable XZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
 		<colgroup><col width=20><col width=60><col width='50%'><col width='50%'></colgroup>
@@ -254,7 +254,7 @@
 <$ if (AjxEnv.isIE) { $>
 <br>
 <$ } $>
-<fieldset class='ZFieldset' style='width:99%'>
+<fieldset class='ZFieldset' style='width:auto'>
 	<legend class='ZLegend'><$= ZmMsg.selectIdentityWhen $></legend>
 	<table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
 		<colgroup><col width=20><col width='100%'><col width=40></colgroup>
@@ -264,7 +264,7 @@
 		</tr>
 
 		<tr><td></td>
-			<td><input id='${id}_whenSentToInput' class='ZFieldSizeHusky'></td>
+			<td><input id='${id}_whenSentToInput' class='fullWidth'></td>
 		</tr>
 
 		<tr><td></td>
@@ -277,8 +277,12 @@
 		</tr>
 
 		<tr><td></td>
-			<td><input id='${id}_whenInFolderInput' class='ZFieldSizeHusky'></td>
-			<td><button id='${id}_folderBrowseButton' style='width:30px'><div class='ImgFolder'></div></button></td>
+			<td>
+				<table cellspacing=0 cellpadding=0 style='width:100%'><tr>
+					<td><input id='${id}_whenInFolderInput' class='fullWidth'></td>
+					<td style='padding-left:10px;'><button id='${id}_folderBrowseButton' style='width:30px'><div class='ImgFolder'></div></button></td>
+				</tr></table>
+			</td>
 		</tr>
 
 		<tr><td></td>
@@ -289,12 +293,12 @@
 </template>
 
 <template id="IdentityForm_signature" xml:space="strip">
-<table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
-	<colgroup><col width=103><col width='100%'></colgroup>
+<table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 style='width:95%;' border=0>
+	<colgroup><col width=103><col width='100%'><col width=20></colgroup>
 
 	<tr><td><div class='ZSmallSpacer'></div></td></tr>
 	<tr><td class='ZLabelCell'><$= ZmMsg.placeSignature $></td>
-		<td>
+		<td colspan=2>
 			<select id='${id}_signatureStyleSelect' class='ZFieldSizeMedium'>
 				<option><$= ZmMsg.aboveQuotedText $></option>
 				<option><$= ZmMsg.atBottomOfMessage $></option>
@@ -306,7 +310,8 @@
 		<td><textarea id='${id}_signature' style='width:100%;height:120px'></textarea></td>
 	</tr>
 	<tr><td class='ZCheckboxCell'><input id='${id}_signatureEnabledCheckbox' type='checkbox'></td>
-		<td class='ZCheckboxLabelCell'><div class='ImgInformation ZInfoContextButton' onclick='Dwt.toggle("${id}_signatureEnabledHelpRow")'></div><$= ZmMsg.signatureEnabled $></td>
+		<td class='ZCheckboxLabelCell'><$= ZmMsg.signatureEnabled $></td>
+		<td><div class='ImgInformation' onclick='Dwt.toggle("${id}_signatureEnabledHelpRow")'></div></td>
 	</tr>
 	<tr id='${id}_signatureEnabledHelpRow' style='display:none'><td></td><td class='ZHelpLabel'><$= ZmMsg.signatureEnabledHelp $></td></tr>
 </table>

@@ -124,10 +124,12 @@ body						{	@ChromeBg@	}
 #skin_border_tree_app_sash				{	@SkinBorderTreeSash@ 	}
 #skin_container_tree_app_sash			{							}
 
-#skin_td_app_top_toolbar				{	padding:0px;	margin-bottom:-1px;	}
+#skin_td_app_top_toolbar,
+#skin_td_app_toolbar_sep				{	padding:0px;	margin-bottom:-1px;	}
 #skin_border_app_top_toolbar			{	padding-right:6px;		}
 .skin_border_app_top_toolbar			{	@SkinBorderAppToolbar@	}
-#skin_container_app_top_toolbar			{	
+#skin_container_app_top_toolbar,
+#skin_container_app_toolbar_sep			{	
 	height:22;		margin:4 2 0 5;	
 #IFDEF MSIE
 	height:25;		margin:0 0 0 1;
@@ -137,6 +139,15 @@ body						{	@ChromeBg@	}
 #ENDIF
 }
 
+#skin_app_toolbar_sep {
+	position:relative;
+	height:16px;
+	width:1px;
+	border-left:1px solid @SeparatorColor@;
+#IFDEF SAFARI
+	top:10%;
+#ENDIF
+}
 
 
 /* app chooser, tree, app main */
