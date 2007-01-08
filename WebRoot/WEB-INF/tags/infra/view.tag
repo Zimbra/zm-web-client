@@ -41,7 +41,7 @@
     <tr>
         <td class='Overview'>&nbsp;</td>
         <td colspan=2>
-            <app:appTabs mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
+            <app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
         </td>
     </tr>
     <tr>

@@ -2,6 +2,7 @@
 <%@ attribute name="selected" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
+<%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -32,7 +33,15 @@
         </td>
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='compose' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/search?action=compose"/>" <c:if test="${keys}">accesskey="e"</c:if>><app:img src="mail/NewMessage.gif"/><span><fmt:message
+            <c:choose>
+                <c:when test="${not empty context}">
+                    <zm:currentResultUrl var="composeUrl" value="/h/search" context="${context}" paction="${param.action}" action="compose"/>
+                </c:when>
+                <c:otherwise>
+                    <c:url var="composeUrl" value="/h/search?action=compose"/>
+                </c:otherwise>
+            </c:choose>
+            <a href="${composeUrl}" <c:if test="${keys}">accesskey="e"</c:if>><app:img src="mail/NewMessage.gif"/><span><fmt:message
                     key="compose"/></span></a>
         </td>
         <td class='TabSpacer'/>
