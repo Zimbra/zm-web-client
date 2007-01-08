@@ -6,9 +6,10 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <app:handleError>
+<zm:getMailbox var="mailbox"/>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
 <c:choose>
-    <c:when test="${!empty param.actionEmpty}">
+    <c:when test="${not empty param.actionEmpty and (param.contextFolderId eq mailbox.trash.id or param.contextFolderId eq mailbox.spam.id)}">
         <zm:emptyFolder id="${param.contextFolderId}"/>
         <app:status>
             <fmt:message key="folderEmptied">
@@ -46,7 +47,6 @@
     <c:otherwise>
         <c:choose>
             <c:when test="${!empty param.actionDelete}">
-                <zm:getMailbox var="mailbox"/>
                 <zm:moveContact  var="result" id="${ids}" folderid="${mailbox.trash.id}"/>
                 <app:status>
                     <fmt:message key="actionContactMovedTrash">
@@ -55,7 +55,6 @@
                 </app:status>
             </c:when>
             <c:when test="${!empty param.actionHardDelete}">
-                <zm:getMailbox var="mailbox"/>
                 <zm:deleteContact  var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionContactHardDeleted">
@@ -76,7 +75,6 @@
             </c:when>
             <c:when test="${fn:startsWith(param.folderId, 'm:')}">
                 <c:set var="folderid" value="${fn:substring(param.folderId, 2, -1)}"/>
-                <zm:getMailbox var="mailbox"/>
                 <zm:moveContact folderid="${folderid}"var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionContactMoved">
