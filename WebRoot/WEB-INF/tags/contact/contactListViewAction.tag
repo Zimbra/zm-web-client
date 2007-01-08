@@ -8,6 +8,14 @@
 <app:handleError>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
 <c:choose>
+    <c:when test="${!empty param.actionEmpty}">
+        <zm:emptyFolder id="${param.contextFolderId}"/>
+        <app:status>
+            <fmt:message key="folderEmptied">
+                <fmt:param value="${zm:getFolderName(pageContext, param.contextFolderId)}"/>
+            </fmt:message>
+        </app:status>
+    </c:when>
     <c:when test="${!empty param.actionCreate}">
         <app:editContactAction id="${param.id}"/>
         <app:status><fmt:message key="contactCreated"/></app:status>
@@ -42,6 +50,15 @@
                 <zm:moveContact  var="result" id="${ids}" folderid="${mailbox.trash.id}"/>
                 <app:status>
                     <fmt:message key="actionContactMovedTrash">
+                        <fmt:param value="${result.idCount}"/>
+                    </fmt:message>
+                </app:status>
+            </c:when>
+            <c:when test="${!empty param.actionHardDelete}">
+                <zm:getMailbox var="mailbox"/>
+                <zm:deleteContact  var="result" id="${ids}"/>
+                <app:status>
+                    <fmt:message key="actionContactHardDeleted">
                         <fmt:param value="${result.idCount}"/>
                     </fmt:message>
                 </app:status>
