@@ -11,6 +11,11 @@
 <c:if test="${empty requestScope.contactsToolbarCache}">
      <zm:getMailbox var="mailbox"/>
     <c:set var="contactsToolbarCache" scope="request">
+        <c:if test="${context.folder.isTrash}">
+            <input type="hidden" name="contextFolderId" value="${context.selectedId}"/>
+            <input class='tbButton' type="submit" name="actionEmpty" value="<fmt:message key="emptyTrash"/>">
+            &nbsp;
+        </c:if>
         <input class='tbButton' type="submit" name="actionNew" value="<fmt:message key="newContact"/>">
         &nbsp;
         <input class='tbButton' type="submit" name="actionNewGroup" value="<fmt:message key="newGroup"/>">
@@ -20,7 +25,14 @@
         <input type='hidden' name="actionEditId" value="${contact.id}"/>
         &nbsp;
         </c:if>
-        <input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="actionTrash"/>">
+        <c:choose>
+            <c:when test="${context.isFolderSearch and context.folder.isTrash}">
+                <input class='tbButton' type="submit" name="actionHardDelete" value="<fmt:message key="actionTrash"/>">
+            </c:when>
+            <c:otherwise>
+                <input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="actionTrash"/>">
+            </c:otherwise>
+        </c:choose>
         &nbsp;
         <select name="folderId">
             <option value="" selected/><fmt:message key="moveAction"/>

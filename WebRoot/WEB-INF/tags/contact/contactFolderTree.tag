@@ -42,6 +42,9 @@
                     <app:overviewFolder types="contact" folder="${folder}" icon="${icon}"/>
                 </c:if>
             </zm:forEachFolder>
+
+            <app:overviewFolder types="contact" folder="${mailbox.trash}" label="trash"
+                                icon="common/Trash.gif"/>
         </c:if>
     </table>
 </div>
