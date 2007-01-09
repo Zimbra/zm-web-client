@@ -82,7 +82,7 @@
                                     <table width=100%>
                                         <tr>
                                             <td valign='top' width='40'>
-                                                <img alt='error' src="<c:url value='${messageImage}'/>"/>
+                                                <img alt='<fmt:message key="ALT_ERROR"/>' src="<c:url value='${messageImage}'/>"/>
                                             </td>
                                             <td class='errorText'>
                                                 <c:out value="${errorMessage}"/> 

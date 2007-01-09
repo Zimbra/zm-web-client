@@ -19,11 +19,11 @@
             <c:param name="${expanded ? 'collapse' : 'expand'}" value="${folder.id}"/>
         </c:url>
         <a href="${toggleUrl}">
-            <app:img src="${expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}"/>
+            <app:img src="${expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}" altkey="${expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/>
         </a>
     </c:if>
     <a href='search?sfi=${folder.id}'>
-        <app:img src="${empty icon ? 'common/SearchFolder.gif' : icon}"/>
+        <app:img alt='${fn:escapeXml(empty label ? folder.name : label)}' src="${empty icon ? 'common/SearchFolder.gif' : icon}"/>
         <span>${fn:escapeXml(empty label ? folder.name : label)}</span>
     </a>
 </td></tr>

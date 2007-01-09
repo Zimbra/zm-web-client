@@ -28,11 +28,11 @@
                     <c:choose>
                         <c:when test="${part.isImage}">
                             <a target="_blank" href="${url}&disp=i">
-                                <img class='AttachmentImage' src="${url}" alt="${part.displayName}"/>
+                                <img class='AttachmentImage' src="${url}" alt="${fn:escapeXml(part.displayName)}"/>
                             </a>
                         </c:when>
                         <c:otherwise>
-                            <app:img src="${part.image}" alt="${part.displayName}" title="${part.contentType}"/>
+                            <app:img src="${part.image}" alt="${fn:escapeXml(part.displayName)}" title="${fn:escapeXml(part.contentType)}"/>
                         </c:otherwise>
                     </c:choose>
                 </td>

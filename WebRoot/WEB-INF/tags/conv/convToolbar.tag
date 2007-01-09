@@ -53,34 +53,34 @@
         <td nowrap align=right>
             <c:if test="${context.hasPrevItem}">
                 <zm:prevItemUrl var="prevItemUrl" value="" action="view" cursor="${convCursor}" context="${context}" css="${param.css}"/>
-                <a <c:if test="${keys}">accesskey="p"</c:if> href="${prevItemUrl}"><img alt='dblleft' src="<c:url value='/images/arrows/LeftDoubleArrow.gif'/>" border="0"/></a>
+                <a <c:if test="${keys}">accesskey="p"</c:if> href="${prevItemUrl}"><img alt='<fmt:message key="ALT_CONV_PREVIOUS_CONVERSATION"/>' src="<c:url value='/images/arrows/LeftDoubleArrow.gif'/>" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
-                <app:img disabled='true' src="arrows/LeftDoubleArrow.gif" border="0"/>
+                <app:img altkey='ALT_CONV_NO_PREVIOUS_CONVERSATION' disabled='true' src="arrows/LeftDoubleArrow.gif" border="0"/>
             </c:if>
             <c:if test="${convSearchResult.hasPrevPage}">
                 <zm:currentResultUrl var="prevPageUrl" value=""  action="view" context="${context}"
                                      cso="${convSearchResult.prevOffset}" css="${param.css}"/>
-                <a <c:if test="${keys}">accesskey="b"</c:if> href="${prevPageUrl}"><img alt='left' src="<c:url value='/images/arrows/LeftArrow.gif'/>" border="0"/></a>
+                <a <c:if test="${keys}">accesskey="b"</c:if> href="${prevPageUrl}"><img   alt='<fmt:message key="ALT_CONV_PREVIOUS_PAGE_IN_CONVERSATION"/>' src="<c:url value='/images/arrows/LeftArrow.gif'/>" border="0"/></a>
             </c:if>
             <c:if test="${!convSearchResult.hasPrevPage}">
-                <app:img disabled='true' src="arrows/LeftArrow.gif" border="0"/>
+                <app:img altkey='ALT_CONV_NO_PREVIOUS_PAGE_IN_CONVERSATION' disabled='true' src="arrows/LeftArrow.gif" border="0"/>
             </c:if>
             <app:searchPageOffset searchResult="${convSearchResult}" max="${convSearchResult.conversationSummary.messageCount}"/>
             <c:if test="${convSearchResult.hasNextPage}">
                 <zm:currentResultUrl var="nextPageUrl" value=""  action="view" context="${context}"
                                      cso="${convSearchResult.nextOffset}" css="${param.css}"/>
-                <a <c:if test="${keys}">accesskey="f"</c:if> href="${nextPageUrl}"><img alt='right' src="<c:url value='/images/arrows/RightArrow.gif'/>" border="0"/></a>
+                <a <c:if test="${keys}">accesskey="f"</c:if> href="${nextPageUrl}"><img  alt='<fmt:message key="ALT_CONV_NEXT_PAGE_IN_CONVERSATION"/>' src="<c:url value='/images/arrows/RightArrow.gif'/>" border="0"/></a>
             </c:if>
             <c:if test="${!convSearchResult.hasNextPage}">
-                <app:img disabled='true' src="arrows/RightArrow.gif" border="0"/>
+                <app:img altkey='ALT_CONV_NO_NEXT_PAGE_IN_CONVERSATION' disabled='true' src="arrows/RightArrow.gif" border="0"/>
             </c:if>
             <c:if test="${context.hasNextItem}">
                 <zm:nextItemUrl var="nextItemUrl" value="" action="view" cursor="${convCursor}" context="${context}" css="${param.css}"/>
-                <a <c:if test="${keys}">accesskey="n"</c:if> href="${nextItemUrl}"><img alt='dblright' src="<c:url value='/images/arrows/RightDoubleArrow.gif'/>" border="0"/></a>
+                <a <c:if test="${keys}">accesskey="n"</c:if> href="${nextItemUrl}"><img  alt='<fmt:message key="ALT_CONV_NEXT_CONVERSATION"/>' src="<c:url value='/images/arrows/RightDoubleArrow.gif'/>" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">
-                <app:img disabled='true' src="arrows/RightDoubleArrow.gif" border="0"/>
+                <app:img altkey='ALT_CONV_NO_NEXT_CONVERSATION' disabled='true' src="arrows/RightDoubleArrow.gif" border="0"/>
             </c:if>
         </td>
     </tr>

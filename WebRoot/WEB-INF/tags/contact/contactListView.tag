@@ -31,7 +31,7 @@
                            <tr>
                                <th class='CB'><input onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                <c:if test="${mailbox.features.tagging}">
-                                <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif"alt="Tagged"/>
+                                <th class='Img' nowrap><app:img atkey='ALT_TAG_TAG' src="tag/MiniTagOrange.gif"alt="Tagged"/>
                                 </c:if>
                                <th class='Img'>&nbsp;
                                <th nowrap>
@@ -46,7 +46,7 @@
                                    <c:if test="${mailbox.features.tagging}">
                                        <td class='Img'><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
                                    </c:if>
-                                   <td class='Img'><app:img src="${hit.contactHit.image}" alt="Contact"/></td>
+                                   <td class='Img'><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
                                    <td ><span style='padding:3px'>
                                        <zm:currentResultUrl var="contactUrl" value="/h/search" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
                                        <a href="${contactUrl}" <c:if test="${hit.contactHit.id == context.currentItem.id}">accesskey='o'</c:if>>

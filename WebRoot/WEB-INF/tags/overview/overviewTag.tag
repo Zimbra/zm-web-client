@@ -15,7 +15,7 @@
     </c:url>
 
     <a href='${url}'>
-        <app:img src="${tag.image}"/>
+        <app:img src="${tag.image}" alt='${fn:escapeXml(tag.name)}'/>
         <span>
             <c:out value="${tag.name}"/>
             <c:if test="${tag.hasUnread}"> (${tag.unreadCount}) </c:if>

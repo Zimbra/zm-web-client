@@ -27,18 +27,18 @@
                         <table width=100% cellpadding=2 cellspacing=0>
                             <tr class='Header'>
                                 <th class='CB' nowrap><input onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
-                                <th class='Img' nowrap><app:img src="tag/FlagRed.gif"alt="Starred"/>
+                                <th class='Img' nowrap><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/>
                                 <c:if test="${mailbox.features.tagging}">
-                                <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif"alt="Tagged"/>
+                                <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG_TAG"/>
                                 </c:if>
                                 <th width=10% nowrap><fmt:message key="from"/>
-                                <th class='Img' nowrap><app:img src="common/Attachment.gif"alt="Attachment"/>
+                                <th class='Img' nowrap><app:img src="common/Attachment.gif" altkey="ALT_ATTACHMENT"/>
                                 <th nowrap>
                                     <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
                                 <a href="${subjectSortUrl}">
                                     <fmt:message key="subject"/>
                                 </a>
-                                <th width=1% nowrap><app:img src="mail/Conversation.gif"alt="Tagged"/>
+                                <th width=1% nowrap><app:img src="mail/Conversation.gif" altkey="ALT_CONVERSATION"/>
                                 <th width=1% nowrap>
                                     <zm:newSortUrl var="dateSortUrl" value="/h/search" context="${context}" sort="${(context.ss eq 'dateDesc' or empty context.ss) ? 'dateAsc' : 'dateDesc'}"/>
                                 <a href="${dateSortUrl}">

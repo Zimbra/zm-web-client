@@ -27,9 +27,9 @@
                     <table width=100% cellpadding=2 cellspacing=0>
                         <tr>
                             <th class='CB' nowrap><input onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
-                            <th class='Img' nowrap><app:img src="tag/FlagRed.gif"alt="Starred"/>
+                            <th class='Img' nowrap><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/>
                              <c:if test="${mailbox.features.tagging}">
-                            <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif"alt="Tagged"/>
+                            <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG_TAG"/>
                             </c:if>
                             <th class='MsgStatusImg' nowrap>
                             <th width=10%>
@@ -37,7 +37,7 @@
                             <a href="${fromSortUrl}">
                                 <fmt:message key="from"/>
                             </a>
-                            <th width=1% nowrap><app:img src="common/Attachment.gif" alt=""/>
+                            <th width=1% nowrap><app:img src="common/Attachment.gif" altkey="ALT_ATTACHMENT"/>
                             <th nowrap>
                                 <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
                             <a href="${subjectSortUrl}">
@@ -71,7 +71,7 @@
                                  <c:if test="${mailbox.features.tagging}">
                                      <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                 </c:if>
-                                <td class='MsgStatusImg' align=center><app:img src="${hit.messageHit.statusImage}"/></td>
+                                <td class='MsgStatusImg' align=center><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
                                 <td><%-- allow wrap --%> <a href="${currentItemUrl}"><c:out value="${hit.messageHit.displaySender}" default="<Unknown>"/></a></td>
                                 <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                 <td > <%-- allow this col to wrap --%>

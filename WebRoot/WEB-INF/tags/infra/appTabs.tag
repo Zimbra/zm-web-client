@@ -15,20 +15,20 @@
         <td class='TabSpacer'/>        
         <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
             <a href="<c:url value="/h/search"/>" <c:if test="${keys}">accesskey="m"</c:if>>
-                <app:img src="mail/MailApp.gif"/>
+                <app:img src="mail/MailApp.gif" altkey='ALT_APP_MAIL'/>
                 <span><fmt:message key="mail"/></span>
             </a>
         </td>
         <c:if test="${mailbox.features.contacts}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='contacts' ? 'TabSelected' :'TabNormal'}'>
-                <a href="<c:url value="/h/search?st=contact"/>" <c:if test="${keys}">accesskey="c"</c:if>><app:img src="contacts/Contact.gif"/><span><fmt:message
+                <a href="<c:url value="/h/search?st=contact"/>" <c:if test="${keys}">accesskey="c"</c:if>><app:img src="contacts/Contact.gif" altkey='ALT_APP_CONTACTS'/><span><fmt:message
                         key="contacts"/></span></a>
             </td>
         </c:if>             
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='options' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options"/>" <c:if test="${keys}">accesskey="y"</c:if>><app:img src="common/Preferences.gif"/><span><fmt:message
+            <a href="<c:url value="/h/options"/>" <c:if test="${keys}">accesskey="y"</c:if>><app:img src="common/Preferences.gif" altkey='ALT_APP_OPTIONS'/><span><fmt:message
                     key="options"/></span></a>
         </td>
         <td class='TabSpacer'/>
@@ -41,32 +41,32 @@
                     <c:url var="composeUrl" value="/h/search?action=compose"/>
                 </c:otherwise>
             </c:choose>
-            <a href="${composeUrl}" <c:if test="${keys}">accesskey="e"</c:if>><app:img src="mail/NewMessage.gif"/><span><fmt:message
+            <a href="${composeUrl}" <c:if test="${keys}">accesskey="e"</c:if>><app:img src="mail/NewMessage.gif" altkey='ALT_APP_COMPOSE'/><span><fmt:message
                     key="compose"/></span></a>
         </td>
         <td class='TabSpacer'/>
         <c:choose>
             <c:when test="${selected =='managetags'}">
                 <td class='Tab TabSelected'>
-                    <app:img src="tag/Tag.gif"/><span><fmt:message key="tags"/></span>
+                    <app:img src="tag/Tag.gif" altkey='ALT_APP_MANAGE_TAGS'/><span><fmt:message key="tags"/></span>
                 </td>
                 <td class='TabSpacer'/>
             </c:when>
             <c:when test="${selected =='managefolders'}">
                 <td class='Tab TabSelected'>
-                    <app:img src="common/Folder.gif"/><span><fmt:message key="folders"/></span>
+                    <app:img src="common/Folder.gif" altkey='ALT_APP_MANAGE_FOLDERS'/><span><fmt:message key="folders"/></span>
                 </td>
                 <td class='TabSpacer'/>
             </c:when>
             <c:when test="${selected =='managesearches'}">
                 <td class='Tab TabSelected'>
-                    <app:img src="common/SearchFolder.gif"/><span><fmt:message key="searches"/></span>
+                    <app:img src="common/SearchFolder.gif" altkey='ALT_APP_MANAGE_SEARCHES'/><span><fmt:message key="searches"/></span>
                 </td>
                 <td class='TabSpacer'/>
             </c:when>
             <c:when test="${selected =='manageaddressbooks'}">
                 <td class='Tab TabSelected'>
-                    <app:img src="contacts/ContactsFolder.gif"/><span><fmt:message key="addressBooks"/></span>
+                    <app:img src="contacts/ContactsFolder.gif" altkey='ALT_APP_MANAGE_ADDRESS_BOOKS'/><span><fmt:message key="addressBooks"/></span>
                 </td>
                 <td class='TabSpacer'/>
             </c:when>
