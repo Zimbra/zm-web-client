@@ -19,12 +19,12 @@
                 <c:param name="st" value="contact"/>
                  <c:param name="${expanded ? 'collapse' : 'expand'}" value="contacts"/>
              </c:url>
-             <th style='width:20px'><a href="${toggleUrl}"><app:img src="${ expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}"/></a></th>
+             <th style='width:20px'><a href="${toggleUrl}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}"/></a></th>
             <th class='Header'><fmt:message key="addressBooks"/></th>
             <th width='1%' align='right'>
                 <c:if test="${empty editmode}">
                     <c:url value="/h/maddrbooks" var="mabUrl"/>
-                    <a href="${mabUrl}"><app:img src="common/Edit.gif"/></a>
+                    <a href="${mabUrl}"><app:img altkey='ALT_APP_MANAGE_ADDRESS_BOOKS' src="common/Edit.gif"/></a>
                 </c:if>
             </th>
         </tr>

@@ -44,31 +44,31 @@
     <td>
         <div class='Tags'>
             <input checked align=top type="radio" name="newTagColor" value="orange">
-            <app:img src="tag/TagOrange.gif"/>
+            <app:img altkey="ALT_TAG_ORANGE" src="tag/TagOrange.gif"/>
             <fmt:message key="orange"/>
             <br>
             <input type="radio" name="newTagColor" value="blue">
-            <app:img src="tag/TagBlue.gif"/>
+            <app:img altkey="ALT_TAG_BLUE" src="tag/TagBlue.gif"/>
             <fmt:message key="blue"/>
             <br>
             <input type="radio" name="newTagColor" value="cyan">
-            <app:img src="tag/TagCyan.gif"/>
+            <app:img altkey="ALT_TAG_CYAN" src="tag/TagCyan.gif"/>
             <fmt:message key="cyan"/>
             <br>
             <input type="radio" name="newTagColor" value="green">
-            <app:img src="tag/TagGreen.gif"/>
+            <app:img altkey="ALT_TAG_GREEN" src="tag/TagGreen.gif"/>
             <fmt:message key="green"/>
             <br>
             <input type="radio" name="newTagColor" value="purple">
-            <app:img src="tag/TagPurple.gif"/>
+            <app:img altkey="ALT_TAG_PURPLE" src="tag/TagPurple.gif"/>
             <fmt:message key="purple"/>
             <br>
             <input type="radio" name="newTagColor" value="red">
-            <app:img src="tag/TagRed.gif"/>
+            <app:img altkey="ALT_TAG_RED" src="tag/TagRed.gif"/>
             <fmt:message key="red"/>
             <br>
             <input type="radio" name="newTagColor" value="yellow">
-            <app:img src="tag/TagYellow.gif"/>
+            <app:img altkey="ALT_TAG_YELLOW" src="tag/TagYellow.gif"/>
             <fmt:message key="yellow"/>
             <br>
         </div>
@@ -130,31 +130,31 @@
     <td>
         <div class='Tags'>
             <input checked type="radio" name="newColor" value="orange">
-            <app:img src="tag/TagOrange.gif"/>
+            <app:img altkey="ALT_TAG_ORANGE" src="tag/TagOrange.gif"/>
             <fmt:message key="orange"/>
             <br>
             <input type="radio" name="newColor" value="blue">
-            <app:img src="tag/TagBlue.gif"/>
+            <app:img altkey="ALT_TAG_BLUE" src="tag/TagBlue.gif"/>
             <fmt:message key="blue"/>
             <br>
             <input type="radio" name="newColor" value="cyan">
-            <app:img src="tag/TagCyan.gif"/>
+            <app:img altkey="ALT_TAG_CYAN" src="tag/TagCyan.gif"/>
             <fmt:message key="cyan"/>
             <br>
             <input type="radio" name="newColor" value="green">
-            <app:img src="tag/TagGreen.gif"/>
+            <app:img altkey="ALT_TAG_GREEN" src="tag/TagGreen.gif"/>
             <fmt:message key="green"/>
             <br>
             <input type="radio" name="newColor" value="purple">
-            <app:img src="tag/TagPurple.gif"/>
+            <app:img altkey="ALT_TAG_PURPLE" src="tag/TagPurple.gif"/>
             <fmt:message key="purple"/>
             <br>
             <input type="radio" name="newColor" value="red">
-            <app:img src="tag/TagRed.gif"/>
+            <app:img altkey="ALT_TAG_RED" src="tag/TagRed.gif"/>
             <fmt:message key="red"/>
             <br>
             <input type="radio" name="newColor" value="yellow">
-            <app:img src="tag/TagYellow.gif"/>
+            <app:img altkey="ALT_TAG_YELLOW" src="tag/TagYellow.gif"/>
             <fmt:message key="yellow"/>
             <br>
         </div>

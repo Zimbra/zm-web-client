@@ -28,13 +28,13 @@
                    <c:param name="${expanded ? 'collapse' : 'expand'}" value="${folder.id}"/>
                </c:url>
                 <a href="${toggleUrl}">
-                    <app:img src="${expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}"/>
+                    <app:img src="${expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}" altkey="${expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/>
                 </a>
         </c:if>
 
         <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="dwt/NodeExpanded.gif"/></c:if></span>--%>
         <a href='${url}' <c:if test="${(not empty key) and keys}">accesskey="${key}" </c:if> >
-            <app:img src="${not empty icon ? icon : (folder.isFeed ? 'mail/RSS.gif' : 'common/Folder.gif')}"/>
+            <app:img src="${not empty icon ? icon : (folder.isFeed ? 'mail/RSS.gif' : 'common/Folder.gif')}" alt='${fn:escapeXml(empty label ? folder.name : label)}'/>
             <span>${fn:escapeXml(empty label ? folder.name : label)} <c:if test="${folder.hasUnread}">
                 (${folder.unreadCount}) </c:if></span>
         </a>

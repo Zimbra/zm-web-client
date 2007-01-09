@@ -35,7 +35,7 @@
             <td width=2% nowrap><input type=checkbox name="addCc" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
             <td width=2% nowrap><input type=checkbox  name="addBcc" value="${fn:escapeXml(hit.contactHit.fullAddress)}"></td>
             <td width=1%><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
-            <td width=1%><app:img src="${hit.contactHit.image}" alt="Contact"/></td>
+            <td width=1%><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
             <td width=1%>&nbsp;</td>
             <td width=20%>
                     ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '' : hit.contactHit.fileAsStr)}
@@ -52,7 +52,7 @@
             <td width=2% nowrap><input type=checkbox name="addCc" value="${fn:escapeXml(contact.galFullAddress)}"></td>
             <td width=2% nowrap><input type=checkbox  name="addBcc" value="${fn:escapeXml(contact.galFullAddress)}"></td>
             <td width=1%><app:miniTagImage ids="${contact.tagIds}"/></td>
-            <td width=1%><app:img src="${contact.image}" alt="Contact"/></td>
+            <td width=1%><app:img src="${contact.image}" altkey="${contact.imageAltKey}"/></td>
             <td width=1%>&nbsp;</td>
             <td >
                     ${fn:escapeXml(contact.galFullAddress)}

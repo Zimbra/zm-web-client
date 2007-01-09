@@ -133,12 +133,12 @@
                                         <c:if test="${mailbox.features.tagging}">
                                             <c:set var="tags" value="${zm:getTags(pageContext, message.tagIds)}"/>
                                             <c:forEach items="${tags}" var="tag">
-                                                <app:img src="${tag.miniImage}"/>
+                                                <app:img src="${tag.miniImage}" alt='${fn:escapeXml(tag.name)}'/>
                                                 <span>${fn:escapeXml(tag.name)}</span>
                                             </c:forEach>
                                         </c:if> 
                                         <c:if test="${message.isFlagged}">
-                                            <app:img src="tag/FlagRed.gif"/>
+                                            <app:img altkey='ALT_FLAGGED' src="tag/FlagRed.gif"/>
                                         </c:if>
                                     </td>
                                 </tr>
@@ -147,7 +147,7 @@
                                 <tr>
                                     <td nowrap align="right" class='MsgHdrAttAnchor'>
                                         <a href="#attachments${message.partName}">
-                                            <app:img src="common/Attachment.gif" alt="Attachment"/>
+                                            <app:img src="common/Attachment.gif" altkey="ALT_ATTACHMENT"/>
                                             <fmt:message key="attachmentCount">
                                                 <fmt:param value="${message.numberOfAttachments}"/>
                                             </fmt:message>
