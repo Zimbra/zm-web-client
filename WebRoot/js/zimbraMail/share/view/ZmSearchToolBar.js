@@ -221,14 +221,17 @@ function(ev) {
 	return true;
 };
 
-ZmSearchToolBar.prototype._getControl = function(parent, segment, i) {
+ZmSearchToolBar.prototype._getControl = 
+function(parent, segment, i) {
     return [this._searchField, this._searchMenuButton][segment.getIndex()];
 };
-ZmSearchToolBar.prototype._getControlHints = function(parent, segment, i) {
+ZmSearchToolBar.prototype._getControlHints = 
+function(parent, segment, i) {
     return segment.getIndex() == 0 ? { width: "100%" } : null;
 };
 
-ZmSearchToolBar.prototype.createCustomSearchBtn = function(icon, label, listener) {
+ZmSearchToolBar.prototype.createCustomSearchBtn = 
+function(icon, label, listener) {
 	var btn = this.getButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON);
 	if (!btn) {
 		btn = this._createButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON, icon, null, null, label, true, "DwtButton", null, 1);
@@ -253,7 +256,8 @@ ZmSearchToolBar.prototype.createCustomSearchBtn = function(icon, label, listener
 	return btn;
 };
 
-ZmSearchToolBar.prototype._customSearchBtnListener = function(ev) {
+ZmSearchToolBar.prototype._customSearchBtnListener = 
+function(ev) {
 	var item = ev.item;
 	var data = item.getData("CustomSearchItem");
 	if (item instanceof DwtMenuItem) {
