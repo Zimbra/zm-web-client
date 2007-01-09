@@ -348,7 +348,7 @@ function(conv, fieldId) {
 // Static methods
 
 ZmConvListView.getPrintHtml =
-function(conv, preferHtml, callback) {
+function(conv, preferHtml, callback, appCtxt) {
 
 	// first, get list of all msg id's for this conversation
 	if (conv.msgIds == null) {
@@ -356,7 +356,7 @@ function(conv, preferHtml, callback) {
 		var msgNode = soapDoc.set("c");
 		msgNode.setAttribute("id", conv.id);
 
-		var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetPrintHtml, [conv, preferHtml, callback]);
+		var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetPrintHtml, [conv, preferHtml, appCtxt, callback]);
 		window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	} else {
 		ZmConvListView._printMessages(conv, preferHtml, callback);
@@ -364,18 +364,18 @@ function(conv, preferHtml, callback) {
 };
 
 ZmConvListView._handleResponseGetPrintHtml =
-function(conv, preferHtml, callback, result) {
+function(conv, preferHtml, appCtxt, callback, result) {
 	var resp = result.getResponse().GetConvResponse.c[0];
 	var msgIds = new Array();
 	var len = resp.m.length;
 	for (var i = 0; i < len; i++)
 		msgIds.push(resp.m[i].id);
 	conv.msgIds = msgIds;
-	ZmConvListView._printMessages(conv, preferHtml, callback);
+	ZmConvListView._printMessages(conv, preferHtml, appCtxt, callback);
 };
 
 ZmConvListView._printMessages =
-function(conv, preferHtml, callback) {
+function(conv, preferHtml, appCtxt, callback) {
 	// XXX: optimize? Once these msgs are d/l'ed should they be cached?
 	var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
 	soapDoc.setMethodAttribute("onerror", "continue");
@@ -391,12 +391,12 @@ function(conv, preferHtml, callback) {
 			msgNode.setAttribute("html", "1");
 		msgRequest.appendChild(msgNode);
 	}
-	var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetMessages, [conv, preferHtml, callback]);
+	var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetMessages, [conv, preferHtml, appCtxt, callback]);
 	window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
 
 ZmConvListView._handleResponseGetMessages =
-function(conv, preferHtml, callback, result) {
+function(conv, preferHtml, appCtxt, callback, result) {
 	var resp = result.getResponse().BatchResponse.GetMsgResponse;
 
 	var html = new Array();
@@ -411,7 +411,7 @@ function(conv, preferHtml, callback, result) {
 
 	for (var i = 0; i < resp.length; i++) {
 		var msgNode = resp[i].m[0];
-		var msg = ZmMailMsg.createFromDom(msgNode, {appCtxt: null, list: null});
+		var msg = ZmMailMsg.createFromDom(msgNode, {appCtxt:appCtxt, list:null});
 		html[idx++] = ZmMailMsgView.getPrintHtml(msg, preferHtml);
 		if (i < resp.length - 1)
 			html[idx++] = "<hr>";

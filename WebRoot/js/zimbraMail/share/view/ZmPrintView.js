@@ -38,7 +38,7 @@ function(item) {
 
 	if (item instanceof ZmConv) {
 		var respCallback = new AjxCallback(this, this._handleResponseRender, item);
-		ZmConvListView.getPrintHtml(item, preferHtml, respCallback);
+		ZmConvListView.getPrintHtml(item, preferHtml, respCallback, this._appCtxt);
 		return;
 		// NOTE: we check for toString instead of instanceof b/c opening new
 		//       window loses type info :(
