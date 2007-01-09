@@ -88,7 +88,7 @@
 			<td><input id="${id}_name" type=text class='ZFieldSizeMedium'></td>
 		</tr>
 		<tr><td class='ZLabelCell'><$= ZmMsg.popAccountFolderLabel $></td>
-			<td><button id="${id}_location" type=text  class='ZFieldSizeMedium'>Inbox</button></td>
+			<td><button id="${id}_location" type=text  class='DwtButtton' style='width:200px'>Inbox</button></td>
 		</tr>
 		<tr><td class='ZLabelCell'><$= ZmMsg.popAccountDownloadLabel $></td>
 			<td><select id="${id}_download" class='ZFieldSizeMedium'>
@@ -299,9 +299,17 @@
 	<tr><td><div class='ZSmallSpacer'></div></td></tr>
 	<tr><td class='ZLabelCell'><$= ZmMsg.placeSignature $></td>
 		<td colspan=2>
-			<select id='${id}_signatureStyleSelect' class='ZFieldSizeMedium'>
+			<select id='${id}_signatureStyleSelect'>
 				<option><$= ZmMsg.aboveQuotedText $></option>
 				<option><$= ZmMsg.atBottomOfMessage $></option>
+			</select>
+		</td>
+	</tr>
+	<tr><td class='ZLabelCell'><$= ZmMsg.applySignature $></td>
+		<td colspan=2>
+			<select id='${id}_signatureEnabledSelect'>
+				<option><$= ZmMsg.automaticSignature $></option>
+				<option><$= ZmMsg.manualSignature $></option>
 			</select>
 		</td>
 	</tr>
@@ -309,11 +317,6 @@
 		<td class='ZLabelCell'><$= ZmMsg.mailSignature $></td>
 		<td><textarea id='${id}_signature' style='width:100%;height:120px'></textarea></td>
 	</tr>
-	<tr><td class='ZCheckboxCell'><input id='${id}_signatureEnabledCheckbox' type='checkbox'></td>
-		<td class='ZCheckboxLabelCell'><$= ZmMsg.signatureEnabled $></td>
-		<td><div class='ImgInformation' onclick='Dwt.toggle("${id}_signatureEnabledHelpRow")'></div></td>
-	</tr>
-	<tr id='${id}_signatureEnabledHelpRow' style='display:none'><td></td><td class='ZHelpLabel'><$= ZmMsg.signatureEnabledHelp $></td></tr>
 </table>
 </template>
 
