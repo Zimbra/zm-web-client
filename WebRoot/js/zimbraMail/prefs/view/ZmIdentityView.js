@@ -475,15 +475,10 @@ function() {
 
 ZmIdentityPage.prototype._populateSelects =
 function(identity) {
-	this._appCtxt.getIdentityCollection().defaultIdentity;
 	for (var field in this._selects) {
 		var select = this._selects[field];
 		var value = identity.getField(field);
-		if (value) {
-			select.setSelectedValue(value);
-		} else {
-			select.setSelected(0);
-		}
+		select.setSelectedValue(value);
 	}
 };
 
@@ -809,16 +804,21 @@ function() {
 	options[i++] = new DwtSelectOptionData(ZmSetting.SIG_OUTLOOK, ZmMsg.aboveQuotedText);
 	options[i++] = new DwtSelectOptionData(ZmSetting.SIG_INTERNET, ZmMsg.atBottomOfMessage);
 	var signatureStyleSelect = new DwtSelect(this, options);
-	var signatureStyleSelectId = id + "_signatureStyleSelect";
-	signatureStyleSelect.replaceElement(signatureStyleSelectId);
+	signatureStyleSelect.replaceElement(id + "_signatureStyleSelect");
 	this._selects[ZmIdentity.SIGNATURE_STYLE] = signatureStyleSelect;
+
+	var options = [];
+	var i = 0;
+	options[i++] = new DwtSelectOptionData(true, ZmMsg.automaticSignature);
+	options[i++] = new DwtSelectOptionData(false, ZmMsg.manualSignature);
+	var signatureEnabledSelect = new DwtSelect(this, options);
+	signatureEnabledSelect.replaceElement(id + "_signatureEnabledSelect");
+	this._selects[ZmIdentity.SIGNATURE_ENABLED] = signatureEnabledSelect;
 
 	var params = { parent: this, type: DwtInputField.STRING, size: 80, rows:12 };
 	var input = new DwtInputField(params);
 	input.replaceElement(id + "_signature");
 	this._inputs[ZmIdentity.SIGNATURE] = input;
-	
-	this._checkboxIds[ZmIdentity.SIGNATURE_ENABLED] = id + "_signatureEnabledCheckbox";
 };
 
 ZmIdentityPage._validateEmailAddress =
