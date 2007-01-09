@@ -146,8 +146,9 @@ function(appt, mode, isDirty) {
 	this._setData = [appt, mode, isDirty];
 	var button = this.getTabButton(this._apptTabKey);
 	if (mode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
-		button.setImage("ApptException");
-	} else if (mode == ZmAppt.MODE_EDIT_SERIES || 
+//        button.setImage("ApptException");
+        button.setImage("Appointment");
+	} else if (mode == ZmAppt.MODE_EDIT_SERIES ||
 			(mode == ZmAppt.MODE_NEW_FROM_QUICKADD && appt.repeatType != "NON")) {
 		button.setImage("ApptRecur");
 	} else {
