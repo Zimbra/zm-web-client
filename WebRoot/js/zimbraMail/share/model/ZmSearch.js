@@ -45,6 +45,7 @@
 * @param searchId					[int]*			ID of owning search folder (if any)
 * @param conds						[array]*		list of search conditions (SearchCalendarResourcesRequest)
 * @param attrs						[array]*		list of attributes to return (SearchCalendarResourcesRequest)
+* @param field						[string]*		field to search within (instead of default)
 */
 function ZmSearch(appCtxt, params) {
 
@@ -69,6 +70,7 @@ function ZmSearch(appCtxt, params) {
 		this.join						= params.join ? params.join : ZmSearch.JOIN_AND;
 		this.attrs						= params.attrs;
 		this.userText					= params.userText;
+		this.field						= params.field;
 		
 		if (this.query)
 			this._parseQuery();
@@ -322,6 +324,10 @@ function(soapDoc) {
 
 	// and of course, always set the query
 	soapDoc.set("query", this.query);
+
+	// set search field if provided
+	if (this.field)
+		method.setAttribute("field", this.field);
 
 	return method;
 };

@@ -254,7 +254,9 @@ function(columnItem, ascending) {
 
 	var sortBy = ascending ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC;
 	var types = AjxVector.fromArray([ZmItem.CONTACT]);
-	var params = {query: this._query, types: types, sortBy: sortBy, offset: 0, limit: ZmContactPicker.SEARCHFOR_MAX, contactSource: this._contactSource};
+	var params = {query:this._query, types:types, sortBy:sortBy, offset:0, 
+				  limit:ZmContactPicker.SEARCHFOR_MAX, contactSource:this._contactSource,
+				  field:"contact:"};
 	var search = new ZmSearch(this._appCtxt, params);
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearch),
 					errorCallback: new AjxCallback(this, this._handleErrorSearch)});
@@ -263,36 +265,42 @@ function(columnItem, ascending) {
 ZmContactPicker.prototype._handleResponseSearch =
 function(result) {
 	var resp = result.getResponse();
-	var vec = resp.getResults(ZmItem.CONTACT);
-
-	// Take the contacts and create a list of their email addresses (a contact may have more than one)
-	var list = [];
-	var a = vec.getArray();
-	for (var i = 0; i < a.length; i++) {
-		var contact = a[i];
-		if (contact.isGroup()) {
-			var members = contact.getGroupMembers().good.toString(ZmEmailAddress.SEPARATOR);
-			var email = new ZmEmailAddress(members, null, contact.getFileAs(), null, true);
-			email.id = Dwt.getNextId();
-			email.contactId = contact.id;
-			email.icon = "Group";
-			list.push(email);
-		} else {
-			var emails = contact.getEmails();
-			for (var j = 0; j < emails.length; j++) {
-				var email = new ZmEmailAddress(emails[j], null, contact.getFileAs());
+	var info = resp.getAttribute("info");
+	if (info && info[0].wildcard[0].expanded == "0") {
+		var d = this._appCtxt.getMsgDialog();
+		d.setMessage(ZmMsg.errorSearchNotExpanded);
+		d.popup();
+	} else {
+		var vec = resp.getResults(ZmItem.CONTACT);
+	
+		// Take the contacts and create a list of their email addresses (a contact may have more than one)
+		var list = [];
+		var a = vec.getArray();
+		for (var i = 0; i < a.length; i++) {
+			var contact = a[i];
+			if (contact.isGroup()) {
+				var members = contact.getGroupMembers().good.toString(ZmEmailAddress.SEPARATOR);
+				var email = new ZmEmailAddress(members, null, contact.getFileAs(), null, true);
 				email.id = Dwt.getNextId();
 				email.contactId = contact.id;
-				email.icon = contact.isGal ? "GAL" : contact.addrbook.getIcon();
+				email.icon = "Group";
 				list.push(email);
+			} else {
+				var emails = contact.getEmails();
+				for (var j = 0; j < emails.length; j++) {
+					var email = new ZmEmailAddress(emails[j], null, contact.getFileAs());
+					email.id = Dwt.getNextId();
+					email.contactId = contact.id;
+					email.icon = contact.isGal ? "GAL" : contact.addrbook.getIcon();
+					list.push(email);
+				}
 			}
 		}
+	
+		// bug fix #2269 - enable/disable sort column per type of search
+		this._resetColHeaders();
+		this._chooser.setItems(AjxVector.fromArray(list));
 	}
-
-	// bug fix #2269 - enable/disable sort column per type of search
-	this._resetColHeaders();
-
-	this._chooser.setItems(AjxVector.fromArray(list));
 
 	this._searchButton.setEnabled(true);
 };
