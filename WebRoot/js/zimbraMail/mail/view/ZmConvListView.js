@@ -64,7 +64,7 @@ function(defaultColumnSort) {
 	this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
 
 	// bug fix #4786
-	colLabel = isFolder.sent ? ZmMsg.sent : ZmMsg.received;
+	colLabel = isFolder.sent ? ZmMsg.sentAt : ZmMsg.received;
 	var dateColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]);
 	var dateColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[dateColIdx]._id);
 	if (dateColSpan) dateColSpan.innerHTML = "&nbsp;" + colLabel;
