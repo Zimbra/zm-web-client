@@ -290,9 +290,13 @@ function(account, batchCommand) {
         identity.setReplyToDisplay = display;
         identity.setReplyToAddress = email;
         identity.useWhenSentTo = account._identity.linkAddr;
-        identity.whenSentToAddresses = [email];
+        if (identity.useWhenSentTo) {
+	        identity.whenSentToAddresses = [email];
+        }
         identity.useWhenInFolder = account._identity.linkFolder;
-        identity.whenInFolderIds = [account.folderId];
+        if (identity.useWhenInFolder) {
+	        identity.whenInFolderIds = [account.folderId];
+        }
 
         identity.createRequest("CreateIdentityRequest", batchCommand);
     }
@@ -509,7 +513,7 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
     var isNew = Boolean(account._new);
     if (isNew && !account._identity) {
         account._identity = {
-            checked: false, linkAddr: true, linkFolder: true 
+            checked: false, linkAddr: true, linkFolder: false 
         };
     }
 
@@ -605,9 +609,14 @@ ZmPopAccountBasicPage.prototype._updateLinkName = function() {
 ZmPopAccountBasicPage.prototype._updateLinkEmail = function() {
     if (this._isLinkEmailDirty) return;
 
+    var value;
     var userName = this._usernameField.getValue();
-    var mailServer = this._serverField.getValue();
-    var value = userName && mailServer ? [userName,mailServer].join("@") : "";
+    if (userName.indexOf('@') != -1) {
+    	value = userName;
+    } else {
+	    var mailServer = this._serverField.getValue();
+	    value = userName && mailServer ? [userName,mailServer].join("@") : "";
+    }
     this._emailField.setValue(value);
 };
 ZmPopAccountBasicPage.prototype._setAdvancedVisible = function(visible) {
@@ -833,13 +842,9 @@ ZmPopAccountBasicPage.prototype._downloadListener = function(evt) {
 ZmPopAccountBasicPage.prototype._serverOrUserNameListener =
 function(field, pname, evt) {
     this._fieldListener(field, pname, evt);
-    if (this._account._new && !this._isLinkEmailDirty) {
-        var uname = this._usernameField.getValue();
-        var server = this._serverField.getValue();
-
-        var email = uname && server ? [uname,server].join("@") : "";
-        this._account._identity.email = email;
-        this._emailField.setValue(email);
+    if (this._account._new) {
+    	this._updateLinkEmail();
+        this._account._identity.email = this._emailField.getValue();
     }
     this._password1Field.setRequired(true);
     this._dirtyListener(evt);
