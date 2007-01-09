@@ -551,7 +551,7 @@ function(item) {
 	else if (item.isForwarded)
 		tooltip = ZmMsg.forwarded;
 	else if (item.isSent)
-		tooltip = ZmMsg.sent;
+		tooltip = ZmMsg.sentAt;
 	else
 		tooltip = ZmMsg.read;
 	
