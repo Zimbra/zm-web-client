@@ -74,6 +74,18 @@ body						{	@ChromeBg@	}
 	height:30;		margin: -2 5 0 10;  
 }
 
+#skin_container_username {
+#IFDEF GECKO
+	padding-top:6px;
+#ENDIF
+#IFDEF SAFARI
+	padding-top:4px;
+#ENDIF
+#IFDEF MSIE
+	position:relative;
+	top:-4px;
+#ENDIF
+}
 
 /* search builder */
 
@@ -112,7 +124,7 @@ body						{	@ChromeBg@	}
 #skin_container_current_app				{	
 	height:22;	 	margin:4 2 0 5;
 #IFDEF MSIE
-	height:24;		margin:0 4 0 0;
+	height:25;		margin:0 4 0 0;
 #ENDIF
 #IFDEF SAFARI
 	height:24;		margin:-1 2 0 5;
@@ -158,8 +170,11 @@ body						{	@ChromeBg@	}
 #skin_border_app_chooser				{	@SkinBorderAppChooser@	}
 #skin_container_app_chooser				{	
 	height:100%;
-#IFDEF MSIE
+#IFDEF SAFARI
 	margin:2 0 0 0;
+#ENDIF
+#IFDEF MSIE
+	margin:0 0 0 0;
 #ENDIF
 }
 

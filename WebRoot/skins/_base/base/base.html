@@ -107,11 +107,13 @@ skin._showEl = function(id, state) {
 					</div>
 				</div>
 			</td>
-			<td id='skin_td_help_logoff' style='padding:0px'>
-				<table width=100%><tr>
-					<td id='skin_container_help'>&nbsp;</td>
-					<td id='skin_container_logoff'>&nbsp;</td>
-				</tr></table>
+			<td id='skin_td_quota' style='padding:0px;'>
+				<div id='skin_container_username' class='skin_container'>
+					<!-- user name -->
+				</div>
+				<div id='skin_container_quota' class='skin_container'>
+					<!-- quota area -->
+				</div>
 			</td>
 		</tr>
 
@@ -143,14 +145,13 @@ skin._showEl = function(id, state) {
 					</div>
 				</div>
 			</td>
-			<td id='skin_td_quota'>
+			<td id='skin_td_help_logoff'>
 				<div id='skin_border_quota' class='skin_container'>
-					<div id='skin_container_username' class='skin_container'>
-						<!-- user name -->
-					</div>
-					<div id='skin_container_quota' class='skin_container'>
-						<!-- quota area -->
-					</div>
+					<table style='width:100%;'><tr>
+						<td style='width:100%'>&nbsp;</td>
+						<td id='skin_container_help' style='padding-right:10px'>&nbsp;</td>
+						<td id='skin_container_logoff' style='padding-right:18px'>&nbsp;</td>
+					</tr></table>
 				</div>
 			</td>
 		</tr>
