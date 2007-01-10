@@ -237,7 +237,7 @@
 <template id="IdentityForm_options" xml:space="strip">
 <fieldset class='ZFieldset' style='width:auto'>
 	<legend class='ZLegend'><$= ZmMsg.sendWithIdentity $></legend>
-	<table class='ZFormTable XZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
+	<table class='ZFormTable XZFixedTable' cellspacing=0 cellpadding=2 width='99%'>
 		<colgroup><col width=20><col width=60><col width='50%'><col width='50%'></colgroup>
 		<tr><td class='ZLabelCell' colspan=2><$= ZmMsg.sendFrom $></td>
 			<td><input id='${id}_sendFromName' style='width:100%'></td>
@@ -264,7 +264,7 @@
 		</tr>
 
 		<tr><td></td>
-			<td><input id='${id}_whenSentToInput' class='fullWidth'></td>
+			<td><input id='${id}_whenSentToInput' style='width:100%'></td>
 		</tr>
 
 		<tr><td></td>
@@ -279,7 +279,7 @@
 		<tr><td></td>
 			<td>
 				<table cellspacing=0 cellpadding=0 style='width:100%'><tr>
-					<td><input id='${id}_whenInFolderInput' class='fullWidth'></td>
+					<td style='width:100%'><input id='${id}_whenInFolderInput' style='width:100%'></td>
 					<td style='padding-left:10px;'><button id='${id}_folderBrowseButton' style='width:30px'><div class='ImgFolder'></div></button></td>
 				</tr></table>
 			</td>
