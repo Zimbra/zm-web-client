@@ -31,7 +31,7 @@ border: none;
  @ToolbarContainer@;
  border-bottom: none;
  background-color: @ItemBgColor@;
- width: 8em;
+ padding: 0 5px 0 5px;
  text-align: center;
  vertical-align: middle;
  font-weight:bold;
@@ -42,7 +42,7 @@ border: none;
 @ToolbarContainer@
  border-bottom: none;
  @ToolbarBg@;
- width: 8em;
+ padding: 0 5px 0 5px;
  text-align: center;
  vertical-align: middle;
  font-weight:bold;    
@@ -151,6 +151,7 @@ A:visited { color: blue; }
 .ZhTreeEdit {
    @Text-light@
    @FontSize-normal@
+padding-right:4px;
     font-weight: normal;
   	text-decoration: underline;
 }

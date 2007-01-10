@@ -23,7 +23,7 @@
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='contacts' ? 'TabSelected' :'TabNormal'}'>
                 <a href="<c:url value="/h/search?st=contact"/>" <c:if test="${keys}">accesskey="c"</c:if>><app:img src="contacts/Contact.gif" altkey='ALT_APP_CONTACTS'/><span><fmt:message
-                        key="contacts"/></span></a>
+                        key="addressBook"/></span></a>
             </td>
         </c:if>             
         <td class='TabSpacer'/>
