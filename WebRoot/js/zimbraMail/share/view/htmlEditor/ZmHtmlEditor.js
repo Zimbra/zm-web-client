@@ -917,8 +917,8 @@ ZmHtmlEditor.prototype._ace_finishedLoading = function(ifr, name, data) {
 	// We have to delay execution (bug 12870).  Seems to affect
 	// Firefox only.  10ms should be quite enough.
 	var self = this;
-	setTimeout(function() {
-		if (!AjxEnv.isIE || ifr.readyState == "complete") {
+	if (!AjxEnv.isIE || ifr.readyState == "complete") {
+		setTimeout(function() {
 			try {
 				var win = Dwt.getIframeWindow(ifr);
 				win.ZmACE = true;
@@ -935,8 +935,8 @@ ZmHtmlEditor.prototype._ace_finishedLoading = function(ifr, name, data) {
 				dlg.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
 				dlg.popup();
 			}
-		}
-	}, 10);
+		}, 10);
+	}
 };
 
 // Returns an array of embedded objects (each one is a reference to its containing IFRAME)
