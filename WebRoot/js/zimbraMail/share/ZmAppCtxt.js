@@ -260,6 +260,14 @@ function() {
 	return this._newNotebookDialog;
 };
 
+ZmAppCtxt.prototype.getNewTaskFolderDialog =
+function() {
+	if (!this._newTaskFolderDialog) {
+		this._newTaskFolderDialog = new ZmNewTaskFolderDialog(this._shell, this.getMsgDialog());
+	}
+	return this._newTaskFolderDialog;
+};
+
 ZmAppCtxt.prototype.getPageConflictDialog =
 function() {
 	if (!this._pageConflictDialog) {
