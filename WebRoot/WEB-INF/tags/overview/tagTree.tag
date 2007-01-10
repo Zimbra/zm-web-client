@@ -21,9 +21,9 @@
             <th style='width:20px'><a href="${toggleUrl}"><app:img src="${ expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}" altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/></a></th>
             <th class='Header'> <fmt:message key="tags"/></th>
             
-            <th width='1%' align='right'>
+            <th width='1%' align='right' class='ZhTreeEdit'>
                 <c:if test="${empty editmode}">
-                    <a href="${mtagsUrl}"><app:img altkey='ALT_APP_MANAGE_TAGS' src="common/Edit.gif"/></a>
+                    <a href="${mtagsUrl}"><fmt:message key="TREE_EDIT"/> </a>
                 </c:if>
             </th>
         </tr>

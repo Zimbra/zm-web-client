@@ -18,10 +18,10 @@
               </c:url>
             <th style='width:20px'><a href="${toggleUrl}"><app:img src="${ expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}" altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TERE_COLLAPSED'}"/></a></th>
             <th class='Header'><fmt:message key="searches"/></th>
-            <th width='1%' align='right'>
+            <th width='1%' align='right' class='ZhTreeEdit'>
                 <c:if test="${empty editmode}">
                     <c:url value="/h/msearches" var="mfoldersUrl"/>
-                    <a href="${mfoldersUrl}"><app:img src="common/Edit.gif" altkey='ALT_APP_MANAGE_SEARCHES'/></a>
+                    <a href="${mfoldersUrl}"><fmt:message key="TREE_EDIT"/></a>
                 </c:if>
             </th>
         </tr>
