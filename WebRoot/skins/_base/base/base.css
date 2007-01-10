@@ -68,7 +68,12 @@ body						{	@ChromeBg@	}
 }
 
 
-#skin_td_quota							{	text-align:right;		}
+#skin_td_quota							{	
+	text-align:right;		
+#IFDEF MSIE
+	vertical-align:top;
+#ENDIF
+}
 #skin_border_quota						{	@SkinBorderQuota@		}
 #skin_container_quota					{	
 	height:30;		margin: -2 5 0 10;  
@@ -187,7 +192,7 @@ body						{	@ChromeBg@	}
 #skin_container_tree					{	
 	height:100%;	margin:4 -4 2 4; 
 #IFDEF MSIE
-					margin:0 -2 2 2;
+					margin:2 -2 2 2;
 #ENDIF
 #IFDEF SAFARI
 					margin:0 0 -2 0;
@@ -205,7 +210,7 @@ body						{	@ChromeBg@	}
 #skin_container_tree_footer				{	
 	height:135;		margin:2 -4 0 4;  
 #IFDEF MSIE
-					margin:0 0 0 0;
+					margin:0 4 0 -4;
 #ENDIF
 #IFDEF SAFARI
 					margin:0 0 0 0;
@@ -224,7 +229,7 @@ body						{	@ChromeBg@	}
 #skin_container_app_main				{	
 	height:100%;	margin:4 -4 -3 4;	
 #IFDEF MSIE
-					margin:0 -2 0 1;
+					margin:2 -2 0 2;
 #ENDIF
 #IFDEF SAFARI
 	height:100%; 	margin:0 0 0 0;
@@ -244,7 +249,7 @@ body						{	@ChromeBg@	}
 #skin_container_status					{	
 		height:30;		margin:8 -4 0 8;
 #IFDEF MSIE
-						margin:15 0 0 0;
+						margin:5 0 0 0;
 #ENDIF
 }
 
@@ -268,7 +273,7 @@ body						{	@ChromeBg@	}
 #IFDEF MSIE
 .ImgAppChiclet DIV,
 .ImgAppChicletHover DIV,
-.ImgAppChicletSel DIV					{	left:4px;	}
+.ImgAppChicletSel DIV					{	left:1px;	}
 #ENDIF
 
 

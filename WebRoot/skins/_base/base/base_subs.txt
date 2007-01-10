@@ -447,16 +447,6 @@ _WidgetHeaderBorder_		= border-bottom:1px solid @DarkSeparatorColor@; padding-to
 	WindowInnerContainer-light	= background-color:@_BaseColorD10_@;	padding:4px; border:2px solid; -moz-border-radius:3 3 3 3; -moz-border-left-colors:@_BaseColorD30_@ @_BaseColorD50_@; -moz-border-top-colors: @_BaseColorD30_@ @_BaseColorD50_@; -moz-border-bottom-colors: @_BaseColorD10_@ @_BaseColorD30_@; -moz-border-right-colors: @_BaseColorD10_@ @_BaseColorD30_@; vertical-align:top;	@InactiveCursor@
 #ENDIF
 
-#IFDEF GECKO
-_AppTabStyle_			 	= border-right-width:0px;	-moz-border-radius:3 0 0 3;
-#ENDIF
-#IFNDEF GECKO
-_AppTabStyle_			 	= border-right-width:0px;
-#ENDIF
-
-AppTabContainer				= @_ToolbarBorder_@ 	background-color:@_BaseColorD10_@;	@_AppTabStyle_@
-AppTabContainer-hover		= @_ToolbarBorder_@ 	background-color:@_BaseColorL25_@;	@_AppTabStyle_@
-AppTabContainer-selected	= @_ToolbarBorder_@ 	background-color:@_BaseColorL50_@;	@_AppTabStyle_@
 
 _InputBorder_				= padding:2 4 2 4; border:1px solid; border-color:black @_BaseColorD10_@ @_BaseColorD10_@ black;
 _InputBorder-error_			= @_InputBorder_@
@@ -894,7 +884,8 @@ SkinBorderApp			= @PageBg@  @OutsetBorder@ height:100%;
 TreeHeaderContainer		= background-color:@HeaderColor@;
 
 
+
 _AppTabStyle_				= border-bottom-width:0px; padding:3px 5px 4px 5px;
-AppTabContainer				= @_WidgetContainer_@ opacity:.6;	@_AppTabStyle_@
+AppTabContainer				= @_WidgetContainer-light_@ 		@_AppTabStyle_@
 AppTabContainer-hover		= @_WidgetContainer_@				@_AppTabStyle_@
 AppTabContainer-selected	= @ToolbarContainer@				@_AppTabStyle_@ margin-top:2px;
