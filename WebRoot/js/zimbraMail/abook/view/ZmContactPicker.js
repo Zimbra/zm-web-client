@@ -325,8 +325,8 @@ function() {
 		}
 	}
 
-	var sortable = this._selectDiv.getValue() == ZmContactPicker.SEARCHFOR_GAL
-			? null : ZmContactPicker.ID_PARTICIPANT;
+	var sortable = this._selectDiv && this._selectDiv.getValue() == ZmContactPicker.SEARCHFOR_GAL
+		? null : ZmContactPicker.ID_PARTICIPANT;
 	slv._headerList[part]._sortable = sortable;
 	slv.createHeaderHtml(sortable);
 };
