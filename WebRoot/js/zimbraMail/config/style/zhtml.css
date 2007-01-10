@@ -146,6 +146,15 @@ A:visited { color: blue; }
  /*   border-bottom: 1px solid #98adbe;*/ 
 }
 
+
+.Tree .ZhTreeEdit a:link, .Tree .ZhTreeEdit a:visited { color: black; text-decoration: underline; }
+.ZhTreeEdit {
+   @Text-light@
+   @FontSize-normal@
+    font-weight: normal;
+  	text-decoration: underline;
+}
+
 .ZhAppContent {
    @PageBg@  @OutsetBorder@
    border-top-width:0px;
