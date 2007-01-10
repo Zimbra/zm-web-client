@@ -45,42 +45,29 @@ function() {
 
 ZmCalendarApp.prototype.launch =
 function(callback) {
-	//DBG.showTiming(true, "ZmCalendarApp#launch");
 	var cc = this.getCalController();
 	var view = cc._defaultView();
-	//DBG.timePt("cc._defaultView");
 	cc.show(view);
-	//DBG.timePt("cc.show");
 	if (callback)
 		callback.run();
-	//DBG.showTiming(false, "ZmCalendarApp#launch");
 };
 
 ZmCalendarApp.prototype.activate =
 function(active, view, date) {
-	var showTiming = DBG._showTiming;
-	//if(!showTiming)DBG.showTiming(true, "ZmCalendarApp#activate("+active+")");
-	//else DBG.println("ZmCalendarApp#activate("+active+")");
 	this._active = active;
 
-	var cc = this.getCalController();
 	this.showMiniCalendar(active || this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL));
-	//DBG.timePt("this.showMiniCalendar");
 
-//	cc.getMiniCalendar().setSkipNotifyOnPage(!active);
 	if (active) {
 		var isAppView = (view == null || view == ZmController.CAL_VIEW || view == ZmController.CAL_DAY_VIEW ||
 						 view == ZmController.CAL_WEEK_VIEW || view == ZmController.CAL_WORK_WEEK_VIEW ||
 						 view == ZmController.CAL_MONTH_VIEW || view == ZmController.CAL_SCHEDULE_VIEW);
 		if (isAppView) {
+			var cc = this.getCalController();
 			cc.show(view);
-			//DBG.timePt("cc.show");
 			if (date) cc.setDate(date);
-			//DBG.timePt("cc.setDate");
 		}
 	} 
-	//if(!showTiming)DBG.showTiming(false, "ZmCalendarApp#activate("+active+")");
-	//else DBG.println("ZmCalendarApp#activate("+active+")");
 };
 
 ZmCalendarApp.prototype.showMiniCalendar =

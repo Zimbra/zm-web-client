@@ -129,22 +129,24 @@ function(view) {
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 
 	var button = this._toolbar[view].getButton(ZmOperation.SHOW_ALL_MENU);
-	var menu = new ZmPopupMenu(button);
-	button.setMenu(menu);
-	button.noMenuBar = true;
-	var ops = [ZmOperation.SHOW_ALL_ITEM_TYPES, ZmOperation.SEP, ZmOperation.SHOW_ONLY_CONTACTS, ZmOperation.SHOW_ONLY_MAIL];
-	var listener = new AjxListener(this, this._showAllListener);
-	for (var i = 0; i < ops.length; i++) {
-		var op = ops[i];
-		if (op == ZmOperation.SEP) {
-			menu.createSeparator();
-			continue;
+	if (button) {
+		var menu = new ZmPopupMenu(button);
+		button.setMenu(menu);
+		button.noMenuBar = true;
+		var ops = [ZmOperation.SHOW_ALL_ITEM_TYPES, ZmOperation.SEP, ZmOperation.SHOW_ONLY_CONTACTS, ZmOperation.SHOW_ONLY_MAIL];
+		var listener = new AjxListener(this, this._showAllListener);
+		for (var i = 0; i < ops.length; i++) {
+			var op = ops[i];
+			if (op == ZmOperation.SEP) {
+				menu.createSeparator();
+				continue;
+			}
+			var icon = ZmOperation.getProp(op, "image");
+			var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
+			var mi = menu.createMenuItem(op, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 1);
+			mi.setData(ZmOperation.KEY_ID, op);
+			mi.addSelectionListener(listener);
 		}
-		var icon = ZmOperation.getProp(op, "image");
-		var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
-		var mi = menu.createMenuItem(op, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 1);
-		mi.setData(ZmOperation.KEY_ID, op);
-		mi.addSelectionListener(listener);
 	}
 };
 
@@ -168,8 +170,10 @@ function() {
 ZmMixedController.prototype._getToolBarOps =
 function() {
 	var list = this._standardToolBarOps();
-	list.push(ZmOperation.FILLER);
-	list.push(ZmOperation.SHOW_ALL_MENU);
+	if (this._appCtxt.get(ZmSetting.MAIL_ENABLED) && this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		list.push(ZmOperation.FILLER);
+		list.push(ZmOperation.SHOW_ALL_MENU);
+	}
 	return list;
 };
 
@@ -225,13 +229,16 @@ function(view) {
 
 ZmMixedController.prototype._setFilterButtonProps =
 function(op, setChecked) {
-	var icon = ZmOperation.getProp(op, "image");
-	var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
 	var button = this._toolbar[this._currentView].getButton(ZmOperation.SHOW_ALL_MENU);
-	button.setImage(icon);
-	button.setText(text);
-	if (setChecked)
-		button.getMenu().checkItem(ZmOperation.KEY_ID, op, true);
+	if (button) {
+		var icon = ZmOperation.getProp(op, "image");
+		var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
+		button.setImage(icon);
+		button.setText(text);
+		if (setChecked) {
+			button.getMenu().checkItem(ZmOperation.KEY_ID, op, true);
+		}
+	}
 };
 
 
