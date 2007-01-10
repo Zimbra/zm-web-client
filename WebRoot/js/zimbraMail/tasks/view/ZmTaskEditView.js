@@ -46,11 +46,10 @@ ZmTaskEditView.prototype.constructor = ZmTaskEditView;
 
 
 // Consts
-ZmTaskEditView.PRIORITY_NONE	= "(" + ZmMsg.none + ")";
-ZmTaskEditView.PRIORITY_LOW		= "! (" + ZmMsg.low + ")";
-ZmTaskEditView.PRIORITY_MEDIUM	= "!! (" + ZmMsg.medium + ")";
-ZmTaskEditView.PRIORITY_HIGH	= "!!! (" + ZmMsg.high + ")";
-ZmTaskEditView.PRIORITY_VALUES = [ZmTaskEditView.PRIORITY_NONE, ZmTaskEditView.PRIORITY_LOW, ZmTaskEditView.PRIORITY_MEDIUM, ZmTaskEditView.PRIORITY_HIGH];   
+ZmTaskEditView.PRIORITY_VALUES = [
+	{ v:ZmTask.PRIORITY_LOW,	l:ZmMsg.low },
+	{ v:ZmTask.PRIORITY_NORMAL,	l:ZmMsg.normal },
+	{ v:ZmTask.PRIORITY_HIGH,	l:ZmMsg.high }];
 
 ZmTaskEditView.STATUS_VALUES = [
 	{ v:"TENT",		l:ZmMsg.notStarted },
@@ -107,6 +106,25 @@ function(attId) {
 	task.setName(this._subjectField.getValue());
 	task.setFolderId(this._folderSelect.getValue());
 
+	var startDate = AjxDateUtil.simpleParseDateStr(document.getElementById(this._dateStartId).value);
+	var endDate = AjxDateUtil.simpleParseDateStr(document.getElementById(this._dateDueId).value);
+	task.setAllDayEvent(true);
+	task.setStartDate(startDate, true);
+	task.setEndDate(endDate, true);
+
+	task.setPercentComplete(this._pCompleteSelect.getValue());
+	task.setPriority(this._prioritySelect.getValue());
+	task.setStatus(this._statusSelect.getValue());
+
+	// TODO - change to use HTML editor
+	var top = new ZmMimePart();
+	top.setContentType(ZmMimeTable.TEXT_PLAIN);
+	top.setContent(document.getElementById(this._notesId).value);
+	task.notesTopPart = top;
+
+	// TODO - attachments
+
+	return task;
 };
 
 ZmTaskEditView.prototype.setSize =
@@ -210,7 +228,7 @@ function() {
 	// add priority DwtSelect
 	this._prioritySelect = new DwtSelect(this);
 	for (var i = 0; i < ZmTaskEditView.PRIORITY_VALUES.length; i++) {
-		this._prioritySelect.addOption(ZmTaskEditView.PRIORITY_VALUES[i], i==1, i);
+		this._prioritySelect.addOption(ZmTaskEditView.PRIORITY_VALUES[i].l, i==1, ZmTaskEditView.PRIORITY_VALUES[i].v);
 	}
 	this._prioritySelect.addChangeListener(listener);
 	this._prioritySelect.reparentHtmlElement(this._htmlElId + "_priority");
@@ -285,7 +303,7 @@ function() {
 ZmTaskEditView.prototype._setTitle =
 function(title) {
 	var titleDiv =  document.getElementById(this._titleId);
-	var fileAs = title || this._task.getSubject();
+	var fileAs = title || this._task.getName();
 	titleDiv.innerHTML = fileAs
 		? fileAs
 		: this._task.id != -1 ? "&nbsp;" : ZmMsg.newTask;
@@ -352,12 +370,10 @@ function() {
 
 ZmTaskEditView.prototype._populate =
 function() {
-	document.getElementById(this._subjectId).value = this._task.getSubject();
-	document.getElementById(this._notesId).value = this._task.getNotes();
-
-	var dd = this._task.getDateDue();
-	document.getElementById(this._dateDueId).value = dd
-		? AjxDateUtil.simpleComputeDateStr(dd) : "";
+	document.getElementById(this._subjectId).value = this._task.getName();
+	document.getElementById(this._notesId).value = this._task.getNotesPart();
+	document.getElementById(this._dateStartId).value = AjxDateUtil.simpleComputeDateStr(this._task.startDate);
+	document.getElementById(this._dateDueId).value = AjxDateUtil.simpleComputeDateStr(this._task.endDate);
 };
 
 ZmTaskEditView.prototype._sizeChildren =

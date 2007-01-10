@@ -793,8 +793,9 @@ function(startDate, duration, folderId) {
 	newAppt.setEndDate(newAppt.getStartTime() + (duration ? duration : ZmCalViewController.DEFAULT_APPOINTMENT_DURATION));
 	newAppt.resetRepeatWeeklyDays();
 	newAppt.resetRepeatMonthlyDayList();
-	newAppt.repeatYearlyMonthsList = startDate.getMonth() + 1;
-	newAppt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[startDate.getDay()];	
+	newAppt.resetRepeatYearlyMonthsList(startDate.getMonth()+1);
+	newAppt.resetRepeatCustomDayOfWeek();
+
 	if (folderId)
 		newAppt.setFolderId(folderId);
 	return newAppt;
@@ -1508,21 +1509,20 @@ function(appt, actionMenu) {
 	var calendar = this.getCheckedCalendar(appt.folderId);
 	var share = calendar && calendar.link ? calendar.shares[0] : null;
 	var workflow = share ? share.isWorkflow() : true;
-	var pstatus = appt.getParticipationStatus();
 	var enabled = !isOrganizer && workflow;
 
 	// reply action menu
-	actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && pstatus != ZmAppt.PSTATUS_ACCEPT);
-	actionMenu.enable(ZmOperation.REPLY_DECLINE, enabled && pstatus != ZmAppt.PSTATUS_DECLINED);
-	actionMenu.enable(ZmOperation.REPLY_TENTATIVE, enabled && pstatus != ZmAppt.PSTATUS_TENTATIVE);
+	actionMenu.enable(ZmOperation.REPLY_ACCEPT, enabled && appt.ptst != ZmAppt.PSTATUS_ACCEPT);
+	actionMenu.enable(ZmOperation.REPLY_DECLINE, enabled && appt.ptst != ZmAppt.PSTATUS_DECLINED);
+	actionMenu.enable(ZmOperation.REPLY_TENTATIVE, enabled && appt.ptst != ZmAppt.PSTATUS_TENTATIVE);
 	actionMenu.enable(ZmOperation.INVITE_REPLY_MENU, enabled);
 
 	// edit reply menu
 	if (enabled) {
 		var editReply = actionMenu.getMenuItem(ZmOperation.INVITE_REPLY_MENU).getMenu();
-		editReply.enable(ZmOperation.EDIT_REPLY_ACCEPT, pstatus != ZmAppt.PSTATUS_ACCEPT);
-		editReply.enable(ZmOperation.EDIT_REPLY_DECLINE, pstatus != ZmAppt.PSTATUS_DECLINED);
-		editReply.enable(ZmOperation.EDIT_REPLY_TENTATIVE, pstatus != ZmAppt.PSTATUS_TENTATIVE);
+		editReply.enable(ZmOperation.EDIT_REPLY_ACCEPT, appt.ptst != ZmAppt.PSTATUS_ACCEPT);
+		editReply.enable(ZmOperation.EDIT_REPLY_DECLINE, appt.ptst != ZmAppt.PSTATUS_DECLINED);
+		editReply.enable(ZmOperation.EDIT_REPLY_TENTATIVE, appt.ptst != ZmAppt.PSTATUS_TENTATIVE);
 	}
 
 	var del = actionMenu.getMenuItem(ZmOperation.DELETE);
@@ -1648,7 +1648,7 @@ function(work, view, list) {
 	if (work & ZmCalViewController.MAINT_MINICAL) {	
 		var highlight = [];
 		for (var i=0; i < list.size(); i++) {
-			var sd = list.get(i).getStartDate();
+			var sd = list.get(i).startDate;
 			highlight[sd.getFullYear()+"/"+sd.getMonth()+"/"+sd.getDate()] = sd;
 		}
 		this._miniCalendar.setHilite(highlight, true, true);

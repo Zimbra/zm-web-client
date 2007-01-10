@@ -207,6 +207,7 @@ Contributor(s):
 
 <!-- Calendar Application -->
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/model/ZmAppt.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/model/ZmRecurrence.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/view/ZmCalViewMgr.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/view/ZmCalBaseView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/zimbraMail/calendar/view/ZmCalColView.js<%= ext %>?v=<%= vers %>"></script>

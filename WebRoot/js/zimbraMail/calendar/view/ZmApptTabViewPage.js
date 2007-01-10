@@ -151,7 +151,7 @@ function(attId) {
 	appt.setStartDate(startDate, true);
 	appt.setEndDate(endDate, true);
 	if (Dwt.getVisibility(this._tzoneSelect.getHtmlElement()))
-		appt.setTimezone(this._tzoneSelect.getValue());
+		appt.timezone = this._tzoneSelect.getValue();
 
 	// set the notes parts (always add text part)
 	var top = new ZmMimePart();
@@ -472,8 +472,8 @@ function(tabGroup) {
 ZmApptTabViewPage.prototype._reset =
 function(appt, mode) {
 	// reset the date/time values based on current time
-	var sd = new Date(appt.getStartDate().getTime());
-	var ed = new Date(appt.getEndDate().getTime());
+	var sd = new Date(appt.startDate.getTime());
+	var ed = new Date(appt.endDate.getTime());
 	var isAllDayAppt = appt.isAllDayEvent();
 	if (isAllDayAppt) {
 		this._allDayCheckbox.checked = true;
@@ -503,8 +503,8 @@ function(appt, mode) {
 			ed.setHours(-12);
 		}
 	} else {
-		this._startTimeSelect.set(appt.getStartDate());
-		this._endTimeSelect.set(appt.getEndDate());
+		this._startTimeSelect.set(appt.startDate);
+		this._endTimeSelect.set(appt.endDate);
 	}
 	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
 	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
@@ -534,9 +534,9 @@ function(appt) {
 	var repeatType = this._repeatSelect.getValue();
 
 	if (this._recurDialog && repeatType == "CUS") {
-		appt.repeatType = this._recurDialog.getSelectedRepeatValue();
+		appt.setRecurType(this._recurDialog.getSelectedRepeatValue());
 
-		switch (appt.repeatType) {
+		switch (appt.getRecurType()) {
 			case "DAI": this._recurDialog.setCustomDailyValues(appt); break;
 			case "WEE": this._recurDialog.setCustomWeeklyValues(appt); break;
 			case "MON": this._recurDialog.setCustomMonthlyValues(appt); break;
@@ -546,7 +546,7 @@ function(appt) {
 		// set the end recur values
 		this._recurDialog.setRepeatEndValues(appt);
 	} else {
-		appt.repeatType = repeatType != "CUS" ? repeatType : "NON";
+		appt.setRecurType(repeatType != "CUS" ? repeatType : "NON");
 	}
 };
 
@@ -560,13 +560,13 @@ function(appt, mode) {
 
 	// select objects
 	this._showAsSelect.setSelectedValue(appt.freeBusy);
-	this._repeatSelect.setSelectedValue(appt.repeatType);
+	this._repeatSelect.setSelectedValue(appt.getRecurType());
 
 	// recurrence string
 	if (appt.isCustomRecurrence()) {
-		this._repeatDescField.innerHTML = appt._getRecurrenceBlurbForSave();
+		this._repeatDescField.innerHTML = appt.getRecurBlurb();
 	} else {
-		this._repeatDescField.innerHTML = appt.repeatType != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
+		this._repeatDescField.innerHTML = appt.getRecurType() != "NON" ? AjxStringUtil.htmlEncode(ZmMsg.customize) : "";
 	}
 
 	// attendees
@@ -1012,7 +1012,7 @@ ZmApptTabViewPage.prototype._resetTimezoneSelect =
 function(appt, isAllDayAppt) {
 	var showTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) && !isAllDayAppt;
 	Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
-	this._tzoneSelect.setSelectedValue(appt.getTimezone());
+	this._tzoneSelect.setSelectedValue(appt.timezone);
 };
 
 ZmApptTabViewPage.prototype._resetCalendarSelect =
@@ -1204,7 +1204,7 @@ function() {
 		this._bodyFieldId = bodyFieldId;
 		this._bodyField = document.getElementById(this._bodyFieldId);
 	}
-
+	
 	var size = this.getSize();
 	if (size.x <= 0 || size.y <= 0)
 		return;
@@ -1314,7 +1314,7 @@ function(ev) {
 			// update the recur language
 			var tempAppt = ZmAppt.quickClone(this._appt);
 			this._getRecurrence(tempAppt);
-			this._repeatDescField.innerHTML = tempAppt._getRecurrenceBlurbForSave();
+			this._repeatDescField.innerHTML = tempAppt.getRecurBlurb();
 		} else {
 			// give feedback to user about errors in recur dialog
 			popdown = false;

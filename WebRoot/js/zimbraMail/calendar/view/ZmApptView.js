@@ -194,7 +194,7 @@ function(appt) {
 	if (this._objectManager) {
 	    this._objectManager.setHandlerAttr(ZmObjectManager.DATE, 
 	    								   ZmObjectManager.ATTR_CURRENT_DATE, 
-	    								   appt.getStartDate());
+	    								   appt.startDate);
 	}
 
 	var closeBtnCellId = Dwt.getNextId();
@@ -327,12 +327,12 @@ function(appt) {
 	var str = [];
 	var i = 0;
 
-	var sd = appt._orig.getStartDate();
-	var ed = appt._orig.getEndDate();
+	var sd = appt._orig.startDate;
+	var ed = appt._orig.endDate;
 
 	var dateFormatter = AjxDateFormat.getDateInstance();
 	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-	var timezone = appt.getTimezone();
+	var timezone = appt.timezone;
 	var localTimezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 
 	if (this._isOneDayAppt(sd, ed)) {
@@ -347,7 +347,7 @@ function(appt) {
 			// bug fix #4762
 			if (timezone && timezone != localTimezone) {
 				str[i++] = " ";
-				str[i++] = appt.getTimezone();
+				str[i++] = timezone;
 			}
 		}
 	} else {
@@ -366,7 +366,7 @@ function(appt) {
 			// bug fix #4762
 			if (timezone && timezone != localTimezone) {
 				str[i++] = " ";
-				str[i++] = appt.getTimezone();
+				str[i++] = timezone;
 			}
 		}
 	}

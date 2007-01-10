@@ -42,7 +42,11 @@ ZmTask.prototype = new ZmAppt;
 ZmTask.prototype.constructor = ZmTask;
 
 
-// Public Methods
+// Consts
+ZmTask.PRIORITY_LOW		= 9;
+ZmTask.PRIORITY_NORMAL	= 5;
+ZmTask.PRIORITY_HIGH	= 1;
+
 /**
 * Used to make our own copy because the form will modify the date object by 
 * calling its setters instead of replacing it with a new date object.
@@ -62,42 +66,20 @@ function(task) {
 	return newTask;
 };
 
+
+// Public Methods
+
 ZmTask.prototype.toString =
 function() {
 	return "ZmTask";
 };
 
-ZmTask.prototype.getFolderId =
-function() {
-	return this.folderId;
-};
+// Getters
+ZmTask.prototype.getFolderId =			function() { return this.folderId; };
+ZmTask.prototype.getPercentComplete =	function() { return this._percentComplete; };
+ZmTask.prototype.getPriority =			function() { return this._priority; };
+ZmTask.prototype.getIcon = 				function() { return "Task"; };
 
-ZmTask.prototype.getSubject =
-function() {
-	return this._subject || "";
-};
-
-ZmTask.prototype.getDateDue =
-function() {
-	return this._dateDue;
-};
-
-ZmTask.prototype.getNotes =
-function() {
-	return this._notes || "";
-};
-
-ZmTask.prototype.getPercentComplete =
-function() {
-	return this._percentComplete;
-};
-
-ZmTask.prototype.getPriority =
-function() {
-	return this._priority;
-};
-
-ZmTask.prototype.getIcon =
-function() {
-	return "Task";
-};
+// Setters
+ZmTask.prototype.setPercentComplete =	function(pComplete) { this._percentCompelte = pComplete; };
+ZmTask.prototype.setPriority =			function(priority) { this._priority = priority; };

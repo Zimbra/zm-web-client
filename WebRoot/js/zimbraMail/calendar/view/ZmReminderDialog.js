@@ -132,12 +132,6 @@ function(html, appt, data, needSep) {
 	data.deltaId = Dwt.getNextId();
 	data.rowIds = [];
 
-/*	
-	var color = ZmCalBaseView.COLORS[this._calController.getCalendarColor(appt.getFolderId())];	
-	var pstatus = appt.getParticipationStatus();
-	var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
-	var colorClass = color +  (isNew ? "" : "Bg");
-*/
 	var cal = appt.getFolderId() != ZmOrganizer.ID_CALENDAR && this._calController
 			? this._calController.getCalendar(appt.getFolderId()) : null;
 	
@@ -147,13 +141,11 @@ function(html, appt, data, needSep) {
 	html.append("<table cellpadding=0 cellspacing=0 border=0><tr>");
 	html.append("<td width=25px>", AjxImg.getImageHtml(appt.hasOtherAttendees() ? "ApptMeeting" : "Appointment"), "</td>");
 	html.append("<td><b>",  AjxStringUtil.htmlEncode(appt.getName()), "</b> (", appt.getDurationText(false, false),")</td>");
-	//html.append("<td><b>",  AjxStringUtil.htmlEncode(appt.getName()), "</b></td>");	
 	html.append("</tr></table>");
 	html.append("</td>");
 	html.append("<td id='", data.deltaId, "'></td>");
 	html.append("<td align=right id='", data.buttonId, "'></td>");	
 	html.append("</tr>");
-	//this._addAttr(html, ZmMsg.when, appt.getDurationText(false, false), data);
 	if (appt.hasOtherAttendees()) this._addAttr(html, ZmMsg.status, appt.getParticipationStatusString(), data);
 	if (cal) this._addAttr(html, ZmMsg.calendar, cal.getName(), data);	
 	this._addAttr(html, ZmMsg.location, appt.getLocation(), data);
@@ -161,7 +153,6 @@ function(html, appt, data, needSep) {
  
 ZmReminderDialog.prototype.initialize = 
 function(list) {
-	//DBG.println("ZmReminderDialog.prototype.initialize");
 	this._list = list.clone();
 	this._apptData = {};
 	
