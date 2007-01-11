@@ -390,88 +390,61 @@ function(compNum) {
  * component object on the invite.
  */
 ZmInvite.prototype.getToolTip =
-function(/*calController*/) {
-	if (!this._toolTip) {
-		var compNum = 0;
-		
-		var html = new Array(20);
-		var idx = 0;
-		
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 >";
-		html[idx++] = "<tr valign='center'><td colspan=2 align='left'>";
-		html[idx++] = "<div style='border-bottom: 1px solid black;'>";
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
-		html[idx++] = "<tr valign='center'>";
-		html[idx++] = "<td><b>";
-		
-		// IMGHACK - added outer table for new image changes...
-		html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
-		if (this.hasOtherAttendees(compNum)) {
-			html[idx++] = "<td>";
-			html[idx++] = AjxImg.getImageHtml("ApptMeeting");
-			html[idx++] = "</td>";
-		}
-		
-		if (this.isException(compNum)) {
-			html[idx++] = "<td>";
-			html[idx++] = AjxImg.getImageHtml("ApptException");
-			html[idx++] = "</td>";
-		}
-		else if (this.isRecurring(compNum)) {
-			html[idx++] = "<td>";
-			html[idx++] = AjxImg.getImageHtml("ApptRecur");
-			html[idx++] = "</td>";
-		}
-			
-//		if (this.hasAlarm()) 
-//			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptReminder") + "</td>";
+function() {
+	if (this._toolTip)
+		return this._toolTip;
 
-		html[idx++] = "</tr></table>";
-		
-		html[idx++] = "&nbsp;";
-		html[idx++] = AjxStringUtil.htmlEncode(this.getName(compNum));
-		html[idx++] = "&nbsp;</div></b></td>";	
-		html[idx++] = "<td align='right'>";
+	var compNum = 0;
 
-		/***
-		var cal = this.getFolderId() != ZmOrganizer.ID_CALENDAR && calController
-			? calController.getCalendar(this.getFolderId()) : null;
-		/***/
-		var cal = null;
-		/***/
+	var html = [];
+	var idx = 0;
 
-		html[idx++] = cal && cal.link
-			? AjxImg.getImageHtml("GroupSchedule")
-			: AjxImg.getImageHtml("Appointment");
-					
+	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 >";
+	html[idx++] = "<tr valign='center'><td colspan=2 align='left'>";
+	html[idx++] = "<div style='border-bottom: 1px solid black;'>";
+	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+	html[idx++] = "<tr valign='center'><td><b>";
+
+	// IMGHACK - added outer table for new image changes...
+	html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
+	if (this.hasOtherAttendees(compNum)) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptMeeting");
 		html[idx++] = "</td>";
-		html[idx++] = "</table>";
-		html[idx++] = "</div></td></tr>";
-		//idx = this._addEntryRow(ZmMsg.meetingStatus, this.getStatusString(), html, idx, false);
-
-		if (cal) {
-			idx = this._addEntryRow(ZmMsg.calendar, cal.getName(compNum), html, idx, false);
-		}
-
-		/***
-		if (this.hasOtherAttendees())
-			idx = this._addEntryRow(ZmMsg.status, this.getParticipationStatusString(), html, idx, false);		
-		/***/
-
-		var when = this.getDurationText(compNum, false, false);
-		idx = this._addEntryRow(ZmMsg.when, when, html, idx, false, null, true);		
-		if (this.isRecurring(compNum)) {
-			var recurrences = this.getRecurrenceRules(compNum);
-			var startDate = this.getServerStartDate(compNum);
-			var repeats = ZmApptViewHelper.getRecurrenceDisplayString(recurrences, startDate);
-			idx = this._addEntryRow(ZmMsg.repeats, repeats, html, idx, false, null, true);		
-		}
-		idx = this._addEntryRow(ZmMsg.location, this.getLocation(compNum), html, idx, false);
-		//idx = this._addEntryRow(ZmMsg.notes, this.getFragment(), html, idx, true, "250");
-
-		html[idx++] = "</table>";
-		this._toolTip = html.join("");
 	}
+
+	if (this.isException(compNum)) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptException");
+		html[idx++] = "</td>";
+	}
+	else if (this.isRecurring(compNum)) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptRecur");
+		html[idx++] = "</td>";
+	}
+
+	html[idx++] = "</tr></table>&nbsp;";
+	html[idx++] = AjxStringUtil.htmlEncode(this.getName(compNum));
+	html[idx++] = "&nbsp;</div></b></td><td align='right'>";
+	html[idx++] = AjxImg.getImageHtml("Appointment");
+	html[idx++] = "</td></table></div></td></tr>";
+
+	var when = this.getDurationText(compNum, false, false);
+	idx = this._addEntryRow(ZmMsg.when, when, html, idx, false, null, true);
+	if (this.isRecurring(compNum)) {
+		if (!this._recurBlurb) {
+			var recur = new ZmRecurrence();
+			recur.parse(this.getRecurrenceRules(compNum));
+			this._recurBlurb = recur.getBlurb();
+		}
+		idx = this._addEntryRow(ZmMsg.repeats, this._recurBlurb, html, idx, true, null, true);
+	}
+	idx = this._addEntryRow(ZmMsg.location, this.getLocation(compNum), html, idx, false);
+
+	html[idx++] = "</table>";
+	this._toolTip = html.join("");
+
 	return this._toolTip;
 };
 

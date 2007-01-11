@@ -77,6 +77,7 @@ ZmList.ITEM_CLASS[ZmItem.APPT]		= "ZmAppt";
 ZmList.ITEM_CLASS[ZmItem.RESOURCE]	= "ZmResource";
 ZmList.ITEM_CLASS[ZmItem.PAGE]		= "ZmPage";
 ZmList.ITEM_CLASS[ZmItem.DOCUMENT]	= "ZmDocument";
+ZmList.ITEM_CLASS[ZmItem.TASK]		= "ZmTask";
 
 // node names for item types
 ZmList.NODE = {};
@@ -94,10 +95,8 @@ for (var i in ZmList.NODE) {
 	ZmList.ITEM_TYPE[ZmList.NODE[i]] = i;
 }
 
-ZmList.TYPES = [
-	ZmItem.CONTACT, ZmItem.CONV, ZmItem.MSG, ZmItem.ATT, ZmItem.APPT,
-	ZmItem.PAGE, ZmItem.DOCUMENT
-];
+ZmList.TYPES = [ZmItem.CONTACT, ZmItem.CONV, ZmItem.MSG, ZmItem.ATT,
+				ZmItem.APPT, ZmItem.PAGE, ZmItem.DOCUMENT, ZmItem.TASK];
 ZmList.MIXED = -1; // special type for heterogeneous list
 
 ZmList.prototype.toString = 

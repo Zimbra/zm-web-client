@@ -68,6 +68,7 @@ ZmTreeView.COMPARE_FUNC[ZmOrganizer.FOLDER]				= ZmFolder.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.TAG]				= ZmTag.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.SEARCH]				= ZmFolder.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.CALENDAR]			= ZmCalendar.sortCompare;
+ZmTreeView.COMPARE_FUNC[ZmOrganizer.TASKS]				= ZmTaskFolder.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.ZIMLET]				= ZmZimlet.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.ROSTER_TREE_ITEM]	= ZmRosterTreeItem.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.ADDRBOOK]			= ZmAddrBook.sortCompare;
