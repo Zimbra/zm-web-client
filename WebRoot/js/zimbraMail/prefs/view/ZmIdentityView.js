@@ -609,7 +609,7 @@ function() {
 ZmIdentityPage.prototype._replaceInput =
 function(input, id) {
 	if (AjxEnv.isIE) {
-		width = document.getElementById(id).style.width;
+		var width = document.getElementById(id).style.width;
 		input.replaceElement(id);
 		input.getInputElement().style.width = width;
 	} else {
