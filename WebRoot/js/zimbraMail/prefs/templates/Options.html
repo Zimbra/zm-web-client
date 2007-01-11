@@ -328,10 +328,10 @@
 			<td class='ZLabelCell'><$= ZmMsg.replyWithIdentity $></td>
 			<td style='padding:0px'>
 				<table>
-					<tr><td class='ZCheckboxCell'><input id='${id}_useDefaultsCheckbox_default' class='ZRadioButton' type='radio' onclick='${controller}._toggleAdvancedSettings(false)'></td>
+					<tr><td class='ZCheckboxCell'><input  name='${id}_group' id='${id}_useDefaultsCheckbox_default' class='ZRadioButton' type='radio' onclick='${controller}._toggleAdvancedSettings(false)'></td>
 						<td class='ZCheckboxLabelCell' colspan='2'><label for='${id}_useDefaultsCheckbox_default' class='ZCheckboxLabel'><$= ZmMsg.identitiesUseDefault $></label></td>
 					</tr>
-					<tr><td class='ZCheckboxCell'><input id='${id}_useDefaultsCheckbox_custom' class='ZRadioButton' type='radio' onclick='${controller}._toggleAdvancedSettings(true)'></td>
+					<tr><td class='ZCheckboxCell'><input  name='${id}_group' id='${id}_useDefaultsCheckbox_custom' class='ZRadioButton' type='radio' onclick='${controller}._toggleAdvancedSettings(true)'></td>
 						<td class='ZCheckboxLabelCell' colspan='2'><label for='${id}_useDefaultsCheckbox_custom' class='ZCheckboxLabel'><$= ZmMsg.customizeSettings $></label></td>
 					</tr>					
 				</table>

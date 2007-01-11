@@ -710,7 +710,8 @@ function() {
 	var id = this._htmlElId;
 	this._useDefaultsCheckboxId = Dwt.getNextId();
 	
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Options#IdentityForm_advanced", id);
+	var params = { id: id, controller: "ZmIdentityPage" }; // controller is used for onclick handler in template, but we use our own handler
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Options#IdentityForm_advanced", params);
 	
 	var radios = {};
 	radios[id + "_useDefaultsCheckbox_default"] = true;
