@@ -33,7 +33,8 @@
          </c:when>
      </c:choose>
 
-     <zm:computeSearchContext var="context" usecache="true"/>
+    <zm:getMailbox var="mailbox"/>
+    <zm:computeSearchContext var="context" usecache="true"/>
 </app:handleError>
 
  <%-- switch based on context saerch types --%>
@@ -41,10 +42,13 @@
     <c:when test="${context.isConversationSearch and action eq 'view'}">
         <app:convView context="${context}"/>
     </c:when>
+    <c:when test="${context.isConversationSearch and action eq 'view2'}">
+        <app:convView2 context="${context}"/>
+    </c:when>
     <c:when test="${context.isConversationSearch}">
         <app:convListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and action eq 'view'}">
+    <c:when test="${context.isMessageSearch and action eq 'view' and not mailbox.prefs.readingPaneEnabled}">
         <app:messageView context="${context}"/>
     </c:when>
     <c:when test="${context.isMessageSearch}">

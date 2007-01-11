@@ -156,6 +156,14 @@ padding-right:4px;
   	text-decoration: underline;
 }
 
+.ZhAppContent2 {
+@AppBg@ @InsetBorder@
+}
+
+.Conv2Tb {
+   @ToolbarBg
+}
+
 .ZhAppContent {
    @PageBg@  @OutsetBorder@
    border-top-width:0px;
@@ -178,6 +186,10 @@ padding: 5px;
 
 .TbBottom {
    @InlineToolbarContainer@
+}
+
+.Tb2 {
+ @ToolbarBg@;
 }
 
 .TbBt {
@@ -220,6 +232,14 @@ border-color: #98adbe #555555 #555555 #E0E0E0;
 /*background-color: @_BaseColorD10_@; */
     
 padding: 5px 0px 5px 0px; 
+}
+
+.ConvSummary2  {
+	@BottomSeparator@
+    @ToolbarBg@;
+/*background-color: @_BaseColorD10_@; */
+
+padding: 5px 0px 5px 5px;
 }
 
 .ConvSummary SPAN, .CompOrigAtt SPAN { vertical-align: middle; }
