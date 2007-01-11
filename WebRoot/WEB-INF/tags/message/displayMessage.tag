@@ -2,8 +2,10 @@
 <%@ attribute name="message" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMessageBean" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ attribute name="showconvlink" rtexprvalue="true" required="false" %>
+<%@ attribute name="hideops" rtexprvalue="true" required="false" %>
 <%@ attribute name="externalImageUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ attribute name="composeUrl" rtexprvalue="true" required="true" type="java.lang.String" %>
+<%@ attribute name="newWindowUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -161,6 +163,7 @@
             </table>
         </td>
     </tr>
+    <c:if test="${not hideops}">
     <tr>
         <td class='MsgOps'>
             <table width=100% >
@@ -187,9 +190,14 @@
                                 <c:param name="st" value="conversation"/>
                                 <c:param name="sq" value='conv:"${message.conversationId}"'/>
                             </c:url>
-                            <a accesskey='9' href="${convUrl}">
+                            <a accesskey='${not empty newWindowUrl ? '8' : '9'}' href="${convUrl}">
                                 <fmt:message key="showConversation"/>
                             </a> |
+                        </c:if>
+                        <c:if test="${not empty newWindowUrl}">
+                            <a accesskey='9' target="_blank" href="${newWindowUrl}">
+                                <fmt:message key="newWindow"/>
+                            </a> | 
                         </c:if>
                         <c:if test="${not isPart}">
                             <a accesskey='0' target="_blank" href="/home/~/?id=${message.id}&auth=co">
@@ -201,6 +209,7 @@
             </table>
         </td>
     </tr>
+    </c:if>
     <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
         <tr>
             <td class='DisplayImages'>

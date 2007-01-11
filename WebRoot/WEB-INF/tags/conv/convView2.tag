@@ -122,7 +122,8 @@
                                             </c:if>
                                             <zm:currentResultUrl var="composeUrl" value="search" context="${context}" id="${message.id}"
                                                                  action="compose" cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}"/>
-                                            <app:displayMessage mailbox="${mailbox}" message="${message}" externalImageUrl="${extImageUrl}" composeUrl="${composeUrl}"/>
+                                            <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${message.id}"/>
+                                            <app:displayMessage mailbox="${mailbox}" message="${message}" externalImageUrl="${extImageUrl}" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
                                         </td>
                                     </tr>
                                 </table>
