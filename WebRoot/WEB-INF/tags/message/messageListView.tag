@@ -128,8 +128,8 @@
                         </c:if>
                         <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
                                              action="compose" paction="view" id="${msg.id}"/>
-
-                        <app:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}"/>
+                       <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
+                       <app:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
                 </td>
             </tr>
         </c:if>
