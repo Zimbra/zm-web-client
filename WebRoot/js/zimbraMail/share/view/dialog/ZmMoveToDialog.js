@@ -102,13 +102,19 @@ function(data, loc, treeIds, clearOverview) {
 
 	// bug fix #13159 (regression of #10676)
 	// - small hack to get selecting Trash folder working again
-	var ti = this._folderTreeView.getTreeItemById(ZmOrganizer.ID_TRASH);
-	ti.setData(ZmTreeView.KEY_TYPE, this._isContact ? ZmEvent.S_CONTACT : ZmEvent.S_FOLDER);
+	if (this._folderTreeView) {
+		var ti = this._folderTreeView.getTreeItemById(ZmOrganizer.ID_TRASH);
+		if (ti) {
+			ti.setData(ZmTreeView.KEY_TYPE, this._isContact ? ZmItem.CONTACT : ZmOrganizer.FOLDER);
+		}
+	}
 
-	folderTree.removeChangeListener(this._changeListener);
-	// this listener has to be added after folder tree view is set
-	// (so that it comes after the view's standard change listener)
-	folderTree.addChangeListener(this._changeListener);
+	if (folderTree) {
+		folderTree.removeChangeListener(this._changeListener);
+		// this listener has to be added after folder tree view is set
+		// (so that it comes after the view's standard change listener)
+		folderTree.addChangeListener(this._changeListener);
+	}
 
 	ZmDialog.prototype.popup.call(this, loc);
 	for (var i = 0; i < treeIds.length; i++) {
