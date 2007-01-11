@@ -46,6 +46,22 @@
      </tag-file>
 
    <tag-file>
+       <name>convView2</name>
+        <path>/WEB-INF/tags/conv/convView2.tag</path>
+    </tag-file>
+
+   <tag-file>
+       <name>convToolbar2</name>
+        <path>/WEB-INF/tags/conv/convToolbar2.tag</path>
+    </tag-file>
+
+   <tag-file>
+       <name>convToolbar2Top</name>
+        <path>/WEB-INF/tags/conv/convToolbar2Top.tag</path>
+    </tag-file>
+
+
+   <tag-file>
          <name>messageAction</name>
          <path>/WEB-INF/tags/message/messageAction.tag</path>
      </tag-file>

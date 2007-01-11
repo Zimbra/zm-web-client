@@ -32,6 +32,7 @@
             </c:if>
 
             <zm:pref name="zimbraPrefSaveToSent" value="${param.zimbraPrefSaveToSent eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
+            <zm:pref name="zimbraPrefReadingPaneEnabled" value="${param.zimbraPrefReadingPaneEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
 
             <c:if test="${mailbox.features.outOfOfficeReply}">
                 <zm:pref name="zimbraPrefOutOfOfficeReplyEnabled" value="${param.zimbraPrefOutOfOfficeReplyEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>

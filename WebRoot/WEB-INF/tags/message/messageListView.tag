@@ -11,6 +11,12 @@
     <fmt:message key="noSubject" var="noSubject"/>
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
     <zm:getMailbox var="mailbox"/>
+
+    <c:if test="${mailbox.prefs.readingPaneEnabled}">
+        <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="true" neuterimages="${empty param.xim}"/>
+        <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
+        <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
+    </c:if>
 </app:handleError>
 
 <app:view title="${title}" context="${context}" selected='mail' folders="true" tags="true" searches="true" keys="true">
@@ -113,6 +119,20 @@
                 <app:messageListViewToolbar context="${context}" keys="false"/>
             </td>
         </tr>
+        <c:if test="${mailbox.prefs.readingPaneEnabled and not empty msg}">
+            <tr>
+                   <td class='ZhAppContent'>
+                        <c:set var="extImageUrl" value=""/>
+                        <c:if test="${empty param.xim}">
+                            <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
+                        </c:if>
+                        <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
+                                             action="compose" paction="view" id="${msg.id}"/>
+
+                        <app:displayMessage mailbox="${mailbox}" message="${msg}"externalImageUrl="${extImageUrl}" showconvlink="true" composeUrl="${composeUrl}"/>
+                </td>
+            </tr>
+        </c:if>
     </table>
     <input type="hidden" name="doMessageAction" value="1"/>
   </form>
