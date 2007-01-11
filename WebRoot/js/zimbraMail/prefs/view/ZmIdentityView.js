@@ -523,7 +523,7 @@ function() {
 	var sendFromName = new DwtInputField(params);
 	this._errorMessages[ZmIdentity.SEND_FROM_DISPLAY] = ZmMsg.sendFromError;
 	sendFromName.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
-	sendFromName.replaceElement(id + "_sendFromName");
+	this._replaceInput(sendFromName, id + "_sendFromName");
 	this._inputs[ZmIdentity.SEND_FROM_DISPLAY] = sendFromName;
 
 	var allowAnyFromAddress = this._appCtxt.get(ZmSetting.ALLOW_ANY_FROM_ADDRESS);
@@ -558,7 +558,7 @@ function() {
 	setReplyToName.setRequired(true);
 	this._errorMessages[ZmIdentity.SET_REPLY_TO_DISPLAY] = ZmMsg.replyToError;
 	setReplyToName.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
-	setReplyToName.replaceElement(id + "_setReplyToName");
+	this._replaceInput(setReplyToName, id + "_setReplyToName");
 	this._inputs[ZmIdentity.SET_REPLY_TO_DISPLAY] = setReplyToName;
 	params.hint = ZmMsg.addressHint;
 	var setReplyToAddress = new DwtInputField(params);
@@ -582,7 +582,7 @@ function() {
 	whenSentToInput.setValidatorFunction(null, ZmIdentityPage._validateEmailList);
 	this._errorMessages[ZmIdentity.WHEN_SENT_TO_ADDRESSES] = ZmMsg.whenSentToError;
 	whenSentToInput.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
-	whenSentToInput.replaceElement(id + "_whenSentToInput");
+	this._replaceInput(whenSentToInput, id + "_whenSentToInput");
 	this._arrays[ZmIdentity.WHEN_SENT_TO_ADDRESSES] = { input: whenSentToInput, toArray: this._stringToArray, toText: this._arrayToString };
 	var whenSentToCheckboxId = id + "_whenSentToCheckbox";
 	this._associateCheckbox(whenSentToCheckboxId, [whenSentToInput]);
@@ -592,7 +592,7 @@ function() {
 	whenInFolderInput.setValidatorFunction(this, this._validateFolderList);
 	this._errorMessages[ZmIdentity.WHEN_IN_FOLDERIDS] = ZmMsg.whenInFolderError;
 	whenInFolderInput.addListener(DwtEvent.ONKEYUP, this._changeListenerObj);
-	whenInFolderInput.replaceElement(id + "_whenInFolderInput");
+	this._replaceInput(whenInFolderInput, id + "_whenInFolderInput");
 	this._arrays[ZmIdentity.WHEN_IN_FOLDERIDS] = { input: whenInFolderInput, toArray: this._stringToFolderArray, toText: this._folderArrayToString };
 	var folderBrowseButton = new DwtButton(this);
 	folderBrowseButton.replaceElement(id + "_folderBrowseButton");
@@ -602,6 +602,19 @@ function() {
 	var whenInFolderCheckboxId = id + "_whenInFolderCheckbox";
 	this._associateCheckbox(whenInFolderCheckboxId, [whenInFolderInput, folderBrowseButton]);
 	this._checkboxIds[ZmIdentity.USE_WHEN_IN_FOLDER] = whenInFolderCheckboxId;
+};
+
+// Fixes layout issues in IE by taking the width from the template element and applying it
+// to the input inside of the DwtInputField
+ZmIdentityPage.prototype._replaceInput =
+function(input, id) {
+	if (AjxEnv.isIE) {
+		width = document.getElementById(id).style.width;
+		input.replaceElement(id);
+		input.getInputElement().style.width = width;
+	} else {
+		input.replaceElement(id);
+	}
 };
 
 ZmIdentityPage.prototype._stringToArray =
