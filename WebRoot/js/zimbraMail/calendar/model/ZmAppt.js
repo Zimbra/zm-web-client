@@ -967,8 +967,10 @@ function(mode, callback, msg, result) {
 		if (mode == ZmAppt.MODE_DELETE_INSTANCE) {
 			soapDoc.setMethodAttribute("s", this.getOrigStartTime());
 			var inst = soapDoc.set("inst");
-			inst.setAttribute("d", AjxDateUtil.getServerDateTime(this.getOrigStartDate()));
-			if (this.timezone) {
+            var allDay = this.isAllDayEvent();
+            var format = allDay ? AjxDateUtil.getServerDate : AjxDateUtil.getServerDateTime;
+            inst.setAttribute("d", format(this.getOrigStartDate()));
+            if (!allDay && this.timezone) {
                 var tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
 				inst.setAttribute("tz", tz);
 			}
