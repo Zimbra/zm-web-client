@@ -81,14 +81,17 @@ function(soapDoc, timezoneClientId, parentNode, skipKnownTimezone) {
 					var ename = tran.ename;
 					var change = tran.change;
 
-					var el = soapDoc.set(ename, null, tz);
-					// NOTE: JS months are 0-based but SOAP is 1-based.
-					el.setAttribute("mon", change[1] + 1);
-					el.setAttribute("mday", change[2]);
-					el.setAttribute("hour", change[3]);
-					el.setAttribute("min", change[4]);
-					el.setAttribute("sec", change[5]);
-				}
+                    var date = new Date(change[0], change[1], change[2], change[3], change[4], change[5]);
+                    var info = AjxTimezone.createWkDayTransition(date);
+
+                    var el = soapDoc.set(ename, null, tz);
+                    el.setAttribute("mon", info.mon);
+                    el.setAttribute("week", info.week);
+                    el.setAttribute("wkday", info.wkday);
+                    el.setAttribute("hour", info.hour);
+                    el.setAttribute("min", info.min);
+                    el.setAttribute("sec", info.sec);
+                }
 			}
 		}
 	}
