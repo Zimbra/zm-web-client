@@ -1360,7 +1360,8 @@ ZmApptTabViewPage.prototype._handleAttendeeField =
 function(type, useException) {
 	if (!this._activeInputField) return;
 	var value = this._attInputField[type].getValue();
-	if (value == this._attInputCurVal[type]) return;
+	// bug fix #13676 - just reparse everytime in case things are off sync - ugh
+//	if (value == this._attInputCurVal[type]) return;
 
 	var attendees = new AjxVector();
 	var items = ZmEmailAddress.split(value);
