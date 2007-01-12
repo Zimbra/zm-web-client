@@ -346,7 +346,7 @@ function(mo) {
 
 ZmAppt.prototype.resetRepeatCustomDayOfWeek =
 function() {
-	this._recurrence.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[startDate.getDay()];
+	this._recurrence.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[this.startDate.getDay()];
 };
 
 ZmAppt.prototype.isOverlapping =
