@@ -69,7 +69,7 @@ ZmPopAccountsView.prototype.getPreSaveCallback = function() {
 };
 
 ZmPopAccountsView.prototype._preSaveTestAccounts =
-function(continueCallback, batchCommand) {
+function(continueCallback, batchCommand, testOkCallback, testCancelCallback) {
 
     // clear sensitive data
     this._accountView._password1Field.setValue("");
@@ -145,16 +145,11 @@ function(continueCallback, batchCommand) {
     html.push("</table>");
     this._testDialog.setContent(html.join(""));
 
-    this._testDialog.setButtonListener(
-        DwtDialog.CANCEL_BUTTON,
-        new AjxListener(this, this._preSaveTestButtonListener, [continueCallback, batchCommand, accounts, successes, false])
-    );
-    this._testDialog.setButtonListener(
-        DwtDialog.OK_BUTTON,
-        new AjxListener(this, this._preSaveTestButtonListener, [continueCallback, batchCommand, accounts, successes, true])
-    );
+	var cancelListener = testOkCallback || (new AjxListener(this, this._preSaveTestButtonListener, [continueCallback, batchCommand, accounts, successes, false]));
+	var okListener = testCancelCallback || (new AjxListener(this, this._preSaveTestButtonListener, [continueCallback, batchCommand, accounts, successes, true]));
+	this._testDialog.setButtonListener(DwtDialog.CANCEL_BUTTON, cancelListener);
+	this._testDialog.setButtonListener(DwtDialog.OK_BUTTON, okListener);
     this._testDialog.setButtonEnabled(DwtDialog.OK_BUTTON, false);
-
     this._testDialog.popup();
 
     // start test
@@ -890,10 +885,16 @@ function(evt) {
 };
 
 ZmPopAccountBasicPage.prototype._testListener = function(evt) {
-    var account = this._account;
-    var callback = new AjxCallback(this, this._testResponse, [account]);
-    account.testConnection(callback);
+    var callback = new AjxCallback(this, this._testResponse, [this._account]);
+	var testOkCancelCallback = new AjxListener(this, this._testOkCancelListener);
+	this.parent._preSaveTestAccounts(callback, null, testOkCancelCallback, testOkCancelCallback);
 };
+
+ZmPopAccountBasicPage.prototype._testOkCancelListener =
+function(ev) {
+	this.parent._testDialog.popdown();
+};
+
 ZmPopAccountBasicPage.prototype._testResponse = function(account, resp) {
     var response = resp && resp._data && resp._data.TestDataSourceResponse;
     var pop3 = response && response.pop3 && response.pop3[0];
