@@ -94,6 +94,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtTabGroupEvent.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtKeyMap.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtKeyMapMgr.js"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtKeyMapMgrException.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtKeyboardMgr.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtTabGroup.js"></script>
 

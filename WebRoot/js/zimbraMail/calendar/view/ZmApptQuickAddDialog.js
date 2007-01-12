@@ -86,13 +86,13 @@ function(appt) {
 	// reset fields...
 	this._subjectField.setValue(appt.getName() ? appt.getName() : "");
 	this._locationField.setValue(appt.getLocation() ? appt.getLocation() : "");
-	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(appt.startDate);
-	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(appt.endDate);
+	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getStartDate());
+	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getEndDate());
 	var isAllDay = appt.isAllDayEvent();
 	this._showTimeFields(!isAllDay);
 	if (!isAllDay) {
-		this._startTimeSelect.set(appt.startDate);
-		this._endTimeSelect.set(appt.endDate);
+		this._startTimeSelect.set(appt.getStartDate());
+		this._endTimeSelect.set(appt.getEndDate());
 	}
 	this._showAsSelect.setSelectedValue("B");
 	this._resetCalendarSelect(appt);
@@ -139,7 +139,9 @@ function() {
 	}
 	appt.setStartDate(startDate);
 	appt.setEndDate(endDate);
-	appt.setRecurType(this._repeatSelect.getValue());
+
+	appt.repeatType = this._repeatSelect.getValue();
+	
 	appt.setAttendees(ZmEmailAddress.split(this._locationField.getValue()), ZmAppt.LOCATION);
 
 	return appt;

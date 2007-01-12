@@ -48,11 +48,8 @@ function ZmNewWindow(appCtxt, domain) {
 
 	// Register keymap and global key action handler w/ shell's keyboard manager
 	this._kbMgr = appCtxt.getKeyboardMgr();
-	if (this._appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) {
-		this._kbMgr.enable(true);
-		this._kbMgr.registerKeyMap(new ZmKeyMap(appCtxt));
-		this._kbMgr.pushDefaultHandler(this);
-	}
+	this._kbMgr.registerKeyMap(new ZmKeyMap(appCtxt));
+	this._kbMgr.pushDefaultHandler(this);
 
 	this._apps = {};
 	this.startup();

@@ -244,5 +244,3 @@
     </c:choose>
     </tbody>
 </table>
-
-

@@ -745,15 +745,13 @@ td.DDSepInvisible div {
 }
 
 .ZmContactInfoView .contactHeaderRow,
-.ZmContactView .contactHeaderRow,
-.ZmTaskEditView .contactHeaderRow {
+.ZmContactView .contactHeaderRow {
 	height: 40px;
 	@WidgetHeaderSize-big@
 }
 
 .ZmContactInfoView .contactHeader,
-.ZmContactView .contactHeader,
-.ZmTaskEditView .contactHeader {
+.ZmContactView .contactHeader {
 	@FontSize-biggest@
 	@Text@
 	padding-left:@BoxPaddingSize@;
@@ -801,8 +799,7 @@ td.DDSepInvisible div {
 }
 
 /* ??? -> ZmFieldLabelRight */
-.ZmContactView .editLabel,
-.ZmTaskEditView .editLabel {
+.ZmContactView .editLabel {
 	@Label@
 	text-align:right;
 }
