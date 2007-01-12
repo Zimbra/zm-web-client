@@ -77,6 +77,7 @@ ZmOrganizer.FOLDER				= ZmEvent.S_FOLDER;
 ZmOrganizer.TAG					= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
 ZmOrganizer.CALENDAR			= ZmEvent.S_APPT;
+ZmOrganizer.TASKS				= ZmEvent.S_TASK;
 ZmOrganizer.ADDRBOOK 			= ZmEvent.S_CONTACT;
 ZmOrganizer.ROSTER_TREE_ITEM	= ZmEvent.S_ROSTER_TREE_ITEM;
 ZmOrganizer.ROSTER_TREE_GROUP	= ZmEvent.S_ROSTER_TREE_GROUP;
@@ -91,6 +92,7 @@ ZmOrganizer.ITEM_ORGANIZER[ZmItem.MSG]		= ZmOrganizer.FOLDER;
 //ZmOrganizer.ITEM_ORGANIZER[ZmItem.ATT]		= ZmOrganizer.FOLDER; // ???
 ZmOrganizer.ITEM_ORGANIZER[ZmItem.CONTACT]	= ZmOrganizer.ADDRBOOK;
 ZmOrganizer.ITEM_ORGANIZER[ZmItem.APPT]		= ZmOrganizer.CALENDAR;
+ZmOrganizer.ITEM_ORGANIZER[ZmItem.TASK]		= ZmOrganizer.TASKS;
 //ZmOrganizer.ITEM_ORGANIZER[ZmItem.NOTE]		= ZmOrganizer.FOLDER; // ???
 ZmOrganizer.ITEM_ORGANIZER[ZmItem.PAGE]		= ZmOrganizer.NOTEBOOK;
 ZmOrganizer.ITEM_ORGANIZER[ZmItem.DOCUMENT]	= ZmOrganizer.NOTEBOOK;
@@ -107,22 +109,25 @@ ZmOrganizer.ID_ADDRBOOK			= 7;
 ZmOrganizer.ID_CALENDAR			= 10;
 ZmOrganizer.ID_NOTEBOOK			= 12;
 ZmOrganizer.ID_AUTO_ADDED 		= 13;
+ZmOrganizer.ID_TASKS			= 15;
 ZmOrganizer.ID_OUTBOX    		= 254;
 ZmOrganizer.ID_ZIMLET			= -1000;  // zimlets need a range.  start from -1000 incrementing up.
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 
 ZmOrganizer.DEFAULT_FOLDER = {};
-ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.FOLDER] = ZmOrganizer.ID_INBOX;
-ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.ADDRBOOK] = ZmOrganizer.ID_ADDRBOOK;
-ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.CALENDAR] = ZmOrganizer.ID_CALENDAR;
-ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.NOTEBOOK] = ZmOrganizer.ID_NOTEBOOK;
+ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.FOLDER]		= ZmOrganizer.ID_INBOX;
+ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.ADDRBOOK]	= ZmOrganizer.ID_ADDRBOOK;
+ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.CALENDAR]	= ZmOrganizer.ID_CALENDAR;
+ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.TASKS]		= ZmOrganizer.ID_TASKS;
+ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.NOTEBOOK]	= ZmOrganizer.ID_NOTEBOOK;
 
 ZmOrganizer.SOAP_CMD = {};
 ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.TAG]		= "TagAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.SEARCH]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.CALENDAR]	= "FolderAction";
+ZmOrganizer.SOAP_CMD[ZmOrganizer.TASKS]		= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.ADDRBOOK]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.NOTEBOOK]	= "FolderAction";
 
@@ -131,6 +136,7 @@ ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]	= 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]		= 64;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.SEARCH]	= 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.CALENDAR]	= 256;
+ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TASKS]	= 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.ADDRBOOK] = 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.NOTEBOOK] = 256;
 
@@ -139,6 +145,7 @@ ZmOrganizer.TEXT[ZmOrganizer.FOLDER]	= ZmMsg.folder;
 ZmOrganizer.TEXT[ZmOrganizer.TAG]		= ZmMsg.tag;
 ZmOrganizer.TEXT[ZmOrganizer.SEARCH]	= ZmMsg.savedSearch;
 ZmOrganizer.TEXT[ZmOrganizer.CALENDAR]	= ZmMsg.calendar;
+ZmOrganizer.TEXT[ZmOrganizer.TASKS]		= ZmMsg.taskFolder;
 ZmOrganizer.TEXT[ZmOrganizer.ADDRBOOK]	= ZmMsg.addressBook;
 ZmOrganizer.TEXT[ZmOrganizer.NOTEBOOK]	= ZmMsg.notebook;
 
@@ -203,16 +210,17 @@ ZmOrganizer.COLOR_CHOICES = [];
 for (var i = 0; i <= ZmOrganizer.MAX_COLOR; i++) {
 	var color = ZmOrganizer.COLOR_TEXT[i];
 	ZmOrganizer.COLORS.push(color);
-	ZmOrganizer.COLOR_CHOICES.push( { value: i, label: color } );
+	ZmOrganizer.COLOR_CHOICES.push( { value:i, label:color } );
 }
 delete i;
 
 // views
-ZmOrganizer.VIEWS = new Object;
-ZmOrganizer.VIEWS[ZmOrganizer.FOLDER] = "conversation";
-ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] = "appointment";
-ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK] = "contact";
-ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK] = "wiki";
+ZmOrganizer.VIEWS = {};
+ZmOrganizer.VIEWS[ZmOrganizer.FOLDER]	= "conversation";
+ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]	= "appointment";
+ZmOrganizer.VIEWS[ZmOrganizer.TASKS]	= "task";
+ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]	= "contact";
+ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]	= "wiki";
 
 ZmOrganizer.TYPES = {};
 for (var i in ZmOrganizer.VIEWS) {
@@ -369,7 +377,8 @@ function(orgA, orgB) {
 
 ZmOrganizer.checkColor =
 function(color) {
-	return ((color != null) && (color >= 0 && color <= ZmOrganizer.MAX_COLOR)) ? color : ZmOrganizer.DEFAULT_COLOR;
+	return ((color != null) && (color >= 0 && color <= ZmOrganizer.MAX_COLOR))
+		? color : ZmOrganizer.DEFAULT_COLOR;
 };
 
 // Public methods
@@ -415,20 +424,25 @@ function(includeRoot, showUnread, maxLength, noMarkup, useSystemName) {
 
 
 /** Returns the full path, suitable for use in search expressions. */
-ZmOrganizer.prototype.getSearchPath = function() {
-	return this.id != ZmOrganizer.ID_ROOT ? this.getPath(null, null, null, true) : "/";
+ZmOrganizer.prototype.getSearchPath =
+function() {
+	return this.id != ZmOrganizer.ID_ROOT
+		? this.getPath(null, null, null, true) : "/";
 };
 
 /** @deprecated Use getRestUrl. */
-ZmOrganizer.prototype.getUrl = function() {
+ZmOrganizer.prototype.getUrl =
+function() {
 	return this.getRestUrl();
 };
 
-ZmOrganizer.prototype.getSyncUrl = function() {
+ZmOrganizer.prototype.getSyncUrl =
+function() {
 	return url;
 };
 
-ZmOrganizer.prototype.getRestUrl = function() {
+ZmOrganizer.prototype.getRestUrl =
+function() {
 	// return REST URL as seen by server
 	if (this.restUrl) {
 		return this.restUrl;
@@ -1020,4 +1034,3 @@ function(name, showUnread, noMarkup) {
 	}
 	return name;
 };
-

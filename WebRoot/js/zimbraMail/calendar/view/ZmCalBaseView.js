@@ -595,20 +595,29 @@ function(appt) {}
 
 ZmCalBaseView.prototype._addApptIcons =
 function(appt, html, idx) {
-
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
 
-	if (appt.hasOtherAttendees())
-		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptMeeting") + "</td>";
+	if (appt.hasOtherAttendees()) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptMeeting");
+		html[idx++] = "</td>";
+	}
 
-	if (appt.isException())
-		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptException") + "</td>";
-	else if (appt.isRecurring())
-		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptRecur") + "</td>";
+	if (appt.isException()) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptException")
+		html[idx++] = "</td>";
+	} else if (appt.isRecurring()) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptRecur");
+		html[idx++] = "</td>";
+	}
 
-	if (appt.hasAlarm())
-		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptReminder") + "</td>";
-	
+	if (appt.alarm) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptReminder");
+		html[idx++] = "</td>";
+	}
 	html[idx++] = "</tr></table>";
 
 	return idx;
