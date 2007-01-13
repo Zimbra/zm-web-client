@@ -150,12 +150,23 @@ function(orig, result, startTime, endTime) {
 	var fanoutNum = 0;
 	while (appt.isInRange(startTime,endTime)) {
 		if (appt.isMultiDay()) {
-			var nextDay = new Date(appt.getStartTime());
+            var apptStartTime = appt.getStartTime();
+            // bug 12205: If someone mistypes "2007" as "200", we get into
+            //            a seemingly never-ending loop trying to fanout
+            //            every day even *before* the startTime of the view.
+            var outOfBounds = apptStartTime < startTime;
+            if (outOfBounds) {
+                apptStartTime = startTime;
+            }
+            var nextDay = new Date(apptStartTime);
 			nextDay.setDate(nextDay.getDate()+1);
 			nextDay.setHours(0,0,0,0);
-			if (AjxDateUtil.isInRange(appt.getStartTime(), nextDay.getTime(), startTime, endTime)) {
+			if (AjxDateUtil.isInRange(apptStartTime, nextDay.getTime(), startTime, endTime)) {
 				var slice = ZmAppt.quickClone(appt);
-				slice._fanoutFirst = (fanoutNum == 0);
+                if (outOfBounds) {
+                    slice.startDate = new Date(startTime);
+                }
+                slice._fanoutFirst = (fanoutNum == 0);
 				slice._orig = orig;
 				slice.setEndDate(nextDay);			
 				slice._fanoutLast = (slice.getEndTime() == orig.getEndTime());	
