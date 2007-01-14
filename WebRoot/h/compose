@@ -122,7 +122,7 @@
                                                 <c:set var="firstAttachment" value="${false}"/>
                                             </c:if>
                                         </td>
-                                        <c:set var="url" value="/home/~/?id=${message.id}&part=${part.partName}&auth=co"/>
+                                        <c:set var="url" value="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"/>
                                         <c:set var="pname" value="${part.displayName}"/>
                                         <c:if test="${empty pname}">
                                             <fmt:message key="unknownContentType" var="pname">

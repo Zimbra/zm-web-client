@@ -200,7 +200,7 @@
                             </a> | 
                         </c:if>
                         <c:if test="${not isPart}">
-                            <a accesskey='0' target="_blank" href="/home/~/?id=${message.id}&auth=co">
+                            <a accesskey='0' target="_blank" href="/service/home/~/?id=${message.id}&auth=co">
                                 <fmt:message key="showOrig"/>
                             </a>
                         </c:if>
