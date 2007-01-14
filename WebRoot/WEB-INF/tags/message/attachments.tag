@@ -21,7 +21,7 @@
         <c:set var="pname" value="${part.displayName}"/>
         <c:if test="${empty pname}"><fmt:message key="unknownContentType" var="pname"><fmt:param value="${part.contentType}"/></fmt:message></c:if>
     
-        <c:set var="url" value="/home/~/?id=${message.id}&part=${part.partName}&auth=co"/>
+        <c:set var="url" value="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"/>
         <table cellspacing=8>
             <tr>
                 <td>
