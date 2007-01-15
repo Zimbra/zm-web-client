@@ -973,6 +973,9 @@ function(mode, callback, msg, result) {
             if (!allDay && this.timezone) {
                 var tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
 				inst.setAttribute("tz", tz);
+
+                var clientId = AjxTimezone.getClientId(this.timezone);
+                ZmTimezone.set(soapDoc, clientId, null, true);
 			}
 		}
 
