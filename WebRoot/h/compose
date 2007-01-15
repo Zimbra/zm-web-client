@@ -32,7 +32,7 @@
 
     <c:choose>
         <c:when test="${empty compose }">
-            <zm:messageCompose var="compose" message="${message}" action="${message.isDraft ? 'resend' : param.op}"/>
+            <zm:messageCompose var="compose" message="${message}" action="${message.isDraft ? 'draft' : param.op}"/>
         </c:when>
         <c:when test="${uploader.isUpload and !empty message}">
             <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
@@ -43,7 +43,6 @@
 
 
 <app:view title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
-
     <c:set var="toolbar">
         <table width=100% cellspacing=0 class='Tb'>
             <tr>
