@@ -91,8 +91,9 @@ function(actionMenu, type, id) {
 			menuItem.setDisabledImage(menuItem.getImage()+"Dis");
 			menuItem.setEnabled(!isLinkOrRemote);
 		}
-
-		var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
+    }
+    if (actionMenu) {
+        var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
 		menuItem.setImage("Refresh");
 	}
 };
