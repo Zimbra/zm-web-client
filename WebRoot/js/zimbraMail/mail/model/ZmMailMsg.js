@@ -163,11 +163,6 @@ function() {
 	return this._attachments;
 }
 
-ZmMailMsg.prototype.getInviteOrganizer =
-function() {
-	return this.isInvite() ? this.invite.getOrganizerEmail() : null;
-};
-
 /**
 * Returns a Reply-To address if there is one, otherwise the From address
 * unless this message was sent by the user, in which case, it is the To

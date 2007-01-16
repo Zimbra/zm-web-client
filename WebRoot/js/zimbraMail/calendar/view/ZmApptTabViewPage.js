@@ -486,18 +486,7 @@ function(appt, mode) {
 		now.setTime(now.getTime() + ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
 		this._endTimeSelect.set(now);
 
-		// bug 9969: remove the all day durtion for display
-		// HACK: This is a total hack because there are two types
-		//       of all day appointment objects. Non-recurring ones
-		//       have there start time set to the current time (for
-		//       some unknown reason) and their end time set to the
-		//       the start time + the default appointment duration.
-		//       Recurring appointments have their start time and
-		//       end time set to 00:00:00 which means that when
-		//       editing it will look like the event ends on the
-		//       day *following* the actual end day. So this hack
-		//       is here until I can figure out why the two are
-		//       different.
+		// bug 9969: HACK - remove the all day durtion for display
         var isNewFromQuickAdd = mode == ZmAppt.MODE_NEW_FROM_QUICKADD;
         if (!isNewFromQuickAdd && ed.getHours() == 0 && ed.getMinutes() == 0 && ed.getSeconds() == 0) {
 			ed.setHours(-12);
@@ -658,37 +647,33 @@ function() {
 
 ZmApptTabViewPage.prototype._createApptHtml =
 function() {
-	var dims = this.parent.getSize();
-	var rowHeight = AjxEnv.isIE ? 150 : 110;
-	this._notesHtmlEditorId = Dwt.getNextId();
+	this._notesHtmlEditorId = this._htmlElId + "_notes";
+	this._subjectFieldId 	= this._htmlElId + "_subject";
+	this._calLabelId 		= this._htmlElId + "_calLabel";
+	this._calSelectId 		= this._htmlElId + "_calSelect";
+	this._showAsSelectId 	= this._htmlElId + "_showAsSelect";
+	this._startDateFieldId 	= this._htmlElId + "_startDateField";
+	this._startMiniCalBtnId = this._htmlElId + "_startMiniCalBtn";
+	this._startTimeSelectId = this._htmlElId + "_startTimeSelect";
+	this._allDayCheckboxId 	= this._htmlElId + "_allDayCheckbox";
+	this._endDateFieldId 	= this._htmlElId + "_endDateField";
+	this._endMiniCalBtnId 	= this._htmlElId + "_endMiniCalBtn";
+	this._endTimeSelectId 	= this._htmlElId + "_endTimeSelect";
+	this._tzoneSelectId 	= this._htmlElId + "_tzoneSelect";
+	this._repeatSelectId 	= this._htmlElId + "_repeatSelect";
+	this._repeatDescId 		= this._htmlElId + "_repeatDesc";
 
-	var html = [];
-	var i = 0;
+	var subs = {
+		id: this._htmlElId,
+		height: (this.parent.getSize().y - 30),
+		locationId: this._attTdId[ZmAppt.LOCATION],
+		personId: this._attTdId[ZmAppt.PERSON],
+		equipmentId: this._attTdId[ZmAppt.EQUIPMENT],
+		currDate: (AjxDateUtil.simpleComputeDateStr(new Date())),
+		isGalEnabled: this._appCtxt.get(ZmSetting.GAL_ENABLED)
+	};
 
-	html[i++] = "<div><table border=0 width=100% style='table-layout:fixed; height:";
-	html[i++] = dims.y - 30;
-	html[i++] = "px'><colgroup><col width='";
-	html[i++] = AjxEnv.is800x600orLower ? "235" : "335";
-	html[i++] = "' /><col /></colgroup>";
-	html[i++] = "<tr style='height:";
-	html[i++] = rowHeight;
-	html[i++] = "px'><td valign=top><fieldset><legend>";
-	html[i++] = ZmMsg.details;
-	html[i++] = "</legend><div>";
-	html[i++] = this._getDetailsHtml();
-	html[i++] = "</div></fieldset></td>";
-	html[i++] = "<td valign=top><fieldset><legend>";
-	html[i++] = ZmMsg.time;
-	html[i++] = "</legend><div style='overflow:hidden; ";
-	html[i++] = AjxEnv.isIE ? " width:99%'>" : "'>";
-	html[i++] = this._getTimeHtml();
-	html[i++] = "</div></fieldset>";
-	html[i++] = "</td></tr><tr><td colspan=2>";
-	html[i++] = this._getSchedulingHtml();
-	html[i++] = "</td></tr></table></div><div id='";
-	html[i++] = this._notesHtmlEditorId;
-	html[i++] = "'></div>";
-	this.getHtmlElement().innerHTML = html.join("");
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ApptEdit", subs);
 };
 
 ZmApptTabViewPage.prototype._createInputs = 
@@ -776,153 +761,6 @@ function() {
 
 	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt);
 	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt);
-};
-
-ZmApptTabViewPage.prototype._getDetailsHtml =
-function() {
-
-	this._subjectFieldId 		= Dwt.getNextId();
-	this._calLabelId 			= Dwt.getNextId();
-	this._calSelectId 			= Dwt.getNextId();
-	this._showAsSelectId 		= Dwt.getNextId();
-
-	var html = [];
-	var i = 0;
-
-	html[i++] = "<table border=0 width=100%>";
-	html[i++] = "<tr><td width=1% class='ZmFieldLabelRight'>*&nbsp;";
-	html[i++] = ZmMsg.subject;
-	html[i++] = ":</td><td colspan=5 id='";
-	html[i++] = this._subjectFieldId;
-	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td width=1% class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.location;
-	html[i++] = ":</td><td colspan=5 id='";
-	html[i++] = this._attTdId[ZmAppt.LOCATION];
-	html[i++] = "'></td></tr>";
-	html[i++] = "<tr>";
-	html[i++] = "<td width=1% class='ZmFieldLabelRight'>";
-	html[i++] = ZmMsg.showAs;
-	html[i++] = "</td><td width=1% id='";
-	html[i++] = this._showAsSelectId;
-	html[i++] = "'></td></tr>";
-	html[i++] = "<tr>";
-	html[i++] = "<td width=1% class='ZmFieldLabelRight' id='";
-	html[i++] = this._calLabelId;
-	html[i++] = "'>";
-	html[i++] = ZmMsg.calendar;
-	html[i++] = ":</td><td id='"
-	html[i++] = this._calSelectId;
-	html[i++] = "'></td>";
-	html[i++] = "</tr>";
-	html[i++] = "</td></tr></table>";
-
-	return html.join("");
-};
-
-ZmApptTabViewPage.prototype._getTimeHtml =
-function() {
-	var currDate = AjxDateUtil.simpleComputeDateStr(new Date());
-	this._startDateFieldId 		= Dwt.getNextId();
-	this._startMiniCalBtnId 	= Dwt.getNextId();
-	this._startTimeSelectId 	= Dwt.getNextId();
-	this._allDayCheckboxId 		= Dwt.getNextId();
-	this._endDateFieldId 		= Dwt.getNextId();
-	this._endMiniCalBtnId 		= Dwt.getNextId();
-	this._endTimeSelectId 		= Dwt.getNextId();
-	this._tzoneSelectId 		= Dwt.getNextId();
-	this._repeatSelectId 		= Dwt.getNextId();
-	this._repeatDescId 			= Dwt.getNextId();
-
-	var html = [];
-	var i = 0;
-
-	html[i++] = "<table border=0>";
-	html[i++] = "<tr><td></td><td width=1%>";
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = "<input type='checkbox' id='";
-	html[i++] = this._allDayCheckboxId;
-	html[i++] = "'></td><td class='ZmFieldLabelLeft'>&nbsp;";
-	html[i++] = ZmMsg.allDayEvent;
-	html[i++] = "</td></tr></table></td><td></td><td colspan=10 id='";
-	html[i++] = this._tzoneSelectId;
-	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td class='ZmFieldLabelRight'>";
-	html[i++] = ZmMsg.start;
-	html[i++] = ":</td><td>";
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = "<input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='";
-	html[i++] = this._startDateFieldId;
-	html[i++] = "' value='";
-	html[i++] = currDate;
-	html[i++] = "'></td><td id='";
-	html[i++] = this._startMiniCalBtnId;
-	html[i++] = "'></td>";
-	html[i++] = "</tr></table></td>";
-	html[i++] = "<td class='ZmFieldLabelCenter'>@</td><td id='";
-	html[i++] = this._startTimeSelectId;
-	html[i++] = "'></td>";
-	html[i++] = "</tr><tr><td class='ZmFieldLabelRight'>";
-	html[i++] = ZmMsg.end;
-	html[i++] = ":</td><td>";
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = "<input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='";
-	html[i++] = this._endDateFieldId;
-	html[i++] = "' value='";
-	html[i++] = currDate;
-	html[i++] = "'></td><td id='";
-	html[i++] = this._endMiniCalBtnId;
-	html[i++] = "'></td>";
-	html[i++] = "</tr></table></td>";
-	html[i++] = "<td class='ZmFieldLabelCenter'>@</td><td id='";
-	html[i++] = this._endTimeSelectId;
-	html[i++] = "'></td>";
-	html[i++] = "</tr>";
-	html[i++] = "<tr><td valign=top class='ZmFieldLabelRight' style='line-height:22px'>";
-	html[i++] = ZmMsg.repeat;
-	html[i++] = ":</td><td valign=top colspan=2 id='";
-	html[i++] = this._repeatSelectId;
-	html[i++] = "'><td colspan=10><span id='";
-	html[i++] = this._repeatDescId;
-	html[i++] = "' onmouseout='this.style.cursor=\"default\"' style='text-decoration:underline;'";
-	html[i++] = "></span></td>";
-	html[i++] = "</tr>";
-	html[i++] = "</table>";
-
-	return html.join("");
-};
-
-ZmApptTabViewPage.prototype._getSchedulingHtml =
-function() {
-
-	var html = [];
-	var i = 0;
-
-	html[i++] = "<table border=0 width=100%>";
-	html[i++] = "<tr>";
-	html[i++] = "<td width='1%' align='right' valign='top' class='ZmApptTabViewPageField'>";
-	html[i++] = ZmMsg.attendees;
-	html[i++] = ":</td>";
-	html[i++] = "<td id='";
-	html[i++] = this._attTdId[ZmAppt.PERSON];
-	html[i++] = "'></td>";
-	html[i++] = "</tr>";
-
-	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		html[i++] = "<tr>";
-		html[i++] = "<td width=1% align=right class='ZmApptTabViewPageField'>";
-		html[i++] = ZmMsg.resources;
-		html[i++] = ":</td>";
-
-		html[i++] = "<td id='";
-		html[i++] = this._attTdId[ZmAppt.EQUIPMENT];
-		html[i++] = "'></td>";
-		html[i++] = "</tr>";
-	}
-
-	html[i++] = "</table>";
-
-	return html.join("");
 };
 
 ZmApptTabViewPage.prototype._initNotesHtmlEditor =

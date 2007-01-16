@@ -237,148 +237,22 @@ function() {
 
 ZmSchedTabViewPage.prototype._createHTML =
 function() {
+	this._startDateFieldId 	= this._htmlElId + "_startDateField";
+	this._startMiniCalBtnId = this._htmlElId + "_startMiniCalBtn";
+	this._startTimeSelectId = this._htmlElId + "_startTimeSelect";
+	this._startTimeAtLblId	= this._htmlElId + "_startTimeAtLbl";
+	this._allDayCheckboxId 	= this._htmlElId + "_allDayCheckbox";
+	this._endDateFieldId 	= this._htmlElId + "_endDateField";
+	this._endMiniCalBtnId 	= this._htmlElId + "_endMiniCalBtn";
+	this._endTimeSelectId 	= this._htmlElId + "_endTimeSelect";
+	this._endTimeAtLblId	= this._htmlElId + "_endTimeAtLbl";
+	this._navToolbarId		= this._htmlElId + "_navToolbar";
+	this._attendeesTableId	= this._htmlElId + "_attendeesTable";
 
-	var html = [];
-	var i = 0;
-
-	html[i++] = "<table border=0 width=100% cellpadding=3><tr><td width=100%>";
-	html[i++] = this._getTimeHtml();
-	html[i++] = "</td><td style='text-align:right'>";
-	html[i++] = this._getKeyHtml();
-	html[i++] = "</td></tr></table>";
-	html[i++] = "<div style='margin-top:10'>";
-	html[i++] = this._getFreeBusyHtml();
-	html[i++] = "</div>";
-
-	this.getHtmlElement().innerHTML = html.join("");
-};
-
-ZmSchedTabViewPage.prototype._getTimeHtml =
-function() {
-	this._startDateFieldId 		= Dwt.getNextId();
-	this._startMiniCalBtnId 	= Dwt.getNextId();
-	this._startTimeSelectId 	= Dwt.getNextId();
-	this._allDayCheckboxId 		= Dwt.getNextId();
-	this._endDateFieldId 		= Dwt.getNextId();
-	this._endMiniCalBtnId 		= Dwt.getNextId();
-	this._endTimeSelectId 		= Dwt.getNextId();
-
-	var html = [];
-	var i = 0;
-
-	html[i++] = "<table border=0>";
-	html[i++] = "<tr><td></td><td colspan=10><table border=0><tr><td><input type='checkbox' id='";
-	html[i++] = this._allDayCheckboxId;
-	html[i++] = "'></td><td class='ZmFieldLabelLeft'>";
-	html[i++] = ZmMsg.allDayEvent;
-	html[i++] = "</td></tr></table></td></tr>";
-	html[i++] = "<tr><td class='ZmFieldLabelRight'>";
-	html[i++] = ZmMsg.startTime;
-	html[i++] = "</td><td>";
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = "<input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='";
-	html[i++] = this._startDateFieldId;
-	html[i++] = "' value=''></td><td id='";
-	html[i++] = this._startMiniCalBtnId;
-	html[i++] = "'></td>";
-	html[i++] = "</tr></table></td>";
-	html[i++] = "<td class='ZmFieldLabelCenter'>@</td><td id='";
-	html[i++] = this._startTimeSelectId;
-	html[i++] = "'></td>";
-	html[i++] = "</tr><tr><td class='ZmFieldLabelRight'>";
-	html[i++] = ZmMsg.endTime;
-	html[i++] = "</td><td>";
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
-	html[i++] = "<input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='";
-	html[i++] = this._endDateFieldId;
-	html[i++] = "' value=''></td><td id='";
-	html[i++] = this._endMiniCalBtnId;
-	html[i++] = "'></td>";
-	html[i++] = "</tr></table></td>";
-	html[i++] = "<td class='ZmFieldLabelCenter'>@</td><td id='";
-	html[i++] = this._endTimeSelectId;
-	html[i++] = "'></td></tr>";
-	html[i++] = "</table>";
-
-	return html.join("");
-};
-
-ZmSchedTabViewPage.prototype._getKeyHtml =
-function() {
-	var html = [];
-	var i = 0;
-
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmGraphKey'><tr>";
-	html[i++] = "<td class='ZmGraphKeyHeader'>";
-	html[i++] = ZmMsg.key;
-	html[i++] = "</td></tr><tr><td class='ZmGraphKeyBody'>";
-	html[i++] = "<table border=0 cellspacing=2><tr>";
-
-	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-free'></div></td>";
-	html[i++] = "<td class='ZmGraphKeyColorText'>";
-	html[i++] = ZmMsg.free;
-	html[i++] = "</td><td>&nbsp;</td>"
-
-	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-busy'></div></td>";
-	html[i++] = "<td class='ZmGraphKeyColorText'>";
-	html[i++] = ZmMsg.busy;
-	html[i++] = "</td><td>&nbsp;</td>"
-
-	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-tentative'></div></td>";
-	html[i++] = "<td class='ZmGraphKeyColorText'>";
-	html[i++] = ZmMsg.tentative;
-	html[i++] = "</td><td>&nbsp;</td>"
-
-	html[i++] = "</tr><tr>";
-
-	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-unknown'></div></td>";
-	html[i++] = "<td class='ZmGraphKeyColorText'>";
-	html[i++] = ZmMsg.unknown;
-	html[i++] = "</td><td>&nbsp;</td>"
-
-	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-outOfOffice'></div></td>";
-	html[i++] = "<td class='ZmGraphKeyColorText'>";
-	html[i++] = ZmMsg.outOfOffice;
-	html[i++] = "</td><td>&nbsp;</td>"
-
-	html[i++] = "</tr>";
-	html[i++] = "</table>";
-	html[i++] = "</td></tr></table>";
-
-	return html.join("");
-};
-
-ZmSchedTabViewPage.prototype._getFreeBusyHtml =
-function() {
-	this._navToolbarId = Dwt.getNextId();
-	this._attendeesTableId = Dwt.getNextId();
 	this._schedTable[0] = null;	// header row has no attendee data
 
-	var html = [];
-	var i = 0;
-
-	html[i++] = "<table style='padding-left:3px;' border=0 cellpadding=0 cellspacing=0 width=100% id='";
-	html[i++] = this._attendeesTableId;
-	html[i++] = "'><colgroup><col style='width:165px' /><col style='width:626px' /></colgroup>";
-
-	// header row
-	html[i++] = "<tr><td align='center' id='";
-	html[i++] = this._navToolbarId;
-	html[i++] = AjxEnv.isIE ? "' width=100%>" : "'>";
-	html[i++] = "</td><td>";
-
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmSchedulerGridHeaderTable'><tr>";
-	for (var j = 0; j <= 24; j++) {
-		var hour = AjxDateUtil.isLocale24Hour() ? j : ((j % 12) || 12);
-		html[i++] = "<td><div class='ZmSchedulerGridHeaderCell'>";
-		html[i++] = hour;
-		html[i++] = "</div></td>";
-	}
-	html[i++] = "</tr></table>";
-	html[i++] = "</td></tr>";
-	html[i++] = "</table>";
-
-	return html.join("");
+	var subs = { id:this._htmlElId };
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ScheduleView", subs);
 };
 
 ZmSchedTabViewPage.prototype._initAutocomplete =
@@ -673,8 +547,8 @@ function(show) {
 		Dwt.setVisibility(this._endTZoneSelect.getHtmlElement(), show);
 	}
 	// also show/hide the "@" text
-	Dwt.setVisibility(this._startTimeSelect.getHtmlElement().parentNode.previousSibling, show);
-	Dwt.setVisibility(this._endTimeSelect.getHtmlElement().parentNode.previousSibling, show);
+	Dwt.setVisibility(document.getElementById(this._startTimeAtLblId), show);
+	Dwt.setVisibility(document.getElementById(this._endTimeAtLblId), show);
 };
 
 /*

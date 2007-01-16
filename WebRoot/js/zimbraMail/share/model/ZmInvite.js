@@ -220,14 +220,15 @@ function(compNum) {
 
 ZmInvite.prototype.getServerEndTime = 
 function(compNum) {
-	if (this.components[compNum] == null) return;
+	var cn = compNum || 0;
+	if (this.components[cn] == null) return;
 
 	if (this._serverEndTime == null) {
-		if (this.components[compNum].e != null ) {
-			this._serverEndTime = this.components[compNum].e[0].d;
+		if (this.components[cn].e != null ) {
+			this._serverEndTime = this.components[cn].e[0].d;
 		} else {
 			// get the duration
-			var dur	= this.components[compNum].dur;
+			var dur	= this.components[cn].dur;
 			var dd		= dur && dur[0].d || 0;
 			var weeks	= dur && dur[0].w || 0;
 			var hh		= dur && dur[0].h || 0;
@@ -235,15 +236,15 @@ function(compNum) {
 			var ss		= dur && dur[0].s || 0;
 			var t = parseInt(ss) + (parseInt(mm) * 60) + (parseInt(hh) * 3600) + (parseInt(dd) * 24 * 3600) + (parseInt(weeks) * 7 * 24 * 3600);
 			// parse the start date
-			var start = this.components[compNum].s[0].d;
+			var start = this.components[cn].s[0].d;
 			var yyyy = parseInt(start.substr(0,4), 10);
 			var MM = parseInt(start.substr(4,2), 10);
 			var dd = parseInt(start.substr(6,2), 10);
 			var d = new Date(yyyy, MM -1, dd);
 			if (start.charAt(8) == 'T') {
-				var hh = parseInt(start.substr(9,2), 10);
-				var mm = parseInt(start.substr(11,2), 10);
-				var ss = parseInt(start.substr(13,2), 10);
+				hh = parseInt(start.substr(9,2), 10);
+				mm = parseInt(start.substr(11,2), 10);
+				ss = parseInt(start.substr(13,2), 10);
 				d.setHours(hh, mm, ss, 0);
 			}
 			// calculate the end date -- start + offset;
@@ -288,26 +289,28 @@ function(compNum) {
 
 ZmInvite.prototype.getServerStartTimeTz = 
 function(compNum) {
-	if (this.components[compNum] == null) return;
+	var cn = compNum || 0;
+	if (this.components[cn] == null) return;
 
 	if (this._serverStartTimeZone == null) {
 		var startTime = this.getServerStartTime();
 		this._serverStartTimeZone = startTime && startTime.charAt(startTime.length -1) == 'Z'
 			? AjxTimezone.GMT_NO_DST
-			: this.components[compNum].s[0].tz;
+			: this.components[cn].s[0].tz;
 	}
 	return this._serverStartTimeZone;
 };
 
 ZmInvite.prototype.getServerEndTimeTz = 
 function(compNum) {
-	if (this.components[compNum] == null) return;
+	var cn = compNum || 0;
+	if (this.components[cn] == null) return;
 
 	if (this._serverEndTimeZone == null) {
 		var endTime = this.getServerEndTime();
 		this._serverEndTimeZone = endTime && startTime.charAt(endTime.length -1) == 'Z'
 			? AjxTimezone.GMT_NO_DST
-			: this.components[compNum].e[0].tz;
+			: this.components[cn].e[0].tz;
 	}
 	return this._serverEndTimeZone;
 };

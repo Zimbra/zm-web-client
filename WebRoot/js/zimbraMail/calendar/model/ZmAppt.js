@@ -567,15 +567,15 @@ function(message, viewMode) {
 		return;
 
 	this.isOrg = message.invite.isOrganizer();
-	this.organizer = message.getInviteOrganizer();
+	this.organizer = message.invite.getOrganizerEmail();
 	this.name = message.invite.getName();
 	this.exception = message.invite.isException();
 	this.freeBusy = message.invite.getFreeBusy();
 	// if instance of recurring appointment, start date is generated from
 	// unique start time sent in appointment summaries. Associated message
 	// will contain only the original start time.
-	var start = message.invite.getServerStartTime(0);
-	var end = message.invite.getServerEndTime(0);
+	var start = message.invite.getServerStartTime();
+	var end = message.invite.getServerEndTime();
 	if (viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
 		this.setStartDate(this.getUniqueStartDate());
 		this.setEndDate(this.getUniqueEndDate());
@@ -589,7 +589,7 @@ function(message, viewMode) {
 	this.endsInUTC = end.charAt(start.length-1) == "Z";
 
 	// record timezone if given, otherwise, guess
-	var tz = (message.invite.getServerStartTimeTz(0)) || (AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+	var tz = (message.invite.getServerStartTimeTz()) || (AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 
 	// adjust start/end times based on UTC/timezone
 	if (viewMode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
@@ -728,67 +728,16 @@ function(message) {
 */
 ZmAppt.prototype.getToolTip =
 function(calController) {
-	// update/null if modified
-	if (this._orig) return this._orig.getToolTip(calController);
+	if (this._orig)
+		return this._orig.getToolTip(calController);
 
 	if (!this._toolTip) {
-		var html = [];
-		var idx = 0;
-		
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 ><tr valign='center'><td colspan=2 align='left'>";
-		html[idx++] = "<div style='border-bottom: 1px solid black;'>";
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr valign='center'><td><b>";
+		var params = { appt: this,
+			cal: (this.getFolderId() != ZmOrganizer.ID_CALENDAR && calController) ? calController.getCalendar() : null,
+			when: this.getDurationText(false, false),
+			location: this.getLocation(true), width: "250" };
 
-		// IMGHACK - added outer table for new image changes...
-		html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
-		if (this.hasOtherAttendees()) {
-			html[idx++] = "<td>";
-			html[idx++] = AjxImg.getImageHtml("ApptMeeting");
-			html[idx++] = "</td>";
-		}
-			
-		if (this.isException()) {
-			html[idx++] = "<td>";
-			html[idx++] = AjxImg.getImageHtml("ApptException");
-			html[idx++] = "</td>";
-		} else if (this.isRecurring()) {
-			html[idx++] = "<td>";
-			html[idx++] = AjxImg.getImageHtml("ApptRecur");
-			html[idx++] = "</td>";
-		}
-
-//		if (this.alarm)
-//			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptReminder") + "</td>";
-
-		html[idx++] = "</tr></table>&nbsp;";
-
-		html[idx++] = AjxStringUtil.htmlEncode(this.getName());
-		html[idx++] = "&nbsp;</div></b></td><td align='right'>";
-
-		var cal = this.getFolderId() != ZmOrganizer.ID_CALENDAR && calController
-			? calController.getCalendar() : null;
-
-		html[idx++] = cal && cal.link
-			? AjxImg.getImageHtml("GroupSchedule")
-			: AjxImg.getImageHtml("Appointment");
-
-		html[idx++] = "</td>";
-		html[idx++] = "</table></div></td></tr>";
-
-		if (cal)
-			idx = this._addEntryRow(ZmMsg.calendar, cal.getName(), html, idx, false);
-
-		if (this.hasOtherAttendees())
-			idx = this._addEntryRow(ZmMsg.status, this.getParticipationStatusString(), html, idx, false);		
-
-		var when = this.getDurationText(false, false);
-
-		idx = this._addEntryRow(ZmMsg.when, when, html, idx, false);
-		idx = this._addEntryRow(ZmMsg.location, this.getLocation(true), html, idx, false);
-		idx = this._addEntryRow(ZmMsg.notes, this.fragment, html, idx, true, "250");
-
-		html[idx++] = "</table>";
-		this._toolTip = html.join("");
+		this._toolTip = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#Tooltip", params);
 	}
 	return this._toolTip;
 };
@@ -935,7 +884,7 @@ function(mode, callback, msg, result) {
 				this._addAttendeesToSoap(soapDoc, null, m, null, accountName);
 			}
 		}
-		soapDoc.set("su", "Cancelled: " + this.name, m);
+		soapDoc.set("su", "Cancelled: " + this.name, m); // XXX: i18n?
 		this._addNotesToSoap(soapDoc, m, true);
 		this._sendRequest(soapDoc, accountName, callback);
 	} else {
@@ -1244,28 +1193,7 @@ function() {
 
 ZmAppt.prototype._getTTDay =
 function(d) {
-	var formatter = DwtCalendar.getDayFormatter();
-	return formatter.format(d);
-};
-
-// Adds a row to the tool tip.
-ZmAppt.prototype._addEntryRow =
-function(field, data, html, idx, wrap, width) {
-	if (data != null && data != "") {
-		html[idx++] = "<tr valign='top'><td align='right' style='padding-right: 5px;'><b><div style='white-space:nowrap'>";
-		html[idx++] = AjxStringUtil.htmlEncode(field);
-		html[idx++] = ":</div></b></td><td align='left'><div style='white-space:";
-		html[idx++] = wrap ? "wrap;" : "nowrap;";
-		if (width) {
-			html[idx++] = "width:";
-			html[idx++] = width;
-			html[idx++] = "px;";
-		}
-		html[idx++] = "'>";
-		html[idx++] = AjxStringUtil.htmlEncode(data);
-		html[idx++] = "</div></td></tr>";
-	}
-	return idx;
+	return DwtCalendar.getDayFormatter().format(d);
 };
 
 ZmAppt.prototype._addInviteAndCompNum =
@@ -1362,7 +1290,7 @@ function(soapDoc, method, attachmentId, notifyList, onBehalfOf) {
 	inv.setAttribute("type", "event");
 	inv.setAttribute("fb", this.freeBusy);
 	inv.setAttribute("transp", "O");
-	inv.setAttribute("status","CONF");
+	inv.setAttribute("status", "CONF");
 	inv.setAttribute("allDay", this.allDayEvent);
 
 	var s = soapDoc.set("s", null, inv);
