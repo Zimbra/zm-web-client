@@ -72,7 +72,7 @@
   <property name='l10n.excludes' value='msgs/*_*.properties,keys/*_*.properties' />
 
   <!-- list all the skins with custom images to build here -->
-  <property name='skins' value='steel,comcast,_demo' />
+  <property name='skins' value='steel,_demo' />
 
   <condition property='isProduction' value='true'>
     <or>
@@ -471,10 +471,21 @@
 
   </target>
 
-  <target name='skin-images'>
+  <target name='skin-images' depends='default-skins,customer-skin' />
+
+  <target name='default-skins'>
     <foreach list='${skins}' target='build-skin-images' param='skindir'>
 		<param name="csspathprefix" value="/zimbra/img/"/>
+		<param name="skinbasedir" value="WebRoot"/>
     </foreach>
+  </target>
+
+  <target name='customer-skin' if='env.CUSTOMER_SKIN'>
+	<antcall target="build-skin-images">
+	  <param name='skindir' value='${env.CUSTOMER_SKIN}'/>
+	  <param name="csspathprefix" value="/zimbra/img/"/>
+	  <param name="skinbasedir" value="../ZimbraCustomerServices"/>
+	</antcall>
   </target>
 
   <target name='build-skin-images' depends='compile' unless='imagesdone'>
@@ -489,7 +500,7 @@
     <imagemerge destdir='${images.loRes.destDir}/skins/${skindir}'
       cssfile='${skindir}.css' csspath='${csspathprefix}loRes/skins/${skindir}/'
       cachefile='${dir.skincache}/CacheLoRes.html'>
-      <dirset dir='WebRoot/skins/${skindir}' includes='**/img/**'/>
+      <dirset dir='${skinbasedir}/skins/${skindir}' includes='**/img/**'/>
     </imagemerge>
     <replace token="@jsVersion@" value="${build.simpleDate}" file='${images.loRes.destDir}/skins/${skindir}/${dir.skincache}/CacheLoRes.html' />
     <replace token="@jsVersion@" value="${build.simpleDate}" file='${images.loRes.destDir}/skins/${skindir}/${skindir}.css' />
@@ -555,7 +566,10 @@
     <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
       <fileset dir="WebRoot/" excludes="**/help/**,**/adminhelp/**,**/admin_skins/**,**/templates/**,js/*.js"/>
     </copy>
-    <copy todir="${build.dir}/WebRoot/js/ajax" overwrite="${isProduction}" >
+    <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
+      <fileset dir="../ZimbraCustomerServices" includes="skins/${env.CUSTOMER_SKIN}/**" />
+	</copy>
+	<copy todir="${build.dir}/WebRoot/js/ajax" overwrite="${isProduction}" >
       <fileset dir="${ajax.dir}/WebRoot/js"/>
     </copy>
 	<copy todir='${build.dir}/WebRoot/css' overwrite='${isProduction}'>
@@ -661,7 +675,8 @@
   -->
   <target name="dev-sync" depends='templates' description="Web Client Quick Sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
-      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**,ALE/**" excludes="**/style/*.css"/>
+      <fileset dir="../ZimbraCustomerServices" includes="skins/**" /> 
+	  <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**,ALE/**" excludes="**/style/*.css"/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
 	<copy verbose='true' todir='${deploy.dir}${deploy.path}/css'>
