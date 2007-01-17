@@ -35,13 +35,13 @@
 *
 * @author Conrad Damon
 */
-function ZmChicletButton(parent, outerClass, innerClass, text) {
+function ZmChicletButton(parent, outerClass, innerClass, text, isLast) {
 
 	if (arguments.length == 0) return;
 	DwtControl.call(this, parent, outerClass, DwtControl.RELATIVE_STYLE);
 
 	if (text) {
-		this._setHtml(innerClass, text);
+		this._setHtml(innerClass, text, isLast);
 	} else {
 		this._innerDiv = document.createElement("div");
 		this._innerDiv.style.position = DwtControl.ABSOLUTE_STYLE;
@@ -153,21 +153,12 @@ function(selected) {
 };
 
 ZmChicletButton.prototype._setHtml =
-function(innerClass, text) {
-	var html = [];
-	var i = 0;
-	var divId = Dwt.getNextId();
+function(innerClass, text, isLast) {
+	var subs = { id:this._htmlElId, innerClass:innerClass, text:text, isLast:isLast };
+	var template = skin.hints && skin.hints.app_chooser.fullWidth ? "ChicletButtonEx" : "ChicletButton";
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.share.templates.App#" + template, subs);
 
-	html[i++] = "<div id='";
-	html[i++] = divId;
-	html[i++] = "'><table border=0 cellpadding=0 cellspacing=0><tr><td nowrap class='";
-	html[i++] = AjxImg.getClassForImage(innerClass);
-	html[i++] = "'></td><td>&nbsp;</td><td nowrap>";
-	html[i++] = text;
-	html[i++] = "</td></tr></table></div>";
-
-	this.getHtmlElement().innerHTML = html.join("");
-	this._innerDiv = document.getElementById(divId);
+	this._innerDiv = document.getElementById(this._htmlElId+"_inner");
 };
 
 // Activates the button.

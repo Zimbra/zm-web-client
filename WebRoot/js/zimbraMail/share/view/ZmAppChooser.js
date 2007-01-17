@@ -27,7 +27,9 @@ function ZmAppChooser(parent, className, buttons, tabStyle) {
 
 	className = className || "ZmAppChooser";
 	var tbStyle = tabStyle ? DwtToolBar.HORIZ_STYLE : DwtToolBar.VERT_STYLE;
-	DwtToolBar.call(this, parent, className, Dwt.ABSOLUTE_STYLE, null, null, tbStyle);
+	var width = skin.hints && skin.hints.app_chooser.fullWidth ? "100%" : null;
+
+	DwtToolBar.call(this, parent, className, Dwt.ABSOLUTE_STYLE, null, null, width, tbStyle);
 
 	this.setScrollStyle(Dwt.CLIP);
 
@@ -37,7 +39,7 @@ function ZmAppChooser(parent, className, buttons, tabStyle) {
 		if (id == ZmAppChooser.SPACER) {
 			this.addSpacer(ZmAppChooser.SPACER_HEIGHT);
 		} else {
-			this._createButton(id, tabStyle);
+			this._createButton(id, tabStyle, i == buttons.length-1);
 		}
 	}
 };
@@ -59,7 +61,7 @@ ZmAppChooser.B_HELP		= i++;
 ZmAppChooser.B_OPTIONS	= i++;
 ZmAppChooser.B_LOGOUT	= i++;
 
-ZmAppChooser.IMAGE = new Object();
+ZmAppChooser.IMAGE = {};
 ZmAppChooser.IMAGE[ZmAppChooser.OUTER]			= "ImgAppChiclet";
 ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]		= "ImgAppChicletHover";
 ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]		= "ImgAppChicletSel";
@@ -74,7 +76,7 @@ ZmAppChooser.IMAGE[ZmAppChooser.B_HELP]     	= "Help";
 ZmAppChooser.IMAGE[ZmAppChooser.B_OPTIONS]		= "Preferences";
 ZmAppChooser.IMAGE[ZmAppChooser.B_LOGOUT]		= "Logoff";
 
-ZmAppChooser.TEXT = new Object();
+ZmAppChooser.TEXT = {};
 ZmAppChooser.TEXT[ZmAppChooser.B_EMAIL]			= ZmMsg.mail;
 ZmAppChooser.TEXT[ZmAppChooser.B_CONTACTS]		= ZmMsg.addressBook;
 ZmAppChooser.TEXT[ZmAppChooser.B_CALENDAR]		= ZmMsg.calendar;
@@ -85,7 +87,7 @@ ZmAppChooser.TEXT[ZmAppChooser.B_HELP]			= ZmMsg.help;
 ZmAppChooser.TEXT[ZmAppChooser.B_OPTIONS]		= ZmMsg.options;
 ZmAppChooser.TEXT[ZmAppChooser.B_LOGOUT]		= ZmMsg.logOff;
 
-ZmAppChooser.TOOLTIP = new Object();
+ZmAppChooser.TOOLTIP = {};
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_EMAIL]		= ZmMsg.goToMail;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_CONTACTS]	= ZmMsg.goToContacts;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_CALENDAR]	= ZmMsg.goToCalendar;
@@ -123,9 +125,9 @@ function(id) {
 };
 
 ZmAppChooser.prototype._createButton =
-function(id, tabStyle) {
+function(id, tabStyle, isLast) {
 	var text = tabStyle == DwtToolBar.HORIZ_STYLE ? ZmAppChooser.TEXT[id]: null;
-	var b = new ZmChicletButton(this, ZmAppChooser.IMAGE[ZmAppChooser.OUTER], ZmAppChooser.IMAGE[id], text);
+	var b = new ZmChicletButton(this, ZmAppChooser.IMAGE[ZmAppChooser.OUTER], ZmAppChooser.IMAGE[id], text, isLast);
 	b.setActivatedImage(ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]);
 	b.setTriggeredImage(ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]);
 	b.setToolTipContent(ZmAppChooser.TOOLTIP[id]);
