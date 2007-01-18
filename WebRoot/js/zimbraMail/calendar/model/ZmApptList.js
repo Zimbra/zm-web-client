@@ -72,7 +72,8 @@ function(resp) {
 		var instanceStartTimes = new AjxVector();
 		for (var j = 0; j < instances.length; j++) {
 			var instNode = instances[j];
-			var adjustMs = apptNode.allDay ? instNode.tzo + new Date(instNode.s).getTimezoneOffset()*60*1000 : 0;
+            var allDay = instNode.allDay != null ? instNode.allDay : apptNode.allDay;
+            var adjustMs = allDay ? instNode.tzo + new Date(instNode.s).getTimezoneOffset()*60*1000 : 0;
 			var startTime = parseInt(this._getAttr(apptNode, instNode, "s"),10) + adjustMs;
 			if (instanceStartTimes.contains(startTime)) {
 				continue;
@@ -98,7 +99,7 @@ function(resp) {
 			if (appt.allDayEvent == null) appt.allDayEvent = '0';
 			appt.otherAttendees = this._getAttr(apptNode, instNode, "otherAtt");
 			appt.alarm = this._getAttr(apptNode, instNode, "alarm");
-			appt.recurring = apptNode.recur;
+			appt.recurring = instNode.recur != null ? instNode.recur : apptNode.recur;
 			if (appt.recurring) {
 				appt._seriesInvId = apptNode.invId;
 			}
