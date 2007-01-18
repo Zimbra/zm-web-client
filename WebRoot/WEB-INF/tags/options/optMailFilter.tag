@@ -6,6 +6,9 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
+<app:handleError>
+    <c:set var="rules" value="${empty param.ruleName ? mailbox.filterRulesReload : mailbox.filterRules}"/>
+</app:handleError>
 
 <table border="0" cellpadding="0" cellspacing="4" width=100%>
     <tbody>
@@ -18,7 +21,7 @@
                         <th width=1% nowrap>&nbsp;
                         <th nowrap><fmt:message key="filterName"/>
                     </tr>
-                    <c:forEach items="${mailbox.filterRules}" var="rule" varStatus="status">
+                    <c:forEach items="${rules}" var="rule" varStatus="status">
                         <tr <c:if test="${rule.name == param.ruleName or (empty param.ruleName and status.first)}"><c:set var="selectedRule" value="${rule}"/>class='RowSelected'</c:if>>
                             <td width=1% nowrap>&nbsp;</td>
                             <td width=1% nowrap><input type=checkbox  name="active" value="${rule.name}" <c:if test="${rule.active}">CHECKED </c:if>></td>
@@ -33,7 +36,7 @@
                             </td>
                         </tr>
                     </c:forEach>
-                    <c:if test="${empty mailbox.filterRules}">
+                    <c:if test="${empty rules}">
                         <tr>
                             <td colspan="4">
                                 <div class='NoResults'><fmt:message key="noFilterRules"/></div>

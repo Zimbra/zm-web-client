@@ -120,9 +120,7 @@
                 <c:choose>
                     <c:when test="${zm:isFlag(action)}">
                         <c:set var="flag" value="${zm:getFlag(action)}"/>
-                        <fmt:message key="FILT_ACTION_FLAG">
-                            <fmt:param>${redirect.address}</fmt:param>
-                        </fmt:message>
+                        <fmt:message key="FILT_ACTION_FLAG_${flag.flagOp}"/>
                     </c:when>
                 </c:choose>
                 <br>
