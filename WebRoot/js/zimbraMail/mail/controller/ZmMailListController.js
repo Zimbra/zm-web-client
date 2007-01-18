@@ -686,10 +686,21 @@ function(type, componentId, instanceDate, accountName) {
 	if (subject != null) {
 		msg.setSubject(subject);
 	}
-	msg.sendInviteReply(contactList, true, componentId, null, null, instanceDate, accountName);
+    var errorCallback = new AjxCallback(this, this._handleErrorInviteReply);
+    msg.sendInviteReply(contactList, true, componentId, null, errorCallback, instanceDate, accountName);
+};
+ZmMailListController.prototype._handleErrorInviteReply =
+function(result) {
+    if (result.code == ZmCsfeException.MAIL_NO_SUCH_ITEM) {
+        var dialog = this._appCtxt.getErrorDialog();
+        dialog.setMessage(ZmMsg.inviteOutOfDate);
+        dialog.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
+        dialog.popup();
+        return true;
+    }
 };
 
-ZmMailListController.prototype._spamListener = 
+ZmMailListController.prototype._spamListener =
 function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	var markAsSpam = (this._getSearchFolderId() != ZmFolder.ID_SPAM);
