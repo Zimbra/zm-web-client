@@ -566,7 +566,7 @@
     <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
       <fileset dir="WebRoot/" excludes="**/help/**,**/adminhelp/**,**/admin_skins/**,**/templates/**,js/*.js"/>
     </copy>
-    <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
+    <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" failonerror='false'>
       <fileset dir="../ZimbraCustomerServices" includes="skins/${env.CUSTOMER_SKIN}/**" />
 	</copy>
 	<copy todir="${build.dir}/WebRoot/js/ajax" overwrite="${isProduction}" >
