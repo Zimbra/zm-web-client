@@ -771,7 +771,8 @@ function(attachmentId, callback, errorCallback, notifyList) {
 
 	if (needsExceptionId) {
 		var exceptId = soapDoc.set("exceptId", null, invAndMsg.inv);
-		if (this.allDayEvent != "1") {
+        // bug 13529: exception id based on original appt, not new data
+        if (this._orig.allDayEvent != "1") {
 			var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate(), this.startsInUTC);
 			// bug fix #4697 (part 2)
 			if (!this.startsInUTC && this.timezone) {
@@ -781,7 +782,7 @@ function(attachmentId, callback, errorCallback, notifyList) {
 			if (AjxEnv.isSafari) sd = AjxStringUtil.xmlEncode(sd);
 			exceptId.setAttribute("d", sd);
 		} else {
-			var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate());
+			var sd = AjxDateUtil.getServerDate(this.getOrigStartDate());
 			if (AjxEnv.isSafari) sd = AjxStringUtil.xmlEncode(sd);
 			exceptId.setAttribute("d", sd);
 		}
