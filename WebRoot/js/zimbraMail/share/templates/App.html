@@ -15,10 +15,10 @@
 		<table border=0 cellpadding=0 cellspacing=0 width=100%>
 			<tr>
 				<td width=1 class='skin_tab_L'>
-					<div class='ImgSkin_Tab_Normal_L'></div>
+					<div id='${id}_leftBtn' class='ImgSkin_Tab_Normal_L'></div>
 				</td>
 				<td class='skin_tab_stretch'>
-					<div class='ImgSkin_Tab_Normal__H skin_tab_text'>
+					<div id='${id}_middleBtn' class='ImgSkin_Tab_Normal__H skin_tab_text'>
 						<table border=0 cellpadding=0 cellspacing=0 width=100%>
 							<tr>
 								<td width=1 nowrap class='skin_tab_text'>
@@ -31,7 +31,7 @@
 					</div>
 				</td>
 				<td width=1 class='skin_tab_R'>
-					<div class='ImgSkin_Tab_Normal_R'></div>
+					<div id='${id}_rightBtn' class='ImgSkin_Tab_Normal_R'></div>
 				</td>
 				<$ if (!data.isLast) { $>
 				<td>

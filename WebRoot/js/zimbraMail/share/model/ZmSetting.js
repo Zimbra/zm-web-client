@@ -135,6 +135,7 @@ ZmSetting.SKIN_STATUS_ID				= i++;
 ZmSetting.SKIN_TREE_ID					= i++;
 ZmSetting.SKIN_TREE_FOOTER_ID			= i++;
 ZmSetting.SKIN_USER_INFO_ID				= i++;
+ZmSetting.SKIN_QUOTA_INFO_ID			= i++;
 
 // COS SETTINGS
 ZmSetting.ALLOW_ANY_FROM_ADDRESS		= i++;
@@ -317,7 +318,8 @@ ZmSetting.INIT[ZmSetting.SKIN_SHELL_ID]					= [null, ZmSetting.T_CONFIG, ZmSetti
 ZmSetting.INIT[ZmSetting.SKIN_STATUS_ID]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_status"];
 ZmSetting.INIT[ZmSetting.SKIN_TREE_ID]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_tree"];
 ZmSetting.INIT[ZmSetting.SKIN_TREE_FOOTER_ID]			= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_tree_footer"];
-ZmSetting.INIT[ZmSetting.SKIN_USER_INFO_ID]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_quota"];
+ZmSetting.INIT[ZmSetting.SKIN_USER_INFO_ID]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_username"];
+ZmSetting.INIT[ZmSetting.SKIN_QUOTA_INFO_ID]			= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "skin_container_quota"];
 
 // COS SETTINGS
 ZmSetting.INIT[ZmSetting.ALLOW_ANY_FROM_ADDRESS]		= ["zimbraAllowAnyFromAddress", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];

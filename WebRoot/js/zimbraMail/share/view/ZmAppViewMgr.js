@@ -121,6 +121,7 @@ function ZmAppViewMgr(shell, controller, isNewWindow, hasSkin) {
 // components
 ZmAppViewMgr.C_BANNER					= "BANNER";
 ZmAppViewMgr.C_USER_INFO				= "USER INFO";
+ZmAppViewMgr.C_QUOTA_INFO				= "QUOTA INFO";
 ZmAppViewMgr.C_SEARCH					= "SEARCH";
 ZmAppViewMgr.C_SEARCH_BUILDER			= "SEARCH BUILDER";
 ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR	= "SEARCH BUILDER TOOLBAR";
@@ -134,17 +135,18 @@ ZmAppViewMgr.C_APP_CONTENT				= "APP CONTENT";
 ZmAppViewMgr.C_STATUS					= "STATUS";
 ZmAppViewMgr.C_SASH						= "SASH";
 
-ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_SEARCH,
-							   ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
-							   ZmAppViewMgr.C_CURRENT_APP, ZmAppViewMgr.C_APP_CHOOSER,
-							   ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP,
-							   ZmAppViewMgr.C_TOOLBAR_BOTTOM, ZmAppViewMgr.C_APP_CONTENT,
-							   ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH];
+ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
+							ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_SEARCH_BUILDER,
+							ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR, ZmAppViewMgr.C_CURRENT_APP,
+							ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
+							ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_TOOLBAR_BOTTOM,
+							ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH];
 
 // keys for getting container IDs
 ZmAppViewMgr.CONT_ID_KEY = {};
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_BANNER]					= ZmSetting.SKIN_LOGO_ID;
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_USER_INFO]				= ZmSetting.SKIN_USER_INFO_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_QUOTA_INFO]				= ZmSetting.SKIN_QUOTA_INFO_ID;
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH]					= ZmSetting.SKIN_SEARCH_ID;
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER]			= ZmSetting.SKIN_SEARCH_BUILDER_ID;
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR]	= ZmSetting.SKIN_SEARCH_BUILDER_TOOLBAR_ID;
@@ -221,9 +223,6 @@ function(components, doFit, noSetZ) {
 */
 ZmAppViewMgr.prototype.showSearchBuilder =
 function(visible) {
-	if (skin.hints && skin.hints.app_chooser.style == "tabs")
-		this._components[ZmAppViewMgr.C_USER_INFO].setVisible(!visible);
-
 	DBG.println(AjxDebug.DBG1, "show search builder: " + visible);
 	skin.showSearchBuilder(visible);
 	this._components[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR].zShow(visible);
@@ -724,7 +723,7 @@ function(ev) {
 							ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_STATUS];
 				this._fitToContainer(list);
 			} else if (deltaWidth) {
-				var list = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_USER_INFO,
+				var list = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
 							ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
 							ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_TOOLBAR_BOTTOM];
 				this._fitToContainer(list);

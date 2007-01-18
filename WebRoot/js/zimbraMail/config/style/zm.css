@@ -137,14 +137,14 @@
 }
 
 /* Quota label */
-.BannerBar .BannerText {
+.BannerTextQuota {
 	@ChromeText@
 	@NoWrap@
 	text-align: center;
 }
 
 /* User label */
-.BannerBar .BannerTextUser {
+.BannerTextUser {
 	@ChromeText@
 	@NoWrap@
 	text-align: center;

@@ -315,7 +315,8 @@ function(params) {
 		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE, "console_inset_app_l", 20);
 		this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
-		this._components[ZmAppViewMgr.C_USER_INFO] = this._createUserInfo();
+		this._components[ZmAppViewMgr.C_USER_INFO] = this._userNameField = this._createUserInfo();
+		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField = this._createUserInfo();
 		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell, this._TAB_SKIN_ENABLED);
 		this._appCtxt.setCurrentAppToolbar(currentAppToolbar);
 		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
@@ -745,16 +746,18 @@ function(app) {
 ZmZimbraMail.prototype._setUserInfo = 
 function() {
 	if (this._TAB_SKIN_ENABLED) {
-		this._setUserInfoLink("ZmZimbraMail.helpLinkCallback();", "Help", ZmMsg.help, "skin_container_help");
-		this._setUserInfoLink("ZmZimbraMail.conditionalLogOff();", "Logoff", ZmMsg.logOff, "skin_container_logoff");
+		var hideIcon = skin.hints && skin.hints.help_button.hideIcon;
+		this._setUserInfoLink("ZmZimbraMail.helpLinkCallback();", "Help", ZmMsg.help, "skin_container_help", hideIcon);
+		hideIcon = skin.hints && skin.hints.logout_button.hideIcon;
+		this._setUserInfoLink("ZmZimbraMail.conditionalLogOff();", "Logoff", ZmMsg.logOff, "skin_container_logoff", hideIcon);
 	}
 
 	var login = this._appCtxt.get(ZmSetting.USERNAME);
 	var username = (this._appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
 	if (username) {
-		this._userNameField.innerHTML = username;
+		this._userNameField.getHtmlElement().innerHTML = username;
 		if (AjxEnv.isLinux)	// bug fix #3355
-			this._userNameField.style.lineHeight = "13px";
+			this._userNameField.getHtmlElement().style.lineHeight = "13px";
 	}
 
 	var userTooltip = (username != login) ? login : null;
@@ -767,7 +770,7 @@ function() {
 	var idx = 0;
 	html[idx++] = "<center><table border=0 cellpadding=0 cellspacing=0><tr";
 	html[idx++] = AjxEnv.isLinux ? " style='line-height: 13px'" : ""; // bug #3355;
-	html[idx++] = "><td class='BannerText'>";
+	html[idx++] = "><td class='BannerTextQuota'>";
 	html[idx++] = ZmMsg.quota;
 	html[idx++] = ": </td>";
 	if (quota) {
@@ -791,13 +794,14 @@ function() {
 		quotaTooltip = [ZmMsg.quota, ": ", percent, "% ", desc].join("");
 	} else {
 		var desc = AjxMessageFormat.format(ZmMsg.quotaDescUnlimited, [size]);
-		html[idx++] = "<td class='BannerText'>";
+		html[idx++] = "<td class='BannerTextQuota'>";
 		html[idx++] = desc;
 		html[idx++] = "</td>";
 	}
 	html[idx++] = "</tr></table></center>";
-	
-	this._usedQuotaField.innerHTML = html.join("");
+
+	if (!(skin.hints && skin.hints.help_button.hideIcon))
+		this._usedQuotaField.getHtmlElement().innerHTML = html.join("");
 
 	if (userTooltip || quotaTooltip) {
 		var tooltip = [];
@@ -815,18 +819,23 @@ function() {
 		}
 		tooltip[idx++] = "</table>";
 		this._components[ZmAppViewMgr.C_USER_INFO].setToolTipContent(tooltip.join(""));
+		this._components[ZmAppViewMgr.C_QUOTA_INFO].setToolTipContent(tooltip.join(""));
 	}
 };
 
 ZmZimbraMail.prototype._setUserInfoLink =
-function(staticFunc, icon, lbl, id) {
+function(staticFunc, icon, lbl, id, hideIcon) {
 	var html = [];
 	var i = 0;
-	html[i++] = "<table border=0 cellpadding=1 cellspacing=1 width=90% align=center><tr><td align=right><a href='javascript:;' onclick='";
-	html[i++] = staticFunc;
-	html[i++] = "'>";
-	html[i++] = AjxImg.getImageHtml(icon, null, "border=0");
-	html[i++] = "</a></td><td width=1% style='white-space:nowrap; font-weight:bold'><a href='javascript:;' onclick='";
+	html[i++] = "<table border=0 cellpadding=1 cellspacing=1 align=right width=1%><tr>";
+	if (!hideIcon) {
+		html[i++] = "<td align=right><a href='javascript:;' onclick='";
+		html[i++] = staticFunc;
+		html[i++] = "'>";
+		html[i++] = AjxImg.getImageHtml(icon, null, "border=0");
+		html[i++] = "</a></td>";
+	}
+	html[i++] = "<td width=1% align=right style='white-space:nowrap; font-weight:bold'><a href='javascript:;' onclick='";
 	html[i++] = staticFunc;
 	html[i++] = "'>";
 	html[i++] = lbl;
@@ -1129,29 +1138,10 @@ function() {
 
 ZmZimbraMail.prototype._createUserInfo =
 function() {
-	var userInfo = new DwtComposite(this._shell, "BannerBar", Dwt.ABSOLUTE_STYLE);
-	userInfo.setScrollStyle(Dwt.CLIP);
-	userInfo._setMouseEventHdlrs();
-
-	var userNameId = Dwt.getNextId();
-	var usedQuotaId = Dwt.getNextId();
-
-	var html = [];
-	var i = 0;
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%>";
-	html[i++] = "<tr><td><div class='BannerTextUser' id='";
-	html[i++] = userNameId;
-	html[i++] = "'></div></td></tr>";
-	html[i++] = "<tr><td><div id='";
-	html[i++] = usedQuotaId;
-	html[i++] = "'></div></td></tr>";
-	html[i++] = "</table>";
-	userInfo.getHtmlElement().innerHTML = html.join("");
-
-	this._userNameField = document.getElementById(userNameId);
-	this._usedQuotaField = document.getElementById(usedQuotaId);
-	
-	return userInfo;
+	var ui = new DwtComposite(this._shell, "BannerBar BannerTextUser", Dwt.ABSOLUTE_STYLE);
+	ui.setScrollStyle(Dwt.CLIP);
+	ui._setMouseEventHdlrs();
+	return ui;
 };
 
 ZmZimbraMail.prototype._createAppChooser =

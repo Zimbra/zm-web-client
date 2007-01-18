@@ -149,11 +149,26 @@ function(selected) {
 		this._origClassName = this._tempOrigClassName;
 		this.setClassName(this._origClassName);
 	}
+
+	// for chiclet buttons that are made w/ images:
+	var left = document.getElementById(this._leftBtnImgId);
+	if (left) left.className = selected ? "ImgSkin_Tab_Selected_L" : "ImgSkin_Tab_Normal_L";
+
+	var middle = document.getElementById(this._middleBtnImgId);
+	if (middle) middle.className = selected ? "ImgSkin_Tab_Selected__H" : "ImgSkin_Tab_Normal__H";
+
+	var right = document.getElementById(this._rightBtnImgId);
+	if (right) right.className = selected ? "ImgSkin_Tab_Selected_R" : "ImgSkin_Tab_Normal_R";
+
 	this.isSelected = selected;
 };
 
 ZmChicletButton.prototype._setHtml =
 function(innerClass, text, isLast) {
+	this._leftBtnImgId = this._htmlElId + "_leftBtn";
+	this._middleBtnImgId = this._htmlElId + "_middleBtn";
+	this._rightBtnImgId = this._htmlElId + "_rightBtn";
+
 	var subs = { id:this._htmlElId, innerClass:innerClass, text:text, isLast:isLast };
 	var template = skin.hints && skin.hints.app_chooser.fullWidth ? "ChicletButtonEx" : "ChicletButton";
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.share.templates.App#" + template, subs);
