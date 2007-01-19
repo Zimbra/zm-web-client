@@ -29,7 +29,10 @@
     </tr>
     <tr>
         <td valign=top align=center class='Overview'>
-            <a href="http://www.zimbra.com" target=_new><div class='ImgAppBanner'/></a>
+            <a href="http://www.zimbra.com/" target="_new">
+                <div class='ImgAppBanner'></div>
+
+            </a>
         </td>
         <td colspan=2 valign=top class='TopContent'>
             <table width=100% cellspacing=0>
