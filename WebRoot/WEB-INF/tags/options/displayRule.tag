@@ -13,14 +13,15 @@
     </tr>
 </table>
 
-<table border="0" cellspacing="3" cellpadding="3" width="100%">
+<table border="0" cellspacing="0" cellpadding="3" width="100%">
 <tbody>
 
     <tr><td colspan="4" class="sectionLabel" valign="top"><fmt:message key="${rule.allConditions ?  'ifAllOfTheFollowingConditionsAreMet' : 'ifAnyOfTheFollowingConditionsAreMet'}"/></td></tr>
+    <c:forEach var="condition" items="${rule.conditions}">
     <tr>
         <td width="5">&nbsp;</td>
         <td class="contactOutput">
-            <c:forEach var="condition" items="${rule.conditions}">
+
             <c:choose>
                 <c:when test="${zm:isAddressBook(condition)}">
                     <c:set var="ab" value="${zm:getAddressBook(condition)}"/>
@@ -66,18 +67,19 @@
                     <fmt:message key="FILT_COND_ATTACHMENT_${attach.exists ? 'EXISTS' : 'NOT_EXISTS'}"/>
                 </c:when>
             </c:choose>
-                <br>
-            </c:forEach>
+
         </td>
     </tr>
+            </c:forEach>    
     <tr><td><br></td></tr>
 
 
     <tr><td colspan="4" class="sectionLabel" valign="top"><fmt:message key="performTheFollowingActions"/></td></tr>
+    <c:forEach var="action" items="${rule.actions}">
     <tr>
         <td width="5">&nbsp;</td>
         <td valign="top" width="385" class="contactOutput">
-            <c:forEach var="action" items="${rule.actions}">
+
                 <c:choose>
                     <c:when test="${zm:isKeep(action)}">
                         <fmt:message key="FILT_ACTION_KEEP"/>
@@ -123,10 +125,9 @@
                         <fmt:message key="FILT_ACTION_FLAG_${flag.flagOp}"/>
                     </c:when>
                 </c:choose>
-                <br>
-            </c:forEach>
         </td>
     </tr>
+    </c:forEach>
     <tr>
         <td><br></td>
     </tr>
