@@ -12,7 +12,7 @@
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
     <zm:getMailbox var="mailbox"/>
 
-    <c:if test="${mailbox.prefs.readingPaneEnabled}">
+    <c:if test="${false and mailbox.prefs.readingPaneEnabled}">
         <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="true" neuterimages="${empty param.xim}"/>
         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
         <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
@@ -119,7 +119,7 @@
                 <app:messageListViewToolbar context="${context}" keys="false"/>
             </td>
         </tr>
-        <c:if test="${mailbox.prefs.readingPaneEnabled and not empty msg}">
+        <c:if test="${false and mailbox.prefs.readingPaneEnabled and not empty msg}">
             <tr>
                    <td class='ZhAppContent'>
                         <c:set var="extImageUrl" value=""/>
