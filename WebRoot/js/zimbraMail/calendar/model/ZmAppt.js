@@ -30,7 +30,6 @@ function ZmAppt(appCtxt, list, noinit, type) {
 
 	this.id = -1;
 	this.uid = -1;																// iCal uid of appt
-	this.type = null;
 	this.name = "";
 	this.fragment = "";
 	this.startDate = new Date();
@@ -110,12 +109,6 @@ ZmAppt.SERVER_WEEK_DAYS				= ["SU", "MO", "TU", "WE", "TH", "FR", "SA"];
 ZmAppt.NOTES_SEPARATOR				= "*~*~*~*~*~*~*~*~*~*";
 
 ZmAppt.ATTACHMENT_CHECKBOX_NAME 	= Dwt.getNextId();
-
-ZmAppt._statusString = {
-	TE:   ZmMsg.tentative,
-	CONF: ZmMsg.confirmed,
-	CANC: ZmMsg.cancelled
-};
 
 ZmAppt._pstatusString = {
 	NE: "NEW",	//	ZmMsg.needsAction,		// HACK: i18n

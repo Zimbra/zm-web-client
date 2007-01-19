@@ -75,7 +75,6 @@ function() {
 };
 
 // Getters
-ZmTask.prototype.getFolderId =			function() { return this.folderId; };
 ZmTask.prototype.getPercentComplete =	function() { return this._percentComplete; };
 ZmTask.prototype.getPriority =			function() { return this._priority; };
 ZmTask.prototype.getIcon = 				function() { return "Task"; };

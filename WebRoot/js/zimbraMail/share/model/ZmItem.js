@@ -125,16 +125,10 @@ ZmItem.F_STATUS			= i++;
 ZmItem.F_FOLDER			= i++;
 ZmItem.F_COMPANY		= i++;
 ZmItem.F_EMAIL			= i++;
-ZmItem.F_PHONE_BUS		= i++;
-ZmItem.F_PHONE_MOBILE 	= i++;
-ZmItem.F_FREE_BUSY		= i++;
 ZmItem.F_ITEM_TYPE		= i++;
 ZmItem.F_TAG_CELL		= i++;
 ZmItem.F_SIZE			= i++;
 ZmItem.F_INDEX			= i++;
-ZmItem.F_COMPLETE		= i++;
-ZmItem.F_CREATED_ON		= i++;
-ZmItem.F_NOTES			= i++;
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};

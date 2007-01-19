@@ -49,7 +49,7 @@ function() {
 	return "ZmListView";
 }
 
-ZmListView.FIELD_PREFIX = new Object();
+ZmListView.FIELD_PREFIX = {};
 ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_ROW]		= "a";
 ZmListView.FIELD_PREFIX[ZmItem.F_ICON]			= "b";
 ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]			= "c";
@@ -65,12 +65,10 @@ ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]		= "l";
 ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER]		= "m";
 ZmListView.FIELD_PREFIX[ZmItem.F_COMPANY]		= "n";
 ZmListView.FIELD_PREFIX[ZmItem.F_EMAIL]			= "o";
-ZmListView.FIELD_PREFIX[ZmItem.F_PHONE_BUS]		= "p";
-ZmListView.FIELD_PREFIX[ZmItem.F_PHONE_MOBILE]	= "q";
-ZmListView.FIELD_PREFIX[ZmItem.F_FREE_BUSY]		= "r";
-ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]		= "s";
-ZmListView.FIELD_PREFIX[ZmItem.F_TAG_CELL]		= "t";
-ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]			= "u";
+ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]		= "p";
+ZmListView.FIELD_PREFIX[ZmItem.F_TAG_CELL]		= "q";
+ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]			= "r";
+
 
 ZmListView.PREFIX_MAP = {};
 for (var field in ZmListView.FIELD_PREFIX) {
