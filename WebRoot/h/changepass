@@ -51,7 +51,9 @@
     <link rel="ICON" type="image/gif" href="<c:url value='/img/loRes/logo/favicon.gif'/>">
     <link rel="SHORTCUT ICON" href="<c:url value='/img/loRes/logo/favicon.ico'/>">
 </head>
-<body onload="document.changePassForm.password.focus();">
+<body <c:if test="${successfullLogin ne 'true'}">
+        onload="document.changePassForm.password.focus();"
+        </c:if>>
 <table width=100% height=100%>
     <tr>
         <td align=center valign=middle>
