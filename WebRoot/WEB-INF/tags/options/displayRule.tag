@@ -109,7 +109,7 @@
                     <c:when test="${zm:isFileInto(action)}">
                         <c:set var="fileInto" value="${zm:getFileInto(action)}"/>
                         <fmt:message key="FILT_ACTION_FILEINTO">
-                            <fmt:param>${fileInto.folderPath}</fmt:param>
+                            <fmt:param>${fn:startsWith(fileInto.folderPath, '/') ? fn:substring(fileInto.folderPath, 1, -1) : fileInto.folderPath}</fmt:param>
                         </fmt:message>
                     </c:when>
                 </c:choose>
