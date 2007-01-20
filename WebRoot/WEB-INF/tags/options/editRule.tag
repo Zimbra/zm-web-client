@@ -6,22 +6,34 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<table width=100% cellspacing=0 cellpadding=0>
-    <tr class='contactHeaderRow'>
-        <td width=20><center><app:img src="mail/MailRule.gif" altkey="filterRule"/></center></td>
-        <td class='contactHeader'><fmt:message key="newFilterRule"/></td>
+<table cellspacing=3 cellpadding=3>
+    <tr>
+        <td valign='center'><fmt:message key="filterName"/> :</td>
+        <td>
+            <c:choose>
+                <c:when test="${not empty param.rulename}">
+                    <c:set var="rulename" value="${param.rulename}"/>
+                </c:when>
+                <c:when test="${empty rule}">
+                    <c:set var="rulename" value=""/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="rulename" value="${rule.name}"/>
+                </c:otherwise>
+            </c:choose>
+            <input name='rulename' type='text' autocomplete='off' size='20' value="${fn:escapeXml(rulename)}">
+        </td>
     </tr>
 </table>
 
 <table border="0" cellspacing="3" cellpadding="3">
 <tbody>
-
     <tr>
         <td><fmt:message key="EFILT_ALLCOND_PRE"/></td>
         <td>
             <select name="allof">
                 <option <c:if test="${rule.allConditions}">selected</c:if> value="IN"><fmt:message key="EFILT_all"/>
-                <option <c:if test="${not rule.allConditions}">selected</c:if> value="IN"><fmt:message key="EFILT_any"/>                                                            
+                <option <c:if test="${not rule.allConditions}">selected</c:if> value="IN"><fmt:message key="EFILT_any"/>
             </select>
         </td>
         <td><fmt:message key="EFILT_ALLCOND_POST"/></td>
@@ -33,7 +45,7 @@
     <tr>
     <td width="5">&nbsp;</td>
     <td  class="ZhAppContent">
-    <table border="0" cellspacing="0" cellpadding="5" class='RuleList'>
+    <table border="0" cellspacing="0" cellpadding="5" class='RuleList' width=100%>
     <tbody>
         <c:forEach var="condition" items="${rule.conditions}">
             <tr>
@@ -42,7 +54,7 @@
                     <c:set var="ab" value="${zm:getAddressBook(condition)}"/>
                     <td>
                         <c:set var="selected" value="${ab.header}"/>
-                                    <select name="abheader">
+                                    <select name="abheader" style='width:100%'>
                                         <option <c:if test="${selected eq 'from'}">selected</c:if> value="from">
                                                 <fmt:message key="EFILT_COND_addressIn"><fmt:param><fmt:message key="from"/></fmt:param></fmt:message>
                                         <option <c:if test="${selected eq 'to'}">selected</c:if> value="to">
@@ -104,6 +116,21 @@
                 </c:when>
                 <c:when test="${zm:isHeader(condition)}">
                     <c:set var="hdr" value="${zm:getHeader(condition)}"/>
+                    <c:choose>
+
+                        <c:when test="${hdr.headerName eq 'subject' or hdr.headerName eq 'to' or hdr.headerName eq 'cc' or hdr.headerName eq 'from'}">
+                            <c:set var="cspan" value="2"/>
+                            <td>
+                                <select name='headervalue'>
+                                    <option <c:if test="${hdr.headerName eq 'subject'}">selected</c:if> value="subject"><fmt:message key="FILT_COND_HEADER_subject"/>
+                                    <option <c:if test="${hdr.headerName eq 'to'}">selected</c:if> value="to"><fmt:message key="FILT_COND_HEADER_to"/>
+                                    <option <c:if test="${hdr.headerName eq 'cc'}">selected</c:if> value="cc"><fmt:message key="FILT_COND_HEADER_cc"/>
+                                    <option <c:if test="${hdr.headerName eq 'from'}">selected</c:if> value="from"><fmt:message key="FILT_COND_HEADER_from"/>
+                                </select>
+                            </td>                            
+                        </c:when>
+                        <c:otherwise>
+                                <c:set var="cspan" value="1"/>
                                 <td>
                                     <select name="headernamed">
                                         <option selected value="headernamed"><fmt:message key="EFILT_COND_HEADER_headerNamed"/>
@@ -112,7 +139,9 @@
                                 <td>
                                     <input name='headervalue' type='text' autocomplete='off' size='20' value="${fn:escapeXml(hdr.headerName)}">
                                 </td>
-                                <td>
+                        </c:otherwise>
+                    </c:choose>
+                                <td colspan="${cspan}">
                                     <select name="headerop">
                                         <option <c:if test="${hdr.headerOp eq 'IS'}">selected</c:if> value="IS"><fmt:message key="EFILT_COND_HEADER_IS"/>
                                         <option <c:if test="${hdr.headerOp eq 'NOT_IS'}">selected</c:if> value="NOT_IS"><fmt:message key="EFILT_COND_HEADER_NOT_IS"/>
@@ -140,21 +169,48 @@
                 </c:when>
                 <c:when test="${zm:isAttachmentExists(condition)}">
                     <c:set var="attach" value="${zm:getAttachmentExists(condition)}"/>
-                                <td colspan='4'>
+                                <td colspan='1'>
                                     <select name="attachop">
                                         <option <c:if test="${attach.exists}">selected</c:if> value="EXISTS"><fmt:message key="EFILT_COND_ATTACHMENT_EXISTS"/>
                                         <option <c:if test="${not attach.exists}">selected</c:if> value="NOT_EXISTS"><fmt:message key="EFILT_COND_ATTACHMENT_NOT_EXISTS"/>
                                     </select>
                                 </td>
+                                <td colspan='3'>&nbsp;
+                                </td>
                 </c:when>
             </c:choose>
                         <td>
-                            <a href="link">remove</a>
+                            <input class='tbButton' type="submit"
+                                   name="actionRemoveCond" value="<fmt:message key="EFILT_COND_remove"/>">
                         </td>
             </tr>
 
 
             </c:forEach>
+            <tr>
+                <td colspan="1">
+                    <select name="addcond">
+                        <option value="from"><fmt:message key="EFILT_NEW_COND_FROM"/>
+                        <option value="to"><fmt:message key="EFILT_NEW_COND_TO"/>
+                        <option value="cc"><fmt:message key="EFILT_NEW_COND_CC"/>
+                        <option value="subject"><fmt:message key="EFILT_NEW_COND_SUBJECT"/>
+                        <option value="subject"><fmt:message key="EFILT_NEW_COND_HEADER"/>
+                        <option value="subject"><fmt:message key="EFILT_NEW_COND_HEADER_EXISTS"/>
+                        <option value="subject"><fmt:message key="EFILT_NEW_COND_SIZE"/>
+                        <option value="subject"><fmt:message key="EFILT_NEW_COND_DATE"/>
+                        <option value="subject"><fmt:message key="EFILT_NEW_COND_BODY"/>
+                        <option value="subject"><fmt:message key="EFILT_NEW_COND_ATTACHMENT"/>
+                        <option value="subject"><fmt:message key="EFILT_NEW_COND_ADDRESS_IN"/>                        
+                    </select>
+                </td>
+                <td colspan=3>
+                    &nbsp;
+                </td>
+                <td>
+                    <input class='tbButton' type="submit"
+                           name="actionNewCond" value="<fmt:message key="EFILT_COND_add"/>">
+                </td>
+            </tr>
             </tbody>
         </table>
         </td>

@@ -51,10 +51,20 @@
                 </c:when>
                 <c:when test="${zm:isHeader(condition)}">
                     <c:set var="hdr" value="${zm:getHeader(condition)}"/>
-                    <fmt:message key="FILT_COND_HEADER_${hdr.headerOp}">
-                        <fmt:param>${hdr.headerName}</fmt:param>
-                        <fmt:param>${hdr.headerValue}</fmt:param>
-                    </fmt:message>
+                    <c:choose>
+                        <c:when test="${hdr.headerName eq 'subject' or hdr.headerName eq 'to' or hdr.headerName eq 'cc' or hdr.headerName eq 'from'}">
+                            <fmt:message key="FILT_COND_HEADER_${hdr.headerOp}">
+                                <fmt:param><fmt:message key="FILT_COND_HEADER_${hdr.headerName}"/></fmt:param>
+                                <fmt:param>${hdr.headerValue}</fmt:param>
+                            </fmt:message>
+                        </c:when>
+                        <c:otherwise>
+                            <fmt:message key="FILT_COND_GENERIC_HEADER_${hdr.headerOp}">
+                                <fmt:param>${hdr.headerName}</fmt:param>
+                                <fmt:param>${hdr.headerValue}</fmt:param>
+                            </fmt:message>
+                        </c:otherwise>
+                    </c:choose>
                 </c:when>
                 <c:when test="${zm:isHeaderExists(condition)}">
                     <c:set var="hdrexists" value="${zm:getHeaderExists(condition)}"/>
@@ -70,7 +80,7 @@
 
         </td>
     </tr>
-            </c:forEach>    
+    </c:forEach>
     <tr><td><br></td></tr>
 
 
