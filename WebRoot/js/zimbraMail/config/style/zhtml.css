@@ -131,6 +131,11 @@ border: none;
     padding: 8px;
 }
 
+
+.ZhRuleContent {
+   @PageBg@  @OutsetBorder@
+}
+
 .RuleList {
       @AppBg@
 /*@InsetBorder@*/

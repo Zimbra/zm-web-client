@@ -44,7 +44,7 @@
 <tbody>
 <tr>
 <td width="5">&nbsp;</td>
-<td  class="ZhAppContent">
+<td  class="ZhRuleContent">
 <table border="0" cellspacing="0" cellpadding="5" class='RuleList' width=100%>
 <tbody>
 <c:forEach var="condition" items="${rule.conditions}">
@@ -220,7 +220,7 @@
 
 <tr>
     <td width="5">&nbsp;</td>
-    <td  class="ZhAppContent">
+    <td  class="ZhRuleContent">
         <table border="0" cellspacing="0" cellpadding="5" class='RuleList'  width=100%>
             <tbody>
                 <c:set var="hasStop" value="${false}"/>
