@@ -15,7 +15,12 @@
          <a href="${closeurl}" <c:if test="${keys}">accesskey="z"</c:if>>${fn:escapeXml(context.backTo)}</a>
         <input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="actionTrash"/>">
         &nbsp;
-        <input class='tbButton' type="submit" name="actionSpam" value="<fmt:message key="actionSpam"/>">
+        <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+            <input class='tbButton' type="submit" name="actionSpam" value="<fmt:message key="actionSpam"/>">
+        </c:if>
+        <c:if test="${context.isFolderSearch and context.folder.isSpam}">
+            <input class='tbButton' type="submit" name="actionNotSpam" value="<fmt:message key="actionNotSpam"/>">
+        </c:if>
         &nbsp;
         <select name="folderId">
             <option value="" selected/><fmt:message key="moveAction"/>

@@ -12,15 +12,20 @@
 <c:if test="${empty requestScope.cvToolbarCache}">
     <zm:getMailbox var="mailbox"/>
     <c:set var="cvToolbarCache" scope="request">
-                <input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="actionTrash"/>">
-                &nbsp;
-                <input class='tbButton' type="submit" name="actionSpam" value="<fmt:message key="actionSpam"/>">
-                &nbsp;
-                 <select name="folderId">
-                     <option value="" selected/><fmt:message key="moveAction"/>
-                     <option disabled /><fmt:message key="actionOptSep"/>
-                     <zm:forEachFolder var="folder">
-                         <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+        <input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="actionTrash"/>">
+        &nbsp;
+        <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+            <input class='tbButton' type="submit" name="actionSpam" value="<fmt:message key="actionSpam"/>">
+        </c:if>
+        <c:if test="${context.isFolderSearch and context.folder.isSpam}">
+            <input class='tbButton' type="submit" name="actionNotSpam" value="<fmt:message key="actionNotSpam"/>">
+        </c:if>
+        &nbsp;
+        <select name="folderId">
+            <option value="" selected/><fmt:message key="moveAction"/>
+            <option disabled /><fmt:message key="actionOptSep"/>
+            <zm:forEachFolder var="folder">
+                <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
                              <option value="m:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
                          </c:if>
                      </zm:forEachFolder>
