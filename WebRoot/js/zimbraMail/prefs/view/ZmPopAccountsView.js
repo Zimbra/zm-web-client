@@ -478,7 +478,6 @@ ZmPopAccountBasicPage.prototype._serverField;
 ZmPopAccountBasicPage.prototype._usernameField;
 ZmPopAccountBasicPage.prototype._password1Field;
 
-ZmPopAccountBasicPage.prototype._advancedCheckbox;
 ZmPopAccountBasicPage.prototype._sslEl;
 /***
 ZmPopAccountBasicPage.prototype._sslTrustDiv;
@@ -529,7 +528,6 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
 
     var useSSL = account.connectionType == ZmPopAccount.CONNECT_SSL;
     var portDef = useSSL ? ZmPopAccount.PORT_SSL : ZmPopAccount.PORT_DEFAULT;
-    var advanced = useSSL || !account.port || account.port != portDef;
     this._sslCheckbox.setSelected(useSSL);
     /***
     Dwt.setVisible(this._sslTrustDiv, useSSL);
@@ -537,8 +535,6 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
     /***/
     this._portField.setValue(account.port || portDef);
     this._portDefEl.innerHTML = portDef;
-    this._advancedCheckbox.setSelected(advanced);
-    this._setAdvancedVisible(advanced);
 
     // initialize other form state
     var identitiesEnabled = this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED);
@@ -613,14 +609,6 @@ ZmPopAccountBasicPage.prototype._updateLinkEmail = function() {
 	    value = userName && mailServer ? [userName,mailServer].join("@") : "";
     }
     this._emailField.setValue(value);
-};
-ZmPopAccountBasicPage.prototype._setAdvancedVisible = function(visible) {
-    var id = this._htmlElId;
-    var ids = [
-        id+"_ssl_row",
-        id+"_port_row"
-    ];
-    this.__setVisible(ids, visible);
 };
 ZmPopAccountBasicPage.prototype._setCreateIdentityVisible = function(visible) {
     var id = this._htmlElId;
@@ -702,7 +690,6 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
     });
     this._showPasswordCheckbox = new DwtCheckbox(this);
 
-    this._advancedCheckbox = new DwtCheckbox(this);
     this._sslCheckbox = new DwtCheckbox(this);
     this._portField = new DwtInputField({
         parent:this, type:DwtInputField.INTEGER,
@@ -737,7 +724,6 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
     this._password1Field.replaceElement(id+"_password");
     this._showPasswordCheckbox.replaceElement(id+"_show_password");
 
-    this._advancedCheckbox.replaceElement(id+"_show_advanced");
     this._sslCheckbox.replaceElement(id+"_ssl");
     this._portField.replaceElement(id+"_port");
 
@@ -768,7 +754,6 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
     var passwordListener = new AjxListener(this, this._passwordListener);
     var showPasswordListener = new AjxListener(this, this._showPasswordListener);
 
-    var advancedListener = new AjxListener(this, this._advancedListener);
     var portListener = new AjxListener(this, this._portListener);
     var sslListener = new AjxListener(this, this._sslListener);
 
@@ -789,7 +774,6 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
     this._password1Field.addListener(DwtEvent.ONKEYUP, passwordListener);
     this._showPasswordCheckbox.addSelectionListener(showPasswordListener);
 
-    this._advancedCheckbox.addSelectionListener(advancedListener);
     this._sslCheckbox.addSelectionListener(sslListener);
     this._portField.addListener(DwtEvent.ONKEYUP, portListener);
 
