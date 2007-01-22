@@ -6,7 +6,6 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<app:handleError>
 <c:if test="${(!empty id) and (param.folderid ne param.origFolderId)}">
     <zm:moveContact var="result" id="${id}" folderid="${param.folderid}"/>
 </c:if>
@@ -69,4 +68,3 @@
     </c:if>
     
 </zm:modifyContact>
-</app:handleError>
