@@ -551,6 +551,13 @@ ZmAppViewMgr.prototype._fitToContainer =
 function(components) {
 	for (var i = 0; i < components.length; i++) {
 		var cid = components[i];
+		if (AjxEnv.isIE && cid == ZmAppViewMgr.C_USER_INFO && components.length > 1) {
+			// Bug 13720: This USER INFO element doesn't go to the right place in IE.
+			if (!this._userInfoAction) {
+				this._fitUserInfoAction = new AjxTimedAction(this, this._fitToContainer, [[ZmAppViewMgr.C_USER_INFO]]);
+			}
+			AjxTimedAction.scheduleAction(this._fitUserInfoAction, 1);
+		}
 		DBG.println(AjxDebug.DBG3, "fitting to container: " + cid);
 		var cont = this._containers[cid];
 		if (cont) {
