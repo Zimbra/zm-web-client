@@ -41,6 +41,10 @@
             <input class='tbButton' type="submit" name="actionSpam" value="<fmt:message key="actionSpam"/>">
             &nbsp;
         </c:if>
+        <c:if test="${context.isFolderSearch and context.folder.isSpam}">
+            <input class='tbButton' type="submit" name="actionNotSpam" value="<fmt:message key="actionNotSpam"/>">
+            &nbsp;
+        </c:if>
         <select name="folderId">
             <option value="" selected/><fmt:message key="moveAction"/>
             <option disabled /><fmt:message key="actionOptSep"/>

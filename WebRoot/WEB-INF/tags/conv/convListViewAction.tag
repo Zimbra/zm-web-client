@@ -60,6 +60,14 @@
                     </fmt:message>
                 </app:status>
             </c:when>
+            <c:when test="${!empty param.actionNotSpam}">
+                <zm:markConversationSpam  var="result" id="${ids}" spam="false"/>
+                <app:status>
+                    <fmt:message key="actionConvMarkedNotSpam">
+                        <fmt:param value="${result.idCount}"/>
+                    </fmt:message>
+                </app:status>
+            </c:when>
             <c:when test="${!empty param.actionDelete}">
                 <zm:moveConversation  var="result" id="${ids}" folderid="${mailbox.trash.id}"/>
                 <app:status>

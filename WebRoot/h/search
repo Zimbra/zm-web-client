@@ -48,7 +48,7 @@
     <c:when test="${context.isConversationSearch}">
         <app:convListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isMessageSearch and action eq 'view' and not mailbox.prefs.readingPaneEnabled}">
+    <c:when test="${context.isMessageSearch and action eq 'view'}">
         <app:messageView context="${context}"/>
     </c:when>
     <c:when test="${context.isMessageSearch}">
