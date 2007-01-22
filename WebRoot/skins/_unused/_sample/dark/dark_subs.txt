@@ -3,7 +3,6 @@ _SkinName_			= [skin]
 # Directories where skin-specific images come from
 SkinImgDir			= /zimbra/skins/[skin]/img
 LogoImgDir			= /zimbra/skins/_base/logos
-LogoURL				= http://www.zimbra.com
 
 
 #######

@@ -130,7 +130,7 @@ SkinName			= light
 #  then you are required to use the Zimbra logo (the default). 
 #
 	LogoImgDir		= /zimbra/skins/_base/logos
-	LogoURL			= http://www.zimbra.com
+#	LogoURL			= http://www.zimbra.com
 #
 #-------------------------------------------------------------------------
 #  If you are using ZCS under the open source license, 
