@@ -444,7 +444,7 @@ function(uname, oldPass) {
 		{
 			var msg = ex.code == ZmCsfeException.ACCT_PASS_RECENTLY_USED
 				? ZmMsg.errorPassRecentlyUsed
-				: (ZmMsg.errorPassChangeTooSoon + " " + errorContact);
+				: (ZmMsg.errorPassChangeTooSoon + " " + ZmMsg.errorContact);
 			ZmLogin._setErrorMessage(msg);
 			newPassField.value = conPassField.value = "";
 			newPassField.focus();
