@@ -11,7 +11,9 @@ param values:
 
 origname      = original rule name (to detect name changes)
 rulename      = current name
+ruleactive    = active (true, false)
 alloff        = all|any
+frompost      = 1 if we should compute the rule from post values
 
 cond0-condN   = condition type (i.e., cond0 == addressbook
 
@@ -35,10 +37,10 @@ action0-actionN   = action type (i.e., rule0 == keep)
                                     type stop
                                     type keep
                                     type discard
-actionN_path                        type fileinto
-actionN_tag                         type tag
-actionN_op                          type mark (READ, FLAGGED)
-actionN_value                       type redirect
+actionN_arg                         type fileinto
+actionN_arg                         type tag
+actionN_arg                         type mark (READ, FLAGGED)
+actionN_arg                         type redirect
 
 action_remove                       remove this action
 
@@ -46,13 +48,14 @@ actionNewAction                     add new action
 action_add                          action to add (keep/discard/fileinto/tag/mark/redirect)
 
 action_count                        number of actions (includes stop)
-action_stop                         stop checkbox (true/false)     
+action_stop                         stop checkbox (true)     
 
 --%>
 <c:if test="${empty param.origname}">
     <input type="hidden" name="origname" value="${rule.name}"/>
 </c:if>
-
+<input type="hidden" name="frompost" value="1"/>
+<input type="hidden" name="ruleactive" value="${not empty param.ruleactive ? param.ruleactive : (not empty rule ? rule.active : 'true')}"/>
 
 
 <table cellspacing=3 cellpadding=3>
@@ -255,7 +258,7 @@ action_stop                         stop checkbox (true/false)
             <option value="to"><fmt:message key="EFILT_NEW_COND_TO"/>
             <option value="cc"><fmt:message key="EFILT_NEW_COND_CC"/>
             <option value="subject"><fmt:message key="EFILT_NEW_COND_SUBJECT"/>
-            <option value="headere"><fmt:message key="EFILT_NEW_COND_HEADER"/>
+            <option value="header"><fmt:message key="EFILT_NEW_COND_HEADER"/>
             <option value="headerexists"><fmt:message key="EFILT_NEW_COND_HEADER_EXISTS"/>
             <option value="size"><fmt:message key="EFILT_NEW_COND_SIZE"/>
             <option value="date"><fmt:message key="EFILT_NEW_COND_DATE"/>
@@ -322,7 +325,7 @@ action_stop                         stop checkbox (true/false)
                                             <fmt:message key="EFILT_ACTION_FILEINTO"/>
                                         </td>
                                         <td>
-                                            <select  name="${acti}_path">
+                                            <select  name="${acti}_arg">
                                                 <c:set var="path" value="${fn:toLowerCase(fn:startsWith(fileInto.folderPath, '/') ? fn:substring(fileInto.folderPath, 1, -1) : fileInto.folderPath)}"/>
                                                 <zm:forEachFolder var="folder">
                                                     <c:if test="${folder.isConversationMoveTarget}">
@@ -343,7 +346,7 @@ action_stop                         stop checkbox (true/false)
                                             <fmt:message key="EFILT_ACTION_TAG"/>
                                         </td>
                                         <td>
-                                            <select name='${acti}_tag'>
+                                            <select name='${acti}_arg'>
                                             <zm:forEachTag var="tag">
                                                 <option value="${fn:escapeXml(tag.name)}" <c:if test="${tag.name eq tagaction.tagName}"> selected</c:if>/>${fn:escapeXml(tag.name)}
                                             </zm:forEachTag>
@@ -359,7 +362,7 @@ action_stop                         stop checkbox (true/false)
                                             <fmt:message key="EFILT_ACTION_REDIRECT"/>
                                         </td>
                                         <td>
-                                            <input name='${acti}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(redirect.address)}">
+                                            <input name='${acti}_arg' type='text' autocomplete='off' size='20' value="${fn:escapeXml(redirect.address)}">
                                         </td>
                                     </c:when>
                                 </c:choose>
@@ -368,7 +371,7 @@ action_stop                         stop checkbox (true/false)
                                         <c:set var="flag" value="${zm:getFlag(action)}"/>
                                         <td>
                                             <input type="hidden" name="${acti}" value="mark"/>
-                                            <select name="${acti}_op">
+                                            <select name="${acti}_arg">
                                                 <option <c:if test="${flag.markOp eq 'READ'}">selected</c:if> value="READ">
                                                         <fmt:message key="EFILT_ACTION_FLAG_READ"/>
                                                 <option <c:if test="${flag.markOp eq 'FLAGGED'}">selected</c:if> value="FLAGGED">
@@ -401,7 +404,7 @@ action_stop                         stop checkbox (true/false)
                             <option value="redirect"><fmt:message key="EFILT_NEW_ACTION_REDIRECT"/>
                         </select>
                         <input class='tbButton' type="submit"
-                               name="actionNewCond" value="<fmt:message key="EFILT_add"/>">
+                               name="actionNewAction" value="<fmt:message key="EFILT_add"/>">
                     </td>
                 </tr>
             </tbody>
@@ -409,7 +412,7 @@ action_stop                         stop checkbox (true/false)
     </td>
 </tr>
 <tr><td colspan="4">
-    <input type=checkbox name="action_stop" value="${hasStop}"
+    <input type=checkbox name="action_stop" value="true"
     <c:if test="${hasStop}"> CHECKED </c:if>>
     <fmt:message key="EFILT_ACTION_STOP"/>
 </td></tr>
