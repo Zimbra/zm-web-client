@@ -132,7 +132,7 @@
                 <c:choose>
                     <c:when test="${zm:isFlag(action)}">
                         <c:set var="flag" value="${zm:getFlag(action)}"/>
-                        <fmt:message key="FILT_ACTION_FLAG_${flag.flagOp}"/>
+                        <fmt:message key="FILT_ACTION_FLAG_${flag.markOp}"/>
                     </c:when>
                 </c:choose>
         </td>
