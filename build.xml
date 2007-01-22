@@ -1,5 +1,12 @@
 <project name="ZimbraWebClient" default="war">
 
+  <!-- To overwrite any properties in your local build, create the file
+       build-custom.properties. If present, its values will overwrite all
+       properties defined in this file, including those defined from the
+       environment. DO NOT CHECK IN build-custom.properties! It is only
+       for local build customization. -->
+  <property file="build-custom.properties" />
+
   <property environment="env"/>
   
 	<property name="zimbra.home.dir" location="/opt/zimbra" />
@@ -674,8 +681,10 @@
   deploy will have to be run.
   -->
   <target name="dev-sync" depends='templates' description="Web Client Quick Sync">
+    <copy verbose="true" todir="${deploy.dir}${deploy.path}" failonerror="false">
+      <fileset dir="../ZimbraCustomerServices" includes="skins/${env.CUSTOMER_SKIN}/**" />
+    </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
-      <fileset dir="../ZimbraCustomerServices" includes="skins/**" /> 
 	  <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**,ALE/**" excludes="**/style/*.css"/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
