@@ -30,7 +30,7 @@ border: none;
 .TabNormal {
  @ToolbarContainer@;
  border-bottom: none;
- background-color: @ItemBgColor@;
+ @PageBg@
  padding: 0 5px 0 5px;
  text-align: center;
  vertical-align: middle;
