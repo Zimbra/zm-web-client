@@ -53,8 +53,6 @@ action_stop                         stop checkbox (true)
 --%>
 <input type="hidden" name="origname" value="${not empty param.origname ? param.origname : rule.name }"/>
 <input type="hidden" name="frompost" value="1"/>
-<input type="hidden" name="ruleactive" value="${not empty param.ruleactive ? param.ruleactive : (not empty rule ? rule.active : 'true')}"/>
-
 
 <table cellspacing=3 cellpadding=3>
     <tr>
@@ -72,6 +70,13 @@ action_stop                         stop checkbox (true)
                 </c:otherwise>
             </c:choose>
             <input name='rulename' type='text' autocomplete='off' size='20' value="${fn:escapeXml(rulename)}">
+        </td>
+        <td align='right'>
+             <c:set var="ruleActive" value="${not empty param.ruleactive ? param.ruleactive : (not empty rule ? rule.active : 'true')}"/>
+            <input name='ruleactive' type='checkbox' value="true" <c:if test="${ruleActive}"> CHECKED </c:if>>
+        </td>
+        <td>
+            <fmt:message key="filterActiveHint"/>
         </td>
     </tr>
 </table>
@@ -409,10 +414,14 @@ action_stop                         stop checkbox (true)
         </table>
     </td>
 </tr>
-<tr><td colspan="4">
-    <input type=checkbox name="action_stop" value="true"
-    <c:if test="${hasStop}"> CHECKED </c:if>>
+<tr>
+    <td colspan="1">
+            <input type=checkbox name="action_stop" value="true"
+                <c:if test="${hasStop}"> CHECKED </c:if>>
+    </td>
+    <td colspan="3">
     <fmt:message key="EFILT_ACTION_STOP"/>
-</td></tr>
+    </td>
+</tr>
 </tbody>
 </table>

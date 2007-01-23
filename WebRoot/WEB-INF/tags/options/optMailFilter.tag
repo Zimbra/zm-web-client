@@ -66,8 +66,12 @@
                                         <input type="hidden" name="ruleName" value="${fn:escapeXml(rule.name)}"/>
                                     </c:if>
                                     <td width=1% nowrap>&nbsp;</td>
-                                    <td width=1% nowrap><input type=checkbox name="active" value="${rule.name}"
-                                    <c:if test="${rule.active}"> CHECKED </c:if>></td>
+                                    <td width=1% nowrap>
+                                    <c:if test="${rule.active}">
+                                        <app:img altkey="active" src="common/Check.gif"/>
+                                    </c:if>
+
+                                    </td>
                                     <td width=1% nowrap>&nbsp;</td>
                                     <td>
                                         <c:url var="selectRuleUrl" value="/h/options?selected=filter">
