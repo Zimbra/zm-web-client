@@ -24,9 +24,10 @@
  */
 
 function ZmTaskListView(parent, controller, dropTgt) {
+	if (arguments.length == 0) return;
 
 	var headerList = this._getHeaderList(parent);
-	DwtListView.call(this, parent, null, Dwt.ABSOLUTE_STYLE, headerList);
+	DwtListEditView.call(this, parent, null, Dwt.ABSOLUTE_STYLE, headerList);
 
 	this.view = ZmController.TASKLIST_VIEW;
 	this.type = ZmItem.TASK;
@@ -41,7 +42,7 @@ function ZmTaskListView(parent, controller, dropTgt) {
 		tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 };
 
-ZmTaskListView.prototype = new DwtListView;
+ZmTaskListView.prototype = new DwtListEditView;
 ZmTaskListView.prototype.constructor = ZmTaskListView;
 
 
@@ -223,18 +224,51 @@ function(item, isDndIcon, isMatched) {
 	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
 
 	return div;
-}
+};
 
-ZmTaskListView.prototype._mouseOverAction =
-function(ev, div) {
-	DwtListView.prototype._mouseOverAction.call(this, ev, div);
+ZmTaskListView.prototype._getInlineWidget =
+function(id) {
+	if (id.indexOf(ZmTaskListView.ID_PRIORITY) != -1) {
+		// todo - add DwtSelect
+		return false;
+	} else if (id.indexOf(ZmTaskListView.ID_ATTACHMENT) != -1) {
+		return false;
+	} else if (id.indexOf(ZmTaskListView.ID_TAG) != -1) {
+		return false;
+	} else if (id.indexOf(ZmTaskListView.ID_FLAG) != -1) {
+		// todo - add checkbox
+		return false;
+	} else if (id.indexOf(ZmTaskListView.ID_SUBJECT) != -1) {
+		if (!this._subjectInput) {
+			this._subjectInput = document.createElement("input");
+			this._subjectInput.type = "text";
+			this._subjectInput.className = "InlineWidget";
+			this.shell.getHtmlElement().appendChild(this._subjectInput);
+		}
+		return this._subjectInput;
+	} else if (id.indexOf(ZmTaskListView.ID_PERCENT_COMPLETE) != -1) {
+		// todo - add DwtSelect
+		return false;
+	} else if (id.indexOf(ZmTaskListView.ID_END_DATE) != -1) {
+		// todo - add DwtCalendar
+		return false;
+	} else if (id.indexOf(ZmTaskListView.ID_CREATED_DATE) != -1) {
+		return false;
+	} else if (id.indexOf(ZmTaskListView.ID_NOTES) != -1) {
+		return false;
+	} else {
+		return false;
+	}
+};
 
-	var type = Dwt.getAttr(div, "_type");
-	var id = ev.target.id || div.id;
-	if (!id) return true;
-
-	if (type == DwtListView.TYPE_LIST_ITEM) {
-		DBG.println("hovering over some item - " + id);
+ZmTaskListView.prototype._setValueForActiveWidget =
+function(activeEl, id) {
+	if (id.indexOf(ZmTaskListView.ID_SUBJECT) != -1) {
+		var cell = document.getElementById(id);
+		if (cell) {
+			// XXX: this is $$$ - need to cache!
+			activeEl.value = AjxStringUtil.trim(AjxStringUtil.convertHtml2Text(cell));
+		}
 	}
 };
 

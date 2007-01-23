@@ -928,6 +928,17 @@ td.DDSepInvisible div {
 }
 
 
+/*
+ * Task application
+ */
+.InlineWidget {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	z-index: 301;
+	visibility: hidden;
+}
+
 
 
 /*

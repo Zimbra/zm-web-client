@@ -120,6 +120,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtCheckbox.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtRadioButtonGroup.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtListView.js<%= ext %>?v=<%= vers %>"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtListEditView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtButton.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtMenuItem.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtMenu.js<%= ext %>?v=<%= vers %>"></script>
