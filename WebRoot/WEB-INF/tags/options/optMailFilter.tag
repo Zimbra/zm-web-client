@@ -7,29 +7,46 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 <app:handleError>
+
     <c:set var="rules" value="${empty param.ruleName ? mailbox.filterRulesReload : mailbox.filterRules}"/>
     <c:forEach items="${rules}" var="rule" varStatus="status">
         <c:if test="${rule.name eq param.ruleName or status.first}">
             <c:set var="selectedRule" value="${rule}"/>
         </c:if>
     </c:forEach>
+
     <c:if test="${not empty param.frompost}">
         <app:constructRule var="postRule"/>
     </c:if>
+    
+    <c:choose>
+        <c:when test="${not empty param.actionFilterSave and requestScope.filterSave eq 'success'}">
+
+        </c:when>
+        <c:when test="${not empty param.actionFilterCancel}">
+            
+        </c:when>
+        <c:when test="${not empty param.actionNewFilter}">
+            <c:set var="newRule" value="${not empty postRule ? postRule : null}"/>
+        </c:when>
+        <c:when test="${not empty param.actionEditFilter}">
+            <c:set var="editRule" value="${not empty postRule ? postRule : selectedRule}"/>
+        </c:when>
+    </c:choose>
 </app:handleError>
 
 <table border="0" cellpadding="0" cellspacing="4" width=100%>
     <tbody>
         <tr>
             <c:choose>
-                <c:when test="${not empty param.actionNewFilter and empty param.actionRuleCancel}">
+                <c:when test="${not empty param.actionNewFilter and (empty param.actionFilterCancel and requestScope.filterSave ne 'success')}">
                     <td valign='top'>
-                        <app:editRule rule="${not empty postRule ? postRule : null}"/>
+                        <app:editRule rule="${newRule}"/>
                     </td>
                 </c:when>
-                <c:when test="${not empty param.actionEditFilter and not empty selectedRule and empty param.actionRuleCancel}">
+                <c:when test="${not empty param.actionEditFilter and not empty editRule and (empty param.actionFilterCancel and requestScope.filterSave ne 'success')}">
                     <td valign='top'>
-                        <app:editRule rule="${not empty postRule ? postRule : selectedRule}"/>
+                        <app:editRule rule="${editRule}"/>
                     </td>
                 </c:when>
                 <c:otherwise>
@@ -45,6 +62,9 @@
                                 <tr
                                         <c:if test="${selectedRule.name eq rule.name}">class='RowSelected'</c:if>
                                         >
+                                    <c:if test="${selectedRule.name eq rule.name}">
+                                        <input type="hidden" name="ruleName" value="${fn:escapeXml(rule.name)}"/>
+                                    </c:if>
                                     <td width=1% nowrap>&nbsp;</td>
                                     <td width=1% nowrap><input type=checkbox name="active" value="${rule.name}"
                                     <c:if test="${rule.active}"> CHECKED </c:if>></td>
