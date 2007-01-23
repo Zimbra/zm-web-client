@@ -34,8 +34,6 @@ border: none;
  padding: 0 5px 0 5px;
  text-align: center;
  vertical-align: middle;
- font-weight:bold;
-
 }
 
 .TabSelected {
@@ -45,7 +43,6 @@ border: none;
  padding: 0 5px 0 5px;
  text-align: center;
  vertical-align: middle;
- font-weight:bold;    
 }
 
 .Tabs A:link, .Tabs A:visited  {
