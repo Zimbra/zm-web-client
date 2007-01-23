@@ -254,9 +254,10 @@ function(columnItem, ascending) {
 
 	var sortBy = ascending ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC;
 	var types = AjxVector.fromArray([ZmItem.CONTACT]);
-	var params = {query:this._query, types:types, sortBy:sortBy, offset:0, 
+	var isChildWindow = this._appCtxt.getAppController().isChildWindow();
+	var params = {query:this._query, types:types, sortBy:sortBy, offset:0,
 				  limit:ZmContactPicker.SEARCHFOR_MAX, contactSource:this._contactSource,
-				  field:"contact:"};
+				  field:"contact:", isChildWindow:isChildWindow};
 	var search = new ZmSearch(this._appCtxt, params);
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearch),
 					errorCallback: new AjxCallback(this, this._handleErrorSearch)});

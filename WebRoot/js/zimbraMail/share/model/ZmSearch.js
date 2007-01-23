@@ -71,6 +71,7 @@ function ZmSearch(appCtxt, params) {
 		this.attrs						= params.attrs;
 		this.userText					= params.userText;
 		this.field						= params.field;
+		this.isChildWindow			 	= params.isChildWindow;
 		
 		if (this.query)
 			this._parseQuery();
@@ -232,7 +233,7 @@ function(isGalSearch, isGalAutocompleteSearch, isCalResSearch, callback, result)
 	} else {
 		response = response.SearchResponse;
 	}
-	var searchResult = new ZmSearchResult(this._appCtxt, this);
+	var searchResult = new ZmSearchResult(this._appCtxt, this, this.isChildWindow);
 	searchResult.set(response, this.contactSource);
 	result.set(searchResult);
 	
