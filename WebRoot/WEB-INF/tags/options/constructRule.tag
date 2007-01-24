@@ -33,9 +33,14 @@
                     <zm:bodyCondition value="${cond_value}" op="${cond_op}"/>
                 </c:when>
                 <c:when test="${cond eq 'date'}">
-                    <fmt:message var="parseFormat" key="FILT_COND_DATE_FORMAT"/>
-                    <fmt:parseDate var="parsedDate" pattern="${parseFormat}" value="${cond_value}"/>
-                    <fmt:formatDate var="fmtDate" value="${parsedDate}" pattern="yyyyMMdd"/>
+                    <c:catch var="parseError">
+                        <fmt:message var="parseFormat" key="FILT_COND_DATE_FORMAT"/>
+                        <fmt:parseDate var="parsedDate" pattern="${parseFormat}" value="${cond_value}"/>
+                        <fmt:formatDate var="fmtDate" value="${parsedDate}" pattern="yyyyMMdd"/>
+                    </c:catch>
+                    <c:if test="${not empty parseError}">
+                        <c:set var="fmtDate" value=""/>
+                    </c:if>
                     <zm:dateCondition value="${fmtDate}" op="${cond_op}"/>
                 </c:when>
                 <c:when test="${cond eq 'header'}">
