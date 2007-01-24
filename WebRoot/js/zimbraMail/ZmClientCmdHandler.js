@@ -67,14 +67,23 @@ function(cmdStr, searchController) {
 		alert("Turning " + feature + " support " + newState);
 		this._settings[id] = !on;
 		this._appCtxt.getAppController().restart(this._settings);
-	} else if (arg0 == "poll") {
+    } else if (arg0 == "instant_notify") {
+        var on = false;
+        if (argv[1] && argv[1] == 1)
+            on = true;
+        this._alert("Set instant notify to "+ (on ? "ON" : "OFF"));
+        this._appCtxt.getAppController().setInstantNotify(on);
+    } else if (arg0 == "poll") {
 		if (!argv[1]) return;
 		this._appCtxt.set(ZmSetting.POLLING_INTERVAL, argv[1]);
 		var pi = this._appCtxt.get(ZmSetting.POLLING_INTERVAL); // LDAP time format converted to seconds
-		this._alert("Set polling interval to " + pi + " seconds");
-		this._appCtxt.getAppController().setPollInterval();
+		if (this._appCtxt.getAppController().setPollInterval()) {
+            this._alert("Set polling interval to " + pi + " seconds");
+        } else {
+            this._alert("Ignoring polling interval b/c we are in Instant_Polling mode ($set:instant_notify 0|1)");
+        }
 	} else if (arg0 == "noop") {
-		this._appCtxt.getAppController()._doPoll(true);
+		this._appCtxt.getAppController().sendNoOp();
 		this._alert("Sent NoOpRequest");
 	} else if (arg0 == "a") {
 		if (this._assistantDialog == null) {

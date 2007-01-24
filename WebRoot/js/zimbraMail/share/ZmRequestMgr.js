@@ -103,7 +103,7 @@ function(params) {
 					 changeToken:changeToken, asyncMode:params.asyncMode, callback:asyncCallback,
 					 logRequest:this._logRequest, highestNotifySeen:this._highestNotifySeen };
 
-	DBG.println(AjxDebug.DBG2, "sendRequest: " + params.soapDoc._methodEl.nodeName);
+	DBG.println(AjxDebug.DBG2, "sendRequest("+reqId+"): " + params.soapDoc._methodEl.nodeName);
 	var cancelParams = timeout ? [reqId, params.errorCallback, params.noBusyOverlay] : null;
 	if (!params.noBusyOverlay) {
 		var cancelCallback = null;
@@ -141,9 +141,14 @@ function(params, result) {
 //	if (this._cancelDialog && this._cancelDialog.isPoppedUp()) {
 //		this._cancelDialog.popdown();
 //	}
-
-	if (!this._pendingRequests[params.reqId]) return;
-	if (this._pendingRequests[params.reqId].state == ZmRequestMgr._CANCEL) return;
+    if (!this._pendingRequests[params.reqId]) {
+        DBG.println(AjxDebug.DBG2, "ZmRequestMgr.handleResponseSendRequest no pendingRequest entry for " + params.reqId);
+        return;
+    }
+    if (this._pendingRequests[params.reqId].state == ZmRequestMgr._CANCEL) {
+        DBG.println(AjxDebug.DBG2, "ZmRequestMgr.handleResponseSendRequest state=CANCEL for " + params.reqId);
+        return;
+    }
 
 	this._pendingRequests[params.reqId].state = ZmRequestMgr._RESPONSE;
 
@@ -152,11 +157,6 @@ function(params, result) {
 	} else if (params.timeout) {
 		AjxTimedAction.cancelAction(this._cancelActionId[params.reqId]);
 		this._cancelActionId[params.reqId] = -1;
-	}
-
-	// we just got activity, cancel current poll timer
-	if (this._controller._pollActionId) {
-		AjxTimedAction.cancelAction(this._controller._pollActionId);
 	}
 
 	var response;
@@ -191,10 +191,9 @@ function(params, result) {
 		result.set(response.Body);
 	}
 
-	// start poll timer if we didn't get an exception
-	if (this._controller._pollInterval) {
-		this._controller._pollActionId = this._controller._doPoll();
-	}
+    // if we didn't get an exception, then we should make sure that the
+    // poll timer is running (just in case it got an exception and stopped)
+    this._controller._kickPolling(true);
 
 	this._clearPendingRequest(params.reqId);
 

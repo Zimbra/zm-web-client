@@ -78,9 +78,11 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.logOff);
 	this._sessionTimerId = -1;
 
-	this._pollActionId = null;
+    this._pollActionId = null; // AjaxTimedAction ID of timer counting down to next poll time
+    this._pollRequest = null; // HTTP request of poll we've sent to server
+    this._pollInstantNotifications = false; // if TRUE, we're in "instant notification" mode
 
-	this._needOverviewLayout = false;
+    this._needOverviewLayout = false;
 	this._treeListener = {};
 	var unreadListener = new AjxListener(this, this._unreadChangeListener);
 	this._treeListener[ZmOrganizer.FOLDER]		= unreadListener;
@@ -519,28 +521,175 @@ function(params) {
 };
 
 /*
-* Sends a delayed NoOpRequest to see if we get any notifications (eg new mail). Ignores
-* exceptions unless they're auth-related.
+* Send a NoOpRequest to the server.  Used for '$set:noop'
 */
-ZmZimbraMail.prototype._doPoll =
-function(now) {
-	this._pollActionId = null; // so we don't try to cancel
-	
-	// It'd be more efficient to make these instance variables, but for some
-	// reason that breaks polling in IE.
-	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-	var errorCallback = new AjxCallback(this, this._handleErrorDoPoll);
-	var pollParams = {soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback, noBusyOverlay: true};
-	var pollAction = new AjxTimedAction(this, this.sendRequest, [pollParams]);
-	return AjxTimedAction.scheduleAction(pollAction, (now ? 0 : this._pollInterval));
+ZmZimbraMail.prototype.sendNoOp =
+function() {
+    var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
+    this.sendRequest({soapDoc: soapDoc, asyncMode: true, noBusyOverlay: true});
+}
+
+/*
+* Put the client into "instant notifications" mode.
+*/
+ZmZimbraMail.prototype.setInstantNotify =
+function(on) {
+    if (on) {
+        this._pollInstantNotifications = true;
+        // set a nonzero poll interval so that we cannot ever
+        // get into a full-speed request loop
+        this._pollInterval = 100;
+        if (this._pollActionId) {
+            AjxTimedAction.cancelAction(this._pollActionId);
+            this._pollActionId = null;
+        }
+        this._kickPolling(true);
+    } else {
+        this.setPollInterval();
+    }
+}
+
+/**
+* Resets the interval between poll requests, based on what's in the settings,
+* only if we are not in instant notify mode.
+*
+*/
+ZmZimbraMail.prototype.setPollInterval =
+function() {
+    if (!this._pollInstantNotifications) {
+        this._pollInterval = this._appCtxt.get(ZmSetting.POLLING_INTERVAL) * 1000;
+        DBG.println(AjxDebug.DBG1, "poll interval = " + this._pollInterval + "ms");
+
+        if (this._pollInterval) {
+            this._kickPolling(true);
+        } else {
+            // cancel pending request if there is one
+            if (this._pollRequest) {
+                this._requestMgr.cancelRequest(this._pollRequest);
+                this._pollRequest = null;
+            }
+            // cancel timer if it is waiting...
+            if (this._pollActionId) {
+                AjxTimedAction.cancelAction(this._pollActionId);
+                this._pollActionId = null;
+            }
+        }
+        return true;
+    } else {
+        DBG.println(AjxDebug.DBG1, "Ignoring Poll Interval (in instant-notify mode)");
+        return false;
+    }
 };
+
+/*
+* Make sure the polling loop is running.  Basic flow:
+*
+*       1) kickPolling():
+*             - cancel any existing timers
+*             - set a timer for _pollInterval time
+*             - call execPoll() when the timer goes off
+*
+*       2) execPoll():
+*             - make the NoOp request, if we're in "instant notifications"
+*               mode, this request will hang on the server until there is more data,
+*               otherwise it will return immediately.  Call into a handle() func below
+*
+*       3) handleDoPollXXXX():
+*             - call back to kickPolling() above
+*
+* resetBackoff = TRUE e.g. if we've just received a successful
+* response from the server, or if the user just changed our
+* polling settings and we want to start in fast mode
+*/
+ZmZimbraMail.prototype._kickPolling =
+function(resetBackoff) {
+    DBG.println(AjxDebug.DBG2, "ZmZimbraMail._kickPolling(1) "+
+                               this._pollInterval + ", "+ this._pollActionId+", "+
+                               (this._pollRequest ? "request_pending" : "no_request_pending"));
+
+    // reset the polling timeout
+    if (this._pollActionId) {
+        AjxTimedAction.cancelAction(this._pollActionId);
+        this._pollActionId = null;
+    }
+
+    if (resetBackoff && this._pollInstantNotifications) {
+        if (this._pollInterval > 100) {
+            // we *were* backed off -- reset the delay back to 1s fastness
+            this._pollInterval = 100;
+            // need to kick the timer if it is waiting -- it might be waiting a long time
+            // and we want the change to take place immediately
+            if (this._pollActionId) {
+                AjxTimedAction.cancelAction(this._pollActionId);
+                this._pollActionId = null;
+            }
+        }
+    }
+
+    if (this._pollInterval && !this._pollActionId && !this._pollRequest) {
+        try {
+            var pollAction = new AjxTimedAction(this, this._execPoll);
+            this._pollActionId = AjxTimedAction.scheduleAction(pollAction, this._pollInterval);
+        } catch (ex) {
+            this._pollActionId = null;
+            DBG.println(AjxDebug.DBG1, "Caught exception in ZmXimbraMail._kickPolling.  Polling chain broken!");
+        }
+    }
+};
+
+/*
+* We've finished waiting, do the actual poll itself
+*/
+ZmZimbraMail.prototype._execPoll =
+function() {
+    this._pollActionId = null;
+
+    // It'd be more efficient to make these instance variables, but for some
+    // reason that breaks polling in IE.
+    var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
+    try {
+        if (this._pollInstantNotifications) {
+            var method = soapDoc.getMethod();
+            method.setAttribute("wait", 1);
+        }
+        var responseCallback = new AjxCallback(this, this._handleResponseDoPoll);
+        var errorCallback = new AjxCallback(this, this._handleErrorDoPoll);
+
+        this._pollRequest = this.sendRequest({soapDoc: soapDoc, asyncMode: true, callback:responseCallback,
+            errorCallback: errorCallback, noBusyOverlay: true});
+    } catch (ex) {
+        // oops!
+        this._handleErrorDoPoll(ex);
+    }
+}
+
 
 ZmZimbraMail.prototype._handleErrorDoPoll =
 function(ex) {
-	return (ex.code != ZmCsfeException.SVC_AUTH_EXPIRED &&
+    this._pollRequest = null;
+
+    if (this._pollInstantNotifications) {
+        // very simpleminded exponential backoff
+        this._pollInterval *= 2;
+        if (this._pollInterval > (1000 * 60 * 2)) {
+            this._pollInterval = 1000 * 60 * 2;
+        }
+    }
+    // restart poll timer if we didn't get an exception
+    this._kickPolling(false);
+
+    return (ex.code != ZmCsfeException.SVC_AUTH_EXPIRED &&
 			ex.code != ZmCsfeException.SVC_AUTH_REQUIRED &&
 			ex.code != ZmCsfeException.NO_AUTH_TOKEN);
 };
+
+ZmZimbraMail.prototype._handleResponseDoPoll =
+function(ex) {
+    this._pollRequest = null;
+    // restart poll timer if we didn't get an exception
+   	this._kickPolling(true);
+};
+
 
 /**
 * Returns a handle to the given app.
@@ -903,19 +1052,6 @@ function(locationStr) {
 ZmZimbraMail.redir =
 function(locationStr){
 	window.location = locationStr;
-};
-
-/**
-* Resets the interval between poll requests, based on what's in the settings.
-*/
-ZmZimbraMail.prototype.setPollInterval =
-function() {
-	this._pollInterval = this._appCtxt.get(ZmSetting.POLLING_INTERVAL) * 1000;
-	DBG.println(AjxDebug.DBG1, "poll interval = " + this._pollInterval + "ms");
-	if (this._pollActionId)
-		AjxTimedAction.cancelAction(this._pollActionId);
-	if (this._pollInterval)
-		this._pollActionId = this._doPoll();
 };
 
 ZmZimbraMail.prototype.setSessionTimer =
