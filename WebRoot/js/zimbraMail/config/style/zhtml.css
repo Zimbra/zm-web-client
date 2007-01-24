@@ -128,8 +128,12 @@ border: none;
     padding: 8px;
 }
 
+.ZhDisplayRuleContent {
+   @AppBg@  @OutsetBorder@
 
-.ZhRuleContent {
+}
+
+.ZhEditRuleContent {
    @PageBg@  @OutsetBorder@
 }
 

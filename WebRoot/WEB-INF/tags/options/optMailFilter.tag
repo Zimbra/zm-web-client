@@ -67,7 +67,7 @@
                             </c:if>
                         </table>
                     </td>
-                    <td class='ZhAppViewContent' valign='top'>
+                    <td class='ZhDisplayRuleContent' valign='top'>
                         <c:if test="${not empty selectedRule}">
                             <app:displayRule rule="${selectedRule}"/>
                         </c:if>
