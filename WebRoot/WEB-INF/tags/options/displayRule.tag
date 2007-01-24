@@ -31,8 +31,17 @@
                 </c:when>
                 <c:when test="${zm:isSize(condition)}">
                     <c:set var="sz" value="${zm:getSize(condition)}"/>
+
                     <fmt:message key="FILT_COND_SIZE_${sz.sizeOp}">
-                        <fmt:param>${fn:escapeXml(sz.size)}</fmt:param>                        
+                        <fmt:param>${fn:escapeXml(sz.size)}</fmt:param>
+                        <fmt:param>
+                            <c:choose>
+                                <c:when test="${sz.units eq 'M'}">MB</c:when>
+                                <c:when test="${sz.units eq 'K'}">KB</c:when>
+                                <c:when test="${sz.units eq 'G'}">GB</c:when>
+                                <c:otherwise>B</c:otherwise>
+                            </c:choose>
+                        </fmt:param>
                     </fmt:message>
                 </c:when>
                 <c:when test="${zm:isBody(condition)}">

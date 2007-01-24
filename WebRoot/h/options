@@ -75,7 +75,7 @@
         <c:set var="subKey" value="mailIdentity"/>
     </c:when>
     <%------------------- MAIL FILTERS ------------------%>
-    <c:when test="${selected eq 'filters'}">
+    <c:when test="${selected eq 'filters' and mailbox.features.filters}">
         <c:set var="subKey" value="mailFilters"/>
     </c:when>
     <%------------------- ADDRESS BOOK ------------------%>
@@ -142,7 +142,7 @@
                                         <app:optMailIdentity mailbox="${mailbox}"/>
                                     </c:when>
                                     <%------------------- MAIL FILTER ------------------%>
-                                    <c:when test="${selected eq 'filter'}">
+                                    <c:when test="${selected eq 'filter' and mailbox.features.filters}">
                                         <app:optMailFilter mailbox="${mailbox}"/>
                                     </c:when>
                                     <%------------------- ADDRESS BOOK ------------------%>

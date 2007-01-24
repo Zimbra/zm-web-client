@@ -29,12 +29,14 @@
             <a href="<c:url value="/h/options?selected=identity"/>" accesskey="${accessKey}">
                 <span><fmt:message key="mailIdentity"/></span></a>
         </td>
-        <c:set var="accessKey" value="${accessKey+1}"/>
-        <td class='TabSpacer'/>
-        <td class='Tab ${selected=='filter' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options?selected=filter"/>" accesskey="${accessKey}">
-                <span><fmt:message key="mailFilters"/></span></a>
-        </td>
+        <c:if test="${mailbox.features.filters}">
+            <c:set var="accessKey" value="${accessKey+1}"/>
+            <td class='TabSpacer'/>
+            <td class='Tab ${selected=='filter' ? 'TabSelected' :'TabNormal'}'>
+                <a href="<c:url value="/h/options?selected=filter"/>" accesskey="${accessKey}">
+                    <span><fmt:message key="mailFilters"/></span></a>
+            </td>
+        </c:if>
         <c:set var="accessKey" value="${accessKey+1}"/>
         <c:if test="${mailbox.features.contacts}">
             <td class='TabSpacer'/>
