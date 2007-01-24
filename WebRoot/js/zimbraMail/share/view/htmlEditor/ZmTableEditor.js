@@ -61,41 +61,6 @@ ZmTableEditor = {
 		this._cellPropsDialog.setup(editor, table, cells);
 	},
 
-	getDialogLayout : function(url) {
-		var time = new Date().getTime();
-
-		// WARNING: synchronous request!
-		// Also we don't treat errors at this point >-) so you better
-		// know what you're doing.
-		var res = AjxRpc.invoke(null, url + "?v=" + time, null, null, true, 5000);
-		var txt = res.text;
-
-		var ids = {};
-
-		// get rid of the comments
-		txt = txt.replace(/<!--.*?-->/, "");
-
-		// replace $msg and $id fields
-		txt = txt.replace(/\$([a-zA-Z0-9_.]+)/g, function(str, p1) {
-			if (/^([^.]+)\.(.*)$/.test(p1)) {
-				var prefix = RegExp.$1;
-				var name = RegExp.$2;
-				switch (prefix) {
-				    case "id":
-					var id = ids[name];
-					if (!id)
-						id = ids[name] = Dwt.getNextId();
-					return id;
-				    case "msg":
-					return ZmMsg[name];
-				}
-			}
-			return str;
-		});
-
-		return { ids: ids, html: txt };
-	},
-
 	// call this in the context of a dialog object that knows this stuff ;-)
 	__makeCommonWidgets : function() {
 		this._wBgColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
@@ -172,7 +137,7 @@ function ZmTablePropsDialog(parent) {
 	var ids;
 	var html;
 
-	ids = ZmTableEditor.getDialogLayout(ZmTablePropsDialog.URL);
+	ids = AjxDlgUtil.getDialogLayout("ZmTablePropsDialog", ZmTablePropsDialog.URL, ZmMsg);
 	html = ids.html;
 	ids = ids.ids;
 
@@ -400,7 +365,7 @@ function ZmCellPropsDialog(parent) {
 	var ids;
 	var html;
 
-	ids = ZmTableEditor.getDialogLayout(ZmCellPropsDialog.URL);
+	ids = AjxDlgUtil.getDialogLayout("ZmCellPropsDialog", ZmCellPropsDialog.URL, ZmMsg);
 	html = ids.html;
 	ids = ids.ids;
 
