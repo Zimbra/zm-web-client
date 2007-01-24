@@ -10,6 +10,11 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
 <c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
+
+<c:if test="${not empty param.actionNew}"><input type="hidden" name="actionNew" value="true"/></c:if>
+<c:if test="${not empty param.actionNewGroup}"><input type="hidden" name="actionNewGroup" value="true"/></c:if>
+<c:if test="${not empty param.actionEdit}"><input type="hidden" name="actionEdit" value="true"/></c:if>
+
 <table width=100% cellspacing=0 cellpadding=0>
     <tr class='contactHeaderRow'>
         <td width=20><center><app:img src="${contact.isGroup or isgroup ? 'contacts/Group.gif' : 'contacts/Contact.gif'}" altkey="${contact.isGroup or isgroup ? 'ALT_CONTACT_GROUP' : 'ALT_CONTACT_CONTACT'}"/></center></td>
@@ -28,7 +33,8 @@
                 <table border="0" cellpadding="0" cellspacing="3" width="100%">
                     <tr>
                         <td class="editContactGroupLabel"><fmt:message key="AB_GROUP_NAME"/>:
-                            <input name='nickname' type='text' autocomplete='off' size='35' value="${fn:escapeXml(contact.nickname)}">
+                            <input name='isgroup' type='hidden' value="true"/>
+                            <input name='nickname' type='text' autocomplete='off' size='35' value="${fn:escapeXml(not empty param.nickname ? param.nickname : contact.nickname)}">
                         </td>
                         <td align=right>
                             <table  border="0" cellspacing='5'>
@@ -66,7 +72,7 @@
         </tr>
         <tr>
             <td>
-                <textarea rows="40" cols="60" style="width:100%" name="dlist">${contact.groupMembersPerLine}</textarea>
+                <textarea rows="40" cols="60" style="width:100%" name="dlist">${not empty param.dlist ? param.dlist : contact.groupMembersPerLine}</textarea>
             </td>
         </tr>
     </c:when>
