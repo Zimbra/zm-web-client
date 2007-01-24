@@ -190,17 +190,18 @@
 <tr>
     <td colspan="1" nowrap>
         <select name="addcond">
+            <option value="select"><fmt:message key="EFILT_NEW_COND_SELECT"/>
             <option value="from"><fmt:message key="EFILT_NEW_COND_FROM"/>
             <option value="to"><fmt:message key="EFILT_NEW_COND_TO"/>
             <option value="cc"><fmt:message key="EFILT_NEW_COND_CC"/>
             <option value="subject"><fmt:message key="EFILT_NEW_COND_SUBJECT"/>
-            <option value="subject"><fmt:message key="EFILT_NEW_COND_HEADER"/>
-            <option value="subject"><fmt:message key="EFILT_NEW_COND_HEADER_EXISTS"/>
-            <option value="subject"><fmt:message key="EFILT_NEW_COND_SIZE"/>
-            <option value="subject"><fmt:message key="EFILT_NEW_COND_DATE"/>
-            <option value="subject"><fmt:message key="EFILT_NEW_COND_BODY"/>
-            <option value="subject"><fmt:message key="EFILT_NEW_COND_ATTACHMENT"/>
-            <option value="subject"><fmt:message key="EFILT_NEW_COND_ADDRESS_IN"/>
+            <option value="headere"><fmt:message key="EFILT_NEW_COND_HEADER"/>
+            <option value="headerexists"><fmt:message key="EFILT_NEW_COND_HEADER_EXISTS"/>
+            <option value="size"><fmt:message key="EFILT_NEW_COND_SIZE"/>
+            <option value="date"><fmt:message key="EFILT_NEW_COND_DATE"/>
+            <option value="body"><fmt:message key="EFILT_NEW_COND_BODY"/>
+            <option value="attachment"><fmt:message key="EFILT_NEW_COND_ATTACHMENT"/>
+            <option value="address"><fmt:message key="EFILT_NEW_COND_ADDRESS_IN"/>
         </select>
         <input class='tbButton' type="submit"
                name="actionNewCond" value="<fmt:message key="EFILT_add"/>">
@@ -310,6 +311,7 @@
                 <tr>
                     <td colspan=3 nowrap>
                         <select name="addaction">
+                            <option value="select"><fmt:message key="EFILT_NEW_ACTION_SELECT"/>
                             <option value="keep"><fmt:message key="EFILT_NEW_ACTION_KEEP"/>
                             <option value="discard"><fmt:message key="EFILT_NEW_ACTION_DISCARD"/>
                             <option value="fileinto"><fmt:message key="EFILT_NEW_ACTION_FILEINTO"/>
