@@ -37,6 +37,11 @@
         <c:when test="${uploader.isCancel}">
             <c:set var="needComposeView" value="${false}"/>
         </c:when>
+        <c:when test="${uploader.isSend and empty uploader.compose.to and empty uploader.compose.cc and empty uploader.compose.bcc}">
+            <app:status>
+                <fmt:message key="noAddresses"/>
+            </app:status>
+        </c:when>
         <c:when test="${uploader.isSend}">
             <c:set var="needComposeView" value="${true}"/>
             <app:handleError>
