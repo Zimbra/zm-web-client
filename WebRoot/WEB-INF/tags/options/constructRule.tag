@@ -1,6 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="var" rtexprvalue="false" required="true" type="java.lang.String" %>
-<%@ variable name-from-attribute="var" alias='ruleVar' scope="AT_BEGIN" variable-class="java.lang.String" %>
+<%@ variable name-from-attribute="var" alias='ruleVar' scope="AT_BEGIN" variable-class="com.zimbra.cs.zclient.ZFilterRule" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -95,12 +95,11 @@
         <c:set var="key_actremove" value="action${i}_remove"/>
         <c:set var="action" value="${param[key_acti]}"/>
         <c:set var="action_arg" value="${param[key_actarg]}"/>
-        <!-- i(${i}) action(${action}) action_arg(${action_arg}) -->
         <c:if test="${empty param[key_actremove]}">
             <c:choose>
-                <c:when test="${action eq 'stop' and not empty param.action_stop eq 'true'}">
+                <c:when test="${action eq 'stop' and param.action_stop eq 'true'}">
                     <zm:stopAction/>
-                    <c:set var="stopAdded" value="${true}}"/>
+                    <c:set var="stopAdded" value="${true}"/>
                 </c:when>
                 <c:when test="${action eq 'keep'}">
                     <zm:keepAction/>
@@ -124,7 +123,6 @@
         </c:if>
     </c:forEach>
 
-    <! -- STOP (${not stopAdded}) (${param.action_stop eq 'true'}) -->
     <c:if test="${not stopAdded and param.action_stop eq 'true'}">
         <zm:stopAction/>
     </c:if>

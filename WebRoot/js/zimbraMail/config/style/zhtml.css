@@ -143,6 +143,11 @@ border: none;
   /*  @ListContainer@; */
 }
 
+.RuleHint {
+    @Text-disabled@
+    @FontSize-smaller@
+}
+
 .RuleList A:link, .RuleList A:visited  {
 	color: black;
 	text-decoration: underline;

@@ -51,9 +51,7 @@ action_count                        number of actions (includes stop)
 action_stop                         stop checkbox (true)     
 
 --%>
-<c:if test="${empty param.origname}">
-    <input type="hidden" name="origname" value="${rule.name}"/>
-</c:if>
+<input type="hidden" name="origname" value="${not empty param.origname ? param.origname : rule.name }"/>
 <input type="hidden" name="frompost" value="1"/>
 <input type="hidden" name="ruleactive" value="${not empty param.ruleactive ? param.ruleactive : (not empty rule ? rule.active : 'true')}"/>
 
@@ -151,7 +149,7 @@ action_stop                         stop checkbox (true)
         </select>
     </td>
     <td colspan='3'>
-        <input name="${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(body.text)}">
+        <input name="${condi}_value" type='text' autocomplete='off' size='20' value="${fn:escapeXml(body.text)}">
     </td>
 </c:when>
 <c:when test="${zm:isDate(condition)}">
@@ -168,7 +166,7 @@ action_stop                         stop checkbox (true)
         </select>
     </td>
     <td colspan='3'>
-        <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(fdate)}">
+        <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(fdate)}"> 
     </td>
 </c:when>
 <c:when test="${zm:isHeader(condition)}">
@@ -193,7 +191,7 @@ action_stop                         stop checkbox (true)
                 </select>
             </td>
             <td>
-                <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(hdr.headerName)}">
+                <input name="${condi}_header" type='text' autocomplete='off' size='20' value="${fn:escapeXml(hdr.headerName)}">
             </td>
         </c:otherwise>
     </c:choose>
