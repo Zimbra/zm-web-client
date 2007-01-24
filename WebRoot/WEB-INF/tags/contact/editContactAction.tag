@@ -61,10 +61,11 @@
     <zm:field name="otherFax" value="${param.otherFax}"/>
     <zm:field name="notes" value="${param.notes}"/>
 
-    <c:if test="${not empty param.dlist}">
+    <c:if test="${not empty param.dlist and param.isgroup}">
         <zm:field name="fileAs" value="8:${param.nickname}"/>
         <zm:field name="nickname" value="${param.nickname}"/>
         <zm:field name="dlist" value="${zm:joinLines(param.dlist,', ')}"/>
+        <zm:field name="type" value="group"/>
     </c:if>
     
 </zm:modifyContact>

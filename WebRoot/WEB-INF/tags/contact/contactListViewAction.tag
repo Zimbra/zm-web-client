@@ -9,6 +9,22 @@
 <zm:requirePost/>
 <zm:getMailbox var="mailbox"/>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
+<c:set var="contactError" value="${false}"/>
+<c:choose>
+   <c:when test="${ (not (empty param.actionCreate and empty param.actionModify)) and (param.isgroup and empty fn:trim(param.nickname))}">
+       <c:set var="contactError" value="true"/>
+        <app:status>
+            <fmt:message key="noContactGroupName"/>
+        </app:status>
+    </c:when>
+    <c:when test="${ (not (empty param.actionCreate and empty param.actionModify)) and (param.isgroup and empty fn:trim(param.dlist))}">
+        <c:set var="contactError" value="true"/>
+        <app:status>
+            <fmt:message key="noContactGroupMembers"/>
+        </app:status>
+    </c:when>
+</c:choose>
+
 <c:choose>
     <c:when test="${not empty param.actionEmpty and (param.contextFolderId eq mailbox.trash.id or param.contextFolderId eq mailbox.spam.id)}">
         <zm:emptyFolder id="${param.contextFolderId}"/>
@@ -18,12 +34,12 @@
             </fmt:message>
         </app:status>
     </c:when>
-    <c:when test="${!empty param.actionCreate}">
+    <c:when test="${not empty param.actionCreate and not contactError}">
         <app:editContactAction id="${param.id}"/>
         <app:status><fmt:message key="contactCreated"/></app:status>
         <zm:clearSearchCache type="contact"/>
     </c:when>
-    <c:when test="${!empty param.actionModify}">
+    <c:when test="${not empty param.actionModify and not contactError}">
         <app:editContactAction id="${param.id}"/>
         <app:status><fmt:message key="contactModified"/></app:status>
     </c:when>
