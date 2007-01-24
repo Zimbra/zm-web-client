@@ -64,92 +64,100 @@
     </td>
 </tr>
 
-<tr>
-    <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="renameSearch"/></td>
-</tr>
-<tr>
-    <td nowrap align='right'><fmt:message key="currentName"/> :</td>
-    <td>
-        <select name="folderToRename">
-            <option value="" selected/>
-            <fmt:message key="chooseSearchToRename"/>
-            <option disabled/>
-            <fmt:message key="actionOptSep"/>
-            <zm:forEachFolder var="folder">
-                <c:if test="${folder.isSearchFolder}">
-                    <option value="f:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
-                </c:if>
-            </zm:forEachFolder>
-        </select>
-    </td>
-</tr>
-<tr>
-    <td nowrap align='right'><fmt:message key="newName"/> :</td>
-    <td><input name='newName' type='text' autocomplete='off' size='35' value=""></td>
-</tr>
+<zm:forEachFolder var="folder">
+    <c:if test="${folder.isSearchFolder}">
+        <c:set var="showRest" value="true"/>
+    </c:if>
+</zm:forEachFolder>
 
-<tr>
-    <td>&nbsp;</td>
-    <td><input class='tbButton' type="submit" name="actionRename" value="<fmt:message key="renameSearch"/>"></td>
-</tr>
+<c:if test="${showRest}">
+    <tr>
+        <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="renameSearch"/></td>
+    </tr>
+    <tr>
+        <td nowrap align='right'><fmt:message key="currentName"/> :</td>
+        <td>
+            <select name="folderToRename">
+                <option value="" selected/>
+                <fmt:message key="chooseSearchToRename"/>
+                <option disabled/>
+                <fmt:message key="actionOptSep"/>
+                <zm:forEachFolder var="folder">
+                    <c:if test="${folder.isSearchFolder}">
+                        <option value="f:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td nowrap align='right'><fmt:message key="newName"/> :</td>
+        <td><input name='newName' type='text' autocomplete='off' size='35' value=""></td>
+    </tr>
 
-<tr>
-    <td colspan="2" class="sectionLabel" valign="top"> <fmt:message key="moveSearch"/></td>
-</tr>
-<tr>
-    <td nowrap align='right'><fmt:message key="searchName"/>: </td>
-    <td>
-        <select name="folderToMove">
-            <option value="" selected/><fmt:message key="chooseSearchToMove"/>
-            <option disabled/><fmt:message key="actionOptSep"/>
-             <zm:forEachFolder var="folder">
-                <c:if test="${folder.isSearchFolder}">
-                    <option value="f:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
-                </c:if>
-            </zm:forEachFolder>
-        </select>
-    </td>
-</tr>
-<tr>
-    <td nowrap align='right'><fmt:message key="newLocation"/>: </td>
-    <td>
-        <select name="newParentFolder">
-            <option value="f:1" selected/><fmt:message key="rootFolder"/>
-            <option disabled /><fmt:message key="actionOptSep"/>
-            <zm:forEachFolder var="folder">
-                <c:if test="${(folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam) or folder.isSearchFolder}">
-                    <option value="f:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
-                </c:if>
-            </zm:forEachFolder>
-        </select>
-    </td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td valign='top'><input class='tbButton' type="submit" name="actionMove" value="<fmt:message key="moveSearch"/>"></td>
-</tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td><input class='tbButton' type="submit" name="actionRename" value="<fmt:message key="renameSearch"/>"></td>
+    </tr>
 
-<tr>
-    <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="deleteSearch"/></td>
-</tr>
-<tr>
-    <td align='right' nowrap><fmt:message key="searchName"/>:</td>
-    <td>
-        <select name="folderToDelete">
-            <option value="" selected/><fmt:message key="chooseSearchToDelete"/>
-            <option disabled/><fmt:message key="actionOptSep"/>
-             <zm:forEachFolder var="folder">
-                <c:if test="${folder.isSearchFolder}">
-                    <option value="f:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
-                </c:if>
-            </zm:forEachFolder>
-        </select>
-    </td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td><input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="deleteSearch"/>"></td>
-</tr>
+    <tr>
+        <td colspan="2" class="sectionLabel" valign="top"> <fmt:message key="moveSearch"/></td>
+    </tr>
+    <tr>
+        <td nowrap align='right'><fmt:message key="searchName"/>: </td>
+        <td>
+            <select name="folderToMove">
+                <option value="" selected/><fmt:message key="chooseSearchToMove"/>
+                <option disabled/><fmt:message key="actionOptSep"/>
+                <zm:forEachFolder var="folder">
+                    <c:if test="${folder.isSearchFolder}">
+                        <option value="f:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td nowrap align='right'><fmt:message key="newLocation"/>: </td>
+        <td>
+            <select name="newParentFolder">
+                <option value="f:1" selected/><fmt:message key="rootFolder"/>
+                <option disabled /><fmt:message key="actionOptSep"/>
+                <zm:forEachFolder var="folder">
+                    <c:if test="${(folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam) or folder.isSearchFolder}">
+                        <option value="f:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign='top'><input class='tbButton' type="submit" name="actionMove" value="<fmt:message key="moveSearch"/>"></td>
+    </tr>
+
+    <tr>
+        <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="deleteSearch"/></td>
+    </tr>
+    <tr>
+        <td align='right' nowrap><fmt:message key="searchName"/>:</td>
+        <td>
+            <select name="folderToDelete">
+                <option value="" selected/><fmt:message key="chooseSearchToDelete"/>
+                <option disabled/><fmt:message key="actionOptSep"/>
+                <zm:forEachFolder var="folder">
+                    <c:if test="${folder.isSearchFolder}">
+                        <option value="f:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td><input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="deleteSearch"/>"></td>
+    </tr>
+</c:if>
 
 <tr>
     <td colspan='2'>&nbsp;</td>

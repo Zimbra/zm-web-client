@@ -122,124 +122,150 @@
         <input class='tbButton' type="submit" name="actionSubscribe" value="<fmt:message key="subscribe"/>">
     </td>
 </tr>
-<tr>
-    <td colspan="2" class="sectionLabel" valign="top">
-        <fmt:message key="renameFolder"/>
-    </td>
-</tr>
-<tr>
-    <td nowrap align='right'>
-        <fmt:message key="currentName"/>
-        :
-    </td>
-    <td>
-        <select name="folderToRename">
-            <option value="" selected/>
-            <fmt:message key="chooseFolderToRename"/>
-            <option disabled/>
-            <fmt:message key="actionOptSep"/>
-            <zm:forEachFolder var="folder">
-                <c:if test="${folder.isMessageFolderRenameTarget}">
-                    <option value="f:${folder.id}"/>
-                    ${fn:escapeXml(folder.rootRelativePath)}
-                </c:if>
-            </zm:forEachFolder>
-        </select>
-    </td>
-</tr>
-<tr>
-    <td nowrap align='right'>
-        <fmt:message key="newName"/>
-        :
-    </td>
-    <td><input name='newName' type='text' autocomplete='off' size='35' value=""></td>
-</tr>
 
-<tr>
-    <td>&nbsp;</td>
-    <td><input class='tbButton' type="submit" name="actionRename" value="<fmt:message key="renameFolder"/>"></td>
-</tr>
 
-<tr>
-    <td colspan="2" class="sectionLabel" valign="top">
-        <fmt:message key="moveFolder"/>
-    </td>
-</tr>
-<tr>
-    <td nowrap align='right'>
-        <fmt:message key="folderName"/>
-        :
-    </td>
-    <td>
-        <select name="folderToMove">
-            <option value="" selected/>
-            <fmt:message key="chooseFolderToMove"/>
-            <option disabled/>
-            <fmt:message key="actionOptSep"/>
-            <zm:forEachFolder var="folder">
-                <c:if test="${folder.isMessageFolderMoveSource}">
-                    <option value="f:${folder.id}"/>
-                    ${fn:escapeXml(folder.rootRelativePath)}
-                </c:if>
-            </zm:forEachFolder>
-        </select>
-    </td>
-</tr>
-<tr>
-    <td nowrap align='right'>
-        <fmt:message key="newLocation"/>
-        :
-    </td>
-    <td>
-        <select name="newParentFolder">
-            <option value="f:1" selected/>
-            <fmt:message key="rootFolder"/>
-            <option disabled/>
-            <fmt:message key="actionOptSep"/>
-            <zm:forEachFolder var="folder">
-                <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
-                    <option value="f:${folder.id}"/>
-                    ${fn:escapeXml(folder.rootRelativePath)}
-                </c:if>
-            </zm:forEachFolder>
-        </select>
-    </td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td valign='top'><input class='tbButton' type="submit" name="actionMove" value="<fmt:message key="moveFolder"/>">
-    </td>
-</tr>
+<zm:forEachFolder var="folder">
+    <c:if test="${folder.isMessageFolderRenameTarget}">
+        <c:set var="showRename" value="true"/>
+    </c:if>
+</zm:forEachFolder>
 
-<tr>
-    <td colspan="2" class="sectionLabel" valign="top">
-        <fmt:message key="deleteFolder"/>
-    </td>
-</tr>
-<tr>
-    <td align='right' nowrap>
-        <fmt:message key="folderName"/>
-        :
-    </td>
-    <td>
-        <select name="folderToDelete">
-            <option value="" selected/>
-            <fmt:message key="chooseFolderToDelete"/>
-            <option disabled/>
-            <fmt:message key="actionOptSep"/>
-            <zm:forEachFolder var="folder">
-                <c:if test="${folder.isMessageFolderDeleteTarget}">
-                    <option value="f:${folder.id}"/>
-                    ${fn:escapeXml(folder.rootRelativePath)}
-                </c:if>
-            </zm:forEachFolder>
-        </select>
-    </td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td><input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="deleteFolder"/>"></td>
-</tr>
+<c:if test="${showRename}">
+    <tr>
+        <td colspan="2" class="sectionLabel" valign="top">
+            <fmt:message key="renameFolder"/>
+        </td>
+    </tr>
+    <tr>
+        <td nowrap align='right'>
+            <fmt:message key="currentName"/>
+            :
+        </td>
+        <td>
+            <select name="folderToRename">
+                <option value="" selected/>
+                <fmt:message key="chooseFolderToRename"/>
+                <option disabled/>
+                <fmt:message key="actionOptSep"/>
+                <zm:forEachFolder var="folder">
+                    <c:if test="${folder.isMessageFolderRenameTarget}">
+                        <option value="f:${folder.id}"/>
+                        ${fn:escapeXml(folder.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td nowrap align='right'>
+            <fmt:message key="newName"/>
+            :
+        </td>
+        <td><input name='newName' type='text' autocomplete='off' size='35' value=""></td>
+    </tr>
+
+    <tr>
+        <td>&nbsp;</td>
+        <td><input class='tbButton' type="submit" name="actionRename" value="<fmt:message key="renameFolder"/>"></td>
+    </tr>
+</c:if>
+
+<zm:forEachFolder var="folder">
+    <c:if test="${folder.isMessageFolderMoveSource}">
+        <c:set var="showMove" value="true"/>
+    </c:if>
+</zm:forEachFolder>
+
+<c:if test="${showMove}">
+    <tr>
+        <td colspan="2" class="sectionLabel" valign="top">
+            <fmt:message key="moveFolder"/>
+        </td>
+    </tr>
+    <tr>
+        <td nowrap align='right'>
+            <fmt:message key="folderName"/>
+            :
+        </td>
+        <td>
+            <select name="folderToMove">
+                <option value="" selected/>
+                <fmt:message key="chooseFolderToMove"/>
+                <option disabled/>
+                <fmt:message key="actionOptSep"/>
+                <zm:forEachFolder var="folder">
+                    <c:if test="${folder.isMessageFolderMoveSource}">
+                        <option value="f:${folder.id}"/>
+                        ${fn:escapeXml(folder.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td nowrap align='right'>
+            <fmt:message key="newLocation"/>
+            :
+        </td>
+        <td>
+            <select name="newParentFolder">
+                <option value="f:1" selected/>
+                <fmt:message key="rootFolder"/>
+                <option disabled/>
+                <fmt:message key="actionOptSep"/>
+                <zm:forEachFolder var="folder">
+                    <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+                        <option value="f:${folder.id}"/>
+                        ${fn:escapeXml(folder.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign='top'><input class='tbButton' type="submit" name="actionMove" value="<fmt:message key="moveFolder"/>">
+        </td>
+    </tr>
+</c:if> 
+
+<zm:forEachFolder var="folder">
+    <c:if test="${folder.isMessageFolderDeleteTarget}">
+        <c:set var="showDelete" value="true"/>
+    </c:if>
+</zm:forEachFolder>
+
+<c:if test="${showDelete}">
+    <tr>
+        <td colspan="2" class="sectionLabel" valign="top">
+            <fmt:message key="deleteFolder"/>
+        </td>
+    </tr>
+    <tr>
+        <td align='right' nowrap>
+            <fmt:message key="folderName"/>
+            :
+        </td>
+        <td>
+            <select name="folderToDelete">
+                <option value="" selected/>
+                <fmt:message key="chooseFolderToDelete"/>
+                <option disabled/>
+                <fmt:message key="actionOptSep"/>
+                <zm:forEachFolder var="folder">
+                    <c:if test="${folder.isMessageFolderDeleteTarget}">
+                        <option value="f:${folder.id}"/>
+                        ${fn:escapeXml(folder.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td><input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="deleteFolder"/>"></td>
+    </tr>
+</c:if>
 
 <tr>
     <td colspan='2'>&nbsp;</td>
