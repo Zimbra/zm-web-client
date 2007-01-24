@@ -120,7 +120,25 @@ border: none;
     text-align: center;
 }
 
-/* --------------- */
+/* ---- filter rules ----------- */
+
+
+.RuleList TD {
+    @ItemBottomBorder@
+    padding: 8px;
+}
+
+.RuleList {
+      @AppBg@
+/*@InsetBorder@*/
+  /*  @ListContainer@; */
+}
+
+.RuleList A:link, .RuleList A:visited  {
+	color: black;
+	text-decoration: underline;
+}
+
 
 .MsgStatusImg {
  width: 20px;

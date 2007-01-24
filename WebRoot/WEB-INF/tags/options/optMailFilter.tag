@@ -8,6 +8,11 @@
 
 <app:handleError>
     <c:set var="rules" value="${empty param.ruleName ? mailbox.filterRulesReload : mailbox.filterRules}"/>
+    <c:forEach items="${rules}" var="rule" varStatus="status">
+        <c:if test="${rule.name eq param.ruleName or status.first}">
+            <c:set var="selectedRule" value="${rule}"/>
+        </c:if>
+    </c:forEach>
 </app:handleError>
 
 <table border="0" cellpadding="0" cellspacing="4" width=100%>
@@ -22,7 +27,7 @@
                         <th nowrap><fmt:message key="filterName"/>
                     </tr>
                     <c:forEach items="${rules}" var="rule" varStatus="status">
-                        <tr <c:if test="${rule.name == param.ruleName or (empty param.ruleName and status.first)}"><c:set var="selectedRule" value="${rule}"/>class='RowSelected'</c:if>>
+                        <tr <c:if test="${selectedRule.name eq rule.name}">class='RowSelected'</c:if>>
                             <td width=1% nowrap>&nbsp;</td>
                             <td width=1% nowrap><input type=checkbox  name="active" value="${rule.name}" <c:if test="${rule.active}">CHECKED </c:if>></td>
                             <td width=1% nowrap>&nbsp;</td>                            
