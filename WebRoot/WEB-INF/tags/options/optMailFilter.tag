@@ -41,12 +41,12 @@
             <c:choose>
                 <c:when test="${not empty param.actionNewFilter and (empty param.actionFilterCancel and requestScope.filterSave ne 'success')}">
                     <td valign='top'>
-                        <app:editRule rule="${newRule}"/>
+                        <app:editRule rule="${newRule}" mailbox="${mailbox}"/>
                     </td>
                 </c:when>
                 <c:when test="${not empty param.actionEditFilter and not empty editRule and (empty param.actionFilterCancel and requestScope.filterSave ne 'success')}">
                     <td valign='top'>
-                        <app:editRule rule="${editRule}"/>
+                        <app:editRule rule="${editRule}" mailbox="${mailbox}"/>
                     </td>
                 </c:when>
                 <c:otherwise>

@@ -1,5 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="rule" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZFilterRule" %>
+<%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -140,8 +141,13 @@ action_stop                         stop checkbox (true)
             <option <c:if test="${sz.sizeOp eq 'NOT_OVER'}">selected</c:if> value="NOT_OVER"><fmt:message key="EFILT_COND_SIZE_NOT_OVER"/>
         </select>
     </td>
-    <td colspan='3'>
-        <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(sz.size)}">
+    <td colspan='3' nowrap>
+        <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(sz.sizeNoUnits)}">
+        <select name="${condi}_units">
+            <option <c:if test="${sz.units eq 'B'}">selected</c:if> value="">B
+            <option <c:if test="${sz.units eq 'K'}">selected</c:if> value="K">KB
+            <option <c:if test="${sz.units eq 'M'}">selected</c:if> value="M">MB
+        </select>
     </td>
 </c:when>
 <c:when test="${zm:isBody(condition)}">
@@ -178,7 +184,6 @@ action_stop                         stop checkbox (true)
     <c:set var="hdr" value="${zm:getHeader(condition)}"/>
     <c:choose>
         <c:when test="${hdr.headerName eq 'subject' or hdr.headerName eq 'to' or hdr.headerName eq 'cc' or hdr.headerName eq 'from'}">
-            <c:set var="cspan" value="2"/>
             <td>
                 <select name='${condi}_header'>
                     <option <c:if test="${hdr.headerName eq 'subject'}">selected</c:if> value="subject"><fmt:message key="FILT_COND_HEADER_subject"/>
@@ -189,18 +194,15 @@ action_stop                         stop checkbox (true)
             </td>
         </c:when>
         <c:otherwise>
-            <c:set var="cspan" value="1"/>
-            <td>
+            <td nowrap>
                 <select name="${condi}_headernamed">
                     <option selected value="headernamed"><fmt:message key="EFILT_COND_HEADER_headerNamed"/>
                 </select>
-            </td>
-            <td>
                 <input name="${condi}_header" type='text' autocomplete='off' size='20' value="${fn:escapeXml(hdr.headerName)}">
             </td>
         </c:otherwise>
     </c:choose>
-    <td colspan="${cspan}">
+    <td>
         <select name="${condi}_op">
             <option <c:if test="${hdr.headerOp eq 'IS'}">selected</c:if> value="IS"><fmt:message key="EFILT_COND_HEADER_IS"/>
             <option <c:if test="${hdr.headerOp eq 'NOT_IS'}">selected</c:if> value="NOT_IS"><fmt:message key="EFILT_COND_HEADER_NOT_IS"/>
@@ -210,7 +212,7 @@ action_stop                         stop checkbox (true)
             <option <c:if test="${hdr.headerOp eq 'NOT_MATCHES'}">selected</c:if> value="NOT_MATCHES"><fmt:message key="EFILT_COND_HEADER_NOT_MATCHES"/>
         </select>
     </td>
-    <td>
+    <td colspan=2>
         <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(hdr.headerValue)}">
         <input type="hidden" name="${condi}" value="header"/>
     </td>
@@ -267,7 +269,9 @@ action_stop                         stop checkbox (true)
             <option value="date"><fmt:message key="EFILT_NEW_COND_DATE"/>
             <option value="body"><fmt:message key="EFILT_NEW_COND_BODY"/>
             <option value="attachment"><fmt:message key="EFILT_NEW_COND_ATTACHMENT"/>
+            <c:if test="${mailbox.features.contacts}">
             <option value="addressbook"><fmt:message key="EFILT_NEW_COND_ADDRESS_IN"/>
+            </c:if>
         </select>
         <input class='tbButton' type="submit"
                name="actionNewCond" value="<fmt:message key="EFILT_add"/>">
@@ -402,9 +406,13 @@ action_stop                         stop checkbox (true)
                             <option value="keep"><fmt:message key="EFILT_NEW_ACTION_KEEP"/>
                             <option value="discard"><fmt:message key="EFILT_NEW_ACTION_DISCARD"/>
                             <option value="fileinto"><fmt:message key="EFILT_NEW_ACTION_FILEINTO"/>
+                            <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
                             <option value="tag"><fmt:message key="EFILT_NEW_ACTION_TAG"/>
+                            </c:if>
                             <option value="mark"><fmt:message key="EFILT_NEW_ACTION_MARK"/>
+                            <c:if test="${mailbox.features.mailForwarding}">
                             <option value="redirect"><fmt:message key="EFILT_NEW_ACTION_REDIRECT"/>
+                            </c:if>
                         </select>
                         <input class='tbButton' type="submit"
                                name="actionNewAction" value="<fmt:message key="EFILT_add"/>">

@@ -22,7 +22,9 @@
         <c:if test="${empty param[key_condremove]}">
             <c:choose>
                 <c:when test="${cond eq 'size'}">
-                    <zm:sizeCondition value="${cond_value}" op="${cond_op}"/>
+                    <c:set var="key_condunits" value="cond${i}_units"/>
+                    <c:set var="cond_units" value="${param[key_condunits]}"/>
+                    <zm:sizeCondition value="${cond_value}${cond_units}" op="${cond_op}"/>
                 </c:when>
                 <c:when test="${cond eq 'addressbook'}">
                     <zm:addressBookCondition header="${cond_header}" op="${cond_op}"/>
