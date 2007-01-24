@@ -20,12 +20,12 @@
         <tr>
             <c:choose>
                 <c:when test="${not empty param.actionNewFilter and empty param.actionRuleCancel}">
-                    <td class='ZZZhAppContent' valign='top'>
+                    <td valign='top'>
                         <app:editRule rule="${null}"/>
                     </td>
                 </c:when>
                 <c:when test="${not empty param.actionEditFilter and not empty selectedRule and empty param.actionRuleCancel}">
-                    <td class='ZZZhAppContent' valign='top'>
+                    <td valign='top'>
                         <app:editRule rule="${selectedRule}"/>
                     </td>
                 </c:when>
