@@ -13,6 +13,9 @@
             <c:set var="selectedRule" value="${rule}"/>
         </c:if>
     </c:forEach>
+    <c:if test="${not empty param.frompost}">
+        <app:constructRule var="postRule"/>
+    </c:if>
 </app:handleError>
 
 <table border="0" cellpadding="0" cellspacing="4" width=100%>
@@ -21,12 +24,12 @@
             <c:choose>
                 <c:when test="${not empty param.actionNewFilter and empty param.actionRuleCancel}">
                     <td valign='top'>
-                        <app:editRule rule="${null}"/>
+                        <app:editRule rule="${not empty postRule ? postRule : null}"/>
                     </td>
                 </c:when>
                 <c:when test="${not empty param.actionEditFilter and not empty selectedRule and empty param.actionRuleCancel}">
                     <td valign='top'>
-                        <app:editRule rule="${selectedRule}"/>
+                        <app:editRule rule="${not empty postRule ? postRule : selectedRule}"/>
                     </td>
                 </c:when>
                 <c:otherwise>
