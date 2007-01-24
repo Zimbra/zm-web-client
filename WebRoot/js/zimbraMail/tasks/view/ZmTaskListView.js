@@ -247,8 +247,13 @@ function(id) {
 		}
 		return this._subjectInput;
 	} else if (id.indexOf(ZmTaskListView.ID_PERCENT_COMPLETE) != -1) {
-		// todo - add DwtSelect
-		return false;
+		if (!this._pCompleteSelect) {
+			this._pCompleteSelect = new DwtSelect(this.shell, null, "InlineWidget");
+			for (var i = 0; i <= 100; i += 10) {
+				this._pCompleteSelect.addOption((i+"%"), i==0, i);
+			}
+		}
+		return this._pCompleteSelect;
 	} else if (id.indexOf(ZmTaskListView.ID_END_DATE) != -1) {
 		// todo - add DwtCalendar
 		return false;
@@ -261,6 +266,16 @@ function(id) {
 	}
 };
 
+ZmTaskListView.prototype._setBoundsForActiveWidget =
+function(element, id) {
+	DwtListEditView.prototype._setBoundsForActiveWidget.call(this, element, id);
+
+	// DwtSelect sucks.
+	if (id.indexOf(ZmTaskListView.ID_PERCENT_COMPLETE) != -1) {
+		this._activeWidget.setSize(Dwt.DEFAULT, "24");
+	}
+};
+
 ZmTaskListView.prototype._setValueForActiveWidget =
 function(activeEl, id) {
 	if (id.indexOf(ZmTaskListView.ID_SUBJECT) != -1) {
@@ -268,7 +283,20 @@ function(activeEl, id) {
 		if (cell) {
 			// XXX: this is $$$ - need to cache!
 			activeEl.value = AjxStringUtil.trim(AjxStringUtil.convertHtml2Text(cell));
+		} else if (id.indexOf(ZmTaskListView.ID_PERCENT_COMPLETE) != -1) {
+			// TODO
+			// activeEl.setValue();
 		}
+	}
+};
+
+ZmTaskListView.prototype._setMouseOut =
+function() {
+	// DwtSelect really sucks.
+	if (this._activeWidget instanceof DwtSelect) {
+		this._activeWidget.getHtmlElement().onmouseout = AjxCallback.simpleClosure(this._activeWidgetMouseOut, this);
+	} else {
+		DwtListEditView.prototype._setMouseOut.call(this);
 	}
 };
 
