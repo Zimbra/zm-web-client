@@ -312,6 +312,31 @@
     </tag-file>
 
     <tag-file>
+        <name>optGeneral</name>
+        <path>/WEB-INF/tags/options/optGeneral.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>optMail</name>
+        <path>/WEB-INF/tags/options/optMail.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>optMailIdentity</name>
+        <path>/WEB-INF/tags/options/optMailIdentity.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>optAddressBook</name>
+        <path>/WEB-INF/tags/options/optAddressBook.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>optShortcuts</name>
+        <path>/WEB-INF/tags/options/optShortcuts.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>optCheckbox</name>
         <path>/WEB-INF/tags/options/optCheckbox.tag</path>
     </tag-file>
