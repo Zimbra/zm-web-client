@@ -7,16 +7,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <app:handleError>
-    <c:set var="toolbar">
-        <table width=100% cellspacing=0 class='Tb'>
-            <tr>
-                <td align=left class=TbBt>
-                    <input type=hidden class='tbButton' name="zzz">&nbsp;
-                </td>
-            </tr>
-        </table>
-    </c:set>
-
     <c:set var="selected" value="${empty param.selected ? 'general' : param.selected}"/>
 
     <c:if test="${!empty param.actionSave}">
@@ -64,124 +54,66 @@
 
 <app:view title="${title}" context="${null}" selected='options' folders="true" searches="true" tags="true" keys="true">
 
-<form action="" method="post">
-<table width=100% cellpadding="0" cellspacing="0">
-<tr>
-    <td class='TbTop'>${toolbar}
-    </td>
-</tr>
-<tr>
-    <td class='ZhAppContent'>
-        <c:set var="accessKey" value="${1}"/>
-        <table width=100% cellpadding=0 cellspacing=0>
-            <tr>
-                <td>
-                    <table cellpadding=0 cellspacing=0>
-                        <tr class='Tabs'>
-                            <td class='TabSpacer'/>
-                            <td class='TabSpacer'/>
-                            <td class='Tab ${selected=='general' ? 'TabSelected' :'TabNormal'}'>
-                                <a href="<c:url value="/h/options?selected=general"/>" accesskey="${accessKey}">
-                                    <span><fmt:message key="general"/></span>
-                                </a>
-                            </td>
-                            <c:set var="accessKey" value="${accessKey+1}"/>
-                            <td class='TabSpacer'/>
-                            <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
-                                <a href="<c:url value="/h/options?selected=mail"/>" accesskey="${accessKey}">
-                                    <span><fmt:message key="mail"/></span></a>
-                            </td>
-                            <c:set var="accessKey" value="${accessKey+1}"/>
-                            <td class='TabSpacer'/>
-                            <td class='Tab ${selected=='identity' ? 'TabSelected' :'TabNormal'}'>
-                                <a href="<c:url value="/h/options?selected=identity"/>" accesskey="${accessKey}">
-                                    <span><fmt:message key="mailIdentity"/></span></a>
-                            </td>
-                            <c:set var="accessKey" value="${accessKey+1}"/>
-                            <td class='TabSpacer'/>
-                            <td class='Tab ${selected=='filter' ? 'TabSelected' :'TabNormal'}'>
-                                <a href="<c:url value="/h/options?selected=filter"/>" accesskey="${accessKey}">
-                                    <span><fmt:message key="mailFilters"/></span></a>
-                            </td>
-                            <c:set var="accessKey" value="${accessKey+1}"/>
-                            <c:if test="${mailbox.features.contacts}">
-                                <td class='TabSpacer'/>
-                                <td class='Tab ${selected=='addressbook' ? 'TabSelected' :'TabNormal'}'>
-                                    <a href="<c:url value="/h/options?selected=addressbook"/>" accesskey="${accessKey}">
-                                        <span><fmt:message key="addressBook"/></span></a>
-                                </td>
-                                <c:set var="accessKey" value="${accessKey+1}"/>
-                            </c:if>
-                            <td class='TabSpacer'/>
-                            <td class='Tab ${selected=='shortcuts' ? 'TabSelected' :'TabNormal'}'>
-                                <a href="<c:url value="/h/options?selected=shortcuts"/>" accesskey="${accessKey}">
-                                    <span><fmt:message key="shortcuts"/></span></a>
-                            </td>
-                            <td class='TabFiller'>
-                                &nbsp;
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
+    <form action="" method="post">
+        <table width=100% cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
-                    <table cellspacing=0 class='Tb'>
+                    <table width=100% cellspacing=0 class='Tb'>
                         <tr>
-                            <c:if test="${selected ne 'filter'}">
-                                <td align=left class=TbBt>
-                                    <input
-                                    <c:if test="${selected eq 'shortcuts'}"> DISABLED </c:if> class='tbButton' type="submit"
-                                                                             name="actionSave" value="<fmt:message key="save"/>">
-                                </td>
-                            </c:if>
-                            <c:if test="${selected eq 'filter'}">
-                                <td align=left class=TbBt>
-                                    <input class='tbButton' type="submit"
-                                           name="actionNewFilter" value="<fmt:message key="newFilter"/>">
-                                </td>
-                            </c:if>
-                            <td align=right>
-                                &nbsp;
+                            <td align=left class=TbBt>
+                                <input type=hidden class='tbButton' name="zzz">&nbsp;
                             </td>
                         </tr>
                     </table>
                 </td>
             </tr>
             <tr>
-                <td>
-                    <c:choose>
-                        <%------------------- GENERAL ------------------%>
-                        <c:when test="${selected eq 'general'}">
-                            <app:optGeneral mailbox="${mailbox}"/>
-                        </c:when>
-                        <%------------------- MAIL ------------------%>
-                        <c:when test="${selected eq 'mail'}">
-                            <app:optMail mailbox="${mailbox}"/>
-                        </c:when>
-                        <%------------------- MAIL IDENTITY ------------------%>
-                        <c:when test="${selected eq 'identity'}">
-                            <app:optMailIdentity mailbox="${mailbox}"/>
-                        </c:when>
-                        <%------------------- MAIL FILTER ------------------%>
-                        <c:when test="${selected eq 'filter'}">
-                            <app:optMailFilter mailbox="${mailbox}"/>
-                        </c:when>
-                        <%------------------- ADDRESS BOOK ------------------%>
-                        <c:when test="${selected eq 'addressbook'}">
-                            <app:optAddressBook mailbox="${mailbox}"/>
-                        </c:when>
-                        <%------------------- SHORTCUTS ------------------%>
-                        <c:when test="${selected eq 'shortcuts'}">
-                            <app:optShortcuts mailbox="${mailbox}"/>
-                        </c:when>
-                    </c:choose>
+                <td class='ZhAppContent'>
+                    <table width=100% cellpadding=0 cellspacing=0>
+                        <tr>
+                            <td>
+                                <app:optTabs mailbox="${mailbox}" selected="${selected}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class='TbTop'>
+                                <app:optSubToolbar selected="${selected}"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <c:choose>
+                                    <%------------------- GENERAL ------------------%>
+                                    <c:when test="${selected eq 'general'}">
+                                        <app:optGeneral mailbox="${mailbox}"/>
+                                    </c:when>
+                                    <%------------------- MAIL ------------------%>
+                                    <c:when test="${selected eq 'mail'}">
+                                        <app:optMail mailbox="${mailbox}"/>
+                                    </c:when>
+                                    <%------------------- MAIL IDENTITY ------------------%>
+                                    <c:when test="${selected eq 'identity'}">
+                                        <app:optMailIdentity mailbox="${mailbox}"/>
+                                    </c:when>
+                                    <%------------------- MAIL FILTER ------------------%>
+                                    <c:when test="${selected eq 'filter'}">
+                                        <app:optMailFilter mailbox="${mailbox}"/>
+                                    </c:when>
+                                    <%------------------- ADDRESS BOOK ------------------%>
+                                    <c:when test="${selected eq 'addressbook'}">
+                                        <app:optAddressBook mailbox="${mailbox}"/>
+                                    </c:when>
+                                    <%------------------- SHORTCUTS ------------------%>
+                                    <c:when test="${selected eq 'shortcuts'}">
+                                        <app:optShortcuts mailbox="${mailbox}"/>
+                                    </c:when>
+                                </c:choose>
+                            </td>
+                        </tr>
+                        <br>
                 </td>
             </tr>
-            <br>
-    </td>
-</tr>
-</table>
-<input type="hidden" name="doAction" value="1"/>
-</form>
+        </table>
+        <input type="hidden" name="doAction" value="1"/>
+    </form>
 </app:view>
