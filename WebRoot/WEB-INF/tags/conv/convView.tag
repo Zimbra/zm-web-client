@@ -131,7 +131,7 @@
                                                      cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}" xim="1"/>
                             </c:if>
                                 <zm:currentResultUrl var="composeUrl" value="search" context="${context}" id="${message.id}"
-                                                     action="compose" paction="view" cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}"/>
+                                                     action="compose" paction="view" cid="${convSearchResult.conversationSummary.id}" cso="${convSearchResult.offset}" csi="${csi}" css="${param.css}"/>
                                <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${message.id}"/>
 
                             <tr>
