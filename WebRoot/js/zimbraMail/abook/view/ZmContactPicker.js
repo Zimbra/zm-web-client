@@ -282,16 +282,14 @@ function(result) {
 				var members = contact.getGroupMembers().good.toString(ZmEmailAddress.SEPARATOR);
 				var email = new ZmEmailAddress(members, null, contact.getFileAs(), null, true);
 				email.id = Dwt.getNextId();
-				email.contactId = contact.id;
-				email.icon = "Group";
+				email.__contact = contact;
 				list.push(email);
 			} else {
-				var emails = contact.getEmails();
+				var emails = contact.isGal ? [contact.getEmail()] : contact.getEmails();
 				for (var j = 0; j < emails.length; j++) {
 					var email = new ZmEmailAddress(emails[j], null, contact.getFileAs());
 					email.id = Dwt.getNextId();
-					email.contactId = contact.id;
-					email.icon = contact.isGal ? "GAL" : contact.addrbook.getIcon();
+					email.__contact = contact;
 					list.push(email);
 				}
 			}
@@ -440,9 +438,9 @@ function(ev, div) {
 
 	if (id && item) {
 		var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
-		var contact = contactList ? contactList.getById(item.contactId) : null;
+		var contact = item.__contact;
 		if (contact) {
-			var tt = contact.getToolTip(item.address);
+			var tt = contact.getToolTip(item.address, contact.isGal);
 			this.setToolTipContent(tt);
 		} else {
 			this.setToolTipContent(item.address);
@@ -472,7 +470,7 @@ function(item) {
 			html[idx++] = "<td width=";
 			html[idx++] = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4): this._headerList[i]._width;
 			html[idx++] = ">";
-			html[idx++] = AjxImg.getImageHtml(item.icon);
+			html[idx++] = AjxImg.getImageHtml(item.__contact.getIcon());
 			html[idx++] = "</td>";
 		} else if (id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
 			html[idx++] = "<td width=";
