@@ -222,7 +222,19 @@
     </c:if>
     <tr>
         <td class=MsgBody>
-            ${theBody}
+            <c:if test="${body.contentType eq 'text/html'}">
+                <c:url var="iframeUrl" value="/h/imessage">
+                    <c:param name="id" value="${message.id}"/>
+                    <c:param name="part" value="${message.partName}"/>
+                    <c:param name="xim" value="${param.xim}"/>
+                </c:url>
+                <iframe width="100%" height="600px" src="${iframeUrl}" frameborder="0" scrolling="auto">
+
+                </iframe>
+            </c:if>
+            <c:if test="${!(body.contentType eq 'text/html')}">
+                ${body.textContentAsHtml}
+            </c:if>
             <c:if test="${not empty message.attachments}">
                 <hr/>
                 <a name="attachments${message.partName}"/>
