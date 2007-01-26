@@ -779,43 +779,11 @@ function() {
 * Returns HTML for a tool tip for this contact.
 */
 ZmContact.prototype.getToolTip =
-function(email) {
+function(email, isGal) {
 	// update/null if modified
 	if (!this._toolTip || this._toolTipEmail != email) {
-		var html = [];
-		var idx = 0;
-		var entryTitle = this.getFileAs();
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0>";
-		html[idx++] = "<tr><td colspan=2 valign=top>";
-		html[idx++] = "<div style='border-bottom: 1px solid black;'>";
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
-		html[idx++] = "<tr valign='center'>";
-		html[idx++] = "<td style='font-weight:bold'>";
-		html[idx++] = AjxStringUtil.htmlEncode(entryTitle);
-		html[idx++] = "</td><td align='right'>";
-		html[idx++] = AjxImg.getImageHtml(this.getIcon());
-		html[idx++] = "</td></table></div>";
-		html[idx++] = "</td></tr>";
-		if (this.isGroup()) {
-			var members = this.getGroupMembers().good.getArray();
-			for (var i = 0; i < members.length; i++) {
-				html[idx++] = "<tr><td width=20>";
-				html[idx++] = AjxImg.getImageHtml("Message");
-				html[idx++] = "</td><td>";
-				html[idx++] = AjxStringUtil.htmlEncode(members[i].toString());
-				html[idx++] = "</td></tr>";
-			}
-		} else {
-			idx = this._addEntryRow("fullName", null, html, idx);
-			idx = this._addEntryRow("jobTitle", null, html, idx);
-			idx = this._addEntryRow("company", null, html, idx);
-			idx = this._addEntryRow("mobilePhone", null, html, idx);
-			idx = this._addEntryRow("workPhone", null, html, idx);
-			idx = this._addEntryRow("homePhone", null, html, idx);
-			idx = this._addEntryRow("email", email, html, idx);
-		}
-		html[idx++] = "</table>";
-		this._toolTip = html.join("");
+		var subs = { contact:this, entryTitle:this.getFileAs() };
+		this._toolTip = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#Tooltip", subs);
 		this._toolTipEmail = email;
 	}
 	return this._toolTip;
@@ -987,23 +955,6 @@ function(text, delims) {
 	}
 };
 
-// Adds a row to the tool tip.
-ZmContact.prototype._addEntryRow =
-function(field, data, html, idx) {
-	if (data == null) {
-		data = field == "fullName" ? this.getFullName() : this.getAttr(field);
-	}
-	if (data != null && data != "") {
-		html[idx++] = "<tr valign=top><td align=right style='white-space:nowrap; padding-right:5px; font-weight:bold'>";
-		html[idx++] = AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[field]);
-		html[idx++] = ":</td>";
-		html[idx++] = "<td style='white-space:nowrap;'>";
-		html[idx++] = AjxStringUtil.htmlEncode(data);
-		html[idx++] = "</td></tr>";
-	}
-	return idx;
-};
-
 // Reset computed fields.
 ZmContact.prototype._resetCachedFields =
 function() {
@@ -1089,6 +1040,7 @@ function(type, shortForm) {
 
 // these need to be kept in sync with ZmContact.F_*
 ZmContact._AB_FIELD = {
+	// file as info
 	firstName: ZmMsg.AB_FIELD_firstName,
 	lastName: ZmMsg.AB_FIELD_lastName,
 	middleName: ZmMsg.AB_FIELD_middleName,
@@ -1108,8 +1060,6 @@ ZmContact._AB_FIELD = {
 	workPostalCode: ZmMsg.AB_FIELD_postalCode,
 	workCountry: ZmMsg.AB_FIELD_country,
 	workURL: ZmMsg.AB_FIELD_URL,
-
-	// work phone numbers
 	workPhone: ZmMsg.AB_FIELD_workPhone,
 	workPhone2: ZmMsg.AB_FIELD_workPhone2,
 	workFax: ZmMsg.AB_FIELD_workFax,
@@ -1117,15 +1067,13 @@ ZmContact._AB_FIELD = {
 	companyPhone: ZmMsg.AB_FIELD_companyPhone,
 	callbackPhone: ZmMsg.AB_FIELD_callbackPhone,
 
-	// home address
+	// home
 	homeStreet: ZmMsg.AB_FIELD_street,
 	homeCity: ZmMsg.AB_FIELD_city,
 	homeState: ZmMsg.AB_FIELD_state,
 	homePostalCode: ZmMsg.AB_FIELD_postalCode,
 	homeCountry: ZmMsg.AB_FIELD_country,
 	homeURL: ZmMsg.AB_FIELD_URL,
-
-	// home phone numbers
 	homePhone: ZmMsg.AB_FIELD_homePhone,
 	homePhone2: ZmMsg.AB_FIELD_homePhone2,
 	homeFax: ZmMsg.AB_FIELD_homeFax,
@@ -1133,19 +1081,18 @@ ZmContact._AB_FIELD = {
 	pager: ZmMsg.AB_FIELD_pager,
 	carPhone: ZmMsg.AB_FIELD_carPhone,
 
-	// other address
+	// other
 	otherStreet: ZmMsg.AB_FIELD_street,
 	otherCity: ZmMsg.AB_FIELD_city,
 	otherState: ZmMsg.AB_FIELD_state,
 	otherPostalCode: ZmMsg.AB_FIELD_postalCode,
 	otherCountry: ZmMsg.AB_FIELD_country,
 	otherURL: ZmMsg.AB_FIELD_URL,
-
-	// other phone numbers
 	otherPhone: ZmMsg.AB_FIELD_otherPhone,
 	otherFax: ZmMsg.AB_FIELD_otherFax,
 
 	// misc fields
+	notes: ZmMsg.notes,
 	birthday: ZmMsg.AB_FIELD_birthday
 };
 

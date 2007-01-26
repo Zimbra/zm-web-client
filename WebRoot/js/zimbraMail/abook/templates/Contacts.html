@@ -53,3 +53,67 @@
 		</tr>
 	</table>
 </template>
+
+<template id="Tooltip">
+	<table cellpadding=0 cellspacing=0 border=0 width=250>
+		<tr>
+			<td colspan=2 valign=top>
+				<div style='border-bottom: 1px solid black;'>
+					<table cellpadding=0 cellspacing=0 border=0 width=100%>
+						<tr valign='center'>
+							<td style='font-weight:bold'><$= AjxStringUtil.htmlEncode(data.entryTitle); $></td>
+							<td align='right'><$= AjxImg.getImageHtml(data.contact.getIcon()); $></td>
+						</tr>
+					</table>
+				</div>
+			</td>
+		</tr>
+		<$ if (data.contact.isGroup()) {
+			var members = data.contact.getGroupMembers().good.getArray();
+			for (var i = 0; i < members.length; i++) {
+		$>
+		<tr>
+			<td width=20><$= AjxImg.getImageHtml("Message") $></td>
+			<td><$= AjxStringUtil.htmlEncode(members[i].toString()) $></td>
+		</tr>
+		<$	} 
+		} else {
+		$>
+			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"fullName"}) $>
+			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"jobTitle"}) $>
+			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"company"}) $>
+			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"mobilePhone"}) $>
+			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"workPhone"}) $>
+			<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"homePhone"}) $>
+			<$ if (data.contact.isGal) {
+				var emails = data.contact.getEmails();
+				for (var i = 0; i < emails.length && emails.length <= 3; i++) {
+			$>
+					<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"email", val:emails[i]}) $>
+			<$	} $>
+				<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"notes", truncate:500}) $>
+			<$	} else { $>
+				<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"email", val:data.email}) $>
+			<$	} $>
+		<$	} $>
+	</table>
+</template>
+
+<template id="AddEntry">
+	<$ if (data.val == null) {
+		data.val = data.field == "fullName" ? data.data.contact.getFullName() : data.data.contact.getAttr(data.field);
+	} $>
+
+	<$ if (data.val != null && data.val != "") { $>
+		<tr valign=top>
+			<td align=right style='white-space:nowrap; padding-right:5px; font-weight:bold'>
+				<$= AjxStringUtil.htmlEncode(ZmContact._AB_FIELD[data.field]) $>:
+			</td>
+		<$ if (data.truncate) { $>
+			<td><$= AjxStringUtil.htmlEncode(data.val.substring(0,data.truncate)) $></td>
+		<$ } else { $>
+			<td style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.val) $></td>
+		<$ } $>
+		</tr>
+	<$ } $>
+</template>
