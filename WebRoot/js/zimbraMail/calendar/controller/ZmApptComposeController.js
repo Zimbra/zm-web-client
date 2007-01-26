@@ -243,7 +243,7 @@ function(mode) {
 		this._createToolBar();
 
 	var cancelButton = this._toolbar.getButton(ZmOperation.CANCEL);
-	if (mode == null || mode == ZmAppt.MODE_NEW || mode == ZmAppt.MODE_NEW_FROM_QUICKADD) {
+	if (mode == null || mode == ZmCalItem.MODE_NEW || mode == ZmCalItem.MODE_NEW_FROM_QUICKADD) {
 		cancelButton.setText(ZmMsg.cancel);
 		cancelButton.setImage("Cancel");
 	} else {
@@ -320,7 +320,7 @@ ZmApptComposeController.prototype._saveApptFoRealz =
 function(appt, attId, notifyList) {
 	var args = [appt];
 	var mode = appt.getViewMode();
-	if (mode != ZmAppt.MODE_NEW && appt._orig && appt._orig.folderId != appt.folderId) {
+	if (mode != ZmCalItem.MODE_NEW && appt._orig && appt._orig.folderId != appt.folderId) {
 		// pass along folderId for appt move
 		args.push(appt.folderId);
 	}

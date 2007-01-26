@@ -100,7 +100,7 @@ function(appt) {
 	this._repeatDescField.innerHTML = "";
 
 	this._origFormValue = this._formValue();
-	this._attendees[ZmAppt.LOCATION] = new AjxVector();	// list of ZmResource
+	this._attendees[ZmCalItem.LOCATION] = new AjxVector();	// list of ZmResource
 	
 	// autocomplete for locations
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
@@ -118,7 +118,7 @@ ZmApptQuickAddDialog.prototype.getAppt =
 function() {
 	// create a copy of the appointment so we dont muck w/ the original
 	var appt = ZmAppt.quickClone(this._appt);
-	appt.setViewMode(ZmAppt.MODE_NEW);
+	appt.setViewMode(ZmCalItem.MODE_NEW);
 
 	// save field values of this view w/in given appt
 	appt.setName(this._subjectField.getValue());
@@ -140,7 +140,7 @@ function() {
 	appt.setStartDate(startDate);
 	appt.setEndDate(endDate);
 	appt.setRecurType(this._repeatSelect.getValue());
-	appt.setAttendees(ZmEmailAddress.split(this._locationField.getValue()), ZmAppt.LOCATION);
+	appt.setAttendees(ZmEmailAddress.split(this._locationField.getValue()), ZmCalItem.LOCATION);
 
 	return appt;
 };

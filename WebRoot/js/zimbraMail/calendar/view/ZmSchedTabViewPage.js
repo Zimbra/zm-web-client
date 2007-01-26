@@ -56,10 +56,10 @@ function ZmSchedTabViewPage(parent, appCtxt, attendees, controller, dateInfo) {
 	this._allAttendees = [];
 	this._allAttendeesSlot = null;
 
-	this._attTypes = [ZmAppt.PERSON];
+	this._attTypes = [ZmCalItem.PERSON];
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		this._attTypes.push(ZmAppt.LOCATION);
-		this._attTypes.push(ZmAppt.EQUIPMENT);
+		this._attTypes.push(ZmCalItem.LOCATION);
+		this._attTypes.push(ZmCalItem.EQUIPMENT);
 	}
 
 	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
@@ -269,7 +269,7 @@ function() {
 		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader, separator: "",
 					  matchValue: ZmContactList.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback};
 		this._acContactsList = new ZmAutocompleteListView(params);
-		this._acList[ZmAppt.PERSON] = this._acContactsList;
+		this._acList[ZmCalItem.PERSON] = this._acContactsList;
 	}
 	// autocomplete for locations/equipment
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
@@ -277,10 +277,10 @@ function() {
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations, separator: "",
 					  matchValue: ZmContactList.AC_VALUE_NAME, compCallback: acCallback};
 		this._acLocationsList = new ZmAutocompleteListView(params);
-		this._acList[ZmAppt.LOCATION] = this._acLocationsList;
+		this._acList[ZmCalItem.LOCATION] = this._acLocationsList;
 		params.dataLoader = resourcesClass.getEquipment;
 		this._acEquipmentList = new ZmAutocompleteListView(params);
-		this._acList[ZmAppt.EQUIPMENT] = this._acEquipmentList;
+		this._acList[ZmCalItem.EQUIPMENT] = this._acEquipmentList;
 	}
 };
 
@@ -415,9 +415,9 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		var selectDiv = document.getElementById(selectId);
 		if (selectDiv) {
 			select = new DwtSelect(this);
-			select.addOption(new DwtSelectOption(ZmAppt.PERSON, true, null, null, null, "Person"));
-			select.addOption(new DwtSelectOption(ZmAppt.LOCATION, false, null, null, null, "Location"));
-			select.addOption(new DwtSelectOption(ZmAppt.EQUIPMENT, false, null, null, null, "Resource"));
+			select.addOption(new DwtSelectOption(ZmCalItem.PERSON, true, null, null, null, "Person"));
+			select.addOption(new DwtSelectOption(ZmCalItem.LOCATION, false, null, null, null, "Location"));
+			select.addOption(new DwtSelectOption(ZmCalItem.EQUIPMENT, false, null, null, null, "Resource"));
 			select.reparentHtmlElement(selectId);
 			select.addChangeListener(this._selectChangeListener);
 			select.setSize("38");
@@ -432,7 +432,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 			var inputEl = dwtInputField.getInputElement();
 			inputEl.className = "ZmSchedulerInput";
 			inputEl.id = sched.dwtInputId;
-			sched.attType = inputEl._attType = ZmAppt.PERSON;
+			sched.attType = inputEl._attType = ZmCalItem.PERSON;
 			sched.inputObj = dwtInputField;
 			if (select) {
 				select.dwtInputField = dwtInputField;
@@ -620,7 +620,7 @@ function(inputEl, attendee, useException) {
 
 ZmSchedTabViewPage.prototype._setAttendeeToolTip =
 function(sched, attendee, type) {
-	if (type != ZmAppt.PERSON) return;
+	if (type != ZmCalItem.PERSON) return;
 
 	var name = attendee.getFullName();
 	var email = attendee.getEmail();
@@ -702,8 +702,8 @@ function(organizer, attendees) {
 	this.cleanup();
 	var emails = [];
 	// create a slot for the organizer
-	this._organizerIndex = this._addAttendeeRow(false, organizer.getAttendeeText(ZmAppt.PERSON, true), false);
-	emails.push(this._setAttendee(this._organizerIndex, organizer, ZmAppt.PERSON, true));
+	this._organizerIndex = this._addAttendeeRow(false, organizer.getAttendeeText(ZmCalItem.PERSON, true), false);
+	emails.push(this._setAttendee(this._organizerIndex, organizer, ZmCalItem.PERSON, true));
 
 	// create slots for each of the other attendees/resources
 	for (var t = 0; t < this._attTypes.length; t++) {
@@ -789,7 +789,7 @@ function(sched, resetSelect, type, noClear) {
 	if (resetSelect) {
 		var select = AjxCore.objectWithId(sched.selectObjId);
 		if (select) {
-			select.setSelectedValue(ZmAppt.PERSON);
+			select.setSelectedValue(ZmCalItem.PERSON);
 		}
 	}
 
@@ -955,11 +955,11 @@ function(ev) {
 
 	// reset autocomplete handler
 	var inputEl = input.getInputElement();
-	if (type == ZmAppt.PERSON && svp._acContactsList) {
+	if (type == ZmCalItem.PERSON && svp._acContactsList) {
 		svp._acContactsList.handle(inputEl);
-	} else if (type == ZmAppt.LOCATION && svp._acLocationsList) {
+	} else if (type == ZmCalItem.LOCATION && svp._acLocationsList) {
 		svp._acLocationsList.handle(inputEl);
-	} else if (type == ZmAppt.EQUIPMENT && svp._acEquipmentList) {
+	} else if (type == ZmCalItem.EQUIPMENT && svp._acEquipmentList) {
 		svp._acEquipmentList.handle(inputEl);
 	}
 };

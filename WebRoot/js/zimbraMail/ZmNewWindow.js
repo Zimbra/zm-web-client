@@ -184,9 +184,9 @@ function() {
 			var op = window.args.action ? window.args.action : ZmOperation.NEW_MESSAGE;
 			if (window.args.msg && window.args.msg._mode) {
 				switch (window.args.msg._mode) {
-					case ZmAppt.MODE_DELETE: 
-					case ZmAppt.MODE_DELETE_INSTANCE: 
-					case ZmAppt.MODE_DELETE_SERIES: {
+					case ZmCalItem.MODE_DELETE: 
+					case ZmCalItem.MODE_DELETE_INSTANCE:
+					case ZmCalItem.MODE_DELETE_SERIES: {
 						op = ZmOperation.REPLY_CANCEL;
 						break;
 					}

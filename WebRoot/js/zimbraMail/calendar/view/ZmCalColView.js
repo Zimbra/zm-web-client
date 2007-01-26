@@ -738,7 +738,7 @@ function(appt) {
 		bodyColor: color + (isNew ? "" : "Bg"),
 		name: AjxStringUtil.htmlEncode(appt.getName()) + (is30 ? this._padding : ""),
 		starttime: appt.getDurationText(true, true),
-		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmAppt._getTTHour(appt.endDate))+this._padding,
+		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate))+this._padding,
 		location: location,
 		statusKey: appt.ptst,
 		status: appt.isOrganizer() ? "" : appt.getParticipationStatusString()
@@ -1124,7 +1124,7 @@ function(colIndex, data) {
 ZmCalColView.prototype._computeAllDayApptLayout =
 function() {
 	var adlist = this._allDayApptsList;
-	adlist.sort(ZmAppt.compareByTimeAndDuration);
+	adlist.sort(ZmCalItem.compareByTimeAndDuration);
 	
 	for (var i=0; i < adlist.length; i++) {
 		var appt = adlist[i];
@@ -1974,8 +1974,8 @@ function(ev) {
         			data.view._layoutAppt(null, data.apptEl, bounds.x, bounds.y, bounds.width, bounds.height);
         			data.startDate = newDate;
         			data.snap = snap;
-        			if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.startDate);
-		        	if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(new Date(data.startDate.getTime()+data.appt.getDuration()))+data.view._padding;
+        			if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalItem._getTTHour(data.startDate);
+		        	if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalItem._getTTHour(new Date(data.startDate.getTime()+data.appt.getDuration()))+data.view._padding;
         		}
         	}
     	}
@@ -1999,8 +1999,8 @@ ZmCalColView._restoreApptLoc =
 function(data) {
 	var lo = data.appt._layout;
 	data.view._layoutAppt(null, data.apptEl, lo.x, lo.y, lo.w, lo.h);
-	if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.appt.startDate);
-    	if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.appt.endDate) + data.view._padding;
+	if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalItem._getTTHour(data.appt.startDate);
+    	if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalItem._getTTHour(data.appt.endDate) + data.view._padding;
 	ZmCalColView._setApptOpacity(data.appt, data.apptEl);
 }
 
@@ -2190,7 +2190,7 @@ function(ev) {
         				Dwt.setSize(data.apptBodyEl, Dwt.DEFAULT, Math.floor(newHeight));
         				data.lastDelta = delta;
         				data.startDate.setTime(data.appt.getStartTime() + (delta15 * AjxDateUtil.MSEC_PER_FIFTEEN_MINUTES)); // num msecs in 15 minutes
-        				if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.startDate);
+        				if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalItem._getTTHour(data.startDate);
     		        	}
         		} else {
         			var newHeight = data.origHeight + delta;
@@ -2202,7 +2202,7 @@ function(ev) {
 
         				data.lastDelta = delta;
         				data.endDate.setTime(data.appt.getEndTime() + (delta15 * AjxDateUtil.MSEC_PER_FIFTEEN_MINUTES)); // num msecs in 15 minutes
-        				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.endDate)+data.view._padding;
+        				if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalItem._getTTHour(data.endDate)+data.view._padding;
         			}
         		}
         	}
@@ -2384,8 +2384,8 @@ function(ev) {
 		if (bounds == null) return false;
 		data.view._layoutAppt(null, e, newStart.x, newStart.y, bounds.width, bounds.height);
 		Dwt.setVisible(e, true);
-		if (data.startTimeEl) data.startTimeEl.innerHTML = ZmAppt._getTTHour(data.startDate);
-		if (data.endTimeEl) data.endTimeEl.innerHTML = ZmAppt._getTTHour(data.endDate);
+		if (data.startTimeEl) data.startTimeEl.innerHTML = ZmCalItem._getTTHour(data.startDate);
+		if (data.endTimeEl) data.endTimeEl.innerHTML = ZmCalItem._getTTHour(data.endDate);
 	}
 	mouseEv._stopPropagation = true;
 	mouseEv._returnValue = false;

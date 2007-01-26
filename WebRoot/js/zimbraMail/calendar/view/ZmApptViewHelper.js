@@ -205,8 +205,9 @@ function(appCtxt, item, type, strictText, strictEmail) {
 		attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
 		if (!attendee && !strictEmail) {
 			// ZmEmailAddress has name and email, init a new contact/resource from those
-			attendee = (type == ZmAppt.PERSON) ? new ZmContact(appCtxt) :
-												 new ZmResource(appCtxt, type);
+			attendee = (type == ZmCalItem.PERSON)
+				? new ZmContact(appCtxt)
+				: new ZmResource(appCtxt, type);
 			attendee.initFromEmail(item, true);
 		}
 	} else if (typeof item == "string") {
@@ -219,19 +220,19 @@ function(appCtxt, item, type, strictText, strictEmail) {
 	 		// is it a contact/resource we already know about?
 			attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
 			if (!attendee && !strictEmail) {
-				if (type == ZmAppt.PERSON) {
+				if (type == ZmCalItem.PERSON) {
 					attendee = new ZmContact(appCtxt);
-				} else if (type == ZmAppt.LOCATION) {
-					attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._locations, ZmAppt.LOCATION);
-				} else if (type == ZmAppt.EQUIPMENT) {
-					attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._equipment, ZmAppt.EQUIPMENT);
+				} else if (type == ZmCalItem.LOCATION) {
+					attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._locations, ZmCalItem.LOCATION);
+				} else if (type == ZmCalItem.EQUIPMENT) {
+					attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._equipment, ZmCalItem.EQUIPMENT);
 				}
 				attendee.initFromEmail(email, true);
-			} else if (type == ZmAppt.PERSON) {
+			} else if (type == ZmCalItem.PERSON) {
 				// remember actual address (in case it's email2 or email3)
 				attendee._inviteAddress = addr;
 			}
-		} else if (type != ZmAppt.PERSON) {
+		} else if (type != ZmCalItem.PERSON) {
 			// check if it's a location or piece of equipment we know by name
 			if (ZmApptViewHelper._locations) {
 				attendee = ZmApptViewHelper._locations.getResourceByName(item);
@@ -242,8 +243,8 @@ function(appCtxt, item, type, strictText, strictEmail) {
 		}
 		// non-email string: initialize as a resource if it's a location, since
 		// those can be free-text
-		if (!attendee && type == ZmAppt.LOCATION && !strictText && ZmApptViewHelper._locations) {
-			attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._locations, ZmAppt.LOCATION);
+		if (!attendee && type == ZmCalItem.LOCATION && !strictText && ZmApptViewHelper._locations) {
+			attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._locations, ZmCalItem.LOCATION);
 			attendee.setAttr(ZmResource.F_name, item);
 			attendee.setAttr(ZmResource.F_type, ZmResource.TYPE_LOCATION);
 			ZmApptViewHelper._locations.updateHashes(attendee);
@@ -255,11 +256,11 @@ function(appCtxt, item, type, strictText, strictEmail) {
 ZmApptViewHelper._getAttendeeFromAddr =
 function(addr, type) {
 	var attendee = null;
-	if ((type == ZmAppt.PERSON) && ZmApptViewHelper._contacts) {
+	if ((type == ZmCalItem.PERSON) && ZmApptViewHelper._contacts) {
 		attendee = ZmApptViewHelper._contacts.getContactByEmail(addr);
-	} else if ((type == ZmAppt.LOCATION) && ZmApptViewHelper._locations) {
+	} else if ((type == ZmCalItem.LOCATION) && ZmApptViewHelper._locations) {
 		attendee = ZmApptViewHelper._locations.getResourceByEmail(addr);
-	} else if ((type == ZmAppt.EQUIPMENT) && ZmApptViewHelper._equipment) {
+	} else if ((type == ZmCalItem.EQUIPMENT) && ZmApptViewHelper._equipment) {
 		attendee = ZmApptViewHelper._equipment.getResourceByEmail(addr);
 	}
 	return attendee;

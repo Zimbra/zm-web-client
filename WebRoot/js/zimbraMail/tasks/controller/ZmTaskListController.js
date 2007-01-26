@@ -99,8 +99,51 @@ TODO
 */
 };
 
-// Load contacts into the given view and perform layout.
+ZmListController.prototype._getActionMenuOps =
+function() {
+	return this._standardActionMenuOps();
+};
+
+ZmTaskListController.prototype._getTagMenuMsg =
+function(num) {
+	return (num == 1) ? ZmMsg.tagTask : ZmMsg.tagTasks;
+};
+
+ZmTaskListController.prototype._listSelectionListener =
+function(ev) {
+	ZmListController.prototype._listSelectionListener.call(this, ev);
+
+	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
+		this._app.getTaskController().show(this._activeSearch, ev.item);
+	}
+};
+
+ZmTaskListController.prototype._listActionListener =
+function(ev) {
+	ZmListController.prototype._listActionListener.call(this, ev);
+	var actionMenu = this.getActionMenu();
+	actionMenu.popup(0, ev.docX, ev.docY);
+};
+
 ZmTaskListController.prototype._setViewContents =
 function(view) {
+	///////////////////////////////////////
+	// TEMP TEMP TEMP
+	///////////////////////////////////////
+	for (var i = 0; i < 10; i++) {
+		var task = new ZmTask(this._appCtxt, this._list);
+		task.id = Dwt.getNextId();
+		task.name = "foobar " + i;
+		task._percentComplete = "20%";
+		task._priority = ZmTask.PRIORITY_LOW;
+		this._list.add(task);
+	}
+
+	// load tasks into the given view and perform layout.
 	this._listView[view].set(this._list, null, this._folderId);
+};
+
+ZmTaskListController.prototype._getMoveDialogTitle =
+function(num) {
+	return (num == 1) ? ZmMsg.moveTask : ZmMsg.moveTasks;
 };

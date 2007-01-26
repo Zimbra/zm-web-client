@@ -58,21 +58,21 @@ function ZmApptComposeView(parent, className, calApp, controller) {
 
 	// centralized attendee data
 	this._attendees = {};
-	this._attendees[ZmAppt.PERSON]		= new AjxVector();	// list of ZmContact
-	this._attendees[ZmAppt.LOCATION]	= new AjxVector();	// list of ZmResource
-	this._attendees[ZmAppt.EQUIPMENT]	= new AjxVector();	// list of ZmResource
+	this._attendees[ZmCalItem.PERSON]	= new AjxVector();	// list of ZmContact
+	this._attendees[ZmCalItem.LOCATION]	= new AjxVector();	// list of ZmResource
+	this._attendees[ZmCalItem.EQUIPMENT]= new AjxVector();	// list of ZmResource
 
 	// set of attendee keys (for preventing duplicates)
 	this._attendeeKeys = {};
-	this._attendeeKeys[ZmAppt.PERSON]	= {};
-	this._attendeeKeys[ZmAppt.LOCATION]	= {};
-	this._attendeeKeys[ZmAppt.EQUIPMENT]	= {};
+	this._attendeeKeys[ZmCalItem.PERSON]	= {};
+	this._attendeeKeys[ZmCalItem.LOCATION]	= {};
+	this._attendeeKeys[ZmCalItem.EQUIPMENT]	= {};
 
 	// error msg for when user enters invalid attendee
 	this._badAttendeeMsg = {};
-	this._badAttendeeMsg[ZmAppt.PERSON]		= ZmMsg.schedBadAttendee;
-	this._badAttendeeMsg[ZmAppt.LOCATION]	= ZmMsg.schedBadLocation;
-	this._badAttendeeMsg[ZmAppt.EQUIPMENT]	= ZmMsg.schedBadResource;
+	this._badAttendeeMsg[ZmCalItem.PERSON]		= ZmMsg.schedBadAttendee;
+	this._badAttendeeMsg[ZmCalItem.LOCATION]	= ZmMsg.schedBadLocation;
+	this._badAttendeeMsg[ZmCalItem.EQUIPMENT]	= ZmMsg.schedBadResource;
 
 	// for attendees change events
 	this._evt = new ZmEvent(ZmEvent.S_CONTACT);
@@ -145,10 +145,10 @@ ZmApptComposeView.prototype.set =
 function(appt, mode, isDirty) {
 	this._setData = [appt, mode, isDirty];
 	var button = this.getTabButton(this._apptTabKey);
-	if (mode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
+	if (mode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
 		button.setImage("Appointment");
-	} else if (mode == ZmAppt.MODE_EDIT_SERIES ||
-			(mode == ZmAppt.MODE_NEW_FROM_QUICKADD && appt.getRecurType() != "NON")) {
+	} else if (mode == ZmCalItem.MODE_EDIT_SERIES ||
+			(mode == ZmCalItem.MODE_NEW_FROM_QUICKADD && appt.getRecurType() != "NON")) {
 		button.setImage("ApptRecur");
 	} else {
 		button.setImage("Appointment");
@@ -169,13 +169,13 @@ function(appt, mode, isDirty) {
 ZmApptComposeView.prototype.cleanup = 
 function() {
 	// clear attendees lists
-	this._attendees[ZmAppt.PERSON]		= new AjxVector();
-	this._attendees[ZmAppt.LOCATION]	= new AjxVector();
-	this._attendees[ZmAppt.EQUIPMENT]	= new AjxVector();
+	this._attendees[ZmCalItem.PERSON]		= new AjxVector();
+	this._attendees[ZmCalItem.LOCATION]	= new AjxVector();
+	this._attendees[ZmCalItem.EQUIPMENT]	= new AjxVector();
 
-	this._attendeeKeys[ZmAppt.PERSON]	= {};
-	this._attendeeKeys[ZmAppt.LOCATION]	= {};
-	this._attendeeKeys[ZmAppt.EQUIPMENT]	= {};
+	this._attendeeKeys[ZmCalItem.PERSON]	= {};
+	this._attendeeKeys[ZmCalItem.LOCATION]	= {};
+	this._attendeeKeys[ZmCalItem.EQUIPMENT]	= {};
 
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
@@ -464,15 +464,15 @@ function(id) {
 			break;
 		}
 		case ZmApptComposeView.TAB_ATTENDEES : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.PERSON);
+			tabPage = new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmCalItem.PERSON);
 			break;
 		}
 		case ZmApptComposeView.TAB_LOCATIONS : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.LOCATION);
+			tabPage = new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmCalItem.LOCATION);
 			break;
 		}
 		case ZmApptComposeView.TAB_EQUIPMENT : {
-			tabPage = new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmAppt.EQUIPMENT);
+			tabPage = new ZmApptChooserTabViewPage(this, this._appCtxt, this._attendees, this._controller, ZmCalItem.EQUIPMENT);
 			break;
 		}
 	}

@@ -101,9 +101,9 @@ function() {
 
 ZmCalendarApp.prototype.loadResources = 
 function() {
-	this._locations = new ZmResourceList(this._appCtxt, ZmAppt.LOCATION);
+	this._locations = new ZmResourceList(this._appCtxt, ZmCalItem.LOCATION);
 	this._locations.isCanonical = true;
-	this._equipment = new ZmResourceList(this._appCtxt, ZmAppt.EQUIPMENT);
+	this._equipment = new ZmResourceList(this._appCtxt, ZmCalItem.EQUIPMENT);
 	this._equipment.isCanonical = true;
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var batchCmd = new ZmBatchCommand(this._appCtxt);

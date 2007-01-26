@@ -91,7 +91,7 @@ function(resp) {
 			if (appt.recurring)
 				appt._seriesInvId = apptNode.invId;
 			appt.name = this._getAttr(apptNode, instNode, "name");
-			appt.setAttendees(this._getAttr(apptNode, instNode, "loc"), ZmAppt.LOCATION);
+			appt.setAttendees(this._getAttr(apptNode, instNode, "loc"), ZmCalItem.LOCATION);
 			appt.startDate = new Date(startTime);
 			appt._uniqStartTime = appt.startDate.getTime(); 					// need to construct uniq id later
 			if (instNode.fba && ZmApptList._fba2ptst[instNode.fba])				// override appt.ptst for this instance
@@ -110,7 +110,7 @@ function(obj) {
 
 ZmApptList.sortVector = 
 function(vec) {
-	vec.sort(ZmAppt.compareByTimeAndDuration);
+	vec.sort(ZmCalItem.compareByTimeAndDuration);
 };
 
 // merge all the sorted vectors in the specified array into a single sorted vector

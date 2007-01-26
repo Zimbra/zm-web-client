@@ -34,11 +34,11 @@
 * @param name		[string]		name
 */
 function ZmTask(appCtxt, list) {
-	ZmAppt.call(this, appCtxt, ZmItem.TASK, list);
+	ZmCalItem.call(this, appCtxt, ZmItem.TASK, list);
 	this.folderId = ZmOrganizer.ID_TASKS;
 };
 
-ZmTask.prototype = new ZmAppt;
+ZmTask.prototype = new ZmCalItem;
 ZmTask.prototype.constructor = ZmTask;
 
 
@@ -75,9 +75,28 @@ function() {
 };
 
 // Getters
-ZmTask.prototype.getPercentComplete =	function() { return this._percentComplete; };
-ZmTask.prototype.getPriority =			function() { return this._priority; };
-ZmTask.prototype.getIcon = 				function() { return "Task"; };
+ZmTask.prototype.getPercentComplete		= function() { return this._percentComplete; };
+ZmTask.prototype.getPriority			= function() { return this._priority; };
+ZmTask.prototype.getIcon				= function() { return "Task"; };
+
+ZmTask.prototype.getFolder =
+function() {
+	var ct = this._appCtxt.getTree(ZmOrganizer.TASKS);
+	return ct ? ct.getById(this.getFolderId()) : null;
+};
+
+ZmCalItem.prototype.getSummary =
+function(isHtml) {
+	// TODO
+};
+
+/**
+* Returns HTML for a tool tip for this appt.
+*/
+ZmTask.prototype.getToolTip =
+function(controller) {
+	// TODO
+};
 
 // Setters
 ZmTask.prototype.setPercentComplete =	function(pComplete) { this._percentCompelte = pComplete; };

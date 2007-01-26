@@ -56,7 +56,7 @@ function(mode, appt) {
 	this._defaultRadio.checked = true;
 
 	var m = AjxMessageFormat.format(ZmMsg.isRecurringAppt, [appt.getName()]);
-	if (mode == ZmAppt.MODE_EDIT) {
+	if (mode == ZmCalItem.MODE_EDIT) {
 		this.setTitle(ZmMsg.openRecurringItem);
 		this._questionCell.innerHTML = m + " " + ZmMsg.editApptQuestion;
 		this._instanceMsg.innerHTML = ZmMsg.openInstance;
