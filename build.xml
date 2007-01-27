@@ -29,41 +29,41 @@
   <property name="adminwarfile"      location="${dist.webapps.dir}/zimbraAdmin.war"/>		
   
   <property name="jars.dir"           location="jars"/>
-  <property name="jars.archive.dir"   location="../ZimbraCommon/jars"/>
   <property name="src.dir"            location="src"/>
   <property name="gzipExtension" value=".zgz"/>	
   <property name="rhinoExtension" value=".rhino"/>
   <property name="licenseExtension" value=".license"/>	
   <property name="mail.url" value="/zimbra"/>
 
-  <condition property="ajax.dir" value="${env.AJAX_DIR}">
+  <condition property="ajax.dir" value="${env.AJAX_DIR}" else='../Ajax'>
     <isset property="env.AJAX_DIR" />
   </condition>	
-  <condition property="ajax.dir" value="../Ajax">
-    <not><isset property="env.AJAX_DIR"/></not>
-  </condition>	
-
   <property name="ajax.src.dir" value="${ajax.dir}/src"/>
   <property name="ajax.jars.dir" value="${ajax.dir}/jars"/>
   <property name="ajax.dwtimg.dir" value="${ajax.dir}/img"/>
   <property name='ajax.imagemerge.dir' location='${ajax.src.dir}/com/zimbra/kabuki/tools/img'/>
   <property name='ajax.i18n.dir' location='${ajax.src.dir}/com/zimbra/kabuki/tools/i18n'/>
-  
-  <condition property="deploy.dir" value="${env.DEPLOY_DIR}">
+  <property name="ajaxdwt.images.dir" location="${ajax.dir}/img/loRes/dwt"/>
+
+  <condition property="common.dir" value="${env.COMMON_DIR}" else='../ZimbraCommon'>
+    <isset property="env.AJAX_DIR" />
+  </condition>
+  <property name="common.build.dir" value="${common.dir}/build" />
+  <property name="common.build.classes.dir" location="${common.build.dir}/classes"/>
+  <property name="common.jars.dir" location="${common.dir}/jars"/>
+
+  <condition property="server.dir" value="${env.SERVER_DIR}" else='../ZimbraServer'>
+      <isset property="env.SERVER_DIR" />
+  </condition>
+  <property name="server.build.dir" location="${server.dir}/build"/>
+  <property name="server.build.classes.dir" location="${server.build.dir}/classes"/>
+
+  <condition property="deploy.dir" value="${env.DEPLOY_DIR}" else='/opt/zimbra/tomcat/webapps'>
     <isset property="env.DEPLOY_DIR" />
   </condition>	
-	
-  <condition property="deploy.dir" value="${webserver.root.dir}/webapps">
-    <not><isset property="env.DEPLOY_DIR"/></not>
-  </condition>	
-
-  <condition property="deploy.url" value="${env.DEPLOY_URL}">
+  <condition property="deploy.url" value="${env.DEPLOY_URL}" else='http://localhost:7070/manager/'>
     <isset property="env.DEPLOY_URL" />
   </condition>	
-  <condition property="deploy.url" value="http://localhost:7070/manager/">
-    <not><isset property="env.DEPLOY_URL"/></not>
-  </condition>
-  
   <property name="deploy.war" value="${warfile}"/>
   <property name="deploy.user" value="zimbra"/>
   <property name="deploy.password" value="zimbra"/>
@@ -107,9 +107,10 @@
     <fileset dir="${jars.dir}">
       <include name="**/*.jar"/>
     </fileset>
-    <fileset dir="${jars.archive.dir}">
+    <fileset dir="${common.jars.dir}">
       <include name="**/*.jar"/>
     </fileset>
+    <pathelement path="${common.dir}/build/classes" />
     <fileset dir="${ajax.jars.dir}">
       <include name="**/*.jar"/>
     </fileset>
@@ -212,12 +213,21 @@
         <echo />
         <echo>Checking Zimbra Server messages</echo>
         <echo />
-        <property name='zimbraServer.msgs.dir' value='../ZimbraServer/conf/msgs' />
+        <property name='zimbraServer.msgs.dir' value='${server.dir}/conf/msgs' />
         <i18ncheck>
             <sourcefile file='${zimbraServer.msgs.dir}/ZsMsg.properties' />
             <targetfileset dir='${zimbraServer.msgs.dir}' includes='ZsMsg_*.properties' />
         </i18ncheck>
 	</target>
+
+    <target name='tz' depends='compile'>
+        <java classname="com.zimbra.kabuki.tools.tz.GenerateData">
+            <classpath refid="class.path" />
+            <classpath path="${build.dir}/classes" />
+            <arg value="-i"/> <arg value="${server.dir}/conf/timezones.ics"/>
+            <arg value="-o"/> <arg value="${build.dir}/WebRoot/js/ajax/util/AjxTimezoneData.js"/>
+        </java>
+    </target>
 
 	<target name='i18n' depends='i18n-init,compile' unless='i18n-done'>
 		<taskdef name='i18n'
@@ -359,7 +369,7 @@
         <delete file="${build.dir}/WebRoot/ALE/spreadsheet/embed_all.js${rhinoExtension}"/>
     </target>
 
-    <target name="compress-js-files" depends="copy-files-to-build-area, copy-help, copy-admin-help, jam-files,generate-preambles">
+    <target name="compress-js-files" depends="copy-files-to-build-area, tz, copy-help, copy-admin-help, jam-files,generate-preambles">
 		<fileset id="js-includes" dir="${build.dir}/WebRoot" includes="js/*.js" />
 		<copy todir="${build.dir}/WebRoot">
 			<fileset refid="js-includes" />
@@ -726,17 +736,6 @@
   </target>
 
     <!-- ======= HTML ========== -->
-    <property name="server.dir" location="../ZimbraServer"/>
-    <property name="server.build.dir" location="${server.dir}/build"/>
-    <property name="server.build.classes.dir" location="${server.build.dir}/classes"/>
-    <property name="ajaxdwt.images.dir" location="../Ajax/img/loRes/dwt"/>
-    <property name="common.dir" location="../ZimbraCommon"/>
-    <property name="common.build.dir" location="${common.dir}/build"/>
-    <property name="common.build.classes.dir" location="${common.build.dir}/classes"/>
-    <property name="common.jars.dir" location="${common.dir}/jars"/>
-
-    <property name="htmlclient.dir" location="../ZimbraHtmlClient"/>
-
     <property name="zimbratl.dir" location="../ZimbraTagLib"/>
     <property name="zimbratl.build.dir" location="${zimbratl.dir}/build"/>
     <property name="zimbratl.build.classes.dir" location="${zimbratl.build.dir}/classes"/>
@@ -750,10 +749,10 @@
         <ant dir="${server.dir}" target="jar" inheritAll="false"/>
         <ant dir="${common.dir}" target="jar" inheritAll="false"/>
         <ant dir="${zimbratl.dir}" target="jar" inheritAll="false"/>
-    </target>    
+    </target>
     <!-- ======= HTML ========== -->
 
-  <target name="war" depends="external-jar,copy-files-to-build-area, templates, jam-files, inject-build-info, images, i18n">
+  <target name="war" depends="external-jar,copy-files-to-build-area, tz, templates, jam-files, inject-build-info, images, i18n">
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
