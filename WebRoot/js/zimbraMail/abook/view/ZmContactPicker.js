@@ -535,9 +535,9 @@ function(ev, div) {
 
 	if (id && item) {
 		var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
-		var contact = contactList ? contactList.getById(item.contactId) : null;
+		var contact = item.__contact;
 		if (contact) {
-			var tt = contact.getToolTip(item.address);
+			var tt = contact.getToolTip(item.address, contact.isGal);
 			this.setToolTipContent(tt);
 		} else {
 			this.setToolTipContent(item.address);
