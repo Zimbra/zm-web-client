@@ -37,8 +37,8 @@ ZmTimezone.getDefault = function() {
 };
 ZmTimezone.getDefaultRule = function() {
 	var clientId = ZmTimezone.getDefault();
-	var rule = AjxTimezone.getRule(clientId);
-	return rule;
+	var timezone = AjxTimezone.getRule(clientId);
+	return timezone;
 };
 
 /**
@@ -60,39 +60,33 @@ ZmTimezone.getDefaultRule = function() {
  */
 ZmTimezone.set =
 function(soapDoc, timezoneClientId, parentNode, skipKnownTimezone) {
-	var rule = AjxTimezone.getRule(timezoneClientId);
-	if (!rule) return;
+	var timezone = AjxTimezone.getRule(timezoneClientId);
+	if (!timezone) return;
 
-	if (rule.autoDetected || !skipKnownTimezone) {
+	if (timezone.autoDetected || !skipKnownTimezone) {
 		var tz = soapDoc.set("tz", null, parentNode);
 		var id = AjxTimezone.getServerId(timezoneClientId);
 		if (AjxEnv.isSafari) id = AjxStringUtil.xmlEncode(id);
 		tz.setAttribute("id", id);
-		if (rule.autoDetected) {
-			tz.setAttribute("stdoff", rule.stdOffset);
-			if (rule.dstOffset) {
-				tz.setAttribute("dayoff", rule.dstOffset);
-				var trans = [
-					{ ename: "standard", change: rule.changeStd },
-					{ ename: "daylight", change: rule.changeD }
-				];
-				for (var i = 0; i < trans.length; i++) {
-					var tran = trans[i];
-					var ename = tran.ename;
-					var change = tran.change;
-
-                    var date = new Date(change[0], change[1], change[2], change[3], change[4], change[5]);
-                    var info = AjxTimezone.createWkDayTransition(date);
-
+		if (timezone.autoDetected) {
+			tz.setAttribute("stdoff", timezone.standard.offset);
+			if (timezone.daylight) {
+				tz.setAttribute("dayoff", timezone.daylight.offset);
+                var enames = [ "standard", "daylight" ];
+                var pnames = [ "mon", "mday", "week", "wkday", "hour", "min", "sec" ];
+                for (var i = 0; i < enames.length; i++) {
+                    var ename = enames[i];
+                    var onset = timezone[ename];
+                    
                     var el = soapDoc.set(ename, null, tz);
-                    el.setAttribute("mon", info.mon);
-                    el.setAttribute("week", info.week);
-                    el.setAttribute("wkday", info.wkday);
-                    el.setAttribute("hour", info.hour);
-                    el.setAttribute("min", info.min);
-                    el.setAttribute("sec", info.sec);
+                    for (var j = 0; j < pnames.length; j++) {
+                        var pname = pnames[j];
+                        if (pname in onset) {
+                            el.setAttribute(pname, onset[pname]);
+                        }
+                    }
                 }
-			}
+            }
 		}
 	}
 };
