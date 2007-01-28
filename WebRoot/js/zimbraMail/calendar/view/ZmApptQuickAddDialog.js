@@ -284,8 +284,8 @@ function() {
 
 	// create DwtSelects
 	this._showAsSelect = new DwtSelect(this);
-	for (var i = 0; i < ZmApptTabViewPage.SHOWAS_OPTIONS.length; i++) {
-		var option = ZmApptTabViewPage.SHOWAS_OPTIONS[i];
+	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
+		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
 		this._showAsSelect.addOption(option.label, option.selected, option.value);
 	}
 	this._showAsSelect.reparentHtmlElement(this._showAsSelectId);

@@ -47,7 +47,7 @@ function ZmSchedTabViewPage(parent, appCtxt, attendees, controller, dateInfo) {
 	this._controller = controller;
 	this._dateInfo = dateInfo;
 
-	this._apptTab = parent.getTabPage(ZmApptComposeView.TAB_APPOINTMENT);
+	this._editView = parent.getTabPage(ZmApptComposeView.TAB_APPOINTMENT).getEditView();
 
 	this.setScrollStyle(Dwt.SCROLL);
 	this._rendered = false;
@@ -101,7 +101,7 @@ function() {
 ZmSchedTabViewPage.prototype.showMe =
 function() {
 
-	ZmApptViewHelper.getDateInfo(this._apptTab, this._dateInfo);
+	ZmApptViewHelper.getDateInfo(this._editView, this._dateInfo);
 	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 
 	if (!this._rendered) {
@@ -112,7 +112,7 @@ function() {
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
 
-	this.set(this._dateInfo, this._apptTab.getOrganizer(), this._attendees);
+	this.set(this._dateInfo, this._editView.getOrganizer(), this._attendees);
 	this._controller._setApptComposeTabGroup();
 };
 
@@ -218,7 +218,7 @@ function() {
 	var el = this._allDayCheckbox;
 	el.checked = !el.checked;
 	this._showTimeFields(!el.checked);
-	this._apptTab.updateAllDayField(el.checked);
+	this._editView.updateAllDayField(el.checked);
 	this._outlineAppt();
 };
 
@@ -848,7 +848,7 @@ function(isStartDate, skipCheck) {
 		this._updateFreeBusy();
 	}
 	// finally, update the appt tab view page w/ new date(s)
-	this._apptTab.updateDateField(this._startDateField.value, this._endDateField.value);
+	this._editView.updateDateField(this._startDateField.value, this._endDateField.value);
 };
 
 // Listeners
@@ -918,7 +918,7 @@ function(ev) {
 	this._updateFreeBusy();
 
 	// finally, update the appt tab view page w/ new date(s)
-	this._apptTab.updateDateField(this._startDateField.value, this._endDateField.value);
+	this._editView.updateDateField(this._startDateField.value, this._endDateField.value);
 };
 
 ZmSchedTabViewPage.prototype._timeChangeListener =
@@ -928,7 +928,7 @@ function(ev) {
 	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 	this._outlineAppt(this._dateInfo);
-	this._apptTab.updateTimeField(this._dateInfo);
+	this._editView.updateTimeField(this._dateInfo);
 };
 
 ZmSchedTabViewPage.prototype._selectChangeListener =
@@ -1215,7 +1215,7 @@ function(ev) {
 	// figure out which object was clicked
 	if (el.id == svp._allDayCheckboxId) {
 		svp._showTimeFields(!el.checked);
-		svp._apptTab.updateAllDayField(el.checked);
+		svp._editView.updateAllDayField(el.checked);
 		svp._outlineAppt();
 	} else if (el.id == svp._startDateFieldId || el.id == svp._endDateFieldId) {
 		svp._activeDateField = el;

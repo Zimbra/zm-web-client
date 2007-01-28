@@ -194,7 +194,7 @@ function() {
 
 ZmApptComposeView.prototype.getComposeMode = 
 function() {
-	return this._apptTab.getComposeMode();
+	return this._apptEditView.getComposeMode();
 };
 
 // Sets the mode ZmHtmlEditor should be in.
@@ -203,13 +203,13 @@ function(composeMode) {
 	if (composeMode == DwtHtmlEditor.TEXT || 
 		(composeMode == DwtHtmlEditor.HTML && this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)))
 	{
-		this._apptTab.setComposeMode(composeMode);
+		this._apptEditView.setComposeMode(composeMode);
 	}
 };
 
 ZmApptComposeView.prototype.reEnableDesignMode = 
 function() {
-	this._apptTab.reEnableDesignMode();
+	this._apptEditView.reEnableDesignMode();
 };
 
 ZmApptComposeView.prototype.isDirty =
@@ -241,7 +241,7 @@ function() {
 */
 ZmApptComposeView.prototype.addAttachmentField =
 function() {
-	this._apptTab.addAttachmentField();
+	this._apptEditView.addAttachmentField();
 };
 
 ZmApptComposeView.prototype.tabSwitched =
@@ -250,8 +250,8 @@ function(tabKey) {
 	toolbar.enableAll(true);
 	// based on the current tab selected, enable/disable appropriate buttons in toolbar
 	if (tabKey == this._tabKeys[ZmApptComposeView.TAB_APPOINTMENT]) {
-		this._apptTab.enableInputs(true);
-		this._apptTab.reEnableDesignMode();
+		this._apptEditView.enableInputs(true);
+		this._apptEditView.reEnableDesignMode();
 	} else {
 		var buttons = [ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK];
 		if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED))
@@ -259,7 +259,7 @@ function(tabKey) {
 		if (!this.isChildWindow)
 			buttons.push(ZmOperation.DETACH_COMPOSE);
 		toolbar.enable(buttons, false);
-		this._apptTab.enableInputs(false);
+		this._apptEditView.enableInputs(false);
 	}
 	if (this._curTabId && (this._curTabId != this._tabIdByKey[tabKey])) {
 		this._tabPages[this._curTabId].tabBlur();
@@ -270,7 +270,7 @@ function(tabKey) {
 ZmApptComposeView.prototype.getAppt = 
 function(attId) {
 	this._tabPages[this._curTabId].tabBlur(true);
-	return this._apptTab.getAppt(attId);
+	return this._apptEditView.getCalItem(attId);
 };
 
 ZmApptComposeView.prototype.getApptTab =
@@ -280,7 +280,7 @@ function() {
 
 ZmApptComposeView.prototype.getHtmlEditor = 
 function() {
-	return this._apptTab.getNotesHtmlEditor();
+	return this._apptEditView.getNotesHtmlEditor();
 };
 
 ZmApptComposeView.prototype.getTabPage =
@@ -427,8 +427,9 @@ function() {
 
 	this._apptTab = this._tabPages[ZmApptComposeView.TAB_APPOINTMENT];
 	this._apptTabKey = this._tabKeys[ZmApptComposeView.TAB_APPOINTMENT];
+	this._apptEditView = this._apptTab.getEditView();
 	
-	this._apptTab.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
+	this._apptEditView.addRepeatChangeListener(new AjxListener(this, this._repeatChangeListener));
 	this.addControlListener(new AjxListener(this, this._controlListener));
 };
 
@@ -443,8 +444,8 @@ function(id, tabKey) {
 	tabPage.initialize.apply(tabPage, this._setData);
 	if (id == ZmApptComposeView.TAB_ATTENDEES ||
 		id == ZmApptComposeView.TAB_LOCATIONS ||
-		id == ZmApptComposeView.TAB_EQUIPMENT) {
-
+		id == ZmApptComposeView.TAB_EQUIPMENT)
+	{
 		this._addChooserListener(tabPage);
 	}
 

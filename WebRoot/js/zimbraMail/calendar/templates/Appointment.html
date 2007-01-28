@@ -1,6 +1,6 @@
 <template id='ApptEdit'>
 	<div>
-		<table border=0 width=100% style='table-layout:fixed; height:${height}px'>
+		<table border=0 width=100% style='table-layout:fixed; height:${height}px' id='${id}_table'>
 			<colgroup>
 				<col width='<$= AjxEnv.is800x600orLower ? "235" : "335" $>' />
 				<col />
@@ -20,13 +20,15 @@
 									<td width=1% class='ZmApptTabViewPageField'><$= ZmMsg.location $>:</td>
 									<td colspan=5 id='${locationId}'></td>
 								</tr>
+								<$ if (data.isAppt) { $>
 								<tr>
 									<td width=1% class='ZmFieldLabelRight'><$= ZmMsg.showAs $></td>
 									<td width=1% id='${id}_showAsSelect'></td>
 								</tr>
+								<$ } $>
 								<tr>
-									<td width=1% class='ZmFieldLabelRight' id='${id}_calLabel'><$= ZmMsg.calendar $>:</td>
-									<td id='${id}_calSelect'></td>
+									<td width=1% class='ZmFieldLabelRight' id='${id}_folderLabel'><$= data.isAppt ? ZmMsg.calendar : ZmMsg.taskFolder $>:</td>
+									<td id='${id}_folderSelect'></td>
 								</tr>
 							</table>
 						</div>
@@ -42,6 +44,7 @@
 					</fieldset>
 				</td>
 			</tr>
+			<$ if (data.personId || data.equipmentId) { $>
 			<tr>
 				<td colspan=2>
 					<!-- appointment attendees / resources -->
@@ -60,6 +63,7 @@
 					</table>
 				</td>
 			</tr>
+			<$ } $>
 		</table>
 	</div>
 	<!-- appointment notes -->
@@ -68,6 +72,7 @@
 
 <template id='ApptTimeSection'>
 	<table border=0>
+		<$ if (data.isAppt) { $>
 		<tr>
 			<td></td>
 			<td width=1%>
@@ -79,6 +84,7 @@
 			<td></td>
 			<td colspan=10 id='${id}_tzoneSelect'></td>
 		</tr>
+		<$ } $>
 		<tr>
 			<td class='ZmFieldLabelRight'><$= ZmMsg.start $>:</td>
 			<td>
@@ -87,7 +93,9 @@
 					<td id='${id}_startMiniCalBtn'></td>
 				</tr></table>
 			</td>
+			<$ if (data.isAppt) { $>
 			<td class='ZmFieldLabelCenter'>@</td><td id='${id}_startTimeSelect'></td>
+			<$ } $>
 		</tr>
 		<tr>
 			<td class='ZmFieldLabelRight'><$= ZmMsg.end $>:</td>
@@ -97,7 +105,9 @@
 					<td id='${id}_endMiniCalBtn'></td>
 				</tr></table>
 			</td>
+			<$ if (data.isAppt) { $>
 			<td class='ZmFieldLabelCenter'>@</td><td id='${id}_endTimeSelect'></td>
+			<$ } $>
 		</tr>
 		<tr>
 			<td valign=top class='ZmFieldLabelRight' style='line-height:22px'><$= ZmMsg.repeat $>:</td>

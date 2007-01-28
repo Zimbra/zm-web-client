@@ -22,9 +22,9 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-function ZmCalItem(appCtxt, list, type) {
+function ZmCalItem(appCtxt, type, list) {
 
-	ZmItem.call(this, appCtxt, type, list);
+	ZmItem.call(this, appCtxt, type, null, list);
 
 	this.id = -1;
 	this.uid = -1;																// iCal uid of appt
