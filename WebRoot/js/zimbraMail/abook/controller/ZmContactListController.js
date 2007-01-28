@@ -130,6 +130,7 @@ function(searchResult, bIsGalSearch, folderId) {
 ZmContactListController.prototype.switchView =
 function(view, force, initialized) {
 	if (view != this._currentView || force) {
+		this._currentView = view;
 		DBG.timePt("setting up view", true);
 		this._setup(view);
 		DBG.timePt("done setting up view");
