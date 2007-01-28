@@ -857,6 +857,9 @@ td.DDSepInvisible div {
 	@ContactsCardSize@
 	overflow: hidden;
 	@OverflowEllipsis@
+#IFDEF GECKO
+	-moz-user-select: none;
+#ENDIF
 }
 
 .ZmContactCard {

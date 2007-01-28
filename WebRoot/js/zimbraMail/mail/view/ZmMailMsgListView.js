@@ -227,8 +227,6 @@ function(msg, now, isDndIcon, isMixedView) {
 					var name = fromAddr.getName() || fromAddr.getDispName();
 					htmlArr[idx++] = AjxStringUtil.htmlEncode(name);
 					htmlArr[idx++] = "</span>";
-					if (AjxEnv.isNav)
-						htmlArr[idx++] = ZmListView._fillerString;
 				}
 			}
 			htmlArr[idx++] = "</td>";
@@ -256,8 +254,6 @@ function(msg, now, isDndIcon, isMixedView) {
 					htmlArr[idx++] = "</span>";
 				}
 			}
-			if (AjxEnv.isNav)
-				htmlArr[idx++] = ZmListView._fillerString;
 			if (AjxEnv.isSafari)
 				htmlArr[idx++] = "</div>";
 			htmlArr[idx++] = "</td>";
@@ -273,8 +269,6 @@ function(msg, now, isDndIcon, isMixedView) {
 			if (folder)
 				htmlArr[idx++] = folder.getName();
 			htmlArr[idx++] = "</nobr>";
-			if (AjxEnv.isNav)
-				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]) == 0) {
 			// Size
@@ -282,8 +276,6 @@ function(msg, now, isDndIcon, isMixedView) {
 			htmlArr[idx++] = width;
 			htmlArr[idx++] = "><nobr>";
 			htmlArr[idx++] = AjxUtil.formatSize(msg.size);
-			if (AjxEnv.isNav)
-				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
 			// Date

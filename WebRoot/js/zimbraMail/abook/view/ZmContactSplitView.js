@@ -681,8 +681,6 @@ function(contact, now, isDndIcon) {
 	// file as
 	htmlArr[idx++] = "<td style='vertical-align:middle;'>&nbsp;";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
-	if (AjxEnv.isNav)
-		htmlArr[idx++] = ZmListView._fillerString;
 	htmlArr[idx++] = "</td>";
 
 	if (!isDndIcon) {
@@ -741,8 +739,6 @@ function(contact, now, isDndIcon) {
 			htmlArr[idx++] = this._getFieldId(contact, ZmItem.F_PARTICIPANT);
 			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
-			if (AjxEnv.isNav)
-				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
 			// Attachment icon
@@ -753,8 +749,6 @@ function(contact, now, isDndIcon) {
 			htmlArr[idx++] = this._getFieldId(contact, ZmItem.F_COMPANY);
 			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getCompanyField());
-			if (AjxEnv.isNav)
-				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
 			htmlArr[idx++] = "<td width=";
@@ -763,8 +757,6 @@ function(contact, now, isDndIcon) {
 			htmlArr[idx++] = this._getFieldId(contact, ZmItem.F_DATE);
 			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = AjxDateUtil.computeDateStr(now, contact.modified);
-			if (AjxEnv.isNav)
-				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";
 		}
 	}
