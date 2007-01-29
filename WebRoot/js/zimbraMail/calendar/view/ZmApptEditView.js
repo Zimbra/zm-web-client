@@ -245,11 +245,10 @@ function(calItem) {
 	if (Dwt.getVisibility(this._tzoneSelect.getHtmlElement()))
 		calItem.timezone = this._tzoneSelect.getValue();
 
-	calItem.notesTopPart = top;
-
 	// set attendees
 	for (var t = 0; t < this._attTypes.length; t++) {
-		calItem.setAttendees(this._attendees[type].getArray(), this._attTypes[t]);
+		var type = this._attTypes[t];
+		calItem.setAttendees(this._attendees[type].getArray(), this._attTypes[type]);
 	}
 
 	return calItem;
