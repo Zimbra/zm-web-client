@@ -71,7 +71,6 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/util/AjxTimezone.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/xslt/AjxXslt.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/util/AjxSHA1.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/util/AjxDlgUtil.js<%= ext %>?v=<%= vers %>"></script>
 
 <!-- DWT classes -->
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/core/Dwt.js<%= ext %>?v=<%= vers %>"></script>
@@ -103,6 +102,7 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtTabGroupEvent.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtKeyMap.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtKeyMapMgr.js"></script>
+<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtKeyMapMgrException.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtKeyboardMgr.js"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/keyboard/DwtTabGroup.js"></script>
 
@@ -122,7 +122,6 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtCheckbox.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtRadioButtonGroup.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtListView.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtListEditView.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtButton.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtMenuItem.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtMenu.js<%= ext %>?v=<%= vers %>"></script>
@@ -152,7 +151,6 @@ Contributor(s):
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtSpinner.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtButtonColorPicker.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtMessageComposite.js<%= ext %>?v=<%= vers %>"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/dwt/widgets/DwtResizableWindow.js<%= ext %>?v=<%= vers %>"></script>
 <!-- END SCRIPT BLOCK -->
 
 <script type="text/javascript">

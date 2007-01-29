@@ -103,7 +103,7 @@ function(params) {
 					 changeToken:changeToken, asyncMode:params.asyncMode, callback:asyncCallback,
 					 logRequest:this._logRequest, highestNotifySeen:this._highestNotifySeen };
 
-	DBG.println(AjxDebug.DBG2, "sendRequest("+reqId+"): " + params.soapDoc._methodEl.nodeName);
+	DBG.println(AjxDebug.DBG2, "sendRequest: " + params.soapDoc._methodEl.nodeName);
 	var cancelParams = timeout ? [reqId, params.errorCallback, params.noBusyOverlay] : null;
 	if (!params.noBusyOverlay) {
 		var cancelCallback = null;
@@ -141,14 +141,9 @@ function(params, result) {
 //	if (this._cancelDialog && this._cancelDialog.isPoppedUp()) {
 //		this._cancelDialog.popdown();
 //	}
-    if (!this._pendingRequests[params.reqId]) {
-        DBG.println(AjxDebug.DBG2, "ZmRequestMgr.handleResponseSendRequest no pendingRequest entry for " + params.reqId);
-        return;
-    }
-    if (this._pendingRequests[params.reqId].state == ZmRequestMgr._CANCEL) {
-        DBG.println(AjxDebug.DBG2, "ZmRequestMgr.handleResponseSendRequest state=CANCEL for " + params.reqId);
-        return;
-    }
+
+	if (!this._pendingRequests[params.reqId]) return;
+	if (this._pendingRequests[params.reqId].state == ZmRequestMgr._CANCEL) return;
 
 	this._pendingRequests[params.reqId].state = ZmRequestMgr._RESPONSE;
 
@@ -157,6 +152,11 @@ function(params, result) {
 	} else if (params.timeout) {
 		AjxTimedAction.cancelAction(this._cancelActionId[params.reqId]);
 		this._cancelActionId[params.reqId] = -1;
+	}
+
+	// we just got activity, cancel current poll timer
+	if (this._controller._pollActionId) {
+		AjxTimedAction.cancelAction(this._controller._pollActionId);
 	}
 
 	var response;
@@ -191,9 +191,10 @@ function(params, result) {
 		result.set(response.Body);
 	}
 
-    // if we didn't get an exception, then we should make sure that the
-    // poll timer is running (just in case it got an exception and stopped)
-    this._controller._kickPolling(true);
+	// start poll timer if we didn't get an exception
+	if (this._controller._pollInterval) {
+		this._controller._pollActionId = this._controller._doPoll();
+	}
 
 	this._clearPendingRequest(params.reqId);
 
@@ -293,9 +294,8 @@ function(refresh) {
 		var treeId = ZmZimbraMail.REFRESH_TREES[i];
 		var tree = this._appCtxt.getTree(treeId);
 		if (!tree) {
-			tree = treeId == ZmOrganizer.TAG
-				? (new ZmTagTree(this._appCtxt))
-				: (new ZmFolderTree(this._appCtxt, treeId));
+			tree = (treeId == ZmOrganizer.TAG) ? new ZmTagTree(this._appCtxt) :
+												 new ZmFolderTree(this._appCtxt, treeId);
 			tree.addChangeListener(this._controller._treeListener[treeId]);
 			this._appCtxt.setTree(treeId, tree);
 		}
@@ -319,7 +319,6 @@ function(refresh) {
 	if (refresh.tags) {
 		this._appCtxt.getTree(ZmOrganizer.TAG).loadFromJs(refresh.tags);
 	}
-
 	// everything but tags comes in the <folder> block
 	if (refresh.folder) {
 		for (var i = 0; i < ZmZimbraMail.REFRESH_TREES.length; i++) {
@@ -356,7 +355,7 @@ function(refresh) {
 
 	// XXX: temp, get additional share info (see bug #4434)
 	if (refresh.folder) {
-		this._getFolderPermissions([ZmOrganizer.CALENDAR, /*ZmOrganizer.TASKS,*/ ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK]);
+		this._getFolderPermissions([ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK]);
 	}
 
 	return resetTree;
@@ -745,17 +744,19 @@ function(creates, modifies) {
 			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
 			var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 			var addrBookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
-			var tasksTree = this._appCtxt.getTree(ZmOrganizer.TASKS);
 			// parent could be a folder or a search
 			if (parentId == ZmOrganizer.ID_ROOT) {
 				if (name == "folder") {
-					switch (create.view) {
-						case ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]:	parent = calendarTree.getById(parentId); break;
-						case ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]:	parent = notebookTree.getById(parentId); break;
-						case ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]:	parent = addrBookTree.getById(parentId); break;
-						case ZmOrganizer.VIEWS[ZmOrganizer.TASKS]:		parent = tasksTree.getById(parentId); break;
-						default:										parent = folderTree.getById(parentId); break;
+					if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR])
+						parent = calendarTree.getById(parentId);
+					else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
+						DBG.println("notebook tree");
+						parent = notebookTree.getById(parentId);
 					}
+					else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK])
+						parent = addrBookTree.getById(parentId);
+					else
+						parent = folderTree.getById(parentId);
 				} else {
 					parent = searchTree.getById(parentId);
 				}
@@ -769,20 +770,26 @@ function(creates, modifies) {
 				if (!parent) parent = calendarTree.getById(parentId);
 				if (!parent) parent = notebookTree.getById(parentId);
 				if (!parent) parent = addrBookTree.getById(parentId);
-				if (!parent) parent = tasksTree.getById(parentId);
 			}
 			if (parent)
 				parent.notifyCreate(create, (name == "search"));
 		} else if (name == "link") {
+			var parentId = create.l;
+			var parent;
 			var share;
-			switch (create.view) {
-				case ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]:	share = ZmOrganizer.CALENDAR; break;
-				case ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]:	share = ZmOrganizer.NOTEBOOK; break;
-				case ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]:	share = ZmOrganizer.ADDRBOOK; break;
-				case ZmOrganizer.VIEWS[ZmOrganizer.TASKS]:		share = ZmOrganizer.TASKS; break;
+			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
+				var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+				parent = calendarTree.getById(parentId);
+				share = ZmOrganizer.CALENDAR;
+			} else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
+				var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+				parent = notebookTree.getById(parentId);
+				share = ZmOrganizer.NOTEBOOK;
+			} else if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK]) {
+				var addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+				parent = addrbookTree.getById(parentId);
+				share = ZmOrganizer.ADDRBOOK;
 			}
-			var tree = share ? this._appCtxt.getTree(share) : null;
-			var parent = tree ? tree.getById(create.l) : null;
 
 			if (parent) {
 				parent.notifyCreate(create, true);

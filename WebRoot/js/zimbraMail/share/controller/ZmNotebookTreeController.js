@@ -93,7 +93,7 @@ function(actionMenu, type, id) {
 		}
     }
     if (actionMenu) {
-		var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
+        var menuItem = actionMenu.getMenuItem(ZmOperation.REFRESH);
 		menuItem.setImage("Refresh");
 	}
 };

@@ -64,6 +64,9 @@
                  value="${mailbox.prefs.mailInitialSearch}"/>
 </c:if>
 
+<app:optCheckbox label="alwaysShowReadingPane" pref="zimbraPrefReadingPaneEnabled"
+                 checked="${mailbox.prefs.readingPaneEnabled}"/>
+
 <app:optSeparator/>
 
 <app:optCheckbox label="saveToSent" pref="zimbraPrefSaveToSent" checked="${mailbox.prefs.saveToSent}"/>

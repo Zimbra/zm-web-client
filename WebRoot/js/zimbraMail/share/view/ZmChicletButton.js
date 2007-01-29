@@ -35,13 +35,13 @@
 *
 * @author Conrad Damon
 */
-function ZmChicletButton(parent, outerClass, innerClass, text, isLast) {
+function ZmChicletButton(parent, outerClass, innerClass, text) {
 
 	if (arguments.length == 0) return;
 	DwtControl.call(this, parent, outerClass, DwtControl.RELATIVE_STYLE);
 
 	if (text) {
-		this._setHtml(innerClass, text, isLast);
+		this._setHtml(innerClass, text);
 	} else {
 		this._innerDiv = document.createElement("div");
 		this._innerDiv.style.position = DwtControl.ABSOLUTE_STYLE;
@@ -149,31 +149,25 @@ function(selected) {
 		this._origClassName = this._tempOrigClassName;
 		this.setClassName(this._origClassName);
 	}
-
-	// for chiclet buttons that are made w/ images:
-	var left = document.getElementById(this._leftBtnImgId);
-	if (left) left.className = selected ? "ImgSkin_Tab_Selected_L" : "ImgSkin_Tab_Normal_L";
-
-	var middle = document.getElementById(this._middleBtnImgId);
-	if (middle) middle.className = selected ? "ImgSkin_Tab_Selected__H" : "ImgSkin_Tab_Normal__H";
-
-	var right = document.getElementById(this._rightBtnImgId);
-	if (right) right.className = selected ? "ImgSkin_Tab_Selected_R" : "ImgSkin_Tab_Normal_R";
-
 	this.isSelected = selected;
 };
 
 ZmChicletButton.prototype._setHtml =
-function(innerClass, text, isLast) {
-	this._leftBtnImgId = this._htmlElId + "_leftBtn";
-	this._middleBtnImgId = this._htmlElId + "_middleBtn";
-	this._rightBtnImgId = this._htmlElId + "_rightBtn";
+function(innerClass, text) {
+	var html = [];
+	var i = 0;
+	var divId = Dwt.getNextId();
 
-	var subs = { id:this._htmlElId, innerClass:innerClass, text:text, isLast:isLast };
-	var template = skin.hints && skin.hints.app_chooser.fullWidth ? "ChicletButtonEx" : "ChicletButton";
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.share.templates.App#" + template, subs);
+	html[i++] = "<div id='";
+	html[i++] = divId;
+	html[i++] = "'><table border=0 cellpadding=0 cellspacing=0><tr><td nowrap class='";
+	html[i++] = AjxImg.getClassForImage(innerClass);
+	html[i++] = "'></td><td>&nbsp;</td><td nowrap>";
+	html[i++] = text;
+	html[i++] = "</td></tr></table></div>";
 
-	this._innerDiv = document.getElementById(this._htmlElId+"_inner");
+	this.getHtmlElement().innerHTML = html.join("");
+	this._innerDiv = document.getElementById(divId);
 };
 
 // Activates the button.

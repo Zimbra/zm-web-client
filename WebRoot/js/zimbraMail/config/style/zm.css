@@ -137,14 +137,14 @@
 }
 
 /* Quota label */
-.BannerTextQuota {
+.BannerBar .BannerText {
 	@ChromeText@
 	@NoWrap@
 	text-align: center;
 }
 
 /* User label */
-.BannerTextUser {
+.BannerBar .BannerTextUser {
 	@ChromeText@
 	@NoWrap@
 	text-align: center;
@@ -745,15 +745,13 @@ td.DDSepInvisible div {
 }
 
 .ZmContactInfoView .contactHeaderRow,
-.ZmContactView .contactHeaderRow,
-.ZmTaskEditView .contactHeaderRow {
+.ZmContactView .contactHeaderRow {
 	height: 40px;
 	@WidgetHeaderSize-big@
 }
 
 .ZmContactInfoView .contactHeader,
-.ZmContactView .contactHeader,
-.ZmTaskEditView .contactHeader {
+.ZmContactView .contactHeader {
 	@FontSize-biggest@
 	@Text@
 	padding-left:@BoxPaddingSize@;
@@ -782,7 +780,6 @@ td.DDSepInvisible div {
 	@Label@
 	width: 1%;
 	text-align: right;
-	white-space: nowrap;
 }
 
 
@@ -802,8 +799,7 @@ td.DDSepInvisible div {
 }
 
 /* ??? -> ZmFieldLabelRight */
-.ZmContactView .editLabel,
-.ZmTaskEditView .editLabel {
+.ZmContactView .editLabel {
 	@Label@
 	text-align:right;
 }
@@ -931,15 +927,6 @@ td.DDSepInvisible div {
 	border: solid gray 1px;
 }
 
-
-/*
- * Task application
- */
-.InlineWidget {
-	z-index: 300;
-	visibility: hidden;
-	overflow: hidden;
-}
 
 
 

@@ -37,12 +37,6 @@ function ZmCurrentAppToolBar(parent, tabStyle) {
 		this._currentAppLabel = new DwtLabel(this, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "currentAppLabel");
 		this.addFiller();
 	} else {
-		// XXX: hack for bug 13833 - we should redo steel skin so it uses this ID as well
-		var appLabel = document.getElementById("skin_current_app_label");
-		if (appLabel) {
-			this._currentAppLabel = new DwtLabel(this, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "currentAppLabel");
-			this._currentAppLabel.reparentHtmlElement("skin_current_app_label");
-		}
 		this._viewLabel = new DwtLabel(this, DwtLabel.ALIGN_RIGHT, "viewLabel");
 		this._viewLabel.setText(ZmMsg.view + ":");
 		// HACK - expand out the parent table and shrink first child so view

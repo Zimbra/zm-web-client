@@ -27,9 +27,7 @@ function ZmAppChooser(parent, className, buttons, tabStyle) {
 
 	className = className || "ZmAppChooser";
 	var tbStyle = tabStyle ? DwtToolBar.HORIZ_STYLE : DwtToolBar.VERT_STYLE;
-	var width = skin.hints && skin.hints.app_chooser.fullWidth ? "100%" : null;
-
-	DwtToolBar.call(this, parent, className, Dwt.ABSOLUTE_STYLE, null, null, width, tbStyle);
+	DwtToolBar.call(this, parent, className, Dwt.ABSOLUTE_STYLE, null, null, tbStyle);
 
 	this.setScrollStyle(Dwt.CLIP);
 
@@ -39,7 +37,7 @@ function ZmAppChooser(parent, className, buttons, tabStyle) {
 		if (id == ZmAppChooser.SPACER) {
 			this.addSpacer(ZmAppChooser.SPACER_HEIGHT);
 		} else {
-			this._createButton(id, tabStyle, i == buttons.length-1);
+			this._createButton(id, tabStyle);
 		}
 	}
 };
@@ -54,14 +52,13 @@ ZmAppChooser.SEP		= i++;
 ZmAppChooser.B_EMAIL	= i++;
 ZmAppChooser.B_CONTACTS	= i++;
 ZmAppChooser.B_CALENDAR	= i++;
-ZmAppChooser.B_TASKS	= i++;
 ZmAppChooser.B_IM	    = i++;
 ZmAppChooser.B_NOTEBOOK	= i++;
 ZmAppChooser.B_HELP		= i++;
 ZmAppChooser.B_OPTIONS	= i++;
 ZmAppChooser.B_LOGOUT	= i++;
 
-ZmAppChooser.IMAGE = {};
+ZmAppChooser.IMAGE = new Object();
 ZmAppChooser.IMAGE[ZmAppChooser.OUTER]			= "ImgAppChiclet";
 ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]		= "ImgAppChicletHover";
 ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]		= "ImgAppChicletSel";
@@ -69,29 +66,26 @@ ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]		= "ImgAppChicletSel";
 ZmAppChooser.IMAGE[ZmAppChooser.B_EMAIL]    	= "MailApp";
 ZmAppChooser.IMAGE[ZmAppChooser.B_CONTACTS] 	= "ContactsApp";
 ZmAppChooser.IMAGE[ZmAppChooser.B_CALENDAR] 	= "CalendarApp";
-ZmAppChooser.IMAGE[ZmAppChooser.B_TASKS]		= "Task";
 ZmAppChooser.IMAGE[ZmAppChooser.B_IM]			= "ImStartChat";
 ZmAppChooser.IMAGE[ZmAppChooser.B_NOTEBOOK]		= "NoteApp";
 ZmAppChooser.IMAGE[ZmAppChooser.B_HELP]     	= "Help";
 ZmAppChooser.IMAGE[ZmAppChooser.B_OPTIONS]		= "Preferences";
 ZmAppChooser.IMAGE[ZmAppChooser.B_LOGOUT]		= "Logoff";
 
-ZmAppChooser.TEXT = {};
+ZmAppChooser.TEXT = new Object();
 ZmAppChooser.TEXT[ZmAppChooser.B_EMAIL]			= ZmMsg.mail;
 ZmAppChooser.TEXT[ZmAppChooser.B_CONTACTS]		= ZmMsg.addressBook;
 ZmAppChooser.TEXT[ZmAppChooser.B_CALENDAR]		= ZmMsg.calendar;
-ZmAppChooser.TEXT[ZmAppChooser.B_TASKS]			= ZmMsg.tasks;
 ZmAppChooser.TEXT[ZmAppChooser.B_IM]			= ZmMsg.chat;
 ZmAppChooser.TEXT[ZmAppChooser.B_NOTEBOOK]		= ZmMsg.documents + " " + ZmMsg.beta;
 ZmAppChooser.TEXT[ZmAppChooser.B_HELP]			= ZmMsg.help;
 ZmAppChooser.TEXT[ZmAppChooser.B_OPTIONS]		= ZmMsg.options;
 ZmAppChooser.TEXT[ZmAppChooser.B_LOGOUT]		= ZmMsg.logOff;
 
-ZmAppChooser.TOOLTIP = {};
+ZmAppChooser.TOOLTIP = new Object();
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_EMAIL]		= ZmMsg.goToMail;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_CONTACTS]	= ZmMsg.goToContacts;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_CALENDAR]	= ZmMsg.goToCalendar;
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_TASKS]		= ZmMsg.goToTasks;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_IM]			= ZmMsg.goToIm;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_NOTEBOOK]	= ZmMsg.goToDocuments;
 ZmAppChooser.TOOLTIP[ZmAppChooser.B_HELP]		= ZmMsg.goToHelp;
@@ -125,9 +119,9 @@ function(id) {
 };
 
 ZmAppChooser.prototype._createButton =
-function(id, tabStyle, isLast) {
+function(id, tabStyle) {
 	var text = tabStyle == DwtToolBar.HORIZ_STYLE ? ZmAppChooser.TEXT[id]: null;
-	var b = new ZmChicletButton(this, ZmAppChooser.IMAGE[ZmAppChooser.OUTER], ZmAppChooser.IMAGE[id], text, isLast);
+	var b = new ZmChicletButton(this, ZmAppChooser.IMAGE[ZmAppChooser.OUTER], ZmAppChooser.IMAGE[id], text);
 	b.setActivatedImage(ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]);
 	b.setTriggeredImage(ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]);
 	b.setToolTipContent(ZmAppChooser.TOOLTIP[id]);

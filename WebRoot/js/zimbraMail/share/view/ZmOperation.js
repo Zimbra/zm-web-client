@@ -633,20 +633,6 @@ ZmOperation.SETUP[ZmOperation.NEW_TAG] = {
 	image:		"NewTag"
 };
 
-ZmOperation.NEW_TASK = i++;
-ZmOperation.SETUP[ZmOperation.NEW_TASK] = {
-	textKey:	"newTask",
-	tooltipKey:	"newTaskTooltip",
-	image:		"NewTask"
-};
-
-ZmOperation.NEW_TASK_FOLDER = i++;
-ZmOperation.SETUP[ZmOperation.NEW_TASK_FOLDER] = {
-	textKey:	"newTaskFolder",
-	tooltipKey:	"newTaskFolderTooltip",
-	image:		"NewTask"
-};
-
 ZmOperation.PAGE_BACK = i++;
 ZmOperation.SETUP[ZmOperation.PAGE_BACK] = {
 	image:		"LeftArrow"
@@ -855,12 +841,6 @@ ZmOperation.SHARE_NOTEBOOK = i++;
 ZmOperation.SETUP[ZmOperation.SHARE_NOTEBOOK] = {
 	textKey:	"shareNotebook",
 	image:		"Notebook"
-};
-
-ZmOperation.SHARE_TASKFOLDER = i++;
-ZmOperation.SETUP[ZmOperation.SHARE_TASKFOLDER] = {
-	textKey:	"shareTaskFolder",
-	image:		"Task"
 };
 
 ZmOperation.SHOW_ALL_MENU = i++;
@@ -1190,9 +1170,8 @@ function(parent) {
 	var taggingEnabled = appCtxt.get(ZmSetting.TAGGING_ENABLED);
 	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
 	var calendarEnabled = appCtxt.get(ZmSetting.CALENDAR_ENABLED);
-	var tasksEnabled = appCtxt.get(ZmSetting.TASKS_ENABLED);
 	var notebookEnabled = appCtxt.get(ZmSetting.NOTEBOOK_ENABLED);
-
+	
 	var list = [];
 	list.push(ZmOperation.defineOperation(ZmOperation.NEW_MESSAGE, {id: ZmOperation.NEW_MESSAGE, textKey: "message"}));
 	if (contactsEnabled) {
@@ -1202,14 +1181,11 @@ function(parent) {
 	if (calendarEnabled) {
 		list.push(ZmOperation.defineOperation(ZmOperation.NEW_APPT, {id: ZmOperation.NEW_APPT, textKey: "appointment"}));
 	}
-	if (tasksEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_TASK, {id: ZmOperation.NEW_TASK, textKey: "task"}));
-	}
 	if (notebookEnabled) {
 		list.push(ZmOperation.defineOperation(ZmOperation.NEW_PAGE, {id: ZmOperation.NEW_PAGE, textKey: "page"}));
 	}
 
-	if (foldersEnabled || taggingEnabled || calendarEnabled || notebookEnabled || tasksEnabled) {
+	if (foldersEnabled || taggingEnabled || calendarEnabled || notebookEnabled) {
 		list.push(ZmOperation.defineOperation(ZmOperation.SEP));
 	}
 
@@ -1224,9 +1200,6 @@ function(parent) {
 	}
 	if (calendarEnabled) {
 		list.push(ZmOperation.defineOperation(ZmOperation.NEW_CALENDAR, {id: ZmOperation.NEW_CALENDAR, textKey: "calendar"}));
-	}
-	if (tasksEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_TASK_FOLDER, {id: ZmOperation.NEW_TASK_FOLDER, textKey: "newTaskFolder"}));
 	}
 	if (notebookEnabled) {
 		list.push(ZmOperation.defineOperation(ZmOperation.NEW_NOTEBOOK, {id: ZmOperation.NEW_NOTEBOOK, textKey: "notebook"}));

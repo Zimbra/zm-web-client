@@ -1028,7 +1028,7 @@ function(type, shortForm) {
 	var text = "";
 	var name = this.getFullName();
 	var email = this.getEmail();
-	if (type == ZmCalItem.PERSON && !shortForm) {
+	if (type == ZmAppt.PERSON && !shortForm) {
 		var e = new ZmEmailAddress(email, null, name);
 		text = e.toString();
 	} else {

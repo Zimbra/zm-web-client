@@ -44,8 +44,6 @@ function(rootFolderObj) {
 		this.root = ZmSearchFolder.createFromJs(null, rootFolderObj, this);
 	else if (this.type == ZmOrganizer.CALENDAR)
 		this.root = ZmCalendar.createFromJs(null, rootFolderObj, this);
-	else if (this.type == ZmOrganizer.TASKS)
-		this.root = ZmTaskFolder.createFromJs(null, rootFolderObj, this);
 	else if (this.type == ZmOrganizer.NOTEBOOK)
 		this.root = ZmNotebook.createFromJs(null, rootFolderObj, this);
 	else if (this.type == ZmOrganizer.ADDRBOOK)
