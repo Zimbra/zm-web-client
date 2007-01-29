@@ -33,14 +33,14 @@
 *
 * @param parent				[DwtControl]				some container
 * @param appCtxt 			[ZmAppCtxt]					app context
-* @param attendees			[hash]						attendees/locations/equipment
-* @param controller			[ZmController]				some controller
-* @param dateInfo			[object]					hash of date info
+* @param attendees			[hash]*						attendees/locations/equipment
+* @param dateInfo			[object]*					hash of date info
+* @param posStyle			[String]*					[static|relative|absolute]
 */
-function ZmCalItemEditView(parent, appCtxt, attendees, dateInfo) {
+function ZmCalItemEditView(parent, appCtxt, attendees, dateInfo, posStyle) {
 	if (arguments.length == 0) return;
 
-	DwtComposite.call(this, parent);
+	DwtComposite.call(this, parent, null, posStyle);
 
 	this._appCtxt = appCtxt;
 	this._attendees = attendees;
@@ -91,7 +91,13 @@ function() {
 
 ZmCalItemEditView.prototype.getCalItem =
 function(attId) {
-	// override
+	// attempt to submit attachments first!
+	if (!attId && this._gotAttachments()) {
+		this._submitAttachments();
+		return null;
+	}
+
+	return this._populateForSave(this._getClone());
 };
 
 ZmCalItemEditView.prototype.initialize =
@@ -321,28 +327,54 @@ function() {
 	// override
 };
 
-/**
- * sets any recurrence rules w/in given ZmAppt object
-*/
-ZmCalItemEditView.prototype._getRecurrence =
+ZmCalItemEditView.prototype._populateForSave =
 function(calItem) {
-	var repeatType = this._repeatSelect.getValue();
+	// create a copy of the appointment so we don't muck w/ the original
+	calItem.setViewMode(this._mode);
 
-	if (this._recurDialog && repeatType == "CUS") {
-		calItem.setRecurType(this._recurDialog.getSelectedRepeatValue());
-
-		switch (calItem.getRecurType()) {
-			case "DAI": this._recurDialog.setCustomDailyValues(calItem); break;
-			case "WEE": this._recurDialog.setCustomWeeklyValues(calItem); break;
-			case "MON": this._recurDialog.setCustomMonthlyValues(calItem); break;
-			case "YEA": this._recurDialog.setCustomYearlyValues(calItem); break;
+	// bug fix #5617 - check if there are any existing attachments that were unchecked
+	if (this._mode != ZmCalItem.MODE_NEW) {
+		var attCheckboxes = document.getElementsByName(ZmCalItem.ATTACHMENT_CHECKBOX_NAME);
+		if (attCheckboxes && attCheckboxes.length > 0) {
+			for (var i = 0; i < attCheckboxes.length; i++) {
+				if (!attCheckboxes[i].checked)
+					calItem.removeAttachment(attCheckboxes[i].value);
+			}
 		}
-
-		// set the end recur values
-		this._recurDialog.setRepeatEndValues(calItem);
-	} else {
-		calItem.setRecurType(repeatType != "CUS" ? repeatType : "NON");
 	}
+
+	// save field values of this view w/in given appt
+	calItem.setName(this._subjectField.getValue());
+	var folderId = this._folderSelect.getValue();
+	calItem.setFolderId(folderId);
+	calItem.setOrganizer(this._calendarOrgs[folderId]);
+
+	// set the notes parts (always add text part)
+	var top = new ZmMimePart();
+	if (this._composeMode == DwtHtmlEditor.HTML) {
+		top.setContentType(ZmMimeTable.MULTI_ALT);
+
+		// create two more mp's for text and html content types
+		var textPart = new ZmMimePart();
+		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
+		textPart.setContent(this._notesHtmlEditor.getTextVersion());
+		top.children.add(textPart);
+
+		var htmlPart = new ZmMimePart();
+		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
+		htmlPart.setContent(this._notesHtmlEditor.getContent(true));
+		top.children.add(htmlPart);
+	} else {
+		top.setContentType(ZmMimeTable.TEXT_PLAIN);
+		top.setContent(this._notesHtmlEditor.getContent());
+	}
+
+	calItem.notesTopPart = top;
+
+	// set any recurrence rules
+	this._getRecurrence(calItem);
+
+	return calItem;
 };
 
 ZmCalItemEditView.prototype._populateForEdit =
@@ -375,6 +407,30 @@ function(calItem, mode) {
 	} else {
 		this.setComposeMode(DwtHtmlEditor.TEXT);
 		this._notesHtmlEditor.setContent(calItem.getNotesPart(ZmMimeTable.TEXT_PLAIN));
+	}
+};
+
+/**
+ * sets any recurrence rules w/in given ZmAppt object
+*/
+ZmCalItemEditView.prototype._getRecurrence =
+function(calItem) {
+	var repeatType = this._repeatSelect.getValue();
+
+	if (this._recurDialog && repeatType == "CUS") {
+		calItem.setRecurType(this._recurDialog.getSelectedRepeatValue());
+
+		switch (calItem.getRecurType()) {
+			case "DAI": this._recurDialog.setCustomDailyValues(calItem); break;
+			case "WEE": this._recurDialog.setCustomWeeklyValues(calItem); break;
+			case "MON": this._recurDialog.setCustomMonthlyValues(calItem); break;
+			case "YEA": this._recurDialog.setCustomYearlyValues(calItem); break;
+		}
+
+		// set the end recur values
+		this._recurDialog.setRepeatEndValues(calItem);
+	} else {
+		calItem.setRecurType(repeatType != "CUS" ? repeatType : "NON");
 	}
 };
 

@@ -1,4 +1,4 @@
-<template id='ApptEdit'>
+<template id='EditView'>
 	<div>
 		<table border=0 width=100% style='table-layout:fixed; height:${height}px' id='${id}_table'>
 			<colgroup>
@@ -30,6 +30,20 @@
 									<td width=1% class='ZmFieldLabelRight' id='${id}_folderLabel'><$= data.isAppt ? ZmMsg.calendar : ZmMsg.taskFolder $>:</td>
 									<td id='${id}_folderSelect'></td>
 								</tr>
+								<$ if (!data.isAppt)  { $>
+								<tr>
+									<td width=1% class='ZmFieldLabelRight'><$= ZmMsg.percentComplete $>:</td>
+									<td id='${id}_complete'></td>
+								</tr>
+								<tr>
+									<td width=1% class='ZmFieldLabelRight'><$= ZmMsg.priority $>:</td>
+									<td id='${id}_priority'></td>
+								</tr>
+								<tr>
+									<td width=1% class='ZmFieldLabelRight'><$= ZmMsg.status $>:</td>
+									<td id='${id}_status'></td>
+								</tr>
+								<$ } $>
 							</table>
 						</div>
 					</fieldset>

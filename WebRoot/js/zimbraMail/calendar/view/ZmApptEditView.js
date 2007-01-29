@@ -79,83 +79,6 @@ function(useException) {
 	}
 };
 
-ZmApptEditView.prototype.getCalItem =
-function(attId) {
-	// attempt to submit attachments first!
-	if (!attId && this._gotAttachments()) {
-		this._submitAttachments();
-		return null;
-	}
-	// create a copy of the appointment so we don't muck w/ the original
-	var appt = ZmAppt.quickClone(this._calItem);
-	appt.setViewMode(this._mode);
-
-	// bug fix #5617 - check if there are any existing attachments that were unchecked
-	if (this._mode != ZmCalItem.MODE_NEW) {
-		var attCheckboxes = document.getElementsByName(ZmAppt.ATTACHMENT_CHECKBOX_NAME);
-		if (attCheckboxes && attCheckboxes.length > 0) {
-			for (var i = 0; i < attCheckboxes.length; i++) {
-				if (!attCheckboxes[i].checked)
-					appt.removeAttachment(attCheckboxes[i].value);
-			}
-		}
-	}
-
-	// save field values of this view w/in given appt
-	appt.setName(this._subjectField.getValue());
-	appt.freeBusy = this._showAsSelect.getValue();
-	var calId = this._folderSelect.getValue();
-	appt.setFolderId(calId);
-	appt.setOrganizer(this._calendarOrgs[calId]);
-
-	// set the start date by aggregating start date/time fields
-	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
-	if (this._allDayCheckbox.checked) {
-		appt.setAllDayEvent(true);
-	} else {
-		appt.setAllDayEvent(false);
-		startDate = this._startTimeSelect.getValue(startDate);
-		endDate = this._endTimeSelect.getValue(endDate);
-	}
-	appt.setStartDate(startDate, true);
-	appt.setEndDate(endDate, true);
-	if (Dwt.getVisibility(this._tzoneSelect.getHtmlElement()))
-		appt.timezone = this._tzoneSelect.getValue();
-
-	// set the notes parts (always add text part)
-	var top = new ZmMimePart();
-	if (this._composeMode == DwtHtmlEditor.HTML) {
-		top.setContentType(ZmMimeTable.MULTI_ALT);
-
-		// create two more mp's for text and html content types
-		var textPart = new ZmMimePart();
-		textPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-		textPart.setContent(this._notesHtmlEditor.getTextVersion());
-		top.children.add(textPart);
-
-		var htmlPart = new ZmMimePart();
-		htmlPart.setContentType(ZmMimeTable.TEXT_HTML);
-		htmlPart.setContent(this._notesHtmlEditor.getContent(true));
-		top.children.add(htmlPart);
-	} else {
-		top.setContentType(ZmMimeTable.TEXT_PLAIN);
-		top.setContent(this._notesHtmlEditor.getContent());
-	}
-
-	for (var t = 0; t < this._attTypes.length; t++) {
-		var type = this._attTypes[t];
-		appt.setAttendees(this._attendees[type].getArray(), type);
-	}
-
-	appt.notesTopPart = top;
-
-	// set any recurrence rules
-	this._getRecurrence(appt);
-
-	return appt;
-};
-
 ZmApptEditView.prototype.cleanup =
 function() {
 	ZmCalItemEditView.prototype.cleanup.call(this);
@@ -301,6 +224,37 @@ function() {
 	return ZmAppt.quickClone(this._calItem);
 };
 
+ZmApptEditView.prototype._populateForSave =
+function(calItem) {
+	ZmTaskEditView.prototype._populateForSave.call(this, calItem);
+
+	calItem.freeBusy = this._showAsSelect.getValue();
+
+	// set the start date by aggregating start date/time fields
+	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+	if (this._allDayCheckbox.checked) {
+		calItem.setAllDayEvent(true);
+	} else {
+		calItem.setAllDayEvent(false);
+		startDate = this._startTimeSelect.getValue(startDate);
+		endDate = this._endTimeSelect.getValue(endDate);
+	}
+	calItem.setStartDate(startDate, true);
+	calItem.setEndDate(endDate, true);
+	if (Dwt.getVisibility(this._tzoneSelect.getHtmlElement()))
+		calItem.timezone = this._tzoneSelect.getValue();
+
+	calItem.notesTopPart = top;
+
+	// set attendees
+	for (var t = 0; t < this._attTypes.length; t++) {
+		calItem.setAttendees(this._attendees[type].getArray(), this._attTypes[t]);
+	}
+
+	return calItem;
+};
+
 ZmApptEditView.prototype._populateForEdit =
 function(calItem, mode) {
 	ZmCalItemEditView.prototype._populateForEdit.call(this, calItem, mode);
@@ -361,7 +315,7 @@ function() {
 		isAppt: true
 	};
 
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ApptEdit", subs);
+	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#EditView", subs);
 };
 
 ZmApptEditView.prototype._createWidgets =
