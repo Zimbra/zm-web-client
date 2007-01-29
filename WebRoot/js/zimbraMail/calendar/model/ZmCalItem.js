@@ -686,7 +686,7 @@ function(attachmentId, callback, errorCallback, notifyList) {
 	} else {
 		soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest", "urn:zimbraMail");
 		this._addInviteAndCompNum(soapDoc);
-		needsExceptionId = this._viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
+        needsExceptionId = this._viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || this.exception;
 	}
 
 	var invAndMsg = this._setSimpleSoapAttributes(soapDoc, ZmCalItem.SOAP_METHOD_REQUEST, attachmentId, notifyList, accountName);
