@@ -1259,7 +1259,7 @@ ZmZimbraMail.prototype._createBanner =
 function() {
 	// The LogoContainer style centers the logo
 	var banner = new DwtComposite(this._shell, null, Dwt.ABSOLUTE_STYLE);
-	var logoUrl = skin.hints && skin.hints.logo ? skin.hints.logo.url : this._appCtxt.get(ZmSetting.LOGO_URI);
+	var logoUrl = skin.hints && skin.hints.logo && skin.hints.logo.url ? skin.hints.logo.url : this._appCtxt.get(ZmSetting.LOGO_URI);
 	var html = [];
 	var i = 0;
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 style='width:100%;height:100%'>";
