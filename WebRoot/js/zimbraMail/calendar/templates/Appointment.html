@@ -2,8 +2,8 @@
 	<div>
 		<table border=0 width=100% style='table-layout:fixed; height:${height}px' id='${id}_table'>
 			<colgroup>
-				<col width='<$= AjxEnv.is800x600orLower ? "235" : "335" $>' />
-				<col />
+				<col width='<$= AjxEnv.is800x600orLower ? "235" : "50%" $>' />
+				<col width='<$= AjxEnv.is800x600orLower ? "*" : "50%" $>' />
 			</colgroup>
 			<tr style='height:<$= AjxEnv.isIE ? "150" : "110" $>px'>
 				<!-- appointmenet details section -->
@@ -13,34 +13,26 @@
 						<div>
 							<table border=0 width=100%>
 								<tr>
-									<td width=1% class='ZmFieldLabelRight'>*&nbsp;<$= ZmMsg.subject $>:</td>
+									<td width=1% class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subject $>:</nobr></td>
 									<td id='${id}_subject'></td>
 								</tr>
 								<tr>
-									<td width=1% class='ZmApptTabViewPageField'><$= ZmMsg.location $>:</td>
+									<td width=1% class='ZmApptTabViewPageField'><nobr><$= ZmMsg.location $>:</nobr></td>
 									<td id='${locationId}'></td>
 								</tr>
 								<$ if (data.isAppt) { $>
 								<tr>
-									<td width=1% class='ZmFieldLabelRight'><$= ZmMsg.showAs $></td>
+									<td width=1% class='ZmFieldLabelRight'><nobr><$= ZmMsg.showAs $></nobr></td>
 									<td width=1% id='${id}_showAsSelect'></td>
 								</tr>
 								<$ } else { $>
 								<tr>
-									<td width=1% class='ZmFieldLabelRight'><nobr><$= ZmMsg.percentComplete $>:</nobr></td>
-									<td id='${id}_complete'></td>
-								</tr>
-								<tr>
-									<td width=1% class='ZmFieldLabelRight'><$= ZmMsg.priority $>:</td>
+									<td width=1% class='ZmFieldLabelRight'><nobr><$= ZmMsg.priority $>:</nobr></td>
 									<td id='${id}_priority'></td>
-								</tr>
-								<tr>
-									<td width=1% class='ZmFieldLabelRight'><$= ZmMsg.status $>:</td>
-									<td id='${id}_status'></td>
 								</tr>
 								<$ } $>
 								<tr>
-									<td width=1% class='ZmFieldLabelRight' id='${id}_folderLabel'><$= data.isAppt ? ZmMsg.calendar : ZmMsg.taskFolder $>:</td>
+									<td width=1% class='ZmFieldLabelRight' id='${id}_folderLabel'><nobr><$= data.isAppt ? ZmMsg.calendar : ZmMsg.taskFolder $>:</nobr></td>
 									<td id='${id}_folderSelect'></td>
 								</tr>
 							</table>
@@ -50,9 +42,12 @@
 				<!-- appointment date/time section -->
 				<td valign=top>
 					<fieldset>
-						<legend><$= ZmMsg.time $></legend>
+						<legend><$= (data.isAppt ? ZmMsg.time : ZmMsg.date) $></legend>
 						<div style='overflow:hidden; <$= AjxEnv.isIE ? " width:99%" : "" $>'>
-							<$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ApptTimeSection", data) $>
+							<table border=0 width=100%>
+								<$= (data.isAppt ? "" : AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#TaskDueSection", data)) $>
+								<$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ApptTimeSection", data) $>
+							</table>
 						</div>
 					</fieldset>
 				</td>
@@ -80,26 +75,39 @@
 		</table>
 	</div>
 	<!-- appointment notes -->
-	<div id='${id}_notes'></div>
+	<div id='${id}_notes' style='padding:10px;'>Notes</div>
+</template>
+
+
+<!-- checkbox/status/%complete controls -->
+<template id='TaskDueSection'>
+	<tr>
+		<td class='ZmFieldLabelRight'><input type='checkbox'></td>
+		<td id='${id}_status'></td>
+		<td id='${id}_complete'></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td colspan=2 id='${id}_due_message'>Overdue...</td>
+	</tr>
 </template>
 
 <template id='ApptTimeSection'>
-	<table border=0>
 		<$ if (data.isAppt) { $>
 		<tr>
 			<td></td>
 			<td width=1%>
 				<table border=0 cellpadding=0 cellspacing=0><tr>
 					<td><input type='checkbox' id='${id}_allDayCheckbox'></td>
-					<td class='ZmFieldLabelLeft'>&nbsp;<$= ZmMsg.allDayEvent $></td>
+					<td class='ZmFieldLabelLeft'><nobr>&nbsp;<$= ZmMsg.allDayEvent $></nobr></td>
 				</tr></table>
 			</td>
 			<td></td>
-			<td colspan=10 id='${id}_tzoneSelect'></td>
+			<td colspan=2 id='${id}_tzoneSelect'></td>
 		</tr>
 		<$ } $>
 		<tr>
-			<td class='ZmFieldLabelRight'><$= ZmMsg.start $>:</td>
+			<td class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.start : ZmMsg.startDate ) $>:</nobr></td>
 			<td>
 				<table border=0 cellpadding=0 cellspacing=0><tr>
 					<td><input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='${id}_startDateField' value='${currDate}'></td>
@@ -111,7 +119,7 @@
 			<$ } $>
 		</tr>
 		<tr>
-			<td class='ZmFieldLabelRight'><$= ZmMsg.end $>:</td>
+			<td class='ZmFieldLabelRight'><nobr><$= (data.isAppt ? ZmMsg.end : ZmMsg.dateDue ) $>:</nobr></td>
 			<td>
 				<table border=0 cellpadding=0 cellspacing=0><tr>
 					<td><input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='${id}_endDateField' value='${currDate}'></td>
@@ -123,13 +131,12 @@
 			<$ } $>
 		</tr>
 		<tr>
-			<td valign=top class='ZmFieldLabelRight' style='line-height:22px'><$= ZmMsg.repeat $>:</td>
+			<td valign=top class='ZmFieldLabelRight' style='line-height:22px'><nobr><$= ZmMsg.repeat $>:</nobr></td>
 			<td valign=top colspan=2 id='${id}_repeatSelect'></td>
-			<td colspan=10>
+			<td colspan=2>
 				<span id='${id}_repeatDesc' onmouseout='this.style.cursor="default"' style='text-decoration:underline;'></span>
 			</td>
 		</tr>
-	</table>
 </template>
 
 
