@@ -149,6 +149,7 @@ AppBannerHeight     =	35px
 
 
 
+
 # a list item that is selected, but its container is unfocused
 _SelUnfocusColor_	= #dddddd
 
@@ -886,6 +887,8 @@ _AppTabStyle_				= border-bottom-width:0px; padding:3px 5px 4px 5px;
 AppTabContainer				= @_WidgetContainer-light_@ 		@_AppTabStyle_@
 AppTabContainer-hover		= @_WidgetContainer_@				@_AppTabStyle_@
 AppTabContainer-selected	= @ToolbarContainer@				@_AppTabStyle_@ margin-top:2px;
+
+
 
 
 
