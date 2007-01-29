@@ -884,7 +884,7 @@ function(attachmentId, callback, errorCallback, notifyList) {
 	} else {
 		soapDoc = AjxSoapDoc.create("ModifyAppointmentRequest", "urn:zimbraMail");
 		this._addInviteAndCompNum(soapDoc);
-		needsExceptionId = this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE;
+		needsExceptionId = this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE || this.exception;
 		//if (this._viewMode == ZmAppt.MODE_EDIT_SERIES)
 		//	soapDoc.setMethodAttribute("thisAndFuture",true);
 	}
