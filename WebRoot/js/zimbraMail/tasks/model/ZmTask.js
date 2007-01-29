@@ -63,6 +63,8 @@ function(task) {
 	if (!newTask._orig)
 		newTask._orig = task;
 
+	newTask.type = ZmItem.TASK;
+
 	return newTask;
 };
 
