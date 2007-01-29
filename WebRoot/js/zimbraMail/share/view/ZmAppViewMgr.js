@@ -331,12 +331,15 @@ function(viewId, appName, elements, callbacks, isAppView, isTransient) {
 ZmAppViewMgr.prototype.pushView =
 function(viewId, force) {
 
-	var viewController = viewId == ZmAppViewMgr.PENDING_VIEW
-		? null : this._views[viewId][ZmAppViewMgr.C_APP_CONTENT].getController();
+	var viewController = null;
+	if (viewId == ZmAppViewMgr.PENDING_VIEW) {
+		viewController = this._views[viewId][ZmAppViewMgr.C_APP_CONTENT].getController();
+	}
+	DBG.println(AjxDebug.DBG1, "pushView: " + viewId);
 
-	// if same view, no need to go through hide/show
+	// if same view, no need to hide previous view or check for callbacks
 	if (viewId == this._currentView) {
-		this._setTitle(viewId);
+		this._setViewVisible(viewId, true);
 		// make sure the new content has focus
 		if (viewController) {
 			viewController._restoreFocus();
@@ -344,7 +347,6 @@ function(viewId, force) {
 		return true;
 	}
 
-	DBG.println(AjxDebug.DBG1, "pushView: " + viewId);
 	DBG.println(AjxDebug.DBG2, "hidden (before): " + this._hidden);
 	
 	if (viewId == ZmAppViewMgr.PENDING_VIEW) {
