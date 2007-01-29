@@ -587,18 +587,6 @@ function(item, type) {
 
 // Callbacks
 
-ZmApptEditView.prototype._attsDoneCallback =
-function(status, attId) {
-	DBG.println(AjxDebug.DBG1, "Attachments: status = " + status + ", attId = " + attId);
-	if (status == 200) {
-		this._removeAllAttachments();
-		var acc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getApptComposeController();
-		acc.saveAppt(attId);
-	} else {
-		DBG.println(AjxDebug.DBG1, "attachment error: " + status);
-	}
-};
-
 ZmApptEditView.prototype._emailValidator =
 function(value) {
 	// first parse the value string based on separator

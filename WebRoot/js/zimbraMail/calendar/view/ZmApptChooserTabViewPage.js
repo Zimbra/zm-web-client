@@ -198,7 +198,7 @@ function() {
 
 	this.parent.tabSwitched(this._tabKey);
 	this._setAttendees();
-	this._controller._setApptComposeTabGroup(true);
+	this._controller._setComposeTabGroup(true);
 };
 
 ZmApptChooserTabViewPage.prototype.tabBlur =

@@ -816,7 +816,7 @@ function() {
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		var acc = this.getApp(ZmZimbraMail.CALENDAR_APP).getApptComposeController();
 		if (acc) {
-			acc.initApptComposeView(true);
+			acc.initComposeView(true);
 		}
 	}
 };

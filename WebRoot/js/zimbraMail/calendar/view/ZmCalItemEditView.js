@@ -282,7 +282,7 @@ function(newWidth, newHeight) {
 	}
 };
 
-ZmCalItemEditView.prototype.getNotesHtmlEditor =
+ZmCalItemEditView.prototype.getHtmlEditor =
 function() {
 	return this._notesHtmlEditor;
 };
@@ -793,7 +793,7 @@ function(status, attId) {
 	if (status == 200) {
 		this._removeAllAttachments();
 		var acc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getApptComposeController();
-		acc.saveAppt(attId);
+		acc.saveCalItem(attId);
 	} else {
 		DBG.println(AjxDebug.DBG1, "attachment error: " + status);
 	}

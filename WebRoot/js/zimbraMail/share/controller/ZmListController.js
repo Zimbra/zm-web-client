@@ -549,7 +549,7 @@ function(ev, id, newWin) {
 		}
 		case ZmOperation.NEW_TASK: {
 			var app = this._appCtxt.getApp(ZmZimbraMail.TASKS_APP);
-			app.getTaskController().show();
+			app.getTaskController().show((new ZmTask(this._appCtxt)));
 			break;
 		}
 		case ZmOperation.NEW_PAGE: {

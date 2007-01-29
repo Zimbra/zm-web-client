@@ -113,7 +113,7 @@ function() {
 	this.resize(pSize.x, pSize.y);
 
 	this.set(this._dateInfo, this._editView.getOrganizer(), this._attendees);
-	this._controller._setApptComposeTabGroup();
+	this._controller._setComposeTabGroup();
 };
 
 ZmSchedTabViewPage.prototype.tabBlur =
@@ -460,7 +460,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		this._updateBorders(sched, isAllAttendees);
 	}
 	if (updateTabGroup) {
-		this._controller._setApptComposeTabGroup();
+		this._controller._setComposeTabGroup();
 	}
 	if (setFocus && sched.inputObj) {
 		this._kbMgr.grabFocus(sched.inputObj);
@@ -474,7 +474,7 @@ function(index, updateTabGroup) {
 	this._attendeesTable.deleteRow(index);
 	this._schedTable.splice(index, 1);
 	if (updateTabGroup) {
-		this._controller._setApptComposeTabGroup(true);
+		this._controller._setComposeTabGroup(true);
 	}
 };
 

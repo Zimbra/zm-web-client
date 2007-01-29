@@ -63,7 +63,7 @@ function() {
 
 	this._editView.show();
 	this.parent.tabSwitched(this._tabKey);
-	this._controller._setApptComposeTabGroup(true);
+	this._controller._setComposeTabGroup(true);
 };
 
 ZmApptTabViewPage.prototype.tabBlur =

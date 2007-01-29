@@ -280,7 +280,7 @@ function() {
 
 ZmApptComposeView.prototype.getHtmlEditor = 
 function() {
-	return this._apptEditView.getNotesHtmlEditor();
+	return this._apptEditView.getHtmlEditor();
 };
 
 ZmApptComposeView.prototype.getTabPage =

@@ -28,6 +28,7 @@ function ZmTaskEditView(parent, appCtxt, controller) {
 
 	ZmCalItemEditView.call(this, parent, appCtxt, null, null, DwtControl.ABSOLUTE_STYLE);
 
+	// XXX: may not need this
 	this._controller = controller;
 };
 
@@ -107,27 +108,6 @@ function() {
 	this._prioritySelect.setSelected(1);
 };
 
-ZmTaskEditView.prototype.getController =
-function() {
-	return this._controller;
-};
-
-// Following two overrides are a hack to allow this view to pretend it's a list view
-ZmTaskEditView.prototype.getSelection =
-function() {
-	return this._calItem;
-};
-
-ZmTaskEditView.prototype.getSelectionCount =
-function() {
-	return 1;
-};
-
-ZmTaskEditView.prototype.getTitle =
-function() {
-	return [ZmMsg.zimbraTitle, ZmMsg.task].join(": ");
-};
-
 
 // Private/protected Methods
 
@@ -196,10 +176,13 @@ function() {
 	this._repeatDescField._editViewId = this._startDateField._editViewId = this._endDateField._editViewId = AjxCore.assignId(this);
 };
 
-ZmTaskEditView.prototype._getTabGroupMembers =
-function() {
-	// TODO
-	return [];
+ZmTaskEditView.prototype._addTabGroupMembers =
+function(tabGroup) {
+	tabGroup.addMember(this._subjectField);
+	tabGroup.addMember(this._location);
+
+	var bodyFieldId = this._notesHtmlEditor.getBodyFieldId();
+	tabGroup.addMember(document.getElementById(bodyFieldId));
 };
 
 
