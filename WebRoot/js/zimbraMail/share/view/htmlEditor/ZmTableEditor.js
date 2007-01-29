@@ -122,9 +122,30 @@ ZmTableEditor = {
 
 };
 
-ZmTablePropsDialog.URL = appContextPath + "/js/zimbraMail/share/view/htmlEditor/dlg-table-properties.html";
-
 ZmTablePropsDialog.ADVANCED_BUTTON = ++DwtDialog.LAST_BUTTON;
+
+ZmTablePropsDialog.IDS = [
+	"AdvancedMode1",
+	"AdvancedMode2",
+	"Align",
+	"BackgroundColor",
+	"BorderCollapse",
+	"BorderColor",
+	"BorderSpacing",
+	"BorderStyle",
+	"BorderWidth",
+	"Caption",
+	"CellPadding",
+	"FixedLayout",
+	"ForegroundColor",
+	"Summary",
+	"TextAlign",
+	"TextVAlign",
+	"Width",
+	"WidthAuto",
+	"WidthAuto1",
+	"WidthUnit"
+];
 
 function ZmTablePropsDialog(parent) {
 	if (arguments.length == 0) return;
@@ -134,16 +155,13 @@ function ZmTablePropsDialog(parent) {
 			 DwtDialog.CANCEL_BUTTON ],
 		       [ advancedBtn ] );
 
-	var ids;
-	var html;
+	var base_id = Dwt.getNextId();
+	for (var i = ZmTablePropsDialog.IDS.length; --i >= 0;) {
+		var id = ZmTablePropsDialog.IDS[i];
+		this["_id" + id] = base_id + "_" + id;
+	}
 
-	ids = AjxDlgUtil.getDialogLayout("ZmTablePropsDialog", ZmTablePropsDialog.URL, ZmMsg);
-	html = ids.html;
-	ids = ids.ids;
-
-	for (var i in ids)
-		this["_id" + i] = ids[i];
-
+	var html = AjxTemplate.expand("zimbraMail.share.view.htmlEditor.templates.Dialogs#TableProperties", { id: base_id });
 	this.setContent(html);
 
 	ZmTableEditor.__makeCommonWidgets.call(this);
@@ -357,21 +375,43 @@ ZmTablePropsDialog.prototype.getValues = function() {
 
 ZmCellPropsDialog.URL = appContextPath + "/js/zimbraMail/share/view/htmlEditor/dlg-cell-properties.html";
 
+ZmCellPropsDialog.IDS = [
+	"BackgroundColor",
+	"BorderColor",
+	"BorderStyle",
+	"BorderWidth",
+	"EnableBackgroundColor",
+	"EnableForegroundColor",
+	"EnableHeight",
+	"EnableHorizPadding",
+	"EnableTextAlign",
+	"EnableTextVAlign",
+	"EnableVertPadding",
+	"EnableWidth",
+	"ForegroundColor",
+	"Height",
+	"HorizPadding",
+	"PreviewGrid",
+	"PreviewGridHolder",
+	"QuickBorders",
+	"TextAlign",
+	"TextVAlign",
+	"VertPadding",
+	"Width"
+];
+
 function ZmCellPropsDialog(parent) {
 	DwtDialog.call(this, parent, null, ZmMsg.cellProperties,
 		       [ DwtDialog.OK_BUTTON,
 			 DwtDialog.CANCEL_BUTTON ]);
 
-	var ids;
-	var html;
+	var base_id = Dwt.getNextId();
+	for (var i = ZmCellPropsDialog.IDS.length; --i >= 0;) {
+		var id = ZmCellPropsDialog.IDS[i];
+		this["_id" + id] = base_id + "_" + id;
+	}
 
-	ids = AjxDlgUtil.getDialogLayout("ZmCellPropsDialog", ZmCellPropsDialog.URL, ZmMsg);
-	html = ids.html;
-	ids = ids.ids;
-
-	for (var i in ids)
-		this["_id" + i] = ids[i];
-
+	var html = AjxTemplate.expand("zimbraMail.share.view.htmlEditor.templates.Dialogs#CellProperties", { id: base_id });
 	this.setContent(html);
 
 	ZmTableEditor.__makeCommonWidgets.call(this);
