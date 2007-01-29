@@ -577,10 +577,14 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 
 	soapDoc.setMethodAttribute("updateOrganizer", "TRUE" );
 	if (instanceDate) {
-		var exceptIdNode = soapDoc.set("exceptId");
 		var serverDateTime = AjxDateUtil.getServerDateTime(instanceDate);
 		var timeZone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
         if (AjxEnv.isSafari) timeZone = AjxStringUtil.xmlEncode(timeZone);
+
+        var clientId = AjxTimezone.getClientId(timeZone);
+        ZmTimezone.set(soapDoc, clientId, null, true);
+
+        var exceptIdNode = soapDoc.set("exceptId");
         exceptIdNode.setAttribute("d", serverDateTime);
 		exceptIdNode.setAttribute("tz", timeZone);
 	}
