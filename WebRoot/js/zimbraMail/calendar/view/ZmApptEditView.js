@@ -226,7 +226,7 @@ function() {
 
 ZmApptEditView.prototype._populateForSave =
 function(calItem) {
-	ZmTaskEditView.prototype._populateForSave.call(this, calItem);
+	ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
 
 	calItem.freeBusy = this._showAsSelect.getValue();
 
@@ -419,12 +419,12 @@ function() {
 	var tvpId = AjxCore.assignId(this);
 
 	// add event listeners where necessary
-	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmApptEditView._onClick);
-	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmApptEditView._onClick);
-	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmApptEditView._onMouseOver);
-	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmApptEditView._onMouseOut);
-	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmApptEditView._onChange);
-	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmApptEditView._onChange);
+	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmCalItemEditView._onMouseOver);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);
+	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
+	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
 
 	this._allDayCheckbox._editViewId = this._repeatDescField._editViewId = tvpId;
 	this._startDateField._editViewId = this._endDateField._editViewId = tvpId;
@@ -615,23 +615,6 @@ function(value) {
 };
 
 // Static methods
-
-ZmApptEditView._onClick =
-function(ev) {
-	ev = ev || window.event;
-	var el = DwtUiEvent.getTarget(ev);
-	var edv = AjxCore.objectWithId(el._editViewId);
-
-	// figure out which input field was clicked
-	if (el.id == edv._allDayCheckboxId) {
-		edv._showTimeFields(el.checked ? false : true);
-	} else if (el.id == edv._repeatDescId) {
-		edv._oldRepeatValue = edv._repeatSelect.getValue();
-		edv._showRecurDialog(edv._oldRepeatValue);
-	} else if (el.id.indexOf("_att_") != -1) {
-		edv._removeAttachment(el.id);
-	}
-};
 
 ZmApptEditView._onFocus =
 function(ev) {

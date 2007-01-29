@@ -62,6 +62,11 @@ function(calItem) {
 	this.initialize(calItem);
 };
 
+ZmTaskEditView.prototype._getClone =
+function() {
+	return ZmTask.quickClone(this._calItem);
+};
+
 ZmTaskEditView.prototype._populateForSave =
 function(calItem) {
 	ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
@@ -177,6 +182,18 @@ function(width) {
 	}
 	this._statusSelect.addChangeListener(listener);
 	this._statusSelect.reparentHtmlElement(this._htmlElId + "_status");
+};
+
+ZmTaskEditView.prototype._addEventHandlers =
+function() {
+	// add event listeners where necessary
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmApptEditView._onClick);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmApptEditView._onMouseOver);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmApptEditView._onMouseOut);
+	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmApptEditView._onChange);
+	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmApptEditView._onChange);
+
+	this._repeatDescField._editViewId = this._startDateField._editViewId = this._endDateField._editViewId = AjxCore.assignId(this);
 };
 
 ZmTaskEditView.prototype._getTabGroupMembers =

@@ -14,25 +14,20 @@
 							<table border=0 width=100%>
 								<tr>
 									<td width=1% class='ZmFieldLabelRight'>*&nbsp;<$= ZmMsg.subject $>:</td>
-									<td colspan=5 id='${id}_subject'></td>
+									<td id='${id}_subject'></td>
 								</tr>
 								<tr>
 									<td width=1% class='ZmApptTabViewPageField'><$= ZmMsg.location $>:</td>
-									<td colspan=5 id='${locationId}'></td>
+									<td id='${locationId}'></td>
 								</tr>
 								<$ if (data.isAppt) { $>
 								<tr>
 									<td width=1% class='ZmFieldLabelRight'><$= ZmMsg.showAs $></td>
 									<td width=1% id='${id}_showAsSelect'></td>
 								</tr>
-								<$ } $>
+								<$ } else { $>
 								<tr>
-									<td width=1% class='ZmFieldLabelRight' id='${id}_folderLabel'><$= data.isAppt ? ZmMsg.calendar : ZmMsg.taskFolder $>:</td>
-									<td id='${id}_folderSelect'></td>
-								</tr>
-								<$ if (!data.isAppt)  { $>
-								<tr>
-									<td width=1% class='ZmFieldLabelRight'><$= ZmMsg.percentComplete $>:</td>
+									<td width=1% class='ZmFieldLabelRight'><nobr><$= ZmMsg.percentComplete $>:</nobr></td>
 									<td id='${id}_complete'></td>
 								</tr>
 								<tr>
@@ -44,6 +39,10 @@
 									<td id='${id}_status'></td>
 								</tr>
 								<$ } $>
+								<tr>
+									<td width=1% class='ZmFieldLabelRight' id='${id}_folderLabel'><$= data.isAppt ? ZmMsg.calendar : ZmMsg.taskFolder $>:</td>
+									<td id='${id}_folderSelect'></td>
+								</tr>
 							</table>
 						</div>
 					</fieldset>

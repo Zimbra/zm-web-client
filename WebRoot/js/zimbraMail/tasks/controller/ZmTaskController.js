@@ -45,20 +45,20 @@ function() {
 ZmTaskController.prototype.show =
 function(task) {
 	this._task = task || (new ZmTask(this._appCtxt));
-	this._currentView = this._getViewType();
 	this._list = this._task.list;
+	var view = this._getViewType();
 
 	// re-enable input fields if list view exists
-	if (this._listView[this._currentView])
-		this._listView[this._currentView].enableInputs(true);
-	this._setup(this._currentView);
-	this._resetOperations(this._toolbar[this._currentView], 1); // enable all buttons
+	if (this._editView)
+		this._editView.enableInputs(true);
+	this._setup(view);
+	this._resetOperations(this._toolbar[view], 1); // enable all buttons
 
 	var elements = {};
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._editView;
 
-	this._setView(this._currentView, elements, false, false, false, true);
+	this._setView(view, elements, false, false, false, true);
 };
 
 ZmTaskController.prototype.getKeyMapName =
@@ -80,16 +80,15 @@ function(actionCode) {
 
 ZmTaskController.prototype._getToolBarOps =
 function() {
-	var list = [ZmOperation.SAVE];
-	list.push(ZmOperation.CANCEL);
-	list.push(ZmOperation.SEP);
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
-	list.push(ZmOperation.DELETE);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.ATTACHMENT);
+	var list = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP,
+				ZmOperation.ATTACHMENT, ZmOperation.SEP,
+				ZmOperation.SPELL_CHECK];
+
+	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
+		list.push(ZmOperation.SEP);
+		list.push(ZmOperation.COMPOSE_FORMAT);
+	}
+
 	return list;
 };
 
@@ -106,7 +105,7 @@ function() {
 ZmTaskController.prototype._initializeListView =
 function(view) {
 	if (!this._listView[view]) {
-		this._listView[view] = new ZmTaskEditView(this._container, this._appCtxt, this);
+		this._editView = this._listView[view] = new ZmTaskEditView(this._container, this._appCtxt, this);
 	}
 };
 
@@ -179,17 +178,15 @@ function(parent, num) {
 ZmTaskController.prototype._saveListener =
 function(ev, bIsPopCallback) {
 	try {
-		var view = this._listView[this._currentView];
-
 		// isValid should throw an String containing error message, otherwise returns true
-		if (!view.isValid())
+		if (!this._editView.isValid())
 			return;
 
-		view.getTask().save();
+		this._editView.getTask().save();
 
 		if (!bIsPopCallback) {
 			this._app.popView(true);
-			view.cleanup();
+			this._editView.cleanup();
 		}
 	} catch (ex) {
 		if (AjxUtil.isString(ex)) {
@@ -210,8 +207,7 @@ function(ev) {
 
 ZmTaskController.prototype._attachmentListener =
 function(ev) {
-	// TODO
-	DBG.println("TODO");
+	this._editView.addAttachmentField();
 };
 
 /*
@@ -221,7 +217,7 @@ function(items, hardDelete, attrs, skipPostProcessing) {
 
 	if (!skipPostProcessing) {
 		// disable input fields (to prevent blinking cursor from bleeding through)
-		this._listView[this._currentView].enableInputs(false);
+		this._editView.enableInputs(false);
 		this._app.popView(true);
 	}
 };
@@ -231,9 +227,8 @@ ZmTaskController.prototype._preHideCallback =
 function(view, force) {
 	if (force) return true;
 
-	var v = this._listView[this._currentView];
-	if (!v.isDirty()) {
-		v.cleanup();
+	if (!this._editView.isDirty()) {
+		this._editView.cleanup();
 		return true;
 	}
 
@@ -252,7 +247,7 @@ function() {
 	this._popShield.popdown();
 	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
-	this._listView[this._currentView].cleanup();
+	this._editView.cleanup();
 };
 
 ZmTaskController.prototype._popShieldNoCallback =
@@ -260,7 +255,7 @@ function() {
 	this._popShield.popdown();
 	this._app.popView(true);
 	this._app.getAppViewMgr().showPendingView(true);
-	this._listView[this._currentView].cleanup();
+	this._editView.cleanup();
 };
 
 ZmTaskController.prototype._popdownActionListener =
@@ -270,5 +265,5 @@ function(ev) {
 
 ZmTaskController.prototype._getDefaultFocusItem =
 function() {
-	return this._listView[this._currentView]._getDefaultFocusItem();
+	return this._editView._getDefaultFocusItem();
 };

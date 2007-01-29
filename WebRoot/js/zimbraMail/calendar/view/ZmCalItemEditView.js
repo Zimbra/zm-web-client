@@ -639,8 +639,8 @@ function(repeatType) {
 			this._recurDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._recurCancelListener));
 		}
 		var type = repeatType || this._recurDialogRepeatValue;
-		var sd = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
-		var ed = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+		var sd = (AjxDateUtil.simpleParseDateStr(this._startDateField.value)) || (new Date());
+		var ed = (AjxDateUtil.simpleParseDateStr(this._endDateField.value)) || (new Date());
 		this._recurDialog.initialize(sd, ed, type, this._calItem);
 		this._recurDialog.popup();
 	}
