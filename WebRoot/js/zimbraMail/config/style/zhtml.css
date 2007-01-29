@@ -553,3 +553,60 @@ padding: 8px 0px 6px 0px;
 .PanelHead {
 	background-color:#bab09a;
 }
+
+.ZhCalMonthHeaderTable {
+	@PageHeaderBg@   
+}
+
+/* label for the month */
+.ZhCalMonthHeaderMonth {
+    @PageHeaderBg@
+	@PageHeaderText@
+	@FontSize-biggest@
+	@Label@
+	text-align:center;
+}
+
+/* day of week label for the month */
+.ZhCalMonthHeaderCellsText {
+ 	@PageHeaderBg@
+	@PageHeaderText@
+	@FontSize-big@
+	@SmallBoxPadding@
+	@BottomSeparator@
+	@Label@
+	text-align:center;   
+}
+
+/* cell for each day in the month view in various states*/
+.ZhCalMonthCellsTd {
+    @AppBg@
+    @SeparatorBorder@
+	@NoWrap@
+	vertical-align:top;
+}
+
+/* label of a particular day in various states */
+.ZhCalMonthDayLabel,
+.ZhCalMonthDayLabelToday,
+.ZhCalMonthDayLabelOffMonth,
+.ZhCalMonthDayLabelOffMonthToday
+{
+	@NoWrap@
+	@FontSize-big@
+	@TextPadding@
+	text-align:right;
+}
+
+.ZhCalMonthDayLabelToday {
+	@Text-today@
+}
+
+.ZhCalMonthDayLabelOffMonth {
+	@Text-disabled@
+}
+
+.ZhCalMonthDayLabelOffMonthToday {
+	@Text-disabled@
+	@Text-today@
+}
