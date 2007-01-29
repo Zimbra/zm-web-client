@@ -147,8 +147,6 @@ AppBannerImg        =	@LogoImgDir@/AppBanner.png
 AppBannerWidth      =	120px
 AppBannerHeight     =	35px
 
-# Specify the width of a sidebar ads when using the "ads" skin
-SidebarAdWidth		=	160px
 
 
 
@@ -889,3 +887,32 @@ _AppTabStyle_				= border-bottom-width:0px; padding:3px 5px 4px 5px;
 AppTabContainer				= @_WidgetContainer-light_@ 		@_AppTabStyle_@
 AppTabContainer-hover		= @_WidgetContainer_@				@_AppTabStyle_@
 AppTabContainer-selected	= @ToolbarContainer@				@_AppTabStyle_@ margin-top:2px;
+
+
+
+
+
+### Specify the use and sizing of ads
+#
+#	TO ALLOW SPACE FOR A TOP AD:
+#		Change 'TopAdDisplay' to 'block'
+#		Change 'TopAdHeight' to '30px' where '30' is the height in pixels for your ad
+#
+#	TO HIDE THE TOP AD SPACE
+#		Change 'TopAdDisplay' to 'none'
+#		Change 'TopAdHeight' to '1px'	-- NOTE: MUST be '1px' not '0px' or '30px' etc
+#
+TopAdDisplay		= 	none
+TopAdHeight			=	1px
+
+#	TO ALLOW SPACE FOR A SIDEBAR AD:
+#		Change 'SidebarAdDisplay' to 'block'
+#		Change 'SidebarAdHeight' to '160px' where '160' is the width in pixels for your ad
+#
+#	TO HIDE THE TOP AD SPACE
+#		Change 'SidebarAdDisplay' to 'none'
+#		Change 'SidebarAdHeight' to '1px'	-- NOTE: MUST be '1px' not '0px' or '30px' etc
+#
+SidebarAdDisplay	=	none
+SidebarAdWidth		=	1px
+
