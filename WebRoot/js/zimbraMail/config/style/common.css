@@ -383,6 +383,9 @@ DIV.vSpace {
 .Row, .Row-selected, .Row-matched, .Row-matched-drag, 
 .Row-drag, .Row-selected-drag, .Row-selected-right, .Row-selected-disabled {
 	@ListItemContainer@
+#IFDEF GECKO
+	-moz-user-select: none;
+#ENDIF
 }
 
 .selected, .Row-selected, .Row-selected-drag, .Row-selected-disabled { 

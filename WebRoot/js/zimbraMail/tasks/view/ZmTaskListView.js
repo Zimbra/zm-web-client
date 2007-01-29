@@ -137,8 +137,6 @@ function(task, now, isDndIcon) {
 			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(task.getName(), true);
-			if (AjxEnv.isNav)
-				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
 		} else if (id.indexOf(ZmTaskListView.ID_PERCENT_COMPLETE) == 0) {
 			// percent complete
@@ -148,8 +146,6 @@ function(task, now, isDndIcon) {
 			htmlArr[idx++] = width;
 			htmlArr[idx++] = ">";
 			htmlArr[idx++] = task._percentComplete;
-			if (AjxEnv.isNav)
-				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmTaskListView.ID_END_DATE) == 0) {
 			// end/completion date
@@ -159,8 +155,6 @@ function(task, now, isDndIcon) {
 			htmlArr[idx++] = width;
 			htmlArr[idx++] = ">";
 			htmlArr[idx++] = AjxDateUtil.computeDateStr(now, task.startDate);
-			if (AjxEnv.isNav)
-				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmTaskListView.ID_CREATED_DATE) == 0) {
 			// created on date

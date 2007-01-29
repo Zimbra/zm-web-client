@@ -334,13 +334,6 @@ function(contact, html, idx, isDndIcon) {
 	return idx;
 };
 
-// override so that we don't get back ZmListView._fillerString
-ZmContactCardsView.prototype._getTagImgHtml =
-function(item, id) {
-	var idStr = id ? ["id='", id, "'"].join("") : null;
-	return AjxImg.getImageHtml(item.getTagImageInfo(), null, idStr);
-};
-
 ZmContactCardsView.prototype._getField =
 function(fname, value, skipObjectify, type) {
 	var newValue = skipObjectify ? value : this._generateObject(value, type);

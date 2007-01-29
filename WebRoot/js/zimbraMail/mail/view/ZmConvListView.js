@@ -155,8 +155,6 @@ function(conv, now, isDndIcon, isMixedView, myDiv) {
 				htmlArr[idx++] = AjxStringUtil.htmlEncode(conv.fragment, true);
 				htmlArr[idx++] = "</span>";
 			}
-			if (AjxEnv.isNav)
-				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT]) == 0) {
 			// Conversation count
@@ -170,8 +168,6 @@ function(conv, now, isDndIcon, isMixedView, myDiv) {
 				htmlArr[idx++] = conv.numMsgs;
 				htmlArr[idx++] = ")";
 			}
-			if (AjxEnv.isNav)
-				htmlArr[idx++] = ZmListView._fillerString;
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
 			// Date
@@ -338,8 +334,6 @@ function(conv, fieldId) {
 		// XXX: possible import bug but we must take into account
 		html[idx++] = ZmMsg.noWhere;
 	}
-	if (AjxEnv.isNav)
-		html[idx++] = ZmListView._fillerString;
 
 	return html.join("");
 };
