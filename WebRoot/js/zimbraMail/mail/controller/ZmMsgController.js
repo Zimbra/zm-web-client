@@ -71,6 +71,17 @@ function(msg, mode) {
 	}
 };
 
+/**
+* Called by ZmNewWindow.unload to remove tag list listener (which resides in 
+* the parent window). Otherwise, after the child window is closed, the parent 
+* window is still referencing the child window's msg controller, which has
+* been unloaded!!
+*/
+ZmMsgController.prototype.dispose = 
+function() {
+	this._tagList.removeChangeListener(this._tagChangeLstnr);
+};
+
 ZmMsgController.prototype._handleResponseShow = 
 function(result) {
 	this._showMsg();
