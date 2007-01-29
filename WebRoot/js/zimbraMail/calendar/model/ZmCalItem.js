@@ -694,7 +694,8 @@ function(attachmentId, callback, errorCallback, notifyList) {
 	if (needsExceptionId) {
 		var exceptId = soapDoc.set("exceptId", null, invAndMsg.inv);
         // bug 13529: exception id based on original appt, not new data
-        if (this._orig.allDayEvent != "1") {
+        var allDay = this._orig ? this._orig.allDayEvent : this.allDayEvent;
+        if (allDay != "1") {
 			var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate(), this.startsInUTC);
 			// bug fix #4697 (part 2)
 			if (!this.startsInUTC && this.timezone) {
