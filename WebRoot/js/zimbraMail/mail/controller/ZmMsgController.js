@@ -119,7 +119,7 @@ function() {
 		list = list.concat(this._msgOps());
 		list.push(ZmOperation.SEP);
 		list.push(ZmOperation.SPAM);
-		list.push(ZmOperation.SEP);
+		list.push(ZmOperation.DETACH);
 		return list;
 	}
 };

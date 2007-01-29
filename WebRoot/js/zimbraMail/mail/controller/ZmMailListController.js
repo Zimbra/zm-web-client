@@ -62,6 +62,7 @@ function ZmMailListController(appCtxt, container, mailApp) {
 	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED))
 		this._listeners[ZmOperation.SPAM] = new AjxListener(this, this._spamListener);
 
+	this._listeners[ZmOperation.DETACH] = new AjxListener(this, this._detachListener);
 	this._inviteReplyListener = new AjxListener(this, this._inviteReplyHandler);
 	this._shareListener = new AjxListener(this, this._shareHandler);
 
@@ -350,6 +351,9 @@ function(view, arrowStyle) {
 
 	this._setupDeleteButton(view);
 	this._setupSpamButton(view);
+
+	var detach = this._toolbar[view].getButton(ZmOperation.DETACH);
+	if (detach) detach.setText(ZmMsg.detach2);
 
 	// reset new button properties
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
@@ -707,7 +711,14 @@ function(ev) {
 	this._doSpam(items, markAsSpam);
 };
 
-ZmMailListController.prototype._checkMailListener = 
+ZmMailListController.prototype._detachListener =
+function(ev) {
+	var items = this._listView[this._currentView].getSelection();
+	var msg = items.length ? items[0] : items;
+	ZmMailMsgView.rfc822Callback(msg.id);
+};
+
+ZmMailListController.prototype._checkMailListener =
 function(ev) {
     var folderId = this._getSearchFolderId();
     var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
@@ -838,9 +849,8 @@ function(parent, num) {
 		}
         
 		var isDrafts = folderId == ZmFolder.ID_DRAFTS;
-		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD], !isDrafts && num == 1);
-		parent.enable(ZmOperation.SPAM, !isDrafts && num > 0);
-		parent.enable(ZmOperation.MOVE, !isDrafts && num > 0);
+		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD, ZmOperation.DETACH], !isDrafts && num == 1);
+		parent.enable([ZmOperation.SPAM, ZmOperation.MOVE], !isDrafts && num > 0);
 		parent.enable([ZmOperation.CHECK_MAIL], true);
 	}
 };

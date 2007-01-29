@@ -124,13 +124,17 @@ function(msg) {
 	var oldMsg = this._msg;
 	this._msg = msg;
 	this._dateObjectHandlerDate = msg.sentDate ? new Date(msg.sentDate) : new Date(msg.date);
-	if ((this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) && msg.isInvite()) {
+	if ((this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
+		msg.isInvite() &&
+		!this._controller.isChildWindow)
+	{
 		var invite = msg.getInvite();
 		// in the single component case, which I think is going to be 90%
 		// of the time, we will just show a single toobar.
 		if (!invite.isEmpty() && !invite.hasMultipleComponents() &&
 			invite.getStatus() != ZmAppt.STATUS_CANCELLED &&
-			msg.folderId != ZmFolder.ID_TRASH) {
+			msg.folderId != ZmFolder.ID_TRASH)
+		{
 			// create toolbar
 			var topToolbar = this._getInviteToolbar();
 			// nuke the old toolbar if it exists b4 appending the new one
@@ -147,7 +151,8 @@ function(msg) {
 			// We need an inviteComponentView. Ughhh.
 		}
 	}
-	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) && msg.share && msg.folderId != ZmFolder.ID_TRASH) {
+	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) && msg.share && msg.folderId != ZmFolder.ID_TRASH)
+	{
 		var action = msg.share.action;
         var isNew = action == ZmShare.NEW;
         var isEdit = action == ZmShare.EDIT;
