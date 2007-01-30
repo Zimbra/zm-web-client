@@ -297,7 +297,8 @@ function() {
 			DBG.println(AjxDebug.DBG1, "*** Uninitialized setting! id = " + id);
 			continue;
 		}
-		this._settings[id] = new ZmSetting(id, args[0], args[1], args[2], args[3], this);
+		var setting = new ZmSetting(id, args[0], args[1], args[2], args[3], this);
+		this._settings[id] = setting;
 		if (args[0])
 			this._nameToId[args[0]] = id;
 	}

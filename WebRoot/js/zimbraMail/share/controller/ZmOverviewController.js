@@ -60,7 +60,6 @@ ZmOverviewController.CONTROLLER[ZmOrganizer.FOLDER]				= ZmFolderTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.SEARCH]				= ZmSearchTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.TAG]				= ZmTagTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.CALENDAR]			= ZmCalendarTreeController;
-ZmOverviewController.CONTROLLER[ZmOrganizer.TASKS]				= ZmTaskTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.ADDRBOOK] 			= ZmAddrBookTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]				= ZmZimletTreeController;
 ZmOverviewController.CONTROLLER[ZmOrganizer.ROSTER_TREE_ITEM]	= ZmRosterTreeController;

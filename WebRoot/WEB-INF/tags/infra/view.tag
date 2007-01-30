@@ -49,7 +49,7 @@
     </tr>
     <tr>
         <td valign=top class='Overview'>
-            <app:overviewTree keys="${keys}" calendars="${calendars}" contacts="${contacts}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}"/>
+            <app:overviewTree keys="${keys}" contacts="${contacts}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}"/>
         </td>
 <c:set var="adsOn" value="${!empty ads}"/>
 <c:if test="${adsOn}" >

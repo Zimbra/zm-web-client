@@ -86,13 +86,13 @@ function(appt) {
 	// reset fields...
 	this._subjectField.setValue(appt.getName() ? appt.getName() : "");
 	this._locationField.setValue(appt.getLocation() ? appt.getLocation() : "");
-	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(appt.startDate);
-	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(appt.endDate);
+	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getStartDate());
+	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getEndDate());
 	var isAllDay = appt.isAllDayEvent();
 	this._showTimeFields(!isAllDay);
 	if (!isAllDay) {
-		this._startTimeSelect.set(appt.startDate);
-		this._endTimeSelect.set(appt.endDate);
+		this._startTimeSelect.set(appt.getStartDate());
+		this._endTimeSelect.set(appt.getEndDate());
 	}
 	this._showAsSelect.setSelectedValue("B");
 	this._resetCalendarSelect(appt);
@@ -100,7 +100,7 @@ function(appt) {
 	this._repeatDescField.innerHTML = "";
 
 	this._origFormValue = this._formValue();
-	this._attendees[ZmCalItem.LOCATION] = new AjxVector();	// list of ZmResource
+	this._attendees[ZmAppt.LOCATION] = new AjxVector();	// list of ZmResource
 	
 	// autocomplete for locations
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
@@ -118,7 +118,7 @@ ZmApptQuickAddDialog.prototype.getAppt =
 function() {
 	// create a copy of the appointment so we dont muck w/ the original
 	var appt = ZmAppt.quickClone(this._appt);
-	appt.setViewMode(ZmCalItem.MODE_NEW);
+	appt.setViewMode(ZmAppt.MODE_NEW);
 
 	// save field values of this view w/in given appt
 	appt.setName(this._subjectField.getValue());
@@ -139,8 +139,10 @@ function() {
 	}
 	appt.setStartDate(startDate);
 	appt.setEndDate(endDate);
-	appt.setRecurType(this._repeatSelect.getValue());
-	appt.setAttendees(ZmEmailAddress.split(this._locationField.getValue()), ZmCalItem.LOCATION);
+
+	appt.repeatType = this._repeatSelect.getValue();
+	
+	appt.setAttendees(ZmEmailAddress.split(this._locationField.getValue()), ZmAppt.LOCATION);
 
 	return appt;
 };
@@ -284,8 +286,8 @@ function() {
 
 	// create DwtSelects
 	this._showAsSelect = new DwtSelect(this);
-	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
-		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
+	for (var i = 0; i < ZmApptTabViewPage.SHOWAS_OPTIONS.length; i++) {
+		var option = ZmApptTabViewPage.SHOWAS_OPTIONS[i];
 		this._showAsSelect.addOption(option.label, option.selected, option.value);
 	}
 	this._showAsSelect.reparentHtmlElement(this._showAsSelectId);

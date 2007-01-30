@@ -15,7 +15,7 @@
 <zm:getMailbox var="mailbox"/>
 
 <c:if test="${folders}"><app:folderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
-<c:if test="${calendars}"><app:calendarFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
+
 <c:if test="${contacts}"><app:contactFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
 <c:if test="${mailbox.features.savedSearches}">
 <c:if test="${searches}"><app:searchFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>

@@ -250,5 +250,3 @@
     </c:choose>
     </tbody>
 </table>
-
-
