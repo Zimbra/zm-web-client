@@ -27,7 +27,7 @@
 <app:view title="${title}" context="${null}" selected='calendar' calendars="true" keys="true">
     <form action="${currentUrl}" method="post">
 
-        <table width=100%  cellpadding="0" cellspacing="0">
+        <table width=100%  cellpadding="0" cellspacing="0" border=0>
             <tr>
                 <td class='TbTop'>
                     <app:calendarViewToolbar today="${today}" date="${dateCal}" prevDate="${prevDate}" nextDate="${nextDate}" title="${title}" context="${context}" keys="true"/>
@@ -35,7 +35,7 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                    <table width=100% class='ZhCalMonthHeaderTable'>
+                    <table width=100% class='ZhCalMonthHeaderTable' border=0>
                         <tr>
                             <td colspan=7 class='ZhCalMonthHeaderMonth'>
                                 ${fn:escapeXml(title)}
@@ -51,13 +51,13 @@
                             </c:forEach>
                         </tr>
                     </table>
-                    <table width=100% cellpadding="0" cellspacing="0">
+                    <table width=100% cellpadding="0" cellspacing="0" border=0 class='ZhCalMonthTable'>
                         <c:set var="lastMonth" value="-1"/>
                         <c:forEach var="week" begin="1" end="6">
                             <tr>
                                 <c:forEach var="dow" begin="1" end="7">
                                     <td width=14% class='ZhCalMonthCellsTd'>
-                                        <table width=100% cellpadding=0 cellspacing=0>
+                                        <table width=100% cellpadding=0 cellspacing=0 border=0>
                                             <tr>
                                                 <c:choose>
                                                     <c:when test="${zm:isSameDate(currentDay,today) and zm:isSameMonth(currentDay,dateCal)}">

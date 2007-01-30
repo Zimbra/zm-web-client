@@ -559,7 +559,14 @@ padding: 8px 0px 6px 0px;
 }
 
 .ZhCalMonthHeaderTable {
-	@PageHeaderBg@   
+	@PageHeaderBg@
+	@CompactTable@
+}
+
+
+.ZhCalMonthTable {
+	@CompactTable@
+    @AppBg@
 }
 
 /* label for the month */
@@ -584,7 +591,6 @@ padding: 8px 0px 6px 0px;
 
 /* cell for each day in the month view in various states*/
 .ZhCalMonthCellsTd {
-    @AppBg@
     @SeparatorBorder@
 	@NoWrap@
 	vertical-align:top;
