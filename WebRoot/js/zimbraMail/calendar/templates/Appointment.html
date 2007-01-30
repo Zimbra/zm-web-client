@@ -1,6 +1,6 @@
 <template id='EditView'>
 	<div>
-		<table border=0 width=100% style='table-layout:fixed; height:${height}px' id='${id}_table'>
+		<table border=0 width=100% style='table-layout:fixed;' id='${id}_table'>
 			<colgroup>
 				<col width='<$= AjxEnv.is800x600orLower ? "235" : "50%" $>' />
 				<col width='<$= AjxEnv.is800x600orLower ? "*" : "50%" $>' />
@@ -45,6 +45,11 @@
 						<legend><$= (data.isAppt ? ZmMsg.time : ZmMsg.date) $></legend>
 						<div style='overflow:hidden; <$= AjxEnv.isIE ? " width:99%" : "" $>'>
 							<table border=0 width=100%>
+								<colgroup>
+									<col width='1%' />
+									<col />
+									<col />
+								</colgroup>
 								<$= (data.isAppt ? "" : AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#TaskDueSection", data)) $>
 								<$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ApptTimeSection", data) $>
 							</table>
@@ -73,22 +78,22 @@
 			</tr>
 			<$ } $>
 		</table>
+		<!-- appointment notes -->
+		<div id='${id}_notes' style='padding:5px;'></div>
 	</div>
-	<!-- appointment notes -->
-	<div id='${id}_notes' style='padding:10px;'>Notes</div>
 </template>
 
 
 <!-- checkbox/status/%complete controls -->
 <template id='TaskDueSection'>
 	<tr>
-		<td class='ZmFieldLabelRight'><input type='checkbox'></td>
-		<td id='${id}_status'></td>
+		<td class='ZmFieldLabelRight'><input type='checkbox' id='${id}_status_cbox'></td>
+		<td width=150 id='${id}_status'></td>
 		<td id='${id}_complete'></td>
 	</tr>
 	<tr>
 		<td></td>
-		<td colspan=2 id='${id}_due_message'>Overdue...</td>
+		<td colspan=2 id='${id}_due_message'></td>
 	</tr>
 </template>
 
@@ -132,9 +137,13 @@
 		</tr>
 		<tr>
 			<td valign=top class='ZmFieldLabelRight' style='line-height:22px'><nobr><$= ZmMsg.repeat $>:</nobr></td>
-			<td valign=top colspan=2 id='${id}_repeatSelect'></td>
-			<td colspan=2>
-				<span id='${id}_repeatDesc' onmouseout='this.style.cursor="default"' style='text-decoration:underline;'></span>
+			<td valign=top colspan=10>
+				<table border=0 cellpadding=0 cellspacing=0 width=100%>
+					<tr>
+						<td width=100 id='${id}_repeatSelect'></td>
+						<td id='${id}_repeatDesc'></td>
+					</tr>
+				</table>
 			</td>
 		</tr>
 </template>

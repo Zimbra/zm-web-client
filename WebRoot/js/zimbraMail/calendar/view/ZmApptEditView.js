@@ -415,7 +415,7 @@ function(text, el, match) {
 
 ZmApptEditView.prototype._addEventHandlers =
 function() {
-	var tvpId = AjxCore.assignId(this);
+	var edvId = AjxCore.assignId(this);
 
 	// add event listeners where necessary
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
@@ -425,14 +425,14 @@ function() {
 	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
 	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
 
-	this._allDayCheckbox._editViewId = this._repeatDescField._editViewId = tvpId;
-	this._startDateField._editViewId = this._endDateField._editViewId = tvpId;
+	this._allDayCheckbox._editViewId = this._repeatDescField._editViewId = edvId;
+	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
 
 	for (var i in this._attInputField) {
 		var inputEl = this._attInputField[i].getInputElement();
 		Dwt.setHandler(inputEl, DwtEvent.ONFOCUS, ZmApptEditView._onFocus);
 		Dwt.setHandler(inputEl, DwtEvent.ONBLUR, ZmApptEditView._onBlur);
-		inputEl._editViewId = tvpId;
+		inputEl._editViewId = edvId;
 	}
 };
 
@@ -600,6 +600,16 @@ function(value) {
 
 	return value;
 };
+
+ZmApptEditView.prototype._handleOnClick =
+function(el) {
+	if (el.id == this._allDayCheckboxId) {
+		this._showTimeFields(el.checked ? false : true);
+	} else {
+		ZmCalItemEditView.prototype._handleOnClick.call(this, el);
+	}
+};
+
 
 // Static methods
 

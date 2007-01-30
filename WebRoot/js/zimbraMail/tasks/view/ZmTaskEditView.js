@@ -50,6 +50,10 @@ ZmTaskEditView.STATUS_VALUES = [
 	{ v:"WAITING",				l:ZmMsg.waitingOn },
 	{ v:"DEFERRED",				l:ZmMsg.deferred }];
 
+// Message dialog placement
+ZmTaskEditView.DIALOG_X = 50;
+ZmTaskEditView.DIALOG_Y = 100;
+
 
 // Public Methods
 
@@ -104,8 +108,13 @@ ZmTaskEditView.prototype.cleanup =
 function() {
 	ZmCalItemEditView.prototype.cleanup.call(this);
 
-	this._pCompleteSelect.setSelected(0);
+	this._location.setValue("");
 	this._prioritySelect.setSelected(1);
+	this._statusCheckbox.checked = false;
+	this._statusSelect.setSelected(0);
+	this._pCompleteSelect.setSelected(0);
+	this._startDateField.value = "";
+	this._endDateField.value = "";
 };
 
 
@@ -113,7 +122,8 @@ function() {
 
 ZmTaskEditView.prototype._createHTML =
 function() {
-	this._repeatDescId = this._htmlElId + "_repeatDesc";
+	this._statusCheckboxId 	= this._htmlElId + "_status_cbox";
+	this._repeatDescId		= this._htmlElId + "_repeatDesc";
 
 	var subs = {
 		id: this._htmlElId,
@@ -131,13 +141,27 @@ ZmTaskEditView.prototype._createWidgets =
 function(width) {
 	ZmCalItemEditView.prototype._createWidgets.call(this, width);
 
-	var listener = new AjxListener(this, this._selectListener);
-
 	// add location
 	var params = {parent: this, type: DwtInputField.STRING, skipCaretHack:true};
 	this._location = new DwtInputField(params);
 	Dwt.setSize(this._location.getInputElement(), width, "22px");
 	this._location.reparentHtmlElement(this._htmlElId + "_location");
+
+	// add priority DwtSelect
+	this._prioritySelect = new DwtSelect(this);
+	for (var i = 0; i < ZmTaskEditView.PRIORITY_VALUES.length; i++) {
+		this._prioritySelect.addOption(ZmTaskEditView.PRIORITY_VALUES[i].l, i==1, ZmTaskEditView.PRIORITY_VALUES[i].v);
+	}
+	this._prioritySelect.reparentHtmlElement(this._htmlElId + "_priority");
+
+	var listener = new AjxListener(this, this._selectListener);
+	// add status DwtSelect
+	this._statusSelect = new DwtSelect(this);
+	for (var i = 0; i < ZmTaskEditView.STATUS_VALUES.length; i++) {
+		this._statusSelect.addOption(ZmTaskEditView.STATUS_VALUES[i].l, i==0, ZmTaskEditView.STATUS_VALUES[i].v);
+	}
+	this._statusSelect.addChangeListener(listener);
+	this._statusSelect.reparentHtmlElement(this._htmlElId + "_status");
 
 	// add percent complete DwtSelect
 	this._pCompleteSelect = new DwtSelect(this);
@@ -146,34 +170,52 @@ function(width) {
 	}
 	this._pCompleteSelect.addChangeListener(listener);
 	this._pCompleteSelect.reparentHtmlElement(this._htmlElId + "_complete");
-
-	// add priority DwtSelect
-	this._prioritySelect = new DwtSelect(this);
-	for (var i = 0; i < ZmTaskEditView.PRIORITY_VALUES.length; i++) {
-		this._prioritySelect.addOption(ZmTaskEditView.PRIORITY_VALUES[i].l, i==1, ZmTaskEditView.PRIORITY_VALUES[i].v);
-	}
-	this._prioritySelect.addChangeListener(listener);
-	this._prioritySelect.reparentHtmlElement(this._htmlElId + "_priority");
-
-	// add status DwtSelect
-	this._statusSelect = new DwtSelect(this);
-	for (var i = 0; i < ZmTaskEditView.STATUS_VALUES.length; i++) {
-		this._statusSelect.addOption(ZmTaskEditView.STATUS_VALUES[i].l, i==0, ZmTaskEditView.STATUS_VALUES[i].v);
-	}
-	this._statusSelect.addChangeListener(listener);
-	this._statusSelect.reparentHtmlElement(this._htmlElId + "_status");
 };
 
 ZmTaskEditView.prototype._addEventHandlers =
 function() {
-	// add event listeners where necessary
-	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmApptEditView._onClick);
-	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmApptEditView._onMouseOver);
-	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmApptEditView._onMouseOut);
-	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmApptEditView._onChange);
-	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmApptEditView._onChange);
+	var edvId = AjxCore.assignId(this);
 
-	this._repeatDescField._editViewId = this._startDateField._editViewId = this._endDateField._editViewId = AjxCore.assignId(this);
+	// add event listeners where necessary
+	Dwt.setHandler(this._statusCheckbox, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmCalItemEditView._onMouseOver);
+	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);
+	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
+	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
+
+	this._repeatDescField._editViewId = this._statusCheckbox._editViewId = edvId;
+	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
+};
+
+// cache all input fields so we dont waste time traversing DOM each time
+ZmTaskEditView.prototype._cacheFields =
+function() {
+	ZmCalItemEditView.prototype._cacheFields.call(this);
+	this._statusCheckbox = document.getElementById(this._statusCheckboxId);
+};
+
+// Returns a string representing the form content
+ZmTaskEditView.prototype._formValue =
+function(excludeAttendees) {
+	var vals = [];
+
+	vals.push(this._subjectField.getValue());
+	vals.push(this._location.getValue());
+	vals.push(this._prioritySelect.getValue());
+	vals.push("" + this._statusCheckbox.checked);
+	vals.push(this._pCompleteSelect.getValue());
+	vals.push(this._statusSelect.getValue());
+	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	if (startDate) vals.push(AjxDateUtil.getServerDateTime(startDate));
+	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
+	if (endDate) vals.push(AjxDateUtil.getServerDateTime(endDate));
+	vals.push(this._repeatSelect.getValue());
+	vals.push(this._notesHtmlEditor.getContent());
+
+	var str = vals.join("|");
+	str = str.replace(/\|+/, "|");
+	return str;
 };
 
 ZmTaskEditView.prototype._addTabGroupMembers =
@@ -185,12 +227,39 @@ function(tabGroup) {
 	tabGroup.addMember(document.getElementById(bodyFieldId));
 };
 
+// Consistent spot to locate various dialogs
+ZmTaskEditView.prototype._getDialogXY =
+function() {
+	var loc = Dwt.toWindow(this.getHtmlElement(), 0, 0);
+	return new DwtPoint(loc.x + ZmTaskEditView.DIALOG_X, loc.y + ZmTaskEditView.DIALOG_Y);
+};
+
+ZmTaskEditView.prototype._setPercentCompleteFields =
+function(isComplete) {
+	var val = isComplete
+		? ZmTaskEditView.STATUS_VALUES[1].v : ZmTaskEditView.STATUS_VALUES[0].v;
+	this._statusSelect.setSelectedValue(val);
+	this._pCompleteSelect.setSelected(isComplete ? (this._pCompleteSelect.size()-1) : 0);
+};
+
 
 // Listeners
 
 ZmTaskEditView.prototype._selectListener =
 function(ev) {
-	this._isDirty = true;
+	
+};
+
+
+// Callbacks
+
+ZmTaskEditView.prototype._handleOnClick =
+function(el) {
+	if (el.id == this._statusCheckboxId) {
+		this._setPercentCompleteFields(el.checked);
+	} else {
+		ZmCalItemEditView.prototype._handleOnClick.call(this, el);
+	}
 };
 
 

@@ -81,6 +81,11 @@ function(appt, mode, isDirty) {
 	this._editView.initialize(appt, mode, isDirty);
 };
 
+ZmApptTabViewPage.prototype.isDirty =
+function() {
+	return this._editView.isDirty();
+};
+
 ZmApptTabViewPage.prototype.cleanup =
 function() {
 	this._editView.cleanup();

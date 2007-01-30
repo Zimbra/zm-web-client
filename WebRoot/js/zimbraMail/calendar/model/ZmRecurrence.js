@@ -77,8 +77,8 @@ function(soapDoc, inv) {
 			// TODO: for now, handle "every weekday" as M-F
 			//       eventually, needs to be localized work week days
 			var bwd = soapDoc.set("byday", null, rule);
-			for (var i in ZmAppt.SERVER_WEEK_DAYS) {
-				var day = ZmAppt.SERVER_WEEK_DAYS[i];
+			for (var i in ZmCalItem.SERVER_WEEK_DAYS) {
+				var day = ZmCalItem.SERVER_WEEK_DAYS[i];
 				if (day == "SA" || day == "SU")
 					continue;
 				var wkDay = soapDoc.set("wkday", null, bwd);
@@ -146,7 +146,7 @@ function() {
 		}
 		case "WEE": {
 			if (this.repeatCustomCount == 1 && this.repeatWeeklyDays.length == 1) {
-				var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatWeeklyDays[0]);
+				var dayofweek = AjxUtil.indexOf(ZmCalItem.SERVER_WEEK_DAYS, this.repeatWeeklyDays[0]);
 				var date = new Date();
 				date.setDate(date.getDate() - date.getDay() + dayofweek);
 
@@ -155,7 +155,7 @@ function() {
 			} else {
 				var weekdays = [];
 				for (var i = 0; i < this.repeatWeeklyDays.length; i++) {
-					var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatWeeklyDays[i]);
+					var dayofweek = AjxUtil.indexOf(ZmCalItem.SERVER_WEEK_DAYS, this.repeatWeeklyDays[i]);
 					var date = new Date();
 					date.setDate(date.getDate() - date.getDay() + dayofweek);
 					weekdays.push(date);
@@ -175,7 +175,7 @@ function() {
 				every.push(formatter.format([ date, count ]));
 			} else {
 				var ordinal = Number(this.repeatCustomOrdinal);
-				var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
+				var dayofweek = AjxUtil.indexOf(ZmCalItem.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
 				var day = new Date();
 				day.setDate(day.getDate() - day.getDay() + dayofweek);
 				var count = Number(this.repeatCustomCount);
@@ -195,7 +195,7 @@ function() {
 				every.push(formatter.format([ month, day ]));
 			} else {
 				var ordinal = Number(this.repeatCustomOrdinal);
-				var dayofweek = AjxUtil.indexOf(ZmAppt.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
+				var dayofweek = AjxUtil.indexOf(ZmCalItem.SERVER_WEEK_DAYS, this.repeatCustomDayOfWeek);
 				var day = new Date();
 				day.setDate(day.getDate() - day.getDay() + dayofweek);
 				var month = new Date();

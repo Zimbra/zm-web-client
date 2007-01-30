@@ -145,12 +145,12 @@ function(appt) {
 	
 	if (value == "1") {
 		recur.repeatCustomCount = 1;
-		recur.repeatWeeklyDays.push(ZmAppt.SERVER_WEEK_DAYS[this._weeklySelect.getValue()]);
+		recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[this._weeklySelect.getValue()]);
 	} else {
 		recur.repeatCustomCount = Number(this._weeklyField.getValue());
 		for (var i = 0; i < this._weeklyCheckboxes.length; i++) {
 			if (this._weeklyCheckboxes[i].checked)
-				recur.repeatWeeklyDays.push(ZmAppt.SERVER_WEEK_DAYS[i]);
+				recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[i]);
 		}
 	}
 };
@@ -170,7 +170,7 @@ function(appt) {
 		recur.repeatCustomType = "O";
 		recur.repeatCustomCount = this._monthlyMonthFieldEx.getValue();
 		recur.repeatCustomOrdinal = this._monthlyDaySelect.getValue();
-		recur.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[this._monthlyWeekdaySelect.getValue()];
+		recur.repeatCustomDayOfWeek = ZmCalItem.SERVER_WEEK_DAYS[this._monthlyWeekdaySelect.getValue()];
 	}
 };
 
@@ -187,7 +187,7 @@ function(appt) {
 	} else {
 		appt._recurrence.repeatCustomType = "O";
 		appt._recurrence.repeatCustomOrdinal = this._yearlyDaySelect.getValue();
-		appt._recurrence.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[this._yearlyWeekdaySelect.getValue()];
+		appt._recurrence.repeatCustomDayOfWeek = ZmCalItem.SERVER_WEEK_DAYS[this._yearlyWeekdaySelect.getValue()];
 		appt._recurrence.repeatYearlyMonthsList = this._yearlyMonthSelectEx.getValue() + 1;
 	}
 };
@@ -1084,8 +1084,8 @@ function(appt) {
 		var weeklyRadioOptions = document.getElementsByName(this._weeklyRadioName);
 		if (recur.repeatCustomCount == 1 && recur.repeatWeeklyDays.length == 1) {
 			weeklyRadioOptions[0].checked = true;
-			for (var j = 0; j < ZmAppt.SERVER_WEEK_DAYS.length; j++) {
-				if (recur.repeatWeeklyDays[0] == ZmAppt.SERVER_WEEK_DAYS[j]) {
+			for (var j = 0; j < ZmCalItem.SERVER_WEEK_DAYS.length; j++) {
+				if (recur.repeatWeeklyDays[0] == ZmCalItem.SERVER_WEEK_DAYS[j]) {
 					this._weeklySelect.setSelectedValue(j);
 					break;
 				}
@@ -1096,8 +1096,8 @@ function(appt) {
 			// xxx: minor hack-- uncheck this since we init'd it earlier
 			this._weeklyCheckboxes[this._startDate.getDay()].checked = false;
 			for (var i = 0; i < recur.repeatWeeklyDays.length; i++) {
-				for (var j = 0; j < ZmAppt.SERVER_WEEK_DAYS.length; j++) {
-					if (recur.repeatWeeklyDays[i] == ZmAppt.SERVER_WEEK_DAYS[j]) {
+				for (var j = 0; j < ZmCalItem.SERVER_WEEK_DAYS.length; j++) {
+					if (recur.repeatWeeklyDays[i] == ZmCalItem.SERVER_WEEK_DAYS[j]) {
 						this._weeklyCheckboxes[j].checked = true;
 						break;
 					}
@@ -1113,8 +1113,8 @@ function(appt) {
 		} else {
 			monthlyRadioOptions[1].checked = true;
 			this._monthlyDaySelect.setSelectedValue(recur.repeatCustomOrdinal);
-			for (var i = 0; i < ZmAppt.SERVER_WEEK_DAYS.length; i++) {
-				if (ZmAppt.SERVER_WEEK_DAYS[i] == recur.repeatCustomDayOfWeek) {
+			for (var i = 0; i < ZmCalItem.SERVER_WEEK_DAYS.length; i++) {
+				if (ZmCalItem.SERVER_WEEK_DAYS[i] == recur.repeatCustomDayOfWeek) {
 					this._monthlyWeekdaySelect.setSelectedValue(i);
 					break;
 				}
@@ -1130,8 +1130,8 @@ function(appt) {
 		} else {
 			yearlyRadioOptions[1].checked = true;
 			this._yearlyDaySelect.setSelectedValue(recur.repeatCustomOrdinal);
-			for (var i = 0; i < ZmAppt.SERVER_WEEK_DAYS.length; i++) {
-				if (ZmAppt.SERVER_WEEK_DAYS[i] == recur.repeatCustomDayOfWeek) {
+			for (var i = 0; i < ZmCalItem.SERVER_WEEK_DAYS.length; i++) {
+				if (ZmCalItem.SERVER_WEEK_DAYS[i] == recur.repeatCustomDayOfWeek) {
 					this._yearlyWeekdaySelect.setSelectedValue(i);
 					break;
 				}

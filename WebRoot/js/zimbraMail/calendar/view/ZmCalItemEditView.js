@@ -546,7 +546,7 @@ ZmCalItemEditView.prototype._initAttachContainer =
 function() {
 	// create new table row which will contain parent fieldset
 	var table = document.getElementById(this._htmlElId + "_table");
-	this._attachmentRow = table.insertRow(2);
+	this._attachmentRow = table.insertRow(-1);
 	this._attachmentRow.style.height = AjxEnv.isIE ? "auto" : 22;
 	var cell = this._attachmentRow.insertCell(-1);
 	cell.colSpan = 2;
@@ -615,7 +615,7 @@ function() {
 	this._attachDiv = this._attachRemoveId = this._attachDivId = this._uploadFormId = null;
 	// finally, nuke the whole table row
 	var table = document.getElementById(this._htmlElId + "_table");
-	table.deleteRow(2);
+	table.deleteRow(table.rows.length-1);
 	delete this._attachmentRow;
 	this._attachmentRow = null;
 	// reset any attachment related vars
@@ -804,6 +804,18 @@ function() {
 	return this._subjectField;
 };
 
+ZmCalItemEditView.prototype._handleOnClick =
+function(el) {
+	// figure out which input field was clicked
+	if (el.id == this._repeatDescId) {
+		this._oldRepeatValue = this._repeatSelect.getValue();
+		this._showRecurDialog(this._oldRepeatValue);
+	} else if (el.id.indexOf("_att_") != -1) {
+		this._removeAttachment(el.id);
+	}
+};
+
+
 // Static methods
 
 ZmCalItemEditView._onClick =
@@ -811,15 +823,8 @@ function(ev) {
 	ev = ev || window.event;
 	var el = DwtUiEvent.getTarget(ev);
 	var edv = AjxCore.objectWithId(el._editViewId);
-
-	// figure out which input field was clicked
-	if (el.id == edv._allDayCheckboxId) {
-		edv._showTimeFields(el.checked ? false : true);
-	} else if (el.id == edv._repeatDescId) {
-		edv._oldRepeatValue = edv._repeatSelect.getValue();
-		edv._showRecurDialog(edv._oldRepeatValue);
-	} else if (el.id.indexOf("_att_") != -1) {
-		edv._removeAttachment(el.id);
+	if (edv) {
+		edv._handleOnClick(el);
 	}
 };
 

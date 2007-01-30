@@ -130,6 +130,7 @@ function(view) {
 	///////////////////////////////////////
 	// TEMP TEMP TEMP
 	///////////////////////////////////////
+/*
 	for (var i = 0; i < 10; i++) {
 		var task = new ZmTask(this._appCtxt, this._list);
 		task.id = Dwt.getNextId();
@@ -138,6 +139,7 @@ function(view) {
 		task._priority = ZmTask.PRIORITY_LOW;
 		this._list.add(task);
 	}
+*/
 
 	// load tasks into the given view and perform layout.
 	this._listView[view].set(this._list, null, this._folderId);

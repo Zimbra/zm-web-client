@@ -40,6 +40,9 @@ function ZmTaskListView(parent, controller, dropTgt) {
 	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 	if (tagList)
 		tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+
+	// XXX: temp to turn inline editing on/off
+	this._INLINE_EDIT_ENABLED = false;
 };
 
 ZmTaskListView.prototype = new DwtListEditView;
@@ -222,6 +225,9 @@ function(item, isDndIcon, isMatched) {
 
 ZmTaskListView.prototype._getInlineWidget =
 function(id) {
+	if (!this._INLINE_EDIT_ENABLED)
+		return false;
+
 	if (id.indexOf(ZmTaskListView.ID_PRIORITY) != -1) {
 		// todo - add DwtSelect
 		return false;
