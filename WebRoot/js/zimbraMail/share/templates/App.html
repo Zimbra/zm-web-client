@@ -1,0 +1,44 @@
+<template id="ChicletButton">
+	<div id='${id}_inner'>
+		<table border=0 cellpadding=0 cellspacing=0>
+			<tr>
+				<td nowrap class='<$= AjxImg.getClassForImage(data.innerClass) $>'></td>
+				<td>&nbsp;</td>
+				<td nowrap>${text}</td>
+			</tr>
+		</table>
+	</div>
+</template>
+
+<template id="ChicletButtonEx">
+	<div id='${id}_inner'>
+		<table border=0 cellpadding=0 cellspacing=0 width=100%>
+			<tr>
+				<td width=1 class='skin_tab_L'>
+					<div id='${id}_leftBtn' class='ImgSkin_Tab_Normal_L'></div>
+				</td>
+				<td class='skin_tab_stretch'>
+					<div id='${id}_middleBtn' class='ImgSkin_Tab_Normal__H skin_tab_text'>
+						<table border=0 cellpadding=0 cellspacing=0 width=100%>
+							<tr>
+								<td width=1 nowrap class='skin_tab_text'>
+									<$= AjxImg.getImageHtml(data.innerClass) $>
+								</td>
+								<td width=1>&nbsp;</td>
+								<td nowrap class='skin_tab_text'>${text}</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+				<td width=1 class='skin_tab_R'>
+					<div id='${id}_rightBtn' class='ImgSkin_Tab_Normal_R'></div>
+				</td>
+				<$ if (!data.isLast) { $>
+				<td>
+					<div class='skin_tab_sep ImgSkin_Tab_Bg__H'>&nbsp;</div>
+				</td>
+				<$ } $>
+			</tr>
+		</table>
+	</div>
+</template>
