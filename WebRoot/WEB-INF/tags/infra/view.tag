@@ -4,6 +4,8 @@
 <%@ attribute name="searches" rtexprvalue="true" required="false" %>
 <%@ attribute name="contacts" rtexprvalue="true" required="false" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
+<%@ attribute name="minical" rtexprvalue="true" required="false" %>
+<%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Date" %>
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
 <%@ attribute name="title" rtexprvalue="true" required="true" %>
 <%@ attribute name="ads" rtexprvalue="true" required="false" %>
@@ -49,7 +51,7 @@
     </tr>
     <tr>
         <td valign=top class='Overview'>
-            <app:overviewTree keys="${keys}" calendars="${calendars}" contacts="${contacts}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}"/>
+            <app:overviewTree keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
         </td>
 <c:set var="adsOn" value="${!empty ads}"/>
 <c:if test="${adsOn}" >

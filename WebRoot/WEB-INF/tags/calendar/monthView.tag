@@ -15,8 +15,8 @@
     <fmt:message var="dayMonthChangeFormat" key="CAL_MONTH_DAY_MONTH_CHANGE_FORMAT"/>
     <fmt:message var="titleFormat" key="CAL_MONTH_TITLE_FORMAT"/>
     <fmt:formatDate var="title" value="${date}" pattern="${titleFormat}"/>
-    <jsp:useBean id="dateSmbols" scope="request" class="java.text.DateFormatSymbols" />
-    <c:set var="weekDays" value="${dateSmbols.weekdays}"/>
+    <jsp:useBean id="dateSymbols" scope="request" class="java.text.DateFormatSymbols" />
+    <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
     <c:set var="today" value="${zm:getToday()}"/>
     <c:set var="dateCal" value="${zm:getCalendar(date)}"/>
     <c:set var="prevDate" value="${zm:pageMonth(dateCal, false)}"/>
@@ -24,7 +24,7 @@
     <c:set var="currentDay" value="${zm:getFirstDayOfMonth(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
 </app:handleError>
 
-<app:view title="${title}" context="${null}" selected='calendar' calendars="true" keys="true">
+<app:view title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" date="${date}">
     <form action="${currentUrl}" method="post">
 
         <table width=100%  cellpadding="0" cellspacing="0" border=0>

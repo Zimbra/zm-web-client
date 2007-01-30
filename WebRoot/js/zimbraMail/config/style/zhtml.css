@@ -169,7 +169,7 @@ A:visited { color: blue; }
 	text-decoration: none;    
 }
 
-.Overview { width: 150px; padding:0px 10px 0px 10px; }
+.Overview { width: 162px; padding:0px 10px 0px 10px; }
 
 .TopContent {
     padding:0 5px 0 0;
@@ -620,3 +620,55 @@ padding: 8px 0px 6px 0px;
 	@Text-disabled@
 	@Text-today@
 }
+
+.ZhCalMiniContainer {
+    @AppBg@ @OutsetBorder@
+    height: 135px;
+    padding-bottom: 5px;
+}
+
+/* label of a particular day in various states */
+.ZhCalMiniMonthDayLabel,
+.ZhCalMiniMonthDayLabelToday,
+.ZhCalMiniMonthDayLabelOffMonth,
+.ZhCalMiniMonthDayLabelOffMonthToday
+{
+	@NoWrap@
+	@FontSize-small@
+    @TextPadding@
+	text-align:center;
+}
+
+.ZhCalMiniMonthDayLabelToday {
+    @MiniCalDay-today@
+}
+
+.ZhCalMiniMonthDayLabelOffMonth {
+    @MiniCalDay-gray@
+}
+
+.ZhCalMiniMonthDayLabelOffMonthToday {
+    @MiniCalDay-today@
+    @MiniCalDay-gray@
+}
+
+/* Container of the calendar titlebar (arrows and month label, not DOW labels) */
+.ZhCalMiniTitlebar {
+	@MiniCalHeaderBg@
+}
+
+
+/* Name of the month in the calendar titlebar */
+.ZhCalMiniTitleCell {
+	@FullWidth@
+	@MiniCalHeaderText@
+	@ActiveCursor@
+    font-weight: normal;
+}
+
+/* Label for the days of the week in calendar titlebar */
+.ZhCalMiniDow {
+	@MiniCalDOWText@
+    font-weight: normal;
+}
+
