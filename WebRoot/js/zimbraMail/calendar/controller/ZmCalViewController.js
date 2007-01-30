@@ -211,7 +211,7 @@ function(viewId) {
 	var menuItem = this._view_menu_item[this._currentView];
 	var ok = this._setView(ZmController.CAL_VIEW, elements, true);
 	if (ok) {
-		this._setViewMenu(ZmController.CAL_VIEW);
+		this._setViewMenu(ZmController.CAL_VIEW, viewId);
 		if (this._currentView && menuItem) {
 			menuItem.setChecked(false, true);
 		}
@@ -436,13 +436,14 @@ function(view) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = appToolbar.getViewMenu(view);
 	if (!menu) {
-		var menu = new ZmPopupMenu(appToolbar.getViewButton());
+		menu = new ZmPopupMenu(appToolbar.getViewButton());
 		this._view_menu_item = {};
 		this._view_menu_listener = new AjxListener(this, this._viewMenuListener);
 		for (var i = 0; i < ZmCalViewController.VIEWS.length; i++) {
 			var id = ZmCalViewController.VIEWS[i];
 			var mi = menu.createMenuItem(id, ZmCalViewController.ICON[id], ZmMsg[ZmCalViewController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
 			mi.setData(ZmOperation.KEY_ID, ZmCalViewController.OPS[i]);
+			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._view_menu_listener);
 			this._view_menu_item[id] = mi;
 		}

@@ -1020,9 +1020,9 @@ function(parent) {
 
 // Set the view menu's icon, and make sure the appropriate list item is checked
 ZmListController.prototype._setViewMenu =
-function(view) {
+function(view, viewId) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	appToolbar.showViewMenu(view);
+	appToolbar.showViewMenu(view, viewId);
     var menu = appToolbar.getViewButton().getMenu();
     if (menu) {
 	    var mi = menu.getItemById(ZmOperation.MENUITEM_ID, view);

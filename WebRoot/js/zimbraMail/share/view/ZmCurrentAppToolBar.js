@@ -105,13 +105,13 @@ function(view, menu) {
 };
 
 ZmCurrentAppToolBar.prototype.showViewMenu = 
-function(view) {
+function(view, viewId) {
 	var viewMenu = this._viewMenu[view];
 	if (viewMenu) {
 		this._viewButton.setVisible(true);
 		this._viewButton.setToolTipContent(this._viewTooltip[view]);
 		this._viewButton.setMenu(viewMenu, false, DwtMenuItem.RADIO_STYLE);
-		var mi = viewMenu.getItemById(ZmOperation.MENUITEM_ID, view);
+		var mi = viewMenu.getItemById(ZmOperation.MENUITEM_ID, (viewId || view));
 		var icon = mi ? mi.getImage() : null;
 		if (icon) this._viewButton.setImage(icon);
 		if (mi && this._viewLabel) this._viewButton.setText(mi.getText());
