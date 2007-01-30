@@ -84,13 +84,14 @@ body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
 #skin_td_top						{														}
 #skin_td_logo						{	text-align:center; vertical-align:middle;			}
 #IFDEF MSIE
-	#skin_td_logo					{	padding-bottom: 8px;			}
+	#skin_td_logo					{	padding-bottom: 8px;								}
 #ENDIF
 
-#skin_td_quota						{	width:180;  text-align:right;						}
+#skin_td_quota						{	width:180;  text-align:right; height:20px;			}
 #IFDEF MSIE
-	#skin_td_quota					{	padding-bottom: 1px;			}
+	#skin_td_quota					{	padding-bottom: 1px;								}
 #ENDIF
+#skin_container_username			{	height:100%;										}
 
 #skin_td_quota_spacer				{	width:20;											}
 #skin_td_search						{	background-color:white;								}
@@ -130,7 +131,7 @@ body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
 
 #skin_outer								{	width:100%;		height:100%; 	display:none;				}
 #skin_container_logo					{					height:32;									}
-#skin_container_quota					{					height:32;									}
+#skin_container_quota					{					height:12;									}
 #search_control_inset					{																}
 	#skin_container_search				{ height:25; top:-5; margin-bottom:-8px;	}
 	#skin_container_current_app			{ height:24; top:-4; margin-bottom:-8px;	}

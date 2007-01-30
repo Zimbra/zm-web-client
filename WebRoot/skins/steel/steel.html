@@ -114,39 +114,49 @@ skin._showEl = function(id, state) {
 <!-- END LOGO -->
 <!-- BEGIN SEARCH CONTROLS AND QUOTA -->
 				<td>
-					<table cellspacing=0 cellpadding=0 width=100%><tr>
-						<td id="skin_td_search" width="*">
-						<div class="XConsoleInset">
-							<table class="ConsoleInsetTable" cellpadding=0 id="search_control_inset">
-							<tr><td class="ConsoleInsetCorner"><div class="ImgConsoleInset_TL"></div></td>
-								<td class="ConsoleHorizontal" ><div class="ImgConsoleInset_T__H" style='width:100%'></div></td>
-								<td class="ConsoleInsetCorner"><div class="ImgConsoleInset_TR"></div></td>
-							</tr>
-							<tr><td class="ConsoleVertical"  ><div class="ImgConsoleInset_L__V" style='height:100%'></div></td>
-								<td>
-									<div id="skin_container_search" class="skin_container">
-	<!--
-	<A HREF='javascript:skin.showSearchBuilder()'>
-	SEARCH CONTROLS
-	</A>
-	-->								</div>
-								</td>
-								<td><div class="ImgConsoleInset_R__V" style='height:100%'></div></td>
-							</tr>
-							<tr><td><div class="ImgConsoleInset_BL"></div></td>
-								<td><div class="ImgConsoleInset_B__H" style='width:100%'></div></td>
-								<td><div class="ImgConsoleInset_BR"></div></td>
-							</tr>
-							</table>
-						</div>
-						</td>
-						<td id="skin_td_quota_spacer"><div></div></td>
-						<td id="skin_td_quota"><div id="skin_container_quota" class="skin_container">
-<!--
-QUOTA
--->
-						</div></td>
-					</tr></table>
+					<table cellspacing=0 cellpadding=0 width=100% border=0>
+						<tr>
+							<td id="skin_td_search" width="*" rowspan=2>
+								<div class="XConsoleInset">
+									<table class="ConsoleInsetTable" cellpadding=0 id="search_control_inset">
+									<tr><td class="ConsoleInsetCorner"><div class="ImgConsoleInset_TL"></div></td>
+										<td class="ConsoleHorizontal" ><div class="ImgConsoleInset_T__H" style='width:100%'></div></td>
+										<td class="ConsoleInsetCorner"><div class="ImgConsoleInset_TR"></div></td>
+									</tr>
+									<tr><td class="ConsoleVertical"  ><div class="ImgConsoleInset_L__V" style='height:100%'></div></td>
+										<td>
+											<div id="skin_container_search" class="skin_container">
+			<!--
+			<A HREF='javascript:skin.showSearchBuilder()'>
+			SEARCH CONTROLS
+			</A>
+			-->								</div>
+										</td>
+										<td><div class="ImgConsoleInset_R__V" style='height:100%'></div></td>
+									</tr>
+									<tr><td><div class="ImgConsoleInset_BL"></div></td>
+										<td><div class="ImgConsoleInset_B__H" style='width:100%'></div></td>
+										<td><div class="ImgConsoleInset_BR"></div></td>
+									</tr>
+									</table>
+								</div>
+							</td>
+							<td id="skin_td_quota_spacer"><div></div></td>
+							<td id="skin_td_quota">
+								<div id='skin_container_username'>
+									<!-- user name -->
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td>
+								<div id='skin_container_quota'>
+									<!-- quota area -->
+								</div>
+							</td>
+						</tr>
+					</table>
 				</td>
 <!-- END SEARCH CONTROLS -->
 
