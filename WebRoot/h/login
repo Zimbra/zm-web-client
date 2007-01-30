@@ -91,7 +91,7 @@
                             <table width=100%>
                                 <tr>
                                     <td align=center valign=middle>
-                                        <a href="http://www.zimbra.com/" target="_new"><div class='ImgLoginBanner'/></a>
+                                        <a href="http://www.zimbra.com/" target="_new"><div style='cursor:pointer' class='ImgLoginBanner'></div></a>
                                     </td>
                                 </tr>
                                 <tr>
