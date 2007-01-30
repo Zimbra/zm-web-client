@@ -12,13 +12,15 @@
     <c:set var="context" value="${null}"/>
     <zm:currentResultUrl var="currentUrl" value="" action="view" context="${context}"/>
     <fmt:message var="dayFormat" key="CAL_MONTH_DAY_FORMAT"/>
-    <fmt:message var="dayMonthChangeFormat" key="CAL_MONTH_DAY_MONTH_CHANGE_FORMAT"/>    
+    <fmt:message var="dayMonthChangeFormat" key="CAL_MONTH_DAY_MONTH_CHANGE_FORMAT"/>
     <fmt:message var="titleFormat" key="CAL_MONTH_TITLE_FORMAT"/>
     <fmt:formatDate var="title" value="${date}" pattern="${titleFormat}"/>
     <jsp:useBean id="dateSmbols" scope="request" class="java.text.DateFormatSymbols" />
     <c:set var="weekDays" value="${dateSmbols.weekdays}"/>
     <c:set var="today" value="${zm:getToday()}"/>
     <c:set var="dateCal" value="${zm:getCalendar(date)}"/>
+    <c:set var="prevDate" value="${zm:pageMonth(dateCal, false)}"/>
+    <c:set var="nextDate" value="${zm:pageMonth(dateCal,  true)}"/>  
     <c:set var="currentDay" value="${zm:getFirstDayOfMonth(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
 </app:handleError>
 
@@ -28,7 +30,7 @@
         <table width=100%  cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
-                    <app:calendarViewToolbar context="${context}" keys="true"/>
+                    <app:calendarViewToolbar today="${today}" date="${dateCal}" prevDate="${prevDate}" nextDate="${nextDate}" title="${title}" context="${context}" keys="true"/>
                 </td>
             </tr>
             <tr>
@@ -50,6 +52,7 @@
                         </tr>
                     </table>
                     <table width=100% cellpadding="0" cellspacing="0">
+                        <c:set var="lastMonth" value="-1"/>
                         <c:forEach var="week" begin="1" end="6">
                             <tr>
                                 <c:forEach var="dow" begin="1" end="7">
@@ -71,9 +74,10 @@
                                                     </c:otherwise>
                                                 </c:choose>
                                                 <td align=right class='${clazz}'>
-                                                    <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${dayMonthChangeFormat}"/>
+                                                    <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${zm:getMonth(currentDay) ne lastMonth ? dayMonthChangeFormat : dayFormat}"/>
+                                                    <c:set var="lastMonth" value="${zm:getMonth(currentDay)}"/>
                                                     ${fn:escapeXml(dayTitle)}
-                                                        ${zm:getNextDay(currentDay)}
+
                                                 </td>
                                             </tr>
                                             <tr><td>&nbsp;</td></tr>
@@ -85,6 +89,7 @@
                                             <tr><td>&nbsp;</td></tr>                                            
                                         </table>
                                     </td>
+                                    ${zm:getNextDay(currentDay)}
                                 </c:forEach>
                             </tr>
                         </c:forEach>
@@ -93,7 +98,7 @@
             </tr>
             <tr>
                 <td class='TbBottom'>
-                    <app:calendarViewToolbar context="${context}" keys="false"/>
+                    <app:calendarViewToolbar today="${today}" date="${dateCal}" prevDate="${prevDate}" nextDate="${nextDate}" title="${title}" context="${context}" keys="false"/>
                 </td>
             </tr>
         </table>
