@@ -30,7 +30,7 @@
     <tr>
         <td valign=top align=center class='Overview'>
             <a href="http://www.zimbra.com/" target="_new">
-                <div class='ImgAppBanner'></div>
+                <div style='cursor:pointer' class='ImgAppBanner'></div>
 
             </a>
         </td>
