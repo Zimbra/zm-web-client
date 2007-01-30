@@ -47,7 +47,7 @@ function ZmSchedTabViewPage(parent, appCtxt, attendees, controller, dateInfo) {
 	this._controller = controller;
 	this._dateInfo = dateInfo;
 
-	this._editView = parent.getTabPage(ZmApptComposeView.TAB_APPOINTMENT).getEditView();
+	this._apptTab = parent.getTabPage(ZmApptComposeView.TAB_APPOINTMENT);
 
 	this.setScrollStyle(Dwt.SCROLL);
 	this._rendered = false;
@@ -56,10 +56,10 @@ function ZmSchedTabViewPage(parent, appCtxt, attendees, controller, dateInfo) {
 	this._allAttendees = [];
 	this._allAttendeesSlot = null;
 
-	this._attTypes = [ZmCalItem.PERSON];
+	this._attTypes = [ZmAppt.PERSON];
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		this._attTypes.push(ZmCalItem.LOCATION);
-		this._attTypes.push(ZmCalItem.EQUIPMENT);
+		this._attTypes.push(ZmAppt.LOCATION);
+		this._attTypes.push(ZmAppt.EQUIPMENT);
 	}
 
 	this._fbCallback = new AjxCallback(this, this._handleResponseFreeBusy);
@@ -101,7 +101,7 @@ function() {
 ZmSchedTabViewPage.prototype.showMe =
 function() {
 
-	ZmApptViewHelper.getDateInfo(this._editView, this._dateInfo);
+	ZmApptViewHelper.getDateInfo(this._apptTab, this._dateInfo);
 	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 
 	if (!this._rendered) {
@@ -112,8 +112,8 @@ function() {
 	var pSize = this.parent.getSize();
 	this.resize(pSize.x, pSize.y);
 
-	this.set(this._dateInfo, this._editView.getOrganizer(), this._attendees);
-	this._controller._setComposeTabGroup();
+	this.set(this._dateInfo, this._apptTab.getOrganizer(), this._attendees);
+	this._controller._setApptComposeTabGroup();
 };
 
 ZmSchedTabViewPage.prototype.tabBlur =
@@ -218,7 +218,7 @@ function() {
 	var el = this._allDayCheckbox;
 	el.checked = !el.checked;
 	this._showTimeFields(!el.checked);
-	this._editView.updateAllDayField(el.checked);
+	this._apptTab.updateAllDayField(el.checked);
 	this._outlineAppt();
 };
 
@@ -237,22 +237,148 @@ function() {
 
 ZmSchedTabViewPage.prototype._createHTML =
 function() {
-	this._startDateFieldId 	= this._htmlElId + "_startDateField";
-	this._startMiniCalBtnId = this._htmlElId + "_startMiniCalBtn";
-	this._startTimeSelectId = this._htmlElId + "_startTimeSelect";
-	this._startTimeAtLblId	= this._htmlElId + "_startTimeAtLbl";
-	this._allDayCheckboxId 	= this._htmlElId + "_allDayCheckbox";
-	this._endDateFieldId 	= this._htmlElId + "_endDateField";
-	this._endMiniCalBtnId 	= this._htmlElId + "_endMiniCalBtn";
-	this._endTimeSelectId 	= this._htmlElId + "_endTimeSelect";
-	this._endTimeAtLblId	= this._htmlElId + "_endTimeAtLbl";
-	this._navToolbarId		= this._htmlElId + "_navToolbar";
-	this._attendeesTableId	= this._htmlElId + "_attendeesTable";
 
+	var html = [];
+	var i = 0;
+
+	html[i++] = "<table border=0 width=100% cellpadding=3><tr><td width=100%>";
+	html[i++] = this._getTimeHtml();
+	html[i++] = "</td><td style='text-align:right'>";
+	html[i++] = this._getKeyHtml();
+	html[i++] = "</td></tr></table>";
+	html[i++] = "<div style='margin-top:10'>";
+	html[i++] = this._getFreeBusyHtml();
+	html[i++] = "</div>";
+
+	this.getHtmlElement().innerHTML = html.join("");
+};
+
+ZmSchedTabViewPage.prototype._getTimeHtml =
+function() {
+	this._startDateFieldId 		= Dwt.getNextId();
+	this._startMiniCalBtnId 	= Dwt.getNextId();
+	this._startTimeSelectId 	= Dwt.getNextId();
+	this._allDayCheckboxId 		= Dwt.getNextId();
+	this._endDateFieldId 		= Dwt.getNextId();
+	this._endMiniCalBtnId 		= Dwt.getNextId();
+	this._endTimeSelectId 		= Dwt.getNextId();
+
+	var html = [];
+	var i = 0;
+
+	html[i++] = "<table border=0>";
+	html[i++] = "<tr><td></td><td colspan=10><table border=0><tr><td><input type='checkbox' id='";
+	html[i++] = this._allDayCheckboxId;
+	html[i++] = "'></td><td class='ZmFieldLabelLeft'>";
+	html[i++] = ZmMsg.allDayEvent;
+	html[i++] = "</td></tr></table></td></tr>";
+	html[i++] = "<tr><td class='ZmFieldLabelRight'>";
+	html[i++] = ZmMsg.startTime;
+	html[i++] = "</td><td>";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
+	html[i++] = "<input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='";
+	html[i++] = this._startDateFieldId;
+	html[i++] = "' value=''></td><td id='";
+	html[i++] = this._startMiniCalBtnId;
+	html[i++] = "'></td>";
+	html[i++] = "</tr></table></td>";
+	html[i++] = "<td class='ZmFieldLabelCenter'>@</td><td id='";
+	html[i++] = this._startTimeSelectId;
+	html[i++] = "'></td>";
+	html[i++] = "</tr><tr><td class='ZmFieldLabelRight'>";
+	html[i++] = ZmMsg.endTime;
+	html[i++] = "</td><td>";
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td>";
+	html[i++] = "<input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='";
+	html[i++] = this._endDateFieldId;
+	html[i++] = "' value=''></td><td id='";
+	html[i++] = this._endMiniCalBtnId;
+	html[i++] = "'></td>";
+	html[i++] = "</tr></table></td>";
+	html[i++] = "<td class='ZmFieldLabelCenter'>@</td><td id='";
+	html[i++] = this._endTimeSelectId;
+	html[i++] = "'></td></tr>";
+	html[i++] = "</table>";
+
+	return html.join("");
+};
+
+ZmSchedTabViewPage.prototype._getKeyHtml =
+function() {
+	var html = [];
+	var i = 0;
+
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmGraphKey'><tr>";
+	html[i++] = "<td class='ZmGraphKeyHeader'>";
+	html[i++] = ZmMsg.key;
+	html[i++] = "</td></tr><tr><td class='ZmGraphKeyBody'>";
+	html[i++] = "<table border=0 cellspacing=2><tr>";
+
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-free'></div></td>";
+	html[i++] = "<td class='ZmGraphKeyColorText'>";
+	html[i++] = ZmMsg.free;
+	html[i++] = "</td><td>&nbsp;</td>"
+
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-busy'></div></td>";
+	html[i++] = "<td class='ZmGraphKeyColorText'>";
+	html[i++] = ZmMsg.busy;
+	html[i++] = "</td><td>&nbsp;</td>"
+
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-tentative'></div></td>";
+	html[i++] = "<td class='ZmGraphKeyColorText'>";
+	html[i++] = ZmMsg.tentative;
+	html[i++] = "</td><td>&nbsp;</td>"
+
+	html[i++] = "</tr><tr>";
+
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-unknown'></div></td>";
+	html[i++] = "<td class='ZmGraphKeyColorText'>";
+	html[i++] = ZmMsg.unknown;
+	html[i++] = "</td><td>&nbsp;</td>"
+
+	html[i++] = "<td><div class='ZmGraphKeyColorBox ZmScheduler-outOfOffice'></div></td>";
+	html[i++] = "<td class='ZmGraphKeyColorText'>";
+	html[i++] = ZmMsg.outOfOffice;
+	html[i++] = "</td><td>&nbsp;</td>"
+
+	html[i++] = "</tr>";
+	html[i++] = "</table>";
+	html[i++] = "</td></tr></table>";
+
+	return html.join("");
+};
+
+ZmSchedTabViewPage.prototype._getFreeBusyHtml =
+function() {
+	this._navToolbarId = Dwt.getNextId();
+	this._attendeesTableId = Dwt.getNextId();
 	this._schedTable[0] = null;	// header row has no attendee data
 
-	var subs = { id:this._htmlElId };
-	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ScheduleView", subs);
+	var html = [];
+	var i = 0;
+
+	html[i++] = "<table style='padding-left:3px;' border=0 cellpadding=0 cellspacing=0 width=100% id='";
+	html[i++] = this._attendeesTableId;
+	html[i++] = "'><colgroup><col style='width:165px' /><col style='width:626px' /></colgroup>";
+
+	// header row
+	html[i++] = "<tr><td align='center' id='";
+	html[i++] = this._navToolbarId;
+	html[i++] = AjxEnv.isIE ? "' width=100%>" : "'>";
+	html[i++] = "</td><td>";
+
+	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='ZmSchedulerGridHeaderTable'><tr>";
+	for (var j = 0; j <= 24; j++) {
+		var hour = AjxDateUtil.isLocale24Hour() ? j : ((j % 12) || 12);
+		html[i++] = "<td><div class='ZmSchedulerGridHeaderCell'>";
+		html[i++] = hour;
+		html[i++] = "</div></td>";
+	}
+	html[i++] = "</tr></table>";
+	html[i++] = "</td></tr>";
+	html[i++] = "</table>";
+
+	return html.join("");
 };
 
 ZmSchedTabViewPage.prototype._initAutocomplete =
@@ -269,7 +395,7 @@ function() {
 		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader, separator: "",
 					  matchValue: ZmContactList.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback};
 		this._acContactsList = new ZmAutocompleteListView(params);
-		this._acList[ZmCalItem.PERSON] = this._acContactsList;
+		this._acList[ZmAppt.PERSON] = this._acContactsList;
 	}
 	// autocomplete for locations/equipment
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
@@ -277,10 +403,10 @@ function() {
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations, separator: "",
 					  matchValue: ZmContactList.AC_VALUE_NAME, compCallback: acCallback};
 		this._acLocationsList = new ZmAutocompleteListView(params);
-		this._acList[ZmCalItem.LOCATION] = this._acLocationsList;
+		this._acList[ZmAppt.LOCATION] = this._acLocationsList;
 		params.dataLoader = resourcesClass.getEquipment;
 		this._acEquipmentList = new ZmAutocompleteListView(params);
-		this._acList[ZmCalItem.EQUIPMENT] = this._acEquipmentList;
+		this._acList[ZmAppt.EQUIPMENT] = this._acEquipmentList;
 	}
 };
 
@@ -415,9 +541,9 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		var selectDiv = document.getElementById(selectId);
 		if (selectDiv) {
 			select = new DwtSelect(this);
-			select.addOption(new DwtSelectOption(ZmCalItem.PERSON, true, null, null, null, "Person"));
-			select.addOption(new DwtSelectOption(ZmCalItem.LOCATION, false, null, null, null, "Location"));
-			select.addOption(new DwtSelectOption(ZmCalItem.EQUIPMENT, false, null, null, null, "Resource"));
+			select.addOption(new DwtSelectOption(ZmAppt.PERSON, true, null, null, null, "Person"));
+			select.addOption(new DwtSelectOption(ZmAppt.LOCATION, false, null, null, null, "Location"));
+			select.addOption(new DwtSelectOption(ZmAppt.EQUIPMENT, false, null, null, null, "Resource"));
 			select.reparentHtmlElement(selectId);
 			select.addChangeListener(this._selectChangeListener);
 			select.setSize("38");
@@ -432,7 +558,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 			var inputEl = dwtInputField.getInputElement();
 			inputEl.className = "ZmSchedulerInput";
 			inputEl.id = sched.dwtInputId;
-			sched.attType = inputEl._attType = ZmCalItem.PERSON;
+			sched.attType = inputEl._attType = ZmAppt.PERSON;
 			sched.inputObj = dwtInputField;
 			if (select) {
 				select.dwtInputField = dwtInputField;
@@ -460,7 +586,7 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 		this._updateBorders(sched, isAllAttendees);
 	}
 	if (updateTabGroup) {
-		this._controller._setComposeTabGroup();
+		this._controller._setApptComposeTabGroup();
 	}
 	if (setFocus && sched.inputObj) {
 		this._kbMgr.grabFocus(sched.inputObj);
@@ -474,7 +600,7 @@ function(index, updateTabGroup) {
 	this._attendeesTable.deleteRow(index);
 	this._schedTable.splice(index, 1);
 	if (updateTabGroup) {
-		this._controller._setComposeTabGroup(true);
+		this._controller._setApptComposeTabGroup(true);
 	}
 };
 
@@ -547,8 +673,8 @@ function(show) {
 		Dwt.setVisibility(this._endTZoneSelect.getHtmlElement(), show);
 	}
 	// also show/hide the "@" text
-	Dwt.setVisibility(document.getElementById(this._startTimeAtLblId), show);
-	Dwt.setVisibility(document.getElementById(this._endTimeAtLblId), show);
+	Dwt.setVisibility(this._startTimeSelect.getHtmlElement().parentNode.previousSibling, show);
+	Dwt.setVisibility(this._endTimeSelect.getHtmlElement().parentNode.previousSibling, show);
 };
 
 /*
@@ -620,7 +746,7 @@ function(inputEl, attendee, useException) {
 
 ZmSchedTabViewPage.prototype._setAttendeeToolTip =
 function(sched, attendee, type) {
-	if (type != ZmCalItem.PERSON) return;
+	if (type != ZmAppt.PERSON) return;
 
 	var name = attendee.getFullName();
 	var email = attendee.getEmail();
@@ -702,8 +828,8 @@ function(organizer, attendees) {
 	this.cleanup();
 	var emails = [];
 	// create a slot for the organizer
-	this._organizerIndex = this._addAttendeeRow(false, organizer.getAttendeeText(ZmCalItem.PERSON, true), false);
-	emails.push(this._setAttendee(this._organizerIndex, organizer, ZmCalItem.PERSON, true));
+	this._organizerIndex = this._addAttendeeRow(false, organizer.getAttendeeText(ZmAppt.PERSON, true), false);
+	emails.push(this._setAttendee(this._organizerIndex, organizer, ZmAppt.PERSON, true));
 
 	// create slots for each of the other attendees/resources
 	for (var t = 0; t < this._attTypes.length; t++) {
@@ -789,7 +915,7 @@ function(sched, resetSelect, type, noClear) {
 	if (resetSelect) {
 		var select = AjxCore.objectWithId(sched.selectObjId);
 		if (select) {
-			select.setSelectedValue(ZmCalItem.PERSON);
+			select.setSelectedValue(ZmAppt.PERSON);
 		}
 	}
 
@@ -848,7 +974,7 @@ function(isStartDate, skipCheck) {
 		this._updateFreeBusy();
 	}
 	// finally, update the appt tab view page w/ new date(s)
-	this._editView.updateDateField(this._startDateField.value, this._endDateField.value);
+	this._apptTab.updateDateField(this._startDateField.value, this._endDateField.value);
 };
 
 // Listeners
@@ -918,7 +1044,7 @@ function(ev) {
 	this._updateFreeBusy();
 
 	// finally, update the appt tab view page w/ new date(s)
-	this._editView.updateDateField(this._startDateField.value, this._endDateField.value);
+	this._apptTab.updateDateField(this._startDateField.value, this._endDateField.value);
 };
 
 ZmSchedTabViewPage.prototype._timeChangeListener =
@@ -928,7 +1054,7 @@ function(ev) {
 	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 	this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
 	this._outlineAppt(this._dateInfo);
-	this._editView.updateTimeField(this._dateInfo);
+	this._apptTab.updateTimeField(this._dateInfo);
 };
 
 ZmSchedTabViewPage.prototype._selectChangeListener =
@@ -955,11 +1081,11 @@ function(ev) {
 
 	// reset autocomplete handler
 	var inputEl = input.getInputElement();
-	if (type == ZmCalItem.PERSON && svp._acContactsList) {
+	if (type == ZmAppt.PERSON && svp._acContactsList) {
 		svp._acContactsList.handle(inputEl);
-	} else if (type == ZmCalItem.LOCATION && svp._acLocationsList) {
+	} else if (type == ZmAppt.LOCATION && svp._acLocationsList) {
 		svp._acLocationsList.handle(inputEl);
-	} else if (type == ZmCalItem.EQUIPMENT && svp._acEquipmentList) {
+	} else if (type == ZmAppt.EQUIPMENT && svp._acEquipmentList) {
 		svp._acEquipmentList.handle(inputEl);
 	}
 };
@@ -1215,7 +1341,7 @@ function(ev) {
 	// figure out which object was clicked
 	if (el.id == svp._allDayCheckboxId) {
 		svp._showTimeFields(!el.checked);
-		svp._editView.updateAllDayField(el.checked);
+		svp._apptTab.updateAllDayField(el.checked);
 		svp._outlineAppt();
 	} else if (el.id == svp._startDateFieldId || el.id == svp._endDateFieldId) {
 		svp._activeDateField = el;

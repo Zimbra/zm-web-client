@@ -44,7 +44,6 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.MAIL_APP]			= ZmMailApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.CONTACTS_APP]		= ZmContactsApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.CALENDAR_APP]		= ZmCalendarApp;
-	ZmZimbraMail.APP_CLASS[ZmZimbraMail.TASKS_APP]			= ZmTasksApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.IM_APP]				= ZmImApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.NOTEBOOK_APP]		= ZmNotebookApp;
 	ZmZimbraMail.APP_CLASS[ZmZimbraMail.PREFERENCES_APP]	= ZmPreferencesApp;
@@ -78,11 +77,9 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._sessionTimer = new AjxTimedAction(null, ZmZimbraMail.logOff);
 	this._sessionTimerId = -1;
 
-    this._pollActionId = null; // AjaxTimedAction ID of timer counting down to next poll time
-    this._pollRequest = null; // HTTP request of poll we've sent to server
-    this._pollInstantNotifications = false; // if TRUE, we're in "instant notification" mode
+	this._pollActionId = null;
 
-    this._needOverviewLayout = false;
+	this._needOverviewLayout = false;
 	this._treeListener = {};
 	var unreadListener = new AjxListener(this, this._unreadChangeListener);
 	this._treeListener[ZmOrganizer.FOLDER]		= unreadListener;
@@ -98,14 +95,13 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 ZmZimbraMail.prototype = new ZmController;
 ZmZimbraMail.prototype.constructor = ZmZimbraMail;
 
-ZmZimbraMail.CALENDAR_APP		= "calendar";
-ZmZimbraMail.CONTACTS_APP		= "contacts";
-ZmZimbraMail.IM_APP				= "im";
 ZmZimbraMail.MAIL_APP			= "mail";
-ZmZimbraMail.MIXED_APP			= "mixed";
+ZmZimbraMail.CONTACTS_APP		= "contacts";
+ZmZimbraMail.CALENDAR_APP		= "calendar";
+ZmZimbraMail.IM_APP				= "im";
 ZmZimbraMail.NOTEBOOK_APP		= "notebook";
 ZmZimbraMail.PREFERENCES_APP	= "options";
-ZmZimbraMail.TASKS_APP			= "tasks";
+ZmZimbraMail.MIXED_APP			= "mixed";
 
 ZmZimbraMail.APP_CLASS = {};
 
@@ -120,7 +116,6 @@ ZmZimbraMail.MSG_KEY = {};
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.MAIL_APP]				= "mail";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CONTACTS_APP]			= "addressBook";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.CALENDAR_APP]			= "calendar";
-ZmZimbraMail.MSG_KEY[ZmZimbraMail.TASKS_APP]			= "tasks";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.IM_APP]				= "imAppTitle";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.NOTEBOOK_APP]			= "BETA_documents";
 ZmZimbraMail.MSG_KEY[ZmZimbraMail.PREFERENCES_APP]		= "options";
@@ -131,7 +126,6 @@ ZmZimbraMail.APP_ICON = {};
 ZmZimbraMail.APP_ICON[ZmZimbraMail.MAIL_APP]			= "MailApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.CONTACTS_APP]		= "ContactsApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.CALENDAR_APP]		= "CalendarApp";
-ZmZimbraMail.APP_ICON[ZmZimbraMail.TASKS_APP]			= "Task";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.IM_APP]				= "ImStartChat";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.NOTEBOOK_APP]		= "NoteApp";
 ZmZimbraMail.APP_ICON[ZmZimbraMail.PREFERENCES_APP]		= "Preferences";
@@ -146,14 +140,13 @@ ZmZimbraMail.VIEW_TT_KEY[ZmZimbraMail.IM_APP]	        = "displayIM";
 
 // apps for the app chooser
 ZmZimbraMail.APPS = [ZmZimbraMail.MAIL_APP, ZmZimbraMail.CONTACTS_APP, ZmZimbraMail.CALENDAR_APP,
-					 ZmZimbraMail.TASKS_APP, ZmZimbraMail.IM_APP, ZmZimbraMail.NOTEBOOK_APP];
+					 ZmZimbraMail.IM_APP, ZmZimbraMail.NOTEBOOK_APP];
 
 // app button IDs
 ZmZimbraMail.APP_BUTTON = {};
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.MAIL_APP]			= ZmAppChooser.B_EMAIL;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CONTACTS_APP]		= ZmAppChooser.B_CONTACTS;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.CALENDAR_APP]		= ZmAppChooser.B_CALENDAR;
-ZmZimbraMail.APP_BUTTON[ZmZimbraMail.TASKS_APP]			= ZmAppChooser.B_TASKS;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.IM_APP]			= ZmAppChooser.B_IM;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.NOTEBOOK_APP]		= ZmAppChooser.B_NOTEBOOK;
 ZmZimbraMail.APP_BUTTON[ZmZimbraMail.PREFERENCES_APP]	= ZmAppChooser.B_OPTIONS;
@@ -162,7 +155,6 @@ ZmZimbraMail.APP_BUTTON[ZmZimbraMail.PREFERENCES_APP]	= ZmAppChooser.B_OPTIONS;
 ZmZimbraMail.APP_SETTING = {};
 ZmZimbraMail.APP_SETTING[ZmZimbraMail.CONTACTS_APP]		= ZmSetting.CONTACTS_ENABLED;
 ZmZimbraMail.APP_SETTING[ZmZimbraMail.CALENDAR_APP]		= ZmSetting.CALENDAR_ENABLED;
-ZmZimbraMail.APP_SETTING[ZmZimbraMail.TASKS_APP]		= ZmSetting.TASKS_ENABLED;
 ZmZimbraMail.APP_SETTING[ZmZimbraMail.IM_APP]			= ZmSetting.IM_ENABLED;
 ZmZimbraMail.APP_SETTING[ZmZimbraMail.NOTEBOOK_APP]		= ZmSetting.NOTEBOOK_ENABLED;
 
@@ -170,8 +162,8 @@ ZmZimbraMail.APP_SETTING[ZmZimbraMail.NOTEBOOK_APP]		= ZmSetting.NOTEBOOK_ENABLE
 ZmZimbraMail.DEFAULT_SEARCH = {};
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MAIL_APP]		= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CONTACTS_APP]	= ZmItem.CONTACT;
-ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmSearchToolBar.FOR_MAIL_MI; //= ZmItem.APPT;
-ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.TASKS_APP]		= ZmSearchToolBar.FOR_MAIL_MI; //= ZmItem.TASK;
+//ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmItem.APPT;
+ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.CALENDAR_APP]	= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.IM_APP]    	= ZmSearchToolBar.FOR_MAIL_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.MIXED_APP]		= ZmSearchToolBar.FOR_ANY_MI;
 ZmZimbraMail.DEFAULT_SEARCH[ZmZimbraMail.NOTEBOOK_APP]	= ZmItem.PAGE;
@@ -181,7 +173,6 @@ ZmZimbraMail.OVERVIEW_TREES = {};
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.MAIL_APP]			= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CONTACTS_APP]		= [ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.CALENDAR_APP]		= [ZmOrganizer.CALENDAR, ZmOrganizer.ZIMLET];
-ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.TASKS_APP]			= [ZmOrganizer.TASKS, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.PREFERENCES_APP]	= [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.IM_APP]			= [ZmOrganizer.ROSTER_TREE_ITEM, ZmOrganizer.ZIMLET];
 ZmZimbraMail.OVERVIEW_TREES[ZmZimbraMail.NOTEBOOK_APP]		= [ZmOrganizer.NOTEBOOK, /*ZmOrganizer.SEARCH,*/ ZmOrganizer.TAG,ZmOrganizer.ZIMLET];
@@ -212,15 +203,13 @@ ZmZimbraMail.ACTION_CODE_TO_APP = {};
 ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_MAIL]		= ZmZimbraMail.MAIL_APP;
 ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_CONTACTS]	= ZmZimbraMail.CONTACTS_APP;
 ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_CALENDAR]	= ZmZimbraMail.CALENDAR_APP;
-//ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_TASKS]	= ZmZimbraMail.TASKS_APP;
 ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_IM]		= ZmZimbraMail.IM_APP;
 ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_NOTEBOOK]	= ZmZimbraMail.NOTEBOOK_APP;
 ZmZimbraMail.ACTION_CODE_TO_APP[ZmKeyMap.GOTO_OPTIONS]	= ZmZimbraMail.PREFERENCES_APP;
 
 // trees whose data comes in a <refresh> block
 ZmZimbraMail.REFRESH_TREES = [ZmOrganizer.FOLDER, ZmOrganizer.TAG, ZmOrganizer.SEARCH,
-							  ZmOrganizer.ADDRBOOK, ZmOrganizer.CALENDAR,
-							  ZmOrganizer.TASKS, ZmOrganizer.NOTEBOOK];
+							  ZmOrganizer.ADDRBOOK, ZmOrganizer.CALENDAR, ZmOrganizer.NOTEBOOK];
 
 ZmZimbraMail.defaultStartApp = ZmZimbraMail.MAIL_APP;
 
@@ -521,175 +510,28 @@ function(params) {
 };
 
 /*
-* Send a NoOpRequest to the server.  Used for '$set:noop'
+* Sends a delayed NoOpRequest to see if we get any notifications (eg new mail). Ignores
+* exceptions unless they're auth-related.
 */
-ZmZimbraMail.prototype.sendNoOp =
-function() {
-    var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-    this.sendRequest({soapDoc: soapDoc, asyncMode: true, noBusyOverlay: true});
-}
-
-/*
-* Put the client into "instant notifications" mode.
-*/
-ZmZimbraMail.prototype.setInstantNotify =
-function(on) {
-    if (on) {
-        this._pollInstantNotifications = true;
-        // set a nonzero poll interval so that we cannot ever
-        // get into a full-speed request loop
-        this._pollInterval = 100;
-        if (this._pollActionId) {
-            AjxTimedAction.cancelAction(this._pollActionId);
-            this._pollActionId = null;
-        }
-        this._kickPolling(true);
-    } else {
-        this.setPollInterval();
-    }
-}
-
-/**
-* Resets the interval between poll requests, based on what's in the settings,
-* only if we are not in instant notify mode.
-*
-*/
-ZmZimbraMail.prototype.setPollInterval =
-function() {
-    if (!this._pollInstantNotifications) {
-        this._pollInterval = this._appCtxt.get(ZmSetting.POLLING_INTERVAL) * 1000;
-        DBG.println(AjxDebug.DBG1, "poll interval = " + this._pollInterval + "ms");
-
-        if (this._pollInterval) {
-            this._kickPolling(true);
-        } else {
-            // cancel pending request if there is one
-            if (this._pollRequest) {
-                this._requestMgr.cancelRequest(this._pollRequest);
-                this._pollRequest = null;
-            }
-            // cancel timer if it is waiting...
-            if (this._pollActionId) {
-                AjxTimedAction.cancelAction(this._pollActionId);
-                this._pollActionId = null;
-            }
-        }
-        return true;
-    } else {
-        DBG.println(AjxDebug.DBG1, "Ignoring Poll Interval (in instant-notify mode)");
-        return false;
-    }
+ZmZimbraMail.prototype._doPoll =
+function(now) {
+	this._pollActionId = null; // so we don't try to cancel
+	
+	// It'd be more efficient to make these instance variables, but for some
+	// reason that breaks polling in IE.
+	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
+	var errorCallback = new AjxCallback(this, this._handleErrorDoPoll);
+	var pollParams = {soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback, noBusyOverlay: true};
+	var pollAction = new AjxTimedAction(this, this.sendRequest, [pollParams]);
+	return AjxTimedAction.scheduleAction(pollAction, (now ? 0 : this._pollInterval));
 };
-
-/*
-* Make sure the polling loop is running.  Basic flow:
-*
-*       1) kickPolling():
-*             - cancel any existing timers
-*             - set a timer for _pollInterval time
-*             - call execPoll() when the timer goes off
-*
-*       2) execPoll():
-*             - make the NoOp request, if we're in "instant notifications"
-*               mode, this request will hang on the server until there is more data,
-*               otherwise it will return immediately.  Call into a handle() func below
-*
-*       3) handleDoPollXXXX():
-*             - call back to kickPolling() above
-*
-* resetBackoff = TRUE e.g. if we've just received a successful
-* response from the server, or if the user just changed our
-* polling settings and we want to start in fast mode
-*/
-ZmZimbraMail.prototype._kickPolling =
-function(resetBackoff) {
-    DBG.println(AjxDebug.DBG2, "ZmZimbraMail._kickPolling(1) "+
-                               this._pollInterval + ", "+ this._pollActionId+", "+
-                               (this._pollRequest ? "request_pending" : "no_request_pending"));
-
-    // reset the polling timeout
-    if (this._pollActionId) {
-        AjxTimedAction.cancelAction(this._pollActionId);
-        this._pollActionId = null;
-    }
-
-    if (resetBackoff && this._pollInstantNotifications) {
-        if (this._pollInterval > 100) {
-            // we *were* backed off -- reset the delay back to 1s fastness
-            this._pollInterval = 100;
-            // need to kick the timer if it is waiting -- it might be waiting a long time
-            // and we want the change to take place immediately
-            if (this._pollActionId) {
-                AjxTimedAction.cancelAction(this._pollActionId);
-                this._pollActionId = null;
-            }
-        }
-    }
-
-    if (this._pollInterval && !this._pollActionId && !this._pollRequest) {
-        try {
-            var pollAction = new AjxTimedAction(this, this._execPoll);
-            this._pollActionId = AjxTimedAction.scheduleAction(pollAction, this._pollInterval);
-        } catch (ex) {
-            this._pollActionId = null;
-            DBG.println(AjxDebug.DBG1, "Caught exception in ZmXimbraMail._kickPolling.  Polling chain broken!");
-        }
-    }
-};
-
-/*
-* We've finished waiting, do the actual poll itself
-*/
-ZmZimbraMail.prototype._execPoll =
-function() {
-    this._pollActionId = null;
-
-    // It'd be more efficient to make these instance variables, but for some
-    // reason that breaks polling in IE.
-    var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-    try {
-        if (this._pollInstantNotifications) {
-            var method = soapDoc.getMethod();
-            method.setAttribute("wait", 1);
-        }
-        var responseCallback = new AjxCallback(this, this._handleResponseDoPoll);
-        var errorCallback = new AjxCallback(this, this._handleErrorDoPoll);
-
-        this._pollRequest = this.sendRequest({soapDoc: soapDoc, asyncMode: true, callback:responseCallback,
-            errorCallback: errorCallback, noBusyOverlay: true});
-    } catch (ex) {
-        // oops!
-        this._handleErrorDoPoll(ex);
-    }
-}
-
 
 ZmZimbraMail.prototype._handleErrorDoPoll =
 function(ex) {
-    this._pollRequest = null;
-
-    if (this._pollInstantNotifications) {
-        // very simpleminded exponential backoff
-        this._pollInterval *= 2;
-        if (this._pollInterval > (1000 * 60 * 2)) {
-            this._pollInterval = 1000 * 60 * 2;
-        }
-    }
-    // restart poll timer if we didn't get an exception
-    this._kickPolling(false);
-
-    return (ex.code != ZmCsfeException.SVC_AUTH_EXPIRED &&
+	return (ex.code != ZmCsfeException.SVC_AUTH_EXPIRED &&
 			ex.code != ZmCsfeException.SVC_AUTH_REQUIRED &&
 			ex.code != ZmCsfeException.NO_AUTH_TOKEN);
 };
-
-ZmZimbraMail.prototype._handleResponseDoPoll =
-function(ex) {
-    this._pollRequest = null;
-    // restart poll timer if we didn't get an exception
-   	this._kickPolling(true);
-};
-
 
 /**
 * Returns a handle to the given app.
@@ -816,7 +658,7 @@ function() {
 	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
 		var acc = this.getApp(ZmZimbraMail.CALENDAR_APP).getApptComposeController();
 		if (acc) {
-			acc.initComposeView(true);
+			acc.initApptComposeView(true);
 		}
 	}
 };
@@ -868,7 +710,6 @@ function(app) {
 		var id = list[i];
 		if ((id == ZmOrganizer.SEARCH && !this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) ||
 			(id == ZmOrganizer.CALENDAR && !this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) ||
-			(id == ZmOrganizer.TASK_FOLDER && !this._appCtxt.get(ZmSetting.TASKS_ENABLED)) ||
 			(id == ZmOrganizer.NOTEBOOK && !this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) ||
 			(id == ZmOrganizer.ROSTER_TREE_ITEM && !this._appCtxt.get(ZmSetting.IM_ENABLED)) ||			
 			(id == ZmOrganizer.TAG && !this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) ||
@@ -1052,6 +893,19 @@ function(locationStr) {
 ZmZimbraMail.redir =
 function(locationStr){
 	window.location = locationStr;
+};
+
+/**
+* Resets the interval between poll requests, based on what's in the settings.
+*/
+ZmZimbraMail.prototype.setPollInterval =
+function() {
+	this._pollInterval = this._appCtxt.get(ZmSetting.POLLING_INTERVAL) * 1000;
+	DBG.println(AjxDebug.DBG1, "poll interval = " + this._pollInterval + "ms");
+	if (this._pollActionId)
+		AjxTimedAction.cancelAction(this._pollActionId);
+	if (this._pollInterval)
+		this._pollActionId = this._doPoll();
 };
 
 ZmZimbraMail.prototype.setSessionTimer =
@@ -1330,17 +1184,26 @@ function(icon, visible) {
 ZmZimbraMail.prototype._appButtonListener =
 function(ev) {
 	try {
+		var searchController = this._appCtxt.getSearchController();
 		var id = ev.item.getData(Dwt.KEY_ID);
-		switch (id) {
-			case ZmAppChooser.B_EMAIL:		this.activateApp(ZmZimbraMail.MAIL_APP); break;
-			case ZmAppChooser.B_CONTACTS:	this.activateApp(ZmZimbraMail.CONTACTS_APP); break;
-			case ZmAppChooser.B_CALENDAR:	this.activateApp(ZmZimbraMail.CALENDAR_APP); break;
-			case ZmAppChooser.B_TASKS:		this.activateApp(ZmZimbraMail.TASKS_APP); break;
-			case ZmAppChooser.B_IM:			this.activateApp(ZmZimbraMail.IM_APP); break;
-			case ZmAppChooser.B_NOTEBOOK:	this.activateApp(ZmZimbraMail.NOTEBOOK_APP); break;
-			case ZmAppChooser.B_OPTIONS:	this.activateApp(ZmZimbraMail.PREFERENCES_APP); break;
-			case ZmAppChooser.B_HELP:		window.open(this._appCtxt.get(ZmSetting.HELP_URI)); break;
-			case ZmAppChooser.B_LOGOUT:		ZmZimbraMail.conditionalLogOff(); break;
+		DBG.println(AjxDebug.DBG1, "ZmZimbraMail button press: " + id);
+		if (id == ZmAppChooser.B_EMAIL) {
+			this.activateApp(ZmZimbraMail.MAIL_APP);
+		} else if (id == ZmAppChooser.B_CONTACTS) {
+			// force launch to display all contacts
+			this.activateApp(ZmZimbraMail.CONTACTS_APP);
+		} else if (id == ZmAppChooser.B_CALENDAR) {
+			this.activateApp(ZmZimbraMail.CALENDAR_APP);
+		} else if (id == ZmAppChooser.B_IM) {
+			this.activateApp(ZmZimbraMail.IM_APP);			
+		} else if (id == ZmAppChooser.B_NOTEBOOK) {
+			this.activateApp(ZmZimbraMail.NOTEBOOK_APP);
+		} else if (id == ZmAppChooser.B_HELP) {
+			window.open(this._appCtxt.get(ZmSetting.HELP_URI));
+		} else if (id == ZmAppChooser.B_OPTIONS) {
+			this.activateApp(ZmZimbraMail.PREFERENCES_APP);
+		} else if (id == ZmAppChooser.B_LOGOUT) {
+			ZmZimbraMail.conditionalLogOff();
 		}
 	} catch (ex) {
 		this._handleException(ex, this._appButtonListener, ev, false);

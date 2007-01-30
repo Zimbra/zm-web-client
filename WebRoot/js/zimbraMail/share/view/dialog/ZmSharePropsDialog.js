@@ -42,7 +42,7 @@ function ZmSharePropsDialog(appCtxt, shell, className) {
 					  keyUpCallback: new AjxCallback(this, this._acKeyUpListener) };
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
-
+	
 	// set view
 	this.setView(this._createView());
 };
@@ -406,13 +406,11 @@ function() {
 		var propId = shareWith.addProperty(property.label, property.field);
 	}
 
-	this._granteeInput = new DwtInputField({parent: this});
-	Dwt.setSize(this._granteeInput.getInputElement(), "100%");
+	this._granteeInput = new DwtInputField({parent: this, size: 38});
 	this._granteeInput.setData(Dwt.KEY_OBJECT, this);
 
 	var password = new DwtComposite(this);
-	this._passwordInput = new DwtInputField({parent: password});
-	Dwt.setSize(this._passwordInput.getInputElement(), "100%");
+	this._passwordInput = new DwtInputField({parent: password, size:40});
 	this._passwordInput.setData(Dwt.KEY_OBJECT, this);
 	this._passwordButton = new DwtButton(password);
 	this._passwordButton.setText(ZmMsg.changePassword);

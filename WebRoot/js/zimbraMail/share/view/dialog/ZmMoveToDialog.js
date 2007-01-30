@@ -82,9 +82,6 @@ function(data, loc, treeIds, clearOverview) {
 			}
 		}
 		this._items = data;
-	} else if (data instanceof ZmTask) {
-		treeIds = [ZmOrganizer.TASKS];
-		this._items = data;
 	} else {
 		this._items = data;
 	}

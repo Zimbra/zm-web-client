@@ -120,7 +120,7 @@ function() {
 */
 ZmListController.prototype.show	=
 function(searchResults, view) {
-	this._currentView = view || this._defaultView();
+	this._currentView = view ? view : this._defaultView();
 	this._activeSearch = searchResults;
 	// save current search for use by replenishment
 	if (searchResults)
@@ -302,15 +302,20 @@ ZmListController.prototype._getItemType			= function() {};
 ZmListController.prototype._setup =
 function(view) {
 	this._initialize(view);
+	//DBG.timePt("this._initialize");
 	this._resetOperations(this._toolbar[view], 0);
+	//DBG.timePt("this._resetOperation(toolbar)");
 };
 
 // Creates the basic elements: toolbar, list view, and action menu
 ZmListController.prototype._initialize =
 function(view) {
 	this._initializeToolBar(view);
+	//DBG.timePt("_initializeToolBar");
 	this._initializeListView(view);
+	//DBG.timePt("_initializeListView");
 	this._initializeTabGroup(view);
+	//DBG.timePt("_initializeTabGroup");
 };
 
 // Below are functions that return various groups of operations, for cafeteria-style
@@ -525,7 +530,8 @@ function(ev, id, newWin) {
 		// new items
 		case ZmOperation.NEW_MESSAGE: {
 			var app = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
-			app.getComposeController().doAction(ZmOperation.NEW_MESSAGE, newWin || this._inNewWindow(ev));
+			var controller = app.getComposeController();
+			controller.doAction(ZmOperation.NEW_MESSAGE, newWin || this._inNewWindow(ev));
 			break;
 		}
 		case ZmOperation.NEW_CONTACT:
@@ -536,7 +542,8 @@ function(ev, id, newWin) {
 				var type = id == ZmOperation.NEW_GROUP ? ZmItem.GROUP : null;
 				var contact = new ZmContact(this._appCtxt, null, null, type);
 				var app = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
-				app.getContactController().show(contact);
+				var controller = app.getContactController();
+				controller.show(contact);
 			} else if (ev) {
 				ev.item.popup();
 			}
@@ -544,12 +551,8 @@ function(ev, id, newWin) {
 		}
 		case ZmOperation.NEW_APPT: {
 			var app = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
-			app.getCalController().newAppointment(null, null, null, new Date());
-			break;
-		}
-		case ZmOperation.NEW_TASK: {
-			var app = this._appCtxt.getApp(ZmZimbraMail.TASKS_APP);
-			app.getTaskController().show((new ZmTask(this._appCtxt)));
+			var controller = app.getCalController();
+			controller.newAppointment(null, null, null, new Date());
 			break;
 		}
 		case ZmOperation.NEW_PAGE: {
@@ -562,7 +565,8 @@ function(ev, id, newWin) {
 			page.folderId = notebook ? notebook.id : ZmNotebookItem.DEFAULT_FOLDER;
 
 			var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
-			app.getPageEditController().show(page);
+			var controller = app.getPageEditController();
+			controller.show(page);
 			break;
 		}
 		// new organizers
@@ -584,11 +588,6 @@ function(ev, id, newWin) {
 		case ZmOperation.NEW_CALENDAR: {
 			var dialog = this._appCtxt.getNewCalendarDialog();
 			this._showDialog(dialog, this._newCalendarCallback);
-			break;
-		}
-		case ZmOperation.NEW_TASK_FOLDER: {
-			var dialog = this._appCtxt.getNewTaskFolderDialog();
-			this._showDialog(dialog, this._newTaskFolderCallback);
 			break;
 		}
 		case ZmOperation.NEW_NOTEBOOK: {
@@ -810,8 +809,9 @@ function(parent, name, color, url) {
 	var dialog = this._appCtxt.getNewFolderDialog();
 	dialog.popdown();
 
-	var oc = this._appCtxt.getOverviewController();
-	oc.getTreeController(ZmOrganizer.FOLDER)._doCreate(parent, name, color, url);
+	var overviewController = this._appCtxt.getOverviewController();
+	var controller = overviewController.getTreeController(ZmOrganizer.FOLDER);
+	controller._doCreate(parent, name, color, url);
 };
 
 ZmListController.prototype._newTagCallback =
@@ -821,8 +821,9 @@ function(creatingTag, name, color) {
 	var dialog = this._appCtxt.getNewTagDialog();
 	dialog.popdown();
 
-	var oc = this._appCtxt.getOverviewController();
-	oc.getTreeController(ZmOrganizer.TAG)._doCreate(name, color);
+	var overviewController = this._appCtxt.getOverviewController();
+	var tagController = overviewController.getTreeController(ZmOrganizer.TAG);
+	tagController._doCreate(name, color);
 
 	this._creatingTag = creatingTag;
 };
@@ -834,8 +835,9 @@ function(parent, name, color) {
 	var dialog = this._appCtxt.getNewAddrBookDialog();
 	dialog.popdown();
 
-	var oc = this._appCtxt.getOverviewController();
-	oc.getTreeController(ZmOrganizer.ADDRBOOK)._doCreate(parent, name, color);
+	var overviewController = this._appCtxt.getOverviewController();
+	var controller = overviewController.getTreeController(ZmOrganizer.ADDRBOOK);
+	controller._doCreate(parent, name, color);
 };
 
 ZmListController.prototype._newCalendarCallback =
@@ -845,8 +847,9 @@ function(parent, name, color, url, excludeFb) {
 	var dialog = this._appCtxt.getNewCalendarDialog();
 	dialog.popdown();
 
-	var oc = this._appCtxt.getOverviewController();
-	oc.getTreeController(ZmOrganizer.CALENDAR)._doCreate(parent, name, color, url, excludeFb);
+	var overviewController = this._appCtxt.getOverviewController();
+	var controller = overviewController.getTreeController(ZmOrganizer.CALENDAR);
+	controller._doCreate(parent, name, color, url, excludeFb);
 };
 
 ZmListController.prototype._newNotebookCallback =
@@ -856,19 +859,9 @@ function(parent, name, color/*, url*/) {
 	var dialog = this._appCtxt.getNewNotebookDialog();
 	dialog.popdown();
 
-	var oc = this._appCtxt.getOverviewController();
-	oc.getTreeController(ZmOrganizer.NOTEBOOK)._doCreate(parent, name, color);
-};
-
-ZmListController.prototype._newTaskFolderCallback =
-function(parent, name, color) {
-	// REVISIT: Do we really want to close the dialog before we
-	//          know if the create succeeds or fails?
-	var dialog = this._appCtxt.getNewTaskFolderDialog();
-	dialog.popdown();
-
-	var oc = this._appCtxt.getOverviewController();
-	oc.getTreeController(ZmOrganizer.TASKS)._doCreate(parent, name, color);
+	var overviewController = this._appCtxt.getOverviewController();
+	var controller = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
+	controller._doCreate(parent, name, color);
 };
 
 // Move stuff to a new folder.

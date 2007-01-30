@@ -25,14 +25,7 @@
                 <a href="<c:url value="/h/search?st=contact"/>" <c:if test="${keys}">accesskey="c"</c:if>><app:img src="contacts/Contact.gif" altkey='ALT_APP_CONTACTS'/><span><fmt:message
                         key="addressBook"/></span></a>
             </td>
-        </c:if>
-        <c:if test="${mailbox.features.calendar and selected == 'calendar'}">
-            <td class='TabSpacer'/>
-            <td class='Tab ${selected=='calendar' ? 'TabSelected' :'TabNormal'}'>
-                <a href="<c:url value="/h/calendar"/>" <c:if test="${keys}">accesskey="l"</c:if>><app:img src="calendar/CalendarApp.gif" altkey='ALT_APP_CALENDAR'/><span><fmt:message
-                        key="calendar"/></span></a>
-            </td>
-        </c:if>
+        </c:if>             
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='options' ? 'TabSelected' :'TabNormal'}'>
             <a href="<c:url value="/h/options"/>" <c:if test="${keys}">accesskey="y"</c:if>><app:img src="common/Preferences.gif" altkey='ALT_APP_OPTIONS'/><span><fmt:message

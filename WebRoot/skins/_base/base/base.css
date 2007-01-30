@@ -76,19 +76,19 @@ body						{	@ChromeBg@	}
 }
 #skin_border_quota						{	@SkinBorderQuota@		}
 #skin_container_quota					{	
-	height:30;		margin: -2 5 0 10;  
+	height:15;  
 }
 
 #skin_container_username {
 #IFDEF GECKO
 	padding-top:6px;
+	height:10;
 #ENDIF
 #IFDEF SAFARI
-	padding-top:4px;
+	height:15;
 #ENDIF
 #IFDEF MSIE
-	position:relative;
-	top:-4px;
+	height:15;
 #ENDIF
 }
 
