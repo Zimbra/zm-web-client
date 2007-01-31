@@ -27,7 +27,6 @@
 
 <app:view title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" date="${date}">
     <form action="${currentUrl}" method="post">
-
         <table width=100%  cellpadding="0" cellspacing="0" border=0>
             <tr>
                 <td class='TbTop'>
@@ -58,7 +57,7 @@
                             <tr>
                                 <c:forEach var="dow" begin="1" end="7">
                                     <td width=14% class='ZhCalMonthCellsTd'>
-                                        <table width=100% cellpadding=0 cellspacing=0 border=0>
+                                        <table width=100% cellpadding=0 cellspacing=2 border=0>
                                             <tr>
                                                 <c:choose>
                                                     <c:when test="${zm:isSameDate(currentDay,today) and zm:isSameMonth(currentDay,dateCal)}">
@@ -81,16 +80,14 @@
 
                                                 </td>
                                             </tr>
-                                            <zm:forEachAppoinment var="appt" appointments="${appts}" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+1000*60*60*24}">
-                                                <tr><td>${fn:escapeXml(appt.name)}</td></tr>
+                                            <c:set var="count" value="${0}"/>
+                                            <zm:forEachAppoinment var="appt" appointments="${appts}" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+1000*60*60*24-1}">
+                                                <tr><td><app:monthAppt appt="${appt}"/></td></tr>
+                                                <c:set var="count" value="${count+1}"/>
                                             </zm:forEachAppoinment>
+                                            <c:forEach begin="${count}" end="3">
                                             <tr><td>&nbsp;</td></tr>
-                                            <tr><td>&nbsp;</td></tr>
-                                            <tr><td>&nbsp;</td></tr>
-                                            <tr><td>&nbsp;</td></tr>
-                                            <tr><td>&nbsp;</td></tr>
-                                            <tr><td>&nbsp;</td></tr>
-                                            <tr><td>&nbsp;</td></tr>                                            
+                                            </c:forEach>
                                         </table>
                                     </td>
                                     ${zm:getNextDay(currentDay)}

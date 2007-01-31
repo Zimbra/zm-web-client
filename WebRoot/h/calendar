@@ -24,7 +24,7 @@
             <fmt:parseDate var="date" pattern="yyyyMMdd" value="${param.date}"/>
         </c:when>
         <c:otherwise>
-            <jsp:useBean id="date" scope="request" class="java.util.Date" />
+            <c:set var="date" value="${zm:getToday().time}"/>
         </c:otherwise>
     </c:choose>
 </app:handleError>
