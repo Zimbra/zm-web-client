@@ -27,7 +27,6 @@
 <script src='<%=path%>/js/ajax/util/AjxCookie.js'></script>
 <script src='<%=path%>/js/ajax/util/AjxUtil.js'></script>
 <script src='<%=path%>/js/ajax/core/AjxCore.js'></script>
-<script src='<%=path%>/js/ajax/core/AjxImg.js'></script>
 <script src='<%=path%>/js/ajax/dwt/core/Dwt.js'></script>
 <script src='<%=path%>/js/ajax/dwt/graphics/DwtCssStyle.js'></script>
 
@@ -35,10 +34,8 @@
 <script src='common.js'></script>
 
 <script language='JavaScript'>
-if (window.data == null) window.data = {};
 function onLoad() {
 	var body = document.getElementsByTagName("BODY")[0];
-
 
 	var templateId = window.templateId = "<%=template!=null?template:""%>" || AjxCookie.getCookie(document,"template");
 	if (templateId == null) {

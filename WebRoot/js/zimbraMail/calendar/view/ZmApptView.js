@@ -33,7 +33,7 @@
 *
 * @author Parag Shah
 * @author Conrad Damon
-*
+* 
 * @param parent		[DwtComposite]	parent widget
 * @param posStyle	[constant]		positioning style
 * @param controller	[ZmController]	owning controller
@@ -48,7 +48,7 @@ ZmApptView.prototype.constructor = ZmApptView;
 
 // Public methods
 
-ZmApptView.prototype.toString =
+ZmApptView.prototype.toString = 
 function() {
 	return "ZmApptView";
 };
@@ -70,7 +70,7 @@ function() {
 	return 1;
 };
 
-ZmApptView.prototype.needsRefresh =
+ZmApptView.prototype.needsRefresh = 
 function() {
 	return false;
 };
@@ -93,7 +93,7 @@ function() {
 	this._appt = null;
 };
 
-ZmApptView.prototype.set =
+ZmApptView.prototype.set = 
 function(appt) {
 	if (this._appt == appt) return;
 
@@ -158,7 +158,7 @@ function() {
 	}
 
 	// print recurrence blurb
-	var repeatStr = this._appt.getRecurBlurb();
+	var repeatStr = this._appt._getRecurrenceBlurbForSave();
 	if (repeatStr) {
 		idx = this._printField(ZmMsg.repeats, repeatStr, html, idx);
 	}
@@ -192,9 +192,9 @@ ZmApptView.prototype._renderAppt =
 function(appt) {
 	this._lazyCreateObjectManager();
 	if (this._objectManager) {
-	    this._objectManager.setHandlerAttr(ZmObjectManager.DATE,
-	    								   ZmObjectManager.ATTR_CURRENT_DATE,
-	    								   appt.startDate);
+	    this._objectManager.setHandlerAttr(ZmObjectManager.DATE, 
+	    								   ZmObjectManager.ATTR_CURRENT_DATE, 
+	    								   appt.getStartDate());
 	}
 
 	var closeBtnCellId = Dwt.getNextId();
@@ -236,8 +236,10 @@ function(appt) {
 	}
 
 	html[i++] = "<tr><td width=100 class='LabelColName'";
-	var isException = appt._orig.isException;
-	if (isException) html[i++] = " rowspan='2'";
+	var isException = appt._orig.isException();
+	if (isException) {
+		html[i++] = " rowspan='2'";
+	}
 	html[i++] = ">";
 	html[i++] = ZmMsg.time;
 	html[i++] = ":</td><td class='LabelColValue'>";
@@ -267,7 +269,7 @@ function(appt) {
 		i = this._showField(ZmMsg.attendees, this._objectManager.findObjects(attendees, true), html, i);
 	}
 
-	var repeatStr = appt.isRecurring() ? appt.getRecurBlurb() : null;
+	var repeatStr = appt.isRecurring() ? appt._getRecurrenceBlurbForSave() : null;
 	if (repeatStr) {
 		i = this._showField(ZmMsg.repeats, repeatStr, html, i);
 	}
@@ -305,7 +307,7 @@ function(label, value, html, i) {
 	html[i++] = ": </td><td class='LabelColValue'>";
 	html[i++] = value;
 	html[i++] = "</td></tr>";
-
+	
 	return i;
 };
 
@@ -320,17 +322,17 @@ function(label, value, html, idx, dontEncode) {
 	return idx;
 };
 
-ZmApptView.prototype._getTimeString =
+ZmApptView.prototype._getTimeString = 
 function(appt) {
 	var str = [];
 	var i = 0;
 
-	var sd = appt._orig.startDate;
-	var ed = appt._orig.endDate;
+	var sd = appt._orig.getStartDate();
+	var ed = appt._orig.getEndDate();
 
 	var dateFormatter = AjxDateFormat.getDateInstance();
 	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-	var timezone = appt.timezone;
+	var timezone = appt.getTimezone();
 	var localTimezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 
 	if (this._isOneDayAppt(sd, ed)) {
@@ -345,7 +347,7 @@ function(appt) {
 			// bug fix #4762
 			if (timezone && timezone != localTimezone) {
 				str[i++] = " ";
-				str[i++] = timezone;
+				str[i++] = appt.getTimezone();
 			}
 		}
 	} else {
@@ -364,7 +366,7 @@ function(appt) {
 			// bug fix #4762
 			if (timezone && timezone != localTimezone) {
 				str[i++] = " ";
-				str[i++] = timezone;
+				str[i++] = appt.getTimezone();
 			}
 		}
 	}
@@ -372,7 +374,7 @@ function(appt) {
 	return str.join("");
 };
 
-ZmApptView.prototype._getAttachString =
+ZmApptView.prototype._getAttachString = 
 function(appt) {
 	var str = [];
 	var j = 0;
@@ -392,7 +394,7 @@ function() {
 };
 
 // returns true if given dates are w/in a single day
-ZmApptView.prototype._isOneDayAppt =
+ZmApptView.prototype._isOneDayAppt = 
 function(sd, ed) {
 	var start = new Date(sd.getTime());
 	var end = new Date(ed.getTime());

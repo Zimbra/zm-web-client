@@ -589,20 +589,21 @@ ZmZimletContext._zmObjectTransformers = {
 		oi.getDetails();
 		var ret = { TYPE: "ZmAppt" };
 		ret.id             = oi.getId();
-		ret.uid            = oi.uid;
+		ret.uid            = oi.getUid();
+		ret.type           = oi.getType();
 		ret.subject        = oi.getName();
-		ret.startDate      = oi.startDate;
-		ret.endDate        = oi.endDate;
+		ret.startDate      = oi.getStartDate();
+		ret.endDate        = oi.getEndDate();
 		ret.allDayEvent    = oi.isAllDayEvent();
-		ret.exception      = oi.isException;
-		ret.alarm          = oi.alarm;
+		ret.exception      = oi.isException();
+		ret.alarm          = oi.hasAlarm();
 		ret.otherAttendees = oi.hasOtherAttendees();
 		ret.attendees      = oi.getAttendeesText();
 		ret.resources      = oi.getEquipmentText();
 		ret.location       = oi.getLocation();
 		ret.notes          = oi.getNotesPart();
 		ret.isRecurring    = oi.isRecurring();
-		ret.timeZone       = oi.timezone;
+		ret.timeZone       = oi.getTimezone();
 		return ret;
 	}
 

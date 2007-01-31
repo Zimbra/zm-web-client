@@ -1,32 +1,16 @@
 <project name="ZimbraWebClient" default="war">
 
-  <!-- To overwrite any properties in your local build, create the file
-       build-custom.properties. If present, its values will overwrite all
-       properties defined in this file, including those defined from the
-       environment. DO NOT CHECK IN build-custom.properties! It is only
-       for local build customization. -->
-  <property file="build-custom.properties" />
-
   <property environment="env"/>
-  
-	<property name="zimbra.home.dir" location="/opt/zimbra" />
-	<property name="tomcat.home.dir" location="${zimbra.home.dir}/tomcat" />
-	<property name="jetty.home.dir" location="${zimbra.home.dir}/jetty" />
-	<condition property="use-jetty"><isset property="env.ZIMBRA_USE_JETTY"/></condition>
-	<condition property="use-tomcat"><not><isset property="use-jetty"/></not></condition>
-	<condition property="webserver.name" value="jetty"><isset property="use-jetty"/></condition>
-	<condition property="webserver.name" value="tomcat"><isset property="use-tomcat"/></condition>
-	<property name="webserver.root.dir" location="${zimbra.home.dir}/${webserver.name}"/>
 
   <property name="build.dir"          location="build"/>
   
   <property name="dist.dir"           location="build/dist"/>
-  <property name="dist.webserver.dir"    location="${dist.dir}/${webserver.name}"/>
-  <property name="dist.webapps.dir" location="${dist.webserver.dir}/webapps"/>
+  <property name="dist.tomcat.dir"    location="${dist.dir}/tomcat"/>
+  <property name="dist.tomcat.webapps.dir" location="${dist.tomcat.dir}/webapps"/>
   <property name="dist.tarfile"         value="dev-zimbra.tar"/>
 
-  <property name="warfile"            location="${dist.webapps.dir}/zimbra.war"/>
-  <property name="adminwarfile"      location="${dist.webapps.dir}/zimbraAdmin.war"/>		
+  <property name="warfile"            location="${dist.tomcat.webapps.dir}/zimbra.war"/>
+  <property name="adminwarfile"      location="${dist.tomcat.webapps.dir}/zimbraAdmin.war"/>		
   
   <property name="jars.dir"           location="jars"/>
   <property name="src.dir"            location="src"/>
@@ -63,15 +47,7 @@
   </condition>	
   <condition property="deploy.url" value="${env.DEPLOY_URL}" else='http://localhost:7070/manager/'>
     <isset property="env.DEPLOY_URL" />
-  </condition>
-
-    <condition property="remote.deploy.host" value="${env.ZIMBRA_REMOTE_DEPLOY_HOST}">
-      <isset property="env.ZIMBRA_REMOTE_DEPLOY_HOST"/>
-    </condition>
-    <condition property="remote.deploy.port" value="${env.ZIMBRA_REMOTE_DEPLOY_PORT}">
-      <isset property="env.ZIMBRA_REMOTE_DEPLOY_PORT"/>
-    </condition>
-  
+  </condition>	
   <property name="deploy.war" value="${warfile}"/>
   <property name="deploy.user" value="zimbra"/>
   <property name="deploy.password" value="zimbra"/>
@@ -128,7 +104,7 @@
 
   <target name="build-init">
     <mkdir dir="${dist.dir}"/>
-    <mkdir dir="${dist.webapps.dir}"/>
+    <mkdir dir="${dist.tomcat.webapps.dir}"/>
     <mkdir dir="${build.dir}/WebRoot/js"/>
   </target>
 
@@ -496,21 +472,10 @@
 
   </target>
 
-  <target name='skin-images' depends='default-skins,customer-skin' />
-
-  <target name='default-skins'>
+  <target name='skin-images'>
     <foreach list='${skins}' target='build-skin-images' param='skindir'>
 		<param name="csspathprefix" value="/zimbra/img/"/>
-		<param name="skinbasedir" value="WebRoot"/>
     </foreach>
-  </target>
-
-  <target name='customer-skin' if='env.CUSTOMER_SKIN'>
-	<antcall target="build-skin-images">
-	  <param name='skindir' value='${env.CUSTOMER_SKIN}'/>
-	  <param name="csspathprefix" value="/zimbra/img/"/>
-	  <param name="skinbasedir" value="../ZimbraCustomerServices"/>
-	</antcall>
   </target>
 
   <target name='build-skin-images' depends='compile' unless='imagesdone'>
@@ -525,7 +490,7 @@
     <imagemerge destdir='${images.loRes.destDir}/skins/${skindir}'
       cssfile='${skindir}.css' csspath='${csspathprefix}loRes/skins/${skindir}/'
       cachefile='${dir.skincache}/CacheLoRes.html'>
-      <dirset dir='${skinbasedir}/skins/${skindir}' includes='**/img/**'/>
+      <dirset dir='WebRoot/skins/${skindir}' includes='**/img/**'/>
     </imagemerge>
     <replace token="@jsVersion@" value="${build.simpleDate}" file='${images.loRes.destDir}/skins/${skindir}/${dir.skincache}/CacheLoRes.html' />
     <replace token="@jsVersion@" value="${build.simpleDate}" file='${images.loRes.destDir}/skins/${skindir}/${skindir}.css' />
@@ -591,10 +556,7 @@
     <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" >
       <fileset dir="WebRoot/" excludes="**/help/**,**/adminhelp/**,**/admin_skins/**,**/templates/**,js/*.js"/>
     </copy>
-    <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" failonerror='false'>
-      <fileset dir="../ZimbraCustomerServices" includes="skins/${env.CUSTOMER_SKIN}/**" />
-	</copy>
-	<copy todir="${build.dir}/WebRoot/js/ajax" overwrite="${isProduction}" >
+    <copy todir="${build.dir}/WebRoot/js/ajax" overwrite="${isProduction}" >
       <fileset dir="${ajax.dir}/WebRoot/js"/>
     </copy>
 	<copy todir='${build.dir}/WebRoot/css' overwrite='${isProduction}'>
@@ -699,11 +661,8 @@
   deploy will have to be run.
   -->
   <target name="dev-sync" depends='templates' description="Web Client Quick Sync">
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}" failonerror="false">
-      <fileset dir="../ZimbraCustomerServices" includes="skins/${env.CUSTOMER_SKIN}/**" />
-    </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
-	  <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**,ALE/**" excludes="**/style/*.css"/>
+      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**,ALE/**" excludes="**/style/*.css"/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
 	<copy verbose='true' todir='${deploy.dir}${deploy.path}/css'>
@@ -825,19 +784,15 @@
     </war>
   </target>
 
-    <target name="deploy" depends="war" description="Deploy Web Client">
-		<antcall target="deploy-war">
-			<param name="param.path" value="${deploy.path}"/>
-			<param name="param.warfile" value="${deploy.war}"/>
-		</antcall>
-    </target>
+  <target name="deploy" depends="war" description="Deploy Web Client">
+    <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
+      path="${deploy.path}" war="${deploy.war}" update="true"/>
+  </target>
 
-    <target name="prod-deploy" depends="prod-war" description="Deploy Production Web Client">
-		<antcall target="deploy-war">
-			<param name="param.path" value="${deploy.path}"/>
-			<param name="param.warfile" value="${deploy.war}"/>
-		</antcall>
-    </target>
+  <target name="prod-deploy" depends="prod-war" description="Deploy Production Web Client">
+    <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
+      path="${deploy.path}" war="${deploy.war}" update="true"/>
+  </target>
 
   <target name="dev-dist" depends="war">
     <delete>
@@ -938,33 +893,13 @@
     </copy>
   </target>
   
-	<target name="admin-deploy" depends="admin-dev-war" description="Deploy Admin">
-		<antcall target="deploy-war">
-			<param name="param.path" value="${deploy.admin.path}"/>
-			<param name="param.warfile" value="${deploy.admin.war}"/>
-		</antcall>
-	</target>
+  <target name="admin-deploy" depends="admin-dev-war" description="Deploy Admin">
+    <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
+      path="${deploy.admin.path}" war="${deploy.admin.war}" update="true"/>
+  </target>  
 	
-    <target name="admin-prod-deploy" depends="admin-war" description="Deploy Production Admin">
-		<antcall target="deploy-war">
-			<param name="param.path" value="${deploy.admin.path}"/>
-			<param name="param.warfile" value="${deploy.admin.war}"/>
-		</antcall>
-    </target>
-  		
-	<target name="deploy-war">
-  		<if><isset property="use-tomcat"/><then>
-            <if><isset property="remote.deploy.host"/><then>
-                <deploy url="http://${remote.deploy.host}:${remote.deploy.port}/manager/" username="${deploy.user}"
-                        password="${deploy.password}" path="${param.path}" war="${param.warfile}" update="true"/>
-            </then></if>
-			<deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}" path="${param.path}" war="${param.warfile}" update="true"/>
-  		</then><else>
-  			<echo>Deploy ${param.warfile} to ${webserver.root.dir}/webapps</echo>
-  			<ant dir="../ZimbraServer" target="stop-jetty" inheritAll="false"/>
-			<copy file="${param.warfile}" todir="${webserver.root.dir}/webapps"/>
-  			<ant dir="../ZimbraServer" target="start-jetty" inheritAll="false"/>
-  		</else></if>
-  	</target>
-
+  <target name="admin-prod-deploy" depends="admin-war" description="Deploy Production Admin">
+    <deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}"
+      path="${deploy.admin.path}" war="${deploy.admin.war}" update="true"/>
+  </target>  
 </project>

@@ -168,7 +168,7 @@ function() {
 
 	for (var i=0; i < cachedSize; i++) {
 		var appt = this._cachedAppts.get(i);
-		if (!appt || appt.isAllDayEvent() || appt.getEndTime() < startTime || appt.ptst == ZmCalItem.PSTATUS_DECLINED) {
+		if (!appt || appt.isAllDayEvent() || appt.getEndTime() < startTime || appt.getParticipationStatus() == ZmAppt.PSTATUS_DECLINED) {
 			toRemove.push(appt);
 		} else if (appt.isInRange(startTime, endTime)) {
 			toRemove.push(appt);
