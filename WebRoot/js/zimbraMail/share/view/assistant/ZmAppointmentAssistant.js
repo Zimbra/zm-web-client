@@ -52,7 +52,7 @@ ZmAppointmentAssistant.prototype.extraButtonHandler =
 function(dialog) {
 	var calApp = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
 	var cc = calApp.getCalController();
-	cc.newAppointment(this.getAppt(), ZmAppt.MODE_NEW_FROM_QUICKADD, true); // dirty bit
+	cc.newAppointment(this.getAppt(), ZmCalItem.MODE_NEW_FROM_QUICKADD, true); // dirty bit
 	return true;
 };
 
@@ -68,7 +68,7 @@ function() {
 	appt.setEndDate(this._apptData.endDate ? this._apptData.endDate : this._apptData.startDate);
 	appt.setAllDayEvent(this._apptData.startTime == null);
 
-	if (this._apptData.location) appt.setAttendees(ZmEmailAddress.split(this._apptData.location), ZmAppt.LOCATION);
+	if (this._apptData.location) appt.setAttendees(ZmEmailAddress.split(this._apptData.location), ZmCalItem.LOCATION);
 	if (this._apptData.notes) appt.setTextNotes(this._apptData.notes);
 	if (this._apptData.subject) appt.setName(this._apptData.subject);
 	return appt;

@@ -24,11 +24,9 @@
  */
 
 function ZmCalendarTreeController(appCtxt, type, dropTgt) {
-	
-	type = type ? type : ZmOrganizer.CALENDAR;
-	dropTgt = dropTgt ? dropTgt : null; //new DwtDropTarget(ZmAppt);
-	
-	ZmTreeController.call(this, appCtxt, type, dropTgt);
+	if (arguments.length == 0) return;
+
+	ZmTreeController.call(this, appCtxt, (type || ZmOrganizer.CALENDAR), dropTgt);
 
 	this._listeners[ZmOperation.NEW_CALENDAR] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.CHECK_ALL] = new AjxListener(this, this._checkAllListener);
@@ -43,7 +41,8 @@ function ZmCalendarTreeController(appCtxt, type, dropTgt) {
 ZmCalendarTreeController.prototype = new ZmTreeController;
 ZmCalendarTreeController.prototype.constructor = ZmCalendarTreeController;
 
-ZmCalendarTreeController.prototype.toString = function() {
+ZmCalendarTreeController.prototype.toString =
+function() {
 	return "ZmCalendarTreeController";
 };
 
@@ -256,13 +255,8 @@ function(ev) {
 
 ZmCalendarTreeController.prototype._shareCalListener =
 function(ev) {
-	this._pendingActionData = this._getActionedOrganizer(ev);
-	
-	var calendar = this._pendingActionData;
-	var share = null;
-	
-	var sharePropsDialog = this._appCtxt.getSharePropsDialog();
-	sharePropsDialog.popup(ZmSharePropsDialog.NEW, calendar, share);
+	var calendar = this._pendingActionData = this._getActionedOrganizer(ev);
+	this._appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, calendar);
 };
 
 ZmCalendarTreeController.prototype._mountCalListener =
@@ -271,7 +265,8 @@ function(ev) {
 	dialog.popup(ZmOrganizer.CALENDAR/*, ...*/);
 };
 
-ZmCalendarTreeController.prototype._deleteListener = function(ev) {
+ZmCalendarTreeController.prototype._deleteListener =
+function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 	var callback = new AjxCallback(this, this._deleteListener2, [ organizer ]);
 	var message = AjxMessageFormat.format(ZmMsg.confirmDeleteCalendar, organizer.name);
@@ -279,7 +274,9 @@ ZmCalendarTreeController.prototype._deleteListener = function(ev) {
 	var dialog = this._appCtxt.getConfirmationDialog();
 	dialog.popup(message, callback);
 };
-ZmCalendarTreeController.prototype._deleteListener2 = function(organizer) {
+
+ZmCalendarTreeController.prototype._deleteListener2 =
+function(organizer) {
 	this._doDelete(organizer);
 }
 

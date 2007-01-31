@@ -24,10 +24,8 @@
  */
 
 function ZmNewAddrBookDialog(parent, msgDialog, className) {
-	var title = ZmMsg.createNewAddrBook;
-	var type = ZmOrganizer.ADDRBOOK;
-	ZmNewOrganizerDialog.call(this, parent, msgDialog, className, title, type);
-}
+	ZmNewOrganizerDialog.call(this, parent, msgDialog, className, ZmMsg.createNewAddrBook, ZmOrganizer.ADDRBOOK);
+};
 
 ZmNewAddrBookDialog.prototype = new ZmNewOrganizerDialog;
 ZmNewAddrBookDialog.prototype.constructor = ZmNewAddrBookDialog;

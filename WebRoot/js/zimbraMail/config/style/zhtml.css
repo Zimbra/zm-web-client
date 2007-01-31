@@ -77,6 +77,8 @@ border: none;
 
 .Tree a:link, .Tree a:visited { color: black; text-decoration: none; }
 
+
+
 /* ------- list --------------- */
 
 .List TD {
@@ -167,7 +169,7 @@ A:visited { color: blue; }
 	text-decoration: none;    
 }
 
-.Overview { width: 150px; padding:0px 10px 0px 10px; }
+.Overview { width: 162px; padding:0px 10px 0px 10px; }
 
 .TopContent {
     padding:0 5px 0 0;
@@ -227,6 +229,8 @@ padding: 5px;
 .TbBt A {
 padding: 0px 5px 0px 5px;
 }
+
+.TbBt#caltb a:link, .TbBt#caltb a:visited { color: black; text-decoration: none; }
 
 .Tb SPAN { vertical-align: middle; }
 
@@ -553,3 +557,118 @@ padding: 8px 0px 6px 0px;
 .PanelHead {
 	background-color:#bab09a;
 }
+
+.ZhCalMonthHeaderTable {
+	@PageHeaderBg@
+	@CompactTable@
+}
+
+
+.ZhCalMonthTable {
+	@CompactTable@
+    @AppBg@
+}
+
+/* label for the month */
+.ZhCalMonthHeaderMonth {
+    @PageHeaderBg@
+	@PageHeaderText@
+	@FontSize-biggest@
+	@Label@
+	text-align:center;
+}
+
+/* day of week label for the month */
+.ZhCalMonthHeaderCellsText {
+ 	@PageHeaderBg@
+	@PageHeaderText@
+	@FontSize-big@
+	@SmallBoxPadding@
+	@BottomSeparator@
+	@Label@
+	text-align:center;   
+}
+
+/* cell for each day in the month view in various states*/
+.ZhCalMonthCellsTd {
+    @SeparatorBorder@
+	@NoWrap@
+	vertical-align:top;
+}
+
+/* label of a particular day in various states */
+.ZhCalMonthDayLabel,
+.ZhCalMonthDayLabelToday,
+.ZhCalMonthDayLabelOffMonth,
+.ZhCalMonthDayLabelOffMonthToday
+{
+	@NoWrap@
+	@FontSize-big@
+	@TextPadding@
+	text-align:right;
+}
+
+.ZhCalMonthDayLabelToday {
+	@Text-today@
+}
+
+.ZhCalMonthDayLabelOffMonth {
+	@Text-disabled@
+}
+
+.ZhCalMonthDayLabelOffMonthToday {
+	@Text-disabled@
+	@Text-today@
+}
+
+.ZhCalMiniContainer {
+    @AppBg@ @OutsetBorder@
+    height: 135px;
+    padding-bottom: 5px;
+}
+
+/* label of a particular day in various states */
+.ZhCalMiniMonthDayLabel,
+.ZhCalMiniMonthDayLabelToday,
+.ZhCalMiniMonthDayLabelOffMonth,
+.ZhCalMiniMonthDayLabelOffMonthToday
+{
+	@NoWrap@
+	@FontSize-small@
+    @TextPadding@
+	text-align:center;
+}
+
+.ZhCalMiniMonthDayLabelToday {
+    @MiniCalDay-today@
+}
+
+.ZhCalMiniMonthDayLabelOffMonth {
+    @MiniCalDay-gray@
+}
+
+.ZhCalMiniMonthDayLabelOffMonthToday {
+    @MiniCalDay-today@
+    @MiniCalDay-gray@
+}
+
+/* Container of the calendar titlebar (arrows and month label, not DOW labels) */
+.ZhCalMiniTitlebar {
+	@MiniCalHeaderBg@
+}
+
+
+/* Name of the month in the calendar titlebar */
+.ZhCalMiniTitleCell {
+	@FullWidth@
+	@MiniCalHeaderText@
+	@ActiveCursor@
+    font-weight: normal;
+}
+
+/* Label for the days of the week in calendar titlebar */
+.ZhCalMiniDow {
+	@MiniCalDOWText@
+    font-weight: normal;
+}
+

@@ -134,7 +134,7 @@ function(view) {
 
 ZmContactController.prototype._getTagMenuMsg =
 function() {
-	return ZmMsg.tagContact;
+	return ZmMsg.AB_TAG_CONTACT;
 };
 
 ZmContactController.prototype._setViewContents =
