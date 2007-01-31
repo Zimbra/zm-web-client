@@ -281,8 +281,10 @@ function(errorMsg) {
 ZmCalItemComposeController.prototype._saveCalItemFoRealz =
 function(calItem, attId, notifyList) {
 	var args = [calItem];
-	var mode = calItem.getViewMode();
-	if (mode != ZmCalItem.MODE_NEW && calItem._orig && calItem._orig.folderId != calItem.folderId) {
+	if (calItem.viewMode != ZmCalItem.MODE_NEW &&
+		calItem._orig &&
+		calItem._orig.folderId != calItem.folderId)
+	{
 		// pass along folderId for appt move
 		args.push(calItem.folderId);
 	}
@@ -300,9 +302,6 @@ function(calItem, folderId) {
 	} else {
 		this._handleResponseCleanup();
 	}
-
-	// XXX: remove once bug 6082 is fixed!
-	this._app.getCalController().checkForRefresh(calItem);
 };
 
 ZmCalItemComposeController.prototype._handleResponseCleanup =

@@ -44,11 +44,11 @@ ZmTaskEditView.PRIORITY_VALUES = [
 	{ v:ZmTask.PRIORITY_HIGH,	l:ZmMsg.high }];
 
 ZmTaskEditView.STATUS_VALUES = [
-	{ v:"TENT",					l:ZmMsg.notStarted },
-	{ v:"COMP",					l:ZmMsg.completed },
-	{ v:"INPR",					l:ZmMsg.inProgress},
-	{ v:"WAITING",				l:ZmMsg.waitingOn },
-	{ v:"DEFERRED",				l:ZmMsg.deferred }];
+	{ v:ZmCalItem.STATUS_TENT,	l:ZmMsg.notStarted },
+	{ v:ZmCalItem.STATUS_COMP,	l:ZmMsg.completed },
+	{ v:ZmCalItem.STATUS_INPR,	l:ZmMsg.inProgress},
+	{ v:ZmCalItem.STATUS_WAIT,	l:ZmMsg.waitingOn },
+	{ v:ZmCalItem.STATUS_DEFR,	l:ZmMsg.deferred }];
 
 // Message dialog placement
 ZmTaskEditView.DIALOG_X = 50;
@@ -72,31 +72,38 @@ function() {
 	return ZmTask.quickClone(this._calItem);
 };
 
+ZmTaskEditView.prototype._populateForEdit =
+function(calItem, mode) {
+	ZmCalItemEditView.prototype._populateForEdit.call(this, calItem, mode);
+
+	this._location.setValue(calItem.getLocation());
+	this._prioritySelect.setSelectedValue(calItem.priority);
+	this._statusSelect.setSelectedValue(calItem.status);
+	this._pCompleteSelect.setSelected(calItem.pComplete);
+	this._statusCheckbox.checked = calItem.status == ZmCalItem.STATUS_COMP && calItem.pComplete == 100;
+};
+
 ZmTaskEditView.prototype._populateForSave =
 function(calItem) {
 	ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
 
-	// set location
-	calItem.setAttendees([this._location.getValue()], ZmCalItem.LOCATION);
-
-	// set start/end dates if applicable
+	calItem.location = this._location.getValue();
 	// TODO - normalize
-	var startDate = AjxDateUtil.simpleParseDateStr(document.getElementById(this._dateStartId).value);
-	var endDate = AjxDateUtil.simpleParseDateStr(document.getElementById(this._dateDueId).value);
-	calItem.setAllDayEvent(true);
+	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
+	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
 	calItem.setStartDate(startDate, true);
 	calItem.setEndDate(endDate, true);
-
-	calItem.setPercentComplete(this._pCompleteSelect.getValue());
-	calItem.setPriority(this._prioritySelect.getValue());
-	calItem.setStatus(this._statusSelect.getValue());
+	calItem.setAllDayEvent(true);
+	calItem.pComplete = this._pCompleteSelect.getValue();
+	calItem.priority = this._prioritySelect.getValue();
+	calItem.status = this._statusSelect.getValue();
 
 	return calItem;
 };
 
 ZmTaskEditView.prototype.isValid =
 function() {
-	var val = AjxStringUtil.trim(document.getElementById(this._subjectId).value);
+	var val = AjxStringUtil.trim(this._subjectField.getValue());
 	if (val.length == 0) {
 		throw ZmMsg.errorMissingSubject;
 	}
@@ -108,11 +115,6 @@ ZmTaskEditView.prototype.cleanup =
 function() {
 	ZmCalItemEditView.prototype.cleanup.call(this);
 
-	this._location.setValue("");
-	this._prioritySelect.setSelected(1);
-	this._statusCheckbox.checked = false;
-	this._statusSelect.setSelected(0);
-	this._pCompleteSelect.setSelected(0);
 	this._startDateField.value = "";
 	this._endDateField.value = "";
 };
@@ -165,7 +167,7 @@ function(width) {
 
 	// add percent complete DwtSelect
 	this._pCompleteSelect = new DwtSelect(this);
-	for (var i = 0; i <= 100; i += 10) {
+	for (var i = 0; i <= 100; i += ZmTask.PCOMPLETE_INT) {
 		this._pCompleteSelect.addOption((i+"%"), i==0, i);
 	}
 	this._pCompleteSelect.addChangeListener(listener);

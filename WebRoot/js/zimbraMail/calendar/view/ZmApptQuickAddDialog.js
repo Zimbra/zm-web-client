@@ -364,7 +364,7 @@ function(appt) {
 				this._calendarSelect.addOption(cal.getName(), false, cal.id);
 			}
 		}
-		this._calendarSelect.setSelectedValue(appt.getFolderId());
+		this._calendarSelect.setSelectedValue(appt.folderId);
 	}
 };
 

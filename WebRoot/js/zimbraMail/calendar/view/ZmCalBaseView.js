@@ -603,7 +603,7 @@ function(appt, html, idx) {
 		html[idx++] = "</td>";
 	}
 
-	if (appt.isException()) {
+	if (appt.isException) {
 		html[idx++] = "<td>";
 		html[idx++] = AjxImg.getImageHtml("ApptException")
 		html[idx++] = "</td>";

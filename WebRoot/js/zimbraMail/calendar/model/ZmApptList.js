@@ -44,9 +44,9 @@ function() {
 };
 
 ZmApptList._fba2ptst = {
-	B: ZmAppt.PSTATUS_ACCEPT,
-	F: ZmAppt.PSTATUS_DECLINED,
-	T: ZmAppt.PSTATUS_TENTATIVE
+	B: ZmCalItem.PSTATUS_ACCEPT,
+	F: ZmCalItem.PSTATUS_DECLINED,
+	T: ZmCalItem.PSTATUS_TENTATIVE
 };
 			
 ZmApptList.prototype._getAttr =
@@ -93,7 +93,7 @@ function(resp) {
 			appt.name = this._getAttr(apptNode, instNode, "name");
 			appt.setAttendees(this._getAttr(apptNode, instNode, "loc"), ZmCalItem.LOCATION);
 			appt.startDate = new Date(startTime);
-			appt._uniqStartTime = appt.startDate.getTime(); 					// need to construct uniq id later
+			appt.uniqStartTime = appt.startDate.getTime(); 					// need to construct uniq id later
 			if (instNode.fba && ZmApptList._fba2ptst[instNode.fba])				// override appt.ptst for this instance
 				appt.ptst = ZmApptList._fba2ptst[instNode.fba];
 			var endTime = startTime + (parseInt(this._getAttr(apptNode, instNode, "d")));
@@ -172,7 +172,7 @@ function(orig, result, startTime, endTime) {
 				slice.setEndDate(nextDay);			
 				slice._fanoutLast = (slice.getEndTime() == orig.getEndTime());	
 				slice._fanoutNum = fanoutNum;
-				slice._uniqStartTime = slice.getStartTime();					// need to construct uniq id later
+				slice.uniqStartTime = slice.getStartTime();					// need to construct uniq id later
 				result.add(slice);
 			}
 			fanoutNum++;
@@ -186,7 +186,7 @@ function(orig, result, startTime, endTime) {
 				if (!appt._fanoutFirst)
 					appt._orig = orig;
 				appt._fanoutNum = fanoutNum;
-				appt._uniqStartTime = appt.getStartTime();						// need to construct uniq id later
+				appt.uniqStartTime = appt.getStartTime();						// need to construct uniq id later
 				result.add(appt);
 			}
 			break;

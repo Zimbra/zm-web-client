@@ -210,3 +210,11 @@ ZmApptComposeController.prototype._notifyDlgCancelListener =
 function(ev) {
 	this._addedAttendees.length = this._removedAttendees.length = 0;
 };
+
+ZmApptComposeController.prototype._handleResponseSave =
+function(calItem, folderId) {
+	ZmCalItemComposeController.prototype._handleResponseSave.call(this, calItem, folderId);
+
+	// XXX: remove once bug 6082 is fixed!
+	this._app.getCalController().checkForRefresh(calItem);
+};

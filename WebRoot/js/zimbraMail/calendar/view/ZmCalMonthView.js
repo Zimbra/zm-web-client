@@ -370,9 +370,9 @@ function() {
 
 ZmCalMonthView._allDayItemHtml =
 function(appt,id, body_style, controller) {
-	var isNew = appt.ptst == ZmAppt.PSTATUS_NEEDS_ACTION;
-	var isAccepted = appt.ptst == ZmAppt.PSTATUS_ACCEPT;
-	var color = ZmCalBaseView.COLORS[controller.getCalendarColor(appt.getFolderId())];
+	var isNew = appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION;
+	var isAccepted = appt.ptst == ZmCalItem.PSTATUS_ACCEPT;
+	var color = ZmCalBaseView.COLORS[controller.getCalendarColor(appt.folderId)];
 	var subs = {
 		id: id,
 		body_style: body_style,
@@ -385,7 +385,7 @@ function(appt,id, body_style, controller) {
 		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
 		statusKey: appt.ptst,
-		status: appt.isOrganizer() ? "" : appt.getParticipationStatusString()
+		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr()
 	};	
 	var template = "calendar_appt_allday";
     return AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#"+template, subs);
@@ -444,8 +444,8 @@ function(appt) {
 	var html = [];
 	var i = 0;
 	html[i++] = "<div class='";
-	html[i++] = ZmCalBaseView.COLORS[this._controller.getCalendarColor(appt.getFolderId())];
-	html[i++] = appt.ptst == ZmAppt.PSTATUS_NEEDS_ACTION ? "DarkC" : "C";
+	html[i++] = ZmCalBaseView.COLORS[this._controller.getCalendarColor(appt.folderId)];
+	html[i++] = appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION ? "DarkC" : "C";
 	html[i++] = "'>";
 	html[i++] = "&bull;&nbsp;"
 	html[i++] = dur;
@@ -697,11 +697,11 @@ function(date, list, controller, noheader) {
 	for (var i=0; i < size; i++) {
 		var ao = list.get(i);
 		if (!ao.isAllDayEvent()) {
-			var isNew = ao.ptst == ZmAppt.PSTATUS_NEEDS_ACTION
+			var isNew = ao.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION
 			var dur = ao.getDurationText(false, false);
 
 			html[idx++] = "<tr><td class='calendar_month_day_item'><div class='";
-			html[idx++] = ZmCalBaseView.COLORS[controller.getCalendarColor(ao.getFolderId())];
+			html[idx++] = ZmCalBaseView.COLORS[controller.getCalendarColor(ao.folderId)];
 			html[idx++] = isNew ? "DarkC" : "C";
 			html[idx++] = "'>";
 			if (isNew) html[idx++] = "<b>";

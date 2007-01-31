@@ -158,7 +158,7 @@ function(compNum) {
 	if (!(att && att.length)) return list;
 
 	for (var i = 0; i < att.length; i++) {
-		if (!att[i].cutype || (att[i].cutype == ZmAppt.CUTYPE_INDIVIDUAL)) {
+		if (!att[i].cutype || (att[i].cutype == ZmCalItem.CUTYPE_INDIVIDUAL)) {
 			list.push(att[i]);
 		}
 	}
@@ -174,7 +174,7 @@ function(compNum) {
 	if (!(att && att.length)) return list;
 
 	for (var i = 0; i < att.length; i++) {
-		if (att[i].cutype == ZmAppt.CUTYPE_RESOURCE) {
+		if (att[i].cutype == ZmCalItem.CUTYPE_RESOURCE) {
 			list.push(att[i]);
 		}
 	}

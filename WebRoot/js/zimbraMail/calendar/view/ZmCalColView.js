@@ -147,7 +147,7 @@ function() {
 			var appt = list.get(j);
 			if (appt.startDate.getDate() == nextDay.getDate() || numDays == 1) {
 				var loc = appt.getLocation();
-				var status = appt.getParticipationStatusString();
+				var status = appt.getParticipantStatusStr();
 				if (appt.isAllDayEvent()) {
 					// XXX: this is bad HTML but the browsers do the right thing and help us out
 					html[idx++] = "<table border=0 cellpadding=2 cellspacing=2 width=100% style='border:1px solid black'>";
@@ -388,16 +388,15 @@ function(index, folderId) {
 ZmCalColView.prototype._updateUnionData =
 function(appt) {
 	if (appt.isAllDayEvent()) {
-		this._updateUnionDataHash(48, appt.getFolderId());
+		this._updateUnionDataHash(48, appt.folderId);
 	} else {
 		var em = appt.endDate.getMinutes();
 		var eh = appt.endDate.getHours();
 		var startIndex = (appt.startDate.getHours()*2) + (appt.startDate.getMinutes() < 30 ? 0 : 1);
 		var endIndex = ((eh ? eh : 24) *2) + (em == 0 ? 0 : (em <= 30 ? 1 : 2));
-		var folderId = appt.getFolderId();
 		if (startIndex == endIndex) endIndex++;
 		for (var i=startIndex; i < endIndex; i++) {
-			this._updateUnionDataHash(i, folderId);
+			this._updateUnionDataHash(i, appt.folderId);
 		}
 	}
 }
@@ -658,9 +657,9 @@ function(appt) {
 ZmCalColView._setApptOpacity =
 function(appt, div) {
 	switch (appt.ptst) {
-		case ZmAppt.PSTATUS_DECLINED:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_DECLINED); break;
-		case ZmAppt.PSTATUS_TENTATIVE:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE); break;
-		default:						Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_NORMAL); break;
+		case ZmCalItem.PSTATUS_DECLINED:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_DECLINED); break;
+		case ZmCalItem.PSTATUS_TENTATIVE:	Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_TENTATIVE); break;
+		default:							Dwt.setOpacity(div, ZmCalColView._OPACITY_APPT_NORMAL); break;
 	}
 }
 
@@ -722,10 +721,10 @@ function(appt) {
 
 	this.associateItemWithElement(appt, div, ZmCalBaseView.TYPE_APPT);
 
-	var isNew = appt.ptst == ZmAppt.PSTATUS_NEEDS_ACTION;
-	var isAccepted = appt.ptst == ZmAppt.PSTATUS_ACCEPT;
+	var isNew = appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION;
+	var isAccepted = appt.ptst == ZmCalItem.PSTATUS_ACCEPT;
 	var id = this._getItemId(appt);
-	var color = ZmCalBaseView.COLORS[this._controller.getCalendarColor(appt.getFolderId())];
+	var color = ZmCalBaseView.COLORS[this._controller.getCalendarColor(appt.folderId)];
 	var location = appt.getLocation() ? "<i>"+AjxStringUtil.htmlEncode(appt.getLocation())+"</i>" : "";
 	
 	var is30 = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
@@ -741,7 +740,7 @@ function(appt) {
 		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate))+this._padding,
 		location: location,
 		statusKey: appt.ptst,
-		status: appt.isOrganizer() ? "" : appt.getParticipationStatusString()
+		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr()
 	};	
 	
 	var template;
@@ -1130,7 +1129,7 @@ function() {
 		var appt = adlist[i];
 		var data = this._allDayAppts[appt.getUniqueId()];
 		if (data) {
-			var col = this._scheduleMode ? this._getColForFolderId(data.appt.getFolderId()) : this._getDayForDate(new Date(data.startTime));
+			var col = this._scheduleMode ? this._getColForFolderId(data.appt.folderId) : this._getDayForDate(new Date(data.startTime));
 			if (col)	 this._findAllDaySlot(col.index, data);			
 		}
 	}
@@ -1151,7 +1150,7 @@ function() {
 				var appt = slot.data.appt;
 				var div = document.getElementById(this._getItemId(appt));
 				if (this._scheduleMode) {
-					var cal= this._getColForFolderId(appt.getFolderId());
+					var cal = this._getColForFolderId(appt.folderId);
 					this._positionAppt(div, cal.allDayX+0, rowY);
 					this._sizeAppt(div, cal.allDayWidth * slot.data.numDays - this._daySepWidth - 1,
 								 ZmCalColView._ALL_DAY_APPT_HEIGHT);
@@ -1263,7 +1262,7 @@ function(appt) {
 	endOfDay.setHours(23,59,59,999);
 	var et = Math.min(appt.getEndTime(), endOfDay.getTime());
 	if (this._scheduleMode) 
-		return this._getBoundsForCalendar(sd, et - sd.getTime(), appt.getFolderId());
+		return this._getBoundsForCalendar(sd, et - sd.getTime(), appt.folderId);
 	else
 		return this._getBoundsForDate(sd, et - sd.getTime());
 }
@@ -1840,13 +1839,13 @@ function(data) {
 
 	// include duration
 	var dur = appt.getShortStartHour();
-	var color = ZmCalBaseView.COLORS[this._controller.getCalendarColor(appt.getFolderId())];
+	var color = ZmCalBaseView.COLORS[this._controller.getCalendarColor(appt.folderId)];
 
 	var html = []
 	var i = 0;
 	html[i++] = "<div class='";
 	html[i++] = color;
-	html[i++] = appt.ptst == ZmAppt.PSTATUS_NEEDS_ACTION ? "" : "Bg";
+	html[i++] = appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION ? "" : "Bg";
 	html[i++] = "'><table><tr><td rowspan=2>";
 	html[i++] = AjxImg.getImageHtml("Appointment");
 	html[i++] = "</td><td><b>";

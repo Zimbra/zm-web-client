@@ -142,7 +142,7 @@ function(view) {
 */
 
 	// load tasks into the given view and perform layout.
-	this._listView[view].set(this._list, null, this._folderId);
+	this._listView[view].set(this._list, null, this.folderId);
 };
 
 ZmTaskListController.prototype._getMoveDialogTitle =

@@ -262,7 +262,7 @@
 									<$ if (data.appt.hasOtherAttendees()) { $>
 										<td><$= AjxImg.getImageHtml("ApptMeeting") $></td>
 									<$ } $>
-									<$ if (data.appt.isException()) { $>
+									<$ if (data.appt.isException) { $>
 										<td><$= AjxImg.getImageHtml("ApptException") $></td>
 									<$ } else if (data.appt.isRecurring()) { $>
 										<td><$= AjxImg.getImageHtml("ApptRecur") $></td>
@@ -301,7 +301,7 @@
 				<b><div style='white-space:nowrap'><$= AjxStringUtil.htmlEncode(ZmMsg.status) $>:</div></b>
 			</td>
 			<td align='left'>
-				<div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.appt.getParticipationStatusString()) $></div>
+				<div style='white-space:nowrap;'><$= AjxStringUtil.htmlEncode(data.appt.getParticipantStatusStr()) $></div>
 			</td>
 		</tr>
 	<$ } $>

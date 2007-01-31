@@ -379,7 +379,7 @@ function(calItem) {
 
 ZmCalItemEditView.prototype._populateForEdit =
 function(calItem, mode) {
-	// set subject/location
+	// set subject
 	this._subjectField.setValue(calItem.getName());
 	this._repeatSelect.setSelectedValue(calItem.getRecurType());
 
@@ -539,7 +539,7 @@ function(calItem, mode) {
 		enabled ? this._folderSelect.enable() : this._folderSelect.disable();
 	}
 	// always reset the width of this select widget
-	this._folderSelect.setSelectedValue(calItem.getFolderId());
+	this._folderSelect.setSelectedValue(calItem.folderId);
 };
 
 ZmCalItemEditView.prototype._initAttachContainer =

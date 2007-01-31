@@ -28,9 +28,9 @@ function ZmAppt(appCtxt, list, noinit) {
 	if (noinit) return;
 
 	this.folderId = ZmOrganizer.ID_CALENDAR;
-
-	this._viewMode = ZmCalItem.MODE_NEW;
-	this._recurrence = new ZmRecurrence(this);
+	this.freeBusy = "B"; 														// Free/Busy status (F|B|T|O) (free/busy/tentative/outofoffice)
+	this.transparency = "O";
+	this.otherAttendees = false;
 
 	// attendees by type
 	this._attendees = {};
@@ -49,7 +49,16 @@ ZmAppt.prototype.constructor = ZmAppt;
 
 // Consts
 
-ZmAppt.MODE_DRAG_OR_SASH			= ++ZmCalItem.MODE_LAST;
+ZmAppt.MODE_DRAG_OR_SASH		= ++ZmCalItem.MODE_LAST;
+ZmAppt.ATTENDEES_SEPARATOR		= "; ";
+
+ZmAppt._pstatusString = {
+	NE: ZmMsg._new,
+	TE: ZmMsg.tentative,
+	AC: ZmMsg.accepted,
+	DE: ZmMsg.declined,
+	DG: ZmMsg.delegated
+};
 
 
 // Public methods
@@ -61,7 +70,9 @@ function() {
 
 
 // Getters
-
+ZmAppt.prototype.getAttendees			= function() { return this._attendees[ZmCalItem.PERSON]; };
+ZmAppt.prototype.getEquipment			= function() { return this._attendees[ZmCalItem.EQUIPMENT]; };
+ZmAppt.prototype.getLocations			= function() { return this._attendees[ZmCalItem.LOCATION]; };
 ZmAppt.prototype.getOrigAttendees 		= function() { return this._origAttendees; };
 ZmAppt.prototype.getOrigLocations 		= function() { return this._origLocations; };
 ZmAppt.prototype.getOrigEquipment 		= function() { return this._origEquipment; };
@@ -72,6 +83,20 @@ ZmAppt.prototype.getEquipmentText		= function(inclDispName) { return ZmApptViewH
 ZmAppt.prototype.getOrigLocationsText	= function(inclDispName) { return ZmApptViewHelper.getAttendeesString(this._origLocations, ZmCalItem.LOCATION, inclDispName); };
 ZmAppt.prototype.getOrigLocation		= function(inclDispName) { return this.getOrigLocationsText(inclDispName); };
 ZmAppt.prototype.getOrigEquipmentText	= function(inclDispName) { return ZmApptViewHelper.getAttendeesString(this._origEquipment, ZmCalItem.EQUIPMENT, inclDispName); };
+ZmAppt.prototype.getParticipantStatusStr= function() { return ZmAppt._pstatusString[this.ptst]; };
+
+ZmAppt.prototype.hasOtherAttendees 		= function() { return this.otherAttendees; };
+ZmAppt.prototype.hasAttendees =
+function() {
+	return ((this._attendees[ZmCalItem.PERSON] && this._attendees[ZmCalItem.PERSON].length) ||
+			(this._attendees[ZmCalItem.LOCATION] && this._attendees[ZmCalItem.LOCATION].length) ||
+			(this._attendees[ZmCalItem.EQUIPMENT] && this._attendees[ZmCalItem.EQUIPMENT].length));
+};
+
+
+// Setters
+ZmAppt.prototype.setFreeBusy 			= function(fb) 			{ this.freeBusy = fb || "B"; };
+
 
 /**
 * Used to make our own copy because the form will modify the date object by 
@@ -103,7 +128,7 @@ function(appt) {
 ZmAppt.prototype.getFolder =
 function() {
 	var ct = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-	return ct ? ct.getById(this.getFolderId()) : null;
+	return ct ? ct.getById(this.folderId) : null;
 };
 
 /**
@@ -116,7 +141,7 @@ function(controller) {
 
 	if (!this._toolTip) {
 		var params = { appt: this,
-			cal: (this.getFolderId() != ZmOrganizer.ID_CALENDAR && controller) ? controller.getCalendar() : null,
+			cal: (this.folderId != ZmOrganizer.ID_CALENDAR && controller) ? controller.getCalendar() : null,
 			when: this.getDurationText(false, false),
 			location: this.getLocation(true), width: "250" };
 
@@ -129,9 +154,9 @@ ZmAppt.prototype.getSummary =
 function(isHtml) {
 	var orig = this._orig || this;
 
-	var isEdit = (this._viewMode == ZmCalItem.MODE_EDIT ||
-				  this._viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE ||
-				  this._viewMode == ZmCalItem.MODE_EDIT_SERIES);
+	var isEdit = (this.viewMode == ZmCalItem.MODE_EDIT ||
+				  this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE ||
+				  this.viewMode == ZmCalItem.MODE_EDIT_SERIES);
 
 	var buf = [];
 	var i = 0;
@@ -182,14 +207,14 @@ function(isHtml) {
 
 	var s = this.startDate;
 	var e = this.endDate;
-	if (this._viewMode == ZmCalItem.MODE_DELETE_INSTANCE) {
+	if (this.viewMode == ZmCalItem.MODE_DELETE_INSTANCE) {
 		s = this.getUniqueStartDate();
 		e = this.getUniqueEndDate();
 	}
 
 	var recurrence = this._recurrence.repeatType != "NON" &&
-					 this._viewMode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE &&
-					 this._viewMode != ZmCalItem.MODE_DELETE_INSTANCE;
+					 this.viewMode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE &&
+					 this.viewMode != ZmCalItem.MODE_DELETE_INSTANCE;
 	if (recurrence)
 	{
 		var hasTime = isEdit 
@@ -266,9 +291,99 @@ function(isHtml) {
 };
 
 
+/**
+* Sets the attendees (person, location, or equipment) for this appt.
+*
+* @param list	[array]		list of email string, ZmEmailAddress, ZmContact, or ZmResource
+*/
+ZmAppt.prototype.setAttendees =
+function(list, type) {
+	this._attendees[type] = [];
+	list = (list instanceof Array) ? list : [list];
+	for (var i = 0; i < list.length; i++) {
+		var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, list[i], type);
+		if (attendee) {
+			this._attendees[type].push(attendee);
+		}
+	}
+};
+
+ZmAppt.prototype.setFromMailMessage =
+function(message, subject) {
+	ZmCalItem.prototype.setFromMailMessage.call(this, message, subject);
+
+	// Only unique names in the attendee list, plus omit our own name
+	var used = {};
+	used[this._appCtxt.get(ZmSetting.USERNAME)] = true;
+	var addrs = message.getAddresses(ZmEmailAddress.FROM, used, true);
+	addrs.addList(message.getAddresses(ZmEmailAddress.CC, used, true));
+	addrs.addList(message.getAddresses(ZmEmailAddress.TO, used, true));
+	this._attendees[ZmCalItem.PERSON] = addrs.getArray();
+};
+
+
+
 // Private / Protected methods
 
-ZmAppt.prototype._getTextSummaryTime = 
+ZmAppt.prototype._setExtrasFromMessage =
+function(message) {
+	this.freeBusy = message.invite.getFreeBusy();
+
+	// parse out attendees for this invite
+	this._attendees[ZmCalItem.PERSON] = [];
+	this._origAttendees = [];
+	var attendees = message.invite.getAttendees();
+	if (attendees) {
+		for (var i = 0; i < attendees.length; i++) {
+			var addr = attendees[i].url;
+			var name = attendees[i].d;
+			var email = new ZmEmailAddress(addr, null, name);
+			var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, email, ZmCalItem.PERSON);
+			if (attendee) {
+				this._attendees[ZmCalItem.PERSON].push(attendee);
+				this._origAttendees.push(attendee);
+			}
+		}
+	}
+
+	// Locations can be free-text or known, so we parse the "loc" string to
+	// get them rather than looking at the invite's resources (which will
+	// only contain known locations)
+	this._attendees[ZmCalItem.LOCATION] = [];
+	this._origLocations = [];
+	var locations = ZmEmailAddress.split(message.invite.getLocation());
+	if (locations) {
+		for (var i = 0; i < locations.length; i++) {
+			var location = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, locations[i], ZmCalItem.LOCATION);
+			if (location && location.isLocation()) {
+				this._attendees[ZmCalItem.LOCATION].push(location);
+				this._origLocations.push(location);
+			}
+		}
+	}
+
+	// Get equipment by email, make sure to exclude location resources
+	this._attendees[ZmCalItem.EQUIPMENT] = [];
+	this._origEquipment = [];
+	var resources = message.invite.getResources();	// returns all the invite's resources
+	if (resources) {
+		for (var i = 0; i < resources.length; i++) {
+			// see if it's a known location
+			var location = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, resources[i].url, ZmCalItem.LOCATION, true, true);
+			if (location) {
+				continue;
+			}
+			var equipment = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, resources[i].url, ZmCalItem.EQUIPMENT);
+			if (equipment) {
+				this._attendees[ZmCalItem.EQUIPMENT].push(equipment);
+				this._origEquipment.push(equipment);
+			}
+		}
+	}
+
+};
+
+ZmAppt.prototype._getTextSummaryTime =
 function(isEdit, fieldstr, extDate, start, end, hasTime) {
 	var showingTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE);
 
@@ -305,4 +420,109 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 	buf[i++] = "\n";
 
 	return buf.join("");
+};
+
+ZmAppt.prototype._getSoapForMode =
+function(mode, isException) {
+	switch (mode) {
+		case ZmCalItem.MODE_NEW:
+		case ZmCalItem.MODE_NEW_FROM_QUICKADD:
+		case ZmAppt.MODE_DRAG_OR_SASH:
+			return "CreateAppointmentRequest";
+
+		case ZmCalItem.MODE_EDIT_SINGLE_INSTANCE:
+			return !isException
+				? "CreateAppointmentExceptionRequest"
+				: "ModifyAppointmentRequest";
+
+		case ZmCalItem.MODE_EDIT:
+		case ZmCalItem.MODE_EDIT_SERIES:
+			return "ModifyAppointmentRequest";
+
+		case ZmCalItem.MODE_DELETE:
+		case ZmCalItem.MODE_DELETE_SERIES:
+		case ZmCalItem.MODE_DELETE_INSTANCE:
+			return "CancelAppointmentRequest";
+	}
+
+	return null;
+};
+
+ZmAppt.prototype._addLocationToSoap =
+function(inv) {
+	if (this._attendees[ZmCalItem.LOCATION] && this._attendees[ZmCalItem.LOCATION].length) {
+		inv.setAttribute("loc", this.getLocation());
+	}
+};
+
+ZmAppt.prototype._addAttendeesToSoap =
+function(soapDoc, inv, m, notifyList, onBehalfOf) {
+	for (var x in this._attendees) {
+		if (this._attendees[x] && this._attendees[x].length) {
+			for (var i = 0; i < this._attendees[x].length; i++) {
+				this._addAttendeeToSoap(soapDoc, inv, m, notifyList, this._attendees[x][i], x);
+			}
+		}
+	}
+
+	// if we have a separate list of email addresses to notify, do it here
+	if (m && notifyList) {
+		for (var i = 0; i < notifyList.length; i++) {
+			e = soapDoc.set("e", null, m);
+			e.setAttribute("a", notifyList[i]);
+			e.setAttribute("t", ZmEmailAddress.toSoapType[ZmEmailAddress.TO]);
+		}
+	}
+
+	// call base class LAST
+	ZmCalItem.prototype._addAttendeesToSoap.call(this, soapDoc, inv, m, notifyList, onBehalfOf);
+};
+
+ZmAppt.prototype._addAttendeeToSoap =
+function(soapDoc, inv, m, notifyList, attendee, type) {
+	var address;
+	if (attendee._inviteAddress) {
+		address = attendee._inviteAddress;
+		delete attendee._inviteAddress;
+	} else {
+		address = attendee.getEmail();
+	}
+	if (!address) return;
+
+	var dispName = attendee.getFullName();
+	if (inv) {
+		at = soapDoc.set("at", null, inv);
+		// for now make attendees optional, until UI has a way of setting this
+		at.setAttribute("role", (type == ZmCalItem.PERSON) ? ZmCalItem.ROLE_REQUIRED : ZmCalItem.ROLE_NON_PARTICIPANT);
+		at.setAttribute("ptst", ZmCalItem.PSTATUS_NEEDS_ACTION);
+		var cutype = (type == ZmCalItem.PERSON) ? null : ZmCalItem.CUTYPE_RESOURCE;
+		if (cutype) {
+			at.setAttribute("cutype", cutype);
+		}
+		at.setAttribute("rsvp", "1");
+		at.setAttribute("a", address);
+		if (dispName) {
+			at.setAttribute("d", dispName);
+		}
+	}
+
+	// set email to notify if notifyList not provided
+	if (m && !notifyList) {
+		e = soapDoc.set("e", null, m);
+		e.setAttribute("a", address);
+		if (dispName) {
+			e.setAttribute("p", dispName);
+		}
+		e.setAttribute("t", ZmEmailAddress.toSoapType[ZmEmailAddress.TO]);
+
+		// bug fix #9768 - auto add attendee if not in addrbook
+		if (type == ZmCalItem.PERSON &&
+			this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
+			this._appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS))
+		{
+			var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+			if (!clc.getContactByEmail(address))
+				e.setAttribute("add", "1");
+		}
+	}
 };

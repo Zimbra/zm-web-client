@@ -35,7 +35,9 @@
 */
 function ZmTask(appCtxt, list) {
 	ZmCalItem.call(this, appCtxt, ZmItem.TASK, list);
+
 	this.folderId = ZmOrganizer.ID_TASKS;
+	this.pComplete = 0;
 };
 
 ZmTask.prototype = new ZmCalItem;
@@ -43,15 +45,13 @@ ZmTask.prototype.constructor = ZmTask;
 
 
 // Consts
-ZmTask.PRIORITY_LOW		= 9;
-ZmTask.PRIORITY_NORMAL	= 5;
-ZmTask.PRIORITY_HIGH	= 1;
+ZmTask.PCOMPLETE_INT	= 10;
 
 /**
 * Used to make our own copy because the form will modify the date object by 
 * calling its setters instead of replacing it with a new date object.
 */
-ZmTaskClone = function() { }
+ZmTaskClone = function() { };
 ZmTask.quickClone =
 function(task) {
 	ZmTaskClone.prototype = task;
@@ -77,14 +77,12 @@ function() {
 };
 
 // Getters
-ZmTask.prototype.getPercentComplete		= function() { return this._percentComplete; };
-ZmTask.prototype.getPriority			= function() { return this._priority; };
 ZmTask.prototype.getIcon				= function() { return "Task"; };
-
+ZmTask.prototype.getLocation			= function() { return this.location || ""; };
 ZmTask.prototype.getFolder =
 function() {
 	var ct = this._appCtxt.getTree(ZmOrganizer.TASKS);
-	return ct ? ct.getById(this.getFolderId()) : null;
+	return ct ? ct.getById(this.folderId) : null;
 };
 
 ZmCalItem.prototype.getSummary =
@@ -100,6 +98,39 @@ function(controller) {
 	// TODO
 };
 
-// Setters
-ZmTask.prototype.setPercentComplete =	function(pComplete) { this._percentCompelte = pComplete; };
-ZmTask.prototype.setPriority =			function(priority) { this._priority = priority; };
+
+// Private/protected methods
+
+ZmTask.prototype._setExtrasFromMessage =
+function(message) {
+	this.location = message.invite.getLocation();
+};
+
+ZmTask.prototype._getSoapForMode =
+function(mode, isException) {
+	switch (mode) {
+		case ZmCalItem.MODE_NEW:
+			return "CreateTaskRequest";
+
+		case ZmCalItem.MODE_EDIT_SINGLE_INSTANCE:
+			return !isException
+				? "CreateTaskExceptionRequest"
+				: "ModifyTaskRequest";
+
+		case ZmCalItem.MODE_EDIT:
+		case ZmCalItem.MODE_EDIT_SERIES:
+			return "ModifyTaskRequest";
+
+		case ZmCalItem.MODE_DELETE:
+		case ZmCalItem.MODE_DELETE_SERIES:
+		case ZmCalItem.MODE_DELETE_INSTANCE:
+			return "CancelTaskRequest";
+	}
+
+	return null;
+};
+
+ZmTask.prototype._addLocationToSoap =
+function(inv) {
+	inv.setAttribute("loc", this.location);
+};
