@@ -22,6 +22,7 @@
     <c:set var="prevDate" value="${zm:pageMonth(dateCal, false)}"/>
     <c:set var="nextDate" value="${zm:pageMonth(dateCal,  true)}"/>  
     <c:set var="currentDay" value="${zm:getFirstDayOfMonth(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
+    <zm:getAppointmentSummaries var="appts" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+1000*60*60*24*42}" folderid="${mailbox.calendar.id}"/>
 </app:handleError>
 
 <app:view title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" date="${date}">
@@ -80,6 +81,9 @@
 
                                                 </td>
                                             </tr>
+                                            <zm:forEachAppoinment var="appt" appointments="${appts}" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+1000*60*60*24}">
+                                                <tr><td>${fn:escapeXml(appt.name)}</td></tr>
+                                            </zm:forEachAppoinment>
                                             <tr><td>&nbsp;</td></tr>
                                             <tr><td>&nbsp;</td></tr>
                                             <tr><td>&nbsp;</td></tr>
