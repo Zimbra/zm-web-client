@@ -63,7 +63,15 @@
   </condition>	
   <condition property="deploy.url" value="${env.DEPLOY_URL}" else='http://localhost:7070/manager/'>
     <isset property="env.DEPLOY_URL" />
-  </condition>	
+  </condition>
+
+    <condition property="remote.deploy.host" value="${env.ZIMBRA_REMOTE_DEPLOY_HOST}">
+      <isset property="env.ZIMBRA_REMOTE_DEPLOY_HOST"/>
+    </condition>
+    <condition property="remote.deploy.port" value="${env.ZIMBRA_REMOTE_DEPLOY_PORT}">
+      <isset property="env.ZIMBRA_REMOTE_DEPLOY_PORT"/>
+    </condition>
+  
   <property name="deploy.war" value="${warfile}"/>
   <property name="deploy.user" value="zimbra"/>
   <property name="deploy.password" value="zimbra"/>
@@ -946,7 +954,10 @@
   		
 	<target name="deploy-war">
   		<if><isset property="use-tomcat"/><then>
-  			<echo>Deploy ${param.warfile} to ${deploy.url}/${param.path}</echo>
+            <if><isset property="remote.deploy.host"/><then>
+                <deploy url="http://${remote.deploy.host}:${remote.deploy.port}/manager/" username="${deploy.user}"
+                        password="${deploy.password}" path="${param.path}" war="${param.warfile}" update="true"/>
+            </then></if>
 			<deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}" path="${param.path}" war="${param.warfile}" update="true"/>
   		</then><else>
   			<echo>Deploy ${param.warfile} to ${webserver.root.dir}/webapps</echo>
