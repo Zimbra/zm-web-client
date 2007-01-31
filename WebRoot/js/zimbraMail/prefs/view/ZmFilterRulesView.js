@@ -189,10 +189,10 @@ function(ev) {
 	if (ev.event == ZmEvent.E_MODIFY) {
 		var index = ev.getDetail("index");
 		this._controller._setListView();
-		if (index)
-			rule = this._rules.getRuleByIndex(index);
-		if (rule)
+		var rule = index ? this._rules.getRuleByIndex(index) : null;
+		if (rule) {
 			this.setSelection(rule);
+		}
 	}
 };
 
