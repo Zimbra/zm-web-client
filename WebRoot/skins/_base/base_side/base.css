@@ -71,9 +71,8 @@ body						{	@ChromeBg@	}
 
 #skin_td_quota							{	text-align:right;		}
 #skin_border_quota						{	@SkinBorderQuota@		}
-#skin_container_quota					{	
-	height:30;		margin: -2 5 0 10;  
-}
+#skin_container_username,
+#skin_container_quota					{	height:20px;			}
 
 
 /* search builder */
