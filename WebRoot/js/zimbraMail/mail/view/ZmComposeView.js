@@ -130,6 +130,8 @@ function(action, msg, toOverride, subjOverride, extraBodyText, identity) {
 	this._setAddresses(action, toOverride);
 	this._setSubject(action, msg, subjOverride);
 	this._setBody(action, msg, extraBodyText);
+	
+	this.getHtmlEditor().moveCaretToTop();
 
 	// save extra mime parts
 	var bodyParts = msg ? msg.getBodyParts() : [];
