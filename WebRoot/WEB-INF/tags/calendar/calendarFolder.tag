@@ -28,12 +28,21 @@
                     <c:if test="${not empty param.date}"><c:param name="date" value="${param.date}"/></c:if>
                </c:url>
                 <a href="${toggleUrl}">
+
                     <app:img src="${expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}" altkey="${expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/>
                 </a>
         </c:if>
 
         <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="dwt/NodeExpanded.gif"/></c:if></span>--%>
         <a href='${url}'>
+            <c:choose>
+            <c:when test="${folder.isCheckedInUI}">
+                <app:img altkey="checked" src="common/Check.gif"/>
+            </c:when>
+                <c:otherwise>
+                    <app:img altkey="unchecked" src="dwt/Blank_16.gif"/>
+                </c:otherwise>
+            </c:choose>
             <app:img src="${icon}" alt='${fn:escapeXml(label)}'/>
             ${fn:escapeXml(label)}
         </a>

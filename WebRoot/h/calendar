@@ -27,6 +27,13 @@
             <c:set var="date" value="${zm:getToday().time}"/>
         </c:otherwise>
     </c:choose>
+
+    <c:if test="${not empty param.check}">
+        <zm:checkFolder checked="true" id="${param.check}"/>
+    </c:if>
+    <c:if test="${not empty param.uncheck}">
+        <zm:checkFolder checked="false" id="${param.uncheck}"/>
+    </c:if>
 </app:handleError>
 
 <app:monthView date="${date}"/>
