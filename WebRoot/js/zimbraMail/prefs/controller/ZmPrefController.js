@@ -252,7 +252,7 @@ function(list, callback, noPop, result) {
 	if (list.length) {
 		this._appCtxt.setStatusMsg(ZmMsg.optionsSaved);
 	}
-	if (!noPop && !result._data.BatchResponse.Fault) {
+	if (!noPop && (!result || !result._data.BatchResponse.Fault)) {
 		// pass force flag - we just saved, so we know view isn't dirty
 		this._app.getAppViewMgr().popView(true);
 	}
