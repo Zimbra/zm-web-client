@@ -81,8 +81,10 @@
                                                 </td>
                                             </tr>
                                             <c:set var="count" value="${0}"/>
-                                            <zm:forEachAppoinment var="appt" appointments="${appts}" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+1000*60*60*24-1}">
-                                                <tr><td><app:monthAppt appt="${appt}"/></td></tr>
+                                            <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
+                                            <c:set var="dayEnd" value="${currentDay.timeInMillis+1000*60*60*24}"/>
+                                            <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
+                                                <tr><td><app:monthAppt appt="${appt}" start="${dayStart}" end="${dayEnd}"/></td></tr>
                                                 <c:set var="count" value="${count+1}"/>
                                             </zm:forEachAppoinment>
                                             <c:forEach begin="${count}" end="3">
@@ -97,11 +99,13 @@
                     </table>
                 </td>
             </tr>
+            <%--
             <tr>
                 <td class='TbBottom'>
                     <app:calendarViewToolbar today="${today}" date="${dateCal}" prevDate="${prevDate}" nextDate="${nextDate}" title="${title}" context="${context}" keys="false"/>
                 </td>
             </tr>
+            --%>
         </table>
 
         <input type="hidden" name="doCalendarAction" value="1"/>
