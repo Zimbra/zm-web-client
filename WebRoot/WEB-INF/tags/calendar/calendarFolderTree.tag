@@ -31,14 +31,16 @@
         </tr>
 
         <c:if test="${expanded}">
-            <app:overviewFolder types="appointment" folder="${mailbox.contacts}" label="calendar"
-                                icon="calendar/CalendarFolder.gif"/>
 
             <zm:forEachFolder var="folder">
-                <c:if test="${!folder.isSystemFolder and folder.isAppointmentView and !folder.isSearchFolder}">
-                    <c:set var="icon"
-                           value="${folder.isMountPoint ? 'calendar/SharedCalendarFolder.gif' : 'calendar/CalendarFolder.gif'}"/>
-                    <app:overviewFolder types="appointment" folder="${folder}" icon="${icon}"/>
+                <c:if test="${folder.isAppointmentView and !folder.isSearchFolder and !folder.isMountPoint}">
+                    <app:calendarFolder folder="${folder}"/>
+                </c:if>
+            </zm:forEachFolder>
+
+            <zm:forEachFolder var="folder">
+                <c:if test="${folder.isAppointmentView and !folder.isSearchFolder and folder.isMountPoint}">
+                    <app:calendarFolder folder="${folder}"/>
                 </c:if>
             </zm:forEachFolder>
         </c:if>

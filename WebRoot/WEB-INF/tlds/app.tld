@@ -413,6 +413,11 @@
     </tag-file>
 
     <tag-file>
+        <name>calendarFolder</name>
+        <path>/WEB-INF/tags/calendar/calendarFolder.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>calendarViewToolbar</name>
         <path>/WEB-INF/tags/calendar/calendarViewToolbar.tag</path>
     </tag-file>

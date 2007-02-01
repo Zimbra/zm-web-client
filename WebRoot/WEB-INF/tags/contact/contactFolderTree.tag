@@ -30,9 +30,9 @@
         </tr>
 
         <c:if test="${expanded}">
-            <app:overviewFolder types="contact" folder="${mailbox.contacts}" label="contacts"
+            <app:overviewFolder types="contact" folder="${mailbox.contacts}" 
                                 icon="contacts/ContactsFolder.gif"/>
-            <app:overviewFolder types="contact" folder="${mailbox.autoContacts}" label="emailedContacts"
+            <app:overviewFolder types="contact" folder="${mailbox.autoContacts}"
                                 icon="contacts/EmailedContacts.gif"/>
 
             <zm:forEachFolder var="folder">
@@ -43,7 +43,7 @@
                 </c:if>
             </zm:forEachFolder>
 
-            <app:overviewFolder types="contact" folder="${mailbox.trash}" label="trash"
+            <app:overviewFolder types="contact" folder="${mailbox.trash}"
                                 icon="common/Trash.gif"/>
         </c:if>
     </table>
