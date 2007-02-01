@@ -27,24 +27,25 @@ function ZmCalItem(appCtxt, type, list) {
 	ZmItem.call(this, appCtxt, type, null, list);
 
 	this.id = -1;
-	this.uid = -1;																// iCal uid of appt
+	this.uid = -1; // iCal uid of appt
 
+	this.folderId = this._getDefaultFolderId();
 	this.fragment = "";
 	this.name = "";
-	this.notesTopPart = null; 													// ZmMimePart containing children w/ different message parts
+	this.notesTopPart = null; // ZmMimePart containing children w/ message parts
 	this.attachments = null;
 
 	this.allDayEvent = "0";
-	this.startDate = new Date();
-	this.endDate = new Date(this.startDate.getTime() + (30*60*1000));
+	this.startDate = null;
+	this.endDate = null;
 	this.timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 
 	this.alarm = false;
 	this.isException = false;
 	this.recurring = false;
-	this.priority = ZmCalItem.PRIORITY_NORMAL;
-	this.ptst = null;															// participant status
-	this.status = ZmCalItem.STATUS_CONF;										// status (TENT|CONF|CANC|NEED|COMP|INPR|WAITING|DEFERRED)
+	this.priority = null;
+	this.ptst = null; // participant status
+	this.status = ZmCalItem.STATUS_CONF;
 	this.viewMode = ZmCalItem.MODE_NEW;
 
 	this._recurrence = new ZmRecurrence(this);
@@ -75,24 +76,28 @@ ZmCalItem.PRIORITY_LOW				= 9;
 ZmCalItem.PRIORITY_NORMAL			= 5;
 ZmCalItem.PRIORITY_HIGH				= 1;
 
-ZmCalItem.PSTATUS_NEEDS_ACTION		= "NE";
-ZmCalItem.PSTATUS_TENTATIVE			= "TE";
-ZmCalItem.PSTATUS_ACCEPT			= "AC";
-ZmCalItem.PSTATUS_DECLINED			= "DE";
-ZmCalItem.PSTATUS_DELEGATED			= "DG";
+ZmCalItem.PSTATUS_ACCEPT			= "AC";			// vevent, vtodo
+ZmCalItem.PSTATUS_DECLINED			= "DE";			// vevent, vtodo
+ZmCalItem.PSTATUS_DEFERRED			= "DF";			// vtodo					[outlook]
+ZmCalItem.PSTATUS_DELEGATED			= "DG";			// vevent, vtodo
+ZmCalItem.PSTATUS_NEEDS_ACTION		= "NE";			// vevent, vtodo
+ZmCalItem.PSTATUS_COMPLETED			= "CO";			// vtodo
+ZmCalItem.PSTATUS_TENTATIVE			= "TE";			// vevent, vtodo
+ZmCalItem.PSTATUS_WAITING			= "WA";			// vtodo					[outlook]
 
 ZmCalItem.ROLE_CHAIR				= "CHA";
 ZmCalItem.ROLE_REQUIRED				= "REQ";
 ZmCalItem.ROLE_OPTIONAL				= "OPT";
 ZmCalItem.ROLE_NON_PARTICIPANT		= "NON";
 
-ZmCalItem.STATUS_CANC				= "CANC";
-ZmCalItem.STATUS_COMP				= "COMP";
-ZmCalItem.STATUS_CONF				= "CONF";
-ZmCalItem.STATUS_DEFR				= "DEFERRED";
-ZmCalItem.STATUS_INPR				= "INPR";
-ZmCalItem.STATUS_TENT				= "TENT";
-ZmCalItem.STATUS_WAIT				= "WAITING";
+ZmCalItem.STATUS_CANC				= "CANC";		// vevent, vtodo
+ZmCalItem.STATUS_COMP				= "COMP";		// vtodo
+ZmCalItem.STATUS_CONF				= "CONF";		// vevent
+ZmCalItem.STATUS_DEFR				= "DEFERRED";	// vtodo					[outlook]
+ZmCalItem.STATUS_INPR				= "INPR";		// vtodo
+ZmCalItem.STATUS_NEED				= "NEED";		// vtodo
+ZmCalItem.STATUS_TENT				= "TENT";		// vevent
+ZmCalItem.STATUS_WAIT				= "WAITING";	// vtodo					[outlook]
 
 ZmCalItem.PERSON					= 1;
 ZmCalItem.LOCATION					= 2;
@@ -950,10 +955,16 @@ function(cancel, isHtml) {
 	return buf.join("");
 };
 
+ZmCalItem.prototype._getDefaultFolderId =
+function() {
+	// override
+};
+
+
 // Server request calls
 
 ZmCalItem.prototype._getSoapForMode =
-function(mode, isRequest) {
+function(mode, isException) {
 	// override
 };
 
@@ -971,8 +982,8 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 		{
 			m.setAttribute("l", this.getFolder().rid);
 		}
-		// do not set folderId if default folder or editing single instance
-		else if (this.folderId != ZmOrganizer.ID_CALENDAR &&
+		// only set folderId if not default folder and not editing single instance
+		else if (this.folderId != this._getDefaultFolderId() &&
 				 this.viewMode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)
 		{
 			m.setAttribute("l", this.folderId);
@@ -983,44 +994,16 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 	if (this.uid !== void 0 && this.uid != null && this.uid != -1)
 		inv.setAttribute("uid", this.uid);
 
-	// timezone
-	if (this.timezone) {
-		var clientId = AjxTimezone.getClientId(this.timezone);
-		ZmTimezone.set(soapDoc, clientId, inv, true);
-	}
-
 	var comp = soapDoc.set("comp", null, inv);
 
 	// attendees
 	if (this.isOrganizer())
 		this._addAttendeesToSoap(soapDoc, comp, m, notifyList, onBehalfOf);
 
-	// free-busy / transparency / status / allDay / start-end date-time
-	if (this.freeBusy) comp.setAttribute("fb", this.freeBusy);
-	if (this.transparency) comp.setAttribute("transp", this.transparency);
-	comp.setAttribute("status", this.status);
-	comp.setAttribute("allDay", this.allDayEvent);
+	this._addExtrasToSoap(soapDoc, inv, comp);
 
-	var s = soapDoc.set("s", null, comp);
-	var e = soapDoc.set("e", null, comp);
-	if (!this.isAllDayEvent()) {
-		var sd = AjxDateUtil.getServerDateTime(this.startDate, this.startsInUTC);
-		var ed = AjxDateUtil.getServerDateTime(this.endDate, this.endsInUTC);
-
-		// set timezone if not utc date/time
-		var tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
-		if (!this.startsInUTC && tz && tz.length)
-			s.setAttribute("tz", tz);
-		if (!this.endsInUTC && tz && tz.length)
-			e.setAttribute("tz", tz);
-
-		s.setAttribute("d", sd);
-		e.setAttribute("d", ed);
-		
-	} else {
-		s.setAttribute("d", AjxDateUtil.getServerDate(this.startDate));
-		e.setAttribute("d", AjxDateUtil.getServerDate(this.endDate));
-	}
+	// date/time
+	this._addDateTimeToSoap(soapDoc, inv, comp);
 
 	// subject/location
 	soapDoc.set("su", this.name, m);
@@ -1058,6 +1041,60 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 	}
 
 	return {'inv': inv, 'm': m};
+};
+
+ZmCalItem.prototype._addExtrasToSoap =
+function(soapDoc, inv, comp) {
+	if (this.priority) comp.setAttribute("priority", this.priority);
+	comp.setAttribute("status", this.status);
+};
+
+ZmCalItem.prototype._addDateTimeToSoap =
+function(soapDoc, inv, comp) {
+	// always(?) set all day
+	comp.setAttribute("allDay", this.allDayEvent);
+
+	// timezone
+	var tz;
+	if (this.timezone) {
+		var clientId = AjxTimezone.getClientId(this.timezone);
+		ZmTimezone.set(soapDoc, clientId, inv, true);
+
+		tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
+	}
+
+	// start date
+	if (this.startDate) {
+		var s = soapDoc.set("s", null, comp);
+		if (!this.isAllDayEvent()) {
+			var sd = AjxDateUtil.getServerDateTime(this.startDate, this.startsInUTC);
+
+			// set timezone if not utc date/time
+			if (!this.startsInUTC && tz && tz.length)
+				s.setAttribute("tz", tz);
+
+			s.setAttribute("d", sd);
+		} else {
+			s.setAttribute("d", AjxDateUtil.getServerDate(this.startDate));
+		}
+	}
+
+	// end date
+	if (this.endDate) {
+		var e = soapDoc.set("e", null, comp);
+		if (!this.isAllDayEvent()) {
+			var ed = AjxDateUtil.getServerDateTime(this.endDate, this.endsInUTC);
+
+			// set timezone if not utc date/time
+			if (!this.endsInUTC && tz && tz.length)
+				e.setAttribute("tz", tz);
+
+			e.setAttribute("d", ed);
+
+		} else {
+			e.setAttribute("d", AjxDateUtil.getServerDate(this.endDate));
+		}
+	}
 };
 
 ZmCalItem.prototype._addLocationToSoap =

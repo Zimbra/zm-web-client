@@ -36,8 +36,9 @@
 function ZmTask(appCtxt, list) {
 	ZmCalItem.call(this, appCtxt, ZmItem.TASK, list);
 
-	this.folderId = ZmOrganizer.ID_TASKS;
+	this.priority = ZmCalItem.PRIORITY_NORMAL;
 	this.pComplete = 0;
+	this.status = ZmCalItem.STATUS_NEED;
 };
 
 ZmTask.prototype = new ZmCalItem;
@@ -57,8 +58,8 @@ function(task) {
 	ZmTaskClone.prototype = task;
 
 	var newTask = new ZmTaskClone();
-	newTask.startDate = new Date(task.startDate.getTime());
-	newTask.endDate = new Date(task.endDate.getTime());
+	newTask.startDate = task.startDate ? (new Date(task.startDate.getTime())) : null;
+	newTask.endDate = task.endDate ? (new Date(task.endDate.getTime())) : null;
 
 	if (!newTask._orig)
 		newTask._orig = task;
@@ -98,6 +99,11 @@ function(controller) {
 	// TODO
 };
 
+ZmTask.prototype._getDefaultFolderId =
+function() {
+	return ZmOrganizer.ID_TASKS;
+};
+
 
 // Private/protected methods
 
@@ -128,6 +134,15 @@ function(mode, isException) {
 	}
 
 	return null;
+};
+
+ZmTask.prototype._addExtrasToSoap =
+function(soapDoc, inv, comp) {
+	ZmCalItem.prototype._addExtrasToSoap.call(this, soapDoc, inv, comp);
+
+	comp.setAttribute("percentComplete", this.pComplete);
+
+	// TODO - set "completed" if applicable
 };
 
 ZmTask.prototype._addLocationToSoap =

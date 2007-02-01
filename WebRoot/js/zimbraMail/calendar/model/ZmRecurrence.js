@@ -22,16 +22,15 @@
  *
  * ***** END LICENSE BLOCK *****
  */
-function ZmRecurrence(appt) {
-	this._origAppt				= appt;
-	this._startDate 			= appt ? appt.startDate : (new Date());
+function ZmRecurrence(calItem) {
+	this._startDate 			= (calItem && calItem.startDate) ? calItem.startDate : (new Date());
 
 	// initialize all params (listed alphabetically)
 	this.repeatCustom			= "0";  										// 1|0
 	this.repeatCustomCount		= 1; 											// ival
 	this.repeatCustomDayOfWeek	= "SU"; 										// (DAY|WEEKDAY|WEEKEND) | (SU|MO|TU|WE|TH|FR|SA)
 	this.repeatCustomOrdinal	= "1";
-	this.repeatCustomMonthDay	= appt ? appt.startDate.getDate() : null;
+	this.repeatCustomMonthDay	= this._startDate.getDate();
 	this.repeatCustomType		= "S"; 											// (S)pecific, (O)rdinal
 	this.repeatEnd				= null;
 	this.repeatEndCount			= 1; 											// maps to "count" (when there is no end date specified)

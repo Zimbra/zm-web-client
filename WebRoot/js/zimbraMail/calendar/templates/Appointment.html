@@ -1,5 +1,5 @@
 <template id='EditView'>
-	<div>
+	<div id='${id}_top'>
 		<table border=0 width=100% style='table-layout:fixed;' id='${id}_table'>
 			<colgroup>
 				<col width='<$= AjxEnv.is800x600orLower ? "235" : "50%" $>' />
@@ -12,27 +12,31 @@
 						<legend><$= ZmMsg.details $></legend>
 						<div>
 							<table border=0 width=100%>
+								<colgroup>
+									<col width='1%' />
+									<col />
+								</colgroup>
 								<tr>
-									<td width=1% class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subject $>:</nobr></td>
+									<td class='ZmFieldLabelRight'><nobr>*&nbsp;<$= ZmMsg.subject $>:</nobr></td>
 									<td id='${id}_subject'></td>
 								</tr>
 								<tr>
-									<td width=1% class='ZmApptTabViewPageField'><nobr><$= ZmMsg.location $>:</nobr></td>
+									<td class='ZmApptTabViewPageField'><nobr><$= ZmMsg.location $>:</nobr></td>
 									<td id='${locationId}'></td>
 								</tr>
 								<$ if (data.isAppt) { $>
 								<tr>
-									<td width=1% class='ZmFieldLabelRight'><nobr><$= ZmMsg.showAs $></nobr></td>
-									<td width=1% id='${id}_showAsSelect'></td>
+									<td class='ZmFieldLabelRight'><nobr><$= ZmMsg.showAs $></nobr></td>
+									<td id='${id}_showAsSelect'></td>
 								</tr>
 								<$ } else { $>
 								<tr>
-									<td width=1% class='ZmFieldLabelRight'><nobr><$= ZmMsg.priority $>:</nobr></td>
+									<td class='ZmFieldLabelRight'><nobr><$= ZmMsg.priority $>:</nobr></td>
 									<td id='${id}_priority'></td>
 								</tr>
 								<$ } $>
 								<tr>
-									<td width=1% class='ZmFieldLabelRight' id='${id}_folderLabel'><nobr><$= data.isAppt ? ZmMsg.calendar : ZmMsg.taskFolder $>:</nobr></td>
+									<td class='ZmFieldLabelRight' id='${id}_folderLabel'><nobr><$= data.isAppt ? ZmMsg.calendar : ZmMsg.taskFolder $>:</nobr></td>
 									<td id='${id}_folderSelect'></td>
 								</tr>
 							</table>
@@ -78,9 +82,9 @@
 			</tr>
 			<$ } $>
 		</table>
-		<!-- appointment notes -->
-		<div id='${id}_notes' style='padding:5px;'></div>
 	</div>
+	<!-- appointment notes -->
+	<div id='${id}_notes' style='padding:5px;'></div>
 </template>
 
 

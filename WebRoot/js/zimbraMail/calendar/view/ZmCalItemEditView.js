@@ -34,16 +34,18 @@
 * @param parent				[DwtControl]				some container
 * @param appCtxt 			[ZmAppCtxt]					app context
 * @param attendees			[hash]*						attendees/locations/equipment
+* @param controller			[ZmController]				the compose controller for this view
 * @param dateInfo			[object]*					hash of date info
 * @param posStyle			[String]*					[static|relative|absolute]
 */
-function ZmCalItemEditView(parent, appCtxt, attendees, dateInfo, posStyle) {
+function ZmCalItemEditView(parent, appCtxt, attendees, controller, dateInfo, posStyle) {
 	if (arguments.length == 0) return;
 
 	DwtComposite.call(this, parent, null, posStyle);
 
 	this._appCtxt = appCtxt;
 	this._attendees = attendees;
+	this._controller = controller;
 	this._dateInfo = dateInfo;
 
 	this.setScrollStyle(DwtControl.CLIP);
@@ -669,11 +671,12 @@ function() {
 	if (size.x <= 0 || size.y <= 0)
 		return;
 
-	var topDiv = this.getHtmlElement().firstChild;
+	var topDiv = document.getElementById(this._htmlElId + "_top");
 	var topHeight = Dwt.getSize(topDiv).y;
 	var rowHeight = size.y - topHeight;
-	var fudge = (this._composeMode == DwtHtmlEditor.HTML) ? 50 : 15;
-	Dwt.setSize(this._bodyField, Dwt.DEFAULT, rowHeight - fudge);
+	var hFudge = (this._composeMode == DwtHtmlEditor.HTML) ? 50 : 15;
+	var wFudge = AjxEnv.isIE ? size.x-20 : Dwt.DEFAULT;
+	Dwt.setSize(this._bodyField, wFudge, rowHeight - hFudge);
 };
 
 ZmCalItemEditView.prototype._handleRepeatDescFieldHover =
@@ -731,11 +734,11 @@ function(ev) {
 
 	// change the start/end date if they mismatch
 	if (parentButton == this._startDateButton) {
-		if (ed.valueOf() < ev.detail.valueOf())
+		if (ed && (ed.valueOf() < ev.detail.valueOf()))
 			this._endDateField.value = newDate;
 		this._startDateField.value = newDate;
 	} else {
-		if (sd.valueOf() > ev.detail.valueOf())
+		if (sd && (sd.valueOf() > ev.detail.valueOf()))
 			this._startDateField.value = newDate;
 		this._endDateField.value = newDate;
 	}
@@ -792,8 +795,7 @@ function(status, attId) {
 	DBG.println(AjxDebug.DBG1, "Attachments: status = " + status + ", attId = " + attId);
 	if (status == 200) {
 		this._removeAllAttachments();
-		var acc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getApptComposeController();
-		acc.saveCalItem(attId);
+		this._controller.saveCalItem(attId);
 	} else {
 		DBG.println(AjxDebug.DBG1, "attachment error: " + status);
 	}

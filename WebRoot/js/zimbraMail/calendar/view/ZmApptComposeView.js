@@ -44,7 +44,8 @@ function ZmApptComposeView(parent, className, calApp, controller) {
 
 	className = className ? className : "ZmApptComposeView";
 	DwtTabView.call(this, parent, className, Dwt.ABSOLUTE_STYLE);
-	
+
+	this.setScrollStyle(DwtControl.CLIP);
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._app = calApp;
 	this._controller = controller;

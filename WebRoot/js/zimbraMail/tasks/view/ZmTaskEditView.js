@@ -26,10 +26,7 @@
 function ZmTaskEditView(parent, appCtxt, controller) {
 	if (arguments.length == 0) return;
 
-	ZmCalItemEditView.call(this, parent, appCtxt, null, null, DwtControl.ABSOLUTE_STYLE);
-
-	// XXX: may not need this
-	this._controller = controller;
+	ZmCalItemEditView.call(this, parent, appCtxt, null, controller, null, DwtControl.ABSOLUTE_STYLE);
 };
 
 ZmTaskEditView.prototype = new ZmCalItemEditView;
@@ -39,16 +36,17 @@ ZmTaskEditView.prototype.constructor = ZmTaskEditView;
 // Consts
 
 ZmTaskEditView.PRIORITY_VALUES = [
-	{ v:ZmTask.PRIORITY_LOW,	l:ZmMsg.low },
-	{ v:ZmTask.PRIORITY_NORMAL,	l:ZmMsg.normal },
-	{ v:ZmTask.PRIORITY_HIGH,	l:ZmMsg.high }];
+	{ v:ZmCalItem.PRIORITY_LOW,		l:ZmMsg.low },
+	{ v:ZmCalItem.PRIORITY_NORMAL,	l:ZmMsg.normal },
+	{ v:ZmCalItem.PRIORITY_HIGH,	l:ZmMsg.high }];
 
 ZmTaskEditView.STATUS_VALUES = [
-	{ v:ZmCalItem.STATUS_TENT,	l:ZmMsg.notStarted },
-	{ v:ZmCalItem.STATUS_COMP,	l:ZmMsg.completed },
-	{ v:ZmCalItem.STATUS_INPR,	l:ZmMsg.inProgress},
-	{ v:ZmCalItem.STATUS_WAIT,	l:ZmMsg.waitingOn },
-	{ v:ZmCalItem.STATUS_DEFR,	l:ZmMsg.deferred }];
+	{ v:ZmCalItem.STATUS_NEED,		l:ZmMsg.notStarted },
+	{ v:ZmCalItem.STATUS_COMP,		l:ZmMsg.completed },
+	{ v:ZmCalItem.STATUS_INPR,		l:ZmMsg.inProgress},
+	{ v:ZmCalItem.STATUS_WAIT,		l:ZmMsg.waitingOn },
+	{ v:ZmCalItem.STATUS_DEFR,		l:ZmMsg.deferred },
+	{ v:ZmCalItem.STATUS_CANC,		l:ZmMsg.cancelled }];
 
 // Message dialog placement
 ZmTaskEditView.DIALOG_X = 50;
@@ -91,8 +89,8 @@ function(calItem) {
 	// TODO - normalize
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
-	calItem.setStartDate(startDate, true);
-	calItem.setEndDate(endDate, true);
+	if (startDate) calItem.setStartDate(startDate, true);
+	if (endDate) calItem.setEndDate(endDate, true);
 	calItem.setAllDayEvent(true);
 	calItem.pComplete = this._pCompleteSelect.getValue();
 	calItem.priority = this._prioritySelect.getValue();

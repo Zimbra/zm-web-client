@@ -43,7 +43,7 @@ function ZmApptTabViewPage(parent, appCtxt, attendees, controller, dateInfo) {
 	DwtTabViewPage.call(this, parent);
 
 	this._controller = controller;
-	this._editView = new ZmApptEditView(this, appCtxt, attendees, dateInfo);
+	this._editView = new ZmApptEditView(this, appCtxt, attendees, controller, dateInfo);
 };
 
 ZmApptTabViewPage.prototype = new DwtTabViewPage;

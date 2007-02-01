@@ -27,9 +27,10 @@ function ZmAppt(appCtxt, list, noinit) {
 	ZmCalItem.call(this, appCtxt, ZmItem.APPT, list);
 	if (noinit) return;
 
-	this.folderId = ZmOrganizer.ID_CALENDAR;
 	this.freeBusy = "B"; 														// Free/Busy status (F|B|T|O) (free/busy/tentative/outofoffice)
 	this.transparency = "O";
+	this.startDate = new Date();
+	this.endDate = new Date(this.startDate.getTime() + (30*60*1000));
 	this.otherAttendees = false;
 
 	// attendees by type
@@ -422,6 +423,12 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 	return buf.join("");
 };
 
+ZmAppt.prototype._getDefaultFolderId =
+function() {
+	return ZmOrganizer.ID_CALENDAR;
+};
+
+
 ZmAppt.prototype._getSoapForMode =
 function(mode, isException) {
 	switch (mode) {
@@ -446,6 +453,14 @@ function(mode, isException) {
 	}
 
 	return null;
+};
+
+ZmAppt.prototype._addExtrasToSoap =
+function(soapDoc, inv, comp) {
+	ZmCalItem.prototype._addExtrasToSoap.call(this, soapDoc, inv, comp);
+
+	comp.setAttribute("fb", this.freeBusy);
+	comp.setAttribute("transp", this.transparency);
 };
 
 ZmAppt.prototype._addLocationToSoap =

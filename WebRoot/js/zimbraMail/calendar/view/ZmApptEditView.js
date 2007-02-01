@@ -35,11 +35,12 @@
 * @param appCtxt 			[ZmAppCtxt]					app context
 * @param attendees			[hash]						attendees/locations/equipment
 * @param dateInfo			[object]					hash of date info
+* @param controller			[ZmController]				the compose controller for this view
 */
-function ZmApptEditView(parent, appCtxt, attendees, dateInfo) {
+function ZmApptEditView(parent, appCtxt, attendees, controller, dateInfo) {
 	if (arguments.length == 0) return;
 
-	ZmCalItemEditView.call(this, parent, appCtxt, attendees, dateInfo);
+	ZmCalItemEditView.call(this, parent, appCtxt, attendees, controller, dateInfo);
 
 	this._attTypes = [ZmCalItem.PERSON, ZmCalItem.LOCATION];
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED))
