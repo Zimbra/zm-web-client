@@ -114,7 +114,8 @@ function(resp) {
 			//appt.exception = this._getAttr(apptNode, instNode, "exception");
 			var endTime = startTime + duration;
 			appt.endDate = new Date(endTime);
-			this.add(appt);
+            appt.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+            this.add(appt);
 		}
 	}
 }

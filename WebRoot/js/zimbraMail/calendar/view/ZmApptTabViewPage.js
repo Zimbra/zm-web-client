@@ -352,6 +352,7 @@ function() {
 		this._createHTML();
 		this._rendered = true;
 	}
+    this._initTzSelect();
 };
 
 /**
@@ -486,10 +487,10 @@ function(appt, mode) {
 		now.setTime(now.getTime() + ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
 		this._endTimeSelect.set(now);
 
-		// bug 9969: remove the all day durtion for display
+		// bug 9969: remove the all day duration for display
 		// HACK: This is a total hack because there are two types
 		//       of all day appointment objects. Non-recurring ones
-		//       have there start time set to the current time (for
+		//       have their start time set to the current time (for
 		//       some unknown reason) and their end time set to the
 		//       the start time + the default appointment duration.
 		//       Recurring appointments have their start time and
@@ -750,11 +751,9 @@ function() {
 	delete this._endTimeSelectId;
 
 	this._tzoneSelect = new DwtSelect(this);
-	var timezones = AjxTimezone.getAbbreviatedZoneChoices(); 					// XXX: this seems like overkill, list all 75 timezones!?
-	for (var i = 0; i < timezones.length; i++) {
-		this._tzoneSelect.addOption(timezones[i]);
-	}
-	// init timezone to the local machine's time zone
+    // NOTE: tzone select is initialized later
+
+    // init timezone to the local machine's time zone
 	this._tzoneSelect.setSelectedValue(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 	this._tzoneSelect.reparentHtmlElement(this._tzoneSelectId);
 	delete this._tzoneSelectId;
@@ -767,6 +766,18 @@ function() {
 	}
 	this._repeatSelect.reparentHtmlElement(this._repeatSelectId);
 	delete this._repeatSelectId;
+};
+
+ZmApptTabViewPage.prototype._initTzSelect = function() {
+    // XXX: this seems like overkill, list all timezones!?
+    var options = AjxTimezone.getAbbreviatedZoneChoices();
+    if (options.length != this._tzCount) {
+        this._tzCount = options.length;
+        this._tzoneSelect.clearOptions();
+        for (var i = 0; i < options.length; i++) {
+            this._tzoneSelect.addOption(options[i]);
+        }
+    }
 };
 
 ZmApptTabViewPage.prototype._createButtons =
@@ -1011,7 +1022,8 @@ function() {
 ZmApptTabViewPage.prototype._resetTimezoneSelect =
 function(appt, isAllDayAppt) {
 	var showTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) && !isAllDayAppt;
-	Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
+    showTimezone = showTimezone || appt.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+    Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
 	this._tzoneSelect.setSelectedValue(appt.getTimezone());
 };
 

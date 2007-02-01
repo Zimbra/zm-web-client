@@ -173,6 +173,7 @@ ZmAppt.prototype.getName 						= function() { return this.name || ""; };			// na
 ZmAppt.prototype.getOrganizer 					= function() { return this.organizer || ""; };
 ZmAppt.prototype.getOrigStartDate 				= function() { return this._origStartDate || this.startDate; };
 ZmAppt.prototype.getOrigStartTime 				= function() { return this.getOrigStartDate().getTime(); };
+ZmAppt.prototype.getOrigTimezone                = function() { return this._origTimezone || this.timezone; };
 ZmAppt.prototype.getParticipationStatus 		= function() { return this.ptst; };
 ZmAppt.prototype.getParticipationStatusString 	= function() { return ZmAppt._pstatusString[this.ptst]; };
 ZmAppt.prototype.getStartDate 					= function() { return this.startDate; };
@@ -224,7 +225,6 @@ ZmAppt.prototype.setOrganizer 			= function(organizer) 	{ this.organizer = organ
 ZmAppt.prototype.setMessage 			= function(message) 	{ this._message = message; };
 ZmAppt.prototype.setName 				= function(newName) 	{ this.name = newName; };
 ZmAppt.prototype.setType 				= function(newType) 	{ this.type = newType; };
-ZmAppt.prototype.setTimezone 			= function(timezone) 	{ this.timezone = timezone; };
 
 ZmAppt.prototype.setEndDate =
 function(endDate, keepCache) {
@@ -241,6 +241,15 @@ function(startDate, keepCache) {
 	this.startDate = new Date(startDate instanceof Date ? startDate.getTime() : startDate);
 	if (!keepCache)
 		this._resetCached();
+};
+
+ZmAppt.prototype.setTimezone = function(timezone, keepCache) {
+    if (this._origTimezone == null) {
+        this._origTimezone = timezone;
+    }
+    this.timezone = timezone;
+    if (!keepCache)
+        this._resetCached();
 };
 
 /**
@@ -624,7 +633,7 @@ function(message, viewMode) {
 		// will contain only the original start time.
 		var start = message.invite.getServerStartTime(0);
 		var end = message.invite.getServerEndTime(0);
-		if (viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
+        if (viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
 			this.setStartDate(this.getUniqueStartDate());
 			this.setEndDate(this.getUniqueEndDate());
 		} else {
@@ -637,14 +646,15 @@ function(message, viewMode) {
 		this.endsInUTC = end.charAt(start.length-1) == "Z";
 
 		// record timezone if given, otherwise, guess
-		this.timezone = (message.invite.getServerStartTimeTz(0)) || (AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+		this.setTimezone(message.invite.getServerStartTimeTz(0) || AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 
-		// adjust start/end times based on UTC/timezone
-        if (viewMode != ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
-            ZmAppt.__adjustDateForTimezone(this.startDate, this.timezone, this.startsInUTC);
-            ZmAppt.__adjustDateForTimezone(this.endDate, this.timezone, this.endsInUTC);
+        // adjust start/end times based on UTC/timezone
+        if (viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE) {
+            var timezone = this.getOrigTimezone();
+            ZmAppt.__adjustDateForTimezone(this.startDate, timezone, this.startsInUTC);
+            ZmAppt.__adjustDateForTimezone(this.endDate, timezone, this.endsInUTC);
+            this.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
         }
-        this.timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 
 		this.repeatCustomMonthDay = this.startDate.getDate();
 
@@ -898,8 +908,9 @@ function(attachmentId, callback, errorCallback, notifyList) {
         if (allDay != "1") {
 			var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate(), this.startsInUTC);
 			// bug fix #4697 (part 2)
-			if (!this.startsInUTC && this.timezone) {
-				var tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
+            var timezone = this.getOrigTimezone();
+            if (!this.startsInUTC && timezone) {
+				var tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(timezone) : timezone;
 				exceptId.setAttribute("tz", tz);
 			}
 			if (AjxEnv.isSafari) sd = AjxStringUtil.xmlEncode(sd);
