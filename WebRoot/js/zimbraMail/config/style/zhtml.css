@@ -635,19 +635,21 @@ padding: 8px 0px 6px 0px;
 	@NoWrap@
 	@FontSize-small@
     @TextPadding@
-	text-align:center;
+    padding:2px; border:0px;
+    text-align:center;
 }
 
 .ZhCalMDOMT {
-    @MiniCalDay-today@
+padding:1px; border:1px solid darkred;
 }
 
 .ZhCalMDOMO {
     @MiniCalDay-gray@
+
 }
 
 .ZhCalMDOMOT {
-    @MiniCalDay-today@
+    padding:1px; border:1px solid darkred;
     @MiniCalDay-gray@
 }
 
