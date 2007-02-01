@@ -596,10 +596,10 @@ padding: 8px 0px 6px 0px;
 }
 
 /* label of a particular day in various states */
-.ZhCalMonthDayLabel,
-.ZhCalMonthDayLabelToday,
-.ZhCalMonthDayLabelOffMonth,
-.ZhCalMonthDayLabelOffMonthToday
+.ZhCalDOM,
+.ZhCalDOMT,
+.ZhCalDOMO,
+.ZhCalDOMOT
 {
 	@NoWrap@
 	@FontSize-big@
@@ -607,15 +607,15 @@ padding: 8px 0px 6px 0px;
 	text-align:right;
 }
 
-.ZhCalMonthDayLabelToday {
+.ZhCalDOMT {
 	@Text-today@
 }
 
-.ZhCalMonthDayLabelOffMonth {
+.ZhCalDOMO {
 	@Text-disabled@
 }
 
-.ZhCalMonthDayLabelOffMonthToday {
+.ZhCalDOMOT {
 	@Text-disabled@
 	@Text-today@
 }
@@ -627,10 +627,10 @@ padding: 8px 0px 6px 0px;
 }
 
 /* label of a particular day in various states */
-.ZhCalMiniMonthDayLabel,
-.ZhCalMiniMonthDayLabelToday,
-.ZhCalMiniMonthDayLabelOffMonth,
-.ZhCalMiniMonthDayLabelOffMonthToday
+.ZhCalMDOM,
+.ZhCalMDOMT,
+.ZhCalMDOMO,
+.ZhCalMDOMOT
 {
 	@NoWrap@
 	@FontSize-small@
@@ -638,15 +638,15 @@ padding: 8px 0px 6px 0px;
 	text-align:center;
 }
 
-.ZhCalMiniMonthDayLabelToday {
+.ZhCalMDOMT {
     @MiniCalDay-today@
 }
 
-.ZhCalMiniMonthDayLabelOffMonth {
+.ZhCalMDOMO {
     @MiniCalDay-gray@
 }
 
-.ZhCalMiniMonthDayLabelOffMonthToday {
+.ZhCalMDOMOT {
     @MiniCalDay-today@
     @MiniCalDay-gray@
 }

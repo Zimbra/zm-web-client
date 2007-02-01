@@ -57,20 +57,20 @@
                             <tr>
                                 <c:forEach var="dow" begin="1" end="7">
                                     <td width=14% class='ZhCalMonthCellsTd'>
-                                        <table width=100% cellpadding=0 cellspacing=2 border=0>
+                                        <table width=100% cellspacing=2>
                                             <tr>
                                                 <c:choose>
                                                     <c:when test="${zm:isSameDate(currentDay,today) and zm:isSameMonth(currentDay,dateCal)}">
-                                                        <c:set var="clazz" value='ZhCalMonthDayLabelToday'/>
+                                                        <c:set var="clazz" value='ZhCalDOMT'/>
                                                     </c:when>
                                                     <c:when test="${zm:isSameDate(currentDay,today) and not zm:isSameMonth(currentDay,dateCal)}">
-                                                        <c:set var="clazz" value='ZhCalMonthDayLabelOffMonthToday'/>
+                                                        <c:set var="clazz" value='ZhCalDOMOT'/>
                                                     </c:when>
                                                     <c:when test="${not zm:isSameMonth(currentDay,dateCal)}">
-                                                        <c:set var="clazz" value='ZhCalMonthDayLabelOffMonth'/>
+                                                        <c:set var="clazz" value='ZhCalDOMO'/>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <c:set var="clazz" value='ZhCalMonthDayLabel'/>
+                                                        <c:set var="clazz" value='ZhCalDOM'/>
                                                     </c:otherwise>
                                                 </c:choose>
                                                 <td align=right class='${clazz}'>
@@ -87,9 +87,9 @@
                                                 <tr><td><app:monthAppt appt="${appt}" start="${dayStart}" end="${dayEnd}"/></td></tr>
                                                 <c:set var="count" value="${count+1}"/>
                                             </zm:forEachAppoinment>
-                                            <c:forEach begin="${count}" end="3">
-                                            <tr><td>&nbsp;</td></tr>
-                                            </c:forEach>
+                                            <c:if test="${count lt 4}">
+                                                <c:forEach begin="1" end="${4-count}"><tr><td>&nbsp;</td></tr></c:forEach>
+                                            </c:if>
                                         </table>
                                     </td>
                                     ${zm:getNextDay(currentDay)}

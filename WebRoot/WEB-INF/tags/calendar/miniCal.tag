@@ -43,16 +43,16 @@
         <c:forEach var="dow" begin="1" end="7">
             <c:choose>
                 <c:when test="${zm:isSameDate(currentDay,today) and zm:isSameMonth(currentDay,dateCal)}">
-                    <c:set var="clazz" value='ZhCalMiniMonthDayLabelToday'/>
+                    <c:set var="clazz" value='ZhCalMDOMT'/>
                 </c:when>
                 <c:when test="${zm:isSameDate(currentDay,today) and not zm:isSameMonth(currentDay,dateCal)}">
-                    <c:set var="clazz" value='ZhCalMiniMonthDayLabelOffMonthToday'/>
+                    <c:set var="clazz" value='ZhCalMDOMOT'/>
                 </c:when>
                 <c:when test="${not zm:isSameMonth(currentDay,dateCal)}">
-                    <c:set var="clazz" value='ZhCalMiniMonthDayLabelOffMonth'/>
+                    <c:set var="clazz" value='ZhCalMDOMO'/>
                 </c:when>
                 <c:otherwise>
-                    <c:set var="clazz" value='ZhCalMiniMonthDayLabel'/>
+                    <c:set var="clazz" value='ZhCalMDOM'/>
                 </c:otherwise>
             </c:choose>
             <td align=center class='${clazz}'>
