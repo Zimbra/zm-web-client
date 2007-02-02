@@ -132,6 +132,7 @@ ZmCalItem.prototype.getName 			= function() { return this.name || ""; };			// na
 ZmCalItem.prototype.getOrganizer 		= function() { return this.organizer || ""; };
 ZmCalItem.prototype.getOrigStartDate 	= function() { return this._origStartDate || this.startDate; };
 ZmCalItem.prototype.getOrigStartTime 	= function() { return this.getOrigStartDate().getTime(); };
+ZmCalItem.prototype.getOrigTimezone     = function() { return this._origTimezone || this.timezone; };
 ZmCalItem.prototype.getRecurBlurb		= function() { return this._recurrence.getBlurb(); };
 ZmCalItem.prototype.getRecurType		= function() { return this._recurrence.repeatType; };
 ZmCalItem.prototype.getStartTime 		= function() { return this.startDate.getTime(); }; 	// start time in ms
@@ -170,6 +171,15 @@ function(startDate, keepCache) {
 	this.startDate = new Date(startDate instanceof Date ? startDate.getTime() : startDate);
 	if (!keepCache)
 		this._resetCached();
+};
+
+ZmCalItem.prototype.setTimezone = function(timezone, keepCache) {
+    if (this._origTimezone == null) {
+        this._origTimezone = timezone;
+    }
+    this.timezone = timezone;
+    if (!keepCache)
+        this._resetCached();
 };
 
 /**
@@ -533,14 +543,15 @@ function(message, viewMode) {
 	this.endsInUTC = end.charAt(start.length-1) == "Z";
 
 	// record timezone if given, otherwise, guess
-	var tz = (message.invite.getServerStartTimeTz()) || (AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+	this.setTimezone(message.invite.getServerStartTimeTz() || AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 
 	// adjust start/end times based on UTC/timezone
-	if (viewMode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
-		ZmCalItem.__adjustDateForTimezone(this.startDate, tz, this.startsInUTC);
-		ZmCalItem.__adjustDateForTimezone(this.endDate, tz, this.endsInUTC);
+	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
+        var timezone = this.getOrigTimezone();
+        ZmCalItem.__adjustDateForTimezone(this.startDate, timezone, this.startsInUTC);
+		ZmCalItem.__adjustDateForTimezone(this.endDate, timezone, this.endsInUTC);
+        this.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 	}
-	this.timezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 };
 
 ZmCalItem.prototype._setExtrasFromMessage =
@@ -620,15 +631,17 @@ function(attachmentId, callback, errorCallback, notifyList) {
 	var accountName = this.getRemoteFolderOwner();
 	var invAndMsg = this._setSimpleSoapAttributes(soapDoc, attachmentId, notifyList, accountName);
 
+    var comp = invAndMsg.inv.getElementsByTagName("comp")[0];
 	if (needsExceptionId) {
-		var exceptId = soapDoc.set("exceptId", null, invAndMsg.inv);
+		var exceptId = soapDoc.set("exceptId", null, comp);
         // bug 13529: exception id based on original appt, not new data
         var allDay = this._orig ? this._orig.allDayEvent : this.allDayEvent;
         if (allDay != "1") {
 			var sd = AjxDateUtil.getServerDateTime(this.getOrigStartDate(), this.startsInUTC);
 			// bug fix #4697 (part 2)
-			if (!this.startsInUTC && this.timezone) {
-				var tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(this.timezone) : this.timezone;
+            var timezone = this.getOrigTimezone();
+            if (!this.startsInUTC && timezone) {
+				var tz = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(timezone) : timezone;
 				exceptId.setAttribute("tz", tz);
 			}
 			if (AjxEnv.isSafari) sd = AjxStringUtil.xmlEncode(sd);
@@ -640,7 +653,6 @@ function(attachmentId, callback, errorCallback, notifyList) {
 		}
 	} else {
 		// set recurrence rules for appointment (but not for exceptions!)
-		var comp = invAndMsg.inv.getElementsByTagName("comp")[0];
 		this._recurrence.setSoap(soapDoc, comp);
 	}
 

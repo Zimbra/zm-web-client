@@ -58,7 +58,30 @@ function(node) {
 		invite.components = [{}];
 		invite.components.empty = true;
 	}
-	return invite;
+    var inv = node[0];
+    if (inv.tz) {
+        for (var i = 0; i < inv.tz.length; i++) {
+            var tz = inv.tz[i];
+            var rule = AjxTimezone.getRule(tz.id);
+            if (!rule) {
+                rule = { clientId: tz.id, serverId: tz.id, autoDetected: true };
+                if (tz.daylight) {
+                    rule.standard = AjxUtil.createProxy(tz.standard[0]);
+                    rule.standard.offset = tz.stdoff;
+                    rule.standard.trans = AjxTimezone.createTransitionDate(rule.standard);
+                    
+                    rule.daylight = AjxUtil.createProxy(tz.daylight[0]);
+                    rule.daylight.offset = tz.dayoff;
+                    rule.daylight.trans = AjxTimezone.createTransitionDate(rule.daylight);
+                }
+                else {
+                    rule.standard = { offset: tz.stdoff };
+                }
+                AjxTimezone.addRule(rule);
+            }
+        }
+    }
+    return invite;
 };
 
 ZmInvite.prototype.setMessageId = 

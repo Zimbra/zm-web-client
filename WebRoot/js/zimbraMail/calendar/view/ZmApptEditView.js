@@ -72,6 +72,12 @@ function() {
 	this._setAttendees();
 };
 
+ZmApptEditView.prototype.createHtml =
+function() {
+    ZmCalItemEditView.prototype.createHtml.call(this);
+    this._initTzSelect();
+};
+
 ZmApptEditView.prototype.blur =
 function(useException) {
 	if (this._activeInputField) {
@@ -170,6 +176,18 @@ function(dateInfo) {
 
 
 // Private / protected methods
+
+ZmApptEditView.prototype._initTzSelect = function() {
+    // XXX: this seems like overkill, list all timezones!?
+    var options = AjxTimezone.getAbbreviatedZoneChoices();
+    if (options.length != this._tzCount) {
+        this._tzCount = options.length;
+        this._tzoneSelect.clearOptions();
+        for (var i = 0; i < options.length; i++) {
+            this._tzoneSelect.addOption(options[i]);
+        }
+    }
+};
 
 ZmApptEditView.prototype._addTabGroupMembers =
 function(tabGroup) {
@@ -447,7 +465,8 @@ function() {
 ZmApptEditView.prototype._resetTimezoneSelect =
 function(calItem, isAllDayAppt) {
 	var showTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) && !isAllDayAppt;
-	Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
+    showTimezone = showTimezone || calItem.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+    Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
 	this._tzoneSelect.setSelectedValue(calItem.timezone);
 };
 

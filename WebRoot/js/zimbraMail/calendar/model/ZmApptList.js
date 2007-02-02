@@ -56,7 +56,10 @@ function(resp) {
 			for (var j = 0; j < instances.length; j++) {
 				var instNode = instances[j];
 				var appt = ZmAppt.createFromDom(apptNode, instNode, args);
-				if (appt) this.add(appt);
+				if (appt) {
+					appt.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+					this.add(appt);
+				}
 			}
 		}
 	}

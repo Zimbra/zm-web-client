@@ -1541,8 +1541,9 @@ function(ev) {
 	var actionMenu = this.getActionMenu();
 	this._enableActionMenuReplyOptions(appt, actionMenu);
 	var menu = appt.isRecurring() ? this._recurringActionMenu : actionMenu;
-	actionMenu.__appt = appt;
-	menu.setData(ZmOperation.KEY_ID, null);
+    var op = menu == actionMenu && appt.exception ? ZmOperation.VIEW_APPT_INSTANCE : null;
+    actionMenu.__appt = appt;
+	menu.setData(ZmOperation.KEY_ID, op);
 	menu.popup(0, ev.docX, ev.docY);
 };
 
