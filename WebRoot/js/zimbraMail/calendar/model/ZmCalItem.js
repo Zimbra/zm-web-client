@@ -108,6 +108,11 @@ ZmCalItem.NOTES_SEPARATOR			= "*~*~*~*~*~*~*~*~*~*";
 
 ZmCalItem.ATTACHMENT_CHECKBOX_NAME	= Dwt.getNextId();
 
+ZmCalItem.FBA_TO_PTST = {
+	B: ZmCalItem.PSTATUS_ACCEPT,
+	F: ZmCalItem.PSTATUS_DECLINED,
+	T: ZmCalItem.PSTATUS_TENTATIVE
+};
 
 ZmCalItem.prototype.toString =
 function() {
@@ -1155,6 +1160,53 @@ function(soapDoc, accountName, callback, errorCallback) {
 	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, accountName:accountName, callback:respCallback, errorCallback:errorCallback});
 };
 
+ZmCalItem.prototype._loadFromDom =
+function(calItemNode, instNode) {
+
+	this.uid 			= calItemNode.uid;
+	this.folderId 		= calItemNode.l || this._getDefaultFolderId();
+	this.id 			= this._getAttr(calItemNode, instNode, "id");
+	this.name 			= this._getAttr(calItemNode, instNode, "name");
+	this.fragment 		= this._getAttr(calItemNode, instNode, "fr");
+	this.type 			= this._getAttr(calItemNode, instNode, "type");
+	this.isOrg 			= this._getAttr(calItemNode, instNode, "isOrg");
+	this.status 		= this._getAttr(calItemNode, instNode, "status");
+	this.ptst 			= this._getAttr(calItemNode, instNode, "ptst");
+	this.invId 			= this._getAttr(calItemNode, instNode, "invId");
+	this.compNum 		= this._getAttr(calItemNode, instNode, "compNum");
+	this.isException 	= this._getAttr(calItemNode, instNode, "ex");
+	this.allDayEvent 	= this._getAttr(calItemNode, instNode, "allDay") || "0";
+	this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
+	this.priority 		= parseInt(this._getAttr(calItemNode, instNode, "priority"));
+
+	this.recurring 		= instNode.recur || calItemNode.recur;
+	this._seriesInvId 	= this.recurring ? calItemNode.invId : null;
+
+	// override ptst for this instance if map-able
+	if (instNode.fba && ZmCalItem.FBA_TO_PTST[instNode.fba])
+		this.ptst = ZmCalItem.FBA_TO_PTST[instNode.fba];
+
+	var sd = this._getAttr(calItemNode, instNode, "s");
+	if (sd) {
+		var adjustMs = this.isAllDayEvent() ? (instNode.tzo + new Date(instNode.s).getTimezoneOffset()*60*1000) : 0;
+		var startTime = parseInt(sd,10) + adjustMs;
+		this.startDate = new Date(startTime);
+		this.uniqStartTime = this.startDate.getTime();
+	}
+
+	var ed = this._getAttr(calItemNode, instNode, "d");
+	if (ed) {
+		var endTime = startTime + (parseInt(ed));
+		this.endDate = new Date(endTime);
+	}
+};
+
+ZmCalItem.prototype._getAttr =
+function(calItem, inst, name) {
+	var v = inst[name];
+	return (v != undefined) ? v : ((calItem[name] != null) ? calItem[name] : null);
+};
+
 
 // Callbacks
 
@@ -1208,6 +1260,42 @@ function(a, b) {
 	if (a.getDuration() < b.getDuration()) 		return 1;
 	if (a.getDuration() > b.getDuration()) 		return -1;
 	return 0;
+};
+
+ZmCalItem.getLabelForPriority =
+function(priority, inclExcl, inclText) {
+	var excl = "";
+	var text = "";
+
+	switch (priority) {
+		case ZmCalItem.PRIORITY_LOW:
+			if (inclExcl) excl = "!";
+			if (inclText) text = ZmMsg.low;
+			break;
+		case ZmCalItem.PRIORITY_NORMAL:
+			if (inclExcl) excl = "!!";
+			if (inclText) text = ZmMsg.normal;
+			break;
+		case ZmCalItem.PRIORITY_HIGH:
+			if (inclExcl) excl = "!!!";
+			if (inclText) text = ZmMsg.high;
+			break;
+	}
+
+	return [excl, text].join(" ");
+};
+ZmCalItem.getLabelForStatus =
+
+function(status) {
+	switch (status) {
+		case ZmCalItem.STATUS_CANC: return ZmMsg.cancelled;
+		case ZmCalItem.STATUS_COMP: return ZmMsg.completed;
+		case ZmCalItem.STATUS_DEFR: return ZmMsg.deferred;
+		case ZmCalItem.STATUS_INPR: return ZmMsg.inProgress;
+		case ZmCalItem.STATUS_NEED: return ZmMsg.notStarted;
+		case ZmCalItem.STATUS_WAIT: return ZmMsg.waitingOn;
+	}
+	return "";
 };
 
 ZmCalItem._getTTHour =

@@ -26,9 +26,6 @@
 function ZmTaskListController(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmListController.call(this, appCtxt, container, app);
-
-	// TEMP:
-	this._list = new AjxVector();
 };
 
 ZmTaskListController.prototype = new ZmListController;
@@ -40,21 +37,21 @@ function() {
 };
 
 ZmTaskListController.prototype.show =
-function(view) {
-	var v = view || this._defaultView();
+function(list, view) {
 
-	ZmListController.prototype.show.call(this, null, v);
+	ZmListController.prototype.show.call(this, null, view);
 
-	this._setup(v);
+	this.setList(list);
+	this._setup(this._currentView);
 
 	var elements = {};
-	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[v];
-	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[v];
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 
-	if (this._setView(v, elements, true))
-		this._setViewMenu(v);
+	if (this._setView(this._currentView, elements, true))
+		this._setViewMenu(this._currentView);
 
-	this._setTabGroup(this._tabGroups[v]);
+	this._setTabGroup(this._tabGroups[this._currentView]);
 	this._restoreFocus();
 };
 
@@ -114,7 +111,9 @@ function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-		this._app.getTaskController().show(this._activeSearch, ev.item);
+		// XXX: for now, just set mode to "EDIT"
+		// - figure out series vs. instance if recurring later
+		this._app.getTaskController().show(ev.item, ZmCalItem.MODE_EDIT);
 	}
 };
 
@@ -127,22 +126,8 @@ function(ev) {
 
 ZmTaskListController.prototype._setViewContents =
 function(view) {
-	///////////////////////////////////////
-	// TEMP TEMP TEMP
-	///////////////////////////////////////
-/*
-	for (var i = 0; i < 10; i++) {
-		var task = new ZmTask(this._appCtxt, this._list);
-		task.id = Dwt.getNextId();
-		task.name = "foobar " + i;
-		task._percentComplete = "20%";
-		task._priority = ZmTask.PRIORITY_LOW;
-		this._list.add(task);
-	}
-*/
-
 	// load tasks into the given view and perform layout.
-	this._listView[view].set(this._list, null, this.folderId);
+	this._listView[view].set(this._list.getVector(), null, this.folderId);
 };
 
 ZmTaskListController.prototype._getMoveDialogTitle =

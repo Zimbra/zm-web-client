@@ -317,8 +317,8 @@ function(params) {
 		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE, "console_inset_app_l", 20);
 		this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
-		this._components[ZmAppViewMgr.C_USER_INFO] = this._userNameField = this._createUserInfo();
-		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField = this._createUserInfo();
+		this._components[ZmAppViewMgr.C_USER_INFO] = this._userNameField = this._createUserInfo("BannerTextUser");
+		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField = this._createUserInfo("BannerTextQuota");
 		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell, this._TAB_SKIN_ENABLED);
 		this._appCtxt.setCurrentAppToolbar(currentAppToolbar);
 		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
@@ -1274,8 +1274,8 @@ function() {
 };
 
 ZmZimbraMail.prototype._createUserInfo =
-function() {
-	var ui = new DwtComposite(this._shell, "BannerTextUser", Dwt.ABSOLUTE_STYLE);
+function(className) {
+	var ui = new DwtComposite(this._shell, className, Dwt.ABSOLUTE_STYLE);
 	ui.setScrollStyle(Dwt.CLIP);
 	ui._setMouseEventHdlrs();
 	return ui;

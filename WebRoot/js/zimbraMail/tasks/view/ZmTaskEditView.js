@@ -36,17 +36,17 @@ ZmTaskEditView.prototype.constructor = ZmTaskEditView;
 // Consts
 
 ZmTaskEditView.PRIORITY_VALUES = [
-	{ v:ZmCalItem.PRIORITY_LOW,		l:ZmMsg.low },
-	{ v:ZmCalItem.PRIORITY_NORMAL,	l:ZmMsg.normal },
-	{ v:ZmCalItem.PRIORITY_HIGH,	l:ZmMsg.high }];
+	ZmCalItem.PRIORITY_LOW,
+	ZmCalItem.PRIORITY_NORMAL,
+	ZmCalItem.PRIORITY_HIGH ];
 
 ZmTaskEditView.STATUS_VALUES = [
-	{ v:ZmCalItem.STATUS_NEED,		l:ZmMsg.notStarted },
-	{ v:ZmCalItem.STATUS_COMP,		l:ZmMsg.completed },
-	{ v:ZmCalItem.STATUS_INPR,		l:ZmMsg.inProgress},
-	{ v:ZmCalItem.STATUS_WAIT,		l:ZmMsg.waitingOn },
-	{ v:ZmCalItem.STATUS_DEFR,		l:ZmMsg.deferred },
-	{ v:ZmCalItem.STATUS_CANC,		l:ZmMsg.cancelled }];
+	ZmCalItem.STATUS_NEED,
+	ZmCalItem.STATUS_COMP,
+	ZmCalItem.STATUS_INPR,
+	ZmCalItem.STATUS_WAIT,
+	ZmCalItem.STATUS_DEFR,
+	ZmCalItem.STATUS_CANC ];
 
 // Message dialog placement
 ZmTaskEditView.DIALOG_X = 50;
@@ -74,10 +74,19 @@ ZmTaskEditView.prototype._populateForEdit =
 function(calItem, mode) {
 	ZmCalItemEditView.prototype._populateForEdit.call(this, calItem, mode);
 
+	if (calItem.startDate) {
+		var sd = new Date(calItem.startDate.getTime());
+		this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
+	}
+	if (calItem.endDate) {
+		var ed = new Date(calItem.endDate.getTime());
+		this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
+	}
+
 	this._location.setValue(calItem.getLocation());
 	this._prioritySelect.setSelectedValue(calItem.priority);
 	this._statusSelect.setSelectedValue(calItem.status);
-	this._pCompleteSelect.setSelected(calItem.pComplete);
+	this._pCompleteSelect.setSelectedValue(calItem.pComplete);
 	this._statusCheckbox.checked = calItem.status == ZmCalItem.STATUS_COMP && calItem.pComplete == 100;
 };
 
@@ -150,7 +159,8 @@ function(width) {
 	// add priority DwtSelect
 	this._prioritySelect = new DwtSelect(this);
 	for (var i = 0; i < ZmTaskEditView.PRIORITY_VALUES.length; i++) {
-		this._prioritySelect.addOption(ZmTaskEditView.PRIORITY_VALUES[i].l, i==1, ZmTaskEditView.PRIORITY_VALUES[i].v);
+		var v = ZmTaskEditView.PRIORITY_VALUES[i];
+		this._prioritySelect.addOption(ZmCalItem.getLabelForPriority(v, true, true), i==1, v);
 	}
 	this._prioritySelect.reparentHtmlElement(this._htmlElId + "_priority");
 
@@ -158,7 +168,8 @@ function(width) {
 	// add status DwtSelect
 	this._statusSelect = new DwtSelect(this);
 	for (var i = 0; i < ZmTaskEditView.STATUS_VALUES.length; i++) {
-		this._statusSelect.addOption(ZmTaskEditView.STATUS_VALUES[i].l, i==0, ZmTaskEditView.STATUS_VALUES[i].v);
+		var v = ZmTaskEditView.STATUS_VALUES[i];
+		this._statusSelect.addOption(ZmCalItem.getLabelForStatus(v), i==0, v);
 	}
 	this._statusSelect.addChangeListener(listener);
 	this._statusSelect.reparentHtmlElement(this._htmlElId + "_status");

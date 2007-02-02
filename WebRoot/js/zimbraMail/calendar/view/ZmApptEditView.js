@@ -187,35 +187,6 @@ ZmApptEditView.prototype._reset =
 function(calItem, mode) {
 	ZmCalItemEditView.prototype._reset.call(this, calItem, mode);
 
-	// reset the date/time values based on current time
-	var sd = new Date(calItem.startDate.getTime());
-	var ed = new Date(calItem.endDate.getTime());
-	var isAllDayAppt = calItem.isAllDayEvent();
-	if (isAllDayAppt) {
-		this._allDayCheckbox.checked = true;
-		this._showTimeFields(false);
-
-		// set time anyway to current time and default duration (in case user changes mind)
-		var now = AjxDateUtil.roundTimeMins(new Date(), 30);
-		this._startTimeSelect.set(now);
-
-		now.setTime(now.getTime() + ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
-		this._endTimeSelect.set(now);
-
-		// bug 9969: HACK - remove the all day durtion for display
-        var isNewFromQuickAdd = mode == ZmCalItem.MODE_NEW_FROM_QUICKADD;
-        if (!isNewFromQuickAdd && ed.getHours() == 0 && ed.getMinutes() == 0 && ed.getSeconds() == 0) {
-			ed.setHours(-12);
-		}
-	} else {
-		this._startTimeSelect.set(calItem.startDate);
-		this._endTimeSelect.set(calItem.endDate);
-	}
-	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
-	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
-
-	this._resetTimezoneSelect(calItem, isAllDayAppt);
-
 	// save the original form data in its initialized state
 	this._origFormValueMinusAttendees = this._formValue(true);
 };
@@ -261,6 +232,35 @@ function(calItem, mode) {
 
 	this._attInputField[ZmCalItem.LOCATION].setValue(calItem.getLocation());
 	this._showAsSelect.setSelectedValue(calItem.freeBusy);
+
+	// reset the date/time values based on current time
+	var sd = new Date(calItem.startDate.getTime());
+	var ed = new Date(calItem.endDate.getTime());
+	var isAllDayAppt = calItem.isAllDayEvent();
+	if (isAllDayAppt) {
+		this._allDayCheckbox.checked = true;
+		this._showTimeFields(false);
+
+		// set time anyway to current time and default duration (in case user changes mind)
+		var now = AjxDateUtil.roundTimeMins(new Date(), 30);
+		this._startTimeSelect.set(now);
+
+		now.setTime(now.getTime() + ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
+		this._endTimeSelect.set(now);
+
+		// bug 9969: HACK - remove the all day durtion for display
+        var isNewFromQuickAdd = mode == ZmCalItem.MODE_NEW_FROM_QUICKADD;
+        if (!isNewFromQuickAdd && ed.getHours() == 0 && ed.getMinutes() == 0 && ed.getSeconds() == 0) {
+			ed.setHours(-12);
+		}
+	} else {
+		this._startTimeSelect.set(calItem.startDate);
+		this._endTimeSelect.set(calItem.endDate);
+	}
+	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
+	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
+
+	this._resetTimezoneSelect(calItem, isAllDayAppt);
 
 	// attendees
 	var attendees = calItem.getAttendees();

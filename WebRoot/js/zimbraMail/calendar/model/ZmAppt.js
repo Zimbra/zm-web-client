@@ -126,6 +126,14 @@ function(appt) {
 	return newAppt;
 };
 
+ZmAppt.createFromDom =
+function(apptNode, instNode, args) {
+	var appt = new ZmAppt(args.appCtxt, args.list);
+	appt._loadFromDom(apptNode, instNode);
+
+	return appt;
+};
+
 ZmAppt.prototype.getFolder =
 function() {
 	var ct = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
@@ -428,6 +436,14 @@ function() {
 	return ZmOrganizer.ID_CALENDAR;
 };
 
+ZmAppt.prototype._loadFromDom =
+function(calItemNode, instNode) {
+	ZmCalItem.prototype._loadFromDom.call(this, calItemNode, instNode);
+
+	this.transparency = this._getAttr(calItemNode, instNode, "transp");
+	this.otherAttendees = this._getAttr(calItemNode, instNode, "otherAtt");
+	this.setAttendees(this._getAttr(calItemNode, instNode, "loc"), ZmCalItem.LOCATION);
+};
 
 ZmAppt.prototype._getSoapForMode =
 function(mode, isException) {

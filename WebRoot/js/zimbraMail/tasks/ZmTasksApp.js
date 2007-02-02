@@ -37,9 +37,16 @@ function() {
 };
 
 ZmTasksApp.prototype.launch =
+function(callback, errorCallback) {
+	var respCallback = new AjxCallback(this, this._handleResponseLaunch, callback);
+	this.getTaskList(respCallback, errorCallback);
+};
+
+
+ZmTasksApp.prototype._handleResponseLaunch =
 function(callback) {
-	var tc = this.getTaskListController();
-	tc.show();
+	var tlc = this.getTaskListController();
+	tlc.show(this._taskList);
 
 	if (callback)
 		callback.run();
@@ -62,4 +69,26 @@ function() {
 	if (!this._taskController)
 		this._taskController = new ZmTaskController(this._appCtxt, this._container, this);
 	return this._taskController;
+};
+
+ZmTasksApp.prototype.getTaskList =
+function(callback, errorCallback) {
+	if (!this._taskList) {
+		try {
+			this._taskList = new ZmTaskList(this._appCtxt);
+			var respCallback = new AjxCallback(this, this._handleResponseGetTaskList, callback);
+			this._taskList.load(respCallback, errorCallback);
+		} catch (ex) {
+			this._taskList = null;
+			throw ex;
+		}
+	} else {
+		if (callback) callback.run();
+	}
+	if (!callback) return this._taskList;
+};
+
+ZmTasksApp.prototype._handleResponseGetTaskList =
+function(callback) {
+	if (callback) callback.run();
 };

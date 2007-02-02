@@ -31,15 +31,12 @@ function ZmTaskListView(parent, controller, dropTgt) {
 
 	this.view = ZmController.TASKLIST_VIEW;
 	this.type = ZmItem.TASK;
-	this._controller = controller;
 	this.setDropTarget(dropTgt);
 
-	// create listeners for changes to the list model, and to tags
-	this._listChangeListener = new AjxListener(this, this._changeListener);
+	this._controller = controller;
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
-	if (tagList)
-		tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+
+	this._listChangeListener = new AjxListener(this, this._changeListener);
 
 	// XXX: temp to turn inline editing on/off
 	this._INLINE_EDIT_ENABLED = false;
@@ -50,19 +47,17 @@ ZmTaskListView.prototype.constructor = ZmTaskListView;
 
 
 // Consts
-ZmTaskListView.CLV_COLWIDTH_ICON =	19;
-ZmTaskListView.CLV_COLWIDTH_DATE =	75;
-ZmTaskListView.CLV_COLWIDTH_NOTES =	165;
+ZmTaskListView.CLV_COLWIDTH_ICON	= 19;
+ZmTaskListView.CLV_COLWIDTH_DATE	= 75;
+ZmTaskListView.CLV_COLWIDTH_STATUS	= 145;
 
 ZmTaskListView.ID_PRIORITY			= "p--";
 ZmTaskListView.ID_ATTACHMENT		= "a--";
-ZmTaskListView.ID_TAG				= "t--";
 ZmTaskListView.ID_FLAG				= "f--";
 ZmTaskListView.ID_SUBJECT			= "s--";
+ZmTaskListView.ID_STATUS			= "t--";
 ZmTaskListView.ID_PERCENT_COMPLETE	= "c--";
 ZmTaskListView.ID_END_DATE			= "d--";
-ZmTaskListView.ID_CREATED_DATE		= "r--";
-ZmTaskListView.ID_NOTES				= "n--";
 
 
 // Public Methods
@@ -107,8 +102,9 @@ function(task, now, isDndIcon) {
 			htmlArr[idx++] = this._getFieldId(task, ZmTaskListView.ID_PRIORITY);
 			htmlArr[idx++] = "' width=";
 			htmlArr[idx++] = width;
-			htmlArr[idx++] = ">";
-			htmlArr[idx++] = "</td>";
+			htmlArr[idx++] = "><center><b>";
+			htmlArr[idx++] = ZmCalItem.getLabelForPriority(task.priority, true);
+			htmlArr[idx++] = "</b></center></td>";
 		} else if (id.indexOf(ZmTaskListView.ID_ATTACHMENT) == 0) {
 			// attachment icon
 			htmlArr[idx++] = "<td id='";
@@ -116,14 +112,8 @@ function(task, now, isDndIcon) {
 			htmlArr[idx++] = "' width=";
 			htmlArr[idx++] = width;
 			htmlArr[idx++] = ">";
-			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(ZmTaskListView.ID_TAG) == 0) {
-			// tags
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = this._getFieldId(task, ZmTaskListView.ID_TAG);
-			htmlArr[idx++] = "' width=";
-			htmlArr[idx++] = width;
-			htmlArr[idx++] = ">";
+			var attImageInfo = task.hasAttachments() ? "Attachment" : "Blank_16";
+			AjxImg.getImageHtml(attImageInfo);
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmTaskListView.ID_FLAG) == 0) {
 			// flag (checkbox)
@@ -141,6 +131,15 @@ function(task, now, isDndIcon) {
 			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(task.getName(), true);
 			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
+		} else if (id.indexOf(ZmTaskListView.ID_STATUS) == 0) {
+			// status
+			htmlArr[idx++] = "<td id='";
+			htmlArr[idx++] = this._getFieldId(task, ZmTaskListView.ID_STATUS);
+			htmlArr[idx++] = "' width=";
+			htmlArr[idx++] = width;
+			htmlArr[idx++] = ">";
+			htmlArr[idx++] = ZmCalItem.getLabelForStatus(task.status);
+			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmTaskListView.ID_PERCENT_COMPLETE) == 0) {
 			// percent complete
 			htmlArr[idx++] = "<td id='";
@@ -148,34 +147,17 @@ function(task, now, isDndIcon) {
 			htmlArr[idx++] = "' width=";
 			htmlArr[idx++] = width;
 			htmlArr[idx++] = ">";
-			htmlArr[idx++] = task._percentComplete;
-			htmlArr[idx++] = "</td>";
+			htmlArr[idx++] = task.pComplete || 0;
+			htmlArr[idx++] = "%</td>";
 		} else if (id.indexOf(ZmTaskListView.ID_END_DATE) == 0) {
-			// end/completion date
+			// due date
 			htmlArr[idx++] = "<td id='";
 			htmlArr[idx++] = this._getFieldId(task, ZmTaskListView.ID_END_DATE);
 			htmlArr[idx++] = "' width=";
 			htmlArr[idx++] = width;
 			htmlArr[idx++] = ">";
-			htmlArr[idx++] = AjxDateUtil.computeDateStr(now, task.startDate);
-			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(ZmTaskListView.ID_CREATED_DATE) == 0) {
-			// created on date
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = this._getFieldId(task, ZmTaskListView.ID_CREATED_DATE);
-			htmlArr[idx++] = "' width=";
-			htmlArr[idx++] = width;
-			htmlArr[idx++] = ">";
-			htmlArr[idx++] = "TODO";
-			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(ZmTaskListView.ID_NOTES) == 0) {
-			// notes
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = this._getFieldId(task, ZmTaskListView.ID_NOTES);
-			htmlArr[idx++] = "' width=";
-			htmlArr[idx++] = width;
-			htmlArr[idx++] = ">";
-			htmlArr[idx++] = "TODO";
+			if (task.endDate)
+				htmlArr[idx++] = AjxDateUtil.computeDateStr(now, task.endDate);
 			htmlArr[idx++] = "</td>";
 		}
 	}
@@ -233,8 +215,6 @@ function(id) {
 		return false;
 	} else if (id.indexOf(ZmTaskListView.ID_ATTACHMENT) != -1) {
 		return false;
-	} else if (id.indexOf(ZmTaskListView.ID_TAG) != -1) {
-		return false;
 	} else if (id.indexOf(ZmTaskListView.ID_FLAG) != -1) {
 		// todo - add checkbox
 		return false;
@@ -246,6 +226,9 @@ function(id) {
 			this.shell.getHtmlElement().appendChild(this._subjectInput);
 		}
 		return this._subjectInput;
+	} else if (id.indexOf(ZmTaskListView.ID_STATUS) != -1) {
+		// todo - add DwtSelect
+		return false;
 	} else if (id.indexOf(ZmTaskListView.ID_PERCENT_COMPLETE) != -1) {
 		if (!this._pCompleteSelect) {
 			this._pCompleteSelect = new DwtSelect(this.shell, null, "InlineWidget");
@@ -256,10 +239,6 @@ function(id) {
 		return this._pCompleteSelect;
 	} else if (id.indexOf(ZmTaskListView.ID_END_DATE) != -1) {
 		// todo - add DwtCalendar
-		return false;
-	} else if (id.indexOf(ZmTaskListView.ID_CREATED_DATE) != -1) {
-		return false;
-	} else if (id.indexOf(ZmTaskListView.ID_NOTES) != -1) {
 		return false;
 	} else {
 		return false;
@@ -309,15 +288,11 @@ function(parent) {
 
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_PRIORITY, null, "TaskP3", ZmTaskListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.status));
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_ATTACHMENT, null, "Attachment", ZmTaskListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.attachment));
-	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem(ZmTaskListView.ID_TAG, null, "MiniTag", ZmTaskListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.tag));
-	}
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_FLAG, null, "TaskCheckbox", ZmTaskListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.done));
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_SUBJECT, ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
+	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_STATUS, ZmMsg.status, null, ZmTaskListView.CLV_COLWIDTH_STATUS));
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_PERCENT_COMPLETE, ZmMsg.complete, null, ZmTaskListView.CLV_COLWIDTH_DATE, ZmItem.F_COMPLETE));
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_END_DATE, ZmMsg.dateDue, null, ZmTaskListView.CLV_COLWIDTH_DATE, ZmItem.F_DATE));
-	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_CREATED_DATE, ZmMsg.createdOn, null, ZmTaskListView.CLV_COLWIDTH_DATE, ZmItem.F_CREATED_ON));
-	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_NOTES, ZmMsg.notes, null, ZmTaskListView.CLV_COLWIDTH_NOTES));
 
 	return hList;
 };
@@ -327,14 +302,6 @@ function(parent) {
 ZmTaskListView.prototype._changeListener =
 function(ev) {
 	if ((ev.type != this.type) && (ZmList.MIXED != this.type))
-		return;
-
-	// TODO
-};
-
-ZmTaskListView.prototype._tagChangeListener =
-function(ev) {
-	if (ev.type != ZmEvent.S_TAG)
 		return;
 
 	// TODO

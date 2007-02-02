@@ -69,6 +69,14 @@ function(task) {
 	return newTask;
 };
 
+ZmTask.createFromDom =
+function(taskNode, instNode, args) {
+	var task = new ZmTask(args.appCtxt, args.list);
+	task._loadFromDom(taskNode, instNode);
+
+	return task;
+};
+
 
 // Public Methods
 
@@ -102,6 +110,14 @@ function(controller) {
 ZmTask.prototype._getDefaultFolderId =
 function() {
 	return ZmOrganizer.ID_TASKS;
+};
+
+ZmTask.prototype._loadFromDom =
+function(calItemNode, instNode) {
+	ZmCalItem.prototype._loadFromDom.call(this, calItemNode, instNode);
+
+	this.pComplete = this._getAttr(calItemNode, instNode, "percentComplete");
+	this.location = this._getAttr(calItemNode, instNode, "loc");
 };
 
 

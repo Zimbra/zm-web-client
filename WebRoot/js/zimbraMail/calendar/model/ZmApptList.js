@@ -43,62 +43,21 @@ function() {
 	return "ZmApptList";
 };
 
-ZmApptList._fba2ptst = {
-	B: ZmCalItem.PSTATUS_ACCEPT,
-	F: ZmCalItem.PSTATUS_DECLINED,
-	T: ZmCalItem.PSTATUS_TENTATIVE
-};
-			
-ZmApptList.prototype._getAttr =
-function(appt, inst, name) {
-	var v = inst[name];
-	return (v != undefined) ? v : ((appt[name] != null) ? appt[name] : null);
-};
-
 ZmApptList.prototype.loadFromSummaryJs =
 function(resp) {
-	if (!resp.appt)
-		return;
-
 	var appts = resp.appt;
+	if (!appts) return;
+
 	for (var i = 0; i < appts.length; i++) {
 		var apptNode = appts[i];
-		if (!apptNode.inst) continue;
-
-		var instances = apptNode.inst;
-		for (var j = 0; j < instances.length; j++) {
-			var instNode = instances[j];
-            var allDay = instNode.allDay != null ? instNode.allDay : apptNode.allDay;
-            var adjustMs = allDay ? instNode.tzo + new Date(instNode.s).getTimezoneOffset()*60*1000 : 0;
-			var startTime = parseInt(this._getAttr(apptNode, instNode, "s"),10) + adjustMs;
-			var appt = new ZmAppt(this._appCtxt, this);
-			appt.uid = apptNode.uid;
-			appt.folderId = apptNode.l || ZmOrganizer.ID_CALENDAR;
-			appt.fragment = this._getAttr(apptNode, instNode, "fr");
-			appt.type = this._getAttr(apptNode, instNode, "type");
-			appt.isOrg = this._getAttr(apptNode, instNode, "isOrg");
-			appt.transparency = this._getAttr(apptNode, instNode,"transp");
-			appt.status = this._getAttr(apptNode, instNode,"status");
-			appt.ptst = this._getAttr(apptNode, instNode,"ptst");			
-			appt.id = this._getAttr(apptNode, instNode, "id");
-			appt.invId = this._getAttr(apptNode, instNode, "invId");
-			appt.compNum = this._getAttr(apptNode, instNode, "compNum");
-			appt.exception = this._getAttr(apptNode, instNode, "ex");
-			appt.allDayEvent = this._getAttr(apptNode, instNode, "allDay") || "0";
-			appt.otherAttendees = this._getAttr(apptNode, instNode, "otherAtt");
-			appt.alarm = this._getAttr(apptNode, instNode, "alarm");
-			appt.recurring = instNode.recur != null ? instNode.recur : apptNode.recur;
-			if (appt.recurring)
-				appt._seriesInvId = apptNode.invId;
-			appt.name = this._getAttr(apptNode, instNode, "name");
-			appt.setAttendees(this._getAttr(apptNode, instNode, "loc"), ZmCalItem.LOCATION);
-			appt.startDate = new Date(startTime);
-			appt.uniqStartTime = appt.startDate.getTime(); 					// need to construct uniq id later
-			if (instNode.fba && ZmApptList._fba2ptst[instNode.fba])				// override appt.ptst for this instance
-				appt.ptst = ZmApptList._fba2ptst[instNode.fba];
-			var endTime = startTime + (parseInt(this._getAttr(apptNode, instNode, "d")));
-			appt.endDate = new Date(endTime);
-			this.add(appt);
+		var instances = apptNode ? apptNode.inst : null;
+		if (instances) {
+			var args = {appCtxt: this._appCtxt, list: this};
+			for (var j = 0; j < instances.length; j++) {
+				var instNode = instances[j];
+				var appt = ZmAppt.createFromDom(apptNode, instNode, args);
+				if (appt) this.add(appt);
+			}
 		}
 	}
 }
