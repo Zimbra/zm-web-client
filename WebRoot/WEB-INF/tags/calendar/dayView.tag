@@ -20,9 +20,9 @@
     <c:set var="dateCal" value="${zm:getCalendar(date)}"/>
     <c:set var="prevDate" value="${zm:pageMonth(dateCal, false)}"/>
     <c:set var="nextDate" value="${zm:pageMonth(dateCal,  true)}"/>
-    <c:set var="currentDay" value="${zm:getFirstDayOfMonth(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
-    <zm:getAppointmentSummaries var="appts" start="${currentDay.timeInMillis}"
-                                end="${currentDay.timeInMillis+1000*60*60*24*42}"/>
+
+    <zm:getAppointmentSummaries var="appts" start="${today.timeInMillis}"
+                                end="${today.timeInMillis+1000*60*60*24}"/>
 </app:handleError>
 
 <app:view title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true"
@@ -36,7 +36,22 @@
         </tr>
         <tr>
             <td class='ZhAppContent'>
+                <!-- ${appts}-->
 
+<zm:forEachApptRowLayout var="layout" appointments="${appts}" start="${today.timeInMillis}" end="${today.timeInMillis+1000*60*60*24}">
+    <!--
+    <c:forEach var="column" items="${layout.columns}">
+          COLUMN
+
+         <c:forEach var="appt" items="${column}">
+
+             APPT ${appt.startDate} ${appt.name}
+            
+          </c:forEach>
+    </c:forEach>
+    -->
+
+</zm:forEachApptRowLayout>
                 <TABLE width=100% border="1" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
 
                      <tr>
