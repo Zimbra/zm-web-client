@@ -34,7 +34,7 @@
             <td class='ZhAppContent'>
                 <!-- ${appts}-->
 
-                <TABLE class='ZhCalDayGrid' width=100% border="1" cellpadding=0 cellspacing=0 style='border-collapse:Xcollapse'>
+                <TABLE class='ZhCalDayGrid' width=100% height=100% border="1" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
 
                 <zm:forEachApptRowLayout var="row" appointments="${appts}" start="${date.time}" end="${date.time+1000*60*60*24}">
                     <!-- ROW -->
@@ -48,10 +48,12 @@
                         <c:forEach var="column" items="${row.columns}">
                             <c:choose>
                                 <c:when test="${not empty column.appt and column.isFirst}">
-                                    <app:dayAppt colspan="${column.colSpan}" rowspan="${column.rowSpan}" width="${column.width}" appt="${column.appt}" start="" end=""/>
+                                    <td valign=top height=100% width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>
+                                    <app:dayAppt appt="${column.appt}" start="" end=""/>
+                                    </td>
                                 </c:when>
                                 <c:when test="${empty column.appt}">
-                                    <td width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>&nbsp;</td>
+                                    <td height=100% width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>&nbsp;</td>
                                 </c:when>
                             </c:choose>
                         </c:forEach>

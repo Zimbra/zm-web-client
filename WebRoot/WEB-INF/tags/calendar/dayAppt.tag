@@ -2,9 +2,6 @@
 <%@ attribute name="appt" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZApptSummary" %>
 <%@ attribute name="start" rtexprvalue="true" required="true"%>
 <%@ attribute name="end" rtexprvalue="true" required="true"%>
-<%@ attribute name="width" rtexprvalue="true" required="true"%>
-<%@ attribute name="rowspan" rtexprvalue="true" required="true"%>
-<%@ attribute name="colspan" rtexprvalue="true" required="true"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -21,12 +18,16 @@
         </div>
     </c:when>
     <c:otherwise>
-        <td class='ZhCalDayAppt ${color}${appt.partStatusNeedsAction ? 'BG' : 'BG'}' valign=top width='${width}%'<c:if test="${colspan ne 1}"> colspan='${colspan}'</c:if><c:if test="${rowspan ne 1}"> rowspan='${rowspan}'</c:if>>
+        <table width=100% height=100% border=0 cellspacing=0 cellpadding="0">
+            <tr>
+        <td class='ZhCalDayAppt ${color}${appt.partStatusNeedsAction ? 'BG' : 'BG'}' valign=top>
             <fmt:message key="CAL_DAY_APPT">
                 <fmt:param value="${appt.startDate}"/>
                 <fmt:param value="${fn:escapeXml(appt.name)}"/>
             </fmt:message>
         </td>
+            </tr>
+        </table>
     </c:otherwise>
 </c:choose>
 
