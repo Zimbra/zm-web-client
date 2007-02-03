@@ -36,4 +36,12 @@
     </c:if>
 </app:handleError>
 
-<app:monthView date="${date}"/>
+<c:choose>
+    <c:when test="${param.view eq 'day'}">
+        <app:dayView date="${date}"/>
+    </c:when>
+    <c:otherwise>
+        <app:monthView date="${date}"/>
+    </c:otherwise>
+</c:choose>
+
