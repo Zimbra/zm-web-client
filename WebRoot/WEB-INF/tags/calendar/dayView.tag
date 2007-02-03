@@ -21,8 +21,7 @@
     <c:set var="prevDate" value="${zm:pageMonth(dateCal, false)}"/>
     <c:set var="nextDate" value="${zm:pageMonth(dateCal,  true)}"/>
 
-    <zm:getAppointmentSummaries var="appts" start="${today.timeInMillis}"
-                                end="${today.timeInMillis+1000*60*60*24}"/>
+    <zm:getAppointmentSummaries var="appts" start="${date.time}" end="${date.time+1000*60*60*24}"/>
 </app:handleError>
 
 <app:view title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true"
@@ -38,22 +37,30 @@
             <td class='ZhAppContent'>
                 <!-- ${appts}-->
 
-<zm:forEachApptRowLayout var="layout" appointments="${appts}" start="${today.timeInMillis}" end="${today.timeInMillis+1000*60*60*24}">
-    <!--
-    <c:forEach var="column" items="${layout.columns}">
-          COLUMN
-
-         <c:forEach var="appt" items="${column}">
-
-             APPT ${appt.startDate} ${appt.name}
-            
-          </c:forEach>
-    </c:forEach>
-    -->
-
-</zm:forEachApptRowLayout>
                 <TABLE width=100% border="1" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
 
+                <zm:forEachApptRowLayout var="row" appointments="${appts}" start="${date.time}" end="${date.time+1000*60*60*24}">
+                    <!-- ROW -->
+                    <tr>
+                        <td width=1px>&nbsp;</td>
+                        <c:if test="${row.rowNum % 4 eq 0}">
+                            <td nowrap width=1% rowspan=4 style='border-left:none'>${row.rowNum}</td>
+                        </c:if>
+                        <c:forEach var="column" items="${row.columns}">
+                            <c:choose>
+                                <c:when test="${not empty column.appt and column.isFirst}">
+                                    <td valign=top width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>${fn:escapeXml(column.appt.name)}</td>
+                                </c:when>
+                                <c:when test="${empty column.appt}">
+                                    <td width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>&nbsp;</td>
+                                </c:when>
+                            </c:choose>
+                        </c:forEach>
+                    </tr>
+
+                </zm:forEachApptRowLayout>
+                </TABLE>
+                <TABLE width=100% border="1" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
                      <tr>
                         <td width=1px style='border-right:none'>&nbsp;</td>
                         <td nowrap width=1% rowspan=4 style='border-left:none'>9:00 AM</td>
