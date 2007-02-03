@@ -39,7 +39,7 @@
                 <zm:forEachApptRowLayout var="row" appointments="${appts}" start="${date.time}" end="${date.time+1000*60*60*24}">
                     <!-- ROW -->
                     <tr>
-                        <td width=1px>&nbsp;</td>
+                        <td height=100% width=1px>&nbsp;</td>
                         <c:if test="${row.rowNum % 4 eq 0}">
                             <td class='ZhCalDayHour' nowrap width=1% rowspan=4 style='border-left:none'>
                                     <fmt:formatDate value="${row.date}" pattern="${hourFormat}"/>
