@@ -272,12 +272,3 @@ function(el) {
 		ZmCalItemEditView.prototype._handleOnClick.call(this, el);
 	}
 };
-
-
-// Static Methods
-
-ZmTaskEditView.getPrintHtml =
-function(task, appCtxt) {
-	// TODO
-	return "TODO";
-};

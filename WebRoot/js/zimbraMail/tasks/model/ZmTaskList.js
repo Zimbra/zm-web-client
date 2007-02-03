@@ -85,17 +85,17 @@ function(callback, result) {
 
 	var resp = result.getResponse().GetTaskSummariesResponse;
 	var tasks = resp.task;
-	if (!tasks) return;
-
-	for (var i = 0; i < tasks.length; i++) {
-		var taskNode = tasks[i];
-		var instances = taskNode ? taskNode.inst : null;
-		if (instances) {
-			var args = {appCtxt: this._appCtxt, list: this};
-			for (var j = 0; j < instances.length; j++) {
-				var instNode = instances[j];
-				var task = ZmTask.createFromDom(taskNode, instNode, args);
-				if (task) this.add(task);
+	if (tasks) {
+		for (var i = 0; i < tasks.length; i++) {
+			var taskNode = tasks[i];
+			var instances = taskNode ? taskNode.inst : null;
+			if (instances) {
+				var args = {appCtxt: this._appCtxt, list: this};
+				for (var j = 0; j < instances.length; j++) {
+					var instNode = instances[j];
+					var task = ZmTask.createFromDom(taskNode, instNode, args);
+					if (task) this.add(task);
+				}
 			}
 		}
 	}

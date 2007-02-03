@@ -60,7 +60,7 @@ function(data, loc, treeIds, clearOverview) {
 
 	// contacts have their own tree view so find out what kind of data we're dealing with
 	var item = (data instanceof Array) ? data[0] : null;
-	this._isContact = item && (item instanceof ZmContact);
+	var type = ZmOrganizer.FOLDER;
 
 	if (data instanceof ZmSearchFolder) {
 		this._folder = data;
@@ -69,7 +69,7 @@ function(data, loc, treeIds, clearOverview) {
 	} else if (data instanceof ZmFolder) {
 		this._folder = data;
 		omit[ZmFolder.ID_SPAM] = true;
-	} else if (this._isContact) {
+	} else if (item instanceof ZmContact) {
 		treeIds = [ZmOrganizer.ADDRBOOK];
 
 		// remove any addrbooks that are read only
@@ -82,9 +82,11 @@ function(data, loc, treeIds, clearOverview) {
 			}
 		}
 		this._items = data;
-	} else if (data instanceof ZmTask) {
+		type = ZmItem.CONTACT;
+	} else if (item instanceof ZmTask) {
 		treeIds = [ZmOrganizer.TASKS];
 		this._items = data;
+		type = ZmItem.TASK;
 	} else {
 		this._items = data;
 	}
@@ -95,9 +97,12 @@ function(data, loc, treeIds, clearOverview) {
 	this._renderOverview(ZmMoveToDialog._OVERVIEW_ID, treeIds, omit);
 
 	var folderTree = null;
-	if (this._isContact) {
+	if (item instanceof ZmContact) {
 		this._folderTreeView = this._treeView[ZmOrganizer.ADDRBOOK];
 		folderTree = this._opc.getTreeData(ZmOrganizer.ADDRBOOK);
+	} else if (item instanceof ZmTask) {
+		this._folderTreeView = this._treeView[ZmOrganizer.TASKS];
+		folderTree = this._opc.getTreeData(ZmOrganizer.TASKS);
 	} else {
 		this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
 		folderTree = this._opc.getTreeData(ZmOrganizer.FOLDER);
@@ -107,9 +112,7 @@ function(data, loc, treeIds, clearOverview) {
 	// - small hack to get selecting Trash folder working again
 	if (this._folderTreeView) {
 		var ti = this._folderTreeView.getTreeItemById(ZmOrganizer.ID_TRASH);
-		if (ti) {
-			ti.setData(ZmTreeView.KEY_TYPE, this._isContact ? ZmItem.CONTACT : ZmOrganizer.FOLDER);
-		}
+		if (ti) ti.setData(ZmTreeView.KEY_TYPE, type);
 	}
 
 	if (folderTree) {
@@ -142,7 +145,7 @@ function() {
 ZmMoveToDialog.prototype._contentHtml =
 function() {
 	this._folderTreeCellId = Dwt.getNextId();
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
 	html[idx++] = "<tr><td class='Label' colspan=2>";
@@ -156,9 +159,16 @@ function() {
 
 ZmMoveToDialog.prototype._showNewDialog =
 function() {
-	var dialog = this._isContact 
-		? this._appCtxt.getNewAddrBookDialog()
-		: this._appCtxt.getNewFolderDialog();
+	var item = (this._items instanceof Array) ? this._items[0] : null;
+	var dialog;
+
+	if (item instanceof ZmContact)
+		dialog = this._appCtxt.getNewAddrBookDialog();
+	else if (item instanceof ZmTask)
+		dialog = this._appCtxt.getNewTaskFolderDialog();
+	else
+		dialog = this._appCtxt.getNewFolderDialog();
+
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this);
 	dialog.popup(null, this);
@@ -166,7 +176,11 @@ function() {
 
 ZmMoveToDialog.prototype._newCallback =
 function(parent, name) {
-	var org = this._isContact ? ZmOrganizer.ADDRBOOK : ZmOrganizer.FOLDER;
+	var item = (this._items instanceof Array) ? this._items[0] : null;
+	var org = ZmOrganizer.FOLDER;
+	if (item instanceof ZmContact) org = ZmOrganizer.ADDRBOOK;
+	else if (item instanceof ZmTask) org = ZmOrganizer.TASKS;
+
 	var ftc = this._opc.getTreeController(org);
 	ftc._doCreate(parent, name);
 	var dialog = this._isContact

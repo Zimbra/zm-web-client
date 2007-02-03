@@ -55,3 +55,17 @@
         </table>
     </div>
 </template>
+
+<template id='TypeDialog'>
+	<div style='width:275px' id='${id}_question'></div><p>
+	<table align=center border=0 width=1%>
+		<tr>
+			<td width=1%><input checked value='1' type='radio' id='${id}_defaultRadio' name='${id}_instSeriesName'></td>
+			<td style='white-space:nowrap' id='${id}_instanceMsg'></td>
+		</tr>
+		<tr>
+			<td width=1%><input value='2' type='radio' name='${id}_instSeriesName'></td>
+			<td style='white-space:nowrap' id='${id}_seriesMsg'></td>
+		</tr>
+	</table>
+</template>

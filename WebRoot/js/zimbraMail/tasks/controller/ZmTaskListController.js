@@ -26,6 +26,8 @@
 function ZmTaskListController(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmListController.call(this, appCtxt, container, app);
+
+	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 };
 
 ZmTaskListController.prototype = new ZmListController;
@@ -69,8 +71,6 @@ function(view) {
 ZmTaskListController.prototype._getToolBarOps =
 function() {
 	var list = [ZmOperation.NEW_MENU];
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.DELETE, ZmOperation.MOVE);
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
@@ -96,25 +96,110 @@ TODO
 */
 };
 
-ZmListController.prototype._getActionMenuOps =
+ZmTaskListController.prototype._getActionMenuOps =
 function() {
-	return this._standardActionMenuOps();
+	var list = [];
+	list.push(ZmOperation.EDIT);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.DELETE);
+	list.push(ZmOperation.MOVE);
+	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+		list.push(ZmOperation.PRINT);
+	return list;
 };
 
-ZmTaskListController.prototype._getTagMenuMsg =
-function(num) {
-	return (num == 1) ? ZmMsg.tagTask : ZmMsg.tagTasks;
+ZmTaskListController.prototype._resetOperations =
+function(parent, num) {
+	ZmListController.prototype._resetOperations.call(this, parent, num);
+	// XXX: for now, only allow one task to be deleted at a time
+	parent.enable([ZmOperation.DELETE, ZmOperation.EDIT], num == 1);
+};
+
+// Delete one or more items.
+ZmTaskListController.prototype._deleteListener =
+function(ev) {
+	// XXX: how to handle multiple tasks where some may be recurring and others not?
+	//      For now, we're only allow one task to be deleted at a time.
+
+	//	var tasks = this._listView[this._currentView].getSelection();
+	var task = this._listView[this._currentView].getSelection()[0];
+
+	if (task.isRecurring() && !task.isException) {
+		// prompt user to edit instance vs. series if recurring but not exception
+		this._showTypeDialog(task, ZmCalItem.MODE_DELETE);
+	} else {
+		this._promptDelete(task, ZmCalItem.MODE_DELETE);
+	}
+};
+
+ZmTaskListController.prototype._promptDelete =
+function(task, mode) {
+	var callback = new AjxCallback(this, this._doDelete, [task, mode]);
+	this._appCtxt.getConfirmationDialog().popup(ZmMsg.confirmCancelTask, callback);
+};
+
+ZmTaskListController.prototype._doDelete =
+function(task, mode) {
+	try {
+		var respCallback = new AjxCallback(this, this._handleResponseDelete, [task]);
+		task.cancel(mode, null, respCallback, this._errorCallback);
+	} catch (ex) {
+		var params = [task, mode];
+		this._handleException(ex, this._doDelete, params, false);
+	}
+};
+
+ZmTaskListController.prototype._handleResponseDelete =
+function(task, ev) {
+	// TODO - remove task(s) from listview
+};
+
+ZmTaskListController.prototype._editTask =
+function(task) {
+	if (task.isRecurring()) {
+		// prompt user to edit instance vs. series if recurring but not exception
+		if (task.isException) {
+			this._app.getTaskController().show(task, ZmCalItem.MODE_EDIT_SINGLE_INSTANCE);
+		} else {
+			this._showTypeDialog(task, ZmCalItem.MODE_EDIT);
+		}
+	} else {
+		this._app.getTaskController().show(task, ZmCalItem.MODE_EDIT);
+	}
+};
+
+ZmTaskListController.prototype._showTypeDialog =
+function(task, mode) {
+	if (!this._typeDialog) {
+		this._typeDialog = new ZmCalItemTypeDialog(this._shell);
+		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener, [task, mode]));
+	}
+	this._typeDialog.initialize(task, mode);
+	this._typeDialog.popup();
+};
+
+ZmTaskListController.prototype._typeOkListener =
+function(task, mode, ev) {
+	var isInstance = this._typeDialog.isInstance();
+
+	if (mode == ZmCalItem.MODE_DELETE) {
+		var delMode = isInstance
+			? ZmCalItem.MODE_DELETE_INSTANCE
+			: ZmCalItem.MODE_DELETE_SERIES;
+	} else {
+		var editMode = isInstance
+			? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE
+			: ZmCalItem.MODE_EDIT_SERIES;
+		this._app.getTaskController().show(task, editMode);
+	}
 };
 
 ZmTaskListController.prototype._listSelectionListener =
 function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 
-	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-		// XXX: for now, just set mode to "EDIT"
-		// - figure out series vs. instance if recurring later
-		this._app.getTaskController().show(ev.item, ZmCalItem.MODE_EDIT);
-	}
+	if (ev.detail == DwtListView.ITEM_DBL_CLICKED)
+		this._editTask(ev.item);
 };
 
 ZmTaskListController.prototype._listActionListener =
@@ -124,10 +209,18 @@ function(ev) {
 	actionMenu.popup(0, ev.docX, ev.docY);
 };
 
+ZmTaskListController.prototype._editListener =
+function(ev) {
+	var task = this._listView[this._currentView].getSelection()[0];
+	this._editTask(task);
+};
+
 ZmTaskListController.prototype._setViewContents =
 function(view) {
 	// load tasks into the given view and perform layout.
-	this._listView[view].set(this._list.getVector(), null, this.folderId);
+	var list = this._list.getVector();
+	this._listView[view].set(list, null, this.folderId);
+	if (list.size()) this._listView[view].setSelection(list.get(0));
 };
 
 ZmTaskListController.prototype._getMoveDialogTitle =

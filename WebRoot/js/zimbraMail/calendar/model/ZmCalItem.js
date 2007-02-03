@@ -1180,7 +1180,6 @@ function(calItemNode, instNode) {
 	this.id 			= this._getAttr(calItemNode, instNode, "id");
 	this.name 			= this._getAttr(calItemNode, instNode, "name");
 	this.fragment 		= this._getAttr(calItemNode, instNode, "fr");
-	this.type 			= this._getAttr(calItemNode, instNode, "type");
 	this.isOrg 			= this._getAttr(calItemNode, instNode, "isOrg");
 	this.status 		= this._getAttr(calItemNode, instNode, "status");
 	this.ptst 			= this._getAttr(calItemNode, instNode, "ptst");

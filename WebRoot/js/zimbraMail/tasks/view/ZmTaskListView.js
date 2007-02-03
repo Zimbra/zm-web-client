@@ -59,6 +59,8 @@ ZmTaskListView.ID_STATUS			= "t--";
 ZmTaskListView.ID_PERCENT_COMPLETE	= "c--";
 ZmTaskListView.ID_END_DATE			= "d--";
 
+ZmTaskListView.KEY_ID				= "_keyId";
+
 
 // Public Methods
 ZmTaskListView.prototype.toString =
@@ -122,6 +124,7 @@ function(task, now, isDndIcon) {
 			htmlArr[idx++] = "' width=";
 			htmlArr[idx++] = width;
 			htmlArr[idx++] = ">";
+			htmlArr[idx++] = "&nbsp;";
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmTaskListView.ID_SUBJECT) == 0) {
 			// subject
@@ -203,6 +206,26 @@ function(item, isDndIcon, isMatched) {
 	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
 
 	return div;
+};
+
+ZmTaskListView.prototype._getActionMenuForColHeader =
+function() {
+	if (!this._colHeaderActionMenu) {
+		// create a action menu for the header list
+		this._colHeaderActionMenu = new ZmPopupMenu(this);
+		var actionListener = new AjxListener(this, this._colHeaderActionListener);
+		for (var i = 0; i < this._headerList.length; i++) {
+			var hCol = this._headerList[i];
+			// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
+			if (hCol._width) {
+				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, null, hCol._name, null, null, DwtMenuItem.CHECK_STYLE);
+				mi.setData(ZmTaskListView.KEY_ID, hCol._id);
+				mi.setChecked(true, true);
+				this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
+			}
+		}
+	}
+	return this._colHeaderActionMenu;
 };
 
 ZmTaskListView.prototype._getInlineWidget =
@@ -291,18 +314,46 @@ function(parent) {
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_FLAG, null, "TaskCheckbox", ZmTaskListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.done));
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_SUBJECT, ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_STATUS, ZmMsg.status, null, ZmTaskListView.CLV_COLWIDTH_STATUS));
-	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_PERCENT_COMPLETE, ZmMsg.complete, null, ZmTaskListView.CLV_COLWIDTH_DATE, ZmItem.F_COMPLETE));
+	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_PERCENT_COMPLETE, ZmMsg.percentComplete, null, ZmTaskListView.CLV_COLWIDTH_DATE, ZmItem.F_COMPLETE));
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_END_DATE, ZmMsg.dateDue, null, ZmTaskListView.CLV_COLWIDTH_DATE, ZmItem.F_DATE));
 
 	return hList;
 };
 
+ZmTaskListView.prototype.setSize =
+function(width, height) {
+	DwtListEditView.prototype.setSize.call(this, width, height);
+	this._resetColWidth();
+};
+
+ZmTaskListView.prototype.setBounds =
+function(x, y, width, height) {
+	DwtListEditView.prototype.setBounds.call(this, x, y, width, height);
+	this._resetColWidth();
+};
+
 
 // Listeners
+
 ZmTaskListView.prototype._changeListener =
 function(ev) {
 	if ((ev.type != this.type) && (ZmList.MIXED != this.type))
 		return;
 
 	// TODO
+};
+
+ZmTaskListView.prototype._colHeaderActionListener =
+function(ev) {
+	var menuItemId = ev.item.getData(ZmTaskListView.KEY_ID);
+
+	for (var i = 0; i < this._headerList.length; i++) {
+		var col = this._headerList[i];
+		if (col._id == menuItemId) {
+			col._visible = !col._visible;
+			break;
+		}
+	}
+
+	this._relayout();
 };

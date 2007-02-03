@@ -120,9 +120,8 @@ function() {
 ZmAddrBookTreeController.prototype._getActionMenuOps =
 function() {
 	var ops = [];
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
 		ops.push(ZmOperation.SHARE_ADDRBOOK);
-	}
 	ops.push(ZmOperation.DELETE, ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS);
 	return ops;
 };
@@ -154,18 +153,13 @@ function(item, object) {
 
 ZmAddrBookTreeController.prototype._shareAddrBookListener = 
 function(ev) {
-    this._pendingActionData = this._getActionedOrganizer(ev);
-
-    var addrbook = this._pendingActionData;
-	
-    var sharePropsDialog = this._appCtxt.getSharePropsDialog();
-    sharePropsDialog.popup(ZmSharePropsDialog.NEW, addrbook, null);
+	this._pendingActionData = this._getActionedOrganizer(ev);
+	this._appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
 };
 
 ZmAddrBookTreeController.prototype._mountAddrBookListener =
-function(event) {
-	var dialog = this._appCtxt.getMountFolderDialog();
-	dialog.popup(ZmOrganizer.ADDRBOOK/*, ...*/);
+function(ev) {
+	this._appCtxt.getMountFolderDialog().popup(ZmOrganizer.ADDRBOOK);
 };
 
 ZmAddrBookTreeController.prototype._changeListener =

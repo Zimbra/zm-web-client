@@ -848,7 +848,9 @@ function(items, hardDelete, attrs, op) {
 	// since base view has multiple selection turned off, always select first item
 	var appt = items[0];
 	if (op == ZmOperation.VIEW_APPT_INSTANCE || op == ZmOperation.VIEW_APPT_SERIES) {
-		var mode = (op == ZmOperation.VIEW_APPT_INSTANCE) ? ZmCalItem.MODE_DELETE_INSTANCE : ZmCalItem.MODE_DELETE_SERIES;
+		var mode = (op == ZmOperation.VIEW_APPT_INSTANCE)
+			? ZmCalItem.MODE_DELETE_INSTANCE
+			: ZmCalItem.MODE_DELETE_SERIES;
 		this._promptDeleteAppt(appt, mode);
 	} else {
 		this._deleteAppointment(appt);
@@ -917,11 +919,11 @@ function() {
 ZmCalViewController.prototype._showTypeDialog =
 function(appt, mode) {
 	if (this._typeDialog == null) {
-		this._typeDialog = new ZmApptTypeDialog(this._shell);
-		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener));
+		this._typeDialog = new ZmCalItemTypeDialog(this._shell);
+		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener, [appt, mode]));
 		this._typeDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._typeCancelListener));
 	}
-	this._typeDialog.initialize(mode, appt);
+	this._typeDialog.initialize(appt, mode);
 	this._typeDialog.popup();
 };
 
@@ -1029,11 +1031,8 @@ function(appt) {
 };
 
 ZmCalViewController.prototype._typeOkListener =
-function(ev) {
-    var appt = this._typeDialog.getAppt();
-    var mode = this._typeDialog.getApptMode();
-    var isInstance = this._typeDialog.isInstance();
-    this._performApptAction(appt, mode, isInstance);
+function(appt, mode, ev) {
+    this._performApptAction(appt, mode, this._typeDialog.isInstance());
 };
 
 ZmCalViewController.prototype._performApptAction =

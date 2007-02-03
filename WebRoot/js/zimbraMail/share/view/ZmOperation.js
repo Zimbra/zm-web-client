@@ -528,6 +528,12 @@ ZmOperation.SETUP[ZmOperation.MOUNT_NOTEBOOK] = {
 	image:		"Notebook"
 };
 
+ZmOperation.MOUNT_TASK_FOLDER = i++;
+ZmOperation.SETUP[ZmOperation.MOUNT_TASK_FOLDER] = {
+	textKey:	"mountTaskFolder",
+	image:		"Task"
+};
+
 ZmOperation.MOVE = i++;
 ZmOperation.SETUP[ZmOperation.MOVE] = {
 	textKey:	"move",
