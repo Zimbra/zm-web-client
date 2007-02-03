@@ -10,12 +10,9 @@
     <fmt:message key="noSubject" var="noSubject"/>
     <zm:getMailbox var="mailbox"/>
     <c:set var="context" value="${null}"/>
-    <fmt:message var="dayFormat" key="CAL_MONTH_DAY_FORMAT"/>
-    <fmt:message var="dayMonthChangeFormat" key="CAL_MONTH_DAY_MONTH_CHANGE_FORMAT"/>
-    <fmt:message var="titleFormat" key="CAL_MONTH_TITLE_FORMAT"/>
+    <fmt:message var="hourFormat" key="CAL_DAY_HOUR_FORMAT"/>
+    <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
     <fmt:formatDate var="title" value="${date}" pattern="${titleFormat}"/>
-    <jsp:useBean id="dateSymbols" scope="request" class="java.text.DateFormatSymbols"/>
-    <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
     <c:set var="today" value="${zm:getToday()}"/>
     <c:set var="dateCal" value="${zm:getCalendar(date)}"/>
     <c:set var="prevDate" value="${zm:pageMonth(dateCal, false)}"/>
@@ -37,19 +34,21 @@
             <td class='ZhAppContent'>
                 <!-- ${appts}-->
 
-                <TABLE width=100% border="1" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
+                <TABLE class='ZhCalDayGrid' width=100% border="1" cellpadding=0 cellspacing=0 style='border-collapse:Xcollapse'>
 
                 <zm:forEachApptRowLayout var="row" appointments="${appts}" start="${date.time}" end="${date.time+1000*60*60*24}">
                     <!-- ROW -->
                     <tr>
                         <td width=1px>&nbsp;</td>
                         <c:if test="${row.rowNum % 4 eq 0}">
-                            <td nowrap width=1% rowspan=4 style='border-left:none'>${row.rowNum}</td>
+                            <td class='ZhCalDayHour' nowrap width=1% rowspan=4 style='border-left:none'>
+                                    <fmt:formatDate value="${row.date}" pattern="${hourFormat}"/>
+                            </td>
                         </c:if>
                         <c:forEach var="column" items="${row.columns}">
                             <c:choose>
                                 <c:when test="${not empty column.appt and column.isFirst}">
-                                    <td valign=top width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>${fn:escapeXml(column.appt.name)}</td>
+                                    <app:dayAppt colspan="${column.colSpan}" rowspan="${column.rowSpan}" width="${column.width}" appt="${column.appt}" start="" end=""/>
                                 </c:when>
                                 <c:when test="${empty column.appt}">
                                     <td width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>&nbsp;</td>
@@ -60,106 +59,6 @@
 
                 </zm:forEachApptRowLayout>
                 </TABLE>
-                <TABLE width=100% border="1" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
-                     <tr>
-                        <td width=1px style='border-right:none'>&nbsp;</td>
-                        <td nowrap width=1% rowspan=4 style='border-left:none'>9:00 AM</td>
-                        <td width=33% rowspan=2 valign=top colspan=1 style='background:red'>9:00 AM breakfast at foo bar and grill</td>
-                       <td width=66% colspan=2>&nbsp;</td>
-                    </tr>
-                    <tr>
-                       <td style='border-right:none;'>&nbsp;</td>
-                       <!-- td time  -->
-                       <!-- td prev row -->
-                       <td width=66% colspan=2 style='background:green'>9:15 AM shut it</td>
-                    </tr>
-                    <tr>
-                       <td style='border-right:none;'>&nbsp;</td>
-                       <!-- td time  -->
-                       <td style='background:blue' valign='top' width=33% rowspan=2>9:30 AM whateva</td>
-                      <td width=66% colspan=2>&nbsp;</td>
-                    </tr>
-                    <tr>
-                       <td style='border-right:none;'>&nbsp;</td>
-                       <!-- td time  -->
-                       <!-- td prev row -->
-                       <td style='background:red' width=66% colspan=2>9:45 AM and eva</td>
-                    </tr>
-                    <tr>
-                        <td width=1px style='border-right:none'>&nbsp;</td>
-                        <td nowrap width=1% rowspan=4 style='border-left:none'>10:00 AM</td>
-                       <td valign=top rowspan=4 width=33% style='background:yellow'>10:15 AM shut it</td>
-                       <td width=66% colspan=2>&nbsp;</td>
-                    </tr>
-                    <tr>
-                       <td style='border-right:none;'>&nbsp;</td>
-                       <!-- td time  -->
-                       <!-- td prev row -->
-                       <td width=66% colspan=2>&nbsp;</td>
-                    </tr>
-                    <tr>
-                       <td style='border-right:none;'>&nbsp;</td>
-                       <!-- td time  -->
-                       <!-- td prev row -->
-                      <td valign='top' width=33% rowspan=6 style='background:red'>10:30 AM dork</td>
-                      <td width=33% style='background:purple'>10:30 AM azzholio qwerty abcd 12345 this is a long name</td>
-                    </tr>
-                    <tr>
-                       <td style='border-right:none;'>&nbsp;</td>
-                       <!-- td time  -->
-                       <!-- td prev row -->
-                      <td colspan=2 width=66%>&nbsp;</td>
-                    </tr>
-                    <tr>
-                        <td width=1px style='border-right:none'>&nbsp;</td>
-                        <td nowrap width=1% rowspan=4 style='border-left:none'>11:00 AM</td>
-                       <td  width=33%>&nbsp;</td>
-                       <!-- td prev row -->
-                       <td width=33%>&nbsp;</td>
-                    </tr>
-                    <tr>
-                       <td style='border-right:none;'>&nbsp;</td>
-                       <!-- td time  -->
-                       <td  width=33%>&nbsp;</td>
-                       <!-- td prev row -->
-                       <td width=33%>&nbsp;</td>
-                    </tr>
-                    <tr>
-                       <td style='border-right:none;'>&nbsp;</td>
-                       <!-- td time  -->
-                      <td width=33% rowspan=2 style='background:purple'>11:30 AM lunchola</td>
-                       <!-- td prev row -->
-                       <td width=33%>&nbsp;</td>
-                    </tr>
-                    <tr>
-                       <td style='border-right:none;'>&nbsp;</td>
-                       <!-- td time  -->
-                       <!-- td prev row -->
-                       <!-- td prev row -->
-                       <td width=33%>&nbsp;</td>
-                    </tr>
-
-                     <tr>
-                        <td width=1px style='border-right:none'>&nbsp;</td>
-                        <td nowrap width=1% rowspan=4 style='border-left:none'>12:00 PM</td>
-                       <td valign=top rowspan=4 colspan=3 width=100% style='background:orange'>12:00 PM blah blah group meeting</td>
-                    </tr>
-                    <tr>
-                       <td style='border-right:none;'>&nbsp;</td>
-                       <!-- td time  -->
-                    </tr>
-                    <tr>
-                       <td style='border-right:none;'>&nbsp;</td>
-                       <!-- td time  -->
-
-                    </tr>
-                    <tr>
-                       <td style='border-right:none;'>&nbsp;</td>
-                       <!-- td time  -->
-                    </tr>
-                    
-                </TABLE>
-
             </td>
         </tr>
     </table>

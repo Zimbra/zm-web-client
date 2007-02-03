@@ -688,6 +688,30 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 	border-bottom-width:1px;
 }
 
+.ZhCalDayAppt {
+padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
+    border:2px solid;
+    	border-color:#AAAAAA #333333 #333333 #AAAAAA;
+    #IFDEF GECKO
+    -moz-border-radius:2 2 2 2;
+#ENDIF
+}
+
+/* day of week label for the month */
+.ZhCalDayHour {
+ 	@AppBg@
+	@PageHeaderText@
+	@FontSize-big@
+	@SmallBoxPadding@
+	@BottomSeparator@
+	@Label@
+	text-align:center;   
+}
+
+/* day of week label for the month */
+.ZhCalDayGrid {
+ 	@AppBg@
+}
 /*
  * Colors, for use in calendar and elsewhere.
  *
