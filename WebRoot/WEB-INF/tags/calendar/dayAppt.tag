@@ -20,7 +20,7 @@
         </div>
     </c:when>
     <c:when test="${appt.duration gt 1000*60*15}">
-        <table class='ZhCalDayAppt' width=100% height=100% border=0 cellspacing=0 cellpadding="0">
+        <table class='ZhCalDayAppt' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
             <tr>
                 <td nowrap class='${color}${appt.partStatusNeedsAction ? 'Light' : 'Light'}' valign=top>
                      <fmt:message key="CAL_DAY_APPT_HEADER">
@@ -39,7 +39,7 @@
         </table>
     </c:when>
     <c:otherwise>
-        <table class='ZhCalDayAppt' width=100% height=100% border=0 cellspacing=0 cellpadding="0">
+        <table class='ZhCalDayAppt' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
             <tr>
                 <td class='${color}${appt.partStatusNeedsAction ? 'Light' : 'Light'}' valign=top>
                     <fmt:message key="CAL_DAY_APPT30">

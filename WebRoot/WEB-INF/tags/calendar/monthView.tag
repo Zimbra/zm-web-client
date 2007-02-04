@@ -33,7 +33,7 @@
         </tr>
         <tr>
             <td class='ZhAppContent'>
-                <table width=100% class='ZhCalMonthHeaderTable' border=0>
+                <table width=100% class='ZhCalMonthHeaderTable' cellpadding=2 cellspacing=0 border=0>
                     <tr>
                         <td colspan=7 class='ZhCalMonthHeaderMonth'>
                                 ${fn:escapeXml(title)}
