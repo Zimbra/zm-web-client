@@ -41,10 +41,10 @@
             <td class='ZhAppContent'>
                 <table class='ZhCalDayGrid' width=100% height=100% border="0" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
                    <tr class='ZhCalMonthHeaderRow'>
-                       <td nowrap align=center width=1% style='border-left:none'>
+                       <td class='ZhCalDayHeader' nowrap align=center width=1% style='border-left:none'>
                            <fmt:formatDate value="${date}" pattern="${yearTitleFormat}"/>
                        </td>
-                       <td class='ZhCalDayHS' height=100% width=1px>&nbsp;</td>
+                       <td class='ZhCalDayHSB' height=100% width=1px>&nbsp;</td>
                        <td class='ZhCalDayHeader' colspan="${layout.maxColumns}">
                                ${fn:escapeXml(title)}
                        </td>
