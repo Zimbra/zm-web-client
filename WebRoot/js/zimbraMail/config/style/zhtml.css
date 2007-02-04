@@ -557,9 +557,8 @@ padding: 8px 0px 6px 0px;
 	background-color:#bab09a;
 }
 
-.ZhCalMonthHeaderTable {
+.ZhCalMonthHeaderRow {
 	@PageHeaderBg@
-	@CompactTable@
 }
 
 
@@ -732,6 +731,17 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
     @BottomSeparator-light@
 }
 
+/* allday bottom */
+.ZhCalDayADB {
+    @BottomSeparator-light@
+    border-bottom-width:4px;
+}
+
+.ZhCalDayADHS {
+    @RightSeparator@
+  	@BottomSeparator-light@
+    border-bottom-width:4px;
+}
 /* day of week label for the month */
 .ZhCalDayGrid {
  	@AppBg@
