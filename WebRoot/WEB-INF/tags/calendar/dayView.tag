@@ -39,9 +39,7 @@
         </tr>
         <tr>
             <td class='ZhAppContent'>
-                
-                <TABLE class='ZhCalDayGrid' width=100% height=100% border="0" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
-
+                <table class='ZhCalDayGrid' width=100% height=100% border="0" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
                    <tr class='ZhCalMonthHeaderRow'>
                        <td nowrap align=center width=1% style='border-left:none'>
                            <fmt:formatDate value="${date}" pattern="${yearTitleFormat}"/>
@@ -51,19 +49,23 @@
                                ${fn:escapeXml(title)}
                        </td>
                    </tr>
-
-                    <c:forEach var="allday" items="${layout.allDayAppts}">
-                        <tr>
-                            <td nowrap width=1% style='border-left:none'>
-                                &nbsp;
-                            </td>
-                            <td class='ZhCalDayHS' height=100% width=1px>&nbsp;</td>
-                            <td colspan="${layout.maxColumns}">
-                                <app:dayAppt appt="${allday}" start="${timeDateBegin}" end="${timeDateEnd}"/>
-                            </td>
-                        </tr>
-                    </c:forEach>
-
+                    <tr>
+                        <td nowrap width=1% style='border-left:none'>
+                            &nbsp;
+                        </td>
+                        <td class='ZhCalDayHS' height=100% width=1px>&nbsp;</td>
+                        <td colspan="${layout.maxColumns}" width=100%>
+                            <table class='ZhCalDayGrid' width=100% height=100% border="0" cellpadding=2 cellspacing=0 style='border-collapse:collapse'>
+                                <c:forEach var="allday" items="${layout.allDayAppts}">
+                                    <tr>
+                                        <td>
+                                            <app:dayAppt appt="${allday}" start="${timeDateBegin}" end="${timeDateEnd}"/>
+                                        </td>
+                                    </tr>
+                                </c:forEach>
+                            </table>
+                        </td>
+                    </tr>
                     <tr>
                         <td class='ZhCalDayADB' nowrap width=1% style='border-left:none'>
                             &nbsp;
@@ -75,29 +77,28 @@
                     </tr>
 
                     <c:forEach var="row" items="${layout.rows}">
-                    <tr>
-                        <c:if test="${row.rowNum % 4 eq 0}">
-                            <td valign=top class='ZhCalDayHour' nowrap width=1% rowspan=4 style='border-left:none'>
+                        <tr>
+                            <c:if test="${row.rowNum % 4 eq 0}">
+                                <td valign=top class='ZhCalDayHour' nowrap width=1% rowspan=4 style='border-left:none'>
                                     <fmt:formatDate value="${row.date}" pattern="${hourFormat}"/>
-                            </td>
-                        </c:if>
-                        <td <c:if test="${row.rowNum % 4 ne 3}">class='ZhCalDayHS' </c:if><c:if test="${row.rowNum % 4 eq 3}">class='ZhCalDayHSB' </c:if> height=100% width=1px>&nbsp;</td>
-                        <c:forEach var="column" items="${row.columns}">
-                            <c:choose>
-                                <c:when test="${not empty column.appt and column.isFirst}">
-                                    <td valign=top height=100% width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>
-                                    <app:dayAppt appt="${column.appt}" start="${timeDateBegin}" end="${timeDateEnd}"/>
-                                    </td>
-                                </c:when>
-                                <c:when test="${empty column.appt}">
-                                    <td <c:if test="${row.rowNum % 4 eq 3}">class='ZhCalDayHB' </c:if><c:if test="${row.rowNum % 4 eq 1}">class='ZhCalDayHHB' </c:if> height=100% width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>&nbsp;</td>
-                                </c:when>
-                            </c:choose>
-                        </c:forEach>
-                    </tr>
-
-                </c:forEach>
-                </TABLE>
+                                </td>
+                            </c:if>
+                            <td <c:if test="${row.rowNum % 4 ne 3}">class='ZhCalDayHS' </c:if><c:if test="${row.rowNum % 4 eq 3}">class='ZhCalDayHSB' </c:if> height=100% width=1px>&nbsp;</td>
+                            <c:forEach var="column" items="${row.columns}">
+                                <c:choose>
+                                    <c:when test="${not empty column.appt and column.isFirst}">
+                                        <td valign=top height=100% width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>
+                                            <app:dayAppt appt="${column.appt}" start="${timeDateBegin}" end="${timeDateEnd}"/>
+                                        </td>
+                                    </c:when>
+                                    <c:when test="${empty column.appt}">
+                                        <td <c:if test="${row.rowNum % 4 eq 3}">class='ZhCalDayHB' </c:if><c:if test="${row.rowNum % 4 eq 1}">class='ZhCalDayHHB' </c:if> height=100% width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>&nbsp;</td>
+                                    </c:when>
+                                </c:choose>
+                            </c:forEach>
+                        </tr>
+                    </c:forEach>
+                </table>
             </td>
         </tr>
     </table>
