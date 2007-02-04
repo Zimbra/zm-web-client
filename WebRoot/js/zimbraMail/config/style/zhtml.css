@@ -595,6 +595,16 @@ padding: 8px 0px 6px 0px;
 	vertical-align:top;
 }
 
+/* header for day view */
+.ZhCalDayHeader {
+    @PageHeaderBg@
+	@PageHeaderText@
+	@Label@
+	text-align:center;
+    @BottomSeparator@
+    line-height: 2.0em;
+}
+
 /* label of a particular day in various states */
 .ZhCalDOM,
 .ZhCalDOMT,
@@ -689,7 +699,6 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 }
 
 .ZhCalDayAppt {
-padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
     border:2px solid;
     	border-color:#AAAAAA #333333 #333333 #AAAAAA;
     #IFDEF GECKO
@@ -701,11 +710,29 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 .ZhCalDayHour {
  	@AppBg@
 	@PageHeaderText@
-	@FontSize-big@
 	@SmallBoxPadding@
 	@BottomSeparator@
-	@Label@
+    @Label@
 	text-align:center;   
+}
+
+/* column between hours and appts */
+.ZhCalDayHS {
+    @RightSeparator@
+}
+.ZhCalDayHSB {
+    @RightSeparator@
+  	@BottomSeparator@
+}
+/* half hour bottom */
+.ZhCalDayHHB {
+    @BottomSeparator-light@
+    border-bottom-style: dashed;
+}
+
+/* hour bottom */
+.ZhCalDayHB {
+    @BottomSeparator-light@
 }
 
 /* day of week label for the month */

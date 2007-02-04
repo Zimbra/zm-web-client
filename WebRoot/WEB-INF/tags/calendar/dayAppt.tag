@@ -7,6 +7,8 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+
+<%-- TODO: take into account start/end and adjust appt start/end for rendering --%>
 <c:set var="color" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/>
 <c:choose>
     <c:when test="${appt.allDay}">
@@ -17,15 +19,34 @@
                 ${fn:escapeXml(appt.name)}
         </div>
     </c:when>
-    <c:otherwise>
-        <table width=100% height=100% border=0 cellspacing=0 cellpadding="0">
+    <c:when test="${appt.duration gt 1000*60*15}">
+        <table class='ZhCalDayAppt' width=100% height=100% border=0 cellspacing=0 cellpadding="0">
             <tr>
-        <td class='ZhCalDayAppt ${color}${appt.partStatusNeedsAction ? 'BG' : 'BG'}' valign=top>
-            <fmt:message key="CAL_DAY_APPT">
-                <fmt:param value="${appt.startDate}"/>
-                <fmt:param value="${fn:escapeXml(appt.name)}"/>
-            </fmt:message>
-        </td>
+                <td nowrap class='${color}${appt.partStatusNeedsAction ? 'Light' : 'Light'}' valign=top>
+                     <fmt:message key="CAL_DAY_APPT_HEADER">
+                        <fmt:param value="${appt.startDate}"/>
+                        <fmt:param value="${appt.endDate}"/>
+                    </fmt:message>
+                </td>
+            </tr>
+            <tr>
+                <td height=100% class='${color}${appt.partStatusNeedsAction ? 'BG' : 'BG'}' valign=top>
+                    <fmt:message key="CAL_DAY_APPT_BODY">
+                        <fmt:param value="${fn:escapeXml(appt.name)}"/>
+                    </fmt:message>
+                </td>
+            </tr>
+        </table>
+    </c:when>
+    <c:otherwise>
+        <table class='ZhCalDayAppt' width=100% height=100% border=0 cellspacing=0 cellpadding="0">
+            <tr>
+                <td class='${color}${appt.partStatusNeedsAction ? 'Light' : 'Light'}' valign=top>
+                    <fmt:message key="CAL_DAY_APPT30">
+                        <fmt:param value="${appt.startDate}"/>
+                        <fmt:param value="${fn:escapeXml(appt.name)}"/>
+                    </fmt:message>
+                </td>
             </tr>
         </table>
     </c:otherwise>

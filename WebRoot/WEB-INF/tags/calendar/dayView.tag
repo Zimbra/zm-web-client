@@ -15,8 +15,8 @@
     <fmt:formatDate var="title" value="${date}" pattern="${titleFormat}"/>
     <c:set var="today" value="${zm:getToday()}"/>
     <c:set var="dateCal" value="${zm:getCalendar(date)}"/>
-    <c:set var="prevDate" value="${zm:pageMonth(dateCal, false)}"/>
-    <c:set var="nextDate" value="${zm:pageMonth(dateCal,  true)}"/>
+    <c:set var="prevDate" value="${zm:addDay(dateCal, -1)}"/>
+    <c:set var="nextDate" value="${zm:addDay(dateCal,  1)}"/>
 
     <zm:getAppointmentSummaries var="appts" start="${date.time}" end="${date.time+1000*60*60*24}"/>
 </app:handleError>
@@ -32,19 +32,23 @@
         </tr>
         <tr>
             <td class='ZhAppContent'>
-                <!-- ${appts}-->
-
-                <TABLE class='ZhCalDayGrid' width=100% height=100% border="1" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
+                <table width=100% height=100% class='ZhCalMonthHeaderTable' border=0>
+                    <tr>
+                        <td class='ZhCalDayHeader'>
+                                ${fn:escapeXml(title)}
+                        </td>
+                    </tr>
+                </table>
+                <TABLE class='ZhCalDayGrid' width=100% height=100% border="0" cellpadding=0 cellspacing=0 style='border-collapse:collapse'>
 
                 <zm:forEachApptRowLayout var="row" appointments="${appts}" start="${date.time}" end="${date.time+1000*60*60*24}">
-                    <!-- ROW -->
                     <tr>
-                        <td height=100% width=1px>&nbsp;</td>
                         <c:if test="${row.rowNum % 4 eq 0}">
-                            <td class='ZhCalDayHour' nowrap width=1% rowspan=4 style='border-left:none'>
+                            <td valign=top class='ZhCalDayHour' nowrap width=1% rowspan=4 style='border-left:none'>
                                     <fmt:formatDate value="${row.date}" pattern="${hourFormat}"/>
                             </td>
                         </c:if>
+                        <td <c:if test="${row.rowNum % 4 ne 3}">class='ZhCalDayHS' </c:if><c:if test="${row.rowNum % 4 eq 3}">class='ZhCalDayHSB' </c:if> height=100% width=1px>&nbsp;</td>
                         <c:forEach var="column" items="${row.columns}">
                             <c:choose>
                                 <c:when test="${not empty column.appt and column.isFirst}">
@@ -53,7 +57,7 @@
                                     </td>
                                 </c:when>
                                 <c:when test="${empty column.appt}">
-                                    <td height=100% width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>&nbsp;</td>
+                                    <td <c:if test="${row.rowNum % 4 eq 3}">class='ZhCalDayHB' </c:if><c:if test="${row.rowNum % 4 eq 1}">class='ZhCalDayHHB' </c:if> height=100% width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>&nbsp;</td>
                                 </c:when>
                             </c:choose>
                         </c:forEach>

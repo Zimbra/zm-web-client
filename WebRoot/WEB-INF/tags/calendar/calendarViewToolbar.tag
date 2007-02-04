@@ -17,12 +17,14 @@
     <zm:getMailbox var="mailbox"/>
     <c:set var="calViewToolbarCache" scope="request">
         <fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd"/>
-        <c:url var="monthUrl" value="/h/calendar">
+        <c:url var="viewUrl" value="/h/calendar">
             <c:param name="date" value="${dateDf}"/>
-            <c:param name="view" value="month"/>
         </c:url>
+         <td>
+            <a href="${viewUrl}&view=day"><app:img altkey="ALT_CAL_DAY_VIEW" src="calendar/DayView.gif"/><fmt:message key="day"/></a>
+        </td>
         <td>
-            <a href="${monthUrl}"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/MonthView.gif"/><fmt:message key="month"/></a>
+            <a href="${viewUrl}&view=month"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/MonthView.gif"/><fmt:message key="month"/></a>
         </td>
         <fmt:formatDate var="todayDf" value="${today.time}" pattern="yyyyMMdd"/>
         <td>
