@@ -249,7 +249,7 @@ function(compNum) {
 	if (this._serverEndTime == null) {
 		if (this.components[cn].e != null ) {
 			this._serverEndTime = this.components[cn].e[0].d;
-		} else {
+		} else if (this.components[cn].s) {
 			// get the duration
 			var dur	= this.components[cn].dur;
 			var dd		= dur && dur[0].d || 0;
@@ -298,7 +298,8 @@ function(compNum) {
 ZmInvite.prototype.getServerStartTime = 
 function(compNum) {
 	var cn = compNum || 0;
-	return this.components[cn] ? this.components[cn].s[0].d : null;
+	return this.components[cn] && this.components[cn].s
+		? this.components[cn].s[0].d : null;
 };
 
 ZmInvite.prototype.getServerStartDate =
@@ -319,7 +320,7 @@ function(compNum) {
 		var startTime = this.getServerStartTime();
 		this._serverStartTimeZone = startTime && startTime.charAt(startTime.length -1) == 'Z'
 			? AjxTimezone.GMT_NO_DST
-			: this.components[cn].s[0].tz;
+			: (this.components[cn].s ? this.components[cn].s[0].tz : null);
 	}
 	return this._serverStartTimeZone;
 };

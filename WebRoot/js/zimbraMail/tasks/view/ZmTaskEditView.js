@@ -61,8 +61,8 @@ function() {
 };
 
 ZmTaskEditView.prototype.set =
-function(calItem) {
-	this.initialize(calItem);
+function(calItem, mode, isDirty) {
+	this.initialize(calItem, mode, isDirty);
 };
 
 ZmTaskEditView.prototype._getClone =

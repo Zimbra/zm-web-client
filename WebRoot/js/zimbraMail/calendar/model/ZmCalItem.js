@@ -70,7 +70,8 @@ ZmCalItem.MODE_DELETE				= 5;
 ZmCalItem.MODE_DELETE_INSTANCE		= 6;
 ZmCalItem.MODE_DELETE_SERIES		= 7;
 ZmCalItem.MODE_NEW_FROM_QUICKADD 	= 8;
-ZmCalItem.MODE_LAST					= 8;
+ZmCalItem.MODE_GET					= 9;
+ZmCalItem.MODE_LAST					= 9;
 
 ZmCalItem.PRIORITY_LOW				= 9;
 ZmCalItem.PRIORITY_NORMAL			= 5;
@@ -263,12 +264,14 @@ function() {
 
 ZmCalItem.prototype.resetRepeatWeeklyDays =
 function() {
-	this._recurrence.repeatWeeklyDays = [ZmCalItem.SERVER_WEEK_DAYS[this.startDate.getDay()]];
+	if (this.startDate)
+		this._recurrence.repeatWeeklyDays = [ZmCalItem.SERVER_WEEK_DAYS[this.startDate.getDay()]];
 };
 
 ZmCalItem.prototype.resetRepeatMonthlyDayList =
 function() {
-	this._recurrence.repeatMonthlyDayList = [this.startDate.getDate()];
+	if (this.startDate)
+		this._recurrence.repeatMonthlyDayList = [this.startDate.getDate()];
 };
 
 ZmCalItem.prototype.resetRepeatYearlyMonthsList =
@@ -278,7 +281,8 @@ function(mo) {
 
 ZmCalItem.prototype.resetRepeatCustomDayOfWeek =
 function() {
-	this._recurrence.repeatCustomDayOfWeek = ZmCalItem.SERVER_WEEK_DAYS[this.startDate.getDay()];
+	if (this.startDate)
+		this._recurrence.repeatCustomDayOfWeek = ZmCalItem.SERVER_WEEK_DAYS[this.startDate.getDay()];
 };
 
 ZmCalItem.prototype.isOverlapping =
@@ -427,7 +431,7 @@ function() {
 
 ZmCalItem.prototype.getUniqueStartDate =
 function() {
-	if (this._uniqueStartDate == null) {
+	if (this._uniqueStartDate == null && this.uniqStartTime) {
 		this._uniqueStartDate = new Date(this.uniqStartTime);
 	}
 	return this._uniqueStartDate;
@@ -435,7 +439,7 @@ function() {
 
 ZmCalItem.prototype.getUniqueEndDate =
 function() {
-	if (this._uniqueEndDate == null) {
+	if (this._uniqueEndDate == null && this.uniqStartTime) {
 		this._uniqueEndDate = new Date(this.uniqStartTime + this.getDuration());
 	}
 	return this._uniqueEndDate;
@@ -450,7 +454,9 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate) {
 		var id = seriesMode ? (this._seriesInvId || this.invId) : this.invId;
 		this._message = new ZmMailMsg(this._appCtxt, id);
 		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, this._message, callback]);
-		var respErrorCallback = !ignoreOutOfDate ? new AjxCallback(this, this._handleErrorGetDetails, [mode, callback, errorCallback]) : errorCallback;
+		var respErrorCallback = !ignoreOutOfDate
+			? (new AjxCallback(this, this._handleErrorGetDetails, [mode, callback, errorCallback]))
+			: errorCallback;
 		this._message.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, respErrorCallback);
 	} else {
 		this.setFromMessage(this._message, mode);
@@ -462,7 +468,7 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate) {
 ZmCalItem.prototype._handleErrorGetDetails =
 function(mode, callback, errorCallback, ex) {
 	if (ex.code == "mail.INVITE_OUT_OF_DATE") {
-		var soapDoc = AjxSoapDoc.create("GetAppointmentRequest", "urn:zimbraMail");
+		var soapDoc = AjxSoapDoc.create(this._getSoapForMode(ZmCalItem.MODE_GET), "urn:zimbraMail");
 		soapDoc.setMethodAttribute("id", this.id);
 
 		var respCallback = new AjxCallback(this, this._handleErrorGetDetails2, [mode, callback, errorCallback]);
@@ -525,22 +531,25 @@ function(notes) {
 
 ZmCalItem.prototype._setTimeFromMessage =
 function(message, viewMode) {
-	// if instance of recurring appointment, start date is generated from
-	// unique start time sent in appointment summaries. Associated message
-	// will contain only the original start time.
+	// if instance of recurring appointment, start date is generated from unique
+	// start time sent in appointment summaries. Associated message will contain
+	// only the original start time.
 	var start = message.invite.getServerStartTime();
 	var end = message.invite.getServerEndTime();
 	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
-		this.setStartDate(this.getUniqueStartDate());
-		this.setEndDate(this.getUniqueEndDate());
+		var usd = this.getUniqueStartDate();
+		if (usd) this.setStartDate(usd);
+
+		var ued = this.getUniqueEndDate();
+		if (ued) this.setEndDate(ued);
 	} else {
-		this.setStartDate(AjxDateUtil.parseServerDateTime(start));
-		this.setEndDate(AjxDateUtil.parseServerDateTime(end));
+		if (start) this.setStartDate(AjxDateUtil.parseServerDateTime(start));
+		if (end) this.setEndDate(AjxDateUtil.parseServerDateTime(end));
 	}
 
 	// record whether the start/end dates are in UTC
-	this.startsInUTC = start.charAt(start.length-1) == "Z";
-	this.endsInUTC = end.charAt(start.length-1) == "Z";
+	this.startsInUTC = start ? start.charAt(start.length-1) == "Z" : null;
+	this.endsInUTC = end ? end.charAt(start.length-1) == "Z" : null;
 
 	// record timezone if given, otherwise, guess
 	this.setTimezone(message.invite.getServerStartTimeTz() || AjxTimezone.getServerId(AjxTimezone.DEFAULT));
@@ -995,14 +1004,9 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 	if (this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE && !this.isException) {
 		// do nothing for instance requests
 	} else {
-		if (onBehalfOf)
-		{
+		if (onBehalfOf) {
 			m.setAttribute("l", this.getFolder().rid);
-		}
-		// only set folderId if not default folder and not editing single instance
-		else if (this.folderId != this._getDefaultFolderId() &&
-				 this.viewMode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE)
-		{
+		} else if (this.viewMode != ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
 			m.setAttribute("l", this.folderId);
 		}
 	}

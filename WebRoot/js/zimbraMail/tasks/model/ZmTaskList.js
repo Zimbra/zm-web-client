@@ -52,7 +52,9 @@ function() {
 };
 
 ZmTaskList.prototype.load =
-function(callback, errorCallback, startDate, endDate, folderId) {
+function(callback, errorCallback, folderId, startDate, endDate) {
+	var fid = folderId || ZmOrganizer.ID_TASKS;
+
 //	var sd = startDate || (new Date(0));										// either given start date or beginning of time
 //	HACK HACK HACK - get 7 days earlier + 199 days until server allows more
 	var sd = startDate;
@@ -72,7 +74,7 @@ function(callback, errorCallback, startDate, endDate, folderId) {
 	var soapDoc = AjxSoapDoc.create("GetTaskSummariesRequest", "urn:zimbraMail");
 	soapDoc.setMethodAttribute("s", sd.getTime());
 	soapDoc.setMethodAttribute("e", ed.getTime());
-	if (folderId) soapDoc.setMethodAttribute("l", folderId);
+	soapDoc.setMethodAttribute("l", fid);
 
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [callback]);
 	var params = {soapDoc:soapDoc, asyncMode:true, callback:respCallback, errorCallback:errorCallback};

@@ -466,6 +466,9 @@ function(mode, isException) {
 		case ZmCalItem.MODE_DELETE_SERIES:
 		case ZmCalItem.MODE_DELETE_INSTANCE:
 			return "CancelAppointmentRequest";
+
+		case ZmCalItem.MODE_GET:
+			return "GetAppointmentRequest";
 	}
 
 	return null;

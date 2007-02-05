@@ -312,10 +312,10 @@ function(parent) {
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_PRIORITY, null, "TaskP3", ZmTaskListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.status));
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_ATTACHMENT, null, "Attachment", ZmTaskListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.attachment));
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_FLAG, null, "TaskCheckbox", ZmTaskListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.done));
-	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_SUBJECT, ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
+	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_SUBJECT, ZmMsg.subject));
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_STATUS, ZmMsg.status, null, ZmTaskListView.CLV_COLWIDTH_STATUS));
-	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_PERCENT_COMPLETE, ZmMsg.percentComplete, null, ZmTaskListView.CLV_COLWIDTH_DATE, ZmItem.F_COMPLETE));
-	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_END_DATE, ZmMsg.dateDue, null, ZmTaskListView.CLV_COLWIDTH_DATE, ZmItem.F_DATE));
+	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_PERCENT_COMPLETE, ZmMsg.percentComplete, null, ZmTaskListView.CLV_COLWIDTH_DATE));
+	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_END_DATE, ZmMsg.dateDue, null, ZmTaskListView.CLV_COLWIDTH_DATE));
 
 	return hList;
 };
@@ -341,6 +341,7 @@ function(ev) {
 		return;
 
 	// TODO
+	DBG.println("----------- todo: HANDLE CHANGE LISTENER -------------");
 };
 
 ZmTaskListView.prototype._colHeaderActionListener =

@@ -37,9 +37,11 @@ function() {
 };
 
 ZmTasksApp.prototype.launch =
-function(callback, errorCallback) {
-	var respCallback = new AjxCallback(this, this._handleResponseLaunch, callback);
-	this.getTaskList(respCallback, errorCallback);
+function(callback, errorCallback, folderId) {
+	if (!this._launchCallback) {
+		this._launchCallback = new AjxCallback(this, this._handleResponseLaunch, callback);
+	}
+	this.getTaskList(this._launchCallback, errorCallback, folderId);
 };
 
 
@@ -72,23 +74,19 @@ function() {
 };
 
 ZmTasksApp.prototype.getTaskList =
-function(callback, errorCallback) {
-	if (!this._taskList) {
-		try {
-			this._taskList = new ZmTaskList(this._appCtxt);
-			var respCallback = new AjxCallback(this, this._handleResponseGetTaskList, callback);
-			this._taskList.load(respCallback, errorCallback);
-		} catch (ex) {
-			this._taskList = null;
-			throw ex;
-		}
-	} else {
-		if (callback) callback.run();
-	}
-	if (!callback) return this._taskList;
-};
+function(callback, errorCallback, folderId) {
+	if (this._taskList)
+		this._taskList.clear();
 
-ZmTasksApp.prototype._handleResponseGetTaskList =
-function(callback) {
-	if (callback) callback.run();
+	try {
+		this._taskList = new ZmTaskList(this._appCtxt);
+		this._taskList.load(callback, errorCallback, folderId);
+	} catch (ex) {
+		this._taskList = null;
+		throw ex;
+	}
+
+	if (!callback) {
+		return this._taskList;
+	}
 };

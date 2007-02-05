@@ -356,7 +356,7 @@ function(refresh) {
 
 	// XXX: temp, get additional share info (see bug #4434)
 	if (refresh.folder) {
-		this._getFolderPermissions([ZmOrganizer.CALENDAR, /*ZmOrganizer.TASKS,*/ ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK]);
+		this._getFolderPermissions([ZmOrganizer.CALENDAR, ZmOrganizer.TASKS, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK]);
 	}
 
 	return resetTree;

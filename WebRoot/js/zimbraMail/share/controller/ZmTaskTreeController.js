@@ -174,6 +174,6 @@ function(organizer) {
 */
 ZmTaskTreeController.prototype._itemClicked =
 function(folder) {
-	DBG.println("TODO");
-	// TODO
+	var tapp = this._appCtxt.getApp(ZmZimbraMail.TASKS_APP);
+	tapp.launch(null, null, folder.id);
 };

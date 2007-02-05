@@ -156,16 +156,23 @@ function(task, ev) {
 
 ZmTaskListController.prototype._editTask =
 function(task) {
+	var mode = ZmCalItem.MODE_EDIT;
+
 	if (task.isRecurring()) {
 		// prompt user to edit instance vs. series if recurring but not exception
 		if (task.isException) {
-			this._app.getTaskController().show(task, ZmCalItem.MODE_EDIT_SINGLE_INSTANCE);
+			mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
 		} else {
 			this._showTypeDialog(task, ZmCalItem.MODE_EDIT);
+			return;
 		}
-	} else {
-		this._app.getTaskController().show(task, ZmCalItem.MODE_EDIT);
 	}
+	task.getDetails(mode, new AjxCallback(this, this._showTaskEditView, [task, mode]));
+};
+
+ZmTaskListController.prototype._showTaskEditView =
+function(task, mode) {
+	this._app.getTaskController().show(task, mode);
 };
 
 ZmTaskListController.prototype._showTypeDialog =
@@ -186,11 +193,13 @@ function(task, mode, ev) {
 		var delMode = isInstance
 			? ZmCalItem.MODE_DELETE_INSTANCE
 			: ZmCalItem.MODE_DELETE_SERIES;
+		// TODO
 	} else {
 		var editMode = isInstance
 			? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE
 			: ZmCalItem.MODE_EDIT_SERIES;
-		this._app.getTaskController().show(task, editMode);
+
+		task.getDetails(mode, new AjxCallback(this, this._showTaskEditView, [task, editMode]));
 	}
 };
 

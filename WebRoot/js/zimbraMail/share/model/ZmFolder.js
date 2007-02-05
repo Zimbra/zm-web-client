@@ -148,8 +148,9 @@ function(parent, obj, tree) {
 	// ignore non-mail folders
 	if (obj.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] ||
 		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK] ||
-		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK]) {
-
+		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK] ||
+		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.TASKS])
+	{
 		return;
 	}
 
