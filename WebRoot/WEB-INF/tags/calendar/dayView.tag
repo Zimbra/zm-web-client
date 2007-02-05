@@ -10,7 +10,6 @@
     <fmt:message key="noSubject" var="noSubject"/>
     <zm:getMailbox var="mailbox"/>
     <c:set var="context" value="${null}"/>
-    <fmt:message var="hourFormat" key="CAL_DAY_HOUR_FORMAT"/>
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
     <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
     <fmt:message var="tbTitleFormat" key="CAL_DAY_TB_TITLE_FORMAT"/>
@@ -80,7 +79,9 @@
                         <tr>
                             <c:if test="${row.rowNum % 4 eq 0}">
                                 <td valign=top class='ZhCalDayHour' nowrap width=1% rowspan=4 style='border-left:none'>
-                                    <fmt:formatDate value="${row.date}" pattern="${hourFormat}"/>
+                                    <fmt:message key="CAL_DAY_HOUR_FORMAT">
+                                     <fmt:param value="${row.date}"/>
+                                    </fmt:message>
                                 </td>
                             </c:if>
                             <td <c:if test="${row.rowNum % 4 ne 3}">class='ZhCalDayHS' </c:if><c:if test="${row.rowNum % 4 eq 3}">class='ZhCalDayHSB' </c:if> height=100% width=1px>&nbsp;</td>

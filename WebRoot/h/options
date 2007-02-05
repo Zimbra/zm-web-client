@@ -79,8 +79,12 @@
         <c:set var="subKey" value="mailFilters"/>
     </c:when>
     <%------------------- ADDRESS BOOK ------------------%>
-    <c:when test="${selected eq 'addressbook'}">
+    <c:when test="${selected eq 'addressbook' and mailbox.features.contacts}">
         <c:set var="subKey" value="addressBook"/>
+    </c:when>
+    <%------------------- ADDRESS BOOK ------------------%>
+    <c:when test="${selected eq 'calendar' and mailbox.features.calendar}">
+        <c:set var="subKey" value="calendar"/>
     </c:when>
     <%------------------- SHORTCUTS ------------------%>
     <c:when test="${selected eq 'shortcuts'}">
@@ -148,6 +152,10 @@
                                     <%------------------- ADDRESS BOOK ------------------%>
                                     <c:when test="${selected eq 'addressbook'}">
                                         <app:optAddressBook mailbox="${mailbox}"/>
+                                    </c:when>
+                                    <%------------------- CALENDARW ------------------%>
+                                    <c:when test="${selected eq 'calendar'}">
+                                        <app:optCalendar mailbox="${mailbox}"/>
                                     </c:when>
                                     <%------------------- SHORTCUTS ------------------%>
                                     <c:when test="${selected eq 'shortcuts'}">
