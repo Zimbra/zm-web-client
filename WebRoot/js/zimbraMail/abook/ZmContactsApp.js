@@ -56,7 +56,7 @@ function ZmContactsApp(appCtxt, container, parentController) {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("ContactsCore");
-			return new ZmContactList(this._appCtxt, search, false);
+			return new ZmContactList(this._appCtxt, search, search ? search.isGalSearch : null);
 		}, this)
 						});
 
