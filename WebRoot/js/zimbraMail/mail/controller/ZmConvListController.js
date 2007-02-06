@@ -86,6 +86,7 @@ function(searchResult) {
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements, true);
 	this._setViewMenu(ZmController.CONVLIST_VIEW);
+	this._setGroupMailBy(ZmItem.CONV);
 
 	// reset selected index prior to resetting new list items
 	var list = this._listView[this._currentView].getList();
