@@ -121,18 +121,6 @@ ZmAppt.prototype.setFreeBusy 			= function(fb) 			{ this.freeBusy = fb || "B"; }
 // Public methods
 
 /**
- * This method sets the view mode, and resets any other fields that should not 
- * be set for that view mode.
- */
-ZmAppt.prototype.setViewMode = 
-function(mode) {
-	this._viewMode = mode || ZmAppt.MODE_NEW;
-
-	if (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE)
-		this._recurrence.repeatType = "NON";
-};
-
-/**
 * Used to make our own copy because the form will modify the date object by 
 * calling its setters instead of replacing it with a new date object.
 */
@@ -150,7 +138,7 @@ function(appt) {
 	newAppt._origLocations = AjxUtil.createProxy(appt.getOrigLocations());
 	newAppt._origEquipment = AjxUtil.createProxy(appt.getOrigEquipment());
 	newAppt._validAttachments = AjxUtil.createProxy(appt._validAttachments);
-	
+
 	if (newAppt._orig == null) 
 		newAppt._orig = appt;
 

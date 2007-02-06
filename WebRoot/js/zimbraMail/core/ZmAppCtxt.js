@@ -268,7 +268,7 @@ ZmAppCtxt.prototype.getNewTaskFolderDialog =
 function() {
 	if (!this._newTaskFolderDialog) {
 		AjxDispatcher.require(["TasksCore", "Tasks"]);
-		this._newTaskFlderDialog = new ZmNewTaskFolderDialog(this._shell, this.getMsgDialog());
+		this._newTaskFolderDialog = new ZmNewTaskFolderDialog(this._shell, this.getMsgDialog());
 	}
 	return this._newTaskFolderDialog;
 };

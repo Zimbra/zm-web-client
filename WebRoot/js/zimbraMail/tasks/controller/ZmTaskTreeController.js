@@ -174,6 +174,6 @@ function(organizer) {
 */
 ZmTaskTreeController.prototype._itemClicked =
 function(folder) {
-	var tapp = this._appCtxt.getApp(ZmZimbraMail.TASKS_APP);
+	var tapp = this._appCtxt.getApp(ZmApp.TASKS);
 	tapp.launch(null, null, folder.id);
 };
