@@ -149,10 +149,8 @@ function(date, list, controller, noheader) {
 		var ao = list.get(i);
 		if (!ao.isAllDayEvent()) {
 		
-			var color = ZmCalBaseView.COLORS[controller.getCalendarColor(ao.getFolderId())];
-			var pstatus = ao.getParticipationStatus();
-			var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
-
+			var color = ZmCalBaseView.COLORS[controller.getCalendarColor(ao.folderId)];
+			var isNew = ao.status == ZmCalItem.PSTATUS_NEEDS_ACTION;
 
 			html.append("<tr><td class='calendar_month_day_item'><div class='", color, isNew ? "DarkC" : "C", "'>");		
 			if (isNew) html.append("<b>");
