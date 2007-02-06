@@ -23,7 +23,9 @@
         <table class='ZhCalDayAppt' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
             <tr>
                 <td nowrap class='${color}${appt.partStatusNeedsAction ? 'Light' : 'Light'}' valign=top>
-                     <fmt:message key="CAL_DAY_APPT_HEADER">
+                    <c:set var="startDate" value="${appt.startDate.time lt start ? 'S' : ''}"/>
+                    <c:set var="endDate" value="${appt.endDate.time gt end ? 'E' : ''}"/>
+                     <fmt:message key="CAL_DAY_APPT_HEADER${startDate}${endDate}">
                         <fmt:param value="${appt.startDate}"/>
                         <fmt:param value="${appt.endDate}"/>
                     </fmt:message>

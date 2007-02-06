@@ -74,6 +74,8 @@
         <c:when test="${selected eq 'calendar'}">
             <zm:pref name="zimbraPrefCalendarInitialView" value="${param.zimbraPrefCalendarInitialView}"/>
             <zm:pref name="zimbraPrefCalendarFirstdayOfWeek" value="${param.zimbraPrefCalendarFirstdayOfWeek}"/>
+            <zm:pref name="zimbraPrefCalendarDayHourStart" value="${param.zimbraPrefCalendarDayHourStart}"/>
+            <zm:pref name="zimbraPrefCalendarDayHourEnd" value="${param.zimbraPrefCalendarDayHourEnd}"/>
         </c:when>
     </c:choose>
 </zm:modifyPrefs>

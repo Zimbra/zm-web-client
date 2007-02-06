@@ -23,7 +23,8 @@
     <c:set var="timeDateEnd" value="${date.time + 1000*60*60*24}"/>
 
     <zm:getAppointmentSummaries var="appts" start="${date.time}" end="${date.time+1000*60*60*24}"/>
-    <zm:apptRowLayout var="layout" appointments="${appts}" start="${date.time}" end="${date.time+1000*60*60*24}"/>
+    <zm:apptRowLayout var="layout" appointments="${appts}" start="${date.time}" end="${date.time+1000*60*60*24}"
+            hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
     <!-- ROWS ${layout.rows}-->
 </app:handleError>
 
