@@ -31,31 +31,36 @@
 * @author Parag Shah
 * @param parent			the element that created this view
 */
-function ZmApptTypeDialog(parent) {
+function ZmCalItemTypeDialog(parent) {
 
 	DwtDialog.call(this, parent);
 
-	this.setContent(this._setHtml());
-	this._cacheFields();
+	var content = AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#TypeDialog", {id:this._htmlElId});
+	this.setContent(content);
+
+	// cache fields
+	this._defaultRadio = document.getElementById(this._htmlElId + "_defaultRadio");
+	this._questionCell = document.getElementById(this._htmlElId + "_question");
+	this._instanceMsg = document.getElementById(this._htmlElId + "_instanceMsg");
+	this._seriesMsg = document.getElementById(this._htmlElId + "_seriesMsg");
 };
 
-ZmApptTypeDialog.prototype = new DwtDialog;
-ZmApptTypeDialog.prototype.constructor = ZmApptTypeDialog;
+ZmCalItemTypeDialog.prototype = new DwtDialog;
+ZmCalItemTypeDialog.prototype.constructor = ZmCalItemTypeDialog;
 
 // Public methods
 
-ZmApptTypeDialog.prototype.toString = 
+ZmCalItemTypeDialog.prototype.toString =
 function() {
-	return "ZmApptTypeDialog";
+	return "ZmCalItemTypeDialog";
 };
 
-ZmApptTypeDialog.prototype.initialize = 
-function(mode, appt) {
-	this._appt = appt;
-	this._apptMode = mode;
+ZmCalItemTypeDialog.prototype.initialize =
+function(calItem, mode) {
 	this._defaultRadio.checked = true;
 
-	var m = AjxMessageFormat.format(ZmMsg.isRecurringAppt, [appt.getName()]);
+	var type = calItem.type == ZmItem.APPT ? ZmMsg.isRecurringAppt : ZmMsg.isRecurringTask;
+	var m = AjxMessageFormat.format(type, [calItem.getName()]);
 	if (mode == ZmCalItem.MODE_EDIT) {
 		this.setTitle(ZmMsg.openRecurringItem);
 		this._questionCell.innerHTML = m + " " + ZmMsg.editApptQuestion;
@@ -74,65 +79,12 @@ function(mode, appt) {
 	}
 };
 
-ZmApptTypeDialog.prototype.addSelectionListener = 
+ZmCalItemTypeDialog.prototype.addSelectionListener =
 function(buttonId, listener) {
 	this._button[buttonId].addSelectionListener(listener);
 };
 
-ZmApptTypeDialog.prototype.isInstance = 
+ZmCalItemTypeDialog.prototype.isInstance =
 function() {
 	return this._defaultRadio.checked;
-};
-
-ZmApptTypeDialog.prototype.getAppt = 
-function() {
-	return this._appt;
-};
-
-ZmApptTypeDialog.prototype.getApptMode = 
-function() {
-	return this._apptMode;
-};
-
-
-// Private / protected methods
-
-ZmApptTypeDialog.prototype._setHtml = 
-function() {
-	this._questionId = Dwt.getNextId();
-	this._defaultRadioId = Dwt.getNextId();
-	this._instSeriesRadioName = Dwt.getNextId();
-	this._instanceMsgId = Dwt.getNextId();
-	this._seriesMsgId = Dwt.getNextId();
-
-	var html = new Array();
-	var i = 0;
-
-	html[i++] = "<div style='width:275px' id='";
-	html[i++] = this._questionId;
-	html[i++] = "'></div><p>";
-	html[i++] = "<table align=center border=0 width=1%>";
-	html[i++] = "<tr><td width=1%><input checked value='1' type='radio' id='";
-	html[i++] = this._defaultRadioId;
-	html[i++] = "' name='";
-	html[i++] = this._instSeriesRadioName;
-	html[i++] = "'></td><td style='white-space:nowrap' id='";
-	html[i++] = this._instanceMsgId;
-	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td width=1%><input value='2' type='radio' name='";
-	html[i++] = this._instSeriesRadioName;
-	html[i++] = "'></td><td style='white-space:nowrap' id='";
-	html[i++] = this._seriesMsgId;
-	html[i++] = "'></td></tr>";
-	html[i++] = "</table>";
-
-	return html.join("");
-};
-
-ZmApptTypeDialog.prototype._cacheFields = 
-function() {
-	this._defaultRadio = document.getElementById(this._defaultRadioId); 		delete this._defaultRadioId;
-	this._questionCell = document.getElementById(this._questionId); 			delete this._questionId;
-	this._instanceMsg = document.getElementById(this._instanceMsgId); 			delete this._instanceMsgId;
-	this._seriesMsg = document.getElementById(this._seriesMsgId); 				delete this._seriesMsgId;
 };
