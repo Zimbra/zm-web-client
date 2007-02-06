@@ -77,8 +77,9 @@ function(parent, obj, tree, elementType, path) {
 	} else {
 		var type = obj.view ? ZmOrganizer.TYPE[obj.view] : ZmOrganizer.FOLDER;
 		if (!type) { return; }
-		if (ZmOrganizer.DEFERRABLE[type]) {
-			var app = tree._appCtxt.getApp(ZmOrganizer.APP[type]);
+		var appCtxt = tree._appCtxt;
+		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type]) {
+			var app = appCtxt.getApp(ZmOrganizer.APP[type]);
 			app.addDeferredFolder(type, obj, tree, path);
 		} else {
 			var pkg = ZmOrganizer.ORG_PACKAGE[type];
