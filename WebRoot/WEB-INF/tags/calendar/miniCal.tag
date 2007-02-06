@@ -55,7 +55,7 @@
                     <c:set var="clazz" value='ZhCalMDOM'/>
                 </c:otherwise>
             </c:choose>
-            <td align=center class='${clazz}'>
+            <td align=center class='${clazz}${currentDay.timeInMillis eq date.time ? ' ZhCalMDS':''}'>
                 <fmt:formatDate value="${currentDay.time}" pattern="${dayFormat}"/>
             </td>
             ${zm:getNextDay(currentDay)}

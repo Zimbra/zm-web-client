@@ -45,7 +45,7 @@
                            <fmt:formatDate value="${date}" pattern="${yearTitleFormat}"/>
                        </td>
                        <td class='ZhCalDayHSB' height=100% width=1px>&nbsp;</td>
-                       <td class='ZhCalDayHeader' colspan="${layout.maxColumns}">
+                       <td class='ZhCalDayHeader${date.time eq today.timeInMillis ? 'Today':''}' colspan="${layout.maxColumns}">
                                ${fn:escapeXml(title)}
                        </td>
                    </tr>

@@ -54,7 +54,7 @@
                     <c:forEach var="week" begin="1" end="6">
                         <tr>
                             <c:forEach var="dow" begin="1" end="7" varStatus="dowStatus">
-                                <td width=14% class='ZhCalMonthCellsTd'>
+                                <td width=14% class='ZhCalMonthDay${currentDay.timeInMillis eq dateCal.timeInMillis ? 'Selected':''}'>
                                     <table width=100% cellspacing=2>
                                         <tr>
                                             <c:choose>

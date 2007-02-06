@@ -588,20 +588,26 @@ padding: 8px 0px 6px 0px;
 }
 
 /* cell for each day in the month view in various states*/
-.ZhCalMonthCellsTd {
+.ZhCalMonthDay, .ZhCalMonthDaySelected {
     @SeparatorBorder@
 	@NoWrap@
 	vertical-align:top;
 }
 
+.ZhCalMonthDaySelected { @SelectedBg@ }
+
 /* header for day view */
-.ZhCalDayHeader {
+.ZhCalDayHeader, .ZhCalDayHeaderToday {
     @PageHeaderBg@
 	@PageHeaderText@
 	@Label@
 	text-align:center;
     @BottomSeparator@
     line-height: 2.0em;
+}
+
+.ZhCalDayHeaderToday {
+    @Text-today@
 }
 
 /* label of a particular day in various states */
@@ -635,7 +641,8 @@ padding: 8px 0px 6px 0px;
     padding-bottom: 5px;
 }
 
-/* label of a particular day in various states */
+.ZhCalMDS { @SelectedBg@ }
+
 .ZhCalMDOM,
 .ZhCalMDOMT,
 .ZhCalMDOMO,
