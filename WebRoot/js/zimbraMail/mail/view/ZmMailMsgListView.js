@@ -64,7 +64,7 @@ function(defaultColumnSort) {
 		var fromColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_FROM]);
 		var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
 		if (fromColSpan) fromColSpan.innerHTML = "&nbsp;" + colLabel;
-		this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
+		if (this._colHeaderActionMenu) this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
 
 		// set the received column name based on query string
 		colLabel = isFolder.sent
@@ -72,7 +72,7 @@ function(defaultColumnSort) {
 		var recdColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]);
 		var recdColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[recdColIdx]._id);
 		if (recdColSpan) recdColSpan.innerHTML = "&nbsp;" + colLabel;
-		this._colHeaderActionMenu.getItem(recdColIdx).setText(colLabel);
+		if (this._colHeaderActionMenu) this._colHeaderActionMenu.getItem(recdColIdx).setText(colLabel);
 	}
 };
 
