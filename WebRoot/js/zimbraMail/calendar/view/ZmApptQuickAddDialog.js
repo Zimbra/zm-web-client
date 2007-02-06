@@ -105,9 +105,9 @@ function(appt) {
 	// autocomplete for locations
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var shell = this._appCtxt.getShell();
-		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
+		var resourcesClass = this._appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations,
-					  matchValue: ZmContactList.AC_VALUE_NAME};
+					  matchValue: ZmContactsApp.AC_VALUE_NAME};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._locationField.getInputElement());
 	}
@@ -140,7 +140,7 @@ function() {
 	appt.setStartDate(startDate);
 	appt.setEndDate(endDate);
 	appt.setRecurType(this._repeatSelect.getValue());
-	appt.setAttendees(ZmEmailAddress.split(this._locationField.getValue()), ZmCalItem.LOCATION);
+	appt.setAttendees(AjxEmailAddress.split(this._locationField.getValue()), ZmCalItem.LOCATION);
 
 	return appt;
 };
@@ -297,8 +297,8 @@ function() {
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
-	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
-	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
+	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
+	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
 
 	// create selects for Time section
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);

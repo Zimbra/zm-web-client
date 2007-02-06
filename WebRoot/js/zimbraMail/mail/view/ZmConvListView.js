@@ -353,7 +353,7 @@ function(conv, preferHtml, callback, appCtxt) {
 		var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetPrintHtml, [conv, preferHtml, appCtxt, callback]);
 		window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	} else {
-		ZmConvListView._printMessages(conv, preferHtml, callback);
+		ZmConvListView._printMessages(conv, preferHtml, appCtxt, callback);
 	}
 };
 

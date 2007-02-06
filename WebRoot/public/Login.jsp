@@ -165,15 +165,32 @@
 <script type="text/javascript" language="javascript">
 appContextPath = "<%= contextPath %>";
 </script>
-<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
-<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
+<jsp:include page="Messages.jsp"/>
 <jsp:include page="Boot.jsp"/>
-<jsp:include page="Ajax.jsp"/>
-<jsp:include page="Zimbra.jsp"/>
-<jsp:include page="LoginFiles.jsp"/>
-<% } else { %>
-<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
-<% } %>
+<%
+    String packages = "AjaxLogin,ZimbraLogin,Login";
+
+    String extraPackages = request.getParameter("packages");
+    if (extraPackages != null) packages += ","+extraPackages;
+
+    String pprefix = inDevMode ? "public/jsp" : "js";
+    String psuffix = inDevMode ? ".jsp" : "_all.js";
+
+    String[] pnames = packages.split(",");
+    for (String pname : pnames) {
+        String pageurl = "/"+pprefix+"/"+pname+psuffix;
+        if (inDevMode) { %>
+            <jsp:include>
+                <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
+            </jsp:include>
+        <% } else { %>
+            <script type="text/javascript" src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script>
+        <% } %>
+    <% }
+%>
+<script type="text/javascript">
+AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
+</script>
 <script type="text/javascript">
 	var initMode = "<%= initMode %>";
 	AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp";
@@ -249,7 +266,7 @@ appContextPath = "<%= contextPath %>";
 </head>
 <body>
 <noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
-    <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="/zimbra" value='/h/'/></fmt:param></fmt:message>
+    <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="<%=contextPath%>" value='/h/'/></fmt:param></fmt:message>
 </noscript>
 </body>
 </html>

@@ -32,12 +32,12 @@ function ZmSharePropsDialog(appCtxt, shell, className) {
 
 	// create auto-completer	
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var dataClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+		var dataClass = this._appCtxt.getApp(ZmApp.CONTACTS);
 		var dataLoader = dataClass.getContactList;
 		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, [this]);
 		var compCallback = new AjxCallback(this, this._handleCompletionData, [this]);
 		var params = {parent: this, dataClass: dataClass, dataLoader: dataLoader,
-					  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback,
+					  matchValue: ZmContactsApp.AC_VALUE_EMAIL, locCallback: locCallback,
 					  compCallback: compCallback,
 					  keyUpCallback: new AjxCallback(this, this._acKeyUpListener) };
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
@@ -70,7 +70,7 @@ function(mode, object, share, loc) {
 	this._share = share;
 
 	this._nameEl.innerHTML = AjxStringUtil.htmlEncode(object.name);
-	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[this._object.type] || ZmMsg.folder;
+	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[this._object.type]] || ZmMsg.folder;
 
 	var isNewShare = (this._shareMode == ZmSharePropsDialog.NEW);
 	var isUserShare = share ? share.isUser() || share.isGroup() : true;
@@ -169,7 +169,7 @@ function(event) {
 	if (this._shareMode == ZmSharePropsDialog.NEW) {
 		var type = this._getType(isUserShare, isGuestShare, isPublicShare);
 		if (!isPublicShare) {
-			var addrs = ZmEmailAddress.split(this._granteeInput.getValue());
+			var addrs = AjxEmailAddress.split(this._granteeInput.getValue());
 			if (addrs && addrs.length) {
 				for (var i = 0; i < addrs.length; i++) {
 					var share = this._setUpShare();
@@ -216,7 +216,7 @@ function(shares, result) {
 			var email = share.grantee.email || share.grantee.id;
 
 			var addrs = new AjxVector();
-			var addr = new ZmEmailAddress(email, ZmEmailAddress.TO);
+			var addr = new AjxEmailAddress(email, AjxEmailAddress.TO);
 			addrs.add(addr);
 
 			var tmpShare = new ZmShare({appCtxt: this._appCtxt, object: share.object});

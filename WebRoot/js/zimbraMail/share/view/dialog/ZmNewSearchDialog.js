@@ -104,7 +104,7 @@ function() {
 	if (!msg && (parentFolder.id == ZmOrganizer.ID_ROOT) && this._folderTree.root.hasChild(name))
 		msg = ZmMsg.folderOrSearchNameExists;
 
-	return (msg ? this._showError(msg) : [parentFolder, name, this._search]);
+	return (msg ? this._showError(msg) : {parent:parentFolder, name:name, search:this._search});
 }
 
 ZmNewSearchDialog.prototype._enterListener =

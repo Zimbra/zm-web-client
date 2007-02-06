@@ -97,7 +97,7 @@ function() {
     DwtDragTracker.init(this._statusLabel, DwtDragTracker.STYLE_MOVE, 5, 5, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_DRAG);        
     DwtDragTracker.init(this._gripper, DwtDragTracker.STYLE_RESIZE_SOUTHEAST, 5, 5, this._dragTrackerCallback, this, ZmChatWindow._TRACKER_RESIZE);
 
-	var dropTgt = new DwtDropTarget(ZmRosterTreeItem);
+	var dropTgt = new DwtDropTarget("ZmRosterTreeItem");
 	this._input.setDropTarget(dropTgt);
 	this._content.setDropTarget(dropTgt);
 	dropTgt.addDropListener(new AjxListener(this, this._dropListener));

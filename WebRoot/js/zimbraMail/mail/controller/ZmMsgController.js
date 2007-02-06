@@ -218,9 +218,8 @@ function(view) {
 ZmMsgController.prototype._paginate = 
 function(view, bPageForward) {
 	// NOTE: do not call base class.
-	var controller = this._mode == ZmController.TRAD_VIEW 
-		? this._app.getTradController() 
-		: this._app.getConvController();
+	var controller = AjxDispatcher.run((this._mode == ZmController.TRAD_VIEW) ? "GetTradController" :
+																				"GetConvController");
 
 	if (controller) {
 		controller.pageItemSilently(this._msg, bPageForward);

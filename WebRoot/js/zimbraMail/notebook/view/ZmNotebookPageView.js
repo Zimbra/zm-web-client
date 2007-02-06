@@ -163,7 +163,7 @@ function(page, appCtxt) {
 		return "";
 	}
 
-	var cache = appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP).getNotebookCache();
+	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
 	var chrome = cache.getPageByName(page.folderId, ZmNotebook.PAGE_CHROME, true);
 	var chromeContent = chrome.getContent();
 

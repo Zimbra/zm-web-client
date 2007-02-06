@@ -264,18 +264,18 @@ function() {
 
 	// autocomplete for attendees
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+		var contactsClass = this._appCtxt.getApp(ZmApp.CONTACTS);
 		var contactsLoader = contactsClass.getContactList;
 		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader, separator: "",
-					  matchValue: ZmContactList.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback};
+					  matchValue: ZmContactsApp.AC_VALUE_NAME, keyUpCallback: keyUpCallback, compCallback: acCallback};
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalItem.PERSON] = this._acContactsList;
 	}
 	// autocomplete for locations/equipment
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
+		var resourcesClass = this._appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations, separator: "",
-					  matchValue: ZmContactList.AC_VALUE_NAME, compCallback: acCallback};
+					  matchValue: ZmContactsApp.AC_VALUE_NAME, compCallback: acCallback};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acList[ZmCalItem.LOCATION] = this._acLocationsList;
 		params.dataLoader = resourcesClass.getEquipment;
@@ -496,8 +496,8 @@ function() {
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
-	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt);
-	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt);
+	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt);
+	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt);
 
 	var navBarListener = new AjxListener(this, this._navBarListener);
 	this._navToolbar = new ZmNavToolBar(this, DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
@@ -892,6 +892,7 @@ function(ev) {
 ZmSchedTabViewPage.prototype._contactPickerListener =
 function(ev) {
 	if (!this._contactPicker) {
+		AjxDispatcher.require("ContactsCore");
 		this._contactPicker = new ZmContactPicker(this._appCtxt);
 		this._contactPicker.registerCallback(DwtDialog.OK_BUTTON, this._contactPickerOk, this);
 	}
@@ -1141,7 +1142,7 @@ function(result) {
 ZmSchedTabViewPage.prototype._emailValidator =
 function(value) {
 	var str = AjxStringUtil.trim(value);
-	if (str.length > 0 && !ZmEmailAddress.isValid(value)) {
+	if (str.length > 0 && !AjxEmailAddress.isValid(value)) {
 		throw ZmMsg.errorInvalidEmail;
 	}
 

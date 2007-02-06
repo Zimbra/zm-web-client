@@ -67,10 +67,12 @@ function() {
 		list.push(ZmPicker.SEARCH);
 	}
     list.push(ZmPicker.SIZE);
-    var idxZimlets = this._appCtxt.getZimletMgr().getIndexedZimlets();
-    if (idxZimlets.length) {
-    	list.push(ZmPicker.ZIMLET);
-    }
+	if (this._appCtxt.zimletsPresent()) {
+	    var idxZimlets = this._appCtxt.getZimletMgr().getIndexedZimlets();
+	    if (idxZimlets.length) {
+	    	list.push(ZmPicker.ZIMLET);
+	    }
+	}
 	list.push(ZmPicker.FLAG);
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		list.push(ZmPicker.TAG);

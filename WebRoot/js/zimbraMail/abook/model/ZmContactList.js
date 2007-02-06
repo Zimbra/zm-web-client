@@ -48,7 +48,7 @@
 * @param isGal		[boolean]*		if true, this is a list of GAL contacts
 * @param type		[constant]*		item type
 */
-function ZmContactList(appCtxt, search, isGal, type) {
+ZmContactList = function(appCtxt, search, isGal, type) {
 	
 	if (arguments.length == 0) return;
 	type = type ? type : ZmItem.CONTACT;
@@ -79,9 +79,6 @@ ZmContactList.prototype.constructor = ZmContactList;
 ZmContactList.AC_FIELDS 		= [ZmContact.F_firstName, ZmContact.F_lastName, ZmContact.X_fullName, ZmContact.X_firstLast,
 								   ZmContact.F_fileAs, ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
 ZmContactList.AC_NAME_FIELDS	= [ZmContact.F_firstName, ZmContact.F_lastName];
-ZmContactList.AC_VALUE_FULL 	= "fullAddress";
-ZmContactList.AC_VALUE_EMAIL	= "email";
-ZmContactList.AC_VALUE_NAME		= "name";
 ZmContactList.AC_MAX 			= 20;	// max # of autocomplete matches to return
 ZmContactList.AC_PREMATCH		= 2;	// # of characters to do pre-matching for
 ZmContactList.AC_GAL_TIMEOUT	= 15;	// GAL autocomplete timeout (in seconds)
@@ -192,7 +189,7 @@ function(list) {
 ZmContactList.prototype.addFromDom =
 function(node, args) {
 	// first make sure this contact isnt already in the canonical list
-	var canonicalList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+	var canonicalList = AjxDispatcher.run("GetContacts");
 	var contact = canonicalList.getById(node.id);
 	if (contact) {
 		// NOTE: we dont realize contact b/c getById already does that for us
@@ -735,7 +732,7 @@ function(str, which) {
  */
 ZmContactList.prototype.isComplete =
 function(str) {
-	return ZmEmailAddress.isValid(str);
+	return AjxEmailAddress.isValid(str);
 };
 
 /**
@@ -760,9 +757,9 @@ function(str) {
 	}
 	if (this._userDomain) {
 		var text = [str, this._userDomain].join("@");
-		result[ZmContactList.AC_VALUE_FULL] = text;
-		result[ZmContactList.AC_VALUE_EMAIL] = text;
-		result[ZmContactList.AC_VALUE_NAME] = text;
+		result[ZmContactsApp.AC_VALUE_FULL] = text;
+		result[ZmContactsApp.AC_VALUE_EMAIL] = text;
+		result[ZmContactsApp.AC_VALUE_NAME] = text;
 		return result;
 	} else {
 		return null;
@@ -903,7 +900,7 @@ function(str) {
 		var matches = this._getMatches(list[i], str);
 		if (matches && matches.length) {
 			for (var j = 0; j < matches.length; j++) {
-				var email = matches[j][ZmContactList.AC_VALUE_EMAIL];
+				var email = matches[j][ZmContactsApp.AC_VALUE_EMAIL];
 				if (!emails[email]) {
 					results.push(matches[j]);
 					emails[email] = true;
@@ -997,7 +994,7 @@ function(nameHL, emailHL, name, email, contact) {
 		: (contact.isGal ? "GALContact" : "Contact");
 
 	if (contact.isGroup()) {
-		result[ZmContactList.AC_VALUE_FULL] = emailHL.toString(ZmEmailAddress.SEPARATOR);
+		result[ZmContactsApp.AC_VALUE_FULL] = emailHL.toString(AjxEmailAddress.SEPARATOR);
 
 		var members = emailHL.getArray();
 		var emailArr = [];
@@ -1009,12 +1006,12 @@ function(nameHL, emailHL, name, email, contact) {
 			emailArr.push(e);
 			nameArr.push(members[i].name || e);
 		}
-		result[ZmContactList.AC_VALUE_EMAIL] = emailArr.join(ZmEmailAddress.SEPARATOR);
-		result[ZmContactList.AC_VALUE_NAME] = nameArr.join(ZmEmailAddress.SEPARATOR);
+		result[ZmContactsApp.AC_VALUE_EMAIL] = emailArr.join(AjxEmailAddress.SEPARATOR);
+		result[ZmContactsApp.AC_VALUE_NAME] = nameArr.join(AjxEmailAddress.SEPARATOR);
 	} else {
-		result[ZmContactList.AC_VALUE_FULL] = name ? ['"', name, '" <', email, ">"].join("") : email;
-		result[ZmContactList.AC_VALUE_EMAIL] = email;
-		result[ZmContactList.AC_VALUE_NAME] = name || email;
+		result[ZmContactsApp.AC_VALUE_FULL] = name ? ['"', name, '" <', email, ">"].join("") : email;
+		result[ZmContactsApp.AC_VALUE_EMAIL] = email;
+		result[ZmContactsApp.AC_VALUE_NAME] = name || email;
 	}
 
 	return result;
@@ -1070,9 +1067,7 @@ function(str, aclv, callback) {
 	}
 	var sortBy = ZmSearch.NAME_DESC;
 	var types = AjxVector.fromArray([ZmItem.CONTACT]);
-	var isChildWindow = aclv._appCtxt.getAppController().isChildWindow(); // make sure to check isChildWindow from aclv's appCtxt!
-	var params = {query: str, types: types, sortBy: sortBy, offset: 0,
-		limit: ZmContactList.AC_MAX, isGalAutocompleteSearch: true, isChildWindw:isChildWindow};
+	var params = {query: str, types: types, sortBy: sortBy, offset: 0, limit: ZmContactList.AC_MAX, isGalAutocompleteSearch: true};
 	var search = new ZmSearch(this._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseGetGalMatches, [str, aclv, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches, [aclv, callback]);
@@ -1164,7 +1159,7 @@ function(aclv, callback, ex) {
 			var settings = this._appCtxt.getSettings();
 			var setting = settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE_SESSION);
 			setting.setValue(false);
-			this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController().setDirty(ZmPrefView.ADDR_BOOK, true);
+			AjxDispatcher.run("GetPrefController").setDirty(ZmPrefView.ADDR_BOOK, true);
 			this._galFailures = 0;
 		}
 	}
@@ -1181,4 +1176,9 @@ function(ev) {
 		this._acAddrList = {};	
 		this._setGalAutocompleteEnabled();
 	}
+};
+
+ZmContactList.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	return ZmContactCardsView.getPrintHtml(this);
 };

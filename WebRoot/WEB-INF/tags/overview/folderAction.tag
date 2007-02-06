@@ -104,18 +104,13 @@
                 <c:set var="folderid" value="${fn:substring(param.folderToMove, 2, -1)}"/>
                 <c:set var="folderName" value="${zm:getFolderName(pageContext, folderid)}"/>
                 <c:set var="parentid" value="${fn:substring(param.newParentFolder, 2, -1)}"/>
+                <c:set var="parentName" value="${parentid == 1 ? zm:m(pageContext, 'rootFolder') : zm:getFolderName(pageContext, parentid)}"/>                                
                 <zm:moveFolder id="${folderid}" parentid="${parentid}"/>
+
                 <app:status>
                     <fmt:message key="actionFolderMoved">
                         <fmt:param value="${folderName}"/>
-                        <c:choose>
-                            <c:when test="${parentid == 1}">
-                                <fmt:param><fmt:message key="rootFolder"/></fmt:param>
-                            </c:when>
-                            <c:otherwise>
-                                <fmt:param value="${zm:getFolderName(pageContext, parentid)}"/>
-                            </c:otherwise>
-                        </c:choose>
+                        <fmt:param value="${parentName}"/>
                     </fmt:message>
                 </app:status>
             </c:otherwise>

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMailMsgView(parent, className, posStyle, mode, controller) {
+ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 	if (arguments.length == 0) return;
 	className = className ? className : "ZmMailMsgView";
 	DwtComposite.call(this, parent, className, posStyle);
@@ -170,7 +170,7 @@ function(msg) {
 };
 
 ZmMailMsgView.prototype.__hasMountpoint = function(share) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.TYPES[share.link.view]);
+	var tree = this._appCtxt.getTree(ZmOrganizer.TYPE[share.link.view]);
 	if (!tree) {
 		DBG.println("ZmMailMsgView#__hasMountpoint: no tree for view "+share.link.view);
 		return false;
@@ -376,7 +376,9 @@ function(msg, oldMsg) {
 	this.getHtmlElement().scrollTop = 0;
 
 	// notify zimlets that a new message has been opened
-	this._appCtxt.getZimletMgr().notifyZimlets("onMsgView", msg, oldMsg);
+	if (this._appCtxt.zimletsPresent()) {
+		this._appCtxt.getZimletMgr().notifyZimlets("onMsgView", msg, oldMsg);
+	}
 };
 
 // Values in this hash MUST be null or RegExp.  If "null" is passed, then that
@@ -876,7 +878,7 @@ function(htmlArr, idx, addrs, prefix) {
 	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
 	for (var i = 0; i < addrs.size(); i++) {
 		if (i > 0)
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmEmailAddress.SEPARATOR);
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR);
 
 		var addr = addrs.get(i);
 		if (this._objectManager && addr.address) {
@@ -929,8 +931,8 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "</td></tr>";
 
 	// bug fix #10652 - check invite if sentBy is set (which means on-behalf-of)
-	var sentBy = msg.getAddress(ZmEmailAddress.SENDER);
-	var addr = msg.getAddress(ZmEmailAddress.FROM) || ZmMsg.unknown; 
+	var sentBy = msg.getAddress(AjxEmailAddress.SENDER);
+	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown; 
 	var dateString = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
 
 	// add non-collapsable header info (Sent by and date)
@@ -943,7 +945,7 @@ function(msg, container, callback) {
 	htmlArr[idx++] = ZmMsg.sentBy;
 	htmlArr[idx++] = ": </td></tr></table></td>";
 	htmlArr[idx++] = "<td class='LabelColValue' style='vertical-align:bottom'>";
-	if (addr instanceof ZmEmailAddress) {
+	if (addr instanceof AjxEmailAddress) {
 		addr = addr.address || (AjxStringUtil.htmlEncode(addr.name));
 	}
 	htmlArr[idx++] = this._objectManager
@@ -971,10 +973,10 @@ function(msg, container, callback) {
 	// To/CC/Reply-to
 	for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
-		if (type == ZmEmailAddress.SENDER) continue;
+		if (type == AjxEmailAddress.SENDER) continue;
 		var addrs = msg.getAddresses(type);
 		if (addrs.size() > 0) {
-			var prefix = ZmMsg[ZmEmailAddress.TYPE_STRING[type]];
+			var prefix = ZmMsg[AjxEmailAddress.TYPE_STRING[type]];
 			idx = this._addAddressHeaderHtml(htmlArr, idx, addrs, prefix);
 		}
 	}
@@ -1436,10 +1438,10 @@ function(msg, preferHtml, callback) {
 		var len = addrs.size();
 		if (len > 0) {
 			html[idx++] = "<tr><td valign=top style='text-align:right; font-size:14px'>";
-			html[idx++] = ZmMsg[ZmEmailAddress.TYPE_STRING[ZmMailMsg.ADDRS[j]]];
+			html[idx++] = ZmMsg[AjxEmailAddress.TYPE_STRING[ZmMailMsg.ADDRS[j]]];
 			html[idx++] = ": </td><td width=100% style='font-size: 14px'>";
 			for (var i = 0; i < len; i++) {
-				html[idx++] = i > 0 ? AjxStringUtil.htmlEncode(ZmEmailAddress.SEPARATOR) : "";
+				html[idx++] = i > 0 ? AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR) : "";
 				html[idx++] = addrs.get(i).address;
 			}
 			html[idx++] = "</td></tr>";
@@ -1588,5 +1590,5 @@ function(msgId, vcardPartId) {
 		? window.parentController._appCtxt
 		: window._zimbraMail._appCtxt;
 
-	appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).createFromVCard(msgId, vcardPartId);
+	appCtxt.getApp(ZmApp.CONTACTS).createFromVCard(msgId, vcardPartId);
 };

@@ -1,0 +1,149 @@
+/*
+ * ***** BEGIN LICENSE BLOCK *****
+ * Version: ZPL 1.2
+ *
+ * The contents of this file are subject to the Zimbra Public License
+ * Version 1.2 ("License"); you may not use this file except in
+ * compliance with the License. You may obtain a copy of the License at
+ * http://www.zimbra.com/license
+ *
+ * Software distributed under the License is distributed on an "AS IS"
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
+ * the License for the specific language governing rights and limitations
+ * under the License.
+ *
+ * The Original Code is: Zimbra Collaboration Suite Web Client
+ *
+ * The Initial Developer of the Original Code is Zimbra, Inc.
+ * Portions created by Zimbra are Copyright (C) 2006 Zimbra, Inc.
+ * All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * ***** END LICENSE BLOCK *****
+ */
+
+function ZmVoicemailController(appCtxt, container, app) {
+	if (arguments.length == 0) return;
+	ZmListController.call(this, appCtxt, container, app);
+
+	this._soundPlayer = null;
+
+	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._refreshListener);
+	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
+	this._listeners[ZmOperation.MOVE] = new AjxListener(this, this._moveListener);
+	this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
+}
+ZmVoicemailController.prototype = new ZmListController;
+ZmVoicemailController.prototype.constructor = ZmVoicemailController;
+
+ZmVoicemailController.prototype.toString =
+function() {
+	return "ZmVoicemailController";
+};
+
+ZmVoicemailController.prototype._defaultView =
+function() {
+	return ZmController.VOICEMAIL_VIEW;
+};
+
+/**
+* Displays the given search results.
+*
+* @param search		search results (which should contain a list of conversations)
+*/
+ZmVoicemailController.prototype.show =
+function(searchResult) {
+	ZmListController.prototype.show.call(this, searchResult);
+	this._list = searchResult.getResults(ZmItem.VOICEMAIL);
+	this._setup(this._currentView);
+
+	var elements = new Object();
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
+	this._setView(this._currentView, elements, true);
+};
+
+
+ZmVoicemailController.prototype._createNewView = 
+function(view) {
+	var result = new ZmVoicemailView(this._container, this._appCtxt, this._dropTgt);
+	result.addSelectionListener(new AjxListener(this, this._selectListener));
+	return result;
+};
+
+ZmVoicemailController.prototype._initialize =
+function(view) {
+	ZmListController.prototype._initialize.call(this, view);
+};
+
+ZmVoicemailController.prototype._setViewContents =
+function(view) {
+	this._listView[view].set(this._list, ZmItem.F_DATE);
+};
+
+ZmVoicemailController.prototype._getToolBarOps =
+function() {
+	var list = [];
+	list.push(ZmOperation.CHECK_MAIL);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.DELETE);
+	list.push(ZmOperation.MOVE);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.FORWARD);
+	return list;
+};
+
+ZmVoicemailController.prototype._getActionMenuOps =
+function() {
+	var list = [];
+	list.push(ZmOperation.DELETE);
+	list.push(ZmOperation.MOVE);
+	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.FORWARD);
+	return list;
+};
+
+ZmVoicemailController.prototype._initializeToolBar =
+function(view) {
+	ZmListController.prototype._initializeToolBar.call(this, view);
+	this._toolbar[view].getButton(ZmOperation.CHECK_MAIL).setText(ZmMsg.checkVoicemail);
+	this._soundPlayer = new DwtSoundPlayer(this._toolbar[view]);
+};
+
+ZmVoicemailController.prototype._resetOperations = 
+function(parent, num) {
+	ZmListController.prototype._resetOperations.call(this, parent, num);
+	parent.enable(ZmOperation.CHECK_MAIL, true);
+};
+
+ZmVoicemailController.prototype._refreshListener = 
+function(ev) {
+//	alert('Check voicemail here');
+};
+
+ZmVoicemailController.prototype._deleteListener = 
+function(ev) {
+//	alert('Delete voicemail here');
+};
+
+ZmVoicemailController.prototype._moveListener = 
+function(ev) {
+//	alert('Move voicemail here');
+};
+
+ZmVoicemailController.prototype._forwardListener = 
+function(ev) {
+//	alert('Forward here');
+};
+
+ZmVoicemailController.prototype._selectListener = 
+function(ev) {
+	var selection = ev.dwtObj.getSelection();
+	var url = null;
+	if (selection.length == 1) {
+		var voicemail = selection[0];
+		url = voicemail.soundUrl;
+	}
+	this._soundPlayer.setSound(url);
+};

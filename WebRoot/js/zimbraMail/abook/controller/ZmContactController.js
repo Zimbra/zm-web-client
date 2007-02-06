@@ -205,11 +205,12 @@ function(ev, bIsPopCallback) {
 				} else {
 					this._doModify(contact, mods);
 				}
-				this._appCtxt.getZimletMgr().notifyZimlets(
-					"onContactModified",
-					ZmZimletContext._translateZMObject(contact), mods);
+				if (this._appCtxt.zimletsPresent()) {
+					this._appCtxt.getZimletMgr().notifyZimlets("onContactModified",
+						ZmZimletContext._translateZMObject(contact), mods);
+				}
 			} else {
-				this._doCreate(this._app.getContactList(), mods);
+				this._doCreate(AjxDispatcher.run("GetContacts"), mods);
 			}
 		} else {
 			// bug fix #5829 - differentiate betw. an empty contact and saving
@@ -285,7 +286,7 @@ function() {
 	this._popShield.popdown();
 
 	this._app.popView(true);
-	this._app.getAppViewMgr().showPendingView(true);
+	this._appCtxt.getAppViewMgr().showPendingView(true);
 
 	this._listView[this._currentView].cleanup();
 };
@@ -295,7 +296,7 @@ function() {
 	this._popShield.popdown();
 
 	this._app.popView(true);
-	this._app.getAppViewMgr().showPendingView(true);
+	this._appCtxt.getAppViewMgr().showPendingView(true);
 
 	this._listView[this._currentView].cleanup();
 };

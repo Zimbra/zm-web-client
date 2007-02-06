@@ -86,7 +86,6 @@ function(searchResult) {
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements, true);
 	this._setViewMenu(ZmController.CONVLIST_VIEW);
-	this._setGroupMailBy(ZmItem.CONV);
 
 	// reset selected index prior to resetting new list items
 	var list = this._listView[this._currentView].getList();
@@ -221,7 +220,7 @@ function(ev) {
 		if (ev.item.isDraft) {
 			this._doAction(ev, ZmOperation.DRAFT);
 		} else {
-			this._app.getConvController().show(this._activeSearch, ev.item);
+			AjxDispatcher.run("GetConvController").show(this._activeSearch, ev.item);
 		}
 	}
 };

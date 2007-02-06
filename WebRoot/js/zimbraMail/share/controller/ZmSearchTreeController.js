@@ -34,7 +34,7 @@
 */
 function ZmSearchTreeController(appCtxt) {
 
-	var dropTgt = new DwtDropTarget(ZmSearchFolder);
+	var dropTgt = new DwtDropTarget("ZmSearchFolder");
 	ZmFolderTreeController.call(this, appCtxt, ZmOrganizer.SEARCH, dropTgt);
 
 	this._listeners[ZmOperation.RENAME_SEARCH] = new AjxListener(this, this._renameListener);
@@ -78,8 +78,8 @@ function(overviewId, showUnread, omit, forceCreate, app, hideEmpty) {
 	}
 	// mixed app should be filtered based on the previous app!
 	var searchTypes = this._searchTypes[id] =
-		(activeApp == ZmZimbraMail.MIXED_APP && prevApp == ZmZimbraMail.CONTACTS_APP) ?
-			ZmZimbraMail.SEARCH_TYPES_H[ZmZimbraMail.CONTACTS_APP] : ZmZimbraMail.SEARCH_TYPES_H[activeApp];
+		(activeApp == ZmApp.MIXED && prevApp == ZmApp.CONTACTS) ?
+			ZmApp.SEARCH_TYPES_R[ZmApp.CONTACTS] : ZmApp.SEARCH_TYPES_R[activeApp];
 	this._treeView[id].set(this._dataTree, showUnread, omit, searchTypes);
 	this._checkTreeView(id, searchTypes);
 };
@@ -149,6 +149,12 @@ function() {
 	return list;
 };
 
+// override the ZmFolderTreeController override
+ZmSearchTreeController.prototype._getAllowedSubTypes =
+function() {
+	return ZmTreeController.prototype._getAllowedSubTypes.call();
+};
+
 /*
 * Returns a "New Saved Search" dialog.
 */
@@ -169,26 +175,6 @@ function(searchFolder) {
 	searchController.redoSearch(searchFolder.search);
 };
 
-// Listeners
-
-/*
-* Handles the potential drop of a search folder into the search tree.
-*
-* @param ev		[DwtDropEvent]		the drop event
-*/
-ZmSearchTreeController.prototype._dropListener =
-function(ev) {
-	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		var dragSearchFolder = ev.srcData; // note that search folders cannot be moved as a list
-		var dropSearchFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
-		ev.doIt = dropSearchFolder.mayContain(dragSearchFolder);
-	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
-		var dropSearchFolder = ev.targetControl.getData(Dwt.KEY_OBJECT);
-		DBG.println(AjxDebug.DBG3, "DRAG_DROP: " + ev.srcData.name + " on to " + dropSearchFolder.name);
-		this._doMove(ev.srcData, dropSearchFolder);
-	}
-};
-
 /*
 * Override to handle our multiple tree views. Primarily, we need to make sure that
 * only the appropriate tree views receive CREATE notifications. For example, we
@@ -199,12 +185,12 @@ function(ev) {
 */
 ZmSearchTreeController.prototype._treeChangeListener =
 function(ev) {
-	var searches = ev.getDetail("organizers");
+	var organizers = ev.getDetail("organizers");
 	for (var overviewId in this._treeView) {
 		if (!this._treeView[overviewId].getHtmlElement()) continue;	// tree view may have been pruned from overview
-		if (searches.length == 1 && ev.event == ZmEvent.E_CREATE) {
+		if (organizers.length == 1 && organizers[0].type == ZmOrganizer.SEARCH && ev.event == ZmEvent.E_CREATE) {
 			var app = overviewId.substr(overviewId.indexOf(ZmSearchTreeController.APP_JOIN_CHAR) + 1);
-			if (searches[0]._typeMatch(ZmZimbraMail.SEARCH_TYPES_H[app])) {
+			if (organizers[0]._typeMatch(ZmApp.SEARCH_TYPES_R[app])) {
 				this._changeListener(ev, this._treeView[overviewId], overviewId);
 			}
 		} else {
@@ -252,22 +238,6 @@ function(ev, treeView, overviewId) {
 			ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 		}
 	}
-};
-
-// Callbacks
-
-/*
-* Called when a "New Search" dialog is submitted. This override is necessary because we
-* need to pass the search object to _doCreate().
-*
-* @param parent	[ZmFolder]	folder (or search) that will contain it
-* @param name	[string]	name of the new saved search
-* @param search	[ZmSearch]	search object with details of the search
-*/
-ZmSearchTreeController.prototype._newCallback =
-function(parent, name, search) {
-	this._doCreate(parent, name, null, null, search);
-	this._getNewDialog().popdown();
 };
 
 // Miscellaneous

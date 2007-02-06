@@ -28,7 +28,7 @@
  *
  * @author Ross Dargahi
  */
-function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt, withAce) {
+ZmHtmlEditor = function(parent, posStyle, content, mode, appCtxt, withAce) {
 	if (arguments.length == 0) return;
 	this._appCtxt = appCtxt;
 	this._toolbars = [];
@@ -43,11 +43,6 @@ function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt, withAce) {
 	DwtHtmlEditor.call(this, parent, "ZmHtmlEditor", posStyle, content, mode, appContextPath+"/public/blank.html");
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));
-
-	// spell checker init
-	this._spellChecker = new ZmSpellChecker(this, appCtxt);
-	this._spellCheck = null;
-	this._spellCheckSuggestionListener = new AjxListener(this, this._spellCheckSuggestionListener);
 
 	this.__contextMenuSelectionListener = new AjxListener(this, this.__contextMenuSelectionListener);
 	this.addListener(DwtEvent.ONCONTEXTMENU, new AjxListener(this, this.__onContextMenu));
@@ -178,8 +173,13 @@ function(callback) {
 		text = AjxStringUtil.xmlEncode(text);
 
 	if (/\S/.test(text)) {
-		if (!this.onExitSpellChecker)
+		AjxDispatcher.require("Extras");
+		this._spellChecker = new ZmSpellChecker(this, appCtxt);
+		this._spellCheck = null;
+		this._spellCheckSuggestionListener = new AjxListener(this, this._spellCheckSuggestionListener);
+		if (!this.onExitSpellChecker) {
 			this.onExitSpellChecker = callback;
+		}
 		this._spellChecker.check(text, new AjxCallback(this, this._spellCheckCallback));
 		return true;
 	}
@@ -827,10 +827,12 @@ function(ev) {
 	this.focus();
 	switch (data) {
 	    case "tableProperties":
+	    AjxDispatcher.require("Extras");
 		var dlg = ZmTableEditor.getTablePropsDialog(this, this.getNearestElement("table"));
 		dlg.popup();
 		break;
 	    case "cellProperties":
+	    AjxDispatcher.require("Extras");
 		var dlg = ZmTableEditor.getCellPropsDialog(this, this.getNearestElement("table"), this.getSelectedCells());
 		dlg.popup();
 		// alert("Not yet implemented");
@@ -864,7 +866,7 @@ function(name, target, data) {
 	// chose from.
 	switch (name) {
 	    case "ZmSpreadSheet":
-		component_url = toplevel_url + appContextPath + "/ALE/spreadsheet/index.jsp";
+		component_url = toplevel_url + appContextPath + "/public/Spreadsheet.jsp";
 		break;
 	}
 

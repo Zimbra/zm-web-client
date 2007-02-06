@@ -47,6 +47,7 @@ function ZmCalBaseView(parent, className, posStyle, controller, view) {
 	
 	this._controller = controller;
 	this.view = view;	
+	this._viewPrefix = ["V", "_", this.view, "_"].join("");
 	this._evtMgr = new AjxEventMgr();	 
 	this._selectedItems = new AjxVector();
 	this._selEv = new DwtSelectionEvent(true);
@@ -147,7 +148,7 @@ function (item, element, type, optionalId) {
 
 ZmCalBaseView.prototype._getViewPrefix = 
 function() { 
-	return "V" + this.view + "_";
+	return this._viewPrefix;
 }
 
 ZmCalBaseView.prototype.deselectAll =

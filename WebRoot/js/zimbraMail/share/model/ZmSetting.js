@@ -173,6 +173,7 @@ ZmSetting.TAGGING_ENABLED				= i++;
 ZmSetting.TASKS_ENABLED					= i++;
 ZmSetting.VACATION_MSG_FEATURE_ENABLED	= i++;
 ZmSetting.VIEW_ATTACHMENT_AS_HTML 		= i++;
+ZmSetting.VOICEMAIL_ENABLED				= i++;
 
 // USER METADATA
 ZmSetting.LICENSE_STATUS				= i++;
@@ -189,7 +190,6 @@ ZmSetting.HELP_ENABLED					= i++;
 ZmSetting.MAIL_FORWARDING_ENABLED		= i++;
 ZmSetting.MIXED_VIEW_ENABLED			= i++;
 ZmSetting.NOTES_ENABLED					= i++;
-ZmSetting.PREFS_ENABLED					= i++;
 ZmSetting.PRINT_ENABLED					= i++;
 ZmSetting.REPLY_MENU_ENABLED			= i++;
 ZmSetting.FORWARD_MENU_ENABLED 			= i++;
@@ -286,7 +286,7 @@ ZmSetting.INIT = {};
 // CONFIG SETTINGS
 ZmSetting.INIT[ZmSetting.AC_TIMER_INTERVAL]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_INT, 300];
 ZmSetting.INIT[ZmSetting.ASYNC_MODE]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, true];
-ZmSetting.INIT[ZmSetting.BRANCH]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "main"];
+ZmSetting.INIT[ZmSetting.BRANCH]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "LAZY"];
 ZmSetting.INIT[ZmSetting.CLIENT_DATETIME] 				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildDateTime@"]; // this gets replaced during deploy
 ZmSetting.INIT[ZmSetting.CLIENT_RELEASE]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildRelease@"];  // this gets replaced during deploy
 ZmSetting.INIT[ZmSetting.CLIENT_VERSION]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildVersion@"];  // this gets replaced during deploy
@@ -355,9 +355,10 @@ ZmSetting.INIT[ZmSetting.SAVED_SEARCHES_ENABLED]		= ["zimbraFeatureSavedSearches
 ZmSetting.INIT[ZmSetting.SHARING_ENABLED]		 		= ["zimbraFeatureSharingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.SKIN_CHANGE_ENABLED]			= ["zimbraFeatureSkinChangeEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.TAGGING_ENABLED]				= ["zimbraFeatureTaggingEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
-ZmSetting.INIT[ZmSetting.TASKS_ENABLED]					= ["zimbraFeatureTasksEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
+ZmSetting.INIT[ZmSetting.TASKS_ENABLED]					= ["zimbraFeatureTasksEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.VACATION_MSG_FEATURE_ENABLED]	= ["zimbraFeatureOutOfOfficeReplyEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 ZmSetting.INIT[ZmSetting.VIEW_ATTACHMENT_AS_HTML] 		= ["zimbraFeatureViewInHtmlEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
+ZmSetting.INIT[ZmSetting.VOICEMAIL_ENABLED]				= ["zimbraFeatureVoicemailEnabled", ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
 
 // user metadata (included with COS since the user can't change them)
 ZmSetting.INIT[ZmSetting.LICENSE_STATUS]				= [null, ZmSetting.T_COS, ZmSetting.D_STRING, ZmSetting.LICENSE_GOOD];
@@ -373,7 +374,6 @@ ZmSetting.INIT[ZmSetting.FEED_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D
 ZmSetting.INIT[ZmSetting.HELP_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.MIXED_VIEW_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.NOTES_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, false];
-ZmSetting.INIT[ZmSetting.PREFS_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.PRINT_ENABLED]					= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.REPLY_MENU_ENABLED]			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];
 ZmSetting.INIT[ZmSetting.FORWARD_MENU_ENABLED] 			= [null, ZmSetting.T_COS, ZmSetting.D_BOOLEAN, true];

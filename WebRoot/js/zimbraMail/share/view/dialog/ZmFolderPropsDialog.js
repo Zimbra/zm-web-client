@@ -53,13 +53,6 @@ ZmFolderPropsDialog.prototype.constructor = ZmFolderPropsDialog;
 
 ZmFolderPropsDialog.ADD_SHARE_BUTTON = ++DwtDialog.LAST_BUTTON;
 
-ZmFolderPropsDialog.TYPE_CHOICES = new Object;
-ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.FOLDER]	= ZmMsg.mailFolder;
-ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.CALENDAR]	= ZmMsg.calendarFolder;
-ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.NOTEBOOK]	= ZmMsg.notebookFolder;
-ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.ADDRBOOK]	= ZmMsg.addressBookFolder;
-ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.TASKS]		= ZmMsg.taskFolder;
-
 ZmFolderPropsDialog.SHARES_HEIGHT = "9em";
 
 // Public methods
@@ -125,6 +118,7 @@ function(event) {
 
 ZmFolderPropsDialog.prototype._handleResendShare =
 function(event) {
+	AjxDispatcher.require("Share");
 	var target = DwtUiEvent.getTarget(event);
 	var share = Dwt.getObjectFromElement(target);
 	var dialog = share._appCtxt.getFolderPropsDialog();
@@ -263,14 +257,16 @@ function(event) {
 		this._nameOutputEl.style.display = "none";
 	}
 	this._ownerEl.innerHTML = AjxStringUtil.htmlEncode(organizer.owner);
-	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[organizer.type] || ZmMsg.folder;
+	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[organizer.type]] || ZmMsg.folder;
 	this._urlEl.innerHTML = organizer.url || "";
 	this._color.setSelectedValue(organizer.color);
 	this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
 
 	var showPerm = organizer.link && organizer.shares && organizer.shares.length > 0;
-	if (showPerm)
+	if (showPerm) {
+		AjxDispatcher.require("Share");
 		this._permEl.innerHTML = ZmShare.getRoleActions(organizer.shares[0].link.perm);
+	}
 
 	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		this._populateShares(organizer);
@@ -291,6 +287,7 @@ function(organizer) {
 	var shares = organizer.shares;
 	var visible = (!link && shares && shares.length > 0);
 	if (visible) {
+		AjxDispatcher.require("Share");
 		var table = document.createElement("TABLE");
 		table.border = 0;
 		table.cellSpacing = 0;

@@ -25,8 +25,59 @@
 
 function ZmTasksApp(appCtxt, container) {
 
-	ZmApp.call(this, ZmZimbraMail.TASKS_APP, appCtxt, container);
+	ZmApp.call(this, ZmApp.TASKS, appCtxt, container);
+	
+	AjxDispatcher.registerMethod("GetTaskListController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskListController));
+	AjxDispatcher.registerMethod("GetTaskController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskController));
+	
+	ZmItem.registerItem(ZmItem.TASK,
+						{app:			ZmApp.TASKS,
+						 nameKey:		"task",
+						 icon:			"Task",
+						 soapCmd:		"ItemAction",
+						 itemClass:		"ZmTask",
+						 node:			"task",
+						 organizer:		ZmOrganizer.TASKS
+						});
+
+	ZmOrganizer.registerOrg(ZmOrganizer.TASKS,
+							{app:				ZmApp.TASKS,
+							 nameKey:			"taskFolder",
+							 defaultFolder:		ZmOrganizer.ID_TASKS,
+							 soapCmd:			"FolderAction",
+							 firstUserId:		256,
+							 orgClass:			"ZmTaskFolder",
+							 orgPackage:		"TasksCore",
+							 treeController:	"ZmTaskTreeController",
+							 labelKey:			"tasks",
+							 defaultColor:		ZmOrganizer.C_GRAY,
+							 views:				["task"],
+							 createFunc:		"ZmOrganizer.create",
+							 compareFunc:		"ZmTaskFolder.sortCompare",
+							 deferrable:		true
+							});
+
+	ZmApp.registerApp(ZmApp.TASKS,
+							 {nameKey:				"tasks",
+							  icon:					"Task",
+							  chooserTooltipKey:	"goToTasks",
+							  overviewTrees:		[ZmOrganizer.TASKS],
+							  showZimlets:			true,
+							  actionCode:			ZmKeyMap.GOTO_TASKS,
+							  chooserSort:			35,
+							  defaultSort:			25});
 };
+
+// Organizer and item-related constants
+ZmEvent.S_TASK			= "TASK";
+ZmItem.TASK				= ZmEvent.S_TASK;
+ZmOrganizer.TASKS		= ZmEvent.S_TASK;
+
+// App-related constants
+ZmApp.TASKS						= "Tasks";
+ZmApp.CLASS[ZmApp.TASKS]		= "ZmTasksApp";
+ZmApp.SETTING[ZmApp.TASKS]		= ZmSetting.TASKS_ENABLED;
+ZmApp.LOAD_SORT[ZmApp.TASKS]	= 45;
 
 ZmTasksApp.prototype = new ZmApp;
 ZmTasksApp.prototype.constructor = ZmTasksApp;
@@ -38,20 +89,24 @@ function() {
 
 ZmTasksApp.prototype.launch =
 function(callback, errorCallback, folderId) {
-	if (!this._launchCallback) {
-		this._launchCallback = new AjxCallback(this, this._handleResponseLaunch, callback);
-	}
-	this.getTaskList(this._launchCallback, errorCallback, folderId);
+	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback, errorCallback, folderId]);
+	AjxDispatcher.require(["TasksCore", "Tasks"], false, loadCallback, null, true);
 };
 
 
+ZmTasksApp.prototype._handleLoadLaunch =
+function(callback, errorCallback, folderId) {
+	var respCallback = new AjxCallback(this, this._handleResponseLaunch, [callback]);
+	this.getTaskList(respCallback, errorCallback, folderId);
+};
+
 ZmTasksApp.prototype._handleResponseLaunch =
 function(callback) {
-	var tlc = this.getTaskListController();
-	tlc.show(this._taskList);
-
-	if (callback)
+	this._createDeferredFolders();
+	this.getTaskListController().show(this._taskList);
+	if (callback) {
 		callback.run();
+	}
 };
 
 ZmTasksApp.prototype.activate =
@@ -61,8 +116,9 @@ function(active, view) {
 
 ZmTasksApp.prototype.getTaskListController =
 function() {
-	if (!this._taskListController)
+	if (!this._taskListController) {
 		this._taskListController = new ZmTaskListController(this._appCtxt, this._container, this);
+	}
 	return this._taskListController;
 };
 

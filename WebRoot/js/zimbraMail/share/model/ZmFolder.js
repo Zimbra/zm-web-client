@@ -44,8 +44,10 @@
 * @param rid		[string]*		Remote ID of organizer, if remote folder
 * @param restUrl	[string]*		The REST URL of this organizer.
 */
-function ZmFolder(id, name, parent, tree, numUnread, numTotal, url, owner, zid, rid, restUrl) {
-	ZmOrganizer.call(this, ZmOrganizer.FOLDER, id, name, parent, tree, numUnread, numTotal, url, owner, zid, rid, restUrl);
+function ZmFolder(params) {
+	if (arguments.length == 0) { return; }
+	params.type = params.type || ZmOrganizer.FOLDER;
+	ZmOrganizer.call(this, params);
 };
 
 ZmFolder.prototype = new ZmOrganizer;
@@ -65,7 +67,6 @@ ZmFolder.ID_SENT			= 5;
 ZmFolder.ID_DRAFTS			= 6;
 ZmFolder.ID_CONTACTS		= ZmOrganizer.ID_ADDRBOOK;
 ZmFolder.ID_AUTO_ADDED		= ZmOrganizer.ID_AUTO_ADDED;
-ZmFolder.LAST_SYSTEM_ID		= 6;
 ZmFolder.ID_TAGS	 		= 8;
 ZmFolder.ID_OUTBOX	 		= ZmOrganizer.ID_OUTBOX;
 
@@ -121,63 +122,27 @@ ZmFolder.TCON_CODE[ZmFolder.ID_SPAM]	= "j";
 ZmFolder.TCON_CODE[ZmFolder.ID_SENT]	= "s";
 ZmFolder.TCON_CODE[ZmFolder.ID_OTHER]	= "o";
 
+// folders that look like mail folders that we don't want to show
+ZmFolder.HIDE_ID = {};
+ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS]	= true;
+
 // Hide folders migrated from Outlook mailbox
-ZmFolder.HIDE = {};
-ZmFolder.HIDE["Journal"]	= true;
-ZmFolder.HIDE["Notes"]		= true;
-//ZmFolder.HIDE["Outbox"]		= true;
-ZmFolder.HIDE["Tasks"]		= true;
+ZmFolder.HIDE_NAME = {};
+ZmFolder.HIDE_NAME["Journal"]	= true;
+ZmFolder.HIDE_NAME["Notes"]		= true;
+//ZmFolder.HIDE_NAME["Outbox"]		= true;
+ZmFolder.HIDE_NAME["Tasks"]		= true;
 
 // The extra-special, visible but untouchable outlook folder
 ZmFolder.SYNC_ISSUES = "Sync Issues";
 
 // map name to ID
-ZmFolder.QUERY_ID = new Object();
-for (var i in ZmFolder.QUERY_NAME)
-	ZmFolder.QUERY_ID[ZmFolder.QUERY_NAME[i]] = i;
-
-ZmFolder.createFromJs =
-function(parent, obj, tree) {
-	if (!(obj && obj.id)) return;
-
-	// check ID - can't be lower than root, or in tag range
-    // Allow Outbox ID... breaks some assumptions :(
-    if (obj.id != ZmFolder.ID_OUTBOX && (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID &&
-		obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]))) return;
-
-	// ignore non-mail folders
-	if (obj.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR] ||
-		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK] ||
-		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK] ||
-		obj.view == ZmOrganizer.VIEWS[ZmOrganizer.TASKS])
-	{
-		return;
+ZmFolder.QUERY_ID = {};
+(function() {
+	for (var i in ZmFolder.QUERY_NAME) {
+		ZmFolder.QUERY_ID[ZmFolder.QUERY_NAME[i]] = i;
 	}
-
-	var folder = new ZmFolder(obj.id, obj.name, parent, tree, obj.u, obj.n, obj.url, null, null, obj.rest);
-	if (ZmFolder.MSG_KEY[obj.id]) {
-		folder._systemName = obj.name;
-	}
-	folder._setSharesFromJs(obj);
-
-	// a folder may contain other folders or searches
-	if (obj.folder && obj.folder.length) {
-		for (var i = 0; i < obj.folder.length; i++) {
-			var childFolder = ZmFolder.createFromJs(folder, obj.folder[i], tree);
-			if (childFolder)
-				folder.children.add(childFolder);
-		}
-	}
-	if (parent && obj.search && obj.search.length) {
-		for (var i = 0; i < obj.search.length; i++) {
-			var childFolder = ZmSearchFolder.createFromJs(folder, obj.search[i], tree);
-			if (childFolder)
-				folder.children.add(childFolder);
-		}
-	}
-
-	return folder;
-};
+})();
 
 /**
 * Comparison function for folders. Intended for use on a list of user folders through a call to Array.sort().
@@ -325,9 +290,7 @@ function(obj, isSearch) {
 	// ignore creates of system folders
 	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]) return;
 
-	var folder = isSearch
-		? ZmSearchFolder.createFromJs(this, obj, this.tree)
-		: ZmFolder.createFromJs(this, obj, this.tree);
+	var folder = ZmFolderTree.createFromJs(this, obj, this.tree, isSearch ? "search" : "folder");
 	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
 	this.children.add(folder, index);
 	folder._notify(ZmEvent.E_CREATE);
@@ -350,7 +313,7 @@ function(obj) {
 		details.oldPath = this.getPath();
 		this.name = obj.name;
 		fields[ZmOrganizer.F_NAME] = true;
-		this.parent.children.sort(ZmTreeView.COMPARE_FUNC[this.type]);
+		this.parent.children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
 		doNotify = true;
 		obj.name = null;
 	}
@@ -364,9 +327,6 @@ function(obj) {
 		var newParent = this._getNewParent(obj.l);
 		this.reparent(newParent);
 		this._notify(ZmEvent.E_MOVE, details);
-		// could be moving search between Folders and Searches - make sure
-		// it has the correct tree
-		this.tree = newParent.tree;
 		obj.l = null;
 	}
 
@@ -444,22 +404,24 @@ function() {
 * - A draft can be moved to Trash or Drafts
 * - Non-drafts cannot be moved to Drafts
 *
-* @param what		object(s) to possibly move into this folder
+* @param what		[object]	object(s) to possibly move into this folder (item or organizer)
+* @param folderType	[constant]	contextual folder type (for tree view root items)
 */
 ZmFolder.prototype.mayContain =
-function(what) {
+function(what, folderType) {
 	if (!what) return true;
 	if (this.isFeed()) return false;
 	if (this.isSyncIssuesFolder()) return false;
 
+	var thisType = folderType || this.type;
 	var invalid = false;
 	if (what instanceof ZmFolder) {
 		var folder = what;
 		invalid = (folder.parent == this || this.isChildOf(folder) || 
 				   this.id == ZmFolder.ID_DRAFTS || this.id == ZmFolder.ID_SPAM || 
 				   (!this.isInTrash() && this.hasChild(folder.name)) ||
-				   (folder.type == ZmOrganizer.FOLDER && this.type == ZmOrganizer.SEARCH) ||
-				   (folder.type == ZmOrganizer.SEARCH && this.type == ZmOrganizer.FOLDER && this.id == ZmOrganizer.ID_ROOT) ||
+				   (folder.type == ZmOrganizer.FOLDER && thisType == ZmOrganizer.SEARCH) ||
+				   (folder.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.id == ZmOrganizer.ID_ROOT) ||
 				   (folder.id == this.id));
 	} else {
 		// An item or an array of items is being moved
@@ -467,7 +429,7 @@ function(what) {
 		var item = items[0];
 		if (this.id == ZmOrganizer.ID_ROOT) {
 			invalid = true;		// container can only have folders/searches
-		} else if (this.type == ZmOrganizer.SEARCH) {
+		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;		// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
 			invalid = true;
@@ -512,32 +474,22 @@ function() {
 	return this.name == ZmFolder.SYNC_ISSUES;
 };
 
-
-/**
-* Returns the folder with the given path
-*
-* @param path			[string]	the path to search for
-* @param useSystemName	[boolean]*	if true, use untranslated version of system folder names
-*/
-ZmFolder.prototype.getByPath =
-function(path, useSystemName) {
-	return this._getByPath(path.toLowerCase(), useSystemName);
-};
-
-// Test the path of this folder and then descendants against the given path, case insensitively
-ZmFolder.prototype._getByPath =
-function(path, useSystemName) {
-	if (this.id == ZmFolder.ID_TAGS) return null;
-
-	if (path == this.getPath(false, false, null, true, useSystemName).toLowerCase())
-		return this;
-		
-	var organizer;
+/*
+ * Returns true if this folder has a search folder for any of
+ * the given types anywhere in or under it.
+ *
+ * @param types		[hash]		a hash of search types (item type IDs)
+ */
+ZmFolder.prototype._hasType =
+function(types) {
+	if (this._typeMatch && this._typeMatch(types)) { return true; }
+	
 	var a = this.children.getArray();
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++) {
-		if (organizer = a[i]._getByPath(path, useSystemName))
-			return organizer;
+		if (a[i]._typeMatch && a[i]._typeMatch(types)) {
+			return true;
+		}
 	}
-	return null;	
+	return false;
 };

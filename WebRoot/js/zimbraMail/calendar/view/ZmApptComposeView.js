@@ -82,7 +82,7 @@ function ZmApptComposeView(parent, className, calApp, controller) {
 	this._msgDialog = this._appCtxt.getMsgDialog();
 
 	this._tabIds = [ZmApptComposeView.TAB_APPOINTMENT, ZmApptComposeView.TAB_SCHEDULE];
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) || this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		this._tabIds.push(ZmApptComposeView.TAB_ATTENDEES);
 	}
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {

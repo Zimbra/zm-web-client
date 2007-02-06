@@ -1,0 +1,28 @@
+/*
+ * Package: Tasks
+ * 
+ * Supports: The Tasks application
+ * 
+ * Loaded: When the user goes to the Tasks application
+ */
+AjxPackage.require("ajax.dwt.widgets.DwtListEditView");
+
+AjxPackage.require("zimbraMail.calendar.controller.ZmCalItemComposeController");
+
+AjxPackage.require("zimbraMail.calendar.model.ZmRecurrence");
+AjxPackage.require("zimbraMail.calendar.model.ZmCalItem");
+
+AjxPackage.require("zimbraMail.calendar.view.ZmCalItemEditView");
+
+AjxPackage.require("zimbraMail.calendar.controller.ZmCalendarTreeController");
+
+AjxPackage.require("zimbraMail.tasks.model.ZmTask");
+AjxPackage.require("zimbraMail.tasks.model.ZmTaskList");
+
+AjxPackage.require("zimbraMail.tasks.view.ZmTaskEditView");
+AjxPackage.require("zimbraMail.tasks.view.ZmTaskListView");
+AjxPackage.require("zimbraMail.tasks.view.ZmNewTaskFolderDialog");
+
+AjxPackage.require("zimbraMail.tasks.controller.ZmTaskController");
+AjxPackage.require("zimbraMail.tasks.controller.ZmTaskListController");
+AjxPackage.require("zimbraMail.tasks.controller.ZmTaskTreeController");

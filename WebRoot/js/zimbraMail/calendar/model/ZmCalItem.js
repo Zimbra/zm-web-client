@@ -22,7 +22,9 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-function ZmCalItem(appCtxt, type, list) {
+ZmCalItem = function(appCtxt, type, list) {
+
+	if (arguments.length == 0) { return; }
 
 	ZmItem.call(this, appCtxt, type, null, list);
 
@@ -634,7 +636,7 @@ function(attachmentId, callback, errorCallback, notifyList) {
 			 this.viewMode == ZmCalItem.MODE_EDIT_SERIES)
 	{
 		this._addInviteAndCompNum(soapDoc);
-        needsExceptionId = this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || this.isException;
+		needsExceptionId = this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || this.isException;
 	}
 
 	var accountName = this.getRemoteFolderOwner();
@@ -662,6 +664,7 @@ function(attachmentId, callback, errorCallback, notifyList) {
 		}
 	} else {
 		// set recurrence rules for appointment (but not for exceptions!)
+		var comp = invAndMsg.inv.getElementsByTagName("comp")[0];
 		this._recurrence.setSoap(soapDoc, comp);
 	}
 
@@ -739,7 +742,7 @@ function(mode, callback, msg, result) {
 				for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 					var type = ZmMailMsg.ADDRS[i];
 					// if on-behalf-of, dont set the from address
-					if (accountName && type == ZmEmailAddress.FROM)
+					if (accountName && type == AjxEmailAddress.FROM)
 						continue;
 					var vector = msg.getAddresses(type);
 					var count = vector.size();
@@ -747,7 +750,7 @@ function(mode, callback, msg, result) {
 						var addr = vector.get(j);
 						var e = soapDoc.set("e", null, m);
 						e.setAttribute("a", addr.getAddress());
-						e.setAttribute("t", ZmEmailAddress.toSoapType[type]);
+						e.setAttribute("t", AjxEmailAddress.toSoapType[type]);
 					}
 				}
 
@@ -755,7 +758,7 @@ function(mode, callback, msg, result) {
 				if (accountName) {
 					var e = soapDoc.set("e", null, m);
 					e.setAttribute("a", accountName);
-					e.setAttribute("t", ZmEmailAddress.toSoapType[ZmEmailAddress.FROM]);
+					e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
 				}
 			}
 			else {
@@ -1129,7 +1132,7 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 	if (onBehalfOf) {
 		e = soapDoc.set("e", null, m);
 		e.setAttribute("a", onBehalfOf);
-		e.setAttribute("t", ZmEmailAddress.toSoapType[ZmEmailAddress.FROM]);
+		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.FROM]);
 	}
 };
 

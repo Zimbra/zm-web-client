@@ -54,7 +54,7 @@ function ZmObjectManager(view, appCtxt, selectCallback, skipHandlers) {
 		this._createHandlers();
 	
 		// get Zimlet handler's
-		if (this._appCtxt != null) {
+		if (this._appCtxt && this._appCtxt.zimletsPresent()) {
 			var zimlets = this._appCtxt.getZimletMgr().getContentZimlets();
 			for (var i = 0; i < zimlets.length; i++) {
 				this.addHandler(zimlets[i], zimlets[i].type, zimlets[i].prio);
@@ -159,8 +159,10 @@ function() {
 		obj = c[i];
 		var	zim = obj;
 		var type = obj.TYPE;
-		if (!(obj instanceof ZmZimletBase)) {
-			zim = new obj(this._appCtxt);
+		if (this._appCtxt.zimletsPresent()) {
+			if (!(obj instanceof ZmZimletBase)) {
+				zim = new obj(this._appCtxt);
+			}
 		}
 		if (obj.useType) {
 			type = obj.useType;
@@ -184,7 +186,7 @@ function() {
 
 ZmObjectManager.prototype.objectsCount =
 function() {
-	return this._appCtxt.getZimletMgr().getContentZimlets().length;
+	return (this._appCtxt.zimletsPresent()) ? this._appCtxt.getZimletMgr().getContentZimlets().length : 0;
 };
 
 ZmObjectManager.prototype.getImageAttachmentHandler =
@@ -236,7 +238,7 @@ function(content, htmlEncode, type, isTextMsg) {
 				}
 			}
 			// If it's an email address just handle it and return the result.
-			if (content instanceof ZmEmailAddress) {
+			if (content instanceof AjxEmailAddress) {
 				if(lowestHandler) {
 					this.generateSpan(lowestHandler, html, idx, content, null);
 				} else {

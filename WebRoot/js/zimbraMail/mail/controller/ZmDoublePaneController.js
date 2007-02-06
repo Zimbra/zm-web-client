@@ -359,7 +359,7 @@ function(ev) {
 				this._doAction(ev, ZmOperation.DRAFT);
 			} else if (!this._readingPaneOn) {
 				try {
-					this._app.getMsgController().show(msg, currView._mode);
+					AjxDispatcher.run("GetMsgController").show(msg, currView._mode);
 
 					// if msg is cached, then mark read if unread
 					if (msg.isLoaded() && msg.isUnread)
@@ -420,12 +420,13 @@ function(ev) {
 	var msg = this._listView[this._currentView].getSelection()[0];
 	if (!msg) return;
 	
+	AjxDispatcher.require("Preferences");
 	var rule = new ZmFilterRule();
-	var from = msg.getAddress(ZmEmailAddress.FROM);
+	var from = msg.getAddress(AjxEmailAddress.FROM);
 	if (from) rule.addCondition(new ZmCondition(ZmFilterRule.C_FROM, ZmFilterRule.OP_IS, from));
-	var to = msg.getAddress(ZmEmailAddress.TO);
+	var to = msg.getAddress(AjxEmailAddress.TO);
 	if (to)	rule.addCondition(new ZmCondition(ZmFilterRule.C_TO, ZmFilterRule.OP_IS, to));
-	var cc = msg.getAddress(ZmEmailAddress.CC);
+	var cc = msg.getAddress(AjxEmailAddress.CC);
 	if (cc)	rule.addCondition(new ZmCondition(ZmFilterRule.C_CC, ZmFilterRule.OP_IS, cc));
 	var subj = msg.getSubject();
 	if (subj) rule.addCondition(new ZmCondition(ZmFilterRule.C_SUBJECT, ZmFilterRule.OP_IS, subj));

@@ -61,6 +61,7 @@ function(calItem, mode, isDirty) {
 	ZmCalItemComposeController.prototype.show.call(this, calItem, mode, isDirty);
 
 	this._addedAttendees.length = this._removedAttendees.length = 0;
+	this._setComposeTabGroup()
 };
 
 ZmApptComposeController.prototype.saveCalItem =

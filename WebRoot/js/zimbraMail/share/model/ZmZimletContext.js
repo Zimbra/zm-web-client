@@ -184,7 +184,7 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	// If it has an _id then we need to make sure the treeItem
 	// is up-to-date now that the i18n files have loaded.
 	if(this._id) {
-		var tree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
+		var tree = this._appCtxt.getZimletTree();
 		var zimletItem = tree.getById(this._id);
 		zimletItem.resetNames();
 	}
@@ -442,9 +442,9 @@ ZmZimletContext._zmObjectTransformers = {
 			var oi = o[i];
 			ret.id           = oi.getId();
 			ret.convId       = oi.getConvId();
-			ret.from         = oi.getAddresses(ZmEmailAddress.FROM).getArray();
-			ret.to           = oi.getAddresses(ZmEmailAddress.TO).getArray();
-			ret.cc           = oi.getAddresses(ZmEmailAddress.CC).getArray();
+			ret.from         = oi.getAddresses(AjxEmailAddress.FROM).getArray();
+			ret.to           = oi.getAddresses(AjxEmailAddress.TO).getArray();
+			ret.cc           = oi.getAddresses(AjxEmailAddress.CC).getArray();
 			ret.subject      = oi.getSubject();
 			ret.date         = oi.getDate();
 			ret.size         = oi.getSize();

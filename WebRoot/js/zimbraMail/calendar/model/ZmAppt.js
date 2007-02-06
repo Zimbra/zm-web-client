@@ -24,6 +24,8 @@
  */
 function ZmAppt(appCtxt, list, noinit) {
 
+	if (arguments.length == 0) { return; }
+	
 	ZmCalItem.call(this, appCtxt, ZmItem.APPT, list);
 	if (noinit) return;
 
@@ -94,10 +96,41 @@ function() {
 			(this._attendees[ZmCalItem.EQUIPMENT] && this._attendees[ZmCalItem.EQUIPMENT].length));
 };
 
+/**
+* Sets the attendees (person, location, or equipment) for this appt.
+*
+* @param list	[array]		list of email string, AjxEmailAddress, ZmContact, or ZmResource
+*/
+ZmAppt.prototype.setAttendees =
+function(list, type) {
+	this._attendees[type] = [];
+	list = (list instanceof Array) ? list : [list];
+	for (var i = 0; i < list.length; i++) {
+		var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, list[i], type);
+		if (attendee) {
+			this._attendees[type].push(attendee);
+		}
+	}
+};
+
 
 // Setters
 ZmAppt.prototype.setFreeBusy 			= function(fb) 			{ this.freeBusy = fb || "B"; };
 
+
+// Public methods
+
+/**
+ * This method sets the view mode, and resets any other fields that should not 
+ * be set for that view mode.
+ */
+ZmAppt.prototype.setViewMode = 
+function(mode) {
+	this._viewMode = mode || ZmAppt.MODE_NEW;
+
+	if (this._viewMode == ZmAppt.MODE_EDIT_SINGLE_INSTANCE)
+		this._recurrence.repeatType = "NON";
+};
 
 /**
 * Used to make our own copy because the form will modify the date object by 
@@ -303,7 +336,7 @@ function(isHtml) {
 /**
 * Sets the attendees (person, location, or equipment) for this appt.
 *
-* @param list	[array]		list of email string, ZmEmailAddress, ZmContact, or ZmResource
+* @param list	[array]		list of email string, AjxEmailAddress, ZmContact, or ZmResource
 */
 ZmAppt.prototype.setAttendees =
 function(list, type) {
@@ -324,9 +357,9 @@ function(message, subject) {
 	// Only unique names in the attendee list, plus omit our own name
 	var used = {};
 	used[this._appCtxt.get(ZmSetting.USERNAME)] = true;
-	var addrs = message.getAddresses(ZmEmailAddress.FROM, used, true);
-	addrs.addList(message.getAddresses(ZmEmailAddress.CC, used, true));
-	addrs.addList(message.getAddresses(ZmEmailAddress.TO, used, true));
+	var addrs = message.getAddresses(AjxEmailAddress.FROM, used, true);
+	addrs.addList(message.getAddresses(AjxEmailAddress.CC, used, true));
+	addrs.addList(message.getAddresses(AjxEmailAddress.TO, used, true));
 	this._attendees[ZmCalItem.PERSON] = addrs.getArray();
 };
 
@@ -346,7 +379,7 @@ function(message) {
 		for (var i = 0; i < attendees.length; i++) {
 			var addr = attendees[i].url;
 			var name = attendees[i].d;
-			var email = new ZmEmailAddress(addr, null, name);
+			var email = new AjxEmailAddress(addr, null, name);
 			var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, email, ZmCalItem.PERSON);
 			if (attendee) {
 				this._attendees[ZmCalItem.PERSON].push(attendee);
@@ -360,7 +393,7 @@ function(message) {
 	// only contain known locations)
 	this._attendees[ZmCalItem.LOCATION] = [];
 	this._origLocations = [];
-	var locations = ZmEmailAddress.split(message.invite.getLocation());
+	var locations = AjxEmailAddress.split(message.invite.getLocation());
 	if (locations) {
 		for (var i = 0; i < locations.length; i++) {
 			var location = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, locations[i], ZmCalItem.LOCATION);
@@ -504,7 +537,7 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 		for (var i = 0; i < notifyList.length; i++) {
 			e = soapDoc.set("e", null, m);
 			e.setAttribute("a", notifyList[i]);
-			e.setAttribute("t", ZmEmailAddress.toSoapType[ZmEmailAddress.TO]);
+			e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
 		}
 	}
 
@@ -547,14 +580,14 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		if (dispName) {
 			e.setAttribute("p", dispName);
 		}
-		e.setAttribute("t", ZmEmailAddress.toSoapType[ZmEmailAddress.TO]);
+		e.setAttribute("t", AjxEmailAddress.toSoapType[AjxEmailAddress.TO]);
 
 		// bug fix #9768 - auto add attendee if not in addrbook
 		if (type == ZmCalItem.PERSON &&
 			this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) &&
 			this._appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS))
 		{
-			var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+			var clc = this._appCtxt.getApp(ZmApp.CONTACTS).getContactList();
 			if (!clc.getContactByEmail(address))
 				e.setAttribute("add", "1");
 		}

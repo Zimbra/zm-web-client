@@ -40,7 +40,7 @@ function ZmFilterRulesController(appCtxt, container, prefsApp, prefsView) {
 	ZmController.call(this, appCtxt, container, prefsApp);
 
 	this._prefsView = prefsView;
-	this._rules = prefsApp.getFilterRules();
+	this._rules = AjxDispatcher.run("GetFilterRules");
 	this._filterRulesView = new ZmFilterRulesView(this._prefsView._parent, appCtxt, this);
 	
 	this._buttonListeners = new Object();

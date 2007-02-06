@@ -82,7 +82,7 @@ function ZmListController(appCtxt, container, app) {
 
 	this._popdownListener = new AjxListener(this, this._popdownActionListener);
 
-	this._dropTgt = new DwtDropTarget(ZmTag);
+	this._dropTgt = new DwtDropTarget("ZmTag");
 	this._dropTgt.markAsMultiple();
 	this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
 };
@@ -101,6 +101,7 @@ ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE_WIN]	= ZmOperation.NEW_M
 ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_PAGE]			= ZmOperation.NEW_PAGE;
 ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_TAG]			= ZmOperation.NEW_TAG;
 ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_NOTEBOOK]		= ZmOperation.NEW_NOTEBOOK;
+ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_TASK]			= ZmOperation.NEW_TASK;
 
 // abstract public methods
 
@@ -195,17 +196,17 @@ function(actionCode) {
 		case ZmKeyMap.NEW: {
 			//Find the current app
 			switch (this._appCtxt.getAppController().getActiveApp()) {
-				case ZmZimbraMail.MAIL_APP:
-				case ZmZimbraMail.MIXED_APP:
+				case ZmApp.MAIL:
+				case ZmApp.MIXED:
 					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE]);
 					break;
-				case ZmZimbraMail.CALENDAR_APP:
+				case ZmApp.CALENDAR:
 					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_APPT]);
 					break;
-				case ZmZimbraMail.CONTACTS_APP:
+				case ZmApp.CONTACTS:
 					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CONTACT]);
 					break;
-				case ZmZimbraMail.NOTEBOOK_APP:
+				case ZmApp.NOTEBOOK:
 					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_PAGE]);
 					break;
 			}
@@ -220,6 +221,7 @@ function(actionCode) {
 		case ZmKeyMap.NEW_TAG:
 		case ZmKeyMap.NEW_PAGE:
 		case ZmKeyMap.NEW_NOTEBOOK:
+		case ZmKeyMap.NEW_TASK:
 			this._newListener(null, ZmListController.ACTION_CODE_TO_OP[actionCode]);
 			break;
 
@@ -471,14 +473,6 @@ function(view, elements, isAppView, clear, pushOnly, isTransient) {
 	 return (clear ? this._app.setView(view) : this._app.pushView(view));
 };
 
-// Returns the print view, creating it if necessary.
-ZmListController.prototype._getPrintView =
-function() {
-	if (!this._printView)
-		this._printView = new ZmPrintView(this._appCtxt);
-	return this._printView;
-};
-
 // List listeners
 
 // List selection event - handle flagging if a flag icon was clicked, otherwise reset
@@ -524,8 +518,8 @@ function(ev, id, newWin) {
 	switch (id) {
 		// new items
 		case ZmOperation.NEW_MESSAGE: {
-			var app = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
-			app.getComposeController().doAction(ZmOperation.NEW_MESSAGE, newWin || this._inNewWindow(ev));
+			AjxDispatcher.run("Compose", {action: ZmOperation.NEW_MESSAGE,
+										  inNewWindow: newWin || this._inNewWindow(ev)});
 			break;
 		}
 		case ZmOperation.NEW_CONTACT:
@@ -535,24 +529,24 @@ function(ev, id, newWin) {
 			if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 				var type = id == ZmOperation.NEW_GROUP ? ZmItem.GROUP : null;
 				var contact = new ZmContact(this._appCtxt, null, null, type);
-				var app = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
-				app.getContactController().show(contact);
+				AjxDispatcher.run("GetContactController").show(contact);
 			} else if (ev) {
 				ev.item.popup();
 			}
 			break;
 		}
 		case ZmOperation.NEW_APPT: {
-			var app = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
-			app.getCalController().newAppointment(null, null, null, new Date());
+			AjxDispatcher.require(["CalendarCore", "Calendar"]);
+			AjxDispatcher.run("GetCalController").newAppointment(null, null, null, new Date());
 			break;
 		}
 		case ZmOperation.NEW_TASK: {
-			var app = this._appCtxt.getApp(ZmZimbraMail.TASKS_APP);
-			app.getTaskController().show((new ZmTask(this._appCtxt)));
+			var app = this._appCtxt.getApp(ZmApp.TASKS);
+			AjxDispatcher.run("GetTaskController").show((new ZmTask(this._appCtxt)));
 			break;
 		}
 		case ZmOperation.NEW_PAGE: {
+			AjxDispatcher.require(["NotebookCore", "Notebook"]);
 			var overviewController = this._appCtxt.getOverviewController();
 			var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
 			var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
@@ -561,8 +555,7 @@ function(ev, id, newWin) {
 			var page = new ZmPage(this._appCtxt);
 			page.folderId = notebook ? notebook.id : ZmNotebookItem.DEFAULT_FOLDER;
 
-			var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
-			app.getPageEditController().show(page);
+			AjxDispatcher.run("GetPageEditController").show(page);
 			break;
 		}
 		// new organizers
@@ -609,7 +602,7 @@ function(ev) {
 // Tag/untag items.
 ZmListController.prototype._tagListener =
 function(item) {
-	if (this._app.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
+	if (this._appCtxt.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
 		var tagEvent = item.getData(ZmTagMenu.KEY_TAG_EVENT);
 		var tagAdded = item.getData(ZmTagMenu.KEY_TAG_ADDED);
 		var items = this._listView[this._currentView].getSelection();
@@ -633,7 +626,7 @@ ZmListController.prototype._printListener =
 function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	var item = (items instanceof Array) ? items[0] : items;
-	this._getPrintView().render(item);
+	this._appCtxt.getPrintView().render(item);
 };
 
 ZmListController.prototype._backListener =
@@ -660,7 +653,9 @@ function(ev) {
 // Switch to selected view.
 ZmListController.prototype._viewButtonListener =
 function(ev) {
-	this.switchView(ev.item.getData(ZmOperation.MENUITEM_ID));
+	if (ev.detail == DwtMenuItem.CHECKED) {
+		this.switchView(ev.item.getData(ZmOperation.MENUITEM_ID));
+	}
 };
 
 // Navbar listeners
@@ -699,9 +694,9 @@ function(ev) {
 // Compose message to participant
 ZmListController.prototype._participantComposeListener =
 function(ev) {
-	var name = this._actionEv.address.toString() + ZmEmailAddress.SEPARATOR;
-	var cc = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
-	cc.doAction(ZmOperation.NEW_MESSAGE, this._inNewWindow(ev), null, name);
+	var name = this._actionEv.address.toString() + AjxEmailAddress.SEPARATOR;
+	AjxDispatcher.run("Compose", {action: ZmOperation.NEW_MESSAGE, inNewWindow: this._inNewWindow(ev),
+								  toOverride: name});
 };
 
 // IM the participant (if enabled via config)
@@ -710,17 +705,15 @@ function(ev) {
 	// get the first selected message
 	var msg = this._listView[this._currentView].getSelection()[0];
 	var screenName = msg._contact._fullName;
-	if (!this._newImDialog)
-		this._newImDialog = new ZmNewImDialog(this._shell, null, screenName);
-	else
-		this._newImDialog.setScreenName(screenName);
-	this._newImDialog.popup();
+	var newImDialog = this._appCtxt.getNewImDialog();
+	newImDialog.setScreenName(screenName);
+	newImDialog.popup();
 };
 
 // If there's a contact for the participant, edit it, otherwise add it.
 ZmListController.prototype._participantContactListener =
 function(ev) {
-	var cc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController();
+	var cc = AjxDispatcher.run("GetContactController");
 	if (this._actionEv.contact) {
 		if (this._actionEv.contact.isLoaded()) {
 			cc.show(this._actionEv.contact);
@@ -737,8 +730,7 @@ function(ev) {
 
 ZmListController.prototype._loadContactCallback =
 function(resp, contact) {
-	var cc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController();
-	cc.show(contact);
+	AjxDispatcher.run("GetContactController").show(contact);
 };
 
 // Drag and drop listeners
@@ -790,7 +782,7 @@ function(ev) {
 ZmListController.prototype._tagChangeListener =
 function(ev) {
 	// only process if current view is this view!
-	if (this._app.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
+	if (this._appCtxt.getAppViewMgr().getCurrentViewId() == this._getViewType()) {
 		if (ev.type == ZmEvent.S_TAG && ev.event == ZmEvent.E_CREATE && this._creatingTag) {
 			var tag = ev.getDetail("organizers")[0];
 			this._doTag(this._pendingActionData, tag, true);

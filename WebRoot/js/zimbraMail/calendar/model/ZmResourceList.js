@@ -55,6 +55,11 @@ ZmResourceList.AC_FIELDS = ["displayName"];
 ZmResourceList.prototype = new ZmContactList;
 ZmResourceList.prototype.constructor = ZmResourceList;
 
+ZmResourceList.prototype.toString =
+function() {
+	return "ZmResourceList";
+};
+
 ZmResourceList.prototype.load =
 function(batchCmd) {
 	var conds = [];
@@ -91,6 +96,12 @@ function(resource) {
 	if (email) {
 		this._emailToResource[email.toLowerCase()] = resource;
 	}
+};
+
+// Override so we don't invoke ZmContactList.addFromDom
+ZmResourceList.prototype.addFromDom =
+function(node, args) {
+	ZmList.prototype.addFromDom.call(this, node, args);
 };
 
 /**
@@ -174,8 +185,8 @@ function(match, resource) {
 	result.item = resource;
 	result.text = match.savedMatch;
 	result.plain = result.text ? result.text.replace(/<\/?b>/g, "") : "";	// for sorting results
-	result[ZmContactList.AC_VALUE_EMAIL] = resource.getEmail();
-	result[ZmContactList.AC_VALUE_NAME] = resource.getFullName();
+	result[ZmContactsApp.AC_VALUE_EMAIL] = resource.getEmail();
+	result[ZmContactsApp.AC_VALUE_NAME] = resource.getFullName();
 
 	return result;
 };

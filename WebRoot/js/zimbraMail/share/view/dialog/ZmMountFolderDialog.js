@@ -32,12 +32,12 @@ function ZmMountFolderDialog(appCtxt, shell, className) {
 
 	// create auto-completer
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var dataClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+		var dataClass = this._appCtxt.getApp(ZmApp.CONTACTS);
 		var dataLoader = dataClass.getContactList;
 		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, [this]);
 		var compCallback = new AjxCallback(this, this._handleCompletionData, [this]);
 		var params = {parent: this, dataClass: dataClass, dataLoader: dataLoader,
-					  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback,
+					  matchValue: ZmContactsApp.AC_VALUE_EMAIL, locCallback: locCallback,
 					  compCallback: compCallback,
 					  keyUpCallback: new AjxCallback(this, this._acKeyUpListener) };
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
@@ -48,14 +48,6 @@ function ZmMountFolderDialog(appCtxt, shell, className) {
 }
 ZmMountFolderDialog.prototype = new DwtDialog;
 ZmMountFolderDialog.prototype.constructor = ZmMountFolderDialog;
-
-// Constants
-
-ZmMountFolderDialog.TITLES = {};
-ZmMountFolderDialog.TITLES[ZmOrganizer.ADDRBOOK] = ZmMsg.mountAddrBook;
-ZmMountFolderDialog.TITLES[ZmOrganizer.CALENDAR] = ZmMsg.mountCalendar;
-ZmMountFolderDialog.TITLES[ZmOrganizer.FOLDER] = ZmMsg.mountFolder;
-ZmMountFolderDialog.TITLES[ZmOrganizer.NOTEBOOK] = ZmMsg.mountNotebook;
 
 // Data
 
@@ -78,7 +70,7 @@ function(organizerType, folderId, user, path, loc) {
 	this._folderId = folderId || ZmOrganizer.ID_ROOT;
 
 	// set title
-	this.setTitle(ZmMountFolderDialog.TITLES[organizerType] || ZmMountFolderDialog.TITLES[ZmOrganizer.FOLDER]);
+	this.setTitle(ZmMsg[ZmOrganizer.MOUNT_KEY[organizerType]] || ZmMsg[ZmOrganizer.MOUNT_KEY[ZmOrganizer.FOLDER]]);
 
 	// reset input fields
 	this._userInput.setValue(user || "");
@@ -197,11 +189,13 @@ ZmMountFolderDialog.prototype._handleOkButton = function(event) {
 		"name": this._nameInput.getValue(),
 		"owner": this._userInput.getValue(),
 		"path": this._pathInput.getValue(),
-		"view": ZmOrganizer.VIEWS[this._organizerType] || ZmOrganizer.VIEWS[ZmOrganizer.FOLDER],
+		"view": ZmOrganizer.VIEWS[this._organizerType][0] || ZmOrganizer.VIEWS[ZmOrganizer.FOLDER][0],
 		"color": this._colorSelect.getValue()
 	};
-	if (this._organizerType == ZmOrganizer.CALENDAR) {
-		params.f = ZmOrganizer.FLAG_CHECKED;
+	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+		if (this._organizerType == ZmOrganizer.CALENDAR) {
+			params.f = ZmOrganizer.FLAG_CHECKED;
+		}
 	}
 	var callback = new AjxCallback(this, this.popdown);
 	var errorCallback = new AjxCallback(this, this._handleCreateError);

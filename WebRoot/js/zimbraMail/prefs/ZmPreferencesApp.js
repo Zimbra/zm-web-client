@@ -29,8 +29,40 @@
 * hook into the overall application.
 */
 function ZmPreferencesApp(appCtxt, container) {
-	ZmApp.call(this, ZmZimbraMail.PREFERENCES_APP, appCtxt, container);
+
+	ZmApp.call(this, ZmApp.PREFERENCES, appCtxt, container);
+
+	AjxDispatcher.registerMethod("GetIdentityCollection", "PreferencesCore", new AjxCallback(this, this.getIdentityCollection));
+	AjxDispatcher.registerMethod("GetDataSourceCollection", "PreferencesCore", new AjxCallback(this, this.getDataSourceCollection));
+	AjxDispatcher.registerMethod("GetFilterRules", "Preferences", new AjxCallback(this, this.getFilterRules));
+	AjxDispatcher.registerMethod("GetPrefController", "Preferences", new AjxCallback(this, this.getPrefController));
+	AjxDispatcher.registerMethod("GetPopAccountsController", "Preferences", new AjxCallback(this, this.getPopAccountsController));
+	AjxDispatcher.registerMethod("GetFilterController", "Preferences", new AjxCallback(this, this.getFilterController));
+
+	ZmApp.registerApp(ZmApp.PREFERENCES,
+							 {nameKey:				"options",
+							  icon:					"Preferences",
+							  chooserTooltipKey:	"goToOptions",
+							  button:				ZmAppChooser.B_OPTIONS,
+							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  showZimlets:			true,
+							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],
+							  actionCode:			ZmKeyMap.GOTO_OPTIONS,
+							  chooserSort:			180
+							  });
 };
+
+// Organizer and item-related constants
+ZmEvent.S_FILTER			= "FILTER";
+ZmEvent.S_DATA_SOURCE       = "DATA SOURCE";
+ZmEvent.S_IDENTITY       	= "IDENTITY";
+ZmItem.DATA_SOURCE			= ZmEvent.S_DATA_SOURCE;
+
+// App-related constants
+ZmApp.PREFERENCES					= "Options";
+ZmApp.CLASS[ZmApp.PREFERENCES]		= "ZmPreferencesApp";
+ZmApp.SETTING[ZmApp.PREFERENCES]	= ZmSetting.PREFERENCES_ENABLED;
+ZmApp.LOAD_SORT[ZmApp.PREFERENCES]	= 10;
 
 ZmPreferencesApp.prototype = new ZmApp;
 ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;
@@ -40,15 +72,28 @@ function() {
 	return "ZmPreferencesApp";
 };
 
+ZmPreferencesApp.prototype.startup =
+function(result) {
+	var obj = result.getResponse().GetInfoResponse;
+	AjxDispatcher.run("GetIdentityCollection").initialize(obj.identities);
+	AjxDispatcher.run("GetDataSourceCollection").initialize(obj.dataSources);
+};
+
 ZmPreferencesApp.prototype.launch =
-function(callback, errorCallback) {
+function(callback) {
+	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
+	AjxDispatcher.require("Preferences", false, loadCallback, null, true);
+};
+
+ZmPreferencesApp.prototype._handleLoadLaunch =
+function(callback) {
 	var respCallback = new AjxCallback(this, this._handleResponseLaunch, [callback]);
 	this._appCtxt.getSettings().loadAvailableSkins(respCallback);
 };
 
 ZmPreferencesApp.prototype._handleResponseLaunch =
 function(callback) {
-	this.getPrefController().show();
+	AjxDispatcher.run("GetPrefController").show();
 	if (callback) {
 		callback.run();
 	}
@@ -65,7 +110,7 @@ function() {
 ZmPreferencesApp.prototype.getPopAccountsController =
 function() {
     if (!this._popAccountsController) {
-        var prefController = this.getPrefController();
+        var prefController = AjxDispatcher.run("GetPrefController");
         var prefsView = prefController.getPrefsView();
         this._popAccountsController = new ZmPopAccountsController(this._appCtxt, this._container, this, prefsView);
     }
@@ -95,6 +140,8 @@ ZmPreferencesApp.prototype.getDataSourceCollection = function() {
 
 ZmPreferencesApp.prototype.getIdentityCollection =
 function() {
-	return this._appCtxt.getIdentityCollection();
+	if (!this._identityCollection) {
+		this._identityCollection = new ZmIdentityCollection(this._appCtxt);
+	}
+	return this._identityCollection;
 };
-

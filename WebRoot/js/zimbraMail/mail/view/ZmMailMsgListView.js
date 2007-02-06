@@ -189,11 +189,11 @@ function(msg, now, isDndIcon, isMixedView) {
 			if (this._mode == ZmController.TRAD_VIEW && 
 				(msg.folderId == ZmFolder.ID_SENT || msg.folderId == ZmFolder.ID_DRAFTS || msg.folderId == ZmFolder.ID_OUTBOX)) 
 			{
-				var addrs = msg.getAddresses(ZmEmailAddress.TO).getArray();
+				var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
 		
 				// default to FROM addresses if no TO: found
 				if (addrs == null || addrs.length == 0)
-					addrs = msg.getAddresses(ZmEmailAddress.FROM).getArray();
+					addrs = msg.getAddresses(AjxEmailAddress.FROM).getArray();
 				
 				if (addrs && addrs.length) {
 					var fieldId = this._getFieldId(msg, ZmItem.F_PARTICIPANT);
@@ -219,7 +219,7 @@ function(msg, now, isDndIcon, isMixedView) {
 					}
 				}		
 			} else {
-				var fromAddr = msg.getAddress(ZmEmailAddress.FROM);
+				var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 				if (fromAddr) {
 					htmlArr[idx++] = "<span style='white-space:nowrap' id='";
 					htmlArr[idx++] = this._getFieldId(msg, ZmItem.F_FROM);
@@ -323,8 +323,8 @@ function(ev) {
 			}
 		}
 	} else if (this._mode == ZmController.CONV_VIEW && ev.event == ZmEvent.E_CREATE) {
-		var conv = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController().getConv();
-		var msg = items[0].type == ZmItem.MSG ? items[0] : null;
+		var conv = AjxDispatcher.run("GetConvController").getConv();
+		var msg = items[0].typ == ZmItem.MSG ? items[0] : null;
 		if (conv && msg && (msg.cid == conv.id)) {
 			ZmMailListView.prototype._changeListener.call(this, ev);
 		}
@@ -421,10 +421,8 @@ function(columnItem, bSortAsc) {
 	ZmMailListView.prototype._sortColumn.call(this, columnItem, bSortAsc);
 
 	if (this.getList().size() > 1 && this._sortByString) {
-		var controller = this._mode == ZmController.CONV_VIEW
-			? this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController()
-			: this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getTradController();
-		
+		var controller = AjxDispatcher.run((this._mode == ZmController.CONV_VIEW) ? "GetConvController" :
+																					"GetTradController");
 		var searchString = controller.getSearchString();
 
 		if (this._mode == ZmController.CONV_VIEW) {

@@ -26,7 +26,7 @@
 function ZmMixedView(parent, className, posStyle, controller, dropTgt) {
 
 	var headerList = this._getHeaderList(parent);
-	ZmListView.call(this, parent, className, posStyle, ZmController.MIXED_VIEW, ZmList.MIXED, controller, headerList, dropTgt);
+	ZmListView.call(this, parent, className, posStyle, ZmController.MIXED_VIEW, ZmItem.MIXED, controller, headerList, dropTgt);
 };
 
 ZmMixedView.prototype = new ZmListView;
@@ -95,7 +95,7 @@ function(ev) {
 
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		var items = ev.getDetail("items");
-		var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+		var contactList = AjxDispatcher.run("GetContacts");
 
 		// walk the list of items and if any are contacts,
 		for (var i = 0; i < items.length; i++) {

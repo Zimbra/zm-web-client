@@ -78,8 +78,8 @@ function() {
 ZmCurrentAppToolBar.prototype.setCurrentApp = 
 function(appName) {
 	if (this._currentAppLabel) {
-		this._currentAppLabel.setText(ZmMsg[ZmZimbraMail.MSG_KEY[appName]]);
-		this._currentAppLabel.setImage(ZmZimbraMail.APP_ICON[appName]);
+		this._currentAppLabel.setText(ZmMsg[ZmApp.NAME[appName]]);
+		this._currentAppLabel.setImage(ZmApp.ICON[appName]);
 	}
 };
 

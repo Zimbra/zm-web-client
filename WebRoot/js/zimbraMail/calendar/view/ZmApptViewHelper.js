@@ -24,19 +24,14 @@
  */
 
 /**
-* Static class used by ZmApptQuickAddDialog, ZmApptTabViewPage, ZmApptRecurDialog,
-* ZmSchedTabViewPage, and possibly others that have shared code.
+* Does nothing.
 * @constructor
 * @class
-* This class provides a form for creating/editing appointments.
+* This static class provides utility functions for dealing with appointments
+* and their related forms and views.
 *
 * @author Parag Shah
-* @param parent			the element that created this view
-* @param className 		class name for this view (defaults to ZmApptComposeView)
-* @param calApp			a handle to the owning calendar application
-* @param controller		the controller for this view
-* @param contactPicker	handle to a ZmContactPicker for selecting addresses
-* @param composeMode 	passed in so detached window knows which mode to be in on startup
+* @author Conrad Damon
 */
 
 /**
@@ -54,54 +49,6 @@ ZmApptViewHelper.REPEAT_OPTIONS = [
 	{ label: ZmMsg.everyMonth, 			value: "MON", 	selected: false },
 	{ label: ZmMsg.everyYear, 			value: "YEA", 	selected: false },
 	{ label: ZmMsg.custom, 				value: "CUS", 	selected: false }];
-
-/**
- * creates a new button with a DwtCalendar as its menu
- * @document 					the DOM document
- * @parent						parent this DwtButton gets appended to
- * @buttonId 					buttonId to fetch inside DOM and append DwtButton to
- * @dateButtonListener			AjxListener to call when date button is pressed
- * @dateCalSelectionListener	AjxListener to call when date is selected in DwtCalendar
- * @isInDialog 					true if mini cal is inside a DwtDialog (otherwise z-index will be too low)
-*/
-ZmApptViewHelper.createMiniCalButton =
-function(parent, buttonId, dateButtonListener, dateCalSelectionListener, appCtxt, isInDialog) {
-	// create button
-	var dateButton = new DwtButton(parent, null, "DwtSelect");
-	dateButton.addDropDownSelectionListener(dateButtonListener);
-	if (AjxEnv.isIE)
-		dateButton.setSize("20");
-
-	// create menu for button
-	var calMenu = new DwtMenu(dateButton, null, null, null, isInDialog);
-	calMenu.setSize("150");
-	calMenu._table.width = "100%";
-	dateButton.setMenu(calMenu, true);
-
-	// create mini cal for menu for button
-	var cal = new DwtCalendar(calMenu);
-	cal.setSkipNotifyOnPage(true);
-	cal.setFirstDayOfWeek(appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK));
-	cal.addSelectionListener(dateCalSelectionListener);
-	// add settings change listener on mini cal in case first day of week setting changes
-	var listener = new AjxListener(null, ZmApptViewHelper._settingsChangeListener, cal);
-	appCtxt.getSettings().getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK).addChangeListener(listener);
-
-	// reparent and cleanup
-	dateButton.reparentHtmlElement(buttonId);
-	delete buttonId;
-
-	return dateButton;
-};
-
-ZmApptViewHelper._settingsChangeListener =
-function(cal, ev) {
-	if (ev.type != ZmEvent.S_SETTING) return;
-
-	var setting = ev.source;
-	if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK)
-		cal.setFirstDayOfWeek(setting.getValue());
-};
 
 /**
 * Returns an object with the indices of the currently selected time fields.
@@ -168,14 +115,78 @@ function(startDateField, endDateField, isStartDate, skipCheck) {
 	return needsUpdate;
 };
 
+ZmApptViewHelper.getDayToolTipText =
+function(date, list, controller, noheader) {
+	var html = new AjxBuffer();
+
+	var formatter = DwtCalendar.getDateFullFormatter();	
+	var title = formatter.format(date);
+	
+	html.append("<div>");
+
+	html.append("<table cellpadding='0' cellspacing='0' border='0'>");
+	if (!noheader) html.append("<tr><td><div class='calendar_tooltip_month_day_label'>", title, "</div></td></tr>");
+	html.append("<tr><td>");
+	html.append("<table cellpadding='1' cellspacing='0' border='0' width=100%>");
+	
+	var size = list ? list.size() : 0;
+
+	for (var i=0; i < size; i++) {
+		var ao = list.get(i);
+		if (ao.isAllDayEvent()) {
+			//DBG.println("AO    "+ao);
+			var bs = "";
+			if (!ao._fanoutFirst) bs = "border-left:none;";
+			if (!ao._fanoutLast) bs += "border-right:none;";
+			var body_style = (bs != "") ? "style='"+bs+"'" : "";
+			html.append("<tr><td><div class=appt>");
+			html.append(ZmCalMonthView._allDayItemHtml(ao, Dwt.getNextId(), body_style, controller));
+			html.append("</div></td></tr>");
+		}
+	}
+
+	for (var i=0; i < size; i++) {
+		var ao = list.get(i);
+		if (!ao.isAllDayEvent()) {
+		
+			var color = ZmCalBaseView.COLORS[controller.getCalendarColor(ao.getFolderId())];
+			var pstatus = ao.getParticipationStatus();
+			var isNew = pstatus == ZmAppt.PSTATUS_NEEDS_ACTION;
+
+
+			html.append("<tr><td class='calendar_month_day_item'><div class='", color, isNew ? "DarkC" : "C", "'>");		
+			if (isNew) html.append("<b>");
+			//html.append("&bull;&nbsp;");
+			//var dur = ao.getShortStartHour();
+			var dur = ao.getDurationText(false, false);
+			html.append(dur);
+			if (dur != "") {
+				html.append("&nbsp;");
+			}
+			html.append(AjxStringUtil.htmlEncode(ao.getName()));
+			if (isNew) html.append("</b>");			
+			html.append("</div>");
+			html.append("</td></tr>");
+		}
+	}
+	if ( size == 0) {
+		html.append("<tr><td>"+ZmMsg.noAppts+"</td></tr>");
+	}
+	html.append("</table>");
+	html.append("</tr></td></table>");
+	html.append("</div>");
+
+	return html.toString();
+};
+
 /*
-* Takes a string, ZmEmailAddress, or contact/resource and returns
+* Takes a string, AjxEmailAddress, or contact/resource and returns
 * a ZmContact or a ZmResource. If the attendee cannot be found in
 * contacts, locations, or equipment, a new contact or
 * resource is created and initialized.
 *
 * @param appCtxt		[ZmAppCtxt]		the app context
-* @param item			[object]		string, ZmEmailAddress, ZmContact, or ZmResource
+* @param item			[object]		string, AjxEmailAddress, ZmContact, or ZmResource
 * @param type			[constant]*		attendee type
 * @param strictText		[boolean]*		if true, new location will not be created from free text
 * @param strictEmail	[boolean]*		if true, new attendee will not be created from email address
@@ -186,35 +197,34 @@ function(appCtxt, item, type, strictText, strictEmail) {
 	if (!item || !type) return null;
 
 	if (!ZmApptViewHelper._contacts) {
-		ZmApptViewHelper._contacts = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+		ZmApptViewHelper._contacts = AjxDispatcher.run("GetContacts");
 	}
 	if (!ZmApptViewHelper._locations) {
-		ZmApptViewHelper._locations = appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getLocations();
+		ZmApptViewHelper._locations = appCtxt.getApp(ZmApp.CALENDAR).getLocations();
 	}
 	if (!ZmApptViewHelper._equipment) {
-		ZmApptViewHelper._equipment = appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getEquipment();
+		ZmApptViewHelper._equipment = appCtxt.getApp(ZmApp.CALENDAR).getEquipment();
 	}
 
 	var attendee = null;
 	if (item instanceof ZmContact) {
 		// it's already a contact or resource, return it as is
 		attendee = item;
-	} else if (item instanceof ZmEmailAddress) {
+	} else if (item instanceof AjxEmailAddress) {
 		var addr = item.getAddress();
 		// see if we have this contact/resource by checking email address
 		attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
 		if (!attendee && !strictEmail) {
-			// ZmEmailAddress has name and email, init a new contact/resource from those
-			attendee = (type == ZmCalItem.PERSON)
-				? new ZmContact(appCtxt)
-				: new ZmResource(appCtxt, type);
+			// AjxEmailAddress has name and email, init a new contact/resource from those
+			attendee = (type == ZmCalItem.PERSON) ? new ZmContact(appCtxt) :
+													new ZmResource(appCtxt, type);
 			attendee.initFromEmail(item, true);
 		}
 	} else if (typeof item == "string") {
 		item = AjxStringUtil.trim(item);	// trim white space
 		item = item.replace(/;$/, "");		// trim separator
 		// see if it's an email we can use for lookup
-	 	var email = ZmEmailAddress.parse(item);
+	 	var email = AjxEmailAddress.parse(item);
 	 	if (email) {
 	 		var addr = email.getAddress();
 	 		// is it a contact/resource we already know about?
@@ -267,7 +277,7 @@ function(addr, type) {
 };
 
 /**
-* Returns a ZmEmailAddress for the organizer.
+* Returns a AjxEmailAddress for the organizer.
 *
 * @param appCtxt	[ZmAppCtxt]		the app context
 * @param organizer	[string]*		organizer's email address
@@ -276,7 +286,7 @@ ZmApptViewHelper.getOrganizerEmail =
 function(appCtxt, organizer) {
 	var orgAddress = organizer ? organizer : appCtxt.get(ZmSetting.USERNAME);
 	var orgName = (orgAddress == appCtxt.get(ZmSetting.USERNAME)) ? appCtxt.get(ZmSetting.DISPLAY_NAME) : null;
-	return new ZmEmailAddress(orgAddress, null, orgName);
+	return new AjxEmailAddress(orgAddress, null, orgName);
 };
 
 /*

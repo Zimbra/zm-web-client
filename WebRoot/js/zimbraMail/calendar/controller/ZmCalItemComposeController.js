@@ -435,7 +435,7 @@ function() {
 	this._popShield.popdown();
 	if (this._doSave()) {
 		this._app.popView(true);
-		this._app.getAppViewMgr().showPendingView(true);
+		this._appCtxt.getAppViewMgr().showPendingView(true);
 	}
 };
 
@@ -443,7 +443,7 @@ ZmCalItemComposeController.prototype._popShieldNoCallback =
 function() {
 	this._popShield.popdown();
 	this._app.popView(true);
-	this._app.getAppViewMgr().showPendingView(true);
+	this._appCtxt.getAppViewMgr().showPendingView(true);
 	this._composeView.cleanup();
 };
 

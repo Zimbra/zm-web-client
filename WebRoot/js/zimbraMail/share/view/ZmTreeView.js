@@ -30,15 +30,17 @@
 * This class displays data in a tree structure.
 *
 * @author Conrad Damon
-* @param parent			[DwtControl]		the tree's parent widget
-* @param type			[constant]			organizer type
-* @param className		[string]*			CSS class
-* @param posStyle		[constant]*			positioning style
-* @param overviewId		[constant]*			overview ID
-* @param headerClass	[string]*			CSS class for header item
-* @param dragSrc		[DwtDragSource]*	drag source
-* @param dropTgt		[DwtDropTarget]*	drop target
-* @param treeStyle		[constant]*			tree style (see DwtTree)
+* @param parent				[DwtControl]		the tree's parent widget
+* @param type				[constant]			organizer type
+* @param className			[string]*			CSS class
+* @param posStyle			[constant]*			positioning style
+* @param overviewId			[constant]*			overview ID
+* @param headerClass		[string]*			CSS class for header item
+* @param dragSrc			[DwtDragSource]*	drag source
+* @param dropTgt			[DwtDropTarget]*	drop target
+* @param treeStyle			[constant]*			tree style (see DwtTree)
+* @param allowedTypes		[hash]*				org types this tree may display
+* @param allowedSubTypes	[hash]*				org types this tree may display below top level
 */
 function ZmTreeView(params) {
 
@@ -51,6 +53,8 @@ function ZmTreeView(params) {
 	this._headerClass = params.headerClass ? params.headerClass : "overviewHeader";
 	this.overviewId = params.overviewId;
 	this.type = params.type;
+	this.allowedTypes = params.allowedTypes;
+	this.allowedSubTypes = params.allowedSubTypes;
 	
 	this._dragSrc = params.dragSrc;
 	this._dropTgt = params.dropTgt;
@@ -67,18 +71,10 @@ ZmTreeView.COMPARE_FUNC = new Object();
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.FOLDER]				= ZmFolder.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.TAG]				= ZmTag.sortCompare;
 ZmTreeView.COMPARE_FUNC[ZmOrganizer.SEARCH]				= ZmFolder.sortCompare;
-ZmTreeView.COMPARE_FUNC[ZmOrganizer.CALENDAR]			= ZmCalendar.sortCompare;
-ZmTreeView.COMPARE_FUNC[ZmOrganizer.TASKS]				= ZmTaskFolder.sortCompare;
-ZmTreeView.COMPARE_FUNC[ZmOrganizer.ZIMLET]				= ZmZimlet.sortCompare;
-ZmTreeView.COMPARE_FUNC[ZmOrganizer.ROSTER_TREE_ITEM]	= ZmRosterTreeItem.sortCompare;
-ZmTreeView.COMPARE_FUNC[ZmOrganizer.ADDRBOOK]			= ZmAddrBook.sortCompare;
-ZmTreeView.COMPARE_FUNC[ZmOrganizer.NOTEBOOK]			= ZmNotebook.sortCompare;
 
 // add space after the following items
 ZmTreeView.ADD_SEP = new Object();
 ZmTreeView.ADD_SEP[ZmFolder.ID_TRASH] = true;
-//ZmTreeView.ADD_SEP[ZmCalendar.ID_CALENDAR] = true;
-//ZmTreeView.ADD_SEP[ZmOrganizer.ID_NOTEBOOK] = true;
 
 // Static methods
 
@@ -128,7 +124,7 @@ ZmTreeView.prototype.set =
 function(dataTree, showUnread, omit, searchTypes) {
 
 	this._showUnread = showUnread;
-	this._dataTree = dataTree;	
+	this._dataTree = dataTree;
 	var root = this._dataTree.root;
 	this._treeHash[ZmOrganizer.ID_ROOT] = root;
 	
@@ -137,12 +133,10 @@ function(dataTree, showUnread, omit, searchTypes) {
 	// create header item
 	var ti = this._headerItem = new DwtTreeItem(this, null, null, null, null, this._headerClass);
 	ti.enableSelection(false); // by default, disallow selection
-	var name = root.getName();
-	if (name)
+	var name = ZmMsg[ZmOrganizer.LABEL[this.type]];
+	if (name) {
 		ti.setText(name);
-	var icon = root.getIcon();
-	if (icon)
-		ti.setImage(icon);
+	}
 	ti.setData(Dwt.KEY_ID, root.id);
 	ti.setData(Dwt.KEY_OBJECT, root);
 	ti.setData(ZmTreeView.KEY_ID, this.overviewId);
@@ -210,19 +204,21 @@ function(organizer, skipNotify) {
 ZmTreeView.prototype._render =
 function(treeNode, organizer, omit, searchTypes) {
 	var children = organizer.children.getArray();
-	children.sort(ZmTreeView.COMPARE_FUNC[this.type]);
+	children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
 	DBG.println(AjxDebug.DBG3, "Render: " + organizer.name + ": " + children.length);
 	var addSep = true;
 	for (var i = 0; i < children.length; i++) {
 		var child = children[i];
-		if (omit && omit[child.id]) continue;
+		if (omit && omit[child.id]) { continue; }
+		if ((organizer.id == ZmOrganizer.ID_ROOT) && !this.allowedTypes[child.type]) { continue; }
+		if ((organizer.id != ZmOrganizer.ID_ROOT) && !this.allowedSubTypes[child.type]) { continue; }
 		// if this is a tree view of saved searches, make sure to only show saved searches
 		// that are for one of the given types
 		if ((child.type == ZmOrganizer.SEARCH) && searchTypes && !child._typeMatch(searchTypes)) {
 			continue;
 		}
 		
-		if (this._allowedTypes && !this._allowedTypes[child.type]) continue;
+		if (this._allowedTypes && !this._allowedTypes[child.type]) { continue; }
 		// NOTE: Separates public and shared folders
 		if (organizer.id == ZmOrganizer.ID_ROOT && child.link && addSep) {
 			treeNode.addSeparator();

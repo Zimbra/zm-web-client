@@ -398,19 +398,19 @@ function() {
 
 	// autocomplete for attendees
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var contactsClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+		var contactsClass = this._appCtxt.getApp(ZmApp.CONTACTS);
 		var contactsLoader = contactsClass.getContactList;
 		var params = {parent: shell, dataClass: contactsClass, dataLoader: contactsLoader,
-					  matchValue: ZmContactList.AC_VALUE_FULL, compCallback: acCallback};
+					  matchValue: ZmContactsApp.AC_VALUE_FULL, compCallback: acCallback};
 		this._acContactsList = new ZmAutocompleteListView(params);
 		this._acContactsList.handle(this._attInputField[ZmCalItem.PERSON].getInputElement());
 		this._acList[ZmCalItem.PERSON] = this._acContactsList;
 	}
 	// autocomplete for locations/equipment
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
+		var resourcesClass = this._appCtxt.getApp(ZmApp.CALENDAR);
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations,
-					  matchValue: ZmContactList.AC_VALUE_NAME, compCallback: acCallback};
+					  matchValue: ZmContactsApp.AC_VALUE_NAME, compCallback: acCallback};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._attInputField[ZmCalItem.LOCATION].getInputElement());
 		this._acList[ZmCalItem.LOCATION] = this._acLocationsList;
@@ -545,7 +545,7 @@ function(type, useException) {
 
 	var value = this._attInputField[type].getValue();
 	var attendees = new AjxVector();
-	var items = ZmEmailAddress.split(value);
+	var items = AjxEmailAddress.split(value);
 
 	for (var i = 0; i < items.length; i++) {
 		var item = AjxStringUtil.trim(items[i]);
@@ -612,7 +612,7 @@ function(value) {
 	// first parse the value string based on separator
 	var attendees = AjxStringUtil.trim(value);
 	if (attendees.length > 0) {
-		var addrs = ZmEmailAddress.parseEmailString(attendees);
+		var addrs = AjxEmailAddress.parseEmailString(attendees);
 		if (addrs.bad.size() > 0) {
 			throw ZmMsg.errorInvalidEmail2;
 		}

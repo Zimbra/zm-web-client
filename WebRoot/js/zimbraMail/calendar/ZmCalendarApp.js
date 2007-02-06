@@ -25,7 +25,69 @@
 
 function ZmCalendarApp(appCtxt, container) {
 
-	ZmApp.call(this, ZmZimbraMail.CALENDAR_APP, appCtxt, container);
+	ZmApp.call(this, ZmApp.CALENDAR, appCtxt, container);
+
+	AjxDispatcher.setPackageLoadFunction("Calendar", new AjxCallback(this, this._postLoad));
+	AjxDispatcher.registerMethod("GetCalController", "CalendarCore", new AjxCallback(this, this.getCalController));
+	AjxDispatcher.registerMethod("GetReminderController", "CalendarCore", new AjxCallback(this, this.getReminderController));
+	AjxDispatcher.registerMethod("ShowMiniCalendar", "CalendarCore", new AjxCallback(this, this.showMiniCalendar));
+	AjxDispatcher.registerMethod("GetApptComposeController", ["CalendarCore", "Calendar"], new AjxCallback(this, this.getApptComposeController));
+
+	ZmItem.registerItem(ZmItem.APPT,
+						{app:			ZmApp.CALENDAR,
+						 nameKey:		"appointment",
+						 icon:			"Appointment",
+						 itemClass:		"ZmAppt",
+						 organizer:		ZmOrganizer.CALENDAR,
+						 searchType:	"appointment",
+						 stbNameKey:	"searchCalendar",
+						 stbTooltipKey:	"searchForAppts",
+						 stbIcon:		"CalendarFolder"
+						});
+
+	ZmItem.registerItem(ZmItem.RESOURCE,
+						{app:			ZmApp.CALENDAR,
+						 itemClass:		"ZmResource",
+						 node:			"calResource",
+						 resultsList:
+		AjxCallback.simpleClosure(function(search) {
+			AjxDispatcher.require("CalendarCore");
+			return new ZmResourceList(this._appCtxt, null, search);
+		}, this)
+						});
+
+	ZmOrganizer.registerOrg(ZmOrganizer.CALENDAR,
+							{app:				ZmApp.CALENDAR,
+							 nameKey:			"calendar",
+							 defaultFolder:		ZmOrganizer.ID_CALENDAR,
+							 soapCmd:			"FolderAction",
+							 firstUserId:		256,
+							 orgClass:			"ZmCalendar",
+							 orgPackage:		"CalendarCore",
+							 treeController:	"ZmCalendarTreeController",
+							 labelKey:			"calendars",
+							 views:				["appointment"],
+							 folderKey:			"calendarFolder",
+							 mountKey:			"mountCalendar",
+							 createFunc:		"ZmCalendar.create",
+							 compareFunc:		"ZmCalendar.sortCompare",
+							 deferrable:		true
+							});
+
+	ZmApp.registerApp(ZmApp.CALENDAR,
+							 {nameKey:				"calendar",
+							  icon:					"CalendarApp",
+							  chooserTooltipKey:	"goToCalendar",
+							  viewTooltipKey:		"displayCalendar",
+							  defaultSearch:		ZmSearchToolBar.FOR_MAIL_MI,
+							  overviewTrees:		[ZmOrganizer.CALENDAR],
+							  showZimlets:			true,
+							  assistants:			{"ZmAppointmentAssistant":	["CalendarCore", "Calendar"],
+							  						 "ZmCalendarAssistant":		["CalendarCore", "Calendar"]},
+							  actionCode:			ZmKeyMap.GOTO_CALENDAR,
+							  chooserSort:			30,
+							  defaultSort:			20
+							  });
 
 	var settings = this._appCtxt.getSettings();
 	var listener = new AjxListener(this, this._settingsChangeListener);
@@ -35,6 +97,22 @@ function ZmCalendarApp(appCtxt, container) {
 	this._active = false;
 };
 
+// Organizer and item-related constants
+ZmEvent.S_APPT				= "APPT";
+ZmEvent.S_RESOURCE			= "RESOURCE";
+ZmItem.APPT					= ZmEvent.S_APPT;
+ZmItem.RESOURCE				= ZmEvent.S_RESOURCE;
+ZmOrganizer.CALENDAR		= "CALENDAR";
+
+// App-related constants
+ZmApp.CALENDAR					= "Calendar";
+ZmApp.CLASS[ZmApp.CALENDAR]		= "ZmCalendarApp";
+ZmApp.SETTING[ZmApp.CALENDAR]	= ZmSetting.CALENDAR_ENABLED;
+ZmApp.LOAD_SORT[ZmApp.CALENDAR]	= 40;
+
+// ms to wait before fetching reminders
+ZmCalendarApp.REMINDER_START_DELAY = 30000;
+
 ZmCalendarApp.prototype = new ZmApp;
 ZmCalendarApp.prototype.constructor = ZmCalendarApp;
 
@@ -43,8 +121,53 @@ function() {
 	return "ZmCalendarApp";
 };
 
+ZmCalendarApp.prototype.startup =
+function(result) {
+	if (this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL)) {
+		AjxDispatcher.run("ShowMiniCalendar", true);
+	}
+	var refreshAction = new AjxTimedAction(this, function() {
+			AjxDispatcher.run("GetReminderController").refresh();
+		});
+	AjxTimedAction.scheduleAction(refreshAction, ZmCalendarApp.REMINDER_START_DELAY);
+};
+
+ZmCalendarApp.prototype.refresh =
+function(refresh) {
+	if (!this._appCtxt.inStartup) {
+		AjxDispatcher.run("GetCalController").refreshHandler(refresh);
+	}
+};
+
+ZmCalendarApp.prototype.deleteNotify =
+function(ids) {
+	AjxDispatcher.run("GetCalController").notifyDelete(ids);
+};
+
+ZmCalendarApp.prototype.createNotify =
+function(list) {
+	this._handleCreates(list);
+};
+
+ZmCalendarApp.prototype.modifyNotify =
+function(list) {
+	AjxDispatcher.run("GetCalController").notifyModify(list);
+};
+
+ZmCalendarApp.prototype.postNotify =
+function(notify) {
+	AjxDispatcher.run("GetCalController").notifyComplete();
+};
+
 ZmCalendarApp.prototype.launch =
 function(callback) {
+	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
+	AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+};
+
+ZmCalendarApp.prototype._handleLoadLaunch =
+function(callback) {
+	this._createDeferredFolders();
 	var cc = this.getCalController();
 	var view = cc._defaultView();
 	cc.show(view);
@@ -129,6 +252,11 @@ function() {
 	return this._equipment;
 };
 
+ZmCalendarApp.prototype._postLoad =
+function() {
+	this.getApptComposeController().initComposeView(true);
+};
+
 ZmCalendarApp.prototype._settingsChangeListener =
 function(ev) {
 	if (ev.type != ZmEvent.S_SETTING) return;
@@ -150,4 +278,97 @@ function(ev) {
 		var date = minical.getDate();
 		controller.setDate(date, 0, true);
 	}
+};
+
+ZmCalendarApp.prototype._handleCreates =
+function(list) {
+	for (var i = 0; i < list.length; i++) {
+		var create = list[i];
+		var name = create._name;
+		if (this._appCtxt.cacheGet(create.id)) { continue; }
+
+		if (name == "folder") {
+			var parentId = create.l;
+			var parent;
+			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+			if (parentId == ZmOrganizer.ID_ROOT) {
+				if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][0]) {
+					parent = calendarTree.getById(parentId);
+				}
+			} else {
+				parent = calendarTree.getById(parentId);
+			}
+			if (parent) {
+				DBG.println(AjxDebug.DBG1, "ZmCalendarApp: handling CREATE for node: " + name);
+				parent.notifyCreate(create);
+				create._handled = true;
+			}
+		} else if (name == "link") {
+			var parentId = create.l;
+			var parent, share;
+			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][0]) {
+				var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+				parent = calendarTree.getById(parentId);
+				share = ZmOrganizer.CALENDAR;
+			}
+			if (parent) {
+				DBG.println(AjxDebug.DBG1, "ZmCalendarApp: handling CREATE for node: " + name);
+				parent.notifyCreate(create, true);
+				// XXX: once bug #4434 is fixed, check if this call is still needed
+				this._appCtxt.getRequestMgr().getFolderPermissions([share]);
+				create._handled = true;
+			}
+		} else if (name == "appt") {
+			// TODO: create appt object and pass into notify create
+			AjxDispatcher.run("GetCalController").notifyCreate(null);
+		}
+	}
+};
+
+/**
+ * creates a new button with a DwtCalendar as its menu
+ * @document 					the DOM document
+ * @parent						parent this DwtButton gets appended to
+ * @buttonId 					buttonId to fetch inside DOM and append DwtButton to
+ * @dateButtonListener			AjxListener to call when date button is pressed
+ * @dateCalSelectionListener	AjxListener to call when date is selected in DwtCalendar
+ * @isInDialog 					true if mini cal is inside a DwtDialog (otherwise z-index will be too low)
+*/
+ZmCalendarApp.createMiniCalButton =
+function(parent, buttonId, dateButtonListener, dateCalSelectionListener, appCtxt, isInDialog) {
+	// create button
+	var dateButton = new DwtButton(parent, null, "DwtSelect");
+	dateButton.addDropDownSelectionListener(dateButtonListener);
+	if (AjxEnv.isIE)
+		dateButton.setSize("20");
+
+	// create menu for button
+	var calMenu = new DwtMenu(dateButton, null, null, null, isInDialog);
+	calMenu.setSize("150");
+	calMenu._table.width = "100%";
+	dateButton.setMenu(calMenu, true);
+
+	// create mini cal for menu for button
+	var cal = new DwtCalendar(calMenu);
+	cal.setSkipNotifyOnPage(true);
+	cal.setFirstDayOfWeek(appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK));
+	cal.addSelectionListener(dateCalSelectionListener);
+	// add settings change listener on mini cal in case first day of week setting changes
+	var listener = new AjxListener(null, ZmCalendarApp._settingsChangeListener, cal);
+	appCtxt.getSettings().getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK).addChangeListener(listener);
+
+	// reparent and cleanup
+	dateButton.reparentHtmlElement(buttonId);
+	delete buttonId;
+
+	return dateButton;
+};
+
+ZmCalendarApp._settingsChangeListener =
+function(cal, ev) {
+	if (ev.type != ZmEvent.S_SETTING) return;
+
+	var setting = ev.source;
+	if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK)
+		cal.setFirstDayOfWeek(setting.getValue());
 };

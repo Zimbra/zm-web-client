@@ -2729,3 +2729,8 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZFieldSizeHusky	{	width:250px;	}
 .ZFieldSizeLarge	{	width:300px;	}
 .ZFieldSizeFull		{	width:100%;		}
+
+.ZmTooltipLabel {
+	text-align:right;
+	padding-right:5px;
+}

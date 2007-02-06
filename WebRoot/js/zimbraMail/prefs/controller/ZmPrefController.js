@@ -140,17 +140,12 @@ function(parent, view) {
 */
 ZmPrefController.prototype._setView = 
 function() {
-	if (!this._passwordDialog) {
-		this._passwordDialog = new ZmChangePasswordDialog(this._shell, this._appCtxt.getMsgDialog());
-		this._passwordDialog.registerCallback(DwtDialog.OK_BUTTON, this._changePassword, this);
-	}
-
 	if (!this._prefsView) {
 		this._initializeToolBar();
 		var callbacks = new Object();
 		callbacks[ZmAppViewMgr.CB_PRE_HIDE] = new AjxCallback(this, this._preHideCallback);
 		callbacks[ZmAppViewMgr.CB_POST_SHOW] = new AjxCallback(this, this._postShowCallback);
-		this._prefsView = new ZmPrefView(this._container, this._appCtxt, Dwt.ABSOLUTE_STYLE, this, this._passwordDialog);
+		this._prefsView = new ZmPrefView(this._container, this._appCtxt, Dwt.ABSOLUTE_STYLE, this);
 		var elements = new Object();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
@@ -254,7 +249,7 @@ function(list, callback, noPop, result) {
 	}
 	if (!noPop && (!result || !result._data.BatchResponse.Fault)) {
 		// pass force flag - we just saved, so we know view isn't dirty
-		this._app.getAppViewMgr().popView(true);
+		this._appCtxt.getAppViewMgr().popView(true);
 	}
 	
 	if (callback) callback.run(result);
@@ -262,7 +257,7 @@ function(list, callback, noPop, result) {
 
 ZmPrefController.prototype._backListener = 
 function() {
-	this._app.getAppViewMgr().popView();
+	this._appCtxt.getAppViewMgr().popView();
 };
 
 ZmPrefController.prototype._changePassword =
@@ -281,14 +276,14 @@ function(oldPassword, newPassword) {
 
 ZmPrefController.prototype._handleResponseChangePassword =
 function(result) {
-	this._passwordDialog.popdown();
+	this._appCtxt.getChangePasswordDialog().popdown();
 	this._appCtxt.setStatusMsg(ZmMsg.passwordChangeSucceeded);
 };
 
 ZmPrefController.prototype._handleErrorChangePassword =
 function(ex) {
 	if (ex.code == ZmCsfeException.ACCT_AUTH_FAILED) {
-		this._passwordDialog.showMessageDialog(ZmMsg.oldPasswordIsIncorrect);
+		this._appCtxt.getChangePasswordDialog().showMessageDialog(ZmMsg.oldPasswordIsIncorrect);
 		return true;
 	} else {
 		return false;
@@ -336,7 +331,7 @@ function() {
 ZmPrefController.prototype._handleResponsePopShieldYesCallback =
 function() {
 	this._app.popView(true);
-	this._app.getAppViewMgr().showPendingView(true);
+	this._appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 ZmPrefController.prototype._popShieldNoCallback =
@@ -344,13 +339,13 @@ function() {
 	this._prefsView.reset();
 	this._popShield.popdown();
 	this._app.popView(true);
-	this._app.getAppViewMgr().showPendingView(true);
+	this._appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 ZmPrefController.prototype._popShieldCancelCallback =
 function() {
 	this._popShield.popdown();
-	this._app.getAppViewMgr().showPendingView(false);
+	this._appCtxt.getAppViewMgr().showPendingView(false);
 };
 
 ZmPrefController.prototype._getDefaultFocusItem = 

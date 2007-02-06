@@ -30,9 +30,7 @@ function ZmLinkPropsDialog(appCtxt, shell, className) {
 
 	this._appCtxt = appCtxt;
 
-	var appController = appCtxt.getAppController();
-	var app = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
-	this._cache = app.getNotebookCache();
+	this._cache = AjxDispatcher.run("GetNotebookCache");
 
 	// set view
 	this.setView(this._createView());

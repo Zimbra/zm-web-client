@@ -36,16 +36,14 @@
 * @param appCtxt			[ZmAppCtxt]					the app context
 * @param view				[constant]					which page we are
 * @param controller			[ZmPrefController]			prefs controller
-* @param passwordDialog		[ZmChangePasswordDialog]	change password dialog
 */
-function ZmPreferencesPage(parent, appCtxt, view, controller, passwordDialog) {
+function ZmPreferencesPage(parent, appCtxt, view, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 	
 	this._appCtxt = appCtxt;
 	this._view = view; // which preferences page we are
 	this._controller = controller;
-	this._passwordDialog = passwordDialog;
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[view]].join(": ");
 
 	this._dwtObjects = {};
@@ -483,7 +481,9 @@ function(buttonId, setup) {
 // Popup the change password dialog.
 ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
-	this._passwordDialog.popup();
+	var passwordDialog = this._appCtxt.getChangePasswordDialog();
+	passwordDialog.registerCallback(DwtDialog.OK_BUTTON, this._controller._changePassword, this);
+	passwordDialog.popup();
 };
 
 ZmPreferencesPage.prototype._exportContactsListener =

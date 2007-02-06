@@ -28,7 +28,7 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	className = className ? className : "ZmChatMultiWindowView";
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
 	ZmChatBaseView.call(this, parent, className, posStyle, controller, ZmController.IM_CHAT_TAB_VIEW);
-	var dropTgt = new DwtDropTarget(ZmRosterTreeItem, ZmRosterTreeGroup);
+	var dropTgt = new DwtDropTarget(["ZmRosterTreeItem", "ZmRosterTreeGroup"]);
 	this.setDropTarget(dropTgt);
 	dropTgt.addDropListener(new AjxListener(this, this._dropListener));
 	

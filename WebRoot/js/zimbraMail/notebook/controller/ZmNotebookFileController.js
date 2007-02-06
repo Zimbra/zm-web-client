@@ -53,7 +53,7 @@ ZmNotebookFileController.prototype.show = function(searchResults, fromUserSearch
 
 	this._setup(this._currentView);
 
-	this._list = searchResults.getResults(ZmList.MIXED);
+	this._list = searchResults.getResults(ZmItem.MIXED);
 	if (this._activeSearch) {
 		if (this._list)
 			this._list.setHasMore(this._activeSearch.getAttribute("more"));
@@ -314,9 +314,9 @@ function(ev) {
 	// figure out the default for this item should be moved to
 	var folder = null;
 	if (items[0] instanceof ZmContact) {
-		folder = new ZmFolder(ZmOrganizer.ID_ADDRBOOK);
+		folder = new ZmFolder({id: ZmOrganizer.ID_ADDRBOOK});
 	} else if (items[0] instanceof ZmAppt) {
-		folder = new ZmFolder(ZmOrganizer.ID_CALENDAR);
+		folder = new ZmFolder({id: ZmOrganizer.ID_CALENDAR});
 	} else {
 		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		var folderId = items[0].isDraft ? ZmFolder.ID_DRAFTS : ZmFolder.ID_INBOX;

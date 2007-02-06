@@ -426,7 +426,7 @@ function(ev) {
 	// bug fix #3602
 	var address = ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT] 
 		? ev.detail 
-		: ((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(ZmEmailAddress.FROM) : null); // yuck
+		: ((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null); // yuck
 	if (address && items.length == 1 && 
 		(ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT] || 
 		 ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM])) 
@@ -435,7 +435,7 @@ function(ev) {
 		this._setTagMenu(this._participantActionMenu);
 		this._actionEv.address = address;
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			var contacts = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+			var contacts = AjxDispatcher.run("GetContacts");
 			this._actionEv.contact = contacts.getContactByEmail(this._actionEv.address.getAddress());
 			this._setContactText(this._actionEv.contact != null);
 		}
@@ -491,7 +491,7 @@ function(ev, action, extraBodyText, instanceDate, accountName) {
 	//   then if opening draft always request html 
 	// 	 otherwise just check if user prefers html or
 	//   msg hasnt been loaded yet and user prefers format of orig. msg
-	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
 	var identity = identityCollection.selectIdentity(msg);
 
 	// always re-resolve forward action if forward toolbar button is clicked
@@ -512,8 +512,8 @@ function(ev, action, extraBodyText, instanceDate, accountName) {
 
 ZmMailListController.prototype._handleResponseDoAction = 
 function(action, inNewWindow, msg, extraBodyText, accountName) {
-	// ugh... param-itize this shiznat
-	this._app.getComposeController().doAction(action, inNewWindow, msg, null, null, extraBodyText, null, accountName);
+	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
+								  extraBodyText: extraBodyText, accountName: accountName});
 };
 
 ZmMailListController.prototype._inviteReplyHandler = 
@@ -657,7 +657,7 @@ function(action, componentId, instanceDate, accountName) {
 ZmMailListController.prototype._sendInviteReply = 
 function(type, componentId, instanceDate, accountName) {
 	var msg = new ZmMailMsg(this._appCtxt);
-	var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+	var contactList = AjxDispatcher.run("GetContacts");
 	
 	msg._origMsg = this._getMsg();
 	msg.inviteMode = type;
@@ -729,8 +729,7 @@ function(ev) {
     var hasPopAccounts = false;
 
     if (folder && !isFeed && this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
-        var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
-        dsCollection = prefsApp.getDataSourceCollection();
+        dsCollection = AjxDispatcher.run("GetDataSourceCollection");
         var dataSources = dsCollection.getPopAccountsFor(folderId);
         hasPopAccounts = dataSources.length > 0;
     }
@@ -826,8 +825,7 @@ function(parent, num) {
         var hasPopAccounts = false;
 
         if (folder && !isInbox && !isFeed && this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
-            var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
-            var dsCollection = prefsApp.getDataSourceCollection();
+            var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
             var popAccounts = dsCollection.getPopAccountsFor(folderId);
             hasPopAccounts = popAccounts.length > 0;
         }
@@ -942,9 +940,6 @@ function(view, saveSelection, loadIndex, offset, result) {
 
 ZmMailListController.prototype._setGroupMailBy =
 function(id) {
-	if (!this._appCtxt.get(ZmSetting.PREFS_ENABLED)) return;
-	this._appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmPref.GROUP_MAIL_BY_VALUE[id]);
-	var searchCtlr = this._appCtxt.getSearchController();
-	if (searchCtlr)
-		searchCtlr.setGroupMailBy(id);
+	if (!this._appCtxt.get(ZmSetting.OPTIONS_ENABLED)) return;
+	this._appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmMailApp.GROUP_MAIL_BY_VALUE[id]);
 };

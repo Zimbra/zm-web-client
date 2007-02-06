@@ -25,16 +25,21 @@
 
 function ZmZimletTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length === 0) {return;}
+
 	type = type ? type : ZmOrganizer.ZIMLET;
-	var list =[ZmFolder, ZmConv, ZmMailMsg];
-	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		list.push(ZmContact);
+	if (!dropTgt) {
+		var list = ["ZmFolder"];
+		if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+			list.push("ZmMailMsg");
+			list.push("ZmConv");
+		}
+		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			list.push("ZmContact");
+		}
+		dropTgt = new DwtDropTarget(list);
 	}
-	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-		list.push(ZmAppt);
-	}
-	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(list);
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
+
 	this._eventMgrs = {};
 }
 
@@ -105,6 +110,11 @@ function(ev, treeView) {
 	}
 };
 
+ZmZimletTreeController.prototype._getDataTree =
+function() {
+	return this._appCtxt.getZimletTree();
+};
+
 // Returns a list of desired header action menu operations
 ZmZimletTreeController.prototype._getHeaderActionMenuOps = function() {
 	return null;
@@ -158,6 +168,10 @@ ZmZimletTreeController.prototype._itemDblClicked = function(z) {
 // Handles a drop event
 ZmZimletTreeController.prototype._dropListener = function(ev) {
 	var z = ev.targetControl.getData(Dwt.KEY_OBJECT);
+	if (!z) {
+		ev.doIt = false;
+		return;
+	}
 	if (z.id == ZmZimlet.ID_ZIMLET) {
 		ev.doIt = false;
 		return;

@@ -58,7 +58,7 @@ function(attachment, now) {
 	var subject = AjxStringUtil.htmlEncode(attachment.getSubject());
 	var from = null;
 	if (msg) {
-		var fromAddr = msg._addrs[ZmEmailAddress.FROM].get(0)
+		var fromAddr = msg._addrs[AjxEmailAddress.FROM].get(0)
 		from = fromAddr.getName();
 	}
 	var size = attachment.getSize();
@@ -113,7 +113,7 @@ function(ev, div) {
 	var msg = this.getItemFromElement(div).getMessage();
 	if (m && m.field && msg) {
 		if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) {
-			var fromAddr = msg._addrs[ZmEmailAddress.FROM].get(0);
+			var fromAddr = msg._addrs[AjxEmailAddress.FROM].get(0);
 			this._setParticipantToolTip(fromAddr);
 		} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) {
 			this.setToolTipContent(AjxStringUtil.htmlEncode(msg.fragment));

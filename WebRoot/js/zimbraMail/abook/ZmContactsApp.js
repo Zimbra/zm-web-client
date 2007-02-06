@@ -35,9 +35,111 @@
 * @param parentController	Reference to the parent "uber" controller - populated if this is a child window opened by the parent
 */
 function ZmContactsApp(appCtxt, container, parentController) {
-	ZmApp.call(this, ZmZimbraMail.CONTACTS_APP, appCtxt, container, parentController);
+	ZmApp.call(this, ZmApp.CONTACTS, appCtxt, container, parentController);
+
+	AjxDispatcher.registerMethod("GetContacts", "ContactsCore", new AjxCallback(this, this.getContactList));
+	AjxDispatcher.registerMethod("GetContactListController", ["ContactsCore", "Contacts"], new AjxCallback(this, this.getContactListController));
+	AjxDispatcher.registerMethod("GetContactController", ["ContactsCore", "Contacts"], new AjxCallback(this, this.getContactController));
+
+	ZmItem.registerItem(ZmItem.CONTACT,
+						{app:			ZmApp.CONTACTS,
+						 nameKey:		"contact",
+						 icon:			"Contact",
+						 soapCmd:		"ContactAction",
+						 itemClass:		"ZmContact",
+						 node:			"cn",
+						 organizer:		ZmOrganizer.ADDRBOOK,
+						 searchType:	"contact",
+						 stbNameKey:	"searchContacts",
+						 stbTooltipKey:	"searchPersonalContacts",
+						 stbIcon:		"SearchContacts",
+						 resultsList:
+		AjxCallback.simpleClosure(function(search) {
+			AjxDispatcher.require("ContactsCore");
+			return new ZmContactList(this._appCtxt, search, false);
+		}, this)
+						});
+
+	ZmItem.registerItem(ZmItem.GROUP,
+						{nameKey:	"group",
+						 icon:		"Group",
+						 soapCmd:	"ContactAction"
+						});
+
+	ZmOrganizer.registerOrg(ZmOrganizer.ADDRBOOK,
+							{app:				ZmApp.CONTACTS,
+							 nameKey:			"addressBook",
+							 defaultFolder:		ZmOrganizer.ID_ADDRBOOK,
+							 soapCmd:			"FolderAction",
+							 firstUserId:		256,
+							 orgClass:			"ZmAddrBook",
+							 orgPackage:		"ContactsCore",
+							 treeController:	"ZmAddrBookTreeController",
+							 labelKey:			"addressBooks",
+							 defaultColor:		ZmOrganizer.C_GRAY,
+							 views:				["contact"],
+							 folderKey:			"addressBookFolder",
+							 mountKey:			"mountAddrBook",
+							 createFunc:		"ZmOrganizer.create",
+							 compareFunc:		"ZmAddrBook.sortCompare",
+							 deferrable:		true
+							});
+
+	ZmApp.registerApp(ZmApp.CONTACTS,
+							 {nameKey:				"addressBook",
+							  icon:					"ContactsApp",
+							  chooserTooltipKey:	"goToContacts",
+							  viewTooltipKey:		"displayContacts",
+							  defaultSearch:		ZmItem.CONTACT,
+							  overviewTrees:		[ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  showZimlets:			true,
+							  assistants:			{"ZmContactAssistant":"Contacts"},
+							  searchTypes:			[ZmItem.CONTACT],
+							  actionCode:			ZmKeyMap.GOTO_CONTACTS,
+							  trashViewOp:			ZmOperation.SHOW_ONLY_CONTACTS,
+							  chooserSort:			20,
+							  defaultSort:			40
+							  });
+
+	ZmSearchToolBar.FOR_PAS_MI 	= "FOR PAS";
+	ZmSearchToolBar.FOR_GAL_MI	= "FOR GAL";
+	ZmSearchToolBar.SETTING[ZmSearchToolBar.FOR_PAS_MI]		= ZmSetting.SHARING_ENABLED;
+	ZmSearchToolBar.SETTING[ZmSearchToolBar.FOR_GAL_MI]		= ZmSetting.GAL_ENABLED;
+	ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_PAS_MI]		= "searchPersonalAndShared";
+	ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_GAL_MI]		= "searchGALContacts";
+	ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_PAS_MI]	= "searchPersonalAndShared";
+	ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_GAL_MI]	= "searchGALContacts";
+	ZmSearchToolBar.ICON[ZmSearchToolBar.FOR_PAS_MI]		= "SearchSharedContacts";
+	ZmSearchToolBar.ICON[ZmSearchToolBar.FOR_GAL_MI]		= "SearchGAL";
+	ZmSearchToolBar.MENU_ITEMS.push(ZmItem.CONTACT);
+	ZmSearchToolBar.MENU_ITEMS.push(ZmSearchToolBar.FOR_PAS_MI);
+	ZmSearchToolBar.MENU_ITEMS.push(ZmSearchToolBar.FOR_GAL_MI);
+
 	this._initialized = false;
 };
+
+// Organizer and item-related constants
+ZmEvent.S_CONTACT				= "CONTACT";
+ZmEvent.S_GROUP					= "GROUP";
+ZmItem.CONTACT					= ZmEvent.S_CONTACT;
+ZmItem.GROUP					= ZmEvent.S_GROUP;
+ZmOrganizer.ADDRBOOK			= "ADDRBOOK";
+
+// App-related constants
+ZmApp.CONTACTS					= "Contacts";
+ZmApp.CLASS[ZmApp.CONTACTS]		= "ZmContactsApp";
+ZmApp.SETTING[ZmApp.CONTACTS]	= ZmSetting.CONTACTS_ENABLED;
+ZmApp.LOAD_SORT[ZmApp.CONTACTS]	= 30;
+
+// fields used for autocomplete matching
+ZmContactsApp.AC_VALUE_FULL 	= "fullAddress";
+ZmContactsApp.AC_VALUE_EMAIL	= "email";
+ZmContactsApp.AC_VALUE_NAME		= "name";
+
+ZmContactsApp.SEARCHFOR_CONTACTS 	= 1;
+ZmContactsApp.SEARCHFOR_GAL 		= 2;
+ZmContactsApp.SEARCHFOR_PAS			= 3; // PAS = personal and shared
+ZmContactsApp.SEARCHFOR_MAX 		= 50;
 
 ZmContactsApp.prototype = new ZmApp;
 ZmContactsApp.prototype.constructor = ZmContactsApp;
@@ -47,15 +149,27 @@ function() {
 	return "ZmContactsApp";
 };
 
-ZmContactsApp.prototype.launch =
-function(callback, errorCallback) {
-	var respCallback = new AjxCallback(this, this._handleResponseLaunch, callback);
-	this.getContactList(respCallback, errorCallback);
+ZmContactsApp.prototype.startup =
+function(result) {
+	AjxDispatcher.run("GetContacts");
 };
 
-ZmContactsApp.prototype._handleResponseLaunch =
+ZmContactsApp.prototype.createNotify =
+function(list) {
+	this._handleCreates(list);
+};
+
+ZmContactsApp.prototype.launch =
 function(callback) {
-	var clc = this.getContactListController();
+	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
+	AjxDispatcher.require("Contacts", false, loadCallback, null, true);
+};
+
+ZmContactsApp.prototype._handleLoadLaunch =
+function(callback) {
+	this._createDeferredFolders();
+	AjxDispatcher.run("GetContacts");	// contacts should already be loaded
+	var clc = AjxDispatcher.run("GetContactListController");
 	if (!this._initialized) {
 		// set search toolbar field manually
 		if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
@@ -76,6 +190,20 @@ function(callback) {
 	this._initialized = true;
 };
 
+ZmContactsApp.prototype.showSearchResults =
+function(results, callback, isInGal, folderId) {
+	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback, isInGal, folderId]);
+	AjxDispatcher.require("Contacts", false, loadCallback, null, true);
+};
+
+ZmContactsApp.prototype._handleLoadShowSearchResults =
+function(results, callback, isInGal, folderId) {
+	this.getContactListController().show(results, isInGal, folderId);
+	if (callback) {
+		callback.run();
+	}
+};
+
 ZmContactsApp.prototype.showFolder = 
 function(folder) {
 	// we manually set search bar's field since contacts dont always make search requests
@@ -83,13 +211,16 @@ function(folder) {
 		var query = folder.createQuery();
 		this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue(query);
 	}
-	this.getContactListController().show(this._contactList, null, folder.id);
+	var clc = AjxDispatcher.run("GetContactListController");
+	clc.show(this._contactList, null, folder.id);
 };
 
 ZmContactsApp.prototype.setActive =
 function(active) {
-	if (active)
-		this.getContactListController().show();
+	if (active) {
+		var clc = AjxDispatcher.run("GetContactListController");
+		clc.show();
+	}
 };
 
 ZmContactsApp.prototype.getContactList =
@@ -98,7 +229,7 @@ function(callback, errorCallback) {
 		try {
 			// check if a parent controller exists and ask it for the contact list
 			if (this._parentController) {
-				this._contactList = this._parentController.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+				this._contactList = this._parentController.getApp(ZmApp.CONTACTS).getContactList();
 			} else {
 				this._contactList = new ZmContactList(this._appCtxt);
 				var respCallback = new AjxCallback(this, this._handleResponseGetContactList, callback);
@@ -109,14 +240,17 @@ function(callback, errorCallback) {
 			throw ex;
 		}
 	} else {
-		if (callback) callback.run();
+		if (callback && callback.run) {
+			callback.run(this._contactList);
+		} else {
+			return this._contactList;
+		}
 	}
-	if (!callback) return this._contactList;
 };
 
 ZmContactsApp.prototype._handleResponseGetContactList =
 function(callback) {
-	if (callback) callback.run();
+	if (callback && callback.run) callback.run(this._contactList);
 };
 
 // NOTE: calling method should handle exceptions!
@@ -165,4 +299,56 @@ function() {
 	if (this._contactController == null)
 		this._contactController = new ZmContactController(this._appCtxt, this._container, this);
 	return this._contactController;
+};
+
+/**
+ * Checks for the creation of an address book or a mount point to one. Regular
+ * contact creates are handed to the canonical list.
+ * 
+ * @param list	[array]		list of create notifications
+ */
+ZmContactsApp.prototype._handleCreates =
+function(list) {
+	for (var i = 0; i < list.length; i++) {
+		var create = list[i];
+		var name = create._name;
+		if (this._appCtxt.cacheGet(create.id)) { continue; }
+
+		if (name == "folder") {
+			var parentId = create.l;
+			var parent;
+			var addrBookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+			if (parentId == ZmOrganizer.ID_ROOT) {
+				if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK][0]) {
+					parent = addrBookTree.getById(parentId);
+				}
+			} else {
+				parent = addrBookTree.getById(parentId);
+			}
+			if (parent) {
+				DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
+				parent.notifyCreate(create);
+				create._handled = true;
+			}
+		} else if (name == "link") {
+			var parentId = create.l;
+			var parent, share;
+			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK][0]) {
+				var addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+				parent = addrbookTree.getById(parentId);
+				share = ZmOrganizer.ADDRBOOK;
+			}
+			if (parent) {
+				DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
+				parent.notifyCreate(create, true);
+				// XXX: once bug #4434 is fixed, check if this call is still needed
+				this._appCtxt.getRequestMgr().getFolderPermissions([share]);
+				create._handled = true;
+			}
+		} else if (name == "cn") {
+			DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
+			AjxDispatcher.run("GetContacts").notifyCreate(create, true);
+			create._handled = true;
+		}
+	}
 };

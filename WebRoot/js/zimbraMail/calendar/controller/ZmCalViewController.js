@@ -161,6 +161,7 @@ function() {
 
 ZmCalViewController.prototype.show =
 function(viewId) {
+	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	if (!viewId || viewId == ZmController.CAL_VIEW)
 		viewId = this._currentView ? this._currentView : this._defaultView();
 
@@ -353,9 +354,9 @@ function() {
 
 ZmCalViewController.prototype.getCalendarColor =
 function(folderId) {
-	if (!folderId) return ZmOrganizer.DEFAULT_COLOR;
+	if (!folderId) { return ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.CALENDAR]; }
 	var cal = this.getCalendar(folderId);
-	return cal ? cal.color : ZmOrganizer.DEFAULT_COLOR;
+	return cal ? cal.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.CALENDAR];
 };
 
 ZmCalViewController.prototype._refreshButtonListener =
@@ -475,14 +476,22 @@ function(date) {
 	this._miniCalendar.addDateRangeListener(new AjxListener(this, this._miniCalDateRangeListener));
 	this._miniCalendar.setMouseOverDayCallback(new AjxCallback(this, this._miniCalMouseOverDayCallback));
 
-	this._miniCalDropTarget = new DwtDropTarget(ZmConv, ZmMailMsg, ZmContact);
+	var list = [];
+	if (this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		list.push("ZmMailMsg");
+		list.push("ZmConv");
+	}
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		list.push("ZmContact");
+	}
+	this._miniCalDropTarget = new DwtDropTarget(list);
 	this._miniCalDropTarget.addDropListener(new AjxListener(this, this._miniCalDropTargetListener));
 	this._miniCalendar.setDropTarget(this._miniCalDropTarget);
 
 	var workingWeek = [];
 	var fdow = this.firstDayOfWeek();
-	for (var i=0; i < 7; i++) {
-		var d = (i+fdow)%7
+	for (var i = 0; i < 7; i++) {
+		var d = (i + fdow) % 7
 		workingWeek[i] = (d > 0 && d < 6);
 	}
 	this._miniCalendar.setWorkingWeek(workingWeek);
@@ -720,6 +729,7 @@ function(forward) {
 
 ZmCalViewController.prototype.setDate =
 function(date, duration, roll) {
+	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	// set mini-cal first so it will cache appts we might need
 	if (this._miniCalendar.getDate() == null || this._miniCalendar.getDate().getTime() != date.getTime())
 		this._miniCalendar.setDate(date, true, roll);
@@ -824,11 +834,7 @@ function(ev) {
 
 ZmCalViewController.prototype._printListener =
 function(ev) {
-	var viewMgr = this._viewMgr;
-	if (!this._printView) {
-		this._printView = new ZmPrintView(this._appCtxt);
-	}
-	this._printView.render(viewMgr);
+	this._appCtxt.getPrintView().render(this._viewMgr);
 };
 
 ZmCalViewController.prototype._deleteListener =
@@ -889,7 +895,7 @@ function(appt, mode) {
 
 ZmCalViewController.prototype._continueDeleteReplyRespondAction =
 function(appt, action, mode) {
-	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
+	var msgController = AjxDispatcher.run("GetMsgController");
 	var msg = appt.getMessage();
 	msg._appt = appt;
 	msg._mode = mode;
@@ -946,6 +952,7 @@ function(appt, shiftKey) {
 	var useQuickAdd = this._appCtxt.get(ZmSetting.CAL_USE_QUICK_ADD);
 	if ((useQuickAdd && !shiftKey) || (!useQuickAdd && shiftKey)) {
 		if (this._quickAddDialog == null) {
+			AjxDispatcher.require(["CalendarCore", "Calendar"]);
 			this._quickAddDialog = new ZmApptQuickAddDialog(this._shell, this._appCtxt);
 			this._quickAddDialog.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._quickAddOkListener));
 			this._quickAddDialog.addSelectionListener(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, new AjxListener(this, this._quickAddMoreListener));
@@ -975,6 +982,7 @@ function(startDate, endDate, folderId, shiftKey) {
 
 ZmCalViewController.prototype.newAppointment =
 function(newAppt, mode, isDirty, startDate) {
+	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
 	var appt = newAppt || this._newApptObject(sd);
 	this._app.getApptComposeController().show(appt, mode, isDirty);
@@ -982,6 +990,7 @@ function(newAppt, mode, isDirty, startDate) {
 
 ZmCalViewController.prototype.editAppointment =
 function(appt, mode) {
+	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	if (mode != ZmCalItem.MODE_NEW) {
         var clone = ZmAppt.quickClone(appt);
         clone.getDetails(mode, new AjxCallback(this, this._showApptComposeView, [clone, mode]));
@@ -1232,7 +1241,7 @@ function(date, noheader) {
 		var start = new Date(date.getTime());
 		start.setHours(0, 0, 0, 0);
 		var result = this.getApptSummaries(start.getTime(), start.getTime()+AjxDateUtil.MSEC_PER_DAY, true, this.getCheckedCalendarFolderIds());
-		return ZmCalMonthView.getDayToolTipText(start,result, this, noheader);
+		return ZmApptViewHelper.getDayToolTipText(start,result, this, noheader);
 	} catch (ex) {
 		DBG.println(ex);
 		return "<b>"+ZmMsg.errorGettingAppts+"</b>";
@@ -1347,7 +1356,7 @@ function(ev) {
 
 ZmCalViewController.prototype._handleResponseHandleApptRespondAction =
 function(appt, type, op) {
-	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
+	var msgController = AjxDispatcher.run("GetMsgController");
 	msgController.setMsg(appt.getMessage());
 	// poke the msgController
 	var instanceDate = op == ZmOperation.VIEW_APPT_INSTANCE ? new Date(appt.uniqStartTime) : null;
@@ -1365,7 +1374,7 @@ function(ev) {
 
 ZmCalViewController.prototype._handleResponseHandleApptEditRespondAction =
 function(appt, id, op) {
-	var msgController = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getMsgController();
+	var msgController = AjxDispatcher.run("GetMsgController");
 	msgController.setMsg(appt.getMessage());
 
 	// poke the msgController
@@ -1593,7 +1602,7 @@ function(items) {
 
 // this gets called afer all the above notify* methods get called
 ZmCalViewController.prototype.notifyComplete =
-function(ids) {
+function() {
 	DBG.println(AjxDebug.DBG2, "ZmCalViewController: notifyComplete: " + this._clearCache);
 	if (this._clearCache) {
 		var act = new AjxTimedAction(this, this._refreshAction);

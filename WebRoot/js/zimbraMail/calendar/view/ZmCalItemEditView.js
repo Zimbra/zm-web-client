@@ -38,7 +38,7 @@
 * @param dateInfo			[object]*					hash of date info
 * @param posStyle			[String]*					[static|relative|absolute]
 */
-function ZmCalItemEditView(parent, appCtxt, attendees, controller, dateInfo, posStyle) {
+ZmCalItemEditView = function(parent, appCtxt, attendees, controller, dateInfo, posStyle) {
 	if (arguments.length == 0) return;
 
 	DwtComposite.call(this, parent, null, posStyle);
@@ -482,8 +482,8 @@ function(width) {
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 	// start/end date DwtCalendar's
-	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this, this._htmlElId+"_startMiniCalBtn", dateButtonListener, dateCalSelectionListener, this._appCtxt);
-	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this, this._htmlElId+"_endMiniCalBtn", dateButtonListener, dateCalSelectionListener, this._appCtxt);
+	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId+"_startMiniCalBtn", dateButtonListener, dateCalSelectionListener, this._appCtxt);
+	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._htmlElId+"_endMiniCalBtn", dateButtonListener, dateCalSelectionListener, this._appCtxt);
 
 	// notes ZmHtmlEditor
 	this._notesHtmlEditor = new ZmHtmlEditor(this, null, null, this._composeMode, this._appCtxt);

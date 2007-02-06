@@ -195,7 +195,7 @@ function(request, batchCommand, callback, errorCallback) {
 
 ZmIdentity.prototype._handleAction =
 function(request, callback, result, response) {
-	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
 	if (request == "ModifyIdentityRequest") {
 		var identity = identityCollection.getById(this.id);
 		identityCollection._removeFromMaps(identity);
@@ -275,7 +275,7 @@ function() {
 ZmIdentity.prototype.getAdvancedIdentity =
 function() {
 	if (this.useDefaultAdvanced) {
-		var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+		var identityCollection = AjxDispatcher.run("GetIdentityCollection");
 		return identityCollection.defaultIdentity;
 	} else {
 		return this;
@@ -409,13 +409,13 @@ function(mailMsg) {
 	}
 
 	// Check if the a identity's address was in the to field.
-	var identity = this._selectIdentityFromAddresses(mailMsg, ZmEmailAddress.TO);
+	var identity = this._selectIdentityFromAddresses(mailMsg, AjxEmailAddress.TO);
 	if (identity) {
 		return identity;
 	}
 
 	// Check if the a identity's address was in the cc field.
-	identity = this._selectIdentityFromAddresses(mailMsg, ZmEmailAddress.CC);
+	identity = this._selectIdentityFromAddresses(mailMsg, AjxEmailAddress.CC);
 	if (identity) {
 		return identity;
 	}

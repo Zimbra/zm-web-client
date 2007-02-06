@@ -309,7 +309,7 @@ function() {
 		}
 	}
 
-	return (msg ? this._showError(msg) : [parentFolder, name, color, url]);
+	return (msg ? this._showError(msg) : {l:parentFolder.id, name:name, color:color, url:url});
 };
 
 ZmNewOrganizerDialog.prototype._getTabGroupMembers =

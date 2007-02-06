@@ -350,13 +350,12 @@ function(ev) {
 		id = this._defaultNewId;
 	if (id == ZmOperation.NEW_MESSAGE) {
 		var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
-		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController().doAction(ZmOperation.NEW_MESSAGE, inNewWindow);
+		AjxDispatcher.run("Compose", {action: ZmOperation.NEW_MESSAGE, inNewWindow: inNewWindow});
 	} else if (id == ZmOperation.NEW_CONTACT) {
 		var contact = new ZmContact(this._appCtxt);
-		this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(contact);
+		AjxDispatcher.run("GetContactController").show(contact);
 	} else if (id == ZmOperation.NEW_APPT) {
-		var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-		cc.newAppointment();
+		AjxDispatcher.run("GetCalController").newAppointment();
 	} else if (id == ZmOperation.NEW_FOLDER) {
 		this._showDialog(this._appCtxt.getNewFolderDialog(), this._newFolderCallback);
 	} else if (id == ZmOperation.NEW_TAG) {

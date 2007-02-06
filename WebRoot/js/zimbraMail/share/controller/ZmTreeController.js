@@ -63,9 +63,11 @@ function ZmTreeController(appCtxt, type, dropTgt) {
 	}
 
 	// change listening
-	this._dataTree = appCtxt.getTree(type);
+//	this._dataTree = appCtxt.getTree(type);
+	this._dataTree = this._getDataTree();
 	if (this._dataTree) {
-		this._dataTree.addChangeListener(new AjxListener(this, this._treeChangeListener));
+		this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
+		this._dataTree.addChangeListener(this._dataChangeListener);
 	}
 	
 	this._treeView = {};	// hash of tree views of this type, by overview ID
@@ -156,7 +158,23 @@ function(overviewId) {
 	delete this._treeView[overviewId];
 };
 
+/**
+ * Returns this controller's drop target.
+ */
+ZmTreeController.prototype.getDropTarget =
+function() {
+	return this._dropTgt;
+};
+
 // Private and protected methods
+
+/**
+ * Folder tree is used by default.
+ */
+ZmTreeController.prototype._getDataTree =
+function() {
+	return this._appCtxt.getFolderTree();
+};
 
 /*
 * Performs initialization.
@@ -181,26 +199,27 @@ ZmTreeController.prototype._initializeTreeView =
 function(overviewId) {
 	var dragSrc = this._opc.dndSupported(overviewId) ? this._dragSrc : null;
 	var dropTgt = this._opc.dndSupported(overviewId) ? this._dropTgt : null;
-	var params = {parent: this._opc.getOverview(overviewId), overviewId: overviewId, type: this.type,
-				  headerClass: this._opc.getHeaderClass(overviewId), dragSrc: dragSrc, dropTgt: dropTgt,
-				  treeStyle: this.getTreeStyle() || this._opc.getTreeStyle(overviewId)}; 
+	var params = {parent:this._opc.getOverview(overviewId), overviewId:overviewId, type:this.type,
+				  headerClass:this._opc.getHeaderClass(overviewId), dragSrc:dragSrc, dropTgt:dropTgt,
+				  treeStyle:this.getTreeStyle() || this._opc.getTreeStyle(overviewId),
+				  allowedTypes:this._getAllowedTypes(), allowedSubTypes:this._getAllowedSubTypes()};
 	var treeView = new ZmTreeView(params);
 	treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
 	
 	return treeView;
 };
 
-/** 
+/**
  * This allows a tree controller to override the default tree style
  * specified by the overview controller.
  */
 ZmTreeController.prototype.getTreeStyle = function() {};
 
-/*
-* Creates up to two action menus, one for the tree view's header item, and
-* one for the rest of the items. Note that each of these two menus is a 
-* singleton, shared among the tree views of this type.
-*/
+/**
+ * Creates up to two action menus, one for the tree view's header item, and
+ * one for the rest of the items. Note that each of these two menus is a 
+ * singleton, shared among the tree views of this type.
+ */
 ZmTreeController.prototype._initializeActionMenus =
 function() {
 	var obj = this;
@@ -261,6 +280,20 @@ function(parent, menuItems) {
 	return actionMenu;
 };
 
+ZmTreeController.prototype._getAllowedTypes =
+function() {
+	var types = {};
+	types[this.type] = true;
+	return types;
+};
+
+ZmTreeController.prototype._getAllowedSubTypes =
+function() {
+	var types = {};
+	types[this.type] = true;
+	return types;
+};
+
 // Actions
 
 /*
@@ -270,8 +303,13 @@ function(parent, menuItems) {
 * @param name		[string]		name of the new organizer
 */
 ZmTreeController.prototype._doCreate =
-function(parent, name) {
-	parent.create(name);
+function(params) {
+	params.type = this.type;
+	var funcName = ZmOrganizer.CREATE_FUNC[this.type];
+	if (funcName) {
+		var func = eval(funcName);
+		func(this._appCtxt, params);
+	}
 };
 
 /*
@@ -402,7 +440,7 @@ function(ev) {
 */
 ZmTreeController.prototype._changeListener =
 function(ev, treeView, overviewId) {
-	if (ev.type != this.type) return;
+	if (!treeView.allowedTypes[ev.type] && !treeView.allowedSubTypes[ev.type]) { return; }
 	
 	var organizers = ev.getDetail("organizers");
 	if (!organizers && ev.source) {
@@ -439,7 +477,7 @@ function(ev, treeView, overviewId) {
 				node.dispose(); // remove from current parent
 			}
 			if (parentNode) {
-				var idx = ZmTreeView.getSortIndex(parentNode, organizer, ZmTreeView.COMPARE_FUNC[organizer.type]);
+				var idx = ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type]));
 				var added = this._addNew(treeView, parentNode, organizer, idx); // add to new parent
 				if (added && parentNode) {
 					parentNode.setExpanded(true); // so that new node is visible
@@ -468,12 +506,14 @@ function(ev, treeView, overviewId) {
 						if (parentNode && (parentNode.getNumChildren() > 1)) {
 							// remove and re-insert the node (if parent has more than one child)
 							node.dispose();
-							var idx = ZmTreeView.getSortIndex(parentNode, organizer, ZmTreeView.COMPARE_FUNC[organizer.type]);
+							var idx = ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type]));
 							treeView._addNew(parentNode, organizer, idx);
 							if (checked) {
 								node = treeView.getTreeItemById(id);
 								node.setChecked(checked);
 							}
+						} else {
+							node.setDndText(organizer.getName());
 						}
 						this._appCtxt.getAppViewMgr().updateTitle();
 					}
@@ -640,8 +680,8 @@ function() {
 * @param 1		[string]		the name of the new organizer
 */
 ZmTreeController.prototype._newCallback =
-function(parent, name, color, url) {
-	this._doCreate(parent, name, color, url);
+function(params) {
+	this._doCreate(params);
 	this._clearDialog(this._getNewDialog());
 };
 

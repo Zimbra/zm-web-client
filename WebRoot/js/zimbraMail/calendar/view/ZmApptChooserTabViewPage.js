@@ -408,10 +408,10 @@ function() {
 	if (this._listSelectId) {
 		var listSelect = document.getElementById(this._listSelectId);
 		this._selectDiv = new DwtSelect(this);
-		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactPicker.SEARCHFOR_CONTACTS);
+		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
-			this._selectDiv.addOption(ZmMsg.searchPersonalAndShared, false, ZmContactPicker.SEARCHFOR_PAS);
-		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactPicker.SEARCHFOR_GAL);
+			this._selectDiv.addOption(ZmMsg.searchPersonalAndShared, false, ZmContactsApp.SEARCHFOR_PAS);
+		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
 	}
    
@@ -491,10 +491,10 @@ function(sortBy) {
 
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var searchFor = this._selectDiv.getSelectedOption().getValue();
-		this._contactSource = (searchFor == ZmContactPicker.SEARCHFOR_CONTACTS || searchFor == ZmContactPicker.SEARCHFOR_PAS)
+		this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
 			? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
-		if (searchFor == ZmContactPicker.SEARCHFOR_PAS) {
-			var addrbookList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getAddrbookList();
+		if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
+			var addrbookList = this._appCtxt.getApp(ZmApp.CONTACTS).getAddrbookList();
 			this._query += " (" + addrbookList.join(" or ") + ")";
 		}
 	} else {
@@ -506,7 +506,7 @@ function(sortBy) {
 	sortBy = sortBy ? sortBy : ZmApptChooserTabViewPage.SORT_BY[this.type];
 	var types = AjxVector.fromArray([ZmItem.CONTACT]);
 	var params = {query: this._query, types: types, sortBy: sortBy, offset: 0,
-				  limit: ZmContactPicker.SEARCHFOR_MAX, contactSource: this._contactSource};
+				  limit: ZmContactsApp.SEARCHFOR_MAX, contactSource: this._contactSource};
 	var search = new ZmSearch(this._appCtxt, params);
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearchContacts)});
 };
@@ -555,7 +555,7 @@ function(sortBy) {
 			conds.push({attr: attr, op: op, value: value});
 		}
 	}
-	var params = {sortBy: sortBy, offset: 0, limit: ZmContactPicker.SEARCHFOR_MAX, conds: conds,
+	var params = {sortBy: sortBy, offset: 0, limit: ZmContactsApp.SEARCHFOR_MAX, conds: conds,
 				  attrs: ZmApptChooserTabViewPage.ATTRS[this.type]};
 	var search = new ZmSearch(this._appCtxt, params);
 	search.execute({callback: new AjxCallback(this, this._handleResponseSearchCalendarResources)});
@@ -696,7 +696,7 @@ function() {
 	return headerList;
 };
 
-// The items are ZmEmailAddress objects
+// The items are AjxEmailAddress objects
 ZmApptChooserListView.prototype._createItemHtml =
 function(item) {
 

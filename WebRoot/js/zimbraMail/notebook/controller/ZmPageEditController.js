@@ -327,7 +327,7 @@ ZmPageEditController.prototype._saveResponseHandler = function(content, response
 ZmPageEditController.prototype._saveResponseHandlerShowNote =
 function(id) {
 	this._showPage(id);
-	this._app.getAppViewMgr().showPendingView(true);
+	this._appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._saveErrorResponseHandler =
@@ -457,7 +457,7 @@ function() {
 	this._popShield.popdown();
 	this._doSave(true);
 	this._app.popView(true);
-	this._app.getAppViewMgr().showPendingView(true);
+	this._appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._popShieldNoCallback =
@@ -465,11 +465,11 @@ function() {
 	this._popShield.popdown();
 	this._app.popView(true);
 	this._showCurrentPage();
-	this._app.getAppViewMgr().showPendingView(true);
+	this._appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._popShieldDismissCallback =
 function() {
 	this._popShield.popdown();
-	this._app.getAppViewMgr().showPendingView(false);
+	this._appCtxt.getAppViewMgr().showPendingView(false);
 };

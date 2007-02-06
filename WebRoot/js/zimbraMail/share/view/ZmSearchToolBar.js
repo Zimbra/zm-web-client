@@ -47,62 +47,22 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
     var menu = new DwtMenu(menuParent, null, "ActionMenu");
     menuParent.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 
-    var numTypes = 0;
-    var mi = DwtMenuItem.create(menu, "SearchMail", ZmMsg.searchMail, null, true, DwtMenuItem.RADIO_STYLE, 0);
-    mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_MAIL_MI);
-    numTypes++;
-
-    if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-        mi = DwtMenuItem.create(menu, "SearchContacts", ZmMsg.searchPersonalContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
-        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.CONTACT);
-        numTypes++;
-
-        if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-            mi = DwtMenuItem.create(menu, "SearchSharedContacts", ZmMsg.searchPersonalAndShared, null, true, DwtMenuItem.RADIO_STYLE, 0);
-            mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_PAS_MI);
-            numTypes++;
-        }
-    }
-
-    if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
-        mi = DwtMenuItem.create(menu, "SearchGAL", ZmMsg.searchGALContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
-        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_GAL_MI);
-        numTypes++;
-    }
-/*
-    if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-        mi = DwtMenuItem.create(menu, "SearchCalendar", ZmMsg.searchCalendar, null, true, DwtMenuItem.RADIO_STYLE, 0);
-        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.APPT);
-        numTypes++;
-    }
-*/
-    if (this._appCtxt.get(ZmSetting.NOTES_ENABLED)) {
-        mi = DwtMenuItem.create(menu, "SearchNotes", ZmMsg.searchNotes, null, true, DwtMenuItem.RADIO_STYLE, 0);
-        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.NOTE);
-        numTypes++;
-    }
-
-    if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
-        mi = DwtMenuItem.create(menu, "SearchNotes", ZmMsg.searchNotebooks, null, true, DwtMenuItem.RADIO_STYLE, 0);
-        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.PAGE);
-        numTypes++;
-    }
-
-    if ((numTypes > 1) && this._appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED)) {
-        mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
-        mi = DwtMenuItem.create(menu, "SearchAll", ZmMsg.searchAll, null, true, DwtMenuItem.RADIO_STYLE, 0);
-        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_ANY_MI);
-    }
+	ZmSearchToolBar.MENU_ITEMS.push(ZmSearchToolBar.FOR_ANY_MI);
+	for (var i = 0; i < ZmSearchToolBar.MENU_ITEMS.length; i++){
+		var id = ZmSearchToolBar.MENU_ITEMS[i];
+		if (id == ZmSearchToolBar.FOR_ANY_MI) {
+			if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
+	        mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+		}
+		var setting = ZmSearchToolBar.SETTING[id];
+		if (setting && !this._appCtxt.get(setting)) { continue; }
+	    var mi = DwtMenuItem.create(menu, ZmSearchToolBar.ICON[id], ZmMsg[ZmSearchToolBar.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE, 0);
+	    mi.setData(ZmSearchToolBar.MENUITEM_ID, id);
+	}
 
     var callback = new AjxCallback(this, this._getControl);
     var hintsCallback = new AjxCallback(this, this._getControlHints);
     this._search.setFormat(ZmMsg.searchToolBar, callback, hintsCallback);
-
-    //var searchColId = Dwt.getNextId();
-    //var groupBy = this._appCtxt.getSettings().getGroupMailBy();
-    //var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
-    //this._searchButton = this._createButton(ZmSearchToolBar.SEARCH_BUTTON, null, ZmMsg.search, null, tooltip, true, "DwtToolbarButton");
-    //document.getElementById(searchColId).appendChild(this._searchButton.getHtmlElement());
 
     if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
         this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, "Save", null, "SaveDis", ZmMsg.saveCurrentSearch, true, "DwtToolbarButton");
@@ -115,10 +75,10 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
     }
 };
 
-ZmSearchToolBar.BROWSE_BUTTON 		= 1;
-ZmSearchToolBar.SEARCH_BUTTON 		= 2;
-ZmSearchToolBar.SAVE_BUTTON 		= 3;
-ZmSearchToolBar.SEARCH_MENU_BUTTON 	= 4;
+ZmSearchToolBar.BROWSE_BUTTON 			= 1;
+ZmSearchToolBar.SEARCH_BUTTON 			= 2;
+ZmSearchToolBar.SAVE_BUTTON 			= 3;
+ZmSearchToolBar.SEARCH_MENU_BUTTON 		= 4;
 ZmSearchToolBar.CUSTOM_SEARCH_BUTTON    = 5;
 
 ZmSearchToolBar.SEARCH_FIELD_SIZE 	= 48;
@@ -126,38 +86,27 @@ ZmSearchToolBar.UNICODE_CHAR_RE 	= /\S/;
 
 ZmSearchToolBar.MENUITEM_ID = "_menuItemId";
 
-ZmSearchToolBar.FOR_MAIL_MI	= ++ZmItem.MAX;
-ZmSearchToolBar.FOR_PAS_MI 	= ++ZmItem.MAX; // Personal and Shared
-ZmSearchToolBar.FOR_GAL_MI	= ++ZmItem.MAX; // Global Address List
-ZmSearchToolBar.FOR_ANY_MI	= ++ZmItem.MAX;
+// menu items
+ZmSearchToolBar.FOR_ANY_MI	= "FOR_ANY";
 
-// XXX: are these used anywhere??
-ZmSearchToolBar.MSG_KEY = new Object();
-ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_MAIL_MI] = "searchMail";
-ZmSearchToolBar.MSG_KEY[ZmItem.CONTACT] = "searchContacts";
-ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_GAL_MI] = "searchGALContacts";
-ZmSearchToolBar.MSG_KEY[ZmItem.APPT] = "searchCalendar";
-ZmSearchToolBar.MSG_KEY[ZmItem.PAGE] = "searchNotebooks";
+// required setting for menu item to appear
+ZmSearchToolBar.SETTING = {};
+ZmSearchToolBar.SETTING[ZmSearchToolBar.FOR_ANY_MI] = ZmSetting.MIXED_VIEW_ENABLED;
+
+// text for menu item
+ZmSearchToolBar.MSG_KEY = {};
 ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_ANY_MI] = "searchAll";
 
-ZmSearchToolBar.TT_MSG_KEY = new Object();
-ZmSearchToolBar.TT_MSG_KEY[ZmItem.MSG] = "searchForMessages";
-ZmSearchToolBar.TT_MSG_KEY[ZmItem.CONV] = "searchForConvs";
-ZmSearchToolBar.TT_MSG_KEY[ZmItem.CONTACT] = "searchPersonalContacts";
-ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_PAS_MI] = "searchPersonalAndShared";
-ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_GAL_MI] = "searchGALContacts";
-ZmSearchToolBar.TT_MSG_KEY[ZmItem.APPT] = "searchForAppts";
-ZmSearchToolBar.TT_MSG_KEY[ZmItem.PAGE] = "searchForPages";
+// tooltip text for menu item
+ZmSearchToolBar.TT_MSG_KEY = {};
 ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_ANY_MI] = "searchForAny";
 
-ZmSearchToolBar.ICON_KEY = new Object();
-ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_MAIL_MI] = "MailFolder";
-ZmSearchToolBar.ICON_KEY[ZmItem.CONTACT] = "ContactsFolder";
-ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_PAS_MI] = "GAL"; // XXX: new icon?
-ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_GAL_MI] = "GAL";
-ZmSearchToolBar.ICON_KEY[ZmItem.APPT] = "CalendarFolder";
-ZmSearchToolBar.ICON_KEY[ZmItem.PAGE] = "Notebook";
-ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_ANY_MI] = "Globe";
+// image for menu item
+ZmSearchToolBar.ICON = {};
+ZmSearchToolBar.ICON[ZmSearchToolBar.FOR_ANY_MI] = "SearchAll";
+
+// list of menu items
+ZmSearchToolBar.MENU_ITEMS = [];
 
 ZmSearchToolBar.prototype = new ZmToolBar;
 ZmSearchToolBar.prototype.constructor = ZmSearchToolBar;

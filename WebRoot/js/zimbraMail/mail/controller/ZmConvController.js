@@ -182,7 +182,7 @@ function(ev) {
 	
 	if (ev.item.getData(ZmOperation.MENUITEM_ID) == ZmOperation.DELETE_CONV) {
 		// use conv list controller to delete conv
-		var clc = this._app.getConvListController();
+		var clc = AjxDispatcher.run("GetConvListController");
 		clc._doDelete([this._conv]);
 		this._app.popView();
 	} else {
@@ -196,7 +196,7 @@ function(ev) {
 // or deleted, it's just removed from the view and its underlying list.
 ZmConvController.prototype._checkConvLocation =
 function() {
-	var clc = this._app.getConvListController();
+	var clc = AjxDispatcher.run("GetConvListController");
 	var list = clc.getList();
 	var folderId = list.search.folderId;
 	if (folderId) {
@@ -246,7 +246,7 @@ function() {
 
 	if (this._conv.numMsgs > 1) {
 		// get the search folder if one exists
-		var clc = this._app.getConvListController();
+		var clc = AjxDispatcher.run("GetConvListController");
 		var search = clc.getList().search;
 		var folderId = search.folderId ? (parseInt(search.folderId)) : null;
 		if (folderId && this._conv.msgs) {
@@ -379,7 +379,7 @@ function(view, offset, limit, callback) {
 
 ZmConvController.prototype._paginateDouble = 
 function(bDoubleForward) {
-	var clc = this._app.getConvListController();
+	var clc = AjxDispatcher.run("GetConvListController");
 	if (clc)
 		clc.pageItemSilently(this._conv, bDoubleForward);
 }

@@ -116,19 +116,31 @@ function() {
 	this._composeView._dispose();
 };
 
+/**
+ * Begins a compose session by presenting a form to the user.
+ * 
+ * @param action		[constant]		new message, reply, forward, or an invite action
+ * @param inNewWindow	[boolean]*		if true, we are in detached window
+ * @param msg			[ZmMailMsg]*	the original message (reply/forward), or address (new message)
+ * @param toOverride 	[string]*		initial value for To: field
+ * @param subjOverride 	[string]*		initial value for Subject: field
+ * @param extraBodyText [string]*		canned text to prepend to body (invites)
+ * @param callback		[AjxCallback]*	callback to run after view has been set
+ * @param accountName	[string]*		on-behalf-of From address
+ */
 ZmComposeController.prototype.doAction =
-function(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText, callback, accountName) {
-	if (inNewWindow) {
+function(params) {
+	if (params.inNewWindow) {
 		var newWinObj = this._appCtxt.getNewWindow();
 
 		// this is how child window knows what to do once loading:
 		newWinObj.command = "compose";
-		newWinObj.args = [action, msg, toOverride, subjOverride, extraBodyText, null, accountName];
+		newWinObj.params = params;
 	} else {
-		this._setView(action, msg, toOverride, subjOverride, extraBodyText, null, accountName);
+		this._setView(params);
 	}
-	if (callback) {
-		callback.run();
+	if (params.callback) {
+		params.callback.run();
 	}
 };
 
@@ -159,7 +171,7 @@ function() {
 	// this is how child window knows what to do once loading:
 	var newWinObj = this._appCtxt.getNewWindow();
 	newWinObj.command = "composeDetach";
-	newWinObj.args = {action:this._action, msg:msg, addrs:addrs, subj:subj, forwardHtml:forAttHtml, body:body,
+	newWinObj.params = {action:this._action, msg:msg, addrs:addrs, subj:subj, forwardHtml:forAttHtml, body:body,
 					  composeMode:composeMode, identityId:identityId, accountName:this._accountName, 
 					  backupForm:backupForm, sendUID:sendUID};
 };
@@ -231,9 +243,7 @@ function(attId, isDraft, callback) {
 			appt.save();
 		}
 	} else {
-		var contactList = !isDraft
-			? this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList() : null;
-
+		var contactList = !isDraft ? AjxDispatcher.run("GetContacts") : null;
 		var respCallback = new AjxCallback(this, this._handleResponseSendMsg, [isDraft, msg, callback]);
 		var errorCallback = new AjxCallback(this, this._handleErrorSendMsg);
 		var resp = msg.send(contactList, isDraft, respCallback, errorCallback, this._accountName);
@@ -381,7 +391,6 @@ function() {
 
 ZmComposeController.prototype.handleKeyAction =
 function(actionCode) {
-	DBG.println("ZmComposeController.handleKeyAction");
 	switch (actionCode) {
 		case ZmKeyMap.CANCEL:
 			this._cancelCompose();
@@ -417,7 +426,7 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.ADDRESS_PICKER:
-			this._composeView._addressButtonListener(null, ZmEmailAddress.TO);
+			this._composeView._addressButtonListener(null, AjxEmailAddress.TO);
 			break;
 
 		case ZmKeyMap.NEW_WINDOW:
@@ -459,26 +468,37 @@ function(delMsg) {
 	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:async});
 };
 
-// Creates the compose view based on the mode we're in. Lazily creates the
-// compose toolbar, a contact picker, and the compose view itself.
+/**
+ * Creates the compose view based on the mode we're in. Lazily creates the
+ * compose toolbar, a contact picker, and the compose view itself.
+ * 
+ * @param action		[constant]		new message, reply, forward, or an invite action
+ * @param msg			[ZmMailMsg]*	the original message (reply/forward), or address (new message)
+ * @param toOverride 	[string]*		initial value for To: field
+ * @param subjOverride 	[string]*		initial value for Subject: field
+ * @param extraBodyText [string]*		canned text to prepend to body (invites)
+ * @param composeMode	[constant]*		HTML or text compose
+ * @param accountName	[string]*		on-behalf-of From address
+ */
 ZmComposeController.prototype._setView =
-function(action, msg, toOverride, subjOverride, extraBodyText, composeMode, accountName) {
+function(params) {
 
 	// save args in case we need to re-display (eg go from Reply to Reply All)
-	this._action = action;
-	this._msg = msg;
-	this._toOverride = toOverride;
-	this._subjOverride = subjOverride;
-	this._extraBodyText = extraBodyText;
-	this._accountName = accountName;
+	var action = this._action = params.action;
+	var msg = this._msg = params.msg;
+	this._toOverride = params.toOverride;
+	this._subjOverride = params.subjOverride;
+	this._extraBodyText = params.extraBodyText;
+	this._accountName = params.accountName;
 	
-	var identityCollection = this._appCtxt.getIdentityCollection();
-	var identity = (msg && msg.identity) ? identity = msg.identity : identityCollection.selectIdentity(msg);
+	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
+	var identity = (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
+	params.identity = identity;
 
 	this._initializeToolBar();
 	this._toolbar.enableAll(true);
-	var isCancel = action == ZmOperation.REPLY_CANCEL;
-	var isModify = action == ZmOperation.REPLY_MODIFY;
+	var isCancel = (action == ZmOperation.REPLY_CANCEL);
+	var isModify = (action == ZmOperation.REPLY_MODIFY);
 	if (isCancel || isModify) {
 		var ops = [ ZmOperation.SAVE_DRAFT ];
 		if (isCancel) {
@@ -487,15 +507,15 @@ function(action, msg, toOverride, subjOverride, extraBodyText, composeMode, acco
 		this._toolbar.enable(ops, false);
 	}
 
-	this.initComposeView(null, composeMode);
+	this.initComposeView(null, params.composeMode);
 
-	this._composeMode = composeMode ? composeMode : this._getComposeMode(msg, identity);
+	this._composeMode = params.composeMode ? params.composeMode : this._getComposeMode(msg, identity);
 	this._composeView.setComposeMode(this._composeMode);
 
 	this._setOptionsMenu(this._composeMode, identity);
 	this._setAddSignatureVisibility(identity);
 
-	this._composeView.set(action, msg, toOverride, subjOverride, extraBodyText, identity);
+	this._composeView.set(params);
 	this._setComposeTabGroup();
 	this._app.pushView(ZmController.COMPOSE_VIEW);
 	this._composeView.reEnableDesignMode();
@@ -524,7 +544,7 @@ function() {
 		if (buttons[i] > 0 && this._listeners[buttons[i]])
 			this._toolbar.addSelectionListener(buttons[i], this._listeners[buttons[i]]);
 
-	var identity = this._appCtxt.getIdentityCollection().defaultIdentity;
+	var identity = AjxDispatcher.run("GetIdentityCollection").defaultIdentity;
 	var canAddSig = this._setAddSignatureVisibility(identity);
 
 	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY, ZmOperation.FORWARD_ATT, ZmOperation.DRAFT,
@@ -554,6 +574,7 @@ function() {
 
 ZmComposeController.prototype._setAddSignatureVisibility =
 function(identity) {
+	if (!identity) { return false; }
 	var canAddSig = (!identity.signatureEnabled && identity.signature);
 	var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
 	signatureButton.setVisible(canAddSig);
@@ -615,7 +636,7 @@ function(composeMode, identity) {
 	}
 	var isReply = (this._action == ZmOperation.REPLY || this._action == ZmOperation.REPLY_ALL);
 	var isForward = (this._action == ZmOperation.FORWARD_ATT || this._action == ZmOperation.FORWARD_INLINE);
-	if (isReply || isForward) {
+	if (identity && (isReply || isForward)) {
 		var includePref = isReply ? identity.getReplyOption() : identity.getForwardOption();
 		this._curIncOption = ZmComposeController.INC_OP[includePref];
 		menu.checkItem(ZmOperation.KEY_ID, this._curIncOption, true);
@@ -634,13 +655,13 @@ function(msg, identity) {
 	var composeMode = DwtHtmlEditor.TEXT;
 
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		if (this._action == ZmOperation.REPLY ||
+		if ((this._action == ZmOperation.REPLY ||
 			this._action == ZmOperation.REPLY_ALL ||
 			this._action == ZmOperation.FORWARD_INLINE ||
 			this._action == ZmOperation.REPLY_ACCEPT ||
 			this._action == ZmOperation.REPLY_CANCEL ||
 			this._action == ZmOperation.REPLY_DECLINE ||
-			this._action == ZmOperation.REPLY_TENTATIVE)
+			this._action == ZmOperation.REPLY_TENTATIVE) && identity)
 		{
 			var bComposeSameFormat = identity.getComposeSameFormat();
 			var bComposeAsFormat = identity.getComposeAsFormat();
@@ -770,7 +791,7 @@ function(ev) {
 	// Show BCC is checkbox
 	if (op == ZmOperation.SHOW_BCC) {
 		var showField = (ev.detail == DwtMenuItem.CHECKED);
-		this._composeView._showAddressField(ZmEmailAddress.BCC, showField);
+		this._composeView._showAddressField(AjxEmailAddress.BCC, showField);
 		return;
 	}
 
@@ -913,7 +934,7 @@ function() {
 	}
 
 	this._app.popView(true);
-	this._app.getAppViewMgr().showPendingView(true);
+	this._appCtxt.getAppViewMgr().showPendingView(true);
 };
 
 // Called as: No, don't save as draft
@@ -930,9 +951,9 @@ function() {
 		}
 
 		this._app.popView(true);
-		this._app.getAppViewMgr().showPendingView(true);
+		this._appCtxt.getAppViewMgr().showPendingView(true);
 	} else {
-		this._app.getAppViewMgr().showPendingView(false);
+		this._appCtxt.getAppViewMgr().showPendingView(false);
 		this._composeView.reEnableDesignMode();
 	}
 };
@@ -942,7 +963,7 @@ ZmComposeController.prototype._popShieldDismissCallback =
 function() {
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
-	this._app.getAppViewMgr().showPendingView(false);
+	this._appCtxt.getAppViewMgr().showPendingView(false);
 	this._composeView.reEnableDesignMode();
 };
 
@@ -968,7 +989,7 @@ function() {
 		this._action == ZmOperation.FORWARD_INLINE || 
 		this._action == ZmOperation.FORWARD_ATT) {
 
-		return this._composeView._field[ZmEmailAddress.TO];
+		return this._composeView._field[AjxEmailAddress.TO];
 	} else {
 		var composeMode = this._composeView.getComposeMode();
 		return (composeMode == DwtHtmlEditor.TEXT) ? this._composeView._bodyField :

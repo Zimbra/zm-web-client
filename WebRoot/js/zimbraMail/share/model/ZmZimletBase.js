@@ -292,7 +292,7 @@ function(spanElement, contentObjText, matchContext, canvas) {
 		    txt = "fetching data...";
 		} else {
 			// If it's an email address just use the address value.
-			if (obj.objectContent instanceof ZmEmailAddress) {obj.objectContent = obj.objectContent.address;}
+			if (obj.objectContent instanceof AjxEmailAddress) {obj.objectContent = obj.objectContent.address;}
 			txt = this.xmlObj().processString(c.toolTip, obj);
 		}
 		canvas.innerHTML = txt;
@@ -697,7 +697,7 @@ ZmZimletBase.prototype._createDialog = function(args) {
 /* Overrides default ZmObjectHandler methods for Zimlet API compat */
 ZmZimletBase.prototype._getHtmlContent =
 function(html, idx, obj, context) {
-	if (obj instanceof ZmEmailAddress) {
+	if (obj instanceof AjxEmailAddress) {
 		obj = obj.address;
 	}
 	var contentObj = this.xmlObj().getVal("contentObject");

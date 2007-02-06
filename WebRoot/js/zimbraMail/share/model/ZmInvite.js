@@ -461,6 +461,7 @@ function() {
 	idx = this._addEntryRow(ZmMsg.when, when, html, idx, false, null, true);
 	if (this.isRecurring(compNum)) {
 		if (!this._recurBlurb) {
+			AjxDispatcher.require("CalendarCore");
 			var recur = new ZmRecurrence();
 			recur.parse(this.getRecurrenceRules(compNum));
 			this._recurBlurb = recur.getBlurb();

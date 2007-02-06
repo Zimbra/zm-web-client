@@ -353,16 +353,14 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 
 ZmNotebookController.prototype._sendPageListener2 =
 function(names, urls, inNewWindow) {
-	var app = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
-	var controller = app.getComposeController();
-
 	var action = ZmOperation.NEW_MESSAGE;
 	var msg = new ZmMailMsg(this._appCtxt);
 	var toOverride = null;
 	var subjOverride = new AjxListFormat().format(names);
 	var extraBodyText = urls.join("\n");
-
-	controller.doAction(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText);
+	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
+								  toOverride: toOverride, subjOverride: subjOverride,
+								  extraBodyText: extraBodyText});
 };
 
 ZmNotebookController.prototype._detachListener = function(event) {

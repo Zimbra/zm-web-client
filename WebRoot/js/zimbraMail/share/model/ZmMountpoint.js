@@ -28,11 +28,12 @@
  * mountpoints in an overview tree but is mostly used as a utility to
  * create mountpoints.
  */
-function ZmMountpoint(id, name, parent, tree, color, view) {
-	ZmOrganizer.call(ZmOrganizer.MOUNTPOINT, id, name, parent, tree);
-	this.color = color || ZmOrganizer.DEFAULT_COLOR;
-	this.view = view;
+function ZmMountpoint(params) {
+	params.type = ZmOrganizer.MOUNTPOINT;
+	ZmOrganizer.call(this, params);
+	this.view = params.view;
 }
+
 ZmMountpoint.prototype = new ZmOrganizer;
 ZmMountpoint.prototype.constructor = ZmMountpoint;
 

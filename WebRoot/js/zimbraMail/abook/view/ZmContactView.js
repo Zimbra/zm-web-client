@@ -418,7 +418,7 @@ function() {
 	var id = this._fieldIds[ZmContact.F_birthday] + ZmContactView.BIRTHDAY_ID;
 	var dateBtnListener = new AjxListener(this, this._dateButtonListener);
 	var dateSelListener = new AjxListener(this, this._dateSelectionListener);
-	ZmApptViewHelper.createMiniCalButton(this, id, dateBtnListener, dateSelListener, this._appCtxt);
+	ZmCalendarApp.createMiniCalButton(this, id, dateBtnListener, dateSelListener, this._appCtxt);
 };
 
 ZmContactView.prototype._generateHtml =
@@ -550,7 +550,7 @@ function() {
 	// set the appropriate header color
 	var folderId = this._contact.folderId;
 	var folder = folderId ? this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId) : null;
-	var color = folder ? folder.color : ZmAddrBook.DEFAULT_COLOR;
+	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 	var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
 	var contactHdrRow = document.getElementById(this._contactHeaderRowId);
 	contactHdrRow.className = "contactHeaderRow " + bkgdColor;
@@ -806,7 +806,7 @@ ZmContactView.prototype._setFolder =
 function() {
 	var match;
 	if (this._contact.id == null) {
-		var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+		var clc = AjxDispatcher.run("GetContactListController");
 		match = clc._folderId;
 	} else {
 		match = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
@@ -962,7 +962,7 @@ function(contact, abridged, appCtxt) {
 		}
 		html[idx++] = "</table>";
 	} else {
-		var cc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController();
+		var cc = AjxDispatcher.run("GetContactController");
 		var printView = new ZmContactView(cc._container, appCtxt, this._controller, true);
 		printView.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 		printView.zShow(false);

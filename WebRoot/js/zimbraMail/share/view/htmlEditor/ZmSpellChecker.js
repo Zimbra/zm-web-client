@@ -35,7 +35,7 @@
 * @param parent			the parent needing spell checking
 * @param appCtxt		the application context
 */
-function ZmSpellChecker(parent, appCtxt) {
+ZmSpellChecker = function(parent, appCtxt) {
 	this._parent = parent;
 	this._appCtxt = appCtxt;
 };

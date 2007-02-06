@@ -102,7 +102,7 @@
 	appCurrentSkin = "<%=skin %>";
 </script>
 
-<script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext %>?v=<%=vers %>"></script>
+<jsp:include page="Messages.jsp"/>
 <script type="text/javascript" src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %>"></script>
 <style type="text/css">
 <!--
@@ -110,15 +110,31 @@
 -->
 </style>
 
-<% if (inDevMode) { %>
-    <jsp:include page="Boot.jsp"/>
-	<jsp:include page="Ajax.jsp" />
-	<jsp:include page="Zimbra.jsp" />
-	<jsp:include page="ZimbraMail.jsp" />
-<% } else { %>
-	<script type="text/javascript" src="<%=contextPath%>/js/Ajax_all.js<%=ext %>?v=<%=vers%>"></script>
-	<script type="text/javascript" src="<%=contextPath%>/js/ZimbraMail_all.js<%=ext %>?v=<%=vers%>"></script>
-<% } %>
+<jsp:include page="Boot.jsp"/>
+<%
+    String packages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore";
+    
+    String extraPackages = request.getParameter("packages");
+    if (extraPackages != null) packages += ","+extraPackages;
+
+    String pprefix = inDevMode ? "public/jsp" : "js";
+    String psuffix = inDevMode ? ".jsp" : "_all.js";
+
+    String[] pnames = packages.split(",");
+    for (String pname : pnames) {
+        String pageurl = "/"+pprefix+"/"+pname+psuffix;
+        if (inDevMode) { %>
+            <jsp:include>
+                <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
+            </jsp:include>
+        <% } else { %>
+            <script type="text/javascript" src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script> 
+        <% } %>
+    <% }
+%>
+<script type="text/javascript">
+AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
+</script>
 
 <script type="text/javascript" language="JavaScript">
 	zJSloading = (new Date()).getTime() - zJSloading;
@@ -199,7 +215,7 @@
 </head>
 <body>
 <noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
-    <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="/zimbra" value='/h/'/></fmt:param></fmt:message>
+    <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="<%=contextPath%>" value='/h/'/></fmt:param></fmt:message>
 </noscript>
 <jsp:include page="/public/pre-cache.jsp"/>
 <%

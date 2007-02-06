@@ -62,7 +62,7 @@ ZmPage.save = function(appCtxt, folderId, name, content, callback, errorCallback
 ZmPage.createFromDom = function(node, args) {
 	var page = new ZmPage(args.appCtxt, null, args.list);
 	page.set(node);
-	var notebookApp = args.appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	var notebookApp = args.appCtxt.getApp(ZmApp.NOTEBOOK);
 	var cache = notebookApp.getNotebookCache();
 	cache.putPage(page);
 	return page;
@@ -209,6 +209,11 @@ function(version, callback, errorCallback, traverseUp) {
 	if (!params.asyncMode) {
 		this._loadHandleResponse(callback, response);
 	}
+};
+
+ZmPage.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	return ZmNotebookPageView.getPrintHtml(this, this._appCtxt);
 };
 
 /***

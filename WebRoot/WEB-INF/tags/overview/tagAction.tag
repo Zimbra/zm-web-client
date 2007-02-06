@@ -65,7 +65,7 @@
                 <c:set var="tagName" value="${zm:getTagName(pageContext, tagid)}"/>
                 <zm:modifyTagColor id="${tagid}" color="${param.newColor}"/>
                 <app:status>
-                    <fmt:message key="${newColor}" var="colorMsg"/>
+                    <fmt:message key="${newColor}LC" var="colorMsg"/>
                     <fmt:message key="actionTagColorChanged">
                         <fmt:param value="${tagName}"/>
                         <fmt:param value="${colorMsg}"/>

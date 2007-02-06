@@ -53,13 +53,13 @@ function(zimletArray, userProps) {
 	}
 	var panelZimlets = this.getPanelZimlets();
  	if(panelZimlets && panelZimlets.length > 0) {
-		var zimletTree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
+		var zimletTree = this._appCtxt.getZimletTree();
 	 	if (!zimletTree) {
 	 		zimletTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ZIMLET);
-	 		this._appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
+	 		this._appCtxt.setZimletTree(zimletTree);
 	 	}
 	 	zimletTree.reset();
-	 	zimletTree.loadFromJs(panelZimlets);
+	 	zimletTree.loadFromJs(panelZimlets, "zimlet");
  	}
 };
 
