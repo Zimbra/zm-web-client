@@ -12,14 +12,15 @@
     <c:when test="${appt.allDay}">
         <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
         <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
-        <div <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if> 
+        <div <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if>
                 class='ZhCalMonthAllDayAppt ${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}'>
                 ${fn:escapeXml(appt.name)}
         </div>
     </c:when>
     <c:otherwise>
         <div class='ZhCalMonthAppt ${color}${appt.partStatusNeedsAction ? 'DarkC' : 'C'}'>
-            <fmt:message key="CAL_MONTH_APPT">
+            <c:set var="startDate" value="${appt.startDate.time lt start ? 'S' : ''}"/>
+            <fmt:message key="CAL_MONTH_APPT${startDate}">
                 <fmt:param value="${appt.startDate}"/>
                 <fmt:param value="${fn:escapeXml(appt.name)}"/>
             </fmt:message>
