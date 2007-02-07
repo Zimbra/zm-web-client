@@ -292,6 +292,7 @@ function(account, batchCommand) {
         if (identity.useWhenInFolder) {
 	        identity.whenInFolderIds = [account.folderId];
         }
+		identity.setAllDefaultAdvancedFields();
 
         identity.createRequest("CreateIdentityRequest", batchCommand);
     }
