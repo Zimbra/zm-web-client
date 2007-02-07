@@ -23,10 +23,10 @@
         <a href='${url}'>
             <c:choose>
             <c:when test="${folder.isCheckedInUI}">
-                <app:img altkey="checked" src="common/Check.gif"/>
+                <app:img altkey="checked" src="tasks/Task.gif"/>
             </c:when>
                 <c:otherwise>
-                    <app:img altkey="unchecked" src="dwt/Blank_16.gif"/>
+                    <app:img altkey="unchecked" src="tasks/TaskCheckbox.gif"/>
                 </c:otherwise>
             </c:choose>
             <app:img src="${icon}" alt='${fn:escapeXml(label)}'/>
