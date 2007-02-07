@@ -488,6 +488,7 @@ function(ev) {
 
 ZmPreferencesPage.prototype._exportContactsListener =
 function(ev) {
+	AjxDispatcher.require(["ContactsCore", "Contacts"]);
 	var dialog = this._appCtxt.getChooseFolderDialog();
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._exportOkCallback, this, dialog);
@@ -504,6 +505,7 @@ function(ev) {
 	var val = fileInput ? AjxStringUtil.trim(fileInput.value) : null;
 
 	if (val) {
+		AjxDispatcher.require(["ContactsCore", "Contacts"]);
 		var dialog = this._appCtxt.getMoveToDialog();
 		dialog.reset();
 		dialog.setTitle(ZmMsg._import);
