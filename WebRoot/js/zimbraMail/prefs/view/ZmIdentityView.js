@@ -310,12 +310,14 @@ function(originalValue) {
 		throw AjxMsg.valueIsRequired;
 	} else if (value.toUpperCase() == ZmIdentity.DEFAULT_NAME.toUpperCase()) {
 	    throw AjxMessageFormat.format(ZmMsg.errorDefaultIdentityName, value);
+	} else if (!ZmOrganizer.VALID_NAME_RE.test(value)) {
+		throw AjxMessageFormat.format(ZmMsg.errorInvalidName, value);
 	} else {
 		var existing = this._appCtxt.getIdentityCollection().getByName(value);
 		if (existing && (existing.id != this._identity.id)) {
 	    	throw AjxMessageFormat.format(ZmMsg.errorIdentityAlreadyExists, existing.name);
 		}
-	}	
+	}
 	return originalValue;
 };
 
