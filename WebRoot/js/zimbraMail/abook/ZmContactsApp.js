@@ -285,6 +285,7 @@ function(callback, errorCallback) {
 				var respCallback = new AjxCallback(this, this._handleResponseGetContactList, callback);
 				this._contactList.load(respCallback, errorCallback);
 			}
+			return this._contactList;
 		} catch (ex) {
 			this._contactList = null;
 			throw ex;
