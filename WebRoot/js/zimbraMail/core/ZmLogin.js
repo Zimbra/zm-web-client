@@ -101,7 +101,7 @@ function(ev, skipBrowserCheck) {
 */
 ZmLogin.isSupportedBrowser =
 function() {
-	return AjxEnv.isIE6up || AjxEnv.isMozilla1_4up || AjxEnv.isFirefox || AjxEnv.isSafari;
+	return AjxEnv.isIE6up || AjxEnv.isMozilla1_4up || AjxEnv.isFirefox1up || AjxEnv.isSafari;
 };
 
 /**
@@ -127,7 +127,8 @@ function() {
 	} else {
 		params.aboutMsg = ZmMsg.unsupportedBrowserTip;
 	}
-	
+	params.clientLevelNotice = AjxMessageFormat.format(ZmMsg.clientLoginNotice, [appContextPath+"/h/"]);
+
 	var html = [];
 	var idx = 0;
 	html[idx++] = "<table border=0 cellspacing=0 cellpadding=0 style='width:100%; height:100%'><tr><td align='center' valign='center'>";
@@ -182,6 +183,7 @@ function(errorMessage) {
 		params.errorMsg = errorMessage;
 		params.showError = true;
 	}
+	params.clientLevelNotice = AjxMessageFormat.format(ZmMsg.clientLoginNotice, [appContextPath+"/h/"]);
 	html[idx++] = ZLoginFactory.getLoginDialogHTML(params);
 
 	html[idx++] = "</td></tr></table>";
@@ -371,13 +373,13 @@ function() {
 	}
 
     // check uname and pword first
+	if (!uname || !pword) {
+		ZmLogin._setErrorMessage(ZmMsg.enterUsername);
+		return;
+	}
+
     if (!ZmLogin.isValidUsername(uname)) {
 		ZmLogin._setErrorMessage(ZmMsg.badUsername);
-		return;
-    }
-
-    if (!uname || !pword) {
-		ZmLogin._setErrorMessage(ZmMsg.enterUsername);
 		return;
     }
 
