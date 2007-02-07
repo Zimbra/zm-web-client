@@ -44,22 +44,28 @@ function ZmAppChooser(parent, className, buttons, useTabs) {
 	}
 };
 
-ZmAppChooser.SPACER			= "spacer";
-ZmAppChooser.B_HELP			= "Help";
-ZmAppChooser.B_LOGOUT		= "Logout";
+ZmAppChooser.SPACER								= "spacer";
+ZmAppChooser.B_HELP								= "Help";
+ZmAppChooser.B_LOGOUT							= "Logout";
 
-ZmApp.CHOOSER_SORT[ZmAppChooser.SPACER]		= 160;
-ZmApp.CHOOSER_SORT[ZmAppChooser.B_HELP]		= 170;
-ZmApp.CHOOSER_SORT[ZmAppChooser.B_LOGOUT]	= 190;
+ZmApp.CHOOSER_SORT[ZmAppChooser.SPACER]			= 160;
+ZmApp.CHOOSER_SORT[ZmAppChooser.B_HELP]			= 170;
+ZmApp.CHOOSER_SORT[ZmAppChooser.B_LOGOUT]		= 190;
 
-ZmAppChooser.OUTER			= "outer";
-ZmAppChooser.OUTER_ACT		= "outer_act";
-ZmAppChooser.OUTER_TRIG		= "outer_trig";
+ZmAppChooser.OUTER								= "outer";
+ZmAppChooser.OUTER_ACT							= "outer_act";
+ZmAppChooser.OUTER_TRIG							= "outer_trig";
 
 ZmAppChooser.IMAGE = {};
 ZmAppChooser.IMAGE[ZmAppChooser.OUTER]			= "ImgAppChiclet";
 ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]		= "ImgAppChicletHover";
 ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]		= "ImgAppChicletSel";
+
+// hard code help/logout since they arent real "apps"
+ZmApp.ICON[ZmAppChooser.B_HELP]					= "Help";
+ZmApp.ICON[ZmAppChooser.B_LOGOUT]				= "Logoff";
+ZmApp.CHOOSER_TOOLTIP[ZmAppChooser.B_HELP]		= "goToHelp";
+ZmApp.CHOOSER_TOOLTIP[ZmAppChooser.B_LOGOUT]	= "logOff";
 
 ZmAppChooser.SPACER_HEIGHT = 10;
 
@@ -89,7 +95,7 @@ function(id) {
 
 ZmAppChooser.prototype._createButton =
 function(id, tbStyle, isLast) {
-	var text = (tbStyle == DwtToolBar.HORIZ_STYLE) ? ZmMsg[ZmApp.NAME[id]]: null;
+	var text = (tbStyle == DwtToolBar.HORIZ_STYLE) ? ZmMsg[ZmApp.NAME[id]] : null;
 	var b = new ZmChicletButton(this, ZmAppChooser.IMAGE[ZmAppChooser.OUTER], ZmApp.ICON[id], text, isLast);
 	b.setActivatedImage(ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]);
 	b.setTriggeredImage(ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]);
