@@ -244,11 +244,11 @@ function() {
 	var dns = this._deferredNotifications;
 	for (var i = 0; i < dns.length; i++) {
 		var dn = dns[i];
-		if (dn.type == "delete") {
+		if (dn.type == "delete" && dn.ids && dn.ids.length) {
 			this.deleteNotify(dn.ids);
-		} else if (dn.type == "create") {
+		} else if (dn.type == "create" && dn.list && dn.list.length) {
 			this.createNotify(dn.list);
-		} else if (dn.type == "modify") {
+		} else if (dn.type == "modify" && dn.list && dn.list.length) {
 			this.modifyNotify(dn.list);
 		}
 	}
