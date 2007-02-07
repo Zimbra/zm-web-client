@@ -174,7 +174,7 @@ function(callback) {
 
 	if (/\S/.test(text)) {
 		AjxDispatcher.require("Extras");
-		this._spellChecker = new ZmSpellChecker(this, appCtxt);
+		this._spellChecker = new ZmSpellChecker(this, this._appCtxt);
 		this._spellCheck = null;
 		this._spellCheckSuggestionListener = new AjxListener(this, this._spellCheckSuggestionListener);
 		if (!this.onExitSpellChecker) {
