@@ -25,7 +25,7 @@
 
 function ZmMountFolderDialog(appCtxt, shell, className) {
 	className = className || "ZmMountFolderDialog";
-	var title = ZmMountFolderDialog.TITLES[ZmOrganizer.FOLDER];
+	var title = ZmMsg[ZmOrganizer.MOUNT_KEY[ZmOrganizer.FOLDER]];
 	DwtDialog.call(this, shell, className, title);
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 	this._appCtxt = appCtxt;
