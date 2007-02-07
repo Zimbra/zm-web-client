@@ -54,7 +54,8 @@ function ZmImApp(appCtxt, container) {
 							});
 
 	ZmApp.registerApp(ZmApp.IM,
-							 {nameKey:				"imAppTitle",
+							 {mainPkg:				"IM",
+							  nameKey:				"imAppTitle",
 							  icon:					"ImStartChat",
 							  chooserTooltipKey:	"goToIm",
 							  defaultSearch:		ZmSearchToolBar.FOR_MAIL_MI,

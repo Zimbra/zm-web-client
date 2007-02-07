@@ -27,6 +27,7 @@ function ZmTasksApp(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.TASKS, appCtxt, container);
 	
+	AjxDispatcher.setPackageLoadFunction("Tasks", new AjxCallback(this, this._postLoad));
 	AjxDispatcher.registerMethod("GetTaskListController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskListController));
 	AjxDispatcher.registerMethod("GetTaskController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskController));
 	
@@ -58,7 +59,8 @@ function ZmTasksApp(appCtxt, container) {
 							});
 
 	ZmApp.registerApp(ZmApp.TASKS,
-							 {nameKey:				"tasks",
+							 {mainPkg:				"Tasks",
+							  nameKey:				"tasks",
 							  icon:					"Task",
 							  chooserTooltipKey:	"goToTasks",
 							  overviewTrees:		[ZmOrganizer.TASKS],
@@ -102,7 +104,6 @@ function(callback, errorCallback, folderId) {
 
 ZmTasksApp.prototype._handleResponseLaunch =
 function(callback) {
-	this._createDeferredFolders();
 	this.getTaskListController().show(this._taskList);
 	if (callback) {
 		callback.run();

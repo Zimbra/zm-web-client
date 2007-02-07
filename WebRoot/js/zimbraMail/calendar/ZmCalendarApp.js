@@ -75,7 +75,8 @@ function ZmCalendarApp(appCtxt, container) {
 							});
 
 	ZmApp.registerApp(ZmApp.CALENDAR,
-							 {nameKey:				"calendar",
+							 {mainPkg:				"Calendar",
+							  nameKey:				"calendar",
 							  icon:					"CalendarApp",
 							  chooserTooltipKey:	"goToCalendar",
 							  viewTooltipKey:		"displayCalendar",
@@ -141,16 +142,59 @@ function(refresh) {
 
 ZmCalendarApp.prototype.deleteNotify =
 function(ids) {
+	if (this._deferNotifications("delete", ids)) { return; }
 	AjxDispatcher.run("GetCalController").notifyDelete(ids);
 };
 
 ZmCalendarApp.prototype.createNotify =
 function(list) {
-	this._handleCreates(list);
+	if (this._deferNotifications("create", list)) { return; }
+	for (var i = 0; i < list.length; i++) {
+		var create = list[i];
+		var name = create._name;
+		if (this._appCtxt.cacheGet(create.id)) { continue; }
+
+		if (name == "folder") {
+			var parentId = create.l;
+			var parent;
+			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+			if (parentId == ZmOrganizer.ID_ROOT) {
+				if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][0]) {
+					parent = calendarTree.getById(parentId);
+				}
+			} else {
+				parent = calendarTree.getById(parentId);
+			}
+			if (parent) {
+				DBG.println(AjxDebug.DBG1, "ZmCalendarApp: handling CREATE for node: " + name);
+				parent.notifyCreate(create);
+				create._handled = true;
+			}
+		} else if (name == "link") {
+			var parentId = create.l;
+			var parent, share;
+			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][0]) {
+				var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+				parent = calendarTree.getById(parentId);
+				share = ZmOrganizer.CALENDAR;
+			}
+			if (parent) {
+				DBG.println(AjxDebug.DBG1, "ZmCalendarApp: handling CREATE for node: " + name);
+				parent.notifyCreate(create, true);
+				// XXX: once bug #4434 is fixed, check if this call is still needed
+				this._appCtxt.getRequestMgr().getFolderPermissions([share]);
+				create._handled = true;
+			}
+		} else if (name == "appt") {
+			// TODO: create appt object and pass into notify create
+			AjxDispatcher.run("GetCalController").notifyCreate(null);
+		}
+	}
 };
 
 ZmCalendarApp.prototype.modifyNotify =
 function(list) {
+	if (this._deferNotifications("modify", list)) { return; }
 	AjxDispatcher.run("GetCalController").notifyModify(list);
 };
 
@@ -167,7 +211,6 @@ function(callback) {
 
 ZmCalendarApp.prototype._handleLoadLaunch =
 function(callback) {
-	this._createDeferredFolders();
 	var cc = this.getCalController();
 	var view = cc._defaultView();
 	cc.show(view);
@@ -254,6 +297,7 @@ function() {
 
 ZmCalendarApp.prototype._postLoad =
 function() {
+	this._createDeferredFolders();
 	this.getApptComposeController().initComposeView(true);
 };
 
@@ -277,51 +321,6 @@ function(ev) {
 
 		var date = minical.getDate();
 		controller.setDate(date, 0, true);
-	}
-};
-
-ZmCalendarApp.prototype._handleCreates =
-function(list) {
-	for (var i = 0; i < list.length; i++) {
-		var create = list[i];
-		var name = create._name;
-		if (this._appCtxt.cacheGet(create.id)) { continue; }
-
-		if (name == "folder") {
-			var parentId = create.l;
-			var parent;
-			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-			if (parentId == ZmOrganizer.ID_ROOT) {
-				if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][0]) {
-					parent = calendarTree.getById(parentId);
-				}
-			} else {
-				parent = calendarTree.getById(parentId);
-			}
-			if (parent) {
-				DBG.println(AjxDebug.DBG1, "ZmCalendarApp: handling CREATE for node: " + name);
-				parent.notifyCreate(create);
-				create._handled = true;
-			}
-		} else if (name == "link") {
-			var parentId = create.l;
-			var parent, share;
-			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][0]) {
-				var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-				parent = calendarTree.getById(parentId);
-				share = ZmOrganizer.CALENDAR;
-			}
-			if (parent) {
-				DBG.println(AjxDebug.DBG1, "ZmCalendarApp: handling CREATE for node: " + name);
-				parent.notifyCreate(create, true);
-				// XXX: once bug #4434 is fixed, check if this call is still needed
-				this._appCtxt.getRequestMgr().getFolderPermissions([share]);
-				create._handled = true;
-			}
-		} else if (name == "appt") {
-			// TODO: create appt object and pass into notify create
-			AjxDispatcher.run("GetCalController").notifyCreate(null);
-		}
 	}
 };
 

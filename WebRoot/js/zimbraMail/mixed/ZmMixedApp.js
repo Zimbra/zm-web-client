@@ -33,7 +33,8 @@ function ZmMixedApp(appCtxt, container) {
 						{app:			ZmApp.MIXED});
 
 	ZmApp.registerApp(ZmApp.MIXED,
-							 {nameKey:			"zimbraTitle",
+							 {mainPkg:			"Mixed",
+							  nameKey:			"zimbraTitle",
 							  icon:				"Globe",
 							  overviewTrees:	[ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:		true,

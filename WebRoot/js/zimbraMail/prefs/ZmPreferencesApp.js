@@ -40,7 +40,8 @@ function ZmPreferencesApp(appCtxt, container) {
 	AjxDispatcher.registerMethod("GetFilterController", "Preferences", new AjxCallback(this, this.getFilterController));
 
 	ZmApp.registerApp(ZmApp.PREFERENCES,
-							 {nameKey:				"options",
+							 {mainPkg:				"Preferences",
+							  nameKey:				"options",
 							  icon:					"Preferences",
 							  chooserTooltipKey:	"goToOptions",
 							  button:				ZmAppChooser.B_OPTIONS,

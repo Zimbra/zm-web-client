@@ -84,7 +84,8 @@ function ZmMailApp(appCtxt, container, parentController) {
 						});
 
 	ZmApp.registerApp(ZmApp.MAIL,
-							 {nameKey:				"mail",
+							 {mainPkg:				"Mail",
+							  nameKey:				"mail",
 							  icon:					"MailApp",
 							  chooserTooltipKey:	"goToMail",
 							  viewTooltipKey:		"displayMail",
@@ -146,9 +147,63 @@ function(notify) {
 	this._adjustNotifies(notify);
 };
 
+/**
+ * For mail creates, there is no authoritative list (mail lists are always the result,
+ * of a search), so we notify each ZmMailList that we know about. To make life easier,
+ * we figure out which folder(s) a conv spans before we hand it off.
+ * 
+ * @param list	[array]		list of create notifications
+ */
 ZmMailApp.prototype.createNotify =
 function(list) {
-	this._handleCreates(list);
+	if (this._deferNotifications("create", list)) { return; }
+	var convs = {};
+	var msgs = {};
+	var folders = {};
+	var numMsgs = {};
+	var gotMail = false;
+	for (var i = 0; i < list.length; i++) {
+		var create = list[i];
+		var name = create._name;
+		// ignore stuff we already have, and virtual convs that got normalized
+		if (this._appCtxt.cacheGet(create.id) || ((name == "c") && create._wasVirtConv)) {
+			create._handled = true;
+			continue;
+		}
+
+		if (name == "m") {
+			DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + name);
+			var msg = ZmMailMsg.createFromDom(create, {appCtxt: this._appCtxt}, true);
+			msgs[msg.id] = msg;
+			var cid = msg.cid;
+			var folder = msg.folderId;
+			if (cid && folder) {
+				if (!folders[cid]) {
+					folders[cid] = {};
+				}
+				folders[cid][folder] = true;
+			}
+			numMsgs[cid] = numMsgs[cid] ? numMsgs[cid] + 1 : 1;
+			gotMail = true;
+			create._handled = true;
+		} else if (name == "c") {
+			DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + name);
+			var conv = ZmConv.createFromDom(create, {appCtxt: this._appCtxt}, true);
+			convs[conv.id] = conv;
+			gotMail = true;
+			create._handled = true;
+		}
+	}
+	if (gotMail) {
+		for (var cid in convs) {
+			var conv = convs[cid];
+			conv.folders = folders[cid] ? folders[cid] : null;
+		}
+		var list = this._appCtxt.getCurrentList();
+		if (list && (list instanceof ZmMailList)) {
+			list.notifyCreate(convs, msgs);
+		}
+	}
 };
 
 ZmMailApp.prototype.launch =
@@ -382,66 +437,8 @@ function(notify) {
 	if (newMods.length) {
 		var mods = {};
 		mods.c = newMods;
-		this._handleModifies(mods);
+		this._appCtxt.getRequestMgr()._handleModifies(mods);
 	}
 	
 	return notify;
-};
-
-/**
- * For mail creates, there is no authoritative list (mail lists are always the result,
- * of a search), so we notify each ZmMailList that we know about. To make life easier,
- * we figure out which folder(s) a conv spans before we hand it off.
- * 
- * @param list	[array]		list of create notifications
- */
-ZmMailApp.prototype._handleCreates =
-function(list) {
-	var convs = {};
-	var msgs = {};
-	var folders = {};
-	var numMsgs = {};
-	var gotMail = false;
-	for (var i = 0; i < list.length; i++) {
-		var create = list[i];
-		var name = create._name;
-		// ignore stuff we already have, and virtual convs that got normalized
-		if (this._appCtxt.cacheGet(create.id) || ((name == "c") && create._wasVirtConv)) {
-			create._handled = true;
-			continue;
-		}
-
-		if (name == "m") {
-			DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + name);
-			var msg = ZmMailMsg.createFromDom(create, {appCtxt: this._appCtxt}, true);
-			msgs[msg.id] = msg;
-			var cid = msg.cid;
-			var folder = msg.folderId;
-			if (cid && folder) {
-				if (!folders[cid]) {
-					folders[cid] = {};
-				}
-				folders[cid][folder] = true;
-			}
-			numMsgs[cid] = numMsgs[cid] ? numMsgs[cid] + 1 : 1;
-			gotMail = true;
-			create._handled = true;
-		} else if (name == "c") {
-			DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + name);
-			var conv = ZmConv.createFromDom(create, {appCtxt: this._appCtxt}, true);
-			convs[conv.id] = conv;
-			gotMail = true;
-			create._handled = true;
-		}
-	}
-	if (gotMail) {
-		for (var cid in convs) {
-			var conv = convs[cid];
-			conv.folders = folders[cid] ? folders[cid] : null;
-		}
-		var list = this._appCtxt.getCurrentList();
-		if (list && (list instanceof ZmMailList)) {
-			list.notifyCreate(convs, msgs);
-		}
-	}
 };

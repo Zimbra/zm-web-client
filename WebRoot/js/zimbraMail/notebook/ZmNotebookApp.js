@@ -27,6 +27,7 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 
 	ZmApp.call(this, ZmApp.NOTEBOOK, appCtxt, container, parentController);
 
+	AjxDispatcher.setPackageLoadFunction("Notebook", new AjxCallback(this, this._postLoad));
 	AjxDispatcher.registerMethod("GetNotebookController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getNotebookController));
 	AjxDispatcher.registerMethod("GetPageEditController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getPageEditController));
 	AjxDispatcher.registerMethod("GetNotebookCache", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getNotebookCache));
@@ -85,7 +86,8 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 							});
 
 	ZmApp.registerApp(ZmApp.NOTEBOOK,
-							 {nameKey:				"BETA_documents",
+							 {mainPkg:				"Notebook",
+							  nameKey:				"BETA_documents",
 							  icon:					"NoteApp",
 							  chooserTooltipKey:	"goToDocuments",
 							  defaultSearch:		ZmItem.PAGE,
@@ -132,91 +134,7 @@ ZmNotebookApp.prototype._notebookCache;
 
 ZmNotebookApp.prototype.deleteNotify =
 function(ids) {
-	this._handleDeletes(ids);
-};
-
-ZmNotebookApp.prototype.createNotify =
-function(list) {
-	this._handleCreates(list);
-};
-
-ZmNotebookApp.prototype.modifyNotify =
-function(list) {
-	this._handleModifies(list);
-};
-
-ZmNotebookApp.prototype.launch =
-function(callback) {
-	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
-	AjxDispatcher.require(["NotebookCore", "Notebook"], false, loadCallback, null, true);
-};
-
-ZmNotebookApp.prototype._handleLoadLaunch =
-function(callback) {
-	this._createDeferredFolders();
-	var notebookController = this.getNotebookController();
-	notebookController.show(null, true);
-
-	if (callback) {
-		callback.run();
-	}
-};
-
-ZmNotebookApp.prototype.showSearchResults =
-function(results, callback) {
-	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
-	AjxDispatcher.require(["NotebookCore", "Notebook"], false, loadCallback, null, true);
-};
-
-ZmNotebookApp.prototype._handleLoadShowSearchResults =
-function(results, callback) {
-	this.getFileController().show(results, true);
-	if (callback) {
-		callback.run();
-	}
-};
-
-ZmNotebookApp.prototype.setActive =
-function(active) {
-	/***
-	if (active) {
-		var notebookController = AjxDispatcher.run("GetNotebookController");
-		notebookController.show();
-	}
-	/***/
-};
-
-ZmNotebookApp.prototype.getNotebookController = function() {
-	if (!this._notebookController) {
-		this._notebookController = new ZmNotebookPageController(this._appCtxt, this._container, this);
-	}
-	return this._notebookController;
-};
-
-ZmNotebookApp.prototype.getPageEditController = function() {
-	if (!this._pageController) {
-		this._pageController = new ZmPageEditController(this._appCtxt, this._container, this);
-	}
-	return this._pageController;
-};
-
-ZmNotebookApp.prototype.getFileController = function() {
-	if (!this._fileController) {
-		this._fileController = new ZmNotebookFileController(this._appCtxt, this._container, this);
-	}
-	return this._fileController;
-};
-
-ZmNotebookApp.prototype.getNotebookCache =
-function() {
-	if (!this._notebookCache) {
-		this._notebookCache = new ZmNotebookCache(this._appCtxt);
-	}
-	return this._notebookCache;
-};
-
-ZmNotebookApp.prototype._handleDeletes =
-function(ids) {
+	if (this._deferNotifications("delete", ids)) { return; }
 	for (var i = 0; i < ids.length; i++) {
 		var cache = this.getNotebookCache();
 		var page = cache.getPageById(ids[i]);
@@ -245,8 +163,9 @@ function(ids) {
  * 
  * @param list	[array]		list of create notifications
  */
-ZmNotebookApp.prototype._handleCreates =
+ZmNotebookApp.prototype.createNotify =
 function(list) {
+	if (this._deferNotifications("create", list)) { return; }
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
 		var name = create._name;
@@ -306,8 +225,9 @@ function(list) {
 	}
 };
 
-ZmNotebookApp.prototype._handleModifies =
+ZmNotebookApp.prototype.modifyNotify =
 function(list) {
+	if (this._deferNotifications("modify", list)) { return; }
 	for (var i = 0; i < list.length; i++) {
 		var mod = list[i];
 		var id = mod.id;
@@ -354,4 +274,73 @@ function(list) {
 			mod._handled = true;
 		}
 	}
+};
+
+ZmNotebookApp.prototype.launch =
+function(callback) {
+	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
+	AjxDispatcher.require(["NotebookCore", "Notebook"], false, loadCallback, null, true);
+};
+
+ZmNotebookApp.prototype._handleLoadLaunch =
+function(callback) {
+	var notebookController = this.getNotebookController();
+	notebookController.show(null, true);
+
+	if (callback) {
+		callback.run();
+	}
+};
+
+ZmNotebookApp.prototype.showSearchResults =
+function(results, callback) {
+	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
+	AjxDispatcher.require(["NotebookCore", "Notebook"], false, loadCallback, null, true);
+};
+
+ZmNotebookApp.prototype._handleLoadShowSearchResults =
+function(results, callback) {
+	this.getFileController().show(results, true);
+	if (callback) {
+		callback.run();
+	}
+};
+
+ZmNotebookApp.prototype.setActive =
+function(active) {
+	/***
+	if (active) {
+		var notebookController = AjxDispatcher.run("GetNotebookController");
+		notebookController.show();
+	}
+	/***/
+};
+
+ZmNotebookApp.prototype.getNotebookController = function() {
+	if (!this._notebookController) {
+		this._notebookController = new ZmNotebookPageController(this._appCtxt, this._container, this);
+	}
+	return this._notebookController;
+};
+
+ZmNotebookApp.prototype.getPageEditController = function() {
+	if (!this._pageController) {
+		this._pageController = new ZmPageEditController(this._appCtxt, this._container, this);
+	}
+	return this._pageController;
+};
+
+ZmNotebookApp.prototype.getFileController = function() {
+	if (!this._fileController) {
+		this._fileController = new ZmNotebookFileController(this._appCtxt, this._container, this);
+	}
+	return this._fileController;
+};
+
+ZmNotebookApp.prototype.getNotebookCache =
+function() {
+	if (!this._notebookCache) {
+		this._notebookCache = new ZmNotebookCache(this._appCtxt);
+	}
+	return this._notebookCache;
 };

@@ -45,7 +45,9 @@ function ZmApp(name, appCtxt, container, parentController) {
 	this._appViewMgr = appCtxt.getAppViewMgr();
 	this._container = container;
 	this._parentController = parentController;
+
 	this._deferredFolders = [];
+	this._deferredNotifications = [];
 }
 
 // app information ("_R" means "reverse map")
@@ -56,6 +58,7 @@ ZmApp.SETTING			= {};	// ID of setting that's true when app is enabled
 ZmApp.LOAD_SORT			= {};	// controls order in which apps are instantiated
 
 // these are set via registerApp() in app constructor
+ZmApp.MAIN_PKG			= {};	// main package that composes the app
 ZmApp.NAME				= {};	// msg key for app name
 ZmApp.ICON				= {};	// name of app icon class
 ZmApp.CHOOSER_TOOLTIP	= {};	// msg key for app view menu tooltip
@@ -83,7 +86,10 @@ ZmApp.APPS				= [];	// ordered list
 ZmApp.DEFAULT_APPS		= [];	// ordered list
 
 /**
- * Stores information about an app
+ * Stores information about an app. Note: Setting a value that evaluates to
+ * false (such as 0 or an empty string) will not do anything.
+ * 
+ * @param mainPkg			[string]	main package that composes the app
  * @param app				[constant]	app ID
  * @param nameKey			[string]	msg key for app name
  * @param icon				[string]	name of app icon class
@@ -103,6 +109,7 @@ ZmApp.DEFAULT_APPS		= [];	// ordered list
 ZmApp.registerApp =
 function(app, params) {
 
+	if (params.mainPkg)				{ ZmApp.MAIN_PKG[app]			= params.mainPkg; }
 	if (params.nameKey)				{ ZmApp.NAME[app]				= params.nameKey; }
 	if (params.icon)				{ ZmApp.ICON[app]				= params.icon; }
 	if (params.chooserTooltipKey)	{ ZmApp.CHOOSER_TOOLTIP[app]	= params.chooserTooltipKey; }
@@ -191,6 +198,18 @@ function(type, obj, tree, path) {
 	this._deferredFolders.push(params);
 };
 
+/**
+ * Default function to run after an app's main package has been loaded.
+ */
+ZmApp.prototype._postLoad =
+function() {
+	this._createDeferredFolders();
+	this._handleDeferredNotifications();
+};
+
+/**
+ * Lazily create folders received in the initial <refresh> block.
+ */
 ZmApp.prototype._createDeferredFolders =
 function() {
 	for (var i = 0; i < this._deferredFolders.length; i++) {
@@ -199,6 +218,39 @@ function() {
 		var folder = ZmFolderTree.createFolder(params.type, parent, params.obj, params.tree, params.path);
 		parent.children.add(folder);
 		folder.parent = parent;
+	}
+};
+
+/**
+ * Defer notifications if this app's main package has not been loaded.
+ * Returns true if notifications were deferred.
+ * 
+ * @param type	[string]	type of notification (delete, create, or modify)
+ * @param data	[array]		list of notifications
+ */
+ZmApp.prototype._deferNotifications =
+function(type, data) {
+	var pkg = ZmApp.MAIN_PKG[this._name];
+	if (pkg && !AjxDispatcher.loaded(pkg)) {
+		this._deferredNotifications.push({type:type, data:data});
+		return true;
+	} else {
+		return false;
+	}
+};
+
+ZmApp.prototype._handleDeferredNotifications =
+function() {
+	var dns = this._deferredNotifications;
+	for (var i = 0; i < dns.length; i++) {
+		var dn = dns[i];
+		if (dn.type == "delete") {
+			this.deleteNotify(dn.ids);
+		} else if (dn.type == "create") {
+			this.createNotify(dn.list);
+		} else if (dn.type == "modify") {
+			this.modifyNotify(dn.list);
+		}
 	}
 };
 

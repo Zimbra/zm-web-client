@@ -537,7 +537,7 @@ function(notify) {
 
 /**
  * A delete notification hands us a list of IDs which could be anything. First, we
- * run any app-requested delete handlers. Any IDs which have been handled by an app will
+ * run any app delete handlers. Any IDs which have been handled by an app will
  * be nulled out. The generic handling here will be applied to the rest - the item is
  * retrieved from the item cache and told it has been deleted.
  *
@@ -559,8 +559,8 @@ function(deletes) {
 };
 
 /**
- * Create notifications hand us full XML nodes. First, we run any app-requested
- * create handlers, which will mark any create notes that they handle. Remaining
+ * Create notifications hand us full XML nodes. First, we run any app
+ * create handlers, which will mark any create nodes that they handle. Remaining
  * creates are handled here.
  * 
  * @param creates	[object]	node containing all 'created' notifications
@@ -593,8 +593,8 @@ function(creates) {
 };
 
 /**
- * Change notifications are handled at the item/organizer level. The item or
- * organizer will notify its list/tree, if any.
+ * First, we run any app modify handlers, which will mark any nodes that
+ * they handle. Remaining modify notifications are handled here.
  * 
  * @param modifies	[object]	node containing all 'modified' notifications
  */
@@ -605,10 +605,11 @@ function(modifies) {
 	// mark the last "item moved" notify to trigger replenishment (we don't want to
 	// replenish after each one)
 	var lastMove = null;
-	for (var i = 0; i < list.length; i++)
+	for (var i = 0; i < list.length; i++) {
 		if (list[i].l) {
 			lastMove = i;
 		}
+	}
 	if (lastMove != null) {
 		list[lastMove].lastModify = true;
 	}

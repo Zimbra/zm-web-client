@@ -49,7 +49,8 @@ function ZmVoicemailApp(appCtxt, container, parentController) {
 						});
 
 	ZmApp.registerApp(ZmApp.VOICEMAIL,
-							 {nameKey:				"voicemail",
+							 {mainPkg:				"Voicemail",
+							  nameKey:				"voicemail",
 							  icon:					"NoteApp",
 							  chooserTooltipKey:	"goToVoicemail",
 							  defaultSearch:		ZmItem.PAGE,

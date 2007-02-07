@@ -37,6 +37,7 @@
 function ZmContactsApp(appCtxt, container, parentController) {
 	ZmApp.call(this, ZmApp.CONTACTS, appCtxt, container, parentController);
 
+	AjxDispatcher.setPackageLoadFunction("Contacts", new AjxCallback(this, this._postLoad));
 	AjxDispatcher.registerMethod("GetContacts", "ContactsCore", new AjxCallback(this, this.getContactList));
 	AjxDispatcher.registerMethod("GetContactListController", ["ContactsCore", "Contacts"], new AjxCallback(this, this.getContactListController));
 	AjxDispatcher.registerMethod("GetContactController", ["ContactsCore", "Contacts"], new AjxCallback(this, this.getContactController));
@@ -86,7 +87,8 @@ function ZmContactsApp(appCtxt, container, parentController) {
 							});
 
 	ZmApp.registerApp(ZmApp.CONTACTS,
-							 {nameKey:				"addressBook",
+							 {mainPkg:				"Contacts",
+							  nameKey:				"addressBook",
 							  icon:					"ContactsApp",
 							  chooserTooltipKey:	"goToContacts",
 							  viewTooltipKey:		"displayContacts",
@@ -154,9 +156,57 @@ function(result) {
 	AjxDispatcher.run("GetContacts");
 };
 
+/**
+ * Checks for the creation of an address book or a mount point to one. Regular
+ * contact creates are handed to the canonical list.
+ * 
+ * @param list	[array]		list of create notifications
+ */
 ZmContactsApp.prototype.createNotify =
 function(list) {
-	this._handleCreates(list);
+	if (this._deferNotifications("create", list)) { return; }
+	for (var i = 0; i < list.length; i++) {
+		var create = list[i];
+		var name = create._name;
+		if (this._appCtxt.cacheGet(create.id)) { continue; }
+
+		if (name == "folder") {
+			var parentId = create.l;
+			var parent;
+			var addrBookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+			if (parentId == ZmOrganizer.ID_ROOT) {
+				if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK][0]) {
+					parent = addrBookTree.getById(parentId);
+				}
+			} else {
+				parent = addrBookTree.getById(parentId);
+			}
+			if (parent) {
+				DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
+				parent.notifyCreate(create);
+				create._handled = true;
+			}
+		} else if (name == "link") {
+			var parentId = create.l;
+			var parent, share;
+			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK][0]) {
+				var addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+				parent = addrbookTree.getById(parentId);
+				share = ZmOrganizer.ADDRBOOK;
+			}
+			if (parent) {
+				DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
+				parent.notifyCreate(create, true);
+				// XXX: once bug #4434 is fixed, check if this call is still needed
+				this._appCtxt.getRequestMgr().getFolderPermissions([share]);
+				create._handled = true;
+			}
+		} else if (name == "cn") {
+			DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
+			AjxDispatcher.run("GetContacts").notifyCreate(create, true);
+			create._handled = true;
+		}
+	}
 };
 
 ZmContactsApp.prototype.launch =
@@ -167,7 +217,6 @@ function(callback) {
 
 ZmContactsApp.prototype._handleLoadLaunch =
 function(callback) {
-	this._createDeferredFolders();
 	AjxDispatcher.run("GetContacts");	// contacts should already be loaded
 	var clc = AjxDispatcher.run("GetContactListController");
 	if (!this._initialized) {
@@ -299,56 +348,4 @@ function() {
 	if (this._contactController == null)
 		this._contactController = new ZmContactController(this._appCtxt, this._container, this);
 	return this._contactController;
-};
-
-/**
- * Checks for the creation of an address book or a mount point to one. Regular
- * contact creates are handed to the canonical list.
- * 
- * @param list	[array]		list of create notifications
- */
-ZmContactsApp.prototype._handleCreates =
-function(list) {
-	for (var i = 0; i < list.length; i++) {
-		var create = list[i];
-		var name = create._name;
-		if (this._appCtxt.cacheGet(create.id)) { continue; }
-
-		if (name == "folder") {
-			var parentId = create.l;
-			var parent;
-			var addrBookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
-			if (parentId == ZmOrganizer.ID_ROOT) {
-				if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK][0]) {
-					parent = addrBookTree.getById(parentId);
-				}
-			} else {
-				parent = addrBookTree.getById(parentId);
-			}
-			if (parent) {
-				DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
-				parent.notifyCreate(create);
-				create._handled = true;
-			}
-		} else if (name == "link") {
-			var parentId = create.l;
-			var parent, share;
-			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK][0]) {
-				var addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
-				parent = addrbookTree.getById(parentId);
-				share = ZmOrganizer.ADDRBOOK;
-			}
-			if (parent) {
-				DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
-				parent.notifyCreate(create, true);
-				// XXX: once bug #4434 is fixed, check if this call is still needed
-				this._appCtxt.getRequestMgr().getFolderPermissions([share]);
-				create._handled = true;
-			}
-		} else if (name == "cn") {
-			DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
-			AjxDispatcher.run("GetContacts").notifyCreate(create, true);
-			create._handled = true;
-		}
-	}
 };

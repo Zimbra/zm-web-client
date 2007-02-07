@@ -84,7 +84,6 @@ function(parent, obj, tree, elementType, path) {
 		} else {
 			var pkg = ZmOrganizer.ORG_PACKAGE[type];
 			if (pkg) {
-				DBG.println("******************** refresh, require: " + pkg + "****************");
 				AjxDispatcher.require(pkg);
 			}
 			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path);
