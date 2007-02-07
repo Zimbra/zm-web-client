@@ -275,13 +275,23 @@ function() {
 ZmIdentity.prototype.getAdvancedIdentity =
 function() {
 	if (this.useDefaultAdvanced) {
-		var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+		var identityCollection = this._appCtxt.getIdentityCollection();
 		return identityCollection.defaultIdentity;
 	} else {
 		return this;
 	}
 };
 
+// Sets all of this identity's advanced options to be the same as
+// the default identity's.
+ZmIdentity.prototype.setAllDefaultAdvancedFields =
+function() {
+	var identity = this._appCtxt.getIdentityCollection().defaultIdentity;
+	this.composeFormat = identity.composeFormat;
+	this.prefix = identity.prefix;
+	this.forwardOption = identity.forwardOption;
+	this.replyOption = identity.replyOption;
+};
 
 function ZmIdentityCollection(appCtxt) {
 	ZmModel.call(this, ZmEvent.S_IDENTITY);
