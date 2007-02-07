@@ -46,7 +46,7 @@
                        </td>
                        <td class='ZhCalDayHSB' height=100% width=1px>&nbsp;</td>
                        <c:forEach var="day" items="${layout.days}">
-                           <td class='ZhCalDayHeader${date.time eq today.timeInMillis ? 'Today':''}' colspan="${day.maxColumns}" width=${day.width}%>
+                           <td class='ZhCalDayHeader${day.startTime eq today.timeInMillis ? 'Today':''}' colspan="${day.maxColumns}" width=${day.width}%>
                                <fmt:message var="titleFormat" key="CAL_${days > 1 ? 'M':''}DAY_TITLE_FORMAT"/>
                                <fmt:formatDate value="${day.date}" pattern="${titleFormat}"/>
                            </td>
