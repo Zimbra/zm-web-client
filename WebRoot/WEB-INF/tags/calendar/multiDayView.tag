@@ -114,25 +114,25 @@
                             </c:if>
                             <td <c:if test="${row.rowNum % 4 ne 3}">class='ZhCalDayHS' </c:if><c:if test="${row.rowNum % 4 eq 3}">class='ZhCalDayHSB' </c:if> height=100% width=1px>&nbsp;</td>
                             <c:set var="prevDay" value="${0}"/>
-                            <c:forEach var="column" items="${row.columns}">
-                                <c:set var="diffDay" value="${prevDay ne column.day.day}"/>
+                            <c:forEach var="cell" items="${row.cells}">
+                                <c:set var="diffDay" value="${prevDay ne cell.day.day}"/>
                                 <c:if test="${diffDay}">
-                                    <c:set var="prevDay" value="${column.day.day}"/>
+                                    <c:set var="prevDay" value="${cell.day.day}"/>
                                 </c:if>  
                                 <c:choose>
-                                    <c:when test="${not empty column.appt and column.isFirst}">
-                                        <td <c:if test="${diffDay}">class='ZhCalDaySEP' </c:if> valign=top height=100% width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>
-                                            <app:dayAppt appt="${column.appt}" start="${column.day.startTime}" end="${column.day.endTime}"/>
+                                    <c:when test="${not empty cell.appt and cell.isFirst}">
+                                        <td <c:if test="${diffDay}">class='ZhCalDaySEP' </c:if> valign=top height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>
+                                            <app:dayAppt appt="${cell.appt}" start="${cell.day.startTime}" end="${cell.day.endTime}"/>
                                         </td>
                                     </c:when>
-                                    <c:when test="${empty column.appt}">
+                                    <c:when test="${empty cell.appt}">
                                         <c:choose>
                                             <c:when test="${row.rowNum % 4 eq 3}"><c:set var="hb" value="ZhCalDayHB "/></c:when>
                                             <c:when test="${row.rowNum % 4 eq 1}"><c:set var="hb" value="ZhCalDayHHB "/></c:when>
                                             <c:otherwise><c:set var="hb" value=""/></c:otherwise>
                                         </c:choose>
                                         <c:set var="dd" value="${diffDay ? 'ZhCalDaySEP' : ''}"/>
-                                        <td <c:if test="${not empty hb or not empty dd}">class='${hb}${dd}' </c:if> height=100% width='${column.width}%'<c:if test="${column.colSpan ne 1}"> colspan='${column.colSpan}'</c:if><c:if test="${column.rowSpan ne 1}"> rowspan='${column.rowSpan}'</c:if>>&nbsp;</td>
+                                        <td <c:if test="${not empty hb or not empty dd}">class='${hb}${dd}' </c:if> height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>&nbsp;</td>
                                     </c:when>
                                 </c:choose>
                             </c:forEach>
