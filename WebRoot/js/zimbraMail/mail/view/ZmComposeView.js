@@ -115,7 +115,9 @@ function(params) {
 	if (msg) {
 		msg.onChange = this._onMsgDataChange;
 	}
-	this._identitySelect.setSelectedValue(params.identity.id);
+	if (params.identity) {
+		this._identitySelect.setSelectedValue(params.identity.id);
+	}
 
 	this.reset(true);
 

@@ -225,7 +225,9 @@ function(callback, checkQS) {
 			var to = match ? decodeURIComponent(match[1]) : null;
 			match = location.search.match(/\bbody=([^&]+)/);
 			var body = match ? decodeURIComponent(match[1]) : null;
-			cc.doAction(ZmOperation.NEW_MESSAGE, false, null, to, subject, body, respCallback);
+			var params = {action:ZmOperation.NEW_MESSAGE, toOverride:to, subjOverride:subject,
+						  extraBodyText:body, callback:respCallback};
+			cc.doAction(params);
 			return;
 		} else if (location.search && (location.search.match(/\bview=msg\b/))) {
 			var match = location.search.match(/\bid=(\d+)/);
