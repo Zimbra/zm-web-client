@@ -447,6 +447,7 @@ function() {
 ZmAppCtxt.prototype.getChangePasswordDialog =
 function() {
 	if (!this._changePasswordDialog) {
+		AjxDispatcher.require("Extras");
 		this._changePasswordDialog = new ZmChangePasswordDialog(this._shell, this.getMsgDialog());
 	}
 	return this._changePasswordDialog;
