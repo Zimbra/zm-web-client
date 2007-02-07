@@ -334,7 +334,9 @@ function(viewId, force) {
 
 	var viewController = null;
 	if (viewId == ZmAppViewMgr.PENDING_VIEW) {
-		viewController = this._views[viewId][ZmAppViewMgr.C_APP_CONTENT].getController();
+		var view = this._views[viewId];
+		var appContent = view ? view[ZmAppViewMgr.C_APP_CONTENT] : null;
+		viewController = appContent ? appContent.getController() : null;
 	}
 	DBG.println(AjxDebug.DBG1, "pushView: " + viewId);
 
