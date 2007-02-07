@@ -420,7 +420,7 @@ function(ev) {
 	var msg = this._listView[this._currentView].getSelection()[0];
 	if (!msg) return;
 	
-	AjxDispatcher.require("Preferences");
+	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
 	var rule = new ZmFilterRule();
 	var from = msg.getAddress(AjxEmailAddress.FROM);
 	if (from) rule.addCondition(new ZmCondition(ZmFilterRule.C_FROM, ZmFilterRule.OP_IS, from));

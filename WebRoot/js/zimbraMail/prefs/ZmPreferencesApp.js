@@ -34,10 +34,10 @@ function ZmPreferencesApp(appCtxt, container) {
 
 	AjxDispatcher.registerMethod("GetIdentityCollection", "PreferencesCore", new AjxCallback(this, this.getIdentityCollection));
 	AjxDispatcher.registerMethod("GetDataSourceCollection", "PreferencesCore", new AjxCallback(this, this.getDataSourceCollection));
-	AjxDispatcher.registerMethod("GetFilterRules", "Preferences", new AjxCallback(this, this.getFilterRules));
-	AjxDispatcher.registerMethod("GetPrefController", "Preferences", new AjxCallback(this, this.getPrefController));
-	AjxDispatcher.registerMethod("GetPopAccountsController", "Preferences", new AjxCallback(this, this.getPopAccountsController));
-	AjxDispatcher.registerMethod("GetFilterController", "Preferences", new AjxCallback(this, this.getFilterController));
+	AjxDispatcher.registerMethod("GetFilterRules", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterRules));
+	AjxDispatcher.registerMethod("GetPrefController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getPrefController));
+	AjxDispatcher.registerMethod("GetPopAccountsController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getPopAccountsController));
+	AjxDispatcher.registerMethod("GetFilterController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterController));
 
 	ZmApp.registerApp(ZmApp.PREFERENCES,
 							 {mainPkg:				"Preferences",
@@ -83,7 +83,7 @@ function(result) {
 ZmPreferencesApp.prototype.launch =
 function(callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
-	AjxDispatcher.require("Preferences", false, loadCallback, null, true);
+	AjxDispatcher.require(["PreferencesCore", "Preferences"], false, loadCallback, null, true);
 };
 
 ZmPreferencesApp.prototype._handleLoadLaunch =

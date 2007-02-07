@@ -7,10 +7,6 @@
  * 	- When the user goes to the Options application
  * 	- When the user creates a filter rule from message headers
  */
-AjxPackage.require("zimbraMail.prefs.model.ZmPref");
-AjxPackage.require("zimbraMail.prefs.model.ZmIdentity");
-AjxPackage.require("zimbraMail.prefs.model.ZmDataSourceCollection");
-AjxPackage.require("zimbraMail.prefs.model.ZmPopAccount");
 AjxPackage.require("zimbraMail.prefs.model.ZmFilterRule");
 AjxPackage.require("zimbraMail.prefs.model.ZmFilterRules");
 

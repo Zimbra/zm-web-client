@@ -412,7 +412,7 @@ function() {
 ZmAppCtxt.prototype.getFilterRuleDialog =
 function() {
 	if (!this._filterRuleDialog) {
-		AjxDispatcher.require("Preferences");
+		AjxDispatcher.require(["PreferencesCore", "Preferences"]);
 		this._filterRuleDialog = new ZmFilterRuleDialog(this);
 	}
 	return this._filterRuleDialog;
