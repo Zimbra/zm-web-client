@@ -222,7 +222,8 @@ ZmCalendarApp.prototype.activate =
 function(active, view, date) {
 	this._active = active;
 
-	this.showMiniCalendar(active || this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL));
+	var show = active || this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
+	AjxDispatcher.run("ShowMiniCalendar", show);
 
 	if (active) {
 		var isAppView = (view == null || view == ZmController.CAL_VIEW || view == ZmController.CAL_DAY_VIEW ||
@@ -308,9 +309,9 @@ function(ev) {
 	var setting = ev.source;
 	if (setting.id == ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL) {
 		if (setting.getValue()) {
-			this.showMiniCalendar(true);
+			AjxDispatcher.run("ShowMiniCalendar", true);
 		} else if (!this._active) {
-			this.showMiniCalendar(false);
+			AjxDispatcher.run("ShowMiniCalendar", false);
 		}
 	} else if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK) {
 		var controller = this.getCalController();
