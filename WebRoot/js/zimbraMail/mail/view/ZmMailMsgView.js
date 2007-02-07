@@ -123,35 +123,30 @@ function(msg) {
 	var contentDiv = this.getHtmlElement();
 	var oldMsg = this._msg;
 	this._msg = msg;
-	this._dateObjectHandlerDate = msg.sentDate ? new Date(msg.sentDate) : new Date(msg.date);
+	this._dateObjectHandlerDate = msg.sentDate
+		? new Date(msg.sentDate)
+		: new Date(msg.date);
+
 	if ((this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
 		msg.isInvite() &&
 		!this._controller.isChildWindow)
 	{
 		var invite = msg.getInvite();
-		// in the single component case, which I think is going to be 90%
-		// of the time, we will just show a single toobar.
 		if (!invite.isEmpty() && !invite.hasMultipleComponents() &&
-			invite.getStatus() != ZmAppt.STATUS_CANCELLED &&
+			invite.getStatus() != ZmCalItem.STATUS_CANC &&
 			msg.folderId != ZmFolder.ID_TRASH)
 		{
-			// create toolbar
 			var topToolbar = this._getInviteToolbar();
 			// nuke the old toolbar if it exists b4 appending the new one
 			var tEl = topToolbar.getHtmlElement();
 			if (tEl && tEl.parentNode)
 				tEl.parentNode.removeChild(tEl);
 			contentDiv.appendChild(tEl);
-		} else {
-			// TODO:
-			// here we want to show an arrow at the top which should drop down
-			// to show all the components that could be replied to.
-			// I think I want the toolbar at the top, to be applied to the
-			// selected component.
-			// We need an inviteComponentView. Ughhh.
 		}
 	}
-	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) && msg.share && msg.folderId != ZmFolder.ID_TRASH)
+	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) &&
+			 msg.share &&
+			 msg.folderId != ZmFolder.ID_TRASH)
 	{
 		var action = msg.share.action;
         var isNew = action == ZmShare.NEW;
@@ -169,18 +164,19 @@ function(msg) {
 	this._renderMessage(msg, contentDiv, respCallback);
 };
 
-ZmMailMsgView.prototype.__hasMountpoint = function(share) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.TYPE[share.link.view]);
-	if (!tree) {
-		DBG.println("ZmMailMsgView#__hasMountpoint: no tree for view "+share.link.view);
-		return false;
-	}
-	return this.__hasMountpoint2(tree.root, share.grantor.id, share.link.id);
+ZmMailMsgView.prototype.__hasMountpoint =
+function(share) {
+	var tree = this._appCtxt.getFolderTree().getByType(ZmOrganizer.TYPE[share.link.view]);
+	return tree
+		? this.__hasMountpoint2(tree.root, share.grantor.id, share.link.id)
+		: false;
 };
-ZmMailMsgView.prototype.__hasMountpoint2 = function(organizer, zid, rid) {
-	if (organizer.zid == zid && organizer.rid == rid) {
+
+ZmMailMsgView.prototype.__hasMountpoint2 =
+function(organizer, zid, rid) {
+	if (organizer.zid == zid && organizer.rid == rid)
 		return true;
-	}
+
 	if (organizer.children) {
 		var children = organizer.children.getArray();
 		for (var i = 0; i < children.length; i++) {

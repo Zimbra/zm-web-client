@@ -298,7 +298,7 @@ function(refresh) {
 
 	// XXX: temp, get additional share info (see bug #4434)
 	if (refresh.folder) {
-		this._getFolderPermissions([ZmOrganizer.CALENDAR, ZmOrganizer.TASKS, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK]);
+		this.getFolderPermissions([ZmOrganizer.CALENDAR, ZmOrganizer.TASKS, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK]);
 	}
 
 	// Run any app-requested refresh routines
@@ -322,7 +322,7 @@ function(type, unread, obj, objType) {
 	tree.loadFromJs(obj, objType);
 };
 
-ZmRequestMgr.prototype._getFolderPermissions =
+ZmRequestMgr.prototype.getFolderPermissions =
 function(items) {
 	var needPermArr = [];
 
@@ -344,7 +344,7 @@ function(items) {
 		}
 
 		var respCallback = new AjxCallback(this, this._handleResponseGetShares, [items]);
-		this._controller().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+		this._controller.sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 	}
 };
 
