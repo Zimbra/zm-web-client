@@ -506,40 +506,40 @@ function() {
 
 ZmCalItemEditView.prototype._resetFolderSelect =
 function(calItem, mode) {
-	// get all folders w/ view set to calItem type we received from initial refresh block
+	// get all calendar folders
 	var org = ZmOrganizer.ITEM_ORGANIZER[calItem.type];
-	var treeData = this._appCtxt.getOverviewController().getTreeData(org);
-	if (treeData && treeData.root) {
-		this._folderSelect.clearOptions();
-		this._calendarOrgs = {};
-		var children = treeData.root.children.getArray();
-		var len = children.length;
-		var itemCal;
-		for (var i = 0; i < len; i++) {
-			var cal = children[i];
-			if (cal.id == calItem.folderId) {
-				itemCal = cal;
-				break;
-			}
+	var data = this._appCtxt.getFolderTree().getByType(org);
+	var len = data.length;
+
+	// look for calItem's calendar
+	this._folderSelect.clearOptions();
+	this._calendarOrgs = {};
+	var itemCal;
+	for (var i = 0; i < len; i++) {
+		var cal = data[i];
+		if (cal.id == calItem.folderId) {
+			itemCal = cal;
+			break;
 		}
-		var visible = len > 1;
-		var enabled = (mode == ZmCalItem.MODE_NEW || mode == ZmCalItem.MODE_NEW_FROM_QUICKADD || !itemCal.link);
-		if (visible) {
-			for (var i = 0; i < len; i++) {
-				var cal = children[i];
-				this._calendarOrgs[cal.id] = cal.owner;
-				if (enabled) {
-					// don't show calendar if remote or don't have write perms
-					if (cal.isFeed()) continue;
-					if (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()) continue;
-				}
-				this._folderSelect.addOption(cal.getName(), false, cal.id);
-			}
-		}
-		Dwt.setVisibility(this._folderSelect.getHtmlElement(), visible);
-		Dwt.setVisibility(this._folderLabelField, visible);
-		enabled ? this._folderSelect.enable() : this._folderSelect.disable();
 	}
+	var visible = len > 1;
+	var enabled = (mode == ZmCalItem.MODE_NEW || mode == ZmCalItem.MODE_NEW_FROM_QUICKADD || !itemCal.link);
+	if (visible) {
+		for (var i = 0; i < len; i++) {
+			var cal = data[i];
+			this._calendarOrgs[cal.id] = cal.owner;
+			if (enabled) {
+				// don't show calendar if remote or don't have write perms
+				if (cal.isFeed()) continue;
+				if (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()) continue;
+			}
+			this._folderSelect.addOption(cal.getName(), false, cal.id);
+		}
+	}
+	Dwt.setVisibility(this._folderSelect.getHtmlElement(), visible);
+	Dwt.setVisibility(this._folderLabelField, visible);
+	enabled ? this._folderSelect.enable() : this._folderSelect.disable();
+
 	// always reset the width of this select widget
 	this._folderSelect.setSelectedValue(calItem.folderId);
 };

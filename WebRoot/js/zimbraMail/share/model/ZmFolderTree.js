@@ -171,6 +171,11 @@ function(folder, obj, path) {
 	folder._setSharesFromJs(obj);
 };
 
+ZmFolderTree.prototype.getByType =
+function(type) {
+	return this.root ? this.root.getByType(type) : null;
+};
+
 ZmFolderTree.prototype.getByPath =
 function(path, useSystemName) {
 	return this.root ? this.root.getByPath(path, useSystemName) : null;

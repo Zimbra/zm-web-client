@@ -812,7 +812,7 @@ function() {
 		match = this._contact.addrbook ? this._contact.addrbook.id : ZmFolder.ID_CONTACTS;
 	}
 
-	var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
+	var folders = this._appCtxt.getFolderTree().getByType(ZmOrganizer.ADDRBOOK);
 
 	// for now, always re-populate folders DwtSelect
 	this._folderSelect.clearOptions();

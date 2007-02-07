@@ -884,6 +884,29 @@ function(name) {
 };
 
 /**
+* Returns a list of organizers with the given type
+*
+* @param type			[constant]	the desired organizer type
+*/
+ZmOrganizer.prototype.getByType =
+function(type) {
+	var list = [];
+	this._getByType(type, list);
+	return list;
+};
+
+ZmOrganizer.prototype._getByType =
+function(type, list) {
+	if (this.type == type) {
+		list.push(this);
+	}
+	var a = this.children.getArray();
+	for (var i = 0; i < a.length; i++) {
+		a[i]._getByType(type, list);
+	}
+};
+
+/**
 * Returns the organizer with the given path
 *
 * @param path			[string]	the path to search for
@@ -903,11 +926,10 @@ function(path, useSystemName) {
 		return this;
 	}
 		
-	var organizer;
 	var a = this.children.getArray();
-	var sz = this.children.size();
-	for (var i = 0; i < sz; i++) {
-		if (organizer = a[i]._getByPath(path, useSystemName)) {
+	for (var i = 0; i < a.length; i++) {
+		var organizer = a[i]._getByPath(path, useSystemName);
+		if (organizer) {
 			return organizer;
 		}
 	}
