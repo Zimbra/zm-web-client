@@ -46,39 +46,42 @@
                        </td>
                        <td class='ZhCalDayHSB' height=100% width=1px>&nbsp;</td>
                        <c:forEach var="day" items="${layout.days}">
-                           <td class='ZhCalDayHeader${day.startTime eq today.timeInMillis ? 'Today':''}' colspan="${day.maxColumns}" width=${day.width}%>
+                           <td class='ZhCalDaySEP ZhCalDayHeader${day.startTime eq today.timeInMillis ? 'Today':''}' colspan="${day.maxColumns}" width=${day.width}%>
                                <fmt:message var="titleFormat" key="CAL_${days > 1 ? 'M':''}DAY_TITLE_FORMAT"/>
                                <fmt:formatDate value="${day.date}" pattern="${titleFormat}"/>
                            </td>
                        </c:forEach>
                    </tr>
-                    <%--
                     <tr>
                         <td nowrap width=1% style='border-left:none'>
                             &nbsp;
                         </td>
                         <td class='ZhCalDayHS' height=100% width=1px>&nbsp;</td>
-                        <td colspan="${layout.maxColumns}" width=100%>
-                            <table class='ZhCalDayGrid' width=100% height=100% border="0" cellpadding=2 cellspacing=0 style='border-collapse:collapse'>
-                                <c:forEach var="allday" items="${layout.days[0].allDayAppts}">
-                                    <tr>
-                                        <td>
-                                            <app:dayAppt appt="${allday}" start="${day.timeDateBegin}" end="${day.timeDateEnd}"/>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </table>
-                        </td>
+                        <c:forEach var="day" items="${layout.days}">
+                            <td valign='top' class='ZhCalDaySEP' colspan="${day.maxColumns}" width=${day.width}%>
+                                <table class='ZhCalDayGrid' width=100% height=100% border="0" cellpadding=2 cellspacing=0 style='border-collapse:collapse'>
+                                    <c:forEach var="allday" items="${day.allDayAppts}">
+                                        <tr>
+                                            <td valign='top'>
+                                                <app:dayAppt appt="${allday}" start="${day.startTime}" end="${day.endTime}"/>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </table>
+                            </td>
+                        </c:forEach>
                     </tr>
-                    --%>
                     <tr>
                         <td class='ZhCalDayADB' nowrap width=1% style='border-left:none'>
                             &nbsp;
                         </td>
                         <td class='ZhCalDayADHS' height=100% width=1px>&nbsp;</td>
-                        <td class='ZhCalDayADB' colspan="${layout.maxColumns}">
+
+                        <c:forEach var="day" items="${layout.days}">
+                        <td class='ZhCalDaySEP ZhCalDayADB' colspan="${day.maxColumns}" width=${day.width}%>
                             &nbsp;
                         </td>
+                        </c:forEach>
                     </tr>
 
                     <c:forEach var="row" items="${layout.rows}">
