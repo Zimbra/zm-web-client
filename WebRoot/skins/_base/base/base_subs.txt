@@ -630,17 +630,6 @@ ToolbarButtonText-clicked	= @Text-clicked@ 	@_ToolbarButtonTextStyle_@
 ToolbarButtonText-default	= @Text-default@	@_ToolbarButtonTextStyle_@
 ToolbarButtonText-focused	= @Text-focused@	@_ToolbarButtonTextStyle_@
 
-SoundPlayer						= @OutsetBorder@
-_SoundPlayerButtonStyle_		= width:20px;
-SoundPlayerButton				= @_ToolbarButtonContainer_@ @_SoundPlayerButtonStyle_@
-SoundPlayerButton-disabled		= @_ToolbarButtonContainer-disabled_@ @_SoundPlayerButtonStyle_@
-SoundPlayerButton-hover			= @_WidgetContainer-hover_@ @_SoundPlayerButtonStyle_@ 
-SoundPlayerButton-clicked		= @_WidgetContainer-clicked_@ @_SoundPlayerButtonStyle_@
-SoundPlayerButton-default		= @_WidgetContainer-default_@ @_SoundPlayerButtonStyle_@
-SoundPlayerButton-focused		= @_WidgetContainer-focused_@ @_SoundPlayerButtonStyle_@
-SoundPlayerButton-toggled		= @_WidgetContainer-toggled_@ @_SoundPlayerButtonStyle_@
-
-
 
 _SelectStyle_				= @_SelectSize_@
 Select						= @_WidgetContainer_@			@_SelectStyle_@

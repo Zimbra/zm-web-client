@@ -67,6 +67,44 @@ function(node, args) {
 	return result;
 };
 
+ZmVoicemail.getCallerComparator =
+function(bSortAsc) {
+	var negate = bSortAsc ? 1 : -1;
+	return AjxCallback.simpleClosure(ZmVoicemail._callerComparator, ZmVoicemail, negate);	
+};
+
+ZmVoicemail._callerComparator =
+function(negate, a, b) {
+	var value = a.caller.localeCompare(b.caller);
+	return value ? value * negate : ZmVoicemail._dateComparator(a, b);
+};
+
+ZmVoicemail.getDurationComparator =
+function(bSortAsc) {
+	var negate = bSortAsc ? 1 : -1;
+	return AjxCallback.simpleClosure(ZmVoicemail._durationComparator, ZmVoicemail, negate);	
+};
+
+ZmVoicemail._durationComparator =
+function(negate, a, b) {
+	var value = a.duration.getTime() - b.duration.getTime();
+	return value ? value * negate : ZmVoicemail._dateComparator(a, b);
+};
+
+ZmVoicemail.getDateComparator =
+function(bSortAsc) {
+	if (bSortAsc) {
+		return ZmVoicemail._dateComparator;
+	} else {
+		return function(a, b) { return ZmVoicemail._dateComparator(b, a); }
+	}
+};
+
+ZmVoicemail._dateComparator =
+function(a, b) {
+	return a.date.getTime() - b.date.getTime();
+};
+
 ZmVoicemail.prototype._loadFromDom =
 function(node) {
 	if (node.id) this.id = node.id;

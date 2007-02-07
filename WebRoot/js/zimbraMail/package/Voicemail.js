@@ -8,9 +8,7 @@
  * 	- If a search for voicemails returns results
  */
 
-AjxPackage.require("ajax.3rdparty.soundmanager2");
-
-AjxPackage.require("ajax.dwt.widgets.DwtProgressBar");
+AjxPackage.require("ajax.util.AjxPluginDetector");
 AjxPackage.require("ajax.dwt.widgets.DwtSoundPlayer");
 
 AjxPackage.require("zimbraMail.voicemail.model.ZmVoicemail");

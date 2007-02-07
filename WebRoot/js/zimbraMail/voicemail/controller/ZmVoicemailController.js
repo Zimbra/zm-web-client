@@ -108,7 +108,10 @@ ZmVoicemailController.prototype._initializeToolBar =
 function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 	this._toolbar[view].getButton(ZmOperation.CHECK_MAIL).setText(ZmMsg.checkVoicemail);
-	this._soundPlayer = new DwtSoundPlayer(this._toolbar[view]);
+	this._soundPlayer = DwtSoundPlayer.create(this._toolbar[view], 200, 16);
+	if (this._soundPlayer.isPluginMissing) {
+		this._soundPlayer.addHelpListener(new AjxListener(this, this._pluginHelpListener));
+	}
 };
 
 ZmVoicemailController.prototype._resetOperations = 
@@ -145,5 +148,13 @@ function(ev) {
 		var voicemail = selection[0];
 		url = voicemail.soundUrl;
 	}
-	this._soundPlayer.setSound(url);
+	this._soundPlayer.setUrl(url);
+};
+
+// Called when user clicks for help with plugins.
+ZmVoicemailController.prototype._pluginHelpListener =
+function(event) {
+	var dialog = this._appCtxt.getMsgDialog();
+	dialog.setMessage(ZmMsg.missingPluginHelp, DwtMessageDialog.CRITICAL_STYLE);
+	dialog.popup();
 };

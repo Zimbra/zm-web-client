@@ -58,11 +58,11 @@ function(appCtxt, callback) {
 	var searchResult = new ZmSearchResult(appCtxt, search);
 	var response = { };
 	response.v = [
-		{ caller: "650-463-3266", date: new Date(2007, 0, 1), duration: new Date(15500), isUnheard: true, soundUrl:'../../public/SoundPlayer/WhosOnFirstAudio.mp3' },
-		{ caller: "946-272-6245", date: new Date(2007, 0, 2), duration: new Date(25000), isUnheard: false, soundUrl:'../../public/SoundPlayer/Bring em on.mp3' },
-		{ caller: "946-272-6245", date: new Date(2007, 0, 12), duration: new Date(12300), isUnheard: true, soundUrl:'../../public/SoundPlayer/Achieve those hurdles.mp3' },
-		{ caller: "946-272-6245", date: new Date(2007, 0, 15), duration: new Date(654321), isUnheard: false, soundUrl:'../../public/SoundPlayer/Restore chaos and order.mp3'},
-		{ caller: "858-693-6165", date: new Date(), duration: new Date(61000), isUnheard: true, soundUrl:'../../public/SoundPlayer/Tribute.mp3' }
+		{ caller: "650-463-3266", date: new Date(2007, 0, 1), duration: new Date(15500), isUnheard: true, soundUrl:'../../public/SoundPlayer/whoson1st.wav' },
+		{ caller: "946-272-6245", date: new Date(2007, 0, 2), duration: new Date(25000), isUnheard: false, soundUrl:'../../public/SoundPlayer/clinhale.wav' },
+		{ caller: "946-272-6245", date: new Date(2007, 0, 12), duration: new Date(12300), isUnheard: true, soundUrl:'../../public/SoundPlayer/mansong.wav' },
+		{ caller: "946-272-6245", date: new Date(2007, 0, 15), duration: new Date(654321), isUnheard: false, soundUrl:'../../public/SoundPlayer/mutlylaf.wav'},
+		{ caller: "858-693-6165", date: new Date(), duration: new Date(61000), isUnheard: true, soundUrl:'../../public/SoundPlayer/mutlylaf.wav3' }
 	];
 	for (var i = 0, count = response.v.length; i < count; i++) {
 		response.v[i].id = "vm" + i;

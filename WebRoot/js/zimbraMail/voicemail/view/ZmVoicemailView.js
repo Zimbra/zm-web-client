@@ -47,10 +47,10 @@ ZmVoicemailView.prototype._getHeaderList =
 function(appCtxt) {
 
 	var headerList = new Array();
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FROM], ZmMsg.from, null, ZmVoicemailView.FROM_WIDTH, true, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE], ZmMsg.duration, null, ZmVoicemailView.DURATION_WIDTH, true, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.received, null, ZmVoicemailView.DATE_WIDTH, true, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subjectNotes, null, ZmVoicemailView.SUBJECT_WIDTH, true, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FROM], ZmMsg.from, null, ZmVoicemailView.FROM_WIDTH, ZmItem.F_FROM, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE], ZmMsg.duration, null, ZmVoicemailView.DURATION_WIDTH, ZmItem.F_SIZE, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.received, null, ZmVoicemailView.DATE_WIDTH, ZmItem.F_DATE, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subjectNotes, null, ZmVoicemailView.SUBJECT_WIDTH, null, true));
 
 	return headerList;
 };
@@ -65,8 +65,9 @@ function(voicemail, now, isDndIcon, isMixedView, myDiv) {
 	idx = this._getTable(htmlArr, idx, isDndIcon);
 	var className = voicemail.isUnheard ? "Unread" : "";
 	idx = this._getRow(htmlArr, idx, voicemail, className);
+	var columnCount = this._headerList.length;
 
-	for (var i = 0; i < this._headerList.length; i++) {
+	for (var i = 0; i < columnCount; i++) {
 		if (!this._headerList[i]._visible)
 			continue;
 		var width = this._getFieldWidth(i);
@@ -111,3 +112,19 @@ function(voicemail) {
 	var html = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#Tooltip", data);
 	return html;
 };
+
+ZmVoicemailView.prototype._sortColumn =
+function(columnItem, bSortAsc) {
+	var comparator;
+	switch (columnItem._sortable) {
+		case ZmItem.F_FROM: comparator = ZmVoicemail.getCallerComparator(bSortAsc); break;
+		case ZmItem.F_SIZE: comparator = ZmVoicemail.getDurationComparator(bSortAsc); break;
+		case ZmItem.F_DATE: comparator = ZmVoicemail.getDateComparator(bSortAsc); break;
+		default: break;
+	}
+	if (comparator) {
+		this.getList().sort(comparator);
+		this.setUI();
+	}
+};
+
