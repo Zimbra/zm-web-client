@@ -312,7 +312,7 @@ ZmAppCtxt.prototype.getRenameFolderDialog =
 function() {
 	if (!this._renameFolderDialog) {
 		AjxDispatcher.require("Extras");
-		this._renameFolderDialog = new ZmRnameFolderDialog(this._shell, this.getMsgDialog());
+		this._renameFolderDialog = new ZmRenameFolderDialog(this._shell, this.getMsgDialog());
 	}
 	return this._renameFolderDialog;
 };
