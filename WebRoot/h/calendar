@@ -40,6 +40,9 @@
     <c:when test="${param.view eq 'day'}">
         <app:dayView date="${date}"/>
     </c:when>
+    <c:when test="${param.view eq 'workWeek'}">
+        <app:multiDayView date="${date}" days="5"/>
+    </c:when>
     <c:otherwise>
         <app:monthView date="${date}"/>
     </c:otherwise>

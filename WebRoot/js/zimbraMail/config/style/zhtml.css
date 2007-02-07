@@ -744,6 +744,10 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
     border-bottom-width:4px;
 }
 
+.ZhCalDaySEP {
+    @LeftSeparator@       
+}
+
 .ZhCalDayADHS {
     @RightSeparator@
   	@BottomSeparator-light@

@@ -22,7 +22,7 @@
     <c:when test="${appt.duration gt 1000*60*15}">
         <table class='ZhCalDayAppt' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
             <tr>
-                <td nowrap class='${color}${appt.partStatusNeedsAction ? 'Light' : 'Light'}' valign=top>
+                <td class='${color}${appt.partStatusNeedsAction ? 'Light' : 'Light'}' valign=top>
                     <c:set var="startDate" value="${appt.startDate.time lt start ? 'S' : ''}"/>
                     <c:set var="endDate" value="${appt.endDate.time gt end ? 'E' : ''}"/>
                      <fmt:message key="CAL_DAY_APPT_HEADER${startDate}${endDate}">
