@@ -85,6 +85,7 @@ ZmApp.IM					= "IM";
 ZmApp.CLASS[ZmApp.IM]		= "ZmImApp";
 ZmApp.SETTING[ZmApp.IM]		= ZmSetting.IM_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.IM]	= 70;
+ZmApp.QS_ARG[ZmApp.IM]		= "chat";
 
 ZmImApp.prototype = new ZmApp;
 ZmImApp.prototype.constructor = ZmImApp;

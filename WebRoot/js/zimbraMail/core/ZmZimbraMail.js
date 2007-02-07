@@ -84,6 +84,10 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 		this._appViewMgr._toRemove.push(ZmController.LOADING_VIEW);
 	}));
 
+	for (var i in ZmApp.QS_ARG) {
+		ZmApp.QS_ARG_R[ZmApp.QS_ARG[i]] = i;
+	}
+
 	this.startup({app: app});
 };
 
@@ -369,8 +373,13 @@ ZmZimbraMail.prototype._handleResponseStartup1 =
 function(params) {
 	
 	var respCallback = new AjxCallback(this, this._handleResponseStartup2);
-	var startApp = (params && params.app) ? params.app :
-				   (params && params.isRelogin && this._activeApp) ? this._activeApp : this._defaultStartApp;
+	var startApp;
+	if (params && params.app) {
+		startApp = ZmApp.QS_ARG_R[params.app.toLowerCase()];
+	}
+	if (!startApp) {
+		startApp = (params && params.isRelogin && this._activeApp) ? this._activeApp : this._defaultStartApp;
+	}
 
 	// check for jump to compose page or msg view
 	var checkQS = false;

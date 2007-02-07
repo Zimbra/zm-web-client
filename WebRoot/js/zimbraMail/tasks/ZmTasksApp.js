@@ -80,6 +80,7 @@ ZmApp.TASKS						= "Tasks";
 ZmApp.CLASS[ZmApp.TASKS]		= "ZmTasksApp";
 ZmApp.SETTING[ZmApp.TASKS]		= ZmSetting.TASKS_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.TASKS]	= 45;
+ZmApp.QS_ARG[ZmApp.TASKS]		= "tasks";
 
 ZmTasksApp.prototype = new ZmApp;
 ZmTasksApp.prototype.constructor = ZmTasksApp;

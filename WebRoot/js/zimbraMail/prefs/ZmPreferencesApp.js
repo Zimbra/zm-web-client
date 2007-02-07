@@ -64,6 +64,7 @@ ZmApp.PREFERENCES					= "Options";
 ZmApp.CLASS[ZmApp.PREFERENCES]		= "ZmPreferencesApp";
 ZmApp.SETTING[ZmApp.PREFERENCES]	= ZmSetting.PREFERENCES_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.PREFERENCES]	= 10;
+ZmApp.QS_ARG[ZmApp.PREFERENCES]		= "options";
 
 ZmPreferencesApp.prototype = new ZmApp;
 ZmPreferencesApp.prototype.constructor = ZmPreferencesApp;

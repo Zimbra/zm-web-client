@@ -115,6 +115,7 @@ ZmApp.NOTEBOOK					= "Notebook";
 ZmApp.CLASS[ZmApp.NOTEBOOK]		= "ZmNotebookApp";
 ZmApp.SETTING[ZmApp.NOTEBOOK]	= ZmSetting.NOTEBOOK_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.NOTEBOOK]	= 60;
+ZmApp.QS_ARG[ZmApp.NOTEBOOK]	= "documents";
 
 ZmNotebookApp.prototype = new ZmApp;
 ZmNotebookApp.prototype.constructor = ZmNotebookApp;

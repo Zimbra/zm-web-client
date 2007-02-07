@@ -110,6 +110,7 @@ ZmApp.CALENDAR					= "Calendar";
 ZmApp.CLASS[ZmApp.CALENDAR]		= "ZmCalendarApp";
 ZmApp.SETTING[ZmApp.CALENDAR]	= ZmSetting.CALENDAR_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.CALENDAR]	= 40;
+ZmApp.QS_ARG[ZmApp.CALENDAR]	= "calendar";
 
 // ms to wait before fetching reminders
 ZmCalendarApp.REMINDER_START_DELAY = 30000;

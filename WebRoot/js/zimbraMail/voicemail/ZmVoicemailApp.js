@@ -52,6 +52,7 @@ function ZmVoicemailApp(appCtxt, container, parentController) {
 							 {mainPkg:				"Voicemail",
 							  nameKey:				"voicemail",
 							  icon:					"NoteApp",
+							  qsArg:				"voicemail",
 							  chooserTooltipKey:	"goToVoicemail",
 							  defaultSearch:		ZmItem.PAGE,
 							  overviewTrees:		[ZmOrganizer.TAG],
@@ -74,6 +75,7 @@ ZmApp.VOICEMAIL						= "Voicemail";
 ZmApp.CLASS[ZmApp.VOICEMAIL]		= "ZmVoicemailApp";
 ZmApp.SETTING[ZmApp.VOICEMAIL]		= ZmSetting.VOICEMAIL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.VOICEMAIL]	= 80;
+ZmApp.QS_ARG[ZmApp.VOICEMAIL]		= "voicemail";
 
 ZmVoicemailApp.prototype = new ZmApp;
 ZmVoicemailApp.prototype.constructor = ZmVoicemailApp;

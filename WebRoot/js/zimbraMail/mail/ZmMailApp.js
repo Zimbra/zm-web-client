@@ -128,6 +128,7 @@ ZmApp.MAIL					= "Mail";
 ZmApp.CLASS[ZmApp.MAIL]		= "ZmMailApp";
 ZmApp.SETTING[ZmApp.MAIL]	= ZmSetting.MAIL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.MAIL]	= 20;
+ZmApp.QS_ARG[ZmApp.MAIL]	= "mail";
 
 ZmMailApp.prototype = new ZmApp;
 ZmMailApp.prototype.constructor = ZmMailApp;
