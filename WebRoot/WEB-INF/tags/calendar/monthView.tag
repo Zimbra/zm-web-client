@@ -20,7 +20,7 @@
     <c:set var="dateCal" value="${zm:getCalendar(date)}"/>
     <c:set var="prevDate" value="${zm:pageMonth(dateCal, false)}"/>
     <c:set var="nextDate" value="${zm:pageMonth(dateCal,  true)}"/>  
-    <c:set var="currentDay" value="${zm:getFirstDayOfMonth(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
+    <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
     <zm:getAppointmentSummaries var="appts" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+1000*60*60*24*42}"/>
 </app:handleError>
 

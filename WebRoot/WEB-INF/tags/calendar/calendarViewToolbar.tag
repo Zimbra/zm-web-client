@@ -24,6 +24,12 @@
             <a href="${viewUrl}&view=day"><app:img altkey="ALT_CAL_DAY_VIEW" src="calendar/DayView.gif"/><fmt:message key="day"/></a>
         </td>
         <td>
+            <a href="${viewUrl}&view=workWeek"><app:img altkey="ALT_CAL_WORKWEEK_VIEW" src="calendar/WorkWeekView.gif"/><fmt:message key="workWeek"/></a>
+        </td>
+        <td>
+            <a href="${viewUrl}&view=week"><app:img altkey="ALT_CAL_WEEK_VIEW" src="calendar/WeekView.gif"/><fmt:message key="week"/></a>
+        </td>
+        <td>
             <a href="${viewUrl}&view=month"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/MonthView.gif"/><fmt:message key="month"/></a>
         </td>
         <fmt:formatDate var="todayDf" value="${today.time}" pattern="yyyyMMdd"/>

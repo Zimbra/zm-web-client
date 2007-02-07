@@ -428,11 +428,6 @@
     </tag-file>
 
     <tag-file>
-        <name>dayView</name>
-        <path>/WEB-INF/tags/calendar/dayView.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>multiDayView</name>
         <path>/WEB-INF/tags/calendar/multiDayView.tag</path>
     </tag-file>

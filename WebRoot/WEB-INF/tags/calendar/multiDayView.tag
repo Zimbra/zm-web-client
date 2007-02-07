@@ -1,6 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Date" %>
-<%@ attribute name="days" rtexprvalue="true" required="true" %>
+<%@ attribute name="numdays" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -12,22 +12,41 @@
     <zm:getMailbox var="mailbox"/>
     <c:set var="context" value="${null}"/>
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
-    <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
-    <fmt:message var="tbTitleFormat" key="CAL_DAY_TB_TITLE_FORMAT"/>
-    <fmt:formatDate var="title" value="${date}" pattern="${titleFormat}"/>
-    <fmt:formatDate var="tbTitle" value="${date}" pattern="${tbTitleFormat}"/>
+
+    <c:set var="currentDay" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, numdays)}"/>
+
+    <c:choose>
+        <c:when test="${numdays eq 1}">
+            <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
+            <fmt:formatDate var="pageTitle" value="${currentDay.time}" pattern="${titleFormat}"/>
+            <fmt:message var="tbTitleFormat" key="CAL_DAY_TB_TITLE_FORMAT"/>
+            <fmt:formatDate var="tbTitle" value="${currentDay.time}" pattern="${tbTitleFormat}"/>
+        </c:when>
+        <c:otherwise>
+            <fmt:message var="singleDayFormat" key="CAL_DAY_TB_TITLE_FORMAT"/>
+            <fmt:message var="pageTitle" key="CAL_MDAY_TITLE_FORMAT">
+                <fmt:param><fmt:formatDate value="${currentDay.time}" pattern="${singleDayFormat}"/></fmt:param>
+                <fmt:param><fmt:formatDate value="${zm:addDay(currentDay, numdays).time}" pattern="${singleDayFormat}"/></fmt:param>
+            </fmt:message>
+            <c:set var="tbTitle" value="${pageTitle}"/>
+        </c:otherwise>
+    </c:choose>
+
+
+
     <c:set var="today" value="${zm:getToday()}"/>
     <c:set var="dateCal" value="${zm:getCalendar(date)}"/>
-    <c:set var="prevDate" value="${zm:addDay(dateCal, -1)}"/>
-    <c:set var="nextDate" value="${zm:addDay(dateCal,  1)}"/>
+    <c:set var="dayIncr" value="${(numdays eq 5) ? 7 : numdays}"/>
+    <c:set var="prevDate" value="${zm:addDay(dateCal, -dayIncr)}"/>
+    <c:set var="nextDate" value="${zm:addDay(dateCal,  dayIncr)}"/>
 
-    <zm:getAppointmentSummaries var="appts" start="${date.time}" end="${date.time+1000*60*60*24*days}"/>
-    <zm:apptMultiDayLayout var="layout" appointments="${appts}" start="${date.time}" days="${days}"
+    <zm:getAppointmentSummaries var="appts" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+1000*60*60*24*numdays}"/>
+    <zm:apptMultiDayLayout var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
             hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
     <!-- ROWS ${layout.rows}-->
 </app:handleError>
 
-<app:view title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true"
+<app:view title="${pageTitle}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true"
           date="${date}">
     <table width=100% height=100% cellpadding="0" cellspacing="0" border=0>
         <tr>
@@ -47,7 +66,7 @@
                        <td class='ZhCalDayHSB' height=100% width=1px>&nbsp;</td>
                        <c:forEach var="day" items="${layout.days}">
                            <td class='ZhCalDaySEP ZhCalDayHeader${day.startTime eq today.timeInMillis ? 'Today':''}' colspan="${day.maxColumns}" width=${day.width}%>
-                               <fmt:message var="titleFormat" key="CAL_${days > 1 ? 'M':''}DAY_TITLE_FORMAT"/>
+                               <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
                                <fmt:formatDate value="${day.date}" pattern="${titleFormat}"/>
                            </td>
                        </c:forEach>

@@ -26,7 +26,7 @@
                         key="addressBook"/></span></a>
             </td>
         </c:if>
-        <c:if test="${mailbox.features.calendar and selected == 'calendar'}">
+        <c:if test="${mailbox.features.calendar}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='calendar' ? 'TabSelected' :'TabNormal'}'>
                 <a href="<c:url value="/h/calendar"/>" <c:if test="${keys}">accesskey="l"</c:if>><app:img src="calendar/CalendarApp.gif" altkey='ALT_APP_CALENDAR'/><span><fmt:message

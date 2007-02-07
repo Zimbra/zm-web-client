@@ -16,8 +16,8 @@
     <fmt:formatDate var="title" value="${date}" pattern="${titleFormat}"/>
     <c:set var="today" value="${zm:getToday()}"/>
     <c:set var="dateCal" value="${zm:getCalendar(date)}"/>
-    <c:set var="currentDay" value="${zm:getFirstDayOfMonth(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
-    <c:set var="currentWeekDay" value="${zm:getFirstDayOfMonth(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
+    <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
+    <c:set var="currentWeekDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
 </app:handleError>
 
 <div class='ZhCalMiniContainer'>
