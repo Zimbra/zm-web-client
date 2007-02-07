@@ -29,7 +29,7 @@
 
 <app:view title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true"
           date="${date}">
-    <table width=100% cellpadding="0" cellspacing="0" border=0>
+    <table width=100% height=100% cellpadding="0" cellspacing="0" border=0>
         <tr>
             <td class='TbTop'>
                 <app:calendarViewToolbar today="${today}" date="${dateCal}" prevDate="${prevDate}"
@@ -85,7 +85,7 @@
                     </tr>
 
                     <c:forEach var="row" items="${layout.rows}">
-                        <tr>
+                        <tr height="100%">
                             <c:if test="${row.rowNum % 4 eq 0}">
                                 <td valign=top class='ZhCalDayHour' nowrap width=1% rowspan=4 style='border-left:none'>
                                     <fmt:message key="CAL_DAY_HOUR_FORMAT">
