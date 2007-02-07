@@ -243,7 +243,7 @@ function() {
 	} else if (window.command == "msgViewDetach") {
 		var msgController = AjxDispatcher.run("GetMsgController");
 		msgController.isChildWindow = true;
-		msgController.show(window.args.msg);
+		msgController.show(window.params.msg);
 		rootTg.addMember(msgController.getTabGroup());
 		startupFocusItem = msgController.getCurrentView();
 	}

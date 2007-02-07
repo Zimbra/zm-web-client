@@ -1568,7 +1568,7 @@ function(appCtxt, result) {
 
 	var newWinObj = appCtxt.getNewWindow(true);
 	newWinObj.command = "msgViewDetach";
-	newWinObj.args = { msg:msg };
+	newWinObj.params = { msg:msg };
 };
 
 ZmMailMsgView.rfc822Callback =
