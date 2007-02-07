@@ -852,7 +852,7 @@ if (ext == null) ext = "";
   <!-- admin console targets -->
   <target name="admin-dev-sync" description="Admin Quick Sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}">
-      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="public/launch*,js/*/package/**"/>
+      <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="public/launch*,js/*/package/**,js/zimbraMail/**,public/Login.jsp,public/launchZimbraMail.jsp,public/ZimbraMail.jsp,public/ZimbraMailNewCompose.jsp,public/Messages.jsp"/>
       <fileset dir='${build.dir}/WebRoot' includes='public/jsp/**'/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
