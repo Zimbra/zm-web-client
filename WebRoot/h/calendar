@@ -18,7 +18,7 @@
      </c:if>
      
     <zm:getMailbox var="mailbox"/>
-    <zm:computeSearchContext var="context" usecache="true"/>
+
     <c:choose>
         <c:when test="${not empty param.date}">
             <fmt:parseDate var="date" pattern="yyyyMMdd" value="${param.date}"/>
