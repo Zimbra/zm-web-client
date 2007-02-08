@@ -57,6 +57,8 @@ function() {
 
 ZmCalItemTypeDialog.prototype.initialize =
 function(calItem, mode) {
+	this.calItem = calItem;
+	this.mode = mode;
 	this._defaultRadio.checked = true;
 
 	var type = calItem.type == ZmItem.APPT ? ZmMsg.isRecurringAppt : ZmMsg.isRecurringTask;

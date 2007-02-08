@@ -926,7 +926,7 @@ ZmCalViewController.prototype._showTypeDialog =
 function(appt, mode) {
 	if (this._typeDialog == null) {
 		this._typeDialog = new ZmCalItemTypeDialog(this._shell);
-		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener, [appt, mode]));
+		this._typeDialog.addSelectionListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._typeOkListener));
 		this._typeDialog.addSelectionListener(DwtDialog.CANCEL_BUTTON, new AjxListener(this, this._typeCancelListener));
 	}
 	this._typeDialog.initialize(appt, mode);
@@ -1040,8 +1040,8 @@ function(appt) {
 };
 
 ZmCalViewController.prototype._typeOkListener =
-function(appt, mode, ev) {
-    this._performApptAction(appt, mode, this._typeDialog.isInstance());
+function(ev) {
+    this._performApptAction(this._typeDialog.calItem, this._typeDialog.mode, this._typeDialog.isInstance());
 };
 
 ZmCalViewController.prototype._performApptAction =
@@ -1067,7 +1067,7 @@ function(appt, mode, isInstance) {
 
 ZmCalViewController.prototype._typeCancelListener =
 function(ev) {
-	if (this._typeDialog.getApptMode() == ZmAppt.MODE_DRAG_OR_SASH) {
+	if (this._typeDialog.mode == ZmAppt.MODE_DRAG_OR_SASH) {
 		// we cancel the drag/sash, refresh view
 		this._refreshAction(true);
 	}
