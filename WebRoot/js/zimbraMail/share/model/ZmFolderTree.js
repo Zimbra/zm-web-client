@@ -31,7 +31,14 @@ function ZmFolderTree(appCtxt, type) {
 ZmFolderTree.prototype = new ZmTree;
 ZmFolderTree.prototype.constructor = ZmFolderTree;
 
-ZmFolderTree.prototype.toString = 
+
+// Consts
+ZmFolderTree.IS_PARSED = {};
+
+
+// Public Methods
+
+ZmFolderTree.prototype.toString =
 function() {
 	return "ZmFolderTree";
 };
@@ -144,15 +151,17 @@ function(folder, obj, tree, path) {
 
 ZmFolderTree.createFolder =
 function(type, parent, obj, tree, path) {
-		var orgClass = eval(ZmOrganizer.ORG_CLASS[type]);
-		DBG.println(AjxDebug.DBG2, "Creating " + type + " with id " + obj.id + " and name " + obj.name);
-		params = {id:obj.id, name:obj.name, parent:parent, tree:tree, color:obj.color,
-				  owner:obj.owner, zid:obj.zid, rid:obj.rid, restUrl:obj.rest,
-				  url:obj.url, numUnread:obj.u, numTotal:obj.n};
-		var folder = new orgClass(params);
-		ZmFolderTree._fillInFolder(folder, obj, path);
-		
-		return folder;
+	var orgClass = eval(ZmOrganizer.ORG_CLASS[type]);
+	DBG.println(AjxDebug.DBG2, "Creating " + type + " with id " + obj.id + " and name " + obj.name);
+	params = {id:obj.id, name:obj.name, parent:parent, tree:tree, color:obj.color,
+			  owner:obj.owner, zid:obj.zid, rid:obj.rid, restUrl:obj.rest,
+			  url:obj.url, numUnread:obj.u, numTotal:obj.n};
+	var folder = new orgClass(params);
+	ZmFolderTree._fillInFolder(folder, obj, path);
+
+	ZmFolderTree.IS_PARSED[type] = true;
+
+	return folder;
 };
 
 ZmFolderTree._fillInFolder =
@@ -179,6 +188,182 @@ function(type) {
 ZmFolderTree.prototype.getByPath =
 function(path, useSystemName) {
 	return this.root ? this.root.getByPath(path, useSystemName) : null;
+};
+
+/*
+ * Handles a missing link by marking its organizer as not there, redrawing it in
+ * any tree views, and asking to delete it.
+ *
+ * @param organizerType		[int]		the type of organizer (constants defined in ZmOrganizer)
+ * @param zid				[string]	the zid of the missing folder
+ * @param rid				[string]	the rid of the missing folder
+ *
+ */
+ZmFolderTree.prototype.handleNoSuchFolderError =
+function(organizerType, zid, rid) {
+	var items = this.getByType(organizerType);
+
+	var treeView;
+	var handled = false;
+	if (items) {
+		for (var i = 0; i < items.length; i++) {
+			if ((items[i].zid == zid) && (items[i].rid == rid)) {
+				// Mark that the item is not there any more.
+				items[i].noSuchFolder = true;
+
+				// Change its appearance in the tree.
+				if (!treeView) {
+					treeView = this._appCtxt.getOverviewController().getTreeView(ZmZimbraMail._OVERVIEW_ID, organizerType);
+				}
+				var node = treeView.getTreeItemById(items[i].id);
+				node.setText(items[i].getName(true));
+
+				// Ask if it should be deleted now.
+				this.handleDeleteNoSuchFolder(items[i]);
+				handled = true;
+			}
+		}
+	}
+	return handled;
+};
+
+/*
+* Takes care of letting the user know that a linked organizer generated a "no such folder",
+* error, giving him a chance to delete it.
+*
+* @param organizer	[ZmOrganizer]	organizer
+*
+*/
+ZmFolderTree.prototype.handleDeleteNoSuchFolder =
+function(organizer) {
+	var ds = this._appCtxt.getYesNoMsgDialog();
+	ds.reset();
+	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteOrganizerYesCallback, this, [organizer, ds]);
+	ds.registerCallback(DwtDialog.NO_BUTTON, this._appCtxt.getAppController()._clearDialog, this, ds);
+	var msg = AjxMessageFormat.format(ZmMsg.confirmDeleteMissingFolder, organizer.getName(false, 0, true));
+	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	ds.popup();
+};
+
+// Handles the "Yes" button in the delete organizer dialog.
+ZmFolderTree.prototype._deleteOrganizerYesCallback =
+function(organizer, dialog) {
+	organizer._delete();
+	this._appCtxt.getAppController()._clearDialog(dialog);
+};
+
+// This method is used to retrieve permissions on folders that can be *shared*
+ZmFolderTree.prototype.getPermissions =
+function(type) {
+	var needPerms = this._getItemsWithoutPerms(type);
+
+	// build batch request to get all permissions at once
+	if (needPerms.length > 0) {
+		var soapDoc = AjxSoapDoc.create("BatchRequest", "urn:zimbra");
+		soapDoc.setMethodAttribute("onerror", "continue");
+
+		var doc = soapDoc.getDoc();
+		for (var j = 0; j < needPerms.length; j++) {
+			var folderRequest = soapDoc.set("GetFolderRequest", null, null, "urn:zimbraMail");
+			var folderNode = doc.createElement("folder");
+			folderNode.setAttribute("l", needPerms[j]);
+			folderRequest.appendChild(folderNode);
+		}
+
+		var respCallback = new AjxCallback(this, this._handleResponseGetShares);
+		this._appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+	}
+};
+
+ZmFolderTree.prototype._getItemsWithoutPerms =
+function(type) {
+	var needPerms = [];
+	// NOTE: we dont list ZmOrganizer.FOLDER here b/c mail folders are not yet share-able
+	var orgs = type ? [type] : [ZmOrganizer.CALENDAR, ZmOrganizer.TASKS, ZmOrganizer.NOTEBOOK, ZmOrganizer.ADDRBOOK];
+
+	for (var j = 0; j < orgs.length; j++) {
+		var org = orgs[j];
+		if (!ZmFolderTree.IS_PARSED[org])
+			continue;
+
+		var items = this.getByType(org);
+
+		for (var i = 0; i < items.length; i++) {
+			if (items[i].link && items[i].shares == null)
+				needPerms.push(items[i].id);
+		}
+	}
+
+	return needPerms;
+};
+
+ZmFolderTree.prototype._handleResponseGetShares =
+function(result) {
+	var batchResp = result.getResponse().BatchResponse;
+	this._handleErrorGetShares(batchResp);
+
+	var resp = batchResp.GetFolderResponse;
+	if (resp) {
+		for (var i = 0; i < resp.length; i++) {
+			var link = resp[i].link ? resp[i].link[0] : null;
+			if (link) {
+				var share = this.getById(link.id);
+				if (share) share.setPermissions(link.perm);
+			}
+		}
+	}
+};
+
+/*
+ * Handles errors that come back from the GetShares batch request.
+ *
+ * @param organizerTypes	[array]		the types of organizer (constants defined in ZmOrganizer)
+ * @param batchResp			[object]	the response
+ *
+ */
+ZmFolderTree.prototype._handleErrorGetShares =
+function(batchResp) {
+	var faults = batchResp.Fault;
+	if (faults) {
+		var rids = [];
+		var zids = [];
+		for (var i = 0, length = faults.length; i < length; i++) {
+			var ex = ZmCsfeCommand.faultToEx(faults[i]);
+			if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
+				var itemId = ex.data.itemId[0];
+				var index = itemId.lastIndexOf(':');
+				zids.push(itemId.substring(0, index));
+				rids.push(itemId.substring(index + 1, itemId.length));
+			}
+		}
+		if (zids.length) {
+			this._markNoSuchFolder(zids, rids);
+		}
+	}
+};
+
+/*
+ * Handles missing links by marking the organizers as not there
+ *
+ * @param zids				[array]		the zids of the missing folders
+ * @param rids				[array]		the rids of the missing folders. rids and zids must have the same length
+ *
+ */
+ZmFolderTree.prototype._markNoSuchFolder =
+function(zids, rids) {
+	// XXX: we may want to optimize by getting tree per organizer
+	var treeData = this._appCtxt.getTree();
+	var items = treeData && treeData.root
+		? treeData.root.children.getArray()
+		: null;
+
+	for (var i = 0; i < items.length; i++) {
+		for (var j = 0; j < rids.length; j++) {
+			if ((items[i].zid == zids[j]) && (items[i].rid == rids[j])) {
+				items[i].noSuchFolder = true;
+			}
+		}
+	}
 };
 
 ZmFolderTree.prototype._sortFolder =

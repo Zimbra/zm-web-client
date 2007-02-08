@@ -543,9 +543,6 @@ function(type) {
 	} else {
 		return this.getFolderTree();
 	}
-//	return this.getAppController().isChildWindow()
-//		? window.parentController._appCtxt.getTree(type)
-//		: this._trees[type];
 };
 
 ZmAppCtxt.prototype.setTree =

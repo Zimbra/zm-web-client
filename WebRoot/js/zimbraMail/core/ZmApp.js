@@ -213,7 +213,7 @@ function() {
  * Lazily create folders received in the initial <refresh> block.
  */
 ZmApp.prototype._createDeferredFolders =
-function() {
+function(type) {
 	for (var i = 0; i < this._deferredFolders.length; i++) {
 		var params = this._deferredFolders[i];
 		var parent = params.tree.getById(params.obj.l);
@@ -221,6 +221,8 @@ function() {
 		parent.children.add(folder);
 		folder.parent = parent;
 	}
+
+	this._appCtxt.getFolderTree().getPermissions(type);
 };
 
 /**

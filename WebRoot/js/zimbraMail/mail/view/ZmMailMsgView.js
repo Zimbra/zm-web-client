@@ -166,7 +166,7 @@ function(msg) {
 
 ZmMailMsgView.prototype.__hasMountpoint =
 function(share) {
-	var tree = this._appCtxt.getFolderTree().getByType(ZmOrganizer.TYPE[share.link.view]);
+	var tree = this._appCtxt.getTree(ZmOrganizer.TYPE[share.link.view]);
 	return tree
 		? this.__hasMountpoint2(tree.root, share.grantor.id, share.link.id)
 		: false;

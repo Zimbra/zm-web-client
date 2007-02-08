@@ -1120,8 +1120,9 @@ function(ex, method, params, restartOnError, obj) {
 			var index = itemId.lastIndexOf(':');
 			var zid = itemId.substring(0, index);
 			var rid = itemId.substring(index + 1, itemId.length);
+			var ft = this._appCtxt.getFolderTree();
 			for (var type = 0; type < organizerTypes.length; type++) {
-				handled |= this._requestMgr._handleNoSuchFolderError(organizerTypes[type], zid, rid, true);
+				handled |= ft.handleNoSuchFolderError(organizerTypes[type], zid, rid, true);
 			}
 		}
 	}

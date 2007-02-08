@@ -299,7 +299,7 @@ function() {
 
 ZmCalendarApp.prototype._postLoad =
 function() {
-	this._createDeferredFolders();
+	this._createDeferredFolders(ZmOrganizer.CALENDAR);
 	this.getApptComposeController().initComposeView(true);
 };
 
