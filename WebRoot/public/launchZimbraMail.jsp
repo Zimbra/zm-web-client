@@ -115,7 +115,12 @@
     String packages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore";
     
     String extraPackages = request.getParameter("packages");
-    if (extraPackages != null) packages += ","+extraPackages;
+    if (extraPackages != null) {
+    	if (extraPackages.equals("dev")) {
+    		extraPackages = "CalendarCore,Calendar,ContactsCore,Contacts,IM,Mixed,NotebookCore,Notebook,PreferencesCore,Preferences,TasksCore,Tasks,Mail,Voicemail,Assistant,Browse,Extras,Share,Zimlet";
+    	}
+    	packages += "," + extraPackages;
+    }
 
     String pprefix = inDevMode ? "public/jsp" : "js";
     String psuffix = inDevMode ? ".jsp" : "_all.js";
