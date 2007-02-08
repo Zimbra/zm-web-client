@@ -73,30 +73,15 @@ function() {
 	var dialog = this._appCtxt.getNewTagDialog();
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this);
-	if (AjxEnv.isNav) {
-		this.popdown();
-		dialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._newCancelCallback, this);
-	}
-	dialog.popup(this._loc);
+	dialog.popup();
 };
 
 ZmPickTagDialog.prototype._newCallback = 
 function(parent, name) {
-	if (AjxEnv.isNav)
-		this.popup();
-
 	this._appCtxt.getNewTagDialog().popdown();
 	var ttc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.TAG);
 	ttc._doCreate(parent, name);
 	this._creatingTag = true;
-};
-
-ZmPickTagDialog.prototype._newCancelCallback = 
-function(args) {
-	if (AjxEnv.isNav)
-		this.popup();
-
-	this._appCtxt.getNewTagDialog().popdown();
 };
 
 ZmPickTagDialog.prototype._tagTreeChangeListener = 

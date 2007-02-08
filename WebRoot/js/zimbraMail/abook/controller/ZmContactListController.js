@@ -281,6 +281,21 @@ function(num) {
 	return (num == 1) ? ZmMsg.AB_MOVE_CONTACT : ZmMsg.AB_MOVE_CONTACTS;
 };
 
+ZmContactListController.prototype._getMoveParams =
+function() {
+	var params = ZmListController.prototype._getMoveParams.call(this);
+	var omit = {};
+	var folders = this._appCtxt.getFolderTree().getByType(ZmOrganizer.ADDRBOOK);
+	for (var i = 0; i < folders.length; i++) {
+		var folder = folders[i];
+		if (folder.link && folder.isReadOnly()) {
+			omit[folder.id] = true;
+		}
+	}
+	params.omit = omit;
+	return params;
+};
+
 ZmContactListController.prototype._initializeToolBar =
 function(view) {
 	if (this._toolbar[view]) return;

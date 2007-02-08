@@ -35,11 +35,11 @@ function ZmImApp(appCtxt, container) {
 						 icon:			"ImStartChat"
 						});
 
+	// not really sure what this is
 	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE,
 							{app:				ZmApp.IM,
 							 orgClass:			"ZmRosterTree",
 							 orgPackage:		"IM",
-							 treeController:	"ZmRosterTreeController",
 							 labelKey:			"buddyList",
 							 compareFunc:		"ZmRosterTreeItem.sortCompare"
 							});
@@ -59,6 +59,7 @@ function ZmImApp(appCtxt, container) {
 							  icon:					"ImStartChat",
 							  chooserTooltipKey:	"goToIm",
 							  defaultSearch:		ZmSearchToolBar.FOR_MAIL_MI,
+							  organizer:			ZmOrganizer.ROSTER_TREE_ITEM,
 							  overviewTrees:		[ZmOrganizer.ROSTER_TREE_ITEM],
 							  showZimlets:			true,
 							  actionCode:			ZmKeyMap.GOTO_IM,

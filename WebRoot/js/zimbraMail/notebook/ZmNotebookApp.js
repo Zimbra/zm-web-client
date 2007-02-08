@@ -91,6 +91,7 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 							  icon:					"NoteApp",
 							  chooserTooltipKey:	"goToDocuments",
 							  defaultSearch:		ZmItem.PAGE,
+							  organizer:			ZmOrganizer.NOTEBOOK,
 							  overviewTrees:		[ZmOrganizer.NOTEBOOK, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.PAGE, ZmItem.DOCUMENT],

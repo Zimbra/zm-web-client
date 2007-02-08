@@ -919,18 +919,19 @@ function(rowId) {
 
 ZmShortcutsPageTabViewCustom.prototype._browseListener =
 function(ev) {
-	var dialog, treeIds;
+	var dialog, treeIds, params;
 	var button = ev.item;
 	if (this._organizer == ZmOrganizer.TAG) {
 		dialog = this._appCtxt.getPickTagDialog();
 	} else {
 		dialog = this._appCtxt.getMoveToDialog();
 		treeIds = [this._organizer];
+		params = {treeIds:treeIds};
 	}
 	dialog.reset();
 	dialog.setTitle(ZmShortcutsPageTabViewCustom.DIALOG_TEXT[this._organizer]);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._browseSelectionCallback, this, [ev.item, dialog]);
-	dialog.popup(null, null, treeIds, true);
+	dialog.popup(params);
 };
 
 /*

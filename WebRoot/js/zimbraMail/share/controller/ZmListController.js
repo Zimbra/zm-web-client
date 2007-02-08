@@ -645,9 +645,16 @@ ZmListController.prototype._moveListener =
 function(ev) {
 	this._pendingActionData = this._listView[this._currentView].getSelection();
 	var moveToDialog = this._appCtxt.getMoveToDialog();
-	this._showDialog(moveToDialog, this._moveCallback, this._pendingActionData);
+	this._showDialog(moveToDialog, this._moveCallback, this._getMoveParams());
 	moveToDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, moveToDialog);
 	moveToDialog.setTitle(this._getMoveDialogTitle(this._pendingActionData.length));
+};
+
+ZmListController.prototype._getMoveParams =
+function() {
+	var org = ZmApp.ORGANIZER[this._app._name];
+	var params = {data:this._pendingActionData, treeIds:[org]};
+	return params;
 };
 
 // Switch to selected view.

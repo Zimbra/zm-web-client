@@ -66,6 +66,7 @@ ZmApp.QS_ARG_R			= {};
 ZmApp.CHOOSER_TOOLTIP	= {};	// msg key for app view menu tooltip
 ZmApp.VIEW_TOOLTIP		= {};	// msg key for app tooltip
 ZmApp.DEFAULT_SEARCH	= {};	// type of item to search for in the app
+ZmApp.ORGANIZER			= {};	// main organizer for this app
 ZmApp.OVERVIEW_TREES	= {};	// list of tree IDs to show in overview
 ZmApp.SHOW_ZIMLETS		= {};	// whether to show Zimlet tree in overview
 ZmApp.SEARCH_TYPES		= {};	// list of types of saved searches to show in overview
@@ -98,6 +99,7 @@ ZmApp.DEFAULT_APPS		= [];	// ordered list
  * @param chooserTooltipKey	[string]	msg key for app tooltip
  * @param viewTooltipKey	[string]	msg key for app view menu tooltip
  * @param defaultSearch		[constant]	type of item to search for in the app
+ * @param organizer			[constant]	main organizer for this app
  * @param overviewTrees		[array]		list of tree IDs to show in overview
  * @param showZimlets		[boolean]	if true, show Zimlet tree in overview
  * @param assistants		[array]		hash of assistant class names and required packages
@@ -117,6 +119,7 @@ function(app, params) {
 	if (params.chooserTooltipKey)	{ ZmApp.CHOOSER_TOOLTIP[app]	= params.chooserTooltipKey; }
 	if (params.viewTooltipKey)		{ ZmApp.VIEW_TOOLTIP[app]		= params.viewTooltipKey; }
 	if (params.defaultSearch)		{ ZmApp.DEFAULT_SEARCH[app]		= params.defaultSearch; }
+	if (params.organizer)			{ ZmApp.ORGANIZER[app]			= params.organizer; }
 	if (params.overviewTrees)		{ ZmApp.OVERVIEW_TREES[app]		= params.overviewTrees; }
 	if (params.showZimlets)			{ ZmApp.SHOW_ZIMLETS[app]		= params.showZimlets; }
 	if (params.assistants)			{ ZmApp.ASSISTANTS[app]			= params.assistants; }

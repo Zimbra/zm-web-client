@@ -90,6 +90,7 @@ function ZmMailApp(appCtxt, container, parentController) {
 							  chooserTooltipKey:	"goToMail",
 							  viewTooltipKey:		"displayMail",
 							  defaultSearch:		ZmSearchToolBar.FOR_MAIL_MI,
+							  organizer:			ZmOrganizer.FOLDER,
 							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  assistants:			{"ZmMailAssistant":"Mail"},

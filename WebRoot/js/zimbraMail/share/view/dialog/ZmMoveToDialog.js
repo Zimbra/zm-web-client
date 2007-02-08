@@ -23,6 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * This singleton class present a dialog with various trees so that the
+ * user can choose a folder as a move target.
+ */
 function ZmMoveToDialog(parent, msgDialog, className) {
 	var newButton = new DwtDialog_ButtonDescriptor(ZmMoveToDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
 	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.move, [newButton]);
@@ -47,89 +51,62 @@ function() {
 	return "ZmMoveToDialog";
 };
 
+/**
+ * @param data		[object]	Array of items, a folder, an item, or null
+ * @param loc		[DwtPoint]	Location to pop up at
+ * @param treeIds	[array]		List of trees to show
+ * @param orgType	[constant]	Primary tree type
+ */
 ZmMoveToDialog.prototype.popup =
-function(data, loc, treeIds, clearOverview) {
-	var omit = {};
+//function(data, loc, treeIds, clearOverview) {
+function(params, loc) {
+	params = params || {};
+	var omit = params.omit || {};
 	omit[ZmFolder.ID_DRAFTS] = true;
-	treeIds = treeIds ? treeIds : [ZmOrganizer.FOLDER];
+	var treeIds = (params.treeIds && params.treeIds.length) ? params.treeIds : [ZmOrganizer.FOLDER];
 	
 	// New button doesn't make sense if we're only showing saved searches
 	var newButton = this.getButton(ZmMoveToDialog.NEW_BUTTON);
 	var searchOnly = (treeIds.length == 1 && treeIds[0] == ZmOrganizer.SEARCH);
 	newButton.setVisible(!searchOnly);
 
-	// contacts have their own tree view so find out what kind of data we're dealing with
-	var item = (data instanceof Array) ? data[0] : null;
-	var type = ZmOrganizer.FOLDER;
-
-	if (data instanceof ZmSearchFolder) {
-		this._folder = data;
-		omit[ZmFolder.ID_SPAM] = true;
-		treeIds = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH];
-	} else if (data instanceof ZmFolder) {
-		this._folder = data;
-		omit[ZmFolder.ID_SPAM] = true;
-	} else if (item instanceof ZmContact) {
-		treeIds = [ZmOrganizer.ADDRBOOK];
-
-		// remove any addrbooks that are read only
-		var folders = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).asList();
-
-		for (var i = 0; i < folders.length; i++) {
-			var folder = folders[i];
-			if (folder.link && folder.isReadOnly()) {
-				omit[folder.id] = true;
-			}
-		}
-		this._items = data;
-		type = ZmItem.CONTACT;
-	} else if (item instanceof ZmTask) {
-		treeIds = [ZmOrganizer.TASKS];
-		this._items = data;
-		type = ZmItem.TASK;
-	} else {
-		this._items = data;
-	}
-
-	if (clearOverview) {
+	this._data = params.data;
+	
+	// clear overview if we're displaying different series of trees
+	var treeIdString = treeIds.join("|");
+	if (this._treeIdString && (treeIdString != this._treeIdString)) {
 		this._opc.clearOverview(ZmMoveToDialog._OVERVIEW_ID);
 	}
+	this._treeIdString = treeIdString;
 	this._renderOverview(ZmMoveToDialog._OVERVIEW_ID, treeIds, omit);
 
-	var folderTree = null;
-	if (item instanceof ZmContact) {
-		this._folderTreeView = this._treeView[ZmOrganizer.ADDRBOOK];
-		folderTree = this._opc.getTreeData(ZmOrganizer.ADDRBOOK);
-	} else if (item instanceof ZmTask) {
-		this._folderTreeView = this._treeView[ZmOrganizer.TASKS];
-		folderTree = this._opc.getTreeData(ZmOrganizer.TASKS);
-	} else {
-		this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
-		folderTree = this._opc.getTreeData(ZmOrganizer.FOLDER);
-	}
+	this._orgType = params.orgType || treeIds[0];
+	this._folderTreeView = this._treeView[this._orgType];
 
 	// bug fix #13159 (regression of #10676)
 	// - small hack to get selecting Trash folder working again
 	if (this._folderTreeView) {
 		var ti = this._folderTreeView.getTreeItemById(ZmOrganizer.ID_TRASH);
-		if (ti) ti.setData(ZmTreeView.KEY_TYPE, type);
+		if (ti) {
+			ti.setData(ZmTreeView.KEY_TYPE, this._orgType);
+		}
 	}
 
-	if (folderTree) {
-		folderTree.removeChangeListener(this._changeListener);
-		// this listener has to be added after folder tree view is set
-		// (so that it comes after the view's standard change listener)
-		folderTree.addChangeListener(this._changeListener);
-	}
+	var folderTree = this._appCtxt.getFolderTree();
+	folderTree.removeChangeListener(this._changeListener);
+	// this listener has to be added after folder tree view is set
+	// (so that it comes after the view's standard change listener)
+	folderTree.addChangeListener(this._changeListener);
 
 	ZmDialog.prototype.popup.call(this, loc);
+	
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
 		var treeView = this._treeView[treeId] = this._opc.getTreeView(ZmMoveToDialog._OVERVIEW_ID, treeId);
 		var tree = this._opc.getTreeData(treeId);
 		var ti = treeView.getTreeItemById(tree.root.id);
 		ti.setExpanded(true);
-		if (this._folder && treeId == this._folder.type) {
+		if (this._data && (treeId == this._data.type)) {
 			treeView.setSelected(tree.root);
 		}
 	}
@@ -138,8 +115,8 @@ function(data, loc, treeIds, clearOverview) {
 ZmMoveToDialog.prototype.reset =
 function() {
 	ZmDialog.prototype.reset.call(this);
-	this._folder = this._items = null;
-	this._folderTreeView = null;
+	this._data = this._orgType = this._folderTreeView = null;
+	this._creatingFolder = false;
 };
 
 ZmMoveToDialog.prototype._contentHtml =
@@ -159,33 +136,18 @@ function() {
 
 ZmMoveToDialog.prototype._showNewDialog =
 function() {
-	var item = (this._items instanceof Array) ? this._items[0] : null;
-	var dialog;
-
-	if (item instanceof ZmContact)
-		dialog = this._appCtxt.getNewAddrBookDialog();
-	else if (item instanceof ZmTask)
-		dialog = this._appCtxt.getNewTaskFolderDialog();
-	else
-		dialog = this._appCtxt.getNewFolderDialog();
-
+	var ftc = this._opc.getTreeController(this._orgType);
+	var dialog = ftc._getNewDialog();
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this);
-	dialog.popup(null, this);
+	dialog.popup();
 };
 
 ZmMoveToDialog.prototype._newCallback =
 function(parent, name) {
-	var item = (this._items instanceof Array) ? this._items[0] : null;
-	var org = ZmOrganizer.FOLDER;
-	if (item instanceof ZmContact) org = ZmOrganizer.ADDRBOOK;
-	else if (item instanceof ZmTask) org = ZmOrganizer.TASKS;
-
-	var ftc = this._opc.getTreeController(org);
+	var ftc = this._opc.getTreeController(this._orgType);
 	ftc._doCreate(parent, name);
-	var dialog = this._isContact
-		? this._appCtxt.getNewAddrBookDialog()
-		: this._appCtxt.getNewFolderDialog();
+	var dialog = ftc._getNewDialog();
 	dialog.popdown();
 	this._creatingFolder = true;
 };
@@ -206,14 +168,9 @@ function(ev) {
 		msg = ZmMsg.noTargetFolder;
 	}
 
-	// moving a folder, check for valid target
-	if (!msg && this._folder &&	!tgtFolder.mayContain(this._folder)) {
-	    msg = ZmMsg.badTargetFolder;
-	}
-
-	// moving items, check for valid target
-	if (!msg && this._items && !tgtFolder.mayContain(this._items)) {
-		msg = ZmMsg.badTargetFolderItems;
+	// check for valid target
+	if (!msg && this._data && !tgtFolder.mayContain(this._data)) {
+	    msg = (this._data instanceof ZmFolder) ? ZmMsg.badTargetFolder : ZmMsg.badTargetFolderItems;
 	}
 
 	if (msg) {

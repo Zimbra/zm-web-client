@@ -175,6 +175,13 @@ function(searchFolder) {
 	searchController.redoSearch(searchFolder.search);
 };
 
+ZmSearchTreeController.prototype._getMoveParams =
+function() {
+	var params = ZmTreeController.prototype._getMoveParams.call(this);
+	params.treeIds = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH];
+	return params;
+};
+
 /*
 * Override to handle our multiple tree views. Primarily, we need to make sure that
 * only the appropriate tree views receive CREATE notifications. For example, we

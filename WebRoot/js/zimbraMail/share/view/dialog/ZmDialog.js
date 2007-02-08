@@ -77,7 +77,7 @@ function(newView, noReset) {
 };
 
 ZmDialog.prototype.popup =
-function(data, loc) {
+function(loc) {
 	if (!this._tabGroupComplete) {
 		// tab group filled in here rather than in the constructor
 		// because we need all the content fields to have been created

@@ -63,6 +63,7 @@ function ZmTasksApp(appCtxt, container) {
 							  nameKey:				"tasks",
 							  icon:					"Task",
 							  chooserTooltipKey:	"goToTasks",
+							  organizer:			ZmOrganizer.TASKS,
 							  overviewTrees:		[ZmOrganizer.TASKS],
 							  showZimlets:			true,
 							  actionCode:			ZmKeyMap.GOTO_TASKS,

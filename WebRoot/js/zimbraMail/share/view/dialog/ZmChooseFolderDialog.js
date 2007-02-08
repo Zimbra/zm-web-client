@@ -139,7 +139,7 @@ function() {
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this);
 
     var folder = this._treeView[type].getSelected();
-    dialog.popup(folder, this);
+    dialog.popup(folder);
 };
 
 ZmChooseFolderDialog.prototype._newCallback =

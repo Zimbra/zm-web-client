@@ -586,9 +586,17 @@ ZmTreeController.prototype._moveListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
 	var moveToDialog = this._appCtxt.getMoveToDialog();
-	this._showDialog(moveToDialog, this._moveCallback, this._pendingActionData);
+	this._showDialog(moveToDialog, this._moveCallback, this._getMoveParams());
 	moveToDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, moveToDialog);
 	moveToDialog.setTitle(this._getMoveDialogTitle());
+};
+
+ZmTreeController.prototype._getMoveParams =
+function() {
+	var omit = {};
+	omit[ZmFolder.ID_SPAM] = true;
+	var params = {data:this._pendingActionData, treeIds:[this.type], omit:omit};
+	return params;
 };
 
 /*

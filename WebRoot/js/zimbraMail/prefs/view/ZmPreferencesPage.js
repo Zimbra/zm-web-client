@@ -512,7 +512,7 @@ function(ev) {
 		dialog.registerCallback(DwtDialog.OK_BUTTON, this._importOkCallback, this, dialog);
 
 		var blankContact = new ZmContact(this._appCtxt);
-		dialog.popup([blankContact]);
+		dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK]});
 	}
 };
 

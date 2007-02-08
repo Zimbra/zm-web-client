@@ -81,6 +81,7 @@ function ZmCalendarApp(appCtxt, container) {
 							  chooserTooltipKey:	"goToCalendar",
 							  viewTooltipKey:		"displayCalendar",
 							  defaultSearch:		ZmSearchToolBar.FOR_MAIL_MI,
+							  organizer:			ZmOrganizer.CALENDAR,
 							  overviewTrees:		[ZmOrganizer.CALENDAR],
 							  showZimlets:			true,
 							  assistants:			{"ZmAppointmentAssistant":	["CalendarCore", "Calendar"],

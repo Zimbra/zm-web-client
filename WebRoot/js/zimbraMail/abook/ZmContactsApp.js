@@ -93,6 +93,7 @@ function ZmContactsApp(appCtxt, container, parentController) {
 							  chooserTooltipKey:	"goToContacts",
 							  viewTooltipKey:		"displayContacts",
 							  defaultSearch:		ZmItem.CONTACT,
+							  organizer:			ZmOrganizer.ADDRBOOK,
 							  overviewTrees:		[ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  assistants:			{"ZmContactAssistant":"Contacts"},
