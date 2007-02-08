@@ -286,7 +286,7 @@ function() {
 // the default identity's.
 ZmIdentity.prototype.setAllDefaultAdvancedFields =
 function() {
-	var identity = this._appCtxt.getIdentityCollection().defaultIdentity;
+	var identity = AjxDispatcher.run("GetIdentityCollection").defaultIdentity;
 	this.composeFormat = identity.composeFormat;
 	this.prefix = identity.prefix;
 	this.forwardOption = identity.forwardOption;
