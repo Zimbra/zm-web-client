@@ -96,14 +96,11 @@ function() {
 	return "ZmImApp";
 };
 
-ZmImApp.prototype.startup =
-function() {
-	AjxDispatcher.run("GetRoster").reload();
-};
-
 ZmImApp.prototype.refresh =
 function() {
-	AjxDispatcher.run("GetRoster").reload();
+	if (!this._appCtxt.inStartup) {
+		AjxDispatcher.run("GetRoster").reload();
+	}
 };
 
 ZmImApp.prototype.postNotify =
@@ -121,6 +118,7 @@ function(callback) {
 
 ZmImApp.prototype._handleLoadLaunch =
 function(callback) {
+	AjxDispatcher.run("GetRoster").reload();
     var clc = this.getChatListController();
     clc.show();
 	if (callback)
