@@ -263,8 +263,11 @@ function(item) {
 
 ZmPrefListView.prototype._updateListSize = 
 function() {
-	var viewHeight = this._controller.getPrefsView().getSize().y
-	this._list.setSize(Dwt.DEFAULT, viewHeight - 100);
+	var viewElement = this._controller.getPrefsView().getHtmlElement(); 
+	var viewHeight = Dwt.getSize(viewElement).y
+	var scrollHeight = viewElement.scrollHeight;
+	var height = Math.max(viewHeight, scrollHeight);
+	this._list.setSize(Dwt.DEFAULT, height - 100);
 };
 
 ZmPrefListView.prototype._controlListener = 
