@@ -428,6 +428,11 @@
     </tag-file>
 
     <tag-file>
+        <name>calendarViewBottomToolbar</name>
+        <path>/WEB-INF/tags/calendar/calendarViewBottomToolbar.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>multiDayView</name>
         <path>/WEB-INF/tags/calendar/multiDayView.tag</path>
     </tag-file>

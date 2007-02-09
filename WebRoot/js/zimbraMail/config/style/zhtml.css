@@ -694,14 +694,21 @@ padding:1px; border:1px solid darkred;
 padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 }
 
-.ZhCalMonthAllDayAppt {
-    padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
+.ZhCalMonthAllDayAppt, .ZhCalDayAllDayAppt {
     border:2px solid #333333;
 #IFDEF GECKO
     -moz-border-radius:2 2 2 2;
 #ENDIF
 	border-top-width:1px;
 	border-bottom-width:1px;
+}
+
+.ZhCalMonthAllDayAppt {
+   padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
+}
+
+.ZhCalDayAllDayAppt {
+    padding: 1 @BoxPaddingSize@ 1 @BoxPaddingSize@;
 }
 
 .ZhCalDayAppt {

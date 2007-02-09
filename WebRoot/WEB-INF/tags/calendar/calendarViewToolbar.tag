@@ -21,16 +21,16 @@
             <c:param name="date" value="${dateDf}"/>
         </c:url>
          <td>
-            <a href="${viewUrl}&view=day"><app:img altkey="ALT_CAL_DAY_VIEW" src="calendar/DayView.gif"/><fmt:message key="day"/></a>
+            <a accesskey="1" href="${viewUrl}&view=day"><app:img altkey="ALT_CAL_DAY_VIEW" src="calendar/DayView.gif"/><fmt:message key="day"/></a>
         </td>
         <td>
-            <a href="${viewUrl}&view=workWeek"><app:img altkey="ALT_CAL_WORKWEEK_VIEW" src="calendar/WorkWeekView.gif"/><fmt:message key="workWeek"/></a>
+            <a accesskey="2" href="${viewUrl}&view=workWeek"><app:img altkey="ALT_CAL_WORKWEEK_VIEW" src="calendar/WorkWeekView.gif"/><fmt:message key="workWeek"/></a>
         </td>
         <td>
-            <a href="${viewUrl}&view=week"><app:img altkey="ALT_CAL_WEEK_VIEW" src="calendar/WeekView.gif"/><fmt:message key="week"/></a>
+            <a accesskey="3" href="${viewUrl}&view=week"><app:img altkey="ALT_CAL_WEEK_VIEW" src="calendar/WeekView.gif"/><fmt:message key="week"/></a>
         </td>
         <td>
-            <a href="${viewUrl}&view=month"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/MonthView.gif"/><fmt:message key="month"/></a>
+            <a accesskey="4" href="${viewUrl}&view=month"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/MonthView.gif"/><fmt:message key="month"/></a>
         </td>
         <fmt:formatDate var="todayDf" value="${today.time}" pattern="yyyyMMdd"/>
         <td>
@@ -41,7 +41,7 @@
             <c:if test="${not empty param.view}"><c:param name="view" value="${param.view}"/></c:if>
         </c:url>
         <td>
-            <a href="${todayUrl}"><app:img altkey="ALT_CAL_TODAY" src="calendar/Date.gif"/></a>
+            <a accesskey="5" href="${todayUrl}"><app:img altkey="ALT_CAL_TODAY" src="calendar/Date.gif"/></a>
         </td>
     </c:set>
 </c:if>

@@ -146,5 +146,10 @@
                 </table>
             </td>
         </tr>
+        <tr>
+            <td class='TbBottom'>
+                <app:calendarViewBottomToolbar/>
+            </td>
+        </tr>
     </table>
 </app:view>
