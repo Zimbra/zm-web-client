@@ -346,26 +346,25 @@ function() {
 ZmApptQuickAddDialog.prototype._resetCalendarSelect = 
 function(appt) {
 	// get all folders w/ view set to "Appointment" we received from initial refresh block
-	var calTreeData = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
-	if (calTreeData && calTreeData.root) {
-		this._calendarSelect.clearOptions();
-		this._calendarOrgs = [];
-		var children = calTreeData.root.children.getArray();
-		var len = children.length;
-		Dwt.setVisibility(this._calendarSelect.getHtmlElement(), len>1);
-		Dwt.setVisibility(this._calLabelField, len>1);
-		if (len>1) {
-			for (var i = 0; i < len; i++) {
-				var cal = children[i];
-				this._calendarOrgs[cal.id] = cal.owner;
-				// don't show calendar if remote or don't have write perms
-				if (cal.url) continue;
-				if (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()) continue;
-				this._calendarSelect.addOption(cal.getName(), false, cal.id);
-			}
-		}
-		this._calendarSelect.setSelectedValue(appt.folderId);
+	var org = ZmOrganizer.ITEM_ORGANIZER[appt.type];
+	var data = this._appCtxt.getFolderTree().getByType(org);
+
+	this._calendarSelect.clearOptions();
+	this._calendarOrgs = [];
+	for (var i = 0; i < data.length; i++) {
+		var cal = data[i];
+		this._calendarOrgs[cal.id] = cal.owner;
+		// don't show calendar if remote or don't have write perms
+		if (cal.url) continue;
+		if (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()) continue;
+		this._calendarSelect.addOption(cal.getName(), false, cal.id);
 	}
+
+	var len = this._calendarSelect.size();
+	Dwt.setVisibility(this._calendarSelect.getHtmlElement(), len>1);
+	Dwt.setVisibility(this._calLabelField, len>1);
+
+	this._calendarSelect.setSelectedValue(appt.folderId);
 };
 
 ZmApptQuickAddDialog.prototype._showTimeFields = 
