@@ -709,6 +709,10 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
   	border-color:#AAAAAA #333333 #333333 #AAAAAA;
 }
 
+.ZhCalDayApptEnd {
+    @Text-disabled@
+}
+
 /* day of week label for the month */
 .ZhCalDayHour {
  	@AppBg@

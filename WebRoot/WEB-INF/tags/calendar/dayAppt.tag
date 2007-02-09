@@ -23,11 +23,9 @@
         <table class='ZhCalDayAppt' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
             <tr>
                 <td class='${color}${appt.partStatusNeedsAction ? 'Light' : 'Light'}' valign=top>
-                    <c:set var="startDate" value="${appt.startDate.time lt start ? 'S' : ''}"/>
-                    <c:set var="endDate" value="${appt.endDate.time gt end ? 'E' : ''}"/>
-                     <fmt:message key="CAL_DAY_APPT_HEADER${startDate}${endDate}">
+                    <c:set var="startDate" value="${appt.startDate.time lt start ? 'L' : ''}"/>
+                     <fmt:message key="CAL_DAY_APPT_TOP${startDate}">
                         <fmt:param value="${appt.startDate}"/>
-                        <fmt:param value="${appt.endDate}"/>
                     </fmt:message>
                 </td>
             </tr>
@@ -36,8 +34,18 @@
                     <fmt:message key="CAL_DAY_APPT_BODY">
                         <fmt:param value="${fn:escapeXml(appt.name)}"/>
                     </fmt:message>
+                </td
+            </tr>
+            <c:if test="${appt.duration gt 1000*60*60}">
+            <tr>
+                <td align=left valign=bottom height=1% class='ZhCalDayApptEnd ${color}${appt.partStatusNeedsAction ? 'BG' : 'BG'}'>
+                    <c:set var="endDate" value="${appt.endDate.time gt end ? 'L' : ''}"/>
+                    <fmt:message key="CAL_DAY_APPT_BOT${endDate}">
+                        <fmt:param value="${appt.endDate}"/>
+                    </fmt:message>
                 </td>
             </tr>
+            </c:if>
         </table>
     </c:when>
     <c:otherwise>
