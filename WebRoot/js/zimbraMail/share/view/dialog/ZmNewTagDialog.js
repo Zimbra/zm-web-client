@@ -46,6 +46,11 @@ function(bPoppedUp) {
  	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
 };
 
+ZmNewTagDialog.prototype.popup =
+function(data, loc) {
+	ZmDialog.prototype.popup.call(this, loc);
+};
+
 ZmNewTagDialog.prototype._colorListener = 
 function(ev) {
 	var color = ev.item.getData(ZmOperation.MENUITEM_ID);
