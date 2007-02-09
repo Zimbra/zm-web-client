@@ -40,7 +40,8 @@
     <c:set var="prevDate" value="${zm:addDay(dateCal, -dayIncr)}"/>
     <c:set var="nextDate" value="${zm:addDay(dateCal,  dayIncr)}"/>
 
-    <zm:getAppointmentSummaries var="appts" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+1000*60*60*24*numdays}"/>
+    <c:set var="rangeEnd" value="${currentDay.timeInMillis+1000*60*60*24*numdays}"/>
+    <zm:getAppointmentSummaries var="appts" start="${currentDay.timeInMillis}" end="${rangeEnd}"/>
     <zm:apptMultiDayLayout var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
             hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
     <!-- ROWS ${layout.rows}-->
@@ -71,25 +72,29 @@
                            </td>
                        </c:forEach>
                    </tr>
-                    <tr>
-                        <td nowrap width=1% style='border-left:none'>
-                            &nbsp;
-                        </td>
-                        <td class='ZhCalDayHS' height=100% width=1px>&nbsp;</td>
-                        <c:forEach var="day" items="${layout.days}">
-                            <td valign='top' class='ZhCalDaySEP' colspan="${day.maxColumns}" width=${day.width}%>
-                                <table class='ZhCalDayGrid' width=100% height=100% border="0" cellpadding=2 cellspacing=0 style='border-collapse:collapse'>
-                                    <c:forEach var="allday" items="${day.allDayAppts}">
-                                        <tr>
-                                            <td valign='top'>
-                                                <app:dayAppt appt="${allday}" start="${day.startTime}" end="${day.endTime}"/>
-                                            </td>
-                                        </tr>
-                                    </c:forEach>
-                                </table>
+
+                    <c:forEach var="row" items="${layout.allDayRows}">
+                        <tr>
+                            <td nowrap width=1% style='border-left:none'>
+                                &nbsp;
                             </td>
-                        </c:forEach>
-                    </tr>
+                            <td class='ZhCalDayHS' height=100% width=1px>&nbsp;</td>
+                            <c:forEach var="cell" items="${row.cells}">
+                                <td class='ZhCalAllDayDS' valign=top height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if>>
+                                    <c:choose>
+                                        <c:when test="${not empty cell.appt}">
+                                            <div style='padding:1px'>
+                                            <app:dayAppt appt="${cell.appt}" start="${currentDay.timeInMillis}" end="${rangeEnd}"/>
+                                            </div>
+                                        </c:when>
+                                        <c:otherwise>
+                                            &nbsp;
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                            </c:forEach>
+                        </tr>
+                    </c:forEach>
                     <tr>
                         <td class='ZhCalDayADB' nowrap width=1% style='border-left:none'>
                             &nbsp;

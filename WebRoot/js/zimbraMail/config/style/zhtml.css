@@ -723,6 +723,9 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 .ZhCalDayHS {
     @RightSeparator@
 }
+.ZhCalAllDayDS {
+    @LeftSeparator@
+}
 .ZhCalDayHSB {
     @RightSeparator@
   	@BottomSeparator@
