@@ -546,6 +546,7 @@ function(type, useException) {
 	var value = this._attInputField[type].getValue();
 	var attendees = new AjxVector();
 	var items = AjxEmailAddress.split(value);
+	var gotOne = false;
 
 	for (var i = 0; i < items.length; i++) {
 		var item = AjxStringUtil.trim(items[i]);
@@ -559,20 +560,13 @@ function(type, useException) {
 		}
 		if (attendee) {
 			attendees.add(attendee);
-		} else {
-			var msg = AjxMessageFormat.format(this.parent._badAttendeeMsg[type], item);
-			if (useException) {
-				this._attInputField[type].setValue(this._attInputCurVal[type]);
-				this._activeInputField = null;
-				throw msg;
-			} else {
-				this.parent.showErrorMessage(msg, null, this._badAttendeeCallback, this, type);
-				break;
-			}
+			gotOne = true;
 		}
 	}
 	// replace attendees list with what we've found :/
-	this.parent.parent.updateAttendees(attendees, type);
+	if (gotOne) {
+		this.parent.parent.updateAttendees(attendees, type);
+	}
 };
 
 ZmApptEditView.prototype._getAttendeeByName =
@@ -584,12 +578,6 @@ function(type, name) {
 		}
 	}
 	return null;
-};
-
-ZmApptEditView.prototype._badAttendeeCallback =
-function(type) {
-	this._kbMgr.grabFocus(this._attInputField[type]);
-	this.parent._msgDialog.popdown();
 };
 
 ZmApptEditView.prototype._getAttendeeByItem =
@@ -645,11 +633,6 @@ ZmApptEditView._onBlur =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var edv = AjxCore.objectWithId(el._editViewId);
-	// don't check attendees if autocomplete list is up, since this
-	// handler will be called before completion happens
-	var acList = edv._acList[el._attType];
-	if (!(acList && acList.getVisible())) {
-		edv._handleAttendeeField(el._attType);
-	}
+	edv._handleAttendeeField(el._attType);
 	edv._activeInputField = null;
 };

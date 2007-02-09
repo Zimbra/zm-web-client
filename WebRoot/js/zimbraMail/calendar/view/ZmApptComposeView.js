@@ -69,12 +69,6 @@ function ZmApptComposeView(parent, className, calApp, controller) {
 	this._attendeeKeys[ZmCalItem.LOCATION]	= {};
 	this._attendeeKeys[ZmCalItem.EQUIPMENT]	= {};
 
-	// error msg for when user enters invalid attendee
-	this._badAttendeeMsg = {};
-	this._badAttendeeMsg[ZmCalItem.PERSON]		= ZmMsg.schedBadAttendee;
-	this._badAttendeeMsg[ZmCalItem.LOCATION]	= ZmMsg.schedBadLocation;
-	this._badAttendeeMsg[ZmCalItem.EQUIPMENT]	= ZmMsg.schedBadResource;
-
 	// for attendees change events
 	this._evt = new ZmEvent(ZmEvent.S_CONTACT);
 	this._evtMgr = new AjxEventMgr();
