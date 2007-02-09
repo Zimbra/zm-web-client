@@ -73,12 +73,23 @@ function() {
 	return this._controller;
 };
 
+ZmTaskListView.prototype.set =
+function(list, sortField) {
+	var subList = list;
+	if (list instanceof ZmList) {
+		list.addChangeListener(this._listChangeListener);
+		subList = list.getVector();
+	}
+
+	DwtListEditView.prototype.set.call(this, subList, sortField);
+};
+
 
 // Private Methods
 
 ZmTaskListView.prototype._createItemHtml =
 function(task, now, isDndIcon) {
-	var	div = this._getDiv(task, isDndIcon);
+	var div = this._getDiv(task, isDndIcon);
 
 	var htmlArr = [];
 	var idx = 0;
@@ -340,8 +351,28 @@ function(ev) {
 	if ((ev.type != this.type) && (ZmList.MIXED != this.type))
 		return;
 
-	// TODO
-	DBG.println("----------- todo: HANDLE CHANGE LISTENER -------------");
+	var fields = ev.getDetail("fields");
+	var items = ev.getDetail("items");
+
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
+		for (var i = 0; i < items.length; i++) {
+			var row = document.getElementById(this._getItemId(items[i]));
+			if (row) {
+				this._parentEl.removeChild(row);
+				this._selectedItems.remove(row);
+			}
+			if (this._list) this._list.remove(items[i]);
+		}
+	} else if (ev.event == ZmEvent.E_MODIFY) {
+		// check which field changed
+	}
+
+	if (ev.event == ZmEvent.E_CREATE ||
+		ev.event == ZmEvent.E_DELETE ||
+		ev.event == ZmEvent.E_MOVE)
+	{
+		this._resetColWidth();
+	}
 };
 
 ZmTaskListView.prototype._colHeaderActionListener =

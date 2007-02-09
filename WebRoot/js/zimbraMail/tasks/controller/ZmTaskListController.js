@@ -57,6 +57,14 @@ function(list, view) {
 	this._restoreFocus();
 };
 
+ZmTaskListController.prototype.notifyCreate =
+function(node) {
+	if (node.l == this._list.folderId) {
+		// for now, refetch this folder
+		this._app.launch(null, null, node.l);
+	}
+};
+
 ZmTaskListController.prototype._defaultView =
 function() {
 	return ZmController.TASKLIST_VIEW;
@@ -227,8 +235,9 @@ function(ev) {
 ZmTaskListController.prototype._setViewContents =
 function(view) {
 	// load tasks into the given view and perform layout.
+	this._listView[view].set(this._list, null, this.folderId);
+
 	var list = this._list.getVector();
-	this._listView[view].set(list, null, this.folderId);
 	if (list.size()) this._listView[view].setSelection(list.get(0));
 };
 

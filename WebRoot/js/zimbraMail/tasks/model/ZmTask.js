@@ -33,8 +33,8 @@
 * @param id			[int]			numeric ID
 * @param name		[string]		name
 */
-function ZmTask(appCtxt, list) {
-	ZmCalItem.call(this, appCtxt, ZmItem.TASK, list);
+function ZmTask(appCtxt, list, id) {
+	ZmCalItem.call(this, appCtxt, ZmItem.TASK, list, id);
 
 	this.priority = ZmCalItem.PRIORITY_NORMAL;
 	this.pComplete = 0;
@@ -46,10 +46,10 @@ ZmTask.prototype.constructor = ZmTask;
 
 
 // Consts
-ZmTask.PCOMPLETE_INT	= 10;
+ZmTask.PCOMPLETE_INT = 10;
 
 /**
-* Used to make our own copy because the form will modify the date object by 
+* Used to make our own copy because the form will modify the date object by
 * calling its setters instead of replacing it with a new date object.
 */
 ZmTaskClone = function() { };
@@ -71,7 +71,8 @@ function(task) {
 
 ZmTask.createFromDom =
 function(taskNode, instNode, args) {
-	var task = new ZmTask(args.appCtxt, args.list);
+	// NOTE: passing ID implies this item should get cached!
+	var task = new ZmTask(args.appCtxt, args.list, taskNode.id);
 	task._loadFromDom(taskNode, instNode);
 
 	return task;
@@ -105,7 +106,22 @@ function(isHtml) {
 ZmTask.prototype.getToolTip =
 function(controller) {
 	// TODO
+	DBG.println("------------ TODO: getTooltip! --------------");
 };
+
+ZmTask.prototype.notifyModify =
+function(obj) {
+	ZmItem.prototype.notifyModify.call(this, obj);
+
+	// TODO - update local task info w/ new
+
+	// update this tasks's list and notify
+	this.list.modifyLocal(obj);
+	this._notify(ZmEvent.E_MODIFY, obj);
+};
+
+
+// Private/protected methods
 
 ZmTask.prototype._getDefaultFolderId =
 function() {
@@ -119,9 +135,6 @@ function(calItemNode, instNode) {
 	this.pComplete = this._getAttr(calItemNode, instNode, "percentComplete");
 	this.location = this._getAttr(calItemNode, instNode, "loc");
 };
-
-
-// Private/protected methods
 
 ZmTask.prototype._setExtrasFromMessage =
 function(message) {

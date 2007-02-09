@@ -1,34 +1,34 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
-ZmCalItem = function(appCtxt, type, list) {
+ZmCalItem = function(appCtxt, type, list, id) {
 
 	if (arguments.length == 0) { return; }
 
-	ZmItem.call(this, appCtxt, type, null, list);
+	ZmItem.call(this, appCtxt, type, id, list);
 
-	this.id = -1;
+	this.id = id || -1;
 	this.uid = -1; // iCal uid of appt
 
 	this.folderId = this._getDefaultFolderId();
@@ -186,7 +186,7 @@ ZmCalItem.prototype.setTimezone = function(timezone, keepCache) {
 };
 
 /**
- * This method sets the view mode, and resets any other fields that should not 
+ * This method sets the view mode, and resets any other fields that should not
  * be set for that view mode.
  */
 ZmCalItem.prototype.setViewMode =
@@ -210,7 +210,7 @@ function(useStartTime) {
 };
 
 /**
- * Walks the notesParts array looking for the first part that matches given 
+ * Walks the notesParts array looking for the first part that matches given
  * content type - for now, returns the content (but we could just return the whole part?)
 */
 ZmCalItem.prototype.getNotesPart =
@@ -246,7 +246,7 @@ function() {
 };
 
 ZmCalItem.prototype.isReadOnly =
-function() { 
+function() {
 	var isLinkAndReadOnly = false;
 	var folder = this.getFolder();
 	// if we're dealing w/ a shared cal, find out if we have any write access
@@ -295,14 +295,14 @@ function(other, checkFolder) {
 	var tet = this.getEndTime();
 	var ost = other.getStartTime();
 	var oet = other.getEndTime();
-	
+
 	return (tst < oet) && (tet > ost);
 };
 
 ZmCalItem.prototype.isInRange =
 function(startTime, endTime) {
 	var tst = this.getStartTime();
-	var tet = this.getEndTime();	
+	var tet = this.getEndTime();
 	return (tst < endTime && tet > startTime);
 };
 
@@ -363,7 +363,7 @@ function(ids) {
 
 ZmCalItem.prototype.getAttachments =
 function() {
-	var m = this.getMessage();	
+	var m = this.getMessage();
 	if (this.hasDetails() && m._attachments != null) {
 		var attachs = m._attachments;
 		if (this._validAttachments == null) {
@@ -416,12 +416,12 @@ function(emptyAllDay,startOnly) {
 		} else {
 			var startHour = ZmCalItem._getTTHour(this.startDate);
 			var endHour = ZmCalItem._getTTHour(this.endDate);
-		
+
 			if (!ZmCalItem._hoursFormatter) {
 				ZmCalItem._hoursFormatter = new AjxMessageFormat(ZmMsg.durationHours);
 			}
 			return ZmCalItem._hoursFormatter.format( [startHour, endHour] );
-		}			
+		}
 	}
 };
 
@@ -450,7 +450,7 @@ function() {
 ZmCalItem.prototype.getDetails =
 function(viewMode, callback, errorCallback, ignoreOutOfDate) {
 	var mode = viewMode || this.viewMode;
-	
+
 	var seriesMode = mode == ZmCalItem.MODE_EDIT_SERIES;
 	if (this._message == null) {
 		var id = seriesMode ? (this._seriesInvId || this.invId) : this.invId;
@@ -526,9 +526,9 @@ function(message, subject) {
 
 ZmCalItem.prototype.setTextNotes =
 function(notes) {
-	this.notesTopPart = new ZmMimePart();	
+	this.notesTopPart = new ZmMimePart();
 	this.notesTopPart.setContentType(ZmMimeTable.TEXT_PLAIN);
-	this.notesTopPart.setContent(notes);	
+	this.notesTopPart.setContent(notes);
 };
 
 ZmCalItem.prototype._setTimeFromMessage =
@@ -636,7 +636,7 @@ function(attachmentId, callback, errorCallback, notifyList) {
 			 this.viewMode == ZmCalItem.MODE_EDIT_SERIES)
 	{
 		this._addInviteAndCompNum(soapDoc);
-		needsExceptionId = this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || this.isException;
+        needsExceptionId = this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || this.isException;
 	}
 
 	var accountName = this.getRemoteFolderOwner();
@@ -664,7 +664,6 @@ function(attachmentId, callback, errorCallback, notifyList) {
 		}
 	} else {
 		// set recurrence rules for appointment (but not for exceptions!)
-		var comp = invAndMsg.inv.getElementsByTagName("comp")[0];
 		this._recurrence.setSoap(soapDoc, comp);
 	}
 
@@ -680,7 +679,7 @@ function(folderId, callback, errorCallback) {
 	actionNode.setAttribute("id", this.id);
 	actionNode.setAttribute("op", "move");
 	actionNode.setAttribute("l", folderId);
-	
+
 	this._sendRequest(soapDoc, accountName, callback, errorCallback);
 };
 
@@ -801,8 +800,8 @@ function(attach, hasCheckbox) {
 	var sizeText = null;
 	if (size != null) {
 	    if (size < 1024)		sizeText = size + " B";
-        else if (size < 1024^2)	sizeText = Math.round((size/1024) * 10) / 10 + " KB"; 
-        else 					sizeText = Math.round((size / (1024*1024)) * 10) / 10 + " MB"; 
+        else if (size < 1024^2)	sizeText = Math.round((size/1024) * 10) / 10 + " KB";
+        else 					sizeText = Math.round((size / (1024*1024)) * 10) / 10 + " MB";
 	}
 
 	var html = [];
@@ -830,7 +829,7 @@ function(attach, hasCheckbox) {
 	html[i++] = attach.filename;
 	html[i++] = "</a>";
 
-	var addHtmlLink = (this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) && 
+	var addHtmlLink = (this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML) &&
 					  attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct));
 
 	if (sizeText || addHtmlLink) {
@@ -898,7 +897,7 @@ function(isEdit, fieldstr, extDate, start, end, hasTime) {
 		}
 	}
 	// NOTE: This relies on the fact that setModel creates a clone of the
-	//		 appointment object and that the original object is saved in 
+	//		 appointment object and that the original object is saved in
 	//		 the clone as the _orig property.
 	if (isEdit && ((this._orig && this._orig.isAllDayEvent() != this.isAllDayEvent()) || hasTime)) {
 		buf[i++] = " ";
@@ -1137,12 +1136,12 @@ function(soapDoc, inv, m, notifyList, onBehalfOf) {
 };
 
 ZmCalItem.prototype._addNotesToSoap =
-function(soapDoc, m, cancel) {	
+function(soapDoc, m, cancel) {
 
 	var hasAttendees = this.hasAttendees();
 	var tprefix = hasAttendees ? this._getDefaultBlurb(cancel) : "";
 	var hprefix = hasAttendees ? this._getDefaultBlurb(cancel, true) : "";
-	
+
 	var mp = soapDoc.set("mp", null, m);
 	mp.setAttribute("ct", ZmMimeTable.MULTI_ALT);
 	var numSubParts = this.notesTopPart ? this.notesTopPart.children.size() : 0;
@@ -1221,8 +1220,7 @@ function(calItemNode, instNode) {
 
 ZmCalItem.prototype._getAttr =
 function(calItem, inst, name) {
-	var v = inst[name];
-	return (v != undefined) ? v : ((calItem[name] != null) ? calItem[name] : null);
+	return inst[name] || calItem[name];
 };
 
 

@@ -173,36 +173,9 @@ function(list) {
 		if (this._appCtxt.cacheGet(create.id)) { continue; }
 
 		if (name == "folder") {
-			var parentId = create.l;
-			var parent;
-			var addrBookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
-			if (parentId == ZmOrganizer.ID_ROOT) {
-				if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK][0]) {
-					parent = addrBookTree.getById(parentId);
-				}
-			} else {
-				parent = addrBookTree.getById(parentId);
-			}
-			if (parent) {
-				DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
-				parent.notifyCreate(create);
-				create._handled = true;
-			}
+			this._handleCreateFolder(create, ZmOrganizer.ADDRBOOK);
 		} else if (name == "link") {
-			var parentId = create.l;
-			var parent, share;
-			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.ADDRBOOK][0]) {
-				var addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
-				parent = addrbookTree.getById(parentId);
-				share = ZmOrganizer.ADDRBOOK;
-			}
-			if (parent) {
-				DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
-				parent.notifyCreate(create, true);
-				// XXX: once bug #4434 is fixed, check if this call is still needed
-				this._appCtxt.getRequestMgr().getFolderPermissions([share]);
-				create._handled = true;
-			}
+			this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
 		} else if (name == "cn") {
 			DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
 			AjxDispatcher.run("GetContacts").notifyCreate(create, true);

@@ -248,7 +248,8 @@ function() {
 ZmTaskEditView.prototype._setPercentCompleteFields =
 function(isComplete) {
 	var val = isComplete
-		? ZmTaskEditView.STATUS_VALUES[1].v : ZmTaskEditView.STATUS_VALUES[0].v;
+		? ZmTaskEditView.STATUS_VALUES[1]
+		: ZmTaskEditView.STATUS_VALUES[0];
 	this._statusSelect.setSelectedValue(val);
 	this._pCompleteSelect.setSelected(isComplete ? (this._pCompleteSelect.size()-1) : 0);
 };

@@ -157,36 +157,9 @@ function(list) {
 		if (this._appCtxt.cacheGet(create.id)) { continue; }
 
 		if (name == "folder") {
-			var parentId = create.l;
-			var parent;
-			var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-			if (parentId == ZmOrganizer.ID_ROOT) {
-				if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][0]) {
-					parent = calendarTree.getById(parentId);
-				}
-			} else {
-				parent = calendarTree.getById(parentId);
-			}
-			if (parent) {
-				DBG.println(AjxDebug.DBG1, "ZmCalendarApp: handling CREATE for node: " + name);
-				parent.notifyCreate(create);
-				create._handled = true;
-			}
+			this._handleCreateFolder(create, ZmOrganizer.CALENDAR);
 		} else if (name == "link") {
-			var parentId = create.l;
-			var parent, share;
-			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][0]) {
-				var calendarTree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-				parent = calendarTree.getById(parentId);
-				share = ZmOrganizer.CALENDAR;
-			}
-			if (parent) {
-				DBG.println(AjxDebug.DBG1, "ZmCalendarApp: handling CREATE for node: " + name);
-				parent.notifyCreate(create, true);
-				// XXX: once bug #4434 is fixed, check if this call is still needed
-				this._appCtxt.getRequestMgr().getFolderPermissions([share]);
-				create._handled = true;
-			}
+			this._handleCreateLink(create, ZmOrganizer.CALENDAR);
 		} else if (name == "appt") {
 			// TODO: create appt object and pass into notify create
 			AjxDispatcher.run("GetCalController").notifyCreate(null);

@@ -49,17 +49,6 @@ function ZmMountFolderDialog(appCtxt, shell, className) {
 ZmMountFolderDialog.prototype = new DwtDialog;
 ZmMountFolderDialog.prototype.constructor = ZmMountFolderDialog;
 
-// Data
-
-ZmMountFolderDialog.prototype._organizerType;
-ZmMountFolderDialog.prototype._folderId;
-
-ZmMountFolderDialog.prototype._userInput;
-ZmMountFolderDialog.prototype._pathInput;
-
-ZmMountFolderDialog.prototype._nameInput;
-ZmMountFolderDialog.prototype._nameInputDirty;
-ZmMountFolderDialog.prototype._colorSelect;
 
 // Public methods
 
@@ -120,7 +109,8 @@ function(cv, ev) {
 
 // Protected functions
 
-ZmMountFolderDialog._handleOtherKeyUp = function(event){
+ZmMountFolderDialog._handleOtherKeyUp =
+function(event) {
 	var value = ZmMountFolderDialog._handleKeyUp(event);
 
 	var target = DwtUiEvent.getTarget(event);
@@ -150,7 +140,8 @@ ZmMountFolderDialog._handleOtherKeyUp = function(event){
 	return value;
 };
 
-ZmMountFolderDialog._handleNameKeyUp = function(event){
+ZmMountFolderDialog._handleNameKeyUp =
+function(event) {
 	var target = DwtUiEvent.getTarget(event);
 	var inputField = Dwt.getObjectFromElement(target);
 	var dialog = inputField.parent.parent;
@@ -160,7 +151,8 @@ ZmMountFolderDialog._handleNameKeyUp = function(event){
 	return ZmMountFolderDialog._handleKeyUp(event);
 };
 
-ZmMountFolderDialog._handleKeyUp = function(event){
+ZmMountFolderDialog._handleKeyUp =
+function(event) {
 	if (DwtInputField._keyUpHdlr(event)) {
 		var target = DwtUiEvent.getTarget(event);
 		var inputField = Dwt.getObjectFromElement(target);
@@ -170,7 +162,8 @@ ZmMountFolderDialog._handleKeyUp = function(event){
 	return false;
 };
 
-ZmMountFolderDialog._enableFieldsOnEdit = function(dialog) {
+ZmMountFolderDialog._enableFieldsOnEdit =
+function(dialog) {
 	var user = dialog._userInput.getValue();
 	var path = dialog._pathInput.getValue();
 	var name = dialog._nameInput.getValue();
@@ -182,7 +175,8 @@ ZmMountFolderDialog._enableFieldsOnEdit = function(dialog) {
 
 // Protected methods
 
-ZmMountFolderDialog.prototype._handleOkButton = function(event) {
+ZmMountFolderDialog.prototype._handleOkButton =
+function(event) {
 	var appCtxt = this._appCtxt;
 	var params = {
 		"l": this._folderId,
@@ -203,7 +197,8 @@ ZmMountFolderDialog.prototype._handleOkButton = function(event) {
 	ZmMountpoint.create(appCtxt, params, callback, errorCallback)
 };
 
-ZmMountFolderDialog.prototype._handleCreateError = function(response) {
+ZmMountFolderDialog.prototype._handleCreateError =
+function(response) {
 	var code = response.code;
 	if (code == ZmCsfeException.SVC_PERM_DENIED ||
 		code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
@@ -216,7 +211,8 @@ ZmMountFolderDialog.prototype._handleCreateError = function(response) {
 	}
 };
 
-ZmMountFolderDialog.prototype._createMountHtml = function() {
+ZmMountFolderDialog.prototype._createMountHtml =
+function() {
 	// create instructional elements
 	var instructEl1 = document.createElement("DIV");
 	instructEl1.innerHTML = ZmMsg.mountInstructions1;

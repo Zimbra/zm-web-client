@@ -174,34 +174,9 @@ function(list) {
 		if (this._appCtxt.cacheGet(create.id)) { continue; }
 
 		if (name == "folder") {
-			var parentId = create.l;
-			var parent;
-			var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-			if (parentId == ZmOrganizer.ID_ROOT) {
-				if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK][0]) {
-					parent = notebookTree.getById(parentId);
-				}
-			} else {
-				parent = notebookTree.getById(parentId);
-			}
-			if (parent) {
-				DBG.println(AjxDebug.DBG1, "ZmNotebookApp: handling CREATE for node: " + name);
-				parent.notifyCreate(create);
-			}
+			this._handleCreateFolder(create, ZmOrganizer.NOTEBOOK);
 		} else if (name == "link") {
-			var parentId = create.l;
-			var parent, share;
-			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.NOTEBOOK][0]) {
-				var notebookTree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-				parent = notebookTree.getById(parentId);
-				share = ZmOrganizer.NOTEBOOK;
-			}
-			if (parent) {
-				DBG.println(AjxDebug.DBG1, "ZmNotebookApp: handling CREATE for node: " + name);
-				parent.notifyCreate(create, true);
-				// XXX: once bug #4434 is fixed, check if this call is still needed
-				this._appCtxt.getRequestMgr().getFolderPermissions([share]);
-			}
+			this._handleCreateLink(create, ZmOrganizer.NOTEBOOK);
 		} else if (name == "w") {
 			DBG.println(AjxDebug.DBG1, "ZmNotebookApp: handling CREATE for node: " + name);
 			// REVISIT: use app context item cache

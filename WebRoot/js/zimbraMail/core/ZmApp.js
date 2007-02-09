@@ -261,6 +261,41 @@ function() {
 	}
 };
 
+ZmApp.prototype._handleCreateFolder =
+function(create, org) {
+	var tree = this._appCtxt.getTree(org);
+	var parentId = create.l;
+	var parent;
+	if (parentId == ZmOrganizer.ID_ROOT) {
+		if (create.view == ZmOrganizer.VIEWS[org][0])
+			parent = tree.getById(parentId);
+	} else {
+		parent = tree.getById(parentId);
+	}
+
+	if (parent) {
+		parent.notifyCreate(create);
+		create._handled = true;
+	}
+};
+
+ZmApp.prototype._handleCreateLink =
+function(create, org) {
+	var parentId = create.l;
+	var parent, share;
+	if (create.view == ZmOrganizer.VIEWS[org][0]) {
+		var tree = this._appCtxt.getTree(org);
+		parent = tree.getById(parentId);
+		share = org;
+	}
+	if (parent) {
+		parent.notifyCreate(create, true);
+		// XXX: once bug #4434 is fixed, check if this call is still needed
+		this._appCtxt.getRequestMgr().getFolderPermissions([share]);
+		create._handled = true;
+	}
+};
+
 // Abstract methods
 
 /**
