@@ -200,8 +200,6 @@ function(appt) {
 	var closeBtnCellId = Dwt.getNextId();
 	this._hdrTableId = Dwt.getNextId();
 
-	this._appt = appt;
-
 	var i = 0;
 	var html = [];
 
