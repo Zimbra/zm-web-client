@@ -653,14 +653,15 @@ function(ev) {
 ZmListController.prototype._getMoveParams =
 function() {
 	var org = ZmApp.ORGANIZER[this._app._name];
-	var params = {data:this._pendingActionData, treeIds:[org]};
-	return params;
+	return {data:this._pendingActionData, treeIds:[org]};
 };
 
 // Switch to selected view.
 ZmListController.prototype._viewButtonListener =
 function(ev) {
-	if (ev.detail == DwtMenuItem.CHECKED) {
+	if (ev.detail == DwtMenuItem.CHECKED ||
+		ev.detail == DwtMenuItem.UNCHECKED)
+	{
 		this.switchView(ev.item.getData(ZmOperation.MENUITEM_ID));
 	}
 };
