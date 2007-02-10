@@ -79,6 +79,7 @@ AjxPackage.require("zimbraMail.core.ZmZimbraMail");
 AjxPackage.require("zimbraMail.core.ZmNewWindow");
 
 AjxPackage.require("zimbraMail.prefs.ZmPreferencesApp");
+AjxPackage.require("zimbraMail.portal.ZmPortalApp");
 AjxPackage.require("zimbraMail.mail.ZmMailApp");
 AjxPackage.require("zimbraMail.calendar.ZmCalendarApp");
 AjxPackage.require("zimbraMail.tasks.ZmTasksApp");

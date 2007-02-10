@@ -207,8 +207,10 @@ body						{	@ChromeBg@	}
 	padding:4 6 4 0;
 #ENDIF
 }
-#skin_border_app_main					{	@SkinBorderApp@		height:100%;		}
-#skin_container_app_main				{	
+#skin_border_app_main, #skin_border_app_main_full    {
+    @SkinBorderApp@		height:100%;
+}
+#skin_container_app_main, #skin_container_app_main_full	{	
 	height:100%;	margin:4 -4 -3 4;	
 #IFDEF MSIE
 					margin:2 -2 0 2;

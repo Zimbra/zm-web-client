@@ -55,6 +55,7 @@ ZmLogin.CSFE_SERVER_URI = location.port == "80" ? "/service/soap/" : ":" + locat
 ZmLogin.DEFAULT_SKIN = "sand";
 
 ZmLogin.APP_LETTER = {};
+ZmLogin.APP_LETTER[ZmSetting.PORTAL_ENABLED]		= "p";
 ZmLogin.APP_LETTER[ZmSetting.MAIL_ENABLED]			= "m";
 ZmLogin.APP_LETTER[ZmSetting.CALENDAR_ENABLED]		= "c";
 ZmLogin.APP_LETTER[ZmSetting.CONTACTS_ENABLED]		= "a";

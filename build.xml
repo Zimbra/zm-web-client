@@ -700,17 +700,18 @@ if (ext == null) ext = "";
       <fileset dir="../ZimbraCustomerServices" includes="skins/**" />
     </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
-	  <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="**/style/*.css,js/*/package/**"/>
+	  <fileset dir="WebRoot"
+               includes="js/**,test/**,public/**,skins/**,portals/**" 
+               excludes="**/style/*.css,js/*/package/**"
+      />
       <fileset dir='${build.dir}/WebRoot' includes='img/**,js/*_all.js'/>
     </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}" flatten='true'>
-      <fileset dir='WebRoot' includes='js/*/package/**' />
+    <copy verbose="true" todir="${deploy.dir}${deploy.path}/js" flatten='true'>
+      <fileset dir='WebRoot/js' includes='*/package/**' />
     </copy>
-    <copy verbose='true' todir='${deploy.dir}${deploy.path}/css'>
-	  <fileset dir='${ajax.dir}/WebRoot/js/config/style' includes='*.css' />
-	  <fileset dir='WebRoot/js/zimbra/config/style' includes='*.css' />
-	  <fileset dir='WebRoot/js/zimbraAdmin/config/style' includes='*.css' />
-	  <fileset dir='WebRoot/js/zimbraMail/config/style' includes='*.css' />
+    <copy verbose='true' todir='${deploy.dir}${deploy.path}/css' flatten='true'>
+	  <fileset dir='${ajax.dir}/WebRoot/js' includes='**/config/style/*.css' />
+	  <fileset dir='WebRoot/js' includes='**/config/style/*.css' />
 	</copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}/js/ajax">
       <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js,**/*.css" excludes="**/img/"/>
@@ -718,13 +719,14 @@ if (ext == null) ext = "";
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
       <fileset dir="${build.dir}/WebRoot" includes="js/**/templates/*.js,public/jsp/**" />
     </copy>
-    <copy verbose='true' todir='${deploy.dir}${deploy.path}/WEB-INF/classes'>
+    <copy verbose='true' todir='${deploy.dir}${deploy.path}/WEB-INF/classes/msgs' flatten='true'>
       <fileset dir='${build.dir}/i18n' includes='msgs/*.properties'/>
-      <fileset dir='${ajax.dir}/WebRoot/js/config' includes='msgs/*.properties'/>
-      <fileset dir='WebRoot/js/zimbra/config' includes='msgs/*.properties'/>
-      <fileset dir='WebRoot/js/zimbraMail/config' includes='msgs/*.properties'/>
-      <fileset dir='${ajax.dir}/WebRoot/js/config' includes='keys/*.properties'/>
-      <fileset dir='WebRoot/js/zimbraMail/config' includes='keys/*.properties'/>
+      <fileset dir='${ajax.dir}/WebRoot/js' includes='**/config/msgs/*.properties'/>
+      <fileset dir='WebRoot/js' includes='**/config/msgs/*.properties'/>
+    </copy>
+    <copy verbose='true' todir='${deploy.dir}${deploy.path}/WEB-INF/classes/keys' flatten='true'>
+      <fileset dir='${ajax.dir}/WebRoot/js' includes='**/config/keys/*.properties'/>
+      <fileset dir='WebRoot/js' includes='**/config/keys/*.properties'/>
     </copy>
     <copy todir="${deploy.dir}${deploy.path}/WEB-INF">
       <fileset dir="WebRoot/WEB-INF" includes="tlds/*"/>
@@ -856,7 +858,7 @@ if (ext == null) ext = "";
       <fileset dir='${build.dir}/WebRoot' includes='public/jsp/**'/>
       <fileset dir='${build.dir}/WebRoot' includes='img/**'/>
     </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}" flatten='true'>
+    <copy verbose="true" todir="${deploy.dir}${deploy.path}/js" flatten='true'>
       <fileset dir='WebRoot' includes='js/*/package/**' />
     </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/ajax">

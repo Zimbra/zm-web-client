@@ -302,8 +302,11 @@ function(create, org) {
 * Launches an app, which creates a view and shows it.
 */
 ZmApp.prototype.launch =
-function() {
-}
+function(callback) {
+    if (callback) {
+        callback.run();
+    }
+};
 
 /**
 * Run when the activation state of an app changes.

@@ -133,6 +133,7 @@ ZmAppViewMgr.C_TREE_FOOTER				= "TREE FOOTER";
 ZmAppViewMgr.C_TOOLBAR_TOP				= "TOP TOOLBAR";
 ZmAppViewMgr.C_TOOLBAR_BOTTOM			= "BOTTOM TOOLBAR";
 ZmAppViewMgr.C_APP_CONTENT				= "APP CONTENT";
+ZmAppViewMgr.C_APP_CONTENT_FULL			= "APP CONTENT FULL";
 ZmAppViewMgr.C_STATUS					= "STATUS";
 ZmAppViewMgr.C_SASH						= "SASH";
 
@@ -141,7 +142,17 @@ ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, 
 							ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR, ZmAppViewMgr.C_CURRENT_APP,
 							ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
 							ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_TOOLBAR_BOTTOM,
-							ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH];
+							ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
+                            ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH];
+
+/**
+ * These components are the ones that are part of the app display when NOT
+ * in full screen mode.
+ */
+ZmAppViewMgr.APP_COMPONENTS = [
+    ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
+    ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH
+];
 
 // keys for getting container IDs
 ZmAppViewMgr.CONT_ID_KEY = {};
@@ -158,6 +169,7 @@ ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE_FOOTER]			= ZmSetting.SKIN_TREE_FOO
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_TOP]			= ZmSetting.SKIN_APP_TOP_TOOLBAR_ID;
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_BOTTOM]			= ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID;
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT]			= ZmSetting.SKIN_APP_MAIN_ID;
+ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT_FULL]		= ZmSetting.SKIN_APP_MAIN_FULL_ID;
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_STATUS]					= ZmSetting.SKIN_STATUS_ID;
 ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SASH]					= ZmSetting.SKIN_SASH_ID;
 
@@ -175,6 +187,11 @@ ZmAppViewMgr.PENDING_VIEW = "ZmAppViewMgr.PENDING_VIEW";
 ZmAppViewMgr.prototype.toString = 
 function() {
 	return "ZmAppViewMgr";
+};
+
+ZmAppViewMgr.prototype.isFullScreen = function(viewId) {
+    viewId = viewId || this._currentView;
+    return viewId && this._views[viewId] && this._views[viewId][ZmAppViewMgr.C_APP_CONTENT_FULL];
 };
 
 /**
@@ -230,7 +247,8 @@ function(visible) {
 	this._components[ZmAppViewMgr.C_SEARCH_BUILDER].zShow(visible);
 	var list = [ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
 				ZmAppViewMgr.C_CURRENT_APP, ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE,
-				ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT];
+				ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_TOOLBAR_TOP,
+                ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL];
 	this._fitToContainer(list);
 	// search builder contains forms, and browsers have quirks around form fields and z-index
 	if (!visible) {
@@ -273,7 +291,7 @@ function() {
 ZmAppViewMgr.prototype.getCurrentView =
 function() {
 	var curView = this._views[this._currentView];
-	return curView ? curView[ZmAppViewMgr.C_APP_CONTENT] : null;
+	return curView ? curView[ZmAppViewMgr.C_APP_CONTENT] || curView[ZmAppViewMgr.C_APP_CONTENT_FULL] : null;
 };
 
 /**
@@ -335,8 +353,8 @@ function(viewId, force) {
 	var viewController = null;
 	if (viewId == ZmAppViewMgr.PENDING_VIEW) {
 		var view = this._views[viewId];
-		var appContent = view ? view[ZmAppViewMgr.C_APP_CONTENT] : null;
-		viewController = appContent ? appContent.getController() : null;
+		var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
+		viewController = appContent.getController();
 	}
 	DBG.println(AjxDebug.DBG1, "pushView: " + viewId);
 
@@ -605,7 +623,7 @@ function(view) {
 	var sz = topToolbar.getSize();
 	var height = sz.y ? sz.y : topToolbar.getHtmlElement().clientHeight;
 	topToolbar.setBounds(0, 0, this._shellSz.x, height);
-	var appContent = this._components[ZmAppViewMgr.C_APP_CONTENT];
+	var appContent = this._components[ZmAppViewMgr.C_APP_CONTENT] || this._components[ZmAppViewMgr.C_APP_CONTENT_FULL];
 	appContent.setBounds(0, height, this._shellSz.x, this._shellSz.y - height);
 };
 
@@ -662,7 +680,32 @@ function(view, force, isNewView) {
 ZmAppViewMgr.prototype._setViewVisible =
 function(view, show) {
 	var elements = this._views[view];
-	if (show) {
+    var wasFull = this._lastView ? this.isFullScreen(this._lastView) : false;
+    var isFull = this.isFullScreen(view);
+    if (show) {
+        if (wasFull != isFull) {
+            var elemIds = {
+                main: this._appCtxt.get(ZmSetting.SKIN_APP_MAIN_ROW_ID),
+                status: this._appCtxt.get(ZmSetting.SKIN_STATUS_ROW_ID),
+                full: this._appCtxt.get(ZmSetting.SKIN_APP_MAIN_ROW_FULL_ID)
+            };
+            Dwt.setVisible(document.getElementById(elemIds.main), !isFull);
+            Dwt.setVisible(document.getElementById(elemIds.status), !isFull);
+            Dwt.setVisible(document.getElementById(elemIds.full), isFull);
+
+            for (var i = 0; i < ZmAppViewMgr.APP_COMPONENTS.length; i++) {
+                var cid = ZmAppViewMgr.APP_COMPONENTS[i];
+                var comp = this._components[cid];
+                if (!comp) continue;
+                comp.zShow(!isFull);
+                if (isFull) {
+                    comp.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+                }
+            }
+            if (!isFull && this._hasSkin) {
+                this._fitToContainer(ZmAppViewMgr.APP_COMPONENTS);
+            }
+        }
 		var list = [];
 		for (var cid in elements) {
 			list.push(cid);
@@ -715,7 +758,7 @@ function(view) {
 		DBG.println(AjxDebug.DBG1, "No elements found for view " + view);
 		return;
 	}
-	var content = elements[ZmAppViewMgr.C_APP_CONTENT];
+	var content = elements[ZmAppViewMgr.C_APP_CONTENT] || elements[ZmAppViewMgr.C_APP_CONTENT_FULL];
 	if (content && content.getTitle) {
 		var title = content.getTitle();
 		Dwt.setTitle(title ? title : ZmMsg.zimbraTitle);
@@ -740,7 +783,8 @@ function(ev) {
 				topToolbar.setSize(ev.newWidth, Dwt.DEFAULT);
 			}
 			// make sure to remove height of top toolbar for height of app content
-			var appContent = this._views[this._currentView][ZmAppViewMgr.C_APP_CONTENT];
+            var view = this._views[this._currentView];
+            var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
 			if (appContent) {
 				appContent.setSize(ev.newWidth, ev.newHeight - topToolbar.getH());
 			}
@@ -749,12 +793,14 @@ function(ev) {
 				this.fitAll();
 			} else if (deltaHeight) {
 				var list = [ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
-							ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_STATUS];
+							ZmAppViewMgr.C_SASH, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL, 
+                            ZmAppViewMgr.C_STATUS];
 				this._fitToContainer(list);
 			} else if (deltaWidth) {
 				var list = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
 							ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
-							ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_TOOLBAR_BOTTOM];
+							ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL, 
+                            ZmAppViewMgr.C_TOOLBAR_BOTTOM];
 				this._fitToContainer(list);
 			}
 		}

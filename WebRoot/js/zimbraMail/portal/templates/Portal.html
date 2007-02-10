@@ -1,0 +1,58 @@
+<template id='layout'>
+    <$ var spacing = data.spacing || 0; $>
+    <table border='0' cellpadding='0' cellspacing='0' width='100%' height='100%'
+           style='margin-left:<$=spacing$>;margin-top:<$=spacing$>'>
+        <colgroup>
+            <$ for (var i = 0; i < data.cols.length; i++) { $>
+                <col width='<$=data.cols[i].width$>'>
+            <$ } $>
+        </colgroup>
+        <tr>
+            <$ var spacing = data.spacing || 0; $>
+            <$ for (var i = 0; i < data.cols.length; i++) { $>
+                <td style='padding-right:<$=spacing$>'>
+                  <table border='0' cellpadding='0' cellspacing='0' width='100%' height='100%'>
+                    <$ for (var j = 0; j < data.cols[i].portlets.length; j++) { $>
+                        <tr>
+                            <td id='Portal_<$=i$>_<$=j$>' style='padding-bottom:<$=spacing$>px'></td>
+                        </tr>
+                    <$ } $>
+                  </table>
+                </td>
+            <$ } $>
+        </tr>
+    </table>
+</template>
+
+<template id='border' width='20' height='32'>
+    <table class='DwtDialog WindowOuterContainer'
+           border='0' cellspacing='0' cellpadding='0' width='100%' height='100%'>
+        <tr id='${id}_header'>
+            <td id='${id}_header_icon' class='minWidth'></td>
+            <td id='${id}_header_title' class='DwtDialogTitle' width='100%'>${title}</td>
+            <td id='${id}_header_help' class='minWidth'></td>
+            <td id='${id}_header_config' class='minWidth'></td>
+            <td id='${id}_header_size' class='minWidth'></td>
+            <td id='${id}_header_close' class='minWidth'></td>
+        </tr>
+        <tr height='100%'>
+            <td id='${id}_content' colspan='6' class='DwtDialogBody WindowInnerContainer'></td>
+        </tr>
+    </table>
+</template>
+
+<template id='border-none'>
+    <div id='${id}_content'></div>
+</template>
+
+<template id='border-tabbed' width='20' height='32'>    
+    <table class='DwtDialog WindowOuterContainer'
+           border='0' cellspacing='0' cellpadding='0' width='100%' height='100%'>
+        <tr>
+            <td id='${id}_tabs'></td>
+        </tr>
+        <tr height='100%'>
+            <td id='${id}_content' class='DwtDialogBody WindowInnerContainer'></td>
+        </tr>
+    </table>
+</template>

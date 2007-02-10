@@ -182,7 +182,7 @@ skin._showEl = function(id, state) {
 
 <!-- app chooser, tree and mini-cal, main app wd -->
 		<tr id='skin_tr_main'>
-			<td class='full_height'>
+			<td class='full_height' height='100%'>
 				<!-- NOTE: tree and mini-cal need to be their own table so the mini-cal can be hidden -->
 				<table class='skin_table' cellspacing=0 cellpadding=0>
 				<tr id='skin_tr_tree'>
@@ -212,7 +212,7 @@ skin._showEl = function(id, state) {
 					</div>
 				</div>
 			</td>
-			<td id='skin_td_app_main' class='full_height' rowspan='2' colspan='2'>
+			<td id='skin_td_app_main' class='full_height' rowspan='2' colspan='2' height='100%'>
 				<div id='skin_border_app_main' class='skin_container full_size'>
 						<div id='skin_container_app_main' class='skin_container full_width full_height'>
 							<!-- main app area -->
@@ -232,6 +232,18 @@ skin._showEl = function(id, state) {
 				</div>
 			</td>
 		</tr>
+
+<!-- "full screen" app -->
+        <tr id='skin_tr_main_full'>
+            <td id='skin_td_app_mail_full' class='full_height' colspan='4' height='100%'>
+                <div id='skin_border_app_main_full' class='skin_container full_size'>
+                    <div id='skin_container_app_main_full' class='skin_container full_width full_height' height='100%'>
+                        <!-- main app area -->
+                    </div>
+                </div>
+            </td>
+        </tr>
+
 	</table>
 </div>
 <!-- END SKIN -->
