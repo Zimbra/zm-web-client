@@ -291,7 +291,7 @@ function(create, org) {
 	if (parent) {
 		parent.notifyCreate(create, true);
 		// XXX: once bug #4434 is fixed, check if this call is still needed
-		this._appCtxt.getRequestMgr().getFolderPermissions([share]);
+		this._appCtxt.getFolderTree().getPermissions(share);
 		create._handled = true;
 	}
 };

@@ -197,7 +197,7 @@ function(list) {
 //				DBG.println(AjxDebug.DBG1, "ZmVoicemailApp: handling CREATE for node: " + name);
 //				parent.notifyCreate(create, true);
 //				// XXX: once bug #4434 is fixed, check if this call is still needed
-//				this._appCtxt.getRequestMgr().getFolderPermissions([share]);
+//				this._appCtxt.getFolderTree().getPermissions(share);
 //			}
 //		} else if (name == "w") {
 //			DBG.println(AjxDebug.DBG1, "ZmVoicemailApp: handling CREATE for node: " + name);
