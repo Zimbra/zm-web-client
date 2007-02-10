@@ -40,19 +40,18 @@
 
 <c:choose>
     <c:when test="${view eq 'day'}">
-        <app:multiDayView date="${date}" numdays="1"/>
+        <app:multiDayView date="${date}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
     </c:when>
     <c:when test="${view eq 'workWeek'}">
-        <app:multiDayView date="${date}" numdays="5"/>
+        <app:multiDayView date="${date}" view='${view}' numdays="5"/>
     </c:when>
     <c:when test="${view eq 'week'}">
-        <app:multiDayView date="${date}" numdays="7"/>
+        <app:multiDayView date="${date}" view='${view}' numdays="7"/>
     </c:when>
     <c:when test="${view eq 'schedule'}">
-        <app:multiDayView date="${date}" numdays="1" schedule="true"/>
+        <app:multiDayView date="${date}" numdays="1" view="${view}"/>
     </c:when>
     <c:otherwise>
         <app:monthView date="${date}"/>
     </c:otherwise>
 </c:choose>
-

@@ -75,7 +75,9 @@
                                             <td align=right class='${clazz}'>
                                                 <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${zm:getMonth(currentDay) ne lastMonth ? dayMonthChangeFormat : dayFormat}"/>
                                                 <c:set var="lastMonth" value="${zm:getMonth(currentDay)}"/>
-                                                    ${fn:escapeXml(dayTitle)}
+                                                
+                                                <app:calendarUrl var="dayUrl" view="day" rawdate="${currentDay.time}"/>
+                                                    <a href="${dayUrl}">${fn:escapeXml(dayTitle)}</a>
                                             </td>
                                         </tr>
                                         <c:set var="count" value="${0}"/>

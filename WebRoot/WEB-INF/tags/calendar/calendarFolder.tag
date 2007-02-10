@@ -13,12 +13,10 @@
 <tr>
     <td nowrap colspan=3 class='${folder.styleColor}Bg Folder<c:if test="${folder.hasUnread}"> Unread</c:if><c:if test="${folder.id eq requestScope.context.selectedId}"> Selected</c:if>'
         style='padding-left: ${folder.depth*8}px'>
-        <c:url var="url" value="/h/calendar">
-            <c:if test="${not empty param.date}"><c:param name="date" value="${param.date}"/></c:if>
-            <c:if test="${not empty param.view}"><c:param name="view" value="${param.view}"/></c:if>
-            <c:if test="${folder.isCheckedInUI}"><c:param name="uncheck" value="${folder.id}"/></c:if> 
-            <c:if test="${not folder.isCheckedInUI}"><c:param name="check" value="${folder.id}"/></c:if>
-        </c:url>
+        <c:choose>
+            <c:when test="${folder.isCheckedInUI}"><app:calendarUrl var="url" uncheck="${folder.id}"/></c:when>
+            <c:otherwise><app:calendarUrl var="url" check="${folder.id}"/></c:otherwise>
+        </c:choose>
         <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="dwt/NodeExpanded.gif"/></c:if></span>--%>
         <a href='${url}'>
             <c:choose>

@@ -1,7 +1,7 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Date" %>
 <%@ attribute name="numdays" rtexprvalue="true" required="true" %>
-<%@ attribute name="schedule" rtexprvalue="true" required="false" %>
+<%@ attribute name="view" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -14,10 +14,10 @@
     <c:set var="context" value="${null}"/>
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
 
-    <c:set var="currentDay" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, numdays)}"/>
+    <c:set var="currentDay" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, view)}"/>
 
     <c:choose>
-        <c:when test="${schedule}">
+        <c:when test="${view eq 'schedule'}">
             <fmt:message var="titleFormat" key="CAL_SCHEDULE_TITLE_FORMAT"/>
             <fmt:formatDate var="pageTitle" value="${currentDay.time}" pattern="${titleFormat}"/>
             <fmt:message var="tbTitleFormat" key="CAL_SCHEDULE_TB_TITLE_FORMAT"/>
@@ -39,11 +39,9 @@
         </c:otherwise>
     </c:choose>
 
-
-
     <c:set var="today" value="${zm:getToday()}"/>
     <c:set var="dateCal" value="${zm:getCalendar(date)}"/>
-    <c:set var="dayIncr" value="${(numdays eq 5) ? 7 : numdays}"/>
+    <c:set var="dayIncr" value="${(view eq 'workWeek') ? 7 : numdays}"/>
     <c:set var="prevDate" value="${zm:addDay(dateCal, -dayIncr)}"/>
     <c:set var="nextDate" value="${zm:addDay(dateCal,  dayIncr)}"/>
 
@@ -51,7 +49,7 @@
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
     <zm:getAppointmentSummaries var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${rangeEnd}"/>
     <zm:apptMultiDayLayout
-            schedule="${schedule ? checkedCalendars : ''}"
+            schedule="${view eq 'schedule' ? checkedCalendars : ''}"
             var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
             hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
 </app:handleError>
@@ -83,8 +81,11 @@
                                        ${fn:escapeXml(fname)}
                                    </c:when>
                                    <c:otherwise>
+                                       <app:calendarUrl var="dayUrl" view="day" rawdate="${day.date}"/>
+                                       <a href="${dayUrl}">
                                        <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
                                        <fmt:formatDate value="${day.date}" pattern="${titleFormat}"/>
+                                       </a>
                                    </c:otherwise>
                                </c:choose>
                            </td>
@@ -98,7 +99,7 @@
                             </td>
                             <td class='ZhCalDayHS' height=100% width=1px>&nbsp;</td>
                             <c:forEach var="cell" items="${row.cells}">
-                                <td class='ZhCalAllDayDS' valign=top height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if>>
+                                <td class='ZhCalAllDayDS' valign=middle height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if>>
                                     <c:choose>
                                         <c:when test="${not empty cell.appt}">
                                             <div style='padding:1px'>
