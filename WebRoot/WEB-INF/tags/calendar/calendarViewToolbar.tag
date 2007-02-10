@@ -44,7 +44,7 @@
             <c:if test="${not empty param.view}"><c:param name="view" value="${param.view}"/></c:if>
         </c:url>
         <td>
-            <a accesskey="5" href="${todayUrl}"><app:img altkey="ALT_CAL_TODAY" src="calendar/Date.gif"/></a>
+            <a accesskey="6" href="${todayUrl}"><app:img altkey="ALT_CAL_TODAY" src="calendar/Date.gif"/></a>
         </td>
     </c:set>
 </c:if>
