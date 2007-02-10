@@ -32,6 +32,9 @@
         <td>
             <a accesskey="4" href="${viewUrl}&view=month"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/MonthView.gif"/><fmt:message key="month"/></a>
         </td>
+        <td>
+            <a accesskey="5" href="${viewUrl}&view=schedule"><app:img altkey="ALT_CAL_SCHEDULE_VIEW" src="calendar/GroupSchedule.gif"/><fmt:message key="schedule"/></a>
+        </td>
         <fmt:formatDate var="todayDf" value="${today.time}" pattern="yyyyMMdd"/>
         <td>
             <div class='vertSep'/>

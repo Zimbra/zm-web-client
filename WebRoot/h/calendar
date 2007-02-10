@@ -34,17 +34,22 @@
     <c:if test="${not empty param.uncheck}">
         <zm:checkFolder checked="false" id="${param.uncheck}"/>
     </c:if>
+
+    <c:set var="view" value="${not empty param.view ? param.view : mailbox.prefs.calendarInitialView}"/>
 </app:handleError>
 
 <c:choose>
-    <c:when test="${param.view eq 'day'}">
+    <c:when test="${view eq 'day'}">
         <app:multiDayView date="${date}" numdays="1"/>
     </c:when>
-    <c:when test="${param.view eq 'workWeek'}">
+    <c:when test="${view eq 'workWeek'}">
         <app:multiDayView date="${date}" numdays="5"/>
     </c:when>
-    <c:when test="${param.view eq 'week'}">
+    <c:when test="${view eq 'week'}">
         <app:multiDayView date="${date}" numdays="7"/>
+    </c:when>
+    <c:when test="${view eq 'schedule'}">
+        <app:multiDayView date="${date}" numdays="1" schedule="true"/>
     </c:when>
     <c:otherwise>
         <app:monthView date="${date}"/>

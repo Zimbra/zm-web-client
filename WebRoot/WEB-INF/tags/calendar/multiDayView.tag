@@ -1,6 +1,7 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Date" %>
 <%@ attribute name="numdays" rtexprvalue="true" required="true" %>
+<%@ attribute name="schedule" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -16,6 +17,12 @@
     <c:set var="currentDay" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, numdays)}"/>
 
     <c:choose>
+        <c:when test="${schedule}">
+            <fmt:message var="titleFormat" key="CAL_SCHEDULE_TITLE_FORMAT"/>
+            <fmt:formatDate var="pageTitle" value="${currentDay.time}" pattern="${titleFormat}"/>
+            <fmt:message var="tbTitleFormat" key="CAL_SCHEDULE_TB_TITLE_FORMAT"/>
+            <fmt:formatDate var="tbTitle" value="${currentDay.time}" pattern="${tbTitleFormat}"/>
+        </c:when>
         <c:when test="${numdays eq 1}">
             <fmt:message var="titleFormat" key="CAL_DAY_TITLE_FORMAT"/>
             <fmt:formatDate var="pageTitle" value="${currentDay.time}" pattern="${titleFormat}"/>
@@ -41,10 +48,12 @@
     <c:set var="nextDate" value="${zm:addDay(dateCal,  dayIncr)}"/>
 
     <c:set var="rangeEnd" value="${currentDay.timeInMillis+1000*60*60*24*numdays}"/>
-    <zm:getAppointmentSummaries var="appts" start="${currentDay.timeInMillis}" end="${rangeEnd}"/>
-    <zm:apptMultiDayLayout var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
+    <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
+    <zm:getAppointmentSummaries var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${rangeEnd}"/>
+    <zm:apptMultiDayLayout
+            schedule="${schedule ? checkedCalendars : ''}"
+            var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
             hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
-    <!-- ROWS ${layout.rows}-->
 </app:handleError>
 
 <app:view title="${pageTitle}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true"
@@ -66,9 +75,18 @@
                        </td>
                        <td class='ZhCalDayHSB' height=100% width=1px>&nbsp;</td>
                        <c:forEach var="day" items="${layout.days}">
-                           <td class='ZhCalDaySEP ZhCalDayHeader${day.startTime eq today.timeInMillis ? 'Today':''}' colspan="${day.maxColumns}" width=${day.width}%>
-                               <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
-                               <fmt:formatDate value="${day.date}" pattern="${titleFormat}"/>
+                           <td class='ZhCalDaySEP ZhCalDayHeader${(day.startTime eq today.timeInMillis and empty day.folderId) ? 'Today':''}' colspan="${day.maxColumns}" width=${day.width}%>
+                               <c:choose>
+                                   <c:when test="${not empty day.folderId}">
+                                       <fmt:message var="fname" key="FOLDER_LABEL_${day.folderId}"/>
+                                       <c:if test="${fn:startsWith(fname,'???')}"><c:set var="fname" value="${zm:getFolderName(pageContext, day.folderId)}"/></c:if>
+                                       ${fn:escapeXml(fname)}
+                                   </c:when>
+                                   <c:otherwise>
+                                       <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
+                                       <fmt:formatDate value="${day.date}" pattern="${titleFormat}"/>
+                                   </c:otherwise>
+                               </c:choose>
                            </td>
                        </c:forEach>
                    </tr>
