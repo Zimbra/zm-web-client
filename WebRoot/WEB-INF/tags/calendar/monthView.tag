@@ -18,8 +18,8 @@
     <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
     <c:set var="today" value="${zm:getToday()}"/>
     <c:set var="dateCal" value="${zm:getCalendar(date)}"/>
-    <c:set var="prevDate" value="${zm:pageMonth(dateCal, false)}"/>
-    <c:set var="nextDate" value="${zm:pageMonth(dateCal,  true)}"/>
+    <c:set var="prevDate" value="${zm:addMonth(dateCal, -1)}"/>
+    <c:set var="nextDate" value="${zm:addMonth(dateCal,  1)}"/>
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
     <zm:getAppointmentSummaries var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+1000*60*60*24*42}"/>

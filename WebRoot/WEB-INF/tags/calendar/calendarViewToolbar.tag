@@ -40,7 +40,7 @@
         <td>
             <div class='vertSep'/>
         </td>
-        <app:calendarUrl var="todayUrl" rawdate="${today.time}"/>
+        <app:calendarUrl var="todayUrl" nodate="true"/>
         <td>
             <a accesskey="6" href="${todayUrl}"><app:img altkey="ALT_CAL_TODAY" src="calendar/Date.gif"/></a>
         </td>

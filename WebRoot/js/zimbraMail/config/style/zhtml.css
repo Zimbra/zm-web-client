@@ -622,7 +622,9 @@ padding: 8px 0px 6px 0px;
 	text-align:right;
 }
 
-.ZhCalMonthTable a:link, .ZhCalMonthTable a:visited, .ZhCalMonthHeaderRow a:link, .ZhCalMonthHeaderRow a:visited { text-decoration: none; color:inherit;}
+.ZhCalMonthTable a:link, .ZhCalMonthTable a:visited,
+.ZhCalMiniContainer a:link, .ZhCalMiniContainer a:visited,
+    .ZhCalMonthHeaderRow a:link, .ZhCalMonthHeaderRow a:visited { text-decoration: none; color:inherit;}
 
 .ZhCalDOMT {
 	@Text-today@

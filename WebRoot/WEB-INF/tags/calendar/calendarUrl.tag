@@ -11,11 +11,12 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
+<c:set var='view' value='${not empty view ? view : param.view}'/>
 <c:url value="${not empty value ? value : '/h/calendar'}" var="urlVar">
-    <c:if test="${(not empty view or not empty param.view)}">
-        <c:param name='view' value='${not empty view ? view : param.view}'/>
+    <c:if test="${not empty view}">
+        <c:param name='view' value='${view}'/>
     </c:if>
-    <c:if test="${not empty param.numdays}"><c:param name='numdays' value='${param.numdays}'/></c:if>
+    <c:if test="${not empty param.numdays and view eq 'day'}"><c:param name='numdays' value='${param.numdays}'/></c:if>
     <c:choose>
         <c:when test="${not empty rawdate}">
             <c:param name='date'><fmt:formatDate value="${rawdate}" pattern="yyyyMMdd"/></c:param>

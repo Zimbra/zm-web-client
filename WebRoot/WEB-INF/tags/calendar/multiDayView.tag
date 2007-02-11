@@ -81,7 +81,7 @@
                                        ${fn:escapeXml(fname)}
                                    </c:when>
                                    <c:otherwise>
-                                       <app:calendarUrl var="dayUrl" view="day" rawdate="${day.date}"/>
+                                       <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" rawdate="${day.date}"/>
                                        <a href="${dayUrl}">
                                        <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
                                        <fmt:formatDate value="${day.date}" pattern="${titleFormat}"/>
