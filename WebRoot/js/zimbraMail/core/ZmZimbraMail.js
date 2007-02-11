@@ -985,7 +985,7 @@ function() {
 	var port = (location.port == '80') ? "" : [":", location.port].join("");
 	var locationStr = [location.protocol, "//", location.hostname, port].join("");
 	if (appContextPath) {
-		locationStr = [locationStr, appContextPath].join("/");
+		locationStr = [locationStr, appContextPath].join("");
 	}
 	locationStr = [locationStr, location.search].join("");
 	ZmZimbraMail.sendRedirect(locationStr);
