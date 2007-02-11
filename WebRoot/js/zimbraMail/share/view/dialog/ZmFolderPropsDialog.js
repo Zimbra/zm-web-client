@@ -63,14 +63,14 @@ function() {
 };
 
 ZmFolderPropsDialog.prototype.popup =
-function(organizer, loc) {
+function(organizer) {
 	this._organizer = organizer;
 	organizer.addChangeListener(this._folderChangeListener);
 	this._handleFolderChange();
 	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, !organizer.link);
 	}
-	DwtDialog.prototype.popup.call(this, loc);
+	DwtDialog.prototype.popup.call(this);
 
 	if (organizer.id != ZmCalendar.ID_CALENDAR &&
 		organizer.id != ZmOrganizer.ID_NOTEBOOK &&

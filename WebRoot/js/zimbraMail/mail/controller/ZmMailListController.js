@@ -505,7 +505,7 @@ function(ev, action, extraBodyText, instanceDate, accountName) {
 	var sameFormat = identity.getComposeSameFormat();
 	
 	var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg.isLoaded() && sameFormat)))));
-	var inNewWindow = this._inNewWindow(ev);
+	var inNewWindow = this._app._inNewWindow(ev);
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText, accountName]);
 	msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
 };

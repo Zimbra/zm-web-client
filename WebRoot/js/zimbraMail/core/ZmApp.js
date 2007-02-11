@@ -73,6 +73,8 @@ ZmApp.SEARCH_TYPES		= {};	// list of types of saved searches to show in overview
 ZmApp.SEARCH_TYPES_R	= {};
 ZmApp.ACTION_CODE		= {};	// ID of shortcut action that switches to app
 ZmApp.ACTION_CODE_R		= {};
+ZmApp.OPS				= {};	// IDs of operations for the app
+ZmApp.OPS_R				= {};	// map of operation ID to app
 ZmApp.QS_VIEWS			= {};	// list of views to handle in query string
 ZmApp.TRASH_VIEW_OP		= {};	// menu choice for "Show Only ..." in Trash view
 
@@ -105,6 +107,7 @@ ZmApp.DEFAULT_APPS		= [];	// ordered list
  * @param assistants		[array]		hash of assistant class names and required packages
  * @param searchTypes		[array]		list of types of saved searches to show in overview
  * @param actionCode		[constant]	ID of shortcut action that switches to app
+ * @param ops				[array]		IDs of operations for the app
  * @param qsViews			[array]		list of views to handle in query string
  * @param chooserSort		[int]		controls order of apps in app chooser toolbar
  * @param defaultSort		[int]		controls order in which app is chosen as default start app
@@ -125,6 +128,7 @@ function(app, params) {
 	if (params.assistants)			{ ZmApp.ASSISTANTS[app]			= params.assistants; }
 	if (params.searchTypes) 		{ ZmApp.SEARCH_TYPES[app]		= params.searchTypes; }
 	if (params.actionCode)			{ ZmApp.ACTION_CODE[app]		= params.actionCode; }
+	if (params.ops)					{ ZmApp.OPS[app]				= params.ops; }
 	if (params.qsViews)				{ ZmApp.QS_VIEWS[app]			= params.qsViews; }
 	if (params.chooserSort)			{ ZmApp.CHOOSER_SORT[app]		= params.chooserSort; }
 	if (params.defaultSort)			{ ZmApp.DEFAULT_SORT[app]		= params.defaultSort; }
@@ -136,6 +140,12 @@ function(app, params) {
 		ZmApp.SEARCH_TYPES_R[app] = {};
 		for (var i = 0; i < params.searchTypes.length; i++) {
 			ZmApp.SEARCH_TYPES_R[app][params.searchTypes[i]] = true;
+		}
+	}
+	
+	if (params.ops) {
+		for (var i = 0; i < params.ops.length; i++) {
+			ZmApp.OPS_R[params.ops[i]] = app;
 		}
 	}
 	
@@ -154,13 +164,14 @@ function() {
 }
 
 // Abstract methods for apps to override in response to certain events
-ZmApp.prototype.startup			= function(result) {};	// run during startup
-ZmApp.prototype.refresh			= function(refresh) {};	// run when a <refresh> block arrives
-ZmApp.prototype.preNotify		= function(notify) {};	// run before handling notifications
-ZmApp.prototype.deleteNotify	= function(ids) {};		// run on delete notifications
-ZmApp.prototype.createNotify	= function(list) {};	// run on create notifications
-ZmApp.prototype.modifyNotify	= function(list) {};	// run on modify notifications
-ZmApp.prototype.postNotify		= function(notify) {};	// run after handling notifications
+ZmApp.prototype.startup			= function(result) {};		// run during startup
+ZmApp.prototype.refresh			= function(refresh) {};		// run when a <refresh> block arrives
+ZmApp.prototype.preNotify		= function(notify) {};		// run before handling notifications
+ZmApp.prototype.deleteNotify	= function(ids) {};			// run on delete notifications
+ZmApp.prototype.createNotify	= function(list) {};		// run on create notifications
+ZmApp.prototype.modifyNotify	= function(list) {};		// run on modify notifications
+ZmApp.prototype.postNotify		= function(notify) {};		// run after handling notifications
+ZmApp.prototype.handleOp		= function(op, params) {};	// handle an operation
 
 /**
 * Returns the app's name.
@@ -261,6 +272,14 @@ function() {
 	}
 };
 
+// depending on "Always in New Window" option and whether Shift key is pressed,
+// determine whether action should be in new window or not
+ZmApp.prototype._inNewWindow =
+function(ev) {
+	var setting = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE);
+	return !ev ? setting : ((!setting && ev && ev.shiftKey) || (setting && ev && !ev.shiftKey));
+};
+
 ZmApp.prototype._handleCreateFolder =
 function(create, org) {
 	var tree = this._appCtxt.getTree(org);
@@ -291,7 +310,7 @@ function(create, org) {
 	if (parent) {
 		parent.notifyCreate(create, true);
 		// XXX: once bug #4434 is fixed, check if this call is still needed
-		this._appCtxt.getFolderTree().getPermissions(share);
+		this._appCtxt.getRequestMgr().getFolderPermissions([share]);
 		create._handled = true;
 	}
 };
@@ -302,11 +321,8 @@ function(create, org) {
 * Launches an app, which creates a view and shows it.
 */
 ZmApp.prototype.launch =
-function(callback) {
-    if (callback) {
-        callback.run();
-    }
-};
+function() {
+}
 
 /**
 * Run when the activation state of an app changes.

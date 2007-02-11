@@ -87,6 +87,7 @@ function ZmCalendarApp(appCtxt, container) {
 							  assistants:			{"ZmAppointmentAssistant":	["CalendarCore", "Calendar"],
 							  						 "ZmCalendarAssistant":		["CalendarCore", "Calendar"]},
 							  actionCode:			ZmKeyMap.GOTO_CALENDAR,
+							  ops:					[ZmOperation.NEW_APPT, ZmOperation.NEW_CALENDAR],
 							  chooserSort:			30,
 							  defaultSort:			20
 							  });
@@ -123,6 +124,8 @@ ZmCalendarApp.prototype.toString =
 function() {
 	return "ZmCalendarApp";
 };
+
+// App API
 
 ZmCalendarApp.prototype.startup =
 function(result) {
@@ -177,6 +180,27 @@ ZmCalendarApp.prototype.postNotify =
 function(notify) {
 	AjxDispatcher.run("GetCalController").notifyComplete();
 };
+
+ZmCalendarApp.prototype.handleOp =
+function(op) {
+	switch (op) {
+		case ZmOperation.NEW_APPT: {
+			AjxDispatcher.require(["CalendarCore", "Calendar"]);
+			AjxDispatcher.run("GetCalController").newAppointment(null, null, null, new Date());
+			break;
+		}
+		case ZmOperation.NEW_CALENDAR: {
+			var dialog = this._appCtxt.getNewCalendarDialog();
+			if (!this._newCalendarCb) {
+				this._newCalendarCb = new AjxCallback(this, this._newCalendarCallback);
+			}
+			ZmController.showDialog(dialog, this._newCalendarCb);
+			break;
+		}
+	}
+};
+
+// Public methods
 
 ZmCalendarApp.prototype.launch =
 function(callback) {
@@ -346,4 +370,15 @@ function(cal, ev) {
 	var setting = ev.source;
 	if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK)
 		cal.setFirstDayOfWeek(setting.getValue());
+};
+
+ZmCalendarApp.prototype._newCalendarCallback =
+function(parent, name, color, url, excludeFb) {
+	// REVISIT: Do we really want to close the dialog before we
+	//          know if the create succeeds or fails?
+	var dialog = this._appCtxt.getNewCalendarDialog();
+	dialog.popdown();
+
+	var oc = this._appCtxt.getOverviewController();
+	oc.getTreeController(ZmOrganizer.CALENDAR)._doCreate(parent, name, color, url, excludeFb);
 };

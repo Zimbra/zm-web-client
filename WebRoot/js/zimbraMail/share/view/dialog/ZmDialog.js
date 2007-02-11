@@ -77,7 +77,7 @@ function(newView, noReset) {
 };
 
 ZmDialog.prototype.popup =
-function(loc) {
+function() {
 	if (!this._tabGroupComplete) {
 		// tab group filled in here rather than in the constructor
 		// because we need all the content fields to have been created
@@ -87,7 +87,7 @@ function(loc) {
 		}
 		this._tabGroupComplete = true;
 	}
-	DwtDialog.prototype.popup.call(this, loc);
+	DwtDialog.prototype.popup.call(this);
 };
 
 ZmDialog.prototype.reset =
@@ -134,8 +134,10 @@ function(overviewId, treeIds, omit) {
 	this._opc.set(overviewId, treeIds, omit);
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeView = this._treeView[treeIds[i]] = this._opc.getTreeView(overviewId, treeIds[i]);
-		var hi = treeView.getHeaderItem();
-		hi.enableSelection(true);
+		if (treeView) {
+			var hi = treeView.getHeaderItem();
+			hi.enableSelection(true);
+		}
 	}
 };
 

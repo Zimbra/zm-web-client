@@ -51,10 +51,10 @@ function() {
 }
 
 ZmNewSearchDialog.prototype.popup =
-function(search, loc) {
+function(search) {
 	this._search = search;
 	this._searchTreeView.setSelected(this._searchTree.root, true);
-	ZmDialog.prototype.popup.call(this, loc);
+	ZmDialog.prototype.popup.call(this);
 }
 
 ZmNewSearchDialog.prototype._contentHtml = 

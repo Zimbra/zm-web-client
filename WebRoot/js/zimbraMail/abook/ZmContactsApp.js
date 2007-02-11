@@ -99,6 +99,7 @@ function ZmContactsApp(appCtxt, container, parentController) {
 							  assistants:			{"ZmContactAssistant":"Contacts"},
 							  searchTypes:			[ZmItem.CONTACT],
 							  actionCode:			ZmKeyMap.GOTO_CONTACTS,
+							  ops:					[ZmOperation.NEW_CONTACT, ZmOperation.NEW_GROUP, ZmOperation.NEW_ADDRBOOK],
 							  trashViewOp:			ZmOperation.SHOW_ONLY_CONTACTS,
 							  chooserSort:			20,
 							  defaultSort:			40
@@ -153,6 +154,8 @@ function() {
 	return "ZmContactsApp";
 };
 
+// App API
+
 ZmContactsApp.prototype.startup =
 function(result) {
 	AjxDispatcher.run("GetContacts");
@@ -183,6 +186,33 @@ function(list) {
 		}
 	}
 };
+
+ZmContactsApp.prototype.handleOp =
+function(op) {
+	switch (op) {
+		case ZmOperation.NEW_CONTACT:
+		case ZmOperation.NEW_GROUP: {
+			// bug fix #5373
+			// - dont allow adding new contacts after searching GAL if contacts disabled
+			if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+				var type = (op == ZmOperation.NEW_GROUP) ? ZmItem.GROUP : null;
+				var contact = new ZmContact(this._appCtxt, null, null, type);
+				AjxDispatcher.run("GetContactController").show(contact);
+			}
+			break;
+		}
+		case ZmOperation.NEW_ADDRBOOK: {
+			var dialog = this._appCtxt.getNewAddrBookDialog();
+			if (!this._newAddrBookCb) {
+				this._newAddrBookCb = new AjxCallback(this, this._newAddrBookCallback);
+			}
+			ZmController.showDialog(dialog, this._newAddrBookCb);
+			break;
+		}
+	}
+};
+
+// Public methods
 
 ZmContactsApp.prototype.launch =
 function(callback) {
@@ -324,4 +354,15 @@ function() {
 	if (this._contactController == null)
 		this._contactController = new ZmContactController(this._appCtxt, this._container, this);
 	return this._contactController;
+};
+
+ZmContactsApp.prototype._newAddrBookCallback =
+function(parent, name, color) {
+	// REVISIT: Do we really want to close the dialog before we
+	//          know if the create succeeds or fails?
+	var dialog = this._appCtxt.getNewAddrBookDialog();
+	dialog.popdown();
+
+	var oc = this._appCtxt.getOverviewController();
+	oc.getTreeController(ZmOrganizer.ADDRBOOK)._doCreate(parent, name, color);
 };

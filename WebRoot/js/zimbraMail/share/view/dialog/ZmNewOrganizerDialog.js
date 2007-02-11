@@ -42,7 +42,7 @@ function() {
 // Public methods
 
 ZmNewOrganizerDialog.prototype.popup =
-function(folder, loc) {
+function(folder) {
 	folder = folder ? folder : this._folderTree.root;
 
 	this._folderTreeView.setSelected(folder);
@@ -52,7 +52,7 @@ function(folder, loc) {
 	}
 	DBG.timePt("selected folder", true);
 	
-	ZmDialog.prototype.popup.call(this, loc);
+	ZmDialog.prototype.popup.call(this);
 };
 
 ZmNewOrganizerDialog.prototype.reset =

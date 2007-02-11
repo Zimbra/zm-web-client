@@ -135,25 +135,19 @@ function(item, fields, treeView) {
 };
 
 // Protected methods
-ZmRosterTreeController.prototype.show = 
-function(overviewId, showUnread, omit, forceCreate) {
-	var firstTime = !this._treeView[overviewId];
-
-    	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate);
-
-	if (firstTime || forceCreate) {
-		var treeView = this.getTreeView(overviewId);
-    		var root = treeView.getItems()[0];
-		var groups = root.getItems();		
-		for (var i = 0; i < groups.length; i++) {
-			var group = groups[i];
-			group.setExpanded(true);
-			var treeItems = group.getItems();
-			for (var j=0; j < treeItems.length; j++) {
-			    var treeItem = treeItems[j];
-			    treeItem.setToolTipContent("");
-			    treeItem.addListener(DwtEvent.HOVEROVER, this._treeItemHoverListenerListener);
-			}
+ZmRosterTreeController.prototype._postSetup = 
+function(overviewId) {
+	var treeView = this.getTreeView(overviewId);
+	var root = treeView.getItems()[0];
+	var groups = root.getItems();		
+	for (var i = 0; i < groups.length; i++) {
+		var group = groups[i];
+		group.setExpanded(true);
+		var treeItems = group.getItems();
+		for (var j=0; j < treeItems.length; j++) {
+		    var treeItem = treeItems[j];
+		    treeItem.setToolTipContent("");
+		    treeItem.addListener(DwtEvent.HOVEROVER, this._treeItemHoverListenerListener);
 		}
 	}
 };
@@ -366,8 +360,11 @@ function(name) {
 ZmRosterTreeController.prototype._newRosterItemListener =
 function(ev) {
 	var newDialog = this._appCtxt.getNewRosterItemDialog();
-	newDialog.setTitle(ZmMsg.createNewRosterItem);	
-    this._showDialog(newDialog, this._newRosterItemCallback);	
+	newDialog.setTitle(ZmMsg.createNewRosterItem);
+	if (!this._newRosterItemCb) {
+		this._newRosterItemCb = new AjxCallback(this, this._newRosterItemCallback);
+	}
+    ZmController.showDialog(newDialog, this._newRosterItemCb);
 	var org = this._getActionedOrganizer(ev);
 	if (org instanceof ZmRosterTreeGroup) {
         newDialog.setGroups(org.getName());
@@ -378,7 +375,10 @@ ZmRosterTreeController.prototype._editRosterItemListener =
 function(ev) {
 	var newDialog = this._appCtxt.getNewRosterItemDialog();
 	newDialog.setTitle(ZmMsg.editRosterItem);	
-    this._showDialog(newDialog, this._newRosterItemCallback);	
+	if (!this._newRosterItemCb) {
+		this._newRosterItemCb = new AjxCallback(this, this._newRosterItemCallback);
+	}
+    ZmController.showDialog(newDialog, this._newRosterItemCb);
 	var org = this._getActionedOrganizer(ev);
     var ri = org.getRosterItem();	
     newDialog.setAddress(ri.getAddress(), true);

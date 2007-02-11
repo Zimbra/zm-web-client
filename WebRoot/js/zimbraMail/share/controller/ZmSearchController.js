@@ -502,7 +502,10 @@ ZmSearchController.prototype._saveButtonListener =
 function(ev) {
 	if (this._results && this._results.search) {
 		var stc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.SEARCH);
-		stc._showDialog(stc._getNewDialog(), stc._newCallback, this._results.search);
+		if (!stc._newCb) {
+			stc._newCb = new AjxCallback(stc, stc._newCallback);
+		}
+		ZmController.showDialog(stc._getNewDialog(), stc._newCb, this._results.search);
 	}
 }
 

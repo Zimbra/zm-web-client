@@ -80,8 +80,9 @@ function() {
 */
 ZmEvent.prototype.set =
 function(event, source) {
-	this.event = event; 
-	this.source = source; 
+	this.event = event;
+	this.source = source;
+	this.handled = false;
 };
 
 /**

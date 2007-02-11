@@ -252,7 +252,7 @@ function(hdr) {
 	if (hdr && hdr.context && hdr.context.refresh) {
 		this._highestNotifySeen = 0;
 		this._refreshHandler(hdr.context.refresh);
-		this._controller._checkOverviewLayout(false);
+		this._controller._checkOverviewLayout();
 	}
 };
 

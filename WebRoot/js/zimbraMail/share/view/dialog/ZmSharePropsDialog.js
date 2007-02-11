@@ -63,7 +63,7 @@ ZmSharePropsDialog.prototype._mode = ZmSharePropsDialog.NEW;
 // Public methods
 
 ZmSharePropsDialog.prototype.popup =
-function(mode, object, share, loc) {
+function(mode, object, share) {
 
 	this._shareMode = mode;
 	this._object = object;
@@ -121,7 +121,7 @@ function(mode, object, share, loc) {
 
 	this._urlEl.innerHTML = AjxStringUtil.htmlEncode(this._object.getRestUrl());
 
-	DwtDialog.prototype.popup.call(this, loc);
+	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 	if (isNewShare) {
 		this._userRadioEl.checked = true;

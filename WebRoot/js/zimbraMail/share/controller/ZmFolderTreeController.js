@@ -68,16 +68,10 @@ function() {
 
 /**
 * Displays a folder tree. Certain folders are hidden.
-*
-* @param overviewId		[constant]	overview ID
-* @param showUnread		[boolean]*	if true, unread counts will be shown
-* @param omit			[Object]*	hash of organizer IDs to ignore
-* @param forceCreate	[boolean]*	if true, tree view will be created
-* @param searchTypes	[hash]*		types of saved searches to show
 */
 ZmFolderTreeController.prototype.show = 
-function(overviewId, showUnread, omit, forceCreate, searchTypes) {
-	if (!omit) omit = {};
+function(params) {
+	var omit = params.omit || {};
 	for (var id in ZmFolder.HIDE_ID) {
 		omit[id] = true;		
 	}
@@ -87,7 +81,8 @@ function(overviewId, showUnread, omit, forceCreate, searchTypes) {
 			omit[folder.id] = true;
 		}
 	}
-	ZmTreeController.prototype.show.apply(this, [overviewId, showUnread, omit, forceCreate, searchTypes]);
+	params.omit = omit;
+	ZmTreeController.prototype.show.call(this, params);
 };
 
 /**
@@ -357,48 +352,6 @@ function(ev) {
 			var ctlr = srcData.controller;
 			var items = (data instanceof Array) ? data : [data];
 			ctlr._doMove(items, dropFolder);
-		}
-	}
-};
-
-/*
-* Handles a search folder being moved from Folders to Searches.
-*
-* @param ev				[ZmEvent]		a change event
-* @param treeView		[ZmTreeView]	a tree view
-* @param overviewId		[constant]		overview ID
-*/
-ZmFolderTreeController.prototype._changeListener =
-function(ev, treeView, overviewId) {
-	var organizers = ev.getDetail("organizers");
-	if (!organizers && ev.source)
-		organizers = [ev.source];
-
-	// handle one organizer at a time
-	for (var i = 0; i < organizers.length; i++) {
-		var organizer = organizers[i];
-		var id = organizer.id;
-		var fields = ev.getDetail("fields");
-		var node = treeView.getTreeItemById(id);
-		var parentNode = organizer.parent ? treeView.getTreeItemById(organizer.parent.id) : null;
-		if ((organizer.type == ZmOrganizer.SEARCH && 
-			(organizer.parent.tree.type == ZmOrganizer.SEARCH || id == ZmOrganizer.ID_ROOT)) &&
-		 	(ev.event == ZmEvent.E_MOVE || (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_PARENT])))) {
-			DBG.println(AjxDebug.DBG3, "Moving search from Folders to Searches");
-			if (node) {
-				node.dispose();
-			}
-			this._checkTreeView(overviewId);
-			// send a CREATE event to search tree controller to get it to add node
-			var newEv = new ZmEvent(ZmEvent.S_SEARCH);
-			newEv.set(ZmEvent.E_CREATE, organizer);
-			var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
-			var stv = stc.getTreeView(treeView.overviewId);
-			var app = this._appCtxt.getAppController().getActiveApp();
-			var searchOverviewId = [overviewId, ZmSearchTreeController.APP_JOIN_CHAR, app].join("");
-			stc._changeListener(newEv, stv, searchOverviewId);
-		} else {
-			ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 		}
 	}
 };

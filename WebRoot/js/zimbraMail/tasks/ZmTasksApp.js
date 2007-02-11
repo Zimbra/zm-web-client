@@ -67,6 +67,7 @@ function ZmTasksApp(appCtxt, container) {
 							  overviewTrees:		[ZmOrganizer.TASKS],
 							  showZimlets:			true,
 							  actionCode:			ZmKeyMap.GOTO_TASKS,
+							  ops:					[ZmOperation.NEW_TASK, ZmOperation.NEW_TASK_FOLDER],
 							  chooserSort:			35,
 							  defaultSort:			25});
 };
@@ -90,6 +91,28 @@ ZmTasksApp.prototype.toString =
 function() {
 	return "ZmTasksApp";
 };
+
+// App API
+
+ZmTasksApp.prototype.handleOp =
+function(op) {
+	switch (op) {
+		case ZmOperation.NEW_TASK: {
+			AjxDispatcher.run("GetTaskController").show((new ZmTask(this._appCtxt)));
+			break;
+		}
+		case ZmOperation.NEW_TASK_FOLDER: {
+			var dialog = this._appCtxt.getNewTaskFolderDialog();
+			if (!this._newTaskFolderCb) {
+				this._newTaskFolderCb = new AjxCallback(this, this._newTaskFolderCallback);
+			}
+			ZmController.showDialog(dialog, this._newTaskFolderCb);
+			break;
+		}
+	}
+};
+
+// Public methods
 
 ZmTasksApp.prototype.launch =
 function(callback, errorCallback, folderId) {
@@ -173,4 +196,12 @@ function(callback, errorCallback, folderId) {
 	if (!callback) {
 		return this._taskList;
 	}
+};
+
+ZmTasksApp.prototype._newTaskFolderCallback =
+function(parent, name, color) {
+	var dialog = this._appCtxt.getNewTaskFolderDialog();
+	dialog.popdown();
+	var oc = this._appCtxt.getOverviewController();
+	oc.getTreeController(ZmOrganizer.TASKS)._doCreate(parent, name, color);
 };

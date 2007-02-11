@@ -38,7 +38,8 @@ ZmCalendarTreeController = function(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.MOUNT_CALENDAR] = new AjxListener(this, this._mountCalListener);
 
 	this._eventMgrs = {};
-};
+	this.usesColors = true;
+}
 
 ZmCalendarTreeController.prototype = new ZmTreeController;
 ZmCalendarTreeController.prototype.constructor = ZmCalendarTreeController;
@@ -46,13 +47,6 @@ ZmCalendarTreeController.prototype.constructor = ZmCalendarTreeController;
 ZmCalendarTreeController.prototype.toString = function() {
 	return "ZmCalendarTreeController";
 };
-
-// Constants
-
-ZmCalendarTreeController.COLOR_CLASSNAMES = [
-	// NOTE: We use Gray instead of GrayBg so that it doesn't blend into background
-	"OrangeBg", "BlueBg", "CyanBg", "GreenBg", "PurpleBg", "RedBg", "YellowBg", "PinkBg", "Gray"
-];
 
 // Public methods
 
@@ -92,28 +86,6 @@ function(overviewId, listener) {
 };
 
 // Protected methods
-
-ZmCalendarTreeController.prototype.show = 
-function(overviewId, showUnread, omit, forceCreate) {
-	var firstTime = (!this._treeView[overviewId] || forceCreate);
-
-	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate);
-	
-	if (firstTime) {
-		var treeView = this.getTreeView(overviewId);
-		var root = treeView.getTreeItemById(ZmOrganizer.ID_ROOT);
-		if (!root) { return; }
-		root.showCheckBox(false);
-		var items = root.getItems();
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			if (item._isSeparator) continue;
-			var object = item.getData(Dwt.KEY_OBJECT);
-			this._setTreeItemColor(item, object.color);
-			item.setChecked(object.isChecked);
-		}
-	}
-};
 
 ZmCalendarTreeController.prototype.resetOperations = 
 function(actionMenu, type, id) {
@@ -304,12 +276,6 @@ function(overviewId) {
 			return root.getItems();
 	}
 	return [];
-};
-
-ZmCalendarTreeController.prototype._setTreeItemColor =
-function(item, color) {
-	var element = item.getHtmlElement();
-	element.className = ZmCalendarTreeController.COLOR_CLASSNAMES[color];
 };
 
 ZmCalendarTreeController.prototype._setAllChecked =

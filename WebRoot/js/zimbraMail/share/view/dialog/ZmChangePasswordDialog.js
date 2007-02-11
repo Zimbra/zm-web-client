@@ -42,8 +42,8 @@ function() {
 };
 
 ZmChangePasswordDialog.prototype.popup = 
-function(loc) {
-	DwtDialog.prototype.popup.call(this, loc);
+function() {
+	DwtDialog.prototype.popup.call(this);
 	this._oldPasswordField.focus();
 };
 

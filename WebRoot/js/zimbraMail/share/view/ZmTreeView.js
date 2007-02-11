@@ -117,14 +117,14 @@ function() {
 *
 * @param dataTree		[ZmTree]		data in tree form
 * @param showUnread		[boolean]*		if true, show unread counts
-* @param omit			[Object]*		hash of organizer IDs to ignore
+* @param omit			[object]*		hash of organizer IDs to ignore
+* @param include		[object]*		hash of organizer IDs to include
 * @param searchTypes	[hash]*			types of saved searches to show
 */
 ZmTreeView.prototype.set =
-function(dataTree, showUnread, omit, searchTypes) {
-
-	this._showUnread = showUnread;
-	this._dataTree = dataTree;
+function(params) {
+	this._showUnread = params.showUnread;
+	this._dataTree = params.dataTree;
 	var root = this._dataTree.root;
 	this._treeHash[ZmOrganizer.ID_ROOT] = root;
 	
@@ -141,12 +141,15 @@ function(dataTree, showUnread, omit, searchTypes) {
 	ti.setData(Dwt.KEY_OBJECT, root);
 	ti.setData(ZmTreeView.KEY_ID, this.overviewId);
 	ti.setData(ZmTreeView.KEY_TYPE, this.type);
-	if (this._dropTgt)
+	if (this._dropTgt) {
 		ti.setDropTarget(this._dropTgt);
+	}
 	this._treeHash[root.id] = ti;
 	
 	// render the root item's children (ie everything else)
-	this._render(ti, root, omit, searchTypes);
+	params.treeNode = ti;
+	params.organizer = root;
+	this._render(params);
 	ti.setExpanded(true);
 };
 
@@ -199,32 +202,42 @@ function(organizer, skipNotify) {
 * @param treeNode		[DwtTreeItem]	current node
 * @param organizer		[ZmOrganizer]	its organizer
 * @param omit			[Object]*		hash of organizer IDs to ignore	
+* @param include		[object]*		hash of organizer IDs to include
+* @param showOrphans	[boolean]*		if true, show parent chain of any
+* 										folder of this type, as well as the folder
 * @param searchTypes	[hash]*			types of saved searches to show
+* 
+* TODO: Add logic to support display of folders that are not normally allowed in
+* 		this tree, but that have children (orphans) of an allowed type
+* TODO: Only sort folders we're showing (requires two passes).
 */
 ZmTreeView.prototype._render =
-function(treeNode, organizer, omit, searchTypes) {
-	var children = organizer.children.getArray();
+function(params) {
+	var org = params.organizer;
+	var children = org.children.getArray();
 	children.sort(eval(ZmTreeView.COMPARE_FUNC[this.type]));
-	DBG.println(AjxDebug.DBG3, "Render: " + organizer.name + ": " + children.length);
+	DBG.println(AjxDebug.DBG3, "Render: " + org.name + ": " + children.length);
 	var addSep = true;
 	for (var i = 0; i < children.length; i++) {
 		var child = children[i];
-		if (omit && omit[child.id]) { continue; }
-		if ((organizer.id == ZmOrganizer.ID_ROOT) && !this.allowedTypes[child.type]) { continue; }
-		if ((organizer.id != ZmOrganizer.ID_ROOT) && !this.allowedSubTypes[child.type]) { continue; }
-		// if this is a tree view of saved searches, make sure to only show saved searches
-		// that are for one of the given types
-		if ((child.type == ZmOrganizer.SEARCH) && searchTypes && !child._typeMatch(searchTypes)) {
-			continue;
+		if (params.omit && params.omit[child.id]) { continue; }
+		if (!(params.include && params.include[child.id])) {
+			var allowed = ((org.id == ZmOrganizer.ID_ROOT) && this.allowedTypes[child.type]) ||
+						  ((org.id != ZmOrganizer.ID_ROOT) && this.allowedSubTypes[child.type]);
+			if (!allowed) { continue; }
+			// if this is a tree view of saved searches, make sure to only show saved searches
+			// that are for one of the given types
+			if ((child.type == ZmOrganizer.SEARCH) && params.searchTypes && !child._typeMatch(params.searchTypes)) {
+				continue;
+			}
+			if (this._allowedTypes && !this._allowedTypes[child.type]) { continue; }
 		}
-		
-		if (this._allowedTypes && !this._allowedTypes[child.type]) { continue; }
 		// NOTE: Separates public and shared folders
-		if (organizer.id == ZmOrganizer.ID_ROOT && child.link && addSep) {
+		if (org.id == ZmOrganizer.ID_ROOT && child.link && addSep) {
 			treeNode.addSeparator();
 			addSep = false;
 		}
-		this._addNew(treeNode, child, null);
+		this._addNew(params.treeNode, child);
 	}
 };
 
@@ -243,14 +256,19 @@ function(parentNode, organizer, index) {
 	ti.setData(Dwt.KEY_OBJECT, organizer);
 	ti.setData(ZmTreeView.KEY_ID, this.overviewId);
 	ti.setData(ZmTreeView.KEY_TYPE, organizer.type);
-	if (this._dragSrc)
+	if (this._dragSrc) {
 		ti.setDragSource(this._dragSrc);
-	if (this._dropTgt)
+	}
+	if (this._dropTgt) {
 		ti.setDropTarget(this._dropTgt);
+	}
 	this._treeHash[organizer.id] = ti;
 
-	if (ZmTreeView.ADD_SEP[organizer.id])
+	if (ZmTreeView.ADD_SEP[organizer.id]) {
 		parentNode.addSeparator();
-	if (organizer.children && organizer.children.size()) // recursively add children
-		this._render(ti, organizer);
+	}
+	// recursively add children
+	if (organizer.children && organizer.children.size()) {
+		this._render({treeNode:ti, organizer:organizer});
+	}
 };

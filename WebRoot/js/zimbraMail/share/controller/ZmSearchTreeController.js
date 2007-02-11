@@ -66,50 +66,24 @@ function() {
 * @param hideEmpty		[boolean]*	if true, don't show header if there is no data
 */
 ZmSearchTreeController.prototype.show =
-function(overviewId, showUnread, omit, forceCreate, app, hideEmpty) {
-	var appController = this._appCtxt.getAppController();
-	var activeApp = app || appController.getActiveApp();
-	var prevApp = appController.getPreviousApp();
-	var id = [overviewId, ZmSearchTreeController.APP_JOIN_CHAR, activeApp].join("");
-	this._hideEmpty[id] = hideEmpty;
-
-	if (!this._treeView[id] || forceCreate) {
-		this._treeView[id] = this._setup(overviewId);
+function(params) {
+	var id = params.overviewId;
+	this._hideEmpty[id] = params.hideEmpty;
+	if (!this._treeView[id] || params.forceCreate) {
+		this._treeView[id] = this._setup(id);
 	}
 	// mixed app should be filtered based on the previous app!
+	var appController = this._appCtxt.getAppController();
+	var activeApp = params.app || appController.getActiveApp();
+	var prevApp = appController.getPreviousApp();
 	var searchTypes = this._searchTypes[id] =
 		(activeApp == ZmApp.MIXED && prevApp == ZmApp.CONTACTS) ?
 			ZmApp.SEARCH_TYPES_R[ZmApp.CONTACTS] : ZmApp.SEARCH_TYPES_R[activeApp];
-	this._treeView[id].set(this._dataTree, showUnread, omit, searchTypes);
-	this._checkTreeView(id, searchTypes);
-};
-
-/**
-* Returns the tree view for the given overview.
-*
-* @param overviewId		[constant]	overview ID
-* @param app			[string]*	app that owns the overview
-*/
-ZmSearchTreeController.prototype.getTreeView =
-function(overviewId, app) {
-	app = app ? app : this._appCtxt.getAppController().getActiveApp();
-	var id = [overviewId, ZmSearchTreeController.APP_JOIN_CHAR, app].join("");
-	return this._treeView[id];
-};
-
-/**
-* Clears the tree view for the given overview.
-*
-* @param overviewId		[constant]	overview ID
-* @param app			[string]*	app that owns the overview
-*/
-ZmSearchTreeController.prototype.clearTreeView =
-function(overviewId, app) {
-	app = app ? app : this._appCtxt.getAppController().getActiveApp();
-	var id = [overviewId, ZmSearchTreeController.APP_JOIN_CHAR, app].join("");
-	if (this._treeView[id]) {
-		this._treeView[id].dispose();
-		delete this._treeView[id];
+	if (this._dataTree) {
+		params.dataTree = this._dataTree;
+		params.searchTypes = searchTypes;
+		this._treeView[id].set(params);
+		this._checkTreeView(id, searchTypes);
 	}
 };
 
@@ -152,7 +126,7 @@ function() {
 // override the ZmFolderTreeController override
 ZmSearchTreeController.prototype._getAllowedSubTypes =
 function() {
-	return ZmTreeController.prototype._getAllowedSubTypes.call();
+	return ZmTreeController.prototype._getAllowedSubTypes.call(this);
 };
 
 /*
@@ -180,71 +154,6 @@ function() {
 	var params = ZmTreeController.prototype._getMoveParams.call(this);
 	params.treeIds = [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH];
 	return params;
-};
-
-/*
-* Override to handle our multiple tree views. Primarily, we need to make sure that
-* only the appropriate tree views receive CREATE notifications. For example, we
-* don't want to add a saved search for contacts to the mail app's search tree view.
-* CREATE notifications always come one at a time.
-*
-* @param ev		[ZmEvent]	a change event
-*/
-ZmSearchTreeController.prototype._treeChangeListener =
-function(ev) {
-	var organizers = ev.getDetail("organizers");
-	for (var overviewId in this._treeView) {
-		if (!this._treeView[overviewId].getHtmlElement()) continue;	// tree view may have been pruned from overview
-		if (organizers.length == 1 && organizers[0].type == ZmOrganizer.SEARCH && ev.event == ZmEvent.E_CREATE) {
-			var app = overviewId.substr(overviewId.indexOf(ZmSearchTreeController.APP_JOIN_CHAR) + 1);
-			if (organizers[0]._typeMatch(ZmApp.SEARCH_TYPES_R[app])) {
-				this._changeListener(ev, this._treeView[overviewId], overviewId);
-			}
-		} else {
-			this._changeListener(ev, this._treeView[overviewId], overviewId);
-		}
-	}
-};
-
-/*
-* Handles a search folder being moved from Searches to Folders.
-*
-* @param ev				[ZmEvent]		a change event
-* @param treeView		[ZmTreeView]	a tree view
-* @param overviewId		[constant]		overview ID
-*/
-ZmSearchTreeController.prototype._changeListener =
-function(ev, treeView, overviewId) {
-	var organizers = ev.getDetail("organizers");
-	if (!organizers && ev.source)
-		organizers = [ev.source];
-
-	// handle one organizer at a time
-	for (var i = 0; i < organizers.length; i++) {
-		var organizer = organizers[i];
-		var id = organizer.id;
-		var fields = ev.getDetail("fields");
-		var node = treeView.getTreeItemById(id);
-		var parentNode = organizer.parent ? treeView.getTreeItemById(organizer.parent.id) : null;
-		if ((organizer.type == ZmOrganizer.SEARCH &&
-			(id == ZmOrganizer.ID_ROOT || organizer.parent.tree.type == ZmOrganizer.FOLDER)) &&
-			(ev.event == ZmEvent.E_MOVE || (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_PARENT])))) {
-			DBG.println(AjxDebug.DBG3, "Moving search from Searches to Folders");
-			if (node) {
-				node.dispose();
-			}
-			this._checkTreeView(overviewId);
-			// send a CREATE event to folder tree controller to get it to add node
-			var newEv = new ZmEvent(ZmEvent.S_FOLDER);
-			newEv.set(ZmEvent.E_CREATE, organizer);
-			var ftc = this._opc.getTreeController(ZmOrganizer.FOLDER);
-			var ftv = ftc.getTreeView(treeView.overviewId);
-			var folderOverviewId = overviewId.substring(0, overviewId.indexOf(ZmSearchTreeController.APP_JOIN_CHAR));
-			ftc._changeListener(newEv, ftv, folderOverviewId);
-		} else {
-			ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
-		}
-	}
 };
 
 // Miscellaneous

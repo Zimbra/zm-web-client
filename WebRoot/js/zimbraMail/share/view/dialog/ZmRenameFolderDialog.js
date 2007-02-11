@@ -40,8 +40,8 @@ function() {
 }
 
 ZmRenameFolderDialog.prototype.popup =
-function(folder, source, loc) {
-	ZmDialog.prototype.popup.call(this, loc);
+function(folder, source) {
+	ZmDialog.prototype.popup.call(this);
 	var title = (folder.type == ZmOrganizer.SEARCH) ? ZmMsg.renameSearch : ZmMsg.renameFolder;
 	this.setTitle(title + ': ' + folder.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
 	this._nameField.value = folder.getName(false, null, true);

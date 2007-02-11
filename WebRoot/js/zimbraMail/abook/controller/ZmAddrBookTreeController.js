@@ -46,7 +46,9 @@ function ZmAddrBookTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_ADDRBOOK] = new AjxListener(this, this._shareAddrBookListener);
 	this._listeners[ZmOperation.MOUNT_ADDRBOOK] = new AjxListener(this, this._mountAddrBookListener);
-};
+
+	this.usesColors = true;
+}
 
 ZmAddrBookTreeController.prototype = new ZmFolderTreeController;
 ZmAddrBookTreeController.prototype.constructor = ZmAddrBookTreeController;
@@ -60,22 +62,10 @@ function() {
 };
 
 ZmAddrBookTreeController.prototype.show =
-function(overviewId, showUnread, omit, forceCreate) {
-	var firstTime = (!this._treeView[overviewId] || forceCreate);
-
-	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate);
-
-	if (firstTime) {
-		var treeView = this.getTreeView(overviewId);
-		var root = treeView.getTreeItemById(ZmOrganizer.ID_ROOT);
-		var items = root.getItems();
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			if (item._isSeparator) continue;
-			var object = item.getData(Dwt.KEY_OBJECT);
-			this._setTreeItemColor(item, object);
-		}
-	}
+function(params) {
+	params.include = {};
+	params.include[ZmFolder.ID_TRASH] = true;
+	ZmTreeController.prototype.show.call(this, params);
 };
 
 // Enables/disables operations based on the given organizer ID
@@ -138,15 +128,6 @@ ZmAddrBookTreeController.prototype._getNewDialog =
 function() {
 	return this._appCtxt.getNewAddrBookDialog();
 };
-
-ZmAddrBookTreeController.prototype._setTreeItemColor =
-function(item, object) {
-	if (object.id == ZmFolder.ID_TRASH) return;
-
-	var element = item.getHtmlElement();
-	element.className = ZmOrganizer.COLOR_TEXT[object.color] + "Bg";
-};
-
 
 // Listeners
 

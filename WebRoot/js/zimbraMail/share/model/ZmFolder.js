@@ -193,63 +193,6 @@ function() {
 	return "ZmFolder";
 };
 
-// Searches created here since they may be created under a folder or
-// another search.
-ZmFolder.prototype.create =
-function(name, color, url, search) {
-	if (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_DRAFTS)
-		throw new AjxException("Cannot create subfolder of Spam or Drafts");
-
-	if (search) {
-		var soapDoc = AjxSoapDoc.create("CreateSearchFolderRequest", "urn:zimbraMail");
-		var searchNode = soapDoc.set("search");
-		searchNode.setAttribute("name", AjxEnv.isSafari ? AjxStringUtil.xmlEncode(name) : name);
-		searchNode.setAttribute("query", search.query);
-		if (search.types) {
-			var a = search.types.getArray();
-			if (a.length) {
-				var typeStr = new Array();
-				for (var i = 0; i < a.length; i++)
-					typeStr.push(ZmSearch.TYPE[a[i]]);
-				searchNode.setAttribute("types", typeStr.join(","));
-			}
-		}
-		if (search.sortBy)
-			searchNode.setAttribute("sortBy", ZmSearch.SORT_BY[search.sortBy]);
-		searchNode.setAttribute("l", this.id);
-	} else {
-		var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
-		var folderNode = soapDoc.set("folder");
-		folderNode.setAttribute("name", AjxEnv.isSafari ? AjxStringUtil.xmlEncode(name) : name);
-		folderNode.setAttribute("l", this.id);
-		if (url) folderNode.setAttribute("url", url);
-	}
-	var errorCallback = new AjxCallback(this, this._handleErrorCreate, [url, name]);
-	var appController = this.tree._appCtxt.getAppController();
-	appController.sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
-};
-
-ZmFolder.prototype._handleErrorCreate =
-function(url, name, ex) {
-	if (!url && !name) return false;
-
-	var msgDialog = this.tree._appCtxt.getMsgDialog();
-	var msg;
-	if (name && (ex.code == ZmCsfeException.MAIL_ALREADY_EXISTS)) {
-		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
-	} else if (url) {
-		var errorMsg = (ex.code == ZmCsfeException.SVC_RESOURCE_UNREACHABLE) ? ZmMsg.feedUnreachable : ZmMsg.feedInvalid;
-		msg = AjxMessageFormat.format(errorMsg, url);
-	}
-	if (msg) {
-		msgDialog.reset();
-		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-		msgDialog.popup();
-	}
-
-	return true;
-};
-
 // User can move a folder to Trash even if there's already a folder there with the
 // same name. We find a new name for this folder and rename it before the move.
 ZmFolder.prototype.move =
@@ -323,9 +266,9 @@ function(obj) {
 	}
 
 	if (obj.l != null && obj.l != this.parent.id) {
-		details.oldPath = this.getPath();
 		var newParent = this._getNewParent(obj.l);
 		this.reparent(newParent);
+		details.oldPath = this.getPath();
 		this._notify(ZmEvent.E_MOVE, details);
 		obj.l = null;
 	}

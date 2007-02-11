@@ -118,16 +118,14 @@ ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]		= 64;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.SEARCH]	= 256;
 
 // fields that can be part of a displayed organizer
-var i = 1;
-ZmOrganizer.F_NAME		= i++;
-ZmOrganizer.F_UNREAD	= i++;
-ZmOrganizer.F_TOTAL		= i++;
-ZmOrganizer.F_PARENT	= i++;
-ZmOrganizer.F_COLOR		= i++;
-ZmOrganizer.F_QUERY		= i++;
-ZmOrganizer.F_SHARES	= i++;
-ZmOrganizer.F_FLAGS		= i++;
-ZmOrganizer.F_REST_URL	= i++;
+ZmOrganizer.F_NAME		= "name";
+ZmOrganizer.F_UNREAD	= "unread";
+ZmOrganizer.F_TOTAL		= "total";
+ZmOrganizer.F_COLOR		= "color";
+ZmOrganizer.F_QUERY		= "query";
+ZmOrganizer.F_SHARES	= "shares";
+ZmOrganizer.F_FLAGS		= "flags";
+ZmOrganizer.F_REST_URL	= "rest";
 
 ZmOrganizer.FLAG_CHECKED			= "#";
 ZmOrganizer.FLAG_IMAP_SUBSCRIBED	= "*";
@@ -348,6 +346,7 @@ function(appCtxt, msg) {
  * @param errorCallback	[AjxCallback]	Optional.
  */
 /*** TODO ***
+// make static
 ZmOrganizer.prototype.createPath =
 function(path, attrs, callback, errorCallback) {
 	var organizer = this;
@@ -696,12 +695,13 @@ ZmOrganizer.prototype.notifyCreate = function() {};
 * Handle modifications to fields that organizers have in general. Note that
 * the notification object may contain multiple notifications.
 *
-* @param obj	[Object]	a "modified" notification
+* @param obj		[object]	a "modified" notification
+* @param details	[hash]*		event details
 */
 ZmOrganizer.prototype.notifyModify =
-function(obj) {
+function(obj, details) {
 	var doNotify = false;
-	var details = {};
+	var details = details || {};
 	var fields = {};
 	if (obj.name != null && this.name != obj.name) {
 		details.oldName = this.name;

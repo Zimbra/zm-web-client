@@ -53,7 +53,7 @@ ZmMountFolderDialog.prototype.constructor = ZmMountFolderDialog;
 // Public methods
 
 ZmMountFolderDialog.prototype.popup =
-function(organizerType, folderId, user, path, loc) {
+function(organizerType, folderId, user, path) {
 	// remember values
 	this._organizerType = organizerType;
 	this._folderId = folderId || ZmOrganizer.ID_ROOT;
@@ -68,7 +68,7 @@ function(organizerType, folderId, user, path, loc) {
 	this._nameInputDirty = false;
 
 	// show
-	DwtDialog.prototype.popup.call(this, loc);
+	DwtDialog.prototype.popup.call(this);
 	ZmMountFolderDialog._enableFieldsOnEdit(this);
 };
 

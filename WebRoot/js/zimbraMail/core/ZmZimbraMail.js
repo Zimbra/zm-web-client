@@ -324,7 +324,6 @@ function(params, result) {
 							hideEmpty: ZmZimbraMail.HIDE_EMPTY});
 	}
 	this._setUserInfo();
-	this._checkOverviewLayout();
 
 	if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
 		this._components[ZmAppViewMgr.C_SEARCH] = this._appCtxt.getSearchController().getSearchPanel();
@@ -781,7 +780,9 @@ function(appName, view) {
 		if (ZmApp.DEFAULT_SEARCH[appName]) {
 			this._appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName], true);
 		}
-		this._checkOverviewLayout(true);
+		var reset = {};
+		reset[ZmOrganizer.SEARCH] = true;
+		this._checkOverviewLayout(true, reset);
 		// activate current app
 		var app = this._apps[this._activeApp];
 		if (app) app.activate(true, view);
@@ -821,11 +822,11 @@ function(appName) {
 };
 
 ZmZimbraMail.prototype._checkOverviewLayout =
-function(force, resetTree) {
+function(force, reset) {
 	if ((this._needOverviewLayout || force) && this._settings.userSettingsLoaded) {
 		DBG.println(AjxDebug.DBG1, "laying out overview panel");
 		var opc = this._appCtxt.getOverviewController();
-		opc.set(ZmZimbraMail._OVERVIEW_ID, this._getOverviewTrees(this._activeApp), null, resetTree);
+		opc.set(ZmZimbraMail._OVERVIEW_ID, this._getOverviewTrees(this._activeApp), null, reset);
 		this._components[ZmAppViewMgr.C_TREE] = opc.getOverview(ZmZimbraMail._OVERVIEW_ID);
 		// clear shared folder dialogs so they'll be recreated with new folder tree
 		this._appCtxt.clearFolderDialogs();

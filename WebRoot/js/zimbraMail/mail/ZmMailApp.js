@@ -96,6 +96,7 @@ function ZmMailApp(appCtxt, container, parentController) {
 							  assistants:			{"ZmMailAssistant":"Mail"},
 							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],
 							  actionCode:			ZmKeyMap.GOTO_MAIL,
+							  ops:					[ZmOperation.NEW_MESSAGE],
 							  qsViews:				["compose", "msg"],
 							  trashViewOp:			ZmOperation.SHOW_ONLY_MAIL,
 							  chooserSort:			10,
@@ -138,6 +139,8 @@ ZmMailApp.prototype.toString =
 function() {
 	return "ZmMailApp";
 };
+
+// App API
 
 ZmMailApp.prototype.startup =
 function(result) {
@@ -207,6 +210,20 @@ function(list) {
 		}
 	}
 };
+
+ZmMailApp.prototype.handleOp =
+function(op, params) {
+	switch (op) {
+		case ZmOperation.NEW_MESSAGE: {
+			var inNewWindow = (params && params.newWin) || (params && params.ev) ?
+								this._inNewWindow(params.ev) : false;
+			AjxDispatcher.run("Compose", {action: ZmOperation.NEW_MESSAGE, inNewWindow:inNewWindow});
+			break;
+		}
+	}
+};
+
+// Public methods
 
 ZmMailApp.prototype.launch =
 function(callback, checkQS) {

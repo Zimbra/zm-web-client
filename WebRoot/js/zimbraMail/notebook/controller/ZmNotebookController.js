@@ -316,7 +316,7 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 
 	var names = [];
 	var urls = [];
-	var inNewWindow = this._inNewWindow(event);
+	var inNewWindow = this._app._inNewWindow(event);
 
 	var content = "<wiklet class='NAME'/>";
 

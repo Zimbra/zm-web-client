@@ -172,7 +172,9 @@ function(overviewId, treeIds, omit, reset) {
 		if (!treeView || (reset && reset[treeId])) {
 			var hideEmpty = this._hideEmpty[overviewId] ? this._hideEmpty[overviewId][treeId] : false;
 			// create the tree view as a child of the overview
-			treeController.show(overviewId, this._showUnread[overviewId], omit, false, app, hideEmpty);
+			var params = {overviewId:overviewId, omit:omit, app:app, hideEmpty:hideEmpty};
+			params.showUnread = this._showUnread[overviewId];
+			treeController.show(params);
 		} else {
 			// add the tree view's HTML element back to the overview
 			overview.addChild(treeView);
@@ -279,6 +281,29 @@ function(overviewId, treeId, app) {
 };
 
 /**
+ * Searches all the tree views for the given overviewId for the tree item
+ * whose data object has the given ID.
+ * 
+ * @param overviewId	[constant]		overview ID
+ * @param id			[int]			ID to look for
+ * @param type			[constant]*		item must also have this type
+ */
+ZmOverviewController.prototype.getTreeItemById =
+function(overviewId, id, type) {
+	var treeIds = this._treeIds[overviewId];
+	if (!(treeIds && treeIds.length)) { return null; }
+	for (var i = 0; i < treeIds.length; i++) {
+		var treeId = treeIds[i];
+		var treeView = this.getTreeView(overviewId, treeId);
+		var item = treeView.getTreeItemById(id);
+		if (item && (!type || (treeId == type))) {
+			return item;
+		}
+	}
+	return null;
+};
+
+/**
 * Returns the first selected item within this overview.
 *
 * @param overviewId		[constant]	overview ID
@@ -286,10 +311,15 @@ function(overviewId, treeId, app) {
 ZmOverviewController.prototype.getSelected =
 function(overviewId) {
 	var treeIds = this._treeIds[overviewId];
+	if (!(treeIds && treeIds.length)) { return null; }
 	for (var i = 0; i < treeIds.length; i++) {
-		var item = this.getTreeView(overviewId, treeIds[i]).getSelected();
-		if (item)
-			return item;
+		var treeView = this.getTreeView(overviewId, treeIds[i]);
+		if (treeView) {
+			var item = treeView.getSelected();
+			if (item) {
+				return item;
+			}
+		}
 	}
 	return null;
 };
@@ -306,7 +336,10 @@ function(overviewId, treeId) {
 	var treeIds = this._treeIds[overviewId];
 	for (var i = 0; i < treeIds.length; i++) {
 		if (treeIds[i] != treeId) {
-			this.getTreeView(overviewId, treeIds[i]).deselectAll();
+			var treeView = this.getTreeView(overviewId, treeIds[i]);
+			if (treeView) {
+				treeView.deselectAll();
+			}
 		}
 	}
 };

@@ -71,18 +71,14 @@ function(overviewId, listener) {
 };
 
 // Protected methods
-ZmZimletTreeController.prototype.show =
-function(overviewId, showUnread, omit, forceCreate, app, hideEmpty) {
-	var firstTime = !this._treeView[overviewId];
-	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate, app, hideEmpty);
-	if (firstTime) {
-		var treeView = this.getTreeView(overviewId);
-		var root = treeView.getItems()[0];
-		if (root) {
-			var items = root.getItems();
-			for (var i = 0; i < items.length; i++) {
-				this.setToolTipText(items[i]);
-			}
+ZmZimletTreeController.prototype._postSetup =
+function(overviewId) {
+	var treeView = this.getTreeView(overviewId);
+	var root = treeView.getItems()[0];
+	if (root) {
+		var items = root.getItems();
+		for (var i = 0; i < items.length; i++) {
+			this.setToolTipText(items[i]);
 		}
 	}
 };

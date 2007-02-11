@@ -55,7 +55,7 @@ ZmDeclineShareDialog.prototype.constructor = ZmDeclineShareDialog;
 // Public methods
 
 ZmDeclineShareDialog.prototype.popup =
-function(share, loc) {
+function(share) {
 	this._share = share;
 	var params = [ share.grantee.name, share.link.name ];
 	var message = this._formatter.format(params);
@@ -64,7 +64,7 @@ function(share, loc) {
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 	
-	DwtDialog.prototype.popup.call(this, loc);
+	DwtDialog.prototype.popup.call(this);
 };
 
 ZmDeclineShareDialog.prototype.setDeclineListener =

@@ -53,13 +53,12 @@ function() {
 
 /**
  * @param data		[object]	Array of items, a folder, an item, or null
- * @param loc		[DwtPoint]	Location to pop up at
  * @param treeIds	[array]		List of trees to show
+ * @param omit		[hash]		IDs to not show
  * @param orgType	[constant]	Primary tree type
  */
 ZmMoveToDialog.prototype.popup =
-//function(data, loc, treeIds, clearOverview) {
-function(params, loc) {
+function(params) {
 	params = params || {};
 	var omit = params.omit || {};
 	omit[ZmFolder.ID_DRAFTS] = true;
@@ -98,7 +97,7 @@ function(params, loc) {
 	// (so that it comes after the view's standard change listener)
 	folderTree.addChangeListener(this._changeListener);
 
-	ZmDialog.prototype.popup.call(this, loc);
+	ZmDialog.prototype.popup.call(this);
 	
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];

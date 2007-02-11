@@ -96,6 +96,7 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.PAGE, ZmItem.DOCUMENT],
 							  actionCode:			ZmKeyMap.GOTO_NOTEBOOK,
+							  ops:					[ZmOperation.NEW_PAGE, ZmOperation.NEW_NOTEBOOK],
 							  chooserSort:			50,
 							  defaultSort:			30
 							  });
@@ -132,7 +133,7 @@ function() {
 
 ZmNotebookApp.prototype._notebookCache;
 
-// Public methods
+// App API
 
 ZmNotebookApp.prototype.deleteNotify =
 function(ids) {
@@ -253,6 +254,35 @@ function(list) {
 	}
 };
 
+ZmNotebookApp.prototype.handleOp =
+function(op) {
+	switch (op) {
+		case ZmOperation.NEW_PAGE: {
+			AjxDispatcher.require(["NotebookCore", "Notebook"]);
+			var overviewController = this._appCtxt.getOverviewController();
+			var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
+			var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+
+			var notebook = treeView ? treeView.getSelected() : null;
+			var page = new ZmPage(this._appCtxt);
+			page.folderId = notebook ? notebook.id : ZmNotebookItem.DEFAULT_FOLDER;
+
+			AjxDispatcher.run("GetPageEditController").show(page);
+			break;
+		}
+		case ZmOperation.NEW_NOTEBOOK: {
+			var dialog = this._appCtxt.getNewNotebookDialog();
+			if (!this._newNotebookCb) {
+				this._newNotebookCb = new AjxCallback(this, this._newNotebookCallback);
+			}
+			ZmController.showDialog(dialog, this._newNotebookCb);
+			break;
+		}
+	}
+};
+
+// Public methods
+
 ZmNotebookApp.prototype.launch =
 function(callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
@@ -320,4 +350,12 @@ function() {
 		this._notebookCache = new ZmNotebookCache(this._appCtxt);
 	}
 	return this._notebookCache;
+};
+
+ZmNotebookApp.prototype._newNotebookCallback =
+function(parent, name, color) {
+	var dialog = this._appCtxt.getNewNotebookDialog();
+	dialog.popdown();
+	var oc = this._appCtxt.getOverviewController();
+	oc.getTreeController(ZmOrganizer.NOTEBOOK)._doCreate(parent, name, color);
 };

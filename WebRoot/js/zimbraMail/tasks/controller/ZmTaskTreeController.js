@@ -33,7 +33,8 @@ function ZmTaskTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.MOUNT_TASKFOLDER] = new AjxListener(this, this._mountTaskFolderListener);
 
 	this._eventMgrs = {};
-};
+	this.usesColors = true;
+}
 
 ZmTaskTreeController.prototype = new ZmFolderTreeController;
 ZmTaskTreeController.prototype.constructor = ZmTaskTreeController;
@@ -43,24 +44,6 @@ ZmTaskTreeController.prototype.constructor = ZmTaskTreeController;
 ZmTaskTreeController.prototype.toString =
 function() {
 	return "ZmTaskTreeController";
-};
-
-ZmTaskTreeController.prototype.show =
-function(overviewId, showUnread, omit, forceCreate) {
-	var firstTime = (!this._treeView[overviewId] || forceCreate);
-
-	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate);
-
-	if (firstTime) {
-		var treeView = this.getTreeView(overviewId);
-		var root = treeView.getTreeItemById(ZmOrganizer.ID_ROOT);
-		var items = root.getItems();
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			if (item._isSeparator) continue;
-			this._setTreeItemColor(item, item.getData(Dwt.KEY_OBJECT));
-		}
-	}
 };
 
 ZmTaskTreeController.prototype.resetOperations =
@@ -85,12 +68,6 @@ function(parent, type, id) {
 ZmTaskTreeController.prototype._getNewDialog =
 function() {
 	return this._appCtxt.getNewTaskFolderDialog();
-};
-
-ZmTaskTreeController.prototype._setTreeItemColor =
-function(item, object) {
-	var element = item.getHtmlElement();
-	element.className = ZmOrganizer.COLOR_TEXT[object.color] + "Bg";
 };
 
 // Returns a list of desired header action menu operations

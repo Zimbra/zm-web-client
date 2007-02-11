@@ -345,30 +345,7 @@ function(ev) {
 // a menu item), the action taken depends on the app.
 ZmChatListController.prototype._newListener = 
 function(ev) {
-	var id = ev.item.getData(ZmOperation.KEY_ID);
-	if (!id || id == ZmOperation.NEW_MENU)
-		id = this._defaultNewId;
-	if (id == ZmOperation.NEW_MESSAGE) {
-		var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
-		AjxDispatcher.run("Compose", {action: ZmOperation.NEW_MESSAGE, inNewWindow: inNewWindow});
-	} else if (id == ZmOperation.NEW_CONTACT) {
-		var contact = new ZmContact(this._appCtxt);
-		AjxDispatcher.run("GetContactController").show(contact);
-	} else if (id == ZmOperation.NEW_APPT) {
-		AjxDispatcher.run("GetCalController").newAppointment();
-	} else if (id == ZmOperation.NEW_FOLDER) {
-		this._showDialog(this._appCtxt.getNewFolderDialog(), this._newFolderCallback);
-	} else if (id == ZmOperation.NEW_TAG) {
-		this._showDialog(this._appCtxt.getNewTagDialog(), this._newTagCallback, null, null, false);
-	} else if (id == ZmOperation.NEW_CALENDAR) {
-		var overviewController = this._appCtxt.getOverviewController();
-		var treeData = overviewController.getTreeData(ZmOrganizer.CALENDAR);
-		var folder = treeData.root;
-	
-		var newCalDialog = this._appCtxt.getNewCalendarDialog();
-		newCalDialog.setParentFolder(folder);
-		newCalDialog.popup();
-	}
+	ZmListController.prototype._newListener.call(this, ev);
 }
 
 ZmChatListController.prototype._presenceItemListener = 
