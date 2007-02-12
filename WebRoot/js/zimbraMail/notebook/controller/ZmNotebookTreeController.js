@@ -199,8 +199,8 @@ function() {
 // Listener callbacks
 
 ZmNotebookTreeController.prototype._changeListener =
-function(ev, treeView) {
-	ZmTreeController.prototype._changeListener.call(this, ev, treeView);
+function(ev, treeView, overviewId) {
+	ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 
 	if (ev.type != this.type) return;
 

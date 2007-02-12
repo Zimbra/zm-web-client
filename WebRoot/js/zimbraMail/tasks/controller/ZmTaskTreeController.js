@@ -105,8 +105,8 @@ function(ev) {
 };
 
 ZmTaskTreeController.prototype._changeListener =
-function(ev, treeView) {
-	ZmFolderTreeController.prototype._changeListener.call(this, ev, treeView);
+function(ev, treeView, overviewId) {
+	ZmFolderTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 
 	if (ev.type != this.type) return;
 

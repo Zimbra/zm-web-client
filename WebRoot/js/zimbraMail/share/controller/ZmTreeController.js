@@ -244,7 +244,7 @@ function(treeItem, object) {
 	if (object.id == ZmFolder.ID_TRASH) { return; }
 	
 	var element = treeItem.getHtmlElement();
-	element.className = ZmOrganizer.COLOR_CLASS[object.color];
+	element.className = ZmTreeController.COLOR_CLASS[object.color];
 };
 
 /*

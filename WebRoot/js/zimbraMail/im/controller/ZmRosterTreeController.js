@@ -77,9 +77,6 @@ function(overviewId, listener) {
 	}
 };
 
-//ZmRosterTreeController.prototype._changeListener = 
-//function(ev, treeView) {};
-
 ZmRosterTreeController.prototype._rosterListChangeListener = 
 function(ev) {
     var treeView = this.getTreeView(ZmZimbraMail._OVERVIEW_ID);

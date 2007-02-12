@@ -92,8 +92,8 @@ function (item) {
 // ZmTreeController removes existing DwtTreeItem object then add a new one on ZmEvent.E_MODIFY,
 // wiping out any properties set on the object. 
 ZmZimletTreeController.prototype._changeListener =
-function(ev, treeView) {
-	ZmTreeController.prototype._changeListener.call(this, ev, treeView);
+function(ev, treeView, overviewId) {
+	ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 	var organizers = ev.getDetail("organizers");
 	if (!organizers && ev.source)
 		organizers = [ev.source];
