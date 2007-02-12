@@ -234,7 +234,7 @@ function(params) {
 		}
 		// NOTE: Separates public and shared folders
 		if (org.id == ZmOrganizer.ID_ROOT && child.link && addSep) {
-			treeNode.addSeparator();
+			params.treeNode.addSeparator();
 			addSep = false;
 		}
 		this._addNew(params.treeNode, child);
