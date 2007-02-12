@@ -217,7 +217,7 @@ function(overviewId) {
 ZmTreeController.prototype._postSetup =
 function(overviewId) {
 	var isCheckedStyle = (this.getTreeStyle() == DwtTree.CHECKEDITEM_STYLE);
-	if (!isCheckedStyle && !this.usesColor) { return; }
+	if (!isCheckedStyle && !this.usesColors) { return; }
 
 	var treeView = this.getTreeView(overviewId);
 	var rootTreeItem = treeView.getTreeItemById(ZmOrganizer.ID_ROOT);
@@ -230,8 +230,8 @@ function(overviewId) {
 		var treeItem = treeItems[i];
 		if (treeItem._isSeparator) continue;
 		var object = treeItem.getData(Dwt.KEY_OBJECT);
-		if (this.usesColor) {
-			this._setTreeItemColor(treeItem, object.color);
+		if (this.usesColors && (object.color != null)) {
+			this._setTreeItemColor(treeItem, object);
 		}
 		if (isCheckedStyle) {
 			treeItem.setChecked(object.isChecked);
@@ -241,6 +241,7 @@ function(overviewId) {
 
 ZmTreeController.prototype._setTreeItemColor =
 function(treeItem, object) {
+	if (!treeItem || !object) { return; }
 	if (object.id == ZmFolder.ID_TRASH) { return; }
 	
 	var element = treeItem.getHtmlElement();
