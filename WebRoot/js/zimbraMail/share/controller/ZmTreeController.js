@@ -510,6 +510,7 @@ function(ev, treeView, overviewId) {
 		var organizer = organizers[i];
 		var id = organizer.id;
 		var node = treeView.getTreeItemById(id);
+		// source tree handles moves
 		if (!node && (ev.event != ZmEvent.E_CREATE)) { continue; }
 		var parentNode = null;
 		if (organizer.parent) {
@@ -539,9 +540,10 @@ function(ev, treeView, overviewId) {
 		} else if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE) {
 			if (parentNode) {
 				var idx = ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type]));
-				if (ev.event == ZmEvent.CREATE) {
-					// root is shared by all folder types, so check for our type
-					if ((organizer.parent.id == ZmOrganizer.ID_ROOT) && (ev.type != this.type)) { continue; }
+				if (ev.event == ZmEvent.E_CREATE) {
+					// parent's tree controller should handle creates - root is shared by all folder types
+					var type = (organizer.parent.id == ZmOrganizer.ID_ROOT) ? ev.type : organizer.parent.type;
+					if (type != this.type) { continue; }
 					DBG.println("TREE LISTENER: creating node");
 					this._addNew(treeView, parentNode, organizer, idx); // add to new parent
 				} else if (ev.event == ZmEvent.E_MOVE) {

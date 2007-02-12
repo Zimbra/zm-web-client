@@ -416,23 +416,3 @@ ZmFolder.prototype.isSyncIssuesFolder =
 function() {
 	return this.name == ZmFolder.SYNC_ISSUES;
 };
-
-/*
- * Returns true if this folder has a search folder for any of
- * the given types anywhere in or under it.
- *
- * @param types		[hash]		a hash of search types (item type IDs)
- */
-ZmFolder.prototype._hasType =
-function(types) {
-	if (this._typeMatch && this._typeMatch(types)) { return true; }
-	
-	var a = this.children.getArray();
-	var sz = this.children.size();
-	for (var i = 0; i < sz; i++) {
-		if (a[i]._typeMatch && a[i]._typeMatch(types)) {
-			return true;
-		}
-	}
-	return false;
-};

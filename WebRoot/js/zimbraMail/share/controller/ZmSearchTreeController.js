@@ -174,7 +174,25 @@ function() {
  */
 ZmSearchTreeController.prototype._checkTreeView =
 function(overviewId) {
-	if (!overviewId || !this._treeView[overviewId].getHtmlElement()) return;	// tree view may have been pruned from overview
-	var show = (this._dataTree.root._hasType(this._searchTypes[overviewId]) || !this._hideEmpty[overviewId]);
+	var treeView = this._treeView[overviewId];
+	if (!overviewId || !treeView.getHtmlElement()) return;	// tree view may have been pruned from overview
+
+	var show = 	!this._hideEmpty[overviewId] || this._treeItemTypeMatch(treeView.getTreeItemById(ZmOrganizer.ID_ROOT), this._searchTypes[overviewId]);
 	this._treeView[overviewId].setVisible(show);
+};
+
+ZmSearchTreeController.prototype._treeItemTypeMatch =
+function(treeItem, types) {
+	var search = treeItem.getData(Dwt.KEY_OBJECT);
+	if (search._typeMatch && search._typeMatch(types)) {
+		return true;
+	}
+	
+	var items = treeItem.getItems();
+	for (var i = 0; i < items.length; i++) {
+		if (this._treeItemTypeMatch(items[i], types)) {
+			return true;
+		}
+	}
+	return false;
 };
