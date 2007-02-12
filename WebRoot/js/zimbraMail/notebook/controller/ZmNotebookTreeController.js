@@ -61,6 +61,7 @@ function(actionMenu, type, id) {
 		var overviewController = this._appCtxt.getOverviewController();
 		var treeData = overviewController.getTreeData(ZmOrganizer.NOTEBOOK);
 		var notebook = treeData.getById(id);
+		if (!notebook) { return; }
 
 		var isRoot = notebook.id == ZmOrganizer.ID_ROOT;
 		var isNotebook = notebook.id == ZmOrganizer.ID_NOTEBOOK;

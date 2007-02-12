@@ -52,14 +52,18 @@ function(parent, type, id) {
 	var folder = this._dataTree.getById(id);
 
 	parent.enableAll(true);
-	if (folder && folder.isSystem()) {
-		parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
-	} else if (folder.link) {
-		parent.enable([ZmOperation.SHARE_TASKFOLDER], false);
+	if (folder) {
+		if ( folder.isSystem()) {
+			parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
+		} else if (folder.link) {
+			parent.enable([ZmOperation.SHARE_TASKFOLDER], false);
+		}
 	}
 
 	var op = parent.getOp(ZmOperation.DELETE);
-	if (op) op.setText(deleteText);
+	if (op) {
+		op.setText(deleteText);
+	}
 };
 
 /*

@@ -93,9 +93,11 @@ function(actionMenu, type, id) {
 		var overviewController = this._appCtxt.getOverviewController();
 		var treeData = overviewController.getTreeData(ZmOrganizer.CALENDAR);
 		var calendar = treeData.getById(id);
-		actionMenu.enable(ZmOperation.SHARE_CALENDAR, !calendar.link);
+		if (calendar) {
+			actionMenu.enable(ZmOperation.SHARE_CALENDAR, !calendar.link);
+			actionMenu.enable(ZmOperation.SYNC, calendar.isFeed());
+		}
 		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_CALENDAR);
-		actionMenu.enable(ZmOperation.SYNC, calendar.isFeed());
 		if (id == ZmOrganizer.ID_ROOT) {
 			var items = this._getItems(this._actionedOverviewId);
 			var foundChecked = false;

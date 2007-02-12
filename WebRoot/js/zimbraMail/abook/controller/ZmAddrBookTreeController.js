@@ -72,7 +72,6 @@ function(params) {
 ZmAddrBookTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	var deleteText = ZmMsg.del;
-	var addrBook = this._dataTree.getById(id);
 
 	if (id == ZmFolder.ID_TRASH) {
 		parent.enableAll(false);
@@ -80,16 +79,20 @@ function(parent, type, id) {
 		deleteText = ZmMsg.emptyTrash;
 	} else {
 		parent.enableAll(true);
-		if (addrBook && addrBook.isSystem()) {
-			parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
-		} else if (addrBook.link) {
-			parent.enable([ZmOperation.SHARE_ADDRBOOK], false);
+		var addrBook = this._dataTree.getById(id);
+		if (addrBook) {
+			if (addrBook.isSystem()) {
+				parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);
+			} else if (addrBook.link) {
+				parent.enable([ZmOperation.SHARE_ADDRBOOK], false);
+			}
 		}
 	}
 
 	var op = parent.getOp(ZmOperation.DELETE);
-	if (op)
+	if (op) {
 		op.setText(deleteText);
+	}
 };
 
 
