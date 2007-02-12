@@ -167,9 +167,9 @@ function(actionCode) {
 		actionCode = shortcut.baseAction;
 	}
 	
-	var app = ZmApp.NEW_ACTION_CODES_R[actionCode];
+	var app = ZmApp.ACTION_CODES_R[actionCode];
 	if (app) {
-		var op = ZmApp.NEW_ACTION_CODES_OP[actionCode];
+		var op = ZmApp.ACTION_CODES_OP[actionCode];
 		if (op) {
 			this._appCtxt.getApp(app).handleOp(op);
 			return true;
@@ -202,20 +202,29 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.NEW: {
-			var curApp = this._appCtxt.getAppController().getActiveApp();
-			var newActionCodes = ZmApp.NEW_ACTION_CODES[curApp];
-			if (newActionCodes && newActionCodes.length) {
-				// list is code, op, code, op ... grab first op (default)
-				var op = newActionCodes[1];
+			// find default "New" action code for current app
+			var app = this._appCtxt.getAppController().getActiveApp();
+			var newActionCode = ZmApp.NEW_ACTION_CODE[app];
+			if (newActionCode) {
+				var op = ZmApp.ACTION_CODES_OP[newActionCode];
 				if (op) {
-					this._appCtxt.getApp(curApp).handleOp(op);
+					this._appCtxt.getApp(app).handleOp(op);
 					return true;
-				}	
+				}
 			}
+			break;
 		}
 	
 		case ZmKeyMap.NEW_MESSAGE_WIN:
 			this._newListener(null, ZmListController.ACTION_CODE_TO_OP[actionCode], {newWin:true});
+			break;
+			
+		case ZmKeyMap.NEW_FOLDER:
+		case ZmKeyMap.NEW_TAG:
+			var op = ZmApp.ACTION_CODES_OP[actionCode];
+			if (op) {
+				this._newListener(null, op);
+			}
 			break;
 
 		case ZmKeyMap.PRINT:
@@ -506,6 +515,7 @@ function() {
  */
 ZmListController.prototype._newListener =
 function(ev, op, params) {
+	if (!ev && !op) { return; }
 	op = op || ev.item.getData(ZmOperation.KEY_ID);
 	if (!op || op == ZmOperation.NEW_MENU) {
 		op = this._defaultNewId;

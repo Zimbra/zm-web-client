@@ -100,7 +100,8 @@ function ZmContactsApp(appCtxt, container, parentController) {
 							  searchTypes:			[ZmItem.CONTACT],
 							  ops:					[ZmOperation.NEW_CONTACT, ZmOperation.NEW_GROUP, ZmOperation.NEW_ADDRBOOK],
 							  gotoActionCode:		ZmKeyMap.GOTO_CONTACTS,
-							  newActionCodes:		[ZmKeyMap.NEW_CONTACT, ZmOperation.NEW_CONTACT],
+							  newActionCode:		ZmKeyMap.NEW_CONTACT,
+							  actionCodes:			[ZmKeyMap.NEW_CONTACT, ZmOperation.NEW_CONTACT],
 							  trashViewOp:			ZmOperation.SHOW_ONLY_CONTACTS,
 							  chooserSort:			20,
 							  defaultSort:			40

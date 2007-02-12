@@ -5,10 +5,9 @@
  * 
  * Loaded: During initial load of web client
  */
-AjxPackage.require("zimbraMail.core.ZmApp");
 AjxPackage.require("zimbraMail.core.ZmAppCtxt");
-AjxPackage.require("zimbraMail.core.ZmMimeTable");
 AjxPackage.require("zimbraMail.core.ZmOperation");
+AjxPackage.require("zimbraMail.core.ZmMimeTable");
 
 AjxPackage.require("zimbraMail.share.model.ZmObjectHandler");
 AjxPackage.require("zimbraMail.share.model.ZmObjectManager");
@@ -16,11 +15,11 @@ AjxPackage.require("zimbraMail.share.model.ZmEvent");
 AjxPackage.require("zimbraMail.share.model.ZmModel");
 AjxPackage.require("zimbraMail.share.model.ZmSetting");
 AjxPackage.require("zimbraMail.share.model.ZmSettings");
+AjxPackage.require("zimbraMail.share.model.ZmKeyMap");
 AjxPackage.require("zimbraMail.share.model.ZmTimezone");
 AjxPackage.require("zimbraMail.share.model.ZmItem");
 AjxPackage.require("zimbraMail.share.model.ZmOrganizer");
 AjxPackage.require("zimbraMail.share.model.ZmFolder");
-AjxPackage.require("zimbraMail.share.model.ZmKeyMap");
 AjxPackage.require("zimbraMail.share.model.ZmSearchFolder");
 AjxPackage.require("zimbraMail.share.model.ZmAuthenticate");
 AjxPackage.require("zimbraMail.share.model.ZmSearch");
@@ -31,6 +30,8 @@ AjxPackage.require("zimbraMail.share.model.ZmTagTree");
 AjxPackage.require("zimbraMail.share.model.ZmFolderTree");
 AjxPackage.require("zimbraMail.share.model.ZmInvite");
 AjxPackage.require("zimbraMail.share.model.ZmList");
+
+AjxPackage.require("zimbraMail.core.ZmApp");
 
 AjxPackage.require("zimbraMail.share.view.ZmPopupMenu");
 AjxPackage.require("zimbraMail.share.view.ZmActionMenu");

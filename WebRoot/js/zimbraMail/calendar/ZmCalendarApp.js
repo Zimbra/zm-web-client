@@ -88,7 +88,8 @@ function ZmCalendarApp(appCtxt, container) {
 							  						 "ZmCalendarAssistant":		["CalendarCore", "Calendar"]},
 							  ops:					[ZmOperation.NEW_APPT, ZmOperation.NEW_CALENDAR],
 							  gotoActionCode:		ZmKeyMap.GOTO_CALENDAR,
-							  newActionCodes:		[ZmKeyMap.NEW_APPT, ZmOperation.NEW_APPT,
+							  newActionCode:		ZmKeyMap.NEW_APPT,
+							  actionCodes:			[ZmKeyMap.NEW_APPT, ZmOperation.NEW_APPT,
 							  						 ZmKeyMap.NEW_CALENDAR, ZmOperation.NEW_CALENDAR],
 							  chooserSort:			30,
 							  defaultSort:			20

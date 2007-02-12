@@ -97,7 +97,8 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 							  searchTypes:			[ZmItem.PAGE, ZmItem.DOCUMENT],
 							  ops:					[ZmOperation.NEW_PAGE, ZmOperation.NEW_NOTEBOOK],
 							  gotoActionCode:		ZmKeyMap.GOTO_NOTEBOOK,
-							  newActionCodes:		[ZmKeyMap.NEW_PAGE, ZmOperation.NEW_PAGE,
+							  newActionCode:		ZmKeyMap.NEW_PAGE,
+							  actionCodes:			[ZmKeyMap.NEW_PAGE, ZmOperation.NEW_PAGE,
 							  						 ZmKeyMap.NEW_NOTEBOOK, ZmOperation.NEW_NOTEBOOK],
 							  chooserSort:			50,
 							  defaultSort:			30

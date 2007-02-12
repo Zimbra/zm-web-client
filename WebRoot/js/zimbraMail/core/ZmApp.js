@@ -73,15 +73,20 @@ ZmApp.SEARCH_TYPES			= {};	// list of types of saved searches to show in overvie
 ZmApp.SEARCH_TYPES_R		= {};
 ZmApp.GOTO_ACTION_CODE		= {};	// key action for jumping to this app
 ZmApp.GOTO_ACTION_CODE_R	= {};
-ZmApp.NEW_ACTION_CODES		= {};	// key actions for creating new things
-ZmApp.NEW_ACTION_CODES_R	= {};
-ZmApp.NEW_ACTION_CODES_OP	= {};
+ZmApp.NEW_ACTION_CODE		= {};	// default "new" key action
+ZmApp.ACTION_CODES			= {};	// key actions that map to ops
+ZmApp.ACTION_CODES_R		= {};
 ZmApp.OPS					= {};	// IDs of operations for the app
 ZmApp.OPS_R					= {};	// map of operation ID to app
 ZmApp.QS_VIEWS				= {};	// list of views to handle in query string
 ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
 
-// assistants for each app; each value is a hash where the key is the name of the
+// map of key action to op
+ZmApp.ACTION_CODES_OP		= {};
+ZmApp.ACTION_CODES_OP[ZmKeyMap.NEW_FOLDER]	= ZmOperation.NEW_FOLDER;
+ZmApp.ACTION_CODES_OP[ZmKeyMap.NEW_TAG]		= ZmOperation.NEW_TAG;
+
+// assistants for each app; each valu is a hash where the key is the name of the
 // assistant class and the value is the required package
 ZmApp.ASSISTANTS		= {};
 
@@ -110,7 +115,8 @@ ZmApp.DEFAULT_APPS		= [];	// ordered list
  * @param assistants		[array]		hash of assistant class names and required packages
  * @param searchTypes		[array]		list of types of saved searches to show in overview
  * @param gotoActionCode	[constant]	key action for jumping to this app
- * @param newActionCodes	[array]		key actions for creating new things
+ * @param newActionCode		[constant]	default "new" action code
+ * @param actionCodes		[array]		key actions that map to ops (in pairs)
  * @param ops				[array]		IDs of operations for the app
  * @param qsViews			[array]		list of views to handle in query string
  * @param chooserSort		[int]		controls order of apps in app chooser toolbar
@@ -132,7 +138,8 @@ function(app, params) {
 	if (params.assistants)			{ ZmApp.ASSISTANTS[app]			= params.assistants; }
 	if (params.searchTypes) 		{ ZmApp.SEARCH_TYPES[app]		= params.searchTypes; }
 	if (params.gotoActionCode)		{ ZmApp.GOTO_ACTION_CODE[app]	= params.gotoActionCode; }
-	if (params.newActionCodes)		{ ZmApp.NEW_ACTION_CODES[app]	= params.newActionCodes; }
+	if (params.newActionCode)		{ ZmApp.NEW_ACTION_CODE[app]	= params.newActionCode; }
+	if (params.actionCodes)			{ ZmApp.ACTION_CODES[app]		= params.actionCodes; }
 	if (params.ops)					{ ZmApp.OPS[app]				= params.ops; }
 	if (params.qsViews)				{ ZmApp.QS_VIEWS[app]			= params.qsViews; }
 	if (params.chooserSort)			{ ZmApp.CHOOSER_SORT[app]		= params.chooserSort; }
@@ -151,11 +158,11 @@ function(app, params) {
 	}
 	
 	// since Javascript doesn't like anonymous arrays whose keys have a prop dereference
-	// (eg {a.b:3}, we are passed a list of values as action code / op pairs
-	if (params.newActionCodes) {
-		for (var i = 0; i < params.newActionCodes.length; i += 2) {
-			ZmApp.NEW_ACTION_CODES_R[params.newActionCodes[i]] = app;
-			ZmApp.NEW_ACTION_CODES_OP[params.newActionCodes[i]] = params.newActionCodes[i + 1];
+	// (eg {a.b:3}, we are passed a list of values as actionCode/op pairs
+	if (params.actionCodes) {
+		for (var i = 0; i < params.actionCodes.length; i += 2) {
+			ZmApp.ACTION_CODES_R[params.actionCodes[i]] = app;
+			ZmApp.ACTION_CODES_OP[params.actionCodes[i]] = params.actionCodes[i + 1];
 		}
 	}
 	
