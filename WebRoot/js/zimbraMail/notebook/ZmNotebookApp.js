@@ -95,8 +95,10 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 							  overviewTrees:		[ZmOrganizer.NOTEBOOK, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.PAGE, ZmItem.DOCUMENT],
-							  actionCode:			ZmKeyMap.GOTO_NOTEBOOK,
 							  ops:					[ZmOperation.NEW_PAGE, ZmOperation.NEW_NOTEBOOK],
+							  gotoActionCode:		ZmKeyMap.GOTO_NOTEBOOK,
+							  newActionCodes:		[ZmKeyMap.NEW_PAGE, ZmOperation.NEW_PAGE,
+							  						 ZmKeyMap.NEW_NOTEBOOK, ZmOperation.NEW_NOTEBOOK],
 							  chooserSort:			50,
 							  defaultSort:			30
 							  });

@@ -166,6 +166,15 @@ function(actionCode) {
 	if (shortcut) {
 		actionCode = shortcut.baseAction;
 	}
+	
+	var app = ZmApp.NEW_ACTION_CODES_R[actionCode];
+	if (app) {
+		var op = ZmApp.NEW_ACTION_CODES_OP[actionCode];
+		if (op) {
+			this._appCtxt.getApp(app).handleOp(op);
+			return true;
+		}	
+	}
 
 	switch (actionCode) {
 
@@ -193,37 +202,18 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.NEW: {
-			//Find the current app
-			switch (this._appCtxt.getAppController().getActiveApp()) {
-				case ZmApp.MAIL:
-				case ZmApp.MIXED:
-					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE]);
-					break;
-				case ZmApp.CALENDAR:
-					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_APPT]);
-					break;
-				case ZmApp.CONTACTS:
-					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CONTACT]);
-					break;
-				case ZmApp.NOTEBOOK:
-					this._newListener(null, ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_PAGE]);
-					break;
+			var curApp = this._appCtxt.getAppController().getActiveApp();
+			var newActionCodes = ZmApp.NEW_ACTION_CODES[curApp];
+			if (newActionCodes && newActionCodes.length) {
+				// list is code, op, code, op ... grab first op (default)
+				var op = newActionCodes[1];
+				if (op) {
+					this._appCtxt.getApp(curApp).handleOp(op);
+					return true;
+				}	
 			}
-			break;
 		}
 	
-		case ZmKeyMap.NEW_CALENDAR:
-		case ZmKeyMap.NEW_CONTACT:
-		case ZmKeyMap.NEW_FOLDER:
-		case ZmKeyMap.NEW_MESSAGE:
-		case ZmKeyMap.NEW_APPT:
-		case ZmKeyMap.NEW_TAG:
-		case ZmKeyMap.NEW_PAGE:
-		case ZmKeyMap.NEW_NOTEBOOK:
-		case ZmKeyMap.NEW_TASK:
-			this._newListener(null, ZmListController.ACTION_CODE_TO_OP[actionCode]);
-			break;
-
 		case ZmKeyMap.NEW_MESSAGE_WIN:
 			this._newListener(null, ZmListController.ACTION_CODE_TO_OP[actionCode], {newWin:true});
 			break;

@@ -58,25 +58,28 @@ ZmApp.SETTING			= {};	// ID of setting that's true when app is enabled
 ZmApp.LOAD_SORT			= {};	// controls order in which apps are instantiated
 
 // these are set via registerApp() in app constructor
-ZmApp.MAIN_PKG			= {};	// main package that composes the app
-ZmApp.NAME				= {};	// msg key for app name
-ZmApp.ICON				= {};	// name of app icon class
-ZmApp.QS_ARG			= {};	// arg for 'app' var in QS to jump to app
-ZmApp.QS_ARG_R			= {};
-ZmApp.CHOOSER_TOOLTIP	= {};	// msg key for app view menu tooltip
-ZmApp.VIEW_TOOLTIP		= {};	// msg key for app tooltip
-ZmApp.DEFAULT_SEARCH	= {};	// type of item to search for in the app
-ZmApp.ORGANIZER			= {};	// main organizer for this app
-ZmApp.OVERVIEW_TREES	= {};	// list of tree IDs to show in overview
-ZmApp.SHOW_ZIMLETS		= {};	// whether to show Zimlet tree in overview
-ZmApp.SEARCH_TYPES		= {};	// list of types of saved searches to show in overview
-ZmApp.SEARCH_TYPES_R	= {};
-ZmApp.ACTION_CODE		= {};	// ID of shortcut action that switches to app
-ZmApp.ACTION_CODE_R		= {};
-ZmApp.OPS				= {};	// IDs of operations for the app
-ZmApp.OPS_R				= {};	// map of operation ID to app
-ZmApp.QS_VIEWS			= {};	// list of views to handle in query string
-ZmApp.TRASH_VIEW_OP		= {};	// menu choice for "Show Only ..." in Trash view
+ZmApp.MAIN_PKG				= {};	// main package that composes the app
+ZmApp.NAME					= {};	// msg key for app name
+ZmApp.ICON					= {};	// name of app icon class
+ZmApp.QS_ARG				= {};	// arg for 'app' var in QS to jump to app
+ZmApp.QS_ARG_R				= {};
+ZmApp.CHOOSER_TOOLTIP		= {};	// msg key for app view menu tooltip
+ZmApp.VIEW_TOOLTIP			= {};	// msg key for app tooltip
+ZmApp.DEFAULT_SEARCH		= {};	// type of item to search for in the app
+ZmApp.ORGANIZER				= {};	// main organizer for this app
+ZmApp.OVERVIEW_TREES		= {};	// list of tree IDs to show in overview
+ZmApp.SHOW_ZIMLETS			= {};	// whether to show Zimlet tree in overview
+ZmApp.SEARCH_TYPES			= {};	// list of types of saved searches to show in overview
+ZmApp.SEARCH_TYPES_R		= {};
+ZmApp.GOTO_ACTION_CODE		= {};	// key action for jumping to this app
+ZmApp.GOTO_ACTION_CODE_R	= {};
+ZmApp.NEW_ACTION_CODES		= {};	// key actions for creating new things
+ZmApp.NEW_ACTION_CODES_R	= {};
+ZmApp.NEW_ACTION_CODES_OP	= {};
+ZmApp.OPS					= {};	// IDs of operations for the app
+ZmApp.OPS_R					= {};	// map of operation ID to app
+ZmApp.QS_VIEWS				= {};	// list of views to handle in query string
+ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
 
 // assistants for each app; each value is a hash where the key is the name of the
 // assistant class and the value is the required package
@@ -106,7 +109,8 @@ ZmApp.DEFAULT_APPS		= [];	// ordered list
  * @param showZimlets		[boolean]	if true, show Zimlet tree in overview
  * @param assistants		[array]		hash of assistant class names and required packages
  * @param searchTypes		[array]		list of types of saved searches to show in overview
- * @param actionCode		[constant]	ID of shortcut action that switches to app
+ * @param gotoActionCode	[constant]	key action for jumping to this app
+ * @param newActionCodes	[array]		key actions for creating new things
  * @param ops				[array]		IDs of operations for the app
  * @param qsViews			[array]		list of views to handle in query string
  * @param chooserSort		[int]		controls order of apps in app chooser toolbar
@@ -127,19 +131,31 @@ function(app, params) {
 	if (params.showZimlets)			{ ZmApp.SHOW_ZIMLETS[app]		= params.showZimlets; }
 	if (params.assistants)			{ ZmApp.ASSISTANTS[app]			= params.assistants; }
 	if (params.searchTypes) 		{ ZmApp.SEARCH_TYPES[app]		= params.searchTypes; }
-	if (params.actionCode)			{ ZmApp.ACTION_CODE[app]		= params.actionCode; }
+	if (params.gotoActionCode)		{ ZmApp.GOTO_ACTION_CODE[app]	= params.gotoActionCode; }
+	if (params.newActionCodes)		{ ZmApp.NEW_ACTION_CODES[app]	= params.newActionCodes; }
 	if (params.ops)					{ ZmApp.OPS[app]				= params.ops; }
 	if (params.qsViews)				{ ZmApp.QS_VIEWS[app]			= params.qsViews; }
 	if (params.chooserSort)			{ ZmApp.CHOOSER_SORT[app]		= params.chooserSort; }
 	if (params.defaultSort)			{ ZmApp.DEFAULT_SORT[app]		= params.defaultSort; }
 	if (params.trashViewOp)			{ ZmApp.TRASH_VIEW_OP[app]		= params.trashViewOp; }
 
-	if (params.actionCode)			{ ZmApp.ACTION_CODE_R[params.actionCode]	= app; }
-
 	if (params.searchTypes) {
 		ZmApp.SEARCH_TYPES_R[app] = {};
 		for (var i = 0; i < params.searchTypes.length; i++) {
 			ZmApp.SEARCH_TYPES_R[app][params.searchTypes[i]] = true;
+		}
+	}
+	
+	if (params.gotoActionCode) {
+		ZmApp.GOTO_ACTION_CODE_R[params.gotoActionCode] = app;
+	}
+	
+	// since Javascript doesn't like anonymous arrays whose keys have a prop dereference
+	// (eg {a.b:3}, we are passed a list of values as action code / op pairs
+	if (params.newActionCodes) {
+		for (var i = 0; i < params.newActionCodes.length; i += 2) {
+			ZmApp.NEW_ACTION_CODES_R[params.newActionCodes[i]] = app;
+			ZmApp.NEW_ACTION_CODES_OP[params.newActionCodes[i]] = params.newActionCodes[i + 1];
 		}
 	}
 	
@@ -163,7 +179,7 @@ function() {
 	return "ZmApp";
 }
 
-// Abstract methods for apps to override in response to certain events
+// App API: Abstract methods for apps to override in response to certain events
 ZmApp.prototype.startup			= function(result) {};		// run during startup
 ZmApp.prototype.refresh			= function(refresh) {};		// run when a <refresh> block arrives
 ZmApp.prototype.preNotify		= function(notify) {};		// run before handling notifications

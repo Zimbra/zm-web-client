@@ -62,7 +62,7 @@ function ZmImApp(appCtxt, container) {
 							  organizer:			ZmOrganizer.ROSTER_TREE_ITEM,
 							  overviewTrees:		[ZmOrganizer.ROSTER_TREE_ITEM],
 							  showZimlets:			true,
-							  actionCode:			ZmKeyMap.GOTO_IM,
+							  gotoActionCode:		ZmKeyMap.GOTO_IM,
 							  chooserSort:			40,
 							  defaultSort:			50
 							  });

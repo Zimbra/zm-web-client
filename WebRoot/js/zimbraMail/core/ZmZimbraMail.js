@@ -1289,6 +1289,15 @@ function() {
 
 ZmZimbraMail.prototype.handleKeyAction =
 function(actionCode, ev) {
+
+	var app = ZmApp.GOTO_ACTION_CODE_R[actionCode];
+	if (app) {
+		DBG.println("app for action code: " + app);
+		if (app == this.getActiveApp()) { return false; }
+		this.activateApp(app);
+		return true;
+	}
+
 	switch (actionCode) {
 		case ZmKeyMap.DBG_NONE:
 			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.NONE);
@@ -1318,24 +1327,6 @@ function(actionCode, ev) {
 			break;
 		}
 		
-		case ZmKeyMap.GOTO_MAIL:
-		case ZmKeyMap.GOTO_CONTACTS:
-		case ZmKeyMap.GOTO_CALENDAR:
-		case ZmKeyMap.GOTO_IM:
-		case ZmKeyMap.GOTO_OPTIONS:
-		case ZmKeyMap.GOTO_VOICEMAIL:
-		case ZmKeyMap.GOTO_NOTEBOOK: {
-			var app = ZmApp.ACTION_CODE_R[actionCode];
-			if (app == this.getActiveApp()) {
-				return false;
-			}
-			var setting = ZmApp.SETTING[app];
-			if (!setting || this._appCtxt.get(setting)) {
-				this.activateApp(app);
-			}
-			break;
-		}
-
 		case ZmKeyMap.ASSISTANT: {
 			if (!this._assistantDialog) {
 				AjxDispatcher.require("Assistant");

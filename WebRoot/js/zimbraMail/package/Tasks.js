@@ -12,6 +12,7 @@ AjxPackage.require("zimbraMail.calendar.controller.ZmCalItemComposeController");
 AjxPackage.require("zimbraMail.calendar.model.ZmRecurrence");
 AjxPackage.require("zimbraMail.calendar.model.ZmCalItem");
 
+AjxPackage.require("zimbraMail.calendar.view.ZmApptViewHelper");
 AjxPackage.require("zimbraMail.calendar.view.ZmCalItemEditView");
 
 AjxPackage.require("zimbraMail.calendar.controller.ZmCalendarTreeController");

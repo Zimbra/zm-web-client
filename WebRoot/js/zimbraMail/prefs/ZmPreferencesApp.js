@@ -48,7 +48,7 @@ function ZmPreferencesApp(appCtxt, container) {
 							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],
-							  actionCode:			ZmKeyMap.GOTO_OPTIONS,
+							  gotoActionCode:		ZmKeyMap.GOTO_OPTIONS,
 							  chooserSort:			180
 							  });
 };

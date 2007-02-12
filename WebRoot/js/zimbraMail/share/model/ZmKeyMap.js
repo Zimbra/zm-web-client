@@ -106,6 +106,7 @@ ZmKeyMap.GOTO_OPTIONS		= "GoToOptions";
 ZmKeyMap.GOTO_VOICEMAIL		= "GoToVoicemail";
 ZmKeyMap.GOTO_SENT			= "GoToSent";
 ZmKeyMap.GOTO_TAG			= "GoToTag";		// takes NNN
+ZmKeyMap.GOTO_TASKS			= "GoToTasks";
 ZmKeyMap.GOTO_TRASH			= "GoToTrash";
 ZmKeyMap.HTML_FORMAT		= "HtmlFormat";
 ZmKeyMap.LOGOFF				= "LogOff";

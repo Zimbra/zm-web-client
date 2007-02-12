@@ -59,7 +59,7 @@ function ZmVoicemailApp(appCtxt, container, parentController) {
 //							  overviewTrees:		[ZmOrganizer.VOICEMAIL, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.VOICEMAIL],
-							  actionCode:			ZmKeyMap.GOTO_VOICEMAIL,
+							  gotoActionCode:		ZmKeyMap.GOTO_VOICEMAIL,
 							  chooserSort:			15,
 							  defaultSort:			15
 							  });

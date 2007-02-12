@@ -66,8 +66,9 @@ function ZmTasksApp(appCtxt, container) {
 							  organizer:			ZmOrganizer.TASKS,
 							  overviewTrees:		[ZmOrganizer.TASKS],
 							  showZimlets:			true,
-							  actionCode:			ZmKeyMap.GOTO_TASKS,
 							  ops:					[ZmOperation.NEW_TASK, ZmOperation.NEW_TASK_FOLDER],
+							  gotoActionCode:		ZmKeyMap.GOTO_TASKS,
+							  newActionCodes:		[ZmKeyMap.NEW_TASK, ZmOperation.NEW_TASK],
 							  chooserSort:			35,
 							  defaultSort:			25});
 };

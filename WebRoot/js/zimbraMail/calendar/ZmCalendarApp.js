@@ -86,8 +86,10 @@ function ZmCalendarApp(appCtxt, container) {
 							  showZimlets:			true,
 							  assistants:			{"ZmAppointmentAssistant":	["CalendarCore", "Calendar"],
 							  						 "ZmCalendarAssistant":		["CalendarCore", "Calendar"]},
-							  actionCode:			ZmKeyMap.GOTO_CALENDAR,
 							  ops:					[ZmOperation.NEW_APPT, ZmOperation.NEW_CALENDAR],
+							  gotoActionCode:		ZmKeyMap.GOTO_CALENDAR,
+							  newActionCodes:		[ZmKeyMap.NEW_APPT, ZmOperation.NEW_APPT,
+							  						 ZmKeyMap.NEW_CALENDAR, ZmOperation.NEW_CALENDAR],
 							  chooserSort:			30,
 							  defaultSort:			20
 							  });
