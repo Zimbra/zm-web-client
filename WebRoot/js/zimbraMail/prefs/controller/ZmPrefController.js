@@ -50,6 +50,11 @@ function ZmPrefController(appCtxt, container, prefsApp) {
 ZmPrefController.prototype = new ZmController();
 ZmPrefController.prototype.constructor = ZmPrefController;
 
+ZmPrefController.prototype.toString = 
+function() {
+	return "ZmPrefController";
+};
+
 /**
 * Displays the tabbed options pages.
 */

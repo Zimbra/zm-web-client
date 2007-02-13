@@ -482,7 +482,7 @@ function(buttonId, setup) {
 ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
 	var passwordDialog = this._appCtxt.getChangePasswordDialog();
-	passwordDialog.registerCallback(DwtDialog.OK_BUTTON, this._controller._changePassword, this);
+	passwordDialog.registerCallback(DwtDialog.OK_BUTTON, this._controller._changePassword, this._controller);
 	passwordDialog.popup();
 };
 
