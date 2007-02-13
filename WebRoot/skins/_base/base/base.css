@@ -68,29 +68,11 @@ body						{	@ChromeBg@	}
 }
 
 
-#skin_td_quota							{	
-	text-align:right;		
-#IFDEF MSIE
-	vertical-align:top;
-#ENDIF
-}
+#skin_td_quota							{	vertical-align:top;		}
 #skin_border_quota						{	@SkinBorderQuota@		}
-#skin_container_quota					{	
-	height:15;  
-}
+#skin_container_username,
+#skin_container_quota					{	height:20px;			}
 
-#skin_container_username {
-#IFDEF GECKO
-	padding-top:6px;
-	height:10;
-#ENDIF
-#IFDEF SAFARI
-	height:15;
-#ENDIF
-#IFDEF MSIE
-	height:15;
-#ENDIF
-}
 
 /* search builder */
 

@@ -90,8 +90,6 @@
 
 
 /* Outside container for the banner */
-.BannerBar {}
-
 .BannerBar .quotabar {
 	@ProgressBarContainer@
 	background-color: #FFFFFF;
@@ -122,18 +120,10 @@
 	@FontSize-smaller@
 	@ChromeText@
 	@NoWrap@
-/*	@FixIESizeQuirk@	/* WEIRD IE QUIRK */
-	
 }
 
 .BannerBar td {
 	padding-right: @BoxPaddingSize@;
-}
-
-/* ??? USED? */
-.BannerBar img {
-	border: none;
-	margin-right: 2px;
 }
 
 /* Quota label */
@@ -149,7 +139,6 @@
 	@NoWrap@
 	text-align: center;
 	font-weight: bold;
-
 }
 
 

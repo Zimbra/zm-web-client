@@ -758,7 +758,7 @@ function() {
 
 	var html = [];
 	var idx = 0;
-	html[idx++] = "<center><table border=0 cellpadding=0 cellspacing=0><tr";
+	html[idx++] = "<center><table border=0 cellpadding=0 cellspacing=0 class='BannerBar'><tr";
 	html[idx++] = AjxEnv.isLinux ? " style='line-height: 13px'" : ""; // bug #3355;
 	html[idx++] = "><td class='BannerTextQuota'>";
 	html[idx++] = ZmMsg.quota;
@@ -1129,7 +1129,7 @@ function() {
 
 ZmZimbraMail.prototype._createUserInfo =
 function() {
-	var ui = new DwtComposite(this._shell, "BannerBar BannerTextUser", Dwt.ABSOLUTE_STYLE);
+	var ui = new DwtComposite(this._shell, "BannerTextUser", Dwt.ABSOLUTE_STYLE);
 	ui.setScrollStyle(Dwt.CLIP);
 	ui._setMouseEventHdlrs();
 	return ui;
