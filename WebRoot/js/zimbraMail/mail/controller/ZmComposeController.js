@@ -540,9 +540,12 @@ function() {
 	var className = this.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
 	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, className);
 
-	for (var i = 0; i < buttons.length; i++)
-		if (buttons[i] > 0 && this._listeners[buttons[i]])
-			this._toolbar.addSelectionListener(buttons[i], this._listeners[buttons[i]]);
+	for (var i = 0; i < buttons.length; i++) {
+		var button = buttons[i];
+		if (this._listeners[button]) {
+			this._toolbar.addSelectionListener(button, this._listeners[button]);
+		}
+	}
 
 	var identity = AjxDispatcher.run("GetIdentityCollection").defaultIdentity;
 	var canAddSig = this._setAddSignatureVisibility(identity);

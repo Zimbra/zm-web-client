@@ -192,9 +192,12 @@ function(view) {
 		if (button)
 			button.setText(null);
 	}
-	for (var i = 0; i < buttons.length; i++)
-		if (buttons[i] > 0 && this._listeners[buttons[i]])
-			this._toolbar[view].addSelectionListener(buttons[i], this._listeners[buttons[i]]);
+	for (var i = 0; i < buttons.length; i++) {
+		var button = buttons[i];
+		if (this._listeners[button]) {
+			this._toolbar[view].addSelectionListener(button, this._listeners[button]);
+		}
+	}
 
     // init presence menu			
     var presenceButton = this._toolbar[view].getButton(ZmOperation.IM_PRESENCE_MENU);
@@ -228,9 +231,12 @@ function(view) {
 	var menuItems = this._getActionMenuOps();
 	if (!menuItems) return;
 	this._actionMenu = new ZmActionMenu(this._shell, menuItems);
-	for (var i = 0; i < menuItems.length; i++)
-		if (menuItems[i] > 0)
-			this._actionMenu.addSelectionListener(menuItems[i], this._listeners[menuItems[i]]);
+	for (var i = 0; i < menuItems.length; i++) {
+		var menuItem = menuItems[i];
+		if (this._listeners[menuItem]) {
+			this._actionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
+		}
+	}
 	this._actionMenu.addPopdownListener(this._popdownListener);
 
 }

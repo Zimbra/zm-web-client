@@ -305,8 +305,10 @@ function(view) {
 		}
     	this._participantActionMenu = new ZmActionMenu(this._shell, menuItems);
 		for (var i = 0; i < menuItems.length; i++) {
-			if (menuItems[i] > 0)
-				this._participantActionMenu.addSelectionListener(menuItems[i], this._listeners[menuItems[i]]);
+			var menuItem = menuItems[i];
+			if (this._listeners[menuItem]) {
+				this._participantActionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
+			}
 		}
 		this._propagateMenuListeners(this._participantActionMenu, ZmOperation.REPLY_MENU);
 		this._propagateMenuListeners(this._participantActionMenu, ZmOperation.FORWARD_MENU);

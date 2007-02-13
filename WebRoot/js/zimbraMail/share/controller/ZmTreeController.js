@@ -330,9 +330,12 @@ function(parent, menuItems) {
 	if (!menuItems) return;
 	
 	var actionMenu = new ZmActionMenu(parent, menuItems);
-	for (var i = 0; i < menuItems.length; i++)
-		if (menuItems[i] > 0)
-			actionMenu.addSelectionListener(menuItems[i], this._listeners[menuItems[i]]);
+	for (var i = 0; i < menuItems.length; i++) {
+		var menuItem = menuItems[i];
+		if (this._listeners[menuItem]) {
+			actionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
+		}
+	}
 	actionMenu.addPopdownListener(new AjxListener(this, this._popdownActionListener));
 
 	return actionMenu;

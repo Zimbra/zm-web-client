@@ -378,7 +378,7 @@ function(view) {
 	for (var i = 0; i < buttons.length; i++) {
 		var button = buttons[i];
 		if (this._listeners[button]) {
-			this._toolbar[view].addSelectionListener(buttons[i], this._listeners[button]);
+			this._toolbar[view].addSelectionListener(button, this._listeners[button]);
 		}
 	}
 
@@ -419,7 +419,7 @@ function() {
 	for (var i = 0; i < menuItems.length; i++) {
 		var menuItem = menuItems[i];
 		if (this._listeners[menuItem]) {
-			this._actionMenu.addSelectionListener(menuItems[i], this._listeners[menuItem]);
+			this._actionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
 		}
 	}
 	this._actionMenu.addPopdownListener(this._popdownListener);

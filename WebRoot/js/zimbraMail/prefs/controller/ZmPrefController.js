@@ -164,8 +164,10 @@ function () {
 	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL];
 	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmAppToolBar");
 	for (var i = 0; i < buttons.length; i++) {
-		if (buttons[i] > 0 && this._listeners[buttons[i]])
-			this._toolbar.addSelectionListener(buttons[i], this._listeners[buttons[i]]);
+		var button = buttons[i];
+		if (this._listeners[button]) {
+			this._toolbar.addSelectionListener(button, this._listeners[button]);
+		}
 	}
 	this._toolbar.getButton(ZmOperation.SAVE).setToolTipContent(ZmMsg.savePrefs);
 };

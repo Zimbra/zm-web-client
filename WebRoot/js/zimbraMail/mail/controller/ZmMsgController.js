@@ -144,9 +144,12 @@ function(view, arrowStyle) {
 		if (!buttons) return;
 		this._toolbar[view] = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmMsgViewToolBar_cw");
 
-		for (var i = 0; i < buttons.length; i++)
-			if (buttons[i] > 0 && this._listeners[buttons[i]])
-				this._toolbar[view].addSelectionListener(buttons[i], this._listeners[buttons[i]]);
+		for (var i = 0; i < buttons.length; i++) {
+			var button = buttons[i];
+			if (this._listeners[button]) {
+				this._toolbar[view].addSelectionListener(button, this._listeners[button]);
+			}
+		}
 	}
 };
 
