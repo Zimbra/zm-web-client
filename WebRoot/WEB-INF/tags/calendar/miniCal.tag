@@ -29,6 +29,8 @@
 
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
     <c:set var="currentWeekDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
+    <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
+    <zm:getAppointmentSummaries var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+1000*60*60*24*42}"/>
 </app:handleError>
 
 <div class='ZhCalMiniContainer'>
@@ -85,7 +87,8 @@
                     <c:set var="clazz" value='ZhCalMDOM'/>
                 </c:otherwise>
             </c:choose>
-            <td align=center class='${clazz}${(currentDay.timeInMillis ge rangeStart and currentDay.timeInMillis lt rangeEnd) ? ' ZhCalMDS':''}'>
+            <c:set var="hasappt" value="${zm:hasAnyAppointments(appts, currentDay.timeInMillis, currentDay.timeInMillis + 1000*60*60*24) ? ' ZhCalMDHA' : ''}"/>
+            <td align=center class='${clazz}${hasappt}${(currentDay.timeInMillis ge rangeStart and currentDay.timeInMillis lt rangeEnd) ? ' ZhCalMDS':''}'>
                 <app:calendarUrl var="dayUrl" rawdate="${currentDay.time}"/>
                 <a href="${dayUrl}">
                 <fmt:formatDate value="${currentDay.time}" pattern="${dayFormat}"/>

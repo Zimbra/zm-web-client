@@ -668,6 +668,11 @@ padding:1px; border:1px solid darkred;
 
 }
 
+/*mini cal day has appt */
+.ZhCalMDHA {
+    font-weight: bold;
+}
+
 .ZhCalMDOMOT {
     padding:1px; border:1px solid darkred;
     @MiniCalDay-gray@

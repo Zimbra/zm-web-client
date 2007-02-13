@@ -35,6 +35,10 @@
         <zm:checkFolder checked="false" id="${param.uncheck}"/>
     </c:if>
 
+    <c:if test="${not empty param.refresh}">
+        <zm:clearApptSummaryCache/>
+    </c:if>
+    
     <c:set var="view" value="${not empty param.view ? param.view : mailbox.prefs.calendarInitialView}"/>
 </app:handleError>
 
