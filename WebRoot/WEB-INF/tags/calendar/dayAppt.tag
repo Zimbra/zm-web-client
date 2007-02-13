@@ -8,21 +8,21 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<%-- TODO: take into account start/end and adjust appt start/end for rendering --%>
 <c:set var="color" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/>
+<c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
 <c:choose>
     <c:when test="${appt.allDay}">
         <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
         <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
         <div <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if> 
-                class='ZhCalDayAllDayAppt ${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}'>
+                class='ZhCalDayAllDayAppt${needsAction ? 'New ' : ' '} ${color}${needsAction ? 'Dark' : 'Light'}'>
                 ${fn:escapeXml(appt.name)}
         </div>
     </c:when>
     <c:when test="${appt.duration gt 1000*60*15}">
-        <table class='ZhCalDayAppt' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
+        <table class='ZhCalDayAppt${needsAction ? 'New' : ''}' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
             <tr>
-                <td class='${color}${appt.partStatusNeedsAction ? 'Light' : 'Light'}' valign=top>
+                <td class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}' valign=top>
                     <c:set var="startDate" value="${appt.startDate.time lt start ? 'L' : ''}"/>
                      <fmt:message key="CAL_DAY_APPT_TOP${startDate}">
                         <fmt:param value="${appt.startDate}"/>
@@ -30,7 +30,7 @@
                 </td>
             </tr>
             <tr>
-                <td height=100% class='${color}${appt.partStatusNeedsAction ? 'BG' : 'BG'}' valign=top>
+                <td height=100% class='${color}${needsAction ? '' : 'Bg'}' valign=top>
                     <fmt:message key="CAL_DAY_APPT_BODY">
                         <fmt:param value="${fn:escapeXml(appt.name)}"/>
                     </fmt:message>
@@ -38,7 +38,7 @@
             </tr>
             <c:if test="${appt.duration gt 1000*60*60}">
             <tr>
-                <td align=left valign=bottom height=1% class='ZhCalDayApptEnd ${color}${appt.partStatusNeedsAction ? 'BG' : 'BG'}'>
+                <td align=left valign=bottom height=1% class='ZhCalDayApptEnd ${color}${needsAction ? '' : 'Bg'}'>
                     <c:set var="endDate" value="${appt.endDate.time gt end ? 'L' : ''}"/>
                     <fmt:message key="CAL_DAY_APPT_BOT${endDate}">
                         <fmt:param value="${appt.endDate}"/>
@@ -51,7 +51,7 @@
     <c:otherwise>
         <table class='ZhCalDayAppt' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
             <tr>
-                <td class='${color}${appt.partStatusNeedsAction ? 'Light' : 'Light'}' valign=top>
+                <td class='${color}${needsAction ? 'Dark' : 'Light'}' valign=top>
                     <fmt:message key="CAL_DAY_APPT30">
                         <fmt:param value="${appt.startDate}"/>
                         <fmt:param value="${fn:escapeXml(appt.name)}"/>
