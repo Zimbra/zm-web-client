@@ -622,7 +622,7 @@ function(ev) {
 
 ZmListController.prototype._getMoveParams =
 function() {
-	var org = ZmApp.ORGANIZER[this._app._name];
+	var org = ZmApp.ORGANIZER[this._app._name] || ZmOrganizer.FOLDER;
 	return {data:this._pendingActionData, treeIds:[org]};
 };
 

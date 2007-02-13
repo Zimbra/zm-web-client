@@ -136,7 +136,9 @@ function(overviewId, treeIds, omit) {
 		var treeView = this._treeView[treeIds[i]] = this._opc.getTreeView(overviewId, treeIds[i]);
 		if (treeView) {
 			var hi = treeView.getHeaderItem();
-			hi.enableSelection(true);
+			if (hi) {
+				hi.enableSelection(true);
+			}
 		}
 	}
 };
