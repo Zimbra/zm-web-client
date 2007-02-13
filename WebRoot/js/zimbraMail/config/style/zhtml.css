@@ -190,7 +190,7 @@ padding-right:4px;
 }
 
 .Conv2Tb {
-   @ToolbarBg
+   @ToolbarBg@
 }
 
 .ZhAppContent {
@@ -606,7 +606,12 @@ padding: 8px 0px 6px 0px;
     line-height: 2.0em;
 }
 
-.ZhCalDayHeaderToday {
+
+.ZhCalMonthHeaderRow a:link, .ZhCalMonthHeaderRow a:visited {
+    @Text@
+}
+
+.ZhCalDayHeaderToday, .ZhCalDayHeaderToday a:link, .ZhCalDayHeaderToday a:visited {
     @Text-today@
 }
 
@@ -626,15 +631,19 @@ padding: 8px 0px 6px 0px;
 .ZhCalMiniContainer a:link, .ZhCalMiniContainer a:visited,
     .ZhCalMonthHeaderRow a:link, .ZhCalMonthHeaderRow a:visited { text-decoration: none; color:inherit;}
 
-.ZhCalDOMT {
+.ZhCalDOM, .ZhCalDOM a:link, .ZhCalDOM a:visited {
+	@Text@
+}
+
+.ZhCalDOMT, .ZhCalDOMT a:link, .ZhCalDOMT:visited {
 	@Text-today@
 }
 
-.ZhCalDOMO {
+.ZhCalDOMO, .ZhCalDOMO a:link, .ZhCalDOMO a:visited {
 	@Text-disabled@
 }
 
-.ZhCalDOMOT {
+.ZhCalDOMOT, .ZhCalDOMOT a:link, .ZhCalDOMOT a:visited {
 	@Text-disabled@
 	@Text-today@
 }
@@ -663,20 +672,26 @@ padding: 8px 0px 6px 0px;
 padding:1px; border:1px solid darkred;
 }
 
-.ZhCalMDOMO {
+.ZhCalMDOMO, .ZhCalMDOMO a:link, .ZhCalMDOMO a:visited {
     @MiniCalDay-gray@
 
 }
+
 
 /*mini cal day has appt */
 .ZhCalMDHA {
-    font-weight: bold;
+    @MiniCalDay-hilited@
 }
 
-.ZhCalMDOMOT {
+.ZhCalMDOMOT, .ZhCalMDOMOT a:link, .ZhCalMDOMOT a:visited {
     padding:1px; border:1px solid darkred;
     @MiniCalDay-gray@
 }
+
+.ZhCalMDOM a:link, .ZhCalMDOM a:visited, ZhCalMDOMT a:link, .ZhCalMDOMT a:visited {
+    @Text@
+}
+
 
 /* Container of the calendar titlebar (arrows and month label, not DOW labels) */
 .ZhCalMiniTitlebar {
@@ -686,10 +701,14 @@ padding:1px; border:1px solid darkred;
 
 /* Name of the month in the calendar titlebar */
 .ZhCalMiniTitleCell {
-	@FullWidth@
+    white-space:nowrap;	
 	@MiniCalHeaderText@
 	@ActiveCursor@
     font-weight: normal;
+}
+
+.ZhCalMiniTitleCell a:link, .ZhCalMiniTitleCell a:visited {
+    @Text@
 }
 
 /* Label for the days of the week in calendar titlebar */
@@ -780,6 +799,20 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 .ZhCalDayGrid {
  	@AppBg@
 }
+
+.ZhCalDayUnionSEP {
+    @LeftSeparator@
+    @RightSeparator@       
+}
+
+/* used in sched view for thermometer*/
+.ZhCalSchedUnion {
+	text-align:center;
+	background-color:#D90000;
+	color:black;
+    width:25px;
+}
+
 /*
  * Colors, for use in calendar and elsewhere.
  *

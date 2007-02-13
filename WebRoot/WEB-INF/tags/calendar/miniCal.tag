@@ -36,37 +36,37 @@
 <div class='ZhCalMiniContainer'>
 <table width=100% height=100% border=0 cellspacing='0' cellpadding='0'>
     <tr class='ZhCalMiniTitlebar'>
-        <th>
+        <td align=center>
             <app:calendarUrl var="prevYear" rawdate="${zm:addYear(dateCal,-1).time}"/>
             <a href="${prevYear}"><img alt='<fmt:message key="ALT_CAL_MINI_PREV_YEAR"/>' src="<c:url value='/images/dwt/FastRevArrowSmall.gif'/>" border="0"/></a>
-        </th>
-        <th>
+        </td>
+        <td align=center>
             <app:calendarUrl var="prevMonth" rawdate="${zm:addMonth(dateCal,-1).time}"/>
             <a href="${prevMonth}"><img alt='<fmt:message key="ALT_CAL_MINI_PREV_MONTH"/>' src="<c:url value='/images/dwt/RevArrowSmall.gif'/>" border="0"/></a>
-        </th>
-        <th nowrap colspan=3 class='ZhCalMiniTitleCell'>
-            <app:calendarUrl var="todayUrl" nodate="true"/>
-            <a href="${todayUrl}">${fn:escapeXml(title)}</a>
-        </th>
-        <th>
+        </td>
+        <app:calendarUrl var="todayUrl" nodate="true"/>
+        <td align=center nowrap colspan=3 class='ZhCalMiniTitleCell'>
+            <a href="${todayUrl}">${fn:replace(fn:escapeXml(title),' ','&nbsp;')}</a>
+        </td>
+        <td align=center>
             <app:calendarUrl var="nextMonth" rawdate="${zm:addMonth(dateCal,1).time}"/>
              <a href="${nextMonth}"><img alt='<fmt:message key="ALT_CAL_MINI_NEXT_MONTH"/>' src="<c:url value='/images/dwt/FwdArrowSmall.gif'/>" border="0"/></a>
 
-        </th>
-        <th>
+        </td>
+        <td align=center>
             <app:calendarUrl var="nextYear" rawdate="${zm:addYear(dateCal,1).time}"/>
              <a href="${nextYear}"><img alt='<fmt:message key="ALT_CAL_MINI_NEXT_YEAR"/>' src="<c:url value='/images/dwt/FastFwdArrowSmall.gif'/>" border="0"/></a>
 
-        </th>
+        </td>
     </tr>
     <tr>
         <c:forEach var="day"
                    begin="${mailbox.prefs.calendarFirstDayOfWeek}"
                    end="${mailbox.prefs.calendarFirstDayOfWeek+6}">
-            <th width=14% class='ZhCalMiniDow'>
+            <td nowrap width=14% class='ZhCalMiniDow'>
                 <fmt:message key="CAL_MINICAL_WDAY${zm:getDayOfWeek(currentWeekDay)}"/>                
                     ${zm:getNextDay(currentWeekDay)}
-            </th>
+            </td>
         </c:forEach>
     </tr>
 <c:set var="lastMonth" value="-1"/>

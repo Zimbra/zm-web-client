@@ -15,9 +15,9 @@
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
 
     <c:set var="currentDay" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, view)}"/>
-
+    <c:set var="scheduleView" value="${view eq 'schedule'}"/>
     <c:choose>
-        <c:when test="${view eq 'schedule'}">
+        <c:when test="${scheduleView}">
             <fmt:message var="titleFormat" key="CAL_SCHEDULE_TITLE_FORMAT"/>
             <fmt:formatDate var="pageTitle" value="${currentDay.time}" pattern="${titleFormat}"/>
             <fmt:message var="tbTitleFormat" key="CAL_SCHEDULE_TB_TITLE_FORMAT"/>
@@ -54,7 +54,7 @@
 
     <zm:getAppointmentSummaries var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${rangeEnd}"/>
     <zm:apptMultiDayLayout
-            schedule="${view eq 'schedule' ? checkedCalendars : ''}"
+            schedule="${scheduleView ? checkedCalendars : ''}"
             var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
             hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
 </app:handleError>
@@ -76,7 +76,14 @@
                        <td class='ZhCalDayHeader' nowrap align=center width=1% style='border-left:none'>
                            <fmt:formatDate value="${date}" pattern="${yearTitleFormat}"/>
                        </td>
-                       <td class='ZhCalDayHSB' height=100% width=1px>&nbsp;</td>
+                       <c:choose>
+                           <c:when test="${scheduleView}">
+                               <td class='ZhCalDayHSB ZhCalDaySEP' height=100%><div style='width:25px'>&nbsp;</div></td>
+                           </c:when>
+                           <c:otherwise>
+                               <td class='ZhCalDayHSB' height=100% width=1px>&nbsp;</td>
+                           </c:otherwise>
+                       </c:choose>
                        <c:forEach var="day" items="${layout.days}">
                            <td class='ZhCalDaySEP ZhCalDayHeader${(day.startTime eq today.timeInMillis and empty day.folderId) ? 'Today':''}' colspan="${day.maxColumns}" width=${day.width}%>
                                <c:choose>
@@ -102,7 +109,26 @@
                             <td nowrap width=1% style='border-left:none'>
                                 &nbsp;
                             </td>
-                            <td class='ZhCalDayHS' height=100% width=1px>&nbsp;</td>
+
+                            <c:choose>
+                                <c:when test="${scheduleView}">
+                                    <%--
+                                    <td class='ZhCalDayHS ZhCalDaySEP' height=100%><div style='width:25px' >&nbsp;</div></td> --%>
+
+                                    <c:set var="overlap" value="${layout.scheduleAlldayOverlapCount}"/>
+                                    <c:set var ="oc" value="${overlap gt 0 ? ' ZhCalSchedUnion ' :''}"/>
+                                    <c:set var="opacity" value="${20 + 60 * (overlap / layout.numDays)}"/>
+                                    <td valign='top' class='${oc}ZhCalDayHS ZhCalDaySEP' height=100% <c:if test="${overlap gt 0}"> style='opacity:${opacity/100};filter:alpha(opacity=${opacity})'</c:if>>
+                                        &nbsp;
+                                    </td>
+
+
+                                </c:when>
+                                <c:otherwise>
+                                    <td class='ZhCalDayHS' height=100% width=1px>&nbsp;</td>
+                                </c:otherwise>
+                            </c:choose>
+                            
                             <c:forEach var="cell" items="${row.cells}">
                                 <td class='ZhCalAllDayDS' valign=middle height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if>>
                                     <c:choose>
@@ -123,7 +149,21 @@
                         <td class='ZhCalDayADB' nowrap width=1% style='border-left:none'>
                             &nbsp;
                         </td>
-                        <td class='ZhCalDayADHS' height=100% width=1px>&nbsp;</td>
+
+                        <c:choose>
+                            <c:when test="${scheduleView}">
+                                <%--<td class='ZhCalDayADHS ZhCalDaySEP' height=100%><div style='width:25px' >&nbsp;</div></td>--%>
+                                <c:set var="overlap" value="${layout.scheduleAlldayOverlapCount}"/>
+                                <c:set var ="oc" value="${overlap gt 0 ? ' ZhCalSchedUnion ' :''}"/>
+                                <c:set var="opacity" value="${20 + 60 * (overlap / layout.numDays)}"/>
+                                <td valign='top' class='${oc}ZhCalDayADHS ZhCalDaySEP' height=100% <c:if test="${overlap gt 0}"> style='opacity:${opacity/100};filter:alpha(opacity=${opacity})'</c:if>>
+                                    &nbsp;
+                                </td>
+                            </c:when>
+                            <c:otherwise>
+                                <td class='ZhCalDayADHS' height=100% width=1px>&nbsp;</td>
+                            </c:otherwise>
+                        </c:choose>
 
                         <c:forEach var="day" items="${layout.days}">
                         <td class='ZhCalDaySEP ZhCalDayADB' colspan="${day.maxColumns}" width=${day.width}%>
@@ -134,6 +174,7 @@
 
                     <c:forEach var="row" items="${layout.rows}">
                         <tr height="100%">
+
                             <c:if test="${row.rowNum % 4 eq 0}">
                                 <td valign=top class='ZhCalDayHour' nowrap width=1% rowspan=4 style='border-left:none'>
                                     <fmt:message key="CAL_DAY_HOUR_FORMAT">
@@ -141,7 +182,26 @@
                                     </fmt:message>
                                 </td>
                             </c:if>
-                            <td <c:if test="${row.rowNum % 4 ne 3}">class='ZhCalDayHS' </c:if><c:if test="${row.rowNum % 4 eq 3}">class='ZhCalDayHSB' </c:if> height=100% width=1px>&nbsp;</td>
+
+                            <c:choose>
+                                <c:when test="${scheduleView}">
+                                    <c:choose>
+                                        <c:when test="${row.rowNum % 4 eq 3}"><c:set var="hs" value="ZhCalDayHB "/></c:when> <%--HS/HSB --%>
+                                        <c:when test="${row.rowNum % 4 eq 1}"><c:set var="hs" value="ZhCalDayHHB "/></c:when>
+                                        <c:otherwise><c:set var="hs" value=""/></c:otherwise>
+                                    </c:choose>
+                                    <c:set var="overlap" value="${row.scheduleOverlapCount}"/>
+                                    <c:set var ="oc" value="${overlap gt 0 ? ' ZhCalSchedUnion ' :''}"/>
+                                    <c:set var="opacity" value="${20 + 60 * (overlap / layout.numDays)}"/>
+                                    <td valign='top' class='${hs}${oc}ZhCalDayUnionSEP' height=100% <c:if test="${overlap gt 0}"> style='opacity:${opacity/100};filter:alpha(opacity=${opacity})'</c:if>>
+                                        &nbsp;
+                                    </td>
+                                </c:when>
+                                <c:otherwise>
+                                    <td <c:if test="${row.rowNum % 4 ne 3}">class='ZhCalDayHS' </c:if><c:if test="${row.rowNum % 4 eq 3}">class='ZhCalDayHSB' </c:if> height=100% width=1px>&nbsp;</td>
+                                </c:otherwise>
+                            </c:choose>
+
                             <c:set var="prevDay" value="${0}"/>
                             <c:forEach var="cell" items="${row.cells}">
                                 <c:set var="diffDay" value="${prevDay ne cell.day.day}"/>
