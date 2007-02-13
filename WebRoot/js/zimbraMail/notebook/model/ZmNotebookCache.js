@@ -245,7 +245,7 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 		for (var specialName in ZmNotebookCache._SPECIAL_NAMES) {
 			if (this._foldersMap[folderId].pages[specialName]) continue;
 			var requestNode = soapDoc.set("GetWikiRequest",null,null,"urn:zimbraMail");
-			requestNode.setAttribute("id", specialName);
+			requestNode.setAttribute("requestId", specialName);
 			var wordNode = soapDoc.set("w", null, requestNode);
 			wordNode.setAttribute("l", folderId);
 			wordNode.setAttribute("name", specialName);

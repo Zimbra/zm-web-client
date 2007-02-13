@@ -160,7 +160,7 @@ function(files, status, guids) {
 		if (file.done) continue;
 
 		var saveDocNode = soapDoc.set("SaveDocumentRequest", null, null, "urn:zimbraMail");
-		saveDocNode.setAttribute("id", i);
+		saveDocNode.setAttribute("requestId", i);
 		
 		var docNode = soapDoc.set("doc", null, saveDocNode);
 		if (file.id) {
@@ -196,8 +196,8 @@ function(files, status, guids, response) {
 	if (resp && resp.SaveDocumentResponse) {
 		for (var i = 0; i < resp.SaveDocumentResponse.length; i++) {
 			var saveDocResp = resp.SaveDocumentResponse[i];
-			files[saveDocResp.id].done = true;
-			files[saveDocResp.id].rest = saveDocResp.doc[0].rest;
+			files[saveDocResp.requestId].done = true;
+			files[saveDocResp.requestId].rest = saveDocResp.doc[0].rest;
 		}
 	}
 

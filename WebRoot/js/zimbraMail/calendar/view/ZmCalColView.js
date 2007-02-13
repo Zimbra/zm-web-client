@@ -235,7 +235,7 @@ function(list, numAppts) {
 
 			var doc = soapDoc.getDoc();
 			var msgNode = doc.createElement("m");
-			msgNode.setAttribute("id", i);
+			msgNode.setAttribute("requestId", i);
 	
 			msgRequest.appendChild(msgNode);
 		}
@@ -245,11 +245,11 @@ function(list, numAppts) {
 
 		for (var i = 0; i < resp.length; i++) {
 			var msgNode = resp[i].m[0];
-			var msg = needToLoad[msgNode.id];
+			var msg = needToLoad[msgNode.requestId];
 			if (msg) {
 				msg._loadFromDom(msgNode);
 				// parse ZmMailMsg into ZmAppt
-				var appt = apptHash[msgNode.id];
+				var appt = apptHash[msgNode.requestId];
 				if (appt)
 					appt.setFromMessage(msg);
 			}
