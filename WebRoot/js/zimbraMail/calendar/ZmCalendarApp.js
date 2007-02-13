@@ -27,7 +27,7 @@ function ZmCalendarApp(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.CALENDAR, appCtxt, container);
 
-	AjxDispatcher.setPackageLoadFunction("Calendar", new AjxCallback(this, this._postLoad));
+	AjxDispatcher.setPackageLoadFunction("Calendar", new AjxCallback(this, this._postLoad, ZmOrganizer.CALENDAR));
 	AjxDispatcher.registerMethod("GetCalController", "CalendarCore", new AjxCallback(this, this.getCalController));
 	AjxDispatcher.registerMethod("GetReminderController", "CalendarCore", new AjxCallback(this, this.getReminderController));
 	AjxDispatcher.registerMethod("ShowMiniCalendar", "CalendarCore", new AjxCallback(this, this.showMiniCalendar));
@@ -330,8 +330,8 @@ function() {
 };
 
 ZmCalendarApp.prototype._postLoad =
-function() {
-	this._createDeferredFolders(ZmOrganizer.CALENDAR);
+function(type) {
+	ZmApp.prototype._postLoad.call(this, type);
 	this.getApptComposeController().initComposeView(true);
 };
 

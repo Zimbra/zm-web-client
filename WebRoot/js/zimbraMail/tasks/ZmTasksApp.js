@@ -27,7 +27,7 @@ function ZmTasksApp(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.TASKS, appCtxt, container);
 	
-	AjxDispatcher.setPackageLoadFunction("Tasks", new AjxCallback(this, this._postLoad));
+	AjxDispatcher.setPackageLoadFunction("Tasks", new AjxCallback(this, this._postLoad, ZmOrganizer.TASKS));
 	AjxDispatcher.registerMethod("GetTaskListController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskListController));
 	AjxDispatcher.registerMethod("GetTaskController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskController));
 

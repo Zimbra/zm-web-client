@@ -27,7 +27,7 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 
 	ZmApp.call(this, ZmApp.NOTEBOOK, appCtxt, container, parentController);
 
-	AjxDispatcher.setPackageLoadFunction("Notebook", new AjxCallback(this, this._postLoad));
+	AjxDispatcher.setPackageLoadFunction("Notebook", new AjxCallback(this, this._postLoad, ZmOrganizer.NOTEBOOK));
 	AjxDispatcher.registerMethod("GetNotebookController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getNotebookController));
 	AjxDispatcher.registerMethod("GetPageEditController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getPageEditController));
 	AjxDispatcher.registerMethod("GetNotebookCache", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getNotebookCache));

@@ -37,7 +37,7 @@
 function ZmContactsApp(appCtxt, container, parentController) {
 	ZmApp.call(this, ZmApp.CONTACTS, appCtxt, container, parentController);
 
-	AjxDispatcher.setPackageLoadFunction("Contacts", new AjxCallback(this, this._postLoad));
+	AjxDispatcher.setPackageLoadFunction("Contacts", new AjxCallback(this, this._postLoad, ZmOrganizer.ADDRBOOK));
 	AjxDispatcher.registerMethod("GetContacts", "ContactsCore", new AjxCallback(this, this.getContactList));
 	AjxDispatcher.registerMethod("GetContactListController", ["ContactsCore", "Contacts"], new AjxCallback(this, this.getContactListController));
 	AjxDispatcher.registerMethod("GetContactController", ["ContactsCore", "Contacts"], new AjxCallback(this, this.getContactController));

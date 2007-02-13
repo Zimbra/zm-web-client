@@ -241,8 +241,8 @@ function(type, obj, tree, path) {
  * Default function to run after an app's main package has been loaded.
  */
 ZmApp.prototype._postLoad =
-function() {
-	this._createDeferredFolders();
+function(type) {
+	this._createDeferredFolders(type);
 	this._handleDeferredNotifications();
 };
 
