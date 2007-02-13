@@ -70,7 +70,7 @@
 %><%
 	Cookie[] cookies = request.getCookies();
 	String contextPath = request.getContextPath();
-	if(contextPath.equals("/")) {
+	if (contextPath.equals("/")) {
 		contextPath = "";
 	}
 
@@ -266,7 +266,9 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 </head>
 <body>
 <noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
-    <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="<%=contextPath%>" value='/h/'/></fmt:param></fmt:message>
+    <fmt:message key="errorJavaScriptRequired"><fmt:param>
+    <c:url context="/zimbra" value='/h/'></c:url>
+    </fmt:param></fmt:message>
 </noscript>
 </body>
 </html>
