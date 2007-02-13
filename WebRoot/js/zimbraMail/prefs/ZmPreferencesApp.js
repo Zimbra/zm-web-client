@@ -39,6 +39,12 @@ function ZmPreferencesApp(appCtxt, container) {
 	AjxDispatcher.registerMethod("GetPopAccountsController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getPopAccountsController));
 	AjxDispatcher.registerMethod("GetFilterController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterController));
 
+	ZmOperation.registerOp("ADD_FILTER_RULE", {textKey:"newFilter", image:"Plus"});
+	ZmOperation.registerOp("EDIT_FILTER_RULE", {textKey:"filterEdit", image:"Edit"});
+	ZmOperation.registerOp("MOVE_DOWN_FILTER_RULE", {textKey:"filterMoveDown", image:"DownArrow"});
+	ZmOperation.registerOp("MOVE_UP_FILTER_RULE", {textKey:"filterMoveUp", image:"UpArrow"});
+	ZmOperation.registerOp("REMOVE_FILTER_RULE", {textKey:"filterRemove", image:"Delete"});
+
 	ZmApp.registerApp(ZmApp.PREFERENCES,
 							 {mainPkg:				"Preferences",
 							  nameKey:				"options",

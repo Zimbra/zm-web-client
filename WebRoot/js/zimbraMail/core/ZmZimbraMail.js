@@ -1292,7 +1292,6 @@ function(actionCode, ev) {
 
 	var app = ZmApp.GOTO_ACTION_CODE_R[actionCode];
 	if (app) {
-		DBG.println("app for action code: " + app);
 		if (app == this.getActiveApp()) { return false; }
 		this.activateApp(app);
 		return true;

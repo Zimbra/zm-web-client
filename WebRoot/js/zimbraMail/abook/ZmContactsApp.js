@@ -42,6 +42,15 @@ function ZmContactsApp(appCtxt, container, parentController) {
 	AjxDispatcher.registerMethod("GetContactListController", ["ContactsCore", "Contacts"], new AjxCallback(this, this.getContactListController));
 	AjxDispatcher.registerMethod("GetContactController", ["ContactsCore", "Contacts"], new AjxCallback(this, this.getContactController));
 
+	ZmOperation.registerOp("CONTACT");	// placeholder
+	ZmOperation.registerOp("EDIT_CONTACT", {textKey:"AB_EDIT_CONTACT", image:"Edit"});
+	ZmOperation.registerOp("MOUNT_ADDRBOOK", {textKey:"mountAddrBook", image:"ContactsFolder"});
+	ZmOperation.registerOp("NEW_ADDRBOOK", {textKey:"newAddrBook", tooltipKey:"newAddrBookTooltip", image:"NewContact"});
+	ZmOperation.registerOp("NEW_CONTACT", {textKey:"newContact", tooltipKey:"newContactTooltip", image:"NewContact"});
+	ZmOperation.registerOp("NEW_GROUP", {textKey:"newGroup", tooltipKey:"newGroupTooltip", image:"NewGroup"});
+	ZmOperation.registerOp("PRINT_CONTACTLIST", {textKey:"printAddrBook", image:"Print"});
+	ZmOperation.registerOp("SHARE_ADDRBOOK", {textKey:"shareAddrBook", image:"SharedContactsFolder"});
+
 	ZmItem.registerItem(ZmItem.CONTACT,
 						{app:			ZmApp.CONTACTS,
 						 nameKey:		"contact",

@@ -32,6 +32,21 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 	AjxDispatcher.registerMethod("GetPageEditController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getPageEditController));
 	AjxDispatcher.registerMethod("GetNotebookCache", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getNotebookCache));
 
+	ZmOperation.registerOp("EDIT_NOTEBOOK_CHROME", {textKey:"editNotebookChrome", image:"Edit"});
+	ZmOperation.registerOp("EDIT_NOTEBOOK_INDEX", {textKey:"editNotebookIndex", image:"Edit"});
+	ZmOperation.registerOp("EDIT_NOTEBOOK_HEADER", {textKey:"editNotebookHeader", image:"Edit"});
+	ZmOperation.registerOp("EDIT_NOTEBOOK_FOOTER", {textKey:"editNotebookFooter", image:"Edit"});
+	ZmOperation.registerOp("EDIT_NOTEBOOK_SIDE_BAR", {textKey:"editNotebookSideBar", image:"Edit"});
+	ZmOperation.registerOp("EDIT_NOTEBOOK_CHROME", {textKey:"editNotebookChrome", image:"Edit"});
+	ZmOperation.registerOp("FORMAT_MEDIA_WIKI", {textKey:"formatMediaWiki"});
+	ZmOperation.registerOp("FORMAT_RICH_TEXT", {textKey:"formatRichText"});
+	ZmOperation.registerOp("FORMAT_TWIKI", {textKey:"formatTWiki"});
+	ZmOperation.registerOp("MOUNT_NOTEBOOK", {textKey:"mountNotebook", image:"Notebook"});
+	ZmOperation.registerOp("NEW_NOTEBOOK", {textKey:"newNotebook", image:"NewNotebook"});
+	ZmOperation.registerOp("NEW_PAGE", {textKey:"newPage", tooltipKey:"createNewPage", image:"NewPage"});
+	ZmOperation.registerOp("SEND_PAGE", {textKey:"send", tooltipKey:"sendPageTT", image:"Send"});
+	ZmOperation.registerOp("SHARE_NOTEBOOK", {textKey:"shareNotebook", image:"Notebook"});
+
 	ZmItem.registerItem(ZmItem.PAGE,
 						{app:			ZmApp.NOTEBOOK,
 						 nameKey:		"page",

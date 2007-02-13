@@ -29,6 +29,10 @@ function ZmMixedApp(appCtxt, container) {
 
 	AjxDispatcher.registerMethod("GetMixedController", "Mixed", new AjxCallback(this, this.getMixedController));
 
+	ZmOperation.registerOp("SHOW_ALL_ITEM_TYPES", {textKey:"showAllItemTypes", image:"Globe"});
+	ZmOperation.registerOp("SHOW_ONLY_CONTACTS", {textKey:"showOnlyContacts", image:"Contact"});
+	ZmOperation.registerOp("SHOW_ONLY_MAIL", {textKey:"showOnlyMail", image:"Conversation"});
+
 	ZmItem.registerItem(ZmItem.MIXED,
 						{app:			ZmApp.MIXED});
 
@@ -64,7 +68,7 @@ ZmMixedApp.prototype.launch = function() {}
 ZmMixedApp.prototype.showSearchResults =
 function(results, callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
-	AjxDispatcher.require("Mixed", false, loadCallback, null, true);
+	AjxDispatcher.require(["Mail", "Mixed"], false, loadCallback, null, true);
 };
 
 ZmMixedApp.prototype._handleLoadShowSearchResults =

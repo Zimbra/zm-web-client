@@ -36,6 +36,30 @@ function ZmMailApp(appCtxt, container, parentController) {
 	AjxDispatcher.registerMethod("GetTradController", "Mail", new AjxCallback(this, this.getTradController));
 	AjxDispatcher.registerMethod("GetMailListController", "Mail", new AjxCallback(this, this.getMailListController));
 
+	ZmOperation.registerOp("ADD_SIGNATURE", {textKey:"addSignature"});
+	ZmOperation.registerOp("CHECK_MAIL", {textKey:"checkMail", tooltipKey:"checkMailTooltip", image:"Refresh"});
+	ZmOperation.registerOp("COMPOSE_OPTIONS", {textKey:"options", image:"Preferences"});
+	ZmOperation.registerOp("DELETE_CONV", {textKey:"delConv", image:"DeleteConversation"});
+	ZmOperation.registerOp("DELETE_MENU", {tooltipKey:"deleteTooltip", image:"Delete"});
+	ZmOperation.registerOp("DETACH_COMPOSE", {tooltipKey:"detachTooltip", image:"OpenInNewWindow"});
+	ZmOperation.registerOp("DRAFT");
+	ZmOperation.registerOp("FORWARD", {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward"});
+	ZmOperation.registerOp("FORWARD_ATT", {textKey:"forwardAtt", tooltipKey:"forwardAtt", image:"Forward"});
+	ZmOperation.registerOp("FORWARD_INLINE", {textKey:"forwardInline", tooltipKey:"forwardTooltip", image:"Forward"});
+	ZmOperation.registerOp("FORWARD_MENU", {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward"});
+	ZmOperation.registerOp("INC_ATTACHMENT", {textKey:"includeMenuAttachment"});
+	ZmOperation.registerOp("INC_NONE", {textKey:"includeMenuNone"});
+	ZmOperation.registerOp("INC_NO_PREFIX", {textKey:"includeMenuNoPrefix"});
+	ZmOperation.registerOp("INC_PREFIX", {textKey:"includeMenuPrefix"});
+	ZmOperation.registerOp("INC_SMART", {textKey:"includeMenuSmart"});
+	ZmOperation.registerOp("MARK_READ", {textKey:"markAsRead", image:"ReadMessage"});
+	ZmOperation.registerOp("MARK_UNREAD", {textKey:"markAsUnread", image:"UnreadMessage"});
+	ZmOperation.registerOp("NEW_MESSAGE", {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage"});
+	ZmOperation.registerOp("SAVE_DRAFT", {textKey:"saveDraft", tooltipKey:"saveDraftTooltip", image:"DraftFolder"});
+	ZmOperation.registerOp("SHOW_BCC", {textKey:"showBcc"});
+	ZmOperation.registerOp("SHOW_ORIG", {textKey:"showOrig", image:"Message"});
+	ZmOperation.registerOp("SPAM", {textKey:"junk", tooltipKey:"junkTooltip", image:"SpamFolder"});
+
 	ZmItem.registerItem(ZmItem.CONV,
 						{app:			ZmApp.MAIL,
 						 nameKey:		"conversation",

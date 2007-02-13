@@ -38,15 +38,14 @@
 function ZmOperation() {};
 
 // Special operations
-ZmOperation.NONE 					= -1;		// no operations or menu items
-ZmOperation.SEP 					= -2;		// separator
-ZmOperation.SPACER 					= -3;		// spacer (toolbar)
-ZmOperation.FILLER 					= -4;		// filler (toolbar)
+ZmOperation.NONE 					= "NONE";		// no operations or menu items
+ZmOperation.SEP 					= "SEP";		// separator
+ZmOperation.SPACER 					= "SPACER";		// spacer (toolbar)
+ZmOperation.FILLER 					= "FILLER";		// filler (toolbar)
 
 // suffix for disabled image
 ZmOperation.DIS = "Dis";
 
-var i = 1;
 ZmOperation.SETUP = {};
 
 ZmOperation.SETUP[ZmOperation.NONE]		= {};
@@ -54,957 +53,94 @@ ZmOperation.SETUP[ZmOperation.SEP]		= {};
 ZmOperation.SETUP[ZmOperation.SPACER]	= {};
 ZmOperation.SETUP[ZmOperation.FILLER]	= {};
 
-// Alphabetical list of operations and their definitions
-//
-// Each definition has zero or more of the following properties:
-//		text		label for the button or menu item
-//		tooltip		tooltip text
-//		image		icon for the button or menu item
-//		disImage	disabled version of image; if not present, defaults
-//					to image name plus "Dis"
-
-ZmOperation.ADD_FILTER_RULE = i++;
-ZmOperation.SETUP[ZmOperation.ADD_FILTER_RULE] = {
-	textKey:	"newFilter",
-	image:		"Plus"
-};
-
-ZmOperation.ADD_SIGNATURE = i++;
-ZmOperation.SETUP[ZmOperation.ADD_SIGNATURE] = {
-	textKey:	"addSignature"
-};
-
-ZmOperation.ATTACHMENT = i++;
-ZmOperation.SETUP[ZmOperation.ATTACHMENT] = {
-	textKey:	"addAttachment",
-	tooltipKey:	"attachmentTooltip",
-	image:		"Attachment"
-};
-
-ZmOperation.BROWSE = i++;
-ZmOperation.SETUP[ZmOperation.BROWSE] = {
-	textKey:	"advancedSearch",
-	image:		"SearchBuilder"
-};
-
-ZmOperation.CALL = i++;
-ZmOperation.SETUP[ZmOperation.CALL] = {
-	image:		"Telephone"
-};
-
-ZmOperation.CAL_REFRESH = i++;
-ZmOperation.SETUP[ZmOperation.CAL_REFRESH] = {
-	textKey:	"refresh",
-	tooltipKey:	"calRefreshTooltip",
-	image:		"Refresh"
-};
-
-ZmOperation.CAL_VIEW_MENU = i++;
-ZmOperation.SETUP[ZmOperation.CAL_VIEW_MENU] = {
-	textKey:	"view",
-	image:		"Appointment"
-};
-
-ZmOperation.CANCEL = i++;
-ZmOperation.SETUP[ZmOperation.CANCEL] = {
-	textKey:	"cancel",
-	tooltipKey:	"cancelTooltip",
-	image:		"Cancel"
-};
-
-ZmOperation.CHECK_ALL = i++;
-ZmOperation.SETUP[ZmOperation.CHECK_ALL] = {
-	textKey:	"checkAll",
-	image:		"Check"
-};
-
-ZmOperation.CHECK_MAIL = i++;
-ZmOperation.SETUP[ZmOperation.CHECK_MAIL] = {
-	textKey:	"checkMail",
-	tooltipKey:	"checkMailTooltip",
-	image:		"Refresh"
-};
-
-ZmOperation.CLEAR_ALL = i++;
-ZmOperation.SETUP[ZmOperation.CLEAR_ALL] = {
-	textKey:	"clearAll",
-	image:		"Cancel"
-};
-
-ZmOperation.CLOSE = i++;
-ZmOperation.SETUP[ZmOperation.CLOSE] = {
-	textKey:	"close",
-	tooltipKey:	"closeTooltip",
-	image:		"Close"
-};
-
-ZmOperation.COLOR_MENU = i++;
-ZmOperation.SETUP[ZmOperation.COLOR_MENU] = {
-	textKey:	"tagColor"
-};
-
-ZmOperation.COMPOSE_FORMAT = i++;
-ZmOperation.SETUP[ZmOperation.COMPOSE_FORMAT] = {
-	textKey:	"format",
-	tooltipKey:	"formatTooltip",
-	image:		"SwitchFormat"
-};
-
-ZmOperation.COMPOSE_OPTIONS = i++;
-ZmOperation.SETUP[ZmOperation.COMPOSE_OPTIONS] = {
-	textKey:	"options",
-	image:		"Preferences"
-};
-
-ZmOperation.CONTACT = i++;
-ZmOperation.SETUP[ZmOperation.CONTACT] = {
-};
-
-ZmOperation.DAY_VIEW = i++;
-ZmOperation.SETUP[ZmOperation.DAY_VIEW] = {
-	textKey:	"viewDay",
-	tooltipKey:	"viewDayTooltip",
-	image:		"DayView"
-};
-
-ZmOperation.DELETE = i++;
-ZmOperation.SETUP[ZmOperation.DELETE] = {
-	textKey:	"del",
-	tooltipKey:	"deleteTooltip",
-	image:		"Delete"
-};
-
-ZmOperation.DELETE_CONV = i++;
-ZmOperation.SETUP[ZmOperation.DELETE_CONV] = {
-	textKey:	"delConv",
-	image:		"DeleteConversation"
-};
-
-ZmOperation.DELETE_MENU = i++;
-ZmOperation.SETUP[ZmOperation.DELETE_MENU] = {
-	tooltipKey:	"deleteTooltip",
-	image:		"Delete"
-};
-
-ZmOperation.DETACH = i++;
-ZmOperation.SETUP[ZmOperation.DETACH] = {
-	textKey:	"detach",
-	tooltipKey:	"detachTT",
-	image:		"OpenInNewWindow"
-};
-
-ZmOperation.DETACH_COMPOSE = i++;
-ZmOperation.SETUP[ZmOperation.DETACH_COMPOSE] = {
-	tooltipKey:	"detachTooltip",
-	image:		"OpenInNewWindow"
-};
-
-ZmOperation.DRAFT = i++;
-ZmOperation.SETUP[ZmOperation.DRAFT] = {
-};
-
-ZmOperation.EDIT = i++;
-ZmOperation.SETUP[ZmOperation.EDIT] = {
-	textKey:	"edit",
-	tooltipKey:	"editTooltip",
-	image:		"Edit"
-};
-
-ZmOperation.EDIT_CONTACT = i++;
-ZmOperation.SETUP[ZmOperation.EDIT_CONTACT] = {
-	textKey:	"AB_EDIT_CONTACT",
-	image:		"Edit"
-};
-
-ZmOperation.EDIT_FILTER_RULE = i++;
-ZmOperation.SETUP[ZmOperation.EDIT_FILTER_RULE] = {
-	textKey:	"filterEdit",
-	image:		"Edit"
-};
-
-ZmOperation.EDIT_NOTEBOOK_CHROME = i++;
-ZmOperation.SETUP[ZmOperation.EDIT_NOTEBOOK_CHROME] = {
-	textKey:	"editNotebookChrome",
-	image:		"Edit"
-};
-
-ZmOperation.EDIT_NOTEBOOK_INDEX = i++;
-ZmOperation.SETUP[ZmOperation.EDIT_NOTEBOOK_INDEX] = {
-	textKey:	"editNotebookIndex",
-	image:		"Edit"
-};
-
-ZmOperation.EDIT_NOTEBOOK_STYLES = i++;
-ZmOperation.SETUP[ZmOperation.EDIT_NOTEBOOK_STYLES] = {
-	textKey:	"editNotebookStyles",
-	image:		"Edit"
-};
-
-ZmOperation.EDIT_NOTEBOOK_HEADER = i++;
-ZmOperation.SETUP[ZmOperation.EDIT_NOTEBOOK_HEADER] = {
-	textKey:	"editNotebookHeader",
-	image:		"Edit"
-};
-
-ZmOperation.EDIT_NOTEBOOK_FOOTER = i++;
-ZmOperation.SETUP[ZmOperation.EDIT_NOTEBOOK_FOOTER] = {
-	textKey:	"editNotebookFooter",
-	image:		"Edit"
-};
-
-ZmOperation.EDIT_NOTEBOOK_SIDE_BAR = i++;
-ZmOperation.SETUP[ZmOperation.EDIT_NOTEBOOK_SIDE_BAR] = {
-	textKey:	"editNotebookSideBar",
-	image:		"Edit"
-};
-
-
-ZmOperation.EDIT_PROPS = i++;
-ZmOperation.SETUP[ZmOperation.EDIT_PROPS] = {
-	textKey:	"editProperties",
-	tooltipKey:	"editPropertiesTooltip",
-	image:		"Properties"
-};
-
-ZmOperation.EDIT_REPLY_ACCEPT = i++;
-ZmOperation.SETUP[ZmOperation.EDIT_REPLY_ACCEPT] = {
-	textKey:	"replyAccept",
-	image:		"Check"
-};
-
-ZmOperation.EDIT_REPLY_CANCEL = i++;
-ZmOperation.SETUP[ZmOperation.EDIT_REPLY_CANCEL] = {
-};
-
-ZmOperation.EDIT_REPLY_DECLINE = i++;
-ZmOperation.SETUP[ZmOperation.EDIT_REPLY_DECLINE] = {
-	textKey:	"replyDecline",
-	image:		"Cancel"
-};
-
-ZmOperation.EDIT_REPLY_TENTATIVE = i++;
-ZmOperation.SETUP[ZmOperation.EDIT_REPLY_TENTATIVE] = {
-	textKey:	"replyTentative",
-	image:		"QuestionMark"
-};
-
-ZmOperation.EXPAND_ALL = i++;
-ZmOperation.SETUP[ZmOperation.EXPAND_ALL] = {
-	textKey:	"expandAll",
-	image:		"Plus"
-};
-
-ZmOperation.FORMAT_HTML = i++;
-ZmOperation.SETUP[ZmOperation.FORMAT_HTML] = {
-	textKey:	"formatAsHtml",
-	image:		"HtmlDoc"
-};
-
-ZmOperation.FORMAT_HTML_SOURCE = i++;
-ZmOperation.SETUP[ZmOperation.FORMAT_HTML_SOURCE] = {
-	textKey:	"formatHtmlSource"
-};
-
-ZmOperation.FORMAT_MEDIA_WIKI = i++;
-ZmOperation.SETUP[ZmOperation.FORMAT_MEDIA_WIKI] = {
-	textKey:	"formatMediaWiki"
-};
-
-ZmOperation.FORMAT_RICH_TEXT = i++;
-ZmOperation.SETUP[ZmOperation.FORMAT_RICH_TEXT] = {
-	textKey:	"formatRichText"
-};
-
-ZmOperation.FORMAT_TEXT = i++;
-ZmOperation.SETUP[ZmOperation.FORMAT_TEXT] = {
-	textKey:	"formatAsText",
-	image:		"GenericDoc"
-};
-
-ZmOperation.FORMAT_TWIKI = i++;
-ZmOperation.SETUP[ZmOperation.FORMAT_TWIKI] = {
-	textKey:	"formatTWiki"
-};
-
-ZmOperation.FORWARD = i++;
-ZmOperation.SETUP[ZmOperation.FORWARD] = {
-	textKey:	"forward",
-	tooltipKey:	"forwardTooltip",
-	image:		"Forward"
-};
-
-ZmOperation.FORWARD_ATT = i++;
-ZmOperation.SETUP[ZmOperation.FORWARD_ATT] = {
-	textKey:	"forwardAtt",
-	tooltipKey:	"forwardAtt",
-	image:		"Forward"
-};
-
-ZmOperation.FORWARD_INLINE = i++;
-ZmOperation.SETUP[ZmOperation.FORWARD_INLINE] = {
-	textKey:	"forwardInline",
-	tooltipKey:	"forwardTooltip",
-	image:		"Forward"
-};
-
-ZmOperation.FORWARD_MENU = i++;
-ZmOperation.SETUP[ZmOperation.FORWARD_MENU] = {
-	textKey:	"forward",
-	tooltipKey:	"forwardTooltip",
-	image:		"Forward"
-};
-
-ZmOperation.GO_TO_URL = i++;
-ZmOperation.SETUP[ZmOperation.GO_TO_URL] = {
-	image:		"URL"
-};
-
-ZmOperation.IM = i++;
-ZmOperation.SETUP[ZmOperation.IM] = {
-	textKey:	"newIM",
-	image:		"ImStartChat"
-};
-
-ZmOperation.IM_NEW_CHAT = i++;
-ZmOperation.SETUP[ZmOperation.IM_NEW_CHAT] = {
-	textKey:	"imNewChat",
-	image:		"ImFree2Chat"
-};
-
-ZmOperation.IM_NEW_GROUP_CHAT = i++;
-ZmOperation.SETUP[ZmOperation.IM_NEW_GROUP_CHAT] = {
-	textKey:	"imNewGroupChat",
-	image:		"ImFree2Chat"
-};
-
-ZmOperation.IM_PRESENCE_AWAY = i++;
-ZmOperation.SETUP[ZmOperation.IM_PRESENCE_AWAY] = {
-	textKey:	"imStatusAway",
-	image:		"ImAway"
-};
-
-ZmOperation.IM_PRESENCE_CHAT = i++;
-ZmOperation.SETUP[ZmOperation.IM_PRESENCE_CHAT] = {
-	textKey:	"imStatusChat",
-	image:		"ImFree2Chat"
-};
-
-ZmOperation.IM_PRESENCE_DND = i++;
-ZmOperation.SETUP[ZmOperation.IM_PRESENCE_DND] = {
-	textKey:	"imStatusDND",
-	image:		"ImDnd"
-};
-
-ZmOperation.IM_PRESENCE_INVISIBLE = i++;
-ZmOperation.SETUP[ZmOperation.IM_PRESENCE_INVISIBLE] = {
-	textKey:	"imStatusInvisible",
-	image:		"ImInvisible"
-};
-
-ZmOperation.IM_PRESENCE_MENU = i++;
-ZmOperation.SETUP[ZmOperation.IM_PRESENCE_MENU] = {
-	textKey:	"imPresence"
-};
-
-ZmOperation.IM_PRESENCE_OFFLINE = i++;
-ZmOperation.SETUP[ZmOperation.IM_PRESENCE_OFFLINE] = {
-	textKey:	"imStatusOffline",
-	image:		"RoundMinusDis"			// need new one
-};
-
-ZmOperation.IM_PRESENCE_ONLINE = i++;
-ZmOperation.SETUP[ZmOperation.IM_PRESENCE_ONLINE] = {
-	textKey:	"imStatusOnline",
-	image:		"ImAvailable"
-};
-
-ZmOperation.IM_PRESENCE_XA = i++;
-ZmOperation.SETUP[ZmOperation.IM_PRESENCE_XA] = {
-	textKey:	"imStatusExtAway",
-	image:		"ImExtendedAway"
-};
-
-ZmOperation.INC_ATTACHMENT = i++;
-ZmOperation.SETUP[ZmOperation.INC_ATTACHMENT] = {
-	textKey:	"includeMenuAttachment"
-};
-
-ZmOperation.INC_NONE = i++;
-ZmOperation.SETUP[ZmOperation.INC_NONE] = {
-	textKey:	"includeMenuNone"
-};
-
-ZmOperation.INC_NO_PREFIX = i++;
-ZmOperation.SETUP[ZmOperation.INC_NO_PREFIX] = {
-	textKey:	"includeMenuNoPrefix"
-};
-
-ZmOperation.INC_PREFIX = i++;
-ZmOperation.SETUP[ZmOperation.INC_PREFIX] = {
-	textKey:	"includeMenuPrefix"
-};
-
-ZmOperation.INC_SMART = i++;
-ZmOperation.SETUP[ZmOperation.INC_SMART] = {
-	textKey:	"includeMenuSmart"
-};
-
-ZmOperation.INVITE_REPLY_ACCEPT = i++;
-ZmOperation.SETUP[ZmOperation.INVITE_REPLY_ACCEPT] = {
-	textKey:	"editReply",
-	image:		"Check"
-};
-
-ZmOperation.INVITE_REPLY_DECLINE = i++;
-ZmOperation.SETUP[ZmOperation.INVITE_REPLY_DECLINE] = {
-	textKey:	"editReply",
-	image:		"Cancel"
-};
-
-ZmOperation.INVITE_REPLY_MENU = i++;
-ZmOperation.SETUP[ZmOperation.INVITE_REPLY_MENU] = {
-	textKey:	"editReply",
-	image:		"Reply"
-};
-
-ZmOperation.INVITE_REPLY_TENTATIVE = i++;
-ZmOperation.SETUP[ZmOperation.INVITE_REPLY_TENTATIVE] = {
-	textKey:	"editReply",
-	image:		"QuestionMark"
-};
-
-ZmOperation.MARK_ALL_READ = i++;
-ZmOperation.SETUP[ZmOperation.MARK_ALL_READ] = {
-	textKey:	"markAllRead",
-	image:		"ReadMessage"
-};
-
-ZmOperation.MARK_READ = i++;
-ZmOperation.SETUP[ZmOperation.MARK_READ] = {
-	textKey:	"markAsRead",
-	image:		"ReadMessage"
-};
-
-ZmOperation.MARK_UNREAD = i++;
-ZmOperation.SETUP[ZmOperation.MARK_UNREAD] = {
-	textKey:	"markAsUnread",
-	image:		"UnreadMessage"
-};
-
-ZmOperation.MODIFY_SEARCH = i++;
-ZmOperation.SETUP[ZmOperation.MODIFY_SEARCH] = {
-	textKey:	"modifySearch",
-	image:		"SearchFolder"
-};
-
-ZmOperation.MONTH_VIEW = i++;
-ZmOperation.SETUP[ZmOperation.MONTH_VIEW] = {
-	textKey:	"viewMonth",
-	tooltipKey:	"viewMonthTooltip",
-	image:		"MonthView"
-};
-
-ZmOperation.MOUNT_ADDRBOOK = i++;
-ZmOperation.SETUP[ZmOperation.MOUNT_ADDRBOOK] = {
-	textKey:	"mountAddrBook",
-	image:		"ContactsFolder"
-};
-
-ZmOperation.MOUNT_CALENDAR = i++;
-ZmOperation.SETUP[ZmOperation.MOUNT_CALENDAR] = {
-	textKey:	"mountCalendar",
-	image:		"GroupSchedule"
-};
-
-ZmOperation.MOUNT_FOLDER = i++;
-ZmOperation.SETUP[ZmOperation.MOUNT_FOLDER] = {
-	textKey:	"mountFolder",
-	image:		"Folder"
-};
-
-ZmOperation.MOUNT_NOTEBOOK = i++;
-ZmOperation.SETUP[ZmOperation.MOUNT_NOTEBOOK] = {
-	textKey:	"mountNotebook",
-	image:		"Notebook"
-};
-
-ZmOperation.MOUNT_TASK_FOLDER = i++;
-ZmOperation.SETUP[ZmOperation.MOUNT_TASK_FOLDER] = {
-	textKey:	"mountTaskFolder",
-	image:		"Task"
-};
-
-ZmOperation.MOVE = i++;
-ZmOperation.SETUP[ZmOperation.MOVE] = {
-	textKey:	"move",
-	tooltipKey:	"moveTooltip",
-	image:		"MoveToFolder"
-};
-
-ZmOperation.MOVE_DOWN_FILTER_RULE = i++;
-ZmOperation.SETUP[ZmOperation.MOVE_DOWN_FILTER_RULE] = {
-	textKey:	"filterMoveDown",
-	image:		"DownArrow"
-};
-
-ZmOperation.MOVE_UP_FILTER_RULE = i++;
-ZmOperation.SETUP[ZmOperation.MOVE_UP_FILTER_RULE] = {
-	textKey:	"filterMoveUp",
-	image:		"UpArrow"
-};
-
-ZmOperation.NEW_ADDRBOOK = i++;
-ZmOperation.SETUP[ZmOperation.NEW_ADDRBOOK] = {
-	textKey:	"newAddrBook",
-	tooltipKey:	"newAddrBookTooltip",
-	image:		"NewContact"
-};
-
-ZmOperation.NEW_ALLDAY_APPT = i++;
-ZmOperation.SETUP[ZmOperation.NEW_ALLDAY_APPT] = {
-	textKey:	"newAllDayAppt",
-	tooltipKey:	"newAllDayApptTooltip",
-	image:		"NewAppointment"
-};
-
-ZmOperation.NEW_APPT = i++;
-ZmOperation.SETUP[ZmOperation.NEW_APPT] = {
-	textKey:	"newAppt",
-	tooltipKey:	"newApptTooltip",
-	image:		"NewAppointment"
-};
-
-ZmOperation.NEW_CALENDAR = i++;
-ZmOperation.SETUP[ZmOperation.NEW_CALENDAR] = {
-	textKey:	"newCalendar",
-	image:		"NewAppointment"
-};
-
-ZmOperation.NEW_CONTACT = i++;
-ZmOperation.SETUP[ZmOperation.NEW_CONTACT] = {
-	textKey:	"newContact",
-	tooltipKey:	"newContactTooltip",
-	image:		"NewContact"
-};
-
-ZmOperation.NEW_FOLDER = i++;
-ZmOperation.SETUP[ZmOperation.NEW_FOLDER] = {
-	textKey:	"newFolder",
-	tooltipKey:	"newFolderTooltip",
-	image:		"NewFolder"
-};
-
-ZmOperation.NEW_GROUP = i++;
-ZmOperation.SETUP[ZmOperation.NEW_GROUP] = {
-	textKey:	"newGroup",
-	tooltipKey:	"newGroupTooltip",
-	image:		"NewGroup"
-};
-
-ZmOperation.NEW_MENU = i++;
-ZmOperation.SETUP[ZmOperation.NEW_MENU] = {
-	textKey:	"_new"
-};
-
-ZmOperation.NEW_MESSAGE = i++;
-ZmOperation.SETUP[ZmOperation.NEW_MESSAGE] = {
-	textKey:	"newEmail",
-	tooltipKey:	"newMessageTooltip",
-	image:		"NewMessage"
-};
-
-ZmOperation.NEW_PAGE = i++;
-ZmOperation.SETUP[ZmOperation.NEW_PAGE] = {
-	textKey:	"newPage",
-	tooltipKey:	"createNewPage",
-	image:		"NewPage"
-};
-
-ZmOperation.NEW_NOTEBOOK = i++;
-ZmOperation.SETUP[ZmOperation.NEW_NOTEBOOK] = {
-	textKey:	"newNotebook",
-	image:		"NewNotebook"
-};
-
-ZmOperation.NEW_ROSTER_ITEM = i++;
-ZmOperation.SETUP[ZmOperation.NEW_ROSTER_ITEM] = {
-	textKey:	"newRosterItem",
-	image:		"ImBuddy"
-};
-
-ZmOperation.NEW_TAG = i++;
-ZmOperation.SETUP[ZmOperation.NEW_TAG] = {
-	textKey:	"newTag",
-	tooltipKey:	"newTagTooltip",
-	image:		"NewTag"
-};
-
-ZmOperation.NEW_TASK = i++;
-ZmOperation.SETUP[ZmOperation.NEW_TASK] = {
-	textKey:	"newTask",
-	tooltipKey:	"newTaskTooltip",
-	image:		"NewTask"
-};
-
-ZmOperation.NEW_TASK_FOLDER = i++;
-ZmOperation.SETUP[ZmOperation.NEW_TASK_FOLDER] = {
-	textKey:	"newTaskFolder",
-	tooltipKey:	"newTaskFolderTooltip",
-	image:		"NewTask"
-};
-
-ZmOperation.PAGE_BACK = i++;
-ZmOperation.SETUP[ZmOperation.PAGE_BACK] = {
-	image:		"LeftArrow"
-};
-
-ZmOperation.PAGE_DBL_BACK = i++;
-ZmOperation.SETUP[ZmOperation.PAGE_DBL_BACK] = {
-	image:		"LeftDoubleArrow"
-};
-
-ZmOperation.PAGE_DBL_FORW = i++;
-ZmOperation.SETUP[ZmOperation.PAGE_DBL_FORW] = {
-	image:		"RightDoubleArrow"
-};
-
-ZmOperation.PAGE_FORWARD = i++;
-ZmOperation.SETUP[ZmOperation.PAGE_FORWARD] = {
-	image:		"RightArrow"
-};
-
-ZmOperation.PRINT = i++;
-ZmOperation.SETUP[ZmOperation.PRINT] = {
-	textKey:	"print",
-	tooltipKey:	"printTooltip",
-	image:		"Print"
-};
-
-ZmOperation.PRINT_CONTACTLIST = i++;
-ZmOperation.SETUP[ZmOperation.PRINT_CONTACTLIST] = {
-	textKey:	"printAddrBook",
-	image:		"Print" 				// XXX: new icon?
-};
-
-ZmOperation.PRINT_MENU = i++;
-ZmOperation.SETUP[ZmOperation.PRINT_MENU] = {
-	tooltipKey:	"printTooltip",
-	image:		"Print"
-};
-
-ZmOperation.REFRESH = i++;
-ZmOperation.SETUP[ZmOperation.REFRESH] = {
-	textKey:	"refresh",
-	tooltipKey:	"refreshTooltip",
-	img:		"Refresh"
-};
-
-ZmOperation.REMOVE_FILTER_RULE = i++;
-ZmOperation.SETUP[ZmOperation.REMOVE_FILTER_RULE] = {
-	textKey:	"filterRemove",
-	image:		"Delete"
-};
-
-ZmOperation.RENAME_FOLDER = i++;
-ZmOperation.SETUP[ZmOperation.RENAME_FOLDER] = {
-	textKey:	"renameFolder",
-	image:		"Rename"
-};
-
-ZmOperation.RENAME_SEARCH = i++;
-ZmOperation.SETUP[ZmOperation.RENAME_SEARCH] = {
-	textKey:	"renameSearch",
-	image:		"Rename"
-};
-
-ZmOperation.RENAME_TAG = i++;
-ZmOperation.SETUP[ZmOperation.RENAME_TAG] = {
-	textKey:	"renameTag",
-	image:		"Rename"
-};
-
-ZmOperation.REPLY = i++;
-ZmOperation.SETUP[ZmOperation.REPLY] = {
-	textKey:	"reply",
-	tooltipKey:	"replyTooltip",
-	image:		"Reply"
-};
-
-ZmOperation.REPLY_ACCEPT = i++;
-ZmOperation.SETUP[ZmOperation.REPLY_ACCEPT] = {
-	textKey:	"replyAccept",
-	image:		"Check"
-};
-
-ZmOperation.REPLY_ALL = i++;
-ZmOperation.SETUP[ZmOperation.REPLY_ALL] = {
-	textKey:	"replyAll",
-	tooltipKey:	"replyAllTooltip",
-	image:		"ReplyAll"
-};
-
-ZmOperation.REPLY_CANCEL = i++;
-ZmOperation.SETUP[ZmOperation.REPLY_CANCEL] = {
-};
-
-ZmOperation.REPLY_DECLINE = i++;
-ZmOperation.SETUP[ZmOperation.REPLY_DECLINE] = {
-	textKey:	"replyDecline",
-	image:		"Cancel"
-};
-
-ZmOperation.REPLY_MENU = i++;
-ZmOperation.SETUP[ZmOperation.REPLY_MENU] = {
-	textKey:	"reply",
-	tooltipKey:	"replyTooltip",
-	image:		"Reply"
-};
-
-ZmOperation.REPLY_MODIFY = i++;
-ZmOperation.SETUP[ZmOperation.REPLY_MODIFY] = {};
-
-ZmOperation.REPLY_NEW_TIME = i++;
-ZmOperation.SETUP[ZmOperation.REPLY_NEW_TIME] = {
-	textKey:	"replyNewTime",
-	image:		"NewTime"
-};
-
-ZmOperation.REPLY_TENTATIVE = i++;
-ZmOperation.SETUP[ZmOperation.REPLY_TENTATIVE] = {
-	textKey:	"replyTentative",
-	image:		"QuestionMark"
-};
-
-ZmOperation.SAVE = i++;
-ZmOperation.SETUP[ZmOperation.SAVE] = {
-	textKey:	"save",
-	image:		"Save"
-};
-
-ZmOperation.SAVE_DRAFT = i++;
-ZmOperation.SETUP[ZmOperation.SAVE_DRAFT] = {
-	textKey:	"saveDraft",
-	tooltipKey:	"saveDraftTooltip",
-	image:		"DraftFolder"
-};
-
-ZmOperation.SCHEDULE_VIEW = i++;
-ZmOperation.SETUP[ZmOperation.SCHEDULE_VIEW] = {
-	textKey:	"viewSchedule",
-	tooltipKey:	"viewScheduleTooltip",
-	image:		"GroupSchedule"
-};
-
-ZmOperation.SEARCH = i++;
-ZmOperation.SETUP[ZmOperation.SEARCH] = {
-	textKey:	"search",
-	image:		"Search"
-};
-
-ZmOperation.SEARCH_MAIL = i++;
-ZmOperation.SETUP[ZmOperation.SEARCH_MAIL] = {
-	textKey:	"searchMail",
-	image:		"SearchMail"
-};
-
-ZmOperation.SEND = i++;
-ZmOperation.SETUP[ZmOperation.SEND] = {
-	textKey:	"send",
-	tooltipKey:	"sendTooltip",
-	image:		"Send"
-};
-
-ZmOperation.SEND_PAGE = i++;
-ZmOperation.SETUP[ZmOperation.SEND_PAGE] = {
-	textKey:	"send",
-	tooltipKey:	"sendPageTT",
-	image:		"Send"
-};
-
-ZmOperation.SHARE = i++;
-ZmOperation.SETUP[ZmOperation.SHARE] = {
-	textKey:	"share",
-	tooltipKey:	"shareTooltip"
-};
-
-ZmOperation.SHARE_ACCEPT = i++;
-ZmOperation.SETUP[ZmOperation.SHARE_ACCEPT] = {
-	textKey:	"acceptShare",
-	image:		"Check"
-};
-
-ZmOperation.SHARE_ADDRBOOK = i++;
-ZmOperation.SETUP[ZmOperation.SHARE_ADDRBOOK] = {
-	textKey:	"shareAddrBook",
-	image:		"SharedContactsFolder"
-};
-
-ZmOperation.SHARE_CALENDAR = i++;
-ZmOperation.SETUP[ZmOperation.SHARE_CALENDAR] = {
-	textKey:	"shareCalendar",
-	image:		"CalendarFolder"
-};
-
-ZmOperation.SHARE_DECLINE = i++;
-ZmOperation.SETUP[ZmOperation.SHARE_DECLINE] = {
-	textKey:	"declineShare",
-	image:		"Cancel"
-};
-
-ZmOperation.SHARE_FOLDER = i++;
-ZmOperation.SETUP[ZmOperation.SHARE_FOLDER] = {
-	textKey:	"shareFolder",
-	image:		"Folder"
-};
-
-ZmOperation.SHARE_NOTEBOOK = i++;
-ZmOperation.SETUP[ZmOperation.SHARE_NOTEBOOK] = {
-	textKey:	"shareNotebook",
-	image:		"Notebook"
-};
-
-ZmOperation.SHARE_TASKFOLDER = i++;
-ZmOperation.SETUP[ZmOperation.SHARE_TASKFOLDER] = {
-	textKey:	"shareTaskFolder",
-	image:		"Task"
-};
-
-ZmOperation.SHOW_ALL_MENU = i++;
-ZmOperation.SETUP[ZmOperation.SHOW_ALL_MENU] = {
-	textKey:	"showAllItemTypes",
-	image:		"Globe"
-};
-
-ZmOperation.SHOW_ALL_ITEM_TYPES = i++;
-ZmOperation.SETUP[ZmOperation.SHOW_ALL_ITEM_TYPES] = {
-	textKey:	"showAllItemTypes",
-	image:		"Globe"
-};
-
-ZmOperation.SHOW_BCC = i++;
-ZmOperation.SETUP[ZmOperation.SHOW_BCC] = {
-	textKey:	"showBcc"
-};
-
-ZmOperation.SHOW_ONLY_CONTACTS = i++;
-ZmOperation.SETUP[ZmOperation.SHOW_ONLY_CONTACTS] = {
-	textKey:	"showOnlyContacts",
-	image:		"Contact"
-};
-
-ZmOperation.SHOW_ONLY_MAIL = i++;
-ZmOperation.SETUP[ZmOperation.SHOW_ONLY_MAIL] = {
-	textKey:	"showOnlyMail",
-	image:		"Conversation"
-};
-
-ZmOperation.SHOW_ORIG = i++;
-ZmOperation.SETUP[ZmOperation.SHOW_ORIG] = {
-	textKey:	"showOrig",
-	image:		"Message"
-};
-
-ZmOperation.SPAM = i++;
-ZmOperation.SETUP[ZmOperation.SPAM] = {
-	textKey:	"junk",
-	tooltipKey:	"junkTooltip",
-	image:		"SpamFolder"
-};
-
-ZmOperation.SPELL_CHECK = i++;
-ZmOperation.SETUP[ZmOperation.SPELL_CHECK] = {
-	textKey:	"spellCheck",
-	image:		"SpellCheck"
-};
-
-ZmOperation.SYNC = i++;
-ZmOperation.SETUP[ZmOperation.SYNC] = {
-	textKey:	"reload",
-	image:		"Refresh"
-};
-
-ZmOperation.TAG = i++;
-ZmOperation.SETUP[ZmOperation.TAG] = {
-};
-
-ZmOperation.TAG_MENU = i++;
-ZmOperation.SETUP[ZmOperation.TAG_MENU] = {
-	textKey:	"tag",
-	tooltipKey:	"tagTooltip",
-	image:		"Tag"
-};
-
-ZmOperation.TEXT = i++;
-ZmOperation.SETUP[ZmOperation.TEXT] = {
-};
-
-ZmOperation.TODAY = i++;
-ZmOperation.SETUP[ZmOperation.TODAY] = {
-	tooltipKey:	"todayTooltip",
-	image:		"Date"
-};
-
-ZmOperation.TODAY_GOTO = i++;
-ZmOperation.SETUP[ZmOperation.TODAY_GOTO] = {
-	textKey:	"todayGoto",
-	image:		"Date"
-};
-
-ZmOperation.UNDELETE = i++;
-ZmOperation.SETUP[ZmOperation.UNDELETE] = {
-	textKey:	"undelete",
-	tooltipKey:	"undelete",
-	image:		"MoveToFolder" 		// XXX: need new icon?
-};
-
-ZmOperation.VIEW = i++;
-ZmOperation.SETUP[ZmOperation.VIEW] = {
-	textKey:	"view",
-	image:		"SplitView"
-};
-
-ZmOperation.VIEW_APPOINTMENT = i++;
-ZmOperation.SETUP[ZmOperation.VIEW_APPOINTMENT] = {
-	textKey:	"viewAppointment",
-	image:		"Appointment"
-};
-
-ZmOperation.VIEW_APPT_INSTANCE = i++;
-ZmOperation.SETUP[ZmOperation.VIEW_APPT_INSTANCE] = {
-	textKey:	"apptInstance",
-	image:		"Appointment"
-};
-
-ZmOperation.VIEW_APPT_SERIES = i++;
-ZmOperation.SETUP[ZmOperation.VIEW_APPT_SERIES] = {
-	textKey:	"apptSeries",
-	image:		"ApptRecur"
-};
-
-ZmOperation.WEEK_VIEW = i++;
-ZmOperation.SETUP[ZmOperation.WEEK_VIEW] = {
-	textKey:	"viewWeek",
-	tooltipKey:	"viewWeekTooltip",
-	image:		"WeekView"
-};
-
-ZmOperation.WORK_WEEK_VIEW = i++;
-ZmOperation.SETUP[ZmOperation.WORK_WEEK_VIEW] = {
-	textKey:	"viewWorkWeek",
-	tooltipKey:	"viewWorkWeekTooltip",
-	image:		"WorkWeekView"
-};
-
-ZmOperation.ZIMLET = i++;
-ZmOperation.SETUP[ZmOperation.ZIMLET] = {
-	image:		"ZimbraIcon"
-};
-
-delete i;
+/**
+ * Defines the aspects of an operation, and the ID that refers to it.
+ * 
+ * @param op		[string]	name of the operation
+ * @param text		[string]*	msg key for button or menu item text
+ * @param tooltip	[string]*	msg key for tooltip text
+ * @param image		[string]*	icon class for the button or menu item
+ * @param disImage	[string]*	disabled version of image; defaults to image + "Dis"
+ */
+ZmOperation.registerOp =
+function(op, params) {
+	ZmOperation[op] = op;
+	ZmOperation.SETUP[op] = params || {};
+};
+
+ZmOperation.registerOp("ATTACHMENT", {textKey:"addAttachment", tooltipKey:"attachmentTooltip", image:"Attachment"});
+ZmOperation.registerOp("BROWSE", {textKey:"advancedSearch", image:"SearchBuilder"});
+ZmOperation.registerOp("CALL", {image:"Telephone"});
+ZmOperation.registerOp("CANCEL", {textKey:"cancel", tooltipKey:"cancelTooltip", image:"Cancel"});
+ZmOperation.registerOp("CHECK_ALL", {textKey:"checkAll", image:"Check"});
+ZmOperation.registerOp("CLEAR_ALL", {textKey:"clearAll", image:"Cancel"});
+ZmOperation.registerOp("CLOSE", {textKey:"close", tooltipKey:"closeTooltip", image:"Close"});
+ZmOperation.registerOp("COLOR_MENU", {textKey:"tagColor"});
+ZmOperation.registerOp("COMPOSE_FORMAT", {textKey:"format", tooltipKey:"formatTooltip", image:"SwitchFormat"});
+ZmOperation.registerOp("DELETE", {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete"});
+ZmOperation.registerOp("DETACH", {textKey:"detach", tooltipKey:"detachTT", image:"OpenInNewWindow"});
+ZmOperation.registerOp("EDIT", {textKey:"edit", tooltipKey:"editTooltip", image:"Edit"});
+ZmOperation.registerOp("EDIT_PROPS", {textKey:"editProperties", tooltipKey:"editPropertiesTooltip", image:"Properties"});
+ZmOperation.registerOp("EDIT_REPLY_ACCEPT", {textKey:"replyAccept", image:"Check"});
+ZmOperation.registerOp("EDIT_REPLY_CANCEL");
+ZmOperation.registerOp("EDIT_REPLY_DECLINE", {textKey:"replyDecline", image:"Cancel"});
+ZmOperation.registerOp("EDIT_REPLY_TENTATIVE", {textKey:"replyTentative", image:"QuestionMark"});
+ZmOperation.registerOp("EXPAND_ALL", {textKey:"expandAll", image:"Plus"});
+ZmOperation.registerOp("FORMAT_HTML", {textKey:"formatAsHtml", image:"HtmlDoc"});
+ZmOperation.registerOp("FORMAT_HTML_SOURCE", {textKey:"formatHtmlSource"});
+ZmOperation.registerOp("FORMAT_TEXT", {textKey:"formatAsText", image:"GenericDoc"});
+ZmOperation.registerOp("GO_TO_URL", {image:"URL"});
+ZmOperation.registerOp("INVITE_REPLY_ACCEPT", {textKey:"editReply", image:"Check"});
+ZmOperation.registerOp("INVITE_REPLY_DECLINE", {textKey:"editReply", image:"Cancel"});
+ZmOperation.registerOp("INVITE_REPLY_MENU", {textKey:"editReply", image:"Reply"});
+ZmOperation.registerOp("INVITE_REPLY_TENTATIVE", {textKey:"editReply", image:"QuestionMark"});
+ZmOperation.registerOp("MARK_ALL_READ", {textKey:"markAllRead", image:"ReadMessage"});
+ZmOperation.registerOp("MODIFY_SEARCH", {textKey:"modifySearch", image:"SearchFolder"});
+ZmOperation.registerOp("MOUNT_FOLDER", {textKey:"mountFolder", image:"Folder"});
+ZmOperation.registerOp("MOVE", {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder"});
+ZmOperation.registerOp("NEW_FOLDER", {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder"});
+ZmOperation.registerOp("NEW_MENU", {textKey:"_new"});
+ZmOperation.registerOp("NEW_TAG", {textKey:"newTag", tooltipKey:"newTagTooltip", image:"NewTag"});
+ZmOperation.registerOp("PAGE_BACK", {image:"LeftArrow"});
+ZmOperation.registerOp("PAGE_DBL_BACK", {image:"LeftDoubleArrow"});
+ZmOperation.registerOp("PAGE_DBL_FORW", {image:"RightDoubleArrow"});
+ZmOperation.registerOp("PAGE_FORWARD", {image:"RightArrow"});
+ZmOperation.registerOp("PRINT", {textKey:"print", tooltipKey:"printTooltip", image:"Print"});
+ZmOperation.registerOp("PRINT_MENU", {tooltipKey:"printTooltip", image:"Print"});
+ZmOperation.registerOp("REFRESH", {textKey:"refresh", tooltipKey:"refreshTooltip", image:"Refresh"});
+ZmOperation.registerOp("RENAME_FOLDER", {textKey:"renameFolder", image:"Rename"});
+ZmOperation.registerOp("RENAME_SEARCH", {textKey:"renameSearch", image:"Rename"});
+ZmOperation.registerOp("RENAME_TAG", {textKey:"renameTag", image:"Rename"});
+ZmOperation.registerOp("REPLY", {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply"});
+ZmOperation.registerOp("REPLY_ACCEPT", {textKey:"replyAccept", image:"Check"});
+ZmOperation.registerOp("REPLY_ALL", {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll"});
+ZmOperation.registerOp("REPLY_CANCEL");
+ZmOperation.registerOp("REPLY_DECLINE", {textKey:"replyDecline", image:"Cancel"});
+ZmOperation.registerOp("REPLY_MENU", {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply"});
+ZmOperation.registerOp("REPLY_MODIFY");
+ZmOperation.registerOp("REPLY_NEW_TIME", {textKey:"replyNewTime", image:"NewTime"});
+ZmOperation.registerOp("REPLY_TENTATIVE", {textKey:"replyTentative", image:"QuestionMark"});
+ZmOperation.registerOp("SAVE", {textKey:"save", image:"Save"});
+ZmOperation.registerOp("SEARCH", {textKey:"search", image:"Search"});
+ZmOperation.registerOp("SEND", {textKey:"send", tooltipKey:"sendTooltip", image:"Send"});
+ZmOperation.registerOp("SHARE", {textKey:"share", tooltipKey:"shareTooltip"});
+ZmOperation.registerOp("SHARE_ACCEPT", {textKey:"acceptShare", image:"Check"});
+ZmOperation.registerOp("SHARE_DECLINE", {textKey:"declineShare", image:"Cancel"});
+ZmOperation.registerOp("SHARE_FOLDER", {textKey:"shareFolder", image:"Folder"});
+ZmOperation.registerOp("SHOW_ALL_MENU", {textKey:"showAllItemTypes", image:"Globe"});
+ZmOperation.registerOp("SPELL_CHECK", {textKey:"spellCheck", image:"SpellCheck"});
+ZmOperation.registerOp("SYNC", {textKey:"reload", image:"Refresh"});
+ZmOperation.registerOp("TAG");
+ZmOperation.registerOp("TAG_MENU", {textKey:"tag", tooltipKey:"tagTooltip", image:"Tag"});
+// placeholder for toolbar text
+ZmOperation.registerOp("TEXT");
+// XXX: need new icon?
+ZmOperation.registerOp("UNDELETE", {textKey:"undelete", tooltipKey:"undelete", image:"MoveToFolder"});
+ZmOperation.registerOp("VIEW", {textKey:"view", image:"SplitView"});
+ZmOperation.registerOp("ZIMLET", {image:"ZimbraIcon"});
 
 ZmOperation.KEY_ID		= "_opId";
 ZmOperation.MENUITEM_ID	= "_menuItemId";
-
 
 // Static hash of operation IDs and descriptors
 ZmOperation._operationDesc = {};

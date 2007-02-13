@@ -33,6 +33,25 @@ function ZmCalendarApp(appCtxt, container) {
 	AjxDispatcher.registerMethod("ShowMiniCalendar", "CalendarCore", new AjxCallback(this, this.showMiniCalendar));
 	AjxDispatcher.registerMethod("GetApptComposeController", ["CalendarCore", "Calendar"], new AjxCallback(this, this.getApptComposeController));
 
+	ZmOperation.registerOp("CAL_REFRESH", {textKey:"refresh", tooltipKey:"calRefreshTooltip", image:"Refresh"});
+	ZmOperation.registerOp("CAL_VIEW_MENU", {textKey:"view", image:"Appointment"});
+	ZmOperation.registerOp("DAY_VIEW", {textKey:"viewDay", tooltipKey:"viewDayTooltip", image:"DayView"});
+	ZmOperation.registerOp("MONTH_VIEW", {textKey:"viewMonth", tooltipKey:"viewMonthTooltip", image:"MonthView"});
+	ZmOperation.registerOp("MOUNT_CALENDAR", {textKey:"mountCalendar", image:"GroupSchedule"});
+	ZmOperation.registerOp("NEW_ALLDAY_APPT", {textKey:"newAllDayAppt", tooltipKey:"newAllDayApptTooltip", image:"NewAppointment"});
+	ZmOperation.registerOp("NEW_APPT", {textKey:"newAppt", tooltipKey:"newApptTooltip", image:"NewAppointment"});
+	ZmOperation.registerOp("NEW_CALENDAR", {textKey:"newCalendar", image:"NewAppointment"});
+	ZmOperation.registerOp("SCHEDULE_VIEW", {textKey:"viewSchedule", tooltipKey:"viewScheduleTooltip", image:"GroupSchedule"});
+	ZmOperation.registerOp("SEARCH_MAIL", {textKey:"searchMail", image:"SearchMail"});
+	ZmOperation.registerOp("SHARE_CALENDAR", {textKey:"shareCalendar", image:"CalendarFolder"});
+	ZmOperation.registerOp("TODAY", {textKey:"todayTooltip", image:"Date"});
+	ZmOperation.registerOp("TODAY_GOTO", {textKey:"TODAY_GOTO", image:"Date"});
+	ZmOperation.registerOp("VIEW_APPOINTMENT", {textKey:"viewAppointment", image:"Appointment"});
+	ZmOperation.registerOp("VIEW_APPT_INSTANCE", {textKey:"apptInstance", image:"Appointment"});
+	ZmOperation.registerOp("VIEW_APPT_SERIES", {textKey:"apptSeries", image:"Appointment"});
+	ZmOperation.registerOp("WEEK_VIEW", {textKey:"viewWeek", tooltipKey:"viewWeekTooltip", image:"WeekView"});
+	ZmOperation.registerOp("WORK_WEEK_VIEW", {textKey:"viewWorkWeek", tooltipKey:"viewWorkWeekTooltip", image:"WorkWeekView"});
+
 	ZmItem.registerItem(ZmItem.APPT,
 						{app:			ZmApp.CALENDAR,
 						 nameKey:		"appointment",

@@ -30,7 +30,12 @@ function ZmTasksApp(appCtxt, container) {
 	AjxDispatcher.setPackageLoadFunction("Tasks", new AjxCallback(this, this._postLoad));
 	AjxDispatcher.registerMethod("GetTaskListController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskListController));
 	AjxDispatcher.registerMethod("GetTaskController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskController));
-	
+
+	ZmOperation.registerOp("MOUNT_TASK_FOLDER", {textKey:"mountTaskFolder", image:"Task"});
+	ZmOperation.registerOp("NEW_TASK", {textKey:"newTask", tooltipKey:"newTaskTooltip", image:"NewTask"});
+	ZmOperation.registerOp("NEW_TASK_FOLDER", {textKey:"newTaskFolder", tooltipKey:"newTaskFolderTooltip", image:"NewTask"});
+	ZmOperation.registerOp("SHARE_TASKFOLDER", {textKey:"shareTaskFolder", image:"Task"});
+
 	ZmItem.registerItem(ZmItem.TASK,
 						{app:			ZmApp.TASKS,
 						 nameKey:		"task",
