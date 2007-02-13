@@ -205,7 +205,7 @@ function(appCtxt, item, type, strictText, strictEmail) {
 	}
 
 	var attendee = null;
-	if (item instanceof ZmContact) {
+	if ((item instanceof ZmContact) || (item instanceof ZmResource)) {
 		// it's already a contact or resource, return it as is
 		attendee = item;
 	} else if (item instanceof AjxEmailAddress) {
@@ -254,7 +254,7 @@ function(appCtxt, item, type, strictText, strictEmail) {
 		if (!attendee && type == ZmCalItem.LOCATION && !strictText && ZmApptViewHelper._locations) {
 			attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._locations, ZmCalItem.LOCATION);
 			attendee.setAttr(ZmResource.F_name, item);
-			attendee.setAttr(ZmResource.F_type, ZmResource.TYPE_LOCATION);
+			attendee.setAttr(ZmResource.F_type, ZmResource.ATTR_LOCATION);
 			ZmApptViewHelper._locations.updateHashes(attendee);
 		}
 	}

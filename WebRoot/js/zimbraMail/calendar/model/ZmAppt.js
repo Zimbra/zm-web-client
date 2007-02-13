@@ -96,23 +96,6 @@ function() {
 			(this._attendees[ZmCalItem.EQUIPMENT] && this._attendees[ZmCalItem.EQUIPMENT].length));
 };
 
-/**
-* Sets the attendees (person, location, or equipment) for this appt.
-*
-* @param list	[array]		list of email string, AjxEmailAddress, ZmContact, or ZmResource
-*/
-ZmAppt.prototype.setAttendees =
-function(list, type) {
-	this._attendees[type] = [];
-	list = (list instanceof Array) ? list : [list];
-	for (var i = 0; i < list.length; i++) {
-		var attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, list[i], type);
-		if (attendee) {
-			this._attendees[type].push(attendee);
-		}
-	}
-};
-
 
 // Setters
 ZmAppt.prototype.setFreeBusy 			= function(fb) 			{ this.freeBusy = fb || "B"; };

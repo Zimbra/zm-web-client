@@ -238,7 +238,7 @@ function(calItem) {
 	// set attendees
 	for (var t = 0; t < this._attTypes.length; t++) {
 		var type = this._attTypes[t];
-		calItem.setAttendees(this._attendees[type].getArray(), this._attTypes[type]);
+		calItem.setAttendees(this._attendees[type].getArray(), type);
 	}
 
 	return calItem;
