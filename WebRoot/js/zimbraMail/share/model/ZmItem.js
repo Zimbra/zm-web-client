@@ -355,7 +355,7 @@ function(obj) {
 		}
 		this._notify(ZmEvent.E_FLAGS, {flags: changedFlags});
 	}
-	if (obj.l != null) {
+	if (obj.l != null && obj.l != this.folderId) {
 		this.moveLocal(obj.l);
 		if (this.list)
 			this.list.moveLocal([this], obj.l);

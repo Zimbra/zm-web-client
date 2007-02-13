@@ -436,7 +436,11 @@ function(ev) {
 			if (this._list) this._list.remove(items[i]);
 		}
 	} else if (ev.event == ZmEvent.E_MODIFY) {
-		// check which field changed
+		// XXX: optimize later - for now refetch list from server
+		if (items[0].folderId == this._controller._list.folderId) {
+			var tapp = this._appCtxt.getApp(ZmApp.TASKS);
+			tapp.launch(null, null, items[0].folderId);
+		}
 	}
 
 	if (ev.event == ZmEvent.E_CREATE ||
