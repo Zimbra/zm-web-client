@@ -258,6 +258,7 @@ function(type) {
 		parent.children.add(folder);
 		folder.parent = parent;
 	}
+	this._deferredFolders = [];
 
 	this._appCtxt.getFolderTree().getPermissions(type);
 };
