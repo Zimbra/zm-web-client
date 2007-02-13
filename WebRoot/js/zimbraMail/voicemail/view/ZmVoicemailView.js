@@ -29,6 +29,7 @@ function ZmVoicemailView(parent, appCtxt, controller, dropTgt) {
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;
+	this._playing = null; // The voicemail currently loaded in the player.
 }
 ZmVoicemailView.prototype = new ZmListView;
 ZmVoicemailView.prototype.constructor = ZmVoicemailView;
@@ -38,19 +39,78 @@ ZmVoicemailView.prototype.toString = function() {
 };
 
 ZmVoicemailView.FROM_WIDTH = 150;
+ZmVoicemailView.PLAYING_WIDTH = 16;
 ZmVoicemailView.DURATION_WIDTH = 120;
 ZmVoicemailView.DATE_WIDTH = 60;
 ZmVoicemailView.SUBJECT_WIDTH = null; // Auto
 
+var i = 1;
+ZmVoicemailView.F_CALLER = i++;
+ZmVoicemailView.F_PLAYING = i++;
+ZmVoicemailView.F_SIZE = i++;
+ZmVoicemailView.F_DATE = i++;
+ZmVoicemailView.F_SUBJECT = i++;
+delete i;
+
+ZmVoicemailView.FIELD_PREFIX = {};
+ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_CALLER]	= "a";
+ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING]	= "b";
+ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SIZE]	= "c";
+ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_DATE]	= "d";
+ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SUBJECT]	= "e";
+
+ZmVoicemailView.prototype.getTitle =
+function() {
+	return [ZmMsg.zimbraTitle, ": ", ZmMsg.voicemail].join("");
+};
+
+ZmVoicemailView.prototype.setPlaying =
+function(voicemail) {
+	if (voicemail == this._playing)  {
+		return;
+	}
+		
+	var prefix = ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING];
+	var columnIndex = this._getColumnIndexByPrefix(prefix);
+	if (this._playing) {
+		this._showPlayingImage(this._playing, columnIndex, false);
+	}
+	this._playing = voicemail;
+	if (this._playing) {
+		this._showPlayingImage(this._playing, columnIndex, true);
+	}
+};
+
+ZmVoicemailView.prototype._getColumnIndexByPrefix =
+function(prefix) {
+	var playingColumn = this.getColumnBy
+	var columnCount = this._headerList.length;
+	for (var i = 0, count = this._headerList.length; i < count; i++) {
+		if (this._headerList[i]._id.indexOf(prefix) == 0) {
+			return i;
+		}
+	}
+	return 0;
+};
+
+ZmVoicemailView.prototype._showPlayingImage =
+function(voicemail, columnIndex, show) {
+	
+	var element = this._getElFromItem(voicemail);
+	var table = element.firstChild;
+	var cell = table.rows[0].cells[columnIndex];
+	cell.className = show ? "ImgPlaying" : "";
+};
 
 ZmVoicemailView.prototype._getHeaderList =
 function(appCtxt) {
 
 	var headerList = new Array();
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FROM], ZmMsg.from, null, ZmVoicemailView.FROM_WIDTH, ZmItem.F_FROM, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE], ZmMsg.duration, null, ZmVoicemailView.DURATION_WIDTH, ZmItem.F_SIZE, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.received, null, ZmVoicemailView.DATE_WIDTH, ZmItem.F_DATE, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subjectNotes, null, ZmVoicemailView.SUBJECT_WIDTH, null, true));
+	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_CALLER], ZmMsg.from, null, ZmVoicemailView.FROM_WIDTH, ZmVoicemailView.F_CALLER, true));
+	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING], "", null, ZmVoicemailView.PLAYING_WIDTH, null, true));
+	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SIZE], ZmMsg.duration, null, ZmVoicemailView.DURATION_WIDTH, ZmVoicemailView.F_SIZE, true));
+	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_DATE], ZmMsg.received, null, ZmVoicemailView.DATE_WIDTH, ZmVoicemailView.F_DATE, true));
+	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SUBJECT], ZmMsg.subjectNotes, null, ZmVoicemailView.SUBJECT_WIDTH, null, true));
 
 	return headerList;
 };
@@ -76,13 +136,15 @@ function(voicemail, now, isDndIcon, isMixedView, myDiv) {
 		htmlArr[idx++] = ">";
 		
 		var id = this._headerList[i]._id;
-		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) == 0) {
+		if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_CALLER]) == 0) {
 			htmlArr[idx++] = voicemail.caller;
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]) == 0) {
+		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING]) == 0) {
+			htmlArr[idx++] = voicemail == this._playing ? AjxImg.getImageHtml("Playing") : "";
+		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SIZE]) == 0) {
 			htmlArr[idx++] = AjxDateUtil.computeDuration(voicemail.duration);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
+		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_DATE]) == 0) {
 			htmlArr[idx++] = AjxDateUtil.computeDateStr(now, voicemail.date);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
+		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SUBJECT]) == 0) {
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(voicemail.subject);
 		}
 		htmlArr[idx++] = "</td>";
@@ -117,9 +179,9 @@ ZmVoicemailView.prototype._sortColumn =
 function(columnItem, bSortAsc) {
 	var comparator;
 	switch (columnItem._sortable) {
-		case ZmItem.F_FROM: comparator = ZmVoicemail.getCallerComparator(bSortAsc); break;
-		case ZmItem.F_SIZE: comparator = ZmVoicemail.getDurationComparator(bSortAsc); break;
-		case ZmItem.F_DATE: comparator = ZmVoicemail.getDateComparator(bSortAsc); break;
+		case ZmVoicemailView.F_CALLER: comparator = ZmVoicemail.getCallerComparator(bSortAsc); break;
+		case ZmVoicemailView.F_SIZE: comparator = ZmVoicemail.getDurationComparator(bSortAsc); break;
+		case ZmVoicemailView.F_DATE: comparator = ZmVoicemail.getDateComparator(bSortAsc); break;
 		default: break;
 	}
 	if (comparator) {

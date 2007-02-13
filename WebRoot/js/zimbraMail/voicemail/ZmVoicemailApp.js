@@ -51,7 +51,7 @@ function ZmVoicemailApp(appCtxt, container, parentController) {
 	ZmApp.registerApp(ZmApp.VOICEMAIL,
 							 {mainPkg:				"Voicemail",
 							  nameKey:				"voicemail",
-							  icon:					"NoteApp",
+							  icon:					"VoicemailApp",
 							  qsArg:				"voicemail",
 							  chooserTooltipKey:	"goToVoicemail",
 							  defaultSearch:		ZmItem.PAGE,
@@ -118,12 +118,9 @@ function(callback) {
 	}
 };
 
-ZmVoicemailApp.prototype.setActive =
-function(active) {
-	if (active) {
-		var voicemailController = AjxDispatcher.run("GetVoicemailController");
-		voicemailController.show();
-	}
+ZmVoicemailApp.prototype.activate =
+function(active, view) {
+	this.getVoicemailController().showSoundPlayer();
 };
 
 ZmVoicemailApp.prototype.getVoicemailController = function() {

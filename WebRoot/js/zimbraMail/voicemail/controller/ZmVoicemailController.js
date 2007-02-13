@@ -64,7 +64,12 @@ function(searchResult) {
 	this._setView(this._currentView, elements, true);
 };
 
-
+ZmVoicemailController.prototype.showSoundPlayer =
+function(searchResult) {
+	if (this._soundPlayer) {
+		this._soundPlayer.setVisible(true);
+	}
+};
 ZmVoicemailController.prototype._createNewView = 
 function(view) {
 	var result = new ZmVoicemailView(this._container, this._appCtxt, this._dropTgt);
@@ -107,10 +112,12 @@ function() {
 ZmVoicemailController.prototype._initializeToolBar =
 function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
-	this._toolbar[view].getButton(ZmOperation.CHECK_MAIL).setText(ZmMsg.checkVoicemail);
-	this._soundPlayer = DwtSoundPlayer.create(this._toolbar[view], 200, 16);
-	if (this._soundPlayer.isPluginMissing) {
-		this._soundPlayer.addHelpListener(new AjxListener(this, this._pluginHelpListener));
+	if (!this._soundPlayer) {
+		this._toolbar[view].getButton(ZmOperation.CHECK_MAIL).setText(ZmMsg.checkVoicemail);
+		this._soundPlayer = DwtSoundPlayer.create(this._toolbar[view], 200, 16, true);
+		if (this._soundPlayer.isPluginMissing) {
+			this._soundPlayer.addHelpListener(new AjxListener(this, this._pluginHelpListener));
+		}
 	}
 };
 
@@ -142,13 +149,24 @@ function(ev) {
 
 ZmVoicemailController.prototype._selectListener = 
 function(ev) {
-	var selection = ev.dwtObj.getSelection();
-	var url = null;
-	if (selection.length == 1) {
-		var voicemail = selection[0];
-		url = voicemail.soundUrl;
+	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
+		var selection = ev.dwtObj.getSelection();
+		var url = null;
+		if (selection.length == 1) {
+			var voicemail = selection[0];
+			url = voicemail.soundUrl;
+			this._soundPlayer.setUrl(url);
+			this._soundPlayer.play();
+			var view = this._getView();
+			view.setPlaying(voicemail);
+		}
+		
 	}
-	this._soundPlayer.setUrl(url);
+};
+
+ZmVoicemailController.prototype._getView = 
+function() {
+	return this._listView[this._currentView];
 };
 
 // Called when user clicks for help with plugins.
