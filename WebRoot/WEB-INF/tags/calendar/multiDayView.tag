@@ -47,6 +47,11 @@
 
     <c:set var="rangeEnd" value="${currentDay.timeInMillis+1000*60*60*24*numdays}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
+
+    <%-- fetch mini cal appts first, so they are in cache, as well as any data neded by this view --%>
+    <c:set var="startOfMonth" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
+    <zm:getAppointmentSummaries var="minicalappts" folderid="${checkedCalendars}" start="${startOfMonth.timeInMillis}" end="${startOfMonth.timeInMillis+1000*60*60*24*42}"/>
+
     <zm:getAppointmentSummaries var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${rangeEnd}"/>
     <zm:apptMultiDayLayout
             schedule="${view eq 'schedule' ? checkedCalendars : ''}"
