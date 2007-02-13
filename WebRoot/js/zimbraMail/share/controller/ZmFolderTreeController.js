@@ -39,7 +39,7 @@ function ZmFolderTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length == 0) return;
 
 	type = type ? type : ZmOrganizer.FOLDER;
-	dropTgt = dropTgt ? dropTgt : this._getDropTarget();
+	dropTgt = dropTgt ? dropTgt : this._getDropTarget(appCtxt);
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
@@ -213,7 +213,7 @@ function(folder) {
 
 // override this method if you want different drop targets
 ZmFolderTreeController.prototype._getDropTarget =
-function() {
+function(appCtxt) {
 	var list = ["ZmFolder", "ZmSearchFolder"];
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
 		list.push("ZmMailMsg");

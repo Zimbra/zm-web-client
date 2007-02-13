@@ -94,7 +94,7 @@ function() {
 };
 
 ZmTaskTreeController.prototype._getDropTarget =
-function() {
+function(appCtxt) {
 	return (new DwtDropTarget(["ZmTask"]));
 };
 

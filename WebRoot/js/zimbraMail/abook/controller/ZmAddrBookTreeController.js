@@ -133,7 +133,7 @@ function() {
 };
 
 ZmAddrBookTreeController.prototype._getDropTarget =
-function() {
+function(appCtxt) {
 	return (new DwtDropTarget(["ZmContact"]));
 };
 
