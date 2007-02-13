@@ -93,6 +93,14 @@ function() {
 	return ops;
 };
 
+ZmTaskTreeController.prototype._getDropTarget =
+function() {
+	return (new DwtDropTarget(["ZmTask"]));
+};
+
+
+// Listeners
+
 ZmTaskTreeController.prototype._shareTaskFolderListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);

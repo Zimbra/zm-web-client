@@ -84,6 +84,18 @@ function(list, sortField) {
 	DwtListEditView.prototype.set.call(this, subList, sortField);
 };
 
+ZmTaskListView.prototype.setSize =
+function(width, height) {
+	DwtListEditView.prototype.setSize.call(this, width, height);
+	this._resetColWidth();
+};
+
+ZmTaskListView.prototype.setBounds =
+function(x, y, width, height) {
+	DwtListEditView.prototype.setBounds.call(this, x, y, width, height);
+	this._resetColWidth();
+};
+
 
 // Private Methods
 
@@ -212,6 +224,7 @@ function(item, isDndIcon, isMatched) {
 
 	if (isDndIcon) {
 		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
+		div.style.padding = "4px"; // HACK. whateva.
 	}
 
 	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
@@ -238,6 +251,77 @@ function() {
 	}
 	return this._colHeaderActionMenu;
 };
+
+ZmTaskListView.prototype._getDnDIcon =
+function(dragOp) {
+	var dndSelection = this.getDnDSelection();
+	if (dndSelection == null)
+		return null;
+
+	var icon;
+	var div;
+	var roundPlusStyle;
+	this._dndImg = null;
+
+	if (!(dndSelection instanceof Array) || dndSelection.length == 1) {
+		var item = null;
+		if (dndSelection instanceof Array) {
+			item = dndSelection[0];
+		} else {
+			item = dndSelection;
+		}
+		icon = this._createItemHtml(item, new Date(), true);
+		icon._origClassName = icon.className;
+
+		roundPlusStyle = "position:absolute; top:18; left:-11;visibility:hidden";
+	} else {
+		// Create multi one
+		icon = document.createElement("div");
+		icon.className = "DndIcon";
+		Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE);
+
+		AjxImg.setImage(icon, "DndMultiYes_48");
+		this._dndImg = icon;
+
+		div = document.createElement("div");
+		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
+		div.innerHTML = "<table><tr><td class='DndIconTextLabel'>"
+						+ dndSelection.length + "</td></tr></table>";
+		icon.appendChild(div);
+
+		roundPlusStyle = "position:absolute;top:30;left:0;visibility:hidden";
+
+		// The size of the Icon is envelopeImg.width + sealImg.width - 20, ditto for height
+		Dwt.setBounds(icon, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE, 43 + 32 - 16, 36 + 32 - 20);
+	}
+
+	var imgHtml = AjxImg.getImageHtml("RoundPlus", roundPlusStyle);
+	icon.appendChild(Dwt.parseHtmlFragment(imgHtml));
+
+	this.shell.getHtmlElement().appendChild(icon);
+
+	// If we have multiple items selected, then we have our cool little dnd icon,
+	// so position the text in the middle of the seal
+	if (div) {
+		var sz = Dwt.getSize(div);
+		Dwt.setLocation(div, 16 + (32 - sz.x) / 2, 19 + (32 - sz.y) / 2);
+	}
+
+	Dwt.setZIndex(icon, Dwt.Z_DND);
+	return icon;
+}
+
+ZmTaskListView.prototype._setDnDIconState =
+function(dropAllowed) {
+	// If we are moving multiple items then set borders & icons, else delegate up
+	// to DwtControl.prototype._setDnDIconState()
+	if (this._dndImg)
+		AjxImg.setImage(this._dndImg, dropAllowed ? "DndMultiYes_48" : "DndMultiNo_48");
+	else {
+		this._dndIcon.className = (dropAllowed) ? this._dndIcon._origClassName + " DropAllowed"
+												: this._dndIcon._origClassName + " DropNotAllowed";
+	}
+}
 
 ZmTaskListView.prototype._getInlineWidget =
 function(id) {
@@ -329,18 +413,6 @@ function(parent) {
 	hList.push(new DwtListHeaderItem(ZmTaskListView.ID_END_DATE, ZmMsg.dateDue, null, ZmTaskListView.CLV_COLWIDTH_DATE));
 
 	return hList;
-};
-
-ZmTaskListView.prototype.setSize =
-function(width, height) {
-	DwtListEditView.prototype.setSize.call(this, width, height);
-	this._resetColWidth();
-};
-
-ZmTaskListView.prototype.setBounds =
-function(x, y, width, height) {
-	DwtListEditView.prototype.setBounds.call(this, x, y, width, height);
-	this._resetColWidth();
 };
 
 

@@ -132,6 +132,12 @@ function() {
 	return this._appCtxt.getNewAddrBookDialog();
 };
 
+ZmAddrBookTreeController.prototype._getDropTarget =
+function() {
+	return (new DwtDropTarget(["ZmContact"]));
+};
+
+
 // Listeners
 
 ZmAddrBookTreeController.prototype._shareAddrBookListener = 

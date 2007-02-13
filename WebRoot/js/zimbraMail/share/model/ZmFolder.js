@@ -68,6 +68,7 @@ ZmFolder.ID_DRAFTS			= 6;
 ZmFolder.ID_CONTACTS		= ZmOrganizer.ID_ADDRBOOK;
 ZmFolder.ID_AUTO_ADDED		= ZmOrganizer.ID_AUTO_ADDED;
 ZmFolder.ID_TAGS	 		= 8;
+ZmFolder.ID_TASKS			= ZmOrganizer.ID_TASKS;
 ZmFolder.ID_OUTBOX	 		= ZmOrganizer.ID_OUTBOX;
 
 // system folder names
@@ -79,6 +80,7 @@ ZmFolder.MSG_KEY[ZmFolder.ID_SENT]			= "sent";
 ZmFolder.MSG_KEY[ZmFolder.ID_DRAFTS]		= "drafts";
 ZmFolder.MSG_KEY[ZmFolder.ID_CONTACTS]		= "contacts";
 ZmFolder.MSG_KEY[ZmFolder.ID_AUTO_ADDED]	= "emailedContacts";
+ZmFolder.MSG_KEY[ZmFolder.ID_TASKS]			= "tasks";
 ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]			= "tags";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CALENDAR]	= "calendar";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]	= "notebook";
@@ -131,7 +133,7 @@ ZmFolder.HIDE_NAME = {};
 ZmFolder.HIDE_NAME["Journal"]	= true;
 ZmFolder.HIDE_NAME["Notes"]		= true;
 //ZmFolder.HIDE_NAME["Outbox"]		= true;
-ZmFolder.HIDE_NAME["Tasks"]		= true;
+//ZmFolder.HIDE_NAME["Tasks"]		= true;
 
 // The extra-special, visible but untouchable outlook folder
 ZmFolder.SYNC_ISSUES = "Sync Issues";

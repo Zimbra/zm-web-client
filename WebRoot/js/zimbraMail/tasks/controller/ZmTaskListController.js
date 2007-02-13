@@ -27,6 +27,9 @@ function ZmTaskListController(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmListController.call(this, appCtxt, container, app);
 
+	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
+
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 };
 
@@ -73,6 +76,7 @@ function() {
 ZmTaskListController.prototype._createNewView =
 function(view) {
 	this._listView[view] = new ZmTaskListView(this._container, this, this._dropTgt);
+	this._listView[view].setDragSource(this._dragSrc);
 	return this._listView[view];
 };
 

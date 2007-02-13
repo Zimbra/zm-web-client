@@ -39,17 +39,7 @@ function ZmFolderTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length == 0) return;
 
 	type = type ? type : ZmOrganizer.FOLDER;
-	if (!dropTgt) {
-		var list = ["ZmFolder", "ZmSearchFolder"];
-		if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-			list.push("ZmMailMsg");
-			list.push("ZmConv");
-		}
-		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			list.push("ZmContact");
-		}
-		dropTgt = new DwtDropTarget(list);
-	}
+	dropTgt = dropTgt ? dropTgt : this._getDropTarget();
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
@@ -220,6 +210,18 @@ function(folder) {
 		searchController.search({query: folder.createQuery(), types: types});
 	}
 };
+
+// override this method if you want different drop targets
+ZmFolderTreeController.prototype._getDropTarget =
+function() {
+	var list = ["ZmFolder", "ZmSearchFolder"];
+	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		list.push("ZmMailMsg");
+		list.push("ZmConv");
+	}
+	return (new DwtDropTarget(list));
+};
+
 
 // Actions
 
