@@ -286,7 +286,7 @@ function(appCtxt, params) {
 	var type = params.type;
 
 	// set attributes
-	params.view = params.view || ZmOrganizer.VIEWS[type][0];
+	params.view = params.view || ZmOrganizer.VIEWS[type] ? ZmOrganizer.VIEWS[type][0] : null;
 	for (var i in params) {
 		if (i == "type" || i == "errorCallback") { continue; }
 		var value = params[i];

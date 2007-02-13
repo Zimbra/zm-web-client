@@ -143,9 +143,9 @@ function() {
 };
 
 ZmMoveToDialog.prototype._newCallback =
-function(parent, name) {
+function(params) {
 	var ftc = this._opc.getTreeController(this._orgType);
-	ftc._doCreate(parent, name);
+	ftc._doCreate(params);
 	var dialog = ftc._getNewDialog();
 	dialog.popdown();
 	this._creatingFolder = true;
@@ -154,7 +154,11 @@ function(parent, name) {
 ZmMoveToDialog.prototype._folderTreeChangeListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_CREATE && this._creatingFolder) {
-		this._folderTreeView.setSelected(ev.source, true);
+		var organizers = ev.getDetail("organizers");
+		if (!organizers && ev.source) {
+			organizers = [ev.source];
+		}
+		this._folderTreeView.setSelected(organizers[0], true);
 		this._creatingFolder = false;
 	}
 };

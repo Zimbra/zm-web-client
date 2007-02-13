@@ -1374,3 +1374,4 @@ function() {
 		ZmApp.OVERVIEW_TREES[app].push(ZmOrganizer.ZIMLET);
 	}
 };
+ZmOrganizer.ZIMLET = "Zimlet";

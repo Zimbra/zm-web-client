@@ -191,6 +191,7 @@ function(overviewId, treeIds, omit, reset) {
 */
 ZmOverviewController.prototype.getTreeController =
 function(treeId) {
+	if (!treeId) { return null; }
 	if (!this._controllers[treeId]) {
 		var treeControllerCtor = eval(ZmOverviewController.CONTROLLER[treeId]);
 		this._controllers[treeId] = new treeControllerCtor(this._appCtxt);
@@ -205,7 +206,7 @@ function(treeId) {
 */
 ZmOverviewController.prototype.getTreeData =
 function(treeId) {
-	return this._appCtxt.getTree(treeId);
+	return treeId ? this._appCtxt.getTree(treeId) : null;
 };
 
 /**
@@ -277,6 +278,7 @@ function(overviewId) {
 */
 ZmOverviewController.prototype.getTreeView =
 function(overviewId, treeId, app) {
+	if (!overviewId || !treeId) { return null; }
 	return this.getTreeController(treeId).getTreeView(overviewId, app);
 };
 
@@ -290,6 +292,7 @@ function(overviewId, treeId, app) {
  */
 ZmOverviewController.prototype.getTreeItemById =
 function(overviewId, id, type) {
+	if (!overviewId || !id) { return null; }
 	var treeIds = this._treeIds[overviewId];
 	if (!(treeIds && treeIds.length)) { return null; }
 	for (var i = 0; i < treeIds.length; i++) {

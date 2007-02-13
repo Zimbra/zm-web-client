@@ -487,6 +487,7 @@ function(ev) {
 */
 ZmTreeController.prototype._treeChangeListener =
 function(ev) {
+	this._evHandled = {};
 	for (var overviewId in this._treeView) {
 		this._changeListener(ev, this._treeView[overviewId], overviewId);
 	}
@@ -501,7 +502,7 @@ function(ev) {
 */
 ZmTreeController.prototype._changeListener =
 function(ev, treeView, overviewId) {
-	if (ev.handled) { return; }
+	if (this._evHandled[overviewId]) { return; }
 	if (!treeView.allowedTypes[ev.type] && !treeView.allowedSubTypes[ev.type]) { return; }
 	
 	var organizers = ev.getDetail("organizers");
@@ -530,7 +531,7 @@ function(ev, treeView, overviewId) {
 			// handle "Mark All As Read" by clearing unread count
 			if ((flag == ZmItem.FLAG_UNREAD) && !state) {
 				node.setText(organizer.getName(false));
-				ev.handled = true;
+				this._evHandled[overviewId] = true;
 			}
 		} else if (ev.event == ZmEvent.E_DELETE) {
 			if (id == ZmFolder.ID_TRASH || id == ZmFolder.ID_SPAM) {
@@ -540,7 +541,7 @@ function(ev, treeView, overviewId) {
 				node.dispose();
 			}
 			this._checkTreeView(overviewId);
-			ev.handled = true;
+			this._evHandled[overviewId] = true;
 		} else if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_MOVE) {
 			if (parentNode) {
 				var idx = ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type]));
@@ -548,7 +549,6 @@ function(ev, treeView, overviewId) {
 					// parent's tree controller should handle creates - root is shared by all folder types
 					var type = (organizer.parent.id == ZmOrganizer.ID_ROOT) ? ev.type : organizer.parent.type;
 					if (type != this.type) { continue; }
-					DBG.println("TREE LISTENER: creating node");
 					this._addNew(treeView, parentNode, organizer, idx); // add to new parent
 				} else if (ev.event == ZmEvent.E_MOVE) {
 					node.dispose();
@@ -560,7 +560,7 @@ function(ev, treeView, overviewId) {
 					var treeItem = treeView.getTreeItemById(id);
 					treeItem.setChecked(organizer.isChecked);
 				}
-				ev.handled = true;
+				this._evHandled[overviewId] = true;
 			}
 		} else if (ev.event == ZmEvent.E_MODIFY) {
 			if (fields) {
@@ -591,7 +591,7 @@ function(ev, treeView, overviewId) {
 					if (parentNode) {
 						parentNode.setExpanded(true);
 					}
-					ev.handled = true;
+					this._evHandled[overviewId] = true;
 				}
 			}
 		}
