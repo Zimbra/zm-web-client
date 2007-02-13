@@ -80,18 +80,6 @@ ZmCalBaseView.TYPE_MONTH_DAY = 7; // over a day in month view
 ZmCalBaseView.TYPE_ALL_DAY = 8; // all day div area in day view
 ZmCalBaseView.TYPE_SCHED_FREEBUSY = 9; // free/busy union
 
-ZmCalBaseView.COLORS = [];
-// these need to match CSS rules
-ZmCalBaseView.COLORS[ZmOrganizer.C_ORANGE]	= "Orange";
-ZmCalBaseView.COLORS[ZmOrganizer.C_BLUE]	= "Blue";
-ZmCalBaseView.COLORS[ZmOrganizer.C_CYAN]	= "Cyan";
-ZmCalBaseView.COLORS[ZmOrganizer.C_GREEN]	= "Green";
-ZmCalBaseView.COLORS[ZmOrganizer.C_PURPLE]	= "Purple";
-ZmCalBaseView.COLORS[ZmOrganizer.C_RED]	= "Red";
-ZmCalBaseView.COLORS[ZmOrganizer.C_YELLOW]	= "Yellow";
-ZmCalBaseView.COLORS[ZmOrganizer.C_PINK]	= "Pink";
-ZmCalBaseView.COLORS[ZmOrganizer.C_GRAY]	= "Gray";
-
 ZmCalBaseView.prototype.getController =
 function() {
 	return this._controller;

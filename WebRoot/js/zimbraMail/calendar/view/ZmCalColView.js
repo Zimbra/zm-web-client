@@ -667,7 +667,7 @@ function(appt, div) {
 ZmCalColView.prototype._populateNewApptHtml =
 function(div, allDay, folderId) {
 	if (folderId == null) folderId = this._controller.getDefaultCalendarFolderId();
-	var color = ZmCalBaseView.COLORS[this._controller.getCalendarColor(folderId)];
+	var color = ZmCalendarApp.COLORS[this._controller.getCalendarColor(folderId)];
 	var prop = allDay ? "_newAllDayApptColor" : "_newApptColor";
 	if (this[prop] && this[prop] == color) return div;
 	else this[prop] = color;
@@ -724,7 +724,7 @@ function(appt) {
 	var isNew = appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION;
 	var isAccepted = appt.ptst == ZmCalItem.PSTATUS_ACCEPT;
 	var id = this._getItemId(appt);
-	var color = ZmCalBaseView.COLORS[this._controller.getCalendarColor(appt.folderId)];
+	var color = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
 	var location = appt.getLocation() ? "<i>"+AjxStringUtil.htmlEncode(appt.getLocation())+"</i>" : "";
 	
 	var is30 = (appt._orig.getDuration() <= AjxDateUtil.MSEC_PER_HALF_HOUR);
@@ -1531,7 +1531,7 @@ function(i) {
 		if (data[fid]) {
 			var cal = this._controller.getCalendar(fid);
 			if (cal) {
-				var color = ZmCalBaseView.COLORS[cal.color];
+				var color = ZmCalendarApp.COLORS[cal.color];
 				html.append("<tr valign='center' class='", color, "Bg'><td>", AjxImg.getImageHtml(cal.getIcon()), "</td>");
 				html.append("<td>", AjxStringUtil.htmlEncode(cal.getName()), "</td></tr>");
 			}
@@ -1839,7 +1839,7 @@ function(data) {
 
 	// include duration
 	var dur = appt.getShortStartHour();
-	var color = ZmCalBaseView.COLORS[this._controller.getCalendarColor(appt.folderId)];
+	var color = ZmCalendarApp.COLORS[this._controller.getCalendarColor(appt.folderId)];
 
 	var html = []
 	var i = 0;

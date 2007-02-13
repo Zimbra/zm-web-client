@@ -1240,11 +1240,11 @@ function(date, noheader) {
 	try {
 		var start = new Date(date.getTime());
 		start.setHours(0, 0, 0, 0);
-		var result = this.getApptSummaries(start.getTime(), start.getTime()+AjxDateUtil.MSEC_PER_DAY, true, this.getCheckedCalendarFolderIds());
-		return ZmApptViewHelper.getDayToolTipText(start,result, this, noheader);
+		var result = this.getApptSummaries(start.getTime(), start.getTime() + AjxDateUtil.MSEC_PER_DAY, true, this.getCheckedCalendarFolderIds());
+		return ZmApptViewHelper.getDayToolTipText(start, result, this, noheader);
 	} catch (ex) {
 		DBG.println(ex);
-		return "<b>"+ZmMsg.errorGettingAppts+"</b>";
+		return "<b>" + ZmMsg.errorGettingAppts + "</b>";
 	}
 };
 

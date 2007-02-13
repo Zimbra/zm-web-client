@@ -139,6 +139,18 @@ ZmApp.QS_ARG[ZmApp.CALENDAR]	= "calendar";
 // ms to wait before fetching reminders
 ZmCalendarApp.REMINDER_START_DELAY = 30000;
 
+ZmCalendarApp.COLORS = [];
+// these need to match CSS rules
+ZmCalendarApp.COLORS[ZmOrganizer.C_ORANGE]	= "Orange";
+ZmCalendarApp.COLORS[ZmOrganizer.C_BLUE]	= "Blue";
+ZmCalendarApp.COLORS[ZmOrganizer.C_CYAN]	= "Cyan";
+ZmCalendarApp.COLORS[ZmOrganizer.C_GREEN]	= "Green";
+ZmCalendarApp.COLORS[ZmOrganizer.C_PURPLE]	= "Purple";
+ZmCalendarApp.COLORS[ZmOrganizer.C_RED]		= "Red";
+ZmCalendarApp.COLORS[ZmOrganizer.C_YELLOW]	= "Yellow";
+ZmCalendarApp.COLORS[ZmOrganizer.C_PINK]	= "Pink";
+ZmCalendarApp.COLORS[ZmOrganizer.C_GRAY]	= "Gray";
+
 ZmCalendarApp.prototype = new ZmApp;
 ZmCalendarApp.prototype.constructor = ZmCalendarApp;
 

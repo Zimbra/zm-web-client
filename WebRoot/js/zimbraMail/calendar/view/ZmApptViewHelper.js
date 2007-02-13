@@ -131,7 +131,7 @@ function(date, list, controller, noheader) {
 	
 	var size = list ? list.size() : 0;
 
-	for (var i=0; i < size; i++) {
+	for (var i = 0; i < size; i++) {
 		var ao = list.get(i);
 		if (ao.isAllDayEvent()) {
 			//DBG.println("AO    "+ao);
@@ -140,16 +140,16 @@ function(date, list, controller, noheader) {
 			if (!ao._fanoutLast) bs += "border-right:none;";
 			var body_style = (bs != "") ? "style='"+bs+"'" : "";
 			html.append("<tr><td><div class=appt>");
-			html.append(ZmCalMonthView._allDayItemHtml(ao, Dwt.getNextId(), body_style, controller));
+			html.append(ZmApptViewHelper._allDayItemHtml(ao, Dwt.getNextId(), body_style, controller));
 			html.append("</div></td></tr>");
 		}
 	}
 
-	for (var i=0; i < size; i++) {
+	for (var i = 0; i < size; i++) {
 		var ao = list.get(i);
 		if (!ao.isAllDayEvent()) {
 		
-			var color = ZmCalBaseView.COLORS[controller.getCalendarColor(ao.folderId)];
+			var color = ZmCalendarApp.COLORS[controller.getCalendarColor(ao.folderId)];
 			var isNew = ao.status == ZmCalItem.PSTATUS_NEEDS_ACTION;
 
 			html.append("<tr><td class='calendar_month_day_item'><div class='", color, isNew ? "DarkC" : "C", "'>");		
@@ -314,6 +314,30 @@ function(list, type, includeDisplayName) {
 
 	return a.join(ZmAppt.ATTENDEES_SEPARATOR);
 };
+
+ZmApptViewHelper._allDayItemHtml =
+function(appt,id, body_style, controller) {
+	var isNew = appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION;
+	var isAccepted = appt.ptst == ZmCalItem.PSTATUS_ACCEPT;
+	var color = ZmCalendarApp.COLORS[controller.getCalendarColor(appt.folderId)];
+	var subs = {
+		id: id,
+		body_style: body_style,
+		newState: isNew ? "_new" : "",
+		headerColor: color + (isNew ? "Dark" : "Light"),
+		bodyColor: color + (isNew ? "" : "Bg"),
+		name: AjxStringUtil.htmlEncode(appt.getName()),
+//		tag: isNew ? "NEW" : "",		//  HACK: i18n
+		starttime: appt.getDurationText(true, true),
+		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate),
+		location: AjxStringUtil.htmlEncode(appt.getLocation()),
+		statusKey: appt.ptst,
+		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr()
+	};	
+	var template = "calendar_appt_allday";
+    return AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#"+template, subs);
+};
+
 
 /**
 * Creates up to three separate DwtSelects for the time (hour, minute, am|pm)
