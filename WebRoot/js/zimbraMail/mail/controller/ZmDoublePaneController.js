@@ -236,12 +236,14 @@ function() {
 ZmDoublePaneController.prototype._setupReadingPaneMenuItem =
 function(view, menu, checked) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	var menu = menu ? menu : appToolbar.getViewMenu(view);
-	if (!menu) { // should have a menu by now, from _setupGroupByMenuItems()
-		menu = new ZmPopupMenu(appToolbar.getViewButton());
-	}
 	var id = ZmController.READING_PANE_VIEW;
-	if (menu._menuItems[id] == null) {
+	var menu = menu ? menu : appToolbar.getViewMenu(view);
+	if (!menu) {
+		// conversations not enabled
+		menu = new ZmPopupMenu(appToolbar.getViewButton());
+		id = view;
+	}
+	if (!menu._menuItems[id]) {
 		var mi = menu.createMenuItem(id, "SplitPane", ZmMsg.readingPane, null, true, DwtMenuItem.CHECK_STYLE);
 		mi.setData(ZmOperation.MENUITEM_ID, id);
 		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
