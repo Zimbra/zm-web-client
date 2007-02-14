@@ -22,7 +22,7 @@
     <c:set var="nextDate" value="${zm:addMonth(dateCal,  1)}"/>
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
-    <zm:getAppointmentSummaries var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+1000*60*60*24*42}"/>
+    <zm:getAppointmentSummaries var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+zm:MSECS_PER_DAY()*42}"/>
 </app:handleError>
 
 <app:view title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" date="${date}">
@@ -58,21 +58,9 @@
                                 <td width=14% class='ZhCalMonthDay${currentDay.timeInMillis eq dateCal.timeInMillis ? 'Selected':''}'>
                                     <table width=100% cellspacing=2>
                                         <tr>
-                                            <c:choose>
-                                                <c:when test="${zm:isSameDate(currentDay,today) and zm:isSameMonth(currentDay,dateCal)}">
-                                                    <c:set var="clazz" value='ZhCalDOMT'/>
-                                                </c:when>
-                                                <c:when test="${zm:isSameDate(currentDay,today) and not zm:isSameMonth(currentDay,dateCal)}">
-                                                    <c:set var="clazz" value='ZhCalDOMOT'/>
-                                                </c:when>
-                                                <c:when test="${not zm:isSameMonth(currentDay,dateCal)}">
-                                                    <c:set var="clazz" value='ZhCalDOMO'/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <c:set var="clazz" value='ZhCalDOM'/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                            <td align=right class='${clazz}'>
+                                            <c:set var="T" value="${zm:isSameDate(currentDay, today) ? 'T' : ''}"/>
+                                            <c:set var="O" value="${not zm:isSameMonth(currentDay, dateCal) ? 'O' : ''}"/>
+                                            <td align=right class='ZhCalDOM${O}${T}'>
                                                 <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${zm:getMonth(currentDay) ne lastMonth ? dayMonthChangeFormat : dayFormat}"/>
                                                 <c:set var="lastMonth" value="${zm:getMonth(currentDay)}"/>
                                                 
@@ -82,7 +70,7 @@
                                         </tr>
                                         <c:set var="count" value="${0}"/>
                                         <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
-                                        <c:set var="dayEnd" value="${currentDay.timeInMillis+1000*60*60*24}"/>
+                                        <c:set var="dayEnd" value="${currentDay.timeInMillis+zm:MSECS_PER_DAY()}"/>
                                         <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
                                             <tr><td><app:monthAppt appt="${appt}" start="${dayStart}" end="${dayEnd}"/></td></tr>
                                             <c:set var="count" value="${count+1}"/>

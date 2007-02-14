@@ -36,7 +36,7 @@
                     </fmt:message>
                 </td
             </tr>
-            <c:if test="${appt.duration gt 1000*60*60}">
+            <c:if test="${appt.duration gt zm:MSECS_PER_HOUR()}">
             <tr>
                 <td align=left valign=bottom height=1% class='ZhCalDayApptEnd ${color}${needsAction ? '' : 'Bg'}'>
                     <c:set var="endDate" value="${appt.endDate.time gt end ? 'L' : ''}"/>
