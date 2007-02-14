@@ -149,7 +149,9 @@ function() {
 	html[idx++] = "'></td></tr></table>";
 	html[idx++] = "</td><td align=right>";
 	// add placeholder for drop down select widget
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
+		this._appCtxt.get(ZmSetting.GAL_ENABLED))
+	{
 		html[idx++] = "<table border=0 cellpadding=0 cellspacing=0><tr><td class='Label nobreak'>";
 		html[idx++] = ZmMsg.showNames;
 		html[idx++] = ":&nbsp;</td><td id='";
@@ -183,13 +185,20 @@ function() {
 	searchSpan.appendChild(this._searchButton.getHtmlElement());
 
 	// add select menu
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
+		this._appCtxt.get(ZmSetting.GAL_ENABLED))
+	{
 		var listSelect = document.getElementById(this._listSelectId);
 		this._selectDiv = new DwtSelect(this);
-		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
-		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
-			this._selectDiv.addOption(ZmMsg.searchPersonalAndShared, false, ZmContactsApp.SEARCHFOR_PAS);
-		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
+
+			if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+				this._selectDiv.addOption(ZmMsg.searchPersonalAndShared, false, ZmContactsApp.SEARCHFOR_PAS);
+		}
+		if (this._appCtxt.get(ZmSetting.GAL_ENABLED))
+			this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
+
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
 	}
 
