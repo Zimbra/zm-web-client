@@ -130,7 +130,6 @@ ZmCalItem.prototype.getEndTime 			= function() { return this.endDate.getTime(); 
 ZmCalItem.prototype.getFolder			= function() { /* override */ };
 ZmCalItem.prototype.getId 				= function() { return this.id; }; 					// mail item id on appt instance
 ZmCalItem.prototype.getLocation			= function() { /* override */ };
-ZmCalItem.prototype.getMessage 			= function() { return this._message; };
 ZmCalItem.prototype.getName 			= function() { return this.name || ""; };			// name (aka Subject) of appt
 ZmCalItem.prototype.getOrganizer 		= function() { return this.organizer || ""; };
 ZmCalItem.prototype.getOrigStartDate 	= function() { return this._origStartDate || this.startDate; };
@@ -148,12 +147,10 @@ ZmCalItem.prototype.isOrganizer 		= function() { return (typeof(this.isOrg) === 
 ZmCalItem.prototype.isRecurring 		= function() { return (this.recurring || (this._rawRecurrences != null)); };
 ZmCalItem.prototype.hasAttachments 		= function() { return this.getAttachments() != null; };
 ZmCalItem.prototype.hasAttendees		= function() { return false; } // override if necessary
-ZmCalItem.prototype.hasDetails 			= function() { return this.getMessage() != null; };
 
 // Setters
 ZmCalItem.prototype.setAllDayEvent 		= function(isAllDay) 	{ this.allDayEvent = isAllDay ? "1" : "0"; };
 ZmCalItem.prototype.setFolderId 		= function(folderId) 	{ this.folderId = folderId || ZmOrganizer.ID_CALENDAR; };
-ZmCalItem.prototype.setMessage 			= function(message) 	{ this._message = message; };
 ZmCalItem.prototype.setName 			= function(newName) 	{ this.name = newName; };
 ZmCalItem.prototype.setOrganizer 		= function(organizer) 	{ this.organizer = organizer != "" ? organizer : null; };
 ZmCalItem.prototype.setRecurType		= function(repeatType)	{ this._recurrence.repeatType = repeatType; };
@@ -363,13 +360,12 @@ function(ids) {
 
 ZmCalItem.prototype.getAttachments =
 function() {
-	var m = this.getMessage();
-	if (this.hasDetails() && m._attachments != null) {
-		var attachs = m._attachments;
+	var attachs = this.message ? this.message._attachments : null;
+	if (attachs) {
 		if (this._validAttachments == null) {
 			this._validAttachments = [];
 			for (var i = 0; i < attachs.length; ++i) {
-				if (m.isRealAttachment(attachs[i]))
+				if (this.message.isRealAttachment(attachs[i]))
 					this._validAttachments.push(attachs[i]);
 			}
 		}
@@ -452,16 +448,16 @@ function(viewMode, callback, errorCallback, ignoreOutOfDate) {
 	var mode = viewMode || this.viewMode;
 
 	var seriesMode = mode == ZmCalItem.MODE_EDIT_SERIES;
-	if (this._message == null) {
+	if (this.message == null) {
 		var id = seriesMode ? (this._seriesInvId || this.invId) : this.invId;
-		this._message = new ZmMailMsg(this._appCtxt, id);
-		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, this._message, callback]);
+		this.message = new ZmMailMsg(this._appCtxt, id);
+		var respCallback = new AjxCallback(this, this._handleResponseGetDetails, [mode, this.message, callback]);
 		var respErrorCallback = !ignoreOutOfDate
 			? (new AjxCallback(this, this._handleErrorGetDetails, [mode, callback, errorCallback]))
 			: errorCallback;
-		this._message.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, respErrorCallback);
+		this.message.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback, respErrorCallback);
 	} else {
-		this.setFromMessage(this._message, mode);
+		this.setFromMessage(this.message, mode);
 		if (callback)
 			callback.run();
 	}
@@ -494,7 +490,7 @@ function(mode, callback, errorCallback, result) {
 	// Update invId and force a message reload
 	var invite = result._data.GetAppointmentResponse.appt[0].inv[0];
 	this.invId = [this.id, invite.id].join("-");
-	this._message = null;
+	this.message = null;
 	var ignoreOutOfDate = true;
 	this.getDetails(mode, callback, errorCallback, ignoreOutOfDate);
 };
@@ -518,10 +514,15 @@ function(message, viewMode) {
 	this._currentlyLoaded = message;
 };
 
+// This method gets called when a mail item is dragged onto the minical and we
+// need to load the mail item and parse the right parts to show in ZmCalItemEditView
 ZmCalItem.prototype.setFromMailMessage =
 function(message, subject) {
 	this.name = subject;
 	this._setNotes(message);
+	// set up message so attachments work
+	this.message = message;
+	this.invId = message.id;
 };
 
 ZmCalItem.prototype.setTextNotes =
@@ -1057,7 +1058,7 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 		if (this._validAttachments) {
 			for (var i = 0; i < this._validAttachments.length; i++) {
 				var msgPartNode = soapDoc.set("mp", null, attachNode);
-				msgPartNode.setAttribute("mid", this._message.id); 				// shouldnt this be this.invId ??
+				msgPartNode.setAttribute("mid", this.message.id); 				// shouldnt this be this.invId ??
 				msgPartNode.setAttribute("part", this._validAttachments[i].part);
 			}
 		}
@@ -1243,7 +1244,7 @@ function(respName, callback, result) {
 		var oldInvId = this.invId;
 		this.invId = response.m.id;
 		if (oldInvId != this.invId)
-			this._message = null;
+			this.message = null;
 	}
 
 	this._messageNode = null;

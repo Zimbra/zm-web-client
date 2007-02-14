@@ -187,6 +187,23 @@ function() {
 	return this._taskController;
 };
 
+ZmTasksApp.prototype.newTaskFromMailItem =
+function(msg, date) {
+	var subject = msg.subject || "";
+	if (msg instanceof ZmConv)
+		msg = msg.getFirstMsg();
+	msg.load(false, false, new AjxCallback(this, this._msgLoadedCallback, [msg, date, subject]));
+};
+
+ZmTasksApp.prototype._msgLoadedCallback =
+function(mailItem, date, subject) {
+	var t = new ZmTask(this._appCtxt);
+	t.setStartDate(AjxDateUtil.roundTimeMins(date, 30));
+	t.setFromMailMessage(mailItem, subject);
+	this.getTaskController().show(t, ZmCalItem.MODE_NEW);
+};
+
+
 ZmTasksApp.prototype.getTaskList =
 function(callback, errorCallback, folderId) {
 	if (this._taskList)

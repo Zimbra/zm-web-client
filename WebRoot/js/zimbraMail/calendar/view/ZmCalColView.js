@@ -216,11 +216,10 @@ function(list, numAppts) {
 	// collect all appointments that dont have details loaded yet
 	for (var i = 0; i < numAppts; i++) {
 		var appt = list.get(i);
-		if (!appt.hasDetails()) {
-			var newMessage = new ZmMailMsg(this._appCtxt, appt.invId);
-			needToLoad[newMessage.id] = newMessage;
-			apptHash[newMessage.id] = appt;
-			appt.setMessage(newMessage);
+		if (appt.message == null) {
+			appt.message = new ZmMailMsg(this._appCtxt, appt.invId);
+			needToLoad[appt.invId] = appt.message;
+			apptHash[appt.invId] = appt;
 			makeBatchReq = true;
 		}
 	}

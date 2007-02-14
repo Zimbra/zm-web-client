@@ -252,7 +252,7 @@ function(appt) {
 	var attendees = appt.getAttendeesText();
 	if (attendees) {
 		var organizer = appt.getOrganizer();
-		var sender = appt.getMessage().getAddress(AjxEmailAddress.SENDER);
+		var sender = appt.message.getAddress(AjxEmailAddress.SENDER);
 		if (sender || organizer) {
 			var or = sender ? sender.toString() : organizer;
 			var ob = this._objectManager.findObjects(or, true, ZmObjectManager.EMAIL);

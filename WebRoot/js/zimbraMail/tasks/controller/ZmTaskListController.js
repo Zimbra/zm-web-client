@@ -62,7 +62,10 @@ function(list, view) {
 
 ZmTaskListController.prototype.notifyCreate =
 function(node) {
-	if (node.l == this._list.folderId) {
+	if (this._currentView != this._appCtxt.getAppViewMgr().getCurrentViewId())
+		return;
+
+	if (this._list && node.l == this._list.folderId) {
 		// for now, refetch this folder
 		this._app.launch(null, null, node.l);
 	}
@@ -123,8 +126,17 @@ function() {
 ZmTaskListController.prototype._resetOperations =
 function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
-	// XXX: for now, only allow one task to be deleted at a time
-	parent.enable([ZmOperation.DELETE, ZmOperation.EDIT], num == 1);
+
+	// a valid folderId means user clicked on an addrbook
+	if (this._list.folderId) {
+		var folder = this._appCtxt.getTree(ZmOrganizer.TASKS).getById(this._list.folderId);
+		var isShare = folder && folder.link;
+		var canEdit = (folder == null || !folder.isReadOnly());
+
+		parent.enable([ZmOperation.MOVE], canEdit && num > 0);
+		// XXX: for now, only allow one task to be deleted at a time
+		parent.enable([ZmOperation.DELETE, ZmOperation.EDIT], canEdit && num == 1);
+	}
 };
 
 // Delete one or more items.

@@ -98,8 +98,17 @@ function(calItem) {
 	// TODO - normalize
 	var startDate = AjxDateUtil.simpleParseDateStr(this._startDateField.value);
 	var endDate = AjxDateUtil.simpleParseDateStr(this._endDateField.value);
-	if (startDate) calItem.setStartDate(startDate, true);
-	if (endDate) calItem.setEndDate(endDate, true);
+
+	if (startDate)
+		calItem.setStartDate(startDate, true);
+	else
+		calItem.startDate = null; // explicitly null out in case item has old data
+
+	if (endDate)
+		calItem.setEndDate(endDate, true);
+	else
+		calItem.endDate = null;  // explicitly null out in case item has old data
+
 	calItem.setAllDayEvent(true);
 	calItem.pComplete = this._pCompleteSelect.getValue();
 	calItem.priority = this._prioritySelect.getValue();
@@ -192,11 +201,11 @@ function() {
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmCalItemEditView._onMouseOver);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);
-	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
-	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
+//	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
+//	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
 
 	this._repeatDescField._editViewId = this._statusCheckbox._editViewId = edvId;
-	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
+//	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
 };
 
 // cache all input fields so we dont waste time traversing DOM each time

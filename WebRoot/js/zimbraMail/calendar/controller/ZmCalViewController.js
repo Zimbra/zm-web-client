@@ -508,13 +508,16 @@ function(ev) {
 	var data = ((ev.srcData.data instanceof Array) && ev.srcData.data.length == 1)
 		? ev.srcData.data[0] : ev.srcData.data;
 
+	// use shiftKey to create new Tasks if enabled. NOTE: does not support Contacts yet
+	var shiftKey = this._appCtxt.get(ZmSetting.TASKS_ENABLED) && ev.uiEvent.shiftKey;
+
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		// Hack: in some instances ZmMailMsg is reported as being an Array of
-		//       length 1 (as well as a ZmMailMsg) under FF1.5
+		// Hack: in some instances ZmContact is reported as being an Array of
+		//       length 1 (as well as a ZmContact) under FF1.5
 		if (data instanceof Array && data.length > 1) {
 			var foundValid = false;
 			for (var i = 0; i < data.length; i++) {
-				if (data[i] instanceof ZmContact) {
+				if (!shiftKey && (data[i] instanceof ZmContact)) {
 					var email = data[i].getEmail();
 					if (email && email != "")
 						foundValid = true;
@@ -537,7 +540,7 @@ function(ev) {
 			}
 
 			// If dealing with a contact, make sure it has a valid email address
-			if (data instanceof ZmContact) {
+			if (!shiftKey && (data instanceof ZmContact)) {
 				var email = data.getEmail();
 				if (!email || email == "")
 					ev.doIt = false;
@@ -560,7 +563,12 @@ function(ev) {
 			}
 			else
 			{
-				this.newApptFromMailItem(data, dropDate);
+				if (shiftKey) {
+					AjxDispatcher.require(["TasksCore", "Tasks"]);
+					this._appCtxt.getApp(ZmApp.TASKS).newTaskFromMailItem(data, dropDate);
+				} else {
+					this.newApptFromMailItem(data, dropDate);
+				}
 			}
 		}
 	}
@@ -577,7 +585,7 @@ function(ev) {
  */
 ZmCalViewController.prototype.newApptFromMailItem =
 function(mailItem, date) {
-	var subject = mailItem.subject || '';
+	var subject = mailItem.subject || "";
 	if (mailItem instanceof ZmConv)
 		mailItem = mailItem.getFirstMsg();
 	mailItem.load(false, false, new AjxCallback(this, this._msgLoadedCallback, [mailItem, date, subject]));
@@ -896,7 +904,7 @@ function(appt, mode) {
 ZmCalViewController.prototype._continueDeleteReplyRespondAction =
 function(appt, action, mode) {
 	var msgController = AjxDispatcher.run("GetMsgController");
-	var msg = appt.getMessage();
+	var msg = appt.message;
 	msg._appt = appt;
 	msg._mode = mode;
 	msgController.setMsg(msg);
@@ -1357,7 +1365,7 @@ function(ev) {
 ZmCalViewController.prototype._handleResponseHandleApptRespondAction =
 function(appt, type, op) {
 	var msgController = AjxDispatcher.run("GetMsgController");
-	msgController.setMsg(appt.getMessage());
+	msgController.setMsg(appt.message);
 	// poke the msgController
 	var instanceDate = op == ZmOperation.VIEW_APPT_INSTANCE ? new Date(appt.uniqStartTime) : null;
 	msgController._sendInviteReply(type, 0, instanceDate, appt.getRemoteFolderOwner());
@@ -1375,7 +1383,7 @@ function(ev) {
 ZmCalViewController.prototype._handleResponseHandleApptEditRespondAction =
 function(appt, id, op) {
 	var msgController = AjxDispatcher.run("GetMsgController");
-	msgController.setMsg(appt.getMessage());
+	msgController.setMsg(appt.message);
 
 	// poke the msgController
 	switch (id) {
