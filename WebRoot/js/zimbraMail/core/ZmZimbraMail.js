@@ -758,6 +758,7 @@ function(callback) {
 */
 ZmZimbraMail.prototype.setActiveApp =
 function(appName, view) {
+
 	// update app chooser
 	this._components[ZmAppViewMgr.C_APP_CHOOSER].setSelected(appName);
 
@@ -766,6 +767,7 @@ function(appName, view) {
 	toolbar.showViewMenu(view);
 
 	if (this._activeApp != appName) {
+
 		// deactivate previous app
 	    if (this._activeApp) {
 			// some views are not stored in _apps collection, so check if it exists.
@@ -773,6 +775,7 @@ function(appName, view) {
 			if (app) app.activate(false, view);
 			this._previousApp = this._activeApp;
 	    }
+
 	    // switch app
 		this._activeApp = appName;
 		toolbar.setCurrentApp(appName);

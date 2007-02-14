@@ -53,8 +53,7 @@ function(list, view) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 
-	if (this._setView(this._currentView, elements, true))
-		this._setViewMenu(this._currentView);
+	this._setView(this._currentView, elements, true);
 
 	this._setTabGroup(this._tabGroups[this._currentView]);
 	this._restoreFocus();

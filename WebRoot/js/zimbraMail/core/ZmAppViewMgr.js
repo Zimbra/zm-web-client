@@ -476,7 +476,7 @@ function(force, viewId) {
 	this._layout(this._currentView);	
 	
 	if (this._viewApp[this._currentView]) {
-		this._controller.setActiveApp(this._viewApp[this._currentView], this._currentView);
+//		this._controller.setActiveApp(this._viewApp[this._currentView], this._currentView);
 	}
 
 	return true;
@@ -521,7 +521,7 @@ function(show) {
 		if (this._pendingView && this._viewApp[this._pendingView] &&
 			this._pendingAction.run(ZmAppViewMgr.PENDING_VIEW)) {
 
-			this._controller.setActiveApp(this._viewApp[this._pendingView], this._pendingView);
+//			this._controller.setActiveApp(this._viewApp[this._pendingView], this._pendingView);
 		}
 	}
 	this._pendingAction = this._pendingView = null;
