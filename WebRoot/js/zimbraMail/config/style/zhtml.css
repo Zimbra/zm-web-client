@@ -14,11 +14,12 @@ vertical-align: middle;
 
 .ZhAppLinks {
     vertical-align: middle;
-    color: darkblue;
 }
 
 .ZhAppLinks a:link, .ZhAppLinks a:visited {
     text-decoration: none;
+    font-weight: bold;
+    color: darkblue;
 }
 
 /* ------- tabs --------------- */
