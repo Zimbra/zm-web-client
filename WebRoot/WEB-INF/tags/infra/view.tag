@@ -24,11 +24,11 @@
 
 <body>
 <table width=100% cellpadding="0" cellspacing="0">
+
     <tr>
-        <td class='TopContent' colspan=3  align=right valign=top><b>${fn:escapeXml(mailbox.name)}</b> |
-                        <a href="<c:url value="/h/login?loginOp=logout"/>"><fmt:message key="logOff"/></a>
-        </td>
+        <td class='TopContent' colspan=3  align=right valign=top>&nbsp;</td>
     </tr>
+
     <tr>
         <td valign=top align=center class='Overview'>
             <a href="http://www.zimbra.com/" target="_new">
@@ -37,16 +37,33 @@
             </a>
         </td>
         <td colspan=2 valign=top class='TopContent'>
-            <table width=100% cellspacing=0>
-                <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}"/>
-                <app:appStatus/>
-            </table>
+            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}"/>
+        </td>
+    </tr>
+    <tr>
+        <td class='Overview'>
+            &nbsp;
+        </td>
+        <td align=center colspan=2>
+            <app:appStatus/>
         </td>
     </tr>
     <tr>
         <td class='Overview'>&nbsp;</td>
-        <td colspan=2>
+        <td colspan=1>
             <app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
+        </td>
+        <td align=right class='ZhAppLinks'>
+            <table cellpadding=2 cellspacing=0>
+                <tr>
+                    <td align=right>
+                        <a target=_new href="<c:url value="/help/Zimbra_User_Help.htm"/>"><img alt='<fmt:message key="ALT_APP_LINK_HELP"/>' src="<c:url value='/images/common/Help.gif'/>" border="0"/> <fmt:message key="help"/></a>
+                    </td>
+                    <td align=right>
+                        <a href="<c:url value="/h/login?loginOp=logout"/>"><img alt='<fmt:message key="ALT_APP_LINK_LOGOFF"/>' src="<c:url value='/images/common/Logoff.gif'/>" border="0"/> <fmt:message key="logOut"/></a>
+                    </td>
+                </tr>
+            </table>
         </td>
     </tr>
     <tr>
@@ -55,11 +72,11 @@
         </td>
 <c:set var="adsOn" value="${!empty ads}"/>
 <c:if test="${adsOn}" >
-        <td valign='top'>
+        <td valign='top' colspan=2>
             <table width=100% cellpadding="0" cellspacing="0">
                 <tr>
 </c:if>        
-                    <td valign='top'>
+                    <td valign='top' colspan=2>
                         <jsp:doBody/>
                     </td>
 <c:if test="${adsOn}" >

@@ -8,6 +8,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
+<table width=100% cellspacing=0>
 <tr height=35 >
     <td style='width:80%' height=25 nowrap class='SearchBar'>
             <c:url var="searchUrl" value="/h/search"/>
@@ -29,13 +30,25 @@
                     <input class="SearchButton" type=submit name=search value="<fmt:message key="search"/>">
             </form>
     </td>
-    <td align=right>
+    <td>
         <c:set var="max" value="${mailbox.attrs.zimbraMailQuota[0]}"/>
-        <fmt:message var="unlimited" key="unlimited"/>
-        <fmt:message key="quotaUsage">
-            <fmt:param value="${zm:displaySizeFractions(mailbox.size,2)}"/>
-            <fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(max,2)}"/>
-        </fmt:message>
+        <table cellpadding=2 cellspacing=0 width=100%>
+            <tr>
+                <td align=center>
+                    <b>${fn:escapeXml(mailbox.name)}</b>
+                </td>
+            </tr>
+            <tr>
+                <td align=center>
+                    <fmt:message var="unlimited" key="unlimited"/>
+                    <fmt:message key="quotaUsage">
+                        <fmt:param value="${zm:displaySizeFractions(mailbox.size,2)}"/>
+                        <fmt:param value="${max==0 ? unlimited : zm:displaySizeFractions(max,2)}"/>
+                    </fmt:message>
+                </td>
+            </tr>
+        </table>
     </td>
 </tr>
+</table>
 

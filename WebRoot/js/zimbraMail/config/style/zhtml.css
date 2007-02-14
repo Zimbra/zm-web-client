@@ -12,6 +12,16 @@ vertical-align: middle;
     @FontSize-normal@
 }
 
+.ZhAppLinks {
+    vertical-align: middle;
+}
+
+.ZhAppLinks a:link, .ZhAppLinks a:visited {
+    text-decoration: none;
+    font-weight: bold;
+    color: darkblue;
+}
+
 /* ------- tabs --------------- */
 
 .TabFiller {
