@@ -340,6 +340,11 @@ function(dateInfo) {
 	this._endTimeSelect.setSelected(dateInfo.endHourIdx, dateInfo.endMinuteIdx, dateInfo.endAmPmIdx);
 };
 
+ZmApptTabViewPage.prototype.updateTimezone =
+function(dateInfo) {
+    this._tzoneSelect.setSelectedValue(dateInfo.timezone);
+};
+
 ZmApptTabViewPage.prototype.reEnableDesignMode =
 function() {
 	if (this._composeMode == DwtHtmlEditor.HTML)
@@ -740,7 +745,7 @@ function() {
 
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 
-	this._startTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.START);
+    this._startTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.START);
 	this._startTimeSelect.reparentHtmlElement(this._startTimeSelectId);
 	this._startTimeSelect.addChangeListener(timeSelectListener);
 	delete this._startTimeSelectId;
@@ -750,13 +755,13 @@ function() {
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 	delete this._endTimeSelectId;
 
-	this._tzoneSelect = new DwtSelect(this);
-    // NOTE: tzone select is initialized later
+    var timezoneListener = new AjxListener(this, this._timezoneListener);
 
-    // init timezone to the local machine's time zone
-	this._tzoneSelect.setSelectedValue(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+    this._tzoneSelect = new DwtSelect(this);
 	this._tzoneSelect.reparentHtmlElement(this._tzoneSelectId);
-	delete this._tzoneSelectId;
+    this._tzoneSelect.addChangeListener(timezoneListener);
+    delete this._tzoneSelectId;
+    // NOTE: tzone select is initialized later
 
 	this._repeatSelect = new DwtSelect(this);
 	this._repeatSelect.addChangeListener(new AjxListener(this, this._repeatChangeListener));
@@ -1347,6 +1352,11 @@ function(ev) {
 ZmApptTabViewPage.prototype._timeChangeListener =
 function(ev) {
 	ZmTimeSelect.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField);
+	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+};
+
+ZmApptTabViewPage.prototype._timezoneListener =
+function(ev) {
 	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 };
 
