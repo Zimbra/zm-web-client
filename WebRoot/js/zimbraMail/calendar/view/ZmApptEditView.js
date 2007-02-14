@@ -72,12 +72,6 @@ function() {
 	this._setAttendees();
 };
 
-ZmApptEditView.prototype.createHtml =
-function() {
-    ZmCalItemEditView.prototype.createHtml.call(this);
-    this._initTzSelect();
-};
-
 ZmApptEditView.prototype.blur =
 function(useException) {
 	if (this._activeInputField) {
@@ -174,6 +168,10 @@ function(dateInfo) {
 	this._endTimeSelect.setSelected(dateInfo.endHourIdx, dateInfo.endMinuteIdx, dateInfo.endAmPmIdx);
 };
 
+ZmApptEditView.prototype.updateTimezone =
+function(dateInfo) {
+    this._tzoneSelect.setSelectedValue(dateInfo.timezone);
+};
 
 // Private / protected methods
 
@@ -278,6 +276,7 @@ function(calItem, mode) {
 	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(sd);
 	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(ed);
 
+    this._initTzSelect();
 	this._resetTimezoneSelect(calItem, isAllDayAppt);
 
 	// attendees
@@ -321,8 +320,10 @@ function() {
 	// cache these Id's since we use them more than once
 	this._allDayCheckboxId 	= this._htmlElId + "_allDayCheckbox";
 	this._repeatDescId 		= this._htmlElId + "_repeatDesc";
+    this._startTimeAtLblId  = this._htmlElId + "_startTimeAtLbl";
+    this._endTimeAtLblId  = this._htmlElId + "_endTimeAtLbl";
 
-	var subs = {
+    var subs = {
 		id: this._htmlElId,
 		height: (this.parent.getSize().y - 30),
 		locationId: this._attTdId[ZmCalItem.LOCATION],
@@ -376,14 +377,12 @@ function(width) {
 	this._endTimeSelect.addChangeListener(timeSelectListener);
 
 	// timezone DwtSelect
+    var timezoneListener = new AjxListener(this, this._timezoneListener);
+
 	this._tzoneSelect = new DwtSelect(this);
-	var timezones = AjxTimezone.getAbbreviatedZoneChoices(); 					// XXX: this seems like overkill, list all 75 timezones!?
-	for (var i = 0; i < timezones.length; i++) {
-		this._tzoneSelect.addOption(timezones[i]);
-	}
-	// init timezone to the local machine's time zone
-	this._tzoneSelect.setSelectedValue(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 	this._tzoneSelect.reparentHtmlElement(this._htmlElId + "_tzoneSelect");
+    this._tzoneSelect.addChangeListener(timezoneListener);
+    // NOTE: tzone select is initialized later
 
 	// init auto-complete widget if contacts app enabled
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
@@ -464,21 +463,27 @@ function() {
 
 ZmApptEditView.prototype._resetTimezoneSelect =
 function(calItem, isAllDayAppt) {
-	var showTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) && !isAllDayAppt;
-    showTimezone = showTimezone || calItem.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-    Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
 	this._tzoneSelect.setSelectedValue(calItem.timezone);
+};
+ZmApptEditView.prototype._setTimezoneVisible =
+function(dateInfo) {
+    var showTimezone = !dateInfo.isAllDay;
+    if (showTimezone) {
+        showTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) ||
+                       dateInfo.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+    }
+    Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
 };
 
 ZmApptEditView.prototype._showTimeFields =
 function(show) {
 	Dwt.setVisibility(this._startTimeSelect.getHtmlElement(), show);
 	Dwt.setVisibility(this._endTimeSelect.getHtmlElement(), show);
-	if (this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE))
-		Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), show);
+    this._setTimezoneVisible(this._dateInfo);
+
 	// also show/hide the "@" text
-	Dwt.setVisibility(this._startTimeSelect.getHtmlElement().parentNode.previousSibling, show);
-	Dwt.setVisibility(this._endTimeSelect.getHtmlElement().parentNode.previousSibling, show);
+    Dwt.setVisibility(document.getElementById(this._startTimeAtLblId), show);
+    Dwt.setVisibility(document.getElementById(this._endTimeAtLblId), show);
 };
 
 // Returns a string representing the form content
@@ -518,6 +523,11 @@ function(excludeAttendees) {
 ZmApptEditView.prototype._timeChangeListener =
 function(ev) {
 	ZmTimeSelect.adjustStartEnd(ev, this._startTimeSelect, this._endTimeSelect, this._startDateField, this._endDateField);
+	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+};
+
+ZmApptEditView.prototype._timezoneListener =
+function(ev) {
 	ZmApptViewHelper.getDateInfo(this, this._dateInfo);
 };
 
@@ -612,6 +622,8 @@ function(value) {
 ZmApptEditView.prototype._handleOnClick =
 function(el) {
 	if (el.id == this._allDayCheckboxId) {
+        var edv = AjxCore.objectWithId(el._editViewId);
+        ZmApptViewHelper.getDateInfo(edv, edv._dateInfo);
 		this._showTimeFields(el.checked ? false : true);
 	} else {
 		ZmCalItemEditView.prototype._handleOnClick.call(this, el);

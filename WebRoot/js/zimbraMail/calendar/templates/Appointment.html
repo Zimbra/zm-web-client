@@ -56,6 +56,17 @@
 								</colgroup>
 								<$= (data.isAppt ? "" : AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#TaskDueSection", data)) $>
 								<$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ApptTimeSection", data) $>
+                <tr>
+                  <td valign=top class='ZmFieldLabelRight' style='line-height:22px'><nobr><$= ZmMsg.repeat $>:</nobr></td>
+                  <td valign=top colspan=10>
+                    <table border=0 cellpadding=0 cellspacing=0 width=100%>
+                      <tr>
+                        <td width=100 id='${id}_repeatSelect'></td>
+                        <td id='${id}_repeatDesc' style='text-decoration:underline'></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
 							</table>
 						</div>
 					</fieldset>
@@ -124,7 +135,8 @@
 				</tr></table>
 			</td>
 			<$ if (data.isAppt) { $>
-			<td class='ZmFieldLabelCenter'>@</td><td id='${id}_startTimeSelect'></td>
+  			<td id='${id}_startTimeAtLbl' class='ZmFieldLabelCenter'>@</td>
+        <td id='${id}_startTimeSelect'></td>
 			<$ } $>
 		</tr>
 		<tr>
@@ -136,19 +148,9 @@
 				</tr></table>
 			</td>
 			<$ if (data.isAppt) { $>
-			<td class='ZmFieldLabelCenter'>@</td><td id='${id}_endTimeSelect'></td>
+        <td id='${id}_endTimeAtLbl' class='ZmFieldLabelCenter'>@</td>
+        <td id='${id}_endTimeSelect'></td>
 			<$ } $>
-		</tr>
-		<tr>
-			<td valign=top class='ZmFieldLabelRight' style='line-height:22px'><nobr><$= ZmMsg.repeat $>:</nobr></td>
-			<td valign=top colspan=10>
-				<table border=0 cellpadding=0 cellspacing=0 width=100%>
-					<tr>
-						<td width=100 id='${id}_repeatSelect'></td>
-						<td id='${id}_repeatDesc' style='text-decoration:underline'></td>
-					</tr>
-				</table>
-			</td>
 		</tr>
 </template>
 
@@ -158,38 +160,8 @@
 		<td width=100%>
 			<!-- date/time section -->
 			<table border=0>
-				<tr>
-					<td></td>
-					<td colspan=10>
-						<table border=0><tr>
-							<td><input type='checkbox' id='${id}_allDayCheckbox'></td>
-							<td class='ZmFieldLabelLeft'><$= ZmMsg.allDayEvent $></td>
-						</tr></table>
-					</td>
-				</tr>
-				<tr>
-					<td class='ZmFieldLabelRight'><$= ZmMsg.startTime $></td>
-					<td>
-						<table border=0 cellpadding=0 cellspacing=0><tr>
-							<td><input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='${id}_startDateField' value=''></td>
-							<td id='${id}_startMiniCalBtn'></td>
-						</tr></table>
-					</td>
-					<td id='${id}_startTimeAtLbl' class='ZmFieldLabelCenter'>@</td>
-					<td id='${id}_startTimeSelect'></td>
-				</tr>
-				<tr>
-					<td class='ZmFieldLabelRight'><$= ZmMsg.endTime $></td>
-					<td>
-						<table border=0 cellpadding=0 cellspacing=0><tr>
-							<td><input autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 id='${id}_endDateField' value=''></td>
-							<td id='${id}_endMiniCalBtn'></td>
-						</tr></table>
-					</td>
-					<td id='${id}_endTimeAtLbl' class='ZmFieldLabelCenter'>@</td>
-					<td id='${id}_endTimeSelect'></td>
-				</tr>
-			</table>
+        <$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ApptTimeSection", data) $>
+      </table>
 		</td>
 		<td style='text-align:right'>
 			<!-- key/legend section -->
@@ -251,6 +223,41 @@
 	</div>
 </template>
 
+<template id='AttendeeName'>
+  <table border=0 cellpadding=0 cellspacing=0 width=100%>
+    <tr>
+      <$ if (data.isAllAttendees) { $>
+        <td style='padding: 5 0 5 0' class='ZmSchedulerAllTd'><$=ZmMsg.allAttendees$></td>
+      <$ } else if (data.organizer) { $>
+        <td width=38 align=center class='ZmSchedulerOrgIconTd'><$=AjxImg.getImageHtml("Person")$></td>
+      <$ } else { $>
+        <td width=38 id='${sched.dwtSelectId}'></td>
+      <$ } $>
+
+      <$ if (!data.isAllAttendees) { $>
+        <td class='ZmSchedulerNameTd' id='${sched.dwtNameId}'>
+        <$ if (data.organizer) { $>
+          <div class='ZmSchedulerInputDisabled'>${organizer}</div>
+        <$ } $>
+        </td>
+      <$ } $>
+    </tr>
+  </table>
+</template>
+
+<template id='AttendeeFreeBusy'>
+  <table id='${sched.dwtTableId}'
+         class='ZmSchedulerGridTable<$= data.isAllAttendees ? "-allAttendees" : "" $>'
+         border=0 cellpadding=0 cellspacing=0>
+    <tr>
+      <$ for (var k = 0; k < data.cellCount; k++) { $>
+        <td class='ZmScheduler-free'>
+          <div class='ZmSchedulerGridDiv'></div>
+        </td>
+      <$ } $>
+    </tr>
+  </table>
+</template>
 
 <template id='Tooltip'>
 	<table cellpadding=0 cellspacing=0 border=0 width=<$= data.width $>>

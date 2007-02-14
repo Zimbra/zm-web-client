@@ -149,6 +149,9 @@ function(dateInfo, organizer, attendees) {
 	}
 	this._resetFullDateField();
 
+    this._initTzSelect();
+    this._resetTimezoneSelect(dateInfo);
+
 	this._setAttendees(organizer, attendees);
 	this._outlineAppt(this._dateInfo);
 };
@@ -245,13 +248,14 @@ function() {
 	this._endDateFieldId 	= this._htmlElId + "_endDateField";
 	this._endMiniCalBtnId 	= this._htmlElId + "_endMiniCalBtn";
 	this._endTimeSelectId 	= this._htmlElId + "_endTimeSelect";
-	this._endTimeAtLblId	= this._htmlElId + "_endTimeAtLbl";
+    this._endTimeAtLblId	= this._htmlElId + "_endTimeAtLbl";
+    this._tzoneSelectId	    = this._htmlElId + "_tzoneSelect";
 	this._navToolbarId		= this._htmlElId + "_navToolbar";
 	this._attendeesTableId	= this._htmlElId + "_attendeesTable";
 
 	this._schedTable[0] = null;	// header row has no attendee data
 
-	var subs = { id:this._htmlElId };
+	var subs = { id:this._htmlElId, isAppt: true };
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#ScheduleView", subs);
 };
 
@@ -351,61 +355,20 @@ function(isAllAttendees, organizer, drawBorder, index, updateTabGroup, setFocus)
 	sched._coloredCells = [];
 	this._schedTable[index] = sched;
 
+    var data = {
+        id: dwtId,
+        sched: sched,
+        isAllAttendees: isAllAttendees,
+        organizer: organizer,
+        cellCount: ZmSchedTabViewPage.FREEBUSY_NUM_CELLS
+    };
+
 	var tr = this._attendeesTable.insertRow(index);
+	var td = tr.insertCell(-1);
+    td.innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AttendeeName", data);
 
 	var td = tr.insertCell(-1);
-
-	var cellHtml = [];
-	var k = 0;
-	cellHtml[k++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%><tr>";
-
-	if (isAllAttendees) {
-		cellHtml[k++] = "<td style='padding: 5 0 5 0' class='ZmSchedulerAllTd'>";
-		cellHtml[k++] = ZmMsg.allAttendees;
-		cellHtml[k++] = "</td>";
-	} else if (organizer) {
-		cellHtml[k++] = "<td width=38 align=center class='ZmSchedulerOrgIconTd'>";
-		cellHtml[k++] = AjxImg.getImageHtml("Person");
-		cellHtml[k++] = "</td>";
-	} else {
-		cellHtml[k++] = "<td width=38 id='";
-		cellHtml[k++] = sched.dwtSelectId;
-		cellHtml[k++] = "'></td>";
-	}
-
-	if (!isAllAttendees) {
-		cellHtml[k++] = "<td class='ZmSchedulerNameTd' id='";
-		cellHtml[k++] = sched.dwtNameId;
-		cellHtml[k++] = "'>";
-		if (organizer) {
-			cellHtml[k++] = "<div class='ZmSchedulerInputDisabled'>";
-			cellHtml[k++] = organizer;
-			cellHtml[k++] = "</div>";
-		}
-		cellHtml[k++] = "</td>";
-	}
-	cellHtml[k++] = "</tr></table>";
-	td.innerHTML = cellHtml.join("");
-
-	var html = [];
-	var i = 0;
-	td = tr.insertCell(-1);
-	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 class='";
-	html[i++] = isAllAttendees ? "ZmSchedulerGridTable-allAttendees" : "ZmSchedulerGridTable";
-	html[i++] = "' id='";
-	html[i++] = sched.dwtTableId;
-	html[i++] = "'><tr>";
-	var cellContents = [
-		"<td class='ZmScheduler-free'><div class='",
-		(isAllAttendees ? "ZmSchedulerGridTopCell" : "ZmSchedulerGridDiv"),
-		"'></div></td>"
-	].join("");
-
-	for (k = 0; k < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; k++) {
-		html[i++] = cellContents;
-	}
-	html[i++] = "</tr></table>";
-	td.innerHTML = html.join("");
+    td.innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AttendeeFreeBusy", data);
 
 	// create DwtInputField and DwtSelect for the attendee slots, add handlers
 	if (!isAllAttendees && !organizer) {
@@ -480,6 +443,14 @@ function(index, updateTabGroup) {
 
 ZmSchedTabViewPage.prototype._createDwtObjects =
 function() {
+    var timezoneListener = new AjxListener(this, this._timezoneListener);
+
+    this._tzoneSelect = new DwtSelect(this);
+    this._tzoneSelect.reparentHtmlElement(this._tzoneSelectId);
+    this._tzoneSelect.addChangeListener(timezoneListener);
+    // NOTE: tzone select is initialized later
+    delete this._tzoneSelectId;
+
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
 
 	this._startTimeSelect = new ZmTimeSelect(this, ZmTimeSelect.START);
@@ -527,6 +498,18 @@ function() {
 	this._selectChangeListener = new AjxListener(this, this._selectChangeListener);
 };
 
+ZmSchedTabViewPage.prototype._initTzSelect = function() {
+    // XXX: this seems like overkill, list all timezones!?
+    var options = AjxTimezone.getAbbreviatedZoneChoices();
+    if (options.length != this._tzCount) {
+        this._tzCount = options.length;
+        this._tzoneSelect.clearOptions();
+        for (var i = 0; i < options.length; i++) {
+            this._tzoneSelect.addOption(options[i]);
+        }
+    }
+};
+
 ZmSchedTabViewPage.prototype._addEventHandlers =
 function() {
 	Dwt.setHandler(this._allDayCheckbox, DwtEvent.ONCLICK, ZmSchedTabViewPage._onClick);
@@ -543,9 +526,8 @@ ZmSchedTabViewPage.prototype._showTimeFields =
 function(show) {
 	Dwt.setVisibility(this._startTimeSelect.getHtmlElement(), show);
 	Dwt.setVisibility(this._endTimeSelect.getHtmlElement(), show);
-	if (this._supportTimeZones) {
-		Dwt.setVisibility(this._endTZoneSelect.getHtmlElement(), show);
-	}
+    this._setTimezoneVisible(this._dateInfo);
+
 	// also show/hide the "@" text
 	Dwt.setVisibility(document.getElementById(this._startTimeAtLblId), show);
 	Dwt.setVisibility(document.getElementById(this._endTimeAtLblId), show);
@@ -775,6 +757,20 @@ function(sched, resetSelect, type, noClear) {
 	this._activeInputIdx = null;
 };
 
+ZmSchedTabViewPage.prototype._resetTimezoneSelect =
+function(dateInfo) {
+    this._tzoneSelect.setSelectedValue(dateInfo.timezone);
+};
+ZmSchedTabViewPage.prototype._setTimezoneVisible =
+function(dateInfo) {
+    var showTimezone = !dateInfo.isAllDay;
+    if (showTimezone) {
+        showTimezone = this._appCtxt.get(ZmSetting.CAL_SHOW_TIMEZONE) ||
+                       dateInfo.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT);
+    }
+    Dwt.setVisibility(this._tzoneSelect.getHtmlElement(), showTimezone);
+};
+
 ZmSchedTabViewPage.prototype._clearColoredCells =
 function(sched) {
 	while (sched._coloredCells.length > 0) {
@@ -910,6 +906,15 @@ function(ev) {
 	this._editView.updateTimeField(this._dateInfo);
 };
 
+ZmSchedTabViewPage.prototype._timezoneListener =
+function(ev) {
+    ZmApptViewHelper.getDateInfo(this, this._dateInfo);
+    this._dateBorder = this._getBordersFromDateInfo(this._dateInfo);
+    this._outlineAppt(this._dateInfo);
+    this._editView.updateTimezone(this._dateInfo);
+    this._updateFreeBusy();
+};
+
 ZmSchedTabViewPage.prototype._selectChangeListener =
 function(ev) {
 	var select = ev._args.selectObj;
@@ -1021,7 +1026,7 @@ function(sched, isAllAttendees) {
 	if (row) {
 		for (var i = 0; i < ZmSchedTabViewPage.FREEBUSY_NUM_CELLS; i++) {
 			var td = row.cells[i];
-			div = td ? td.firstChild : null;
+			div = td ? td.getElementsByTagName("*")[0] : null;
 			if (div) {
 				curClass = div.className;
 				newClass = normalClassName;
@@ -1048,13 +1053,23 @@ function(sched, isAllAttendees) {
 *
 * @param time	[Date or int]		time
 * @param isEnd	[boolean]*			if true, this is an appt end time
+* @param adjust [boolean]           (Optional) Specify whether the time should
+*                                   be adjusted based on timezone selector. If
+*                                   not specified, assumed to be true.
 */
 ZmSchedTabViewPage.prototype._getIndexFromTime =
-function(time, isEnd) {
+function(time, isEnd, adjust) {
 	var d = (time instanceof Date) ? time : new Date(time);
-	var idx = d.getHours() * 2;
-	var minutes = d.getMinutes()
-	if (minutes >= 30) {
+    var hourmin = d.getHours() * 60 + d.getMinutes();
+    adjust = adjust != null ? adjust : true;
+    if (adjust && this._dateInfo.timezone != AjxTimezone.getServerId(AjxTimezone.DEFAULT)) {
+        var offset1 = AjxTimezone.getOffset(AjxTimezone.DEFAULT, d);
+        var offset2 = AjxTimezone.getOffset(AjxTimezone.getClientId(this._dateInfo.timezone), d);
+        hourmin += offset2 - offset1;
+    }
+    var idx = hourmin / 60 * 2;
+	var minutes = hourmin % 60;
+	if (minutes > 30) {
 		idx++;
 	}
 	// end times don't mark blocks on half-hour boundary
@@ -1077,8 +1092,8 @@ function(dateInfo) {
 													 dateInfo.endAmPmIdx,
 													 AjxDateUtil.simpleParseDateStr(dateInfo.endDate));
 		// subtract 1 from index since we're marking right borders
-		index.start = this._getIndexFromTime(startDate) - 1;
-		index.end = this._getIndexFromTime(endDate, true);
+		index.start = this._getIndexFromTime(startDate, null, false) - 1;
+		index.end = this._getIndexFromTime(endDate, true, false);
 	}
 	return index;
 };
@@ -1193,8 +1208,10 @@ function(ev) {
 	if (!svp) return;
 	// figure out which object was clicked
 	if (el.id == svp._allDayCheckboxId) {
+        ZmApptViewHelper.getDateInfo(svp, svp._dateInfo);
 		svp._showTimeFields(!el.checked);
 		svp._editView.updateAllDayField(el.checked);
+        svp._dateBorder = svp._getBordersFromDateInfo(svp._dateInfo);
 		svp._outlineAppt();
 	} else if (el.id == svp._startDateFieldId || el.id == svp._endDateFieldId) {
 		svp._activeDateField = el;

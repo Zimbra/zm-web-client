@@ -60,11 +60,13 @@ ZmApptViewHelper.getDateInfo =
 function(tabView, dateInfo) {
 	dateInfo.startDate = tabView._startDateField.value;
 	dateInfo.endDate = tabView._endDateField.value;
-	if (tabView._allDayCheckbox.checked) {
+    dateInfo.timezone = tabView._tzoneSelect.getValue();
+    if (tabView._allDayCheckbox.checked) {
 		dateInfo.showTime = false;
 		dateInfo.startHourIdx = dateInfo.startMinuteIdx = dateInfo.startAmPmIdx =
 		dateInfo.endHourIdx = dateInfo.endMinuteIdx = dateInfo.endAmPmIdx = null;
-	} else {
+        dateInfo.isAllDay = true;
+    } else {
 		dateInfo.showTime = true;
 		dateInfo.startHourIdx = tabView._startTimeSelect.getSelectedHourIdx();
 		dateInfo.startMinuteIdx = tabView._startTimeSelect.getSelectedMinuteIdx();
@@ -72,6 +74,7 @@ function(tabView, dateInfo) {
 		dateInfo.endHourIdx = tabView._endTimeSelect.getSelectedHourIdx();
 		dateInfo.endMinuteIdx = tabView._endTimeSelect.getSelectedMinuteIdx();
 		dateInfo.endAmPmIdx = tabView._endTimeSelect.getSelectedAmPmIdx();
+        dateInfo.isAllDay = false;
 	}
 };
 
