@@ -24,21 +24,23 @@
  */
 
 function ZmRosterTreeController(appCtxt, type, dropTgt) {
-	if (arguments.length === 0) {return;}
+	if (arguments.length === 0) { return; }
+
 	type = type ? type : ZmOrganizer.ROSTER_TREE_ITEM;
 	dropTgt = dropTgt ? dropTgt : new DwtDropTarget("ZmRosterTreeItem");
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
+
     this._imApp = appCtxt.getApp(ZmApp.IM);
 	this._eventMgrs = {};
 	this._confirmDeleteRosterItemFormatter = new AjxMessageFormat(ZmMsg.imConfirmDeleteRosterItem);	
     this._addr2Items = {}; // hash from  roster tree item addr to ZmRosterItem for each group item is in
     this._prefixId = Dwt.getNextId();	
-	// initialze tree data from roster item list
+	// initialize tree data from roster item list
 	var list = this._imApp.getRoster().getRosterItemList();
 	list.addChangeListener(new AjxListener(this, this._rosterListChangeListener));
-	if (this._dataTree.root == null) {
-	    this._dataTree.root = ZmRosterTree.createRoot(this._dataTree);
-	}
+//	if (this._dataTree.root == null) {
+//	    this._dataTree.root = ZmRosterTree.createRoot(this._dataTree);
+//	}
 	var listArray = list.getArray();
 	for (var i=0; i < listArray.length; i++) {
 	    this._addRosterItem(listArray[i]);
@@ -75,6 +77,15 @@ function(overviewId, listener) {
 	if (this._eventMgrs[overviewId]) {
 		this._eventMgrs[overviewId].removeListener(DwtEvent.SELECTION, listener);
 	}
+};
+
+ZmRosterTreeController.prototype._getDataTree =
+function() {
+	if (!this._dataTree) {
+		this._dataTree = new ZmTree(this.type, this._appCtxt);
+		this._dataTree.root = ZmRosterTree.createRoot(this._dataTree);
+	}
+	return this._dataTree;
 };
 
 ZmRosterTreeController.prototype._rosterListChangeListener = 
@@ -135,7 +146,9 @@ function(item, fields, treeView) {
 ZmRosterTreeController.prototype._postSetup = 
 function(overviewId) {
 	var treeView = this.getTreeView(overviewId);
-	var root = treeView.getItems()[0];
+	var items = treeView.getItems();
+	var root = (items && items.length) ? items[0] : null;
+	if (!root) { return; }
 	var groups = root.getItems();		
 	for (var i = 0; i < groups.length; i++) {
 		var group = groups[i];
@@ -300,8 +313,8 @@ function(rosterItem) {
     for (var j=0; j < groups.length; j++) {
         var groupName = groups[j];
         var rosterGroup = this._getGroup(groupName);
-        var id = rosterItem.getAddress() + ":"+ groupName;
-        var item = new ZmRosterTreeItem({id: id, rosterItem: rosterItem, parent: rosterGroup, tree: this._dataTree});
+        var id = rosterItem.getAddress() + ":" + groupName;
+        var item = new ZmRosterTreeItem({id:id, rosterItem:rosterItem, parent:rosterGroup, tree:this._dataTree});
         item._notify(ZmEvent.E_CREATE);
 	    rosterGroup.children.add(item);
 	    items.push(item);
@@ -309,8 +322,7 @@ function(rosterItem) {
     this._addr2Items[rosterItem.getAddress()] = items;
     var treeView = this.getTreeView(ZmZimbraMail._OVERVIEW_ID);    
     if (treeView) for (var i in items) {
-        rti = items[i];
-        var ti = treeView.getTreeItemById(rti.id);
+        var ti = treeView.getTreeItemById(items[i].id);
         if (ti) {
             ti.setToolTipContent(rosterItem.getAddress());
 		    ti.addListener(DwtEvent.HOVEROVER, this._treeItemHoverListenerListener);
@@ -403,4 +415,36 @@ ZmRosterTreeController.prototype._newRosterItemCallback =
 function(addr, rname, groups) {
 	this._appCtxt.getNewRosterItemDialog().popdown();
 	this._imApp.getRoster().createRosterItem(addr, rname, groups);
+};
+
+// HACK: override that removes a bunch of checking
+ZmRosterTreeController.prototype._changeListener =
+function(ev, treeView, overviewId) {
+	if (ev.event != ZmEvent.E_CREATE) {
+		return ZmTreeController.prototype._changeListener.apply(this, [ev, treeView, overviewId]);
+	}
+
+	var organizers = ev.getDetail("organizers");
+	if (!organizers && ev.source) {
+		organizers = [ev.source];
+	}
+
+	// handle one organizer at a time
+	for (var i = 0; i < organizers.length; i++) {
+		var organizer = organizers[i];
+		var id = organizer.id;
+		var node = treeView.getTreeItemById(id);
+		var parentNode = null;
+		if (organizer.parent) {
+			parentNode = this._appCtxt.getOverviewController().getTreeItemById(overviewId, organizer.parent.id);
+			if (!parentNode) {
+				// HACK: just add item to root node
+				parentNode = this._appCtxt.getOverviewController().getTreeItemById(overviewId, 1);
+			}
+		}
+		if (parentNode) {
+			var idx = ZmTreeView.getSortIndex(parentNode, organizer, eval(ZmTreeView.COMPARE_FUNC[organizer.type]));
+			this._addNew(treeView, parentNode, organizer, idx); // add to new parent
+		}
+	}
 };

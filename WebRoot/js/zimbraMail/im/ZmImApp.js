@@ -32,7 +32,6 @@ function ZmImApp(appCtxt, container) {
 	ZmOperation.registerOp("IM", {textKey:"newIM", image:"ImStartChat"});
 	ZmOperation.registerOp("IM_NEW_CHAT", {textKey:"imNewChat", image:"ImFree2Chat"});
 	ZmOperation.registerOp("IM_NEW_GROUP_CHAT", {textKey:"imNewGroupChat", image:"ImFree2Chat"});
-	ZmOperation.registerOp("IM_NEW_ROSTER_ITEM", {textKey:"newRosterItem", image:"ImBuddy"});
 	ZmOperation.registerOp("IM_PRESENCE_AWAY", {textKey:"imStatusAway", image:"ImAway"});
 	ZmOperation.registerOp("IM_PRESENCE_CHAT", {textKey:"imStatusChat", image:"ImFree2Chat"});
 	ZmOperation.registerOp("IM_PRESENCE_DND", {textKey:"imStatusDND", image:"ImDnd"});
@@ -41,6 +40,7 @@ function ZmImApp(appCtxt, container) {
 	ZmOperation.registerOp("IM_PRESENCE_OFFLINE", {textKey:"imStatusOffline", image:"RoundMinusDis"});
 	ZmOperation.registerOp("IM_PRESENCE_ONLINE", {textKey:"imStatusOnline", image:"ImAvailable"});
 	ZmOperation.registerOp("IM_PRESENCE_XA", {textKey:"imStatusExtAway", image:"ImExtendedAway"});
+	ZmOperation.registerOp("NEW_ROSTER_ITEM", {textKey:"newRosterItem", image:"ImBuddy"});
 
 	ZmItem.registerItem(ZmItem.CHAT,
 						{app:			ZmApp.IM,
