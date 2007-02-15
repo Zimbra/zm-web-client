@@ -60,6 +60,9 @@
                         <a target=_new href="<c:url value="/help/Zimbra_Basic_User_Help.htm"/>"><img alt='<fmt:message key="ALT_APP_LINK_HELP"/>' src="<c:url value='/images/common/Help.gif'/>" border="0"/> <fmt:message key="help"/></a>
                     </td>
                     <td align=right>
+                        &nbsp;
+                    </td>
+                    <td align=right>
                         <a href="<c:url value="/h/login?loginOp=logout"/>"><img alt='<fmt:message key="ALT_APP_LINK_LOGOFF"/>' src="<c:url value='/images/common/Logoff.gif'/>" border="0"/> <fmt:message key="logOut"/></a>
                     </td>
                 </tr>
