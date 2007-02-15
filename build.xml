@@ -579,20 +579,30 @@
   </target>
 
   <target name="helpinit" unless='help.force'>
-    <available property='helpdone' file='${build.dir}/WebRoot/help/WebHelp/'/>
+      <available property='helpdone' file='${build.dir}/WebRoot/help/WebHelp/'/>
+      <available property='helpdone' file='${build.dir}/WebRoot/help/BasicWebHelp/'/>
   </target>
 
-  <target name="copy-help" depends="helpinit" unless='helpdone'>
-    <unzip src="WebRoot/help/WebHelp.zip" dest="${build.dir}/WebRoot/tmp/help" overwrite="yes">
-      <patternset>
-	<include name="WebHelp/**/*"/>
-      </patternset>
-    </unzip>
-    <copy todir="${build.dir}/WebRoot/help/" overwrite="true" >
-      <fileset dir="${build.dir}/WebRoot/tmp/help/WebHelp/" includes="**/*"/>
-    </copy>
-    <delete dir="${build.dir}/WebRoot/tmp/help"/>
-  </target>
+    <target name="copy-help" depends="helpinit" unless='helpdone'>
+        <unzip src="WebRoot/help/WebHelp.zip" dest="${build.dir}/WebRoot/tmp/help" overwrite="yes">
+            <patternset>
+                <include name="WebHelp/**/*"/>
+            </patternset>
+        </unzip>
+        <copy todir="${build.dir}/WebRoot/help/" overwrite="true">
+            <fileset dir="${build.dir}/WebRoot/tmp/help/WebHelp/" includes="**/*"/>
+        </copy>
+        <delete dir="${build.dir}/WebRoot/tmp/help"/>
+        <unzip src="WebRoot/help/BasicWebHelp.zip" dest="${build.dir}/WebRoot/tmp/bhelp" overwrite="yes">
+            <patternset>
+                <include name="BasicWebHelp/**/*"/>
+            </patternset>
+        </unzip>
+        <copy todir="${build.dir}/WebRoot/bhelp/" overwrite="true">
+            <fileset dir="${build.dir}/WebRoot/tmp/bhelp/BasicWebHelp/" includes="**/*"/>
+        </copy>
+        <delete dir="${build.dir}/WebRoot/tmp/bhelp"/>
+    </target>
 
   <target name="adminhelpinit" unless='adminhelp.force'>
     <available property='adminhelpdone' file='${build.dir}/WebRoot/adminhelp/html/WebHelp/'/>
@@ -764,6 +774,7 @@
       <classes dir="${build.dir}/classes" includes="**/webClient/servlet/*.class,**/webClient/filters/*.class,**/servlets/*.class"/>
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
+      <fileset dir="${build.dir}/WebRoot" includes="bhelp/**"/>
       <fileset dir="${build.dir}/WebRoot" includes="ALE/**"/>
       <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/config/keys/**,**/xforms/**,**/test/**"/>
       <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
