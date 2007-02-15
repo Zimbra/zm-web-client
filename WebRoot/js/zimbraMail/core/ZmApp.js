@@ -286,12 +286,12 @@ function() {
 	var dns = this._deferredNotifications;
 	for (var i = 0; i < dns.length; i++) {
 		var dn = dns[i];
-		if (dn.type == "delete" && dn.ids && dn.ids.length) {
-			this.deleteNotify(dn.ids);
-		} else if (dn.type == "create" && dn.list && dn.list.length) {
-			this.createNotify(dn.list);
-		} else if (dn.type == "modify" && dn.list && dn.list.length) {
-			this.modifyNotify(dn.list);
+		if (dn.type == "delete") {
+			this.deleteNotify(dn.data, true);
+		} else if (dn.type == "create") {
+			this.createNotify(dn.data, true);
+		} else if (dn.type == "modify") {
+			this.modifyNotify(dn.data, true);
 		}
 	}
 };
@@ -332,7 +332,7 @@ function(create, org) {
 		share = org;
 	}
 	if (parent) {
-		parent.notifyCreate(create, true);
+		parent.notifyCreate(create);
 		// XXX: once bug #4434 is fixed, check if this call is still needed
 		this._appCtxt.getFolderTree().getPermissions(share);
 		create._handled = true;

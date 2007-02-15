@@ -650,7 +650,7 @@ function() {
 ZmAppCtxt.prototype.getCurrentController =
 function() {
 	var view = this.getCurrentView();
-	return view ? view.getController() : null;
+	return (view && view.getController) ? view.getController() : null;
 };
 
 ZmAppCtxt.prototype.setCurrentList =

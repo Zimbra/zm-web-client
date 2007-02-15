@@ -179,8 +179,8 @@ function(result) {
  * @param list	[array]		list of create notifications
  */
 ZmContactsApp.prototype.createNotify =
-function(list) {
-	if (this._deferNotifications("create", list)) { return; }
+function(list, force) {
+	if (!force && this._deferNotifications("create", list)) { return; }
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
 		var name = create._name;
@@ -192,7 +192,7 @@ function(list) {
 			this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
 		} else if (name == "cn") {
 			DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
-			AjxDispatcher.run("GetContacts").notifyCreate(create, true);
+			AjxDispatcher.run("GetContacts").notifyCreate(create);
 			create._handled = true;
 		}
 	}

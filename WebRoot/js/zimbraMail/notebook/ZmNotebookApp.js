@@ -154,8 +154,8 @@ ZmNotebookApp.prototype._notebookCache;
 // App API
 
 ZmNotebookApp.prototype.deleteNotify =
-function(ids) {
-	if (this._deferNotifications("delete", ids)) { return; }
+function(ids, force) {
+	if (!force && this._deferNotifications("delete", ids)) { return; }
 	for (var i = 0; i < ids.length; i++) {
 		var cache = this.getNotebookCache();
 		var page = cache.getPageById(ids[i]);
@@ -185,8 +185,8 @@ function(ids) {
  * @param list	[array]		list of create notifications
  */
 ZmNotebookApp.prototype.createNotify =
-function(list) {
-	if (this._deferNotifications("create", list)) { return; }
+function(list, force) {
+	if (!force && this._deferNotifications("create", list)) { return; }
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
 		var name = create._name;
@@ -222,8 +222,8 @@ function(list) {
 };
 
 ZmNotebookApp.prototype.modifyNotify =
-function(list) {
-	if (this._deferNotifications("modify", list)) { return; }
+function(list, force) {
+	if (!force && this._deferNotifications("modify", list)) { return; }
 	for (var i = 0; i < list.length; i++) {
 		var mod = list[i];
 		var id = mod.id;

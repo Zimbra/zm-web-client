@@ -119,6 +119,31 @@ function(op) {
 	}
 };
 
+/**
+ * Checks for the creation of an address book or a mount point to one. Regular
+ * contact creates are handed to the canonical list.
+ *
+ * @param list	[array]		list of create notifications
+ */
+ZmTasksApp.prototype.createNotify =
+function(list, force) {
+	if (!force && this._deferNotifications("create", list)) { return; }
+	for (var i = 0; i < list.length; i++) {
+		var create = list[i];
+		var name = create._name;
+		if (this._appCtxt.cacheGet(create.id)) { continue; }
+
+		if (name == "folder") {
+			this._handleCreateFolder(create, ZmOrganizer.TASKS);
+		} else if (name == "link") {
+			this._handleCreateLink(create, ZmOrganizer.TASKS);
+		} else if (name == "task") {
+			AjxDispatcher.run("GetTaskListController").notifyCreate(create);
+			create._handled = true;
+		}
+	}
+};
+
 // Public methods
 
 ZmTasksApp.prototype.launch =
@@ -139,31 +164,6 @@ function(callback) {
 	this.getTaskListController().show(this._taskList);
 	if (callback) {
 		callback.run();
-	}
-};
-
-/**
- * Checks for the creation of an address book or a mount point to one. Regular
- * contact creates are handed to the canonical list.
- *
- * @param list	[array]		list of create notifications
- */
-ZmTasksApp.prototype.createNotify =
-function(list) {
-	if (this._deferNotifications("create", list)) { return; }
-	for (var i = 0; i < list.length; i++) {
-		var create = list[i];
-		var name = create._name;
-		if (this._appCtxt.cacheGet(create.id)) { continue; }
-
-		if (name == "folder") {
-			this._handleCreateFolder(create, ZmOrganizer.TASKS);
-		} else if (name == "link") {
-			this._handleCreateLink(create, ZmOrganizer.TASKS);
-		} else if (name == "task") {
-			AjxDispatcher.run("GetTaskListController").notifyCreate(create);
-			create._handled = true;
-		}
 	}
 };
 

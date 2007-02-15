@@ -180,14 +180,14 @@ function(refresh) {
 };
 
 ZmCalendarApp.prototype.deleteNotify =
-function(ids) {
-	if (this._deferNotifications("delete", ids)) { return; }
+function(ids, force) {
+	if (!force && this._deferNotifications("delete", ids)) { return; }
 	AjxDispatcher.run("GetCalController").notifyDelete(ids);
 };
 
 ZmCalendarApp.prototype.createNotify =
-function(list) {
-	if (this._deferNotifications("create", list)) { return; }
+function(list, force) {
+	if (!force && this._deferNotifications("create", list)) { return; }
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
 		var name = create._name;
@@ -205,8 +205,8 @@ function(list) {
 };
 
 ZmCalendarApp.prototype.modifyNotify =
-function(list) {
-	if (this._deferNotifications("modify", list)) { return; }
+function(list, force) {
+	if (!force && this._deferNotifications("modify", list)) { return; }
 	AjxDispatcher.run("GetCalController").notifyModify(list);
 };
 

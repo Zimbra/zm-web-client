@@ -186,8 +186,8 @@ function(notify) {
  * @param list	[array]		list of create notifications
  */
 ZmMailApp.prototype.createNotify =
-function(list) {
-	if (this._deferNotifications("create", list)) { return; }
+function(list, force) {
+	if (!force && this._deferNotifications("create", list)) { return; }
 	var convs = {};
 	var msgs = {};
 	var folders = {};

@@ -153,9 +153,9 @@ ZmFolderTree.createFolder =
 function(type, parent, obj, tree, path) {
 	var orgClass = eval(ZmOrganizer.ORG_CLASS[type]);
 	DBG.println(AjxDebug.DBG2, "Creating " + type + " with id " + obj.id + " and name " + obj.name);
-	params = {id:obj.id, name:obj.name, parent:parent, tree:tree, color:obj.color,
-			  owner:obj.owner, zid:obj.zid, rid:obj.rid, restUrl:obj.rest,
-			  url:obj.url, numUnread:obj.u, numTotal:obj.n};
+	var params = {id:obj.id, name:obj.name, parent:parent, tree:tree, color:obj.color,
+				  owner:obj.owner, zid:obj.zid, rid:obj.rid, restUrl:obj.rest,
+				  url:obj.url, numUnread:obj.u, numTotal:obj.n};
 	var folder = new orgClass(params);
 	ZmFolderTree._fillInFolder(folder, obj, path);
 
