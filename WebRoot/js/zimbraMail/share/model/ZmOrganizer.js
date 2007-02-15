@@ -54,7 +54,7 @@ function ZmOrganizer(params) {
 	
 	this.type = params.type;
 	var id = this.id = params.id;
-	this.name = ZmFolder.MSG_KEY[id] || params.name;
+	this.name = ZmFolder.MSG_KEY[id] ? ZmMsg[ZmFolder.MSG_KEY[id]] : params.name;
 	this.parent = params.parent;
 	this.tree = params.tree;
 	this.color = params.color || ZmOrganizer.DEFAULT_COLOR[this.type];
