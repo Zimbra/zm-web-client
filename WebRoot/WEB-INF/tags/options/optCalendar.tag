@@ -53,7 +53,7 @@
                     <c:forEach var="h" begin="0" end="23">
                         <option value="${h}" <c:if test="${h eq hour}"> selected</c:if>>
                             <fmt:message key="CAL_DAY_HOUR_FORMAT">
-                                <fmt:param value="${zm:getTodayHour(h).time}"/>
+                                <fmt:param value="${zm:getTodayHour(h, mailbox.timeZone).time}"/>
                             </fmt:message>
                         </option>
                     </c:forEach>
@@ -71,7 +71,7 @@
                     <c:forEach var="h" begin="1" end="24">
                         <option value="${h}" <c:if test="${h eq hour}"> selected</c:if>>
                             <fmt:message key="CAL_DAY_HOUR_FORMAT">
-                                <fmt:param value="${zm:getTodayHour(h % 24).time}"/>
+                                <fmt:param value="${zm:getTodayHour(h % 24, mailbox.timeZone).time}"/>
                             </fmt:message>
                         </option>
                     </c:forEach>

@@ -2,6 +2,7 @@
 <%@ attribute name="appt" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZApptSummary" %>
 <%@ attribute name="start" rtexprvalue="true" required="true"%>
 <%@ attribute name="end" rtexprvalue="true" required="true"%>
+<%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -20,9 +21,9 @@
     </c:when>
     <c:otherwise>
         <div class='ZhCalMonthAppt ${color}${needsAction ? 'DarkC' : 'C'}'>
-            <c:set var="startDate" value="${appt.startDate.time lt start ? 'S' : ''}"/>
+            <c:set var="startDate" value="${appt.startTime lt start ? 'S' : ''}"/>
             <fmt:message key="CAL_MONTH_APPT${startDate}">
-                <fmt:param value="${appt.startDate}"/>
+                <fmt:param value="${zm:getCalendar(appt.startTime, timezone).time}"/>
                 <fmt:param value="${fn:escapeXml(appt.name)}"/>
             </fmt:message>
         </div>

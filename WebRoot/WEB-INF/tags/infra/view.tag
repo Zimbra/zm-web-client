@@ -5,7 +5,7 @@
 <%@ attribute name="contacts" rtexprvalue="true" required="false" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
 <%@ attribute name="minical" rtexprvalue="true" required="false" %>
-<%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Date" %>
+<%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Calendar" %>
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
 <%@ attribute name="title" rtexprvalue="true" required="true" %>
 <%@ attribute name="ads" rtexprvalue="true" required="false" %>

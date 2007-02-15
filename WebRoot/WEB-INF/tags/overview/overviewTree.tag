@@ -4,7 +4,7 @@
 <%@ attribute name="contacts" rtexprvalue="true" required="false" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
 <%@ attribute name="minical" rtexprvalue="true" required="false" %>
-<%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Date" %>
+<%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Calendar" %>
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
 <%@ attribute name="tags" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
@@ -25,4 +25,4 @@
 <c:if test="${mailbox.features.tagging}">
 <c:if test="${tags}"><app:tagTree keys="${keys}" editmode="${editmode}"/></c:if>
 </c:if>
-<c:if test="${minical}"><app:miniCal date="${not empty date ? date : zm:getToday().time}"/></c:if>
+<c:if test="${minical}"><app:miniCal date="${not empty date ? date : zm:getToday(mailbox.timeZone)}"/></c:if>

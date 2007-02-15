@@ -64,8 +64,8 @@
             </table>
         </td>
         <td align=right>
-            <app:calendarUrl var="prevUrl" rawdate="${prevDate.time}"/>
-            <app:calendarUrl var="nextUrl" rawdate="${nextDate.time}"/>
+            <app:calendarUrl var="prevUrl" rawdate="${prevDate}"/>
+            <app:calendarUrl var="nextUrl" rawdate="${nextDate}"/>
             <table cellspacing=5 cellpadding=0>
                 <tr>
                     <td>

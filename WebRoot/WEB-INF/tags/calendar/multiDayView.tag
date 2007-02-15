@@ -1,5 +1,5 @@
 <%@ tag body-content="empty" %>
-<%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Date" %>
+<%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
 <%@ attribute name="numdays" rtexprvalue="true" required="true" %>
 <%@ attribute name="view" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -39,11 +39,10 @@
         </c:otherwise>
     </c:choose>
 
-    <c:set var="today" value="${zm:getToday()}"/>
-    <c:set var="dateCal" value="${zm:getCalendar(date)}"/>
+    <c:set var="today" value="${zm:getToday(mailbox.timeZone)}"/>
     <c:set var="dayIncr" value="${(view eq 'workWeek') ? 7 : numdays}"/>
-    <c:set var="prevDate" value="${zm:addDay(dateCal, -dayIncr)}"/>
-    <c:set var="nextDate" value="${zm:addDay(dateCal,  dayIncr)}"/>
+    <c:set var="prevDate" value="${zm:addDay(date, -dayIncr)}"/>
+    <c:set var="nextDate" value="${zm:addDay(date,  dayIncr)}"/>
 
     <c:set var="rangeEnd" value="${currentDay.timeInMillis+zm:MSECS_PER_DAY()*numdays}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
@@ -64,7 +63,7 @@
     <table width=100% height=100% cellpadding="0" cellspacing="0" border=0>
         <tr>
             <td class='TbTop'>
-                <app:calendarViewToolbar today="${today}" date="${dateCal}" prevDate="${prevDate}"
+                <app:calendarViewToolbar today="${today}" date="${date}" prevDate="${prevDate}"
                                          nextDate="${nextDate}" title="${tbTitle}" context="${context}" keys="true"/>
             </td>
         </tr>
@@ -74,7 +73,7 @@
 
                    <tr class='ZhCalMonthHeaderRow'>
                        <td class='ZhCalDayHeader' nowrap align=center width=1% style='border-left:none'>
-                           <fmt:formatDate value="${date}" pattern="${yearTitleFormat}"/>
+                           <fmt:formatDate value="${date.time}" pattern="${yearTitleFormat}"/>
                        </td>
                        <c:choose>
                            <c:when test="${scheduleView}">
@@ -93,10 +92,10 @@
                                        ${fn:escapeXml(fname)}
                                    </c:when>
                                    <c:otherwise>
-                                       <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" rawdate="${day.date}"/>
+                                       <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" rawdate="${zm:getCalendar(day.startTime, mailbox.timeZone)}"/>
                                        <a href="${dayUrl}">
                                        <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
-                                       <fmt:formatDate value="${day.date}" pattern="${titleFormat}"/>
+                                       <fmt:formatDate value="${zm:getCalendar(day.startTime, mailbox.timeZone).time}" pattern="${titleFormat}"/>
                                        </a>
                                    </c:otherwise>
                                </c:choose>
@@ -129,7 +128,7 @@
                                     <c:choose>
                                         <c:when test="${not empty cell.appt}">
                                             <div style='padding:1px'>
-                                            <app:dayAppt appt="${cell.appt}" start="${currentDay.timeInMillis}" end="${rangeEnd}"/>
+                                            <app:dayAppt appt="${cell.appt}" start="${currentDay.timeInMillis}" end="${rangeEnd}" timezone="${mailbox.timeZone}"/>
                                             </div>
                                         </c:when>
                                         <c:otherwise>
@@ -171,7 +170,7 @@
                             <c:if test="${row.rowNum % 4 eq 0}">
                                 <td valign=top class='ZhCalDayHour' nowrap width=1% rowspan=4 style='border-left:none'>
                                     <fmt:message key="CAL_DAY_HOUR_FORMAT">
-                                     <fmt:param value="${row.date}"/>
+                                     <fmt:param value="${zm:getCalendar(row.time, mailbox.timeZone).time}"/>
                                     </fmt:message>
                                 </td>
                             </c:if>
@@ -198,7 +197,7 @@
                                 <c:choose>
                                     <c:when test="${not empty cell.appt and cell.isFirst}">
                                         <td <c:if test="${diffDay}">class='ZhCalDaySEP' </c:if> valign=top height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>
-                                            <app:dayAppt appt="${cell.appt}" start="${cell.day.startTime}" end="${cell.day.endTime}"/>
+                                            <app:dayAppt appt="${cell.appt}" start="${cell.day.startTime}" end="${cell.day.endTime}" timezone="${mailbox.timeZone}"/>
                                         </td>
                                     </c:when>
                                     <c:when test="${empty cell.appt}">

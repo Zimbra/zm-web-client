@@ -22,9 +22,10 @@
     <c:choose>
         <c:when test="${not empty param.date}">
             <fmt:parseDate var="date" pattern="yyyyMMdd" value="${param.date}"/>
+            <c:set var="datecal" value="${zm:getCalendarMidnight(date.time, mailbox.timeZone)}"/>
         </c:when>
         <c:otherwise>
-            <c:set var="date" value="${zm:getToday().time}"/>
+            <c:set var="datecal" value="${zm:getToday(mailbox.timeZone)}"/>
         </c:otherwise>
     </c:choose>
 
@@ -42,20 +43,22 @@
     <c:set var="view" value="${not empty param.view ? param.view : mailbox.prefs.calendarInitialView}"/>
 </app:handleError>
 
+<app:handleError>
 <c:choose>
     <c:when test="${view eq 'day'}">
-        <app:multiDayView date="${date}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
+        <app:multiDayView date="${datecal}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
     </c:when>
     <c:when test="${view eq 'workWeek'}">
-        <app:multiDayView date="${date}" view='${view}' numdays="5"/>
+        <app:multiDayView date="${datecal}" view='${view}' numdays="5"/>
     </c:when>
     <c:when test="${view eq 'week'}">
-        <app:multiDayView date="${date}" view='${view}' numdays="7"/>
+        <app:multiDayView date="${datecal}" view='${view}' numdays="7"/>
     </c:when>
     <c:when test="${view eq 'schedule'}">
-        <app:multiDayView date="${date}" numdays="1" view="${view}"/>
+        <app:multiDayView date="${datecal}" numdays="1" view="${view}"/>
     </c:when>
     <c:otherwise>
-        <app:monthView date="${date}"/>
+        <app:monthView date="${datecal}"/>
     </c:otherwise>
 </c:choose>
+</app:handleError>
