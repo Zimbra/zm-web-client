@@ -64,17 +64,6 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
 	this._apptCache = new ZmApptCache(this, appCtxt);
 
-	ZmCalViewController.OPS = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
-							   ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
-
-	// get view based on op
-	ZmCalViewController.OP_TO_VIEW = {};
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_VIEW]		= ZmController.CAL_DAY_VIEW;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.WEEK_VIEW]		= ZmController.CAL_WEEK_VIEW;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmController.CAL_WORK_WEEK_VIEW;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmController.CAL_MONTH_VIEW;
-	ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmController.CAL_SCHEDULE_VIEW;
-
 	this._initializeViewActionMenu();
 
 	this._errorCallback = new AjxCallback(this, this._handleError);
@@ -82,6 +71,17 @@ function ZmCalViewController(appCtxt, container, calApp) {
 
 ZmCalViewController.prototype = new ZmListController();
 ZmCalViewController.prototype.constructor = ZmCalViewController;
+
+ZmCalViewController.OPS = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
+						   ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
+
+// get view based on op
+ZmCalViewController.OP_TO_VIEW = {};
+ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_VIEW]		= ZmController.CAL_DAY_VIEW;
+ZmCalViewController.OP_TO_VIEW[ZmOperation.WEEK_VIEW]		= ZmController.CAL_WEEK_VIEW;
+ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmController.CAL_WORK_WEEK_VIEW;
+ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmController.CAL_MONTH_VIEW;
+ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmController.CAL_SCHEDULE_VIEW;
 
 ZmCalViewController.ICON = {};
 ZmCalViewController.ICON[ZmController.CAL_DAY_VIEW]				= "DayView";
