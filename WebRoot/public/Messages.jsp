@@ -1,3 +1,4 @@
+<%@ page session="false" %>
 <!--
 ***** BEGIN LICENSE BLOCK *****
 Version: ZPL 1.2

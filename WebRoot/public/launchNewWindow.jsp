@@ -1,12 +1,10 @@
+<%@ page session="false" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %><%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 
 	// Set standard HTTP/1.1 no-cache headers.
 	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-
-	// Set IE extended HTTP/1.1 no-cache headers (use addHeader).
-	response.addHeader("Cache-Control", "post-check=0, pre-check=0");
 
 	// Set standard HTTP/1.0 no-cache header.
 	response.setHeader("Pragma", "no-cache");
