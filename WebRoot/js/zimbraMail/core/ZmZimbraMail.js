@@ -314,9 +314,6 @@ function(params, result) {
 		}
 	}
 
-	if (document.domain != "localhost") {
-		this.setPollInterval();	// turn off polling for dev
-	}
 	var opc = this._appCtxt.getOverviewController();
 	if (!opc.getOverview(ZmZimbraMail._OVERVIEW_ID)) {
 		opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
