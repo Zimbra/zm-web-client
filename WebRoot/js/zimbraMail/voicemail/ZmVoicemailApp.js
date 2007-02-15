@@ -48,6 +48,21 @@ function ZmVoicemailApp(appCtxt, container, parentController) {
 		}, this)
 						});
 
+	ZmOrganizer.registerOrg(ZmOrganizer.VOICEMAIL,
+							{app:				ZmApp.VOICEMAIL,
+							 nameKey:			"voicemailFolder",
+							 defaultFolder:		ZmOrganizer.ID_VOICEMAIL,
+							 firstUserId:		256,
+							 orgClass:			"ZmVoicemailFolder",
+							 orgPackage:		"VoicemailCore",
+							 treeController:	"ZmVoicemailTreeController",
+							 labelKey:			"voicemail",
+							 views:				["voicemail"],
+							 createFunc:		"ZmOrganizer.create",
+							 compareFunc:		"ZmVoicemailFolder.sortCompare",
+							 deferrable:		false
+							});
+
 	ZmApp.registerApp(ZmApp.VOICEMAIL,
 							 {mainPkg:				"Voicemail",
 							  nameKey:				"voicemail",
@@ -55,8 +70,7 @@ function ZmVoicemailApp(appCtxt, container, parentController) {
 							  qsArg:				"voicemail",
 							  chooserTooltipKey:	"goToVoicemail",
 							  defaultSearch:		ZmItem.PAGE,
-							  overviewTrees:		[ZmOrganizer.TAG],
-//							  overviewTrees:		[ZmOrganizer.VOICEMAIL, ZmOrganizer.TAG],
+							  overviewTrees:		[ZmOrganizer.VOICEMAIL],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.VOICEMAIL],
 							  gotoActionCode:		ZmKeyMap.GOTO_VOICEMAIL,
@@ -69,6 +83,9 @@ function ZmVoicemailApp(appCtxt, container, parentController) {
 ZmEvent.S_VOICEMAIL				= "VOICEMAIL";
 ZmItem.VOICEMAIL				= ZmEvent.S_VOICEMAIL;
 ZmOrganizer.VOICEMAIL			= ZmEvent.S_VOICEMAIL;
+
+//TODO: Figure out what id to use or should I just use something unique?
+ZmOrganizer.ID_VOICEMAIL		= 8675;
 
 // App-related constants
 ZmApp.VOICEMAIL						= "Voicemail";
@@ -113,6 +130,7 @@ function(callback) {
 	var voicemailController = AjxDispatcher.run("GetVoicemailController");
 	var searchResuts = ZmVoicemailList.searchHACK(this._appCtxt);
 	voicemailController.show(searchResuts);
+	
 	if (callback) {
 		callback.run();
 	}
@@ -132,141 +150,65 @@ ZmVoicemailApp.prototype.getVoicemailController = function() {
 
 ZmVoicemailApp.prototype._handleDeletes =
 function(ids) {
-//	for (var i = 0; i < ids.length; i++) {
-//		var cache = this.getVoicemailCache();
-//		var page = cache.getPageById(ids[i]);
-//		if (page) {
-//			DBG.println(AjxDebug.DBG2, "ZmVoicemailApp: handling delete notif for ID " + ids[i]);
-//			cache.removePage(page);
-//			page.notifyDelete();
-//				
-//			// re-render, if necessary
-//			var voicemailController = AjxDispatcher.run("GetVoicemailController");
-//			var shownPage = voicemailController.getPage();
-//			if (shownPage && shownPage.id == page.id) {
-//				if (shownPage.name == ZmVoicemail.PAGE_INDEX || shownPage.name == page.name) {
-//					var pageRef = { folderId: page.folderId, name: ZmVoicemail.PAGE_INDEX };
-//					voicemailController.gotoPage(pageRef);
-//				}
-//			}
-//			ids[i] = null;
-//		}
-//	}
 };
 
-/**
- * Checks for the creation of a voicemail or a mount point to one, or of a page
- * or document.
- * 
- * @param list	[array]		list of create notifications
- */
 ZmVoicemailApp.prototype._handleCreates =
 function(list) {
-//	for (var i = 0; i < list.length; i++) {
-//		var create = list[i];
-//		var name = create._name;
-//		if (this._appCtxt.cacheGet(create.id)) { continue; }
-//
-//		if (name == "folder") {
-//			var parentId = create.l;
-//			var parent;
-//			var voicemailTree = this._appCtxt.getTree(ZmOrganizer.VOICEMAIL);
-//			if (parentId == ZmOrganizer.ID_ROOT) {
-//				if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.VOICEMAIL][0]) {
-//					parent = voicemailTree.getById(parentId);
-//				}
-//			} else {
-//				parent = voicemailTree.getById(parentId);
-//			}
-//			if (parent) {
-//				DBG.println(AjxDebug.DBG1, "ZmVoicemailApp: handling CREATE for node: " + name);
-//				parent.notifyCreate(create);
-//			}
-//		} else if (name == "link") {
-//			var parentId = create.l;
-//			var parent, share;
-//			if (create.view == ZmOrganizer.VIEWS[ZmOrganizer.VOICEMAIL][0]) {
-//				var voicemailTree = this._appCtxt.getTree(ZmOrganizer.VOICEMAIL);
-//				parent = voicemailTree.getById(parentId);
-//				share = ZmOrganizer.VOICEMAIL;
-//			}
-//			if (parent) {
-//				DBG.println(AjxDebug.DBG1, "ZmVoicemailApp: handling CREATE for node: " + name);
-//				parent.notifyCreate(create, true);
-//				// XXX: once bug #4434 is fixed, check if this call is still needed
-//				this._appCtxt.getFolderTree().getPermissions(share);
-//			}
-//		} else if (name == "w") {
-//			DBG.println(AjxDebug.DBG1, "ZmVoicemailApp: handling CREATE for node: " + name);
-//			// REVISIT: use app context item cache
-//			var cache = this.getVoicemailCache();
-//			var page = new ZmPage(this._appCtxt);
-//			page.set(create);
-//			cache.putPage(page);
-//
-//			// re-render current page, if necessary
-//			var voicemailController = AjxDispatcher.run("GetVoicemailController");
-//			var shownPage = voicemailController.getPage();
-//			if (shownPage && shownPage.name == ZmVoicemail.PAGE_INDEX) {
-//				voicemailController.gotoPage(shownPage);
-//			}
-//		} else if (name == "doc") {
-//			DBG.println(AjxDebug.DBG1, "ZmVoicemailApp: handling CREATE for node: " + name);
-//			// REVISIT: use app context item cache
-//			var cache = this.getVoicemailCache();
-//			var doc = new ZmDocument(this._appCtxt);
-//			doc.set(create);
-//			cache.putDocument(doc);
-//		}
-//	}
 };
 
 ZmVoicemailApp.prototype._handleModifies =
 function(list) {
-//	for (var i = 0; i < list.length; i++) {
-//		var mod = list[i];
-//		var id = mod.id;
-//		if (!id) { continue; }
-//		var name = mod._name;
-//
-//		if (name == "w") {
-//			DBG.println(AjxDebug.DBG2, "ZmVoicemailApp: handling modified notif for ID " + id + ", node type = " + name);
-//			// REVISIT: Use app context item cache
-//			var cache = this.getVoicemailCache();
-//			var page = cache.getPageById(id);
-//			if (!page) {
-//				page = new ZmPage(this._appCtxt);
-//				page.set(mod);
-//				cache.putPage(page);
-//			} else {
-//				page.notifyModify(mod);
-//				page.set(mod);
-//			}
-//			
-//			// re-render current page, if necessary
-//			var voicemailController = AjxDispatcher.run("GetVoicemailController");
-//			var shownPage = voicemailController.getPage();
-//			if (shownPage && shownPage.folderId == page.folderId) {
-//				if (shownPage.name == ZmVoicemail.PAGE_INDEX || shownPage.name == page.name) {
-//					voicemailController.gotoPage(shownPage);
-//				}
-//			}
-//			mod._handled = true;
-//		} else if (name == "doc") {
-//			DBG.println(AjxDebug.DBG2, "ZmVoicemailApp: handling modified notif for ID " + id + ", node type = " + name);
-//			// REVISIT: Use app context item cache
-//			var cache = this.getVoicemailCache();
-//			var doc = cache.getDocumentById(id);
-//			if (!doc) {
-//				doc = new ZmDocument(this._appCtxt);
-//				doc.set(mod);
-//				cache.putDocument(doc);
-//			}
-//			else {
-//				doc.notifyModify(mod);
-//				doc.set(mod);
-//			}
-//			mod._handled = true;
-//		}
-//	}
 };
+
+// Fake folder creation...since there's no server support.
+ZmVoicemailApp._createTreeHACK =
+function(appCtxt) {
+	ZmVoicemailApp.treeHACK(appCtxt, ZmOrganizer.VOICEMAIL, "Primary (650) 123-4567");
+	ZmVoicemailApp.treeHACK(appCtxt, '2222', "Sally (858) 234-1234");
+	ZmVoicemailApp.treeHACK(appCtxt, '4444', "Billy (858) 234-0987");
+};
+
+ZmVoicemailApp.treeHACK = 
+function(appCtxt, baseId, accountName) {
+	var jsonObj = {
+		folder: [
+            {
+              id: baseId + '-Voicemail',
+              l: '16234',
+              n: 1,
+              name: 'Voicemail',
+              view: 'voicemail'
+             },
+            {
+              id: baseId + "-Missed",
+              l: '1',
+              n: 1,
+              name: 'Missed Calls',
+              view: 'voicemail'
+             },
+            {
+              id: baseId + "-Answered",
+              l: '1',
+              n: 1,
+              name: 'Answered Calls',
+              view: 'voicemail'
+             },
+            {
+              id: baseId + "-Placed",
+              l: '1',
+              n: 1,
+              name: 'Placed Calls',
+              view: 'voicemail'
+             },
+           ],
+          id: baseId,
+          l: '11',
+          name: accountName,
+          view: 'voicemail'
+	};
+	var folderTree = appCtxt.getFolderTree();
+	var folder = ZmFolderTree.createFromJs(folderTree.root, jsonObj, folderTree, "folder");
+	folder.isAccount = true;
+	folderTree.root.children.add(folder);
+};
+

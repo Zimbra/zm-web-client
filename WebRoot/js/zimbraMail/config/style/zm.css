@@ -2734,3 +2734,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	text-align:right;
 	padding-right:5px;
 }
+
+.ZmVoicemailTreeHeader {
+	display:none;
+}
