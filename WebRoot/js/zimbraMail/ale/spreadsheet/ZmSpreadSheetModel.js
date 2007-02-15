@@ -1095,16 +1095,16 @@ ZmSpreadSheetCellModel.prototype.isEmpty = function() {
 
 ZmSpreadSheetCellModel.prototype.getTooltipText = function() {
 	var html = [ "<div class='ZmSpreadSheet-Tooltip'>",
-		     "<div class='CellName'>Cell - ", this.getName(), "</div>" ];
+		     "<div class='CellName'>", ZmMsg.cell, " - ", this.getName(), "</div>" ];
 	if (!this.isEmpty())
-		html.push("<div class='CellType'>Type: ", this.getType(), "</div>");
+		html.push("<div class='CellType'>", ZmMsg.type, ": ", this.getType(), "</div>");
 	else
-		html.push("<div class='CellType'>Empty cell</div>");
+		html.push("<div class='CellType'>", ZmMsg.emptyCell, "</div>");
 	if (this._errorMessage) {
-		html.push("Edit value: " + this._editValue);
+		html.push(ZmMsg.editValue, ": ", this._editValue);
 		html.push("<div class='CellExprError'>", this._errorMessage, "</div>");
 	} else if (this._expr) {
-		html.push("Expression:");
+		html.push(ZmMsg.expression, ":");
 		html.push("<div class='CellExpr'>[", this._expr.toString(), "]</div>");
 	}
 	if (ZmSpreadSheetModel.DEBUG) {
