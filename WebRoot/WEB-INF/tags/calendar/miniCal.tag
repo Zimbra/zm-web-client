@@ -8,7 +8,7 @@
 
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    <c:set var="timezone" value="${not empty requestScope.tz ? requestScope.tz : mailbox.timeZone}"/>
+    <c:set var="timezone" value="${not empty requestScope.tz ? requestScope.tz : mailbox.prefs.timeZone}"/>
     <fmt:setTimeZone value="${timezone}"/>
     <c:set var="view" value="${not empty param.view ? param.view : mailbox.prefs.calendarInitialView}"/>
     <jsp:useBean id="dateSymbols" scope="request" class="java.text.DateFormatSymbols" />

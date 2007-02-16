@@ -23,7 +23,7 @@
             <fmt:setTimeZone var="tz" value="${param.tz}" scope="request"/>
         </c:when>
         <c:otherwise>
-            <c:set var="tz" value="${mailbox.timeZone}" scope="request"/>
+            <c:set var="tz" value="${mailbox.prefs.timeZone}" scope="request"/>
         </c:otherwise>
     </c:choose>
 

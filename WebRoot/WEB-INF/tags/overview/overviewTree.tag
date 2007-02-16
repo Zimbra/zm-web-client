@@ -25,4 +25,4 @@
 <c:if test="${mailbox.features.tagging}">
 <c:if test="${tags}"><app:tagTree keys="${keys}" editmode="${editmode}"/></c:if>
 </c:if>
-<c:if test="${minical}"><app:miniCal date="${not empty date ? date : zm:getToday(mailbox.timeZone)}"/></c:if>
+<c:if test="${minical}"><app:miniCal date="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}"/></c:if>
