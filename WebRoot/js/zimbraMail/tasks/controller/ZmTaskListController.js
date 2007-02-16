@@ -77,8 +77,12 @@ function() {
 
 ZmTaskListController.prototype._createNewView =
 function(view) {
-	this._listView[view] = new ZmTaskListView(this._container, this, this._dropTgt);
-	this._listView[view].setDragSource(this._dragSrc);
+	if (view == ZmController.TASK_VIEW) {
+		this._listView[view] = new ZmTaskView(this._container, DwtControl.ABSOLUTE_STYLE, this);
+	} else {
+		this._listView[view] = new ZmTaskListView(this._container, this, this._dropTgt);
+		this._listView[view].setDragSource(this._dragSrc);
+	}
 	return this._listView[view];
 };
 
@@ -181,16 +185,40 @@ ZmTaskListController.prototype._editTask =
 function(task) {
 	var mode = ZmCalItem.MODE_EDIT;
 
-	if (task.isRecurring()) {
-		// prompt user to edit instance vs. series if recurring but not exception
-		if (task.isException) {
-			mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
-		} else {
-			this._showTypeDialog(task, ZmCalItem.MODE_EDIT);
-			return;
+	if (task.isReadOnly()) {
+		if (task.isException) mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
+		task.getDetails(mode, new AjxCallback(this, this._showTaskReadOnlyView, task));
+	} else {
+		if (task.isRecurring()) {
+			// prompt user to edit instance vs. series if recurring but not exception
+			if (task.isException) {
+				mode = ZmCalItem.MODE_EDIT_SINGLE_INSTANCE;
+			} else {
+				this._showTypeDialog(task, ZmCalItem.MODE_EDIT);
+				return;
+			}
 		}
+		task.getDetails(mode, new AjxCallback(this, this._showTaskEditView, [task, mode]));
 	}
-	task.getDetails(mode, new AjxCallback(this, this._showTaskEditView, [task, mode]));
+};
+
+ZmTaskListController.prototype._showTaskReadOnlyView =
+function(task) {
+	var viewId = ZmController.TASK_VIEW;
+	var calItemView = this._listView[viewId];
+
+	if (!calItemView) {
+		this._setup(viewId);
+		calItemView = this._listView[viewId];
+	}
+
+	calItemView.set(task, ZmController.TASKLIST_VIEW);
+	this._resetOperations(this._toolbar[viewId], 1); // enable all buttons
+
+	var elements = {};
+	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[viewId];
+	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[viewId];
+	this._setView(viewId, elements, null, null, true);
 };
 
 ZmTaskListController.prototype._showTaskEditView =

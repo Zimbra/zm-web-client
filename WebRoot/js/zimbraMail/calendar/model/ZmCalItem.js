@@ -1301,8 +1301,8 @@ function(priority, inclExcl, inclText) {
 
 	return [excl, text].join(" ");
 };
-ZmCalItem.getLabelForStatus =
 
+ZmCalItem.getLabelForStatus =
 function(status) {
 	switch (status) {
 		case ZmCalItem.STATUS_CANC: return ZmMsg.cancelled;

@@ -81,6 +81,7 @@ ZmController.NOTEBOOK_SITE_VIEW			= "NOTEBOOK_SITE";
 ZmController.PORTAL_VIEW                = "PORTAL";
 ZmController.TASKLIST_VIEW				= "TASKLIST";
 ZmController.TASKEDIT_VIEW				= "TASKEDIT";
+ZmController.TASK_VIEW					= "TASK_VIEW";
 ZmController.LOADING_VIEW				= "LOADING";
 ZmController.VOICEMAIL_VIEW				= "VOICEMAIL";
 

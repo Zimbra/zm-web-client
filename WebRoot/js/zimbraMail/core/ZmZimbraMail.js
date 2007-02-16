@@ -45,7 +45,6 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	// settings structure and defaults
 	this._settings = appCtxt.getSettings();
 	var branch = appCtxt.get(ZmSetting.BRANCH);
-    DBG.println(AjxDebug.DBG1, "Branch: " + branch + " Image Load: " + zImgLoading + " JS/CSS Load: " + zJSloading);
     if (!DBG.isDisabled()) {
 		DBG.setTitle("Debug (" + branch + ")");
     }

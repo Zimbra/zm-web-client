@@ -352,3 +352,87 @@
 
 	</table>
 </template>
+
+<template id='ReadOnlyView'>
+	<table border=0 class='MsgHeaderTable' id='${id}_hdrTable' cellspacing=0 cellpadding=0 width=100%>
+		<tr>
+			<td width=100 class='SubjectCol LabelColName'><$= AjxStringUtil.htmlEncode(ZmMsg.subject) $>:</td>
+			<td colspan=3>
+				<table border=0 cellpadding=0 cellspacing=0 width=100%>
+					<tr>
+						<td class='SubjectCol LabelColValue'><$= data.subject $></td>
+						<td width=1% id='${id}_closeBtnCell'></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+
+		<$ if (data.location) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddEntry", {lbl:ZmMsg.location, val:data.location}) $><$ } $>
+		<$ if (data.equipment) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddEntry", {lbl:ZmMsg.resources, val:data.equipment}) $><$ } $>
+		<$ if (data.dateStr) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddEntry", {lbl:ZmMsg.date, val:data.dateStr}) $><$ } $>
+		<$ if (data.startDate) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddEntry", {lbl:ZmMsg.startDate, val:data.startDate}) $><$ } $>
+		<$ if (data.dueDate) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddEntry", {lbl:ZmMsg.dueDate, val:data.dueDate}) $><$ } $>
+		<$ if (data.priority) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddEntry", {lbl:ZmMsg.priority, val:data.priority}) $><$ } $>
+		<$ if (data.status) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddEntry", {lbl:ZmMsg.status, val:data.status}) $><$ } $>
+		<$ if (data.pComplete) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddEntry", {lbl:ZmMsg.percentComplete, val:data.pComplete}) $><$ } $>
+
+		<!-- exception warning -->
+		<$ if (data.isException) { $>
+		<tr valign='center'>
+			<td></td>
+			<td>
+				<table border=0>
+					<tr>
+						<td><$= AjxImg.getImageHtml("ApptException") $></td>
+						<td><b><$= ZmMsg.apptExceptionNote$></b></td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<$ } $>
+
+		<$ if (data.attendees && data.org) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddEntry", {lbl:ZmMsg.organizer, val:data.org}) $><$ } $>
+		<$ if (data.attendees && data.obo) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddEntry", {lbl:ZmMsg.onBehalfOf, val:data.obo}) $><$ } $>
+		<$ if (data.attendees) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddEntry", {lbl:ZmMsg.attendees, val:data.attendees}) $><$ } $>
+		<$ if (data.recurStr) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddEntry", {lbl:ZmMsg.repeats, val:data.recurStr}) $><$ } $>
+		<$ if (data.attachStr) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddEntry", {lbl:ZmMsg.attachments, val:data.attachStr}) $><$ } $>
+	</table>
+</template>
+
+<template id='ReadOnlyPrint'>
+	<div style='width: 100%; background-color: #EEEEEE'>
+		<table border=0 width=100%>
+			<tr>
+				<td><font size=+1><$= data.subject $></font></td>
+				<td align=right><font size=+1><$= data.dateStr $></font></td>
+			</tr>
+		</table>
+
+		<table border=0 width=100%>
+			<$ if (data.location) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddPrintEntry", {lbl:ZmMsg.location, val:data.location}) $><$ } $>
+			<$ if (data.equipment) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddPrintEntry", {lbl:ZmMsg.resources, val:data.equipment}) $><$ } $>
+			<$ if (data.organizer) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddPrintEntry", {lbl:ZmMsg.organizer, val:data.organizer}) $><$ } $>
+			<$ if (data.attendees) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddPrintEntry", {lbl:ZmMsg.attendees, val:data.attendees}) $><$ } $>
+			<$ if (data.recurStr) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddPrintEntry", {lbl:ZmMsg.repeats, val:data.recurStr}) $><$ } $>
+			<$ if (data.attachStr) { $><$= AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#AddPrintEntry", {lbl:ZmMsg.attachments, val:data.attachStr, noEncode:true }) $><$ } $>
+		</table>
+	</div>
+
+	<$ if (data.bodyPart) { $>
+		<div style='padding:10px; font-size:12px'><$= data.bodyPart $></div>
+	<$ } $>
+</template>
+
+<template id="AddEntry">
+	<tr>
+		<td width=100 class='LabelColName'><$= AjxStringUtil.htmlEncode(data.lbl) $>: </td>
+		<td class='LabelColValue'><$= data.val $></td>
+	</tr>
+</template>
+
+<template id="AddPrintEntry">
+	<tr>
+		<td valign=top style='text-align:right; font-size:14px'><$= data.lbl $>: </td>
+		<td width=100% style='font-size:14px'><$= data.noEncode ? data.val : AjxStringUtil.htmlEncode(data.val) $></td>
+	</tr>
+</template>

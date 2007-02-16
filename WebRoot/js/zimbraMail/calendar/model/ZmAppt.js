@@ -74,19 +74,20 @@ function() {
 
 // Getters
 ZmAppt.prototype.getAttendees			= function() { return this._attendees[ZmCalItem.PERSON]; };
+ZmAppt.prototype.getAttendeesText		= function() { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalItem.PERSON], ZmCalItem.PERSON); };
 ZmAppt.prototype.getEquipment			= function() { return this._attendees[ZmCalItem.EQUIPMENT]; };
 ZmAppt.prototype.getLocations			= function() { return this._attendees[ZmCalItem.LOCATION]; };
 ZmAppt.prototype.getOrigAttendees 		= function() { return this._origAttendees; };
 ZmAppt.prototype.getOrigLocations 		= function() { return this._origLocations; };
 ZmAppt.prototype.getOrigEquipment 		= function() { return this._origEquipment; };
-ZmAppt.prototype.getAttendeesText		= function() { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalItem.PERSON], ZmCalItem.PERSON); };
+ZmAppt.prototype.getParticipantStatusStr= function() { return ZmAppt._pstatusString[this.ptst]; };
+
+ZmAppt.prototype.getEquipmentText		= function(inclDispName) { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalItem.EQUIPMENT], ZmCalItem.EQUIPMENT, inclDispName); };
 ZmAppt.prototype.getLocationsText		= function(inclDispName) { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalItem.LOCATION], ZmCalItem.LOCATION, inclDispName); };
 ZmAppt.prototype.getLocation			= function(inclDispName) { return this.getLocationsText(inclDispName); };
-ZmAppt.prototype.getEquipmentText		= function(inclDispName) { return ZmApptViewHelper.getAttendeesString(this._attendees[ZmCalItem.EQUIPMENT], ZmCalItem.EQUIPMENT, inclDispName); };
 ZmAppt.prototype.getOrigLocationsText	= function(inclDispName) { return ZmApptViewHelper.getAttendeesString(this._origLocations, ZmCalItem.LOCATION, inclDispName); };
 ZmAppt.prototype.getOrigLocation		= function(inclDispName) { return this.getOrigLocationsText(inclDispName); };
 ZmAppt.prototype.getOrigEquipmentText	= function(inclDispName) { return ZmApptViewHelper.getAttendeesString(this._origEquipment, ZmCalItem.EQUIPMENT, inclDispName); };
-ZmAppt.prototype.getParticipantStatusStr= function() { return ZmAppt._pstatusString[this.ptst]; };
 
 ZmAppt.prototype.hasOtherAttendees 		= function() { return this.otherAttendees; };
 ZmAppt.prototype.hasAttendees =
