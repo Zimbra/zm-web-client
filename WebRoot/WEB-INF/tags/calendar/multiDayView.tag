@@ -2,6 +2,7 @@
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
 <%@ attribute name="numdays" rtexprvalue="true" required="true" %>
 <%@ attribute name="view" rtexprvalue="true" required="true" %>
+<%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -11,6 +12,7 @@
 <app:handleError>
     <fmt:message key="noSubject" var="noSubject"/>
     <zm:getMailbox var="mailbox"/>
+    <fmt:setTimeZone value="${timezone}"/>
     <c:set var="context" value="${null}"/>
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
 
@@ -39,7 +41,7 @@
         </c:otherwise>
     </c:choose>
 
-    <c:set var="today" value="${zm:getToday(mailbox.timeZone)}"/>
+    <c:set var="today" value="${zm:getToday(timezone)}"/>
     <c:set var="dayIncr" value="${(view eq 'workWeek') ? 7 : numdays}"/>
     <c:set var="prevDate" value="${zm:addDay(date, -dayIncr)}"/>
     <c:set var="nextDate" value="${zm:addDay(date,  dayIncr)}"/>
@@ -92,10 +94,10 @@
                                        ${fn:escapeXml(fname)}
                                    </c:when>
                                    <c:otherwise>
-                                       <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" rawdate="${zm:getCalendar(day.startTime, mailbox.timeZone)}"/>
+                                       <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" rawdate="${zm:getCalendar(day.startTime, timezone)}"/>
                                        <a href="${dayUrl}">
                                        <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
-                                       <fmt:formatDate value="${zm:getCalendar(day.startTime, mailbox.timeZone).time}" pattern="${titleFormat}"/>
+                                       <fmt:formatDate value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>
                                        </a>
                                    </c:otherwise>
                                </c:choose>
@@ -128,7 +130,7 @@
                                     <c:choose>
                                         <c:when test="${not empty cell.appt}">
                                             <div style='padding:1px'>
-                                            <app:dayAppt appt="${cell.appt}" start="${currentDay.timeInMillis}" end="${rangeEnd}" timezone="${mailbox.timeZone}"/>
+                                            <app:dayAppt appt="${cell.appt}" start="${currentDay.timeInMillis}" end="${rangeEnd}" timezone="${timezone}"/>
                                             </div>
                                         </c:when>
                                         <c:otherwise>
@@ -169,9 +171,7 @@
                         <tr height="100%">
                             <c:if test="${row.rowNum % 4 eq 0}">
                                 <td valign=top class='ZhCalDayHour' nowrap width=1% rowspan=4 style='border-left:none'>
-                                    <fmt:message key="CAL_DAY_HOUR_FORMAT">
-                                     <fmt:param value="${zm:getCalendar(row.time, mailbox.timeZone).time}"/>
-                                    </fmt:message>
+                                    <fmt:formatDate value="${row.date}" type="time" timeStyle="short"/>
                                 </td>
                             </c:if>
                             <c:choose>
@@ -197,7 +197,7 @@
                                 <c:choose>
                                     <c:when test="${not empty cell.appt and cell.isFirst}">
                                         <td <c:if test="${diffDay}">class='ZhCalDaySEP' </c:if> valign=top height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if><c:if test="${cell.rowSpan ne 1}"> rowspan='${cell.rowSpan}'</c:if>>
-                                            <app:dayAppt appt="${cell.appt}" start="${cell.day.startTime}" end="${cell.day.endTime}" timezone="${mailbox.timeZone}"/>
+                                            <app:dayAppt appt="${cell.appt}" start="${cell.day.startTime}" end="${cell.day.endTime}" timezone="${timezone}"/>
                                         </td>
                                     </c:when>
                                     <c:when test="${empty cell.appt}">

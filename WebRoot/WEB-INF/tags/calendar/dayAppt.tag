@@ -9,6 +9,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
+<fmt:setTimeZone value="${timezone}"/>
 <c:set var="color" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/>
 <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
 <c:choose>
@@ -24,26 +25,32 @@
         <table class='ZhCalDayAppt${needsAction ? 'New' : ''}' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
             <tr>
                 <td class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}' valign=top>
-                    <c:set var="startDate" value="${appt.startTime lt start ? 'L' : ''}"/>
-                     <fmt:message key="CAL_DAY_APPT_TOP${startDate}">
-                        <fmt:param value="${zm:getCalendar(appt.startTime, timezone).time}"/>
-                    </fmt:message>
+                    <c:choose>
+                        <c:when test="${appt.startTime lt start}">
+                            <fmt:formatDate value="${appt.startDate}" type="both" timeStyle="short" dateStyle="short"/>
+                        </c:when>
+                        <c:otherwise>
+                            <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
+                        </c:otherwise>
+                    </c:choose>
                 </td>
             </tr>
             <tr>
                 <td height=100% class='${color}${needsAction ? '' : 'Bg'}' valign=top>
-                    <fmt:message key="CAL_DAY_APPT_BODY">
-                        <fmt:param value="${fn:escapeXml(appt.name)}"/>
-                    </fmt:message>
+                    ${fn:escapeXml(appt.name)}
                 </td
             </tr>
             <c:if test="${appt.duration gt zm:MSECS_PER_HOUR()}">
             <tr>
                 <td align=left valign=bottom height=1% class='ZhCalDayApptEnd ${color}${needsAction ? '' : 'Bg'}'>
-                    <c:set var="endDate" value="${appt.endTime gt end ? 'L' : ''}"/>
-                    <fmt:message key="CAL_DAY_APPT_BOT${endDate}">
-                        <fmt:param value="${zm:getCalendar(appt.endTime, timezone).time}"/>
-                    </fmt:message>
+                    <c:choose>
+                        <c:when test="${appt.endTime gt end}">
+                            <fmt:formatDate value="${appt.endDate}" type="both" timeStyle="short" dateStyle="short"/>
+                        </c:when>
+                        <c:otherwise>
+                            <fmt:formatDate value="${appt.endDate}" type="time" timeStyle="short"/>
+                        </c:otherwise>
+                    </c:choose>                    
                 </td>
             </tr>
             </c:if>
@@ -53,10 +60,8 @@
         <table class='ZhCalDayAppt' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
             <tr>
                 <td class='${color}${needsAction ? 'Dark' : 'Light'}' valign=top>
-                    <fmt:message key="CAL_DAY_APPT30">
-                        <fmt:param value="${zm:getCalendar(appt.startTime, timezone).time}"/>
-                        <fmt:param value="${fn:escapeXml(appt.name)}"/>
-                    </fmt:message>
+                    <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
+                     &nbsp; ${fn:escapeXml(appt.name)}
                 </td>
             </tr>
         </table>

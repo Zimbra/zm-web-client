@@ -8,6 +8,8 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+
+<fmt:setTimeZone value="${timezone}"/>
 <c:set var="color" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/>
 <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
 <c:choose>
@@ -21,11 +23,17 @@
     </c:when>
     <c:otherwise>
         <div class='ZhCalMonthAppt ${color}${needsAction ? 'DarkC' : 'C'}'>
-            <c:set var="startDate" value="${appt.startTime lt start ? 'S' : ''}"/>
-            <fmt:message key="CAL_MONTH_APPT${startDate}">
-                <fmt:param value="${zm:getCalendar(appt.startTime, timezone).time}"/>
-                <fmt:param value="${fn:escapeXml(appt.name)}"/>
-            </fmt:message>
+            &bull;&nbsp;
+            <c:choose>
+                <c:when test="${appt.startTime lt start}">
+                    <fmt:formatDate value="${appt.startDate}" type="date" dateStyle="short"/>
+                </c:when>
+                <c:otherwise>
+                    <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
+                </c:otherwise>
+            </c:choose>
+            &nbsp;
+                ${fn:escapeXml(appt.name)}
         </div>
     </c:otherwise>
 </c:choose>

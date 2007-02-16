@@ -52,9 +52,7 @@
                 <select name="zimbraPrefCalendarDayHourStart">
                     <c:forEach var="h" begin="0" end="23">
                         <option value="${h}" <c:if test="${h eq hour}"> selected</c:if>>
-                            <fmt:message key="CAL_DAY_HOUR_FORMAT">
-                                <fmt:param value="${zm:getTodayHour(h, mailbox.timeZone).time}"/>
-                            </fmt:message>
+                             <fmt:formatDate value="${zm:getTodayHour(h, null).time}" type="time" timeStyle="short"/>
                         </option>
                     </c:forEach>
                 </select>
@@ -70,9 +68,7 @@
                 <select name="zimbraPrefCalendarDayHourEnd">
                     <c:forEach var="h" begin="1" end="24">
                         <option value="${h}" <c:if test="${h eq hour}"> selected</c:if>>
-                            <fmt:message key="CAL_DAY_HOUR_FORMAT">
-                                <fmt:param value="${zm:getTodayHour(h % 24, mailbox.timeZone).time}"/>
-                            </fmt:message>
+                            <fmt:formatDate value="${zm:getTodayHour(h % 24, null).time}" type="time" timeStyle="short"/>
                         </option>
                     </c:forEach>
                 </select>

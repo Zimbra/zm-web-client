@@ -17,6 +17,7 @@
         <c:param name='view' value='${view}'/>
     </c:if>
     <c:if test="${not empty param.numdays and view eq 'day'}"><c:param name='numdays' value='${param.numdays}'/></c:if>
+    <c:if test="${not empty param.tz}"><c:param name='tz' value='${param.tz}'/></c:if>
     <c:choose>
         <c:when test="${not empty rawdate}">
             <c:param name='date'><fmt:formatDate value="${rawdate.time}" pattern="yyyyMMdd"/></c:param>

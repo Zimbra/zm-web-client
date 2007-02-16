@@ -1,5 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar" %>
+<%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -9,6 +10,7 @@
 <app:handleError>
     <fmt:message key="noSubject" var="noSubject"/>
     <zm:getMailbox var="mailbox"/>
+    <fmt:setTimeZone value="${timezone}"/>
     <c:set var="context" value="${null}"/>
     <fmt:message var="dayFormat" key="CAL_MONTH_DAY_FORMAT"/>
     <fmt:message var="dayMonthChangeFormat" key="CAL_MONTH_DAY_MONTH_CHANGE_FORMAT"/>
@@ -16,7 +18,7 @@
     <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
     <jsp:useBean id="dateSymbols" scope="request" class="java.text.DateFormatSymbols" />
     <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
-    <c:set var="today" value="${zm:getToday(mailbox.timeZone)}"/>
+    <c:set var="today" value="${zm:getToday(timezone)}"/>
     <c:set var="prevDate" value="${zm:addMonth(date, -1)}"/>
     <c:set var="nextDate" value="${zm:addMonth(date,  1)}"/>
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
@@ -71,7 +73,7 @@
                                         <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
                                         <c:set var="dayEnd" value="${currentDay.timeInMillis+zm:MSECS_PER_DAY()}"/>
                                         <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
-                                            <tr><td><app:monthAppt appt="${appt}" start="${dayStart}" end="${dayEnd}" timezone="${mailbox.timeZone}"/></td></tr>
+                                            <tr><td><app:monthAppt appt="${appt}" start="${dayStart}" end="${dayEnd}" timezone="${timezone}"/></td></tr>
                                             <c:set var="count" value="${count+1}"/>
                                         </zm:forEachAppoinment>
                                         <c:if test="${dowStatus.first and count lt 4}">

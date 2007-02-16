@@ -15,7 +15,7 @@
 
     <fmt:message var="dayFormat" key="CAL_MINICAL_DAY_FORMAT"/>
     <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
-    <c:set var="today" value="${zm:getToday(mailbox.timeZone)}"/>
+    <c:set var="today" value="${zm:getToday(not empty requestScope.tz ? requestScope.tz : mailbox.timeZone)}"/>
     <c:set var="rangeStart" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, view).timeInMillis}"/>
     <c:choose>
         <c:when test="${view eq 'week' or view eq 'workWeek'}">
