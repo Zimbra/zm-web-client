@@ -135,7 +135,6 @@ function(callback) {
 
 ZmVoicemailApp.prototype.activate =
 function(active, view) {
-	this.getVoicemailController().activate();
 };
 
 ZmVoicemailApp.prototype.getVoicemailController = function() {

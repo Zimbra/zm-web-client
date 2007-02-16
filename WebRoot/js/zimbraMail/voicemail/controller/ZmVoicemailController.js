@@ -28,7 +28,6 @@ function ZmVoicemailController(appCtxt, container, app) {
 	ZmListController.call(this, appCtxt, container, app);
 
 	this._soundPlayer = null;
-	this._activated = false;
 	this._folder = null;
 	this._hasPlayedSound = false;
 
@@ -71,17 +70,15 @@ function(searchResult, callType) {
 	this._showSoundPlayer();
 };
 
-ZmVoicemailController.prototype.activate =
-function(searchResult) {
-	this._activated = true;
-	this._showSoundPlayer();
-};
-
 ZmVoicemailController.prototype._showSoundPlayer =
 function() {
 	if (this._soundPlayer) {
-		var visible = this._activated && (this._callType == ZmVoicemailFolder.VOICEMAIL);
-		this._soundPlayer.setVisible(visible);
+		var visible = this._callType == ZmVoicemailFolder.VOICEMAIL;
+		if (visible) {
+			this._soundPlayer.setLocation(0, 0);
+		} else {
+			this._soundPlayer.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+		}
 	}
 };
 
@@ -137,7 +134,8 @@ function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 	if (!this._soundPlayer) {
 		this._toolbar[view].getButton(ZmOperation.CHECK_MAIL).setText(ZmMsg.checkVoicemail);
-		this._soundPlayer = DwtSoundPlayer.create(this._toolbar[view], 200, 16, true);
+		this._soundPlayer = DwtSoundPlayer.create(this._toolbar[view], 200, 16, true, null, DwtControl.RELATIVE_STYLE);
+		this._soundPlayer.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 		if (this._soundPlayer.isPluginMissing) {
 			this._soundPlayer.addHelpListener(new AjxListener(this, this._pluginHelpListener));
 		}
