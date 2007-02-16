@@ -56,9 +56,6 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 						 node:			"w",
 						 organizer:		ZmOrganizer.NOTEBOOK,
 						 searchType:	"wiki",
-						 stbNameKey:	"searchNotebooks",
-						 stbTooltipKey:	"searchForPages",
-						 stbIcon:		"SearchNotes",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("NotebookCore");
@@ -100,6 +97,12 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 							 deferrable:		true
 							});
 
+	ZmSearchToolBar.addMenuItem(ZmItem.PAGE,
+								{msgKey:		"searchNotebooks",
+								 tooltipKey:	"searchForPages",
+								 icon:			"SearchNotes"
+								});
+
 	ZmApp.registerApp(ZmApp.NOTEBOOK,
 							 {mainPkg:				"Notebook",
 							  nameKey:				"BETA_documents",
@@ -118,8 +121,6 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 							  chooserSort:			50,
 							  defaultSort:			30
 							  });
-
-	ZmSearchToolBar.MENU_ITEMS.push(ZmItem.PAGE);
 }
 
 // Organizer and item-related constants

@@ -38,9 +38,6 @@ function ZmVoicemailApp(appCtxt, container, parentController) {
 						 node:			"v",
 						 organizer:		ZmOrganizer.VOICEMAIL,
 						 searchType:	"voicemail",
-						 stbNameKey:	"searchVoicemails",
-						 stbTooltipKey:	"searchForVoicemails",
-						 stbIcon:		"SearchVoicemails",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("Voicemail");

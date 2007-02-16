@@ -58,10 +58,7 @@ function ZmCalendarApp(appCtxt, container) {
 						 icon:			"Appointment",
 						 itemClass:		"ZmAppt",
 						 organizer:		ZmOrganizer.CALENDAR,
-						 searchType:	"appointment",
-						 stbNameKey:	"searchCalendar",
-						 stbTooltipKey:	"searchForAppts",
-						 stbIcon:		"CalendarFolder"
+						 searchType:	"appointment"
 						});
 
 	ZmItem.registerItem(ZmItem.RESOURCE,

@@ -61,9 +61,6 @@ function ZmContactsApp(appCtxt, container, parentController) {
 						 node:			"cn",
 						 organizer:		ZmOrganizer.ADDRBOOK,
 						 searchType:	"contact",
-						 stbNameKey:	"searchContacts",
-						 stbTooltipKey:	"searchPersonalContacts",
-						 stbIcon:		"SearchContacts",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("ContactsCore");
@@ -97,6 +94,28 @@ function ZmContactsApp(appCtxt, container, parentController) {
 							 deferrable:		true
 							});
 
+	ZmSearchToolBar.addMenuItem(ZmItem.CONTACT,
+								{msgKey:		"searchContacts",
+								 tooltipKey:	"searchPersonalContacts",
+								 icon:			"SearchContacts"
+								});
+
+	ZmSearchToolBar.FOR_PAS_MI 	= "FOR PAS";
+	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_PAS_MI,
+								{msgKey:		"searchPersonalAndShared",
+								 tooltipKey:	"searchPersonalAndShared",
+								 icon:			"SearchSharedContacts",
+								 setting:		ZmSetting.SHARING_ENABLED
+								});
+
+	ZmSearchToolBar.FOR_GAL_MI 	= "FOR GAL";
+	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_PAS_MI,
+								{msgKey:		"searchGALContacts",
+								 tooltipKey:	"searchGALContacts",
+								 icon:			"SearchGAL",
+								 setting:		ZmSetting.GAL_ENABLED
+								});
+
 	ZmApp.registerApp(ZmApp.CONTACTS,
 							 {mainPkg:				"Contacts",
 							  nameKey:				"addressBook",
@@ -117,20 +136,6 @@ function ZmContactsApp(appCtxt, container, parentController) {
 							  chooserSort:			20,
 							  defaultSort:			40
 							  });
-
-	ZmSearchToolBar.FOR_PAS_MI 	= "FOR PAS";
-	ZmSearchToolBar.FOR_GAL_MI	= "FOR GAL";
-	ZmSearchToolBar.SETTING[ZmSearchToolBar.FOR_PAS_MI]		= ZmSetting.SHARING_ENABLED;
-	ZmSearchToolBar.SETTING[ZmSearchToolBar.FOR_GAL_MI]		= ZmSetting.GAL_ENABLED;
-	ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_PAS_MI]		= "searchPersonalAndShared";
-	ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_GAL_MI]		= "searchGALContacts";
-	ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_PAS_MI]	= "searchPersonalAndShared";
-	ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_GAL_MI]	= "searchGALContacts";
-	ZmSearchToolBar.ICON[ZmSearchToolBar.FOR_PAS_MI]		= "SearchSharedContacts";
-	ZmSearchToolBar.ICON[ZmSearchToolBar.FOR_GAL_MI]		= "SearchGAL";
-	ZmSearchToolBar.MENU_ITEMS.push(ZmItem.CONTACT);
-	ZmSearchToolBar.MENU_ITEMS.push(ZmSearchToolBar.FOR_PAS_MI);
-	ZmSearchToolBar.MENU_ITEMS.push(ZmSearchToolBar.FOR_GAL_MI);
 
 	this._initialized = false;
 };

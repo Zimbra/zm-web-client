@@ -47,7 +47,7 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
     var menu = new DwtMenu(menuParent, null, "ActionMenu");
     menuParent.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 
-	ZmSearchToolBar.MENU_ITEMS.push(ZmSearchToolBar.FOR_ANY_MI);
+	ZmSearchToolBar.MENU_ITEMS.push(ZmSearchToolBar.FOR_ANY_MI);	// "All" comes last
 	for (var i = 0; i < ZmSearchToolBar.MENU_ITEMS.length; i++){
 		var id = ZmSearchToolBar.MENU_ITEMS[i];
 		if (id == ZmSearchToolBar.FOR_ANY_MI) {
@@ -117,6 +117,15 @@ function() {
 };
 
 // Public methods
+
+ZmSearchToolBar.addMenuItem =
+function(id, params) {
+	if (params.msgKey)		{ ZmSearchToolBar.MSG_KEY[id]		= params.msgKey; }
+	if (params.tooltipKey)	{ ZmSearchToolBar.TT_MSG_KEY[id]	= params.tooltipKey; }
+	if (params.icon)		{ ZmSearchToolBar.ICON[id]			= params.icon; }
+	if (params.setting)		{ ZmSearchToolBar.SETTING[id]		= params.setting; }
+	ZmSearchToolBar.MENU_ITEMS.push(id);
+};
 
 ZmSearchToolBar.prototype.getSearchField =
 function() {

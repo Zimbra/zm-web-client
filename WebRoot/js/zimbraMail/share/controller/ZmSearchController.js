@@ -148,25 +148,19 @@ function(enabled) {
 }
 
 /**
-* Provides a programmatic way to set the search type. So that it doesn't override a user's
-* choice, it only works if there's a current system-set default, or the "force" flag is set.
-* Any time a user chooses a type through the menu, the default is cleared.
-*
-* @param type		the search type to set as the default
-* @param force		override user choice
-*/
+ * Provides a programmatic way to set the search type.
+ *
+ * @param type		the search type to set as the default
+ */
 ZmSearchController.prototype.setDefaultSearchType =
-function(type, force) {
-	if (this._defaultSearchType || force) {
-		if (this._searchToolBar) {
-			var menu = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON).getMenu();
-			this._preventSearch = true;
-			menu.checkItem(ZmSearchToolBar.MENUITEM_ID, type);
-			this._preventSearch = false;
-		}
-		this._defaultSearchType = type;
+function(type) {
+	if (this._searchToolBar) {
+		var menu = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON).getMenu();
+		this._preventSearch = true;
+		menu.checkItem(ZmSearchToolBar.MENUITEM_ID, type);
+		this._preventSearch = false;
 	}
-}
+};
 
 ZmSearchController.prototype._setView =
 function() {
@@ -527,12 +521,10 @@ function(ev) {
 	var btn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
 	btn.setText(ev.item.getText());
 
-	// clear system default now that user has spoken
-	this._defaultSearchType = null;
-
-	if (!this._preventSearch)
+	if (!this._preventSearch) {
 		this._searchButtonListener(ev);
-}
+	}
+};
 
 /*
 * Selects the appropriate item in the overview based on the search. Selection only happens

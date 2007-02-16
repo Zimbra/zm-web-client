@@ -108,6 +108,13 @@ function ZmMailApp(appCtxt, container, parentController) {
 		}, this)
 						});
 
+	ZmSearchToolBar.FOR_MAIL_MI = "FOR MAIL";
+	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_MAIL_MI,
+								{msgKey:		"searchMail",
+								 tooltipKey:	"searchMail",
+								 icon:			"SearchMail"
+								});
+
 	ZmApp.registerApp(ZmApp.MAIL,
 							 {mainPkg:				"Mail",
 							  nameKey:				"mail",
@@ -129,11 +136,6 @@ function ZmMailApp(appCtxt, container, parentController) {
 							  chooserSort:			10,
 							  defaultSort:			10
 							  });
-
-	ZmSearchToolBar.FOR_MAIL_MI = "FOR MAIL";
-	ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_MAIL_MI]	= "searchMail";
-	ZmSearchToolBar.ICON[ZmSearchToolBar.FOR_MAIL_MI]		= "SearchMail";
-	ZmSearchToolBar.MENU_ITEMS.push(ZmSearchToolBar.FOR_MAIL_MI);
 };
 
 // Organizer and item-related constants

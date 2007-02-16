@@ -147,9 +147,6 @@ ZmItem.DND_ACTION_BOTH = ZmItem.DND_ACTION_MOVE | ZmItem.DND_ACTION_COPY;
  * @param node			[string]	SOAP response node for this item
  * @param organizer		[constant]	associated organizer
  * @param searchType	[string]	associated type in SearchRequest
- * @param stbNameKey	[string]	key for item name in search toolbar
- * @param stbTooltipKey	[string]	key for item tooltip in search toolbar
- * @param stbIcon		[string]	icon class for item in search toolbar
  * @param resultsList	[function]	function that returns a ZmList for
  * 									holding search results of this type
  */
@@ -163,9 +160,6 @@ function(item, params) {
 	if (params.node)			{ ZmList.NODE[item]					= params.node; }
 	if (params.organizer)		{ ZmOrganizer.ITEM_ORGANIZER[item]	= params.organizer; }
 	if (params.searchType)		{ ZmSearch.TYPE[item]				= params.searchType; }
-	if (params.stbNameKey)		{ ZmSearchToolBar.MSG_KEY[item]		= params.stbNameKey; }
-	if (params.stbTooltipKey)	{ ZmSearchToolBar.TT_MSG_KEY[item]	= params.stbTooltipKey; }
-	if (params.stbIcon)			{ ZmSearchToolBar.ICON[item]		= params.stbIcon; }
 	if (params.resultsList)		{ ZmItem.RESULTS_LIST[item]			= params.resultsList; }
 	
 	if (params.node) {
