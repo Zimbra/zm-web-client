@@ -127,6 +127,7 @@ ZmOperation.registerOp("SHARE", {textKey:"share", tooltipKey:"shareTooltip"});
 ZmOperation.registerOp("SHARE_ACCEPT", {textKey:"acceptShare", image:"Check"});
 ZmOperation.registerOp("SHARE_DECLINE", {textKey:"declineShare", image:"Cancel"});
 ZmOperation.registerOp("SHARE_FOLDER", {textKey:"shareFolder", image:"Folder"});
+ZmOperation.registerOp("SHOW_ALL_ITEM_TYPES", {textKey:"showAllItemTypes", image:"Globe"});
 ZmOperation.registerOp("SHOW_ALL_MENU", {textKey:"showAllItemTypes", image:"Globe"});
 ZmOperation.registerOp("SPELL_CHECK", {textKey:"spellCheck", image:"SpellCheck"});
 ZmOperation.registerOp("SYNC", {textKey:"reload", image:"Refresh"});

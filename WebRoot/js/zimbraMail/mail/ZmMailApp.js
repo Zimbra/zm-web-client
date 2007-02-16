@@ -57,6 +57,7 @@ function ZmMailApp(appCtxt, container, parentController) {
 	ZmOperation.registerOp("NEW_MESSAGE", {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage"});
 	ZmOperation.registerOp("SAVE_DRAFT", {textKey:"saveDraft", tooltipKey:"saveDraftTooltip", image:"DraftFolder"});
 	ZmOperation.registerOp("SHOW_BCC", {textKey:"showBcc"});
+	ZmOperation.registerOp("SHOW_ONLY_MAIL", {textKey:"showOnlyMail", image:"Conversation"});
 	ZmOperation.registerOp("SHOW_ORIG", {textKey:"showOrig", image:"Message"});
 	ZmOperation.registerOp("SPAM", {textKey:"junk", tooltipKey:"junkTooltip", image:"SpamFolder"});
 

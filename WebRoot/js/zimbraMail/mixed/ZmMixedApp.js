@@ -29,10 +29,6 @@ function ZmMixedApp(appCtxt, container) {
 
 	AjxDispatcher.registerMethod("GetMixedController", "Mixed", new AjxCallback(this, this.getMixedController));
 
-	ZmOperation.registerOp("SHOW_ALL_ITEM_TYPES", {textKey:"showAllItemTypes", image:"Globe"});
-	ZmOperation.registerOp("SHOW_ONLY_CONTACTS", {textKey:"showOnlyContacts", image:"Contact"});
-	ZmOperation.registerOp("SHOW_ONLY_MAIL", {textKey:"showOnlyMail", image:"Conversation"});
-
 	ZmItem.registerItem(ZmItem.MIXED,
 						{app:			ZmApp.MIXED});
 
