@@ -56,6 +56,7 @@ function ZmTasksApp(appCtxt, container) {
 							 orgPackage:		"TasksCore",
 							 treeController:	"ZmTaskTreeController",
 							 labelKey:			"tasks",
+							 hasColor:			true,
 							 defaultColor:		ZmOrganizer.C_GRAY,
 							 views:				["task"],
 							 createFunc:		"ZmOrganizer.create",

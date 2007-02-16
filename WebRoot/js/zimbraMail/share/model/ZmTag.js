@@ -111,11 +111,13 @@ function(color) {
 
 ZmTag.create =
 function(appCtxt, params) {
-	var color = ZmOrganizer.checkColor(params.color);
 	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:zimbraMail");
 	var tagNode = soapDoc.set("tag");
 	tagNode.setAttribute("name", AjxEnv.isSafari ? AjxStringUtil.xmlEncode(params.name) : params.name);
-	tagNode.setAttribute("color", color);
+	var color = ZmOrganizer.checkColor(params.color);
+	if (color && (color != ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG])) {
+		tagNode.setAttribute("color", color);
+	}
 	var errorCallback = new AjxCallback(null, ZmTag._handleErrorCreate, [appCtxt, params]);
 	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
 };

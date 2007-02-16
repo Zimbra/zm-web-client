@@ -85,6 +85,7 @@ function ZmCalendarApp(appCtxt, container) {
 							 orgPackage:		"CalendarCore",
 							 treeController:	"ZmCalendarTreeController",
 							 labelKey:			"calendars",
+							 hasColor:			true,
 							 views:				["appointment"],
 							 folderKey:			"calendarFolder",
 							 mountKey:			"mountCalendar",

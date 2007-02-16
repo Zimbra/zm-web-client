@@ -74,21 +74,22 @@ function ZmOrganizer(params) {
 	this.children = new AjxVector();
 };
 
-// organizer types
+// global organizer types
 ZmOrganizer.FOLDER				= ZmEvent.S_FOLDER;
 ZmOrganizer.TAG					= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
 ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 
+// keys for org names
 ZmOrganizer.MSG_KEY = {};
 ZmOrganizer.MSG_KEY[ZmOrganizer.FOLDER]		= "folder";
 ZmOrganizer.MSG_KEY[ZmOrganizer.TAG]		= "tag";
 ZmOrganizer.MSG_KEY[ZmOrganizer.SEARCH]		= "savedSearch";
 
-// Primary organizer for items
+// primary organizer for item types
 ZmOrganizer.ITEM_ORGANIZER = {};
 
-// defined in com.zimbra.cs.mailbox.Mailbox
+// folder IDs defined in com.zimbra.cs.mailbox.Mailbox
 ZmOrganizer.ID_ROOT				= 1;
 ZmOrganizer.ID_INBOX			= 2;
 ZmOrganizer.ID_TRASH			= 3;
@@ -104,14 +105,17 @@ ZmOrganizer.ID_ZIMLET			= -1000;  // zimlets need a range.  start from -1000 inc
 ZmOrganizer.ID_ROSTER_LIST		= -11;
 ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 
+// default folder for org type
 ZmOrganizer.DEFAULT_FOLDER = {};
 ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.FOLDER]		= ZmOrganizer.ID_INBOX;
 
+// SOAP command for modifying an org
 ZmOrganizer.SOAP_CMD = {};
 ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.TAG]		= "TagAction";
 ZmOrganizer.SOAP_CMD[ZmOrganizer.SEARCH]	= "FolderAction";
 
+// lowest valid user ID for an org type
 ZmOrganizer.FIRST_USER_ID = {};
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]	= 256;
 ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]		= 64;
@@ -127,12 +131,14 @@ ZmOrganizer.F_SHARES	= "shares";
 ZmOrganizer.F_FLAGS		= "flags";
 ZmOrganizer.F_REST_URL	= "rest";
 
+// server representation of org flags
 ZmOrganizer.FLAG_CHECKED			= "#";
 ZmOrganizer.FLAG_IMAP_SUBSCRIBED	= "*";
 ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY	= "b";
 ZmOrganizer.ALL_FLAGS = [ZmOrganizer.FLAG_CHECKED, ZmOrganizer.FLAG_IMAP_SUBSCRIBED,
 						 ZmOrganizer.FLAG_EXCLUDE_FREE_BUSY];
 
+// org property for each flag
 ZmOrganizer.FLAG_PROP = {};
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_CHECKED]				= "isChecked";
 ZmOrganizer.FLAG_PROP[ZmOrganizer.FLAG_IMAP_SUBSCRIBED]		= "imapSubscribed";
@@ -146,8 +152,7 @@ ZmOrganizer.VALID_NAME_RE = new RegExp('^' + ZmOrganizer.VALID_NAME_CHARS + '+$'
 ZmOrganizer.MAX_NAME_LENGTH			= 128;	// max allowed by server
 ZmOrganizer.MAX_DISPLAY_NAME_LENGTH	= 30;	// max we will show
 
-// colors - these are the server values
-ZmOrganizer.C_ORANGE	= 0;
+// color constants (server stores a number)
 ZmOrganizer.C_BLUE		= 1;
 ZmOrganizer.C_CYAN		= 2;
 ZmOrganizer.C_GREEN		= 3;
@@ -156,7 +161,8 @@ ZmOrganizer.C_RED		= 5;
 ZmOrganizer.C_YELLOW	= 6;
 ZmOrganizer.C_PINK		= 7;
 ZmOrganizer.C_GRAY		= 8;
-ZmOrganizer.MAX_COLOR	= ZmOrganizer.C_GRAY;
+ZmOrganizer.C_ORANGE	= 9;
+ZmOrganizer.MAX_COLOR	= ZmOrganizer.C_ORANGE;
 ZmOrganizer.ORG_DEFAULT_COLOR = ZmOrganizer.C_ORANGE;
 
 // color names
@@ -171,18 +177,24 @@ ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_YELLOW]	= ZmMsg.yellow;
 ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_PINK]		= ZmMsg.pink;
 ZmOrganizer.COLOR_TEXT[ZmOrganizer.C_GRAY]		= ZmMsg.gray;
 
+// list of colors and text for populating a color select menu
 ZmOrganizer.COLORS = [];
 ZmOrganizer.COLOR_CHOICES = [];
-for (var i = 0; i <= ZmOrganizer.MAX_COLOR; i++) {
-	var color = ZmOrganizer.COLOR_TEXT[i];
-	ZmOrganizer.COLORS.push(color);
-	ZmOrganizer.COLOR_CHOICES.push( { value:i, label:color } );
-}
-delete i;
+(function() {
+	for (var i = 1; i <= ZmOrganizer.MAX_COLOR; i++) {
+		var color = ZmOrganizer.COLOR_TEXT[i];
+		ZmOrganizer.COLORS.push(color);
+		ZmOrganizer.COLOR_CHOICES.push( { value:i, label:color } );
+	}
+})();
 
+// whether an org uses colors
+ZmOrganizer.HAS_COLOR = {};
+
+// default color for each org type
 ZmOrganizer.DEFAULT_COLOR = {};
-ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.FOLDER]	= null;
-ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.SEARCH]	= null;
+ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.FOLDER]	= ZmOrganizer.ORG_DEFAULT_COLOR;
+ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.SEARCH]	= ZmOrganizer.ORG_DEFAULT_COLOR;
 ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG]		= ZmOrganizer.ORG_DEFAULT_COLOR;
 
 // App responsible for organizer
@@ -201,6 +213,7 @@ ZmOrganizer.CREATE_FUNC[ZmOrganizer.FOLDER]	= "ZmOrganizer.create";
 ZmOrganizer.CREATE_FUNC[ZmOrganizer.TAG]	= "ZmTag.create";
 ZmOrganizer.CREATE_FUNC[ZmOrganizer.SEARCH]	= "ZmSearchFolder.create";
 
+// msg key for text for tree view header item
 ZmOrganizer.LABEL = {};
 ZmOrganizer.LABEL[ZmOrganizer.FOLDER]	= "folders";
 ZmOrganizer.LABEL[ZmOrganizer.TAG]		= "tags";
@@ -238,13 +251,14 @@ ZmOrganizer.DEFERRABLE = {};
  * @param orgPackage		[string]	name of smallest package with org class
  * @param treeController	[string]	name of associated tree controller
  * @param labelKey			[string]	msg key for label in overview
+ * @param hasColor			[boolean]	true if org has color associated with it
  * @param defaultColor		[constant]	default color for org in overview
  * @param views				[string]	associated folder views (JSON)
  * @param folderKey			[string]	msg key for folder props dialog
  * @param mountKey			[string]	msg key for folder mount dialog
  * @param createFunc		[string]	name of function for creating this org
  * @param compareFunc		[string]	name of function for comparing instances of this org
- * @param deferrable		[boolean]	creation can be deferred to app launch
+ * @param deferrable		[boolean]	true if creation can be deferred to app launch
  */
 ZmOrganizer.registerOrg =
 function(org, params) {
@@ -257,14 +271,18 @@ function(org, params) {
 	if (params.orgPackage)		{ ZmOrganizer.ORG_PACKAGE[org]			= params.orgPackage;}
 	if (params.treeController)	{ ZmOverviewController.CONTROLLER[org]	= params.treeController;}
 	if (params.labelKey)		{ ZmOrganizer.LABEL[org]				= params.labelKey;}
+	if (params.hasColor)		{ ZmOrganizer.HAS_COLOR[org]			= params.hasColor;}
 	if (params.views)			{ ZmOrganizer.VIEWS[org]				= params.views;}
 	if (params.folderKey)		{ ZmOrganizer.FOLDER_KEY[org]			= params.folderKey;}
 	if (params.mountKey)		{ ZmOrganizer.MOUNT_KEY[org]			= params.mountKey;}
 	if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc;}
 	if (params.deferrable)		{ ZmOrganizer.DEFERRABLE[org]			= params.deferrable;}
 
-	ZmOrganizer.DEFAULT_COLOR[org]	= params.defaultColor || ZmOrganizer.ORG_DEFAULT_COLOR;
 	ZmOrganizer.CREATE_FUNC[org]	= params.createFunc || "ZmOrganizer.create";
+
+	if (params.hasColor) {
+		ZmOrganizer.DEFAULT_COLOR[org]	= params.defaultColor || ZmOrganizer.ORG_DEFAULT_COLOR;
+	}
 };
 
 ZmOrganizer.sortCompare = function(organizerA, organizerB) {};
@@ -293,7 +311,10 @@ function(appCtxt, params) {
 		if (i == "name") {
 			value = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(value) : value;
 		} else if (i == "color") {
-			value = value || ZmOrganizer.DEFAULT_COLOR[type];
+			// no need to save color if missing or default
+			if (!value || (value == ZmOrganizer.DEFAULT_COLOR[type])) {
+				value = null;
+			}
 		}
 		if (value) {
 			folderNode.setAttribute(i, value);
@@ -606,7 +627,10 @@ function(name, callback, errorCallback) {
 ZmOrganizer.prototype.setColor =
 function(color, callback, errorCallback) {
 	var color = ZmOrganizer.checkColor(color);
-	if (this.color == color) return;
+	if (this.color == color) { return; }
+	if (color == ZmOrganizer.DEFAULT_COLOR[this.type]) {
+		color = 0;
+	}
 	this._organizerAction({action: "color", attrs: {color: color}, callback: callback, errorCallback: errorCallback});
 };
 

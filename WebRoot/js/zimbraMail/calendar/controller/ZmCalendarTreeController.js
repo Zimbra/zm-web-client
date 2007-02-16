@@ -38,7 +38,6 @@ ZmCalendarTreeController = function(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.MOUNT_CALENDAR] = new AjxListener(this, this._mountCalListener);
 
 	this._eventMgrs = {};
-	this.usesColors = true;
 }
 
 ZmCalendarTreeController.prototype = new ZmTreeController;
@@ -168,30 +167,12 @@ function(ev, treeView, overviewId) {
 
 	if (ev.type != this.type) return;
 	
-	var organizers = ev.getDetail("organizers");
-	if (!organizers && ev.source)
-		organizers = [ev.source];
-
-	for (var i = 0; i < organizers.length; i++) {
-		var organizer = organizers[i];
-		var id = organizer.id;
-		var node = treeView.getTreeItemById(id);
-		if (!node) continue;
-
-		var fields = ev.getDetail("fields") || {};
-		// NOTE: ZmTreeController#_changeListener re-inserts the node if the 
-		//		 name changes so we need to reset the color in that case, too.
-		if (ev.event == ZmEvent.E_CREATE || 
-			(ev.event == ZmEvent.E_MODIFY && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]))) {
-			var object = node.getData(Dwt.KEY_OBJECT);
-			this._setTreeItemColor(node, object.color);
-		}
-		if (ev.event == ZmEvent.E_CREATE || (ev.event == ZmEvent.E_MODIFY && fields[ZmOrganizer.F_FLAGS])) {
-			var app = this._appCtxt.getApp(ZmApp.CALENDAR);
-			var controller = app.getCalController();
-			controller._updateCheckedCalendars();
-			controller._refreshAction(true);
-		}
+	var fields = ev.getDetail("fields") || {};
+	if (ev.event == ZmEvent.E_CREATE || (ev.event == ZmEvent.E_MODIFY && fields[ZmOrganizer.F_FLAGS])) {
+		var app = this._appCtxt.getApp(ZmApp.CALENDAR);
+		var controller = app.getCalController();
+		controller._updateCheckedCalendars();
+		controller._refreshAction(true);
 	}
 };
 

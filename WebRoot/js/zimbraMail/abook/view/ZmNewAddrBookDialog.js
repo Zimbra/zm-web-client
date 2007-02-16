@@ -46,7 +46,7 @@ function() {
 // overload since we always want to init the color to grey
 ZmNewAddrBookDialog.prototype._initColorSelect =
 function() {
-	var option = this._colorSelect.getOptionWithValue(ZmOrganizer.C_GRAY);
+	var option = this._colorSelect.getOptionWithValue(ZmOrganizer.DEFAULT_COLOR[this._organizerType]);
 	this._colorSelect.setSelectedOption(option);
 };
 

@@ -33,7 +33,6 @@ function ZmTaskTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.MOUNT_TASKFOLDER] = new AjxListener(this, this._mountTaskFolderListener);
 
 	this._eventMgrs = {};
-	this.usesColors = true;
 }
 
 ZmTaskTreeController.prototype = new ZmFolderTreeController;
@@ -110,34 +109,6 @@ function(ev) {
 ZmTaskTreeController.prototype._mountTaskFolderListener =
 function(ev) {
 	this._appCtxt.getMountFolderDialog().popup(ZmOrganizer.TASKS);
-};
-
-ZmTaskTreeController.prototype._changeListener =
-function(ev, treeView, overviewId) {
-	ZmFolderTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
-
-	if (ev.type != this.type) return;
-
-	var organizers = ev.getDetail("organizers");
-	if (!organizers && ev.source)
-		organizers = [ev.source];
-
-	for (var i = 0; i < organizers.length; i++) {
-		var organizer = organizers[i];
-		var id = organizer.id;
-		var node = treeView.getTreeItemById(id);
-		if (!node) continue;
-
-		var fields = ev.getDetail("fields");
-		// NOTE: ZmTreeController#_changeListener re-inserts the node if the
-		//		 name changes so we need to reset the color in that case, too.
-		if (ev.event == ZmEvent.E_CREATE ||
-			(ev.event == ZmEvent.E_MODIFY && fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME])))
-		{
-			var object = node.getData(Dwt.KEY_OBJECT);
-			this._setTreeItemColor(node, object);
-		}
-	}
 };
 
 ZmTaskTreeController.prototype._deleteListener =

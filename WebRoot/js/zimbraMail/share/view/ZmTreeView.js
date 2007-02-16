@@ -242,7 +242,7 @@ function(params) {
 };
 
 /*
-* Adds a tree item node to the tree, and then adds its children.
+* Adds a tree item node for the given organizer to the tree, and then adds its children.
 *
 * @param parentNode	[DwtTreeItem]	node under which to add the new one
 * @param organizer	[ZmOrganizer]	organizer for the new node
@@ -271,4 +271,6 @@ function(parentNode, organizer, index) {
 	if (organizer.children && organizer.children.size()) {
 		this._render({treeNode:ti, organizer:organizer});
 	}
+
+	return ti;
 };

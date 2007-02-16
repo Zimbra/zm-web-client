@@ -46,8 +46,6 @@ function ZmAddrBookTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.NEW_ADDRBOOK] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_ADDRBOOK] = new AjxListener(this, this._shareAddrBookListener);
 	this._listeners[ZmOperation.MOUNT_ADDRBOOK] = new AjxListener(this, this._mountAddrBookListener);
-
-	this.usesColors = true;
 }
 
 ZmAddrBookTreeController.prototype = new ZmFolderTreeController;
@@ -150,34 +148,6 @@ ZmAddrBookTreeController.prototype._mountAddrBookListener =
 function(ev) {
 	this._appCtxt.getMountFolderDialog().popup(ZmOrganizer.ADDRBOOK);
 };
-
-ZmAddrBookTreeController.prototype._changeListener =
-function(ev, treeView, overviewId) {
-	ZmFolderTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
-
-	if (ev.type != this.type) return;
-
-	var organizers = ev.getDetail("organizers");
-	if (!organizers && ev.source)
-		organizers = [ev.source];
-
-	for (var i = 0; i < organizers.length; i++) {
-		var organizer = organizers[i];
-		var id = organizer.id;
-		var node = treeView.getTreeItemById(id);
-		if (!node) continue;
-
-		var fields = ev.getDetail("fields");
-		// NOTE: ZmTreeController#_changeListener re-inserts the node if the
-		//		 name changes so we need to reset the color in that case, too.
-		if (ev.event == ZmEvent.E_CREATE ||
-			(ev.event == ZmEvent.E_MODIFY && fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]))) {
-			var object = node.getData(Dwt.KEY_OBJECT);
-			this._setTreeItemColor(node, object);
-		}
-	}
-};
-
 
 /*
 * Called when a left click occurs (by the tree view listener). The folder that

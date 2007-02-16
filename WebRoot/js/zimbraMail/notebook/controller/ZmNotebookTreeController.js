@@ -225,19 +225,6 @@ function(ev, treeView, overviewId) {
 		if (id == shownPage.id || id == shownPage.folderId) {
 			notebookController.gotoPage(shownPage);
 		}
-
-		/***
-		var node = treeView.getTreeItemById(id);
-		if (!node) continue;
-		var fields = ev.getDetail("fields");
-		// NOTE: ZmTreeController#_changeListener re-inserts the node if the
-		//		 name changes so we need to reset the color in that case, too.
-		if (ev.event == ZmEvent.E_CREATE ||
-			(ev.event == ZmEvent.E_MODIFY && fields && (fields[ZmOrganizer.F_COLOR] || fields[ZmOrganizer.F_NAME]))) {
-			var object = node.getData(Dwt.KEY_OBJECT);
-			this._setTreeItemColor(node, object.color);
-		}
-		/***/
 	}
 };
 

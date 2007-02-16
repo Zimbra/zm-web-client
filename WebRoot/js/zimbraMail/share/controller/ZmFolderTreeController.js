@@ -239,8 +239,7 @@ function(folder) {
 };
 
 /*
-* Makes a request to add a new item to the tree, returning true if the item was 
-* actually added, or false if it was omitted.
+* Makes a request to add a new item to the tree.
 * 
 * @param treeView	[ZmTreeView]	a tree view
 * @param parentNode	[DwtTreeItem]	node under which to add the new one
@@ -252,8 +251,7 @@ function(treeView, parentNode, organizer, idx) {
 	if (ZmFolder.HIDE_ID[organizer.id]) {
 		return false;
 	}
-	treeView._addNew(parentNode, organizer, idx);
-	return true;
+	return treeView._addNew(parentNode, organizer, idx);
 };
 
 // Listeners
