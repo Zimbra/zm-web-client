@@ -375,11 +375,14 @@ function(deletes) {
 	this._controller.runAppFunction("deleteNotify", ids);
 
 	for (var i = 0; i < ids.length; i++) {
-		if (!ids[i]) { continue; }
-		var item = this._appCtxt.cacheGet(ids[i]);
-		DBG.println(AjxDebug.DBG2, "ZmRequestMgr: handling delete notif for ID " + ids[i]);
+		var id = ids[i];
+		if (!id) { continue; }
+		var item = this._appCtxt.cacheGet(id);
+		DBG.println(AjxDebug.DBG2, "ZmRequestMgr: handling delete notif for ID " + id);
 		if (item) {
 			item.notifyDelete();
+			this._appCtxt.cacheRemove(id);
+			item = null;
 		}
 	}
 };

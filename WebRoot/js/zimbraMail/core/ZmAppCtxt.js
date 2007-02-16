@@ -707,6 +707,11 @@ function(key) {
 	return this._itemCache ? this._itemCache.get(key) : null;
 };
 
+ZmAppCtxt.prototype.cacheRemove =
+function(key) {
+	this._itemCache.clear(key);
+};
+
 ZmAppCtxt.prototype.getCsfeMsgFetcher = 
 function() {
 	if (!this._csfeMsgFetchSvc) {

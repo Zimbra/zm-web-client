@@ -174,6 +174,7 @@ function(ids, force) {
 					notebookController.gotoPage(pageRef);
 				}
 			}
+			this._appCtxt.cacheRemove(id);
 			ids[i] = null;
 		}
 	}

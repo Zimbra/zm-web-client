@@ -68,8 +68,9 @@ function ZmOrganizer(params) {
 	this.restUrl = params.restUrl;
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 
-	if (id && params.tree)
+	if (id && params.tree) {
 		params.tree._appCtxt.cacheSet(id, this);
+	}
 
 	this.children = new AjxVector();
 };
@@ -798,10 +799,22 @@ function(obj, details) {
 
 // Local change handling
 
+/**
+ * Cleans up a deleted organizer:
+ * 	- remove from parent's list of children
+ * 	- remove from item cache
+ * 	- perform above two steps for each child
+ * 	- clear list of children
+ */
 ZmOrganizer.prototype.deleteLocal =
 function() {
-	this.children.removeAll();
 	this.parent.children.remove(this);
+	var a = this.children.getArray();
+	var sz = this.children.size();
+	for (var i = 0; i < sz; i++) {
+		a[i].deleteLocal();
+	}
+	this.children.removeAll();
 };
 
 /**

@@ -526,14 +526,8 @@ function(ev, treeView, overviewId) {
 		var organizer = organizers[i];
 		var id = organizer.id;
 		var node = treeView.getTreeItemById(id);
-		// source tree handles moves
+		// Note: source tree handles moves - it will have node
 		if (!node && (ev.event != ZmEvent.E_CREATE)) { continue; }
-		var parentNode = null;
-		if (organizer.parent) {
-			// if node being moved to root, we assume new parent must be the container of its type
-			var type = (organizer.parent.id == ZmOrganizer.ID_ROOT) ? ev.type : null;
-			parentNode = this._appCtxt.getOverviewController().getTreeItemById(overviewId, organizer.parent.id, type);
-		}
 		
 		var fields = ev.getDetail("fields");
 		if (ev.event == ZmEvent.E_FLAGS) {
@@ -571,6 +565,8 @@ function(ev, treeView, overviewId) {
 			this._evHandled[overviewId] = true;
 		} else if (ev.event == ZmEvent.E_MODIFY) {
 			if (!fields) { return; }
+			var parentNode = this._getParentNode(organizer, ev, overviewId);
+			if (!parentNode) { return; }
 			if (fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_UNREAD] || fields[ZmOrganizer.F_FLAGS] || fields[ZmOrganizer.F_COLOR] ||
 				((id == ZmFolder.ID_DRAFTS || id == ZmFolder.ID_OUTBOX) && fields[ZmOrganizer.F_TOTAL])) {
 
