@@ -128,8 +128,8 @@ function(callback) {
 ZmVoicemailApp.prototype._handleLoadLaunch =
 function(callback) {
 	var voicemailController = AjxDispatcher.run("GetVoicemailController");
-	var searchResuts = ZmVoicemailList.searchHACK(this._appCtxt);
-	voicemailController.show(searchResuts);
+	var searchResuts = ZmVoicemailList.searchHACK(this._appCtxt, ZmVoicemailFolder.VOICEMAIL);
+	voicemailController.show(searchResuts, ZmVoicemailFolder.VOICEMAIL);
 	
 	if (callback) {
 		callback.run();
@@ -138,7 +138,7 @@ function(callback) {
 
 ZmVoicemailApp.prototype.activate =
 function(active, view) {
-	this.getVoicemailController().showSoundPlayer();
+	this.getVoicemailController().activate();
 };
 
 ZmVoicemailApp.prototype.getVoicemailController = function() {
@@ -173,13 +173,16 @@ function(appCtxt, baseId, accountName) {
 	var jsonObj = {
 		folder: [
             {
+              f: "Voicemail",
               id: baseId + '-Voicemail',
               l: '16234',
               n: 1,
+              u:2,
               name: 'Voicemail',
               view: 'voicemail'
              },
             {
+              f: "Missed Call",
               id: baseId + "-Missed",
               l: '1',
               n: 1,
@@ -187,6 +190,7 @@ function(appCtxt, baseId, accountName) {
               view: 'voicemail'
              },
             {
+              f: "Answered Call",
               id: baseId + "-Answered",
               l: '1',
               n: 1,
@@ -194,6 +198,7 @@ function(appCtxt, baseId, accountName) {
               view: 'voicemail'
              },
             {
+              f: "Placed Call",
               id: baseId + "-Placed",
               l: '1',
               n: 1,
@@ -201,6 +206,7 @@ function(appCtxt, baseId, accountName) {
               view: 'voicemail'
              },
            ],
+          f: "Account",
           id: baseId,
           l: '11',
           name: accountName,
@@ -208,7 +214,6 @@ function(appCtxt, baseId, accountName) {
 	};
 	var folderTree = appCtxt.getFolderTree();
 	var folder = ZmFolderTree.createFromJs(folderTree.root, jsonObj, folderTree, "folder");
-	folder.isAccount = true;
 	folderTree.root.children.add(folder);
 };
 

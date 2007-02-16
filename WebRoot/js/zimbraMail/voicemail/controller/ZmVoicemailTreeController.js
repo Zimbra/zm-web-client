@@ -115,8 +115,11 @@ function(ev, treeView, overviewId) {
 /*
 * Called when a left click occurs (by the tree view listener).
 *
-* @param folder		ZmOrganizer		folder or search that was clicked
+* @param folder		ZmVoicemailFolder		folder that was clicked
 */
 ZmVoicemailTreeController.prototype._itemClicked =
 function(folder) {
+	var controller = AjxDispatcher.run("GetVoicemailController");
+	var searchResult = ZmVoicemailList.searchHACK(this._appCtxt, folder.callType);
+	controller.show(searchResult, folder.callType);
 };

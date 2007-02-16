@@ -64,6 +64,11 @@ function() {
 	return [ZmMsg.zimbraTitle, ": ", ZmMsg.voicemail].join("");
 };
 
+ZmVoicemailView.prototype.setCallType =
+function(callType) {
+	this._callType = callType;	
+};
+
 ZmVoicemailView.prototype.setPlaying =
 function(voicemail) {
 	if (voicemail == this._playing)  {
@@ -81,6 +86,17 @@ function(voicemail) {
 	}
 };
 
+ZmVoicemailView.prototype.createHeaderHtml = 
+function(defaultColumnSort) {
+	ZmListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
+	var isPlaced = this._callType == ZmVoicemailFolder.PLACED_CALL;
+	var label = isPlaced ? ZmMsg.to : ZmMsg.from;
+	var index = this.getColIndexForId(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_CALLER]);
+	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[index]._id);
+	if (fromColSpan) fromColSpan.innerHTML = "&nbsp;" + label;
+	if (this._colHeaderActionMenu) this._colHeaderActionMenu.getItem(index).setText(label);
+};
+
 ZmVoicemailView.prototype._getColumnIndexByPrefix =
 function(prefix) {
 	var playingColumn = this.getColumnBy
@@ -95,7 +111,6 @@ function(prefix) {
 
 ZmVoicemailView.prototype._showPlayingImage =
 function(voicemail, columnIndex, show) {
-	
 	var element = this._getElFromItem(voicemail);
 	var table = element.firstChild;
 	var cell = table.rows[0].cells[columnIndex];

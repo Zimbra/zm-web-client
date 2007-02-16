@@ -52,7 +52,7 @@ function() {
 // Creates a tee item for the organizer, and recurslively renders its children.
 ZmVoicemailTreeView.prototype._addNew =
 function(parentNode, organizer, index) {
-	if (organizer.isAccount) {
+	if (organizer.callType == ZmVoicemailFolder.ACCOUNT) {
 		var item = this._createAccountItem(organizer, organizer.getName());
 		this._render({treeNode:item, organizer:organizer});
 	} else {

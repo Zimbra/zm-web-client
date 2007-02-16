@@ -45,11 +45,18 @@ function ZmVoicemailFolder(params) {
 	params.type = ZmOrganizer.VOICEMAIL;
 	params.color = params.color || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.VOICEMAIL];
 	ZmOrganizer.call(this, params);
-	this.isAccount = false;
+	this.callType = null; // Will be set to a constant...ACCOUNT, PLACED, etc.
 }
 
 ZmVoicemailFolder.prototype = new ZmOrganizer;
 ZmVoicemailFolder.prototype.constructor = ZmVoicemailFolder;
+
+ZmVoicemailFolder.ACCOUNT = "Account";
+ZmVoicemailFolder.PLACED_CALL = "Placed Call";
+ZmVoicemailFolder.ANSWERED_CALL = "Answered Call";
+ZmVoicemailFolder.MISSED_CALL = "Missed Call";
+ZmVoicemailFolder.VOICEMAIL = "Voicemail";
+
 
 // Public methods
 
@@ -60,7 +67,7 @@ function() {
 
 ZmVoicemailFolder.prototype.getName =
 function(showUnread, maxLength, noMarkup) {
-    return this.name;
+	return this._markupName(this.name, showUnread, noMarkup);
 };
 
 ZmVoicemailFolder.prototype.getIcon =
@@ -71,4 +78,11 @@ function() {
 ZmVoicemailFolder.sortCompare =
 function(a, b) {
 	return 0;
+};
+
+// I'm using the "f" field on my JSON object to represent what type of
+// call is in this folder.
+ZmVoicemailFolder.prototype._parseFlags =
+function(str) {
+	this.callType = str;
 };

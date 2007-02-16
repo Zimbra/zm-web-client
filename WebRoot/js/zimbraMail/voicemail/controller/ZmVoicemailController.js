@@ -28,6 +28,9 @@ function ZmVoicemailController(appCtxt, container, app) {
 	ZmListController.call(this, appCtxt, container, app);
 
 	this._soundPlayer = null;
+	this._activated = false;
+	this._folder = null;
+	this._hasPlayedSound = false;
 
 	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
@@ -51,9 +54,11 @@ function() {
 * Displays the given search results.
 *
 * @param search		search results (which should contain a list of conversations)
+* @param callType	The type of call. See constants in ZmVoicemailFolder
 */
 ZmVoicemailController.prototype.show =
-function(searchResult) {
+function(searchResult, callType) {
+	this._callType = callType;
 	ZmListController.prototype.show.call(this, searchResult);
 	this._list = searchResult.getResults(ZmItem.VOICEMAIL);
 	this._setup(this._currentView);
@@ -62,14 +67,24 @@ function(searchResult) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements, true);
+
+	this._showSoundPlayer();
 };
 
-ZmVoicemailController.prototype.showSoundPlayer =
+ZmVoicemailController.prototype.activate =
 function(searchResult) {
+	this._activated = true;
+	this._showSoundPlayer();
+};
+
+ZmVoicemailController.prototype._showSoundPlayer =
+function() {
 	if (this._soundPlayer) {
-		this._soundPlayer.setVisible(true);
+		var visible = this._activated && (this._callType == ZmVoicemailFolder.VOICEMAIL);
+		this._soundPlayer.setVisible(visible);
 	}
 };
+
 ZmVoicemailController.prototype._createNewView = 
 function(view) {
 	var result = new ZmVoicemailView(this._container, this._appCtxt, this._dropTgt);
@@ -83,8 +98,16 @@ function(view) {
 };
 
 ZmVoicemailController.prototype._setViewContents =
-function(view) {
-	this._listView[view].set(this._list, ZmItem.F_DATE);
+function(viewId) {
+	if (this._hasPlayedSound) {
+		this._soundPlayer.pause();
+		this._soundPlayer.rewind();
+		this._hasPlayedSound = false;
+	}
+	var view = this._listView[viewId];
+	view.setPlaying(null);
+	view.setCallType(this._callType);
+	view.set(this._list, ZmItem.F_DATE);
 };
 
 ZmVoicemailController.prototype._getToolBarOps =
@@ -157,6 +180,7 @@ function(ev) {
 			url = voicemail.soundUrl;
 			this._soundPlayer.setUrl(url);
 			this._soundPlayer.play();
+			this._hasPlayedSound = true;
 			var view = this._getView();
 			view.setPlaying(voicemail);
 		}
