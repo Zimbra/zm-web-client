@@ -202,7 +202,7 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 		dispatcher.include(wrappedReq, response);
 	%>
   <script type="text/javascript" language=Javascript>
-    skin.hideQuota();
+    //skin.hideQuota();
     skin.hideTreeFooter();
   </script>
   </body>
