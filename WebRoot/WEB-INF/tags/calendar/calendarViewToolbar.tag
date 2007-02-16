@@ -4,6 +4,7 @@
 <%@ attribute name="title" rtexprvalue="true" required="true" %>
 <%@ attribute name="today" rtexprvalue="true" required="true" type="java.util.Calendar"%>
 <%@ attribute name="date" rtexprvalue="true" required="true" type="java.util.Calendar"%>
+<%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ attribute name="nextDate" rtexprvalue="true" required="true" type="java.util.Calendar"%>
 <%@ attribute name="prevDate" rtexprvalue="true" required="true" type="java.util.Calendar"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -64,8 +65,8 @@
             </table>
         </td>
         <td align=right>
-            <app:calendarUrl var="prevUrl" rawdate="${prevDate}"/>
-            <app:calendarUrl var="nextUrl" rawdate="${nextDate}"/>
+            <app:calendarUrl var="prevUrl" rawdate="${prevDate}" timezone="${timezone}"/>
+            <app:calendarUrl var="nextUrl" rawdate="${nextDate}" timezone="${timezone}"/>
             <table cellspacing=5 cellpadding=0>
                 <tr>
                     <td>

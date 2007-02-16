@@ -51,9 +51,8 @@
 
     <%-- fetch mini cal appts first, so they are in cache, as well as any data neded by this view --%>
     <c:set var="startOfMonth" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
-    <zm:getAppointmentSummaries var="minicalappts" folderid="${checkedCalendars}" start="${startOfMonth.timeInMillis}" end="${startOfMonth.timeInMillis+zm:MSECS_PER_DAY()*42}"/>
-
-    <zm:getAppointmentSummaries var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${rangeEnd}"/>
+    <zm:getAppointmentSummaries timezone="${timezone}" var="minicalappts" folderid="${checkedCalendars}" start="${startOfMonth.timeInMillis}" end="${startOfMonth.timeInMillis+zm:MSECS_PER_DAY()*42}"/>
+    <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${rangeEnd}"/>
     <zm:apptMultiDayLayout
             schedule="${scheduleView ? checkedCalendars : ''}"
             var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
@@ -65,7 +64,7 @@
     <table width=100% height=100% cellpadding="0" cellspacing="0" border=0>
         <tr>
             <td class='TbTop'>
-                <app:calendarViewToolbar today="${today}" date="${date}" prevDate="${prevDate}"
+                <app:calendarViewToolbar timezone="${timezone}" today="${today}" date="${date}" prevDate="${prevDate}"
                                          nextDate="${nextDate}" title="${tbTitle}" context="${context}" keys="true"/>
             </td>
         </tr>
@@ -94,7 +93,7 @@
                                        ${fn:escapeXml(fname)}
                                    </c:when>
                                    <c:otherwise>
-                                       <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" rawdate="${zm:getCalendar(day.startTime, timezone)}"/>
+                                       <app:calendarUrl var="dayUrl" view="${view eq 'day' ? 'week' : 'day'}" timezone="${timezone}" rawdate="${zm:getCalendar(day.startTime, timezone)}"/>
                                        <a href="${dayUrl}">
                                        <fmt:message var="titleFormat" key="CAL_${numdays > 1 ? 'MDAY_':''}DAY_TITLE_FORMAT"/>
                                        <fmt:formatDate value="${zm:getCalendar(day.startTime, timezone).time}" pattern="${titleFormat}"/>

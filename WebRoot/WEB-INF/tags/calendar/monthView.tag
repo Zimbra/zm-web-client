@@ -23,14 +23,14 @@
     <c:set var="nextDate" value="${zm:addMonth(date,  1)}"/>
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
-    <zm:getAppointmentSummaries var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+zm:MSECS_PER_DAY()*42}"/>
+    <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+zm:MSECS_PER_DAY()*42}"/>
 </app:handleError>
 
 <app:view title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" date="${date}">
     <table width=100%  cellpadding="0" cellspacing="0" border=0>
         <tr>
             <td class='TbTop'>
-                <app:calendarViewToolbar today="${today}" date="${date}" prevDate="${prevDate}" nextDate="${nextDate}" title="${title}" context="${context}" keys="true"/>
+                <app:calendarViewToolbar today="${today}" date="${date}" timezone="${timezone}" prevDate="${prevDate}" nextDate="${nextDate}" title="${title}" context="${context}" keys="true"/>
             </td>
         </tr>
         <tr>
@@ -65,7 +65,7 @@
                                                 <fmt:formatDate var="dayTitle" value="${currentDay.time}" pattern="${zm:getMonth(currentDay) ne lastMonth ? dayMonthChangeFormat : dayFormat}"/>
                                                 <c:set var="lastMonth" value="${zm:getMonth(currentDay)}"/>
                                                 
-                                                <app:calendarUrl var="dayUrl" view="day" rawdate="${currentDay}"/>
+                                                <app:calendarUrl var="dayUrl" view="day" timezone="${timezone}" rawdate="${currentDay}"/>
                                                     <a href="${dayUrl}">${fn:escapeXml(dayTitle)}</a>
                                             </td>
                                         </tr>

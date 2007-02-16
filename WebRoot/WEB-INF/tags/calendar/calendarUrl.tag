@@ -3,6 +3,7 @@
 <%@ attribute name="value" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ attribute name="view" rtexprvalue="true" required="false" %>
 <%@ attribute name="rawdate" rtexprvalue="true" required="false" type="java.util.Calendar"%>
+<%@ attribute name="timezone" rtexprvalue="true" required="false" type="java.util.TimeZone"%>
 <%@ attribute name="date" rtexprvalue="true" required="false" %>
 <%@ attribute name="nodate" rtexprvalue="true" required="false" %>
 <%@ variable name-from-attribute="var" alias='urlVar' scope="AT_BEGIN" variable-class="java.lang.String" %>
@@ -20,7 +21,7 @@
     <c:if test="${not empty param.tz}"><c:param name='tz' value='${param.tz}'/></c:if>
     <c:choose>
         <c:when test="${not empty rawdate}">
-            <c:param name='date'><fmt:formatDate value="${rawdate.time}" pattern="yyyyMMdd"/></c:param>
+            <c:param name='date'><fmt:formatDate timeZone="${timezone}" value="${rawdate.time}" pattern="yyyyMMdd"/></c:param>
         </c:when>
         <c:otherwise>
             <c:if test="${(not empty date or not empty param.date) and (not nodate)}">
