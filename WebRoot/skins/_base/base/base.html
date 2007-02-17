@@ -51,6 +51,15 @@ skin.hideTreeFooter = function () {
 	this.showTreeFooter(false);
 }
 
+skin.showFullScreen = function(state) {
+  skin.isFullScreen = state != false;
+  skin._showEl("skin_tr_main", !state);
+  skin._showEl("skin_tr_status", !state);
+  skin._showEl("skin_tr_main_full", state);
+};
+skin.hideFullScreen = function() {
+  skin.showFullScreen(false);
+};
 
 skin.setTreeWidth = function(newWidth) {
 	skin.setSize("skin_col_tree", newWidth, null);

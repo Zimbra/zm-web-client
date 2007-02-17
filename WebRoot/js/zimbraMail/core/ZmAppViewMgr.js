@@ -686,14 +686,9 @@ function(view, show) {
     var isFull = this.isFullScreen(view);
     if (show) {
         if (wasFull != isFull) {
-            var elemIds = {
-                main: this._appCtxt.get(ZmSetting.SKIN_APP_MAIN_ROW_ID),
-                status: this._appCtxt.get(ZmSetting.SKIN_STATUS_ROW_ID),
-                full: this._appCtxt.get(ZmSetting.SKIN_APP_MAIN_ROW_FULL_ID)
-            };
-            Dwt.setVisible(document.getElementById(elemIds.main), !isFull);
-            Dwt.setVisible(document.getElementById(elemIds.status), !isFull);
-            Dwt.setVisible(document.getElementById(elemIds.full), isFull);
+            if (this._hasSkin && skin.showFullScreen) {
+                skin.showFullScreen(isFull);
+            }
 
             for (var i = 0; i < ZmAppViewMgr.APP_COMPONENTS.length; i++) {
                 var cid = ZmAppViewMgr.APP_COMPONENTS[i];
@@ -829,7 +824,7 @@ function(delta) {
 	DBG.println("************ sash callback **************");
 	DBG.println("delta = " + delta);
 	
-//	skin.moveSash(delta);
+//	s.moveSash(delta);
 	
 	DBG.println("shell width = " + this._shellSz.x);
 

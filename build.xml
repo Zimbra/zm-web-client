@@ -784,7 +784,10 @@ if (ext == null) ext = "";
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/WebRoot/js/zimbraMail/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
-      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,test/**,skins/**" excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/config/keys/**"/>
+      <fileset dir="${build.dir}/WebRoot"
+               includes="*,img/**,js/**,css/**,test/**,skins/**,portals/**"
+               excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/config/keys/**"
+      />
       <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
 
         <!-- ======= HTML ========== -->
@@ -818,7 +821,10 @@ if (ext == null) ext = "";
       <webinf dir="WebRoot/WEB-INF" includes="tlds/*"/>
       <fileset dir="${build.dir}/WebRoot" includes="help/**"/>
       <fileset dir="${build.dir}/WebRoot" includes="bhelp/**"/>
-      <fileset dir="${build.dir}/WebRoot" includes="*,img/**,js/**,css/**,skins/**" excludes="js/zimbraAdmin/**,js/Admin*,js/XForms*,**/config/msgs/**,**/config/keys/**,**/xforms/**,**/test/**"/>
+      <fileset dir="${build.dir}/WebRoot"
+               includes="*,img/**,js/**,css/**,skins/**,portals/**"
+               excludes="js/zimbraAdmin/**,js/Admin*,js/XForms*,**/config/msgs/**,**/config/keys/**,**/xforms/**,**/test/**"
+      />
       <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
 
         <!-- ======= HTML ========== -->
