@@ -1,0 +1,92 @@
+.ImgAppBanner 					{background-image:url(logos/AppBanner.png);					width:120px;	height:35px;	background-repeat:no-repeat;	}
+
+.ImgSkin_Button_Inside__H		{background-image:url(img/Skin_Button_Inside__H.gif); 		width:100%;		height:18px;	 background-repeat:repeat-x;	} 
+.ImgSkin_Button_L				{background-image:url(img/Skin_Button_L.gif); 				width:8px;		height:21px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Button_R				{background-image:url(img/Skin_Button_R.gif); 				width:8px;		height:21px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Button__H				{background-image:url(img/Skin_Button__H.gif); 				width:100%;		height:21px;	 background-repeat:repeat-x;	} 
+
+.ImgSkin_Find_L					{background-image:url(img/Skin_Find_L.gif); 				width:8px;		height:21px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Find_R					{background-image:url(img/Skin_Find_R.gif); 				width:8px;		height:21px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Find__H				{background-image:url(img/Skin_Find__H.gif); 				width:100%;		height:21px;	 background-repeat:repeat-x;	} 
+
+.ImgSkin_Chrome_R1_L			{background-image:url(img/Skin_Chrome_R1_L.gif); 			width:8px;		height:41px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Chrome_R1_R			{background-image:url(img/Skin_Chrome_R1_R.gif); 			width:8px;		height:41px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Chrome_R1__H			{background-image:url(img/Skin_Chrome_R1__H.gif); 			width:100%;		height:41px;	 background-repeat:repeat-x;	} 
+
+.ImgSkin_Chrome_R2_L			{background-image:url(img/Skin_Chrome_R2_L.gif); 			width:8px;		height:56px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Chrome_R2_R			{background-image:url(img/Skin_Chrome_R2_R.gif); 			width:8px;		height:56px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Chrome_R2__H			{background-image:url(img/Skin_Chrome_R2__H.gif); 			width:100%;		height:56px;	 background-repeat:repeat-x;	} 
+
+.ImgSkin_Chrome_R3_L			{background-image:url(img/Skin_Chrome_R3_L.gif); 			width:8px;		height:18px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Chrome_R3_R			{background-image:url(img/Skin_Chrome_R3_R.gif); 			width:8px;		height:18px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Chrome_R3__H			{background-image:url(img/Skin_Chrome_R3__H.gif); 			width:100%;		height:18px;	 background-repeat:repeat-x;	} 
+
+.ImgSkin_Chrome_R4_L			{background-image:url(img/Skin_Chrome_R4_L.gif); 			width:8px;		height:14px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Chrome_R4_R			{background-image:url(img/Skin_Chrome_R4_R.gif); 			width:8px;		height:14px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Chrome_R4__H			{background-image:url(img/Skin_Chrome_R4__H.gif); 			width:100%;		height:14px;	 background-repeat:repeat-x;	} 
+
+.ImgSkin_Select_L				{background-image:url(img/Skin_Select_L.gif); 				width:8px;		height:21px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Select_R				{background-image:url(img/Skin_Select_R.gif); 				width:8px;		height:21px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Select_Sep				{background-image:url(img/Skin_Select_Sep.gif); 			width:8px;		height:21px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Select__H				{background-image:url(img/Skin_Select__H.gif); 				width:100%;		height:21px;	 background-repeat:repeat-x;	} 
+
+.ImgSkin_Tab_Bg__H				{background-image:url(img/Skin_Tab_Bg__H.gif); 				width:100%;		height:23px;	 background-repeat:repeat-x;	} 
+
+.ImgSkin_Tab_Normal_L			{background-image:url(img/Skin_Tab_Normal_L.gif); 			width:6px;		height:23px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Tab_Normal_R			{background-image:url(img/Skin_Tab_Normal_R.gif); 			width:6px;		height:23px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Tab_Normal__H			{background-image:url(img/Skin_Tab_Normal__H.gif); 			width:100%;		height:23px;	 background-repeat:repeat-x;	} 
+
+.ImgSkin_Tab_Selected_L			{background-image:url(img/Skin_Tab_Selected_L.gif); 		width:6px;		height:23px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Tab_Selected_R			{background-image:url(img/Skin_Tab_Selected_R.gif); 		width:6px;		height:23px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Tab_Selected__H		{background-image:url(img/Skin_Tab_Selected__H.gif); 		width:100%;		height:23px;	 background-repeat:repeat-x;	} 
+
+.ImgSkin_Toolbar_L				{background-image:url(img/Skin_Toolbar_L.gif); 				width:6px;		height:21px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Toolbar_R				{background-image:url(img/Skin_Toolbar_R.gif); 				width:6px;		height:21px;	 background-repeat:no-repeat;	} 
+.ImgSkin_Toolbar__H				{background-image:url(img/Skin_Toolbar__H.gif); 			width:100%;		height:21px;	 background-repeat:repeat-x;	} 
+
+.ImgSkin_User_Bottom_L			{background-image:url(img/Skin_User_Bottom_L.gif);			width:8px;		height:21px;	 background-repeat:no-repeat;	} 
+.ImgSkin_User_Bottom_R			{background-image:url(img/Skin_User_Bottom_R.gif); 			width:8px;		height:21px;	 background-repeat:no-repeat;	} 
+.ImgSkin_User_Bottom__H			{background-image:url(img/Skin_User_Bottom__H.gif); 		width:100%;		height:21px;	 background-repeat:repeat-x;	} 
+
+.ImgSkin_User_Top_L				{background-image:url(img/Skin_User_Top_L.gif);				width:8px;		height:23px;	 background-repeat:no-repeat;	} 
+.ImgSkin_User_Top_R				{background-image:url(img/Skin_User_Top_R.gif); 			width:8px;		height:23px;	 background-repeat:no-repeat;	} 
+.ImgSkin_User_Top__H			{background-image:url(img/Skin_User_Top__H.gif); 			width:100%;		height:23px;	 background-repeat:repeat-x;	} 
+
+
+.ImgSkin_App_Frame_BL			{background-image:url(img/Skin_App_Frame_BL.gif); 			width:5px;		height:7px;		 background-repeat:no-repeat;	}
+.ImgSkin_App_Frame_BR			{background-image:url(img/Skin_App_Frame_BR.gif); 			width:5px;		height:7px;		 background-repeat:no-repeat;	}
+.ImgSkin_App_Frame_B__H			{background-image:url(img/Skin_App_Frame_B__H.gif); 		width:100%;		height:7px;		 background-repeat:repeat-x;	}
+.ImgSkin_App_Frame_L__V			{background-image:url(img/Skin_App_Frame_L__V.gif); 		width:5px;		height:100%;	 background-repeat:repeat-y;	}
+.ImgSkin_App_Frame_R__V			{background-image:url(img/Skin_App_Frame_R__V.gif); 		width:5px;		height:100%;	 background-repeat:repeat-y;	}
+.ImgSkin_App_Frame_TL			{background-image:url(img/Skin_App_Frame_TL.gif); 			width:5px;		height:21px;	 background-repeat:no-repeat;	}
+.ImgSkin_App_Frame_TR			{background-image:url(img/Skin_App_Frame_TR.gif); 			width:5px;		height:21px;	 background-repeat:no-repeat;	}
+.ImgSkin_App_Frame_T__H			{background-image:url(img/Skin_App_Frame_T__H.gif); 		width:100%;		height:21px;	 background-repeat:repeat-x;	}
+
+
+.ImgSkin_H_Sash_Bg__H			{background-image:url(img/Skin_H_Sash_Bg__H.gif); 			width:100%;		height:12px;	 background-repeat:repeat-x;	}
+.ImgSkin_H_Sash_Thumb			{background-image:url(img/Skin_H_Sash_Thumb.gif); 			width:12px;		height:12px;	 background-repeat:no-repeat;	}
+
+.ImgSkin_List_Header_Bg__H		{background-image:url(img/Skin_List_Header_Bg__H.gif);		width:100%;		height:17px;	 background-repeat:repeat-x;	}
+
+
+.ImgSkin_Tree_Frame_BL			{background-image:url(img/Skin_Tree_Frame_BL.gif); 			width:5px;		height:6px;		 background-repeat:no-repeat;	}
+.ImgSkin_Tree_Frame_BR			{background-image:url(img/Skin_Tree_Frame_BR.gif); 			width:5px;		height:6px;		 background-repeat:no-repeat;	}
+.ImgSkin_Tree_Frame_B__H		{background-image:url(img/Skin_Tree_Frame_B__H.gif); 		width:100%;		height:6px;		 background-repeat:repeat-x;	}
+.ImgSkin_Tree_Frame_L__V		{background-image:url(img/Skin_Tree_Frame_L__V.gif); 		width:5px;		height:100%;	 background-repeat:repeat-y;	}
+.ImgSkin_Tree_Frame_R__V		{background-image:url(img/Skin_Tree_Frame_R__V.gif); 		width:5px;		height:100%;	 background-repeat:repeat-y;	}
+
+.ImgSkin_Tree_Header_Bg__H		{background-image:url(img/Skin_Tree_Header_Bg__H.gif); 		width:100%;		height:17px;	 background-repeat:repeat-x;	}
+
+.ImgSkin_Tree_Tab_Normal_Bg__H	{background-image:url(img/Skin_Tree_Tab_Normal_Bg__H.gif); 	width:100%;		height:21px;	 background-repeat:repeat-x;	}
+.ImgSkin_Tree_Tab_Normal_L		{background-image:url(img/Skin_Tree_Tab_Normal_L.gif); 		width:5px;		height:21px;	 background-repeat:no-repeat;	}
+.ImgSkin_Tree_Tab_Normal_R		{background-image:url(img/Skin_Tree_Tab_Normal_R.gif); 		width:5px;		height:21px;	 background-repeat:no-repeat;	}
+
+.ImgSkin_Tree_Tab_Selected_Bg__H {background-image:url(img/Skin_Tree_Tab_Selected_Bg__H.gif); width:100%;	height:21px;	 background-repeat:repeat-x;	}
+.ImgSkin_Tree_Tab_Selected_L	{background-image:url(img/Skin_Tree_Tab_Selected_L.gif); 	width:5px;		height:21px;	 background-repeat:no-repeat;	}
+.ImgSkin_Tree_Tab_Selected_R	{background-image:url(img/Skin_Tree_Tab_Selected_R.gif); 	width:5px;		height:21px;	 background-repeat:no-repeat;	}
+.ImgSkin_Tree_Tab_Sep__H		{background-image:url(img/Skin_Tree_Tab_Sep__H.gif); 		width:100%;		height:21px;	 background-repeat:repeat-x;	}
+
+
+.ImgSkin_View_Menu_Bg__H		{background-image:url(img/Skin_View_Menu_Bg__H.gif); 		width:100%;		height:21px;	 background-repeat:repeat-x;	}
+.ImgSkin_View_Menu_L			{background-image:url(img/Skin_View_Menu_L.gif); 			width:8px;		height:21px;	 background-repeat:no-repeat;	}
+.ImgSkin_View_Menu_R			{background-image:url(img/Skin_View_Menu_R.gif); 			width:8px;		height:21px;	 background-repeat:no-repeat;	}

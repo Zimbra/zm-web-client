@@ -80,7 +80,7 @@
   <property name='l10n.excludes' value='msgs/*_*.properties,keys/*_*.properties' />
 
   <!-- list all the skins with custom images to build here -->
-  <property name='skins' value='steel,_demo' />
+  <property name='skins' value='steel,velodrome,_demo' />
 
   <condition property='isProduction' value='true' else='false'>
     <or>

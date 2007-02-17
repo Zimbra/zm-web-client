@@ -1,0 +1,732 @@
+<html>
+<title>Velodrome Widget Test</title>
+<link rel="stylesheet" href="widget_images.css">
+<link rel="stylesheet" href="widgets.css">
+<body style='background-color:#eeeeee'>
+
+<h2>Velodrome Widgets as simple HTML for templates</h2>
+
+
+<h3 style='margin-top:10px'>Buttons in different styles</h3>
+<div class='tiny'>Note that the HTML for each is identical -- style changes come from addition of a class (.ZFocused, .ZDisabled) to the outer .ZButton element.</div>
+<table cellspacing=5><tr>
+
+	<td>
+		<div id='${id}_container' class='ZButton ZWidget ZCenterTitle'>
+			<table id='${id}_border' class='ZButtonBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgButton_L'></div></td>
+				<td width=100% valign=top><div class='ImgButton__H'></div></td>
+				<td><div class='ImgButton_R'></div></td>				
+			</tr></table>
+			<table id='{id}_button' class='ZButtonTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+				<td id='{id}_title'		 class='ZButtonTitle ZWidgetTitle'>Normal</td>
+				<td id='{id}_right_icon' class='ZLeftIcon ZWidgetIcon'></td>
+			</tr></table>
+		</div>
+	</td>
+
+	<td>
+		<div id='${id}_container' class='ZButton ZWidget ZActive'>
+			<table id='${id}_border' class='ZButtonBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgButton_L'></div></td>
+				<td width=100% valign=top><div class='ImgButton__H'></div></td>
+				<td><div class='ImgButton_R'></div></td>				
+			</tr></table>
+			<table id='{id}_button' class='ZButtonTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'><div class='ImgPerson'></div></td>
+				<td id='{id}_title'		 class='ZButtonTitle ZWidgetTitle'>Active</td>
+				<td id='{id}_right_icon' class='ZRightIcon ZWidgetIcon'><div class='ImgPerson'></div></td>
+			</tr></table>
+		</div>
+	</td>
+
+	<td>
+		<div id='${id}_container' class='ZButton ZWidget ZFocused ZCenterTitle'>
+			<table id='${id}_border' class='ZButtonBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgButton_L'></div></td>
+				<td width=100% valign=top><div class='ImgButton__H'></div></td>
+				<td><div class='ImgButton_R'></div></td>				
+			</tr></table>
+			<table id='{id}_button' class='ZButtonTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+				<td id='{id}_title'		 class='ZButtonTitle ZWidgetTitle'>Focused</td>
+				<td id='{id}_right_icon' class='ZLeftIcon ZWidgetIcon'></td>
+			</tr></table>
+		</div>
+	</td>
+	<td>
+		<div id='${id}_container' class='ZButton ZWidget ZDisabled'>
+			<table id='${id}_border' class='ZButtonBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgButton_L'></div></td>
+				<td width=100% valign=top><div class='ImgButton__H'></div></td>
+				<td><div class='ImgButton_R'></div></td>				
+			</tr></table>
+			<table id='{id}_button' class='ZButtonTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'><div class='ImgPerson'></div></td>
+				<td id='{id}_title'		 class='ZButtonTitle ZWidgetTitle'>Disabled</td>
+				<td id='{id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+			</tr></table>
+		</div>
+	</td>
+</tr><tr>
+	<td>
+		<div id='${id}_container' class='ZButton ZWidget ZHover'>
+			<table id='${id}_border' class='ZButtonBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgButton_L'></div></td>
+				<td width=100% valign=top><div class='ImgButton__H'></div></td>
+				<td><div class='ImgButton_R'></div></td>				
+			</tr></table>
+			<table id='{id}_button' class='ZButtonTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'><div class='ImgPerson'></div></td>
+				<td id='{id}_title'		 class='ZButtonTitle ZWidgetTitle'>Hover</td>
+				<td id='{id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+			</tr></table>
+		</div>
+	</td>
+	<td>
+		<div id='${id}_container' class='ZButton ZWidget ZSelected'>
+			<table id='${id}_border' class='ZButtonBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgButton_L'></div></td>
+				<td width=100% valign=top><div class='ImgButton__H'></div></td>
+				<td><div class='ImgButton_R'></div></td>				
+			</tr></table>
+			<table id='{id}_button' class='ZButtonTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'><div class='ImgPerson'></div></td>
+				<td id='{id}_title'		 class='ZButtonTitle ZWidgetTitle'>Selected</td>
+				<td id='{id}_right_icon' class='ZRightIcon ZWidgetIcon'><div class='ImgPerson'></div></td>
+			</tr></table>
+		</div>
+	</td>
+	<td>
+		<div id='${id}_container' class='ZButton ZWidget ZDefault ZCenterTitle'>
+			<table id='${id}_border' class='ZButtonBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgButton_L'></div></td>
+				<td width=100% valign=top><div class='ImgButton__H'></div></td>
+				<td><div class='ImgButton_R'></div></td>				
+			</tr></table>
+			<table id='{id}_button' class='ZButtonTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+				<td id='{id}_title'		 class='ZButtonTitle ZWidgetTitle'>Default</td>
+				<td id='{id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+			</tr></table>
+		</div>
+	</td>
+</tr>
+</table>
+
+
+<h3>Selects in different styles</h3>
+<table><tr>
+	<td>
+		<div id='${id}_container' class='ZSelect ZWidget'>
+			<table id='${id}_border' class='ZSelectBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgSelect_L'></div></td>
+				<td width=100%><div class='ImgSelect__H'></div></td>
+				<td><div class='ImgSelect_R'></div></td>				
+			</tr></table>
+			<table id='{id}_select' class='ZSelectTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+				<td id='{id}_title'		 class='ZSelectTitle ZWidgetTitle'>Normal</td>
+			</tr></table>
+		</div>
+	</td>
+	
+	<td>
+		<div id='${id}_container' class='ZSelect ZWidget ZActive'>
+			<table id='${id}_border' class='ZSelectBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgSelect_L'></div></td>
+				<td width=100%><div class='ImgSelect__H'></div></td>
+				<td><div class='ImgSelect_R'></div></td>				
+			</tr></table>
+			<table id='{id}_select' class='ZSelectTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'><div class='ImgPerson'></div></td>
+				<td id='{id}_title'		 class='ZSelectTitle ZWidgetTitle'>Active</td>
+			</tr></table>
+		</div>
+	</td>
+
+	<td>
+		<div id='${id}_container' class='ZSelect ZWidget ZFocused'>
+			<table id='${id}_border' class='ZSelectBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgSelect_L'></div></td>
+				<td width=100%><div class='ImgSelect__H'></div></td>
+				<td><div class='ImgSelect_R'></div></td>				
+			</tr></table>
+			<table id='{id}_select' class='ZSelectTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+				<td id='{id}_title'		 class='ZSelectTitle ZWidgetTitle'>Focused</td>
+			</tr></table>
+		</div>
+	</td>
+
+	<td>
+		<div id='${id}_container' class='ZSelect ZWidget ZDisabled'>
+			<table id='${id}_border' class='ZSelectBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgSelect_L'></div></td>
+				<td width=100%><div class='ImgSelect__H'></div></td>
+				<td><div class='ImgSelect_R'></div></td>				
+			</tr></table>
+			<table id='{id}_select' class='ZSelectTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+				<td id='{id}_title'		 class='ZSelectTitle ZWidgetTitle'>Disabled</td>
+			</tr></table>
+		</div>
+	</td>
+</tr>
+<tr>
+	<td>
+		<div id='${id}_container' class='ZSelect ZWidget ZHover'>
+			<table id='${id}_border' class='ZSelectBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgSelect_L'></div></td>
+				<td width=100%><div class='ImgSelect__H'></div></td>
+				<td><div class='ImgSelect_R'></div></td>				
+			</tr></table>
+			<table id='{id}_select' class='ZSelectTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+				<td id='{id}_title'		 class='ZSelectTitle ZWidgetTitle'>Hover</td>
+			</tr></table>
+		</div>
+	</td>
+
+</tr>
+</table>
+
+
+
+
+<h3>Tabs in different styles</h3>
+<table><tr>
+	<td>
+		<div id='${id}_container' class='ZTab ZWidget'>
+			<table id='${id}_border' class='ZTabBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgTab_L'></div></td>
+				<td width=100%><div class='ImgTab__H'></div></td>
+				<td><div class='ImgTab_R'></div></td>				
+			</tr></table>
+			<table id='{id}_select' class='ZTabTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+				<td id='{id}_title'		 class='ZTabTitle ZWidgetTitle'>Hover</td>
+				<td id='{id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+			</tr></table>
+		</div>
+	</td>
+
+	<td>
+		<div id='${id}_container' class='ZTab ZWidget ZActive'>
+			<table id='${id}_border' class='ZTabBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgTab_L'></div></td>
+				<td width=100%><div class='ImgTab__H'></div></td>
+				<td><div class='ImgTab_R'></div></td>				
+			</tr></table>
+			<table id='{id}_select' class='ZTabTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+				<td id='{id}_title'		 class='ZTabTitle ZWidgetTitle'>Active</td>
+				<td id='{id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+			</tr></table>
+		</div>
+	</td>
+
+	<td>
+		<div id='${id}_container' class='ZTab ZWidget ZFocused'>
+			<table id='${id}_border' class='ZTabBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgTab_L'></div></td>
+				<td width=100%><div class='ImgTab__H'></div></td>
+				<td><div class='ImgTab_R'></div></td>				
+			</tr></table>
+			<table id='{id}_select' class='ZTabTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+				<td id='{id}_title'		 class='ZTabTitle ZWidgetTitle'>Focused</td>
+				<td id='{id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+			</tr></table>
+		</div>
+	</td>
+
+	<td>
+		<div id='${id}_container' class='ZTab ZWidget ZDisabled'>
+			<table id='${id}_border' class='ZTabBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgTab_L'></div></td>
+				<td width=100%><div class='ImgTab__H'></div></td>
+				<td><div class='ImgTab_R'></div></td>				
+			</tr></table>
+			<table id='{id}_select' class='ZTabTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+				<td id='{id}_title'		 class='ZTabTitle ZWidgetTitle'>Disabled</td>
+				<td id='{id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+			</tr></table>
+		</div>
+	</td>
+
+</tr>
+<tr>
+	<td>
+		<div id='${id}_container' class='ZTab ZWidget ZHover'>
+			<table id='${id}_border' class='ZTabBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgTab_L'></div></td>
+				<td width=100%><div class='ImgTab__H'></div></td>
+				<td><div class='ImgTab_R'></div></td>				
+			</tr></table>
+			<table id='{id}_select' class='ZTabTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+				<td id='{id}_title'		 class='ZTabTitle ZWidgetTitle'>Hover</td>
+				<td id='{id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+			</tr></table>
+		</div>
+	</td>
+	<td>
+		<div id='${id}_container' class='ZTab ZWidget ZSelected'>
+			<table id='${id}_border' class='ZTabBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgTab_L'></div></td>
+				<td width=100%><div class='ImgTab__H'></div></td>
+				<td><div class='ImgTab_R'></div></td>				
+			</tr></table>
+			<table id='{id}_select' class='ZTabTable' cellspacing=0 cellpadding=0><tr>
+				<td id='{id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+				<td id='{id}_title'		 class='ZTabTitle ZWidgetTitle'>Selected</td>
+				<td id='{id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+			</tr></table>
+		</div>
+	</td>
+
+</tr>
+</table>
+
+
+
+
+<h3>Fields in different styles</h3>
+<div class='tiny'>Note background images for fields will *not* work in safari -- see special classes below this list</div>
+<table><tr>
+	<td>
+		<div id='${id}_container' class='ZField ZWidget'>
+			<table id='${id}_border' class='ZFieldBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgField_L'></div></td>
+				<td width=100%><div class='ImgField__H'></div></td>
+				<td><div class='ImgField_R'></div></td>				
+			</tr></table>
+			<input id='${id}_field' class='ZFieldInput' value='Normal'>
+		</div>
+	</td>
+
+	<td>
+		<div id='${id}_container' class='ZField ZWidget ZFocused'>
+			<table id='${id}_border' class='ZFieldBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgField_L'></div></td>
+				<td width=100%><div class='ImgField__H'></div></td>
+				<td><div class='ImgField_R'></div></td>				
+			</tr></table>
+			<input id='${id}_field' class='ZFieldInput' value='Focused'>
+		</div>
+	</td>
+
+	<td>
+		<div id='${id}_container' class='ZField ZWidget ZDisabled'>
+			<table id='${id}_border' class='ZFieldBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgField_L'></div></td>
+				<td width=100%><div class='ImgField__H'></div></td>
+				<td><div class='ImgField_R'></div></td>				
+			</tr></table>
+			<input id='${id}_field' class='ZFieldInput' value='Disabled'>
+		</div>
+	</td>
+
+	<td>
+		<div id='${id}_container' class='ZField ZWidget ZError'>
+			<table id='${id}_border' class='ZFieldBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgField_L'></div></td>
+				<td width=100%><div class='ImgField__H'></div></td>
+				<td><div class='ImgField_R'></div></td>				
+			</tr></table>
+			<input id='${id}_field' class='ZFieldInput' value='Error'>
+		</div>
+	</td>
+</tr><tr>
+
+	<td>
+		<div id='${id}_container' class='ZField ZWidget ZHint'>
+			<table id='${id}_border' class='ZFieldBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgField_L'></div></td>
+				<td width=100%><div class='ImgField__H'></div></td>
+				<td><div class='ImgField_R'></div></td>				
+			</tr></table>
+			<input id='${id}_field' class='ZFieldInput' value='Normal w/Hint'>
+		</div>
+	</td>
+
+
+</tr>
+</table>
+
+
+<h3>Fields in different styles for safari <font color='darkred'>(ignore in other browsers)</font></h3>
+<div class='tiny'>Safari doesn't allow fields to be transparent, so we will have a class ZBrowserSafari on the BODY tag 
+				which will automatically make fields look like:</div>
+<table class='ZBrowserSafari'><tr>
+	<td>
+		<div id='${id}_container' class='ZField ZWidget'>
+			<table id='${id}_border' class='ZFieldBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgField_L'></div></td>
+				<td width=100%><div class='ImgField__H'></div></td>
+				<td><div class='ImgField_R'></div></td>				
+			</tr></table>
+			<input id='${id}_field' class='ZFieldInput' value='Normal'>
+		</div>
+	</td>
+
+	<td>
+		<div id='${id}_container' class='ZField ZWidget ZFocused'>
+			<table id='${id}_border' class='ZFieldBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgField_L'></div></td>
+				<td width=100%><div class='ImgField__H'></div></td>
+				<td><div class='ImgField_R'></div></td>				
+			</tr></table>
+			<input id='${id}_field' class='ZFieldInput' value='Focused'>
+		</div>
+	</td>
+
+	<td>
+		<div id='${id}_container' class='ZField ZWidget ZDisabled'>
+			<table id='${id}_border' class='ZFieldBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgField_L'></div></td>
+				<td width=100%><div class='ImgField__H'></div></td>
+				<td><div class='ImgField_R'></div></td>				
+			</tr></table>
+			<input id='${id}_field' class='ZFieldInput' value='Disabled'>
+		</div>
+	</td>
+
+	<td>
+		<div id='${id}_container' class='ZField ZWidget ZError'>
+			<table id='${id}_border' class='ZFieldBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgField_L'></div></td>
+				<td width=100%><div class='ImgField__H'></div></td>
+				<td><div class='ImgField_R'></div></td>				
+			</tr></table>
+			<input id='${id}_field' class='ZFieldInput' value='Error'>
+		</div>
+	</td>
+</tr><tr>
+
+	<td>
+		<div id='${id}_container' class='ZField ZWidget ZHint'>
+			<table id='${id}_border' class='ZFieldBorder ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+				<td><div class='ImgField_L'></div></td>
+				<td width=100%><div class='ImgField__H'></div></td>
+				<td><div class='ImgField_R'></div></td>				
+			</tr></table>
+			<input id='${id}_field' class='ZFieldInput' value='Normal w/Hint'>
+		</div>
+	</td>
+
+</tr>
+</table>
+
+
+
+
+<h3>ListViewer</h3>
+<div style='width:600px'>
+	<table class='ZListViewer' cellspacing=0 cellpadding=0>
+		<colgroup>
+			<col width=30>
+			<col width=30>
+			<col width='*'>
+			<col width=80>
+			<col width=140>
+		</colgroup>
+		<tr>
+			<th class='ImgListHeader__H ZFirstItem'>1</th>
+			<th class='ImgListHeader__H'>2</th>
+			<th class='ImgListHeader__H ZSelected'>Heading</th>
+			<th class='ImgListHeader__H'>Heading</th>
+			<th class='ImgListHeader__H ZLastItem'>Heading</th>
+		</tr>
+		<tr class='ZRow ZEvenRow ZFirstRow'>
+			<td class='ZListViewerCell'><div>1</div></td>
+			<td class='ZListViewerCell'><div>&nbsp;</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+		</tr>
+		<tr class='ZOddRow ZFocused'>
+			<td class='ZListViewerCell'><div>1</div></td>
+			<td class='ZListViewerCell'><div>&nbsp;</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+		</tr>
+		<tr class='ZEvenRow'>
+			<td class='ZListViewerCell'><div>1</div></td>
+			<td class='ZListViewerCell'><div>&nbsp;</div></td>
+			<td class='ZListViewerCell'><div>long long long long long long long long long long long value</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+		</tr>
+		<tr class='ZOddRow'>
+			<td class='ZListViewerCell'><div>1</div></td>
+			<td class='ZListViewerCell'><div>&nbsp;</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+		</tr>
+		<tr class='ZEvenRow'>
+			<td class='ZListViewerCell'><div>1</div></td>
+			<td class='ZListViewerCell'><div>&nbsp;</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+		</tr>
+		<tr class='ZOddRow'>
+			<td class='ZListViewerCell'><div>1</div></td>
+			<td class='ZListViewerCell'><div>&nbsp;</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+			<td class='ZListViewerCell'><div>value</div></td>
+		</tr>
+	</table>
+</div>
+
+
+
+<script language='javascript'>
+function showBody(which) {
+	for (var i = 1; i < 4; i++) {
+		var body = document.getElementById("tree_body_"+i);
+		var header = document.getElementById("tree_header_"+i);
+		if (which == i) {
+			body.style.display = 'table-row';
+			header.className   = 'ZTreeHeader ZWidget ZSelected';
+	
+		} else {
+			body.style.display = 'none';
+			header.className   = 'ZTreeHeader ZWidget';
+		
+		}
+	}
+}
+</script>
+
+
+<h3>Tree/Accordion</h3>
+<div style='width:200px;position:relative;'>
+	<div class='ZTree' style='height:300px;'>
+	<table class='ZTreeTable' cellspacing=0 cellpadding=0>
+		<tr><td class='ZTreeTableHeaderCell' >
+			<div id='tree_header_1' class='ZTreeHeader ZWidget' onclick='showBody(1)'>
+					<table class='absolute' cellspacing=0 cellpadding=0><tr>
+						<td><div class='ImgAccordion_L'></div></td>
+						<td width=100%><div class='ImgAccordion__H'></div></td>
+						<td><div class='ImgAccordion_R'></div></td>				
+					</tr></table>
+					<div id='${id}_title' class='ZTreeHeaderTitle ZWidgetTitle'>owen@zimbra.com</div>
+			</div>
+		</td></tr>
+		<tr id='tree_body_1' style='display:none'><td class='ZTreeTableBodyCell'>
+			<div class='ZTreeBody'>
+				<div class='ZTreeItem'>
+					<div class='ZTreeItemIcon'><div class='ImgNodeExpanded ZTreeIndent0'></div><div class='ImgFolder ZTreeIndent1'></div></div>
+					<div class='ZTreeItemTitle ZTreeIndent2'>Inbox</div>
+				</div>
+				<div class='ZTreeItem'>
+					<div class='ZTreeItemIcon'><div class='ImgNodeExpanded ZTreeIndent1'></div><div class='ImgFolder ZTreeIndent2'></div></div>
+					<div class='ZTreeItemTitle ZTreeIndent3'>Work</div>
+				</div>
+				<div class='ZTreeItem ZSelected'>
+					<div class='ZTreeItemIcon'><div class='ImgNodeCollapsed ZTreeIndent2'></div><div class='ImgFolder ZTreeIndent3'></div></div>
+					<div class='ZTreeItemTitle ZTreeIndent4'>UI Projects</div>
+				</div>
+				<div class='ZTreeItem'>
+					<div class='ZTreeItemIcon'><div class='ImgNodeCollapsed ZTreeIndent2'></div><div class='ImgFolder ZTreeIndent3'></div></div>
+					<div class='ZTreeItemTitle ZTreeIndent4'>Customers</div>
+				</div>
+				<div class='ZTreeItem'>
+					<div class='ZTreeItemIcon'><div class='ImgNodeCollapsed ZTreeIndent1'></div><div class='ImgFolder ZTreeIndent2'></div></div>
+					<div class='ZTreeItemTitle ZTreeIndent3'>Specs</div>
+				</div>
+			</div>
+		</td></tr>
+		<tr><td class='ZTreeTableHeaderCell'>
+			<div  id='tree_header_2' class='ZTreeHeader ZWidget ZSelected'  onclick='showBody(2)'>
+					<table class='absolute' cellspacing=0 cellpadding=0><tr>
+						<td><div class='ImgAccordion_L'></div></td>
+						<td width=100%><div class='ImgAccordion__H'></div></td>
+						<td><div class='ImgAccordion_R'></div></td>				
+					</tr></table>
+					<div id='${id}_title' class='ZTreeHeaderTitle ZWidgetTitle'>owen.williams.39@mail.yahoo.com</div>
+			</div>
+		</td></tr>
+		<tr id='tree_body_2' style='display:table-row'><td class='ZTreeTableBodyCell'>
+			<div class='ZTreeBody'>
+				<div class='ZTreeItem'>
+					<div class='ZTreeItemIcon'><div class='ImgNodeExpanded ZTreeIndent0'></div><div class='ImgFolder ZTreeIndent1'></div></div>
+					<div class='ZTreeItemTitle ZTreeIndent2'>Inbox</div>
+				</div>
+				<div class='ZTreeItem ZSelected'>
+					<div class='ZTreeItemIcon'><div class='ImgNodeCollapsed ZTreeIndent1'></div><div class='ImgFolder ZTreeIndent2'></div></div>
+					<div class='ZTreeItemTitle ZTreeIndent3'>Mailing Lists</div>
+				</div>
+				<div class='ZTreeItem'>
+					<div class='ZTreeItemIcon'><div class='ImgNodeCollapsed ZTreeIndent0'></div><div class='ImgFolder ZTreeIndent1'></div></div>
+					<div class='ZTreeItemTitle ZTreeIndent2'>Outbox</div>
+				</div>
+				<div class='ZTreeItem'>
+					<div class='ZTreeItemIcon'><div class='ImgNodeCollapsed ZTreeIndent0'></div><div class='ImgFolder ZTreeIndent1'></div></div>
+					<div class='ZTreeItemTitle ZTreeIndent2'>Sent</div>
+				</div>
+				<div class='ZTreeItem'>
+					<div class='ZTreeItemIcon'><div class='ImgNodeCollapsed ZTreeIndent0'></div><div class='ImgFolder ZTreeIndent1'></div></div>
+					<div class='ZTreeItemTitle ZTreeIndent2'>Trash</div>
+				</div>
+			</div>
+		</td></tr>
+		<tr><td class='ZTreeTableHeaderCell'>
+			<div id='tree_header_3' class='ZTreeHeader ZWidget' onclick='showBody(3)'>
+					<table class='absolute' cellspacing=0 cellpadding=0><tr>
+						<td><div class='ImgAccordion_L'></div></td>
+						<td width=100%><div class='ImgAccordion__H'></div></td>
+						<td><div class='ImgAccordion_R'></div></td>				
+					</tr></table>
+					<div id='${id}_title' class='ZTreeHeaderTitle ZWidgetTitle'>owen@gmail.com</div>
+			</div>
+		</td></tr>
+		<tr id='tree_body_3' style='display:none'><td class='ZTreeTableBodyCell'>
+			<div class='ZTreeBody'>
+				<div class='ZTreeItem ZSelected'>
+					<div class='ZTreeItemIcon'><div class='ImgFolder ZTreeIndent0'></div></div>
+					<div class='ZTreeItemTitle ZTreeIndent1'>Inbox</div>
+				</div>
+			</div>
+		</td></tr>
+	</table>
+	</div>
+</div>
+
+
+
+<h3>Panel, for tree, welcome center, main app</h3>
+<div style='background-color:#888888; width:800px;height:120px; padding:10px;position:relative;'>
+	<div style='width:200px;height:100px;position:absolute;'>
+		<div id='${id}_panel' style='width:100%;height:100%;position:relative;'>
+			<table class='absolute' style='width:100%;height:100%;' cellspacing=0 cellpadding=0>
+				<tr><td>
+					<table cellspacing=0 cellpadding=0><tr>
+						<td><div class='ImgPanel_NW'></div></td>
+						<td width=100%><div class='ImgPanel_N__H'></div></td>
+						<td><div class='ImgPanel_NE'></div></td>				
+					</tr></table>
+				</td></tr>
+	
+				<tr><td height=100% valign=top>
+					<table cellspacing=0 cellpadding=0 style='width:100%;height:100%'><tr>
+						<td><div class='ImgPanel_W__V'></div></td>
+						<td width=100%><div class='ImgPanel_bg__H'style='width:100%;height:100%'></div></td>
+						<td><div class='ImgPanel_E__V'></div></td>				
+					</tr></table>
+				</td></tr>
+				
+				<tr><td>
+					<table cellspacing=0 cellpadding=0><tr>
+						<td><div class='ImgPanel_SW'></div></td>
+						<td width=100%><div class='ImgPanel_S__H'></div></td>
+						<td><div class='ImgPanel_SE'></div></td>				
+					</tr></table>
+				</td></tr>
+			</table>
+	
+			<table id='{id}_titlebar' class='ZPanelTitlebar'><tr>
+				<td id='{id}_icon' 	class='ZPanelIcon'><div class='ImgFolder'></div></td>
+				<td id='{id}_title'	class='ZPanelTitle'>title</td>
+				<td id='{id}_toolbar'  class='ZPanelToolbar ZWidgetToolbar'>toolbar</td>
+			</tr></table>
+			<div id='${id}_contents' class='ZPanelContents absolute'>contents</div>
+		</div>
+	</div>
+
+	<div style='width:200px;height:100px;position:absolute;left:250px;'>
+		<div id='${id}_panel' style='width:100%;height:100%;position:relative;'>
+			<table class='absolute' style='width:100%;height:100%;' cellspacing=0 cellpadding=0>
+				<tr><td>
+					<table cellspacing=0 cellpadding=0><tr>
+						<td><div class='ImgPanel_NW'></div></td>
+						<td width=100%><div class='ImgPanel_N__H'></div></td>
+						<td><div class='ImgPanel_NE'></div></td>				
+					</tr></table>
+				</td></tr>
+	
+				<tr><td height=100% valign=top>
+					<table cellspacing=0 cellpadding=0 style='width:100%;height:100%'><tr>
+						<td><div class='ImgPanel_W__V'></div></td>
+						<td width=100%><div class='ImgPanel_bg__H'style='width:100%;height:100%'></div></td>
+						<td><div class='ImgPanel_E__V'></div></td>				
+					</tr></table>
+				</td></tr>
+				
+				<tr><td>
+					<table cellspacing=0 cellpadding=0><tr>
+						<td><div class='ImgPanel_SW'></div></td>
+						<td width=100%><div class='ImgPanel_S__H'></div></td>
+						<td><div class='ImgPanel_SE'></div></td>				
+					</tr></table>
+				</td></tr>
+			</table>
+	
+			<table id='{id}_titlebar' class='ZPanelTitlebar'><tr>
+				<td id='{id}_icon' 	class='ZPanelIcon'></td>
+				<td id='{id}_title'	class='ZPanelTitle'>title</td>
+				<td id='{id}_toolbar'  class='ZPanelToolbar ZWidgetToolbar'></td>
+			</tr></table>
+			<div id='${id}_contents' class='ZPanelContents absolute'>contents</div>
+		</div>
+	</div>
+</div>
+
+
+
+<h3>Outset, for tooltips and such</h3>
+<div style='background-color:#888888; width:200px;padding:10px;position:relative;'>
+	<div style='width:200px;height:100px;position:relative;'>
+		<div id='${id}_panel' style='width:100%;height:100%;position:relative;'>
+			<table class='absolute' style='width:100%;height:100%;' cellspacing=0 cellpadding=0>
+				<tr><td>
+					<table cellspacing=0 cellpadding=0><tr>
+						<td><div class='ImgOutset_NW'></div></td>
+						<td width=100%><div class='ImgOutset_N__H'></div></td>
+						<td><div class='ImgOutset_NE'></div></td>				
+					</tr></table>
+				</td></tr>
+	
+				<tr><td height=100% valign=top>
+					<table cellspacing=0 cellpadding=0 style='width:100%;height:100%'><tr>
+						<td><div class='ImgOutset_W__V'></div></td>
+						<td width=100%><div class='ImgOutset_bg__H'style='width:100%;height:100%'></div></td>
+						<td><div class='ImgOutset_E__V'></div></td>				
+					</tr></table>
+				</td></tr>
+				
+				<tr><td>
+					<table cellspacing=0 cellpadding=0><tr>
+						<td><div class='ImgOutset_SW'></div></td>
+						<td width=100%><div class='ImgOutset_S__H'></div></td>
+						<td><div class='ImgOutset_SE'></div></td>				
+					</tr></table>
+				</td></tr>
+			</table>
+	
+			<div id='${id}_contents' class='ZOutsetContents absolute'>contents</div>
+		</div>
+	</div>
+</div>
+
+
+
+<h3>Horizontal sash</h3>
+<div style='width:500px'>
+	<div id='${id}_sash' class='ImgHSash__H ZHSash'>
+		<center><div class='ImgHSash_thumb'></div></center>
+	</div>
+</div>
+
+<br><br><br><br><br><br>
+
+</body>
+</html>
