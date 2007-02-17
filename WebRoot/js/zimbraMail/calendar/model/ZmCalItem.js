@@ -22,7 +22,7 @@
  *
  * ***** END LICENSE BLOCK *****
  */
-ZmCalItem = function(appCtxt, type, list, id) {
+ZmCalItem = function(appCtxt, type, list, id, folderId) {
 
 	if (arguments.length == 0) { return; }
 
@@ -31,7 +31,7 @@ ZmCalItem = function(appCtxt, type, list, id) {
 	this.id = id || -1;
 	this.uid = -1; // iCal uid of appt
 
-	this.folderId = this._getDefaultFolderId();
+	this.folderId = folderId || this._getDefaultFolderId();
 	this.fragment = "";
 	this.name = "";
 	this.notesTopPart = null; // ZmMimePart containing children w/ message parts

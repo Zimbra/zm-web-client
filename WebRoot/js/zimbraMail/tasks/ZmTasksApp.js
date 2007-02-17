@@ -103,10 +103,10 @@ function() {
 // App API
 
 ZmTasksApp.prototype.handleOp =
-function(op) {
+function(op, params) {
 	switch (op) {
 		case ZmOperation.NEW_TASK: {
-			AjxDispatcher.run("GetTaskController").show((new ZmTask(this._appCtxt)));
+			AjxDispatcher.run("GetTaskController").show((new ZmTask(this._appCtxt, null, null, params.folderId)));
 			break;
 		}
 		case ZmOperation.NEW_TASK_FOLDER: {

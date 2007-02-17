@@ -539,7 +539,6 @@ function(calItem, mode) {
 	Dwt.setVisibility(this._folderLabelField, num > 1);
 	enabled ? this._folderSelect.enable() : this._folderSelect.disable();
 
-	// always reset the width of this select widget
 	this._folderSelect.setSelectedValue(calItem.folderId);
 };
 

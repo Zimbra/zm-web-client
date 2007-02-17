@@ -168,17 +168,10 @@ function(task, mode) {
 ZmTaskListController.prototype._doDelete =
 function(task, mode) {
 	try {
-		var respCallback = new AjxCallback(this, this._handleResponseDelete, [task]);
-		task.cancel(mode, null, respCallback, this._errorCallback);
+		task.cancel(mode);
 	} catch (ex) {
-		var params = [task, mode];
-		this._handleException(ex, this._doDelete, params, false);
+		this._handleException(ex, this._doDelete, [task, mode], false);
 	}
-};
-
-ZmTaskListController.prototype._handleResponseDelete =
-function(task, ev) {
-	// TODO - remove task(s) from listview
 };
 
 ZmTaskListController.prototype._editTask =
@@ -252,6 +245,13 @@ function(task, mode, ev) {
 
 		task.getDetails(mode, new AjxCallback(this, this._showTaskEditView, [task, editMode]));
 	}
+};
+
+ZmTaskListController.prototype._newListener =
+function(ev, op, params) {
+	params = params || {};
+	params.folderId = this._list.folderId;
+	ZmListController.prototype._newListener.call(this, ev, op, params);
 };
 
 ZmTaskListController.prototype._listSelectionListener =
