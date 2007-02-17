@@ -213,7 +213,7 @@
         </tr>
         <tr>
             <td class='TbBottom'>
-                <app:calendarViewBottomToolbar/>
+                <app:calendarViewBottomToolbar timezone="${timezone}"/>
             </td>
         </tr>
     </table>

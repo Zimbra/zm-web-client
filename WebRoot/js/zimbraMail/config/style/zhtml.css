@@ -758,6 +758,10 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
     color:white;
 }
 
+.ZhCalDAyApptEnd, .ZhCalTimeZone {
+    @Text-disabled@
+}
+
 /* day of week label for the month */
 .ZhCalDayHour {
  	@AppBg@
