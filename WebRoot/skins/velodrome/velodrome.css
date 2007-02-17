@@ -149,6 +149,7 @@
 	Main row:  tree and app 
 *********************************/
 #skin_tr_main {
+	height:100%;
 }
 
 #skin_td_tree_outer {
