@@ -357,14 +357,16 @@ function(index, notify, callback, result) {
 */
 ZmFilterRules.prototype._handleErrorSaveRules =
 function(ex) {
-	if (ex.code == "service.PARSE_ERROR") {
+	if (ex.code == ZmCsfeException.SVC_PARSE_ERROR || ex.code == ZmCsfeException.SVC_INVALID_REQUEST) {
 		var msgDialog = this._appCtxt.getMsgDialog();
-		msgDialog.setMessage(ZmMsg.filterError, DwtMessageDialog.CRITICAL_STYLE);
+		msgDialog.setMessage([ZmMsg.filterError, " ", ex.msg].join(""), DwtMessageDialog.CRITICAL_STYLE);
 		msgDialog.popup();
 	    var respCallback = new AjxCallback(this, this._handleResponseHandleErrorSaveRules);
 	    this.loadRules(true, respCallback);
+		return true;
+	} else {
+		return false;
 	}
-	return true;
 };
 
 // XXX: the caller should probably be the one doing this
