@@ -215,10 +215,6 @@ function(actionCode) {
 			break;
 		}
 	
-		case ZmKeyMap.NEW_MESSAGE_WIN:
-			this._newListener(null, ZmListController.ACTION_CODE_TO_OP[actionCode], {newWin:true});
-			break;
-			
 		case ZmKeyMap.NEW_FOLDER:
 		case ZmKeyMap.NEW_TAG:
 			var op = ZmApp.ACTION_CODES_OP[actionCode];

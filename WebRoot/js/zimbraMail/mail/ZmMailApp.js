@@ -55,6 +55,7 @@ function ZmMailApp(appCtxt, container, parentController) {
 	ZmOperation.registerOp("MARK_READ", {textKey:"markAsRead", image:"ReadMessage"});
 	ZmOperation.registerOp("MARK_UNREAD", {textKey:"markAsUnread", image:"UnreadMessage"});
 	ZmOperation.registerOp("NEW_MESSAGE", {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage"});
+	ZmOperation.registerOp("NEW_MESSAGE_WIN", {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage"});
 	ZmOperation.registerOp("SAVE_DRAFT", {textKey:"saveDraft", tooltipKey:"saveDraftTooltip", image:"DraftFolder"});
 	ZmOperation.registerOp("SHOW_BCC", {textKey:"showBcc"});
 	ZmOperation.registerOp("SHOW_ONLY_MAIL", {textKey:"showOnlyMail", image:"Conversation"});
@@ -130,7 +131,8 @@ function ZmMailApp(appCtxt, container, parentController) {
 							  ops:					[ZmOperation.NEW_MESSAGE],
 							  gotoActionCode:		ZmKeyMap.GOTO_MAIL,
 							  newActionCode:		ZmKeyMap.NEW_MESSAGE,
-							  actionCodes:			[ZmKeyMap.NEW_MESSAGE, ZmOperation.NEW_MESSAGE],
+							  actionCodes:			[ZmKeyMap.NEW_MESSAGE, ZmOperation.NEW_MESSAGE,
+							  						 ZmKeyMap.NEW_MESSAGE_WIN, ZmOperation.NEW_MESSAGE_WIN],
 							  qsViews:				["compose", "msg"],
 							  trashViewOp:			ZmOperation.SHOW_ONLY_MAIL,
 							  chooserSort:			10,
@@ -242,13 +244,16 @@ function(list, force) {
 
 ZmMailApp.prototype.handleOp =
 function(op, params) {
+	var inNewWindow = false;
 	switch (op) {
-		case ZmOperation.NEW_MESSAGE: {
-			var inNewWindow = (params && params.newWin) || (params && params.ev) ?
-								this._inNewWindow(params.ev) : false;
+		case ZmOperation.NEW_MESSAGE_WIN:
+			inNewWindow = true;
+		case ZmOperation.NEW_MESSAGE:
+			if (!inNewWindow && params && params.ev) {
+				inNewWindow = this._inNewWindow(params.ev);
+			}
 			AjxDispatcher.run("Compose", {action: ZmOperation.NEW_MESSAGE, inNewWindow:inNewWindow});
 			break;
-		}
 	}
 };
 
