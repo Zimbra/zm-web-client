@@ -38,10 +38,10 @@
 * @param extraButtons	[Array]*		buttons to show in addition to standard set
 * @param view			[DwtControl]*	dialog contents
 */
-function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
+function ZmDialog(parent, msgDialog, className, title, extraButtons, view, standardButtons) {
 
 	if (arguments.length == 0) return;
-	DwtDialog.call(this, parent, className, title, null, extraButtons);
+	DwtDialog.call(this, parent, className, title, standardButtons, extraButtons);
 	if (!view) {
 		this.setContent(this._contentHtml());
 	} else {
@@ -53,7 +53,12 @@ function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 	if (this._msgDialog == null) {
 		this._msgDialog = this._appCtxt.getMsgDialog();
 	}
-	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
+
+	if (this._button[DwtDialog.OK_BUTTON]) {
+		this.setButtonListener(DwtDialog.OK_BUTTON,
+				       new AjxListener(this,
+						       this._okButtonListener));
+	}
 
 	this._treeView = {};
 	this._opc = this._appCtxt.getOverviewController();

@@ -577,9 +577,12 @@ ZmZimletBase.prototype.getEnabled = function() {
 	return this.__zimletEnabled;
 };
 
-ZmZimletBase.prototype.getUsername =
-function() {
-	return this.getAppCtxt().getUsername();
+ZmZimletBase.prototype.getUsername = function() {
+	return this.getAppCtxt().get(ZmSetting.USERNAME);
+};
+
+ZmZimletBase.prototype.getUserID = function() {
+	return this.getAppCtxt().get(ZmSetting.USERID);
 };
 
 // Make DOM safe id's
@@ -691,7 +694,9 @@ ZmZimletBase.prototype._createDialog = function(args) {
 			    args.className,
 			    args.title,
 			    args.extraButtons,
-			    args.view);
+			    args.view,
+			    args.standardButtons
+			   );
 };
 
 /* Overrides default ZmObjectHandler methods for Zimlet API compat */

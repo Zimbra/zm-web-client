@@ -684,6 +684,8 @@ function(tb) {
 	this._underlineButton.setToolTipContent(ZmMsg.underlineText);
 	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
 	this._underlineButton.addSelectionListener(listener);
+
+	this._appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar1", this, tb);
 };
 
 ZmHtmlEditor.prototype._createToolBar2 =
@@ -738,6 +740,8 @@ function(tb) {
 		b.setToolTipContent(ZmMsg.insertSpreadsheet);
 		b.addSelectionListener(new AjxListener(this, this._menu_insertObject));
 	}
+
+	this._appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar2", this, tb);
 };
 
 ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {
