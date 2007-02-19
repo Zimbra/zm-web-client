@@ -9,7 +9,7 @@
 <c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
 <zm:getMailbox var="mailbox"/>
 <table width=100% cellspacing=0 cellpadding=0>
-    <tr class='contactHeaderRow'>
+    <tr class='${zm:getFolder(pageContext, contact.folderId).styleColor}Bg'>
         <td width=20><center><app:img src="${contact.isGroup ? 'contacts/Group.gif' : 'contacts/Contact.gif'}" altkey="${contact.imageAltKey}"/></center></td>
         <td class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : contact.displayFileAs)}
         </td>
