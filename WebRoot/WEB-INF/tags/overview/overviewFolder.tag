@@ -16,7 +16,7 @@
 <c:if test="${fn:startsWith(label,'???')}"><c:set var="label" value="${folder.name}"/></c:if>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
 <tr>
-    <td nowrap colspan=3 class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if><c:if test="${folder.id eq requestScope.context.selectedId}"> Selected</c:if>'
+    <td nowrap colspan=3 class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'
         style='padding-left: ${padFudge+folder.depth*8}px'>
         <c:url var="url" value="/h/${empty base ? 'search' : base}">
             <c:param name="sfi" value="${folder.id}"/>
@@ -26,6 +26,7 @@
                 <c:set var="expanded" value="${sessionScope.expanded[folder.id] ne 'collapse'}"/>
                 <c:url var="toggleUrl" value="/h/search">
                    <c:param name="${expanded ? 'collapse' : 'expand'}" value="${folder.id}"/>
+                   <c:if test="${!empty types}"><c:param name="st" value="${types}"/></c:if>
                </c:url>
                 <a href="${toggleUrl}">
                     <app:img src="${expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}" altkey="${expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}"/>
@@ -35,7 +36,7 @@
         <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="dwt/NodeExpanded.gif"/></c:if></span>--%>
         <a href='${url}' <c:if test="${(not empty key) and keys}">accesskey="${key}" </c:if> >
             <app:img src="${not empty icon ? icon : (folder.isFeed ? 'mail/RSS.gif' : 'common/Folder.gif')}" alt='${fn:escapeXml(label)}'/>
-            <span>${fn:escapeXml(label)} <c:if test="${folder.hasUnread}">
+            <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>${fn:escapeXml(label)} <c:if test="${folder.hasUnread}">
                 (${folder.unreadCount}) </c:if></span>
         </a>
 

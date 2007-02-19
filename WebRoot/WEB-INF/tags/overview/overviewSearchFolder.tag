@@ -11,8 +11,7 @@
 
 <c:if test="${!empty label}"><fmt:message key="${label}" var="label"/></c:if>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
-<tr><td nowrap colspan=3 class='Folder<c:if test="${folder.id eq requestScope.context.selectedId}"> Selected</c:if>'
-        style='padding-left: ${padFudge+folder.depth*8}px'>
+<tr><td nowrap colspan=3 class='Folder' style='padding-left: ${padFudge+folder.depth*8}px'>
     <c:if test="${folder.hasChildren}">
         <c:set var="expanded" value="${sessionScope.expanded[folder.id] ne 'collapse'}"/>
         <c:url var="toggleUrl" value="/h/search">
@@ -24,6 +23,6 @@
     </c:if>
     <a href='search?sfi=${folder.id}'>
         <app:img alt='${fn:escapeXml(empty label ? folder.name : label)}' src="${empty icon ? 'common/SearchFolder.gif' : icon}"/>
-        <span>${fn:escapeXml(empty label ? folder.name : label)}</span>
+        <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>${fn:escapeXml(empty label ? folder.name : label)}</span>
     </a>
 </td></tr>

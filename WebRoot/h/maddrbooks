@@ -8,121 +8,136 @@
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 
 <app:handleError>
-    <c:if test="${!empty param.doAction}"><app:addressBookAction/></c:if>
+    <c:if test="${!empty param.doAction}">
+        <app:addressBookAction/>
+    </c:if>
     <zm:getMailbox var="mailbox"/>
 
     <c:set var="toolbar">
         <table width=100% cellspacing=0 class='Tb'>
-            <tr><td align=left class=TbBt><input type=hidden class='tbButton' name="zzz">&nbsp;</td></tr>
+            <tr>
+                <td align=left class=TbBt><input type=hidden class='tbButton' name="zzz">&nbsp;</td>
+            </tr>
         </table>
     </c:set>
     <fmt:message var="title" key="manageAddressBooks"/>
 </app:handleError>
 
 <app:view title="${title}" context="${null}" selected='manageaddressbooks' contacts="true" editmode="true" keys="true">
-    
-<form action="" method="post">
 
-<table width=100% cellspacing="0" cellpadding="0">
-    <tr>
-        <td class='TbTop'>${toolbar}</td>
-    </tr>
-    <tr>
-<td class='ZhAppContent'>
-<%--
-<table width=100% cellspacing=0 cellpadding=0>
-    <tr class='contactHeaderRow'>
-        <td align=center>
-            <div class='contactHeader'>
-                <fmt:message key="manageAddressBooks"/>
-            </div>
-        </td>
-    </tr>
-</table>
-<br />
---%>
+    <form action="" method="post">
 
-<table border="0" cellpadding="0" cellspacing="10" width=100%>
-<tbody>
+        <table width=100% cellspacing="0" cellpadding="0">
+            <tr>
+                <td class='TbTop'>${toolbar}</td>
+            </tr>
+            <tr>
+                <td class='ZhAppContent'>
 
-<tr>
-    <td colspan="2" class="sectionLabel" valign="top">
-        <fmt:message key="createNewAddressBook"/>
-    </td>
-</tr>
-<tr>
-    <td nowrap align=right><fmt:message key="addressBookName"/> :</td>
-    <td><input name='newFolderName' type='text' autocomplete='off' size='35' value=""></td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td valign="top">
-        <input class='tbButton' type="submit" name="actionCreate" value="<fmt:message key="createAddressBook"/>">
-    </td>
-</tr>
+                    <table border="0" cellpadding="0" cellspacing="10" width=100%>
+                        <tbody>
 
-<tr>
-    <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="renameAddressBook"/></td>
-</tr>
-<tr>
-    <td nowrap align='right'><fmt:message key="currentName"/> :</td>
-    <td>
-        <select name="folderToRename">
-            <option value="" selected/>
-            <fmt:message key="chooseAddressBookToRename"/>
-            <option disabled/>
-            <fmt:message key="actionOptSep"/>
-            <zm:forEachFolder var="folder">
-                <c:if test="${folder.isContactView and not folder.isSystemFolder}">
-                    <option value="f:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
-                </c:if>
-            </zm:forEachFolder>
-        </select>
-    </td>
-</tr>
-<tr>
-    <td nowrap align='right'><fmt:message key="newName"/> :</td>
-    <td><input name='newName' type='text' autocomplete='off' size='35' value=""></td>
-</tr>
+                            <tr>
+                                <td colspan="2" class="sectionLabel" valign="top">
+                                    <fmt:message key="createNewAddressBook"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td nowrap align=right>
+                                    <fmt:message key="addressBookName"/>
+                                    :
+                                </td>
+                                <td><input name='newFolderName' type='text' autocomplete='off' size='35' value=""></td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td valign="top">
+                                    <input class='tbButton' type="submit" name="actionCreate"
+                                           value="<fmt:message key="createAddressBook"/>">
+                                </td>
+                            </tr>
 
-<tr>
-    <td>&nbsp;</td>
-    <td><input class='tbButton' type="submit" name="actionRename" value="<fmt:message key="renameAddressBook"/>"></td>
-</tr>
+                            <tr>
+                                <td colspan="2" class="sectionLabel" valign="top">
+                                    <fmt:message key="renameAddressBook"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td nowrap align='right'>
+                                    <fmt:message key="currentName"/>
+                                    :
+                                </td>
+                                <td>
+                                    <select name="folderToRename">
+                                        <option value="" selected/>
+                                        <fmt:message key="chooseAddressBookToRename"/>
+                                        <option disabled/>
+                                        <fmt:message key="actionOptSep"/>
+                                        <zm:forEachFolder var="folder">
+                                            <c:if test="${folder.isContactView and not folder.isSystemFolder}">
+                                                <option value="f:${folder.id}"/>
+                                                ${fn:escapeXml(folder.rootRelativePath)}
+                                            </c:if>
+                                        </zm:forEachFolder>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td nowrap align='right'>
+                                    <fmt:message key="newName"/>
+                                    :
+                                </td>
+                                <td><input name='newName' type='text' autocomplete='off' size='35' value=""></td>
+                            </tr>
+
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td><input class='tbButton' type="submit" name="actionRename"
+                                           value="<fmt:message key="renameAddressBook"/>"></td>
+                            </tr>
 
 
-<tr>
-    <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="deleteAddressBook"/></td>
-</tr>
-<tr>
-    <td align='right' nowrap><fmt:message key="addressBookName"/>:</td>
-    <td>
-        <select name="folderToDelete">
-            <option value="" selected/><fmt:message key="chooseAddressBookToDelete"/>
-            <option disabled/><fmt:message key="actionOptSep"/>
-             <zm:forEachFolder var="folder">
-                <c:if test="${folder.isContactView and not folder.isSystemFolder}">
-                    <option value="f:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
-                </c:if>
-            </zm:forEachFolder>
-        </select>
-    </td>
-</tr>
-<tr>
-    <td>&nbsp;</td>
-    <td><input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="deleteAddressBook"/>"></td>
-</tr>
+                            <tr>
+                                <td colspan="2" class="sectionLabel" valign="top">
+                                    <fmt:message key="deleteAddressBook"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align='right' nowrap>
+                                    <fmt:message key="addressBookName"/>
+                                    :
+                                </td>
+                                <td>
+                                    <select name="folderToDelete">
+                                        <option value="" selected/>
+                                        <fmt:message key="chooseAddressBookToDelete"/>
+                                        <option disabled/>
+                                        <fmt:message key="actionOptSep"/>
+                                        <zm:forEachFolder var="folder">
+                                            <c:if test="${folder.isContactView and not folder.isSystemFolder}">
+                                                <option value="f:${folder.id}"/>
+                                                ${fn:escapeXml(folder.rootRelativePath)}
+                                            </c:if>
+                                        </zm:forEachFolder>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td><input class='tbButton' type="submit" name="actionDelete"
+                                           value="<fmt:message key="deleteAddressBook"/>"></td>
+                            </tr>
 
-<tr>
-    <td colspan='2'>&nbsp;</td>
-</tr>
+                            <tr>
+                                <td colspan='2'>&nbsp;</td>
+                            </tr>
 
-</tbody>
-</table>
+                        </tbody>
+                    </table>
 
-</td>
-    </tr>
-</table>
-<input type="hidden" name="doAction" value="1"/>    
-</form>
+                </td>
+            </tr>
+        </table>
+        <input type="hidden" name="doAction" value="1"/>
+    </form>
 </app:view>
