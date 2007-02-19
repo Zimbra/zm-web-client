@@ -277,6 +277,66 @@ function(params, ex) {
 	return false;
 };
 
+ZmZimbraMail.prototype.__buddyListTabsListener = function(ev) {
+	var btn = ev.item;
+	if (!btn.isSelected) {
+		btn.setSelected(true);
+		var show_buddies;
+		if (btn === this.__btnFolders) {
+			this.__btnBuddies.setSelected(false);
+			show_buddies = false;
+		} else {
+			this.__btnFolders.setSelected(false);
+			show_buddies = true;
+		}
+		var opc = this._appCtxt.getOverviewController();
+		var a = opc.getAllTreeViews(ZmZimbraMail._OVERVIEW_ID);
+		var buddies_view = opc.getTreeView(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.ROSTER_TREE_ITEM);
+		for (var i = a.length; --i >= 0;) {
+			var view = a[i];
+			try {
+				// where's XOR when you need it?
+				var show = ( (show_buddies && (view === buddies_view)) ||
+					     (!show_buddies && (view !== buddies_view)) );
+				view.setDisplay(show ? Dwt.DISPLAY_BLOCK : Dwt.DISPLAY_NONE);
+			} catch(ex) {}
+		}
+	}
+};
+
+ZmZimbraMail.prototype._createBuddyListTabs = function() {
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
+		var opc = this._appCtxt.getOverviewController();
+		var tb = new DwtToolBar(opc.getOverview(ZmZimbraMail._OVERVIEW_ID),
+					"DwtToolBar DwtTabBar ZmBuddyFolderTabBar", null, null, null, "100%");
+
+		var listener = new AjxListener(this, this.__buddyListTabsListener);
+
+		var b = this.__btnFolders = new ZmChicletButton(tb, "BuddyFolderTab", "", ZmMsg.folders);
+		b.setActivatedImage("BuddyFolderTab-hover");
+		b.setTriggeredImage("BuddyFolderTab-active");
+		b.addSelectionListener(listener);
+		b.setSelected(true);
+
+		var b = this.__btnBuddies = new ZmChicletButton(tb, "BuddyFolderTab", "", ZmMsg.buddies, true);
+		b.setActivatedImage("BuddyFolderTab-hover");
+		b.setTriggeredImage("BuddyFolderTab-active");
+		b.addSelectionListener(listener);
+	}
+};
+
+ZmZimbraMail.prototype.setBuddyListTab = function(tabName) {
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
+		var selectBtn = null;
+		switch (tabName) {
+		    case "buddies": selectBtn = this.__btnBuddies; break;
+		    case "folders": selectBtn = this.__btnFolders; break;
+		}
+		if (selectBtn)
+			this.__buddyListTabsListener({ item: selectBtn });
+	}
+};
+
 /*
 * Startup: part 2
 * Creates components which have dependencies on the settings, including the overview.
@@ -318,6 +378,9 @@ function(params, result) {
 		opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
 							selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true,
 							hideEmpty: ZmZimbraMail.HIDE_EMPTY});
+		if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
+			this._createBuddyListTabs();
+		}
 	}
 	this._setUserInfo();
 
@@ -786,6 +849,10 @@ function(appName, view) {
 		var app = this._apps[this._activeApp];
 		if (app) app.activate(true, view);
 	}
+};
+
+ZmZimbraMail.prototype.getAppChooserButton = function(id) {
+	return this._components[ZmAppViewMgr.C_APP_CHOOSER].getButton(id);
 };
 
 ZmZimbraMail.prototype.isChildWindow =

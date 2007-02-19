@@ -193,6 +193,7 @@ function(subscribed) {
  */
 ZmRoster.prototype.handleNotification =
 function(im) {
+	// console.dir(im);
 	if (im.n) {
 		for (var curNot=0; curNot < im.n.length; curNot++) {
 			var not = im.n[curNot];
@@ -254,13 +255,20 @@ function(im) {
 				var chatMessage = new ZmChatMessage(msg, msg.from == this.getMyAddress());
 				var cl = this.getChatList();
 				var chat = cl.getChatByThread(chatMessage.thread);
-				if (chat == null && !chatMessage.fromMe) {
-					chat = cl.getChatByRosterAddr(chatMessage.from, true);
+				if (chat == null) {
+					if (!chatMessage.fromMe) {
+						chat = cl.getChatByRosterAddr(chatMessage.from, true);
+					} else {
+						chat = cl.getChatByRosterAddr(chatMessage.to, false);
+					}
 					if (chat) chat.setThread(chatMessage.thread);
 				}
 				if (chat) {
 					chat.addMessage(chatMessage);
-					if (!this._imApp.isActive()) this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, true);
+					if (!this._imApp.isActive()) {
+						this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, true);
+						this._imApp.startFlashingIcon();
+					}
 				}
 			} else if (not.type == "leftchat") {
 				var lc = not;

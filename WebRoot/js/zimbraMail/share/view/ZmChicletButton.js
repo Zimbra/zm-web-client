@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -50,6 +50,7 @@ function ZmChicletButton(parent, outerClass, innerClass, text, isLast) {
 	}
 
 	this._origClassName = outerClass;
+	this._origInnerClass = innerClass;
 	this._activatedClassName = this._origClassName + " " + DwtCssStyle.ACTIVATED;
 	this._triggeredClassName = this._origClassName + " " + DwtCssStyle.TRIGGERED;
 
@@ -79,9 +80,14 @@ function(className) {
 	this._outerDiv.className = className;
 };
 
-ZmChicletButton.prototype.setInnerImage =
+ZmChicletButton.prototype.setInnerImage = // WARNING: this seems broken, not sure it's any good.
 function(className) {
 	this._innerDiv.className = AjxImg.getClassForImage(className);
+};
+
+ZmChicletButton.prototype.setImage = function(className) {
+	if (this._iconDiv)
+		this._iconDiv.className = AjxImg.getClassForImage(className);
 };
 
 ZmChicletButton.prototype.setActivatedImage =
@@ -101,7 +107,7 @@ function(className) {
 *
 * @param listener	a listener
 */
-ZmChicletButton.prototype.addSelectionListener = 
+ZmChicletButton.prototype.addSelectionListener =
 function(listener) {
 	this.addListener(DwtEvent.SELECTION, listener);
 };
@@ -111,16 +117,16 @@ function(listener) {
 *
 * @param listener	the listener to remove
 */
-ZmChicletButton.prototype.removeSelectionListener = 
-function(listener) { 
+ZmChicletButton.prototype.removeSelectionListener =
+function(listener) {
 	this.removeListener(DwtEvent.SELECTION, listener);
 };
 
 /**
 * Removes all the selection listeners.
 */
-ZmChicletButton.prototype.removeSelectionListeners = 
-function() { 
+ZmChicletButton.prototype.removeSelectionListeners =
+function() {
 	this.removeAllListeners(DwtEvent.SELECTION);
 };
 
@@ -174,10 +180,11 @@ function(innerClass, text, isLast) {
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.share.templates.App#" + template, subs);
 
 	this._innerDiv = document.getElementById(this._htmlElId+"_inner");
+	this._iconDiv = document.getElementById(this._htmlElId + "_icon");
 };
 
 // Activates the button.
-ZmChicletButton.prototype._mouseOverListener = 
+ZmChicletButton.prototype._mouseOverListener =
 function(ev) {
 	if (this.isSelected) return;
 
@@ -190,7 +197,7 @@ function(ev) {
 };
 
 // Triggers the button.
-ZmChicletButton.prototype._mouseDownListener = 
+ZmChicletButton.prototype._mouseDownListener =
 function(ev) {
 	this.trigger();
 };
@@ -198,11 +205,11 @@ function(ev) {
 ZmChicletButton.prototype.trigger =
 function() {
 	this.setClassName(this._triggeredClassName);
-	this.isTriggered = true;	
+	this.isTriggered = true;
 };
 
 // Button has been pressed, notify selection listeners.
-ZmChicletButton.prototype._mouseUpListener = 
+ZmChicletButton.prototype._mouseUpListener =
 function(ev) {
     var el = this.getHtmlElement();
 	if (this.isTriggered) {
@@ -214,7 +221,7 @@ function(ev) {
 			this.notifyListeners(DwtEvent.SELECTION, selEv);
 		}
 	}
-	el.className = this._origClassName;	
+	el.className = this._origClassName;
 };
 
 ZmChicletButton.prototype._setMouseOutClassName =
@@ -225,12 +232,12 @@ function() {
 };
 
 // Button no longer activated/triggered.
-ZmChicletButton.prototype._mouseOutListener = 
+ZmChicletButton.prototype._mouseOutListener =
 function(ev) {
 	if (this.isSelected) return;
 
 	if (AjxEnv.isIE) {
-		this._mouseOutActionId = 
+		this._mouseOutActionId =
  		   AjxTimedAction.scheduleAction(this._mouseOutAction, 6);
 	} else {
 		this._setMouseOutClassName();
@@ -247,7 +254,7 @@ function() {
 	this.setActivated(false);
 };
 
-ZmChicletButton.prototype.getKeyMapName = 
+ZmChicletButton.prototype.getKeyMapName =
 function() {
 	return "ZmChicletButton";
 };
@@ -264,9 +271,30 @@ function(actionCode, ev) {
 				this.notifyListeners(DwtEvent.SELECTION, selEv);
 			}
 			break;
-			
+
 		default:
 			return false;
 	}
 	return true;
+};
+
+ZmChicletButton.prototype.startFlashing = function() {
+	if (!this.__flashTimer) {
+		// don't start twice
+		this.__flashIconStatus = false;
+		this.__flashTimer = setInterval(AjxCallback.simpleClosure(this.__flashIconCallback, this), 333);
+	}
+};
+
+ZmChicletButton.prototype.stopFlashing = function() {
+	if (this.__flashTimer) {
+		clearInterval(this.__flashTimer);
+		this.__flashTimer = null;
+		this.setImage(this._origInnerClass);
+	}
+};
+
+ZmChicletButton.prototype.__flashIconCallback = function() {
+	this.__flashIconStatus = !this.__flashIconStatus;
+	this.setImage(this.__flashIconStatus ? "Blank_16" : this._origInnerClass);
 };

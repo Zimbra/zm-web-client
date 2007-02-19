@@ -23,6 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 function ZmRosterTreeItem(params) {
+	// console.log(params);
 	params.type = ZmOrganizer.ROSTER_TREE_ITEM;
 	params.name = params.rosterItem.getDisplayName();
 	ZmOrganizer.call(this, params);

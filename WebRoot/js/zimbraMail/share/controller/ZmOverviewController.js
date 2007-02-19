@@ -282,6 +282,14 @@ function(overviewId, treeId, app) {
 	return this.getTreeController(treeId).getTreeView(overviewId, app);
 };
 
+ZmOverviewController.prototype.getAllTreeViews =
+function(overviewId, app) {
+	var a = [], i = 0, id;
+	for (id in this._controllers)
+		a[i++] = this._controllers[id].getTreeView(overviewId, app);
+	return a;
+};
+
 /**
  * Searches all the tree views for the given overviewId for the tree item
  * whose data object has the given ID.
