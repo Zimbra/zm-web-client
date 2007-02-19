@@ -10,7 +10,7 @@
 <c:choose>
     <c:when test="${!empty param.actionCreate}">
         <c:set var="newFolderName" value="${fn:trim(param.newFolderName)}"/>
-        <c:set var="newSearchQuery" value="${fn:trim(param.newSearchQuery)}"/>
+        <c:set var="newFolderColor" value="${fn:trim(param.newFolderColor)}"/>
         <c:choose>
             <c:when test="${empty newFolderName}">
                 <app:status style="Warning">
@@ -18,7 +18,7 @@
                 </app:status>
             </c:when>
             <c:otherwise>
-                <zm:createFolder parentid="1" var="folder" name="${newFolderName}" view="contact"/>
+                <zm:createFolder parentid="1" var="folder" name="${newFolderName}" view="contact" color="${fn:substring(newFolderColor,2,-1)}"/>
                 <app:status>
                     <fmt:message key="actionAddressBookCreated">
                         <fmt:param value="${newFolderName}"/>
@@ -27,7 +27,34 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${!empty param.actionRename}">
+    <c:when test="${not empty param.actionChangeColor}">
+        <c:choose>
+            <c:when test="${!fn:startsWith(param.folderToChangeColor, 'f:')}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoAddressBookSelected"/>
+                </app:status>
+            </c:when>
+            <c:when test="${not fn:startsWith(param.newColor, 'c:')}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoAddressBookColorSelected"/>
+                </app:status>
+            </c:when>
+            <c:otherwise>
+                <c:set var="folderid" value="${fn:substring(param.folderToChangeColor, 2, -1)}"/>
+                <c:set var="color" value="${fn:substring(param.newColor, 2, -1)}"/>
+                <zm:modifyFolderColor id="${folderid}" color="${color}"/>
+                <c:set var="folderName" value="${zm:getFolderName(pageContext, folderid)}"/>
+                <app:status>
+                    <fmt:message key="${color}" var="colorMsg"/>
+                    <fmt:message key="actionAddressBookColorChanged">
+                        <fmt:param value="${folderName}"/>
+                        <fmt:param value="${colorMsg}"/>
+                    </fmt:message>
+                </app:status>
+            </c:otherwise>
+        </c:choose>
+    </c:when>
+    <c:when test="${not empty param.actionRename}">
         <c:set var="newName" value="${fn:trim(param.newName)}"/>
         <c:choose>
             <c:when test="${empty newName}">
@@ -37,7 +64,7 @@
             </c:when>
             <c:when test="${!fn:startsWith(param.folderToRename, 'f:')}">
                 <app:status style="Warning">
-                    <fmt:message key="actionNoAddressBookRenameSelected"/>
+                    <fmt:message key="actionNoAddressBookSelected"/>
                 </app:status>
             </c:when>
             <c:otherwise>
@@ -57,7 +84,7 @@
         <c:choose>
             <c:when test="${!fn:startsWith(param.folderToDelete, 'f:')}">
                 <app:status style="Warning">
-                    <fmt:message key="actionNoAddressBookDeleteSelected"/>
+                    <fmt:message key="actionNoAddressBookSelected"/>
                 </app:status>
             </c:when>
             <c:otherwise>

@@ -36,7 +36,7 @@
 
                     <table border="0" cellpadding="0" cellspacing="10" width=100%>
                         <tbody>
-
+                            <%-- create --%>
                             <tr>
                                 <td colspan="2" class="sectionLabel" valign="top">
                                     <fmt:message key="createNewAddressBook"/>
@@ -50,6 +50,25 @@
                                 <td><input name='newFolderName' type='text' autocomplete='off' size='35' value=""></td>
                             </tr>
                             <tr>
+                               <td nowrap align='right'>
+                                   <fmt:message key="color"/>
+                                   :
+                               </td>
+                               <td>
+                                   <select name="newFolderColor">
+                                       <option value="c:blue"/><fmt:message key="blue"/>
+                                       <option value="c:cyan"/><fmt:message key="cyan"/>
+                                       <option value="c:green"/><fmt:message key="green"/>
+                                       <option value="c:purple"/><fmt:message key="purple"/>
+                                       <option value="c:red"/><fmt:message key="red"/>
+                                       <option value="c:yellow"/><fmt:message key="yellow"/>
+                                       <option value="c:pink"/><fmt:message key="pink"/>
+                                       <option selected value="c:gray"/><fmt:message key="gray"/>
+                                       <option value="c:orange"/><fmt:message key="orange"/>
+                                   </select>
+                               </td>
+                           </tr>
+                            <tr>
                                 <td>&nbsp;</td>
                                 <td valign="top">
                                     <input class='tbButton' type="submit" name="actionCreate"
@@ -57,6 +76,62 @@
                                 </td>
                             </tr>
 
+                            <%-- change color --%>
+                            <tr>
+                                <td colspan="2" class="sectionLabel" valign="top">
+                                    <fmt:message key="changeAddressBookColor"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td nowrap align='right'>
+                                    <fmt:message key="addressBookName"/>
+                                    :
+                                </td>
+                                <td>
+                                    <select name="folderToChangeColor">
+                                        <option value="" selected/>
+                                        <fmt:message key="chooseAddressBookToChange"/>
+                                        <option disabled/>
+                                        <fmt:message key="actionOptSep"/>
+                                        <zm:forEachFolder var="folder">
+                                            <c:if test="${folder.isContactView}">
+                                                <option value="f:${folder.id}"/>
+                                                ${fn:escapeXml(folder.rootRelativePath)}
+                                            </c:if>
+                                        </zm:forEachFolder>
+                                    </select>
+                                </td>
+                            </tr>
+                             <tr>
+                                <td nowrap align='right'>
+                                    <fmt:message key="color"/>
+                                    :
+                                </td>
+                                <td>
+                                    <select name="newColor">
+                                        <option value="" selected/>
+                                        <fmt:message key="chooseColor"/>
+                                        <option disabled/>
+                                        <fmt:message key="actionOptSep"/>
+                                        <option value="c:blue"/><fmt:message key="blue"/>
+                                        <option value="c:cyan"/><fmt:message key="cyan"/>
+                                        <option value="c:green"/><fmt:message key="green"/>
+                                        <option value="c:purple"/><fmt:message key="purple"/>
+                                        <option value="c:red"/><fmt:message key="red"/>
+                                        <option value="c:yellow"/><fmt:message key="yellow"/>
+                                        <option value="c:pink"/><fmt:message key="pink"/>
+                                        <option value="c:gray"/><fmt:message key="gray"/>
+                                        <option value="c:orange"/><fmt:message key="orange"/>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td><input class='tbButton' type="submit" name="actionChangeColor"
+                                           value="<fmt:message key="changeAddressBookColor"/>"></td>
+                            </tr>
+
+                            <%-- rename --%>
                             <tr>
                                 <td colspan="2" class="sectionLabel" valign="top">
                                     <fmt:message key="renameAddressBook"/>
@@ -97,6 +172,7 @@
                             </tr>
 
 
+                            <%-- delete --%>
                             <tr>
                                 <td colspan="2" class="sectionLabel" valign="top">
                                     <fmt:message key="deleteAddressBook"/>
