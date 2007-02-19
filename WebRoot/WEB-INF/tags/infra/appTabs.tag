@@ -77,6 +77,12 @@
                 </td>
                 <td class='TabSpacer'/>
             </c:when>
+            <c:when test="${selected =='managecalendars'}">
+                <td class='Tab TabSelected'>
+                    <app:img src="calendar/CalendarFolder.gif" altkey='ALT_APP_MANAGE_CALENDARS'/><span><fmt:message key="calendars"/></span>
+                </td>
+                <td class='TabSpacer'/>
+            </c:when>
         </c:choose>
         <%--
         <td class='Tab ${selected=='calendar' ? ' TabSelected' :' TabNormal'}'>

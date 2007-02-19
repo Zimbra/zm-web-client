@@ -87,6 +87,11 @@
      </tag-file>
 
     <tag-file>
+         <name>calendarAction</name>
+         <path>/WEB-INF/tags/overview/calendarAction.tag</path>
+     </tag-file>
+
+    <tag-file>
         <name>convToolbar</name>
         <path>/WEB-INF/tags/conv/convToolbar.tag</path>
     </tag-file>
