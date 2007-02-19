@@ -82,8 +82,8 @@ function(appt, mode, isDirty) {
 };
 
 ZmApptTabViewPage.prototype.isDirty =
-function() {
-	return this._editView.isDirty();
+function(excludeAttendees) {
+	return this._editView.isDirty(excludeAttendees);
 };
 
 ZmApptTabViewPage.prototype.cleanup =
