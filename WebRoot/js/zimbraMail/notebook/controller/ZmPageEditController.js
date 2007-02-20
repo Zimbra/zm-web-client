@@ -25,6 +25,13 @@
 
 function ZmPageEditController(appCtxt, container, app) {
 	ZmListController.call(this, appCtxt, container, app);
+
+	ZmPageEditController.RADIO_GROUP = {};
+	ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_HTML_SOURCE]	= 1;
+	ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_MEDIA_WIKI]		= 1;
+	ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_RICH_TEXT]		= 1;
+	ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_TWIKI]			= 1;
+
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CLOSE] = new AjxListener(this, this._closeListener);
 	//this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._addDocsListener);
@@ -38,14 +45,6 @@ ZmPageEditController.prototype.toString =
 function() {
 	return "ZmPageEditController";
 };
-
-// Constants
-
-ZmPageEditController.RADIO_GROUP = {};
-ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_HTML_SOURCE]	= 1;
-ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_MEDIA_WIKI]		= 1;
-ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_RICH_TEXT]		= 1;
-ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_TWIKI]			= 1;
 
 // Data
 

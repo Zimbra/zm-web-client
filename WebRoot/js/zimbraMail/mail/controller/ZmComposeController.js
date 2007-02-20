@@ -40,6 +40,37 @@ function ZmComposeController(appCtxt, container, mailApp) {
 
 	this._action = null;
 	
+	// radio groups for options items
+	ZmComposeController.RADIO_GROUP = {};
+	ZmComposeController.RADIO_GROUP[ZmOperation.REPLY]			= 1;
+	ZmComposeController.RADIO_GROUP[ZmOperation.REPLY_ALL]		= 1;
+	ZmComposeController.RADIO_GROUP[ZmOperation.FORMAT_HTML]	= 2;
+	ZmComposeController.RADIO_GROUP[ZmOperation.FORMAT_TEXT]	= 2;
+	ZmComposeController.RADIO_GROUP[ZmOperation.INC_ATTACHMENT]	= 3;
+	ZmComposeController.RADIO_GROUP[ZmOperation.INC_NO_PREFIX]	= 3;
+	ZmComposeController.RADIO_GROUP[ZmOperation.INC_NONE]		= 3;
+	ZmComposeController.RADIO_GROUP[ZmOperation.INC_PREFIX]		= 3;
+	ZmComposeController.RADIO_GROUP[ZmOperation.INC_SMART]		= 3;
+	
+	// translate between include preferences and operations
+	ZmComposeController.INC_OP = {};
+	ZmComposeController.INC_OP[ZmSetting.INCLUDE_ATTACH]	= ZmOperation.INC_ATTACHMENT;
+	ZmComposeController.INC_OP[ZmSetting.INCLUDE]			= ZmOperation.INC_NO_PREFIX;
+	ZmComposeController.INC_OP[ZmSetting.INCLUDE_NONE]		= ZmOperation.INC_NONE;
+	ZmComposeController.INC_OP[ZmSetting.INCLUDE_PREFIX]	= ZmOperation.INC_PREFIX;
+	ZmComposeController.INC_OP[ZmSetting.INCLUDE_SMART]		= ZmOperation.INC_SMART;
+	ZmComposeController.INC_MAP = {};
+	for (var i in ZmComposeController.INC_OP)
+		ZmComposeController.INC_MAP[ZmComposeController.INC_OP[i]] = i;
+	delete i;
+	
+	ZmComposeController.OPTIONS_TT = {};
+	ZmComposeController.OPTIONS_TT[ZmOperation.NEW_MESSAGE]		= "composeOptions";
+	ZmComposeController.OPTIONS_TT[ZmOperation.REPLY]			= "replyOptions";
+	ZmComposeController.OPTIONS_TT[ZmOperation.REPLY_ALL]		= "replyOptions";
+	ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_ATT]		= "forwardOptions";
+	ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_INLINE]	= "forwardOptions";
+
 	this._listeners = {};
 	this._listeners[ZmOperation.SEND] = new AjxListener(this, this._sendListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
@@ -59,37 +90,6 @@ function ZmComposeController(appCtxt, container, mailApp) {
 
 // settings whose changes affect us (so we add a listener to them)
 ZmComposeController.SETTINGS = [ZmSetting.SHOW_BCC];
-
-// radio groups for options items
-ZmComposeController.RADIO_GROUP = {};
-ZmComposeController.RADIO_GROUP[ZmOperation.REPLY]			= 1;
-ZmComposeController.RADIO_GROUP[ZmOperation.REPLY_ALL]		= 1;
-ZmComposeController.RADIO_GROUP[ZmOperation.FORMAT_HTML]	= 2;
-ZmComposeController.RADIO_GROUP[ZmOperation.FORMAT_TEXT]	= 2;
-ZmComposeController.RADIO_GROUP[ZmOperation.INC_ATTACHMENT]	= 3;
-ZmComposeController.RADIO_GROUP[ZmOperation.INC_NO_PREFIX]	= 3;
-ZmComposeController.RADIO_GROUP[ZmOperation.INC_NONE]		= 3;
-ZmComposeController.RADIO_GROUP[ZmOperation.INC_PREFIX]		= 3;
-ZmComposeController.RADIO_GROUP[ZmOperation.INC_SMART]		= 3;
-
-// translate between include preferences and operations
-ZmComposeController.INC_OP = {};
-ZmComposeController.INC_OP[ZmSetting.INCLUDE_ATTACH]	= ZmOperation.INC_ATTACHMENT;
-ZmComposeController.INC_OP[ZmSetting.INCLUDE]			= ZmOperation.INC_NO_PREFIX;
-ZmComposeController.INC_OP[ZmSetting.INCLUDE_NONE]		= ZmOperation.INC_NONE;
-ZmComposeController.INC_OP[ZmSetting.INCLUDE_PREFIX]	= ZmOperation.INC_PREFIX;
-ZmComposeController.INC_OP[ZmSetting.INCLUDE_SMART]		= ZmOperation.INC_SMART;
-ZmComposeController.INC_MAP = {};
-for (var i in ZmComposeController.INC_OP)
-	ZmComposeController.INC_MAP[ZmComposeController.INC_OP[i]] = i;
-delete i;
-
-ZmComposeController.OPTIONS_TT = {};
-ZmComposeController.OPTIONS_TT[ZmOperation.NEW_MESSAGE]		= "composeOptions";
-ZmComposeController.OPTIONS_TT[ZmOperation.REPLY]			= "replyOptions";
-ZmComposeController.OPTIONS_TT[ZmOperation.REPLY_ALL]		= "replyOptions";
-ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_ATT]		= "forwardOptions";
-ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_INLINE]	= "forwardOptions";
 
 ZmComposeController.prototype = new ZmController();
 ZmComposeController.prototype.constructor = ZmComposeController;

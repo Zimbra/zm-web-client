@@ -89,21 +89,6 @@ function ZmListController(appCtxt, container, app) {
 ZmListController.prototype = new ZmController;
 ZmListController.prototype.constructor = ZmListController;
 
-// convert key mapping to operation
-ZmListController.ACTION_CODE_TO_OP = {};
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_APPT]			= ZmOperation.NEW_APPT;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CALENDAR]		= ZmOperation.NEW_CALENDAR;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_CONTACT]		= ZmOperation.NEW_CONTACT;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_FOLDER]			= ZmOperation.NEW_FOLDER;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE]		= ZmOperation.NEW_MESSAGE;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_MESSAGE_WIN]	= ZmOperation.NEW_MESSAGE;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_PAGE]			= ZmOperation.NEW_PAGE;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_TAG]			= ZmOperation.NEW_TAG;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_NOTEBOOK]		= ZmOperation.NEW_NOTEBOOK;
-ZmListController.ACTION_CODE_TO_OP[ZmKeyMap.NEW_TASK]			= ZmOperation.NEW_TASK;
-
-// abstract public methods
-
 // public methods
 
 ZmListController.prototype.toString = 
