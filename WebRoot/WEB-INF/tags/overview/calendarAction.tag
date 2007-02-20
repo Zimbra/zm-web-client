@@ -19,9 +19,30 @@
                 </app:status>
             </c:when>
             <c:otherwise>
-                <zm:createFolder parentid="1" var="folder" name="${newFolderName}" view="appointment" color="${fn:substring(newFolderColor,2,-1)}" flags="${newFolderFlag}"/>
+                <zm:createFolder parentid="1" var="folder" name="${newFolderName}" view="appointment" color="${fn:substring(newFolderColor,2,-1)}" flags="#${newFolderFlag}"/>
                 <app:status>
                     <fmt:message key="actionCalendarCreated">
+                        <fmt:param value="${newFolderName}"/>
+                    </fmt:message>
+                </app:status>
+            </c:otherwise>
+        </c:choose>
+    </c:when>
+    <c:when test="${!empty param.actionSubscribe}">
+        <c:set var="subscribeFolderName" value="${fn:trim(param.subscribeFolderName)}"/>
+        <c:set var="subscribeFolderUrl" value="${fn:trim(param.subscribeFolderUrl)}"/>
+        <c:set var="subscribeFolderColor" value="${fn:trim(param.subscribeFolderColor)}"/>
+        <c:set var="subscribeFolderFlag" value="${fn:trim(param.subscribeFolderFlag)}"/>
+        <c:choose>
+            <c:when test="${empty subscribeFolderName}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoCalendarNameSpecified"/>
+                </app:status>
+            </c:when>
+            <c:otherwise>
+                <zm:createFolder parentid="1" var="folder" name="${subscribeFolderName}" url="${subscribeFolderUrl}" view="appointment" color="${fn:substring(subscribeFolderColor,2,-1)}" flags="#${subscribeFolderFlag}"/>
+                <app:status>
+                    <fmt:message key="actionCalendarSubscribed">
                         <fmt:param value="${newFolderName}"/>
                     </fmt:message>
                 </app:status>

@@ -10,8 +10,8 @@
 <c:set var="icon" value="${folder.isMountPoint ? 'calendar/SharedCalendarFolder.gif' : 'calendar/CalendarFolder.gif'}"/>
 <fmt:message var="label" key="FOLDER_LABEL_${folder.id}"/>
 <c:if test="${fn:startsWith(label,'???')}"><c:set var="label" value="${folder.name}"/></c:if>
-<tr>
-    <td nowrap colspan=3 class='${folder.styleColor}Bg Folder<c:if test="${folder.hasUnread}"> Unread</c:if><c:if test="${folder.id eq requestScope.context.selectedId}"> Selected</c:if>'
+<tr class='${folder.styleColor}Bg'>
+    <td nowrap colspan=2 class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if><c:if test="${folder.id eq requestScope.context.selectedId}"> Selected</c:if>'
         style='padding-left: ${folder.depth*8}px'>
         <c:choose>
             <c:when test="${folder.isCheckedInUI}"><app:calendarUrl var="url" uncheck="${folder.id}"/></c:when>
@@ -31,5 +31,17 @@
             ${fn:escapeXml(label)}
         </a>
 
-    </td></tr>
+    </td>
+    <td width=1% align=center style='padding:0;'>
+        <c:choose>
+            <c:when test="${not empty folder.remoteURL}">
+                <app:calendarUrl var="syncUrl" sync="${folder.id}"/>
+                <a href="${syncUrl}"><app:img src="arrows/Refresh.gif"/></a>
+            </c:when>
+            <c:otherwise>
+                &nbsp;
+            </c:otherwise>
+        </c:choose>
+    </td>
+</tr>
 
