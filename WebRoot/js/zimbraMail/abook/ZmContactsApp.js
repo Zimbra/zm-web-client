@@ -109,7 +109,7 @@ function ZmContactsApp(appCtxt, container, parentController) {
 								});
 
 	ZmSearchToolBar.FOR_GAL_MI 	= "FOR GAL";
-	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_PAS_MI,
+	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_GAL_MI,
 								{msgKey:		"searchGALContacts",
 								 tooltipKey:	"searchGALContacts",
 								 icon:			"SearchGAL",
