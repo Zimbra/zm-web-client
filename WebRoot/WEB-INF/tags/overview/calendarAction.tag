@@ -28,6 +28,42 @@
             </c:otherwise>
         </c:choose>
     </c:when>
+    <c:when test="${!empty param.actionLink}">
+        <c:set var="linkedOwnersEmail" value="${fn:trim(param.linkedOwnersEmail)}"/>
+        <c:set var="linkedOwnersCalendar" value="${fn:trim(param.linkedOwnersCalendar)}"/>
+        <c:set var="linkedFolderName" value="${fn:trim(param.linkedFolderName)}"/>
+        <c:set var="linkedFolderColor" value="${fn:trim(param.linkedFolderColor)}"/>
+        <c:set var="linkedFolderFlag" value="${fn:trim(param.linkedFolderFlag)}"/>
+        <c:choose>
+            <c:when test="${empty linkedOwnersEmail}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoOwnerEmailSpecified"/>
+                </app:status>
+            </c:when>
+            <c:when test="${empty linkedOwnersCalendar}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoOwnerCalendarSpecified"/>
+                </app:status>
+            </c:when>
+            <c:when test="${empty linkedFolderName}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoCalendarNameSpecified"/>
+                </app:status>
+            </c:when>
+            <c:otherwise>
+                <zm:createMountpoint
+                        owner="${linkedOwnersEmail}" ownerby="BY_NAME"
+                        shareditem="${linkedOwnersCalendar}" shareditemby="BY_PATH"
+                        parentid="1" var="folder" name="${linkedFolderName}" view="appointment"
+                        color="${fn:substring(linkedFolderColor,2,-1)}" flags="#${linkedFolderFlag}"/>
+                <app:status>
+                    <fmt:message key="actionCalendarCreated">
+                        <fmt:param value="${newFolderName}"/>
+                    </fmt:message>
+                </app:status>
+            </c:otherwise>
+        </c:choose>
+    </c:when>
     <c:when test="${!empty param.actionSubscribe}">
         <c:set var="subscribeFolderName" value="${fn:trim(param.subscribeFolderName)}"/>
         <c:set var="subscribeFolderUrl" value="${fn:trim(param.subscribeFolderUrl)}"/>

@@ -486,7 +486,7 @@ padding: 8px 0px 6px 0px;
 
 .StatusInfo     { @WindowOuterContainer@ @ToastBg-info@ }
 .StatusWarning  { @WindowOuterContainer@ @ToastBg-warning@}
-.StatusCritical { @windowOuterContainer@ @ToastBg-critical@ }
+.StatusCritical { @WindowOuterContainer@ @ToastBg-critical@ }
 
 /*
  *   Shortcut key display

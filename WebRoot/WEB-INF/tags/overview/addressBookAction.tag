@@ -27,6 +27,40 @@
             </c:otherwise>
         </c:choose>
     </c:when>
+    <c:when test="${!empty param.actionLink}">
+        <c:set var="linkedOwnersEmail" value="${fn:trim(param.linkedOwnersEmail)}"/>
+        <c:set var="linkedOwnersAddressBook" value="${fn:trim(param.linkedOwnersAddressBook)}"/>
+        <c:set var="linkedFolderName" value="${fn:trim(param.linkedFolderName)}"/>
+        <c:set var="linkedFolderColor" value="${fn:trim(param.linkedFolderColor)}"/>
+        <c:choose>
+            <c:when test="${empty linkedOwnersEmail}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoOwnerEmailSpecified"/>
+                </app:status>
+            </c:when>
+            <c:when test="${empty linkedOwnersAddressBook}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoOwnerAddressBookSpecified"/>
+                </app:status>
+            </c:when>
+            <c:when test="${empty linkedFolderName}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoAddressBookNameSpecified"/>
+                </app:status>
+            </c:when>
+            <c:otherwise>
+                <zm:createMountpoint owner="${linkedOwnersEmail}" ownerby="BY_NAME"
+                                     shareditem="${linkedOwnersAddressBook}" shareditemby="BY_PATH"
+                                     parentid="1" var="folder" name="${linkedFolderName}"
+                                     view="contact" color="${fn:substring(linkedFolderColor,2,-1)}"/>
+                <app:status>
+                    <fmt:message key="actionAddressBookCreated">
+                        <fmt:param value="${linkedFolderName}"/>
+                    </fmt:message>
+                </app:status>
+            </c:otherwise>
+        </c:choose>
+    </c:when>
     <c:when test="${not empty param.actionChangeColor}">
         <c:choose>
             <c:when test="${!fn:startsWith(param.folderToChangeColor, 'f:')}">

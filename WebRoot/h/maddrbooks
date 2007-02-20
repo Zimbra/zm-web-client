@@ -76,6 +76,60 @@
                                 </td>
                             </tr>
 
+                            <%-- link --%>
+                            <tr>
+                                <td colspan="2" class="sectionLabel" valign="top">
+                                    <fmt:message key="linkToSharedAddressBook"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td nowrap align=right>
+                                    <fmt:message key="ownersEmail"/>
+                                    :
+                                </td>
+                                <td><input name='linkedOwnersEmail' type='text' autocomplete='off' size='35' value=""></td>
+                            </tr>
+                            <tr>
+                                <td nowrap align=right>
+                                    <fmt:message key="ownersAddressBookName"/>
+                                    :
+                                </td>
+                                <td><input name='linkedOwnersAddressBook' type='text' autocomplete='off' size='35' value=""></td>
+                            </tr>
+                            <tr>
+                                <td nowrap align=right>
+                                    <fmt:message key="addressBookName"/>
+                                    :
+                                </td>
+                                <td><input name='linkedFolderName' type='text' autocomplete='off' size='35' value=""></td>
+                            </tr>
+                            <tr>
+                               <td nowrap align='right'>
+                                   <fmt:message key="color"/>
+                                   :
+                               </td>
+                               <td>
+                                   <select name="linkedFolderColor">
+                                       <option value="c:blue"/><fmt:message key="blue"/>
+                                       <option value="c:cyan"/><fmt:message key="cyan"/>
+                                       <option value="c:green"/><fmt:message key="green"/>
+                                       <option value="c:purple"/><fmt:message key="purple"/>
+                                       <option value="c:red"/><fmt:message key="red"/>
+                                       <option value="c:yellow"/><fmt:message key="yellow"/>
+                                       <option value="c:pink"/><fmt:message key="pink"/>
+                                       <option selected value="c:gray"/><fmt:message key="gray"/>
+                                       <option value="c:orange"/><fmt:message key="orange"/>
+                                   </select>
+                               </td>
+                           </tr>
+                            <tr>
+                                <td>&nbsp;</td>
+                                <td valign="top">
+                                    <input class='tbButton' type="submit" name="actionLink"
+                                           value="<fmt:message key="linkToSharedAddressBook"/>">
+                                </td>
+                            </tr>
+
                             <%-- change color --%>
                             <tr>
                                 <td colspan="2" class="sectionLabel" valign="top">
