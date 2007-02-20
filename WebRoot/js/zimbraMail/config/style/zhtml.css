@@ -141,7 +141,6 @@ border: none;
 
 .ZhDisplayRuleContent {
    @AppBg@  @OutsetBorder@
-
 }
 
 .ZhEditRuleContent {
@@ -565,6 +564,11 @@ padding: 8px 0px 6px 0px;
 
 .PanelHead {
 	background-color:#bab09a;
+}
+
+
+.ZhEditCalendarContent {
+   @AppBg@  @OutsetBorder@
 }
 
 .ZhCalMonthHeaderRow {

@@ -50,6 +50,12 @@
 
     <c:if test="${not empty param.sync}">
         <zm:syncFolder id="${param.sync}"/>
+        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.sync)}"/>
+        <app:status>
+            <fmt:message key="actionCalendarReloaded">
+                <fmt:param value="${folderName}"/>
+            </fmt:message>
+        </app:status>
     </c:if>
 
     <c:set var="view" value="${not empty param.view ? param.view : mailbox.prefs.calendarInitialView}"/>
