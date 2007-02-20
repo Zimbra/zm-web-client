@@ -36,7 +36,8 @@
         <c:choose>
             <c:when test="${not empty folder.remoteURL}">
                 <app:calendarUrl var="syncUrl" sync="${folder.id}"/>
-                <a href="${syncUrl}"><app:img src="arrows/Refresh.gif"/></a>
+                <fmt:message key="reloadCalendar" var="reload"/>
+                <a href="${syncUrl}"><app:img src="arrows/Refresh.gif" title="${reload}"/></a>
             </c:when>
             <c:otherwise>
                 &nbsp;
