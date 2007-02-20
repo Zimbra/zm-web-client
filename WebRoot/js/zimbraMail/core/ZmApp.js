@@ -47,6 +47,7 @@ function ZmApp(name, appCtxt, container, parentController) {
 	this._parentController = parentController;
 
 	this._deferredFolders = [];
+	this._deferredFolderHash = {};
 	this._deferredNotifications = [];
 }
 
@@ -233,8 +234,11 @@ function(name, force) {
 
 ZmApp.prototype.addDeferredFolder =
 function(type, obj, tree, path) {
-	var params = {type:type, obj:obj, tree:tree, path:path};
-	this._deferredFolders.push(params);
+	if (obj.id && !this._deferredFolderHash[obj.id]) {
+		var params = {type:type, obj:obj, tree:tree, path:path};
+		this._deferredFolders.push(params);
+		this._deferredFolderHash[obj.id] = true;
+	}
 };
 
 /**
@@ -259,6 +263,7 @@ function(type) {
 		folder.parent = parent;
 	}
 	this._deferredFolders = [];
+	this._deferredFolderHash = {};
 
 	this._appCtxt.getFolderTree().getPermissions(type);
 };
