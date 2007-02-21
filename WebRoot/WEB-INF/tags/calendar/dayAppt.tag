@@ -19,6 +19,10 @@
         <div <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if> 
                 class='ZhCalDayAllDayAppt${needsAction ? 'New ' : ' '} ${color}${needsAction ? 'Dark' : 'Light'}'>
                 ${fn:escapeXml(appt.name)}
+            <%--
+            start(<fmt:formatDate value="${zm:getCalendar(appt.startTime, null).time}" type="both"/>)
+            end(<fmt:formatDate value="${zm:getCalendar(appt.endTime,null).time}" type="both"/>)
+            --%>
         </div>
     </c:when>
     <c:when test="${appt.duration gt 1000*60*15}">

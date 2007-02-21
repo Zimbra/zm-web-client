@@ -46,14 +46,14 @@
     <c:set var="prevDate" value="${zm:addDay(date, -dayIncr)}"/>
     <c:set var="nextDate" value="${zm:addDay(date,  dayIncr)}"/>
 
-    <c:set var="rangeEnd" value="${currentDay.timeInMillis+zm:MSECS_PER_DAY()*numdays}"/>
+    <c:set var="rangeEnd" value="${zm:addDay(currentDay,numdays).timeInMillis}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
 
     <%-- fetch mini cal appts first, so they are in cache, as well as any data neded by this view --%>
     <c:set var="startOfMonth" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
-    <zm:getAppointmentSummaries timezone="${timezone}" var="minicalappts" folderid="${checkedCalendars}" start="${startOfMonth.timeInMillis}" end="${startOfMonth.timeInMillis+zm:MSECS_PER_DAY()*42}"/>
+    <zm:getAppointmentSummaries timezone="${timezone}" var="minicalappts" folderid="${checkedCalendars}" start="${startOfMonth.timeInMillis}" end="${zm:addDay(startOfMonth, 42).timeInMillis}"/>
     <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${rangeEnd}"/>
-    <zm:apptMultiDayLayout
+    <zm:apptMultiDayLayout timezone="${timezone}"
             schedule="${scheduleView ? checkedCalendars : ''}"
             var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
             hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
@@ -85,7 +85,7 @@
                            </c:otherwise>
                        </c:choose>
                        <c:forEach var="day" items="${layout.days}">
-                           <td class='ZhCalDaySEP ZhCalDayHeader${(day.startTime eq today.timeInMillis and empty day.folderId) ? 'Today':''}' colspan="${day.maxColumns}" width=${day.width}%>
+                           <td nowrap class='ZhCalDaySEP ZhCalDayHeader${(day.startTime eq today.timeInMillis and empty day.folderId) ? 'Today':''}' colspan="${day.maxColumns}" width=${day.width}%>
                                <c:choose>
                                    <c:when test="${not empty day.folderId}">
                                        <fmt:message var="fname" key="FOLDER_LABEL_${day.folderId}"/>

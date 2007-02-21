@@ -18,20 +18,20 @@
     <fmt:message var="dayFormat" key="CAL_MINICAL_DAY_FORMAT"/>
     <fmt:formatDate var="title" value="${date.time}" pattern="${titleFormat}"/>
     <c:set var="today" value="${zm:getToday(timezone)}"/>
-    <c:set var="rangeStart" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, view).timeInMillis}"/>
+    <c:set var="rangeStart" value="${zm:getFirstDayOfMultiDayView(date, mailbox.prefs.calendarFirstDayOfWeek, view)}"/>
     <c:choose>
         <c:when test="${view eq 'week' or view eq 'workWeek'}">
-            <c:set var="rangeEnd" value="${rangeStart + zm:MSECS_PER_DAY()*(view eq 'week' ? 7 : 5)}"/>
+            <c:set var="rangeEnd" value="${zm:addDay(rangeStart, view eq 'week' ? 7 : 5)}"/>
         </c:when>
         <c:otherwise>
-            <c:set var="rangeEnd" value="${rangeStart + zm:MSECS_PER_DAY() *(not empty param.numdays ? param.numdays : 1)}"/>
+            <c:set var="rangeEnd" value="${zm:addDay(rangeStart, not empty param.numdays ? param.numdays : 1)}"/>
         </c:otherwise>
     </c:choose>
 
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
     <c:set var="currentWeekDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
-    <zm:getAppointmentSummaries var="appts" timezone="${timezone}" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+zm:MSECS_PER_DAY()*42}"/>
+    <zm:getAppointmentSummaries var="appts" timezone="${timezone}" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${zm:addDay(currentDay, 42).timeInMillis}"/>
 </app:handleError>
 
 <div class='ZhCalMiniContainer'>
@@ -88,8 +88,8 @@
                     <c:set var="clazz" value='ZhCalMDOM'/>
                 </c:otherwise>
             </c:choose>
-            <c:set var="hasappt" value="${zm:hasAnyAppointments(appts, currentDay.timeInMillis, currentDay.timeInMillis + zm:MSECS_PER_DAY()) ? ' ZhCalMDHA' : ''}"/>
-            <td align=center class='${clazz}${hasappt}${(currentDay.timeInMillis ge rangeStart and currentDay.timeInMillis lt rangeEnd) ? ' ZhCalMDS':''}'>
+            <c:set var="hasappt" value="${zm:hasAnyAppointments(appts, currentDay.timeInMillis, zm:addDay(currentDay, 1).timeInMillis) ? ' ZhCalMDHA' : ''}"/>
+            <td align=center class='${clazz}${hasappt}${(currentDay.timeInMillis ge rangeStart.timeInMillis and currentDay.timeInMillis lt rangeEnd.timeInMillis) ? ' ZhCalMDS':''}'>
                 <app:calendarUrl var="dayUrl" timezone="${timezone}" rawdate="${currentDay}"/>
                 <a href="${dayUrl}">
                 <fmt:formatDate value="${currentDay.time}" pattern="${dayFormat}"/>

@@ -23,7 +23,7 @@
     <c:set var="nextDate" value="${zm:addMonth(date,  1)}"/>
     <c:set var="currentDay" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
     <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
-    <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${currentDay.timeInMillis+zm:MSECS_PER_DAY()*42}"/>
+    <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${zm:addDay(currentDay, 42).timeInMillis}"/>
 </app:handleError>
 
 <app:view title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" date="${date}">
@@ -71,7 +71,7 @@
                                         </tr>
                                         <c:set var="count" value="${0}"/>
                                         <c:set var="dayStart" value="${currentDay.timeInMillis}"/>
-                                        <c:set var="dayEnd" value="${currentDay.timeInMillis+zm:MSECS_PER_DAY()}"/>
+                                        <c:set var="dayEnd" value="${zm:addDay(currentDay, 1).timeInMillis}"/>
                                         <zm:forEachAppoinment var="appt" appointments="${appts}" start="${dayStart}" end="${dayEnd}">
                                             <tr><td><app:monthAppt appt="${appt}" start="${dayStart}" end="${dayEnd}" timezone="${timezone}"/></td></tr>
                                             <c:set var="count" value="${count+1}"/>
