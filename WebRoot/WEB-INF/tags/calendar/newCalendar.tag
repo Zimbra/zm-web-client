@@ -65,6 +65,7 @@
                 <tr valign=center>
                     <td>
                         <input name='newFolderUrl' type='text' autocomplete='off' size='70' value="${fn:escapeXml(param.newFolderUrl)}">
+                        <input name='newFolderUrlVisible' type='hidden' value='TRUE'/>
                     </td>
                 </tr>
             </table>
@@ -80,6 +81,7 @@
             </td>
             <td>
                 <input name='newFolderOwnersEmail' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersEmail)}">
+                <input name='newFolderOwnersEmailVisible' type='hidden' value='TRUE'/>
             </td>
         </tr>
         <tr>
@@ -89,6 +91,7 @@
             </td>
             <td>
                 <input name='newFolderOwnersCalendar' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersCalendar)}">
+                <input name='newFolderOwnersCalendarVisible' type='hidden' value='TRUE'/>
             </td>
         </tr>
     </c:if>
@@ -149,7 +152,7 @@
     <tr>
         <td>&nbsp;</td>
         <td>
-            <input class='tbButton' type="submit" name="actionCreate"
+            <input class='tbButton' type="submit" name="actionNew"
                    value="<fmt:message key="createCalendar"/>">
             &nbsp;
             <input class='tbButton' type="submit" name="actionCancel"

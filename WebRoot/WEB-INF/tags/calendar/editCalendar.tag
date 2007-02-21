@@ -12,11 +12,9 @@
 <table width=100% cellspacing=0 cellpadding=0>
     <tr class='${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}'>
         <c:set var="icon" value="${folder.isMountPoint ? 'calendar/SharedCalendarFolder.gif' : 'calendar/CalendarFolder.gif'}"/>
-        <td>
-            &nbsp;
-        </td>
+
         <td width=20>
-            <app:img src="${icon}" alt='${fn:escapeXml(label)}'/>
+            &nbsp;<app:img src="${icon}" alt='${fn:escapeXml(label)}'/>
         </td>
         <td class='ZhFolderHeader' colspan=2>
             ${fn:escapeXml(label)}
@@ -56,6 +54,7 @@
                 </c:when>
                 <c:otherwise>
                     <input name='folderName' type='text' autocomplete='off' size='35' value="${fn:escapeXml(folder.name)}">
+                    <input name='folderNameVisible' type='hidden' value="true"/>
                 </c:otherwise>
             </c:choose>
 
@@ -73,6 +72,7 @@
                 <tr valign=center>
                     <td>
                         <input name='folderUrl' type='text' autocomplete='off' size='70' value="${fn:escapeXml(folder.remoteURL)}">
+                        <input name='folderUrlVisible' type='hidden' value="true"/>
                     </td>
                     <td>
                         &nbsp;
@@ -121,15 +121,15 @@
         </td>
         <td>
             <select name="folderColor">
-                <option <c:if test="${folder.color eq 'blue'}">selected</c:if> value="c:blue"/><fmt:message key="blue"/>
-                <option <c:if test="${folder.color eq 'cyan'}">selected</c:if> value="c:cyan"/><fmt:message key="cyan"/>
-                <option <c:if test="${folder.color eq 'green'}">selected</c:if> value="c:green"/><fmt:message key="green"/>
-                <option <c:if test="${folder.color eq 'purple'}">selected</c:if> value="c:purple"/><fmt:message key="purple"/>
-                <option <c:if test="${folder.color eq 'red'}">selected</c:if> value="c:red"/><fmt:message key="red"/>
-                <option <c:if test="${folder.color eq 'yellow'}">selected</c:if> value="c:yellow"/><fmt:message key="yellow"/>
-                <option <c:if test="${folder.color eq 'pink'}">selected</c:if> value="c:pink"/><fmt:message key="pink"/>
-                <option <c:if test="${folder.color eq 'gray'}">selected</c:if> value="c:gray"/><fmt:message key="gray"/>
-                <option <c:if test="${folder.color eq 'orange'}">selected</c:if> value="c:orange"/><fmt:message key="orange"/>
+                <option <c:if test="${folder.color eq 'blue'}">selected</c:if> value="blue"/><fmt:message key="blue"/>
+                <option <c:if test="${folder.color eq 'cyan'}">selected</c:if> value="cyan"/><fmt:message key="cyan"/>
+                <option <c:if test="${folder.color eq 'green'}">selected</c:if> value="green"/><fmt:message key="green"/>
+                <option <c:if test="${folder.color eq 'purple'}">selected</c:if> value="purple"/><fmt:message key="purple"/>
+                <option <c:if test="${folder.color eq 'red'}">selected</c:if> value="red"/><fmt:message key="red"/>
+                <option <c:if test="${folder.color eq 'yellow'}">selected</c:if> value="yellow"/><fmt:message key="yellow"/>
+                <option <c:if test="${folder.color eq 'pink'}">selected</c:if> value="pink"/><fmt:message key="pink"/>
+                <option <c:if test="${folder.color eq 'gray'}">selected</c:if> value="gray"/><fmt:message key="gray"/>
+                <option <c:if test="${folder.color eq 'orange'}">selected</c:if> value="orange"/><fmt:message key="orange"/>
             </select>
         </td>
     </tr>
@@ -172,7 +172,37 @@
         <td>
             <input class='tbButton' type="submit" name="actionSave"
                    value="<fmt:message key="saveChanges"/>">
+            <input type="hidden" name="folderId" value="${folder.id}"/>
         </td>
-
     </tr>
+
+    <c:if test="${not folder.isSystemFolder}">
+    <tr>
+        <td colspan=2><hr></td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td nowrap>
+            <table border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                    <td>
+                        <input name='folderDeleteConfirm' type='checkbox' value="true">
+                    </td>
+                    <td>&nbsp;</td>
+                    <td>
+                        <fmt:message key="calendarDeleteConfirmation"/>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>
+            <input class='tbButton' type="submit" name="actionDelete"
+                   value="<fmt:message key="calendarDelete"/>">
+            <input type="hidden" name="folderDeleteId" value="${folder.id}"/>
+        </td>
+    </tr>
+    </c:if> 
 </table>
