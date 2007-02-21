@@ -72,7 +72,14 @@ function(showUnread, maxLength, noMarkup) {
 
 ZmVoicemailFolder.prototype.getIcon =
 function() {
-	return this.id == ZmOrganizer.ID_ROOT ? null : "Voicemail";
+	switch (this.callType) {
+		case ZmVoicemailFolder.ACCOUNT: return null;
+		case ZmVoicemailFolder.PLACED_CALL: return "PlacedCalls";
+		case ZmVoicemailFolder.ANSWERED_CALL: return "AnsweredCalls";
+		case ZmVoicemailFolder.MISSED_CALL: return "MissedCalls";
+		case ZmVoicemailFolder.VOICEMAIL: return "Voicemail";
+	}
+	return null;
 };
 
 ZmVoicemailFolder.sortCompare =
