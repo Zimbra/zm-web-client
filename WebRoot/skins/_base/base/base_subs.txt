@@ -639,6 +639,7 @@ PlayButton-clicked		= @_WidgetContainer-clicked_@		@_PlayButtonStyle_@
 PlayButton-default		= @_WidgetContainer-default_@		@_PlayButtonStyle_@
 PlayButton-focused		= @_WidgetContainer-focused_@		@_PlayButtonStyle_@
 PlayButton-toggled		= @_WidgetContainer-toggled_@		@_PlayButtonStyle_@
+PlayButton-hidden		= padding:2px; /* To compensate for the border around the visible buttons */
 
 _SelectStyle_				= @_SelectSize_@
 Select						= @_WidgetContainer_@			@_SelectStyle_@

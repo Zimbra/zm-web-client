@@ -40,7 +40,7 @@ ZmVoicemailView.prototype.toString = function() {
 };
 
 ZmVoicemailView.FROM_WIDTH = 150;
-ZmVoicemailView.PLAYING_WIDTH = 16;
+ZmVoicemailView.PLAYING_WIDTH = 20;
 ZmVoicemailView.DURATION_WIDTH = 120;
 ZmVoicemailView.DATE_WIDTH = 60;
 ZmVoicemailView.SUBJECT_WIDTH = null; // Auto
@@ -155,7 +155,7 @@ function(voicemail, now, isDndIcon, isMixedView, myDiv) {
 		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SIZE]) == 0) {
 			htmlArr[idx++] = AjxDateUtil.computeDuration(voicemail.duration);
 		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING]) == 0) {
-			htmlArr[idx++] = "<div></div>";
+			htmlArr[idx++] = "<div class='ImgBlank_16 ZmPlayButton-hidden'></div>";
 		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_DATE]) == 0) {
 			htmlArr[idx++] = AjxDateUtil.computeDateStr(now, voicemail.date);
 		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SUBJECT]) == 0) {

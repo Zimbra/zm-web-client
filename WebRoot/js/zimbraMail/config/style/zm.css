@@ -2749,17 +2749,25 @@ HTML>BODY .appt-selected .appt_allday_body
   @AppTabContainer-selected@
 }
 
-.ZmVoicemailView .Row {
+.ZmVoicemailView .Row, 
+.ZmVoicemailView .Row-selected, 
+.ZmVoicemailView .Row-matched, 
+.ZmVoicemailView .Row-matched-drag, 
+.ZmVoicemailView .Row-drag, 
+.ZmVoicemailView .Row-selected-drag, 
+.ZmVoicemailView .Row-selected-right, 
+.ZmVoicemailView .Row-selected-disabled {
 	height: 20px;
 }
 
-.ZmPlayButton 								{	@PlayButton@					}
-.ZmPlayButton-disabled						{	@PlayButton-disabled@			}
-.ZmPlayButton-activated 					{	@PlayButton-hover@			}
-.ZmPlayButton-triggered						{	@PlayButton-clicked@			}
-.ZmPlayButton-toggled						{	@PlayButton-toggled@			}
-.ZmPlayButton-active						{	@PlayButton-default@			}
-.ZmPlayButton-focused						{	@PlayButton-focused@			}
+.ZmPlayButton 								{	@PlayButton@			}
+.ZmPlayButton-disabled						{	@PlayButton-disabled@	}
+.ZmPlayButton-activated 					{	@PlayButton-hover@		}
+.ZmPlayButton-triggered						{	@PlayButton-clicked@	}
+.ZmPlayButton-toggled						{	@PlayButton-toggled@	}
+.ZmPlayButton-active						{	@PlayButton-default@	}
+.ZmPlayButton-focused						{	@PlayButton-focused@	}
+.ZmPlayButton-hidden						{	@PlayButton-hidden@		}
 
 .ZmPortlet {
   width: 100%;
