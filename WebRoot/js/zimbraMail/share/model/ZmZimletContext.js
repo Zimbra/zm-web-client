@@ -288,14 +288,14 @@ ZmZimletContext.prototype._translateConfig = function() {
 	if (this.config.global) {
 		var prop = this.config.global[0].property;
 		this.config.global = {};
-		for (var i = 0; i < prop.length; i++) {
+		for (var i in prop) {
 			this.config.global[prop[i].name] = prop[i]._content;
 		}
 	}
 	if (this.config.local) {
 		var propLocal = this.config.local[0].property;
 		this.config.local = {};
-		for (var j = 0; j < propLocal.length; j++) {
+		for (var j in propLocal) {
 			this.config.local[propLocal[j].name] = propLocal[j]._content;
 		}
 	}
