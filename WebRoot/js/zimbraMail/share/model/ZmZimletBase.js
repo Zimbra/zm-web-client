@@ -143,6 +143,13 @@ function(zmObject) {
 ZmZimletBase.prototype.doDrop =
 function(zmObject) {};
 
+ZmZimletBase.prototype.portletCreated = function(portlet) {
+    DBG.println("portlet created: "+portlet.id);
+};
+ZmZimletBase.prototype.portletRefreshed = function(portlet) {
+    DBG.println("portlet refreshed: "+portlet.id);
+};
+
 // This method is called when the Zimlet panel item is double clicked. This
 // method defines the following formal parameters:
 //
@@ -552,14 +559,10 @@ ZmZimletBase.prototype.getBoolConfig = function(key, defaultValue) {
 			defaultValue = false;
 		if (defaultValue) {
 			// the default is TRUE, check if explicitely disabled
-			val = /^(0|false|off|no)$/i.test(val)
-				? false
-				: true;
+			val = !/^(0|false|off|no)$/i.test(val);
 		} else {
 			// default FALSE, check if explicitely enabled
-			val = /^(1|true|on|yes)$/i.test(val)
-				? true
-				: false;
+			val = /^(1|true|on|yes)$/i.test(val);
 		}
 	} else {
 		val = defaultValue;

@@ -69,6 +69,14 @@ ZmPortalController.prototype._createNewView = function(view) {
 // listeners
 
 ZmPortalController.prototype._refreshListener = function() {
-    alert("TODO");    
+    /***/
+    this._app.refreshPortlets();
+    /***
+    this._listView[this._currentView]._initializeView();
+    /***/
 };
 
+ZmPortalController.prototype._resetOperations = function(parent, num) {
+//    ZmListController.prototype._resetOperations.call(parent, num);
+    parent.enable(ZmOperation.REFRESH, true);
+};

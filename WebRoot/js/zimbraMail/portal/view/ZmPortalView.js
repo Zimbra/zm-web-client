@@ -33,40 +33,7 @@ function ZmPortalView(parent, appCtxt, controller, dropTgt) {
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 
-    // load the portal manifest
-    var portal = appCtxt.get(ZmSetting.PORTAL_NAME);
-    if (portal) {
-        var url = [ "/zimbra/portals/",portal,"/manifest.js" ].join("");
-        var req = AjxLoader.load(url);
-        AjxPackage.eval(req.responseText || "");
-
-        // generate layout
-        var cols = window.Portal && window.Portal.cols;
-        if (cols) {
-            var templateId = "zimbraMail.portal.templates.Portal#layout";
-            var data = { cols: cols, spacing: 4 };
-            this.getHtmlElement().innerHTML = AjxTemplate.expand(templateId, data);
-
-            // populate portlets
-            for (var i = 0; i < cols.length; i++) {
-                var col = cols[i];
-                var portlets = col.portlets || [];
-                for (var j = 0; j < portlets.length; j++) {
-                    var portlet = portlets[j];
-
-                    var id = [ "Portal", i, j ].join("_");
-                    var contEl = document.getElementById(id);
-                    var templateId = "zimbraMail.portal.templates.Portal#border";
-                    contEl.innerHTML = AjxTemplate.expand(templateId, id);
-
-                    var titleEl = document.getElementById(id+"_header_title");
-                    titleEl.innerHTML = "Title";
-                    var contentEl = document.getElementById(id+"_content");
-                    contentEl.innerHTML = "Content";
-                }
-            }
-        }
-    }
+    this._initializeView();
 }
 ZmPortalView.prototype = new ZmListView;
 ZmPortalView.prototype.constructor = ZmPortalView;
@@ -81,4 +48,53 @@ ZmPortalView.prototype.toString = function() {
 
 ZmPortalView.prototype._getHeaderList = function() {
     return [];
+};
+
+ZmPortalView.prototype._initializeView = function() {
+    var viewEl = this.getHtmlElement();
+    var portal;
+
+    // load the portal manifest
+    var portalName = this._appCtxt.get(ZmSetting.PORTAL_NAME);
+    if (portalName) {
+        var url = [ "/zimbra/portals/",portalName,"/manifest.js" ].join("");
+        var req = AjxLoader.load(url);
+        if (req.status == 200 && req.responseText) {
+            eval("portal = "+req.responseText);
+        }
+    }
+
+    // generate layout
+    var cols = portal && portal.cols;
+    if (cols) {
+        var templateId = "zimbraMail.portal.templates.Portal#layout";
+        var data = { cols: cols, spacing: 4 };
+        viewEl.innerHTML = AjxTemplate.expand(templateId, data);
+
+        // populate portlets
+        var zimletMgr = this._appCtxt.getZimletMgr();
+        var portletZimlets = zimletMgr.getPortletZimletsHash();
+        var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+
+        for (var i = 0; i < cols.length; i++) {
+            var col = cols[i];
+            var portletDefs = col.portlets || [];
+            for (var j = 0; j < portletDefs.length; j++) {
+                var portletDef = portletDefs[j];
+
+                var zimlet = portletZimlets[portletDef.zimlet];
+
+                var id = [ "Portal", i, j ].join("_");
+                var contEl = document.getElementById(id);
+
+                var portlet = portletMgr.createPortlet(id, portletDef);
+                var view = new ZmPortletView(contEl, portlet);
+            }
+        }
+    }
+
+    // clear layout
+    else {
+        viewEl.innerHTML = "";
+    }
 };

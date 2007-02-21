@@ -50,9 +50,20 @@ ZmApp.CLASS[ZmApp.PORTAL]		= "ZmPortalApp";
 ZmApp.SETTING[ZmApp.PORTAL]	= ZmSetting.PORTAL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.PORTAL]	= 1;
 
+ZmEvent.S_PORTLET   = "PORTLET";
+ZmItem.PORTLET      = ZmEvent.S_PORTLET;
+
 //
 // Public methods
 //
+
+ZmPortalApp.prototype.refreshPortlets = function() {
+    var mgr = this.getPortletMgr();
+    var portlets = mgr.getPortlets();
+    for (var id in portlets) {
+        portlets[id].refresh();
+    }
+};
 
 ZmPortalApp.prototype.launch =
 function(callback) {
@@ -79,4 +90,11 @@ ZmPortalApp.prototype.getPortalController = function() {
 		this._portalController = new ZmPortalController(this._appCtxt, this._container, this);
 	}
 	return this._portalController;
+};
+
+ZmPortalApp.prototype.getPortletMgr = function() {
+    if (!this._portletMgr) {
+        this._portletMgr = new ZmPortletMgr(this._appCtxt);
+    }
+    return this._portletMgr;
 };

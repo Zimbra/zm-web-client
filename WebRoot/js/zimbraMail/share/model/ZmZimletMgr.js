@@ -89,6 +89,28 @@ function() {
 	return indexedZimlets;
 };
 
+ZmZimletMgr.prototype.getPortletZimlets =
+function() {
+    if (!this._portletArray) {
+        this._portletArray = [];
+        this._portletMap = {};
+        var j = 0;
+        for (var i = 0; i < this._ZIMLETS.length; i++) {
+            var zimlet = this._ZIMLETS[i];
+            if (zimlet.portlet) {
+                this._portletArray[j++] = zimlet;
+                this._portletMap[zimlet.name] = zimlet;
+            }
+        }
+    }
+    return this._portletArray;
+};
+ZmZimletMgr.prototype.getPortletZimletsHash =
+function() {
+    this.getPortletZimlets();
+    return this._portletMap;
+};
+
 ZmZimletMgr.prototype.registerContentZimlet =
 function(zimletObj, type, priority) {
 	var i = this._CONTENT_ZIMLETS.length;

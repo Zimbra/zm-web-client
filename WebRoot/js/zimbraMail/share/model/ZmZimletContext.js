@@ -87,7 +87,13 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	if(zimlet.handlerObject) {
 		this.handlerObject = zimlet.handlerObject[0]._content;
 	}
-	if(zimlet.userProperties) {
+    var portlet = zimlet.portlet && zimlet.portlet[0];
+    if (portlet) {
+        portlet = ZmZimletContext.sanitize(portlet);
+        portlet.portletProperties = portlet.portletProperties.property;
+        this.portlet = portlet;
+    }
+    if(zimlet.userProperties) {
 		this.userProperties = zimlet.userProperties[0];
 		this._translateUserProp();
 	}
@@ -188,7 +194,19 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 		var zimletItem = tree.getById(this._id);
 		zimletItem.resetNames();
 	}
-	DBG.println(AjxDebug.DBG2, "Zimlets - init() complete: " + this.name);
+
+    // initialize portlets
+    var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+    var portlets = portletMgr.getPortlets();
+    for (var pname in portlets) {
+        var portlet = portlets[pname];
+        if (portlet.zimletCtxt.name == this.name) {
+            portlet.zimlet = this.handlerObject;
+            this.handlerObject.portletCreated(portlet);
+        }
+    }
+
+    DBG.println(AjxDebug.DBG2, "Zimlets - init() complete: " + this.name);
 };
 
 ZmZimletContext.prototype._loadStyles = function() {
@@ -372,7 +390,7 @@ ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
 		});
 };
 
-ZmZimletContext.prototype.makeURL = function(actionUrl, obj) {
+ZmZimletContext.prototype.makeURL = function(actionUrl, obj, props) {
 	var url = actionUrl.target;
 	var param = [];
 	if (actionUrl.param) {
@@ -380,11 +398,11 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj) {
 		for (var i = 0; i < a.length; ++i) {
 			// trim whitespace as it's almost certain that the
 			// developer didn't intend it.
-			var val = AjxStringUtil.trim(a[i]._content);
+			var val = AjxStringUtil.trim(a[i]._content || a[i]);
 			if (obj) {
 				val = this.processString(val, obj);
 			}
-			val = this.replaceObj(ZmZimletContext.RE_SCAN_PROP, val, this._propsById);
+			val = this.replaceObj(ZmZimletContext.RE_SCAN_PROP, val, props || this._propsById);
 			param.push([ AjxStringUtil.urlEncode(a[i].name),
 				     "=",
 				     AjxStringUtil.urlEncode(val) ].join(""));
