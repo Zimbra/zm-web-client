@@ -66,7 +66,7 @@ function ZmVoicemailApp(appCtxt, container, parentController) {
 							  icon:					"VoicemailApp",
 							  qsArg:				"voicemail",
 							  chooserTooltipKey:	"goToVoicemail",
-							  defaultSearch:		ZmItem.PAGE,
+							  defaultSearch:		ZmSearchToolBar.FOR_ANY_MI,
 							  overviewTrees:		[ZmOrganizer.VOICEMAIL],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.VOICEMAIL],
