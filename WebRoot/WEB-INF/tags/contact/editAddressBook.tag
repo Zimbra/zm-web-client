@@ -11,7 +11,7 @@
 
 <table width=100% cellspacing=0 cellpadding=0>
     <tr class='${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}'>
-        <c:set var="icon" value="${folder.isMountPoint ? 'calendar/SharedCalendarFolder.gif' : 'calendar/CalendarFolder.gif'}"/>
+        <c:set var="icon" value="${folder.isMountPoint ? 'contacts/SharedContactsFolder.gif' : folder.isAutoContacts ? 'contacts/EmailedContacts.gif' : 'contacts/ContactsFolder.gif'}"/>
 
         <td width=20>
             &nbsp;<app:img src="${icon}" alt='${fn:escapeXml(label)}'/>
@@ -22,16 +22,13 @@
         <td width=1% nowrap class='ZhCalType'>
             <c:choose>
                 <c:when test="${folder.isSystemFolder}">
-                    <fmt:message key="calendarSystem"/>
-                </c:when>
-                <c:when test="${not empty folder.remoteURL}">
-                    <fmt:message key="calendarSubscribed"/>
+                    <fmt:message key="addressBookSystem"/>
                 </c:when>
                 <c:when test="${folder.isMountPoint}">
-                    <fmt:message key="calendarShared"/>
+                    <fmt:message key="addressBookShared"/>
                 </c:when>
                 <c:otherwise>
-                    <fmt:message key="calendarUser"/>
+                    <fmt:message key="addressBookUser"/>
                 </c:otherwise>
             </c:choose>
             &nbsp;
@@ -60,36 +57,6 @@
 
         </td>
     </tr>
-
-    <c:if test="${not empty folder.remoteURL}">
-        <tr>
-            <td nowrap align=right>
-                <fmt:message key="url"/>
-                :
-            </td>
-            <td>
-            <table border="0" cellpadding="0" cellspacing="0">
-                <tr valign=center>
-                    <td>
-                        <input name='folderUrl' type='text' autocomplete='off' size='70' value="${fn:escapeXml(folder.remoteURL)}">
-                        <input name='folderUrlVisible' type='hidden' value="true"/>
-                    </td>
-                    <td>
-                        &nbsp;
-                    </td>
-                    <td valign="center">
-                        <c:url var="syncUrl" value="">
-                            <c:param name="id" value="${folder.id}"/>
-                            <c:param name="sync" value="${folder.id}"/>
-                        </c:url>
-                        <fmt:message key="reloadCalendar" var="reload"/>
-                        <a href="${syncUrl}"><app:img src="arrows/Refresh.gif" title="${reload}"/></a>
-                    </td>
-                </tr>
-            </table>
-            </td>
-        </tr>
-    </c:if>
 
     <c:if test="${folder.isMountPoint}">
         <tr>
@@ -133,39 +100,6 @@
             </select>
         </td>
     </tr>
-    <tr>
-        <td>&nbsp;</td>
-        <td nowrap>
-            <table border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td>
-                        <input name='folderExcludeFlag' type='checkbox' <c:if test="${folder.isExcludedFromFreeBusy}">checked</c:if> value="b">
-                    </td>
-                    <td>&nbsp;</td>
-                    <td>
-                        <fmt:message key="excludeFromFreeBusyTimes"/>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-
-    <tr>
-        <td>&nbsp;</td>
-        <td nowrap>
-            <table border="0" cellpadding="0" cellspacing="0">
-                <tr>
-                    <td>
-                        <input name='folderCheckedFlag' type='checkbox' <c:if test="${folder.isCheckedInUI}">checked</c:if> value="#">
-                    </td>
-                    <td>&nbsp;</td>
-                    <td>
-                        <fmt:message key="calendarCheckedInUI"/>
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
 
     <tr>
         <td>&nbsp;</td>
@@ -193,7 +127,7 @@
                         </td>
                         <td>&nbsp;</td>
                         <td>
-                            <fmt:message key="calendarDeleteConfirmation"/>
+                            <fmt:message key="addressBookDeleteConfirmation"/>
                         </td>
                     </tr>
                 </table>
@@ -203,7 +137,7 @@
             <td>&nbsp;</td>
             <td>
                 <input class='tbButton' type="submit" name="actionDelete"
-                       value="<fmt:message key="calendarDelete"/>">
+                       value="<fmt:message key="addressBookDelete"/>">
                 <input type="hidden" name="folderDeleteId" value="${folder.id}"/>
             </td>
         </tr>

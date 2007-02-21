@@ -102,6 +102,16 @@
      </tag-file>
 
     <tag-file>
+         <name>editAddressBook</name>
+         <path>/WEB-INF/tags/contact/editAddressBook.tag</path>
+     </tag-file>
+
+    <tag-file>
+         <name>newAddressBook</name>
+         <path>/WEB-INF/tags/contact/newAddressBook.tag</path>
+     </tag-file>
+
+    <tag-file>
         <name>convToolbar</name>
         <path>/WEB-INF/tags/conv/convToolbar.tag</path>
     </tag-file>

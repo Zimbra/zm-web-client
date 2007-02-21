@@ -8,123 +8,83 @@
 
 <app:handleError>
 <c:choose>
-    <c:when test="${!empty param.actionCreate}">
-        <c:set var="newFolderName" value="${fn:trim(param.newFolderName)}"/>
-        <c:set var="newFolderColor" value="${fn:trim(param.newFolderColor)}"/>
+    <c:when test="${not empty param.actionSave}">
+        <c:set var="folder" value="${zm:getFolder(pageContext, param.folderId)}"/>
         <c:choose>
-            <c:when test="${empty newFolderName}">
+            <c:when test="${not empty param.folderNameVisible and empty param.folderName}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoAddressBookNameSpecified"/>
                 </app:status>
             </c:when>
             <c:otherwise>
-                <zm:createFolder parentid="1" var="folder" name="${newFolderName}" view="contact" color="${fn:substring(newFolderColor,2,-1)}"/>
+                <zm:updateFolder
+                        id="${param.folderId}"
+                        name="${param.folderName}"
+                        color="${param.folderColor}"/>
                 <app:status>
-                    <fmt:message key="actionAddressBookCreated">
-                        <fmt:param value="${newFolderName}"/>
-                    </fmt:message>
+                    <fmt:message key="addressBookUpdated"/>
                 </app:status>
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${!empty param.actionLink}">
-        <c:set var="linkedOwnersEmail" value="${fn:trim(param.linkedOwnersEmail)}"/>
-        <c:set var="linkedOwnersAddressBook" value="${fn:trim(param.linkedOwnersAddressBook)}"/>
-        <c:set var="linkedFolderName" value="${fn:trim(param.linkedFolderName)}"/>
-        <c:set var="linkedFolderColor" value="${fn:trim(param.linkedFolderColor)}"/>
-        <c:choose>
-            <c:when test="${empty linkedOwnersEmail}">
+    <c:when test="${not empty param.actionNew}">
+         <c:choose>
+            <c:when test="${empty param.newFolderName}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoAddressBookNameSpecified"/>
+                </app:status>
+            </c:when>
+             <c:when test="${not empty param.newFolderOwnersEmailVisible and empty param.newFolderOwnersEmail}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoOwnerEmailSpecified"/>
                 </app:status>
             </c:when>
-            <c:when test="${empty linkedOwnersAddressBook}">
+            <c:when test="${not empty param.newFolderOwnersAddressBookVisible and empty param.newFolderOwnersAddressBook}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoOwnerAddressBookSpecified"/>
                 </app:status>
             </c:when>
-            <c:when test="${empty linkedFolderName}">
-                <app:status style="Warning">
-                    <fmt:message key="actionNoAddressBookNameSpecified"/>
-                </app:status>
-            </c:when>
             <c:otherwise>
-                <zm:createMountpoint owner="${linkedOwnersEmail}" ownerby="BY_NAME"
-                                     shareditem="${linkedOwnersAddressBook}" shareditemby="BY_PATH"
-                                     parentid="1" var="folder" name="${linkedFolderName}"
-                                     view="contact" color="${fn:substring(linkedFolderColor,2,-1)}"/>
+                <c:choose>
+                    <c:when test="${not empty param.newFolderOwnersEmailVisible}">
+                        <zm:createMountpoint var="folder"
+                                             parentid="1"
+                                             name="${param.newFolderName}"
+                                             view="contact"
+                                             color="${param.newFolderColor}"
+                                             flags="${param.newFolderExcludeFlag}${param.newFolderCheckedFlag}"
+                                             owner="${param.newFolderOwnersEmail}" ownerby="BY_NAME"
+                                             shareditem="${param.newFolderOwnersAddressBook}" shareditemby="BY_PATH"/>
+                    </c:when>
+                    <c:otherwise>
+                        <zm:createFolder var="folder"
+                                         parentid="1"
+                                         name="${param.newFolderName}"
+                                         view="contact"
+                                         color="${param.newFolderColor}"
+                                         flags="${param.newFolderExcludeFlag}${param.newFolderCheckedFlag}"/>
+                    </c:otherwise>
+                </c:choose>
                 <app:status>
                     <fmt:message key="actionAddressBookCreated">
-                        <fmt:param value="${linkedFolderName}"/>
+                        <fmt:param value="${param.newFolderName}"/>
                     </fmt:message>
                 </app:status>
+                <c:set var="newlyCreatedAddressBookName" value="${param.newFolderName}" scope="request"/>
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${not empty param.actionChangeColor}">
+    <c:when test="${not empty param.actionDelete}">
+        <c:set var="folder" value="${zm:getFolder(pageContext, param.folderDeleteId)}"/>
         <c:choose>
-            <c:when test="${!fn:startsWith(param.folderToChangeColor, 'f:')}">
+            <c:when test="${empty param.folderDeleteConfirm}">
                 <app:status style="Warning">
-                    <fmt:message key="actionNoAddressBookSelected"/>
-                </app:status>
-            </c:when>
-            <c:when test="${not fn:startsWith(param.newColor, 'c:')}">
-                <app:status style="Warning">
-                    <fmt:message key="actionNoColorSelected"/>
+                    <fmt:message key="actionAddressBookCheckConfirm"/>
                 </app:status>
             </c:when>
             <c:otherwise>
-                <c:set var="folderid" value="${fn:substring(param.folderToChangeColor, 2, -1)}"/>
-                <c:set var="color" value="${fn:substring(param.newColor, 2, -1)}"/>
-                <zm:modifyFolderColor id="${folderid}" color="${color}"/>
-                <c:set var="folderName" value="${zm:getFolderName(pageContext, folderid)}"/>
-                <app:status>
-                    <fmt:message key="${color}" var="colorMsg"/>
-                    <fmt:message key="actionAddressBookColorChanged">
-                        <fmt:param value="${folderName}"/>
-                        <fmt:param value="${colorMsg}"/>
-                    </fmt:message>
-                </app:status>
-            </c:otherwise>
-        </c:choose>
-    </c:when>
-    <c:when test="${not empty param.actionRename}">
-        <c:set var="newName" value="${fn:trim(param.newName)}"/>
-        <c:choose>
-            <c:when test="${empty newName}">
-                <app:status style="Warning">
-                    <fmt:message key="actionNoAddressBookNameSpecified"/>
-                </app:status>
-            </c:when>
-            <c:when test="${!fn:startsWith(param.folderToRename, 'f:')}">
-                <app:status style="Warning">
-                    <fmt:message key="actionNoAddressBookSelected"/>
-                </app:status>
-            </c:when>
-            <c:otherwise>
-                <c:set var="folderid" value="${fn:substring(param.folderToRename, 2, -1)}"/>
-                <c:set var="oldName" value="${zm:getFolderName(pageContext, folderid)}"/>
-                <zm:renameFolder id="${folderid}" newname="${newName}"/>
-                <app:status>
-                    <fmt:message key="actionAddressBookRenamed">
-                        <fmt:param value="${oldName}"/>
-                        <fmt:param value="${newName}"/>
-                    </fmt:message>
-                </app:status>
-            </c:otherwise>
-        </c:choose>
-    </c:when>
-    <c:when test="${!empty param.actionDelete}">
-        <c:choose>
-            <c:when test="${!fn:startsWith(param.folderToDelete, 'f:')}">
-                <app:status style="Warning">
-                    <fmt:message key="actionNoAddressBookSelected"/>
-                </app:status>
-            </c:when>
-            <c:otherwise>
-                <c:set var="folderid" value="${fn:substring(param.folderToDelete, 2, -1)}"/>
-                <c:set var="folderName" value="${zm:getFolderName(pageContext, folderid)}"/>
-                <zm:moveFolder id="${folderid}" parentid="3"/>
+                <c:set var="folderName" value="${folder.name}"/>
+                <zm:deleteFolder id="${param.folderDeleteId}"/>
                 <app:status>
                     <fmt:message key="actionAddressBookMovedToTrash">
                         <fmt:param value="${folderName}"/>

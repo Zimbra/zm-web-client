@@ -567,11 +567,11 @@ padding: 8px 0px 6px 0px;
 }
 
 
-.ZhEditCalendarContent {
+.ZhEditAddressBookContent, .ZhEditCalendarContent {
    @AppBg@  @OutsetBorder@
 }
 
-.ZhCalType {
+.ZhCalType, .ZhABType {
 @Text-disabled@;
 }
 
