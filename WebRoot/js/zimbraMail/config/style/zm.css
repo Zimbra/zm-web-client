@@ -2748,3 +2748,16 @@ HTML>BODY .appt-selected .appt_allday_body
 .BuddyFolderTab-active {
   @AppTabContainer-selected@
 }
+
+.ZmVoicemailView .Row {
+	height: 20px;
+}
+
+.ZmPlayButton 								{	@PlayButton@					}
+.ZmPlayButton-disabled						{	@PlayButton-disabled@			}
+.ZmPlayButton-activated 					{	@PlayButton-hover@			}
+.ZmPlayButton-triggered						{	@PlayButton-clicked@			}
+.ZmPlayButton-toggled						{	@PlayButton-toggled@			}
+.ZmPlayButton-active						{	@PlayButton-default@			}
+.ZmPlayButton-focused						{	@PlayButton-focused@			}
+

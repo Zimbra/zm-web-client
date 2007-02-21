@@ -25,11 +25,12 @@
 
 function ZmVoicemailView(parent, appCtxt, controller, dropTgt) {
 	var headerList = this._getHeaderList(appCtxt);
-	ZmListView.call(this, parent, null, Dwt.ABSOLUTE_STYLE, ZmController.VOICEMAIL_VIEW, ZmItem.VOICEMAIL, controller, headerList, dropTgt);
+	ZmListView.call(this, parent, "DwtListView ZmVoicemailView", Dwt.ABSOLUTE_STYLE, ZmController.VOICEMAIL_VIEW, ZmItem.VOICEMAIL, controller, headerList, dropTgt);
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 	this._playing = null; // The voicemail currently loaded in the player.
+	this._previewing = null; // The voicemail whose play button is visible.
 }
 ZmVoicemailView.prototype = new ZmListView;
 ZmVoicemailView.prototype.constructor = ZmVoicemailView;
@@ -59,6 +60,9 @@ ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SIZE]	= "c";
 ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_DATE]	= "d";
 ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SUBJECT]	= "e";
 
+// Event details.
+ZmVoicemailView.PLAY_BUTTON_PRESSED = "PlayButtonPressed";
+
 ZmVoicemailView.prototype.getTitle =
 function() {
 	return [ZmMsg.zimbraTitle, ": ", ZmMsg.voicemail].join("");
@@ -74,15 +78,13 @@ function(voicemail) {
 	if (voicemail == this._playing)  {
 		return;
 	}
-		
-	var prefix = ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING];
-	var columnIndex = this._getColumnIndexByPrefix(prefix);
+
 	if (this._playing) {
-		this._showPlayingImage(this._playing, columnIndex, false);
+		this._setPlayState(this._playing, null, false);
 	}
 	this._playing = voicemail;
 	if (this._playing) {
-		this._showPlayingImage(this._playing, columnIndex, true);
+		this._setPlayState(this._playing, "toggled", true, true);
 	}
 };
 
@@ -97,10 +99,9 @@ function(defaultColumnSort) {
 	if (this._colHeaderActionMenu) this._colHeaderActionMenu.getItem(index).setText(label);
 };
 
-ZmVoicemailView.prototype._getColumnIndexByPrefix =
-function(prefix) {
-	var playingColumn = this.getColumnBy
-	var columnCount = this._headerList.length;
+ZmVoicemailView.prototype._getColumnIndex = 
+function(field) {
+	var prefix = ZmVoicemailView.FIELD_PREFIX[field];
 	for (var i = 0, count = this._headerList.length; i < count; i++) {
 		if (this._headerList[i]._id.indexOf(prefix) == 0) {
 			return i;
@@ -109,20 +110,18 @@ function(prefix) {
 	return 0;
 };
 
-ZmVoicemailView.prototype._showPlayingImage =
-function(voicemail, columnIndex, show) {
-	var element = this._getElFromItem(voicemail);
+ZmVoicemailView.prototype._getCell = 
+function(columnIndex, element) {
 	var table = element.firstChild;
-	var cell = table.rows[0].cells[columnIndex];
-	cell.className = show ? "ImgPlaying" : "";
+	return table.rows[0].cells[columnIndex];
 };
 
 ZmVoicemailView.prototype._getHeaderList =
 function(appCtxt) {
 
 	var headerList = new Array();
-	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_CALLER], ZmMsg.from, null, ZmVoicemailView.FROM_WIDTH, ZmVoicemailView.F_CALLER, true));
 	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING], "", null, ZmVoicemailView.PLAYING_WIDTH, null, true));
+	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_CALLER], ZmMsg.from, null, ZmVoicemailView.FROM_WIDTH, ZmVoicemailView.F_CALLER, true));
 	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SIZE], ZmMsg.duration, null, ZmVoicemailView.DURATION_WIDTH, ZmVoicemailView.F_SIZE, true));
 	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_DATE], ZmMsg.received, null, ZmVoicemailView.DATE_WIDTH, ZmVoicemailView.F_DATE, true));
 	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SUBJECT], ZmMsg.subjectNotes, null, ZmVoicemailView.SUBJECT_WIDTH, null, true));
@@ -146,17 +145,17 @@ function(voicemail, now, isDndIcon, isMixedView, myDiv) {
 		if (!this._headerList[i]._visible)
 			continue;
 		var width = this._getFieldWidth(i);
+		var id = this._headerList[i]._id;
 		htmlArr[idx++] = "<td width=";
 		htmlArr[idx++] = width;
 		htmlArr[idx++] = ">";
 		
-		var id = this._headerList[i]._id;
 		if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_CALLER]) == 0) {
 			htmlArr[idx++] = voicemail.caller;
-		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING]) == 0) {
-			htmlArr[idx++] = voicemail == this._playing ? AjxImg.getImageHtml("Playing") : "";
 		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SIZE]) == 0) {
 			htmlArr[idx++] = AjxDateUtil.computeDuration(voicemail.duration);
+		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING]) == 0) {
+			htmlArr[idx++] = "<div></div>";
 		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_DATE]) == 0) {
 			htmlArr[idx++] = AjxDateUtil.computeDateStr(now, voicemail.date);
 		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SUBJECT]) == 0) {
@@ -171,12 +170,96 @@ function(voicemail, now, isDndIcon, isMixedView, myDiv) {
 	return div;
 };
 
+ZmVoicemailView.prototype._addRow =
+function(row, index) {
+	DwtListView.prototype._addRow.call(this, row, index);
+};
+
 ZmVoicemailView.prototype._mouseOverAction =
 function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
+	
 	var voicemail = this.getItemFromElement(div);
-	var tooltip = voicemail ? this._createTooltip(voicemail) : null;
-	this.setToolTipContent(tooltip);
+	if (voicemail != this._playing && voicemail != this._previewing) {
+		if (this._previewing) {
+			this._setPlayState(this._previewing, null, false);
+		}
+		this._previewing = voicemail;
+		var target = ev.target;
+		var inPlayingCell = this._isInPlayingCell(target);
+		var state = inPlayingCell ? "activated" : null;
+		if (this._previewing) {
+			this._setPlayState(this._previewing, state, true);
+		}
+	}
+};
+
+ZmVoicemailView.prototype._mouseDownAction =
+function(ev, div) {
+	var voicemail = this.getItemFromElement(div);
+	if (voicemail == this._previewing) {
+		var target = ev.target;
+		var inPlayingCell = this._isInPlayingCell(target);
+		if (inPlayingCell) {
+			this._setPlayState(this._previewing, "triggered", true);
+		}
+	}
+};
+
+ZmVoicemailView.prototype._mouseUpAction =
+function(ev, div) {
+	var voicemail = this.getItemFromElement(div);
+	if (voicemail == this._previewing) {
+		var target = ev.target;
+		var inPlayingCell = this._isInPlayingCell(target);
+		if (inPlayingCell) {
+			this._previewing = null;
+			
+			// Notify listeners of play button selection.
+			// (This will cuase the play state to be updated.)
+			DwtUiEvent.copy(this._selEv, ev);
+			this._selEv.item = this.getItemFromElement(div);
+			this._selEv.detail = ZmVoicemailView.PLAY_BUTTON_PRESSED;
+			this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
+		}
+	}
+};
+
+ZmVoicemailView.prototype._isInPlayingCell =
+function(target) {
+	var thisElement = this.getHtmlElement();
+	var columnIndex = this._getColumnIndex(ZmVoicemailView.F_PLAYING);
+	while (target && target != thisElement) {
+		if (target.cellIndex == columnIndex) {
+			return true;
+		}
+		target = target.parentNode;
+	}
+	return false;
+};
+
+ZmVoicemailView.prototype._setPlayState =
+function(voicemail, state, visible, playing) {
+	var columnIndex = this._getColumnIndex(ZmVoicemailView.F_PLAYING);
+	var element = this._getElFromItem(voicemail);
+	var cell = this._getCell(columnIndex, element);
+	var div = cell.childNodes[0];
+	if (!visible) {
+		div.className = "ImgBlank_16 ZmPlayButton-hidden";
+	} else {
+		var buttonClass = state ? " ZmPlayButton-" + state : " ZmPlayButton";
+		var imageClass = playing ? "ImgPlayingMessage" : "ImgPlayMessage";
+		div.className = imageClass + buttonClass;
+	}
+};
+
+ZmVoicemailView.prototype._mouseOutAction =
+function(ev, div) {
+	var voicemail = this.getItemFromElement(div);
+	if (voicemail != this._playing && this._previewing) {
+		this._setPlayState(this._previewing, null, false);
+		this._previewing = null;
+	}
 };
 
 ZmVoicemailView.prototype._createTooltip =
@@ -204,4 +287,3 @@ function(columnItem, bSortAsc) {
 		this.setUI();
 	}
 };
-

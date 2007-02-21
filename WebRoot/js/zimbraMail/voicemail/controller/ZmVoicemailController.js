@@ -170,7 +170,8 @@ function(ev) {
 
 ZmVoicemailController.prototype._selectListener = 
 function(ev) {
-	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
+	if (ev.detail == DwtListView.ITEM_DBL_CLICKED ||
+		ev.detail == ZmVoicemailView.PLAY_BUTTON_PRESSED) {
 		var selection = ev.dwtObj.getSelection();
 		var url = null;
 		if (selection.length == 1) {
@@ -182,7 +183,6 @@ function(ev) {
 			var view = this._getView();
 			view.setPlaying(voicemail);
 		}
-		
 	}
 };
 
