@@ -90,6 +90,12 @@ function(callback, result) {
 	if (tasks) {
 		for (var i = 0; i < tasks.length; i++) {
 			var taskNode = tasks[i];
+			var args = {appCtxt: this._appCtxt, list: this};
+
+			// XXX: for now, only add the first instance of any recurring task
+			var task = ZmTask.createFromDom(taskNode, taskNode.inst[0], args);
+			if (task) this.add(task);
+/*
 			var instances = taskNode ? taskNode.inst : null;
 			if (instances) {
 				var args = {appCtxt: this._appCtxt, list: this};
@@ -99,6 +105,7 @@ function(callback, result) {
 					if (task) this.add(task);
 				}
 			}
+*/
 		}
 	}
 
