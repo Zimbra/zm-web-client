@@ -670,6 +670,12 @@ function(ev) {
 // If there's a contact for the participant, edit it, otherwise add it.
 ZmListController.prototype._participantContactListener =
 function(ev) {
+	var loadCallback = new AjxCallback(this, this._handleLoadParticipantContactListener);
+	AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
+};
+
+ZmListController.prototype._handleLoadParticipantContactListener =
+function() {
 	var cc = AjxDispatcher.run("GetContactController");
 	if (this._actionEv.contact) {
 		if (this._actionEv.contact.isLoaded()) {
