@@ -29,7 +29,7 @@ function ZmMailApp(appCtxt, container, parentController) {
 
 	AjxDispatcher.registerMethod("Compose", "Mail", new AjxCallback(this, this.compose));
 	AjxDispatcher.registerMethod("GetAttachmentListController", "Mail", new AjxCallback(this, this.getAttachmentListController));
-	AjxDispatcher.registerMethod("GetComposeController", "Mail", new AjxCallback(this, this.getComposeController));
+	AjxDispatcher.registerMethod("GetComposeController", ["Mail", "Zimlet"], new AjxCallback(this, this.getComposeController));
 	AjxDispatcher.registerMethod("GetConvController", "Mail", new AjxCallback(this, this.getConvController));
 	AjxDispatcher.registerMethod("GetConvListController", "Mail", new AjxCallback(this, this.getConvListController));
 	AjxDispatcher.registerMethod("GetMsgController", "Mail", new AjxCallback(this, this.getMsgController));
