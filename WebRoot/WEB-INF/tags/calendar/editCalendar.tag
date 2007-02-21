@@ -6,34 +6,22 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
+<fmt:message var="label" key="FOLDER_LABEL_${folder.id}"/>
+<c:if test="${fn:startsWith(label,'???')}"><c:set var="label" value="${folder.name}"/></c:if>
 
-<table border="0" cellpadding="0" cellspacing="10" width=100%>
-    <tr>
-        <td nowrap align=right>
-            <fmt:message key="name"/>
-            :
-        </td>
+<table width=100% cellspacing=0 cellpadding=0>
+    <tr class='${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}'>
+        <c:set var="icon" value="${folder.isMountPoint ? 'calendar/SharedCalendarFolder.gif' : 'calendar/CalendarFolder.gif'}"/>
         <td>
-            <c:choose>
-                <c:when test="${folder.isSystemFolder}">
-                    <fmt:message var="label" key="FOLDER_LABEL_${folder.id}"/>
-                    <c:if test="${fn:startsWith(label,'???')}"><c:set var="label" value="${folder.name}"/></c:if>
-                    ${fn:escapeXml(label)}
-                </c:when>
-                <c:otherwise>
-                    <input name='folderName' type='text' autocomplete='off' size='35' value="${fn:escapeXml(folder.name)}">
-                </c:otherwise>
-            </c:choose>
-
+            &nbsp;
         </td>
-    </tr>
-
-    <tr>
-        <td nowrap align=right>
-            <fmt:message key="type"/>
-            :
+        <td width=20>
+            <app:img src="${icon}" alt='${fn:escapeXml(label)}'/>
         </td>
-        <td>
+        <td class='ZhFolderHeader' colspan=2>
+            ${fn:escapeXml(label)}
+        </td>
+        <td width=1% nowrap class='ZhCalType'>
             <c:choose>
                 <c:when test="${folder.isSystemFolder}">
                     <fmt:message key="calendarSystem"/>
@@ -45,7 +33,29 @@
                     <fmt:message key="calendarShared"/>
                 </c:when>
                 <c:otherwise>
-                    <fmt:message key="calendar"/>
+                    <fmt:message key="calendarUser"/>
+                </c:otherwise>
+            </c:choose>
+            &nbsp;
+        </td>
+    </tr>
+</table>
+
+<table border="0" cellpadding="0" cellspacing="10" width=100%>
+
+
+    <tr>
+        <td nowrap align=right>
+            <fmt:message key="name"/>
+            :
+        </td>
+        <td>
+            <c:choose>
+                <c:when test="${folder.isSystemFolder}">
+                    ${fn:escapeXml(label)}
+                </c:when>
+                <c:otherwise>
+                    <input name='folderName' type='text' autocomplete='off' size='35' value="${fn:escapeXml(folder.name)}">
                 </c:otherwise>
             </c:choose>
 

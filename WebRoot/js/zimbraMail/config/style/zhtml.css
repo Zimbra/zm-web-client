@@ -424,7 +424,7 @@ width: 18em;
         background-color:#E9E9E9; /* TODO: dynamic based on folder */
 }
 
-.contactHeader {
+.contactHeader, .ZhFolderHeader {
         font-size:18px; 
         font-weight:bold;
         color: black;
@@ -569,6 +569,10 @@ padding: 8px 0px 6px 0px;
 
 .ZhEditCalendarContent {
    @AppBg@  @OutsetBorder@
+}
+
+.ZhCalType {
+@Text-disabled@;
 }
 
 .ZhCalMonthHeaderRow {
