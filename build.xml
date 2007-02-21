@@ -1,5 +1,7 @@
 <project name="ZimbraWebClient" default="war">
 
+    <property file='build-custom.properties' />
+
   <property environment="env"/>
   
 	<property name="zimbra.home.dir" location="/opt/zimbra" />
