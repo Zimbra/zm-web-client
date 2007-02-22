@@ -7,7 +7,22 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<fmt:message var="label" key="folderNew"/>
+
+
+<c:choose>
+    <c:when test="${url}">
+        <fmt:message var="label" key="folderNewRssAtomFeed"/>
+        <fmt:message var="folderType" key="folderSubscribed"/>
+    </c:when>
+    <c:when test="${search}">
+        <fmt:message var="label" key="folderNewSearchFolder"/>
+        <fmt:message var="folderType" key="folderSearch"/>
+    </c:when>
+    <c:otherwise>
+        <fmt:message var="label" key="folderNew"/>
+        <fmt:message var="folderType" key="folderUser"/>
+    </c:otherwise>
+</c:choose>
 
 <table width=100% cellspacing=0 cellpadding=0>
     <tr class='GrayBg'>

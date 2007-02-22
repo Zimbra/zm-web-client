@@ -95,16 +95,8 @@
             :
         </td>
         <td>
-            <c:choose>
-                <c:when test="${folder.isSystemFolder}">
-                    ${fn:escapeXml(label)}
-                </c:when>
-                <c:otherwise>
-                    <input name='folderName' type='text' autocomplete='off' size='35' value="${fn:escapeXml(folder.name)}">
-                    <input name='folderNameVisible' type='hidden' value="true"/>
-                </c:otherwise>
-            </c:choose>
-
+            <input <c:if test="${folder.isSystemFolder}">disabled </c:if> name='folderName' type='text' autocomplete='off' size='35' value="${fn:escapeXml(folder.name)}">
+            <input name='folderNameVisible' type='hidden' value="true"/>
         </td>
     </tr>
 
