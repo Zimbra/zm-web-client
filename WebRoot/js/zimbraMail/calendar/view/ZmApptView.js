@@ -332,7 +332,7 @@ function(appt) {
 
 	var dateFormatter = AjxDateFormat.getDateInstance();
 	var timeFormatter = AjxDateFormat.getTimeInstance(AjxDateFormat.SHORT);
-	var timezone = appt.getTimezone();
+	var timezone = appt.getOrigTimezone();
 	var localTimezone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
 
 	if (this._isOneDayAppt(sd, ed)) {
