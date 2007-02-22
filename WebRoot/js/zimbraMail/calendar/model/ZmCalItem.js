@@ -555,7 +555,8 @@ function(message, viewMode) {
 	this.endsInUTC = end ? end.charAt(start.length-1) == "Z" : null;
 
 	// record timezone if given, otherwise, guess
-	this.setTimezone(message.invite.getServerStartTimeTz() || AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+    var serverId = !this.startsInUTC && message.invite.getServerStartTimeTz();
+    this.setTimezone(serverId || AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 
 	// adjust start/end times based on UTC/timezone
 	if (viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE) {
