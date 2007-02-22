@@ -196,13 +196,16 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	}
 
     // initialize portlets
-    var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
-    var portlets = portletMgr.getPortlets();
-    for (var pname in portlets) {
-        var portlet = portlets[pname];
-        if (portlet.zimletCtxt.name == this.name) {
-            portlet.zimlet = this.handlerObject;
-            this.handlerObject.portletCreated(portlet);
+    if (this._appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
+        AjxPackage.require("Portal");
+        var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+        var portlets = portletMgr.getPortlets();
+        for (var pname in portlets) {
+            var portlet = portlets[pname];
+            if (portlet.zimletCtxt.name == this.name) {
+                portlet.zimlet = this.handlerObject;
+                this.handlerObject.portletCreated(portlet);
+            }
         }
     }
 
