@@ -6,15 +6,12 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<fmt:message var="label" key="FOLDER_LABEL_${folder.id}"/>
-<c:if test="${fn:startsWith(label,'???')}"><c:set var="label" value="${folder.name}"/></c:if>
+<c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 
 <table width=100% cellspacing=0 cellpadding=0>
     <tr class='${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}'>
-        <c:set var="icon" value="${folder.isMountPoint ? 'contacts/SharedContactsFolder.gif' : folder.isAutoContacts ? 'contacts/EmailedContacts.gif' : 'contacts/ContactsFolder.gif'}"/>
-
         <td width=20>
-            &nbsp;<app:img src="${icon}" alt='${fn:escapeXml(label)}'/>
+            &nbsp;<app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
         </td>
         <td class='ZhFolderHeader' colspan=2>
             ${fn:escapeXml(label)}

@@ -18,17 +18,6 @@
         <td class='ZhFolderHeader' colspan=2>
             ${fn:escapeXml(label)}
         </td>
-        <td width=1% nowrap class='ZhABType'>
-            <c:choose>
-                <c:when test="${link}">
-                    <fmt:message key="addressBookShared"/>
-                </c:when>
-                <c:otherwise>
-                    <fmt:message key="addressBookUser"/>
-                </c:otherwise>
-            </c:choose>
-            &nbsp;
-        </td>
     </tr>
 </table>
 

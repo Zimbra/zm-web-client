@@ -70,7 +70,7 @@
                         <fmt:param value="${param.newFolderName}"/>
                     </fmt:message>
                 </app:status>
-                <c:set var="newlyCreatedAddressBookName" value="${param.newFolderName}" scope="request"/>
+                <c:set var="newlyCreatedAddressBookId" value="${folder.id}" scope="request"/>
             </c:otherwise>
         </c:choose>
     </c:when>

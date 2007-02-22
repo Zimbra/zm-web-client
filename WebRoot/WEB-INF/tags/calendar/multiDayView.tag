@@ -88,8 +88,7 @@
                            <td nowrap class='ZhCalDaySEP ZhCalDayHeader${(day.startTime eq today.timeInMillis and empty day.folderId) ? 'Today':''}' colspan="${day.maxColumns}" width=${day.width}%>
                                <c:choose>
                                    <c:when test="${not empty day.folderId}">
-                                       <fmt:message var="fname" key="FOLDER_LABEL_${day.folderId}"/>
-                                       <c:if test="${fn:startsWith(fname,'???')}"><c:set var="fname" value="${zm:getFolderName(pageContext, day.folderId)}"/></c:if>
+                                       <c:set var="fname" value="${zm:getFolderName(pageContext, day.folderId)}"/>
                                        ${fn:escapeXml(fname)}
                                    </c:when>
                                    <c:otherwise>

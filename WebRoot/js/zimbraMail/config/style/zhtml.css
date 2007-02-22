@@ -567,7 +567,7 @@ padding: 8px 0px 6px 0px;
 }
 
 
-.ZhEditAddressBookContent, .ZhEditCalendarContent, .ZhEditTagContent {
+.ZhEditFolderContent,.ZhEditAddressBookContent, .ZhEditCalendarContent, .ZhEditTagContent {
    @AppBg@  @OutsetBorder@
 }
 

@@ -33,19 +33,19 @@
         </tr>
 
         <c:if test="${expanded}">
-            <app:overviewFolder folder="${mailbox.inbox}" keys="${keys}" key="i" icon="mail/Inbox.gif"/>
+            <app:overviewFolder folder="${mailbox.inbox}" keys="${keys}" key="i"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.inbox.id}" skipsystem="false"/>
 
-            <app:overviewFolder folder="${mailbox.sent}" keys="${keys}" key="s"  icon="mail/SentFolder.gif"/>
+            <app:overviewFolder folder="${mailbox.sent}" keys="${keys}" key="s"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.sent.id}" skipsystem="false"/>
 
-            <app:overviewFolder folder="${mailbox.drafts}" keys="${keys}" key="d" icon="mail/DraftFolder.gif"/>
+            <app:overviewFolder folder="${mailbox.drafts}" keys="${keys}" key="d"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.drafts.id}" skipsystem="false"/>
 
-            <app:overviewFolder folder="${mailbox.spam}" keys="${keys}" key="u" icon="mail/SpamFolder.gif"/>
+            <app:overviewFolder folder="${mailbox.spam}" keys="${keys}" key="u"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.spam.id}" skipsystem="false"/>
 
-            <app:overviewFolder folder="${mailbox.trash}" keys="${keys}" key="t" icon="common/Trash.gif"/>
+            <app:overviewFolder folder="${mailbox.trash}" keys="${keys}" key="t"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
         </c:if>
     </table>

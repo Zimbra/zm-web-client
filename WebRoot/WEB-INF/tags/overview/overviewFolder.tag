@@ -1,6 +1,5 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="folder" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZFolderBean" %>
-<%@ attribute name="icon" rtexprvalue="true" required="false" %>
 <%@ attribute name="base" rtexprvalue="true" required="false" %>
 <%@ attribute name="types" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="false" %>
@@ -12,8 +11,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<fmt:message var="label" key="FOLDER_LABEL_${folder.id}"/>
-<c:if test="${fn:startsWith(label,'???')}"><c:set var="label" value="${folder.name}"/></c:if>
+<c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
 <tr>
     <td nowrap colspan=3 class='Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'
@@ -35,7 +33,7 @@
 
         <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="dwt/NodeExpanded.gif"/></c:if></span>--%>
         <a href='${url}' <c:if test="${(not empty key) and keys}">accesskey="${key}" </c:if> >
-            <app:img src="${not empty icon ? icon : (folder.isFeed ? 'mail/RSS.gif' : 'common/Folder.gif')}" alt='${fn:escapeXml(label)}'/>
+            <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
             <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>${fn:escapeXml(label)} <c:if test="${folder.hasUnread}">
                 (${folder.unreadCount}) </c:if></span>
         </a>

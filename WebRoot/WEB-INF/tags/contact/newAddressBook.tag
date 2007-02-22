@@ -12,7 +12,7 @@
 
 <table width=100% cellspacing=0 cellpadding=0>
     <tr class='${newFolderStyleColor}${newFolderStyleColor ne 'Gray' ? 'Bg' :''}'>
-        <c:set var="icon" value="${link ? 'calendar/SharedCalendarFolder.gif' : 'calendar/CalendarFolder.gif'}"/>
+        <c:set var="icon" value="${link ? 'contacts/SharedContactsFolder.gif' : 'contacts/ContactsFolder.gif'}"/>
         <td>&nbsp;</td>
         <td width=20>
             <app:img src="${icon}" alt='${fn:escapeXml(label)}'/>

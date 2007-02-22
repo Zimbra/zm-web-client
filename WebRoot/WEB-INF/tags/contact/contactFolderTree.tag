@@ -38,8 +38,7 @@
 
             <app:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
 
-            <app:overviewFolder types="contact" folder="${mailbox.trash}"
-                                icon="common/Trash.gif"/>
+            <app:overviewFolder types="contact" folder="${mailbox.trash}"/>
             <app:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
         </c:if>
     </table>

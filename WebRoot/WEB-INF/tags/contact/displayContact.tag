@@ -33,7 +33,10 @@
                 <c:if test="${!((empty contact.jobTitle) or (empty contact.company))}">,&nbsp;</c:if>
                 ${fn:escapeXml(contact.company)}
             </c:if>
-        </td><td width="20"><app:img altkey='ALT_CONTACT_FOLDER' src="contacts/ContactsFolder.gif"/></td><td
+        </td><td width="20">
+        <c:set var="folderImage" value="${zm:getFolder(pageContext, contact.folderId).image}"/>
+        <app:img altkey='ALT_CONTACT_FOLDER' src="${folderImage}"/>
+    </td><td
             class="companyFolder">${fn:escapeXml(zm:getFolderName(pageContext, contact.folderId))}</td>
     </tr>
 </tbody></table>

@@ -85,7 +85,7 @@
                         <fmt:param value="${param.newFolderName}"/>
                     </fmt:message>
                 </app:status>
-                <c:set var="newlyCreatedCalendarName" value="${param.newFolderName}" scope="request"/>
+                <c:set var="newlyCreatedCalendarId" value="${folder.id}" scope="request"/>
             </c:otherwise>
         </c:choose>
     </c:when>

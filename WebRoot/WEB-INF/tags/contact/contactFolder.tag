@@ -7,9 +7,7 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<c:set var="icon" value="${folder.isMountPoint ? 'contacts/SharedContactsFolder.gif' : folder.isAutoContacts ? 'contacts/EmailedContacts.gif' : 'contacts/ContactsFolder.gif'}"/>
-<fmt:message var="label" key="FOLDER_LABEL_${folder.id}"/>
-<c:if test="${fn:startsWith(label,'???')}"><c:set var="label" value="${folder.name}"/></c:if>
+<c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
 <c:set var="padFudge" value="${folder.hasChildren ? 0 : 20}"/>
 <tr>
     <td nowrap colspan=3 class='${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''} Folder<c:if test="${folder.hasUnread}"> Unread</c:if>'
@@ -20,7 +18,7 @@
         </c:url>
 
         <a href='${url}'>
-            <app:img src="${icon}" alt='${fn:escapeXml(label)}'/>
+            <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
             <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>
             ${fn:escapeXml(label)}
             </span>
