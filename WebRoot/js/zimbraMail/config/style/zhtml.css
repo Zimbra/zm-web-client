@@ -571,7 +571,7 @@ padding: 8px 0px 6px 0px;
    @AppBg@  @OutsetBorder@
 }
 
-.ZhCalType, .ZhABType {
+.ZhCalType, .ZhABType, .ZhFolderType {
 @Text-disabled@;
 }
 

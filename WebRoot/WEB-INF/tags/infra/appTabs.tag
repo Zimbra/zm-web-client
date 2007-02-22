@@ -65,12 +65,6 @@
                 </td>
                 <td class='TabSpacer'/>
             </c:when>
-            <c:when test="${selected =='managesearches'}">
-                <td class='Tab TabSelected'>
-                    <app:img src="common/SearchFolder.gif" altkey='ALT_APP_MANAGE_SEARCHES'/><span><fmt:message key="searches"/></span>
-                </td>
-                <td class='TabSpacer'/>
-            </c:when>
             <c:when test="${selected =='manageaddressbooks'}">
                 <td class='Tab TabSelected'>
                     <app:img src="contacts/ContactsFolder.gif" altkey='ALT_APP_MANAGE_ADDRESS_BOOKS'/><span><fmt:message key="addressBooks"/></span>

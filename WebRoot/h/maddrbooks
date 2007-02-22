@@ -84,7 +84,7 @@
                                         <app:newAddressBook link="true"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <app:editAddressBook folder="${selectedFolder}"/>
+                                        <app:editFolder folder="${selectedFolder}"/>
                                     </c:otherwise>
                                 </c:choose>
                             </td>

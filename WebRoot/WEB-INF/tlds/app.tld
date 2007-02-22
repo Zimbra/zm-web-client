@@ -72,13 +72,18 @@
      </tag-file>
 
     <tag-file>
-         <name>folderAction</name>
-         <path>/WEB-INF/tags/overview/folderAction.tag</path>
+         <name>editFolder</name>
+         <path>/WEB-INF/tags/overview/editFolder.tag</path>
      </tag-file>
 
     <tag-file>
-         <name>searchAction</name>
-         <path>/WEB-INF/tags/overview/searchAction.tag</path>
+         <name>newFolder</name>
+         <path>/WEB-INF/tags/overview/newFolder.tag</path>
+     </tag-file>
+
+    <tag-file>
+         <name>folderAction</name>
+         <path>/WEB-INF/tags/overview/folderAction.tag</path>
      </tag-file>
 
     <tag-file>
@@ -92,18 +97,8 @@
      </tag-file>
 
     <tag-file>
-         <name>editCalendar</name>
-         <path>/WEB-INF/tags/calendar/editCalendar.tag</path>
-     </tag-file>
-
-    <tag-file>
          <name>newCalendar</name>
          <path>/WEB-INF/tags/calendar/newCalendar.tag</path>
-     </tag-file>
-
-    <tag-file>
-         <name>editAddressBook</name>
-         <path>/WEB-INF/tags/contact/editAddressBook.tag</path>
      </tag-file>
 
     <tag-file>

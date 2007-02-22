@@ -100,7 +100,7 @@
                                         <app:newCalendar url="true"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <app:editCalendar folder="${selectedFolder}"/>
+                                        <app:editFolder folder="${selectedFolder}"/>
                                     </c:otherwise>
                                 </c:choose>
                             </td>

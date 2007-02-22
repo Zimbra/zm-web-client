@@ -74,7 +74,8 @@
                                                     <c:param name="id" value="${tag.id}"/>
                                                 </c:url>
                                                 <a href="${selectUrl}">
-                                                        ${fn:escapeXml(tag.name)}
+                                                    <app:img src="${tag.image}"/>
+                                                        <span style='vertical-align:middle;'>${fn:escapeXml(tag.name)}</span>
                                                 </a>
                                             </td>
                                         </tr>
