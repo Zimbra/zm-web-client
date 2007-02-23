@@ -333,6 +333,35 @@
     </tr>
 </c:if>
 
+<c:if test="${folder.isAppointmentView}">
+    <tr>
+        <td colspan=2>
+            <hr>
+        </td>
+    </tr>
+    <tr>
+        <td align=right><fmt:message key="calendarExport"/></td>
+        <td>
+            <a href="${fn:escapeXml(folder.restURLAsFile)}.ics">${fn:escapeXml(folder.restURLAsFile)}.ics</a>
+        </td>
+    </tr>
+</c:if>
+
+
+<c:if test="${folder.isContactView}">
+    <tr>
+        <td colspan=2>
+            <hr>
+        </td>
+    </tr>
+    <tr>
+        <td align=right><fmt:message key="contactExport"/></td>
+        <td>
+            <a href="${fn:escapeXml(folder.restURLAsFile)}.csv">${fn:escapeXml(folder.restURLAsFile)}.csv</a>
+        </td>
+    </tr>
+</c:if>
+
 <c:if test="${folder.unreadCount gt 0 and not (folder.isDrafts or folder.isSearchFolder or folder.isMountPoint or folder.isContactView or folder.isAppointmentView)}">
     <tr>
         <td colspan=2>
