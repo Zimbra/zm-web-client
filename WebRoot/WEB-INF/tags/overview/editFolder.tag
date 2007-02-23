@@ -93,7 +93,7 @@
                 <td colspan=3>
                     <c:choose>
                         <c:when test="${not (folder.isMountPoint or folder.isSearchFolder)}">
-                            <span class='ZhFolderType' style='vertical-align:middle;'>
+                            <span class='ZZZhFolderType' style='vertical-align:middle;'>
                                 &nbsp;
                                 <fmt:message key="folderItemCount">
                                 <fmt:param value="${folder.messageCount}"/>
@@ -102,6 +102,12 @@
                                    &nbsp;
                                     <fmt:message key="folderItemUnreadCount">
                                         <fmt:param value="${folder.unreadCount}"/>
+                                    </fmt:message>
+                                </c:if>
+                                <c:if test="${folder.subFolderCount gt 0}">
+                                    &nbsp;
+                                    <fmt:message key="folderFolderCount">
+                                        <fmt:param value="${folder.subFolderCount}"/>
                                     </fmt:message>
                                 </c:if>
                             </span>
@@ -126,6 +132,7 @@
         :
     </td>
     <td>
+        <input type="hidden" name="folderId" value="${folder.id}"/>
         <input
         <c:if test="${folder.isSystemFolder}"> disabled </c:if> name='folderName' type='text' autocomplete='off'
                                                size='35' value="${fn:escapeXml(folder.name)}">
@@ -322,10 +329,43 @@
         <td>
             <input class='tbButton' type="submit" name="actionSave"
                    value="<fmt:message key="saveChanges"/>">
-            <input type="hidden" name="folderId" value="${folder.id}"/>
         </td>
     </tr>
 </c:if>
+
+<c:if test="${folder.unreadCount gt 0 and not (folder.isDrafts or folder.isSearchFolder or folder.isMountPoint or folder.isContactView or folder.isAppointmentView)}">
+    <tr>
+        <td colspan=2>
+            <hr>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>
+            <input class='tbButton' type="submit" name="actionMarkRead"
+                   value="<fmt:message key="actionMarkAllRead"/>">
+        </td>
+    </tr>
+</c:if>
+
+<c:if test="${folder.isTrash or folder.isSpam}">
+    <tr>
+        <td colspan=2>
+            <hr>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>
+            <input class='tbButton' type="submit" name="actionEmptyFolder"
+                   value="<fmt:message key="folderEmptyFolder"/>">
+            <input type="hidden" name="folderEmptyId" value="${folder.id}"/>
+        </td>
+    </tr>
+</c:if>
+
+
+
 
 <c:set var="inTrash" value="${folder.isInTrash}"/>
 <c:if test="${not folder.isSystemFolder}">

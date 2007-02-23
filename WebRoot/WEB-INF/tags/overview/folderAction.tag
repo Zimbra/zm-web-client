@@ -7,6 +7,8 @@
 
 
 <app:handleError>
+<zm:getMailbox var="mailbox"/>
+
 <c:choose>
     <c:when test="${not empty param.actionSave}">
         <c:set var="folder" value="${zm:getFolder(pageContext, param.folderId)}"/>
@@ -114,24 +116,23 @@
             </c:otherwise>
         </c:choose>
     </c:when>
+    <c:when test="${not empty param.actionEmptyFolder}">
+        <zm:emptyFolder id="${param.folderEmptyId}"/>
+        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderEmptyId)}"/>
+        <app:status>
+            <fmt:message key="folderEmptied">
+                <fmt:param value="${folderName}"/>
+            </fmt:message>
+        </app:status>
+    </c:when>
     <c:when test="${not empty param.actionMarkRead}">
-        <c:choose>
-            <c:when test="${!fn:startsWith(param.folderToMarkRead, 'f:')}">
-                <app:status style="Warning">
-                    <fmt:message key="actionNoFolderMarkReadSelected"/>
-                </app:status>
-            </c:when>
-            <c:otherwise>
-                <c:set var="folderid" value="${fn:substring(param.folderToMarkRead, 2, -1)}"/>
-                <c:set var="folderName" value="${zm:getFolderName(pageContext, folderid)}"/>
-                <zm:markFolderRead id="${folderid}"/>
-                <app:status>
-                    <fmt:message key="actionFolderMarkRead">
-                        <fmt:param value="${folderName}"/>
-                    </fmt:message>
-                </app:status>
-            </c:otherwise>
-        </c:choose>
+        <zm:markFolderRead id="${param.folderId}"/>
+        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderId)}"/>
+        <app:status>
+            <fmt:message key="actionFolderMarkRead">
+                <fmt:param value="${folderName}"/>
+            </fmt:message>
+        </app:status>
     </c:when>
     <c:otherwise>
 
