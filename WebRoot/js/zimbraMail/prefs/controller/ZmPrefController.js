@@ -168,6 +168,7 @@ function () {
 	
 	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL];
 	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmAppToolBar");
+	buttons = this._toolbar.opList;
 	for (var i = 0; i < buttons.length; i++) {
 		var button = buttons[i];
 		if (this._listeners[button]) {

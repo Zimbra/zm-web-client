@@ -47,18 +47,18 @@ function ZmActionMenu(parent, standardMenuItems, extraMenuItems, dialog) {
 
 	// standard menu items default to Tag/Print/Delete
 	if (!standardMenuItems) {
-		standardMenuItems = new Array();
-		if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-			standardMenuItems.push(ZmOperation.TAG_MENU);
-		}
-		if (this._appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-			standardMenuItems.push(ZmOperation.PRINT);
-		}
-		standardMenuItems.push(ZmOperation.DELETE);
+		standardMenuItems = [ZmOperation.TAG_MENU, ZmOperation.PRINT, ZmOperation.DELETE];
 	} else if (standardMenuItems == ZmOperation.NONE) {
 		standardMenuItems = null;
 	}
-	this._menuItems = ZmOperation.createOperations(this, standardMenuItems, extraMenuItems);
+	// weed out disabled ops, save list of ones that make it
+	this.opList = ZmOperation.filterOperations(this._appCtxt, standardMenuItems);
+	this._menuItems = ZmOperation.createOperations(this, this.opList, extraMenuItems);
+	if (extraMenuItems && extraMenuItems.length) {
+		for (var i = 0; i < extraMenuItems.length; i++) {
+			this.opList.push(extraMenuItems[i].id);
+		}
+	}
 }
 
 ZmActionMenu.prototype = new ZmPopupMenu;

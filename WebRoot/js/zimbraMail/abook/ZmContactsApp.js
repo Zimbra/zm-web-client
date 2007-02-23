@@ -44,13 +44,13 @@ function ZmContactsApp(appCtxt, container, parentController) {
 
 	ZmOperation.registerOp("CONTACT");	// placeholder
 	ZmOperation.registerOp("EDIT_CONTACT", {textKey:"AB_EDIT_CONTACT", image:"Edit"});
-	ZmOperation.registerOp("MOUNT_ADDRBOOK", {textKey:"mountAddrBook", image:"ContactsFolder"});
+	ZmOperation.registerOp("MOUNT_ADDRBOOK", {textKey:"mountAddrBook", image:"ContactsFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("NEW_ADDRBOOK", {textKey:"newAddrBook", tooltipKey:"newAddrBookTooltip", image:"NewContact"});
 	ZmOperation.registerOp("NEW_CONTACT", {textKey:"newContact", tooltipKey:"newContactTooltip", image:"NewContact"});
 	ZmOperation.registerOp("NEW_GROUP", {textKey:"newGroup", tooltipKey:"newGroupTooltip", image:"NewGroup"});
-	ZmOperation.registerOp("PRINT_CONTACTLIST", {textKey:"printAddrBook", image:"Print"});
-	ZmOperation.registerOp("SHARE_ADDRBOOK", {textKey:"shareAddrBook", image:"SharedContactsFolder"});
-	ZmOperation.registerOp("SHOW_ONLY_CONTACTS", {textKey:"showOnlyContacts", image:"Contact"});
+	ZmOperation.registerOp("PRINT_CONTACTLIST", {textKey:"printAddrBook", image:"Print"}, ZmSetting.PRINT_ENABLED);
+	ZmOperation.registerOp("SHARE_ADDRBOOK", {textKey:"shareAddrBook", image:"SharedContactsFolder"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp("SHOW_ONLY_CONTACTS", {textKey:"showOnlyContacts", image:"Contact"}, ZmSetting.MIXED_VIEW_ENABLED);
 
 	ZmItem.registerItem(ZmItem.CONTACT,
 						{app:			ZmApp.CONTACTS,
@@ -235,7 +235,7 @@ function(op) {
 ZmContactsApp.prototype.launch =
 function(callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
-	AjxDispatcher.require("Contacts", false, loadCallback, null, true);
+	AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 };
 
 ZmContactsApp.prototype._handleLoadLaunch =

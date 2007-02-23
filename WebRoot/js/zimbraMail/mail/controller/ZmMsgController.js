@@ -144,6 +144,7 @@ function(view, arrowStyle) {
 		if (!buttons) return;
 		this._toolbar[view] = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmMsgViewToolBar_cw");
 
+		buttons = this._toolbar[view].opList;
 		for (var i = 0; i < buttons.length; i++) {
 			var button = buttons[i];
 			if (this._listeners[button]) {

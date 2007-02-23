@@ -55,12 +55,18 @@ function() {
 
 ZmPopupMenu.prototype.addSelectionListener =
 function(menuItemId, listener) {
-	this._menuItems[menuItemId].addSelectionListener(listener);
+	var menuItem = this._menuItems[menuItemId];
+	if (menuItem) {
+		menuItem.addSelectionListener(listener);
+	}
 };
 
 ZmPopupMenu.prototype.removeSelectionListener =
 function(menuItemId, listener) {
-	this._menuItems[menuItemId].removeSelectionListener(listener);
+	var menuItem = this._menuItems[menuItemId];
+	if (menuItem) {
+		menuItem.removeSelectionListener(listener);
+	}
 };
 
 ZmPopupMenu.prototype.popup =

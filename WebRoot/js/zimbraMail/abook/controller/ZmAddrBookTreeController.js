@@ -99,21 +99,14 @@ function(parent, type, id) {
 // Returns a list of desired header action menu operations
 ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	var ops = [ ZmOperation.NEW_ADDRBOOK ];
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-		ops.push(ZmOperation.MOUNT_ADDRBOOK);
-	}
-	return ops;
+	return [ZmOperation.NEW_ADDRBOOK, ZmOperation.MOUNT_ADDRBOOK];
 };
 
 // Returns a list of desired action menu operations
 ZmAddrBookTreeController.prototype._getActionMenuOps =
 function() {
-	var ops = [];
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
-		ops.push(ZmOperation.SHARE_ADDRBOOK);
-	ops.push(ZmOperation.DELETE, ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS);
-	return ops;
+	return [ZmOperation.SHARE_ADDRBOOK, ZmOperation.DELETE,
+			ZmOperation.RENAME_FOLDER, ZmOperation.EDIT_PROPS];
 };
 
 /*

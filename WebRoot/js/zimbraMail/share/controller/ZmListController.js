@@ -299,46 +299,23 @@ function(view) {
 
 ZmListController.prototype._standardToolBarOps =
 function() {
-	var list = [];
-	list.push(ZmOperation.NEW_MENU);
-	list.push(ZmOperation.CHECK_MAIL);
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.DELETE);
-	list.push(ZmOperation.MOVE);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
-	return list;
+	return [ZmOperation.NEW_MENU, ZmOperation.CHECK_MAIL,
+			ZmOperation.TAG_MENU, ZmOperation.SEP,
+			ZmOperation.DELETE, ZmOperation.MOVE,
+			ZmOperation.PRINT];
 };
 
 ZmListController.prototype._standardActionMenuOps =
 function() {
-	var list = [];
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	list.push(ZmOperation.DELETE);
-	list.push(ZmOperation.MOVE);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
-	return list;
+	return [ZmOperation.TAG_MENU, ZmOperation.DELETE,
+			ZmOperation.MOVE, ZmOperation.PRINT];
 };
 
-ZmListController.prototype._contactOps =
+ZmListController.prototype._participantOps =
 function() {
-	var list = [];
-	if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED))
-		list.push(ZmOperation.SEARCH);
-	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED))
-		list.push(ZmOperation.BROWSE);
-	list.push(ZmOperation.NEW_MESSAGE);
-	/*
-	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
-		list.push(ZmOperation.IM);
-    */
-	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
-		list.push(ZmOperation.CONTACT);
-	return list;
+	return [ZmOperation.SEARCH, ZmOperation.BROWSE,
+			ZmOperation.NEW_MESSAGE, //ZmOperation.IM,
+			ZmOperation.CONTACT];
 };
 
 // toolbar: buttons and listeners
@@ -353,9 +330,11 @@ function(view) {
 	var list = [ZmOperation.PRINT, ZmOperation.DELETE, ZmOperation.MOVE];
 	for (var i = 0; i < list.length; i++) {
 		var button = this._toolbar[view].getButton(list[i]);
-		if (button)
+		if (button) {
 			button.setText(null);
+		}
 	}
+	buttons = this._toolbar[view].opList;
 	for (var i = 0; i < buttons.length; i++) {
 		var button = buttons[i];
 		if (this._listeners[button]) {
@@ -372,12 +351,10 @@ function(view) {
        	toolbar._ZmListController_newDropDownListener = listener;
    	}
 
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		var tagMenuButton = this._toolbar[view].getButton(ZmOperation.TAG_MENU);
-		if (tagMenuButton) {
-			tagMenuButton.noMenuBar = true;
-			this._setupTagMenu(this._toolbar[view]);
-		}
+	var tagMenuButton = this._toolbar[view].getButton(ZmOperation.TAG_MENU);
+	if (tagMenuButton) {
+		tagMenuButton.noMenuBar = true;
+		this._setupTagMenu(this._toolbar[view]);
 	}
 };
 
@@ -397,6 +374,7 @@ function() {
 	var menuItems = this._getActionMenuOps();
 	if (!menuItems) return;
 	this._actionMenu = new ZmActionMenu(this._shell, menuItems);
+	menuItems = this._actionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
 		var menuItem = menuItems[i];
 		if (this._listeners[menuItem]) {

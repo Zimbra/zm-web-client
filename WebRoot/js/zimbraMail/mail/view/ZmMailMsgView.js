@@ -295,6 +295,7 @@ function() {
 	toolbarHtmlEl.firstChild.cellPadding = "3";
 
 	var inviteToolBarListener = new AjxListener(this, this._inviteToolBarListener);
+	operationButtonIds = this._inviteToolbar.opList;
 	for (var i = 0; i < operationButtonIds.length; i++) {
 		var id = operationButtonIds[i];
 
@@ -310,6 +311,7 @@ function() {
 
 		var standardItems = [id, replyButtonIds[i]];
 		var menu = new ZmActionMenu(button, standardItems);
+		standardItems = menu.opList;
 		for (var j = 0; j < standardItems.length; j++) {
 			var menuItem = menu.getItem(j);
 			menuItem.addSelectionListener(inviteToolBarListener);

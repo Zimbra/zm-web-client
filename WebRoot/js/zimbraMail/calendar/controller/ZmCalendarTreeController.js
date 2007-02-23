@@ -115,23 +115,15 @@ function(actionMenu, type, id) {
 // Returns a list of desired header action menu operations
 ZmCalendarTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	var ops = [ ZmOperation.NEW_CALENDAR ];
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-		ops.push(ZmOperation.MOUNT_CALENDAR);
-	}
-	ops.push(ZmOperation.CHECK_ALL, ZmOperation.CLEAR_ALL);
-	return ops;
+	return [ZmOperation.NEW_CALENDAR, ZmOperation.MOUNT_CALENDAR,
+			ZmOperation.CHECK_ALL, ZmOperation.CLEAR_ALL];
 };
 
 // Returns a list of desired action menu operations
 ZmCalendarTreeController.prototype._getActionMenuOps =
 function() {
-	var ops = [];
-	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-		ops.push(ZmOperation.SHARE_CALENDAR);
-	}
-	ops.push(ZmOperation.DELETE, ZmOperation.EDIT_PROPS, ZmOperation.SYNC);
-	return ops;
+	return [ZmOperation.SHARE_CALENDAR, ZmOperation.DELETE,
+			ZmOperation.EDIT_PROPS, ZmOperation.SYNC];
 };
 
 ZmCalendarTreeController.prototype.getTreeStyle =

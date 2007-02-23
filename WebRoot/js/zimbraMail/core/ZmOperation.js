@@ -46,12 +46,18 @@ ZmOperation.FILLER 					= "FILLER";		// filler (toolbar)
 // suffix for disabled image
 ZmOperation.DIS = "Dis";
 
+// text and icons displayed for operation
 ZmOperation.SETUP = {};
 
-ZmOperation.SETUP[ZmOperation.NONE]		= {};
-ZmOperation.SETUP[ZmOperation.SEP]		= {};
-ZmOperation.SETUP[ZmOperation.SPACER]	= {};
-ZmOperation.SETUP[ZmOperation.FILLER]	= {};
+// special-purpose operations
+ZmOperation.SETUP[ZmOperation.NONE]		= {};	// means no operations (as opposed to a default set)
+ZmOperation.SETUP[ZmOperation.SEP]		= {};	// a thin vertical or horizontal bar
+ZmOperation.SETUP[ZmOperation.SPACER]	= {};	// empty space of a given size
+ZmOperation.SETUP[ZmOperation.FILLER]	= {};	// expandable space (for right-align in toolbars)
+
+// preconditions for operations - no automatic checking is done, so a client
+// of this class has to check them on its own if it wants
+ZmOperation.SETTING = {};
 
 /**
  * Defines the aspects of an operation, and the ID that refers to it.
@@ -61,78 +67,64 @@ ZmOperation.SETUP[ZmOperation.FILLER]	= {};
  * @param tooltip	[string]*	msg key for tooltip text
  * @param image		[string]*	icon class for the button or menu item
  * @param disImage	[string]*	disabled version of image; defaults to image + "Dis"
+ * @param setting	[constant]*	setting which acts as a precondition for this operation
  */
 ZmOperation.registerOp =
-function(op, params) {
+function(op, params, setting) {
 	ZmOperation[op] = op;
 	ZmOperation.SETUP[op] = params || {};
+	if (setting) {
+		ZmOperation.SETTING[op] = setting;
+	}
 };
 
 ZmOperation.registerOp("ATTACHMENT", {textKey:"addAttachment", tooltipKey:"attachmentTooltip", image:"Attachment"});
-ZmOperation.registerOp("BROWSE", {textKey:"advancedSearch", image:"SearchBuilder"});
+ZmOperation.registerOp("BROWSE", {textKey:"advancedSearch", image:"SearchBuilder"}, ZmSetting.BROWSE_ENABLED);
 ZmOperation.registerOp("CALL", {image:"Telephone"});
 ZmOperation.registerOp("CANCEL", {textKey:"cancel", tooltipKey:"cancelTooltip", image:"Cancel"});
 ZmOperation.registerOp("CHECK_ALL", {textKey:"checkAll", image:"Check"});
 ZmOperation.registerOp("CLEAR_ALL", {textKey:"clearAll", image:"Cancel"});
 ZmOperation.registerOp("CLOSE", {textKey:"close", tooltipKey:"closeTooltip", image:"Close"});
-ZmOperation.registerOp("COLOR_MENU", {textKey:"tagColor"});
-ZmOperation.registerOp("COMPOSE_FORMAT", {textKey:"format", tooltipKey:"formatTooltip", image:"SwitchFormat"});
+ZmOperation.registerOp("COMPOSE_FORMAT", {textKey:"format", tooltipKey:"formatTooltip", image:"SwitchFormat"}, ZmSetting.HTML_COMPOSE_ENABLED);
 ZmOperation.registerOp("DELETE", {textKey:"del", tooltipKey:"deleteTooltip", image:"Delete"});
 ZmOperation.registerOp("DETACH", {textKey:"detach", tooltipKey:"detachTT", image:"OpenInNewWindow"});
 ZmOperation.registerOp("EDIT", {textKey:"edit", tooltipKey:"editTooltip", image:"Edit"});
 ZmOperation.registerOp("EDIT_PROPS", {textKey:"editProperties", tooltipKey:"editPropertiesTooltip", image:"Properties"});
-ZmOperation.registerOp("EDIT_REPLY_ACCEPT", {textKey:"replyAccept", image:"Check"});
-ZmOperation.registerOp("EDIT_REPLY_CANCEL");
-ZmOperation.registerOp("EDIT_REPLY_DECLINE", {textKey:"replyDecline", image:"Cancel"});
-ZmOperation.registerOp("EDIT_REPLY_TENTATIVE", {textKey:"replyTentative", image:"QuestionMark"});
 ZmOperation.registerOp("EXPAND_ALL", {textKey:"expandAll", image:"Plus"});
-ZmOperation.registerOp("FORMAT_HTML", {textKey:"formatAsHtml", image:"HtmlDoc"});
-ZmOperation.registerOp("FORMAT_HTML_SOURCE", {textKey:"formatHtmlSource"});
-ZmOperation.registerOp("FORMAT_TEXT", {textKey:"formatAsText", image:"GenericDoc"});
+ZmOperation.registerOp("FORMAT_HTML", {textKey:"formatAsHtml", image:"HtmlDoc"}, ZmSetting.HTML_COMPOSE_ENABLED);
+ZmOperation.registerOp("FORMAT_TEXT", {textKey:"formatAsText", image:"GenericDoc"}, ZmSetting.HTML_COMPOSE_ENABLED);
 ZmOperation.registerOp("GO_TO_URL", {image:"URL"});
-ZmOperation.registerOp("INVITE_REPLY_ACCEPT", {textKey:"editReply", image:"Check"});
-ZmOperation.registerOp("INVITE_REPLY_DECLINE", {textKey:"editReply", image:"Cancel"});
-ZmOperation.registerOp("INVITE_REPLY_MENU", {textKey:"editReply", image:"Reply"});
-ZmOperation.registerOp("INVITE_REPLY_TENTATIVE", {textKey:"editReply", image:"QuestionMark"});
 ZmOperation.registerOp("MARK_ALL_READ", {textKey:"markAllRead", image:"ReadMessage"});
-ZmOperation.registerOp("MODIFY_SEARCH", {textKey:"modifySearch", image:"SearchFolder"});
-ZmOperation.registerOp("MOUNT_FOLDER", {textKey:"mountFolder", image:"Folder"});
+ZmOperation.registerOp("MODIFY_SEARCH", {textKey:"modifySearch", image:"SearchFolder"}, ZmSetting.SEARCH_ENABLED);
+ZmOperation.registerOp("MOUNT_FOLDER", {textKey:"mountFolder", image:"Folder"}, ZmSetting.SHARING_ENABLED);
 ZmOperation.registerOp("MOVE", {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder"});
-ZmOperation.registerOp("NEW_FOLDER", {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder"});
+ZmOperation.registerOp("NEW_FOLDER", {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder"}, ZmSetting.USER_FOLDERS_ENABLED);
 ZmOperation.registerOp("NEW_MENU", {textKey:"_new"});
-ZmOperation.registerOp("NEW_TAG", {textKey:"newTag", tooltipKey:"newTagTooltip", image:"NewTag"});
+ZmOperation.registerOp("NEW_TAG", {textKey:"newTag", tooltipKey:"newTagTooltip", image:"NewTag"}, ZmSetting.TAGGING_ENABLED);
 ZmOperation.registerOp("PAGE_BACK", {image:"LeftArrow"});
 ZmOperation.registerOp("PAGE_DBL_BACK", {image:"LeftDoubleArrow"});
 ZmOperation.registerOp("PAGE_DBL_FORW", {image:"RightDoubleArrow"});
 ZmOperation.registerOp("PAGE_FORWARD", {image:"RightArrow"});
-ZmOperation.registerOp("PRINT", {textKey:"print", tooltipKey:"printTooltip", image:"Print"});
-ZmOperation.registerOp("PRINT_MENU", {tooltipKey:"printTooltip", image:"Print"});
+ZmOperation.registerOp("PRINT", {textKey:"print", tooltipKey:"printTooltip", image:"Print"}, ZmSetting.PRINT_ENABLED);
+ZmOperation.registerOp("PRINT_MENU", {tooltipKey:"printTooltip", image:"Print"}, ZmSetting.PRINT_ENABLED);
 ZmOperation.registerOp("REFRESH", {textKey:"refresh", tooltipKey:"refreshTooltip", image:"Refresh"});
 ZmOperation.registerOp("RENAME_FOLDER", {textKey:"renameFolder", image:"Rename"});
 ZmOperation.registerOp("RENAME_SEARCH", {textKey:"renameSearch", image:"Rename"});
-ZmOperation.registerOp("RENAME_TAG", {textKey:"renameTag", image:"Rename"});
-ZmOperation.registerOp("REPLY", {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply"});
-ZmOperation.registerOp("REPLY_ACCEPT", {textKey:"replyAccept", image:"Check"});
-ZmOperation.registerOp("REPLY_ALL", {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll"});
-ZmOperation.registerOp("REPLY_CANCEL");
-ZmOperation.registerOp("REPLY_DECLINE", {textKey:"replyDecline", image:"Cancel"});
-ZmOperation.registerOp("REPLY_MENU", {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply"});
-ZmOperation.registerOp("REPLY_MODIFY");
-ZmOperation.registerOp("REPLY_NEW_TIME", {textKey:"replyNewTime", image:"NewTime"});
-ZmOperation.registerOp("REPLY_TENTATIVE", {textKey:"replyTentative", image:"QuestionMark"});
+ZmOperation.registerOp("RENAME_TAG", {textKey:"renameTag", image:"Rename"}, ZmSetting.TAGGING_ENABLED);
 ZmOperation.registerOp("SAVE", {textKey:"save", image:"Save"});
-ZmOperation.registerOp("SEARCH", {textKey:"search", image:"Search"});
+ZmOperation.registerOp("SEARCH", {textKey:"search", image:"Search"}, ZmSetting.SEARCH_ENABLED);
 ZmOperation.registerOp("SEND", {textKey:"send", tooltipKey:"sendTooltip", image:"Send"});
-ZmOperation.registerOp("SHARE", {textKey:"share", tooltipKey:"shareTooltip"});
-ZmOperation.registerOp("SHARE_ACCEPT", {textKey:"acceptShare", image:"Check"});
-ZmOperation.registerOp("SHARE_DECLINE", {textKey:"declineShare", image:"Cancel"});
-ZmOperation.registerOp("SHARE_FOLDER", {textKey:"shareFolder", image:"Folder"});
+ZmOperation.registerOp("SHARE", {textKey:"share", tooltipKey:"shareTooltip"}, ZmSetting.SHARING_ENABLED);
+ZmOperation.registerOp("SHARE_ACCEPT", {textKey:"acceptShare", image:"Check"}, ZmSetting.SHARING_ENABLED);
+ZmOperation.registerOp("SHARE_DECLINE", {textKey:"declineShare", image:"Cancel"}, ZmSetting.SHARING_ENABLED);
+ZmOperation.registerOp("SHARE_FOLDER", {textKey:"shareFolder", image:"Folder"}, ZmSetting.SHARING_ENABLED);
 ZmOperation.registerOp("SHOW_ALL_ITEM_TYPES", {textKey:"showAllItemTypes", image:"Globe"});
 ZmOperation.registerOp("SHOW_ALL_MENU", {textKey:"showAllItemTypes", image:"Globe"});
 ZmOperation.registerOp("SPELL_CHECK", {textKey:"spellCheck", image:"SpellCheck"});
 ZmOperation.registerOp("SYNC", {textKey:"reload", image:"Refresh"});
-ZmOperation.registerOp("TAG");
-ZmOperation.registerOp("TAG_MENU", {textKey:"tag", tooltipKey:"tagTooltip", image:"Tag"});
+ZmOperation.registerOp("TAG", null, ZmSetting.TAGGING_ENABLED);
+ZmOperation.registerOp("TAG_COLOR_MENU", {textKey:"tagColor"}, ZmSetting.TAGGING_ENABLED);
+ZmOperation.registerOp("TAG_MENU", {textKey:"tag", tooltipKey:"tagTooltip", image:"Tag"}, ZmSetting.TAGGING_ENABLED);
 // placeholder for toolbar text
 ZmOperation.registerOp("TEXT");
 // XXX: need new icon?
@@ -272,7 +264,7 @@ function(parent, id, opHash, index) {
 		ZmOperation.addDeferredMenu(ZmOperation.addNewMenu, opHash[id]);
 	} else if (id == ZmOperation.TAG_MENU) {
 		ZmOperation.addDeferredMenu(ZmOperation.addTagMenu, opHash[id]);
-	} else if (id == ZmOperation.COLOR_MENU) {
+	} else if (id == ZmOperation.TAG_COLOR_MENU) {
 		ZmOperation.addDeferredMenu(ZmOperation.addColorMenu, opHash[id]);
 	} else if (id == ZmOperation.IM_PRESENCE_MENU) {
 		ZmOperation.addImPresenceMenu(parent, opHash);
@@ -319,6 +311,56 @@ function(parent, oldOp, newOp, text, image, disImage) {
 	op.setImage(image ? image : ZmOperation.getProp(newOp, "image"));
 	op.setDisabledImage(disImage ? disImage : ZmOperation.getProp(newOp, "disImage"));
 };
+
+/**
+ * Takes a list of operations and removes any who have a corresponding setting that's
+ * not set. Also deals with the fact that you don't want a separator or a spacer unless
+ * there's stuff on either side of it.
+ */
+ZmOperation.filterOperations =
+function(appCtxt, list) {
+	var newList = [];
+	if (!(list && list.length)) { return newList; }
+	
+	// remove disabled operations
+	for (var i = 0; i < list.length; i++) {
+		var op = list[i];
+		if (!op) { continue; }
+		var setting = ZmOperation.SETTING[op];
+		if (!setting || appCtxt.get(setting)) {
+			newList.push(op);
+		}
+	}
+	// reduce multiple consecutive separators to the first one
+	var newList1 = [];
+	var gotSep = false;
+	for (var i = 0; i < newList.length; i++) {
+		var op = newList[i];
+		if (op == ZmOperation.SEP || op == ZmOperation.SPACER) {
+			if (!gotSep) {
+				newList1.push(op);
+			}
+			gotSep = true;
+		} else {
+			newList1.push(op);
+			gotSep = false;
+		}
+	}
+	// remove sep at beginning or end
+	if (newList1 && newList1.length) {
+		if (newList1[0] == ZmOperation.SEP || newList1[0] == ZmOperation.SPACER) {
+			newList1.shift();
+		}
+		var i = newList1.length - 1;
+		if (newList1[i] == ZmOperation.SEP || newList1[i] == ZmOperation.SPACER) {
+			newList1.pop();
+		}
+	}
+	
+	return newList1;
+};
+
+// everything below here should be moved
 
 /**
 * Adds a "New" submenu. Custom descriptors are used because we don't want "New" at the

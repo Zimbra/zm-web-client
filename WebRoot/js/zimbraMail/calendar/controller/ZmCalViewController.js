@@ -763,17 +763,12 @@ function() {
 		if(ZmZimlet.actionMenus && ZmZimlet.actionMenus["ZmCalViewController"] && ZmZimlet.actionMenus["ZmCalViewController"] instanceof Array) {
 			extraList = ZmZimlet.actionMenus["ZmCalViewController"];
 		}
-		this._minicalMenu = new ZmActionMenu(this._appCtxt.getShell(), list,extraList);
+		this._minicalMenu = new ZmActionMenu(this._appCtxt.getShell(), list, extraList);
+		list = this._minicalMenu.opList;
 		var cnt = list.length;
 		for(var ix=0; ix < cnt; ix++) {
 			if(this._listeners[list[ix]]) {
 				this._minicalMenu.addSelectionListener(list[ix], this._listeners[list[ix]]);
-			}
-		}
-		cnt = extraList.length;
-		for(var ix=0; ix < cnt; ix++) {
-			if(this._listeners[extraList[ix].id]) {
-				this._minicalMenu.addSelectionListener(extraList[ix].id, this._listeners[extraList[ix].id]);
 			}
 		}
 	}
@@ -1407,6 +1402,7 @@ function() {
 	var menuItems = this._getViewActionMenuOps();
 	if (!menuItems) return;
 	this._viewActionMenu = new ZmActionMenu(this._shell, menuItems);
+	menuItems = this._viewActionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
 		var menuItem = menuItems[i];
 		if (menuItem == ZmOperation.CAL_VIEW_MENU) {
@@ -1443,6 +1439,7 @@ function() {
 	var menuItems = this._getActionMenuOps();
 	if (menuItems && menuItems.length > 0) {
 		var actionMenu = this._actionMenu = new ZmActionMenu(this._shell, menuItems);
+		menuItems = actionMenu.opList;
 		for (var i = 0; i < menuItems.length; i++) {
 			var menuItem = menuItems[i];
 			if (menuItem == ZmOperation.INVITE_REPLY_MENU) {
@@ -1463,6 +1460,7 @@ function() {
 		var menuItems = this._getRecurringActionMenuOps();
 		if (menuItems && menuItems.length > 0) {
 			this._recurringActionMenu = new ZmActionMenu(this._shell, menuItems);
+			menuItems = this._recurringActionMenu.opList;
 			for (var i = 0; i < menuItems.length; i++) {
 				var item = this._recurringActionMenu.getMenuItem(menuItems[i]);
 				item.setMenu(actionMenu);

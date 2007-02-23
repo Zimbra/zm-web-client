@@ -91,9 +91,9 @@ function() {
 	this._toolbar = new ZmButtonToolBar(this._filterRulesView, buttons, null, Dwt.STATIC_STYLE);
 
 	// add listeners
-	var id;
+	buttons = this._toolbar.opList;
 	for (var i = 0; i < buttons.length; i++) {
-		id = buttons[i];
+		var id = buttons[i];
 		if (this._buttonListeners[id]) {
 			this._toolbar.addSelectionListener(id, this._buttonListeners[id]);
 		}

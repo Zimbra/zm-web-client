@@ -341,6 +341,7 @@ function(parent, menuItems) {
 	if (!menuItems) return;
 	
 	var actionMenu = new ZmActionMenu(parent, menuItems);
+	menuItems = actionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
 		var menuItem = menuItems[i];
 		if (this._listeners[menuItem]) {

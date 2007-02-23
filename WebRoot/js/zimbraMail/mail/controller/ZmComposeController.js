@@ -525,14 +525,12 @@ ZmComposeController.prototype._initializeToolBar =
 function() {
 	if (this._toolbar) return;
 	
-	var buttons = [ZmOperation.SEND, ZmOperation.CANCEL, ZmOperation.SEP];
-	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED))
-		buttons.push(ZmOperation.SAVE_DRAFT);
-	buttons.push(ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK);
-	buttons.push(ZmOperation.ADD_SIGNATURE);
-	buttons.push(ZmOperation.COMPOSE_OPTIONS);
+	var buttons = [ZmOperation.SEND, ZmOperation.CANCEL,
+				   ZmOperation.SEP, ZmOperation.SAVE_DRAFT,
+				   ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK,
+				   ZmOperation.ADD_SIGNATURE, ZmOperation.COMPOSE_OPTIONS,
+				   ZmOperation.FILLER]; // right-align remaining buttons
 
-	buttons.push(ZmOperation.FILLER); // right-align remaining buttons
 	if (!this.isChildWindow) {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
 	}
@@ -540,8 +538,8 @@ function() {
 	var className = this.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
 	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, className);
 
-	for (var i = 0; i < buttons.length; i++) {
-		var button = buttons[i];
+	for (var i = 0; i < this._toolbar.opList.length; i++) {
+		var button = this._toolbar.opList[i];
 		if (this._listeners[button]) {
 			this._toolbar.addSelectionListener(button, this._listeners[button]);
 		}
@@ -550,8 +548,10 @@ function() {
 	var identity = AjxDispatcher.run("GetIdentityCollection").defaultIdentity;
 	var canAddSig = this._setAddSignatureVisibility(identity);
 
-	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY, ZmOperation.FORWARD_ATT, ZmOperation.DRAFT,
-					ZmOperation.REPLY_CANCEL, ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE];
+	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY,
+				   ZmOperation.FORWARD_ATT, ZmOperation.DRAFT,
+				   ZmOperation.REPLY_CANCEL, ZmOperation.REPLY_ACCEPT,
+				   ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE];
 	this._optionsMenu = {};
 	for (var i = 0; i < actions.length; i++) {
 		this._optionsMenu[actions[i]] = this._createOptionsMenu(actions[i]);
@@ -580,7 +580,9 @@ function(identity) {
 	if (!identity) { return false; }
 	var canAddSig = (!identity.signatureEnabled && identity.signature);
 	var signatureButton = this._toolbar.getButton(ZmOperation.ADD_SIGNATURE);
-	signatureButton.setVisible(canAddSig);
+	if (signatureButton) {
+		signatureButton.setVisible(canAddSig);
+	}
 	return canAddSig;
 };
 

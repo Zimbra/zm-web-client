@@ -136,16 +136,10 @@ function(view) {
 */
 ZmConvController.prototype._standardToolBarOps =
 function() {
-	var list = [ZmOperation.NEW_MENU];
-	list.push(ZmOperation.CHECK_MAIL);
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.DELETE_MENU);
-	list.push(ZmOperation.MOVE);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
-	return list;
+	return [ZmOperation.NEW_MENU, ZmOperation.CHECK_MAIL,
+			ZmOperation.TAG_MENU, ZmOperation.SEP,
+			ZmOperation.DELETE_MENU, ZmOperation.MOVE,
+			ZmOperation.PRINT];
 }
 
 ZmConvController.prototype._getViewType =

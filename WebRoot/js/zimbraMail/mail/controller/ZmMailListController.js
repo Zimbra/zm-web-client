@@ -297,13 +297,14 @@ function(view) {
 	ZmListController.prototype._initialize.call(this, view);
 	
 	if (!this._participantActionMenu) {
-		var menuItems = this._contactOps();
+		var menuItems = this._participantOps();
 		menuItems.push(ZmOperation.SEP);
 		var ops = this._getActionMenuOps();
 		if (ops && ops.length) {
 			menuItems = menuItems.concat(ops);
 		}
     	this._participantActionMenu = new ZmActionMenu(this._shell, menuItems);
+		menuItems = this._participantActionMenu.opList;
 		for (var i = 0; i < menuItems.length; i++) {
 			var menuItem = menuItems[i];
 			if (this._listeners[menuItem]) {
@@ -375,7 +376,7 @@ function() {
 
 ZmMailListController.prototype._flagOps =
 function() {
-	return ([ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD]);
+	return [ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD];
 };
 
 ZmMailListController.prototype._msgOps =

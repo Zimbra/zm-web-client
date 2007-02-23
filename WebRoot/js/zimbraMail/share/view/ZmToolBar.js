@@ -56,12 +56,18 @@ function() {
 
 ZmToolBar.prototype.addSelectionListener =
 function(buttonId, listener) {
-	this._buttons[buttonId].addSelectionListener(listener);
+	var button = this._buttons[buttonId];
+	if (button) {
+		button.addSelectionListener(listener);
+	}
 };
 
 ZmToolBar.prototype.removeSelectionListener =
 function(buttonId, listener) {
-	this._buttons[buttonId].removeSelectionListener(listener);
+	var button = this._buttons[buttonId];
+	if (button) {
+		button.removeSelectionListener(listener);
+	}
 };
 
 ZmToolBar.prototype.getButton =

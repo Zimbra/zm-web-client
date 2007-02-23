@@ -50,7 +50,7 @@ function ZmTagTreeController(appCtxt) {
 
 	this._listeners[ZmOperation.NEW_TAG] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_TAG] = new AjxListener(this, this._renameListener);
-	this._listeners[ZmOperation.COLOR_MENU] = new AjxListener(this, this._colorListener);
+	this._listeners[ZmOperation.TAG_COLOR_MENU] = new AjxListener(this, this._colorListener);
 };
 
 ZmTagTreeController.prototype = new ZmTreeController;
@@ -70,11 +70,11 @@ ZmTagTreeController.prototype._getActionMenu =
 function() {
 	var menu = ZmTreeController.prototype._getActionMenu.call(this);
 	if (menu && !menu._initialized) {
-		var mi = menu.getMenuItem(ZmOperation.COLOR_MENU);
+		var mi = menu.getMenuItem(ZmOperation.TAG_COLOR_MENU);
 		if (mi) {
 			var items = mi.getMenu().getItems();
 			for (var i = 0; i < items.length; i++) {
-				items[i].addSelectionListener(this._listeners[ZmOperation.COLOR_MENU]);
+				items[i].addSelectionListener(this._listeners[ZmOperation.TAG_COLOR_MENU]);
 			}
 		}
 		menu._initialized = true;
@@ -94,7 +94,7 @@ function(parent, type, id) {
 	parent.enableAll(true);
 	if (tag.isSystem())
 		parent.enable([ZmOperation.RENAME_TAG, 
-					   ZmOperation.COLOR_MENU, ZmOperation.DELETE], false);
+					   ZmOperation.TAG_COLOR_MENU, ZmOperation.DELETE], false);
 	parent.enable(ZmOperation.MARK_ALL_READ, (tag && (tag.numUnread > 0)));
 };
 
@@ -123,7 +123,7 @@ function() {
 			  ZmOperation.MARK_ALL_READ,
 			  ZmOperation.RENAME_TAG,
 			  ZmOperation.DELETE,
-			  ZmOperation.COLOR_MENU);
+			  ZmOperation.TAG_COLOR_MENU);
 	return list;
 };
 

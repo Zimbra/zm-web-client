@@ -82,8 +82,7 @@ function() {
 // minimal toolbar
 ZmAttachmentListController.prototype._getToolBarOps =
 function() {
-	var list = [ZmOperation.NEW_MENU];
-	return list;
+	return [ZmOperation.NEW_MENU];
 }
 
 // no action menu

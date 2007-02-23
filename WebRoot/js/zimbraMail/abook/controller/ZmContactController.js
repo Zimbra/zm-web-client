@@ -87,15 +87,9 @@ function(actionCode) {
 
 ZmContactController.prototype._getToolBarOps =
 function() {
-	var list = [ZmOperation.SAVE];
-	list.push(ZmOperation.CANCEL);
-	list.push(ZmOperation.SEP);
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
-	list.push(ZmOperation.DELETE);
-	return list;
+	return [ZmOperation.SAVE, ZmOperation.CANCEL,
+			ZmOperation.SEP, ZmOperation.TAG_MENU,
+			ZmOperation.PRINT, ZmOperation.DELETE];
 };
 
 ZmContactController.prototype._getActionMenuOps =

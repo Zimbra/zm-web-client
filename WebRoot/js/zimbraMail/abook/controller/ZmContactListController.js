@@ -225,14 +225,10 @@ function(actionCode) {
 
 ZmContactListController.prototype._standardToolBarOps =
 function() {
-	var list = [ZmOperation.NEW_MENU];
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.DELETE, ZmOperation.MOVE);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT_MENU);
-	return list;
+	return [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU,
+			ZmOperation.SEP,
+			ZmOperation.DELETE, ZmOperation.MOVE,
+			ZmOperation.PRINT_MENU];
 };
 
 ZmContactListController.prototype._getToolBarOps =
@@ -245,7 +241,7 @@ function() {
 
 ZmContactListController.prototype._getActionMenuOps =
 function() {
-	var list = this._contactOps();
+	var list = this._participantOps();
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;

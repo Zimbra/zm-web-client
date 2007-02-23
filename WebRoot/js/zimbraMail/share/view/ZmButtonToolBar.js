@@ -52,18 +52,18 @@ function ZmButtonToolBar(parent, standardButtons, extraButtons, posStyle, classN
 
 	// standard buttons default to New/Tag/Print/Delete
 	if (!standardButtons) {
-		standardButtons = [ZmOperation.NEW_MENU];
-		if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-			standardButtons.push(ZmOperation.TAG_MENU);
-		}
-		if (this._appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-			standardButtons.push(ZmOperation.PRINT);
-		}
-		standardButtons.push(ZmOperation.DELETE);
+		standardButtons = [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.PRINT, ZmOperation.DELETE];
 	} else if (standardButtons == ZmOperation.NONE) {
 		standardButtons = null;
 	}
-	this._buttons = ZmOperation.createOperations(this, standardButtons, extraButtons);
+	// weed out disabled ops, save list of ones that make it
+	this.opList = ZmOperation.filterOperations(this._appCtxt, standardButtons);
+	this._buttons = ZmOperation.createOperations(this, this.opList, extraButtons);
+	if (extraButtons && extraButtons.length) {
+		for (var i = 0; i < extraButtons.length; i++) {
+			this.opList.push(extraButtons[i].id);
+		}
+	}
 };
 
 ZmButtonToolBar.prototype = new ZmToolBar;

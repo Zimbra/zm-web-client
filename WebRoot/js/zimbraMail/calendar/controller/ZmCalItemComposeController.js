@@ -216,12 +216,10 @@ function(mode) {
 
 ZmCalItemComposeController.prototype._createToolBar =
 function() {
-	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.ATTACHMENT, ZmOperation.SEP, ZmOperation.SPELL_CHECK];
-
-	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
-		buttons.push(ZmOperation.SEP);
-		buttons.push(ZmOperation.COMPOSE_FORMAT);
-	}
+	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL,
+				   ZmOperation.SEP, ZmOperation.ATTACHMENT,
+				   ZmOperation.SEP, ZmOperation.SPELL_CHECK,
+				   ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT];
 
 	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmAppToolBar");
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));

@@ -116,6 +116,7 @@ function() {
 
 	return list;
 };
+
 ZmPageEditController.prototype._initializeToolBar =
 function(view) {
 	if (this._toolbar[view]) return;
@@ -135,6 +136,7 @@ function(view) {
 		spellCheckButton.setText("");
 	}
 
+	// NOTE: probably cleaner to use ZmActionMenu, which knows about operations
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 		var menu = new ZmPopupMenu(button);

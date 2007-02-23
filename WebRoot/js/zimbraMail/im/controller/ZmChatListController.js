@@ -133,7 +133,7 @@ ZmChatListController.prototype._getActionMenuOps =
 function() {
     return [];
     /*
-//	var list = this._contactOps();
+//	var list = this._participantOps();
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
@@ -173,9 +173,11 @@ function(view) {
 	var list = [ZmOperation.PRINT, ZmOperation.DELETE, ZmOperation.MOVE];
 	for (var i = 0; i < list.length; i++) {
 		var button = this._toolbar[view].getButton(list[i]);
-		if (button)
+		if (button) {
 			button.setText(null);
+		}
 	}
+	buttons = this._toolbar[view].opList;
 	for (var i = 0; i < buttons.length; i++) {
 		var button = buttons[i];
 		if (this._listeners[button]) {
@@ -189,7 +191,7 @@ function(view) {
     presenceButton.setText(ZmMsg[ZmOperation.getProp(ZmOperation.IM_PRESENCE_OFFLINE, "textKey")]);
     var presenceMenu = presenceButton.getMenu();
     
-    	var list = [ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
+   	var list = [ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
                 ZmOperation.IM_PRESENCE_DND, ZmOperation.IM_PRESENCE_AWAY, ZmOperation.IM_PRESENCE_XA,
                 ZmOperation.IM_PRESENCE_INVISIBLE];
     var currentShowOp = this._imApp.getRoster().getPresence().getShowOperation();
@@ -215,6 +217,7 @@ function(view) {
 	var menuItems = this._getActionMenuOps();
 	if (!menuItems) return;
 	this._actionMenu = new ZmActionMenu(this._shell, menuItems);
+	menuItems = this._actionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
 		var menuItem = menuItems[i];
 		if (this._listeners[menuItem]) {

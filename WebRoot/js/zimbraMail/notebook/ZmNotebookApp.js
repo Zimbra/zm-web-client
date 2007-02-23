@@ -38,14 +38,15 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 	ZmOperation.registerOp("EDIT_NOTEBOOK_FOOTER", {textKey:"editNotebookFooter", image:"Edit"});
 	ZmOperation.registerOp("EDIT_NOTEBOOK_SIDE_BAR", {textKey:"editNotebookSideBar", image:"Edit"});
 	ZmOperation.registerOp("EDIT_NOTEBOOK_CHROME", {textKey:"editNotebookChrome", image:"Edit"});
-	ZmOperation.registerOp("FORMAT_MEDIA_WIKI", {textKey:"formatMediaWiki"});
-	ZmOperation.registerOp("FORMAT_RICH_TEXT", {textKey:"formatRichText"});
-	ZmOperation.registerOp("FORMAT_TWIKI", {textKey:"formatTWiki"});
-	ZmOperation.registerOp("MOUNT_NOTEBOOK", {textKey:"mountNotebook", image:"Notebook"});
+	ZmOperation.registerOp("FORMAT_HTML_SOURCE", {textKey:"formatHtmlSource"}, ZmSetting.HTML_COMPOSE_ENABLED);
+	ZmOperation.registerOp("FORMAT_MEDIA_WIKI", {textKey:"formatMediaWiki"}, ZmSetting.HTML_COMPOSE_ENABLED);
+	ZmOperation.registerOp("FORMAT_RICH_TEXT", {textKey:"formatRichText"}, ZmSetting.HTML_COMPOSE_ENABLED);
+	ZmOperation.registerOp("FORMAT_TWIKI", {textKey:"formatTWiki"}, ZmSetting.HTML_COMPOSE_ENABLED);
+	ZmOperation.registerOp("MOUNT_NOTEBOOK", {textKey:"mountNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("NEW_NOTEBOOK", {textKey:"newNotebook", image:"NewNotebook"});
 	ZmOperation.registerOp("NEW_PAGE", {textKey:"newPage", tooltipKey:"createNewPage", image:"NewPage"});
 	ZmOperation.registerOp("SEND_PAGE", {textKey:"send", tooltipKey:"sendPageTT", image:"Send"});
-	ZmOperation.registerOp("SHARE_NOTEBOOK", {textKey:"shareNotebook", image:"Notebook"});
+	ZmOperation.registerOp("SHARE_NOTEBOOK", {textKey:"shareNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 
 	ZmItem.registerItem(ZmItem.PAGE,
 						{app:			ZmApp.NOTEBOOK,

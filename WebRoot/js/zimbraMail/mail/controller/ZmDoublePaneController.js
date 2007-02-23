@@ -183,9 +183,7 @@ function() {
 	list = list.concat(this._standardActionMenuOps());
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.SHOW_ORIG);
-	if (this._appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
-		list.push(ZmOperation.ADD_FILTER_RULE);
-	}
+	list.push(ZmOperation.ADD_FILTER_RULE);
 	return list;
 };
 

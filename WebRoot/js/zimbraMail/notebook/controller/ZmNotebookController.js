@@ -84,13 +84,8 @@ ZmNotebookController.prototype.switchView = function(view, force) {
 // Overrides ZmListController method, leaving ZmOperation.MOVE off the menu.
 ZmNotebookController.prototype._standardActionMenuOps =
 function() {
-	var list = [];
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	list.push(ZmOperation.DELETE);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
-	return list;
+	return [ZmOperation.TAG_MENU, ZmOperation.DELETE,
+			ZmOperation.PRINT];
 };
 
 
@@ -110,21 +105,8 @@ ZmNotebookController.prototype._getBasicToolBarOps = function() {
 	];
 };
 ZmNotebookController.prototype._getItemToolBarOps = function() {
-	var list = [];
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		list.push(ZmOperation.TAG_MENU, ZmOperation.SEP);
-	}
-	list.push(
-		ZmOperation.DELETE,
-		ZmOperation.PRINT
-		// ZmOperation.MOVE
-	);
-	/***
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-		list.push(ZmOperation.PRINT);
-	}
-	/***/
-	return list;
+	return [ZmOperation.TAG_MENU, ZmOperation.SEP,
+			ZmOperation.DELETE, ZmOperation.PRINT];
 };
 ZmNotebookController.prototype._getNaviToolBarOps = function() {
 	return [
