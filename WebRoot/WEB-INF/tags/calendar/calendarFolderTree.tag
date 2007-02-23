@@ -24,7 +24,7 @@
             <th class='Header'><fmt:message key="calendars"/></th>
             <th width='1%' align='right' class='ZhTreeEdit'>
                 <c:choose>
-                    <c:when test="${empty editmode}">
+                    <c:when test="${false and empty editmode}">
                         <c:url value="/h/mcalendars" var="mabUrl"/>
                         <a href="${mabUrl}" ><fmt:message key="TREE_EDIT"/></a>
                     </c:when>
