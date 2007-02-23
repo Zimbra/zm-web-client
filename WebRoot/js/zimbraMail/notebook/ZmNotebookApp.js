@@ -104,6 +104,16 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 								 icon:			"SearchNotes"
 								});
 
+	var newItemOps = {};
+	newItemOps[ZmOperation.NEW_PAGE] = "page";
+
+	var newOrgOps = {};
+	newOrgOps[ZmOperation.NEW_NOTEBOOK] = "notebook";
+
+	var actionCodes = {};
+	actionCodes[ZmKeyMap.NEW_PAGE]		= ZmOperation.NEW_PAGE;
+	actionCodes[ZmKeyMap.NEW_NOTEBOOK]	= ZmOperation.NEW_NOTEBOOK;
+
 	ZmApp.registerApp(ZmApp.NOTEBOOK,
 							 {mainPkg:				"Notebook",
 							  nameKey:				"BETA_documents",
@@ -114,11 +124,11 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 							  overviewTrees:		[ZmOrganizer.NOTEBOOK, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.PAGE, ZmItem.DOCUMENT],
-							  ops:					[ZmOperation.NEW_PAGE, ZmOperation.NEW_NOTEBOOK],
+							  newItemOps:			newItemOps,
+							  newOrgOps:			newOrgOps,
+							  actionCodes:			actionCodes,
 							  gotoActionCode:		ZmKeyMap.GOTO_NOTEBOOK,
 							  newActionCode:		ZmKeyMap.NEW_PAGE,
-							  actionCodes:			[ZmKeyMap.NEW_PAGE, ZmOperation.NEW_PAGE,
-							  						 ZmKeyMap.NEW_NOTEBOOK, ZmOperation.NEW_NOTEBOOK],
 							  chooserSort:			50,
 							  defaultSort:			30
 							  });

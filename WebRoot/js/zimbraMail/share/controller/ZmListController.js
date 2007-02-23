@@ -154,7 +154,7 @@ function(actionCode) {
 	
 	var app = ZmApp.ACTION_CODES_R[actionCode];
 	if (app) {
-		var op = ZmApp.ACTION_CODES_OP[actionCode];
+		var op = ZmApp.ACTION_CODES[actionCode];
 		if (op) {
 			this._appCtxt.getApp(app).handleOp(op);
 			return true;
@@ -325,7 +325,7 @@ function(view) {
 
 	var buttons = this._getToolBarOps();
 	if (!buttons) return;
-	this._toolbar[view] = new ZmButtonToolBar({parent:this._container, standardButtons:buttons});
+	this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons});
 	// remove text for Print, Delete, and Move buttons
 	var list = [ZmOperation.PRINT, ZmOperation.DELETE, ZmOperation.MOVE];
 	for (var i = 0; i < list.length; i++) {
@@ -373,7 +373,7 @@ ZmListController.prototype._initializeActionMenu =
 function() {
 	var menuItems = this._getActionMenuOps();
 	if (!menuItems) return;
-	this._actionMenu = new ZmActionMenu({parent:this._shell, standardMenuItems:menuItems});
+	this._actionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
 	menuItems = this._actionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
 		var menuItem = menuItems[i];

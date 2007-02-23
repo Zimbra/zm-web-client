@@ -34,13 +34,12 @@
  *
  * @author Conrad Damon
  *
- * @param parent				[DwtComposite]		the containing widget
- * @param standardButtons		[array]*			a list of operation IDs
- * @param extraButtons			[array]*			a list of operation descriptors
- * @param posStyle				[constant]*			positioning style
- * @param className				[string]*			CSS class name
- * @param buttonClassName		[string]*			CSS class name for buttons
- * @param overrides				[hash]*				hash of overrides by op ID
+ * @param parent			[DwtComposite]		the containing widget
+ * @param buttons			[array]*			a list of operation IDs
+ * @param posStyle			[constant]*			positioning style
+ * @param className			[string]*			CSS class name
+ * @param buttonClassName	[string]*			CSS class name for buttons
+ * @param overrides			[hash]*				hash of overrides by op ID
  */
 function ZmButtonToolBar(params) {
 	if (arguments.length == 0) return;
@@ -53,7 +52,7 @@ function ZmButtonToolBar(params) {
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
 	// standard buttons default to New/Tag/Print/Delete
-	var buttons = params.standardButtons;
+	var buttons = params.buttons;
 	if (!buttons) {
 		buttons = [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.PRINT, ZmOperation.DELETE];
 	} else if (buttons == ZmOperation.NONE) {
@@ -61,13 +60,7 @@ function ZmButtonToolBar(params) {
 	}
 	// weed out disabled ops, save list of ones that make it
 	this.opList = ZmOperation.filterOperations(this._appCtxt, buttons);
-	var extraButtons = params.extraButtons;
-	this._buttons = ZmOperation.createOperations(this, this.opList, extraButtons, params.overrides);
-	if (extraButtons && extraButtons.length) {
-		for (var i = 0; i < extraButtons.length; i++) {
-			this.opList.push(extraButtons[i].id);
-		}
-	}
+	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
 };
 
 ZmButtonToolBar.prototype = new ZmToolBar;

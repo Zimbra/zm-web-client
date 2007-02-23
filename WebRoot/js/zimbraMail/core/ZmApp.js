@@ -83,9 +83,8 @@ ZmApp.QS_VIEWS				= {};	// list of views to handle in query string
 ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
 
 // map of key action to op
-ZmApp.ACTION_CODES_OP		= {};
-ZmApp.ACTION_CODES_OP[ZmKeyMap.NEW_FOLDER]	= ZmOperation.NEW_FOLDER;
-ZmApp.ACTION_CODES_OP[ZmKeyMap.NEW_TAG]		= ZmOperation.NEW_TAG;
+ZmApp.ACTION_CODES[ZmKeyMap.NEW_FOLDER]	= ZmOperation.NEW_FOLDER;
+ZmApp.ACTION_CODES[ZmKeyMap.NEW_TAG]	= ZmOperation.NEW_TAG;
 
 // assistants for each app; each valu is a hash where the key is the name of the
 // assistant class and the value is the required package
@@ -117,8 +116,9 @@ ZmApp.DEFAULT_APPS		= [];	// ordered list
  * @param searchTypes		[array]		list of types of saved searches to show in overview
  * @param gotoActionCode	[constant]	key action for jumping to this app
  * @param newActionCode		[constant]	default "new" action code
- * @param actionCodes		[array]		key actions that map to ops (in pairs)
- * @param ops				[array]		IDs of operations for the app
+ * @param actionCodes		[hash]		keyboard actions mapped to operations
+ * @param newItemOps		[hash]		IDs of operations that create a new item, and their text keys
+ * @param newOrgOps			[hash]		IDs of operations that create a new organizer, and their text keys
  * @param qsViews			[array]		list of views to handle in query string
  * @param chooserSort		[int]		controls order of apps in app chooser toolbar
  * @param defaultSort		[int]		controls order in which app is chosen as default start app
@@ -141,7 +141,6 @@ function(app, params) {
 	if (params.gotoActionCode)		{ ZmApp.GOTO_ACTION_CODE[app]	= params.gotoActionCode; }
 	if (params.newActionCode)		{ ZmApp.NEW_ACTION_CODE[app]	= params.newActionCode; }
 	if (params.actionCodes)			{ ZmApp.ACTION_CODES[app]		= params.actionCodes; }
-	if (params.ops)					{ ZmApp.OPS[app]				= params.ops; }
 	if (params.qsViews)				{ ZmApp.QS_VIEWS[app]			= params.qsViews; }
 	if (params.chooserSort)			{ ZmApp.CHOOSER_SORT[app]		= params.chooserSort; }
 	if (params.defaultSort)			{ ZmApp.DEFAULT_SORT[app]		= params.defaultSort; }
@@ -158,18 +157,24 @@ function(app, params) {
 		ZmApp.GOTO_ACTION_CODE_R[params.gotoActionCode] = app;
 	}
 	
-	// since Javascript doesn't like anonymous arrays whose keys have a prop dereference
-	// (eg {a.b:3}, we are passed a list of values as actionCode/op pairs
 	if (params.actionCodes) {
-		for (var i = 0; i < params.actionCodes.length; i += 2) {
-			ZmApp.ACTION_CODES_R[params.actionCodes[i]] = app;
-			ZmApp.ACTION_CODES_OP[params.actionCodes[i]] = params.actionCodes[i + 1];
+		for (var ac in params.actionCodes) {
+			ZmApp.ACTION_CODES_R[ac] = app;
 		}
 	}
 	
-	if (params.ops) {
-		for (var i = 0; i < params.ops.length; i++) {
-			ZmApp.OPS_R[params.ops[i]] = app;
+	if (params.newItemOps) {
+		for (var op in params.newItemOps) {
+			ZmApp.OPS_R[op] = app;
+			ZmOperation.NEW_ITEM_OPS.push(op);
+			ZmOperation.NEW_ITEM_KEY[op] = params.newItemOps[op];
+		}
+	}
+	if (params.newOrgOps) {
+		for (var op in params.newOrgOps) {
+			ZmApp.OPS_R[op] = app;
+			ZmOperation.NEW_ORG_OPS.push(op);
+			ZmOperation.NEW_ORG_KEY[op] = params.newOrgOps[op];
 		}
 	}
 	

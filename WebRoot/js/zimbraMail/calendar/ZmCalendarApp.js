@@ -104,6 +104,16 @@ function ZmCalendarApp(appCtxt, container) {
 							 deferrable:		true
 							});
 
+	var newItemOps = {};
+	newItemOps[ZmOperation.NEW_APPT] = "appointment";
+
+	var newOrgOps = {};
+	newOrgOps[ZmOperation.NEW_CALENDAR] = "calendar";
+
+	var actionCodes = {};
+	actionCodes[ZmKeyMap.NEW_APPT]		= ZmOperation.NEW_APPT;
+	actionCodes[ZmKeyMap.NEW_CALENDAR]	= ZmOperation.NEW_CALENDAR;
+
 	ZmApp.registerApp(ZmApp.CALENDAR,
 							 {mainPkg:				"Calendar",
 							  nameKey:				"calendar",
@@ -116,11 +126,11 @@ function ZmCalendarApp(appCtxt, container) {
 							  showZimlets:			true,
 							  assistants:			{"ZmAppointmentAssistant":	["CalendarCore", "Calendar"],
 							  						 "ZmCalendarAssistant":		["CalendarCore", "Calendar"]},
-							  ops:					[ZmOperation.NEW_APPT, ZmOperation.NEW_CALENDAR],
+							  newItemOps:			newItemOps,
+							  newOrgOps:			newOrgOps,
+							  actionCodes:			actionCodes,
 							  gotoActionCode:		ZmKeyMap.GOTO_CALENDAR,
 							  newActionCode:		ZmKeyMap.NEW_APPT,
-							  actionCodes:			[ZmKeyMap.NEW_APPT, ZmOperation.NEW_APPT,
-							  						 ZmKeyMap.NEW_CALENDAR, ZmOperation.NEW_CALENDAR],
 							  chooserSort:			30,
 							  defaultSort:			20
 							  });

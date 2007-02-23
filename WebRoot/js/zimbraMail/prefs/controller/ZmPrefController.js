@@ -167,7 +167,7 @@ function () {
 	if (this._toolbar) return;
 	
 	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL];
-	this._toolbar = new ZmButtonToolBar({parent:this._container, standardButtons:buttons});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons});
 	buttons = this._toolbar.opList;
 	for (var i = 0; i < buttons.length; i++) {
 		var button = buttons[i];

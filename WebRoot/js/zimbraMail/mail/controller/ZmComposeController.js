@@ -536,7 +536,7 @@ function() {
 	}
 
 	var className = this.isChildWindow ? "ZmAppToolBar_cw" : "ZmAppToolBar";
-	this._toolbar = new ZmButtonToolBar({parent:this._container, standardButtons:buttons, className:className});
+	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:className});
 
 	for (var i = 0; i < this._toolbar.opList.length; i++) {
 		var button = this._toolbar.opList[i];

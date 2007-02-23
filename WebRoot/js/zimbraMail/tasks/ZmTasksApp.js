@@ -64,6 +64,15 @@ function ZmTasksApp(appCtxt, container) {
 							 deferrable:		true
 							});
 
+	var newItemOps = {};
+	newItemOps[ZmOperation.NEW_TASK] = "task";
+
+	var newOrgOps = {};
+	newOrgOps[ZmOperation.NEW_TASK_FOLDER] = "taskFolder";
+
+	var actionCodes = {};
+	actionCodes[ZmKeyMap.NEW_TASK] = ZmOperation.NEW_TASK;
+
 	ZmApp.registerApp(ZmApp.TASKS,
 							 {mainPkg:				"Tasks",
 							  nameKey:				"tasks",
@@ -72,10 +81,11 @@ function ZmTasksApp(appCtxt, container) {
 							  organizer:			ZmOrganizer.TASKS,
 							  overviewTrees:		[ZmOrganizer.TASKS],
 							  showZimlets:			true,
-							  ops:					[ZmOperation.NEW_TASK, ZmOperation.NEW_TASK_FOLDER],
+							  newItemOps:			newItemOps,
+							  newOrgOps:			newOrgOps,
+							  actionCodes:			actionCodes,
 							  gotoActionCode:		ZmKeyMap.GOTO_TASKS,
 							  newActionCode:		ZmKeyMap.NEW_TASK,
-							  actionCodes:			[ZmKeyMap.NEW_TASK, ZmOperation.NEW_TASK],
 							  chooserSort:			35,
 							  defaultSort:			25});
 };

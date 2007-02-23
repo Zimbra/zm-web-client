@@ -34,11 +34,10 @@
  *
  * @author Conrad Damon
  *
- * @param parent				[DwtComposite]		the containing widget
- * @param standardMenuItems		[array]*			a list of operation IDs
- * @param extraMenuItems		[array]*			a list of operation descriptors
- * @param dialog				[DwtDialog]*		containing dialog, if any
- * @param overrides				[hash]*				hash of overrides by op ID
+ * @param parent		[DwtComposite]		the containing widget
+ * @param menuItems		[array]*			a list of operation IDs
+ * @param dialog		[DwtDialog]*		containing dialog, if any
+ * @param overrides		[hash]*				hash of overrides by op ID
  */
 function ZmActionMenu(params) {
 
@@ -47,7 +46,7 @@ function ZmActionMenu(params) {
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
 	// standard menu items default to Tag/Print/Delete
-	var menuItems = params.standardMenuItems;
+	var menuItems = params.menuItems;
 	if (!menuItems) {
 		menuItems = [ZmOperation.TAG_MENU, ZmOperation.PRINT, ZmOperation.DELETE];
 	} else if (menuItems == ZmOperation.NONE) {
@@ -56,12 +55,7 @@ function ZmActionMenu(params) {
 	// weed out disabled ops, save list of ones that make it
 	this.opList = ZmOperation.filterOperations(this._appCtxt, menuItems);
 	var extraItems = params.extraMenuItems;
-	this._menuItems = ZmOperation.createOperations(this, this.opList, extraItems, params.overrides);
-	if (extraItems && extraItems.length) {
-		for (var i = 0; i < extraItems.length; i++) {
-			this.opList.push(extraItems[i].id);
-		}
-	}
+	this._menuItems = ZmOperation.createOperations(this, this.opList, params.overrides);
 }
 
 ZmActionMenu.prototype = new ZmPopupMenu;

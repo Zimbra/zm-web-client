@@ -133,6 +133,13 @@ function ZmMailApp(appCtxt, container, parentController) {
 								 icon:			"SearchMail"
 								});
 
+	var newItemOps = {};
+	newItemOps[ZmOperation.NEW_MESSAGE] = "message";
+
+	var actionCodes = {};
+	actionCodes[ZmKeyMap.NEW_MESSAGE]		= ZmOperation.NEW_MESSAGE;
+	actionCodes[ZmKeyMap.NEW_MESSAGE_WIN]	= ZmOperation.NEW_MESSAGE_WIN;
+	
 	ZmApp.registerApp(ZmApp.MAIL,
 							 {mainPkg:				"Mail",
 							  nameKey:				"mail",
@@ -145,11 +152,10 @@ function ZmMailApp(appCtxt, container, parentController) {
 							  showZimlets:			true,
 							  assistants:			{"ZmMailAssistant":"Mail"},
 							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],
-							  ops:					[ZmOperation.NEW_MESSAGE],
+							  newItemOps:			newItemOps,
+							  actionCodes:			actionCodes,
 							  gotoActionCode:		ZmKeyMap.GOTO_MAIL,
 							  newActionCode:		ZmKeyMap.NEW_MESSAGE,
-							  actionCodes:			[ZmKeyMap.NEW_MESSAGE, ZmOperation.NEW_MESSAGE,
-							  						 ZmKeyMap.NEW_MESSAGE_WIN, ZmOperation.NEW_MESSAGE_WIN],
 							  qsViews:				["compose", "msg"],
 							  trashViewOp:			ZmOperation.SHOW_ONLY_MAIL,
 							  chooserSort:			10,

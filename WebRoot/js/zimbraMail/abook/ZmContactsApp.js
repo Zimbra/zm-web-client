@@ -74,6 +74,9 @@ function ZmContactsApp(appCtxt, container, parentController) {
 						 soapCmd:	"ContactAction"
 						});
 
+	var orgColor = {};
+	orgColor[ZmFolder.ID_AUTO_ADDED] = ZmOrganizer.C_YELLOW;
+	
 	ZmOrganizer.registerOrg(ZmOrganizer.ADDRBOOK,
 							{app:				ZmApp.CONTACTS,
 							 nameKey:			"addressBook",
@@ -86,7 +89,7 @@ function ZmContactsApp(appCtxt, container, parentController) {
 							 labelKey:			"addressBooks",
 							 hasColor:			true,
 							 defaultColor:		ZmOrganizer.C_GRAY,
-							 orgColor:			[ZmFolder.ID_AUTO_ADDED, ZmOrganizer.C_YELLOW],
+							 orgColor:			orgColor,
 							 views:				["contact"],
 							 folderKey:			"addressBookFolder",
 							 mountKey:			"mountAddrBook",
@@ -117,6 +120,16 @@ function ZmContactsApp(appCtxt, container, parentController) {
 								 setting:		ZmSetting.GAL_ENABLED
 								});
 
+	var newItemOps = {};
+	newItemOps[ZmOperation.NEW_CONTACT]	= "contact";
+	newItemOps[ZmOperation.NEW_GROUP]	= "group";
+
+	var newOrgOps = {};
+	newOrgOps[ZmOperation.NEW_ADDRBOOK] = "addressBook";
+
+	var actionCodes = {};
+	actionCodes[ZmKeyMap.NEW_CONTACT] = ZmOperation.NEW_CONTACT;
+
 	ZmApp.registerApp(ZmApp.CONTACTS,
 							 {mainPkg:				"Contacts",
 							  nameKey:				"addressBook",
@@ -129,10 +142,11 @@ function ZmContactsApp(appCtxt, container, parentController) {
 							  showZimlets:			true,
 							  assistants:			{"ZmContactAssistant":"Contacts"},
 							  searchTypes:			[ZmItem.CONTACT],
-							  ops:					[ZmOperation.NEW_CONTACT, ZmOperation.NEW_GROUP, ZmOperation.NEW_ADDRBOOK],
+							  newItemOps:			newItemOps,
+							  newOrgOps:			newOrgOps,
+							  actionCodes:			actionCodes,
 							  gotoActionCode:		ZmKeyMap.GOTO_CONTACTS,
 							  newActionCode:		ZmKeyMap.NEW_CONTACT,
-							  actionCodes:			[ZmKeyMap.NEW_CONTACT, ZmOperation.NEW_CONTACT],
 							  trashViewOp:			ZmOperation.SHOW_ONLY_CONTACTS,
 							  chooserSort:			20,
 							  defaultSort:			40

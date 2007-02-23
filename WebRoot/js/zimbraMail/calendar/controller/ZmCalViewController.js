@@ -766,7 +766,6 @@ function(ev) {
 	mm.popup(0, ev.docX, ev.docY);
 };
 
-//Zimlet hack
 ZmCalViewController.prototype._getMiniCalActionMenu =
 function() {
 	if (this._minicalMenu == null) {
@@ -774,11 +773,16 @@ function() {
 		this.postInitListeners();
 
 		var list = [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT, ZmOperation.SEP, ZmOperation.SEARCH_MAIL];
-		var extraList = [];
-		if(ZmZimlet.actionMenus && ZmZimlet.actionMenus["ZmCalViewController"] && ZmZimlet.actionMenus["ZmCalViewController"] instanceof Array) {
-			extraList = ZmZimlet.actionMenus["ZmCalViewController"];
+		//Zimlet hack
+		var zimletOps = ZmZimlet.actionMenus ? ZmZimlet.actionMenus["ZmCalViewController"] : null;
+		if (zimletOps && zimletOps.length) {
+			for (var i = 0; i < zimletOps.length; i++) {
+				var op = zimletOps[i];
+				ZmOperation.defineOperation(null, op);
+				list.push(op.id);
+			}
 		}
-		var params = {parent:this._shell, standardMenuItems:list, extraMenuItems:extraList};
+		var params = {parent:this._shell, menuItems:list};
 		this._minicalMenu = new ZmActionMenu(params);
 		list = this._minicalMenu.opList;
 		var cnt = list.length;
@@ -1427,7 +1431,7 @@ function() {
 	if (!menuItems) return;
 	var overrides = {};
 	overrides[ZmOperation.TODAY] = {textKey:"todayGoto"};
-	var params = {parent:this._shell, standardMenuItems:menuItems, overrides:overrides};
+	var params = {parent:this._shell, menuItems:menuItems, overrides:overrides};
 	this._viewActionMenu = new ZmActionMenu(params);
 	menuItems = this._viewActionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
@@ -1465,7 +1469,7 @@ ZmCalViewController.prototype._initializeActionMenu =
 function() {
 	var menuItems = this._getActionMenuOps();
 	if (menuItems && menuItems.length > 0) {
-		var params = {parent:this._shell, standardMenuItems:menuItems};
+		var params = {parent:this._shell, menuItems:menuItems};
 		var actionMenu = this._actionMenu = new ZmActionMenu(params);
 		menuItems = actionMenu.opList;
 		for (var i = 0; i < menuItems.length; i++) {
@@ -1487,7 +1491,7 @@ function() {
 
 		var menuItems = this._getRecurringActionMenuOps();
 		if (menuItems && menuItems.length > 0) {
-			var params = {parent:this._shell, standardMenuItems:menuItems};
+			var params = {parent:this._shell, menuItems:menuItems};
 			this._recurringActionMenu = new ZmActionMenu(params);
 			menuItems = this._recurringActionMenu.opList;
 			for (var i = 0; i < menuItems.length; i++) {

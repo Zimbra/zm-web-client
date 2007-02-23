@@ -59,23 +59,27 @@ ZmOperation.SETUP[ZmOperation.FILLER]	= {};	// expandable space (for right-align
 // of this class has to check them on its own if it wants
 ZmOperation.SETTING = {};
 
+// code to run after an operation has been created - typically used to create
+// a menu for a button
+ZmOperation.CALLBACK = {};
+
 /**
  * Defines the aspects of an operation, and the ID that refers to it.
  * 
- * @param op		[string]	name of the operation
- * @param text		[string]*	msg key for button or menu item text
- * @param tooltip	[string]*	msg key for tooltip text
- * @param image		[string]*	icon class for the button or menu item
- * @param disImage	[string]*	disabled version of image; defaults to image + "Dis"
- * @param setting	[constant]*	setting which acts as a precondition for this operation
+ * @param op		[string]		name of the operation
+ * @param text		[string]*		msg key for button or menu item text
+ * @param tooltip	[string]*		msg key for tooltip text
+ * @param image		[string]*		icon class for the button or menu item
+ * @param disImage	[string]*		disabled version of image; defaults to image + "Dis"
+ * @param setting	[constant]*		setting which acts as a precondition for this operation
+ * @param callback	[AjxCallback]*	additional code to run after this operation has been created
  */
 ZmOperation.registerOp =
-function(op, params, setting) {
+function(op, params, setting, callback) {
 	ZmOperation[op] = op;
 	ZmOperation.SETUP[op] = params || {};
-	if (setting) {
-		ZmOperation.SETTING[op] = setting;
-	}
+	if (setting)	{ ZmOperation.SETTING[op]	= setting; }
+	if (callback)	{ ZmOperation.CALLBACK[op]	= callback; }
 };
 
 ZmOperation.registerOp("ATTACHMENT", {textKey:"addAttachment", tooltipKey:"attachmentTooltip", image:"Attachment"});
@@ -135,61 +139,57 @@ ZmOperation.registerOp("ZIMLET", {image:"ZimbraIcon"});
 ZmOperation.KEY_ID		= "_opId";
 ZmOperation.MENUITEM_ID	= "_menuItemId";
 
-// Static hash of operation IDs and descriptors
+ZmOperation.NEW_ITEM_OPS	= [];
+ZmOperation.NEW_ITEM_KEY	= {};
+ZmOperation.NEW_ORG_OPS		= [ZmOperation.NEW_FOLDER, ZmOperation.NEW_TAG];
+ZmOperation.NEW_ORG_KEY		= {};
+ZmOperation.NEW_ORG_KEY[ZmOperation.NEW_FOLDER]	= "folder";
+ZmOperation.NEW_ORG_KEY[ZmOperation.NEW_TAG]	= "tag";
+
+
+// Static hash of operation IDs ad descriptors
 ZmOperation._operationDesc = {};
 
 /**
- * Merges the lists of standard and extra operations (creating operation descriptors for the
- * standard ops), then creates the appropriate widget for each operation based on the type of
+ * Creates operation descriptors for the given operation IDs,
+ * then creates the appropriate widget for each operation based on the type of
  * the parent. If it's a toolbar, then buttons are created. If it's a menu, menu items are
  * created.
  * <p>
- * To add a custom operation, use extraOperations and pass a list of operation descriptors.
- * To override or add properties of a particular operation, pass in a hash of properties and
+ * To override or add properties to a particular operation, pass in a hash of properties and
  * values as a value in overrides, with the operation ID as the key.</p>
  *
- * @param parent				[DwtComposite]		the containing widget (toolbar or menu)
- * @param standardOperations	[array]*			a list of operation IDs
- * @param extraOperations		[array]*			a list of custom operation descriptors
- * @param overrides				[hash]*				hash of overrides by op ID
+ * @param parent		[DwtComposite]		the containing widget (toolbar or menu)
+ * @param operations	[array]*			a list of operation IDs
+ * @param overrides		[hash]*				hash of overrides by op ID
  *
  * @returns						a hash of operations by ID
  */
 ZmOperation.createOperations =
-function(parent, standardOperations, extraOperations, overrides) {
+function(parent, operations, overrides) {
 	var obj = new ZmOperation();
-	return obj._createOperations(parent, standardOperations, extraOperations, overrides);
+	return obj._createOperations(parent, operations, overrides);
 }
 
 // Done through an object so that we can have more than one invocation going without
 // sharing memory (eg, creating New submenu).
 ZmOperation.prototype._createOperations =
-function(parent, standardOperations, extraOperations, overrides) {
-	if (standardOperations == ZmOperation.NONE) {
-		standardOperations = null;
+function(parent, operations, overrides) {
+	if (operations == ZmOperation.NONE) {
+		operations = null;
 	}
 	overrides = overrides || {};
-	// assemble the list of operation IDs, and the list of operation descriptors
-	var operationList = [];
-	if (standardOperations && standardOperations.length) {
-		for (var i = 0; i < standardOperations.length; i++) {
-			var id = standardOperations[i];
-			operationList.push(id);
+
+	var opHash = {};
+	if (operations && operations.length) {
+		for (var i = 0; i < operations.length; i++) {
+			var id = operations[i];
 			ZmOperation.defineOperation(id, overrides[id]);
-		}
-	}
-	if (extraOperations && extraOperations.length) {
-		for (var i = 0; i < extraOperations.length; i++) {
-			operationList.push(extraOperations[i].id);
+			ZmOperation.addOperation(parent, id, opHash);
 		}
 	}
 
-	var operations = {};
-	for (var i = 0; i < operationList.length; i++) {
-		ZmOperation.addOperation(parent, operationList[i], operations);
-	}
-
-	return operations;
+	return opHash;
 };
 
 /**
@@ -361,64 +361,28 @@ function(appCtxt, list) {
 	return newList1;
 };
 
-// everything below here should be moved
-
 /**
-* Adds a "New" submenu. Custom descriptors are used because we don't want "New" at the
+* Adds a "New" submenu. Overrides are used because we don't want "New" at the
 * beginning of each label.
 *
 * @param parent		parent widget
 */
 ZmOperation.addNewMenu =
 function(parent) {
-	var appCtxt = parent.shell.getData(ZmAppCtxt.LABEL);
-	var foldersEnabled = appCtxt.get(ZmSetting.USER_FOLDERS_ENABLED);
-	var taggingEnabled = appCtxt.get(ZmSetting.TAGGING_ENABLED);
-	var contactsEnabled = appCtxt.get(ZmSetting.CONTACTS_ENABLED);
-	var calendarEnabled = appCtxt.get(ZmSetting.CALENDAR_ENABLED);
-	var tasksEnabled = appCtxt.get(ZmSetting.TASKS_ENABLED);
-	var notebookEnabled = appCtxt.get(ZmSetting.NOTEBOOK_ENABLED);
+	var list = ZmOperation.NEW_ITEM_OPS;
+	list.push(ZmOperation.SEP);
+	list = list.concat(ZmOperation.NEW_ORG_OPS);
 
-	var list = [];
-	list.push(ZmOperation.defineOperation(ZmOperation.NEW_MESSAGE, {id: ZmOperation.NEW_MESSAGE, textKey: "message"}));
-	if (contactsEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_CONTACT, {id: ZmOperation.NEW_CONTACT, textKey: "contact"}));
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_GROUP, {id: ZmOperation.NEW_GROUP, textKey: "group"}));
-	}
-	if (calendarEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_APPT, {id: ZmOperation.NEW_APPT, textKey: "appointment"}));
-	}
-	if (tasksEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_TASK, {id: ZmOperation.NEW_TASK, textKey: "task"}));
-	}
-	if (notebookEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_PAGE, {id: ZmOperation.NEW_PAGE, textKey: "page"}));
+	var overrides = {};
+	for (var i = 0; i < list.length; i++) {
+		var op = list[i];
+		var textKey = ZmOperation.NEW_ITEM_KEY[op] || ZmOperation.NEW_ORG_KEY[op];
+		if (textKey) {
+			overrides[op] = {textKey:textKey};
+		}
 	}
 
-	if (foldersEnabled || taggingEnabled || calendarEnabled || notebookEnabled || tasksEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.SEP));
-	}
-
-	if (foldersEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_FOLDER, {id: ZmOperation.NEW_FOLDER, textKey: "folder"}));
-	}
-	if (taggingEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_TAG, {id: ZmOperation.NEW_TAG, textKey: "tag"}));
-	}
-	if (contactsEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_ADDRBOOK, {id: ZmOperation.NEW_ADDRBOOK, textKey: "addressBook"}));
-	}
-	if (calendarEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_CALENDAR, {id: ZmOperation.NEW_CALENDAR, textKey: "calendar"}));
-	}
-	if (tasksEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_TASK_FOLDER, {id: ZmOperation.NEW_TASK_FOLDER, textKey: "taskFolder"}));
-	}
-	if (notebookEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_NOTEBOOK, {id: ZmOperation.NEW_NOTEBOOK, textKey: "notebook"}));
-	}
-
-	var menu = new ZmActionMenu({parent:parent, standardMenuItems:ZmOperation.NONE, extraMenuItems:list});
+	var menu = new ZmActionMenu({parent:parent, menuItems:list, overrides:overrides});
 	parent.setMenu(menu);
 
 	return menu;
@@ -463,7 +427,7 @@ function(parent, dialog) {
 ZmOperation.addReplyMenu =
 function(parent) {
 	var list = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
-	var menu = new ZmActionMenu({parent:parent, standardMenuItems:list});
+	var menu = new ZmActionMenu({parent:parent, menuItems:list});
 	parent.setMenu(menu);
 	return menu;
 }
@@ -476,7 +440,7 @@ function(parent) {
 ZmOperation.addForwardMenu =
 function(parent) {
 	var list = [ZmOperation.FORWARD_INLINE, ZmOperation.FORWARD_ATT];
-	var menu = new ZmActionMenu({parent:parent, standardMenuItems:list});
+	var menu = new ZmActionMenu({parent:parent, menuItems:list});
 	parent.setMenu(menu);
 	return menu;
 };
@@ -489,7 +453,7 @@ function(parent) {
 ZmOperation.addInviteReplyMenu =
 function(parent) {
 	var list = [ZmOperation.EDIT_REPLY_ACCEPT, ZmOperation.EDIT_REPLY_DECLINE, ZmOperation.EDIT_REPLY_TENTATIVE];
-	var menu = new ZmActionMenu({parent:parent, standardMenuItems:list});
+	var menu = new ZmActionMenu({parent:parent, menuItems:list});
 	parent.setMenu(menu);
 	return menu;
 };
@@ -503,7 +467,7 @@ function(parent) {
 ZmOperation.addCalViewMenu =
 function(parent) {
 	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
-	var menu = new ZmActionMenu({parent:parent, standardMenuItems:list});
+	var menu = new ZmActionMenu({parent:parent, menuItems:list});
 	parent.setMenu(menu);
 	return menu;
 };

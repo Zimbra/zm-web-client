@@ -289,11 +289,9 @@ function(org, params) {
 		ZmOrganizer.DEFAULT_COLOR[org]	= params.defaultColor || ZmOrganizer.ORG_DEFAULT_COLOR;
 	}
 	
-	// since Javascript doesn't like anonymous arrays whose keys have a prop dereference
-	// (eg {a.b:3}, we are passed a list of values as ID/color pairs
 	if (params.orgColor) {
-		for (var i = 0; i < params.orgColor.length; i += 2) {
-			ZmOrganizer.ORG_COLOR[params.orgColor[i]] = params.orgColor[i + 1];
+		for (var id in params.orgColor) {
+			ZmOrganizer.ORG_COLOR[id] = params.orgColor[id];
 		}
 	}
 };

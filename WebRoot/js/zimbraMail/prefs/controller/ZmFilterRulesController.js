@@ -88,7 +88,7 @@ function() {
 				   ZmOperation.SEP,
 				   ZmOperation.MOVE_DOWN_FILTER_RULE];
 	
-	this._toolbar = new ZmButtonToolBar({parent:this._filterRulesView, standardButtons:buttons, posStyle:Dwt.STATIC_STYLE});
+	this._toolbar = new ZmButtonToolBar({parent:this._filterRulesView, buttons:buttons, posStyle:Dwt.STATIC_STYLE});
 
 	// add listeners
 	buttons = this._toolbar.opList;
