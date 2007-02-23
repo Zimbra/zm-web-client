@@ -115,7 +115,7 @@
     String extraPackages = request.getParameter("packages");
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
-    		extraPackages = "CalendarCore,Calendar,ContactsCore,Contacts,IM,Mail,Mixed,NotebookCore,Notebook,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet";
+    		extraPackages = "CalendarCore,Calendar,ContactsCore,Contacts,IM,Mail,Mixed,NotebookCore,Notebook,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal";
     	}
     	packages += "," + extraPackages;
     }
