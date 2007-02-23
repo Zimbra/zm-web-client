@@ -411,7 +411,7 @@ function(parent) {
 		list.push(ZmOperation.defineOperation(ZmOperation.NEW_CALENDAR, {id: ZmOperation.NEW_CALENDAR, textKey: "calendar"}));
 	}
 	if (tasksEnabled) {
-		list.push(ZmOperation.defineOperation(ZmOperation.NEW_TASK_FOLDER, {id: ZmOperation.NEW_TASK_FOLDER, textKey: "newTaskFolder"}));
+		list.push(ZmOperation.defineOperation(ZmOperation.NEW_TASK_FOLDER, {id: ZmOperation.NEW_TASK_FOLDER, textKey: "taskFolder"}));
 	}
 	if (notebookEnabled) {
 		list.push(ZmOperation.defineOperation(ZmOperation.NEW_NOTEBOOK, {id: ZmOperation.NEW_NOTEBOOK, textKey: "notebook"}));
