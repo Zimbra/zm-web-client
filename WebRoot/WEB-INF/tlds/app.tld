@@ -346,6 +346,11 @@
     </tag-file>
 
     <tag-file>
+        <name>foldersTabs</name>
+        <path>/WEB-INF/tags/overview/foldersTabs.tag</path>
+    </tag-file>
+
+    <tag-file>
         <name>optTabs</name>
         <path>/WEB-INF/tags/options/optTabs.tag</path>
     </tag-file>

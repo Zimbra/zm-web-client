@@ -39,6 +39,11 @@
                     key="options"/></span></a>
         </td>
         <td class='TabSpacer'/>
+        <td class='Tab ${selected=='folders' ? 'TabSelected' :'TabNormal'}'>
+            <a href="<c:url value="/h/mfolders"/>" ><app:img src="common/Folder.gif" altkey='ALT_APP_MANAGE_FOLDERS'/>
+                <span><fmt:message key="folders"/></span></a>
+        </td>
+        <td class='TabSpacer'/>
         <td class='Tab ${selected=='compose' ? 'TabSelected' :'TabNormal'}'>
             <c:choose>
                 <c:when test="${not empty context}">
@@ -52,38 +57,6 @@
                     key="compose"/></span></a>
         </td>
         <td class='TabSpacer'/>
-        <c:choose>
-            <c:when test="${selected =='managetags'}">
-                <td class='Tab TabSelected'>
-                    <app:img src="tag/Tag.gif" altkey='ALT_APP_MANAGE_TAGS'/><span><fmt:message key="tags"/></span>
-                </td>
-                <td class='TabSpacer'/>
-            </c:when>
-            <c:when test="${selected =='managefolders'}">
-                <td class='Tab TabSelected'>
-                    <app:img src="common/Folder.gif" altkey='ALT_APP_MANAGE_FOLDERS'/><span><fmt:message key="folders"/></span>
-                </td>
-                <td class='TabSpacer'/>
-            </c:when>
-            <c:when test="${selected =='manageaddressbooks'}">
-                <td class='Tab TabSelected'>
-                    <app:img src="contacts/ContactsFolder.gif" altkey='ALT_APP_MANAGE_ADDRESS_BOOKS'/><span><fmt:message key="addressBooks"/></span>
-                </td>
-                <td class='TabSpacer'/>
-            </c:when>
-            <c:when test="${selected =='managecalendars'}">
-                <td class='Tab TabSelected'>
-                    <app:img src="calendar/CalendarFolder.gif" altkey='ALT_APP_MANAGE_CALENDARS'/><span><fmt:message key="calendars"/></span>
-                </td>
-                <td class='TabSpacer'/>
-            </c:when>
-        </c:choose>
-        <%--
-        <td class='Tab ${selected=='calendar' ? ' TabSelected' :' TabNormal'}'>
-            <app:img src="calendar/CalendarApp.gif"/>
-            <span><fmt:message key="calendar"/></span>
-        </td>
-        --%>
         <td class='TabFiller'>
             &nbsp;
         </td>
