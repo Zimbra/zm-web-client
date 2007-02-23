@@ -566,6 +566,9 @@ padding: 8px 0px 6px 0px;
 	background-color:#bab09a;
 }
 
+.ZhSubTabs {
+    padding-top: 4px;
+}
 
 .ZhEditFolderContent,.ZhEditAddressBookContent, .ZhEditCalendarContent, .ZhEditTagContent {
    @AppBg@  @OutsetBorder@
