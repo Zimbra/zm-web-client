@@ -43,7 +43,6 @@
 */
 function ZmVoicemailFolder(params) {
 	params.type = ZmOrganizer.VOICEMAIL;
-	params.color = params.color || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.VOICEMAIL];
 	ZmOrganizer.call(this, params);
 	this.callType = null; // Will be set to a constant...ACCOUNT, PLACED, etc.
 }

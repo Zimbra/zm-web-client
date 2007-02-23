@@ -42,7 +42,6 @@
 */
 function ZmAddrBook(params) {
 	params.type = ZmOrganizer.ADDRBOOK;
-	params.color = params.color || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 	ZmFolder.call(this, params);
 };
 

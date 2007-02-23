@@ -346,13 +346,13 @@ function(appCtxt, list) {
 			gotSep = false;
 		}
 	}
-	// remove sep at beginning or end
+	// remove separator at beginning or end
 	if (newList1 && newList1.length) {
 		if (newList1[0] == ZmOperation.SEP || newList1[0] == ZmOperation.SPACER) {
 			newList1.shift();
 		}
 		var i = newList1.length - 1;
-		if (newList1[i] == ZmOperation.SEP || newList1[i] == ZmOperation.SPACER) {
+		if (newList1[i] == ZmOperation.SEP || newList1[i] == ZmOperation.SPACER || newList1[i] == ZmOperation.FILLER) {
 			newList1.pop();
 		}
 	}

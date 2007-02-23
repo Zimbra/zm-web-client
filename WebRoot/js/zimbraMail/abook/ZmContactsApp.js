@@ -86,6 +86,7 @@ function ZmContactsApp(appCtxt, container, parentController) {
 							 labelKey:			"addressBooks",
 							 hasColor:			true,
 							 defaultColor:		ZmOrganizer.C_GRAY,
+							 orgColor:			[ZmFolder.ID_AUTO_ADDED, ZmOrganizer.C_YELLOW],
 							 views:				["contact"],
 							 folderKey:			"addressBookFolder",
 							 mountKey:			"mountAddrBook",

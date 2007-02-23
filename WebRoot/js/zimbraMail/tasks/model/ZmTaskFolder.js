@@ -43,7 +43,6 @@
 */
 function ZmTaskFolder(params) {
 	params.type = ZmOrganizer.TASKS;
-	params.color = params.color || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TASKS];
 	ZmOrganizer.call(this, params);
 }
 

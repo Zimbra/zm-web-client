@@ -25,7 +25,6 @@
 
 function ZmTag(params) {
 	params.type = ZmOrganizer.TAG;
-	params.color = params.color || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 	ZmOrganizer.call(this, params);
 };
 

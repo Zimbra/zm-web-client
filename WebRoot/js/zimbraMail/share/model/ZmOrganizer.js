@@ -57,7 +57,7 @@ function ZmOrganizer(params) {
 	this.name = ZmFolder.MSG_KEY[id] ? ZmMsg[ZmFolder.MSG_KEY[id]] : params.name;
 	this.parent = params.parent;
 	this.tree = params.tree;
-	this.color = params.color || ZmOrganizer.DEFAULT_COLOR[this.type];
+	this.color = params.color || ZmOrganizer.ORG_COLOR[id] || ZmOrganizer.DEFAULT_COLOR[this.type];
 	this.numUnread = params.numUnread || 0;
 	this.numTotal = params.numTotal || 0;
 	this.url = params.url;
@@ -198,6 +198,9 @@ ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.FOLDER]	= ZmOrganizer.ORG_DEFAULT_COLOR;
 ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.SEARCH]	= ZmOrganizer.ORG_DEFAULT_COLOR;
 ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG]		= ZmOrganizer.ORG_DEFAULT_COLOR;
 
+// color overrides by ID
+ZmOrganizer.ORG_COLOR = {};
+
 // App responsible for organizer
 ZmOrganizer.APP = {};
 
@@ -254,6 +257,7 @@ ZmOrganizer.DEFERRABLE = {};
  * @param labelKey			[string]	msg key for label in overview
  * @param hasColor			[boolean]	true if org has color associated with it
  * @param defaultColor		[constant]	default color for org in overview
+ * @param orgColor			[array]		color override by ID (in pairs)
  * @param views				[string]	associated folder views (JSON)
  * @param folderKey			[string]	msg key for folder props dialog
  * @param mountKey			[string]	msg key for folder mount dialog
@@ -283,6 +287,14 @@ function(org, params) {
 
 	if (params.hasColor) {
 		ZmOrganizer.DEFAULT_COLOR[org]	= params.defaultColor || ZmOrganizer.ORG_DEFAULT_COLOR;
+	}
+	
+	// since Javascript doesn't like anonymous arrays whose keys have a prop dereference
+	// (eg {a.b:3}, we are passed a list of values as ID/color pairs
+	if (params.orgColor) {
+		for (var i = 0; i < params.orgColor.length; i += 2) {
+			ZmOrganizer.ORG_COLOR[params.orgColor[i]] = params.orgColor[i + 1];
+		}
 	}
 };
 
