@@ -1,3 +1,4 @@
+<%@ page session="false" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%
@@ -178,7 +179,6 @@
     </script>
   </head>
   <body>
-  <jsp:include page="/public/pre-cache.jsp"/>  
     <%
 		// NOTE: This inserts raw HTML files from the user's skin
 		//       into the JSP output. It's done *this* way so that

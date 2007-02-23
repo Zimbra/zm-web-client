@@ -1,6 +1,15 @@
-<%@ page language="java" import="javax.naming.*"%>
+<%@ page session="false" language="java" import="javax.naming.*"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%
+	// Set to expire far in the past.
+	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
+
+	// Set standard HTTP/1.1 no-cache headers.
+	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+
+	// Set standard HTTP/1.0 no-cache header.
+	response.setHeader("Pragma", "no-cache");
+
 	String portsCSV = application.getInitParameter("admin.allowed.ports");
 	if (portsCSV != null) {
 		// Split on zero-or-more spaces followed by comma followed by zero-or-more spaces.

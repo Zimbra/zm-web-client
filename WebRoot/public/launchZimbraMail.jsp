@@ -1,3 +1,4 @@
+<%@ page session="false" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%
 	// Set to expire far in the past.
@@ -5,9 +6,6 @@
 
 	// Set standard HTTP/1.1 no-cache headers.
 	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-
-	// Set IE extended HTTP/1.1 no-cache headers (use addHeader).
-	response.addHeader("Cache-Control", "post-check=0, pre-check=0");
 
 	// Set standard HTTP/1.0 no-cache header.
 	response.setHeader("Pragma", "no-cache");
@@ -201,7 +199,6 @@
 <noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
     <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="/zimbra" value='/h/'/></fmt:param></fmt:message>
 </noscript>
-<jsp:include page="/public/pre-cache.jsp"/>
 <%
 	// NOTE: This inserts raw HTML files from the user's skin
 	//       into the JSP output. It's done *this* way so that
