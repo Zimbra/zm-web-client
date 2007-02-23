@@ -20,9 +20,10 @@
             </zm:forEachTag>
         </c:when>
         <c:when test="${not empty param.id}">
-            <zm:forEachTag var="tag">
-                <c:if test="${param.id eq tag.id}"><c:set var="selectedTag" value="${tag}"/></c:if>
-            </zm:forEachTag>
+            <c:set var="selectedTag" value="${zm:getTag(pageContext, param.id)}"/>
+        </c:when>
+        <c:when test="${not empty param.sti}">
+            <c:set var="selectedTag" value="${zm:getTag(pageContext, param.sti)}"/>            
         </c:when>
     </c:choose>
 

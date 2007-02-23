@@ -9,7 +9,14 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<c:set var="folderUrl" value="${selected eq 'calendar' ? 'mcalendars' : selected eq 'contacts' ? 'maddrbooks' : 'mfolders'}"/>
+<c:url var="folderUrl" value="/h/${selected eq 'calendar' ? 'mcalendars' : selected eq 'contacts' ? 'maddrbooks' : not empty param.sti ? 'mtags' : 'mfolders'}">
+    <c:if test="${not empty param.sfi}">
+        <c:param name="sfi" value="${param.sfi}"/>
+    </c:if>
+        <c:if test="${not empty param.sti}">
+        <c:param name="sti" value="${param.sti}"/>
+    </c:if>
+</c:url>
 
 <table cellpadding=0 cellspacing=0>
     <tr class='Tabs'>
@@ -43,7 +50,7 @@
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='folders' ? 'TabSelected' :'TabNormal'}'>
 
-            <a href="<c:url value="/h/${folderUrl}"/>" ><app:img src="common/Folder.gif" altkey='ALT_APP_MANAGE_FOLDERS'/>
+            <a href="${folderUrl}" ><app:img src="common/Folder.gif" altkey='ALT_APP_MANAGE_FOLDERS'/>
                 <span><fmt:message key="folders"/></span></a>
         </td>
         <td class='TabSpacer'/>

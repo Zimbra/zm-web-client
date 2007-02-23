@@ -23,6 +23,9 @@
         <c:when test="${not empty param.id}">
             <c:set var="selectedFolder" value="${zm:getFolder(pageContext, param.id)}"/>
         </c:when>
+        <c:when test="${not empty param.sfi}">
+            <c:set var="selectedFolder" value="${zm:getFolder(pageContext, param.sfi)}"/>
+        </c:when>
     </c:choose>
     <c:if test="${empty selectedFolder}"><c:set var="selectedFolder" value="${mailbox.inbox}"/></c:if>
     <c:set var="newFolder" value="${not empty param.actionNewFolder or not empty param.actionNewSearchFolder or not empty param.actionNewFeedFolder}"/>
