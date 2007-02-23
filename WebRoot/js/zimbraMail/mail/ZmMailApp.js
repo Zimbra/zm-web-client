@@ -269,9 +269,15 @@ function(op, params) {
 			if (!inNewWindow && params && params.ev) {
 				inNewWindow = this._inNewWindow(params.ev);
 			}
-			AjxDispatcher.run("Compose", {action: ZmOperation.NEW_MESSAGE, inNewWindow:inNewWindow});
+			var loadCallback = new AjxCallback(this, this._handleLoadNewMessage, [inNewWindow]);
+			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 			break;
 	}
+};
+
+ZmMailApp.prototype._handleLoadNewMessage =
+function(inNewWindow) {
+	AjxDispatcher.run("Compose", {action: ZmOperation.NEW_MESSAGE, inNewWindow:inNewWindow});
 };
 
 // Public methods

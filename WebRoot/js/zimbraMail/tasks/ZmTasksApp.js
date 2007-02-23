@@ -125,7 +125,7 @@ function(params) {
 
 ZmTasksApp.prototype._handleLoadNewTaskFolder =
 function() {
-	this._appCtxt.getAppViewMgr().popView();	// pop "Loading..." page
+	this._appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
 	var dialog = this._appCtxt.getNewTaskFolderDialog();
 	if (!this._newTaskFolderCb) {
 		this._newTaskFolderCb = new AjxCallback(this, this._newTaskFolderCallback);

@@ -232,7 +232,7 @@ function(contact) {
 
 ZmContactsApp.prototype._handleLoadNewAddrBook =
 function() {
-	this._appCtxt.getAppViewMgr().popView();	// pop "Loading..." page
+	this._appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
 	var dialog = this._appCtxt.getNewAddrBookDialog();
 	if (!this._newAddrBookCb) {
 		this._newAddrBookCb = new AjxCallback(this, this._newAddrBookCallback);

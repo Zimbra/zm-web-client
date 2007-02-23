@@ -114,7 +114,7 @@ function(forceShow, callback) {
 
 ZmSearchController.prototype._handleLoadShowBrowseView =
 function(callback) {
-	this._appCtxt.getAppViewMgr().popView(ZmController.LOADING_VIEW);
+	this._appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);
 	var bvc = this._browseViewController = new ZmBrowseController(this._appCtxt, this._searchPanel);
 	bvc.setBrowseViewVisible(true);
 	if (callback) {

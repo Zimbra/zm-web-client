@@ -306,7 +306,7 @@ function() {
 
 ZmNotebookApp.prototype._handleLoadNewNotebook =
 function() {
-	this._appCtxt.getAppViewMgr().popView();	// pop "Loading..." page
+	this._appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
 	var dialog = this._appCtxt.getNewNotebookDialog();
 	if (!this._newNotebookCb) {
 		this._newNotebookCb = new AjxCallback(this, this._newNotebookCallback);

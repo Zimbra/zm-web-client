@@ -250,7 +250,7 @@ function() {
 
 ZmCalendarApp.prototype._handleLoadNewCalendar =
 function() {
-	this._appCtxt.getAppViewMgr().popView();	// pop "Loading..." page
+	this._appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
 	var dialog = this._appCtxt.getNewCalendarDialog();
 	if (!this._newCalendarCb) {
 		this._newCalendarCb = new AjxCallback(this, this._newCalendarCallback);
