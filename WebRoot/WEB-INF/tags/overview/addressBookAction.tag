@@ -84,7 +84,7 @@
             </c:when>
             <c:otherwise>
                 <c:set var="folderName" value="${folder.name}"/>
-                <zm:deleteFolder id="${param.folderDeleteId}"/>
+                <zm:moveFolder parentid="3" id="${param.folderDeleteId}"/>
                 <app:status>
                     <fmt:message key="actionAddressBookMovedToTrash">
                         <fmt:param value="${folderName}"/>
@@ -92,6 +92,15 @@
                 </app:status>
             </c:otherwise>
         </c:choose>
+    </c:when>
+    <c:when test="${not empty param.actionEmptyFolder}">
+        <zm:emptyFolder id="${param.folderEmptyId}"/>
+        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderEmptyId)}"/>
+        <app:status>
+            <fmt:message key="folderEmptied">
+                <fmt:param value="${folderName}"/>
+            </fmt:message>
+        </app:status>
     </c:when>
     <c:otherwise>
 

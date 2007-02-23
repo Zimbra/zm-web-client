@@ -24,7 +24,7 @@
             <c:set var="selectedFolder" value="${zm:getFolder(pageContext, param.sfi)}"/>
         </c:when>
     </c:choose>
-    <c:if test="${empty selectedFolder or not selectedFolder.isContactView}"><c:set var="selectedFolder" value="${mailbox.contacts}"/></c:if>
+    <c:if test="${empty selectedFolder or not (selectedFolder.isContactView or selectedFolder.isTrash)}"><c:set var="selectedFolder" value="${mailbox.contacts}"/></c:if>
     <c:set var="newAddressBook" value="${not empty param.actionNewAddressBook or not empty param.actionNewSharedAddressBook}"/>
 
     <c:set var="toolbar">
@@ -72,13 +72,15 @@
                         <tr>
                             <td width=200 class='List' valign='top'>
                                 <table width=100% cellpadding=2 cellspacing=0>
+                                    <c:set var="anyInTrash" value="${false}"/>
                                     <zm:forEachFolder var="folder">
-                                        <c:if test="${folder.isContactView}">
+                                        <c:if test="${not anyInTrash and folder.isInTrash}">
+                                            <c:set var="anyInTrash" value="${true}"/>
+                                        </c:if>
+                                        <c:if test="${folder.isContactView and not folder.isInTrash}">
                                             <tr <c:if test="${selectedFolder.id eq folder.id and not newAddressBook}">class='RowSelected'</c:if>>
-                                                <td width=1%>
-                                                    &nbsp;
-                                                </td>
-                                                <td>
+                                                <td width=1%>&nbsp;</td>
+                                                <td style='padding-left: ${folder.depth*8}px'>
                                                     <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
                                                     <c:url var="selectUrl" value="">
                                                         <c:param name="id" value="${folder.id}"/>
@@ -91,6 +93,28 @@
                                             </tr>
                                         </c:if>
                                     </zm:forEachFolder>
+                                    
+                                    <c:if test="${anyInTrash}">
+                                        <zm:forEachFolder var="folder">
+                                            <c:if test="${folder.isTrash or (folder.isContactView and folder.isInTrash)}">
+                                                <tr <c:if test="${selectedFolder.id eq folder.id and not newAddressBook}">class='RowSelected'</c:if>>
+                                                    <td width=1%>
+                                                        &nbsp;
+                                                    </td>
+                                                    <td style='padding-left: ${folder.depth*8}px'>
+                                                        <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
+                                                        <c:url var="selectUrl" value="">
+                                                            <c:param name="id" value="${folder.id}"/>
+                                                        </c:url>
+                                                        <a href="${selectUrl}">
+                                                            <app:img src="${folder.image}"/>
+                                                            <span style='vertical-align:middle'>${fn:escapeXml(label)}</span>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            </c:if>
+                                        </zm:forEachFolder>
+                                    </c:if> 
                                 </table>
                             </td>
                             <td class='ZhEditAddressBookContent' valign='top'>
