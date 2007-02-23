@@ -91,7 +91,7 @@
                                     </zm:forEachFolder>
                                 </table>
                             </td>
-                            <td class='ZhEditFolderContent' valign='top'>
+                            <td height=100% class='ZhEditFolderContent' valign='top'>
                                 <c:choose>
                                     <c:when test="${not empty param.actionNewFolder}">
                                         <app:newFolder/>
@@ -103,7 +103,13 @@
                                         <app:newFolder url="true"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <app:editFolder folder="${selectedFolder}"/>
+                                        <table width=100% height=100% cellspacing=0 cellpadding=0>
+                                            <tr>
+                                                <td>
+                                                    <app:editFolder folder="${selectedFolder}"/>
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </c:otherwise>
                                 </c:choose>
                             </td>
