@@ -322,7 +322,7 @@ ZmZimletContext.prototype.getPanelActionMenu = function() {
 };
 
 ZmZimletContext.prototype._makeMenu = function(obj) {
-	var menu = new ZmActionMenu(DwtShell.getShell(window), ZmOperation.NONE);
+	var menu = new ZmActionMenu({parent:DwtShell.getShell(window), standardMenuItems:ZmOperation.NONE});
 	for (var i = 0; i < obj.length; ++i) {
 		var data = obj[i];
 		if (!data.id) {

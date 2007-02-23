@@ -39,9 +39,12 @@
 function ZmNavToolBar(parent, posStyle, className, arrowStyle, hasText) {
 
 	className = className || "ZmNavToolBar";
-	ZmButtonToolBar.call(this, parent, this._getButtons(arrowStyle, hasText), null, posStyle, className);
-	if (hasText)
+	var buttons = this._getButtons(arrowStyle, hasText);
+	var params = {parent:parent, standardButtons:buttons, posStyle:posStyle, className:className};
+	ZmButtonToolBar.call(this, params);
+	if (hasText) {
 		this._textButton = this.getButton(ZmOperation.TEXT);
+	}
 };
 
 ZmNavToolBar.SINGLE_ARROWS	= 1;

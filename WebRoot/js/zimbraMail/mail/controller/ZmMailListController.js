@@ -303,7 +303,7 @@ function(view) {
 		if (ops && ops.length) {
 			menuItems = menuItems.concat(ops);
 		}
-    	this._participantActionMenu = new ZmActionMenu(this._shell, menuItems);
+    	this._participantActionMenu = new ZmActionMenu({parent:this._shell, standardMenuItems:menuItems});
 		menuItems = this._participantActionMenu.opList;
 		for (var i = 0; i < menuItems.length; i++) {
 			var menuItem = menuItems[i];

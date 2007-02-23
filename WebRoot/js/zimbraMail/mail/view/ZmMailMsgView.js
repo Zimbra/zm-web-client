@@ -287,9 +287,9 @@ function() {
 
 	var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
 	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
-	this._inviteToolbar = new ZmButtonToolBar(this,	operationButtonIds,
-						  null, DwtControl.STATIC_STYLE,
-						  "ZmInviteToolBar", "DwtToolbarButton");
+	var params = {parent:this, standardButtons:operationButtonIds, posStyle:DwtControl.STATIC_STYLE,
+				  className:"ZmInviteToolBar", buttonClassName:"DwtToolbarButton"};
+	this._inviteToolbar = new ZmButtonToolBar(params);
 	// get a little space between the buttons.
 	var toolbarHtmlEl = this._inviteToolbar.getHtmlElement();
 	toolbarHtmlEl.firstChild.cellPadding = "3";
@@ -310,7 +310,7 @@ function() {
 		this._inviteToolbar.addSelectionListener(id, inviteToolBarListener);
 
 		var standardItems = [id, replyButtonIds[i]];
-		var menu = new ZmActionMenu(button, standardItems);
+		var menu = new ZmActionMenu({parent:button, standardMenuItems:standardItems});
 		standardItems = menu.opList;
 		for (var j = 0; j < standardItems.length; j++) {
 			var menuItem = menu.getItem(j);
@@ -329,9 +329,9 @@ function() {
 		this._shareToolbar.dispose();
 
 	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
-	this._shareToolbar = new ZmButtonToolBar(this,	buttonIds,
-											  null, DwtControl.STATIC_STYLE,
-											  "ZmShareToolBar", "DwtToolbarButton");
+	var params = {parent:this, standardButtons:buttonIds, posStyle:DwtControl.STATIC_STYLE,
+				  className:"ZmShareToolBar", buttonClassName:"DwtToolbarButton"};
+	this._shareToolbar = new ZmButtonToolBar(params);
 	// get a little space between the buttons.
 	var toolbarHtmlEl = this._shareToolbar.getHtmlElement();
 	toolbarHtmlEl.firstChild.cellPadding = "3";

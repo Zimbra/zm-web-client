@@ -778,7 +778,8 @@ function() {
 		if(ZmZimlet.actionMenus && ZmZimlet.actionMenus["ZmCalViewController"] && ZmZimlet.actionMenus["ZmCalViewController"] instanceof Array) {
 			extraList = ZmZimlet.actionMenus["ZmCalViewController"];
 		}
-		this._minicalMenu = new ZmActionMenu(this._appCtxt.getShell(), list, extraList);
+		var params = {parent:this._shell, standardMenuItems:list, extraMenuItems:extraList};
+		this._minicalMenu = new ZmActionMenu(params);
 		list = this._minicalMenu.opList;
 		var cnt = list.length;
 		for(var ix=0; ix < cnt; ix++) {
@@ -1426,7 +1427,8 @@ function() {
 	if (!menuItems) return;
 	var overrides = {};
 	overrides[ZmOperation.TODAY] = {textKey:"todayGoto"};
-	this._viewActionMenu = new ZmActionMenu(this._shell, menuItems, null, null, overrides);
+	var params = {parent:this._shell, standardMenuItems:menuItems, overrides:overrides};
+	this._viewActionMenu = new ZmActionMenu(params);
 	menuItems = this._viewActionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
 		var menuItem = menuItems[i];
@@ -1463,7 +1465,8 @@ ZmCalViewController.prototype._initializeActionMenu =
 function() {
 	var menuItems = this._getActionMenuOps();
 	if (menuItems && menuItems.length > 0) {
-		var actionMenu = this._actionMenu = new ZmActionMenu(this._shell, menuItems);
+		var params = {parent:this._shell, standardMenuItems:menuItems};
+		var actionMenu = this._actionMenu = new ZmActionMenu(params);
 		menuItems = actionMenu.opList;
 		for (var i = 0; i < menuItems.length; i++) {
 			var menuItem = menuItems[i];
@@ -1484,7 +1487,8 @@ function() {
 
 		var menuItems = this._getRecurringActionMenuOps();
 		if (menuItems && menuItems.length > 0) {
-			this._recurringActionMenu = new ZmActionMenu(this._shell, menuItems);
+			var params = {parent:this._shell, standardMenuItems:menuItems};
+			this._recurringActionMenu = new ZmActionMenu(params);
 			menuItems = this._recurringActionMenu.opList;
 			for (var i = 0; i < menuItems.length; i++) {
 				var item = this._recurringActionMenu.getMenuItem(menuItems[i]);

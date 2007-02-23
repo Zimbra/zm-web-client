@@ -418,7 +418,7 @@ function(parent) {
 		list.push(ZmOperation.defineOperation(ZmOperation.NEW_NOTEBOOK, {id: ZmOperation.NEW_NOTEBOOK, textKey: "notebook"}));
 	}
 
-	var menu = new ZmActionMenu(parent, ZmOperation.NONE, list);
+	var menu = new ZmActionMenu({parent:parent, standardMenuItems:ZmOperation.NONE, extraMenuItems:list});
 	parent.setMenu(menu);
 
 	return menu;
@@ -463,7 +463,7 @@ function(parent, dialog) {
 ZmOperation.addReplyMenu =
 function(parent) {
 	var list = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
-	var menu = new ZmActionMenu(parent, list);
+	var menu = new ZmActionMenu({parent:parent, standardMenuItems:list});
 	parent.setMenu(menu);
 	return menu;
 }
@@ -476,7 +476,7 @@ function(parent) {
 ZmOperation.addForwardMenu =
 function(parent) {
 	var list = [ZmOperation.FORWARD_INLINE, ZmOperation.FORWARD_ATT];
-	var menu = new ZmActionMenu(parent, list);
+	var menu = new ZmActionMenu({parent:parent, standardMenuItems:list});
 	parent.setMenu(menu);
 	return menu;
 };
@@ -489,7 +489,7 @@ function(parent) {
 ZmOperation.addInviteReplyMenu =
 function(parent) {
 	var list = [ZmOperation.EDIT_REPLY_ACCEPT, ZmOperation.EDIT_REPLY_DECLINE, ZmOperation.EDIT_REPLY_TENTATIVE];
-	var menu = new ZmActionMenu(parent, list);
+	var menu = new ZmActionMenu({parent:parent, standardMenuItems:list});
 	parent.setMenu(menu);
 	return menu;
 };
@@ -503,7 +503,7 @@ function(parent) {
 ZmOperation.addCalViewMenu =
 function(parent) {
 	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
-	var menu = new ZmActionMenu(parent, list);
+	var menu = new ZmActionMenu({parent:parent, standardMenuItems:list});
 	parent.setMenu(menu);
 	return menu;
 };

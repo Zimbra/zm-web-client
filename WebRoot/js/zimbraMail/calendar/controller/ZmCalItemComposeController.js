@@ -221,7 +221,7 @@ function() {
 				   ZmOperation.SEP, ZmOperation.SPELL_CHECK,
 				   ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT];
 
-	this._toolbar = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmAppToolBar");
+	this._toolbar = new ZmButtonToolBar({parent:this._container, standardButtons:buttons});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
 	this._toolbar.addSelectionListener(ZmOperation.ATTACHMENT, new AjxListener(this, this._attachmentListener));

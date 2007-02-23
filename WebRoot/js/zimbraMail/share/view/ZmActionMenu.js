@@ -40,24 +40,26 @@
  * @param dialog				[DwtDialog]*		containing dialog, if any
  * @param overrides				[hash]*				hash of overrides by op ID
  */
-function ZmActionMenu(parent, standardMenuItems, extraMenuItems, dialog, overrides) {
+function ZmActionMenu(params) {
 
-	ZmPopupMenu.call(this, parent, null, dialog);
+	ZmPopupMenu.call(this, params.parent, null, params.dialog);
 
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
 	// standard menu items default to Tag/Print/Delete
-	if (!standardMenuItems) {
-		standardMenuItems = [ZmOperation.TAG_MENU, ZmOperation.PRINT, ZmOperation.DELETE];
-	} else if (standardMenuItems == ZmOperation.NONE) {
-		standardMenuItems = null;
+	var menuItems = params.standardMenuItems;
+	if (!menuItems) {
+		menuItems = [ZmOperation.TAG_MENU, ZmOperation.PRINT, ZmOperation.DELETE];
+	} else if (menuItems == ZmOperation.NONE) {
+		menuItems = null;
 	}
 	// weed out disabled ops, save list of ones that make it
-	this.opList = ZmOperation.filterOperations(this._appCtxt, standardMenuItems);
-	this._menuItems = ZmOperation.createOperations(this, this.opList, extraMenuItems, overrides);
-	if (extraMenuItems && extraMenuItems.length) {
-		for (var i = 0; i < extraMenuItems.length; i++) {
-			this.opList.push(extraMenuItems[i].id);
+	this.opList = ZmOperation.filterOperations(this._appCtxt, menuItems);
+	var extraItems = params.extraMenuItems;
+	this._menuItems = ZmOperation.createOperations(this, this.opList, extraItems, params.overrides);
+	if (extraItems && extraItems.length) {
+		for (var i = 0; i < extraItems.length; i++) {
+			this.opList.push(extraItems[i].id);
 		}
 	}
 }
