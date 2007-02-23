@@ -211,24 +211,33 @@ function(op) {
 	switch (op) {
 		case ZmOperation.NEW_CONTACT:
 		case ZmOperation.NEW_GROUP: {
-			// bug fix #5373
-			// - dont allow adding new contacts after searching GAL if contacts disabled
-			if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-				var type = (op == ZmOperation.NEW_GROUP) ? ZmItem.GROUP : null;
-				var contact = new ZmContact(this._appCtxt, null, null, type);
-				AjxDispatcher.run("GetContactController").show(contact);
-			}
+			var type = (op == ZmOperation.NEW_GROUP) ? ZmItem.GROUP : null;
+			var contact = new ZmContact(this._appCtxt, null, null, type);
+			var loadCallback = new AjxCallback(this, this._handleLoadNewItem, [contact]);
+			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 			break;
 		}
 		case ZmOperation.NEW_ADDRBOOK: {
-			var dialog = this._appCtxt.getNewAddrBookDialog();
-			if (!this._newAddrBookCb) {
-				this._newAddrBookCb = new AjxCallback(this, this._newAddrBookCallback);
-			}
-			ZmController.showDialog(dialog, this._newAddrBookCb);
+			var loadCallback = new AjxCallback(this, this._handleLoadNewAddrBook);
+			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
 			break;
 		}
 	}
+};
+
+ZmContactsApp.prototype._handleLoadNewItem =
+function(contact) {
+	AjxDispatcher.run("GetContactController").show(contact);
+};
+
+ZmContactsApp.prototype._handleLoadNewAddrBook =
+function() {
+	this._appCtxt.getAppViewMgr().popView();	// pop "Loading..." page
+	var dialog = this._appCtxt.getNewAddrBookDialog();
+	if (!this._newAddrBookCb) {
+		this._newAddrBookCb = new AjxCallback(this, this._newAddrBookCallback);
+	}
+	ZmController.showDialog(dialog, this._newAddrBookCb);
 };
 
 // Public methods

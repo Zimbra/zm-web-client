@@ -106,18 +106,31 @@ ZmTasksApp.prototype.handleOp =
 function(op, params) {
 	switch (op) {
 		case ZmOperation.NEW_TASK: {
-			AjxDispatcher.run("GetTaskController").show((new ZmTask(this._appCtxt, null, null, params.folderId)));
+			var loadCallback = new AjxCallback(this, this._handleLoadNewTask, [params]);
+			AjxDispatcher.require(["TasksCore", "Tasks"], false, loadCallback, null, true);
 			break;
 		}
 		case ZmOperation.NEW_TASK_FOLDER: {
-			var dialog = this._appCtxt.getNewTaskFolderDialog();
-			if (!this._newTaskFolderCb) {
-				this._newTaskFolderCb = new AjxCallback(this, this._newTaskFolderCallback);
-			}
-			ZmController.showDialog(dialog, this._newTaskFolderCb);
+			var loadCallback = new AjxCallback(this, this._handleLoadNewTaskFolder);
+			AjxDispatcher.require(["TasksCore", "Tasks"], false, loadCallback, null, true);
 			break;
 		}
 	}
+};
+
+ZmTasksApp.prototype._handleLoadNewTask =
+function(params) {
+	AjxDispatcher.run("GetTaskController").show((new ZmTask(this._appCtxt, null, null, params.folderId)));
+};
+
+ZmTasksApp.prototype._handleLoadNewTaskFolder =
+function() {
+	this._appCtxt.getAppViewMgr().popView();	// pop "Loading..." page
+	var dialog = this._appCtxt.getNewTaskFolderDialog();
+	if (!this._newTaskFolderCb) {
+		this._newTaskFolderCb = new AjxCallback(this, this._newTaskFolderCallback);
+	}
+	ZmController.showDialog(dialog, this._newTaskFolderCb);
 };
 
 /**

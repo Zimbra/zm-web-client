@@ -231,19 +231,31 @@ ZmCalendarApp.prototype.handleOp =
 function(op) {
 	switch (op) {
 		case ZmOperation.NEW_APPT: {
-			AjxDispatcher.require(["CalendarCore", "Calendar"]);
-			AjxDispatcher.run("GetCalController").newAppointment(null, null, null, new Date());
+			var loadCallback = new AjxCallback(this, this._handleLoadNewAppt);
+			AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
 			break;
 		}
 		case ZmOperation.NEW_CALENDAR: {
-			var dialog = this._appCtxt.getNewCalendarDialog();
-			if (!this._newCalendarCb) {
-				this._newCalendarCb = new AjxCallback(this, this._newCalendarCallback);
-			}
-			ZmController.showDialog(dialog, this._newCalendarCb);
+			var loadCallback = new AjxCallback(this, this._handleLoadNewCalendar);
+			AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
 			break;
 		}
 	}
+};
+
+ZmCalendarApp.prototype._handleLoadNewAppt =
+function() {
+	AjxDispatcher.run("GetCalController").newAppointment(null, null, null, new Date());
+};
+
+ZmCalendarApp.prototype._handleLoadNewCalendar =
+function() {
+	this._appCtxt.getAppViewMgr().popView();	// pop "Loading..." page
+	var dialog = this._appCtxt.getNewCalendarDialog();
+	if (!this._newCalendarCb) {
+		this._newCalendarCb = new AjxCallback(this, this._newCalendarCallback);
+	}
+	ZmController.showDialog(dialog, this._newCalendarCb);
 };
 
 // Public methods

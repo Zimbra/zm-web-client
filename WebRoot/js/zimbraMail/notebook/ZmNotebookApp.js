@@ -279,27 +279,39 @@ ZmNotebookApp.prototype.handleOp =
 function(op) {
 	switch (op) {
 		case ZmOperation.NEW_PAGE: {
-			AjxDispatcher.require(["NotebookCore", "Notebook"]);
-			var overviewController = this._appCtxt.getOverviewController();
-			var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
-			var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
-
-			var notebook = treeView ? treeView.getSelected() : null;
-			var page = new ZmPage(this._appCtxt);
-			page.folderId = notebook ? notebook.id : ZmNotebookItem.DEFAULT_FOLDER;
-
-			AjxDispatcher.run("GetPageEditController").show(page);
+			var loadCallback = new AjxCallback(this, this._handleLoadNewPage);
+			AjxDispatcher.require(["NotebookCore", "Notebook"], false, loadCallback, null, true);
 			break;
 		}
 		case ZmOperation.NEW_NOTEBOOK: {
-			var dialog = this._appCtxt.getNewNotebookDialog();
-			if (!this._newNotebookCb) {
-				this._newNotebookCb = new AjxCallback(this, this._newNotebookCallback);
-			}
-			ZmController.showDialog(dialog, this._newNotebookCb);
+			var loadCallback = new AjxCallback(this, this._handleLoadNewNotebook);
+			AjxDispatcher.require(["NotebookCore", "Notebook"], false, loadCallback, null, true);
 			break;
 		}
 	}
+};
+
+ZmNotebookApp.prototype._handleLoadNewPage =
+function() {
+	var overviewController = this._appCtxt.getOverviewController();
+	var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
+	var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+
+	var notebook = treeView ? treeView.getSelected() : null;
+	var page = new ZmPage(this._appCtxt);
+	page.folderId = notebook ? notebook.id : ZmNotebookItem.DEFAULT_FOLDER;
+
+	AjxDispatcher.run("GetPageEditController").show(page);
+};
+
+ZmNotebookApp.prototype._handleLoadNewNotebook =
+function() {
+	this._appCtxt.getAppViewMgr().popView();	// pop "Loading..." page
+	var dialog = this._appCtxt.getNewNotebookDialog();
+	if (!this._newNotebookCb) {
+		this._newNotebookCb = new AjxCallback(this, this._newNotebookCallback);
+	}
+	ZmController.showDialog(dialog, this._newNotebookCb);
 };
 
 // Public methods
