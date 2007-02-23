@@ -428,8 +428,12 @@ width: 18em;
         font-size:18px; 
         font-weight:bold;
         color: black;
-        white-space:nowrap; overflow:hidden;
+        overflow:hidden;
         padding: 3 0 3 2;
+}
+
+.ZhFolderHeader {
+        white-space:nowrap;
 }
 
 .searchField {

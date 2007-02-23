@@ -13,11 +13,12 @@
         <td width=20><center><app:img src="${contact.isGroup ? 'contacts/Group.gif' : 'contacts/Contact.gif'}" altkey="${contact.imageAltKey}"/></center></td>
         <td class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : contact.displayFileAs)}
         </td>
-        <td nowrap align='right' class='Tags'>
+        <td align='right' class='Tags'>
             <c:if test="${contact.hasTags and mailbox.features.tagging}">
                 <c:set var="tags" value="${zm:getTags(pageContext, contact.tagIds)}"/>
                 <c:forEach items="${tags}" var="tag">
-                    <app:img altkey="${fn:escapeXml(tag.name)}" src="${tag.miniImage}"/> <span>${fn:escapeXml(tag.name)} </span>
+                 <span style='white-space:nowrap;'>
+                    <app:img altkey="${fn:escapeXml(tag.name)}" src="${tag.miniImage}"/>${fn:escapeXml(tag.name)} </span>
                 </c:forEach>
             </c:if>
         </td>
