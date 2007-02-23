@@ -32,20 +32,23 @@
     </c:when>
     <c:otherwise>
         <c:set var="newFolderStyleColor" value="Gray"/>
-        <fmt:message var="createLabel" key="folderNew"/>
+
         <c:set var="icon" value="${search ? 'common/SearchFolder.gif' : (url ? 'mail/RSS.gif' : 'common/Folder.gif')}"/>
         <c:choose>
             <c:when test="${url}">
                 <fmt:message var="label" key="folderNewRssAtomFeed"/>
                 <fmt:message var="folderType" key="folderSubscribed"/>
+                <fmt:message var="createLabel" key="folderCreateFeed"/>
             </c:when>
             <c:when test="${search}">
                 <fmt:message var="label" key="folderNewSearchFolder"/>
                 <fmt:message var="folderType" key="folderSearch"/>
+                <fmt:message var="createLabel" key="folderCreateSearch"/>
             </c:when>
             <c:otherwise>
                 <fmt:message var="label" key="folderNew"/>
                 <fmt:message var="folderType" key="folderUser"/>
+                <fmt:message var="createLabel" key="folderCreate"/>
             </c:otherwise>
         </c:choose>
     </c:otherwise>

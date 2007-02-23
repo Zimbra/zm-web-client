@@ -9,6 +9,8 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
+<c:set var="folderUrl" value="${selected eq 'calendar' ? 'mcalendars' : selected eq 'contacts' ? 'maddrbooks' : 'mfolders'}"/>
+
 <table cellpadding=0 cellspacing=0>
     <tr class='Tabs'>
         <td class='TabSpacer'/>
@@ -40,7 +42,8 @@
         </td>
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='folders' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/mfolders"/>" ><app:img src="common/Folder.gif" altkey='ALT_APP_MANAGE_FOLDERS'/>
+
+            <a href="<c:url value="/h/${folderUrl}"/>" ><app:img src="common/Folder.gif" altkey='ALT_APP_MANAGE_FOLDERS'/>
                 <span><fmt:message key="folders"/></span></a>
         </td>
         <td class='TabSpacer'/>

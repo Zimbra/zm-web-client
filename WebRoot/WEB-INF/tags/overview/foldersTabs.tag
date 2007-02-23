@@ -15,7 +15,7 @@
         <td class='Tab ${selected=='folders' ? 'TabSelected' :'TabNormal'}'>
             <a href="<c:url value="/h/mfolders"/>" accesskey="${accessKey}">
                 <app:img src="common/Folder.gif" altkey='ALT_APP_MANAGE_FOLDERS'/>
-                <span><fmt:message key="folders"/></span>
+                <span><fmt:message key="mailSearch"/></span>
             </a>
         </td>
         <c:set var="accessKey" value="${accessKey+1}"/>
@@ -23,7 +23,7 @@
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='addressbooks' ? 'TabSelected' :'TabNormal'}'>
             <a href="<c:url value="/h/maddrbooks"/>" accesskey="${accessKey}">
-                <app:img src="contacts/ContactsFolder.gif" altkey='ALT_APP_MANAGE_ADDRESS_BOOKS'/>
+                <app:img src="contacts/Contact.gif" altkey='ALT_APP_MANAGE_ADDRESS_BOOKS'/>
                 <span><fmt:message key="addressBooks"/></span></a>
         </td>
             <c:set var="accessKey" value="${accessKey+1}"/>
