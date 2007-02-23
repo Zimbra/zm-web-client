@@ -664,6 +664,13 @@ function(ev) {
 		d.setMinutes(curr.getMinutes());
 	}
 
+	var loadCallback = new AjxCallback(this, this._handleLoadNewApptAction, [d]);
+	AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+};
+
+ZmCalViewController.prototype._handleLoadNewApptAction =
+function(d) {
+	this._appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
 	this.newAppointmentHelper(d);
 };
 
@@ -682,6 +689,14 @@ function(ev) {
 	if (d != null) delete this._minicalMenu.__detail;
 	else d = this._viewMgr ? this._viewMgr.getDate() : null;
 	if (d == null) d = new Date();
+
+	var loadCallback = new AjxCallback(this, this._handleLoadNewAllDayApptAction, [d]);
+	AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+};
+
+ZmCalViewController.prototype._handleLoadNewAllDayApptAction =
+function(d) {
+	this._appCtxt.getAppViewMgr().popView(true, ZmController.LOADING_VIEW);	// pop "Loading..." page
 	this.newAllDayAppointmentHelper(d);
 };
 
@@ -778,8 +793,16 @@ function() {
 ZmCalViewController.prototype._miniCalSelectionListener =
 function(ev) {
 	if (ev.item instanceof DwtCalendar) {
-		this.setDate(ev.detail, 0, ev.item.getForceRollOver());
-		if (!this._viewVisible) this.show();
+		var loadCallback = new AjxCallback(this, this._handleLoadMiniCalSelection, [ev]);
+		AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+	}
+};
+
+ZmCalViewController.prototype._handleLoadMiniCalSelection =
+function(ev) {
+	this.setDate(ev.detail, 0, ev.item.getForceRollOver());
+	if (!this._viewVisible) {
+		this.show();
 	}
 };
 
