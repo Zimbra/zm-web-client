@@ -67,7 +67,7 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._listeners[ZmOperation.EDIT_REPLY_DECLINE] = apptEditListener;
 	this._listeners[ZmOperation.EDIT_REPLY_TENTATIVE] = apptEditListener;
 	this._listeners[ZmOperation.VIEW_APPOINTMENT] = new AjxListener(this, this._handleMenuViewAction);
-	this._listeners[ZmOperation.TODAY_GOTO] = new AjxListener(this, this._todayButtonListener);
+	this._listeners[ZmOperation.TODAY] = new AjxListener(this, this._todayButtonListener);
 	this._listeners[ZmOperation.DAY_VIEW] = calViewListener;
 	this._listeners[ZmOperation.WEEK_VIEW] = calViewListener;
 	this._listeners[ZmOperation.WORK_WEEK_VIEW] = calViewListener;
@@ -1424,7 +1424,9 @@ function() {
 
 	var menuItems = this._getViewActionMenuOps();
 	if (!menuItems) return;
-	this._viewActionMenu = new ZmActionMenu(this._shell, menuItems);
+	var overrides = {};
+	overrides[ZmOperation.TODAY] = {textKey:"todayGoto"};
+	this._viewActionMenu = new ZmActionMenu(this._shell, menuItems, null, null, overrides);
 	menuItems = this._viewActionMenu.opList;
 	for (var i = 0; i < menuItems.length; i++) {
 		var menuItem = menuItems[i];
@@ -1451,7 +1453,7 @@ function(menu) {
  */
 ZmCalViewController.prototype._getViewActionMenuOps =
 function () {
-	return [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT, ZmOperation.SEP, ZmOperation.TODAY_GOTO, ZmOperation.CAL_VIEW_MENU];
+	return [ZmOperation.NEW_APPT, ZmOperation.NEW_ALLDAY_APPT, ZmOperation.SEP, ZmOperation.TODAY, ZmOperation.CAL_VIEW_MENU];
 };
 
 /**

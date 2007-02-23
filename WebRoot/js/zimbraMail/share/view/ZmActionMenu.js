@@ -24,22 +24,23 @@
  */
 
 /**
-* Creates an action menu with the given menu items.
-* @constructor
-* @class
-* This class represents an action menu, which is a popup menu with a few added features.
-* It can be easily created using a set of standard operations, and/or custom menu items
-* can be provided. This class is designed for use with items (ZmItem), so it can for
-* example contain a tab submenu. See also ZmButtonToolBar.
-*
-* @author Conrad Damon
-*
-* @param parent					[DwtComposite]		the containing widget
-* @param standardMenuItems		[array]*			a list of operation IDs
-* @param extraMenuItems			[array]*			a list of operation descriptors
-* @param dialog					[DwtDialog]*		containing dialog, if any
-*/
-function ZmActionMenu(parent, standardMenuItems, extraMenuItems, dialog) {
+ * Creates an action menu with the given menu items.
+ * @constructor
+ * @class
+ * This class represents an action menu, which is a popup menu with a few added features.
+ * It can be easily created using a set of standard operations, and/or custom menu items
+ * can be provided. This class is designed for use with items (ZmItem), so it can for
+ * example contain a tab submenu. See also ZmButtonToolBar.
+ *
+ * @author Conrad Damon
+ *
+ * @param parent				[DwtComposite]		the containing widget
+ * @param standardMenuItems		[array]*			a list of operation IDs
+ * @param extraMenuItems		[array]*			a list of operation descriptors
+ * @param dialog				[DwtDialog]*		containing dialog, if any
+ * @param overrides				[hash]*				hash of overrides by op ID
+ */
+function ZmActionMenu(parent, standardMenuItems, extraMenuItems, dialog, overrides) {
 
 	ZmPopupMenu.call(this, parent, null, dialog);
 
@@ -53,7 +54,7 @@ function ZmActionMenu(parent, standardMenuItems, extraMenuItems, dialog) {
 	}
 	// weed out disabled ops, save list of ones that make it
 	this.opList = ZmOperation.filterOperations(this._appCtxt, standardMenuItems);
-	this._menuItems = ZmOperation.createOperations(this, this.opList, extraMenuItems);
+	this._menuItems = ZmOperation.createOperations(this, this.opList, extraMenuItems, overrides);
 	if (extraMenuItems && extraMenuItems.length) {
 		for (var i = 0; i < extraMenuItems.length; i++) {
 			this.opList.push(extraMenuItems[i].id);

@@ -59,7 +59,6 @@ function ZmCalendarApp(appCtxt, container) {
 	ZmOperation.registerOp("SEARCH_MAIL", {textKey:"searchMail", image:"SearchMail"}, ZmSetting.SEARCH_ENABLED);
 	ZmOperation.registerOp("SHARE_CALENDAR", {textKey:"shareCalendar", image:"CalendarFolder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("TODAY", {textKey:"today", tooltipKey:"todayTooltip", image:"Date"});
-	ZmOperation.registerOp("TODAY_GOTO", {textKey:"todayGoto", image:"Date"});
 	ZmOperation.registerOp("VIEW_APPOINTMENT", {textKey:"viewAppointment", image:"Appointment"});
 	ZmOperation.registerOp("VIEW_APPT_INSTANCE", {textKey:"apptInstance", image:"Appointment"});
 	ZmOperation.registerOp("VIEW_APPT_SERIES", {textKey:"apptSeries", image:"Appointment"});

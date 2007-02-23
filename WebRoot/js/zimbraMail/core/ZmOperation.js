@@ -139,47 +139,48 @@ ZmOperation.MENUITEM_ID	= "_menuItemId";
 ZmOperation._operationDesc = {};
 
 /**
-* Merges the lists of standard and extra operations (creating operation descriptors for the
-* standard ops), then creates the appropriate widget for each operation based on the type of
-* the parent. If it's a toolbar, then buttons are created. If it's a menu, menu items are
-* created.
-* <p>
-* Extra operations can be used to override properties of existing operations, or to define new
-* operations.</p>
-*
-* @param parent					[DwtComposite]		the containing widget (toolbar or menu)
-* @param standardOperations		[array]*			a list of operation IDs
-* @param extraOperations		[array]*			a list of custom operations
-*
-* @returns						a hash of operations by ID
-*/
+ * Merges the lists of standard and extra operations (creating operation descriptors for the
+ * standard ops), then creates the appropriate widget for each operation based on the type of
+ * the parent. If it's a toolbar, then buttons are created. If it's a menu, menu items are
+ * created.
+ * <p>
+ * To add a custom operation, use extraOperations and pass a list of operation descriptors.
+ * To override or add properties of a particular operation, pass in a hash of properties and
+ * values as a value in overrides, with the operation ID as the key.</p>
+ *
+ * @param parent				[DwtComposite]		the containing widget (toolbar or menu)
+ * @param standardOperations	[array]*			a list of operation IDs
+ * @param extraOperations		[array]*			a list of custom operation descriptors
+ * @param overrides				[hash]*				hash of overrides by op ID
+ *
+ * @returns						a hash of operations by ID
+ */
 ZmOperation.createOperations =
-function(parent, standardOperations, extraOperations) {
+function(parent, standardOperations, extraOperations, overrides) {
 	var obj = new ZmOperation();
-	return obj._createOperations(parent, standardOperations, extraOperations);
+	return obj._createOperations(parent, standardOperations, extraOperations, overrides);
 }
 
 // Done through an object so that we can have more than one invocation going without
 // sharing memory (eg, creating New submenu).
 ZmOperation.prototype._createOperations =
-function(parent, standardOperations, extraOperations) {
+function(parent, standardOperations, extraOperations, overrides) {
 	if (standardOperations == ZmOperation.NONE) {
 		standardOperations = null;
 	}
+	overrides = overrides || {};
 	// assemble the list of operation IDs, and the list of operation descriptors
 	var operationList = [];
-	if (standardOperations || extraOperations) {
-		if (standardOperations && standardOperations.length) {
-			for (var i = 0; i < standardOperations.length; i++) {
-				var id = standardOperations[i];
-				operationList.push(id);
-				ZmOperation.defineOperation(id);
-			}
+	if (standardOperations && standardOperations.length) {
+		for (var i = 0; i < standardOperations.length; i++) {
+			var id = standardOperations[i];
+			operationList.push(id);
+			ZmOperation.defineOperation(id, overrides[id]);
 		}
-		if (extraOperations && extraOperations.length) {
-			for (var i = 0; i < extraOperations.length; i++) {
-				operationList.push(extraOperations[i].id);
-			}
+	}
+	if (extraOperations && extraOperations.length) {
+		for (var i = 0; i < extraOperations.length; i++) {
+			operationList.push(extraOperations[i].id);
 		}
 	}
 
@@ -201,7 +202,7 @@ function(parent, standardOperations, extraOperations) {
 */
 ZmOperation.defineOperation =
 function(baseId, op) {
-	var id = (baseId && !op) ? baseId : (op && op.id) ? op.id : Dwt.getNextId();
+	var id = (op && op.id) ? op.id : baseId ? baseId : Dwt.getNextId();
 	op = op ? op : {};
 	var textKey = ZmOperation.getProp(baseId, "textKey", op);
 	var text = textKey ? ZmMsg[textKey] : null;
@@ -211,7 +212,7 @@ function(baseId, op) {
 	var disImage = ZmOperation.getProp(baseId, "disImage", op);
 	var enabled = (op.enabled !== false);
 
-	var opDesc = {id: id, text: text, image: image, disImage: disImage, enabled: enabled, tooltip: tooltip};
+	var opDesc = {id:id, text:text, image:image, disImage:disImage, enabled:enabled, tooltip:tooltip};
 	ZmOperation._operationDesc[id] = opDesc;
 	
 	return opDesc;
