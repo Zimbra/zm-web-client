@@ -16,6 +16,13 @@
                     <fmt:message key="actionNoTagNameSpecified"/>
                 </app:status>
             </c:when>
+            <c:when test="${fn:length(newTagName) gt 128}">
+                <app:status style="Warning">
+                    <fmt:message key="nameTooLong">
+                        <fmt:param value="128"/>
+                    </fmt:message>
+                </app:status>
+            </c:when>
             <c:otherwise>
                 <zm:createTag var="newid" name="${newTagName}" color="${param.newTagColor}"/>
                 <app:status>
@@ -33,6 +40,13 @@
             <c:when test="${empty newName}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoTagNameSpecified"/>
+                </app:status>
+            </c:when>
+            <c:when test="${fn:length(newName) gt 128}">
+                <app:status style="Warning">
+                    <fmt:message key="nameTooLong">
+                        <fmt:param value="128"/>
+                    </fmt:message>
                 </app:status>
             </c:when>
             <c:otherwise>
