@@ -97,16 +97,6 @@
      </tag-file>
 
     <tag-file>
-         <name>newCalendar</name>
-         <path>/WEB-INF/tags/calendar/newCalendar.tag</path>
-     </tag-file>
-
-    <tag-file>
-         <name>newAddressBook</name>
-         <path>/WEB-INF/tags/contact/newAddressBook.tag</path>
-     </tag-file>
-
-    <tag-file>
         <name>convToolbar</name>
         <path>/WEB-INF/tags/conv/convToolbar.tag</path>
     </tag-file>

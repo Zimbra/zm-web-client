@@ -91,13 +91,13 @@
                             <td class='ZhEditCalendarContent' valign='top'>
                                 <c:choose>
                                     <c:when test="${not empty param.actionNewCalendar}">
-                                        <app:newCalendar/>
+                                        <app:newFolder calendar="true"/>
                                     </c:when>
                                     <c:when test="${not empty param.actionNewSharedCalendar}">
-                                        <app:newCalendar link="true"/>
+                                        <app:newFolder calendar="true"  link="true"/>
                                     </c:when>
                                     <c:when test="${not empty param.actionNewSubscribedCalendar}">
-                                        <app:newCalendar url="true"/>
+                                        <app:newFolder calendar="true" url="true"/>
                                     </c:when>
                                     <c:otherwise>
                                         <app:editFolder folder="${selectedFolder}"/>

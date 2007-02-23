@@ -78,10 +78,10 @@
                             <td class='ZhEditAddressBookContent' valign='top'>
                                 <c:choose>
                                     <c:when test="${not empty param.actionNewAddressBook}">
-                                        <app:newAddressBook/>
+                                        <app:newFolder addressbook="true"/>
                                     </c:when>
                                     <c:when test="${not empty param.actionNewSharedAddressBook}">
-                                        <app:newAddressBook link="true"/>
+                                        <app:newFolder addressbook="true" link="true"/>
                                     </c:when>
                                     <c:otherwise>
                                         <app:editFolder folder="${selectedFolder}"/>

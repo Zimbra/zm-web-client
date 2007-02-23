@@ -12,7 +12,7 @@
         <c:set var="colorStyle" value="${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}"/>
     </c:when>
     <c:otherwise>
-        <c:set var="colorStyle" value="GrayBg"/>
+        <c:set var="colorStyle" value="Gray"/>
     </c:otherwise>
 </c:choose>
 
@@ -340,7 +340,7 @@
         </td>
     </tr>
     <tr>
-        <td align=right><fmt:message key="calendarExport"/></td>
+        <td align=right><fmt:message key="calendarExport"/>:</td>
         <td>
             <a href="${fn:escapeXml(folder.restURLAsFile)}.ics">${fn:escapeXml(folder.restURLAsFile)}.ics</a>
         </td>
@@ -355,7 +355,7 @@
         </td>
     </tr>
     <tr>
-        <td align=right><fmt:message key="contactExport"/></td>
+        <td align=right><fmt:message key="contactExport"/>:</td>
         <td>
             <a href="${fn:escapeXml(folder.restURLAsFile)}.csv">${fn:escapeXml(folder.restURLAsFile)}.csv</a>
         </td>
