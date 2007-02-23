@@ -738,6 +738,7 @@ function(zimletsPresent) {
 ZmAppCtxt.prototype.getZimletMgr =
 function() {
 	if (!this._zimletMgr) {
+		AjxDispatcher.require("Zimlet");
 		this._zimletMgr = new ZmZimletMgr(this);
 	}
 	return this._zimletMgr;
