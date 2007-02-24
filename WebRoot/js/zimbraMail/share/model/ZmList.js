@@ -69,41 +69,22 @@ ZmList.prototype.constructor = ZmList;
 
 // for item creation
 ZmList.ITEM_CLASS = {};
-ZmList.ITEM_CLASS[ZmItem.CONV]		= "ZmConv";
-ZmList.ITEM_CLASS[ZmItem.MSG]		= "ZmMailMsg";
-ZmList.ITEM_CLASS[ZmItem.ATT]		= "ZmMimePart";
-ZmList.ITEM_CLASS[ZmItem.CONTACT]	= "ZmContact";
-ZmList.ITEM_CLASS[ZmItem.APPT]		= "ZmAppt";
-ZmList.ITEM_CLASS[ZmItem.RESOURCE]	= "ZmResource";
-ZmList.ITEM_CLASS[ZmItem.PAGE]		= "ZmPage";
-ZmList.ITEM_CLASS[ZmItem.DOCUMENT]	= "ZmDocument";
 
 // node names for item types
 ZmList.NODE = {};
-ZmList.NODE[ZmItem.CONV]		= "c";
-ZmList.NODE[ZmItem.MSG]			= "m";
-ZmList.NODE[ZmItem.ATT]			= "mp";
-ZmList.NODE[ZmItem.CONTACT]		= "cn";
-ZmList.NODE[ZmItem.RESOURCE]	= "calresource";
-ZmList.NODE[ZmItem.PAGE]		= "w";
-ZmList.NODE[ZmItem.DOCUMENT]	= "doc";
 
-// item types based on node name
+// item types based on node name (reverse map of above)
 ZmList.ITEM_TYPE = {};
-for (var i in ZmList.NODE) {
-	ZmList.ITEM_TYPE[ZmList.NODE[i]] = i;
-}
 
-ZmList.TYPES = [
-	ZmItem.CONTACT, ZmItem.CONV, ZmItem.MSG, ZmItem.ATT, ZmItem.APPT,
-	ZmItem.PAGE, ZmItem.DOCUMENT
-];
-ZmList.MIXED = -1; // special type for heterogeneous list
+ZmList.SEARCH_TYPES = [ZmItem.NOTE];
 
 ZmList.prototype.toString = 
 function() {
 	return "ZmList";
-}
+};
+
+// abstract methods
+ZmList.prototype.getPrintHtml = function(preferHtml, callback) {};
 
 /**
 * Adds an item to the list.
@@ -303,7 +284,7 @@ function(offset, newList) {
 */
 ZmList.prototype.flagItems =
 function(items, flagOp, on) {
-	if (this.type == ZmList.MIXED && !this._mixedType) {
+	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("flagItems", [items, flagOp, on]);
 		return;
 	}
@@ -322,7 +303,7 @@ function(items, flagOp, on) {
 */
 ZmList.prototype.tagItems =
 function(items, tagId, doTag) {
-	if (this.type == ZmList.MIXED && !this._mixedType) {
+	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("tagItems", [items, tagId, doTag]);
 		return;
 	}
@@ -343,7 +324,7 @@ function(items, tagId, doTag) {
 
 ZmList.prototype.removeAllTags = 
 function(items) {
-	if (this.type == ZmList.MIXED && !this._mixedType) {
+	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("removeAllTags", [items]);
 		return;
 	}
@@ -366,7 +347,7 @@ function(items) {
 */
 ZmList.prototype.moveItems =
 function(items, folder, attrs) {
-	if (this.type == ZmList.MIXED && !this._mixedType) {
+	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("moveItems", [items, folder, attrs]);
 		return;
 	}
@@ -376,7 +357,7 @@ function(items, folder, attrs) {
 	attrs.l = folder.id;
 	
 	var respCallback = null;
-	if (this.type == ZmList.MIXED)
+	if (this.type == ZmItem.MIXED)
 		respCallback = new AjxCallback(this, this._handleResponseMoveItems, folder);
 	this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback});
 };
@@ -419,7 +400,7 @@ function(items, folder, attrs) {
 */
 ZmList.prototype.deleteItems =
 function(items, hardDelete, attrs) {
-	if (this.type == ZmList.MIXED && !this._mixedType) {
+	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("deleteItems", [items, hardDelete, attrs]);
 		return;
 	}
@@ -515,7 +496,7 @@ function(params, batchCmd) {
 			return actionedItems;
 	}
 
-	var type = (this.type == ZmList.MIXED) ? this._mixedType : this.type;
+	var type = (this.type == ZmItem.MIXED) ? this._mixedType : this.type;
 	if (!type) return;
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
 	var soapDoc = AjxSoapDoc.create(soapCmd, "urn:zimbraMail");

@@ -9,15 +9,16 @@
 <c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
 <zm:getMailbox var="mailbox"/>
 <table width=100% cellspacing=0 cellpadding=0>
-    <tr class='contactHeaderRow'>
+    <tr class='${zm:getFolder(pageContext, contact.folderId).styleColor}Bg'>
         <td width=20><center><app:img src="${contact.isGroup ? 'contacts/Group.gif' : 'contacts/Contact.gif'}" altkey="${contact.imageAltKey}"/></center></td>
         <td class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : contact.displayFileAs)}
         </td>
-        <td nowrap align='right' class='Tags'>
+        <td align='right' class='Tags'>
             <c:if test="${contact.hasTags and mailbox.features.tagging}">
                 <c:set var="tags" value="${zm:getTags(pageContext, contact.tagIds)}"/>
                 <c:forEach items="${tags}" var="tag">
-                    <app:img altkey="${fn:escapeXml(tag.name)}" src="${tag.miniImage}"/> <span>${fn:escapeXml(tag.name)} </span>
+                 <span style='white-space:nowrap;'>
+                    <app:img altkey="${fn:escapeXml(tag.name)}" src="${tag.miniImage}"/>${fn:escapeXml(tag.name)} </span>
                 </c:forEach>
             </c:if>
         </td>
@@ -33,7 +34,10 @@
                 <c:if test="${!((empty contact.jobTitle) or (empty contact.company))}">,&nbsp;</c:if>
                 ${fn:escapeXml(contact.company)}
             </c:if>
-        </td><td width="20"><app:img altkey='ALT_CONTACT_FOLDER' src="contacts/ContactsFolder.gif"/></td><td
+        </td><td width="20">
+        <c:set var="folderImage" value="${zm:getFolder(pageContext, contact.folderId).image}"/>
+        <app:img altkey='ALT_CONTACT_FOLDER' src="${folderImage}"/>
+    </td><td
             class="companyFolder">${fn:escapeXml(zm:getFolderName(pageContext, contact.folderId))}</td>
     </tr>
 </tbody></table>

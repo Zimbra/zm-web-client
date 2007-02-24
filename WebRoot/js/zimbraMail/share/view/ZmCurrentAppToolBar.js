@@ -65,6 +65,8 @@ function ZmCurrentAppToolBar(parent, tabStyle) {
 	this._viewIcon = {};
 	this._viewTooltip = {};
 	this._viewMenu = {};
+	this._subView = {};
+	this._callback = {};
 };
 
 ZmCurrentAppToolBar.prototype = new DwtToolBar;
@@ -78,8 +80,8 @@ function() {
 ZmCurrentAppToolBar.prototype.setCurrentApp = 
 function(appName) {
 	if (this._currentAppLabel) {
-		this._currentAppLabel.setText(ZmMsg[ZmZimbraMail.MSG_KEY[appName]]);
-		this._currentAppLabel.setImage(ZmZimbraMail.APP_ICON[appName]);
+		this._currentAppLabel.setText(ZmMsg[ZmApp.NAME[appName]]);
+		this._currentAppLabel.setImage(ZmApp.ICON[appName]);
 	}
 };
 
@@ -101,24 +103,60 @@ function(view) {
 ZmCurrentAppToolBar.prototype.setViewMenu = 
 function(view, menu) {
 	this._viewMenu[view] = menu;
-	this.showViewMenu(view);
+};
+
+/**
+ * Associates a sub-view with a view. The name of the sub-view
+ * will be used to retrieve the correct menu item in showViewMenu().
+ * 
+ * @param view		[constant]		a view ID
+ * @param subView	[constant]		a view ID
+ */
+ZmCurrentAppToolBar.prototype.setSubView =
+function(view, subView) {
+	this._subView[view] = subView;
+};
+
+/**
+ * Associates a callback with a view. The callback is used to
+ * set the icon/text on the view button.
+ * 
+ * @param view		[constant]		a view ID
+ * @param callback	[AjxCallback]	a callback
+ */
+ZmCurrentAppToolBar.prototype.setCallback =
+function(view, callback) {
+	this._callback[view] = callback;
 };
 
 ZmCurrentAppToolBar.prototype.showViewMenu = 
-function(view, viewId) {
+function(view) {
+	this._curView = view;
 	var viewMenu = this._viewMenu[view];
 	if (viewMenu) {
 		this._viewButton.setVisible(true);
 		this._viewButton.setToolTipContent(this._viewTooltip[view]);
 		this._viewButton.setMenu(viewMenu, false, DwtMenuItem.RADIO_STYLE);
-		var mi = viewMenu.getItemById(ZmOperation.MENUITEM_ID, (viewId || view));
-		var icon = mi ? mi.getImage() : null;
-		if (icon) this._viewButton.setImage(icon);
-		if (mi && this._viewLabel) this._viewButton.setText(mi.getText());
+		if (this._callback[view]) {
+			this._callback[view].run();
+		} else {
+			var id = this._subView[view] || view;
+			var mi = viewMenu.getItemById(ZmOperation.MENUITEM_ID, id);
+			if (mi) {
+				var icon = mi.getImage();
+				if (icon) {
+					this._viewButton.setImage(icon);
+				}
+				if (this._viewLabel) {
+					this._viewButton.setText(mi.getText());
+				}
+				mi.setChecked(true, true);
+			}
+		}
 	} else {
 		this._viewButton.setVisible(false);
 	}
-
-	if (this._viewLabel)
+	if (this._viewLabel) {
 		this._viewLabel.setVisible(viewMenu != null);
+	}
 };

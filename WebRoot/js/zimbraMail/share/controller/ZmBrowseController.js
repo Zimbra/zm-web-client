@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -44,14 +44,14 @@ function ZmBrowseController(appCtxt, parent) {
 	components[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR] = this._toolbar;
 	components[ZmAppViewMgr.C_SEARCH_BUILDER] = this._browseView;
 	this._appCtxt.getAppViewMgr().addComponents(components, true);
-	
+
 	this._searchBuilderOpened = false;
 };
 
 ZmBrowseController.prototype = new ZmController;
 ZmBrowseController.prototype.constructor = ZmBrowseController;
 
-ZmBrowseController.prototype.toString = 
+ZmBrowseController.prototype.toString =
 function() {
 	return "ZmBrowseController";
 };
@@ -67,10 +67,12 @@ function() {
 		list.push(ZmPicker.SEARCH);
 	}
     list.push(ZmPicker.SIZE);
-    var idxZimlets = this._appCtxt.getZimletMgr().getIndexedZimlets();
-    if (idxZimlets.length) {
-    	list.push(ZmPicker.ZIMLET);
-    }
+	if (this._appCtxt.zimletsPresent()) {
+	    var idxZimlets = this._appCtxt.getZimletMgr().getIndexedZimlets();
+	    if (idxZimlets.length) {
+	    	list.push(ZmPicker.ZIMLET);
+	    }
+	}
 	list.push(ZmPicker.FLAG);
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		list.push(ZmPicker.TAG);
@@ -94,14 +96,28 @@ ZmBrowseController.prototype.setBrowseViewVisible =
 function(visible) {
 	if (this._browseViewVisible == visible) {return;}
 
+	var tbl, H;
+	if (AjxEnv.isGeckoBased && skin.getTopAdContainer) {
+		tbl = skin.$("skin_table_outer");
+		H = tbl.offsetHeight;
+	}
+
 	this._appCtxt.getAppViewMgr().showSearchBuilder(visible);
+
+	if (AjxEnv.isGeckoBased && skin.getTopAdContainer) {
+		tbl.style.height = H + "px";
+		setTimeout(function() {
+			tbl.style.height = "100%";
+		}, 10);
+	}
+
 	// hack to fix bug 10222 - skin doesn't size correctly first time
 	if (visible && !this._searchBuilderOpened) {
 		this._appCtxt.getAppViewMgr().showSearchBuilder(!visible);
 		this._appCtxt.getAppViewMgr().showSearchBuilder(visible);
 		this._searchBuilderOpened = true;
 	}
-	
+
 	var searchCtlr = this._appCtxt.getSearchController();
 	this._browseViewVisible = visible;
 	if (visible) {
@@ -159,7 +175,7 @@ function(doSearch) {
 			}
 		}
 	}
-	
+
 	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		// so we can select search folder in overview
 		var a = this._pickers[ZmPicker.SEARCH].getArray();
@@ -221,12 +237,12 @@ function(id) {
     cb.addSelectionListener(new AjxListener(this, this._pickerCloseListener));
     picker.addPickerListener(new AjxListener(this, this._pickerListener));
 	this._updateQuery(true);
-	
+
 	// disable picker button if max instances of this picker has been reached
 	if (ZmPicker.LIMIT[id] != -1 && this._pickers[id].size() == ZmPicker.LIMIT[id]) {
 		this._toolbar.enable(id, false);
-	}	
-	
+	}
+
 	return picker;
 };
 

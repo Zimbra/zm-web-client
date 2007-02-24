@@ -22,9 +22,14 @@
             <th class='Header'> <fmt:message key="tags"/></th>
             
             <th width='1%' align='right' class='ZhTreeEdit'>
-                <c:if test="${empty editmode}">
-                    <a href="${mtagsUrl}"><fmt:message key="TREE_EDIT"/> </a>
-                </c:if>
+                <c:choose>
+                    <c:when test="${false and empty editmode}">
+                        <a href="${mtagsUrl}"><fmt:message key="TREE_EDIT"/> </a>
+                    </c:when>
+                    <c:otherwise>
+                        &nbsp;
+                    </c:otherwise>
+                </c:choose>
             </th>
         </tr>
         <c:if test="${expanded}">

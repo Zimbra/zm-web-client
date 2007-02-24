@@ -36,9 +36,7 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 // Consts
 
 ZmConvListView.CONVLIST_REPLENISH_THRESHOLD = 0;
-ZmConvListView.CLV_COLWIDTH_ICON 			= 19;
-ZmConvListView.CLV_COLWIDTH_FROM 			= 145;
-ZmConvListView.CLV_COLWIDTH_DATE 			= 60;
+ZmConvListView.COL_WIDTH_FROM 				= 145;
 
 
 // Public methods
@@ -61,14 +59,14 @@ function(defaultColumnSort) {
 	var fromColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]);
 	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
 	if (fromColSpan) fromColSpan.innerHTML = "&nbsp;" + colLabel;
-	this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
+	if (this._colHeaderActionMenu) this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
 
 	// bug fix #4786
 	colLabel = isFolder.sent ? ZmMsg.sentAt : ZmMsg.received;
 	var dateColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]);
 	var dateColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[dateColIdx]._id);
 	if (dateColSpan) dateColSpan.innerHTML = "&nbsp;" + colLabel;
-	this._colHeaderActionMenu.getItem(dateColIdx).setText(colLabel);
+	if (this._colHeaderActionMenu) this._colHeaderActionMenu.getItem(dateColIdx).setText(colLabel);
 };
 
 ZmConvListView.prototype.markUIAsRead =
@@ -194,22 +192,22 @@ function(conv, now, isDndIcon, isMixedView, myDiv) {
 
 ZmConvListView.prototype._getHeaderList =
 function(parent) {
-
-	var headerList = new Array();
-
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, "FlagRed", ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.flag));
 	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
 	var appCtxt = shell.getData(ZmAppCtxt.LABEL); // this._appCtxt not set until parent constructor is called
-	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "MiniTag", ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.tag));
-	}
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], ZmMsg.from, null, ZmConvListView.CLV_COLWIDTH_FROM, null, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, "Attachment", ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.attachment));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT], null, "Conversation", 25, null, null, null, ZmMsg.count));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.received, null, ZmConvListView.CLV_COLWIDTH_DATE, ZmItem.F_DATE));
 
-	return headerList;
+	var hList = [];
+
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, "FlagRed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.flag));
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "MiniTag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));
+	}
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], ZmMsg.from, null, ZmConvListView.COL_WIDTH_FROM, null, true));
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT], null, "Conversation", 25, null, null, null, ZmMsg.count));
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.received, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_DATE));
+
+	return hList;
 };
 
 ZmConvListView.prototype._sortColumn =
@@ -353,7 +351,7 @@ function(conv, preferHtml, callback, appCtxt) {
 		var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetPrintHtml, [conv, preferHtml, appCtxt, callback]);
 		window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	} else {
-		ZmConvListView._printMessages(conv, preferHtml, callback);
+		ZmConvListView._printMessages(conv, preferHtml, appCtxt, callback);
 	}
 };
 

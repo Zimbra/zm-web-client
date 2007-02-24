@@ -1,0 +1,148 @@
+##########################################################################
+#                            Skin Substitutions                          #
+#------------------------------------------------------------------------#
+#
+#  Add or change entries below to customize this skin.  
+#     See:  http://wiki.zimbra.com/?title=Themes
+#
+#  NOTE: Substitutions that begin and end with "_" (eg: "_BaseColor_") 
+#  should only be used within this file -- never in a CSS or HTML file
+#
+#========================================================================#
+
+
+SkinName			= bones
+
+
+##########################################################################
+#                           Logo Licensing Rules 	   		 	         #
+#------------------------------------------------------------------------#
+#
+#  If you are using the Zimbra Collaboration Suite (ZCS) under the 
+#  open source license, and you have not modifed the software, 
+#  then you are required to use the Zimbra logo (the default). 
+#
+#	LogoImgDir		= /zimbra/skins/_base/logos
+#	LogoURL			= http://www.zimbra.com
+#
+#-------------------------------------------------------------------------
+#  If you are using ZCS under the open source license, 
+#  and you have modified the software, 
+#  then you are required to use the Zimbra Inside logo. 
+#
+#	LogoImgDir		= /zimbra/skins/_base/logos/ZimbraInside
+#	LogoURL			= http://www.zimbra.com
+#
+#-------------------------------------------------------------------------
+#  If you are using ZCS under the network (commercial) license, 
+#  then you are welcome to use your own logo in place of the Zimbra logo,
+#  or to retain the original Zimbra logo. 
+#
+#	LogoImgDir		= /zimbra/skins/@SkinName@/logos
+#	LogoURL			= http://www.yourcompany.com
+#
+#========================================================================#
+
+##########################################################################
+#                               Skin Colors                              #
+#------------------------------------------------------------------------#
+#
+#### Base color and variants ####
+	_BaseColor_			=	#e0e0e0
+	_BaseColorD95_		=	#0c0b0a
+	_BaseColorD90_		=	#171613
+	_BaseColorD85_		=	#23211d
+	_BaseColorD80_		=	#2e2c27
+	_BaseColorD75_		=	#3a3730
+	_BaseColorD70_		=	#46423a
+	_BaseColorD65_		=	#514d44
+	_BaseColorD60_		=	#5d584d
+	_BaseColorD55_		=	#686357
+	_BaseColorD50_		=	#707070
+	_BaseColorD45_		=	#808080
+	_BaseColorD40_		=	#868686
+	_BaseColorD35_		=	#979797
+	_BaseColorD30_		=	#a2a2a2
+	_BaseColorD25_		=	#aea591
+#### Toolbar Bg ####
+	_BaseColorD20_		=	#b3b3b3
+#### Header Color Hover ####
+	_BaseColorD15_		=	#bebebe
+#### Header Color and Widget BG color ####
+	_BaseColorD10_		=	#cacaca
+	_BaseColorD5_		=	#dcd1b7
+	_BaseColorL5_		=	#e9dec4
+	_BaseColorL10_		=	#eaeaea
+	_BaseColorL15_		=	#ebe1ca
+	_BaseColorL20_		=	#ede3cd
+#### Page BG and APP tab container Hover ####
+	_BaseColorL25_		=	#e8e8e8
+	_BaseColorL30_		=	#efe7d4
+	_BaseColorL35_		=	#f0e8d7
+	_BaseColorL40_		=	#f1eada
+	_BaseColorL45_		=	#f2ecdd
+### APP Tab container Selected ####
+	_BaseColorL50_		=	#f0f0f0
+	_BaseColorL55_		=	#f5efe3
+	_BaseColorL60_		=	#f6f1e6
+	_BaseColorL65_		=	#f7f3e9
+	_BaseColorL70_		=	#f8f5ec
+#### Item BG color and Tree container BG and APP bg####
+	_BaseColorL75_		=	#f7f7f7
+	_BaseColorL80_		=	#faf8f3
+	_BaseColorL85_		=	#fcfaf6
+	_BaseColorL90_		=	#fdfcf9
+	_BaseColorL95_		=	#fefdfc
+#### Selection color and variants ####
+	_SelColor_			=	#e6f7ff
+	_SelColorD95_		=	#0c0c0d
+	_SelColorD90_		=	#17191a
+	_SelColorD85_		=	#232526
+	_SelColorD80_		=	#2e3133
+	_SelColorD75_		=	#3a3e40
+	_SelColorD70_		=	#454a4d
+	_SelColorD65_		=	#515659
+	_SelColorD60_		=	#5c6366
+	_SelColorD55_		=	#686f73
+	_SelColorD50_		=	#737c80
+	_SelColorD45_		=	#7f888c
+	_SelColorD40_		=	#8a9499
+	_SelColorD35_		=	#96a1a6
+	_SelColorD30_		=	#a1adb3
+	_SelColorD25_		=	#adb9bf
+	_SelColorD20_		=	#b8c6cc
+	_SelColorD15_		=	#c4d2d9
+	_SelColorD10_		=	#cfdee6
+	_SelColorD5_		=	#dbebf2
+	_SelColorL5_		=	#e7f7ff
+	_SelColorL10_		=	#e9f8ff
+	_SelColorL15_		=	#eaf8ff
+	_SelColorL20_		=	#ebf9ff
+	_SelColorL25_		=	#ecf9ff
+	_SelColorL30_		=	#eef9ff
+	_SelColorL35_		=	#effaff
+	_SelColorL40_		=	#f0faff
+	_SelColorL45_		=	#f1fbff
+	_SelColorL50_		=	#f3fbff
+	_SelColorL55_		=	#f4fbff
+	_SelColorL60_		=	#f5fcff
+	_SelColorL65_		=	#f6fcff
+	_SelColorL70_		=	#f8fdff
+	_SelColorL75_		=	#f9fdff
+	_SelColorL80_		=	#fafdff
+	_SelColorL85_		=	#fbfeff
+	_SelColorL90_		=	#fdfeff
+	_SelColorL95_		=	#feffff
+	
+	HilightColor		= #e3da93
+	ChromeBg          = background: url("@SkinImgDir@/bg_bones.png") repeat-x;
+	
+######
+# colors for different kinds of notices
+#######
+InfoBg						= background-color:#bed8ee;
+WarningBg					= background-color:#FFDDBF;
+CriticalBg					= background-color:#F5BFBF;
+
+#
+#========================================================================#

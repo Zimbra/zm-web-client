@@ -85,7 +85,6 @@ function(searchResult) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements, true);
-	this._setViewMenu(ZmController.CONVLIST_VIEW);
 	this._setGroupMailBy(ZmItem.CONV);
 
 	// reset selected index prior to resetting new list items
@@ -221,7 +220,7 @@ function(ev) {
 		if (ev.item.isDraft) {
 			this._doAction(ev, ZmOperation.DRAFT);
 		} else {
-			this._app.getConvController().show(this._activeSearch, ev.item);
+			AjxDispatcher.run("GetConvController").show(this._activeSearch, ev.item);
 		}
 	}
 };

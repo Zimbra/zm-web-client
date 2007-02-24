@@ -61,6 +61,11 @@ function(id) {
 	return args ? args[3] : null;
 };
 
+ZmSettings.prototype.toString =
+function() {
+	return "ZmSettings";
+};
+
 /**
 * Returns the value of the given setting.
 *
@@ -177,17 +182,11 @@ function(callback, result) {
 	}
 
 	// load Zimlets
-	if(obj.zimlets && obj.zimlets.zimlet) {
+	if (obj.zimlets && obj.zimlets.zimlet) {
 		DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + obj.zimlets.zimlet.length + " Zimlets");
+		AjxDispatcher.require("Zimlet");
 		this._appCtxt.getZimletMgr().loadZimlets(obj.zimlets.zimlet, obj.props.prop);
 	}
-
-    var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
-    var identityCollection = prefsApp.getIdentityCollection();
-	identityCollection.initialize(obj.identities);
-
-    var dataSourceCollection = prefsApp.getDataSourceCollection();
-    dataSourceCollection.initialize(obj.dataSources);
 
     this.userSettingsLoaded = true;
 	
@@ -266,7 +265,7 @@ function(list, callback, result) {
 			var setting = list[i];
 			setting.origValue = setting.value;
 			if (setting.id == ZmSetting.SKIN_NAME) {
-				ZmLogin.setSkinCookie(setting.getValue());
+				ZmLogin.setCookie(ZmLogin.SKIN_COOKIE, setting.getValue());
 			}
 			setting._notify(ZmEvent.E_MODIFY);
 		}
@@ -274,19 +273,6 @@ function(list, callback, result) {
 	
 	if (callback) callback.run(result);
 };
-
-/**
-* Convenience method to convert "group mail by" between server (string)
-* and client (int constant) versions.
-*/
-ZmSettings.prototype.getGroupMailBy =
-function() {
-	var setting = this.get(ZmSetting.PREFS_ENABLED) ? this.get(ZmSetting.GROUP_MAIL_BY) : null;
-	if (!setting) {
-		DBG.println(AjxDebug.DBG1, "GROUP_MAIL_BY setting not found!");
-	}
-	return setting ? ZmPref.GROUP_MAIL_BY_ITEM[setting] : ZmItem.MSG;
-}
 
 // Loads the settings and their default values. See ZmSetting for details.
 ZmSettings.prototype._initialize =
@@ -297,8 +283,7 @@ function() {
 			DBG.println(AjxDebug.DBG1, "*** Uninitialized setting! id = " + id);
 			continue;
 		}
-		var setting = new ZmSetting(id, args[0], args[1], args[2], args[3], this);
-		this._settings[id] = setting;
+		this._settings[id] = new ZmSetting(id, args[0], args[1], args[2], args[3], this);
 		if (args[0])
 			this._nameToId[args[0]] = id;
 	}

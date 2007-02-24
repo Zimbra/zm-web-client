@@ -2,7 +2,7 @@
 	<div id='${id}_inner'>
 		<table border=0 cellpadding=0 cellspacing=0>
 			<tr>
-				<td nowrap class='<$= AjxImg.getClassForImage(data.innerClass) $>'></td>
+				<td id="${id}_icon" nowrap class='<$= AjxImg.getClassForImage(data.innerClass) $>'></td>
 				<td>&nbsp;</td>
 				<td nowrap>${text}</td>
 			</tr>
@@ -21,7 +21,7 @@
 					<div id='${id}_middleBtn' class='ImgSkin_Tab_Normal__H skin_tab_text'>
 						<table border=0 cellpadding=0 cellspacing=0 width=100%>
 							<tr>
-								<td width=1 nowrap class='skin_tab_text'>
+								<td id="${id}_icon" width=1 nowrap class='skin_tab_text'>
 									<$= AjxImg.getImageHtml(data.innerClass) $>
 								</td>
 								<td width=1>&nbsp;</td>

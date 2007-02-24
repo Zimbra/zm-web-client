@@ -32,17 +32,17 @@ function ZmSharePropsDialog(appCtxt, shell, className) {
 
 	// create auto-completer	
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var dataClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+		var dataClass = this._appCtxt.getApp(ZmApp.CONTACTS);
 		var dataLoader = dataClass.getContactList;
 		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, [this]);
 		var compCallback = new AjxCallback(this, this._handleCompletionData, [this]);
 		var params = {parent: this, dataClass: dataClass, dataLoader: dataLoader,
-					  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback,
+					  matchValue: ZmContactsApp.AC_VALUE_EMAIL, locCallback: locCallback,
 					  compCallback: compCallback,
 					  keyUpCallback: new AjxCallback(this, this._acKeyUpListener) };
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
 	}
-	
+
 	// set view
 	this.setView(this._createView());
 };
@@ -63,14 +63,14 @@ ZmSharePropsDialog.prototype._mode = ZmSharePropsDialog.NEW;
 // Public methods
 
 ZmSharePropsDialog.prototype.popup =
-function(mode, object, share, loc) {
+function(mode, object, share) {
 
 	this._shareMode = mode;
 	this._object = object;
 	this._share = share;
 
 	this._nameEl.innerHTML = AjxStringUtil.htmlEncode(object.name);
-	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[this._object.type] || ZmMsg.folder;
+	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[this._object.type]] || ZmMsg.folder;
 
 	var isNewShare = (this._shareMode == ZmSharePropsDialog.NEW);
 	var isUserShare = share ? share.isUser() || share.isGroup() : true;
@@ -121,7 +121,7 @@ function(mode, object, share, loc) {
 
 	this._urlEl.innerHTML = AjxStringUtil.htmlEncode(this._object.getRestUrl());
 
-	DwtDialog.prototype.popup.call(this, loc);
+	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.OK_BUTTON, false);
 	if (isNewShare) {
 		this._userRadioEl.checked = true;
@@ -169,7 +169,7 @@ function(event) {
 	if (this._shareMode == ZmSharePropsDialog.NEW) {
 		var type = this._getType(isUserShare, isGuestShare, isPublicShare);
 		if (!isPublicShare) {
-			var addrs = ZmEmailAddress.split(this._granteeInput.getValue());
+			var addrs = AjxEmailAddress.split(this._granteeInput.getValue());
 			if (addrs && addrs.length) {
 				for (var i = 0; i < addrs.length; i++) {
 					var share = this._setUpShare();
@@ -216,7 +216,7 @@ function(shares, result) {
 			var email = share.grantee.email || share.grantee.id;
 
 			var addrs = new AjxVector();
-			var addr = new ZmEmailAddress(email, ZmEmailAddress.TO);
+			var addr = new AjxEmailAddress(email, AjxEmailAddress.TO);
 			addrs.add(addr);
 
 			var tmpShare = new ZmShare({appCtxt: this._appCtxt, object: share.object});
@@ -406,11 +406,13 @@ function() {
 		var propId = shareWith.addProperty(property.label, property.field);
 	}
 
-	this._granteeInput = new DwtInputField({parent: this, size: 38});
+	this._granteeInput = new DwtInputField({parent: this});
+	Dwt.setSize(this._granteeInput.getInputElement(), "100%");
 	this._granteeInput.setData(Dwt.KEY_OBJECT, this);
 
 	var password = new DwtComposite(this);
-	this._passwordInput = new DwtInputField({parent: password, size:40});
+	this._passwordInput = new DwtInputField({parent: password});
+	Dwt.setSize(this._passwordInput.getInputElement(), "100%");
 	this._passwordInput.setData(Dwt.KEY_OBJECT, this);
 	this._passwordButton = new DwtButton(password);
 	this._passwordButton.setText(ZmMsg.changePassword);

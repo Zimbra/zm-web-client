@@ -55,7 +55,7 @@ function(tagsObj) {
 ZmTagTree.prototype.createRoot =
 function() {
 	if (!this.root)
-		this.root = new ZmTag(ZmTag.ID_ROOT, null, null, null, this);
+		this.root = new ZmTag({id: ZmTag.ID_ROOT, tree: this});
 };
 
 ZmTagTree.prototype.getByIndex =

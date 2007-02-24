@@ -44,7 +44,7 @@
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 	this._labels = labels;
-	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
+	this._prefsController = AjxDispatcher.run("GetPrefController");
 	
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]].join(": ");
 

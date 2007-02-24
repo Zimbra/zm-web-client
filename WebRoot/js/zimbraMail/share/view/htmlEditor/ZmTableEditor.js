@@ -61,41 +61,6 @@ ZmTableEditor = {
 		this._cellPropsDialog.setup(editor, table, cells);
 	},
 
-	getDialogLayout : function(url) {
-		var time = new Date().getTime();
-
-		// WARNING: synchronous request!
-		// Also we don't treat errors at this point >-) so you better
-		// know what you're doing.
-		var res = AjxRpc.invoke(null, url + "?v=" + time, null, null, true, 5000);
-		var txt = res.text;
-
-		var ids = {};
-
-		// get rid of the comments
-		txt = txt.replace(/<!--.*?-->/, "");
-
-		// replace $msg and $id fields
-		txt = txt.replace(/\$([a-zA-Z0-9_.]+)/g, function(str, p1) {
-			if (/^([^.]+)\.(.*)$/.test(p1)) {
-				var prefix = RegExp.$1;
-				var name = RegExp.$2;
-				switch (prefix) {
-				    case "id":
-					var id = ids[name];
-					if (!id)
-						id = ids[name] = Dwt.getNextId();
-					return id;
-				    case "msg":
-					return ZmMsg[name];
-				}
-			}
-			return str;
-		});
-
-		return { ids: ids, html: txt };
-	},
-
 	// call this in the context of a dialog object that knows this stuff ;-)
 	__makeCommonWidgets : function() {
 		this._wBgColor = new DwtButtonColorPicker(this, null, null, null, null, null, ZmMsg.auto);
@@ -157,10 +122,6 @@ ZmTableEditor = {
 
 };
 
-ZmTablePropsDialog.URL = appContextPath + "/js/zimbraMail/share/view/htmlEditor/dlg-table-properties.html";
-
-ZmTablePropsDialog.ADVANCED_BUTTON = ++DwtDialog.LAST_BUTTON;
-
 function ZmTablePropsDialog(parent) {
 	if (arguments.length == 0) return;
 	var advancedBtn = new DwtDialog_ButtonDescriptor(ZmTablePropsDialog.ADVANCED_BUTTON, ZmMsg.advanced, DwtDialog.ALIGN_LEFT);
@@ -169,16 +130,13 @@ function ZmTablePropsDialog(parent) {
 			 DwtDialog.CANCEL_BUTTON ],
 		       [ advancedBtn ] );
 
-	var ids;
-	var html;
+	var base_id = Dwt.getNextId();
+	for (var i = ZmTablePropsDialog.IDS.length; --i >= 0;) {
+		var id = ZmTablePropsDialog.IDS[i];
+		this["_id" + id] = base_id + "_" + id;
+	}
 
-	ids = ZmTableEditor.getDialogLayout(ZmTablePropsDialog.URL);
-	html = ids.html;
-	ids = ids.ids;
-
-	for (var i in ids)
-		this["_id" + i] = ids[i];
-
+	var html = AjxTemplate.expand("zimbraMail.share.view.htmlEditor.templates.Dialogs#TableProperties", { id: base_id });
 	this.setContent(html);
 
 	ZmTableEditor.__makeCommonWidgets.call(this);
@@ -228,6 +186,31 @@ function ZmTablePropsDialog(parent) {
 
 ZmTablePropsDialog.prototype = new DwtDialog;
 ZmTablePropsDialog.prototype.constructor = ZmTablePropsDialog;
+
+ZmTablePropsDialog.ADVANCED_BUTTON = ++DwtDialog.LAST_BUTTON;
+
+ZmTablePropsDialog.IDS = [
+	"AdvancedMode1",
+	"AdvancedMode2",
+	"Align",
+	"BackgroundColor",
+	"BorderCollapse",
+	"BorderColor",
+	"BorderSpacing",
+	"BorderStyle",
+	"BorderWidth",
+	"Caption",
+	"CellPadding",
+	"FixedLayout",
+	"ForegroundColor",
+	"Summary",
+	"TextAlign",
+	"TextVAlign",
+	"Width",
+	"WidthAuto",
+	"WidthAuto1",
+	"WidthUnit"
+];
 
 ZmTablePropsDialog.prototype.popup = function() {
 	DwtDialog.prototype.popup.call(this);
@@ -390,23 +373,18 @@ ZmTablePropsDialog.prototype.getValues = function() {
 // ****************************************************************
 // cell properties dialog
 
-ZmCellPropsDialog.URL = appContextPath + "/js/zimbraMail/share/view/htmlEditor/dlg-cell-properties.html";
-
 function ZmCellPropsDialog(parent) {
 	DwtDialog.call(this, parent, null, ZmMsg.cellProperties,
 		       [ DwtDialog.OK_BUTTON,
 			 DwtDialog.CANCEL_BUTTON ]);
 
-	var ids;
-	var html;
+	var base_id = Dwt.getNextId();
+	for (var i = ZmCellPropsDialog.IDS.length; --i >= 0;) {
+		var id = ZmCellPropsDialog.IDS[i];
+		this["_id" + id] = base_id + "_" + id;
+	}
 
-	ids = ZmTableEditor.getDialogLayout(ZmCellPropsDialog.URL);
-	html = ids.html;
-	ids = ids.ids;
-
-	for (var i in ids)
-		this["_id" + i] = ids[i];
-
+	var html = AjxTemplate.expand("zimbraMail.share.view.htmlEditor.templates.Dialogs#CellProperties", { id: base_id });
 	this.setContent(html);
 
 	ZmTableEditor.__makeCommonWidgets.call(this);
@@ -478,6 +456,33 @@ function ZmCellPropsDialog(parent) {
 
 ZmCellPropsDialog.prototype = new DwtDialog;
 ZmCellPropsDialog.prototype.constructor = ZmCellPropsDialog;
+
+ZmCellPropsDialog.URL = appContextPath + "/js/zimbraMail/share/view/htmlEditor/dlg-cell-properties.html";
+
+ZmCellPropsDialog.IDS = [
+	"BackgroundColor",
+	"BorderColor",
+	"BorderStyle",
+	"BorderWidth",
+	"EnableBackgroundColor",
+	"EnableForegroundColor",
+	"EnableHeight",
+	"EnableHorizPadding",
+	"EnableTextAlign",
+	"EnableTextVAlign",
+	"EnableVertPadding",
+	"EnableWidth",
+	"ForegroundColor",
+	"Height",
+	"HorizPadding",
+	"PreviewGrid",
+	"PreviewGridHolder",
+	"QuickBorders",
+	"TextAlign",
+	"TextVAlign",
+	"VertPadding",
+	"Width"
+];
 
 //
 // this rather ugly variable describes the "quick border" buttons.  It is an

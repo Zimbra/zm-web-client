@@ -87,7 +87,8 @@ function(searchResult, bIsGalSearch, folderId) {
 		: ZmContactListController.SEARCH_TYPE_CANONICAL;
 	this._folderId = folderId;
 
-	if (searchResult instanceof ZmList) {
+	// use toString() here due to flakiness of 'instanceof' for ZmContactList
+	if (searchResult instanceof ZmContactList) {
 		this._list = searchResult;			// set as canonical list of contacts
 		this._list._isShared = false;		// this list is not a search of shared items
 		if (!this._currentView)
@@ -143,8 +144,7 @@ function(view, force, initialized) {
 		if (!initialized)
 			this._initializeAlphabetBar(view);
 
-		if (this._setView(view, elements, true))
-			this._setViewMenu(view);
+		this._setView(view, elements, true);
 
 		this._resetNavToolBarButtons(view);
 
@@ -225,14 +225,10 @@ function(actionCode) {
 
 ZmContactListController.prototype._standardToolBarOps =
 function() {
-	var list = [ZmOperation.NEW_MENU];
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.DELETE, ZmOperation.MOVE);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT_MENU);
-	return list;
+	return [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU,
+			ZmOperation.SEP,
+			ZmOperation.DELETE, ZmOperation.MOVE,
+			ZmOperation.PRINT_MENU];
 };
 
 ZmContactListController.prototype._getToolBarOps =
@@ -245,7 +241,7 @@ function() {
 
 ZmContactListController.prototype._getActionMenuOps =
 function() {
-	var list = this._contactOps();
+	var list = this._participantOps();
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
@@ -278,6 +274,21 @@ function(num) {
 ZmContactListController.prototype._getMoveDialogTitle =
 function(num) {
 	return (num == 1) ? ZmMsg.AB_MOVE_CONTACT : ZmMsg.AB_MOVE_CONTACTS;
+};
+
+ZmContactListController.prototype._getMoveParams =
+function() {
+	var params = ZmListController.prototype._getMoveParams.call(this);
+	var omit = {};
+	var folders = this._appCtxt.getFolderTree().getByType(ZmOrganizer.ADDRBOOK);
+	for (var i = 0; i < folders.length; i++) {
+		var folder = folders[i];
+		if (folder.link && folder.isReadOnly()) {
+			omit[folder.id] = true;
+		}
+	}
+	params.omit = omit;
+	return params;
 };
 
 ZmContactListController.prototype._initializeToolBar =
@@ -339,7 +350,8 @@ function(view) {
 		menu = new ZmPopupMenu(appToolbar.getViewButton());
 		for (var i = 0; i < ZmContactListController.VIEWS.length; i++) {
 			var id = ZmContactListController.VIEWS[i];
-			var mi = menu.createMenuItem(id, ZmContactListController.ICON[id], ZmMsg[ZmContactListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
+			var mi = menu.createMenuItem(id, {image:ZmContactListController.ICON[id], text:ZmMsg[ZmContactListController.MSG_KEY[id]],
+											  style:DwtMenuItem.RADIO_STYLE});
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 			if (id == view)
@@ -357,7 +369,7 @@ function(view) {
 	printButton.setMenu(menu);
 
 	var id = ZmOperation.PRINT_CONTACTLIST;
-	var mi = menu.createMenuItem(id, ZmOperation.getProp(id, "image"), ZmMsg[ZmOperation.getProp(id, "textKey")]);
+	var mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
 	mi.setData(ZmOperation.MENUITEM_ID, id);
 	mi.addSelectionListener(this._listeners[ZmOperation.PRINT]);
 };
@@ -451,8 +463,9 @@ function(ev) {
 	else if (ev.detail == DwtListView.ITEM_DBL_CLICKED)
 	{
 		var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(ev.item.folderId);
-		if (!this.isGalSearch() && (folder == null || !folder.isReadOnly()))
-			this._app.getContactController().show(ev.item);
+		if (!this.isGalSearch() && (folder == null || !folder.isReadOnly())) {
+			AjxDispatcher.run("GetContactController").show(ev.item);
+		}
 	}
 };
 
@@ -464,7 +477,7 @@ function(ev) {
 	var email = contact.isGroup()
 		? contact.getGroupMembers().good : contact.getEmail();
 	this._actionEv.address = contact.isGroup()
-		? email : new ZmEmailAddress(email);
+		? email : new AjxEmailAddress(email);
 	// enable/disable New Email menu item per valid email found for this contact
 	var enableNewEmail = email != null && this._listView[this._currentView].getSelectionCount() == 1;
 	var actionMenu = this.getActionMenu();
@@ -505,49 +518,45 @@ function(ev) {
 ZmContactListController.prototype._editListener =
 function(ev) {
 	var contact = this._listView[this._currentView].getSelection()[0];
-	this._app.getContactController().show(contact, false);
+	AjxDispatcher.run("GetContactController").show(contact, false);
 };
 
 ZmContactListController.prototype._printListener =
 function(ev) {
-	if (!this._printView)
-		this._printView = new ZmPrintView(this._appCtxt);
-
+	var printView = this._appCtxt.getPrintView();
 	if (this._folderId && !this._list._isShared) {
 		var subList = this._list.getSubList(0, null, this._folderId);
-		this._printView.renderType(ZmItem.CONTACT, subList);
+		printView.renderHtml(ZmContactCardsView.getPrintHtml(subList));
 	} else if ((this._searchType & ZmContactListController.SEARCH_TYPE_ANYWHERE) != 0) {
-		var canonicalList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
-		this._printView.render(canonicalList);
+		printView.render(AjxDispatcher.run("GetContacts"));
 	} else {
-		this._printView.render(this._list);
+		printView.render(this._list);
 	}
 };
 
 ZmContactListController.prototype._printContactListener =
 function(ev) {
-	if (!this._printView)
-		this._printView = new ZmPrintView(this._appCtxt);
-
+	var printView = this._appCtxt.getPrintView();
 	var contacts = this._listView[this._currentView].getSelection();
 	if (contacts.length == 1) {
 		var contact = contacts[0];
 		if (contact) {
 			if (contact.isLoaded()) {
-				this._printView.render(contact);
+				printView.render(contact);
 			} else {
 				var callback = new AjxCallback(this, this._handleResponsePrintLoad);
 				contact.load(callback);
 			}
 		}
 	} else {
-		this._printView.renderType(ZmItem.CONTACT, contacts);
+		var html = ZmContactCardsView.getPrintHtml(AjxVector.fromArray(contacts));
+		printView.renderHtml(html);
 	}
 };
 
 ZmContactListController.prototype._handleResponsePrintLoad =
 function(result, contact) {
-	this._printView.render(contact);
+	this._appCtxt.getPrintView().render(contact);
 };
 
 // Returns the type of item in the underlying list

@@ -1,5 +1,5 @@
 <%@ page session="false" %>
-<!--
+<%--
 ***** BEGIN LICENSE BLOCK *****
 Version: ZPL 1.2
 
@@ -22,31 +22,25 @@ All Rights Reserved.
 Contributor(s):
 
 ***** END LICENSE BLOCK *****
--->
+--%>
 <%
-   String vers = (String)request.getAttribute("version");
-   String ext = (String)request.getAttribute("fileExtension");
-	String contextPath = request.getContextPath();
-	if(contextPath.equals("/")) {
-		contextPath = "";
-	}
-   if (vers == null){
-      vers = "";
-   }
-   if (ext == null){
-      ext = "";
-   }
+    String contextPath = request.getContextPath();
+    if (contextPath.equals("/")) contextPath = "";
+
+    String mode = (String)request.getAttribute("mode");
+    boolean inDevMode = mode != null && mode.equals("mjsf");
+
+    String vers = (String)request.getAttribute("version");
+    if (vers == null) vers = "";
+
+    String ext = (String)request.getAttribute("fileExtension");
+    if (ext == null) ext = "";
 %>
-<!-- BEGIN SCRIPT BLOCK -->
 <!-- bootstrap classes -->
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/boot/AjxEnv.js"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/boot/AjxCallback.js"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/boot/AjxLoader.js"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/boot/AjxPackage.js"></script>
-<script type="text/javascript" src="<%= contextPath %>/js/ajax/boot/AjxTemplate.js"></script>
+<script type="text/javascript" src='<%=contextPath%>/js/Boot_all.js<%=ext%>?v=<%=vers%>'></script>
+
 <script type="text/javascript">
 AjxPackage.setBasePath("<%=contextPath%>/js");
-AjxPackage.setExtension(".js<%=ext%>");
+AjxPackage.setExtension("<%= inDevMode ? "" : "_all" %>.js<%=ext%>");
 AjxPackage.setQueryString("v=<%=vers%>");
 </script>
-<!-- END SCRIPT BLOCK -->
