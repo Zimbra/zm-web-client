@@ -9,9 +9,10 @@
 <app:handleError>
     <app:searchTitle var="title" context="${context}"/>
     <fmt:message key="noSubject" var="noSubject"/>
+    <fmt:message var="unknownRecipient" key="unknownRecipient"/>
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
     <zm:getMailbox var="mailbox"/>
-
+    <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
     <c:if test="${false and mailbox.prefs.readingPaneEnabled}">
         <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="true" neuterimages="${empty param.xim}"/>
         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
@@ -41,7 +42,7 @@
                             <th width=10%>
                                 <zm:newSortUrl var="fromSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'nameAsc' ? 'nameDesc' : 'nameAsc'}"/>
                             <a href="${fromSortUrl}">
-                                <fmt:message key="from"/>
+                                <fmt:message key="${useTo ? 'to' : 'from'}"/>
                             </a>
                             <th width=1% nowrap><app:img src="common/Attachment.gif" altkey="ALT_ATTACHMENT"/>
                             <th nowrap>
@@ -78,7 +79,7 @@
                                      <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                 </c:if>
                                 <td class='MsgStatusImg' align=center><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
-                                <td><%-- allow wrap --%> <a href="${currentItemUrl}"><c:out value="${hit.messageHit.displaySender}" default="<Unknown>"/></a></td>
+                                <td><%-- allow wrap --%> <a href="${currentItemUrl}">${fn:escapeXml(empty hit.messageHit.displaySender ? unknownRecipient :  hit.messageHit.displaySender)}</a></td>
                                 <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                 <td > <%-- allow this col to wrap --%>
 

@@ -12,6 +12,7 @@
     <fmt:message var="unknownRecipient" key="unknownRecipient"/>
     <fmt:message var="unknownSubject" key="noSubject"/>
     <zm:getMailbox var="mailbox"/>
+    <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
 </app:handleError>
 <app:view title="${title}" selected='mail' folders="true" tags="true" searches="true" context="${context}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
@@ -31,7 +32,7 @@
                                 <c:if test="${mailbox.features.tagging}">
                                 <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG_TAG"/>
                                 </c:if>
-                                <th width=10% nowrap><fmt:message key="from"/>
+                                <th width=10% nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/>
                                 <th class='Img' nowrap><app:img src="common/Attachment.gif" altkey="ALT_ATTACHMENT"/>
                                 <th nowrap>
                                     <zm:newSortUrl var="subjectSortUrl" value="/h/search" context="${context}" sort="${context.ss eq 'subjAsc' ? 'subjDesc' : 'subjAsc'}"/>
