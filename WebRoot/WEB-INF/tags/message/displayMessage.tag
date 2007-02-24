@@ -16,11 +16,8 @@
 <c:set var="body" value="${message.body}"/>
 
 <c:set var="theBody">
-    <c:if test="${body.contentType eq 'text/html'}">
-        ${message.bodyHtmlContent}
-    </c:if>
-    <c:if test="${!(body.contentType eq 'text/html')}">
-        ${body.textContentAsHtml}
+    <c:if test="${body.isTextHtml or body.isTextPlain}">
+          ${zm:getPartHtmlContent(body, message)}
     </c:if>
 </c:set>
 
@@ -222,19 +219,21 @@
     </c:if>
     <tr>
         <td class=MsgBody>
-            <c:if test="${body.contentType eq 'text/html'}">
-                <c:url var="iframeUrl" value="/h/imessage">
-                    <c:param name="id" value="${message.id}"/>
-                    <c:param name="part" value="${message.partName}"/>
-                    <c:param name="xim" value="${param.xim}"/>
-                </c:url>
-                <iframe width="100%" height="600px" src="${iframeUrl}" frameborder="0" scrolling="auto">
+            <c:choose>
+                <c:when test="${body.isTextHtml}">
+                    <c:url var="iframeUrl" value="/h/imessage">
+                        <c:param name="id" value="${message.id}"/>
+                        <c:param name="part" value="${message.partName}"/>
+                        <c:param name="xim" value="${param.xim}"/>
+                    </c:url>
+                    <iframe width="100%" height="600px" src="${iframeUrl}" frameborder="0" scrolling="auto">
 
-                </iframe>
-            </c:if>
-            <c:if test="${!(body.contentType eq 'text/html')}">
-                ${body.textContentAsHtml}
-            </c:if>
+                    </iframe>
+                </c:when>
+                <c:otherwise>
+                    ${theBody}
+                </c:otherwise>
+            </c:choose>
             <c:if test="${not empty message.attachments}">
                 <hr/>
                 <a name="attachments${message.partName}"/>

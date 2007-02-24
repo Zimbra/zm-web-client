@@ -10,18 +10,12 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <zm:getMessage var="message" id="${param.id}" markread="true"  part="${param.part}" neuterimages="${empty param.xim}"/>
-    <%--compute body up front, so attachments refereneced in multipart/related don't show up --%>
     <c:set var="body" value="${message.body}"/>
 </app:handleError>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<c:if test="${body.contentType eq 'text/html'}">
-    <html>
-    <body>
-        ${message.bodyHtmlContent}
-    </body>
-    </html>
-</c:if>
-<c:if test="${!(body.contentType eq 'text/html')}">
-    ${body.textContentAsHtml}
-</c:if>
+<html>
+<body>
+${zm:getPartHtmlContent(message.body, message)}
+</body>
+</html>
