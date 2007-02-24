@@ -94,8 +94,9 @@ function() {
 	var id;
 	for (var i = 0; i < buttons.length; i++) {
 		id = buttons[i];
-		if (id > 0)
+		if (this._buttonListeners[id]) {
 			this._toolbar.addSelectionListener(id, this._buttonListeners[id]);
+		}
 	}
 	this._resetOperations(this._toolbar, 0);
 };
