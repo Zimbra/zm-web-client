@@ -103,7 +103,10 @@ ZmOperation.registerOp("MODIFY_SEARCH", {textKey:"modifySearch", image:"SearchFo
 ZmOperation.registerOp("MOUNT_FOLDER", {textKey:"mountFolder", image:"Folder"}, ZmSetting.SHARING_ENABLED);
 ZmOperation.registerOp("MOVE", {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder"});
 ZmOperation.registerOp("NEW_FOLDER", {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder"}, ZmSetting.USER_FOLDERS_ENABLED);
-ZmOperation.registerOp("NEW_MENU", {textKey:"_new"});
+ZmOperation.registerOp("NEW_MENU", {textKey:"_new"}, null,
+	AjxCallback.simpleClosure(function(parent) {
+		ZmOperation.addDeferredMenu(ZmOperation.addNewMenu, parent);
+	}));
 ZmOperation.registerOp("NEW_TAG", {textKey:"newTag", tooltipKey:"newTagTooltip", image:"NewTag"}, ZmSetting.TAGGING_ENABLED);
 ZmOperation.registerOp("PAGE_BACK", {image:"LeftArrow"});
 ZmOperation.registerOp("PAGE_DBL_BACK", {image:"LeftDoubleArrow"});
@@ -127,8 +130,14 @@ ZmOperation.registerOp("SHOW_ALL_MENU", {textKey:"showAllItemTypes", image:"Glob
 ZmOperation.registerOp("SPELL_CHECK", {textKey:"spellCheck", image:"SpellCheck"});
 ZmOperation.registerOp("SYNC", {textKey:"reload", image:"Refresh"});
 ZmOperation.registerOp("TAG", null, ZmSetting.TAGGING_ENABLED);
-ZmOperation.registerOp("TAG_COLOR_MENU", {textKey:"tagColor"}, ZmSetting.TAGGING_ENABLED);
-ZmOperation.registerOp("TAG_MENU", {textKey:"tag", tooltipKey:"tagTooltip", image:"Tag"}, ZmSetting.TAGGING_ENABLED);
+ZmOperation.registerOp("TAG_COLOR_MENU", {textKey:"tagColor"}, ZmSetting.TAGGING_ENABLED,
+	AjxCallback.simpleClosure(function(parent) {
+		ZmOperation.addDeferredMenu(ZmOperation.addColorMenu, parent);
+	}));
+ZmOperation.registerOp("TAG_MENU", {textKey:"tag", tooltipKey:"tagTooltip", image:"Tag"}, ZmSetting.TAGGING_ENABLED,
+	AjxCallback.simpleClosure(function(parent) {
+		ZmOperation.addDeferredMenu(ZmOperation.addTagMenu, parent);
+	}));
 // placeholder for toolbar text
 ZmOperation.registerOp("TEXT");
 // XXX: need new icon?
@@ -261,23 +270,13 @@ function(parent, id, opHash, index) {
 	} else {
 		opHash[id] = parent.createOp(id, opDesc.text, opDesc.image, opDesc.disImage, opDesc.enabled, opDesc.tooltip, index);
 	}
-	if (id == ZmOperation.NEW_MENU) {
-		ZmOperation.addDeferredMenu(ZmOperation.addNewMenu, opHash[id]);
-	} else if (id == ZmOperation.TAG_MENU) {
-		ZmOperation.addDeferredMenu(ZmOperation.addTagMenu, opHash[id]);
-	} else if (id == ZmOperation.TAG_COLOR_MENU) {
-		ZmOperation.addDeferredMenu(ZmOperation.addColorMenu, opHash[id]);
-	} else if (id == ZmOperation.IM_PRESENCE_MENU) {
-		ZmOperation.addImPresenceMenu(parent, opHash);
-//		ZmOperation.addDeferredMenu(ZmOperation.addImPresenceMenu, opHash[id]);
-	} else if (id == ZmOperation.REPLY_MENU) {
-		ZmOperation.addDeferredMenu(ZmOperation.addReplyMenu, opHash[id]);
-	} else if (id == ZmOperation.FORWARD_MENU) {
-		ZmOperation.addDeferredMenu(ZmOperation.addForwardMenu, opHash[id]);
-	} else if (id == ZmOperation.INVITE_REPLY_MENU) {
-		ZmOperation.addDeferredMenu(ZmOperation.addInviteReplyMenu, opHash[id]);
-	} else if (id == ZmOperation.CAL_VIEW_MENU) {
-		ZmOperation.addDeferredMenu(ZmOperation.addCalViewMenu, opHash[id]);
+	var callback = ZmOperation.CALLBACK[id];
+	if (callback) {
+		if (callback.run) {
+			callback.run(opHash[id]);
+		} else {
+			callback(opHash[id]);
+		}
 	}
 };
 
@@ -416,83 +415,5 @@ function(parent, dialog) {
 		var mi = menu.createMenuItem(color, ZmTag.COLOR_ICON[color], ZmOrganizer.COLOR_TEXT[color]);
 		mi.setData(ZmOperation.MENUITEM_ID, color);
 	}
-	return menu;
-}
-
-/**
-* Adds a "Reply" submenu for replying to sender or all.
-*
-* @param parent		parent widget (a toolbar or action menu)
-*/
-ZmOperation.addReplyMenu =
-function(parent) {
-	var list = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
-	var menu = new ZmActionMenu({parent:parent, menuItems:list});
-	parent.setMenu(menu);
-	return menu;
-}
-
-/**
-* Adds a "Forward" submenu for forwarding inline or as attachment
-*
-* @param parent		parent widget (a toolbar or action menu)
-*/
-ZmOperation.addForwardMenu =
-function(parent) {
-	var list = [ZmOperation.FORWARD_INLINE, ZmOperation.FORWARD_ATT];
-	var menu = new ZmActionMenu({parent:parent, menuItems:list});
-	parent.setMenu(menu);
-	return menu;
-};
-
-/**
- * Adds an invite actions submenu for accept/decline/tentative.
- *
- * @param parent		parent widget (a toolbar or action menu)
- */
-ZmOperation.addInviteReplyMenu =
-function(parent) {
-	var list = [ZmOperation.EDIT_REPLY_ACCEPT, ZmOperation.EDIT_REPLY_DECLINE, ZmOperation.EDIT_REPLY_TENTATIVE];
-	var menu = new ZmActionMenu({parent:parent, menuItems:list});
-	parent.setMenu(menu);
-	return menu;
-};
-
-
-/**
- * Adds an invite actions submenu for accept/decline/tentative.
- *
- * @param parent		parent widget (a toolbar or action menu)
- */
-ZmOperation.addCalViewMenu =
-function(parent) {
-	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
-	var menu = new ZmActionMenu({parent:parent, menuItems:list});
-	parent.setMenu(menu);
-	return menu;
-};
-
-ZmOperation.addImPresenceMenu =
-function(parent, opHash) {
-	var list = [ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
-                ZmOperation.IM_PRESENCE_DND, ZmOperation.IM_PRESENCE_AWAY, ZmOperation.IM_PRESENCE_XA,
-                ZmOperation.IM_PRESENCE_INVISIBLE];
-
-    var button = opHash[ZmOperation.IM_PRESENCE_MENU];
-	var menu = new ZmPopupMenu(button);
-//	var menu = new ZmPopupMenu(parent);
-//	var menu = new ZmActionMenu(parent, list);
-
-
-	for (var i = 0; i < list.length; i++) {
-		var op = list[i];
-		var mi = menu.createMenuItem(op, ZmOperation.getProp(op, "image"), ZmMsg[ZmOperation.getProp(op, "textKey")], null, true, DwtMenuItem.RADIO_STYLE);
-		mi.setData(ZmOperation.MENUITEM_ID, op);
-		mi.setData(ZmOperation.KEY_ID, op);		
-		if (op == ZmOperation.IM_PRESENCE_OFFLINE) mi.setChecked(true, true);
-	}
-
-//	parent.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
-	button.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 	return menu;
 };

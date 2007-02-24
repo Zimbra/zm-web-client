@@ -36,7 +36,10 @@ function ZmImApp(appCtxt, container) {
 	ZmOperation.registerOp("IM_PRESENCE_CHAT", {textKey:"imStatusChat", image:"ImFree2Chat"});
 	ZmOperation.registerOp("IM_PRESENCE_DND", {textKey:"imStatusDND", image:"ImDnd"});
 	ZmOperation.registerOp("IM_PRESENCE_INVISIBLE", {textKey:"imStatusInvisible", image:"ImInvisible"});
-	ZmOperation.registerOp("IM_PRESENCE_MENU", {textKey:"imPresence"});
+	ZmOperation.registerOp("IM_PRESENCE_MENU", {textKey:"imPresence"}, null,
+		AjxCallback.simpleClosure(function(parent) {
+			ZmImApp.addImPresenceMenu(parent);
+	}));
 	ZmOperation.registerOp("IM_PRESENCE_OFFLINE", {textKey:"imStatusOffline", image:"RoundMinusDis"});
 	ZmOperation.registerOp("IM_PRESENCE_ONLINE", {textKey:"imStatusOnline", image:"ImAvailable"});
 	ZmOperation.registerOp("IM_PRESENCE_XA", {textKey:"imStatusExtAway", image:"ImExtendedAway"});
@@ -179,4 +182,24 @@ ZmImApp.prototype.startFlashingIcon = function() {
 
 ZmImApp.prototype.stopFlashingIcon = function() {
 	this._appCtxt.getAppController().getAppChooserButton("IM").stopFlashing();
+};
+
+ZmImApp.addImPresenceMenu =
+function(parent) {
+	var list = [ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
+                ZmOperation.IM_PRESENCE_DND, ZmOperation.IM_PRESENCE_AWAY, ZmOperation.IM_PRESENCE_XA,
+                ZmOperation.IM_PRESENCE_INVISIBLE];
+
+	var menu = new ZmPopupMenu(parent);
+
+	for (var i = 0; i < list.length; i++) {
+		var op = list[i];
+		var mi = menu.createMenuItem(op, ZmOperation.getProp(op, "image"), ZmMsg[ZmOperation.getProp(op, "textKey")], null, true, DwtMenuItem.RADIO_STYLE);
+		mi.setData(ZmOperation.MENUITEM_ID, op);
+		mi.setData(ZmOperation.KEY_ID, op);		
+		if (op == ZmOperation.IM_PRESENCE_OFFLINE) mi.setChecked(true, true);
+	}
+
+	parent.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
+	return menu;
 };

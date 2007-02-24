@@ -191,7 +191,7 @@ function(actionCode) {
 			var app = this._appCtxt.getAppController().getActiveApp();
 			var newActionCode = ZmApp.NEW_ACTION_CODE[app];
 			if (newActionCode) {
-				var op = ZmApp.ACTION_CODES_OP[newActionCode];
+				var op = ZmApp.ACTION_CODES[newActionCode];
 				if (op) {
 					this._appCtxt.getApp(app).handleOp(op);
 					return true;
@@ -202,7 +202,7 @@ function(actionCode) {
 	
 		case ZmKeyMap.NEW_FOLDER:
 		case ZmKeyMap.NEW_TAG:
-			var op = ZmApp.ACTION_CODES_OP[actionCode];
+			var op = ZmApp.ACTION_CODES[actionCode];
 			if (op) {
 				this._newListener(null, op);
 			}

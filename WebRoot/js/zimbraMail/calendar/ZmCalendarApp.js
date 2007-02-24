@@ -34,7 +34,10 @@ function ZmCalendarApp(appCtxt, container) {
 	AjxDispatcher.registerMethod("GetApptComposeController", ["CalendarCore", "Calendar"], new AjxCallback(this, this.getApptComposeController));
 
 	ZmOperation.registerOp("CAL_REFRESH", {textKey:"refresh", tooltipKey:"calRefreshTooltip", image:"Refresh"});
-	ZmOperation.registerOp("CAL_VIEW_MENU", {textKey:"view", image:"Appointment"});
+	ZmOperation.registerOp("CAL_VIEW_MENU", {textKey:"view", image:"Appointment"}, null,
+		AjxCallback.simpleClosure(function(parent) {
+			ZmOperation.addDeferredMenu(ZmCalendarApp.addCalViewMenu, parent);
+	}));
 	ZmOperation.registerOp("DAY_VIEW", {textKey:"viewDay", tooltipKey:"viewDayTooltip", image:"DayView"});
 	ZmOperation.registerOp("EDIT_REPLY_ACCEPT", {textKey:"replyAccept", image:"Check"});
 	ZmOperation.registerOp("EDIT_REPLY_CANCEL");
@@ -42,7 +45,10 @@ function ZmCalendarApp(appCtxt, container) {
 	ZmOperation.registerOp("EDIT_REPLY_TENTATIVE", {textKey:"replyTentative", image:"QuestionMark"});
 	ZmOperation.registerOp("INVITE_REPLY_ACCEPT", {textKey:"editReply", image:"Check"});
 	ZmOperation.registerOp("INVITE_REPLY_DECLINE", {textKey:"editReply", image:"Cancel"});
-	ZmOperation.registerOp("INVITE_REPLY_MENU", {textKey:"editReply", image:"Reply"});
+	ZmOperation.registerOp("INVITE_REPLY_MENU", {textKey:"editReply", image:"Reply"}, null,
+		AjxCallback.simpleClosure(function(parent) {
+			ZmOperation.addDeferredMenu(ZmCalendarApp.addInviteReplyMenu, parent);
+	}));
 	ZmOperation.registerOp("INVITE_REPLY_TENTATIVE", {textKey:"editReply", image:"QuestionMark"});
 	ZmOperation.registerOp("MONTH_VIEW", {textKey:"viewMonth", tooltipKey:"viewMonthTooltip", image:"MonthView"});
 	ZmOperation.registerOp("MOUNT_CALENDAR", {textKey:"mountCalendar", image:"GroupSchedule"});
@@ -448,4 +454,31 @@ function(parent, name, color, url, excludeFb) {
 
 	var oc = this._appCtxt.getOverviewController();
 	oc.getTreeController(ZmOrganizer.CALENDAR)._doCreate(parent, name, color, url, excludeFb);
+};
+
+/**
+ * Adds an invite actions submenu for accept/decline/tentative.
+ *
+ * @param parent		parent widget (a toolbar or action menu)
+ */
+ZmCalendarApp.addInviteReplyMenu =
+function(parent) {
+	var list = [ZmOperation.EDIT_REPLY_ACCEPT, ZmOperation.EDIT_REPLY_DECLINE, ZmOperation.EDIT_REPLY_TENTATIVE];
+	var menu = new ZmActionMenu({parent:parent, menuItems:list});
+	parent.setMenu(menu);
+	return menu;
+};
+
+
+/**
+ * Adds an invite actions submenu for accept/decline/tentative.
+ *
+ * @param parent		parent widget (a toolbar or action menu)
+ */
+ZmCalendarApp.addCalViewMenu =
+function(parent) {
+	var list = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
+	var menu = new ZmActionMenu({parent:parent, menuItems:list});
+	parent.setMenu(menu);
+	return menu;
 };

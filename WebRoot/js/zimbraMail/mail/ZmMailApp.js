@@ -43,23 +43,18 @@ function ZmMailApp(appCtxt, container, parentController) {
 	ZmOperation.registerOp("DELETE_MENU", {tooltipKey:"deleteTooltip", image:"Delete"});
 	ZmOperation.registerOp("DETACH_COMPOSE", {tooltipKey:"detachTooltip", image:"OpenInNewWindow"});
 	ZmOperation.registerOp("DRAFT", null, ZmSetting.SAVE_DRAFT_ENABLED);
-	ZmOperation.registerOp("EDIT_REPLY_ACCEPT", {textKey:"replyAccept", image:"Check"});
-	ZmOperation.registerOp("EDIT_REPLY_CANCEL");
-	ZmOperation.registerOp("EDIT_REPLY_DECLINE", {textKey:"replyDecline", image:"Cancel"});
-	ZmOperation.registerOp("EDIT_REPLY_TENTATIVE", {textKey:"replyTentative", image:"QuestionMark"});
 	ZmOperation.registerOp("FORWARD", {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward"}, ZmSetting.MAIL_FORWARDING_ENABLED);
 	ZmOperation.registerOp("FORWARD_ATT", {textKey:"forwardAtt", tooltipKey:"forwardAtt", image:"Forward"}, ZmSetting.MAIL_FORWARDING_ENABLED);
 	ZmOperation.registerOp("FORWARD_INLINE", {textKey:"forwardInline", tooltipKey:"forwardTooltip", image:"Forward"}, ZmSetting.MAIL_FORWARDING_ENABLED);
-	ZmOperation.registerOp("FORWARD_MENU", {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward"}, ZmSetting.MAIL_FORWARDING_ENABLED);
+	ZmOperation.registerOp("FORWARD_MENU", {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward"}, ZmSetting.MAIL_FORWARDING_ENABLED,
+		AjxCallback.simpleClosure(function(parent) {
+			ZmOperation.addDeferredMenu(ZmMailApp.addForwardMenu, parent);
+	}));
 	ZmOperation.registerOp("INC_ATTACHMENT", {textKey:"includeMenuAttachment"});
 	ZmOperation.registerOp("INC_NONE", {textKey:"includeMenuNone"});
 	ZmOperation.registerOp("INC_NO_PREFIX", {textKey:"includeMenuNoPrefix"});
 	ZmOperation.registerOp("INC_PREFIX", {textKey:"includeMenuPrefix"});
 	ZmOperation.registerOp("INC_SMART", {textKey:"includeMenuSmart"});
-	ZmOperation.registerOp("INVITE_REPLY_ACCEPT", {textKey:"editReply", image:"Check"});
-	ZmOperation.registerOp("INVITE_REPLY_DECLINE", {textKey:"editReply", image:"Cancel"});
-	ZmOperation.registerOp("INVITE_REPLY_MENU", {textKey:"editReply", image:"Reply"});
-	ZmOperation.registerOp("INVITE_REPLY_TENTATIVE", {textKey:"editReply", image:"QuestionMark"});
 	ZmOperation.registerOp("MARK_READ", {textKey:"markAsRead", image:"ReadMessage"});
 	ZmOperation.registerOp("MARK_UNREAD", {textKey:"markAsUnread", image:"UnreadMessage"});
 	ZmOperation.registerOp("NEW_MESSAGE", {textKey:"newEmail", tooltipKey:"newMessageTooltip", image:"NewMessage"});
@@ -69,7 +64,10 @@ function ZmMailApp(appCtxt, container, parentController) {
 	ZmOperation.registerOp("REPLY_ALL", {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll"});
 	ZmOperation.registerOp("REPLY_CANCEL");
 	ZmOperation.registerOp("REPLY_DECLINE", {textKey:"replyDecline", image:"Cancel"});
-	ZmOperation.registerOp("REPLY_MENU", {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply"}, ZmSetting.REPLY_MENU_ENABLED);
+	ZmOperation.registerOp("REPLY_MENU", {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply"}, ZmSetting.REPLY_MENU_ENABLED,
+		AjxCallback.simpleClosure(function(parent) {
+			ZmOperation.addDeferredMenu(ZmMailApp.addReplyMenu, parent);
+	}));
 	ZmOperation.registerOp("REPLY_MODIFY");
 	ZmOperation.registerOp("REPLY_NEW_TIME", {textKey:"replyNewTime", image:"NewTime"});
 	ZmOperation.registerOp("REPLY_TENTATIVE", {textKey:"replyTentative", image:"QuestionMark"});
@@ -526,3 +524,30 @@ function(notify) {
 	
 	return notify;
 };
+
+/**
+* Adds a "Reply" submenu for replying to sender or all.
+*
+* @param parent		parent widget (a toolbar or action menu)
+*/
+ZmMailApp.addReplyMenu =
+function(parent) {
+	var list = [ZmOperation.REPLY, ZmOperation.REPLY_ALL];
+	var menu = new ZmActionMenu({parent:parent, menuItems:list});
+	parent.setMenu(menu);
+	return menu;
+};
+
+/**
+* Adds a "Forward" submenu for forwarding inline or as attachment
+*
+* @param parent		parent widget (a toolbar or action menu)
+*/
+ZmMailApp.addForwardMenu =
+function(parent) {
+	var list = [ZmOperation.FORWARD_INLINE, ZmOperation.FORWARD_ATT];
+	var menu = new ZmActionMenu({parent:parent, menuItems:list});
+	parent.setMenu(menu);
+	return menu;
+};
+

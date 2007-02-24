@@ -53,7 +53,7 @@ ZmContact = function(appCtxt, id, list, type) {
 	ZmItem.call(this, appCtxt, type, id, list);
 
 	this.attr = {};
-	this.isGal = this.list.isGal;
+	this.isGal = (this.list && this.list.isGal);
 
 	this.participants = new AjxVector(); // XXX: need to populate this guy (see ZmConv)
 };
