@@ -32,11 +32,9 @@
     <%-- blah, optimize this later --%>
     <c:if test="${not empty requestScope.idsMarkedUnread and not message.isUnread}">
         <c:forEach var="unreadid" items="${requestScope.idsMarkedUnread}">
-            <!-- unreadid ${unreadid} -->
             <c:if test="${unreadid eq message.id}">
                 <zm:markMessageRead var="mmrresult" id="${message.id}" read="${false}"/>
                 <c:set var="leaveunread" value="${true}"/>
-                <!-- leaveunread ${leaveunread} -->
             </c:if>
         </c:forEach>
     </c:if>
