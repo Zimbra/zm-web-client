@@ -9,6 +9,9 @@
 <zm:requirePost/>
 <zm:getMailbox var="mailbox"/>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
+<c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
+<c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
+
 <c:choose>
     <c:when test="${!empty param.actionCompose}">
         <jsp:forward page="/h/compose"/>
@@ -84,25 +87,25 @@
                     </fmt:message>
                 </app:status>
             </c:when>
-            <c:when test="${param.actionOp eq 'unread' or param.actionOp eq 'read'}">
-                <zm:markConversationRead var="result" id="${ids}" read="${param.actionOp eq 'read'}"/>
+            <c:when test="${actionOp eq 'unread' or actionOp eq 'read'}">
+                <zm:markConversationRead var="result" id="${ids}" read="${actionOp eq 'read'}"/>
                 <app:status>
-                    <fmt:message key="${param.actionOp eq 'read' ? 'actionConvMarkedRead' : 'actionConvMarkedUnread'}">
+                    <fmt:message key="${actionOp eq 'read' ? 'actionConvMarkedRead' : 'actionConvMarkedUnread'}">
                         <fmt:param value="${result.idCount}"/>
                     </fmt:message>
                 </app:status>
             </c:when>            
-            <c:when test="${param.actionOp eq 'flag' or param.actionOp eq 'unflag'}">
-                <zm:flagConversation var="result" id="${ids}" flag="${param.actionOp eq 'flag'}"/>
+            <c:when test="${actionOp eq 'flag' or actionOp eq 'unflag'}">
+                <zm:flagConversation var="result" id="${ids}" flag="${actionOp eq 'flag'}"/>
                 <app:status>
-                    <fmt:message key="${param.actionOp eq 'flag' ? 'actionConvFlag' : 'actionConvUnflag'}">
+                    <fmt:message key="${actionOp eq 'flag' ? 'actionConvFlag' : 'actionConvUnflag'}">
                         <fmt:param value="${result.idCount}"/>
                     </fmt:message>
                 </app:status>
             </c:when>
-            <c:when test="${fn:startsWith(param.actionOp, 't:') or fn:startsWith(param.actionOp, 'u:')}">
-                <c:set var="tag" value="${fn:startsWith(param.actionOp, 't')}"/>
-                <c:set var="tagid" value="${fn:substring(param.actionOp, 2, -1)}"/>
+            <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
+                <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
+                <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
                 <zm:tagConversation tagid="${tagid}"var="result" id="${ids}" tag="${tag}"/>
                 <app:status>
                     <fmt:message key="${tag ? 'actionConvTag' : 'actionConvUntag'}">
@@ -111,8 +114,8 @@
                     </fmt:message>
                 </app:status>
             </c:when>
-            <c:when test="${fn:startsWith(param.folderId, 'm:')}">
-                <c:set var="folderid" value="${fn:substring(param.folderId, 2, -1)}"/>
+            <c:when test="${fn:startsWith(folderId, 'm:')}">
+                <c:set var="folderid" value="${fn:substring(folderId, 2, -1)}"/>
                 <zm:moveConversation folderid="${folderid}"var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionConvMoved">                    
@@ -122,7 +125,7 @@
                 </app:status>
             </c:when>
             <c:when test="${!empty param.actionMove}">
-                <app:status style="Warning"><fmt:message key="actionNoFolderSelected"/></app:status>                                
+                <app:status style="Warning"><fmt:message key="actionNoFolderSelected"/></app:status>
             </c:when>
             <c:otherwise>
                 <app:status style="Warning"><fmt:message key="actionNoActionSelected"/></app:status>
