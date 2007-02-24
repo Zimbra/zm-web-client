@@ -26,7 +26,7 @@
 function ZmTasksApp(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.TASKS, appCtxt, container);
-	
+
 	AjxDispatcher.setPackageLoadFunction("Tasks", new AjxCallback(this, this._postLoad, ZmOrganizer.TASKS));
 	AjxDispatcher.registerMethod("GetTaskListController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskListController));
 	AjxDispatcher.registerMethod("GetTaskController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskController));
@@ -43,13 +43,19 @@ function ZmTasksApp(appCtxt, container) {
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmTask",
 						 node:			"task",
-						 organizer:		ZmOrganizer.TASKS
+						 organizer:		ZmOrganizer.TASKS,
+						 searchType:	"task",
+						 resultsList:
+		   AjxCallback.simpleClosure(function(search) {
+			   AjxDispatcher.require("TasksCore");
+			   return new ZmTaskList(this._appCtxt, search);
+		   }, this)
 						});
 
 	ZmOrganizer.registerOrg(ZmOrganizer.TASKS,
 							{app:				ZmApp.TASKS,
 							 nameKey:			"taskFolder",
-							 defaultFolder:		ZmOrganizer.ID_TASKS,
+							 defaultFolder:		ZmFolder.ID_TASKS,
 							 soapCmd:			"FolderAction",
 							 firstUserId:		256,
 							 orgClass:			"ZmTaskFolder",
@@ -73,17 +79,25 @@ function ZmTasksApp(appCtxt, container) {
 	var actionCodes = {};
 	actionCodes[ZmKeyMap.NEW_TASK] = ZmOperation.NEW_TASK;
 
+	ZmSearchToolBar.FOR_TASKS_MI = "FOR TASKS";
+	ZmSearchToolBar.addMenuItem(ZmItem.TASK,
+								{msgKey:		"tasks",
+								 tooltipKey:	"searchTasks",
+								 icon:			"Task" // XXX: change me
+								});
 	ZmApp.registerApp(ZmApp.TASKS,
 							 {mainPkg:				"Tasks",
 							  nameKey:				"tasks",
 							  icon:					"Task",
 							  chooserTooltipKey:	"goToTasks",
+							  defaultSearch:		ZmItem.TASK,
 							  organizer:			ZmOrganizer.TASKS,
-							  overviewTrees:		[ZmOrganizer.TASKS],
+							  overviewTrees:		[ZmOrganizer.TASKS, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  newItemOps:			newItemOps,
 							  newOrgOps:			newOrgOps,
 							  actionCodes:			actionCodes,
+							  searchTypes:			[ZmItem.TASK],
 							  gotoActionCode:		ZmKeyMap.GOTO_TASKS,
 							  newActionCode:		ZmKeyMap.NEW_TASK,
 							  chooserSort:			35,
@@ -171,24 +185,27 @@ function(list, force) {
 // Public methods
 
 ZmTasksApp.prototype.launch =
-function(callback, errorCallback, folderId) {
-	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback, errorCallback, folderId]);
+function(callback) {
+	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, callback);
 	AjxDispatcher.require(["TasksCore", "Tasks"], false, loadCallback, null, true);
 };
 
 
 ZmTasksApp.prototype._handleLoadLaunch =
-function(callback, errorCallback, folderId) {
-	var respCallback = new AjxCallback(this, this._handleResponseLaunch, [callback]);
-	this.getTaskList(respCallback, errorCallback, folderId);
+function(callback) {
+	this.search(null, null, null, callback);
 };
 
-ZmTasksApp.prototype._handleResponseLaunch =
-function(callback) {
-	this.getTaskListController().show(this._taskList);
-	if (callback) {
-		callback.run();
-	}
+ZmTasksApp.prototype.showSearchResults =
+function(results, callback, isGal, folderId) {
+	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback, folderId]);
+	AjxDispatcher.require("Tasks", false, loadCallback, null, true);
+};
+
+ZmTasksApp.prototype._handleLoadShowSearchResults =
+function(results, callback, folderId) {
+	this.getTaskListController().show(results, folderId);
+	if (callback) callback.run();
 };
 
 ZmTasksApp.prototype.activate =
@@ -228,23 +245,17 @@ function(mailItem, date, subject) {
 };
 
 
-ZmTasksApp.prototype.getTaskList =
-function(callback, errorCallback, folderId) {
-	if (this._taskList)
-		this._taskList.clear();
+ZmTasksApp.prototype.search =
+function(folder, startDate, endDate, callback) {
+	var query = folder ? folder.createQuery() : "in:tasks";
+	var sc = this._appCtxt.getSearchController();
+	var types = sc.getTypes(ZmSearchToolBar.FOR_TASKS_MI);
 
-	try {
-		this._taskList = new ZmTaskList(this._appCtxt);
-		this._taskList.load(callback, errorCallback, folderId);
-	} catch (ex) {
-		this._taskList = null;
-		throw ex;
-	}
-
-	if (!callback) {
-		return this._taskList;
-	}
+	sc.search({query:query, types:types, callback:callback});
 };
+
+
+// Callback
 
 ZmTasksApp.prototype._newTaskFolderCallback =
 function(parent, name, color) {

@@ -63,18 +63,18 @@ ZmItem.prototype = new ZmModel;
 ZmItem.prototype.constructor = ZmItem;
 
 // Item types
-ZmItem.NOTE			= ZmEvent.S_NOTE;
+ZmItem.NOTE = ZmEvent.S_NOTE;
 
 // App responsible for item
 ZmItem.APP = {};
 
 // Type names
 ZmItem.MSG_KEY = {};
-ZmItem.MSG_KEY[ZmItem.NOTE]		= "note";
+ZmItem.MSG_KEY[ZmItem.NOTE]	= "note";
 
 // Representative icons
 ZmItem.ICON = {};
-ZmItem.ICON[ZmItem.NOTE]	= "Note";
+ZmItem.ICON[ZmItem.NOTE] = "Note";
 
 // Function for creating search results list
 ZmItem.RESULTS_LIST = {};
@@ -101,6 +101,10 @@ ZmItem.F_ITEM_TYPE		= i++;
 ZmItem.F_TAG_CELL		= i++;
 ZmItem.F_SIZE			= i++;
 ZmItem.F_INDEX			= i++;
+// task specific
+ZmItem.F_PRIORITY		= i++;
+ZmItem.F_STATUS			= i++;
+ZmItem.F_PCOMPLETE		= i++;
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};

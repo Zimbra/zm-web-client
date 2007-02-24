@@ -21,13 +21,8 @@ AjxPackage.require("zimbraMail.calendar.view.ZmCalItemView");
 
 AjxPackage.require("zimbraMail.calendar.controller.ZmCalendarTreeController");
 
-AjxPackage.require("zimbraMail.tasks.model.ZmTask");
-AjxPackage.require("zimbraMail.tasks.model.ZmTaskList");
-
 AjxPackage.require("zimbraMail.tasks.view.ZmTaskEditView");
-AjxPackage.require("zimbraMail.tasks.view.ZmTaskListView");
 AjxPackage.require("zimbraMail.tasks.view.ZmNewTaskFolderDialog");
 
 AjxPackage.require("zimbraMail.tasks.controller.ZmTaskController");
-AjxPackage.require("zimbraMail.tasks.controller.ZmTaskListController");
 AjxPackage.require("zimbraMail.tasks.controller.ZmTaskTreeController");

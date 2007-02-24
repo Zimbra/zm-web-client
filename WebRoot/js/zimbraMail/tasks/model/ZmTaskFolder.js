@@ -43,10 +43,10 @@
 */
 function ZmTaskFolder(params) {
 	params.type = ZmOrganizer.TASKS;
-	ZmOrganizer.call(this, params);
+	ZmFolder.call(this, params);
 }
 
-ZmTaskFolder.prototype = new ZmOrganizer;
+ZmTaskFolder.prototype = new ZmFolder;
 ZmTaskFolder.prototype.constructor = ZmTaskFolder;
 
 // Public methods
@@ -58,14 +58,14 @@ function() {
 
 ZmTaskFolder.prototype.getName =
 function(showUnread, maxLength, noMarkup) {
-    if (this.id == ZmOrganizer.ID_ROOT) return ZmMsg.tasks;
+    if (this.id == ZmFolder.ID_ROOT) return ZmMsg.tasks;
     if (this.path) return [this.path, this.name].join("/");
     return this.name;
 };
 
 ZmTaskFolder.prototype.getIcon =
 function() {
-	return this.id == ZmOrganizer.ID_ROOT
+	return this.id == ZmFolder.ID_ROOT
 		? null
 		: (this.link ? "GroupSchedule" : "Task");
 };
@@ -84,7 +84,7 @@ function(what) {
 
 	var invalid = false;
 
-	if (this.id == ZmOrganizer.ID_ROOT) {
+	if (this.id == ZmFolder.ID_ROOT) {
 		// cannot drag anything onto root folder
 		invalid = true;
 	} else if (this.link) {
@@ -132,22 +132,18 @@ function(obj) {
 
 ZmTaskFolder.prototype.notifyModify =
 function(obj) {
-	ZmOrganizer.prototype.notifyModify.call(this, obj);
+	ZmFolder.prototype.notifyModify.call(this, obj);
 
-	var doNotify = false;
-	var fields = {};
 	if (obj.f != null) {
 		this._parseFlags(obj.f);
 		// TODO: Should a F_EXCLUDE_FB property be added to ZmOrganizer?
 		//       It doesn't make sense to require the base class to know about
 		//       all the possible fields in sub-classes. So I'm just using the
 		//       modified property name as the key.
+		var fields = {};
 		fields["excludeFreeBusy"] = true;
-		doNotify = true;
-	}
-
-	if (doNotify)
 		this._notify(ZmEvent.E_MODIFY, {fields: fields});
+	}
 };
 
 
@@ -155,7 +151,7 @@ function(obj) {
 
 ZmTaskFolder.checkName =
 function(name) {
-	return ZmOrganizer.checkName(name);
+	return ZmFolder.checkName(name);
 };
 
 ZmTaskFolder.sortCompare =

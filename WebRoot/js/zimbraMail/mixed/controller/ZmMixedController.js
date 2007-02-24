@@ -278,10 +278,12 @@ function(ev) {
 			} else {
 				AjxDispatcher.run("GetMsgController").show(ev.item);
 			}
+		} else if (ev.item.type == ZmItem.TASK) {
+			var app = this._appCtxt.getApp(ZmApp.TASKS);
+			// XXX: prompt user if task is recurring!
+			AjxDispatcher.run("GetTaskController").show(ev.item, ZmCalItem.MODE_EDIT);
 		} else if (ev.item.type == ZmItem.PAGE || ev.item.type == ZmItem.DOCUMENT) {
-			var app = this._appCtxt.getApp(ZmApp.NOTEBOOK);
-			var controller = app.getFileController();
-			controller._doSelectDblClicked(ev.item, true);
+			this._appCtxt.getApp(ZmApp.NOTEBOOK).getFileController()._doSelectDblClicked(ev.item, true);
 		}
 	}
 };

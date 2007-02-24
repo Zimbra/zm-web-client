@@ -42,11 +42,27 @@ function() {
 };
 
 ZmTaskListController.prototype.show =
-function(list, view) {
+function(list, folderId) {
 
-	ZmListController.prototype.show.call(this, null, view);
+	// XXX: will "list" ever be ZmTaskList?
+	if (list instanceof ZmTaskList)
+	{
+		this._list = list;			// set as canonical list of contacts
+		this._list._isShared = false;		// this list is not a search of shared items
+	}
+	else if (list instanceof ZmSearchResult)
+	{
+		this._list = list.getResults(ZmItem.TASK);
 
-	this.setList(list);
+		// XXX: WHY?
+		// find out if we just searched for a shared address book
+		var tree = folderId ? this._appCtxt.getTree(ZmOrganizer.TASKS) : null;
+		var folder = tree ? tree.getById(folderId) : null;
+		this._list._isShared = folder ? folder.link : false;
+	}
+
+	ZmListController.prototype.show.call(this, list);
+
 	this._setup(this._currentView);
 
 	var elements = {};
@@ -100,18 +116,17 @@ function() {
 
 ZmTaskListController.prototype._initializeToolBar =
 function(view) {
+	if (this._toolbar[view]) return;
+
 	ZmListController.prototype._initializeToolBar.call(this, view);
-/*
-TODO
-	this._setupViewMenu(view);
-*/
+
+//	this._setupViewMenu(view);
+
 	this._setNewButtonProps(view, ZmMsg.createNewTask, "NewTask", "NewTaskDis", ZmOperation.NEW_TASK);
-/*
-TODO
+
 	this._toolbar[view].addFiller();
 	var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
 	this._setNavToolBar(tb, view);
-*/
 };
 
 ZmTaskListController.prototype._getActionMenuOps =
@@ -140,6 +155,12 @@ function(parent, num) {
 		// XXX: for now, only allow one task to be deleted at a time
 		parent.enable([ZmOperation.DELETE, ZmOperation.EDIT], canEdit && num == 1);
 	}
+};
+
+ZmTaskListController.prototype._paginate =
+function(view, bPageForward) {
+	// TODO
+	DBG.println("todo");
 };
 
 // Delete one or more items.

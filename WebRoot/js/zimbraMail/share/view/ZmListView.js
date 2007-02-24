@@ -69,6 +69,13 @@ ZmListView.FIELD_PREFIX[ZmItem.F_EMAIL]			= "o";
 ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]		= "p";
 ZmListView.FIELD_PREFIX[ZmItem.F_TAG_CELL]		= "q";
 ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]			= "r";
+ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY]		= "s";
+ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]		= "t";
+ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE]		= "u";
+
+// column widths
+ZmListView.COL_WIDTH_ICON 					= 19;
+ZmListView.COL_WIDTH_DATE 					= 75;
 
 
 ZmListView.PREFIX_MAP = {};

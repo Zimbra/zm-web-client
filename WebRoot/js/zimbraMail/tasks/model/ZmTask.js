@@ -69,8 +69,9 @@ function(task) {
 	return newTask;
 };
 
+// XXX: set start/end intervals for instNode
 ZmTask.createFromDom =
-function(taskNode, instNode, args) {
+function(taskNode, args, instNode) {
 	// NOTE: passing ID implies this item should get cached!
 	var task = new ZmTask(args.appCtxt, args.list, taskNode.id);
 	task._loadFromDom(taskNode, instNode);
@@ -129,11 +130,28 @@ function() {
 };
 
 ZmTask.prototype._loadFromDom =
-function(calItemNode, instNode) {
-	ZmCalItem.prototype._loadFromDom.call(this, calItemNode, instNode);
+function(node, instNode) {
+	this.id = node.id;
+	this.invId = node.invId;
+	this.uid = node.uid;				// XXX: what is this?
+	this.folderId = node.l;
+	this.size = node.s;					// XXX: do we care?
+	this.name = node.name;
+	this.location = node.loc;
+	this.setAllDayEvent(node.allDay);
+	this.priority = parseInt(node.priority);
+	this.pComplete = parseInt(node.percentComplete);
+	this.status = node.status;
+	this.isOrg = node.isOrg;
+	this.ptst = node.ptst;
+	this.compNum = node.compNum;
+	this.date = node.d;					// XXX: creation date?
+//	this.rev = node.rev;
+//	this.md = node.md;
+//	this.ms = node.ms;
 
-	this.pComplete = this._getAttr(calItemNode, instNode, "percentComplete");
-	this.location = this._getAttr(calItemNode, instNode, "loc");
+	this._parseFlags(node.f);
+	this._parseTags(node.t);			// future
 };
 
 ZmTask.prototype._setExtrasFromMessage =
