@@ -162,123 +162,86 @@ function(show, priority, showStatus) {
 };
 
 /**
- * Pass in an array of SUBSCRIBED items
- */
-ZmRoster.prototype.handleSubscribedRosterItems =
-function(subscribed) {
-	for (var i=0; i < subscribed.length; i++) {
-		var sub = subscribed[i];
-		if (sub.to) {
-			var list = this.getRosterItemList();
-			var item = list.getByAddr(sub.to);
-			if (item) {
-				if (sub.groups) item._notifySetGroups(sub.groups); // should optimize
-				if (sub.name && sub.name != item.getName()) item._notifySetName(sub.name);
-				// mod
-			} else {
-				// create
-				var item = new ZmRosterItem(sub.to, list, this._appCtxt, sub.name, null, sub.groups);
-				list.addItem(item);
-				var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
-				this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
-			}
-		}
-	}
-}
-
-/**
  * handle async notifications. we might need to queue this with timed action and return
  * immediately, since this is happening as a result of a notify header in a response, and
  * we probably don't want to trigger more requests while handling a response.
  */
 ZmRoster.prototype.handleNotification =
 function(im) {
-	// console.dir(im);
-	if (im.n) {
-		for (var curNot=0; curNot < im.n.length; curNot++) {
-			var not = im.n[curNot];
-			if (not.type == "roster") {
-				this.getRosterItemList().removeAllItems();
+// do subscribes/unsubscribes before presence...
+	if (im.subscribed) {
+		for (var i=0; i < im.subscribed.length; i++) {
+			var sub = im.subscribed[i];
+			if (sub.to) {
 				var list = this.getRosterItemList();
-				if (not.n) {
-					for (var rosterNum=0; rosterNum < not.n.length; rosterNum++) {
-						var rosterItem = not.n[rosterNum];
-//						if (rosterItem.type == "subscribed") {
-							var item = new ZmRosterItem(rosterItem.to, list, this._appCtxt, rosterItem.name, null, rosterItem.groups);
-							list.addItem(item);
-//						}
-					}	
+				var item = list.getByAddr(sub.to);
+				if (item) {
+					if (sub.groups) item._notifySetGroups(sub.groups); // should optimize
+					if (sub.name && sub.name != item.getName()) item._notifySetName(sub.name);
+					// mod
+				} else {
+					// create
+					var item = new ZmRosterItem(sub.to, list, this._appCtxt, sub.name, null, sub.groups);
+					list.addItem(item);
+					var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
+					this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
 				}
-				// ignore unsubscribed entries for now (TODO FIXME)
-			} else if (not.type == "subscribed") {
-				var sub = not;
-				if (sub.to) {
-					var list = this.getRosterItemList();
-					var item = list.getByAddr(sub.to);
-					if (item) {
-						if (sub.groups) item._notifySetGroups(sub.groups); // should optimize
-						if (sub.name && sub.name != item.getName()) item._notifySetName(sub.name);
-						// mod
-					} else {
-						// create
-						var item = new ZmRosterItem(sub.to, list, this._appCtxt, sub.name, null, sub.groups);
-						list.addItem(item);
-						var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
+			} else if (sub.from) {
+			    // toast, should we user if they want to add user if they aren't in buddy list?
+			}
+		}
+	}
+	if (im.unsubscribed) {
+		for (var i=0; i < im.unsubscribed.length; i++) {
+			var unsub = im.unsubscribed[i];
+			if (unsub.to) {
+				var list = this.getRosterItemList();
+				var item = list.getByAddr(unsub.to);
+				if (item) list.removeItem(item);
+			}
+		}
+	}
+	if (im.presence) {
+		for (var i=0; i < im.presence.length; i++) {
+			var p = im.presence[i];
+			if (p.from == this.getMyAddress()) {
+				if (this.getPresence().setFromJS(p)) this._notifyPresence();            
+			} else {
+				var ri = this.getRosterItemList().getByAddr(p.from);
+				if (ri) {
+					if (ri.getPresence().setFromJS(p)) {
+						ri._notifyPresence();
+						var toast = this._presenceToastFormatter.format([ri.getDisplayName(), ri.getPresence().getShowText()]);
 						this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
 					}
-				} else if (sub.from) {
-				    // toast, should we user if they want to add user if they aren't in buddy list?
-				}
-			} else if (not.type == "unsubscribed") {
-				var unsub = not;
-				if (unsub.to) {
-					var list = this.getRosterItemList();
-					var item = list.getByAddr(unsub.to);
-					if (item) list.removeItem(item);
-				}
-			} else if (not.type == "presence") {
-				var p = not;
-				if (p.from == this.getMyAddress()) {
-					if (this.getPresence().setFromJS(p)) this._notifyPresence();            
-				} else {
-					var ri = this.getRosterItemList().getByAddr(p.from);
-					if (ri) {
-						if (ri.getPresence().setFromJS(p)) {
-							ri._notifyPresence();
-							var toast = this._presenceToastFormatter.format([ri.getDisplayName(), ri.getPresence().getShowText()]);
-							this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
-						}
-					}
-				}
-			} else if (not.type == "message") {
-				var msg = not;
-				var chatMessage = new ZmChatMessage(msg, msg.from == this.getMyAddress());
-				var cl = this.getChatList();
-				var chat = cl.getChatByThread(chatMessage.thread);
-				if (chat == null) {
-					if (!chatMessage.fromMe) {
-						chat = cl.getChatByRosterAddr(chatMessage.from, true);
-					} else {
-						chat = cl.getChatByRosterAddr(chatMessage.to, false);
-					}
-					if (chat) chat.setThread(chatMessage.thread);
-				}
-				if (chat) {
-					chat.addMessage(chatMessage);
-					if (!this._imApp.isActive()) {
-						this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, true);
-						this._imApp.startFlashingIcon();
-					}
-				}
-			} else if (not.type == "leftchat") {
-				var lc = not;
-				var chat = this.getChatList().getChatByThread(lc.thread);
-				if (chat) {
-					chat.addMessage(ZmChatMessage.system(this._leftChatFormatter.format([lc.addr])));
-					chat.setThread(null);
 				}
 			}
 		}
 	}
-
+	if (im.message) {
+		for (var i=0; i < im.message.length; i++) {
+			var msg = im.message[i];
+			var chatMessage = new ZmChatMessage(msg, msg.from == this.getMyAddress());
+			var cl = this.getChatList();
+			var chat = cl.getChatByThread(chatMessage.thread);
+			if (chat == null && !chatMessage.fromMe) {
+				chat = cl.getChatByRosterAddr(chatMessage.from, true);
+				if (chat) chat.setThread(chatMessage.thread);
+			}
+			if (chat) {
+				chat.addMessage(chatMessage);
+				if (!this._imApp.isActive()) this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, true);
+			}
+		}
+	}
+	if (im.leftchat) {
+		for (var i=0; i < im.leftchat.length; i++) {
+			var lc = im.leftchat[i];
+			var chat = this.getChatList().getChatByThread(lc.thread);
+			if (chat) {
+				chat.addMessage(ZmChatMessage.system(this._leftChatFormatter.format([lc.addr])));
+				chat.setThread(null);
+			}
+		}
+	}
 };

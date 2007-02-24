@@ -38,10 +38,10 @@
 * @param extraButtons	[Array]*		buttons to show in addition to standard set
 * @param view			[DwtControl]*	dialog contents
 */
-function ZmDialog(parent, msgDialog, className, title, extraButtons, view, standardButtons) {
+function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 
 	if (arguments.length == 0) return;
-	DwtDialog.call(this, parent, className, title, standardButtons, extraButtons);
+	DwtDialog.call(this, parent, className, title, null, extraButtons);
 	if (!view) {
 		this.setContent(this._contentHtml());
 	} else {
@@ -53,12 +53,7 @@ function ZmDialog(parent, msgDialog, className, title, extraButtons, view, stand
 	if (this._msgDialog == null) {
 		this._msgDialog = this._appCtxt.getMsgDialog();
 	}
-
-	if (this._button[DwtDialog.OK_BUTTON]) {
-		this.setButtonListener(DwtDialog.OK_BUTTON,
-				       new AjxListener(this,
-						       this._okButtonListener));
-	}
+	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 
 	this._treeView = {};
 	this._opc = this._appCtxt.getOverviewController();
@@ -82,7 +77,7 @@ function(newView, noReset) {
 };
 
 ZmDialog.prototype.popup =
-function() {
+function(data, loc) {
 	if (!this._tabGroupComplete) {
 		// tab group filled in here rather than in the constructor
 		// because we need all the content fields to have been created
@@ -92,7 +87,7 @@ function() {
 		}
 		this._tabGroupComplete = true;
 	}
-	DwtDialog.prototype.popup.call(this);
+	DwtDialog.prototype.popup.call(this, loc);
 };
 
 ZmDialog.prototype.reset =
@@ -139,12 +134,8 @@ function(overviewId, treeIds, omit) {
 	this._opc.set(overviewId, treeIds, omit);
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeView = this._treeView[treeIds[i]] = this._opc.getTreeView(overviewId, treeIds[i]);
-		if (treeView) {
-			var hi = treeView.getHeaderItem();
-			if (hi) {
-				hi.enableSelection(true);
-			}
-		}
+		var hi = treeView.getHeaderItem();
+		hi.enableSelection(true);
 	}
 };
 

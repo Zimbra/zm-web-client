@@ -95,7 +95,8 @@ function(dwtList, account) {
 
 ZmPopAccountsController.prototype._getListData =
 function() {
-    var collection = AjxDispatcher.run("GetDataSourceCollection");
+    var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
+    var collection = prefsApp.getDataSourceCollection();
 
     var listener = new AjxListener(this, this._changeListener);
     collection.addChangeListener(listener);

@@ -215,7 +215,7 @@ function(start,end, fanoutAllDay, folderIds, callback) {
 		req.setAttribute("s", start);
 		req.setAttribute("e", end);
 		req.setAttribute("l", context.needToFetch[i]);
-		req.setAttribute("requestId", i);
+		req.setAttribute("id", i);
 	}
 	
 	//var soapDoc = AjxSoapDoc.create("GetApptSummariesRequest", "urn:zimbraMail");
@@ -268,7 +268,7 @@ function(context, result) {
 			var apptList = new ZmApptList(this._appCtxt);
 			apptList.loadFromSummaryJs(summaries[i]);
 
-			var folderId = context.needToFetch[summaries[i].requestId];// id in response tied back to folder id
+			var folderId = context.needToFetch[summaries[i].id];// id in response tied back to folder id
 
 			// TODO: no need to cache remote ids for now?
 			var cal = this._calViewController.getCalendar(folderId);

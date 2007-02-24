@@ -104,7 +104,7 @@ function(folder, result) {
 */
 ZmMailList.prototype.spamItems = 
 function(items, markAsSpam, folder) {
-	if (this.type == ZmItem.MIXED && !this._mixedType) {
+	if (this.type == ZmList.MIXED && !this._mixedType) {
 		this._mixedAction("spamItems", [items, markAsSpam, folder]);
 		return;
 	}
