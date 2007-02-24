@@ -28,6 +28,18 @@
         </c:if>
         <zm:getMessage var="message" id="${not empty param.id ? param.id : convSearchResult.hits[csi].id}" markread="true" neuterimages="${empty param.xim}"/>
     </c:if>
+
+    <%-- blah, optimize this later --%>
+    <c:if test="${not empty requestScope.idsMarkedUnread and not message.isUnread}">
+        <c:forEach var="unreadid" items="${requestScope.idsMarkedUnread}">
+            <!-- unreadid ${unreadid} -->
+            <c:if test="${unreadid eq message.id}">
+                <zm:markMessageRead var="mmrresult" id="${message.id}" read="${false}"/>
+                <c:set var="leaveunread" value="${true}"/>
+                <!-- leaveunread ${leaveunread} -->
+            </c:if>
+        </c:forEach>
+    </c:if>
 </app:handleError>
 
 <%-- get the message up front, so when we output the overview tree unread counts are correctly reflected --%>
@@ -93,7 +105,7 @@
                                             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
                                                 <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='view' context="${context}"
                                                                      cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-                                                <tr class='ZhRow${(hit.messageHit.isUnread and (hit.id != message.id)) ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
+                                                <tr class='ZhRow${hit.messageHit.isUnread ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
                                                     <td class='CB' nowrap><input <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
                                                     <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
                                                     <c:if test="${mailbox.features.tagging}">

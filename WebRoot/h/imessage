@@ -9,7 +9,7 @@
 
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    <zm:getMessage var="message" id="${param.id}" markread="true"  part="${param.part}" neuterimages="${empty param.xim}"/>
+    <zm:getMessage var="message" id="${param.id}" markread="false"  part="${param.part}" neuterimages="${empty param.xim}"/>
     <c:set var="body" value="${message.body}"/>
 </app:handleError>
 

@@ -11,6 +11,16 @@
     <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="true" neuterimages="${empty param.xim}"/>
     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
     <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
+
+    <%-- blah, optimize this later --%>
+    <c:if test="${not empty requestScope.idsMarkedUnread and not msg.isUnread}">
+        <c:forEach var="unreadid" items="${requestScope.idsMarkedUnread}">
+            <c:if test="${unreadid eq msg.id}">
+                <zm:markMessageRead var="mmrresult" id="${msg.id}" read="${false}"/>
+                <c:set var="leaveunread" value="${true}"/>
+            </c:if>
+        </c:forEach>
+    </c:if>
 </app:handleError>
 
 <app:view title="${msg.subject}" context="${context}" selected='mail' folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
