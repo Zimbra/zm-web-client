@@ -291,8 +291,8 @@ function(overviewId, app) {
 };
 
 /**
- * Searches all the tree views for the given overviewId for the tree item
- * whose data object has the given ID.
+ * Searches the tree views for the given overviewId for the tree item
+ * whose data object has the given ID and type.
  * 
  * @param overviewId	[constant]		overview ID
  * @param id			[int]			ID to look for
@@ -301,16 +301,16 @@ function(overviewId, app) {
 ZmOverviewController.prototype.getTreeItemById =
 function(overviewId, id, type) {
 	if (!overviewId || !id) { return null; }
-	var treeIds = this._treeIds[overviewId];
-	if (!(treeIds && treeIds.length)) { return null; }
-	for (var i = 0; i < treeIds.length; i++) {
-		var treeId = treeIds[i];
-		var treeView = this.getTreeView(overviewId, treeId);
-		var item = treeView.getTreeItemById(id);
-		if (item && (!type || (treeId == type))) {
-			return item;
+	for (var org in this._controllers) {
+		var treeView = this._controllers[org].getTreeView(overviewId);
+		if (treeView) {
+			var item = treeView.getTreeItemById(id);
+			if (item && (!type || (org == type))) {
+				return item;
+			}
 		}
 	}
+
 	return null;
 };
 
