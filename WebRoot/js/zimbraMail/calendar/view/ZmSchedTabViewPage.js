@@ -569,17 +569,6 @@ function(inputEl, attendee, useException) {
 			}
 		} else {
 			this._activeInputIdx = null;
-			var msg = AjxMessageFormat.format(this.parent._badAttendeeMsg[type], value);
-			if (useException) {
-				if (curAttendee) {
-					this._removeAttendeeRow(idx);
-				} else {
-					this._resetRow(sched, false, type, true);
-				}
-				throw msg;
-			} else {
-				this.parent.showErrorMessage(msg, null, this._badAttendeeCallback, this, [idx, sched]);
-			}
 		}
 	} else if (curAttendee) {
 		// user erased an attendee
@@ -596,17 +585,6 @@ function(sched, attendee, type) {
 	var email = attendee.getEmail();
 	if (name && email) {
 		sched.inputObj.setToolTipContent(email);
-	}
-};
-
-ZmSchedTabViewPage.prototype._badAttendeeCallback =
-function(index, sched) {
-	this.parent._msgDialog.popdown();
-	this._activeInputIdx = null;
-	if (sched && sched.attendee) {
-		this._removeAttendeeRow(index, true);
-	} else {
-		this._resetRow(sched, false, sched.attType, true);
 	}
 };
 
@@ -1247,11 +1225,6 @@ function(ev) {
 		svp._handleDateChange(el == svp._startDateField);
 		svp._activeDateField = null;
 	} else {
-		// don't check attendees if autocomplete list is up, since this
-		// handler will be called before completion happens
-		var acList = svp._acList[el._attType];
-		if (!(acList && acList.getVisible())) {
-			svp._handleAttendeeField(el);
-		}
+		svp._handleAttendeeField(el);
 	}
 };

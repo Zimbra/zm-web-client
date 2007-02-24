@@ -1381,38 +1381,31 @@ function() {
 ZmApptTabViewPage.prototype._handleAttendeeField =
 function(type, useException) {
 	if (!this._activeInputField) return;
-	var value = this._attInputField[type].getValue();
-	// bug fix #13676 - just reparse everytime in case things are off sync - ugh
-//	if (value == this._attInputCurVal[type]) return;
 
+	var value = this._attInputField[type].getValue();
 	var attendees = new AjxVector();
 	var items = ZmEmailAddress.split(value);
+	var gotOne = false;
+
 	for (var i = 0; i < items.length; i++) {
 		var item = AjxStringUtil.trim(items[i]);
 		if (!item) continue;
-		
+
 		// see if it's an attendee we already know about (added via autocomplete or other tab)
 		var attendee = this._getAttendeeByName(type, item);
-		attendee = attendee ? attendee : this._getAttendeeByItem(item, type);
+		attendee = attendee || this._getAttendeeByItem(item, type);
 		if (!attendee) {
 			attendee = ZmApptViewHelper.getAttendeeFromItem(this._appCtxt, item, type);
 		}
 		if (attendee) {
 			attendees.add(attendee);
-		} else {
-			var msg = AjxMessageFormat.format(this.parent._badAttendeeMsg[type], item);
-			if (useException) {
-				this._attInputField[type].setValue(this._attInputCurVal[type]);
-				this._activeInputField = null;
-				throw msg;
-			} else {
-				this.parent.showErrorMessage(msg, null, this._badAttendeeCallback, this, type);
-				break;
-			}
+			gotOne = true;
 		}
 	}
-	// replace attendees list with what we've found
-	this.parent.updateAttendees(attendees, type);
+	// replace attendees list with what we've found :/
+	if (gotOne) {
+		this.parent.parent.updateAttendees(attendees, type);
+	}
 };
 
 ZmApptTabViewPage.prototype._getAttendeeByName =
@@ -1424,12 +1417,6 @@ function(type, name) {
 		}
 	}
 	return null;
-};
-
-ZmApptTabViewPage.prototype._badAttendeeCallback =
-function(type) {
-	this._kbMgr.grabFocus(this._attInputField[type]);
-	this.parent._msgDialog.popdown();
 };
 
 ZmApptTabViewPage.prototype._getAttendeeByItem =
@@ -1546,11 +1533,6 @@ ZmApptTabViewPage._onBlur =
 function(ev) {
 	var el = DwtUiEvent.getTarget(ev);
 	var tvp = AjxCore.objectWithId(el._tabViewPageId);
-	// don't check attendees if autocomplete list is up, since this
-	// handler will be called before completion happens
-	var acList = tvp._acList[el._attType];
-	if (!(acList && acList.getVisible())) {
-		tvp._handleAttendeeField(el._attType);
-	}
+	tvp._handleAttendeeField(el._attType);
 	tvp._activeInputField = null;
 };
