@@ -1073,7 +1073,7 @@ function(tb) {
 
 	for (var i = 0; i < menuItems.length; i++) {
 		var item = menuItems[i];
-		var mi = menu.createMenuItem(item.id, null, item.label, null, true, DwtMenuItem.RADIO_STYLE);
+		var mi = menu.createMenuItem(item.id, {text:item.label, style:DwtMenuItem.RADIO_STYLE});
 		mi.addSelectionListener(listener);
 		mi.setData(ZmHtmlEditor._VALUE, item.id);
 		if (i == 0)
@@ -1099,7 +1099,7 @@ function(tb) {
 
 	for (var i = 0; i < menuItems.length; i++) {
 		var item = menuItems[i];
-		var mi = menu.createMenuItem(item.id, item.image, null, null, true, DwtMenuItem.RADIO_STYLE);
+		var mi = menu.createMenuItem(item.id, {image:item.image, style:DwtMenuItem.RADIO_STYLE});
 		mi.addSelectionListener(listener);
 		mi.setData(ZmHtmlEditor._VALUE, item.id);
 		if (i == 0)
@@ -1120,7 +1120,7 @@ function(tb) {
 
 	for (var i = 0; i < ZmHtmlEditor.FONT_FAMILY.length; i++) {
 		var item = ZmHtmlEditor.FONT_FAMILY[i];
-		var mi = menu.createMenuItem(item.name, null, item.name, null, true);
+		var mi = menu.createMenuItem(item.name, {text:item.name});
 		mi.addSelectionListener(listener);
 		mi.setData(ZmHtmlEditor._VALUE, i);
 	}
@@ -1138,8 +1138,8 @@ function(tb) {
 	for (var i = 0; i < ZmHtmlEditor.FONT_SIZE_VALUES.length; i++) {
 		var item = ZmHtmlEditor.FONT_SIZE_VALUES[i];
 		var num = i+1;
-		var label = num + " (" + item + ")";
-		var mi = menu.createMenuItem(i, null, label, null, true);
+		var text = num + " (" + item + ")";
+		var mi = menu.createMenuItem(i, {text:text});
 		mi.addSelectionListener(listener);
 		mi.setData(ZmHtmlEditor._VALUE, num);
 	}
@@ -1435,10 +1435,8 @@ function(ev) {
 			var menu = new ZmPopupMenu(parent), item;
 			menu.dontStealFocus();
 			if (modified) {
-				item = menu.createMenuItem
-					("orig", null,
-					 "<b style='color: red'>Initial: " + word + "</b>",
-					 null, true, null, null);
+				var text = "<b style='color: red'>Initial: " + word + "</b>";
+				item = menu.createMenuItem("orig", {text:text});
 				item.setData("fixall", fixall);
 				item.setData("value", word);
 				item.setData("orig", word);
@@ -1448,8 +1446,8 @@ function(ev) {
 			if (plainText) {
 				// in plain text mode we want to be able to edit misspelled words
 				var txt = fixall ? "Edit all" : "Edit";
-				item = menu.createMenuItem("edit", null, "<b style='color: #d62'>" + txt + "</b>",
-							   null, true, null, null);
+				var text = "<b style='color: #d62'>" + txt + "</b>";
+				item = menu.createMenuItem("edit", {text:text});
 				item.setData("fixall", fixall);
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
@@ -1459,9 +1457,7 @@ function(ev) {
 				menu.createSeparator();
 			if (suggestions.length > 0) {
 				for (var i = 0; i < suggestions.length; ++i) {
-					item = menu.createMenuItem("sug-" + fixall + "" + i,
-								   null, suggestions[i],
-								   null, true, null, null);
+					item = menu.createMenuItem("sug-" + fixall + "" + i, {text:suggestions[i]});
 					item.setData("fixall", fixall);
 					item.setData("value", suggestions[i]);
 					item.setData("orig", word);
@@ -1469,8 +1465,7 @@ function(ev) {
 					item.addSelectionListener(self._spellCheckSuggestionListener);
 				}
 			} else {
-				item = menu.createMenuItem("clear", null, "<b style='color: red'>Clear text</b>",
-							   null, true, null, null);
+				item = menu.createMenuItem("clear", {text:"<b style='color: red'>Clear text</b>"});
 				item.setData("fixall", fixall);
 				item.setData("value", "");
 				item.setData("orig", word);
@@ -1482,10 +1477,8 @@ function(ev) {
 		sc.menu = makeMenu(0, this);
 		if (sc.wordIds[word].length > 1) {
 			sc.menu.createSeparator();
-			var item = sc.menu.createMenuItem
-				("fixall", null,
-				 "Replace all (" + sc.wordIds[word].length + " occurrences)",
-				 null, true, null, null);
+			var text = "Replace all (" + sc.wordIds[word].length + " occurrences)";
+			var item = sc.menu.createMenuItem("fixall", {text:text});
 			item.setMenu(makeMenu(1, item));
 		}
 		var pos, ms = sc.menu.getSize(), ws = this.shell.getSize();

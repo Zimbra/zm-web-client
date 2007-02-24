@@ -237,11 +237,11 @@ ZmNotebookController.prototype._setViewMenu = function(view) {
 
 		menu = new ZmPopupMenu(appToolbar.getViewButton());
 
-		var item = menu.createMenuItem(ZmNotebookApp.PAGE, "Page", ZmMsg.notebookPageView, null, true, DwtMenuItem.RADIO_STYLE);
+		var item = menu.createMenuItem(ZmNotebookApp.PAGE, {image:"Page", text:ZmMsg.notebookPageView, style:DwtMenuItem.RADIO_STYLE});
 		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTEBOOK_PAGE_VIEW);
 		item.addSelectionListener(listener);
 
-		var item = menu.createMenuItem(ZmNotebookApp.FILE, "Folder", ZmMsg.notebookFileView, null, true, DwtMenuItem.RADIO_STYLE);
+		var item = menu.createMenuItem(ZmNotebookApp.FILE, {image:"Folder", text:ZmMsg.notebookFileView, style:DwtMenuItem.RADIO_STYLE});
 		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTEBOOK_FILE_VIEW);
 		item.addSelectionListener(listener);
 	}

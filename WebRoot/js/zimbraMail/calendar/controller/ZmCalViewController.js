@@ -424,7 +424,8 @@ function(view) {
 		this._view_menu_listener = new AjxListener(this, this._viewMenuListener);
 		for (var i = 0; i < ZmCalViewController.VIEWS.length; i++) {
 			var id = ZmCalViewController.VIEWS[i];
-			var mi = menu.createMenuItem(id, ZmCalViewController.ICON[id], ZmMsg[ZmCalViewController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
+			var mi = menu.createMenuItem(id, {image:ZmCalViewController.ICON[id], text:ZmMsg[ZmCalViewController.MSG_KEY[id]],
+											  style:DwtMenuItem.RADIO_STYLE});
 			mi.setData(ZmOperation.KEY_ID, ZmCalViewController.OPS[i]);
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._view_menu_listener);

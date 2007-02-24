@@ -268,7 +268,7 @@ function(parent, id, opHash, index) {
 	} else if (id == ZmOperation.FILLER) {	// toolbar only
 		parent.addFiller(null, index);
 	} else {
-		opHash[id] = parent.createOp(id, opDesc.text, opDesc.image, opDesc.disImage, opDesc.enabled, opDesc.tooltip, index);
+		opHash[id] = parent.createOp(id, opDesc, index);
 	}
 	var callback = ZmOperation.CALLBACK[id];
 	if (callback) {
@@ -412,7 +412,7 @@ function(parent, dialog) {
 	var list = ZmTagTree.COLOR_LIST;
 	for (var i = 0; i < list.length; i++) {
 		var color = list[i];
-		var mi = menu.createMenuItem(color, ZmTag.COLOR_ICON[color], ZmOrganizer.COLOR_TEXT[color]);
+		var mi = menu.createMenuItem(color, {image:ZmTag.COLOR_ICON[color], text:ZmOrganizer.COLOR_TEXT[color]});
 		mi.setData(ZmOperation.MENUITEM_ID, color);
 	}
 	return menu;

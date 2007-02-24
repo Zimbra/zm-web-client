@@ -100,19 +100,30 @@ function(enabled) {
 	}
 };
 
+/**
+ * Adds a menu item to this menu.
+ * 
+ * @param id			[string]		menu item ID
+ * @param text			[string]*		menu item text
+ * @param image			[string]*		icon class for the or menu item
+ * @param disImage		[string]*		disabled version of icon
+ * @param enabled		[boolean]*		if true, menu item is enabled
+ * @param style			[constant]*		menu item style
+ * @param radioGroupId	[string]*		ID of radio group for this menu item
+ */
 ZmPopupMenu.prototype.createMenuItem =
-function(menuItemId, imageInfo, text, disImageInfo, enabled, style, radioGroupId) {
-	var mi = this._menuItems[menuItemId] = new DwtMenuItem(this, style, radioGroupId);
-	if (imageInfo) {
-		mi.setImage(imageInfo);
+function(id, params) {
+	var mi = this._menuItems[id] = new DwtMenuItem(this, params.style, params.radioGroupId);
+	if (params.image) {
+		mi.setImage(params.image);
 	}
-	if (text) {
-		mi.setText(text);
+	if (params.text) {
+		mi.setText(params.text);
 	}
-	if (disImageInfo) {
-		mi.setDisabledImage(disImageInfo);
+	if (params.disImage) {
+		mi.setDisabledImage(params.disImage);
 	}
-	mi.setEnabled(enabled !== false);
+	mi.setEnabled(params.enabled !== false);
 
 	return mi;
 };

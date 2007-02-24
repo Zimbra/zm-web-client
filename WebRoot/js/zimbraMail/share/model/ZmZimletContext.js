@@ -328,8 +328,8 @@ ZmZimletContext.prototype._makeMenu = function(obj) {
 		if (!data.id) {
 			menu.createSeparator();
 		} else {
-			var item = menu.createMenuItem(data.id, data.icon, this.processMessage(data.label),
-						       data.disabledIcon, true);
+			var item = menu.createMenuItem(data.id, {image:data.icon, text:this.processMessage(data.label),
+													 disImage:data.disabledIcon});
 			item.setData("xmlMenuItem", data);
 			item.addSelectionListener(this._handleMenuItemSelected);
 		}

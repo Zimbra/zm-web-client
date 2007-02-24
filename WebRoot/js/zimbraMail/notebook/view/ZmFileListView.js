@@ -43,7 +43,7 @@ function ZmFileListView(parent, className, posStyle, mode, controller, dropTgt) 
 		var hCol = headerList[i];
 		// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
 		if (hCol._width) {
-			var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, null, hCol._name, null, null, DwtMenuItem.CHECK_STYLE);
+			var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
 			mi.setData(ZmFileListView.KEY_ID, hCol._id);
 			mi.setChecked(true, true);
 			this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);

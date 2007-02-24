@@ -194,7 +194,8 @@ function(parent) {
 
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
-		var mi = menu.createMenuItem(op, ZmOperation.getProp(op, "image"), ZmMsg[ZmOperation.getProp(op, "textKey")], null, true, DwtMenuItem.RADIO_STYLE);
+		var mi = menu.createMenuItem(op, {image:ZmOperation.getProp(op, "image"), text:ZmMsg[ZmOperation.getProp(op, "textKey")],
+										  style:DwtMenuItem.RADIO_STYLE});
 		mi.setData(ZmOperation.MENUITEM_ID, op);
 		mi.setData(ZmOperation.KEY_ID, op);		
 		if (op == ZmOperation.IM_PRESENCE_OFFLINE) mi.setChecked(true, true);

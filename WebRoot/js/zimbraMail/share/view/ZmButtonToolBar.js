@@ -74,17 +74,28 @@ function() {
 };
 
 /**
-* Creates a button and adds its operation ID as data.
-*/
+ * Creates a button and adds its operation ID as data.
+ * 
+ * @param id			[string]		name of the operation
+ * @param text			[string]*		button text
+ * @param tooltip		[string]*		button tooltip text
+ * @param image			[string]*		icon class for the button
+ * @param disImage		[string]*		disabled version of icon
+ * @param enabled		[boolean]*		if true, button is enabled
+ * @param className		[constant]*		CSS class name
+ * @param style			[constant]*		button style
+ * @param index			[int]*			position at which to add the button
+ */
 ZmButtonToolBar.prototype.createOp =
-function(buttonId, text, imageInfo, disImageInfo, enabled, toolTip, index) {
+function(id, params, index) {
 	var b;
-	if (buttonId == ZmOperation.TEXT) {
+	params.className = this._buttonStyle;
+	if (id == ZmOperation.TEXT) {
 		b = new DwtText(this);
 	} else {
-		b = this._createButton(buttonId, imageInfo, text, disImageInfo, toolTip, enabled, this._buttonStyle, null, index);
+		b = this.createButton(id, params, index);
 	}
-	b.setData(ZmOperation.KEY_ID, buttonId);
+	b.setData(ZmOperation.KEY_ID, id);
 
 	return b;
 };

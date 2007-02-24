@@ -159,7 +159,7 @@ function(view) {
 		}
 		var icon = ZmOperation.getProp(op, "image");
 		var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
-		var mi = menu.createMenuItem(op, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 1);
+		var mi = menu.createMenuItem(op, {image:icon, text:text, style:DwtMenuItem.RADIO_STYLE}, 1);
 		mi.setData(ZmOperation.KEY_ID, op);
 		mi.addSelectionListener(listener);
 	}

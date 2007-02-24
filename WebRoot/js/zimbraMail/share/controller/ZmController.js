@@ -347,8 +347,11 @@ function(username, password, rememberMe) {
 
 ZmController.prototype._doLastSearch = 
 function() {
+	if (!this._execFrame) { return; }
 	var obj = this._execFrame.obj ? this._execFrame.obj : this;
-	this._execFrame.func.apply(obj, this._execFrame.args);
+	if (this._execFrame.func) {
+		this._execFrame.func.apply(obj, this._execFrame.args);
+	}
 	this._execFrame = null;
 };
 
@@ -357,11 +360,11 @@ function() {
 ZmController.prototype._errorDialogCallback =
 function() {
 	this._errorDialog.popdown();
-	if (this._execFrame) {
-		if (this._execFrame.restartOnError && !this._authenticating)
-			this._execFrame.func.apply(this, this._execFrame.args);
-		this._execFrame = null;
+	if (!this._execFrame) { return; }
+	if (this._execFrame.restartOnError && !this._authenticating && this._execFrame.func) {
+		this._execFrame.func.apply(this, this._execFrame.args);
 	}
+	this._execFrame = null;
 };
 
 

@@ -350,7 +350,8 @@ function(view) {
 		menu = new ZmPopupMenu(appToolbar.getViewButton());
 		for (var i = 0; i < ZmContactListController.VIEWS.length; i++) {
 			var id = ZmContactListController.VIEWS[i];
-			var mi = menu.createMenuItem(id, ZmContactListController.ICON[id], ZmMsg[ZmContactListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
+			var mi = menu.createMenuItem(id, {image:ZmContactListController.ICON[id], text:ZmMsg[ZmContactListController.MSG_KEY[id]],
+											  style:DwtMenuItem.RADIO_STYLE});
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 			if (id == view)
@@ -368,7 +369,7 @@ function(view) {
 	printButton.setMenu(menu);
 
 	var id = ZmOperation.PRINT_CONTACTLIST;
-	var mi = menu.createMenuItem(id, ZmOperation.getProp(id, "image"), ZmMsg[ZmOperation.getProp(id, "textKey")]);
+	var mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
 	mi.setData(ZmOperation.MENUITEM_ID, id);
 	mi.addSelectionListener(this._listeners[ZmOperation.PRINT]);
 };

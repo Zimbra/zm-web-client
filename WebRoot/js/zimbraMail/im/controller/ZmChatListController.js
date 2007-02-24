@@ -289,7 +289,8 @@ function(view) {
 		var menu = new ZmPopupMenu(appToolbar.getViewButton());
 		for (var i = 0; i < ZmChatListController.VIEWS.length; i++) {
 			var id = ZmChatListController.VIEWS[i];
-			var mi = menu.createMenuItem(id, ZmChatListController.ICON[id], ZmMsg[ZmChatListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
+			var mi = menu.createMenuItem(id, {image:ZmChatListController.ICON[id], text:ZmMsg[ZmChatListController.MSG_KEY[id]],
+											  style:DwtMenuItem.RADIO_STYLE});
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 			if (id == view)

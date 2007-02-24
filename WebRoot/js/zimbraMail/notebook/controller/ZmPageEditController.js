@@ -158,7 +158,7 @@ function(view) {
 			var style = DwtMenuItem.RADIO_STYLE;
 			var group = ZmPageEditController.RADIO_GROUP[op];
 
-			var menuItem = menu.createMenuItem(op, icon, text, null, true, style, group);
+			var menuItem = menu.createMenuItem(op, {image:icon, text:text, style:style, radioGroupId:group});
 			menuItem.setData(ZmOperation.KEY_ID, op);
 			menuItem.setData(ZmPageEditor.KEY_FORMAT, item.format);
 			menuItem.addSelectionListener(this._listeners[ZmOperation.COMPOSE_FORMAT]);

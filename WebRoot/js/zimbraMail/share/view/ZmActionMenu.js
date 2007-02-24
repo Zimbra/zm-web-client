@@ -69,12 +69,20 @@ function() {
 }
 
 /**
-* Creates a menu item and adds its operation ID as data.
-*/
+ * Creates a menu item and adds its operation ID as data.
+ * 
+ * @param id			[string]		name of the operation
+ * @param text			[string]*		menu item text
+ * @param image			[string]*		icon class for the menu item
+ * @param disImage		[string]*		disabled version of icon
+ * @param enabled		[boolean]*		if true, menu item is enabled
+ * @param style			[constant]*		menu item style
+ * @param radioGroupId	[string]*		ID of radio group for this menu item
+ */
 ZmActionMenu.prototype.createOp =
-function(menuItemId, text, imageInfo, disImageInfo, enabled) {
-	var mi = this.createMenuItem(menuItemId, imageInfo, text, disImageInfo, enabled);
-	mi.setData(ZmOperation.KEY_ID, menuItemId);
+function(id, params) {
+	var mi = this.createMenuItem(id, params);
+	mi.setData(ZmOperation.KEY_ID, id);
 
 	return mi;
 };

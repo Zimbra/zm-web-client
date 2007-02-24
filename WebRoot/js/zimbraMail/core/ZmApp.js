@@ -140,7 +140,6 @@ function(app, params) {
 	if (params.searchTypes) 		{ ZmApp.SEARCH_TYPES[app]		= params.searchTypes; }
 	if (params.gotoActionCode)		{ ZmApp.GOTO_ACTION_CODE[app]	= params.gotoActionCode; }
 	if (params.newActionCode)		{ ZmApp.NEW_ACTION_CODE[app]	= params.newActionCode; }
-	if (params.actionCodes)			{ ZmApp.ACTION_CODES[app]		= params.actionCodes; }
 	if (params.qsViews)				{ ZmApp.QS_VIEWS[app]			= params.qsViews; }
 	if (params.chooserSort)			{ ZmApp.CHOOSER_SORT[app]		= params.chooserSort; }
 	if (params.defaultSort)			{ ZmApp.DEFAULT_SORT[app]		= params.defaultSort; }
@@ -160,6 +159,7 @@ function(app, params) {
 	if (params.actionCodes) {
 		for (var ac in params.actionCodes) {
 			ZmApp.ACTION_CODES_R[ac] = app;
+			ZmApp.ACTION_CODES[ac] = params.actionCodes[ac];
 		}
 	}
 	

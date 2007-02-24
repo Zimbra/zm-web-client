@@ -38,10 +38,8 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
     searchFieldEl.className = "search_input";
     Dwt.setHandler(searchFieldEl, DwtEvent.ONKEYPRESS, ZmSearchToolBar._keyPressHdlr);
 
-    this._searchMenuButton = this._createButton(
-        ZmSearchToolBar.SEARCH_MENU_BUTTON, "MailFolder", ZmMsg.searchMail,
-        null, ZmMsg.chooseSearchType, true, "DwtButton"
-    );
+	var params = {image:"MailFolder", text:ZmMsg.searchMail, tooltip:ZmMsg.chooseSearchType, className:"DwtButton"};
+    this._searchMenuButton = this.createButton(ZmSearchToolBar.SEARCH_MENU_BUTTON, params);
     var menuParent = this._searchMenuButton;
 
     var menu = new DwtMenu(menuParent, null, "ActionMenu");
@@ -65,13 +63,15 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
     this._search.setFormat(ZmMsg.searchToolBar, callback, hintsCallback);
 
     if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-        this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, "Save", null, "SaveDis", ZmMsg.saveCurrentSearch, true, "DwtToolbarButton");
+        this._saveButton = this.createButton(ZmSearchToolBar.SAVE_BUTTON, {image:"Save", disImage:"SaveDis", tooltip:ZmMsg.saveCurrentSearch,
+        																   className:"DwtToolbarButton"});
     }
 
     if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
         this.addSeparator("vertSep");
         var buttonStyle = DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE;
-        this._browseButton = this._createButton(ZmSearchToolBar.BROWSE_BUTTON, null, ZmMsg.searchBuilder, null, ZmMsg.openSearchBuilder, true, "DwtToolbarButton", buttonStyle);
+        this._browseButton = this.createButton(ZmSearchToolBar.BROWSE_BUTTON, {text:ZmMsg.searchBuilder, tooltip:ZmMsg.openSearchBuilder,
+        																	   className:"DwtToolbarButton", style:buttonStyle});
     }
 };
 
@@ -189,11 +189,11 @@ function(parent, segment, i) {
 };
 
 ZmSearchToolBar.prototype.createCustomSearchBtn = 
-function(icon, label, listener) {
+function(icon, text, listener) {
 	var btn = this.getButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON);
 	if (!btn) {
-		btn = this._createButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON, icon, null, null, label, true, "DwtButton", null, 1);
-		btn.setData("CustomSearchItem", [ icon, label, listener ]);
+		btn = this.createButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON, {image:icon, text:text, className:"DwtButton"}, 1);
+		btn.setData("CustomSearchItem", [ icon, text, listener ]);
 		btn.addSelectionListener(this._customSearchBtnListener);
 	} else {
 		var menu = btn.getMenu();
@@ -207,8 +207,8 @@ function(icon, label, listener) {
 			item.setChecked(true, true);
 			item.addSelectionListener(this._customSearchBtnListener);
 		}
-		item = DwtMenuItem.create(menu, icon, label, null, true, DwtMenuItem.RADIO_STYLE, 0);
-		item.setData("CustomSearchItem", [ icon, label, listener ]);
+		item = DwtMenuItem.create(menu, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 0);
+		item.setData("CustomSearchItem", [ icon, text, listener ]);
 		item.addSelectionListener(this._customSearchBtnListener);
 	}
 	return btn;

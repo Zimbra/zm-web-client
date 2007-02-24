@@ -592,8 +592,9 @@ function(action) {
 	var isReply = (action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL);
 	var isForward = (action == ZmOperation.FORWARD_ATT || action == ZmOperation.FORWARD_INLINE);
 	var list = [];
-	if (isReply)
+	if (isReply) {
 		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.SEP);
+	}
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		list.push(ZmOperation.FORMAT_HTML, ZmOperation.FORMAT_TEXT, ZmOperation.SEP);
 	}
@@ -606,26 +607,35 @@ function(action) {
 	}
 
 	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
-	var menu = new ZmPopupMenu(button);
 	
+	var overrides = {};
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
-		if (op == ZmOperation.SEP) {
-			menu.createSeparator();
-		} else {
-			var style = op == ZmOperation.SHOW_BCC ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
-			var radioGroup = (style == DwtMenuItem.RADIO_STYLE) ? ZmComposeController.RADIO_GROUP[op] : null;
-			var text = (op == ZmOperation.REPLY) ? ZmMsg.replySender : ZmMsg[ZmOperation.getProp(op, "textKey")];
-			var mi = menu.createMenuItem(op, ZmOperation.getProp(op, "image"), text, null, true, style, radioGroup);
-			if (op == ZmOperation.FORMAT_HTML) {
-				mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
-			} else if (op == ZmOperation.FORMAT_TEXT) {
-				mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
-			}
-			mi.setData(ZmOperation.KEY_ID, op);		
-			mi.addSelectionListener(this._listeners[ZmOperation.COMPOSE_OPTIONS]);
+		overrides[op] = {};
+		var style = (op == ZmOperation.SHOW_BCC) ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
+		overrides[op].style = style;
+		overrides[op].radioGroupId = (style == DwtMenuItem.RADIO_STYLE) ? ZmComposeController.RADIO_GROUP[op] : null;
+		if (op == ZmOperation.REPLY) {
+			overrides[op].text = ZmMsg.replySender;
 		}
+		
 	}
+
+	var menu = new ZmActionMenu({parent:button, menuItems:list, overrides:overrides});
+
+	for (var i = 0; i < list.length; i++) {
+		var op = list[i];
+		var mi = menu.getOp(op);
+		if (!mi) { continue; }
+		if (op == ZmOperation.FORMAT_HTML) {
+			mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HTML);
+		} else if (op == ZmOperation.FORMAT_TEXT) {
+			mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
+		}
+		mi.setData(ZmOperation.KEY_ID, op);		
+		mi.addSelectionListener(this._listeners[ZmOperation.COMPOSE_OPTIONS]);
+	}
+
 	return menu;
 };
 

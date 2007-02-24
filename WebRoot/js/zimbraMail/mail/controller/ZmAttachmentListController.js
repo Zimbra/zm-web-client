@@ -113,7 +113,7 @@ ZmAttachmentListController.prototype._setupViewMenu =
 function(view) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = new ZmPopupMenu(appToolbar.getViewButton());
-	var mi = menu.createMenuItem(ZmController.ATT_LIST_VIEW, "ListView", ZmMsg.list);
+	var mi = menu.createMenuItem(ZmController.ATT_LIST_VIEW, {image:"ListView", text:ZmMsg.list});
 	mi.setData(ZmOperation.MENUITEM_ID, ZmController.ATT_LIST_VIEW);
     mi = menu.createMenuItem(ZmController.ATT_ICON_VIEW, "IconView", ZmMsg.icon);
 	mi.setData(ZmOperation.MENUITEM_ID, ZmController.ATT_ICON_VIEW);
