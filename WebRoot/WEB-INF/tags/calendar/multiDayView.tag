@@ -35,7 +35,7 @@
             <fmt:message var="singleDayFormat" key="CAL_DAY_TB_TITLE_FORMAT"/>
             <fmt:message var="pageTitle" key="CAL_MDAY_TITLE_FORMAT">
                 <fmt:param><fmt:formatDate value="${currentDay.time}" pattern="${singleDayFormat}"/></fmt:param>
-                <fmt:param><fmt:formatDate value="${zm:addDay(currentDay, numdays).time}" pattern="${singleDayFormat}"/></fmt:param>
+                <fmt:param><fmt:formatDate value="${zm:addDay(currentDay, numdays-1).time}" pattern="${singleDayFormat}"/></fmt:param>
             </fmt:message>
             <c:set var="tbTitle" value="${pageTitle}"/>
         </c:otherwise>
