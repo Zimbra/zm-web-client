@@ -9,6 +9,8 @@
 <zm:requirePost/>
 <zm:getMailbox var="mailbox"/>
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
+<c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
+<c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 <c:set var="contactError" value="${false}"/>
 <c:choose>
    <c:when test="${ (not (empty param.actionCreate and empty param.actionModify)) and (param.isgroup and empty fn:trim(param.nickname))}">
@@ -79,9 +81,9 @@
                     </fmt:message>
                 </app:status>
             </c:when>
-            <c:when test="${fn:startsWith(param.actionOp, 't:') or fn:startsWith(param.actionOp, 'u:')}">
-                <c:set var="tag" value="${fn:startsWith(param.actionOp, 't')}"/>
-                <c:set var="tagid" value="${fn:substring(param.actionOp, 2, -1)}"/>
+            <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
+                <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
+                <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
                 <zm:tagContact tagid="${tagid}"var="result" id="${ids}" tag="${tag}"/>
                 <app:status>
                     <fmt:message key="${tag ? 'actionContactTag' : 'actionContactUntag'}">
@@ -90,8 +92,8 @@
                     </fmt:message>
                 </app:status>
             </c:when>
-            <c:when test="${fn:startsWith(param.folderId, 'm:')}">
-                <c:set var="folderid" value="${fn:substring(param.folderId, 2, -1)}"/>
+            <c:when test="${fn:startsWith(folderId, 'm:')}">
+                <c:set var="folderid" value="${fn:substring(folderId, 2, -1)}"/>
                 <zm:moveContact folderid="${folderid}"var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionContactMoved">
