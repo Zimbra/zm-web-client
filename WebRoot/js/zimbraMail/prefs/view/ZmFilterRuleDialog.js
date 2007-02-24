@@ -424,14 +424,26 @@ function(conf, field, options, dataValue, rowId, data) {
 		// create button with calendar that hangs off menu
 		var dateButton = new DwtButton(this);
 		dateButton.setSize(ZmFilterRuleDialog.CHOOSER_BUTTON_WIDTH, Dwt.DEFAULT);
-		dateButton.setText(dataValue ? dataValue : ZmMsg.chooseDate);
-		dateButton.setData(ZmFilterRuleDialog.DATA, dataValue);
+		var date, dateText;
+		if (dataValue) {
+			// convert from filter format (yyyymmdd) to display format (dd/mm/yyyy)
+			var yyyy = parseInt(dataValue.substr(0, 4), 10);
+			var mm = parseInt(dataValue.substr(4, 2), 10) - 1;
+			var dd = parseInt(dataValue.substr(6, 2), 10);
+			date = new Date(yyyy, mm, dd);
+			dateText = AjxDateUtil.simpleComputeDateStr(date);
+		} else {
+			date = new Date();
+			dateText = ZmMsg.chooseDate;
+		}
+		dateButton.setText(dateText);
+		dateButton.setData(ZmFilterRuleDialog.DATA, date);
 		var calMenu = new DwtMenu(dateButton, DwtMenu.CALENDAR_PICKER_STYLE, null, null, this);
 		dateButton.setMenu(calMenu, true);
 		var cal = new DwtCalendar(calMenu);
 		cal.setSkipNotifyOnPage(true);
 		cal.addSelectionListener(this._dateLstnr);
-		cal.setDate(dataValue ? new Date(dataValue) : new Date());
+		cal.setDate(date);
 		cal._dateButton = dateButton;
 		this._inputs[rowId][field] = {id: id, dwtObj: dateButton};
 		return "<td id='" + id + "' valign='center' class='paddedTableCell'></td>";
@@ -573,7 +585,7 @@ function(ev) {
 	var date = ev.detail;
 	var button = cal._dateButton;
 	button.setText(AjxDateUtil.simpleComputeDateStr(date));
-	button.setData(ZmFilterRuleDialog.DATA, AjxDateFormat.format("yyyyMMdd", date));
+	button.setData(ZmFilterRuleDialog.DATA, date);
 };
 
 /*
@@ -810,7 +822,8 @@ function(inputs, conf, field) {
 	} else if (type == ZmFilterRule.TYPE_SELECT) {
 		return inputs[field].dwtObj.getValue();
 	} else if (type == ZmFilterRule.TYPE_CALENDAR) {
-		return inputs[field].dwtObj.getData(ZmFilterRuleDialog.DATA);
+		var date = inputs[field].dwtObj.getData(ZmFilterRuleDialog.DATA);
+		return AjxDateFormat.format("yyyyMMdd", date);
 	} else if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
 		return inputs[field].dwtObj.getData(ZmFilterRuleDialog.DATA);
 	} else if (type == ZmFilterRule.TYPE_TAG_PICKER) {
