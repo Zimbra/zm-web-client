@@ -101,6 +101,9 @@
                         <fmt:param value="${result.idCount}"/>
                     </fmt:message>
                 </app:status>
+                <c:if test="${actionOp ne 'read'}">
+                    <c:set var="idsMarkedUnread" value="${paramValues.id}" scope="request"/>
+                </c:if>
             </c:when>
             <c:when test="${actionOp eq 'flag' or actionOp eq 'unflag'}">
                 <zm:flagMessage var="result" id="${ids}" flag="${actionOp eq 'flag'}"/>
