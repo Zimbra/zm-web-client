@@ -217,6 +217,13 @@ padding-right:4px;
 padding: 5px;
 }
 
+.TbTop BUTTON, .TbBottom BUTTON {
+ padding: 0; 
+ border: none;
+/*@_WidgetContainer_@; */
+ @ToolbarBg@;   
+}
+
 .TbTop {
    @ToolbarContainer@
 
@@ -224,6 +231,12 @@ padding: 5px;
 
 .TbBottom {
    @InlineToolbarContainer@
+}
+
+.Tb a:link, .Tb a:visited {
+    text-decoration: none;
+    font-weight: normal;
+    @Text@
 }
 
 .Tb2 {
@@ -293,7 +306,8 @@ padding: 5px 0 5px 0;
 }
 
 .MsgOps {
-    background-color: @HeaderColor@;
+    @ToolbarBg@;
+/*    background-color: @HeaderColor@;*/
 }
 
 .Msg { }

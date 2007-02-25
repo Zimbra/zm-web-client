@@ -10,10 +10,14 @@
 
 <table width=100% cellspacing=0 class='Tb'>
     <tr>
-        <td align=left class=TbBt>
-            <input class='tbButton' type="submit" name="${create ? 'actionCreate' : 'actionModify'}" value="<fmt:message key="save"/>">
-            &nbsp;
-            <input class='tbButton' type="submit" name="${create ? 'actionCancelCreate' : 'actionCancelModify'}" value="<fmt:message key="cancel"/>">
+        <td align=left class=Tb>
+            <table cellspacing=2 cellpadding=0 class='Tb'>
+                <tr>
+                    <app:button name="${create ? 'actionCreate' : 'actionModify'}" src="common/Save.gif" tooltip="save" text="save"/>
+                    <td><div class='vertSep'></div></td>
+                    <app:button name="${create ? 'actionCancelCreate' : 'actionCancelModify'}" src="common/Close.gif" tooltip="cancel" text="cancel"/>
+                </tr>
+            </table>
         </td>
         <td align=right>
             &nbsp;

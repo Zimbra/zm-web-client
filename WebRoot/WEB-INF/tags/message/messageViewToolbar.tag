@@ -11,17 +11,12 @@
 <c:if test="${empty requestScope.mvToolbarCache}">
     <zm:getMailbox var="mailbox"/>
     <c:set var="mvToolbarCache" scope="request">
+        <td nowrap>
         <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
-         <a href="${closeurl}" <c:if test="${keys}">accesskey="z"</c:if>>${fn:escapeXml(context.backTo)}</a>
-        <input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="actionTrash"/>">
-        &nbsp;
-        <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-            <input class='tbButton' type="submit" name="actionSpam" value="<fmt:message key="actionSpam"/>">
-        </c:if>
-        <c:if test="${context.isFolderSearch and context.folder.isSpam}">
-            <input class='tbButton' type="submit" name="actionNotSpam" value="<fmt:message key="actionNotSpam"/>">
-        </c:if>
-        &nbsp;
+        <a href="${closeurl}" <c:if test="${keys}">accesskey="z"</c:if>> <app:img src="common/Close.gif"/> <span>${fn:escapeXml(context.backTo)}&nbsp;</span></a>
+        </td>
+         <td><div class='vertSep'></div></td>
+        <td  nowrap valign=middle>
         <select name="folderId">
             <option value="" selected/><fmt:message key="moveAction"/>
             <option disabled /><fmt:message key="actionOptSep"/>
@@ -31,8 +26,10 @@
                 </c:if>
             </zm:forEachFolder>
         </select>
-        <input class='tbButton' type="submit" name="actionMove" value="<fmt:message key="actionMove"/>">
-        &nbsp;
+        </td>
+        <app:button name="actionMove" src="common/MoveToFolder.gif" tooltip="actionMoveTT"/>
+        <td><div class='vertSep'></div></td>
+        <td  nowrap valign=middle>
         <select name="actionOp">
             <option value="" selected/><fmt:message key="moreActions"/>
             <option value="read"/><fmt:message key="actionMarkRead"/>
@@ -41,15 +38,28 @@
             <option value="unflag"/><fmt:message key="actionRemoveFlag"/>
             <app:tagOptions mailbox="${mailbox}"/>
         </select>
-        <input class='tbButton' type="submit" name="action" value="<fmt:message key="actionGo"/>">
+        </td>
+        <app:button name="action" tooltip="actionMessageGoTT" src="mail/Message.gif" />
+        <td><div class='vertSep'></div></td>
+         <app:button name="actionDelete" src="common/Delete.gif" tooltip="actionTrashTT"/>
+        <td><div class='vertSep'></div></td>
+        <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+            <app:button name="actionSpam" src="mail/SpamFolder.gif" tooltip="actionSpamTT" text="actionSpam"/>
+        </c:if>
+        <c:if test="${context.isFolderSearch and context.folder.isSpam}">
+            <app:button name="actionNotSpam" src="mail/SpamFolder.gif" tooltip="actionNotSpamTT" text="actionNotSpam"/>
+        </c:if>
     </c:set>
 </c:if>
 
 <table width=100% cellspacing=0 class='Tb'>
-    <tr>
-        <td align=left class=TbBt>
-            <zm:currentResultUrl var="closeUrl" value="/h/search" context="${context}"/>
-            ${requestScope.mvToolbarCache}
+      <tr valign='middle'>
+        <td style='padding:2px'>
+            <table cellspacing=2 cellpadding=0 class='Tb'>
+                <tr>
+                    ${requestScope.mvToolbarCache}
+                </tr>
+            </table>
         </td>
         <td align=right>
             <c:if test="${context.hasPrevItem}">

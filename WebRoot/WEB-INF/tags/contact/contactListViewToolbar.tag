@@ -13,56 +13,70 @@
     <c:set var="contactsToolbarCache" scope="request">
         <c:if test="${context.folder.isTrash}">
             <input type="hidden" name="contextFolderId" value="${context.selectedId}"/>
-            <input class='tbButton' type="submit" name="actionEmpty" value="<fmt:message key="emptyTrash"/>">
-            &nbsp;
+            <app:button name="actionEmpty" src="common/Delete.gif" tooltip="emptyTrash" text="emptyTrash"/>
+            <td><div class='vertSep'></div></td>
         </c:if>
-        <input class='tbButton' type="submit" name="actionNew" value="<fmt:message key="newContact"/>">
-        &nbsp;
-        <input class='tbButton' type="submit" name="actionNewGroup" value="<fmt:message key="newGroup"/>">
-        &nbsp;
-        <c:if test="${not empty contact}">
-        <input class='tbButton' type="submit" name="actionEdit" value="<fmt:message key="edit"/>">
-        <input type='hidden' name="actionEditId" value="${contact.id}"/>
-        &nbsp;
-        </c:if>
-        <c:choose>
-            <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                <input class='tbButton' type="submit" name="actionHardDelete" value="<fmt:message key="actionTrash"/>">
-            </c:when>
-            <c:otherwise>
-                <input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="actionTrash"/>">
-            </c:otherwise>
-        </c:choose>
-        &nbsp;
-        <select name="folderId">
-            <option value="" selected/><fmt:message key="moveAction"/>
-            <option disabled /><fmt:message key="actionOptSep"/>
-            <zm:forEachFolder var="folder">
-                <c:if test="${folder.isContactMoveTarget and !folder.isTrash}">
-                    <option value="m:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
-                </c:if>
-            </zm:forEachFolder>
-        </select>
-        <input class='tbButton' type="submit" name="actionMove" value="<fmt:message key="actionMove"/>">
-        &nbsp;
+        <td><div class='vertSep'></div></td>
+        <app:button name="actionNew" src="contacts/NewContact.gif" tooltip="newContact" text="contact"/>
+        <td><div class='vertSep'></div></td>
+        <app:button name="actionNewGroup" src="mail/NewGroup.gif" tooltip="newGroup" text="group"/>
+         <td><div class='vertSep'></div></td>
+        <td nowrap>
+            <select name="folderId">
+                <option value="" selected/><fmt:message key="moveAction"/>
+                <option disabled /><fmt:message key="actionOptSep"/>
+                <zm:forEachFolder var="folder">
+                    <c:if test="${folder.isContactMoveTarget and !folder.isTrash}">
+                        <option value="m:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+        <app:button name="actionMove" src="common/MoveToFolder.gif" tooltip="actionMoveTT"/>
+
+        <td><div class='vertSep'></div></td>
+
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
+            <td nowrap>
             <select name="actionOp">
-                <option value="" selected/><fmt:message key="moreActions"/>
+            <option value="" selected/><fmt:message key="moreActions"/>
         </c:if>
         <app:tagOptions mailbox="${mailbox}"/>
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             </select>
-            <input class='tbButton' type="submit" name="action" value="<fmt:message key="actionGo"/>">
+            </td>
+            <app:button name="action" tooltip="actionContactGoTT" src="contacts/Contact.gif" />
         </c:if>
+        <td><div class='vertSep'></div></td>
+         <c:choose>
+             <c:when test="${context.isFolderSearch and context.folder.isTrash}">
+                 <app:button name="actionHardDelete" src="common/Delete.gif" tooltip="actionTrashTT" />
+             </c:when>
+             <c:otherwise>
+                 <app:button name="actionDelete" src="common/Delete.gif" tooltip="actionTrashTT"/>
+             </c:otherwise>
+         </c:choose>
+        <c:if test="${not empty contact}">
+            <td><div class='vertSep'></div></td>
+             <app:button name="actionEdit" src="common/Edit.gif" tooltip="edit" text="edit"/>
+             <input type='hidden' name="actionEditId" value="${contact.id}"/>
+         </c:if>
+
     </c:set>
 </c:if>
 
 <table width=100% cellspacing=0 class='Tb'>
     <tr>
-        <td align=left class=TbBt>
-            <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
-            <a href="${refreshUrl}" <c:if test="${keys}">accesskey="r"</c:if>><fmt:message key="refresh"/></a>
-            ${requestScope.contactsToolbarCache}
+        <td align=left class=Tb>
+            <table cellspacing=2 cellpadding=0 class='Tb'>
+                <tr>
+                    <td nowrap>
+                        <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />
+                        <a href="${refreshUrl}" <c:if test="${keys}">accesskey="r"</c:if>><app:img src="arrows/Refresh.gif" altkey="refresh"/><span><fmt:message key="refresh"/></span></a>
+                    </td>
+                    ${requestScope.contactsToolbarCache}
+                </tr>
+            </table>
         </td>
         <td nowrap align=right>
             <app:searchPageLeft keys="${keys}" context="${context}" urlTarget="/h/search"/>

@@ -44,20 +44,24 @@
 
 <app:view title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
     <c:set var="toolbar">
-        <table width=100% cellspacing=0 class='Tb'>
-            <tr>
-                <td align=left class=TbBt>
-                    <input class='tbButton' name="actionSend" type=submit value="<fmt:message key="send"/>">
-                    &nbsp;
-                    <input class='tbButton' name="actionCancel" type=submit value="<fmt:message key="cancel"/>">
-                    &nbsp;
-                    <input class='tbButton' name="actionDraft" type=submit value="<fmt:message key="saveDraft"/>">
-                    &nbsp;
-                    <input class='tbButton' name="actionAttachAdd" type=submit value="<fmt:message key="addAttachments"/>">
-                    <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
-                        &nbsp;
-                        <input class='tbButton' name="actionContactAdd" type=submit value="<fmt:message key="addFromContacts"/>">
-                    </c:if>                     
+        <table width=100% cellspacing=0 cellpadding=0>
+            <tr valign='middle'>
+                <td>
+                    <table cellspacing=2 cellpadding=0 class='Tb'>
+                        <tr>
+                            <app:button name="actionSend" src="mail/Send.gif" tooltip="send" text="send"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button name="actionCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button name="actionDraft" src="mail/DraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button name="actionAttachAdd" src="common/Attachment.gif" tooltip="addAttachments" text="addAttachments"/>
+                            <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
+                                <td><div class='vertSep'></div></td>
+                                <app:button name="actionContactAdd" src="contacts/ContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
+                            </c:if>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>
