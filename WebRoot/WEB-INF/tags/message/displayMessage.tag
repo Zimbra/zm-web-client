@@ -166,41 +166,68 @@
             <table width=100% >
                 <tr valign="middle">
                     <td nowrap align=left style='padding-left: 5px'>
-                        <a
-                                <c:if test="${not isPart}">accesskey="1"</c:if> href="${composeUrl}&op=reply">
-                            <fmt:message key="reply"/>
-                        </a> |
-                        <a
-                                <c:if test="${not isPart}">accesskey="2"</c:if> href="${composeUrl}&op=replyAll">
-                            <fmt:message key="replyAll"/>
-                        </a> |
-                        <a
-                                <c:if test="${not isPart}">accesskey="3"</c:if> href="${composeUrl}&op=forward">
-                            <fmt:message key="forward"/>
-                        </a>
-                        <%-- <c:if test="${isPart}"> | <a href="${composeUrl}&op=resend"><fmt:message key="resend"/></a></c:if> --%>
+                        <table cellspacing=4 cellpadding=0 class='Tb'>
+                            <tr>
+                                <td style='padding: 0 2px 0 2px'>
+                                    <a <c:if test="${not isPart}">accesskey="1"</c:if> href="${composeUrl}&op=reply">
+                                        <img src="<c:url value="/images/mail/Reply.gif"/>" alt=""/>
+                                        &nbsp;
+                                        <span><fmt:message key="reply"/></span>
+                                    </a>
+                                </td>
+                                <td><div class='vertSep'></div></td>
+
+                                <td style='padding: 0 2px 0 2px'>
+                                    <a <c:if test="${not isPart}">accesskey="2"</c:if> href="${composeUrl}&op=replyAll">
+                                        <img src="<c:url value="/images/mail/ReplyAll.gif"/>" alt=""/>
+                                        &nbsp;
+                                        <span><fmt:message key="replyAll"/></span>
+                                    </a>
+                                </td>
+                                <td><div class='vertSep'></div></td>
+                                <td style='padding: 0 2px 0 2px'>
+                                    <a <c:if test="${not isPart}">accesskey="3"</c:if> href="${composeUrl}&op=forward">
+                                        <img src="<c:url value="/images/mail/Forward.gif"/>" alt=""/>
+                                        &nbsp;
+                                        <span><fmt:message key="forward"/></span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
                     </td>
                     <td nowrap align=right style='padding-right: 5px;'>
-                        <c:if test="${showconvlink and not fn:startsWith(message.conversationId, '-')}">
-                            <c:url var="convUrl" value="/h/search">
-                                <c:param name="action" value="view"/>
-                                <c:param name="st" value="conversation"/>
-                                <c:param name="sq" value='conv:"${message.conversationId}"'/>
-                            </c:url>
-                            <a accesskey='${not empty newWindowUrl ? '8' : '9'}' href="${convUrl}">
-                                <fmt:message key="showConversation"/>
-                            </a> |
-                        </c:if>
-                        <c:if test="${not empty newWindowUrl}">
-                            <a accesskey='9' target="_blank" href="${newWindowUrl}">
-                                <fmt:message key="newWindow"/>
-                            </a> | 
-                        </c:if>
-                        <c:if test="${not isPart}">
-                            <a accesskey='0' target="_blank" href="/service/home/~/?id=${message.id}&auth=co">
-                                <fmt:message key="showOrig"/>
-                            </a>
-                        </c:if>
+                        <table cellspacing=4 cellpadding=0 class='Tb'>
+                            <tr>
+                                <c:if test="${showconvlink and not fn:startsWith(message.conversationId, '-')}">
+                                    <td style='padding: 0 2px 0 2px'>
+                                        <c:url var="convUrl" value="/h/search">
+                                            <c:param name="action" value="view"/>
+                                            <c:param name="st" value="conversation"/>
+                                            <c:param name="sq" value='conv:"${message.conversationId}"'/>
+                                        </c:url>
+                                        <a accesskey='${not empty newWindowUrl ? '8' : '9'}' href="${convUrl}">
+                                            <img src="<c:url value="/images/mail/Conversation.gif"/>" alt="<fmt:message key="showConversation"/>" title="<fmt:message key="showConversation"/>"/>
+                                        </a>
+                                    </td>
+                                </c:if>
+                                <td><div class='vertSep'></div></td>
+                                <c:if test="${not empty newWindowUrl}">
+                                <td style='padding: 0 2px 0 2px'>
+                                    <a accesskey='9' target="_blank" href="${newWindowUrl}">
+                                        <img src="<c:url value="/images/common/OpenInNewWindow.gif"/>" alt="<fmt:message key="newWindow"/>" title="<fmt:message key="newWindow"/>"/>
+                                    </a>
+                                </td>
+                                </c:if>
+                                <td><div class='vertSep'></div></td>
+                                <c:if test="${not isPart}">
+                                <td style='padding: 0 2px 0 2px'>
+                                    <a accesskey='0' target="_blank" href="/service/home/~/?id=${message.id}&auth=co">
+                                        <img src="<c:url value="/images/mail/Message.gif"/>" alt="<fmt:message key="showOrig"/>" title="<fmt:message key="showOrig"/>"/>
+                                    </a>
+                                    </c:if>
+                                </td>
+                            </tr>
+                        </table>
                     </td>
                 </tr>
             </table>

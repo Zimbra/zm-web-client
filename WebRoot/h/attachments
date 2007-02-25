@@ -16,12 +16,16 @@
 <app:view title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
 
     <c:set var="toolbar">
-        <table width=100% cellspacing=0 class='Tb'>
-            <tr>
-                <td align=left class=TbBt>
-                    <input class='tbButton' name="actionAttachDone" type=submit value="<fmt:message key="done"/>">
-                    &nbsp;
-                    <input class='tbButton' name="actionAttachCancel" type=submit value="<fmt:message key="cancel"/>">
+        <table width=100% cellspacing=0>
+            <tr valign='middle'>
+                <td>
+                    <table cellspacing=2 cellpadding=0 class='Tb'>
+                        <tr>
+                            <app:button name="actionAttachDone" src="common/Close.gif" tooltip="done" text="done"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button name="actionAttachCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>

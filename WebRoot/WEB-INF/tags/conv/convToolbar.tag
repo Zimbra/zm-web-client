@@ -12,15 +12,8 @@
 <c:if test="${empty requestScope.cvToolbarCache}">
     <zm:getMailbox var="mailbox"/>
     <c:set var="cvToolbarCache" scope="request">
-        <input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="actionTrash"/>">
-        &nbsp;
-        <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-            <input class='tbButton' type="submit" name="actionSpam" value="<fmt:message key="actionSpam"/>">
-        </c:if>
-        <c:if test="${context.isFolderSearch and context.folder.isSpam}">
-            <input class='tbButton' type="submit" name="actionNotSpam" value="<fmt:message key="actionNotSpam"/>">
-        </c:if>
-        &nbsp;
+        <td><div class='vertSep'></div></td>
+        <td  nowrap valign=middle>
         <select name="folderId">
             <option value="" selected/><fmt:message key="moveAction"/>
             <option disabled /><fmt:message key="actionOptSep"/>
@@ -29,31 +22,49 @@
                              <option value="m:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
                          </c:if>
                      </zm:forEachFolder>
-                 </select>
-                 <input class='tbButton' type="submit" name="actionMove" value="<fmt:message key="actionMove"/>">
-                &nbsp;
-                <select name="actionOp">
+        </select>
+        </td>
+        <app:button name="actionMove" src="common/MoveToFolder.gif" tooltip="actionMoveTT"/>
+        <td><div class='vertSep'></div></td>
+        <td  nowrap valign=middle>
+        <select name="actionOp">
                     <option value="" selected/><fmt:message key="moreActions"/>
                     <option value="read"/><fmt:message key="actionMarkRead"/>
                     <option value="unread"/><fmt:message key="actionMarkUnread"/>
                     <option value="flag"/><fmt:message key="actionAddFlag"/>
                     <option value="unflag"/><fmt:message key="actionRemoveFlag"/>
                     <app:tagOptions mailbox="${mailbox}"/>
-                </select>
-                <input class='tbButton' type="submit" name="action" value="<fmt:message key="actionGo"/>">
-        &nbsp;&nbsp;
-                <input type="hidden" name="contextConvId" value="${convSearchResult.conversationSummary.id}">
-                <input class='tbButton' type="submit" name="actionMarkConvRead" value="<fmt:message key="actionMarkAllRead"/>">
-
+        </select>
+        </td>
+        <app:button name="action" tooltip="actionMessageGoTT" src="mail/Message.gif" />
+        <td><div class='vertSep'></div></td>
+        <app:button name="actionDelete" src="common/Delete.gif" tooltip="actionTrashTT"/>
+        <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
+            <td><div class='vertSep'></div></td>
+            <app:button name="actionSpam" src="mail/SpamFolder.gif" tooltip="actionSpamTT" text="actionSpam"/>
+        </c:if>
+        <c:if test="${context.isFolderSearch and context.folder.isSpam}">
+            <td><div class='vertSep'></div></td>
+            <app:button name="actionNotSpam" src="mail/SpamFolder.gif" tooltip="actionNotSpamTT" text="actionNotSpam"/>
+        </c:if>
+        <td><div class='vertSep'></div></td>
+        <input type="hidden" name="contextConvId" value="${convSearchResult.conversationSummary.id}">
+        <app:button name="actionMarkConvRead" src="mail/ReadMessage.gif" tooltip="actionMarkAllRead"/>
     </c:set>
 </c:if>
 
 <table width=100% cellspacing=0 class='Tb'>
     <tr>
-        <td align=left class=TbBt>
-            <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
-            <a href="${closeurl}" <c:if test="${keys}">accesskey="z"</c:if>>${fn:escapeXml(context.backTo)}</a>
-            ${requestScope.cvToolbarCache}
+        <td align=left class=Tb>
+            <table cellspacing=2 cellpadding=0 class='Tb'>
+                <tr>
+                    <td nowrap>
+                        <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
+                        <a href="${closeurl}" <c:if test="${keys}">accesskey="z"</c:if>> <app:img src="common/Close.gif"/> <span>${fn:escapeXml(context.backTo)}&nbsp;</span></a>
+                    </td>
+                    ${requestScope.cvToolbarCache}
+                </tr>
+            </table>
         </td>
         <td nowrap align=right>
             <c:if test="${context.hasPrevItem}">
