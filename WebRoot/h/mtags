@@ -38,11 +38,14 @@
     </c:if>
 
     <c:set var="toolbar">
-        <table width=100% cellspacing=0 class='Tb'>
+        <table width=100% cellspacing=0>
             <tr>
-                <td align=left class=TbBt>
-                    <input class='tbButton' type="submit"
-                           name="actionNewTag" value="<fmt:message key="tagNew"/>">
+                <td>
+                    <table cellspacing=2 cellpadding=0 class='Tb'>
+                        <tr>
+                            <app:button name="actionNewTag" src="tag/NewTag.gif" tooltip="tagNew" text="tagNew"/>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>

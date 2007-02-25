@@ -31,17 +31,18 @@
     <c:set var="newFolder" value="${not empty param.actionNewFolder or not empty param.actionNewSearchFolder or not empty param.actionNewFeedFolder}"/>
 
     <c:set var="toolbar">
-        <table width=100% cellspacing=0 class='Tb'>
+        <table width=100% cellspacing=0>
             <tr>
-                <td align=left class=TbBt>
-                    <input class='tbButton' type="submit"
-                           name="actionNewFolder" value="<fmt:message key="folderNew"/>">
-                    &nbsp;
-                    <input class='tbButton' type="submit"
-                           name="actionNewFeedFolder" value="<fmt:message key="folderNewRssAtomFeed"/>">
-                    &nbsp;
-                    <input class='tbButton' type="submit"
-                           name="actionNewSearchFolder" value="<fmt:message key="folderNewSearchFolder"/>">
+                <td>
+                    <table cellspacing=2 cellpadding=0 class='Tb'>
+                        <tr>
+                            <app:button name="actionNewFolder" src="common/NewFolder.gif" tooltip="folderNew" text="folderNew"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button name="actionNewFeedFolder" src="common/NewFolder.gif" tooltip="folderNewRssAtomFeed" text="folderNewRssAtomFeed"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button name="actionNewSearchFolder" src="common/NewFolder.gif" tooltip="folderNewSearchFolder" text="folderNewSearchFolder"/>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>

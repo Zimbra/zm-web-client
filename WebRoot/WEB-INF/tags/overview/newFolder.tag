@@ -56,25 +56,14 @@
 
 <table width=100% cellspacing=0 cellpadding=0>
     <tr class="${newFolderStyleColor}${newFolderStyleColor ne 'Gray' ? 'Bg' :''}">
-        <td>&nbsp;</td>
-        <td width=20>
+        <td width=20 style='padding-left:5px'>
             <app:img src="${icon}" alt='${fn:escapeXml(label)}'/>
         </td>
         <td class='ZhFolderHeader' colspan=2>
             ${fn:escapeXml(label)}
         </td>
-        <td width=1% nowrap class='ZhCalType'>
-            <c:choose>
-                <c:when test="${url}">
-                    <fmt:message key="folderSubscribed"/>
-                </c:when>
-                <c:when test="${search}">
-                    <fmt:message key="folderSearch"/>
-                </c:when>
-                <c:otherwise>
-                    <fmt:message key="folderUser"/>
-                </c:otherwise>
-            </c:choose>
+        <td width=1% nowrap class='ZhFolderType'>
+            ${fn:escapeXml(folderType)}
             &nbsp;
         </td>
     </tr>

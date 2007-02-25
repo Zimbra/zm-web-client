@@ -22,7 +22,7 @@
     <td>
         <table width=100% cellspacing=0 cellpadding=1>
             <tr valign="middle" class='${colorStyle}'>
-                <td valign="middle" width=20>
+                <td valign="middle" width=20 style='padding-left:5px'>
                     <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
                 </td>
                 <td>

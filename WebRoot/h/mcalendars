@@ -26,17 +26,18 @@
     <c:set var="newCalendar" value="${not empty param.actionNewCalendar or not empty param.actionNewSubscribedCalendar or not empty param.actionNewSharedCalendar}"/>
 
     <c:set var="toolbar">
-        <table width=100% cellspacing=0 class='Tb'>
+        <table width=100% cellspacing=0>
             <tr>
-                <td align=left class=TbBt>
-                    <input class='tbButton' type="submit"
-                           name="actionNewCalendar" value="<fmt:message key="calendarNew"/>">
-                    &nbsp;
-                     <input class='tbButton' type="submit"
-                           name="actionNewSubscribedCalendar" value="<fmt:message key="calendarNewSubscribed"/>">
-                    &nbsp;
-                    <input class='tbButton' type="submit"
-                           name="actionNewSharedCalendar" value="<fmt:message key="calendarNewShared"/>">
+                <td>
+                    <table cellspacing=2 cellpadding=0 class='Tb'>
+                        <tr>
+                            <app:button name="actionNewCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNew" text="calendarNew"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button name="actionNewSubscribedCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNewSubscribed" text="calendarNewSubscribed"/>
+                            <td><div class='vertSep'></div></td>
+                            <app:button name="actionNewSharedCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNewShared" text="calendarNewShared"/>
+                        </tr>
+                    </table>
                 </td>
             </tr>
         </table>
