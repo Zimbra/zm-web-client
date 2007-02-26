@@ -43,7 +43,7 @@ function() {
 ZmContactsBaseView.prototype.set =
 function(list, sortField, folderId) {
 	var subList;
-	if (list instanceof ZmContactList) {
+	if (list instanceof ZmList) {
 		// compute the sublist based on the folderId if applicable
 		list.addChangeListener(this._listChangeListener);
 		subList = list.getSubList(this.getOffset(), this.getLimit(), folderId);
@@ -272,7 +272,7 @@ ZmContactAlphabetBar._alphabetClicked =
 function(cell, letter, endLetter) {
 	// get reference to alphabet bar - ugh
 	var appCtxt = window._zimbraMail._appCtxt;
-	var clc = AjxDispatcher.run("GetContactListController");
+	var clc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
 	var alphabetBar = clc.getParentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
 		alphabetBar.reset(cell);
@@ -284,7 +284,7 @@ ZmContactAlphabetBar._onMouseOver =
 function(cell) {
 	// get reference to alphabet bar - ugh
 	var appCtxt = window._zimbraMail._appCtxt;
-	var alphabetBar = AjxDispatcher.run("GetContactListController").getParentView().getAlphabetBar();
+	var alphabetBar = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().getParentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
 		cell.className = "DwtButton-activated AlphabetBarCell";
 	}
@@ -294,7 +294,7 @@ ZmContactAlphabetBar._onMouseOut =
 function(cell) {
 	// get reference to alphabet bar - ugh
 	var appCtxt = window._zimbraMail._appCtxt;
-	var alphabetBar = AjxDispatcher.run("GetContactListController").getParentView().getAlphabetBar();
+	var alphabetBar = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController().getParentView().getAlphabetBar();
 	if (alphabetBar.enabled()) {
 		alphabetBar.setToggled(cell, cell == alphabetBar.getCurrent());
 	}

@@ -56,18 +56,12 @@ function() {
 
 ZmToolBar.prototype.addSelectionListener =
 function(buttonId, listener) {
-	var button = this._buttons[buttonId];
-	if (button) {
-		button.addSelectionListener(listener);
-	}
+	this._buttons[buttonId].addSelectionListener(listener);
 };
 
 ZmToolBar.prototype.removeSelectionListener =
 function(buttonId, listener) {
-	var button = this._buttons[buttonId];
-	if (button) {
-		button.removeSelectionListener(listener);
-	}
+	this._buttons[buttonId].removeSelectionListener(listener);
 };
 
 ZmToolBar.prototype.getButton =
@@ -103,37 +97,26 @@ function(enabled) {
 	}
 };
 
-/**
- * Adds a button to this toolbar.
- * 
- * @param id			[string]		button ID
- * @param text			[string]*		button text
- * @param tooltip		[string]*		button tooltip text
- * @param image			[string]*		icon class for the button
- * @param disImage		[string]*		disabled version of icon
- * @param enabled		[boolean]*		if true, button is enabled
- * @param className		[constant]*		CSS class name
- * @param style			[constant]*		button style
- * @param index			[int]*			position at which to add the button
- */
-ZmToolBar.prototype.createButton =
-function(id, params, index) {
-	var className = params.className || "DwtToolbarButton";
-	var b = this._buttons[id] = new DwtButton(this, params.style, className, null, null, null, params.index);
-	if (params.image) {
-		b.setImage(params.image);
+ZmToolBar.prototype._createButton =
+function(buttonId, imageInfo, text, disImageInfo, toolTip, enabled, style, align, index) {
+	if (!style) {
+		style = "DwtToolbarButton";
 	}
-	if (params.text) {
-		b.setText(params.text);
+	var b = this._buttons[buttonId] = new DwtButton(this, align, style, null, null, null, index);
+	if (imageInfo) {
+		b.setImage(imageInfo);
 	}
-	if (params.toolTip) {
-		b.setToolTipContent(params.toolTip);
+	if (text) {
+		b.setText(text);
 	}
-	if (params.disImage) {
-		b.setDisabledImage(params.disImage);
+	if (toolTip) {
+		b.setToolTipContent(toolTip);
 	}
-	b.setEnabled(params.enabled !== false);
-	b.setData("_buttonId", id);
+	if (disImageInfo) {
+		b.setDisabledImage(disImageInfo);
+	}
+	b.setEnabled((enabled) ? true : false);
+	b.setData("_buttonId", buttonId);
 
 	return b;
 };

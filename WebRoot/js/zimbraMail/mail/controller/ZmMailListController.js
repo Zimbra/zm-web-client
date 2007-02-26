@@ -40,18 +40,6 @@ function ZmMailListController(appCtxt, container, mailApp) {
 	if (arguments.length == 0) return;
 	ZmListController.call(this, appCtxt, container, mailApp);
 
-	ZmMailListController.INVITE_REPLY_MAP = {};
-	ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_ACCEPT]		= ZmOperation.REPLY_ACCEPT;
-	ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_DECLINE]		= ZmOperation.REPLY_DECLINE;
-	ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_TENTATIVE]	= ZmOperation.REPLY_TENTATIVE;
-	
-	// convert key mapping to operation
-	ZmMailListController.ACTION_CODE_TO_OP = {};
-	ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.REPLY]			= ZmOperation.REPLY;
-	ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.REPLY_ALL]		= ZmOperation.REPLY_ALL;
-	ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.FORWARD_INLINE]	= ZmOperation.FORWARD_INLINE;
-	ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.FORWARD_ATT]	= ZmOperation.FORWARD_ATT;
-
 	this._listeners[ZmOperation.MARK_READ] = new AjxListener(this, this._markReadListener);
 	this._listeners[ZmOperation.MARK_UNREAD] = new AjxListener(this, this._markUnreadListener);
 
@@ -95,6 +83,18 @@ ZmMailListController.MSG_KEY[ZmController.CONVLIST_VIEW]	= "byConversation";
 ZmMailListController.MSG_KEY[ZmController.TRAD_VIEW]		= "byMessage";
 
 ZmMailListController.GROUP_BY_VIEWS = [ZmController.CONVLIST_VIEW, ZmController.TRAD_VIEW];
+
+ZmMailListController.INVITE_REPLY_MAP = {};
+ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_ACCEPT]		= ZmOperation.REPLY_ACCEPT;
+ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_DECLINE]		= ZmOperation.REPLY_DECLINE;
+ZmMailListController.INVITE_REPLY_MAP[ZmOperation.INVITE_REPLY_TENTATIVE]	= ZmOperation.REPLY_TENTATIVE;
+
+// convert key mapping to operation
+ZmMailListController.ACTION_CODE_TO_OP = {};
+ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.REPLY]			= ZmOperation.REPLY;
+ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.REPLY_ALL]		= ZmOperation.REPLY_ALL;
+ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.FORWARD_INLINE]	= ZmOperation.FORWARD_INLINE;
+ZmMailListController.ACTION_CODE_TO_OP[ZmKeyMap.FORWARD_ATT]	= ZmOperation.FORWARD_ATT;
 
 // convert key mapping to folder to search
 ZmMailListController.ACTION_CODE_TO_FOLDER = {};
@@ -297,19 +297,16 @@ function(view) {
 	ZmListController.prototype._initialize.call(this, view);
 	
 	if (!this._participantActionMenu) {
-		var menuItems = this._participantOps();
+		var menuItems = this._contactOps();
 		menuItems.push(ZmOperation.SEP);
 		var ops = this._getActionMenuOps();
 		if (ops && ops.length) {
 			menuItems = menuItems.concat(ops);
 		}
-    	this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
-		menuItems = this._participantActionMenu.opList;
+    	this._participantActionMenu = new ZmActionMenu(this._shell, menuItems);
 		for (var i = 0; i < menuItems.length; i++) {
-			var menuItem = menuItems[i];
-			if (this._listeners[menuItem]) {
-				this._participantActionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
-			}
+			if (menuItems[i] > 0)
+				this._participantActionMenu.addSelectionListener(menuItems[i], this._listeners[menuItems[i]]);
 		}
 		this._propagateMenuListeners(this._participantActionMenu, ZmOperation.REPLY_MENU);
 		this._propagateMenuListeners(this._participantActionMenu, ZmOperation.FORWARD_MENU);
@@ -376,7 +373,7 @@ function() {
 
 ZmMailListController.prototype._flagOps =
 function() {
-	return [ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD];
+	return ([ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD]);
 };
 
 ZmMailListController.prototype._msgOps =
@@ -429,7 +426,7 @@ function(ev) {
 	// bug fix #3602
 	var address = ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT] 
 		? ev.detail 
-		: ((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null); // yuck
+		: ((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(ZmEmailAddress.FROM) : null); // yuck
 	if (address && items.length == 1 && 
 		(ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT] || 
 		 ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM])) 
@@ -438,7 +435,7 @@ function(ev) {
 		this._setTagMenu(this._participantActionMenu);
 		this._actionEv.address = address;
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			var contacts = AjxDispatcher.run("GetContacts");
+			var contacts = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 			this._actionEv.contact = contacts.getContactByEmail(this._actionEv.address.getAddress());
 			this._setContactText(this._actionEv.contact != null);
 		}
@@ -494,7 +491,7 @@ function(ev, action, extraBodyText, instanceDate, accountName) {
 	//   then if opening draft always request html 
 	// 	 otherwise just check if user prefers html or
 	//   msg hasnt been loaded yet and user prefers format of orig. msg
-	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
+	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
 	var identity = identityCollection.selectIdentity(msg);
 
 	// always re-resolve forward action if forward toolbar button is clicked
@@ -508,15 +505,15 @@ function(ev, action, extraBodyText, instanceDate, accountName) {
 	var sameFormat = identity.getComposeSameFormat();
 	
 	var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg.isLoaded() && sameFormat)))));
-	var inNewWindow = this._app._inNewWindow(ev);
+	var inNewWindow = this._inNewWindow(ev);
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText, accountName]);
 	msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
 };
 
 ZmMailListController.prototype._handleResponseDoAction = 
 function(action, inNewWindow, msg, extraBodyText, accountName) {
-	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
-								  extraBodyText: extraBodyText, accountName: accountName});
+	// ugh... param-itize this shiznat
+	this._app.getComposeController().doAction(action, inNewWindow, msg, null, null, extraBodyText, null, accountName);
 };
 
 ZmMailListController.prototype._inviteReplyHandler = 
@@ -660,7 +657,7 @@ function(action, componentId, instanceDate, accountName) {
 ZmMailListController.prototype._sendInviteReply = 
 function(type, componentId, instanceDate, accountName) {
 	var msg = new ZmMailMsg(this._appCtxt);
-	var contactList = AjxDispatcher.run("GetContacts");
+	var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 	
 	msg._origMsg = this._getMsg();
 	msg.inviteMode = type;
@@ -732,7 +729,8 @@ function(ev) {
     var hasPopAccounts = false;
 
     if (folder && !isFeed && this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
-        dsCollection = AjxDispatcher.run("GetDataSourceCollection");
+        var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
+        dsCollection = prefsApp.getDataSourceCollection();
         var dataSources = dsCollection.getPopAccountsFor(folderId);
         hasPopAccounts = dataSources.length > 0;
     }
@@ -770,8 +768,7 @@ function(view) {
 		appToolbar.setViewMenu(view, menu);
 		for (var i = 0; i < ZmMailListController.GROUP_BY_VIEWS.length; i++) {
 			var id = ZmMailListController.GROUP_BY_VIEWS[i];
-			var mi = menu.createMenuItem(id, {image:ZmMailListController.ICON[id], text:ZmMsg[ZmMailListController.MSG_KEY[id]],
-											  style:DwtMenuItem.RADIO_STYLE});
+			var mi = menu.createMenuItem(id, ZmMailListController.ICON[id], ZmMsg[ZmMailListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 			if (id == this._defaultView())
@@ -829,7 +826,8 @@ function(parent, num) {
         var hasPopAccounts = false;
 
         if (folder && !isInbox && !isFeed && this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
-            var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
+            var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
+            var dsCollection = prefsApp.getDataSourceCollection();
             var popAccounts = dsCollection.getPopAccountsFor(folderId);
             hasPopAccounts = popAccounts.length > 0;
         }
@@ -944,6 +942,9 @@ function(view, saveSelection, loadIndex, offset, result) {
 
 ZmMailListController.prototype._setGroupMailBy =
 function(id) {
-	if (!this._appCtxt.get(ZmSetting.OPTIONS_ENABLED)) return;
-	this._appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmMailApp.GROUP_MAIL_BY_VALUE[id]);
+	if (!this._appCtxt.get(ZmSetting.PREFS_ENABLED)) return;
+	this._appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmPref.GROUP_MAIL_BY_VALUE[id]);
+	var searchCtlr = this._appCtxt.getSearchController();
+	if (searchCtlr)
+		searchCtlr.setGroupMailBy(id);
 };

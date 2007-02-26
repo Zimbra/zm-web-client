@@ -137,6 +137,6 @@ function(on) {
 
 ZmMailItem.prototype._parseParticipantNode = 
 function(node) {
-	var type = AjxEmailAddress.fromSoapType[node.t];
-	this.participants.add(new AjxEmailAddress(node.a, type, node.p, node.d));
+	var type = ZmEmailAddress.fromSoapType[node.t];
+	this.participants.add(new ZmEmailAddress(node.a, type, node.p, node.d));
 }

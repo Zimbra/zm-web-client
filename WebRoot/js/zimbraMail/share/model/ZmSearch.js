@@ -71,6 +71,7 @@ function ZmSearch(appCtxt, params) {
 		this.attrs						= params.attrs;
 		this.userText					= params.userText;
 		this.field						= params.field;
+		this.isChildWindow			 	= params.isChildWindow;
 		
 		if (this.query)
 			this._parseQuery();
@@ -81,6 +82,12 @@ function ZmSearch(appCtxt, params) {
 
 // Search types
 ZmSearch.TYPE = {};
+ZmSearch.TYPE[ZmItem.CONV]		= "conversation";
+ZmSearch.TYPE[ZmItem.MSG]		= "message";
+ZmSearch.TYPE[ZmItem.CONTACT]	= "contact";
+ZmSearch.TYPE[ZmItem.APPT]		= "appointment";
+ZmSearch.TYPE[ZmItem.PAGE]		= "wiki";
+ZmSearch.TYPE[ZmItem.DOCUMENT]	= "document";
 ZmSearch.TYPE[ZmItem.NOTE]		= "note";
 ZmSearch.TYPE_ANY				= "any";
 
@@ -92,6 +99,8 @@ ZmSearch.JOIN_AND	= 1;
 ZmSearch.JOIN_OR	= 2;
 
 ZmSearch.TYPE_MAP = {};
+for (var i in ZmSearch.TYPE)
+	ZmSearch.TYPE_MAP[ZmSearch.TYPE[i]] = i;
 
 // Sort By
 var i = 1;
@@ -138,7 +147,7 @@ function() {
 ZmSearch.prototype.execute =
 function(params) {
 
-	this.isGalSearch = (this.contactSource && (this.contactSource == ZmSearchToolBar.FOR_GAL_MI));
+	this.isGalSearch = (this.contactSource == ZmSearchToolBar.FOR_GAL_MI);
 	this.isCalResSearch = (this.conds != null);
 	if (!this.query && !this.isCalResSearch) return;
 
@@ -224,7 +233,7 @@ function(isGalSearch, isGalAutocompleteSearch, isCalResSearch, callback, result)
 	} else {
 		response = response.SearchResponse;
 	}
-	var searchResult = new ZmSearchResult(this._appCtxt, this);
+	var searchResult = new ZmSearchResult(this._appCtxt, this, this.isChildWindow);
 	searchResult.set(response, this.contactSource);
 	result.set(searchResult);
 	

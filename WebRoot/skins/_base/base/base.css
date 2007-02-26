@@ -202,15 +202,16 @@ body						{	@ChromeBg@	}
 
 
 #skin_td_app_main						{	
-	padding:6 6 7 0;	 
+	padding:4 4 9 0;
+#IFDEF SAFARI
+	padding:6 4 6 0;	 
+#ENDIF
 #IFDEF MSIE
-	padding:4 6 4 0;
+	padding:6 4 5 0;
 #ENDIF
 }
-#skin_border_app_main, #skin_border_app_main_full    {
-    @SkinBorderApp@		height:100%;
-}
-#skin_container_app_main, #skin_container_app_main_full	{	
+#skin_border_app_main					{	@SkinBorderApp@		height:100%;		}
+#skin_container_app_main				{	
 	height:100%;	margin:4 -4 -3 4;	
 #IFDEF MSIE
 					margin:2 -2 0 2;
@@ -272,11 +273,38 @@ body						{	@ChromeBg@	}
 #ENDIF
 
 
-/* Specify the width of sidebar ads when using a skin with ads */
-.skin_sidebar_ad	{
-	width:@SidebarAdWidth@;
-}
-
 .ZmAppChooser {
 	margin:0px;
+}
+
+
+
+/* Ad stuff */
+#skin_tr_top_ad {}
+#skin_top_ad_outer {
+	display:@TopAdDisplay@;
+	height:@TopAdHeight@;
+}
+#skin_td_top_ad {}
+
+
+
+#skin_col_main_inner {
+	width:auto;
+}
+#skin_col_sidebar_ad {
+	width:@SidebarAdWidth@;
+}
+#skin_td_sidebar_ad {
+	vertical-align:top;
+}
+#skin_sidebar_ad_outer	{
+	display:@SidebarAdDisplay@;
+	position:relative;
+	height:100%;
+	overflow:hidden;
+}
+#skin_container_sidebar_ad {
+	position:absolute;
+	padding:5px 5px 5px 5px;
 }
