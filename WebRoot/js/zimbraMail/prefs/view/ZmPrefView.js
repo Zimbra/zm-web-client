@@ -35,14 +35,16 @@
 * @param appCtxt			[ZmAppCtxt]					the app context
 * @param posStyle			[constant]					positioning style
 * @param controller			[ZmPrefController]			prefs controller
+* @param passwordDialog		[ZmChangePasswordDialog]	password change dialog
 */
-function ZmPrefView(parent, appCtxt, posStyle, controller) {
+function ZmPrefView(parent, appCtxt, posStyle, controller, passwordDialog) {
 
     DwtTabView.call(this, parent, "ZmPrefView", posStyle);
 
 	this._parent = parent;
     this._appCtxt = appCtxt;
 	this._controller = controller;
+	this._passwordDialog = passwordDialog;
 
     this.setScrollStyle(DwtControl.SCROLL);
 	this.prefView = {};
@@ -133,9 +135,9 @@ function() {
 		} else if (view == ZmPrefView.IDENTITY) {
 			viewObj = this._controller.getIdentityController().getListView();
         } else if (view == ZmPrefView.POP_ACCOUNTS) {
-            viewObj = AjxDispatcher.run("GetPopAccountsController").getListView();
+            viewObj = this._controller._app.getPopAccountsController().getListView();
         } else {
-			viewObj = new ZmPreferencesPage(this._parent, this._appCtxt, view, this._controller);
+			viewObj = new ZmPreferencesPage(this._parent, this._appCtxt, view, this._controller, this._passwordDialog);
 		}
 
 		this.prefView[view] = viewObj;

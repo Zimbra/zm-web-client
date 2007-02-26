@@ -6,128 +6,199 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
-
 <app:handleError>
-    <c:if test="${!empty param.doAction}">
-        <app:tagAction/>
-    </c:if>
+    <c:if test="${!empty param.doAction}"><app:tagAction/></c:if>
     <zm:getMailbox var="mailbox"/>
-
-    <c:choose>
-        <c:when test="${not empty requestScope.newlyCreatedTagName}">
-             <zm:forEachTag var="tag">
-                <c:if test="${requestScope.newlyCreatedTagName eq tag.name}"><c:set var="selectedTag" value="${tag}"/></c:if>
-            </zm:forEachTag>
-        </c:when>
-        <c:when test="${not empty param.id}">
-            <c:set var="selectedTag" value="${zm:getTag(pageContext, param.id)}"/>
-        </c:when>
-        <c:when test="${not empty param.sti}">
-            <c:set var="selectedTag" value="${zm:getTag(pageContext, param.sti)}"/>            
-        </c:when>
-    </c:choose>
-
-    <c:set var="newTag" value="${not empty param.actionNewTag}"/>
-
-    <c:if test="${empty selectedTag and not newTag}">
-        <zm:forEachTag var="tag">
-            <c:if test="${empty selectedTag}">
-                <c:set var="selectedTag" value="${tag}"/>
-            </c:if>
-        </zm:forEachTag>
-    </c:if>
-
     <c:set var="toolbar">
-        <table width=100% cellspacing=0>
-            <tr>
-                <td>
-                    <table cellspacing=2 cellpadding=0 class='Tb'>
-                        <tr>
-                            <app:button name="actionNewTag" src="tag/NewTag.gif" tooltip="tagNew" text="tagNew"/>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
+        <table width=100% cellspacing=0 class='Tb'>
+            <tr><td align=left class=TbBt><input type=hidden class='tbButton' name="zzz">&nbsp;</td></tr>
         </table>
     </c:set>
     <fmt:message var="title" key="manageTags"/>
-
 </app:handleError>
 
-<app:view title="${title}" context="${null}" selected='folders' tags="true" editmode="true" keys="true">
+<app:view title="${title}" context="${null}" selected='managetags' tags="true" editmode="true" keys="true">
 
-    <form action="" method="post">
-        <table width=100% cellspacing="0" cellpadding="0">
-            <tr>
-                <td class='TbTop'>
-                    <table cellspacing=0 class='Tb'>
-                        <tr>
-                            <td></td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-            <tr>
-                <td class='ZhAppContent'>
-                    <table border="0" cellpadding="0" cellspacing="0" width=100%>
-                        <tr>
-                            <td colspan=2 class='ZhSubTabs'>
-                                <app:foldersTabs mailbox="${mailbox}" selected='tags'/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan=2 class='TbBottom'>${toolbar}</td>
-                        </tr>
-                        <tr>
-                            <td width=200 class='List' valign='top'>
-                                <table width=100% cellpadding=2 cellspacing=0>
-                                    <zm:forEachTag var="tag">
-                                        <c:set var="hasTags" value="${true}"/>
-                                        <tr <c:if test="${selectedTag.id eq tag.id and not newTag}">class='RowSelected'</c:if>>
-                                            <td width=1%>
-                                                &nbsp;
-                                            </td>
-                                            <td>
-                                                <c:url var="selectUrl" value="">
-                                                    <c:param name="id" value="${tag.id}"/>
-                                                </c:url>
-                                                <a href="${selectUrl}">
-                                                    <app:img src="${tag.image}"/>
-                                                        <span style='vertical-align:middle;'>${fn:escapeXml(tag.name)}</span>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    </zm:forEachTag>
-                                    <c:if test="${not hasTags}">
-                                        <tr>
-                                            <td>
-                                                <div class='NoResults'>
-                                                    <fmt:message key="tagNoTags"/>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </c:if>
-                                </table>
-                            </td>
-                            <td class='ZhEditTagContent' valign='top'>
-                                <c:choose>
-                                    <c:when test="${not empty param.actionNewTag}">
-                                        <app:newTag/>
-                                    </c:when>
-                                    <c:when test="${not empty selectedTag}">
-                                        <app:editTag tag="${selectedTag}"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        &nbsp;
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
+<form action="" method="post">
+<table width=100% cellspacing="0" cellpadding="0">
+<tr>
+<td class='TbTop'>${toolbar}</td>
+</tr>
+<tr>
+<td class='ZhAppContent'>
 
-        </table>
-        <input type="hidden" name="doAction" value="1"/>
-    </form>
+<table border="0" cellpadding="0" cellspacing="10" width=100%>
+<tbody>
+<tr>
+    <td colspan="2" class="sectionLabel" valign="top">
+        <fmt:message key="createNewTag"/>
+    </td>
+</tr>
+<tr>
+    <td nowrap align=right><fmt:message key="tagName"/> :</td>
+    <td><input name='newTagName' type='text' autocomplete='off' size='35' value=""></td>
+</tr>
+
+<tr>
+    <td nowrap valign="top" align='right'> <fmt:message key="tagColor"/> : </td>
+    <td>
+        <div class='Tags'>
+            <input checked align=top type="radio" name="newTagColor" value="orange">
+            <app:img altkey="ALT_TAG_ORANGE" src="tag/TagOrange.gif"/>
+            <fmt:message key="orange"/>
+            <br>
+            <input type="radio" name="newTagColor" value="blue">
+            <app:img altkey="ALT_TAG_BLUE" src="tag/TagBlue.gif"/>
+            <fmt:message key="blue"/>
+            <br>
+            <input type="radio" name="newTagColor" value="cyan">
+            <app:img altkey="ALT_TAG_CYAN" src="tag/TagCyan.gif"/>
+            <fmt:message key="cyan"/>
+            <br>
+            <input type="radio" name="newTagColor" value="green">
+            <app:img altkey="ALT_TAG_GREEN" src="tag/TagGreen.gif"/>
+            <fmt:message key="green"/>
+            <br>
+            <input type="radio" name="newTagColor" value="purple">
+            <app:img altkey="ALT_TAG_PURPLE" src="tag/TagPurple.gif"/>
+            <fmt:message key="purple"/>
+            <br>
+            <input type="radio" name="newTagColor" value="red">
+            <app:img altkey="ALT_TAG_RED" src="tag/TagRed.gif"/>
+            <fmt:message key="red"/>
+            <br>
+            <input type="radio" name="newTagColor" value="yellow">
+            <app:img altkey="ALT_TAG_YELLOW" src="tag/TagYellow.gif"/>
+            <fmt:message key="yellow"/>
+            <br>
+        </div>
+    </td>
+</tr>
+<tr>
+    <td>&nbsp;</td>
+    <td valign="top">
+        <input class='tbButton' type="submit" name="actionCreate" value="<fmt:message key="createTag"/>">
+    </td>
+</tr>
+<c:if test="${mailbox.hasTags}">
+
+<tr>
+    <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="renameTag"/></td>
+</tr>
+<tr>
+    <td nowrap align='right'><fmt:message key="tagName"/> :</td>
+    <td>
+        <select name="tagToRename">
+            <option value="" selected/>
+            <fmt:message key="chooseTagToRename"/>
+            <option disabled/>
+            <fmt:message key="actionOptSep"/>
+            <zm:forEachTag var="tag">
+                <option value="t:${tag.id}"/>
+                ${fn:escapeXml(tag.name)}
+            </zm:forEachTag>
+        </select>
+    </td>
+</tr>
+<tr>
+    <td nowrap align='right'><fmt:message key="newName"/> :</td>
+    <td><input name='newName' type='text' autocomplete='off' size='35' value=""></td>
+</tr>
+
+<tr>
+    <td>&nbsp;</td>
+    <td><input class='tbButton' type="submit" name="actionRename" value="<fmt:message key="renameTag"/>"></td>
+</tr>
+
+<tr>
+    <td colspan="2" class="sectionLabel" valign="top"> <fmt:message key="changeTagColor"/></td>
+</tr>
+<tr>
+    <td nowrap align='right'><fmt:message key="tagName"/>: </td>
+    <td>
+        <select name="tagToChangeColor">
+            <option value="" selected/><fmt:message key="chooseTagToChange"/>
+            <option disabled/><fmt:message key="actionOptSep"/>
+            <zm:forEachTag var="tag">
+                <option value="t:${tag.id}"/>${fn:escapeXml(tag.name)}
+            </zm:forEachTag>
+        </select>
+    </td>
+</tr>
+<tr>
+    <td nowrap align='right' valign='top'><fmt:message key="tagColor"/> :</td>
+    <td>
+        <div class='Tags'>
+            <input checked type="radio" name="newColor" value="orange">
+            <app:img altkey="ALT_TAG_ORANGE" src="tag/TagOrange.gif"/>
+            <fmt:message key="orange"/>
+            <br>
+            <input type="radio" name="newColor" value="blue">
+            <app:img altkey="ALT_TAG_BLUE" src="tag/TagBlue.gif"/>
+            <fmt:message key="blue"/>
+            <br>
+            <input type="radio" name="newColor" value="cyan">
+            <app:img altkey="ALT_TAG_CYAN" src="tag/TagCyan.gif"/>
+            <fmt:message key="cyan"/>
+            <br>
+            <input type="radio" name="newColor" value="green">
+            <app:img altkey="ALT_TAG_GREEN" src="tag/TagGreen.gif"/>
+            <fmt:message key="green"/>
+            <br>
+            <input type="radio" name="newColor" value="purple">
+            <app:img altkey="ALT_TAG_PURPLE" src="tag/TagPurple.gif"/>
+            <fmt:message key="purple"/>
+            <br>
+            <input type="radio" name="newColor" value="red">
+            <app:img altkey="ALT_TAG_RED" src="tag/TagRed.gif"/>
+            <fmt:message key="red"/>
+            <br>
+            <input type="radio" name="newColor" value="yellow">
+            <app:img altkey="ALT_TAG_YELLOW" src="tag/TagYellow.gif"/>
+            <fmt:message key="yellow"/>
+            <br>
+        </div>
+
+    </td>
+</tr>
+<tr>
+    <td>&nbsp;</td>
+    <td valign='top'><input class='tbButton' type="submit" name="actionColorChange" value="<fmt:message key="changeTagColor"/>"></td>
+</tr>
+
+<tr>
+    <td colspan="2" class="sectionLabel" valign="top"><fmt:message key="deleteTag"/></td>
+</tr>
+<tr>
+    <td align='right' nowrap><fmt:message key="tagName"/>:</td>
+    <td>
+        <select name="tagToDelete">
+            <option value="" selected/>
+            <fmt:message key="chooseTagToDelete"/>
+            <option disabled/>
+            <fmt:message key="actionOptSep"/>
+            <zm:forEachTag var="tag">
+                <option value="t:${tag.id}"/>
+                ${fn:escapeXml(tag.name)}
+            </zm:forEachTag>
+        </select>
+    </td>
+
+</tr>
+<tr>
+    <td>&nbsp;</td>
+    <td><input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="deleteTag"/>"></td>
+</tr>
+</c:if>
+<tr>
+    <td colspan='2'>&nbsp;</td>
+</tr>
+
+</tbody>
+</table>
+</td>
+</tr>
+</table>
+<input type="hidden" name="doAction" value="1"/>
+</form>
 </app:view>

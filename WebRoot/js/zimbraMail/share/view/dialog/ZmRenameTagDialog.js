@@ -39,8 +39,8 @@ function() {
 }
 
 ZmRenameTagDialog.prototype.popup =
-function(tag, source) {
-	ZmDialog.prototype.popup.call(this);
+function(tag, source, loc) {
+	ZmDialog.prototype.popup.call(this, loc);
 	this.setTitle(ZmMsg.renameTag + ': ' + tag.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
 	this._nameField.value = tag.getName(false, null, true);
 	this._tag = tag;

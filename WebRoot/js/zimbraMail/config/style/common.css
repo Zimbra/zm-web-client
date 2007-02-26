@@ -78,6 +78,11 @@ LEGEND {
 	INPUT[disabled] {
 		@InputField-disabled@
 	}
+	
+	TEXTAREA[disabled] {
+		@TextArea-disabled@
+	}
+
 	textarea {
 		@TextArea@
 	}

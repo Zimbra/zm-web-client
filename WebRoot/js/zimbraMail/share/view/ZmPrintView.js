@@ -35,23 +35,49 @@ function () {
 ZmPrintView.prototype.render = 
 function(item) {
 	var preferHtml = this._appCtxt.get(ZmSetting.VIEW_AS_HTML);
-	var respCallback = new AjxCallback(this, this._handleResponseRender, item);
-	var html = item.getPrintHtml(preferHtml, respCallback);
-	if (html) {
-		this.renderHtml(html);
+
+	if (item instanceof ZmConv) {
+		var respCallback = new AjxCallback(this, this._handleResponseRender, item);
+		ZmConvListView.getPrintHtml(item, preferHtml, respCallback, this._appCtxt);
+		return;
+		// NOTE: we check for toString instead of instanceof b/c opening new
+		//       window loses type info :(
+	} else if (item.toString() == "ZmMailMsg") {
+		var respCallback = new AjxCallback(this, this._handleResponseRender, item);
+		ZmMailMsgView.getPrintHtml(item, preferHtml, respCallback);
+		return;
+	} else if (item instanceof ZmContact) {
+		this._html = item.isGroup()
+			? ZmGroupView.getPrintHtml(item, false, this._appCtxt)
+			: ZmContactView.getPrintHtml(item, false, this._appCtxt);
+	} else if (item instanceof ZmContactList) {
+		this._html = ZmContactCardsView.getPrintHtml(item);
+	} else if (item instanceof ZmCalViewMgr) {
+		this._html = ZmCalViewMgr.getPrintHtml(item);
+	} else if (item instanceof ZmPage) {
+		this._html = ZmNotebookPageView.getPrintHtml(item, this._appCtxt);
 	}
+
+	this._printWindow = this._getNewWindow();
 };
 
-ZmPrintView.prototype.renderHtml =
-function(html, args) {
-	this._html = html;
-	this._printWindow = this._getNewWindow(args);
+ZmPrintView.prototype.renderType =
+function(type, list) {
+	if (list instanceof Array)
+		list = AjxVector.fromArray(list);
+
+	if (type == ZmItem.CONTACT) {
+		this._html = ZmContactCardsView.getPrintHtml(list);
+	}
+
+	this._printWindow = this._getNewWindow();
 };
 
 ZmPrintView.prototype._handleResponseRender =
 function(mailItem, result) {
+	this._html = result.getResponse();
 	var args = mailItem.showImages ? mailItem : null;
-	this.renderHtml(result.getResponse(), args);
+	this._printWindow = this._getNewWindow(args);
 };
 
 ZmPrintView.prototype._render = 

@@ -35,7 +35,7 @@ ZmWikletProcessor._data;
 
 ZmWikletProcessor.process = function(appCtxt, item, content) {
 	// global values needed by _replaceWiklet
-	var notebookApp = appCtxt.getApp(ZmApp.NOTEBOOK);
+	var notebookApp = appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
 	var cache = notebookApp.getNotebookCache();
 
     ZmWikletProcessor._context = new ZmWikletContext(appCtxt, cache);

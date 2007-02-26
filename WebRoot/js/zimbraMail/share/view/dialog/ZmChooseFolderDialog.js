@@ -74,7 +74,6 @@ function(treeIds, omit, skipReadOnly, description) {
 		var descCell = document.getElementById(this._folderDescCellId);
 		descCell.innerHTML = description;
 	}
-	this._orgType = treeIds[0];
 
 	this._renderOverview(ZmChooseFolderDialog._OVERVIEW_ID, treeIds, omit);
 
@@ -140,14 +139,17 @@ function() {
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._newCallback, this);
 
     var folder = this._treeView[type].getSelected();
-    dialog.popup(folder);
+    dialog.popup(folder, this);
 };
 
 ZmChooseFolderDialog.prototype._newCallback =
-function(params) {
-    var ftc = this._opc.getTreeController(this._orgType);
-	ftc._doCreate(params);
-	var dialog = ftc._getNewDialog();
+function(parent, name) {
+    var type = parent.type;
+    var ftc = this._opc.getTreeController(type);
+	ftc._doCreate(parent, name);
+	var dialog = type == ZmOrganizer.ADDRBOOK
+		? this._appCtxt.getNewAddrBookDialog()
+		: this._appCtxt.getNewFolderDialog();
 	dialog.popdown();
 	this._creatingFolder = true;
 };
@@ -155,7 +157,7 @@ function(params) {
 ZmChooseFolderDialog.prototype._folderTreeChangeListener =
 function(ev) {
 	if (ev.event == ZmEvent.E_CREATE && this._creatingFolder) {
-        var treeView = this._treeView[this._orgType];
+        var treeView = this._treeView[ev.source.type];
         var organizer = ev.getDetail("organizers")[0];
         treeView.setSelected(organizer, true);
 		this._creatingFolder = false;

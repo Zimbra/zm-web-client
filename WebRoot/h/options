@@ -79,12 +79,8 @@
         <c:set var="subKey" value="mailFilters"/>
     </c:when>
     <%------------------- ADDRESS BOOK ------------------%>
-    <c:when test="${selected eq 'addressbook' and mailbox.features.contacts}">
+    <c:when test="${selected eq 'addressbook'}">
         <c:set var="subKey" value="addressBook"/>
-    </c:when>
-    <%------------------- ADDRESS BOOK ------------------%>
-    <c:when test="${selected eq 'calendar' and mailbox.features.calendar}">
-        <c:set var="subKey" value="calendar"/>
     </c:when>
     <%------------------- SHORTCUTS ------------------%>
     <c:when test="${selected eq 'shortcuts'}">
@@ -110,7 +106,9 @@
                 <td class='TbTop'>
                     <table cellspacing=0 class='Tb'>
                         <tr>
-                            <td></td>
+                            <td align=left class=TbBt>
+                                <input type=hidden class='tbButton' name="zzz">&nbsp;
+                            </td>
                         </tr>
                     </table>
                 </td>
@@ -119,12 +117,12 @@
                 <td class='ZhAppContent'>
                     <table width=100% cellpadding=0 cellspacing=0>
                         <tr>
-                            <td class='ZhSubTabs'>
+                            <td>
                                 <app:optTabs mailbox="${mailbox}" selected="${selected}"/>
                             </td>
                         </tr>
                         <tr>
-                            <td class='TbBottom'>
+                            <td class='TbTop'>
                                 <app:optSubToolbar selected="${selected}"/>
                             </td>
                         </tr>
@@ -151,10 +149,6 @@
                                     <c:when test="${selected eq 'addressbook'}">
                                         <app:optAddressBook mailbox="${mailbox}"/>
                                     </c:when>
-                                    <%------------------- CALENDARW ------------------%>
-                                    <c:when test="${selected eq 'calendar'}">
-                                        <app:optCalendar mailbox="${mailbox}"/>
-                                    </c:when>
                                     <%------------------- SHORTCUTS ------------------%>
                                     <c:when test="${selected eq 'shortcuts'}">
                                         <app:optShortcuts mailbox="${mailbox}"/>
@@ -162,6 +156,7 @@
                                 </c:choose>
                             </td>
                         </tr>
+                        <br>
                     </table>
                 </td>
             </tr>

@@ -55,18 +55,12 @@ function() {
 
 ZmPopupMenu.prototype.addSelectionListener =
 function(menuItemId, listener) {
-	var menuItem = this._menuItems[menuItemId];
-	if (menuItem) {
-		menuItem.addSelectionListener(listener);
-	}
+	this._menuItems[menuItemId].addSelectionListener(listener);
 };
 
 ZmPopupMenu.prototype.removeSelectionListener =
 function(menuItemId, listener) {
-	var menuItem = this._menuItems[menuItemId];
-	if (menuItem) {
-		menuItem.removeSelectionListener(listener);
-	}
+	this._menuItems[menuItemId].removeSelectionListener(listener);
 };
 
 ZmPopupMenu.prototype.popup =
@@ -100,30 +94,19 @@ function(enabled) {
 	}
 };
 
-/**
- * Adds a menu item to this menu.
- * 
- * @param id			[string]		menu item ID
- * @param text			[string]*		menu item text
- * @param image			[string]*		icon class for the or menu item
- * @param disImage		[string]*		disabled version of icon
- * @param enabled		[boolean]*		if true, menu item is enabled
- * @param style			[constant]*		menu item style
- * @param radioGroupId	[string]*		ID of radio group for this menu item
- */
 ZmPopupMenu.prototype.createMenuItem =
-function(id, params) {
-	var mi = this._menuItems[id] = new DwtMenuItem(this, params.style, params.radioGroupId);
-	if (params.image) {
-		mi.setImage(params.image);
+function(menuItemId, imageInfo, text, disImageInfo, enabled, style, radioGroupId) {
+	var mi = this._menuItems[menuItemId] = new DwtMenuItem(this, style, radioGroupId);
+	if (imageInfo) {
+		mi.setImage(imageInfo);
 	}
-	if (params.text) {
-		mi.setText(params.text);
+	if (text) {
+		mi.setText(text);
 	}
-	if (params.disImage) {
-		mi.setDisabledImage(params.disImage);
+	if (disImageInfo) {
+		mi.setDisabledImage(disImageInfo);
 	}
-	mi.setEnabled(params.enabled !== false);
+	mi.setEnabled(enabled !== false);
 
 	return mi;
 };

@@ -24,17 +24,16 @@
  */
 
 function ZmChatMessage(notifyJs, fromMe, isSystem) {
-	if (notifyJs) {
-		this.subject = notifyJs.subject;
-		this.body = notifyJs.body[0]._content;
-		this.from = notifyJs.from;
-		this.to = notifyJs.to;
-		this.thread = notifyJs.thread;
-		this.ts = notifyJs.ts;
-	}
-	if (!this.ts) this.ts = new Date().getTime();
-	this.fromMe = fromMe;    
-	this.isSystem = isSystem;
+    if (notifyJs) {
+        this.subject = notifyJs.subject;
+        this.body = notifyJs.body[0]._content;
+        this.from = notifyJs.from;
+        this.thread = notifyJs.thread;
+        this.ts = notifyJs.ts;
+    }
+    if (!this.ts) this.ts = new Date().getTime();
+    this.fromMe = fromMe;    
+    this.isSystem = isSystem;
 };
 
 ZmChatMessage.prototype.constructor = ZmChatMessage;
@@ -58,19 +57,21 @@ function() {
 };
 
 ZmChatMessage.prototype.toHtml = 
-function(objectManager, chat, lastFrom) {
-	var params = { isSystem		 : this.isSystem,
-		       fromMe		 : this.fromMe,
-		       shortTime	 : AjxStringUtil.htmlEncode(this.getShortTime()),
-		       body		 : ( objectManager
-					     ? objectManager.findObjects(this.body, true)
-					     : this.body )
-		     };
-	if (!lastFrom || lastFrom != this.from)
-		params.displayName = AjxStringUtil.htmlEncode(chat.getDisplayName(this.from, this.fromMe));
-	var html = [];
-	if (lastFrom && lastFrom != this.from)
-		html.push("<div class='ZmChatWindowChatEntry-sep'>&nbsp;</div>");
-	html.push(AjxTemplate.expand("zimbraMail.im.templates.Chat#ChatMessageLine", params));
-	return html.join("");
+function(objectManager, chat) {
+    var html = new AjxBuffer();
+    if (this.isSystem) {
+        html.append("<span class='ZmChatWindowChatEntrySystem'>");
+        //if (objectManager) html.append(objectManager.findObjects(this.body, true));
+        //else 
+        html.append("[",AjxStringUtil.htmlEncode(this.getShortTime()), "]&nbsp;");        
+        html.append(AjxStringUtil.htmlEncode(this.body));        
+        html.append("</span>");
+    } else {
+        html.append("<span class='", this.fromMe ? "ZmChatWindowChatEntryMe" : "ZmChatWindowChatEntryThem","'>");
+        html.append("[",AjxStringUtil.htmlEncode(this.getShortTime()), "]&nbsp;");
+        html.append(AjxStringUtil.htmlEncode(chat.getDisplayName(this.from, this.fromMe)), ": </span>");
+        if (objectManager) html.append(objectManager.findObjects(this.body, true));
+        else html.append(AjxStringUtil.htmlEncode(this.body));
+    }
+    return html.toString();
 };

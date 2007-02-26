@@ -46,14 +46,6 @@
             </td>
             <c:set var="accessKey" value="${accessKey+1}"/>
         </c:if>
-        <c:if test="${mailbox.features.calendar}">
-            <td class='TabSpacer'/>
-            <td class='Tab ${selected=='calendar' ? 'TabSelected' :'TabNormal'}'>
-                <a href="<c:url value="/h/options?selected=calendar"/>" accesskey="${accessKey}">
-                    <span><fmt:message key="calendar"/></span></a>
-            </td>
-            <c:set var="accessKey" value="${accessKey+1}"/>
-        </c:if>
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='shortcuts' ? 'TabSelected' :'TabNormal'}'>
             <a href="<c:url value="/h/options?selected=shortcuts"/>" accesskey="${accessKey}">
