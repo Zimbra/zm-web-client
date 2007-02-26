@@ -519,6 +519,12 @@ function(params) {
 
 	this.backupForm = params.backupForm;
 	this._sendUID = params.sendUID;
+
+	// bug 14322 -- in Windows Firefox, DEL/BACKSPACE don't work
+	// when composing in new window until we (1) enter some text
+	// or (2) resize the window (!).  I chose the latter.
+	if (AjxEnv.isGeckoBased && AjxEnv.isWindows)
+		window.resizeBy(1, 1);
 };
 
 ZmComposeView.prototype.setFocus =
