@@ -11,9 +11,9 @@
 
 <c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
 
-<c:if test="${not empty param.actionNew}"><input type="hidden" name="actionNew" value="true"/></c:if>
-<c:if test="${not empty param.actionNewGroup}"><input type="hidden" name="actionNewGroup" value="true"/></c:if>
-<c:if test="${not empty param.actionEdit}"><input type="hidden" name="actionEdit" value="true"/></c:if>
+<c:if test="${zm:actionSet(param, 'actionNew')}"><input type="hidden" name="actionNew" value="true"/></c:if>
+<c:if test="${zm:actionSet(param, 'actionNewGroup')}"><input type="hidden" name="actionNewGroup" value="true"/></c:if>
+<c:if test="${zm:actionSet(param, 'actionEdit')}"><input type="hidden" name="actionEdit" value="true"/></c:if>
 
 <table width=100% cellspacing=0 cellpadding=0>
     <tr class='contactHeaderRow'>

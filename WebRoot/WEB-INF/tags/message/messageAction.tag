@@ -12,10 +12,10 @@
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 <c:choose>
-    <c:when test="${!empty param.actionCompose}">
+    <c:when test="${zm:actionSet(param, 'actionCompose')}">
         <jsp:forward page="/h/compose"/>
     </c:when>
-    <c:when test="${!empty param.actionMarkTagRead}">
+    <c:when test="${zm:actionSet(param, 'actionMarkTagRead')}">
         <c:set var="tagName" value="${zm:getTagName(pageContext, param.contextTagId)}"/>
         <zm:markTagRead id="${param.contextTagId}"/>
         <app:status>
@@ -24,7 +24,7 @@
             </fmt:message>
         </app:status>
     </c:when>
-    <c:when test="${!empty param.actionMarkFolderRead}">
+    <c:when test="${zm:actionSet(param, 'actionMarkFolderRead')}">
         <c:set var="folderName" value="${zm:getFolderName(pageContext, param.contextFolderId)}"/>
         <zm:markFolderRead id="${param.contextFolderId}"/>
         <app:status>
@@ -33,7 +33,7 @@
             </fmt:message>
         </app:status>
     </c:when>
-        <c:when test="${!empty param.actionMarkConvRead}">
+        <c:when test="${zm:actionSet(param, 'actionMarkConvRead')}">
         <zm:markConversationRead read="true" var="result" id="${param.contextConvId}"/>
         <app:status>
             <fmt:message key="actionConvMarkedRead">
@@ -41,7 +41,7 @@
             </fmt:message>
         </app:status>
     </c:when>
-    <c:when test="${not empty param.actionEmpty and (param.contextFolderId eq mailbox.trash.id or param.contextFolderId eq mailbox.spam.id)}">
+    <c:when test="${zm:actionSet(param, 'actionEmpty') and (param.contextFolderId eq mailbox.trash.id or param.contextFolderId eq mailbox.spam.id)}">
         <zm:emptyFolder id="${param.contextFolderId}"/>
         <app:status>
             <fmt:message key="folderEmptied">
@@ -49,7 +49,7 @@
             </fmt:message>
         </app:status>
     </c:when>
-    <c:when test="${!empty param.actionLoadFeed}">
+    <c:when test="${zm:actionSet(param, 'actionLoadFeed')}">
         <zm:syncFolder id="${param.contextFolderId}"/>
         <app:status>
             <fmt:message key="feedLoaded">
@@ -62,7 +62,7 @@
     </c:when>
     <c:otherwise>
         <c:choose>
-            <c:when test="${!empty param.actionSpam}">
+            <c:when test="${zm:actionSet(param, 'actionSpam')}">
                 <zm:markMessageSpam  var="result" id="${ids}" spam="true"/>
                 <app:status>
                     <fmt:message key="actionMessageMarkedSpam">
@@ -70,7 +70,7 @@
                     </fmt:message>
                 </app:status>
             </c:when>
-            <c:when test="${!empty param.actionNotSpam}">
+            <c:when test="${zm:actionSet(param, 'actionNotSpam')}">
                 <zm:markMessageSpam  var="result" id="${ids}" spam="false"/>
                 <app:status>
                     <fmt:message key="actionMessageMarkedNotSpam">
@@ -78,7 +78,7 @@
                     </fmt:message>
                 </app:status>
             </c:when>
-            <c:when test="${!empty param.actionDelete}">
+            <c:when test="${zm:actionSet(param, 'actionDelete')}">
                 <zm:moveMessage  var="result" id="${ids}" folderid="${mailbox.trash.id}"/>
                 <app:status>
                     <fmt:message key="actionMessageMovedTrash">
@@ -86,7 +86,7 @@
                     </fmt:message>
                 </app:status>
             </c:when>
-            <c:when test="${!empty param.actionHardDelete}">
+            <c:when test="${zm:actionSet(param, 'actionHardDelete')}">
                 <zm:deleteMessage  var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionMessageHardDeleted">
@@ -134,7 +134,7 @@
                     </fmt:message>
                 </app:status>
             </c:when>
-            <c:when test="${!empty param.actionMove}">
+            <c:when test="${zm:actionSet(param, 'actionMove')}">
                 <app:status style="Warning"><fmt:message key="actionNoFolderSelected"/></app:status>
             </c:when>
             <c:otherwise>

@@ -9,16 +9,16 @@
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <app:handleError>
     <c:choose>
-        <c:when test="${not empty param.actionNew}">
+        <c:when test="${zm:actionSet(param, 'actionNew')}">
             <c:set var="contactId" value=""/>
             <fmt:message var="title" key="newContact"/>
         </c:when>
-        <c:when test="${not empty param.actionNewGroup}">
+        <c:when test="${zm:actionSet(param, 'actionNewGroup')}">
             <c:set var="contactId" value=""/>
             <fmt:message var="title" key="newGroup"/>
             <!--- yeah -->
         </c:when>
-        <c:when test="${not empty param.actionEdit and not empty param.actionEditId}">
+        <c:when test="${zm:actionSet(param, 'actionEdit') and not empty param.actionEditId}">
             <c:set var="contactId" value="${not empty param.id ? param.id : param.actionEditId}"/>
         </c:when>
         <c:otherwise>

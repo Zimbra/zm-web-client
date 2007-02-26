@@ -14,12 +14,12 @@
                    <c:choose>
                        <c:when test="${selected eq 'filter'}">
                            <c:choose>
-                               <c:when test="${(empty param.actionFilterCancel and requestScope.filterSave ne 'success') and (not empty param.actionEditFilter or not empty param.actionNewFilter)}">
+                               <c:when test="${(not zm:actionSet(param, 'actionFilterCancel') and requestScope.filterSave ne 'success') and (zm:actionSet(param, 'actionEditFilter') or zm:actionSet(param, 'actionNewFilter'))}">
                                     <app:button  name="actionFilterSave" src="common/Save.gif" tooltip="save" text="save"/>
                                      <td><div class='vertSep'></div></td>
                                     <app:button  name="actionFilterCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
                                        <input type="hidden"
-                                              name="${not empty param.actionEditFilter ? 'actionEditFilter' : 'actionNewFilter'}" value="1"/>
+                                              name="${zm:actionSet(param, 'actionEditFilter') ? 'actionEditFilter' : 'actionNewFilter'}" value="1"/>
                                    </td>
                                </c:when>
                                <c:otherwise>
