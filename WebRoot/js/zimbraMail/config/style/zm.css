@@ -2689,6 +2689,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin:0px;
 }
 
+/* THIS IS IN DWT
 .ZTab,
 .ZTab.selected {
 #IFDEF GECKO
@@ -2712,7 +2713,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-top:2px;
 	padding-top:7px;
 }
-
+*/
 
 
 .ZFieldSizeTiny 	{	width:50px;		}
