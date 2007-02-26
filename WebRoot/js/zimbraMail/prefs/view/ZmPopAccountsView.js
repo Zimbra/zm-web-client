@@ -370,8 +370,7 @@ ZmPopAccountsView.prototype.reset = function() {
 // Protected methods
 
 ZmPopAccountsView.prototype._commandResult = function(account, result) {
-    var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
-    var collection = prefsApp.getDataSourceCollection();
+    var collection = AjxDispatcher.run("GetDataSourceCollection");
 
     var data = result._data;
     if (data.CreateDataSourceResponse) {

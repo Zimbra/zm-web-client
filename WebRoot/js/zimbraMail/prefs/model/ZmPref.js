@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPref(id, name, dataType) {
+ZmPref = function(id, name, dataType) {
 
 	ZmSetting.call(this, id, name, ZmSetting.T_PREF, dataType);
 	
@@ -35,14 +35,6 @@ ZmPref.prototype = new ZmSetting();
 ZmPref.prototype.constructor = ZmPref;
 
 ZmPref.KEY_ID = "prefId_";
-
-// convert between server values for "group mail by" and item types
-ZmPref.GROUP_MAIL_BY_ITEM = {};
-ZmPref.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_CONV] = ZmItem.CONV;
-ZmPref.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_MESSAGE] = ZmItem.MSG;
-ZmPref.GROUP_MAIL_BY_VALUE = {};
-ZmPref.GROUP_MAIL_BY_VALUE[ZmItem.CONV] = ZmSetting.GROUP_BY_CONV;
-ZmPref.GROUP_MAIL_BY_VALUE[ZmItem.MSG] = ZmSetting.GROUP_BY_MESSAGE;
 
 ZmPref.GENERAL_PREFS = [ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH,
 						ZmSetting.SHOW_SEARCH_STRING, ZmSetting.COMPOSE_AS_FORMAT,
@@ -99,7 +91,7 @@ function(appCtxt, setup) {
 ZmPref.validateEmail = 
 function(emailStr) {
 	if (emailStr) {
-		var match = ZmEmailAddress.parse(emailStr);
+		var match = AjxEmailAddress.parse(emailStr);
 		return (match != null);
 	}
 	return true;

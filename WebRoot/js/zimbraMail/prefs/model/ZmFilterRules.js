@@ -372,7 +372,7 @@ function(ex) {
 // XXX: the caller should probably be the one doing this
 ZmFilterRules.prototype._handleResponseHandleErrorSaveRules =
 function() {
-	var prefController = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
+	var prefController = AjxDispatcher.run("GetPrefController");
 	var prefsView = prefController.getPrefsView();
 	if (prefsView && prefsView.getView(ZmPrefView.FILTER_RULES))
 		prefController.getFilterRulesController()._setListView();

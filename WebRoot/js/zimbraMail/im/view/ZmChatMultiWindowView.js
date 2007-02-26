@@ -28,7 +28,7 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	className = className ? className : "ZmChatMultiWindowView";
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
 	ZmChatBaseView.call(this, parent, className, posStyle, controller, ZmController.IM_CHAT_TAB_VIEW);
-	var dropTgt = new DwtDropTarget(ZmRosterTreeItem, ZmRosterTreeGroup);
+	var dropTgt = new DwtDropTarget(["ZmRosterTreeItem", "ZmRosterTreeGroup"]);
 	this.setDropTarget(dropTgt);
 	dropTgt.addDropListener(new AjxListener(this, this._dropListener));
 	
@@ -66,25 +66,25 @@ function() {
 */
 ZmChatMultiWindowView.prototype._changeListener =
 function(ev) {
-    if (ev.event == ZmEvent.E_CREATE) {
-        var chat = ev._details.items[0];
+	if (ev.event == ZmEvent.E_CREATE) {
+		var chat = ev._details.items[0];
         	var cw = new ZmChatWindow(this, chat);
-        this._addChatWindow(cw, chat);
-        cw.select();
-    } else if (ev.event == ZmEvent.E_DELETE) {
-        var chat = ev._details.items[0];    
-        var cw = this._getChatWindowForChat(chat);
-        if (cw) {
-            this._removeChatWindow(cw);
-            cw.dispose();
-        }
-    }
+		this._addChatWindow(cw, chat);
+		cw.select();
+	} else if (ev.event == ZmEvent.E_DELETE) {
+		var chat = ev._details.items[0];    
+		var cw = this._getChatWindowForChat(chat);
+		if (cw) {
+			this._removeChatWindow(cw);
+			cw.dispose();
+		}
+	}
 };
 
 ZmChatMultiWindowView.prototype.selectChat =
 function(chat) {
-    var cw = this._getChatWindowForChat(chat);
-    if (cw) cw.select();
+	var cw = this._getChatWindowForChat(chat);
+	if (cw) cw.select();
 };
 
 ZmChatMultiWindowView.prototype._rosterItemChangeListener =
@@ -102,35 +102,44 @@ ZmChatMultiWindowView.KEY_CHAT = "zcmwv_chat";
 
 ZmChatMultiWindowView.prototype._initialWindowPlacement =
 function(chatWindow) {
-    if (this._nextInitX || this._nextInitY) {
-        chatWindow.setBounds(this._nextInitX, this._nextInitY, Dwt.DEAFULT, Dwt.DEFAULT);
-	    delete this._nextInitX;
-	    delete this._nextInitY;
-	    return;
-    }
+	if (this._nextInitX || this._nextInitY) {
+		// chatWindow.setBounds(this._nextInitX, this._nextInitY, Dwt.DEAFULT, Dwt.DEFAULT);
+		var pos = { x: this._nextInitX,
+			    y: this._nextInitY };
+		delete this._nextInitX;
+		delete this._nextInitY;
+		return pos;
+	}
 
-    var windows = {};
-    for (var id in this._chatWindows) {
-        var cw = this._chatWindows[id];
-        var loc = cw.getLocation();
-        windows[loc.x+","+loc.y] = true;
-    }
+	// FIXME: for now it seems better to leave DwtResizableWindow
+	// handle this--otherwise all windows get positioned at (20, 20)
+	return null;
 
-    var size = this.getSize();
+	var windows = {};
+	for (var id in this._chatWindows) {
+		var cw = this._chatWindows[id];
+		if (cw === chatWindow)
+			continue;
+		var loc = cw.getLocation();
+		windows[loc.x+","+loc.y] = true;
+	}
 
-    var initX = 20, initY = 20;
-    var incr = 20;
-    var x = initX, y = initY;
-    while(windows[x+","+y]) {
-        x += incr;
-        y += incr;
+	var size = this.getSize();
+
+	var initX = 20, initY = 20;
+	var incr = 20;
+	var x = initX, y = initY;
+	while(windows[x+","+y]) {
+		x += incr;
+		y += incr;
         	if ((x > (size.x - 50)) || (y > (size.y - 50))) {
-        	    initX += incr;
-        	    x = initX;
-        	    y = initY;
-    	    }
-    }        	
-    chatWindow.setBounds(x, y, Dwt.DEAFULT, Dwt.DEFAULT);
+        		initX += incr;
+        		x = initX;
+        		y = initY;
+    		}
+	}        	
+	// chatWindow.setBounds(x, y, Dwt.DEAFULT, Dwt.DEFAULT);
+	return { x: x, y: y };
 };
 
 ZmChatMultiWindowView.prototype._addChatWindow =
@@ -139,8 +148,9 @@ function(chatWindow, chat) {
     	this._chatIdToChatWindow[chat.id] = chatWindow;
     	var cb = chatWindow.getCloseButton();
     	cb.setData(ZmChatMultiWindowView.KEY_CHAT, chat);
-    cb.addSelectionListener(this._windowCloseButtonListener);
-    this._initialWindowPlacement(chatWindow);    
+	cb.addSelectionListener(this._windowCloseButtonListener);
+	var pos = this._initialWindowPlacement(chatWindow);
+	chatWindow.popup(pos);
 };
 
 ZmChatMultiWindowView.prototype._removeChatWindow =
@@ -170,18 +180,20 @@ function(ev) {
         	var srcData = ev.srcData;
 		if ((srcData instanceof ZmRosterTreeItem)) {
 			var mouseEv = DwtShell.mouseEvent;
-            	mouseEv.setFromDhtmlEvent(ev.uiEvent);
-            	this._nextInitX = mouseEv.elementX;
-            	this._nextInitY = mouseEv.elementY;
-		    this._controller.chatWithRosterItem(srcData.getRosterItem());
-        }
+            		mouseEv.setFromDhtmlEvent(ev.uiEvent);
+			var pos = this.getLocation();
+            		this._nextInitX = mouseEv.docX - pos.x;
+            		this._nextInitY = mouseEv.docY - pos.y;
+			this._controller.chatWithRosterItem(srcData.getRosterItem());
+		}
 		if ((srcData instanceof ZmRosterTreeGroup)) {
 			var mouseEv = DwtShell.mouseEvent;
-            	mouseEv.setFromDhtmlEvent(ev.uiEvent);
-            	this._nextInitX = mouseEv.elementX;
-            	this._nextInitY = mouseEv.elementY;
-		    this._controller.chatWithRosterItems(srcData.getRosterItems(), srcData.getName()+" "+ZmMsg.imGroupChat);
-        }
-        
+            		mouseEv.setFromDhtmlEvent(ev.uiEvent);
+            		var pos = this.getLocation();
+            		this._nextInitX = mouseEv.docX - pos.x;
+            		this._nextInitY = mouseEv.docY - pos.y;
+			this._controller.chatWithRosterItems(srcData.getRosterItems(), srcData.getName()+" "+ZmMsg.imGroupChat);
+		}
+		
 	}
 };

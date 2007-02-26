@@ -245,7 +245,7 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 		for (var specialName in ZmNotebookCache._SPECIAL_NAMES) {
 			if (this._foldersMap[folderId].pages[specialName]) continue;
 			var requestNode = soapDoc.set("GetWikiRequest",null,null,"urn:zimbraMail");
-			requestNode.setAttribute("id", specialName);
+			requestNode.setAttribute("requestId", specialName);
 			var wordNode = soapDoc.set("w", null, requestNode);
 			wordNode.setAttribute("l", folderId);
 			wordNode.setAttribute("name", specialName);
@@ -375,7 +375,7 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 		link = link.substr(1);
 	}
 	if (!notebook) {
-		var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+		var app = this._appCtxt.getApp(ZmApp.NOTEBOOK);
 		var controller = app.getNotebookController();
 		var currentPage = controller.getPage();
 		var folderId = (currentPage && currentPage.folderId) || ZmOrganizer.ID_NOTEBOOK;
@@ -592,7 +592,7 @@ function(folderId, callback, errorCallback, response) {
 			}
 
 			// create sub-tree and add to tree
-			var notebook = ZmNotebook.createFromJs(parent, obj, tree, null);
+			var notebook = ZmFolderTree.createFromJs(parent, obj, tree);
 			parent.children.add(notebook);
 			notebook._notify(ZmEvent.E_CREATE);
 		}

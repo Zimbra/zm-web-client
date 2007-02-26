@@ -123,7 +123,7 @@
                             <tr>
                                 <td nowrap align='right' class='MsgHdrSent'>
                                     <fmt:message var="dateFmt" key="formatDateSent"/>
-                                    <fmt:formatDate pattern="${dateFmt}" value="${message.sentDate}"/>
+                                    <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/>
                                 </td>
                             </tr>
                             <c:if test="${message.hasTags or message.isFlagged}">

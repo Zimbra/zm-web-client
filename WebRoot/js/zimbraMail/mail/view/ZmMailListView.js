@@ -27,20 +27,6 @@ function ZmMailListView(parent, className, posStyle, view, type, controller, hea
 
 	if (arguments.length == 0) return;
 	ZmListView.call(this, parent, className, posStyle, view, type, controller, headerList, dropTgt);
-	
-	// create a action menu for the header list
-	this._colHeaderActionMenu = new ZmPopupMenu(this);
-	var actionListener = new AjxListener(this, this._colHeaderActionListener);
-	for (var i = 0; i < headerList.length; i++) {
-		var hCol = headerList[i];
-		// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
-		if (hCol._width) {
-			var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, null, hCol._name, null, null, DwtMenuItem.CHECK_STYLE);
-			mi.setData(ZmMailListView.KEY_ID, hCol._id);
-			mi.setChecked(true, true);
-			this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
-		}
-	}
 
 	this._folderId = null;
 };
@@ -172,6 +158,21 @@ function(participants, participantsElided, width) {
 
 ZmMailListView.prototype._getActionMenuForColHeader = 
 function() {
+	if (!this._colHeaderActionMenu) {
+		// create a action menu for the header list
+		this._colHeaderActionMenu = new ZmPopupMenu(this);
+		var actionListener = new AjxListener(this, this._colHeaderActionListener);
+		for (var i = 0; i < this._headerList.length; i++) {
+			var hCol = this._headerList[i];
+			// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
+			if (hCol._width) {
+				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
+				mi.setData(ZmMailListView.KEY_ID, hCol._id);
+				mi.setChecked(true, true);
+				this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
+			}
+		}
+	}
 	return this._colHeaderActionMenu;
 };
 
@@ -197,17 +198,17 @@ function(ev) {
 		ZmListView.prototype._changeListener.call(this, ev); // handle other flags
 	} else if (ev.event == ZmEvent.E_CREATE) {
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: CREATE");
-		var now = new Date();
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			DBG.println(AjxDebug.DBG3, "Item to add: " + item.id);
 			if (this._list && this._list.contains(item)) // skip if we already have it
 				continue;
 			// For now, we assume that the new conv/msg is the most recent one. If we're on the
 			// first page with date desc order, we insert it at the top. If we're on the last
 			// page with date asc order, we insert it at the bottom. Otherwise, we do nothing.
 			// TODO: put result of ZmMailList._sortIndex() in ev.details
-			if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
+			if ((this.getOffset() == 0) &&
+				(!this._sortByString || this._sortByString == ZmSearch.DATE_DESC))
+			{
 				// add new item at the beg. of list view's internal list
 				this.addItem(item, 0);
 	
@@ -215,7 +216,10 @@ function(ev) {
 				if (this.size() > this.getLimit()) {
 					this.removeLastItem();
 				}
-			} else if ((this._controller.getList().hasMore() === false) && (this._sortByString == ZmSearch.DATE_ASC)) {
+			}
+			else if ((this._controller.getList().hasMore() === false) &&
+					 (this._sortByString == ZmSearch.DATE_ASC))
+			{
 				if (this.size() < this.getLimit()) {
 					// add new item at the end of list view's internal list
 					this.addItem(item);
@@ -229,7 +233,7 @@ function(ev) {
 	}
 };
 
-ZmMailListView.prototype._colHeaderActionListener = 
+ZmMailListView.prototype._colHeaderActionListener =
 function(ev) {
 
 	var menuItemId = ev.item.getData(ZmMailListView.KEY_ID);

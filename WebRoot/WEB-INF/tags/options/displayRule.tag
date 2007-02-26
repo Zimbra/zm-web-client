@@ -23,13 +23,13 @@
         <td class="contactOutput">
 
             <c:choose>
-                <c:when test="${zm:isAddressBook(condition)}">
+                <c:when test="${zm:isAddressBookCondition(condition)}">
                     <c:set var="ab" value="${zm:getAddressBook(condition)}"/>
                     <fmt:message key="FILT_COND_ADDRESSBOOK_${ab.addressBookOp}">
                         <fmt:param>${fn:escapeXml(ab.header)}</fmt:param>
                     </fmt:message>
                 </c:when>
-                <c:when test="${zm:isSize(condition)}">
+                <c:when test="${zm:isSizeCondition(condition)}">
                     <c:set var="sz" value="${zm:getSize(condition)}"/>
 
                     <fmt:message key="FILT_COND_SIZE_${sz.sizeOp}">
@@ -44,13 +44,13 @@
                         </fmt:param>
                     </fmt:message>
                 </c:when>
-                <c:when test="${zm:isBody(condition)}">
+                <c:when test="${zm:isBodyCondition(condition)}">
                     <c:set var="body" value="${zm:getBody(condition)}"/>
                     <fmt:message key="FILT_COND_BODY_${body.bodyOp}">
                         <fmt:param>${fn:escapeXml(body.text)}</fmt:param>
                     </fmt:message>
                 </c:when>
-                <c:when test="${zm:isDate(condition)}">
+                <c:when test="${zm:isDateCondition(condition)}">
                     <c:set var="date" value="${zm:getDate(condition)}"/>
                     <fmt:message var="dateFmt" key="FILT_COND_DATE_FORMAT"/>
                     <fmt:formatDate pattern="${dateFmt}" value="${date.date}" var="fdate"/>
@@ -58,7 +58,7 @@
                         <fmt:param>${fdate}</fmt:param>
                     </fmt:message>
                 </c:when>
-                <c:when test="${zm:isHeader(condition)}">
+                <c:when test="${zm:isHeaderCondition(condition)}">
                     <c:set var="hdr" value="${zm:getHeader(condition)}"/>
                     <c:choose>
                         <c:when test="${hdr.headerName eq 'subject' or hdr.headerName eq 'to' or hdr.headerName eq 'cc' or hdr.headerName eq 'from'}">
@@ -75,13 +75,13 @@
                         </c:otherwise>
                     </c:choose>
                 </c:when>
-                <c:when test="${zm:isHeaderExists(condition)}">
+                <c:when test="${zm:isHeaderExistsCondition(condition)}">
                     <c:set var="hdrexists" value="${zm:getHeaderExists(condition)}"/>
                     <fmt:message key="FILT_COND_HEADER_${hdrexists.exists ? 'EXISTS' : 'NOT_EXISTS'}">
                         <fmt:param>${hdrexists.headerName}</fmt:param>
                     </fmt:message>
                 </c:when>
-                <c:when test="${zm:isAttachmentExists(condition)}">
+                <c:when test="${zm:isAttachmentExistsCondition(condition)}">
                     <c:set var="attach" value="${zm:getAttachmentExists(condition)}"/>
                     <fmt:message key="FILT_COND_ATTACHMENT_${attach.exists ? 'EXISTS' : 'NOT_EXISTS'}"/>
                 </c:when>
@@ -100,47 +100,47 @@
         <td valign="top" width="385" class="contactOutput">
 
                 <c:choose>
-                    <c:when test="${zm:isKeep(action)}">
+                    <c:when test="${zm:isKeepAction(action)}">
                         <fmt:message key="FILT_ACTION_KEEP"/>
                     </c:when>
                 </c:choose>
                 <c:choose>
-                    <c:when test="${zm:isDiscard(action)}">
+                    <c:when test="${zm:isDiscardAction(action)}">
                         <fmt:message key="FILT_ACTION_DISCARD"/>
                     </c:when>
                 </c:choose>
                 <c:choose>
-                    <c:when test="${zm:isStop(action)}">
+                    <c:when test="${zm:isStopAction(action)}">
                         <fmt:message key="FILT_ACTION_STOP"/>
                     </c:when>
                 </c:choose>
                 <c:choose>
-                    <c:when test="${zm:isFileInto(action)}">
-                        <c:set var="fileInto" value="${zm:getFileInto(action)}"/>
+                    <c:when test="${zm:isFileIntoAction(action)}">
+                        <c:set var="fileInto" value="${zm:getFileIntoAction(action)}"/>
                         <fmt:message key="FILT_ACTION_FILEINTO">
                             <fmt:param>${fn:startsWith(fileInto.folderPath, '/') ? fn:substring(fileInto.folderPath, 1, -1) : fileInto.folderPath}</fmt:param>
                         </fmt:message>
                     </c:when>
                 </c:choose>
                 <c:choose>
-                    <c:when test="${zm:isTag(action)}">
-                        <c:set var="tag" value="${zm:getTag(action)}"/>
+                    <c:when test="${zm:isTagAction(action)}">
+                        <c:set var="tag" value="${zm:getTagAction(action)}"/>
                         <fmt:message key="FILT_ACTION_TAG">
                             <fmt:param>${tag.tagName}</fmt:param>
                         </fmt:message>
                     </c:when>
                 </c:choose>
                 <c:choose>
-                    <c:when test="${zm:isRedirect(action)}">
-                        <c:set var="redirect" value="${zm:getRedirect(action)}"/>
+                    <c:when test="${zm:isRedirectAction(action)}">
+                        <c:set var="redirect" value="${zm:getRedirectAction(action)}"/>
                         <fmt:message key="FILT_ACTION_REDIRECT">
                             <fmt:param>${redirect.address}</fmt:param>
                         </fmt:message>
                     </c:when>
                 </c:choose>
                 <c:choose>
-                    <c:when test="${zm:isFlag(action)}">
-                        <c:set var="flag" value="${zm:getFlag(action)}"/>
+                    <c:when test="${zm:isFlagAction(action)}">
+                        <c:set var="flag" value="${zm:getFlagAction(action)}"/>
                         <fmt:message key="FILT_ACTION_FLAG_${flag.markOp}"/>
                     </c:when>
                 </c:choose>

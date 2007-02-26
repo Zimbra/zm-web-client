@@ -44,7 +44,7 @@ function ZmFilterRuleDialog(appCtxt) {
 	DwtDialog.call(this, appCtxt.getShell(), "ZmFilterRuleDialog", ZmMsg.selectAddresses);
 
 	this._appCtxt = appCtxt;
-	this._rules = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getFilterRules();
+	this._rules = AjxDispatcher.run("GetFilterRules");
 	this._rules.loadRules(); // make sure rules are loaded (for when we save)
 
 	this.setContent(this._contentHtml());
@@ -617,13 +617,8 @@ function(ev) {
 	var dialog;
 	var button = ev.item;
 	var type = button.getData(ZmFilterRuleDialog.BROWSE_TYPE);
-	if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
-		dialog = this._appCtxt.getMoveToDialog();
-	} else {
-		if (!this._tagPicker)
-			this._tagPicker = new ZmPickTagDialog(this.shell, this._appCtxt.getMsgDialog());
-		dialog = this._tagPicker;
-	}
+	var dialog = (type == ZmFilterRule.TYPE_FOLDER_PICKER) ? this._appCtxt.getMoveToDialog() :
+															 this._appCtxt.getPickTagDialog();
 	dialog.reset();
 	dialog.setTitle((type == ZmFilterRule.TYPE_FOLDER_PICKER) ? ZmMsg.chooseFolder : ZmMsg.chooseTag);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._browseSelectionCallback, this, ev.item);
@@ -640,7 +635,7 @@ ZmFilterRuleDialog.prototype._browseSelectionCallback =
 function(button, organizer) {
 	var type = button.getData(ZmFilterRuleDialog.BROWSE_TYPE);
 	var isFolder = (type == ZmFilterRule.TYPE_FOLDER_PICKER);
-	var dialog = isFolder ? this._appCtxt.getMoveToDialog() : this._tagPicker;
+	var dialog = isFolder ? this._appCtxt.getMoveToDialog() : this._appCtxt.getPickTagDialog();
 	if (organizer) {
 		button.setText(organizer.getName(false, null, true));
 		var value = isFolder ? "/" + organizer.getPath(false, false, null, true, true) :

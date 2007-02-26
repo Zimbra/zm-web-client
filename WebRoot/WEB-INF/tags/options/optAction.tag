@@ -19,6 +19,7 @@
             <c:if test="${mailbox.features.skinChange}">
                 <zm:pref name="zimbraPrefSkin" value="${param.zimbraPrefSkin}"/>
             </c:if>
+            <zm:pref name="zimbraPrefTimeZoneId" value="${param.zimbraPrefTimeZoneId}"/>            
         </c:when>
         <%-- MAIL --%>
         <c:when test="${selected eq 'mail'}">
@@ -69,6 +70,13 @@
         <c:when test="${selected eq 'addressbook'}">
             <zm:pref name="zimbraPrefAutoAddAddressEnabled" value="${param.zimbraPrefAutoAddAddressEnabled eq 'TRUE' ? 'TRUE' : 'FALSE'}"/>
             <zm:pref name="zimbraPrefContactsPerPage" value="${param.zimbraPrefContactsPerPage}"/>
+        </c:when>
+        <%-- CALENDAR --%>
+        <c:when test="${selected eq 'calendar'}">
+            <zm:pref name="zimbraPrefCalendarInitialView" value="${param.zimbraPrefCalendarInitialView}"/>
+            <zm:pref name="zimbraPrefCalendarFirstdayOfWeek" value="${param.zimbraPrefCalendarFirstdayOfWeek}"/>
+            <zm:pref name="zimbraPrefCalendarDayHourStart" value="${param.zimbraPrefCalendarDayHourStart}"/>
+            <zm:pref name="zimbraPrefCalendarDayHourEnd" value="${param.zimbraPrefCalendarDayHourEnd}"/>
         </c:when>
     </c:choose>
 </zm:modifyPrefs>

@@ -95,22 +95,6 @@ function(view, force) {
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
 		var ok = this._setView(view, elements, true);
 		this._currentView = view;
-		if (ok)
-			this._setViewMenu(view);
-	}
-}
-
-
-// Set the view menu's icon, and make sure the appropriate list item is checked
-ZmChatListController.prototype._setViewMenu =
-function(view) {
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	appToolbar.showViewMenu(view);
-    var menu = appToolbar.getViewButton().getMenu();
-    if (menu) {
-	    var mi = menu.getItemById(ZmOperation.MENUITEM_ID, view);
-		if (mi)
-			mi.setChecked(true, true);
 	}
 }
 
@@ -149,7 +133,7 @@ ZmChatListController.prototype._getActionMenuOps =
 function() {
     return [];
     /*
-//	var list = this._contactOps();
+//	var list = this._participantOps();
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
@@ -184,17 +168,22 @@ function(view) {
 
 	var buttons = this._getToolBarOps();
 	if (!buttons) return;
-	this._toolbar[view] = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmAppToolBar");
+	this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons});
 	// remove text for Print, Delete, and Move buttons
 	var list = [ZmOperation.PRINT, ZmOperation.DELETE, ZmOperation.MOVE];
 	for (var i = 0; i < list.length; i++) {
 		var button = this._toolbar[view].getButton(list[i]);
-		if (button)
+		if (button) {
 			button.setText(null);
+		}
 	}
-	for (var i = 0; i < buttons.length; i++)
-		if (buttons[i] > 0 && this._listeners[buttons[i]])
-			this._toolbar[view].addSelectionListener(buttons[i], this._listeners[buttons[i]]);
+	buttons = this._toolbar[view].opList;
+	for (var i = 0; i < buttons.length; i++) {
+		var button = buttons[i];
+		if (this._listeners[button]) {
+			this._toolbar[view].addSelectionListener(button, this._listeners[button]);
+		}
+	}
 
     // init presence menu			
     var presenceButton = this._toolbar[view].getButton(ZmOperation.IM_PRESENCE_MENU);
@@ -202,7 +191,7 @@ function(view) {
     presenceButton.setText(ZmMsg[ZmOperation.getProp(ZmOperation.IM_PRESENCE_OFFLINE, "textKey")]);
     var presenceMenu = presenceButton.getMenu();
     
-    	var list = [ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
+   	var list = [ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
                 ZmOperation.IM_PRESENCE_DND, ZmOperation.IM_PRESENCE_AWAY, ZmOperation.IM_PRESENCE_XA,
                 ZmOperation.IM_PRESENCE_INVISIBLE];
     var currentShowOp = this._imApp.getRoster().getPresence().getShowOperation();
@@ -227,10 +216,14 @@ function(view) {
 
 	var menuItems = this._getActionMenuOps();
 	if (!menuItems) return;
-	this._actionMenu = new ZmActionMenu(this._shell, menuItems);
-	for (var i = 0; i < menuItems.length; i++)
-		if (menuItems[i] > 0)
-			this._actionMenu.addSelectionListener(menuItems[i], this._listeners[menuItems[i]]);
+	this._actionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
+	menuItems = this._actionMenu.opList;
+	for (var i = 0; i < menuItems.length; i++) {
+		var menuItem = menuItems[i];
+		if (this._listeners[menuItem]) {
+			this._actionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
+		}
+	}
 	this._actionMenu.addPopdownListener(this._popdownListener);
 
 }
@@ -296,7 +289,8 @@ function(view) {
 		var menu = new ZmPopupMenu(appToolbar.getViewButton());
 		for (var i = 0; i < ZmChatListController.VIEWS.length; i++) {
 			var id = ZmChatListController.VIEWS[i];
-			var mi = menu.createMenuItem(id, ZmChatListController.ICON[id], ZmMsg[ZmChatListController.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE);
+			var mi = menu.createMenuItem(id, {image:ZmChatListController.ICON[id], text:ZmMsg[ZmChatListController.MSG_KEY[id]],
+											  style:DwtMenuItem.RADIO_STYLE});
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 			if (id == view)
@@ -345,31 +339,7 @@ function(ev) {
 // a menu item), the action taken depends on the app.
 ZmChatListController.prototype._newListener = 
 function(ev) {
-	var id = ev.item.getData(ZmOperation.KEY_ID);
-	if (!id || id == ZmOperation.NEW_MENU)
-		id = this._defaultNewId;
-	if (id == ZmOperation.NEW_MESSAGE) {
-		var inNewWindow = this._appCtxt.get(ZmSetting.NEW_WINDOW_COMPOSE) || ev.shiftKey;
-		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController().doAction(ZmOperation.NEW_MESSAGE, inNewWindow);
-	} else if (id == ZmOperation.NEW_CONTACT) {
-		var contact = new ZmContact(this._appCtxt);
-		this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(contact);
-	} else if (id == ZmOperation.NEW_APPT) {
-		var cc = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getCalController();
-		cc.newAppointment();
-	} else if (id == ZmOperation.NEW_FOLDER) {
-		this._showDialog(this._appCtxt.getNewFolderDialog(), this._newFolderCallback);
-	} else if (id == ZmOperation.NEW_TAG) {
-		this._showDialog(this._appCtxt.getNewTagDialog(), this._newTagCallback, null, null, false);
-	} else if (id == ZmOperation.NEW_CALENDAR) {
-		var overviewController = this._appCtxt.getOverviewController();
-		var treeData = overviewController.getTreeData(ZmOrganizer.CALENDAR);
-		var folder = treeData.root;
-	
-		var newCalDialog = this._appCtxt.getNewCalendarDialog();
-		newCalDialog.setParentFolder(folder);
-		newCalDialog.popup();
-	}
+	ZmListController.prototype._newListener.call(this, ev);
 }
 
 ZmChatListController.prototype._presenceItemListener = 

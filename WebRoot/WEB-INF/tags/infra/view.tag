@@ -4,6 +4,8 @@
 <%@ attribute name="searches" rtexprvalue="true" required="false" %>
 <%@ attribute name="contacts" rtexprvalue="true" required="false" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
+<%@ attribute name="minical" rtexprvalue="true" required="false" %>
+<%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Calendar" %>
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
 <%@ attribute name="title" rtexprvalue="true" required="true" %>
 <%@ attribute name="ads" rtexprvalue="true" required="false" %>
@@ -57,7 +59,9 @@
                     <td align=right>
                         <a target=_new href="<c:url value="/bhelp/Zimbra_Basic_User_Help.htm"/>"><img alt='<fmt:message key="ALT_APP_LINK_HELP"/>' src="<c:url value='/images/common/Help.gif'/>" border="0"/> <fmt:message key="help"/></a>
                     </td>
-                    <td align=right>&nbsp;</td>
+                    <td align=right>
+                        &nbsp;
+                    </td>
                     <td align=right>
                         <a href="<c:url value="/h/login?loginOp=logout"/>"><img alt='<fmt:message key="ALT_APP_LINK_LOGOFF"/>' src="<c:url value='/images/common/Logoff.gif'/>" border="0"/> <fmt:message key="logOut"/></a>
                     </td>
@@ -67,7 +71,7 @@
     </tr>
     <tr>
         <td valign=top class='Overview'>
-            <app:overviewTree keys="${keys}" contacts="${contacts}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}"/>
+            <app:overviewTree keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
         </td>
 <c:set var="adsOn" value="${!empty ads}"/>
 <c:if test="${adsOn}" >

@@ -51,52 +51,19 @@ skin.hideTreeFooter = function () {
 	this.showTreeFooter(false);
 }
 
+skin.showFullScreen = function(state) {
+  skin.isFullScreen = state != false;
+  skin._showEl("skin_tr_main", !state);
+  skin._showEl("skin_tr_status", !state);
+  skin._showEl("skin_tr_main_full", state);
+};
+skin.hideFullScreen = function() {
+  skin.showFullScreen(false);
+};
 
 skin.setTreeWidth = function(newWidth) {
 	skin.setSize("skin_col_tree", newWidth, null);
 }
-
-
-skin.showTopAd = function (height) {
-	skin._showEl("skin_top_ad_outer");
-	if (height) {
-		var el = skin.$("skin_top_ad_outer");
-		el.style.height = height + "px";
-	}
-	skin._reflowApp();
-}
-skin.hideTopAd = function () {
-	skin._hide("skin_top_ad_outer");
-	skin._reflowApp();
-}
-skin.getTopAdContainer = function () {
-	return skin.$("skin_container_top_ad");
-}
-
-skin.showSidebarAd = function (width) {
-	var el = skin.$("skin_sidebar_ad_outer");
-	el.style.display = 'block';
-	var el = skin.$("skin_col_sidebar_ad");
-	el.style.width = width + "px";
-	var el = skin.$("skin_container_sidebar_ad");
-	el.style.widdth = width + "px";
-	skin._reflowApp();
-}
-skin.hideSidebarAd = function () {
-	skin._hideEl("skin_sidebar_ad_outer");
-	var el = skin.$("skin_col_sidebar_ad");
-	el.style.width = "1px";
-	var el = skin.$("skin_container_sidebar_ad");
-	el.style.widdth = "1px";
-	skin._reflowApp();
-}
-
-skin.getSidebarAdContainer = function() {
-	return skin.$("skin_container_sidebar_ad");
-}
-
-
-
 
 skin.setSize = function(id, width, height) {
 	var el = skin._getEl(id);
@@ -104,9 +71,6 @@ skin.setSize = function(id, width, height) {
 	if (height != null) el.style.height = height;
 }
 
-skin.$ = function(id) {
-	return document.getElementById(id);
-}
 skin._getEl = function(id) {
 	return document.getElementById(id);
 }
@@ -124,15 +88,6 @@ skin._showEl = function(id, state) {
 	}
 	el.style.display = value;
 }
-skin._hideEl = function(id, state) {
-	skin._showEl(id, false);
-}
-skin._reflowApp = function () {
-	var table = skin.$("skin_main_table");
-	table.style.width = table.style.width;
-	window._zimbraMail.getAppViewMgr().fitAll();
-}
-
 </script>
 
 <!-- BEGIN SKIN -->
@@ -145,14 +100,6 @@ skin._reflowApp = function () {
 			<col id='skin_col_quota'>
 		</colgroup>
 
-<!-- top ad: may or may not be visible -->
-		<tr id='skin_tr_top_ad'>
-			<td id='skin_td_top_ad' colspan=4>
-				<div id='skin_top_ad_outer'>
-					<center><span id='skin_container_top_ad'><!-- Your top ad here: leave the 'skin_container_top_ad' in place! --></span></center>
-				</div>
-			</td>
-		</tr>
 
 <!-- top row: logo, search box, quota -->			
 		<tr id='skin_tr_top'>
@@ -244,7 +191,7 @@ skin._reflowApp = function () {
 
 <!-- app chooser, tree and mini-cal, main app wd -->
 		<tr id='skin_tr_main'>
-			<td class='full_height'>
+			<td class='full_height' height='100%'>
 				<!-- NOTE: tree and mini-cal need to be their own table so the mini-cal can be hidden -->
 				<table class='skin_table' cellspacing=0 cellpadding=0>
 				<tr id='skin_tr_tree'>
@@ -274,34 +221,12 @@ skin._reflowApp = function () {
 					</div>
 				</div>
 			</td>
-			<td id='skin_td_app_main' class='full_height' rowspan='2' colspan=2>
-				<table id='skin_main_table' class='skin_table' style='width:100%' cellspacing=0 cellpadding=0>
-				<colgroup>
-					<col id='skin_col_main_inner'>
-					<col id='skin_col_sidebar_ad'>
-				</colgroup>
-				
-				<tr id='skin_tr_main'>
-					<td id='skin_td_main'>				
-						<div id='skin_border_app_main' class='skin_container full_size'>
-								<div id='skin_container_app_main' class='skin_container full_width full_height'>
-									<!-- main app area -->
-								</div>
+			<td id='skin_td_app_main' class='full_height' rowspan='2' colspan='2' height='100%'>
+				<div id='skin_border_app_main' class='skin_container full_size'>
+						<div id='skin_container_app_main' class='skin_container full_width full_height'>
+							<!-- main app area -->
 						</div>
-					</td>
-					<td id='skin_td_sidebar_ad'>
-						<!-- AD NOTE: 
-							* You *must* leave the two nested DIVs in place or a long ad
-								will cause the app to resize improperly.					
-						-->
-						<div id='skin_sidebar_ad_outer'>
-							<div id='skin_container_sidebar_ad'>
-								<!-- Your sidebar ad here: leave the 'skin_container_sidebar_ad' in place! -->
-							</div>
-						</div>
-					</td>
-				</tr>
-				</table>
+				</div>
 			</td>
 		</tr>
 		
@@ -316,6 +241,18 @@ skin._reflowApp = function () {
 				</div>
 			</td>
 		</tr>
+
+<!-- "full screen" app -->
+        <tr id='skin_tr_main_full'>
+            <td id='skin_td_app_mail_full' class='full_height' colspan='4' height='100%'>
+                <div id='skin_border_app_main_full' class='skin_container full_size'>
+                    <div id='skin_container_app_main_full' class='skin_container full_width full_height' height='100%'>
+                        <!-- main app area -->
+                    </div>
+                </div>
+            </td>
+        </tr>
+
 	</table>
 </div>
 <!-- END SKIN -->

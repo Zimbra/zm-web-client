@@ -60,7 +60,7 @@ function(fieldId) {
  	document.getElementById(fieldId).appendChild(this._colorButton.getHtmlElement());
 	ZmOperation.addColorMenu(this._colorButton, this);
     this._tagColorListener = new AjxListener(this, this._colorListener);
-    var color = ZmTag.DEFAULT_COLOR;
+    var color = ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
  	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
 	var menu = this._colorButton.getMenu();
 	var items = menu.getItems();
@@ -104,7 +104,7 @@ function() {
 	if (!msg && (this._appCtxt.getTree(ZmOrganizer.TAG).getByName(name)))
 		msg = ZmMsg.tagNameExists
 
-	return (msg ? this._showError(msg) : [name, this._colorButton.getData(ZmOperation.MENUITEM_ID)]);
+	return (msg ? this._showError(msg) : {name:name, color:this._colorButton.getData(ZmOperation.MENUITEM_ID)});
 };
 
 ZmNewTagDialog.prototype._enterListener =
@@ -119,7 +119,7 @@ function() {
 	var colorUsed = new Object();
 	var tags = this._appCtxt.getTree(ZmOrganizer.TAG).root.children.getArray();
 	if (!(tags && tags.length))
-		return ZmTag.DEFAULT_COLOR;
+		return ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 	for (var i = 0; i < tags.length; i++)
 		colorUsed[tags[i].color] = true;
 	for (var i = 0; i < ZmTagTree.COLOR_LIST.length; i++) {
@@ -127,7 +127,7 @@ function() {
 		if (!colorUsed[color])
 			return color;
 	}
-	return ZmTag.DEFAULT_COLOR;
+	return ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 };
 
 ZmNewTagDialog.prototype._getTabGroupMembers =

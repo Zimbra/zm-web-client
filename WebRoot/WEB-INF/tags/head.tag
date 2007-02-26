@@ -11,7 +11,10 @@
         <c:if test="${!empty title}"><fmt:message key="zimbraTitle"/>: ${fn:escapeXml(title)}</c:if>
     </title>
     <zm:getMailbox var="mailbox"/>
-    <c:set var="skin" value="${not empty param.skin ? param.skin : (not empty mailbox.prefs.skin ? mailbox.prefs.skin : 'sand')}"/>
+    <c:if test="${not empty param.skin}">
+        <c:set var="skin" value="${param.skin}" scope="session"/>
+    </c:if>
+    <c:set var="skin" value="${not empty sessionScope.skin ? sessionScope.skin : (not empty mailbox.prefs.skin ? mailbox.prefs.skin : 'sand')}"/>
     <!-- skin is ${skin} -->
     <style type="text/css">
        @import url( "<c:url value='/css/common,login,zhtml,${skin},skin.css?skin=${skin}'/>" );

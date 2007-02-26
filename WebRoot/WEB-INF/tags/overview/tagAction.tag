@@ -8,12 +8,19 @@
 
 <app:handleError>
 <c:choose>
-    <c:when test="${!empty param.actionCreate}">
+    <c:when test="${not empty param.actionNew}">
         <c:set var="newTagName" value="${fn:trim(param.newTagName)}"/>
         <c:choose>
             <c:when test="${empty newTagName}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoTagNameSpecified"/>
+                </app:status>
+            </c:when>
+            <c:when test="${fn:length(newTagName) gt 128}">
+                <app:status style="Warning">
+                    <fmt:message key="nameTooLong">
+                        <fmt:param value="128"/>
+                    </fmt:message>
                 </app:status>
             </c:when>
             <c:otherwise>
@@ -23,68 +30,43 @@
                         <fmt:param value="${newTagName}"/>
                     </fmt:message>
                 </app:status>
+                <c:set var="newlyCreatedTagName" value="${param.newTagName}" scope="request"/>
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${!empty param.actionRename}">
-        <c:set var="newName" value="${fn:trim(param.newName)}"/>
+    <c:when test="${not empty param.actionSave}">
+        <c:set var="newName" value="${fn:trim(param.tagName)}"/>
         <c:choose>
             <c:when test="${empty newName}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoTagNameSpecified"/>
                 </app:status>
             </c:when>
-            <c:when test="${!fn:startsWith(param.tagToRename, 't:')}">
+            <c:when test="${fn:length(newName) gt 128}">
                 <app:status style="Warning">
-                    <fmt:message key="actionNoTagRenameSelected"/>
+                    <fmt:message key="nameTooLong">
+                        <fmt:param value="128"/>
+                    </fmt:message>
                 </app:status>
             </c:when>
             <c:otherwise>
-                <c:set var="tagid" value="${fn:substring(param.tagToRename, 2, -1)}"/>
-                <c:set var="oldName" value="${zm:getTagName(pageContext, tagid)}"/>
-                <zm:renameTag id="${tagid}" newname="${newName}"/>                        
+                <zm:updateTag id="${param.tagId}" name="${newName}" color="${param.tagColor}"/>
                 <app:status>
-                    <fmt:message key="actionTagRenamed">
-                        <fmt:param value="${oldName}"/>
-                        <fmt:param value="${newName}"/>
-                    </fmt:message>
+                    <fmt:message key="tagUpdated"/>
                 </app:status>
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${!empty param.actionColorChange}">
-        <c:set var="newColor" value="${fn:trim(param.newColor)}"/>
+    <c:when test="${not empty param.actionDelete}">
         <c:choose>
-            <c:when test="${!fn:startsWith(param.tagToChangeColor, 't:')}">
+            <c:when test="${empty param.tagDeleteConfirm}">
                 <app:status style="Warning">
-                    <fmt:message key="actionNoTagChangeColorSelected"/>
+                    <fmt:message key="actionTagCheckConfirm"/>
                 </app:status>
             </c:when>
             <c:otherwise>
-                <c:set var="tagid" value="${fn:substring(param.tagToChangeColor, 2, -1)}"/>
-                <c:set var="tagName" value="${zm:getTagName(pageContext, tagid)}"/>
-                <zm:modifyTagColor id="${tagid}" color="${param.newColor}"/>
-                <app:status>
-                    <fmt:message key="${newColor}" var="colorMsg"/>
-                    <fmt:message key="actionTagColorChanged">
-                        <fmt:param value="${tagName}"/>
-                        <fmt:param value="${colorMsg}"/>
-                    </fmt:message>
-                </app:status>
-            </c:otherwise>
-        </c:choose>
-    </c:when>
-    <c:when test="${!empty param.actionDelete}">
-        <c:choose>
-            <c:when test="${!fn:startsWith(param.tagToDelete, 't:')}">
-                <app:status style="Warning">
-                    <fmt:message key="actionNoTagToDeleteSelected"/>
-                </app:status>
-            </c:when>
-            <c:otherwise>
-                <c:set var="tagid" value="${fn:substring(param.tagToDelete, 2, -1)}"/>
-                <c:set var="tagName" value="${zm:getTagName(pageContext, tagid)}"/>
-                <zm:deleteTag id="${tagid}"/>                
+                <c:set var="tagName" value="${zm:getTagName(pageContext, param.tagDeleteId)}"/>
+                <zm:deleteTag id="${param.tagDeleteId}"/>                
                 <app:status>
                     <fmt:message key="actionTagDeleted">
                         <fmt:param value="${tagName}"/>
@@ -93,7 +75,7 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${!empty param.actionMarkRead}">
+    <c:when test="${not empty param.actionMarkRead}">
         <c:choose>
             <c:when test="${!fn:startsWith(param.tagToMarkRead, 't:')}">
                 <app:status style="Warning">
