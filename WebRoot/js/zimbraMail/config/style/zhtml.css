@@ -217,10 +217,12 @@ padding-right:4px;
 padding: 5px;
 }
 
-.TbTop BUTTON, .TbBottom BUTTON {
+.TbTop INPUT, .TbBottom INPUT {
  padding: 0; 
  border: none;
 /*@_WidgetContainer_@; */
+    @FontSize-normal@
+    @Text@
  @ToolbarBg@;   
 }
 
