@@ -62,7 +62,7 @@ ZmRosterTree.prototype.getIcon = function() {    return null; };
 
 ZmRosterTree.createRoot = 
 function(tree) {
-    var root = new ZmRosterTree({id: ZmOrganizer.ID_ROOT, name: ZmMsg.buddyList, tree: tree});
+    var root = new ZmRosterTree({id: ZmOrganizer.ID_ROSTER_LIST, name: ZmMsg.buddyList, tree: tree});
     // TODO: nothing for now...    
     return root;
 };
