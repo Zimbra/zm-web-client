@@ -1404,7 +1404,7 @@ function(type, useException) {
 	}
 	// replace attendees list with what we've found :/
 	if (gotOne) {
-		this.parent.parent.updateAttendees(attendees, type);
+		this.parent.updateAttendees(attendees, type);
 	}
 };
 
