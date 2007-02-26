@@ -65,7 +65,7 @@ function() {
 	if (this._remoteCheckboxField) {
 		this._remoteCheckboxField.checked = false;
 		var urlRow = document.getElementById(this._remoteCheckboxField.id+"URLrow");		
-		urlRow.style.display = "none";
+		if (urlRow) urlRow.style.display = "none";
 	}
 
 	if (this._urlField) {
