@@ -20,16 +20,16 @@
     </c:if>
     
     <c:choose>
-        <c:when test="${not empty param.actionFilterSave and requestScope.filterSave eq 'success'}">
+        <c:when test="${zm:actionSet(param, 'actionFilterSave') and requestScope.filterSave eq 'success'}">
 
         </c:when>
-        <c:when test="${not empty param.actionFilterCancel}">
+        <c:when test="${zm:actionSet(param, 'actionFilterCancel')}">
             
         </c:when>
-        <c:when test="${not empty param.actionNewFilter}">
+        <c:when test="${zm:actionSet(param, 'actionNewFilter')}">
             <c:set var="newRule" value="${not empty postRule ? postRule : null}"/>
         </c:when>
-        <c:when test="${not empty param.actionEditFilter}">
+        <c:when test="${zm:actionSet(param, 'actionEditFilter')}">
             <c:set var="editRule" value="${not empty postRule ? postRule : selectedRule}"/>
         </c:when>
     </c:choose>
@@ -39,12 +39,12 @@
     <tbody>
         <tr>
             <c:choose>
-                <c:when test="${not empty param.actionNewFilter and (empty param.actionFilterCancel and requestScope.filterSave ne 'success')}">
+                <c:when test="${zm:actionSet(param, 'actionNewFilter') and (not zm:actionSet(param, 'actionFilterCancel') and requestScope.filterSave ne 'success')}">
                     <td valign='top'>
                         <app:editRule rule="${newRule}" mailbox="${mailbox}"/>
                     </td>
                 </c:when>
-                <c:when test="${not empty param.actionEditFilter and not empty editRule and (empty param.actionFilterCancel and requestScope.filterSave ne 'success')}">
+                <c:when test="${zm:actionSet(param, 'actionEditFilter') and not empty editRule and (not zm:actionSet(param, 'actionFilterCancel') and requestScope.filterSave ne 'success')}">
                     <td valign='top'>
                         <app:editRule rule="${editRule}" mailbox="${mailbox}"/>
                     </td>

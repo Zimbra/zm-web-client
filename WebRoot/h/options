@@ -10,24 +10,24 @@
     <c:set var="selected" value="${empty param.selected ? 'general' : param.selected}"/>
 
     <c:choose>
-        <c:when test="${!empty param.actionSave}">
+        <c:when test="${zm:actionSet(param, 'actionSave')}">
             <app:optAction selected="${selected}"/>
         </c:when>
-        <c:when test="${not empty param.actionFilterCancel}">
+        <c:when test="${zm:actionSet(param, 'actionFilterCancel')}">
             <app:status>
-                <fmt:message key="${not empty param.actionNewFilter ? 'filterCancelCreate' : 'filterCancelModify'}"/>
+                <fmt:message key="${zm:actionSet(param, 'actionNewFilter') ? 'filterCancelCreate' : 'filterCancelModify'}"/>
             </app:status>
         </c:when>
-        <c:when test="${not empty param.actionDeleteFilter and not empty param.ruleName}">
+        <c:when test="${zm:actionSet(param, 'actionDeleteFilter') and not empty param.ruleName}">
             <zm:deleteFilterRule name="${param.ruleName}"/>
         </c:when>
-        <c:when test="${not empty param.actionMoveFilterUp and not empty param.ruleName}">
+        <c:when test="${zm:actionSet(param, 'actionMoveFilterUp') and not empty param.ruleName}">
             <zm:moveFilterRule direction="up" name="${param.ruleName}"/>
         </c:when>
-        <c:when test="${not empty param.actionMoveFilterDown and not empty param.ruleName}">
+        <c:when test="${zm:actionSet(param, 'actionMoveFilterDown') and not empty param.ruleName}">
             <zm:moveFilterRule direction="down" name="${param.ruleName}"/>
         </c:when>
-        <c:when test="${not empty param.actionFilterSave and not empty param.frompost}">
+        <c:when test="${zm:actionSet(param, 'actionFilterSave') and not empty param.frompost}">
             <c:set var="filterSave" value="fail" scope="request"/>
             <app:constructRule var="postRule"/>
             <c:choose>
@@ -46,11 +46,11 @@
                         <fmt:message key="actionRuleNoActions"/>
                     </app:status>
                 </c:when>
-                <c:when test="${not empty param.actionNewFilter}">
+                <c:when test="${zm:actionSet(param, 'actionNewFilter')}">
                     <zm:createFilterRule rule="${postRule}"/>
                     <c:set var="filterSave" value="success" scope="request"/>
                 </c:when>
-                <c:when test="${not empty param.actionEditFilter}">
+                <c:when test="${zm:actionSet(param, 'actionEditFilter')}">
                     <zm:modifyFilterRule originalname="${param.origname}"  rule="${postRule}"/>
                     <c:set var="filterSave" value="success" scope="request"/>
                 </c:when>

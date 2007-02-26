@@ -11,15 +11,15 @@
 <c:if test="${empty requestScope.contactsToolbarCache}">
      <zm:getMailbox var="mailbox"/>
     <c:set var="contactsToolbarCache" scope="request">
-        <c:if test="${context.folder.isTrash}">
-            <input type="hidden" name="contextFolderId" value="${context.selectedId}"/>
-            <app:button name="actionEmpty" src="common/Delete.gif" tooltip="emptyTrash" text="emptyTrash"/>
-            <td><div class='vertSep'></div></td>
-        </c:if>
         <td><div class='vertSep'></div></td>
         <app:button name="actionNew" src="contacts/NewContact.gif" tooltip="newContact" text="contact"/>
         <td><div class='vertSep'></div></td>
         <app:button name="actionNewGroup" src="mail/NewGroup.gif" tooltip="newGroup" text="group"/>
+        <c:if test="${not empty contact}">
+            <td><div class='vertSep'></div></td>
+            <app:button name="actionEdit" src="common/Edit.gif" tooltip="edit" text="edit"/>
+            <input type='hidden' name="actionEditId" value="${contact.id}"/>
+         </c:if>
          <td><div class='vertSep'></div></td>
         <td nowrap>
             <select name="folderId">
@@ -56,12 +56,11 @@
                  <app:button name="actionDelete" src="common/Delete.gif" tooltip="actionTrashTT"/>
              </c:otherwise>
          </c:choose>
-        <c:if test="${not empty contact}">
+        <c:if test="${context.folder.isTrash}">
             <td><div class='vertSep'></div></td>
-             <app:button name="actionEdit" src="common/Edit.gif" tooltip="edit" text="edit"/>
-             <input type='hidden' name="actionEditId" value="${contact.id}"/>
-         </c:if>
-
+            <input type="hidden" name="contextFolderId" value="${context.selectedId}"/>
+            <app:button name="actionEmpty" src="common/Delete.gif" tooltip="emptyTrash" text="emptyTrash"/>
+        </c:if>
     </c:set>
 </c:if>
 

@@ -13,13 +13,13 @@
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
 <c:set var="contactError" value="${false}"/>
 <c:choose>
-   <c:when test="${ (not (empty param.actionCreate and empty param.actionModify)) and (param.isgroup and empty fn:trim(param.nickname))}">
+   <c:when test="${ (zm:actionSet(param, 'actionCreate') or zm:actionSet(param, 'actionModify')) and (param.isgroup and empty fn:trim(param.nickname))}">
        <c:set var="contactError" value="true"/>
         <app:status>
             <fmt:message key="noContactGroupName"/>
         </app:status>
     </c:when>
-    <c:when test="${ (not (empty param.actionCreate and empty param.actionModify)) and (param.isgroup and empty fn:trim(param.dlist))}">
+    <c:when test="${ (zm:actionSet(param, 'actionCreate') or zm:actionSet(param, 'actionModify')) and (param.isgroup and empty fn:trim(param.dlist))}">
         <c:set var="contactError" value="true"/>
         <app:status>
             <fmt:message key="noContactGroupMembers"/>
@@ -28,7 +28,7 @@
 </c:choose>
 
 <c:choose>
-    <c:when test="${not empty param.actionEmpty and (param.contextFolderId eq mailbox.trash.id or param.contextFolderId eq mailbox.spam.id)}">
+    <c:when test="${zm:actionSet(param, 'actionEmpty') and (param.contextFolderId eq mailbox.trash.id or param.contextFolderId eq mailbox.spam.id)}">
         <zm:emptyFolder id="${param.contextFolderId}"/>
         <app:status>
             <fmt:message key="folderEmptied">
@@ -36,28 +36,28 @@
             </fmt:message>
         </app:status>
     </c:when>
-    <c:when test="${not empty param.actionCreate and not contactError}">
+    <c:when test="${zm:actionSet(param, 'actionCreate') and not contactError}">
         <app:editContactAction id="${param.id}"/>
         <app:status><fmt:message key="contactCreated"/></app:status>
         <zm:clearSearchCache type="contact"/>
     </c:when>
-    <c:when test="${not empty param.actionModify and not contactError}">
+    <c:when test="${zm:actionSet(param, 'actionModify') and not contactError}">
         <app:editContactAction id="${param.id}"/>
         <app:status><fmt:message key="contactModified"/></app:status>
     </c:when>
-    <c:when test="${!empty param.actionCancelCreate}">
+    <c:when test="${zm:actionSet(param, 'actionCancelCreate')}">
         <app:status style="Warning"><fmt:message key="contactCancelCreate"/></app:status>
     </c:when>
-    <c:when test="${!empty param.actionCancelModify}">
+    <c:when test="${zm:actionSet(param, 'actionCancelModify')}">
         <app:status style="Warning"><fmt:message key="contactCancelModify"/></app:status>
     </c:when>
-    <c:when test="${!empty param.actionNew}">
+    <c:when test="${zm:actionSet(param, 'actionNew')}">
         <jsp:forward page="/h/econtact"/>
     </c:when>
-    <c:when test="${!empty param.actionNewGroup}">
+    <c:when test="${zm:actionSet(param, 'actionNewGroup')}">
         <jsp:forward page="/h/econtact"/>
     </c:when>
-    <c:when test="${!empty param.actionEdit}">
+    <c:when test="${zm:actionSet(param, 'actionEdit')}">
         <jsp:forward page="/h/econtact"/>
     </c:when>
     <c:when test="${empty ids}">
@@ -65,7 +65,7 @@
     </c:when>
     <c:otherwise>
         <c:choose>
-            <c:when test="${!empty param.actionDelete}">
+            <c:when test="${zm:actionSet(param, 'actionDelete')}">
                 <zm:moveContact  var="result" id="${ids}" folderid="${mailbox.trash.id}"/>
                 <app:status>
                     <fmt:message key="actionContactMovedTrash">
@@ -73,7 +73,7 @@
                     </fmt:message>
                 </app:status>
             </c:when>
-            <c:when test="${!empty param.actionHardDelete}">
+            <c:when test="${zm:actionSet(param, 'actionHardDelete')}">
                 <zm:deleteContact  var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionContactHardDeleted">
@@ -102,7 +102,7 @@
                     </fmt:message>
                 </app:status>
             </c:when>
-            <c:when test="${!empty param.actionMove}">
+            <c:when test="${zm:actionSet(param, 'actionMove')}">
                 <app:status style="Warning"><fmt:message key="actionNoFolderSelected"/></app:status>
             </c:when>
             <c:otherwise>
