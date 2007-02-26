@@ -207,7 +207,7 @@ ZmVoicemailView.prototype._mouseDownAction =
 function(ev, div) {
 	if (this._callType == ZmVoicemailFolder.VOICEMAIL) {
 		var voicemail = this.getItemFromElement(div);
-		if (voicemail == this._previewing) {
+		if (voicemail && voicemail == this._previewing) {
 			var target = ev.target;
 			var inPlayingCell = this._isInPlayingCell(target);
 			if (inPlayingCell) {
@@ -221,7 +221,7 @@ ZmVoicemailView.prototype._mouseUpAction =
 function(ev, div) {
 	if (this._callType == ZmVoicemailFolder.VOICEMAIL) {
 		var voicemail = this.getItemFromElement(div);
-		if (voicemail == this._previewing) {
+		if (voicemail && voicemail == this._previewing) {
 			var target = ev.target;
 			var inPlayingCell = this._isInPlayingCell(target);
 			if (inPlayingCell) {

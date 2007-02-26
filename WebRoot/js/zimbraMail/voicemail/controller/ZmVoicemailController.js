@@ -67,19 +67,6 @@ function(searchResult, callType) {
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements, true);
 
-	this._showSoundPlayer();
-};
-
-ZmVoicemailController.prototype._showSoundPlayer =
-function() {
-	if (this._soundPlayer) {
-		var visible = this._callType == ZmVoicemailFolder.VOICEMAIL;
-		if (visible) {
-			this._soundPlayer.setLocation(0, 0);
-		} else {
-			this._soundPlayer.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-		}
-	}
 };
 
 ZmVoicemailController.prototype._createNewView = 
@@ -133,12 +120,9 @@ ZmVoicemailController.prototype._initializeToolBar =
 function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 	if (!this._soundPlayer) {
+		this._toolbar[view].addSpacer();
 		this._toolbar[view].getButton(ZmOperation.CHECK_MAIL).setText(ZmMsg.checkVoicemail);
-		this._soundPlayer = DwtSoundPlayer.create(this._toolbar[view], 200, 16, true, null, DwtControl.RELATIVE_STYLE);
-		this._soundPlayer.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
-		if (this._soundPlayer.isPluginMissing) {
-			this._soundPlayer.addHelpListener(new AjxListener(this, this._pluginHelpListener));
-		}
+		this._soundPlayer = new DwtSoundPlayer(this._toolbar[view]);
 	}
 };
 
@@ -189,7 +173,6 @@ function(ev) {
 			var voicemail = selection[0];
 			url = voicemail.soundUrl;
 			this._soundPlayer.setUrl(url);
-			this._soundPlayer.play();
 			this._hasPlayedSound = true;
 			var view = this._getView();
 			view.setPlaying(voicemail);
