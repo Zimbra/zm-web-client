@@ -504,7 +504,7 @@ if (ext == null) ext = "";
 	<antcall target="build-skin-images">
 	  <param name='skindir' value='${env.CUSTOMER_SKIN}'/>
 	  <param name="csspathprefix" value="/zimbra/img/"/>
-	  <param name="skinbasedir" value="../ZimbraCustomerServices"/>
+	  <param name="skinbasedir" value="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot"/>
 	</antcall>
   </target>
 
@@ -591,8 +591,8 @@ if (ext == null) ext = "";
         <fileset dir='WebRoot/js' includes='*/package/*.js' />
     </copy>
     <copy todir="${build.dir}/WebRoot" overwrite="${isProduction}" failonerror='false'>
-        <fileset dir="../ZimbraCustomerServices" includes="skins/${env.CUSTOMER_SKIN}/**" />
-        <fileset dir="../ZimbraCustomerServices" includes="portals/${env.CUSTOMER_SKIN}/**" />
+        <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="skins/**" />
+        <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="portals/**" />
 	</copy>
 	<copy todir="${build.dir}/WebRoot/js/ajax" overwrite="${isProduction}" >
       <fileset dir="${ajax.dir}/WebRoot/js"/>
@@ -710,8 +710,8 @@ if (ext == null) ext = "";
   -->
   <target name="dev-sync" depends='templates' description="Web Client Quick Sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.path}" failonerror="false">
-        <fileset dir="../ZimbraCustomerServices" includes="skins/**" />
-        <fileset dir="../ZimbraCustomerServices" includes="portals/**" />
+        <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="skins/**" />
+        <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="portals/**" />
     </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
 	  <fileset dir="WebRoot"
