@@ -1,17 +1,17 @@
 <skin>
 	<substitutions>
-		<file>../_base/base/base_subs.txt</file>
-		<file>bones_subs.txt</file>
+		<file>../_base/base/skin.properties</file>
+		<file>skin.properties</file>
 	</substitutions>
 	<css>
-		<file>../_base/base/base.css</file>
+		<file>../_base/base/skin.css</file>
 	</css>
     <script>
         <file>../_base/base/ZmSkin.js</file>
         <file>../_base/base/BaseSkin.js</file>
-        <file>../_base/base/base.js</file>
+        <file>../_base/base/skin.js</file>
     </script>
 	<html>
-		<file>../_base/base/base.html</file>
+		<file>../_base/base/skin.html</file>
 	</html>
 </skin>
