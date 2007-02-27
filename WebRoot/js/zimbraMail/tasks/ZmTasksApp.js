@@ -144,7 +144,8 @@ function(op, params) {
 
 ZmTasksApp.prototype._handleLoadNewTask =
 function(params) {
-	AjxDispatcher.run("GetTaskController").show((new ZmTask(this._appCtxt, null, null, params.folderId)));
+	var folderId = params ? params.folderId : null;
+	AjxDispatcher.run("GetTaskController").show((new ZmTask(this._appCtxt, null, null, folderId)));
 };
 
 ZmTasksApp.prototype._handleLoadNewTaskFolder =
@@ -251,7 +252,7 @@ function(folder, startDate, endDate, callback) {
 	var sc = this._appCtxt.getSearchController();
 	var types = sc.getTypes(ZmSearchToolBar.FOR_TASKS_MI);
 
-	sc.search({query:query, types:types, callback:callback});
+	sc.search({query:query, types:types, sortBy:ZmSearch.DATE_DESC, callback:callback});
 };
 
 

@@ -103,7 +103,6 @@ ZmItem.F_SIZE			= i++;
 ZmItem.F_INDEX			= i++;
 // task specific
 ZmItem.F_PRIORITY		= i++;
-ZmItem.F_STATUS			= i++;
 ZmItem.F_PCOMPLETE		= i++;
 
 // Action requests for different items

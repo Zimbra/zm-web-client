@@ -307,8 +307,13 @@ function() {
 
 ZmListController.prototype._standardActionMenuOps =
 function() {
-	return [ZmOperation.TAG_MENU, ZmOperation.DELETE,
-			ZmOperation.MOVE, ZmOperation.PRINT];
+	var list = [];
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+		list.push(ZmOperation.TAG_MENU);
+	list.push(ZmOperation.DELETE, ZmOperation.MOVE);
+	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+		list.push(ZmOperation.PRINT);
+	return list;
 };
 
 ZmListController.prototype._participantOps =

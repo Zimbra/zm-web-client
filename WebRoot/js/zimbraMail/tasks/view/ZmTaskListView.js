@@ -217,6 +217,36 @@ function() {
 	return this._colHeaderActionMenu;
 };
 
+ZmTaskListView.prototype._mouseOverAction =
+function(ev, div) {
+	var id = ev.target.id || div.id;
+	if (!id) return true;
+
+	// check if we're hovering over a column header
+	var type = Dwt.getAttr(div, "_type");
+	if (type && type != DwtListView.TYPE_HEADER_ITEM) {
+		var m = this._parseId(id);
+		if (m && m.field) {
+			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY])
+			{
+				var item = this.getItemFromElement(div);
+				this.setToolTipContent(ZmCalItem.getLabelForPriority(item.priority, false, true));
+				return true;
+			}
+			else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT] ||
+					m.field == ZmListView.FIELD_PREFIX[ZmItem.F_STATUS] ||
+					m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE])
+			{
+				// do nothing for now
+				// this.setToolTipContent();
+				return true;
+			}
+		}
+	}
+
+	ZmListView.prototype._mouseOverAction.call(this, ev, div);
+};
+
 ZmTaskListView.prototype._showInlineWidget =
 function(cell, show) {
 	var inlineId = cell ? Dwt.getAttr(cell, "_inlineId") : null;

@@ -59,6 +59,7 @@ function(list, folderId) {
 		var tree = folderId ? this._appCtxt.getTree(ZmOrganizer.TASKS) : null;
 		var folder = tree ? tree.getById(folderId) : null;
 		this._list._isShared = folder ? folder.link : false;
+		this._list.setHasMore(list.getAttribute("more"));
 	}
 
 	ZmListController.prototype.show.call(this, list);
@@ -73,6 +74,7 @@ function(list, folderId) {
 
 	this._setTabGroup(this._tabGroups[this._currentView]);
 	this._restoreFocus();
+	this._resetNavToolBarButtons(this._currentView);
 };
 
 ZmTaskListController.prototype.notifyCreate =
@@ -91,6 +93,11 @@ function() {
 	return ZmController.TASKLIST_VIEW;
 };
 
+ZmTaskListController.prototype._getViewType =
+function() {
+	return this._currentView;
+};
+
 ZmTaskListController.prototype._createNewView =
 function(view) {
 	if (view == ZmController.TASK_VIEW) {
@@ -104,7 +111,7 @@ function(view) {
 
 ZmTaskListController.prototype._getToolBarOps =
 function() {
-	var list = [ZmOperation.NEW_MENU];
+	var list = [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU];
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.DELETE, ZmOperation.MOVE);
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
@@ -134,11 +141,13 @@ function() {
 	var list = [];
 	list.push(ZmOperation.EDIT);
 	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.DELETE);
-	list.push(ZmOperation.MOVE);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
+	list = list.concat(this._standardActionMenuOps());
 	return list;
+};
+
+ZmTaskListController.prototype._getTagMenuMsg =
+function(num) {
+	return (num == 1) ? ZmMsg.tagTask : ZmMsg.tagTasks;
 };
 
 ZmTaskListController.prototype._resetOperations =
@@ -157,10 +166,19 @@ function(parent, num) {
 	}
 };
 
+ZmTaskListController.prototype._resetNavToolBarButtons = 
+function(view) {
+	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
+	this._showListRange(view);
+};
+
 ZmTaskListController.prototype._paginate =
 function(view, bPageForward) {
-	// TODO
-	DBG.println("todo");
+	var list = this._listView[view].getList();
+	var prevId = bPageForward ? list.get(list.size()-1).id : list.get(0).id;
+	var params = {offset:null, lastId:prevId, lastSortVal:ZmSearch.DATE_DESC};
+	var sc = this._appCtxt.getSearchController();
+	sc.redoSearch(this._activeSearch.search, false, params);
 };
 
 // Delete one or more items.
