@@ -8,7 +8,7 @@
 
 <app:handleError>
 <c:choose>
-    <c:when test="${not empty param.actionNew}">
+    <c:when test="${zm:actionSet(param, 'actionNew')}">
         <c:set var="newTagName" value="${fn:trim(param.newTagName)}"/>
         <c:choose>
             <c:when test="${empty newTagName}">
@@ -34,7 +34,7 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${not empty param.actionSave}">
+    <c:when test="${zm:actionSet(param, 'actionSave')}">
         <c:set var="newName" value="${fn:trim(param.tagName)}"/>
         <c:choose>
             <c:when test="${empty newName}">
@@ -57,7 +57,7 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${not empty param.actionDelete}">
+    <c:when test="${zm:actionSet(param,'actionDelete')}">
         <c:choose>
             <c:when test="${empty param.tagDeleteConfirm}">
                 <app:status style="Warning">
@@ -75,7 +75,7 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${not empty param.actionMarkRead}">
+    <c:when test="${zm:actionSet(param, 'actionMarkRead')}">
         <c:choose>
             <c:when test="${!fn:startsWith(param.tagToMarkRead, 't:')}">
                 <app:status style="Warning">

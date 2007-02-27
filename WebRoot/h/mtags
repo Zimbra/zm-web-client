@@ -27,7 +27,7 @@
         </c:when>
     </c:choose>
 
-    <c:set var="newTag" value="${not empty param.actionNewTag}"/>
+    <c:set var="newTag" value="${zm:actionSet(param, 'actionNewTag')}"/>
 
     <c:if test="${empty selectedTag and not newTag}">
         <zm:forEachTag var="tag">
@@ -111,7 +111,7 @@
                             </td>
                             <td class='ZhEditTagContent' valign='top'>
                                 <c:choose>
-                                    <c:when test="${not empty param.actionNewTag}">
+                                    <c:when test="${zm:actionSet(param, 'actionNewTag')}">
                                         <app:newTag/>
                                     </c:when>
                                     <c:when test="${not empty selectedTag}">

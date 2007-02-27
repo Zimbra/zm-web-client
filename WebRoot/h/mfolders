@@ -28,7 +28,7 @@
         </c:when>
     </c:choose>
     <c:if test="${empty selectedFolder}"><c:set var="selectedFolder" value="${mailbox.inbox}"/></c:if>
-    <c:set var="newFolder" value="${not empty param.actionNewFolder or not empty param.actionNewSearchFolder or not empty param.actionNewFeedFolder}"/>
+    <c:set var="newFolder" value="${zm:actionSet(param, 'actionNewFolder') or zm:actionSet(param, 'actionNewSearchFolder') or zm:actionSet(param, 'actionNewFeedFolder')}"/>
 
     <c:set var="toolbar">
         <table width=100% cellspacing=0>
@@ -114,13 +114,13 @@
                             </td>
                             <td height=100% class='ZhEditFolderContent' valign='top'>
                                 <c:choose>
-                                    <c:when test="${not empty param.actionNewFolder}">
+                                    <c:when test="${zm:actionSet(param, 'actionNewFolder')}">
                                         <app:newFolder/>
                                     </c:when>
-                                    <c:when test="${not empty param.actionNewSearchFolder}">
+                                    <c:when test="${zm:actionSet(param, 'actionNewSearchFolder')}">
                                         <app:newFolder search="true"/>
                                     </c:when>
-                                    <c:when test="${not empty param.actionNewFeedFolder}">
+                                    <c:when test="${zm:actionSet(param, 'actionNewFeedFolder')}">
                                         <app:newFolder url="true"/>
                                     </c:when>
                                     <c:otherwise>

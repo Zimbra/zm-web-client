@@ -10,7 +10,7 @@
 <zm:getMailbox var="mailbox"/>
 
 <c:choose>
-    <c:when test="${not empty param.actionSave}">
+    <c:when test="${zm:actionSet(param, 'actionSave')}">
         <c:set var="folder" value="${zm:getFolder(pageContext, param.folderId)}"/>
         <c:choose>
             <c:when test="${not empty param.folderNameVisible and empty param.folderName}">
@@ -39,7 +39,7 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${not empty param.actionNew}">
+    <c:when test="${zm:actionSet(param, 'actionNew')}">
          <c:choose>
             <c:when test="${empty param.newFolderName}">
                 <app:status style="Warning">
@@ -80,7 +80,7 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${not empty param.actionDelete}">
+    <c:when test="${zm:actionSet(param, 'actionDelete')}">
         <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderDeleteId)}"/>
         <c:choose>
             <c:when test="${empty param.folderDeleteConfirm}">
@@ -98,7 +98,7 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${not empty param.actionPermDelete}">
+    <c:when test="${zm:actionSet(param, 'actionPermDelete')}">
         <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderDeleteId)}"/>
         <c:choose>
             <c:when test="${empty param.folderDeleteConfirm}">
@@ -116,7 +116,7 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${not empty param.actionEmptyFolder}">
+    <c:when test="${zm:actionSet(param, 'actionEmptyFolder')}">
         <zm:emptyFolder id="${param.folderEmptyId}"/>
         <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderEmptyId)}"/>
         <app:status>
@@ -125,7 +125,7 @@
             </fmt:message>
         </app:status>
     </c:when>
-    <c:when test="${not empty param.actionMarkRead}">
+    <c:when test="${zm:actionSet(param, 'actionMarkRead')}">
         <zm:markFolderRead id="${param.folderId}"/>
         <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderId)}"/>
         <app:status>

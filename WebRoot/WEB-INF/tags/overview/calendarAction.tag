@@ -8,7 +8,7 @@
 
 <app:handleError>
 <c:choose>
-    <c:when test="${not empty param.actionSave}">
+    <c:when test="${zm:actionSet(param, 'actionSave')}">
         <c:set var="folder" value="${zm:getFolder(pageContext, param.folderId)}"/>
         <c:choose>
             <c:when test="${not empty param.folderNameVisible and empty param.folderName}">
@@ -36,7 +36,7 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${not empty param.actionNew}">
+    <c:when test="${zm:actionSet(param, 'actionNew')}">
          <c:choose>
             <c:when test="${empty param.newFolderName}">
                 <app:status style="Warning">
@@ -89,7 +89,7 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${not empty param.actionDelete}">
+    <c:when test="${zm:actionSet(param, 'actionDelete')}">
         <c:set var="folder" value="${zm:getFolder(pageContext, param.folderDeleteId)}"/>
         <c:choose>
             <c:when test="${empty param.folderDeleteConfirm}">

@@ -23,7 +23,7 @@
     </c:choose>
 
     <c:if test="${empty selectedFolder or not selectedFolder.isAppointmentView}"><c:set var="selectedFolder" value="${mailbox.calendar}"/></c:if>
-    <c:set var="newCalendar" value="${not empty param.actionNewCalendar or not empty param.actionNewSubscribedCalendar or not empty param.actionNewSharedCalendar}"/>
+    <c:set var="newCalendar" value="${zm:actionSet(param, 'actionNewCalendar') or zm:actionSet(param, 'actionNewSubscribedCalendar') or zm:actionSet(param, 'actionNewSharedCalendar')}"/>
 
     <c:set var="toolbar">
         <table width=100% cellspacing=0>
@@ -106,13 +106,13 @@
                             </td>
                             <td class='ZhEditCalendarContent' valign='top'>
                                 <c:choose>
-                                    <c:when test="${not empty param.actionNewCalendar}">
+                                    <c:when test="${zm:actionSet(param, 'actionNewCalendar')}">
                                         <app:newFolder calendar="true"/>
                                     </c:when>
-                                    <c:when test="${not empty param.actionNewSharedCalendar}">
+                                    <c:when test="${zm:actionSet(param, 'actionNewSharedCalendar')}">
                                         <app:newFolder calendar="true"  link="true"/>
                                     </c:when>
-                                    <c:when test="${not empty param.actionNewSubscribedCalendar}">
+                                    <c:when test="${zm:actionSet(param, 'actionNewSubscribedCalendar')}">
                                         <app:newFolder calendar="true" url="true"/>
                                     </c:when>
                                     <c:otherwise>

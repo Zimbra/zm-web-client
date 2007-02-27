@@ -25,7 +25,7 @@
         </c:when>
     </c:choose>
     <c:if test="${empty selectedFolder or not (selectedFolder.isContactView or selectedFolder.isTrash)}"><c:set var="selectedFolder" value="${mailbox.contacts}"/></c:if>
-    <c:set var="newAddressBook" value="${not empty param.actionNewAddressBook or not empty param.actionNewSharedAddressBook}"/>
+    <c:set var="newAddressBook" value="${zm:actionSet(param, 'actionNewAddressBook') or zm:actionSet(param, 'actionNewSharedAddressBook')}"/>
 
     <c:set var="toolbar">
         <table width=100% cellspacing=0>
@@ -121,10 +121,10 @@
                             </td>
                             <td class='ZhEditAddressBookContent' valign='top'>
                                 <c:choose>
-                                    <c:when test="${not empty param.actionNewAddressBook}">
+                                    <c:when test="${zm:actionSet(param, 'actionNewAddressBook')}">
                                         <app:newFolder addressbook="true"/>
                                     </c:when>
-                                    <c:when test="${not empty param.actionNewSharedAddressBook}">
+                                    <c:when test="${zm:actionSet(param, 'actionNewSharedAddressBook')}">
                                         <app:newFolder addressbook="true" link="true"/>
                                     </c:when>
                                     <c:otherwise>
