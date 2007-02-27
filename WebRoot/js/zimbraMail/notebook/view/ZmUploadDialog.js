@@ -212,19 +212,20 @@ function(files, status, guids, response) {
 			var attrs = error.a;
 			if (code == ZmCsfeException.MAIL_ALREADY_EXISTS ||
 				code == ZmCsfeException.MODIFY_CONFLICT) {
-				var file = files[fault.id];
+				var file = files[fault.requestId];
 				for (var p in attrs) {
 					var attr = attrs[p];
 					switch (attr.n) {
 						case "id": { file.id = attr._content; break; }
 						case "ver": { file.version = attr._content; break; }
+						case "rest": { file.rest = attr._content; break; }
 					}
 				}
 				conflicts.push(file);
 			}
 			else {
 				DBG.println("Unknown error occurred: "+code);
-				errors[fault.id] = fault;
+				errors[fault.requestId] = fault;
 			}
 		}
 		// TODO: What to do about other errors?
