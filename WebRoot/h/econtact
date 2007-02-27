@@ -54,7 +54,7 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                        <app:editContact title="${title}" contact="${contact}" context="${context}" isgroup="${not empty param.actionNewGroup}"/>
+                        <app:editContact title="${title}" contact="${contact}" context="${context}" isgroup="${zm:actionSet(param, 'actionNewGroup')}"/>
                 </td>
             </tr>
             <tr>
