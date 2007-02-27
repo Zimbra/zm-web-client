@@ -7,7 +7,12 @@
 	<css>
 		<file>steel.css</file>
 	</css>
-	<html>
+    <script>
+        <file>../_base/base/ZmSkin.js</file>
+        <file>../_base/base/BaseSkin.js</file>
+        <file>steel.js</file>
+    </script>
+    <html>
 		<file>steel.html</file>
 	</html>
 </skin>

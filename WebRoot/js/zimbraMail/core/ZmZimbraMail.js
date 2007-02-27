@@ -229,7 +229,7 @@ function(params) {
 		this._appViewMgr.createView(ZmController.LOADING_VIEW, null, elements);
 	}
 
-	skin.showSkin(true);
+	skin.show("skin", true);
 	this._TAB_SKIN_ENABLED = skin.hints && skin.hints.app_chooser.style == "tabs";
 	if (!this._components) {
 		this._components = {};

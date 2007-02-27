@@ -5,7 +5,12 @@
 	<css>
 		<file>base.css</file>
 	</css>
-	<html>
+    <script>
+        <file>ZmSkin.js</file>
+        <file>BaseSkin.js</file>
+        <file>base.js</file>
+    </script>
+    <html>
 		<file>base.html</file>
 	</html>
 </skin>

@@ -242,7 +242,7 @@ function(components, doFit, noSetZ) {
 ZmAppViewMgr.prototype.showSearchBuilder =
 function(visible) {
 	DBG.println(AjxDebug.DBG1, "show search builder: " + visible);
-	skin.showSearchBuilder(visible);
+	skin.show("searchBuilder", visible);
 	this._components[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR].zShow(visible);
 	this._components[ZmAppViewMgr.C_SEARCH_BUILDER].zShow(visible);
 	var list = [ZmAppViewMgr.C_SEARCH_BUILDER, ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR,
@@ -264,7 +264,7 @@ function(visible) {
 ZmAppViewMgr.prototype.showTreeFooter =
 function(visible) {
 	DBG.println(AjxDebug.DBG1, "show tree footer: " + visible);
-	skin.showTreeFooter(visible);
+	skin.show("treeFooter", visible);
 	this._components[ZmAppViewMgr.C_TREE_FOOTER].zShow(visible);
 	this._fitToContainer([ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER]);
 };
@@ -686,8 +686,8 @@ function(view, show) {
     var isFull = this.isFullScreen(view);
     if (show) {
         if (wasFull != isFull) {
-            if (this._hasSkin && skin.showFullScreen) {
-                skin.showFullScreen(isFull);
+            if (this._hasSkin) {
+                skin.show("fullScreen", isFull);
             }
 
             for (var i = 0; i < ZmAppViewMgr.APP_COMPONENTS.length; i++) {
