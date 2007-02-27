@@ -30,6 +30,11 @@
 	   <param-value>0</param-value>
 	</context-param>
 
+    <context-param>
+        <param-name>zimbraCacheBusterVersion</param-name>
+		<param-value>@jsVersion@</param-value>
+    </context-param>
+
     <filter>
 		<filter-name>Set Header Filter</filter-name>
 		<filter-class>

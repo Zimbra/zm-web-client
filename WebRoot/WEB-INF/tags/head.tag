@@ -15,9 +15,10 @@
         <c:set var="skin" value="${param.skin}" scope="session"/>
     </c:if>
     <c:set var="skin" value="${not empty sessionScope.skin ? sessionScope.skin : (not empty mailbox.prefs.skin ? mailbox.prefs.skin : 'sand')}"/>
+    <c:set var="version" value="${initParam.zimbraCacheBusterVersion}"/>
     <!-- skin is ${skin} -->
     <style type="text/css">
-       @import url( "<c:url value='/css/common,login,zhtml,${skin},skin.css?skin=${skin}'/>" );
+       @import url( "<c:url value='/css/common,login,zhtml,skin.css?skin=${skin}&v=${version}'/>" );
     </style>
     <link rel="ICON" type="image/gif" href="<c:url value='/img/loRes/logo/favicon.gif'/>">
     <link rel="SHORTCUT ICON" href="<c:url value='/img/loRes/logo/favicon.ico'/>">
