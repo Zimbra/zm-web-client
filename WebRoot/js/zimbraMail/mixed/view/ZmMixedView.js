@@ -26,7 +26,7 @@
 function ZmMixedView(parent, className, posStyle, controller, dropTgt) {
 
 	var headerList = this._getHeaderList(parent);
-	ZmListView.call(this, parent, className, posStyle, ZmController.MIXED_VIEW, ZmItem.MIXED, controller, headerList, dropTgt);
+	ZmListView.call(this, parent, className, posStyle, ZmController.MIXED_VIEW, ZmList.MIXED, controller, headerList, dropTgt);
 };
 
 ZmMixedView.prototype = new ZmListView;
@@ -73,14 +73,12 @@ function(item, now, isDndIcon) {
 		return ZmConvListView.prototype._createItemHtml.call(this, item, now, isDndIcon, true);
 	} else if (item.type == ZmItem.MSG) {
 		return ZmMailMsgListView.prototype._createItemHtml.call(this, item, now, isDndIcon, true);
-	} else if (item.type == ZmItem.TASK) {
-		return ZmTaskListView.prototype._createTaskHtmlForMixed.call(this, item, now, isDndIcon);
 	} else if (item.type == ZmItem.PAGE || item.type == ZmItem.DOCUMENT) {
 		return ZmFileListView.prototype._createItemHtml.call(this, item, now, isDndIcon);
 	}
 };
 
-ZmMixedView.prototype._getParticipantHtml =
+ZmMixedView.prototype._getParticipantHtml = 
 function(conv, fieldId) {
 	return ZmConvListView.prototype._getParticipantHtml.call(this, conv, fieldId);
 };
@@ -97,7 +95,7 @@ function(ev) {
 
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		var items = ev.getDetail("items");
-		var contactList = AjxDispatcher.run("GetContacts");
+		var contactList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 
 		// walk the list of items and if any are contacts,
 		for (var i = 0; i < items.length; i++) {

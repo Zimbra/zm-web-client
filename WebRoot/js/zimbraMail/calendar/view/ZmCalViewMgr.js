@@ -236,8 +236,3 @@ function(ev) {
 		return;
 	this.notifyListeners(DwtEvent.DATE_RANGE, ev);
 }
-
-ZmCalViewMgr.prototype.getPrintHtml =
-function(preferHtml, callback) {
-	return ZmCalViewMgr.getPrintHtml(this);
-};

@@ -43,33 +43,91 @@ function() {
 	return "ZmApptList";
 };
 
+ZmApptList._fba2ptst = {
+	B: ZmAppt.PSTATUS_ACCEPT,
+	F: ZmAppt.PSTATUS_DECLINED,
+	T: ZmAppt.PSTATUS_TENTATIVE
+};
+			
+ZmApptList.prototype._getAttr =
+function(appt, inst, name) {
+	var v = inst[name];
+	return (v != undefined) ? v : ((appt[name] != null) ? appt[name] : null);
+};
+
 ZmApptList.prototype.loadFromSummaryJs =
 function(resp) {
+	if (!resp.appt)
+		return;
+	// go through each <appt> node		
 	var appts = resp.appt;
-	if (!appts) return;
-
 	for (var i = 0; i < appts.length; i++) {
 		var apptNode = appts[i];
-		var instances = apptNode ? apptNode.inst : null;
-		if (instances) {
-			var args = {appCtxt: this._appCtxt, list: this};
-			for (var j = 0; j < instances.length; j++) {
-				var instNode = instances[j];
-				var appt = ZmAppt.createFromDom(apptNode, instNode, args);
-				if (appt) this.add(appt);
+		if (!apptNode.inst) continue;
+		// Now deal with instances		
+		var instances = apptNode.inst;
+		// emc 8/24/2005 - instanceStartTimes is a workaround for bug 3590.
+		// When the server side is fixed, we can remove the few lines containing
+		// instanceStartTimes.
+		var instanceStartTimes = new AjxVector();
+		for (var j = 0; j < instances.length; j++) {
+			var instNode = instances[j];
+            var allDay = instNode.allDay != null ? instNode.allDay : apptNode.allDay;
+            var adjustMs = allDay ? instNode.tzo + new Date(instNode.s).getTimezoneOffset()*60*1000 : 0;
+			var startTime = parseInt(this._getAttr(apptNode, instNode, "s"),10) + adjustMs;
+			if (instanceStartTimes.contains(startTime)) {
+				continue;
 			}
+			instanceStartTimes.add(startTime);
+			var appt = new ZmAppt(this._appCtxt, this);
+			appt.uid =  apptNode.uid;
+			appt.folderId = apptNode.l || ZmOrganizer.ID_CALENDAR;
+
+			appt.fragment = this._getAttr(apptNode, instNode, "fr");			
+			var duration = parseInt(this._getAttr(apptNode, instNode, "d"));
+			appt.type = this._getAttr(apptNode, instNode, "type");
+			appt.isOrg = this._getAttr(apptNode, instNode, "isOrg");
+			appt.transparency = this._getAttr(apptNode, instNode,"transp");
+			appt.status = this._getAttr(apptNode, instNode,"status");
+			appt.ptst = this._getAttr(apptNode, instNode,"ptst");			
+			appt.id = this._getAttr(apptNode, instNode, "id");
+			appt.invId = this._getAttr(apptNode, instNode, "invId");
+			appt.compNum = this._getAttr(apptNode, instNode, "compNum");
+			appt.exception = this._getAttr(apptNode, instNode, "ex");
+			appt.allDayEvent = this._getAttr(apptNode, instNode, "allDay");
+			appt.allDayEvent = (appt.allDayEvent == true)? '1' :'0';
+			if (appt.allDayEvent == null) appt.allDayEvent = '0';
+			appt.otherAttendees = this._getAttr(apptNode, instNode, "otherAtt");
+			appt.alarm = this._getAttr(apptNode, instNode, "alarm");
+			appt.recurring = instNode.recur != null ? instNode.recur : apptNode.recur;
+			if (appt.recurring) {
+				appt._seriesInvId = apptNode.invId;
+			}
+			appt.name = this._getAttr(apptNode, instNode, "name");
+			appt.setAttendees(this._getAttr(apptNode, instNode, "loc"), ZmAppt.LOCATION);
+			appt.startDate = new Date(startTime);
+			appt._uniqStartTime = appt.startDate.getTime(); // neede to construct uniq id later
+			if (instNode.fba && ZmApptList._fba2ptst[instNode.fba]) {
+				// override appt.ptst for this instance
+				appt.ptst = ZmApptList._fba2ptst[instNode.fba];
+			}
+			//appt.exception = this._getAttr(apptNode, instNode, "exception");
+			var endTime = startTime + duration;
+			appt.endDate = new Date(endTime);
+            appt.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
+            this.add(appt);
 		}
 	}
 }
 
 ZmApptList.prototype.indexOf =
-function(obj) {
+function (obj) {
 	return this._vector.indexOf(obj);
 };
 
 ZmApptList.sortVector = 
 function(vec) {
-	vec.sort(ZmCalItem.compareByTimeAndDuration);
+	vec.sort(ZmAppt.compareByTimeAndDuration);
 };
 
 // merge all the sorted vectors in the specified array into a single sorted vector
@@ -85,10 +143,10 @@ function(vecArray) {
 
 ZmApptList.toVector =
 function(apptList, startTime, endTime, fanoutAllDay) {
-	var result = new AjxVector();
+	var result  = new AjxVector();
 	var list = apptList.getVector();
 	var size = list.size();
-	for (var i = 0; i < size; i++) {
+	for (var i=0; i < size; i++) {
 		var ao = list.get(i);
 		if (ao.isInRange(startTime, endTime)) {
 			if (ao.isAllDayEvent() && !fanoutAllDay) {
@@ -108,24 +166,8 @@ ZmApptList._fanout =
 function(orig, result, startTime, endTime) {
 	var appt = ZmAppt.quickClone(orig);
 	var fanoutNum = 0;
-
-    // HACK: Avoid "strange" appt durations that occur at transition
-    //       days for timezones w/ DST. For example, going from DST to
-    //       STD, the duration for a single day is 25 hours; while the
-    //       transition from STD to DST, the duration is 23 hours. So
-    //       we advance 12 hours (just to be safe) and then subtract
-    //       off the extra hours.
-    var origEndTime = orig.getEndTime();
-    if (appt.isAllDayEvent()) {
-        var origEndDate = new Date(origEndTime);
-        origEndDate.setHours(0, 0, 0, 0);
-
-        appt.setEndDate(origEndDate);
-        origEndTime = origEndDate.getTime();
-    }
-
-    while (appt.isInRange(startTime,endTime)) {
-        if (appt.isMultiDay()) {
+	while (appt.isInRange(startTime,endTime)) {
+		if (appt.isMultiDay()) {
             var apptStartTime = appt.getStartTime();
             // bug 12205: If someone mistypes "2007" as "200", we get into
             //            a seemingly never-ending loop trying to fanout
@@ -144,10 +186,10 @@ function(orig, result, startTime, endTime) {
                 }
                 slice._fanoutFirst = (fanoutNum == 0);
 				slice._orig = orig;
-				slice.setEndDate(nextDay);
-                slice._fanoutLast = (slice.getEndTime() == origEndTime);	
+				slice.setEndDate(nextDay);			
+				slice._fanoutLast = (slice.getEndTime() == orig.getEndTime());	
 				slice._fanoutNum = fanoutNum;
-				slice.uniqStartTime = slice.getStartTime();					// need to construct uniq id later
+				slice._uniqStartTime = slice.getStartTime(); // neede to construct uniq id later							
 				result.add(slice);
 			}
 			fanoutNum++;
@@ -156,12 +198,12 @@ function(orig, result, startTime, endTime) {
 				break;				
 		} else {
 			if (appt.isInRange(startTime,endTime)) {
-                appt._fanoutFirst = fanoutNum == 0;
-				appt._fanoutLast = appt.getEndTime() == origEndTime;
+				appt._fanoutFirst = (fanoutNum == 0);	
+				appt._fanoutLast = (appt.getEndTime() == orig.getEndTime());				
 				if (!appt._fanoutFirst)
 					appt._orig = orig;
 				appt._fanoutNum = fanoutNum;
-				appt.uniqStartTime = appt.getStartTime();						// need to construct uniq id later
+				appt._uniqStartTime = appt.getStartTime(); // neede to construct uniq id later
 				result.add(appt);
 			}
 			break;

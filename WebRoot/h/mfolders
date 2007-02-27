@@ -6,139 +6,277 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
-
 <app:handleError>
     <c:if test="${!empty param.doAction}">
         <app:folderAction/>
     </c:if>
     <zm:getMailbox var="mailbox"/>
 
-    <%-- types selectedFolder for us --%>
-    <c:set var="selectedFolder" value="${mailbox.inbox}"/>
-
-    <c:choose>
-        <c:when test="${not empty requestScope.newlyCreatedFolderId}">
-            <c:set var="selectedFolder" value="${zm:getFolder(pageContext, requestScope.newlyCreatedFolderId)}"/>
-        </c:when>
-        <c:when test="${not empty param.id}">
-            <c:set var="selectedFolder" value="${zm:getFolder(pageContext, param.id)}"/>
-        </c:when>
-        <c:when test="${not empty param.sfi}">
-            <c:set var="selectedFolder" value="${zm:getFolder(pageContext, param.sfi)}"/>
-        </c:when>
-    </c:choose>
-    <c:if test="${empty selectedFolder}"><c:set var="selectedFolder" value="${mailbox.inbox}"/></c:if>
-    <c:set var="newFolder" value="${zm:actionSet(param, 'actionNewFolder') or zm:actionSet(param, 'actionNewSearchFolder') or zm:actionSet(param, 'actionNewFeedFolder')}"/>
-
     <c:set var="toolbar">
-        <table width=100% cellspacing=0>
+        <table width=100% cellspacing=0 class='Tb'>
             <tr>
-                <td>
-                    <table cellspacing=2 cellpadding=0 class='Tb'>
-                        <tr>
-                            <app:button name="actionNewFolder" src="common/NewFolder.gif" tooltip="folderNew" text="folderNew"/>
-                            <td><div class='vertSep'></div></td>
-                            <app:button name="actionNewFeedFolder" src="common/NewFolder.gif" tooltip="folderNewRssAtomFeed" text="folderNewRssAtomFeed"/>
-                            <td><div class='vertSep'></div></td>
-                            <app:button name="actionNewSearchFolder" src="common/NewFolder.gif" tooltip="folderNewSearchFolder" text="folderNewSearchFolder"/>
-                        </tr>
-                    </table>
-                </td>
+                <td align=left class=TbBt><input type=hidden class='tbButton' name="zzz">&nbsp;</td>
             </tr>
         </table>
     </c:set>
     <fmt:message var="title" key="manageFolders"/>
-
-    <c:if test="${not empty param.sync}">
-        <zm:syncFolder id="${param.sync}"/>
-        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.sync)}"/>
-        <app:status>
-            <fmt:message key="actionFolderReloaded">
-                <fmt:param value="${folderName}"/>
-            </fmt:message>
-        </app:status>
-    </c:if>
-
 </app:handleError>
 
-<app:view title="${title}" context="${null}" selected='folders' folders="true" searches="true" editmode="true" keys="true">
+<app:view title="${title}" context="${null}" selected='managefolders' folders="true" editmode="true" keys="true">
+<form action="" method="post">
 
-    <form action="" method="post">
-        <table width=100% cellspacing="0" cellpadding="0">
+<table width=100% cellpadding='0' cellspacing='0'>
+<tr>
+    <td class='TbTop'>${toolbar}</td>
+</tr>
+<tr>
+<td class='ZhAppContent'>
 
-            <tr>
-                <td class='TbTop'>
-                    <table cellspacing=0 class='Tb'>
-                        <tr>
-                            <td>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
+<table border="0" cellpadding="0" cellspacing="10" width=100%>
+<tbody>
 
-            <tr>
-                <td class='ZhAppContent'>
-                    <table border="0" cellpadding="0" cellspacing="0" width=100%>
-                        <tr>
-                            <td colspan=2 class='ZhSubTabs'>
-                                <app:foldersTabs mailbox="${mailbox}" selected='folders'/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan=2 class='TbBottom'>${toolbar}</td>
-                        </tr>
-                        <tr>
-                            <td width=200 class='List' valign='top'>
-                                <table width=100% cellpadding=2 cellspacing=0>
-                                    <zm:forEachFolder var="folder">
-                                        <c:if test="${folder.isMailView and not folder.isChats}">
-                                            <tr <c:if test="${selectedFolder.id eq folder.id and not newFolder}">class='RowSelected'</c:if>>
-                                                <td width=1%>
-                                                    &nbsp;
-                                                </td>
-                                                <td style='padding-left: ${folder.depth*8}px'>
-                                                    <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
-                                                    <c:url var="selectUrl" value="">
-                                                        <c:param name="id" value="${folder.id}"/>
-                                                    </c:url>
-                                                    <a href="${selectUrl}">
-                                                        <app:img src="${folder.image}"/>
-                                                            <span style='vertical-align:middle'>${fn:escapeXml(label)}</span>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        </c:if>
-                                    </zm:forEachFolder>
-                                </table>
-                            </td>
-                            <td height=100% class='ZhEditFolderContent' valign='top'>
-                                <c:choose>
-                                    <c:when test="${zm:actionSet(param, 'actionNewFolder')}">
-                                        <app:newFolder/>
-                                    </c:when>
-                                    <c:when test="${zm:actionSet(param, 'actionNewSearchFolder')}">
-                                        <app:newFolder search="true"/>
-                                    </c:when>
-                                    <c:when test="${zm:actionSet(param, 'actionNewFeedFolder')}">
-                                        <app:newFolder url="true"/>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <table width=100% height=100% cellspacing=0 cellpadding=0>
-                                            <tr>
-                                                <td>
-                                                    <app:editFolder folder="${selectedFolder}"/>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                    </c:otherwise>
-                                </c:choose>
-                            </td>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-        <input type="hidden" name="doAction" value="1"/>
-    </form>
+<tr>
+    <td colspan="2" class="sectionLabel" valign="top">
+        <fmt:message key="createNewFolder"/>
+    </td>
+</tr>
+<tr>
+    <td align='right' nowrap>
+        <fmt:message key="createFolderIn"/>
+        :
+    </td>
+    <td>
+        <select name="parentFolderId">
+            <option value="f:1" selected/>
+            <fmt:message key="rootFolder"/>
+            <option disabled/>
+            <fmt:message key="actionOptSep"/>
+            <zm:forEachFolder var="folder">
+                <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+                    <option value="f:${folder.id}"/>
+                    ${fn:escapeXml(folder.rootRelativePath)}
+                </c:if>
+            </zm:forEachFolder>
+        </select>
+    </td>
+</tr>
+<tr>
+    <td nowrap align=right>
+        <fmt:message key="folderName"/>
+        :
+    </td>
+    <td><input name='newFolderName' type='text' autocomplete='off' size='35' value=""></td>
+</tr>
+
+<tr>
+    <td>&nbsp;</td>
+    <td valign="top">
+        <input class='tbButton' type="submit" name="actionCreate" value="<fmt:message key="createFolder"/>">
+    </td>
+</tr>
+
+<tr>
+    <td colspan="2" class="sectionLabel" valign="top">
+        <fmt:message key="subscribeToFeed"/>
+    </td>
+</tr>
+<tr>
+    <td align='right' nowrap>
+        <fmt:message key="createFolderIn"/>
+        :
+    </td>
+    <td>
+        <select name="feedParentFolderId">
+            <option value="f:1" selected/>
+            <fmt:message key="rootFolder"/>
+            <option disabled/>
+            <fmt:message key="actionOptSep"/>
+            <zm:forEachFolder var="folder">
+                <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+                    <option value="f:${folder.id}"/>
+                    ${fn:escapeXml(folder.rootRelativePath)}
+                </c:if>
+            </zm:forEachFolder>
+        </select>
+    </td>
+</tr>
+<tr>
+    <td nowrap align=right>
+        <fmt:message key="folderName"/>
+        :
+    </td>
+    <td><input name='feedFolderName' type='text' autocomplete='off' size='35' value=""></td>
+</tr>
+
+<tr>
+    <td nowrap align=right>
+        <fmt:message key="url"/>
+        :
+    </td>
+    <td><input name='feedFolderUrl' type='text' autocomplete='off' size='35' value=""></td>
+</tr>
+
+<tr>
+    <td>&nbsp;</td>
+    <td valign="top">
+        <input class='tbButton' type="submit" name="actionSubscribe" value="<fmt:message key="subscribe"/>">
+    </td>
+</tr>
+
+
+<zm:forEachFolder var="folder">
+    <c:if test="${folder.isMessageFolderRenameTarget}">
+        <c:set var="showRename" value="true"/>
+    </c:if>
+</zm:forEachFolder>
+
+<c:if test="${showRename}">
+    <tr>
+        <td colspan="2" class="sectionLabel" valign="top">
+            <fmt:message key="renameFolder"/>
+        </td>
+    </tr>
+    <tr>
+        <td nowrap align='right'>
+            <fmt:message key="currentName"/>
+            :
+        </td>
+        <td>
+            <select name="folderToRename">
+                <option value="" selected/>
+                <fmt:message key="chooseFolderToRename"/>
+                <option disabled/>
+                <fmt:message key="actionOptSep"/>
+                <zm:forEachFolder var="folder">
+                    <c:if test="${folder.isMessageFolderRenameTarget}">
+                        <option value="f:${folder.id}"/>
+                        ${fn:escapeXml(folder.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td nowrap align='right'>
+            <fmt:message key="newName"/>
+            :
+        </td>
+        <td><input name='newName' type='text' autocomplete='off' size='35' value=""></td>
+    </tr>
+
+    <tr>
+        <td>&nbsp;</td>
+        <td><input class='tbButton' type="submit" name="actionRename" value="<fmt:message key="renameFolder"/>"></td>
+    </tr>
+</c:if>
+
+<zm:forEachFolder var="folder">
+    <c:if test="${folder.isMessageFolderMoveSource}">
+        <c:set var="showMove" value="true"/>
+    </c:if>
+</zm:forEachFolder>
+
+<c:if test="${showMove}">
+    <tr>
+        <td colspan="2" class="sectionLabel" valign="top">
+            <fmt:message key="moveFolder"/>
+        </td>
+    </tr>
+    <tr>
+        <td nowrap align='right'>
+            <fmt:message key="folderName"/>
+            :
+        </td>
+        <td>
+            <select name="folderToMove">
+                <option value="" selected/>
+                <fmt:message key="chooseFolderToMove"/>
+                <option disabled/>
+                <fmt:message key="actionOptSep"/>
+                <zm:forEachFolder var="folder">
+                    <c:if test="${folder.isMessageFolderMoveSource}">
+                        <option value="f:${folder.id}"/>
+                        ${fn:escapeXml(folder.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td nowrap align='right'>
+            <fmt:message key="newLocation"/>
+            :
+        </td>
+        <td>
+            <select name="newParentFolder">
+                <option value="f:1" selected/>
+                <fmt:message key="rootFolder"/>
+                <option disabled/>
+                <fmt:message key="actionOptSep"/>
+                <zm:forEachFolder var="folder">
+                    <c:if test="${folder.isMessageMoveTarget and !folder.isTrash and !folder.isSpam}">
+                        <option value="f:${folder.id}"/>
+                        ${fn:escapeXml(folder.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td valign='top'><input class='tbButton' type="submit" name="actionMove" value="<fmt:message key="moveFolder"/>">
+        </td>
+    </tr>
+</c:if> 
+
+<zm:forEachFolder var="folder">
+    <c:if test="${folder.isMessageFolderDeleteTarget}">
+        <c:set var="showDelete" value="true"/>
+    </c:if>
+</zm:forEachFolder>
+
+<c:if test="${showDelete}">
+    <tr>
+        <td colspan="2" class="sectionLabel" valign="top">
+            <fmt:message key="deleteFolder"/>
+        </td>
+    </tr>
+    <tr>
+        <td align='right' nowrap>
+            <fmt:message key="folderName"/>
+            :
+        </td>
+        <td>
+            <select name="folderToDelete">
+                <option value="" selected/>
+                <fmt:message key="chooseFolderToDelete"/>
+                <option disabled/>
+                <fmt:message key="actionOptSep"/>
+                <zm:forEachFolder var="folder">
+                    <c:if test="${folder.isMessageFolderDeleteTarget}">
+                        <option value="f:${folder.id}"/>
+                        ${fn:escapeXml(folder.rootRelativePath)}
+                    </c:if>
+                </zm:forEachFolder>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td><input class='tbButton' type="submit" name="actionDelete" value="<fmt:message key="deleteFolder"/>"></td>
+    </tr>
+</c:if>
+
+<tr>
+    <td colspan='2'>&nbsp;</td>
+</tr>
+
+</tbody>
+</table>
+
+</td>
+</tr>
+</table>
+<input type="hidden" name="doAction" value="1"/>
+</form>
 </app:view>

@@ -1,1 +1,0 @@
-skin = new BaseSkin();

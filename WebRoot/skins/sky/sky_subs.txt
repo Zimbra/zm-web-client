@@ -1,0 +1,132 @@
+##########################################################################
+#                            Skin Substitutions                          #
+#------------------------------------------------------------------------#
+#
+#  Add or change entries below to customize this skin.  
+#     See:  http://wiki.zimbra.com/?title=Themes
+#
+#  NOTE: Substitutions that begin and end with "_" (eg: "_BaseColor_") 
+#  should only be used within this file -- never in a CSS or HTML file
+#
+#========================================================================#
+
+
+SkinName			= sky
+
+
+##########################################################################
+#                           Logo Licensing Rules 	   		 	         #
+#------------------------------------------------------------------------#
+#
+#  If you are using the Zimbra Collaboration Suite (ZCS) under the 
+#  open source license, and you have not modifed the software, 
+#  then you are required to use the Zimbra logo (the default). 
+#
+#	LogoImgDir		= /zimbra/skins/_base/logos
+#	LogoURL			= http://www.zimbra.com
+#
+#-------------------------------------------------------------------------
+#  If you are using ZCS under the open source license, 
+#  and you have modified the software, 
+#  then you are required to use the Zimbra Inside logo. 
+#
+#	LogoImgDir		= /zimbra/skins/_base/logos/ZimbraInside
+#	LogoURL			= http://www.zimbra.com
+#
+#-------------------------------------------------------------------------
+#  If you are using ZCS under the network (commercial) license, 
+#  then you are welcome to use your own logo in place of the Zimbra logo,
+#  or to retain the original Zimbra logo. 
+#
+#	LogoImgDir		= /zimbra/skins/@SkinName@/logos
+#	LogoURL			= http://www.yourcompany.com
+#
+#========================================================================#
+
+
+##########################################################################
+#                               Skin Colors                              #
+#------------------------------------------------------------------------#
+#
+#### Base color and variants ####
+	_BaseColor_			=	#bed8ee
+	_BaseColorD95_		=	#0a0b0c
+	_BaseColorD90_		=	#131618
+	_BaseColorD85_		=	#1d2024
+	_BaseColorD80_		=	#262b30
+	_BaseColorD75_		=	#30363c
+	_BaseColorD70_		=	#394147
+	_BaseColorD65_		=	#434c53
+	_BaseColorD60_		=	#4c565f
+	_BaseColorD55_		=	#56616b
+	_BaseColorD50_		=	#5f6c77
+	_BaseColorD45_		=	#697783
+	_BaseColorD40_		=	#72828f
+	_BaseColorD35_		=	#7c8c9b
+	_BaseColorD30_		=	#8597a7
+	_BaseColorD25_		=	#8fa2b3
+	_BaseColorD20_		=	#98adbe
+	_BaseColorD15_		=	#a2b8ca
+	_BaseColorD10_		=	#abc2d6
+	_BaseColorD5_		=	#b5cde2
+	_BaseColorL5_		=	#c1daef
+	_BaseColorL10_		=	#c5dcf0
+	_BaseColorL15_		=	#c8def1
+	_BaseColorL20_		=	#cbe0f1
+	_BaseColorL25_		=	#cee2f2
+	_BaseColorL30_		=	#d2e4f3
+	_BaseColorL35_		=	#d5e6f4
+	_BaseColorL40_		=	#d8e8f5
+	_BaseColorL45_		=	#dbeaf6
+	_BaseColorL50_		=	#dfecf7
+	_BaseColorL55_		=	#e2edf7
+	_BaseColorL60_		=	#e5eff8
+	_BaseColorL65_		=	#e8f1f9
+	_BaseColorL70_		=	#ecf3fa
+	_BaseColorL75_		=	#eff5fb
+	_BaseColorL80_		=	#f2f7fc
+	_BaseColorL85_		=	#f5f9fc
+	_BaseColorL90_		=	#f9fbfd
+	_BaseColorL95_		=	#fcfdfe
+#### Selection color and variants ####
+	_SelColor_			=	#fdf8ba
+	_SelColorD95_		=	#0d0c09
+	_SelColorD90_		=	#191913
+	_SelColorD85_		=	#26251c
+	_SelColorD80_		=	#333225
+	_SelColorD75_		=	#3f3e2f
+	_SelColorD70_		=	#4c4a38
+	_SelColorD65_		=	#595741
+	_SelColorD60_		=	#65634a
+	_SelColorD55_		=	#727054
+	_SelColorD50_		=	#7f7c5d
+	_SelColorD45_		=	#8b8866
+	_SelColorD40_		=	#989570
+	_SelColorD35_		=	#a4a179
+	_SelColorD30_		=	#b1ae82
+	_SelColorD25_		=	#beba8c
+	_SelColorD20_		=	#cac695
+	_SelColorD15_		=	#d7d39e
+	_SelColorD10_		=	#e4dfa7
+	_SelColorD5_		=	#f0ecb1
+	_SelColorL5_		=	#fdf8bd
+	_SelColorL10_		=	#fdf9c1
+	_SelColorL15_		=	#fdf9c4
+	_SelColorL20_		=	#fdf9c8
+	_SelColorL25_		=	#fefacb
+	_SelColorL30_		=	#fefacf
+	_SelColorL35_		=	#fefad2
+	_SelColorL40_		=	#fefbd6
+	_SelColorL45_		=	#fefbd9
+	_SelColorL50_		=	#fefcdd
+	_SelColorL55_		=	#fefce0
+	_SelColorL60_		=	#fefce3
+	_SelColorL65_		=	#fefde7
+	_SelColorL70_		=	#fefdea
+	_SelColorL75_		=	#fffdee
+	_SelColorL80_		=	#fffef1
+	_SelColorL85_		=	#fffef5
+	_SelColorL90_		=	#fffef8
+	_SelColorL95_		=	#fffffc
+#
+#========================================================================#

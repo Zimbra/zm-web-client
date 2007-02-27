@@ -143,13 +143,6 @@ function(zmObject) {
 ZmZimletBase.prototype.doDrop =
 function(zmObject) {};
 
-ZmZimletBase.prototype.portletCreated = function(portlet) {
-    DBG.println("portlet created: "+portlet.id);
-};
-ZmZimletBase.prototype.portletRefreshed = function(portlet) {
-    DBG.println("portlet refreshed: "+portlet.id);
-};
-
 // This method is called when the Zimlet panel item is double clicked. This
 // method defines the following formal parameters:
 //
@@ -299,7 +292,7 @@ function(spanElement, contentObjText, matchContext, canvas) {
 		    txt = "fetching data...";
 		} else {
 			// If it's an email address just use the address value.
-			if (obj.objectContent instanceof AjxEmailAddress) {obj.objectContent = obj.objectContent.address;}
+			if (obj.objectContent instanceof ZmEmailAddress) {obj.objectContent = obj.objectContent.address;}
 			txt = this.xmlObj().processString(c.toolTip, obj);
 		}
 		canvas.innerHTML = txt;
@@ -559,10 +552,14 @@ ZmZimletBase.prototype.getBoolConfig = function(key, defaultValue) {
 			defaultValue = false;
 		if (defaultValue) {
 			// the default is TRUE, check if explicitely disabled
-			val = !/^(0|false|off|no)$/i.test(val);
+			val = /^(0|false|off|no)$/i.test(val)
+				? false
+				: true;
 		} else {
 			// default FALSE, check if explicitely enabled
-			val = /^(1|true|on|yes)$/i.test(val);
+			val = /^(1|true|on|yes)$/i.test(val)
+				? true
+				: false;
 		}
 	} else {
 		val = defaultValue;
@@ -580,12 +577,9 @@ ZmZimletBase.prototype.getEnabled = function() {
 	return this.__zimletEnabled;
 };
 
-ZmZimletBase.prototype.getUsername = function() {
-	return this.getAppCtxt().get(ZmSetting.USERNAME);
-};
-
-ZmZimletBase.prototype.getUserID = function() {
-	return this.getAppCtxt().get(ZmSetting.USERID);
+ZmZimletBase.prototype.getUsername =
+function() {
+	return this.getAppCtxt().getUsername();
 };
 
 // Make DOM safe id's
@@ -697,15 +691,13 @@ ZmZimletBase.prototype._createDialog = function(args) {
 			    args.className,
 			    args.title,
 			    args.extraButtons,
-			    args.view,
-			    args.standardButtons
-			   );
+			    args.view);
 };
 
 /* Overrides default ZmObjectHandler methods for Zimlet API compat */
 ZmZimletBase.prototype._getHtmlContent =
 function(html, idx, obj, context) {
-	if (obj instanceof AjxEmailAddress) {
+	if (obj instanceof ZmEmailAddress) {
 		obj = obj.address;
 	}
 	var contentObj = this.xmlObj().getVal("contentObject");

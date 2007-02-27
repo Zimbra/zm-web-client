@@ -107,7 +107,7 @@ action_stop                         stop checkbox (true)
 <c:set var="condi" value="cond${condStatus.index}"/>
 <tr>
 <c:choose>
-<c:when test="${zm:isAddressBookCondition(condition)}">
+<c:when test="${zm:isAddressBook(condition)}">
     <c:set var="ab" value="${zm:getAddressBook(condition)}"/>
     <td>
         <input type="hidden" name="${condi}" value="addressbook"/>
@@ -130,7 +130,7 @@ action_stop                         stop checkbox (true)
         </select>
     </td>
 </c:when>
-<c:when test="${zm:isSizeCondition(condition)}">
+<c:when test="${zm:isSize(condition)}">
     <c:set var="sz" value="${zm:getSize(condition)}"/>
     <td>
         <input type="hidden" name="${condi}" value="size"/>
@@ -150,7 +150,7 @@ action_stop                         stop checkbox (true)
         </select>
     </td>
 </c:when>
-<c:when test="${zm:isBodyCondition(condition)}">
+<c:when test="${zm:isBody(condition)}">
     <c:set var="body" value="${zm:getBody(condition)}"/>
     <td>
         <input type="hidden" name="${condi}" value="body"/>
@@ -163,7 +163,7 @@ action_stop                         stop checkbox (true)
         <input name="${condi}_value" type='text' autocomplete='off' size='20' value="${fn:escapeXml(body.text)}">
     </td>
 </c:when>
-<c:when test="${zm:isDateCondition(condition)}">
+<c:when test="${zm:isDate(condition)}">
     <c:set var="date" value="${zm:getDate(condition)}"/>
     <fmt:message var="dateFmt" key="FILT_COND_DATE_FORMAT"/>
     <fmt:formatDate pattern="${dateFmt}" value="${date.date}" var="fdate"/>
@@ -180,7 +180,7 @@ action_stop                         stop checkbox (true)
         <input name='${condi}_value' type='text' autocomplete='off' size='20' value="${fn:escapeXml(fdate)}"> 
     </td>
 </c:when>
-<c:when test="${zm:isHeaderCondition(condition)}">
+<c:when test="${zm:isHeader(condition)}">
     <c:set var="hdr" value="${zm:getHeader(condition)}"/>
     <c:choose>
         <c:when test="${hdr.headerName eq 'subject' or hdr.headerName eq 'to' or hdr.headerName eq 'cc' or hdr.headerName eq 'from'}">
@@ -217,7 +217,7 @@ action_stop                         stop checkbox (true)
         <input type="hidden" name="${condi}" value="header"/>
     </td>
 </c:when>
-<c:when test="${zm:isHeaderExistsCondition(condition)}">
+<c:when test="${zm:isHeaderExists(condition)}">
     <c:set var="hdrexists" value="${zm:getHeaderExists(condition)}"/>
     <td>
         <input type="hidden" name="${condi}" value="headerexists"/>
@@ -230,7 +230,7 @@ action_stop                         stop checkbox (true)
         <input name='${condi}_header' type='text' autocomplete='off' size='20' value="${fn:escapeXml(hdrexists.headerName)}">
     </td>
 </c:when>
-<c:when test="${zm:isAttachmentExistsCondition(condition)}">
+<c:when test="${zm:isAttachmentExists(condition)}">
     <c:set var="attach" value="${zm:getAttachmentExists(condition)}"/>
     <td colspan='1'>
         <input type="hidden" name="${condi}" value="attachment"/>
@@ -297,7 +297,7 @@ action_stop                         stop checkbox (true)
                 <c:forEach var="action" items="${rule.actions}" varStatus="actionStatus">
                     <c:set var="acti" value="action${actionStatus.index}"/>
                     <c:choose>
-                        <c:when test="${zm:isStopAction(action)}">
+                        <c:when test="${zm:isStop(action)}">
                             <c:set var="hasStop" value="${true}"/>
                             <input type="hidden" name="${acti}" value="stop"/>
                             <c:if test="${actionStatus.last}">
@@ -307,7 +307,7 @@ action_stop                         stop checkbox (true)
                         <c:otherwise>
                             <tr>
                                 <c:choose>
-                                    <c:when test="${zm:isKeepAction(action)}">
+                                    <c:when test="${zm:isKeep(action)}">
                                         <td>
                                             <input type="hidden" name="${acti}" value="keep"/>
                                             <fmt:message key="EFILT_ACTION_KEEP"/>
@@ -316,7 +316,7 @@ action_stop                         stop checkbox (true)
                                     </c:when>
                                 </c:choose>
                                 <c:choose>
-                                    <c:when test="${zm:isDiscardAction(action)}">
+                                    <c:when test="${zm:isDiscard(action)}">
                                         <td>
                                             <input type="hidden" name="${acti}" value="discard"/>
                                             <fmt:message key="EFILT_ACTION_DISCARD"/>
@@ -325,8 +325,8 @@ action_stop                         stop checkbox (true)
                                     </c:when>
                                 </c:choose>
                                 <c:choose>
-                                    <c:when test="${zm:isFileIntoAction(action)}">
-                                        <c:set var="fileInto" value="${zm:getFileIntoAction(action)}"/>
+                                    <c:when test="${zm:isFileInto(action)}">
+                                        <c:set var="fileInto" value="${zm:getFileInto(action)}"/>
                                         <td>
                                             <input type="hidden" name="${acti}" value="fileinto"/>
                                             <fmt:message key="EFILT_ACTION_FILEINTO"/>
@@ -346,8 +346,8 @@ action_stop                         stop checkbox (true)
                                     </c:when>
                                 </c:choose>
                                 <c:choose>
-                                    <c:when test="${zm:isTagAction(action)}">
-                                        <c:set var="tagaction" value="${zm:getTagAction(action)}"/>
+                                    <c:when test="${zm:isTag(action)}">
+                                        <c:set var="tagaction" value="${zm:getTag(action)}"/>
                                         <td>
                                             <input type="hidden" name="${acti}" value="tag"/>
                                             <fmt:message key="EFILT_ACTION_TAG"/>
@@ -362,8 +362,8 @@ action_stop                         stop checkbox (true)
                                     </c:when>
                                 </c:choose>
                                 <c:choose>
-                                    <c:when test="${zm:isRedirectAction(action)}">
-                                        <c:set var="redirect" value="${zm:getRedirectAction(action)}"/>
+                                    <c:when test="${zm:isRedirect(action)}">
+                                        <c:set var="redirect" value="${zm:getRedirect(action)}"/>
                                         <td>
                                             <input type="hidden" name="${acti}" value="redirect"/>
                                             <fmt:message key="EFILT_ACTION_REDIRECT"/>
@@ -374,8 +374,8 @@ action_stop                         stop checkbox (true)
                                     </c:when>
                                 </c:choose>
                                 <c:choose>
-                                    <c:when test="${zm:isFlagAction(action)}">
-                                        <c:set var="flag" value="${zm:getFlagAction(action)}"/>
+                                    <c:when test="${zm:isFlag(action)}">
+                                        <c:set var="flag" value="${zm:getFlag(action)}"/>
                                         <td>
                                             <input type="hidden" name="${acti}" value="mark"/>
                                             <select name="${acti}_arg">

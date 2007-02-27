@@ -87,9 +87,15 @@ function(actionCode) {
 
 ZmContactController.prototype._getToolBarOps =
 function() {
-	return [ZmOperation.SAVE, ZmOperation.CANCEL,
-			ZmOperation.SEP, ZmOperation.TAG_MENU,
-			ZmOperation.PRINT, ZmOperation.DELETE];
+	var list = [ZmOperation.SAVE];
+	list.push(ZmOperation.CANCEL);
+	list.push(ZmOperation.SEP);
+	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
+		list.push(ZmOperation.TAG_MENU);
+	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
+		list.push(ZmOperation.PRINT);
+	list.push(ZmOperation.DELETE);
+	return list;
 };
 
 ZmContactController.prototype._getActionMenuOps =
@@ -128,7 +134,7 @@ function(view) {
 
 ZmContactController.prototype._getTagMenuMsg =
 function() {
-	return ZmMsg.AB_TAG_CONTACT;
+	return ZmMsg.tagContact;
 };
 
 ZmContactController.prototype._setViewContents =
@@ -199,12 +205,11 @@ function(ev, bIsPopCallback) {
 				} else {
 					this._doModify(contact, mods);
 				}
-				if (this._appCtxt.zimletsPresent()) {
-					this._appCtxt.getZimletMgr().notifyZimlets("onContactModified",
-						ZmZimletContext._translateZMObject(contact), mods);
-				}
+				this._appCtxt.getZimletMgr().notifyZimlets(
+					"onContactModified",
+					ZmZimletContext._translateZMObject(contact), mods);
 			} else {
-				this._doCreate(AjxDispatcher.run("GetContacts"), mods);
+				this._doCreate(this._app.getContactList(), mods);
 			}
 		} else {
 			// bug fix #5829 - differentiate betw. an empty contact and saving
@@ -280,7 +285,7 @@ function() {
 	this._popShield.popdown();
 
 	this._app.popView(true);
-	this._appCtxt.getAppViewMgr().showPendingView(true);
+	this._app.getAppViewMgr().showPendingView(true);
 
 	this._listView[this._currentView].cleanup();
 };
@@ -290,7 +295,7 @@ function() {
 	this._popShield.popdown();
 
 	this._app.popView(true);
-	this._appCtxt.getAppViewMgr().showPendingView(true);
+	this._app.getAppViewMgr().showPendingView(true);
 
 	this._listView[this._currentView].cleanup();
 };
