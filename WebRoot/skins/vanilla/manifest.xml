@@ -1,0 +1,18 @@
+<skin>
+	<substitutions>
+		<file>../_base/base_side/base_subs.txt</file>
+		<file>../_base/white/white_subs.txt</file>
+		<file>vanilla_subs.txt</file>
+	</substitutions>
+	<css>
+		<file>../_base/base_side/base.css</file>
+	</css>
+    <script>
+        <file>../_base/base/ZmSkin.js</file>
+        <file>../_base/base/BaseSkin.js</file>
+        <file>../_base/base/base.js</file>
+    </script>
+	<html>
+		<file>../_base/base_side/base.html</file>
+	</html>
+</skin>

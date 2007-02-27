@@ -1,0 +1,16 @@
+<skin>
+	<substitutions>
+		<file>base_subs.txt</file>
+	</substitutions>
+	<css>
+		<file>base.css</file>
+	</css>
+    <script>
+        <file>ZmSkin.js</file>
+        <file>BaseSkin.js</file>
+        <file>base.js</file>
+    </script>
+    <html>
+		<file>base.html</file>
+	</html>
+</skin>
