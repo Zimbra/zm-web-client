@@ -520,7 +520,8 @@ function(field, isDate) {
 	var e = document.getElementById(this._fieldIds[field]);
 	if (e != null) {
 		if (isDate && value && value != "") {
-			e.value = AjxDateUtil.simpleComputeDateStr(this._bdateFormatter.parse(value));
+			var val = this._bdateFormatter.parse(value);
+			e.value = val ? AjxDateUtil.simpleComputeDateStr(val) : "";
 		} else {
 			e.value = value;
 		}
