@@ -73,7 +73,7 @@ function ZmAutocompleteListView(params) {
 	this._dataLoader = params.dataLoader;
 	this._dataLoaded = false;
 	this._matchValue = params.matchValue;
-	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
+	this._separator = (params.separator != null) ? params.separator : ZmEmailAddress.SEPARATOR;
 	this._locCallback = params.locCallback ? params.locCallback : new AjxCallback(this, this._getAcListLoc);
 	this._compCallback = params.compCallback;
 	this._keyDownCallback = params.keyDownCallback;
@@ -477,7 +477,7 @@ function(text, start) {
 		}
 	}
 	var chunk = text.substring(start, i);
-	if (AjxEmailAddress.isValid(chunk)) {
+	if (ZmEmailAddress.isValid(chunk)) {
 		start = i;
 		chunk = text.substring(start, i);
 	}

@@ -51,7 +51,7 @@
 *	- Miscellaneous stuff that multiple apps might use (objects, autocomplete)
 *	- Modifiers
 *
-* Many of the Dwt widgets don't have corresponding classes here, since they are only subclassed.
+* Many of the Dwt widgets don't have corresponding classes here, since they are only subclassed. 
 * If you create and display one of those widgets, you'll have to add a class for it.
 */
 
@@ -139,7 +139,6 @@
 	@NoWrap@
 	text-align: center;
 	font-weight: bold;
-	padding-top: 5px;
 }
 
 
@@ -148,11 +147,11 @@
 
 /* Status bar stuff */
 
-.ZmStatusMainText {
+.ZmStatusMainText {	
 	@ToastText@
 }
 
-.ZmStatusToastText {
+.ZmStatusToastText { 
 	@ToastText@
 }
 
@@ -160,18 +159,18 @@
 	@ToastContainer@
 	@ToastBg-info@
 }
-.ZmStatusWarningToast {
+.ZmStatusWarningToast {	
 	@ToastContainer@
 	@ToastBg-warning@
 }
-.ZmStatusCriticalToast {
+.ZmStatusCriticalToast {	
 	@ToastContainer@
 	@ToastBg-critical@
 }
 
-.ZmStatusHistory {
+.ZmStatusHistory { 
 	width: 400px; 				/* ??? SIZE */
-	height: 285px;
+	height: 285px; 
 	@BoxMargin@
 	margin-bottom: 0px;
 	overflow: auto;
@@ -266,7 +265,7 @@
 
 /* ??? USE ? */
 td.DDSepVisible div {
-	background-color:black;
+	background-color:black; 
 	width:1px;
 	overflow:hidden;
 }
@@ -278,7 +277,7 @@ td.DDSepInvisible div {
 
 
 
-/*
+/* 
  * Search bar
  */
 
@@ -293,7 +292,7 @@ td.DDSepInvisible div {
 
 
 
-/*
+/* 
  * Search builder
  */
 
@@ -305,8 +304,8 @@ td.DDSepInvisible div {
 }
 
 
-/*
- * Search builder "pickers" or panes
+/* 
+ * Search builder "pickers" or panes 
  */
 
 /* outer container for an individual picker */
@@ -337,7 +336,7 @@ td.DDSepInvisible div {
 
 /* ??? SHOTGUN */
 .ZmPickerOverview td {
-	 @Label@
+	 @Label@ 
 }
 
 
@@ -349,9 +348,9 @@ td.DDSepInvisible div {
 
 /* message fragment text */
 .ZmConvListFragment,
-.Row-Selected .ZmConvListFragment {
+.Row-Selected .ZmConvListFragment { 
 	@Text-disabled@
-	font-weight: normal;
+	font-weight: normal; 
 }
 
 /* Conversation view outer container (header, list and reading pane) */
@@ -364,10 +363,10 @@ td.DDSepInvisible div {
 	border:0px;
 }
 
-
+ 
 
 /* ??? SHOTGUN */
-.ZmConvView td {
+.ZmConvView td { 
 	@NoWrap@
 }
 
@@ -391,14 +390,14 @@ td.DDSepInvisible div {
 }
 
 /* put space between display of tag icons and their names */
-.Tags a {
+.Tags a { 
 	@NoWrap@
 	padding-right: @BoxPaddingSize@; 	/* ??? SIZE */
 }
 
 
 
-/* Container for the view of one particular message
+/* Container for the view of one particular message 
 	-- there can be two instances, one for "conversation" view and one for "messages" view */
 .ZmMailMsgView {
 	@FullWidth@
@@ -426,7 +425,7 @@ td.DDSepInvisible div {
 	@WidgetHeaderContainer@
 }
 
-.ZmMailMsgView .SubjectCol {
+.ZmMailMsgView .SubjectCol { 
 	@FontSize-bigger@
 	@Text@
 }
@@ -447,15 +446,15 @@ td.DDSepInvisible div {
 }
 
 /* ??? USE? */
-.ZmMailMsgView .AttName,
+.ZmMailMsgView .AttName, 
 .ZmMailMsgView .AttName-matched {
 	padding-right: 8px;
 }
 
 /* ??? USE? */
-.ZmMailMsgView .AttName-matched {
+.ZmMailMsgView .AttName-matched { 
 	@Anchor-matched@
-	white-space: nowrap;
+	white-space: nowrap; 
 }
 
 /* ??? MOVE ME */
@@ -495,8 +494,8 @@ td.DDSepInvisible div {
 
 
 /*
- * Message compose view
- */
+ * Message compose view 
+ */ 
 /* Outer container of message compose view */
 .ZmComposeView {
 	@PageBg@
@@ -555,8 +554,8 @@ td.DDSepInvisible div {
 
 /*
  *	ZmHtmlEditor -- HTML editor stuff
- */
-
+ */ 
+ 
 /* Outer container */
 .ZmHtmlEditor {
 	@BoxPadding@
@@ -583,15 +582,15 @@ td.DDSepInvisible div {
 
 
 /* ??? USE? */
-.ZmHEDialog td.Label {
+.ZmHEDialog td.Label { 
 	@NoSelect@
-	text-align: right;
-	width: 12em;
+	text-align: right; 
+	width: 12em; 
 	padding-right: 3px;
 }
-.ZmHEDialog td.SmallLabel {
+.ZmHEDialog td.SmallLabel { 
 	@NoSelect@
-	text-align: right;
+	text-align: right; 
 	padding-right: 3px;
 }
 .ZmHEDialog td.col2 { width: 7em; }
@@ -631,8 +630,8 @@ td.DDSepInvisible div {
 
 /* ??? USED? */
 .NtdDialogTable .NtdLabel {
-	white-space:nowrap;
-	padding:2px 5px;
+	white-space:nowrap; 
+	padding:2px 5px; 
 	text-align:right;
 }
 
@@ -735,15 +734,13 @@ td.DDSepInvisible div {
 }
 
 .ZmContactInfoView .contactHeaderRow,
-.ZmContactView .contactHeaderRow,
-.ZmTaskEditView .contactHeaderRow {
+.ZmContactView .contactHeaderRow {
 	height: 40px;
 	@WidgetHeaderSize-big@
 }
 
 .ZmContactInfoView .contactHeader,
-.ZmContactView .contactHeader,
-.ZmTaskEditView .contactHeader {
+.ZmContactView .contactHeader {
 	@FontSize-biggest@
 	@Text@
 	padding-left:@BoxPaddingSize@;
@@ -791,8 +788,7 @@ td.DDSepInvisible div {
 }
 
 /* ??? -> ZmFieldLabelRight */
-.ZmContactView .editLabel,
-.ZmTaskEditView .editLabel {
+.ZmContactView .editLabel {
 	@Label@
 	text-align:right;
 }
@@ -840,10 +836,10 @@ td.DDSepInvisible div {
 }
 
 /* Container for a single contact card in various states */
-.ZmContactCard,
-.ZmContactCard-selected,
+.ZmContactCard, 
+.ZmContactCard-selected, 
 .ZmContactCard-selected-right,
-.ZmContactCard-drag,
+.ZmContactCard-drag, 
 .ZmContactCard-selected-drag,
 .ZmContactCard-dnd {
 	@AppBg@
@@ -920,15 +916,6 @@ td.DDSepInvisible div {
 	border: solid gray 1px;
 }
 
-
-/*
- * Task application
- */
-.InlineWidget {
-	z-index: 300;
-	visibility: hidden;
-	overflow: hidden;
-}
 
 
 
@@ -1098,19 +1085,19 @@ td.DDSepInvisible div {
 }
 
 
-/* set the width of each day column in the month view
+/* set the width of each day column in the month view 
 	-- extra space goes to the last column  			*/
 .month_calendar_c0,
 .month_calendar_c1,
 .month_calendar_c2,
 .month_calendar_c3,
 .month_calendar_c4,
-.month_calendar_c5 {
-	width: 14%;
+.month_calendar_c5 { 
+	width: 14%; 
 }
 
-.month_calendar_c6{
-	width: 16%;
+.month_calendar_c6{ 
+	width: 16%; 
 }
 
 
@@ -1264,7 +1251,7 @@ td.DDSepInvisible div {
 }
 
 
-/*
+/* 
  * appearance of appointments in day views -- NOTE: colors of these items are not skinned
  */
 .appt							{ 	z-index:10;	}
@@ -1298,19 +1285,19 @@ td.DDSepInvisible div {
 .appt_location					{	@SmallBoxPadding@;						}
 
 .appt_top_sash,
-.appt_bottom_sash{
-	height: 5px;
-	width:100%;
-	position:absolute;
-	font-size: 2pt;
+.appt_bottom_sash{ 
+	height: 5px; 
+	width:100%; 
+	position:absolute; 
+	font-size: 2pt; 
 }
 
 .appt_top_sash {
-	top: 0;
+	top: 0; 
 	cursor: n-resize;
 }
-.appt_bottom_sash {
-	bottom: 0;
+.appt_bottom_sash { 
+	bottom: 0; 
 	cursor: s-resize;
 }
 
@@ -1391,7 +1378,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 
-/*
+/* 
  *  Print view of the calendar -- note this is always black text on white
  *		??? USED?  Calendar print view seems to be hard-coding
  */
@@ -1475,11 +1462,11 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 
-/*
- * Reminder Dialog
+/* 
+ * Reminder Dialog 
  */
 
-.ZmReminderDialog {
+.ZmReminderDialog { 
 	overflow: auto;
 	width: 475px; 			/*??? SIZE */
 	@BoxMargin@
@@ -1533,7 +1520,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /*
  *	Free/busy view
- */
+ */ 
 /* Colors for the free/busy blocks */		/*??? SKIN THIS ? */
 .ZmScheduler-free 		{	background-color: #FFFFFF;	}
 .ZmScheduler-busy 		{	background-color: #990000;	}
@@ -1745,7 +1732,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /*
  *	Chat application
- */
+ */ 
 
 .ZmChatMultiWindowView, .ZmChatTabbedView {
 	@PageBg@
@@ -1766,7 +1753,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatWindow-selected {
 	@WindowContainer-focused@
 	width: 400px;
-	height: 300px;
+	height: 300px;	
 }
 
 .ZmChatDialogField {
@@ -1812,7 +1799,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatWindowChat {
 	@AppBg@
 	@AppBorder@
-	overflow: auto;
+	overflow: hidden;
 }
 
 /* list of chat members for multi-person chat */
@@ -1822,31 +1809,39 @@ HTML>BODY .appt-selected .appt_allday_body
 	@AppBorder@
 }
 
-.ZmChatWindowChatEntry {
-  padding: 1px 5px; line-height: 15px;
+/* label in the chat record by text that user has typed, eg:  [2:10 PM] username: */
+.ZmChatWindowChatEntryMe {
+	@Text@
+	font-weight: bold;
+	padding: 1px;
+	padding-left: 2px;
 }
-
-.ZmChatWindowChatEntry-sep { border-top: 1px solid #edd; margin-top: 4px; margin-bottom: 2px; font-size: 1px; line-height: 1px; overflow: hidden; height: 1px; }
-
-.ZmChatWindowChatEntry .from { font-weight: bold; }
-.ZmChatWindowChatEntry .time { float: right; color: #888; }
-.ZmChatWindowChatEntry .body { padding-left: 15px; margin-right: 4.2em; }
-
-.ZmChatWindowChatEntryMe .from { color: #00c; }
-.ZmChatWindowChatEntryThem .from { color: #c00; }
 
 /* label in the chat record for system notes (eg: roland goes offline, etc) */
 .ZmChatWindowChatEntrySystem {
-  color: #888;
-  font-style: italic;
+	@Label@
+	font-style: italic;
+	padding: 1px;
+	padding-left: 2px;
+}
+
+/* label in the chat record by text that chatees have typed */
+.ZmChatWindowChatEntryThem {
+	color: blue;
+	font-weight: bold;	
+	padding: 1px;
+	padding-left: 2px;
 }
 
 .ZmChatWindowInput {
-	@AppBg@
-	@AppBorder@
-  border-width: 2px !important;
+	border: 0px;
+	overflow: auto;
+/*	border: 1px solid #999999;*/
 }
 
+.ZmChatWindowInput textarea {
+	@TextArea@
+}
 
 
 /*
@@ -1900,19 +1895,19 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 /* ??? USE? */
-.ZmAutocompleteListView .Row,
+.ZmAutocompleteListView .Row, 
 .ZmAutocompleteListView .Row-selected {
 	@TextPadding@
     height:auto;
 }
-.ZmAutocompleteListView .Row-selected {
+.ZmAutocompleteListView .Row-selected { 
 	/* color: white; */
 }
 
 
 
 /*
- * Filter rules
+ * Filter rules 
  */
 
 /* list of filters */
@@ -1974,8 +1969,8 @@ HTML>BODY .appt-selected .appt_allday_body
 /* Box that shows a color, allows you to click to set the color */
 .ZmPrefView .colorBox {
 	@AppBorder@		/* ??? */
-	width:18px;
-	height:18px;
+	width:18px; 
+	height:18px; 
 }
 
 
@@ -2093,12 +2088,12 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .OutsetPanel {
 	padding:0px;
-	border:1px solid;
+	border:1px solid; 
 	border-color:#a29a87 #746e61 #746e61 #a29a87;
 #IFDEF GECKO
     -moz-border-left-colors:#a29a87 #eae0c7;
-	-moz-border-top-colors: #a29a87 #eae0c7;
-	-moz-border-bottom-colors: #746e61 #bab09a;
+	-moz-border-top-colors: #a29a87 #eae0c7; 	
+	-moz-border-bottom-colors: #746e61 #bab09a;		
 	-moz-border-right-colors: #746e61 #bab09a;
 #ENDIF
 }
@@ -2241,7 +2236,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 .ZmTestFailed {
     font-weight:bold;
-    @Text-error@
+    @Text-error@ 
 }
 .ZmTestError {
     @Text-error@
@@ -2253,7 +2248,7 @@ HTML>BODY .appt-selected .appt_allday_body
 /*
  *   Shortcut key display
  */
-
+ 
 .shortcutList {
 	width:100%;
 	border-collapse:collapse;
@@ -2280,7 +2275,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:auto;
 }
 
-.shortcutKeyCombo {
+.shortcutKeyCombo { 
 	white-space:nowrap;
 	margin-right:5px;
 	margin-left:5px;
@@ -2540,7 +2535,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZCheckboxLabel {
 	cursor:pointer;
 }
-
+ 
 .ZCheckboxLabelCell {}
 
 .ZCheckboxLabelInline {
@@ -2549,16 +2544,16 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 .ZSpacer {
-	height:7px;
+	height:7px; 
 	margin-bottom:7px;
 }
 .ZSmallSpacer {
-	height:3px;
+	height:3px; 
 	margin-bottom:3px;
 }
 .ZSectionSeparator {
 	border-bottom:3px double #666666;
-	height:10px;
+	height:10px; 
 	margin-bottom:10px;
 }
 
@@ -2589,7 +2584,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZNestedFieldset {
 	width:auto;
-	padding:0px 0px 5px 0px;
+	padding:0px 0px 5px 0px;	
 }
 
 .ZLegend {
@@ -2625,7 +2620,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-top:-.5em;
 	padding-left:3px;
 	padding-right:3px;
-}
+}	
 
 .ZHelpLabel,
 .ZHelpLabelIndent {
@@ -2689,7 +2684,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin:0px;
 }
 
-/* THIS IS IN DWT
 .ZTab,
 .ZTab.selected {
 #IFDEF GECKO
@@ -2713,7 +2707,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-top:2px;
 	padding-top:7px;
 }
-*/
+
 
 
 .ZFieldSizeTiny 	{	width:50px;		}
@@ -2722,55 +2716,3 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZFieldSizeHusky	{	width:250px;	}
 .ZFieldSizeLarge	{	width:300px;	}
 .ZFieldSizeFull		{	width:100%;		}
-
-.ZmTooltipLabel {
-	text-align:right;
-	padding-right:5px;
-}
-
-.ZmVoicemailTreeHeader {
-	display:none;
-}
-
-/* tabs for buddy list/folders in the overview bar */
-/* FIXME: look broken */
-
-.ZmBuddyFolderTabBar {
-}
-
-.BuddyFolderTab {
-  @AppTabContainer@
-}
-
-.BuddyFolderTab-hover {
-  @AppTabContainer-hover@
-}
-
-.BuddyFolderTab-active {
-  @AppTabContainer-selected@
-}
-
-.ZmVoicemailView .Row, 
-.ZmVoicemailView .Row-selected, 
-.ZmVoicemailView .Row-matched, 
-.ZmVoicemailView .Row-matched-drag, 
-.ZmVoicemailView .Row-drag, 
-.ZmVoicemailView .Row-selected-drag, 
-.ZmVoicemailView .Row-selected-right, 
-.ZmVoicemailView .Row-selected-disabled {
-	height: 20px;
-}
-
-.ZmPlayButton 								{	@PlayButton@			}
-.ZmPlayButton-disabled						{	@PlayButton-disabled@	}
-.ZmPlayButton-activated 					{	@PlayButton-hover@		}
-.ZmPlayButton-triggered						{	@PlayButton-clicked@	}
-.ZmPlayButton-toggled						{	@PlayButton-toggled@	}
-.ZmPlayButton-active						{	@PlayButton-default@	}
-.ZmPlayButton-focused						{	@PlayButton-focused@	}
-.ZmPlayButton-hidden						{	@PlayButton-hidden@		}
-
-.ZmPortlet {
-  width: 100%;
-  height: 100%;
-}

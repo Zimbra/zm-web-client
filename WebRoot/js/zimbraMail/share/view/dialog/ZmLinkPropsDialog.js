@@ -30,7 +30,9 @@ function ZmLinkPropsDialog(appCtxt, shell, className) {
 
 	this._appCtxt = appCtxt;
 
-	this._cache = AjxDispatcher.run("GetNotebookCache");
+	var appController = appCtxt.getAppController();
+	var app = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	this._cache = app.getNotebookCache();
 
 	// set view
 	this.setView(this._createView());
@@ -42,7 +44,7 @@ ZmLinkPropsDialog.prototype.constructor = ZmLinkPropsDialog;
 // Public methods
 
 ZmLinkPropsDialog.prototype.popup =
-function(linkInfo, callback) {
+function(linkInfo, callback, loc) {
 	this._linkInfo = linkInfo || {};
 	this._callback = callback;
 
@@ -66,7 +68,7 @@ function(linkInfo, callback) {
 
 	ZmLinkPropsDialog._setRequiredFields(this, !isUrlLink);
 
-	DwtDialog.prototype.popup.call(this);
+	DwtDialog.prototype.popup.call(this, loc);
 	ZmLinkPropsDialog._enableFieldsOnEdit(this);
 };
 

@@ -553,7 +553,7 @@ function(html, idx, label, field, objMgr) {
 ZmContactSplitView.prototype._setHeaderColor =
 function(folder) {
 	// set background color of header
-	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
+	var color = folder ? folder.color : ZmAddrBook.DEFAULT_COLOR;
 	var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
 	var contactHdrRow = document.getElementById(this._contactHeaderRowId);
 	contactHdrRow.className = "contactHeaderRow " + bkgdColor;

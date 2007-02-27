@@ -478,6 +478,11 @@ function(appCtxt) {
 	return false;
 };
 
+// placeholder rule used for adding a new rule
+ZmFilterRule.DUMMY_RULE = new ZmFilterRule;
+ZmFilterRule.DUMMY_RULE.conditions = [new ZmCondition(ZmFilterRule.C_SUBJECT, ":contains")];
+ZmFilterRule.DUMMY_RULE.actions = [new ZmAction(ZmFilterRule.A_KEEP)];
+
 /**
 * Creates a ZmCondition.
 * @constructor
@@ -511,8 +516,3 @@ function ZmAction(name, arg) {
 	this.name = name;
 	this.arg = arg;
 };
-
-// placeholder rule used for adding a new rule
-ZmFilterRule.DUMMY_RULE = new ZmFilterRule;
-ZmFilterRule.DUMMY_RULE.conditions = [new ZmCondition(ZmFilterRule.C_SUBJECT, ":contains")];
-ZmFilterRule.DUMMY_RULE.actions = [new ZmAction(ZmFilterRule.A_KEEP)];

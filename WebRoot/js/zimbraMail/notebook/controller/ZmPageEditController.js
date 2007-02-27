@@ -25,13 +25,6 @@
 
 function ZmPageEditController(appCtxt, container, app) {
 	ZmListController.call(this, appCtxt, container, app);
-
-	ZmPageEditController.RADIO_GROUP = {};
-	ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_HTML_SOURCE]	= 1;
-	ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_MEDIA_WIKI]		= 1;
-	ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_RICH_TEXT]		= 1;
-	ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_TWIKI]			= 1;
-
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CLOSE] = new AjxListener(this, this._closeListener);
 	//this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._addDocsListener);
@@ -45,6 +38,14 @@ ZmPageEditController.prototype.toString =
 function() {
 	return "ZmPageEditController";
 };
+
+// Constants
+
+ZmPageEditController.RADIO_GROUP = {};
+ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_HTML_SOURCE]	= 1;
+ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_MEDIA_WIKI]		= 1;
+ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_RICH_TEXT]		= 1;
+ZmPageEditController.RADIO_GROUP[ZmOperation.FORMAT_TWIKI]			= 1;
 
 // Data
 
@@ -116,7 +117,6 @@ function() {
 
 	return list;
 };
-
 ZmPageEditController.prototype._initializeToolBar =
 function(view) {
 	if (this._toolbar[view]) return;
@@ -136,7 +136,6 @@ function(view) {
 		spellCheckButton.setText("");
 	}
 
-	// NOTE: probably cleaner to use ZmActionMenu, which knows about operations
 	if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 		var button = toolbar.getButton(ZmOperation.COMPOSE_FORMAT);
 		var menu = new ZmPopupMenu(button);
@@ -158,7 +157,7 @@ function(view) {
 			var style = DwtMenuItem.RADIO_STYLE;
 			var group = ZmPageEditController.RADIO_GROUP[op];
 
-			var menuItem = menu.createMenuItem(op, {image:icon, text:text, style:style, radioGroupId:group});
+			var menuItem = menu.createMenuItem(op, icon, text, null, true, style, group);
 			menuItem.setData(ZmOperation.KEY_ID, op);
 			menuItem.setData(ZmPageEditor.KEY_FORMAT, item.format);
 			menuItem.addSelectionListener(this._listeners[ZmOperation.COMPOSE_FORMAT]);
@@ -189,6 +188,7 @@ function(view) {
 ZmPageEditController.prototype._setView =
 function(view, elements, isAppView, clear, pushOnly, isTransient) {
 	ZmListController.prototype._setView.apply(this, arguments);
+	//this._app._setViewMenu(view);
 
 	this._format = this._format || ZmPageEditor.DEFAULT;
 
@@ -327,7 +327,7 @@ ZmPageEditController.prototype._saveResponseHandler = function(content, response
 ZmPageEditController.prototype._saveResponseHandlerShowNote =
 function(id) {
 	this._showPage(id);
-	this._appCtxt.getAppViewMgr().showPendingView(true);
+	this._app.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._saveErrorResponseHandler =
@@ -456,6 +456,8 @@ ZmPageEditController.prototype._popShieldYesCallback =
 function() {
 	this._popShield.popdown();
 	this._doSave(true);
+	this._app.popView(true);
+	this._app.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._popShieldNoCallback =
@@ -463,11 +465,11 @@ function() {
 	this._popShield.popdown();
 	this._app.popView(true);
 	this._showCurrentPage();
-	this._appCtxt.getAppViewMgr().showPendingView(true);
+	this._app.getAppViewMgr().showPendingView(true);
 };
 
 ZmPageEditController.prototype._popShieldDismissCallback =
 function() {
 	this._popShield.popdown();
-	this._appCtxt.getAppViewMgr().showPendingView(false);
+	this._app.getAppViewMgr().showPendingView(false);
 };

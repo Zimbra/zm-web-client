@@ -42,18 +42,17 @@ function() {
 // Public methods
 
 ZmNewOrganizerDialog.prototype.popup =
-function(folder) {
-	if (this._folderTreeView) {
-		folder = folder ? folder : this._folderTree.root;
-		this._folderTreeView.setSelected(folder);
-		if (folder.id == ZmOrganizer.ID_ROOT) {
-			var ti = this._folderTreeView.getTreeItemById(folder.id);
-			ti.setExpanded(true);
-		}
+function(folder, loc) {
+	folder = folder ? folder : this._folderTree.root;
+
+	this._folderTreeView.setSelected(folder);
+	if (folder.id == ZmOrganizer.ID_ROOT) {
+		var ti = this._folderTreeView.getTreeItemById(folder.id);
+		ti.setExpanded(true);
 	}
 	DBG.timePt("selected folder", true);
 	
-	ZmDialog.prototype.popup.call(this);
+	ZmDialog.prototype.popup.call(this, loc);
 };
 
 ZmNewOrganizerDialog.prototype.reset =
@@ -65,7 +64,7 @@ function() {
 
 	if (this._remoteCheckboxField) {
 		this._remoteCheckboxField.checked = false;
-		var urlRow = document.getElementById(this._remoteCheckboxFieldId+"URLrow");
+		var urlRow = document.getElementById(this._remoteCheckboxField.id+"URLrow");		
 		if (urlRow) urlRow.style.display = "none";
 	}
 
@@ -246,8 +245,6 @@ function() {
 
 ZmNewOrganizerDialog.prototype._setupFolderControl =
 function() {
-	if (!this._folderTreeCellId) { return; }
-	
 	var organizerType = this._organizerType;
 	this._folderTree = this._appCtxt.getTree(organizerType);
 
@@ -282,14 +279,9 @@ function() {
 	var msg = ZmFolder.checkName(name);
 
 	// make sure a parent was selected
-	var parentFolder;
-	if (this._folderTreeView) {
-		parentFolder = this._folderTreeView.getSelected();
-		if (!msg && !parentFolder) {
-			msg = ZmMsg.folderNameNoLocation;
-		}
-	} else {
-		parentFolder = this._appCtxt.getFolderTree().root;
+	var parentFolder = this._folderTreeView.getSelected();
+	if (!msg && !parentFolder) {
+		msg = ZmMsg.folderNameNoLocation;
 	}
 
 	// make sure parent doesn't already have a child by this name
@@ -317,7 +309,7 @@ function() {
 		}
 	}
 
-	return (msg ? this._showError(msg) : {l:parentFolder.id, name:name, color:color, url:url});
+	return (msg ? this._showError(msg) : [parentFolder, name, color, url]);
 };
 
 ZmNewOrganizerDialog.prototype._getTabGroupMembers =

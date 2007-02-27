@@ -111,84 +111,80 @@ function() {
 };
 
 ZmApptRecurDialog.prototype.setRepeatEndValues = 
-function(appt) {
-	var recur = appt._recurrence;
-	recur.repeatEndType = this._getRadioOptionValue(this._repeatEndName);
+function(appt) {	
+	appt.repeatEndType = this._getRadioOptionValue(this._repeatEndName);
 
 	// add any details for the select option
-	if (recur.repeatEndType == "A")
-		recur.repeatEndCount = this._endIntervalField.getValue();
-	else if (recur.repeatEndType == "D")
-		recur.repeatEndDate = AjxDateUtil.simpleParseDateStr(this._endByField.getValue());
+	if (appt.repeatEndType == "A")
+		appt.repeatEndCount = this._endIntervalField.getValue();
+	else if (appt.repeatEndType == "D")
+		appt.repeatEndDate = AjxDateUtil.simpleParseDateStr(this._endByField.getValue());
 };
 
 ZmApptRecurDialog.prototype.setCustomDailyValues = 
 function(appt) {
-	var recur = appt._recurrence;
 	var value = this._getRadioOptionValue(this._dailyRadioName);
 
 	if (value == "2") {
-		recur.repeatCustom = "1";
-		recur.repeatWeekday = true;
+		appt.repeatCustom = "1";
+		appt.repeatWeekday = true;
 	} else {
-		recur.repeatCustomCount = value == "3" ? (Number(this._dailyField.getValue())) : 1;
+		appt.repeatCustomCount = value == "3" ? (Number(this._dailyField.getValue())) : 1;
 	}
 };
 
 ZmApptRecurDialog.prototype.setCustomWeeklyValues = 
 function(appt) {
-	var recur = appt._recurrence;
-	recur.repeatWeeklyDays = []
-	recur.repeatCustom = "1";
+	appt.repeatWeeklyDays = new Array();
+	appt.repeatCustom = "1";
 
 	var value = this._getRadioOptionValue(this._weeklyRadioName);
 	
 	if (value == "1") {
-		recur.repeatCustomCount = 1;
-		recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[this._weeklySelect.getValue()]);
+		appt.repeatCustomCount = 1;
+		appt.repeatWeeklyDays.push(ZmAppt.SERVER_WEEK_DAYS[this._weeklySelect.getValue()]);
 	} else {
-		recur.repeatCustomCount = Number(this._weeklyField.getValue());
+		appt.repeatCustomCount = Number(this._weeklyField.getValue());
 		for (var i = 0; i < this._weeklyCheckboxes.length; i++) {
 			if (this._weeklyCheckboxes[i].checked)
-				recur.repeatWeeklyDays.push(ZmCalItem.SERVER_WEEK_DAYS[i]);
+				appt.repeatWeeklyDays.push(ZmAppt.SERVER_WEEK_DAYS[i]);
 		}
 	}
 };
 
 ZmApptRecurDialog.prototype.setCustomMonthlyValues = 
 function(appt) {
-	var recur = appt._recurrence;
-	recur.repeatCustom = "1";
+	appt.repeatCustom = "1";
 
 	var value = this._getRadioOptionValue(this._monthlyRadioName);
 	
 	if (value == "1") {
-		recur.repeatCustomType = "S";
-		recur.repeatCustomCount = this._monthlyMonthField.getValue();
-		recur.repeatMonthlyDayList = [this._monthlyDayField.getValue()];
+		appt.repeatCustomType = "S";
+		appt.repeatCustomCount = this._monthlyMonthField.getValue();
+		appt.repeatMonthlyDayList = [this._monthlyDayField.getValue()];
 	} else {
-		recur.repeatCustomType = "O";
-		recur.repeatCustomCount = this._monthlyMonthFieldEx.getValue();
-		recur.repeatCustomOrdinal = this._monthlyDaySelect.getValue();
-		recur.repeatCustomDayOfWeek = ZmCalItem.SERVER_WEEK_DAYS[this._monthlyWeekdaySelect.getValue()];
+		appt.repeatCustomType = "O";
+		appt.repeatCustomCount = this._monthlyMonthFieldEx.getValue();
+		appt.repeatCustomOrdinal = this._monthlyDaySelect.getValue();
+		appt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[this._monthlyWeekdaySelect.getValue()];
 	}
 };
 
 ZmApptRecurDialog.prototype.setCustomYearlyValues = 
 function(appt) {
-	appt._recurrence.repeatCustom = "1";
+	appt.repeatCustom = "1";
 
 	var value = this._getRadioOptionValue(this._yearlyRadioName);
 
 	if (value == "1") {
-		appt._recurrence.repeatCustomType = "S";
-		appt._recurrence.repeatCustomMonthDay = this._yearlyDayField.getValue();
-		appt._recurrence.repeatYearlyMonthsList = this._yearlyMonthSelect.getValue() + 1;
+		appt.repeatCustomType = "S";
+		appt.repeatCustomMonthDay = this._yearlyDayField.getValue();
+		appt.repeatYearlyMonthsList = this._yearlyMonthSelect.getValue() + 1;
 	} else {
-		appt._recurrence.repeatCustomType = "O";
-		appt._recurrence.repeatCustomOrdinal = this._yearlyDaySelect.getValue();
-		appt._recurrence.repeatCustomDayOfWeek = ZmCalItem.SERVER_WEEK_DAYS[this._yearlyWeekdaySelect.getValue()];
-		appt._recurrence.repeatYearlyMonthsList = this._yearlyMonthSelectEx.getValue() + 1;
+		appt.repeatCustomType = "O";
+		appt.repeatCustomOrdinal = this._yearlyDaySelect.getValue();
+		appt.repeatCustomDayOfWeek = ZmAppt.SERVER_WEEK_DAYS[this._yearlyWeekdaySelect.getValue()];
+		appt.repeatYearlyMonthsList = this._yearlyMonthSelectEx.getValue() + 1;
 	}
 };
 
@@ -761,7 +757,7 @@ function() {
 	// create mini calendar button for end by field
 	var dateButtonListener = new AjxListener(this, this._endByButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
-	ZmCalendarApp.createMiniCalButton(this, this._endByButtonId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
+	ZmApptViewHelper.createMiniCalButton(this, this._endByButtonId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
 
 	// create all DwtInputField's
 	this._createInputs();
@@ -1069,86 +1065,85 @@ function(radioName) {
 */
 ZmApptRecurDialog.prototype._populateForEdit = 
 function(appt) {
-	var recur = appt._recurrence;
-	if (recur.repeatType == "NON") return;
+	if (appt.repeatType == "NON") return;
 
-	if (recur.repeatType == "DAI") {
+	if (appt.repeatType == "DAI") {
 		var dailyRadioOptions = document.getElementsByName(this._dailyRadioName);
-		if (recur.repeatWeekday) {
+		if (appt.repeatWeekday) {
 			dailyRadioOptions[1].checked = true;
-		} else if (recur.repeatCustomCount > 1) {
-			this._dailyField.setValue(recur.repeatCustomCount);
+		} else if (appt.repeatCustomCount > 1) {
+			this._dailyField.setValue(appt.repeatCustomCount);
 			dailyRadioOptions[2].checked = true;
 		}
-	} else if (recur.repeatType == "WEE") {
+	} else if (appt.repeatType == "WEE") {
 		var weeklyRadioOptions = document.getElementsByName(this._weeklyRadioName);
-		if (recur.repeatCustomCount == 1 && recur.repeatWeeklyDays.length == 1) {
+		if (appt.repeatCustomCount == 1 && appt.repeatWeeklyDays.length == 1) {
 			weeklyRadioOptions[0].checked = true;
-			for (var j = 0; j < ZmCalItem.SERVER_WEEK_DAYS.length; j++) {
-				if (recur.repeatWeeklyDays[0] == ZmCalItem.SERVER_WEEK_DAYS[j]) {
+			for (var j = 0; j < ZmAppt.SERVER_WEEK_DAYS.length; j++) {
+				if (appt.repeatWeeklyDays[0] == ZmAppt.SERVER_WEEK_DAYS[j]) {
 					this._weeklySelect.setSelectedValue(j);
 					break;
 				}
 			}
 		} else {
 			weeklyRadioOptions[1].checked = true;
-			this._weeklyField.setValue(recur.repeatCustomCount);
+			this._weeklyField.setValue(appt.repeatCustomCount);
 			// xxx: minor hack-- uncheck this since we init'd it earlier
 			this._weeklyCheckboxes[this._startDate.getDay()].checked = false;
-			for (var i = 0; i < recur.repeatWeeklyDays.length; i++) {
-				for (var j = 0; j < ZmCalItem.SERVER_WEEK_DAYS.length; j++) {
-					if (recur.repeatWeeklyDays[i] == ZmCalItem.SERVER_WEEK_DAYS[j]) {
+			for (var i = 0; i < appt.repeatWeeklyDays.length; i++) {
+				for (var j = 0; j < ZmAppt.SERVER_WEEK_DAYS.length; j++) {
+					if (appt.repeatWeeklyDays[i] == ZmAppt.SERVER_WEEK_DAYS[j]) {
 						this._weeklyCheckboxes[j].checked = true;
 						break;
 					}
 				}
 			}
 		}
-	} else if (recur.repeatType == "MON") {
+	} else if (appt.repeatType == "MON") {
 		var monthlyRadioOptions = document.getElementsByName(this._monthlyRadioName);
-		if (recur.repeatMonthlyDayList) {
+		if (appt.repeatMonthlyDayList) {
 			monthlyRadioOptions[0].checked = true;
-			this._monthlyDayField.setValue(recur.repeatMonthlyDayList[0]);
-			this._monthlyMonthField.setValue(recur.repeatCustomCount);
+			this._monthlyDayField.setValue(appt.repeatMonthlyDayList[0]);
+			this._monthlyMonthField.setValue(appt.repeatCustomCount);
 		} else {
 			monthlyRadioOptions[1].checked = true;
-			this._monthlyDaySelect.setSelectedValue(recur.repeatCustomOrdinal);
-			for (var i = 0; i < ZmCalItem.SERVER_WEEK_DAYS.length; i++) {
-				if (ZmCalItem.SERVER_WEEK_DAYS[i] == recur.repeatCustomDayOfWeek) {
+			this._monthlyDaySelect.setSelectedValue(appt.repeatCustomOrdinal);
+			for (var i = 0; i < ZmAppt.SERVER_WEEK_DAYS.length; i++) {
+				if (ZmAppt.SERVER_WEEK_DAYS[i] == appt.repeatCustomDayOfWeek) {
 					this._monthlyWeekdaySelect.setSelectedValue(i);
 					break;
 				}
 			}
-			this._monthlyMonthFieldEx.setValue(recur.repeatCustomCount);
+			this._monthlyMonthFieldEx.setValue(appt.repeatCustomCount);
 		}
-	} else if (recur.repeatType == "YEA") {
+	} else if (appt.repeatType == "YEA") {
 		var yearlyRadioOptions = document.getElementsByName(this._yearlyRadioName);
-		if (recur.repeatCustomType == "S") {
+		if (appt.repeatCustomType == "S") {
 			yearlyRadioOptions[0].checked = true;
-			this._yearlyDayField.setValue(recur.repeatCustomMonthDay);
-			this._yearlyMonthSelect.setSelectedValue(Number(recur.repeatYearlyMonthsList)-1);
+			this._yearlyDayField.setValue(appt.repeatCustomMonthDay);
+			this._yearlyMonthSelect.setSelectedValue(Number(appt.repeatYearlyMonthsList)-1);
 		} else {
 			yearlyRadioOptions[1].checked = true;
-			this._yearlyDaySelect.setSelectedValue(recur.repeatCustomOrdinal);
-			for (var i = 0; i < ZmCalItem.SERVER_WEEK_DAYS.length; i++) {
-				if (ZmCalItem.SERVER_WEEK_DAYS[i] == recur.repeatCustomDayOfWeek) {
+			this._yearlyDaySelect.setSelectedValue(appt.repeatCustomOrdinal);
+			for (var i = 0; i < ZmAppt.SERVER_WEEK_DAYS.length; i++) {
+				if (ZmAppt.SERVER_WEEK_DAYS[i] == appt.repeatCustomDayOfWeek) {
 					this._yearlyWeekdaySelect.setSelectedValue(i);
 					break;
 				}
 			}
-			this._yearlyMonthSelectEx.setSelectedValue(Number(recur.repeatYearlyMonthsList)-1);
+			this._yearlyMonthSelectEx.setSelectedValue(Number(appt.repeatYearlyMonthsList)-1);
 		}
 	}
 
 	// populate recurrence ending rules
-	if (recur.repeatEndType != "N") {
+	if (appt.repeatEndType != "N") {
 		var endRadioOptions = document.getElementsByName(this._repeatEndName);
-		if (recur.repeatEndType == "A") {
+		if (appt.repeatEndType == "A") {
 			endRadioOptions[1].checked = true;
-			this._endIntervalField.setValue(recur.repeatEndCount);
+			this._endIntervalField.setValue(appt.repeatEndCount);
 		} else {
 			endRadioOptions[2].checked = true;
-			this._endByField.setValue(AjxDateUtil.simpleComputeDateStr(recur.repeatEndDate));
+			this._endByField.setValue(AjxDateUtil.simpleComputeDateStr(appt.repeatEndDate));
 		}
 	}
 };
