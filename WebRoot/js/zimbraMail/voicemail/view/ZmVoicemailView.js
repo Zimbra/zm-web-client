@@ -263,7 +263,7 @@ function(voicemail, state, visible, playing) {
 		div.className = "ImgBlank_16 ZmPlayButton-hidden";
 	} else {
 		var buttonClass = state ? " ZmPlayButton-" + state : " ZmPlayButton";
-		var imageClass = playing ? "ImgPlayingMessage" : "ImgPlayMessage";
+		var imageClass = playing ? "ImgPlayingMessage" : "ImgPlay";
 		div.className = imageClass + buttonClass;
 	}
 };

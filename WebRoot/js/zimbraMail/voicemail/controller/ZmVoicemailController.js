@@ -123,6 +123,9 @@ function(view) {
 		this._toolbar[view].addSpacer();
 		this._toolbar[view].getButton(ZmOperation.CHECK_MAIL).setText(ZmMsg.checkVoicemail);
 		this._soundPlayer = new DwtSoundPlayer(this._toolbar[view]);
+		if (this._soundPlayer.isPluginMissing()) {
+			this._soundPlayer.addHelpListener(new AjxListener(this, this._pluginHelpListener));
+		}
 	}
 };
 
