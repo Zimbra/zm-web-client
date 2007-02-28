@@ -59,11 +59,11 @@ function(appCtxt, folderType) {
 	var response = { };
 	if (folderType == ZmVoicemailFolder.VOICEMAIL) {
 		response.v = [
-			{ caller: "858-693-6165", callerName: "Otis Smith", date: new Date(), duration: new Date(61000), isUnheard: true, soundUrl:'../../public/SoundPlayer/morning.wav' },
-			{ caller: "946-272-6245", callerName: "Rufus Jones", date: new Date(2007, 0, 15), duration: new Date(654321), isUnheard: true, soundUrl:'../../public/SoundPlayer/postal.wav' },
-			{ caller: "946-272-6245", callerName: "Rufus Jones", date: new Date(2007, 0, 12), duration: new Date(12300), isUnheard: false, soundUrl:'../../public/SoundPlayer/smokers.wav' },
-			{ caller: "946-272-6245", callerName: "Rufus Jones", date: new Date(2007, 0, 2), duration: new Date(25000), isUnheard: false, soundUrl:'../../public/SoundPlayer/yogurt.wav' },
-			{ caller: "650-462-2266", callerName: "", date: new Date(2007, 0, 1), duration: new Date(15500), isUnheard: false, soundUrl:'../../public/SoundPlayer/mutlylaf.wav' }
+			{ caller: "858-693-6165", callerName: "Otis Smith", date: new Date(), duration: new Date(61000), isUnheard: true, soundUrl:'http://localhost:7070/zimbra/public/SoundPlayer/morning.wav' },
+			{ caller: "946-272-6245", callerName: "Rufus Jones", date: new Date(2007, 0, 15), duration: new Date(654321), isUnheard: true, soundUrl:'http://localhost:7070/zimbra/public/SoundPlayer/postal.wav' },
+			{ caller: "946-272-6245", callerName: "Rufus Jones", date: new Date(2007, 0, 12), duration: new Date(12300), isUnheard: false, soundUrl:'http://localhost:7070/zimbra/public/SoundPlayer/smokers.wav' },
+			{ caller: "946-272-6245", callerName: "Rufus Jones", date: new Date(2007, 0, 2), duration: new Date(25000), isUnheard: false, soundUrl:'http://localhost:7070/zimbra/public/SoundPlayer/yogurt.wav' },
+			{ caller: "650-462-2266", callerName: "", date: new Date(2007, 0, 1), duration: new Date(15500), isUnheard: false, soundUrl:'http://localhost:7070/zimbra/public/SoundPlayer/mutlylaf.wav' }
 		];
 	} else if (folderType == ZmVoicemailFolder.PLACED_CALL) {
 		response.v = [
