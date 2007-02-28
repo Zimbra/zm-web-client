@@ -88,6 +88,15 @@ function(node) {
 	}
 };
 
+// default callback before a view is shown - enable/disable nav buttons
+ZmTaskListController.prototype._preShowCallback =
+function(view, viewPushed) {
+	if (view == ZmController.TASKLIST_VIEW) {
+		return ZmListController.prototype._preShowCallback.call(this, view, viewPushed);
+	}
+	return true;
+};
+
 ZmTaskListController.prototype._defaultView =
 function() {
 	return ZmController.TASKLIST_VIEW;
@@ -115,7 +124,7 @@ function() {
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.DELETE, ZmOperation.MOVE);
 	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT_MENU);
+		list.push(ZmOperation.PRINT);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.EDIT);
 	return list;
@@ -155,14 +164,16 @@ function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 
 	// a valid folderId means user clicked on an addrbook
-	if (this._list.folderId) {
-		var folder = this._appCtxt.getTree(ZmOrganizer.TASKS).getById(this._list.folderId);
+	var folderId = this._activeSearch.search.folderId;
+	if (folderId) {
+		var folder = this._appCtxt.getTree(ZmOrganizer.TASKS).getById(folderId);
 		var isShare = folder && folder.link;
 		var canEdit = (folder == null || !folder.isReadOnly());
 
 		parent.enable([ZmOperation.MOVE], canEdit && num > 0);
 		// XXX: for now, only allow one task to be deleted at a time
 		parent.enable([ZmOperation.DELETE, ZmOperation.EDIT], canEdit && num == 1);
+		parent.enable(ZmOperation.TAG_MENU, !isShare);
 	}
 };
 
@@ -246,6 +257,7 @@ function(task) {
 
 	calItemView.set(task, ZmController.TASKLIST_VIEW);
 	this._resetOperations(this._toolbar[viewId], 1); // enable all buttons
+	this._navToolBar[viewId].enable([ZmOperation.PAGE_BACK, ZmOperation.PAGE_FORWARD], false);
 
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[viewId];

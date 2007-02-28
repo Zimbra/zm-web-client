@@ -1322,6 +1322,13 @@ function(d) {
 	return formatter.format(d);
 };
 
+ZmCalItem._getTTDay =
+function(d, format) {
+	format = format || AjxDateFormat.SHORT;
+	var formatter = AjxDateFormat.getDateInstance();
+	return formatter.format(d);
+};
+
 // REVISIT: Move to AjxDateUtil function
 ZmCalItem.__adjustDateForTimezone =
 function(date, timezoneServerId, inUTC) {

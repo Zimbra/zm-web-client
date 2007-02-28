@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPrintView (appCtxt) {
+function ZmPrintView(appCtxt) {
 	this._appCtxt = appCtxt;
 };
 
@@ -56,63 +56,36 @@ function(mailItem, result) {
 
 ZmPrintView.prototype._render = 
 function(item) {
-	if (this._printWindow) {
+	if (this._printWindow)
+	{
 		var onloadStr = item && item.showImages
 			? this._getShowImagesStr()
 			: null;
-		var header = this._getHeader(onloadStr);
-		var footer = this._getFooter();
-		
+
+		var subs = {
+			username: this._appCtxt.get(ZmSetting.USERNAME),
+			appContextPath: appContextPath,
+			cacheKillerVersion: cacheKillerVersion,
+			onloadStr: onloadStr,
+			content: this._html
+		};
+
+		var html = AjxTemplate.expand("zimbraMail.share.templates.App#PrintView", subs);
+
 		this._printWindow.document.open();
-		this._printWindow.document.write(header);
-		this._printWindow.document.write(this._html);
-		this._printWindow.document.write(footer);
+		this._printWindow.document.write(html);
 		this._printWindow.document.close();
 
 		if (window.print)
 			this._printWindow.print();
-	} else {
+	}
+	else
+	{
 		this._appCtxt.setStatusMsg(ZmMsg.popupBlocker, ZmStatusView.LEVEL_CRITICAL);
 	}
+
+	// cleanup
 	this._html = null;
-};
-
-ZmPrintView.prototype._getHeader = 
-function(onloadStr) {
-	var username = this._appCtxt.get(ZmSetting.USERNAME);
-	var html = new Array();
-	var idx = 0;
-	html[idx++] = "<html><head><title>Zimbra: ";
-	html[idx++] = username;
-	html[idx++] = "</title>";
-	html[idx++] = "<link rel='stylesheet' href='";
-	html[idx++] = appContextPath;
-	html[idx++] = "/css/msgview,zm,wiki.css?v=";
-	html[idx++] = cacheKillerVersion;
-	html[idx++] = "' media='screen'></link>";
-	if (onloadStr) {
-		html[idx++] = "<script language='javascript'>";
-		html[idx++] = "function handleOnload() {";
-		html[idx++] = onloadStr;
-		html[idx++] = "} </script>";
-		html[idx++] = "</head><body onload='handleOnload();'>";
-	} else {
-		html[idx++] = "</head><body>";
-	}
-	html[idx++] = "<table border=0 width=100%><tr>";
-	html[idx++] = "<td class='ZmPrintView-company'><b>Zimbra</b> Collaboration Suite</td>";
-	html[idx++] = "<td class='ZmPrintView-username' align=right>";
-	html[idx++] = username;
-	html[idx++] = "</td></tr></table>";
-	html[idx++] = "<hr>";
-	html[idx++] = "<div style='padding: 10px'>";
-
-	return html.join("");
-};
-
-ZmPrintView.prototype._getFooter = 
-function() {
-	return "</div></body></html>";
 };
 
 ZmPrintView.prototype._getNewWindow =
@@ -124,14 +97,18 @@ function(args) {
 
 ZmPrintView.prototype._getShowImagesStr =
 function() {
-	var code = [];
-	var idx = 0;
+	if (!this._showImagesStr) {
+		var code = [];
+		var idx = 0;
 
-	code[idx++] = "var images = document.getElementsByTagName('img');";
-	code[idx++] = "for (var i = 0; i < images.length; i++) {";
-	code[idx++] = "if (images[i].getAttribute('dfsrc')) {";
-	code[idx++] = "images[i].src = images[i].getAttribute('dfsrc');";
-	code[idx++] = "	} };";
+		code[idx++] = "var images = document.getElementsByTagName('img');";
+		code[idx++] = "for (var i = 0; i < images.length; i++) {";
+		code[idx++] = "if (images[i].getAttribute('dfsrc')) {";
+		code[idx++] = "images[i].src = images[i].getAttribute('dfsrc');";
+		code[idx++] = "	} };";
 
-	return code.join("");
+		this._showImagesStr = code.join("");
+	}
+
+	return this._showImagesStr;
 };
