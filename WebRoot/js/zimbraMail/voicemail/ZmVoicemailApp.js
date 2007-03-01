@@ -45,6 +45,8 @@ function ZmVoicemailApp(appCtxt, container, parentController) {
 		}, this)
 						});
 
+	ZmOperation.registerOp("AUTO_PLAY", {textKey:"autoPlay", tooltipKey:"autoPlayTooltip", image:"ApptRecur"});
+
 	ZmOrganizer.registerOrg(ZmOrganizer.VOICEMAIL,
 							{app:				ZmApp.VOICEMAIL,
 							 nameKey:			"voicemailFolder",
@@ -159,7 +161,7 @@ function(list) {
 // Fake folder creation...since there's no server support.
 ZmVoicemailApp._createTreeHACK =
 function(appCtxt) {
-	ZmVoicemailApp.treeHACK(appCtxt, ZmOrganizer.VOICEMAIL, "Primary (650) 123-4567");
+	var root1 = ZmVoicemailApp.treeHACK(appCtxt, ZmOrganizer.VOICEMAIL, "Primary (650) 123-4567");
 	ZmVoicemailApp.treeHACK(appCtxt, '2222', "Sally (858) 234-1234");
 	ZmVoicemailApp.treeHACK(appCtxt, '4444', "Billy (858) 234-0987");
 };
