@@ -192,6 +192,7 @@ function() {
 ZmVoicemailController.prototype._pluginHelpListener =
 function(event) {
 	var dialog = this._appCtxt.getMsgDialog();
-	dialog.setMessage(ZmMsg.missingPluginHelp, DwtMessageDialog.CRITICAL_STYLE);
+	var message = AjxEnv.isIE ? ZmMsg.missingPluginHelpIE : ZmMsg.missingPluginHelp;
+	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
 	dialog.popup();
 };
