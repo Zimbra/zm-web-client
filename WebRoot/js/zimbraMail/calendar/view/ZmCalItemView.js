@@ -413,7 +413,7 @@ function(calItem) {
 	var isException = calItem._orig ? calItem._orig.isException : calItem.isException;
 	var startDate = calItem.startDate ? AjxDateFormat.getDateInstance().format(calItem.startDate) : null;
 	var dueDate = calItem.endDate ? AjxDateFormat.getDateInstance().format(calItem.endDate) : null;
-	var priority = calItem.priority ? ZmCalItem.getLabelForPriority(calItem.priority, false, true) : null;
+	var priority = calItem.priority ? ZmCalItem.getLabelForPriority(calItem.priority) : null;
 	var status = calItem.status ? ZmCalItem.getLabelForStatus(calItem.status) : null;
 	var pComplete = calItem.pComplete;
 	var recurStr = calItem.isRecurring() ? calItem.getRecurBlurb() : null;

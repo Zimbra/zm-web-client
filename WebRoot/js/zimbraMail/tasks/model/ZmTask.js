@@ -126,6 +126,21 @@ function(obj) {
 	this._notify(ZmEvent.E_MODIFY, obj);
 };
 
+ZmTask.prototype.isPastDue =
+function() {
+	return (this.endDate && ((new Date()).getTime() > this.endDate.getTime()));
+};
+
+ZmTask.prototype.isComplete =
+function() {
+	return (this.pComplete == 100) || (this.status == ZmCalItem.STATUS_COMP);
+};
+
+ZmTask.prototype.getSortVal =
+function(sortBy) {
+	return this.sf;
+};
+
 
 // Private/protected methods
 
@@ -151,6 +166,7 @@ function(node, instNode) {
 	this.ptst = node.ptst;
 	this.compNum = node.compNum;
 	this.date = node.d;					// XXX: creation date?
+	this.sf = node.sf;
 //	this.rev = node.rev;
 //	this.md = node.md;
 //	this.ms = node.ms;

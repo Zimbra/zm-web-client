@@ -104,6 +104,7 @@ ZmItem.F_INDEX			= i++;
 // task specific
 ZmItem.F_PRIORITY		= i++;
 ZmItem.F_PCOMPLETE		= i++;
+ZmItem.F_COMPLETED		= i++;
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};

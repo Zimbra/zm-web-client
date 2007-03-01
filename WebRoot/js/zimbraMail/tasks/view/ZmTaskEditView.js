@@ -169,7 +169,7 @@ function(width) {
 	this._prioritySelect = new DwtSelect(this);
 	for (var i = 0; i < ZmTaskEditView.PRIORITY_VALUES.length; i++) {
 		var v = ZmTaskEditView.PRIORITY_VALUES[i];
-		this._prioritySelect.addOption(ZmCalItem.getLabelForPriority(v, true, true), i==1, v);
+		this._prioritySelect.addOption(ZmCalItem.getLabelForPriority(v), i==1, v);
 	}
 	this._prioritySelect.reparentHtmlElement(this._htmlElId + "_priority");
 

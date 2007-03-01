@@ -102,6 +102,11 @@ function() {
 	return ZmController.TASKLIST_VIEW;
 };
 
+ZmTaskListController.prototype._getItemType =
+function() {
+	return ZmItem.TASK;
+};
+
 ZmTaskListController.prototype._getViewType =
 function() {
 	return this._currentView;
@@ -183,15 +188,6 @@ function(view) {
 	this._showListRange(view);
 };
 
-ZmTaskListController.prototype._paginate =
-function(view, bPageForward) {
-	var list = this._listView[view].getList();
-	var prevId = bPageForward ? list.get(list.size()-1).id : list.get(0).id;
-	var params = {offset:null, lastId:prevId, lastSortVal:ZmSearch.DATE_DESC};
-	var sc = this._appCtxt.getSearchController();
-	sc.redoSearch(this._activeSearch.search, false, params);
-};
-
 // Delete one or more items.
 ZmTaskListController.prototype._deleteListener =
 function(ev) {
@@ -270,6 +266,12 @@ function(task, mode) {
 	this._app.getTaskController().show(task, mode);
 };
 
+ZmTaskListController.prototype._doCheckCompleted =
+function(task) {
+	// TODO
+//	use task.isComplete()
+};
+
 ZmTaskListController.prototype._showTypeDialog =
 function(task, mode) {
 	if (!this._typeDialog) {
@@ -311,6 +313,8 @@ function(ev) {
 
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED)
 		this._editTask(ev.item);
+	else if (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED])
+		this._doCheckCompleted(ev.item);
 };
 
 ZmTaskListController.prototype._listActionListener =

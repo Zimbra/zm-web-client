@@ -86,10 +86,22 @@ function(task, now, isDndIcon) {
 			? (this._headerList[i]._width + 4)
 			: this._headerList[i]._width;
 
-		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) == 0)
+		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED]) == 0)
 		{
-			// Flags
-			idx = this._getField(htmlArr, idx, task, ZmItem.F_FLAG, i);
+			var cboxIcon = "TaskCheckbox";
+			if (task.isComplete())
+				cboxIcon = "TaskCheckboxCompleted";
+			else if (task.isPastDue())
+				cboxIcon = "TaskCheckboxOverdue";
+
+			// complete checkbox
+			htmlArr[idx++] = "<td id='";
+			htmlArr[idx++] = this._getFieldId(task, id);
+			htmlArr[idx++] = "' width=";
+			htmlArr[idx++] = width;
+			htmlArr[idx++] = "'>";
+			htmlArr[idx++] = AjxImg.getImageHtml(cboxIcon);
+			htmlArr[idx++] = "</td>";
 		}
 		else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) == 0) {
 			// Tags
@@ -99,9 +111,9 @@ function(task, now, isDndIcon) {
 		{
 			// priority
 			idx = this._getTableCell(task, ZmItem.F_PRIORITY, width, htmlArr, idx);
-			htmlArr[idx++] = "<center><b>";
-			htmlArr[idx++] = ZmCalItem.getLabelForPriority(task.priority, true);
-			htmlArr[idx++] = "</b></center></td>";
+			htmlArr[idx++] = "<center>";
+			htmlArr[idx++] = ZmCalItem.getImageForPriority(task);
+			htmlArr[idx++] = "</center></td>";
 		}
 		else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0)
 		{
@@ -230,7 +242,7 @@ function(ev, div) {
 			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY])
 			{
 				var item = this.getItemFromElement(div);
-				this.setToolTipContent(ZmCalItem.getLabelForPriority(item.priority, false, true));
+				this.setToolTipContent(ZmCalItem.getLabelForPriority(item.priority));
 				return true;
 			}
 			else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT] ||
@@ -347,7 +359,7 @@ function(widget, element, id) {
 
 ZmTaskListView.prototype._getTableCell =
 function(task, id, width, htmlArr, idx) {
-	htmlArr[idx++] = "<td style='padding:3px' id='";
+	htmlArr[idx++] = "<td id='";
 	htmlArr[idx++] = this._getFieldId(task, id);
 
 	if (width) {
@@ -372,7 +384,7 @@ function(parent) {
 
 	var hList = [];
 
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, "FlagRed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.flag));
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED], null, "TaskCheckbox", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.completed));
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "MiniTag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));
 	}
@@ -380,7 +392,7 @@ function(parent) {
 	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
 	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null/*, ZmItem.F_SUBJECT*/));
 	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS], ZmMsg.status, null, ZmTaskListView.COL_WIDTH_STATUS));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE], ZmMsg.percentComplete, null, ZmListView.COL_WIDTH_DATE));
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE], ZmMsg.pComplete, null, ZmListView.COL_WIDTH_DATE));
 	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.dateDue, null, ZmListView.COL_WIDTH_DATE));
 
 	return hList;

@@ -1281,26 +1281,26 @@ function(a, b) {
 };
 
 ZmCalItem.getLabelForPriority =
-function(priority, inclExcl, inclText) {
-	var excl = "";
-	var text = "";
-
+function(priority) {
 	switch (priority) {
-		case ZmCalItem.PRIORITY_LOW:
-			if (inclExcl) excl = "!";
-			if (inclText) text = ZmMsg.low;
-			break;
-		case ZmCalItem.PRIORITY_NORMAL:
-			if (inclExcl) excl = "!!";
-			if (inclText) text = ZmMsg.normal;
-			break;
-		case ZmCalItem.PRIORITY_HIGH:
-			if (inclExcl) excl = "!!!";
-			if (inclText) text = ZmMsg.high;
-			break;
+		case ZmCalItem.PRIORITY_LOW:	return ZmMsg.low;
+		case ZmCalItem.PRIORITY_NORMAL: return ZmMsg.normal;
+		case ZmCalItem.PRIORITY_HIGH:	return ZmMsg.high;
+		default: return "";
 	}
+};
 
-	return [excl, text].join(" ");
+ZmCalItem.getImageForPriority =
+function(task) {
+	switch (task.priority) {
+		case ZmCalItem.PRIORITY_LOW:
+			// XXX: replace with down arrow
+			return "<b><font color='blue'>&darr;</font></b>";
+		case ZmCalItem.PRIORITY_HIGH:
+			var icon = task.isPastDue() ? "TaskP1Overdue" : "TaskP1";
+			return AjxImg.getImageHtml(icon);
+		default: return "";
+	}
 };
 
 ZmCalItem.getLabelForStatus =
