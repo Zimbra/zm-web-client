@@ -36,7 +36,7 @@ function ZmVoicemailController(appCtxt, container, app) {
 
 	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
-	this._listeners[ZmOperation.MOVE] = new AjxListener(this, this._moveListener);
+	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
 	this._listeners[ZmOperation.AUTO_PLAY] = new AjxListener(this, this._autoPlayListener);
 }
@@ -102,8 +102,8 @@ function() {
 	var list = [];
 	list.push(ZmOperation.CHECK_MAIL);
 	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.SAVE);
 	list.push(ZmOperation.DELETE);
-	list.push(ZmOperation.MOVE);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.FORWARD);
 	list.push(ZmOperation.SEP);
@@ -115,10 +115,9 @@ function() {
 ZmVoicemailController.prototype._getActionMenuOps =
 function() {
 	var list = [];
-	list.push(ZmOperation.DELETE);
-	list.push(ZmOperation.MOVE);
-	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.FORWARD);
+	list.push(ZmOperation.SAVE);
+	list.push(ZmOperation.DELETE);
 	return list;
 };
 
@@ -157,9 +156,9 @@ function(ev) {
 //	alert('Delete voicemail here');
 };
 
-ZmVoicemailController.prototype._moveListener = 
+ZmVoicemailController.prototype._saveListener = 
 function(ev) {
-//	alert('Move voicemail here');
+//	alert('Save voicemail here');
 };
 
 ZmVoicemailController.prototype._forwardListener = 
@@ -269,4 +268,16 @@ function(event) {
 	if (this._autoPlaying && event.finished) {
 		this._autoPlayNext();
 	}
+};
+
+ZmVoicemailController.prototype._listActionListener =
+function(ev) {
+	ZmListController.prototype._listActionListener.call(this, ev);
+
+	var isVoicemail = this._folder.callType == ZmVoicemailFolder.VOICEMAIL;
+	var actionMenu = this.getActionMenu();
+	actionMenu.getMenuItem(ZmOperation.SAVE).setVisible(isVoicemail);
+	actionMenu.getMenuItem(ZmOperation.FORWARD).setVisible(isVoicemail);
+	
+	this.getActionMenu().popup(0, ev.docX, ev.docY);
 };
