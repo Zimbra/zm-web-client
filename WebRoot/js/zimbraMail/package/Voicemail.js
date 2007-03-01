@@ -13,13 +13,13 @@ AjxPackage.require("ajax.util.AjxPluginDetector");
 AjxPackage.require("ajax.dwt.core.DwtDragTracker");
 
 AjxPackage.require("ajax.dwt.widgets.DwtSlider");
-AjxPackage.require("ajax.dwt.widgets.DwtSoundPlayer");
 AjxPackage.require("ajax.dwt.widgets.DwtSoundPlugin");
 
 AjxPackage.require("zimbraMail.voicemail.model.ZmVoicemail");
 AjxPackage.require("zimbraMail.voicemail.model.ZmVoicemailFolder");
 AjxPackage.require("zimbraMail.voicemail.model.ZmVoicemailList");
 
+AjxPackage.require("zimbraMail.voicemail.view.ZmSoundPlayer");
 AjxPackage.require("zimbraMail.voicemail.view.ZmVoicemailView");
 AjxPackage.require("zimbraMail.voicemail.view.ZmVoicemailTreeView");
 
