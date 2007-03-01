@@ -231,8 +231,7 @@ ZmVoicemailController.prototype._selectListener =
 function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED ||
 		ev.detail == ZmVoicemailView.PLAY_BUTTON_PRESSED) {
-		var selection = ev.dwtObj.getSelection();
-		var url = null;
+		var selection = this._getView().getSelection();
 		if (selection.length == 1) {
 			if (this._autoPlaying) {
 				this._stopAutoPlay();
