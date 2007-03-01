@@ -272,7 +272,7 @@
     </target>
 
     <target name='skin-templates' depends='compile,templates-init'>
-        <copy todir="${build.dir}/WebRoot">
+        <copy todir="${build.dir}/WebRoot" failonerror="false">
             <fileset dir="WebRoot" includes="skins/*/templates/**/*.html" />
             <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="skins/*/templates/**/*.html" />
         </copy>
