@@ -41,9 +41,6 @@ function() {
 
 ZmVoicemailTreeController.prototype._createView =
 function(params) {
-	// Hard-code some folders till we can get them from the server.
-	ZmVoicemailApp._createTreeHACK(this._appCtxt);
-
 	return new ZmVoicemailTreeView(params);
 };
 
@@ -121,5 +118,5 @@ ZmVoicemailTreeController.prototype._itemClicked =
 function(folder) {
 	var controller = AjxDispatcher.run("GetVoicemailController");
 	var searchResult = ZmVoicemailList.searchHACK(this._appCtxt, folder.callType);
-	controller.show(searchResult, folder.callType);
+	controller.show(searchResult, folder);
 };

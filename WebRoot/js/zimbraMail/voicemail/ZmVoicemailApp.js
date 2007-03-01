@@ -127,8 +127,11 @@ function(callback) {
 ZmVoicemailApp.prototype._handleLoadLaunch =
 function(callback) {
 	var voicemailController = AjxDispatcher.run("GetVoicemailController");
+	// Hard-code some folders till we can get them from the server.
+	ZmVoicemailApp._createTreeHACK(this._appCtxt);
+
 	var searchResuts = ZmVoicemailList.searchHACK(this._appCtxt, ZmVoicemailFolder.VOICEMAIL);
-	voicemailController.show(searchResuts, ZmVoicemailFolder.VOICEMAIL);
+	voicemailController.show(searchResuts, ZmVoicemailApp._startFolder);
 	
 	if (callback) {
 		callback.run();
@@ -162,6 +165,7 @@ function(list) {
 ZmVoicemailApp._createTreeHACK =
 function(appCtxt) {
 	var root1 = ZmVoicemailApp.treeHACK(appCtxt, ZmOrganizer.VOICEMAIL, "Primary (650) 123-4567");
+	ZmVoicemailApp._startFolder = root1.getChild("voicemail");
 	ZmVoicemailApp.treeHACK(appCtxt, '2222', "Sally (858) 234-1234");
 	ZmVoicemailApp.treeHACK(appCtxt, '4444', "Billy (858) 234-0987");
 };
@@ -213,5 +217,6 @@ function(appCtxt, baseId, accountName) {
 	var folderTree = appCtxt.getFolderTree();
 	var folder = ZmFolderTree.createFromJs(folderTree.root, jsonObj, folderTree, "folder");
 	folderTree.root.children.add(folder);
+	return folder;
 };
 

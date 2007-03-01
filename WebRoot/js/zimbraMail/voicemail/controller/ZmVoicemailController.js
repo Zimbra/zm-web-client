@@ -57,11 +57,11 @@ function() {
 * Displays the given search results.
 *
 * @param search		search results (which should contain a list of conversations)
-* @param callType	The type of call. See constants in ZmVoicemailFolder
+* @param folder		The folder being shown
 */
 ZmVoicemailController.prototype.show =
-function(searchResult, callType) {
-	this._callType = callType;
+function(searchResult, folder) {
+	this._folder = folder;
 	ZmListController.prototype.show.call(this, searchResult);
 	this._list = searchResult.getResults(ZmItem.VOICEMAIL);
 	this._setup(this._currentView);
@@ -93,7 +93,7 @@ function(viewId) {
 	}
 	var view = this._listView[viewId];
 	view.setPlaying(null);
-	view.setCallType(this._callType);
+	view.setCallType(this._folder.callType);
 	view.set(this._list, ZmItem.F_DATE);
 };
 
@@ -143,9 +143,8 @@ function(view) {
 ZmVoicemailController.prototype._resetOperations = 
 function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
-	var canPlay = (this._callType == ZmVoicemailFolder.VOICEMAIL) && !this._soundPlayer.isPluginMissing();
 	parent.enable(ZmOperation.CHECK_MAIL, true);
-	parent.enable(ZmOperation.AUTO_PLAY, canPlay);
+	parent.enable(ZmOperation.AUTO_PLAY, this._folder && this._folder.numUnread && !this._soundPlayer.isPluginMissing());
 };
 
 ZmVoicemailController.prototype._refreshListener = 
