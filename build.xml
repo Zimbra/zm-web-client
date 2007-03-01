@@ -242,17 +242,53 @@
 		<available property='i18n-done' file='${build.dir}/i18n/msgs/I18nMsg.properties' />
 	</target>
 	
-    <target name='templates' depends='compile'>
+    <target name='templates' depends='compile,templates-init'>
+        <antcall target="compile-template">
+            <param name="odir" value="${build.dir}/WebRoot/js/ajax" />
+            <param name="prefix" value="ajax" />
+            <param name="idir" value="${ajax.dir}/WebRoot/js" />
+            <param name="includes" value="**/templates/**/*.html" />
+        </antcall>
+        <antcall target="compile-template">
+            <param name="odir" value="${build.dir}/WebRoot/js" />
+            <param name="prefix" value="" />
+            <param name="idir" value="WebRoot/js" />
+            <param name="includes" value="**/templates/**/*.html" />
+        </antcall>
+        <antcall target="skin-templates" />
+    </target>
+
+    <target name='templates-init'>
         <taskdef name='template'
                  classname='com.zimbra.kabuki.tools.templates.TemplateTask'
                  classpath='${build.dir}/classes'
         />
-        <template destdir='${build.dir}/WebRoot/js/ajax' prefix='ajax'>
-            <fileset dir='${ajax.dir}/WebRoot/js' includes='**/templates/**/*.html'/>
+    </target>
+
+    <target name='compile-template'>
+        <template destdir='${odir}' prefix='${prefix}'>
+            <fileset dir='${idir}' includes='${includes}' />
         </template>
-        <template destdir='${build.dir}/WebRoot/js'>
-            <fileset dir='WebRoot/js' includes='**/templates/**/*.html'/>
-        </template>
+    </target>
+
+    <target name='skin-templates' depends='compile,templates-init'>
+        <copy todir="${build.dir}/WebRoot">
+            <fileset dir="WebRoot" includes="skins/*/templates/**/*.html" />
+            <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="skins/*/templates/**/*.html" />
+        </copy>
+        <dirset id='skin.template.dirset' dir='${build.dir}/WebRoot' includes='skins/*/templates' />
+        <pathconvert property='skin.template.dirs' refid='skin.template.dirset' pathsep=',' />
+        <echo>dirs: ${skin.template.dirs}</echo>
+        <foreach target='skin-template' list='${skin.template.dirs}' param='dir' />
+    </target>
+
+    <target name='skin-template'>
+        <antcall target="compile-template">
+            <param name="odir" value="${dir}" />
+            <param name="prefix" value="skin.templates" />
+            <param name="idir" value="${dir}" />
+            <param name="includes" value="**/*.html" />
+        </antcall>
     </target>
 
   <target name="jam-files" depends="compile,copy-files-to-build-area">

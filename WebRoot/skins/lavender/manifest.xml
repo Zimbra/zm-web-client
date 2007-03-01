@@ -5,7 +5,7 @@
 		<file>skin.properties</file>
 	</substitutions>
 	<css>
-		<file>../_base/base/base.skin</file>
+		<file>../_base/base/skin.css</file>
 	</css>
     <script>
         <file>../_base/base/ZmSkin.js</file>
