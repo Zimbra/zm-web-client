@@ -26,12 +26,12 @@
 
 <c:if test="${not empty src}">
     <td height=100% nowrap valign=middle style='padding: 0 2px 0 2px'>
-        <input  <c:if test="${disabled}">disabled </c:if> name="${name}" type="image" src="${src}" <c:if test="${not empty tooltip}">alt="${fn:escapeXml(tooltip)}" </c:if> <c:if test="${not empty clazz}">class='${clazz}'</c:if>>
+        <input  <c:if test="${disabled}">disabled </c:if> name="${name}" type="image" src="${src}" <c:if test="${not empty tooltip}">alt="${fn:escapeXml(tooltip)}" title="${fn:escapeXml(tooltip)}" </c:if> <c:if test="${not empty clazz}">class='${clazz}'</c:if>>
     </td>
 </c:if>
 <c:if test="${not empty text}">
     <td height=100% nowrap valign=middle style='padding: 0 2px 0 2px'>
-        <input <c:if test="${disabled}">disabled </c:if> name="${name}" type="submit" value="${fn:escapeXml(text)}">
+        <input <c:if test="${disabled}">disabled </c:if> name="${name}" type="submit" value="${fn:escapeXml(text)}"  <c:if test="${not empty tooltip}">title="${fn:escapeXml(tooltip)}"</c:if>>
     </td>
 </c:if>
     
