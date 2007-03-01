@@ -2770,6 +2770,48 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmPlayButton-focused						{	@PlayButton-focused@	}
 .ZmPlayButton-hidden						{	@PlayButton-hidden@		}
 
+/*************
+ *
+ *	Sound player
+ *
+ *************/
+
+
+.ZmSoundPlayer {
+	
+}
+
+.DwtMissingSoundPlayer { 
+	background-color: #ffffcc;
+	color:darkred;
+	text-decoration: underline;
+	cursor: pointer;
+}
+/* Size issues...
+.ZmSoundPlayer .DwtButton,
+.ZmSoundPlayer .ZButton {
+	width:30px; min-width:30px;
+}
+*/
+
+.ZmSoundPlayer .ZButton .ZLeftIcon  DIV {
+	margin-left:5px;
+	margin-right:5px;
+}
+.ZmSoundPlayer .ZButton .ZWidgetTitle {
+	padding:0px;
+}
+
+.ZmSoundPlayer .DwtPositionSlider	{	margin:0 2 0 2;		}
+.DwtMenu .DwtVolumeSlider			{	height:80px;	}
+
+.ZmSoundPlayer .DwtPlayButton 		{	margin:0 2 0 2;		}
+.ZmSoundPlayer .DwtPauseButton 	{	margin:0 2 0 2;		}
+.ZmSoundPlayer .DwtVolumeButton 	{	margin:0 2 0 2;		}
+
+
+
+
 .ZmPortlet {
   width: 100%;
   height: 100%;

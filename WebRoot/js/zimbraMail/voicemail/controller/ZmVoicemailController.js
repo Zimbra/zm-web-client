@@ -130,7 +130,7 @@ function(view) {
 		var autoPlayButton = this._toolbar[view].getButton(ZmOperation.AUTO_PLAY);
 		autoPlayButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
 		
-		this._soundPlayer = new DwtSoundPlayer(this._toolbar[view]);
+		this._soundPlayer = new ZmSoundPlayer(this._toolbar[view]);
 		if (this._soundPlayer.isPluginMissing()) {
 			this._soundPlayer.addHelpListener(new AjxListener(this, this._pluginHelpListener));
 		} else {
