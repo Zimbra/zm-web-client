@@ -72,7 +72,7 @@ ZmNotebookItem.prototype.getRestUrl = function(dontIncludeThisName) {
 	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var notebook = tree.getById(this.folderId);
 	if (notebook) {
-		url = url.replace(/^.*(\/[^\/]+)$/, notebook.getRestUrl()+"$1");
+		url = url.replace(/^.*\/([^\/]+)$/, notebook.getRestUrl()+"$1");
 	}
 
 	if (dontIncludeThisName) {
