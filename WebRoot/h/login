@@ -7,54 +7,46 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <fmt:setBundle basename="/msgs/ZhMsg" scope="request"/>
-<c:choose>
-    <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
-        <c:set var="errorCode" value="account.CHANGE_PASSWORD"/>
-        <fmt:message var="errorMessage" key="bothNewPasswordsMustMatch"/>
-    </c:when>
-    <c:when test="${param.loginOp eq 'relogin'}">
-        <zm:logout/>
-        <c:set var="errorCode" value="${param.loginErrorCode}"/>
-        <fmt:message var="errorMessage" key="${errorCode}"/>
-    </c:when>
-    <c:when test="${param.loginOp eq 'logout' || param.loginOp eq 'relogin'}">
-        <zm:logout/>
-    </c:when>
-    <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
-        <c:catch var="loginException">
-            <zm:login username="${param.username}" password="${param.password}"
-                    newpassword="${param.loginNewPassword}" rememberme="${param.loginRememberme == 'on'}"/>
-            <c:set var="postLoginUrl" value="${zm:getPostLoginRedirectUrl(pageContext, '/h/search')}"/>
-            <c:choose>
-                <c:when test="${empty postLoginUrl}">
-                    <c:set var="loginUrl" value="/h/search"/>
-                </c:when>
-                <c:otherwise>
-                    <c:url var="loginUrl" value="${postLoginUrl}"/>
-                </c:otherwise>
-            </c:choose>
-            <c:redirect url="${loginUrl}"/>
-        </c:catch>
-        <c:if test="${loginException != null}">
-            <zm:getException var="error" exception="${loginException}"/>
-            <c:set var="errorCode" value="${error.code}"/>
-            <fmt:message var="errorMessage" key="${errorCode}"/>
-        </c:if>
-    </c:when>
 
+<c:catch var="loginException">
+    <c:choose>
+        <c:when test="${(not empty param.loginNewPassword or not empty param.loginConfirmNewPassword) and (param.loginNewPassword ne param.loginConfirmNewPassword)}">
+            <c:set var="errorCode" value="account.CHANGE_PASSWORD"/>
+            <fmt:message var="errorMessage" key="bothNewPasswordsMustMatch"/>
+        </c:when>
+        <c:when test="${param.loginOp eq 'relogin'}">
+            <zm:logout/>
+            <c:set var="errorCode" value="${param.loginErrorCode}"/>
+            <fmt:message var="errorMessage" key="${errorCode}"/>
+        </c:when>
+        <c:when test="${param.loginOp eq 'logout' || param.loginOp eq 'relogin'}">
+            <zm:logout/>
+        </c:when>
+        <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
+            <zm:login username="${param.username}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
+                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"/>
+            <c:if test="${empty postLoginUrl}"><c:set var="postLoginUrl" value="/h/search"/></c:if>
+            <c:redirect url="${postLoginUrl}"/>
+    </c:when>
     <c:otherwise>
         <%-- try and use existing cookie if possible --%>
-        <c:catch>
-            <zm:getMailbox var="mailbox"/>
-            <c:redirect url="/h/search"/>
-        </c:catch>
-        <c:if test="${loginException != null}">
-            <zm:getException var="error" exception="${loginException}"/>
-            <c:set var="errorCode" value="${error.code}"/>
-            <fmt:message var="errorMessage" key="${errorCode}"/>
+        <c:set var="authtoken" value="${not empty param.zauthtoken ? param.zauthtoken : cookie.ZM_AUTH_TOKEN.value}"/>
+        <c:if test="${not empty authtoken}">
+            <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
+                      varRedirectUrl="postLoginUrl" varAuthResult="authResult"
+                      rememberme="${param.zrememberme == '1'}"/>
+            <c:if test="${empty postLoginUrl}"><c:set var="postLoginUrl" value="/h/search"/></c:if>
+            <c:redirect url="${postLoginUrl}"/>
         </c:if>
     </c:otherwise>
-</c:choose>
+    </c:choose>
+</c:catch>
+
+<c:if test="${loginException != null}">
+    <zm:getException var="error" exception="${loginException}"/>
+    <c:set var="errorCode" value="${error.code}"/>
+    <fmt:message var="errorMessage" key="${errorCode}"/>
+</c:if>
 
 <c:set var="loginRedirectUrl" value="${zm:getPreLoginRedirectUrl(pageContext, '/h/login')}"/>
 <c:if test="${not empty loginRedirectUrl}"><c:redirect url="${loginRedirectUrl}"/></c:if>
@@ -157,7 +149,7 @@
                                             <td>
                                                 <table width=100%>
                                                     <tr>
-                                                        <td><input type=checkbox name='loginRememberme' /></td>
+                                                        <td><input value="1" type=checkbox name='zrememberme' /></td>
                                                         <td class='zLoginCheckboxLabelContainer'><fmt:message
                                                                 key="rememberMe"/></td>
                                                     </tr>

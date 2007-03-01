@@ -11,6 +11,9 @@
 <c:if test="${!empty actionException}">
     <zm:getException var="error" exception="${actionException}"/>
     <c:choose>
+        <c:when test="${error.code eq 'ztaglib.SERVER_REDIRECT'}">
+            <c:redirect url="${not empty requestScope.SERVIER_REDIRECT_URL ? requestScope.SERVIER_REDIRECT_URL : '/h/login'}"/>
+        </c:when>
         <c:when test="${error.code eq 'service.AUTH_EXPIRED' or error.code eq 'service.AUTH_REQUIRED'}">
             <c:redirect url="/h/login?loginOp=relogin&loginErrorCode=${error.code}"/>
         </c:when>
