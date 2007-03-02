@@ -119,7 +119,7 @@ function(enabled) {
 ZmToolBar.prototype.createButton =
 function(id, params, index) {
 	var className = params.className || "DwtToolbarButton";
-	var b = this._buttons[id] = new DwtButton(this, params.style, className, null, null, null, params.index);
+	var b = this._buttons[id] = this._createButton(params, className);
 	if (params.image) {
 		b.setImage(params.image);
 	}
@@ -136,6 +136,14 @@ function(id, params, index) {
 	b.setData("_buttonId", id);
 
 	return b;
+};
+
+//
+// Protected methods
+//
+
+ZmToolBar.prototype._createButton = function(params, className) {
+    return new DwtButton(this, params.style, className, null, null, null, params.index);
 };
 
 ZmToolBar.prototype._createSeparator =

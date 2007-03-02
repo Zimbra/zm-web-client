@@ -1055,7 +1055,7 @@ function(tb) {
 	var s = new DwtButton(tb, null, "DwtToolbarButton");
 	// minor hack to set section symbol - avoids d/l'ing an icon :]
 	s.setText("x");
-	s._textCell.innerHTML = "<span style='font-size:13px'>&sect;</span>";
+    s._textEl.innerHTML = "<span style='font-size:13px'>&sect;</span>";
 	s.setToolTipContent(ZmMsg.sections);
 	s.dontStealFocus();
 	var menu = this._styleMenu = new ZmPopupMenu(s);

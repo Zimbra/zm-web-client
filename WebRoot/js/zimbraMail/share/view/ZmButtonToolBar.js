@@ -44,10 +44,10 @@
 function ZmButtonToolBar(params) {
 	if (arguments.length == 0) return;
 
-	var className = params.className || "ZmAppToolBar";
+    var className = params.className || "ZToolbar";
 	ZmToolBar.call(this, params.parent, className, params.posStyle);
 	
-	this._buttonStyle = params.buttonClassName ? params.buttonClassName : "DwtToolbarButton";
+	this._buttonStyle = params.buttonClassName ? params.buttonClassName : "ZToolbarButton";
 
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
@@ -139,10 +139,42 @@ function() {
 	}
 };
 
+//
+// Protected methods
+//
+
+ZmButtonToolBar.prototype._createButton = function(params, className) {
+    return new ZmToolBarButton(this, params.style, className, null, null, null, params.index);
+};
+
+//
 // Private methods
+//
 
 // Returns the ID for the given button.
 ZmButtonToolBar.prototype._buttonId =
 function(button) {
 	return button.getData(ZmOperation.KEY_ID);
+};
+
+//
+// Classes
+//
+
+function ZmToolBarButton(parent, className, posStyle /*, ... */) {
+    DwtButton.apply(this, arguments);
+}
+ZmToolBarButton.prototype = new DwtButton;
+ZmToolBarButton.prototype.constructor = ZmToolBarButton;
+
+ZmToolBarButton.prototype.toString = function() {
+    return "ZmToolBarButton";
+};
+
+// Protected methods
+
+ZmToolBarButton.prototype._createHtml = function() {
+    var templateId = "ajax.dwt.templates.Widgets#ZToolbarButton";
+    var data = { id: this._htmlElId };
+    this._createHtmlFromTemplate(templateId, data);
 };
