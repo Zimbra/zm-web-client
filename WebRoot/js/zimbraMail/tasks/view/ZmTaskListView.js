@@ -28,9 +28,6 @@ function ZmTaskListView(parent, controller, dropTgt) {
 
 	var headerList = this._getHeaderList(parent);
 	ZmListView.call(this, parent, null, Dwt.ABSOLUTE_STYLE, ZmController.TASKLIST_VIEW, ZmItem.TASK, controller, headerList, dropTgt);
-
-	// XXX: temp to turn inline editing on/off
-	this._INLINE_EDIT_ENABLED = false;
 };
 
 ZmTaskListView.prototype = new ZmListView;
@@ -39,7 +36,6 @@ ZmTaskListView.prototype.constructor = ZmTaskListView;
 
 // Consts
 ZmTaskListView.COL_WIDTH_STATUS		= 145;
-
 ZmTaskListView.KEY_ID				= "_keyId";
 
 
@@ -61,8 +57,61 @@ function(x, y, width, height) {
 	this._resetColWidth();
 };
 
+ZmTaskListView.prototype.saveNewTask =
+function(keepFocus) {
+	if (this._newTaskInputEl && Dwt.getVisibility(this._newTaskInputEl)) {
+		var name = AjxStringUtil.trim(this._newTaskInputEl.value);
+		if (name != "") {
+			DBG.println("TODO");
+		}
+
+		if (keepFocus) {
+			this._newTaskInputEl.value = "";
+			this._newTaskInputEl.focus();
+		} else {
+			Dwt.setVisibility(this._newTaskInputEl, false);
+		}
+	}
+};
+
 
 // Private Methods
+
+ZmTaskListView.prototype._renderList =
+function(list, noResultsOk) {
+	this._newTaskId = Dwt.getNextId();
+	var div = document.createElement("DIV");
+
+	var htmlArr = [];
+	var idx = 0;
+
+	htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='newTaskBannerSep'><tr>";
+	for (var i = 0; i < this._headerList.length; i++) {
+		if (!this._headerList[i]._visible)
+			continue;
+
+		var id = this._headerList[i]._id;
+		var width = this._headerList[i]._width;
+
+		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0)
+		{
+			htmlArr[idx++] = "<td><div class='newTaskBanner' id='";
+			htmlArr[idx++] = this._newTaskId;
+			htmlArr[idx++] = "' onclick='ZmTaskListView._handleOnClick(this)'>";
+			htmlArr[idx++] = ZmMsg.createNewTaskHint;
+			htmlArr[idx++] = "</div></td>";
+		} else {
+			htmlArr[idx++] = "<td width=";
+			htmlArr[idx++] = width;
+			htmlArr[idx++] = ">&nbsp;</td>";
+		}
+	}
+	htmlArr[idx++] = "</tr></table>";
+	div.innerHTML = htmlArr.join("");
+	this._addRow(div);
+
+	ZmListView.prototype._renderList.call(this, list, noResultsOk);
+};
 
 ZmTaskListView.prototype._createItemHtml =
 function(task, now, isDndIcon) {
@@ -217,13 +266,14 @@ function() {
 		var actionListener = new AjxListener(this, this._colHeaderActionListener);
 		for (var i = 0; i < this._headerList.length; i++) {
 			var hCol = this._headerList[i];
-			// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
-			if (hCol._width) {
-				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
-				mi.setData(ZmTaskListView.KEY_ID, hCol._id);
-				mi.setChecked(true, true);
-				this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
-			}
+
+			if (hCol._id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0)
+				continue;
+
+			var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
+			mi.setData(ZmTaskListView.KEY_ID, hCol._id);
+			mi.setChecked(true, true);
+			this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
 		}
 	}
 	return this._colHeaderActionMenu;
@@ -259,122 +309,45 @@ function(ev, div) {
 	ZmListView.prototype._mouseOverAction.call(this, ev, div);
 };
 
-ZmTaskListView.prototype._showInlineWidget =
-function(cell, show) {
-	var inlineId = cell ? Dwt.getAttr(cell, "_inlineId") : null;
-	var widget = inlineId ? this._getInlineWidget(inlineId) : null;
-	if (!widget) return;
-
-	if (widget instanceof DwtControl) {
-		widget.setVisibility(show);
-		if (show) {
-			Dwt.setHandler(widget.getHtmlElement(), DwtEvent.ONMOUSEOUT, ZmTaskListView._handleWidgetMouseOut);
-		}
-	} else if (widget.tagName) {
-		Dwt.setVisibility(widget, show);
-		if (show) {
-			Dwt.setHandler(widget, DwtEvent.ONMOUSEOUT, ZmTaskListView._handleWidgetMouseOut);
-		}
-	}
-
-	if (show) {
-		this._setBoundsForActiveWidget(widget, cell, inlineId);
-		this._setValueForActiveWidget(widget, cell, inlineId);
-	}
-};
-
-ZmTaskListView.prototype._getInlineWidget =
-function(id) {
-	if (!this._INLINE_EDIT_ENABLED)
-		return false;
-
-	if (id == ZmTaskListView.ID_SUBJECT)
-	{
-		if (!this._subjectInput) {
-			this._subjectInput = document.createElement("input");
-			this._subjectInput.type = "text";
-			this._subjectInput.className = "InlineWidget";
-			this.shell.getHtmlElement().appendChild(this._subjectInput);
-		}
-		return this._subjectInput;
-	}
-	else if (id == ZmTaskListView.ID_PERCENT_COMPLETE)
-	{
-		if (!this._pCompleteSelect) {
-			this._pCompleteSelect = new DwtSelect(this.shell, null, "InlineWidget");
-			for (var i = 0; i <= 100; i += 10) {
-				this._pCompleteSelect.addOption((i+"%"), i==0, i);
-			}
-		}
-		return this._pCompleteSelect;
-	}
-	else
-	{
-		return false;
-	}
-};
-
-ZmTaskListView.prototype._setBoundsForActiveWidget =
-function(widget, element, id) {
-	var bounds = element ? Dwt.getBounds(element) : null;
-	if (!bounds) return;
-
-	// fudge factor for selected listview item
-	var selection = this.getSelection();
-	var taskId = Dwt.getAttr(element, "_taskId");
-	if (selection.length > 1 || selection[0].id != taskId)
-		bounds.y -= 2;
-
-	if (widget instanceof DwtControl)
-	{
-		widget.setPosition(DwtControl.ABSOLUTE_STYLE);
-		widget.setScrollStyle(Dwt.CLIP);
-		widget.setBounds(bounds.x, bounds.y, bounds.width, Dwt.DEFAULT);
-	}
-	else if (widget.tagName)
-	{
-		Dwt.setPosition(widget, Dwt.ABSOLUTE_STYLE);
-		Dwt.setBounds(widget, bounds.x, bounds.y, bounds.width, Dwt.DEFAULT);
-	}
-
-	// DwtSelect sucks.
-	if (id == ZmTaskListView.ID_PERCENT_COMPLETE) {
-		widget.setSize(Dwt.DEFAULT, "24");
-	}
-};
-
-ZmTaskListView.prototype._setValueForActiveWidget =
-function(widget, element, id) {
-	if (id == ZmTaskListView.ID_SUBJECT)
-	{
-		// XXX: this is $$$ - need to cache!
-		widget.value = AjxStringUtil.trim(AjxStringUtil.convertHtml2Text(element));
-	}
-	else if (id == ZmTaskListView.ID_PERCENT_COMPLETE)
-	{
-		// TODO
-		// activeEl.setValue();
-	}
-};
-
 ZmTaskListView.prototype._getTableCell =
 function(task, id, width, htmlArr, idx) {
 	htmlArr[idx++] = "<td id='";
 	htmlArr[idx++] = this._getFieldId(task, id);
-
 	if (width) {
 		htmlArr[idx++] = "' width=";
 		htmlArr[idx++] = width;
 	}
-
-	htmlArr[idx++] = " _inlineId='";
-	htmlArr[idx++] = id;
-	htmlArr[idx++] = "'";
-	htmlArr[idx++] = " _taskId='";
-	htmlArr[idx++] = task.id;
-	htmlArr[idx++] = "' onmouseover='ZmTaskListView._handleMouseOver(this, true)'>";
+	htmlArr[idx++] = ">";
 
 	return idx;
+};
+
+ZmTaskListView.prototype._handleNewTaskClick =
+function(el) {
+	if (!this._newTaskInputEl) {
+		this._newTaskInputEl = document.createElement("INPUT");
+		this._newTaskInputEl.type = "text";
+		this._newTaskInputEl.className = "InlineWidget";
+		this._newTaskInputEl.style.position = "absolute";
+
+		Dwt.setHandler(this._newTaskInputEl, DwtEvent.ONBLUR, ZmTaskListView._handleOnBlur);
+		Dwt.setHandler(this._newTaskInputEl, DwtEvent.ONKEYPRESS, ZmTaskListView._handleKeyPress);
+		this.shell.getHtmlElement().appendChild(this._newTaskInputEl);
+
+		var bounds = Dwt.getBounds(el);
+		Dwt.setBounds(this._newTaskInputEl, bounds.x, bounds.y, bounds.width, bounds.height);
+	} else {
+		this._newTaskInputEl.value = "";
+	}
+	Dwt.setVisibility(this._newTaskInputEl, true);
+	this._newTaskInputEl.focus();
+};
+
+
+ZmTaskListView.prototype._handleColHeaderResize =
+function(ev) {
+	ZmListView.prototype._handleColHeaderResize(this, ev);
+	this._newTaskInputEl = null;
 };
 
 ZmTaskListView.prototype._getHeaderList =
@@ -443,22 +416,36 @@ function(ev) {
 
 // Static Methods
 
-ZmTaskListView._handleMouseOver =
-function(cell, isMouseOver) {
-//DBG.println("ZmTaskListView._handleMouseOver " + cell.id);
+ZmTaskListView._handleOnClick =
+function(div) {
 	var appCtxt = window.parentController
 		? window.parentController._appCtxt
 		: window._zimbraMail._appCtxt;
 
 	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
-	tlv._showInlineWidget(cell, isMouseOver);
+	tlv._handleNewTaskClick(div);
 };
 
-
-ZmTaskListView._handleWidgetMouseOut =
+ZmTaskListView._handleOnBlur =
 function(ev) {
-	if (ev.target.tagName) {
-//		DBG.println("ZmTaskListView._handleWidgetMouseOut " + ev.target.tagName);
-		Dwt.setVisibility(ev.target, false);
+	var appCtxt = window.parentController
+		? window.parentController._appCtxt
+		: window._zimbraMail._appCtxt;
+
+	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
+	tlv.saveNewTask();
+};
+
+ZmTaskListView._handleKeyPress =
+function(ev) {
+	var key = DwtKeyEvent.getCharCode(ev);
+
+	if (key == DwtKeyEvent.KEY_ENTER) {
+		var appCtxt = window.parentController
+			? window.parentController._appCtxt
+			: window._zimbraMail._appCtxt;
+
+		var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
+		tlv.saveNewTask(true);
 	}
 };

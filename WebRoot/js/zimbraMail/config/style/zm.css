@@ -741,6 +741,16 @@ td.DDSepInvisible div {
 	@WidgetHeaderSize-big@
 }
 
+.newTaskBanner {
+	color: rgb(120, 111, 91);
+	cursor: default;
+	padding: 5 0 5 0;
+}
+
+.newTaskBannerSep {
+	border-bottom: 2px solid #AAAAAA;
+}
+
 .ZmContactInfoView .contactHeader,
 .ZmContactView .contactHeader,
 .ZmTaskEditView .contactHeader {
@@ -926,7 +936,6 @@ td.DDSepInvisible div {
  */
 .InlineWidget {
 	z-index: 300;
-	visibility: hidden;
 	overflow: hidden;
 }
 

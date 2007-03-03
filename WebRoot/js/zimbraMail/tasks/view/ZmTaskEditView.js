@@ -213,6 +213,12 @@ ZmTaskEditView.prototype._cacheFields =
 function() {
 	ZmCalItemEditView.prototype._cacheFields.call(this);
 	this._statusCheckbox = document.getElementById(this._statusCheckboxId);
+
+	// HACK: hide all recurrence-related fields until tasks supports it
+	this._repeatSelect.setVisibility(false);
+	var repeatLabel = document.getElementById(this._htmlElId + "_repeatLabel");
+	Dwt.setVisibility(repeatLabel, false);
+	Dwt.setVisibility(this._repeatDescField, false);
 };
 
 // Returns a string representing the form content

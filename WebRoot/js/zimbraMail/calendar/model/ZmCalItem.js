@@ -552,7 +552,7 @@ function(message, viewMode) {
 
 	// record whether the start/end dates are in UTC
 	this.startsInUTC = start ? start.charAt(start.length-1) == "Z" : null;
-	this.endsInUTC = end ? end.charAt(start.length-1) == "Z" : null;
+	this.endsInUTC = end && start ? end.charAt(start.length-1) == "Z" : null;
 
 	// record timezone if given, otherwise, guess
     var serverId = !this.startsInUTC && message.invite.getServerStartTimeTz();
