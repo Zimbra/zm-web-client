@@ -611,6 +611,7 @@ function(action) {
 	var overrides = {};
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
+		if (op == ZmOperation.SEP) { continue; }
 		overrides[op] = {};
 		var style = (op == ZmOperation.SHOW_BCC) ? DwtMenuItem.CHECK_STYLE : DwtMenuItem.RADIO_STYLE;
 		overrides[op].style = style;

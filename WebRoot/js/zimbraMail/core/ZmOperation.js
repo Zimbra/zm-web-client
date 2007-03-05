@@ -207,21 +207,25 @@ function(parent, operations, overrides) {
 * can be defined by passing its properties in a hash.
 *
 * @param baseId		[string]*		ID of an existing operation
-* @param op			[hash]*			properties for the new operation
+* @param overrides	[hash]*			property overrides for the operation
 */
 ZmOperation.defineOperation =
-function(baseId, op) {
-	var id = (op && op.id) ? op.id : baseId ? baseId : Dwt.getNextId();
-	op = op ? op : {};
-	var textKey = ZmOperation.getProp(baseId, "textKey", op);
+function(baseId, overrides) {
+	var id = (overrides && overrides.id) ? overrides.id : baseId ? baseId : Dwt.getNextId();
+	var textKey = ZmOperation.getProp(baseId, "textKey");
 	var text = textKey ? ZmMsg[textKey] : null;
-	var tooltipKey = ZmOperation.getProp(baseId, "tooltipKey", op);
+	var tooltipKey = ZmOperation.getProp(baseId, "tooltipKey");
 	var tooltip = tooltipKey ? ZmMsg[tooltipKey] : null;
-	var image = ZmOperation.getProp(baseId, "image", op);
-	var disImage = ZmOperation.getProp(baseId, "disImage", op);
-	var enabled = (op.enabled !== false);
+	var image = ZmOperation.getProp(baseId, "image");
+	var disImage = ZmOperation.getProp(baseId, "disImage");
+	var enabled = (overrides && (overrides.enabled !== false));
 
 	var opDesc = {id:id, text:text, image:image, disImage:disImage, enabled:enabled, tooltip:tooltip};
+	if (overrides) {
+		for (var i in overrides) {
+			opDesc[i] = overrides[i];
+		}
+	}
 	ZmOperation._operationDesc[id] = opDesc;
 	
 	return opDesc;
@@ -232,22 +236,15 @@ function(baseId, op) {
 *
 * @param id		[string]		operation ID
 * @param prop	[string]		name of an operation property
-* @param op		[hash]*			operation property overrides
 */
 ZmOperation.getProp =
-function(id, prop, op) {
+function(id, prop) {
 	var value = null;
-	if (op && (op[prop] == ZmOperation.NONE)) {
-		return null;
-	}
-	value = op ? op[prop] : null;
-	if (!value) {
-		var setup = ZmOperation.SETUP[id];
-		if (setup) {
-			value = setup[prop];
-			if (!value && (prop == "disImage") && setup.image) {
-				value = setup.image + ZmOperation.DIS;
-			}
+	var setup = ZmOperation.SETUP[id];
+	if (setup) {
+		value = setup[prop];
+		if (!value && (prop == "disImage") && setup.image) {
+			value = setup.image + ZmOperation.DIS;
 		}
 	}
 
