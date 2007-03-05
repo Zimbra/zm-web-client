@@ -248,12 +248,14 @@
             <param name="prefix" value="ajax" />
             <param name="idir" value="${ajax.dir}/WebRoot/js" />
             <param name="includes" value="**/templates/**/*.html" />
+            <param name="authoritative" value="false" />
         </antcall>
         <antcall target="compile-template">
             <param name="odir" value="${build.dir}/WebRoot/js" />
             <param name="prefix" value="" />
             <param name="idir" value="WebRoot/js" />
             <param name="includes" value="**/templates/**/*.html" />
+            <param name="authoritative" value="false" />
         </antcall>
         <antcall target="skin-templates" />
     </target>
@@ -266,7 +268,7 @@
     </target>
 
     <target name='compile-template'>
-        <template destdir='${odir}' prefix='${prefix}'>
+        <template destdir='${odir}' prefix='${prefix}' authoritative="${authoritative}">
             <fileset dir='${idir}' includes='${includes}' />
         </template>
     </target>
@@ -288,6 +290,8 @@
             <param name="prefix" value="skin.templates" />
             <param name="idir" value="${dir}" />
             <param name="includes" value="**/*.html" />
+            <!-- skin templates always override -->
+            <param name="authoritative" value="true" />
         </antcall>
     </target>
 
