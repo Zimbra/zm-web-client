@@ -84,7 +84,7 @@ ZmNotebookCache.prototype.fillCache =
 function(folderId, callback, errorCallback) {
 	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	/***
-	var notebook = tree.getById(folderId);
+	var notebook = this._appCtxt.getById(folderId);
 	var path = notebook.getSearchPath();
 	var search = 'in:"'+path+'"';
 	/***/
@@ -365,13 +365,12 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 	}
 
 	// link: /Foo/Bar
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var notebook = null;
 	if (link.match(/^\//)) {
 		// TODO: Handle case where current folder owner is not me
 		//       because absolute paths should be relative to where
 		//       the link was followed. [Q] Should they?
-		notebook = tree.getById(ZmOrganizer.ID_ROOT);
+		notebook = this._appCtxt.getById(ZmOrganizer.ID_ROOT);
 		link = link.substr(1);
 	}
 	if (!notebook) {
@@ -379,7 +378,7 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 		var controller = app.getNotebookController();
 		var currentPage = controller.getPage();
 		var folderId = (currentPage && currentPage.folderId) || ZmOrganizer.ID_NOTEBOOK;
-		notebook = tree.getById(folderId);
+		notebook = this._appCtxt.getById(folderId);
 	}
 
 	// link: Foo/Bar
@@ -489,8 +488,7 @@ ZmNotebookCache.prototype.makeProxyPage = function(page, folderId) {
 
 ZmNotebookCache.prototype._fillCacheResponse = 
 function(requestParams, folderId, callback, errorCallback, response) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(folderId);
+	var notebook = this._appCtxt.getById(folderId);
 	var remoteFolderId = notebook.zid ? notebook.zid+":"+notebook.rid : undefined;
 
 	// add pages to folder map in cache
@@ -579,13 +577,12 @@ function(folderId, callback, errorCallback, response) {
 	var folder = resp.folder && resp.folder[0];
 	var folders = folder && folder.folder;
 	if (folders) {
-		var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-		var parent = tree.getById(folderId);
+		var parent = this._appCtxt.getById(folderId);
 		for (var i = 0; i < folders.length; i++) {
 			var obj = folders[i];
 
 			// remove sub-tree if it already exists
-			var notebook = tree.getById(obj.id);
+			var notebook = this._appCtxt.getById(obj.id);
 			if (notebook) {
 				parent.children.remove(notebook);
 				notebook._notify(ZmEvent.E_DELETE);

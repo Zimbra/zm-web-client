@@ -47,7 +47,7 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 
 	if (!controller.isChildWindow) {
 		// Add change listener to taglist to track changes in tag color
-		this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
+		this._tagList = this._appCtxt.getTagTree();
 		this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 		this.addListener(ZmMailMsgView._TAG_CLICK, new AjxListener(this, this._msgTagClicked));
 	}
@@ -166,7 +166,7 @@ function(msg) {
 
 ZmMailMsgView.prototype.__hasMountpoint =
 function(share) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.TYPE[share.link.view]);
+	var tree = this._appCtxt.getFolderTree();
 	return tree
 		? this.__hasMountpoint2(tree.root, share.grantor.id, share.link.id)
 		: false;
@@ -1375,7 +1375,7 @@ function(ev) {
 
 ZmMailMsgView.prototype._msgTagClicked =
 function(tagId) {
-	var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getById(tagId);
+	var tag = this._appCtxt.getById(tagId);
 	var query = 'tag:"' + tag.name + '"';
 	var searchController = this._appCtxt.getSearchController();
 	searchController.search({query: query});

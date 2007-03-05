@@ -60,8 +60,7 @@ ZmNotebookItem.createFromDom = function(node, args) {
 // Public methods
 
 ZmNotebookItem.prototype.getPath = function(dontIncludeThisName) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(this.folderId);
+	var notebook = this._appCtxt.getById(this.folderId);
 	var name = !dontIncludeThisName ? this.name : "";
 	return [ notebook.getPath(), "/", name ].join("");
 };
@@ -69,8 +68,7 @@ ZmNotebookItem.prototype.getPath = function(dontIncludeThisName) {
 ZmNotebookItem.prototype.getRestUrl = function(dontIncludeThisName) {
 	var url = ZmItem.prototype.getRestUrl.call(this);
 
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(this.folderId);
+	var notebook = this._appCtxt.getById(this.folderId);
 	if (notebook) {
 		url = url.replace(/^.*\/([^\/]+)$/, notebook.getRestUrl()+"$1");
 	}

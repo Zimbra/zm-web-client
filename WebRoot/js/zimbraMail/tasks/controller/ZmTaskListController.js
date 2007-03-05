@@ -56,8 +56,7 @@ function(list, folderId) {
 
 		// XXX: WHY?
 		// find out if we just searched for a shared address book
-		var tree = folderId ? this._appCtxt.getTree(ZmOrganizer.TASKS) : null;
-		var folder = tree ? tree.getById(folderId) : null;
+		var folder = this._appCtxt.getById(folderId);
 		this._list._isShared = folder ? folder.link : false;
 		this._list.setHasMore(list.getAttribute("more"));
 	}
@@ -171,7 +170,7 @@ function(parent, num) {
 	// a valid folderId means user clicked on an addrbook
 	var folderId = this._activeSearch.search.folderId;
 	if (folderId) {
-		var folder = this._appCtxt.getTree(ZmOrganizer.TASKS).getById(folderId);
+		var folder = this._appCtxt.getById(folderId);
 		var isShare = folder && folder.link;
 		var canEdit = (folder == null || !folder.isReadOnly());
 

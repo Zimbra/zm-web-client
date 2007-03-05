@@ -307,7 +307,7 @@ function(result) {
 		for (var i = 0; i < resp.length; i++) {
 			var link = resp[i].link ? resp[i].link[0] : null;
 			if (link) {
-				var share = this.getById(link.id);
+				var share = this._appCtxt.getById(link.id);
 				if (share) share.setPermissions(link.perm);
 			}
 		}
@@ -351,8 +351,7 @@ function(batchResp) {
  */
 ZmFolderTree.prototype._markNoSuchFolder =
 function(zids, rids) {
-	// XXX: we may want to optimize by getting tree per organizer
-	var treeData = this._appCtxt.getTree();
+	var treeData = this._appCtxt.getFolderTree();
 	var items = treeData && treeData.root
 		? treeData.root.children.getArray()
 		: null;

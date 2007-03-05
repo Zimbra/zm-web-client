@@ -32,7 +32,7 @@ function ZmContactView(parent, appCtxt, controller, isReadOnly) {
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 
-	this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
+	this._tagList = this._appCtxt.getTagTree();
 	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 
 	// read only flag is mainly used for printing a single contact
@@ -550,7 +550,7 @@ ZmContactView.prototype._setHeaderColor =
 function() {
 	// set the appropriate header color
 	var folderId = this._contact.folderId;
-	var folder = folderId ? this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId) : null;
+	var folder = folderId ? this._appCtxt.getById(folderId) : null;
 	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 	var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
 	var contactHdrRow = document.getElementById(this._contactHeaderRowId);

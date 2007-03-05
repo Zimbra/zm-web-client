@@ -106,7 +106,7 @@ function(what) {
 			if (!invalid && item.folderId) {
 				invalid = true;
 				for (var i = 0; i < items.length; i++) {
-					var tree = this.tree.getById(items[i].folderId);
+					var tree = this._appCtxt.getById(items[i].folderId);
 					if (tree != this) {
 						invalid = false;
 						break;

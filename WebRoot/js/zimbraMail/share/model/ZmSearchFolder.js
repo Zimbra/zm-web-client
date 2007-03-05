@@ -91,12 +91,11 @@ function() {
 */
 ZmSearchFolder.prototype._getNewParent =
 function(parentId) {
-	var parent = this.tree.getById(parentId);
+	var parent = this._appCtxt.getById(parentId);
 	if (parent) return parent;
 	
 	var type = (this.parent.type == ZmOrganizer.SEARCH) ? ZmOrganizer.FOLDER : ZmOrganizer.SEARCH;
-	var tree = this.tree._appCtxt.getTree(type);
-	return tree.getById(parentId); 
+	return this._appCtxt.getById(parentId); 
 };
 
 /**

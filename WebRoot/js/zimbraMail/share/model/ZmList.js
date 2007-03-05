@@ -57,7 +57,7 @@ function ZmList(type, appCtxt, search) {
 	this._hasMore = false;
 	this._idHash = new Object();
 
-	var tagList = appCtxt.getTree(ZmOrganizer.TAG);
+	var tagList = appCtxt.getTagTree();
 	if (tagList) {
 		this._tagChangeListener = new AjxListener(this, this._tagTreeChangeListener);
 		tagList.addChangeListener(this._tagChangeListener);
@@ -411,7 +411,7 @@ function(items, hardDelete, attrs) {
 	var toDelete = new Array();	
 	for (var i = 0; i < items.length; i++) {
 		var folderId = items[i].getFolderId();
-		var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
+		var folder = this._appCtxt.getById(folderId);
 		if (hardDelete || (folder && folder.isInTrash()))
 			toDelete.push(items[i]);
 		else
@@ -420,7 +420,7 @@ function(items, hardDelete, attrs) {
 
 	// soft delete - items moved to Trash
 	if (toMove.length)
-		this.moveItems(toMove, this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_TRASH), attrs);
+		this.moveItems(toMove, this._appCtxt.getById(ZmFolder.ID_TRASH), attrs);
 
 	// hard delete - items actually deleted from data store
 	if (toDelete.length)

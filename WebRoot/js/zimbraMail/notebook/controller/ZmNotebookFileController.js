@@ -174,8 +174,7 @@ function() {
 	var showUndelete = false;
 	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
 	if (folderId) {
-		var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-		var folder = tree ? tree.getById(folderId) : null;
+		var folder = this._appCtxt.getById(folderId);
 		showUndelete = folder && folder.isInTrash();
 	}
 	var actionMenu = this._actionMenu;
@@ -318,9 +317,8 @@ function(ev) {
 	} else if (items[0] instanceof ZmAppt) {
 		folder = new ZmFolder({id: ZmOrganizer.ID_CALENDAR});
 	} else {
-		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		var folderId = items[0].isDraft ? ZmFolder.ID_DRAFTS : ZmFolder.ID_INBOX;
-		folder = folderTree.getById(folderId);
+		folder = this._appCtxt.getById(folderId);
 	}
 
 	if (folder)

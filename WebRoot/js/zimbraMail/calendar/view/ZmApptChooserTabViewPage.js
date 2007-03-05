@@ -716,7 +716,7 @@ function(item) {
 			if (item.isGal) {
 				name = ZmMsg.GAL;
 			} else {
-				var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(item.folderId);
+				var folder = this._appCtxt.getById(item.folderId);
 				name = folder ? folder.name : "";
 			}
 			html[idx++] = this._getField(i, name);

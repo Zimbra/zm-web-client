@@ -64,7 +64,7 @@ function(overviewId) {
 
 ZmVoicemailTreeController.prototype.resetOperations =
 function(parent, type, id) {
-	var folder = this._dataTree.getById(id);
+	var folder = this._appCtxt.getById(id);
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
 };
 

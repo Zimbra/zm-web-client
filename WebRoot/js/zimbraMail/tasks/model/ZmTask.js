@@ -92,8 +92,7 @@ ZmTask.prototype.getIcon				= function() { return "Task"; };
 ZmTask.prototype.getLocation			= function() { return this.location || ""; };
 ZmTask.prototype.getFolder =
 function() {
-	var ct = this._appCtxt.getTree(ZmOrganizer.TASKS);
-	return ct ? ct.getById(this.folderId) : null;
+	return this._appCtxt.getById(this.folderId);
 };
 
 ZmCalItem.prototype.getSummary =

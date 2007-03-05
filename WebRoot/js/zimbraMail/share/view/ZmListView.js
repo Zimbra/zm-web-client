@@ -37,7 +37,7 @@ function ZmListView(parent, className, posStyle, view, type, controller, headerL
 	// create listeners for changes to the list model, and to tags
 	this._listChangeListener = new AjxListener(this, this._changeListener);
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
+	var tagList = this._appCtxt.getTagTree();
 	if (tagList)
 		tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 }
@@ -401,7 +401,7 @@ function(ev, div) {
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) {
 				this._setDateToolTip(item, div);
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER]) {
-				var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(item.folderId);
+				var folder = this._appCtxt.getById(item.folderId);
 				if (folder && folder.parent) {
 					this.setToolTipContent(folder.getPath());
 				}
@@ -530,7 +530,7 @@ function(div) {
 	var item = this.getItemFromElement(div);
 	var numTags = item.tags.length;
 	if (!numTags) return;
-	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
+	var tagList = this._appCtxt.getTagTree();
 	var tags = item.tags;
 	var html = new Array();
 	var idx = 0;

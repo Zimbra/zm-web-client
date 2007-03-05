@@ -249,7 +249,7 @@ function() {
 	if (!this._folderTreeCellId) { return; }
 	
 	var organizerType = this._organizerType;
-	this._folderTree = this._appCtxt.getTree(organizerType);
+	this._folderTree = this._appCtxt.getFolderTree();
 
 	var omit = new Object();
 	omit[ZmFolder.ID_SPAM] = true;
@@ -295,13 +295,6 @@ function() {
 	// make sure parent doesn't already have a child by this name
 	if (!msg && parentFolder.hasChild(name)) {
 		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
-	}
-
-	// if we're creating a top-level folder, check for conflict with top-level search
-	if (!msg && (parentFolder.id == ZmOrganizer.ID_ROOT)) {
-		var searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
-		if (searchTree && searchTree.root.hasChild(name))
-			msg = ZmMsg.folderOrSearchNameExists;
 	}
 
 	var color = null;

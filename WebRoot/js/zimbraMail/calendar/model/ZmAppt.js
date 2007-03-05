@@ -141,8 +141,7 @@ function(apptNode, instNode, args) {
 
 ZmAppt.prototype.getFolder =
 function() {
-	var ct = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-	return ct ? ct.getById(this.folderId) : null;
+	return this._appCtxt.getById(this.folderId);
 };
 
 /**

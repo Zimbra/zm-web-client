@@ -101,7 +101,7 @@ function() {
 	var msg = ZmTag.checkName(name);
 
 	// make sure tag doesn't already exist
-	if (!msg && (this._appCtxt.getTree(ZmOrganizer.TAG).getByName(name)))
+	if (!msg && (this._appCtxt.getTagTree().getByName(name)))
 		msg = ZmMsg.tagNameExists
 
 	return (msg ? this._showError(msg) : {name:name, color:this._colorButton.getData(ZmOperation.MENUITEM_ID)});
@@ -117,7 +117,7 @@ function(ev) {
 ZmNewTagDialog.prototype._getNextColor =
 function() {
 	var colorUsed = new Object();
-	var tags = this._appCtxt.getTree(ZmOrganizer.TAG).root.children.getArray();
+	var tags = this._appCtxt.getTagTree().root.children.getArray();
 	if (!(tags && tags.length))
 		return ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 	for (var i = 0; i < tags.length; i++)

@@ -514,8 +514,7 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
     // initialize input fields
     this._nameField.setValue(account.name);
     var folderId = account.folderId || ZmPopAccountBasicPage.DEFAULT_FOLDER_ID;
-    var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-    var folder = tree.getById(folderId);
+    var folder = this._appCtxt.getById(folderId);
     this._folderButton.setText(folder.name);
     this._downloadSelect.setSelectedValue(account.leaveOnServer);
 

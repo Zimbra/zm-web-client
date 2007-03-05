@@ -60,7 +60,7 @@ function(actionMenu, type, id) {
 	if (actionMenu && id != ZmOrganizer.ID_ROOT) {
 		var overviewController = this._appCtxt.getOverviewController();
 		var treeData = overviewController.getTreeData(ZmOrganizer.NOTEBOOK);
-		var notebook = treeData.getById(id);
+		var notebook = this._appCtxt.getById(id);
 		if (!notebook) { return; }
 
 		var isRoot = notebook.id == ZmOrganizer.ID_ROOT;
@@ -235,7 +235,7 @@ function(ev) {
 
 	var overviewController = this._appCtxt.getOverviewController();
 	var treeData = overviewController.getTreeData(ZmOrganizer.NOTEBOOK);
-	var folder = treeData.getById(this._pendingActionData.id);
+	var folder = this._appCtxt.getById(this._pendingActionData.id);
 
 	var newNotebookDialog = this._appCtxt.getNewNotebookDialog();
 	newNotebookDialog.setParentFolder(folder);

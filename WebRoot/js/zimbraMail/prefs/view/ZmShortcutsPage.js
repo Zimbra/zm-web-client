@@ -840,7 +840,7 @@ function(shortcut) {
 	button.setSize(bWidth, bHeight);
 	var organizer = null, value = "";
 	if (shortcut) {
-		organizer = this._appCtxt.getTree(org).getById(shortcut.arg);
+		organizer = this._appCtxt.getById(shortcut.arg);
 		value = (org == ZmOrganizer.FOLDER) ? organizer.getPath(false, false, null, true, true) :
 											  organizer.getName(false, null, true);
 		button.setData(ZmShortcutsPageTabViewCustom.DATA, value);

@@ -279,8 +279,7 @@ ZmNotebookController.prototype._editListener = function(event) {
 
 /***
 ZmNotebookController.prototype._uploadListener = function(event) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(this._folderId || ZmNotebookItem.DEFAULT_FOLDER);
+	var notebook = this._appCtxt.getById(this._folderId || ZmNotebookItem.DEFAULT_FOLDER);
 	var callback = null;
 
 	var dialog = this._appCtxt.getUploadDialog();
@@ -299,7 +298,6 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 
 	var content = "<wiklet class='NAME'/>";
 
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var notebook, shares;
 	var noprompt = false;
 
@@ -309,7 +307,7 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 		names.push(ZmWikletProcessor.process(this._appCtxt, item, content));
 		if (noprompt) continue;
 
-		notebook = tree.getById(item.folderId);
+		notebook = this._appCtxt.getById(item.folderId);
 		shares = notebook && notebook.shares;
 		if (shares) {
 			for (var j = 0; j < shares.length; j++) {

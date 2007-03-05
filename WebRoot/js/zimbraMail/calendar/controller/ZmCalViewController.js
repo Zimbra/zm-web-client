@@ -169,7 +169,7 @@ function(viewId) {
 		this._calTreeController = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
 		if (this._calTreeController) {
 			this._calTreeController.addSelectionListener(ZmZimbraMail._OVERVIEW_ID, new AjxListener(this, this._calTreeSelectionListener));
-			var calTree = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
+			var calTree = this._appCtxt.getFolderTree();
 			if (calTree)
 				calTree.addChangeListener(new AjxListener(this, this._calTreeChangeListener));
 			// add change listener
@@ -332,8 +332,7 @@ function(ev) {
 
 ZmCalViewController.prototype.getCalendar =
 function(folderId) {
-	var ct = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-	return ct ? ct.getById(folderId) : null;
+	return this._appCtxt.getById(folderId);
 };
 
 // todo: change to currently "selected" calendar
@@ -1027,8 +1026,7 @@ function(appt) {
 	try {
 		// if we have an appointment, go get all the details.
 		if (!appt.__creating) {
-			var tree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-			var calendar = tree.getById(appt.folderId);
+			var calendar = this._appCtxt.getById(appt.folderId);
 			var isSynced = Boolean(calendar.url);
 			if (appt.isReadOnly() || isSynced) {
 				var mode = appt.isException ? ZmCalItem.MODE_EDIT_SINGLE_INSTANCE : ZmCalItem.MODE_EDIT_SERIES;
@@ -1308,8 +1306,7 @@ function(parent, num) {
 		var currView = this._viewMgr.getCurrentView();
 		var appt = currView ? currView.getSelection()[0] : null;
 		var isReadOnly = appt ? appt.isReadOnly() : false;
-		var tree = appt && this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-		var calendar = tree && tree.getById(appt.folderId);
+		var calendar = appt && this._appCtxt.getById(appt.folderId);
 		var isSynced = Boolean(calendar && calendar.url);
 		var disabled = isSynced || isReadOnly;
 		parent.enable(ZmOperation.DELETE, !disabled);
@@ -1340,8 +1337,7 @@ function(ev) {
 	var appt = actionMenu.__appt;
 	delete actionMenu.__appt;
 
-	var tree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
-	var calendar = tree.getById(appt.folderId);
+	var calendar = this._appCtxt.getById(appt.folderId);
 	var isSynced = Boolean(calendar.url);
 	if (appt.isReadOnly() || isSynced) {
 		// always get details on appt as if we're editing series (since its read only)

@@ -645,7 +645,7 @@ function(value) {
 	if (!value.split) return[]; 
 	var names = value.split(",");
 	if (names.length) {
-		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		var tree = this._appCtxt.getFolderTree();
 		for (var i = 0, count = names.length; i < count; i++) {
 			var path = AjxStringUtil.trim(names[i]);
 			if (path) {
@@ -664,7 +664,7 @@ ZmIdentityPage.prototype._containsInvalidFolders =
 function(value) {
 	var names = value.split(",");
 	if (names.length) {
-		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		var tree = this._appCtxt.getFolderTree();
 		for (var i = 0, count = names.length; i < count; i++) {
 			var path = AjxStringUtil.trim(names[i]);
 			if (path) {
@@ -682,9 +682,8 @@ ZmIdentityPage.prototype._folderArrayToString =
 function(value) {
 	var result = [];
 	if (value.length) {
-		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		for (var i = 0, count = value.length; i < count; i++) {
-			var folder = tree.getById(value[i]);
+			var folder = this._appCtxt.getById(value[i]);
 			if (folder) {
 				result[result.length] = folder.getPath(false, false, null, true, true);
 			}

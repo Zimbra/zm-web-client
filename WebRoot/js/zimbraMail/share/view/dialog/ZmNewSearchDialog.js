@@ -36,8 +36,7 @@ function ZmNewSearchDialog(parent, msgDialog, className) {
 					  [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH], omit);
 	this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
 	this._searchTreeView = this._treeView[ZmOrganizer.SEARCH];
-	this._folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-	this._searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
+	this._folderTree = this._appCtxt.getFolderTree();
 }
 
 ZmNewSearchDialog._OVERVIEW_ID = "ZmNewSearchDialog";
@@ -53,7 +52,7 @@ function() {
 ZmNewSearchDialog.prototype.popup =
 function(search) {
 	this._search = search;
-	this._searchTreeView.setSelected(this._searchTree.root, true);
+	this._searchTreeView.setSelected(this._folderTree.root, true);
 	ZmDialog.prototype.popup.call(this);
 }
 

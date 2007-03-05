@@ -419,8 +419,7 @@ function(results, search, isMixed) {
 	DBG.timePt("handle search results");
 
 	// determine if we need to default to mixed view
-	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-	var folder = folderTree ? folderTree.getById(search.folderId) : null;
+	var folder = this._appCtxt.getById(search.folderId);
 	var inTrash = folder && folder.isInTrash();
 	var isInGal = (this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
 	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {

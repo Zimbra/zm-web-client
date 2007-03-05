@@ -110,8 +110,7 @@ function(searchResult, bIsGalSearch, folderId) {
 			this._list._isShared = false;
 		} else {
 			// find out if we just searched for a shared address book
-			var addrbookTree = folderId ? this._appCtxt.getTree(ZmOrganizer.ADDRBOOK) : null;
-			var addrbook = addrbookTree ? addrbookTree.getById(folderId) : null;
+			var addrbook = folderId ? this._appCtxt.getById(folderId) : null;
 			this._list._isShared = addrbook ? addrbook.link : false;
 		}
 
@@ -181,7 +180,7 @@ function() {
 ZmContactListController.prototype.searchAlphabet =
 function(letter, endLetter) {
 	var folderId = this._folderId || ZmFolder.ID_CONTACTS;
-	var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(folderId);
+	var folder = this._appCtxt.getById(folderId);
 	var query = folder ? folder.createQuery() : null;
 
 	if (query) {
@@ -391,7 +390,7 @@ function(parent, num) {
 
 		// a valid folderId means user clicked on an addrbook
 		if (this._folderId) {
-			var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this._folderId);
+			var folder = this._appCtxt.getById(this._folderId);
 			var isShare = folder && folder.link;
 			var canEdit = (folder == null || !folder.isReadOnly());
 
@@ -454,15 +453,12 @@ ZmContactListController.prototype._listSelectionListener =
 function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 
-	if (ev.detail == DwtListView.ITEM_SELECTED)
-	{
+	if (ev.detail == DwtListView.ITEM_SELECTED)	{
 		this._resetNavToolBarButtons(this._currentView);
 		if (this._currentView == ZmController.CONTACT_SIMPLE_VIEW)
 			this._parentView[this._currentView].setContact(ev.item, this.isGalSearch());
-	}
-	else if (ev.detail == DwtListView.ITEM_DBL_CLICKED)
-	{
-		var folder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(ev.item.folderId);
+	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
+		var folder = this._appCtxt.getById(ev.item.folderId);
 		if (!this.isGalSearch() && (folder == null || !folder.isReadOnly())) {
 			AjxDispatcher.run("GetContactController").show(ev.item);
 		}

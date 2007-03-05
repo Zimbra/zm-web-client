@@ -48,8 +48,7 @@ function(linkInfo, callback) {
 
 	var isUrlLink = this._linkInfo.url;
 	if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
-		var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-		var root = tree.getById(ZmOrganizer.ID_ROOT);
+		var root = this._appCtxt.getById(ZmOrganizer.ID_ROOT);
 		var children = root.children.getArray();
 
 		this._notebookSelect.clearOptions();
@@ -217,8 +216,7 @@ function(event) {
 		var link;
 		if (this._pageRadioEl && this._pageRadioEl.checked) {
 			var notebookId = this._notebookSelect.getValue();
-			var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-			var notebook = tree.getById(notebookId);
+			var notebook = this._appCtxt.getById(notebookId);
 			var value = AjxStringUtil.trim(this._pageInput.getValue());
 			link = [
 				"[[",

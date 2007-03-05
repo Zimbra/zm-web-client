@@ -108,7 +108,7 @@ function() {
 		return ZmMsg.zimbraTitle;
 	}
 	var folderId = page.getFolderId();
-	var notebook = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK).getById(folderId);
+	var notebook = this._appCtxt.getById(folderId);
 	var notebookName = notebook.getName();
 	return [ZmMsg.zimbraTitle, notebookName].join(": ");
 };

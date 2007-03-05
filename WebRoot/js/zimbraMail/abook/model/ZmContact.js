@@ -655,7 +655,7 @@ function(newFolderId) {
 	if (this.folderId == newFolderId) return;
 
 	// moving out of a share or into one is handled differently (create then hard delete)
-	var newFolder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(newFolderId)
+	var newFolder = this._appCtxt.getById(newFolderId)
 	if (this.isShared() || (newFolder && newFolder.link)) {
 		if (this.list) {
 			this.list.moveItems(this, newFolder);
@@ -1006,7 +1006,7 @@ function(node) {
 
 		// check if the folderId is found in our address book (otherwise, we
 		// assume this contact to be a shared contact)
-		this.addrbook = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this.folderId);
+		this.addrbook = this._appCtxt.getById(this.folderId);
 		this._loaded = !this.isShared();
 
 		// lets not process tags/flags for shared contacts until we get better server support

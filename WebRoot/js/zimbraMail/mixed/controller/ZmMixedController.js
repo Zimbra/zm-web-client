@@ -159,8 +159,7 @@ function() {
 	var showUndelete = false;
 	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
 	if (folderId) {
-		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-		var folder = folderTree ? folderTree.getById(folderId) : null;
+		var folder = this._appCtxt.getById(folderId);
 		showUndelete = folder && folder.isInTrash();
 	}
 	var actionMenu = this._actionMenu;
@@ -309,8 +308,7 @@ function(ev) {
 	var miUndelete = actionMenu.getMenuItem(ZmOperation.UNDELETE);
 	var miMoveTo = actionMenu.getMenuItem(ZmOperation.MOVE);
 	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
-	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-	var folder = folderTree && folderId ? folderTree.getById(folderId) : null;
+	var folder = this._appCtxt.getById(folderId);
 
 	if (folder && folder.isInTrash()) {
 		// only want to show Undelete menu item if contact(s) is selected
@@ -350,9 +348,8 @@ function(ev) {
 	} else if (items[0] instanceof ZmAppt) {
 		folder = new ZmFolder({id: ZmOrganizer.ID_CALENDAR});
 	} else {
-		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		var folderId = items[0].isDraft ? ZmFolder.ID_DRAFTS : ZmFolder.ID_INBOX;
-		folder = folderTree.getById(folderId);
+		folder = this._appCtxt.getById(folderId);
 	}
 
 	if (folder)

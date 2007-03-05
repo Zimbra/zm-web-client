@@ -167,8 +167,7 @@ function(item, now, isDndIcon) {
 			htmlArr[idx++] = "</td>";
 		}
 		else if (field == ZmItem.F_FOLDER) {
-			var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-			var notebook = tree.getById(item.folderId);
+			var notebook = this._appCtxt.getById(item.folderId);
 			var path = notebook ? notebook.getPath() : item.folderId;
 			htmlArr[idx++] = "<td id='" + fieldId + "'";
 			htmlArr[idx++] = " width=" + width + ">";

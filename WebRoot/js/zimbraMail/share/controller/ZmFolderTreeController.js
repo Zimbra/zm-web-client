@@ -84,7 +84,7 @@ function(params) {
 ZmFolderTreeController.prototype.resetOperations = 
 function(parent, type, id) {
 	var deleteText = ZmMsg.del;
-	var folder = this._dataTree.getById(id);
+	var folder = this._appCtxt.getById(id);
 	// user folder or Folders header
 	if (id == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder())) {
 		parent.enableAll(true);
@@ -277,7 +277,7 @@ function(ev) {
 		ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		ds.popup();
     } else {
-		this._doMove(organizer, this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_TRASH));
+		this._doMove(organizer, this._appCtxt.getById(ZmFolder.ID_TRASH));
 	}
 };
 

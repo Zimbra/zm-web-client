@@ -165,7 +165,7 @@ function(actionCode) {
 		case ZmKeyMap.MOVE_TO_JUNK:
 			if (num && !(isDrafts && actionCode != ZmKeyMap.MOVE_TO_TRASH)) {
 				var folderId = ZmMailListController.ACTION_CODE_TO_FOLDER_MOVE[actionCode];
-				var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
+				var folder = this._appCtxt.getById(folderId);
 				var items = lv.getSelection();
 				this._doMove(items, folder);
 			}
@@ -264,14 +264,14 @@ function(actionCode) {
 			break;
 
 		case ZmKeyMap.GOTO_FOLDER:
-			var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(shortcut.arg);
+			var folder = this._appCtxt.getById(shortcut.arg);
 			this._appCtxt.getSearchController().search({query: folder.createQuery()});
 			break;
 
 		case ZmKeyMap.MOVE_TO_FOLDER:
 			// Handle action code like "MoveToFolder3"
 			if (num && !isDrafts) {
-				var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(shortcut.arg);
+				var folder = this._appCtxt.getById(shortcut.arg);
 				var items = lv.getSelection();
 				this._doMove(items, folder);
 			}
@@ -724,7 +724,7 @@ function(ev) {
 ZmMailListController.prototype._checkMailListener =
 function(ev) {
     var folderId = this._getSearchFolderId();
-    var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
+    var folder = this._appCtxt.getById(folderId);
     var dsCollection;
 
     var isInbox = folderId == ZmFolder.ID_INBOX;
@@ -822,7 +822,7 @@ function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 	if (parent && parent instanceof ZmToolBar) {
         var folderId = this._getSearchFolderId();
-        var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
+        var folder = this._appCtxt.getById(folderId);
 
         var isInbox = folderId == ZmFolder.ID_INBOX;
         var isFeed = folder && folder.isFeed();

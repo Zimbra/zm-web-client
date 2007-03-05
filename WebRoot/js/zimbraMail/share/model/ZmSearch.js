@@ -268,16 +268,11 @@ ZmSearch.prototype.getTitle =
 function() {
 	var where = null;
 	if (this.folderId) {
-		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-		if (folderTree) {
-			var folder = folderTree.getById(this.folderId);
-			if (folder)
-				where = folder.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
-		}
+		var folder = this._appCtxt.getById(this.folderId);
+		if (folder)
+			where = folder.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 	} else if (this.tagId) {
-		var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
-		if (tagList)
-			where = tagList.getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
+			where = this._appCtxt.getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 	}
 	var title = where ? [ZmMsg.zimbraTitle, where].join(": ") : 
 						[ZmMsg.zimbraTitle, ZmMsg.searchResults].join(": ");
@@ -346,23 +341,17 @@ function() {
 		}
 		// now check all folders by name
 		if (!this.folderId) {
-			var folders = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+			var folders = this._appCtxt.getFolderTree();
 			var folder = folders ? folders.getByPath(path) : null;
 			if (folder) {
 				this.folderId = folder.id;
-			} else {
-				var addrBooks = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
-				var addrBook = addrBooks ? addrBooks.getByPath(path) : null;
-				if (addrBook) {
-					this.folderId = addrBook.id;
-				}
 			}
 		}
 	}
 	results = this.query.match(ZmSearch.TAG_QUERY_RE);
 	if (results) {
 		var name = results[1].toLowerCase();
-		var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getByName(name);
+		var tag = this._appCtxt.getTagTree().getByName(name);
 		if (tag) {
 			this.tagId = tag.id;
 		}

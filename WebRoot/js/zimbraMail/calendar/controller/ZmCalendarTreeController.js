@@ -89,9 +89,7 @@ function(overviewId, listener) {
 ZmCalendarTreeController.prototype.resetOperations = 
 function(actionMenu, type, id) {
 	if (actionMenu) {
-		var overviewController = this._appCtxt.getOverviewController();
-		var treeData = overviewController.getTreeData(ZmOrganizer.CALENDAR);
-		var calendar = treeData.getById(id);
+		var calendar = this._appCtxt.getById(id);
 		if (calendar) {
 			actionMenu.enable(ZmOperation.SHARE_CALENDAR, !calendar.link);
 			actionMenu.enable(ZmOperation.SYNC, calendar.isFeed());

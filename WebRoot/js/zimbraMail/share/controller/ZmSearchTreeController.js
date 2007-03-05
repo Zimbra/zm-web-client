@@ -96,7 +96,7 @@ function(params) {
 ZmSearchTreeController.prototype.resetOperations = 
 function(parent, type, id) {
 	parent.enableAll(true);
-	var search = this._dataTree.getById(id);
+	var search = this._appCtxt.getById(id);
 	parent.enable(ZmOperation.EXPAND_ALL, (search.size() > 0));
 };
 

@@ -101,7 +101,7 @@ ZmPage.prototype.getContent = function(callback, errorCallback) {
 ZmPage.prototype.getNotebook =
 function() {
 	if (!this._notebook) {
-		var folder = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK).getById(this.folderId);
+		var folder = this._appCtxt.getById(this.folderId);
 		while (folder && folder.parent && (folder.parent.id != ZmOrganizer.ID_ROOT)) {
 			folder = folder.parent;
 		}

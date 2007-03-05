@@ -200,7 +200,7 @@ function(treeId) {
 };
 
 /**
-* Returns the given tree controller.
+* Returns the tree for the given organizer type.
 *
 * @param treeId		[constant]		organizer type
 */

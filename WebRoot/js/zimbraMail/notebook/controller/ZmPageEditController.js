@@ -227,8 +227,7 @@ function(popViewWhenSaved) {
 	}
 
 	// bug: 9406 (short term fix, waiting for backend support)
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(this._page.folderId || ZmOrganizer.ID_NOTEBOOK);
+	var notebook = this._appCtxt.getById(this._page.folderId || ZmOrganizer.ID_NOTEBOOK);
 	if (notebook && notebook.getChild(name)) {
 		message = AjxMessageFormat.format(ZmMsg.errorInvalidPageOrSectionName, name);
 	}
@@ -377,8 +376,7 @@ function(ev) {
 /***
 ZmPageEditController.prototype._addDocsListener =
 function(ev) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(this._page.folderId || ZmNotebookItem.DEFAULT_FOLDER);
+	var notebook = this._appCtxt.getById(this._page.folderId || ZmNotebookItem.DEFAULT_FOLDER);
 	var callback = null;
 
 	var dialog = this._appCtxt.getUploadDialog();

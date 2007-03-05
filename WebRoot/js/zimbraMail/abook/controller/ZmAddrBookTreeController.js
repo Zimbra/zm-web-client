@@ -77,7 +77,7 @@ function(parent, type, id) {
 		deleteText = ZmMsg.emptyTrash;
 	} else {
 		parent.enableAll(true);
-		var addrBook = this._dataTree.getById(id);
+		var addrBook = this._appCtxt.getById(id);
 		if (addrBook) {
 			if (addrBook.isSystem()) {
 				parent.enable([ZmOperation.DELETE, ZmOperation.RENAME_FOLDER], false);

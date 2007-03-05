@@ -44,7 +44,7 @@ function ZmMailList(type, appCtxt, search) {
 	this.convId = null; // for msg list within a conv
 
 	// mail list can be changed via folder or tag action (eg "Mark All Read")
-	var folderTree = appCtxt.getTree(ZmOrganizer.FOLDER);
+	var folderTree = appCtxt.getFolderTree();
 	if (folderTree) {
 		this._folderChangeListener = new AjxListener(this, this._folderTreeChangeListener);
 		folderTree.addChangeListener(this._folderChangeListener);
@@ -142,7 +142,7 @@ function(markAsSpam, folder, result) {
 ZmMailList.prototype.deleteItems =
 function(items, folder, attrs) {
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
-		var searchFolder = this.search ? this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(this.search.folderId) : null;
+		var searchFolder = this.search ? this._appCtxt.getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isInTrash()) {
 			if (!attrs) attrs = {};
 			attrs.tcon = ZmFolder.TCON_CODE[ZmFolder.ID_TRASH];
@@ -306,10 +306,12 @@ function(item, bForce) {
 ZmMailList.prototype.clear =
 function() {
 	// remove listeners for this list from folder tree and tag list
-	if (this._folderChangeListener)
-		this._appCtxt.getTree(ZmOrganizer.FOLDER).removeChangeListener(this._folderChangeListener);
-	if (this._tagChangeListener)
-		this._appCtxt.getTree(ZmOrganizer.TAG).removeChangeListener(this._tagChangeListener);
+	if (this._folderChangeListener) {
+		this._appCtxt.getFolderTree().removeChangeListener(this._folderChangeListener);
+	}
+	if (this._tagChangeListener) {
+		this._appCtxt.getTagTree().removeChangeListener(this._tagChangeListener);
+	}
 
 	ZmList.prototype.clear.call(this);
 };

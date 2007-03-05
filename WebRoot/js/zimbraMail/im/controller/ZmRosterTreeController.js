@@ -350,7 +350,7 @@ function(rosterItem) {
 ZmRosterTreeController.prototype._getGroup =
 function(name) {
     var groupId = this._prefixId+"_group_"+name;
-    var group = this._dataTree.root.getById(groupId);
+    var group = this._appCtxt.getById(groupId);
     if (group == null) {
         group = new ZmRosterTreeGroup({id: groupId, name: name, parent: this._dataTree.root, tree: this._dataTree});
         group._notify(ZmEvent.E_CREATE);

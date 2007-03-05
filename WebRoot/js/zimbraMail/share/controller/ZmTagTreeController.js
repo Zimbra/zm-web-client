@@ -93,7 +93,7 @@ function() {
 */
 ZmTagTreeController.prototype.resetOperations = 
 function(parent, type, id) {
-	var tag = this._dataTree.getById(id);
+	var tag = this._appCtxt.getById(id);
 	parent.enableAll(true);
 	if (tag.isSystem())
 		parent.enable([ZmOperation.RENAME_TAG, 

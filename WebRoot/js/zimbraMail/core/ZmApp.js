@@ -262,7 +262,7 @@ ZmApp.prototype._createDeferredFolders =
 function(type) {
 	for (var i = 0; i < this._deferredFolders.length; i++) {
 		var params = this._deferredFolders[i];
-		var parent = params.tree.getById(params.obj.l);
+		var parent = this._appCtxt.getById(params.obj.l);
 		var folder = ZmFolderTree.createFolder(params.type, parent, params.obj, params.tree, params.path);
 		parent.children.add(folder);
 		folder.parent = parent;
@@ -316,17 +316,8 @@ function(ev) {
 
 ZmApp.prototype._handleCreateFolder =
 function(create, org) {
-	var tree = this._appCtxt.getTree(org);
-	var parentId = create.l;
-	var parent;
-	if (parentId == ZmOrganizer.ID_ROOT) {
-		if (create.view == ZmOrganizer.VIEWS[org][0])
-			parent = tree.getById(parentId);
-	} else {
-		parent = tree.getById(parentId);
-	}
-
-	if (parent) {
+	var parent = this._appCtxt.getById(create.l);
+	if (parent && (create.view == ZmOrganizer.VIEWS[org][0])) {
 		parent.notifyCreate(create);
 		create._handled = true;
 	}
@@ -334,17 +325,11 @@ function(create, org) {
 
 ZmApp.prototype._handleCreateLink =
 function(create, org) {
-	var parentId = create.l;
-	var parent, share;
-	if (create.view == ZmOrganizer.VIEWS[org][0]) {
-		var tree = this._appCtxt.getTree(org);
-		parent = tree.getById(parentId);
-		share = org;
-	}
-	if (parent) {
+	var parent = this._appCtxt.getById(create.l);
+	if (parent && (create.view == ZmOrganizer.VIEWS[org][0])) {
 		parent.notifyCreate(create);
 		// XXX: once bug #4434 is fixed, check if this call is still needed
-		this._appCtxt.getFolderTree().getPermissions(share);
+		this._appCtxt.getFolderTree().getPermissions(org);
 		create._handled = true;
 	}
 };

@@ -291,7 +291,7 @@ function(refresh) {
 	this._loadTree(ZmOrganizer.FOLDER, unread, refresh.folder[0], "folder");
 	this._controller._needOverviewLayout = true;
 	
-	var inbox = this._appCtxt.getFolderTree().getById(ZmFolder.ID_INBOX);
+	var inbox = this._appCtxt.getById(ZmFolder.ID_INBOX);
 	if (inbox) {
 		this._controller._statusView.setIconVisible(ZmStatusView.ICON_INBOX, inbox.numUnread > 0);
 	}
@@ -320,22 +320,6 @@ function(type, unread, obj, objType) {
 		tree.createRoot(); // tag tree root not in the DOM
 	}
 	tree.loadFromJs(obj, objType);
-};
-
-ZmRequestMgr.prototype._checkUnread =
-function(tree, unread) {
-	var organizers = [];
-	var list = tree.asList();
-	for (var i = 0; i < list.length; i++) {
-		var organizer = list[i];
-		if (organizer.numUnread != unread[organizer.id])
-			organizers.push(organizer);
-	}
-	if (organizers.length) {
-		var fields = {};
-		fields[ZmOrganizer.F_UNREAD] = true;
-		tree._notify(ZmEvent.E_MODIFY, {organizers: organizers, fields: fields});
-	}
 };
 
 // To handle notifications, we keep track of all the models in use. A model could
@@ -409,11 +393,10 @@ function(creates) {
 
 		DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
 		if (name == "tag") {
-			var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
-			tagList.root.notifyCreate(create);
+			this._appCtxt.getTagTree().root.notifyCreate(create);
 		} else if (name == "folder" || name == "search") {
 			var parentId = create.l;
-			var parent = this._appCtxt.getFolderTree().getById(parentId);
+			var parent = this._appCtxt.getById(parentId);
 			if (parent) {
 				parent.notifyCreate(create, (name == "search"));
 			}

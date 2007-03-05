@@ -453,9 +453,9 @@ function(conf, field, options, dataValue, rowId, data) {
 		var organizer = null;
 		if (dataValue) {
 			if (type == ZmFilterRule.TYPE_FOLDER_PICKER)
-				organizer = this._appCtxt.getTree(ZmOrganizer.FOLDER).getByPath(dataValue.substring(1), true);
+				organizer = this._appCtxt.getFolderTree().getByPath(dataValue.substring(1), true);
 			else
-				organizer = this._appCtxt.getTree(ZmOrganizer.TAG).getByName(dataValue);
+				organizer = this._appCtxt.getTagTree().getByName(dataValue);
 		}
 		var	text = organizer ? organizer.getName(false, null, true) : ZmMsg.browse;
 		button.setText(text);

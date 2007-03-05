@@ -56,7 +56,7 @@ function ZmListController(appCtxt, container, app) {
 	this._actionMenu = null; 		// ZmActionMenu
 	this._actionEv = null;
 	
-	this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
+	this._tagList = this._appCtxt.getTagTree();
 	if (this._tagList) {
 		this._tagChangeLstnr = new AjxListener(this, this._tagChangeListener);
 		this._tagList.addChangeListener(this._tagChangeLstnr);
@@ -227,18 +227,18 @@ function(actionCode) {
 		case ZmKeyMap.TAG:
 			var items = listView.getSelection();
 			if (items && items.length) {
-				var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getById(shortcut.arg);
+				var tag = this._appCtxt.getById(shortcut.arg);
 				this._doTag(items, tag, true);
 			}
 			break;
 			
 		case ZmKeyMap.GOTO_TAG:
-			var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getById(shortcut.arg);
+			var tag = this._appCtxt.getById(shortcut.arg);
 			this._appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
 			break;
 
 		case ZmKeyMap.SAVED_SEARCH:
-			var searchFolder = this._appCtxt.getTree(ZmOrganizer.SEARCH).getById(shortcut.arg);
+			var searchFolder = this._appCtxt.getById(shortcut.arg);
 			this._appCtxt.getSearchController().redoSearch(searchFolder.search);
 			break;
 			

@@ -70,6 +70,10 @@ function ZmOrganizer(params) {
 
 	if (id && params.tree) {
 		params.tree._appCtxt.cacheSet(id, this);
+		if (this.link) {
+			// also store under ID that items use for parent folder ("l" attribute in node)
+			params.tree._appCtxt.cacheSet([this.zid, this.rid].join(":"), this);
+		}
 	}
 
 	this.children = new AjxVector();
@@ -349,9 +353,10 @@ function(appCtxt, params, ex) {
 
 	if (msg) {
 		ZmOrganizer._showErrorMsg(appCtxt, msg);
+		return true;
 	}
 
-	return true;
+	return false;
 };
 
 ZmOrganizer._showErrorMsg =
@@ -415,8 +420,7 @@ ZmOrganizer.prototype._handlePostCreatePath =
 function(path, attrs, callback, errorCallback, response) {
 	debugger;
 	var folderId = response.CreateFolderResponse.folder.id;
-	var tree = this._appCtxt.getTree(ZmOrganizer.TYPE[attrs.view || this.type]);
-	var organizer = tree.getById(folderId);
+	var organizer = this._appCtxt.getById(folderId);
 	if (path != "") {
 		organizer.create(path, attrs, callback, errorCallback, postCallback);
 	}
@@ -895,7 +899,9 @@ function(newParent) {
 };
 
 /**
-* Returns the organizer with the given ID, wherever it is.
+* Returns the organizer with the given ID, searching recursively through
+* child organizers. The preferred method for getting an organizer by ID
+* is to use appCtxt.getById().
 *
 * @param id		the ID to search for
 */
@@ -1014,7 +1020,7 @@ function (organizer) {
 */
 ZmOrganizer.prototype._getNewParent =
 function(parentId) {
-	return this.tree.getById(parentId);
+	return this._appCtxt.getById(parentId);
 };
 
 ZmOrganizer.prototype.isUnder =

@@ -262,8 +262,7 @@ function(context) {
 };
 
 ZmNotebookObjectHandler.prototype._getNotebook = function(folderId, path) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var organizer = tree.getById(folderId);
+	var organizer = this._appCtxt.getById(folderId);
 	if (path.match('/')) {
 		var parts = path.replace(/^\//,"").replace(/\/[^\/]*$/,"").split('/');
 		for (var i = 0; i < parts.length; i++) {

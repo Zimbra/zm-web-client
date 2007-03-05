@@ -205,7 +205,7 @@ function() {
 // Tag in the summary area clicked, do a tag search.
 ZmConvController.prototype._convTagClicked =
 function(tagId) {
-	var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getById(tagId);
+	var tag = this._appCtxt.getById(tagId);
 	var query = 'tag:"' + tag.name + '"';
 	var searchController = this._appCtxt.getSearchController();
 	searchController.search({query: query});

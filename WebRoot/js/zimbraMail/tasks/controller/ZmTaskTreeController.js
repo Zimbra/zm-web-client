@@ -48,7 +48,7 @@ function() {
 ZmTaskTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	var deleteText = ZmMsg.del;
-	var folder = this._dataTree.getById(id);
+	var folder = this._appCtxt.getById(id);
 
 	parent.enableAll(true);
 	if (folder) {

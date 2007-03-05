@@ -32,7 +32,7 @@ function ZmPickTagDialog(parent, msgDialog, className) {
 
 	this._setOverview(ZmPickTagDialog._OVERVIEW_ID, this._tagTreeCellId, [ZmOrganizer.TAG]);
 	this._tagTreeView = this._treeView[ZmOrganizer.TAG];
-	this._tagTree = this._appCtxt.getTree(ZmOrganizer.TAG);
+	this._tagTree = this._appCtxt.getTagTree();
 	this._tagTree.addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
 	this.registerCallback(ZmPickTagDialog.NEW_BUTTON, this._showNewDialog, this);
 	var root = this._tagTreeView.getTreeItemById(ZmOrganizer.ID_ROOT);

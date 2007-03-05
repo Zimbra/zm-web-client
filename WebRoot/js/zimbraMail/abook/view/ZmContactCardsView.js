@@ -40,7 +40,7 @@ function ZmContactCardsView(parent, className, posStyle, controller, dropTgt) {
 
 	this.addControlListener(new AjxListener(this, this._controlListener));
 
-	this._addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+	this._addrbookTree = this._appCtxt.getFolderTree();
 	this._addrbookTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
 
 	this._initialResized = false;

@@ -572,7 +572,7 @@ function(item, details) {
 
 	// reset addrbook property
 	if (contact.addrbook.id != contact.folderId)
-		contact.addrbook = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(contact.folderId);
+		contact.addrbook = this._appCtxt.getById(contact.folderId);
 };
 
 ZmContactList.prototype.createLocal =

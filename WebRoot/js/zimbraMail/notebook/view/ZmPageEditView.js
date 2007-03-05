@@ -74,11 +74,10 @@ function(page) {
 ZmPageEditView.prototype._setResponse = function(page) {
 	// set location
 	var appCtxt = this._appCtxt;
-	var tree = appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 
 	var content;
 	if (page.folderId == ZmFolder.ID_ROOT) {
-		content = tree.getById(page.folderId).name;
+		content = this._appCtxt.getById(page.folderId).name;
 	}
 	else {
 		var iconAndName = "<td><wiklet class='ICON' /></td><td><wiklet class='NAME' /></td>";
@@ -88,7 +87,7 @@ ZmPageEditView.prototype._setResponse = function(page) {
 
 		var folderId = page.folderId;
 		while (folderId != ZmFolder.ID_ROOT) {
-			var notebook = tree.getById(folderId);
+			var notebook = this._appCtxt.getById(folderId);
 			a.unshift(ZmWikletProcessor.process(appCtxt, notebook, iconAndName));
 			folderId = notebook.parent.id;
 			if (folderId != ZmFolder.ID_ROOT) {
@@ -630,9 +629,8 @@ ZmPageEditor.prototype._insertObjectsListener = function(event, func, title) {
 };
 
 ZmPageEditor.prototype.__popupUploadDialog = function(callback, title) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var page = this._controller.getPage();
-	var notebook = tree.getById(page.folderId);
+	var notebook = this._appCtxt.getById(page.folderId);
 
 	var dialog = this._appCtxt.getUploadDialog();
 	dialog.popup(notebook, callback, title);

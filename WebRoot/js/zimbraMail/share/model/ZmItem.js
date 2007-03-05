@@ -254,8 +254,7 @@ ZmItem.prototype.getRestUrl = function() {
 
 	// if server doesn't tell us what URL to use, do our best to generate
 	var organizerType = ZmOrganizer.ITEM_ORGANIZER[this.type];
-	var tree = this._appCtxt.getTree(organizerType);
-	var organizer = tree.getById(this.folderId);
+	var organizer = this._appCtxt.getById(this.folderId);
 	var url = [
 		organizer.getRestUrl(), "/", AjxStringUtil.urlComponentEncode(this.name)
 	].join("");
@@ -270,14 +269,11 @@ ZmItem.prototype.getRestUrl = function() {
 */
 ZmItem.prototype.getTagImageInfo =
 function() {
-	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
-	if (!tagList) return ZmTag.COLOR_MINI_ICON[ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG]];
-	
 	var tagImageInfo;
 	if (!this.tags.length) {
 		tagImageInfo = "Blank_16";
 	} else if (this.tags.length == 1) {
-		var tag = tagList.getById(this.tags[0]);
+		var tag = this._appCtxt.getById(this.tags[0]);
 		var color = tag ? tag.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 		tagImageInfo = ZmTag.COLOR_MINI_ICON[color];
 	} else {
