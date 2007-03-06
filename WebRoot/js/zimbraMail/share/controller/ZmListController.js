@@ -379,17 +379,22 @@ function() {
 	var menuItems = this._getActionMenuOps();
 	if (!menuItems) return;
 	this._actionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
-	menuItems = this._actionMenu.opList;
-	for (var i = 0; i < menuItems.length; i++) {
-		var menuItem = menuItems[i];
-		if (this._listeners[menuItem]) {
-			this._actionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
-		}
-	}
-	this._actionMenu.addPopdownListener(this._popdownListener);
+	this._addMenuListeners(this._actionMenu);
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		this._setupTagMenu(this._actionMenu);
 	}
+};
+
+ZmListController.prototype._addMenuListeners =
+function(menu) {
+	var menuItems = menu.opList;
+	for (var i = 0; i < menuItems.length; i++) {
+		var menuItem = menuItems[i];
+		if (this._listeners[menuItem]) {
+			menu.addSelectionListener(menuItem, this._listeners[menuItem]);
+		}
+	}
+	menu.addPopdownListener(this._popdownListener);
 };
 
 ZmListController.prototype._initializeTabGroup =
@@ -668,12 +673,18 @@ function() {
 			this._actionEv.contact.load(callback);
 		}
 	} else {
-		var contact = new ZmContact(this._appCtxt);
-		contact.initFromEmail(this._actionEv.address);
+		var contact = this._createNewContact(this._actionEv);
 		cc.show(contact, true);
 	}
 };
 
+ZmListController.prototype._createNewContact =
+function(ev) {
+	var contact = new ZmContact(this._appCtxt);
+	contact.initFromEmail(ev.address);
+	return contact;
+};
+		
 ZmListController.prototype._loadContactCallback =
 function(resp, contact) {
 	AjxDispatcher.run("GetContactController").show(contact);

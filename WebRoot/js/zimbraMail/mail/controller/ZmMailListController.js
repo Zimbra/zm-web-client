@@ -304,13 +304,7 @@ function(view) {
 			menuItems = menuItems.concat(ops);
 		}
     	this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
-		menuItems = this._participantActionMenu.opList;
-		for (var i = 0; i < menuItems.length; i++) {
-			var menuItem = menuItems[i];
-			if (this._listeners[menuItem]) {
-				this._participantActionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
-			}
-		}
+    	this._addMenuListeners(this._participantActionMenu);
 		this._propagateMenuListeners(this._participantActionMenu, ZmOperation.REPLY_MENU);
 		this._propagateMenuListeners(this._participantActionMenu, ZmOperation.FORWARD_MENU);
 		this._participantActionMenu.addPopdownListener(this._popdownListener);

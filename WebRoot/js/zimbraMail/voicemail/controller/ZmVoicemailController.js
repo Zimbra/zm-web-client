@@ -131,6 +131,7 @@ function() {
 			menuItems = menuItems.concat(ops);
 		}
     	this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
+    	this._addMenuListeners(this._participantActionMenu);
 	}
 	return this._participantActionMenu;
 };
@@ -266,6 +267,14 @@ function() {
 	return this._toolbar[this._currentView]
 };
 
+ZmVoicemailController.prototype._createNewContact =
+function(ev) {
+	var voicemail = ev.item;
+	var contact = new ZmContact(this._appCtxt);
+	contact.initFromPhone(voicemail.caller);
+	return contact;
+};
+
 // Called when user clicks for help with plugins.
 ZmVoicemailController.prototype._pluginHelpListener =
 function(event) {
@@ -282,14 +291,6 @@ function(event) {
 		this._autoPlayNext();
 	}
 };
-
-// TODO:
-// 1) A lot of the participant-related code could be refactored up to ZmListController
-//    I think t should be as simple as the dereived class
-//       - A) Specifying that a participant menu is allowed
-//       - B) Setting this._actionEv.contact
-// 1) Participant menu clicks have no effect because no listeners are added.
-//    See ZmMailListController.prototype._initialize / this._participantActionMenu.addSelectionListener(...)
 
 ZmVoicemailController.prototype._listActionListener =
 function(ev) {
