@@ -28,7 +28,8 @@ function ZmPortlet(appCtxt, list, id, def) {
 
     // save zimlet
     var zimletMgr = appCtxt.getZimletMgr();
-    this.zimletCtxt = zimletMgr.getZimletsHash()[def.zimlet];
+    this.zimletName = def.zimlet;
+    this.zimletCtxt = zimletMgr.getZimletsHash()[this.zimletName];
     this.zimlet = this.zimletCtxt && this.zimletCtxt.handlerObject;
 
     // save data
@@ -37,11 +38,11 @@ function ZmPortlet(appCtxt, list, id, def) {
     if (this.title) {
         this.title = this.zimletCtxt ? this.zimletCtxt.processMessage(def.title) : def.zimlet;
     }
-    this.actionUrl = this.zimletCtxt.portlet.actionUrl;
+    this.actionUrl = this.zimletCtxt && this.zimletCtxt.portlet.actionUrl;
 
     // merge default and specified properties
     this.properties = {};
-    var defaultProps = this.zimletCtxt.portlet.portletProperties;
+    var defaultProps = this.zimletCtxt && this.zimletCtxt.portlet.portletProperties;
     for (var i in defaultProps) {
         var prop = defaultProps[i];
         this.properties[prop.name] = prop.value;
@@ -74,8 +75,12 @@ ZmPortlet.prototype.refresh = function() {
         if (this.actionUrl) {
             this.view.setContentUrl(this.actionUrl.target);
         }
-        else {
+        else if (this.zimlet) {
             this.zimlet.portletRefreshed(this);
+        }
+        else {
+            var text = AjxMessageFormat.format(ZmMsg.zimletUnknown, this.zimletName);
+            this.setContent(text);
         }
     }
 };

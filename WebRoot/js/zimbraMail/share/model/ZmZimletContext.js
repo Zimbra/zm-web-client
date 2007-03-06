@@ -202,7 +202,7 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
         var portlets = portletMgr.getPortlets();
         for (var pname in portlets) {
             var portlet = portlets[pname];
-            if (portlet.zimletCtxt.name == this.name) {
+            if (portlet.zimletName == this.name) {
                 portlet.zimlet = this.handlerObject;
                 this.handlerObject.portletCreated(portlet);
             }
