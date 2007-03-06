@@ -292,7 +292,7 @@ ZmSetting.INIT = {};
 // CONFIG SETTINGS
 ZmSetting.INIT[ZmSetting.AC_TIMER_INTERVAL]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_INT, 300];
 ZmSetting.INIT[ZmSetting.ASYNC_MODE]					= [null, ZmSetting.T_CONFIG, ZmSetting.D_BOOLEAN, true];
-ZmSetting.INIT[ZmSetting.BRANCH]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "LAZY"];
+ZmSetting.INIT[ZmSetting.BRANCH]						= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "main"];
 ZmSetting.INIT[ZmSetting.CLIENT_DATETIME] 				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildDateTime@"]; // this gets replaced during deploy
 ZmSetting.INIT[ZmSetting.CLIENT_RELEASE]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildRelease@"];  // this gets replaced during deploy
 ZmSetting.INIT[ZmSetting.CLIENT_VERSION]				= [null, ZmSetting.T_CONFIG, ZmSetting.D_STRING, "@buildVersion@"];  // this gets replaced during deploy
