@@ -58,6 +58,7 @@ ZmContactList = function(appCtxt, search, isGal, type) {
 	this.isCanonical = false;
 
 	this._emailToContact = {};
+	this._phoneToContact = {};
 	this._acAddrList = {};
 	this._galResults = {};
 	this._galRequests = {};
@@ -162,7 +163,7 @@ function(list) {
 		if (!contact._attrs) contact._attrs = {}; // handle empty contacts
 		// note that we don't create a ZmContact here (optimization)
 		contact.list = this;
-		this._updateEmailHash(contact, true);
+		this._updateHashes(contact, true);
 		var fn = [], fl = [];
 		if (contact._attrs[ZmContact.F_firstName])	{ fn.push(contact._attrs[ZmContact.F_firstName]); }
 		if (contact._attrs[ZmContact.F_middleName])	{ fn.push(contact._attrs[ZmContact.F_middleName]); }
@@ -229,7 +230,7 @@ function(contact, idx) {
 		var a = this.getArray();
 		idx = idx || this._getIndexById(contact.id);
 		a[idx] = realContact;
-		this._updateEmailHash(realContact, true);
+		this._updateHashes(realContact, true);
 		this._idHash[contact.id] = realContact;
 	}
 
@@ -319,6 +320,20 @@ function(address) {
 	if (!address || !this.isCanonical) return null;
 
 	var contact = this._emailToContact[address.toLowerCase()];
+	return contact ? this._realizeContact(contact) : null;
+};
+
+/**
+* Returns the contact with the given phone number, if any. Canonical list only.
+*
+* @param phone	[string]	a phone number
+*/
+ZmContactList.prototype.getContactByPhone =
+function(phone) {
+	if (!phone || !this.isCanonical) return null;
+
+	var digits = this._getPhoneDigits(phone);
+	var contact = this._phoneToContact[digits];
 	return contact ? this._realizeContact(contact) : null;
 };
 
@@ -525,7 +540,7 @@ function(items, folderId) {
 		ZmList.prototype.moveLocal.call(this, items, folderId);
 	if (folderId == ZmFolder.ID_TRASH) {
 		for (var i = 0; i < items.length; i++) {
-			this._updateEmailHash(items[i], false);
+			this._updateHashes(items[i], false);
 			this._updateAcList(items[i], false);
 		}
 	}
@@ -535,7 +550,7 @@ ZmContactList.prototype.deleteLocal =
 function(items) {
 	ZmList.prototype.deleteLocal.call(this, items);
 	for (var i = 0; i < items.length; i++) {
-		this._updateEmailHash(items[i], false);
+		this._updateHashes(items[i], false);
 		this._updateAcList(items[i], false);
 	}
 }
@@ -556,11 +571,11 @@ function(item, details) {
 		var oldContact = new ZmContact(this._appCtxt, null, this);
 		oldContact.id = details.contact.id;
 		oldContact.attr = details.oldAttr;
-		this._updateEmailHash(oldContact, false);
+		this._updateHashes(oldContact, false);
 		this._updateAcList(oldContact, false);
 
 		// add new contact to hashes
-		this._updateEmailHash(contact, true);
+		this._updateHashes(contact, true);
 		this._updateAcList(contact, true);
 	}
 
@@ -577,12 +592,13 @@ function(item, details) {
 
 ZmContactList.prototype.createLocal =
 function(item) {
-	this._updateEmailHash(item, true);
+	this._updateHashes(item, true);
 	this._updateAcList(item, true);
 };
 
-ZmContactList.prototype._updateEmailHash =
+ZmContactList.prototype._updateHashes =
 function(contact, doAdd) {
+	// Update email hash.
 	for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
 		var email = ZmContact.getAttr(contact, ZmContact.F_EMAIL_FIELDS[i]);
 		if (email) {
@@ -592,6 +608,27 @@ function(contact, doAdd) {
 				delete this._emailToContact[email.toLowerCase()];
 		}
 	}
+	
+	// Update phone hash.
+	for (var i = 0; i < ZmContact.F_PHONE_FIELDS.length; i++) {
+		var phone = ZmContact.getAttr(contact, ZmContact.F_PHONE_FIELDS[i]);
+		if (phone) {
+			var digits = this._getPhoneDigits(phone);
+			if (digits) {
+				if (doAdd)
+					this._phoneToContact[digits] = contact;
+				else
+					delete this._phoneToContact[digits];
+			}
+		}
+	}
+};
+
+// Strips all non-digit characters from a phone number.
+ZmContactList.prototype._getPhoneDigits =
+function(phone) {
+	var match = phone.match(/\d+/g);
+	return match ? match.join("") : null
 };
 
 // Returns the position at which the given contact should be inserted in this list.

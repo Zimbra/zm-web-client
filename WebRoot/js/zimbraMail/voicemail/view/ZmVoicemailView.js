@@ -29,6 +29,7 @@ function ZmVoicemailView(parent, appCtxt, controller, dropTgt) {
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;
+	
 	this._playing = null; // The voicemail currently loaded in the player.
 	this._previewing = null; // The voicemail whose play button is visible.
 }
@@ -45,20 +46,12 @@ ZmVoicemailView.DURATION_WIDTH = 120;
 ZmVoicemailView.DATE_WIDTH = null; // Auto
 ZmVoicemailView.CALLER_NAME_WIDTH = 150;
 
-var i = 1;
-ZmVoicemailView.F_CALLER = i++;
-ZmVoicemailView.F_PLAYING = i++;
-ZmVoicemailView.F_SIZE = i++;
-ZmVoicemailView.F_DATE = i++;
-ZmVoicemailView.F_CALLER_NAME = i++;
-delete i;
-
-ZmVoicemailView.FIELD_PREFIX = {};
-ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_CALLER]	= "a";
-ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING]	= "b";
-ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SIZE]	= "c";
-ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_DATE]	= "d";
-ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_CALLER_NAME]	= "e";
+// Resuse existing field codes rather than adding voice-specific stuff to ZmList...
+ZmVoicemailView.F_CALLER = ZmItem.F_FROM;
+ZmVoicemailView.F_PLAYING = ZmItem.F_ATTACHMENT;
+ZmVoicemailView.F_SIZE = ZmItem.F_SIZE;
+ZmVoicemailView.F_DATE =ZmItem.F_DATE;
+ZmVoicemailView.F_CALLER_NAME = ZmItem.F_PARTICIPANT;
 
 // Event details.
 ZmVoicemailView.PLAY_BUTTON_PRESSED = "PlayButtonPressed";
@@ -100,7 +93,7 @@ function(defaultColumnSort) {
 
 ZmVoicemailView.prototype._setColumnHeader = 
 function(fieldId, label) {
-	var index = this.getColIndexForId(ZmVoicemailView.FIELD_PREFIX[fieldId]);
+	var index = this.getColIndexForId(ZmListView.FIELD_PREFIX[fieldId]);
 	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[index]._id);
 	if (fromColSpan) fromColSpan.innerHTML = "&nbsp;" + label;
 	if (this._colHeaderActionMenu) this._colHeaderActionMenu.getItem(index).setText(label);
@@ -108,7 +101,7 @@ function(fieldId, label) {
 
 ZmVoicemailView.prototype._getColumnIndex = 
 function(field) {
-	var prefix = ZmVoicemailView.FIELD_PREFIX[field];
+	var prefix = ZmListView.FIELD_PREFIX[field];
 	for (var i = 0, count = this._headerList.length; i < count; i++) {
 		if (this._headerList[i]._id.indexOf(prefix) == 0) {
 			return i;
@@ -127,11 +120,11 @@ ZmVoicemailView.prototype._getHeaderList =
 function(appCtxt) {
 
 	var headerList = new Array();
-	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING], "", null, ZmVoicemailView.PLAYING_WIDTH, null, true));
-	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_CALLER_NAME], ZmMsg.from, null, ZmVoicemailView.CALLER_NAME_WIDTH, null, true));
-	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_CALLER], ZmMsg.phoneNumber, null, ZmVoicemailView.FROM_WIDTH, ZmVoicemailView.F_CALLER, true));
-	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SIZE], ZmMsg.duration, null, ZmVoicemailView.DURATION_WIDTH, ZmVoicemailView.F_SIZE, true));
-	headerList.push(new DwtListHeaderItem(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_DATE], ZmMsg.received, null, ZmVoicemailView.DATE_WIDTH, ZmVoicemailView.F_DATE, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING], "", null, ZmVoicemailView.PLAYING_WIDTH, null, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailView.F_CALLER_NAME], ZmMsg.from, null, ZmVoicemailView.CALLER_NAME_WIDTH, null, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailView.F_CALLER], ZmMsg.phoneNumber, null, ZmVoicemailView.FROM_WIDTH, ZmVoicemailView.F_CALLER, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailView.F_SIZE], ZmMsg.duration, null, ZmVoicemailView.DURATION_WIDTH, ZmVoicemailView.F_SIZE, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailView.F_DATE], ZmMsg.received, null, ZmVoicemailView.DATE_WIDTH, ZmVoicemailView.F_DATE, true));
 
 	return headerList;
 };
@@ -155,18 +148,27 @@ function(voicemail, now, isDndIcon, isMixedView, myDiv) {
 		var id = this._headerList[i]._id;
 		htmlArr[idx++] = "<td width=";
 		htmlArr[idx++] = width;
+		var prefix = id.length ? id.charAt(0) : null;
+		if (prefix) {
+			htmlArr[idx++] = " id='";
+			htmlArr[idx++] = this._getFieldIdFromPrefix(voicemail, prefix);
+			if (prefix == ZmListView.FIELD_PREFIX[ZmVoicemailView.F_CALLER_NAME]) {
+				htmlArr[idx++] = "_0";
+			}
+			htmlArr[idx++] = "'";
+		}
 		htmlArr[idx++] = ">";
 		
-		if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_CALLER]) == 0) {
-			htmlArr[idx++] = voicemail.caller;
-		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_SIZE]) == 0) {
+		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmVoicemailView.F_CALLER]) == 0) {
+			htmlArr[idx++] = this._getCallerHtml(voicemail);
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmVoicemailView.F_SIZE]) == 0) {
 			htmlArr[idx++] = AjxDateUtil.computeDuration(voicemail.duration);
-		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING]) == 0) {
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmVoicemailView.F_PLAYING]) == 0) {
 			htmlArr[idx++] = "<div class='ImgBlank_16 ZmPlayButton-hidden'></div>";
-		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_DATE]) == 0) {
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmVoicemailView.F_DATE]) == 0) {
 			htmlArr[idx++] = AjxDateUtil.computeDateStr(now, voicemail.date);
-		} else if (id.indexOf(ZmVoicemailView.FIELD_PREFIX[ZmVoicemailView.F_CALLER_NAME]) == 0) {
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(voicemail.callerName);
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmVoicemailView.F_CALLER_NAME]) == 0) {
+			htmlArr[idx++] = this._getCallerNameHtml(voicemail);
 		}
 		htmlArr[idx++] = "</td>";
 	}	
@@ -175,6 +177,24 @@ function(voicemail, now, isDndIcon, isMixedView, myDiv) {
 	
 	div.innerHTML = htmlArr.join("");
 	return div;
+};
+
+ZmVoicemailView.prototype._getCallerNameHtml =
+function(voicemail) {
+	var contactList = AjxDispatcher.run("GetContacts");
+	var contact = contactList.getContactByPhone(voicemail.caller);
+	if (contact) {
+// TODO: Seems like this should go on ZmVoicemail?!?!?		
+		voicemail.participants.getArray()[0] = voicemail.caller;
+		return AjxStringUtil.htmlEncode(contact.getFullName());
+	} else {
+		return this._getCallerHtml(voicemail);
+	}
+};
+
+ZmVoicemailView.prototype._getCallerHtml =
+function(voicemail) {
+	return AjxStringUtil.htmlEncode(voicemail.caller);
 };
 
 ZmVoicemailView.prototype._addRow =

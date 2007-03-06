@@ -136,6 +136,11 @@ ZmContact.FA_COMPANY_FIRST_LAST		= i++;
 ZmContact.FA_CUSTOM					= i++;
 
 ZmContact.F_EMAIL_FIELDS = [ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
+ZmContact.F_PHONE_FIELDS = [
+	ZmContact.F_assistantPhone, ZmContact.F_callbackPhone, ZmContact.F_carPhone, ZmContact.F_companyPhone,
+	ZmContact.F_homeFax, ZmContact.F_homePhone, ZmContact.F_homePhone2, ZmContact.F_mobilePhone,
+	ZmContact.F_otherPhone, ZmContact.F_workPhone, ZmContact.F_workPhone2
+];
 
 ZmContact.prototype.toString =
 function() {

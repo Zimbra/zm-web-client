@@ -626,7 +626,12 @@ function(columnItem, bSortAsc) {
 
 ZmListView.prototype._getFieldId =
 function(item, field) {
-	return [this._getViewPrefix(), ZmListView.FIELD_PREFIX[field], item.id].join("");
+	return this._getFieldIdFromPrefix(item, ZmListView.FIELD_PREFIX[field]);
+}
+
+ZmListView.prototype._getFieldIdFromPrefix =
+function(item, prefix) {
+	return [this._getViewPrefix(), prefix, item.id].join("");
 }
 
 ZmListView.prototype._getDnDIcon =

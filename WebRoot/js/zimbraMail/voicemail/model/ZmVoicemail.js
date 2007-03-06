@@ -40,11 +40,11 @@ function ZmVoicemail(appCtxt, id, list) {
 
 	this.id = null;
 	this.caller = null;
-	this.callerName = null;
 	this.date = 0;
 	this.duration = 0;
 	this.isUnheard = false;
 	this.soundUrl = false;
+	this.participants = new AjxVector();
 }
 
 ZmVoicemail.prototype = new ZmItem;
@@ -110,7 +110,6 @@ ZmVoicemail.prototype._loadFromDom =
 function(node) {
 	if (node.id) this.id = node.id;
 	if (node.caller) this.caller = node.caller;
-	if (node.callerName) this.callerName = node.callerName;
 	if (node.date) this.date = node.date;
 	if (node.duration) this.duration = node.duration;
 	if (node.isUnheard) this.isUnheard = node.isUnheard;

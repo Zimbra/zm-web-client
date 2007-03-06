@@ -121,6 +121,20 @@ function() {
 	return list;
 };
 
+ZmVoicemailController.prototype._getParticipantActionMenu =
+function() {
+	if (!this._participantActionMenu) {
+		var menuItems = this._participantOps();
+		menuItems.push(ZmOperation.SEP);
+		var ops = this._getActionMenuOps();
+		if (ops && ops.length) {
+			menuItems = menuItems.concat(ops);
+		}
+    	this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
+	}
+	return this._participantActionMenu;
+};
+
 ZmVoicemailController.prototype._initializeToolBar =
 function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
@@ -269,14 +283,39 @@ function(event) {
 	}
 };
 
+// TODO:
+// 1) A lot of the participant-related code could be refactored up to ZmListController
+//    I think t should be as simple as the dereived class
+//       - A) Specifying that a participant menu is allowed
+//       - B) Setting this._actionEv.contact
+// 1) Participant menu clicks have no effect because no listeners are added.
+//    See ZmMailListController.prototype._initialize / this._participantActionMenu.addSelectionListener(...)
+
 ZmVoicemailController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
 
+	var view = ev.dwtObj;
+	var isParticipant = ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT];
 	var isVoicemail = this._folder.callType == ZmVoicemailFolder.VOICEMAIL;
-	var actionMenu = this.getActionMenu();
+	var actionMenu;
+	if (isParticipant) {
+	 	actionMenu = this._getParticipantActionMenu();
+		var newOp = ev.detail ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
+		var newText = ev.detail? null : ZmMsg.AB_ADD_CONTACT;
+		ZmOperation.setOperation(this._participantActionMenu, ZmOperation.CONTACT, newOp, newText);
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+			var contacts = AjxDispatcher.run("GetContacts");
+			this._actionEv.contact = contacts.getContactByPhone(ev.detail);
+			this._setContactText(this._actionEv.contact != null);
+		}
+	} else  {
+	 	actionMenu = this.getActionMenu();
+	}
+	
 	actionMenu.getMenuItem(ZmOperation.SAVE).setVisible(isVoicemail);
 	actionMenu.getMenuItem(ZmOperation.FORWARD).setVisible(isVoicemail);
 	
-	this.getActionMenu().popup(0, ev.docX, ev.docY);
+	actionMenu.popup(0, ev.docX, ev.docY);
 };
+
