@@ -751,6 +751,7 @@ if (ext == null) ext = "";
   <target name="dev-sync" depends='templates' description="Web Client Quick Sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.path}" failonerror="false">
         <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="skins/**" />
+        <fileset dir="build/WebRoot" includes="skins/${env.CUSTOMER_SKIN}/**/*.js" />
         <fileset dir="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot" includes="portals/**" />
     </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}">
