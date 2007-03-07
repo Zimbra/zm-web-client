@@ -109,29 +109,6 @@ ZmSetting.LICENSE_GRACE		= "inGracePeriod";
 ZmSetting.SIG_INTERNET		= "internet";				// zimbraPrefMailSignatureStyle
 ZmSetting.SIG_OUTLOOK		= "outlook";
 
-/**
- * Returns the name of the setting with the given ID. Abstract method that's
- * available before ZmSettings has been constructed.
- * 
- * @param id	[constant]		setting ID
- */
-ZmSetting.getName =
-function(id) {
-	return ZmSetting.INIT[id] ? ZmSetting.INIT[id].name : null;
-};
-
-/**
- * Returns true if the setting with the given ID is a user preference as
- * opposed to a COS feature.
- * 
- * @param id	[constant]		setting ID
- */
-ZmSetting.isPref =
-function(id) {
-	var name = ZmSetting.getName(id);
-	return name ? (name.indexOf("zimbraPref") == 0) : false;
-};
-
 ZmSetting.prototype.toString =
 function() {
 	return this.name + ": " + this.value;

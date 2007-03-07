@@ -272,11 +272,15 @@ function(uname, pword) {
     soapDoc.set("virtualHost", location.hostname);
     var prefs = [], attrs = [];
     if (ZmLogin.FETCH.length) {
+    	if (!ZmLogin._settings) {
+    		ZmLogin._settings = new ZmSettings();
+			ZmLogin._settings._initializeLoginSettings();
+    	}
 		for (var i = 0; i < ZmLogin.FETCH.length; i++) {
 			var id = ZmLogin.FETCH[i];
-			var setting = ZmSetting.getName(id);
-			if (setting) {
-				ZmSetting.isPref(id) ? prefs.push(setting) : attrs.push(setting);
+			var setting = ZmLogin._settings.getSetting(id);
+			if (setting.name) {
+				(setting.type == ZmSetting.T_PREF) ? prefs.push(setting.name) : attrs.push(setting.name);
 			}
 		}
 		if (prefs.length) {
@@ -333,8 +337,7 @@ function(uname, pword, result) {
 	ZmLogin._authTokenLifetime = resp.lifetime;
 	var mailServer = resp.refer;
 
-	var settings = new ZmSettings();
-	settings.initialize();	// temporary
+	var settings = ZmLogin._settings;
 	var prefs = !resp.prefs ? null : (resp.prefs instanceof Array) ? resp.prefs[0].pref : resp.prefs.pref;
 	if (prefs && prefs.length) {
 		settings.createFromJs(prefs);

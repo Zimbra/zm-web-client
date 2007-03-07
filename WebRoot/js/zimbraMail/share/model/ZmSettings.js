@@ -47,14 +47,14 @@ function ZmSettings(appCtxt) {
 ZmSettings.prototype = new ZmModel;
 ZmSettings.prototype.constructor = ZmSettings;
 
-// we need these in static code
+// we need these IDs available for login and startup
 ZmSetting.CALENDAR_ENABLED		= "CALENDAR_ENABLED";
 ZmSetting.CONTACTS_ENABLED		= "CONTACTS_ENABLED";
-ZmSetting.OPTIONS_ENABLED		= "OPTIONS_ENABLED";
 ZmSetting.IM_ENABLED			= "IM_ENABLED";
 ZmSetting.MAIL_ENABLED			= "MAIL_ENABLED";
 ZmSetting.MIXED_VIEW_ENABLED	= "MIXED_VIEW_ENABLED";
 ZmSetting.NOTEBOOK_ENABLED		= "NOTEBOOK_ENABLED";
+ZmSetting.OPTIONS_ENABLED		= "OPTIONS_ENABLED";
 ZmSetting.PORTAL_ENABLED		= "PORTAL_ENABLED";
 ZmSetting.SKIN_NAME				= "SKIN_NAME";
 ZmSetting.TASKS_ENABLED			= "TASKS_ENABLED";
@@ -443,7 +443,6 @@ function() {
 	this.registerSetting("NOTEBOOK_ENABLED",				{name: "zimbraFeatureNotebookEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("NOTIF_FEATURE_ENABLED",			{name: "zimbraFeatureNewMailNotificationEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("OPTIONS_ENABLED",					{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("OPTIONS_ENABLED",					{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("POP_ACCOUNTS_ENABLED",			{name: "zimbraFeaturePop3DataSourceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("PORTAL_ENABLED",					{name: "zimbraFeaturePortalEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("PORTAL_NAME",						{name: "zimbraPortalName", type: ZmSetting.T_COS, defaultValue: "example"});
@@ -458,8 +457,6 @@ function() {
 	this.registerSetting("VACATION_MSG_FEATURE_ENABLED",	{name: "zimbraFeatureOutOfOfficeReplyEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("VIEW_ATTACHMENT_AS_HTML",			{name: "zimbraFeatureViewInHtmlEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("VOICEMAIL_ENABLED",				{name: "zimbraFeatureVoicemailEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	
-	
 	
 	// user metadata (included with COS since the user can't change them)
 	this.registerSetting("LICENSE_STATUS",	{type: ZmSetting.T_COS, defaultValue: ZmSetting.LICENSE_GOOD});
@@ -548,4 +545,19 @@ function() {
 	
 	// Keyboard shortcuts
 	this.registerSetting("SHORTCUTS",	{name: "zimbraPrefShortcuts", type: ZmSetting.T_PREF});
+};
+
+ZmSettings.prototype._initializeLoginSettings =
+function() {
+	this.registerSetting("CALENDAR_ENABLED",	{name: "zimbraFeatureCalendarEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("CONTACTS_ENABLED",	{name: "zimbraFeatureContactsEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("IM_ENABLED",			{name: "zimbraFeatureIMEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("MAIL_ENABLED",		{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	this.registerSetting("MIXED_VIEW_ENABLED",	{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	this.registerSetting("NOTEBOOK_ENABLED",	{name: "zimbraFeatureNotebookEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("OPTIONS_ENABLED",		{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	this.registerSetting("PORTAL_ENABLED",		{name: "zimbraFeaturePortalEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("SKIN_NAME",			{name: "zimbraPrefSkin", type: ZmSetting.T_PREF, defaultValue: "skin"});
+	this.registerSetting("TASKS_ENABLED",		{name: "zimbraFeatureTasksEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("VOICEMAIL_ENABLED",	{name: "zimbraFeatureVoicemailEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 };
