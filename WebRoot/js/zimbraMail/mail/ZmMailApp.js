@@ -27,6 +27,8 @@ function ZmMailApp(appCtxt, container, parentController) {
 
 	ZmApp.call(this, ZmApp.MAIL, appCtxt, container, parentController);
 
+	ZmMailApp._setGroupByMaps();
+
 	AjxDispatcher.registerMethod("Compose", "Mail", new AjxCallback(this, this.compose));
 	AjxDispatcher.registerMethod("GetAttachmentListController", "Mail", new AjxCallback(this, this.getAttachmentListController));
 	AjxDispatcher.registerMethod("GetComposeController", ["Mail", "Zimlet"], new AjxCallback(this, this.getComposeController));
@@ -169,14 +171,6 @@ ZmItem.CONV					= ZmEvent.S_CONV;
 ZmItem.MSG					= ZmEvent.S_MSG;
 ZmItem.ATT					= ZmEvent.S_ATT;
 
-// convert between server values for "group mail by" and item types
-ZmMailApp.GROUP_MAIL_BY_ITEM	= {};
-ZmMailApp.GROUP_MAIL_BY_VALUE	= {};
-ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_CONV]		= ZmItem.CONV;
-ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_MESSAGE]	= ZmItem.MSG;
-ZmMailApp.GROUP_MAIL_BY_VALUE[ZmItem.CONV]					= ZmSetting.GROUP_BY_CONV;
-ZmMailApp.GROUP_MAIL_BY_VALUE[ZmItem.MSG]					= ZmSetting.GROUP_BY_MESSAGE;
-
 // App-related constants
 ZmApp.MAIL					= "Mail";
 ZmApp.CLASS[ZmApp.MAIL]		= "ZmMailApp";
@@ -186,6 +180,17 @@ ZmApp.QS_ARG[ZmApp.MAIL]	= "mail";
 
 ZmMailApp.prototype = new ZmApp;
 ZmMailApp.prototype.constructor = ZmMailApp;
+
+ZmMailApp._setGroupByMaps =
+function() {
+	// convert between server values for "group mail by" and item types
+	ZmMailApp.GROUP_MAIL_BY_ITEM	= {};
+	ZmMailApp.GROUP_MAIL_BY_VALUE	= {};
+	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_CONV]		= ZmItem.CONV;
+	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_MESSAGE]	= ZmItem.MSG;
+	ZmMailApp.GROUP_MAIL_BY_VALUE[ZmItem.CONV]					= ZmSetting.GROUP_BY_CONV;
+	ZmMailApp.GROUP_MAIL_BY_VALUE[ZmItem.MSG]					= ZmSetting.GROUP_BY_MESSAGE;
+};
 
 ZmMailApp.prototype.toString = 
 function() {

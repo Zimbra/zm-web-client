@@ -38,6 +38,8 @@ function ZmComposeView(parent, controller, composeMode) {
 
 	DwtComposite.call(this, parent, "ZmComposeView", Dwt.ABSOLUTE_STYLE);
 
+	ZmComposeView.ADDR_SETTING[AjxEmailAddress.BCC]	= ZmSetting.SHOW_BCC;
+
 	this._onMsgDataChange = new AjxCallback(this, this._onMsgDataChange);
 
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
@@ -58,8 +60,6 @@ ZmComposeView.prototype.constructor = ZmComposeView;
 
 // Consts related to compose fields
 ZmComposeView.ADDRS = [AjxEmailAddress.TO, AjxEmailAddress.CC, AjxEmailAddress.BCC];
-ZmComposeView.ADDR_SETTING = {}; // XXX: may not be necessary anymore?
-ZmComposeView.ADDR_SETTING[AjxEmailAddress.BCC]	= ZmSetting.SHOW_BCC;
 ZmComposeView.QUOTED_HDRS = [ZmMailMsg.HDR_FROM, ZmMailMsg.HDR_TO, ZmMailMsg.HDR_CC,
 							 ZmMailMsg.HDR_DATE, ZmMailMsg.HDR_SUBJECT];
 ZmComposeView.BAD = "_bad_addrs_";
@@ -84,8 +84,9 @@ ZmComposeView.HTML_QUOTED_CONTENT_RE = new RegExp("<br>----- ", "i");
 ZmComposeView.REFANG_RE = new RegExp("(<img[^>]*)dfsrc\s*=([^>]*>)", "ig");
 ZmComposeView.REFANG_RE_REPLACE = "$1src=$2";
 
-ZmComposeView.WRAP_LENGTH = 72;
+ZmComposeView.ADDR_SETTING = {}; // XXX: may not be necessary anymore?
 
+ZmComposeView.WRAP_LENGTH = 72;
 
 // Public methods
 

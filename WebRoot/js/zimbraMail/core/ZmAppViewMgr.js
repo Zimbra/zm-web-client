@@ -88,6 +88,8 @@
 */
 function ZmAppViewMgr(shell, controller, isNewWindow, hasSkin) {
 
+	ZmAppViewMgr._setContainerIds();
+
 	this._shell = shell;
 	this._controller = controller;
 	this._appCtxt = controller._appCtxt;
@@ -138,12 +140,12 @@ ZmAppViewMgr.C_STATUS					= "STATUS";
 ZmAppViewMgr.C_SASH						= "SASH";
 
 ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
-							ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_SEARCH_BUILDER,
-							ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR, ZmAppViewMgr.C_CURRENT_APP,
-							ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
-							ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_TOOLBAR_BOTTOM,
-							ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
-                            ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH];
+							   ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_SEARCH_BUILDER,
+							   ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR, ZmAppViewMgr.C_CURRENT_APP,
+							   ZmAppViewMgr.C_APP_CHOOSER, ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
+							   ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_TOOLBAR_BOTTOM,
+							   ZmAppViewMgr.C_APP_CONTENT, ZmAppViewMgr.C_APP_CONTENT_FULL,
+                               ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH];
 
 /**
  * These components are the ones that are part of the app display when NOT
@@ -156,22 +158,6 @@ ZmAppViewMgr.APP_COMPONENTS = [
 
 // keys for getting container IDs
 ZmAppViewMgr.CONT_ID_KEY = {};
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_BANNER]					= ZmSetting.SKIN_LOGO_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_USER_INFO]				= ZmSetting.SKIN_USER_INFO_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_QUOTA_INFO]				= ZmSetting.SKIN_QUOTA_INFO_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH]					= ZmSetting.SKIN_SEARCH_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER]			= ZmSetting.SKIN_SEARCH_BUILDER_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR]	= ZmSetting.SKIN_SEARCH_BUILDER_TOOLBAR_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_CURRENT_APP]			= ZmSetting.SKIN_CURRENT_APP_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CHOOSER]			= ZmSetting.SKIN_APP_CHOOSER_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE]					= ZmSetting.SKIN_TREE_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE_FOOTER]			= ZmSetting.SKIN_TREE_FOOTER_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_TOP]			= ZmSetting.SKIN_APP_TOP_TOOLBAR_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_BOTTOM]			= ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT]			= ZmSetting.SKIN_APP_MAIN_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT_FULL]		= ZmSetting.SKIN_APP_MAIN_FULL_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_STATUS]					= ZmSetting.SKIN_STATUS_ID;
-ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SASH]					= ZmSetting.SKIN_SASH_ID;
 
 // callbacks
 ZmAppViewMgr.CB_PRE_HIDE	= 1;
@@ -181,6 +167,26 @@ ZmAppViewMgr.CB_POST_SHOW	= 4;
 
 // used to continue when returning from callbacks
 ZmAppViewMgr.PENDING_VIEW = "ZmAppViewMgr.PENDING_VIEW";
+
+ZmAppViewMgr._setContainerIds =
+function() {
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_BANNER]					= ZmSetting.SKIN_LOGO_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_USER_INFO]				= ZmSetting.SKIN_USER_INFO_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_QUOTA_INFO]				= ZmSetting.SKIN_QUOTA_INFO_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH]					= ZmSetting.SKIN_SEARCH_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER]			= ZmSetting.SKIN_SEARCH_BUILDER_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR]	= ZmSetting.SKIN_SEARCH_BUILDER_TOOLBAR_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_CURRENT_APP]			= ZmSetting.SKIN_CURRENT_APP_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CHOOSER]			= ZmSetting.SKIN_APP_CHOOSER_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE]					= ZmSetting.SKIN_TREE_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TREE_FOOTER]			= ZmSetting.SKIN_TREE_FOOTER_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_TOP]			= ZmSetting.SKIN_APP_TOP_TOOLBAR_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_TOOLBAR_BOTTOM]			= ZmSetting.SKIN_APP_BOTTOM_TOOLBAR_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT]			= ZmSetting.SKIN_APP_MAIN_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_APP_CONTENT_FULL]		= ZmSetting.SKIN_APP_MAIN_FULL_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_STATUS]					= ZmSetting.SKIN_STATUS_ID;
+	ZmAppViewMgr.CONT_ID_KEY[ZmAppViewMgr.C_SASH]					= ZmSetting.SKIN_SASH_ID;
+};
 
 // Public methods
 

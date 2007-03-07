@@ -96,12 +96,9 @@ function(icon, visible) {
 
 ZmAppCtxt.prototype.getSettings =
 function() {
-	if (!this._settings)
-		this._settings = new ZmSettings(this);
 	return this._settings;
 };
 
-// NOTE: this is only to be used by any child windows!
 ZmAppCtxt.prototype.setSettings = 
 function(settings) {
 	this._settings = settings;

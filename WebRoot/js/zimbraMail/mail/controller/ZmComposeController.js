@@ -40,6 +40,9 @@ function ZmComposeController(appCtxt, container, mailApp) {
 
 	this._action = null;
 	
+	// settings whose changes affect us (so we add a listener to them)
+	ZmComposeController.SETTINGS = [ZmSetting.SHOW_BCC];
+
 	// radio groups for options items
 	ZmComposeController.RADIO_GROUP = {};
 	ZmComposeController.RADIO_GROUP[ZmOperation.REPLY]			= 1;
@@ -87,9 +90,6 @@ function ZmComposeController(appCtxt, container, mailApp) {
 		settings.getSetting(ZmComposeController.SETTINGS[i]).addChangeListener(scl);
 	}
 };
-
-// settings whose changes affect us (so we add a listener to them)
-ZmComposeController.SETTINGS = [ZmSetting.SHOW_BCC];
 
 ZmComposeController.prototype = new ZmController();
 ZmComposeController.prototype.constructor = ZmComposeController;

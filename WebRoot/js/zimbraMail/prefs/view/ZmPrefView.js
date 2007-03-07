@@ -40,6 +40,8 @@ function ZmPrefView(parent, appCtxt, posStyle, controller) {
 
     DwtTabView.call(this, parent, "ZmPrefView", posStyle);
 
+	ZmPrefView._setViewPrefs();
+	
 	this._parent = parent;
     this._appCtxt = appCtxt;
 	this._controller = controller;
@@ -77,12 +79,15 @@ ZmPrefView.VIEWS = [
 
 // list of prefs for each page
 ZmPrefView.PREFS = {};
-ZmPrefView.PREFS[ZmPrefView.ADDR_BOOK]			= ZmPref.ADDR_BOOK_PREFS;
-ZmPrefView.PREFS[ZmPrefView.CALENDAR]			= ZmPref.CALENDAR_PREFS;
-ZmPrefView.PREFS[ZmPrefView.GENERAL]			= ZmPref.GENERAL_PREFS;
-ZmPrefView.PREFS[ZmPrefView.MAIL]				= ZmPref.MAIL_PREFS;
-ZmPrefView.PREFS[ZmPrefView.POP_ACCOUNTS]       = ZmPref.POP_ACCOUNTS_PREFS;
-ZmPrefView.PREFS[ZmPrefView.SHORTCUTS]			= ZmPref.SHORTCUT_PREFS;
+ZmPrefView._setViewPrefs =
+function() {
+	ZmPrefView.PREFS[ZmPrefView.ADDR_BOOK]			= ZmPref.ADDR_BOOK_PREFS;
+	ZmPrefView.PREFS[ZmPrefView.CALENDAR]			= ZmPref.CALENDAR_PREFS;
+	ZmPrefView.PREFS[ZmPrefView.GENERAL]			= ZmPref.GENERAL_PREFS;
+	ZmPrefView.PREFS[ZmPrefView.MAIL]				= ZmPref.MAIL_PREFS;
+	ZmPrefView.PREFS[ZmPrefView.POP_ACCOUNTS]       = ZmPref.POP_ACCOUNTS_PREFS;
+	ZmPrefView.PREFS[ZmPrefView.SHORTCUTS]			= ZmPref.SHORTCUT_PREFS;
+};
 
 // title for the page's tab
 ZmPrefView.TAB_NAME = {};

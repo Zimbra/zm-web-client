@@ -39,6 +39,8 @@ function ZmFilterRulesController(appCtxt, container, prefsApp, prefsView) {
 
 	ZmController.call(this, appCtxt, container, prefsApp);
 
+	ZmFilterRule._setPreconditions();
+
 	this._prefsView = prefsView;
 	this._rules = AjxDispatcher.run("GetFilterRules");
 	this._filterRulesView = new ZmFilterRulesView(this._prefsView._parent, appCtxt, this);

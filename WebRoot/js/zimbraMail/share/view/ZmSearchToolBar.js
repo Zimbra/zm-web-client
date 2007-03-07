@@ -28,6 +28,8 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	this._appCtxt = appCtxt;
 	ZmToolBar.call(this, parent, "ZmSearchToolbar");
 
+	ZmSearchToolBar.SETTING[ZmSearchToolBar.FOR_ANY_MI] = ZmSetting.MIXED_VIEW_ENABLED;
+
 	this._customSearchBtnListener = new AjxListener(this, this._customSearchBtnListener);
 
     this._search = new DwtMessageComposite(this);
@@ -89,10 +91,6 @@ ZmSearchToolBar.MENUITEM_ID = "_menuItemId";
 // menu items
 ZmSearchToolBar.FOR_ANY_MI	= "FOR_ANY";
 
-// required setting for menu item to appear
-ZmSearchToolBar.SETTING = {};
-ZmSearchToolBar.SETTING[ZmSearchToolBar.FOR_ANY_MI] = ZmSetting.MIXED_VIEW_ENABLED;
-
 // text for menu item
 ZmSearchToolBar.MSG_KEY = {};
 ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_ANY_MI] = "searchAll";
@@ -104,6 +102,9 @@ ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_ANY_MI] = "searchForAny";
 // image for menu item
 ZmSearchToolBar.ICON = {};
 ZmSearchToolBar.ICON[ZmSearchToolBar.FOR_ANY_MI] = "SearchAll";
+
+// required setting for menu item to appear
+ZmSearchToolBar.SETTING = {};
 
 // list of menu items
 ZmSearchToolBar.MENU_ITEMS = [];

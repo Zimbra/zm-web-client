@@ -334,6 +334,7 @@ function(uname, pword, result) {
 	var mailServer = resp.refer;
 
 	var settings = new ZmSettings();
+	settings.initialize();	// temporary
 	var prefs = !resp.prefs ? null : (resp.prefs instanceof Array) ? resp.prefs[0].pref : resp.prefs.pref;
 	if (prefs && prefs.length) {
 		settings.createFromJs(prefs);
