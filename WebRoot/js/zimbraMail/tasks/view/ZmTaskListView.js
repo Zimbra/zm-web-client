@@ -164,6 +164,7 @@ function(task, now, isDndIcon) {
 
 		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED]) == 0)
 		{
+			var fieldId = this._getFieldId(task, ZmItem.F_COMPLETED);
 			var cboxIcon = "TaskCheckbox";
 			if (task.isComplete())
 				cboxIcon = "TaskCheckboxCompleted";
@@ -171,12 +172,10 @@ function(task, now, isDndIcon) {
 				cboxIcon = "TaskCheckboxOverdue";
 
 			// complete checkbox
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = this._getFieldId(task, id);
-			htmlArr[idx++] = "' width=";
+			htmlArr[idx++] = "<td width=";
 			htmlArr[idx++] = width;
-			htmlArr[idx++] = "'>";
-			htmlArr[idx++] = AjxImg.getImageHtml(cboxIcon);
+			htmlArr[idx++] = ">";
+			htmlArr[idx++] = AjxImg.getImageHtml(cboxIcon, null, ["id='", fieldId, "'"].join(""));
 			htmlArr[idx++] = "</td>";
 		}
 		else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) == 0) {

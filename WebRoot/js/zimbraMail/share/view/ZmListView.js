@@ -72,6 +72,7 @@ ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]			= "r";
 ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY]		= "s";
 ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]		= "t";
 ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE]		= "u";
+ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED]		= "v";
 
 // column widths
 ZmListView.COL_WIDTH_ICON 					= 19;
@@ -464,7 +465,7 @@ function (ev, listEv, clickedEl) {
 
 	var m = this._parseId(id);
 	if (ev.button == DwtMouseEvent.LEFT) {
-			this._selEv.field = m ? m.field : null;
+		this._selEv.field = m ? m.field : null;
 	} else if (ev.button == DwtMouseEvent.RIGHT) {
 		this._actionEv.field = m ? m.field : null;
 		if (m && m.field) {

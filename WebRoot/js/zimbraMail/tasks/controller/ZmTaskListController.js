@@ -273,8 +273,17 @@ function(task, mode) {
 
 ZmTaskListController.prototype._doCheckCompleted =
 function(task) {
-	// TODO
-//	use task.isComplete()
+	var callback = new AjxCallback(this, this._doCheckCompletedResponse, [task]);
+	task.getDetails(ZmCalItem.MODE_EDIT, callback);
+};
+
+ZmTaskListController.prototype._doCheckCompletedResponse =
+function(task) {
+	var clone = ZmTask.quickClone(task);
+	clone.pComplete = task.isComplete() ? 0 : 100;
+	clone.status = task.isComplete() ? ZmCalItem.STATUS_NEED : ZmCalItem.STATUS_COMP;
+	clone.setViewMode(ZmCalItem.MODE_EDIT);
+	clone.save();
 };
 
 ZmTaskListController.prototype._showTypeDialog =
