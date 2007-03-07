@@ -166,7 +166,9 @@ function() {
  */
 ZmTasksApp.prototype.createNotify =
 function(list, force) {
-	if (!force && this._deferNotifications("create", list)) { return; }
+	if (!force && this._deferNotifications("create", list))
+		return;
+
 	for (var i = 0; i < list.length; i++) {
 		var create = list[i];
 		var name = create._name;
@@ -177,7 +179,10 @@ function(list, force) {
 		} else if (name == "link") {
 			this._handleCreateLink(create, ZmOrganizer.TASKS);
 		} else if (name == "task") {
-			AjxDispatcher.run("GetTaskListController").notifyCreate(create);
+			var currList = this._appCtxt.getCurrentList();
+			if (currList && (currList instanceof ZmTaskList)) {
+				currList.notifyCreate(create);
+			}
 			create._handled = true;
 		}
 	}

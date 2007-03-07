@@ -150,20 +150,22 @@ function() {
 
 ZmTask.prototype._loadFromDom =
 function(node, instNode) {
+	var inv = node.inv ? node.inv[0] : null
+	var comp = inv ? inv.comp[0] : null;
 	this.id = node.id;
-	this.invId = node.invId;
+	this.invId = (node.invId) || (inv ? [node.id, inv.id].join("-") : null);
 	this.uid = node.uid;				// XXX: what is this?
 	this.folderId = node.l;
 	this.size = node.s;					// XXX: do we care?
-	this.name = node.name;
-	this.location = node.loc;
-	this.setAllDayEvent(node.allDay);
-	this.priority = parseInt(node.priority);
-	this.pComplete = parseInt(node.percentComplete);
-	this.status = node.status;
-	this.isOrg = node.isOrg;
-	this.ptst = node.ptst;
-	this.compNum = node.compNum;
+	this.name = this._getPart(node, comp, "name");
+	this.location = this._getPart(node, comp, "loc");
+	this.setAllDayEvent(this._getPart(node, comp, "allDay"));
+	this.priority = parseInt(this._getPart(node, comp, "priority"));
+	this.pComplete = parseInt(this._getPart(node, comp, "percentComplete"));
+	this.status = this._getPart(node, comp, "status");
+	this.isOrg = this._getPart(node, comp, "isOrg");
+	this.ptst = this._getPart(node, comp, "ptst");
+	this.compNum = this._getPart(node, comp, "compNum");
 	this.date = node.d;					// XXX: creation date?
 	this.sf = node.sf;
 //	this.rev = node.rev;
@@ -172,6 +174,13 @@ function(node, instNode) {
 
 	this._parseFlags(node.f);
 	this._parseTags(node.t);			// future
+};
+
+ZmTask.prototype._getPart =
+function(node, comp, name) {
+	if (node[name] != null) return node[name];
+	if (comp) return comp[name];
+	return null;
 };
 
 ZmTask.prototype._setExtrasFromMessage =

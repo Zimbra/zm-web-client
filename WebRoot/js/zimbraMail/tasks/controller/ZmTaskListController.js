@@ -65,6 +65,10 @@ function(list, folderId) {
 
 	this._setup(this._currentView);
 
+	// reset offset if list view has been created
+	if (this._listView[this._currentView])
+		this._listView[this._currentView].setOffset(0);
+
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
@@ -76,15 +80,17 @@ function(list, folderId) {
 	this._resetNavToolBarButtons(this._currentView);
 };
 
-ZmTaskListController.prototype.notifyCreate =
-function(node) {
-	if (this._currentView != this._appCtxt.getAppViewMgr().getCurrentViewId())
-		return;
+ZmTaskListController.prototype.quickSave =
+function(name, callback) {
+	var folderId = this._activeSearch.search.folderId;
 
-	if (this._list && node.l == this._list.folderId) {
-		// for now, refetch this folder
-		this._app.launch(null, null, node.l);
-	}
+	var task = new ZmTask(this._appCtxt, this._list, null, folderId);
+	task.setName(name);
+	task.setViewMode(ZmCalItem.MODE_NEW);
+	task.location = "";
+	task.setAllDayEvent(true);
+
+	task.save(null, callback);
 };
 
 // default callback before a view is shown - enable/disable nav buttons

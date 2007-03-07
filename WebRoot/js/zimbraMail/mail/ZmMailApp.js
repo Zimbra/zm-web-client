@@ -256,9 +256,9 @@ function(list, force) {
 			var conv = convs[cid];
 			conv.folders = folders[cid] ? folders[cid] : null;
 		}
-		var list = this._appCtxt.getCurrentList();
-		if (list && (list instanceof ZmMailList)) {
-			list.notifyCreate(convs, msgs);
+		var currList = this._appCtxt.getCurrentList();
+		if (currList && (currList instanceof ZmMailList)) {
+			currList.notifyCreate(convs, msgs);
 		}
 	}
 };

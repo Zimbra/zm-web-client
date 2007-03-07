@@ -62,15 +62,30 @@ function(keepFocus) {
 	if (this._newTaskInputEl && Dwt.getVisibility(this._newTaskInputEl)) {
 		var name = AjxStringUtil.trim(this._newTaskInputEl.value);
 		if (name != "") {
-			DBG.println("TODO");
-		}
-
-		if (keepFocus) {
-			this._newTaskInputEl.value = "";
-			this._newTaskInputEl.focus();
+			var respCallback = new AjxCallback(this, this._saveNewTaskResponse, [keepFocus]);
+			this._controller.quickSave(name, respCallback);
 		} else {
-			Dwt.setVisibility(this._newTaskInputEl, false);
+			this._saveNewTaskResponse(keepFocus);
 		}
+	}
+};
+
+ZmTaskListView.prototype._saveNewTaskResponse =
+function(keepFocus) {
+	if (keepFocus) {
+		this._newTaskInputEl.value = "";
+		this._newTaskInputEl.focus();
+	} else {
+		Dwt.setVisibility(this._newTaskInputEl, false);
+	}
+};
+
+ZmTaskListView.prototype.discardNewTask =
+function() {
+	if (this._newTaskInputEl && Dwt.getVisibility(this._newTaskInputEl)) {
+		this._newTaskInputEl.value = "";
+		Dwt.setVisibility(this._newTaskInputEl, false);
+		this.focus();
 	}
 };
 
@@ -79,8 +94,8 @@ function(keepFocus) {
 
 ZmTaskListView.prototype._renderList =
 function(list, noResultsOk) {
-	this._newTaskId = Dwt.getNextId();
 	var div = document.createElement("DIV");
+	div.id = "_newTaskBannerId";
 
 	var htmlArr = [];
 	var idx = 0;
@@ -95,9 +110,7 @@ function(list, noResultsOk) {
 
 		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0)
 		{
-			htmlArr[idx++] = "<td><div class='newTaskBanner' id='";
-			htmlArr[idx++] = this._newTaskId;
-			htmlArr[idx++] = "' onclick='ZmTaskListView._handleOnClick(this)'>";
+			htmlArr[idx++] = "<td><div class='newTaskBanner' onclick='ZmTaskListView._handleOnClick(this)'>";
 			htmlArr[idx++] = ZmMsg.createNewTaskHint;
 			htmlArr[idx++] = "</div></td>";
 		} else {
@@ -111,6 +124,20 @@ function(list, noResultsOk) {
 	this._addRow(div);
 
 	ZmListView.prototype._renderList.call(this, list, noResultsOk);
+};
+
+ZmTaskListView.prototype._resetListView =
+function() {
+	// explicitly remove each child (setting innerHTML causes mem leak)
+	var cDiv;
+	while (this._parentEl.hasChildNodes()) {
+		if (this._parentEl.lastChild.id == "_newTaskBannerId")
+			break;
+		cDiv = this._parentEl.removeChild(this._parentEl.lastChild);
+		AjxCore.unassignId(Dwt.getAttr(cDiv, "_itemIndex"));
+	}
+	this._selectedItems.removeAll();
+	this._rightSelItems = null;
 };
 
 ZmTaskListView.prototype._createItemHtml =
@@ -382,7 +409,17 @@ function(ev) {
 	var fields = ev.getDetail("fields");
 	var items = ev.getDetail("items");
 
-	if (ev.event == ZmEvent.E_MODIFY) {
+	if (ev.event == ZmEvent.E_CREATE) {
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if (this._list && this._list.contains(item)) // skip if we already have it
+				continue;
+
+			// add new item at the beg. of list view's internal list
+			var idx = this._list && this._list.size() > 0 ? 1 : null;
+			this.addItem(item, idx);
+		}
+	} else if (ev.event == ZmEvent.E_MODIFY) {
 		// HACK HACK HACK
 		// XXX: optimize later - for now refetch list from server
 		this._controller._list._redoSearch(this._controller);
@@ -440,12 +477,15 @@ ZmTaskListView._handleKeyPress =
 function(ev) {
 	var key = DwtKeyEvent.getCharCode(ev);
 
-	if (key == DwtKeyEvent.KEY_ENTER) {
-		var appCtxt = window.parentController
-			? window.parentController._appCtxt
-			: window._zimbraMail._appCtxt;
+	var appCtxt = window.parentController
+		? window.parentController._appCtxt
+		: window._zimbraMail._appCtxt;
 
-		var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
+	var tlv = appCtxt.getApp(ZmApp.TASKS).getTaskListController().getCurrentView();
+
+	if (key == DwtKeyEvent.KEY_ENTER) {
 		tlv.saveNewTask(true);
+	} else if (key == DwtKeyEvent.KEY_ESCAPE) {
+		tlv.discardNewTask();
 	}
 };
