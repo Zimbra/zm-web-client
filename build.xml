@@ -914,7 +914,7 @@ if (ext == null) ext = "";
   </target>
 
   <!-- admin console targets -->
-  <target name="admin-dev-sync" description="Admin Quick Sync">
+  <target name="admin-dev-sync" depends='templates' description="Admin Quick Sync">
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}">
       <fileset dir="WebRoot" includes="js/**,test/**,public/**,skins/**" excludes="public/launch*,js/*/package/**,js/zimbraMail/**,public/Login.jsp,public/launchZimbraMail.jsp,public/ZimbraMail.jsp,public/ZimbraMailNewCompose.jsp,public/Messages.jsp"/>
       <fileset dir='${build.dir}/WebRoot' includes='public/jsp/**'/>
@@ -926,8 +926,8 @@ if (ext == null) ext = "";
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/ajax">
       <fileset dir="${ajax.dir}/WebRoot/js" includes="**/*.js,**/*.css" excludes="**/img/"/>
     </copy>
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}/js">
-      <fileset dir="${build.dir}/WebRoot/js" includes="**/templates/*.js" />
+    <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js">
+      <fileset dir="${build.dir}/WebRoot/js" includes="**/templates/*.js" excludes="zimbraMail/**/templates/**" />
     </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.admin.path}/js/zimbraAdmin/config/style">
       <fileset dir="WebRoot/js/zimbraMail/config/style" includes="*.css" excludes="zm.css"/>
