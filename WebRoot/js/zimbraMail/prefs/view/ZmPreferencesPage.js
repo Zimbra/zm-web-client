@@ -88,7 +88,7 @@ function() {
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._view);
 
 	this._prefPresent = {};
-	var prefs = ZmPrefView.PREFS[this._view];
+	var prefs = ZmPrefView.PREFS[this._view] || [];
 	var settings = this._appCtxt.getSettings();
 	for (var i = 0; i < prefs.length; i++) {
 		var id = prefs[i];

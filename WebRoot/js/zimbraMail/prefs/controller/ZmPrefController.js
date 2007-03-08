@@ -39,9 +39,6 @@ function ZmPrefController(appCtxt, container, prefsApp) {
 
 	ZmController.call(this, appCtxt, container, prefsApp);
 
-	ZmPref._setupPrefs();
-	ZmPref._setPrefLists();
-
 	this._listeners = {};
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._backListener);

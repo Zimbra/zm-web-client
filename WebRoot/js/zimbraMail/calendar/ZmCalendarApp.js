@@ -95,6 +95,51 @@ function() {
 	settings.registerSetting("DEFAULT_CALENDAR_TIMEZONE",	{name: "zimbraPrefTimeZoneId", type: ZmSetting.T_PREF});
 };
 
+ZmCalendarApp.prototype._registerPrefs =
+function() {
+	var list = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DAY_OF_WEEK, 
+				ZmSetting.CAL_SHOW_TIMEZONE, ZmSetting.CAL_USE_QUICK_ADD, ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL,
+				ZmSetting.CAL_REMINDER_WARNING_TIME];
+
+	ZmPref.setPrefList("CALENDAR_PREFS", list);
+
+	ZmPref.registerPref("CAL_ALWAYS_SHOW_MINI_CAL", {
+	 	displayName:		ZmMsg.alwaysShowMiniCal,
+	 	displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+	
+	ZmPref.registerPref("CAL_FIRST_DAY_OF_WEEK", {
+	 	displayName:		ZmMsg.calendarFirstDayOfWeek,
+	 	displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		AjxDateUtil.WEEKDAY_LONG,
+		options:			[0,1,2,3,4,5,6]
+	});
+	
+	ZmPref.registerPref("CAL_REMINDER_WARNING_TIME", {
+		displayName:		ZmMsg.numberOfMinutes,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		[ZmMsg.neverShow, "1", "5", "10", "15", "30", "45", "60"],
+		options:			[0, 1, 5, 10, 15, 30, 45, 60]
+	});
+	
+	ZmPref.registerPref("CAL_SHOW_TIMEZONE", {
+	 	displayName:		ZmMsg.shouldShowTimezone,
+	 	displayContainer:	ZmPref.TYPE_CHECKBOX
+	 });
+	
+	ZmPref.registerPref("CAL_USE_QUICK_ADD", {
+	 	displayName:		ZmMsg.useQuickAdd,
+	 	displayContainer:	ZmPref.TYPE_CHECKBOX
+	 });
+	
+	ZmPref.registerPref("CALENDAR_INITIAL_VIEW", {
+	 	displayName:		ZmMsg.calendarInitialView,
+	 	displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewSchedule],
+		options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_SCHEDULE]
+	});
+};
+
 ZmCalendarApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp("CAL_REFRESH", {textKey:"refresh", tooltipKey:"calRefreshTooltip", image:"Refresh"});

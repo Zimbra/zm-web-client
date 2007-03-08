@@ -208,6 +208,7 @@ ZmApp.prototype._registerItems		= function() {};
 ZmApp.prototype._registerOrganizers	= function() {};
 ZmApp.prototype._setupSearchToolbar	= function() {};
 ZmApp.prototype._registerApp		= function() {};
+ZmApp.prototype._registerPrefs		= function() {};	// called when Preferences pkg is loaded
 
 // Functions that apps can override in response to certain events
 ZmApp.prototype.startup			= function(result) {};		// run during startup

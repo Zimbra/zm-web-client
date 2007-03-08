@@ -113,6 +113,146 @@ function() {
 	ZmMailApp._setGroupByMaps();
 };
 
+ZmMailApp.prototype._registerPrefs =
+function() {
+	var list = [ZmSetting.INITIAL_GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSetting.SHOW_FRAGMENTS,
+				ZmSetting.INITIAL_SEARCH, ZmSetting.POLLING_INTERVAL, ZmSetting.READING_PANE_ENABLED,
+				ZmSetting.SAVE_TO_SENT, ZmSetting.VACATION_MSG_ENABLED, ZmSetting.VACATION_MSG,
+				ZmSetting.NOTIF_ENABLED, ZmSetting.NOTIF_ADDRESS, ZmSetting.MAIL_FORWARDING_ADDRESS,					 
+				ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED, ZmSetting.VIEW_AS_HTML, ZmSetting.DEDUPE_MSG_TO_SELF, 
+				ZmSetting.NEW_WINDOW_COMPOSE];
+				
+	ZmPref.setPrefList("MAIL_PREFS", list);
+
+	ZmPref.registerPref("DEDUPE_MSG_TO_SELF", {
+		displayName:		ZmMsg.removeDupesToSelf,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		[ZmMsg.dedupeNone, ZmMsg.dedupeSecondCopy, ZmMsg.dedupeAll],
+		options:			[ZmSetting.DEDUPE_NONE, ZmSetting.DEDUPE_SECOND, ZmSetting.DEDUPE_ALL]
+	});
+
+	ZmPref.registerPref("FORWARD_INCLUDE_ORIG", {
+		displayName:		ZmMsg.forwardInclude,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		[ZmMsg.includeAsAttach, ZmMsg.includeInBody, ZmMsg.includePrefix],
+		options:			[ZmSetting.INCLUDE_ATTACH, ZmSetting.INCLUDE, ZmSetting.INCLUDE_PREFIX]
+	});
+
+	ZmPref.registerPref("INITIAL_GROUP_MAIL_BY", { 
+		displayName:		ZmMsg.groupMailBy,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		[ZmMsg.message, ZmMsg.conversation],
+		options:			[ZmSetting.GROUP_BY_MESSAGE, ZmSetting.GROUP_BY_CONV],
+		precondition:		ZmSetting.CONVERSATIONS_ENABLED
+	});
+	
+	ZmPref.registerPref("INITIAL_SEARCH", {
+		displayName:		ZmMsg.initialMailSearch,
+		displayContainer:	ZmPref.TYPE_INPUT,
+		maxLength:			ZmPref.MAX_LENGTH[ZmSetting.INITIAL_SEARCH],
+		errorMessage:       AjxMessageFormat.format(ZmMsg.invalidInitialSearch, ZmPref.MAX_LENGTH[ZmSetting.INITIAL_SEARCH]),
+		displaySeparator:	false,
+		precondition:		ZmSetting.INITIAL_SEARCH_ENABLED
+	});
+	
+	ZmPref.registerPref("MAIL_FORWARDING_ADDRESS", {
+		displayName:		ZmMsg.mailForwardingAddress,
+		displayContainer:	ZmPref.TYPE_INPUT,
+		validationFunction: ZmPref.validateEmail,
+		errorMessage:       ZmMsg.invalidEmail,
+		precondition:		ZmSetting.MAIL_FORWARDING_ENABLED
+	});
+		
+	ZmPref.registerPref("MAIL_LOCAL_DELIVERY_DISABLED", {
+		displayName:		ZmMsg.mailDeliveryDisabled,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		displaySeparator:	true,
+		precondition:		ZmSetting.MAIL_FORWARDING_ENABLED
+	});
+	
+	ZmPref.registerPref("NEW_WINDOW_COMPOSE", {
+		displayName:		ZmMsg.composeInNewWin,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		displaySeparator: 	true
+	});
+	
+	ZmPref.registerPref("NOTIF_ADDRESS", {
+		displayName:		ZmMsg.mailNotifAddress,
+		displayContainer:	ZmPref.TYPE_INPUT,
+		validationFunction: ZmPref.validateEmail,
+		errorMessage:       ZmMsg.invalidEmail,
+		precondition:		ZmSetting.NOTIF_FEATURE_ENABLED,
+		displaySeparator:	true
+	});
+	
+	ZmPref.registerPref("NOTIF_ENABLED", {
+		displayName:		ZmMsg.mailNotifEnabled,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		precondition:		ZmSetting.NOTIF_FEATURE_ENABLED
+	});
+	
+	ZmPref.registerPref("REPLY_INCLUDE_ORIG", {
+		displayName:		ZmMsg.replyInclude,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		[ZmMsg.dontInclude, ZmMsg.includeAsAttach,
+							 ZmMsg.includeInBody, ZmMsg.includePrefix, ZmMsg.smartInclude],
+		options:			[ZmSetting.INCLUDE_NONE, ZmSetting.INCLUDE_ATTACH,
+							 ZmSetting.INCLUDE, ZmSetting.INCLUDE_PREFIX, ZmSetting.INCLUDE_SMART]
+	});
+	
+	ZmPref.registerPref("REPLY_PREFIX", {
+		displayName:		ZmMsg.prefix,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		displayOptions:		[">", "|"],
+		displaySeparator:	true
+	});
+	
+	ZmPref.registerPref("REPLY_TO_ADDRESS", {
+		displayName:		ZmMsg.replyToAddress,
+		displayContainer:	ZmPref.TYPE_INPUT,
+		validationFunction: ZmPref.validateEmail,
+		errorMessage:       ZmMsg.invalidEmail
+	});
+	
+	ZmPref.registerPref("SAVE_TO_SENT", {
+		displayName:		ZmMsg.saveToSent,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+	
+	ZmPref.registerPref("SIGNATURE", {
+		displayName:		ZmMsg.signature,
+		displayContainer:	ZmPref.TYPE_TEXTAREA,
+		maxLength:			ZmPref.MAX_LENGTH[ZmSetting.SIGNATURE],
+		errorMessage:       AjxMessageFormat.format(ZmMsg.invalidSignature, ZmPref.MAX_LENGTH[ZmSetting.SIGNATURE]),
+		displaySeparator:	true
+	});
+	
+	ZmPref.registerPref("SIGNATURE_ENABLED", {
+		displayName:		ZmMsg.signatureEnabled,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+	
+	ZmPref.registerPref("SIGNATURE_STYLE", {
+		displayName:		ZmMsg.signatureStyle,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+	
+	ZmPref.registerPref("VACATION_MSG", {
+		displayName:		ZmMsg.awayMessage,
+		displayContainer:	ZmPref.TYPE_TEXTAREA,
+		maxLength:			ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE],
+		errorMessage:       AjxMessageFormat.format(ZmMsg.invalidAwayMessage, ZmPref.MAX_LENGTH[ZmSetting.AWAY_MESSAGE]),
+		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED,
+		displaySeparator:	true
+	});
+	
+	ZmPref.registerPref("VACATION_MSG_ENABLED", {
+		displayName:		ZmMsg.awayMessageEnabled,
+		displayContainer:	ZmPref.TYPE_CHECKBOX,
+		precondition:		ZmSetting.VACATION_MSG_FEATURE_ENABLED
+	});
+};
+
 ZmMailApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp("ADD_SIGNATURE", {textKey:"addSignature"}/*, ZmSetting.SIGNATURE_ENABLED*/);
