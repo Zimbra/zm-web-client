@@ -76,6 +76,7 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._listeners[ZmOperation.NEW_APPT] = new AjxListener(this, this._newApptAction);
 	this._listeners[ZmOperation.NEW_ALLDAY_APPT] = new AjxListener(this, this._newAllDayApptAction);
 	this._listeners[ZmOperation.SEARCH_MAIL] = new AjxListener(this, this._searchMailAction);
+	this._listeners[ZmOperation.CAL_REFRESH] = new AjxListener(this, this._refreshButtonListener);
 
 	this._maintTimedAction = new AjxTimedAction(this, this._maintenanceAction);
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
@@ -375,14 +376,11 @@ function() {
 ZmCalViewController.prototype._initializeToolBar =
 function(viewId) {
 	if (this._toolbar[ZmController.CAL_VIEW]) return;
-	//DBG.println("ZmCalViewController.prototype._initializeToolBar: " + viewId);
-	var calViewButtonListener = new AjxListener(this, this._calViewButtonListener);
-	var todayButtonListener = new AjxListener(this, this._todayButtonListener);
-	var refreshButtonListener = new AjxListener(this, this._refreshButtonListener);
 
 	ZmListController.prototype._initializeToolBar.call(this, ZmController.CAL_DAY_VIEW);
 
 	this._setupViewMenu(ZmController.CAL_VIEW);
+
 	// NOTE: bug 5720
 	if (AjxEnv.is800x600orLower) {
 		var toolbar = this._toolbar[ZmController.CAL_DAY_VIEW];
