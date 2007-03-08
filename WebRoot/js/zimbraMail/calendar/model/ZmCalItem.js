@@ -1198,7 +1198,7 @@ function(calItemNode, instNode) {
 	this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
 	this.priority 		= parseInt(this._getAttr(calItemNode, instNode, "priority"));
 
-	this.recurring 		= instNode.recur || calItemNode.recur;
+	this.recurring 		= instNode.recur != null ? instNode.recur : calItemNode.recur; // TEST for null since recur can be FALSE
 	this._seriesInvId 	= this.recurring ? calItemNode.invId : null;
 
 	// override ptst for this instance if map-able
