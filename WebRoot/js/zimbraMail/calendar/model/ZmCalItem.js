@@ -1293,12 +1293,8 @@ function(priority) {
 ZmCalItem.getImageForPriority =
 function(task) {
 	switch (task.priority) {
-		case ZmCalItem.PRIORITY_LOW:
-			// XXX: replace with down arrow
-			return "<b><font color='blue'>&darr;</font></b>";
-		case ZmCalItem.PRIORITY_HIGH:
-			var icon = task.isPastDue() ? "TaskP1Overdue" : "TaskP1";
-			return AjxImg.getImageHtml(icon);
+		case ZmCalItem.PRIORITY_LOW:	return AjxImg.getImageHtml("TaskLow");
+		case ZmCalItem.PRIORITY_HIGH:	return AjxImg.getImageHtml("TaskHigh");
 		default: return "";
 	}
 };

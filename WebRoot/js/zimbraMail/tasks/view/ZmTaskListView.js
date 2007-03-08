@@ -387,7 +387,7 @@ function(parent) {
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "MiniTag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));
 	}
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY], null, "TaskP3", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.priority));
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY], null, "TaskHigh", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.priority));
 	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
 	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null/*, ZmItem.F_SUBJECT*/));
 	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS], ZmMsg.status, null, ZmTaskListView.COL_WIDTH_STATUS));

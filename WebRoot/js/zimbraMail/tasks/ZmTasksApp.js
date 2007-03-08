@@ -59,10 +59,10 @@ function() {
 
 ZmTasksApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp("MOUNT_TASK_FOLDER", {textKey:"mountTaskFolder", image:"Task"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp("MOUNT_TASK_FOLDER", {textKey:"mountTaskFolder", image:"TaskList"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("NEW_TASK", {textKey:"newTask", tooltipKey:"newTaskTooltip", image:"NewTask"});
-	ZmOperation.registerOp("NEW_TASK_FOLDER", {textKey:"newTaskFolder", tooltipKey:"newTaskFolderTooltip", image:"NewTask"});
-	ZmOperation.registerOp("SHARE_TASKFOLDER", {textKey:"shareTaskFolder", image:"Task"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp("NEW_TASK_FOLDER", {textKey:"newTaskFolder", tooltipKey:"newTaskFolderTooltip", image:"NewTaskList"});
+	ZmOperation.registerOp("SHARE_TASKFOLDER", {textKey:"shareTaskFolder", image:"TaskList"}, ZmSetting.SHARING_ENABLED);
 };
 
 ZmTasksApp.prototype._registerItems =
@@ -70,7 +70,7 @@ function() {
 	ZmItem.registerItem(ZmItem.TASK,
 						{app:			ZmApp.TASKS,
 						 nameKey:		"task",
-						 icon:			"Task",
+						 icon:			"TaskList",
 						 soapCmd:		"ItemAction",
 						 itemClass:		"ZmTask",
 						 node:			"task",
@@ -111,7 +111,7 @@ function() {
 	ZmSearchToolBar.addMenuItem(ZmItem.TASK,
 								{msgKey:		"tasks",
 								 tooltipKey:	"searchTasks",
-								 icon:			"Task" // XXX: change me
+								 icon:			"SearchTasks"
 								});
 };
 
@@ -129,7 +129,7 @@ function() {
 	ZmApp.registerApp(ZmApp.TASKS,
 							 {mainPkg:				"Tasks",
 							  nameKey:				"tasks",
-							  icon:					"Task",
+							  icon:					"TaskList",
 							  chooserTooltipKey:	"goToTasks",
 							  defaultSearch:		ZmItem.TASK,
 							  organizer:			ZmOrganizer.TASKS,
