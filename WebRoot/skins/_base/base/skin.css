@@ -200,6 +200,10 @@ body						{	@ChromeBg@	}
 }
 
 
+#skin_tr_main_full {
+	display:none;
+}
+
 
 #skin_td_app_main						{	
 	padding:6 6 7 0;	 

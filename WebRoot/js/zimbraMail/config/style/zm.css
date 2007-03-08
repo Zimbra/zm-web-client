@@ -212,6 +212,7 @@
 /* Search toolbar */
 .ZmSearchToolbar {
 	padding-left:5px;
+	margin-top:1px;
 }
 .ZmSearchToolbar .MessageControl0 {
 	padding-right:5px;
@@ -223,6 +224,10 @@
 
 .ZmSearchToolbar TABLE {
 	@FullSize@
+}
+
+.ZmSearchToolbar .ZNormal .ZButtonBorder {
+	@ZTransparentBg@ @TransparentBorder@
 }
 
 /* Search builder toolbar (buttons only) */
@@ -2496,7 +2501,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmOptionsFormListButtonCell {
 	@PanelPadding@
-	background-color:@_SelColorL30_@;
+	background-color:@SelC-30@;
 	@TopSeparator@
 }
 
@@ -2574,7 +2579,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmPanelHead {
 	@FontSize-bigger@
-	background-color:@_SelColor_@;
+	background-color:@SelC@;
 	@BoxPadding@
 	padding-left:@PanelPaddingSize@;
 	font-weight:bold;
@@ -2697,32 +2702,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding-bottom:28px;
 	margin:0px;
 }
-
-/* THIS IS IN DWT
-.ZTab,
-.ZTab.selected {
-#IFDEF GECKO
-    -moz-border-radius:8px 8px 0px 0px;
-#ENDIF
-	padding:3px 10px 3px 10px;
-	margin:6px 1px 0px 0px;
-	min-width:40px;
-	float:left;
-	@InsetBg@
-	@SeparatorBorder@
-	text-align:center;
-	white-space:nowrap;
-	height:15px;
-	cursor:pointer;
-}
-
-.ZTab.selected {
-	border-bottom-color:@_SelColor_@;
-	background-color:@_SelColor_@;
-	margin-top:2px;
-	padding-top:7px;
-}
-*/
 
 
 .ZFieldSizeTiny 	{	width:50px;		}
