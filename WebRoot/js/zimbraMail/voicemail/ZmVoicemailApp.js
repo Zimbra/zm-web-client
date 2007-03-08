@@ -26,56 +26,6 @@
 function ZmVoicemailApp(appCtxt, container, parentController) {
 
 	ZmApp.call(this, ZmApp.VOICEMAIL, appCtxt, container, parentController);
-
-	AjxDispatcher.registerMethod("GetVoicemailController", "Voicemail", new AjxCallback(this, this.getVoicemailController));
-
-	ZmItem.registerItem(ZmItem.VOICEMAIL,
-						{app:			ZmApp.VOICEMAIL,
-						 nameKey:		"voicemail",
-						 icon:			"Voicemail",
-						 soapCmd:		"VoicemailAction",
-						 itemClass:		"ZmVoicemail",
-						 node:			"v",
-						 organizer:		ZmOrganizer.VOICEMAIL,
-						 searchType:	"voicemail",
-						 resultsList:
-		AjxCallback.simpleClosure(function(search) {
-			AjxDispatcher.require("Voicemail");
-			return new ZmVoicemailList(this._appCtxt, search);
-		}, this)
-						});
-
-	ZmOperation.registerOp("AUTO_PLAY", {textKey:"autoPlay", tooltipKey:"autoPlayTooltip", image:"ApptRecur"});
-
-	ZmOrganizer.registerOrg(ZmOrganizer.VOICEMAIL,
-							{app:				ZmApp.VOICEMAIL,
-							 nameKey:			"voicemailFolder",
-							 defaultFolder:		ZmOrganizer.ID_VOICEMAIL,
-							 firstUserId:		256,
-							 orgClass:			"ZmVoicemailFolder",
-							 orgPackage:		"VoicemailCore",
-							 treeController:	"ZmVoicemailTreeController",
-							 labelKey:			"voicemail",
-							 views:				["voicemail"],
-							 createFunc:		"ZmOrganizer.create",
-							 compareFunc:		"ZmVoicemailFolder.sortCompare",
-							 deferrable:		false
-							});
-
-	ZmApp.registerApp(ZmApp.VOICEMAIL,
-							 {mainPkg:				"Voicemail",
-							  nameKey:				"voicemail",
-							  icon:					"VoicemailApp",
-							  qsArg:				"voicemail",
-							  chooserTooltipKey:	"goToVoicemail",
-							  defaultSearch:		ZmSearchToolBar.FOR_ANY_MI,
-							  overviewTrees:		[ZmOrganizer.VOICEMAIL],
-							  showZimlets:			true,
-							  searchTypes:			[ZmItem.VOICEMAIL],
-							  gotoActionCode:		ZmKeyMap.GOTO_VOICEMAIL,
-							  chooserSort:			15,
-							  defaultSort:			15
-							  });
 }
 
 // Organizer and item-related constants
@@ -100,6 +50,73 @@ ZmVoicemailApp.prototype.toString =
 function() {
 	return "ZmVoicemailApp";
 }
+
+// Construction
+
+ZmVoicemailApp.prototype._defineAPI =
+function() {
+	AjxDispatcher.registerMethod("GetVoicemailController", "Voicemail", new AjxCallback(this, this.getVoicemailController));
+};
+
+ZmVoicemailApp.prototype._registerItems =
+function() {
+	ZmItem.registerItem(ZmItem.VOICEMAIL,
+						{app:			ZmApp.VOICEMAIL,
+						 nameKey:		"voicemail",
+						 icon:			"Voicemail",
+						 soapCmd:		"VoicemailAction",
+						 itemClass:		"ZmVoicemail",
+						 node:			"v",
+						 organizer:		ZmOrganizer.VOICEMAIL,
+						 searchType:	"voicemail",
+						 resultsList:
+		AjxCallback.simpleClosure(function(search) {
+			AjxDispatcher.require("Voicemail");
+			return new ZmVoicemailList(this._appCtxt, search);
+		}, this)
+						});
+};
+
+ZmVoicemailApp.prototype._registerOperations =
+function() {
+	ZmOperation.registerOp("AUTO_PLAY", {textKey:"autoPlay", tooltipKey:"autoPlayTooltip", image:"ApptRecur"});
+};
+
+ZmVoicemailApp.prototype._registerOrganizers =
+function() {
+	ZmOrganizer.registerOrg(ZmOrganizer.VOICEMAIL,
+							{app:				ZmApp.VOICEMAIL,
+							 nameKey:			"voicemailFolder",
+							 defaultFolder:		ZmOrganizer.ID_VOICEMAIL,
+							 firstUserId:		256,
+							 orgClass:			"ZmVoicemailFolder",
+							 orgPackage:		"VoicemailCore",
+							 treeController:	"ZmVoicemailTreeController",
+							 labelKey:			"voicemail",
+							 views:				["voicemail"],
+							 createFunc:		"ZmOrganizer.create",
+							 compareFunc:		"ZmVoicemailFolder.sortCompare",
+							 deferrable:		false
+							});
+};
+
+ZmVoicemailApp.prototype._registerApp =
+function() {
+	ZmApp.registerApp(ZmApp.VOICEMAIL,
+							 {mainPkg:				"Voicemail",
+							  nameKey:				"voicemail",
+							  icon:					"VoicemailApp",
+							  qsArg:				"voicemail",
+							  chooserTooltipKey:	"goToVoicemail",
+							  defaultSearch:		ZmSearchToolBar.FOR_ANY_MI,
+							  overviewTrees:		[ZmOrganizer.VOICEMAIL],
+							  showZimlets:			true,
+							  searchTypes:			[ZmItem.VOICEMAIL],
+							  gotoActionCode:		ZmKeyMap.GOTO_VOICEMAIL,
+							  chooserSort:			15,
+							  defaultSort:			15
+							  });
+};
 
 // Public methods
 

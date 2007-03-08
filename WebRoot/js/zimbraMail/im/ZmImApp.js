@@ -27,62 +27,6 @@ function ZmImApp(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.IM, appCtxt, container);
 
-	AjxDispatcher.registerMethod("GetRoster", "IM", new AjxCallback(this, this.getRoster));
-
-	ZmOperation.registerOp("IM", {textKey:"newIM", image:"ImStartChat"});
-	ZmOperation.registerOp("IM_NEW_CHAT", {textKey:"imNewChat", image:"ImFree2Chat"});
-	ZmOperation.registerOp("IM_NEW_GROUP_CHAT", {textKey:"imNewGroupChat", image:"ImFree2Chat"});
-	ZmOperation.registerOp("IM_PRESENCE_AWAY", {textKey:"imStatusAway", image:"ImAway"});
-	ZmOperation.registerOp("IM_PRESENCE_CHAT", {textKey:"imStatusChat", image:"ImFree2Chat"});
-	ZmOperation.registerOp("IM_PRESENCE_DND", {textKey:"imStatusDND", image:"ImDnd"});
-	ZmOperation.registerOp("IM_PRESENCE_INVISIBLE", {textKey:"imStatusInvisible", image:"ImInvisible"});
-	ZmOperation.registerOp("IM_PRESENCE_MENU", {textKey:"imPresence"}, null,
-		AjxCallback.simpleClosure(function(parent) {
-			ZmImApp.addImPresenceMenu(parent);
-	}));
-	ZmOperation.registerOp("IM_PRESENCE_OFFLINE", {textKey:"imStatusOffline", image:"RoundMinusDis"});
-	ZmOperation.registerOp("IM_PRESENCE_ONLINE", {textKey:"imStatusOnline", image:"ImAvailable"});
-	ZmOperation.registerOp("IM_PRESENCE_XA", {textKey:"imStatusExtAway", image:"ImExtendedAway"});
-	ZmOperation.registerOp("NEW_ROSTER_ITEM", {textKey:"newRosterItem", image:"ImBuddy"});
-
-	ZmItem.registerItem(ZmItem.CHAT,
-						{app:			ZmApp.IM,
-						 nameKey:		"chat",
-						 icon:			"ImStartChat"
-						});
-
-	// not really sure what this is
-	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE,
-							{app:				ZmApp.IM,
-							 orgClass:			"ZmRosterTree",
-							 orgPackage:		"IM",
-							 labelKey:			"buddyList",
-							 compareFunc:		"ZmRosterTreeItem.sortCompare"
-							});
-
-	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE_ITEM,
-							{app:				ZmApp.IM,
-							 orgClass:			"ZmRosterTreeItem",
-							 orgPackage:		"IM",
-							 treeController:	"ZmRosterTreeController",
-							 labelKey:			"buddyList",
-							 compareFunc:		"ZmRosterTreeItem.sortCompare"
-							});
-
-	ZmApp.registerApp(ZmApp.IM,
-							 {mainPkg:				"IM",
-							  nameKey:				"imAppTitle",
-							  icon:					"ImStartChat",
-							  chooserTooltipKey:	"goToIm",
-							  defaultSearch:		ZmSearchToolBar.FOR_MAIL_MI,
-							  organizer:			ZmOrganizer.ROSTER_TREE_ITEM,
-							  overviewTrees:		[ZmOrganizer.ROSTER_TREE_ITEM],
-							  showZimlets:			true,
-							  gotoActionCode:		ZmKeyMap.GOTO_IM,
-							  chooserSort:			40,
-							  defaultSort:			50
-							  });
-
 	this._active = false;
 };
 
@@ -111,6 +55,80 @@ ZmImApp.prototype.toString =
 function() {
 	return "ZmImApp";
 };
+
+// Construction
+
+ZmImApp.prototype._defineAPI =
+function() {
+	AjxDispatcher.registerMethod("GetRoster", "IM", new AjxCallback(this, this.getRoster));
+};
+
+ZmImApp.prototype._registerOperations =
+function() {
+	ZmOperation.registerOp("IM", {textKey:"newIM", image:"ImStartChat"});
+	ZmOperation.registerOp("IM_NEW_CHAT", {textKey:"imNewChat", image:"ImFree2Chat"});
+	ZmOperation.registerOp("IM_NEW_GROUP_CHAT", {textKey:"imNewGroupChat", image:"ImFree2Chat"});
+	ZmOperation.registerOp("IM_PRESENCE_AWAY", {textKey:"imStatusAway", image:"ImAway"});
+	ZmOperation.registerOp("IM_PRESENCE_CHAT", {textKey:"imStatusChat", image:"ImFree2Chat"});
+	ZmOperation.registerOp("IM_PRESENCE_DND", {textKey:"imStatusDND", image:"ImDnd"});
+	ZmOperation.registerOp("IM_PRESENCE_INVISIBLE", {textKey:"imStatusInvisible", image:"ImInvisible"});
+	ZmOperation.registerOp("IM_PRESENCE_MENU", {textKey:"imPresence"}, null,
+		AjxCallback.simpleClosure(function(parent) {
+			ZmImApp.addImPresenceMenu(parent);
+	}));
+	ZmOperation.registerOp("IM_PRESENCE_OFFLINE", {textKey:"imStatusOffline", image:"RoundMinusDis"});
+	ZmOperation.registerOp("IM_PRESENCE_ONLINE", {textKey:"imStatusOnline", image:"ImAvailable"});
+	ZmOperation.registerOp("IM_PRESENCE_XA", {textKey:"imStatusExtAway", image:"ImExtendedAway"});
+	ZmOperation.registerOp("NEW_ROSTER_ITEM", {textKey:"newRosterItem", image:"ImBuddy"});
+};
+
+ZmImApp.prototype._registerItems =
+function() {
+	ZmItem.registerItem(ZmItem.CHAT,
+						{app:			ZmApp.IM,
+						 nameKey:		"chat",
+						 icon:			"ImStartChat"
+						});
+};
+
+ZmImApp.prototype._registerOrganizers =
+function() {
+	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE,
+							{app:				ZmApp.IM,
+							 orgClass:			"ZmRosterTree",
+							 orgPackage:		"IM",
+							 labelKey:			"buddyList",
+							 compareFunc:		"ZmRosterTreeItem.sortCompare"
+							});
+
+	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE_ITEM,
+							{app:				ZmApp.IM,
+							 orgClass:			"ZmRosterTreeItem",
+							 orgPackage:		"IM",
+							 treeController:	"ZmRosterTreeController",
+							 labelKey:			"buddyList",
+							 compareFunc:		"ZmRosterTreeItem.sortCompare"
+							});
+};
+
+ZmImApp.prototype._registerApp =
+function() {
+	ZmApp.registerApp(ZmApp.IM,
+							 {mainPkg:				"IM",
+							  nameKey:				"imAppTitle",
+							  icon:					"ImStartChat",
+							  chooserTooltipKey:	"goToIm",
+							  defaultSearch:		ZmSearchToolBar.FOR_MAIL_MI,
+							  organizer:			ZmOrganizer.ROSTER_TREE_ITEM,
+							  overviewTrees:		[ZmOrganizer.ROSTER_TREE_ITEM],
+							  showZimlets:			true,
+							  gotoActionCode:		ZmKeyMap.GOTO_IM,
+							  chooserSort:			40,
+							  defaultSort:			50
+							  });
+};
+
+// App API
 
 ZmImApp.prototype.refresh =
 function() {

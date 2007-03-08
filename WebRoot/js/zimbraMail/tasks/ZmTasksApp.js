@@ -26,82 +26,6 @@
 function ZmTasksApp(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.TASKS, appCtxt, container);
-
-	AjxDispatcher.setPackageLoadFunction("Tasks", new AjxCallback(this, this._postLoad, ZmOrganizer.TASKS));
-	AjxDispatcher.registerMethod("GetTaskListController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskListController));
-	AjxDispatcher.registerMethod("GetTaskController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskController));
-
-	ZmOperation.registerOp("MOUNT_TASK_FOLDER", {textKey:"mountTaskFolder", image:"Task"}, ZmSetting.SHARING_ENABLED);
-	ZmOperation.registerOp("NEW_TASK", {textKey:"newTask", tooltipKey:"newTaskTooltip", image:"NewTask"});
-	ZmOperation.registerOp("NEW_TASK_FOLDER", {textKey:"newTaskFolder", tooltipKey:"newTaskFolderTooltip", image:"NewTask"});
-	ZmOperation.registerOp("SHARE_TASKFOLDER", {textKey:"shareTaskFolder", image:"Task"}, ZmSetting.SHARING_ENABLED);
-
-	ZmItem.registerItem(ZmItem.TASK,
-						{app:			ZmApp.TASKS,
-						 nameKey:		"task",
-						 icon:			"Task",
-						 soapCmd:		"ItemAction",
-						 itemClass:		"ZmTask",
-						 node:			"task",
-						 organizer:		ZmOrganizer.TASKS,
-						 searchType:	"task",
-						 resultsList:
-		   AjxCallback.simpleClosure(function(search) {
-			   AjxDispatcher.require("TasksCore");
-			   return new ZmTaskList(this._appCtxt, search);
-		   }, this)
-						});
-
-	ZmOrganizer.registerOrg(ZmOrganizer.TASKS,
-							{app:				ZmApp.TASKS,
-							 nameKey:			"taskFolder",
-							 defaultFolder:		ZmFolder.ID_TASKS,
-							 soapCmd:			"FolderAction",
-							 firstUserId:		256,
-							 orgClass:			"ZmTaskFolder",
-							 orgPackage:		"TasksCore",
-							 treeController:	"ZmTaskTreeController",
-							 labelKey:			"tasks",
-							 hasColor:			true,
-							 defaultColor:		ZmOrganizer.C_GRAY,
-							 views:				["task"],
-							 createFunc:		"ZmOrganizer.create",
-							 compareFunc:		"ZmTaskFolder.sortCompare",
-							 deferrable:		true
-							});
-
-	var newItemOps = {};
-	newItemOps[ZmOperation.NEW_TASK] = "task";
-
-	var newOrgOps = {};
-	newOrgOps[ZmOperation.NEW_TASK_FOLDER] = "taskFolder";
-
-	var actionCodes = {};
-	actionCodes[ZmKeyMap.NEW_TASK] = ZmOperation.NEW_TASK;
-
-	ZmSearchToolBar.FOR_TASKS_MI = "FOR TASKS";
-	ZmSearchToolBar.addMenuItem(ZmItem.TASK,
-								{msgKey:		"tasks",
-								 tooltipKey:	"searchTasks",
-								 icon:			"Task" // XXX: change me
-								});
-	ZmApp.registerApp(ZmApp.TASKS,
-							 {mainPkg:				"Tasks",
-							  nameKey:				"tasks",
-							  icon:					"Task",
-							  chooserTooltipKey:	"goToTasks",
-							  defaultSearch:		ZmItem.TASK,
-							  organizer:			ZmOrganizer.TASKS,
-							  overviewTrees:		[ZmOrganizer.TASKS, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
-							  showZimlets:			true,
-							  newItemOps:			newItemOps,
-							  newOrgOps:			newOrgOps,
-							  actionCodes:			actionCodes,
-							  searchTypes:			[ZmItem.TASK],
-							  gotoActionCode:		ZmKeyMap.GOTO_TASKS,
-							  newActionCode:		ZmKeyMap.NEW_TASK,
-							  chooserSort:			35,
-							  defaultSort:			25});
 };
 
 // Organizer and item-related constants
@@ -122,6 +46,103 @@ ZmTasksApp.prototype.constructor = ZmTasksApp;
 ZmTasksApp.prototype.toString =
 function() {
 	return "ZmTasksApp";
+};
+
+// Construction
+
+ZmTasksApp.prototype._defineAPI =
+function() {
+	AjxDispatcher.setPackageLoadFunction("Tasks", new AjxCallback(this, this._postLoad, ZmOrganizer.TASKS));
+	AjxDispatcher.registerMethod("GetTaskListController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskListController));
+	AjxDispatcher.registerMethod("GetTaskController", ["TasksCore", "Tasks"], new AjxCallback(this, this.getTaskController));
+};
+
+ZmTasksApp.prototype._registerOperations =
+function() {
+	ZmOperation.registerOp("MOUNT_TASK_FOLDER", {textKey:"mountTaskFolder", image:"Task"}, ZmSetting.SHARING_ENABLED);
+	ZmOperation.registerOp("NEW_TASK", {textKey:"newTask", tooltipKey:"newTaskTooltip", image:"NewTask"});
+	ZmOperation.registerOp("NEW_TASK_FOLDER", {textKey:"newTaskFolder", tooltipKey:"newTaskFolderTooltip", image:"NewTask"});
+	ZmOperation.registerOp("SHARE_TASKFOLDER", {textKey:"shareTaskFolder", image:"Task"}, ZmSetting.SHARING_ENABLED);
+};
+
+ZmTasksApp.prototype._registerItems =
+function() {
+	ZmItem.registerItem(ZmItem.TASK,
+						{app:			ZmApp.TASKS,
+						 nameKey:		"task",
+						 icon:			"Task",
+						 soapCmd:		"ItemAction",
+						 itemClass:		"ZmTask",
+						 node:			"task",
+						 organizer:		ZmOrganizer.TASKS,
+						 searchType:	"task",
+						 resultsList:
+		   AjxCallback.simpleClosure(function(search) {
+			   AjxDispatcher.require("TasksCore");
+			   return new ZmTaskList(this._appCtxt, search);
+		   }, this)
+						});
+};
+
+ZmTasksApp.prototype._registerOrganizers =
+function() {
+	ZmOrganizer.registerOrg(ZmOrganizer.TASKS,
+							{app:				ZmApp.TASKS,
+							 nameKey:			"taskFolder",
+							 defaultFolder:		ZmFolder.ID_TASKS,
+							 soapCmd:			"FolderAction",
+							 firstUserId:		256,
+							 orgClass:			"ZmTaskFolder",
+							 orgPackage:		"TasksCore",
+							 treeController:	"ZmTaskTreeController",
+							 labelKey:			"tasks",
+							 hasColor:			true,
+							 defaultColor:		ZmOrganizer.C_GRAY,
+							 views:				["task"],
+							 createFunc:		"ZmOrganizer.create",
+							 compareFunc:		"ZmTaskFolder.sortCompare",
+							 deferrable:		true
+							});
+};
+
+ZmTasksApp.prototype._setupSearchToolbar =
+function() {
+	ZmSearchToolBar.FOR_TASKS_MI = "FOR TASKS";
+	ZmSearchToolBar.addMenuItem(ZmItem.TASK,
+								{msgKey:		"tasks",
+								 tooltipKey:	"searchTasks",
+								 icon:			"Task" // XXX: change me
+								});
+};
+
+ZmTasksApp.prototype._registerApp =
+function() {
+	var newItemOps = {};
+	newItemOps[ZmOperation.NEW_TASK] = "task";
+
+	var newOrgOps = {};
+	newOrgOps[ZmOperation.NEW_TASK_FOLDER] = "taskFolder";
+
+	var actionCodes = {};
+	actionCodes[ZmKeyMap.NEW_TASK] = ZmOperation.NEW_TASK;
+
+	ZmApp.registerApp(ZmApp.TASKS,
+							 {mainPkg:				"Tasks",
+							  nameKey:				"tasks",
+							  icon:					"Task",
+							  chooserTooltipKey:	"goToTasks",
+							  defaultSearch:		ZmItem.TASK,
+							  organizer:			ZmOrganizer.TASKS,
+							  overviewTrees:		[ZmOrganizer.TASKS, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  showZimlets:			true,
+							  newItemOps:			newItemOps,
+							  newOrgOps:			newOrgOps,
+							  actionCodes:			actionCodes,
+							  searchTypes:			[ZmItem.TASK],
+							  gotoActionCode:		ZmKeyMap.GOTO_TASKS,
+							  newActionCode:		ZmKeyMap.NEW_TASK,
+							  chooserSort:			35,
+							  defaultSort:			25});
 };
 
 // App API

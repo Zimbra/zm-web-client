@@ -49,6 +49,14 @@ function ZmApp(name, appCtxt, container, parentController) {
 	this._deferredFolders = [];
 	this._deferredFolderHash = {};
 	this._deferredNotifications = [];
+	
+	this._defineAPI();
+	this._registerSettings();
+	this._registerOperations();
+	this._registerItems();
+	this._registerOrganizers();
+	this._setupSearchToolbar();
+	this._registerApp();
 }
 
 // app information ("_R" means "reverse map")
@@ -192,7 +200,16 @@ function() {
 	return "ZmApp";
 }
 
-// App API: Abstract methods for apps to override in response to certain events
+// Functions called during construction
+ZmApp.prototype._defineAPI			= function() {};
+ZmApp.prototype._registerSettings	= function() {};
+ZmApp.prototype._registerOperations	= function() {};
+ZmApp.prototype._registerItems		= function() {};
+ZmApp.prototype._registerOrganizers	= function() {};
+ZmApp.prototype._setupSearchToolbar	= function() {};
+ZmApp.prototype._registerApp		= function() {};
+
+// Functions that apps can override in response to certain events
 ZmApp.prototype.startup			= function(result) {};		// run during startup
 ZmApp.prototype.refresh			= function(refresh) {};		// run when a <refresh> block arrives
 ZmApp.prototype.preNotify		= function(notify) {};		// run before handling notifications

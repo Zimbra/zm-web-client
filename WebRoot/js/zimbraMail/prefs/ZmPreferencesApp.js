@@ -31,32 +31,6 @@
 function ZmPreferencesApp(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.PREFERENCES, appCtxt, container);
-
-	AjxDispatcher.registerMethod("GetIdentityCollection", "PreferencesCore", new AjxCallback(this, this.getIdentityCollection));
-	AjxDispatcher.registerMethod("GetDataSourceCollection", "PreferencesCore", new AjxCallback(this, this.getDataSourceCollection));
-	AjxDispatcher.registerMethod("GetFilterRules", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterRules));
-	AjxDispatcher.registerMethod("GetPrefController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getPrefController));
-	AjxDispatcher.registerMethod("GetPopAccountsController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getPopAccountsController));
-	AjxDispatcher.registerMethod("GetFilterController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterController));
-
-	ZmOperation.registerOp("ADD_FILTER_RULE", {textKey:"newFilter", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
-	ZmOperation.registerOp("EDIT_FILTER_RULE", {textKey:"filterEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
-	ZmOperation.registerOp("MOVE_DOWN_FILTER_RULE", {textKey:"filterMoveDown", image:"DownArrow"}, ZmSetting.FILTERS_ENABLED);
-	ZmOperation.registerOp("MOVE_UP_FILTER_RULE", {textKey:"filterMoveUp", image:"UpArrow"}, ZmSetting.FILTERS_ENABLED);
-	ZmOperation.registerOp("REMOVE_FILTER_RULE", {textKey:"filterRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
-
-	ZmApp.registerApp(ZmApp.PREFERENCES,
-							 {mainPkg:				"Preferences",
-							  nameKey:				"options",
-							  icon:					"Preferences",
-							  chooserTooltipKey:	"goToOptions",
-							  button:				ZmAppChooser.B_OPTIONS,
-							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
-							  showZimlets:			true,
-							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],
-							  gotoActionCode:		ZmKeyMap.GOTO_OPTIONS,
-							  chooserSort:			180
-							  });
 };
 
 // Organizer and item-related constants
@@ -79,6 +53,54 @@ ZmPreferencesApp.prototype.toString =
 function() {
 	return "ZmPreferencesApp";
 };
+
+// Construction
+
+ZmPreferencesApp.prototype._defineAPI =
+function() {
+	AjxDispatcher.registerMethod("GetIdentityCollection", "PreferencesCore", new AjxCallback(this, this.getIdentityCollection));
+	AjxDispatcher.registerMethod("GetDataSourceCollection", "PreferencesCore", new AjxCallback(this, this.getDataSourceCollection));
+	AjxDispatcher.registerMethod("GetFilterRules", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterRules));
+	AjxDispatcher.registerMethod("GetPrefController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getPrefController));
+	AjxDispatcher.registerMethod("GetPopAccountsController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getPopAccountsController));
+	AjxDispatcher.registerMethod("GetFilterController", ["PreferencesCore", "Preferences"], new AjxCallback(this, this.getFilterController));
+};
+
+ZmPreferencesApp.prototype._registerSettings =
+function() {
+	var settings = this._appCtxt.getSettings();
+	settings.registerSetting("ALLOW_ANY_FROM_ADDRESS",	{name: "zimbraAllowAnyFromAddress", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("ALLOW_FROM_ADDRESSES",	{name: "zimbraAllowFromAddress", type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
+	settings.registerSetting("FILTERS_ENABLED",			{name: "zimbraFeatureFiltersEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN,	defaultValue: false});
+	settings.registerSetting("IDENTITIES_ENABLED",		{name: "zimbraFeatureIdentitiesEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+};
+
+ZmPreferencesApp.prototype._registerOperations =
+function() {
+	ZmOperation.registerOp("ADD_FILTER_RULE", {textKey:"newFilter", image:"Plus"}, ZmSetting.FILTERS_ENABLED);
+	ZmOperation.registerOp("EDIT_FILTER_RULE", {textKey:"filterEdit", image:"Edit"}, ZmSetting.FILTERS_ENABLED);
+	ZmOperation.registerOp("MOVE_DOWN_FILTER_RULE", {textKey:"filterMoveDown", image:"DownArrow"}, ZmSetting.FILTERS_ENABLED);
+	ZmOperation.registerOp("MOVE_UP_FILTER_RULE", {textKey:"filterMoveUp", image:"UpArrow"}, ZmSetting.FILTERS_ENABLED);
+	ZmOperation.registerOp("REMOVE_FILTER_RULE", {textKey:"filterRemove", image:"Delete"}, ZmSetting.FILTERS_ENABLED);
+};
+
+ZmPreferencesApp.prototype._registerApp =
+function() {
+	ZmApp.registerApp(ZmApp.PREFERENCES,
+							 {mainPkg:				"Preferences",
+							  nameKey:				"options",
+							  icon:					"Preferences",
+							  chooserTooltipKey:	"goToOptions",
+							  button:				ZmAppChooser.B_OPTIONS,
+							  overviewTrees:		[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  showZimlets:			true,
+							  searchTypes:			[ZmItem.MSG, ZmItem.CONV],
+							  gotoActionCode:		ZmKeyMap.GOTO_OPTIONS,
+							  chooserSort:			180
+							  });
+};
+
+// App API
 
 ZmPreferencesApp.prototype.startup =
 function(result) {

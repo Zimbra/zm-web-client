@@ -25,7 +25,19 @@
 
 function ZmPortalApp(appCtxt, container, parentController) {
 	ZmApp.call(this, ZmApp.PORTAL, appCtxt, container, parentController);
+}
 
+ZmPortalApp.prototype = new ZmApp;
+ZmPortalApp.prototype.constructor = ZmPortalApp;
+
+ZmPortalApp.prototype.toString = function() {
+	return "ZmPortalApp";
+};
+
+// Construction
+
+ZmPortalApp.prototype._registerApp =
+function() {
     ZmApp.registerApp(ZmApp.PORTAL, {
         nameKey: "portal",
         icon: "Globe",
@@ -33,12 +45,6 @@ function ZmPortalApp(appCtxt, container, parentController) {
         chooserSort: 1,
         defaultSort: 1
     });
-}
-ZmPortalApp.prototype = new ZmApp;
-ZmPortalApp.prototype.constructor = ZmPortalApp;
-
-ZmPortalApp.prototype.toString = function() {
-	return "ZmPortalApp";
 };
 
 //

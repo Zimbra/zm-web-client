@@ -26,20 +26,6 @@
 function ZmMixedApp(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.MIXED, appCtxt, container);
-
-	AjxDispatcher.registerMethod("GetMixedController", "Mixed", new AjxCallback(this, this.getMixedController));
-
-	ZmItem.registerItem(ZmItem.MIXED,
-						{app:			ZmApp.MIXED});
-
-	ZmApp.registerApp(ZmApp.MIXED,
-							 {mainPkg:			"Mixed",
-							  nameKey:			"zimbraTitle",
-							  icon:				"Globe",
-							  overviewTrees:	[ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
-							  showZimlets:		true,
-							  searchTypes:		[ZmItem.MSG, ZmItem.CONV]
-							  });
 };
 
 // Organizer and item-related constants
@@ -59,7 +45,32 @@ function() {
 	return "ZmMixedApp";
 };
 
-ZmMixedApp.prototype.launch = function() {}
+// Construction
+
+ZmMixedApp.prototype._defineAPI =
+function() {
+	AjxDispatcher.registerMethod("GetMixedController", "Mixed", new AjxCallback(this, this.getMixedController));
+};
+
+ZmMixedApp.prototype._registerItems =
+function() {
+	ZmItem.registerItem(ZmItem.MIXED,
+						{app:			ZmApp.MIXED});
+};
+
+ZmMixedApp.prototype._registerApp =
+function() {
+	ZmApp.registerApp(ZmApp.MIXED,
+							 {mainPkg:			"Mixed",
+							  nameKey:			"zimbraTitle",
+							  icon:				"Globe",
+							  overviewTrees:	[ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  showZimlets:		true,
+							  searchTypes:		[ZmItem.MSG, ZmItem.CONV]
+							  });
+};
+
+ZmMixedApp.prototype.launch = function() {};
 
 ZmMixedApp.prototype.showSearchResults =
 function(results, callback) {

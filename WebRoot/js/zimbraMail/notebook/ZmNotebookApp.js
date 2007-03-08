@@ -26,12 +26,49 @@
 function ZmNotebookApp(appCtxt, container, parentController) {
 
 	ZmApp.call(this, ZmApp.NOTEBOOK, appCtxt, container, parentController);
+}
 
+// Organizer and item-related constants
+ZmEvent.S_PAGE					= "PAGE";
+ZmEvent.S_DOCUMENT				= "DOCUMENT";
+ZmEvent.S_NOTEBOOK				= "NOTEBOOK";
+ZmItem.PAGE						= ZmEvent.S_PAGE;
+ZmItem.DOCUMENT					= ZmEvent.S_DOCUMENT;
+ZmOrganizer.NOTEBOOK			= ZmEvent.S_NOTEBOOK;
+
+// App-related constants
+ZmApp.NOTEBOOK					= "Notebook";
+ZmApp.CLASS[ZmApp.NOTEBOOK]		= "ZmNotebookApp";
+ZmApp.SETTING[ZmApp.NOTEBOOK]	= ZmSetting.NOTEBOOK_ENABLED;
+ZmApp.LOAD_SORT[ZmApp.NOTEBOOK]	= 60;
+ZmApp.QS_ARG[ZmApp.NOTEBOOK]	= "documents";
+
+ZmNotebookApp.prototype = new ZmApp;
+ZmNotebookApp.prototype.constructor = ZmNotebookApp;
+
+ZmNotebookApp.prototype.toString = 
+function() {
+	return "ZmNotebookApp";
+}
+
+// Constants
+
+// Data
+
+ZmNotebookApp.prototype._notebookCache;
+
+// Construction
+
+ZmNotebookApp.prototype._defineAPI =
+function() {
 	AjxDispatcher.setPackageLoadFunction("Notebook", new AjxCallback(this, this._postLoad, ZmOrganizer.NOTEBOOK));
 	AjxDispatcher.registerMethod("GetNotebookController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getNotebookController));
 	AjxDispatcher.registerMethod("GetPageEditController", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getPageEditController));
 	AjxDispatcher.registerMethod("GetNotebookCache", ["NotebookCore", "Notebook"], new AjxCallback(this, this.getNotebookCache));
+};
 
+ZmNotebookApp.prototype._registerOperations =
+function() {
 	ZmOperation.registerOp("EDIT_NOTEBOOK_CHROME", {textKey:"editNotebookChrome", image:"Edit"});
 	ZmOperation.registerOp("EDIT_NOTEBOOK_INDEX", {textKey:"editNotebookIndex", image:"Edit"});
 	ZmOperation.registerOp("EDIT_NOTEBOOK_HEADER", {textKey:"editNotebookHeader", image:"Edit"});
@@ -47,7 +84,10 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 	ZmOperation.registerOp("NEW_PAGE", {textKey:"newPage", tooltipKey:"createNewPage", image:"NewPage"});
 	ZmOperation.registerOp("SEND_PAGE", {textKey:"send", tooltipKey:"sendPageTT", image:"Send"});
 	ZmOperation.registerOp("SHARE_NOTEBOOK", {textKey:"shareNotebook", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
+};
 
+ZmNotebookApp.prototype._registerItems =
+function() {
 	ZmItem.registerItem(ZmItem.PAGE,
 						{app:			ZmApp.NOTEBOOK,
 						 nameKey:		"page",
@@ -79,7 +119,10 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 			return new ZmPageList(this._appCtxt, search, ZmItem.DOCUMENT);
 		}, this)
 						});
+};
 
+ZmNotebookApp.prototype._registerOrganizers =
+function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.NOTEBOOK,
 							{app:				ZmApp.NOTEBOOK,
 							 nameKey:			"notebook",
@@ -97,13 +140,19 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 							 compareFunc:		"ZmNotebook.sortCompare",
 							 deferrable:		true
 							});
+};
 
+ZmNotebookApp.prototype._setupSearchToolbar =
+function() {
 	ZmSearchToolBar.addMenuItem(ZmItem.PAGE,
 								{msgKey:		"searchNotebooks",
 								 tooltipKey:	"searchForPages",
 								 icon:			"SearchNotes"
 								});
+};
 
+ZmNotebookApp.prototype._registerApp =
+function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.NEW_PAGE] = "page";
 
@@ -132,36 +181,7 @@ function ZmNotebookApp(appCtxt, container, parentController) {
 							  chooserSort:			50,
 							  defaultSort:			30
 							  });
-}
-
-// Organizer and item-related constants
-ZmEvent.S_PAGE					= "PAGE";
-ZmEvent.S_DOCUMENT				= "DOCUMENT";
-ZmEvent.S_NOTEBOOK				= "NOTEBOOK";
-ZmItem.PAGE						= ZmEvent.S_PAGE;
-ZmItem.DOCUMENT					= ZmEvent.S_DOCUMENT;
-ZmOrganizer.NOTEBOOK			= ZmEvent.S_NOTEBOOK;
-
-// App-related constants
-ZmApp.NOTEBOOK					= "Notebook";
-ZmApp.CLASS[ZmApp.NOTEBOOK]		= "ZmNotebookApp";
-ZmApp.SETTING[ZmApp.NOTEBOOK]	= ZmSetting.NOTEBOOK_ENABLED;
-ZmApp.LOAD_SORT[ZmApp.NOTEBOOK]	= 60;
-ZmApp.QS_ARG[ZmApp.NOTEBOOK]	= "documents";
-
-ZmNotebookApp.prototype = new ZmApp;
-ZmNotebookApp.prototype.constructor = ZmNotebookApp;
-
-ZmNotebookApp.prototype.toString = 
-function() {
-	return "ZmNotebookApp";
-}
-
-// Constants
-
-// Data
-
-ZmNotebookApp.prototype._notebookCache;
+};
 
 // App API
 

@@ -26,9 +26,46 @@
 function ZmMailApp(appCtxt, container, parentController) {
 
 	ZmApp.call(this, ZmApp.MAIL, appCtxt, container, parentController);
+};
 
-	ZmMailApp._setGroupByMaps();
+// Organizer and item-related constants
+ZmEvent.S_CONV				= "CONV";
+ZmEvent.S_MSG				= "MSG";
+ZmEvent.S_ATT				= "ATT";
+ZmItem.CONV					= ZmEvent.S_CONV;
+ZmItem.MSG					= ZmEvent.S_MSG;
+ZmItem.ATT					= ZmEvent.S_ATT;
 
+// App-related constants
+ZmApp.MAIL					= "Mail";
+ZmApp.CLASS[ZmApp.MAIL]		= "ZmMailApp";
+ZmApp.SETTING[ZmApp.MAIL]	= ZmSetting.MAIL_ENABLED;
+ZmApp.LOAD_SORT[ZmApp.MAIL]	= 20;
+ZmApp.QS_ARG[ZmApp.MAIL]	= "mail";
+
+ZmMailApp.prototype = new ZmApp;
+ZmMailApp.prototype.constructor = ZmMailApp;
+
+ZmMailApp._setGroupByMaps =
+function() {
+	// convert between server values for "group mail by" and item types
+	ZmMailApp.GROUP_MAIL_BY_ITEM	= {};
+	ZmMailApp.GROUP_MAIL_BY_VALUE	= {};
+	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_CONV]		= ZmItem.CONV;
+	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_MESSAGE]	= ZmItem.MSG;
+	ZmMailApp.GROUP_MAIL_BY_VALUE[ZmItem.CONV]					= ZmSetting.GROUP_BY_CONV;
+	ZmMailApp.GROUP_MAIL_BY_VALUE[ZmItem.MSG]					= ZmSetting.GROUP_BY_MESSAGE;
+};
+
+ZmMailApp.prototype.toString = 
+function() {
+	return "ZmMailApp";
+};
+
+// Construction
+
+ZmMailApp.prototype._defineAPI =
+function() {
 	AjxDispatcher.registerMethod("Compose", "Mail", new AjxCallback(this, this.compose));
 	AjxDispatcher.registerMethod("GetAttachmentListController", "Mail", new AjxCallback(this, this.getAttachmentListController));
 	AjxDispatcher.registerMethod("GetComposeController", ["Mail", "Zimlet"], new AjxCallback(this, this.getComposeController));
@@ -37,7 +74,47 @@ function ZmMailApp(appCtxt, container, parentController) {
 	AjxDispatcher.registerMethod("GetMsgController", "Mail", new AjxCallback(this, this.getMsgController));
 	AjxDispatcher.registerMethod("GetTradController", "Mail", new AjxCallback(this, this.getTradController));
 	AjxDispatcher.registerMethod("GetMailListController", "Mail", new AjxCallback(this, this.getMailListController));
+};
 
+ZmMailApp.prototype._registerSettings =
+function() {
+	var settings = this._appCtxt.getSettings();
+	settings.registerSetting("CONVERSATIONS_ENABLED",			{name: "zimbraFeatureConversationsEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("DEDUPE_MSG_TO_SELF",				{name: "zimbraPrefDedupeMessagesSentToSelf", type: ZmSetting.T_PREF, defaultValue: ZmSetting.DEDUPE_NONE});
+	settings.registerSetting("FORWARD_INCLUDE_ORIG",			{name: "zimbraPrefForwardIncludeOriginalText", type: ZmSetting.T_PREF, defaultValue: ZmSetting.INCLUDE});
+	settings.registerSetting("GROUP_MAIL_BY",					{type: ZmSetting.T_PREF, defaultValue: ZmSetting.GROUP_BY_MESSAGE});
+	settings.registerSetting("INITIAL_GROUP_MAIL_BY",			{name: "zimbraPrefGroupMailBy", type: ZmSetting.T_PREF, defaultValue: ZmSetting.GROUP_BY_MESSAGE});
+	settings.registerSetting("INITIAL_SEARCH",					{name: "zimbraPrefMailInitialSearch", type: ZmSetting.T_PREF, defaultValue: "in:inbox"});
+	settings.registerSetting("INITIAL_SEARCH_ENABLED",			{name: "zimbraFeatureInitialSearchPreferenceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("MAIL_ALIASES",					{name: "zimbraMailAlias", type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
+	settings.registerSetting("MAIL_FORWARDING_ADDRESS",			{name: "zimbraPrefMailForwardingAddress", type: ZmSetting.T_PREF});
+	settings.registerSetting("MAIL_FORWARDING_ENABLED",			{name: "zimbraFeatureMailForwardingEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("MAIL_LOCAL_DELIVERY_DISABLED",	{name: "zimbraPrefMailLocalDeliveryDisabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("NEW_WINDOW_COMPOSE",				{name: "zimbraPrefComposeInNewWindow", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	settings.registerSetting("NOTIF_ADDRESS",					{name: "zimbraPrefNewMailNotificationAddress", type: ZmSetting.T_PREF});
+	settings.registerSetting("NOTIF_ENABLED",					{name: "zimbraPrefNewMailNotificationEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("NOTIF_FEATURE_ENABLED",			{name: "zimbraFeatureNewMailNotificationEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("PAGE_SIZE",						{name: "zimbraPrefMailItemsPerPage", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 25});
+	settings.registerSetting("READING_PANE_ENABLED",			{name: "zimbraPrefReadingPaneEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	settings.registerSetting("REPLY_INCLUDE_ORIG",				{name: "zimbraPrefReplyIncludeOriginalText", type: ZmSetting.T_PREF, defaultValue: ZmSetting.INCLUDE});
+	settings.registerSetting("REPLY_PREFIX",					{name: "zimbraPrefForwardReplyPrefixChar", type: ZmSetting.T_PREF, defaultValue: ">"});
+	settings.registerSetting("REPLY_TO_ADDRESS",				{name: "zimbraPrefReplyToAddress", type: ZmSetting.T_PREF});
+	settings.registerSetting("SAVE_TO_SENT",					{name: "zimbraPrefSaveToSent", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	settings.registerSetting("SENT_FOLDER_NAME",				{name: "zimbraPrefSentMailFolder", type: ZmSetting.T_PREF, defaultValue: "sent"});
+	settings.registerSetting("SHOW_BCC",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("SHOW_FRAGMENTS",					{name: "zimbraPrefShowFragments", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("SIGNATURE",						{name: "zimbraPrefMailSignature", type: ZmSetting.T_PREF});
+	settings.registerSetting("SIGNATURE_ENABLED",				{name: "zimbraPrefMailSignatureEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("SIGNATURE_STYLE",					{name: "zimbraPrefMailSignatureStyle", type: ZmSetting.T_PREF, defaultValue: ZmSetting.SIG_OUTLOOK});
+	settings.registerSetting("VACATION_MSG",					{name: "zimbraPrefOutOfOfficeReply", type: ZmSetting.T_PREF});
+	settings.registerSetting("VACATION_MSG_ENABLED",			{name: "zimbraPrefOutOfOfficeReplyEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("VACATION_MSG_FEATURE_ENABLED",	{name: "zimbraFeatureOutOfOfficeReplyEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+
+	ZmMailApp._setGroupByMaps();
+};
+
+ZmMailApp.prototype._registerOperations =
+function() {
 	ZmOperation.registerOp("ADD_SIGNATURE", {textKey:"addSignature"}/*, ZmSetting.SIGNATURE_ENABLED*/);
 	ZmOperation.registerOp("CHECK_MAIL", {textKey:"checkMail", tooltipKey:"checkMailTooltip", image:"Refresh"});
 	ZmOperation.registerOp("COMPOSE_OPTIONS", {textKey:"options", image:"Preferences"});
@@ -78,7 +155,10 @@ function ZmMailApp(appCtxt, container, parentController) {
 	ZmOperation.registerOp("SHOW_ONLY_MAIL", {textKey:"showOnlyMail", image:"Conversation"}, ZmSetting.MIXED_VIEW_ENABLED);
 	ZmOperation.registerOp("SHOW_ORIG", {textKey:"showOrig", image:"Message"});
 	ZmOperation.registerOp("SPAM", {textKey:"junk", tooltipKey:"junkTooltip", image:"SpamFolder"}, ZmSetting.SPAM_ENABLED);
+};
 
+ZmMailApp.prototype._registerItems =
+function() {
 	ZmItem.registerItem(ZmItem.CONV,
 						{app:			ZmApp.MAIL,
 						 nameKey:		"conversation",
@@ -88,8 +168,6 @@ function ZmMailApp(appCtxt, container, parentController) {
 						 node:			"c",
 						 organizer:		ZmOrganizer.FOLDER,
 						 searchType:	"conversation",
-						 stbTooltipKey:	"searchForConvs",
-						 stbIcon:		"ContactsFolder",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("Mail");
@@ -106,8 +184,6 @@ function ZmMailApp(appCtxt, container, parentController) {
 						 node:			"m",
 						 organizer:		ZmOrganizer.FOLDER,
 						 searchType:	"message",
-						 stbTooltipKey:	"searchForMessages",
-						 stbIcon:		"ContactsFolder",
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("Mail");
@@ -125,14 +201,20 @@ function ZmMailApp(appCtxt, container, parentController) {
 			return new ZmMailList(ZmItem.ATT, this._appCtxt, search);
 		}, this)
 						});
+};
 
+ZmMailApp.prototype._setupSearchToolbar =
+function() {
 	ZmSearchToolBar.FOR_MAIL_MI = "FOR MAIL";
 	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_MAIL_MI,
 								{msgKey:		"searchMail",
 								 tooltipKey:	"searchMail",
 								 icon:			"SearchMail"
 								});
+};
 
+ZmMailApp.prototype._registerApp =
+function() {
 	var newItemOps = {};
 	newItemOps[ZmOperation.NEW_MESSAGE] = "message";
 
@@ -161,40 +243,6 @@ function ZmMailApp(appCtxt, container, parentController) {
 							  chooserSort:			10,
 							  defaultSort:			10
 							  });
-};
-
-// Organizer and item-related constants
-ZmEvent.S_CONV				= "CONV";
-ZmEvent.S_MSG				= "MSG";
-ZmEvent.S_ATT				= "ATT";
-ZmItem.CONV					= ZmEvent.S_CONV;
-ZmItem.MSG					= ZmEvent.S_MSG;
-ZmItem.ATT					= ZmEvent.S_ATT;
-
-// App-related constants
-ZmApp.MAIL					= "Mail";
-ZmApp.CLASS[ZmApp.MAIL]		= "ZmMailApp";
-ZmApp.SETTING[ZmApp.MAIL]	= ZmSetting.MAIL_ENABLED;
-ZmApp.LOAD_SORT[ZmApp.MAIL]	= 20;
-ZmApp.QS_ARG[ZmApp.MAIL]	= "mail";
-
-ZmMailApp.prototype = new ZmApp;
-ZmMailApp.prototype.constructor = ZmMailApp;
-
-ZmMailApp._setGroupByMaps =
-function() {
-	// convert between server values for "group mail by" and item types
-	ZmMailApp.GROUP_MAIL_BY_ITEM	= {};
-	ZmMailApp.GROUP_MAIL_BY_VALUE	= {};
-	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_CONV]		= ZmItem.CONV;
-	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_MESSAGE]	= ZmItem.MSG;
-	ZmMailApp.GROUP_MAIL_BY_VALUE[ZmItem.CONV]					= ZmSetting.GROUP_BY_CONV;
-	ZmMailApp.GROUP_MAIL_BY_VALUE[ZmItem.MSG]					= ZmSetting.GROUP_BY_MESSAGE;
-};
-
-ZmMailApp.prototype.toString = 
-function() {
-	return "ZmMailApp";
 };
 
 // App API
