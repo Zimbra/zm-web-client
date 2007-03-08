@@ -81,6 +81,8 @@
         </td>
     </tr>
 
+<c:choose>
+    <c:when test="${not calendar and not addressbook}">
     <tr>
         <td nowrap align='right'>
             <fmt:message key="parentFolder"/>
@@ -99,6 +101,11 @@
             </select>
         </td>
     </tr>
+    </c:when>
+    <c:otherwise>
+        <input name="newFolderParentId" type="hidden" value="1">
+    </c:otherwise>
+</c:choose>
 
     <c:if test="${url}">
         <tr>
