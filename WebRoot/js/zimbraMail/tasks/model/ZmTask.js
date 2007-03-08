@@ -118,10 +118,10 @@ ZmTask.prototype.notifyModify =
 function(obj) {
 	ZmItem.prototype.notifyModify.call(this, obj);
 
-	// TODO - update local task info w/ new
+	this._loadFromDom(obj);
 
 	// update this tasks's list and notify
-	this.list.modifyLocal(obj);
+	this.list.modifyLocal(obj, {task:this});
 	this._notify(ZmEvent.E_MODIFY, obj);
 };
 

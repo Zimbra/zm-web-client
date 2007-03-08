@@ -141,8 +141,8 @@ function() {
 };
 
 ZmTaskListView.prototype._createItemHtml =
-function(task, now, isDndIcon) {
-	var div = this._getDiv(task, isDndIcon);
+function(task, now, isDndIcon, myDiv) {
+	var div = myDiv || this._getDiv(task, isDndIcon);
 
 	var htmlArr = [];
 	var idx = 0;
@@ -419,9 +419,12 @@ function(ev) {
 			this.addItem(item, idx);
 		}
 	} else if (ev.event == ZmEvent.E_MODIFY) {
-		// HACK HACK HACK
-		// XXX: optimize later - for now refetch list from server
-		this._controller._list._redoSearch(this._controller);
+		var task = items[0];
+		var div = this._getElFromItem(task);
+		if (div) {
+			this._createItemHtml(task, this._now, false, div);
+			this.associateItemWithElement(task, div, DwtListView.TYPE_LIST_ITEM);
+		}
 	}
 
 	ZmListView.prototype._changeListener.call(this, ev);

@@ -47,3 +47,14 @@ ZmTaskList.prototype.toString =
 function() {
 	return "ZmTaskList";
 };
+
+// Handle modified task.
+ZmTaskList.prototype.modifyLocal =
+function(item, details) {
+	var task = details.task;
+
+	this.remove(task);
+
+	// TODO - figure out proper sorting index once server bug #15063 is fixed
+	this.add(task, 0/*this._sortIndex(task)*/);
+};
