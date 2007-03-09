@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmVoicemailController(appCtxt, container, app) {
+function ZmVoiceListController(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmListController.call(this, appCtxt, container, app);
 
@@ -40,15 +40,15 @@ function ZmVoicemailController(appCtxt, container, app) {
 	this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
 	this._listeners[ZmOperation.AUTO_PLAY] = new AjxListener(this, this._autoPlayListener);
 }
-ZmVoicemailController.prototype = new ZmListController;
-ZmVoicemailController.prototype.constructor = ZmVoicemailController;
+ZmVoiceListController.prototype = new ZmListController;
+ZmVoiceListController.prototype.constructor = ZmVoiceListController;
 
-ZmVoicemailController.prototype.toString =
+ZmVoiceListController.prototype.toString =
 function() {
-	return "ZmVoicemailController";
+	return "ZmVoiceListController";
 };
 
-ZmVoicemailController.prototype._defaultView =
+ZmVoiceListController.prototype._defaultView =
 function() {
 	return ZmController.VOICEMAIL_VIEW;
 };
@@ -59,7 +59,7 @@ function() {
 * @param search		search results (which should contain a list of conversations)
 * @param folder		The folder being shown
 */
-ZmVoicemailController.prototype.show =
+ZmVoiceListController.prototype.show =
 function(searchResult, folder) {
 	this._folder = folder;
 	ZmListController.prototype.show.call(this, searchResult);
@@ -72,19 +72,19 @@ function(searchResult, folder) {
 	this._setView(this._currentView, elements, true);
 };
 
-ZmVoicemailController.prototype._createNewView = 
+ZmVoiceListController.prototype._createNewView = 
 function(view) {
-	var result = new ZmVoicemailView(this._container, this._appCtxt, this._dropTgt);
+	var result = new ZmVoiceListView(this._container, this._appCtxt, this._dropTgt);
 	result.addSelectionListener(new AjxListener(this, this._selectListener));
 	return result;
 };
 
-ZmVoicemailController.prototype._initialize =
+ZmVoiceListController.prototype._initialize =
 function(view) {
 	ZmListController.prototype._initialize.call(this, view);
 };
 
-ZmVoicemailController.prototype._setViewContents =
+ZmVoiceListController.prototype._setViewContents =
 function(viewId) {
 	if (this._hasPlayedSound) {
 		this._soundPlayer.pause();
@@ -97,7 +97,7 @@ function(viewId) {
 	view.set(this._list, ZmItem.F_DATE);
 };
 
-ZmVoicemailController.prototype._getToolBarOps =
+ZmVoiceListController.prototype._getToolBarOps =
 function() {
 	var list = [];
 	list.push(ZmOperation.CHECK_MAIL);
@@ -112,7 +112,7 @@ function() {
 	return list;
 };
 
-ZmVoicemailController.prototype._getActionMenuOps =
+ZmVoiceListController.prototype._getActionMenuOps =
 function() {
 	var list = [];
 	list.push(ZmOperation.FORWARD);
@@ -121,12 +121,12 @@ function() {
 	return list;
 };
 
-ZmVoicemailController.prototype._participantOps =
+ZmVoiceListController.prototype._participantOps =
 function() {
 	return [ZmOperation.CONTACT];
 };
 
-ZmVoicemailController.prototype._getParticipantActionMenu =
+ZmVoiceListController.prototype._getParticipantActionMenu =
 function() {
 	if (!this._participantActionMenu) {
 		var menuItems = this._participantOps();
@@ -141,7 +141,7 @@ function() {
 	return this._participantActionMenu;
 };
 
-ZmVoicemailController.prototype._initializeToolBar =
+ZmVoiceListController.prototype._initializeToolBar =
 function(view) {
 	ZmListController.prototype._initializeToolBar.call(this, view);
 	if (!this._soundPlayer) {
@@ -159,29 +159,29 @@ function(view) {
 	}
 };
 
-ZmVoicemailController.prototype._resetOperations = 
+ZmVoiceListController.prototype._resetOperations = 
 function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 	parent.enable(ZmOperation.CHECK_MAIL, true);
 	parent.enable(ZmOperation.AUTO_PLAY, this._folder && this._folder.numUnread && !this._soundPlayer.isPluginMissing());
 };
 
-ZmVoicemailController.prototype._refreshListener = 
+ZmVoiceListController.prototype._refreshListener = 
 function(ev) {
 //	alert('Check voicemail here');
 };
 
-ZmVoicemailController.prototype._deleteListener = 
+ZmVoiceListController.prototype._deleteListener = 
 function(ev) {
 //	alert('Delete voicemail here');
 };
 
-ZmVoicemailController.prototype._saveListener = 
+ZmVoiceListController.prototype._saveListener = 
 function(ev) {
 //	alert('Save voicemail here');
 };
 
-ZmVoicemailController.prototype._forwardListener = 
+ZmVoiceListController.prototype._forwardListener = 
 function(ev) {
 	var voicemail = this._getView().getSelection()[0];
 	var duration = AjxDateUtil.computeDuration(voicemail.duration);
@@ -197,7 +197,7 @@ function(ev) {
 	AjxDispatcher.run("Compose", params);
 };
 
-ZmVoicemailController.prototype._autoPlayListener = 
+ZmVoiceListController.prototype._autoPlayListener = 
 function(ev) {
 	if (!this._autoPlaying) {
 		var firstUnheard;
@@ -213,7 +213,7 @@ function(ev) {
 	}
 };
 
-ZmVoicemailController.prototype._autoPlayNext = 
+ZmVoiceListController.prototype._autoPlayNext = 
 function() {
 	var next = null;
 	var list = this._getView().getList();
@@ -233,14 +233,14 @@ function() {
 	}
 };
 
-ZmVoicemailController.prototype._stopAutoPlay = 
+ZmVoiceListController.prototype._stopAutoPlay = 
 function() {
 	this._autoPlaying = false;
 	var autoPlayButton = this._getToolbar().getButton(ZmOperation.AUTO_PLAY);
 	autoPlayButton.setToggled(false);
 };
 
-ZmVoicemailController.prototype._play = 
+ZmVoiceListController.prototype._play = 
 function(voicemail) {
 	var url = [];
 	var i = 0;
@@ -258,10 +258,10 @@ function(voicemail) {
 	this._getView().setPlaying(voicemail);
 };
 
-ZmVoicemailController.prototype._selectListener = 
+ZmVoiceListController.prototype._selectListener = 
 function(ev) {
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED ||
-		ev.detail == ZmVoicemailView.PLAY_BUTTON_PRESSED) {
+		ev.detail == ZmVoiceListView.PLAY_BUTTON_PRESSED) {
 		var selection = this._getView().getSelection();
 		if (selection.length == 1) {
 			if (this._autoPlaying) {
@@ -273,17 +273,17 @@ function(ev) {
 	}
 };
 
-ZmVoicemailController.prototype._getView = 
+ZmVoiceListController.prototype._getView = 
 function() {
 	return this._listView[this._currentView];
 };
 
-ZmVoicemailController.prototype._getToolbar = 
+ZmVoiceListController.prototype._getToolbar = 
 function() {
 	return this._toolbar[this._currentView]
 };
 
-ZmVoicemailController.prototype._createNewContact =
+ZmVoiceListController.prototype._createNewContact =
 function(ev) {
 	var voicemail = ev.item;
 	var contact = new ZmContact(this._appCtxt);
@@ -292,7 +292,7 @@ function(ev) {
 };
 
 // Called when user clicks for help with plugins.
-ZmVoicemailController.prototype._pluginHelpListener =
+ZmVoiceListController.prototype._pluginHelpListener =
 function(event) {
 	var dialog = this._appCtxt.getMsgDialog();
 	var message = AjxEnv.isIE ? ZmMsg.missingPluginHelpIE : ZmMsg.missingPluginHelp;
@@ -301,14 +301,14 @@ function(event) {
 };
 
 // Called while the sound is playing. The event has information about play status.
-ZmVoicemailController.prototype._soundChangeListener =
+ZmVoiceListController.prototype._soundChangeListener =
 function(event) {
 	if (this._autoPlaying && event.finished) {
 		this._autoPlayNext();
 	}
 };
 
-ZmVoicemailController.prototype._listActionListener =
+ZmVoiceListController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
 

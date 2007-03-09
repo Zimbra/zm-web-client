@@ -23,35 +23,35 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmVoicemailTreeController(appCtxt, type, dropTgt) {
+function ZmVoiceTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length == 0) return;
 
 	ZmFolderTreeController.call(this, appCtxt, (type || ZmOrganizer.VOICEMAIL), dropTgt);
 }
 
-ZmVoicemailTreeController.prototype = new ZmFolderTreeController;
-ZmVoicemailTreeController.prototype.constructor = ZmVoicemailTreeController;
+ZmVoiceTreeController.prototype = new ZmFolderTreeController;
+ZmVoiceTreeController.prototype.constructor = ZmVoiceTreeController;
 
 
 // Public Methods
-ZmVoicemailTreeController.prototype.toString =
+ZmVoiceTreeController.prototype.toString =
 function() {
-	return "ZmVoicemailTreeController";
+	return "ZmVoiceTreeController";
 };
 
-ZmVoicemailTreeController.prototype._createView =
+ZmVoiceTreeController.prototype._createView =
 function(params) {
-	return new ZmVoicemailTreeView(params);
+	return new ZmVoiceTreeView(params);
 };
 
-ZmVoicemailTreeController.prototype._getAllowedSubTypes =
+ZmVoiceTreeController.prototype._getAllowedSubTypes =
 function(overviewType) {
 	var types = {};
 	types[ZmOrganizer.VOICEMAIL] = true;
 	return types;
 };
 
-ZmVoicemailTreeController.prototype._postSetup =
+ZmVoiceTreeController.prototype._postSetup =
 function(overviewId) {
 	ZmTreeController.prototype._postSetup.call(this, overviewId);
 	
@@ -65,25 +65,25 @@ function(overviewId) {
 	}
 };
 
-ZmVoicemailTreeController.prototype.resetOperations =
+ZmVoiceTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	var folder = this._appCtxt.getById(id);
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
 };
 
 // Returns a list of desired header action menu operations
-ZmVoicemailTreeController.prototype._getHeaderActionMenuOps =
+ZmVoiceTreeController.prototype._getHeaderActionMenuOps =
 function() {
 	return [ZmOperation.EXPAND_ALL];
 };
 
 // Returns a list of desired action menu operations
-ZmVoicemailTreeController.prototype._getActionMenuOps =
+ZmVoiceTreeController.prototype._getActionMenuOps =
 function() {
 	return [ZmOperation.EXPAND_ALL];
 };
 
-ZmVoicemailTreeController.prototype._getDropTarget =
+ZmVoiceTreeController.prototype._getDropTarget =
 function(appCtxt) {
 	return (new DwtDropTarget(["ZmVoicemail"]));
 };
@@ -91,7 +91,7 @@ function(appCtxt) {
 
 // Listeners
 
-ZmVoicemailTreeController.prototype._changeListener =
+ZmVoiceTreeController.prototype._changeListener =
 function(ev, treeView, overviewId) {
 	ZmFolderTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 
@@ -117,7 +117,7 @@ function(ev, treeView, overviewId) {
 *
 * @param folder		ZmVoicemailFolder		folder that was clicked
 */
-ZmVoicemailTreeController.prototype._itemClicked =
+ZmVoiceTreeController.prototype._itemClicked =
 function(folder) {
 	this._appCtxt.getApp(ZmApp.VOICEMAIL).search(folder);
 };

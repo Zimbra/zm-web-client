@@ -31,7 +31,7 @@
 * done in the base class, drawing the top-level account items as headers.
 *
 */
-function ZmVoicemailTreeView(params) {
+function ZmVoiceTreeView(params) {
 	if (arguments.length == 0) return;
 
 	params.headerClass = params.headerClass || "ZmVoicemailTreeHeader";
@@ -39,18 +39,18 @@ function ZmVoicemailTreeView(params) {
 	this._headerClickListenerObj = new AjxListener(this, this.__headerClickListener);
 };
 
-ZmVoicemailTreeView.prototype = new ZmTreeView;
-ZmVoicemailTreeView.prototype.constructor = ZmVoicemailTreeView;
+ZmVoiceTreeView.prototype = new ZmTreeView;
+ZmVoiceTreeView.prototype.constructor = ZmVoiceTreeView;
 
 // Public methods
 
-ZmVoicemailTreeView.prototype.toString = 
+ZmVoiceTreeView.prototype.toString = 
 function() {
-	return "ZmVoicemailTreeView";
+	return "ZmVoiceTreeView";
 };
 
 // Creates a tee item for the organizer, and recurslively renders its children.
-ZmVoicemailTreeView.prototype._addNew =
+ZmVoiceTreeView.prototype._addNew =
 function(parentNode, organizer, index) {
 	if (organizer.callType == ZmVoicemailFolder.ACCOUNT) {
 		var item = this._createAccountItem(organizer, organizer.getName());
@@ -60,7 +60,7 @@ function(parentNode, organizer, index) {
 	}
 };
 
-ZmVoicemailTreeView.prototype._createAccountItem =
+ZmVoiceTreeView.prototype._createAccountItem =
 function(organizer) {
 	var item = new DwtTreeItem(this, null, null, null, null, "overviewHeader");
 	item.enableSelection(false); // by default, disallow selection

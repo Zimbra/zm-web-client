@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmVoicemailApp(appCtxt, container, parentController) {
+function ZmVoiceApp(appCtxt, container, parentController) {
 	this._phones = [];
 	ZmApp.call(this, ZmApp.VOICEMAIL, appCtxt, container, parentController);
 }
@@ -38,27 +38,27 @@ ZmOrganizer.ID_VOICEMAIL		= 8675;
 
 // App-related constants
 ZmApp.VOICEMAIL						= "Voicemail";
-ZmApp.CLASS[ZmApp.VOICEMAIL]		= "ZmVoicemailApp";
+ZmApp.CLASS[ZmApp.VOICEMAIL]		= "ZmVoiceApp";
 ZmApp.SETTING[ZmApp.VOICEMAIL]		= ZmSetting.VOICEMAIL_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.VOICEMAIL]	= 80;
 ZmApp.QS_ARG[ZmApp.VOICEMAIL]		= "voicemail";
 
-ZmVoicemailApp.prototype = new ZmApp;
-ZmVoicemailApp.prototype.constructor = ZmVoicemailApp;
+ZmVoiceApp.prototype = new ZmApp;
+ZmVoiceApp.prototype.constructor = ZmVoiceApp;
 
-ZmVoicemailApp.prototype.toString = 
+ZmVoiceApp.prototype.toString = 
 function() {
-	return "ZmVoicemailApp";
+	return "ZmVoiceApp";
 }
 
 // Construction
 
-ZmVoicemailApp.prototype._defineAPI =
+ZmVoiceApp.prototype._defineAPI =
 function() {
 	AjxDispatcher.registerMethod("GetVoicemailController", "Voicemail", new AjxCallback(this, this.getVoicemailController));
 };
 
-ZmVoicemailApp.prototype._registerItems =
+ZmVoiceApp.prototype._registerItems =
 function() {
 	ZmItem.registerItem(ZmItem.VOICEMAIL,
 						{app:			ZmApp.VOICEMAIL,
@@ -77,12 +77,12 @@ function() {
 						});
 };
 
-ZmVoicemailApp.prototype._registerOperations =
+ZmVoiceApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp("AUTO_PLAY", {textKey:"autoPlay", tooltipKey:"autoPlayTooltip", image:"ApptRecur"});
 };
 
-ZmVoicemailApp.prototype._registerOrganizers =
+ZmVoiceApp.prototype._registerOrganizers =
 function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.VOICEMAIL,
 							{app:				ZmApp.VOICEMAIL,
@@ -91,7 +91,7 @@ function() {
 							 firstUserId:		256,
 							 orgClass:			"ZmVoicemailFolder",
 							 orgPackage:		"VoicemailCore",
-							 treeController:	"ZmVoicemailTreeController",
+							 treeController:	"ZmVoiceTreeController",
 							 labelKey:			"voicemail",
 							 views:				["voicemail"],
 							 createFunc:		"ZmOrganizer.create",
@@ -100,7 +100,7 @@ function() {
 							});
 };
 
-ZmVoicemailApp.prototype._registerApp =
+ZmVoiceApp.prototype._registerApp =
 function() {
 	ZmApp.registerApp(ZmApp.VOICEMAIL,
 							 {mainPkg:				"Voicemail",
@@ -120,22 +120,22 @@ function() {
 
 // Public methods
 
-ZmVoicemailApp.prototype.deleteNotify =
+ZmVoiceApp.prototype.deleteNotify =
 function(ids) {
 	this._handleDeletes(ids);
 };
 
-ZmVoicemailApp.prototype.createNotify =
+ZmVoiceApp.prototype.createNotify =
 function(list) {
 	this._handleCreates(list);
 };
 
-ZmVoicemailApp.prototype.modifyNotify =
+ZmVoiceApp.prototype.modifyNotify =
 function(list) {
 	this._handleModifies(list);
 };
 
-ZmVoicemailApp.prototype.search =
+ZmVoiceApp.prototype.search =
 function(folder, callback) {
 	var soapInfo = {
 		method: "SearchVoiceRequest", 
@@ -152,7 +152,7 @@ function(folder, callback) {
 	search.execute({ callback: responseCallback });
 };
 
-ZmVoicemailApp.prototype._handleResponseSearch =
+ZmVoiceApp.prototype._handleResponseSearch =
 function(folder, callback, response) {
 	var searchResult = response._data;
 	var voicemailController = AjxDispatcher.run("GetVoicemailController");
@@ -162,13 +162,13 @@ function(folder, callback, response) {
 	}
 };
 
-ZmVoicemailApp.prototype.launch =
+ZmVoiceApp.prototype.launch =
 function(callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require("Voicemail", false, loadCallback, null, true);
 };
 
-ZmVoicemailApp.prototype._handleLoadLaunch =
+ZmVoiceApp.prototype._handleLoadLaunch =
 function(callback) {
     var soapDoc = AjxSoapDoc.create("GetVoiceInfoRequest", "urn:zimbraVoice");
     var respCallback = new AjxCallback(this, this._handleResponseVoiceInfo, callback);
@@ -180,7 +180,7 @@ function(callback) {
 	this._appCtxt.getAppController().sendRequest(params);
 };
 
-ZmVoicemailApp.prototype._handleResponseVoiceInfo =
+ZmVoiceApp.prototype._handleResponseVoiceInfo =
 function(callback, response) {
 	var folderTree = this._appCtxt.getFolderTree();
 	var phones = response._data.GetVoiceInfoResponse.phone;
@@ -199,7 +199,7 @@ function(callback, response) {
 	}
 };
 
-ZmVoicemailApp.prototype._getFolders =
+ZmVoiceApp.prototype._getFolders =
 function(callback) {
     var soapDoc = AjxSoapDoc.create("GetVoiceFolderRequest", "urn:zimbraVoice");
     for (var i = 0, count = this._phones.length; i < count; i++) {
@@ -215,7 +215,7 @@ function(callback) {
 	this._appCtxt.getAppController().sendRequest(params);
 };
 
-ZmVoicemailApp.prototype._handleResponseGetFolder =
+ZmVoiceApp.prototype._handleResponseGetFolder =
 function(callback, response) {
 	var folderTree = this._appCtxt.getFolderTree();
 	var array = response._data.GetVoiceFolderResponse.phone
@@ -227,7 +227,7 @@ function(callback, response) {
 	}
 };
 
-ZmVoicemailApp.prototype._createFolder =
+ZmVoiceApp.prototype._createFolder =
 function(parent, phone, obj) {
 	var params = { 
 		id: phone.name + obj.name,
@@ -251,25 +251,25 @@ function(parent, phone, obj) {
 	return folder;
 };
 
-ZmVoicemailApp.prototype.activate =
+ZmVoiceApp.prototype.activate =
 function(active, view) {
 };
 
-ZmVoicemailApp.prototype.getVoicemailController = function() {
+ZmVoiceApp.prototype.getVoicemailController = function() {
 	if (!this._voicemailController) {
-		this._voicemailController = new ZmVoicemailController(this._appCtxt, this._container, this);
+		this._voicemailController = new ZmVoiceListController(this._appCtxt, this._container, this);
 	}
 	return this._voicemailController;
 };
 
-ZmVoicemailApp.prototype._handleDeletes =
+ZmVoiceApp.prototype._handleDeletes =
 function(ids) {
 };
 
-ZmVoicemailApp.prototype._handleCreates =
+ZmVoiceApp.prototype._handleCreates =
 function(list) {
 };
 
-ZmVoicemailApp.prototype._handleModifies =
+ZmVoiceApp.prototype._handleModifies =
 function(list) {
 };
