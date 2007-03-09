@@ -5,6 +5,10 @@ vertical-align: middle;
 
 }
 
+LEGEND {
+@Text-disabled@;
+}
+
 .tbButton, .searchButton {
     padding:2px;
     /* couldn't find a good match in base_subs for this */
@@ -276,8 +280,6 @@ padding: 0px 5px 0px 5px;
 
 .Compose {
 @PageBg@;
-border: 1px solid;
-border-color: #98adbe #555555 #555555 #E0E0E0;
     
 }
 
