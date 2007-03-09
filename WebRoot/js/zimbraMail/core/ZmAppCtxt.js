@@ -585,9 +585,8 @@ function(tree) {
 
 ZmAppCtxt.prototype.getUsername = 
 function() { 
-	// get username from the cookie set during successful login, or from acct info
-	return AjxCookie.getCookie(document, ZmLogin.USER_NAME_COOKIE) ||
-		   this.get(ZmSetting.USERNAME);
+	// get username from acct info received in GetInfoResponse
+	return this.get(ZmSetting.USERNAME);
 };
 ZmAppCtxt.prototype.getUploadFrameId =
 function() {
