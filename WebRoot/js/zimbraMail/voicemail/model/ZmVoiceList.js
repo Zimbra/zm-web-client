@@ -33,15 +33,15 @@
 * @param appCtxt	global app context
 * @param search		the search that generated this list
 */
-function ZmVoicemailList(appCtxt, search) {
+function ZmVoiceList(appCtxt, search) {
 	ZmList.call(this, ZmItem.VOICEMAIL, appCtxt, search);
 };
 
-ZmVoicemailList.prototype = new ZmList;
-ZmVoicemailList.prototype.constructor = ZmVoicemailList;
+ZmVoiceList.prototype = new ZmList;
+ZmVoiceList.prototype.constructor = ZmVoiceList;
 
-ZmVoicemailList.prototype.toString = 
+ZmVoiceList.prototype.toString = 
 function() {
-	return "ZmVoicemailList";
+	return "ZmVoiceList";
 };
 

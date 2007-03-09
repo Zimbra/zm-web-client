@@ -115,7 +115,7 @@ function(ev, treeView, overviewId) {
 /*
 * Called when a left click occurs (by the tree view listener).
 *
-* @param folder		ZmVoicemailFolder		folder that was clicked
+* @param folder		ZmVoiceFolder		folder that was clicked
 */
 ZmVoiceTreeController.prototype._itemClicked =
 function(folder) {

@@ -34,7 +34,7 @@
 function ZmVoiceTreeView(params) {
 	if (arguments.length == 0) return;
 
-	params.headerClass = params.headerClass || "ZmVoicemailTreeHeader";
+	params.headerClass = params.headerClass || "ZmVoiceTreeHeader";
 	ZmTreeView.call(this, params);
 	this._headerClickListenerObj = new AjxListener(this, this.__headerClickListener);
 };
@@ -52,7 +52,7 @@ function() {
 // Creates a tee item for the organizer, and recurslively renders its children.
 ZmVoiceTreeView.prototype._addNew =
 function(parentNode, organizer, index) {
-	if (organizer.callType == ZmVoicemailFolder.ACCOUNT) {
+	if (organizer.callType == ZmVoiceFolder.ACCOUNT) {
 		var item = this._createAccountItem(organizer, organizer.getName());
 		this._render({treeNode:item, organizer:organizer});
 	} else {

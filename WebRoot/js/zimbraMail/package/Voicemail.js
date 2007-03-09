@@ -17,13 +17,13 @@ AjxPackage.require("ajax.dwt.widgets.DwtSoundPlugin");
 
 AjxPackage.require("zimbraMail.voicemail.model.ZmPhone");
 AjxPackage.require("zimbraMail.voicemail.model.ZmVoicemail");
-AjxPackage.require("zimbraMail.voicemail.model.ZmVoicemailFolder");
-AjxPackage.require("zimbraMail.voicemail.model.ZmVoicemailList");
+AjxPackage.require("zimbraMail.voicemail.model.ZmVoiceFolder");
+AjxPackage.require("zimbraMail.voicemail.model.ZmVoiceList");
 
 AjxPackage.require("zimbraMail.voicemail.view.ZmSoundPlayer");
-AjxPackage.require("zimbraMail.voicemail.view.ZmVoicemailView");
-AjxPackage.require("zimbraMail.voicemail.view.ZmVoicemailTreeView");
+AjxPackage.require("zimbraMail.voicemail.view.ZmVoiceListView");
+AjxPackage.require("zimbraMail.voicemail.view.ZmVoiceTreeView");
 
-AjxPackage.require("zimbraMail.voicemail.controller.ZmVoicemailController");
-AjxPackage.require("zimbraMail.voicemail.controller.ZmVoicemailTreeController");
+AjxPackage.require("zimbraMail.voicemail.controller.ZmVoiceListController");
+AjxPackage.require("zimbraMail.voicemail.controller.ZmVoiceTreeController");
 

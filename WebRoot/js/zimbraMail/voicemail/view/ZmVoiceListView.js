@@ -84,7 +84,7 @@ function(voicemail) {
 ZmVoiceListView.prototype.createHeaderHtml = 
 function(defaultColumnSort) {
 	ZmListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
-	var isPlaced = this._callType == ZmVoicemailFolder.PLACED_CALL;
+	var isPlaced = this._callType == ZmVoiceFolder.PLACED_CALL;
 	var callerLabel = isPlaced ? ZmMsg.to : ZmMsg.from;
 	this._setColumnHeader(ZmVoiceListView.F_CALLER_NAME, callerLabel);
 	var dateLabel = isPlaced ? ZmMsg.placed : ZmMsg.received;	
@@ -207,7 +207,7 @@ ZmVoiceListView.prototype._mouseOverAction =
 function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
 	
-	if (this._callType == ZmVoicemailFolder.VOICEMAIL) {
+	if (this._callType == ZmVoiceFolder.VOICEMAIL) {
 		var voicemail = this.getItemFromElement(div);
 		if (voicemail != this._playing && voicemail != this._previewing) {
 			if (this._previewing) {
@@ -226,7 +226,7 @@ function(ev, div) {
 
 ZmVoiceListView.prototype._mouseDownAction =
 function(ev, div) {
-	if (this._callType == ZmVoicemailFolder.VOICEMAIL) {
+	if (this._callType == ZmVoiceFolder.VOICEMAIL) {
 		var voicemail = this.getItemFromElement(div);
 		if (voicemail && voicemail == this._previewing) {
 			var target = ev.target;
@@ -240,7 +240,7 @@ function(ev, div) {
 
 ZmVoiceListView.prototype._mouseUpAction =
 function(ev, div) {
-	if (this._callType == ZmVoicemailFolder.VOICEMAIL) {
+	if (this._callType == ZmVoiceFolder.VOICEMAIL) {
 		var voicemail = this.getItemFromElement(div);
 		if (voicemail && voicemail == this._previewing) {
 			var target = ev.target;
@@ -261,7 +261,7 @@ function(ev, div) {
 
 ZmVoiceListView.prototype._isInPlayingCell =
 function(target) {
-	if (this._callType == ZmVoicemailFolder.VOICEMAIL) {
+	if (this._callType == ZmVoiceFolder.VOICEMAIL) {
 		var thisElement = this.getHtmlElement();
 		var columnIndex = this._getColumnIndex(ZmVoiceListView.F_PLAYING);
 		while (target && target != thisElement) {
@@ -291,7 +291,7 @@ function(voicemail, state, visible, playing) {
 
 ZmVoiceListView.prototype._mouseOutAction =
 function(ev, div) {
-	if (this._callType == ZmVoicemailFolder.VOICEMAIL) {
+	if (this._callType == ZmVoiceFolder.VOICEMAIL) {
 		var voicemail = this.getItemFromElement(div);
 		if (voicemail != this._playing && this._previewing) {
 			this._setPlayState(this._previewing, null, false);

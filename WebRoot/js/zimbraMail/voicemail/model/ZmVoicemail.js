@@ -31,7 +31,7 @@
 *
 * @param appCtxt	[ZmAppCtxt]		the app context
 * @param id			[int]			unique ID
-* @param list		[ZmVoicemailList]	list that contains this item
+* @param list		[ZmVoiceList]	list that contains this item
 */
 function ZmVoicemail(appCtxt, id, list) {
 

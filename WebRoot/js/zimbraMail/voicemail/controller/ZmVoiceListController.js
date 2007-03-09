@@ -314,7 +314,7 @@ function(ev) {
 
 	var view = ev.dwtObj;
 	var isParticipant = ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT];
-	var isVoicemail = this._folder.callType == ZmVoicemailFolder.VOICEMAIL;
+	var isVoicemail = this._folder.callType == ZmVoiceFolder.VOICEMAIL;
 	var actionMenu;
 	if (isParticipant) {
 	 	actionMenu = this._getParticipantActionMenu();

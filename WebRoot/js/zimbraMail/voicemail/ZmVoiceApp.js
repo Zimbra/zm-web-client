@@ -72,7 +72,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("Voicemail");
-			return new ZmVoicemailList(this._appCtxt, search);
+			return new ZmVoiceList(this._appCtxt, search);
 		}, this)
 						});
 };
@@ -89,13 +89,13 @@ function() {
 							 nameKey:			"voicemailFolder",
 							 defaultFolder:		ZmOrganizer.ID_VOICEMAIL,
 							 firstUserId:		256,
-							 orgClass:			"ZmVoicemailFolder",
+							 orgClass:			"ZmVoiceFolder",
 							 orgPackage:		"VoicemailCore",
 							 treeController:	"ZmVoiceTreeController",
 							 labelKey:			"voicemail",
 							 views:				["voicemail"],
 							 createFunc:		"ZmOrganizer.create",
-							 compareFunc:		"ZmVoicemailFolder.sortCompare",
+							 compareFunc:		"ZmVoiceFolder.sortCompare",
 							 deferrable:		false
 							});
 };
@@ -233,14 +233,14 @@ function(parent, phone, obj) {
 		id: phone.name + obj.name,
 		name: obj.name,
 		phone: phone,
-		callType: obj.name || ZmVoicemailFolder.ACCOUNT,
+		callType: obj.name || ZmVoiceFolder.ACCOUNT,
 		view: obj.view,
 		parent: parent,
 		tree: parent.tree,
 	}		
-	var folder = new ZmVoicemailFolder(params);
+	var folder = new ZmVoiceFolder(params);
 	parent.children.add(folder);
-	if (!this.startFolder && (folder.callType == ZmVoicemailFolder.VOICEMAIL)) {
+	if (!this.startFolder && (folder.callType == ZmVoiceFolder.VOICEMAIL)) {
 		this.startFolder = folder;
 	}
 	if (obj.folder) {

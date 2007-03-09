@@ -2716,7 +2716,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	padding-right:5px;
 }
 
-.ZmVoicemailTreeHeader {
+.ZmVoiceTreeHeader {
 	display:none;
 }
 
@@ -2738,14 +2738,14 @@ HTML>BODY .appt-selected .appt_allday_body
   @AppTabContainer-selected@
 }
 
-.ZmVoicemailView .Row, 
-.ZmVoicemailView .Row-selected, 
-.ZmVoicemailView .Row-matched, 
-.ZmVoicemailView .Row-matched-drag, 
-.ZmVoicemailView .Row-drag, 
-.ZmVoicemailView .Row-selected-drag, 
-.ZmVoicemailView .Row-selected-right, 
-.ZmVoicemailView .Row-selected-disabled {
+.ZmVoiceListView .Row, 
+.ZmVoiceListView .Row-selected, 
+.ZmVoiceListView .Row-matched, 
+.ZmVoiceListView .Row-matched-drag, 
+.ZmVoiceListView .Row-drag, 
+.ZmVoiceListView .Row-selected-drag, 
+.ZmVoiceListView .Row-selected-right, 
+.ZmVoiceListView .Row-selected-disabled {
 	height: 20px;
 }
 

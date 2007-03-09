@@ -41,7 +41,7 @@
 * @param rid		[string]*		Remote id of organizer, if remote share
 * @param restUrl	[string]*		The REST URL of this organizer.
 */
-function ZmVoicemailFolder(params) {
+function ZmVoiceFolder(params) {
 	params.type = ZmOrganizer.VOICEMAIL;
 	ZmOrganizer.call(this, params);
 	this.phone = params.phone;
@@ -50,44 +50,44 @@ function ZmVoicemailFolder(params) {
 	this.view = params.view;
 }
 
-ZmVoicemailFolder.prototype = new ZmOrganizer;
-ZmVoicemailFolder.prototype.constructor = ZmVoicemailFolder;
+ZmVoiceFolder.prototype = new ZmOrganizer;
+ZmVoiceFolder.prototype.constructor = ZmVoiceFolder;
 
-ZmVoicemailFolder.ACCOUNT = "USER_ROOT";
-ZmVoicemailFolder.PLACED_CALL = "Placed Calls";
-ZmVoicemailFolder.ANSWERED_CALL = "Answered Calls";
-ZmVoicemailFolder.MISSED_CALL = "Missed Calls";
-ZmVoicemailFolder.VOICEMAIL = "Voice Mails";
-ZmVoicemailFolder.TRASH = "Trash";
+ZmVoiceFolder.ACCOUNT = "USER_ROOT";
+ZmVoiceFolder.PLACED_CALL = "Placed Calls";
+ZmVoiceFolder.ANSWERED_CALL = "Answered Calls";
+ZmVoiceFolder.MISSED_CALL = "Missed Calls";
+ZmVoiceFolder.VOICEMAIL = "Voice Mails";
+ZmVoiceFolder.TRASH = "Trash";
 
 
 // Public methods
 
-ZmVoicemailFolder.prototype.toString =
+ZmVoiceFolder.prototype.toString =
 function() {
-	return "ZmVoicemailFolder";
+	return "ZmVoiceFolder";
 };
 
-ZmVoicemailFolder.prototype.getName =
+ZmVoiceFolder.prototype.getName =
 function(showUnread, maxLength, noMarkup) {
-	var name = this.name == ZmVoicemailFolder.ACCOUNT ? this.phone.getDisplay() : this.name;
+	var name = this.name == ZmVoiceFolder.ACCOUNT ? this.phone.getDisplay() : this.name;
 	return this._markupName(name, showUnread, noMarkup);
 };
 
-ZmVoicemailFolder.prototype.getIcon =
+ZmVoiceFolder.prototype.getIcon =
 function() {
 	switch (this.callType) {
-		case ZmVoicemailFolder.ACCOUNT: return null;
-		case ZmVoicemailFolder.PLACED_CALL: return "PlacedCalls";
-		case ZmVoicemailFolder.ANSWERED_CALL: return "AnsweredCalls";
-		case ZmVoicemailFolder.MISSED_CALL: return "MissedCalls";
-		case ZmVoicemailFolder.VOICEMAIL: return "Voicemail";
-		case ZmVoicemailFolder.TRASH: return "Trash";
+		case ZmVoiceFolder.ACCOUNT: return null;
+		case ZmVoiceFolder.PLACED_CALL: return "PlacedCalls";
+		case ZmVoiceFolder.ANSWERED_CALL: return "AnsweredCalls";
+		case ZmVoiceFolder.MISSED_CALL: return "MissedCalls";
+		case ZmVoiceFolder.VOICEMAIL: return "Voicemail";
+		case ZmVoiceFolder.TRASH: return "Trash";
 	}
 	return null;
 };
 
-ZmVoicemailFolder.sortCompare =
+ZmVoiceFolder.sortCompare =
 function(a, b) {
 	return 0;
 };
