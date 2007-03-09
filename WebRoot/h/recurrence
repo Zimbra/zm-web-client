@@ -35,310 +35,280 @@
     </c:set>
 
     <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
-        <table width=100% cellpadding="0" cellspacing="0">
+         <table width=100% cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
                         ${toolbar}
                 </td>
             </tr>
             <tr>
-                <td class='ZhAppContent'>
-                    <table cellpadding=5 cellspacing=5 width=100%>
-                        <tr>
-                            <td width=50%>
-                                <fieldset>
-                                    <legend>Repeat</legend>
-                                    <table cellpadding=0 cellspacing=0>
-                                        <tr>
-                                            <td>
-                                                <fieldset>
-                                                    <legend>Daily</legend>
-                                                    <table cellpadding=5 cellspacing=0>
-                                                        <tr>
-                                                            <td>
-                                                                <input type=radio name='frequency' value="daily">
-                                                            </td>
-                                                            <td>
-                                                                Every Day.
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <input type=radio name='frequency' value="dailyWeekday">
-                                                            </td>
-                                                            <td>
-                                                                Every Weekday.
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <input type=radio name='frequency'
-                                                                       value="dailyInterval">
-                                                            </td>
-                                                            <td>
-                                                                <table cellpadding=0 cellspacing=0>
-                                                                    <tr>
-                                                                        <td>Every</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td><input type=text size="3"
-                                                                                   maxlength="3"
-                                                                                   name="dailyInterval">
-                                                                        </td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>days.</td>
-                                                                    </tr>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </fieldset>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <fieldset>
-                                                    <legend>Weekly</legend>
-                                                    <table cellpadding=5 cellspacing=0>
-                                                        <tr>
-                                                            <td>
-                                                                <input type=radio name='frequency' value="weekly">
-                                                            </td>
-                                                            <td>
-                                                                <table cellpadding=0 cellspacing=0>
-                                                                    <tr>
-                                                                        <td>Every</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>
-                                                                            <select name="weeklyDOW">
-                                                                                <option value="0">Sunday</option>
-                                                                                <option value="1">Monday</option>
-                                                                                <option value="2">Tuesday</option>
-                                                                                <option value="3">Wednesday</option>
-                                                                                <option value="4">Thursday</option>
-                                                                                <option value="5">Friday</option>
-                                                                                <option value="6">Saturday</option>
-                                                                            </select>
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <input type=radio name='frequency'
-                                                                       value="weeklyInterval">
-                                                            </td>
-                                                            <td>
-                                                                <table cellpadding=0 cellspacing=0>
-                                                                    <tr>
-                                                                        <td>Every</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td><input style='padding: 2px 4px'
-                                                                                         type=text size="3"
-                                                                                         maxlength="3"
-                                                                                         name="weeklyInterval">
-                                                                        </td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>weeks on</td>
-                                                                    </tr>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                &nbsp;
-                                                            </td>
-                                                            <td>
-                                                                <table cellpadding=0 cellspacing=0>
-                                                                    <tr>
-                                                                        <td><input type=checkbox></td>
-                                                                        <td>Sun</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td><input type=checkbox></td>
-                                                                        <td>Mon</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td><input type=checkbox></td>
-                                                                        <td>Tue</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td><input type=checkbox></td>
-                                                                        <td>Wed</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td><input type=checkbox></td>
-                                                                        <td>Thu</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td><input type=checkbox></td>
-                                                                        <td>Fri</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td><input type=checkbox></td>
-                                                                        <td>Sat</td>
-                                                                        <td>&nbsp;</td>
-                                                                    </tr>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </fieldset>
-                                            </td>
-                                        </tr>
-                                       <tr>
-                                            <td>
-                                                <fieldset>
-                                                    <legend>Monthly</legend>
-                                                    <table cellpadding=5 cellspacing=0>
-                                                        <tr>
-                                                            <td>
-                                                                <input type=radio name='frequency' value="monthly">
-                                                            </td>
-                                                            <td>
-                                                                <table cellpadding=0 cellspacing=0>
-                                                                    <tr>
-                                                                        <td>Day</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td><input type=text size="3" maxlength="3" name="monthDayOfMonth">
-                                                                        </td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>of every</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>
-                                                                            <input type=text size="3" maxlength="3" name="monthInterval">
-                                                                        </td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>month(s)</td>
-                                                                    </tr>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <input type=radio name='frequency'
-                                                                       value="monthlyDayRule">
-                                                            </td>
-                                                            <td>
-                                                                <table cellpadding=0 cellspacing=0>
-                                                                    <tr>
-                                                                        <td>The</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>
-                                                                            <select name="monthlyDayOccurence">
-                                                                                <option value="1">first</option>
-                                                                                <option value="2">second</option>
-                                                                                <option value="3">third</option>
-                                                                                <option value="4">fourth</option>
-                                                                                <option value="-1">last</option>
-                                                                            </select>
-                                                                        </td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>
-                                                                            <select name="monthyDOW">
-                                                                                <option value="0">Sunday</option>
-                                                                                <option value="1">Monday</option>
-                                                                                <option value="2">Tuesday</option>
-                                                                                <option value="3">Wednesday</option>
-                                                                                <option value="4">Thursday</option>
-                                                                                <option value="5">Friday</option>
-                                                                                <option value="6">Saturday</option>
-                                                                            </select>
-                                                                        </td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>of every</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>
-                                                                            <input type=text size="3" maxlength="3" name="monthDayRuleInterval">
-                                                                        </td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>month(s).</td>
-                                                                    </tr>
-                                                                </table>
+            <td class='ZhAppContent'>
+                <table cellpadding=5 cellspacing=5 width=100%>
+                    <tr>
+                        <td width=50%>
+                            <fieldset>
+                                <legend>Repeat</legend>
+                                <table cellpadding=5 cellspacing=0>
+                                    <tr>
+                                        <td valign=top width=1% rowspan=3>Daily:</td>
+                                        <td>
+                                            <input type=radio name='frequency' value="daily">
+                                        </td>
+                                        <td>
+                                            Every Day.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type=radio name='frequency' value="dailyWeekday">
+                                        </td>
+                                        <td>
+                                            Every Weekday.
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type=radio name='frequency'
+                                                   value="dailyInterval">
+                                        </td>
+                                        <td>
+                                            <table cellpadding=0 cellspacing=0>
+                                                <tr>
+                                                    <td>Every</td>
+                                                    <td>&nbsp;</td>
+                                                    <td><input type=text size="3"
+                                                               maxlength="3"
+                                                               name="dailyInterval">
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td>day(s).</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr><td colspan=3><hr></td></tr>
+                                    <tr>
+                                        <td valign=top width=1% rowspan=3>Weekly:</td>
+                                        <td>
+                                            <input type=radio name='frequency' value="weekly">
+                                        </td>
+                                        <td>
+                                            <table cellpadding=0 cellspacing=0>
+                                                <tr>
+                                                    <td>Every</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <select name="weeklyDOW">
+                                                            <option value="0">Sunday</option>
+                                                            <option value="1">Monday</option>
+                                                            <option value="2">Tuesday</option>
+                                                            <option value="3">Wednesday</option>
+                                                            <option value="4">Thursday</option>
+                                                            <option value="5">Friday</option>
+                                                            <option value="6">Saturday</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type=radio name='frequency'
+                                                   value="weeklyInterval">
+                                        </td>
+                                        <td>
+                                            <table cellpadding=0 cellspacing=0>
+                                                <tr>
+                                                    <td>Every</td>
+                                                    <td>&nbsp;</td>
+                                                    <td><input style='padding: 2px 4px'
+                                                               type=text size="3"
+                                                               maxlength="3"
+                                                               name="weeklyInterval">
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td>weeks on</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            &nbsp;
+                                        </td>
+                                        <td>
+                                            <table cellpadding=0 cellspacing=0>
+                                                <tr>
+                                                    <td><input type=checkbox></td>
+                                                    <td>Sun</td>
+                                                    <td>&nbsp;</td>
+                                                    <td><input type=checkbox></td>
+                                                    <td>Mon</td>
+                                                    <td>&nbsp;</td>
+                                                    <td><input type=checkbox></td>
+                                                    <td>Tue</td>
+                                                    <td>&nbsp;</td>
+                                                    <td><input type=checkbox></td>
+                                                    <td>Wed</td>
+                                                    <td>&nbsp;</td>
+                                                    <td><input type=checkbox></td>
+                                                    <td>Thu</td>
+                                                    <td>&nbsp;</td>
+                                                    <td><input type=checkbox></td>
+                                                    <td>Fri</td>
+                                                    <td>&nbsp;</td>
+                                                    <td><input type=checkbox></td>
+                                                    <td>Sat</td>
+                                                    <td>&nbsp;</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr><td colspan=3><hr></td></tr>
+                                    <tr>
+                                        <td valign=top width=1% rowspan=2>Monthly:</td>
+                                        <td>
+                                            <input type=radio name='frequency' value="monthly">
+                                        </td>
+                                        <td>
+                                            <table cellpadding=0 cellspacing=0>
+                                                <tr>
+                                                    <td>Day</td>
+                                                    <td>&nbsp;</td>
+                                                    <td><input type=text size="3" maxlength="3" name="monthDayOfMonth">
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td>of every</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <input type=text size="3" maxlength="3" name="monthInterval">
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td>month(s)</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
 
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </fieldset>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td>
-                                                <fieldset>
-                                                    <legend>Yearly</legend>
-                                                    <table cellpadding=5 cellspacing=0>
-                                                        <tr>
-                                                            <td>
-                                                                <input type=radio name='frequency' value="yearly">
-                                                            </td>
-                                                            <td>
-                                                                <table cellpadding=0 cellspacing=0>
-                                                                    <tr>
-                                                                        <td>Every year on</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>
-                                                                            <select name="yearlyMonth">
-                                                                                <option value="1">Janurary</option>
-                                                                            </select>
-                                                                        </td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td><input type=text size="3" maxlength="3" name="yearlyMonthDay">
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <input type=radio name='frequency'
-                                                                       value="yearlyMonthDayRule">
-                                                            </td>
-                                                            <td>
-                                                                <table cellpadding=0 cellspacing=0>
-                                                                    <tr>
-                                                                        <td>The</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>
-                                                                            <select name="yearlyRuleMonthlyDayOccurence">
-                                                                                <option value="1">first</option>
-                                                                                <option value="2">second</option>
-                                                                                <option value="3">third</option>
-                                                                                <option value="4">fourth</option>
-                                                                                <option value="-1">last</option>
-                                                                            </select>
-                                                                        </td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>
-                                                                            <select name="yearlyRuleMonthyDOW">
-                                                                                <option value="0">Sunday</option>
-                                                                                <option value="1">Monday</option>
-                                                                                <option value="2">Tuesday</option>
-                                                                                <option value="3">Wednesday</option>
-                                                                                <option value="4">Thursday</option>
-                                                                                <option value="5">Friday</option>
-                                                                                <option value="6">Saturday</option>
-                                                                            </select>
-                                                                        </td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>of every</td>
-                                                                        <td>&nbsp;</td>
-                                                                        <td>
-                                                                            <select name="yearlyRuleMonth">
-                                                                                <option value="1">Janurary</option>
-                                                                            </select>
-                                                                        </td>
-                                                                    </tr>
-                                                                </table>
-
-                                                            </td>
-                                                        </tr>
-                                                    </table>
-                                                </fieldset>
-                                            </td>
-                                        </tr>
+                                        <td>
+                                            <input type=radio name='frequency'
+                                                   value="monthlyDayRule">
+                                        </td>
+                                        <td>
+                                            <table cellpadding=0 cellspacing=0>
+                                                <tr>
+                                                    <td>The</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <select name="monthlyDayOccurence">
+                                                            <option value="1">first</option>
+                                                            <option value="2">second</option>
+                                                            <option value="3">third</option>
+                                                            <option value="4">fourth</option>
+                                                            <option value="-1">last</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <select name="monthyDOW">
+                                                            <option value="0">Sunday</option>
+                                                            <option value="1">Monday</option>
+                                                            <option value="2">Tuesday</option>
+                                                            <option value="3">Wednesday</option>
+                                                            <option value="4">Thursday</option>
+                                                            <option value="5">Friday</option>
+                                                            <option value="6">Saturday</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td>of every</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <input type=text size="3" maxlength="3" name="monthDayRuleInterval">
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td>month(s).</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr><td colspan=3><hr></td></tr>
+                                    <tr>
+                                        <td valign=top width=1% rowspan=2>Yearly:</td>
+                                        <td>
+                                            <input type=radio name='frequency' value="yearly">
+                                        </td>
+                                        <td>
+                                            <table cellpadding=0 cellspacing=0>
+                                                <tr>
+                                                    <td>Every year on</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <select name="yearlyMonth">
+                                                            <option value="1">Janurary</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td><input type=text size="3" maxlength="3" name="yearlyMonthDay">
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <input type=radio name='frequency'
+                                                   value="yearlyMonthDayRule">
+                                        </td>
+                                        <td>
+                                            <table cellpadding=0 cellspacing=0>
+                                                <tr>
+                                                    <td>The</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <select name="yearlyRuleMonthlyDayOccurence">
+                                                            <option value="1">first</option>
+                                                            <option value="2">second</option>
+                                                            <option value="3">third</option>
+                                                            <option value="4">fourth</option>
+                                                            <option value="-1">last</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <select name="yearlyRuleMonthyDOW">
+                                                            <option value="0">Sunday</option>
+                                                            <option value="1">Monday</option>
+                                                            <option value="2">Tuesday</option>
+                                                            <option value="3">Wednesday</option>
+                                                            <option value="4">Thursday</option>
+                                                            <option value="5">Friday</option>
+                                                            <option value="6">Saturday</option>
+                                                        </select>
+                                                    </td>
+                                                    <td>&nbsp;</td>
+                                                    <td>of every</td>
+                                                    <td>&nbsp;</td>
+                                                    <td>
+                                                        <select name="yearlyRuleMonth">
+                                                            <option value="1">Janurary</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
                                     </table>
                                 </fieldset>
                             </td>
-                          <td width=50% valign=top>
-                              <fieldset>
-                                  <legend>End</legend>
-                                  <table cellpadding=5 cellspacing=0>
-                                      <tr>
-                                          <td>
+                            <td width=50% valign=top>
+                                <fieldset>
+                                    <legend>End</legend>
+                                    <table cellpadding=5 cellspacing=0>
+                                        <tr>
+                                            <td>
                                               <input type=radio name='endType' value="noend">
                                           </td>
                                           <td>
