@@ -24,7 +24,7 @@
  */
 
 function ZmVoicemailApp(appCtxt, container, parentController) {
-
+	this._phones = [];
 	ZmApp.call(this, ZmApp.VOICEMAIL, appCtxt, container, parentController);
 }
 
@@ -66,7 +66,7 @@ function() {
 						 icon:			"Voicemail",
 						 soapCmd:		"VoicemailAction",
 						 itemClass:		"ZmVoicemail",
-						 node:			"v",
+						 node:			"m",
 						 organizer:		ZmOrganizer.VOICEMAIL,
 						 searchType:	"voicemail",
 						 resultsList:
@@ -135,6 +135,33 @@ function(list) {
 	this._handleModifies(list);
 };
 
+ZmVoicemailApp.prototype.search =
+function(folder, callback) {
+	var soapInfo = {
+		method: "SearchVoiceRequest", 
+		namespace: "urn:zimbraVoice",
+		response: "SearchVoiceResponse"
+	};
+	var searchParams = {
+		soapInfo: soapInfo,
+		types: AjxVector.fromArray([ZmItem.VOICEMAIL]),
+		query: "phone:" + folder.phone.name,
+	};
+	var search = new ZmSearch(this._appCtxt, searchParams);	
+	var responseCallback = new AjxCallback(this, this._handleResponseSearch, [folder, callback]);
+	search.execute({ callback: responseCallback });
+};
+
+ZmVoicemailApp.prototype._handleResponseSearch =
+function(folder, callback, response) {
+	var searchResult = response._data;
+	var voicemailController = AjxDispatcher.run("GetVoicemailController");
+	voicemailController.show(searchResult, folder);
+	if (callback) {
+		callback.run(searchResult);
+	}
+};
+
 ZmVoicemailApp.prototype.launch =
 function(callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
@@ -143,16 +170,85 @@ function(callback) {
 
 ZmVoicemailApp.prototype._handleLoadLaunch =
 function(callback) {
-	var voicemailController = AjxDispatcher.run("GetVoicemailController");
-	// Hard-code some folders till we can get them from the server.
-	ZmVoicemailApp._createTreeHACK(this._appCtxt);
+    var soapDoc = AjxSoapDoc.create("GetVoiceInfoRequest", "urn:zimbraVoice");
+    var respCallback = new AjxCallback(this, this._handleResponseVoiceInfo, callback);
+    var params = {
+    	soapDoc: soapDoc, 
+    	asyncMode: true,
+		callback: respCallback
+	};
+	this._appCtxt.getAppController().sendRequest(params);
+};
 
-	var searchResuts = ZmVoicemailList.searchHACK(this._appCtxt, ZmVoicemailFolder.VOICEMAIL);
-	voicemailController.show(searchResuts, ZmVoicemailApp._startFolder);
-	
-	if (callback) {
-		callback.run();
+ZmVoicemailApp.prototype._handleResponseVoiceInfo =
+function(callback, response) {
+	var folderTree = this._appCtxt.getFolderTree();
+	var phones = response._data.GetVoiceInfoResponse.phone;
+	for (var i = 0, count = phones.length; i < count; i++) {
+		var obj = phones[i];
+		var phone = new ZmPhone();
+		phone._loadFromDom(obj);
+		this._phones.push(phone);
 	}
+	if (this._phones.length) {
+		this._getFolders(callback);
+	} else {
+		if (callback) {
+			callback.run();
+		}
+	}
+};
+
+ZmVoicemailApp.prototype._getFolders =
+function(callback) {
+    var soapDoc = AjxSoapDoc.create("GetVoiceFolderRequest", "urn:zimbraVoice");
+    for (var i = 0, count = this._phones.length; i < count; i++) {
+	    var node = soapDoc.set("phone");
+	    node.setAttribute("name", this._phones[i].name);
+    }
+    var respCallback = new AjxCallback(this, this._handleResponseGetFolder, [callback]);
+    var params = {
+    	soapDoc: soapDoc, 
+    	asyncMode: true,
+		callback: respCallback
+	};
+	this._appCtxt.getAppController().sendRequest(params);
+};
+
+ZmVoicemailApp.prototype._handleResponseGetFolder =
+function(callback, response) {
+	var folderTree = this._appCtxt.getFolderTree();
+	var array = response._data.GetVoiceFolderResponse.phone
+	for (var i = 0, count = array.length; i < count; i++) {
+		this._createFolder(folderTree.root, this._phones[i], array[i].folder[0]);
+	}
+	if (this.startFolder) {
+		this.search(this.startFolder, callback);
+	}
+};
+
+ZmVoicemailApp.prototype._createFolder =
+function(parent, phone, obj) {
+	var params = { 
+		id: phone.name + obj.name,
+		name: obj.name,
+		phone: phone,
+		callType: obj.name || ZmVoicemailFolder.ACCOUNT,
+		view: obj.view,
+		parent: parent,
+		tree: parent.tree,
+	}		
+	var folder = new ZmVoicemailFolder(params);
+	parent.children.add(folder);
+	if (!this.startFolder && (folder.callType == ZmVoicemailFolder.VOICEMAIL)) {
+		this.startFolder = folder;
+	}
+	if (obj.folder) {
+		for (var i = 0, count = obj.folder.length; i < count; i++) {
+			this._createFolder(folder, phone, obj.folder[i]);
+		}
+	}
+	return folder;
 };
 
 ZmVoicemailApp.prototype.activate =
@@ -177,63 +273,3 @@ function(list) {
 ZmVoicemailApp.prototype._handleModifies =
 function(list) {
 };
-
-// Fake folder creation...since there's no server support.
-ZmVoicemailApp._createTreeHACK =
-function(appCtxt) {
-	var root1 = ZmVoicemailApp.treeHACK(appCtxt, ZmOrganizer.VOICEMAIL, "Primary (650) 123-4567");
-	ZmVoicemailApp._startFolder = root1.getChild("voicemail");
-	ZmVoicemailApp.treeHACK(appCtxt, '2222', "Sally (858) 234-1234");
-	ZmVoicemailApp.treeHACK(appCtxt, '4444', "Billy (858) 234-0987");
-};
-
-ZmVoicemailApp.treeHACK = 
-function(appCtxt, baseId, accountName) {
-	var jsonObj = {
-		folder: [
-            {
-              f: "Voicemail",
-              id: baseId + '-Voicemail',
-              l: '16234',
-              n: 1,
-              u:2,
-              name: 'Voicemail',
-              view: 'voicemail'
-             },
-            {
-              f: "Missed Call",
-              id: baseId + "-Missed",
-              l: '1',
-              n: 1,
-              name: 'Missed Calls',
-              view: 'voicemail'
-             },
-            {
-              f: "Answered Call",
-              id: baseId + "-Answered",
-              l: '1',
-              n: 1,
-              name: 'Answered Calls',
-              view: 'voicemail'
-             },
-            {
-              f: "Placed Call",
-              id: baseId + "-Placed",
-              l: '1',
-              n: 1,
-              name: 'Placed Calls',
-              view: 'voicemail'
-             },
-           ],
-          f: "Account",
-          id: baseId,
-          l: '11',
-          name: accountName,
-          view: 'voicemail'
-	};
-	var folderTree = appCtxt.getFolderTree();
-	var folder = ZmFolderTree.createFromJs(folderTree.root, jsonObj, folderTree, "folder");
-	folderTree.root.children.add(folder);
-	return folder;
-};
-

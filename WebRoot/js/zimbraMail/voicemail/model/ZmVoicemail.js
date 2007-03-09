@@ -109,10 +109,14 @@ function(a, b) {
 ZmVoicemail.prototype._loadFromDom =
 function(node) {
 	if (node.id) this.id = node.id;
-	if (node.caller) this.caller = node.caller;
-	if (node.date) this.date = node.date;
-	if (node.duration) this.duration = node.duration;
-	if (node.isUnheard) this.isUnheard = node.isUnheard;
-	if (node.soundUrl) this.soundUrl = node.soundUrl;
+	if (node.e) this.caller = node.e[0].p;
+	if (node.d) this.date = new Date(node.d);
+	if (node.du) this.duration = node.du * 1000;
+	if (node.f) {
+		this.isUnheard = node.f.indexOf("u") >= 0;
+		this.isHighPriority = node.f.indexOf("h") >= 0;
+		this.isPrivate = node.f.indexOf("p") >= 0;
+	}
+	if (node.content) this.soundUrl = node.content[0].url;
 };
 

@@ -194,7 +194,8 @@ function(voicemail) {
 
 ZmVoicemailView.prototype._getCallerHtml =
 function(voicemail) {
-	return AjxStringUtil.htmlEncode(voicemail.caller);
+	var display = ZmPhone.calculateDisplay(voicemail.caller);
+	return AjxStringUtil.htmlEncode(display);
 };
 
 ZmVoicemailView.prototype._addRow =

@@ -46,6 +46,7 @@
 * @param conds						[array]*		list of search conditions (SearchCalendarResourcesRequest)
 * @param attrs						[array]*		list of attributes to return (SearchCalendarResourcesRequest)
 * @param field						[string]*		field to search within (instead of default)
+* @param soapInfo					[object]*		object with method, namespace, and response fields for creating soap doc
 */
 function ZmSearch(appCtxt, params) {
 
@@ -71,6 +72,7 @@ function ZmSearch(appCtxt, params) {
 		this.attrs						= params.attrs;
 		this.userText					= params.userText;
 		this.field						= params.field;
+		this.soapInfo					= params.soapInfo;
 		
 		if (this.query)
 			this._parseQuery();
@@ -175,7 +177,11 @@ function(params) {
 			}
 		}
 	} else {
-		soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
+		if (this.soapInfo) {
+			soapDoc = AjxSoapDoc.create(this.soapInfo.method, this.soapInfo.namespace);
+		} else {
+			soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
+		}
 		var method = this._getStandardMethod(soapDoc);
 		if (this.types) {
 			var a = this.types.getArray();
@@ -221,6 +227,8 @@ function(isGalSearch, isGalAutocompleteSearch, isCalResSearch, callback, result)
 		response = response.SearchCalendarResourcesResponse;
 	} else if (isGalAutocompleteSearch) {
 		response = response.AutoCompleteGalResponse;
+	} else if (this.soapInfo) {
+		response = response[this.soapInfo.response];
 	} else {
 		response = response.SearchResponse;
 	}

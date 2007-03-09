@@ -44,17 +44,21 @@
 function ZmVoicemailFolder(params) {
 	params.type = ZmOrganizer.VOICEMAIL;
 	ZmOrganizer.call(this, params);
-	this.callType = null; // Will be set to a constant...ACCOUNT, PLACED, etc.
+	this.phone = params.phone;
+//TODO: clean up this callType...shouldn't be necessary, when .name field has same thing.	
+	this.callType = params.name; // A constant...ACCOUNT, PLACED, etc.
+	this.view = params.view;
 }
 
 ZmVoicemailFolder.prototype = new ZmOrganizer;
 ZmVoicemailFolder.prototype.constructor = ZmVoicemailFolder;
 
-ZmVoicemailFolder.ACCOUNT = "Account";
-ZmVoicemailFolder.PLACED_CALL = "Placed Call";
-ZmVoicemailFolder.ANSWERED_CALL = "Answered Call";
-ZmVoicemailFolder.MISSED_CALL = "Missed Call";
-ZmVoicemailFolder.VOICEMAIL = "Voicemail";
+ZmVoicemailFolder.ACCOUNT = "USER_ROOT";
+ZmVoicemailFolder.PLACED_CALL = "Placed Calls";
+ZmVoicemailFolder.ANSWERED_CALL = "Answered Calls";
+ZmVoicemailFolder.MISSED_CALL = "Missed Calls";
+ZmVoicemailFolder.VOICEMAIL = "Voice Mails";
+ZmVoicemailFolder.TRASH = "Trash";
 
 
 // Public methods
@@ -66,7 +70,8 @@ function() {
 
 ZmVoicemailFolder.prototype.getName =
 function(showUnread, maxLength, noMarkup) {
-	return this._markupName(this.name, showUnread, noMarkup);
+	var name = this.name == ZmVoicemailFolder.ACCOUNT ? this.phone.getDisplay() : this.name;
+	return this._markupName(name, showUnread, noMarkup);
 };
 
 ZmVoicemailFolder.prototype.getIcon =
@@ -77,6 +82,7 @@ function() {
 		case ZmVoicemailFolder.ANSWERED_CALL: return "AnsweredCalls";
 		case ZmVoicemailFolder.MISSED_CALL: return "MissedCalls";
 		case ZmVoicemailFolder.VOICEMAIL: return "Voicemail";
+		case ZmVoicemailFolder.TRASH: return "Trash";
 	}
 	return null;
 };
@@ -86,9 +92,3 @@ function(a, b) {
 	return 0;
 };
 
-// I'm using the "f" field on my JSON object to represent what type of
-// call is in this folder.
-ZmVoicemailFolder.prototype._parseFlags =
-function(str) {
-	this.callType = str;
-};

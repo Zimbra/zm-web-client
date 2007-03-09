@@ -56,9 +56,12 @@ function(overviewId) {
 	ZmTreeController.prototype._postSetup.call(this, overviewId);
 	
 	// Expand the default account.
-	var item = this._treeView[overviewId].getTreeItemById(ZmOrganizer.VOICEMAIL);
-	if (item) {
-		item.setExpanded(true, false);
+	var app = this._appCtxt.getApp(ZmApp.VOICEMAIL);
+	if (app.startFolder) {
+		var view = this._treeView[overviewId];
+		var parentItem = view.getTreeItemById(app.startFolder.parent.id);
+		parentItem.setExpanded(true, false);
+//TODO: Select the start item here...
 	}
 };
 
@@ -116,7 +119,6 @@ function(ev, treeView, overviewId) {
 */
 ZmVoicemailTreeController.prototype._itemClicked =
 function(folder) {
-	var controller = AjxDispatcher.run("GetVoicemailController");
-	var searchResult = ZmVoicemailList.searchHACK(this._appCtxt, folder.callType);
-	controller.show(searchResult, folder);
+	this._appCtxt.getApp(ZmApp.VOICEMAIL).search(folder);
 };
+

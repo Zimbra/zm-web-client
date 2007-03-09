@@ -121,6 +121,11 @@ function() {
 	return list;
 };
 
+ZmVoicemailController.prototype._participantOps =
+function() {
+	return [ZmOperation.CONTACT];
+};
+
 ZmVoicemailController.prototype._getParticipantActionMenu =
 function() {
 	if (!this._participantActionMenu) {
@@ -237,7 +242,18 @@ function() {
 
 ZmVoicemailController.prototype._play = 
 function(voicemail) {
-	this._soundPlayer.setUrl(voicemail.soundUrl);
+	var url = [];
+	var i = 0;
+	var location = window.location;
+	url[i++] = location.protocol;
+	url[i++] = "//";
+	url[i++] = location.hostname 
+	if (location.port && location.port != "80") {
+		url[i++] = ":";
+		url[i++] = location.port;
+	}
+	url[i++] = voicemail.soundUrl;
+	this._soundPlayer.setUrl(url.join(""));
 	this._hasPlayedSound = true;
 	this._getView().setPlaying(voicemail);
 };
