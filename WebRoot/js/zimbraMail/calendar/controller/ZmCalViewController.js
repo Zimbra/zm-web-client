@@ -745,7 +745,7 @@ function(date, duration, roll) {
 		}
 		var title = this._viewMgr.getCurrentView().getCalTitle();
 		this._navToolBar[ZmController.CAL_VIEW].setText(title);
-		Dwt.setTitle(title);
+		Dwt.setTitle([ZmMsg.zimbraTitle, ": ", title].join(""));
 		if (!roll && this._currentView == ZmController.CAL_WORK_WEEK_VIEW && (date.getDay() == 0 || date.getDay() ==  6)) {
 			this.show(ZmController.CAL_WEEK_VIEW);
 		}
