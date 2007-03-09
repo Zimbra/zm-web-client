@@ -18,32 +18,35 @@
     <zm:getMailbox var="mailbox"/>
     <c:set var="calViewToolbarCache" scope="request">
         <fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd"/>
+        <app:calendarUrl var="newApptUrl" date="${dateDf}" action="editappt"/>
         <app:calendarUrl var="dayViewUrl" date="${dateDf}" view="day"/>
         <app:calendarUrl var="weekViewUrl" date="${dateDf}" view="week"/>
         <app:calendarUrl var="workWeekViewUrl" date="${dateDf}" view="workWeek"/>
         <app:calendarUrl var="monthViewUrl" date="${dateDf}" view="month"/>
         <app:calendarUrl var="scheduleViewUrl" date="${dateDf}" view="schedule"/>
+        <td height=100%>
+            <a accesskey="1" href="${newApptUrl}"><app:img altkey="ALT_CAL_NEW_APPT" src="calendar/NewAppointment.gif"/><span><fmt:message key="new"/></span></a>
+        </td>
+        <td height=100%><div class='vertSep'/></td>
          <td height=100%>
-            <a accesskey="1" href="${dayViewUrl}"><app:img altkey="ALT_CAL_DAY_VIEW" src="calendar/DayView.gif"/><span><fmt:message key="day"/></span></a>
+            <a accesskey="2" href="${dayViewUrl}"><app:img altkey="ALT_CAL_DAY_VIEW" src="calendar/DayView.gif"/><span><fmt:message key="day"/></span></a>
         </td>
         <td height=100%>
-            <a accesskey="2" href="${workWeekViewUrl}"><app:img altkey="ALT_CAL_WORKWEEK_VIEW" src="calendar/WorkWeekView.gif"/><span><fmt:message key="workWeek"/></span></a>
+            <a accesskey="3" href="${workWeekViewUrl}"><app:img altkey="ALT_CAL_WORKWEEK_VIEW" src="calendar/WorkWeekView.gif"/><span><fmt:message key="workWeek"/></span></a>
         </td>
         <td height=100%>
-            <a accesskey="3" href="${weekViewUrl}"><app:img altkey="ALT_CAL_WEEK_VIEW" src="calendar/WeekView.gif"/><span><fmt:message key="week"/></span></a>
+            <a accesskey="4" href="${weekViewUrl}"><app:img altkey="ALT_CAL_WEEK_VIEW" src="calendar/WeekView.gif"/><span><fmt:message key="week"/></span></a>
         </td>
         <td height=100%>
-            <a accesskey="4" href="${monthViewUrl}"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/MonthView.gif"/><span><fmt:message key="month"/></span></a>
+            <a accesskey="5" href="${monthViewUrl}"><app:img altkey="ALT_CAL_MONTH_VIEW" src="calendar/MonthView.gif"/><span><fmt:message key="month"/></span></a>
         </td>
         <td height=100%>
-            <a accesskey="5" href="${scheduleViewUrl}"><app:img altkey="ALT_CAL_SCHEDULE_VIEW" src="calendar/GroupSchedule.gif"/><span><fmt:message key="schedule"/></span></a>
+            <a accesskey="6" href="${scheduleViewUrl}"><app:img altkey="ALT_CAL_SCHEDULE_VIEW" src="calendar/GroupSchedule.gif"/><span><fmt:message key="schedule"/></span></a>
         </td>
-        <td height=100%>
-            <div class='vertSep'/>
-        </td>
+        <td height=100%><div class='vertSep'/></td>
         <app:calendarUrl var="todayUrl" nodate="true"/>
         <td height=100%>
-            <a accesskey="6" href="${todayUrl}"><app:img altkey="ALT_CAL_TODAY" src="calendar/Date.gif"/></a>
+            <a accesskey="7" href="${todayUrl}"><app:img altkey="ALT_CAL_TODAY" src="calendar/Date.gif"/></a>
         </td>
     </c:set>
 </c:if>

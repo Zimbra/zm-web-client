@@ -8,14 +8,6 @@
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 
 <app:handleError>
-    <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
-
-     <c:if test="${not empty param.expand}">
-         <c:set target="${sessionScope.expanded}" property="${param.expand}" value="expand"/>
-     </c:if>
-     <c:if test="${not empty param.collapse}">
-         <c:set target="${sessionScope.expanded}" property="${param.collapse}" value="collapse"/>
-     </c:if>
      
     <zm:getMailbox var="mailbox"/>
     <c:choose>
@@ -30,12 +22,24 @@
     <c:choose>
         <c:when test="${not empty param.date}">
             <fmt:parseDate var="date" pattern="yyyyMMdd" value="${param.date}"/>
-            <c:set var="datecal" value="${zm:getCalendarMidnight(date.time, tz)}"/>
+            <c:set scope="request" var="datecal" value="${zm:getCalendarMidnight(date.time, tz)}"/>
         </c:when>
         <c:otherwise>
-            <c:set var="datecal" value="${zm:getToday(tz)}"/>
+            <c:set scope="request" var="datecal" value="${zm:getToday(tz)}"/>
         </c:otherwise>
     </c:choose>
+
+    <app:editapptCheck/>
+    
+    <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
+
+     <c:if test="${not empty param.expand}">
+         <c:set target="${sessionScope.expanded}" property="${param.expand}" value="expand"/>
+     </c:if>
+     <c:if test="${not empty param.collapse}">
+         <c:set target="${sessionScope.expanded}" property="${param.collapse}" value="collapse"/>
+     </c:if>
+
 
     <c:if test="${not empty param.check}">
         <zm:checkFolder checked="true" id="${param.check}"/>
