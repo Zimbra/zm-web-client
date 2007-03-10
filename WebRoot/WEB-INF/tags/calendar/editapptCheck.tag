@@ -37,9 +37,9 @@
         <c:when test="${uploader.isCancel}">
             <c:set var="needEditView" value="${false}"/>
         </c:when>
-        <c:when test="${uploader.isSend and empty uploader.compose.to and empty uploader.compose.cc and empty uploader.compose.bcc}">
-            <app:status>
-                <fmt:message key="noAddresses"/>
+        <c:when test="${uploader.isSave and empty uploader.compose.subject}">
+            <app:status style="Critical">
+                <fmt:message key="errorMissingSubject"/>
             </app:status>
         </c:when>
         <c:when test="${uploader.isSend}">

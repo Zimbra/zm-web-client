@@ -8,7 +8,7 @@
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    <fmt:message var="title" key="compose"/>
+    <fmt:message var="title" key="newAppointment"/>
     <zm:composeUploader var="uploader"/>
     <c:set var="compose" value="${uploader.compose}"/>
 </app:handleError>
@@ -32,7 +32,7 @@
 
     <c:choose>
         <c:when test="${empty compose }">
-            <zm:messageCompose var="compose" message="${message}" action="${message.isDraft ? 'draft' : param.op}"/>
+            <zm:messageCompose var="compose" message="${message}" action="newappt" date="${requestScope.dateContext}"/>
         </c:when>
         <c:when test="${uploader.isUpload and !empty message}">
             <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
@@ -42,14 +42,14 @@
 </app:handleError>
 
 
-<app:view title="${not empty compose.subject ? compose.subject : title}" selected='calendar' calendars="true" minical="true" context="${null}" keys="false" date="${requestScope.datecal}">
+<app:view title="${not empty compose.subject ? compose.subject : title}" selected='calendar' calendars="true" minical="true" context="${null}" keys="false" date="${requestScope.dateContext}">
     <c:set var="toolbar">
         <table width=100% cellspacing=0 cellpadding=0>
             <tr valign='middle'>
                 <td>
                     <table cellspacing=2 cellpadding=0 class='Tb'>
                         <tr>
-                            <app:button name="actionSend" src="common/Save.gif" tooltip="save" text="save"/>
+                            <app:button name="actionSave" src="common/Save.gif" tooltip="save" text="save"/>
                             <td><div class='vertSep'></div></td>
                             <app:button name="actionCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
                             <td><div class='vertSep'></div></td>
@@ -74,7 +74,7 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                    <table cellpadding=2 cellspacing=0 height=80% width=100% class='Compose'>
+                    <table cellpadding=2 cellspacing=0 width=100% class='Compose'>
                         <tr>
                             <td colspan=2>
                                 <table width=100% cellspacing=0 cellpadding=0>
@@ -97,36 +97,52 @@
                                             <table cellpadding="5" cellspacing="0">
                                                 <tr>
                                                     <td width="1%" align="right"><fmt:message key="subject"/>:</td>
-                                                    <td><input style="width:99%" type="text" size="100" name="subject"></td>
+                                                    <td><input style="width:99%" type="text" size="100" name="subject" value="${fn:escapeXml(compose.subject)}"></td>
                                                 </tr>
                                                 <tr>
                                                     <td width="1%" align="right"><fmt:message key="location"/>:</td>
-                                                    <td><input style="width:99%" type="text" size="100" name="location"></td>
+                                                    <td><input style="width:99%" type="text" size="100" name="location" value="${fn:escapeXml(compose.location)}"></td>
                                                 </tr>
                                                 <tr>
                                                     <td width="1%" align="right"><fmt:message key="showAs"/>:</td>
                                                     <td>
                                                         <select name="freeBusyStatus">
-                                                            <option value="F"><fmt:message key="free"/>
-                                                            <option value="T"><fmt:message key="tentative"/>
-                                                            <option value="B"><fmt:message key="busy"/>
-                                                            <option value="O"><fmt:message key="outOfOffice"/>
+                                                            <option <c:if test="${compose.freeBusyStatus eq 'F'}">selected </c:if>value="F"><fmt:message key="free"/>
+                                                            <option <c:if test="${compose.freeBusyStatus eq 'T'}">selected </c:if> value="T"><fmt:message key="tentative"/>
+                                                            <option <c:if test="${compose.freeBusyStatus eq 'B'}">selected </c:if> value="B"><fmt:message key="busy"/>
+                                                            <option <c:if test="${compose.freeBusyStatus eq 'O'}">selected </c:if> value="O"><fmt:message key="outOfOffice"/>
                                                         </select>
                                                     </td>
                                                 </tr>
-                                                <tr>
-                                                    <td width="1%" align="right"><fmt:message key="calendar"/>:</td>
-                                                    <td>
-                                                        <select name='appointmentFolder'>
-                                                            <zm:forEachFolder var="folder">
-                                                                <c:if test="${folder.isAppointmentView}">
-                                                                    <option value="${folder.id}" />
-                                                                    ${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}
-                                                                </c:if>
-                                                            </zm:forEachFolder>
-                                                        </select>
-                                                    </td>
-                                                </tr>
+
+                                                <c:set var="numCalendars" value="0"/>
+                                                <zm:forEachFolder var="folder">
+                                                    <c:if test="${folder.isAppointmentView}">
+                                                        <c:set var="numCalendars" value="${numCalendars+1}"/>
+                                                    </c:if>
+                                                </zm:forEachFolder>
+                                                <c:choose>
+                                                    <c:when test="${numCalendars gt 1}">
+                                                        <tr>
+                                                            <td width="1%" align="right"><fmt:message key="calendar"/>:</td>
+                                                            <td>
+                                                                <select name='appointmentFolder'>
+                                                                    <zm:forEachFolder var="folder">
+                                                                        <c:if test="${folder.isAppointmentView}">
+                                                                            <option value="${folder.id}" />
+                                                                            ${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}
+                                                                        </c:if>
+                                                                    </zm:forEachFolder>
+                                                                </select>
+                                                            </td>
+                                                        </tr>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <tr>
+                                                            <td colspan=2>&nbsp;</td>
+                                                        </tr>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </table>
                                         </fieldset>
                                     </td>
@@ -140,7 +156,7 @@
                                                     <table cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
-                                                                <input type=checkbox name="allday">
+                                                                <input type=checkbox name="allDay" <c:if test="${compose.allDay eq '1'}">checked</c:if> value="1">
                                                             </td>
                                                             <td>
                                                                <fmt:message key="allDayEvent"/>
@@ -155,51 +171,53 @@
                                                     <table cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
-                                                                <input type=text size="12" maxlength="20" name="startDate" value="3/8/2008">
+                                                                <input type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}">
                                                             </td>
                                                             <td>&nbsp;</td>
                                                             <td>@</td>
                                                             <td>&nbsp;</td>
                                                             <td>
-                                                                <select>
-                                                                    <option>1
-                                                                    <option>2
-                                                                    <option>3
-                                                                    <option>4
-                                                                    <option>5
-                                                                    <option>6
-                                                                    <option>7
-                                                                    <option>8
-                                                                    <option>9
-                                                                    <option>10
-                                                                    <option>11
-                                                                    <option>12
+                                                                <select name="startHour">
+                                                                    <c:set var="h" value="${compose.startHour}"/>
+                                                                    <option <c:if test="${h eq 1}">selected </c:if>value="1">1
+                                                                    <option <c:if test="${h eq 2}">selected </c:if> value="2">2
+                                                                    <option <c:if test="${h eq 3}">selected </c:if> value="3">3
+                                                                    <option <c:if test="${h eq 4}">selected </c:if> value="4">4
+                                                                    <option <c:if test="${h eq 5}">selected </c:if> value="5">5
+                                                                    <option <c:if test="${h eq 6}">selected </c:if> value="6">6
+                                                                    <option <c:if test="${h eq 7}">selected </c:if> value="7">7
+                                                                    <option <c:if test="${h eq 8}">selected </c:if> value="8">8
+                                                                    <option <c:if test="${h eq 9}">selected </c:if> value="9">9
+                                                                    <option <c:if test="${h eq 10}">selected </c:if> value="10">10
+                                                                    <option <c:if test="${h eq 11}">selected </c:if> value="11">11
+                                                                    <option <c:if test="${h eq 0}">selected </c:if> value="0">12
                                                                 </select>
                                                             </td>
                                                             <td>&nbsp;</td>
                                                             <td>:</td>
                                                             <td>&nbsp;</td>
                                                             <td>
-                                                                <select>
-                                                                    <option>00
-                                                                    <option>05
-                                                                    <option>10
-                                                                    <option>15
-                                                                    <option>20
-                                                                    <option>25
-                                                                    <option>30
-                                                                    <option>35
-                                                                    <option>40
-                                                                    <option>45
-                                                                    <option>50
-                                                                    <option>55
+                                                                <select name="startMinute">
+                                                                    <c:set var="m" value="${compose.startMinute}"/>
+                                                                    <option <c:if test="${m eq 0}">selected </c:if> value="0">00
+                                                                    <option <c:if test="${m eq 5}">selected </c:if> value="5">05
+                                                                    <option <c:if test="${m eq 10}">selected </c:if> value="10">10
+                                                                    <option <c:if test="${m eq 15}">selected </c:if> value="15">15
+                                                                    <option <c:if test="${m eq 20}">selected </c:if> value="20">20
+                                                                    <option <c:if test="${m eq 25}">selected </c:if> value="25">25
+                                                                    <option <c:if test="${m eq 30}">selected </c:if> value="30">30
+                                                                    <option <c:if test="${m eq 35}">selected </c:if> value="35">35
+                                                                    <option <c:if test="${m eq 40}">selected </c:if> value="40">40
+                                                                    <option <c:if test="${m eq 45}">selected </c:if> value="45">45
+                                                                    <option <c:if test="${m eq 50}">selected </c:if> value="50">50
+                                                                    <option <c:if test="${m eq 55}">selected </c:if> value="55">55
                                                                 </select>
                                                             </td>
                                                             <td>&nbsp;</td>
                                                             <td>
-                                                                <select>
-                                                                    <option>AM</option>
-                                                                    <option>PM</option>
+                                                                <select name="startAmPm">
+                                                                    <option <c:if test="${compose.startAmPm eq 'AM'}">selected </c:if>value="AM">AM</option>
+                                                                    <option <c:if test="${compose.startAmPm eq 'PM'}">selected </c:if> value="PM">PM</option>
                                                                 </select>
                                                             </td>
                                                         </tr>
@@ -212,51 +230,53 @@
                                                     <table cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
-                                                                <input type=text size="12" maxlength="20" name="endDate" value="3/8/2008">
+                                                                <input type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}">
                                                             </td>
                                                             <td>&nbsp;</td>
                                                             <td>@</td>
                                                             <td>&nbsp;</td>
                                                             <td>
-                                                                <select>
-                                                                    <option>1
-                                                                    <option>2
-                                                                    <option>3
-                                                                    <option>4
-                                                                    <option>5
-                                                                    <option>6
-                                                                    <option>7
-                                                                    <option>8
-                                                                    <option>9
-                                                                    <option>10
-                                                                    <option>11
-                                                                    <option>12
+                                                                <select name="endHour">
+                                                                    <c:set var="h" value="${compose.endHour}"/>
+                                                                    <option <c:if test="${h eq 1}">selected </c:if>value="1">1
+                                                                    <option <c:if test="${h eq 2}">selected </c:if> value="2">2
+                                                                    <option <c:if test="${h eq 3}">selected </c:if> value="3">3
+                                                                    <option <c:if test="${h eq 4}">selected </c:if> value="4">4
+                                                                    <option <c:if test="${h eq 5}">selected </c:if> value="5">5
+                                                                    <option <c:if test="${h eq 6}">selected </c:if> value="6">6
+                                                                    <option <c:if test="${h eq 7}">selected </c:if> value="7">7
+                                                                    <option <c:if test="${h eq 8}">selected </c:if> value="8">8
+                                                                    <option <c:if test="${h eq 9}">selected </c:if> value="9">9
+                                                                    <option <c:if test="${h eq 10}">selected </c:if> value="10">10
+                                                                    <option <c:if test="${h eq 11}">selected </c:if> value="11">11
+                                                                    <option <c:if test="${h eq 0}">selected </c:if> value="0">12
                                                                 </select>
                                                             </td>
                                                             <td>&nbsp;</td>
                                                             <td>:</td>
                                                             <td>&nbsp;</td>
                                                             <td>
-                                                                <select>
-                                                                    <option>00
-                                                                    <option>05
-                                                                    <option>10
-                                                                    <option>15
-                                                                    <option>20
-                                                                    <option>25
-                                                                    <option>30
-                                                                    <option>35
-                                                                    <option>40
-                                                                    <option>45
-                                                                    <option>50
-                                                                    <option>55
+                                                                <select name="endMinute">
+                                                                    <c:set var="m" value="${compose.endMinute}"/>
+                                                                    <option <c:if test="${m eq 0}">selected </c:if> value="0">00
+                                                                    <option <c:if test="${m eq 5}">selected </c:if> value="5">05
+                                                                    <option <c:if test="${m eq 10}">selected </c:if> value="10">10
+                                                                    <option <c:if test="${m eq 15}">selected </c:if> value="15">15
+                                                                    <option <c:if test="${m eq 20}">selected </c:if> value="20">20
+                                                                    <option <c:if test="${m eq 25}">selected </c:if> value="25">25
+                                                                    <option <c:if test="${m eq 30}">selected </c:if> value="30">30
+                                                                    <option <c:if test="${m eq 35}">selected </c:if> value="35">35
+                                                                    <option <c:if test="${m eq 40}">selected </c:if> value="40">40
+                                                                    <option <c:if test="${m eq 45}">selected </c:if> value="45">45
+                                                                    <option <c:if test="${m eq 50}">selected </c:if> value="50">50
+                                                                    <option <c:if test="${m eq 55}">selected </c:if> value="55">55
                                                                 </select>
                                                             </td>
                                                             <td>&nbsp;</td>
                                                             <td>
-                                                                <select>
-                                                                    <option>AM</option>
-                                                                    <option selected>PM</option>
+                                                                <select name="endAmPm">
+                                                                    <option <c:if test="${compose.endAmPm eq 'AM'}">selected </c:if> value="AM">AM</option>
+                                                                    <option <c:if test="${compose.endAmPm eq 'AM'}">selected </c:if> value="PM" selected>PM</option>
                                                                 </select>
                                                             </td>
                                                         </tr>
@@ -269,11 +289,10 @@
                                                         <fmt:message key="timeZonePref"/> :
                                                     </td>
                                                     <td>
-                                                        <select name="zimbraPrefTimeZoneId">
-                                                            <c:set var="tzpref" value="${mailbox.prefs.timeZoneWindowsId}"/>
+                                                        <select name="timeZone">
                                                             <zm:forEachTimeZone var="tz">
                                                                 <option
-                                                                        <c:if test="${tzpref eq tz.id}">selected</c:if>
+                                                                        <c:if test="${compose.timeZone eq tz.id}">selected</c:if>
                                                                         value="${fn:escapeXml(tz.id)}">${fn:escapeXml(tz.display)}</option>
                                                             </zm:forEachTimeZone>
                                                         </select>

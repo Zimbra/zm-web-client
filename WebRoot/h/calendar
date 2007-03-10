@@ -22,10 +22,10 @@
     <c:choose>
         <c:when test="${not empty param.date}">
             <fmt:parseDate var="date" pattern="yyyyMMdd" value="${param.date}"/>
-            <c:set scope="request" var="datecal" value="${zm:getCalendarMidnight(date.time, tz)}"/>
+            <c:set scope="request" var="dateContext" value="${zm:getCalendarMidnight(date.time, tz)}"/>
         </c:when>
         <c:otherwise>
-            <c:set scope="request" var="datecal" value="${zm:getToday(tz)}"/>
+            <c:set scope="request" var="dateContext" value="${zm:getToday(tz)}"/>
         </c:otherwise>
     </c:choose>
 
@@ -68,19 +68,19 @@
 <app:handleError>
 <c:choose>
     <c:when test="${view eq 'day'}">
-        <app:multiDayView timezone="${tz}" date="${datecal}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
+        <app:multiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
     </c:when>
     <c:when test="${view eq 'workWeek'}">
-        <app:multiDayView timezone="${tz}" date="${datecal}" view='${view}' numdays="5"/>
+        <app:multiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="5"/>
     </c:when>
     <c:when test="${view eq 'week'}">
-        <app:multiDayView timezone="${tz}" date="${datecal}" view='${view}' numdays="7"/>
+        <app:multiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="7"/>
     </c:when>
     <c:when test="${view eq 'schedule'}">
-        <app:multiDayView timezone="${tz}" date="${datecal}" numdays="1" view="${view}"/>
+        <app:multiDayView timezone="${tz}" date="${dateContext}" numdays="1" view="${view}"/>
     </c:when>
     <c:otherwise>
-        <app:monthView timezone="${tz}" date="${datecal}"/>
+        <app:monthView timezone="${tz}" date="${dateContext}"/>
     </c:otherwise>
 </c:choose>
 </app:handleError>
