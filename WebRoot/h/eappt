@@ -11,6 +11,7 @@
     <fmt:message var="title" key="newAppointment"/>
     <zm:composeUploader var="uploader"/>
     <c:set var="compose" value="${uploader.compose}"/>
+    <fmt:message var="hourFmt" key="CAL_APPT_EDIT_HOUR_FORMAT"/>
 </app:handleError>
 
 <app:handleError>
@@ -179,45 +180,29 @@
                                                             <td>
                                                                 <select name="startHour">
                                                                     <c:set var="h" value="${compose.startHour}"/>
-                                                                    <option <c:if test="${h eq 1}">selected </c:if>value="1">1
-                                                                    <option <c:if test="${h eq 2}">selected </c:if> value="2">2
-                                                                    <option <c:if test="${h eq 3}">selected </c:if> value="3">3
-                                                                    <option <c:if test="${h eq 4}">selected </c:if> value="4">4
-                                                                    <option <c:if test="${h eq 5}">selected </c:if> value="5">5
-                                                                    <option <c:if test="${h eq 6}">selected </c:if> value="6">6
-                                                                    <option <c:if test="${h eq 7}">selected </c:if> value="7">7
-                                                                    <option <c:if test="${h eq 8}">selected </c:if> value="8">8
-                                                                    <option <c:if test="${h eq 9}">selected </c:if> value="9">9
-                                                                    <option <c:if test="${h eq 10}">selected </c:if> value="10">10
-                                                                    <option <c:if test="${h eq 11}">selected </c:if> value="11">11
-                                                                    <option <c:if test="${h eq 0}">selected </c:if> value="0">12
+                                                                    <c:forEach var="hi" begin="0" end="23">
+                                                                        <option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>>
+                                                                            <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}"/>
+                                                                        </option>
+                                                                    </c:forEach>
                                                                 </select>
                                                             </td>
-                                                            <td>&nbsp;</td>
-                                                            <td>:</td>
                                                             <td>&nbsp;</td>
                                                             <td>
                                                                 <select name="startMinute">
                                                                     <c:set var="m" value="${compose.startMinute}"/>
-                                                                    <option <c:if test="${m eq 0}">selected </c:if> value="0">00
-                                                                    <option <c:if test="${m eq 5}">selected </c:if> value="5">05
-                                                                    <option <c:if test="${m eq 10}">selected </c:if> value="10">10
-                                                                    <option <c:if test="${m eq 15}">selected </c:if> value="15">15
-                                                                    <option <c:if test="${m eq 20}">selected </c:if> value="20">20
-                                                                    <option <c:if test="${m eq 25}">selected </c:if> value="25">25
-                                                                    <option <c:if test="${m eq 30}">selected </c:if> value="30">30
-                                                                    <option <c:if test="${m eq 35}">selected </c:if> value="35">35
-                                                                    <option <c:if test="${m eq 40}">selected </c:if> value="40">40
-                                                                    <option <c:if test="${m eq 45}">selected </c:if> value="45">45
-                                                                    <option <c:if test="${m eq 50}">selected </c:if> value="50">50
-                                                                    <option <c:if test="${m eq 55}">selected </c:if> value="55">55
-                                                                </select>
-                                                            </td>
-                                                            <td>&nbsp;</td>
-                                                            <td>
-                                                                <select name="startAmPm">
-                                                                    <option <c:if test="${compose.startAmPm eq 'AM'}">selected </c:if>value="AM">AM</option>
-                                                                    <option <c:if test="${compose.startAmPm eq 'PM'}">selected </c:if> value="PM">PM</option>
+                                                                    <option <c:if test="${m eq 0}">selected </c:if> value="0">:00
+                                                                    <option <c:if test="${m eq 5}">selected </c:if> value="5">:05
+                                                                    <option <c:if test="${m eq 10}">selected </c:if> value="10">:10
+                                                                    <option <c:if test="${m eq 15}">selected </c:if> value="15">:15
+                                                                    <option <c:if test="${m eq 20}">selected </c:if> value="20">:20
+                                                                    <option <c:if test="${m eq 25}">selected </c:if> value="25">:25
+                                                                    <option <c:if test="${m eq 30}">selected </c:if> value="30">:30
+                                                                    <option <c:if test="${m eq 35}">selected </c:if> value="35">:35
+                                                                    <option <c:if test="${m eq 40}">selected </c:if> value="40">:40
+                                                                    <option <c:if test="${m eq 45}">selected </c:if> value="45">:45
+                                                                    <option <c:if test="${m eq 50}">selected </c:if> value="50">:50
+                                                                    <option <c:if test="${m eq 55}">selected </c:if> value="55">:55
                                                                 </select>
                                                             </td>
                                                         </tr>
@@ -238,45 +223,29 @@
                                                             <td>
                                                                 <select name="endHour">
                                                                     <c:set var="h" value="${compose.endHour}"/>
-                                                                    <option <c:if test="${h eq 1}">selected </c:if>value="1">1
-                                                                    <option <c:if test="${h eq 2}">selected </c:if> value="2">2
-                                                                    <option <c:if test="${h eq 3}">selected </c:if> value="3">3
-                                                                    <option <c:if test="${h eq 4}">selected </c:if> value="4">4
-                                                                    <option <c:if test="${h eq 5}">selected </c:if> value="5">5
-                                                                    <option <c:if test="${h eq 6}">selected </c:if> value="6">6
-                                                                    <option <c:if test="${h eq 7}">selected </c:if> value="7">7
-                                                                    <option <c:if test="${h eq 8}">selected </c:if> value="8">8
-                                                                    <option <c:if test="${h eq 9}">selected </c:if> value="9">9
-                                                                    <option <c:if test="${h eq 10}">selected </c:if> value="10">10
-                                                                    <option <c:if test="${h eq 11}">selected </c:if> value="11">11
-                                                                    <option <c:if test="${h eq 0}">selected </c:if> value="0">12
+                                                                    <c:forEach var="hi" begin="0" end="23">
+                                                                        <option value="${hi}" <c:if test="${h eq hi}"> selected</c:if>>
+                                                                            <fmt:formatDate value="${zm:getTodayHour(hi, null).time}" pattern="${hourFmt}"/>
+                                                                        </option>
+                                                                    </c:forEach>
                                                                 </select>
                                                             </td>
-                                                            <td>&nbsp;</td>
-                                                            <td>:</td>
                                                             <td>&nbsp;</td>
                                                             <td>
                                                                 <select name="endMinute">
                                                                     <c:set var="m" value="${compose.endMinute}"/>
-                                                                    <option <c:if test="${m eq 0}">selected </c:if> value="0">00
-                                                                    <option <c:if test="${m eq 5}">selected </c:if> value="5">05
-                                                                    <option <c:if test="${m eq 10}">selected </c:if> value="10">10
-                                                                    <option <c:if test="${m eq 15}">selected </c:if> value="15">15
-                                                                    <option <c:if test="${m eq 20}">selected </c:if> value="20">20
-                                                                    <option <c:if test="${m eq 25}">selected </c:if> value="25">25
-                                                                    <option <c:if test="${m eq 30}">selected </c:if> value="30">30
-                                                                    <option <c:if test="${m eq 35}">selected </c:if> value="35">35
-                                                                    <option <c:if test="${m eq 40}">selected </c:if> value="40">40
-                                                                    <option <c:if test="${m eq 45}">selected </c:if> value="45">45
-                                                                    <option <c:if test="${m eq 50}">selected </c:if> value="50">50
-                                                                    <option <c:if test="${m eq 55}">selected </c:if> value="55">55
-                                                                </select>
-                                                            </td>
-                                                            <td>&nbsp;</td>
-                                                            <td>
-                                                                <select name="endAmPm">
-                                                                    <option <c:if test="${compose.endAmPm eq 'AM'}">selected </c:if> value="AM">AM</option>
-                                                                    <option <c:if test="${compose.endAmPm eq 'AM'}">selected </c:if> value="PM" selected>PM</option>
+                                                                    <option <c:if test="${m eq 0}">selected </c:if> value="0">:00
+                                                                    <option <c:if test="${m eq 5}">selected </c:if> value="5">:05
+                                                                    <option <c:if test="${m eq 10}">selected </c:if> value="10">:10
+                                                                    <option <c:if test="${m eq 15}">selected </c:if> value="15">:15
+                                                                    <option <c:if test="${m eq 20}">selected </c:if> value="20">:20
+                                                                    <option <c:if test="${m eq 25}">selected </c:if> value="25">:25
+                                                                    <option <c:if test="${m eq 30}">selected </c:if> value="30">:30
+                                                                    <option <c:if test="${m eq 35}">selected </c:if> value="35">:35
+                                                                    <option <c:if test="${m eq 40}">selected </c:if> value="40">:40
+                                                                    <option <c:if test="${m eq 45}">selected </c:if> value="45">:45
+                                                                    <option <c:if test="${m eq 50}">selected </c:if> value="50">:50
+                                                                    <option <c:if test="${m eq 55}">selected </c:if> value="55">:55
                                                                 </select>
                                                             </td>
                                                         </tr>
