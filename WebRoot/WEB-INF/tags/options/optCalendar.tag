@@ -41,6 +41,8 @@
                 </select>
             </td>
         </tr>
+        <app:optCheckbox label="shouldShowTimezone" pref="zimbraPrefUseTimeZoneListInCalendar"
+                         checked="${mailbox.prefs.useTimeZoneListInCalendar}"/>
         <app:optSeparator/>
         <tr>
             <td nowrap align=right width=30%>

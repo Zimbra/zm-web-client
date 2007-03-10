@@ -37,22 +37,32 @@
         <c:when test="${uploader.isCancel}">
             <c:set var="needEditView" value="${false}"/>
         </c:when>
+        <c:when test="${uploader.isSave and not uploader.compose.isValidStartTime}">
+            <app:status style="Critical">
+                <fmt:message key="errorInvalidApptStartDate"/>
+            </app:status>
+        </c:when>
+        <c:when test="${uploader.isSave and not uploader.compose.isValidEndTime}">
+            <app:status style="Critical">
+                <fmt:message key="errorInvalidApptEndDate"/>
+            </app:status>
+        </c:when>
+        <c:when test="${uploader.isSave and uploader.compose.isValidEndTime and uploader.compose.isValidStartTime and (uploader.compose.apptEndTime lt uploader.compose.apptStartTime)}">
+            <app:status style="Critical">
+                <fmt:message key="errorInvalidApptEndBeforeStart"/>
+            </app:status>
+        </c:when>
         <c:when test="${uploader.isSave and empty uploader.compose.subject}">
             <app:status style="Critical">
                 <fmt:message key="errorMissingSubject"/>
             </app:status>
         </c:when>
-        <c:when test="${uploader.isSend}">
+        <c:when test="${uploader.isSave}">
             <c:set var="needEditView" value="${true}"/>
             <app:handleError>
-                <zm:sendMessage var="sendResult" compose="${uploader.compose}"/>
+                <zm:saveAppointment var="createResult" compose="${uploader.compose}"/>
                 <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
-                <app:status><fmt:message key="messageSent"/></app:status>
-                <c:if test="${!empty uploader.compose.draftId}">
-                    <c:catch>
-                        <zm:deleteMessage var="actionResult" id="${uploader.compose.draftId}"/>
-                    </c:catch>
-                </c:if>
+                <app:status><fmt:message key="actionAppointmentCreated"/></app:status>
                 <c:set var="needEditView" value="${false}"/>
             </app:handleError>
         </c:when>
