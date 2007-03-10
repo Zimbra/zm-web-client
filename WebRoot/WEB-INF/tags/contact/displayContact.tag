@@ -8,8 +8,11 @@
 
 <c:set var="noDisplayAs"><fmt:message key="noDisplayAs"/></c:set>
 <zm:getMailbox var="mailbox"/>
-<table width=100% cellspacing=0 cellpadding=0>
-    <tr class='${zm:getFolder(pageContext, contact.folderId).styleColor}Bg'>
+<table width=100% cellspacing="0" cellpadding="0">
+<tr>
+    <td class='ZhBottomSep'>
+        <table width=100% cellspacing=0 cellpadding=0>
+            <tr class='${zm:getFolder(pageContext, contact.folderId).styleColor}Bg'>
         <td width=20><center><app:img src="${contact.isGroup ? 'contacts/Group.gif' : 'contacts/Contact.gif'}" altkey="${contact.imageAltKey}"/></center></td>
         <td class='contactHeader'>${fn:escapeXml(empty contact.displayFileAs ? noDisplayAs : contact.displayFileAs)}
         </td>
@@ -23,10 +26,12 @@
             </c:if>
         </td>
     </tr>
-
-</table>
-
-<table border="0" cellpadding="2" cellspacing="2" width="100%"><tbody>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td>
+        <table border="0" cellpadding="2" cellspacing="2" width="100%"><tbody>
     <tr>
         <td class="companyName" width="100%">
             <c:if test="${zm:anySet(contact,'jobTitle company')}">
@@ -41,8 +46,11 @@
             class="companyFolder">${fn:escapeXml(zm:getFolderName(pageContext, contact.folderId))}</td>
     </tr>
 </tbody></table>
-
-<table border="0" cellspacing="3" cellpadding="${contact.isGroup ? 1 : 3}" width="100%">
+    </td>
+</tr>
+<tr>
+    <td>
+        <table border="0" cellspacing="3" cellpadding="${contact.isGroup ? 1 : 3}" width="100%">
 <tbody>
 
 <c:if test="${contact.isGroup}">
@@ -177,4 +185,6 @@
 </c:if>
 </tbody>
 </table>
-
+    </td>
+</tr>
+</table>

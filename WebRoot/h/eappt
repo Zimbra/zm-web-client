@@ -53,12 +53,14 @@
                             <app:button name="actionSave" src="common/Save.gif" tooltip="save" text="save"/>
                             <td><div class='vertSep'></div></td>
                             <app:button name="actionCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
+                            <%--
                             <td><div class='vertSep'></div></td>
                             <app:button name="actionAttachAdd" src="common/Attachment.gif" tooltip="addAttachments" text="addAttachments"/>
                             <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
                                 <td><div class='vertSep'></div></td>
                                 <app:button name="actionContactAdd" src="contacts/ContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
                             </c:if>
+                            --%>
                         </tr>
                     </table>
                 </td>
@@ -77,11 +79,11 @@
                 <td class='ZhAppContent'>
                     <table cellpadding=2 cellspacing=0 width=100% class='Compose'>
                         <tr>
-                            <td colspan=2>
+                            <td colspan=2 class='ZhBottomSep'>
                                 <table width=100% cellspacing=0 cellpadding=0>
-                                    <tr class='contactHeaderRow'>
+                                    <tr class='apptHeaderRow'>
                                         <td width=20><center><app:img src="calendar/NewAppointment.gif" altkey="ALT_NEW_APPOINTMENT"/></center></td>
-                                        <td class='contactHeader'>
+                                        <td class='apptHeader'>
                                             <fmt:message key="newAppointment"/>
                                         </td>
                                     </tr>

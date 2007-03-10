@@ -859,6 +859,22 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
     width:25px;
 }
 
+.apptHeaderRow {
+        background-color:#E9E9E9;
+        height:28px;
+}
+
+.apptHeader {
+        font-size:18px;
+        font-weight:bold;
+        color: black;
+        overflow:hidden;
+}
+
+.ZhBottomSep {
+     @BottomSeparator@
+}
+
 /*
  * Colors, for use in calendar and elsewhere.
  *

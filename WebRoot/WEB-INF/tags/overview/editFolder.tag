@@ -19,20 +19,20 @@
 
 <table width=100% height=100% cellspacing="0" cellpadding="0">
 <tr>
-    <td>
+    <td class='ZhBottomSep'>
         <table width=100% cellspacing=0 cellpadding=1>
             <tr valign="middle" class='${colorStyle}'>
                 <td valign="middle" width=20 style='padding-left:5px'>
                     <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
                 </td>
                 <td>
-            <span class='ZhFolderHeader' style='vertical-align:middle;'>
-                ${fn:escapeXml(label)}
-            </span>
+                    <span class='ZhFolderHeader' style='vertical-align:middle;'>
+                        ${fn:escapeXml(label)}
+                    </span>
                     <c:if test="${folder.depth gt 0}">
-                <span class='ZhFolderType' style='vertical-align:middle;'>
-                        &nbsp;(${fn:escapeXml(folder.rootRelativePath)})
-                </span>
+                        <span class='ZhFolderType' style='vertical-align:middle;'>
+                            &nbsp;(${fn:escapeXml(folder.rootRelativePath)})
+                        </span>
                     </c:if>
                 </td>
                 <td width=1% nowrap class='ZhFolderType'>
