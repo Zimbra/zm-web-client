@@ -81,6 +81,10 @@ function(domain) {
 
 	// Create the global app context
 	var appCtxt = new ZmAppCtxt();
+	var settings = new ZmSettings(appCtxt);
+	appCtxt.setSettings(settings);
+	settings.initialize();
+	ZmOperation.initialize();
 
 	if (!window.parentController) {
 		window.parentController = window.opener._zimbraMail;
@@ -94,16 +98,8 @@ function(domain) {
 
 	// create new window
 	var newWindow = new ZmNewWindow(appCtxt, domain);
-
-    // set any global references in parent w/in child window
-    if (window.parentController) {
-        var parentCtxt = window.parentController._appCtxt;
-        appCtxt.setSettings(parentCtxt.getSettings());
-        var identityCollection = parentCtxt.getApp(ZmApp.PREFERENCES).getIdentityCollection();
-        appCtxt.getApp(ZmApp.PREFERENCES)._identityCollection = identityCollection;
-    }
-
-    // Go!
+	
+	// Go!
     newWindow.startup();
 };
 
@@ -155,15 +151,23 @@ function(ev) {
 	}
 };
 
+/**
+ * Instantiates enabled apps. An optional argument may be given limiting the set
+ * of apps that may be created.
+ * 
+ * @param apps	[hash]*		the set of apps to create
+ */
 ZmNewWindow.prototype._createEnabledApps =
-function() {
-	for (var app in ZmApp.SETTING) {
-		ZmApp.APPS.push(app);
+function(apps) {
+	for (var app in ZmApp.CLASS) {
+		if (!apps || apps[app]) {
+			ZmApp.APPS.push(app);
+		}
 	}
 	ZmApp.APPS.sort(function(a, b) {
 		return ZmZimbraMail.hashSortCompare(ZmApp.LOAD_SORT, a, b);
 	});
-
+	
 	this._appCtxt.set(ZmSetting.IM_ENABLED, false);	// defaults to true in LDAP
 	// instantiate enabled apps - this will invoke app registration
 	for (var i = 0; i < ZmApp.APPS.length; i++) {
@@ -201,7 +205,19 @@ function() {
 		}
 	}
 
-    this._createEnabledApps();
+	var apps = {};
+	apps[ZmApp.MAIL] = true;
+	apps[ZmApp.CONTACTS] = true;
+	apps[ZmApp.CALENDAR] = true;
+	apps[ZmApp.PREFERENCES] = true;
+    this._createEnabledApps(apps);
+
+	// get access to identities
+	if (window.parentController) {
+		var parentCtxt = window.parentController._appCtxt;
+		var identityCollection = parentCtxt.getApp(ZmApp.PREFERENCES).getIdentityCollection();
+		this._appCtxt.getApp(ZmApp.PREFERENCES)._identityCollection = identityCollection;
+	}
 
     // depending on the command, do the right thing
 	if (window.command == "compose" || window.command == "composeDetach") {

@@ -542,10 +542,18 @@ function(funcName) {
 	}
 };
 
+/**
+ * Instantiates enabled apps. An optional argument may be given limiting the set
+ * of apps that may be created.
+ * 
+ * @param apps	[hash]*		the set of apps to create
+ */
 ZmZimbraMail.prototype._createEnabledApps =
-function() {
-	for (var app in ZmApp.SETTING) {
-		ZmApp.APPS.push(app);
+function(apps) {
+	for (var app in ZmApp.CLASS) {
+		if (!apps || apps[app]) {
+			ZmApp.APPS.push(app);
+		}
 	}
 	ZmApp.APPS.sort(function(a, b) {
 		return ZmZimbraMail.hashSortCompare(ZmApp.LOAD_SORT, a, b);
