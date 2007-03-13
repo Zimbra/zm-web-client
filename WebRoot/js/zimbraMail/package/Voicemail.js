@@ -15,6 +15,8 @@ AjxPackage.require("ajax.dwt.core.DwtDragTracker");
 AjxPackage.require("ajax.dwt.widgets.DwtSlider");
 AjxPackage.require("ajax.dwt.widgets.DwtSoundPlugin");
 
+AjxPackage.require("zimbraMail.voicemail.model.ZmVoiceItem");
+AjxPackage.require("zimbraMail.voicemail.model.ZmCall");
 AjxPackage.require("zimbraMail.voicemail.model.ZmPhone");
 AjxPackage.require("zimbraMail.voicemail.model.ZmVoicemail");
 AjxPackage.require("zimbraMail.voicemail.model.ZmVoiceFolder");

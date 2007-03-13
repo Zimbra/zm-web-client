@@ -31,6 +31,8 @@ function ZmVoiceApp(appCtxt, container, parentController) {
 // Organizer and item-related constants
 ZmEvent.S_VOICEMAIL				= "VOICEMAIL";
 ZmItem.VOICEMAIL				= ZmEvent.S_VOICEMAIL;
+ZmEvent.S_CALL					= "CALL";
+ZmItem.CALL						= ZmEvent.S_CALL;
 ZmOrganizer.VOICEMAIL			= ZmEvent.S_VOICEMAIL;
 
 //TODO: Figure out what id to use or should I just use something unique?
@@ -60,6 +62,7 @@ function() {
 
 ZmVoiceApp.prototype._registerItems =
 function() {
+	var listCreator = AjxCallback.simpleClosure(this._createList, this);
 	ZmItem.registerItem(ZmItem.VOICEMAIL,
 						{app:			ZmApp.VOICEMAIL,
 						 nameKey:		"voicemail",
@@ -69,12 +72,26 @@ function() {
 						 node:			"m",
 						 organizer:		ZmOrganizer.VOICEMAIL,
 						 searchType:	"voicemail",
-						 resultsList:
-		AjxCallback.simpleClosure(function(search) {
-			AjxDispatcher.require("Voicemail");
-			return new ZmVoiceList(this._appCtxt, search);
-		}, this)
+						 resultsList:	listCreator
 						});
+	ZmItem.registerItem(ZmItem.CALL,
+						{app:			ZmApp.VOICEMAIL,
+						 nameKey:		"call",
+						 icon:			"Voicemail",
+						 soapCmd:		"VoicemailAction",
+						 itemClass:		"ZmCall",
+						 node:			"m",
+						 organizer:		ZmOrganizer.VOICEMAIL,
+//TODO: mapping of call to trash......						 
+						 searchType:	"trash",
+						 resultsList:	listCreator
+						});
+};
+
+ZmVoiceApp.prototype._createList =
+function(search) {
+	AjxDispatcher.require("Voicemail");
+	return new ZmVoiceList(this._appCtxt, search);
 };
 
 ZmVoiceApp.prototype._registerOperations =
@@ -144,7 +161,7 @@ function(folder, callback) {
 	};
 	var searchParams = {
 		soapInfo: soapInfo,
-		types: AjxVector.fromArray([ZmItem.VOICEMAIL]),
+		types: AjxVector.fromArray([folder.getSearchType()]),
 		query: "phone:" + folder.phone.name,
 	};
 	var search = new ZmSearch(this._appCtxt, searchParams);	
@@ -155,10 +172,58 @@ function(folder, callback) {
 ZmVoiceApp.prototype._handleResponseSearch =
 function(folder, callback, response) {
 	var searchResult = response._data;
+	var list = searchResult.getResults(folder.getSearchType());
+	list.folder = folder;
 	var voicemailController = AjxDispatcher.run("GetVoicemailController");
 	voicemailController.show(searchResult, folder);
 	if (callback) {
 		callback.run(searchResult);
+	}
+};
+
+ZmVoiceApp.prototype.deleteItems =
+function(items, callback) {
+	
+	if (!items[0].isInTrash()) {
+		this._moveItems(items, ZmVoiceFolder.TRASH_ID, callback);
+	} else {
+//TODO: this undeletes. Should really be hard delete.	
+		this._moveItems(items, ZmVoiceFolder.VOICEMAIL_ID, callback);
+	}
+};
+
+ZmVoiceApp.prototype._moveItems =
+function(items, destination, callback) {
+	if (!items.length) {
+		if (callback) {
+			callback.run(items);
+		}
+		return;
+	}
+	var ids = [];	
+    for (var i = 0, count = items.length; i < count; i++) {
+    	ids[i] = items[i].id;
+    }
+    var soapDoc = AjxSoapDoc.create("VoiceMsgActionRequest", "urn:zimbraVoice");
+    var node = soapDoc.set("action");
+    node.setAttribute("op", "move");
+    node.setAttribute("id", ids.join(","));
+    node.setAttribute("phone", items[0].getPhone().name);
+    node.setAttribute("l", destination); 
+
+    var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [items, callback]);
+    var params = {
+    	soapDoc: soapDoc, 
+    	asyncMode: true,
+		callback: respCallback
+	};
+	this._appCtxt.getAppController().sendRequest(params);
+};
+
+ZmVoiceApp.prototype._handleResponseMoveItems =
+function(items, callback, response) {
+	if (callback) {
+		callback.run(items);
 	}
 };
 

@@ -63,7 +63,7 @@ ZmVoiceListController.prototype.show =
 function(searchResult, folder) {
 	this._folder = folder;
 	ZmListController.prototype.show.call(this, searchResult);
-	this._list = searchResult.getResults(ZmItem.VOICEMAIL);
+	this._list = searchResult.getResults(folder.getSearchType());
 	this._setup(this._currentView);
 
 	var elements = new Object();
@@ -173,7 +173,20 @@ function(ev) {
 
 ZmVoiceListController.prototype._deleteListener = 
 function(ev) {
-//	alert('Delete voicemail here');
+	if (!this._handleResponseDeleteObj) {
+		this._handleResponseDeleteObj = new AjxListener(this, this._handleResponseDelete);
+	}
+	var app = this._appCtxt.getApp(ZmApp.VOICEMAIL);
+	app.deleteItems(this._getView().getSelection(), this._handleResponseDeleteObj);
+};
+
+ZmVoiceListController.prototype._handleResponseDelete = 
+function(items) {
+	var list = this._getView().getList();
+	for (var i = 0, count = items.length; i < count; i++) {
+		list.remove(items[i]);
+	}
+	this._getView().setUI();
 };
 
 ZmVoiceListController.prototype._saveListener = 

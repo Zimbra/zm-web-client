@@ -60,6 +60,13 @@ ZmVoiceFolder.MISSED_CALL = "Missed Calls";
 ZmVoiceFolder.VOICEMAIL = "Voice Mails";
 ZmVoiceFolder.TRASH = "Trash";
 
+ZmVoiceFolder.ACCOUNT_ID = "1";
+ZmVoiceFolder.PLACED_CALL_ID = "1027";
+ZmVoiceFolder.ANSWERED_CALL_ID = "1026";
+ZmVoiceFolder.MISSED_CALL_ID = "Missed Calls";
+ZmVoiceFolder.VOICEMAIL_ID = "1024";
+ZmVoiceFolder.TRASH_ID = "1028";
+
 
 // Public methods
 
@@ -85,6 +92,23 @@ function() {
 		case ZmVoiceFolder.TRASH: return "Trash";
 	}
 	return null;
+};
+
+ZmVoiceFolder.prototype.getSearchType =
+function() {
+	return (this.callType == ZmVoiceFolder.VOICEMAIL) ? ZmItem.VOICEMAIL : ZmItem.CALL;
+};
+
+ZmVoiceFolder.prototype.isInTrash =
+function() {
+	var folder = this;
+	while (folder) {
+		if (this.callType == ZmVoiceFolder.TRASH) {
+			return true;
+		}
+		folder = folder.parent;
+	}
+	return false;
 };
 
 ZmVoiceFolder.sortCompare =

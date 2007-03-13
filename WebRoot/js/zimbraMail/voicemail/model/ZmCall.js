@@ -24,25 +24,44 @@
  */
 
 /**
-* Creates an empty list of voicemails.
+* Creates a phone call.
 * @constructor
 * @class
-* This class represents a list of voicemails.
+* This class represents a phone call.
 *
-* @author Dave Comfort
-* @param appCtxt	global app context
-* @param search		the search that generated this list
+* @param appCtxt	[ZmAppCtxt]		the app context
+* @param id			[int]			unique ID
+* @param list		[ZmVoiceList]	list that contains this item
 */
-function ZmVoiceList(appCtxt, search) {
-	ZmList.call(this, ZmItem.VOICEMAIL, appCtxt, search);
-	this.folder = null;
+function ZmCall(appCtxt, id, list) {
+
+	if (arguments.length == 0) return;
+	ZmVoiceItem.call(this, appCtxt, ZmItem.VOICEMAIL, id, list);
+}
+
+ZmCall.prototype = new ZmVoiceItem;
+ZmCall.prototype.constructor = ZmCall;
+
+ZmCall.prototype.toString = 
+function() {
+	return "ZmCall";
+}
+
+/**
+* Fills in the voicemail from the given message node.
+*
+* @param node		a message node
+* @param args		hash of input args
+*/
+ZmCall.createFromDom =
+function(node, args) {
+	var result = new ZmCall(args.appCtxt, node.id, args.list);
+	result._loadFromDom(node);
+	return result;
 };
 
-ZmVoiceList.prototype = new ZmList;
-ZmVoiceList.prototype.constructor = ZmVoiceList;
-
-ZmVoiceList.prototype.toString = 
-function() {
-	return "ZmVoiceList";
+ZmCall.prototype._loadFromDom =
+function(node) {
+	ZmVoiceItem.prototype._loadFromDom.call(this, node);
 };
 

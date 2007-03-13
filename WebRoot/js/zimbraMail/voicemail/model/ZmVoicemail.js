@@ -36,18 +36,13 @@
 function ZmVoicemail(appCtxt, id, list) {
 
 	if (arguments.length == 0) return;
-	ZmItem.call(this, appCtxt, ZmItem.VOICEMAIL, id, list);
+	ZmVoiceItem.call(this, appCtxt, ZmItem.VOICEMAIL, id, list);
 
-	this.id = null;
-	this.caller = null;
-	this.date = 0;
-	this.duration = 0;
 	this.isUnheard = false;
-	this.soundUrl = false;
-	this.participants = new AjxVector();
+	this.soundUrl = null;
 }
 
-ZmVoicemail.prototype = new ZmItem;
+ZmVoicemail.prototype = new ZmVoiceItem;
 ZmVoicemail.prototype.constructor = ZmVoicemail;
 
 ZmVoicemail.prototype.toString = 
@@ -68,50 +63,9 @@ function(node, args) {
 	return result;
 };
 
-ZmVoicemail.getCallerComparator =
-function(bSortAsc) {
-	var negate = bSortAsc ? 1 : -1;
-	return AjxCallback.simpleClosure(ZmVoicemail._callerComparator, ZmVoicemail, negate);	
-};
-
-ZmVoicemail._callerComparator =
-function(negate, a, b) {
-	var value = a.caller.localeCompare(b.caller);
-	return value ? value * negate : ZmVoicemail._dateComparator(a, b);
-};
-
-ZmVoicemail.getDurationComparator =
-function(bSortAsc) {
-	var negate = bSortAsc ? 1 : -1;
-	return AjxCallback.simpleClosure(ZmVoicemail._durationComparator, ZmVoicemail, negate);	
-};
-
-ZmVoicemail._durationComparator =
-function(negate, a, b) {
-	var value = a.duration.getTime() - b.duration.getTime();
-	return value ? value * negate : ZmVoicemail._dateComparator(a, b);
-};
-
-ZmVoicemail.getDateComparator =
-function(bSortAsc) {
-	if (bSortAsc) {
-		return ZmVoicemail._dateComparator;
-	} else {
-		return function(a, b) { return ZmVoicemail._dateComparator(b, a); }
-	}
-};
-
-ZmVoicemail._dateComparator =
-function(a, b) {
-	return a.date.getTime() - b.date.getTime();
-};
-
 ZmVoicemail.prototype._loadFromDom =
 function(node) {
-	if (node.id) this.id = node.id;
-	if (node.e) this.caller = node.e[0].p;
-	if (node.d) this.date = new Date(node.d);
-	if (node.du) this.duration = node.du * 1000;
+	ZmVoiceItem.prototype._loadFromDom.call(this, node);
 	if (node.f) {
 		this.isUnheard = node.f.indexOf("u") >= 0;
 		this.isHighPriority = node.f.indexOf("h") >= 0;
