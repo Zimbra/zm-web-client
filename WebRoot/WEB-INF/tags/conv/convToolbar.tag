@@ -36,7 +36,7 @@
                     <app:tagOptions mailbox="${mailbox}"/>
         </select>
         </td>
-        <app:button name="action" tooltip="actionMessageGoTT" src="mail/Message.gif" />
+        <app:button name="action" tooltip="actionMessageGoTT" text="actionGo" />
         <td><div class='vertSep'></div></td>
         <app:button name="actionDelete" src="common/Delete.gif" tooltip="actionTrashTT"/>
         <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
@@ -49,7 +49,7 @@
         </c:if>
         <td><div class='vertSep'></div></td>
         <input type="hidden" name="contextConvId" value="${convSearchResult.conversationSummary.id}">
-        <app:button name="actionMarkConvRead" src="mail/ReadMessage.gif" tooltip="actionMarkAllRead"/>
+        <app:button name="actionMarkConvRead" src="mail/ReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
     </c:set>
 </c:if>
 

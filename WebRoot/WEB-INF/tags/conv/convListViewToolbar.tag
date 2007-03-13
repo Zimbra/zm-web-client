@@ -34,7 +34,7 @@
             <app:tagOptions mailbox="${mailbox}"/>
         </select>
         </td>
-        <app:button name="action" tooltip="actionConvGoTT" src="mail/Conversation.gif" />
+        <app:button name="action" tooltip="actionConvGoTT" text="actionGo"/>
         <td><div class='vertSep'></div></td>        
        <c:choose>
             <c:when test="${context.isFolderSearch and context.folder.isTrash}">
@@ -55,12 +55,12 @@
             <c:when test="${context.isTagSearch and mailbox.features.tagging}">
                 <td><div class='vertSep'></div></td>
                 <input type="hidden" name="contextTagId" value="${context.selectedId}">
-                <app:button name="actionMarkTagRead" src="mail/ReadMessage.gif" tooltip="actionMarkAllRead"/>
+                <app:button name="actionMarkTagRead" src="mail/ReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
             </c:when>
             <c:when test="${context.isFolderSearch}">
                 <td><div class='vertSep'></div></td>
                 <input type="hidden" name="contextFolderId" value="${context.selectedId}">
-                <app:button name="actionMarkFolderRead" src="mail/ReadMessage.gif" tooltip="actionMarkAllRead"/>
+                <app:button name="actionMarkFolderRead" src="mail/ReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
             </c:when>
         </c:choose>      
         <c:if test="${context.isFolderSearch}">
