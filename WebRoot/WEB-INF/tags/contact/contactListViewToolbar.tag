@@ -45,7 +45,7 @@
         <c:if test="${mailbox.features.tagging and mailbox.hasTags}">
             </select>
             </td>
-            <app:button name="action" tooltip="actionContactGoTT" src="contacts/Contact.gif" />
+            <app:button name="action" tooltip="actionContactGoTT" text="actionGo" />
         </c:if>
         <td><div class='vertSep'></div></td>
          <c:choose>

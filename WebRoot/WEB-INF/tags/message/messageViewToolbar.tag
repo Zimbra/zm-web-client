@@ -39,7 +39,7 @@
             <app:tagOptions mailbox="${mailbox}"/>
         </select>
         </td>
-        <app:button name="action" tooltip="actionMessageGoTT" src="mail/Message.gif" />
+        <app:button name="action" tooltip="actionMessageGoTT" text="actionGo" />
         <td><div class='vertSep'></div></td>
          <app:button name="actionDelete" src="common/Delete.gif" tooltip="actionTrashTT"/>
         <td><div class='vertSep'></div></td>
