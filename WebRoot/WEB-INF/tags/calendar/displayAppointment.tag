@@ -74,7 +74,7 @@
                                             <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" timeStyle="short" type="time" value="${endDate}"/>
                                         </c:when>
                                         <c:otherwise>
-                                            <fmt:message key="apptViewFrom"/>&nbsp;
+                                            <fmt:message key="from"/>&nbsp;
                                             <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" dateStyle="medium" type="date" value="${startDate}"/>
                                             &nbsp;
                                             <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" timeStyle="short" type="time" value="${startDate}"/>
@@ -84,6 +84,7 @@
                                             <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" timeStyle="short" type="time" value="${endDate}"/>
                                         </c:otherwise>
                                     </c:choose>
+                                    &nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneWindowsId}</span>&nbsp;
                                 </td>
                             </tr>
 

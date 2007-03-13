@@ -256,7 +256,7 @@
                                                     </table>
                                                 </td>
                                             </tr>
-                                            <c:if test="${mailbox.prefs.useTimeZoneListInCalendar}">
+                                            <c:if test="${mailbox.prefs.useTimeZoneListInCalendar or not zm:isSameTimeZone(compose.timeZone, mailbox.prefs.timeZoneWindowsId)}">
                                                 <tr>
                                                     <td nowrap align=right>
                                                         <fmt:message key="timeZonePref"/> :
