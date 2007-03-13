@@ -81,7 +81,8 @@ function(node) {
             }
         }
     }
-    return invite;
+	invite.type = inv && inv.type ? inv.type : "appt";
+	return invite;
 };
 
 ZmInvite.prototype.setMessageId = 

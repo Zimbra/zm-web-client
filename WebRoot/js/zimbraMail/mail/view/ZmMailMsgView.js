@@ -128,7 +128,7 @@ function(msg) {
 		: new Date(msg.date);
 
 	if ((this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
-		msg.isInvite() &&
+		msg.isInvite() && msg.getInvite().type != "task" && 
 		!this._controller.isChildWindow)
 	{
 		var invite = msg.getInvite();
