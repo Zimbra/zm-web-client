@@ -42,18 +42,18 @@
 * @param list		[ZmContactList]*	list that contains this contact
 * @param type		[constant]*			item type
 */
-ZmContact = function(appCtxt, id, list, type) {
+function ZmContact(appCtxt, id, list, type) {
 	if (arguments.length == 0) return;
 
 	// handle to canonical list (for contacts that are part of search results)
-	this.canonicalList = AjxDispatcher.run("GetContacts");
+	this.canonicalList = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 
 	list = list || this.canonicalList;
 	type = type || ZmItem.CONTACT;
 	ZmItem.call(this, appCtxt, type, id, list);
 
 	this.attr = {};
-	this.isGal = (this.list && this.list.isGal);
+	this.isGal = this.list.isGal;
 
 	this.participants = new AjxVector(); // XXX: need to populate this guy (see ZmConv)
 };
@@ -136,11 +136,6 @@ ZmContact.FA_COMPANY_FIRST_LAST		= i++;
 ZmContact.FA_CUSTOM					= i++;
 
 ZmContact.F_EMAIL_FIELDS = [ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
-ZmContact.F_PHONE_FIELDS = [
-	ZmContact.F_assistantPhone, ZmContact.F_callbackPhone, ZmContact.F_carPhone, ZmContact.F_companyPhone,
-	ZmContact.F_homeFax, ZmContact.F_homePhone, ZmContact.F_homePhone2, ZmContact.F_mobilePhone,
-	ZmContact.F_otherPhone, ZmContact.F_workPhone, ZmContact.F_workPhone2
-];
 
 ZmContact.prototype.toString =
 function() {
@@ -166,7 +161,7 @@ function(node, args) {
 		contact = new ZmContact(args.appCtxt, node.id, args.list);
 		contact._loadFromDom(node);
 	} else {
-		contact.list = args.list || AjxDispatcher.run("GetContacts");
+		contact.list = args.list || args.appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
 	}
 
 	return contact;
@@ -383,11 +378,11 @@ function() {
 	return (this.getAttr(ZmContact.F_dlist) != null || this.type == ZmItem.GROUP);
 };
 
-// parses "dlist" attr into AjxEmailAddress objects stored in 3 vectors (all, good, and bad)
+// parses "dlist" attr into ZmEmailAddress objects stored in 3 vectors (all, good, and bad)
 ZmContact.prototype.getGroupMembers =
 function() {
 	return this.isGroup()
-		? AjxEmailAddress.parseEmailString(this.getAttr(ZmContact.F_dlist))
+		? ZmEmailAddress.parseEmailString(this.getAttr(ZmContact.F_dlist))
 		: null;
 };
 
@@ -660,7 +655,7 @@ function(newFolderId) {
 	if (this.folderId == newFolderId) return;
 
 	// moving out of a share or into one is handled differently (create then hard delete)
-	var newFolder = this._appCtxt.getById(newFolderId)
+	var newFolder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(newFolderId)
 	if (this.isShared() || (newFolder && newFolder.link)) {
 		if (this.list) {
 			this.list.moveItems(this, newFolder);
@@ -714,12 +709,12 @@ function(obj) {
 /**
 * Sets this contacts email address.
 *
-* @param email		[object]		an AjxEmailAddress, or an email string
+* @param email		[object]		an ZmEmailAddress, or an email string
 * @param strictName	[boolean]*		if true, don't try to set name from user portion of address
 */
 ZmContact.prototype.initFromEmail =
 function(email, strictName) {
-	if (email instanceof AjxEmailAddress) {
+	if (email instanceof ZmEmailAddress) {
 		this.setAttr(ZmContact.F_email, email.getAddress());
 		this._initFullName(email, strictName);
 	} else {
@@ -922,7 +917,7 @@ function(street, city, state, zipcode, country) {
 ZmContact.prototype._initFullName =
 function(email, strictName) {
 	var name = email.getName();
-	name = AjxStringUtil.trim(name.replace(AjxEmailAddress.commentPat, '')); // strip comment (text in parens)
+	name = AjxStringUtil.trim(name.replace(ZmEmailAddress.commentPat, '')); // strip comment (text in parens)
 
 	if (name && name.length) {
 		this._setFullName(name, [" "]);
@@ -1011,7 +1006,7 @@ function(node) {
 
 		// check if the folderId is found in our address book (otherwise, we
 		// assume this contact to be a shared contact)
-		this.addrbook = this._appCtxt.getById(this.folderId);
+		this.addrbook = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this.folderId);
 		this._loaded = !this.isShared();
 
 		// lets not process tags/flags for shared contacts until we get better server support
@@ -1033,20 +1028,14 @@ function(type, shortForm) {
 	var text = "";
 	var name = this.getFullName();
 	var email = this.getEmail();
-	if (type == ZmCalItem.PERSON && !shortForm) {
-		var e = new AjxEmailAddress(email, null, name);
+	if (type == ZmAppt.PERSON && !shortForm) {
+		var e = new ZmEmailAddress(email, null, name);
 		text = e.toString();
 	} else {
 		text = name ? name : email ? email : "";
 	}
 
 	return text;
-};
-
-ZmContact.prototype.getPrintHtml =
-function(preferHtml, callback) {
-	return this.isGroup() ? ZmGroupView.getPrintHtml(this, false, this._appCtxt) :
-							ZmContactView.getPrintHtml(this, false, this._appCtxt);
 };
 
 // these need to be kept in sync with ZmContact.F_*

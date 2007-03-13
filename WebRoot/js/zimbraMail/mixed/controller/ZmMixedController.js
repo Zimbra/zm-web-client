@@ -60,7 +60,7 @@ function(searchResults) {
 	
 	this._setup(this._currentView);
 
-	this._list = searchResults.getResults(ZmItem.MIXED);
+	this._list = searchResults.getResults(ZmList.MIXED);
 	if (this._activeSearch) {
 		if (this._list)
 			this._list.setHasMore(this._activeSearch.getAttribute("more"));
@@ -103,7 +103,7 @@ function(parent, num) {
 	// Disallow printing of ZmDocuments.
 	if (num == 1) {
 		var selectedItem = this.getCurrentView().getSelection()[0];
-		if (selectedItem.toString() == "ZmDocument") {
+		if (selectedItem instanceof ZmDocument) {
 			parent.enable(ZmOperation.PRINT, false);
 		}
 	}
@@ -133,8 +133,7 @@ function(view) {
 		var menu = new ZmPopupMenu(button);
 		button.setMenu(menu);
 		button.noMenuBar = true;
-		var ops = [ZmOperation.SHOW_ALL_ITEM_TYPES, ZmOperation.SEP];
-		ops = ops.concat(this._getTrashViewOps());
+		var ops = [ZmOperation.SHOW_ALL_ITEM_TYPES, ZmOperation.SEP, ZmOperation.SHOW_ONLY_CONTACTS, ZmOperation.SHOW_ONLY_MAIL];
 		var listener = new AjxListener(this, this._showAllListener);
 		for (var i = 0; i < ops.length; i++) {
 			var op = ops[i];
@@ -144,7 +143,7 @@ function(view) {
 			}
 			var icon = ZmOperation.getProp(op, "image");
 			var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
-			var mi = menu.createMenuItem(op, {image:icon, text:text, style:DwtMenuItem.RADIO_STYLE}, 1);
+			var mi = menu.createMenuItem(op, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 1);
 			mi.setData(ZmOperation.KEY_ID, op);
 			mi.addSelectionListener(listener);
 		}
@@ -159,7 +158,8 @@ function() {
 	var showUndelete = false;
 	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
 	if (folderId) {
-		var folder = this._appCtxt.getById(folderId);
+		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		var folder = folderTree ? folderTree.getById(folderId) : null;
 		showUndelete = folder && folder.isInTrash();
 	}
 	var actionMenu = this._actionMenu;
@@ -170,8 +170,7 @@ function() {
 ZmMixedController.prototype._getToolBarOps =
 function() {
 	var list = this._standardToolBarOps();
-	var trashViewOps = this._getTrashViewOps();
-	if (trashViewOps.length > 1) {
+	if (this._appCtxt.get(ZmSetting.MAIL_ENABLED) && this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		list.push(ZmOperation.FILLER);
 		list.push(ZmOperation.SHOW_ALL_MENU);
 	}
@@ -192,7 +191,7 @@ function() {
 
 ZmMixedController.prototype._getItemType =
 function() {
-	return ZmItem.MIXED;
+	return ZmList.MIXED;
 };
 
 ZmMixedController.prototype._defaultView =
@@ -242,17 +241,6 @@ function(op, setChecked) {
 	}
 };
 
-ZmMixedController.prototype._getTrashViewOps =
-function() {
-	var list = [];
-	for (var i = 0; i < ZmApp.APPS.length; i++) {
-		var op = ZmApp.TRASH_VIEW_OP[ZmApp.APPS[i]];
-		if (op) {
-			list.push(op);
-		}
-	}
-	return list;
-};
 
 // List listeners
 
@@ -262,27 +250,25 @@ function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		if (ev.item.type == ZmItem.CONTACT || ev.item.type == ZmItem.GROUP) {
-			AjxDispatcher.run("GetContactController").show(ev.item);
+			this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactController().show(ev.item);
 		} else if (ev.item.type == ZmItem.CONV) {
-			var mailApp = this._appCtxt.getApp(ZmApp.MAIL);
+			var mailApp = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
 			if (ev.item.isDraft) {
-				AjxDispatcher.run("GetConvListController")._doAction(ev, ZmOperation.DRAFT);
+				mailApp.getConvListController()._doAction(ev, ZmOperation.DRAFT);
 			} else {
-				AjxDispatcher.run("GetConvController").show(this._activeSearch, ev.item);
+				mailApp.getConvController().show(this._activeSearch, ev.item);
 			}
 		} else if (ev.item.type == ZmItem.MSG) {
-			var mailApp = this._appCtxt.getApp(ZmApp.MAIL);
+			var mailApp = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
 			if (ev.item.isDraft) {
-				AjxDispatcher.run("GetTradController")._doAction(ev, ZmOperation.DRAFT);
+				mailApp.getTradController()._doAction(ev, ZmOperation.DRAFT);
 			} else {
-				AjxDispatcher.run("GetMsgController").show(ev.item);
+				mailApp.getMsgController().show(ev.item);
 			}
-		} else if (ev.item.type == ZmItem.TASK) {
-			var app = this._appCtxt.getApp(ZmApp.TASKS);
-			// XXX: prompt user if task is recurring!
-			AjxDispatcher.run("GetTaskController").show(ev.item, ZmCalItem.MODE_EDIT);
 		} else if (ev.item.type == ZmItem.PAGE || ev.item.type == ZmItem.DOCUMENT) {
-			this._appCtxt.getApp(ZmApp.NOTEBOOK).getFileController()._doSelectDblClicked(ev.item, true);
+			var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+			var controller = app.getFileController();
+			controller._doSelectDblClicked(ev.item, true);
 		}
 	}
 };
@@ -308,7 +294,8 @@ function(ev) {
 	var miUndelete = actionMenu.getMenuItem(ZmOperation.UNDELETE);
 	var miMoveTo = actionMenu.getMenuItem(ZmOperation.MOVE);
 	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
-	var folder = this._appCtxt.getById(folderId);
+	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+	var folder = folderTree && folderId ? folderTree.getById(folderId) : null;
 
 	if (folder && folder.isInTrash()) {
 		// only want to show Undelete menu item if contact(s) is selected
@@ -344,12 +331,13 @@ function(ev) {
 	// figure out the default for this item should be moved to
 	var folder = null;
 	if (items[0] instanceof ZmContact) {
-		folder = new ZmFolder({id: ZmOrganizer.ID_ADDRBOOK});
+		folder = new ZmFolder(ZmOrganizer.ID_ADDRBOOK);
 	} else if (items[0] instanceof ZmAppt) {
-		folder = new ZmFolder({id: ZmOrganizer.ID_CALENDAR});
+		folder = new ZmFolder(ZmOrganizer.ID_CALENDAR);
 	} else {
+		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		var folderId = items[0].isDraft ? ZmFolder.ID_DRAFTS : ZmFolder.ID_INBOX;
-		folder = this._appCtxt.getById(folderId);
+		folder = folderTree.getById(folderId);
 	}
 
 	if (folder)

@@ -40,7 +40,7 @@ function ZmContactCardsView(parent, className, posStyle, controller, dropTgt) {
 
 	this.addControlListener(new AjxListener(this, this._controlListener));
 
-	this._addrbookTree = this._appCtxt.getFolderTree();
+	this._addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
 	this._addrbookTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
 
 	this._initialResized = false;
@@ -152,7 +152,7 @@ function(contact, now, isDndIcon, getHtml) {
 	html[idx++] = "<table border=0 width=100% height=100% cellpadding=0 cellspacing=0>";
 	html[idx++] = "<tr class='contactHeader ";
 
-	var color = contact.addrbook ? contact.addrbook.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
+	var color = contact.addrbook ? contact.addrbook.color : ZmAddrBook.DEFAULT_COLOR;
 	html[idx++] = ZmOrganizer.COLOR_TEXT[color] + "Bg";
 	html[idx++] = "'>";
 	html[idx++] = "<td width=16>";
@@ -576,7 +576,7 @@ function(cell, contactId) {
 	var appCtxt = window._zimbraMail._appCtxt;
 	var contact = appCtxt.cacheGet(contactId);
 	if (contact && !contact.isLoaded()) {
-		var clc = AjxDispatcher.run("GetContactListController");
+		var clc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
 		var cardsView = clc.getParentView();
 		var callback = new AjxCallback(cardsView, cardsView._handleResponseLoad);
 		contact.load(callback);
@@ -592,6 +592,7 @@ function(contactId) {
 		? window.parentController._appCtxt
 		: window._zimbraMail._appCtxt;
 
-	var contact = AjxDispatcher.run("GetContacts").getById(contactId);
-	AjxDispatcher.run("GetContactController").show(contact);
+	var capp = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+	var contact = capp.getContactList().getById(contactId);
+	capp.getContactController().show(contact);
 };

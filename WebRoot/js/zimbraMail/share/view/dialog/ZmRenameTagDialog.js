@@ -39,8 +39,8 @@ function() {
 }
 
 ZmRenameTagDialog.prototype.popup =
-function(tag, source) {
-	ZmDialog.prototype.popup.call(this);
+function(tag, source, loc) {
+	ZmDialog.prototype.popup.call(this, loc);
 	this.setTitle(ZmMsg.renameTag + ': ' + tag.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
 	this._nameField.value = tag.getName(false, null, true);
 	this._tag = tag;
@@ -78,7 +78,7 @@ function() {
 	
 	// make sure tag name doesn't already exist
 	if (!msg) {
-		var t = this._appCtxt.getTagTree().getByName(name);
+		var t = this._appCtxt.getTree(ZmOrganizer.TAG).getByName(name);
 		if (t && (t.id != this._tag.id))
 			msg = ZmMsg.tagNameExists;
 	}

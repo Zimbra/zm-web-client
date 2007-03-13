@@ -16,19 +16,14 @@
 <c:if test="${zm:actionSet(param, 'actionEdit')}"><input type="hidden" name="actionEdit" value="true"/></c:if>
 
 <table width=100% cellspacing=0 cellpadding=0>
-<tr>
-    <td class='ZhBottomSep'>
-        <table width=100% cellspacing=0 cellpadding=0>
-            <tr class='contactHeaderRow'>
-                <td width=20><center><app:img src="${contact.isGroup or isgroup ? 'contacts/Group.gif' : 'contacts/Contact.gif'}" altkey="${contact.isGroup or isgroup ? 'ALT_CONTACT_GROUP' : 'ALT_CONTACT_CONTACT'}"/></center></td>
-                <td class='contactHeader'>${fn:escapeXml(title)}
-                </td>
-            </tr>
-        </table>
-    </td>
-</tr>
-<tr>
-<td>
+    <tr class='contactHeaderRow'>
+        <td width=20><center><app:img src="${contact.isGroup or isgroup ? 'contacts/Group.gif' : 'contacts/Contact.gif'}" altkey="${contact.isGroup or isgroup ? 'ALT_CONTACT_GROUP' : 'ALT_CONTACT_CONTACT'}"/></center></td>
+        <td class='contactHeader'>${fn:escapeXml(title)}
+        </td>
+    </tr>
+
+</table>
+
 <table border="0" cellpadding="0" cellspacing="3" width="100%">
     <tbody>
     <c:choose>
@@ -255,8 +250,3 @@
     </c:choose>
     </tbody>
 </table>
-</td>
-</tr>
-</table>
-
-

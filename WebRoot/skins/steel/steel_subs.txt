@@ -1,0 +1,159 @@
+##########################################################################
+#                            Skin Substitutions                          #
+#------------------------------------------------------------------------#
+#
+#  Add or change entries below to customize this skin.  
+#     See:  http://wiki.zimbra.com/?title=Themes
+#
+#  NOTE: Substitutions that begin and end with "_" (eg: "_BaseColor_") 
+#  should only be used within this file -- never in a CSS or HTML file
+#
+#========================================================================#
+
+
+SkinName			= steel
+
+
+##########################################################################
+#                           Logo Licensing Rules 	   		 	         #
+#------------------------------------------------------------------------#
+#
+#  If you are using the Zimbra Collaboration Suite (ZCS) under the 
+#  open source license, and you have not modifed the software, 
+#  then you are required to use the Zimbra logo (the default). 
+#
+#	LogoImgDir		= /zimbra/skins/_base/logos
+#	LogoURL			= http://www.zimbra.com
+#
+#-------------------------------------------------------------------------
+#  If you are using ZCS under the open source license, 
+#  and you have modified the software, 
+#  then you are required to use the Zimbra Inside logo. 
+#
+#	LogoImgDir		= /zimbra/skins/_base/logos/ZimbraInside
+#	LogoURL			= http://www.zimbra.com
+#
+#-------------------------------------------------------------------------
+#  If you are using ZCS under the network (commercial) license, 
+#  then you are welcome to use your own logo in place of the Zimbra logo,
+#  or to retain the original Zimbra logo. 
+#
+#	LogoImgDir		= /zimbra/skins/@SkinName@/logos
+#	LogoURL			= http://www.yourcompany.com
+#
+#========================================================================#
+
+
+
+##########################################################################
+#                               Skin Colors                              #
+#------------------------------------------------------------------------#
+#
+#### Base color and variants ####
+	_BaseColor_			=	#e0e0e0
+	_BaseColorD95_		=	#0b0b0b
+	_BaseColorD90_		=	#161616
+	_BaseColorD85_		=	#222222
+	_BaseColorD80_		=	#2d2d2d
+	_BaseColorD75_		=	#383838
+	_BaseColorD70_		=	#434343
+	_BaseColorD65_		=	#4e4e4e
+	_BaseColorD60_		=	#5a5a5a
+	_BaseColorD55_		=	#656565
+	_BaseColorD50_		=	#707070
+	_BaseColorD45_		=	#7b7b7b
+	_BaseColorD40_		=	#868686
+	_BaseColorD35_		=	#929292
+	_BaseColorD30_		=	#9d9d9d
+	_BaseColorD25_		=	#a8a8a8
+	_BaseColorD20_		=	#b3b3b3
+	_BaseColorD15_		=	#bebebe
+	_BaseColorD10_		=	#cacaca
+	_BaseColorD5_		=	#d5d5d5
+	_BaseColorL5_		=	#e2e2e2
+	_BaseColorL10_		=	#e3e3e3
+	_BaseColorL15_		=	#e5e5e5
+	_BaseColorL20_		=	#e6e6e6
+	_BaseColorL25_		=	#e8e8e8
+	_BaseColorL30_		=	#e9e9e9
+	_BaseColorL35_		=	#ebebeb
+	_BaseColorL40_		=	#ececec
+	_BaseColorL45_		=	#eeeeee
+	_BaseColorL50_		=	#f0f0f0
+	_BaseColorL55_		=	#f1f1f1
+	_BaseColorL60_		=	#f3f3f3
+	_BaseColorL65_		=	#f4f4f4
+	_BaseColorL70_		=	#f6f6f6
+	_BaseColorL75_		=	#f7f7f7
+	_BaseColorL80_		=	#f9f9f9
+	_BaseColorL85_		=	#fafafa
+	_BaseColorL90_		=	#fcfcfc
+	_BaseColorL95_		=	#fdfdfd
+#### Selection color and variants ####
+	_SelColor_			=	#aed6d6
+	_SelColorD95_		=	#090b0b
+	_SelColorD90_		=	#111515
+	_SelColorD85_		=	#1a2020
+	_SelColorD80_		=	#232b2b
+	_SelColorD75_		=	#2c3636
+	_SelColorD70_		=	#344040
+	_SelColorD65_		=	#3d4b4b
+	_SelColorD60_		=	#465656
+	_SelColorD55_		=	#4e6060
+	_SelColorD50_		=	#576b6b
+	_SelColorD45_		=	#607676
+	_SelColorD40_		=	#688080
+	_SelColorD35_		=	#718b8b
+	_SelColorD30_		=	#7a9696
+	_SelColorD25_		=	#83a1a1
+	_SelColorD20_		=	#8babab
+	_SelColorD15_		=	#94b6b6
+	_SelColorD10_		=	#9dc1c1
+	_SelColorD5_		=	#a5cbcb
+	_SelColorL5_		=	#b2d8d8
+	_SelColorL10_		=	#b6dada
+	_SelColorL15_		=	#badcdc
+	_SelColorL20_		=	#bedede
+	_SelColorL25_		=	#c2e0e0
+	_SelColorL30_		=	#c6e2e2
+	_SelColorL35_		=	#cae4e4
+	_SelColorL40_		=	#cee6e6
+	_SelColorL45_		=	#d2e8e8
+	_SelColorL50_		=	#d7ebeb
+	_SelColorL55_		=	#dbeded
+	_SelColorL60_		=	#dfefef
+	_SelColorL65_		=	#e3f1f1
+	_SelColorL70_		=	#e7f3f3
+	_SelColorL75_		=	#ebf5f5
+	_SelColorL80_		=	#eff7f7
+	_SelColorL85_		=	#f3f9f9
+	_SelColorL90_		=	#f7fbfb
+	_SelColorL95_		=	#fbfdfd
+#
+#========================================================================#
+
+
+
+
+
+ChromeBg					= background-image:url(@SkinImgDir@/Console__BG.gif);
+
+_AppTabStyle_			 	= border-width:0px; padding-left:0px; padding-left:10px; padding-top:0px; margin-bottom:2px;
+#IFDEF MSIE
+_AppTabStyle_			 	= border-width:0px; padding-right:14px; margin-top:9px; margin-bottom:-8px;
+#ENDIF
+
+AppTabContainer				= @_AppTabStyle_@	
+AppTabContainer-hover		= @_AppTabStyle_@
+AppTabContainer-selected	= @_AppTabStyle_@
+
+HSashContents				= display:none;
+
+ToolbarBg					= background-image:url(@SkinImgDir@/Toolbar__BG.gif);
+MiniCalBg					= @ToolbarBg@
+
+SearchHelperToolbarMargin	= margin-top:-3px;
+
+HoverBorder					= padding:0px;	border:2px solid; border-color:@_SelColorD20_@ @_SelColorD50_@ @_SelColorD50_@ @_SelColorD20_@;
+
+MenuContainer			 	= @WindowOuterContainer-light@

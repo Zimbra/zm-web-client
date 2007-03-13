@@ -108,7 +108,7 @@ function() {
 		return ZmMsg.zimbraTitle;
 	}
 	var folderId = page.getFolderId();
-	var notebook = this._appCtxt.getById(folderId);
+	var notebook = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK).getById(folderId);
 	var notebookName = notebook.getName();
 	return [ZmMsg.zimbraTitle, notebookName].join(": ");
 };
@@ -163,7 +163,7 @@ function(page, appCtxt) {
 		return "";
 	}
 
-	var cache = appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
+	var cache = appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP).getNotebookCache();
 	var chrome = cache.getPageByName(page.folderId, ZmNotebook.PAGE_CHROME, true);
 	var chromeContent = chrome.getContent();
 

@@ -29,9 +29,9 @@ function ZmFilterRulesView(parent, appCtxt, controller) {
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;
-	this._prefsController = AjxDispatcher.run("GetPrefController");
+	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
 	
-	this._rules = AjxDispatcher.run("GetFilterRules");
+	this._rules = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getFilterRules();
 
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]].join(": ");
 
@@ -78,7 +78,7 @@ function ZmFilterListView(parent, appCtxt, controller) {
 	DwtListView.call(this, parent, "ZmFilterListView", null, headerList);	
 
 	this._appCtxt = appCtxt;
-	this._rules = AjxDispatcher.run("GetFilterRules");
+	this._rules = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getFilterRules();
 	
 	this._controller = controller;
 	this._rules.addChangeListener(new AjxListener(this, this._changeListener));

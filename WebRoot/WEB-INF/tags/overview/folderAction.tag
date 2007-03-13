@@ -7,89 +7,131 @@
 
 
 <app:handleError>
-<zm:getMailbox var="mailbox"/>
-
 <c:choose>
-    <c:when test="${zm:actionSet(param, 'actionSave')}">
-        <c:set var="folder" value="${zm:getFolder(pageContext, param.folderId)}"/>
+    <c:when test="${!empty param.actionCreate}">
+        <c:set var="newFolderName" value="${fn:trim(param.newFolderName)}"/>
         <c:choose>
-            <c:when test="${not empty param.folderNameVisible and empty param.folderName}">
-                <app:status style="Warning">
-                    <fmt:message key="actionNoNameSpecified"/>
-                </app:status>
-            </c:when>
-            <c:when test="${not empty param.folderUrlVisible and empty param.folderUrl}">
-                <app:status style="Warning">
-                    <fmt:message key="actionNoUrlSpecified"/>
-                </app:status>
-            </c:when>
-            <c:otherwise>
-                <zm:updateFolder
-                        parentid="${empty param.folderParentId ? folder.parentId : param.folderParentId}"
-                        id="${param.folderId}"
-                        name="${param.folderName}"
-                        color="${empty param.folderColor ? folder.color : param.folderColor}"
-                        flags="${param.folderExcludeFlag}${param.folderCheckedFlag}"/>
-                <c:if test="${not empty param.folderUrl and param.folderUrl ne folder.remoteURL}">
-                    <zm:modifyFolderUrl id="${param.folderId}" url="${param.folderUrl}"/>
-                </c:if>
-                <app:status>
-                    <fmt:message key="folderUpdated"/>
-                </app:status>
-            </c:otherwise>
-        </c:choose>
-    </c:when>
-    <c:when test="${zm:actionSet(param, 'actionNew')}">
-         <c:choose>
-            <c:when test="${empty param.newFolderName}">
+            <c:when test="${empty newFolderName}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoFolderNameSpecified"/>
                 </app:status>
             </c:when>
-            <c:when test="${not empty param.newFolderUrlVisible and empty param.newFolderUrl}">
+            <c:when test="${!fn:startsWith(param.parentFolderId, 'f:')}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoParentFolderSelected"/>
+                </app:status>
+            </c:when>
+            <c:otherwise>
+                <c:set var="parentid" value="${fn:substring(param.parentFolderId, 2, -1)}"/>
+                <zm:createFolder parentid="${parentid}" var="folder" name="${newFolderName}" view="conversation"/>
+                <app:status>
+                    <fmt:message key="actionFolderCreated">
+                        <fmt:param value="${newFolderName}"/>
+                    </fmt:message>
+                </app:status>
+            </c:otherwise>
+        </c:choose>
+    </c:when>
+        <c:when test="${!empty param.actionSubscribe}">
+        <c:set var="newFolderName" value="${fn:trim(param.feedFolderName)}"/>
+        <c:set var="newFolderUrl" value="${fn:trim(param.feedFolderUrl)}"/>
+        <c:choose>
+            <c:when test="${empty newFolderName}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoFolderNameSpecified"/>
+                </app:status>
+            </c:when>
+            <c:when test="${empty newFolderUrl}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoUrlSpecified"/>
                 </app:status>
             </c:when>
-             <c:when test="${not empty param.newFolderQueryVisible and empty param.newFolderQuery}">
+            <c:when test="${!fn:startsWith(param.feedParentFolderId, 'f:')}">
                 <app:status style="Warning">
-                    <fmt:message key="actionNoSearchQuerySpecified"/>
+                    <fmt:message key="actionNoParentFolderSelected"/>
                 </app:status>
             </c:when>
             <c:otherwise>
-                <c:choose>
-                    <c:when test="${not empty param.newFolderQuery}">
-                        <zm:createSearchFolder var="folder"
-                                               parentid="${param.newFolderParentId}"
-                                               name="${param.newFolderName}"
-                                               query="${param.newFolderQuery}"/>
-                    </c:when>
-                    <c:otherwise>
-                        <zm:createFolder var="folder"
-                                         parentid="${param.newFolderParentId}"
-                                         name="${param.newFolderName}"
-                                         url="${param.newFolderUrl}"/>
-                    </c:otherwise>
-                </c:choose>
+                <c:set var="parentid" value="${fn:substring(param.feedParentFolderId, 2, -1)}"/>
+                <zm:createFolder parentid="${parentid}" var="folder" name="${newFolderName}" view="conversation" url="${newFolderUrl}"/>
                 <app:status>
                     <fmt:message key="actionFolderCreated">
-                        <fmt:param value="${param.newFolderName}"/>
+                        <fmt:param value="${newFolderName}"/>
                     </fmt:message>
                 </app:status>
-                <c:set var="newlyCreatedFolderId" value="${folder.id}" scope="request"/>
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionDelete')}">
-        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderDeleteId)}"/>
+    <c:when test="${!empty param.actionRename}">
+        <c:set var="newName" value="${fn:trim(param.newName)}"/>
         <c:choose>
-            <c:when test="${empty param.folderDeleteConfirm}">
+            <c:when test="${empty newName}">
                 <app:status style="Warning">
-                    <fmt:message key="actionDeleteCheckConfirm"/>
+                    <fmt:message key="actionNoFolderNameSpecified"/>
+                </app:status>
+            </c:when>
+            <c:when test="${!fn:startsWith(param.folderToRename, 'f:')}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoFolderRenameSelected"/>
                 </app:status>
             </c:when>
             <c:otherwise>
-                <zm:moveFolder id="${param.folderDeleteId}" parentid="3"/>
+                <c:set var="folderid" value="${fn:substring(param.folderToRename, 2, -1)}"/>
+                <c:set var="oldName" value="${zm:getFolderName(pageContext, folderid)}"/>
+                <zm:renameFolder id="${folderid}" newname="${newName}"/>
+                <app:status>
+                    <fmt:message key="actionFolderRenamed">
+                        <fmt:param value="${oldName}"/>
+                        <fmt:param value="${newName}"/>
+                    </fmt:message>
+                </app:status>
+            </c:otherwise>
+        </c:choose>
+    </c:when>
+    <c:when test="${!empty param.actionMove}">
+        <c:choose>
+            <c:when test="${!fn:startsWith(param.folderToMove, 'f:')}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoFolderMoveSelected"/>
+                </app:status>
+            </c:when>
+            <c:when test="${!fn:startsWith(param.newParentFolder, 'f:')}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoNewParentFolderSelected"/>
+                </app:status>
+            </c:when>
+            <c:otherwise>
+                <c:set var="folderid" value="${fn:substring(param.folderToMove, 2, -1)}"/>
+                <c:set var="folderName" value="${zm:getFolderName(pageContext, folderid)}"/>
+                <c:set var="parentid" value="${fn:substring(param.newParentFolder, 2, -1)}"/>
+                <zm:moveFolder id="${folderid}" parentid="${parentid}"/>
+                <app:status>
+                    <fmt:message key="actionFolderMoved">
+                        <fmt:param value="${folderName}"/>
+                        <c:choose>
+                            <c:when test="${parentid == 1}">
+                                <fmt:param><fmt:message key="rootFolder"/></fmt:param>
+                            </c:when>
+                            <c:otherwise>
+                                <fmt:param value="${zm:getFolderName(pageContext, parentid)}"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </fmt:message>
+                </app:status>
+            </c:otherwise>
+        </c:choose>
+    </c:when>
+    <c:when test="${!empty param.actionDelete}">
+        <c:choose>
+            <c:when test="${!fn:startsWith(param.folderToDelete, 'f:')}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoFolderDeleteSelected"/>
+                </app:status>
+            </c:when>
+            <c:otherwise>
+                <c:set var="folderid" value="${fn:substring(param.folderToDelete, 2, -1)}"/>
+                <c:set var="folderName" value="${zm:getFolderName(pageContext, folderid)}"/>
+                <zm:moveFolder id="${folderid}" parentid="3"/>
                 <app:status>
                     <fmt:message key="actionFolderMovedToTrash">
                         <fmt:param value="${folderName}"/>
@@ -98,41 +140,24 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionPermDelete')}">
-        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderDeleteId)}"/>
+    <c:when test="${!empty param.actionMarkRead}">
         <c:choose>
-            <c:when test="${empty param.folderDeleteConfirm}">
+            <c:when test="${!fn:startsWith(param.folderToMarkRead, 'f:')}">
                 <app:status style="Warning">
-                    <fmt:message key="actionDeleteCheckConfirm"/>
+                    <fmt:message key="actionNoFolderMarkReadSelected"/>
                 </app:status>
             </c:when>
             <c:otherwise>
-                <zm:deleteFolder id="${param.folderDeleteId}"/>
+                <c:set var="folderid" value="${fn:substring(param.folderToMarkRead, 2, -1)}"/>
+                <c:set var="folderName" value="${zm:getFolderName(pageContext, folderid)}"/>
+                <zm:markFolderRead id="${folderid}"/>
                 <app:status>
-                    <fmt:message key="actionFolderDeleted">
+                    <fmt:message key="actionFolderMarkRead">
                         <fmt:param value="${folderName}"/>
                     </fmt:message>
                 </app:status>
             </c:otherwise>
         </c:choose>
-    </c:when>
-    <c:when test="${zm:actionSet(param, 'actionEmptyFolder')}">
-        <zm:emptyFolder id="${param.folderEmptyId}"/>
-        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderEmptyId)}"/>
-        <app:status>
-            <fmt:message key="folderEmptied">
-                <fmt:param value="${folderName}"/>
-            </fmt:message>
-        </app:status>
-    </c:when>
-    <c:when test="${zm:actionSet(param, 'actionMarkRead')}">
-        <zm:markFolderRead id="${param.folderId}"/>
-        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderId)}"/>
-        <app:status>
-            <fmt:message key="actionFolderMarkRead">
-                <fmt:param value="${folderName}"/>
-            </fmt:message>
-        </app:status>
     </c:when>
     <c:otherwise>
 

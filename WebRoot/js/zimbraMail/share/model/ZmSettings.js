@@ -42,52 +42,23 @@ function ZmSettings(appCtxt) {
 	this._appCtxt = appCtxt;
 	this._settings = {}; // settings by ID
 	this._nameToId = {}; // map to get from server setting name to setting ID
+	this._initialize();
+	this._setDefaults();
+	this.userSettingsLoaded = false;
 };
 
 ZmSettings.prototype = new ZmModel;
 ZmSettings.prototype.constructor = ZmSettings;
 
-// we need these IDs available for login and startup
-ZmSetting.CALENDAR_ENABLED		= "CALENDAR_ENABLED";
-ZmSetting.CONTACTS_ENABLED		= "CONTACTS_ENABLED";
-ZmSetting.IM_ENABLED			= "IM_ENABLED";
-ZmSetting.MAIL_ENABLED			= "MAIL_ENABLED";
-ZmSetting.MIXED_VIEW_ENABLED	= "MIXED_VIEW_ENABLED";
-ZmSetting.NOTEBOOK_ENABLED		= "NOTEBOOK_ENABLED";
-ZmSetting.OPTIONS_ENABLED		= "OPTIONS_ENABLED";
-ZmSetting.PORTAL_ENABLED		= "PORTAL_ENABLED";
-ZmSetting.SKIN_NAME				= "SKIN_NAME";
-ZmSetting.TASKS_ENABLED			= "TASKS_ENABLED";
-ZmSetting.VOICEMAIL_ENABLED		= "VOICEMAIL_ENABLED";
-
 /**
- * Creates a new setting and adds it to the settings.
- * 
- * @param id			[string]		unique ID of the setting
- * @param name			[string]*		the name of the pref or attr on the server
- * @param type			[constant]*		config, pref, or COS
- * @param dataType		[constant]*		string, int, or boolean (defaults to string)
- * @param defaultValue	[any]*			default value
- */
-ZmSettings.prototype.registerSetting =
-function(id, params) {
-	ZmSetting[id] = id;
-	this._settings[id] = new ZmSetting(id, params.name, params.type, params.dataType, params.defaultValue);
-	if (params.name) {
-		this._nameToId[params.name] = id;
-	}
-};
-
-ZmSettings.prototype.toString =
-function() {
-	return "ZmSettings";
-};
-
-ZmSettings.prototype.initialize =
-function() {
-	this._initialize();
-	this._setDefaults();
-	this.userSettingsLoaded = false;
+* Static method so that static code can get the default value of a setting if it needs to.
+*
+* @param id		the numeric ID of the setting
+*/
+ZmSettings.get =
+function(id) {
+	var args = ZmSetting.INIT[id];
+	return args ? args[3] : null;
 };
 
 /**
@@ -97,7 +68,11 @@ function() {
 */
 ZmSettings.prototype.get =
 function(id, key) {
-	return (id && this._settings[id]) ? this._settings[id].getValue(key) : null;
+	if (!this._settings[id]) {
+		DBG.println(AjxDebug.DBG1, "*** missing setting " + id);
+		return null;
+	}
+	return this._settings[id].getValue(key);
 };
 
 /**
@@ -202,11 +177,17 @@ function(callback, result) {
 	}
 
 	// load Zimlets
-	if (obj.zimlets && obj.zimlets.zimlet) {
+	if(obj.zimlets && obj.zimlets.zimlet) {
 		DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + obj.zimlets.zimlet.length + " Zimlets");
-		AjxDispatcher.require("Zimlet");
 		this._appCtxt.getZimletMgr().loadZimlets(obj.zimlets.zimlet, obj.props.prop);
 	}
+
+    var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
+    var identityCollection = prefsApp.getIdentityCollection();
+	identityCollection.initialize(obj.identities);
+
+    var dataSourceCollection = prefsApp.getDataSourceCollection();
+    dataSourceCollection.initialize(obj.dataSources);
 
     this.userSettingsLoaded = true;
 	
@@ -285,13 +266,42 @@ function(list, callback, result) {
 			var setting = list[i];
 			setting.origValue = setting.value;
 			if (setting.id == ZmSetting.SKIN_NAME) {
-				ZmLogin.setCookie(ZmLogin.SKIN_COOKIE, setting.getValue());
+				ZmLogin.setSkinCookie(setting.getValue());
 			}
 			setting._notify(ZmEvent.E_MODIFY);
 		}
 	}
 	
 	if (callback) callback.run(result);
+};
+
+/**
+* Convenience method to convert "group mail by" between server (string)
+* and client (int constant) versions.
+*/
+ZmSettings.prototype.getGroupMailBy =
+function() {
+	var setting = this.get(ZmSetting.PREFS_ENABLED) ? this.get(ZmSetting.GROUP_MAIL_BY) : null;
+	if (!setting) {
+		DBG.println(AjxDebug.DBG1, "GROUP_MAIL_BY setting not found!");
+	}
+	return setting ? ZmPref.GROUP_MAIL_BY_ITEM[setting] : ZmItem.MSG;
+}
+
+// Loads the settings and their default values. See ZmSetting for details.
+ZmSettings.prototype._initialize =
+function() {
+	for (var id = 1; id <= ZmSetting.MAX_INDEX; id++) {
+		var args = ZmSetting.INIT[id];
+		if (!args) {
+			DBG.println(AjxDebug.DBG1, "*** Uninitialized setting! id = " + id);
+			continue;
+		}
+		var setting = new ZmSetting(id, args[0], args[1], args[2], args[3], this);
+		this._settings[id] = setting;
+		if (args[0])
+			this._nameToId[args[0]] = id;
+	}
 };
 
 // Set defaults which are determined dynamically (which can't be set in static code).
@@ -321,18 +331,22 @@ function() {
 	this._settings[ZmSetting.CSFE_EXPORT_URI].setValue(value, null, false, true);
 	
 	// default sorting preferences
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONVLIST_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONV_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.TRAD_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SRC_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_TGT_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SIMPLE_VIEW, true, true);
-	this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_CARDS_VIEW, true, true);
+	if (this._appCtxt) {
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONVLIST_VIEW, true, true);
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.CONV_VIEW, true, true);
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.DATE_DESC, ZmController.TRAD_VIEW, true, true);
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SRC_VIEW, true, true);
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_TGT_VIEW, true, true);
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_SIMPLE_VIEW, true, true);
+		this._settings[ZmSetting.SORTING_PREF].setValue(ZmSearch.NAME_ASC, ZmController.CONTACT_CARDS_VIEW, true, true);
+	}
 };
 
 /**
  * Loads the user's custom shortcuts, which consist of key bindings for organizers
- * that have aliases.
+ * that has aliases. Note that we don't check to see if KB nav is enabled, since it
+ * gets disabled during a SOAP request (we don't want to process KB input while the
+ * busy veil is up).
  */
 ZmSettings.prototype._loadShortcuts =
 function() {
@@ -352,140 +366,4 @@ function() {
 	for (var map in maps) {
 		kmm.reloadMap(map);
 	}
-};
-
-/**
- * Loads the standard settings and their default values.
- */
-ZmSettings.prototype._initialize =
-function() {
-	// CONFIG SETTINGS
-	this.registerSetting("AC_TIMER_INTERVAL",		{type: ZmSetting.T_CONFIG, dataType: ZmSetting.D_INT, defaultValue: 300});
-	this.registerSetting("ASYNC_MODE",				{type: ZmSetting.T_CONFIG, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("BRANCH",					{type: ZmSetting.T_CONFIG, defaultValue: "main"});
-	// next 3 are replaced during deployment
-	this.registerSetting("CLIENT_DATETIME",			{type: ZmSetting.T_CONFIG, defaultValue: "@buildDateTime@"});
-	this.registerSetting("CLIENT_RELEASE",			{type: ZmSetting.T_CONFIG, defaultValue: "@buildRelease@"});
-	this.registerSetting("CLIENT_VERSION",			{type: ZmSetting.T_CONFIG, defaultValue: "@buildVersion@"});
-	this.registerSetting("CONFIG_PATH",				{type: ZmSetting.T_CONFIG, defaultValue: appContextPath + "/js/zimbraMail/config"});
-	this.registerSetting("CSFE_EXPORT_URI",			{type: ZmSetting.T_CONFIG});
-	this.registerSetting("CSFE_MSG_FETCHER_URI",	{type: ZmSetting.T_CONFIG});
-	this.registerSetting("CSFE_SERVER_URI",			{type: ZmSetting.T_CONFIG});
-	this.registerSetting("CSFE_UPLOAD_URI",			{type: ZmSetting.T_CONFIG});
-	this.registerSetting("FORCE_CAL_OFF",			{type: ZmSetting.T_CONFIG, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("HELP_URI",				{type: ZmSetting.T_CONFIG, defaultValue: appContextPath + "/help/Zimbra_User_Help.htm"});
-	this.registerSetting("LOG_REQUEST",				{type: ZmSetting.T_CONFIG, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("LOGO_URI",				{type: ZmSetting.T_CONFIG, defaultValue: "http://www.zimbra.com"});
-	this.registerSetting("TIMEOUT",					{type: ZmSetting.T_CONFIG, dataType: ZmSetting.D_INT, defaultValue: 30});
-	this.registerSetting("USE_XML",					{type: ZmSetting.T_CONFIG, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	
-	// IDs FOR HTML COMPONENTS IN THE SKIN
-	this.registerSetting("SKIN_APP_BOTTOM_TOOLBAR_ID",		{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_app_bottom_toolbar"});
-	this.registerSetting("SKIN_APP_CHOOSER_ID",				{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_app_chooser"});
-	this.registerSetting("SKIN_APP_MAIN_FULL_ID",			{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_app_main_full"});
-	this.registerSetting("SKIN_APP_MAIN_ID",				{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_app_main"});
-	this.registerSetting("SKIN_APP_MAIN_ROW_FULL_ID",		{type: ZmSetting.T_CONFIG, defaultValue: "skin_tr_main_full"});
-	this.registerSetting("SKIN_APP_MAIN_ROW_ID",			{type: ZmSetting.T_CONFIG, defaultValue: "skin_tr_main"});
-	this.registerSetting("SKIN_APP_TOP_TOOLBAR_ID",			{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_app_top_toolbar"});
-	this.registerSetting("SKIN_CURRENT_APP_ID",				{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_current_app"});
-	this.registerSetting("SKIN_LOGO_ID",					{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_logo"});
-	this.registerSetting("SKIN_QUOTA_INFO_ID",				{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_quota"});
-	this.registerSetting("SKIN_SASH_ID",					{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_tree_app_sash"});
-	this.registerSetting("SKIN_SEARCH_BUILDER_ID",			{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_search_builder"});
-	this.registerSetting("SKIN_SEARCH_BUILDER_TOOLBAR_ID",	{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_search_builder_toolbar"});
-	this.registerSetting("SKIN_SEARCH_BUILDER_TR_ID",		{type: ZmSetting.T_CONFIG, defaultValue: "skin_tr_search_builder"});
-	this.registerSetting("SKIN_SEARCH_ID",					{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_search"});
-	this.registerSetting("SKIN_SHELL_ID",					{type: ZmSetting.T_CONFIG, defaultValue: "skin_outer"});
-	this.registerSetting("SKIN_STATUS_ID",					{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_status"});
-	this.registerSetting("SKIN_STATUS_ROW_ID",				{type: ZmSetting.T_CONFIG, defaultValue: "skin_tr_status"});
-	this.registerSetting("SKIN_TREE_FOOTER_ID",				{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_tree_footer"});
-	this.registerSetting("SKIN_TREE_ID",					{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_tree"});
-	this.registerSetting("SKIN_USER_INFO_ID",				{type: ZmSetting.T_CONFIG, defaultValue: "skin_container_username"});
-	
-	// COS SETTINGS
-	this.registerSetting("AVAILABLE_SKINS",					{type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
-	this.registerSetting("BROWSE_ENABLED",					{name: "zimbraFeatureAdvancedSearchEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("CALENDAR_ENABLED",				{name: "zimbraFeatureCalendarEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("CHANGE_PASSWORD_ENABLED",			{name: "zimbraFeatureChangePasswordEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("CONTACTS_ENABLED",				{name: "zimbraFeatureContactsEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("DISPLAY_NAME",					{name: "displayName", type: ZmSetting.T_COS});
-	this.registerSetting("GAL_AUTOCOMPLETE_ENABLED",		{name: "zimbraFeatureGalAutoCompleteEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN,	defaultValue: false});
-	this.registerSetting("GAL_ENABLED",						{name: "zimbraFeatureGalEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN,	defaultValue: true});
-	this.registerSetting("HTML_COMPOSE_ENABLED",			{name: "zimbraFeatureHtmlComposeEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("IDLE_SESSION_TIMEOUT",			{name: "zimbraMailIdleSessionTimeout", type: ZmSetting.T_COS, dataType: ZmSetting.D_LDAP_TIME, defaultValue: 0});
-	this.registerSetting("IM_ENABLED",						{name: "zimbraFeatureIMEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("MAIL_ENABLED",					{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("MIN_POLLING_INTERVAL",			{name: "zimbraMailMinPollingInterval", type: ZmSetting.T_COS, dataType: ZmSetting.D_LDAP_TIME, defaultValue: 120});
-	this.registerSetting("NOTEBOOK_ENABLED",				{name: "zimbraFeatureNotebookEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("OPTIONS_ENABLED",					{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("POP_ACCOUNTS_ENABLED",			{name: "zimbraFeaturePop3DataSourceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("PORTAL_ENABLED",					{name: "zimbraFeaturePortalEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("PORTAL_NAME",						{name: "zimbraPortalName", type: ZmSetting.T_COS, defaultValue: "example"});
-	this.registerSetting("PWD_MAX_LENGTH",					{name: "zimbraPasswordMaxLength", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 64});
-	this.registerSetting("PWD_MIN_LENGTH",					{name: "zimbraPasswordMinLength", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 6});
-	this.registerSetting("QUOTA",							{name: "zimbraMailQuota", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 0});
-	this.registerSetting("SAVED_SEARCHES_ENABLED",			{name: "zimbraFeatureSavedSearchesEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("SHARING_ENABLED",					{name: "zimbraFeatureSharingEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("SKIN_CHANGE_ENABLED",				{name: "zimbraFeatureSkinChangeEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("TAGGING_ENABLED",					{name: "zimbraFeatureTaggingEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("TASKS_ENABLED",					{name: "zimbraFeatureTasksEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("VIEW_ATTACHMENT_AS_HTML",			{name: "zimbraFeatureViewInHtmlEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("VOICEMAIL_ENABLED",				{name: "zimbraFeatureVoicemailEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	
-	// user metadata (included with COS since the user can't change them)
-	this.registerSetting("LICENSE_STATUS",	{type: ZmSetting.T_COS, defaultValue: ZmSetting.LICENSE_GOOD});
-	this.registerSetting("QUOTA_USED",		{type: ZmSetting.T_COS, dataType: ZmSetting.D_INT});
-	this.registerSetting("TOKEN_LIFETIME",	{type: ZmSetting.T_COS, dataType: ZmSetting.D_INT});
-	this.registerSetting("USERID",			{name: "zimbraId", type: ZmSetting.T_COS});
-	this.registerSetting("USERNAME",		{type: ZmSetting.T_COS});
-	
-	// CLIENT SIDE FEATURE SUPPORT
-	this.registerSetting("ATT_VIEW_ENABLED",		{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("EVAL_ENABLED",			{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("FEED_ENABLED",			{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("FORWARD_MENU_ENABLED",	{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("HELP_ENABLED",			{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("MIXED_VIEW_ENABLED",		{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("NOTES_ENABLED",			{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("PRINT_ENABLED",			{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("REPLY_MENU_ENABLED",		{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("SAVE_DRAFT_ENABLED",		{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("SEARCH_ENABLED",			{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("SKI_HACK_ENABLED",		{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("SPAM_ENABLED",			{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("USER_FOLDERS_ENABLED",	{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	
-	// USER PREFERENCES (mutable)
-	
-	// general preferences
-	this.registerSetting("COMPOSE_AS_FORMAT",			{name: "zimbraPrefComposeFormat", type: ZmSetting.T_PREF, defaultValue: ZmSetting.COMPOSE_TEXT});
-	this.registerSetting("COMPOSE_INIT_FONT_COLOR",		{name: "zimbraPrefHtmlEditorDefaultFontColor", type: ZmSetting.T_PREF, defaultValue: ZmSetting.COMPOSE_FONT_COLOR});
-	this.registerSetting("COMPOSE_INIT_FONT_FAMILY",	{name: "zimbraPrefHtmlEditorDefaultFontFamily", type: ZmSetting.T_PREF, defaultValue: ZmSetting.COMPOSE_FONT_FAM});
-	this.registerSetting("COMPOSE_INIT_FONT_SIZE",		{name: "zimbraPrefHtmlEditorDefaultFontSize", type: ZmSetting.T_PREF, defaultValue: ZmSetting.COMPOSE_FONT_SIZE});
-	this.registerSetting("COMPOSE_SAME_FORMAT",			{name: "zimbraPrefForwardReplyInOriginalFormat", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("PASSWORD",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
-	this.registerSetting("POLLING_INTERVAL",			{name: "zimbraPrefMailPollingInterval", type: ZmSetting.T_PREF, dataType: ZmSetting.D_LDAP_TIME, defaultValue: 300});
-	this.registerSetting("SEARCH_INCLUDES_SPAM",		{name: "zimbraPrefIncludeSpamInSearch", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("SEARCH_INCLUDES_TRASH",		{name: "zimbraPrefIncludeTrashInSearch", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("SHORTCUTS",					{name: "zimbraPrefShortcuts", type: ZmSetting.T_PREF});
-	this.registerSetting("SHOW_SEARCH_STRING",			{name: "zimbraPrefShowSearchString", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("SKIN_NAME",					{name: "zimbraPrefSkin", type: ZmSetting.T_PREF, defaultValue: "skin"});
-	this.registerSetting("SORTING_PREF",				{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
-	this.registerSetting("USE_KEYBOARD_SHORTCUTS",		{name: "zimbraPrefUseKeyboardShortcuts", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("VIEW_AS_HTML",				{name: "zimbraPrefMessageViewHtmlPreferred", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-};
-
-ZmSettings.prototype._initializeLoginSettings =
-function() {
-	this.registerSetting("CALENDAR_ENABLED",	{name: "zimbraFeatureCalendarEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("CONTACTS_ENABLED",	{name: "zimbraFeatureContactsEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("IM_ENABLED",			{name: "zimbraFeatureIMEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("MAIL_ENABLED",		{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("MIXED_VIEW_ENABLED",	{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("NOTEBOOK_ENABLED",	{name: "zimbraFeatureNotebookEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("OPTIONS_ENABLED",		{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
-	this.registerSetting("PORTAL_ENABLED",		{name: "zimbraFeaturePortalEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("SKIN_NAME",			{name: "zimbraPrefSkin", type: ZmSetting.T_PREF, defaultValue: "skin"});
-	this.registerSetting("TASKS_ENABLED",		{name: "zimbraFeatureTasksEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("VOICEMAIL_ENABLED",	{name: "zimbraFeatureVoicemailEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 };

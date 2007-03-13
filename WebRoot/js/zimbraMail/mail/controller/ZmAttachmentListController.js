@@ -82,7 +82,8 @@ function() {
 // minimal toolbar
 ZmAttachmentListController.prototype._getToolBarOps =
 function() {
-	return [ZmOperation.NEW_MENU];
+	var list = [ZmOperation.NEW_MENU];
+	return list;
 }
 
 // no action menu
@@ -113,7 +114,7 @@ ZmAttachmentListController.prototype._setupViewMenu =
 function(view) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = new ZmPopupMenu(appToolbar.getViewButton());
-	var mi = menu.createMenuItem(ZmController.ATT_LIST_VIEW, {image:"ListView", text:ZmMsg.list});
+	var mi = menu.createMenuItem(ZmController.ATT_LIST_VIEW, "ListView", ZmMsg.list);
 	mi.setData(ZmOperation.MENUITEM_ID, ZmController.ATT_LIST_VIEW);
     mi = menu.createMenuItem(ZmController.ATT_ICON_VIEW, "IconView", ZmMsg.icon);
 	mi.setData(ZmOperation.MENUITEM_ID, ZmController.ATT_ICON_VIEW);
@@ -159,7 +160,7 @@ function(ev) {
 
 	var msg = ev.item.getMessage();
 	if (msg && ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) {
-		var fromAddr = msg._addrs[AjxEmailAddress.FROM].get(0);
+		var fromAddr = msg._addrs[ZmEmailAddress.FROM].get(0);
 		var sctrl = this._appCtxt.getSearchController();
 		sctrl.fromSearch(fromAddr.getAddress());
 	} else if (msg && ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) {
@@ -167,11 +168,11 @@ function(ev) {
 		conv.id = msg.getConvId();
 		conv.msgs.add(msg);
 		conv.msgHitList[msg.id] = msg;
-		AjxDispatcher.run("GetConvController").show(conv);
+		this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getConvController().show(conv);
 	}	
 }
 
-// SKI DEMO ACK for the most part. If we really do this, it should look recursively for parts instead of just
+// SKI DEMO HACK for the most part. If we really do this, it should look recursively for parts instead of just
 // one level. This code doesn't respect privacy.
 ZmAttachmentListController.prototype._getResultsAsMimeParts = 
 function(search) {

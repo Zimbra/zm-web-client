@@ -30,7 +30,9 @@ function ZmLinkPropsDialog(appCtxt, shell, className) {
 
 	this._appCtxt = appCtxt;
 
-	this._cache = AjxDispatcher.run("GetNotebookCache");
+	var appController = appCtxt.getAppController();
+	var app = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	this._cache = app.getNotebookCache();
 
 	// set view
 	this.setView(this._createView());
@@ -42,13 +44,14 @@ ZmLinkPropsDialog.prototype.constructor = ZmLinkPropsDialog;
 // Public methods
 
 ZmLinkPropsDialog.prototype.popup =
-function(linkInfo, callback) {
+function(linkInfo, callback, loc) {
 	this._linkInfo = linkInfo || {};
 	this._callback = callback;
 
 	var isUrlLink = this._linkInfo.url;
 	if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
-		var root = this._appCtxt.getById(ZmOrganizer.ID_ROOT);
+		var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+		var root = tree.getById(ZmOrganizer.ID_ROOT);
 		var children = root.children.getArray();
 
 		this._notebookSelect.clearOptions();
@@ -65,7 +68,7 @@ function(linkInfo, callback) {
 
 	ZmLinkPropsDialog._setRequiredFields(this, !isUrlLink);
 
-	DwtDialog.prototype.popup.call(this);
+	DwtDialog.prototype.popup.call(this, loc);
 	ZmLinkPropsDialog._enableFieldsOnEdit(this);
 };
 
@@ -216,7 +219,8 @@ function(event) {
 		var link;
 		if (this._pageRadioEl && this._pageRadioEl.checked) {
 			var notebookId = this._notebookSelect.getValue();
-			var notebook = this._appCtxt.getById(notebookId);
+			var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+			var notebook = tree.getById(notebookId);
 			var value = AjxStringUtil.trim(this._pageInput.getValue());
 			link = [
 				"[[",

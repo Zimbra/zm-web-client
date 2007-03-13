@@ -72,28 +72,18 @@
      </tag-file>
 
     <tag-file>
-         <name>editFolder</name>
-         <path>/WEB-INF/tags/overview/editFolder.tag</path>
-     </tag-file>
-
-    <tag-file>
-         <name>newFolder</name>
-         <path>/WEB-INF/tags/overview/newFolder.tag</path>
-     </tag-file>
-
-    <tag-file>
          <name>folderAction</name>
          <path>/WEB-INF/tags/overview/folderAction.tag</path>
      </tag-file>
 
     <tag-file>
-         <name>addressBookAction</name>
-         <path>/WEB-INF/tags/overview/addressBookAction.tag</path>
+         <name>searchAction</name>
+         <path>/WEB-INF/tags/overview/searchAction.tag</path>
      </tag-file>
 
     <tag-file>
-         <name>calendarAction</name>
-         <path>/WEB-INF/tags/overview/calendarAction.tag</path>
+         <name>addressBookAction</name>
+         <path>/WEB-INF/tags/overview/addressBookAction.tag</path>
      </tag-file>
 
     <tag-file>
@@ -236,16 +226,6 @@
     </tag-file>
 
     <tag-file>
-        <name>editTag</name>
-        <path>/WEB-INF/tags/overview/editTag.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>newTag</name>
-        <path>/WEB-INF/tags/overview/newTag.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>folderTree</name>
         <path>/WEB-INF/tags/overview/folderTree.tag</path>
     </tag-file>
@@ -254,6 +234,7 @@
         <name>doFolderTree</name>
         <path>/WEB-INF/tags/overview/doFolderTree.tag</path>
     </tag-file>
+
 
     <tag-file>
         <name>searchFolderTree</name>
@@ -266,18 +247,8 @@
     </tag-file>
 
     <tag-file>
-        <name>contactFolder</name>
-        <path>/WEB-INF/tags/contact/contactFolder.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>overviewTree</name>
         <path>/WEB-INF/tags/overview/overviewTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>doContactFolderTree</name>
-        <path>/WEB-INF/tags/contact/doContactFolderTree.tag</path>
     </tag-file>
 
     <tag-file>
@@ -351,11 +322,6 @@
     </tag-file>
 
     <tag-file>
-        <name>foldersTabs</name>
-        <path>/WEB-INF/tags/overview/foldersTabs.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>optTabs</name>
         <path>/WEB-INF/tags/options/optTabs.tag</path>
     </tag-file>
@@ -402,11 +368,6 @@
     </tag-file>
 
     <tag-file>
-        <name>optCalendar</name>
-        <path>/WEB-INF/tags/options/optCalendar.tag</path>
-    </tag-file>
-
-    <tag-file>
         <name>optShortcuts</name>
         <path>/WEB-INF/tags/options/optShortcuts.tag</path>
     </tag-file>
@@ -449,76 +410,6 @@
     <tag-file>
         <name>optShortcutSection</name>
         <path>/WEB-INF/tags/options/optShortcutSection.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>editapptCheck</name>
-        <path>/WEB-INF/tags/calendar/editapptCheck.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>displayAppointment</name>
-        <path>/WEB-INF/tags/calendar/displayAppointment.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>apptView</name>
-        <path>/WEB-INF/tags/calendar/apptView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>apptViewToolbar</name>
-        <path>/WEB-INF/tags/calendar/apptViewToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>calendarFolderTree</name>
-        <path>/WEB-INF/tags/calendar/calendarFolderTree.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>calendarFolder</name>
-        <path>/WEB-INF/tags/calendar/calendarFolder.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>calendarUrl</name>
-        <path>/WEB-INF/tags/calendar/calendarUrl.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>calendarViewToolbar</name>
-        <path>/WEB-INF/tags/calendar/calendarViewToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>calendarViewBottomToolbar</name>
-        <path>/WEB-INF/tags/calendar/calendarViewBottomToolbar.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>multiDayView</name>
-        <path>/WEB-INF/tags/calendar/multiDayView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>monthView</name>
-        <path>/WEB-INF/tags/calendar/monthView.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>monthAppt</name>
-        <path>/WEB-INF/tags/calendar/monthAppt.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>dayAppt</name>
-        <path>/WEB-INF/tags/calendar/dayAppt.tag</path>
-    </tag-file>
-
-    <tag-file>
-        <name>miniCal</name>
-        <path>/WEB-INF/tags/calendar/miniCal.tag</path>
     </tag-file>
 
 </taglib>

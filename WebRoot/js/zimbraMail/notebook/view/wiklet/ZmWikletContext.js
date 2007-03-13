@@ -66,7 +66,8 @@ ZmWikletContext.prototype.getPageByName = function(notebookId, name, recurseUp) 
 };
 
 ZmWikletContext.prototype.getNotebookById = function(id) {
-	return this._appCtxt.getById(id);
+	var treeController = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	return treeController.getById(id);
 };
 ZmWikletContext.prototype.getSections = function(notebookId) {
 	var notebook = this.getNotebookById(notebookId);
@@ -80,7 +81,8 @@ ZmWikletContext.prototype.getCache = function() {
 };
 
 ZmWikletContext.prototype.getTagById = function(tagId) {
-	return this._appCtxt.getById(tagId);
+	var tree = this._appCtxt.getTree(ZmOrganizer.TAG);
+	return tree.getById(tagId);
 };
 
 ZmWikletContext.prototype.process = function(content) {

@@ -46,8 +46,6 @@ function ZmDoublePaneController(appCtxt, container, mailApp) {
 	
 	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
 	this._listeners[ZmOperation.ADD_FILTER_RULE] = new AjxListener(this, this._filterListener);
-	
-	this._viewMenuCallback = new AjxCallback(this, this._checkViewMenu);
 };
 
 ZmDoublePaneController.prototype = new ZmMailListController;
@@ -77,7 +75,6 @@ function(search, item) {
 
 	// see if we have it cached? Check if conv loaded?
 	this._loadItem(item, this._currentView);
-	this._checkViewMenu();
 };
 
 /**
@@ -107,7 +104,6 @@ function(view, toggle) {
 	}
 
 	this._readingPaneOn = mi.getChecked();
-	this._checkViewMenu();
 	this._doublePaneView.toggleView();
 
 	// set msg in msg view if reading pane is being shown
@@ -158,9 +154,6 @@ function(view) {
 	}
 
 	ZmMailListController.prototype._initialize.call(this, view);
-	if (!this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
-		this._appCtxt.getCurrentAppToolbar().setCallback(ZmController.TRAD_VIEW, this._viewMenuCallback);
-	}
 };
 
 ZmDoublePaneController.prototype._getToolBarOps =
@@ -183,7 +176,9 @@ function() {
 	list = list.concat(this._standardActionMenuOps());
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.SHOW_ORIG);
-	list.push(ZmOperation.ADD_FILTER_RULE);
+	if (this._appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
+		list.push(ZmOperation.ADD_FILTER_RULE);
+	}
 	return list;
 };
 
@@ -239,16 +234,15 @@ function() {
 
 // Adds a "Reading Pane" checked menu item to a view menu
 ZmDoublePaneController.prototype._setupReadingPaneMenuItem =
-function(view, menu, checked, itemId) {
+function(view, menu, checked) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	var id = itemId || ZmController.READING_PANE_VIEW;
 	var menu = menu ? menu : appToolbar.getViewMenu(view);
-	if (!menu) {
-		// conversations not enabled
+	if (!menu) { // should have a menu by now, from _setupGroupByMenuItems()
 		menu = new ZmPopupMenu(appToolbar.getViewButton());
 	}
-	if (!menu._menuItems[id]) {
-		var mi = menu.createMenuItem(id, {image:"SplitPane", text:ZmMsg.readingPane, style:DwtMenuItem.CHECK_STYLE});
+	var id = ZmController.READING_PANE_VIEW;
+	if (menu._menuItems[id] == null) {
+		var mi = menu.createMenuItem(id, "SplitPane", ZmMsg.readingPane, null, true, DwtMenuItem.CHECK_STYLE);
 		mi.setData(ZmOperation.MENUITEM_ID, id);
 		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 		mi.setChecked(checked, true);
@@ -281,27 +275,6 @@ function(ev, action, extraBodyText) {
 	}
 	// finally, call the base class last
 	ZmMailListController.prototype._doAction.call(this, ev, action, extraBodyText);
-};
-
-/**
- * Sets the content of the view button if conversations are disabled (in which case
- * "Reading Pane" is the sole menu item).
- * 
- * @param mi	[DwtMenuItem]*	the Reading Pane menu item
- */
-ZmDoublePaneController.prototype._checkViewMenu =
-function() {
-	if (this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) { return; }
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	var menu = appToolbar.getViewButton().getMenu();
-	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, ZmController.READING_PANE_VIEW);
-	var icon = mi.getImage();
-	if (icon) {
-		appToolbar._viewButton.setImage(icon);
-	}
-	if (appToolbar._viewLabel) {
-		appToolbar._viewButton.setText(this._readingPaneOn ? ZmMsg.readingPaneOn : ZmMsg.readingPaneOff);
-	}
 };
 
 /*
@@ -386,7 +359,7 @@ function(ev) {
 				this._doAction(ev, ZmOperation.DRAFT);
 			} else if (!this._readingPaneOn) {
 				try {
-					AjxDispatcher.run("GetMsgController").show(msg, currView._mode);
+					this._app.getMsgController().show(msg, currView._mode);
 
 					// if msg is cached, then mark read if unread
 					if (msg.isLoaded() && msg.isUnread)
@@ -447,13 +420,12 @@ function(ev) {
 	var msg = this._listView[this._currentView].getSelection()[0];
 	if (!msg) return;
 	
-	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
 	var rule = new ZmFilterRule();
-	var from = msg.getAddress(AjxEmailAddress.FROM);
+	var from = msg.getAddress(ZmEmailAddress.FROM);
 	if (from) rule.addCondition(new ZmCondition(ZmFilterRule.C_FROM, ZmFilterRule.OP_CONTAINS, from.address));
-	var to = msg.getAddress(AjxEmailAddress.TO);
+	var to = msg.getAddress(ZmEmailAddress.TO);
 	if (to)	rule.addCondition(new ZmCondition(ZmFilterRule.C_TO, ZmFilterRule.OP_CONTAINS, to.address));
-	var cc = msg.getAddress(AjxEmailAddress.CC);
+	var cc = msg.getAddress(ZmEmailAddress.CC);
 	if (cc)	rule.addCondition(new ZmCondition(ZmFilterRule.C_CC, ZmFilterRule.OP_CONTAINS, cc.address));
 	var subj = msg.getSubject();
 	if (subj) rule.addCondition(new ZmCondition(ZmFilterRule.C_SUBJECT, ZmFilterRule.OP_IS, subj));

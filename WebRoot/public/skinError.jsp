@@ -26,14 +26,28 @@
  *
  * ***** END LICENSE BLOCK *****
  */
- -->
-<jsp:include page="Messages.jsp"/>
-<jsp:include page="Boot.jsp"/>
-<script type="text/javascript">
-// NOTE: Force load of single source file regardless of prod mode
-AjxPackage.setExtension(".js");
-AjxPackage.require("ajax.util.AjxText");
-</script>
+ --><%
+
+
+	String contextPath = request.getContextPath();
+	if(contextPath.equals("/")) {
+		contextPath = "";
+	}
+	String vers = (String) request.getAttribute("version");
+	if (vers == null) vers = "";
+	String ext = (String) request.getAttribute("fileExtension");
+	if (ext == null) ext = "";
+	String mode = (String) request.getAttribute("mode");
+	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
+ if (inDevMode) {
+	%>
+	<jsp:include page="Messages.jsp"/>
+    <jsp:include page="Boot.jsp"/>
+	<jsp:include page="Ajax.jsp"/>
+ <% } else { %>
+	<script type="text/javascript" src="<%=contextPath%>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext%>?v=<%=vers%>"></script>
+	<script type="text/javascript" src="<%=contextPath%>/js/Ajax_all.js<%=ext%>?v=<%=vers%>"></script>
+	<% } %>
 	<SCRIPT type="text/javascript">
 		function onLoad() {
 			var skin;

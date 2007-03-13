@@ -32,12 +32,11 @@ function ZmListView(parent, className, posStyle, view, type, controller, headerL
 	this.type = type;
 	this._controller = controller;
 	this.setDropTarget(dropTgt);
-	this._viewPrefix = ["V", "_", this.view, "_"].join("");
 
 	// create listeners for changes to the list model, and to tags
 	this._listChangeListener = new AjxListener(this, this._changeListener);
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	var tagList = this._appCtxt.getTagTree();
+	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 	if (tagList)
 		tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 }
@@ -50,7 +49,7 @@ function() {
 	return "ZmListView";
 }
 
-ZmListView.FIELD_PREFIX = {};
+ZmListView.FIELD_PREFIX = new Object();
 ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_ROW]		= "a";
 ZmListView.FIELD_PREFIX[ZmItem.F_ICON]			= "b";
 ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]			= "c";
@@ -66,18 +65,12 @@ ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]		= "l";
 ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER]		= "m";
 ZmListView.FIELD_PREFIX[ZmItem.F_COMPANY]		= "n";
 ZmListView.FIELD_PREFIX[ZmItem.F_EMAIL]			= "o";
-ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]		= "p";
-ZmListView.FIELD_PREFIX[ZmItem.F_TAG_CELL]		= "q";
-ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]			= "r";
-ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY]		= "s";
-ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]		= "t";
-ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE]		= "u";
-ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED]		= "v";
-
-// column widths
-ZmListView.COL_WIDTH_ICON 					= 19;
-ZmListView.COL_WIDTH_DATE 					= 75;
-
+ZmListView.FIELD_PREFIX[ZmItem.F_PHONE_BUS]		= "p";
+ZmListView.FIELD_PREFIX[ZmItem.F_PHONE_MOBILE]	= "q";
+ZmListView.FIELD_PREFIX[ZmItem.F_FREE_BUSY]		= "r";
+ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]		= "s";
+ZmListView.FIELD_PREFIX[ZmItem.F_TAG_CELL]		= "t";
+ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]			= "u";
 
 ZmListView.PREFIX_MAP = {};
 for (var field in ZmListView.FIELD_PREFIX) {
@@ -116,7 +109,7 @@ function() {
 
 ZmListView.prototype._changeListener =
 function(ev) {
-	if ((ev.type != this.type) && (ZmItem.MIXED != this.type))
+	if ((ev.type != this.type) && (ZmList.MIXED != this.type))
 		return;
 	var items = ev.getDetail("items");
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
@@ -316,28 +309,22 @@ function(item) {
 	tagCell.innerHTML = this._getTagImgHtml(item, this._getFieldId(item, ZmItem.F_TAG));
 }
 
-/**
- * Parse the DOM ID to figure out what got clicked. Most IDs will look something like 
- * "V_CONVLIST_a551".
- * Item IDs will look like "V_CONVLIST_551". Participant IDs will look like
- * "V_CONVLIST_a551_0".
- *
- *     V_CONVLIST	- conv list view (number is from view constant in ZmController)
- *     _   			- separator
- *     a   			- flag field (see constants above)
- *     551 			- item ID
- *     _   			- separator
- *     0   			- first participant
- * 
- */
+// Parse the DOM ID to figure out what got clicked. Most IDs will look something like "V1_a551".
+// Item IDs will look like "V1_551". Participant IDs will look like "V1_a551_0".
+//
+//     V1  - conv list view (number is from view constant in ZmController)
+//     _   - separator
+//     a   - flag field (see constants above)
+//     551 - item ID
+//     _   - separator
+//     0   - first participant
 ZmListView.prototype._parseId =
 function(id) {
-	var m = id.match(/^V_(\w+)_([a-z]?)((DWT)?-?\d+)_?(\d*)$/);
-	if (m) {
+	var m = id.match(/^V(\d+)_([a-z]?)((DWT)?-?\d+)_?(\d*)$/);
+	if (m)
 		return {view: m[1], field: m[2], item: m[3], participant: m[5]};
-	} else {
+	else
 		return null;
-	}
 }
 
 ZmListView.prototype._mouseOverAction =
@@ -384,16 +371,16 @@ function(ev, div) {
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) {
 				this._setStatusToolTip(item);
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) {
-				if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && item instanceof ZmContact) {	
+				if (item instanceof ZmContact) {	
 					var toolTip = item.getToolTip(item.getAttr(ZmContact.F_email));
 					this.setToolTipContent(toolTip);
 				} else if (item.participants) {
 				    this._setParticipantToolTip(item.participants.get(m.participant));
 				}
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) {
-				this._setParticipantToolTip(item.getAddress(AjxEmailAddress.FROM));
+				this._setParticipantToolTip(item.getAddress(ZmEmailAddress.FROM));
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) {
-				if (this._appCtxt.get(ZmSetting.MAIL_ENABLED) && item instanceof ZmMailMsg && item.isInvite() && item.needsRsvp()) {
+				if (item instanceof ZmMailMsg && item.isInvite() && item.needsRsvp()) {
 					this.setToolTipContent(item.getInvite().getToolTip());
 				} else {
 				    var frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
@@ -402,10 +389,9 @@ function(ev, div) {
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) {
 				this._setDateToolTip(item, div);
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER]) {
-				var folder = this._appCtxt.getById(item.folderId);
-				if (folder && folder.parent) {
+				var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(item.folderId);
+				if (folder && folder.parent)
 					this.setToolTipContent(folder.getPath());
-				}
 			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]) {
 				this.setToolTipContent(ZmMsg[ZmItem.MSG_KEY[item.type]]);
 			} else {
@@ -465,7 +451,7 @@ function (ev, listEv, clickedEl) {
 
 	var m = this._parseId(id);
 	if (ev.button == DwtMouseEvent.LEFT) {
-		this._selEv.field = m ? m.field : null;
+			this._selEv.field = m ? m.field : null;
 	} else if (ev.button == DwtMouseEvent.RIGHT) {
 		this._actionEv.field = m ? m.field : null;
 		if (m && m.field) {
@@ -504,8 +490,8 @@ function(address) {
 		var toolTip;
 		var addr = address.getAddress();
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && addr) {
-			var contactApp = ZmAppCtxt.getFromShell(this.shell).getApp(ZmApp.CONTACTS);
-			var contacts = AjxDispatcher.run("GetContacts");
+			var contactApp = ZmAppCtxt.getFromShell(this.shell).getApp(ZmZimbraMail.CONTACTS_APP);
+			var contacts = contactApp.getContactList();
 			var contact = contacts ? contacts.getContactByEmail(addr) : null;
 			if (contact)
 				toolTip = contact.getToolTip(addr);
@@ -531,7 +517,7 @@ function(div) {
 	var item = this.getItemFromElement(div);
 	var numTags = item.tags.length;
 	if (!numTags) return;
-	var tagList = this._appCtxt.getTagTree();
+	var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 	var tags = item.tags;
 	var html = new Array();
 	var idx = 0;
@@ -571,7 +557,7 @@ function(item, div) {
 	if (!div._dateStr) {
 		var date;
 		var prefix = "";
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && item instanceof ZmContact) {
+		if (item instanceof ZmContact) {
 			date = item.modified;
 			prefix = "<b>" + ZmMsg.lastModified + ":</b><br>";
 		} else {
@@ -625,14 +611,14 @@ function(columnItem, bSortAsc) {
 	}
 }
 
-ZmListView.prototype._getFieldId =
-function(item, field) {
-	return this._getFieldIdFromPrefix(item, ZmListView.FIELD_PREFIX[field]);
+ZmListView.prototype._getViewPrefix = 
+function() { 
+	return ["V", this.view, "_"].join("");
 }
 
-ZmListView.prototype._getFieldIdFromPrefix =
-function(item, prefix) {
-	return [this._getViewPrefix(), prefix, item.id].join("");
+ZmListView.prototype._getFieldId =
+function(item, field) {
+	return [this._getViewPrefix(), ZmListView.FIELD_PREFIX[field], item.id].join("");
 }
 
 ZmListView.prototype._getDnDIcon =
