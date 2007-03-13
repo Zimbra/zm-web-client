@@ -45,7 +45,7 @@
             </tr>
             <tr>
                 <td class='TbBottom'>
-                    &nbsl;
+                    &nbsp;
                 </td>
             </tr>
         </table>

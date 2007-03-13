@@ -53,6 +53,40 @@
                                 </tr>
                             </c:if>
 
+                            <tr>
+                                <td class='MsgHdrName'>
+                                    <fmt:message key="date"/>
+                                    :
+                                </td>
+                                <td class='MsgHdrValue'>
+
+                                    <c:set var="startDate" value="${appt.start.date}"/>
+                                    <c:set var="endDate" value="${appt.computedEndDate}"/>
+                                    <c:set var="startDateCal" value="${zm:getCalendar(startDate.time, mailbox.prefs.timeZone)}"/>
+                                    <c:set var="endDateCal" value="${zm:getCalendar(endDate.time, mailbox.prefs.timeZone)}"/>
+
+                                    <c:choose>
+                                        <c:when test="${zm:isSameDate(startDateCal,endDateCal)}">
+                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" dateStyle="medium" type="date" value="${startDate}"/>
+                                            &nbsp;<fmt:message key="apptViewFrom"/>&nbsp;
+                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" timeStyle="short" type="time" value="${startDate}"/>
+                                            &nbsp;-&nbsp;
+                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" timeStyle="short" type="time" value="${endDate}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <fmt:message key="apptViewFrom"/>&nbsp;
+                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" dateStyle="medium" type="date" value="${startDate}"/>
+                                            &nbsp;
+                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" timeStyle="short" type="time" value="${startDate}"/>
+                                            &nbsp;-&nbsp;
+                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" dateStyle="medium" type="date" value="${endDate}"/>
+                                            &nbsp;
+                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" timeStyle="short" type="time" value="${endDate}"/>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </td>
+                            </tr>
+
                             <c:if test="${not empty appt.organizer}">
                             <tr>
                                 <td class='MsgHdrName'>
@@ -85,8 +119,7 @@
                         <table width=100% cellpadding=2 cellspacing=0 border=0>
                             <tr>
                                 <td nowrap align='right' class='MsgHdrSent'>
-                                    <fmt:message var="dateFmt" key="formatDateSent"/>
-                                    <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/>
+                                    &nbsp;
                                 </td>
                             </tr>
                             <c:if test="${message.hasTags or message.isFlagged}">
@@ -131,6 +164,8 @@
                     <td nowrap align=left style='padding-left: 5px'>
                         <table cellspacing=4 cellpadding=0 class='Tb'>
                             <tr>
+                                &nbsp;
+                                <%--
                                 <td style='padding: 0 2px 0 2px'>
                                     <a <c:if test="${not isPart}">accesskey="1"</c:if> href="${composeUrl}&op=reply">
                                         <img src="<c:url value="/images/mail/Reply.gif"/>" alt=""/>
@@ -155,6 +190,7 @@
                                         <span><fmt:message key="forward"/></span>
                                     </a>
                                 </td>
+                                --%>
                             </tr>
                         </table>
                     </td>
