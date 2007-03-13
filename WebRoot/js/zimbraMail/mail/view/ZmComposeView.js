@@ -321,7 +321,8 @@ function(attId, isDraft) {
     	cd.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		cd.registerCallback(DwtDialog.OK_BUTTON, this._badAddrsOkCallback, this);
 		cd.registerCallback(DwtDialog.CANCEL_BUTTON, this._badAddrsCancelCallback, this, addrs.badType);
-	    cd.popup(this._getDialogXY());
+		cd.setVisible(true); // per fix for bug 3209
+		cd.popup(this._getDialogXY());
 		return;
 	} else {
 		this._badAddrsOkay = false;
