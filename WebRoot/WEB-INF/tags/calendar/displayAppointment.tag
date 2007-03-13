@@ -23,19 +23,48 @@
 
 <c:set var="appt" value="${invite.component}"/>
 
-<fmt:message var="unknownSender" key="unknownSender"/>
+<fmt:message var="noSubject" key="noSubject"/>
 
 <c:set var="isPart" value="${!empty message.partName}"/>
+<table cellpadding=0 cellspacing=0 width=100% class='Compose'>
+<tr class='${zm:getFolder(pageContext, message.folderId).styleColor}Bg'>
+    <td class='ZhBottomSep'>
+        <table width=100% cellspacing=0 cellpadding=0>
+            <tr class='apptHeaderRow'>
+                <td>
+                    <table border="0" cellpadding="2" cellspacing="2">
+                        <tr>
+                            <td width=20><center><app:img src="calendar/Appointment.gif"/></center></td>
+                            <td class='apptHeader'>
+                            ${fn:escapeXml(empty invite.component.name ? noSubject : invite.component.name)}
+                        </tr>
+                    </table>
+                </td>
+                </td>
+                <td align=right width=1%>
+                    <table border="0" cellpadding="2" cellspacing="2">
+                        <tr>
+                            <td class="companyName" width="100%">
+                                <c:set var="folderImage" value="${zm:getFolder(pageContext, message.folderId).image}"/>
+                                <app:img altkey='ALT_CONTACT_FOLDER' src="${folderImage}"/>
+                            </td>
+                            <td class="companyFolder">${fn:escapeXml(zm:getFolderName(pageContext, message.folderId))}</td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+<tr>
+<td>
 <table width=100% cellpadding=0 cellspacing=0 class=Msg>
     <tr>
         <td class='MsgHdr'>
             <table width=100% cellpadding=0 cellspacing=0 border=0>
-                <tr>
+               <tr>
                     <td>
                         <table width=100% cellpadding=2 cellspacing=0 border=0>
-                            <c:if test="${empty appt.name}">
-                                <fmt:message var="noSubject" key="noSubject"/>
-                            </c:if>
                             <tr>
                                 <td class='MsgHdrName'>
                                     <fmt:message key="subject"/>
@@ -250,4 +279,7 @@
                 </c:if>
         </td>
     </tr>
+</table>
+</td>
+</tr>
 </table>
