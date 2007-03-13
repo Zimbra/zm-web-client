@@ -9,6 +9,10 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
+<fmt:message var="noSubject" key="noSubject"/>
+<c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
+<app:calendarUrl appt="${appt}" var="apptUrl"/>
+
 <fmt:setTimeZone value="${timezone}"/>
 <c:set var="color" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/>
 <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
@@ -18,7 +22,7 @@
         <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
         <div <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if>
                 class='ZhCalMonthAllDayAppt${needsAction ? 'New ':' '} ${color}${needsAction ? 'Dark' : 'Light'}'>
-                ${fn:escapeXml(appt.name)}
+                <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
         </div>
     </c:when>
     <c:otherwise>
@@ -33,7 +37,7 @@
                 </c:otherwise>
             </c:choose>
             &nbsp;
-                ${fn:escapeXml(appt.name)}
+                <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
         </div>
     </c:otherwise>
 </c:choose>

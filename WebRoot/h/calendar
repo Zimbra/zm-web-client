@@ -67,6 +67,9 @@
 
 <app:handleError>
 <c:choose>
+    <c:when test="${param.action eq 'view'}">
+        <app:apptView/>
+    </c:when>
     <c:when test="${view eq 'day'}">
         <app:multiDayView timezone="${tz}" date="${dateContext}" view='${view}' numdays="${not empty param.numdays ? param.numdays : 1}"/>
     </c:when>

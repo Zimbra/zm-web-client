@@ -871,6 +871,11 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
         overflow:hidden;
 }
 
+.ZhCalDayGrid A:link, .ZhCalDayGrid A:visited, .ZhCalMonthTable A:link, .ZhCalMonthTable A:visited  {
+	color: black;
+	text-decoration: none;
+}
+
 .ZhBottomSep {
      @BottomSeparator@
 }

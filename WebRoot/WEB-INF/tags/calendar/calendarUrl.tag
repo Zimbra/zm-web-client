@@ -5,6 +5,7 @@
 <%@ attribute name="rawdate" rtexprvalue="true" required="false" type="java.util.Calendar"%>
 <%@ attribute name="timezone" rtexprvalue="true" required="false" type="java.util.TimeZone"%>
 <%@ attribute name="date" rtexprvalue="true" required="false" %>
+<%@ attribute name="appt" rtexprvalue="true" required="false" type="com.zimbra.cs.zclient.ZApptSummary" %>
 <%@ attribute name="nodate" rtexprvalue="true" required="false" %>
 <%@ variable name-from-attribute="var" alias='urlVar' scope="AT_BEGIN" variable-class="java.lang.String" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -29,7 +30,21 @@
             </c:if>
         </c:otherwise>
     </c:choose>
+    <c:if test="${not empty appt}">
+        <c:param name="invId" value="${appt.seriesInviteId}"/>
+        <c:param name="invCompNum" value="${appt.seriesComponentNumber}"/>
+        <c:if test="${appt.exception}">
+            <c:param name="instance" value="1"/>
+            <c:param name="exInvId" value="${appt.inviteId}"/>
+            <c:param name="exCompNum" value="${appt.inviteComponentNumber}"/>
+        </c:if>
+        <c:param name="action" value="${appt.organizer ? 'editappt' : 'view'}"/>
+        <c:param name="st" value="${appt.startTime}"/>
+        <c:param name="dur" value="${appt.duration}"/> 
+    </c:if>
     <c:forEach items="${dynattrs}" var="a">
-        <c:param name='${a.key}' value='${a.value}'/>
+        <c:if test="${not empty a.value}">
+            <c:param name='${a.key}' value='${a.value}'/>
+        </c:if>
     </c:forEach>
 </c:url>

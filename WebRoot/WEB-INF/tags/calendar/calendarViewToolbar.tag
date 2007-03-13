@@ -46,7 +46,7 @@
         <td height=100%><div class='vertSep'/></td>
         <app:calendarUrl var="todayUrl" nodate="true"/>
         <td height=100%>
-            <a accesskey="7" href="${todayUrl}"><app:img altkey="ALT_CAL_TODAY" src="calendar/Date.gif"/></a>
+            <a accesskey="7" href="${todayUrl}"><app:img altkey="ALT_CAL_TODAY" src="calendar/Date.gif"/><span><fmt:message key="today"/></span></a>
         </td>
     </c:set>
 </c:if>

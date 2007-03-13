@@ -12,13 +12,16 @@
 <fmt:setTimeZone value="${timezone}"/>
 <c:set var="color" value="${zm:getFolder(pageContext,appt.folderId).styleColor}"/>
 <c:set var="needsAction" value="${appt.partStatusNeedsAction}"/>
+<fmt:message var="noSubject" key="noSubject"/>
+<c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
+<app:calendarUrl appt="${appt}" var="apptUrl"/>
 <c:choose>
     <c:when test="${appt.allDay}">
         <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
         <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
         <div <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if> 
                 class='ZhCalDayAllDayAppt${needsAction ? 'New ' : ' '} ${color}${needsAction ? 'Dark' : 'Light'}'>
-                ${fn:escapeXml(appt.name)}
+                <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
             <%--
             start(<fmt:formatDate value="${zm:getCalendar(appt.startTime, null).time}" type="both"/>)
             end(<fmt:formatDate value="${zm:getCalendar(appt.endTime,null).time}" type="both"/>)
@@ -41,8 +44,8 @@
             </tr>
             <tr>
                 <td height=100% class='${color}${needsAction ? '' : 'Bg'}' valign=top>
-                    ${fn:escapeXml(appt.name)}
-                </td
+                    <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
+                </td>
             </tr>
             <c:if test="${appt.duration gt zm:MSECS_PER_HOUR()}">
             <tr>
@@ -65,7 +68,7 @@
             <tr>
                 <td class='${color}${needsAction ? 'Dark' : 'Light'}' valign=top>
                     <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
-                     &nbsp; ${fn:escapeXml(appt.name)}
+                     &nbsp; <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
                 </td>
             </tr>
         </table>
