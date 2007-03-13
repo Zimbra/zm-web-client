@@ -80,6 +80,31 @@ function(list, folderId) {
 	this._resetNavToolBarButtons(this._currentView);
 };
 
+ZmTaskListController.prototype.getKeyMapName =
+function() {
+	return "ZmTaskListController";
+};
+
+ZmTaskListController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println(AjxDebug.DBG3, "ZmTaskListController.handleKeyAction");
+
+	if (actionCode == ZmKeyMap.MARK_COMPLETE ||
+		actionCode == ZmKeyMap.MARK_UNCOMPLETE)
+	{
+		var task = this._listView[this._currentView].getSelection()[0];
+		if ((task.isComplete() && actionCode == ZmKeyMap.MARK_UNCOMPLETE) ||
+			(!task.isComplete() && actionCode == ZmKeyMap.MARK_COMPLETE))
+		{
+			this._doCheckCompleted(task);
+		}
+	}
+	else
+	{
+		return ZmListController.prototype.handleKeyAction.call(this, actionCode);
+	}
+};
+
 ZmTaskListController.prototype.quickSave =
 function(name, callback) {
 	var folderId = this._activeSearch.search.folderId;
@@ -201,27 +226,30 @@ function(ev) {
 
 	//	var tasks = this._listView[this._currentView].getSelection();
 	var task = this._listView[this._currentView].getSelection()[0];
+	this._doDelete(task);
+};
+
+ZmTaskListController.prototype._doDelete =
+function(task, mode) {
+	// if passed in array, just process first item for now
+	if (task instanceof Array)
+		task = task[0];
 
 	if (task.isRecurring() && !task.isException) {
 		// prompt user to edit instance vs. series if recurring but not exception
 		this._showTypeDialog(task, ZmCalItem.MODE_DELETE);
 	} else {
-		this._promptDelete(task, ZmCalItem.MODE_DELETE);
+		var callback = new AjxCallback(this, this._handleDelete, [task]);
+		this._appCtxt.getConfirmationDialog().popup(ZmMsg.confirmCancelTask, callback);
 	}
 };
 
-ZmTaskListController.prototype._promptDelete =
-function(task, mode) {
-	var callback = new AjxCallback(this, this._doDelete, [task, mode]);
-	this._appCtxt.getConfirmationDialog().popup(ZmMsg.confirmCancelTask, callback);
-};
-
-ZmTaskListController.prototype._doDelete =
-function(task, mode) {
+ZmTaskListController.prototype._handleDelete =
+function(task) {
 	try {
-		task.cancel(mode);
+		task.cancel(ZmCalItem.MODE_DELETE);
 	} catch (ex) {
-		this._handleException(ex, this._doDelete, [task, mode], false);
+		this._handleException(ex, this._doDelete, [task], false);
 	}
 };
 

@@ -429,6 +429,9 @@ function(ev) {
 
 	ZmListView.prototype._changeListener.call(this, ev);
 
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE)
+		this._setNextSelection();
+
 	if (ev.event == ZmEvent.E_CREATE ||
 		ev.event == ZmEvent.E_DELETE ||
 		ev.event == ZmEvent.E_MOVE)

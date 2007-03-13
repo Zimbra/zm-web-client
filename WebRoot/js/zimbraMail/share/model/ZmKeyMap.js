@@ -72,6 +72,8 @@ ZmKeyMap.MAP_NAME["editAppointment"]	= "ZmApptComposeController";
 ZmKeyMap.MAP_NAME["options"]			= "ZmPrefController";
 ZmKeyMap.MAP_NAME["mixed"]				= "ZmMixedController";
 ZmKeyMap.MAP_NAME["notebook"]			= "ZmNotebookPageController";
+ZmKeyMap.MAP_NAME["tasks"]				= "ZmTaskListController";
+ZmKeyMap.MAP_NAME["editTask"]			= "ZmTaskController";
 ZmKeyMap.MAP_NAME["tabView"]			= "DwtTabView";
 
 // Action codes
@@ -112,7 +114,9 @@ ZmKeyMap.GOTO_TASKS			= "GoToTasks";
 ZmKeyMap.GOTO_TRASH			= "GoToTrash";
 ZmKeyMap.HTML_FORMAT		= "HtmlFormat";
 ZmKeyMap.LOGOFF				= "LogOff";
+ZmKeyMap.MARK_COMPLETE		= "MarkComplete";
 ZmKeyMap.MARK_READ			= "MarkRead";
+ZmKeyMap.MARK_UNCOMPLETE	= "MarkUncomplete";
 ZmKeyMap.MARK_UNREAD		= "MarkUnread";
 ZmKeyMap.MOVE_TO_FOLDER		= "MoveToFolder";	// takes NNN
 ZmKeyMap.MOVE_TO_INBOX		= "MoveToInbox";
@@ -212,6 +216,8 @@ function() {
 	ZmKeyMap.MAP_PRECONDITION["ZmApptComposeController"]	= ZmSetting.CALENDAR_ENABLED;
 	ZmKeyMap.MAP_PRECONDITION["ZmPrefController"]			= ZmSetting.OPTIONS_ENABLED;
 	ZmKeyMap.MAP_PRECONDITION["ZmNotebookPageController"]	= ZmSetting.NOTEBOOK_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmTaskListController"]		= ZmSetting.TASKS_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmTaskController"]			= ZmSetting.TASKS_ENABLED;
 	
 	ZmKeyMap.ACTION_PRECONDITION["Global"] = {};
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;

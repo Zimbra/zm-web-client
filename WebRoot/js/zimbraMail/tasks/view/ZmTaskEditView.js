@@ -65,6 +65,11 @@ function(calItem, mode, isDirty) {
 	this.initialize(calItem, mode, isDirty);
 };
 
+ZmTaskEditView.prototype.getController =
+function() {
+	return this._controller;
+};
+
 ZmTaskEditView.prototype._getClone =
 function() {
 	return ZmTask.quickClone(this._calItem);
