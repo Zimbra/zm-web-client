@@ -430,7 +430,7 @@ function() {
 	this.registerSetting("TAGGING_ENABLED",					{name: "zimbraFeatureTaggingEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("TASKS_ENABLED",					{name: "zimbraFeatureTasksEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("VIEW_ATTACHMENT_AS_HTML",			{name: "zimbraFeatureViewInHtmlEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("VOICEMAIL_ENABLED",				{name: "zimbraFeatureVoicemailEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	this.registerSetting("VOICEMAIL_ENABLED",				{name: "zimbraFeatureVoiceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	
 	// user metadata (included with COS since the user can't change them)
 	this.registerSetting("LICENSE_STATUS",	{type: ZmSetting.T_COS, defaultValue: ZmSetting.LICENSE_GOOD});
@@ -487,5 +487,5 @@ function() {
 	this.registerSetting("PORTAL_ENABLED",		{name: "zimbraFeaturePortalEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("SKIN_NAME",			{name: "zimbraPrefSkin", type: ZmSetting.T_PREF, defaultValue: "skin"});
 	this.registerSetting("TASKS_ENABLED",		{name: "zimbraFeatureTasksEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("VOICEMAIL_ENABLED",	{name: "zimbraFeatureVoicemailEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("VOICEMAIL_ENABLED",	{name: "zimbraFeatureVoiceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 };
