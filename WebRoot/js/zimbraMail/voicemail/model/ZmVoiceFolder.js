@@ -126,6 +126,28 @@ function() {
 	return false;
 };
 
+ZmVoiceFolder.prototype.mayContain =
+function(what, folderType) {
+	for (var i = 0, count = what.length; i < count; i++) {
+		var voicemail = what[i];
+		if (!(voicemail instanceof ZmVoicemail)) {
+			return false;
+		}
+		if ((this.callType != ZmVoiceFolder.VOICEMAIL) && 
+			(this.callType !== ZmVoiceFolder.TRASH)) {
+			return false;
+		}
+		var folder = voicemail.getFolder();
+		if (folder == this) {
+			return false;
+		}
+		if (folder.phone != this.phone) {
+			return false;
+		}
+	}
+	return true;
+};
+
 ZmVoiceFolder.sortCompare =
 function(a, b) {
 	return 0;

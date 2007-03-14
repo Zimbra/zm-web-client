@@ -39,6 +39,9 @@ function ZmVoiceListController(appCtxt, container, app) {
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
 	this._listeners[ZmOperation.AUTO_PLAY] = new AjxListener(this, this._autoPlayListener);
+
+	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
+	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 }
 ZmVoiceListController.prototype = new ZmListController;
 ZmVoiceListController.prototype.constructor = ZmVoiceListController;
@@ -76,6 +79,7 @@ ZmVoiceListController.prototype._createNewView =
 function(view) {
 	var result = new ZmVoiceListView(this._container, this._appCtxt, this._dropTgt);
 	result.addSelectionListener(new AjxListener(this, this._selectListener));
+	result.setDragSource(this._dragSrc);
 	return result;
 };
 

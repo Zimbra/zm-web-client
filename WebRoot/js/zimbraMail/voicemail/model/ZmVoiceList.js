@@ -46,3 +46,11 @@ function() {
 	return "ZmVoiceList";
 };
 
+ZmVoiceList.prototype._itemAction =
+function(params, batchCmd) {
+// TODO: try and reuse the method on ZmList. Need to
+// ensure voice is following all the same conventions,
+// including "l" for folder id.
+	
+	alert('Drop not implemented: ZmVoiceList.prototype._itemAction');
+};

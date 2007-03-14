@@ -53,6 +53,11 @@ function() {
 	return "ZmVoiceItem";
 }
 
+ZmVoiceItem.prototype.getFolder = 
+function() {
+	return this.list ? this.list.folder : null;
+};
+
 ZmVoiceItem.prototype.getPhone = 
 function() {
 	return this.list && this.list.folder ? this.list.folder.phone : null;;
