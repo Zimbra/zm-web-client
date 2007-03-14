@@ -82,8 +82,7 @@ function() {
 						 itemClass:		"ZmCall",
 						 node:			"m",
 						 organizer:		ZmOrganizer.VOICEMAIL,
-//TODO: mapping of call to trash......						 
-						 searchType:	"trash",
+						 searchType:	"calllog",
 						 resultsList:	listCreator
 						});
 };
@@ -162,7 +161,7 @@ function(folder, callback) {
 	var searchParams = {
 		soapInfo: soapInfo,
 		types: AjxVector.fromArray([folder.getSearchType()]),
-		query: "phone:" + folder.phone.name,
+		query: folder.getSearchQuery()
 	};
 	var search = new ZmSearch(this._appCtxt, searchParams);	
 	var responseCallback = new AjxCallback(this, this._handleResponseSearch, [folder, callback]);
@@ -254,41 +253,14 @@ function(callback, response) {
 		var phone = new ZmPhone();
 		phone._loadFromDom(obj);
 		this._phones.push(phone);
-	}
-	if (this._phones.length) {
-		this._getFolders(callback);
-	} else {
-		if (callback) {
-			callback.run();
+		if (obj.folder && obj.folder.length) {
+			this._createFolder(folderTree.root, phone, obj.folder[0]);
 		}
-	}
-};
-
-ZmVoiceApp.prototype._getFolders =
-function(callback) {
-    var soapDoc = AjxSoapDoc.create("GetVoiceFolderRequest", "urn:zimbraVoice");
-    for (var i = 0, count = this._phones.length; i < count; i++) {
-	    var node = soapDoc.set("phone");
-	    node.setAttribute("name", this._phones[i].name);
-    }
-    var respCallback = new AjxCallback(this, this._handleResponseGetFolder, [callback]);
-    var params = {
-    	soapDoc: soapDoc, 
-    	asyncMode: true,
-		callback: respCallback
-	};
-	this._appCtxt.getAppController().sendRequest(params);
-};
-
-ZmVoiceApp.prototype._handleResponseGetFolder =
-function(callback, response) {
-	var folderTree = this._appCtxt.getFolderTree();
-	var array = response._data.GetVoiceFolderResponse.phone
-	for (var i = 0, count = array.length; i < count; i++) {
-		this._createFolder(folderTree.root, this._phones[i], array[i].folder[0]);
 	}
 	if (this.startFolder) {
 		this.search(this.startFolder, callback);
+	} else if (callback) {
+		callback.run();
 	}
 };
 
