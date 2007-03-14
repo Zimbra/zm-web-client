@@ -110,8 +110,8 @@ ZmApp.DEFAULT_APPS		= [];	// ordered list
  * Stores information about an app. Note: Setting a value that evaluates to
  * false (such as 0 or an empty string) will not do anything.
  * 
- * @param mainPkg			[string]	main package that composes the app
  * @param app				[constant]	app ID
+ * @param mainPkg			[string]	main package that contains the app
  * @param nameKey			[string]	msg key for app name
  * @param icon				[string]	name of app icon class
  * @param chooserTooltipKey	[string]	msg key for app tooltip
@@ -120,7 +120,7 @@ ZmApp.DEFAULT_APPS		= [];	// ordered list
  * @param organizer			[constant]	main organizer for this app
  * @param overviewTrees		[array]		list of tree IDs to show in overview
  * @param showZimlets		[boolean]	if true, show Zimlet tree in overview
- * @param assistants		[array]		hash of assistant class names and required packages
+ * @param assistants		[hash]		hash of assistant class names and required packages
  * @param searchTypes		[array]		list of types of saved searches to show in overview
  * @param gotoActionCode	[constant]	key action for jumping to this app
  * @param newActionCode		[constant]	default "new" action code

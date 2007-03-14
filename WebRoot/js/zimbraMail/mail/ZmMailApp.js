@@ -398,7 +398,7 @@ function(notify) {
 };
 
 /**
- * For mail creates, there is no authoritative list (mail lists are always the result,
+ * For mail creates, there is no authoritative list (mail lists are always the result
  * of a search), so we notify each ZmMailList that we know about. To make life easier,
  * we figure out which folder(s) a conv spans before we hand it off.
  * 

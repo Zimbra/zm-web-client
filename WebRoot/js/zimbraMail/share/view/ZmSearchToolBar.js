@@ -119,6 +119,7 @@ function() {
 
 // Public methods
 
+// TODO: this should just use operations
 ZmSearchToolBar.addMenuItem =
 function(id, params) {
 	if (params.msgKey)		{ ZmSearchToolBar.MSG_KEY[id]		= params.msgKey; }
