@@ -96,6 +96,11 @@ function(parent, type, id) {
 
 // Protected methods
 
+ZmAddrBookTreeController.prototype._getAllowedSubTypes =
+function() {
+	return ZmTreeController.prototype._getAllowedSubTypes.call(this);
+};
+
 // Returns a list of desired header action menu operations
 ZmAddrBookTreeController.prototype._getHeaderActionMenuOps =
 function() {

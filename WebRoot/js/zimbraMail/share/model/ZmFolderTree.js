@@ -82,8 +82,11 @@ function(parent, obj, tree, elementType, path) {
 									 query:obj.query, types:types, sortBy:sortBy});
 		ZmFolderTree._fillInFolder(folder, obj, path);
 	} else {
-		var type = obj.view ? ZmOrganizer.TYPE[obj.view] : ZmOrganizer.FOLDER;
-		if (!type) { return; }
+		var type = obj.view ? ZmOrganizer.TYPE[obj.view] : parent ? parent.type : ZmOrganizer.FOLDER;
+		if (!type) {
+			DBG.println(AjxDebug.DBG1, "No known type for view " + obj.view);
+			return;
+		}
 		var appCtxt = tree._appCtxt;
 		if (appCtxt.inStartup && ZmOrganizer.DEFERRABLE[type]) {
 			var app = appCtxt.getApp(ZmOrganizer.APP[type]);
@@ -94,10 +97,9 @@ function(parent, obj, tree, elementType, path) {
 				AjxDispatcher.require(pkg);
 			}
 			folder = ZmFolderTree.createFolder(type, parent, obj, tree, path);
+			ZmFolderTree._traverse(folder, obj, tree, path || []);
 		}
 	}
-
-	ZmFolderTree._traverse(folder, obj, tree, path || []);
 
 	return folder;
 };
@@ -113,7 +115,7 @@ function(folder, obj, tree, path) {
 		for (var i = 0; i < obj.folder.length; i++) {
 			var folderObj = obj.folder[i];
 			var childFolder = ZmFolderTree.createFromJs(folder, folderObj, tree, "folder", path);
-			if (childFolder) {
+			if (folder && childFolder) {
 				folder.children.add(childFolder);
 			}
 		}
@@ -166,7 +168,7 @@ function(type, parent, obj, tree, path) {
 
 ZmFolderTree._fillInFolder =
 function(folder, obj, path) {
-	if (path) {
+	if (path && path.length) {
 		folder.path = path.join("/");
 	}
 	if (obj.f && folder._parseFlags) {

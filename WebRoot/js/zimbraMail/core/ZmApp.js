@@ -282,8 +282,9 @@ function(type) {
 		var params = this._deferredFolders[i];
 		var parent = this._appCtxt.getById(params.obj.l);
 		var folder = ZmFolderTree.createFolder(params.type, parent, params.obj, params.tree, params.path);
-		parent.children.add(folder);
+		parent.children.add(folder); // necessary?
 		folder.parent = parent;
+		ZmFolderTree._traverse(folder, params.obj, params.tree, params.path || []);
 	}
 	this._deferredFolders = [];
 	this._deferredFolderHash = {};

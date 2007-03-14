@@ -65,6 +65,11 @@ function(parent, type, id) {
 	}
 };
 
+ZmTaskTreeController.prototype._getAllowedSubTypes =
+function() {
+	return ZmTreeController.prototype._getAllowedSubTypes.call(this);
+};
+
 /*
 * Returns a "New Task Folder" dialog.
 */

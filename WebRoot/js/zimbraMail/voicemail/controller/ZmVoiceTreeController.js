@@ -45,10 +45,8 @@ function(params) {
 };
 
 ZmVoiceTreeController.prototype._getAllowedSubTypes =
-function(overviewType) {
-	var types = {};
-	types[ZmOrganizer.VOICEMAIL] = true;
-	return types;
+function() {
+	return ZmTreeController.prototype._getAllowedSubTypes.call(this);
 };
 
 ZmVoiceTreeController.prototype._postSetup =
