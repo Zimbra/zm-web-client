@@ -62,7 +62,7 @@ function ZmShortcutsPage(parent, appCtxt, view, controller) {
 		this._organizers.push(ZmOrganizer.TAG);
 	}
 
-	this._createHtml();
+//	this._createHtml();
 	
 	this._scTabView = new ZmShortcutsPageTabView(this, appCtxt, controller, this._organizers, this._prefId );
 	var element = this._scTabView.getHtmlElement();

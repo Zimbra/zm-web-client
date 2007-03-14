@@ -73,7 +73,7 @@ function() {
 	this._prefsController._resetOperations(this._prefsController._toolbar, ZmPrefView.IDENTITY);
 	if (this._hasRendered) return;
 
-	this._createHtml();
+	this._createPrefListHtml();
 	this._hasRendered = true;
 };
 
@@ -203,7 +203,7 @@ ZmPrefListView.prototype._validateSelectedItem =
 function(errors) {
 };
 
-ZmPrefListView.prototype._createHtml =
+ZmPrefListView.prototype._createPrefListHtml =
 function() {
 	this._templateId = Dwt.getNextId();
 	var id = this._templateId;

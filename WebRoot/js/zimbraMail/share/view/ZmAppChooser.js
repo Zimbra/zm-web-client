@@ -42,7 +42,19 @@ function ZmAppChooser(parent, className, buttons, useTabs) {
 			this._createButton(id, tbStyle, i == buttons.length - 1);
 		}
 	}
+}
+
+ZmAppChooser.prototype = new DwtToolBar;
+ZmAppChooser.prototype.constructor = ZmAppChooser;
+
+ZmAppChooser.prototype.toString =
+function() {
+	return "ZmAppChooser";
 };
+
+//
+// Constants
+//
 
 ZmAppChooser.SPACER								= "spacer";
 ZmAppChooser.B_HELP								= "Help";
@@ -69,13 +81,15 @@ ZmApp.CHOOSER_TOOLTIP[ZmAppChooser.B_LOGOUT]	= "logOff";
 
 ZmAppChooser.SPACER_HEIGHT = 10;
 
-ZmAppChooser.prototype = new DwtToolBar;
-ZmAppChooser.prototype.constructor = ZmAppChooser;
+//
+// Data
+//
 
-ZmAppChooser.prototype.toString = 
-function() {
-	return "ZmAppChooser";
-};
+ZmAppChooser.prototype.TEMPLATE = "zimbraMail.share.templates.Widgets#ZmAppChooser";
+
+//
+// Public methods
+//
 
 ZmAppChooser.prototype.getButton =
 function(id) {

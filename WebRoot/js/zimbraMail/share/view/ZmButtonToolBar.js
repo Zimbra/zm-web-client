@@ -44,10 +44,11 @@
 function ZmButtonToolBar(params) {
 	if (arguments.length == 0) return;
 
-    var className = params.className || "ZToolbar";
-	ZmToolBar.call(this, params.parent, className, params.posStyle);
+//    var className = params.className || "ZToolbar";
+    var className = null;
+    ZmToolBar.call(this, params.parent, className, params.posStyle);
 	
-	this._buttonStyle = params.buttonClassName ? params.buttonClassName : "ZToolbarButton";
+	this._buttonStyle = params.buttonClassName;
 
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
@@ -91,21 +92,13 @@ function(id, params, index) {
 	var b;
 	params.className = this._buttonStyle;
 	if (id == ZmOperation.TEXT) {
-		b = new DwtText(this);
+		b = new DwtText(this, "ZWidgetTitle");
 	} else {
 		b = this.createButton(id, params, index);
 	}
 	b.setData(ZmOperation.KEY_ID, id);
 
 	return b;
-};
-
-/**
-* Creates a separator. Added because ZmToolBar defines _createSeparator().
-*/
-ZmButtonToolBar.prototype.createSeparator =
-function(index) {
-	this.addSeparator("vertSep", index);
 };
 
 ZmButtonToolBar.prototype.addOp =
@@ -140,14 +133,6 @@ function() {
 };
 
 //
-// Protected methods
-//
-
-ZmButtonToolBar.prototype._createButton = function(params, className) {
-    return new ZmToolBarButton(this, params.style, className, null, null, null, params.index);
-};
-
-//
 // Private methods
 //
 
@@ -155,26 +140,4 @@ ZmButtonToolBar.prototype._createButton = function(params, className) {
 ZmButtonToolBar.prototype._buttonId =
 function(button) {
 	return button.getData(ZmOperation.KEY_ID);
-};
-
-//
-// Classes
-//
-
-function ZmToolBarButton(parent, className, posStyle /*, ... */) {
-    DwtButton.apply(this, arguments);
-}
-ZmToolBarButton.prototype = new DwtButton;
-ZmToolBarButton.prototype.constructor = ZmToolBarButton;
-
-ZmToolBarButton.prototype.toString = function() {
-    return "ZmToolBarButton";
-};
-
-// Protected methods
-
-ZmToolBarButton.prototype._createHtml = function() {
-    var templateId = "ajax.dwt.templates.Widgets#ZToolbarButton";
-    var data = { id: this._htmlElId };
-    this._createHtmlFromTemplate(templateId, data);
 };

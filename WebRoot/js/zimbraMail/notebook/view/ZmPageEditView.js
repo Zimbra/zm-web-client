@@ -501,30 +501,30 @@ function(html) {
 ZmPageEditor.prototype._createToolbars = function() {
 	// notebook page editor will have two separate toolbars
 	if (!this._toolbar1) {
-		var tb = this._toolbar1 = new DwtToolBar(this, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
+		var tb = this._toolbar1 = new DwtToolBar(this, "ZToolbar", DwtControl.RELATIVE_STYLE, 2);
 		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 		this._createToolBar1(tb);
 		this._toolbars.push(tb);
 	}
 	if (!this._toolbar2) {
-		var tb = this._toolbar2 = new DwtToolBar(this, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
+		var tb = this._toolbar2 = new DwtToolBar(this, "ZToolbar", DwtControl.RELATIVE_STYLE, 2);
 		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 
 		// add extra buttons here
 		var listener = new AjxListener(this, this._fontStyleListener);
-		b = this._strikeThruButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+		b = this._strikeThruButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
 		b.setImage("StrikeThru");
 		b.setToolTipContent(ZmMsg.strikeThruText);
 		b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.STRIKETHRU_STYLE);
 		b.addSelectionListener(listener);
 
-		b = this._superscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+		b = this._superscriptButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
 		b.setImage("SuperScript");
 		b.setToolTipContent(ZmMsg.superscript);
 		b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUPERSCRIPT_STYLE);
 		b.addSelectionListener(listener);
 
-		b = this._subscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+		b = this._subscriptButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
 		b.setImage("Subscript");
 		b.setToolTipContent(ZmMsg.subscript);
 		b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUBSCRIPT_STYLE);
@@ -545,17 +545,17 @@ ZmPageEditor.prototype._createToolbars = function() {
 ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	ZmHtmlEditor.prototype._createToolBar2.call(this, parent);
 
-	var button = new DwtButton(this._toolbar2, null, "DwtToolbarButton")
+	var button = new DwtToolBarButton(this._toolbar2)
 	button.setImage("ImageDoc");
 	button.setToolTipContent(ZmMsg.insertImage);
 	button.addSelectionListener(new AjxListener(this, this._insertImagesListener));
 
-	button = new DwtButton(this._toolbar2, null, "DwtToolbarButton")
+	button = new DwtToolBarButton(this._toolbar2)
 	button.setImage("Attachment");
 	button.setToolTipContent(ZmMsg.insertAttachment);
 	button.addSelectionListener(new AjxListener(this, this._insertAttachmentsListener));
 
-	button = new DwtButton(this._toolbar2, null, "DwtToolbarButton");
+	button = new DwtToolBarButton(this._toolbar2, null);
 	button.setImage("URL");
 	button.setToolTipContent(ZmMsg.insertLink);
 	button.addSelectionListener(new AjxListener(this, this._insertLinkListener));

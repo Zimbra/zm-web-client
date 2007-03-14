@@ -39,7 +39,7 @@
 function ZmToolBar(parent, className, posStyle) {
 
 	if (arguments.length == 0) return;
-	className = className ? className : "ZmToolBar";
+//	className = className ? className : "ZmToolBar";
 	posStyle = posStyle ? posStyle : DwtControl.ABSOLUTE_STYLE;
 		
 	DwtToolBar.call(this, parent, className, posStyle);
@@ -118,8 +118,8 @@ function(enabled) {
  */
 ZmToolBar.prototype.createButton =
 function(id, params, index) {
-	var className = params.className || "DwtToolbarButton";
-	var b = this._buttons[id] = this._createButton(params, className);
+//	var className = params.className || "DwtToolbarButton";
+	var b = this._buttons[id] = this._createButton(params/*, className*/);
 	if (params.image) {
 		b.setImage(params.image);
 	}
@@ -139,16 +139,17 @@ function(id, params, index) {
 };
 
 //
+// Data
+//
+
+ZmToolBar.prototype.SEPARATOR_TEMPLATE = "zimbraMail.share.templates.Widgets#ZmToolBarSeparator";
+
+//
 // Protected methods
 //
 
 ZmToolBar.prototype._createButton = function(params, className) {
-    return new DwtButton(this, params.style, className, null, null, null, params.index);
-};
-
-ZmToolBar.prototype._createSeparator =
-function() {
-	new DwtControl(this, "vertSep");
+    return new DwtToolBarButton(this, params.style, className, null, null, null, params.index);
 };
 
 ZmToolBar.prototype._buttonId =

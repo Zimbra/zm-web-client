@@ -268,8 +268,13 @@ function(parent, id, opHash, index) {
 	}
 
 	if (id == ZmOperation.SEP) {
-		parent.createSeparator(index);
-	} else if (id == ZmOperation.SPACER) {	// toolbar only
+        if (parent instanceof DwtMenu) {
+            parent.createSeparator(index);
+        }
+        else {
+            parent.addSeparator(null, index);
+        }
+    } else if (id == ZmOperation.SPACER) {	// toolbar only
 		parent.addSpacer(null, index);
 	} else if (id == ZmOperation.FILLER) {	// toolbar only
 		parent.addFiller(null, index);

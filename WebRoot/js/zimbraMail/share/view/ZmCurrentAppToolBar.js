@@ -45,10 +45,6 @@ function ZmCurrentAppToolBar(parent, tabStyle) {
 		}
 		this._viewLabel = new DwtLabel(this, DwtLabel.ALIGN_RIGHT, "viewLabel");
 		this._viewLabel.setText(ZmMsg.view + ":");
-		// HACK - expand out the parent table and shrink first child so view
-		// button can be as wide as possible
-		this._table.width = "100%";
-		this._table.rows[0].cells[0].width = "1%";
 	}
 
 	this._viewButton = new DwtButton(this, null, "DwtToolbarButton");
