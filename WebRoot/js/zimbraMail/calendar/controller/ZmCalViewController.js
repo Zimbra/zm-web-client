@@ -1014,7 +1014,7 @@ function(appt, mode) {
 // XXX: this method is temporary until bug 6082 is fixed!
 ZmCalViewController.prototype.checkForRefresh =
 function(appt) {
-	if (appt.isShared()) {
+	if (appt && appt.isShared()) {
 		this._refreshAction(false);
 	}
 };

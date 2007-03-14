@@ -278,25 +278,27 @@ function(errorMsg) {
 
 ZmCalItemComposeController.prototype._saveCalItemFoRealz =
 function(calItem, attId, notifyList) {
-	var args = [calItem];
+	var args;
 	if (calItem.viewMode != ZmCalItem.MODE_NEW &&
-		calItem._orig &&
-		calItem._orig.folderId != calItem.folderId)
+		calItem._orig && calItem._orig.folderId != calItem.folderId)
 	{
-		// pass along folderId for appt move
-		args.push(calItem.folderId);
+		// pass along calItem for appt move
+		args = calItem;
 	}
-	var callback = new AjxCallback(this, this._handleResponseSave, args);
-	var errorCallback = new AjxCallback(this, this._handleErrorSave);
 
-	calItem.save(attId, callback, errorCallback, notifyList);
+	if (this._composeView.getApptTab().isDirty()) {
+		var callback = new AjxCallback(this, this._handleResponseSave, args);
+		var errorCallback = new AjxCallback(this, this._handleErrorSave);
+		calItem.save(attId, callback, errorCallback, notifyList);
+	} else {
+		this._handleResponseSave(args);
+	}
 };
 
 ZmCalItemComposeController.prototype._handleResponseSave =
-function(calItem, folderId) {
-	if (calItem && folderId) {
-		var callback = new AjxCallback(this, this._handleResponseCleanup);
-		calItem.move(folderId, callback);
+function(calItem) {
+	if (calItem) {
+		calItem.move(calItem.folderId, new AjxCallback(this, this._handleResponseCleanup));
 	} else {
 		this._handleResponseCleanup();
 	}
