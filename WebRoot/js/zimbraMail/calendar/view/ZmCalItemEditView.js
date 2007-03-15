@@ -523,21 +523,17 @@ function(calItem, mode) {
 		}
 	}
 
-	var enabled = (mode == ZmCalItem.MODE_NEW || mode == ZmCalItem.MODE_NEW_FROM_QUICKADD || !itemCal.link);
 	for (var i = 0; i < len; i++) {
 		var cal = data[i];
 		this._calendarOrgs[cal.id] = cal.owner;
-		if (enabled) {
-			// don't show calendar if remote or don't have write perms
-			if (cal.isFeed()) continue;
-			if (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()) continue;
-		}
+		// don't show calendar if remote or don't have write perms
+		if (cal.isFeed()) continue;
+		if (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()) continue;
 		this._folderSelect.addOption(cal.getName(), false, cal.id);
 	}
 	var num = this._folderSelect.size();
 	Dwt.setVisibility(this._folderSelect.getHtmlElement(), num > 1);
 	Dwt.setVisibility(this._folderLabelField, num > 1);
-	enabled ? this._folderSelect.enable() : this._folderSelect.disable();
 
 	this._folderSelect.setSelectedValue(calItem.folderId);
 };
