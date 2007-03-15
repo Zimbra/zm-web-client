@@ -38,11 +38,11 @@
             <c:param name="exInvId" value="${appt.inviteId}"/>
             <c:param name="exCompNum" value="${appt.inviteComponentNumber}"/>
         </c:if>
-        <c:if test="${appt.recurring}">
-            <c:param name="instance" value="1"/>
+        <c:if test="${appt.recurring or appt.exception}">
+            <c:param name="useInstance" value="1"/>
         </c:if>
-        <c:param name="st" value="${appt.startTime}"/>
-        <c:param name="dur" value="${appt.duration}"/> 
+        <c:param name="instStartTime" value="${appt.startTime}"/>
+        <c:param name="instDuration" value="${appt.duration}"/> 
     </c:if>
     <c:forEach items="${dynattrs}" var="a">
         <c:if test="${not empty a.value}">

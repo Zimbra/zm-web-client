@@ -90,9 +90,9 @@
                                 <td class='MsgHdrValue'>
 
                                     <c:choose>
-                                        <c:when test="${not empty param.st and not empty param.dur}">
-                                            <c:set var="startDateCal" value="${zm:getCalendar(param.st, mailbox.prefs.timeZone)}"/>
-                                            <c:set var="endDateCal" value="${zm:getCalendar(param.st + param.dur, mailbox.prefs.timeZone)}"/>
+                                        <c:when test="${not empty param.instStartTime and not empty param.instDuration}">
+                                            <c:set var="startDateCal" value="${zm:getCalendar(param.instStartTime, mailbox.prefs.timeZone)}"/>
+                                            <c:set var="endDateCal" value="${zm:getCalendar(param.instStartTime + param.instDuration, mailbox.prefs.timeZone)}"/>
                                             <c:set var="startDate" value="${startDateCal.time}"/>
                                             <c:set var="endDate" value="${endDateCal.time}"/>
                                         </c:when>
@@ -284,7 +284,7 @@
                 <app:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
             </c:if>
                 <c:if test="${not empty param.debug}">
-                    <pre>${message.mimeStructure}</pre>
+                    <pre>${fn:escapeXml(message.mimeStructure)}</pre>
                 </c:if>
         </td>
     </tr>

@@ -8,7 +8,7 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
-        <c:when test="${param.instance eq '1' and not empty param.exInvId}">
+        <c:when test="${param.useInstance eq '1' and not empty param.exInvId}">
             <c:set var="id" value="${param.exInvId}"/>
             <c:set var="compNum" value="${empty param.exCompNum ? 0 : param.exCompNum}"/>
         </c:when>

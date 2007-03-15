@@ -16,7 +16,7 @@
 
 <app:handleError>
     <c:choose>
-        <c:when test="${param.instance eq '1' and not empty param.exInvId}">
+        <c:when test="${param.useInstance eq '1' and not empty param.exInvId}">
             <c:set var="id" value="${param.exInvId}"/>
             <c:set var="compNum" value="${empty param.exCompNum ? 0 : param.exCompNum}"/>
             <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}" wanthtml="false"/>
@@ -37,9 +37,9 @@
                                date="${requestScope.dateContext}"
                                inviteId="${empty param.invId? null : param.invId}"
                                exceptionInviteId="${empty param.exInvId? null : param.exInvId}"
-                               useInstance="${param.instance eq '1'}"
-                               instanceStartTime="${param.st}"
-                               instanceDuration="${param.dur}"/>
+                               useInstance="${param.useInstance eq '1'}"
+                               instanceStartTime="${param.instStartTime}"
+                               instanceDuration="${param.instDuration}"/>
         </c:when>
         <c:when test="${uploader.isUpload and !empty message}">
             <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
@@ -372,10 +372,10 @@
                 </td>
             </tr>
         </table>
-        <input type="hidden" name="inviteId" value="${fn:escapeXml(compose.inviteId)}"/>
-        <input type="hidden" name="exceptionInviteId" value="${fn:escapeXml(compose.exceptionInviteId)}"/> 
+        <input type="hidden" name="invId" value="${fn:escapeXml(compose.inviteId)}"/>
+        <input type="hidden" name="exInvId" value="${fn:escapeXml(compose.exceptionInviteId)}"/>
         <input type="hidden" name="useInstance" value="${fn:escapeXml(compose.useInstance ? '1' : '0') }"/>
-        <input type="hidden" name="instanceStartTime" value="${fn:escapeXml(compose.instanceStartTime)}"/>
-        <input type="hidden" name="instanceDuration" value="${fn:escapeXml(compose.instanceDuration)}"/>
+        <input type="hidden" name="instStartTime" value="${fn:escapeXml(compose.instanceStartTime)}"/>
+        <input type="hidden" name="instDuration" value="${fn:escapeXml(compose.instanceDuration)}"/>
     </form>
 </app:view>
