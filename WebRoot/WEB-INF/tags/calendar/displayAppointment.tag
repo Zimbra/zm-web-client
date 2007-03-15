@@ -89,11 +89,20 @@
                                 </td>
                                 <td class='MsgHdrValue'>
 
-                                    <c:set var="startDate" value="${appt.start.date}"/>
-                                    <c:set var="endDate" value="${appt.computedEndDate}"/>
-                                    <c:set var="startDateCal" value="${zm:getCalendar(startDate.time, mailbox.prefs.timeZone)}"/>
-                                    <c:set var="endDateCal" value="${zm:getCalendar(endDate.time, mailbox.prefs.timeZone)}"/>
-
+                                    <c:choose>
+                                        <c:when test="${not empty param.st and not empty param.dur}">
+                                            <c:set var="startDateCal" value="${zm:getCalendar(param.st, mailbox.prefs.timeZone)}"/>
+                                            <c:set var="endDateCal" value="${zm:getCalendar(param.st + param.dur, mailbox.prefs.timeZone)}"/>
+                                            <c:set var="startDate" value="${startDateCal.time}"/>
+                                            <c:set var="endDate" value="${endDateCal.time}"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <c:set var="startDate" value="${appt.start.date}"/>
+                                            <c:set var="endDate" value="${appt.computedEndDate}"/>
+                                            <c:set var="startDateCal" value="${zm:getCalendar(startDate.time, mailbox.prefs.timeZone)}"/>
+                                            <c:set var="endDateCal" value="${zm:getCalendar(endDate.time, mailbox.prefs.timeZone)}"/>
+                                        </c:otherwise>
+                                    </c:choose>
                                     <c:choose>
                                         <c:when test="${zm:isSameDate(startDateCal,endDateCal)}">
                                             <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" dateStyle="medium" type="date" value="${startDate}"/>

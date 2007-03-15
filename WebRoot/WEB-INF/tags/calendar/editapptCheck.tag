@@ -7,7 +7,7 @@
 
 <app:handleError>
 <zm:composeUploader var="uploader"/>
-<c:set var="needEditView" value="${param.action eq 'editappt'}"/>
+<c:set var="needEditView" value="${param.action eq 'edit'}"/>
 <c:if test="${uploader.isUpload}">
     <c:choose>
         <c:when test="${uploader.isContactAdd or uploader.isContactSearch}">

@@ -16,15 +16,15 @@
 
 <app:handleError>
     <c:choose>
-        <c:when test="${not empty param.id or not empty compose.draftId or not empty requestScope.draftid}">
-            <c:choose>
-                <c:when test="${not empty compose.draftId or not empty requestScope.draftid}">
-                    <zm:getMessage var="message" id="${empty requestScope.draftid ? compose.draftId : requestScope.draftid}" wanthtml="${false}"/>
-                </c:when>
-                <c:otherwise>
-                    <zm:getMessage var="message" id="${param.id}" part="${param.part}" wanthtml="${false}"/>
-                </c:otherwise>
-            </c:choose>
+        <c:when test="${param.instance eq '1' and not empty param.exInvId}">
+            <c:set var="id" value="${param.exInvId}"/>
+            <c:set var="compNum" value="${empty param.exCompNum ? 0 : param.exCompNum}"/>
+            <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}" wanthtml="false"/>
+        </c:when>
+        <c:when test="${not empty param.invId}">
+            <c:set var="id" value="${param.invId}"/>
+            <c:set var="compNum" value="${empty param.invCompNum ? 0 : param.invCompNum}"/>
+            <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}" wanthtml="false"/>
         </c:when>
         <c:otherwise>
             <c:set var="message" value="${null}"/>
@@ -33,14 +33,32 @@
 
     <c:choose>
         <c:when test="${empty compose }">
-            <zm:messageCompose var="compose" message="${message}" action="newappt" date="${requestScope.dateContext}"/>
+            <zm:messageCompose var="compose" message="${message}" action="${empty message ? 'apptnew' : 'apptedit'}"
+                               date="${requestScope.dateContext}"
+                               inviteId="${empty param.invId? null : param.invId}"
+                               exceptionInviteId="${empty param.exInvId? null : param.exInvId}"
+                               useInstance="${param.instance eq '1'}"
+                               instanceStartTime="${param.st}"
+                               instanceDuration="${param.dur}"/>
         </c:when>
         <c:when test="${uploader.isUpload and !empty message}">
             <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
         </c:when>
     </c:choose>
-</app:handleError>
 
+    <c:choose>
+        <c:when test="${empty compose.inviteId}">
+            <c:set var="apptImage" value="calendar/NewAppointment.gif"/>
+            <c:set var="apptImageAlt" value="ALT_NEW_APPOINTMENT"/>
+            <fmt:message var="apptSubject" key="newAppointment"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="apptImage" value="calendar/Appointment.gif"/>
+            <c:set var="apptImageAlt" value="ALT_EDIT_APPOINTMENT"/>
+            <c:set var="apptSubject" value="${compose.subject}"/>
+        </c:otherwise>
+    </c:choose>
+</app:handleError>
 
 <app:view title="${not empty compose.subject ? compose.subject : title}" selected='calendar' calendars="true" minical="true" context="${null}" keys="false" date="${requestScope.dateContext}">
     <c:set var="toolbar">
@@ -67,6 +85,7 @@
         </table>
     </c:set>
 
+    <!-- ${message.invite.component}-->
     <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
         <table width=100% cellpadding="0" cellspacing="0">
             <tr>
@@ -79,11 +98,11 @@
                     <table cellpadding=2 cellspacing=0 width=100% class='Compose'>
                         <tr>
                             <td colspan=2 class='ZhBottomSep'>
-                                <table width=100% cellspacing=0 cellpadding=0>
+                                <table width=100% cellpadding=0 cellspacing=0>
                                     <tr class='apptHeaderRow'>
-                                        <td width=20><center><app:img src="calendar/NewAppointment.gif" altkey="ALT_NEW_APPOINTMENT"/></center></td>
+                                        <td width=24><center><app:img src="${apptImage}" altkey="${apptImageAlt}"/></center></td>
                                         <td class='apptHeader'>
-                                            <fmt:message key="newAppointment"/>
+                                            ${fn:escapeXml(apptSubject)}
                                         </td>
                                     </tr>
                                 </table>
@@ -353,13 +372,10 @@
                 </td>
             </tr>
         </table>
-        <input type="hidden" name="replyto" value="${fn:escapeXml(compose.replyTo)}"/>
-        <input type="hidden" name="from" value="${fn:escapeXml(compose.from)}"/>
-        <input type="hidden" name="inreplyto" value="${fn:escapeXml(compose.inReplyTo)}"/>
-        <input type="hidden" name="messageid" value="${fn:escapeXml(compose.messageId)}"/>
-        <input type="hidden" name="replytype" value="${fn:escapeXml(compose.replyType)}"/>
-        <c:if test="${message.isDraft}">
-            <input type="hidden" name="draftid" value="${message.id}"/>
-        </c:if>
+        <input type="hidden" name="inviteId" value="${fn:escapeXml(compose.inviteId)}"/>
+        <input type="hidden" name="exceptionInviteId" value="${fn:escapeXml(compose.exceptionInviteId)}"/> 
+        <input type="hidden" name="useInstance" value="${fn:escapeXml(compose.useInstance)}"/>
+        <input type="hidden" name="instanceStartTime" value="${fn:escapeXml(compose.instanceStartTime)}"/>
+        <input type="hidden" name="instanceDuration" value="${fn:escapeXml(compose.instanceDuration)}"/>
     </form>
 </app:view>

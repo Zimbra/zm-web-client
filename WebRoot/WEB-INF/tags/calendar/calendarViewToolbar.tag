@@ -18,7 +18,7 @@
     <zm:getMailbox var="mailbox"/>
     <c:set var="calViewToolbarCache" scope="request">
         <fmt:formatDate var="dateDf" value="${date.time}" pattern="yyyyMMdd"/>
-        <app:calendarUrl var="newApptUrl" date="${dateDf}" action="editappt"/>
+        <app:calendarUrl var="newApptUrl" date="${dateDf}" action="edit"/>
         <app:calendarUrl var="dayViewUrl" date="${dateDf}" view="day"/>
         <app:calendarUrl var="weekViewUrl" date="${dateDf}" view="week"/>
         <app:calendarUrl var="workWeekViewUrl" date="${dateDf}" view="workWeek"/>

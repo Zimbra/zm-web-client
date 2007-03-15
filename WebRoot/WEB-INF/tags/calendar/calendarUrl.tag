@@ -31,6 +31,7 @@
         </c:otherwise>
     </c:choose>
     <c:if test="${not empty appt}">
+        <c:param name="action" value="${appt.organizer ? 'view' : 'view'}"/>
         <c:param name="invId" value="${appt.seriesInviteId}"/>
         <c:param name="invCompNum" value="${appt.seriesComponentNumber}"/>
         <c:if test="${appt.exception}">
@@ -38,7 +39,6 @@
             <c:param name="exInvId" value="${appt.inviteId}"/>
             <c:param name="exCompNum" value="${appt.inviteComponentNumber}"/>
         </c:if>
-        <c:param name="action" value="${appt.organizer ? 'editappt' : 'view'}"/>
         <c:param name="st" value="${appt.startTime}"/>
         <c:param name="dur" value="${appt.duration}"/> 
     </c:if>
