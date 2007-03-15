@@ -324,6 +324,9 @@
       <condition property='pkgdir' value='zimbraMail'>
           <equals arg1='${arg}' arg2='ZimbraCore' />
       </condition>
+      <condition property='pkgdir' value='zimbraAdmin'>
+          <equals arg1='${arg}' arg2='Admin' />
+      </condition>
       <jammer jsDir='${build.dir}/WebRoot/js' destFile='${build.dir}/WebRoot/js/${arg}_all.js'>
           <filelist dir='${build.dir}/WebRoot/js' files='${arg}.js' wrap='${wrap}' />
           <fileset dir='${build.dir}/WebRoot/js' includes='${pkgdir}/**/templates/*.js' />
@@ -332,10 +335,16 @@
 
   <target name='jsp-file'>
       <condition property='pkgdir' value='ajax'>
+        <or>
           <equals arg1='${arg}' arg2='Ajax' />
+          <equals arg1='${arg}' arg2='AjaxZWC' />
+        </or>
       </condition>
       <condition property='pkgdir' value='zimbraMail'>
           <equals arg1='${arg}' arg2='ZimbraCore' />
+      </condition>
+      <condition property='pkgdir' value='zimbraAdmin'>
+          <equals arg1='${arg}' arg2='Admin' />
       </condition>
       <jammer jsDir='${build.dir}/WebRoot/js' destFile='${build.dir}/WebRoot/public/jsp/${arg}.jsp'
               output='html' basepath='&lt;%=contextPath%>/js/' extension='.js&lt;%=ext%>?v=&lt;%=vers%>'>
