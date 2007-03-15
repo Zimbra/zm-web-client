@@ -35,9 +35,11 @@
         <c:param name="invId" value="${appt.seriesInviteId}"/>
         <c:param name="invCompNum" value="${appt.seriesComponentNumber}"/>
         <c:if test="${appt.exception}">
-            <c:param name="instance" value="1"/>
             <c:param name="exInvId" value="${appt.inviteId}"/>
             <c:param name="exCompNum" value="${appt.inviteComponentNumber}"/>
+        </c:if>
+        <c:if test="${appt.recurring}">
+            <c:param name="instance" value="1"/>
         </c:if>
         <c:param name="st" value="${appt.startTime}"/>
         <c:param name="dur" value="${appt.duration}"/> 

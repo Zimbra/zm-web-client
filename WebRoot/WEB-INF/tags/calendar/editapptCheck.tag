@@ -60,7 +60,7 @@
         <c:when test="${uploader.isSave}">
             <c:set var="needEditView" value="${true}"/>
             <app:handleError>
-                <c:set var="apptId" value="${uploader.compose.useInstance ? uploader.compose.exceptionInviteId : uploader.compose.inviteId}"/>
+                <c:set var="apptId" value="${uploader.compose.useInstance and not empty uploader.compose.exceptionInviteId ? uploader.compose.exceptionInviteId : uploader.compose.inviteId}"/>
                 <c:choose>
                     <c:when test="${not empty apptId}">
                         <zm:getMessage var="message" id="${apptId}" markread="true" neuterimages="${empty param.xim}" wanthtml="false"/>
