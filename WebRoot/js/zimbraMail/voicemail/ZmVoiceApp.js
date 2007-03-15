@@ -273,7 +273,7 @@ function(parent, phone, obj) {
 		callType: obj.name || ZmVoiceFolder.ACCOUNT,
 		view: obj.view,
 		parent: parent,
-		tree: parent.tree,
+		tree: parent.tree
 	}		
 	var folder = new ZmVoiceFolder(params);
 	parent.children.add(folder);
