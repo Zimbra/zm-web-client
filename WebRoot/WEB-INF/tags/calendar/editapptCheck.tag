@@ -60,18 +60,20 @@
         <c:when test="${uploader.isSave}">
             <c:set var="needEditView" value="${true}"/>
             <app:handleError>
-                <zm:saveAppointment var="createResult" compose="${uploader.compose}"/>
+                <c:set var="apptId" value="${uploader.compose.useInstance ? uploader.compose.exceptionInviteId : uploader.compose.inviteId}"/>
+                <c:choose>
+                    <c:when test="${not empty apptId}">
+                        <zm:getMessage var="message" id="${apptId}" markread="true" neuterimages="${empty param.xim}" wanthtml="false"/>
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="message" value="${null}"/>
+                    </c:otherwise>
+                </c:choose>
+                <zm:saveAppointment var="createResult" compose="${uploader.compose}" message="${message}"/>
                 <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
-                <app:status><fmt:message key="actionAppointmentCreated"/></app:status>
+                <app:status><fmt:message key="${empty message ? 'actionAppointmentCreated' : 'actionAppointmentSaved'}"/></app:status>
                 <c:set var="needEditView" value="${false}"/>
             </app:handleError>
-        </c:when>
-        <c:when test="${uploader.isDraft}">
-            <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
-            <c:set scope="request" var="draftid" value="${draftResult.id}"/>
-            <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
-            <app:status><fmt:message key="draftSavedSuccessfully"/></app:status>
-            <c:set var="needEditView" value="${true}"/>
         </c:when>
     </c:choose>
 </c:if>

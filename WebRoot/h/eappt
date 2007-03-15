@@ -177,7 +177,7 @@
                                                     <table cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
-                                                                <input type=checkbox name="allDay" <c:if test="${compose.allDay eq '1'}">checked</c:if> value="1">
+                                                                <input type=checkbox name="allDay" <c:if test="${compose.allDay}">checked</c:if> value="1">
                                                             </td>
                                                             <td>
                                                                <fmt:message key="allDayEvent"/>
@@ -374,7 +374,7 @@
         </table>
         <input type="hidden" name="inviteId" value="${fn:escapeXml(compose.inviteId)}"/>
         <input type="hidden" name="exceptionInviteId" value="${fn:escapeXml(compose.exceptionInviteId)}"/> 
-        <input type="hidden" name="useInstance" value="${fn:escapeXml(compose.useInstance)}"/>
+        <input type="hidden" name="useInstance" value="${fn:escapeXml(compose.useInstance ? '1' : '0') }"/>
         <input type="hidden" name="instanceStartTime" value="${fn:escapeXml(compose.instanceStartTime)}"/>
         <input type="hidden" name="instanceDuration" value="${fn:escapeXml(compose.instanceDuration)}"/>
     </form>
