@@ -66,19 +66,23 @@ function(url) {
 	if (this._soundPlugin) {
 		this._soundPlugin.pause();
 		this._soundPlugin.dispose();
+		this._soundPlugin = null;
+		this._timeSlider.setValue(this._timeSlider.getMinimum());
 	}
 	this.setEnabled(url != null);
-	var args = {
-		parent: this.shell,
-		width: 200,
-		height: 16,
-		offscreen: true, 
-		positionType: DwtControl.RELATIVE_STYLE,
-		url: url,
-		volume: this._volume
-	};
-	this._soundPlugin = DwtSoundPlugin.create(args);
-	this._soundPlugin.addChangeListener(this._pluginChangeListenerObj);
+	if (url) {
+		var args = {
+			parent: this.shell,
+			width: 200,
+			height: 16,
+			offscreen: true, 
+			positionType: DwtControl.RELATIVE_STYLE,
+			url: url,
+			volume: this._volume
+		};
+		this._soundPlugin = DwtSoundPlugin.create(args);
+		this._soundPlugin.addChangeListener(this._pluginChangeListenerObj);
+	}
 };
 
 /**

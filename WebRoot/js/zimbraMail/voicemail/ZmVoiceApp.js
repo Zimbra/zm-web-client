@@ -96,6 +96,8 @@ function(search) {
 ZmVoiceApp.prototype._registerOperations =
 function() {
 	ZmOperation.registerOp("AUTO_PLAY", {textKey:"autoPlay", tooltipKey:"autoPlayTooltip", image:"ApptRecur"});
+	ZmOperation.registerOp("MARK_HEARD", {textKey:"markAsHeard", image:"ReadMessage"});
+	ZmOperation.registerOp("MARK_UNHEARD", {textKey:"markAsUnheard", image:"UnreadMessage"});
 };
 
 ZmVoiceApp.prototype._registerOrganizers =
@@ -184,15 +186,21 @@ ZmVoiceApp.prototype.deleteItems =
 function(items, callback) {
 	
 	if (!items[0].isInTrash()) {
-		this._moveItems(items, ZmVoiceFolder.TRASH_ID, callback);
+		this._performAction(items, "move", { l: ZmVoiceFolder.TRASH_ID }, callback);
 	} else {
 //TODO: this undeletes. Should really be hard delete.	
-		this._moveItems(items, ZmVoiceFolder.VOICEMAIL_ID, callback);
+		this._performAction(items, "move", { l: ZmVoiceFolder.VOICEMAIL_ID }, callback);
 	}
 };
 
-ZmVoiceApp.prototype._moveItems =
-function(items, destination, callback) {
+ZmVoiceApp.prototype.markItemsHeard =
+function(items, heard, callback) {
+	var op = heard ? "read" : "!read";
+	this._performAction(items, op, null, callback);
+};
+
+ZmVoiceApp.prototype._performAction =
+function(items, op, attributes, callback) {
 	if (!items.length) {
 		if (callback) {
 			callback.run(items);
@@ -205,25 +213,18 @@ function(items, destination, callback) {
     }
     var soapDoc = AjxSoapDoc.create("VoiceMsgActionRequest", "urn:zimbraVoice");
     var node = soapDoc.set("action");
-    node.setAttribute("op", "move");
+    node.setAttribute("op", op);
     node.setAttribute("id", ids.join(","));
     node.setAttribute("phone", items[0].getPhone().name);
-    node.setAttribute("l", destination); 
-
-    var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [items, callback]);
+    for (var i in attributes) {
+	    node.setAttribute(i, attributes[i]); 
+	}
     var params = {
     	soapDoc: soapDoc, 
     	asyncMode: true,
-		callback: respCallback
+		callback: callback
 	};
 	this._appCtxt.getAppController().sendRequest(params);
-};
-
-ZmVoiceApp.prototype._handleResponseMoveItems =
-function(items, callback, response) {
-	if (callback) {
-		callback.run(items);
-	}
 };
 
 ZmVoiceApp.prototype.launch =
@@ -272,6 +273,7 @@ function(parent, phone, obj) {
 		phone: phone,
 		callType: obj.name || ZmVoiceFolder.ACCOUNT,
 		view: obj.view,
+		numUnread: obj.u,
 		parent: parent,
 		tree: parent.tree
 	}		

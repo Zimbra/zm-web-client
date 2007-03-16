@@ -29,7 +29,6 @@ function ZmVoiceListController(appCtxt, container, app) {
 
 	this._soundPlayer = null;
 	this._folder = null;
-	this._hasPlayedSound = false;
 
 	this._autoPlayIndex = 0;
 	this._autoPlaying = false;
@@ -39,6 +38,8 @@ function ZmVoiceListController(appCtxt, container, app) {
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
 	this._listeners[ZmOperation.AUTO_PLAY] = new AjxListener(this, this._autoPlayListener);
+	this._listeners[ZmOperation.MARK_HEARD] = new AjxListener(this, this._markHeardListener);
+	this._listeners[ZmOperation.MARK_UNHEARD] = new AjxListener(this, this._markUnreadListener);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
@@ -90,11 +91,7 @@ function(view) {
 
 ZmVoiceListController.prototype._setViewContents =
 function(viewId) {
-	if (this._hasPlayedSound) {
-		this._soundPlayer.pause();
-		this._soundPlayer.rewind();
-		this._hasPlayedSound = false;
-	}
+	this._soundPlayer.setUrl(null);
 	var view = this._listView[viewId];
 	view.setPlaying(null);
 	view.setCallType(this._folder.callType);
@@ -118,7 +115,7 @@ function() {
 
 ZmVoiceListController.prototype._getActionMenuOps =
 function() {
-	var list = [];
+	var list = this._flagOps();
 	list.push(ZmOperation.FORWARD);
 	list.push(ZmOperation.SAVE);
 	list.push(ZmOperation.DELETE);
@@ -128,6 +125,11 @@ function() {
 ZmVoiceListController.prototype._participantOps =
 function() {
 	return [ZmOperation.CONTACT];
+};
+
+ZmVoiceListController.prototype._flagOps =
+function() {
+	return [ZmOperation.MARK_HEARD, ZmOperation.MARK_UNHEARD];
 };
 
 ZmVoiceListController.prototype._getParticipantActionMenu =
@@ -168,20 +170,57 @@ function(parent, num) {
 	ZmListController.prototype._resetOperations.call(this, parent, num);
 	parent.enable(ZmOperation.CHECK_MAIL, true);
 	parent.enable(ZmOperation.AUTO_PLAY, this._folder && this._folder.numUnread && !this._soundPlayer.isPluginMissing());
+	
+	var hasHeard = false;
+	var hasUnheard = false;
+	var items = this._listView[this._currentView].getSelection();
+	for (var i = 0; i < items.length; i++) {
+		(items[i].isUnheard) ? hasUnheard = true : hasHeard = true;
+		if (hasUnheard && hasHeard)
+			break;
+	}
+	parent.enable(ZmOperation.MARK_HEARD, hasUnheard);
+	parent.enable(ZmOperation.MARK_UNHEARD, hasHeard);
+	
+};
+
+ZmVoiceListController.prototype._markHeard = 
+function(items, heard) {
+	var changeItems = [];
+	for (var i = 0, count = items.length; i < count; i++) {
+		if (items[i].isUnheard == heard) {
+			changeItems.push(items[i]);
+		}
+	}
+	if (changeItems.length) {
+		var callback = new AjxCallback(this, this._handleResponseMarkHeard, [changeItems, heard]);
+		var app = this._appCtxt.getApp(ZmApp.VOICEMAIL);
+		app.markItemsHeard(changeItems, heard, callback);
+	}
+};
+
+ZmVoiceListController.prototype._handleResponseMarkHeard = 
+function(items, heard) {
+	for (var i = 0, count = items.length; i < count; i++) {
+		items[i].isUnheard = !heard;
+	}
+	this._getView().setUI();
 };
 
 ZmVoiceListController.prototype._refreshListener = 
 function(ev) {
-//	alert('Check voicemail here');
+	if (this._folder) {
+		var app = this._appCtxt.getApp(ZmApp.VOICEMAIL);
+		app.search(this._folder);
+	}
 };
 
 ZmVoiceListController.prototype._deleteListener = 
 function(ev) {
-	if (!this._handleResponseDeleteObj) {
-		this._handleResponseDeleteObj = new AjxListener(this, this._handleResponseDelete);
-	}
+	var items = this._getView().getSelection();
+	var callback = new AjxCallback(this, this._handleResponseDelete, [items]);
 	var app = this._appCtxt.getApp(ZmApp.VOICEMAIL);
-	app.deleteItems(this._getView().getSelection(), this._handleResponseDeleteObj);
+	app.deleteItems(items, callback);
 };
 
 ZmVoiceListController.prototype._handleResponseDelete = 
@@ -230,6 +269,16 @@ function(ev) {
 	}
 };
 
+ZmVoiceListController.prototype._markHeardListener = 
+function(ev) {
+	this._markHeard(this._getView().getSelection(), true);
+};
+
+ZmVoiceListController.prototype._markUnreadListener = 
+function(ev) {
+	this._markHeard(this._getView().getSelection(), false);
+};
+
 ZmVoiceListController.prototype._autoPlayNext = 
 function() {
 	var next = null;
@@ -271,7 +320,6 @@ function(voicemail) {
 	}
 	url[i++] = voicemail.soundUrl;
 	this._soundPlayer.setUrl(url.join(""));
-	this._hasPlayedSound = true;
 	this._getView().setPlaying(voicemail);
 };
 
@@ -322,6 +370,9 @@ ZmVoiceListController.prototype._soundChangeListener =
 function(event) {
 	if (this._autoPlaying && event.finished) {
 		this._autoPlayNext();
+	}
+	if (event.finished || event.status == DwtSoundPlugin.PLAYABLE) {
+		this._markHeard([this._getView().getPlaying()], true);
 	}
 };
 

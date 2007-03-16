@@ -56,7 +56,7 @@ ZmVoiceFolder.prototype.constructor = ZmVoiceFolder;
 ZmVoiceFolder.ACCOUNT = "USER_ROOT";
 ZmVoiceFolder.PLACED_CALL = "Placed Calls";
 ZmVoiceFolder.ANSWERED_CALL = "Answered Calls";
-ZmVoiceFolder.MISSED_CALL = "Missed calls";
+ZmVoiceFolder.MISSED_CALL = "Missed Calls";
 ZmVoiceFolder.VOICEMAIL = "Voicemail Inbox";
 ZmVoiceFolder.TRASH = "Trash";
 

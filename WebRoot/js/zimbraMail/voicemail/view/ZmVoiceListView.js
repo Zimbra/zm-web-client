@@ -81,6 +81,11 @@ function(voicemail) {
 	}
 };
 
+ZmVoiceListView.prototype.getPlaying =
+function() {
+	return this._playing;
+};
+
 ZmVoiceListView.prototype.createHeaderHtml = 
 function(defaultColumnSort) {
 	ZmListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
