@@ -333,7 +333,12 @@ function(viewId, force) {
 
 	var viewController = null;
 	if (viewId == ZmAppViewMgr.PENDING_VIEW) {
-		viewController = this._views[viewId][ZmAppViewMgr.C_APP_CONTENT].getController();
+		viewId = this._pendingView;
+		var view = this._views[viewId];
+		if (view) {
+			var appContent = view[ZmAppViewMgr.C_APP_CONTENT] || view[ZmAppViewMgr.C_APP_CONTENT_FULL];
+			viewController = appContent.getController();
+		}
 	}
 	DBG.println(AjxDebug.DBG1, "pushView: " + viewId);
 
@@ -351,7 +356,6 @@ function(viewId, force) {
 	
 	if (viewId == ZmAppViewMgr.PENDING_VIEW) {
 		DBG.println(AjxDebug.DBG1, "push of pending view: " + this._pendingView);
-		viewId = this._pendingView;
 		force = true;
 	}
 
