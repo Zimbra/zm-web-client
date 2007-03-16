@@ -107,7 +107,6 @@
                                             <app:calendarUrl toggleInstance="true" var="apptUrl"/>
                                             <fmt:message key="apptInstNote"/>
                                             &nbsp;<a accesskey='x' href="${apptUrl}"><fmt:message key="apptInstEditSeries"/></a>
-                                            <fmt:message key="apptInstChangesLost"/>
                                         </td>
                                     </tr>
                                 </table>
