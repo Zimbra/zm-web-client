@@ -487,7 +487,7 @@ function ZmShortcutsPageTabViewCustom(parent, appCtxt, organizer, controller, se
 	this._setting = setting;
 
 	this._dwtObjects = {};
-	this._createHtml();
+	this._createShortcutsPageHtml();
 	this._rendered = false;
 	this._hasRendered = false;
 
@@ -645,7 +645,7 @@ function() {
 	return shortcuts;
 };
 
-ZmShortcutsPageTabViewCustom.prototype._createHtml =
+ZmShortcutsPageTabViewCustom.prototype._createShortcutsPageHtml =
 function() {
 
 	this._addButtonDivId = Dwt.getNextId();
