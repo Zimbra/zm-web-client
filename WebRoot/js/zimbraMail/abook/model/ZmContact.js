@@ -739,6 +739,16 @@ function() {
 			this.getAttr(ZmContact.F_email3));
 };
 
+ZmContact.prototype.getIMAddress = function(type) {
+	return this.getAttr(ZmContact.F_email3); // FIXME: temporary for testing
+};
+
+ZmContact.prototype.getBuddy = function(type) {
+	var roster = AjxDispatcher.run("GetRoster");
+	var buddy = roster.getRosterItem(this.getIMAddress(type));
+	return buddy;
+};
+
 // returns a list (array) of all valid emails for this contact
 ZmContact.prototype.getEmails =
 function() {
@@ -786,11 +796,19 @@ function() {
 ZmContact.prototype.getToolTip =
 function(email, isGal) {
 	// update/null if modified
-	if (!this._toolTip || this._toolTipEmail != email) {
-		var subs = { contact:this, entryTitle:this.getFileAs() };
-		this._toolTip = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#Tooltip", subs);
-		this._toolTipEmail = email;
+//	if (!this._toolTip || this._toolTipEmail != email) {
+
+	// IM status can change anytime so let's always rebuild the tooltip
+	var buddy = null;
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
+		buddy = this.getBuddy("zimbra");
 	}
+	var subs = { contact	: this,
+		     entryTitle	: this.getFileAs(),
+		     buddy	: buddy };
+	this._toolTip = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#Tooltip", subs);
+	this._toolTipEmail = email;
+//	}
 	return this._toolTip;
 };
 

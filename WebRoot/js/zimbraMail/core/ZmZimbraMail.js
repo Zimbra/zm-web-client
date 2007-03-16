@@ -381,9 +381,9 @@ function(params, result) {
 		opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
 							selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true,
 							hideEmpty: ZmZimbraMail.HIDE_EMPTY});
-		if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
-			this._createBuddyListTabs();
-		}
+// 		if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
+// 			this._createBuddyListTabs();
+// 		}
 	}
 	this._setUserInfo();
 

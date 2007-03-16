@@ -62,6 +62,7 @@ ZmImApp.prototype._defineAPI =
 function() {
 	AjxDispatcher.registerMethod("GetRoster", "IM", new AjxCallback(this, this.getRoster));
 };
+////	AjxDispatcher.run("GetRoster").reload();
 
 ZmImApp.prototype._registerOperations =
 function() {
@@ -72,10 +73,7 @@ function() {
 	ZmOperation.registerOp("IM_PRESENCE_CHAT", {textKey:"imStatusChat", image:"ImFree2Chat"});
 	ZmOperation.registerOp("IM_PRESENCE_DND", {textKey:"imStatusDND", image:"ImDnd"});
 	ZmOperation.registerOp("IM_PRESENCE_INVISIBLE", {textKey:"imStatusInvisible", image:"ImInvisible"});
-	ZmOperation.registerOp("IM_PRESENCE_MENU", {textKey:"imPresence"}, null,
-		AjxCallback.simpleClosure(function(parent) {
-			ZmImApp.addImPresenceMenu(parent);
-	}));
+	ZmOperation.registerOp("IM_PRESENCE_MENU", {textKey:"imPresence"}, null, ZmImApp.addImPresenceMenu);
 	ZmOperation.registerOp("IM_PRESENCE_OFFLINE", {textKey:"imStatusOffline", image:"RoundMinusDis"});
 	ZmOperation.registerOp("IM_PRESENCE_ONLINE", {textKey:"imStatusOnline", image:"ImAvailable"});
 	ZmOperation.registerOp("IM_PRESENCE_XA", {textKey:"imStatusExtAway", image:"ImExtendedAway"});
@@ -93,13 +91,14 @@ function() {
 
 ZmImApp.prototype._registerOrganizers =
 function() {
-	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE,
-							{app:				ZmApp.IM,
-							 orgClass:			"ZmRosterTree",
-							 orgPackage:		"IM",
-							 labelKey:			"buddyList",
-							 compareFunc:		"ZmRosterTreeItem.sortCompare"
-							});
+// 	// not really sure what this is
+//	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE,
+//							{app:				ZmApp.IM,
+//							 orgClass:			"ZmRosterTree",
+//							 orgPackage:		"IM",
+//							 labelKey:			"buddyList",
+//							 compareFunc:		"ZmRosterTreeItem.sortCompare"
+//							});
 
 	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE_ITEM,
 							{app:				ZmApp.IM,
@@ -132,9 +131,8 @@ function() {
 
 ZmImApp.prototype.refresh =
 function() {
-	if (!this._appCtxt.inStartup) {
-		AjxDispatcher.run("GetRoster").reload();
-	}
+	// console.log("refresh");
+	AjxDispatcher.run("GetRoster").reload();
 };
 
 ZmImApp.prototype.postNotify =
@@ -146,12 +144,14 @@ function(notify) {
 
 ZmImApp.prototype.launch =
 function(callback) {
+	// console.log("launch");
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require("IM", false, loadCallback, null, true);
 };
 
 ZmImApp.prototype._handleLoadLaunch =
 function(callback) {
+	// console.log("_handleLoadLaunch");
 	AjxDispatcher.run("GetRoster").reload();
     var clc = this.getChatListController();
     clc.show();
@@ -161,6 +161,7 @@ function(callback) {
 
 ZmImApp.prototype.activate =
 function(active) {
+	// console.log("activate");
 	this._active = active;
 	if (active) {
 		this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, false);

@@ -68,6 +68,14 @@ ZmContactList = function(appCtxt, search, isGal, type) {
 	this._galFailures = 0;
 
 	this._acMatchFields = ZmContactList.AC_FIELDS;
+
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
+		setTimeout(AjxCallback.simpleClosure(function() {
+			var roster = AjxDispatcher.run("GetRoster");
+			var list = roster.getRosterItemList();
+			list.addChangeListener(new AjxListener(this, this.__rosterListener));
+		}, this), 500);
+	}
 };
 
 ZmContactList.prototype = new ZmList;
@@ -321,6 +329,10 @@ function(address) {
 
 	var contact = this._emailToContact[address.toLowerCase()];
 	return contact ? this._realizeContact(contact) : null;
+};
+
+ZmContactList.prototype.getContactByIMAddress = function(addr, type) {
+	return this.getContactByEmail(addr); // FIXME: temporary for testing
 };
 
 /**
@@ -1218,4 +1230,8 @@ function(ev) {
 ZmContactList.prototype.getPrintHtml =
 function(preferHtml, callback) {
 	return ZmContactCardsView.getPrintHtml(this);
+};
+
+ZmContactList.prototype.__rosterListener = function(ev) {
+//	console.log("ROSTER Event: ", ev);
 };

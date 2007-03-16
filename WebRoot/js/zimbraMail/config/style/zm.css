@@ -1766,6 +1766,8 @@ HTML>BODY .appt-selected .appt_allday_body
 	@FullSize@
 }
 
+.ZmChatWidget .ZToolbarTable td { vertical-align: middle; }
+
 .ZmChatWindowContainer {
 	@FullSize@
 	overflow: auto;
@@ -1859,6 +1861,38 @@ HTML>BODY .appt-selected .appt_allday_body
 	@AppBg@
 	@AppBorder@
   border-width: 2px !important;
+}
+
+.ZmChatTabs-Container {
+  position: absolute; left: 0; top: 0;
+}
+
+.ZmChatTabs-TabBar {
+  position: absolute;
+  top: 100%;
+  margin-top: 4px;
+  left: 5px;
+}
+
+/* hide the tab bar unless we have 2 or more tabs */
+.ZmChatTabs-TabBarCount-0, .ZmChatTabs-TabBarCount-1 { display: none; }
+
+.ZmChatTabs-TabBar .ZmChatTabs-Tab {
+  @WindowContainer@
+  float: left;
+  padding: 2px 4px;
+  border-top: none;
+  -moz-border-radius-topleft: 0;
+  -moz-border-radius-topright: 0;
+}
+
+.ZmChatTabs-TabBar .ZmChatTabs-Tab-Active {
+  @ToolbarContainer@
+  float: left;
+  padding: 2px 4px;
+  border-top: none;
+  -moz-border-radius-topleft: 0;
+  -moz-border-radius-topright: 0;
 }
 
 
@@ -2766,10 +2800,10 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 .ZmSoundPlayer {
-	
+
 }
 
-.DwtMissingSoundPlayer { 
+.DwtMissingSoundPlayer {
 	background-color: #ffffcc;
 	color:darkred;
 	text-decoration: underline;

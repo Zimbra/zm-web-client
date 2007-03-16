@@ -44,14 +44,26 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 ZmChatMultiWindowView.prototype = new ZmChatBaseView;
 ZmChatMultiWindowView.prototype.constructor = ZmChatMultiWindowView;
 
-ZmChatMultiWindowView.prototype._postSet = 
-function() {
+ZmChatMultiWindowView.prototype.getWindowManager = function() {
+	if (!this._wm)
+		this._wm = new DwtWindowManager(this);
+	return this._wm;
+};
+
+ZmChatMultiWindowView.prototype.__createChatWidget = function(chat) {
+	var wm = this.getWindowManager();
+	var cw = new ZmChatWindow(wm, chat);
+	wm.manageWindow(cw);
+	return cw;
+};
+
+ZmChatMultiWindowView.prototype._postSet = function() {
 	// create chat windows for any pending chats
 	var list = this.getChatList().getArray();
 	for (var i=0; i < list.length; i++) {
-    	    var chat = list[i];
-        	var cw = new ZmChatWindow(this, chat);
-        this._addChatWindow(cw, chat);
+    		var chat = list[i];
+        	var cw = this.__createChatWidget(chat);
+		this._addChatWindow(cw, chat);
 	}
 };
 
@@ -64,11 +76,10 @@ function() {
 /**
 * change listener for the chat list
 */
-ZmChatMultiWindowView.prototype._changeListener =
-function(ev) {
+ZmChatMultiWindowView.prototype._changeListener = function(ev) {
 	if (ev.event == ZmEvent.E_CREATE) {
 		var chat = ev._details.items[0];
-        	var cw = new ZmChatWindow(this, chat);
+        	var cw = this.__createChatWidget(chat);
 		this._addChatWindow(cw, chat);
 		cw.select();
 	} else if (ev.event == ZmEvent.E_DELETE) {
@@ -81,21 +92,18 @@ function(ev) {
 	}
 };
 
-ZmChatMultiWindowView.prototype.selectChat =
-function(chat) {
+ZmChatMultiWindowView.prototype.selectChat = function(chat) {
 	var cw = this._getChatWindowForChat(chat);
 	if (cw) cw.select();
 };
 
-ZmChatMultiWindowView.prototype._rosterItemChangeListener =
-function(chat, item, fields) {
-    var cw = this._getChatWindowForChat(chat);
-    if (cw) cw._rosterItemChangeListener(item, fields);
+ZmChatMultiWindowView.prototype._rosterItemChangeListener = function(chat, item, fields) {
+	var cw = this._getChatWindowForChat(chat);
+	if (cw) cw._rosterItemChangeListener(item, fields);
 }
 
-ZmChatMultiWindowView.prototype._getChatWindowForChat =
-function(chat) {
-    return this._chatIdToChatWindow[chat.id];
+ZmChatMultiWindowView.prototype._getChatWindowForChat = function(chat) {
+	return this._chatIdToChatWindow[chat.id];
 };
 
 ZmChatMultiWindowView.KEY_CHAT = "zcmwv_chat";

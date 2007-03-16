@@ -32,6 +32,9 @@
 */
 function ZmRosterItemList(appCtxt) {
 	ZmList.call(this, ZmItem.ROSTER_ITEM, appCtxt);
+// 	this.addChangeListener(function(ev) {
+// 		console.log(ev);
+// 	});
 }
 
 ZmRosterItemList.prototype = new ZmList;
@@ -94,5 +97,3 @@ function() {
 	    this.removeItem(listArray[i]);
 	}
 };
-
-
