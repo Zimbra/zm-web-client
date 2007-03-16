@@ -35,7 +35,7 @@ function ZmBrowseToolBar(parent, pickers) {
 		b.setData(ZmPicker.KEY_CTOR, ZmPicker.CTOR[id]);
 	}
 
-	this._createSeparator();
+	this.addSeparator();
 
 	var id = ZmPicker.RESET;
 	var b = this.createButton(id, {image:ZmPicker.IMAGE[id], text:ZmMsg[ZmPicker.MSG_KEY[id]],
