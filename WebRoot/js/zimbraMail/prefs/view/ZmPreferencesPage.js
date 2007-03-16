@@ -462,7 +462,7 @@ function(buttonId, setup) {
 
 	// add color picker
 	id = ZmSetting.COMPOSE_INIT_FONT_COLOR;
-	var cp = new DwtButtonColorPicker(this, null, "DwtButton");
+	var cp = new DwtButtonColorPicker(this);
 	cp.setImage("FontColor");
 	cp.showColorDisplay(true);
 	cp.setToolTipContent(ZmMsg.fontColor);

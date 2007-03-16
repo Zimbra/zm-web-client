@@ -284,15 +284,7 @@ function(params, ex) {
 ZmZimbraMail.prototype.__buddyListTabsListener = function(ev) {
 	var btn = ev.item;
 	if (!btn.isSelected) {
-		btn.setSelected(true);
-		var show_buddies;
-		if (btn === this.__btnFolders) {
-			this.__btnBuddies.setSelected(false);
-			show_buddies = false;
-		} else {
-			this.__btnFolders.setSelected(false);
-			show_buddies = true;
-		}
+		var show_buddies = btn === this.__btnBuddies;
 		var opc = this._appCtxt.getOverviewController();
 		var a = opc.getAllTreeViews(ZmZimbraMail._OVERVIEW_ID);
 		var buddies_view = opc.getTreeView(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.ROSTER_TREE_ITEM);
@@ -311,22 +303,17 @@ ZmZimbraMail.prototype.__buddyListTabsListener = function(ev) {
 ZmZimbraMail.prototype._createBuddyListTabs = function() {
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
 		var opc = this._appCtxt.getOverviewController();
-		var tb = new DwtToolBar(opc.getOverview(ZmZimbraMail._OVERVIEW_ID),
-					"DwtToolBar DwtTabBar ZmBuddyFolderTabBar", null, null, null, "100%");
+        var tabbar = new DwtTabBar(opc.getOverview(ZmZimbraMail._OVERVIEW_ID));
 
-		var listener = new AjxListener(this, this.__buddyListTabsListener);
+        var listener = new AjxListener(this, this.__buddyListTabsListener);
 
-		var b = this.__btnFolders = new ZmChicletButton(tb, "BuddyFolderTab", "", ZmMsg.folders);
-		b.setActivatedImage("BuddyFolderTab-hover");
-		b.setTriggeredImage("BuddyFolderTab-active");
-		b.addSelectionListener(listener);
-		b.setSelected(true);
+        // NOTE: Tab key of 1 means that it's auto-selected.
+        this.__btnFolders = tabbar.addButton(1, ZmMsg.folders);
+        this.__btnFolders.addSelectionListener(listener);
 
-		var b = this.__btnBuddies = new ZmChicletButton(tb, "BuddyFolderTab", "", ZmMsg.buddies, true);
-		b.setActivatedImage("BuddyFolderTab-hover");
-		b.setTriggeredImage("BuddyFolderTab-active");
-		b.addSelectionListener(listener);
-	}
+        this.__btnBuddies = tabbar.addButton(2, ZmMsg.buddies);
+        this.__btnBuddies.addSelectionListener(listener);
+    }
 };
 
 ZmZimbraMail.prototype.setBuddyListTab = function(tabName) {

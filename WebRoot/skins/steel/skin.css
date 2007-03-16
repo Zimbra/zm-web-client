@@ -161,6 +161,8 @@ body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
 	top: 6px;
 }
 
+.ZmAppChooser .ZButton { height: auto; margin-bottom: 4px; }
+
 .ImgAppChiclet							{	@AppTabContainer@			}
 .ImgAppChicletHover						{	@AppTabContainer-hover@		}
 .ImgAppChicletSel						{	@AppTabContainer-selected@	}

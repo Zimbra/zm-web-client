@@ -64,15 +64,6 @@ ZmApp.CHOOSER_SORT[ZmAppChooser.SPACER]			= 160;
 ZmApp.CHOOSER_SORT[ZmAppChooser.B_HELP]			= 170;
 ZmApp.CHOOSER_SORT[ZmAppChooser.B_LOGOUT]		= 190;
 
-ZmAppChooser.OUTER								= "outer";
-ZmAppChooser.OUTER_ACT							= "outer_act";
-ZmAppChooser.OUTER_TRIG							= "outer_trig";
-
-ZmAppChooser.IMAGE = {};
-ZmAppChooser.IMAGE[ZmAppChooser.OUTER]			= "ImgAppChiclet";
-ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]		= "ImgAppChicletHover";
-ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]		= "ImgAppChicletSel";
-
 // hard code help/logout since they arent real "apps"
 ZmApp.ICON[ZmAppChooser.B_HELP]					= "Help";
 ZmApp.ICON[ZmAppChooser.B_LOGOUT]				= "Logoff";
@@ -86,6 +77,7 @@ ZmAppChooser.SPACER_HEIGHT = 10;
 //
 
 ZmAppChooser.prototype.TEMPLATE = "zimbraMail.share.templates.Widgets#ZmAppChooser";
+ZmAppChooser.prototype.ITEM_TEMPLATE = "zimbraMail.share.templates.Widgets#ZmAppChooserItem";
 
 //
 // Public methods
@@ -109,10 +101,9 @@ function(id) {
 
 ZmAppChooser.prototype._createButton =
 function(id, tbStyle, isLast) {
-	var text = (tbStyle == DwtToolBar.HORIZ_STYLE) ? ZmMsg[ZmApp.NAME[id]] : null;
-	var b = new ZmChicletButton(this, ZmAppChooser.IMAGE[ZmAppChooser.OUTER], ZmApp.ICON[id], text, isLast);
-	b.setActivatedImage(ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]);
-	b.setTriggeredImage(ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]);
+	var text = ZmMsg[ZmApp.NAME[id]];
+    var outerClass = null;
+    var b = new ZmChicletButton(this, outerClass, ZmApp.ICON[id], text, isLast);
 	b.setToolTipContent(ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]]);
 	b.setData(Dwt.KEY_ID, id);
 	this._buttons[id] = b;
