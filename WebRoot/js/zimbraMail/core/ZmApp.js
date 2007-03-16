@@ -90,10 +90,6 @@ ZmApp.OPS_R					= {};	// map of operation ID to app
 ZmApp.QS_VIEWS				= {};	// list of views to handle in query string
 ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
 
-// map of key action to op
-ZmApp.ACTION_CODES[ZmKeyMap.NEW_FOLDER]	= ZmOperation.NEW_FOLDER;
-ZmApp.ACTION_CODES[ZmKeyMap.NEW_TAG]	= ZmOperation.NEW_TAG;
-
 // assistants for each app; each valu is a hash where the key is the name of the
 // assistant class and the value is the required package
 ZmApp.ASSISTANTS		= {};
@@ -105,6 +101,12 @@ ZmApp.DEFAULT_SORT		= {};	// controls order in which app is chosen as default st
 // ordered lists of apps
 ZmApp.APPS				= [];	// ordered list
 ZmApp.DEFAULT_APPS		= [];	// ordered list
+
+ZmApp.initialize =
+function() {
+	ZmApp.ACTION_CODES[ZmKeyMap.NEW_FOLDER]	= ZmOperation.NEW_FOLDER;
+	ZmApp.ACTION_CODES[ZmKeyMap.NEW_TAG]	= ZmOperation.NEW_TAG;
+};
 
 /**
  * Stores information about an app. Note: Setting a value that evaluates to

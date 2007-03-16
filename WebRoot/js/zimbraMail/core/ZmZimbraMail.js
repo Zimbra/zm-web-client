@@ -138,6 +138,7 @@ function(domain, app, userShellId) {
 	appCtxt.setSettings(settings);
 	settings.initialize();
 	ZmOperation.initialize();
+	ZmApp.initialize();
 	var userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
 	var shell = new DwtShell(null, false, ZmZimbraMail._confirmExitMethod, userShell);
 	appCtxt.setShell(shell);

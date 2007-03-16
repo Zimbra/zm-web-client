@@ -85,6 +85,7 @@ function(domain) {
 	appCtxt.setSettings(settings);
 	settings.initialize();
 	ZmOperation.initialize();
+	ZmApp.initialize();
 
 	if (!window.parentController) {
 		window.parentController = window.opener._zimbraMail;
