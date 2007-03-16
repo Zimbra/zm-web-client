@@ -79,7 +79,7 @@ function ZmListController(appCtxt, container, app) {
 	this._listeners[ZmOperation.CONTACT] = new AjxListener(this, this._participantContactListener);
 	this._listeners[ZmOperation.VIEW] = new AjxListener(this, this._viewButtonListener);
 
-	this._popdownListener = new AjxListener(this, this._popdownActionListener);
+	this._menuPopdownListener = new AjxListener(this, this._menuPopdownActionListener);
 
 	this._dropTgt = new DwtDropTarget("ZmTag");
 	this._dropTgt.markAsMultiple();
@@ -394,7 +394,7 @@ function(menu) {
 			menu.addSelectionListener(menuItem, this._listeners[menuItem]);
 		}
 	}
-	menu.addPopdownListener(this._popdownListener);
+	menu.addPopdownListener(this._menuPopdownListener);
 };
 
 ZmListController.prototype._initializeTabGroup =
@@ -471,7 +471,7 @@ function(ev) {
 	this._resetOperations(actionMenu, this._listView[this._currentView].getSelectionCount());
 };
 
-ZmListController.prototype._popdownActionListener =
+ZmListController.prototype._menuPopdownActionListener =
 function() {
 	if (!this._pendingActionData) {
 		this._listView[this._currentView].handleActionPopdown();
@@ -744,7 +744,7 @@ function(ev) {
 			var tag = ev.getDetail("organizers")[0];
 			this._doTag(this._pendingActionData, tag, true);
 			this._pendingActionData = null;
-			this._popdownActionListener();
+			this._menuPopdownActionListener();
 		}
 	}
 };

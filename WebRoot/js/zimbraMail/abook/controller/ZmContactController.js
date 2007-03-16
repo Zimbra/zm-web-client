@@ -295,7 +295,7 @@ function() {
 	this._listView[this._currentView].cleanup();
 };
 
-ZmContactController.prototype._popdownActionListener = 
+ZmContactController.prototype._menuPopdownActionListener = 
 function(ev) {
 	// bug fix #3719 - do nothing
 };

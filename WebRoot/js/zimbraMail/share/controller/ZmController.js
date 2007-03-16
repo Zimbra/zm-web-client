@@ -377,13 +377,10 @@ function(dialog, callback, data) {
 };
 
 // Pop down the dialog and clear any pending actions (initiated from an action menu).
-// The action menu's popdown listener got deferred when the dialog popped up, so
-// run it now.
 ZmController.prototype._clearDialog =
 function(dialog) {
 	dialog.popdown();
 	this._pendingActionData = null;
-	this._popdownActionListener();
 };
 
-ZmController.prototype._popdownActionListener = function() {};
+ZmController.prototype._menuPopdownActionListener = function() {};

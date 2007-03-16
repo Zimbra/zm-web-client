@@ -236,7 +236,7 @@ function(view) {
 	this._resetNavToolBarButtons(view);
 }
 
-ZmMsgController.prototype._popdownActionListener = 
+ZmMsgController.prototype._menuPopdownActionListener = 
 function(ev) {
 	// dont do anything since msg view has no action menus
 };

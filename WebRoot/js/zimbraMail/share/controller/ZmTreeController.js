@@ -348,7 +348,7 @@ function(parent, menuItems) {
 			actionMenu.addSelectionListener(menuItem, this._listeners[menuItem]);
 		}
 	}
-	actionMenu.addPopdownListener(new AjxListener(this, this._popdownActionListener));
+	actionMenu.addPopdownListener(new AjxListener(this, this._menuPopdownActionListener));
 
 	return actionMenu;
 };
@@ -749,7 +749,7 @@ function(ev) {
 * Called when a dialog we opened is closed. Sets the style of the actioned
 * tree item from "actioned" back to its normal state.
 */
-ZmTreeController.prototype._popdownActionListener = 
+ZmTreeController.prototype._menuPopdownActionListener = 
 function() {
 	if (this._pendingActionData) return;
 
@@ -759,8 +759,6 @@ function() {
 		if (ti)
 			ti._setActioned(false);
 	}
-	this._actionedOrganizer = null;
-	this._actionedOverviewId = null;
 };
 
 // Callbacks
