@@ -34,9 +34,9 @@
                 <td>
                     <table border="0" cellpadding="2" cellspacing="2">
                         <tr>
-                            <td width=20><center><app:img src="calendar/Appointment.gif"/></center></td>
+                            <td width=24><app:img src="${appt.exception or not empty appt.recurrence ? 'calendar/ApptRecur.gif' : 'calendar/Appointment.gif'}"/></td>
                             <td class='apptHeader'>
-                            ${fn:escapeXml(empty invite.component.name ? noSubject : invite.component.name)}
+                            ${fn:escapeXml(empty appt.name ? noSubject : appt.name)}
                         </tr>
                     </table>
                 </td>
@@ -64,7 +64,7 @@
             <table width=100% cellpadding=0 cellspacing=0 border=0>
                <tr>
                     <td>
-                        <table width=100% cellpadding=2 cellspacing=0 border=0>
+                        <table width=100% cellpadding=1 cellspacing=0 border=0>
                             <tr>
                                 <td class='MsgHdrName'>
                                     <fmt:message key="subject"/>
@@ -125,7 +125,21 @@
                                     &nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneWindowsId}</span>&nbsp;
                                 </td>
                             </tr>
-
+                            <c:if test="${appt.exception}">
+                            <tr>
+                                <td class='MsgHdrName'>
+                                    &nbsp;
+                                </td>
+                                <td class='MgrHdrValue'>
+                                    <table cellpadding="0" cellspacing="0">
+                                        <tr>
+                                            <td width=24><app:img src="calendar/ApptException.gif"/></td>
+                                            <td><b><fmt:message key="apptExceptionNote"/></b></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                            </c:if>
                             <c:if test="${not empty appt.organizer}">
                             <tr>
                                 <td class='MsgHdrName'>

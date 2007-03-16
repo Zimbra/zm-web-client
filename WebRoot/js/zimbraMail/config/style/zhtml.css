@@ -879,6 +879,14 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
      @BottomSeparator@
 }
 
+.ZhApptRecurrInfo {
+        cursor: pointer;
+        background-color: #FFFFCC;
+        padding: 7px 0;
+        font-size: 10pt;
+        border-bottom: 1px solid #777777;
+}
+
 /*
  * Colors, for use in calendar and elsewhere.
  *

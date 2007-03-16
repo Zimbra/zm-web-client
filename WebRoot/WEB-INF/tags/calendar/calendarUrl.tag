@@ -7,6 +7,7 @@
 <%@ attribute name="date" rtexprvalue="true" required="false" %>
 <%@ attribute name="appt" rtexprvalue="true" required="false" type="com.zimbra.cs.zclient.ZApptSummary" %>
 <%@ attribute name="nodate" rtexprvalue="true" required="false" %>
+<%@ attribute name="toggleInstance" rtexprvalue="true" required="false" %>
 <%@ variable name-from-attribute="var" alias='urlVar' scope="AT_BEGIN" variable-class="java.lang.String" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -31,18 +32,24 @@
         </c:otherwise>
     </c:choose>
     <c:if test="${not empty appt}">
-        <c:param name="action" value="${appt.organizer ? 'view' : 'view'}"/>
+        <c:param name="action" value="${appt.organizer ? 'edit' : 'view'}"/>
         <c:param name="invId" value="${appt.seriesInviteId}"/>
-        <c:param name="invCompNum" value="${appt.seriesComponentNumber}"/>
         <c:if test="${appt.exception}">
             <c:param name="exInvId" value="${appt.inviteId}"/>
-            <c:param name="exCompNum" value="${appt.inviteComponentNumber}"/>
         </c:if>
         <c:if test="${appt.recurring or appt.exception}">
             <c:param name="useInstance" value="1"/>
         </c:if>
         <c:param name="instStartTime" value="${appt.startTime}"/>
         <c:param name="instDuration" value="${appt.duration}"/> 
+    </c:if>
+    <c:if test="${toggleInstance}">
+        <c:if test="${not empty param.action}"><c:param name="action" value="${param.action}"/></c:if>
+        <c:if test="${not empty param.invId}"><c:param name="invId" value="${param.invId}"/></c:if>
+        <c:if test="${not empty param.exInvId}"><c:param name="exInvId" value="${param.exInvId}"/></c:if>
+        <c:if test="${not empty param.instStartTime}"><c:param name="instStartTime" value="${param.instStartTime}"/></c:if>
+        <c:if test="${not empty param.instDuration}"><c:param name="instDuration" value="${param.instDuration}"/></c:if>
+        <c:param name="useInstance" value="${param.useInstance ne '1' ? '1' : '0'}"/>
     </c:if>
     <c:forEach items="${dynattrs}" var="a">
         <c:if test="${not empty a.value}">

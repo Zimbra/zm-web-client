@@ -31,6 +31,8 @@
         </c:otherwise>
     </c:choose>
 
+    <c:set var="appt" value="${empty message ? null : message.invite.component}"/>
+
     <c:choose>
         <c:when test="${empty compose }">
             <zm:messageCompose var="compose" message="${message}" action="${empty message ? 'apptnew' : 'apptedit'}"
@@ -85,7 +87,6 @@
         </table>
     </c:set>
 
-    <!-- ${message.invite.component}-->
     <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
         <table width=100% cellpadding="0" cellspacing="0">
             <tr>
@@ -96,7 +97,24 @@
             <tr>
                 <td class='ZhAppContent'>
                     <table cellpadding=2 cellspacing=0 width=100% class='Compose'>
+                    <c:if test="${not empty appt and (appt.exception or not empty appt.recurrence) and compose.useInstance}">
                         <tr>
+                            <td colspan=2 >
+                                <table width=100% cellpadding=0 cellspacing=0>
+                                    <tr>
+                                        <td class='ZhApptRecurrInfo' style='padding:0' width=24><app:img src="dwt/Information.gif"/></td>
+                                        <td class='ZhApptRecurrInfo'>
+                                            <app:calendarUrl toggleInstance="true" var="apptUrl"/>
+                                            <fmt:message key="apptInstNote"/>
+                                            &nbsp;<a accesskey='x' href="${apptUrl}"><fmt:message key="apptInstEditSeries"/></a>
+                                            <fmt:message key="apptInstChangesLost"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </c:if>
+                        <tr  class='${zm:getFolder(pageContext, empty compose ? 10 : compose.apptFolderId).styleColor}Bg'>
                             <td colspan=2 class='ZhBottomSep'>
                                 <table width=100% cellpadding=0 cellspacing=0>
                                     <tr class='apptHeaderRow'>
@@ -150,7 +168,7 @@
                                                                 <select name='apptFolderId'>
                                                                     <zm:forEachFolder var="folder">
                                                                         <c:if test="${folder.isAppointmentView}">
-                                                                            <option value="${folder.id}" />
+                                                                            <option value="${folder.id}" <c:if test="${compose.apptFolderId eq folder.id}">selected </c:if>/>
                                                                             ${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}
                                                                         </c:if>
                                                                     </zm:forEachFolder>
