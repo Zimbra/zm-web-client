@@ -419,8 +419,8 @@ function() {
 	this.registerSetting("NOTEBOOK_ENABLED",				{name: "zimbraFeatureNotebookEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("OPTIONS_ENABLED",					{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("POP_ACCOUNTS_ENABLED",			{name: "zimbraFeaturePop3DataSourceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("PORTAL_ENABLED",					{name: "zimbraFeaturePortalEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("PORTAL_NAME",						{name: "zimbraPortalName", type: ZmSetting.T_COS, defaultValue: "example"});
+	this.registerSetting("PORTAL_ENABLED",					{name: "zimbraFeaturePortalEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	this.registerSetting("PORTAL_NAME",						{name: "zimbraPortalName", type: ZmSetting.T_COS, defaultValue: "velodrome"});
 	this.registerSetting("PWD_MAX_LENGTH",					{name: "zimbraPasswordMaxLength", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 64});
 	this.registerSetting("PWD_MIN_LENGTH",					{name: "zimbraPasswordMinLength", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 6});
 	this.registerSetting("QUOTA",							{name: "zimbraMailQuota", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 0});
@@ -430,7 +430,7 @@ function() {
 	this.registerSetting("TAGGING_ENABLED",					{name: "zimbraFeatureTaggingEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("TASKS_ENABLED",					{name: "zimbraFeatureTasksEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("VIEW_ATTACHMENT_AS_HTML",			{name: "zimbraFeatureViewInHtmlEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("VOICEMAIL_ENABLED",				{name: "zimbraFeatureVoiceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("VOICEMAIL_ENABLED",				{name: "zimbraFeatureVoiceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	
 	// user metadata (included with COS since the user can't change them)
 	this.registerSetting("LICENSE_STATUS",	{type: ZmSetting.T_COS, defaultValue: ZmSetting.LICENSE_GOOD});

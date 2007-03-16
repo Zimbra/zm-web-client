@@ -17,5 +17,9 @@
 </template>
 
 <template id='ZmAppChooserButton'>
-  <$= AjxTemplate.expand("ajax.dwt.templates.Widgets#ZTab", data) $>
+  <table id='${id}_select' class='ZAppTabBorder ZWidgetTable  ZWidgetBorder' cellspacing=0 cellpadding=0><tr>
+    <td id='${id}_left_icon'  class='ZLeftIcon ZWidgetIcon'></td>
+    <td id='${id}_title'		 class='ZWidgetTitle'></td>
+    <td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
+  </tr></table>
 </template>
