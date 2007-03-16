@@ -195,5 +195,6 @@
     <input type="hidden" name="replytype" value="${fn:escapeXml(compose.replyType)}"/>
     <input type="hidden" name="draftid"
            value="${fn:escapeXml(empty requestScope.draftid ? compose.draftId : requestScope.draftid)}"/>
+    <input type="hidden" name="inviteReplyVerb" value="${fn:escapeXml(compose.inviteReplyVerb)}"/>
 </form>
 </app:view>

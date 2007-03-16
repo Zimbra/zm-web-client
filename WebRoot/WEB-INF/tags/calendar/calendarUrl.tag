@@ -32,7 +32,8 @@
         </c:otherwise>
     </c:choose>
     <c:if test="${not empty appt}">
-        <c:param name="action" value="${appt.organizer ? 'edit' : 'view'}"/>
+        <c:set var="apptFolder" value="${zm:getFolder(pageContext, appt.folderId)}"/>
+        <c:param name="action" value="${apptFolder.isMountPoint or apptFolder.isFeed or not appt.organizer ? 'view' : 'edit'}"/>
         <c:param name="invId" value="${appt.seriesInviteId}"/>
         <c:if test="${appt.exception}">
             <c:param name="exInvId" value="${appt.inviteId}"/>

@@ -21,6 +21,10 @@
     </c:if>
 </c:set>
 
+<c:if test="${not empty message.invite and mailbox.features.calendar}">
+    <c:set var="appt" value="${message.invite.component}"/>
+    <c:set var="showInviteReply" value="${not zm:getFolder(pageContext, message.folderId).isInTrash and not empty message.invite.component}"/>
+</c:if>
 <fmt:message var="unknownSender" key="unknownSender"/>
 
 <c:set var="isPart" value="${!empty message.partName}"/>
@@ -168,17 +172,44 @@
                     <td nowrap align=left style='padding-left: 5px'>
                         <table cellspacing=4 cellpadding=0 class='Tb'>
                             <tr>
+                                <c:set var="accessKey" value="${0}"/>
+                                <c:if test="${showInviteReply}">
+                                    <c:set var="keyOffset" value="${3}"/>
+                                    <td style='padding: 0 2px 0 2px'>
+                                        <a <c:if test="${not isPart}">accesskey="1" </c:if> href="${composeUrl}&op=accept">
+                                            <img src="<c:url value="/images/common/Check.gif"/>" alt=""/>
+                                            &nbsp;
+                                            <span><fmt:message key="replyAccept"/></span>
+                                        </a>
+                                    </td>
+                                    <td><div class='vertSep'></div></td>
+                                    <td style='padding: 0 2px 0 2px'>
+                                        <a <c:if test="${not isPart}">accesskey="2" </c:if> href="${composeUrl}&op=tentative">
+                                            <img src="<c:url value="/images/common/QuestionMark.gif"/>" alt=""/>
+                                            &nbsp;
+                                            <span><fmt:message key="replyTentative"/></span>
+                                        </a>
+                                    </td>
+                                    <td><div class='vertSep'></div></td>
+                                    <td style='padding: 0 2px 0 2px'>
+                                        <a <c:if test="${not isPart}">accesskey="3" </c:if> href="${composeUrl}&op=decline">
+                                            <img src="<c:url value="/images/common/Cancel.gif"/>" alt=""/>
+                                            &nbsp;
+                                            <span><fmt:message key="replyDecline"/></span>
+                                        </a>
+                                    </td>
+                                    <td><div class='vertSep'></div></td>
+                                </c:if>
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">accesskey="1"</c:if> href="${composeUrl}&op=reply">
+                                    <a <c:if test="${not isPart}">accesskey="${keyOffset+1}"</c:if> href="${composeUrl}&op=reply">
                                         <img src="<c:url value="/images/mail/Reply.gif"/>" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="reply"/></span>
                                     </a>
                                 </td>
                                 <td><div class='vertSep'></div></td>
-
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">accesskey="2"</c:if> href="${composeUrl}&op=replyAll">
+                                    <a <c:if test="${not isPart}">accesskey="${keyOffset+2}"</c:if> href="${composeUrl}&op=replyAll">
                                         <img src="<c:url value="/images/mail/ReplyAll.gif"/>" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="replyAll"/></span>
@@ -186,7 +217,7 @@
                                 </td>
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">accesskey="3"</c:if> href="${composeUrl}&op=forward">
+                                    <a <c:if test="${not isPart}">accesskey="${keyOffset+3}"</c:if> href="${composeUrl}&op=forward">
                                         <img src="<c:url value="/images/mail/Forward.gif"/>" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="forward"/></span>
