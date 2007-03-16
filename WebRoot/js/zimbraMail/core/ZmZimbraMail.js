@@ -74,6 +74,10 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._pollInstantNotifications = false; // if TRUE, we're in "instant notification" mode
 	this._needOverviewLayout = false;
 
+	if (domain != "localhost") {
+		this.setPollInterval();
+	}
+
 	AjxDispatcher.setPackageLoadFunction("Zimlet", new AjxCallback(this, this._postLoadZimlet));
 
 	AjxDispatcher.setPreLoadFunction(new AjxCallback(this, function() {
@@ -670,7 +674,7 @@ function(resetBackoff) {
             this._pollActionId = AjxTimedAction.scheduleAction(pollAction, this._pollInterval);
         } catch (ex) {
             this._pollActionId = null;
-            DBG.println(AjxDebug.DBG1, "Caught exception in ZmXimbraMail._kickPolling.  Polling chain broken!");
+            DBG.println(AjxDebug.DBG1, "Caught exception in ZmZimbraMail._kickPolling.  Polling chain broken!");
         }
     }
   };
