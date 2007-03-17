@@ -25,7 +25,7 @@
 
 function ZmVoiceApp(appCtxt, container, parentController) {
 	this._phones = [];
-	ZmApp.call(this, ZmApp.VOICEMAIL, appCtxt, container, parentController);
+	ZmApp.call(this, ZmApp.VOICE, appCtxt, container, parentController);
 }
 
 // Organizer and item-related constants
@@ -33,17 +33,17 @@ ZmEvent.S_VOICEMAIL				= "VOICEMAIL";
 ZmItem.VOICEMAIL				= ZmEvent.S_VOICEMAIL;
 ZmEvent.S_CALL					= "CALL";
 ZmItem.CALL						= ZmEvent.S_CALL;
-ZmOrganizer.VOICEMAIL			= ZmEvent.S_VOICEMAIL;
+ZmOrganizer.VOICE				= ZmEvent.S_VOICEMAIL;
 
 //TODO: Figure out what id to use or should I just use something unique?
 ZmOrganizer.ID_VOICEMAIL		= 8675;
 
 // App-related constants
-ZmApp.VOICEMAIL						= "Voicemail";
-ZmApp.CLASS[ZmApp.VOICEMAIL]		= "ZmVoiceApp";
-ZmApp.SETTING[ZmApp.VOICEMAIL]		= ZmSetting.VOICE_ENABLED;
-ZmApp.LOAD_SORT[ZmApp.VOICEMAIL]	= 80;
-ZmApp.QS_ARG[ZmApp.VOICEMAIL]		= "voicemail";
+ZmApp.VOICE						= "Voice";
+ZmApp.CLASS[ZmApp.VOICE]		= "ZmVoiceApp";
+ZmApp.SETTING[ZmApp.VOICE]		= ZmSetting.VOICE_ENABLED;
+ZmApp.LOAD_SORT[ZmApp.VOICE]	= 80;
+ZmApp.QS_ARG[ZmApp.VOICE]		= "voice";
 
 ZmVoiceApp.prototype = new ZmApp;
 ZmVoiceApp.prototype.constructor = ZmVoiceApp;
@@ -57,31 +57,31 @@ function() {
 
 ZmVoiceApp.prototype._defineAPI =
 function() {
-	AjxDispatcher.registerMethod("GetVoicemailController", "Voicemail", new AjxCallback(this, this.getVoicemailController));
+	AjxDispatcher.registerMethod("GetVoiceController", "Voicemail", new AjxCallback(this, this.getVoiceController));
 };
 
 ZmVoiceApp.prototype._registerItems =
 function() {
 	var listCreator = AjxCallback.simpleClosure(this._createList, this);
 	ZmItem.registerItem(ZmItem.VOICEMAIL,
-						{app:			ZmApp.VOICEMAIL,
+						{app:			ZmApp.VOICE,
 						 nameKey:		"voicemail",
 						 icon:			"Voicemail",
 						 soapCmd:		"VoiceMsgAction",
 						 itemClass:		"ZmVoicemail",
 						 node:			"m",
-						 organizer:		ZmOrganizer.VOICEMAIL,
+						 organizer:		ZmOrganizer.VOICE,
 						 searchType:	"voicemail",
 						 resultsList:	listCreator
 						});
 	ZmItem.registerItem(ZmItem.CALL,
-						{app:			ZmApp.VOICEMAIL,
+						{app:			ZmApp.VOICE,
 						 nameKey:		"call",
 						 icon:			"Voicemail",
 						 soapCmd:		"VoiceMsgAction",
 						 itemClass:		"ZmCall",
 						 node:			"m",
-						 organizer:		ZmOrganizer.VOICEMAIL,
+						 organizer:		ZmOrganizer.VOICE,
 						 searchType:	"calllog",
 						 resultsList:	listCreator
 						});
@@ -102,8 +102,8 @@ function() {
 
 ZmVoiceApp.prototype._registerOrganizers =
 function() {
-	ZmOrganizer.registerOrg(ZmOrganizer.VOICEMAIL,
-							{app:				ZmApp.VOICEMAIL,
+	ZmOrganizer.registerOrg(ZmOrganizer.VOICE,
+							{app:				ZmApp.VOICE,
 							 nameKey:			"voicemailFolder",
 							 defaultFolder:		ZmOrganizer.ID_VOICEMAIL,
 							 firstUserId:		256,
@@ -120,14 +120,14 @@ function() {
 
 ZmVoiceApp.prototype._registerApp =
 function() {
-	ZmApp.registerApp(ZmApp.VOICEMAIL,
+	ZmApp.registerApp(ZmApp.VOICE,
 							 {mainPkg:				"Voicemail",
 							  nameKey:				"voicemail",
 							  icon:					"VoicemailApp",
 							  qsArg:				"voicemail",
 							  chooserTooltipKey:	"goToVoicemail",
 							  defaultSearch:		ZmSearchToolBar.FOR_ANY_MI,
-							  overviewTrees:		[ZmOrganizer.VOICEMAIL],
+							  overviewTrees:		[ZmOrganizer.VOICE],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.VOICEMAIL],
 							  gotoActionCode:		ZmKeyMap.GOTO_VOICEMAIL,
@@ -175,8 +175,8 @@ function(folder, callback, response) {
 	var searchResult = response._data;
 	var list = searchResult.getResults(folder.getSearchType());
 	list.folder = folder;
-	var voicemailController = AjxDispatcher.run("GetVoicemailController");
-	voicemailController.show(searchResult, folder);
+	var voiceController = AjxDispatcher.run("GetVoiceController");
+	voiceController.show(searchResult, folder);
 	if (callback) {
 		callback.run(searchResult);
 	}
@@ -298,11 +298,11 @@ ZmVoiceApp.prototype.activate =
 function(active, view) {
 };
 
-ZmVoiceApp.prototype.getVoicemailController = function() {
-	if (!this._voicemailController) {
-		this._voicemailController = new ZmVoiceListController(this._appCtxt, this._container, this);
+ZmVoiceApp.prototype.getVoiceController = function() {
+	if (!this._voiceController) {
+		this._voiceController = new ZmVoiceListController(this._appCtxt, this._container, this);
 	}
-	return this._voicemailController;
+	return this._voiceController;
 };
 
 ZmVoiceApp.prototype._handleDeletes =

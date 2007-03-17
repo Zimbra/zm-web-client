@@ -194,7 +194,7 @@ function(items, heard) {
 	}
 	if (changeItems.length) {
 		var callback = new AjxCallback(this, this._handleResponseMarkHeard, [changeItems, heard]);
-		var app = this._appCtxt.getApp(ZmApp.VOICEMAIL);
+		var app = this._appCtxt.getApp(ZmApp.VOICE);
 		app.markItemsHeard(changeItems, heard, callback);
 	}
 };
@@ -210,7 +210,7 @@ function(items, heard) {
 ZmVoiceListController.prototype._refreshListener = 
 function(ev) {
 	if (this._folder) {
-		var app = this._appCtxt.getApp(ZmApp.VOICEMAIL);
+		var app = this._appCtxt.getApp(ZmApp.VOICE);
 		app.search(this._folder);
 	}
 };
@@ -219,7 +219,7 @@ ZmVoiceListController.prototype._deleteListener =
 function(ev) {
 	var items = this._getView().getSelection();
 	var callback = new AjxCallback(this, this._handleResponseDelete, [items]);
-	var app = this._appCtxt.getApp(ZmApp.VOICEMAIL);
+	var app = this._appCtxt.getApp(ZmApp.VOICE);
 	app.deleteItems(items, callback);
 };
 

@@ -42,7 +42,7 @@
 * @param restUrl	[string]*		The REST URL of this organizer.
 */
 function ZmVoiceFolder(params) {
-	params.type = ZmOrganizer.VOICEMAIL;
+	params.type = ZmOrganizer.VOICE;
 	ZmOrganizer.call(this, params);
 	this.phone = params.phone;
 //TODO: clean up this callType...shouldn't be necessary, when .name field has same thing.	

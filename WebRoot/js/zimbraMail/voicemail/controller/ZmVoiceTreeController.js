@@ -26,7 +26,7 @@
 function ZmVoiceTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length == 0) return;
 
-	ZmFolderTreeController.call(this, appCtxt, (type || ZmOrganizer.VOICEMAIL), dropTgt);
+	ZmFolderTreeController.call(this, appCtxt, (type || ZmOrganizer.VOICE), dropTgt);
 }
 
 ZmVoiceTreeController.prototype = new ZmFolderTreeController;
@@ -44,17 +44,12 @@ function(params) {
 	return new ZmVoiceTreeView(params);
 };
 
-ZmVoiceTreeController.prototype._getAllowedSubTypes =
-function() {
-	return ZmTreeController.prototype._getAllowedSubTypes.call(this);
-};
-
 ZmVoiceTreeController.prototype._postSetup =
 function(overviewId) {
 	ZmTreeController.prototype._postSetup.call(this, overviewId);
 	
 	// Expand the default account.
-	var app = this._appCtxt.getApp(ZmApp.VOICEMAIL);
+	var app = this._appCtxt.getApp(ZmApp.VOICE);
 	if (app.startFolder) {
 		var view = this._treeView[overviewId];
 		var parentItem = view.getTreeItemById(app.startFolder.parent.id);
@@ -117,6 +112,6 @@ function(ev, treeView, overviewId) {
 */
 ZmVoiceTreeController.prototype._itemClicked =
 function(folder) {
-	this._appCtxt.getApp(ZmApp.VOICEMAIL).search(folder);
+	this._appCtxt.getApp(ZmApp.VOICE).search(folder);
 };
 
