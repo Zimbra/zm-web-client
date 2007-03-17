@@ -67,7 +67,7 @@ function() {
 						{app:			ZmApp.VOICEMAIL,
 						 nameKey:		"voicemail",
 						 icon:			"Voicemail",
-						 soapCmd:		"VoicemailAction",
+						 soapCmd:		"VoiceMsgAction",
 						 itemClass:		"ZmVoicemail",
 						 node:			"m",
 						 organizer:		ZmOrganizer.VOICEMAIL,
@@ -78,7 +78,7 @@ function() {
 						{app:			ZmApp.VOICEMAIL,
 						 nameKey:		"call",
 						 icon:			"Voicemail",
-						 soapCmd:		"VoicemailAction",
+						 soapCmd:		"VoiceMsgAction",
 						 itemClass:		"ZmCall",
 						 node:			"m",
 						 organizer:		ZmOrganizer.VOICEMAIL,
@@ -184,12 +184,16 @@ function(folder, callback, response) {
 
 ZmVoiceApp.prototype.deleteItems =
 function(items, callback) {
-	
-	if (!items[0].isInTrash()) {
-		this._performAction(items, "move", { l: ZmVoiceFolder.TRASH_ID }, callback);
-	} else {
+	if (items.length) {
+		var phone = items[0].getPhone();
+		var folderId;
+		if (!items[0].isInTrash()) {
+			folderId = ZmVoiceFolder.TRASH_ID + "-" + phone.name;
+		} else {
 //TODO: this undeletes. Should really be hard delete.	
-		this._performAction(items, "move", { l: ZmVoiceFolder.VOICEMAIL_ID }, callback);
+			folderId = ZmVoiceFolder.VOICEMAIL_ID + "-" + phone.name;
+		}
+		this._performAction(items, "move", { l: folderId }, callback);
 	}
 };
 
@@ -268,7 +272,7 @@ function(callback, response) {
 ZmVoiceApp.prototype._createFolder =
 function(parent, phone, obj) {
 	var params = { 
-		id: phone.name + obj.name,
+		id: obj.id,
 		name: obj.name,
 		phone: phone,
 		callType: obj.name || ZmVoiceFolder.ACCOUNT,

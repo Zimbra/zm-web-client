@@ -488,7 +488,7 @@ ZmList.prototype._itemAction =
 function(params, batchCmd) {
 	var actionedItems = new Array();
 	var idHash = this._getIds(params.items);
-	var idStr = idHash.list.join(",");;
+	var idStr = idHash.list.join(",");
 	if (!(idStr && idStr.length)) {
 		if (params.callback)
 			params.callback.run(new ZmCsfeResult(actionedItems));
@@ -499,7 +499,7 @@ function(params, batchCmd) {
 	var type = (this.type == ZmItem.MIXED) ? this._mixedType : this.type;
 	if (!type) return;
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
-	var soapDoc = AjxSoapDoc.create(soapCmd, "urn:zimbraMail");
+	var soapDoc = AjxSoapDoc.create(soapCmd, this._getActionNamespace());
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("id", idStr);
 	actionNode.setAttribute("op", params.action);
@@ -611,6 +611,11 @@ ZmList.prototype._redoSearch =
 function(ctlr) {
 	var sc = this._appCtxt.getSearchController();
 	sc.redoSearch(ctlr._currentSearch);
+};
+
+ZmList.prototype._getActionNamespace =
+function() {
+	return "urn:zimbraMail";
 };
 
 ZmList.prototype._folderTreeChangeListener = 
