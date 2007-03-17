@@ -50,6 +50,8 @@ function ZmComposeController(appCtxt, container, mailApp) {
 	this._listeners[ZmOperation.SPELL_CHECK] = new AjxListener(this, this._spellCheckListener);
 	this._listeners[ZmOperation.COMPOSE_OPTIONS] = new AjxListener(this, this._optionsListener);
 	
+	this._popdownListener = new AjxListener(this, this._popdownActionListener);
+	
 	var settings = this._appCtxt.getSettings();
 	var scl = this._settingsChangeListener = new AjxListener(this, this._settingsChangeListener);
 	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
@@ -182,6 +184,7 @@ function() {
 		ps.registerCallback(DwtDialog.YES_BUTTON, this._popShieldYesCallback, this);
 		ps.registerCallback(DwtDialog.NO_BUTTON, this._popShieldNoCallback, this);
 	}
+	ps.addPopdownListener(this._popdownListener);
 	ps.popup(this._composeView._getDialogXY());
 
 	return false;
@@ -898,6 +901,7 @@ function() {
 //			  Yes, go ahead and cancel
 ZmComposeController.prototype._popShieldYesCallback =
 function() {
+	this._popShield.removePopdownListener(this._popdownListener);
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
@@ -920,6 +924,7 @@ function() {
 //			  No, don't cancel
 ZmComposeController.prototype._popShieldNoCallback =
 function() {
+	this._popShield.removePopdownListener(this._popdownListener);
 	this._popShield.popdown();
 	this._composeView.enableInputs(true);
 	if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
@@ -940,7 +945,22 @@ function() {
 // Called as: Don't save as draft or cancel
 ZmComposeController.prototype._popShieldDismissCallback =
 function() {
+	this._popShield.removePopdownListener(this._popdownListener);
 	this._popShield.popdown();
+	this._cancelViewPop();
+};
+
+/**
+ * Handles re-enabling inputs if the pop shield is dismissed via
+ * Esc. Otherwise, the handling is done explicitly by a callback.
+ */
+ZmComposeController.prototype._popdownActionListener =
+function() {
+	this._cancelViewPop();
+};
+
+ZmComposeController.prototype._cancelViewPop =
+function() {
 	this._composeView.enableInputs(true);
 	this._app.getAppViewMgr().showPendingView(false);
 	this._composeView.reEnableDesignMode();
