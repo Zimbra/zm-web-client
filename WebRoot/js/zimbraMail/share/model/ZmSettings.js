@@ -58,7 +58,7 @@ ZmSetting.OPTIONS_ENABLED		= "OPTIONS_ENABLED";
 ZmSetting.PORTAL_ENABLED		= "PORTAL_ENABLED";
 ZmSetting.SKIN_NAME				= "SKIN_NAME";
 ZmSetting.TASKS_ENABLED			= "TASKS_ENABLED";
-ZmSetting.VOICEMAIL_ENABLED		= "VOICEMAIL_ENABLED";
+ZmSetting.VOICE_ENABLED			= "VOICE_ENABLED";
 
 /**
  * Creates a new setting and adds it to the settings.
@@ -430,7 +430,7 @@ function() {
 	this.registerSetting("TAGGING_ENABLED",					{name: "zimbraFeatureTaggingEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("TASKS_ENABLED",					{name: "zimbraFeatureTasksEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("VIEW_ATTACHMENT_AS_HTML",			{name: "zimbraFeatureViewInHtmlEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("VOICEMAIL_ENABLED",				{name: "zimbraFeatureVoiceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});	
+	this.registerSetting("VOICE_ENABLED",					{name: "zimbraFeatureVoiceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});	
 	// user metadata (included with COS since the user can't change them)
 	this.registerSetting("LICENSE_STATUS",	{type: ZmSetting.T_COS, defaultValue: ZmSetting.LICENSE_GOOD});
 	this.registerSetting("QUOTA_USED",		{type: ZmSetting.T_COS, dataType: ZmSetting.D_INT});
@@ -486,5 +486,5 @@ function() {
 	this.registerSetting("PORTAL_ENABLED",		{name: "zimbraFeaturePortalEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("SKIN_NAME",			{name: "zimbraPrefSkin", type: ZmSetting.T_PREF, defaultValue: "skin"});
 	this.registerSetting("TASKS_ENABLED",		{name: "zimbraFeatureTasksEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
-	this.registerSetting("VOICEMAIL_ENABLED",	{name: "zimbraFeatureVoiceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("VOICE_ENABLED",		{name: "zimbraFeatureVoiceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 };

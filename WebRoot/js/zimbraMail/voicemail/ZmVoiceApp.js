@@ -41,7 +41,7 @@ ZmOrganizer.ID_VOICEMAIL		= 8675;
 // App-related constants
 ZmApp.VOICEMAIL						= "Voicemail";
 ZmApp.CLASS[ZmApp.VOICEMAIL]		= "ZmVoiceApp";
-ZmApp.SETTING[ZmApp.VOICEMAIL]		= ZmSetting.VOICEMAIL_ENABLED;
+ZmApp.SETTING[ZmApp.VOICEMAIL]		= ZmSetting.VOICE_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.VOICEMAIL]	= 80;
 ZmApp.QS_ARG[ZmApp.VOICEMAIL]		= "voicemail";
 
