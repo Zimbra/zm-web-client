@@ -9,15 +9,6 @@
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
-<c:url var="folderUrl" value="/h/${selected eq 'calendar' ? 'mcalendars' : selected eq 'contacts' ? 'maddrbooks' : not empty param.sti ? 'mtags' : 'mfolders'}">
-    <c:if test="${not empty param.sfi}">
-        <c:param name="sfi" value="${param.sfi}"/>
-    </c:if>
-        <c:if test="${not empty param.sti}">
-        <c:param name="sti" value="${param.sti}"/>
-    </c:if>
-</c:url>
-
 <table cellpadding=0 cellspacing=0>
     <tr class='Tabs'>
         <td class='TabSpacer'/>
@@ -46,12 +37,6 @@
         <td class='Tab ${selected=='options' ? 'TabSelected' :'TabNormal'}'>
             <a href="<c:url value="/h/options"/>" <c:if test="${keys}">accesskey="y"</c:if>><app:img src="common/Preferences.gif" altkey='ALT_APP_OPTIONS'/><span><fmt:message
                     key="options"/></span></a>
-        </td>
-        <td class='TabSpacer'/>
-        <td class='Tab ${selected=='folders' ? 'TabSelected' :'TabNormal'}'>
-
-            <a href="${folderUrl}" ><app:img src="common/Folder.gif" altkey='ALT_APP_MANAGE_FOLDERS'/>
-                <span><fmt:message key="folders"/></span></a>
         </td>
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='compose' ? 'TabSelected' :'TabNormal'}'>

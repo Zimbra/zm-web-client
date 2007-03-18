@@ -23,15 +23,8 @@
              <th style='width:20px'><a href="${toggleUrl}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}"/></a></th>
             <th class='Header'><fmt:message key="calendars"/></th>
             <th width='1%' align='right' class='ZhTreeEdit'>
-                <c:choose>
-                    <c:when test="${false and empty editmode}">
-                        <c:url value="/h/mcalendars" var="mabUrl"/>
-                        <a href="${mabUrl}" ><fmt:message key="TREE_EDIT"/></a>
-                    </c:when>
-                    <c:otherwise>
-                        &nbsp;
-                    </c:otherwise>
-                </c:choose>
+                <c:url value="/h/mcalendars" var="mabUrl"/>
+                <a href="${mabUrl}" ><fmt:message key="TREE_EDIT"/></a>
             </th>
         </tr>
 

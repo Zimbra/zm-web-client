@@ -30,23 +30,6 @@
     <c:if test="${empty selectedFolder}"><c:set var="selectedFolder" value="${mailbox.inbox}"/></c:if>
     <c:set var="newFolder" value="${zm:actionSet(param, 'actionNewFolder') or zm:actionSet(param, 'actionNewSearchFolder') or zm:actionSet(param, 'actionNewFeedFolder')}"/>
 
-    <c:set var="toolbar">
-        <table width=100% cellspacing=0>
-            <tr>
-                <td>
-                    <table cellspacing=2 cellpadding=0 class='Tb'>
-                        <tr>
-                            <app:button name="actionNewFolder" src="common/NewFolder.gif" tooltip="folderNew" text="folderNew"/>
-                            <td><div class='vertSep'></div></td>
-                            <app:button name="actionNewFeedFolder" src="common/NewFolder.gif" tooltip="folderNewRssAtomFeed" text="folderNewRssAtomFeed"/>
-                            <td><div class='vertSep'></div></td>
-                            <app:button name="actionNewSearchFolder" src="common/NewFolder.gif" tooltip="folderNewSearchFolder" text="folderNewSearchFolder"/>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </c:set>
     <fmt:message var="title" key="manageFolders"/>
 
     <c:if test="${not empty param.sync}">
@@ -68,9 +51,24 @@
 
             <tr>
                 <td class='TbTop'>
-                    <table cellspacing=0 class='Tb'>
+                    <table width=100% cellspacing=0>
                         <tr>
                             <td>
+                                <table cellspacing=2 cellpadding=0 class='Tb'>
+                                    <tr>
+                                        <td>
+                                            <a href="<c:url value="/h/search"/>">
+                                                <app:img src="common/Close.gif"/><span><fmt:message key="close"/></span>
+                                            </a>
+                                        </td>
+                                        <td><div class='vertSep'></div></td>
+                                        <app:button name="actionNewFolder" src="common/NewFolder.gif" tooltip="folderNew" text="folderNew"/>
+                                        <td><div class='vertSep'></div></td>
+                                        <app:button name="actionNewFeedFolder" src="common/NewFolder.gif" tooltip="folderNewRssAtomFeed" text="folderNewRssAtomFeed"/>
+                                        <td><div class='vertSep'></div></td>
+                                        <app:button name="actionNewSearchFolder" src="common/NewFolder.gif" tooltip="folderNewSearchFolder" text="folderNewSearchFolder"/>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
                     </table>
@@ -80,14 +78,6 @@
             <tr>
                 <td class='ZhAppContent'>
                     <table border="0" cellpadding="0" cellspacing="0" width=100%>
-                        <tr>
-                            <td colspan=2 class='ZhSubTabs'>
-                                <app:foldersTabs mailbox="${mailbox}" selected='folders'/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan=2 class='TbBottom'>${toolbar}</td>
-                        </tr>
                         <tr>
                             <td width=200 class='List' valign='top'>
                                 <table width=100% cellpadding=2 cellspacing=0>

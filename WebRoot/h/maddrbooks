@@ -27,21 +27,6 @@
     <c:if test="${empty selectedFolder or not (selectedFolder.isContactView or selectedFolder.isTrash)}"><c:set var="selectedFolder" value="${mailbox.contacts}"/></c:if>
     <c:set var="newAddressBook" value="${zm:actionSet(param, 'actionNewAddressBook') or zm:actionSet(param, 'actionNewSharedAddressBook')}"/>
 
-    <c:set var="toolbar">
-        <table width=100% cellspacing=0>
-            <tr>
-                <td>
-                    <table cellspacing=2 cellpadding=0 class='Tb'>
-                        <tr>
-                            <app:button name="actionNewAddressBook" src="contacts/NewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
-                            <td><div class='vertSep'></div></td>
-                            <app:button name="actionNewSharedAddressBook" src="contacts/NewContact.gif" tooltip="addressBookNewShared" text="addressBookNewShared"/>
-                        </tr>
-                    </table>
-                </td>
-            </tr>
-        </table>
-    </c:set>
     <fmt:message var="title" key="manageAddressBooks"/>
 
 </app:handleError>
@@ -52,9 +37,22 @@
         <table width=100% cellspacing="0" cellpadding="0">
             <tr>
                 <td class='TbTop'>
-                    <table cellspacing=0 class='Tb'>
+                    <table width=100% cellspacing=0>
                         <tr>
                             <td>
+                                <table cellspacing=2 cellpadding=0 class='Tb'>
+                                    <tr>
+                                        <td>
+                                            <a href="<c:url value="/h/search?st=contact"/>">
+                                                <app:img src="common/Close.gif"/><span><fmt:message key="close"/></span>
+                                            </a>
+                                        </td>
+                                        <td><div class='vertSep'></div></td>
+                                        <app:button name="actionNewAddressBook" src="contacts/NewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
+                                        <td><div class='vertSep'></div></td>
+                                        <app:button name="actionNewSharedAddressBook" src="contacts/NewContact.gif" tooltip="addressBookNewShared" text="addressBookNewShared"/>
+                                    </tr>
+                                </table>
                             </td>
                         </tr>
                     </table>
@@ -63,14 +61,6 @@
             <tr>
                 <td class='ZhAppContent'>
                     <table border="0" cellpadding="0" cellspacing="0" width=100%>
-                        <tr>
-                            <td colspan=2 class='ZhSubTabs'>
-                                <app:foldersTabs mailbox="${mailbox}" selected='addressbooks'/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan=2 class='TbBottom'>${toolbar}</td>
-                        </tr>
                         <tr>
                             <td width=200 class='List' valign='top'>
                                 <table width=100% cellpadding=2 cellspacing=0>

@@ -49,6 +49,7 @@
         </td>
     </tr>
     <tr>
+
         <td class='Overview'>&nbsp;</td>
         <td colspan=1>
             <app:appTabs context="${context}" mailbox="${mailbox}" keys="${keys}" selected='${selected}'/>
@@ -70,16 +71,18 @@
         </td>
     </tr>
     <tr>
+        <c:if test="${empty editmode}">
         <td valign=top class='Overview'>
             <app:overviewTree keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
         </td>
+        </c:if> 
 <c:set var="adsOn" value="${!empty ads}"/>
 <c:if test="${adsOn}" >
         <td valign='top' colspan=2>
             <table width=100% cellpadding="0" cellspacing="0">
                 <tr>
 </c:if>        
-                    <td valign='top' colspan=2>
+                    <td valign='top' colspan=${empty editmode ? 2 : 3} style='padding-left:${editmode ? 10 : 0}px'>
                         <jsp:doBody/>
                     </td>
 <c:if test="${adsOn}" >

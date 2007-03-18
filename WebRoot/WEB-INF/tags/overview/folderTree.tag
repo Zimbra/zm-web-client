@@ -20,15 +20,12 @@
                <th style='width:20px'><a href="${toggleUrl}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}"/></a></th>
             <th class='Header'><fmt:message key="folders"/></th>
             <th width='1%' align='right'  class='ZhTreeEdit'>
-                <c:choose>
-                    <c:when test="${false and empty editmode}">
-                        <c:url value="/h/mfolders" var="mfoldersUrl"/>
-                        <a href="${mfoldersUrl}"><fmt:message key="TREE_EDIT"/> </a>
-                    </c:when>
-                    <c:otherwise>
-                        &nbsp;
-                    </c:otherwise>
-                </c:choose>
+                <c:url value="/h/mfolders" var="mfoldersUrl">
+                        <c:if test="${not empty param.sfi}">
+                            <c:param name="sfi" value="${param.sfi}"/>
+                        </c:if>
+                </c:url>
+                <a href="${mfoldersUrl}"><fmt:message key="TREE_EDIT"/> </a>
             </th>
         </tr>
 
