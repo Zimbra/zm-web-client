@@ -213,7 +213,7 @@ function(appt, mode, isDirty) {
 	if (this._rendered) {
 		this._chooser.reset();
 	} else {
-		this._createHtml();
+		this._createPageHtml();
 		this._addDwtObjects();
 		this._rendered = true;
 	}
@@ -267,7 +267,7 @@ function(enable) {
 	}
 };
 
-ZmApptChooserTabViewPage.prototype._createHtml =
+ZmApptChooserTabViewPage.prototype._createPageHtml =
 function() {
 
 	this._searchTableId	= Dwt.getNextId();
