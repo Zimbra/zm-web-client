@@ -68,11 +68,12 @@ function ZmOrganizer(params) {
 	this.restUrl = params.restUrl;
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 
+	this._appCtxt = params.tree._appCtxt;
 	if (id && params.tree) {
-		params.tree._appCtxt.cacheSet(id, this);
+		this._appCtxt.cacheSet(id, this);
 		if (this.link) {
 			// also store under ID that items use for parent folder ("l" attribute in node)
-			params.tree._appCtxt.cacheSet([this.zid, this.rid].join(":"), this);
+			this._appCtxt.cacheSet([this.zid, this.rid].join(":"), this);
 		}
 	}
 
@@ -556,14 +557,8 @@ function() {
 	}
 
 	// if server doesn't tell us what URL to use, do our best to generate
-	var appCtxt = this.tree ? this.tree._appCtxt : null;
-	if (!appCtxt) {
-		var shell = DwtShell.getShell(window);
-		appCtxt = ZmAppCtxt.getFromShell(shell);
-	}
-
 	var loc = document.location;
-	var uname = this.owner || appCtxt.get(ZmSetting.USERNAME);
+	var uname = this.owner || this._appCtxt.get(ZmSetting.USERNAME);
 	var host = loc.host;
 
 	var m = uname.match(/^(.*)@(.*)$/);
@@ -617,7 +612,7 @@ ZmOrganizer.prototype.setPermissions =
 function(permission) {
 	if (this.shares == null) {
 		AjxDispatcher.require("Share");
-		var share = new ZmShare({appCtxt: this.tree._appCtxt, organizer: this, perm: permission});
+		var share = new ZmShare({appCtxt: this._appCtxt, organizer: this, perm: permission});
 		this.addShare(share);
 	} else {
 		// lets just assume we're dealing w/ a link (which should only have one share)
@@ -709,7 +704,7 @@ function() {
 	// select next reasonable organizer if the currently selected
 	// organizer is the one being deleted or a descendent of the
 	// one being deleted
-	var overviewController = this.tree._appCtxt.getOverviewController();
+	var overviewController = this._appCtxt.getOverviewController();
 	var treeController = overviewController.getTreeController(this.type);
 	var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
 	var organizer = treeView && treeView.getSelected();
@@ -787,7 +782,7 @@ function(obj, details) {
 		if (obj.acl.grant && obj.acl.grant.length) {
 			AjxDispatcher.require("Share");
 			for (var i = 0; i < obj.acl.grant.length; i++) {
-				share = ZmShare.createFromJs(this, obj.acl.grant[i], this.tree._appCtxt);
+				share = ZmShare.createFromJs(this, obj.acl.grant[i], this._appCtxt);
 				this.addShare(share);
 			}
 		}
@@ -1110,7 +1105,7 @@ function(params) {
 	if (params.batchCmd) {
 		params.batchCmd.addRequestParams(soapDoc, respCallback, params.errorCallback);
 	} else {
-		this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
+		this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
 														   callback: respCallback, errorCallback: params.errorCallback });
 	}
 };
@@ -1178,7 +1173,7 @@ function(obj) {
 		var shares = new Array(obj.acl.grant.length);
 		for (var i = 0; i < obj.acl.grant.length; i++) {
 			var grant = obj.acl.grant[i];
-			shares[i] = ZmShare.createFromJs(this, grant, this.tree._appCtxt);
+			shares[i] = ZmShare.createFromJs(this, grant, this._appCtxt);
 		}
 		this.setShares(shares);
 	}
