@@ -550,11 +550,16 @@ if (ext == null) ext = "";
   </target>
 
   <target name='customer-skin' if='env.CUSTOMER_SKIN'>
-	<antcall target="build-skin-images">
-	  <param name='skindir' value='${env.CUSTOMER_SKIN}'/>
+	<dirset id='customer.skins.dirset' dir='../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot' includes='skins/*'>
+	</dirset>
+	<pathconvert property='customer.skins.dirs' refid='customer.skins.dirset' pathsep=','>
+		<flattenmapper />	
+	</pathconvert>
+	<echo>dirs: ${customer.skins.dirs}</echo>
+	<foreach target='build-skin-images' list='${customer.skins.dirs}' param='skindir'>
 	  <param name="csspathprefix" value="/zimbra/img/"/>
 	  <param name="skinbasedir" value="../ZimbraCustomerServices/${env.CUSTOMER_SKIN}/ZimbraWebClient/WebRoot"/>
-	</antcall>
+	</foreach>
   </target>
 
   <target name='build-skin-images' depends='compile' unless='imagesdone'>
