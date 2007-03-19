@@ -386,6 +386,9 @@
             <tr>
                 <td class='TbBottom'>
                     &nbsp;
+                        <c:if test="${not empty param.debug}">
+                            <pre>${fn:escapeXml(appt)}</pre>
+                        </c:if>
                 </td>
             </tr>
         </table>
