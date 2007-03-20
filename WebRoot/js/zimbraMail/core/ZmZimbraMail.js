@@ -134,7 +134,6 @@ function(domain, app, userShellId) {
 
 	// Create the global app context
 	var appCtxt = new ZmAppCtxt();
-	appCtxt.inStartup = true;
 	appCtxt.setRememberMe(false);
 
 	// Create the shell
@@ -214,6 +213,7 @@ function(hash, a, b) {
 ZmZimbraMail.prototype.startup =
 function(params) {
 	
+	this._appCtxt.inStartup = true;
 	if (typeof(skin) == "undefined") {
 		DBG.println(AjxDebug.DBG1, "No skin!");
 		var locationStr = location.protocol + "//" + location.hostname + ((location.port == '80') ?
