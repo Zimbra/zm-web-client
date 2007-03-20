@@ -50,16 +50,6 @@
                                 <legend>Repeat</legend>
                                 <table cellpadding=5 cellspacing=0>
                                     <tr>
-                                        <td valign=top width=1%>None:</td>
-                                        <td>
-                                            <input type=radio name='frequency' value="none">
-                                        </td>
-                                        <td>
-                                            No Repeat.
-                                        </td>
-                                    </tr>
-                                    <tr><td colspan=3><hr></td></tr>
-                                    <tr>
                                         <td valign=top width=1% rowspan=3>Daily:</td>
                                         <td>
                                             <input type=radio name='frequency' value="daily">
@@ -98,15 +88,7 @@
                                     </tr>
                                     <tr><td colspan=3><hr></td></tr>
                                     <tr>
-                                        <td valign=top width=1% rowspan=4>Weekly:</td>
-                                        <td>
-                                            <input type=radio name='frequency' value="WEEKLY">
-                                        </td>
-                                        <td>
-                                            Every week.
-                                        </td
-                                    </tr>
-                                    <tr>
+                                        <td valign=top width=1% rowspan=3>Weekly:</td>
                                         <td>
                                             <input type=radio name='frequency' value="weekly">
                                         </td>
@@ -185,15 +167,7 @@
                                     </tr>
                                     <tr><td colspan=3><hr></td></tr>
                                     <tr>
-                                        <td valign=top width=1% rowspan=3>Monthly:</td>
-                                        <td>
-                                            <input type=radio name='frequency' value="MONTHLY">
-                                        </td>
-                                        <td>
-                                            Every month.
-                                        </td
-                                    </tr>
-                                    <tr>
+                                        <td valign=top width=1% rowspan=2>Monthly:</td>
                                         <td>
                                             <input type=radio name='frequency' value="monthly">
                                         </td>
@@ -262,15 +236,7 @@
                                     </tr>
                                     <tr><td colspan=3><hr></td></tr>
                                     <tr>
-                                        <td valign=top width=1% rowspan=3>Yearly:</td>
-                                        <td>
-                                            <input type=radio name='frequency' value="YEARLY">
-                                        </td>
-                                        <td>
-                                            Every year.
-                                        </td
-                                    </tr>
-                                    <tr>
+                                        <td valign=top width=1% rowspan=2>Yearly:</td>
                                         <td>
                                             <input type=radio name='frequency' value="yearly">
                                         </td>
