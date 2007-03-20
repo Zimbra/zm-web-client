@@ -23,12 +23,13 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPickTagDialog(parent, msgDialog, className) {
+function ZmPickTagDialog(parent, className) {
 
 	if (arguments.length == 0) return;
 
 	var newButton = new DwtDialog_ButtonDescriptor(ZmPickTagDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
-	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.pickATag, [newButton]);
+	var params = {parent:parent, className:className, title:ZmMsg.pickATag, extraButtons:[newButton]};
+	ZmDialog.call(this, params);
 
 	this._setOverview(ZmPickTagDialog._OVERVIEW_ID, this._tagTreeCellId, [ZmOrganizer.TAG]);
 	this._tagTreeView = this._treeView[ZmOrganizer.TAG];
@@ -97,7 +98,8 @@ function(ev) {
 ZmPickTagDialog.prototype._okButtonListener = 
 function(ev) {
 	// Reset the msg dialog (it is a shared resource)
-	this._msgDialog.reset();
+	var msgDialog = this._appCtxt.getMsgDialog();
+	msgDialog.reset();
 	var loc = new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);
 	var selectedTag = this._tagTreeView.getSelected();
 

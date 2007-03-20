@@ -924,9 +924,10 @@ function(ev) {
 	if (this._organizer == ZmOrganizer.TAG) {
 		dialog = this._appCtxt.getPickTagDialog();
 	} else {
-		dialog = this._appCtxt.getMoveToDialog();
+		dialog = this._appCtxt.getChooseFolderDialog();
 		treeIds = [this._organizer];
-		params = {treeIds:treeIds};
+		var title = (this._organizer == ZmOrganizer.SEARCH) ? ZmMsg.chooseSearch : ZmMsg.chooseFolder;
+		params = {treeIds:treeIds, title:title};
 	}
 	dialog.reset();
 	dialog.setTitle(ZmShortcutsPageTabViewCustom.DIALOG_TEXT[this._organizer]);

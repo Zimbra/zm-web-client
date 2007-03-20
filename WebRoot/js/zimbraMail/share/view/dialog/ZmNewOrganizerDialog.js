@@ -23,10 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewOrganizerDialog(parent, msgDialog, className, title, type) {
+function ZmNewOrganizerDialog(parent, className, title, type) {
 	if (arguments.length == 0) return;
 	
-	ZmDialog.call(this, parent, msgDialog, className, title);
+	ZmDialog.call(this, {parent:parent, className:className, title:title});
 	this._organizerType = type;
 	this._setupControls();
 };

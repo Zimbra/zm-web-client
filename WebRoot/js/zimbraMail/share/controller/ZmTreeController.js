@@ -666,20 +666,20 @@ function(ev) {
 ZmTreeController.prototype._moveListener =
 function(ev) {
 	this._pendingActionData = this._getActionedOrganizer(ev);
-	var moveToDialog = this._appCtxt.getMoveToDialog();
+	var moveToDialog = this._appCtxt.getChooseFolderDialog();
 	if (!this._moveCb) {
 		this._moveCb = new AjxCallback(this, this._moveCallback);
 	}
 	ZmController.showDialog(moveToDialog, this._moveCb, this._getMoveParams());
 	moveToDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, moveToDialog);
-	moveToDialog.setTitle(this._getMoveDialogTitle());
 };
 
 ZmTreeController.prototype._getMoveParams =
 function() {
 	var omit = {};
 	omit[ZmFolder.ID_SPAM] = true;
-	var params = {data:this._pendingActionData, treeIds:[this.type], omit:omit};
+	var params = {data:this._pendingActionData, treeIds:[this.type], omit:omit,
+				  title:this._getMoveDialogTitle(), description:ZmMsg.targetFolder};
 	return params;
 };
 
@@ -795,7 +795,7 @@ function(organizer, name) {
 ZmTreeController.prototype._moveCallback =
 function(folder) {
 	this._doMove(this._pendingActionData, folder);
-	this._clearDialog(this._appCtxt.getMoveToDialog());
+	this._clearDialog(this._appCtxt.getChooseFolderDialog());
 };
 
 /*

@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmRenameTagDialog(parent, msgDialog, className) {
+function ZmRenameTagDialog(parent, className) {
 
-	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.renameTag);
+	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.renameTag});
 
 	this._setNameField(this._nameFieldId);
 }

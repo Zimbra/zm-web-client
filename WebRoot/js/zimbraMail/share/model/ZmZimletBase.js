@@ -691,15 +691,10 @@ function(xsltUrl, doc) {
 
 /* Internal functions -- overriding is not recommended */
 
-ZmZimletBase.prototype._createDialog = function(args) {
-	return new ZmDialog(this.getShell(),
-			    args.msgDialog,
-			    args.className,
-			    args.title,
-			    args.extraButtons,
-			    args.view,
-			    args.standardButtons
-			   );
+ZmZimletBase.prototype._createDialog =
+function(params) {
+	params.parent = this.getShell();
+	return new ZmDialog(params);
 };
 
 /* Overrides default ZmObjectHandler methods for Zimlet API compat */

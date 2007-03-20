@@ -496,7 +496,8 @@ function(ev) {
 	var omit = {};
 	omit[ZmFolder.ID_TRASH] = true;
 
-	dialog.popup([ZmOrganizer.ADDRBOOK], omit, false, ZmMsg.chooseFolderToExport);
+	dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], omit:omit,
+				  title:ZmMsg.chooseAddrBook, description:ZmMsg.chooseAddrBookToExport});
 };
 
 ZmPreferencesPage.prototype._importContactsListener =
@@ -506,13 +507,14 @@ function(ev) {
 
 	if (val) {
 		AjxDispatcher.require(["ContactsCore", "Contacts"]);
-		var dialog = this._appCtxt.getMoveToDialog();
+		var dialog = this._appCtxt.getChooseFolderDialog();
 		dialog.reset();
 		dialog.setTitle(ZmMsg._import);
 		dialog.registerCallback(DwtDialog.OK_BUTTON, this._importOkCallback, this, dialog);
 
 		var blankContact = new ZmContact(this._appCtxt);
-		dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK]});
+		dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook,
+					  description:ZmMsg.chooseAddrBookToImport});
 	}
 };
 

@@ -23,10 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewNotebookDialog(parent, msgDialog, className) {
+function ZmNewNotebookDialog(parent, className) {
 	var title = ZmMsg.createNewNotebook;
 	var type = ZmOrganizer.NOTEBOOK;
-	ZmNewOrganizerDialog.call(this, parent, msgDialog, className, title, type);
+	ZmNewOrganizerDialog.call(this, parent, className, title, type);
 }
 
 ZmNewNotebookDialog.prototype = new ZmNewOrganizerDialog;

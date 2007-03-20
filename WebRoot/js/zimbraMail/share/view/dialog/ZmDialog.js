@@ -31,33 +31,29 @@
 *
 * @author Conrad Damon
 *
-* @param parent			[DwtControl]	parent widget
-* @param msgDialog		[DwtMsgDialog]*	message dialog
-* @param className		[string]*		CSS class
-* @param title			[string]*		dialog title
-* @param extraButtons	[Array]*		buttons to show in addition to standard set
-* @param view			[DwtControl]*	dialog contents
+* @param parent				[DwtControl]	parent widget
+* @param msgDialog			[DwtMsgDialog]*	message dialog
+* @param className			[string]*		CSS class
+* @param title				[string]*		dialog title
+* @param standardButtons	[array]*		list of standard buttons to show
+* @param extraButtons		[Array]*		buttons to show in addition to standard set
+* @param view				[DwtControl]*	dialog contents
 */
-function ZmDialog(parent, msgDialog, className, title, extraButtons, view, standardButtons) {
+function ZmDialog(params) {
 
 	if (arguments.length == 0) return;
-	DwtDialog.call(this, parent, className, title, standardButtons, extraButtons);
-	if (!view) {
-		this.setContent(this._contentHtml());
+	DwtDialog.call(this, params.parent, params.className, params.title,
+				   params.standardButtons, params.extraButtons);
+	if (params.view) {
+		this.setView(params.view);
 	} else {
-		this.setView(view);
+		this.setContent(this._contentHtml());
 	}
 
-	this._msgDialog = msgDialog;
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	if (this._msgDialog == null) {
-		this._msgDialog = this._appCtxt.getMsgDialog();
-	}
 
 	if (this._button[DwtDialog.OK_BUTTON]) {
-		this.setButtonListener(DwtDialog.OK_BUTTON,
-				       new AjxListener(this,
-						       this._okButtonListener));
+		this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	}
 
 	this._treeView = {};
@@ -156,10 +152,11 @@ function() {
 
 ZmDialog.prototype._showError =
 function(msg, loc) {
-	this._msgDialog.reset();
+	var msgDialog = this._appCtxt.getMsgDialog();
+	msgDialog.reset();
 	loc = loc ? loc : new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);
-    this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-    this._msgDialog.popup(loc);
+    msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+    msgDialog.popup(loc);
     return null;
 };
 

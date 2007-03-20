@@ -743,7 +743,7 @@ ZmPageEditor._wikletPressButton = function(button) {
 	}
 	
 	var shell = DwtShell.getShell(window);
-	var dialog = new ZmDialog(shell, null, null, ZmMsg.wikletParams);
+	var dialog = new ZmDialog({parent:shell, title:ZmMsg.wikletParams});
 	var propEditor = new DwtPropertyEditor(dialog);
 	propEditor.initProperties(schema);
 	dialog.setView(propEditor);

@@ -804,7 +804,7 @@ ZmPopAccountBasicPage.prototype._folderListener = function(evt) {
     var dialog = this._appCtxt.getChooseFolderDialog();
     dialog.reset();
     dialog.registerCallback(DwtDialog.OK_BUTTON, this._folderOkListener, this, [dialog]);
-    dialog.popup([ZmOrganizer.FOLDER], null, true, ZmMsg.popAccountFolderSelect);
+    dialog.popup({treeIds:[ZmOrganizer.FOLDER], skipReadOnly:true, description:ZmMsg.popAccountFolderSelect});
 };
 ZmPopAccountBasicPage.prototype._folderOkListener = function(dialog, folder) {
     dialog.popdown();

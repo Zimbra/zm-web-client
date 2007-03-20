@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewSearchDialog(parent, msgDialog, className) {
+function ZmNewSearchDialog(parent, className) {
 
-	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.saveSearch);
+	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.saveSearch});
 
 	this._setNameField(this._nameFieldId);
 	var omit = new Object();

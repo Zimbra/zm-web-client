@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewTagDialog(parent, msgDialog, className) {
-	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.createNewTag);
+function ZmNewTagDialog(parent, className) {
+	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.createNewTag});
 
 	this._setNameField(this._nameFieldId);
 	this._setTagColorMenu(this._tagColorButtonCellId);

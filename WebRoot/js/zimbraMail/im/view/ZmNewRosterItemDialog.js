@@ -23,10 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewRosterItemDialog(parent, appCtxt, msgDialog) {
+function ZmNewRosterItemDialog(parent, appCtxt) {
 	ZmQuickAddDialog.call(this, parent, null, null);
 	this._appCtxt = appCtxt;
-	this._msgDialog = msgDialog;
 	this.setContent(this._contentHtml());
 	this.setTitle(ZmMsg.createNewRosterItem);
 //	this.setTabOrder([this._addressFieldId, this._nameFieldId, this._groupsFieldId]);
@@ -169,10 +168,11 @@ function() {
 
 ZmNewRosterItemDialog.prototype._showError =
 function(msg, loc) {
-	this._msgDialog.reset();
+	var msgDialog = this._appCtxt.getMsgDialog();
+	msgDialog.reset();
 	loc = loc ? loc : new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);
-    this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-    this._msgDialog.popup(loc);
+    msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+    msgDialog.popup(loc);
     return null;
 };
 

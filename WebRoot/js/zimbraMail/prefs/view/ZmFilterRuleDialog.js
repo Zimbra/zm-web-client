@@ -617,7 +617,7 @@ function(ev) {
 	var dialog;
 	var button = ev.item;
 	var type = button.getData(ZmFilterRuleDialog.BROWSE_TYPE);
-	var dialog = (type == ZmFilterRule.TYPE_FOLDER_PICKER) ? this._appCtxt.getMoveToDialog() :
+	var dialog = (type == ZmFilterRule.TYPE_FOLDER_PICKER) ? this._appCtxt.getChooseFolderDialog() :
 															 this._appCtxt.getPickTagDialog();
 	dialog.reset();
 	dialog.setTitle((type == ZmFilterRule.TYPE_FOLDER_PICKER) ? ZmMsg.chooseFolder : ZmMsg.chooseTag);
@@ -635,7 +635,7 @@ ZmFilterRuleDialog.prototype._browseSelectionCallback =
 function(button, organizer) {
 	var type = button.getData(ZmFilterRuleDialog.BROWSE_TYPE);
 	var isFolder = (type == ZmFilterRule.TYPE_FOLDER_PICKER);
-	var dialog = isFolder ? this._appCtxt.getMoveToDialog() : this._appCtxt.getPickTagDialog();
+	var dialog = isFolder ? this._appCtxt.getChooseFolderDialog() : this._appCtxt.getPickTagDialog();
 	if (organizer) {
 		button.setText(organizer.getName(false, null, true));
 		var value = isFolder ? "/" + organizer.getPath(false, false, null, true, true) :

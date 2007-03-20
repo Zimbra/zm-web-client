@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmRenameFolderDialog(parent, msgDialog, className) {
+function ZmRenameFolderDialog(parent, className) {
 
-	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.renameFolder);
+	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.renameFolder});
 
 	this._setNameField(this._nameFieldId);
 	this._folderTree = this._appCtxt.getFolderTree();

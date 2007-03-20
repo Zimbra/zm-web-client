@@ -279,7 +279,7 @@ function(uname, pword) {
 		for (var i = 0; i < ZmLogin.FETCH.length; i++) {
 			var id = ZmLogin.FETCH[i];
 			var setting = ZmLogin._settings.getSetting(id);
-			if (setting.name) {
+			if (setting && setting.name) {
 				(setting.type == ZmSetting.T_PREF) ? prefs.push(setting.name) : attrs.push(setting.name);
 			}
 		}

@@ -23,10 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewCalendarDialog(parent, msgDialog, className) {
+function ZmNewCalendarDialog(parent, className) {
 	var title = ZmMsg.createNewCalendar;
 	var type = ZmOrganizer.CALENDAR;
-	ZmNewOrganizerDialog.call(this, parent, msgDialog, className, title, type);
+	ZmNewOrganizerDialog.call(this, parent, className, title, type);
 };
 
 ZmNewCalendarDialog.prototype = new ZmNewOrganizerDialog;

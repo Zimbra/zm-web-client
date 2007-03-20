@@ -212,7 +212,7 @@ function() {
 ZmAppCtxt.prototype.getNewTagDialog =
 function() {
 	if (!this._newTagDialog) {
-		this._newTagDialog = new ZmNewTagDialog(this._shell, this.getMsgDialog());
+		this._newTagDialog = new ZmNewTagDialog(this._shell);
 	}
 	return this._newTagDialog;
 };
@@ -221,7 +221,7 @@ ZmAppCtxt.prototype.getRenameTagDialog =
 function() {
 	if (!this._renameTagDialog) {
 		AjxDispatcher.require("Extras");
-		this._renameTagDialog = new ZmRenameTagDialog(this._shell, this.getMsgDialog());
+		this._renameTagDialog = new ZmRenameTagDialog(this._shell);
 	}
 	return this._renameTagDialog;
 };
@@ -229,7 +229,7 @@ function() {
 ZmAppCtxt.prototype.getNewFolderDialog =
 function() {
 	if (!this._newFolderDialog) {
-		this._newFolderDialog = new ZmNewFolderDialog(this._shell, this.getMsgDialog());
+		this._newFolderDialog = new ZmNewFolderDialog(this._shell);
 	}
 	return this._newFolderDialog;
 };
@@ -247,7 +247,7 @@ ZmAppCtxt.prototype.getNewCalendarDialog =
 function() {
 	if (!this._newCalendarDialog) {
 		AjxDispatcher.require(["CalendarCore", "Calendar"]);
-		this._newCalendarDialog = new ZmNewCalendarDialog(this._shell, this.getMsgDialog());
+		this._newCalendarDialog = new ZmNewCalendarDialog(this._shell);
 	}
 	return this._newCalendarDialog;
 };
@@ -256,7 +256,7 @@ ZmAppCtxt.prototype.getNewNotebookDialog =
 function() {
 	if (!this._newNotebookDialog) {
 		AjxDispatcher.require(["NotebookCore", "Notebook"]);
-		this._newNotebookDialog = new ZmNewNotebookDialog(this._shell, this.getMsgDialog());
+		this._newNotebookDialog = new ZmNewNotebookDialog(this._shell);
 	}
 	return this._newNotebookDialog;
 };
@@ -265,7 +265,7 @@ ZmAppCtxt.prototype.getNewTaskFolderDialog =
 function() {
 	if (!this._newTaskFolderDialog) {
 		AjxDispatcher.require(["TasksCore", "Tasks"]);
-		this._newTaskFolderDialog = new ZmNewTaskFolderDialog(this._shell, this.getMsgDialog());
+		this._newTaskFolderDialog = new ZmNewTaskFolderDialog(this._shell);
 	}
 	return this._newTaskFolderDialog;
 };
@@ -292,7 +292,7 @@ ZmAppCtxt.prototype.getNewRosterItemDialog =
 function() {
 	if (!this._newRosterItemDialog) {
 		AjxDispatcher.require("IM");
-		this._newRosterItemDialog = new ZmNewRosterItemDialog(this._shell, this, this.getMsgDialog());
+		this._newRosterItemDialog = new ZmNewRosterItemDialog(this._shell, this);
 	}
 	return this._newRosterItemDialog;
 };
@@ -300,7 +300,7 @@ function() {
 ZmAppCtxt.prototype.getNewSearchDialog =
 function() {
 	if (!this._newSearchDialog) {
-		this._newSearchDialog = new ZmNewSearchDialog(this._shell, this.getMsgDialog());
+		this._newSearchDialog = new ZmNewSearchDialog(this._shell);
 	}
 	return this._newSearchDialog;
 };
@@ -309,18 +309,9 @@ ZmAppCtxt.prototype.getRenameFolderDialog =
 function() {
 	if (!this._renameFolderDialog) {
 		AjxDispatcher.require("Extras");
-		this._renameFolderDialog = new ZmRenameFolderDialog(this._shell, this.getMsgDialog());
+		this._renameFolderDialog = new ZmRenameFolderDialog(this._shell);
 	}
 	return this._renameFolderDialog;
-};
-
-ZmAppCtxt.prototype.getMoveToDialog =
-function() {
-	if (!this._moveToDialog) {
-		AjxDispatcher.require("Extras");
-		this._moveToDialog = new ZmMoveToDialog(this._shell, this.getMsgDialog());
-	}
-	return this._moveToDialog;
 };
 
 ZmAppCtxt.prototype.getChooseFolderDialog =
@@ -336,7 +327,7 @@ ZmAppCtxt.prototype.getPickTagDialog =
 function() {
 	if (!this._pickTagDialog) {
 		AjxDispatcher.require("Extras");
-		this._pickTagDialog = new ZmPickTagDialog(this._shell, this.getMsgDialog());
+		this._pickTagDialog = new ZmPickTagDialog(this._shell);
 	}
 	return this._pickTagDialog;
 };
@@ -445,7 +436,7 @@ ZmAppCtxt.prototype.getChangePasswordDialog =
 function() {
 	if (!this._changePasswordDialog) {
 		AjxDispatcher.require("Extras");
-		this._changePasswordDialog = new ZmChangePasswordDialog(this._shell, this.getMsgDialog());
+		this._changePasswordDialog = new ZmChangePasswordDialog(this._shell);
 	}
 	return this._changePasswordDialog;
 }
