@@ -90,8 +90,17 @@ function() {
 
 ZmRosterTreeController.prototype._rosterListChangeListener = function(ev) {
 	var treeView = this.getTreeView(ZmZimbraMail._OVERVIEW_ID);
-
 	var items= ev.getItems();
+
+	if (!this._zimbraAssistantBuddy) {
+		// create the Zimbra Assistant buddy
+		var list = this._imApp.getRoster().getRosterItemList();
+		var assistant = new ZmAssistantBuddy(list, this._appCtxt);
+		list.addItem(assistant, true, 0);
+		this._zimbraAssistantBuddy = assistant;
+		items.unshift(assistant);
+	}
+
 	for (var n=0; n < items.length; n++) {
 		var item = items[n];
 		if (!(item instanceof ZmRosterItem)) continue;
@@ -315,10 +324,11 @@ function(rosterItem) {
 		var groupName = groups[j];
 		var rosterGroup = this._getGroup(groupName);
 		var id = rosterItem.getAddress() + ":" + groupName;
-		var item = new ZmRosterTreeItem({ id	     : id,
-						  rosterItem : rosterItem,
-						  parent     : rosterGroup,
-						  tree	     : this._dataTree});
+		var args = { id		      : id,
+			     rosterItem	      : rosterItem,
+			     parent	      : rosterGroup,
+			     tree	      : this._dataTree };
+		var item = new ZmRosterTreeItem(args);
 		item._notify(ZmEvent.E_CREATE);
 		rosterGroup.children.add(item);
 		items.push(item);

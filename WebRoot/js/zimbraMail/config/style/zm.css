@@ -1851,6 +1851,15 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatWindowChatEntryMe .from { color: #00c; }
 .ZmChatWindowChatEntryThem .from { color: #c00; }
 
+/* chat with Zimbra Assistant */
+
+.ZmAssistantChat .ZmAssistantButtons { float: right; }
+.ZmAssistantChat .ZmAssistantButtons span { @Anchor@ padding: 0 10px; font-weight: bold; margin-left: 5px; }
+.ZmAssistantChat .ZmAssistantButtons span:hover { @Anchor-hover@ }
+.ZmAssistantChat .ZmChatWindowChatEntry .time { display: none; }
+.ZmAssistantChat .ZmChatWindowChatEntry .body { margin-right: 0; padding-right: 15px; }
+.ZmAssistantChat .ZmAsstContactHelp { height: auto; overflow: auto; }
+
 /* label in the chat record for system notes (eg: roland goes offline, etc) */
 .ZmChatWindowChatEntrySystem {
   color: #888;
@@ -2772,13 +2781,13 @@ HTML>BODY .appt-selected .appt_allday_body
   @AppTabContainer-selected@
 }
 
-.ZmVoiceListView .Row, 
-.ZmVoiceListView .Row-selected, 
-.ZmVoiceListView .Row-matched, 
-.ZmVoiceListView .Row-matched-drag, 
-.ZmVoiceListView .Row-drag, 
-.ZmVoiceListView .Row-selected-drag, 
-.ZmVoiceListView .Row-selected-right, 
+.ZmVoiceListView .Row,
+.ZmVoiceListView .Row-selected,
+.ZmVoiceListView .Row-matched,
+.ZmVoiceListView .Row-matched-drag,
+.ZmVoiceListView .Row-drag,
+.ZmVoiceListView .Row-selected-drag,
+.ZmVoiceListView .Row-selected-right,
 .ZmVoiceListView .Row-selected-disabled {
 	height: 20px;
 }

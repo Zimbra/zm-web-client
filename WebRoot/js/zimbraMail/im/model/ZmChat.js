@@ -43,7 +43,7 @@ ZmChat.F_MESSAGE = "ZmChat.message";
 ZmChat.prototype.toString = 
 function() {
 	return "ZmChat: id = " + this.id;
-}
+};
 
 ZmChat.prototype._getRosterItemList =
 function() {
@@ -109,6 +109,11 @@ ZmChat.prototype.getRosterItem =
 function(index) {
     if (index == null) index = 0;
     return this._rosterItemList.getArray()[index];
+};
+
+ZmChat.prototype.isZimbraAssistant = function() {
+	return (this._rosterItemList.size() == 1 &&
+		this.getRosterItem(0).getAddress() == ZmAssistantBuddy.ADDR);
 };
 
 ZmChat.prototype.getIcon =

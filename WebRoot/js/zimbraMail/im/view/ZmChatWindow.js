@@ -41,7 +41,11 @@ ZmChatWindow.prototype._init = function(chat) {
 	this.setSize(400, 300);
 	this.setMinSize(200, 100);
 	this.setMinPos(0, 0);
+	tabs = null;
 	this.addSelectionListener(new AjxListener(this, this.__onActivation));
+	this.addFocusListener(new AjxListener(this, function() {
+		this._tabs.getCurrentChatWidget().focus();
+	}));
 };
 
 ZmChatWindow.prototype.select = function() {
@@ -58,6 +62,6 @@ ZmChatWindow.prototype.getCloseButton = function() {
 
 ZmChatWindow.prototype.__onActivation = function(ev) {
 	if (ev.detail) {
-		this._tabs.getCurrentChatWidget()._getElement("input").focus();
+		this._tabs.getCurrentChatWidget().focus();
 	}
 };

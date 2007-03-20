@@ -35,6 +35,8 @@ function ZmChatMessage(notifyJs, fromMe, isSystem) {
 	if (!this.ts) this.ts = new Date().getTime();
 	this.fromMe = fromMe;    
 	this.isSystem = isSystem;
+	this.htmlEncode = true;
+	this.objectify = true;
 };
 
 ZmChatMessage.prototype.constructor = ZmChatMessage;
@@ -62,9 +64,12 @@ function(objectManager, chat, lastFrom) {
 	var params = { isSystem		 : this.isSystem,
 		       fromMe		 : this.fromMe,
 		       shortTime	 : AjxStringUtil.htmlEncode(this.getShortTime()),
-		       body		 : ( objectManager
-					     ? objectManager.findObjects(this.body, true)
-					     : this.body )
+		       body		 : ( (objectManager && this.objectify)
+					     ? objectManager.findObjects(this.body, this.htmlEncode)
+					     : ( this.htmlEncode
+						 ? AjxStringUtil.htmlEncode(this.body)
+						 : this.body )
+					   )
 		     };
 	if (!lastFrom || lastFrom != this.from)
 		params.displayName = AjxStringUtil.htmlEncode(chat.getDisplayName(this.from, this.fromMe));

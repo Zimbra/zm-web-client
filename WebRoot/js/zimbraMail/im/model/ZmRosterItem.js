@@ -23,12 +23,14 @@
  * ***** END LICENSE BLOCK *****
  */
 function ZmRosterItem(id, list, appCtxt, name, presence, groupNames) {
-	ZmItem.call(this, appCtxt, ZmOrganizer.ROSTER_ITEM, id, list);
-	this.name = name;
-	this.presence = presence || new ZmRosterPresence();
-	this.groupNames = groupNames;
-    this.groups = groupNames ? groupNames.split(/,/) : [];
-    this.numUnreadIMs = 0; // num unread IMs from this buddy
+	if (arguments.length > 0) {
+		ZmItem.call(this, appCtxt, ZmOrganizer.ROSTER_ITEM, id, list);
+		this.name = name;
+		this.presence = presence || new ZmRosterPresence();
+		this.groupNames = groupNames;
+		this.groups = groupNames ? groupNames.split(/,/) : [];
+		this.numUnreadIMs = 0; // num unread IMs from this buddy
+	}
 }
 
 ZmRosterItem.prototype = new ZmItem;
@@ -163,6 +165,26 @@ ZmRosterItem.prototype.getDisplayName = function() {	return this.name ? this.nam
 
 ZmRosterItem.prototype.getUnread = function() { return this.numUnreadIMs; };
 
+// args contains: str, sel_start, sel_end, last_key, enter
+//
+// chat      : ZmChat where this discussion is taking place
+// widget    : ZmChatWidget of this discussion
+// str	     : full string
+// sel_start : selection start (caret position for empty selection)
+// sel_end   : selection end     (same ^^)
+// last_key  : the last key pressed (keyCode)
+// enter     : true if ENTER was pressed
+//
+// return value: undefined or hash containing: (all optional)
+//
+// str       : new string to include in the input field
+// sel_start : place new selection
+// sel_end   : ^^
+// stop      : true to avoid sending the message to server (useful for Zimbra Assistant)
+ZmRosterItem.prototype.handleInput = function(args) {};
+
+ZmRosterItem.prototype.chatStarted = function(chat, widget) {}; // called when a new ZmChat is started with this item
+
 ZmRosterItem.prototype.inGroup = 
 function(name) { 
     for (var i in this.groups) {
@@ -203,6 +225,7 @@ function(groups) {
 
 
 // Adds a row to the tool tip.
+// FIXME: move to AjxTemplate
 ZmRosterItem.prototype._addEntryRow =
 function(field, data, html, idx, wrap, width) {
 	if (data != null && data != "") {
@@ -220,6 +243,8 @@ function(field, data, html, idx, wrap, width) {
 
 /**
 * Returns HTML for a tool tip for this appt.
+*
+* FIXME: move to AjxTemplate
 */
 ZmRosterItem.prototype.getToolTip =
 function() {

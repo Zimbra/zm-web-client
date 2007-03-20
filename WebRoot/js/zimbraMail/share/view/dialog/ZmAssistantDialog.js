@@ -51,14 +51,22 @@ function ZmAssistantDialog(appCtxt) {
 	this._parseTimedAction = new AjxTimedAction(this, this._parseAction);
 	this._parseActionId = -1;
 
+	ZmAssistantDialog.initializeAssistants(appCtxt);
+};
+
+//ZmAssistantDialog.prototype = new ZmQuickAddDialog;
+ZmAssistantDialog.prototype = new DwtDialog;
+ZmAssistantDialog.prototype.constructor = ZmAssistantDialog;
+
+ZmAssistantDialog.initializeAssistants = function(appCtxt) {
 	if (!ZmAssistantDialog._handlerInit) {
 		ZmAssistant.register(new ZmVersionAssistant(appCtxt));
 		ZmAssistant.register(new ZmDebugAssistant(appCtxt));
-//		ZmAssistant.register(new ZmCallAssistant(appCtxt));
+		// ZmAssistant.register(new ZmCallAssistant(appCtxt));
 		for (var i = 0; i < ZmApp.APPS.length; i++) {
 			var app = ZmApp.APPS[i];
 			var setting = ZmApp.SETTING[app];
-			if (!setting || this._appCtxt.get(setting)) {
+			if (!setting || appCtxt.get(setting)) {
 				var assistants = ZmApp.ASSISTANTS[app];
 				if (assistants) {
 					for (var asstName in assistants) {
@@ -72,10 +80,6 @@ function ZmAssistantDialog(appCtxt) {
 		}
 	}
 };
-
-//ZmAssistantDialog.prototype = new ZmQuickAddDialog;
-ZmAssistantDialog.prototype = new DwtDialog;
-ZmAssistantDialog.prototype.constructor = ZmAssistantDialog;
 
 ZmAssistantDialog.HELP_BUTTON = ++DwtDialog.LAST_BUTTON;
 ZmAssistantDialog.EXTRA_BUTTON = ++DwtDialog.LAST_BUTTON;
