@@ -5,7 +5,6 @@
  * 
  * Loaded: When the user goes to the Tasks application
  */
-AjxPackage.require("ajax.dwt.widgets.DwtListEditView");
 
 // base class for ZmApptView
 AjxPackage.require("zimbraMail.mail.view.ZmMailMsgView");
