@@ -27,6 +27,8 @@ function ZmImApp(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.IM, appCtxt, container);
 
+	// IM is enabled, so show Chats folder
+	delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	this._active = false;
 };
 
