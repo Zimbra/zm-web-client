@@ -1704,6 +1704,7 @@ function(ev, addrType) {
 			a[type] = addrs[type].good.getArray();
 		}
 	}
+	this._contactPicker.addPopdownListener(this._controller._popdownListener);
 	var str = (this._field[curType].value && !(a[curType] && a[curType].length)) ? this._field[curType].value : "";
 	this._contactPicker.popup(curType, a, str);
 };
@@ -1726,6 +1727,7 @@ function(addrs) {
 		var addr = (vec.size() > 0) ? vec.toString(AjxEmailAddress.SEPARATOR) + AjxEmailAddress.SEPARATOR : "";
 		this.setAddress(ZmComposeView.ADDRS[i], addr);
 	}
+	this._contactPicker.removePopdownListener(this._controller._popdownListener);
 	this._contactPicker.popdown();
 	this.reEnableDesignMode();
 };
