@@ -166,6 +166,18 @@
                                     </td>
                                 </tr>
                             </c:if>
+                            <c:set var="repeat" value="${appt.simpleRecurrence}"/>
+                            <c:if test="${not repeat.type.none}">
+                                <tr>
+                                    <td class='MsgHdrName'>
+                                        <fmt:message key="repeats"/>
+                                        :
+                                    </td>
+                                    <td class='MsgHdrValue'>
+                                        <app:repeatBlurb repeat="${repeat}" start="${appt.start}" timezone="${mailbox.prefs.timeZone}"/>
+                                    </td>
+                                </tr>
+                            </c:if>
                         </table>
                     </td>
                     <td valign='top'>
