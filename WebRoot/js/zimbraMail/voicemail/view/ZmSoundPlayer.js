@@ -19,19 +19,17 @@
  * This class represents a widget that plays sounds.
  *
  * @param parent	{DwtControl} Parent widget (required)
- * @param url		{String} The sound file's url
- * @param item		{Object} The item (voicemail) this player is showing
+ * @param voicemail	{ZmVoicemail} The voicemail this player is showing
  * @param className {string} CSS class. If not provided defaults to the class name (optional)
  * @param positionType {string} Positioning style (absolute, static, or relative). If
  * 		not provided defaults to DwtControl.STATIC_STYLE (optional)
  */
-function ZmSoundPlayer(parent, url, item, className, positionType) {
+function ZmSoundPlayer(parent, voicemail, className, positionType) {
 	if (arguments.length == 0) return;
 	className = className || "ZmSoundPlayer";
 	DwtComposite.call(this, parent, className, positionType);
 
-	this._url = url;
-	this.item = item;
+	this.voicemail = voicemail;
 	this._isCompact = false;
 	this._playButton = null;
 	this._pauseButton = null;
@@ -119,6 +117,7 @@ function(compact) {
 		this._pauseButton.setVisible(!compact);
 		this._volumeButton.setVisible(!compact);
 		this._isCompact = compact;
+		this._setStatus(0);
 
 		// Fire event.
 		if (this.isListenerRegistered(ZmSoundPlayer.COMPACT_EVENT)) {
@@ -183,10 +182,28 @@ function() {
 	DwtControl.prototype.dispose.call(this);
 };
 
+ZmSoundPlayer.prototype._setStatus =
+function(time) {
+	if (!this._durationStr) {
+		this._durationStr = AjxDateUtil.computeDuration(this.voicemail.duration, true);
+	}
+	var status;
+	if (this._isCompact) {
+		status = this._durationStr;
+	} else {
+		status = AjxDateUtil.computeDuration(time, true) + " / " + this._durationStr;
+	}
+	document.getElementById(this._statusId).innerHTML = status;
+};
+
 ZmSoundPlayer.prototype._timeSliderListener =
 function(event) {
-	if (this._soundPlugin && !this._timeSlider.isDragging()) {
-		this._soundPlugin.setTime(this._timeSlider.getValue());
+	if (this._soundPlugin) {
+		var value = this._timeSlider.getValue();
+		if (!this._timeSlider.isDragging()) {
+			this._soundPlugin.setTime(value);
+		}
+		this._setStatus(value);
 	}
 };
 
@@ -198,8 +215,9 @@ function(event) {
 		} else if (event.status != DwtSoundPlugin.ERROR) {
 			this._timeSlider.setValue(event.time);
 		}
+		this._setStatus(event.time);
 	}
-    this.notifyListeners(DwtEvent.ONCHANGE, event);
+	this.notifyListeners(DwtEvent.ONCHANGE, event);
 };
 
 ZmSoundPlayer.prototype._volumeButtonListener =
@@ -233,7 +251,7 @@ function(url) {
 			height: 16,
 			offscreen: true, 
 			positionType: DwtControl.RELATIVE_STYLE,
-			url: this._url,
+			url: this.voicemail.soundUrl,
 			volume: this._volume
 		};
 		this._soundPlugin = DwtSoundPlugin.create(args);
@@ -258,6 +276,8 @@ function() {
 	this._pauseButton.setImage("Pause");
 	this._pauseButton.setToolTipContent(ZmMsg.pause);
 	this._pauseButton.addSelectionListener(new AjxListener(this, this.pause));
+
+	this._statusId = id + "_status";
 
 	this._timeSlider = new DwtSlider(this);
 	this._timeSlider.replaceElement(id + "_postition");

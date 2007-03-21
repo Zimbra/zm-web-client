@@ -251,7 +251,7 @@ function(row, index) {
 	var voicemail = this.getItemFromElement(row);
 	var columnIndex = this._getColumnIndex(ZmVoiceListView.F_PLAYING);
 	var cell = this._getCell(columnIndex, row);
-	var player = new ZmSoundPlayer(this, voicemail.soundUrl, voicemail);
+	var player = new ZmSoundPlayer(this, voicemail);
 	player.reparentHtmlElement(cell);
 	if (!this._compactListenerObj) {
 		this._compactListenerObj = new AjxListener(this, this._compactListener);
@@ -284,7 +284,7 @@ function(ev) {
 			player.pause();
 			player.rewind();
 		}
-		this._playing = ev.dwtObj.item;
+		this._playing = ev.dwtObj.voicemail;
 		this._activePlayer;
 	}
 };
