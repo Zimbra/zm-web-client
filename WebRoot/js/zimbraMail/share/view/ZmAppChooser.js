@@ -90,13 +90,17 @@ function(id) {
 
 ZmAppChooser.prototype.setSelected =
 function(id) {
-	if (this._selectedId && this._buttons[this._selectedId])
+	if (this._selectedId && this._buttons[this._selectedId]) {
+        this.__markPrevNext(this._selectedId, false);
 		this._buttons[this._selectedId].setSelected(false);
+    }
 
-	if (this._buttons[id])
+    if (this._buttons[id]) {
 		this._buttons[id].setSelected(true);
+        this.__markPrevNext(id, true);
+    }
 
-	this._selectedId = id;
+    this._selectedId = id;
 };
 
 ZmAppChooser.prototype._createButton =
@@ -108,3 +112,43 @@ function(id, tbStyle, isLast) {
 	b.setData(Dwt.KEY_ID, id);
 	this._buttons[id] = b;
 };
+
+//
+// Private methods
+//
+
+ZmAppChooser.prototype.__markPrevNext = function(id, opened) {
+    var index = this.__getButtonIndex(id);
+    var prev = this.__getButtonAt(index - 1);
+    var next = this.__getButtonAt(index + 1);
+    if (opened) {
+        if (prev) Dwt.delClass(prev.getHtmlElement(), DwtTabBar._NEXT_PREV_RE, DwtTabBar.SELECTED_PREV);
+        if (next) Dwt.delClass(next.getHtmlElement(), DwtTabBar._NEXT_PREV_RE, DwtTabBar.SELECTED_NEXT);
+    }
+    else {
+        if (prev) Dwt.delClass(prev.getHtmlElement(), DwtTabBar._NEXT_PREV_RE);
+        if (next) Dwt.delClass(next.getHtmlElement(), DwtTabBar._NEXT_PREV_RE);
+    }
+};
+
+ZmAppChooser.prototype.__getButtonIndex = function(id) {
+    var i = 0;
+    for (var name in this._buttons) {
+        if (name == id) {
+            return i;
+        }
+        i++;
+    }
+    return -1;
+};
+ZmAppChooser.prototype.__getButtonAt = function(index) {
+    var i = 0;
+    for (var name in this._buttons) {
+        if (i == index) {
+            return this._buttons[name];
+        }
+        i++;
+    }
+    return null;
+};
+

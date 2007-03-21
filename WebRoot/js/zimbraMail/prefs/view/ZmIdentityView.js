@@ -551,7 +551,7 @@ function() {
 			options.push(new DwtSelectOptionData(aliases[i], aliases[i]));
 		}
 		var sendFromAddress = new DwtSelect(this, options);
-		sendFromAddress.getButton().getHtmlElement().style.minWidth = inputSizeInPixels;
+		sendFromAddress.getHtmlElement().style.minWidth = inputSizeInPixels;
 		sendFromAddress.replaceElement(id + "_sendFromAddress");
 		this._selects[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
 	}

@@ -1392,7 +1392,7 @@ function() {
 	var options = this._getIdentityOptions();
 	this._identitySelect = new DwtSelect(this, options);
 	this._identitySelect.setToolTipContent(ZmMsg.chooseIdentity);
-	this._identitySelect.getButton().getHtmlElement().style.width='100%';
+	this._identitySelect.getHtmlElement().style.width='100%';
 	this._identitySelect.reparentHtmlElement(this._identityCell);
 	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
 	if (!this._identityChangeListenerObj) {

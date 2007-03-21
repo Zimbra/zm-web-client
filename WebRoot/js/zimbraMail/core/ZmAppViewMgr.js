@@ -197,7 +197,7 @@ function() {
 
 ZmAppViewMgr.prototype.isFullScreen = function(viewId) {
     viewId = viewId || this._currentView;
-    return viewId && this._views[viewId] && this._views[viewId][ZmAppViewMgr.C_APP_CONTENT_FULL];
+    return Boolean(viewId && this._views[viewId] && this._views[viewId][ZmAppViewMgr.C_APP_CONTENT_FULL]);
 };
 
 /**
