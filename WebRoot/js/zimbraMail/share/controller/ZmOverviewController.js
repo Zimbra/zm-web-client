@@ -92,7 +92,7 @@ function(params) {
 	var overviewId = params.overviewId;
 	var parent = params.parent ? params.parent : this._shell;
 	var overviewClass = params.overviewClass ? params.overviewClass : "overview";
-	var overview = this._overview[overviewId] = new DwtComposite(parent, overviewClass, params.posStyle);
+	var overview = this._overview[overviewId] = new DwtAccordion(parent, overviewClass, params.posStyle);
 	this._overview[overviewId].setScrollStyle(params.scroll ? params.scroll : Dwt.SCROLL);
 	this._selectionSupported[overviewId] = params.selectionSupported;
 	this._actionSupported[overviewId] = params.actionSupported;
@@ -175,10 +175,24 @@ function(overviewId, treeIds, omit, reset) {
 			var params = {overviewId:overviewId, omit:omit, app:app, hideEmpty:hideEmpty};
 			params.showUnread = this._showUnread[overviewId];
 			treeController.show(params);
+
+			// reset treeView once its been created
+			treeView = this.getTreeView(overviewId, treeIds[i], app);
 		} else {
 			// add the tree view's HTML element back to the overview
 			overview.addChild(treeView);
 			treeView.setCheckboxes();
+		}
+
+		////////////////////////////////////////////////////////////////////
+		// XXX: HACK HACK HACK HACK HACK - AINT SHE PRETTY?
+		////////////////////////////////////////////////////////////////////
+		if (app == ZmApp.MAIL) {
+			var body = overview.getBody();
+			if (body) treeView.reparentHtmlElement(body);
+			overview.show(true);
+		} else {
+			overview.show(false);
 		}
 	}
 	this._treeIds[overviewId] = treeIds;

@@ -75,6 +75,7 @@ AjxPackage.require("ajax.dwt.widgets.DwtToolBar");
 AjxPackage.require("ajax.dwt.widgets.DwtToolTip");
 AjxPackage.require("ajax.dwt.widgets.DwtTreeItem");
 AjxPackage.require("ajax.dwt.widgets.DwtTree");
+AjxPackage.require("ajax.dwt.widgets.DwtAccordion");
 AjxPackage.require("ajax.dwt.widgets.DwtCalendar");
 AjxPackage.require("ajax.dwt.widgets.DwtPropertyPage");
 AjxPackage.require("ajax.dwt.widgets.DwtTabView");
