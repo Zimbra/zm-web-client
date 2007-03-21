@@ -113,8 +113,11 @@ function(partNode, attachments, bodyParts) {
 			attachments.push(this.node);
 		}
 
-		if (this.node.body)
+		if (this.node.body &&
+			(this.node.ct == ZmMimeTable.TEXT_HTML || this.node.ct == ZmMimeTable.TEXT_PLAIN))
+		{
 			bodyParts.push(this.node);
+		}
 
 		// bug fix #4616 - dont add attachments part of a rfc822 msg part
 		if (this.node.mp && this.node.ct != ZmMimeTable.MSG_RFC822) {
