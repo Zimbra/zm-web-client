@@ -61,6 +61,9 @@
         <app:contactListView context="${context}"/>
     </c:when>
     <c:otherwise>
-        mixed view Types (${context.types})
+        <fmt:message key="error" var="title"/>
+        <app:view title="${title}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="" keys="true">
+            <fmt:message key="ztaglib.TAG_EXCEPTION"/>
+        </app:view>
     </c:otherwise>
 </c:choose>
