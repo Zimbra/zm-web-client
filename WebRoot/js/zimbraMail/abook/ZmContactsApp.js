@@ -359,8 +359,10 @@ function(callback) {
 		// set search toolbar field manually
 		if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
 			var folder = this._appCtxt.getById(ZmFolder.ID_CONTACTS);
-			var stb = this._appCtxt.getSearchController().getSearchToolbar();
-			stb.setSearchFieldValue(folder.createQuery());
+			if (folder) {
+				var stb = this._appCtxt.getSearchController().getSearchToolbar();
+				stb.setSearchFieldValue(folder.createQuery());
+			}
 		}
 		// create contact view for the first time
 		clc.show(this._contactList, null, ZmOrganizer.ID_ADDRBOOK);
