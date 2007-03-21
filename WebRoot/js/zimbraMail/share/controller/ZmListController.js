@@ -700,7 +700,7 @@ function(ev) {
 // Compose message to participant
 ZmListController.prototype._participantComposeListener =
 function(ev) {
-	var name = this._actionEv.address.toString() + ZmEmailAddress.SEPARATOR;
+	var name = this._actionEv.address.toString(ZmEmailAddress.SEPARATOR) + ZmEmailAddress.SEPARATOR;
 	var cc = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
 	cc.doAction(ZmOperation.NEW_MESSAGE, this._inNewWindow(ev), null, name);
 };
