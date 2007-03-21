@@ -31,7 +31,8 @@ function ZmVoiceListView(parent, appCtxt, controller, dropTgt) {
 	this._controller = controller;
 	
 	this._playing = null; // The voicemail currently loaded in the player.
-	this._previewing = null; // The voicemail whose play button is visible.
+	this._players = { }; // Map of voicemail.id to sound player
+	this._soundChangeListeners = [];
 }
 ZmVoiceListView.prototype = new ZmListView;
 ZmVoiceListView.prototype.constructor = ZmVoiceListView;
@@ -41,9 +42,9 @@ ZmVoiceListView.prototype.toString = function() {
 };
 
 ZmVoiceListView.FROM_WIDTH = 150;
-ZmVoiceListView.PLAYING_WIDTH = 20;
+ZmVoiceListView.PLAYING_WIDTH = null; // Auto
 ZmVoiceListView.DURATION_WIDTH = 120;
-ZmVoiceListView.DATE_WIDTH = null; // Auto
+ZmVoiceListView.DATE_WIDTH = 120;
 ZmVoiceListView.CALLER_NAME_WIDTH = 150;
 
 // Resuse existing field codes rather than adding voice-specific stuff to ZmList...
@@ -68,22 +69,32 @@ function(callType) {
 
 ZmVoiceListView.prototype.setPlaying =
 function(voicemail) {
-	if (voicemail == this._playing)  {
-		return;
+	var player = this._players[voicemail.id];
+	if (player) {
+		player.play();
 	}
-
-	if (this._playing) {
-		this._setPlayState(this._playing, null, false);
-	}
-	this._playing = voicemail;
-	if (this._playing) {
-		this._setPlayState(this._playing, "toggled", true, true);
-	}
-};
+};	
 
 ZmVoiceListView.prototype.getPlaying =
 function() {
 	return this._playing;
+};
+
+ZmVoiceListView.prototype.addSoundChangeListener =
+function(listener) {
+	this._soundChangeListeners.push(listener);
+};
+
+ZmVoiceListView.prototype.markUIAsRead =
+function(items, on) {
+	var className = on ? "" : "Unread";
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		var row = document.getElementById(this._getFieldId(item, ZmItem.F_ITEM_ROW));
+		if (row) {
+			row.className = className;
+		}
+	}
 };
 
 ZmVoiceListView.prototype.createHeaderHtml = 
@@ -124,11 +135,11 @@ function(columnIndex, element) {
 ZmVoiceListView.prototype._getHeaderList =
 function(appCtxt) {
 
-	var headerList = new Array();
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoiceListView.F_PLAYING], "", null, ZmVoiceListView.PLAYING_WIDTH, null, true));
+	var headerList = [];
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoiceListView.F_CALLER_NAME], ZmMsg.from, null, ZmVoiceListView.CALLER_NAME_WIDTH, null, true));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoiceListView.F_CALLER], ZmMsg.phoneNumber, null, ZmVoiceListView.FROM_WIDTH, ZmVoiceListView.F_CALLER, true));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoiceListView.F_SIZE], ZmMsg.duration, null, ZmVoiceListView.DURATION_WIDTH, ZmVoiceListView.F_SIZE, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoiceListView.F_PLAYING], ZmMsg.message, null, ZmVoiceListView.PLAYING_WIDTH, null, true));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoiceListView.F_DATE], ZmMsg.received, null, ZmVoiceListView.DATE_WIDTH, ZmVoiceListView.F_DATE, true));
 
 	return headerList;
@@ -169,7 +180,7 @@ function(voicemail, now, isDndIcon, isMixedView, myDiv) {
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmVoiceListView.F_SIZE]) == 0) {
 			htmlArr[idx++] = AjxDateUtil.computeDuration(voicemail.duration);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmVoiceListView.F_PLAYING]) == 0) {
-			htmlArr[idx++] = "<div class='ImgBlank_16 ZmPlayButton-hidden'></div>";
+			// No-op. This is handled in _addRow()
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmVoiceListView.F_DATE]) == 0) {
 			htmlArr[idx++] = AjxDateUtil.computeDateStr(now, voicemail.date);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmVoiceListView.F_CALLER_NAME]) == 0) {
@@ -203,105 +214,78 @@ function(voicemail) {
 	return AjxStringUtil.htmlEncode(display);
 };
 
+ZmVoiceListView.prototype.removeItem =
+function(item, skipNotify) {
+	DwtListView.prototype.removeItem.call(this, item, skipNotify);
+	var player = this._players[item.id];
+	if (player) {
+		player.dispose();
+	}
+	if (this._playing == item) {
+		this._playing = null;
+	}
+	delete this._players[item.id];
+};
+
+ZmVoiceListView.prototype.removeAll =
+function(skipNotify) {
+	for (var i in this._players) {
+		this._players[i].dispose();
+	}
+	this._players = {};
+	this._playing = null;
+	DwtListView.prototype.removeAll.call(this, skipNotify);
+};
+
 ZmVoiceListView.prototype._addRow =
 function(row, index) {
 	DwtListView.prototype._addRow.call(this, row, index);
+	var list = this.getList();
+	
+	if (!list || !list.size()) {
+		return;
+	}
+	if (this._callType != ZmVoiceFolder.VOICEMAIL) {
+		return;
+	}
+	var voicemail = this.getItemFromElement(row);
+	var columnIndex = this._getColumnIndex(ZmVoiceListView.F_PLAYING);
+	var cell = this._getCell(columnIndex, row);
+	var player = new ZmSoundPlayer(this, voicemail.soundUrl, voicemail);
+	player.reparentHtmlElement(cell);
+	if (!this._compactListenerObj) {
+		this._compactListenerObj = new AjxListener(this, this._compactListener);
+	}
+	player.addCompactListener(this._compactListenerObj);
+	this._players[voicemail.id] = player;
+	for (var i = 0, count = this._soundChangeListeners.length; i < count; i++) {
+		player.addChangeListener(this._soundChangeListeners[i]);
+	}
 };
 
 ZmVoiceListView.prototype._mouseOverAction =
 function(ev, div) {
+	// Bypassing the ZmList._mouseOverAction which does some participant stuff I'm not
+	// set up to handle yet....
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
-	
-	if (this._callType == ZmVoiceFolder.VOICEMAIL) {
-		var voicemail = this.getItemFromElement(div);
-		if (voicemail != this._playing && voicemail != this._previewing) {
-			if (this._previewing) {
-				this._setPlayState(this._previewing, null, false);
-			}
-			this._previewing = voicemail;
-			var target = ev.target;
-			var inPlayingCell = this._isInPlayingCell(target);
-			var state = inPlayingCell ? "activated" : null;
-			if (this._previewing) {
-				this._setPlayState(this._previewing, state, true);
-			}
-		}
-	}
-};
-
-ZmVoiceListView.prototype._mouseDownAction =
-function(ev, div) {
-	if (this._callType == ZmVoiceFolder.VOICEMAIL) {
-		var voicemail = this.getItemFromElement(div);
-		if (voicemail && voicemail == this._previewing) {
-			var target = ev.target;
-			var inPlayingCell = this._isInPlayingCell(target);
-			if (inPlayingCell) {
-				this._setPlayState(this._previewing, "triggered", true);
-			}
-		}
-	}
-};
-
-ZmVoiceListView.prototype._mouseUpAction =
-function(ev, div) {
-	if (this._callType == ZmVoiceFolder.VOICEMAIL) {
-		var voicemail = this.getItemFromElement(div);
-		if (voicemail && voicemail == this._previewing) {
-			var target = ev.target;
-			var inPlayingCell = this._isInPlayingCell(target);
-			if (inPlayingCell) {
-				this._previewing = null;
-				
-				// Notify listeners of play button selection.
-				// (This will cuase the play state to be updated.)
-				DwtUiEvent.copy(this._selEv, ev);
-				this._selEv.item = this.getItemFromElement(div);
-				this._selEv.detail = ZmVoiceListView.PLAY_BUTTON_PRESSED;
-				this._evtMgr.notifyListeners(DwtEvent.SELECTION, this._selEv);
-			}
-		}
-	}
-};
-
-ZmVoiceListView.prototype._isInPlayingCell =
-function(target) {
-	if (this._callType == ZmVoiceFolder.VOICEMAIL) {
-		var thisElement = this.getHtmlElement();
-		var columnIndex = this._getColumnIndex(ZmVoiceListView.F_PLAYING);
-		while (target && target != thisElement) {
-			if (target.cellIndex == columnIndex) {
-				return true;
-			}
-			target = target.parentNode;
-		}
-		return false;
-	}
-};
-
-ZmVoiceListView.prototype._setPlayState =
-function(voicemail, state, visible, playing) {
-	var columnIndex = this._getColumnIndex(ZmVoiceListView.F_PLAYING);
-	var element = this._getElFromItem(voicemail);
-	var cell = this._getCell(columnIndex, element);
-	var div = cell.childNodes[0];
-	if (!visible) {
-		div.className = "ImgBlank_16 ZmPlayButton-hidden";
-	} else {
-		var buttonClass = state ? " ZmPlayButton-" + state : " ZmPlayButton";
-		var imageClass = playing ? "ImgPlayingMessage" : "ImgPlay";
-		div.className = imageClass + buttonClass;
-	}
 };
 
 ZmVoiceListView.prototype._mouseOutAction =
 function(ev, div) {
-	if (this._callType == ZmVoiceFolder.VOICEMAIL) {
-		var voicemail = this.getItemFromElement(div);
-		if (voicemail != this._playing && this._previewing) {
-			this._setPlayState(this._previewing, null, false);
-			this._previewing = null;
+	DwtListView.prototype._mouseOverAction.call(this, ev, div);
+};
+
+ZmVoiceListView.prototype._compactListener =
+function(ev) {
+	if (!ev.isCompact) {
+		if (this._playing) {
+			var player = this._players[this._playing.id];
+			player.setCompact(true);
+			player.pause();
+			player.rewind();
 		}
+		this._playing = ev.dwtObj.item;
+		this._activePlayer;
 	}
 };
 
@@ -320,9 +304,9 @@ ZmVoiceListView.prototype._sortColumn =
 function(columnItem, bSortAsc) {
 	var comparator;
 	switch (columnItem._sortable) {
-		case ZmVoiceListView.F_CALLER: comparator = ZmVoicemail.getCallerComparator(bSortAsc); break;
-		case ZmVoiceListView.F_SIZE: comparator = ZmVoicemail.getDurationComparator(bSortAsc); break;
-		case ZmVoiceListView.F_DATE: comparator = ZmVoicemail.getDateComparator(bSortAsc); break;
+		case ZmVoiceListView.F_CALLER: comparator = ZmVoiceItem.getCallerComparator(bSortAsc); break;
+		case ZmVoiceListView.F_SIZE: comparator = ZmVoiceItem.getDurationComparator(bSortAsc); break;
+		case ZmVoiceListView.F_DATE: comparator = ZmVoiceItem.getDateComparator(bSortAsc); break;
 		default: break;
 	}
 	if (comparator) {

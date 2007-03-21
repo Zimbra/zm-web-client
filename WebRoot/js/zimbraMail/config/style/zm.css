@@ -2789,17 +2789,8 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmVoiceListView .Row-selected-drag,
 .ZmVoiceListView .Row-selected-right,
 .ZmVoiceListView .Row-selected-disabled {
-	height: 20px;
+	height: 25px;
 }
-
-.ZmPlayButton 								{	@PlayButton@			}
-.ZmPlayButton-disabled						{	@PlayButton-disabled@	}
-.ZmPlayButton-activated 					{	@PlayButton-hover@		}
-.ZmPlayButton-triggered						{	@PlayButton-clicked@	}
-.ZmPlayButton-toggled						{	@PlayButton-toggled@	}
-.ZmPlayButton-active						{	@PlayButton-default@	}
-.ZmPlayButton-focused						{	@PlayButton-focused@	}
-.ZmPlayButton-hidden						{	@PlayButton-hidden@		}
 
 /*************
  *
@@ -2818,12 +2809,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	text-decoration: underline;
 	cursor: pointer;
 }
-/* Size issues...
 .ZmSoundPlayer .DwtButton,
 .ZmSoundPlayer .ZButton {
 	width:30px; min-width:30px;
 }
-*/
 
 .ZmSoundPlayer .ZButton .ZLeftIcon  DIV {
 	margin-left:5px;

@@ -19,15 +19,20 @@
  * This class represents a widget that plays sounds.
  *
  * @param parent	{DwtControl} Parent widget (required)
+ * @param url		{String} The sound file's url
+ * @param item		{Object} The item (voicemail) this player is showing
  * @param className {string} CSS class. If not provided defaults to the class name (optional)
  * @param positionType {string} Positioning style (absolute, static, or relative). If
  * 		not provided defaults to DwtControl.STATIC_STYLE (optional)
  */
-function ZmSoundPlayer(parent, className, positionType) {
+function ZmSoundPlayer(parent, url, item, className, positionType) {
 	if (arguments.length == 0) return;
 	className = className || "ZmSoundPlayer";
 	DwtComposite.call(this, parent, className, positionType);
 
+	this._url = url;
+	this.item = item;
+	this._isCompact = false;
 	this._playButton = null;
 	this._pauseButton = null;
 	this._timeSlider = null;
@@ -38,7 +43,6 @@ function ZmSoundPlayer(parent, className, positionType) {
 		this._createMissingHtml();
 	} else {
 		this._createHtml();
-		this.setEnabled(false);
 	}
 	this._volume = DwtSoundPlugin.MAX_VOLUME;
 	
@@ -53,45 +57,19 @@ function() {
 	return "ZmSoundPlayer";
 };
 
-/**
- * Loads a new sound into the sound player and plays it.
- *
- * @param url	{String} The path to the .wav or other supported sound file.
- */
-ZmSoundPlayer.prototype.setUrl =
-function(url) {
-	if (this._pluginMissing) {
-		return;
-	}
-	if (this._soundPlugin) {
-		this._soundPlugin.pause();
-		this._soundPlugin.dispose();
-		this._soundPlugin = null;
-		this._timeSlider.setValue(this._timeSlider.getMinimum());
-	}
-	this.setEnabled(url != null);
-	if (url) {
-		var args = {
-			parent: this.shell,
-			width: 200,
-			height: 16,
-			offscreen: true, 
-			positionType: DwtControl.RELATIVE_STYLE,
-			url: url,
-			volume: this._volume
-		};
-		this._soundPlugin = DwtSoundPlugin.create(args);
-		this._soundPlugin.addChangeListener(this._pluginChangeListenerObj);
-	}
-};
+ZmSoundPlayer.COMPACT_EVENT = "Compact"
 
 /**
  * Plays the currently loaded sound.
  */
 ZmSoundPlayer.prototype.play =
 function() {
+	this.setCompact(false);
 	if (this._soundPlugin) {
 		this._soundPlugin.play();
+	} else {
+		// Will start playing automatically.
+		this._getPlugin();
 	}
 };
 
@@ -112,6 +90,7 @@ ZmSoundPlayer.prototype.rewind =
 function() {
 	if (this._soundPlugin) {
 		this._soundPlugin.rewind();
+		this._timeSlider.setValue(this._timeSlider.getMinimum());
 	}
 };
 
@@ -124,6 +103,32 @@ ZmSoundPlayer.prototype.setVolume =
 function(volume) {
 	if (this._soundPlugin) {
 		this._soundPlugin.setVolume(volume);
+	}
+};
+
+/**
+ * Sets the compactness pf the player.
+ *
+ * @param compact if true, then only the play button is displayed
+ */
+ZmSoundPlayer.prototype.setCompact =
+function(compact) {
+	if (compact != this._isCompact) {
+		// Set visiblity.
+		this._timeSlider.setVisible(!compact);
+		this._pauseButton.setVisible(!compact);
+		this._volumeButton.setVisible(!compact);
+		this._isCompact = compact;
+
+		// Fire event.
+		if (this.isListenerRegistered(ZmSoundPlayer.COMPACT_EVENT)) {
+			if (!this._changeEvent) {
+				this._changeEvent = new DwtEvent(true);
+				this._changeEvent.dwtObj = this;
+				this._changeEvent.isCompact = compact;
+			}
+		    this.notifyListeners(ZmSoundPlayer.COMPACT_EVENT, this._changeEvent);
+		}
 	}
 };
 
@@ -147,6 +152,10 @@ function(listener) {
     this.addListener(DwtEvent.ONCHANGE, listener);
 };
 
+ZmSoundPlayer.prototype.addCompactListener =
+function(listener) {
+    this.addListener(ZmSoundPlayer.COMPACT_EVENT, listener);
+};
 
 /**
 * Sets the enabled/disabled state of the player.
@@ -164,6 +173,14 @@ function(enabled) {
 			this._timeSlider.setEnabled(enabled);
 		}
 	}
+};
+
+ZmSoundPlayer.prototype.dispose =
+function() {
+	if (this._soundPlugin) {
+		this._soundPlugin.dispose();
+	}
+	DwtControl.prototype.dispose.call(this);
 };
 
 ZmSoundPlayer.prototype._timeSliderListener =
@@ -204,12 +221,32 @@ function(event) {
 	}
 };
 
+ZmSoundPlayer.prototype._getPlugin =
+function(url) {
+	if (this._pluginMissing) {
+		return;
+	}
+	if (!this._soundPlugin) {
+		var args = {
+			parent: this.shell,
+			width: 200,
+			height: 16,
+			offscreen: true, 
+			positionType: DwtControl.RELATIVE_STYLE,
+			url: this._url,
+			volume: this._volume
+		};
+		this._soundPlugin = DwtSoundPlugin.create(args);
+		this._soundPlugin.addChangeListener(this._pluginChangeListenerObj);
+	}
+	return this._soundPlugin;
+};
+
 ZmSoundPlayer.prototype._createHtml =
 function() {
 	var element = this.getHtmlElement();
     var id = this._htmlElId;
     element.innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmSoundPlayer", id);
-//TODO: these ZmMsgs don't belong here...
 	this._playButton = new DwtButton(this);
 	this._playButton.replaceElement(id + "_play");
 	this._playButton.setImage("Play");
@@ -231,6 +268,8 @@ function() {
 	this._volumeButton.setImage("PlayMessage");
 	this._volumeButton.setToolTipContent(ZmMsg.volume);
 	this._volumeButton.addSelectionListener(new AjxListener(this, this._volumeButtonListener));
+	
+	this.setCompact(true);
 };
 
 ZmSoundPlayer.prototype._createMissingHtml =
