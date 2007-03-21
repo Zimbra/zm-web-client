@@ -63,8 +63,18 @@ function ZmCalViewController(appCtxt, container, calApp) {
 	this._maintTimedAction = new AjxTimedAction(this, this._maintenanceAction);
 	this._pendingWork = ZmCalViewController.MAINT_NONE;	
 	this._apptCache = new ZmApptCache(this, appCtxt);
-	
-	this._initializeViewActionMenu();	
+	ZmCalViewController.OPS = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
+							   ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
+
+	// get view based on op
+	ZmCalViewController.OP_TO_VIEW = {};
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_VIEW]		= ZmController.CAL_DAY_VIEW;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.WEEK_VIEW]		= ZmController.CAL_WEEK_VIEW;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmController.CAL_WORK_WEEK_VIEW;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmController.CAL_MONTH_VIEW;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmController.CAL_SCHEDULE_VIEW;
+
+	this._initializeViewActionMenu();
 
 	this._errorCallback = new AjxCallback(this, this._handleError);
 };
@@ -89,9 +99,6 @@ ZmCalViewController.MSG_KEY[ZmController.CAL_SCHEDULE_VIEW]		= "viewSchedule";
 ZmCalViewController.VIEWS = [ZmController.CAL_DAY_VIEW, ZmController.CAL_WORK_WEEK_VIEW, ZmController.CAL_WEEK_VIEW,
 							ZmController.CAL_MONTH_VIEW, ZmController.CAL_SCHEDULE_VIEW];
 
-ZmCalViewController.OPS = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW, 
-							ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
-
 ZmCalViewController.DEFAULT_APPOINTMENT_DURATION = 3600000;
 
 // maintenance needed on views and/or minical
@@ -99,14 +106,6 @@ ZmCalViewController.MAINT_NONE 		= 0x0; // no work to do
 ZmCalViewController.MAINT_MINICAL 	= 0x1; // minical needs refresh
 ZmCalViewController.MAINT_VIEW 		= 0x2; // view needs refresh
 ZmCalViewController.MAINT_REMINDER	= 0x4; // reminders need refresh
-
-// get view based on op
-ZmCalViewController.OP_TO_VIEW = {};
-ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_VIEW]		= ZmController.CAL_DAY_VIEW;
-ZmCalViewController.OP_TO_VIEW[ZmOperation.WEEK_VIEW]		= ZmController.CAL_WEEK_VIEW;
-ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmController.CAL_WORK_WEEK_VIEW;
-ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmController.CAL_MONTH_VIEW;
-ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmController.CAL_SCHEDULE_VIEW;
 
 // get view based on op
 ZmCalViewController.ACTION_CODE_TO_VIEW = {};
@@ -208,19 +207,9 @@ function(viewId) {
 	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[ZmController.CAL_VIEW];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._viewMgr;
-	var menuItem = this._view_menu_item[this._currentView];
-	var ok = this._setView(ZmController.CAL_VIEW, elements, true);
-	if (ok) {
-		this._setViewMenu(ZmController.CAL_VIEW, viewId);
-		if (this._currentView && menuItem) {
-			menuItem.setChecked(false, true);
-		}
-	}
+	this._appCtxt.getCurrentAppToolbar().setSubView(ZmController.CAL_VIEW, viewId);
+	this._setView(ZmController.CAL_VIEW, elements, true);
 	this._currentView = this._viewMgr.getCurrentViewName();
-	menuItem = this._view_menu_item[this._currentView];
-	if (menuItem) {
-		menuItem.setChecked(true, true);
-	}
 	this._listView[this._currentView] = this._viewMgr.getCurrentView();
 	this._resetToolbarOperations();
 	
@@ -437,7 +426,6 @@ function(view) {
 	var menu = appToolbar.getViewMenu(view);
 	if (!menu) {
 		menu = new ZmPopupMenu(appToolbar.getViewButton());
-		this._view_menu_item = {};
 		this._view_menu_listener = new AjxListener(this, this._viewMenuListener);
 		for (var i = 0; i < ZmCalViewController.VIEWS.length; i++) {
 			var id = ZmCalViewController.VIEWS[i];
@@ -445,7 +433,6 @@ function(view) {
 			mi.setData(ZmOperation.KEY_ID, ZmCalViewController.OPS[i]);
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._view_menu_listener);
-			this._view_menu_item[id] = mi;
 		}
 		appToolbar.setViewMenu(view, menu);
 	}

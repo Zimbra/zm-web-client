@@ -188,7 +188,6 @@ function(view) {
 ZmPageEditController.prototype._setView =
 function(view, elements, isAppView, clear, pushOnly, isTransient) {
 	ZmListController.prototype._setView.apply(this, arguments);
-	//this._app._setViewMenu(view);
 
 	this._format = this._format || ZmPageEditor.DEFAULT;
 

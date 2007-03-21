@@ -444,8 +444,10 @@ function(force) {
 
 	this.addComponents(this._views[this._currentView]);
 	this._layout(this._currentView);	
-	
-	this._controller.setActiveApp(this._viewApp[this._currentView], this._currentView);
+
+	if (this._viewApp[this._currentView]) {
+//		this._controller.setActiveApp(this._viewApp[this._currentView], this._currentView);
+	}
 
 	return true;
 };
@@ -487,7 +489,7 @@ ZmAppViewMgr.prototype.showPendingView =
 function(show) {
 	if (show && this._pendingAction) {
 		if (this._pendingView && this._pendingAction.run(ZmAppViewMgr.PENDING_VIEW)) {
-			this._controller.setActiveApp(this._viewApp[this._pendingView], this._pendingView);
+//			this._controller.setActiveApp(this._viewApp[this._pendingView], this._pendingView);
 		}
 	}
 	this._pendingAction = this._pendingView = null;

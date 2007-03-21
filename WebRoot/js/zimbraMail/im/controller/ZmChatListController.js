@@ -95,22 +95,6 @@ function(view, force) {
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
 		var ok = this._setView(view, elements, true);
 		this._currentView = view;
-		if (ok)
-			this._setViewMenu(view);
-	}
-}
-
-
-// Set the view menu's icon, and make sure the appropriate list item is checked
-ZmChatListController.prototype._setViewMenu =
-function(view) {
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	appToolbar.showViewMenu(view);
-    var menu = appToolbar.getViewButton().getMenu();
-    if (menu) {
-	    var mi = menu.getItemById(ZmOperation.MENUITEM_ID, view);
-		if (mi)
-			mi.setChecked(true, true);
 	}
 }
 

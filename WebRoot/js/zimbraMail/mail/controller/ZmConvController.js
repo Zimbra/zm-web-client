@@ -70,7 +70,6 @@ function(activeSearch, conv) {
 		this._listView[this._currentView].setOffset(0);	
 		this._listView[this._currentView].setSortByAsc(ZmItem.F_DATE, false);
 	}
-	this._setViewMenu(ZmController.CONV_VIEW);
 
 	// this._list will be set when conv is loaded
 	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv);

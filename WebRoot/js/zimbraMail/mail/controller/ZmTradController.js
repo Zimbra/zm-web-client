@@ -64,7 +64,6 @@ function(search) {
 
 	// call base class
 	ZmDoublePaneController.prototype.show.call(this, search, this._list);
-	this._setViewMenu(ZmController.TRAD_VIEW);
 	this._setGroupMailBy(ZmItem.MSG);
 	this._resetNavToolBarButtons(ZmController.TRAD_VIEW);
 };

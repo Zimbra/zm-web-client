@@ -659,7 +659,9 @@ function(ev) {
 // Switch to selected view.
 ZmListController.prototype._viewButtonListener =
 function(ev) {
-	this.switchView(ev.item.getData(ZmOperation.MENUITEM_ID));
+	if (ev.detail == DwtMenuItem.CHECKED || ev.detail == DwtMenuItem.UNCHECKED)	{
+		this.switchView(ev.item.getData(ZmOperation.MENUITEM_ID));
+	}
 };
 
 // Navbar listeners
@@ -1008,19 +1010,6 @@ function(parent) {
 		else {
 			tagMenu.parent.popup();
 		}
-	}
-};
-
-// Set the view menu's icon, and make sure the appropriate list item is checked
-ZmListController.prototype._setViewMenu =
-function(view, viewId) {
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	appToolbar.showViewMenu(view, viewId);
-    var menu = appToolbar.getViewButton().getMenu();
-    if (menu) {
-	    var mi = menu.getItemById(ZmOperation.MENUITEM_ID, view);
-		if (mi)
-			mi.setChecked(true, true);
 	}
 };
 

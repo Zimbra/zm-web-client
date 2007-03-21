@@ -70,10 +70,7 @@ ZmNotebookController.prototype.switchView = function(view, force) {
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 		elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 
-		var ok = this._setView(view, elements, true);
-		if (ok) {
-			this._setViewMenu(view);
-		}
+		this._setView(view, elements, true);
 	}
 	Dwt.setTitle(this.getCurrentView().getTitle());
 };

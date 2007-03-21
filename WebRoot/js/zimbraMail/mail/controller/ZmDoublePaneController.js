@@ -46,6 +46,8 @@ function ZmDoublePaneController(appCtxt, container, mailApp) {
 	
 	this._listeners[ZmOperation.SHOW_ORIG] = new AjxListener(this, this._showOrigListener);
 	this._listeners[ZmOperation.ADD_FILTER_RULE] = new AjxListener(this, this._filterListener);
+	
+	this._viewMenuCallback = new AjxCallback(this, this._checkViewMenu);
 };
 
 ZmDoublePaneController.prototype = new ZmMailListController;
@@ -75,6 +77,7 @@ function(search, item) {
 
 	// see if we have it cached? Check if conv loaded?
 	this._loadItem(item, this._currentView);
+	this._checkViewMenu();
 };
 
 /**
@@ -104,6 +107,7 @@ function(view, toggle) {
 	}
 
 	this._readingPaneOn = mi.getChecked();
+	this._checkViewMenu();
 	this._doublePaneView.toggleView();
 
 	// set msg in msg view if reading pane is being shown
@@ -154,6 +158,9 @@ function(view) {
 	}
 
 	ZmMailListController.prototype._initialize.call(this, view);
+	if (!this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
+		this._appCtxt.getCurrentAppToolbar().setCallback(ZmController.TRAD_VIEW, this._viewMenuCallback);
+	}
 };
 
 ZmDoublePaneController.prototype._getToolBarOps =
@@ -234,14 +241,15 @@ function() {
 
 // Adds a "Reading Pane" checked menu item to a view menu
 ZmDoublePaneController.prototype._setupReadingPaneMenuItem =
-function(view, menu, checked) {
+function(view, menu, checked, itemId) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
+	var id = itemId || ZmController.READING_PANE_VIEW;
 	var menu = menu ? menu : appToolbar.getViewMenu(view);
-	if (!menu) { // should have a menu by now, from _setupGroupByMenuItems()
+	if (!menu) {
+		// conversations not enabled
 		menu = new ZmPopupMenu(appToolbar.getViewButton());
 	}
-	var id = ZmController.READING_PANE_VIEW;
-	if (menu._menuItems[id] == null) {
+	if (!menu._menuItems[id]) {
 		var mi = menu.createMenuItem(id, "SplitPane", ZmMsg.readingPane, null, true, DwtMenuItem.CHECK_STYLE);
 		mi.setData(ZmOperation.MENUITEM_ID, id);
 		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
@@ -275,6 +283,27 @@ function(ev, action, extraBodyText) {
 	}
 	// finally, call the base class last
 	ZmMailListController.prototype._doAction.call(this, ev, action, extraBodyText);
+};
+
+/**
+ * Sets the content of the view button if conversations are disabled (in which case
+ * "Reading Pane" is the sole menu item).
+ * 
+ * @param mi	[DwtMenuItem]*	the Reading Pane menu item
+ */
+ZmDoublePaneController.prototype._checkViewMenu =
+function() {
+	if (this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) { return; }
+	var appToolbar = this._appCtxt.getCurrentAppToolbar();
+	var menu = appToolbar.getViewButton().getMenu();
+	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, ZmController.READING_PANE_VIEW);
+	var icon = mi.getImage();
+	if (icon) {
+		appToolbar._viewButton.setImage(icon);
+	}
+	if (appToolbar._viewLabel) {
+		appToolbar._viewButton.setText(this._readingPaneOn ? ZmMsg.readingPaneOn : ZmMsg.readingPaneOff);
+	}
 };
 
 /*

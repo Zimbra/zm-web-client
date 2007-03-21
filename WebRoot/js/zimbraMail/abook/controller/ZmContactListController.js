@@ -143,8 +143,7 @@ function(view, force, initialized) {
 		if (!initialized)
 			this._initializeAlphabetBar(view);
 
-		if (this._setView(view, elements, true))
-			this._setViewMenu(view);
+		this._setView(view, elements, true);
 
 		this._resetNavToolBarButtons(view);
 
