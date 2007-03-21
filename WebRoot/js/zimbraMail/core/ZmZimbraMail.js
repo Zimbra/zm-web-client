@@ -122,15 +122,16 @@ function() {
 };
 
 /**
-* Sets up ZimbraMail, and then starts it by calling its constructor. It is assumed that the
-* CSFE is on the same host.
-*
-* @param domain			[string]	the host that we're running on
-* @param app			[constant]*	starting app
-* @param userShellId	[string]*	DOM ID of containing skin
-*/
+ * Sets up ZimbraMail, and then starts it by calling its constructor. It is assumed that the
+ * CSFE is on the same host.
+ *
+ * @param domain		[string]	the host that we're running on
+ * @param app			[constant]*	starting app
+ * @param userShellId	[string]*	DOM ID of containing skin
+ * @param offlineMode	[boolean]*	if true, this is the offline client
+ */
 ZmZimbraMail.run =
-function(domain, app, userShellId) {
+function(domain, app, userShellId, offlineMode) {
 
 	// Create the global app context
 	var appCtxt = new ZmAppCtxt();
@@ -150,6 +151,11 @@ function(domain, app, userShellId) {
 
 	// Create upload manager (for sending attachments)
 	appCtxt.setUploadManager(new AjxPost(appCtxt.getUploadFrameId()));
+
+    if (offlineMode) {
+    	DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
+    	appCtxt.set(ZmSetting.OFFLINE, true);
+    }
 
 	var apps = AjxCookie.getCookie(document, ZmLogin.APPS_COOKIE);
 	DBG.println(AjxDebug.DBG1, "apps: " + apps);
@@ -943,7 +949,8 @@ function() {
 		var hideIcon = skin.hints && skin.hints.help_button.hideIcon;
 		this._setUserInfoLink("ZmZimbraMail.helpLinkCallback();", "Help", ZmMsg.help, "skin_container_help", hideIcon);
 		hideIcon = skin.hints && skin.hints.logout_button.hideIcon;
-		this._setUserInfoLink("ZmZimbraMail.conditionalLogOff();", "Logoff", ZmMsg.logOff, "skin_container_logoff", hideIcon);
+		var text = this._appCtxt.get(ZmSetting.OFFLINE) ? ZmMsg.setup : ZmMsg.logOff;
+		this._setUserInfoLink("ZmZimbraMail.conditionalLogOff();", "Logoff", text, "skin_container_logoff", hideIcon);
 	}
 
 	var login = this._appCtxt.get(ZmSetting.USERNAME);

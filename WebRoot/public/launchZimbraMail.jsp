@@ -87,6 +87,8 @@
 
 	String ext = (String) request.getAttribute("fileExtension");
 	if (ext == null) ext = "";
+	
+	String offlineMode = application.getInitParameter("offlineMode");
 %>
 <link rel="SHORTCUT ICON" href="<%=contextPath %>/img/loRes/logo/favicon.ico">
 <link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
@@ -181,7 +183,8 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 				app = m[1];
 		}
 
-		ZmZimbraMail.run(document.domain, app);
+		var offlineMode = "<%=offlineMode%>";
+		ZmZimbraMail.run(document.domain, app, null, offlineMode);
 	}
 
     //	START DOMContentLoaded

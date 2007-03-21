@@ -376,6 +376,7 @@ function() {
 	this.registerSetting("HELP_URI",				{type: ZmSetting.T_CONFIG, defaultValue: appContextPath + "/help/Zimbra_User_Help.htm"});
 	this.registerSetting("LOG_REQUEST",				{type: ZmSetting.T_CONFIG, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("LOGO_URI",				{type: ZmSetting.T_CONFIG, defaultValue: "http://www.zimbra.com"});
+	this.registerSetting("OFFLINE",					{type: ZmSetting.T_CONFIG, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("TIMEOUT",					{type: ZmSetting.T_CONFIG, dataType: ZmSetting.D_INT, defaultValue: 30});
 	this.registerSetting("USE_XML",					{type: ZmSetting.T_CONFIG, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	
