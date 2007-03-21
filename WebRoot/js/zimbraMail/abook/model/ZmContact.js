@@ -374,7 +374,7 @@ function() {
 	if (this.isGal) return true;
 
 	return this.isShared()
-		? this.addrbook.isReadOnly()
+		? this.addrbook && this.addrbook.isReadOnly()
 		: false;
 };
 
