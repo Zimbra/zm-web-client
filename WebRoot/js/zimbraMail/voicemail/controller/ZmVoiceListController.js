@@ -192,6 +192,7 @@ function(items, heard) {
 		items[i].isUnheard = !heard;
 	}
 	this._getView().markUIAsRead(items, heard);
+	this._resetToolbarOperations();
 };
 
 ZmVoiceListController.prototype._refreshListener = 
@@ -215,6 +216,7 @@ function(items) {
 	for (var i = 0, count = items.length; i < count; i++) {
 		this._getView().removeItem(items[i]);
 	}
+	this._resetToolbarOperations();
 };
 
 ZmVoiceListController.prototype._saveListener = 
