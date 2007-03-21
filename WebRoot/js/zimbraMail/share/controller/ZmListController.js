@@ -580,19 +580,19 @@ function(ev) {
 ZmListController.prototype._moveListener =
 function(ev) {
 	this._pendingActionData = this._listView[this._currentView].getSelection();
-	var moveToDialog = this._appCtxt.getMoveToDialog();
+	var moveToDialog = this._appCtxt.getChooseFolderDialog();
 	if (!this._moveCb) {
 		this._moveCb = new AjxCallback(this, this._moveCallback);
 	}
 	ZmController.showDialog(moveToDialog, this._moveCb, this._getMoveParams());
 	moveToDialog.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, moveToDialog);
-	moveToDialog.setTitle(this._getMoveDialogTitle(this._pendingActionData.length));
 };
 
 ZmListController.prototype._getMoveParams =
 function() {
 	var org = ZmApp.ORGANIZER[this._app._name] || ZmOrganizer.FOLDER;
-	return {data:this._pendingActionData, treeIds:[org]};
+	var title = this._getMoveDialogTitle(this._pendingActionData.length);
+	return {data:this._pendingActionData, treeIds:[org], title:title, description:ZmMsg.targetFolder};
 };
 
 // Switch to selected view.
@@ -774,7 +774,7 @@ function(params) {
 ZmListController.prototype._moveCallback =
 function(folder) {
 	this._doMove(this._pendingActionData, folder, null, true);
-	this._clearDialog(this._appCtxt.getMoveToDialog());
+	this._clearDialog(this._appCtxt.getChooseFolderDialog());
 	this._pendingActionData = null;
 };
 
