@@ -556,7 +556,6 @@ function(type, useException) {
 	var value = this._attInputField[type].getValue();
 	var attendees = new AjxVector();
 	var items = AjxEmailAddress.split(value);
-	var gotOne = false;
 
 	for (var i = 0; i < items.length; i++) {
 		var item = AjxStringUtil.trim(items[i]);
@@ -570,13 +569,11 @@ function(type, useException) {
 		}
 		if (attendee) {
 			attendees.add(attendee);
-			gotOne = true;
 		}
 	}
-	// replace attendees list with what we've found :/
-	if (gotOne) {
-		this.parent.parent.updateAttendees(attendees, type);
-	}
+
+	// *always* force replace of attendees list with what we've found
+	this.parent.parent.updateAttendees(attendees, type);
 };
 
 ZmApptEditView.prototype._getAttendeeByName =
