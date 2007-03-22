@@ -39,7 +39,9 @@ ZmSearchFolder.create =
 function(appCtxt, params) {
 	var soapDoc = AjxSoapDoc.create("CreateSearchFolderRequest", "urn:zimbraMail");
 	var searchNode = soapDoc.set("search");
-	searchNode.setAttribute("name", AjxEnv.isSafari ? AjxStringUtil.xmlEncode(params.name) : params.name);
+	var name = AjxEnv.isSafari && !AjxEnv.isSafariNightly
+		? AjxStringUtil.xmlEncode(params.name) : params.name;
+	searchNode.setAttribute("name", name);
 	searchNode.setAttribute("query", params.search.query);
 	if (params.search.types) {
 		var a = params.search.types.getArray();

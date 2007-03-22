@@ -169,7 +169,7 @@ function(callback) {
 	var text = this.getTextVersion();
 
 	// bug fix #6970 - safari doesnt xml encode for us :(
-	if (AjxEnv.isSafari)
+	if (AjxEnv.isSafari && !AjxEnv.isSafariNightly)
 		text = AjxStringUtil.xmlEncode(text);
 
 	if (/\S/.test(text)) {

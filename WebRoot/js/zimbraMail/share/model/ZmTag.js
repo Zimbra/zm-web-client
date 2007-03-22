@@ -112,7 +112,9 @@ ZmTag.create =
 function(appCtxt, params) {
 	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:zimbraMail");
 	var tagNode = soapDoc.set("tag");
-	tagNode.setAttribute("name", AjxEnv.isSafari ? AjxStringUtil.xmlEncode(params.name) : params.name);
+	var name = AjxEnv.isSafari && !AjxEnv.isSafariNightly
+		? AjxStringUtil.xmlEncode(params.name) : params.name
+	tagNode.setAttribute("name", name);
 	var color = ZmOrganizer.checkColor(params.color);
 	if (color && (color != ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG])) {
 		tagNode.setAttribute("color", color);

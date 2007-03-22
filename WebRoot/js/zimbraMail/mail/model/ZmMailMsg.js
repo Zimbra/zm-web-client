@@ -574,7 +574,8 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 	if (instanceDate) {
 		var serverDateTime = AjxDateUtil.getServerDateTime(instanceDate);
 		var timeZone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-        if (AjxEnv.isSafari) timeZone = AjxStringUtil.xmlEncode(timeZone);
+        if (AjxEnv.isSafari && !AjxEnv.isSafariNightly)
+			timeZone = AjxStringUtil.xmlEncode(timeZone);
 
         var clientId = AjxTimezone.getClientId(timeZone);
         ZmTimezone.set(soapDoc, clientId, null, true);

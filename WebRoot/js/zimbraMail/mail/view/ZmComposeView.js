@@ -900,7 +900,8 @@ function(ev, acListView, result) {
 
 ZmComposeView.prototype._adjustAddrHeight =
 function(textarea, skipResetBodySize) {
-	if (AjxEnv.isSafari) return;
+	if (AjxEnv.isSafari && !AjxEnv.isSafariNightly)
+		return;
 
 	if (textarea.value.length == 0) {
 		textarea.style.height = "21px";
@@ -1269,8 +1270,8 @@ function(composeMode) {
 		var contactsClass = this._appCtxt.getApp(ZmApp.CONTACTS);
 		var contactsLoader = contactsClass.getContactList;
 		var locCallback = new AjxCallback(this, this._getAcListLoc, [this]);
-		var compCallback = !AjxEnv.isSafari ? (new AjxCallback(this, this._acCompHandler)) : null;
-		var keyupCallback = !AjxEnv.isSafari ? (new AjxCallback(this, this._acKeyupHandler)) : null;
+		var compCallback = (!AjxEnv.isSafari || AjxEnv.isSafariNightly) ? (new AjxCallback(this, this._acCompHandler)) : null;
+		var keyupCallback = (!AjxEnv.isSafari || AjxEnv.isSafariNightly) ? (new AjxCallback(this, this._acKeyupHandler)) : null;
 		var params = {parent: this, dataClass: contactsClass, dataLoader: contactsLoader,
 					  matchValue: ZmContactsApp.AC_VALUE_FULL, locCallback: locCallback,
 					  compCallback:compCallback, keyUpCallback: keyupCallback};
@@ -1300,7 +1301,7 @@ function(composeMode) {
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			this._acAddrSelectList.handle(this._field[type]);
 		} else {
-			if (!AjxEnv.isSafari)
+			if (!AjxEnv.isSafari || AjxEnv.isSafariNightly)
 				this._setEventHandler(this._fieldId[type], "onKeyUp");
 		}
 	}
@@ -1354,7 +1355,8 @@ function() {
 		html[idx++] = "<td><textarea id='";
 		html[idx++] = this._fieldId[type];
 		html[idx++] = "' rows=1 class='addresses' style='";
-		html[idx++] = AjxEnv.isSafari ? "height:52px;" : "height:21px; overflow:hidden";
+		html[idx++] = AjxEnv.isSafari && !AjxEnv.isSafariNightly
+			? "height:52px;" : "height:21px; overflow:hidden";
 		html[idx++] = "'></textarea></td>";
 		html[idx++] = "</tr></table></div></td></tr>";
 	}

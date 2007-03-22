@@ -175,7 +175,7 @@ function(ev) {
 
 		// bug fix #6514 - Explicitly set checkbox for Safari
 		// NOTE: this bug fix should be removed once Safari gets new version!
-		if (AjxEnv.isSafari) {
+		if (AjxEnv.isSafari && !AjxEnv.isSafariNightly) {
 			ev.item._checkBox.checked = !ev.item._checkBox.checked;
 		}
 

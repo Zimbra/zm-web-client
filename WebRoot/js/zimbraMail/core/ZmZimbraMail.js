@@ -1146,7 +1146,7 @@ function(childWin) {
 		this._childWinList = new AjxVector();
 
 	// NOTE: we now save childWin w/in Object so other params can be added to it.
-	// Otherwise, Safari breaks (see http://bugzilla.opendarwin.org/show_bug.cgi?id=7162)
+	// Otherwise, Safari breaks (see http://bugs.webkit.org/show_bug.cgi?id=7162)
 	var newWinObj = new Object();
 	newWinObj.win = childWin;
 

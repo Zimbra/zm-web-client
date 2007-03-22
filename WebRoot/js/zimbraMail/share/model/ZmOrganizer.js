@@ -325,7 +325,8 @@ function(appCtxt, params) {
 		if (i == "type" || i == "errorCallback") { continue; }
 		var value = params[i];
 		if (i == "name") {
-			value = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(value) : value;
+			value = AjxEnv.isSafari && !AjxEnv.isSafariNightly
+				? AjxStringUtil.xmlEncode(value) : value;
 		} else if (i == "color") {
 			// no need to save color if missing or default
 			if (!value || (value == ZmOrganizer.DEFAULT_COLOR[type])) {
@@ -630,7 +631,8 @@ ZmOrganizer.prototype.getIcon = function() {};
 ZmOrganizer.prototype.rename =
 function(name, callback, errorCallback) {
 	if (name == this.name) return;
-	name = AjxEnv.isSafari ? AjxStringUtil.xmlEncode(name) : name;
+	name = AjxEnv.isSafari && !AjxEnv.isSafariNightly
+		? AjxStringUtil.xmlEncode(name) : name;
 	this._organizerAction({action: "rename", attrs: {name: name}, callback: callback, errorCallback: errorCallback});
 };
 

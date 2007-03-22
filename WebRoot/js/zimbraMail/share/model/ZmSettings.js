@@ -197,7 +197,7 @@ function(callback, result) {
 	}
 
 	// bug fix #6787 - disable HTML compose in Safari until design mode is more stable
-	if (AjxEnv.isSafari) {
+	if (AjxEnv.isSafari && !AjxEnv.isSafariNightly) {
 		this._settings[ZmSetting.HTML_COMPOSE_ENABLED].setValue(false);
 	}
 
