@@ -299,6 +299,7 @@
                                                 </td>
                                             </tr>
                                             <c:if test="${mailbox.prefs.useTimeZoneListInCalendar or not zm:isSameTimeZone(compose.timeZone, mailbox.prefs.timeZoneWindowsId)}">
+                                                <c:set var="addedTimeZone" value="true"/>
                                                 <tr>
                                                     <td nowrap align=right>
                                                         <fmt:message key="timeZonePref"/> :
@@ -419,7 +420,9 @@
         <input type="hidden" name="useInstance" value="${fn:escapeXml(compose.useInstance ? '1' : '0') }"/>
         <input type="hidden" name="instStartTime" value="${fn:escapeXml(compose.instanceStartTime)}"/>
         <input type="hidden" name="instDuration" value="${fn:escapeXml(compose.instanceDuration)}"/>
-
+        <c:if  test="${not addedTimeZone}">
+            <input type="hidden" name="timeZone" value="${fn:escapeXml(compose.timeZone)}"/>            
+        </c:if>
         <input type="hidden" name="repeatBasicType" value="${fn:escapeXml(compose.repeatBasicType)}"/>
         <input type="hidden" name="repeatType" value="${fn:escapeXml(compose.repeatType)}"/>
         <input type="hidden" name="repeatDailyInterval" value="${fn:escapeXml(compose.repeatDailyInterval)}"/>
