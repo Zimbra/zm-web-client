@@ -74,6 +74,10 @@
                             <app:button name="actionCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
                             <%--
                             <td><div class='vertSep'></div></td>
+                            <app:button name="actionRepeatEdit" src="calendar/ApptRecur.gif" tooltip="editRecurrence" text="repeat"/>
+                            --%>
+                            <%--
+                            <td><div class='vertSep'></div></td>
                             <app:button name="actionAttachAdd" src="common/Attachment.gif" tooltip="addAttachments" text="addAttachments"/>
                             <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
                                 <td><div class='vertSep'></div></td>
@@ -308,6 +312,21 @@
                                                     </td>
                                                 </tr>
                                             </c:if>
+                                            <c:if test="${empty appt or not appt.exception}">
+                                                <app:handleError>
+                                                    <c:set var="repeat" value="${compose.simpleRecurrence}"/>
+                                                    <c:if test="${not repeat.type.none}">
+                                                        <tr>
+                                                            <td nowrap align=right valign="top">
+                                                                <fmt:message key="repeats"/> :
+                                                            </td>
+                                                            <td>
+                                                                <app:repeatBlurb repeat="${repeat}" start="${compose.apptStartCalendar.time}" timezone="${mailbox.prefs.timeZone}"/>
+                                                            </td>
+                                                        </tr>
+                                                    </c:if>
+                                                </app:handleError>
+                                            </c:if>
                                             </table>
                                         </fieldset>
                                     </td>
@@ -397,5 +416,32 @@
         <input type="hidden" name="useInstance" value="${fn:escapeXml(compose.useInstance ? '1' : '0') }"/>
         <input type="hidden" name="instStartTime" value="${fn:escapeXml(compose.instanceStartTime)}"/>
         <input type="hidden" name="instDuration" value="${fn:escapeXml(compose.instanceDuration)}"/>
+
+        <input type="hidden" name="repeatBasicType" value="${fn:escapeXml(compose.repeatBasicType)}"/>
+        <input type="hidden" name="repeatType" value="${fn:escapeXml(compose.repeatType)}"/>
+        <input type="hidden" name="repeatDailyInterval" value="${fn:escapeXml(compose.repeatDailyInterval)}"/>
+        <input type="hidden" name="repeatWeeklyByDay" value="${fn:escapeXml(compose.repeatWeeklyByDay)}"/>
+        <input type="hidden" name="repeatWeeklyInterval" value="${fn:escapeXml(compose.repeatWeeklyInterval)}"/>
+        <input type="hidden" name="repeatWeeklySun" value="${fn:escapeXml(compose.repeatWeeklySun) ? '1' : '0'}"/>
+        <input type="hidden" name="repeatWeeklyMon" value="${fn:escapeXml(compose.repeatWeeklyMon) ? '1' : '0'}"/>
+        <input type="hidden" name="repeatWeeklyTue" value="${fn:escapeXml(compose.repeatWeeklyTue) ? '1' : '0'}"/>
+        <input type="hidden" name="repeatWeeklyWed" value="${fn:escapeXml(compose.repeatWeeklyWed) ? '1' : '0'}"/>
+        <input type="hidden" name="repeatWeeklyThu" value="${fn:escapeXml(compose.repeatWeeklyThu) ? '1' : '0'}"/>
+        <input type="hidden" name="repeatWeeklyFri" value="${fn:escapeXml(compose.repeatWeeklyFri) ? '1' : '0'}"/>
+        <input type="hidden" name="repeatWeeklySat" value="${fn:escapeXml(compose.repeatWeeklySat) ? '1' : '0'}"/>
+        <input type="hidden" name="repeatMonthlyInterval" value="${fn:escapeXml(compose.repeatMonthlyInterval)}"/>
+        <input type="hidden" name="repeatMonthlyMonthDay" value="${fn:escapeXml(compose.repeatMonthlyMonthDay)}"/>
+        <input type="hidden" name="repeatMonthlyRelativeInterval" value="${fn:escapeXml(compose.repeatMonthlyRelativeInterval)}"/>
+        <input type="hidden" name="repeatMonthlyRelativeOrd" value="${fn:escapeXml(compose.repeatMonthlyRelativeOrd)}"/>
+        <input type="hidden" name="repeatMonthlyRelativeDay" value="${fn:escapeXml(compose.repeatMonthlyRelativeDay)}"/>
+        <input type="hidden" name="repeatYearlyMonthDay" value="${fn:escapeXml(compose.repeatYearlyMonthDay)}"/>
+        <input type="hidden" name="repeatYearlyMonth" value="${fn:escapeXml(compose.repeatYearlyMonth)}"/>
+        <input type="hidden" name="repeatYearlyRelativeOrd" value="${fn:escapeXml(compose.repeatYearlyRelativeOrd)}"/>
+        <input type="hidden" name="repeatYearlyRelativeDay" value="${fn:escapeXml(compose.repeatYearlyRelativeDay)}"/>
+        <input type="hidden" name="repeatYearlyRelativeMonth" value="${fn:escapeXml(compose.repeatYearlyRelativeMonth)}"/>
+        <input type="hidden" name="repeatEndType" value="${fn:escapeXml(compose.repeatEndType)}"/>
+        <input type="hidden" name="repeatEndCount" value="${fn:escapeXml(compose.repeatEndCount)}"/>
+        <input type="hidden" name="repeatEndDate" value="${fn:escapeXml(compose.repeatEndDate)}"/>
+
     </form>
 </app:view>

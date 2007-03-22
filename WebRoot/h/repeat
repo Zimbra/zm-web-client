@@ -21,11 +21,11 @@
             <td>
                 <table cellspacing=2 cellpadding=0 class='Tb'>
                     <tr>
-                        <app:button name="actionAttachDone" src="common/Close.gif" tooltip="done" text="done"/>
+                        <app:button name="actionRepeatDone" src="common/Close.gif" tooltip="done" text="done"/>
                         <td>
                             <div class='vertSep'></div>
                         </td>
-                        <app:button name="actionAttachCancel" src="common/Cancel.gif" tooltip="cancel"
+                        <app:button name="actionRepeatCancel" src="common/Cancel.gif" tooltip="cancel"
                                     text="cancel"/>
                     </tr>
                 </table>
@@ -56,7 +56,7 @@
                                                 <table cellpadding=5 cellspacing=0>
                                                     <tr>
                                                         <td>
-                                                            <input type=radio name='frequency' value="daily">
+                                                            <input type=radio name='repeatType' <c:if test="${compose.repeatType eq 'NONE'}">checked </c:if> value="NONE">
                                                         </td>
                                                         <td colspan=2>
                                                             None.
@@ -64,14 +64,14 @@
                                                     </tr>
                                                     <tr>
                                                         <td>
-                                                            <input type=radio name='frequency' value="dailyWeekday">
+                                                            <input type=radio name='repeatType' value="BASIC" <c:if test="${compose.repeatType eq 'BASIC'}">checked </c:if>>
                                                         </td>
                                                         <td>
-                                                            <select>
-                                                                <option>Every Day</option>
-                                                                <option>Every Week</option>
-                                                                <option>Every Month</option>
-                                                                <option>Every Year</option>
+                                                            <select name="repeatBasicType">
+                                                                <option value="DAILY">Every Day</option>
+                                                                <option value="WEEKLY">Every Week</option>
+                                                                <option value="MONTHLY">Every Month</option>
+                                                                <option value="YEARLY">Every Year</option>
                                                             </select>
                                                         </td>
                                                         <td>
@@ -103,7 +103,7 @@
                                                 <tr>
                                                     <td valign=top width=1% rowspan=3>Daily:</td>
                                                     <td>
-                                                        <input type=radio name='frequency' value="daily">
+                                                        <input type=radio name='repeatType' value="DAILY" <c:if test="${compose.repeatType eq 'DAILY'}">checked </c:if>>
                                                     </td>
                                                     <td>
                                                         Every day.
@@ -111,7 +111,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <input type=radio name='frequency' value="dailyWeekday">
+                                                        <input type=radio name='repeatType' value="DAILY_WEEKDAY" <c:if test="${compose.repeatType eq 'DAILY_WEEKDAY'}">checked </c:if>>
                                                     </td>
                                                     <td>
                                                         Every Weekday.
@@ -119,8 +119,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <input type=radio name='frequency'
-                                                               value="dailyInterval">
+                                                        <input type=radio name='repeatType' value="DAILY_INTERVAL" <c:if test="${compose.repeatType eq 'DAILY_INTERVAL'}">checked </c:if>>
                                                     </td>
                                                     <td>
                                                         <table cellpadding=0 cellspacing=0>
@@ -129,7 +128,9 @@
                                                                 <td>&nbsp;</td>
                                                                 <td><input type=text size="3"
                                                                            maxlength="3"
-                                                                           name="dailyInterval">
+                                                                           name="repeatDailyInterval"
+                                                                        value="${compose.repeatDailyInterval}"
+                                                                        >
                                                                 </td>
                                                                 <td>&nbsp;</td>
                                                                 <td>day(s).</td>
@@ -141,7 +142,7 @@
                                                 <tr>
                                                     <td valign=top width=1% rowspan=3>Weekly:</td>
                                                     <td>
-                                                        <input type=radio name='frequency' value="weekly">
+                                                        <input type=radio name='repeatType' value="WEEKLY_BY_DAY" <c:if test="${compose.repeatType eq 'WEEKLY_BY_DAY'}">checked </c:if>>
                                                     </td>
                                                     <td>
                                                         <table cellpadding=0 cellspacing=0>
@@ -149,7 +150,7 @@
                                                                 <td>Every</td>
                                                                 <td>&nbsp;</td>
                                                                 <td>
-                                                                    <select name="weeklyDOW">
+                                                                    <select name="repeatWeeklyByDay">
                                                                         <option value="0">Sunday</option>
                                                                         <option value="1">Monday</option>
                                                                         <option value="2">Tuesday</option>
@@ -165,8 +166,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <input type=radio name='frequency'
-                                                               value="weeklyInterval">
+                                                        <input type=radio name='repeatType' value="WEEKLY_CUSTOM" <c:if test="${compose.repeatType eq 'WEEKLY_CUSTOM'}">checked </c:if>>
                                                     </td>
                                                     <td>
                                                         <table cellpadding=0 cellspacing=0>
@@ -176,7 +176,9 @@
                                                                 <td><input style='padding: 2px 4px'
                                                                            type=text size="3"
                                                                            maxlength="3"
-                                                                           name="weeklyInterval">
+                                                                           name="repeatWeeklyInterval"
+                                                                        value="${compose.repeatWeeklyInterval}"
+                                                                        >
                                                                 </td>
                                                                 <td>&nbsp;</td>
                                                                 <td>weeks on</td>
@@ -191,25 +193,25 @@
                                                     <td>
                                                         <table cellpadding=0 cellspacing=0>
                                                             <tr>
-                                                                <td><input type=checkbox></td>
+                                                                <td><input type=checkbox name="repeatWeeklySun" value="1" <c:if test="${compose.repeatWeeklySun}">checked </c:if></td>
                                                                 <td>Sun</td>
                                                                 <td>&nbsp;</td>
-                                                                <td><input type=checkbox></td>
+                                                                <td><input type=checkbox name="repeatWeeklyMon" value="1" <c:if test="${compose.repeatWeeklyMon}">checked </c:if></td>
                                                                 <td>Mon</td>
                                                                 <td>&nbsp;</td>
-                                                                <td><input type=checkbox></td>
+                                                                <td><input type=checkbox name="repeatWeeklyTue" value="1" <c:if test="${compose.repeatWeeklyTue}">checked </c:if></td>
                                                                 <td>Tue</td>
                                                                 <td>&nbsp;</td>
-                                                                <td><input type=checkbox></td>
+                                                                <td><input type=checkbox name="repeatWeeklyWed" value="1" <c:if test="${compose.repeatWeeklyWed}">checked </c:if></td>
                                                                 <td>Wed</td>
                                                                 <td>&nbsp;</td>
-                                                                <td><input type=checkbox></td>
+                                                                <td><input type=checkbox name="repeatWeeklyThu" value="1" <c:if test="${compose.repeatWeeklyThu}">checked </c:if></td>
                                                                 <td>Thu</td>
                                                                 <td>&nbsp;</td>
-                                                                <td><input type=checkbox></td>
+                                                                <td><input type=checkbox name="repeatWeeklyFri" value="1" <c:if test="${compose.repeatWeeklyFri}">checked </c:if></td>
                                                                 <td>Fri</td>
                                                                 <td>&nbsp;</td>
-                                                                <td><input type=checkbox></td>
+                                                                <td><input type=checkbox name="repeatWeeklySat" value="1" <c:if test="${compose.repeatWeeklySat}">checked </c:if></td>
                                                                 <td>Sat</td>
                                                                 <td>&nbsp;</td>
                                                             </tr>
@@ -220,20 +222,20 @@
                                                 <tr>
                                                     <td valign=top width=1% rowspan=2>Monthly:</td>
                                                     <td>
-                                                        <input type=radio name='frequency' value="monthly">
+                                                        <input type=radio name='repeatType' value="MONTHLY_BY_MONTH_DAY" <c:if test="${compose.repeatType eq 'MONTHLY_BY_MONTH_DAY'}">checked </c:if>>
                                                     </td>
                                                     <td>
                                                         <table cellpadding=0 cellspacing=0>
                                                             <tr>
                                                                 <td>Day</td>
                                                                 <td>&nbsp;</td>
-                                                                <td><input type=text size="3" maxlength="3" name="monthDayOfMonth">
+                                                                <td><input type=text size="3" maxlength="3" name="repeatMonthlyMonthDay" value="${compose.repeatMonthlyMonthDay}">
                                                                 </td>
                                                                 <td>&nbsp;</td>
                                                                 <td>of every</td>
                                                                 <td>&nbsp;</td>
                                                                 <td>
-                                                                    <input type=text size="3" maxlength="3" name="monthInterval">
+                                                                    <input type=text size="3" maxlength="3" name="repeatMonthlyInterval" value="${compose.repeatMonthlyInterval}">
                                                                 </td>
                                                                 <td>&nbsp;</td>
                                                                 <td>month(s)</td>
@@ -243,8 +245,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <input type=radio name='frequency'
-                                                               value="monthlyDayRule">
+                                                        <input type=radio name='repeatType' value="MONTHLY_RELATIVE" <c:if test="${compose.repeatType eq 'MONTHLY_RELATIVE'}">checked </c:if>>
                                                     </td>
                                                     <td>
                                                         <table cellpadding=0 cellspacing=0>
@@ -252,17 +253,17 @@
                                                                 <td>The</td>
                                                                 <td>&nbsp;</td>
                                                                 <td>
-                                                                    <select name="monthlyDayOccurence">
-                                                                        <option value="1">first</option>
-                                                                        <option value="2">second</option>
-                                                                        <option value="3">third</option>
-                                                                        <option value="4">fourth</option>
-                                                                        <option value="-1">last</option>
+                                                                    <select name="repeatMonthlyRelativeOrd">
+                                                                        <option value="1" <c:if test="${compose.repeatMonthlyRelativeOrd eq 1}">selected </c:if>><fmt:message key="recurFirst"/></option>
+                                                                        <option value="2" <c:if test="${compose.repeatMonthlyRelativeOrd eq 2}">selected </c:if>><fmt:message key="recurSecond"/></option>
+                                                                        <option value="3" <c:if test="${compose.repeatMonthlyRelativeOrd eq 3}">selected </c:if>><fmt:message key="recurThird"/></option>
+                                                                        <option value="4" <c:if test="${compose.repeatMonthlyRelativeOrd eq 4}">selected </c:if>><fmt:message key="recurFourth"/></option>
+                                                                        <option value="-1" <c:if test="${compose.repeatMonthlyRelativeOrd eq -1}">selected </c:if>><fmt:message key="recurLast"/></option>
                                                                     </select>
                                                                 </td>
                                                                 <td>&nbsp;</td>
                                                                 <td>
-                                                                    <select name="monthyDOW">
+                                                                    <select name="repeatMonthlyRelativeDay">
                                                                         <option value="0">Sunday</option>
                                                                         <option value="1">Monday</option>
                                                                         <option value="2">Tuesday</option>
@@ -276,7 +277,7 @@
                                                                 <td>of every</td>
                                                                 <td>&nbsp;</td>
                                                                 <td>
-                                                                    <input type=text size="3" maxlength="3" name="monthDayRuleInterval">
+                                                                    <input type=text size="3" maxlength="3" name="repeatMonthlyRelativeInterval" value="${compose.repeatMonthlyRelativeInterval}">
                                                                 </td>
                                                                 <td>&nbsp;</td>
                                                                 <td>month(s).</td>
@@ -288,7 +289,7 @@
                                                 <tr>
                                                     <td valign=top width=1% rowspan=2>Yearly:</td>
                                                     <td>
-                                                        <input type=radio name='frequency' value="yearly">
+                                                        <input type=radio name='repeatType' value="YEARLY_BY_DATE" <c:if test="${compose.repeatType eq 'YEARLY_BY_DATE'}">checked </c:if>>
                                                     </td>
                                                     <td>
                                                         <table cellpadding=0 cellspacing=0>
@@ -296,12 +297,12 @@
                                                                 <td>Every year on</td>
                                                                 <td>&nbsp;</td>
                                                                 <td>
-                                                                    <select name="yearlyMonth">
+                                                                    <select name="repeatYearlyMonth">
                                                                         <option value="1">Janurary</option>
                                                                     </select>
                                                                 </td>
                                                                 <td>&nbsp;</td>
-                                                                <td><input type=text size="3" maxlength="3" name="yearlyMonthDay">
+                                                                <td><input type=text size="3" maxlength="3" name="repeatYearlyMonthDay" value="${compose.repeatYearlyMonthDay}">
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -309,8 +310,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <input type=radio name='frequency'
-                                                               value="yearlyMonthDayRule">
+                                                        <input type=radio name='repeatType' value="YEARLY_RELATIVE" <c:if test="${compose.repeatType eq 'YEARLY_RELATIVE'}">checked </c:if>>
                                                     </td>
                                                     <td>
                                                         <table cellpadding=0 cellspacing=0>
@@ -318,7 +318,7 @@
                                                                 <td>The</td>
                                                                 <td>&nbsp;</td>
                                                                 <td>
-                                                                    <select name="yearlyRuleMonthlyDayOccurence">
+                                                                    <select name="repeatYearlyRelativeOrd">
                                                                         <option value="1">first</option>
                                                                         <option value="2">second</option>
                                                                         <option value="3">third</option>
@@ -328,7 +328,7 @@
                                                                 </td>
                                                                 <td>&nbsp;</td>
                                                                 <td>
-                                                                    <select name="yearlyRuleMonthyDOW">
+                                                                    <select name="repeatYearlyRelativeDay">
                                                                         <option value="0">Sunday</option>
                                                                         <option value="1">Monday</option>
                                                                         <option value="2">Tuesday</option>
@@ -342,7 +342,7 @@
                                                                 <td>of every</td>
                                                                 <td>&nbsp;</td>
                                                                 <td>
-                                                                    <select name="yearlyRuleMonth">
+                                                                    <select name="repeatYearlyRelativeMonth">
                                                                         <option value="1">Janurary</option>
                                                                     </select>
                                                                 </td>
@@ -359,7 +359,7 @@
                                             <table cellpadding=5 cellspacing=0>
                                                 <tr>
                                                     <td>
-                                                        <input type=radio name='endType' value="noend">
+                                                        <input type=radio name='repeatEndType' value="NEVER" <c:if test="${compose.repeatEndType eq 'NEVER'}">checked </c:if>>
                                                     </td>
                                                     <td>
                                                         No end date.
@@ -367,7 +367,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <input type=radio name='endType' value="occurrences">
+                                                        <input type=radio name='repeatEndType' value="COUNT" <c:if test="${compose.repeatEndType eq 'COUNT'}">checked </c:if>>
                                                     </td>
                                                     <td>
                                                         <table cellpadding=0 cellspacing=0>
@@ -376,7 +376,9 @@
                                                                 <td>&nbsp;</td>
                                                                 <td><input type=text size="3"
                                                                            maxlength="3"
-                                                                           name="numOccurrences">
+                                                                           name="repeatEndCount"
+                                                                        value="${compose.repeatEndCount}"
+                                                                        >
                                                                 </td>
                                                                 <td>&nbsp;</td>
                                                                 <td>occurrence(s).</td>
@@ -386,7 +388,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>
-                                                        <input type=radio name='endType' value="date">
+                                                        <input type=radio name='repeatEndType' value="UNTIL" <c:if test="${compose.repeatEndType eq 'UNTIL'}">checked </c:if>>
                                                     </td>
                                                     <td>
                                                         <table cellpadding=0 cellspacing=0>
@@ -395,7 +397,7 @@
                                                                 <td>&nbsp;</td>
                                                                 <td><input type=text size="12"
                                                                            maxlength="20"
-                                                                           name="endDate" value="3/8/2008">
+                                                                           name="repeatEndDate" value="${fn:escapeXml(compose.repeatEndDate)}">
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -418,5 +420,31 @@
             </td>
         </tr>
     </table>
+    <input type="hidden" name="invId" value="${fn:escapeXml(compose.inviteId)}"/>
+    <input type="hidden" name="exInvId" value="${fn:escapeXml(compose.exceptionInviteId)}"/>
+    <input type="hidden" name="useInstance" value="${fn:escapeXml(compose.useInstance ? '1' : '0') }"/>
+    <input type="hidden" name="instStartTime" value="${fn:escapeXml(compose.instanceStartTime)}"/>
+    <input type="hidden" name="instDuration" value="${fn:escapeXml(compose.instanceDuration)}"/>
+    <input type="hidden" name="subject" value="${fn:escapeXml(compose.subject)}"/>
+    <input type="hidden" name="location" value="${fn:escapeXml(compose.location)}"/>
+    <input type="hidden" name="freeBusyStatus" value="${fn:escapeXml(compose.freeBusyStatus)}"/>
+    <input type="hidden" name="allDay" value="${fn:escapeXml(compose.allDay ? '1':'0')}"/>
+    <input type="hidden" name="startDate" value="${fn:escapeXml(compose.startDate)}"/>
+    <input type="hidden" name="startHour" value="${fn:escapeXml(compose.startHour)}"/>
+    <input type="hidden" name="startMinute" value="${fn:escapeXml(compose.startMinute)}"/>
+    <input type="hidden" name="endDate" value="${fn:escapeXml(compose.endDate)}"/>
+    <input type="hidden" name="endHour" value="${fn:escapeXml(compose.endHour)}"/>
+    <input type="hidden" name="endMinute" value="${fn:escapeXml(compose.endMinute)}"/>
+    <input type="hidden" name="timeZone" value="${fn:escapeXml(compose.timeZone)}"/>
+    <input type="hidden" name="attendees" value="${fn:escapeXml(compose.attendees)}"/>
+    <input type="hidden" name="body" value="${fn:escapeXml(compose.content)}"/>
+    <c:forEach var="ma" items="${compose.messageAttachments}">
+        <input type="hidden" name="messageAttachment" value="${ma.id}:${fn:escapeXml(ma.subject)}"/>
+    </c:forEach>
+    <c:forEach var="ca" items="${compose.checkedAttachmentNames}">
+        <input type="hidden" name="originalAttachment" value="${fn:escapeXml(ca.key)}"/>
+    </c:forEach>
+
+
 </form>
 </app:view>

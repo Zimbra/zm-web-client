@@ -10,6 +10,9 @@
 <c:set var="needEditView" value="${param.action eq 'edit'}"/>
 <c:if test="${uploader.isUpload}">
     <c:choose>
+        <c:when test="${uploader.isRepeatEdit}">
+            <jsp:forward page="/h/repeat"/>
+        </c:when>
         <c:when test="${uploader.isContactAdd or uploader.isContactSearch}">
             <%--
             <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>

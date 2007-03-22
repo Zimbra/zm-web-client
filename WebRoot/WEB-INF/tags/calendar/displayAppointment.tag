@@ -174,7 +174,7 @@
                                         :
                                     </td>
                                     <td class='MsgHdrValue'>
-                                        <app:repeatBlurb repeat="${repeat}" start="${appt.start}" timezone="${mailbox.prefs.timeZone}"/>
+                                        <app:repeatBlurb repeat="${repeat}" start="${appt.start.date}" timezone="${mailbox.prefs.timeZone}"/>
                                     </td>
                                 </tr>
                             </c:if>

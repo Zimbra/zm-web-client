@@ -1,6 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="repeat" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZSimpleRecurrence" %>
-<%@ attribute name="start" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZDateTime" %>
+<%@ attribute name="start" rtexprvalue="true" required="true" type="java.util.Date" %>
 <%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -92,14 +92,30 @@
     </c:otherwise>
 </c:choose>
 
-
+ <c:if test="${not repeat.type.none}">
+&nbsp;
 <c:choose>
-    <c:when test="${repeat.count gt 0}">
-        End after ${repeat.count} occurence(s).
+    <c:when test="${repeat.end.until}">
+        <fmt:formatDate var="endDate" timeZone="${timezone}" dateStyle="medium" type="date" value="${repeat.untilDate.date}"/>
+        <fmt:message key="recurEndByDate">
+            <fmt:param value="${endDate}"/>
+        </fmt:message>
     </c:when>
-    <c:when test="${not empty repeat.untilDate}">
-        End by <fmt:formatDate timeZone="${timezone}" dateStyle="medium" type="date" value="${repeat.untilDate.date}"/>.
+    <c:when test="${repeat.end.count}">
+        <fmt:message key="recurEndNumber">
+            <fmt:param value="${repeat.count}"/>
+        </fmt:message>
     </c:when>
+    <c:otherwise>
+        <fmt:message key="recurEndNone"/>
+    </c:otherwise>
 </c:choose>
 
-Effective <fmt:formatDate timeZone="${timezone}" dateStyle="medium" type="date" value="${start.date}"/>.
+<c:if test="${not empty start}">
+    &nbsp;
+    <fmt:formatDate var="startDate" timeZone="${timezone}" dateStyle="medium" type="date" value="${start}"/>
+    <fmt:message key="recurStart">
+        <fmt:param value="${startDate}"/>
+    </fmt:message>
+</c:if>
+ </c:if>
