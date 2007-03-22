@@ -9,6 +9,8 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <fmt:setTimeZone value="${timezone}"/>
+<fmt:message key="repeatBlurb">
+<fmt:param>
 <c:choose>
     <c:when test="${repeat.type.none}">
         <fmt:message key="recurNone"/>
@@ -91,9 +93,11 @@
         <fmt:message key="recurComplex"/>
     </c:otherwise>
 </c:choose>
+</fmt:param>
+
+<fmt:param>
 
  <c:if test="${not repeat.type.none}">
-&nbsp;
 <c:choose>
     <c:when test="${repeat.end.until}">
         <fmt:formatDate var="endDate" timeZone="${timezone}" dateStyle="medium" type="date" value="${repeat.untilDate.date}"/>
@@ -110,12 +114,17 @@
         <fmt:message key="recurEndNone"/>
     </c:otherwise>
 </c:choose>
-
+    </c:if>
+</fmt:param>
+<fmt:param>
+    <c:if test="${not repeat.type.none}">
 <c:if test="${not empty start}">
-    &nbsp;
     <fmt:formatDate var="startDate" timeZone="${timezone}" dateStyle="medium" type="date" value="${start}"/>
     <fmt:message key="recurStart">
         <fmt:param value="${startDate}"/>
     </fmt:message>
 </c:if>
- </c:if>
+    </c:if>
+</fmt:param>
+
+</fmt:message>
