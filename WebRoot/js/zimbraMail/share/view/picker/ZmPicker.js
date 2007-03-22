@@ -64,6 +64,15 @@ ZmPicker.TIME		= i++;
 ZmPicker.RESET		= i++;	// not really a picker
 ZmPicker.CLOSE		= i++;	// not really a picker
 
+ZmPicker.NEXT_ID	= i;
+
+ZmPicker.DEFAULT_PICKERS=[ZmPicker.ATTACHMENT,
+				ZmPicker.BASIC,
+				ZmPicker.DATE,
+				ZmPicker.DOMAIN,
+				ZmPicker.FOLDER];
+
+
 // Button labels
 ZmPicker.MSG_KEY = new Object();
 ZmPicker.MSG_KEY[ZmPicker.ATTACHMENT]	= "attachment";
