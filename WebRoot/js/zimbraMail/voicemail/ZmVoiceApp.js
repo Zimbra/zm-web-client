@@ -58,6 +58,7 @@ function() {
 ZmVoiceApp.prototype._defineAPI =
 function() {
 	AjxDispatcher.registerMethod("GetVoiceController", "Voicemail", new AjxCallback(this, this.getVoiceController));
+	AjxDispatcher.registerMethod("GetCallListController", "Voicemail", new AjxCallback(this, this.getCallListController));
 };
 
 ZmVoiceApp.prototype._registerItems =
@@ -98,6 +99,7 @@ function() {
 	ZmOperation.registerOp("AUTO_PLAY", {textKey:"autoPlay", tooltipKey:"autoPlayTooltip", image:"ApptRecur"});
 	ZmOperation.registerOp("MARK_HEARD", {textKey:"markAsHeard", image:"ReadMessage"});
 	ZmOperation.registerOp("MARK_UNHEARD", {textKey:"markAsUnheard", image:"UnreadMessage"});
+	ZmOperation.registerOp("VIEW_BY_DATE", {textKey:"viewByDate"});
 };
 
 ZmVoiceApp.prototype._registerOrganizers =
@@ -175,7 +177,12 @@ function(folder, callback, response) {
 	var searchResult = response._data;
 	var list = searchResult.getResults(folder.getSearchType());
 	list.folder = folder;
-	var voiceController = AjxDispatcher.run("GetVoiceController");
+	var voiceController;
+	if (folder.getSearchType() == ZmItem.VOICEMAIL) {
+		voiceController = AjxDispatcher.run("GetVoiceController");
+	} else {
+		voiceController = AjxDispatcher.run("GetCallListController");
+	}
 	voiceController.show(searchResult, folder);
 	if (callback) {
 		callback.run(searchResult);
@@ -300,9 +307,16 @@ function(active, view) {
 
 ZmVoiceApp.prototype.getVoiceController = function() {
 	if (!this._voiceController) {
-		this._voiceController = new ZmVoiceListController(this._appCtxt, this._container, this);
+		this._voiceController = new ZmVoicemailListController(this._appCtxt, this._container, this);
 	}
 	return this._voiceController;
+};
+
+ZmVoiceApp.prototype.getCallListController = function() {
+	if (!this._callListController) {
+		this._callListController = new ZmCallListController(this._appCtxt, this._container, this);
+	}
+	return this._callListController;
 };
 
 ZmVoiceApp.prototype._handleDeletes =

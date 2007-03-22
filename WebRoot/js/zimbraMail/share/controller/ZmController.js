@@ -84,6 +84,7 @@ ZmController.TASKEDIT_VIEW				= "TASKEDIT";
 ZmController.TASK_VIEW					= "TASK_VIEW";
 ZmController.LOADING_VIEW				= "LOADING";
 ZmController.VOICEMAIL_VIEW				= "VOICEMAIL";
+ZmController.CALLLIST_VIEW				= "CALLLIST";
 
 /* ROSSD - It feels like we may need a ZmAppViewController class to help with
  * the tab group work. Delaying this until I have more experience pushing the 

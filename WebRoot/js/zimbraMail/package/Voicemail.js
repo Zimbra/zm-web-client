@@ -24,8 +24,12 @@ AjxPackage.require("zimbraMail.voicemail.model.ZmVoiceList");
 
 AjxPackage.require("zimbraMail.voicemail.view.ZmSoundPlayer");
 AjxPackage.require("zimbraMail.voicemail.view.ZmVoiceListView");
+AjxPackage.require("zimbraMail.voicemail.view.ZmCallListView");
+AjxPackage.require("zimbraMail.voicemail.view.ZmVoicemailListView");
 AjxPackage.require("zimbraMail.voicemail.view.ZmVoiceTreeView");
 
 AjxPackage.require("zimbraMail.voicemail.controller.ZmVoiceListController");
+AjxPackage.require("zimbraMail.voicemail.controller.ZmCallListController");
+AjxPackage.require("zimbraMail.voicemail.controller.ZmVoicemailListController");
 AjxPackage.require("zimbraMail.voicemail.controller.ZmVoiceTreeController");
 

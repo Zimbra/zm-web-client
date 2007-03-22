@@ -28,20 +28,6 @@ function ZmVoiceListController(appCtxt, container, app) {
 	ZmListController.call(this, appCtxt, container, app);
 
 	this._folder = null;
-
-	this._autoPlayIndex = 0;
-	this._autoPlaying = false;
-
-	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._refreshListener);
-	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
-	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
-	this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
-	this._listeners[ZmOperation.AUTO_PLAY] = new AjxListener(this, this._autoPlayListener);
-	this._listeners[ZmOperation.MARK_HEARD] = new AjxListener(this, this._markHeardListener);
-	this._listeners[ZmOperation.MARK_UNHEARD] = new AjxListener(this, this._markUnreadListener);
-
-	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
-	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 }
 ZmVoiceListController.prototype = new ZmListController;
 ZmVoiceListController.prototype.constructor = ZmVoiceListController;
@@ -49,11 +35,6 @@ ZmVoiceListController.prototype.constructor = ZmVoiceListController;
 ZmVoiceListController.prototype.toString =
 function() {
 	return "ZmVoiceListController";
-};
-
-ZmVoiceListController.prototype._defaultView =
-function() {
-	return ZmController.VOICEMAIL_VIEW;
 };
 
 /**
@@ -75,20 +56,6 @@ function(searchResult, folder) {
 	this._setView(this._currentView, elements, true);
 };
 
-ZmVoiceListController.prototype._createNewView = 
-function(view) {
-	var result = new ZmVoiceListView(this._container, this._appCtxt, this._dropTgt);
-	result.addSelectionListener(new AjxListener(this, this._selectListener));
-	result.setDragSource(this._dragSrc);
-	result.addSoundChangeListener(new AjxListener(this, this._soundChangeListener));
-	return result;
-};
-
-ZmVoiceListController.prototype._initialize =
-function(view) {
-	ZmListController.prototype._initialize.call(this, view);
-};
-
 ZmVoiceListController.prototype._setViewContents =
 function(viewId) {
 	var view = this._listView[viewId];
@@ -96,38 +63,9 @@ function(viewId) {
 	view.set(this._list, ZmItem.F_DATE);
 };
 
-ZmVoiceListController.prototype._getToolBarOps =
-function() {
-	var list = [];
-	list.push(ZmOperation.CHECK_MAIL);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.SAVE);
-	list.push(ZmOperation.DELETE);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.FORWARD);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.AUTO_PLAY);
-	list.push(ZmOperation.SEP);
-	return list;
-};
-
-ZmVoiceListController.prototype._getActionMenuOps =
-function() {
-	var list = this._flagOps();
-	list.push(ZmOperation.FORWARD);
-	list.push(ZmOperation.SAVE);
-	list.push(ZmOperation.DELETE);
-	return list;
-};
-
 ZmVoiceListController.prototype._participantOps =
 function() {
 	return [ZmOperation.CONTACT];
-};
-
-ZmVoiceListController.prototype._flagOps =
-function() {
-	return [ZmOperation.MARK_HEARD, ZmOperation.MARK_UNHEARD];
 };
 
 ZmVoiceListController.prototype._getParticipantActionMenu =
@@ -145,173 +83,6 @@ function() {
 	return this._participantActionMenu;
 };
 
-ZmVoiceListController.prototype._initializeToolBar =
-function(view) {
-	ZmListController.prototype._initializeToolBar.call(this, view);
-	this._toolbar[view].getButton(ZmOperation.CHECK_MAIL).setText(ZmMsg.checkVoicemail);
-	var autoPlayButton = this._toolbar[view].getButton(ZmOperation.AUTO_PLAY);
-	autoPlayButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
-};
-
-ZmVoiceListController.prototype._resetOperations = 
-function(parent, num) {
-	ZmListController.prototype._resetOperations.call(this, parent, num);
-	parent.enable(ZmOperation.CHECK_MAIL, true);
-	parent.enable(ZmOperation.AUTO_PLAY, this._folder && this._folder.numUnread);
-	
-	var hasHeard = false;
-	var hasUnheard = false;
-	var items = this._listView[this._currentView].getSelection();
-	for (var i = 0; i < items.length; i++) {
-		(items[i].isUnheard) ? hasUnheard = true : hasHeard = true;
-		if (hasUnheard && hasHeard)
-			break;
-	}
-	parent.enable(ZmOperation.MARK_HEARD, hasUnheard);
-	parent.enable(ZmOperation.MARK_UNHEARD, hasHeard);
-};
-
-ZmVoiceListController.prototype._markHeard = 
-function(items, heard) {
-	var changeItems = [];
-	for (var i = 0, count = items.length; i < count; i++) {
-		if (items[i].isUnheard == heard) {
-			changeItems.push(items[i]);
-		}
-	}
-	if (changeItems.length) {
-		var callback = new AjxCallback(this, this._handleResponseMarkHeard, [changeItems, heard]);
-		var app = this._appCtxt.getApp(ZmApp.VOICE);
-		app.markItemsHeard(changeItems, heard, callback);
-	}
-};
-
-ZmVoiceListController.prototype._handleResponseMarkHeard = 
-function(items, heard) {
-	for (var i = 0, count = items.length; i < count; i++) {
-		items[i].isUnheard = !heard;
-	}
-	this._getView().markUIAsRead(items, heard);
-	this._resetToolbarOperations();
-};
-
-ZmVoiceListController.prototype._refreshListener = 
-function(ev) {
-	if (this._folder) {
-		var app = this._appCtxt.getApp(ZmApp.VOICE);
-		app.search(this._folder);
-	}
-};
-
-ZmVoiceListController.prototype._deleteListener = 
-function(ev) {
-	var items = this._getView().getSelection();
-	var callback = new AjxCallback(this, this._handleResponseDelete, [items]);
-	var app = this._appCtxt.getApp(ZmApp.VOICE);
-	app.deleteItems(items, callback);
-};
-
-ZmVoiceListController.prototype._handleResponseDelete = 
-function(items) {
-	for (var i = 0, count = items.length; i < count; i++) {
-		this._getView().removeItem(items[i]);
-	}
-	this._resetToolbarOperations();
-};
-
-ZmVoiceListController.prototype._saveListener = 
-function(ev) {
-//	alert('Save voicemail here');
-};
-
-ZmVoiceListController.prototype._forwardListener = 
-function(ev) {
-	var voicemail = this._getView().getSelection()[0];
-	var duration = AjxDateUtil.computeDuration(voicemail.duration);
-	var date = AjxDateUtil.computeDateStr(new Date(), voicemail.date);
-	var body = AjxMessageFormat.format(ZmMsg.voicemailBody, [voicemail.caller, duration, date]);
-	var params = {
-		action: ZmOperation.NEW_MESSAGE, 
-		inNewWindow: this._app._inNewWindow(ev), 
-		msg: new ZmMailMsg(this._appCtxt),
-		subjOverride: ZmMsg.voicemailSubject,
-		extraBodyText: body
-	};
-	AjxDispatcher.run("Compose", params);
-};
-
-ZmVoiceListController.prototype._autoPlayListener = 
-function(ev) {
-	if (!this._autoPlaying) {
-		var firstUnheard;
-		var list = this._getView().getList();
-		if (!list.size()) {
-			return;
-		}
-		this._autoPlayIndex = -1;
-		this._autoPlayNext();
-		this._autoPlaying = true;
-	} else {
-		this._autoPlaying = false;
-	}
-};
-
-ZmVoiceListController.prototype._markHeardListener = 
-function(ev) {
-	this._markHeard(this._getView().getSelection(), true);
-};
-
-ZmVoiceListController.prototype._markUnreadListener = 
-function(ev) {
-	this._markHeard(this._getView().getSelection(), false);
-};
-
-ZmVoiceListController.prototype._autoPlayNext = 
-function() {
-	var next = null;
-	var list = this._getView().getList();
-	for (var i = this._autoPlayIndex + 1, count = list.size(); i < count; i++) {
-		var voicemail = list.get(i);
-		if (voicemail.isUnheard) {
-			next = voicemail;
-			this._autoPlayIndex = i;
-			break;
-		}
-	}
-	
-	if (next) {
-		this._play(next);
-	} else {
-		this._stopAutoPlay();
-	}
-};
-
-ZmVoiceListController.prototype._stopAutoPlay = 
-function() {
-	this._autoPlaying = false;
-	var autoPlayButton = this._getToolbar().getButton(ZmOperation.AUTO_PLAY);
-	autoPlayButton.setToggled(false);
-};
-
-ZmVoiceListController.prototype._play = 
-function(voicemail) {
-	this._getView().setPlaying(voicemail);
-};
-
-ZmVoiceListController.prototype._selectListener = 
-function(ev) {
-	if (ev.detail == DwtListView.ITEM_DBL_CLICKED ||
-		ev.detail == ZmVoiceListView.PLAY_BUTTON_PRESSED) {
-		var selection = this._getView().getSelection();
-		if (selection.length == 1) {
-			if (this._autoPlaying) {
-				this._stopAutoPlay();
-			}
-			var voicemail = selection[0];
-			this._play(voicemail);
-		}
-	}
-};
 
 ZmVoiceListController.prototype._getView = 
 function() {
@@ -331,36 +102,12 @@ function(ev) {
 	return contact;
 };
 
-// Called when user clicks for help with plugins.
-ZmVoiceListController.prototype._pluginHelpListener =
-function(event) {
-	var dialog = this._appCtxt.getMsgDialog();
-	var message = AjxEnv.isIE ? ZmMsg.missingPluginHelpIE : ZmMsg.missingPluginHelp;
-	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
-	dialog.popup();
-};
-
-// Called while the sound is playing. The event has information about play status.
-ZmVoiceListController.prototype._soundChangeListener =
-function(event) {
-	if (this._autoPlaying && event.finished) {
-		this._autoPlayNext();
-	}
-	if (event.finished || event.status == DwtSoundPlugin.PLAYABLE) {
-		var playing = this._getView().getPlaying();
-		if (playing) {
-			this._markHeard([playing], true);
-		}
-	}
-};
-
 ZmVoiceListController.prototype._listActionListener =
 function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
 
 	var view = ev.dwtObj;
 	var isParticipant = ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT];
-	var isVoicemail = this._folder.callType == ZmVoiceFolder.VOICEMAIL;
 	var actionMenu;
 	if (isParticipant) {
 	 	actionMenu = this._getParticipantActionMenu();
@@ -375,10 +122,7 @@ function(ev) {
 	} else  {
 	 	actionMenu = this.getActionMenu();
 	}
-	
-	actionMenu.getMenuItem(ZmOperation.SAVE).setVisible(isVoicemail);
-	actionMenu.getMenuItem(ZmOperation.FORWARD).setVisible(isVoicemail);
-	
+
 	actionMenu.popup(0, ev.docX, ev.docY);
 };
 
