@@ -72,10 +72,10 @@
                             <app:button name="actionSave" src="common/Save.gif" tooltip="save" text="save"/>
                             <td><div class='vertSep'></div></td>
                             <app:button name="actionCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
-                            <%--
+<%--
                             <td><div class='vertSep'></div></td>
                             <app:button name="actionRepeatEdit" src="calendar/ApptRecur.gif" tooltip="editRecurrence" text="repeat"/>
-                            --%>
+--%>
                             <%--
                             <td><div class='vertSep'></div></td>
                             <app:button name="actionAttachAdd" src="common/Attachment.gif" tooltip="addAttachments" text="addAttachments"/>
