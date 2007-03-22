@@ -13,7 +13,22 @@
     <c:set var="compose" value="${uploader.compose}"/>
     <jsp:useBean id="dateSymbols" scope="request" class="java.text.DateFormatSymbols" />
     <c:set var="weekDays" value="${dateSymbols.weekdays}"/>
+    <c:set var="shortWeekDays" value="${dateSymbols.shortWeekdays}"/>
     <c:set var="months" value="${dateSymbols.months}"/>
+
+    <c:choose>
+        <c:when test="${empty compose.inviteId}">
+            <c:set var="apptImage" value="calendar/NewAppointment.gif"/>
+            <c:set var="apptImageAlt" value="ALT_NEW_APPOINTMENT"/>
+            <fmt:message var="apptSubject" key="newAppointment"/>
+        </c:when>
+        <c:otherwise>
+            <c:set var="apptImage" value="calendar/Appointment.gif"/>
+            <c:set var="apptImageAlt" value="ALT_EDIT_APPOINTMENT"/>
+            <c:set var="apptSubject" value="${compose.subject}"/>
+        </c:otherwise>
+    </c:choose>
+
 </app:handleError>
 
 <app:view title="${title}" selected='calendar' calendars="true" context="${null}" keys="false" minical="true">
@@ -46,7 +61,20 @@
         </tr>
         <tr>
             <td class='ZhAppContent'>
-                <table cellpadding="0" cellspacing="10" width=100%>
+                <table cellpadding="2" cellspacing="0" width=100%>
+                <tr  class='${zm:getFolder(pageContext, empty compose ? 10 : compose.apptFolderId).styleColor}Bg'>
+                            <td colspan=1 class='ZhBottomSep'>
+                                <table width=100% cellpadding=0 cellspacing=0>
+                                    <tr class='apptHeaderRow'>
+                                        <td width=24><center><app:img src="${apptImage}" altkey="${apptImageAlt}"/></center></td>
+                                        <td class='apptHeader'>
+                                            ${fn:escapeXml(apptSubject)}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
                     <tr>
                         <td>
                             <fieldset>
@@ -125,15 +153,13 @@
                                                         <input type=radio name='repeatType' value="DAILY_INTERVAL" <c:if test="${compose.repeatType eq 'DAILY_INTERVAL'}">checked </c:if>>
                                                     </td>
                                                     <td>
-                                                        <table cellpadding=0 cellspacing=0>
+                                                        <table cellpadding=2 cellspacing=0>
                                                             <tr>
-                                                                <td>Every</td>
-                                                                <td>&nbsp;</td>
-                                                                <td><input type=text size="3" maxlength="3"
-                                                                           name="repeatDailyInterval" value="${compose.repeatDailyInterval}">
-                                                                </td>
-                                                                <td>&nbsp;</td>
-                                                                <td>day(s).</td>
+                                                                <fmt:message key="repeatEditDailyInterval">
+                                                                    <fmt:param>
+                                                                    <input type=text size="3" maxlength="3" name="repeatDailyInterval" value="${compose.repeatDailyInterval}">
+                                                                    </fmt:param>
+                                                                </fmt:message>
                                                             </tr>
                                                         </table>
                                                     </td>
@@ -145,17 +171,17 @@
                                                         <input type=radio name='repeatType' value="WEEKLY_BY_DAY" <c:if test="${compose.repeatType eq 'WEEKLY_BY_DAY'}">checked </c:if>>
                                                     </td>
                                                     <td>
-                                                        <table cellpadding=0 cellspacing=0>
+                                                        <table cellpadding=2 cellspacing=0>
                                                             <tr>
-                                                                <td>Every</td>
-                                                                <td>&nbsp;</td>
-                                                                <td>
-                                                                    <select name="repeatWeeklyByDay">
-                                                                        <c:forEach var="dayIndex" begin="0" end="6">
-                                                                            <option value="${dayIndex}" <c:if test="${compose.repeatWeeklyByDay eq dayIndex}">selected </c:if>> ${weekDays[dayIndex+1]}</option>
-                                                                        </c:forEach>
-                                                                    </select>
-                                                                </td>
+                                                                <fmt:message key="repeatEditWeeklyByDay">
+                                                                    <fmt:param>
+                                                                        <select name="repeatWeeklyByDay">
+                                                                            <c:forEach var="dayIndex" begin="0" end="6">
+                                                                                <option value="${dayIndex}" <c:if test="${compose.repeatWeeklyByDay eq dayIndex}">selected </c:if>> ${weekDays[dayIndex+1]}</option>
+                                                                            </c:forEach>
+                                                                        </select>
+                                                                    </fmt:param>
+                                                                </fmt:message>
                                                             </tr>
                                                         </table>
                                                     </td>
@@ -165,19 +191,15 @@
                                                         <input type=radio name='repeatType' value="WEEKLY_CUSTOM" <c:if test="${compose.repeatType eq 'WEEKLY_CUSTOM'}">checked </c:if>>
                                                     </td>
                                                     <td>
-                                                        <table cellpadding=0 cellspacing=0>
+                                                        <table cellpadding=2 cellspacing=0>
                                                             <tr>
-                                                                <td>Every</td>
-                                                                <td>&nbsp;</td>
-                                                                <td><input style='padding: 2px 4px'
-                                                                           type=text size="3"
-                                                                           maxlength="3"
-                                                                           name="repeatWeeklyInterval"
-                                                                        value="${compose.repeatWeeklyInterval}"
-                                                                        >
-                                                                </td>
-                                                                <td>&nbsp;</td>
-                                                                <td>weeks on</td>
+                                                                <fmt:message key="repeatEditWeeklyCustom">
+                                                                    <fmt:param>
+                                                                        <input style='padding: 2px 4px' type=text size="3" maxlength="3" name="repeatWeeklyInterval"
+                                                                               value="${compose.repeatWeeklyInterval}"
+                                                                                >
+                                                                    </fmt:param>
+                                                                </fmt:message>
                                                             </tr>
                                                         </table>
                                                     </td>
@@ -187,29 +209,22 @@
                                                         &nbsp;
                                                     </td>
                                                     <td>
-                                                        <table cellpadding=0 cellspacing=0>
+                                                        <table cellpadding=2 cellspacing=0>
                                                             <tr>
                                                                 <td><input type=checkbox name="repeatWeeklySun" value="1" <c:if test="${compose.repeatWeeklySun}">checked </c:if></td>
-                                                                <td>Sun</td>
-                                                                <td>&nbsp;</td>
+                                                                <td>${shortWeekDays[1]}</td>
                                                                 <td><input type=checkbox name="repeatWeeklyMon" value="1" <c:if test="${compose.repeatWeeklyMon}">checked </c:if></td>
-                                                                <td>Mon</td>
-                                                                <td>&nbsp;</td>
+                                                                <td>${shortWeekDays[2]}</td>
                                                                 <td><input type=checkbox name="repeatWeeklyTue" value="1" <c:if test="${compose.repeatWeeklyTue}">checked </c:if></td>
-                                                                <td>Tue</td>
-                                                                <td>&nbsp;</td>
+                                                                <td>${shortWeekDays[3]}</td>
                                                                 <td><input type=checkbox name="repeatWeeklyWed" value="1" <c:if test="${compose.repeatWeeklyWed}">checked </c:if></td>
-                                                                <td>Wed</td>
-                                                                <td>&nbsp;</td>
+                                                                <td>${shortWeekDays[4]}</td>
                                                                 <td><input type=checkbox name="repeatWeeklyThu" value="1" <c:if test="${compose.repeatWeeklyThu}">checked </c:if></td>
-                                                                <td>Thu</td>
-                                                                <td>&nbsp;</td>
+                                                                <td>${shortWeekDays[5]}</td>
                                                                 <td><input type=checkbox name="repeatWeeklyFri" value="1" <c:if test="${compose.repeatWeeklyFri}">checked </c:if></td>
-                                                                <td>Fri</td>
-                                                                <td>&nbsp;</td>
+                                                                <td>${shortWeekDays[6]}</td>
                                                                 <td><input type=checkbox name="repeatWeeklySat" value="1" <c:if test="${compose.repeatWeeklySat}">checked </c:if></td>
-                                                                <td>Sat</td>
-                                                                <td>&nbsp;</td>
+                                                                <td>${shortWeekDays[7]}</td>
                                                             </tr>
                                                         </table>
                                                     </td>
@@ -221,20 +236,16 @@
                                                         <input type=radio name='repeatType' value="MONTHLY_BY_MONTH_DAY" <c:if test="${compose.repeatType eq 'MONTHLY_BY_MONTH_DAY'}">checked </c:if>>
                                                     </td>
                                                     <td>
-                                                        <table cellpadding=0 cellspacing=0>
+                                                        <table cellpadding=2 cellspacing=0>
                                                             <tr>
-                                                                <td>Day</td>
-                                                                <td>&nbsp;</td>
-                                                                <td><input type=text size="3" maxlength="3" name="repeatMonthlyMonthDay" value="${compose.repeatMonthlyMonthDay}">
-                                                                </td>
-                                                                <td>&nbsp;</td>
-                                                                <td>of every</td>
-                                                                <td>&nbsp;</td>
-                                                                <td>
-                                                                    <input type=text size="3" maxlength="3" name="repeatMonthlyInterval" value="${compose.repeatMonthlyInterval}">
-                                                                </td>
-                                                                <td>&nbsp;</td>
-                                                                <td>month(s)</td>
+                                                                <fmt:message key="repeatEditMonthlyByDay">
+                                                                    <fmt:param>
+                                                                        <input type=text size="3" maxlength="3" name="repeatMonthlyMonthDay" value="${compose.repeatMonthlyMonthDay}">
+                                                                    </fmt:param>
+                                                                    <fmt:param>
+                                                                        <input type=text size="3" maxlength="3" name="repeatMonthlyInterval" value="${compose.repeatMonthlyInterval}">
+                                                                    </fmt:param>
+                                                                </fmt:message>
                                                             </tr>
                                                         </table>
                                                     </td>
@@ -244,35 +255,29 @@
                                                         <input type=radio name='repeatType' value="MONTHLY_RELATIVE" <c:if test="${compose.repeatType eq 'MONTHLY_RELATIVE'}">checked </c:if>>
                                                     </td>
                                                     <td>
-                                                        <table cellpadding=0 cellspacing=0>
+                                                        <table cellpadding=2 cellspacing=0>
                                                             <tr>
-                                                                <td>The</td>
-                                                                <td>&nbsp;</td>
-                                                                <td>
-                                                                    <select name="repeatMonthlyRelativeOrd">
-                                                                        <option value="1" <c:if test="${compose.repeatMonthlyRelativeOrd eq 1}">selected </c:if>><fmt:message key="recurFirst"/></option>
-                                                                        <option value="2" <c:if test="${compose.repeatMonthlyRelativeOrd eq 2}">selected </c:if>><fmt:message key="recurSecond"/></option>
-                                                                        <option value="3" <c:if test="${compose.repeatMonthlyRelativeOrd eq 3}">selected </c:if>><fmt:message key="recurThird"/></option>
-                                                                        <option value="4" <c:if test="${compose.repeatMonthlyRelativeOrd eq 4}">selected </c:if>><fmt:message key="recurFourth"/></option>
-                                                                        <option value="-1" <c:if test="${compose.repeatMonthlyRelativeOrd eq -1}">selected </c:if>><fmt:message key="recurLast"/></option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>&nbsp;</td>
-                                                                <td>
-                                                                    <select name="repeatMonthlyRelativeDay">
-                                                                        <c:forEach var="dayIndex" begin="0" end="6">
-                                                                            <option value="${dayIndex}" <c:if test="${compose.repeatMonthlyRelativeDay eq dayIndex}">selected </c:if>> ${weekDays[dayIndex+1]}</option>
-                                                                        </c:forEach>
-                                                                    </select>
-                                                                </td>
-                                                                <td>&nbsp;</td>
-                                                                <td>of every</td>
-                                                                <td>&nbsp;</td>
-                                                                <td>
-                                                                    <input type=text size="3" maxlength="3" name="repeatMonthlyRelativeInterval" value="${compose.repeatMonthlyRelativeInterval}">
-                                                                </td>
-                                                                <td>&nbsp;</td>
-                                                                <td>month(s).</td>
+                                                                <fmt:message key="repeatEditMonthlyRelative">
+                                                                    <fmt:param>
+                                                                        <select name="repeatMonthlyRelativeOrd">
+                                                                            <option value="1" <c:if test="${compose.repeatMonthlyRelativeOrd eq 1}">selected </c:if>><fmt:message key="recurFirst"/></option>
+                                                                            <option value="2" <c:if test="${compose.repeatMonthlyRelativeOrd eq 2}">selected </c:if>><fmt:message key="recurSecond"/></option>
+                                                                            <option value="3" <c:if test="${compose.repeatMonthlyRelativeOrd eq 3}">selected </c:if>><fmt:message key="recurThird"/></option>
+                                                                            <option value="4" <c:if test="${compose.repeatMonthlyRelativeOrd eq 4}">selected </c:if>><fmt:message key="recurFourth"/></option>
+                                                                            <option value="-1" <c:if test="${compose.repeatMonthlyRelativeOrd eq -1}">selected </c:if>><fmt:message key="recurLast"/></option>
+                                                                        </select>
+                                                                    </fmt:param>
+                                                                    <fmt:param>
+                                                                        <select name="repeatMonthlyRelativeDay">
+                                                                            <c:forEach var="dayIndex" begin="0" end="6">
+                                                                                <option value="${dayIndex}" <c:if test="${compose.repeatMonthlyRelativeDay eq dayIndex}">selected </c:if>> ${weekDays[dayIndex+1]}</option>
+                                                                            </c:forEach>
+                                                                        </select>
+                                                                    </fmt:param>
+                                                                    <fmt:param>
+                                                                        <input type=text size="3" maxlength="3" name="repeatMonthlyRelativeInterval" value="${compose.repeatMonthlyRelativeInterval}">
+                                                                    </fmt:param>
+                                                                </fmt:message>
                                                             </tr>
                                                         </table>
                                                     </td>
@@ -284,20 +289,20 @@
                                                         <input type=radio name='repeatType' value="YEARLY_BY_DATE" <c:if test="${compose.repeatType eq 'YEARLY_BY_DATE'}">checked </c:if>>
                                                     </td>
                                                     <td>
-                                                        <table cellpadding=0 cellspacing=0>
+                                                        <table cellpadding=2 cellspacing=0>
                                                             <tr>
-                                                                <td>Every year on</td>
-                                                                <td>&nbsp;</td>
-                                                                <td>
-                                                                    <select name="repeatYearlyMonth">
-                                                                        <c:forEach var="monthIndex" begin="1" end="12">
-                                                                            <option value="${monthIndex}" <c:if test="${compose.repeatYearlyMonth eq monthIndex}">selected </c:if>> ${months[monthIndex-1]}</option>
-                                                                        </c:forEach>
-                                                                    </select>
-                                                                </td>
-                                                                <td>&nbsp;</td>
-                                                                <td><input type=text size="3" maxlength="3" name="repeatYearlyMonthDay" value="${compose.repeatYearlyMonthDay}">
-                                                                </td>
+                                                                <fmt:message key="repeatEditYearlyByDate">
+                                                                    <fmt:param>
+                                                                        <select name="repeatYearlyMonth">
+                                                                            <c:forEach var="monthIndex" begin="1" end="12">
+                                                                                <option value="${monthIndex}" <c:if test="${compose.repeatYearlyMonth eq monthIndex}">selected </c:if>> ${months[monthIndex-1]}</option>
+                                                                            </c:forEach>
+                                                                        </select>
+                                                                    </fmt:param>
+                                                                    <fmt:param>
+                                                                        <input type=text size="3" maxlength="3" name="repeatYearlyMonthDay" value="${compose.repeatYearlyMonthDay}">
+                                                                    </fmt:param>
+                                                                </fmt:message>
                                                             </tr>
                                                         </table>
                                                     </td>
@@ -307,37 +312,33 @@
                                                         <input type=radio name='repeatType' value="YEARLY_RELATIVE" <c:if test="${compose.repeatType eq 'YEARLY_RELATIVE'}">checked </c:if>>
                                                     </td>
                                                     <td>
-                                                        <table cellpadding=0 cellspacing=0>
+                                                        <table cellpadding=2 cellspacing=0>
                                                             <tr>
-                                                                <td>The</td>
-                                                                <td>&nbsp;</td>
-                                                                <td>
-                                                                    <select name="repeatYearlyRelativeOrd">
-                                                                        <option value="1" <c:if test="${compose.repeatYearlyRelativeOrd eq 1}">selected </c:if>><fmt:message key="recurFirst"/></option>
-                                                                        <option value="2" <c:if test="${compose.repeatYearlyRelativeOrd eq 2}">selected </c:if>><fmt:message key="recurSecond"/></option>
-                                                                        <option value="3" <c:if test="${compose.repeatYearlyRelativeOrd eq 3}">selected </c:if>><fmt:message key="recurThird"/></option>
-                                                                        <option value="4" <c:if test="${compose.repeatYearlyRelativeOrd eq 4}">selected </c:if>><fmt:message key="recurFourth"/></option>
-                                                                        <option value="-1" <c:if test="${compose.repeatYearlyRelativeOrd eq -1}">selected </c:if>><fmt:message key="recurLast"/></option>
-                                                                    </select>
-                                                                </td>
-                                                                <td>&nbsp;</td>
-                                                                <td>
-                                                                    <select name="repeatYearlyRelativeDay">
-                                                                        <c:forEach var="dayIndex" begin="0" end="6">
-                                                                            <option value="${dayIndex}" <c:if test="${compose.repeatYearlyRelativeDay eq dayIndex}">selected </c:if>> ${weekDays[dayIndex+1]}</option>
-                                                                        </c:forEach>
-                                                                    </select>
-                                                                </td>
-                                                                <td>&nbsp;</td>
-                                                                <td>of every</td>
-                                                                <td>&nbsp;</td>
-                                                                <td>
-                                                                    <select name="repeatYearlyRelativeMonth">
-                                                                        <c:forEach var="monthIndex" begin="1" end="12">
-                                                                            <option value="${monthIndex}" <c:if test="${compose.repeatYearlyRelativeMonth eq monthIndex}">selected </c:if>> ${months[monthIndex-1]}</option>
-                                                                        </c:forEach>
-                                                                    </select>
-                                                                </td>
+                                                                <fmt:message key="repeatEditYearlyRelative">
+                                                                    <fmt:param>
+                                                                        <select name="repeatYearlyRelativeOrd">
+                                                                            <option value="1" <c:if test="${compose.repeatYearlyRelativeOrd eq 1}">selected </c:if>><fmt:message key="recurFirst"/></option>
+                                                                            <option value="2" <c:if test="${compose.repeatYearlyRelativeOrd eq 2}">selected </c:if>><fmt:message key="recurSecond"/></option>
+                                                                            <option value="3" <c:if test="${compose.repeatYearlyRelativeOrd eq 3}">selected </c:if>><fmt:message key="recurThird"/></option>
+                                                                            <option value="4" <c:if test="${compose.repeatYearlyRelativeOrd eq 4}">selected </c:if>><fmt:message key="recurFourth"/></option>
+                                                                            <option value="-1" <c:if test="${compose.repeatYearlyRelativeOrd eq -1}">selected </c:if>><fmt:message key="recurLast"/></option>
+                                                                        </select>
+                                                                    </fmt:param>
+                                                                    <fmt:param>
+                                                                        <select name="repeatYearlyRelativeDay">
+                                                                            <c:forEach var="dayIndex" begin="0" end="6">
+                                                                                <option value="${dayIndex}" <c:if test="${compose.repeatYearlyRelativeDay eq dayIndex}">selected </c:if>> ${weekDays[dayIndex+1]}</option>
+                                                                            </c:forEach>
+                                                                        </select>
+                                                                    </fmt:param>
+                                                                    <fmt:param>
+                                                                        <select name="repeatYearlyRelativeMonth">
+                                                                            <c:forEach var="monthIndex" begin="1" end="12">
+                                                                                <option value="${monthIndex}" <c:if test="${compose.repeatYearlyRelativeMonth eq monthIndex}">selected </c:if>> ${months[monthIndex-1]}</option>
+                                                                            </c:forEach>
+                                                                        </select>
+                                                                    </fmt:param>
+                                                                </fmt:message>
                                                             </tr>
                                                         </table>
                                                     </td>
@@ -362,18 +363,13 @@
                                                         <input type=radio name='repeatEndType' value="COUNT" <c:if test="${compose.repeatEndType eq 'COUNT'}">checked </c:if>>
                                                     </td>
                                                     <td>
-                                                        <table cellpadding=0 cellspacing=0>
+                                                        <table cellpadding=2 cellspacing=0>
                                                             <tr>
-                                                                <td>End after</td>
-                                                                <td>&nbsp;</td>
-                                                                <td><input type=text size="3"
-                                                                           maxlength="3"
-                                                                           name="repeatEndCount"
-                                                                        value="${compose.repeatEndCount}"
-                                                                        >
-                                                                </td>
-                                                                <td>&nbsp;</td>
-                                                                <td>occurrence(s).</td>
+                                                                <fmt:message key="repeatEditEndCount">
+                                                                    <fmt:param>
+                                                                        <input type=text size="3" maxlength="3" name="repeatEndCount" value="${compose.repeatEndCount}">
+                                                                    </fmt:param>
+                                                                </fmt:message>
                                                             </tr>
                                                         </table>
                                                     </td>
@@ -383,14 +379,14 @@
                                                         <input type=radio name='repeatEndType' value="UNTIL" <c:if test="${compose.repeatEndType eq 'UNTIL'}">checked </c:if>>
                                                     </td>
                                                     <td>
-                                                        <table cellpadding=0 cellspacing=0>
+                                                        <table cellpadding=2 cellspacing=0>
                                                             <tr>
-                                                                <td>End by</td>
-                                                                <td>&nbsp;</td>
-                                                                <td><input type=text size="12"
-                                                                           maxlength="20"
+                                                                <fmt:message key="repeatEditEndUntil">
+                                                                    <fmt:param>
+                                                                        <input type=text size="12" maxlength="20"
                                                                            name="repeatEndDate" value="${fn:escapeXml(compose.repeatEndDate)}">
-                                                                </td>
+                                                                    </fmt:param>
+                                                                </fmt:message>
                                                             </tr>
                                                         </table>
                                                     </td>
@@ -412,6 +408,7 @@
             </td>
         </tr>
     </table>
+    <input type="hidden" name="apptFolderId" value="${fn:escapeXml(compose.apptFolderId)}"/>
     <input type="hidden" name="invId" value="${fn:escapeXml(compose.inviteId)}"/>
     <input type="hidden" name="exInvId" value="${fn:escapeXml(compose.exceptionInviteId)}"/>
     <input type="hidden" name="useInstance" value="${fn:escapeXml(compose.useInstance ? '1' : '0') }"/>
