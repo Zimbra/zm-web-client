@@ -74,9 +74,7 @@ function ZmZimbraMail(appCtxt, domain, app, userShell) {
 	this._pollInstantNotifications = false; // if TRUE, we're in "instant notification" mode
 	this._needOverviewLayout = false;
 
-	if (domain != "localhost") {
-		this.setPollInterval();
-	}
+	this.setPollInterval();
 
 	AjxDispatcher.setPackageLoadFunction("Zimlet", new AjxCallback(this, this._postLoadZimlet));
 
