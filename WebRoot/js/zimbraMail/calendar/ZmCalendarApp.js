@@ -497,12 +497,17 @@ function(parent, buttonId, dateButtonListener, dateCalSelectionListener, appCtxt
 	// create mini cal for menu for button
 	var cal = new DwtCalendar(calMenu);
 	cal.setSkipNotifyOnPage(true);
-	cal.setFirstDayOfWeek(appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK));
+	var fdow = appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK) || 0;
+	cal.setFirstDayOfWeek(fdow);
 	cal.addSelectionListener(dateCalSelectionListener);
 	// add settings change listener on mini cal in case first day of week setting changes
-	var listener = new AjxListener(null, ZmCalendarApp._settingsChangeListener, cal);
-	appCtxt.getSettings().getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK).addChangeListener(listener);
-
+	// safety check since this is static code (may not have loaded calendar)
+	var fdowSetting = appCtxt.getSettings().getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK);
+	if (fdowSetting) {
+		var listener = new AjxListener(null, ZmCalendarApp._settingsChangeListener, cal);
+		fdowSetting.addChangeListener(listener);
+	}
+	
 	// reparent and cleanup
 	dateButton.reparentHtmlElement(buttonId);
 	delete buttonId;
