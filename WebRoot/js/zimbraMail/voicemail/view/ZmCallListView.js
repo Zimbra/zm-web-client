@@ -71,7 +71,7 @@ ZmCallListView.prototype._getHeaderList =
 function() {
 
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmCallListView.F_CALLER], ZmMsg.phoneNumber, null, ZmCallListView.FROM_WIDTH, ZmCallListView.F_CALLER, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmCallListView.F_CALLER], ZmMsg.from, null, ZmCallListView.FROM_WIDTH, ZmCallListView.F_CALLER, true));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmCallListView.F_SIZE], ZmMsg.duration, null, ZmCallListView.DURATION_WIDTH, ZmCallListView.F_SIZE, true));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmCallListView.F_DATE], ZmMsg.received, null, ZmCallListView.DATE_WIDTH, ZmCallListView.F_DATE, true));
 
@@ -101,7 +101,7 @@ function(voicemail, now, isDndIcon, isMixedView, myDiv) {
 		if (prefix) {
 			htmlArr[idx++] = " id='";
 			htmlArr[idx++] = this._getFieldIdFromPrefix(voicemail, prefix);
-			if (prefix == ZmListView.FIELD_PREFIX[ZmCallListView.F_CALLER_NAME]) {
+			if (prefix == ZmListView.FIELD_PREFIX[ZmCallListView.F_CALLER]) {
 				htmlArr[idx++] = "_0";
 			}
 			htmlArr[idx++] = "'";
