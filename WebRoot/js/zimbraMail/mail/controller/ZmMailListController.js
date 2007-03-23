@@ -368,6 +368,16 @@ function() {
 
 // Groups of mail-related operations
 
+ZmMailListController.prototype._standardToolBarOps =
+function() {
+	var list = [ZmOperation.NEW_MENU];
+	list.push(this._appCtxt.get(ZmSetting.OFFLINE) ? ZmOperation.SYNC_OFFLINE : ZmOperation.CHECK_MAIL);
+	list = list.concat([ZmOperation.TAG_MENU, ZmOperation.SEP,
+						ZmOperation.DELETE, ZmOperation.MOVE,
+						ZmOperation.PRINT]);
+	return list;
+};
+
 ZmMailListController.prototype._flagOps =
 function() {
 	return [ZmOperation.MARK_READ, ZmOperation.MARK_UNREAD];

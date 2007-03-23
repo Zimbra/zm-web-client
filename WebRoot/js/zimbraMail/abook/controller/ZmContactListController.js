@@ -222,14 +222,6 @@ function(actionCode) {
 // Private and protected methods
 
 
-ZmContactListController.prototype._standardToolBarOps =
-function() {
-	return [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU,
-			ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.MOVE,
-			ZmOperation.PRINT_MENU];
-};
-
 ZmContactListController.prototype._getToolBarOps =
 function() {
 	var list = this._standardToolBarOps();

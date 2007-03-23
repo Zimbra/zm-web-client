@@ -78,6 +78,7 @@ function ZmListController(appCtxt, container, app) {
 	this._listeners[ZmOperation.IM] = new AjxListener(this, this._participantImListener);
 	this._listeners[ZmOperation.CONTACT] = new AjxListener(this, this._participantContactListener);
 	this._listeners[ZmOperation.VIEW] = new AjxListener(this, this._viewButtonListener);
+	this._listeners[ZmOperation.SYNC_OFFLINE] = new AjxListener(this, this._syncOfflineListener);
 
 	this._menuPopdownListener = new AjxListener(this, this._menuPopdownActionListener);
 
@@ -299,10 +300,10 @@ function(view) {
 
 ZmListController.prototype._standardToolBarOps =
 function() {
-	return [ZmOperation.NEW_MENU, ZmOperation.CHECK_MAIL,
-			ZmOperation.TAG_MENU, ZmOperation.SEP,
+	return [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU,
+			ZmOperation.SEP,
 			ZmOperation.DELETE, ZmOperation.MOVE,
-			ZmOperation.PRINT];
+			ZmOperation.PRINT_MENU];
 };
 
 ZmListController.prototype._standardActionMenuOps =
@@ -601,6 +602,12 @@ function(ev) {
 	if (ev.detail == DwtMenuItem.CHECKED || ev.detail == DwtMenuItem.UNCHECKED)	{
 		this.switchView(ev.item.getData(ZmOperation.MENUITEM_ID));
 	}
+};
+
+ZmListController.prototype._syncOfflineListener =
+function(ev) {
+    var soapDoc = AjxSoapDoc.create("SyncRequest", "urn:zimbraOffline");
+    this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
 };
 
 // Navbar listeners
