@@ -120,6 +120,9 @@ function(cmdStr, searchController) {
 			      "Client Release: " + this._appCtxt.get(ZmSetting.CLIENT_RELEASE) + "\n" +
 			      "    Build Date: " + this._appCtxt.get(ZmSetting.CLIENT_DATETIME));
 		}
+	} else if (arg0 == "refresh") {
+		ZmCsfeCommand.setSessionId(null);
+		this._appCtxt.getAppController().sendNoOp();
 	}
 };
 
