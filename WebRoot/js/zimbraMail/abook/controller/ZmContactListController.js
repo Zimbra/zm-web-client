@@ -185,7 +185,8 @@ function(letter, endLetter) {
 
 	if (query) {
 		var limit = this._listView[this._currentView].getLimit();
-		var params = {query:query, offset:0, limit:limit, lastId:0, lastSortVal:letter, endSortVal:endLetter};
+		var params = {query:query, types:[ZmItem.CONTACT], offset:0, limit:limit, lastId:0,
+					  lastSortVal:letter, endSortVal:endLetter};
 		var sc = this._appCtxt.getSearchController();
 		sc.search(params);
 	}
