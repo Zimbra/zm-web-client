@@ -324,7 +324,7 @@
                                                                 <fmt:message key="repeats"/> :
                                                             </td>
                                                             <td>
-                                                                <app:repeatBlurb repeat="${repeat}" start="${compose.apptStartCalendar.time}" timezone="${mailbox.prefs.timeZone}"/>
+                                                              ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,mailbox.prefs.timeZone, compose.apptStartCalendar.time))}
                                                             </td>
                                                         </tr>
                                                     </c:if>

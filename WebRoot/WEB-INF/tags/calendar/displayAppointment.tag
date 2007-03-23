@@ -174,7 +174,7 @@
                                         :
                                     </td>
                                     <td class='MsgHdrValue'>
-                                        <app:repeatBlurb repeat="${repeat}" start="${appt.start.date}" timezone="${mailbox.prefs.timeZone}"/>
+                                        ${fn:escapeXml(zm:getRepeatBlurb(repeat,pageContext,mailbox.prefs.timeZone, appt.start.date))}
                                     </td>
                                 </tr>
                             </c:if>
