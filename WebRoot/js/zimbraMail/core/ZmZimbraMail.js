@@ -154,6 +154,7 @@ function(domain, app, userShellId, offlineMode) {
     	DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
     	appCtxt.set(ZmSetting.OFFLINE, true);
     	appCtxt.set(ZmSetting.POLLING_INTERVAL, 60);
+    	appCtxt.set(ZmSetting.CONTACTS_ENABLED, true);	// hack until we rewrite login
     }
 
 	var apps = AjxCookie.getCookie(document, ZmLogin.APPS_COOKIE);
