@@ -122,22 +122,22 @@ function ZmAppViewMgr(shell, controller, isNewWindow, hasSkin) {
 };
 
 // components
-ZmAppViewMgr.C_BANNER					= "BANNER";
-ZmAppViewMgr.C_USER_INFO				= "USER INFO";
-ZmAppViewMgr.C_QUOTA_INFO				= "QUOTA INFO";
-ZmAppViewMgr.C_SEARCH					= "SEARCH";
-ZmAppViewMgr.C_SEARCH_BUILDER			= "SEARCH BUILDER";
-ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR	= "SEARCH BUILDER TOOLBAR";
-ZmAppViewMgr.C_CURRENT_APP				= "CURRENT APP";
-ZmAppViewMgr.C_APP_CHOOSER				= "APP CHOOSER";
-ZmAppViewMgr.C_TREE						= "TREE";
-ZmAppViewMgr.C_TREE_FOOTER				= "TREE FOOTER";
-ZmAppViewMgr.C_TOOLBAR_TOP				= "TOP TOOLBAR";
-ZmAppViewMgr.C_TOOLBAR_BOTTOM			= "BOTTOM TOOLBAR";
-ZmAppViewMgr.C_APP_CONTENT				= "APP CONTENT";
-ZmAppViewMgr.C_APP_CONTENT_FULL			= "APP CONTENT FULL";
-ZmAppViewMgr.C_STATUS					= "STATUS";
-ZmAppViewMgr.C_SASH						= "SASH";
+ZmAppViewMgr.C_BANNER					= "banner";
+ZmAppViewMgr.C_USER_INFO				= "userInfo";
+ZmAppViewMgr.C_QUOTA_INFO				= "quota";
+ZmAppViewMgr.C_SEARCH					= "search";
+ZmAppViewMgr.C_SEARCH_BUILDER			= "searchBuilder";
+ZmAppViewMgr.C_SEARCH_BUILDER_TOOLBAR	= "searchBuilderToolbar";
+ZmAppViewMgr.C_CURRENT_APP				= "appView";
+ZmAppViewMgr.C_APP_CHOOSER				= "app_chooser"; // TODO: rename
+ZmAppViewMgr.C_TREE						= "tree";
+ZmAppViewMgr.C_TREE_FOOTER				= "treeFooter";
+ZmAppViewMgr.C_TOOLBAR_TOP				= "topToolbar";
+ZmAppViewMgr.C_TOOLBAR_BOTTOM			= "bottomToolbar";
+ZmAppViewMgr.C_APP_CONTENT				= "main";
+ZmAppViewMgr.C_APP_CONTENT_FULL			= "fullScreen";
+ZmAppViewMgr.C_STATUS					= "status";
+ZmAppViewMgr.C_SASH						= "sash";
 
 ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, ZmAppViewMgr.C_QUOTA_INFO,
 							   ZmAppViewMgr.C_SEARCH, ZmAppViewMgr.C_SEARCH_BUILDER,
@@ -595,9 +595,9 @@ function(pendingAction) {
 // Locates and sizes the given list of components to fit within their containers.
 ZmAppViewMgr.prototype._fitToContainer =
 function(components) {
-	for (var i = 0; i < components.length; i++) {
+    for (var i = 0; i < components.length; i++) {
 		var cid = components[i];
-		if (AjxEnv.isIE && cid == ZmAppViewMgr.C_USER_INFO && components.length > 1) {
+        if (AjxEnv.isIE && cid == ZmAppViewMgr.C_USER_INFO && components.length > 1) {
 			// Bug 13720: This USER INFO element doesn't go to the right place in IE.
 			if (!this._userInfoAction) {
 				this._fitUserInfoAction = new AjxTimedAction(this, this._fitToContainer, [[ZmAppViewMgr.C_USER_INFO]]);
@@ -610,8 +610,14 @@ function(components) {
 			var contBds = Dwt.getBounds(cont);
 			var comp = this._components[cid];
 			if (comp && (comp.getZIndex() != Dwt.Z_HIDDEN)) {
-				comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height);
-				this._contBounds[cid] = contBds;
+                var position = skin && skin.hints[cid] && skin.hints[cid].position;
+                if (position == "static") {
+                    cont.appendChild(comp.getHtmlElement());
+                }
+                else {
+                    comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height);
+                }
+                this._contBounds[cid] = contBds;
 			}
 		}
 	}

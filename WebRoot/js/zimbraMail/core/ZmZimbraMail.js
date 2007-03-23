@@ -249,8 +249,8 @@ function(params) {
 		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE, "console_inset_app_l", 20);
 		this._components[ZmAppViewMgr.C_BANNER] = this._createBanner();
-		this._components[ZmAppViewMgr.C_USER_INFO] = this._userNameField = this._createUserInfo("BannerTextUser");
-		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField = this._createUserInfo("BannerTextQuota");
+		this._components[ZmAppViewMgr.C_USER_INFO] = this._userNameField = this._createUserInfo("BannerTextUser", ZmAppViewMgr.C_USER_INFO);
+		this._components[ZmAppViewMgr.C_QUOTA_INFO] = this._usedQuotaField = this._createUserInfo("BannerTextQuota", ZmAppViewMgr.C_QUOTA_INFO);
 		var currentAppToolbar = new ZmCurrentAppToolBar(this._shell, this._TAB_SKIN_ENABLED);
 		this._appCtxt.setCurrentAppToolbar(currentAppToolbar);
 		this._components[ZmAppViewMgr.C_CURRENT_APP] = currentAppToolbar;
@@ -1286,10 +1286,14 @@ function() {
 };
 
 ZmZimbraMail.prototype._createUserInfo =
-function(className) {
-	var ui = new DwtComposite(this._shell, className, Dwt.ABSOLUTE_STYLE);
-	ui.setScrollStyle(Dwt.CLIP);
-	ui._setMouseEventHdlrs();
+function(className, cid) {
+    var position = skin && skin.hints[cid] && skin.hints[cid].position;
+    var posStyle = position || Dwt.ABSOLUTE_STYLE;
+    var ui = new DwtComposite(this._shell, className, posStyle);
+    if (posStyle == Dwt.ABSOLUTE_STYLE) {
+        ui.setScrollStyle(Dwt.CLIP);
+    }
+    ui._setMouseEventHdlrs();
 	return ui;
 };
 
