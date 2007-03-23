@@ -44,7 +44,8 @@ function ZmRequestMgr(appCtxt, controller, domain) {
 	this._appCtxt.setRequestMgr(this);
 
 	ZmCsfeCommand.setServerUri(location.protocol + "//" + domain + appCtxt.get(ZmSetting.CSFE_SERVER_URI));
-	ZmCsfeCommand.clientVersion = appCtxt.get(ZmSetting.CLIENT_VERSION);
+	var cv = appCtxt.get(ZmSetting.CLIENT_VERSION);
+	ZmCsfeCommand.clientVersion = (cv.indexOf('@') == 0) ? "dev build" : cv;
 	
 	this._shell = appCtxt.getShell();
 
