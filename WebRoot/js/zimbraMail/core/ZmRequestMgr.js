@@ -286,6 +286,7 @@ function(hdr) {
 ZmRequestMgr.prototype._refreshHandler =
 function(refresh) {
 	DBG.println(AjxDebug.DBG1, "Handling REFRESH");
+	this._controller.runAppFunction("_clearDeferredFolders");
 
 	var unread = {};
 	this._loadTree(ZmOrganizer.TAG, unread, refresh.tags);

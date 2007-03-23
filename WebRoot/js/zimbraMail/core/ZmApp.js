@@ -288,10 +288,15 @@ function(type) {
 		folder.parent = parent;
 		ZmFolderTree._traverse(folder, params.obj, params.tree, params.path || []);
 	}
-	this._deferredFolders = [];
-	this._deferredFolderHash = {};
+	this._clearDeferredFolders();
 
 	this._appCtxt.getFolderTree().getPermissions(type);
+};
+
+ZmApp.prototype._clearDeferredFolders =
+function() {
+	this._deferredFolders = [];
+	this._deferredFolderHash = {};
 };
 
 /**
