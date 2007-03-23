@@ -604,7 +604,7 @@ function(mode, isCompose) {
 	var content = this._createContent(formatter);
 	if (this.notes || isCompose) {
 		var notes = this.notes;
-		content = [content, ZmAppt.NOTES_SEPARATOR, notes].join("\n");
+		content = [content, ZmCalItem.NOTES_SEPARATOR, notes].join("\n");
 	}
 
 	var mimePart = new ZmMimePart();

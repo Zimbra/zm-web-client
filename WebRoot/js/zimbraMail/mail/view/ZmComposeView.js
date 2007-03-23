@@ -1112,7 +1112,7 @@ function(action, msg, extraBodyText, incOption) {
 
 		// Bug 7160: Strip off the ~*~*~*~ from invite replies.
 		if (isInviteReply) {
-			body = body.replace(ZmAppt.NOTES_SEPARATOR, "");
+			body = body.replace(ZmCalItem.NOTES_SEPARATOR, "");
 		}
 
 		// bug fix# 3215 - dont allow prefixing for html msgs
