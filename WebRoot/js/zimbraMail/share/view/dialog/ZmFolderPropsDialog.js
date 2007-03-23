@@ -175,8 +175,8 @@ function(event) {
 	callback.run(null);
 };
 
-ZmFolderPropsDialog.prototype._handleColor
-= function(response) {
+ZmFolderPropsDialog.prototype._handleColor =
+function(response) {
 	// change color
 	var callback = new AjxCallback(this, this._handleFreeBusy);
 	var organizer = this._organizer;
@@ -190,8 +190,8 @@ ZmFolderPropsDialog.prototype._handleColor
 	callback.run(response);
 };
 
-ZmFolderPropsDialog.prototype._handleFreeBusy
-= function(response) {
+ZmFolderPropsDialog.prototype._handleFreeBusy =
+function(response) {
 	// set free/busy
 	var callback = new AjxCallback(this, this.popdown);
 	var organizer = this._organizer;
@@ -207,13 +207,13 @@ ZmFolderPropsDialog.prototype._handleFreeBusy
 	callback.run(response);
 };
 
-ZmFolderPropsDialog.prototype._handleError
-= function(response) {
+ZmFolderPropsDialog.prototype._handleError =
+function(response) {
 	// TODO: Default handling?
 };
 
-ZmFolderPropsDialog.prototype._handleRenameError
-= function(response) {
+ZmFolderPropsDialog.prototype._handleRenameError =
+function(response) {
 	// REVISIT: This should be handled generically. But the server doesn't
 	//          send back the information necessary to generate the error
 	//          message.

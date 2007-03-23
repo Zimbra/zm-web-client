@@ -196,10 +196,10 @@ ZmOrganizer.COLOR_CHOICES = [];
 
 // whether an org uses colors
 ZmOrganizer.HAS_COLOR = {};
+ZmOrganizer.HAS_COLOR[ZmOrganizer.FOLDER] = true;
 
 // default color for each org type
 ZmOrganizer.DEFAULT_COLOR = {};
-ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.FOLDER]	= ZmOrganizer.ORG_DEFAULT_COLOR;
 ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.SEARCH]	= ZmOrganizer.ORG_DEFAULT_COLOR;
 ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG]		= ZmOrganizer.ORG_DEFAULT_COLOR;
 

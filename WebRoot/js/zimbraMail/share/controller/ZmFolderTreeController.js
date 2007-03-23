@@ -44,6 +44,8 @@ function ZmFolderTreeController(appCtxt, type, dropTgt) {
 
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
+	this._listeners[ZmOperation.SHARE_FOLDER] = new AjxListener(this, this._shareAddrBookListener);
+	this._listeners[ZmOperation.MOUNT_FOLDER] = new AjxListener(this, this._mountAddrBookListener);
 };
 
 ZmFolderTreeController.prototype = new ZmTreeController;
@@ -85,12 +87,17 @@ ZmFolderTreeController.prototype.resetOperations =
 function(parent, type, id) {
 	var deleteText = ZmMsg.del;
 	var folder = this._appCtxt.getById(id);
+
 	// user folder or Folders header
-	if (id == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder())) {
+	if (id == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder()))
+	{
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed());
+		parent.enable([ZmOperation.MOVE, ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], !folder.link);
+	}
 	// system folder
-	} else {
+	else
+	{
 		parent.enableAll(false);
 		// can't create folders under Drafts or Junk
 		if (id == ZmFolder.ID_INBOX || id == ZmFolder.ID_SENT || id == ZmFolder.ID_TRASH)
@@ -100,7 +107,15 @@ function(parent, type, id) {
 			deleteText = (id == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
 			parent.enable(ZmOperation.DELETE, true);
 		}
+		// only allow Inbox and Sent system folders to be share-able for now
+		if (!folder.link && (id == ZmFolder.ID_INBOX || id == ZmFolder.ID_SENT))
+			parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], true);
 	}
+
+	if (folder.link && folder.isReadOnly()) {
+		parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ, ZmOperation.RENAME_FOLDER], false);
+	}
+
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
 	if (id != ZmOrganizer.ID_ROOT)
 		parent.enable(ZmOperation.MARK_ALL_READ, (folder.numUnread > 0));
@@ -116,18 +131,15 @@ function(parent, type, id) {
         button.setVisible(true);
         if (folder.isFeed()) {
             button.setText(ZmMsg.checkFeed);
-        }
-        else if (this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
+        } else if (this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
             var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
             var popAccounts = dsCollection.getPopAccountsFor(folder.id);
             if (popAccounts.length > 0) {
                 button.setText(ZmMsg.checkPopMail);
-            }
-            else {
+            } else {
                 button.setVisible(false);
             }
-        }
-        else {
+        } else {
             button.setVisible(false);
         }
     }
@@ -140,7 +152,7 @@ function(parent, type, id) {
 */
 ZmFolderTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_FOLDER, ZmOperation.EXPAND_ALL];
+	return [ZmOperation.NEW_FOLDER, ZmOperation.MOUNT_FOLDER, ZmOperation.EXPAND_ALL];
 };
 
 /*
@@ -154,6 +166,8 @@ function() {
 			  ZmOperation.DELETE,
 			  ZmOperation.RENAME_FOLDER,
 			  ZmOperation.MOVE,
+			  ZmOperation.SHARE_FOLDER,
+			  ZmOperation.EDIT_PROPS,
 			  ZmOperation.EXPAND_ALL,
 			  ZmOperation.SYNC);
 	return list;
@@ -355,6 +369,18 @@ function(ev) {
 		}
 	}
 };
+
+ZmFolderTreeController.prototype._shareAddrBookListener =
+function(ev) {
+	this._pendingActionData = this._getActionedOrganizer(ev);
+	this._appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
+};
+
+ZmFolderTreeController.prototype._mountAddrBookListener =
+function(ev) {
+	this._appCtxt.getMountFolderDialog().popup(ZmOrganizer.FOLDER);
+};
+
 
 // Miscellaneous
 

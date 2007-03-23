@@ -66,6 +66,7 @@ function() {
 
 ZmMailApp.prototype._defineAPI =
 function() {
+	AjxDispatcher.setPackageLoadFunction("Mail", new AjxCallback(this, this._postLoad, ZmOrganizer.FOLDER));
 	AjxDispatcher.registerMethod("Compose", "Mail", new AjxCallback(this, this.compose));
 	AjxDispatcher.registerMethod("GetAttachmentListController", "Mail", new AjxCallback(this, this.getAttachmentListController));
 	AjxDispatcher.registerMethod("GetComposeController", ["Mail", "Zimlet"], new AjxCallback(this, this.getComposeController));
@@ -442,6 +443,8 @@ function(list, force) {
 			convs[conv.id] = conv;
 			gotMail = true;
 			create._handled = true;
+		} else if (name == "link") {
+			this._handleCreateLink(create, ZmOrganizer.FOLDER);
 		}
 	}
 	if (gotMail) {
@@ -716,6 +719,11 @@ function(notify) {
 	}
 	
 	return notify;
+};
+
+ZmMailApp.prototype._postLoad =
+function(type) {
+	this._appCtxt.getFolderTree().getPermissions(type);
 };
 
 /**
