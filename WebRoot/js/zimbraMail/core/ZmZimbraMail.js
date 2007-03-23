@@ -150,9 +150,10 @@ function(domain, app, userShellId, offlineMode) {
 	// Create upload manager (for sending attachments)
 	appCtxt.setUploadManager(new AjxPost(appCtxt.getUploadFrameId()));
 
-    if (offlineMode) {
+    if (offlineMode == "true") {
     	DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
     	appCtxt.set(ZmSetting.OFFLINE, true);
+    	appCtxt.set(ZmSetting.POLLING_INTERVAL, 60);
     }
 
 	var apps = AjxCookie.getCookie(document, ZmLogin.APPS_COOKIE);
