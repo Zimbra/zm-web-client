@@ -434,6 +434,9 @@
         <input type="hidden" name="originalAttachment" value="${fn:escapeXml(ca.key)}"/>
     </c:forEach>
 
+    <c:forEach var="orig" items="${uploader.origRepeatValues}">
+        <input type="hidden" name="${orig.key}" value="${fn:escapeXml(orig.value)}"/>
+    </c:forEach>
 
 </form>
 </app:view>
