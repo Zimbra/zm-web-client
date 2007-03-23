@@ -388,8 +388,8 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 			var name = names[i];
             if (name == ".") continue;
             if (name == "..") {
-                notebook = notebook.parent;
                 if (notebook == null) return null;
+                notebook = notebook.parent;
                 continue;
             }
             notebook = ZmNotebookCache.__getNotebookByName(notebook, name);
@@ -410,7 +410,7 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 
 	// link: Foo (item)
 	var traverseUp = Boolean(link.match(/^_/));
-	var item = this.getItemByName(notebook.id, link, traverseUp);
+	var item = notebook ? this.getItemByName(notebook.id, link, traverseUp) : null;
 	return item;
 };
 ZmNotebookCache.prototype.getPageByLink = function(link) {
@@ -489,7 +489,7 @@ ZmNotebookCache.prototype.makeProxyPage = function(page, folderId) {
 ZmNotebookCache.prototype._fillCacheResponse = 
 function(requestParams, folderId, callback, errorCallback, response) {
 	var notebook = this._appCtxt.getById(folderId);
-	var remoteFolderId = notebook.zid ? notebook.zid+":"+notebook.rid : undefined;
+	var remoteFolderId = (notebook && notebook.zid) ? notebook.zid + ":" + notebook.rid : undefined;
 
 	// add pages to folder map in cache
 	if (response && (response.SearchResponse || response._data.SearchResponse)) {
@@ -576,8 +576,8 @@ function(folderId, callback, errorCallback, response) {
 	var resp = response.GetFolderResponse || (response._data && response._data.GetFolderResponse);
 	var folder = resp.folder && resp.folder[0];
 	var folders = folder && folder.folder;
-	if (folders) {
-		var parent = this._appCtxt.getById(folderId);
+	var parent = this._appCtxt.getById(folderId);
+	if (folders && parent) {
 		for (var i = 0; i < folders.length; i++) {
 			var obj = folders[i];
 
