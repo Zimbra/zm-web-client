@@ -156,9 +156,8 @@ ZmSearchController.prototype.setDefaultSearchType =
 function(type) {
 	if (this._searchToolBar) {
 		var menu = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON).getMenu();
-		this._preventSearch = true;
 		menu.checkItem(ZmSearchToolBar.MENUITEM_ID, type);
-		this._preventSearch = false;
+		this._searchMenuListener(null, type, true);
 	}
 };
 
@@ -507,24 +506,33 @@ function(ev) {
 }
 
 ZmSearchController.prototype._searchMenuListener =
-function(ev) {
-	if (ev.detail != DwtMenuItem.CHECKED) return;
+function(ev, id, noSearch) {
+	if (ev && (ev.detail != DwtMenuItem.CHECKED)) { return; }
 
-	var id = ev.item.getData(ZmSearchToolBar.MENUITEM_ID);
+	var btn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
+	var item;
+	if (ev) {
+		item = ev.item;
+		id = ev.item.getData(ZmSearchToolBar.MENUITEM_ID);
+	} else {
+		item = btn.getMenu().getItemById(ZmSearchToolBar.MENUITEM_ID, id);
+	}
+
 	this._searchFor = id;
 	this._contactSource = (id == ZmSearchToolBar.FOR_GAL_MI) ? ZmSearchToolBar.FOR_GAL_MI : ZmItem.CONTACT;
 
-	// set tooltip
+	// set button text
+	btn.setText(item.getText());
+
+	// set button tooltip
 	var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[id]];
 	if (id == ZmSearchToolBar.FOR_MAIL_MI) {
 		var groupBy = this._appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 		tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
 	}
 
-	var btn = this._searchToolBar.getButton(ZmSearchToolBar.SEARCH_MENU_BUTTON);
-	btn.setText(ev.item.getText());
-
-	if (!this._preventSearch) {
+	// run search
+	if (!noSearch) {
 		this._searchButtonListener(ev);
 	}
 };
