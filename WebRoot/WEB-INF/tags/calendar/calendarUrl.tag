@@ -50,6 +50,7 @@
         <c:if test="${not empty param.action}"><c:param name="action" value="${param.action}"/></c:if>
         <c:if test="${not empty param.invId}"><c:param name="invId" value="${param.invId}"/></c:if>
         <c:if test="${not empty param.exInvId}"><c:param name="exInvId" value="${param.exInvId}"/></c:if>
+        <c:if test="${not empty param.pstat}"><c:param name="pstat" value="${param.pstat}"/></c:if>
         <c:if test="${not empty param.instStartTime}"><c:param name="instStartTime" value="${param.instStartTime}"/></c:if>
         <c:if test="${not empty param.instDuration}"><c:param name="instDuration" value="${param.instDuration}"/></c:if>
         <c:param name="useInstance" value="${apptFromUrl ? param.useInstance : param.useInstance ne '1' ? '1' : '0'}"/>

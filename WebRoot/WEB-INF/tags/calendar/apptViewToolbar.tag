@@ -1,5 +1,6 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
+<%@ attribute name="isReadOnly" rtexprvalue="true" required="true" %>
 <%@ attribute name="isInstance" rtexprvalue="true" required="true" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -13,15 +14,17 @@
         <td nowrap>
             <app:calendarUrl var="closeurl" />
             <a href="${closeurl}" <c:if test="${keys}">accesskey="z"</c:if>> <app:img src="common/Close.gif"/> <span><fmt:message key="close"/></span></a>
-            <td><div class='vertSep'></div></td>
-            <c:choose>
-                <c:when test="${isInstance}">
-                    <app:button name="actionApptDelete" src="common/Delete.gif" tooltip="actionApptDeleteInstTT" text="deleteInst"/>                                        
-                </c:when>
-                <c:otherwise>
-                    <app:button name="actionApptDelete" src="common/Delete.gif" tooltip="actionApptDeleteTT" text="delete"/>
-                </c:otherwise>
-            </c:choose>
+            <c:if test="${not isReadOnly}">
+                <td><div class='vertSep'></div></td>
+                <c:choose>
+                    <c:when test="${isInstance}">
+                        <app:button name="actionApptDelete" src="common/Delete.gif" tooltip="actionApptDeleteInstTT" text="deleteInst"/>
+                    </c:when>
+                    <c:otherwise>
+                        <app:button name="actionApptDelete" src="common/Delete.gif" tooltip="actionApptDeleteTT" text="delete"/>
+                    </c:otherwise>
+                </c:choose>
+            </c:if>
         </td>
     </c:set>
 </c:if>

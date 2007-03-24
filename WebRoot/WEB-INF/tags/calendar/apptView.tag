@@ -19,6 +19,9 @@
     <zm:getMessage var="msg" id="${id}" markread="true" neuterimages="${empty param.xim}"/>
     <c:set var="invite" value="${msg.invite}"/>
     <c:set var="isInstance" value="${param.useInstance eq '1'}"/>
+
+    <c:set var="apptFolder" value="${zm:getFolder(pageContext, msg.folderId)}"/>
+    <c:set var="readOnly" value="${apptFolder.isMountPoint or apptFolder.isFeed}"/>
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" selected='calendar' calendars="true" keys="false" minical="true" date="${requestScope.dateContext}">
@@ -27,7 +30,7 @@
         <table width=100% cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
-                    <app:apptViewToolbar isInstance="${isInstance}" keys="true"/>
+                    <app:apptViewToolbar isReadOnly="${readOnly}" isInstance="${isInstance}" keys="true"/>
                 </td>
             </tr>
             <tr>
