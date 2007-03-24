@@ -357,6 +357,7 @@ function(view) {
 ZmContactListController.prototype._setupPrintMenu =
 function(view) {
 	var printButton = this._toolbar[view].getButton(ZmOperation.PRINT_MENU);
+	if (!printButton) { return; }
 	var menu = new ZmPopupMenu(printButton);
 	printButton.setMenu(menu);
 
@@ -371,8 +372,11 @@ ZmContactListController.prototype._resetOperations =
 function(parent, num) {
 	var printMenuItem;
 	if (parent instanceof ZmButtonToolBar) {
-		printMenuItem = parent.getButton(ZmOperation.PRINT_MENU).getMenu().getItem(0);
-		printMenuItem.setText(ZmMsg.printResults);
+		var printButton = parent.getButton(ZmOperation.PRINT_MENU);
+		if (printButton) {
+			printMenuItem = printButton.getMenu().getItem(0);
+			printMenuItem.setText(ZmMsg.printResults);
+		}
 	}
 
 	if (!this.isGalSearch()) {
