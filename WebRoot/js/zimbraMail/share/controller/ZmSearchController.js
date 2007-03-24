@@ -429,6 +429,7 @@ function(results, search, isMixed) {
 	var resultsType = (isMixed || inTrash) ? ZmItem.MIXED : results.type;
 	var loadCallback = new AjxCallback(this, this._handleLoadShowResults, [results, search]);
 	var app = this._appCtxt.getApp(ZmItem.APP[resultsType]);
+	app.currentQuery = search.query;
 	app.showSearchResults(results, loadCallback, isInGal, search.folderId);
 };
 

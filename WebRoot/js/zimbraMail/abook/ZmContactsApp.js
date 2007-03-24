@@ -360,8 +360,7 @@ function(callback) {
 		if (this._appCtxt.get(ZmSetting.SHOW_SEARCH_STRING)) {
 			var folder = this._appCtxt.getById(ZmFolder.ID_CONTACTS);
 			if (folder) {
-				var stb = this._appCtxt.getSearchController().getSearchToolbar();
-				stb.setSearchFieldValue(folder.createQuery());
+				this.currentQuery = folder.createQuery();
 			}
 		}
 		// create contact view for the first time

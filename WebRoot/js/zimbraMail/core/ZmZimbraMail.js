@@ -851,11 +851,15 @@ function(appName, view) {
 		if (ZmApp.DEFAULT_SEARCH[appName]) {
 			this._appCtxt.getSearchController().setDefaultSearchType(ZmApp.DEFAULT_SEARCH[appName], true);
 		}
+		
+		// set search string value to match current app's last search, if applicable		
+		var app = this._apps[this._activeApp];
+		this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue(app.currentQuery ? app.currentQuery : "");
+
 		var reset = {};
 		reset[ZmOrganizer.SEARCH] = true;
 		this._checkOverviewLayout(true, reset);
 		// activate current app
-		var app = this._apps[this._activeApp];
 		if (app) app.activate(true, view);
 	}
 };
