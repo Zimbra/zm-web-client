@@ -18,8 +18,8 @@
 
 <table width=100% cellspacing=0 class='Tb'>
       <tr valign='middle'>
-        <td style='padding:2px'>
-            <table cellspacing=2 cellpadding=0 class='Tb'>
+        <td class='TbBt'>
+            <table cellspacing=0 cellpadding=0 class='Tb'>
                 <tr>
                     ${requestScope.apptToolbarCache}
                 </tr>

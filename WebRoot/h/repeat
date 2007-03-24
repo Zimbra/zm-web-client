@@ -36,8 +36,8 @@
 <c:set var="toolbar">
     <table width=100% cellspacing=0>
         <tr valign='middle'>
-            <td>
-                <table cellspacing=2 cellpadding=0 class='Tb'>
+            <td class='TbBt'>
+                <table cellspacing=0 cellpadding=0 class='Tb'>
                     <tr>
                         <app:button name="actionRepeatDone" src="common/Close.gif" tooltip="done" text="done"/>
                         <td>

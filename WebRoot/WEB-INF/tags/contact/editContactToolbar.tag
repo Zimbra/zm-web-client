@@ -10,8 +10,8 @@
 
 <table width=100% cellspacing=0 class='Tb'>
     <tr>
-        <td align=left class=Tb>
-            <table cellspacing=2 cellpadding=0 class='Tb'>
+        <td align=left class=TbBt>
+            <table cellspacing=0 cellpadding=0 class='Tb'>
                 <tr>
                     <app:button name="${create ? 'actionCreate' : 'actionModify'}" src="common/Save.gif" tooltip="save" text="save"/>
                     <td><div class='vertSep'></div></td>

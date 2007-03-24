@@ -66,8 +66,8 @@
 
 <table width=100% cellspacing=0 class='Tb'>
     <tr>
-        <td align=left class=Tb>
-            <table cellspacing=2 cellpadding=0 class='Tb'>
+        <td align=left class=TbBt>
+            <table cellspacing=0 cellpadding=0 class='Tb'>
                 <tr>
                     <td nowrap>
                         <zm:currentResultUrl var="refreshUrl" value="/h/search" context="${context}" refresh="true" />

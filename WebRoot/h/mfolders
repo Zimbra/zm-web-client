@@ -53,8 +53,8 @@
                 <td class='TbTop'>
                     <table width=100% cellspacing=0>
                         <tr>
-                            <td>
-                                <table cellspacing=2 cellpadding=0 class='Tb'>
+                            <td class='TbBt'>
+                                <table cellspacing=0 cellpadding=0 class='Tb'>
                                     <tr>
                                         <td>
                                             <a href="<c:url value="/h/search"/>">
