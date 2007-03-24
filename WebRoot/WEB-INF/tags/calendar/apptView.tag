@@ -18,7 +18,7 @@
     </c:choose>
     <zm:getMessage var="msg" id="${id}" markread="true" neuterimages="${empty param.xim}"/>
     <c:set var="invite" value="${msg.invite}"/>
-
+    <c:set var="isInstance" value="${param.useInstance eq '1'}"/>
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" selected='calendar' calendars="true" keys="false" minical="true" date="${requestScope.dateContext}">
@@ -27,19 +27,41 @@
         <table width=100% cellpadding="0" cellspacing="0">
             <tr>
                 <td class='TbTop'>
-                    <app:apptViewToolbar keys="true"/>
+                    <app:apptViewToolbar isInstance="${isInstance}" keys="true"/>
                 </td>
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                        <c:set var="extImageUrl" value=""/>
-                        <c:if test="${empty param.xim}">
-                            <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
+                    <table cellpadding=0 cellspacing=0 width=100%>
+                        <c:if test="${isInstance}">
+                            <tr>
+                                <td>
+                                    <table width=100% cellpadding=0 cellspacing=0>
+                                        <tr>
+                                            <td class='ZhApptRecurrInfo' style='padding-left:5px' width=24><app:img src="dwt/Information.gif"/></td>
+                                            <td class='ZhApptRecurrInfo'>
+                                                <app:calendarUrl toggleInstance="true" var="apptUrl"/>
+                                                <fmt:message key="apptInstViewNote"/>
+                                                &nbsp;<a accesskey='x' href="${apptUrl}"><fmt:message key="apptInstViewSeries"/></a>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
                         </c:if>
-                        <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
+                        <tr>
+                            <td>
+                                <c:set var="extImageUrl" value=""/>
+                                <c:if test="${empty param.xim}">
+                                    <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
+                                </c:if>
+                                <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
                                              action="compose" paction="view" id="${msg.id}"/>
-                        <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
-                        <app:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}" externalImageUrl="${extImageUrl}" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
+                                <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
+                                <app:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}" externalImageUrl="${extImageUrl}" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
             <tr>

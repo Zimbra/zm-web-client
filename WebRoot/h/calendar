@@ -62,12 +62,33 @@
         </app:status>
     </c:if>
 
+    <c:if test="${param.action eq 'view'}">
+        <c:set var="needViewAppt" value="${true}"/>
+        <c:if test="${zm:actionSet(param,'actionApptDelete')}">
+            <c:choose>
+                <c:when test="${param.useInstance eq '1'}">
+                    <c:set var="id" value="${not empty param.exInvId ? param.exInvId : param.invId}"/>
+                    <c:set var="compNum" value="${empty param.exCompNum ? 0 : param.exCompNum}"/>
+                    <c:set var="instance" value="${param.instStartTime}"/>
+                </c:when>
+                <c:otherwise>
+                    <c:set var="id" value="${param.invId}"/>
+                    <c:set var="compNum" value="${empty param.invCompNum ? 0 : param.invCompNum}"/>
+                    <c:set var="instance" value="${0}"/>
+                </c:otherwise>
+            </c:choose>
+            <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}"/>
+            <zm:cancelAppointment message="${message}" instance="${instance}"/>
+            <c:set var="needViewAppt" value="${false}"/>
+        </c:if>
+    </c:if>
+
     <c:set var="view" value="${not empty param.view ? param.view : mailbox.prefs.calendarInitialView}"/>
 </app:handleError>
 
 <app:handleError>
 <c:choose>
-    <c:when test="${param.action eq 'view'}">
+    <c:when test="${needViewAppt}">
         <app:apptView/>
     </c:when>
     <c:when test="${view eq 'day'}">

@@ -37,8 +37,9 @@
     <c:set var="canDelete" value="${not empty appt}"/>
     <c:set var="hasAttendees" value="${not empty appt and not empty appt.attendees}"/>
 
+
     <c:choose>
-        <c:when test="${empty compose }">
+        <c:when test="${empty compose}">
             <zm:messageCompose var="compose" message="${message}" action="${empty message ? 'apptnew' : 'apptedit'}"
                                date="${requestScope.dateContext}"
                                inviteId="${empty param.invId? null : param.invId}"
@@ -47,7 +48,7 @@
                                instanceStartTime="${param.instStartTime}"
                                instanceDuration="${param.instDuration}"/>
         </c:when>
-        <c:when test="${uploader.isUpload and !empty message}">
+        <c:when test="${uploader.isUpload and not empty message}">
             <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
         </c:when>
     </c:choose>
@@ -67,6 +68,9 @@
             <c:set var="isNewAppt" value="${false}"/>
         </c:otherwise>
     </c:choose>
+
+    <c:set var="isInstance" value="${not empty appt and (appt.exception or not empty appt.recurrence) and compose.useInstance}"/>
+    
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='calendar' calendars="true" minical="true" context="${null}" keys="false" date="${requestScope.dateContext}">
@@ -96,6 +100,9 @@
                                 <c:choose>
                                     <c:when test="${hasAttendees}">
                                         <app:button name="actionApptCancel" src="common/Delete.gif" tooltip="actionApptCancelTT" text="cancel"/>
+                                    </c:when>
+                                    <c:when test="${isInstance}">
+                                        <app:button name="actionApptDelete" src="common/Delete.gif" tooltip="actionApptDeleteInstTT" text="deleteInst"/>                                        
                                     </c:when>
                                     <c:otherwise>
                                         <app:button name="actionApptDelete" src="common/Delete.gif" tooltip="actionApptDeleteTT" text="delete"/>
@@ -129,7 +136,7 @@
             <tr>
                 <td class='ZhAppContent'>
                     <table cellpadding=2 cellspacing=0 width=100% class='Compose'>
-                    <c:if test="${not empty appt and (appt.exception or not empty appt.recurrence) and compose.useInstance}">
+                    <c:if test="${isInstance}">
                         <tr>
                             <td colspan=2 >
                                 <table width=100% cellpadding=0 cellspacing=0>

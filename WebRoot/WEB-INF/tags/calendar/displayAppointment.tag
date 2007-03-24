@@ -90,7 +90,7 @@
                                 <td class='MsgHdrValue'>
 
                                     <c:choose>
-                                        <c:when test="${not empty param.instStartTime and not empty param.instDuration}">
+                                        <c:when test="${param.useInstance eq '1' and (not empty param.instStartTime and not empty param.instDuration)}">
                                             <c:set var="startDateCal" value="${zm:getCalendar(param.instStartTime, mailbox.prefs.timeZone)}"/>
                                             <c:set var="endDateCal" value="${zm:getCalendar(param.instStartTime + param.instDuration, mailbox.prefs.timeZone)}"/>
                                             <c:set var="startDate" value="${startDateCal.time}"/>
