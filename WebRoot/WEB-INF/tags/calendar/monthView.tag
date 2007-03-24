@@ -6,10 +6,9 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-
 <app:handleError>
-    <fmt:message key="noSubject" var="noSubject"/>
     <zm:getMailbox var="mailbox"/>
+    <fmt:message key="noSubject" var="noSubject"/>
     <fmt:setTimeZone value="${timezone}"/>
     <c:set var="context" value="${null}"/>
     <fmt:message var="dayFormat" key="CAL_MONTH_DAY_FORMAT"/>
@@ -26,7 +25,7 @@
     <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${zm:addDay(currentDay, 42).timeInMillis}"/>
 </app:handleError>
 
-<app:view title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" date="${date}">
+<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" date="${date}">
     <table width=100%  cellpadding="0" cellspacing="0" border=0>
         <tr>
             <td class='TbTop'>

@@ -8,10 +8,9 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-
 <app:handleError>
-    <fmt:message key="noSubject" var="noSubject"/>
     <zm:getMailbox var="mailbox"/>
+    <fmt:message key="noSubject" var="noSubject"/>
     <fmt:setTimeZone value="${timezone}"/>
     <c:set var="context" value="${null}"/>
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>
@@ -59,7 +58,7 @@
             hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
 </app:handleError>
 
-<app:view title="${pageTitle}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true"
+<app:view mailbox="${mailbox}" title="${pageTitle}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true"
           date="${date}">
     <table width=100% height=100% cellpadding="0" cellspacing="0" border=0>
         <tr>

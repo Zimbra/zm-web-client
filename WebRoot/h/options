@@ -7,6 +7,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <app:handleError>
+    <zm:getMailbox var="mailbox"/>
     <c:set var="selected" value="${empty param.selected ? 'general' : param.selected}"/>
 
     <c:choose>
@@ -57,8 +58,6 @@
             </c:choose>
         </c:when>
     </c:choose>
-
-    <zm:getMailbox var="mailbox"/>
 </app:handleError>
 
 <c:choose>
@@ -102,7 +101,7 @@
     </c:if>
 </c:set>
 
-<app:view title="${title}" context="${null}" selected='options' folders="true" searches="true" tags="true" keys="true">
+<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='options' folders="true" searches="true" tags="true" keys="true">
 
     <form action="" method="post">
         <table width=100% cellpadding="0" cellspacing="0">

@@ -1,5 +1,6 @@
 <%@ tag body-content="scriptless" %>
 <%@ attribute name="title" rtexprvalue="true" required="false" %>
+<%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -10,7 +11,6 @@
         <c:if test="${empty title}"><fmt:message key="zimbraTitle"/></c:if>
         <c:if test="${!empty title}"><fmt:message key="zimbraTitle"/>: ${fn:escapeXml(title)}</c:if>
     </title>
-    <zm:getMailbox var="mailbox"/>
     <c:if test="${not empty param.skin}">
         <c:set var="skin" value="${param.skin}" scope="session"/>
     </c:if>

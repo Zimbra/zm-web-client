@@ -5,11 +5,10 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-
 <app:handleError>
+    <zm:getMailbox var="mailbox"/>
     <fmt:message var="emptyFragment" key="fragmentIsEmpty"/>
     <fmt:message var="emptySubject" key="noSubject"/>
-    <zm:getMailbox var="mailbox"/>
     <c:set var="csi" value="${param.csi}"/>
     <zm:searchConv limit="${mailbox.prefs.mailItemsPerPage}" var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
     <c:set var="convSummary" value="${convSearchResult.conversationSummary}"/>    
@@ -32,7 +31,7 @@
 <%-- get the message up front, so when we output the overview tree unread counts are correctly reflected --%>
 <c:set var="ads" value='${message.subject} ${message.fragment}'/>
 
-<app:view selected='mail' title="${message.subject}" context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
+<app:view mailbox="${mailbox}" selected='mail' title="${message.subject}" context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
     <zm:currentResultUrl var="currentUrl" action="view2" value="search" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
     <form action="${currentUrl}" method="post">
        <table width=100% cellpadding=0 cellspacing=0>

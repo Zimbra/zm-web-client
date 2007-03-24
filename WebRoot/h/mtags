@@ -6,12 +6,11 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
-
 <app:handleError>
+    <zm:getMailbox var="mailbox"/>
     <c:if test="${!empty param.doAction}">
         <app:tagAction/>
     </c:if>
-    <zm:getMailbox var="mailbox"/>
 
     <c:choose>
         <c:when test="${not empty requestScope.newlyCreatedTagName}">
@@ -44,7 +43,7 @@
 
 </app:handleError>
 
-<app:view title="${title}" context="${null}" selected='folders' tags="true" editmode="true" keys="true">
+<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' tags="true" editmode="true" keys="true">
 
     <form action="" method="post">
         <table width=100% cellspacing="0" cellpadding="0">

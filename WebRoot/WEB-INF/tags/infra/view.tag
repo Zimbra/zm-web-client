@@ -12,6 +12,7 @@
 <%@ attribute name="tags" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
+<%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -19,12 +20,10 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
-<zm:getMailbox var="mailbox"/>
-<app:head title="${title}"/>
+<app:head mailbox="${mailbox}" title="${title}"/>
 
 <body>
 <table width=100% cellpadding="0" cellspacing="0">
-
     <tr>
         <td class='TopContent' colspan=3  align=right valign=top>&nbsp;</td>
     </tr>
@@ -72,32 +71,32 @@
     </tr>
     <tr>
         <c:if test="${empty editmode}">
-        <td valign=top class='Overview'>
-            <app:overviewTree keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
-        </td>
-        </c:if> 
-<c:set var="adsOn" value="${!empty ads}"/>
+            <td valign=top class='Overview'>
+                <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+            </td>
+        </c:if>
+        <c:set var="adsOn" value="${!empty ads}"/>
 <c:if test="${adsOn}" >
         <td valign='top' colspan=2>
             <table width=100% cellpadding="0" cellspacing="0">
                 <tr>
-</c:if>        
-                    <td valign='top' colspan=${empty editmode ? 2 : 3} style='padding-left:${editmode ? 10 : 0}px'>
-                        <jsp:doBody/>
-                    </td>
-<c:if test="${adsOn}" >
-                    <td valign='top' style='border-top: 1px solid #98adbe; width: 180px;'>
-                       <app:ads content="${ads}"/>
-                    </td>
-
-                </tr>
-            </table>
-        </td>
 </c:if>
-        <td style='width:10px;'>
-            &nbsp; <%-- for IE's scrollbar, this should be CSS browser-specific --%>
-        </td>
-    </tr>
+        <td valign='top' colspan='${empty editmode ? 2 : 3}' style='padding-left:${editmode ? 10 : 0}px'>
+        <jsp:doBody/>
+    </td>
+    <c:if test="${adsOn}" >
+                        <td valign='top' style='border-top: 1px solid #98adbe; width: 180px;'>
+                           <app:ads content="${ads}"/>
+                        </td>
+
+                    </tr>
+                </table>
+            </td>
+    </c:if>
+    <td style='width:10px;'>
+        &nbsp; <%-- for IE's scrollbar, this should be CSS browser-specific --%>
+    </td>
+</tr>
 </table>
 </body>
 </html>
