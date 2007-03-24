@@ -15,7 +15,15 @@
                 <tr>
                     <app:button name="${create ? 'actionCreate' : 'actionModify'}" src="common/Save.gif" tooltip="save" text="save"/>
                     <td><div class='vertSep'></div></td>
-                    <app:button name="${create ? 'actionCancelCreate' : 'actionCancelModify'}" src="common/Close.gif" tooltip="cancel" text="cancel"/>
+                    <c:choose>
+                        <c:when test="${create}">
+                            <app:button name="actionCancelCreate" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
+                        </c:when>
+                        <c:otherwise>
+                            <app:button name="actionCancelModify" src="common/Close.gif" tooltip="close" text="close"/>                            
+                        </c:otherwise>
+                    </c:choose>
+
                 </tr>
             </table>
         </td>

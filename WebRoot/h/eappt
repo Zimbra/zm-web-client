@@ -33,6 +33,10 @@
 
     <c:set var="appt" value="${empty message ? null : message.invite.component}"/>
 
+    <c:set var="canEditRecurrence" value="${(empty appt or not appt.exception) and not compose.useInstance}"/>
+    <c:set var="canDelete" value="${not empty appt}"/>
+    <c:set var="hasAttendees" value="${not empty appt and not empty appt.attendees}"/>
+
     <c:choose>
         <c:when test="${empty compose }">
             <zm:messageCompose var="compose" message="${message}" action="${empty message ? 'apptnew' : 'apptedit'}"
@@ -53,11 +57,14 @@
             <c:set var="apptImage" value="calendar/NewAppointment.gif"/>
             <c:set var="apptImageAlt" value="ALT_NEW_APPOINTMENT"/>
             <fmt:message var="apptSubject" key="newAppointment"/>
+            <c:set var="isNewAppt" value="${true}"/>
         </c:when>
         <c:otherwise>
             <c:set var="apptImage" value="calendar/Appointment.gif"/>
             <c:set var="apptImageAlt" value="ALT_EDIT_APPOINTMENT"/>
             <c:set var="apptSubject" value="${compose.subject}"/>
+            <c:set var="closeImage" value="common/Close.gif"/>
+            <c:set var="isNewAppt" value="${false}"/>
         </c:otherwise>
     </c:choose>
 </app:handleError>
@@ -71,12 +78,31 @@
                         <tr>
                             <app:button name="actionSave" src="common/Save.gif" tooltip="save" text="save"/>
                             <td><div class='vertSep'></div></td>
-                            <app:button name="actionCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
+                            <c:choose>
+                                <c:when test="${isNewAppt}">
+                                    <app:button name="actionCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <app:button name="actionCancel" src="common/Close.gif" tooltip="close" text="close"/>        
+                                </c:otherwise>
+                            </c:choose>
+
 
                             <c:set var="editrecur" value="${(empty appt or not appt.exception) and not compose.useInstance}"/>
                             <td><div class='vertSep'></div></td>
                             <app:button name="actionRepeatEdit" src="calendar/ApptRecur.gif" tooltip="editRecurrence" text="repeat" disabled="${not editrecur}"/>
+                            <c:if test="${canDelete}">
+                                <td><div class='vertSep'></div></td>
+                                <c:choose>
+                                    <c:when test="${hasAttendees}">
+                                        <app:button name="actionApptCancel" src="common/Delete.gif" tooltip="actionApptCancelTT" text="cancel"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <app:button name="actionApptDelete" src="common/Delete.gif" tooltip="actionApptDeleteTT" text="delete"/>
+                                    </c:otherwise>
+                                </c:choose>
 
+                            </c:if>
                             
                             <%--
                             <td><div class='vertSep'></div></td>

@@ -61,6 +61,24 @@
                     <fmt:message key="errorMissingSubject"/>
                 </app:status>
             </c:when>
+            <c:when test="${uploader.isApptCancel or uploader.isApptDelete}">
+                <c:set var="needEditView" value="${true}"/>
+                <app:handleError>
+                    <c:set var="apptId" value="${uploader.compose.useInstance and not empty uploader.compose.exceptionInviteId ? uploader.compose.exceptionInviteId : uploader.compose.inviteId}"/>
+                    <c:choose>
+                        <c:when test="${not empty apptId}">
+                            <zm:getMessage var="message" id="${apptId}" markread="true" neuterimages="${empty param.xim}" wanthtml="false"/>
+                        </c:when>
+                        <c:otherwise>
+                            <c:set var="message" value="${null}"/>
+                        </c:otherwise>
+                    </c:choose>
+                    <zm:cancelAppointment compose="${uploader.compose}" message="${message}"/>
+                    <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
+                    <app:status><fmt:message key="${uploader.isApptCancel ? 'actionApptCancelled' : 'actionApptDeleted'}"/></app:status>
+                    <c:set var="needEditView" value="${false}"/>
+                </app:handleError>
+            </c:when>
             <c:when test="${uploader.isSave}">
                 <c:set var="needEditView" value="${true}"/>
                 <app:handleError>
@@ -75,7 +93,7 @@
                     </c:choose>
                     <zm:saveAppointment var="createResult" compose="${uploader.compose}" message="${message}"/>
                     <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
-                    <app:status><fmt:message key="${empty message ? 'actionAppointmentCreated' : 'actionAppointmentSaved'}"/></app:status>
+                    <app:status><fmt:message key="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/></app:status>
                     <c:set var="needEditView" value="${false}"/>
                 </app:handleError>
             </c:when>
