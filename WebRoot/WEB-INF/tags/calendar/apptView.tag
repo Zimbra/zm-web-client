@@ -22,6 +22,7 @@
 
     <c:set var="apptFolder" value="${zm:getFolder(pageContext, msg.folderId)}"/>
     <c:set var="readOnly" value="${apptFolder.isMountPoint or apptFolder.isFeed}"/>
+    
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" selected='calendar' calendars="true" keys="false" minical="true" date="${requestScope.dateContext}">
@@ -58,10 +59,14 @@
                                 <c:if test="${empty param.xim}">
                                     <zm:currentResultUrl var="extImageUrl" value="search" action="view" context="${context}" xim="1"/>
                                 </c:if>
+                                <%--
                                 <zm:currentResultUrl var="composeUrl" value="search" context="${context}"
                                              action="compose" paction="view" id="${msg.id}"/>
-                                <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/>
-                                <app:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}" externalImageUrl="${extImageUrl}" composeUrl="${composeUrl}" newWindowUrl="${newWindowUrl}"/>
+                                             --%>
+                                <app:calendarUrl var="composeUrl" id="${id}" action="compose" paction="view" apptFromParam="${true}" inviteReplyInst="${isInstance ? param.instStartTime : ''}"  inviteReplyAllDay="${isInstance and invite.component.allDay ? '1' : ''}"/>
+                                <%-- <zm:currentResultUrl var="newWindowUrl" value="message" context="${context}" id="${msg.id}"/> --%>
+                                <app:displayAppointment mailbox="${mailbox}" message="${msg}" invite="${invite}"
+                                                        showInviteReply="${not readOnly}" externalImageUrl="${extImageUrl}" composeUrl="${composeUrl}" newWindowUrl=""/>
                             </td>
                         </tr>
                     </table>

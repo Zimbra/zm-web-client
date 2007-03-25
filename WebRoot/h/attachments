@@ -78,5 +78,8 @@
         <input type="hidden" name="replytype" value="${fn:escapeXml(compose.replyType)}"/>
         <input type="hidden" name="draftid" value="${fn:escapeXml(empty requestScope.draftid ? compose.draftId : requestScope.draftid)}"/>
         <input type="hidden" name="inviteReplyVerb" value="${fn:escapeXml(compose.inviteReplyVerb)}"/>
+        <input type="hidden" name="inviteReplyInst" value="${fn:escapeXml(compose.inviteReplyInst)}"/>
+        <input type="hidden" name="inviteReplyAllDay" value="${fn:escapeXml(compose.inviteReplyAllDay)}"/>        
+        
     </form>
 </app:view>

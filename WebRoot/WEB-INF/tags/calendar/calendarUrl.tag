@@ -8,7 +8,8 @@
 <%@ attribute name="appt" rtexprvalue="true" required="false" type="com.zimbra.cs.zclient.ZApptSummary" %>
 <%@ attribute name="nodate" rtexprvalue="true" required="false" %>
 <%@ attribute name="toggleInstance" rtexprvalue="true" required="false" %>
-<%@ attribute name="apptFromUrl" rtexprvalue="true" required="false" %>
+<%@ attribute name="apptFromParam" rtexprvalue="true" required="false" %>
+<%@ attribute name="action" rtexprvalue="true" required="false" %>
 <%@ variable name-from-attribute="var" alias='urlVar' scope="AT_BEGIN" variable-class="java.lang.String" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -32,29 +33,44 @@
             </c:if>
         </c:otherwise>
     </c:choose>
-    <c:if test="${not empty appt}">
-        <c:set var="apptFolder" value="${zm:getFolder(pageContext, appt.folderId)}"/>
-        <c:param name="action" value="${apptFolder.isMountPoint or apptFolder.isFeed or not appt.organizer ? 'view' : 'edit'}"/>
-        <c:param name="invId" value="${appt.seriesInviteId}"/>
-        <c:param name="pstat" value="${appt.participantStatus}"/>
-        <c:if test="${appt.exception}">
-            <c:param name="exInvId" value="${appt.inviteId}"/>
-        </c:if>
-        <c:if test="${appt.recurring or appt.exception}">
-            <c:param name="useInstance" value="1"/>
-        </c:if>
-        <c:param name="instStartTime" value="${appt.startTime}"/>
-        <c:param name="instDuration" value="${appt.duration}"/> 
-    </c:if>
-    <c:if test="${toggleInstance or apptFromUrl}">
-        <c:if test="${not empty param.action}"><c:param name="action" value="${param.action}"/></c:if>
-        <c:if test="${not empty param.invId}"><c:param name="invId" value="${param.invId}"/></c:if>
-        <c:if test="${not empty param.exInvId}"><c:param name="exInvId" value="${param.exInvId}"/></c:if>
-        <c:if test="${not empty param.pstat}"><c:param name="pstat" value="${param.pstat}"/></c:if>
-        <c:if test="${not empty param.instStartTime}"><c:param name="instStartTime" value="${param.instStartTime}"/></c:if>
-        <c:if test="${not empty param.instDuration}"><c:param name="instDuration" value="${param.instDuration}"/></c:if>
-        <c:param name="useInstance" value="${apptFromUrl ? param.useInstance : param.useInstance ne '1' ? '1' : '0'}"/>
-    </c:if>
+    <c:choose>
+        <c:when test="${not empty appt}">
+            <c:set var="apptFolder" value="${zm:getFolder(pageContext, appt.folderId)}"/>
+            <c:param name="action" value="${apptFolder.isMountPoint or apptFolder.isFeed or not appt.organizer ? 'view' : 'edit'}"/>
+            <c:param name="invId" value="${appt.seriesInviteId}"/>
+            <c:param name="pstat" value="${appt.participantStatus}"/>
+            <c:if test="${appt.exception}">
+                <c:param name="exInvId" value="${appt.inviteId}"/>
+            </c:if>
+            <c:if test="${appt.recurring or appt.exception}">
+                <c:param name="useInstance" value="1"/>
+            </c:if>
+            <c:param name="instStartTime" value="${appt.startTime}"/>
+            <c:param name="instDuration" value="${appt.duration}"/>
+        </c:when>
+        <c:when test="${toggleInstance or apptFromParam}">
+            <c:choose>
+                <c:when test="${not empty action}">
+                    <c:param name="action" value="${action}"/>
+                </c:when>
+                <c:otherwise>
+                    <c:if test="${not empty param.action}"><c:param name="action" value="${param.action}"/></c:if>
+                </c:otherwise>
+            </c:choose>
+
+            <c:if test="${not empty param.invId}"><c:param name="invId" value="${param.invId}"/></c:if>
+            <c:if test="${not empty param.exInvId}"><c:param name="exInvId" value="${param.exInvId}"/></c:if>
+            <c:if test="${not empty param.pstat}"><c:param name="pstat" value="${param.pstat}"/></c:if>
+            <c:if test="${not empty param.instStartTime}"><c:param name="instStartTime" value="${param.instStartTime}"/></c:if>
+            <c:if test="${not empty param.instDuration}"><c:param name="instDuration" value="${param.instDuration}"/></c:if>
+            <c:param name="useInstance" value="${apptFromParam ? param.useInstance : param.useInstance ne '1' ? '1' : '0'}"/>
+        </c:when>
+        <c:otherwise>
+            <c:if test="${not empty action}">
+                <c:param name="action" value="${action}"/>
+            </c:if>
+        </c:otherwise>
+    </c:choose>
     <c:forEach items="${dynattrs}" var="a">
         <c:if test="${not empty a.value}">
             <c:param name='${a.key}' value='${a.value}'/>

@@ -3,6 +3,7 @@
 <%@ attribute name="invite" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZInvite" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean" %>
 <%@ attribute name="hideops" rtexprvalue="true" required="false" %>
+<%@ attribute name="showInviteReply" rtexprvalue="true" required="false" %>
 <%@ attribute name="externalImageUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ attribute name="composeUrl" rtexprvalue="true" required="true" type="java.lang.String" %>
 <%@ attribute name="newWindowUrl" rtexprvalue="true" required="false" type="java.lang.String" %>
@@ -22,7 +23,10 @@
 </c:set>
 
 <c:set var="appt" value="${invite.component}"/>
-
+<c:catch>
+    <c:set var="myAttendee" value="${zm:getMyAttendee(invite, mailbox)}"/>
+    <c:set var="pstat" value="${not empty param.pstat ? param.pstat : not empty myAttendee ? myAttendee.participantStatus : ''}"/>
+</c:catch>
 <fmt:message var="noSubject" key="noSubject"/>
 
 <c:set var="isPart" value="${!empty message.partName}"/>
@@ -178,6 +182,17 @@
                                     </td>
                                 </tr>
                             </c:if>
+                            <c:if test="${not empty pstat}">
+                                <tr>
+                                    <td class='MsgHdrName'>
+                                        <fmt:message key="status"/>
+                                        :
+                                    </td>
+                                    <td class='MsgHdrValue'>
+                                        <fmt:message key="apptPtst${pstat}"/>
+                                    </td>
+                                </tr>
+                            </c:if>
                         </table>
                     </td>
                     <td valign='top'>
@@ -229,33 +244,37 @@
                     <td nowrap align=left style='padding-left: 5px'>
                         <table cellspacing=4 cellpadding=0 class='Tb'>
                             <tr>
-                                &nbsp;
-                                <%--
-                                <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">accesskey="1"</c:if> href="${composeUrl}&op=reply">
-                                        <img src="<c:url value="/images/mail/Reply.gif"/>" alt=""/>
-                                        &nbsp;
-                                        <span><fmt:message key="reply"/></span>
-                                    </a>
-                                </td>
-                                <td><div class='vertSep'></div></td>
-
-                                <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">accesskey="2"</c:if> href="${composeUrl}&op=replyAll">
-                                        <img src="<c:url value="/images/mail/ReplyAll.gif"/>" alt=""/>
-                                        &nbsp;
-                                        <span><fmt:message key="replyAll"/></span>
-                                    </a>
-                                </td>
-                                <td><div class='vertSep'></div></td>
-                                <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">accesskey="3"</c:if> href="${composeUrl}&op=forward">
-                                        <img src="<c:url value="/images/mail/Forward.gif"/>" alt=""/>
-                                        &nbsp;
-                                        <span><fmt:message key="forward"/></span>
-                                    </a>
-                                </td>
-                                --%>
+                                <c:choose>
+                                    <c:when test="${showInviteReply}">
+                                        <c:set var="keyOffset" value="${3}"/>
+                                        <td style='padding: 0 2px 0 2px'>
+                                            <a <c:if test="${not isPart}">accesskey="1" </c:if> href="${composeUrl}&op=accept">
+                                                <img src="<c:url value="/images/common/Check.gif"/>" alt=""/>
+                                                &nbsp;
+                                                <span><fmt:message key="replyAccept"/></span>
+                                            </a>
+                                        </td>
+                                        <td><div class='vertSep'></div></td>
+                                        <td style='padding: 0 2px 0 2px'>
+                                            <a <c:if test="${not isPart}">accesskey="2" </c:if> href="${composeUrl}&op=tentative">
+                                                <img src="<c:url value="/images/common/QuestionMark.gif"/>" alt=""/>
+                                                &nbsp;
+                                                <span><fmt:message key="replyTentative"/></span>
+                                            </a>
+                                        </td>
+                                        <td><div class='vertSep'></div></td>
+                                        <td style='padding: 0 2px 0 2px'>
+                                            <a <c:if test="${not isPart}">accesskey="3" </c:if> href="${composeUrl}&op=decline">
+                                                <img src="<c:url value="/images/common/Cancel.gif"/>" alt=""/>
+                                                &nbsp;
+                                                <span><fmt:message key="replyDecline"/></span>
+                                            </a>
+                                        </td>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <td>&nbsp;</td>
+                                    </c:otherwise>
+                                </c:choose>
                             </tr>
                         </table>
                     </td>

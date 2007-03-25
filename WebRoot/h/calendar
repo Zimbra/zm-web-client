@@ -29,7 +29,16 @@
         </c:otherwise>
     </c:choose>
 
-    <app:editapptCheck/>
+    <c:choose>
+        <c:when test="${param.action eq 'compose'}">
+            <app:composeCheck/>
+            <c:set var="needViewAppt" value="${true}"/>            
+        </c:when>
+        <c:otherwise>
+            <app:editapptCheck/>
+        </c:otherwise>
+    </c:choose>
+
     
     <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
 
