@@ -107,26 +107,8 @@
                                             <c:set var="endDateCal" value="${zm:getCalendar(endDate.time, mailbox.prefs.timeZone)}"/>
                                         </c:otherwise>
                                     </c:choose>
-                                    <c:choose>
-                                        <c:when test="${zm:isSameDate(startDateCal,endDateCal)}">
-                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" dateStyle="medium" type="date" value="${startDate}"/>
-                                            &nbsp;<fmt:message key="apptViewFrom"/>&nbsp;
-                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" timeStyle="short" type="time" value="${startDate}"/>
-                                            &nbsp;-&nbsp;
-                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" timeStyle="short" type="time" value="${endDate}"/>
-                                        </c:when>
-                                        <c:otherwise>
-                                            <fmt:message key="from"/>&nbsp;
-                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" dateStyle="medium" type="date" value="${startDate}"/>
-                                            &nbsp;
-                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" timeStyle="short" type="time" value="${startDate}"/>
-                                            &nbsp;-&nbsp;
-                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" dateStyle="medium" type="date" value="${endDate}"/>
-                                            &nbsp;
-                                            <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" timeStyle="short" type="time" value="${endDate}"/>
-                                        </c:otherwise>
-                                    </c:choose>
-                                    &nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneWindowsId}</span>&nbsp;
+                                    ${fn:escapeXml(zm:getApptDateBlurb(pageContext, mailbox.prefs.timeZone, startDate.time, endDate.time, appt.allDay))}
+                                    &nbsp;<span class='ZhCalTimeZone'>${mailbox.prefs.timeZoneWindowsId}</span>
                                 </td>
                             </tr>
                             <c:if test="${appt.exception}">
