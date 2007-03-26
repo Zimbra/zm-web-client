@@ -113,7 +113,7 @@ function(a, b) {
 ZmVoiceItem.prototype._loadFromDom =
 function(node) {
 	if (node.id) this.id = node.id;
-	if (node.e) this.caller = node.e[0].p;
+	if (node.cp) this.caller = node.cp[0].p;
 	if (node.d) this.date = new Date(node.d);
 	if (node.du) this.duration = new Date(node.du * 1000);
 };

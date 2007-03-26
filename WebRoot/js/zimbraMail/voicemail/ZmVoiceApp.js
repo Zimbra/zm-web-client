@@ -70,7 +70,7 @@ function() {
 						 icon:			"Voicemail",
 						 soapCmd:		"VoiceMsgAction",
 						 itemClass:		"ZmVoicemail",
-						 node:			"m",
+						 node:			"vm",
 						 organizer:		ZmOrganizer.VOICE,
 						 searchType:	"voicemail",
 						 resultsList:	listCreator
@@ -81,7 +81,7 @@ function() {
 						 icon:			"Voicemail",
 						 soapCmd:		"VoiceMsgAction",
 						 itemClass:		"ZmCall",
-						 node:			"m",
+						 node:			"cl",
 						 organizer:		ZmOrganizer.VOICE,
 						 searchType:	"calllog",
 						 resultsList:	listCreator
