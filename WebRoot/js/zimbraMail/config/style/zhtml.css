@@ -872,7 +872,7 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 }
 
 .ZhCalDayGrid A:link, .ZhCalDayGrid A:visited, .ZhCalMonthTable A:link, .ZhCalMonthTable A:visited  {
-	color: black;
+	color: inherit;
 	text-decoration: none;
 }
 
