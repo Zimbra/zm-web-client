@@ -373,7 +373,7 @@
                         </tr>
                         <tr>
                             <td valign='top' width=1% align=right nowrap> <fmt:message key="attendees"/>: </td>
-                            <td colspan=2 nowrap><textarea rows="2" style='width:99%' cols="80"
+                            <td colspan=2 nowrap><textarea rows="3" style='width:99%' cols="80"
                                                                name="attendees">${fn:escapeXml(compose.attendees)}</textarea></td>
                         </tr>
                         <c:set var="firstAttachment" value="${true}"/>
