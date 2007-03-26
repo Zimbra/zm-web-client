@@ -39,9 +39,9 @@ function ZmVoiceItem(appCtxt, type, id, list) {
 	ZmItem.call(this, appCtxt, type, id, list);
 
 	this.id = null;
-	this.caller = null;
 	this.date = 0;
 	this.duration = 0;
+	this._callingParties = {};
 	this.participants = new AjxVector();
 }
 
@@ -52,6 +52,9 @@ ZmVoiceItem.prototype.toString =
 function() {
 	return "ZmVoiceItem";
 }
+
+ZmVoiceItem.FROM		= 1;
+ZmVoiceItem.TO			= 2;
 
 ZmVoiceItem.prototype.getFolder = 
 function() {
@@ -72,6 +75,12 @@ function() {
 	}
 };
 
+ZmVoiceItem.prototype.getCallingParty =
+function(type) {
+	return this._callingParties[type];
+};
+
+
 ZmVoiceItem.getCallerComparator =
 function(bSortAsc) {
 	var negate = bSortAsc ? 1 : -1;
@@ -80,7 +89,7 @@ function(bSortAsc) {
 
 ZmVoiceItem._callerComparator =
 function(negate, a, b) {
-	var value = a.caller.localeCompare(b.caller);
+	var value = a.getCallingParty(ZmVoiceItem.FROM).localeCompare(getCallingParty(ZmVoiceItem.FROM));
 	return value ? value * negate : ZmVoiceItem._dateComparator(a, b);
 };
 
@@ -113,7 +122,13 @@ function(a, b) {
 ZmVoiceItem.prototype._loadFromDom =
 function(node) {
 	if (node.id) this.id = node.id;
-	if (node.cp) this.caller = node.cp[0].p;
+	if (node.cp) {
+		for(var i = 0, count = node.cp.length; i < count; i++) {
+			var party = node.cp[i];
+			var type = party.t == "f" ? ZmVoiceItem.FROM : ZmVoiceItem.TO;
+			this._callingParties[type] = party.n;
+		}
+	}
 	if (node.d) this.date = new Date(node.d);
 	if (node.du) this.duration = new Date(node.du * 1000);
 };

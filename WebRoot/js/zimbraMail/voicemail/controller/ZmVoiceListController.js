@@ -96,9 +96,9 @@ function() {
 
 ZmVoiceListController.prototype._createNewContact =
 function(ev) {
-	var voicemail = ev.item;
+	var item = ev.item;
 	var contact = new ZmContact(this._appCtxt);
-	contact.initFromPhone(voicemail.caller);
+	contact.initFromPhone(this._getView().getCallingParty(item));
 	return contact;
 };
 

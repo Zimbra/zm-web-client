@@ -176,7 +176,9 @@ function(ev) {
 	var voicemail = this._getView().getSelection()[0];
 	var duration = AjxDateUtil.computeDuration(voicemail.duration);
 	var date = AjxDateUtil.computeDateStr(new Date(), voicemail.date);
-	var body = AjxMessageFormat.format(ZmMsg.voicemailBody, [voicemail.caller, duration, date]);
+	var callingParty = voicemail.getCallingParty(ZmVoiceItem.FROM);
+	var phoneNumber = ZmPhone.calculateDisplay(callingParty);
+	var body = AjxMessageFormat.format(ZmMsg.voicemailBody, [phoneNumber, duration, date]);
 	var params = {
 		action: ZmOperation.NEW_MESSAGE, 
 		inNewWindow: this._app._inNewWindow(ev), 

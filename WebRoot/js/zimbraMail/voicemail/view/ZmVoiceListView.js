@@ -44,6 +44,14 @@ function(callType) {
 	this._callType = callType;	
 };
 
+// Returns the phone number of whichever the calling party is shown in the view.
+ZmVoiceListView.prototype.getCallingParty =
+function(item) {
+	var type = this._callType == ZmVoiceFolder.PLACED_CALL ? 
+		ZmVoiceItem.TO : ZmVoiceItem.FROM;
+	return item.getCallingParty(type);
+};
+
 ZmVoiceListView.prototype._getColumnIndex = 
 function(field) {
 	var prefix = ZmListView.FIELD_PREFIX[field];
@@ -64,10 +72,11 @@ function(columnIndex, element) {
 ZmVoiceListView.prototype._getCallerNameHtml =
 function(voicemail) {
 	var contactList = AjxDispatcher.run("GetContacts");
-	var contact = contactList.getContactByPhone(voicemail.caller);
+	var callingParty = this.getCallingParty(voicemail);
+	var contact = contactList.getContactByPhone(callingParty);
 	if (contact) {
 // TODO: Seems like this should go on ZmVoicemail?!?!?		
-		voicemail.participants.getArray()[0] = voicemail.caller;
+		voicemail.participants.getArray()[0] = callingParty;
 		return AjxStringUtil.htmlEncode(contact.getFullName());
 	} else {
 		return this._getCallerHtml(voicemail);
@@ -76,7 +85,8 @@ function(voicemail) {
 
 ZmVoiceListView.prototype._getCallerHtml =
 function(voicemail) {
-	var display = ZmPhone.calculateDisplay(voicemail.caller);
+	var callingParty = this.getCallingParty(voicemail);
+	var display = ZmPhone.calculateDisplay(callingParty);
 	return AjxStringUtil.htmlEncode(display);
 };
 
@@ -95,7 +105,7 @@ function(ev, div) {
 ZmVoiceListView.prototype._createTooltip =
 function(voicemail) {
 	var data = { 
-		caller: voicemail.caller, 
+		caller: this.getCallingParty(voicemail), 
 		duration: AjxDateUtil.computeDuration(voicemail.duration),
 		date: AjxDateUtil.computeDateTimeString(voicemail.date)
 	};
