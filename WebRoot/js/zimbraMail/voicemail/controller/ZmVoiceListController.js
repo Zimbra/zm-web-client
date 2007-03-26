@@ -110,13 +110,15 @@ function(ev) {
 	var isParticipant = ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT];
 	var actionMenu;
 	if (isParticipant) {
+		var item = ev.item;
+		var contact = item.participants ? item.participants.getArray()[0] : null;
 	 	actionMenu = this._getParticipantActionMenu();
-		var newOp = ev.detail ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
-		var newText = ev.detail? null : ZmMsg.AB_ADD_CONTACT;
+		var newOp = contact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
+		var newText = contact? null : ZmMsg.AB_ADD_CONTACT;
 		ZmOperation.setOperation(this._participantActionMenu, ZmOperation.CONTACT, newOp, newText);
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			var contacts = AjxDispatcher.run("GetContacts");
-			this._actionEv.contact = contacts.getContactByPhone(ev.detail);
+			this._actionEv.contact = contacts.getContactByPhone(view.getCallingParty(item));
 			this._setContactText(this._actionEv.contact != null);
 		}
 	} else  {

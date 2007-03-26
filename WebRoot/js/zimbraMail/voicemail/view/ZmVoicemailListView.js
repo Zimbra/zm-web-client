@@ -45,7 +45,7 @@ ZmVoicemailListView.PRIORITY_WIDTH = ZmListView.COL_WIDTH_ICON;
 ZmVoicemailListView.DATE_WIDTH = 120;
 
 // Resuse existing field codes rather than adding voice-specific stuff to ZmList...
-ZmVoicemailListView.F_CALLER = ZmItem.F_FROM;
+ZmVoicemailListView.F_CALLER = ZmItem.F_PARTICIPANT;
 ZmVoicemailListView.F_PLAYING = ZmItem.F_ATTACHMENT;
 ZmVoicemailListView.F_PRIORITY = ZmItem.F_ICON;
 ZmVoicemailListView.F_DATE = ZmItem.F_DATE;
@@ -123,15 +123,12 @@ function(voicemail, now, isDndIcon, isMixedView, myDiv) {
 		if (prefix) {
 			htmlArr[idx++] = " id='";
 			htmlArr[idx++] = this._getFieldIdFromPrefix(voicemail, prefix);
-			if (prefix == ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_FROM]) {
-				htmlArr[idx++] = "_0";
-			}
 			htmlArr[idx++] = "'";
 		}
 		htmlArr[idx++] = ">";
 		
 		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_CALLER]) == 0) {
-			htmlArr[idx++] = this._getCallerHtml(voicemail);
+			htmlArr[idx++] = this._getCallerNameHtml(voicemail);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_PRIORITY]) == 0) {
 			htmlArr[idx++] = this._getPriorityHtml(voicemail);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_PLAYING]) == 0) {

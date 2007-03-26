@@ -40,7 +40,7 @@ ZmCallListView.DURATION_WIDTH = 120;
 ZmCallListView.DATE_WIDTH = null; // Auto
 
 // Resuse existing field codes rather than adding voice-specific stuff to ZmList...
-ZmCallListView.F_CALLER = ZmItem.F_FROM;
+ZmCallListView.F_CALLER = ZmItem.F_PARTICIPANT;
 ZmCallListView.F_SIZE = ZmItem.F_SIZE;
 ZmCallListView.F_DATE = ZmItem.F_DATE;
 
@@ -101,15 +101,12 @@ function(voicemail, now, isDndIcon, isMixedView, myDiv) {
 		if (prefix) {
 			htmlArr[idx++] = " id='";
 			htmlArr[idx++] = this._getFieldIdFromPrefix(voicemail, prefix);
-			if (prefix == ZmListView.FIELD_PREFIX[ZmCallListView.F_CALLER]) {
-				htmlArr[idx++] = "_0";
-			}
 			htmlArr[idx++] = "'";
 		}
 		htmlArr[idx++] = ">";
 		
 		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmCallListView.F_CALLER]) == 0) {
-			htmlArr[idx++] = this._getCallerHtml(voicemail);
+			htmlArr[idx++] = this._getCallerNameHtml(voicemail);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmCallListView.F_SIZE]) == 0) {
 			htmlArr[idx++] = AjxDateUtil.computeDuration(voicemail.duration);
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmCallListView.F_DATE]) == 0) {
