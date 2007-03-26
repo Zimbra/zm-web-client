@@ -47,7 +47,7 @@ ZmVoicemailListView.DATE_WIDTH = 120;
 // Resuse existing field codes rather than adding voice-specific stuff to ZmList...
 ZmVoicemailListView.F_CALLER = ZmItem.F_FROM;
 ZmVoicemailListView.F_PLAYING = ZmItem.F_ATTACHMENT;
-ZmVoicemailListView.F_PRIORITY = ZmItem.F_FLAG;
+ZmVoicemailListView.F_PRIORITY = ZmItem.F_ICON;
 ZmVoicemailListView.F_DATE = ZmItem.F_DATE;
 
 // Event details.
