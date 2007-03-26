@@ -286,7 +286,7 @@ function(calItem, attId, notifyList) {
 		args = calItem;
 	}
 
-	if (this._composeView.getApptTab().isDirty()) {
+	if (this._composeView.isDirty()) {
 		var callback = new AjxCallback(this, this._handleResponseSave, args);
 		var errorCallback = new AjxCallback(this, this._handleErrorSave);
 		calItem.save(attId, callback, errorCallback, notifyList);
