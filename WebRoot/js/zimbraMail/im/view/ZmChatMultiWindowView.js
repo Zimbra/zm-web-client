@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -31,18 +31,29 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	var dropTgt = new DwtDropTarget(["ZmRosterTreeItem", "ZmRosterTreeGroup"]);
 	this.setDropTarget(dropTgt);
 	dropTgt.addDropListener(new AjxListener(this, this._dropListener));
-	
+
 //	this.setScrollStyle(DwtControl.CLIP);
 	this.setScrollStyle(DwtControl.SCROLL);
-	this._chatWindows = {};
-	this._chatIdToChatWindow = {};
-	this._windowCloseButtonListener = new AjxListener(this, this._windowCloseListener);
+	this._chatIdToChatWidget = {};
 	this._initX = 20;
-	this._initY = 20;	
-};    
+	this._initY = 20;
+
+	// This is a singleton.  Why on Earth should I jump to 20
+	// source files just to figure out how to get a reference to
+	// it is beyond me.  I'm a simple guy, so I'll just store this
+	// information here and move on.
+	ZmChatMultiWindowView._INSTANCE = this;
+};
 
 ZmChatMultiWindowView.prototype = new ZmChatBaseView;
 ZmChatMultiWindowView.prototype.constructor = ZmChatMultiWindowView;
+
+ZmChatMultiWindowView._INSTANCE = null;
+
+// PUBLIC function
+ZmChatMultiWindowView.getInstance = function() {
+	return ZmChatMultiWindowView._INSTANCE;
+};
 
 ZmChatMultiWindowView.prototype.getWindowManager = function() {
 	if (!this._wm)
@@ -50,11 +61,18 @@ ZmChatMultiWindowView.prototype.getWindowManager = function() {
 	return this._wm;
 };
 
-ZmChatMultiWindowView.prototype.__createChatWidget = function(chat) {
-	var wm = this.getWindowManager();
-	var cw = new ZmChatWindow(wm, chat);
-	wm.manageWindow(cw);
-	return cw;
+ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {
+	if (!win)
+		win = this.__useTab;
+	this.__useTab = null;
+	if (!win) {
+		var wm = this.getWindowManager();
+		var win = new ZmChatWindow(wm, chat);
+		wm.manageWindow(win);
+	} else {
+		win.addTab(chat);
+	}
+	return win.getCurrentChatWidget();
 };
 
 ZmChatMultiWindowView.prototype._postSet = function() {
@@ -63,7 +81,7 @@ ZmChatMultiWindowView.prototype._postSet = function() {
 	for (var i=0; i < list.length; i++) {
     		var chat = list[i];
         	var cw = this.__createChatWidget(chat);
-		this._addChatWindow(cw, chat);
+		this._addChatWidget(cw, chat);
 	}
 };
 
@@ -80,30 +98,32 @@ ZmChatMultiWindowView.prototype._changeListener = function(ev) {
 	if (ev.event == ZmEvent.E_CREATE) {
 		var chat = ev._details.items[0];
         	var cw = this.__createChatWidget(chat);
-		this._addChatWindow(cw, chat);
+		this._addChatWidget(cw, chat);
 		cw.select();
 	} else if (ev.event == ZmEvent.E_DELETE) {
-		var chat = ev._details.items[0];    
-		var cw = this._getChatWindowForChat(chat);
+		var chat = ev._details.items[0];
+		var cw = this._getChatWidgetForChat(chat);
 		if (cw) {
-			this._removeChatWindow(cw);
+			this._removeChatWidget(cw);
 			cw.dispose();
 		}
 	}
 };
 
 ZmChatMultiWindowView.prototype.selectChat = function(chat) {
-	var cw = this._getChatWindowForChat(chat);
-	if (cw) cw.select();
+	var cw = this._getChatWidgetForChat(chat);
+	if (cw)
+		cw.select();
 };
 
 ZmChatMultiWindowView.prototype._rosterItemChangeListener = function(chat, item, fields) {
-	var cw = this._getChatWindowForChat(chat);
-	if (cw) cw._rosterItemChangeListener(item, fields);
-}
+	var cw = this._getChatWidgetForChat(chat);
+	if (cw)
+		cw._rosterItemChangeListener(item, fields);
+};
 
-ZmChatMultiWindowView.prototype._getChatWindowForChat = function(chat) {
-	return this._chatIdToChatWindow[chat.id];
+ZmChatMultiWindowView.prototype._getChatWidgetForChat = function(chat) {
+	return this._chatIdToChatWidget[chat.id];
 };
 
 ZmChatMultiWindowView.KEY_CHAT = "zcmwv_chat";
@@ -123,57 +143,48 @@ function(chatWindow) {
 	// handle this--otherwise all windows get positioned at (20, 20)
 	return null;
 
-	var windows = {};
-	for (var id in this._chatWindows) {
-		var cw = this._chatWindows[id];
-		if (cw === chatWindow)
-			continue;
-		var loc = cw.getLocation();
-		windows[loc.x+","+loc.y] = true;
-	}
+// 	var windows = {};
+// 	for (var id in this._chatWindows) {
+// 		var cw = this._chatWindows[id];
+// 		if (cw === chatWindow)
+// 			continue;
+// 		var loc = cw.getLocation();
+// 		windows[loc.x+","+loc.y] = true;
+// 	}
 
-	var size = this.getSize();
+// 	var size = this.getSize();
 
-	var initX = 20, initY = 20;
-	var incr = 20;
-	var x = initX, y = initY;
-	while(windows[x+","+y]) {
-		x += incr;
-		y += incr;
-        	if ((x > (size.x - 50)) || (y > (size.y - 50))) {
-        		initX += incr;
-        		x = initX;
-        		y = initY;
-    		}
-	}        	
-	// chatWindow.setBounds(x, y, Dwt.DEAFULT, Dwt.DEFAULT);
-	return { x: x, y: y };
+// 	var initX = 20, initY = 20;
+// 	var incr = 20;
+// 	var x = initX, y = initY;
+// 	while(windows[x+","+y]) {
+// 		x += incr;
+// 		y += incr;
+//         	if ((x > (size.x - 50)) || (y > (size.y - 50))) {
+//         		initX += incr;
+//         		x = initX;
+//         		y = initY;
+//     		}
+// 	}
+// 	// chatWindow.setBounds(x, y, Dwt.DEAFULT, Dwt.DEFAULT);
+// 	return { x: x, y: y };
 };
 
-ZmChatMultiWindowView.prototype._addChatWindow =
-function(chatWindow, chat) {
-    	this._chatWindows[chatWindow.id] = chatWindow;
-    	this._chatIdToChatWindow[chat.id] = chatWindow;
-    	var cb = chatWindow.getCloseButton();
-    	cb.setData(ZmChatMultiWindowView.KEY_CHAT, chat);
-	cb.addSelectionListener(this._windowCloseButtonListener);
-	var pos = this._initialWindowPlacement(chatWindow);
-	chatWindow.popup(pos);
+ZmChatMultiWindowView.prototype._addChatWidget =
+function(chatWidget, chat) {
+    	this._chatIdToChatWidget[chat.id] = chatWidget;
+	var pos = this._initialWindowPlacement(chatWidget);
+	chatWidget.popup(pos);
 };
 
-ZmChatMultiWindowView.prototype._removeChatWindow =
-function(chatWindow) {
-    	var cb = chatWindow.getCloseButton();
-    cb.removeSelectionListener(this._windowCloseButtonListener);
-    delete this._chatIdToChatWindow[chatWindow.chat.id];    
-    delete this._chatWindows[chatWindow.id];
+ZmChatMultiWindowView.prototype._removeChatWidget =
+function(chatWidget) {
+	delete this._chatIdToChatWidget[chatWidget.chat.id];
 };
 
-ZmChatMultiWindowView.prototype._windowCloseListener =
-function(ev) {
-    var b = ev.item;
-    var chat = b.getData(ZmChatMultiWindowView.KEY_CHAT);
-    this._controller.endChat(chat);
+ZmChatMultiWindowView.prototype.endChat =
+function(chat) {
+	this._controller.endChat(chat);
 };
 
 ZmChatMultiWindowView.prototype._dropListener =
@@ -202,6 +213,11 @@ function(ev) {
             		this._nextInitY = mouseEv.docY - pos.y;
 			this._controller.chatWithRosterItems(srcData.getRosterItems(), srcData.getName()+" "+ZmMsg.imGroupChat);
 		}
-		
+
 	}
+};
+
+ZmChatMultiWindowView.prototype.chatInNewTab = function(item, tabs) {
+	this.__useTab = tabs;
+	this._controller.chatWithRosterItem(item);
 };

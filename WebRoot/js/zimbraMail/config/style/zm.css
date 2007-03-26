@@ -1873,8 +1873,10 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmChatTabs-Container {
-  position: absolute; left: 0; top: 0;
+  position: absolute; left: 0; top: 0; display: none;
 }
+
+.ZmChatTabs-Container-Active { display: block; }
 
 .ZmChatTabs-TabBar {
   position: absolute;

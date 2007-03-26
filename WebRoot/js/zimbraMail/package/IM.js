@@ -27,7 +27,6 @@ AjxPackage.require("zimbraMail.im.view.ZmChatTabs");
 AjxPackage.require("zimbraMail.im.view.ZmChatWidget");
 AjxPackage.require("zimbraMail.im.view.ZmChatMemberListView");
 AjxPackage.require("zimbraMail.im.view.ZmChatBaseView");
-AjxPackage.require("zimbraMail.im.view.ZmChatTabbedView");
 AjxPackage.require("zimbraMail.im.view.ZmChatMultiWindowView");
 AjxPackage.require("zimbraMail.im.view.ZmNewImDialog");
 AjxPackage.require("zimbraMail.im.view.ZmNewRosterItemDialog");

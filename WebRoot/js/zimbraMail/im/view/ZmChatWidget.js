@@ -124,10 +124,6 @@ ZmChatWidget.prototype.setStatusTitle = function(text) {
 	// this._statusLabel.setText(text);
 };
 
-ZmChatWidget.prototype.getCloseButton = function() {
-	return this._close;
-};
-
 ZmChatWidget.prototype.addRosterItem = function(item) {
 	var forceTitle = false;
 	if (this.chat.getRosterSize() > 0 && this._memberListView == null) {
@@ -220,6 +216,7 @@ ZmChatWidget.prototype._init = function() {
 	this._close = new DwtButton(this._toolbar, null, "DwtToolbarButton");
 	this._close.setImage("Close");
 	this._close.setToolTipContent(ZmMsg.imEndChat);
+	this._close.addSelectionListener(new AjxListener(this, this._closeListener));
 
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
 	this._label.setText("Chat title here");
@@ -237,6 +234,11 @@ ZmChatWidget.prototype._init = function() {
 
 	this._getElement("input")[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] =
 		ZmChatWidget._inputKeyPress;
+
+	var dropTgt = new DwtDropTarget(["ZmRosterTreeItem", "ZmRosterTreeGroup"]);
+	this._label.setDropTarget(dropTgt);
+	this._toolbar.setDropTarget(dropTgt);
+	dropTgt.addDropListener(new AjxListener(this, this._dropOnTitleListener));
 };
 
 // "this" is here the input field.
@@ -302,4 +304,48 @@ ZmChatWidget.prototype.__onResize = function(ev) {
 
 ZmChatWidget.prototype.focus = function() {
 	this._getElement("input").focus();
+};
+
+ZmChatWidget.prototype.popup = function(pos) {
+	//     widget -> tabs -> resizable window
+	return this.parent.parent.popup(pos);
+	this.focus();
+};
+
+ZmChatWidget.prototype.select = function() {
+	var tabs = this.parent;
+	// select window
+	tabs.parent.select();
+	// move to this chat
+	tabs.setActiveTabWidget(this);
+	this.focus();
+};
+
+ZmChatWidget.prototype._closeListener = function() {
+	ZmChatMultiWindowView.getInstance().endChat(this.chat);
+};
+
+ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
+	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		var srcData = ev.srcData;
+		if (!((srcData instanceof ZmRosterTreeItem) || (srcData instanceof ZmRosterTreeGroup))) {
+			ev.doIt = false;
+			return;
+		}
+	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
+		var srcData = ev.srcData;
+ 		if (srcData instanceof ZmRosterTreeItem) {
+ 			// this._controller.chatWithRosterItem(srcData.getRosterItem());
+			var item = srcData.getRosterItem();
+			ZmChatMultiWindowView.getInstance().chatInNewTab(item, this.parent);
+ 		}
+// 		if ((srcData instanceof ZmRosterTreeGroup)) {
+// 			var mouseEv = DwtShell.mouseEvent;
+//             		mouseEv.setFromDhtmlEvent(ev.uiEvent);
+//             		var pos = this.getLocation();
+//             		this._nextInitX = mouseEv.docX - pos.x;
+//             		this._nextInitY = mouseEv.docY - pos.y;
+// 			this._controller.chatWithRosterItems(srcData.getRosterItems(), srcData.getName()+" "+ZmMsg.imGroupChat);
+// 		}
+	}
 };

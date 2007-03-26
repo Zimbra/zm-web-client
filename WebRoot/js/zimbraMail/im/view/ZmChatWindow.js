@@ -35,6 +35,7 @@ ZmChatWindow.prototype.constructor = ZmChatWindow;
 
 ZmChatWindow.prototype._init = function(chat) {
 	var tabs = this._tabs = new ZmChatTabs(this);
+	tabs.addDisposeListener(new AjxListener(this, this._tabsDisposeListener));
 	this.setView(tabs);
 	this.chat = chat;
 	tabs.addTab(chat);
@@ -42,7 +43,7 @@ ZmChatWindow.prototype._init = function(chat) {
 	this.setMinSize(200, 100);
 	this.setMinPos(0, 0);
 	tabs = null;
-	this.addSelectionListener(new AjxListener(this, this.__onActivation));
+	this.addSelectionListener(new AjxListener(this, this._selectionListener));
 	this.addFocusListener(new AjxListener(this, function() {
 		this._tabs.getCurrentChatWidget().focus();
 	}));
@@ -52,16 +53,20 @@ ZmChatWindow.prototype.select = function() {
 	return this.setActive(true);
 };
 
-ZmChatWindow.prototype._rosterItemChangeListener = function(item, fields, setAll) {
-	return this._tabs.getCurrentChatWidget()._rosterItemChangeListener(item, fields, setAll);
+ZmChatWindow.prototype.getCurrentChatWidget = function() {
+	return this._tabs.getCurrentChatWidget();
 };
 
-ZmChatWindow.prototype.getCloseButton = function() {
-	return this._tabs.getCurrentChatWidget().getCloseButton();
+ZmChatWindow.prototype.addTab = function(chat) {
+	return this._tabs.addTab(chat);
 };
 
-ZmChatWindow.prototype.__onActivation = function(ev) {
+ZmChatWindow.prototype._selectionListener = function(ev) {
 	if (ev.detail) {
 		this._tabs.getCurrentChatWidget().focus();
 	}
+};
+
+ZmChatWindow.prototype._tabsDisposeListener = function() {
+	this.dispose();
 };
