@@ -71,7 +71,9 @@ function(view) {
 ZmCallListController.prototype._resetOperations = 
 function(parent, num) {
 	ZmVoiceListController.prototype._resetOperations.call(this, parent, num);
-	parent.enableAll(true);
+	if (parent) {
+		parent.enableAll(true);
+	}
 };
 
 ZmCallListController.prototype._callByDateListener = 

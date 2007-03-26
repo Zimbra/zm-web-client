@@ -122,7 +122,8 @@ function(ev) {
 	} else  {
 	 	actionMenu = this.getActionMenu();
 	}
-
-	actionMenu.popup(0, ev.docX, ev.docY);
+	if (actionMenu) {
+		actionMenu.popup(0, ev.docX, ev.docY);
+	}
 };
 

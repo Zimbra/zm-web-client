@@ -104,12 +104,9 @@ ZmVoiceFolder.prototype.getSearchQuery =
 function() {
 	var query = [ "phone:", this.phone.name ];
 	if (this.callType != ZmVoiceFolder.VOICEMAIL) {
-		query.push(" in:");
-		if (this.callType == ZmVoiceFolder.TRASH) {
-			query.push(this.callType);
-		} else {
-			query.push(this.view);
-		}
+		query.push(" in:\"");
+		query.push(this.callType);
+		query.push("\"");
 	}
 	return query.join("");
 };
