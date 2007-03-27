@@ -154,11 +154,15 @@ function(callback) {
 ZmImApp.prototype._handleLoadLaunch =
 function(callback) {
 	// console.log("_handleLoadLaunch");
-	AjxDispatcher.run("GetRoster").reload();
-    var clc = this.getChatListController();
-    clc.show();
+	this.refresh();
+	var clc = this.getChatListController();
+	clc.show();
 	if (callback)
 		callback.run();
+	var self = this;
+	setTimeout(function() {
+		self.refresh();
+	}, 100);
 };
 
 ZmImApp.prototype.activate =

@@ -45,6 +45,10 @@ ZmAssistantBuddy.prototype.constructor = ZmAssistantBuddy;
 
 ZmAssistantBuddy.ADDR = "internal://assistant";
 
+ZmAssistantBuddy.prototype.isDefaultBuddy = function() {
+	return true;
+};
+
 ZmAssistantBuddy.prototype.getDisplayName = function() {
 	return ZmMsg.zimbraAssistant;
 };

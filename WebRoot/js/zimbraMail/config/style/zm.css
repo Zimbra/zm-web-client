@@ -1895,15 +1895,20 @@ HTML>BODY .appt-selected .appt_allday_body
   border-top: none;
   -moz-border-radius-topleft: 0;
   -moz-border-radius-topright: 0;
+  -moz-border-radius-bottomleft: 2px;
+  -moz-border-radius-bottomright: 2px;
 }
 
 .ZmChatTabs-TabBar .ZmChatTabs-Tab-Active {
   @ToolbarContainer@
   float: left;
-  padding: 2px 4px;
+  padding: 2px 4px 4px 4px;
   border-top: none;
+  margin-top: -1px;
   -moz-border-radius-topleft: 0;
   -moz-border-radius-topright: 0;
+  -moz-border-radius-bottomleft: 2px;
+  -moz-border-radius-bottomright: 2px;
 }
 
 

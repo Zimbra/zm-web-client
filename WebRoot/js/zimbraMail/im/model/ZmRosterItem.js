@@ -276,3 +276,7 @@ function() {
 	}
 	return this._toolTip;
 };
+
+ZmRosterItem.prototype.isDefaultBuddy = function() {
+	return false;
+};

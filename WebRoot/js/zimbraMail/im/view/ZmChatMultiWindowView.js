@@ -61,6 +61,12 @@ ZmChatMultiWindowView.prototype.getWindowManager = function() {
 	return this._wm;
 };
 
+ZmChatMultiWindowView.prototype.getShellWindowManager = function() {
+	if (!this._shellWm)
+		this._shellWm = new DwtWindowManager(DwtShell.getShell(window));
+	return this._shellWm;
+};
+
 ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {
 	if (!win)
 		win = this.__useTab;

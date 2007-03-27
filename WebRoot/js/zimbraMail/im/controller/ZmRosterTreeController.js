@@ -235,6 +235,9 @@ function(ev) {
 		menu = this._itemActionMenu;
 		if (menu == null)
 			menu = this._itemActionMenu = this._createActionMenu(this._shell, this._getItemActionMenuOps());
+		// disallow these operations for implicit buddies (i.e. Zimbra Assistant)
+		menu.getOp(ZmOperation.EDIT_PROPS).setEnabled(!org.rosterItem.isDefaultBuddy());
+		menu.getOp(ZmOperation.DELETE).setEnabled(!org.rosterItem.isDefaultBuddy());
 	} else if (org instanceof ZmRosterTreeGroup) {
 		menu = this._groupActionMenu;
 		if (menu == null)

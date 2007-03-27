@@ -213,13 +213,20 @@ ZmChatWidget.prototype._init = function() {
 
 	this._toolbar = new DwtToolBar(this, null, Dwt.ABSOLUTE_STYLE);
 
-	this._close = new DwtButton(this._toolbar, null, "DwtToolbarButton");
+	this._close = new DwtToolBarButton(this._toolbar, null);
 	this._close.setImage("Close");
 	this._close.setToolTipContent(ZmMsg.imEndChat);
 	this._close.addSelectionListener(new AjxListener(this, this._closeListener));
 
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
 	this._label.setText("Chat title here");
+
+	this._toolbar.addFiller();
+
+	this._sticky = new DwtToolBarButton(this._toolbar, DwtButton.TOGGLE_STYLE);
+	this._sticky.setImage("RoundPlus");
+	this._sticky.setToolTipContent(ZmMsg.stickyWindow);
+	this._sticky.addSelectionListener(new AjxListener(this, this._stickyListener));
 
 	this._content = new DwtComposite(this, "ZmChatWindowChat", Dwt.ABSOLUTE_STYLE);
 	this._content.setScrollStyle(Dwt.SCROLL);
@@ -307,9 +314,12 @@ ZmChatWidget.prototype.focus = function() {
 };
 
 ZmChatWidget.prototype.popup = function(pos) {
-	//     widget -> tabs -> resizable window
-	return this.parent.parent.popup(pos);
+	return this.getChatWindow().popup(pos);
 	this.focus();
+};
+
+ZmChatWidget.prototype.getChatWindow = function() {
+	return this.parent.parent;
 };
 
 ZmChatWidget.prototype.select = function() {
@@ -323,6 +333,36 @@ ZmChatWidget.prototype.select = function() {
 
 ZmChatWidget.prototype._closeListener = function() {
 	ZmChatMultiWindowView.getInstance().endChat(this.chat);
+};
+
+ZmChatWidget.prototype._stickyListener = function(ev) {
+	var button = ev.item;
+	var sticky = button.isToggled();
+	var view = ZmChatMultiWindowView.getInstance();
+	var win = this.getChatWindow();
+	var wp = Dwt.toWindow(win.getHtmlElement(), 0, 0);
+	var p, wm;
+	button.setImage(sticky ? "RoundMinus" : "RoundPlus");
+	win.popdown();
+	if (sticky) {
+		wm = view.getShellWindowManager();
+	} else {
+		wm = view.getWindowManager();
+	}
+	p = Dwt.toWindow(wm.getHtmlElement(), 0, 0);
+	if (p.x == Dwt.LOC_NOWHERE) {
+		// kind of ugly; if the WM is "hidden", we get -10000
+		// (Dwt.LOC_NOWHERE) which messes everything up.
+		p.x = 20;
+		p.y = 20;
+	}
+	wp.x -= p.x;
+	wp.y -= p.y;
+	if (wp.x < 0)
+		wp.x = 0;
+	if (wp.y < 0)
+		wp.y = 0;
+	wm.manageWindow(win, wp); // does popup automagically
 };
 
 ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
