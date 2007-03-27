@@ -48,8 +48,9 @@ function() {
  */
 ZmFolderTree.prototype.loadFromJs =
 function(rootObj, elementType) {
-	this.root = (elementType == "zimlet") ? ZmZimlet.createFromJs(null, rootObj, this) :
-											ZmFolderTree.createFromJs(null, rootObj, this, elementType);
+	this.root = (elementType == "zimlet")
+		? ZmZimlet.createFromJs(null, rootObj, this)
+		: ZmFolderTree.createFromJs(null, rootObj, this, elementType);
 };
 
 /**
@@ -257,7 +258,7 @@ function(organizer, dialog) {
 
 // This method is used to retrieve permissions on folders that can be *shared*
 ZmFolderTree.prototype.getPermissions =
-function(type) {
+function(type, callback, skipNotify) {
 	var needPerms = this._getItemsWithoutPerms(type);
 
 	// build batch request to get all permissions at once
@@ -273,7 +274,7 @@ function(type) {
 			folderRequest.appendChild(folderNode);
 		}
 
-		var respCallback = new AjxCallback(this, this._handleResponseGetShares);
+		var respCallback = new AjxCallback(this, this._handleResponseGetShares, [callback, skipNotify]);
 		this._appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 	}
 };
@@ -301,7 +302,7 @@ function(type) {
 };
 
 ZmFolderTree.prototype._handleResponseGetShares =
-function(result) {
+function(callback, skipNotify, result) {
 	var batchResp = result.getResponse().BatchResponse;
 	this._handleErrorGetShares(batchResp);
 
@@ -312,9 +313,19 @@ function(result) {
 			if (link) {
 				var share = this._appCtxt.getById(link.id);
 				if (share) share.setPermissions(link.perm);
+
+				if (link.folder && link.folder.length > 0) {
+					var parent = this._appCtxt.getById(link.id);
+					if (parent) {
+						for (var j = 0; j < link.folder.length; j++)
+							parent.notifyCreate(link.folder[j], false, skipNotify);
+					}
+				}
 			}
 		}
 	}
+
+	if (callback) callback.run();
 };
 
 /*

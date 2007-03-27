@@ -234,16 +234,19 @@ function(id) {
 *
 * @param obj		[Object]	a JS folder object from the notification
 * @param isSearch	[boolean]	true if the created object is a search folder
+* @param skipNotify	[boolean]	true if notifying client should be ignored
 */
 ZmFolder.prototype.notifyCreate =
-function(obj, isSearch) {
+function(obj, isSearch, skipNotify) {
 	// ignore creates of system folders
 	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]) return;
 
 	var folder = ZmFolderTree.createFromJs(this, obj, this.tree, isSearch ? "search" : "folder");
 	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
 	this.children.add(folder, index);
-	folder._notify(ZmEvent.E_CREATE);
+
+	if (!skipNotify)
+		folder._notify(ZmEvent.E_CREATE);
 };
 
 /*

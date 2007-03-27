@@ -252,9 +252,14 @@ function(hdr) {
 	// refresh block causes the overview panel to get updated
 	if (hdr && hdr.context && hdr.context.refresh) {
 		this._highestNotifySeen = 0;
-		this._refreshHandler(hdr.context.refresh);
-		this._controller._checkOverviewLayout();
+		var callback = new AjxCallback(this, this._handleHeaderResponse);
+		this._refreshHandler(hdr.context.refresh, callback);
 	}
+};
+
+ZmRequestMgr.prototype._handleHeaderResponse =
+function(ev) {
+	this._controller._checkOverviewLayout();
 };
 
 /**
@@ -284,7 +289,7 @@ function(hdr) {
 // changed. It always happens on the first SOAP command (GetInfoRequest).
 // After that, it happens after a session timeout.
 ZmRequestMgr.prototype._refreshHandler =
-function(refresh) {
+function(refresh, callback) {
 	DBG.println(AjxDebug.DBG1, "Handling REFRESH");
 	this._controller.runAppFunction("_clearDeferredFolders");
 
@@ -300,11 +305,20 @@ function(refresh) {
 
 	// XXX: temp, get additional share info (see bug #4434)
 	if (refresh.folder) {
-		this._appCtxt.getFolderTree().getPermissions();
+		var respCallback = new AjxCallback(this, this._handleRefreshHandler, [refresh, callback]);
+		this._appCtxt.getFolderTree().getPermissions(null, respCallback, true);
+	} else {
+		// Run any app-requested refresh routines
+		this._controller.runAppFunction("refresh", refresh);
 	}
+};
 
+ZmRequestMgr.prototype._handleRefreshHandler =
+function(refresh, callback) {
 	// Run any app-requested refresh routines
 	this._controller.runAppFunction("refresh", refresh);
+
+	if (callback) callback.run();
 };
 
 ZmRequestMgr.prototype._loadTree =
