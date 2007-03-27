@@ -295,14 +295,22 @@ function(customFileAs) {
 	return [ZmContact.FA_CUSTOM, ":", customFileAs].join("");
 };
 
-/* These next few static methods handle a contact that is either an anonymous object or an actual
-* ZmContact. The former is used to optimize loading. The anonymous object is upgraded to a
-* ZmContact when needed. */
+/* These next few static methods handle a contact that is either an anonymous
+*  object or an actual ZmContact. The former is used to optimize loading. The
+*  anonymous object is upgraded to a ZmContact when needed. */
 ZmContact.getAttr =
 function(contact, attr) {
-	return (contact instanceof ZmContact)
-		? contact.getAttr(attr)
-		: (contact && contact._attrs) ? contact._attrs[attr] : null;
+	if (contact instanceof ZmContact) {
+		return contact.getAttr(attr);
+	} else {
+		if (contact.a && contact.a.length) {
+			for (var i = 0; i < contact.a.length; i++) {
+				if (contact.a[i].n == attr)
+					return contact.a[i].n;
+			}
+		}
+	}
+	return null;
 };
 
 ZmContact.setAttr =
@@ -342,8 +350,8 @@ function(callback, result) {
 	var resp = result.getResponse().GetContactsResponse;
 
 	// for now, we just assume only one contact was requested at a time
-	this.attr = resp.cn[0]._attrs;
-	this._loaded = true;
+	if (!this._loaded)
+		this._loadFromDom(resp.cn[0]);
 
 	if (callback)
 		callback.run(resp.cn[0], this);
@@ -684,27 +692,22 @@ function(obj) {
 	// cache old fileAs/fullName before resetting them
 	var oldFileAs = this.getFileAs();
 	var oldFullName = this.getFullName();
+	var oldFolderId = this.folderId;
 	this._resetCachedFields();
 
 	var oldAttrCache = {};
-	if (obj._attrs) {
-		// remove attrs that were not returned back from the server
-		var oldAttrs = this.getAttrs();
-		for (var a in oldAttrs) {
-			oldAttrCache[a] = oldAttrs[a];
-			if (obj._attrs[a] == null)
-				this.removeAttr(a);
-		}
+	var oldAttrs = this.getAttrs();
+	for (var a in oldAttrs)
+		oldAttrCache[a] = oldAttrs[a];
 
-		// set attrs returned by server
-		for (var a in obj._attrs)
-			this.setAttr(a, obj._attrs[a]);
-	}
+	this._loadFromDom(obj);
+	this.folderId = oldFolderId;
 
-	var details = {attr:obj._attrs, oldAttr:oldAttrCache,
-				   fullNameChanged:this.getFullName() != oldFullName,
-				   fileAsChanged:this.getFileAs() != oldFileAs,
-				   contact:this};
+	var details = { attr: 			this.getAttrs(),
+					oldAttr: 		oldAttrCache,
+					fullNameChanged:this.getFullName() != oldFullName,
+					fileAsChanged: 	this.getFileAs() != oldFileAs,
+					contact: 		this };
 
 	// update this contact's list per old/new attrs
 	this.list.modifyLocal(obj, details);
@@ -987,7 +990,28 @@ function() {
 // Parse contact node. A contact will only have attr values if its in canonical list.
 ZmContact.prototype._loadFromDom =
 function(node) {
-	// "node.a" means we must be dealing with a GAL contact
+	this.rev = node.rev;
+	this.sf = node.sf;
+	this.folderId = node.l;
+	this._fileAs = node.fileAsStr;
+
+	// for shared contacts, we'll always get fileAs
+	if (this._fileAs)
+		this._fileAsLC = this._fileAs.toLowerCase();
+
+	this.addrbook = this._appCtxt.getById(this.folderId);
+
+	// lets not process tags/flags for shared contacts until we get better server support
+	if (!this.isShared()) {
+		this._parseFlags(node.f);
+		this._parseTags(node.t);
+	}
+
+	// for shared contacts, we get these fields outside of the attr part
+	if (node.email) this.attr[ZmContact.F_email] = node.email;
+	if (node.email2) this.attr[ZmContact.F_email2] = node.email2;
+	if (node.email3) this.attr[ZmContact.F_email3] = node.email3;
+
 	// bug fix #7143 - check for length property instead of "instanceof Array"
 	//                 since opening new window loses type info :(
 	if (node.a && node.a.length) {
@@ -999,45 +1023,16 @@ function(node) {
 				this.modified = attr._content;
 			} else if (attr.n == ZmContact.GAL_CREATE_TIMESTAMP) {
 				this.created = attr._content;
+			} else if (attr.n == "type") {
+				this.type = attr._content;
 			} else {
 				// for now just save all other attrs regardless of dupes
 				this.attr[attr.n] = attr._content;
 			}
 		}
-		this._loaded = true;
-	} else {
-		this.rev = node.rev;
-		this.sf = node.sf;
-		this.folderId = node.l;
-		this.created = node.cd;
-		this.modified = node.md;
-		this._fileAs = node.fileAsStr;
-
-		// for shared contacts, we'll always get fileAs
-		if (this._fileAs)
-			this._fileAsLC = this._fileAs.toLowerCase();
-
-		this.attr = node._attrs || {};
-
-		// for shared contacts, we get these fields outside of the attr part
-		if (node.email) this.attr[ZmContact.F_email] = node.email;
-		if (node.email2) this.attr[ZmContact.F_email2] = node.email2;
-		if (node.email3) this.attr[ZmContact.F_email3] = node.email3;
-
-		this.type = this.attr[ZmContact.F_dlist] != null
-			? ZmItem.GROUP : ZmItem.CONTACT;
-
-		// check if the folderId is found in our address book (otherwise, we
-		// assume this contact to be a shared contact)
-		this.addrbook = this._appCtxt.getById(this.folderId);
-		this._loaded = !this.isShared();
-
-		// lets not process tags/flags for shared contacts until we get better server support
-		if (!this.isShared()) {
-			this._parseFlags(node.f);
-			this._parseTags(node.t);
-		}
 	}
+
+	this._loaded = !this.isShared();
 };
 
 /**

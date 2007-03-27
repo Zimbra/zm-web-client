@@ -117,7 +117,6 @@ function() {
 */
 ZmContactList.prototype.load =
 function(callback, errorCallback) {
-
 	// only the canonical list gets loaded
 	DBG.println(AjxDebug.DBG1, "loading contacts");
 	this.isCanonical = true;
@@ -172,17 +171,26 @@ function(list) {
 		// note that we don't create a ZmContact here (optimization)
 		contact.list = this;
 		this._updateHashes(contact, true);
-		var fn = [], fl = [];
-		if (contact._attrs[ZmContact.F_firstName])	{ fn.push(contact._attrs[ZmContact.F_firstName]); }
-		if (contact._attrs[ZmContact.F_middleName])	{ fn.push(contact._attrs[ZmContact.F_middleName]); }
-		if (contact._attrs[ZmContact.F_lastName])	{ fn.push(contact._attrs[ZmContact.F_lastName]); }
+
+		// pre-build full and first/last names
+		var fn = [], fl = [], val;
+		val = ZmContact.getAttr(contact, ZmContact.F_firstName);
+		if (val) fn.push(val);
+		val = ZmContact.getAttr(contact, ZmContact.F_middleName);
+		if (val) fn.push(val);
+		val = ZmContact.getAttr(contact, ZmContact.F_lastName);
+		if (val) fn.push(val);
 		contact._attrs[ZmContact.X_fullName] = fn.join(" ");
-		if (contact._attrs[ZmContact.F_firstName])	{ fl.push(contact._attrs[ZmContact.F_firstName]); }
-		if (contact._attrs[ZmContact.F_lastName])	{ fl.push(contact._attrs[ZmContact.F_lastName]); }
+
+		val = ZmContact.getAttr(contact, ZmContact.F_firstName);
+		if (val) fn.push(val);
+		val = ZmContact.getAttr(contact, ZmContact.F_lastName);
+		if (val) fn.push(val);
 		contact._attrs[ZmContact.X_firstLast] = fl.join(" ");
-		if (!ZmContact.isInTrash(contact)) {
+
+		if (!ZmContact.isInTrash(contact))
 			this._preMatch(contact);
-		}
+
 		this.add(contact);
 	}
 
@@ -860,9 +868,9 @@ function(contact) {
 		} else {
 			// placeholder objects (ZmContactList) will have _attrs
 			// realized objects (ZmResourceList) will have attr
-			value = contact._attrs
-				? contact._attrs[this._acMatchFields[i]]
-				: (contact.attr ? contact.attr[this._acMatchFields[i]] : null);
+			value = ZmContact.getAttr(contact, this._acMatchFields[i]);
+			if (!value)
+				value = contact.attr ? contact.attr[this._acMatchFields[i]] : null
 		}
 
 		if (value) {
