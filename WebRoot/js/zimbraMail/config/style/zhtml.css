@@ -765,6 +765,10 @@ padding:1px; border:1px solid darkred;
 padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
 }
 
+.ZhApptSel {
+    border: 1px dashed black;
+}
+
 .ZhCalMonthAllDayAppt, .ZhCalMonthAllDayApptNew, .ZhCalDayAllDayAppt, .ZhCalDayAllDayApptNew {
     border:2px solid #333333;
 #IFDEF GECKO

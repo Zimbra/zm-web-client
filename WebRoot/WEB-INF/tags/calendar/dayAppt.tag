@@ -2,6 +2,7 @@
 <%@ attribute name="appt" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZApptSummary" %>
 <%@ attribute name="start" rtexprvalue="true" required="true"%>
 <%@ attribute name="end" rtexprvalue="true" required="true"%>
+<%@ attribute name="selected" rtexprvalue="true" required="false"%>
 <%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -15,6 +16,11 @@
 <fmt:message var="noSubject" key="noSubject"/>
 <c:set var="subject" value="${empty appt.name ? noSubject : appt.name}"/>
 <app:calendarUrl appt="${appt}" var="apptUrl"/>
+<c:if test="${selected}">
+    <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+        <td class='ZhApptSel'>
+</c:if> 
 <c:choose>
     <c:when test="${appt.allDay}">
         <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
@@ -74,3 +80,8 @@
         </table>
     </c:otherwise>
 </c:choose>
+<c:if test="${selected}">
+    </td>
+    </tr>
+    </table>
+</c:if>

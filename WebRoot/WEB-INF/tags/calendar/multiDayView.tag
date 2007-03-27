@@ -10,7 +10,6 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    <fmt:message key="noSubject" var="noSubject"/>
     <fmt:setTimeZone value="${timezone}"/>
     <c:set var="context" value="${null}"/>
     <fmt:message var="yearTitleFormat" key="CAL_DAY_TITLE_YEAR_FORMAT"/>

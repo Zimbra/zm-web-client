@@ -30,7 +30,7 @@
 <c:set var="isPart" value="${!empty message.partName}"/>
 <table width=100% cellpadding=0 cellspacing=0 class=Msg>
     <tr>
-        <td class='MsgHdr'>
+        <td class='MsgHdr' colspan=2>
             <table width=100% cellpadding=0 cellspacing=0 border=0>
                 <tr>
                     <td>
@@ -166,7 +166,7 @@
     </tr>
     <c:if test="${not hideops}">
     <tr>
-        <td class='MsgOps'>
+        <td class='MsgOps' colspan=2>
             <table width=100% >
                 <tr valign="middle">
                     <td nowrap align=left style='padding-left: 5px'>
@@ -267,7 +267,7 @@
     </c:if>
     <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
         <tr>
-            <td class='DisplayImages'>
+            <td class='DisplayImages' colspan=2>
                 <fmt:message key="externalImages"/>
                 &nbsp;<a accesskey='x' href="${externalImageUrl}">
                 <fmt:message key="displayExternalImages"/>
@@ -276,7 +276,7 @@
         </tr>
     </c:if>
     <tr>
-        <td class=MsgBody>
+        <td class=MsgBody valign='top' colspan="${showInviteReply ? 1 : 2}">
             <c:choose>
                 <c:when test="${body.isTextHtml}">
                     <c:url var="iframeUrl" value="/h/imessage">
@@ -301,5 +301,10 @@
                     <pre>${message.mimeStructure}</pre>
                 </c:if>
         </td>
+        <c:if test="${showInviteReply}">
+            <td width=25% valign=top  class='ZhAppContent2'>
+                <app:multiDay selectedId="${message.id}" date="${appt.start.calendar}" numdays="1" view="day" timezone="${mailbox.prefs.timeZone}"/>
+            </td>
+        </c:if>
     </tr>
 </table>
