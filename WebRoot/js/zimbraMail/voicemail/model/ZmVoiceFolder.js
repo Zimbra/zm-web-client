@@ -78,7 +78,7 @@ function() {
 ZmVoiceFolder.prototype.getName =
 function(showUnread, maxLength, noMarkup) {
 	var name = this.name == ZmVoiceFolder.ACCOUNT ? this.phone.getDisplay() : this.name;
-	return this._markupName(name, showUnread, noMarkup);
+	return this._markupName(name, showUnread && (this.callType != ZmVoiceFolder.TRASH), noMarkup);
 };
 
 ZmVoiceFolder.prototype.getIcon =
@@ -143,6 +143,12 @@ function(what, folderType) {
 		}
 	}
 	return true;
+};
+
+ZmVoiceFolder.prototype.changeNumUnheardBy =
+function(delta) {
+	var newValue = (this.numUnread || 0) + delta;
+	this.notifyModify( { u: newValue } );
 };
 
 ZmVoiceFolder.sortCompare =

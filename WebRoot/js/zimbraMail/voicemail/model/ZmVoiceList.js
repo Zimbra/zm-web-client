@@ -65,19 +65,16 @@ function(items, folder, attrs) {
 ZmVoiceList.prototype._handleResponseMoveItems =
 function(items, destinationFolder) {
 	// Update the unread counts in the folders.
-	var numUnread = 0;
+	var numUnheard = 0;
 	for(var i = 0, count = items.length; i < count; i++) {
 		if (items[i].isUnheard) {
-			numUnread++;
+			numUnheard++;
 		}
 	}
 	var sourceFolder = items[0].getFolder();
-	if (numUnread) {
-		var sourceUnread = (sourceFolder.numUnread || 0) - numUnread;
-		sourceFolder.notifyModify( { u: sourceUnread } );
-
-		var destinationUnread = (destinationFolder.numUnread || 0) + numUnread;
-		destinationFolder.notifyModify( { u: destinationUnread } );
+	if (numUnheard) {
+		sourceFolder.changeNumUnheardBy(-numUnheard);
+		destinationFolder.changeNumUnheardBy(numUnheard);
 	}
 
 	// Replenish the list view.

@@ -138,6 +138,8 @@ function(items, heard) {
 	for (var i = 0, count = items.length; i < count; i++) {
 		items[i].isUnheard = !heard;
 	}
+	var delta = heard ? -count : count;
+	this._folder.changeNumUnheardBy(delta);
 	this._getView().markUIAsRead(items, heard);
 	this._resetToolbarOperations();
 };
