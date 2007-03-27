@@ -271,6 +271,12 @@ function(event) {
 	dialog.popup();
 };
 
+ZmVoicemailListController.prototype._preHideCallback =
+function(view, force) {
+	this._getView().stopPlaying();
+	return ZmVoiceListController.prototype._preHideCallback.call(this, view, force);
+};
+
 // Called while the sound is playing. The event has information about play status.
 ZmVoicemailListController.prototype._soundChangeListener =
 function(event) {

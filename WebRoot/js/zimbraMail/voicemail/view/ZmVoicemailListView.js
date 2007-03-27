@@ -31,6 +31,8 @@ function ZmVoicemailListView(parent, controller, dropTgt) {
 	this._playing = null; // The voicemail currently loaded in the player.
 	this._players = { }; // Map of voicemail.id to sound player
 	this._soundChangeListeners = [];
+	this._reconnect = null; // Structure to help reconnect a voicemail to the currently
+							// playing sound when resorting or redraing the list.
 }
 ZmVoicemailListView.prototype = new ZmVoiceListView;
 ZmVoicemailListView.prototype.constructor = ZmVoicemailListView;
@@ -85,6 +87,18 @@ function(items, on) {
 		if (row) {
 			row.className = className;
 		}
+	}
+};
+
+ZmVoicemailListView.prototype.stopPlaying =
+function(compact) {
+	if (this._playing) {
+		var player = this._players[this._playing.id];
+		if (compact) {
+			player.setCompact(true);
+		}
+		player.pause();
+		player.rewind();
 	}
 };
 
@@ -158,14 +172,59 @@ function(item, skipNotify) {
 	delete this._players[item.id];
 };
 
+ZmVoicemailListView.prototype.set =
+function(list, sortField) {
+	ZmVoiceListView.prototype.set.call(this, list, sortField);
+
+	// If we were unable to reconnect the player, dispose it.
+	if (this._reconnect) {
+		this._reconnect.player.dispose();
+		this._reconnect = null;
+	}
+};
+
 ZmVoicemailListView.prototype.removeAll =
 function(skipNotify) {
+	this._clearPlayers();
+	ZmVoiceListView.prototype.removeAll.call(this, skipNotify);
+};
+
+ZmVoicemailListView.prototype._resetList =
+function() {
+	this._clearPlayers();
+	ZmVoiceListView.prototype._resetList.call(this);
+};
+
+ZmVoicemailListView.prototype._clearPlayers =
+function() {
+	if (this._playing) {
+		// Save data to be able to reconnect to the player.
+		this._reconnect = {
+			id: this._playing.id,
+			player: this._players[this._playing.id]
+		};
+		
+		// Hide the player
+		var hidden;
+		if (!this._hiddenDivId) {
+			hidden = document.createElement("div");
+			this._hiddenDivId = Dwt.getNextId();
+			hidden.id = this._hiddenDivId;
+			Dwt.setZIndex(hidden, Dwt.Z_HIDDEN);
+			this.shell.getHtmlElement().appendChild(hidden);
+		} else {
+			hidden = document.getElementById(this._hiddenDivId);
+		}
+		this._reconnect.player.reparentHtmlElement(hidden);
+		
+		// Remove this offscreen player from our player list.
+		delete this._players[this._playing.id];
+		this._playing = null;
+	}
 	for (var i in this._players) {
 		this._players[i].dispose();
 	}
 	this._players = {};
-	this._playing = null;
-	ZmVoiceListView.prototype.removeAll.call(this, skipNotify);
 };
 
 ZmVoicemailListView.prototype._addRow =
@@ -182,27 +241,30 @@ function(row, index) {
 	var voicemail = this.getItemFromElement(row);
 	var columnIndex = this._getColumnIndex(ZmVoicemailListView.F_PLAYING);
 	var cell = this._getCell(columnIndex, row);
-	var player = new ZmSoundPlayer(this, voicemail);
+	
+	var player;
+	if (this._reconnect && (this._reconnect.id == voicemail.id)) {
+		player = this._reconnect.player;
+		this._reconnect = null;
+		this._playing = voicemail;
+	} else {
+		player = new ZmSoundPlayer(this, voicemail);
+		if (!this._compactListenerObj) {
+			this._compactListenerObj = new AjxListener(this, this._compactListener);
+		}
+		player.addCompactListener(this._compactListenerObj);
+		for (var i = 0, count = this._soundChangeListeners.length; i < count; i++) {
+			player.addChangeListener(this._soundChangeListeners[i]);
+		}
+	}
 	player.reparentHtmlElement(cell);
-	if (!this._compactListenerObj) {
-		this._compactListenerObj = new AjxListener(this, this._compactListener);
-	}
-	player.addCompactListener(this._compactListenerObj);
 	this._players[voicemail.id] = player;
-	for (var i = 0, count = this._soundChangeListeners.length; i < count; i++) {
-		player.addChangeListener(this._soundChangeListeners[i]);
-	}
 };
 
 ZmVoicemailListView.prototype._compactListener =
 function(ev) {
 	if (!ev.isCompact) {
-		if (this._playing) {
-			var player = this._players[this._playing.id];
-			player.setCompact(true);
-			player.pause();
-			player.rewind();
-		}
+		this.stopPlaying(true);
 		this._playing = ev.dwtObj.voicemail;
 		this._activePlayer;
 	}
