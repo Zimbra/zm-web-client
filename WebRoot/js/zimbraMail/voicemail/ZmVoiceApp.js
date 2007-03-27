@@ -189,21 +189,6 @@ function(folder, callback, response) {
 	}
 };
 
-ZmVoiceApp.prototype.deleteItems =
-function(items, callback) {
-	if (items.length) {
-		var phone = items[0].getPhone();
-		var folderId;
-		if (!items[0].isInTrash()) {
-			folderId = ZmVoiceFolder.TRASH_ID + "-" + phone.name;
-		} else {
-//TODO: this undeletes. Should really be hard delete.	
-			folderId = ZmVoiceFolder.VOICEMAIL_ID + "-" + phone.name;
-		}
-		this._performAction(items, "move", { l: folderId }, callback);
-	}
-};
-
 ZmVoiceApp.prototype.markItemsHeard =
 function(items, heard, callback) {
 	var op = heard ? "read" : "!read";

@@ -153,17 +153,15 @@ function(ev) {
 ZmVoicemailListController.prototype._deleteListener = 
 function(ev) {
 	var items = this._getView().getSelection();
-	var callback = new AjxCallback(this, this._handleResponseDelete, [items]);
-	var app = this._appCtxt.getApp(ZmApp.VOICE);
-	app.deleteItems(items, callback);
-};
-
-ZmVoicemailListController.prototype._handleResponseDelete = 
-function(items) {
-	for (var i = 0, count = items.length; i < count; i++) {
-		this._getView().removeItem(items[i]);
+	if (!items.length) {
+		return;
 	}
-	this._resetToolbarOperations();
+//TODO: this undeletes stuff in trash. Should really be hard delete. When we have the ability to create new messages anyways.
+	var folderId = this._folder.isInTrash() ? ZmVoiceFolder.VOICEMAIL_ID  : ZmVoiceFolder.TRASH_ID;
+	folderId += "-" + this._folder.phone.name;
+	var destination = this._appCtxt.getFolderTree().getById(folderId);
+	var list = items[0].list;
+	list.moveItems(items, destination);
 };
 
 ZmVoicemailListController.prototype._saveListener = 

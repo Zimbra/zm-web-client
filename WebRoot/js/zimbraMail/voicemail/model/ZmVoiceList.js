@@ -51,7 +51,43 @@ function(items, folder, attrs) {
 	attrs = attrs || {};
 	attrs.phone = this.folder.phone.name;
 	attrs.l = folder.id;
-	this._itemAction({items: items, action: "move", attrs: attrs});
+	var params = {
+		items: items, 
+		action: "move", 
+		attrs: attrs,
+		callback: new AjxCallback(this, this._handleResponseMoveItems, [items, folder])
+	};
+	this._itemAction(params);
+};
+
+// The voice server isn't sending notifications. This callback updates
+// folders and such after a move.
+ZmVoiceList.prototype._handleResponseMoveItems =
+function(items, destinationFolder) {
+	// Update the unread counts in the folders.
+	var numUnread = 0;
+	for(var i = 0, count = items.length; i < count; i++) {
+		if (items[i].isUnheard) {
+			numUnread++;
+		}
+	}
+	var sourceFolder = items[0].getFolder();
+	if (numUnread) {
+		var sourceUnread = (sourceFolder.numUnread || 0) - numUnread;
+		sourceFolder.notifyModify( { u: sourceUnread } );
+
+		var destinationUnread = (destinationFolder.numUnread || 0) + numUnread;
+		destinationFolder.notifyModify( { u: destinationUnread } );
+	}
+
+	// Replenish the list view.
+	//
+	// This is sort of a hack having the model call back to the app, but without notifications
+	// this seems like the best approach.
+	//
+	// We should consider using a "replenish" call rather than redoing the whole search again.
+	var app = this._appCtxt.getApp(ZmApp.VOICE);
+	app.search(sourceFolder);
 };
 
 ZmVoiceList.prototype._getActionNamespace =
