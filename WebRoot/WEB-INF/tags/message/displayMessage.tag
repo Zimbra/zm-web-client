@@ -303,7 +303,9 @@
         </td>
         <c:if test="${showInviteReply}">
             <td width=25% valign=top  class='ZhAppContent2'>
-                <app:multiDay selectedId="${message.id}" date="${appt.start.calendar}" numdays="1" view="day" timezone="${mailbox.prefs.timeZone}"/>
+                <c:catch>
+                    <app:multiDay selectedId="${message.id}" date="${appt.start.calendar}" numdays="1" view="day" timezone="${mailbox.prefs.timeZone}"/>
+                </c:catch>
             </td>
         </c:if>
     </tr>
