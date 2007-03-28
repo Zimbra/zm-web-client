@@ -113,17 +113,3 @@ function(voicemail) {
 	return html;
 };
 
-ZmVoiceListView.prototype._sortColumn =
-function(columnItem, bSortAsc) {
-	var comparator;
-	switch (columnItem._sortable) {
-		case ZmVoiceListView.F_CALLER: comparator = ZmVoiceItem.getCallerComparator(bSortAsc); break;
-		case ZmVoiceListView.F_SIZE: comparator = ZmVoiceItem.getDurationComparator(bSortAsc); break;
-		case ZmVoiceListView.F_DATE: comparator = ZmVoiceItem.getDateComparator(bSortAsc); break;
-		default: break;
-	}
-	if (comparator) {
-		this.getList().sort(comparator);
-		this.setUI();
-	}
-};

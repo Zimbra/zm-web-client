@@ -71,7 +71,7 @@ ZmCallListView.prototype._getHeaderList =
 function() {
 
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmCallListView.F_CALLER], ZmMsg.from, null, ZmCallListView.FROM_WIDTH, ZmCallListView.F_CALLER, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmCallListView.F_CALLER], ZmMsg.from, null, ZmCallListView.FROM_WIDTH, null, true));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmCallListView.F_SIZE], ZmMsg.duration, null, ZmCallListView.DURATION_WIDTH, ZmCallListView.F_SIZE, true));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmCallListView.F_DATE], ZmMsg.received, null, ZmCallListView.DATE_WIDTH, ZmCallListView.F_DATE, true));
 
@@ -121,3 +121,13 @@ function(voicemail, now, isDndIcon, isMixedView, myDiv) {
 	return div;
 };
 
+ZmCallListView.prototype._sortColumn =
+function(columnItem, bSortAsc) {
+	var sortBy;
+	switch (columnItem._sortable) {
+		case ZmCallListView.F_SIZE: sortBy = bSortAsc ? ZmSearch.DURATION_ASC : ZmSearch.DURATION_DESC; break;
+		case ZmCallListView.F_DATE: sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC; break;
+		default: break;
+	}
+	this._appCtxt.getApp(ZmApp.VOICE).search(this._controller._folder, null, sortBy)
+};

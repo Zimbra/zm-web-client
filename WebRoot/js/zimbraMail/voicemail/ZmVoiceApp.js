@@ -156,7 +156,7 @@ function(list) {
 };
 
 ZmVoiceApp.prototype.search =
-function(folder, callback) {
+function(folder, callback, sortBy) {
 	var soapInfo = {
 		method: "SearchVoiceRequest", 
 		namespace: "urn:zimbraVoice",
@@ -165,6 +165,7 @@ function(folder, callback) {
 	var searchParams = {
 		soapInfo: soapInfo,
 		types: AjxVector.fromArray([folder.getSearchType()]),
+		sortBy: sortBy,
 		query: folder.getSearchQuery()
 	};
 	var search = new ZmSearch(this._appCtxt, searchParams);	

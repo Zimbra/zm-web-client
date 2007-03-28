@@ -107,8 +107,8 @@ function() {
 
 	var headerList = [];
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_PRIORITY], null, "Critical", ZmVoicemailListView.PRIORITY_WIDTH, null, false));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_CALLER], ZmMsg.from, null, ZmVoicemailListView.FROM_WIDTH, ZmVoicemailListView.F_CALLER, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_PLAYING], ZmMsg.message, null, ZmVoicemailListView.PLAYING_WIDTH, null, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_CALLER], ZmMsg.from, null, ZmVoicemailListView.FROM_WIDTH, null, true));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_PLAYING], ZmMsg.message, null, ZmVoicemailListView.PLAYING_WIDTH, ZmVoicemailListView.F_PLAYING, true));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_DATE], ZmMsg.received, null, ZmVoicemailListView.DATE_WIDTH, ZmVoicemailListView.F_DATE, true));
 
 	return headerList;
@@ -273,4 +273,15 @@ function(ev) {
 ZmVoicemailListView.prototype._getPriorityHtml =
 function(voicemail) {
 	return "";
+};
+
+ZmVoicemailListView.prototype._sortColumn =
+function(columnItem, bSortAsc) {
+	var sortBy;
+	switch (columnItem._sortable) {
+		case ZmVoicemailListView.F_PLAYING: sortBy = bSortAsc ? ZmSearch.DURATION_ASC : ZmSearch.DURATION_DESC; break;
+		case ZmVoicemailListView.F_DATE: sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC; break;
+		default: break;
+	}
+	this._appCtxt.getApp(ZmApp.VOICE).search(this._controller._folder, null, sortBy)
 };

@@ -104,6 +104,8 @@ ZmSearch.SUBJ_ASC 	= i++;
 ZmSearch.NAME_DESC 	= i++;
 ZmSearch.NAME_ASC 	= i++;
 ZmSearch.SCORE_DESC = i++;
+ZmSearch.DURATION_DESC	= i++; 
+ZmSearch.DURATION_ASC	= i++;
 
 ZmSearch.SORT_BY = {};
 ZmSearch.SORT_BY[ZmSearch.DATE_DESC] 	= "dateDesc";
@@ -113,6 +115,8 @@ ZmSearch.SORT_BY[ZmSearch.SUBJ_ASC] 	= "subjAsc";
 ZmSearch.SORT_BY[ZmSearch.NAME_DESC] 	= "nameDesc";
 ZmSearch.SORT_BY[ZmSearch.NAME_ASC] 	= "nameAsc";
 ZmSearch.SORT_BY[ZmSearch.SCORE_DESC]	= "scoreDesc";
+ZmSearch.SORT_BY[ZmSearch.DURATION_DESC]= "durDesc";
+ZmSearch.SORT_BY[ZmSearch.DURATION_ASC]	= "durAsc";
 
 ZmSearch.SORT_BY_MAP = {};
 for (var i in ZmSearch.SORT_BY)
