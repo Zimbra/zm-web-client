@@ -92,6 +92,9 @@
                         </c:otherwise>
                     </c:choose>
                     <zm:saveAppointment var="createResult" compose="${uploader.compose}" message="${message}"/>
+                    <c:if test="${not empty message and uploader.compose.apptFolderId ne message.folderId}">
+                        <zm:moveItem var="moveResult" id="${apptId}" folderid="${uploader.compose.apptFolderId}"/>
+                    </c:if>
                     <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
                     <app:status><fmt:message key="${empty message ? 'actionApptCreated' : 'actionApptSaved'}"/></app:status>
                     <c:set var="needEditView" value="${false}"/>

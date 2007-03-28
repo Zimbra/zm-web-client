@@ -194,7 +194,7 @@
 
                                                 <c:set var="numCalendars" value="0"/>
                                                 <zm:forEachFolder var="folder">
-                                                    <c:if test="${folder.isAppointmentView}">
+                                                    <c:if test="${folder.isAppointmentView and folder.isAppointmentMoveTarget}">
                                                         <c:set var="numCalendars" value="${numCalendars+1}"/>
                                                     </c:if>
                                                 </zm:forEachFolder>
@@ -205,7 +205,7 @@
                                                             <td>
                                                                 <select name='apptFolderId'>
                                                                     <zm:forEachFolder var="folder">
-                                                                        <c:if test="${folder.isAppointmentView}">
+                                                                        <c:if test="${folder.isAppointmentView and folder.isAppointmentMoveTarget}">
                                                                             <option value="${folder.id}" <c:if test="${compose.apptFolderId eq folder.id}">selected </c:if>/>
                                                                             ${fn:escapeXml(zm:getFolderName(pageContext, folder.id))}
                                                                         </c:if>
