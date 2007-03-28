@@ -67,6 +67,12 @@ ZmVoiceFolder.MISSED_CALL_ID = "1025";
 ZmVoiceFolder.VOICEMAIL_ID = "1024";
 ZmVoiceFolder.TRASH_ID = "1028";
 
+ZmVoiceFolder.SORT_ORDER = {};
+ZmVoiceFolder.SORT_ORDER[ZmVoiceFolder.PLACED_CALL] = 5;
+ZmVoiceFolder.SORT_ORDER[ZmVoiceFolder.ANSWERED_CALL] = 4;
+ZmVoiceFolder.SORT_ORDER[ZmVoiceFolder.MISSED_CALL] = 3;
+ZmVoiceFolder.SORT_ORDER[ZmVoiceFolder.VOICEMAIL] = 1;
+ZmVoiceFolder.SORT_ORDER[ZmVoiceFolder.TRASH] = 2;
 
 // Public methods
 
@@ -152,7 +158,14 @@ function(delta) {
 };
 
 ZmVoiceFolder.sortCompare =
-function(a, b) {
+function(folderA, folderB) {
+	if ((folderA instanceof ZmVoiceFolder) && (folderB instanceof ZmVoiceFolder)) {
+		var sortA = ZmVoiceFolder.SORT_ORDER[folderA.callType];
+		var sortB = ZmVoiceFolder.SORT_ORDER[folderB.callType];
+		if (sortA && sortB) {
+			return sortA - sortB;
+		}
+	}
 	return 0;
 };
 

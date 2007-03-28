@@ -42,6 +42,8 @@ function ZmVoiceTreeView(params) {
 ZmVoiceTreeView.prototype = new ZmTreeView;
 ZmVoiceTreeView.prototype.constructor = ZmVoiceTreeView;
 
+ZmTreeView.COMPARE_FUNC[ZmOrganizer.VOICE] = ZmVoiceFolder.sortCompare;
+
 // Public methods
 
 ZmVoiceTreeView.prototype.toString = 

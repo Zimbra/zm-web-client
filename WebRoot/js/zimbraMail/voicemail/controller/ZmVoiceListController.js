@@ -121,6 +121,7 @@ function(ev) {
 			this._actionEv.contact = contacts.getContactByPhone(view.getCallingParty(item));
 			this._setContactText(this._actionEv.contact != null);
 		}
+		this._resetOperations(actionMenu, this._getView().getSelectionCount());
 	} else  {
 	 	actionMenu = this.getActionMenu();
 	}
