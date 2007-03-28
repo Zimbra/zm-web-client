@@ -19,7 +19,7 @@
             <zm:saveDraft var="draftResult" compose="${uploader.compose}" draftid="${uploader.compose.draftId}"/>
             <c:set scope="request" var="draftid" value="${draftResult.id}"/>
             --%>
-                <jsp:forward page="/h/addcontacts"/>
+                <jsp:forward page="/h/addattendees"/>
             </c:when>
             <c:when test="${uploader.isAttachAdd}">
                 <%--
