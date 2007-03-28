@@ -36,14 +36,16 @@
 * @param appCtxt			[ZmAppCtxt]					the app context
 * @param view				[constant]					which page we are
 * @param controller			[ZmPrefController]			prefs controller
+* @param passwordDialog		[ZmChangePasswordDialog]	change password dialog
 */
-function ZmPreferencesPage(parent, appCtxt, view, controller) {
+function ZmPreferencesPage(parent, appCtxt, view, controller, passwordDialog) {
 
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 	
 	this._appCtxt = appCtxt;
 	this._view = view; // which preferences page we are
 	this._controller = controller;
+	this._passwordDialog = passwordDialog;
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[view]].join(": ");
 
 	this._dwtObjects = {};
@@ -88,7 +90,7 @@ function() {
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._view);
 
 	this._prefPresent = {};
-	var prefs = ZmPrefView.PREFS[this._view] || [];
+	var prefs = ZmPrefView.PREFS[this._view];
 	var settings = this._appCtxt.getSettings();
 	for (var i = 0; i < prefs.length; i++) {
 		var id = prefs[i];
@@ -462,7 +464,7 @@ function(buttonId, setup) {
 
 	// add color picker
 	id = ZmSetting.COMPOSE_INIT_FONT_COLOR;
-	var cp = new DwtButtonColorPicker(this);
+	var cp = new DwtButtonColorPicker(this, null, "DwtButton");
 	cp.setImage("FontColor");
 	cp.showColorDisplay(true);
 	cp.setToolTipContent(ZmMsg.fontColor);
@@ -481,14 +483,11 @@ function(buttonId, setup) {
 // Popup the change password dialog.
 ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
-	var passwordDialog = this._appCtxt.getChangePasswordDialog();
-	passwordDialog.registerCallback(DwtDialog.OK_BUTTON, this._controller._changePassword, this._controller);
-	passwordDialog.popup();
+	this._passwordDialog.popup();
 };
 
 ZmPreferencesPage.prototype._exportContactsListener =
 function(ev) {
-	AjxDispatcher.require(["ContactsCore", "Contacts"]);
 	var dialog = this._appCtxt.getChooseFolderDialog();
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._exportOkCallback, this, dialog);
@@ -496,8 +495,7 @@ function(ev) {
 	var omit = {};
 	omit[ZmFolder.ID_TRASH] = true;
 
-	dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], omit:omit,
-				  title:ZmMsg.chooseAddrBook, description:ZmMsg.chooseAddrBookToExport});
+	dialog.popup([ZmOrganizer.ADDRBOOK], omit, false, ZmMsg.chooseFolderToExport);
 };
 
 ZmPreferencesPage.prototype._importContactsListener =
@@ -506,15 +504,13 @@ function(ev) {
 	var val = fileInput ? AjxStringUtil.trim(fileInput.value) : null;
 
 	if (val) {
-		AjxDispatcher.require(["ContactsCore", "Contacts"]);
-		var dialog = this._appCtxt.getChooseFolderDialog();
+		var dialog = this._appCtxt.getMoveToDialog();
 		dialog.reset();
 		dialog.setTitle(ZmMsg._import);
 		dialog.registerCallback(DwtDialog.OK_BUTTON, this._importOkCallback, this, dialog);
 
 		var blankContact = new ZmContact(this._appCtxt);
-		dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook,
-					  description:ZmMsg.chooseAddrBookToImport});
+		dialog.popup([blankContact]);
 	}
 };
 

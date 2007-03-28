@@ -6,8 +6,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+
 <app:handleError>
-    <zm:getMailbox var="mailbox"/>
     <app:composeCheck/>
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
     <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
@@ -32,6 +32,8 @@
              <app:contactListViewAction/>
          </c:when>
      </c:choose>
+
+    <zm:getMailbox var="mailbox"/>
     <zm:computeSearchContext var="context" usecache="true"/>
 </app:handleError>
 
@@ -59,9 +61,6 @@
         <app:contactListView context="${context}"/>
     </c:when>
     <c:otherwise>
-        <fmt:message key="error" var="title"/>
-        <app:view mailbox="${mailbox}" title="${title}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="" keys="true">
-            <fmt:message key="ztaglib.TAG_EXCEPTION"/>
-        </app:view>
+        mixed view Types (${context.types})
     </c:otherwise>
 </c:choose>

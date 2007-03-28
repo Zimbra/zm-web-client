@@ -220,7 +220,7 @@ function(ev) {
 		if (ev.item.isDraft) {
 			this._doAction(ev, ZmOperation.DRAFT);
 		} else {
-			AjxDispatcher.run("GetConvController").show(this._activeSearch, ev.item);
+			this._app.getConvController().show(this._activeSearch, ev.item);
 		}
 	}
 };

@@ -5,14 +5,14 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+
 <app:handleError>
-    <zm:getMailbox var="mailbox"/>
     <zm:getContact id="${empty param.id ? context.currentItem.id : param.id}" var="contact"/>
     <zm:currentResultUrl var="closeUrl" value="/h/search" context="${context}"/>
     <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${contact.displayFileAs}" selected="contacts" contacts="true" tags="true" context="${context}" keys="true">
+<app:view title="${contact.displayFileAs}" selected="contacts" contacts="true" tags="true" context="${context}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="search" action="view" context="${context}"/>
     <form action="${currentUrl}" method="post">
         <table width=100% cellpadding="0" cellspacing="0">

@@ -29,25 +29,22 @@ function ZmBrowseToolBar(parent, pickers) {
 	
 	for (var i = 0; i < pickers.length; i++) {
 		var id = pickers[i];
-		var b = this.createButton(id, {image:ZmPicker.IMAGE[id], text:ZmMsg[ZmPicker.MSG_KEY[id]],
-									   tooltip:ZmMsg[ZmPicker.TT_MSG_KEY[id]]});
+		var b = this._createButton(id, ZmPicker.IMAGE[id], ZmMsg[ZmPicker.MSG_KEY[id]], null, ZmMsg[ZmPicker.TT_MSG_KEY[id]], true);
 		b.setData(ZmPicker.KEY_ID, id);
 		b.setData(ZmPicker.KEY_CTOR, ZmPicker.CTOR[id]);
 	}
 
-	this.addSeparator();
+	this._createSeparator();
 
 	var id = ZmPicker.RESET;
-	var b = this.createButton(id, {image:ZmPicker.IMAGE[id], text:ZmMsg[ZmPicker.MSG_KEY[id]],
-								   tooltip:ZmMsg[ZmPicker.TT_MSG_KEY[id]]});
+	var b = this._createButton(id, ZmPicker.IMAGE[id], ZmMsg[ZmPicker.MSG_KEY[id]], null, ZmMsg[ZmPicker.TT_MSG_KEY[id]], true);
 	b.setData(ZmPicker.KEY_ID, id);
 
 	this.addFiller();
 
 	var id = ZmPicker.CLOSE;
-	var text = AjxEnv.is800x600orLower ? null : ZmMsg[ZmPicker.MSG_KEY[id]];
-	var b = this.createButton(id, {image:ZmPicker.IMAGE[id], text:text,
-								   tooltip:ZmMsg[ZmPicker.TT_MSG_KEY[id]]});
+	var label = AjxEnv.is800x600orLower ? null : ZmMsg[ZmPicker.MSG_KEY[id]];
+	var b = this._createButton(id, ZmPicker.IMAGE[id], label, null, ZmMsg[ZmPicker.TT_MSG_KEY[id]], true);
 	b.setData(ZmPicker.KEY_ID, id);
 }
 

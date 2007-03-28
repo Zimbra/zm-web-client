@@ -5,12 +5,13 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+
 <app:handleError>
-    <zm:getMailbox var="mailbox"/>
     <app:searchTitle var="title" context="${context}"/>
     <fmt:message key="noSubject" var="noSubject"/>
     <fmt:message var="unknownRecipient" key="unknownRecipient"/>
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
+    <zm:getMailbox var="mailbox"/>
     <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
     <c:if test="${false and mailbox.prefs.readingPaneEnabled}">
         <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="true" neuterimages="${empty param.xim}"/>
@@ -19,7 +20,7 @@
     </c:if>
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${title}" context="${context}" selected='mail' folders="true" tags="true" searches="true" keys="true">
+<app:view title="${title}" context="${context}" selected='mail' folders="true" tags="true" searches="true" keys="true">
 
 <form action="${currentUrl}" method="post" name="zform">
     <table width=100% cellpadding="0" cellspacing="0">

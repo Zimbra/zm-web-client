@@ -9,6 +9,8 @@
 	// Set standard HTTP/1.0 no-cache header.
 	response.setHeader("Pragma", "no-cache");
 %><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
 <!--
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
@@ -32,12 +34,13 @@
  * Contributor(s):
  *
  * ***** END LICENSE BLOCK *****
--->
-<html>
-<head>
-<%
+--><%
 	String contextPath = request.getContextPath();
-	if(contextPath.equals("/")) contextPath = "";
+	if(contextPath.equals("/")) {
+		contextPath = "";
+	}
+
+	String full = request.getParameter("full");
 
     String skin = request.getParameter("skin");
     if (skin == null) {
@@ -52,7 +55,6 @@
 
 	String ext = (String) request.getAttribute("fileExtension");
 	if (ext == null) ext = "";
-
     Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
 %>
 <title><fmt:setBundle basename="/msgs/ZmMsg"/><fmt:message key="zimbraTitle"/></title>
@@ -61,7 +63,7 @@
 	appCurrentSkin = "<%=skin %>";
 </script>
 
-<jsp:include page="Messages.jsp"/>
+<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
 <script type="text/javascript" src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %>"></script>
 <style type="text/css">
 	<!--
@@ -69,33 +71,28 @@
     -->
 </style>
 
-<jsp:include page="Boot.jsp"/>
-<%
-    String packages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore,CalendarCore,ContactsCore,PreferencesCore,Mail";
+<% if (inDevMode) { %>
+    <jsp:include page="Boot.jsp"/>
+	<%if (full != null) {%>
+		<jsp:include page="Ajax.jsp"/>
+		<jsp:include page="Zimbra.jsp"/>
+		<jsp:include page="ZimbraMail.jsp"/>
+	<% } else { %>
+		<jsp:include page="AjaxNewWindow.jsp"/>
+		<jsp:include page="Zimbra.jsp"/>
+		<jsp:include page="ZimbraNewWindow.jsp"/>
+	<% } %>
+<% } else { %>
+	<%if (full != null) {%>
+		<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
+		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraMail_all.js<%= ext %>?v=<%= vers %>"></script>
+	<% } else { %>
+		<script type="text/javascript" src="<%= contextPath %>/js/AjaxNewWindow_all.js<%= ext %>?v=<%= vers %>"></script>
+		<script type="text/javascript" src="<%= contextPath %>/js/ZimbraNewWindow_all.js<%= ext %>?v=<%= vers %>"></script>
+	<% } %>
+<% } %>
 
-    String extraPackages = request.getParameter("packages");
-    if (extraPackages != null) packages += ","+extraPackages;
-
-    String pprefix = inDevMode ? "public/jsp" : "js";
-    String psuffix = inDevMode ? ".jsp" : "_all.js";
-
-    String[] pnames = packages.split(",");
-    for (String pname : pnames) {
-        String pageurl = "/"+pprefix+"/"+pname+psuffix;
-        if (inDevMode) { %>
-            <jsp:include>
-                <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
-            </jsp:include>
-        <% } else { %>
-            <script type="text/javascript" src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script>
-        <% } %>
-    <% }
-%>
-<script type="text/javascript">
-AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
-</script>
-
-    <script type="text/javascript" language="JavaScript">
+	<script type="text/javascript" language="JavaScript">
 		var cacheKillerVersion = "<%= vers %>";
 		function launch() {
 			AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp"

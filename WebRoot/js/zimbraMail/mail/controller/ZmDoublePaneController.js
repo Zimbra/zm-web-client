@@ -183,7 +183,9 @@ function() {
 	list = list.concat(this._standardActionMenuOps());
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.SHOW_ORIG);
-	list.push(ZmOperation.ADD_FILTER_RULE);
+	if (this._appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
+		list.push(ZmOperation.ADD_FILTER_RULE);
+	}
 	return list;
 };
 
@@ -248,7 +250,7 @@ function(view, menu, checked, itemId) {
 		menu = new ZmPopupMenu(appToolbar.getViewButton());
 	}
 	if (!menu._menuItems[id]) {
-		var mi = menu.createMenuItem(id, {image:"SplitPane", text:ZmMsg.readingPane, style:DwtMenuItem.CHECK_STYLE});
+		var mi = menu.createMenuItem(id, "SplitPane", ZmMsg.readingPane, null, true, DwtMenuItem.CHECK_STYLE);
 		mi.setData(ZmOperation.MENUITEM_ID, id);
 		mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
 		mi.setChecked(checked, true);
@@ -386,7 +388,7 @@ function(ev) {
 				this._doAction(ev, ZmOperation.DRAFT);
 			} else if (!this._readingPaneOn) {
 				try {
-					AjxDispatcher.run("GetMsgController").show(msg, currView._mode);
+					this._app.getMsgController().show(msg, currView._mode);
 
 					// if msg is cached, then mark read if unread
 					if (msg.isLoaded() && msg.isUnread)
@@ -447,13 +449,12 @@ function(ev) {
 	var msg = this._listView[this._currentView].getSelection()[0];
 	if (!msg) return;
 	
-	AjxDispatcher.require(["PreferencesCore", "Preferences"]);
 	var rule = new ZmFilterRule();
-	var from = msg.getAddress(AjxEmailAddress.FROM);
+	var from = msg.getAddress(ZmEmailAddress.FROM);
 	if (from) rule.addCondition(new ZmCondition(ZmFilterRule.C_FROM, ZmFilterRule.OP_CONTAINS, from.address));
-	var to = msg.getAddress(AjxEmailAddress.TO);
+	var to = msg.getAddress(ZmEmailAddress.TO);
 	if (to)	rule.addCondition(new ZmCondition(ZmFilterRule.C_TO, ZmFilterRule.OP_CONTAINS, to.address));
-	var cc = msg.getAddress(AjxEmailAddress.CC);
+	var cc = msg.getAddress(ZmEmailAddress.CC);
 	if (cc)	rule.addCondition(new ZmCondition(ZmFilterRule.C_CC, ZmFilterRule.OP_CONTAINS, cc.address));
 	var subj = msg.getSubject();
 	if (subj) rule.addCondition(new ZmCondition(ZmFilterRule.C_SUBJECT, ZmFilterRule.OP_IS, subj));

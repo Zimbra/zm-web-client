@@ -254,7 +254,7 @@ ZmNotebookPageController.prototype._showIndex = function(folderId) {
 ZmNotebookPageController.__setButtonToolTip = function(appCtxt, button, pageRef, defaultValue) {
 	var text = pageRef ? pageRef.name : defaultValue;
 	if (text == ZmNotebook.PAGE_INDEX) {
-		var notebook = appCtxt.getById(pageRef.folderId);
+		var notebook = appCtxt.getTree(ZmOrganizer.NOTEBOOK).getById(pageRef.folderId);
 		if (notebook) {
 			text = notebook.getName();
 		}

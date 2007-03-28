@@ -42,12 +42,12 @@
 </app:handleError>
 
 
-<app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
+<app:view title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
     <c:set var="toolbar">
         <table width=100% cellspacing=0 cellpadding=0>
             <tr valign='middle'>
-                <td align=left class="TbBt">
-                    <table cellspacing=0 cellpadding=0 class='Tb'>
+                <td>
+                    <table cellspacing=2 cellpadding=0 class='Tb'>
                         <tr>
                             <app:button name="actionSend" src="mail/Send.gif" tooltip="send" text="send"/>
                             <td><div class='vertSep'></div></td>
@@ -168,10 +168,6 @@
         <input type="hidden" name="inreplyto" value="${fn:escapeXml(compose.inReplyTo)}"/>
         <input type="hidden" name="messageid" value="${fn:escapeXml(compose.messageId)}"/>
         <input type="hidden" name="replytype" value="${fn:escapeXml(compose.replyType)}"/>
-        <input type="hidden" name="inviteReplyVerb" value="${fn:escapeXml(compose.inviteReplyVerb)}"/>
-        <input type="hidden" name="inviteReplyInst" value="${fn:escapeXml(compose.inviteReplyInst)}"/>
-        <input type="hidden" name="inviteReplyAllDay" value="${fn:escapeXml(compose.inviteReplyAllDay)}"/>        
-
         <c:if test="${message.isDraft}">
             <input type="hidden" name="draftid" value="${message.id}"/>
         </c:if>

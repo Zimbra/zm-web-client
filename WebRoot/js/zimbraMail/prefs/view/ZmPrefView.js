@@ -35,16 +35,16 @@
 * @param appCtxt			[ZmAppCtxt]					the app context
 * @param posStyle			[constant]					positioning style
 * @param controller			[ZmPrefController]			prefs controller
+* @param passwordDialog		[ZmChangePasswordDialog]	password change dialog
 */
-function ZmPrefView(parent, appCtxt, posStyle, controller) {
+function ZmPrefView(parent, appCtxt, posStyle, controller, passwordDialog) {
 
     DwtTabView.call(this, parent, "ZmPrefView", posStyle);
 
-	ZmPrefView._setViewPrefs();
-	
 	this._parent = parent;
     this._appCtxt = appCtxt;
 	this._controller = controller;
+	this._passwordDialog = passwordDialog;
 
     this.setScrollStyle(DwtControl.SCROLL);
 	this.prefView = {};
@@ -79,15 +79,12 @@ ZmPrefView.VIEWS = [
 
 // list of prefs for each page
 ZmPrefView.PREFS = {};
-ZmPrefView._setViewPrefs =
-function() {
-	ZmPrefView.PREFS[ZmPrefView.ADDR_BOOK]			= ZmPref.ADDR_BOOK_PREFS;
-	ZmPrefView.PREFS[ZmPrefView.CALENDAR]			= ZmPref.CALENDAR_PREFS;
-	ZmPrefView.PREFS[ZmPrefView.GENERAL]			= ZmPref.GENERAL_PREFS;
-	ZmPrefView.PREFS[ZmPrefView.MAIL]				= ZmPref.MAIL_PREFS;
-	ZmPrefView.PREFS[ZmPrefView.POP_ACCOUNTS]       = ZmPref.POP_ACCOUNTS_PREFS;
-	ZmPrefView.PREFS[ZmPrefView.SHORTCUTS]			= ZmPref.SHORTCUT_PREFS;
-};
+ZmPrefView.PREFS[ZmPrefView.ADDR_BOOK]			= ZmPref.ADDR_BOOK_PREFS;
+ZmPrefView.PREFS[ZmPrefView.CALENDAR]			= ZmPref.CALENDAR_PREFS;
+ZmPrefView.PREFS[ZmPrefView.GENERAL]			= ZmPref.GENERAL_PREFS;
+ZmPrefView.PREFS[ZmPrefView.MAIL]				= ZmPref.MAIL_PREFS;
+ZmPrefView.PREFS[ZmPrefView.POP_ACCOUNTS]       = ZmPref.POP_ACCOUNTS_PREFS;
+ZmPrefView.PREFS[ZmPrefView.SHORTCUTS]			= ZmPref.SHORTCUT_PREFS;
 
 // title for the page's tab
 ZmPrefView.TAB_NAME = {};
@@ -138,9 +135,9 @@ function() {
 		} else if (view == ZmPrefView.IDENTITY) {
 			viewObj = this._controller.getIdentityController().getListView();
         } else if (view == ZmPrefView.POP_ACCOUNTS) {
-            viewObj = AjxDispatcher.run("GetPopAccountsController").getListView();
+            viewObj = this._controller._app.getPopAccountsController().getListView();
         } else {
-			viewObj = new ZmPreferencesPage(this._parent, this._appCtxt, view, this._controller);
+			viewObj = new ZmPreferencesPage(this._parent, this._appCtxt, view, this._controller, this._passwordDialog);
 		}
 
 		this.prefView[view] = viewObj;

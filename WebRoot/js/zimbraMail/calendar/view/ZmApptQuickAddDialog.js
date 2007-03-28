@@ -86,13 +86,13 @@ function(appt) {
 	// reset fields...
 	this._subjectField.setValue(appt.getName() ? appt.getName() : "");
 	this._locationField.setValue(appt.getLocation() ? appt.getLocation() : "");
-	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(appt.startDate);
-	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(appt.endDate);
+	this._startDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getStartDate());
+	this._endDateField.value = AjxDateUtil.simpleComputeDateStr(appt.getEndDate());
 	var isAllDay = appt.isAllDayEvent();
 	this._showTimeFields(!isAllDay);
 	if (!isAllDay) {
-		this._startTimeSelect.set(appt.startDate);
-		this._endTimeSelect.set(appt.endDate);
+		this._startTimeSelect.set(appt.getStartDate());
+		this._endTimeSelect.set(appt.getEndDate());
 	}
 	this._showAsSelect.setSelectedValue("B");
 	this._resetCalendarSelect(appt);
@@ -100,14 +100,14 @@ function(appt) {
 	this._repeatDescField.innerHTML = "";
 
 	this._origFormValue = this._formValue();
-	this._attendees[ZmCalItem.LOCATION] = new AjxVector();	// list of ZmResource
+	this._attendees[ZmAppt.LOCATION] = new AjxVector();	// list of ZmResource
 	
 	// autocomplete for locations
 	if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 		var shell = this._appCtxt.getShell();
-		var resourcesClass = this._appCtxt.getApp(ZmApp.CALENDAR);
+		var resourcesClass = this._appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
 		var params = {parent: shell, dataClass: resourcesClass, dataLoader: resourcesClass.getLocations,
-					  matchValue: ZmContactsApp.AC_VALUE_NAME};
+					  matchValue: ZmContactList.AC_VALUE_NAME};
 		this._acLocationsList = new ZmAutocompleteListView(params);
 		this._acLocationsList.handle(this._locationField.getInputElement());
 	}
@@ -118,7 +118,7 @@ ZmApptQuickAddDialog.prototype.getAppt =
 function() {
 	// create a copy of the appointment so we dont muck w/ the original
 	var appt = ZmAppt.quickClone(this._appt);
-	appt.setViewMode(ZmCalItem.MODE_NEW);
+	appt.setViewMode(ZmAppt.MODE_NEW);
 
 	// save field values of this view w/in given appt
 	appt.setName(this._subjectField.getValue());
@@ -139,8 +139,10 @@ function() {
 	}
 	appt.setStartDate(startDate);
 	appt.setEndDate(endDate);
-	appt.setRecurType(this._repeatSelect.getValue());
-	appt.setAttendees(AjxEmailAddress.split(this._locationField.getValue()), ZmCalItem.LOCATION);
+
+	appt.repeatType = this._repeatSelect.getValue();
+	
+	appt.setAttendees(ZmEmailAddress.split(this._locationField.getValue()), ZmAppt.LOCATION);
 
 	return appt;
 };
@@ -284,8 +286,8 @@ function() {
 
 	// create DwtSelects
 	this._showAsSelect = new DwtSelect(this);
-	for (var i = 0; i < ZmApptEditView.SHOWAS_OPTIONS.length; i++) {
-		var option = ZmApptEditView.SHOWAS_OPTIONS[i];
+	for (var i = 0; i < ZmApptTabViewPage.SHOWAS_OPTIONS.length; i++) {
+		var option = ZmApptTabViewPage.SHOWAS_OPTIONS[i];
 		this._showAsSelect.addOption(option.label, option.selected, option.value);
 	}
 	this._showAsSelect.reparentHtmlElement(this._showAsSelectId);
@@ -297,8 +299,8 @@ function() {
 	var dateButtonListener = new AjxListener(this, this._dateButtonListener);
 	var dateCalSelectionListener = new AjxListener(this, this._dateCalSelectionListener);
 
-	this._startDateButton = ZmCalendarApp.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
-	this._endDateButton = ZmCalendarApp.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
+	this._startDateButton = ZmApptViewHelper.createMiniCalButton(this, this._startMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
+	this._endDateButton = ZmApptViewHelper.createMiniCalButton(this, this._endMiniCalBtnId, dateButtonListener, dateCalSelectionListener, this._appCtxt, true);
 
 	// create selects for Time section
 	var timeSelectListener = new AjxListener(this, this._timeChangeListener);
@@ -346,25 +348,26 @@ function() {
 ZmApptQuickAddDialog.prototype._resetCalendarSelect = 
 function(appt) {
 	// get all folders w/ view set to "Appointment" we received from initial refresh block
-	var org = ZmOrganizer.ITEM_ORGANIZER[appt.type];
-	var data = this._appCtxt.getFolderTree().getByType(org);
-
-	this._calendarSelect.clearOptions();
-	this._calendarOrgs = [];
-	for (var i = 0; i < data.length; i++) {
-		var cal = data[i];
-		this._calendarOrgs[cal.id] = cal.owner;
-		// don't show calendar if remote or don't have write perms
-		if (cal.url) continue;
-		if (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()) continue;
-		this._calendarSelect.addOption(cal.getName(), false, cal.id);
+	var calTreeData = this._appCtxt.getOverviewController().getTreeData(ZmOrganizer.CALENDAR);
+	if (calTreeData && calTreeData.root) {
+		this._calendarSelect.clearOptions();
+		this._calendarOrgs = [];
+		var children = calTreeData.root.children.getArray();
+		var len = children.length;
+		Dwt.setVisibility(this._calendarSelect.getHtmlElement(), len>1);
+		Dwt.setVisibility(this._calLabelField, len>1);
+		if (len>1) {
+			for (var i = 0; i < len; i++) {
+				var cal = children[i];
+				this._calendarOrgs[cal.id] = cal.owner;
+				// don't show calendar if remote or don't have write perms
+				if (cal.url) continue;
+				if (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()) continue;
+				this._calendarSelect.addOption(cal.getName(), false, cal.id);
+			}
+		}
+		this._calendarSelect.setSelectedValue(appt.getFolderId());
 	}
-
-	var len = this._calendarSelect.size();
-	Dwt.setVisibility(this._calendarSelect.getHtmlElement(), len>1);
-	Dwt.setVisibility(this._calLabelField, len>1);
-
-	this._calendarSelect.setSelectedValue(appt.folderId);
 };
 
 ZmApptQuickAddDialog.prototype._showTimeFields = 

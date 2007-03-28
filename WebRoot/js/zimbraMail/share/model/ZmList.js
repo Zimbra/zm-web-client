@@ -57,7 +57,7 @@ function ZmList(type, appCtxt, search) {
 	this._hasMore = false;
 	this._idHash = new Object();
 
-	var tagList = appCtxt.getTagTree();
+	var tagList = appCtxt.getTree(ZmOrganizer.TAG);
 	if (tagList) {
 		this._tagChangeListener = new AjxListener(this, this._tagTreeChangeListener);
 		tagList.addChangeListener(this._tagChangeListener);
@@ -69,22 +69,41 @@ ZmList.prototype.constructor = ZmList;
 
 // for item creation
 ZmList.ITEM_CLASS = {};
+ZmList.ITEM_CLASS[ZmItem.CONV]		= "ZmConv";
+ZmList.ITEM_CLASS[ZmItem.MSG]		= "ZmMailMsg";
+ZmList.ITEM_CLASS[ZmItem.ATT]		= "ZmMimePart";
+ZmList.ITEM_CLASS[ZmItem.CONTACT]	= "ZmContact";
+ZmList.ITEM_CLASS[ZmItem.APPT]		= "ZmAppt";
+ZmList.ITEM_CLASS[ZmItem.RESOURCE]	= "ZmResource";
+ZmList.ITEM_CLASS[ZmItem.PAGE]		= "ZmPage";
+ZmList.ITEM_CLASS[ZmItem.DOCUMENT]	= "ZmDocument";
 
 // node names for item types
 ZmList.NODE = {};
+ZmList.NODE[ZmItem.CONV]		= "c";
+ZmList.NODE[ZmItem.MSG]			= "m";
+ZmList.NODE[ZmItem.ATT]			= "mp";
+ZmList.NODE[ZmItem.CONTACT]		= "cn";
+ZmList.NODE[ZmItem.RESOURCE]	= "calresource";
+ZmList.NODE[ZmItem.PAGE]		= "w";
+ZmList.NODE[ZmItem.DOCUMENT]	= "doc";
 
-// item types based on node name (reverse map of above)
+// item types based on node name
 ZmList.ITEM_TYPE = {};
+for (var i in ZmList.NODE) {
+	ZmList.ITEM_TYPE[ZmList.NODE[i]] = i;
+}
 
-ZmList.SEARCH_TYPES = [ZmItem.NOTE];
+ZmList.TYPES = [
+	ZmItem.CONTACT, ZmItem.CONV, ZmItem.MSG, ZmItem.ATT, ZmItem.APPT,
+	ZmItem.PAGE, ZmItem.DOCUMENT
+];
+ZmList.MIXED = -1; // special type for heterogeneous list
 
 ZmList.prototype.toString = 
 function() {
 	return "ZmList";
-};
-
-// abstract methods
-ZmList.prototype.getPrintHtml = function(preferHtml, callback) {};
+}
 
 /**
 * Adds an item to the list.
@@ -284,7 +303,7 @@ function(offset, newList) {
 */
 ZmList.prototype.flagItems =
 function(items, flagOp, on) {
-	if (this.type == ZmItem.MIXED && !this._mixedType) {
+	if (this.type == ZmList.MIXED && !this._mixedType) {
 		this._mixedAction("flagItems", [items, flagOp, on]);
 		return;
 	}
@@ -303,7 +322,7 @@ function(items, flagOp, on) {
 */
 ZmList.prototype.tagItems =
 function(items, tagId, doTag) {
-	if (this.type == ZmItem.MIXED && !this._mixedType) {
+	if (this.type == ZmList.MIXED && !this._mixedType) {
 		this._mixedAction("tagItems", [items, tagId, doTag]);
 		return;
 	}
@@ -324,7 +343,7 @@ function(items, tagId, doTag) {
 
 ZmList.prototype.removeAllTags = 
 function(items) {
-	if (this.type == ZmItem.MIXED && !this._mixedType) {
+	if (this.type == ZmList.MIXED && !this._mixedType) {
 		this._mixedAction("removeAllTags", [items]);
 		return;
 	}
@@ -347,7 +366,7 @@ function(items) {
 */
 ZmList.prototype.moveItems =
 function(items, folder, attrs) {
-	if (this.type == ZmItem.MIXED && !this._mixedType) {
+	if (this.type == ZmList.MIXED && !this._mixedType) {
 		this._mixedAction("moveItems", [items, folder, attrs]);
 		return;
 	}
@@ -357,7 +376,7 @@ function(items, folder, attrs) {
 	attrs.l = folder.id;
 	
 	var respCallback = null;
-	if (this.type == ZmItem.MIXED)
+	if (this.type == ZmList.MIXED)
 		respCallback = new AjxCallback(this, this._handleResponseMoveItems, folder);
 	this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback});
 };
@@ -400,7 +419,7 @@ function(items, folder, attrs) {
 */
 ZmList.prototype.deleteItems =
 function(items, hardDelete, attrs) {
-	if (this.type == ZmItem.MIXED && !this._mixedType) {
+	if (this.type == ZmList.MIXED && !this._mixedType) {
 		this._mixedAction("deleteItems", [items, hardDelete, attrs]);
 		return;
 	}
@@ -411,7 +430,7 @@ function(items, hardDelete, attrs) {
 	var toDelete = new Array();	
 	for (var i = 0; i < items.length; i++) {
 		var folderId = items[i].getFolderId();
-		var folder = this._appCtxt.getById(folderId);
+		var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
 		if (hardDelete || (folder && folder.isInTrash()))
 			toDelete.push(items[i]);
 		else
@@ -420,7 +439,7 @@ function(items, hardDelete, attrs) {
 
 	// soft delete - items moved to Trash
 	if (toMove.length)
-		this.moveItems(toMove, this._appCtxt.getById(ZmFolder.ID_TRASH), attrs);
+		this.moveItems(toMove, this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_TRASH), attrs);
 
 	// hard delete - items actually deleted from data store
 	if (toDelete.length)
@@ -488,7 +507,7 @@ ZmList.prototype._itemAction =
 function(params, batchCmd) {
 	var actionedItems = new Array();
 	var idHash = this._getIds(params.items);
-	var idStr = idHash.list.join(",");
+	var idStr = idHash.list.join(",");;
 	if (!(idStr && idStr.length)) {
 		if (params.callback)
 			params.callback.run(new ZmCsfeResult(actionedItems));
@@ -496,10 +515,10 @@ function(params, batchCmd) {
 			return actionedItems;
 	}
 
-	var type = (this.type == ZmItem.MIXED) ? this._mixedType : this.type;
+	var type = (this.type == ZmList.MIXED) ? this._mixedType : this.type;
 	if (!type) return;
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
-	var soapDoc = AjxSoapDoc.create(soapCmd, this._getActionNamespace());
+	var soapDoc = AjxSoapDoc.create(soapCmd, "urn:zimbraMail");
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("id", idStr);
 	actionNode.setAttribute("op", params.action);
@@ -611,11 +630,6 @@ ZmList.prototype._redoSearch =
 function(ctlr) {
 	var sc = this._appCtxt.getSearchController();
 	sc.redoSearch(ctlr._currentSearch);
-};
-
-ZmList.prototype._getActionNamespace =
-function() {
-	return "urn:zimbraMail";
 };
 
 ZmList.prototype._folderTreeChangeListener = 

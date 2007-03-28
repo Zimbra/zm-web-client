@@ -23,22 +23,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmZimlet(id, name, parent, tree, color) {
-	ZmOrganizer.call(this, {type: ZmOrganizer.ZIMLET, id: id, name: name, parent: parent, tree: tree});
+function ZmZimlet(id, name, parent, tree, color, link) {
+	ZmOrganizer.call(this, ZmOrganizer.ZIMLET, id, name, parent, tree);
 }
 
-ZmEvent.S_ZIMLET	= "ZIMLET";
-ZmOrganizer.ZIMLET	= ZmEvent.S_ZIMLET;
-
+ZmZimlet.prototype = new ZmOrganizer();
+ZmZimlet.prototype.constructor = ZmZimlet;
 // test hack 
 ZmZimlet.actionMenus = {};
 ZmZimlet.actionMenus["ZmCalViewController"] = [];
 ZmZimlet.listeners = {};
 ZmZimlet.listeners["ZmCalViewController"] = {};
-
-ZmZimlet.prototype = new ZmOrganizer();
-ZmZimlet.prototype.constructor = ZmZimlet;
-
+//
 ZmZimlet.prototype.toString =
 function() {
 	return "ZmZimlet - " + this.name;

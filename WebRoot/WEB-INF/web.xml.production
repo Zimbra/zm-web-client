@@ -160,10 +160,6 @@
 		<servlet-name>SkinResources</servlet-name>
 		<url-pattern>/html/*</url-pattern>
 	</servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>SkinResources</servlet-name>
-        <url-pattern>/js/skin.js</url-pattern>
-    </servlet-mapping>
 
 	<welcome-file-list>
         <welcome-file>login</welcome-file>

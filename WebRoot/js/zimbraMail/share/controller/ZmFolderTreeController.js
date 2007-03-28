@@ -39,13 +39,15 @@ function ZmFolderTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length == 0) return;
 
 	type = type ? type : ZmOrganizer.FOLDER;
-	dropTgt = dropTgt ? dropTgt : this._getDropTarget(appCtxt);
+	var list =[ZmFolder, ZmSearchFolder, ZmConv, ZmMailMsg];
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		list.push(ZmContact);
+	}
+	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(list);
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
 
 	this._listeners[ZmOperation.NEW_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
-	this._listeners[ZmOperation.SHARE_FOLDER] = new AjxListener(this, this._shareAddrBookListener);
-	this._listeners[ZmOperation.MOUNT_FOLDER] = new AjxListener(this, this._mountAddrBookListener);
 };
 
 ZmFolderTreeController.prototype = new ZmTreeController;
@@ -60,21 +62,23 @@ function() {
 
 /**
 * Displays a folder tree. Certain folders are hidden.
+*
+* @param overviewId		[constant]	overview ID
+* @param showUnread		[boolean]*	if true, unread counts will be shown
+* @param omit			[Object]*	hash of organizer IDs to ignore
+* @param forceCreate	[boolean]*	if true, tree view will be created
+* @param searchTypes	[hash]*		types of saved searches to show
 */
 ZmFolderTreeController.prototype.show = 
-function(params) {
-	var omit = params.omit || {};
-	for (var id in ZmFolder.HIDE_ID) {
-		omit[id] = true;		
-	}
-	for (var name in ZmFolder.HIDE_NAME) {
+function(overviewId, showUnread, omit, forceCreate, searchTypes) {
+	for (var name in ZmFolder.HIDE) {
 		var folder = this._dataTree.getByName(name);
 		if (folder) {
+			if (!omit) omit = {};
 			omit[folder.id] = true;
 		}
 	}
-	params.omit = omit;
-	ZmTreeController.prototype.show.call(this, params);
+	ZmTreeController.prototype.show.apply(this, [overviewId, showUnread, omit, forceCreate, searchTypes]);
 };
 
 /**
@@ -86,18 +90,13 @@ function(params) {
 ZmFolderTreeController.prototype.resetOperations = 
 function(parent, type, id) {
 	var deleteText = ZmMsg.del;
-	var folder = this._appCtxt.getById(id);
-
+	var folder = this._dataTree.getById(id);
 	// user folder or Folders header
-	if (id == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder()))
-	{
+	if (id == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder())) {
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed());
-		parent.enable([ZmOperation.MOVE, ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], !folder.link);
-	}
 	// system folder
-	else
-	{
+	} else {
 		parent.enableAll(false);
 		// can't create folders under Drafts or Junk
 		if (id == ZmFolder.ID_INBOX || id == ZmFolder.ID_SENT || id == ZmFolder.ID_TRASH)
@@ -107,15 +106,7 @@ function(parent, type, id) {
 			deleteText = (id == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
 			parent.enable(ZmOperation.DELETE, true);
 		}
-		// only allow Inbox and Sent system folders to be share-able for now
-		if (!folder.link && (id == ZmFolder.ID_INBOX || id == ZmFolder.ID_SENT))
-			parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], true);
 	}
-
-	if (folder.link && folder.isReadOnly()) {
-		parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ, ZmOperation.RENAME_FOLDER], false);
-	}
-
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
 	if (id != ZmOrganizer.ID_ROOT)
 		parent.enable(ZmOperation.MARK_ALL_READ, (folder.numUnread > 0));
@@ -131,15 +122,19 @@ function(parent, type, id) {
         button.setVisible(true);
         if (folder.isFeed()) {
             button.setText(ZmMsg.checkFeed);
-        } else if (this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
-            var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
+        }
+        else if (this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
+            var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
+            var dsCollection = prefsApp.getDataSourceCollection();
             var popAccounts = dsCollection.getPopAccountsFor(folder.id);
             if (popAccounts.length > 0) {
                 button.setText(ZmMsg.checkPopMail);
-            } else {
+            }
+            else {
                 button.setVisible(false);
             }
-        } else {
+        }
+        else {
             button.setVisible(false);
         }
     }
@@ -152,7 +147,7 @@ function(parent, type, id) {
 */
 ZmFolderTreeController.prototype._getHeaderActionMenuOps =
 function() {
-	return [ZmOperation.NEW_FOLDER, ZmOperation.MOUNT_FOLDER, ZmOperation.EXPAND_ALL];
+	return [ZmOperation.NEW_FOLDER, ZmOperation.EXPAND_ALL];
 };
 
 /*
@@ -160,25 +155,13 @@ function() {
 */
 ZmFolderTreeController.prototype._getActionMenuOps =
 function() {
-	var list = new Array();
-	list.push(ZmOperation.NEW_FOLDER,
-			  ZmOperation.MARK_ALL_READ,
-			  ZmOperation.DELETE,
-			  ZmOperation.RENAME_FOLDER,
-			  ZmOperation.MOVE,
-			  ZmOperation.SHARE_FOLDER,
-			  ZmOperation.EDIT_PROPS,
-			  ZmOperation.EXPAND_ALL,
-			  ZmOperation.SYNC);
-	return list;
-};
-
-ZmFolderTreeController.prototype._getAllowedSubTypes =
-function() {
-	var types = {};
-	types[ZmOrganizer.FOLDER] = true;
-	types[ZmOrganizer.SEARCH] = true;
-	return types;
+	return [ZmOperation.NEW_FOLDER,
+			ZmOperation.MARK_ALL_READ,
+			ZmOperation.DELETE,
+			ZmOperation.RENAME_FOLDER,
+			ZmOperation.MOVE,
+			ZmOperation.EXPAND_ALL,
+			ZmOperation.SYNC];
 };
 
 /*
@@ -217,7 +200,7 @@ function(folder) {
 		if (folder.isInTrash()) {
 			var app = this._appCtxt.getAppController().getActiveApp();
 			// if other apps add Trash to their folder tree, set appropriate type here:
-			if (app == ZmApp.CONTACTS)
+			if (app == ZmZimbraMail.CONTACTS_APP)
 				searchFor = ZmItem.CONTACT;
 		}
 		var types = searchController.getTypes(searchFor);
@@ -225,23 +208,25 @@ function(folder) {
 	}
 };
 
-// override this method if you want different drop targets
-ZmFolderTreeController.prototype._getDropTarget =
-function(appCtxt) {
-	var list = ["ZmFolder", "ZmSearchFolder"];
-	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-		list.push("ZmMailMsg");
-		list.push("ZmConv");
-	}
-	return (new DwtDropTarget(list));
-};
-
-
 // Actions
 
-ZmFolderTreeController.prototype._doSync =
-function(folder) {
-    var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
+/*
+* Creates a new organizer and adds it to the tree of that type.
+*
+* @param parent		[ZmFolder]		parent of the new organizer
+* @param name		[string]		name of the new organizer
+* @param color		[constant]*		color of new folder
+* @param url		[string]*		URL if folder is RSS/ATOM
+* @param search		[ZmSearch]*		search object (saved search creation only)
+*/
+ZmFolderTreeController.prototype._doCreate =
+function(parent, name, color, url, search) {
+	parent.create(name, color, url, search);
+};
+
+ZmFolderTreeController.prototype._doSync = function(folder) {
+    var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
+    var dsCollection = prefsApp.getDataSourceCollection();
     var popAccounts = dsCollection.getPopAccountsFor(folder.id);
 
     if (popAccounts.length > 0) {
@@ -253,7 +238,8 @@ function(folder) {
 };
 
 /*
-* Makes a request to add a new item to the tree.
+* Makes a request to add a new item to the tree, returning true if the item was 
+* actually added, or false if it was omitted.
 * 
 * @param treeView	[ZmTreeView]	a tree view
 * @param parentNode	[DwtTreeItem]	node under which to add the new one
@@ -262,10 +248,11 @@ function(folder) {
  */
 ZmFolderTreeController.prototype._addNew = 
 function(treeView, parentNode, organizer, idx) {
-	if (ZmFolder.HIDE_ID[organizer.id]) {
+	if (ZmFolder.HIDE[organizer.name]) {
 		return false;
 	}
-	return treeView._addNew(parentNode, organizer, idx);
+	treeView._addNew(parentNode, organizer, idx);
+	return true;
 };
 
 // Listeners
@@ -291,7 +278,7 @@ function(ev) {
 		ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		ds.popup();
     } else {
-		this._doMove(organizer, this._appCtxt.getById(ZmFolder.ID_TRASH));
+		this._doMove(organizer, this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_TRASH));
 	}
 };
 
@@ -324,15 +311,14 @@ function(ev) {
 	var srcData = ev.srcData;
 
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		var type = ev.targetControl.getData(ZmTreeView.KEY_TYPE);
 		if (srcData instanceof ZmFolder) {
 			var dragFolder = srcData; // note that folders cannot be moved as a list
-			ev.doIt = dropFolder.mayContain(dragFolder, type);
+			ev.doIt = dropFolder.mayContain(dragFolder);
 		} else if (srcData instanceof ZmTag) {
 			ev.doIt = false; // tags cannot be moved
 		} else {
 			if (this._dropTgt.isValidTarget(srcData.data)) {
-				ev.doIt = dropFolder.mayContain(srcData.data, type);
+				ev.doIt = dropFolder.mayContain(srcData.data);
 
 				var action = null;
 				var plusDiv = null;
@@ -370,17 +356,47 @@ function(ev) {
 	}
 };
 
-ZmFolderTreeController.prototype._shareAddrBookListener =
-function(ev) {
-	this._pendingActionData = this._getActionedOrganizer(ev);
-	this._appCtxt.getSharePropsDialog().popup(ZmSharePropsDialog.NEW, this._pendingActionData);
-};
+/*
+* Handles a search folder being moved from Folders to Searches.
+*
+* @param ev				[ZmEvent]		a change event
+* @param treeView		[ZmTreeView]	a tree view
+* @param overviewId		[constant]		overview ID
+*/
+ZmFolderTreeController.prototype._changeListener =
+function(ev, treeView, overviewId) {
+	var organizers = ev.getDetail("organizers");
+	if (!organizers && ev.source)
+		organizers = [ev.source];
 
-ZmFolderTreeController.prototype._mountAddrBookListener =
-function(ev) {
-	this._appCtxt.getMountFolderDialog().popup(ZmOrganizer.FOLDER);
+	// handle one organizer at a time
+	for (var i = 0; i < organizers.length; i++) {
+		var organizer = organizers[i];
+		var id = organizer.id;
+		var fields = ev.getDetail("fields");
+		var node = treeView.getTreeItemById(id);
+		var parentNode = organizer.parent ? treeView.getTreeItemById(organizer.parent.id) : null;
+		if ((organizer.type == ZmOrganizer.SEARCH && 
+			(organizer.parent.tree.type == ZmOrganizer.SEARCH || id == ZmOrganizer.ID_ROOT)) &&
+		 	(ev.event == ZmEvent.E_MOVE || (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmOrganizer.F_PARENT])))) {
+			DBG.println(AjxDebug.DBG3, "Moving search from Folders to Searches");
+			if (node) {
+				node.dispose();
+			}
+			this._checkTreeView(overviewId);
+			// send a CREATE event to search tree controller to get it to add node
+			var newEv = new ZmEvent(ZmEvent.S_SEARCH);
+			newEv.set(ZmEvent.E_CREATE, organizer);
+			var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
+			var stv = stc.getTreeView(treeView.overviewId);
+			var app = this._appCtxt.getAppController().getActiveApp();
+			var searchOverviewId = [overviewId, ZmSearchTreeController.APP_JOIN_CHAR, app].join("");
+			stc._changeListener(newEv, stv, searchOverviewId);
+		} else {
+			ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
+		}
+	}
 };
-
 
 // Miscellaneous
 

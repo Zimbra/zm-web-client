@@ -44,7 +44,7 @@
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 	this._labels = labels;
-	this._prefsController = AjxDispatcher.run("GetPrefController");
+	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
 	
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]].join(": ");
 
@@ -73,7 +73,7 @@ function() {
 	this._prefsController._resetOperations(this._prefsController._toolbar, ZmPrefView.IDENTITY);
 	if (this._hasRendered) return;
 
-	this._createPrefListHtml();
+	this._createHtml();
 	this._hasRendered = true;
 };
 
@@ -203,7 +203,7 @@ ZmPrefListView.prototype._validateSelectedItem =
 function(errors) {
 };
 
-ZmPrefListView.prototype._createPrefListHtml =
+ZmPrefListView.prototype._createHtml =
 function() {
 	this._templateId = Dwt.getNextId();
 	var id = this._templateId;

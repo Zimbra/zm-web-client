@@ -46,7 +46,6 @@
 * @param conds						[array]*		list of search conditions (SearchCalendarResourcesRequest)
 * @param attrs						[array]*		list of attributes to return (SearchCalendarResourcesRequest)
 * @param field						[string]*		field to search within (instead of default)
-* @param soapInfo					[object]*		object with method, namespace, and response fields for creating soap doc
 */
 function ZmSearch(appCtxt, params) {
 
@@ -72,7 +71,7 @@ function ZmSearch(appCtxt, params) {
 		this.attrs						= params.attrs;
 		this.userText					= params.userText;
 		this.field						= params.field;
-		this.soapInfo					= params.soapInfo;
+		this.isChildWindow			 	= params.isChildWindow;
 		
 		if (this.query)
 			this._parseQuery();
@@ -83,6 +82,12 @@ function ZmSearch(appCtxt, params) {
 
 // Search types
 ZmSearch.TYPE = {};
+ZmSearch.TYPE[ZmItem.CONV]		= "conversation";
+ZmSearch.TYPE[ZmItem.MSG]		= "message";
+ZmSearch.TYPE[ZmItem.CONTACT]	= "contact";
+ZmSearch.TYPE[ZmItem.APPT]		= "appointment";
+ZmSearch.TYPE[ZmItem.PAGE]		= "wiki";
+ZmSearch.TYPE[ZmItem.DOCUMENT]	= "document";
 ZmSearch.TYPE[ZmItem.NOTE]		= "note";
 ZmSearch.TYPE_ANY				= "any";
 
@@ -94,6 +99,8 @@ ZmSearch.JOIN_AND	= 1;
 ZmSearch.JOIN_OR	= 2;
 
 ZmSearch.TYPE_MAP = {};
+for (var i in ZmSearch.TYPE)
+	ZmSearch.TYPE_MAP[ZmSearch.TYPE[i]] = i;
 
 // Sort By
 var i = 1;
@@ -140,7 +147,7 @@ function() {
 ZmSearch.prototype.execute =
 function(params) {
 
-	this.isGalSearch = (this.contactSource && (this.contactSource == ZmSearchToolBar.FOR_GAL_MI));
+	this.isGalSearch = (this.contactSource == ZmSearchToolBar.FOR_GAL_MI);
 	this.isCalResSearch = (this.conds != null);
 	if (!this.query && !this.isCalResSearch) return;
 
@@ -177,11 +184,7 @@ function(params) {
 			}
 		}
 	} else {
-		if (this.soapInfo) {
-			soapDoc = AjxSoapDoc.create(this.soapInfo.method, this.soapInfo.namespace);
-		} else {
-			soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
-		}
+		soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
 		var method = this._getStandardMethod(soapDoc);
 		if (this.types) {
 			var a = this.types.getArray();
@@ -227,12 +230,10 @@ function(isGalSearch, isGalAutocompleteSearch, isCalResSearch, callback, result)
 		response = response.SearchCalendarResourcesResponse;
 	} else if (isGalAutocompleteSearch) {
 		response = response.AutoCompleteGalResponse;
-	} else if (this.soapInfo) {
-		response = response[this.soapInfo.response];
 	} else {
 		response = response.SearchResponse;
 	}
-	var searchResult = new ZmSearchResult(this._appCtxt, this);
+	var searchResult = new ZmSearchResult(this._appCtxt, this, this.isChildWindow);
 	searchResult.set(response, this.contactSource);
 	result.set(searchResult);
 	
@@ -276,11 +277,16 @@ ZmSearch.prototype.getTitle =
 function() {
 	var where = null;
 	if (this.folderId) {
-		var folder = this._appCtxt.getById(this.folderId);
-		if (folder)
-			where = folder.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
+		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		if (folderTree) {
+			var folder = folderTree.getById(this.folderId);
+			if (folder)
+				where = folder.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
+		}
 	} else if (this.tagId) {
-			where = this._appCtxt.getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
+		var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
+		if (tagList)
+			where = tagList.getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 	}
 	var title = where ? [ZmMsg.zimbraTitle, where].join(": ") : 
 						[ZmMsg.zimbraTitle, ZmMsg.searchResults].join(": ");
@@ -349,17 +355,23 @@ function() {
 		}
 		// now check all folders by name
 		if (!this.folderId) {
-			var folders = this._appCtxt.getFolderTree();
+			var folders = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 			var folder = folders ? folders.getByPath(path) : null;
 			if (folder) {
 				this.folderId = folder.id;
+			} else {
+				var addrBooks = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+				var addrBook = addrBooks ? addrBooks.getByPath(path) : null;
+				if (addrBook) {
+					this.folderId = addrBook.id;
+				}
 			}
 		}
 	}
 	results = this.query.match(ZmSearch.TAG_QUERY_RE);
 	if (results) {
 		var name = results[1].toLowerCase();
-		var tag = this._appCtxt.getTagTree().getByName(name);
+		var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getByName(name);
 		if (tag) {
 			this.tagId = tag.id;
 		}

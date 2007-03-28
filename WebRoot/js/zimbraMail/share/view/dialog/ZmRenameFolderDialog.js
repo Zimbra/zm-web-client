@@ -23,12 +23,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmRenameFolderDialog(parent, className) {
+function ZmRenameFolderDialog(parent, msgDialog, className) {
 
-	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.renameFolder});
+	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.renameFolder);
 
 	this._setNameField(this._nameFieldId);
-	this._folderTree = this._appCtxt.getFolderTree();
+	this._folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 }
 
 ZmRenameFolderDialog.prototype = new ZmDialog;
@@ -40,8 +40,8 @@ function() {
 }
 
 ZmRenameFolderDialog.prototype.popup =
-function(folder, source) {
-	ZmDialog.prototype.popup.call(this);
+function(folder, source, loc) {
+	ZmDialog.prototype.popup.call(this, loc);
 	var title = (folder.type == ZmOrganizer.SEARCH) ? ZmMsg.renameSearch : ZmMsg.renameFolder;
 	this.setTitle(title + ': ' + folder.getName(false, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH));
 	this._nameField.value = folder.getName(false, null, true);
@@ -84,6 +84,14 @@ function() {
 		if (folder && (folder.id != this._folder.id)) {
 			msg = ZmMsg.folderOrSearchNameExists;
 		}
+	}
+
+	// if we're creating a top-level folder, check for conflict with top-level search
+	if (!msg && (this._folder.parent.id == ZmOrganizer.ID_ROOT)) {
+		var otherTree = (this._folder.type == ZmOrganizer.SEARCH) ? this._appCtxt.getTree(ZmOrganizer.FOLDER) :
+																	this._appCtxt.getTree(ZmOrganizer.SEARCH);
+		if (otherTree && otherTree.root.hasChild(name))
+			msg = ZmMsg.folderOrSearchNameExists;
 	}
 
 	return (msg ? this._showError(msg) : [this._folder, name]);

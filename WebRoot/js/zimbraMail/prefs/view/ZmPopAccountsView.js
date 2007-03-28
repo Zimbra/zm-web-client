@@ -370,7 +370,8 @@ ZmPopAccountsView.prototype.reset = function() {
 // Protected methods
 
 ZmPopAccountsView.prototype._commandResult = function(account, result) {
-    var collection = AjxDispatcher.run("GetDataSourceCollection");
+    var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
+    var collection = prefsApp.getDataSourceCollection();
 
     var data = result._data;
     if (data.CreateDataSourceResponse) {
@@ -514,7 +515,8 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
     // initialize input fields
     this._nameField.setValue(account.name);
     var folderId = account.folderId || ZmPopAccountBasicPage.DEFAULT_FOLDER_ID;
-    var folder = this._appCtxt.getById(folderId);
+    var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+    var folder = tree.getById(folderId);
     this._folderButton.setText(folder.name);
     this._downloadSelect.setSelectedValue(account.leaveOnServer);
 
@@ -804,7 +806,7 @@ ZmPopAccountBasicPage.prototype._folderListener = function(evt) {
     var dialog = this._appCtxt.getChooseFolderDialog();
     dialog.reset();
     dialog.registerCallback(DwtDialog.OK_BUTTON, this._folderOkListener, this, [dialog]);
-    dialog.popup({treeIds:[ZmOrganizer.FOLDER], skipReadOnly:true, description:ZmMsg.popAccountFolderSelect});
+    dialog.popup([ZmOrganizer.FOLDER], null, true, ZmMsg.popAccountFolderSelect);
 };
 ZmPopAccountBasicPage.prototype._folderOkListener = function(dialog, folder) {
     dialog.popdown();

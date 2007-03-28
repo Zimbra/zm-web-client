@@ -142,15 +142,11 @@ function(view, arrowStyle) {
 	} else {
 		var buttons = this._getToolBarOps();
 		if (!buttons) return;
-		this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:"ZmMsgViewToolBar_cw"});
+		this._toolbar[view] = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmMsgViewToolBar_cw");
 
-		buttons = this._toolbar[view].opList;
-		for (var i = 0; i < buttons.length; i++) {
-			var button = buttons[i];
-			if (this._listeners[button]) {
-				this._toolbar[view].addSelectionListener(button, this._listeners[button]);
-			}
-		}
+		for (var i = 0; i < buttons.length; i++)
+			if (buttons[i] > 0 && this._listeners[buttons[i]])
+				this._toolbar[view].addSelectionListener(buttons[i], this._listeners[buttons[i]]);
 	}
 };
 
@@ -167,7 +163,7 @@ function() {
 ZmMsgController.prototype._defaultView = 
 function() {
 	return ZmController.MSG_VIEW;
-};
+}
 
 ZmMsgController.prototype._initializeListView = 
 function(view) {
@@ -222,8 +218,9 @@ function(view) {
 ZmMsgController.prototype._paginate = 
 function(view, bPageForward) {
 	// NOTE: do not call base class.
-	var controller = AjxDispatcher.run((this._mode == ZmController.TRAD_VIEW) ? "GetTradController" :
-																				"GetConvController");
+	var controller = this._mode == ZmController.TRAD_VIEW 
+		? this._app.getTradController() 
+		: this._app.getConvController();
 
 	if (controller) {
 		controller.pageItemSilently(this._msg, bPageForward);
@@ -236,7 +233,7 @@ function(view) {
 	this._resetNavToolBarButtons(view);
 }
 
-ZmMsgController.prototype._menuPopdownActionListener = 
+ZmMsgController.prototype._popdownActionListener = 
 function(ev) {
 	// dont do anything since msg view has no action menus
 };

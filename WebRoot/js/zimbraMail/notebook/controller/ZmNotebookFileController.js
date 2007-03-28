@@ -53,7 +53,7 @@ ZmNotebookFileController.prototype.show = function(searchResults, fromUserSearch
 
 	this._setup(this._currentView);
 
-	this._list = searchResults.getResults(ZmItem.MIXED);
+	this._list = searchResults.getResults(ZmList.MIXED);
 	if (this._activeSearch) {
 		if (this._list)
 			this._list.setHasMore(this._activeSearch.getAttribute("more"));
@@ -159,7 +159,7 @@ function(view) {
 		}
 		var icon = ZmOperation.getProp(op, "image");
 		var text = ZmMsg[ZmOperation.getProp(op, "textKey")];
-		var mi = menu.createMenuItem(op, {image:icon, text:text, style:DwtMenuItem.RADIO_STYLE}, 1);
+		var mi = menu.createMenuItem(op, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 1);
 		mi.setData(ZmOperation.KEY_ID, op);
 		mi.addSelectionListener(listener);
 	}
@@ -174,7 +174,8 @@ function() {
 	var showUndelete = false;
 	var folderId = this._activeSearch ? this._activeSearch.search.folderId : null;
 	if (folderId) {
-		var folder = this._appCtxt.getById(folderId);
+		var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+		var folder = tree ? tree.getById(folderId) : null;
 		showUndelete = folder && folder.isInTrash();
 	}
 	var actionMenu = this._actionMenu;
@@ -313,12 +314,13 @@ function(ev) {
 	// figure out the default for this item should be moved to
 	var folder = null;
 	if (items[0] instanceof ZmContact) {
-		folder = new ZmFolder({id: ZmOrganizer.ID_ADDRBOOK});
+		folder = new ZmFolder(ZmOrganizer.ID_ADDRBOOK);
 	} else if (items[0] instanceof ZmAppt) {
-		folder = new ZmFolder({id: ZmOrganizer.ID_CALENDAR});
+		folder = new ZmFolder(ZmOrganizer.ID_CALENDAR);
 	} else {
+		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		var folderId = items[0].isDraft ? ZmFolder.ID_DRAFTS : ZmFolder.ID_INBOX;
-		folder = this._appCtxt.getById(folderId);
+		folder = folderTree.getById(folderId);
 	}
 
 	if (folder)

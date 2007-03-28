@@ -53,13 +53,13 @@ function(zimletArray, userProps) {
 	}
 	var panelZimlets = this.getPanelZimlets();
  	if(panelZimlets && panelZimlets.length > 0) {
-		var zimletTree = this._appCtxt.getZimletTree();
+		var zimletTree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
 	 	if (!zimletTree) {
 	 		zimletTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ZIMLET);
-	 		this._appCtxt.setZimletTree(zimletTree);
+	 		this._appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
 	 	}
 	 	zimletTree.reset();
-	 	zimletTree.loadFromJs(panelZimlets, "zimlet");
+	 	zimletTree.loadFromJs(panelZimlets);
  	}
 };
 
@@ -87,28 +87,6 @@ function() {
 		}
 	}
 	return indexedZimlets;
-};
-
-ZmZimletMgr.prototype.getPortletZimlets =
-function() {
-    if (!this._portletArray) {
-        this._portletArray = [];
-        this._portletMap = {};
-        var j = 0;
-        for (var i = 0; i < this._ZIMLETS.length; i++) {
-            var zimlet = this._ZIMLETS[i];
-            if (zimlet.portlet) {
-                this._portletArray[j++] = zimlet;
-                this._portletMap[zimlet.name] = zimlet;
-            }
-        }
-    }
-    return this._portletArray;
-};
-ZmZimletMgr.prototype.getPortletZimletsHash =
-function() {
-    this.getPortletZimlets();
-    return this._portletMap;
 };
 
 ZmZimletMgr.prototype.registerContentZimlet =

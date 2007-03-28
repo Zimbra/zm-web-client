@@ -28,8 +28,6 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 	this._appCtxt = appCtxt;
 	ZmToolBar.call(this, parent, "ZmSearchToolbar");
 
-	ZmSearchToolBar.SETTING[ZmSearchToolBar.FOR_ANY_MI] = ZmSetting.MIXED_VIEW_ENABLED;
-
 	this._customSearchBtnListener = new AjxListener(this, this._customSearchBtnListener);
 
     this._search = new DwtMessageComposite(this);
@@ -40,47 +38,87 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
     searchFieldEl.className = "search_input";
     Dwt.setHandler(searchFieldEl, DwtEvent.ONKEYPRESS, ZmSearchToolBar._keyPressHdlr);
 
-	var params = {image:"MailFolder", text:ZmMsg.searchMail, tooltip:ZmMsg.chooseSearchType, className:"DwtButton"};
-    this._searchMenuButton = this.createButton(ZmSearchToolBar.SEARCH_MENU_BUTTON, params);
+    this._searchMenuButton = this._createButton(
+        ZmSearchToolBar.SEARCH_MENU_BUTTON, "MailFolder", ZmMsg.searchMail,
+        null, ZmMsg.chooseSearchType, true, "DwtButton"
+    );
     var menuParent = this._searchMenuButton;
 
     var menu = new DwtMenu(menuParent, null, "ActionMenu");
     menuParent.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 
-	ZmSearchToolBar.MENU_ITEMS.push(ZmSearchToolBar.FOR_ANY_MI);	// "All" comes last
-	for (var i = 0; i < ZmSearchToolBar.MENU_ITEMS.length; i++){
-		var id = ZmSearchToolBar.MENU_ITEMS[i];
-		if (id == ZmSearchToolBar.FOR_ANY_MI) {
-			if (ZmSearchToolBar.MENU_ITEMS.length <= 1) { continue; }
-	        mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
-		}
-		var setting = ZmSearchToolBar.SETTING[id];
-		if (setting && !this._appCtxt.get(setting)) { continue; }
-	    var mi = DwtMenuItem.create(menu, ZmSearchToolBar.ICON[id], ZmMsg[ZmSearchToolBar.MSG_KEY[id]], null, true, DwtMenuItem.RADIO_STYLE, 0);
-	    mi.setData(ZmSearchToolBar.MENUITEM_ID, id);
-	}
+    var numTypes = 0;
+    var mi = DwtMenuItem.create(menu, "SearchMail", ZmMsg.searchMail, null, true, DwtMenuItem.RADIO_STYLE, 0);
+    mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_MAIL_MI);
+    numTypes++;
+
+    if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+        mi = DwtMenuItem.create(menu, "SearchContacts", ZmMsg.searchPersonalContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
+        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.CONTACT);
+        numTypes++;
+
+        if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
+            mi = DwtMenuItem.create(menu, "SearchSharedContacts", ZmMsg.searchPersonalAndShared, null, true, DwtMenuItem.RADIO_STYLE, 0);
+            mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_PAS_MI);
+            numTypes++;
+        }
+    }
+
+    if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
+        mi = DwtMenuItem.create(menu, "SearchGAL", ZmMsg.searchGALContacts, null, true, DwtMenuItem.RADIO_STYLE, 0);
+        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_GAL_MI);
+        numTypes++;
+    }
+/*
+    if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+        mi = DwtMenuItem.create(menu, "SearchCalendar", ZmMsg.searchCalendar, null, true, DwtMenuItem.RADIO_STYLE, 0);
+        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.APPT);
+        numTypes++;
+    }
+*/
+    if (this._appCtxt.get(ZmSetting.NOTES_ENABLED)) {
+        mi = DwtMenuItem.create(menu, "SearchNotes", ZmMsg.searchNotes, null, true, DwtMenuItem.RADIO_STYLE, 0);
+        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.NOTE);
+        numTypes++;
+    }
+
+    if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
+        mi = DwtMenuItem.create(menu, "SearchNotes", ZmMsg.searchNotebooks, null, true, DwtMenuItem.RADIO_STYLE, 0);
+        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmItem.PAGE);
+        numTypes++;
+    }
+
+    if ((numTypes > 1) && this._appCtxt.get(ZmSetting.MIXED_VIEW_ENABLED)) {
+        mi = new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
+        mi = DwtMenuItem.create(menu, "SearchAll", ZmMsg.searchAll, null, true, DwtMenuItem.RADIO_STYLE, 0);
+        mi.setData(ZmSearchToolBar.MENUITEM_ID, ZmSearchToolBar.FOR_ANY_MI);
+    }
 
     var callback = new AjxCallback(this, this._getControl);
     var hintsCallback = new AjxCallback(this, this._getControlHints);
     this._search.setFormat(ZmMsg.searchToolBar, callback, hintsCallback);
 
+    //var searchColId = Dwt.getNextId();
+    //var groupBy = this._appCtxt.getSettings().getGroupMailBy();
+    //var tooltip = ZmMsg[ZmSearchToolBar.TT_MSG_KEY[groupBy]];
+    //this._searchButton = this._createButton(ZmSearchToolBar.SEARCH_BUTTON, null, ZmMsg.search, null, tooltip, true, "DwtToolbarButton");
+    //document.getElementById(searchColId).appendChild(this._searchButton.getHtmlElement());
+
     if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
-        this._saveButton = this.createButton(ZmSearchToolBar.SAVE_BUTTON, {image:"Save", disImage:"SaveDis", tooltip:ZmMsg.saveCurrentSearch,
-        																   className:"DwtToolbarButton"});
+        this._saveButton = this._createButton(ZmSearchToolBar.SAVE_BUTTON, "Save", null, "SaveDis", ZmMsg.saveCurrentSearch, true, "DwtToolbarButton");
     }
 
     if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
         this.addSeparator("vertSep");
         var buttonStyle = DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_CENTER | DwtButton.TOGGLE_STYLE;
-        this._browseButton = this.createButton(ZmSearchToolBar.BROWSE_BUTTON, {text:ZmMsg.searchBuilder, tooltip:ZmMsg.openSearchBuilder,
-        																	   className:"DwtToolbarButton", style:buttonStyle});
+        this._browseButton = this._createButton(ZmSearchToolBar.BROWSE_BUTTON, null, ZmMsg.searchBuilder, null, ZmMsg.openSearchBuilder, true, "DwtToolbarButton", buttonStyle);
     }
 };
 
-ZmSearchToolBar.BROWSE_BUTTON 			= 1;
-ZmSearchToolBar.SEARCH_BUTTON 			= 2;
-ZmSearchToolBar.SAVE_BUTTON 			= 3;
-ZmSearchToolBar.SEARCH_MENU_BUTTON 		= 4;
+ZmSearchToolBar.BROWSE_BUTTON 		= 1;
+ZmSearchToolBar.SEARCH_BUTTON 		= 2;
+ZmSearchToolBar.SAVE_BUTTON 		= 3;
+ZmSearchToolBar.SEARCH_MENU_BUTTON 	= 4;
 ZmSearchToolBar.CUSTOM_SEARCH_BUTTON    = 5;
 
 ZmSearchToolBar.SEARCH_FIELD_SIZE 	= 48;
@@ -88,26 +126,38 @@ ZmSearchToolBar.UNICODE_CHAR_RE 	= /\S/;
 
 ZmSearchToolBar.MENUITEM_ID = "_menuItemId";
 
-// menu items
-ZmSearchToolBar.FOR_ANY_MI	= "FOR_ANY";
+ZmSearchToolBar.FOR_MAIL_MI	= ++ZmItem.MAX;
+ZmSearchToolBar.FOR_PAS_MI 	= ++ZmItem.MAX; // Personal and Shared
+ZmSearchToolBar.FOR_GAL_MI	= ++ZmItem.MAX; // Global Address List
+ZmSearchToolBar.FOR_ANY_MI	= ++ZmItem.MAX;
 
-// text for menu item
-ZmSearchToolBar.MSG_KEY = {};
+// XXX: are these used anywhere??
+ZmSearchToolBar.MSG_KEY = new Object();
+ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_MAIL_MI] = "searchMail";
+ZmSearchToolBar.MSG_KEY[ZmItem.CONTACT] = "searchContacts";
+ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_GAL_MI] = "searchGALContacts";
+ZmSearchToolBar.MSG_KEY[ZmItem.APPT] = "searchCalendar";
+ZmSearchToolBar.MSG_KEY[ZmItem.PAGE] = "searchNotebooks";
 ZmSearchToolBar.MSG_KEY[ZmSearchToolBar.FOR_ANY_MI] = "searchAll";
 
-// tooltip text for menu item
-ZmSearchToolBar.TT_MSG_KEY = {};
+ZmSearchToolBar.TT_MSG_KEY = new Object();
+ZmSearchToolBar.TT_MSG_KEY[ZmItem.MSG] = "searchForMessages";
+ZmSearchToolBar.TT_MSG_KEY[ZmItem.CONV] = "searchForConvs";
+ZmSearchToolBar.TT_MSG_KEY[ZmItem.CONTACT] = "searchPersonalContacts";
+ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_PAS_MI] = "searchPersonalAndShared";
+ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_GAL_MI] = "searchGALContacts";
+ZmSearchToolBar.TT_MSG_KEY[ZmItem.APPT] = "searchForAppts";
+ZmSearchToolBar.TT_MSG_KEY[ZmItem.PAGE] = "searchForPages";
 ZmSearchToolBar.TT_MSG_KEY[ZmSearchToolBar.FOR_ANY_MI] = "searchForAny";
 
-// image for menu item
-ZmSearchToolBar.ICON = {};
-ZmSearchToolBar.ICON[ZmSearchToolBar.FOR_ANY_MI] = "SearchAll";
-
-// required setting for menu item to appear
-ZmSearchToolBar.SETTING = {};
-
-// list of menu items
-ZmSearchToolBar.MENU_ITEMS = [];
+ZmSearchToolBar.ICON_KEY = new Object();
+ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_MAIL_MI] = "MailFolder";
+ZmSearchToolBar.ICON_KEY[ZmItem.CONTACT] = "ContactsFolder";
+ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_PAS_MI] = "GAL"; // XXX: new icon?
+ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_GAL_MI] = "GAL";
+ZmSearchToolBar.ICON_KEY[ZmItem.APPT] = "CalendarFolder";
+ZmSearchToolBar.ICON_KEY[ZmItem.PAGE] = "Notebook";
+ZmSearchToolBar.ICON_KEY[ZmSearchToolBar.FOR_ANY_MI] = "Globe";
 
 ZmSearchToolBar.prototype = new ZmToolBar;
 ZmSearchToolBar.prototype.constructor = ZmSearchToolBar;
@@ -118,16 +168,6 @@ function() {
 };
 
 // Public methods
-
-// TODO: this should just use operations
-ZmSearchToolBar.addMenuItem =
-function(id, params) {
-	if (params.msgKey)		{ ZmSearchToolBar.MSG_KEY[id]		= params.msgKey; }
-	if (params.tooltipKey)	{ ZmSearchToolBar.TT_MSG_KEY[id]	= params.tooltipKey; }
-	if (params.icon)		{ ZmSearchToolBar.ICON[id]			= params.icon; }
-	if (params.setting)		{ ZmSearchToolBar.SETTING[id]		= params.setting; }
-	ZmSearchToolBar.MENU_ITEMS.push(id);
-};
 
 ZmSearchToolBar.prototype.getSearchField =
 function() {
@@ -191,11 +231,11 @@ function(parent, segment, i) {
 };
 
 ZmSearchToolBar.prototype.createCustomSearchBtn = 
-function(icon, text, listener) {
+function(icon, label, listener) {
 	var btn = this.getButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON);
 	if (!btn) {
-		btn = this.createButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON, {image:icon, text:text, className:"DwtButton"}, 1);
-		btn.setData("CustomSearchItem", [ icon, text, listener ]);
+		btn = this._createButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON, icon, null, null, label, true, "DwtButton", null, 1);
+		btn.setData("CustomSearchItem", [ icon, label, listener ]);
 		btn.addSelectionListener(this._customSearchBtnListener);
 	} else {
 		var menu = btn.getMenu();
@@ -209,8 +249,8 @@ function(icon, text, listener) {
 			item.setChecked(true, true);
 			item.addSelectionListener(this._customSearchBtnListener);
 		}
-		item = DwtMenuItem.create(menu, icon, text, null, true, DwtMenuItem.RADIO_STYLE, 0);
-		item.setData("CustomSearchItem", [ icon, text, listener ]);
+		item = DwtMenuItem.create(menu, icon, label, null, true, DwtMenuItem.RADIO_STYLE, 0);
+		item.setData("CustomSearchItem", [ icon, label, listener ]);
 		item.addSelectionListener(this._customSearchBtnListener);
 	}
 	return btn;

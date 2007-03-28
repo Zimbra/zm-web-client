@@ -28,7 +28,7 @@
  *
  * @author Ross Dargahi
  */
-ZmHtmlEditor = function(parent, posStyle, content, mode, appCtxt, withAce) {
+function ZmHtmlEditor(parent, posStyle, content, mode, appCtxt, withAce) {
 	if (arguments.length == 0) return;
 	this._appCtxt = appCtxt;
 	this._toolbars = [];
@@ -43,6 +43,11 @@ ZmHtmlEditor = function(parent, posStyle, content, mode, appCtxt, withAce) {
 	DwtHtmlEditor.call(this, parent, "ZmHtmlEditor", posStyle, content, mode, appContextPath+"/public/blank.html");
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));
+
+	// spell checker init
+	this._spellChecker = new ZmSpellChecker(this, appCtxt);
+	this._spellCheck = null;
+	this._spellCheckSuggestionListener = new AjxListener(this, this._spellCheckSuggestionListener);
 
 	this.__contextMenuSelectionListener = new AjxListener(this, this.__contextMenuSelectionListener);
 	this.addListener(DwtEvent.ONCONTEXTMENU, new AjxListener(this, this.__onContextMenu));
@@ -169,17 +174,12 @@ function(callback) {
 	var text = this.getTextVersion();
 
 	// bug fix #6970 - safari doesnt xml encode for us :(
-	if (AjxEnv.isSafari && !AjxEnv.isSafariNightly)
+	if (AjxEnv.isSafari)
 		text = AjxStringUtil.xmlEncode(text);
 
 	if (/\S/.test(text)) {
-		AjxDispatcher.require("Extras");
-		this._spellChecker = new ZmSpellChecker(this, this._appCtxt);
-		this._spellCheck = null;
-		this._spellCheckSuggestionListener = new AjxListener(this, this._spellCheckSuggestionListener);
-		if (!this.onExitSpellChecker) {
+		if (!this.onExitSpellChecker)
 			this.onExitSpellChecker = callback;
-		}
 		this._spellChecker.check(text, new AjxCallback(this, this._spellCheckCallback));
 		return true;
 	}
@@ -639,26 +639,26 @@ function(tb) {
 	new DwtControl(tb, "vertSep");
 
 	var insListener = new AjxListener(this, this._insElementListener);
-	this._listButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+	this._listButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE,  "DwtToolbarButton");
 	this._listButton.setToolTipContent(ZmMsg.bulletedList);
 	this._listButton.setImage("BulletedList");
 	this._listButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNORDERED_LIST);
 	this._listButton.addSelectionListener(insListener);
 
-	this._numberedListButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+	this._numberedListButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	this._numberedListButton.setToolTipContent(ZmMsg.numberedList);
 	this._numberedListButton.setImage("NumberedList");
 	this._numberedListButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ORDERED_LIST);
 	this._numberedListButton.addSelectionListener(insListener);
 
 	var listener = new AjxListener(this, this._indentListener);
-	this._outdentButton = new DwtToolBarButton(tb);
+	this._outdentButton = new DwtButton(tb, null, "DwtToolbarButton");
 	this._outdentButton.setToolTipContent(ZmMsg.outdent);
 	this._outdentButton.setImage("Outdent");
 	this._outdentButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.OUTDENT);
 	this._outdentButton.addSelectionListener(listener);
 
-	this._indentButton = new DwtToolBarButton(tb);
+	this._indentButton = new DwtButton(tb, null, "DwtToolbarButton");
 	this._indentButton.setToolTipContent(ZmMsg.indent);
 	this._indentButton.setImage("Indent");
 	this._indentButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.INDENT);
@@ -667,37 +667,35 @@ function(tb) {
 	new DwtControl(tb, "vertSep");
 
 	var listener = new AjxListener(this, this._fontStyleListener);
-	this._boldButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+	this._boldButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	this._boldButton.setImage("Bold");
 	this._boldButton.setToolTipContent(ZmMsg.boldText);
 	this._boldButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.BOLD_STYLE);
 	this._boldButton.addSelectionListener(listener);
 
-	this._italicButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+	this._italicButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	this._italicButton.setImage("Italics");
 	this._italicButton.setToolTipContent(ZmMsg.italicText);
 	this._italicButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.ITALIC_STYLE);
 	this._italicButton.addSelectionListener(listener);
 
-	this._underlineButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
+	this._underlineButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
 	this._underlineButton.setImage("Underline");
 	this._underlineButton.setToolTipContent(ZmMsg.underlineText);
 	this._underlineButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.UNDERLINE_STYLE);
 	this._underlineButton.addSelectionListener(listener);
-
-	this._appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar1", this, tb);
 };
 
 ZmHtmlEditor.prototype._createToolBar2 =
 function(tb) {
-	this._fontColorButton = new ZmHtmlEditorColorPicker(tb);
+	this._fontColorButton = new DwtButtonColorPicker(tb, null, "DwtToolbarButton");
 	this._fontColorButton.dontStealFocus();
 	this._fontColorButton.setImage("FontColor");
 	this._fontColorButton.showColorDisplay(true);
 	this._fontColorButton.setToolTipContent(ZmMsg.fontColor);
 	this._fontColorButton.addSelectionListener(new AjxListener(this, this._fontColorListener));
 
-	this._fontBackgroundButton = new ZmHtmlEditorColorPicker(tb, null, "ZToolbarButton");
+	this._fontBackgroundButton = new DwtButtonColorPicker(tb, null, "DwtToolbarButton");
 	this._fontBackgroundButton.dontStealFocus();
 	this._fontBackgroundButton.setImage("FontBackground");
 	this._fontBackgroundButton.showColorDisplay(true);
@@ -706,14 +704,14 @@ function(tb) {
 
 	new DwtControl(tb, "vertSep");
 
-	this._horizRuleButton = new DwtToolBarButton(tb);
+	this._horizRuleButton = new DwtButton(tb, null, "DwtToolbarButton");
 	this._horizRuleButton.setImage("HorizRule");
 	this._horizRuleButton.setToolTipContent(ZmMsg.horizRule);
 	this._horizRuleButton.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.HORIZ_RULE);
 	this._horizRuleButton.addSelectionListener(new AjxListener(this, this._insElementListener));
 
 // BEGIN: Table operations
-	var b = new DwtToolBarButton(tb);
+	var b = new DwtButton(tb, null, "DwtToolbarButton");
 	b.setToolTipContent(ZmMsg.insertTable);
 	b.dontStealFocus();
 	b.setImage("Table");
@@ -734,14 +732,12 @@ function(tb) {
 
 	if (this.ACE_ENABLED) {
 		tb.addSeparator("vertSep");
-		var b = new DwtToolBarButton(tb, 0);
+		var b = new DwtButton(tb, 0, "DwtToolbarButton");
 		b.setImage("SpreadSheet");
 		b.setData("ACE", "ZmSpreadSheet");
 		b.setToolTipContent(ZmMsg.insertSpreadsheet);
 		b.addSelectionListener(new AjxListener(this, this._menu_insertObject));
 	}
-
-	this._appCtxt.getZimletMgr().notifyZimlets("on_htmlEditor_createToolbar2", this, tb);
 };
 
 ZmHtmlEditor.prototype.__createTableOperationItems = function(menu) {
@@ -831,12 +827,10 @@ function(ev) {
 	this.focus();
 	switch (data) {
 	    case "tableProperties":
-	    AjxDispatcher.require("Extras");
 		var dlg = ZmTableEditor.getTablePropsDialog(this, this.getNearestElement("table"));
 		dlg.popup();
 		break;
 	    case "cellProperties":
-	    AjxDispatcher.require("Extras");
 		var dlg = ZmTableEditor.getCellPropsDialog(this, this.getNearestElement("table"), this.getSelectedCells());
 		dlg.popup();
 		// alert("Not yet implemented");
@@ -870,7 +864,7 @@ function(name, target, data) {
 	// chose from.
 	switch (name) {
 	    case "ZmSpreadSheet":
-		component_url = toplevel_url + appContextPath + "/public/Spreadsheet.jsp";
+		component_url = toplevel_url + appContextPath + "/ALE/spreadsheet/index.jsp";
 		break;
 	}
 
@@ -937,7 +931,7 @@ ZmHtmlEditor.prototype._ace_finishedLoading = function(ifr, name, data) {
 				--self._ace_componentsLoading;
 				// throw new DwtException("Can't deserialize ALE component", DwtException.INTERNAL_ERROR, ex);
 				var dlg = self._appCtxt.getErrorDialog();
-				dlg.setMessage(ZmMsg.aleError, ex.msg || ex.toString(), DwtMessageDialog.WARNING_STYLE, "ALE error");
+				dlg.setMessage("Can't deserialize component", ex, DwtMessageDialog.WARNING_STYLE, "ALE error");
 				dlg.setButtonVisible(ZmErrorDialog.REPORT_BUTTON, false);
 				dlg.popup();
 			}
@@ -1052,10 +1046,10 @@ function() {
 
 ZmHtmlEditor.prototype._createStyleMenu =
 function(tb) {
-	var s = new DwtToolBarButton(tb);
+	var s = new DwtButton(tb, null, "DwtToolbarButton");
 	// minor hack to set section symbol - avoids d/l'ing an icon :]
 	s.setText("x");
-    s._textEl.innerHTML = "<span style='font-size:13px'>&sect;</span>";
+	s._textCell.innerHTML = "<span style='font-size:13px'>&sect;</span>";
 	s.setToolTipContent(ZmMsg.sections);
 	s.dontStealFocus();
 	var menu = this._styleMenu = new ZmPopupMenu(s);
@@ -1073,7 +1067,7 @@ function(tb) {
 
 	for (var i = 0; i < menuItems.length; i++) {
 		var item = menuItems[i];
-		var mi = menu.createMenuItem(item.id, {text:item.label, style:DwtMenuItem.RADIO_STYLE});
+		var mi = menu.createMenuItem(item.id, null, item.label, null, true, DwtMenuItem.RADIO_STYLE);
 		mi.addSelectionListener(listener);
 		mi.setData(ZmHtmlEditor._VALUE, item.id);
 		if (i == 0)
@@ -1085,7 +1079,7 @@ function(tb) {
 
 ZmHtmlEditor.prototype._createJustifyMenu =
 function(tb) {
-	var b = new DwtToolBarButton(tb);
+	var b = new DwtButton(tb, null, "DwtToolbarButton");
 	b.dontStealFocus();
 	b.setImage("LeftJustify");
 	b.setToolTipContent(ZmMsg.alignment);
@@ -1099,7 +1093,7 @@ function(tb) {
 
 	for (var i = 0; i < menuItems.length; i++) {
 		var item = menuItems[i];
-		var mi = menu.createMenuItem(item.id, {image:item.image, style:DwtMenuItem.RADIO_STYLE});
+		var mi = menu.createMenuItem(item.id, item.image, null, null, true, DwtMenuItem.RADIO_STYLE);
 		mi.addSelectionListener(listener);
 		mi.setData(ZmHtmlEditor._VALUE, item.id);
 		if (i == 0)
@@ -1111,7 +1105,7 @@ function(tb) {
 
 ZmHtmlEditor.prototype._createFontFamilyMenu =
 function(tb) {
-	this._fontFamilyButton = new DwtToolBarButton(tb);
+	this._fontFamilyButton = new DwtButton(tb);
 	this._fontFamilyButton.dontStealFocus();
 	this._fontFamilyButton.setSize("115");
 	this._fontFamilyButton.setAlign(DwtLabel.ALIGN_LEFT);
@@ -1120,7 +1114,7 @@ function(tb) {
 
 	for (var i = 0; i < ZmHtmlEditor.FONT_FAMILY.length; i++) {
 		var item = ZmHtmlEditor.FONT_FAMILY[i];
-		var mi = menu.createMenuItem(item.name, {text:item.name});
+		var mi = menu.createMenuItem(item.name, null, item.name, null, true);
 		mi.addSelectionListener(listener);
 		mi.setData(ZmHtmlEditor._VALUE, i);
 	}
@@ -1130,7 +1124,7 @@ function(tb) {
 
 ZmHtmlEditor.prototype._createFontSizeMenu =
 function(tb) {
-	this._fontSizeButton = new DwtToolBarButton(tb);
+	this._fontSizeButton = new DwtButton(tb);
 	this._fontSizeButton.dontStealFocus();
 	var menu = new ZmPopupMenu(this._fontSizeButton);
 	var listener = new AjxListener(this, this._fontSizeListener);
@@ -1138,8 +1132,8 @@ function(tb) {
 	for (var i = 0; i < ZmHtmlEditor.FONT_SIZE_VALUES.length; i++) {
 		var item = ZmHtmlEditor.FONT_SIZE_VALUES[i];
 		var num = i+1;
-		var text = num + " (" + item + ")";
-		var mi = menu.createMenuItem(i, {text:text});
+		var label = num + " (" + item + ")";
+		var mi = menu.createMenuItem(i, null, label, null, true);
 		mi.addSelectionListener(listener);
 		mi.setData(ZmHtmlEditor._VALUE, num);
 	}
@@ -1435,8 +1429,10 @@ function(ev) {
 			var menu = new ZmPopupMenu(parent), item;
 			menu.dontStealFocus();
 			if (modified) {
-				var text = "<b style='color: red'>Initial: " + word + "</b>";
-				item = menu.createMenuItem("orig", {text:text});
+				item = menu.createMenuItem
+					("orig", null,
+					 "<b style='color: red'>Initial: " + word + "</b>",
+					 null, true, null, null);
 				item.setData("fixall", fixall);
 				item.setData("value", word);
 				item.setData("orig", word);
@@ -1446,8 +1442,8 @@ function(ev) {
 			if (plainText) {
 				// in plain text mode we want to be able to edit misspelled words
 				var txt = fixall ? "Edit all" : "Edit";
-				var text = "<b style='color: #d62'>" + txt + "</b>";
-				item = menu.createMenuItem("edit", {text:text});
+				item = menu.createMenuItem("edit", null, "<b style='color: #d62'>" + txt + "</b>",
+							   null, true, null, null);
 				item.setData("fixall", fixall);
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
@@ -1457,7 +1453,9 @@ function(ev) {
 				menu.createSeparator();
 			if (suggestions.length > 0) {
 				for (var i = 0; i < suggestions.length; ++i) {
-					item = menu.createMenuItem("sug-" + fixall + "" + i, {text:suggestions[i]});
+					item = menu.createMenuItem("sug-" + fixall + "" + i,
+								   null, suggestions[i],
+								   null, true, null, null);
 					item.setData("fixall", fixall);
 					item.setData("value", suggestions[i]);
 					item.setData("orig", word);
@@ -1465,7 +1463,8 @@ function(ev) {
 					item.addSelectionListener(self._spellCheckSuggestionListener);
 				}
 			} else {
-				item = menu.createMenuItem("clear", {text:"<b style='color: red'>Clear text</b>"});
+				item = menu.createMenuItem("clear", null, "<b style='color: red'>Clear text</b>",
+							   null, true, null, null);
 				item.setData("fixall", fixall);
 				item.setData("value", "");
 				item.setData("orig", word);
@@ -1477,8 +1476,10 @@ function(ev) {
 		sc.menu = makeMenu(0, this);
 		if (sc.wordIds[word].length > 1) {
 			sc.menu.createSeparator();
-			var text = "Replace all (" + sc.wordIds[word].length + " occurrences)";
-			var item = sc.menu.createMenuItem("fixall", {text:text});
+			var item = sc.menu.createMenuItem
+				("fixall", null,
+				 "Replace all (" + sc.wordIds[word].length + " occurrences)",
+				 null, true, null, null);
 			item.setMenu(makeMenu(1, item));
 		}
 		var pos, ms = sc.menu.getSize(), ws = this.shell.getSize();
@@ -1763,11 +1764,3 @@ ZmHtmlEditor.prototype.__onContextMenu = function(ev) {
 	}
 	menu.popup(0, ev.docX, ev.docY);
 };
-
-function ZmHtmlEditorColorPicker(parent) {
-    DwtButtonColorPicker.call(this, parent);
-}
-ZmHtmlEditorColorPicker.prototype = new DwtButtonColorPicker;
-ZmHtmlEditorColorPicker.prototype.constructor = ZmHtmlEditorColorPicker;
-
-ZmHtmlEditorColorPicker.prototype.TEMPLATE = "ajax.dwt.templates.Widgets#ZToolbarButtonColorPicker";

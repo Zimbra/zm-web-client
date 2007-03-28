@@ -6,7 +6,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <div style='text-align:center; padding:5px;'><font size=1>
-
+  
 </font>
 
 </div>

@@ -8,8 +8,8 @@
 
 <table cellspacing=0 class='Tb' width=100%>
     <tr>
-        <td class='TbBt'>
-            <table cellspacing=0 cellpadding=0 class='Tb'>
+        <td>
+            <table cellspacing=2 cellpadding=0 class='Tb'>
                <tr>
                    <c:choose>
                        <c:when test="${selected eq 'filter'}">

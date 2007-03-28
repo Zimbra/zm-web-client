@@ -136,6 +136,13 @@ data.identity = {
 	},
 	
 	_advancedEnabled : true,
+	_advancedRows : [
+		"_replyForwardSelect_row",
+		"_replyIncludeSelect_row",
+		"_forwardIncludeSelect_row",
+		"_prefixSelect_row"
+	],
+	
 	_advancedFields : [
 		'_replyForwardSelect', 
 		'_replyIncludeSelect', 
@@ -156,7 +163,12 @@ data.identity = {
 
 		Dwt.byId(this.id + '_useDefaultsCheckbox_default').checked = !enable;
 		Dwt.byId(this.id + '_useDefaultsCheckbox_custom').checked = enable;
-		
+
+		for (var i = 0, id; id = this._advancedRows[i]; i++) {
+			Dwt.show(this.id + id, enable);
+		}
+
+/*		
 		for (var i = 0, id; id = this._advancedFields[i]; i++) {
 			Dwt.byId(this.id + id).disabled = (!enable);
 		}
@@ -164,8 +176,9 @@ data.identity = {
 		for (var i = 0, id; id = this._advancedLabels[i]; i++) {
 			Dwt.delClass(Dwt.byId(this.id + id), "ZDisabled", addClass);
 		}
+*/	
 	}
-	
+
 
 };
 

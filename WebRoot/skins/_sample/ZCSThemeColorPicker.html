@@ -269,8 +269,8 @@ function setFocusColor(hex) {
 }
 
 function getColorName(baseName, modifier) {
-	if (modifier == null) return baseName;
-	return baseName + modifier;
+	if (modifier == null) return "_" + baseName + "_";
+	return "_" + baseName + modifier + "_";
 }
 
 function getJSRep(name, value) {
@@ -283,8 +283,8 @@ function drawCurrentColors() {
 	clipboard.value = "##########################################################################\n"+
 					  "#                               Skin Colors                              #\n"+
 					  "#------------------------------------------------------------------------#\n#\n";
-	drawCurrentColor(1, "AppC", "#### Base color and variants ####");
-	drawCurrentColor(2, "SelC", "#### Selection color and variants ####");	
+	drawCurrentColor(1, "BaseColor", "#### Base color and variants ####");
+	drawCurrentColor(2, "SelColor", "#### Selection color and variants ####");	
 	clipboard.value += "#\n#========================================================================#\n"
 	hilightFocusedField();
 }
@@ -302,7 +302,7 @@ function drawCurrentColor(num, name, jsHeader) {
 
 	for (var i = 95; i >= 5; i-=5) {
 		var darkColor  = darken(baseColor, i);
-		var darkName = getColorName(name, "+"+ (i < 10 ? "0"+i : i));
+		var darkName = getColorName(name, "D"+ i);
 
 		html.push([
 				"<td><div class='colorChip' style='background-color:", darkColor, "'><\/div><\/td>",
@@ -317,7 +317,7 @@ function drawCurrentColor(num, name, jsHeader) {
 
 	for (var i = 5; i <= 95; i+=5) {
 		var lightColor = lighten(baseColor, i);
-		var lightName = getColorName(name, "-" + (i < 10 ? "0"+i : i));
+		var lightName = getColorName(name, "L"+ i);
 
 		html.push([
 				"<td><div class='colorChip' style='background-color:", lightColor, "'><\/div><\/td>",
@@ -390,8 +390,8 @@ function drawHues() {
 			<b>Note: this file works best in <a href=http://www.mozilla.com/firefox/ target=_blank>Mozilla FireFox</a></b><br><br>
 			Each Zimbra Theme is composed of two families of colors:
 			<ul>
-				<li>the "AppC" used for the main body of the application, and</li>
-				<li>the "SelC" used to indicate selection, (eg: the background color of the selected message).</li>
+				<li>the "BaseColor" used for the main body of the application, and</li>
+				<li>the "SelColor" used to indicate selection, (eg: the background color of the selected message).</li>
 			</ul>
 			To pick these colors for your theme:<br><br>
 			
@@ -401,13 +401,13 @@ function drawHues() {
 	</tr>
 
 	<tr>
-		<td class=label>AppC:</td>
+		<td class=label>BaseColor:</td>
 		<td class=field><input class=rgbField id='colorRGB1' value='e8dcc1'  onfocus='focusInColorField(1)' onblur='drawCurrentColors()'></td>
 		<td><div id='display1'></div></td>
 	</tr>
 
 	<tr>
-		<td class=label>SelC:</td>
+		<td class=label>SelColor:</td>
 		<td class=field><input class=rgbField id='colorRGB2' value='C7E6F6'  onfocus='focusInColorField(2)' onblur='drawCurrentColors()'></td>
 		<td><div id='display2'></div></td>
 	</tr>

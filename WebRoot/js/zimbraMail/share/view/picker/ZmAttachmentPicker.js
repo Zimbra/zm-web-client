@@ -212,8 +212,8 @@ ZmAttachmentPicker.prototype._treeListener =
 function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED) {
  		// bug fix #7057 - remove when new version of safari is release
- 		// see http://bugs.webkit.org/show_bug.cgi?id=7279
- 		if (AjxEnv.isSafari && !AjxEnv.isSafariNightly) {
+ 		// see http://bugzilla.opendarwin.org/show_bug.cgi?id=7279
+ 		if (AjxEnv.isSafari) {
  			ev.item._checkBox.checked = !ev.item._checkBox.checked;
  		}
  		var ti = ev.item;

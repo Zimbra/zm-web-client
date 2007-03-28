@@ -45,25 +45,57 @@ ZmEvent.L_MODIFY = 1;
 ZmEvent.L_PICKER = 2;
 
 // Source types (note: there are not separate types for list models)
-ZmEvent.S_FOLDER		= "FOLDER";
-ZmEvent.S_TAG			= "TAG";
-ZmEvent.S_NOTE			= "NOTE";
-ZmEvent.S_PICKER		= "PICKER";
-ZmEvent.S_SEARCH		= "SEARCH";
-ZmEvent.S_SETTING		= "SETTING";
-ZmEvent.S_MOUNTPOINT	= "MOUNTPOINT";
+var i = 1;
+ZmEvent.S_FOLDER			= i++;
+ZmEvent.S_TAG				= i++;
+ZmEvent.S_CONV				= i++;
+ZmEvent.S_MSG				= i++;
+ZmEvent.S_ATT				= i++;
+ZmEvent.S_CONTACT			= i++;
+ZmEvent.S_GROUP				= i++;
+ZmEvent.S_APPT				= i++;
+ZmEvent.S_NOTE				= i++;
+ZmEvent.S_PAGE				= i++;
+ZmEvent.S_DOCUMENT			= i++;
+ZmEvent.S_NOTEBOOK			= i++;
+ZmEvent.S_PICKER			= i++;
+ZmEvent.S_SEARCH			= i++;
+ZmEvent.S_SETTING			= i++;
+ZmEvent.S_ZIMLET			= i++;
+ZmEvent.S_FILTER			= i++;
+ZmEvent.S_CHAT        		= i++;
+ZmEvent.S_ROSTER			= i++;
+ZmEvent.S_ROSTER_ITEM		= i++;
+ZmEvent.S_ROSTER_TREE_ITEM	= i++;
+ZmEvent.S_ROSTER_TREE_GROUP	= i++;
+ZmEvent.S_RESOURCE			= i++;
+ZmEvent.S_MOUNTPOINT		= i++;
+ZmEvent.S_DATA_SOURCE       = i++;
+ZmEvent.S_IDENTITY       	= i++;
+
+//Source types for admin
+ZmEvent.S_ACCOUNT		= i++;
+ZmEvent.S_COS			= i++;
+ZmEvent.S_DOMAIN		= i++;
+ZmEvent.S_SERVER		= i++;
+ZmEvent.S_GLOBALCONFIG	= i++;
+ZmEvent.S_STATUS		= i++;
+
+ZmEvent.S_MAX			= i - 1;
 
 // Event types
-ZmEvent.E_CREATE		= "CREATE";
-ZmEvent.E_DELETE		= "DELETE";
-ZmEvent.E_MODIFY		= "MODIFY";
-ZmEvent.E_LOAD			= "LOAD";
-ZmEvent.E_REMOVE		= "REMOVE";
-ZmEvent.E_REMOVE_ALL	= "REMOVE ALL";
-ZmEvent.E_MOVE			= "MOVE";
-ZmEvent.E_FLAGS			= "FLAGS";
-ZmEvent.E_TAGS			= "TAGS";
-ZmEvent.E_ZIMLETS		= "ZIMLET";
+i = 1;
+ZmEvent.E_CREATE		= i++;
+ZmEvent.E_DELETE		= i++;
+ZmEvent.E_MODIFY		= i++;
+ZmEvent.E_LOAD			= i++;
+ZmEvent.E_REMOVE		= i++;
+ZmEvent.E_REMOVE_ALL	= i++;
+ZmEvent.E_MOVE			= i++;
+ZmEvent.E_FLAGS			= i++;
+ZmEvent.E_TAGS			= i++;
+ZmEvent.E_CALENDARS		= i++;
+ZmEvent.E_ZIMLETS		= i++;
 
 // Public methods
 
@@ -80,9 +112,8 @@ function() {
 */
 ZmEvent.prototype.set =
 function(event, source) {
-	this.event = event;
-	this.source = source;
-	this.handled = false;
+	this.event = event; 
+	this.source = source; 
 };
 
 /**

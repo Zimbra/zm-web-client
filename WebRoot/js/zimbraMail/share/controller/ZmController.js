@@ -46,45 +46,39 @@ function ZmController(appCtxt, container, app) {
     this._errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 };
 
-ZmController.CONVLIST_VIEW 				= "CONVLIST";
-ZmController.CONV_VIEW 					= "CONV";
-ZmController.TRAD_VIEW 					= "TRAD";
-ZmController.MSG_VIEW 					= "MSG";
-ZmController.MSG_NEW_WIN_VIEW			= "MSG_NEW_WIN"; // needed for HACK (see ZmMailMsg)
-ZmController.CONTACT_CARDS_VIEW			= "CONTACT_CARDS";
-ZmController.CONTACT_SIMPLE_VIEW 		= "CONTACT_SIMPLE";
-ZmController.CONTACT_VIEW				= "CONTACT";
-ZmController.GROUP_VIEW					= "GROUP";
-ZmController.READING_PANE_VIEW 			= "READING_PANE";
-ZmController.ATT_LIST_VIEW 				= "ATT_LIST";
-ZmController.ATT_ICON_VIEW 				= "ATT_ICON";
-ZmController.CAL_VIEW					= "CAL";
-ZmController.COMPOSE_VIEW				= "COMPOSE";
-ZmController.CONTACT_SRC_VIEW			= "CONTACT_SRC"; // contact picker source list
-ZmController.CONTACT_TGT_VIEW			= "CONTACT_TGT"; // contact picker target list
-ZmController.PREF_VIEW					= "PREF";
-ZmController.CAL_DAY_VIEW				= "CAL_DAY";
-ZmController.CAL_SCHEDULE_VIEW			= "CAL_SCHEDULE";
-ZmController.CAL_WEEK_VIEW				= "CAL_WEEK";
-ZmController.CAL_MONTH_VIEW				= "CAL_MONTH";
-ZmController.CAL_WORK_WEEK_VIEW			= "CAL_WORK_WEEK";
-ZmController.CAL_APPT_VIEW				= "CAL_APPT";
-ZmController.APPT_DETAIL_VIEW			= "APPT_DETAIL";
-ZmController.APPOINTMENT_VIEW 			= "APPOINTMENT";
-ZmController.MIXED_VIEW					= "MIXED";
-ZmController.IM_CHAT_TAB_VIEW			= "IM_CHAT_TAB";
-ZmController.IM_CHAT_MULTI_WINDOW_VIEW	= "IM_CHAT_MULTI_WINDOW";
-ZmController.NOTEBOOK_PAGE_VIEW			= "NOTEBOOK_PAGE";
-ZmController.NOTEBOOK_PAGE_EDIT_VIEW	= "NOTEBOOK_PAGE_EDIT";
-ZmController.NOTEBOOK_FILE_VIEW			= "NOTEBOOK_FILE";
-ZmController.NOTEBOOK_SITE_VIEW			= "NOTEBOOK_SITE";
-ZmController.PORTAL_VIEW                = "PORTAL";
-ZmController.TASKLIST_VIEW				= "TASKLIST";
-ZmController.TASKEDIT_VIEW				= "TASKEDIT";
-ZmController.TASK_VIEW					= "TASK_VIEW";
-ZmController.LOADING_VIEW				= "LOADING";
-ZmController.VOICEMAIL_VIEW				= "VOICEMAIL";
-ZmController.CALLLIST_VIEW				= "CALLLIST";
+var i = 1;
+ZmController.CONVLIST_VIEW 				= i++;
+ZmController.CONV_VIEW 					= i++;
+ZmController.TRAD_VIEW 					= i++;
+ZmController.MSG_VIEW 					= i++;
+ZmController.MSG_NEW_WIN_VIEW			= i++; // needed for HACK (see ZmMailMsg)
+ZmController.CONTACT_CARDS_VIEW			= i++;
+ZmController.CONTACT_SIMPLE_VIEW 		= i++;
+ZmController.CONTACT_VIEW				= i++;
+ZmController.GROUP_VIEW					= i++;
+ZmController.READING_PANE_VIEW 			= i++;
+ZmController.ATT_LIST_VIEW 				= i++;
+ZmController.ATT_ICON_VIEW 				= i++;
+ZmController.CAL_VIEW					= i++;
+ZmController.COMPOSE_VIEW				= i++;
+ZmController.CONTACT_SRC_VIEW			= i++; // contact picker source list
+ZmController.CONTACT_TGT_VIEW			= i++; // contact picker target list
+ZmController.PREF_VIEW					= i++;
+ZmController.CAL_DAY_VIEW				= i++;
+ZmController.CAL_SCHEDULE_VIEW			= i++;
+ZmController.CAL_WEEK_VIEW				= i++;
+ZmController.CAL_MONTH_VIEW				= i++;
+ZmController.CAL_WORK_WEEK_VIEW			= i++;
+ZmController.CAL_APPT_VIEW				= i++;
+ZmController.APPT_DETAIL_VIEW			= i++;
+ZmController.APPOINTMENT_VIEW 			= i++;
+ZmController.MIXED_VIEW					= i++;
+ZmController.IM_CHAT_TAB_VIEW			= i++;
+ZmController.IM_CHAT_MULTI_WINDOW_VIEW	= i++;
+ZmController.NOTEBOOK_PAGE_VIEW			= i++;
+ZmController.NOTEBOOK_PAGE_EDIT_VIEW	= i++;
+ZmController.NOTEBOOK_FILE_VIEW			= i++;
+ZmController.NOTEBOOK_SITE_VIEW			= i++;
 
 /* ROSSD - It feels like we may need a ZmAppViewController class to help with
  * the tab group work. Delaying this until I have more experience pushing the 
@@ -348,11 +342,8 @@ function(username, password, rememberMe) {
 
 ZmController.prototype._doLastSearch = 
 function() {
-	if (!this._execFrame) { return; }
 	var obj = this._execFrame.obj ? this._execFrame.obj : this;
-	if (this._execFrame.func) {
-		this._execFrame.func.apply(obj, this._execFrame.args);
-	}
+	this._execFrame.func.apply(obj, this._execFrame.args);
 	this._execFrame = null;
 };
 
@@ -361,27 +352,30 @@ function() {
 ZmController.prototype._errorDialogCallback =
 function() {
 	this._errorDialog.popdown();
-	if (!this._execFrame) { return; }
-	if (this._execFrame.restartOnError && !this._authenticating && this._execFrame.func) {
-		this._execFrame.func.apply(this, this._execFrame.args);
+	if (this._execFrame) {
+		if (this._execFrame.restartOnError && !this._authenticating)
+			this._execFrame.func.apply(this, this._execFrame.args);
+		this._execFrame = null;
 	}
-	this._execFrame = null;
 };
 
 
 // Pop up a dialog. Since it's a shared resource, we need to reset first.
-ZmController.showDialog = 
-function(dialog, callback, params) {
+ZmController.prototype._showDialog = 
+function(dialog, callback, data, loc, args) {
 	dialog.reset();
-	dialog.registerCallback(DwtDialog.OK_BUTTON, callback);
-	dialog.popup(params);
+	dialog.registerCallback(DwtDialog.OK_BUTTON, callback, this, args);
+	dialog.popup(data, loc);
 };
 
 // Pop down the dialog and clear any pending actions (initiated from an action menu).
+// The action menu's popdown listener got deferred when the dialog popped up, so
+// run it now.
 ZmController.prototype._clearDialog =
 function(dialog) {
 	dialog.popdown();
 	this._pendingActionData = null;
+	this._popdownActionListener();
 };
 
-ZmController.prototype._menuPopdownActionListener = function() {};
+ZmController.prototype._popdownActionListener = function() {};

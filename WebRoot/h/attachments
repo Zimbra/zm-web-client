@@ -13,13 +13,13 @@
     <c:set var="compose" value="${uploader.compose}"/>
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
+<app:view title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
 
     <c:set var="toolbar">
         <table width=100% cellspacing=0>
             <tr valign='middle'>
-                <td class='TbBt'>
-                    <table cellspacing=0 cellpadding=0 class='Tb'>
+                <td>
+                    <table cellspacing=2 cellpadding=0 class='Tb'>
                         <tr>
                             <app:button name="actionAttachDone" src="common/Close.gif" tooltip="done" text="done"/>
                             <td><div class='vertSep'></div></td>
@@ -77,9 +77,5 @@
         <input type="hidden" name="messageid" value="${fn:escapeXml(compose.messageId)}"/>
         <input type="hidden" name="replytype" value="${fn:escapeXml(compose.replyType)}"/>
         <input type="hidden" name="draftid" value="${fn:escapeXml(empty requestScope.draftid ? compose.draftId : requestScope.draftid)}"/>
-        <input type="hidden" name="inviteReplyVerb" value="${fn:escapeXml(compose.inviteReplyVerb)}"/>
-        <input type="hidden" name="inviteReplyInst" value="${fn:escapeXml(compose.inviteReplyInst)}"/>
-        <input type="hidden" name="inviteReplyAllDay" value="${fn:escapeXml(compose.inviteReplyAllDay)}"/>        
-        
     </form>
 </app:view>

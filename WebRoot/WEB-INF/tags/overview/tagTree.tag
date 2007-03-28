@@ -12,11 +12,7 @@
 
 <div class=Tree>
     <table width=100% cellpadding=0 cellspacing=0>
-        <c:url value="/h/mtags" var="mtagsUrl">
-            <c:if test="${not empty param.sti}">
-                <c:param name="sti" value="${param.sti}"/>
-            </c:if>
-        </c:url>
+        <c:url value="/h/mtags" var="mtagsUrl"/>        
         <tr>
             <c:url var="toggleUrl" value="/h/search">
                 <c:param name="${expanded ? 'collapse' : 'expand'}" value="tags"/>
@@ -26,7 +22,9 @@
             <th class='Header'> <fmt:message key="tags"/></th>
             
             <th width='1%' align='right' class='ZhTreeEdit'>
-                <a href="${mtagsUrl}"><fmt:message key="TREE_EDIT"/> </a>
+                <c:if test="${empty editmode}">
+                    <a href="${mtagsUrl}"><fmt:message key="TREE_EDIT"/> </a>
+                </c:if>
             </th>
         </tr>
         <c:if test="${expanded}">

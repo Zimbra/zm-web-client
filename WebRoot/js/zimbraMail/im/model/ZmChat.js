@@ -25,7 +25,7 @@
 
 function ZmChat(id, chatName, appCtxt, chatList) {
 //	if (id == null) id = rosterItem.getAddress() + "_chat";
-	if (chatList == null) chatList = appCtxt.getApp(ZmApp.IM).getRoster().getChatList();
+	if (chatList == null) chatList = appCtxt.getApp(ZmZimbraMail.IM_APP).getRoster().getChatList();
 	ZmItem.call(this, appCtxt, ZmItem.CHAT, id, chatList);
 	this._sendMessageCallbackObj = new AjxCallback(this, this._sendMessageCallback);
 	this._messages = [];
@@ -43,7 +43,7 @@ ZmChat.F_MESSAGE = "ZmChat.message";
 ZmChat.prototype.toString = 
 function() {
 	return "ZmChat: id = " + this.id;
-};
+}
 
 ZmChat.prototype._getRosterItemList =
 function() {
@@ -109,11 +109,6 @@ ZmChat.prototype.getRosterItem =
 function(index) {
     if (index == null) index = 0;
     return this._rosterItemList.getArray()[index];
-};
-
-ZmChat.prototype.isZimbraAssistant = function() {
-	return (this._rosterItemList.size() == 1 &&
-		this.getRosterItem(0).getAddress() == ZmAssistantBuddy.ADDR);
 };
 
 ZmChat.prototype.getIcon =

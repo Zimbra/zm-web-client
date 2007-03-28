@@ -31,30 +31,29 @@
 *
 * @author Conrad Damon
 *
-* @param parent				[DwtControl]	parent widget
-* @param msgDialog			[DwtMsgDialog]*	message dialog
-* @param className			[string]*		CSS class
-* @param title				[string]*		dialog title
-* @param standardButtons	[array]*		list of standard buttons to show
-* @param extraButtons		[Array]*		buttons to show in addition to standard set
-* @param view				[DwtControl]*	dialog contents
+* @param parent			[DwtControl]	parent widget
+* @param msgDialog		[DwtMsgDialog]*	message dialog
+* @param className		[string]*		CSS class
+* @param title			[string]*		dialog title
+* @param extraButtons	[Array]*		buttons to show in addition to standard set
+* @param view			[DwtControl]*	dialog contents
 */
-function ZmDialog(params) {
+function ZmDialog(parent, msgDialog, className, title, extraButtons, view) {
 
 	if (arguments.length == 0) return;
-	DwtDialog.call(this, params.parent, params.className, params.title,
-				   params.standardButtons, params.extraButtons);
-	if (params.view) {
-		this.setView(params.view);
-	} else {
+	DwtDialog.call(this, parent, className, title, null, extraButtons);
+	if (!view) {
 		this.setContent(this._contentHtml());
+	} else {
+		this.setView(view);
 	}
 
+	this._msgDialog = msgDialog;
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-
-	if (this._button[DwtDialog.OK_BUTTON]) {
-		this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
+	if (this._msgDialog == null) {
+		this._msgDialog = this._appCtxt.getMsgDialog();
 	}
+	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 
 	this._treeView = {};
 	this._opc = this._appCtxt.getOverviewController();
@@ -78,7 +77,7 @@ function(newView, noReset) {
 };
 
 ZmDialog.prototype.popup =
-function() {
+function(data, loc) {
 	if (!this._tabGroupComplete) {
 		// tab group filled in here rather than in the constructor
 		// because we need all the content fields to have been created
@@ -88,7 +87,7 @@ function() {
 		}
 		this._tabGroupComplete = true;
 	}
-	DwtDialog.prototype.popup.call(this);
+	DwtDialog.prototype.popup.call(this, loc);
 };
 
 ZmDialog.prototype.reset =
@@ -135,12 +134,8 @@ function(overviewId, treeIds, omit) {
 	this._opc.set(overviewId, treeIds, omit);
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeView = this._treeView[treeIds[i]] = this._opc.getTreeView(overviewId, treeIds[i]);
-		if (treeView) {
-			var hi = treeView.getHeaderItem();
-			if (hi) {
-				hi.enableSelection(true);
-			}
-		}
+		var hi = treeView.getHeaderItem();
+		hi.enableSelection(true);
 	}
 };
 
@@ -152,11 +147,10 @@ function() {
 
 ZmDialog.prototype._showError =
 function(msg, loc) {
-	var msgDialog = this._appCtxt.getMsgDialog();
-	msgDialog.reset();
+	this._msgDialog.reset();
 	loc = loc ? loc : new DwtPoint(this.getLocation().x + 50, this.getLocation().y + 100);
-    msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-    msgDialog.popup(loc);
+    this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+    this._msgDialog.popup(loc);
     return null;
 };
 
