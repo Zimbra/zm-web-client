@@ -162,26 +162,26 @@ ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmAppt.EQUIPMENT] =
 	 ZmApptChooserTabViewPage.SF_CONTACT, ZmApptChooserTabViewPage.SF_FLOOR];
 
 ZmApptChooserTabViewPage.SORT_BY = {};
-ZmApptChooserTabViewPage.SORT_BY[ZmCalItem.PERSON]				= ZmSearch.NAME_ASC;
-ZmApptChooserTabViewPage.SORT_BY[ZmCalItem.LOCATION]			= ZmSearch.NAME_ASC;
-ZmApptChooserTabViewPage.SORT_BY[ZmCalItem.EQUIPMENT]			= ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmAppt.PERSON]				= ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmAppt.LOCATION]			= ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmAppt.EQUIPMENT]			= ZmSearch.NAME_ASC;
 
 ZmApptChooserTabViewPage.TOP_LEGEND = {};
 
-ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalItem.PERSON]			= ZmMsg.findAttendees;
-ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalItem.LOCATION]			= ZmMsg.findLocations;
-ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalItem.EQUIPMENT]		= ZmMsg.findResources;
+ZmApptChooserTabViewPage.TOP_LEGEND[ZmAppt.PERSON]			= ZmMsg.findAttendees;
+ZmApptChooserTabViewPage.TOP_LEGEND[ZmAppt.LOCATION]			= ZmMsg.findLocations;
+ZmApptChooserTabViewPage.TOP_LEGEND[ZmAppt.EQUIPMENT]		= ZmMsg.findResources;
 
 ZmApptChooserTabViewPage.BOTTOM_LEGEND = {};
-ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalItem.PERSON]		= ZmMsg.apptAttendees;
-ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalItem.LOCATION]		= ZmMsg.apptLocations;
-ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalItem.EQUIPMENT]		= ZmMsg.apptResources;
+ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmAppt.PERSON]		= ZmMsg.apptAttendees;
+ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmAppt.LOCATION]		= ZmMsg.apptLocations;
+ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmAppt.EQUIPMENT]		= ZmMsg.apptResources;
 
 // images for the bottom fieldset legend
 ZmApptChooserTabViewPage.ICON = {};
-ZmApptChooserTabViewPage.ICON[ZmCalItem.PERSON]					= appContextPath+"/img/hiRes/calendar/ApptMeeting.gif";
-ZmApptChooserTabViewPage.ICON[ZmCalItem.LOCATION]				= appContextPath+"/img/hiRes/calendar/Location.gif";
-ZmApptChooserTabViewPage.ICON[ZmCalItem.EQUIPMENT]				= appContextPath+"/img/hiRes/calendar/Resource.gif";
+ZmApptChooserTabViewPage.ICON[ZmAppt.PERSON]					= appContextPath+"/img/hiRes/calendar/ApptMeeting.gif";
+ZmApptChooserTabViewPage.ICON[ZmAppt.LOCATION]				= appContextPath+"/img/hiRes/calendar/Location.gif";
+ZmApptChooserTabViewPage.ICON[ZmAppt.EQUIPMENT]				= appContextPath+"/img/hiRes/calendar/Resource.gif";
 
 
 ZmApptChooserTabViewPage.prototype = new DwtTabViewPage;
