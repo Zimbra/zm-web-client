@@ -162,25 +162,25 @@ ZmApptChooserTabViewPage.SEARCH_FIELDS[ZmCalItem.EQUIPMENT] =
 	 ZmApptChooserTabViewPage.SF_CONTACT, ZmApptChooserTabViewPage.SF_FLOOR];
 
 ZmApptChooserTabViewPage.SORT_BY = {};
-ZmApptChooserTabViewPage.SORT_BY[ZmCalItem.PERSON]		= ZmSearch.NAME_ASC;
-ZmApptChooserTabViewPage.SORT_BY[ZmCalItem.LOCATION]	= ZmSearch.NAME_ASC;
-ZmApptChooserTabViewPage.SORT_BY[ZmCalItem.EQUIPMENT]	= ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmCalItem.PERSON]				= ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmCalItem.LOCATION]			= ZmSearch.NAME_ASC;
+ZmApptChooserTabViewPage.SORT_BY[ZmCalItem.EQUIPMENT]			= ZmSearch.NAME_ASC;
 
 ZmApptChooserTabViewPage.TOP_LEGEND = {};
-ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalItem.PERSON]		= ZmMsg.findAttendees;
-ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalItem.LOCATION]	= ZmMsg.findLocations;
-ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalItem.EQUIPMENT]	= ZmMsg.findResources;
+ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalItem.PERSON]			= ZmMsg.findAttendees;
+ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalItem.LOCATION]			= ZmMsg.findLocations;
+ZmApptChooserTabViewPage.TOP_LEGEND[ZmCalItem.EQUIPMENT]		= ZmMsg.findResources;
 
 ZmApptChooserTabViewPage.BOTTOM_LEGEND = {};
 ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalItem.PERSON]		= ZmMsg.apptAttendees;
 ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalItem.LOCATION]		= ZmMsg.apptLocations;
-ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalItem.EQUIPMENT]	= ZmMsg.apptResources;
+ZmApptChooserTabViewPage.BOTTOM_LEGEND[ZmCalItem.EQUIPMENT]		= ZmMsg.apptResources;
 
 // images for the bottom fieldset legend
 ZmApptChooserTabViewPage.ICON = {};
-ZmApptChooserTabViewPage.ICON[ZmCalItem.PERSON]	= appContextPath+"/img/hiRes/calendar/ApptMeeting.gif";
-ZmApptChooserTabViewPage.ICON[ZmCalItem.LOCATION]	= appContextPath+"/img/hiRes/calendar/Location.gif";
-ZmApptChooserTabViewPage.ICON[ZmCalItem.EQUIPMENT]	= appContextPath+"/img/hiRes/calendar/Resource.gif";
+ZmApptChooserTabViewPage.ICON[ZmCalItem.PERSON]					= appContextPath+"/img/hiRes/calendar/ApptMeeting.gif";
+ZmApptChooserTabViewPage.ICON[ZmCalItem.LOCATION]				= appContextPath+"/img/hiRes/calendar/Location.gif";
+ZmApptChooserTabViewPage.ICON[ZmCalItem.EQUIPMENT]				= appContextPath+"/img/hiRes/calendar/Resource.gif";
 
 
 ZmApptChooserTabViewPage.prototype = new DwtTabViewPage;
@@ -519,7 +519,7 @@ function(result) {
 	var list1 = [];
 	for (var i = 0; i < list.length; i++) {
 		var contact = list[i];
-		var emails = contact.getEmails();
+		var emails = contact.isGal ? [contact.getEmail()] : contact.getEmails();
 		if (emails && emails.length > 1) {
 			var workPhone = contact.getAttr(ZmContact.F_workPhone);
 			var homePhone = contact.getAttr(ZmContact.F_homePhone);
