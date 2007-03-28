@@ -38,17 +38,21 @@ function ZmPortlet(appCtxt, list, id, def) {
     if (this.title) {
         this.title = this.zimletCtxt ? this.zimletCtxt.processMessage(def.title) : def.zimlet;
     }
-    this.actionUrl = this.zimletCtxt && this.zimletCtxt.portlet.actionUrl;
+    var portlet = this.zimletCtxt && this.zimletCtxt.portlet;
+    this.actionUrl = portlet && portlet.actionUrl;
 
     // merge default and specified properties
     this.properties = {};
-    var defaultProps = this.zimletCtxt && this.zimletCtxt.portlet.portletProperties;
+    var defaultProps = portlet && portlet.portletProperties;
     for (var i in defaultProps) {
         var prop = defaultProps[i];
         this.properties[prop.name] = prop.value;
     }
-    for (var pname in def.properties) {
-        this.properties[pname] = def.properties[pname];
+    if (def.properties) {
+        for (var i = 0; i < def.properties.length; i++) {
+            var prop = def.properties[i];
+            this.properties[prop.name] = prop._content;
+        }
     }
 
     // setup refresh interval
@@ -58,6 +62,8 @@ function ZmPortlet(appCtxt, list, id, def) {
 }
 ZmPortlet.prototype = new ZmItem;
 ZmPortlet.prototype.constructor = ZmPortlet;
+
+ZmPortlet.prototype.toString = function() { return "ZmPortlet"; }
 
 //
 // Data
@@ -75,8 +81,12 @@ ZmPortlet.prototype.refresh = function() {
         if (this.actionUrl) {
             this.view.setContentUrl(this.actionUrl.target);
         }
-        else if (this.zimlet) {
+        else if (this.zimlet instanceof ZmZimletBase) {
             this.zimlet.portletRefreshed(this);
+        }
+        else if (this.zimlet) {
+            var text = AjxMessageFormat.format(ZmMsg.zimletNotLoaded, this.zimletName);
+            this.setContent(text);
         }
         else {
             var text = AjxMessageFormat.format(ZmMsg.zimletUnknown, this.zimletName);

@@ -59,6 +59,8 @@ ZmApp.LOAD_SORT[ZmApp.PORTAL]	= 1;
 ZmEvent.S_PORTLET   = "PORTLET";
 ZmItem.PORTLET      = ZmEvent.S_PORTLET;
 
+ZmPortalApp.__PORTLET_ID = 0;
+
 //
 // Public methods
 //
@@ -89,6 +91,69 @@ function(active) {
 		var controller = this.getPortalController();
 		controller.show();
 	}
+};
+
+ZmPortalApp.prototype.getManifest = function() {
+    if (!this._manifest) {
+        // load the portal manifest
+        var portalName = this._appCtxt.get(ZmSetting.PORTAL_NAME);
+        var e;
+        if (portalName) {
+            var url = [ "/zimbra/portals/",portalName,"/manifest.xml?v=",new Date().getTime() ].join("");
+            var req = AjxLoader.load(url);
+            if (req.status == 200 && req.responseXML) {
+                try {
+                    // serialize manifest into JSON and evaluate
+                    var json = new AjxJsonSerializer(true).serialize(req.responseXML);
+                    eval("this._manifest = "+json);
+
+                    // further minimize the object structure
+                    var portalDef = this._manifest.portal ;
+                    var portletsDef = portalDef && portalDef.portlets;
+                    if (portletsDef && !(portletsDef.portlet instanceof Array)) {
+                        portletsDef.portlet = [ portletsDef.portlet ];
+                    }
+                    portalDef.portlets = portletsDef.portlet;
+
+                    if (portalDef.portlets) {
+                        for (var i = 0; i < portalDef.portlets.length; i++) {
+                            var portletDef = portalDef.portlets[i];
+                            var propertyDef = portletDef.property;
+                            if (propertyDef && !(propertyDef instanceof Array)) {
+                                propertyDef = [ propertyDef ];
+                            }
+                            portletDef.properties = propertyDef;
+                            delete portletDef.property;
+                        }
+                    }
+                }
+                catch (e) {
+                    DBG.println(e);
+                }
+            }
+        }
+        else {
+            e = ""
+        }
+
+        // create portlets
+        if (this._manifest) {
+            var portalDef = this._manifest.portal;
+            var portletDefs = portalDef && portalDef.portlets;
+            if (portletDefs) {
+                var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+                for (var i = 0; i < portletDefs.length; i++) {
+                    var portletDef = portletDefs[i];
+                    var id = (portletDef.panel && portletDef.panel.id) || ++ZmPortalApp.__PORTLET_ID;
+                    portletMgr.createPortlet(id, portletDef);
+                }
+            }
+        }
+        else {
+            this._manifest = { error: e };
+        }
+    }
+    return this._manifest;
 };
 
 ZmPortalApp.prototype.getPortalController = function() {

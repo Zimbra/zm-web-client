@@ -14,6 +14,8 @@ AjxPackage.require("ajax.util.AjxTimezone");
 AjxPackage.require("ajax.net.AjxInclude");
 AjxPackage.require("ajax.net.AjxPost");
 
+AjxPackage.require("ajax.xml.AjxSerializer");
+
 AjxPackage.require("ajax.events.AjxListener");
 
 // DWT files

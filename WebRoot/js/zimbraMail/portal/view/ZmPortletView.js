@@ -31,6 +31,7 @@ function ZmPortletView(parentEl, portlet, className) {
     this._portlet = portlet;
     this._portlet.view = this;
 
+    /***
     // generate display
     var id = this._baseId = parentEl.id;
     var templateId = "ajax.dwt.templates.Widgets#DwtPanel";
@@ -42,6 +43,14 @@ function ZmPortletView(parentEl, portlet, className) {
     this._titleEl = document.getElementById(id+"_title");
     this._contentsEl = document.getElementById(id+"_contents");
     this._toolbarEl = document.getElementById(id+"_toolbar");
+    /***/
+    this._contentsEl = this.getHtmlElement();
+    if (parentEl) {
+        parentEl.portlet = "loaded";
+        parentEl.innerHTML = "";
+        parentEl.appendChild(this._contentsEl);
+    }
+    /***/
 
     // setup display
     this.setIcon(portlet.icon);

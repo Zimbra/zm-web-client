@@ -51,50 +51,28 @@ ZmPortalView.prototype._getHeaderList = function() {
 };
 
 ZmPortalView.prototype._initializeView = function() {
-    var viewEl = this.getHtmlElement();
-    var portal;
 
-    // load the portal manifest
-    var portalName = this._appCtxt.get(ZmSetting.PORTAL_NAME);
-    if (portalName) {
-        var url = [ "/zimbra/portals/",portalName,"/manifest.js" ].join("");
-        var req = AjxLoader.load(url);
-        if (req.status == 200 && req.responseText) {
-            eval("portal = "+req.responseText);
-        }
+    // layout view
+    var manifest = this._appCtxt.getApp(ZmApp.PORTAL).getManifest();
+    var portalDef = manifest && manifest.portal;
+    if (portalDef) {
+        this.getHtmlElement().innerHTML = portalDef.html || "";
     }
 
-    // generate layout
-    var cols = portal && portal.cols;
-    if (cols) {
-        var templateId = "zimbraMail.portal.templates.Portal#layout";
-        var data = { cols: cols, spacing: 4 };
-        viewEl.innerHTML = AjxTemplate.expand(templateId, data);
-
-        // populate portlets
-        var zimletMgr = this._appCtxt.getZimletMgr();
-        var portletZimlets = zimletMgr.getPortletZimletsHash();
+    // populate portlets
+    var portletDefs = portalDef && portalDef.portlets;
+    if (portletDefs) {
         var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
-
-        for (var i = 0; i < cols.length; i++) {
-            var col = cols[i];
-            var portletDefs = col.portlets || [];
-            for (var j = 0; j < portletDefs.length; j++) {
-                var portletDef = portletDefs[j];
-
-                var zimlet = portletZimlets[portletDef.zimlet];
-
-                var id = [ "Portal", i, j ].join("_");
-                var contEl = document.getElementById(id);
-
-                var portlet = portletMgr.createPortlet(id, portletDef);
-                var view = new ZmPortletView(contEl, portlet);
+        for (var i = 0; i < portletDefs.length; i++) {
+            var portletDef = portletDefs[i];
+            var panelId = portletDef.panel && portletDef.panel.id;
+            var portlet = portletMgr.getPortletById(panelId);
+            if (portlet) {
+                var panelEl = document.getElementById(panelId);
+                if (panelEl && !panelEl.portlet) {
+                    new ZmPortletView(panelEl, portlet);
+                }
             }
         }
-    }
-
-    // clear layout
-    else {
-        viewEl.innerHTML = "";
     }
 };

@@ -92,7 +92,7 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	var portlet = zimlet.portlet && zimlet.portlet[0];
     if (portlet) {
         portlet = ZmZimletContext.sanitize(portlet);
-        portlet.portletProperties = portlet.portletProperties.property;
+        portlet.portletProperties = (portlet.portletProperties && portlet.portletProperties.property) || {};
         this.portlet = portlet;
     }
     if(zimlet.userProperties) {
