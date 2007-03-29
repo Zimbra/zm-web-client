@@ -282,7 +282,7 @@
     --%>
 </c:if>
 
-<c:if test="${folder.isAppointmentView}">
+<c:if test="${folder.isAppointmentView and not folder.isMountPoint}">
     <%---------- exclude from free/busy ----------%>
     <tr>
         <td>&nbsp;</td>
@@ -301,7 +301,8 @@
             </table>
         </td>
     </tr>
-
+</c:if>
+<c:if test="${folder.isAppointmentView}">
     <%---------- checked in UI ----------%>
     <tr>
         <td>&nbsp;</td>
