@@ -54,6 +54,16 @@ function() {
 	return ZmController.VOICEMAIL_VIEW;
 };
 
+ZmVoicemailListController.prototype._getViewType = 
+function() {
+	return ZmController.VOICEMAIL_VIEW;
+};
+
+ZmVoicemailListController.prototype._getItemType =
+function() {
+	return ZmItem.VOICEMAIL;
+};
+
 ZmVoicemailListController.prototype._createNewView = 
 function(view) {
 	var result = new ZmVoicemailListView(this._container, this, this._dropTgt);
@@ -168,7 +178,9 @@ function(ev) {
 
 ZmVoicemailListController.prototype._saveListener = 
 function(ev) {
-//	alert('Save voicemail here');
+	// This is the right code... leaving commented out till server can implement ?disp=a
+//	var voicemail = this._getView().getSelection()[0];
+//	document.location = voicemail.soundUrl + "?disp=a";
 };
 
 ZmVoicemailListController.prototype._forwardListener = 

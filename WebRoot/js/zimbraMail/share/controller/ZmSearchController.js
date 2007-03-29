@@ -256,6 +256,7 @@ function(search, noRender, changes, callback, errorCallback) {
 	params.searchId		= search.searchId;
 	params.lastSortVal	= search.lastSortVal;
 	params.lastId		= search.lastId;
+	params.soapInfo		= search.soapInfo;
 
 	if (changes) {
 		for (var key in changes)

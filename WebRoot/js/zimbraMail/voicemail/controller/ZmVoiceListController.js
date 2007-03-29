@@ -48,6 +48,8 @@ function(searchResult, folder) {
 	this._folder = folder;
 	ZmListController.prototype.show.call(this, searchResult);
 	this._list = searchResult.getResults(folder.getSearchType());
+	if (this._list)
+		this._list.setHasMore(searchResult.getAttribute("more"));	
 	this._setup(this._currentView);
 
 	var elements = new Object();
@@ -83,6 +85,15 @@ function() {
 	return this._participantActionMenu;
 };
 
+ZmVoiceListController.prototype._initializeToolBar =
+function(view) {
+	if (!this._toolbar[view]) {
+		ZmListController.prototype._initializeToolBar.call(this, view);
+		this._toolbar[view].addFiller();
+		var tb = new ZmNavToolBar(this._toolbar[view], DwtControl.STATIC_STYLE, null, ZmNavToolBar.SINGLE_ARROWS, true);
+		this._setNavToolBar(tb, view);
+	};
+};
 
 ZmVoiceListController.prototype._getView = 
 function() {
@@ -92,6 +103,11 @@ function() {
 ZmVoiceListController.prototype._getToolbar = 
 function() {
 	return this._toolbar[this._currentView]
+};
+
+ZmListController.prototype._getMoreSearchParams =
+function(params) {
+	params.soapInfo = ZmVoiceApp.SOAP_INFO;
 };
 
 ZmVoiceListController.prototype._createNewContact =

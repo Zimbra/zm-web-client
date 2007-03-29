@@ -45,6 +45,12 @@ ZmApp.SETTING[ZmApp.VOICE]		= ZmSetting.VOICE_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.VOICE]	= 80;
 ZmApp.QS_ARG[ZmApp.VOICE]		= "voice";
 
+ZmVoiceApp.SOAP_INFO = {
+	method: "SearchVoiceRequest", 
+	namespace: "urn:zimbraVoice",
+	response: "SearchVoiceResponse"
+};
+
 ZmVoiceApp.prototype = new ZmApp;
 ZmVoiceApp.prototype.constructor = ZmVoiceApp;
 
@@ -157,13 +163,8 @@ function(list) {
 
 ZmVoiceApp.prototype.search =
 function(folder, callback, sortBy) {
-	var soapInfo = {
-		method: "SearchVoiceRequest", 
-		namespace: "urn:zimbraVoice",
-		response: "SearchVoiceResponse"
-	};
 	var searchParams = {
-		soapInfo: soapInfo,
+		soapInfo: ZmVoiceApp.SOAP_INFO,
 		types: AjxVector.fromArray([folder.getSearchType()]),
 		sortBy: sortBy,
 		query: folder.getSearchQuery()

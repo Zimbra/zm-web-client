@@ -44,6 +44,16 @@ function() {
 	return ZmController.CALLLIST_VIEW;
 };
 
+ZmCallListController.prototype._getViewType = 
+function() {
+	return ZmController.CALLLIST_VIEW;
+};
+
+ZmCallListController.prototype._getItemType =
+function() {
+	return ZmItem.CALL;
+};
+
 ZmCallListController.prototype._createNewView = 
 function(view) {
 	return new ZmCallListView(this._container, this);
