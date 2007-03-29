@@ -322,7 +322,7 @@ function(ev) {
 		}
 	} else if (this._mode == ZmController.CONV_VIEW && ev.event == ZmEvent.E_CREATE) {
 		var conv = AjxDispatcher.run("GetConvController").getConv();
-		var msg = items[0].typ == ZmItem.MSG ? items[0] : null;
+		var msg = items[0].type == ZmItem.MSG ? items[0] : null;
 		if (conv && msg && (msg.cid == conv.id)) {
 			ZmMailListView.prototype._changeListener.call(this, ev);
 		}
