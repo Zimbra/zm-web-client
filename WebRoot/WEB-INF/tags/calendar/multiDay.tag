@@ -81,13 +81,11 @@
             </c:otherwise>
         </c:choose>
         <c:forEach var="cell" items="${row.cells}">
-            <td class='ZhCalAllDayDS' valign=middle height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if>>
+            <td style='padding: 1px' class='ZhCalAllDayDS' valign=middle height=100% width='${cell.width}%'<c:if test="${cell.colSpan ne 1}"> colspan='${cell.colSpan}'</c:if>>
                 <c:choose>
                     <c:when test="${not empty cell.appt}">
                         <c:set var="testId" value="${cell.appt.id}-${selectedId}"/>
-                        <div style='padding:1px'>
                             <app:dayAppt appt="${cell.appt}" selected="${testId eq cell.appt.inviteId}" start="${currentDay.timeInMillis}" end="${rangeEnd}" timezone="${timezone}"/>
-                        </div>
                     </c:when>
                     <c:otherwise>
                         &nbsp;

@@ -25,19 +25,40 @@
     <c:when test="${appt.allDay}">
         <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
         <c:if test="${appt.endTime gt end}"><c:set var="bright" value='border-right:none;'/></c:if>
-        <div <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if> 
-                class='ZhCalDayAllDayAppt${needsAction ? 'New ' : ' '} ${color}${needsAction ? 'Dark' : 'Light'}'>
-                <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
-            <%--
-            start(<fmt:formatDate value="${zm:getCalendar(appt.startTime, null).time}" type="both"/>)
-            end(<fmt:formatDate value="${zm:getCalendar(appt.endTime,null).time}" type="both"/>)
-            --%>
-        </div>
+
+        <table <c:if test="${not empty bleft or not empty bright}">style="${bleft}${bright}"</c:if>
+                class='ZhCalDayAllDayAppt${needsAction ? 'New ' : ' '} ${color}${needsAction ? 'Dark' : 'Light'}'
+
+                width="100%" height="100%" border="0" cellspacing="0" cellpadding="1">
+            <tr>
+                <td>
+                    <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
+                </td>
+                <c:if test="${appt.otherAttendees or appt.exception}">
+                    <td width=1% align=right>
+                        <table border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <c:if test="${appt.otherAttendees}">
+                                    <td valign='top'>
+                                        <app:img src="calendar/ApptMeeting.gif"/>
+                                    </td>
+                                </c:if>
+                                <c:if test="${appt.exception}">
+                                    <td valign='top'>
+                                        <app:img src="calendar/ApptException.gif"/>
+                                    </td>
+                                </c:if>
+                            </tr>
+                        </table>
+                    </td>
+                </c:if>
+            </tr>
+        </table>
     </c:when>
     <c:when test="${appt.duration gt 1000*60*15}">
         <table class='ZhCalDayAppt${needsAction ? 'New' : ''}' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
             <tr>
-                <td class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}' valign=top>
+                <td colspan="${appt.otherAttendees or appt.exception ? 1 : 2}" nowrap class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}' valign=top>
                     <c:choose>
                         <c:when test="${appt.startTime lt start}">
                             <fmt:formatDate value="${appt.startDate}" type="both" timeStyle="short" dateStyle="short"/>
@@ -47,15 +68,33 @@
                         </c:otherwise>
                     </c:choose>
                 </td>
+                <c:if test="${appt.otherAttendees or appt.exception}">
+                <td width=1% align=right class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}'>
+                <table border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <c:if test="${appt.otherAttendees}">
+                        <td valign='top'>
+                            <app:img src="calendar/ApptMeeting.gif"/>
+                        </td>
+                        </c:if>
+                        <c:if test="${appt.exception}">
+                            <td valign='top'>
+                                <app:img src="calendar/ApptException.gif"/>
+                            </td>
+                        </c:if>
+                    </tr>
+                </table>
+                </td>
+                </c:if>
             </tr>
             <tr>
-                <td height=100% class='${color}${needsAction ? '' : 'Bg'}' valign=top>
+                <td colspan=2 height=100% class='${color}${needsAction ? '' : 'Bg'}' valign=top>
                     <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
                 </td>
             </tr>
             <c:if test="${appt.duration gt zm:MSECS_PER_HOUR()}">
             <tr>
-                <td align=left valign=bottom height=1% class='ZhCalDayApptEnd ${color}${needsAction ? '' : 'Bg'}'>
+                <td colspan=2 align=left valign=bottom height=1% class='ZhCalDayApptEnd ${color}${needsAction ? '' : 'Bg'}'>
                     <c:choose>
                         <c:when test="${appt.endTime gt end}">
                             <fmt:formatDate value="${appt.endDate}" type="both" timeStyle="short" dateStyle="short"/>
@@ -76,6 +115,24 @@
                     <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
                      &nbsp; <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
                 </td>
+                <c:if test="${appt.otherAttendees or appt.exception}">
+                    <td width=1% align=right class='${color}${needsAction ? 'Dark' : 'Light'}'>
+                        <table border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <c:if test="${appt.otherAttendees}">
+                                    <td valign='top'>
+                                        <app:img src="calendar/ApptMeeting.gif"/>
+                                    </td>
+                                </c:if>
+                                <c:if test="${appt.exception}">
+                                    <td valign='top'>
+                                        <app:img src="calendar/ApptException.gif"/>
+                                    </td>
+                                </c:if>
+                            </tr>
+                        </table>
+                    </td>
+                </c:if>
             </tr>
         </table>
     </c:otherwise>
