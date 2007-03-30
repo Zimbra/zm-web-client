@@ -225,6 +225,10 @@ function(actionCode) {
 			}
 			break;
 			
+		case ZmKeyMap.FLAG:
+			this._doFlag(listView.getSelection());
+			break;
+
 		case ZmKeyMap.TAG:
 			var items = listView.getSelection();
 			if (items && items.length) {
@@ -256,6 +260,7 @@ ZmListController.prototype._createNewView	 	= function() {};
 
 // Returns the view ID
 ZmListController.prototype._getViewType 		= function() {};
+ZmListController.prototype._defaultView 		= function() { return this._getViewType(); };
 
 // Populates the view with data
 ZmListController.prototype._setViewContents		= function(view) {};
@@ -789,27 +794,33 @@ function(folder) {
 
 // Flag/unflag an item
 ZmListController.prototype._doFlag =
-function(items) {
-	var on = !items[0].isFlagged;
+function(items, on) {
+	if (on !== true && on !== false) {
+		on = !items[0].isFlagged;
+	}
 	var items1 = [];
 	for (var i = 0; i < items.length; i++) {
 		if (items[i].isFlagged != on) {
 			items1.push(items[i]);
 		}
 	}
-	this._list.flagItems(items1, "flag", on);
+//	this._list.flagItems(items1, "flag", on);
+	var list = items[0].list || this._list;
+	list.flagItems(items1, "flag", on);
 };
 
 // Tag/untag items
 ZmListController.prototype._doTag =
 function(items, tag, doTag) {
-	this._list.tagItems(items, tag.id, doTag);
+	var list = items[0].list || this._list;
+	list.tagItems(items, tag.id, doTag);
 };
 
 // Remove all tags for given items
 ZmListController.prototype._doRemoveAllTags =
 function(items) {
-	this._list.removeAllTags(items);
+	var list = items[0].list || this._list;
+	list.removeAllTags(items);
 };
 
 /*
@@ -821,7 +832,8 @@ function(items) {
 */
 ZmListController.prototype._doDelete =
 function(items, hardDelete, attrs) {
-	this._list.deleteItems(items, hardDelete, attrs);
+	var list = items[0].list || this._list;
+	list.deleteItems(items, hardDelete, attrs);
 };
 
 /**
@@ -848,17 +860,21 @@ function(items, folder, attrs, force) {
 		}
 	}
 
-	if (move.length)
-		this._list.moveItems(move, folder, attrs);
+	var list = items[0].list || this._list;
+	if (move.length) {
+		list.moveItems(move, folder, attrs);
+	}
 
-	if (copy.length)
-		this._list.copyItems(copy, folder, attrs);
+	if (copy.length) {
+		list.copyItems(copy, folder, attrs);
+	}
 };
 
 // Modify an item
 ZmListController.prototype._doModify =
 function(item, mods) {
-	this._list.modifyItem(item, mods);
+	var list = items[0].list || this._list;
+	list.modifyItem(item, mods);
 };
 
 // Create an item. We need to be passed a list since we may not have one.

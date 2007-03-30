@@ -50,11 +50,9 @@ ZmMailApp._setGroupByMaps =
 function() {
 	// convert between server values for "group mail by" and item types
 	ZmMailApp.GROUP_MAIL_BY_ITEM	= {};
-	ZmMailApp.GROUP_MAIL_BY_VALUE	= {};
 	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_CONV]		= ZmItem.CONV;
 	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_MESSAGE]	= ZmItem.MSG;
-	ZmMailApp.GROUP_MAIL_BY_VALUE[ZmItem.CONV]					= ZmSetting.GROUP_BY_CONV;
-	ZmMailApp.GROUP_MAIL_BY_VALUE[ZmItem.MSG]					= ZmSetting.GROUP_BY_MESSAGE;
+	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_HYBRID]		= ZmItem.CONV;
 };
 
 ZmMailApp.prototype.toString = 
@@ -73,6 +71,7 @@ function() {
 	AjxDispatcher.registerMethod("GetConvListController", "Mail", new AjxCallback(this, this.getConvListController));
 	AjxDispatcher.registerMethod("GetMsgController", "Mail", new AjxCallback(this, this.getMsgController));
 	AjxDispatcher.registerMethod("GetTradController", "Mail", new AjxCallback(this, this.getTradController));
+	AjxDispatcher.registerMethod("GetHybridController", "Mail", new AjxCallback(this, this.getHybridController));
 	AjxDispatcher.registerMethod("GetMailListController", "Mail", new AjxCallback(this, this.getMailListController));
 };
 
@@ -390,6 +389,7 @@ function() {
 ZmMailApp.prototype.startup =
 function(result) {
 	AjxDispatcher.run("GetComposeController").initComposeView(true);
+	this._groupBy = this._appCtxt.get(ZmSetting.GROUP_MAIL_BY);	// set type for initial search
 };
 
 ZmMailApp.prototype.preNotify =
@@ -535,10 +535,12 @@ function(results, callback) {
 
 ZmMailApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
-	if (results.type == ZmItem.CONV) {
+	if (this._groupBy == ZmSetting.GROUP_BY_CONV) {
 		this.getConvListController().show(results);
-	} else if (results.type == ZmItem.MSG) {
+	} else if (this._groupBy == ZmSetting.GROUP_BY_MESSAGE) {
 		this.getTradController().show(results);
+	} else if (this._groupBy == ZmSetting.GROUP_BY_HYBRID) {
+		this.getHybridController().show(results);
 	}
 	if (callback) {
 		callback.run();
@@ -577,12 +579,20 @@ function() {
 	return this._tradController;
 };
 
-ZmMailApp.prototype.getMsgController = 
+ZmMailApp.prototype.getMsgController =
 function() {
 	if (!this._msgController) {
 		this._msgController = new ZmMsgController(this._appCtxt, this._container, this);
 	}
 	return this._msgController;
+};
+
+ZmMailApp.prototype.getHybridController =
+function() {
+	if (!this._hybridController) {
+		this._hybridController = new ZmHybridController(this._appCtxt, this._container, this);
+	}
+	return this._hybridController;
 };
 
 ZmMailApp.prototype.getComposeController =

@@ -41,21 +41,16 @@ ZmTradView.prototype.setItem =
 function(msgs) {
 	ZmDoublePaneView.prototype.setItem.call(this, msgs);
 
-	this._msgListView.set(msgs, ZmItem.F_DATE);
+	this._mailListView.set(msgs, ZmItem.F_DATE);
 
 	// XXX: for now always show the first msg 
 	//      (whether user clicked inbox or paginated)
-	var list = this._msgListView.getList();
+	var list = this._mailListView.getList();
 	var selectedItem = list ? list.get(0) : null
 	if (selectedItem) {
-		this._msgListView.setSelection(selectedItem, false, true);
+		this._mailListView.setSelection(selectedItem, false, true);
 	}
 }
-
-ZmTradView.prototype.getTitle =
-function() {
-	return this._msgListView.getTitle();
-};
 
 ZmTradView.prototype._resetSize = 
 function(newWidth, newHeight) {
@@ -66,7 +61,7 @@ function(newWidth, newHeight) {
 		var sashHeight = this._msgSash.getSize().y;
 		if (!this._sashMoved) {
 			var listViewHeight = (newHeight / 2) - DwtListView.HEADERITEM_HEIGHT;
-			this._msgListView.resetHeight(listViewHeight);
+			this._mailListView.resetHeight(listViewHeight);
 			this._msgView.setBounds(Dwt.DEFAULT, listViewHeight + sashHeight, Dwt.DEFAULT,
 									newHeight - (listViewHeight + sashHeight));
 			this._msgSash.setLocation(Dwt.DEFAULT, listViewHeight);
@@ -74,7 +69,7 @@ function(newWidth, newHeight) {
 			var mvHeight = newHeight - this._msgView.getLocation().y;
 			var minHeight = this._msgView.getMinHeight();
 			if (mvHeight < minHeight) {
-				this._msgListView.resetHeight(newHeight - minHeight);
+				this._mailListView.resetHeight(newHeight - minHeight);
 				this._msgView.setBounds(Dwt.DEFAULT, (newHeight - minHeight) + sashHeight,
 										Dwt.DEFAULT, minHeight - sashHeight);
 			} else {
@@ -83,9 +78,9 @@ function(newWidth, newHeight) {
 			this._msgSash.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - sashHeight);
 		}
 	} else {
-		this._msgListView.resetHeight(newHeight);
+		this._mailListView.resetHeight(newHeight);
 	}
-	this._msgListView._resetColWidth();
+	this._mailListView._resetColWidth();
 }
 
 ZmTradView.prototype._sashCallback =
@@ -99,7 +94,7 @@ function(delta) {
 		var minMsgViewHeight = this._msgView.getMinHeight();
 		if (newMsgViewHeight > minMsgViewHeight) {
 			// moving sash down
-			this._msgListView.resetHeight(this._msgListView.getSize().y + delta);
+			this._mailListView.resetHeight(this._mailListView.getSize().y + delta);
 			this._msgView.setSize(Dwt.DEFAULT, newMsgViewHeight);
 			this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y + delta);
 		} else {
@@ -109,10 +104,10 @@ function(delta) {
 		var absDelta = Math.abs(delta);
 		
 		if (!this._minMLVHeight) {
-			var list = this._msgListView.getList();
+			var list = this._mailListView.getList();
 			if (list && list.size()) {
 				var item = list.get(0);
-				var div = document.getElementById(this._msgListView._getItemId(item));
+				var div = document.getElementById(this._mailListView._getItemId(item));
 				this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT + (Dwt.getSize(div).y * 2);
 			} else {
 				this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT;
@@ -121,7 +116,7 @@ function(delta) {
 		
 		if (this._msgSash.getLocation().y - absDelta > this._minMLVHeight) {
 			// moving sash up
-			this._msgListView.resetHeight(this._msgListView.getSize().y - absDelta);
+			this._mailListView.resetHeight(this._mailListView.getSize().y - absDelta);
 			this._msgView.setSize(Dwt.DEFAULT, this._msgView.getSize().y + absDelta);
 			this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - absDelta);
 		} else {
@@ -130,7 +125,7 @@ function(delta) {
 	}
 
 	if (delta)
-		this._msgListView._resetColWidth();
+		this._mailListView._resetColWidth();
 
 	return delta;
 }

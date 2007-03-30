@@ -158,6 +158,7 @@ ZmKeyMap.TODAY				= "Today";
 ZmKeyMap.UNTAG				= "Untag";
 ZmKeyMap.VIEW_BY_CONV		= "ViewByConversation";
 ZmKeyMap.VIEW_BY_MSG		= "ViewByMessage";
+ZmKeyMap.VIEW_HYBRID		= "ViewHybrid";
 
 // shifted chars
 ZmKeyMap.SHIFT = {};

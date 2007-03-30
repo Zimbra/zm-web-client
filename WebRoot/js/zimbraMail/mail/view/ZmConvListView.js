@@ -23,11 +23,14 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmConvListView(parent, className, posStyle, controller, dropTgt) {
+function ZmConvListView(parent, className, posStyle, controller, dropTgt, view) {
+
+	if (arguments.length == 0) { return; }
 
 	var headerList = this._getHeaderList(parent);
-	ZmMailListView.call(this, parent, className, posStyle, ZmController.CONVLIST_VIEW, ZmItem.CONV, controller, headerList, dropTgt);
-	this.setHtmlElementId("ZmConvListView")
+	view = view || ZmController.CONVLIST_VIEW;
+	ZmMailListView.call(this, parent, className, posStyle, view, ZmItem.CONV, controller, headerList, dropTgt);
+	this.setHtmlElementId(this.toString());
 };
 
 ZmConvListView.prototype = new ZmMailListView;

@@ -46,45 +46,46 @@ function ZmController(appCtxt, container, app) {
     this._errorDialog.registerCallback(DwtDialog.OK_BUTTON, this._errorDialogCallback, this);
 };
 
-ZmController.CONVLIST_VIEW 				= "CONVLIST";
-ZmController.CONV_VIEW 					= "CONV";
-ZmController.TRAD_VIEW 					= "TRAD";
+ZmController.CONVLIST_VIEW 				= "CLV";
+ZmController.CONV_VIEW 					= "CV";
+ZmController.TRAD_VIEW 					= "TV";
 ZmController.MSG_VIEW 					= "MSG";
-ZmController.MSG_NEW_WIN_VIEW			= "MSG_NEW_WIN"; // needed for HACK (see ZmMailMsg)
-ZmController.CONTACT_CARDS_VIEW			= "CONTACT_CARDS";
-ZmController.CONTACT_SIMPLE_VIEW 		= "CONTACT_SIMPLE";
-ZmController.CONTACT_VIEW				= "CONTACT";
-ZmController.GROUP_VIEW					= "GROUP";
-ZmController.READING_PANE_VIEW 			= "READING_PANE";
-ZmController.ATT_LIST_VIEW 				= "ATT_LIST";
-ZmController.ATT_ICON_VIEW 				= "ATT_ICON";
+ZmController.MSG_NEW_WIN_VIEW			= "MSG_NW"; // needed for HACK (see ZmMailMsg)
+ZmController.CONTACT_CARDS_VIEW			= "CNC";
+ZmController.CONTACT_SIMPLE_VIEW 		= "CNS";
+ZmController.CONTACT_VIEW				= "CN";
+ZmController.GROUP_VIEW					= "GRP";
+ZmController.READING_PANE_VIEW 			= "RP";
+ZmController.ATT_LIST_VIEW 				= "ATL";
+ZmController.ATT_ICON_VIEW 				= "ATI";
 ZmController.CAL_VIEW					= "CAL";
 ZmController.COMPOSE_VIEW				= "COMPOSE";
-ZmController.CONTACT_SRC_VIEW			= "CONTACT_SRC"; // contact picker source list
-ZmController.CONTACT_TGT_VIEW			= "CONTACT_TGT"; // contact picker target list
+ZmController.CONTACT_SRC_VIEW			= "CN_SRC"; // contact picker source list
+ZmController.CONTACT_TGT_VIEW			= "CN_TGT"; // contact picker target list
 ZmController.PREF_VIEW					= "PREF";
-ZmController.CAL_DAY_VIEW				= "CAL_DAY";
-ZmController.CAL_SCHEDULE_VIEW			= "CAL_SCHEDULE";
-ZmController.CAL_WEEK_VIEW				= "CAL_WEEK";
-ZmController.CAL_MONTH_VIEW				= "CAL_MONTH";
-ZmController.CAL_WORK_WEEK_VIEW			= "CAL_WORK_WEEK";
-ZmController.CAL_APPT_VIEW				= "CAL_APPT";
-ZmController.APPT_DETAIL_VIEW			= "APPT_DETAIL";
-ZmController.APPOINTMENT_VIEW 			= "APPOINTMENT";
-ZmController.MIXED_VIEW					= "MIXED";
+ZmController.CAL_DAY_VIEW				= "CLD";
+ZmController.CAL_SCHEDULE_VIEW			= "CLS";
+ZmController.CAL_WEEK_VIEW				= "CLW";
+ZmController.CAL_MONTH_VIEW				= "CLM";
+ZmController.CAL_WORK_WEEK_VIEW			= "CLWW";
+ZmController.CAL_APPT_VIEW				= "CLA";
+ZmController.APPT_DETAIL_VIEW			= "APPT_D";
+ZmController.APPOINTMENT_VIEW 			= "APPT";
+ZmController.MIXED_VIEW					= "MX";
 ZmController.IM_CHAT_TAB_VIEW			= "IM_CHAT_TAB";
 ZmController.IM_CHAT_MULTI_WINDOW_VIEW	= "IM_CHAT_MULTI_WINDOW";
-ZmController.NOTEBOOK_PAGE_VIEW			= "NOTEBOOK_PAGE";
-ZmController.NOTEBOOK_PAGE_EDIT_VIEW	= "NOTEBOOK_PAGE_EDIT";
-ZmController.NOTEBOOK_FILE_VIEW			= "NOTEBOOK_FILE";
-ZmController.NOTEBOOK_SITE_VIEW			= "NOTEBOOK_SITE";
+ZmController.NOTEBOOK_PAGE_VIEW			= "NBP";
+ZmController.NOTEBOOK_PAGE_EDIT_VIEW	= "NBPE";
+ZmController.NOTEBOOK_FILE_VIEW			= "NBF";
+ZmController.NOTEBOOK_SITE_VIEW			= "NBS";
 ZmController.PORTAL_VIEW                = "PORTAL";
-ZmController.TASKLIST_VIEW				= "TASKLIST";
-ZmController.TASKEDIT_VIEW				= "TASKEDIT";
-ZmController.TASK_VIEW					= "TASK_VIEW";
+ZmController.TASKLIST_VIEW				= "TKL";
+ZmController.TASKEDIT_VIEW				= "TKE";
+ZmController.TASK_VIEW					= "TKV";
 ZmController.LOADING_VIEW				= "LOADING";
-ZmController.VOICEMAIL_VIEW				= "VOICEMAIL";
-ZmController.CALLLIST_VIEW				= "CALLLIST";
+ZmController.VOICEMAIL_VIEW				= "VM";
+ZmController.CALLLIST_VIEW				= "CLIST";
+ZmController.HYBRID_VIEW				= "HY";
 
 /* ROSSD - It feels like we may need a ZmAppViewController class to help with
  * the tab group work. Delaying this until I have more experience pushing the 

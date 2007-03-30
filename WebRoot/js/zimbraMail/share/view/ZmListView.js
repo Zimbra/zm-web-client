@@ -38,8 +38,13 @@ function ZmListView(parent, className, posStyle, view, type, controller, headerL
 	this._listChangeListener = new AjxListener(this, this._changeListener);
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	var tagList = this._appCtxt.getTagTree();
-	if (tagList)
+	if (tagList) {
 		tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
+	}
+	this._handleEventType = {};
+	this._handleEventType[this.type] = true;
+	this._disallowSelection = {};
+	this._disallowSelection[ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]] = true;
 }
 
 ZmListView.prototype = new DwtListView;
@@ -73,6 +78,7 @@ ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY]		= "s";
 ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]		= "t";
 ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE]		= "u";
 ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED]		= "v";
+ZmListView.FIELD_PREFIX[ZmItem.F_EXPAND]		= "w";
 
 // column widths
 ZmListView.COL_WIDTH_ICON 					= 19;
@@ -116,8 +122,7 @@ function() {
 
 ZmListView.prototype._changeListener =
 function(ev) {
-	if ((ev.type != this.type) && (ZmItem.MIXED != this.type))
-		return;
+	if (!this._handleEventType[ev.type] && (this.type != ZmItem.MIXED)) { return; }
 	var items = ev.getDetail("items");
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: TAG");
@@ -290,6 +295,8 @@ function(htmlArr, idx, item, field, colIdx, now) {
 		htmlArr[idx++] = ">";
 		htmlArr[idx++] = AjxDateUtil.computeDateStr(now, item.date);
 		htmlArr[idx++] = "</td>";
+	} else {
+		return null;
 	}
 	
 	return idx;
@@ -485,8 +492,9 @@ function(clickedEl, ev, button) {
 	var type = Dwt.getAttr(clickedEl, "_type");
 	if (id && type && type == DwtListView.TYPE_LIST_ITEM) {
 		var m = this._parseId(id);
-		if (m && m.field)
-			return (m.field != ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]);
+		if (m && m.field) {
+			return (!this._disallowSelection[m.field]);
+		}
 	}
 	return true;
 }

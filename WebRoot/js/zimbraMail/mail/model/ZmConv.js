@@ -61,7 +61,7 @@ function(node, args) {
 };
 
 ZmConv.prototype.load =
-function(searchString, sortBy, offset, limit, pagCallback, callback) {
+function(searchString, sortBy, offset, limit, pagCallback, callback, getFirstMsg) {
 
 	var sortBy = sortBy ? sortBy : ZmSearch.DATE_DESC;
 	var offset = offset ? offset : 0;
@@ -91,7 +91,7 @@ function(searchString, sortBy, offset, limit, pagCallback, callback) {
 	var params = {query: searchString, types: types, sortBy: sortBy, offset: offset, limit: limit};
 	var search = new ZmSearch(this.list._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseLoad, [pagCallback, callback]);
-	search.getConv(this.id, respCallback);
+	search.getConv(this.id, respCallback, getFirstMsg);
 };
 
 ZmConv.prototype._handleResponseLoad =

@@ -53,6 +53,7 @@ function ZmRequestMgr(appCtxt, controller, domain) {
 
 	this._cancelActionId = {};
 	this._pendingRequests = {};
+	this._modifyHandled = {};
 
 	this._useXml = this._appCtxt.get(ZmSetting.USE_XML);
 	this._logRequest = this._appCtxt.get(ZmSetting.LOG_REQUEST);
@@ -428,6 +429,12 @@ function(creates) {
  */
 ZmRequestMgr.prototype._handleModifies =
 function(modifies) {
+
+	// for tracking what has been handled across multiple change listeners;
+	// clients can set this directly with the ID of the item as the key;
+	// clear it out before handling a set of notifications.
+	this._modifyHandled = {};
+
 	var list = ZmRequestMgr._getObjList(modifies);
 
 	// mark the last "item moved" notify to trigger replenishment (we don't want to
@@ -446,7 +453,7 @@ function(modifies) {
 
 	for (var i = 0; i < list.length; i++) {
 		var mod = list[i];
-		if (mod._handled) { continue; }
+		if (mod._handled || this._modifyHandled[mod.id]) { continue; }
 		DBG.println(AjxDebug.DBG2, "ZmRequestMgr: handling modified notif for ID " + mod.id + ", node type = " + mod._name);
 		if (mod._name == "mbx") {
 			var setting = this._controller._settings.getSetting(ZmSetting.QUOTA_USED);

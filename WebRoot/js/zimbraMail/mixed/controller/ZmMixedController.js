@@ -195,11 +195,6 @@ function() {
 	return ZmItem.MIXED;
 };
 
-ZmMixedController.prototype._defaultView =
-function() {
-	return ZmController.MIXED_VIEW;
-};
-
 ZmMixedController.prototype._createNewView = 
 function(view) {
 	var mv = new ZmMixedView(this._container, null, DwtControl.ABSOLUTE_STYLE, this, this._dropTgt);

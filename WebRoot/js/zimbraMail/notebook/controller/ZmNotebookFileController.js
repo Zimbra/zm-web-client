@@ -199,11 +199,6 @@ function() {
 	return ZmItem.PAGE;
 };
 
-ZmNotebookFileController.prototype._defaultView =
-function() {
-	return ZmController.NOTEBOOK_FILE_VIEW;
-};
-
 ZmNotebookFileController.prototype._createNewView =
 function(viewType) {
 	var parent = this._container;

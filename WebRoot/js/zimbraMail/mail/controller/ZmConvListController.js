@@ -45,6 +45,14 @@ function ZmConvListController(appCtxt, container, mailApp) {
 ZmConvListController.prototype = new ZmMailListController;
 ZmConvListController.prototype.constructor = ZmConvListController;
 
+ZmMailListController.GROUP_BY_ITEM[ZmController.CONVLIST_VIEW]		= ZmItem.CONV;
+ZmMailListController.GROUP_BY_SETTING[ZmController.CONVLIST_VIEW]	= ZmSetting.GROUP_BY_CONV;
+
+// view menu
+ZmMailListController.GROUP_BY_ICON[ZmController.CONVLIST_VIEW]		= "ConversationView";
+ZmMailListController.GROUP_BY_MSG_KEY[ZmController.CONVLIST_VIEW]	= "byConversation";
+ZmMailListController.GROUP_BY_VIEWS.push(ZmController.CONVLIST_VIEW);
+
 // Public methods
 
 ZmConvListController.prototype.toString = 
@@ -85,7 +93,7 @@ function(searchResult) {
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[this._currentView];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._listView[this._currentView];
 	this._setView(this._currentView, elements, true);
-	this._setGroupMailBy(ZmItem.CONV);
+	this._appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmSetting.GROUP_BY_CONV);
 
 	// reset selected index prior to resetting new list items
 	var list = this._listView[this._currentView].getList();
@@ -168,31 +176,11 @@ function() {
 	return ZmItem.CONV;
 };
 
-ZmConvListController.prototype._defaultView = 
-function() {
-	return ZmController.CONVLIST_VIEW;
-};
-
 ZmConvListController.prototype._createNewView = 
 function(view) {
 	var clv = new ZmConvListView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
 	clv.setDragSource(this._dragSrc);
 	return clv;
-};
-
-ZmConvListController.prototype._setupViewMenu =
-function(view) {
-	ZmMailListController.prototype._setupGroupByMenuItems.call(this, view);
-};
-
-ZmConvListController.prototype.switchView =
-function(view) {
-	if (view == ZmController.TRAD_VIEW) {
-		var sc = this._appCtxt.getSearchController();
-		var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, ZmController.TRAD_VIEW);
-		var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE); // bug fix #3365
-		sc.redoSearch(this._appCtxt.getCurrentSearch(), null, {types: [ZmItem.MSG], offset: 0, sortBy: sortBy, limit: limit});
-	}
 };
 
 ZmConvListController.prototype._getTagMenuMsg = 

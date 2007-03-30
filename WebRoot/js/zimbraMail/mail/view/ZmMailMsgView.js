@@ -357,7 +357,7 @@ function() {
 ZmMailMsgView.prototype._handleResponseSet =
 function(msg, oldMsg) {
 	if (!this._controller.isChildWindow) {
-		if (this._mode == ZmController.TRAD_VIEW) {
+		if (this._mode == ZmController.TRAD_VIEW || this._mode == ZmController.HYBRID_VIEW) {
 			if (oldMsg != null)
 				oldMsg.list.removeChangeListener(this._listChangeListener);
 			msg.list.addChangeListener(new AjxListener(this, this._listChangeListener));

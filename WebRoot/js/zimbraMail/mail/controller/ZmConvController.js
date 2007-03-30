@@ -152,11 +152,6 @@ function() {
 	return ZmItem.MSG;
 }
 
-ZmConvController.prototype._defaultView =
-function() {
-	return ZmController.CONV_VIEW;
-}
-
 ZmConvController.prototype._resetSelection = 
 function(idx) {
 	// do nothing (dont want base class functionality)

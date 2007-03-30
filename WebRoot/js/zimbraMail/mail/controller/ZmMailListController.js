@@ -85,16 +85,13 @@ function ZmMailListController(appCtxt, container, mailApp) {
 ZmMailListController.prototype = new ZmListController;
 ZmMailListController.prototype.constructor = ZmMailListController;
 
+ZmMailListController.GROUP_BY_ITEM		= {};	// item type to search for
+ZmMailListController.GROUP_BY_SETTING	= {};	// associated setting on server
+
 // Stuff for the View menu
-ZmMailListController.ICON = new Object();
-ZmMailListController.ICON[ZmController.CONVLIST_VIEW]	= "ConversationView";
-ZmMailListController.ICON[ZmController.TRAD_VIEW]		= "MessageView";
-
-ZmMailListController.MSG_KEY = new Object();
-ZmMailListController.MSG_KEY[ZmController.CONVLIST_VIEW]	= "byConversation";
-ZmMailListController.MSG_KEY[ZmController.TRAD_VIEW]		= "byMessage";
-
-ZmMailListController.GROUP_BY_VIEWS = [ZmController.CONVLIST_VIEW, ZmController.TRAD_VIEW];
+ZmMailListController.GROUP_BY_ICON = {};
+ZmMailListController.GROUP_BY_MSG_KEY = {};
+ZmMailListController.GROUP_BY_VIEWS = [];
 
 // convert key mapping to folder to search
 ZmMailListController.ACTION_CODE_TO_FOLDER = {};
@@ -115,6 +112,29 @@ ZmMailListController.prototype.toString =
 function() {
 	return "ZmMailListController";
 };
+
+/**
+ * Handles switching views based on action from view menu.
+ *
+ * @param view		the id of the menu item
+ * @param toggle	flip state of reading pane
+ */
+ZmMailListController.prototype.switchView =
+function(view, toggle) {
+	if (view == ZmController.READING_PANE_VIEW) {
+		this._toggleReadingPane(view, toggle);
+	} else if (view) {
+		this._app._groupBy = ZmMailListController.GROUP_BY_SETTING[view];
+		var sc = this._appCtxt.getSearchController();
+		var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
+		var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE); // bug fix #3365
+		sc.redoSearch(this._appCtxt.getCurrentSearch(), null, {types:[ZmMailListController.GROUP_BY_ITEM[view]], offset:0,
+															   sortBy:sortBy, limit:limit});
+	}
+};
+
+// override if reading pane is supported
+ZmMailListController.prototype._setupReadingPaneMenuItem = function() {};
 
 ZmMailListController.prototype.getKeyMapName =
 function() {
@@ -185,16 +205,16 @@ function(actionCode) {
 			this._markUnreadListener();
 			break;
 		
-		case ZmKeyMap.FLAG:
-			this._doFlag(lv.getSelection());
-			break;
-
 		case ZmKeyMap.VIEW_BY_CONV:
 			this.switchView(ZmController.CONVLIST_VIEW);
 			break;
 			
 		case ZmKeyMap.VIEW_BY_MSG:
 			this.switchView(ZmController.TRAD_VIEW);
+			break;
+
+		case ZmKeyMap.VIEW_HYBRID:
+			this.switchView(ZmController.HYBRID_VIEW);
 			break;
 
 		case ZmKeyMap.READING_PANE:
@@ -285,7 +305,14 @@ function(actionCode) {
 
 // Private and protected methods
 
-ZmMailListController.prototype._setupViewMenu = function(view) {};
+ZmMailListController.prototype._setupViewMenu =
+function(view) {
+	var menu = null;
+	if (this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
+		menu = this._setupGroupByMenuItems(view);
+	}
+	this._setupReadingPaneMenuItem(view, menu, this._appCtxt.get(ZmSetting.READING_PANE_ENABLED));
+};
 
 // Creates a participant menu in addition to standard initialization.
 ZmMailListController.prototype._initialize =
@@ -463,12 +490,12 @@ function(ev) {
 
 ZmMailListController.prototype._markReadListener = 
 function(ev) {
-	this._list.markRead(this._listView[this._currentView].getSelection(), true);
+	this._doMarkRead(this._listView[this._currentView].getSelection(), true);
 };
 
 ZmMailListController.prototype._markUnreadListener = 
 function(ev) {
-	this._list.markRead(this._listView[this._currentView].getSelection(), false);
+	this._doMarkRead(this._listView[this._currentView].getSelection(), false);
 };
 
 ZmMailListController.prototype._replyListener =
@@ -515,6 +542,28 @@ function(ev, action, extraBodyText, instanceDate, accountName) {
 	var inNewWindow = this._app._inNewWindow(ev);
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText, accountName]);
 	msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
+};
+
+ZmMailListController.prototype._doMarkRead = 
+function(items, on) {
+	var list = items[0].list || this._list;
+	list.markRead(items, on);
+};
+
+/*
+* Marks the given items as "spam" or "not spam". Items marked as spam are moved to
+* the Junk folder. If items are being moved out of the Junk folder, they will be
+* marked "not spam", and the destination folder may be provided. It defaults to Inbox
+* if not present.
+*
+* @param items		[Array]			a list of items to move
+* @param folder		[ZmFolder]		destination folder
+* @param attrs		[Object]		additional attrs for SOAP command
+*/
+ZmMailListController.prototype._doSpam = 
+function(items, markAsSpam, folder) {
+	var list = items[0].list || this._list;
+	list.spamItems(items, markAsSpam, folder);
 };
 
 ZmMailListController.prototype._handleResponseDoAction = 
@@ -774,7 +823,8 @@ function(view) {
 		appToolbar.setViewMenu(view, menu);
 		for (var i = 0; i < ZmMailListController.GROUP_BY_VIEWS.length; i++) {
 			var id = ZmMailListController.GROUP_BY_VIEWS[i];
-			var mi = menu.createMenuItem(id, {image:ZmMailListController.ICON[id], text:ZmMsg[ZmMailListController.MSG_KEY[id]],
+			var mi = menu.createMenuItem(id, {image:ZmMailListController.GROUP_BY_ICON[id],
+											  text:ZmMsg[ZmMailListController.GROUP_BY_MSG_KEY[id]],
 											  style:DwtMenuItem.RADIO_STYLE});
 			mi.setData(ZmOperation.MENUITEM_ID, id);
 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
@@ -804,21 +854,6 @@ function(parent) {
 			replyOp.setText(ZmMsg.replySender);
 		}
 	}
-};
-
-/*
-* Marks the given items as "spam" or "not spam". Items marked as spam are moved to
-* the Junk folder. If items are being moved out of the Junk folder, they will be
-* marked "not spam", and the destination folder may be provided. It defaults to Inbox
-* if not present.
-*
-* @param items		[Array]			a list of items to move
-* @param folder		[ZmFolder]		destination folder
-* @param attrs		[Object]		additional attrs for SOAP command
-*/
-ZmMailListController.prototype._doSpam = 
-function(items, markAsSpam, folder) {
-	this._list.spamItems(items, markAsSpam, folder);
 };
 
 ZmMailListController.prototype._resetOperations = 
@@ -944,10 +979,4 @@ function(view, saveSelection, loadIndex, offset, result) {
 	var newItem = loadIndex ? this._list.getVector().get(loadIndex) : null;
 	if (newItem)
 		this._listView[this._currentView].emulateDblClick(newItem);
-};
-
-ZmMailListController.prototype._setGroupMailBy =
-function(id) {
-	if (!this._appCtxt.get(ZmSetting.OPTIONS_ENABLED)) return;
-	this._appCtxt.set(ZmSetting.GROUP_MAIL_BY, ZmMailApp.GROUP_MAIL_BY_VALUE[id]);
 };

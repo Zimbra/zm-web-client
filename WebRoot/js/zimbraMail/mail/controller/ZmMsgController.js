@@ -164,11 +164,6 @@ function() {
 	return ZmController.MSG_VIEW;
 };
 
-ZmMsgController.prototype._defaultView = 
-function() {
-	return ZmController.MSG_VIEW;
-};
-
 ZmMsgController.prototype._initializeListView = 
 function(view) {
 	if (!this._listView[view]) {

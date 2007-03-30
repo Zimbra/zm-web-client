@@ -101,6 +101,7 @@ ZmItem.F_ITEM_TYPE		= i++;
 ZmItem.F_TAG_CELL		= i++;
 ZmItem.F_SIZE			= i++;
 ZmItem.F_INDEX			= i++;
+ZmItem.F_EXPAND			= i++;	// hybrid mail view
 // task specific
 ZmItem.F_PRIORITY		= i++;
 ZmItem.F_PCOMPLETE		= i++;

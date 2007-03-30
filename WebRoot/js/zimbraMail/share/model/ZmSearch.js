@@ -247,16 +247,19 @@ function(isGalSearch, isGalAutocompleteSearch, isCalResSearch, callback, result)
 
 // searching w/in a conv (to get its messages) has its own special command
 ZmSearch.prototype.getConv = 
-function(cid, callback) {
+function(cid, callback, getFirstMsg) {
 	if (!this.query || !cid) return;
 
 	var soapDoc = AjxSoapDoc.create("SearchConvRequest", "urn:zimbraMail");
 	var method = this._getStandardMethod(soapDoc);
 	method.setAttribute("cid", cid);
-	method.setAttribute("fetch", "1");	// fetch content of first msg
-	method.setAttribute("read", "1");	// mark that msg read
-	if (this._appCtxt.get(ZmSetting.VIEW_AS_HTML))
-		method.setAttribute("html", "1");
+	if (getFirstMsg !== false) {
+		method.setAttribute("fetch", "1");	// fetch content of first msg
+		method.setAttribute("read", "1");	// mark that msg read
+		if (this._appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
+			method.setAttribute("html", "1");
+		}
+	}
 	var respCallback = new AjxCallback(this, this._handleResponseGetConv, callback);
 	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };

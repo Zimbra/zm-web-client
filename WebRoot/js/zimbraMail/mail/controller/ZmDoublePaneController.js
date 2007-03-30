@@ -90,17 +90,18 @@ function() {
 };
 
 /**
-* Shows or hides the reading pane.
-*
-* @param view		the id of the menu item
-* @param toggle		flip state of reading pane
-*/
-ZmDoublePaneController.prototype.switchView = 
+ * Shows or hides the reading pane.
+ *
+ * @param view		the id of the menu item
+ * @param toggle		flip state of reading pane
+ */
+ZmDoublePaneController.prototype._toggleReadingPane = 
 function(view, toggle) {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = appToolbar.getViewButton().getMenu();
 	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, view);
 	if (toggle) {
+		// toggle display of reading pane
 		mi.setChecked(!mi.getChecked(), true);
 	} else {
 		if (this._readingPaneOn == mi.getChecked()) return;
@@ -123,7 +124,7 @@ function(view, toggle) {
 			}
 		}
 	}
-	this._doublePaneView.getMsgListView()._resetColWidth();
+	this._doublePaneView.getMailListView()._resetColWidth();
 };
 
 ZmDoublePaneController.prototype._handleResponseSwitchView = 
@@ -192,7 +193,7 @@ ZmDoublePaneController.prototype._createNewView =
 function() {
 	var mlv = null;
 	if (this._doublePaneView) {
-		mlv = this._doublePaneView.getMsgListView();
+		mlv = this._doublePaneView.getMailListView();
 		mlv.setDragSource(this._dragSrc);
 	}
 	return mlv;
@@ -246,6 +247,8 @@ function(view, menu, checked, itemId) {
 	if (!menu) {
 		// conversations not enabled
 		menu = new ZmPopupMenu(appToolbar.getViewButton());
+	} else if (menu.getItemCount() > 0) {
+		new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
 	}
 	if (!menu._menuItems[id]) {
 		var mi = menu.createMenuItem(id, {image:"SplitPane", text:ZmMsg.readingPane, style:DwtMenuItem.CHECK_STYLE});
@@ -286,8 +289,6 @@ function(ev, action, extraBodyText) {
 /**
  * Sets the content of the view button if conversations are disabled (in which case
  * "Reading Pane" is the sole menu item).
- * 
- * @param mi	[DwtMenuItem]*	the Reading Pane menu item
  */
 ZmDoublePaneController.prototype._checkViewMenu =
 function() {
@@ -418,18 +419,6 @@ function(ev) {
 		if (msg)
 			this._doublePaneView.resetMsg(msg);
 	}
-};
-
-// Check to see if the entire conversation is now read.
-ZmDoublePaneController.prototype._markReadListener = 
-function(ev) {
-	this._list.markRead(this._listView[this._currentView].getSelection(), true);
-};
-
-// Check to see if the entire conversation is now unread.
-ZmDoublePaneController.prototype._markUnreadListener = 
-function(ev) {
-	this._list.markRead(this._listView[this._currentView].getSelection(), false);
 };
 
 ZmDoublePaneController.prototype._showOrigListener = 
