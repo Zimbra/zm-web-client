@@ -114,7 +114,7 @@ ZmVoiceListController.prototype._createNewContact =
 function(ev) {
 	var item = ev.item;
 	var contact = new ZmContact(this._appCtxt);
-	contact.initFromPhone(this._getView().getCallingParty(item));
+	contact.initFromPhone(this._getView().getCallingParty(item).getDisplay());
 	return contact;
 };
 
@@ -134,7 +134,7 @@ function(ev) {
 		ZmOperation.setOperation(this._participantActionMenu, ZmOperation.CONTACT, newOp, newText);
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			var contacts = AjxDispatcher.run("GetContacts");
-			this._actionEv.contact = contacts.getContactByPhone(view.getCallingParty(item));
+			this._actionEv.contact = contacts.getContactByPhone(view.getCallingParty(item).name);
 			this._setContactText(this._actionEv.contact != null);
 		}
 		this._resetOperations(actionMenu, this._getView().getSelectionCount());

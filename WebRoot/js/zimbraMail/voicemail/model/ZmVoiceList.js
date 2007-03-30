@@ -31,10 +31,11 @@
 *
 * @author Dave Comfort
 * @param appCtxt	global app context
+* @param type		type of thing in the list
 * @param search		the search that generated this list
 */
-function ZmVoiceList(appCtxt, search) {
-	ZmList.call(this, ZmItem.VOICEMAIL, appCtxt, search);
+function ZmVoiceList(appCtxt, type, search) {
+	ZmList.call(this, type, appCtxt, search);
 	this.folder = null;
 };
 

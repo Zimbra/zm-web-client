@@ -24,53 +24,41 @@
  */
 
 /**
-* Creates a phone.
+* Creates a calling party.
 * @constructor
 * @class
-* This class represents a phone.
+* This class represents a calling party. Should be treated as immutable.
 *
 */
-function ZmPhone() {
-	this.name = null; // The internal representation of the phone.
-	this.used = null; // Amount of quota used.
-	this.limit = null; // Quota size.
+function ZmCallingParty() {
+	ZmPhone.call(this);
+
+	this.type = null;
+	this._phone = null;
+	this.city = null;
+	this.state = null;
+	this.country = null;
 }
 
-ZmPhone.prototype.toString = 
+ZmCallingParty.prototype = new ZmPhone;
+ZmCallingParty.prototype.constructor = ZmCallingParty;
+
+ZmCallingParty.prototype.toString = 
 function() {
-	return "ZmPhone";
+	return "ZmCallingParty";
 }
 
-ZmPhone.calculateDisplay =
-function(name) {
-	if (name.length == 10) {
-		var array = [
-			"(",
-			name.substring(0, 3),
-			") ",
-			name.substring(3, 6),
-			"-",
-			name.substring(6, 10)
-		];
-		return array.join("");
-	} else {
-// TODO: How to handle other numbers????	
-		return name;
-	}
-};
-
-ZmPhone.prototype.getDisplay = 
+ZmCallingParty.prototype.getPhoneNumber = 
 function() {
-	if (!this._display) {
-		this._display = ZmPhone.calculateDisplay(this.name);
-	}
-	return this._display;
+	return this.name;
 };
 
-ZmPhone.prototype._loadFromDom = 
+ZmCallingParty.prototype._loadFromDom =
 function(node) {
-	this.name =  node.name;
-	if (node.used && node.used.length) this.used =  node.used[0]._content;
-	if (this.limit && this.limit.length) this.limit = node.limit[0]._content;
+	if (node.n) this.name = node.n
+	if (node.t) this.type = node.t == "f" ? ZmVoiceItem.FROM : ZmVoiceItem.TO;
+	if (node.ci) this.city = node.ci == "Unavailable" ? null : node.ci;
+	if (node.st) this.state = node.st  == "Unavailable" ? null : node.st;
+	if (node.co) this.country = node.co == "null" ? null : node.co;
 };
 

@@ -80,53 +80,16 @@ function(type) {
 	return this._callingParties[type];
 };
 
-
-ZmVoiceItem.getCallerComparator =
-function(bSortAsc) {
-	var negate = bSortAsc ? 1 : -1;
-	return AjxCallback.simpleClosure(ZmVoiceItem._callerComparator, ZmVoiceItem, negate);	
-};
-
-ZmVoiceItem._callerComparator =
-function(negate, a, b) {
-	var value = a.getCallingParty(ZmVoiceItem.FROM).localeCompare(getCallingParty(ZmVoiceItem.FROM));
-	return value ? value * negate : ZmVoiceItem._dateComparator(a, b);
-};
-
-ZmVoiceItem.getDurationComparator =
-function(bSortAsc) {
-	var negate = bSortAsc ? 1 : -1;
-	return AjxCallback.simpleClosure(ZmVoiceItem._durationComparator, ZmVoiceItem, negate);	
-};
-
-ZmVoiceItem._durationComparator =
-function(negate, a, b) {
-	var value = a.duration.getTime() - b.duration.getTime();
-	return value ? value * negate : ZmVoiceItem._dateComparator(a, b);
-};
-
-ZmVoiceItem.getDateComparator =
-function(bSortAsc) {
-	if (bSortAsc) {
-		return ZmVoiceItem._dateComparator;
-	} else {
-		return function(a, b) { return ZmVoiceItem._dateComparator(b, a); }
-	}
-};
-
-ZmVoiceItem._dateComparator =
-function(a, b) {
-	return a.date.getTime() - b.date.getTime();
-};
-
 ZmVoiceItem.prototype._loadFromDom =
 function(node) {
 	if (node.id) this.id = node.id;
 	if (node.cp) {
 		for(var i = 0, count = node.cp.length; i < count; i++) {
 			var party = node.cp[i];
-			var type = party.t == "f" ? ZmVoiceItem.FROM : ZmVoiceItem.TO;
-			this._callingParties[type] = party.n;
+// Consider keeping a cache of calling parties. There's going to be a lot of repetition here....			
+			var callingParty = new ZmCallingParty();
+			callingParty._loadFromDom(node.cp[i]);
+			this._callingParties[callingParty.type] = callingParty;
 		}
 	}
 	if (node.d) this.date = new Date(node.d);

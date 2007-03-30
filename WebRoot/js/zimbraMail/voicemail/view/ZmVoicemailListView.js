@@ -272,7 +272,7 @@ function(ev) {
 
 ZmVoicemailListView.prototype._getPriorityHtml =
 function(voicemail) {
-	return "";
+	return voicemail.isHighPriority ? "<div class='ImgCritical'></div>" : "";
 };
 
 ZmVoicemailListView.prototype._sortColumn =
@@ -285,3 +285,29 @@ function(columnItem, bSortAsc) {
 	}
 	this._appCtxt.getApp(ZmApp.VOICE).search(this._controller._folder, null, sortBy)
 };
+
+ZmVoicemailListView.prototype._getHeaderTooltip =
+function(prefix) {
+	if (prefix == ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_PRIORITY]) {
+		return ZmMsg.priority;
+	} else if (prefix == ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_CALLER]) {
+		return ZmMsg.from;
+	} else if (prefix == ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_PLAYING]) {
+		return ZmMsg.sortByDuration;
+	} else if (prefix == ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_DATE]) {
+		return ZmMsg.sortByReceived;
+	}
+	return null;
+};
+
+ZmVoicemailListView.prototype._getItemTooltip =
+function(voicemail) {
+	var data = { 
+		caller: this._getCallerHtml(voicemail), 
+		duration: AjxDateUtil.computeDuration(voicemail.duration),
+		date: AjxDateUtil.computeDateTimeString(voicemail.date)
+	};
+	var html = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#VoicemailTooltip", data);
+	return html;
+};
+

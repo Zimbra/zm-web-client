@@ -44,7 +44,7 @@ function(callType) {
 	this._callType = callType;	
 };
 
-// Returns the phone number of whichever the calling party is shown in the view.
+// Returns whichever calling party is shown in the view for the given item.
 ZmVoiceListView.prototype.getCallingParty =
 function(item) {
 	var type = this._callType == ZmVoiceFolder.PLACED_CALL ? 
@@ -73,7 +73,7 @@ ZmVoiceListView.prototype._getCallerNameHtml =
 function(voicemail) {
 	var contactList = AjxDispatcher.run("GetContacts");
 	var callingParty = this.getCallingParty(voicemail);
-	var contact = contactList.getContactByPhone(callingParty);
+	var contact = contactList.getContactByPhone(callingParty.name);
 	if (contact) {
 // TODO: Seems like this should go on ZmVoicemail?!?!?		
 		voicemail.participants.getArray()[0] = callingParty;
@@ -86,7 +86,7 @@ function(voicemail) {
 ZmVoiceListView.prototype._getCallerHtml =
 function(voicemail) {
 	var callingParty = this.getCallingParty(voicemail);
-	var display = ZmPhone.calculateDisplay(callingParty);
+	var display = callingParty.getDisplay();
 	return AjxStringUtil.htmlEncode(display);
 };
 
@@ -95,21 +95,27 @@ function(ev, div) {
 	// Bypassing the ZmList._mouseOverAction which does some participant stuff I'm not
 	// set up to handle yet....
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
+
+	var tooltip = null;
+	var id = ev.target.id || div.id;
+	if (!id) return true;
+	var type = Dwt.getAttr(div, "_type");
+	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
+		var itemIdx = Dwt.getAttr(div, "_itemIndex");
+		var headerId = this._headerList[itemIdx]._id;
+		if (headerId && headerId.length) {
+			var prefix = headerId.charAt(0);
+			tooltip = this._getHeaderTooltip(prefix);
+		}
+	} else {
+		var item = this.getItemFromElement(div);
+		tooltip = this._getItemTooltip(item);
+	}
+	this.setToolTipContent(tooltip);
 };
 
 ZmVoiceListView.prototype._mouseOutAction =
 function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
-};
-
-ZmVoiceListView.prototype._createTooltip =
-function(voicemail) {
-	var data = { 
-		caller: this.getCallingParty(voicemail), 
-		duration: AjxDateUtil.computeDuration(voicemail.duration),
-		date: AjxDateUtil.computeDateTimeString(voicemail.date)
-	};
-	var html = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#Tooltip", data);
-	return html;
 };
 

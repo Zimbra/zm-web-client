@@ -51,7 +51,7 @@ function() {
 	return "ZmVoiceTreeView";
 };
 
-// Creates a tee item for the organizer, and recurslively renders its children.
+// Creates a tree item for the organizer, and recurslively renders its children.
 ZmVoiceTreeView.prototype._addNew =
 function(parentNode, organizer, index) {
 	if (organizer.callType == ZmVoiceFolder.ACCOUNT) {

@@ -69,7 +69,6 @@ function() {
 
 ZmVoiceApp.prototype._registerItems =
 function() {
-	var listCreator = AjxCallback.simpleClosure(this._createList, this);
 	ZmItem.registerItem(ZmItem.VOICEMAIL,
 						{app:			ZmApp.VOICE,
 						 nameKey:		"voicemail",
@@ -79,7 +78,11 @@ function() {
 						 node:			"vm",
 						 organizer:		ZmOrganizer.VOICE,
 						 searchType:	"voicemail",
-						 resultsList:	listCreator
+						 resultsList:	AjxCallback.simpleClosure(function(search) {
+											AjxDispatcher.require("Voicemail");
+											return new ZmVoiceList(this._appCtxt, ZmItem.VOICEMAIL, search);
+										}, this)
+
 						});
 	ZmItem.registerItem(ZmItem.CALL,
 						{app:			ZmApp.VOICE,
@@ -90,14 +93,11 @@ function() {
 						 node:			"cl",
 						 organizer:		ZmOrganizer.VOICE,
 						 searchType:	"calllog",
-						 resultsList:	listCreator
+						 resultsList:	AjxCallback.simpleClosure(function(search) {
+											AjxDispatcher.require("Voicemail");
+											return new ZmVoiceList(this._appCtxt, ZmItem.CALL, search);
+										}, this)
 						});
-};
-
-ZmVoiceApp.prototype._createList =
-function(search) {
-	AjxDispatcher.require("Voicemail");
-	return new ZmVoiceList(this._appCtxt, search);
 };
 
 ZmVoiceApp.prototype._registerOperations =

@@ -131,3 +131,45 @@ function(columnItem, bSortAsc) {
 	}
 	this._appCtxt.getApp(ZmApp.VOICE).search(this._controller._folder, null, sortBy)
 };
+
+ZmCallListView.prototype._getHeaderTooltip =
+function(prefix) {
+	if (prefix == ZmListView.FIELD_PREFIX[ZmCallListView.F_CALLER]) {
+		var isPlaced = this._callType == ZmVoiceFolder.PLACED_CALL;
+		return isPlaced ? ZmMsg.to : ZmMsg.from;
+	} else if (prefix == ZmListView.FIELD_PREFIX[ZmCallListView.F_SIZE]) {
+		return ZmMsg.sortByDuration;
+	} else if (prefix == ZmListView.FIELD_PREFIX[ZmCallListView.F_DATE]) {
+		return ZmMsg.sortByReceived;
+	}
+	return null;
+};
+
+ZmCallListView.prototype._getItemTooltip =
+function(call) {
+	var location;
+	var party = this.getCallingParty(call);
+	if (party.city && party.state && party.country) {
+		if (!this._locationFormatterCityStateCountry) {
+			this._locationFormatterCityStateCountry = new AjxMessageFormat(ZmMsg.locationFormatCityStateCountry);
+		}
+		location = this._locationFormatterCityStateCountry.format([party.city, party.state, party.country]);
+	} else 	if (party.city && party.country) {
+		if (!this._locationFormatterCityCountry) {
+			this._locationFormatterCityCountry = new AjxMessageFormat(ZmMsg.locationFormatCityCountry);
+		}
+		location = this._locationFormatterCityCountry.format([party.city, party.country]);
+	} else {
+		location = ZmMsg.unknown;
+	}
+	var data = { 
+		image: "Img" + this._controller._folder.getIcon(), 
+		caller: this._getCallerHtml(call), 
+		duration: AjxDateUtil.computeDuration(call.duration),
+		date: AjxDateUtil.computeDateTimeString(call.date),
+		location: location
+	};
+	var html = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#CallTooltip", data);
+	return html;
+};
+
