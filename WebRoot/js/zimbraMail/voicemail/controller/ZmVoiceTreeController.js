@@ -81,6 +81,13 @@ function(appCtxt) {
 	return (new DwtDropTarget(["ZmVoicemail"]));
 };
 
+ZmVoiceTreeController.prototype._getAllowedSubTypes =
+function() {
+	var types = {};
+	types[ZmOrganizer.VOICE] = true;
+	return types;
+};
+
 
 // Listeners
 
