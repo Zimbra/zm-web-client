@@ -873,7 +873,7 @@ function(items, folder, attrs, force) {
 // Modify an item
 ZmListController.prototype._doModify =
 function(item, mods) {
-	var list = items[0].list || this._list;
+	var list = item.list || this._list;
 	list.modifyItem(item, mods);
 };
 
