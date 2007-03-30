@@ -701,7 +701,10 @@ function(obj) {
 		oldAttrCache[a] = oldAttrs[a];
 
 	this._loadFromDom(obj);
+
+	// reset old props wiped by the loadFromDom
 	this.folderId = oldFolderId;
+	this.addrbook = this._appCtxt.getById(this.folderId);
 
 	var details = { attr: 			this.getAttrs(),
 					oldAttr: 		oldAttrCache,
