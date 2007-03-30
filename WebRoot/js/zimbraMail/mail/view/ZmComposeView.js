@@ -921,7 +921,7 @@ function(textarea, skipResetBodySize) {
 		var taHeight = parseInt(textarea.style.height) || 0;
 		if (taHeight <= 65) {
 			var sh = textarea.scrollHeight;
-			if (textarea.scrollHeight > 65) {
+			if (textarea.scrollHeight >= 65) {
 				sh = 65;
 				if (AjxEnv.isIE)
 					textarea.style.overflowY = "scroll";
