@@ -909,7 +909,15 @@ function(textarea, skipResetBodySize) {
 	if (textarea.scrollHeight > textarea.clientHeight) {
 		var taHeight = parseInt(textarea.style.height) || 0;
 		if (taHeight <= 65) {
-			textarea.style.height = textarea.scrollHeight + 13;
+			var sh = textarea.scrollHeight;
+			if (textarea.scrollHeight >= 65) {
+				sh = 65;
+				if (AjxEnv.isIE)
+					textarea.style.overflowY = "scroll";
+				else
+					textarea.style.overflow = "auto";
+			}
+			textarea.style.height = sh + 13;
 			this._resetBodySize();
 		} else {
 			if (AjxEnv.isIE) // for IE use overflow-y
