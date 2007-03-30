@@ -113,16 +113,7 @@ function(view, toggle) {
 
 	// set msg in msg view if reading pane is being shown
 	if (this._readingPaneOn) {
-		var currentMsg = this._doublePaneView.getSelection()[0];
-		// DONT bother checking if current msg is already being displayed!
-		if (currentMsg) {
-			if (!currentMsg.isLoaded()) {
-				var respCallback = new AjxCallback(this, this._handleResponseSwitchView, currentMsg);
-				currentMsg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback);
-			} else {
-				this._doublePaneView.setMsg(currentMsg);
-			}
-		}
+		this._setSelectedMsg();
 	}
 	this._doublePaneView.getMailListView()._resetColWidth();
 };
@@ -224,7 +215,8 @@ function() {
 	var selCnt = this._listView[this._currentView].getSelectionCount();
 	if (selCnt == 1) {
 		// Check if currently displaying selected element in message view
-		var msg = this._listView[this._currentView].getSelection()[0];
+		var item = this._listView[this._currentView].getSelection()[0];
+		var msg = (item.type == ZmItem.CONV) ? item.getFirstMsg() : item;
 		if (!msg.isLoaded()) {
 			this._appCtxt.getSearchController().setEnabled(false);
 			this._doGetMsg(msg);

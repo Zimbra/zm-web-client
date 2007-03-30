@@ -127,37 +127,13 @@ function(ev) {
 		}
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		if (!item) { return; }
-		if (this._readingPaneOn) {
-			this._toggle(item);
-		} else {
-			if (item.type == ZmItem.CONV) {
-				AjxDispatcher.run("GetConvController").show(this._activeSearch, item);
-			} else if (item.type == ZmItem.MSG) {
-				AjxDispatcher.run("GetMsgController").show(item);
-			}
+		if (item.type == ZmItem.CONV) {
+			AjxDispatcher.run("GetConvController").show(this._activeSearch, item);
+		} else if (item.type == ZmItem.MSG) {
+			AjxDispatcher.run("GetMsgController").show(item);
 		}
 	} else {
 		ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
-	}
-};
-
-ZmHybridController.prototype._setSelectedMsg =
-function() {
-	var selCnt = this._listView[this._currentView].getSelectionCount();
-	if (selCnt == 1) {
-		// Check if currently displaying selected element in message view
-		var item = this._listView[this._currentView].getSelection()[0];
-		var msg = (item instanceof ZmConv) ? item.getFirstMsg() : item;
-		if (!msg.isLoaded()) {
-			this._appCtxt.getSearchController().setEnabled(false);
-			this._doGetMsg(msg);
-		} else {
-			this._doublePaneView.setMsg(msg);
-			if (msg.isUnread) {
-				// msg was cached, then marked unread
-				this._list.markRead([msg], true);
-			}
-		}
 	}
 };
 

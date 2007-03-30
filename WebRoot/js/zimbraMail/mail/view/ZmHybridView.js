@@ -194,7 +194,7 @@ function(actionCode, ev) {
 	switch (actionCode) {
 		case DwtKeyMap.DBLCLICK:
 			var item = this.getItemFromElement(this._kbAnchor);
-			if (item) {
+			if (item && this._expandable[item.id]) {
 				this._controller._toggle(item);
 			}
 			break;
