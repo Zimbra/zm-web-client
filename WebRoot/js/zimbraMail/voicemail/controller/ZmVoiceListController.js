@@ -105,7 +105,7 @@ function() {
 	return this._toolbar[this._currentView]
 };
 
-ZmListController.prototype._getMoreSearchParams =
+ZmVoiceListController.prototype._getMoreSearchParams =
 function(params) {
 	params.soapInfo = ZmVoiceApp.SOAP_INFO;
 };
