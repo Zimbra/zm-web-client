@@ -153,10 +153,54 @@ function(controller) {
 		return this._orig.getToolTip(controller);
 
 	if (!this._toolTip) {
-		var params = { appt: this,
+        var organizer = this.getOrganizer();
+        var sentBy = this.getSentBy();
+        var userName = this._appCtxt.get(ZmSetting.USERNAME);
+        if (sentBy || (organizer && organizer != userName)) {
+            if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+                var contactsApp = this._appCtxt.getAppController().getApp(ZmApp.CONTACTS);
+                // NOTE: ZmContactsApp#getContactList expects to be called in an
+                //       asynchronous way but we need the data right away. Instead
+                //       of reworking this code or the getContactList method to be
+                //       able to work synchronously, I'm just going to use the
+                //       raw email address in the case where the contact list has
+                //       not been loaded, yet. By the next time a tooltip is
+                //       created, it will probably be available so it's not a big
+                //       deal.
+                var contactList = contactsApp.getContactList();
+
+                var addrs = [ organizer, sentBy ];
+                for (var i = 0; i < addrs.length; i++) {
+                    var addr = addrs[i];
+                    if (!addr) continue;
+                    
+                    if (addr == userName) {
+                        addrs[i] = this._appCtxt.get(ZmSetting.DISPLAY_NAME);
+                        continue;
+                    }
+                    var contact = contactList && contactList.getContactByEmail(addr);
+                    if (contact) {
+                        addrs[i] = contact.getFullName();
+                    }
+                }
+
+                organizer = addrs[0];
+                sentBy = addrs[1];
+            }
+        }
+        else {
+            organizer = null;
+            sentBy = null;
+        }
+        var params = {
+            appt: this,
 			cal: (this.folderId != ZmOrganizer.ID_CALENDAR && controller) ? controller.getCalendar() : null,
-			when: this.getDurationText(false, false),
-			location: this.getLocation(true), width: "250" };
+            organizer: organizer,
+            sentBy: sentBy,
+            when: this.getDurationText(false, false),
+			location: this.getLocation(true),
+            width: "250"
+        };
 
 		this._toolTip = AjxTemplate.expand("zimbraMail.calendar.templates.Appointment#Tooltip", params);
 	}

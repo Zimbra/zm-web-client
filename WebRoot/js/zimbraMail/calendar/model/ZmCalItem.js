@@ -132,6 +132,7 @@ ZmCalItem.prototype.getId 				= function() { return this.id; }; 					// mail ite
 ZmCalItem.prototype.getLocation			= function() { /* override */ };
 ZmCalItem.prototype.getName 			= function() { return this.name || ""; };			// name (aka Subject) of appt
 ZmCalItem.prototype.getOrganizer 		= function() { return this.organizer || ""; };
+ZmCalItem.prototype.getSentBy           = function() { return this.sentBy || ""; };
 ZmCalItem.prototype.getOrigStartDate 	= function() { return this._origStartDate || this.startDate; };
 ZmCalItem.prototype.getOrigStartTime 	= function() { return this.getOrigStartDate().getTime(); };
 ZmCalItem.prototype.getOrigTimezone     = function() { return this._origTimezone || this.timezone; };
@@ -502,6 +503,7 @@ function(message, viewMode) {
 
 	this.isOrg = message.invite.isOrganizer();
 	this.organizer = message.invite.getOrganizerEmail();
+    this.sentBy = message.invite.getSentBy();
 	this.name = message.invite.getName();
 	this.isException = message.invite.isException();
 
@@ -1194,7 +1196,10 @@ function(calItemNode, instNode) {
 	this.name 			= this._getAttr(calItemNode, instNode, "name");
 	this.fragment 		= this._getAttr(calItemNode, instNode, "fr");
 	this.isOrg 			= this._getAttr(calItemNode, instNode, "isOrg");
-	this.status 		= this._getAttr(calItemNode, instNode, "status");
+    var org             = calItemNode.or;
+    this.organizer      = org && org.a;
+    this.sentBy         = org && org.sentBy;
+    this.status 		= this._getAttr(calItemNode, instNode, "status");
 	this.ptst 			= this._getAttr(calItemNode, instNode, "ptst");
 	this.invId 			= this._getAttr(calItemNode, instNode, "invId");
 	this.compNum 		= this._getAttr(calItemNode, instNode, "compNum");

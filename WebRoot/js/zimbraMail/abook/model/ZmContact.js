@@ -306,7 +306,7 @@ function(contact, attr) {
 		if (contact.a && contact.a.length) {
 			for (var i = 0; i < contact.a.length; i++) {
 				if (contact.a[i].n == attr)
-					return contact.a[i].n;
+					return contact.a[i]._content;
 			}
 		}
 	}
