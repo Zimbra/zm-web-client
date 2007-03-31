@@ -442,13 +442,18 @@ function(params) {
 
 	// check for jump to compose page or msg view
 	var checkQS = false;
-	var match;
-	if (location.search && (match = location.search.match(/\bview=(\w+)\b/))) {
-		var view = match[1];
-		startApp = this._defaultStartApp;
-		if (ZmApp.QS_VIEWS[view]) {
-			startApp = ZmApp.QS_VIEWS[view];
-			checkQS = true;
+	if (startApp == ZmApp.CALENDAR) {
+		// let calendar check for jumps
+		checkQS = true;
+	} else {
+		var match;
+		if (location.search && (match = location.search.match(/\bview=(\w+)\b/))) {
+			var view = match[1];
+			startApp = this._defaultStartApp;
+			if (ZmApp.QS_VIEWS[view]) {
+				startApp = ZmApp.QS_VIEWS[view];
+				checkQS = true;
+			}
 		}
 	}
 	this.activateApp(startApp, false, respCallback, this._errorCallback, checkQS);

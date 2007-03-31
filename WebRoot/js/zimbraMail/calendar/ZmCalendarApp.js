@@ -350,16 +350,50 @@ function() {
 // Public methods
 
 ZmCalendarApp.prototype.launch =
-function(callback) {
-	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
+function(callback, checkQS) {
+	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback, checkQS]);
 	AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
 };
 
 ZmCalendarApp.prototype._handleLoadLaunch =
-function(callback) {
+function(callback, checkQS) {
 	var cc = this.getCalController();
 	var view = cc._defaultView();
-	cc.show(view);
+	var sd = null;
+
+	if (checkQS && location) {
+		var search = location.search;
+		var found = false;
+		if (search.match(/\bview=day\b/))
+		{
+			found = true;
+			view = ZmController.CAL_DAY_VIEW;
+		}
+		else if (search.match(/\bview=workWeek\b/))
+		{
+			found = true;
+			view = ZmController.CAL_WORK_WEEK_VIEW;
+		}
+		else if (search.match(/\bview=week\b/))
+		{
+			found = true;
+			view = ZmController.CAL_WEEK_VIEW;
+		}
+		else if (search.match(/\bview=month\b/))
+		{
+			found = true;
+			view = ZmController.CAL_MONTH_VIEW;
+		}
+
+		if (found) {
+			var match = search.match(/\bdate=([^&]+)/)[1];
+			var parsed = match ? AjxDateUtil.parseServerDateTime(match) : null;
+			if (parsed && !isNaN(parsed))
+				sd = new Date((parsed).setHours(0,0,0,0));
+		}
+	}
+
+	cc.show(view, sd);
 	if (callback)
 		callback.run();
 };
@@ -370,17 +404,6 @@ function(active, view, date) {
 
 	var show = active || this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
 	AjxDispatcher.run("ShowMiniCalendar", show);
-
-	if (active) {
-		var isAppView = (view == null || view == ZmController.CAL_VIEW || view == ZmController.CAL_DAY_VIEW ||
-						 view == ZmController.CAL_WEEK_VIEW || view == ZmController.CAL_WORK_WEEK_VIEW ||
-						 view == ZmController.CAL_MONTH_VIEW || view == ZmController.CAL_SCHEDULE_VIEW);
-		if (isAppView) {
-			var cc = this.getCalController();
-			cc.show(view);
-			if (date) cc.setDate(date);
-		}
-	} 
 };
 
 ZmCalendarApp.prototype.showMiniCalendar =

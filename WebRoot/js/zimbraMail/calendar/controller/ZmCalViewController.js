@@ -161,7 +161,7 @@ function() {
 };
 
 ZmCalViewController.prototype.show =
-function(viewId) {
+function(viewId, startDate) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
 	if (!viewId || viewId == ZmController.CAL_VIEW)
 		viewId = this._currentView ? this._currentView : this._defaultView();
@@ -179,9 +179,7 @@ function(viewId) {
 	}
 
 	if (!this._viewMgr) {
-		//this._initializeViewActionMenu();
-
-		var newDate = this._miniCalendar ? this._miniCalendar.getDate() : new Date();
+		var newDate = startDate || (this._miniCalendar ? this._miniCalendar.getDate() : new Date());
 
 		if (!this._miniCalendar) {
 			this._createMiniCalendar(newDate);
