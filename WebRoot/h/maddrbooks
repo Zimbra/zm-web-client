@@ -8,7 +8,8 @@
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    <c:if test="${!empty param.doAction}">
+    <zm:fileUploader var="uploader"/>
+    <c:if test="${uploader.isUpload}">
         <app:addressBookAction/>
     </c:if>
     <c:choose>
@@ -23,15 +24,15 @@
         </c:when>
     </c:choose>
     <c:if test="${empty selectedFolder or not (selectedFolder.isContactView or selectedFolder.isTrash)}"><c:set var="selectedFolder" value="${mailbox.contacts}"/></c:if>
-    <c:set var="newAddressBook" value="${zm:actionSet(param, 'actionNewAddressBook') or zm:actionSet(param, 'actionNewSharedAddressBook')}"/>
+    <c:set var="newAddressBook" value="${not empty uploader.params.actionNewAddressBook or not empty uploader.params.actionNewSharedAddressBook}"/>
 
     <fmt:message var="title" key="manageAddressBooks"/>
 
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' contacts="true" editmode="true" keys="true">
-
-    <form action="" method="post">
+<!-------- UPLOADER(${uploader.isUpload}) ${uploader.params} -------------->
+    <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
         <table width=100% cellspacing="0" cellpadding="0">
             <tr>
                 <td class='TbTop'>
@@ -109,10 +110,10 @@
                             </td>
                             <td class='ZhEditAddressBookContent' valign='top'>
                                 <c:choose>
-                                    <c:when test="${zm:actionSet(param, 'actionNewAddressBook')}">
+                                    <c:when test="${not empty uploader.params.actionNewAddressBook}">
                                         <app:newFolder addressbook="true"/>
                                     </c:when>
-                                    <c:when test="${zm:actionSet(param, 'actionNewSharedAddressBook')}">
+                                    <c:when test="${not empty uploader.params.actionNewSharedAddressBook}">
                                         <app:newFolder addressbook="true" link="true"/>
                                     </c:when>
                                     <c:otherwise>

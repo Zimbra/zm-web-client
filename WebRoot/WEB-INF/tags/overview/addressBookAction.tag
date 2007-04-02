@@ -7,84 +7,103 @@
 
 
 <app:handleError>
+<zm:fileUploader var="uploader"/>
+
 <c:choose>
-    <c:when test="${zm:actionSet(param, 'actionSave')}">
-        <c:set var="folder" value="${zm:getFolder(pageContext, param.folderId)}"/>
+    <c:when test="${not empty uploader.params.actionImport}">
         <c:choose>
-            <c:when test="${not empty param.folderNameVisible and empty param.folderName}">
+            <c:when test="${empty uploader.params.fileUpload}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoAddressBookFileImportSpecified"/>
+                </app:status>
+            </c:when>
+            <c:otherwise>
+                <zm:importContacts var="result" uploader="${uploader}" folderid="${uploader.params.folderId}"/>
+                <app:status>
+                    <fmt:message key="actionAddressBookContactsImported">
+                        <fmt:param value="${result.count}"/>
+                    </fmt:message>
+                </app:status>
+            </c:otherwise>
+        </c:choose>
+    </c:when>
+    <c:when test="${not empty uploader.params.actionSave}">
+        <c:set var="folder" value="${zm:getFolder(pageContext, uploader.params.folderId)}"/>
+        <c:choose>
+            <c:when test="${not empty uploader.params.folderNameVisible and empty uploader.params.folderName}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoAddressBookNameSpecified"/>
                 </app:status>
             </c:when>
             <c:otherwise>
                 <zm:updateFolder
-                        id="${param.folderId}"
-                        name="${param.folderName}"
-                        color="${param.folderColor}"/>
+                        id="${uploader.params.folderId}"
+                        name="${uploader.params.folderName}"
+                        color="${uploader.params.folderColor}"/>
                 <app:status>
                     <fmt:message key="addressBookUpdated"/>
                 </app:status>
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionNew')}">
+    <c:when test="${not empty uploader.params.actionNew}">
          <c:choose>
-            <c:when test="${empty param.newFolderName}">
+            <c:when test="${empty uploader.params.newFolderName}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoAddressBookNameSpecified"/>
                 </app:status>
             </c:when>
-             <c:when test="${not empty param.newFolderOwnersEmailVisible and empty param.newFolderOwnersEmail}">
+             <c:when test="${not empty uploader.params.newFolderOwnersEmailVisible and empty uploader.params.newFolderOwnersEmail}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoOwnerEmailSpecified"/>
                 </app:status>
             </c:when>
-            <c:when test="${not empty param.newFolderOwnersAddressBookVisible and empty param.newFolderOwnersAddressBook}">
+            <c:when test="${not empty uploader.params.newFolderOwnersAddressBookVisible and empty uploader.params.newFolderOwnersAddressBook}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoOwnerAddressBookSpecified"/>
                 </app:status>
             </c:when>
             <c:otherwise>
                 <c:choose>
-                    <c:when test="${not empty param.newFolderOwnersEmailVisible}">
+                    <c:when test="${not empty uploader.params.newFolderOwnersEmailVisible}">
                         <zm:createMountpoint var="folder"
                                              parentid="1"
-                                             name="${param.newFolderName}"
+                                             name="${uploader.params.newFolderName}"
                                              view="contact"
-                                             color="${param.newFolderColor}"
-                                             flags="${param.newFolderExcludeFlag}${param.newFolderCheckedFlag}"
-                                             owner="${param.newFolderOwnersEmail}" ownerby="BY_NAME"
-                                             shareditem="${param.newFolderOwnersAddressBook}" shareditemby="BY_PATH"/>
+                                             color="${uploader.params.newFolderColor}"
+                                             flags="${uploader.params.newFolderExcludeFlag}${uploader.params.newFolderCheckedFlag}"
+                                             owner="${uploader.params.newFolderOwnersEmail}" ownerby="BY_NAME"
+                                             shareditem="${uploader.params.newFolderOwnersAddressBook}" shareditemby="BY_PATH"/>
                     </c:when>
                     <c:otherwise>
                         <zm:createFolder var="folder"
                                          parentid="1"
-                                         name="${param.newFolderName}"
+                                         name="${uploader.params.newFolderName}"
                                          view="contact"
-                                         color="${param.newFolderColor}"
-                                         flags="${param.newFolderExcludeFlag}${param.newFolderCheckedFlag}"/>
+                                         color="${uploader.params.newFolderColor}"
+                                         flags="${uploader.params.newFolderExcludeFlag}${uploader.params.newFolderCheckedFlag}"/>
                     </c:otherwise>
                 </c:choose>
                 <app:status>
                     <fmt:message key="actionAddressBookCreated">
-                        <fmt:param value="${param.newFolderName}"/>
+                        <fmt:param value="${uploader.params.newFolderName}"/>
                     </fmt:message>
                 </app:status>
                 <c:set var="newlyCreatedAddressBookId" value="${folder.id}" scope="request"/>
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionDelete')}">
-        <c:set var="folder" value="${zm:getFolder(pageContext, param.folderDeleteId)}"/>
+    <c:when test="${not empty uploader.params.actionDelete}">
+        <c:set var="folder" value="${zm:getFolder(pageContext, uploader.params.folderDeleteId)}"/>
         <c:choose>
-            <c:when test="${empty param.folderDeleteConfirm}">
+            <c:when test="${empty uploader.params.folderDeleteConfirm}">
                 <app:status style="Warning">
                     <fmt:message key="actionAddressBookCheckConfirm"/>
                 </app:status>
             </c:when>
             <c:otherwise>
                 <c:set var="folderName" value="${folder.name}"/>
-                <zm:moveFolder parentid="3" id="${param.folderDeleteId}"/>
+                <zm:moveFolder parentid="3" id="${uploader.params.folderDeleteId}"/>
                 <app:status>
                     <fmt:message key="actionAddressBookMovedToTrash">
                         <fmt:param value="${folderName}"/>
@@ -93,9 +112,9 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionEmptyFolder')}">
-        <zm:emptyFolder id="${param.folderEmptyId}"/>
-        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.folderEmptyId)}"/>
+    <c:when test="${not empty uploader.params.actionEmptyFolder}">
+        <zm:emptyFolder id="${uploader.params.folderEmptyId}"/>
+        <c:set var="folderName" value="${zm:getFolderName(pageContext, uploader.params.folderEmptyId)}"/>
         <app:status>
             <fmt:message key="folderEmptied">
                 <fmt:param value="${folderName}"/>
