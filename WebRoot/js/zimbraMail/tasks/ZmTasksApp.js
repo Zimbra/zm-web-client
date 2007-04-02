@@ -111,7 +111,8 @@ function() {
 	ZmSearchToolBar.addMenuItem(ZmItem.TASK,
 								{msgKey:		"tasks",
 								 tooltipKey:	"searchTasks",
-								 icon:			"SearchTasks"
+								 icon:			"SearchTasks",
+								 setting:		ZmSetting.TASKS_ENABLED
 								});
 };
 
