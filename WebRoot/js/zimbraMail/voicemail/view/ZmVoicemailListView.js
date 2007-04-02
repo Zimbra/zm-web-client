@@ -55,11 +55,6 @@ ZmVoicemailListView.F_DATE = ZmItem.F_DATE;
 // Event details.
 ZmVoicemailListView.PLAY_BUTTON_PRESSED = "PlayButtonPressed";
 
-ZmVoicemailListView.prototype.getTitle =
-function() {
-	return [ZmMsg.zimbraTitle, ": ", ZmMsg.voicemail].join("");
-};
-
 ZmVoicemailListView.prototype.setPlaying =
 function(voicemail) {
 	var player = this._players[voicemail.id];
@@ -235,7 +230,7 @@ function(row, index) {
 	if (!list || !list.size()) {
 		return;
 	}
-	if (this._callType != ZmVoiceFolder.VOICEMAIL) {
+	if (this._getCallType() != ZmVoiceFolder.VOICEMAIL) {
 		return;
 	}
 	var voicemail = this.getItemFromElement(row);

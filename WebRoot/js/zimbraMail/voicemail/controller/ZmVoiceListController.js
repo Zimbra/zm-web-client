@@ -61,7 +61,7 @@ function(searchResult, folder) {
 ZmVoiceListController.prototype._setViewContents =
 function(viewId) {
 	var view = this._listView[viewId];
-	view.setCallType(this._folder.callType);	
+	view.setFolder(this._folder);	
 	view.set(this._list, ZmItem.F_DATE);
 };
 

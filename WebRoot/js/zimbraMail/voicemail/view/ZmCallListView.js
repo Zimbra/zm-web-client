@@ -44,15 +44,10 @@ ZmCallListView.F_CALLER = ZmItem.F_PARTICIPANT;
 ZmCallListView.F_SIZE = ZmItem.F_SIZE;
 ZmCallListView.F_DATE = ZmItem.F_DATE;
 
-ZmCallListView.prototype.getTitle =
-function() {
-	return [ZmMsg.zimbraTitle, ": ", ZmMsg.voicemail].join("");
-};
-
 ZmCallListView.prototype.createHeaderHtml = 
 function(defaultColumnSort) {
 	ZmVoiceListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
-	var isPlaced = this._callType == ZmVoiceFolder.PLACED_CALL;
+	var isPlaced = this._getCallType() == ZmVoiceFolder.PLACED_CALL;
 	var callerLabel = isPlaced ? ZmMsg.to : ZmMsg.from;
 	this._setColumnHeader(ZmCallListView.F_CALLER, callerLabel);
 	var dateLabel = isPlaced ? ZmMsg.placed : ZmMsg.received;	
@@ -135,7 +130,7 @@ function(columnItem, bSortAsc) {
 ZmCallListView.prototype._getHeaderTooltip =
 function(prefix) {
 	if (prefix == ZmListView.FIELD_PREFIX[ZmCallListView.F_CALLER]) {
-		var isPlaced = this._callType == ZmVoiceFolder.PLACED_CALL;
+		var isPlaced = this._getCallType() == ZmVoiceFolder.PLACED_CALL;
 		return isPlaced ? ZmMsg.to : ZmMsg.from;
 	} else if (prefix == ZmListView.FIELD_PREFIX[ZmCallListView.F_SIZE]) {
 		return ZmMsg.sortByDuration;

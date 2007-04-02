@@ -130,10 +130,10 @@ ZmVoiceApp.prototype._registerApp =
 function() {
 	ZmApp.registerApp(ZmApp.VOICE,
 							 {mainPkg:				"Voicemail",
-							  nameKey:				"voicemail",
+							  nameKey:				"voice",
 							  icon:					"VoicemailApp",
 							  qsArg:				"voicemail",
-							  chooserTooltipKey:	"goToVoicemail",
+							  chooserTooltipKey:	"goToVoice",
 							  defaultSearch:		ZmSearchToolBar.FOR_ANY_MI,
 							  overviewTrees:		[ZmOrganizer.VOICE],
 							  showZimlets:			true,

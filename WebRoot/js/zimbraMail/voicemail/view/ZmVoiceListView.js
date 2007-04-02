@@ -43,20 +43,26 @@ ZmVoiceListView.prototype.toString = function() {
 
 ZmVoiceListView.prototype.getTitle =
 function() {
-	return [ZmMsg.zimbraTitle, ": ", ZmMsg.voicemail].join("");
+	var text = this._folder ? this._folder.getName(false, 0, true) : ZmMsg.voice;
+	return [ZmMsg.zimbraTitle, ": ", text].join("");
 };
 
-ZmVoiceListView.prototype.setCallType =
-function(callType) {
-	this._callType = callType;	
+ZmVoiceListView.prototype.setFolder =
+function(folder) {
+	this._folder = folder;	
 };
 
 // Returns whichever calling party is shown in the view for the given item.
 ZmVoiceListView.prototype.getCallingParty =
 function(item) {
-	var type = this._callType == ZmVoiceFolder.PLACED_CALL ? 
+	var type = this._getCallType() == ZmVoiceFolder.PLACED_CALL ? 
 		ZmVoiceItem.TO : ZmVoiceItem.FROM;
 	return item.getCallingParty(type);
+};
+
+ZmVoiceListView.prototype._getCallType =
+function() {
+	return this._folder ? this._folder.callType : ZmVoiceFolder.VOICEMAIL;
 };
 
 ZmVoiceListView.prototype._getColumnIndex = 
