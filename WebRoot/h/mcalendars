@@ -77,17 +77,20 @@
                                 <table width=100% cellpadding=2 cellspacing=0>
                                     <zm:forEachFolder var="folder">
                                         <c:if test="${folder.isAppointmentView}">
-                                            <tr <c:if test="${selectedFolder.id eq folder.id and not newCalendar}">class='RowSelected'</c:if>>
-                                                <td width=1%>
+                                            <c:set var="rowColor" value="${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}"/>
+                                            <c:set var="selected" value="${selectedFolder.id eq folder.id and not newCalendar}"/>
+                                            <tr>
+                                                <td class='${rowColor}' width=1%>
                                                     &nbsp;
                                                 </td>
-                                                <td>
+                                                <td class='${rowColor}'>
                                                     <c:set var="label" value="${zm:getFolderName(pageContext, folder.id)}"/>
                                                     <c:url var="selectUrl" value="">
                                                         <c:param name="id" value="${folder.id}"/>
                                                     </c:url>
                                                     <a href="${selectUrl}">
-                                                            <app:img src="${folder.image}"/> <span style='vertical-align:middle'>${fn:escapeXml(label)}</span>
+                                                        <app:img src="${folder.image}"/>
+                                                        <span <c:if test="${selected}">class='ZhTISelected'</c:if> style='vertical-align:middle'>${fn:escapeXml(label)}</span>
                                                     </a>
                                                 </td>
                                             </tr>
