@@ -372,6 +372,7 @@ function() {
 	this.registerSetting("CSFE_MSG_FETCHER_URI",	{type: ZmSetting.T_CONFIG});
 	this.registerSetting("CSFE_SERVER_URI",			{type: ZmSetting.T_CONFIG});
 	this.registerSetting("CSFE_UPLOAD_URI",			{type: ZmSetting.T_CONFIG});
+	this.registerSetting("DEV",						{type: ZmSetting.T_CONFIG, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("FORCE_CAL_OFF",			{type: ZmSetting.T_CONFIG, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("HELP_URI",				{type: ZmSetting.T_CONFIG, defaultValue: appContextPath + "/help/Zimbra_User_Help.htm"});
 	this.registerSetting("LOG_REQUEST",				{type: ZmSetting.T_CONFIG, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});

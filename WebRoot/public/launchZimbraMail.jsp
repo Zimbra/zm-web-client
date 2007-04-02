@@ -78,6 +78,24 @@
 			}
 		}
 	}
+	
+	String isDev = (String) request.getParameter("dev");
+	if (isDev != null) {
+		request.setAttribute("mode", "mjsf");
+		request.setAttribute("gzip", "false");
+		request.setAttribute("debug", "1");
+		request.setAttribute("packages", "dev");
+	}
+	String debug = (String) request.getParameter("debug");
+	if (debug == null) {
+		debug = (String) request.getAttribute("debug");
+	}
+	String extraPackages = (String) request.getParameter("packages");
+	if (extraPackages == null) {
+		extraPackages = (String) request.getAttribute("packages");
+	}
+	String startApp = (String) request.getParameter("app");
+	
 	String mode = (String) request.getAttribute("mode");
 	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
 	Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
@@ -112,20 +130,18 @@
 
 <jsp:include page="Boot.jsp"/>
 <%
-    String packages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore";
-    
-    String extraPackages = request.getParameter("packages");
+    String allPackages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore";
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
     		extraPackages = "CalendarCore,Calendar,ContactsCore,Contacts,IM,Mail,Mixed,NotebookCore,Notebook,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal";
     	}
-    	packages += "," + extraPackages;
+    	allPackages += "," + extraPackages;
     }
 
     String pprefix = inDevMode ? "public/jsp" : "js";
     String psuffix = inDevMode ? ".jsp" : "_all.js";
 
-    String[] pnames = packages.split(",");
+    String[] pnames = allPackages.split(",");
     for (String pname : pnames) {
         String pageurl = "/"+pprefix+"/"+pname+psuffix;
         if (inDevMode) { %>
@@ -163,28 +179,20 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 		AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp"
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		// figure out the debug level
-		if (location.search && (location.search.indexOf("debug=") != -1)) {
-			var m = location.search.match(/debug=(\w+)/);
-			if (m && m.length) {
-				var level = m[1];
-				if (level == 't') {
-					DBG.showTiming(true);
-				} else {
-					DBG.setDebugLevel(level);
-				}
+		var debugLevel = "<%= (debug != null) ? debug : "" %>";
+		if (debugLevel) {
+			if (debugLevel == 't') {
+				DBG.showTiming(true);
+			} else {
+				DBG.setDebugLevel(debugLevel);
 			}
 		}
 
-		// figure out which app to start with, if supplied
-		var app = null;
-		if (location.search && (location.search.indexOf("app=") != -1)) {
-			var m = location.search.match(/app=(\w+)/);
-			if (m && m.length)
-				app = m[1];
-		}
+		var app = "<%= (startApp != null) ? startApp : "" %>";
+		var offlineMode = "<%= (offlineMode != null) ? offlineMode : "" %>";
+		var isDev = "<%= (isDev != null) ? isDev : "" %>";
 
-		var offlineMode = "<%=offlineMode%>";
-		ZmZimbraMail.run(document.domain, app, null, offlineMode);
+		ZmZimbraMail.run(document.domain, app, null, offlineMode, isDev);
 	}
 
     //	START DOMContentLoaded

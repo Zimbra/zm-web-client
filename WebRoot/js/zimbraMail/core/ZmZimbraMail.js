@@ -127,9 +127,10 @@ function() {
  * @param app			[constant]*	starting app
  * @param userShellId	[string]*	DOM ID of containing skin
  * @param offlineMode	[boolean]*	if true, this is the offline client
+ * @param devMode		[boolean]*	if true, we are in development environment
  */
 ZmZimbraMail.run =
-function(domain, app, userShellId, offlineMode) {
+function(domain, app, userShellId, offlineMode, devMode) {
 
 	// Create the global app context
 	var appCtxt = new ZmAppCtxt();
@@ -141,21 +142,28 @@ function(domain, app, userShellId, offlineMode) {
 	settings.initialize();
 	ZmOperation.initialize();
 	ZmApp.initialize();
+
+    if (offlineMode) {
+    	DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
+    	appCtxt.set(ZmSetting.OFFLINE, true);
+    	appCtxt.set(ZmSetting.POLLING_INTERVAL, 60);
+    	appCtxt.set(ZmSetting.CONTACTS_ENABLED, true);	// hack until we rewrite login
+    }
+    
+    if (devMode) {
+    	DBG.println(AjxDebug.DBG1, "DEV MODE");
+    	appCtxt.set(ZmSetting.DEV, true);
+    }
+
 	var userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
-	var shell = new DwtShell(null, false, ZmZimbraMail._confirmExitMethod, userShell);
+	var confirmExit = devMode ? null : ZmZimbraMail._confirmExitMethod;
+	var shell = new DwtShell(null, false, confirmExit, userShell);
 	appCtxt.setShell(shell);
 
 	appCtxt.setItemCache(new AjxCache());
 
 	// Create upload manager (for sending attachments)
 	appCtxt.setUploadManager(new AjxPost(appCtxt.getUploadFrameId()));
-
-    if (offlineMode == "true") {
-    	DBG.println(AjxDebug.DBG1, "OFFLINE MODE");
-    	appCtxt.set(ZmSetting.OFFLINE, true);
-    	appCtxt.set(ZmSetting.POLLING_INTERVAL, 60);
-    	appCtxt.set(ZmSetting.CONTACTS_ENABLED, true);	// hack until we rewrite login
-    }
 
 	var apps = AjxCookie.getCookie(document, ZmLogin.APPS_COOKIE);
 	DBG.println(AjxDebug.DBG1, "apps: " + apps);

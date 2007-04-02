@@ -128,6 +128,22 @@
         }
     }
 
+	String isDev = (String) request.getParameter("dev");
+	if (isDev != null) {
+		request.setAttribute("mode", "mjsf");
+		request.setAttribute("gzip", "false");
+		request.setAttribute("debug", "1");
+		request.setAttribute("packages", "dev");
+	}
+	String debug = (String) request.getParameter("debug");
+	if (debug == null) {
+		debug = (String) request.getAttribute("debug");
+	}
+	String extraPackages = (String) request.getParameter("packages");
+	if (extraPackages == null) {
+		extraPackages = (String) request.getAttribute("packages");
+	}
+
 	String mode = (String) request.getAttribute("mode");
 	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
 
@@ -177,15 +193,13 @@ appContextPath = "<%= contextPath %>";
 <jsp:include page="Messages.jsp"/>
 <jsp:include page="Boot.jsp"/>
 <%
-    String packages = "AjaxLogin,ZimbraLogin,Login";
-
-    String extraPackages = request.getParameter("packages");
-    if (extraPackages != null) packages += ","+extraPackages;
+    String allPackages = "AjaxLogin,ZimbraLogin,Login";
+    if (extraPackages != null) allPackages += ","+extraPackages;
 
     String pprefix = inDevMode ? "public/jsp" : "js";
     String psuffix = inDevMode ? ".jsp" : "_all.js";
 
-    String[] pnames = packages.split(",");
+    String[] pnames = allPackages.split(",");
     for (String pname : pnames) {
         String pageurl = "/"+pprefix+"/"+pname+psuffix;
         if (inDevMode) { %>
@@ -208,17 +222,15 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 		AjxDebug.deleteWindowCookie();
 	}
 	// figure out the debug level
-	if (location.search && (location.search.indexOf("debug=") != -1)) {
-		var m = location.search.match(/debug=(\w+)/);
-		if (m && m.length) {
-			var level = m[1];
-			if (level == 't') {
-				DBG.showTiming(true);
-			} else {
-				DBG.setDebugLevel(level);
-			}
+	var debugLevel = "<%= (debug != null) ? debug : "" %>";
+	if (debugLevel) {
+		if (debugLevel == 't') {
+			DBG.showTiming(true);
+		} else {
+			DBG.setDebugLevel(debugLevel);
 		}
 	}
+
 	function init() {
 		// quit if this function has already been called
 		if (arguments.callee.done) {return;}
