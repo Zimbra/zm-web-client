@@ -76,6 +76,12 @@ function() {
 	return this._loaded;
 };
 
+ZmMailItem.prototype.isShared =
+function() {
+	return (this.id && this.id != -1)
+		? (this.id.indexOf(":") != -1) : false;
+};
+
 ZmMailItem.prototype.clear =
 function() {
 	this._clearParticipants();

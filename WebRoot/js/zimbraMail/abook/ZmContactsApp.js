@@ -225,8 +225,8 @@ function() {
 
 	ZmSearchToolBar.FOR_PAS_MI 	= "FOR PAS";
 	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_PAS_MI,
-								{msgKey:		"searchPersonalAndShared",
-								 tooltipKey:	"searchPersonalAndShared",
+								{msgKey:		"searchPersonalSharedContacts",
+								 tooltipKey:	"searchPersonalSharedContacts",
 								 icon:			"SearchSharedContacts",
 								 setting:		ZmSetting.SHARING_ENABLED
 								});

@@ -214,7 +214,7 @@ function() {
 		this._searchInSelect = new DwtSelect(this);
 		this._searchInSelect.addOption(ZmMsg.contacts, true, ZmContactPicker.SEARCHFOR_CONTACTS);
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
-			this._searchInSelect.addOption(ZmMsg.searchPersonalAndShared, false, ZmContactPicker.SEARCHFOR_PAS);
+			this._searchInSelect.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactPicker.SEARCHFOR_PAS);
 		if (this._appCtxt.get(ZmSetting.GAL_ENABLED))
 			this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactPicker.SEARCHFOR_GAL);
 		this._searchInSelect.reparentHtmlElement(this._listSelectId);

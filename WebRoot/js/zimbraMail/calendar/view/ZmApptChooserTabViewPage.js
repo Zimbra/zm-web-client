@@ -410,7 +410,7 @@ function() {
 		this._selectDiv = new DwtSelect(this);
 		this._selectDiv.addOption(ZmMsg.contacts, false, ZmContactsApp.SEARCHFOR_CONTACTS);
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
-			this._selectDiv.addOption(ZmMsg.searchPersonalAndShared, false, ZmContactsApp.SEARCHFOR_PAS);
+			this._selectDiv.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
 		this._selectDiv.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
 		listSelect.appendChild(this._selectDiv.getHtmlElement());
 	}

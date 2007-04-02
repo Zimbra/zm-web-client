@@ -134,7 +134,8 @@ function(msg) {
 		var invite = msg.getInvite();
 		if (!invite.isEmpty() && !invite.hasMultipleComponents() &&
 			invite.getStatus() != ZmCalItem.STATUS_CANC &&
-			msg.folderId != ZmFolder.ID_TRASH)
+			msg.folderId != ZmFolder.ID_TRASH &&
+			!msg.isShared())
 		{
 			var topToolbar = this._getInviteToolbar();
 			// nuke the old toolbar if it exists b4 appending the new one

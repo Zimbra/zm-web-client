@@ -41,6 +41,11 @@ function ZmSearchController(appCtxt, container) {
 ZmSearchController.prototype = new ZmController;
 ZmSearchController.prototype.constructor = ZmSearchController;
 
+
+// Consts
+ZmSearchController.QUERY_ISREMOTE = "(is:remote OR is:local)";
+
+
 ZmSearchController.prototype.toString =
 function() {
 	return "ZmSearchController";
@@ -276,14 +281,22 @@ ZmSearchController.prototype.getTypes =
 function(searchFor) {
 	var types = new AjxVector();
 	searchFor = searchFor || this._searchFor;
+
 	var groupBy;
-	if (searchFor == ZmSearchToolBar.FOR_MAIL_MI || searchFor == ZmSearchToolBar.FOR_ANY_MI) {
+	if (searchFor == ZmSearchToolBar.FOR_MAIL_MI ||
+		searchFor == ZmSearchToolBar.FOR_ANY_MI ||
+		searchFor == ZmSearchToolBar.FOR_PAM_MI)
+	{
 		groupBy = this._appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	}
 
-	if (searchFor == ZmSearchToolBar.FOR_MAIL_MI) {
+	if (searchFor == ZmSearchToolBar.FOR_MAIL_MI ||
+		searchFor == ZmSearchToolBar.FOR_PAM_MI)
+	{
 		types.add(groupBy);
-	} else if (searchFor == ZmSearchToolBar.FOR_ANY_MI) {
+	}
+	else if (searchFor == ZmSearchToolBar.FOR_ANY_MI)
+	{
 		types.add(groupBy);
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 			types.add(ZmItem.CONTACT);
@@ -297,12 +310,18 @@ function(searchFor) {
 			types.add(ZmItem.PAGE);
 			types.add(ZmItem.DOCUMENT);
 		}
-	} else if (searchFor == ZmSearchToolBar.FOR_PAS_MI) {
+	}
+	else if (searchFor == ZmSearchToolBar.FOR_PAS_MI)
+	{
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
 			types.add(ZmItem.CONTACT);
-	} else if (searchFor == ZmSearchToolBar.FOR_TASKS_MI) {
+	}
+	else if (searchFor == ZmSearchToolBar.FOR_TASKS_MI)
+	{
 		types.add(ZmItem.TASK);
-	} else {
+	}
+	else
+	{
 		types.add(searchFor);
 		if (searchFor == ZmItem.PAGE) {
 			types.add(ZmItem.DOCUMENT);
@@ -363,8 +382,11 @@ function(params, noRender, callback, errorCallback) {
 	var isMixed = (this._searchFor == ZmSearchToolBar.FOR_ANY_MI);
 
 	// XXX: hack -- we have to hack the query string in order for this search to work
-	if (this._searchFor == ZmSearchToolBar.FOR_PAS_MI) {
-		params.query += " (is:remote OR is:local)";
+	if (this._searchFor == ZmSearchToolBar.FOR_PAS_MI ||
+		this._searchFor == ZmSearchToolBar.FOR_PAM_MI)
+	{
+		if (params.query.indexOf(ZmSearchController.QUERY_ISREMOTE) == -1)
+			params.query += (" " + ZmSearchController.QUERY_ISREMOTE);	
 	}
 
 	// only set contact source if we are searching for contacts
