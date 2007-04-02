@@ -26,7 +26,14 @@
 function ZmVoiceListView(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
 	if (arguments.length == 0) return;
 	ZmListView.call(this, parent, className, posStyle, view, type, controller, headerList, dropTgt);
-}
+
+	this._contactToItem = {}; // Map of contact ids to the items we draw them in.
+
+	var contactList = AjxDispatcher.run("GetContacts");
+	contactList.addChangeListener(new AjxListener(this, this._contactsChangeListener));
+};
+
+
 ZmVoiceListView.prototype = new ZmListView;
 ZmVoiceListView.prototype.constructor = ZmVoiceListView;
 
@@ -75,11 +82,31 @@ function(voicemail) {
 	var callingParty = this.getCallingParty(voicemail);
 	var contact = contactList.getContactByPhone(callingParty.name);
 	if (contact) {
+		this._addToContactMap(contact, voicemail);
 // TODO: Seems like this should go on ZmVoicemail?!?!?		
-		voicemail.participants.getArray()[0] = callingParty;
+		voicemail.participants.getArray()[0] = contact;
 		return AjxStringUtil.htmlEncode(contact.getFullName());
 	} else {
 		return this._getCallerHtml(voicemail);
+	}
+};
+
+ZmVoiceListView.prototype._addToContactMap =
+function(contact, voicemail) {
+	var items = this._contactToItem[contact.id];
+	if (!items) {
+		this._contactToItem[contact.id] = [voicemail];
+	} else {
+		var found = false;
+		for(var i = 0, count = items.length; i < count; i++) {
+			if (items[i] == voicemail) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			items.push(voicemail);
+		}
 	}
 };
 
@@ -109,7 +136,9 @@ function(ev, div) {
 		}
 	} else {
 		var item = this.getItemFromElement(div);
-		tooltip = this._getItemTooltip(item);
+		if (item) {
+			tooltip = this._getItemTooltip(item);
+		}
 	}
 	this.setToolTipContent(tooltip);
 };
@@ -119,3 +148,67 @@ function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
 };
 
+ZmVoiceListView.prototype.removeItem =
+function(item, skipNotify) {
+	ZmListView.prototype.removeItem.call(this, item, skipNotify);
+	
+	var contact = item.participants.getArray()[0];
+	if (contact) {
+		item.participants.removeAll();
+		var items = this._contactToItem[contact.id];
+		for(var i = 0, count = items.length; i < count; i++) {
+			if (items[i] == item) {
+				items.splice(i,1);
+				break;
+			}
+		}
+	}
+};
+
+ZmVoiceListView.prototype.removeAll =
+function(skipNotify) {
+	this._contactToItem = {};
+	ZmListView.prototype.removeAll.call(this, skipNotify);
+};
+
+ZmVoiceListView.prototype._resetList =
+function() {
+	this._contactToItem = {};
+	ZmListView.prototype._resetList.call(this);
+};
+
+ZmVoiceListView.prototype._contactsChangeListener =
+function(ev) {
+	// The implementation of this method just redraws the entire list when any
+	// contact in the view changes. This is a little brute-force-ish. I tried
+	// just redrawing individual items, but because of reconnecting the sound
+	// players and all the styles that are set on each item, it seemed like I
+	// was going to end up with an unmaintainable mess. So redraw everything...
+	var redraw = false;
+	if ((ev.event == ZmEvent.E_MODIFY) || (ev.event == ZmEvent.E_DELETE)) {
+		var contacts = ev.getDetails().items;
+		if (contacts) {
+			redraw = true;
+			if (ev.event == ZmEvent.E_DELETE) {
+				for(var i = 0, count = contacts.length; i < count; i++) {
+					var contact = contacts[i];
+					var items = this._contactToItem[contact.id];
+					if (items) {
+						for(var j = 0; j < items.length; j++) {
+							items[j].participants.removeAll();
+						}
+						delete this._contactToItem[contact.id];
+					}
+				}
+			}
+		}
+	} else if (ev.event == ZmEvent.E_CREATE) {
+		var contacts = ev.getDetails().items;
+		if (contacts) {
+			redraw = true;
+		}
+	}
+	if (redraw) {
+		this.setUI();
+	}
+};

@@ -134,8 +134,8 @@ function(ev) {
 		ZmOperation.setOperation(this._participantActionMenu, ZmOperation.CONTACT, newOp, newText);
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			var contacts = AjxDispatcher.run("GetContacts");
-			this._actionEv.contact = contacts.getContactByPhone(view.getCallingParty(item).name);
-			this._setContactText(this._actionEv.contact != null);
+			this._actionEv.contact = contact;
+			this._setContactText(contact != null);
 		}
 		this._resetOperations(actionMenu, this._getView().getSelectionCount());
 	} else  {
