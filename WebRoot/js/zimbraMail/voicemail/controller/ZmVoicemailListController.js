@@ -190,7 +190,9 @@ function(ev) {
 	var date = AjxDateUtil.computeDateStr(new Date(), voicemail.date);
 	var callingParty = voicemail.getCallingParty(ZmVoiceItem.FROM);
 	var phoneNumber = callingParty.getDisplay();
-	var body = AjxMessageFormat.format(ZmMsg.voicemailBody, [phoneNumber, duration, date]);
+	var format = this._appCtxt.get(ZmSetting.COMPOSE_AS_FORMAT);
+	var message = format == ZmSetting.COMPOSE_HTML ? ZmMsg.voicemailBodyHtml : ZmMsg.voicemailBodyText;
+	var body = AjxMessageFormat.format(message, [phoneNumber, duration, date]);
 	var params = {
 		action: ZmOperation.NEW_MESSAGE, 
 		inNewWindow: this._app._inNewWindow(ev), 
