@@ -54,7 +54,7 @@
 
 <table width=100% cellspacing=0 class='Tb'>
       <tr valign='middle'>
-        <td class='TbBT'
+        <td class='TbBT'>
             <table cellspacing=0 cellpadding=0 class='Tb'>
                 <tr>
                     ${requestScope.mvToolbarCache}
