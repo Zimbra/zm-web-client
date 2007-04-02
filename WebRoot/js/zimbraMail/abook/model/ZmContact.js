@@ -436,7 +436,8 @@ function(name) {
 	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
 		return this.attr[name];
 	} else {
-		return this.canonicalList.getById(this.id).attr[name];
+		var contact = this.canonicalList.getById(this.id);
+		return contact ? contact.attr[name] : null;
 	}
 };
 
@@ -447,7 +448,10 @@ function(name, value) {
 	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
 		this.attr[name] = value;
 	} else {
-		this.canonicalList.getById(this.id).attr[name] = value;
+		var contact = this.canonicalList.getById(this.id);
+		if (contact) {
+			contact.attr[name] = value;
+		}
 	}
 };
 
@@ -458,7 +462,10 @@ function(name) {
 	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
 		delete this.attr[name];
 	} else {
-		delete this.canonicalList.getById(this.id).attr[name];
+		var contact = this.canonicalList.getById(this.id);
+		if (contact) {
+			delete contact.attr[name];
+		}
 	}
 };
 
