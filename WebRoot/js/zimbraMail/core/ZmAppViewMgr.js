@@ -607,17 +607,27 @@ function(components) {
 		DBG.println(AjxDebug.DBG3, "fitting to container: " + cid);
 		var cont = this._containers[cid];
 		if (cont) {
-			var contBds = Dwt.getBounds(cont);
 			var comp = this._components[cid];
 			if (comp && (comp.getZIndex() != Dwt.Z_HIDDEN)) {
-                var position = skin && skin.hints[cid] && skin.hints[cid].position;
-                if (position == "static") {
-                    cont.appendChild(comp.getHtmlElement());
-                }
-                else {
-                    comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height);
-                }
+                // save bounds
+                var contBds = Dwt.getBounds(cont);
                 this._contBounds[cid] = contBds;
+
+                // set style
+                var position = (skin && skin.hints[cid] && skin.hints[cid].position) || Dwt.ABSOLUTE_STYLE;
+                var compEl = comp.getHtmlElement();
+                compEl.style.position = position;
+
+                // position
+                switch (position) {
+                    case Dwt.STATIC_STYLE: {
+                        cont.appendChild(compEl);
+                        break;
+                    }
+                    default: {
+                        comp.setBounds(contBds.x, contBds.y, contBds.width, contBds.height);
+                    }
+                }
 			}
 		}
 	}

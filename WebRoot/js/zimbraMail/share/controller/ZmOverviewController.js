@@ -93,7 +93,10 @@ function(params) {
 	var parent = params.parent ? params.parent : this._shell;
 	var overviewClass = params.overviewClass ? params.overviewClass : "overview";
 	var overview = this._overview[overviewId] = new DwtAccordion(parent, overviewClass, params.posStyle);
-	this._overview[overviewId].setScrollStyle(params.scroll ? params.scroll : Dwt.SCROLL);
+    if (params.posStyle == Dwt.ABSOLUTE_STYLE) {
+        Dwt.setLocation(overview.getHtmlElement(), Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+    }
+    this._overview[overviewId].setScrollStyle(params.scroll ? params.scroll : Dwt.SCROLL);
 	this._selectionSupported[overviewId] = params.selectionSupported;
 	this._actionSupported[overviewId] = params.actionSupported;
 	this._dndSupported[overviewId] = params.dndSupported;

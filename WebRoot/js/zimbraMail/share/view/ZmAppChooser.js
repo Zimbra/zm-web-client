@@ -30,6 +30,7 @@ function ZmAppChooser(parent, className, buttons, useTabs) {
 	var width = skin.hints && skin.hints.app_chooser.fullWidth ? "100%" : null;
 
 	DwtToolBar.call(this, parent, className, Dwt.ABSOLUTE_STYLE, null, null, width, tbStyle);
+    Dwt.setLocation(this.getHtmlElement(), Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 
 	this.setScrollStyle(Dwt.CLIP);
 
