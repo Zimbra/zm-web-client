@@ -373,13 +373,18 @@ function(items) {
 		if (row) {
 			var folder = this._appCtxt.getById(items[i].folderId);
 			var className = null;
-			if (items[i].isUnread)
+			if (items[i].isUnread) {
 				className = "Unread";
-			if ((folder != null) && folder.isInTrash())
+			}
+			if ((folder != null) && folder.isInTrash()) {
 				className = (className ? (className + " ") : "") + "Trash";
-			if (items[i].isSent)
+			}
+			if (items[i].isSent) {
 				className = (className ? (className + " ") : "") + "Sent";
-			row.className = className;
+			}
+			if (className) {
+				row.className = className;
+			}
 		}
 	}
 };

@@ -357,15 +357,12 @@ function() {
 ZmMailMsgView.prototype._handleResponseSet =
 function(msg, oldMsg) {
 	if (!this._controller.isChildWindow) {
-		if (this._mode == ZmController.TRAD_VIEW || this._mode == ZmController.HYBRID_VIEW) {
-			if (oldMsg != null)
-				oldMsg.list.removeChangeListener(this._listChangeListener);
-			msg.list.addChangeListener(new AjxListener(this, this._listChangeListener));
-		} else {
+		if (this._mode == ZmController.MSG_VIEW) {
 			this._setTags(msg);
 			// Remove listener for current msg if it exists
-			if (oldMsg != null)
+			if (oldMsg) {
 				oldMsg.removeChangeListener(this._changeListener);
+			}
 			msg.addChangeListener(this._changeListener);
 		}
 	}
@@ -1300,13 +1297,6 @@ function(ev) {
 		return;
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL)
 		this._setTags(this._msg);
-};
-
-ZmMailMsgView.prototype._listChangeListener =
-function(ev) {
-	// bug fix #3398 - check list size before nuking the msg view
-	if (ev.source.size() == 0 && (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE))
-		this.reset();
 };
 
 ZmMailMsgView.prototype._selectStartListener =

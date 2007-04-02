@@ -224,7 +224,7 @@ function() {
 			this._doublePaneView.setMsg(msg);
 			if (msg.isUnread) {
 				// msg was cached, then marked unread
-				this._list.markRead([msg], true);
+				this._doMarkRead([msg], true);
 			}
 		}
 	}
@@ -348,10 +348,16 @@ function(msg) {
 ZmDoublePaneController.prototype._resetOperations = 
 function(parent, num) {
 	ZmMailListController.prototype._resetOperations.call(this, parent, num);
-	parent.enable(ZmOperation.SHOW_ORIG, num == 1);
-	if (this._appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
-		parent.enable(ZmOperation.ADD_FILTER_RULE, num == 1);
+	var isMsg = false;
+	if (num == 1) {
+		var item = this._doublePaneView.getSelection()[0];
+		isMsg = (item.type == ZmItem.MSG);
 	}
+	parent.enable(ZmOperation.SHOW_ORIG, isMsg);
+	if (this._appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
+		parent.enable(ZmOperation.ADD_FILTER_RULE, isMsg);
+	}
+	parent.enable(ZmOperation.DETACH, isMsg);
 };
 
 // top level view means this view is allowed to get shown when user clicks on 

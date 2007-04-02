@@ -168,10 +168,15 @@ function ZmHybridListView(parent, className, posStyle, controller, dropTgt) {
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
 	this._msgRowIdList = {};	// hash of lists, each list has row IDs for an expandable item
 	this._expandable = {};		// whether a row for a msg/conv ID has a +/- icon
+//	this._dblClickTimeout = 5000;
 };
 
 ZmHybridListView.prototype = new ZmConvListView;
 ZmHybridListView.prototype.constructor = ZmHybridListView;
+
+// Copy some functions from ZmMailMsgListView, for handling message rows
+ZmHybridListView.prototype._changeFolderName = ZmMailMsgListView.prototype._changeFolderName;
+ZmHybridListView.prototype._changeTrashStatus = ZmMailMsgListView.prototype._changeTrashStatus;
 
 ZmHybridListView.prototype.toString = 
 function() {
@@ -474,16 +479,32 @@ function(item) {
 
 ZmHybridListView.prototype._changeListener =
 function(ev) {
-	// update count field for this conv
+	if (!this._handleEventType[ev.type]) { return; }
+
 	var fields = ev.getDetail("fields");
 	var items = ev.getDetail("items");
+	
 	// prevent redundant handling for same item due to multiple change listeners
 	// (msg will notify containing conv, and then notif for same conv gets processed)
 	var reqMgr = this._appCtxt.getRequestMgr();
 	for (var i = 0; i < items.length; i++) {
 		reqMgr._modifyHandled[items[i].id] = true;
 	}
-	ZmConvListView.prototype._changeListener.call(this, ev);
+	
+	if (ev.type == ZmItem.MSG && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
+				this._controller._list.remove(item, true);
+//				this._checkExpandable(item, true);
+				ZmConvListView.prototype._changeListener.call(this, ev);
+			} else {
+				this._changeFolderName([item]);
+			}
+		}
+	} else {
+		ZmConvListView.prototype._changeListener.call(this, ev);
+	}
 };
 
 /**
@@ -503,4 +524,18 @@ function(item, skipNotify) {
 		}
 	}
 	DwtListView.prototype.removeItem.apply(this, arguments);
+};
+
+ZmHybridListView.prototype._checkExpandable =
+function(item, removed, added) {
+	var expandable;
+	if (item.type == ZmItem.MSG) {
+		var conv = this._appCtxt.getById(item.cid);
+		
+		expandable = (item.numMsgs > 1);
+
+	}
+	if (expandable != this._expandable[item.id]) {
+	
+	}
 };

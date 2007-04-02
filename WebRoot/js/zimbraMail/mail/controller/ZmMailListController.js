@@ -229,7 +229,7 @@ function(actionCode) {
 				if (subjectField) {
 					var loc = Dwt.getLocation(subjectField);
 					var frag;
-					if (item instanceof ZmMailMsg && item.isInvite() && item.needsRsvp()) {
+					if (item.type == ZmItem.MSG && item.isInvite() && item.needsRsvp()) {
 						frag = item.getInvite().getToolTip();
 					} else {
 						frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
@@ -657,9 +657,9 @@ function(item) {
 	if (!item) return null;
 	
 	var msg;
-	if (item instanceof ZmMailMsg) {
+	if (item.type == ZmItem.MSG) {
 		msg = item;
-	} else if (item instanceof ZmConv) {
+	} else if (item.type == ZmItem.CONV) {
 		msg = item.getFirstMsg();
 	}
 	

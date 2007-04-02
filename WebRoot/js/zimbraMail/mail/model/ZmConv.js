@@ -337,8 +337,7 @@ function() {
 			this.tempMsg = msg;
 	}
 	
-	// set the conv's list w/in msg
-	msg.list = this.list;
+	msg.list = this.msgs || new ZmMailList(ZmItem.MSG, this._appCtxt);
 	
 	return msg;
 };
