@@ -67,7 +67,7 @@ ZmTaskFolder.prototype.getIcon =
 function() {
 	return this.id == ZmFolder.ID_ROOT
 		? null
-		: (this.link ? "GroupSchedule" : "TaskList");
+		: (this.link ? "SharedTaskList" : "TaskList");
 };
 
 ZmTaskFolder.prototype.setFreeBusy =
