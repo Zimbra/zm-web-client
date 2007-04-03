@@ -279,7 +279,7 @@ function() {
 
 	this._statusId = id + "_status";
 
-	this._timeSlider = new DwtSlider(this);
+	this._timeSlider = new DwtSlider(this, null, null, Dwt.RELATIVE_STYLE);
 	this._timeSlider.replaceElement(id + "_postition");
 	this._timeSlider.addChangeListener(new AjxListener(this, this._timeSliderListener));
 
