@@ -332,6 +332,8 @@ function() {
 		return ZmFolder.IMAGE[this.id];
 	} else if (this.isFeed()) {
 		return "RSS";
+	} else if (this.isRemote()) {
+		return "SharedMailFolder";
 	} else {
 		return "Folder";
 	}
