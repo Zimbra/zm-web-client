@@ -363,20 +363,21 @@
         </td>
     </tr>
 
-    <tr>
-        <td align=right><fmt:message key="contactImport"/>:</td>
-        <td>
-            <input type=file size="40" name="fileUpload">
-        </td>
-    </tr>
-    <tr>
-        <td>&nbsp;</td>
-        <td>
-            <input class='tbButton' type="submit" name="actionImport"
-                   value="<fmt:message key="import"/>">
-        </td>
-    </tr>
-
+    <c:if test="${not (folder.isMountPoint or folder.isFeed)}">
+        <tr>
+            <td align=right><fmt:message key="contactImport"/>:</td>
+            <td>
+                <input type=file size="40" name="fileUpload">
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>
+                <input class='tbButton' type="submit" name="actionImport"
+                       value="<fmt:message key="import"/>">
+            </td>
+        </tr>
+    </c:if>
 </c:if>
 
 <c:if test="${folder.unreadCount gt 0 and not (folder.isDrafts or folder.isSearchFolder or folder.isMountPoint or folder.isContactView or folder.isAppointmentView)}">
