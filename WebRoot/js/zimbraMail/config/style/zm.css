@@ -2810,6 +2810,12 @@ HTML>BODY .appt-selected .appt_allday_body
 
 }
 
+/* turn off padding for sound player buttons that live inside list rows */
+.DwtListView-Rows .ZmSoundPlayer TD {
+	padding-left:0px;
+	padding-right:0px;
+}
+
 .DwtMissingSoundPlayer {
 	background-color: #ffffcc;
 	color:darkred;
@@ -2837,6 +2843,27 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmSoundPlayer .ZmVolumeButton 		{	margin:0 2 0 2;		}
 
 
+.DwtSliderThumb {
+	cursor:move;
+}
+
+.DwtHorizontalSlider .DwtSliderThumb {
+	width:16px;
+}
+.DwtHorizontalSlider .DwtSliderThumbBorder {
+	width:10px;
+	padding:4px 0px 0px 2px;
+	height:12px;
+}
+
+.DwtVerticalSlider .DwtSliderThumb {
+	height:10px;
+	width:12px;
+}
+
+.DwtVerticalSlider .DwtSliderThumbBorder {
+	padding:2px 0px 0px 4px;
+}
 
 
 .ZmPortlet {
