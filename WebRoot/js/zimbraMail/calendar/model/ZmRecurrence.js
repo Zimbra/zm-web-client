@@ -102,17 +102,11 @@ function(soapDoc, inv) {
 			wkDay.setAttribute("ordwk", this.repeatCustomOrdinal);
 			wkDay.setAttribute("day", this.repeatCustomDayOfWeek);
 		}
-		var co = soapDoc.set('x-name', null, rule);
-		co.setAttribute('name', "repeatCustomType");
-		co.setAttribute('value', this.repeatCustomType);
 	}
 	else if (this.repeatType == "YEA")
 	{
 		var bm = soapDoc.set("bymonth", null, rule);
 		bm.setAttribute("molist", this.repeatYearlyMonthsList);
-		var co = soapDoc.set('x-name', null, rule);
-		co.setAttribute('name', "repeatCustomType");
-		co.setAttribute('value', this.repeatCustomType);
 		if (this.repeatCustomType == "O") {
 			var bwd = soapDoc.set("byday", null, rule);
 			wkDay = soapDoc.set("wkday", null, bwd);
