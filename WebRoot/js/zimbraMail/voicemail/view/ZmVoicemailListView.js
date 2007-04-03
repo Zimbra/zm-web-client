@@ -251,9 +251,23 @@ function(row, index) {
 		for (var i = 0, count = this._soundChangeListeners.length; i < count; i++) {
 			player.addChangeListener(this._soundChangeListeners[i]);
 		}
+		if (player.isPluginMissing()) {
+			if (!this._helpListenerObj) {
+				this._helpListenerObj = new AjxListener(this, this._helpListener);
+			}
+			player.addHelpListener(this._helpListenerObj);
+		}
 	}
 	player.reparentHtmlElement(cell);
 	this._players[voicemail.id] = player;
+};
+
+ZmVoicemailListView.prototype._helpListener =
+function(ev) {
+	var dialog = this._appCtxt.getMsgDialog();
+	var message = AjxEnv.isIE ? ZmMsg.missingPluginHelpIE : ZmMsg.missingPluginHelp;
+	dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
+	dialog.popup();
 };
 
 ZmVoicemailListView.prototype._compactListener =

@@ -37,11 +37,7 @@ function ZmSoundPlayer(parent, voicemail, className, positionType) {
 	this._volumeButton = null;
 
 	this._pluginMissing = DwtSoundPlugin.isPluginMissing();
-	if (this._pluginMissing) {
-		this._createMissingHtml();
-	} else {
-		this._createHtml();
-	}
+	this._createHtml();
 	this._volume = DwtSoundPlugin.MAX_VOLUME;
 	
 	this._pluginChangeListenerObj = new AjxListener(this, this._pluginChangeListener);
@@ -56,18 +52,30 @@ function() {
 };
 
 ZmSoundPlayer.COMPACT_EVENT = "Compact"
+ZmSoundPlayer.HELP_EVENT = "Help"
 
 /**
  * Plays the currently loaded sound.
  */
 ZmSoundPlayer.prototype.play =
 function() {
-	this.setCompact(false);
-	if (this._soundPlugin) {
-		this._soundPlugin.play();
+	if (this._pluginMissing) {
+		// Fire help event.
+		if (this.isListenerRegistered(ZmSoundPlayer.HELP_EVENT)) {
+			if (!this._helpEvent) {
+				this._helpEvent = new DwtEvent(true);
+				this._helpEvent.dwtObj = this;
+			}
+		    this.notifyListeners(ZmSoundPlayer.HELP_EVENT, this._helpEvent);
+		}
 	} else {
-		// Will start playing automatically.
-		this._getPlugin();
+		this.setCompact(false);
+		if (this._soundPlugin) {
+			this._soundPlugin.play();
+		} else {
+			// Will start playing automatically.
+			this._getPlugin();
+		}
 	}
 };
 
@@ -121,12 +129,12 @@ function(compact) {
 
 		// Fire event.
 		if (this.isListenerRegistered(ZmSoundPlayer.COMPACT_EVENT)) {
-			if (!this._changeEvent) {
-				this._changeEvent = new DwtEvent(true);
-				this._changeEvent.dwtObj = this;
-				this._changeEvent.isCompact = compact;
+			if (!this._compactEvent) {
+				this._compactEvent = new DwtEvent(true);
+				this._compactEvent.dwtObj = this;
+				this._compactEvent.isCompact = compact;
 			}
-		    this.notifyListeners(ZmSoundPlayer.COMPACT_EVENT, this._changeEvent);
+		    this.notifyListeners(ZmSoundPlayer.COMPACT_EVENT, this._compactEvent);
 		}
 	}
 };
@@ -141,9 +149,7 @@ function() {
 
 ZmSoundPlayer.prototype.addHelpListener =
 function(listener) {
-	if (this._soundPlugin && this._soundPlugin.addHelpListener) {
-		this._soundPlugin.addHelpListener(listener);
-	}
+    this.addListener(ZmSoundPlayer.HELP_EVENT, listener);
 };
 
 ZmSoundPlayer.prototype.addChangeListener =
@@ -292,9 +298,4 @@ function() {
 	this.setCompact(true);
 };
 
-ZmSoundPlayer.prototype._createMissingHtml =
-function() {
-	// This will create the plugin that displays a warning.
-    this._soundPlugin = DwtSoundPlugin.create(this);
-};
 
