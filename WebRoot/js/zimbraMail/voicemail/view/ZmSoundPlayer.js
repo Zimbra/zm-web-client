@@ -223,7 +223,7 @@ function(event) {
 ZmSoundPlayer.prototype._volumeButtonListener =
 function(event) {
 	if (!this._volumeMenu) {
-		this._volumeMenu = new DwtMenu(this._volumeButton, DwtMenu.GENERIC_WIDGET_STYLE);
+		this._volumeMenu = new DwtMenu(this._volumeButton, DwtMenu.GENERIC_WIDGET_STYLE, "DwtMenu DwtVolumeMenu");
 		this._volumeSlider = new DwtSlider(this._volumeMenu, DwtSlider.VERTICAL, "DwtVerticalSlider DwtVolumeSlider");
 		this._volumeSlider.setRange(0, this._volume, this._volume);
 		this._volumeSlider.addChangeListener(new AjxListener(this, this._volumeSliderListener));
@@ -285,7 +285,7 @@ function() {
 
 	this._volumeButton = new DwtButton(this);
 	this._volumeButton.replaceElement(id + "_volume");
-	this._volumeButton.setImage("PlayMessage");
+	this._volumeButton.setImage("Volume");
 	this._volumeButton.setToolTipContent(ZmMsg.volume);
 	this._volumeButton.addSelectionListener(new AjxListener(this, this._volumeButtonListener));
 	

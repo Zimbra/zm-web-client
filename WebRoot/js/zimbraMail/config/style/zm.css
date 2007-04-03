@@ -2832,8 +2832,8 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmSoundPlayer .DwtPositionSlider	{	margin:0 2 0 2;		}
 .DwtMenu .DwtVolumeSlider			{	height:80px;	}
 
-.ZmSoundPlayer .ZmPlayButton 		{	margin:0 2 0 2;		}
-.ZmSoundPlayer .ZmPauseButton 		{	margin:0 2 0 2;		}
+.ZmSoundPlayer .ZmPlayButton,
+.ZmSoundPlayer .ZmPauseButton,
 .ZmSoundPlayer .ZmVolumeButton 		{	margin:0 2 0 2;		}
 
 
