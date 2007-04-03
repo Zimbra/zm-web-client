@@ -83,6 +83,7 @@
 	if (isDev != null) {
 		request.setAttribute("mode", "mjsf");
 		request.setAttribute("gzip", "false");
+		request.setAttribute("fileExtension", "");
 		request.setAttribute("debug", "1");
 		request.setAttribute("packages", "dev");
 	}
