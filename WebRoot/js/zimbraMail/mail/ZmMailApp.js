@@ -355,7 +355,7 @@ function() {
 	ZmSearchToolBar.addMenuItem(ZmSearchToolBar.FOR_PAM_MI,
 								{msgKey:		"searchPersonalSharedMail",
 								 tooltipKey:	"searchPersonalSharedMail",
-								 icon:			"SearchSharedContacts",
+								 icon:			"SearchSharedMail",
 								 setting:		ZmSetting.SHARING_ENABLED
 								});
 };
