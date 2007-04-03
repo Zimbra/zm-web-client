@@ -411,57 +411,6 @@ function(items, folder, attrs) {
 	}
 };
 
-/**
-* Copies a list of items to the given folder.
-* <p>
-* Search results are treated as though they're in a temporary folder, so that they behave as
-* they would if they were in any other folder such as Inbox.
-* </p>
-*
-* @param items		[Array]			a list of items to move
-* @param folder		[ZmFolder]		destination folder
-* @param attrs		[Object]		additional attrs for SOAP command
-*/
-ZmContactList.prototype.copyItems =
-function(items, folder, attrs) {
-	// Since we may be sharing with multiple users, use a batch command
-	var copyBatchCmd = new ZmBatchCommand(this._appCtxt);
-	var loadBatchCmd = new ZmBatchCommand(this._appCtxt);
-
-	for (var i = 0; i  < items.length; i++) {
-		var contact = items[i];
-		if (contact.isLoaded()) {
-			copyBatchCmd.add(this._getCopyCmd(contact, folder));
-		} else {
-			// if not loaded, lets try to batch-load contacts before trying to copy them
-			var loadCallback = new AjxCallback(this, this._handleResponseBatchLoad, [copyBatchCmd, folder]);
-			var cmd = new AjxCallback(contact, contact.load, [loadCallback, null]);
-			loadBatchCmd.add(cmd);
-		}
-	}
-
-	if (loadBatchCmd.size()) {
-		var respCallback = new AjxCallback(this, this._handleResponseLoadCopy, [copyBatchCmd]);
-		loadBatchCmd.run(respCallback);
-	} else {
-		var respCallback = new AjxCallback(this, this._handleResponseCopyBatchCmd);
-		copyBatchCmd.run(respCallback);
-	}
-};
-
-ZmContactList.prototype._handleResponseCopyBatchCmd =
-function(result) {
-	var resp = result.getResponse().BatchResponse.CreateContactResponse;
-	var msg = AjxMessageFormat.format(ZmMsg.contactCopied, resp.length)
-	this._appCtxt.getAppController().setStatusMsg(msg);
-};
-
-ZmContactList.prototype._handleResponseLoadCopy =
-function(copyBatchCmd, result) {
-	var respCallback = new AjxCallback(this, this._handleResponseCopyBatchCmd);
-	copyBatchCmd.run(respCallback);
-};
-
 ZmContactList.prototype._handleResponseMoveBatchCmd =
 function(result) {
 	var resp = result.getResponse().BatchResponse.ContactActionResponse;

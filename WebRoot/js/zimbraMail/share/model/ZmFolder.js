@@ -384,6 +384,9 @@ function(what, folderType) {
 		var item = items[0];
 		if (this.id == ZmOrganizer.ID_ROOT) {
 			invalid = true;		// container can only have folders/searches
+		} else if (this.link) {
+			// cannot drop anything onto a read-only item
+			invalid = this.isReadOnly();
 		} else if (thisType == ZmOrganizer.SEARCH) {
 			invalid = true;		// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {

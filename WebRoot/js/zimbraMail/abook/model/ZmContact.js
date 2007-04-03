@@ -391,13 +391,6 @@ function() {
 		: null;
 };
 
-ZmContact.prototype.getDefaultDndAction =
-function() {
-	return (this.isShared() || this.isReadOnly())
-		? ZmItem.DND_ACTION_COPY
-		: ZmItem.DND_ACTION_MOVE;
-};
-
 ZmContact.prototype.getSortVal =
 function(sortBy) {
 	return this.sf;

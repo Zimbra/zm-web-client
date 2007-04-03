@@ -856,7 +856,7 @@ function(items, folder, attrs, force) {
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
 		if (!item.folderId || item.folderId != folder.id) {
-			if (!force && (item.isShared() || item.isReadOnly() || folder.link))
+			if (!force && (item.isShared() || item.isReadOnly() || folder.isRemote()))
 				copy.push(item);
 			else
 				move.push(item);

@@ -352,7 +352,7 @@ function(ev) {
 				if (action && plusDiv) {
 					// TODO - what if action is ZmItem.DND_ACTION_BOTH ??
 					var isCopy = ((action & ZmItem.DND_ACTION_COPY) != 0);
-					Dwt.setVisibility(plusDiv, isCopy || dropFolder.link === true);
+					Dwt.setVisibility(plusDiv, isCopy || dropFolder.isRemote());
 				}
 			} else {
 				ev.doIt = false;

@@ -289,7 +289,9 @@ function() {
 */
 ZmItem.prototype.getDefaultDndAction =
 function() {
-	return ZmItem.DND_ACTION_MOVE;
+	return (this.isShared() || this.isReadOnly())
+		? ZmItem.DND_ACTION_COPY
+		: ZmItem.DND_ACTION_MOVE;
 };
 
 /**
