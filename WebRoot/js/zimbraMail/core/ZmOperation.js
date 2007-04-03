@@ -151,7 +151,7 @@ function() {
 	ZmOperation.registerOp("SHOW_ALL_MENU", {textKey:"showAllItemTypes", image:"Globe"});
 	ZmOperation.registerOp("SPELL_CHECK", {textKey:"spellCheck", image:"SpellCheck"});
 	ZmOperation.registerOp("SYNC", {textKey:"reload", image:"Refresh"});
-	ZmOperation.registerOp("SYNC_OFFLINE", {textKey:"sync", tooltipKey:"syncTooltip", image:"Refresh"});
+	ZmOperation.registerOp("SYNC_OFFLINE", {textKey:"checkMail", tooltipKey:"syncTooltip", image:"Refresh"});
 	ZmOperation.registerOp("TAG", null, ZmSetting.TAGGING_ENABLED);
 	ZmOperation.registerOp("TAG_COLOR_MENU", {textKey:"tagColor"}, ZmSetting.TAGGING_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {

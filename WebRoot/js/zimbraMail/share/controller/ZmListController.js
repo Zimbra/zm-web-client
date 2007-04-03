@@ -611,9 +611,12 @@ function(ev) {
 
 ZmListController.prototype._syncOfflineListener =
 function(ev) {
-    var soapDoc = AjxSoapDoc.create("SyncRequest", "urn:zimbraOffline");
-    this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+    var respCallback = new AjxCallback(this, this._handleResponseSyncOfflineListener);
+	this._appCtxt.getAppController().sendSync(respCallback);
 };
+
+// override to do something after sync request
+ZmListController.prototype._handleResponseSyncOfflineListener = function() {};
 
 // Navbar listeners
 

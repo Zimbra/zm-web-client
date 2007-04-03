@@ -587,8 +587,22 @@ function(apps) {
 ZmZimbraMail.prototype.sendNoOp =
 function() {
     var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
-    this.sendRequest({soapDoc: soapDoc, asyncMode: true, noBusyOverlay: true});
-}
+    this.sendRequest({soapDoc:soapDoc, asyncMode:true, noBusyOverlay:true});
+};
+
+ZmZimbraMail.prototype.sendSync =
+function(callback) {
+    var soapDoc = AjxSoapDoc.create("SyncRequest", "urn:zimbraOffline");
+    var respCallback = new AjxCallback(this, this._handleResponseSendSync, [callback]);
+    this.sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+};
+
+ZmZimbraMail.prototype._handleResponseSendSync =
+function(callback) {
+	if (callback) {
+		callback.run();
+	}
+};
 
 /**
  * Put the client into "instant notifications" mode.

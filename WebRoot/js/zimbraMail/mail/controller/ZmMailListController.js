@@ -572,6 +572,11 @@ function(action, inNewWindow, msg, extraBodyText, accountName) {
 								  extraBodyText: extraBodyText, accountName: accountName});
 };
 
+ZmMailListController.prototype._handleResponseSyncOfflineListener =
+function(ev) {
+	this._checkMailListener(ev);
+};
+
 ZmMailListController.prototype._inviteReplyHandler = 
 function(ev) {
 	var type = ev._inviteReplyType;
@@ -775,13 +780,13 @@ function(ev) {
 };
 
 ZmMailListController.prototype._checkMailListener =
-function(ev) {
+function() {
     var folderId = this._getSearchFolderId();
     var folder = this._appCtxt.getById(folderId);
     var dsCollection;
 
-    var isInbox = folderId == ZmFolder.ID_INBOX;
-    var isFeed = folder && folder.isFeed();
+    var isInbox = (folderId == ZmFolder.ID_INBOX);
+    var isFeed = (folder && folder.isFeed());
     var hasPopAccounts = false;
 
     if (folder && !isFeed && this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
@@ -792,8 +797,7 @@ function(ev) {
 
     if (isFeed) {
         folder.sync();
-    }
-    else {
+    } else {
         if (hasPopAccounts) {
             dsCollection.importPopMailFor(folderId);
         }

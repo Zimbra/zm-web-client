@@ -754,6 +754,9 @@ function(isDraft, msg, resp) {
 		}
 		this._composeView.processMsgDraft(msg);
 	}
+	if (this._appCtxt.get(ZmSetting.OFFLINE)) {
+		this._appCtxt.getAppController().sendSync();
+	}
 };
 
 
