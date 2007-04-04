@@ -79,7 +79,7 @@
                 </app:status>
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionDelete')}">
-                <zm:moveMessage  var="result" id="${ids}" folderid="${mailbox.trash.id}"/>
+                <zm:trashMessage  var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionMessageMovedTrash">
                         <fmt:param value="${result.idCount}"/>

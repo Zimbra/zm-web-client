@@ -66,7 +66,7 @@
     <c:otherwise>
         <c:choose>
             <c:when test="${zm:actionSet(param, 'actionDelete')}">
-                <zm:moveContact  var="result" id="${ids}" folderid="${mailbox.trash.id}"/>
+                <zm:trashContact  var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionContactMovedTrash">
                         <fmt:param value="${result.idCount}"/>

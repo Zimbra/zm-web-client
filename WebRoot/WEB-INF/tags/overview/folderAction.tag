@@ -89,7 +89,7 @@
                 </app:status>
             </c:when>
             <c:otherwise>
-                <zm:moveFolder id="${param.folderDeleteId}" parentid="3"/>
+                <zm:trashFolder id="${param.folderDeleteId}"/>
                 <app:status>
                     <fmt:message key="actionFolderMovedToTrash">
                         <fmt:param value="${folderName}"/>
