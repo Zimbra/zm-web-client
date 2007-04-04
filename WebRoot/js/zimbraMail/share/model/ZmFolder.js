@@ -275,7 +275,7 @@ function(obj) {
 		this._notify(ZmEvent.E_MODIFY, details);
 	}
 
-	if (obj.l != null && obj.l != this.parent.id) {
+	if (obj.l != null && (!this.parent || (obj.l != this.parent.id))) {
 		var newParent = this._getNewParent(obj.l);
 		this.reparent(newParent);
 		details.oldPath = this.getPath();

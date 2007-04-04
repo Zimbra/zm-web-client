@@ -890,7 +890,9 @@ function(path) {
 
 ZmOrganizer.prototype.reparent =
 function(newParent) {
-	this.parent.children.remove(this);
+	if (this.parent) {
+		this.parent.children.remove(this);
+	}
 	newParent.children.add(this);
 	this.parent = newParent;
 };
