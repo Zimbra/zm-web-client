@@ -236,7 +236,12 @@ function(parent) {
 ZmHybridListView.prototype._createItemHtml =
 function(item, now, isDndIcon, isMixedView, myDiv) {
 
-	var	div = myDiv || this._getDiv(item, isDndIcon);
+	var isMatched = ((item.type == ZmItem.MSG) && item.isInHitList() && !this._appCtxt.getCurrentSearch().folderId);
+	var	div = myDiv || this._getDiv(item, isDndIcon, isMatched);
+	if ((item.type == ZmItem.MSG) && !isMatched) {
+		// XXX: move to skins
+		div.style.backgroundColor = "EEEEFF";
+	}
 
 	var htmlArr = [];
 	var idx = 0;
@@ -425,7 +430,6 @@ function(conv, msg, offset, limit) {
 				msg.offset = a.length;
 			}
 			var div = this._createItemHtml(msg, this._now);
-			div.style.backgroundColor = "EEEEFF";
 			this._addRow(div, index + i + 1);
 			this._msgRowIdList[item.id].push(div.id);
 		}
