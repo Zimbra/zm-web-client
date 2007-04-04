@@ -178,7 +178,7 @@ function(ev) {
 
 ZmVoicemailListController.prototype._saveListener = 
 function(ev) {
-	// This scary looking piece of code does change the page that the browser is
+	// This scary looking piece of code does not change the page that the browser is
 	// pointing at. Because the server will send back a "Content-Disposition:attachment"
 	// header for this url, the browser opens a dialog to let the user save the file.
 	var voicemail = this._getView().getSelection()[0];
