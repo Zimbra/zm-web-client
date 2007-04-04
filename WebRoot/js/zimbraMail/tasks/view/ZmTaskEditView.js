@@ -63,6 +63,12 @@ function() {
 ZmTaskEditView.prototype.set =
 function(calItem, mode, isDirty) {
 	this.initialize(calItem, mode, isDirty);
+
+	// HACK: TEV takes too long to init so design mode never gets set properly
+	if (AjxEnv.isGeckoBased) {
+		var ta = new AjxTimedAction(this, this.reEnableDesignMode);
+		AjxTimedAction.scheduleAction(ta, 500);
+	}
 };
 
 ZmTaskEditView.prototype.getController =
