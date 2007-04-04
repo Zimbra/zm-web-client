@@ -76,6 +76,16 @@ function() {
 	return this._controller;
 };
 
+ZmTaskEditView.prototype.applyCaretHack =
+function() {
+	// Bug #10992: Disable the caret hack when in html mode.
+	// The caret hack removes the html editor from the dom which
+	// causes horrible problems.
+	if (this.getComposeMode() != DwtHtmlEditor.HTML) {
+		DwtControl.prototype.applyCaretHack.call(this);
+	}
+};
+
 ZmTaskEditView.prototype._getClone =
 function() {
 	return ZmTask.quickClone(this._calItem);
@@ -212,11 +222,8 @@ function() {
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONCLICK, ZmCalItemEditView._onClick);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOVER, ZmCalItemEditView._onMouseOver);
 	Dwt.setHandler(this._repeatDescField, DwtEvent.ONMOUSEOUT, ZmCalItemEditView._onMouseOut);
-//	Dwt.setHandler(this._startDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
-//	Dwt.setHandler(this._endDateField, DwtEvent.ONCHANGE, ZmCalItemEditView._onChange);
 
 	this._repeatDescField._editViewId = this._statusCheckbox._editViewId = edvId;
-//	this._startDateField._editViewId = this._endDateField._editViewId = edvId;
 };
 
 // cache all input fields so we dont waste time traversing DOM each time

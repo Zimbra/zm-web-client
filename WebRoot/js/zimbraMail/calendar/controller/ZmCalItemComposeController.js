@@ -278,26 +278,20 @@ function(errorMsg) {
 
 ZmCalItemComposeController.prototype._saveCalItemFoRealz =
 function(calItem, attId, notifyList) {
-	var args;
-	if (calItem.viewMode != ZmCalItem.MODE_NEW &&
-		calItem._orig && calItem._orig.folderId != calItem.folderId)
-	{
-		// pass along calItem for appt move
-		args = calItem;
-	}
-
 	if (this._composeView.isDirty()) {
-		var callback = new AjxCallback(this, this._handleResponseSave, args);
+		var callback = new AjxCallback(this, this._handleResponseSave, calItem);
 		var errorCallback = new AjxCallback(this, this._handleErrorSave);
 		calItem.save(attId, callback, errorCallback, notifyList);
 	} else {
-		this._handleResponseSave(args);
+		this._handleResponseSave(calItem);
 	}
 };
 
 ZmCalItemComposeController.prototype._handleResponseSave =
 function(calItem) {
-	if (calItem) {
+	if (calItem.viewMode != ZmCalItem.MODE_NEW &&
+		calItem._orig && calItem._orig.folderId != calItem.folderId)
+	{
 		calItem.move(calItem.folderId, new AjxCallback(this, this._handleResponseCleanup));
 	} else {
 		this._handleResponseCleanup();

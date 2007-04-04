@@ -617,7 +617,7 @@ function(attr, callback, result) {
 	var id = cn ? cn.id : null;
 
 	if (id && id == this.id) {
-		this._appCtxt.getAppController().setStatusMsg(this.isGroup() ? ZmMsg.groupSaved : ZmMsg.contactSaved);
+		this._appCtxt.setStatusMsg(this.isGroup() ? ZmMsg.groupSaved : ZmMsg.contactSaved);
 		// the revision for this contact has changed -- we should refetch it
 		// ONLY DO THIS FOR SHARED CONTACT since normal contacts are handled by notifications
 		if (cn.rev && cn.rev != this.rev && this.isShared()) {

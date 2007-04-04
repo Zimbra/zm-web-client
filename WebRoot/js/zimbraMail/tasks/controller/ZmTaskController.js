@@ -59,6 +59,18 @@ function(attId) {
 	return true;
 };
 
+ZmTaskController.prototype._handleResponseSave =
+function(calItem) {
+	ZmCalItemComposeController.prototype._handleResponseSave.call(this, calItem);
+
+	// XXX: null out message so we re-fetch task next time its opened
+	// To optimize, we should save the modified contents into cache'd task item
+	if (calItem && calItem._orig)
+		calItem._orig.message = null;
+
+	this._appCtxt.setStatusMsg(ZmMsg.taskSaved);
+};
+
 ZmTaskController.prototype._createComposeView =
 function() {
 	return (new ZmTaskEditView(this._container, this._appCtxt, this));
