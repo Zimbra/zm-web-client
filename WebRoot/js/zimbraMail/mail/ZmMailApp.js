@@ -541,14 +541,18 @@ function(results, callback) {
 	AjxDispatcher.require("Mail", false, loadCallback, null, true);
 };
 
+/**
+ * Messages have only one list view - Trad View. Convs default to
+ * Conv List View unless user is using Hybrid View.
+ */
 ZmMailApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
-	if (this._groupBy == ZmSetting.GROUP_BY_CONV) {
-		this.getConvListController().show(results);
-	} else if (this._groupBy == ZmSetting.GROUP_BY_MESSAGE) {
+	if (results.type == ZmItem.MSG) {
 		this.getTradController().show(results);
 	} else if (this._groupBy == ZmSetting.GROUP_BY_HYBRID) {
 		this.getHybridController().show(results);
+	} else {
+		this.getConvListController().show(results);
 	}
 	if (callback) {
 		callback.run();
