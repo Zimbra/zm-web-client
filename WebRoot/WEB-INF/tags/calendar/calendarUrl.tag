@@ -44,9 +44,11 @@
             </c:if>
             <c:if test="${appt.recurring or appt.exception}">
                 <c:param name="useInstance" value="1"/>
+                <c:if test="${appt.inviteComponentNumber ne '0'}"><c:param name="instCompNum" value="${appt.inviteComponentNumber}"/></c:if>
             </c:if>
             <c:param name="instStartTime" value="${appt.startTime}"/>
             <c:param name="instDuration" value="${appt.duration}"/>
+            <c:if test="${appt.seriesComponentNumber ne '0'}"><c:param name="compNum" value="${appt.seriesComponentNumber}"/></c:if>
         </c:when>
         <c:when test="${toggleInstance or apptFromParam}">
             <c:choose>
@@ -63,6 +65,8 @@
             <c:if test="${not empty param.pstat}"><c:param name="pstat" value="${param.pstat}"/></c:if>
             <c:if test="${not empty param.instStartTime}"><c:param name="instStartTime" value="${param.instStartTime}"/></c:if>
             <c:if test="${not empty param.instDuration}"><c:param name="instDuration" value="${param.instDuration}"/></c:if>
+            <c:if test="${not empty param.instCompNum}"><c:param name="instCompNum" value="${param.instCompNum}"/></c:if>
+            <c:if test="${not empty param.compNum}"><c:param name="compNum" value="${param.compNum}"/></c:if>
             <c:param name="useInstance" value="${apptFromParam ? param.useInstance : param.useInstance ne '1' ? '1' : '0'}"/>
         </c:when>
         <c:otherwise>

@@ -80,6 +80,7 @@
         <input type="hidden" name="inviteReplyVerb" value="${fn:escapeXml(compose.inviteReplyVerb)}"/>
         <input type="hidden" name="inviteReplyInst" value="${fn:escapeXml(compose.inviteReplyInst)}"/>
         <input type="hidden" name="inviteReplyAllDay" value="${fn:escapeXml(compose.inviteReplyAllDay)}"/>        
-        
+        <input type="hidden" name="compNum" value="${fn:escapeXml(compose.compNum)}"/>
+        <input type="hidden" name="instCompNum" value="${fn:escapeXml(compose.instanceCompNum)}"/>        
     </form>
 </app:view>

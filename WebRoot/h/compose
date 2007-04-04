@@ -167,6 +167,8 @@
         <input type="hidden" name="from" value="${fn:escapeXml(compose.from)}"/>
         <input type="hidden" name="inreplyto" value="${fn:escapeXml(compose.inReplyTo)}"/>
         <input type="hidden" name="messageid" value="${fn:escapeXml(compose.messageId)}"/>
+        <input type="hidden" name="compNum" value="${fn:escapeXml(compose.compNum)}"/>
+        <input type="hidden" name="instCompNum" value="${fn:escapeXml(compose.instanceCompNum)}"/>
         <input type="hidden" name="replytype" value="${fn:escapeXml(compose.replyType)}"/>
         <input type="hidden" name="inviteReplyVerb" value="${fn:escapeXml(compose.inviteReplyVerb)}"/>
         <input type="hidden" name="inviteReplyInst" value="${fn:escapeXml(compose.inviteReplyInst)}"/>
