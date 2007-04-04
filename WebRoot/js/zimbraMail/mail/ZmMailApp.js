@@ -641,7 +641,7 @@ function(params) {
 */
 ZmMailApp.prototype.getGroupMailBy =
 function() {
-	var setting = this._appCtxt.get(ZmSetting.GROUP_MAIL_BY);
+	var setting = this._groupBy || this._appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	return setting ? ZmMailApp.GROUP_MAIL_BY_ITEM[setting] : ZmItem.MSG;
 };
 
