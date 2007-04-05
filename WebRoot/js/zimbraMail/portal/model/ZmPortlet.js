@@ -97,12 +97,12 @@ ZmPortlet.prototype.refresh = function() {
 
 ZmPortlet.prototype.setRefreshInterval = function(interval) {
     if (this._refreshActionId) {
-        AjxTimedAction.cancelAction(this._refreshActionId);
+        clearInterval(this._refreshActionId);
         delete this._refreshActionId;
     }
     if (interval) {
-        var action = new AjxTimedAction(this, this.refresh);
-        this._refreshActionId = AjxTimedAction.scheduleAction(action, interval);
+        var action = AjxCallback.simpleClosure(this.refresh, this);
+        this._refreshActionId = setInterval(action, interval);
     }
 };
 
