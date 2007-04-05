@@ -117,9 +117,9 @@ function(params) {
 ZmHybridController.prototype._listSelectionListener =
 function(ev) {
 	var item = ev.item;
+	var mlv = this._doublePaneView.getMailListView();
 	if (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_EXPAND]) {
 		if (!item) { return; }
-		var mlv = this._doublePaneView.getMailListView();
 		if (mlv._expandable[item.id]) {
 			this._toggle(item);
 		} else {
@@ -127,6 +127,8 @@ function(ev) {
 		}
 	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		if (!item) { return; }
+		var div = Dwt.findAncestor(ev.target, "_itemIndex");
+		mlv._itemSelected(div, ev);
 		if (item.type == ZmItem.CONV) {
 			AjxDispatcher.run("GetConvController").show(this._activeSearch, item);
 		} else if (item.type == ZmItem.MSG) {

@@ -168,7 +168,7 @@ function ZmHybridListView(parent, className, posStyle, controller, dropTgt) {
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
 	this._msgRowIdList = {};	// hash of lists, each list has row IDs for an expandable item
 	this._expandable = {};		// whether a row for a msg/conv ID has a +/- icon
-//	this._dblClickTimeout = 5000;
+	this._dblClickIsolation = true;
 };
 
 ZmHybridListView.prototype = new ZmConvListView;
