@@ -292,7 +292,37 @@ function(isComplete) {
 
 ZmTaskEditView.prototype._selectListener =
 function(ev) {
-	
+	var newVal = ev._args.newValue;
+	var oldVal = ev._args.oldValue;
+
+	if (newVal == oldVal)
+		return;
+
+	var selObj = ev._args.selectObj;
+
+	this._statusCheckbox.checked = false;
+
+	if (selObj == this._statusSelect) {
+		if (newVal == ZmCalItem.STATUS_COMP) {
+			this._pCompleteSelect.setSelectedValue("100");
+			this._statusCheckbox.checked = true;
+		} else if (newVal == ZmCalItem.STATUS_NEED) {
+			this._pCompleteSelect.setSelectedValue("0");
+		}
+	} else {
+		if (newVal == 100) {
+			this._statusSelect.setSelectedValue(ZmCalItem.STATUS_COMP);
+			this._statusCheckbox.checked = true;
+		} else if (newVal == 0) {
+			this._statusSelect.setSelectedValue(ZmCalItem.STATUS_NEED);
+		} else if ((oldVal == 0 || oldVal == 100) &&
+			 		(newVal > 0 || newVal < 100) &&
+					(this._statusSelect.getValue() == ZmCalItem.STATUS_COMP ||
+					 this._statusSelect.getValue() == ZmCalItem.STATUS_NEED))
+		{
+			this._statusSelect.setSelectedValue(ZmCalItem.STATUS_INPR);
+		}
+	}
 };
 
 
