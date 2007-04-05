@@ -219,8 +219,14 @@ function(task, now, isDndIcon, myDiv) {
 		}
 		else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0)
 		{
-			// date
-			idx = this._getField(htmlArr, idx, task, ZmItem.F_DATE, i, now);
+			// date - dont call base class since we *always* want to show date (not time)
+			htmlArr[idx++] = "<td id='";
+			htmlArr[idx++] = fieldId;
+			htmlArr[idx++] = "' width=";
+			htmlArr[idx++] = width;
+			htmlArr[idx++] = ">";
+			htmlArr[idx++] = AjxDateUtil.simpleComputeDateStr(new Date(task.date));
+			htmlArr[idx++] = "</td>";
 		}
 	}
 
