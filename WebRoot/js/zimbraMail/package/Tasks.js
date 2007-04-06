@@ -23,6 +23,7 @@ AjxPackage.require("zimbraMail.calendar.controller.ZmCalendarTreeController");
 
 AjxPackage.require("zimbraMail.tasks.view.ZmTaskEditView");
 AjxPackage.require("zimbraMail.tasks.view.ZmNewTaskFolderDialog");
+AjxPackage.require("zimbraMail.tasks.view.ZmTaskAssistant");
 
 AjxPackage.require("zimbraMail.tasks.controller.ZmTaskController");
 AjxPackage.require("zimbraMail.tasks.controller.ZmTaskTreeController");
