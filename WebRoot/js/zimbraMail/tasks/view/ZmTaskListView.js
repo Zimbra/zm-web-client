@@ -187,7 +187,7 @@ function(task, now, isDndIcon, myDiv) {
 			// priority
 			idx = this._getTableCell(task, ZmItem.F_PRIORITY, width, htmlArr, idx);
 			htmlArr[idx++] = "<center>";
-			htmlArr[idx++] = ZmCalItem.getImageForPriority(task);
+			htmlArr[idx++] = ZmCalItem.getImageForPriority(task, this._getFieldId(task, ZmItem.F_PRIORITY));
 			htmlArr[idx++] = "</center></td>";
 		}
 		else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0)
@@ -318,13 +318,41 @@ function(ev, div) {
 
 	// check if we're hovering over a column header
 	var type = Dwt.getAttr(div, "_type");
-	if (type && type != DwtListView.TYPE_HEADER_ITEM) {
+	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
+		var itemIdx = Dwt.getAttr(div, "_itemIndex");
+		var id = this._headerList[itemIdx]._id;
+		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED]) == 0) {
+			this.setToolTipContent(ZmMsg.status);
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY]) == 0) {
+			this.setToolTipContent(ZmMsg.priority);
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
+			this.setToolTipContent(ZmMsg.subject);
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) == 0) {
+			this.setToolTipContent(ZmMsg.status);
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE]) == 0) {
+			this.setToolTipContent(ZmMsg.percentComplete);
+		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
+			this.setToolTipContent(ZmMsg.dateDue);
+		} else {
+			return ZmListView.prototype._mouseOverAction.call(this, ev, div);
+		}
+	} else {
 		var m = this._parseId(id);
 		if (m && m.field) {
 			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY])
 			{
 				var item = this.getItemFromElement(div);
-				this.setToolTipContent(ZmCalItem.getLabelForPriority(item.priority));
+				if (item && item.priority != ZmCalItem.PRIORITY_NORMAL)
+					this.setToolTipContent(ZmCalItem.getLabelForPriority(item.priority));
+				return true;
+			}
+			else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED])
+			{
+				var item = this.getItemFromElement(div);
+				var tt = item && item.status == ZmCalItem.STATUS_COMP
+					? ZmMsg.clickToMarkNotStarted
+					: ZmMsg.clickToMarkCompleted;
+				this.setToolTipContent(tt);
 				return true;
 			}
 			else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT] ||
@@ -336,9 +364,9 @@ function(ev, div) {
 				return true;
 			}
 		}
+		return ZmListView.prototype._mouseOverAction.call(this, ev, div);
 	}
-
-	ZmListView.prototype._mouseOverAction.call(this, ev, div);
+	return true;
 };
 
 ZmTaskListView.prototype._getTableCell =

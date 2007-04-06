@@ -1301,10 +1301,16 @@ function(priority) {
 };
 
 ZmCalItem.getImageForPriority =
-function(task) {
+function(task, id) {
 	switch (task.priority) {
-		case ZmCalItem.PRIORITY_LOW:	return AjxImg.getImageHtml("TaskLow");
-		case ZmCalItem.PRIORITY_HIGH:	return AjxImg.getImageHtml("TaskHigh");
+		case ZmCalItem.PRIORITY_LOW:
+			return id
+				? AjxImg.getImageHtml("TaskLow", null, ["id='", id, "'"].join(""))
+				: AjxImg.getImageHtml("TaskLow");
+		case ZmCalItem.PRIORITY_HIGH:
+			return id
+				? AjxImg.getImageHtml("TaskHigh", null, ["id='", id, "'"].join(""))
+				: AjxImg.getImageHtml("TaskHigh");
 		default: return "";
 	}
 };
