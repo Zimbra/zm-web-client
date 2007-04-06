@@ -17,7 +17,9 @@
 
 <c:set var="theBody">
     <c:if test="${body.isTextHtml or body.isTextPlain}">
+        <c:catch>
           ${zm:getPartHtmlContent(body, message)}
+        </c:catch>
     </c:if>
 </c:set>
 
