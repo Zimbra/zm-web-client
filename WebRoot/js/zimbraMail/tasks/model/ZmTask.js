@@ -166,7 +166,7 @@ function(node, instNode) {
 	this.isOrg = this._getPart(node, comp, "isOrg");
 	this.ptst = this._getPart(node, comp, "ptst");
 	this.compNum = this._getPart(node, comp, "compNum");
-	this.date = node.d;					// XXX: creation date?
+	if (node.d) this.date = node.d;		// XXX: modified date?
 	this.sf = node.sf;
 //	this.rev = node.rev;
 //	this.md = node.md;
