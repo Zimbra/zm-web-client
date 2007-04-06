@@ -34,6 +34,7 @@ function ZmSearchToolBar(appCtxt, parent, posStyle) {
 
     this._search = new DwtMessageComposite(this);
     this._search.getHtmlElement().parentNode.style.width = "100%";
+    this._search._noFocus = true;	// don't try to set focus to this item via arrows
 
     this._searchField = new DwtInputField({parent:this._search});
     var searchFieldEl = this._searchField.getInputElement();

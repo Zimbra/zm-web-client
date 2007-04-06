@@ -416,14 +416,19 @@ function(params, result) {
 		DBG.println(AjxDebug.DBG2, "SETTING SEARCH CONTROLLER TAB GROUP");
 		var rootTg = this._appCtxt.getRootTabGroup();
 		rootTg.addMember(this._appCtxt.getSearchController().getTabGroup());
+		var appChooserTg = new DwtTabGroup("ZmAppChooser");
+		appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
+		if (this._TAB_SKIN_ENABLED) {
+			rootTg.addMember(appChooserTg);
+		}
 		// Add dummy app view tab group. This will get replaced right away when the
 		// app view comes into play
 		var dummyTg = new DwtTabGroup("DUMMY APPVIEW");
 		ZmController._setCurrentAppViewTabGroup(dummyTg);
 		rootTg.addMember(dummyTg);
-		var appChooserTg = new DwtTabGroup("ZmAppChooser");
-		appChooserTg.addMember(this._components[ZmAppViewMgr.C_APP_CHOOSER]);
-		rootTg.addMember(appChooserTg);
+		if (!this._TAB_SKIN_ENABLED) {
+			rootTg.addMember(appChooserTg);
+		}
 		var kbMgr = this._appCtxt.getKeyboardMgr();
 		kbMgr.setTabGroup(rootTg);
 		

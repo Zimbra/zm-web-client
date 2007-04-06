@@ -174,8 +174,8 @@ function() {
 	this._searchToolBar = new ZmSearchToolBar(this._appCtxt, this._searchPanel);
 
 	var tg = this._createTabGroup();
-	tg.addMember(this._searchToolBar);
 	tg.addMember(this._searchToolBar.getSearchField());
+	tg.addMember(this._searchToolBar);
 
 	// Register keyboard callback for search field
 	this._searchToolBar.registerCallback(this._searchFieldCallback, this);
