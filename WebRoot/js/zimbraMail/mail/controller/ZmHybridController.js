@@ -94,6 +94,16 @@ function() {
 	return ZmItem.CONV;
 };
 
+ZmHybridController.prototype._initializeTabGroup =
+function(view) {
+	if (this._tabGroups[view]) return;
+
+	ZmListController.prototype._initializeTabGroup.apply(this, arguments);
+	if (!AjxEnv.isIE) {
+		this._tabGroups[view].addMember(this.getReferenceView().getMsgView());
+	}
+};
+
 ZmHybridController.prototype._paginate = 
 function(view, bPageForward, convIdx) {
 	view = view ? view : this._currentView;

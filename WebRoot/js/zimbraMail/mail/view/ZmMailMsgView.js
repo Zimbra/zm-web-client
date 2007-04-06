@@ -1372,6 +1372,25 @@ function(tagId) {
 	searchController.search({query: query});
 };
 
+// Focus management - just pass through to native element's focus()
+// and blur() methods, which will indicate focus with a dotted border,
+// and make the element actively scrollable. Doesn't work in IE, which
+// does not support focus for non-input elements.
+
+ZmMailMsgView.prototype._focus =
+function() {
+	// need this flag because the hidden input field in DwtKeyboard Mgr
+	// gets a blur event which it passes to us
+	this._settingFocus = true;
+	this.getHtmlElement().focus();
+	this._settingFocus = false;
+};
+
+ZmMailMsgView.prototype._blur =
+function() {
+	if (this._settingFocus) { return; }
+	this.getHtmlElement().blur();
+};
 
 // Static methods
 
