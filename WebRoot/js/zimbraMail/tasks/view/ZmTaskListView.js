@@ -349,9 +349,11 @@ function(ev, div) {
 			else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED])
 			{
 				var item = this.getItemFromElement(div);
-				var tt = item && item.status == ZmCalItem.STATUS_COMP
+				var tt = item && item.isComplete()
 					? ZmMsg.clickToMarkNotStarted
-					: ZmMsg.clickToMarkCompleted;
+					: item.isPastDue()
+						? (ZmMsg.taskPastDue + " "  + ZmMsg.clickToMarkCompleted)
+						: ZmMsg.clickToMarkCompleted;
 				this.setToolTipContent(tt);
 				return true;
 			}
