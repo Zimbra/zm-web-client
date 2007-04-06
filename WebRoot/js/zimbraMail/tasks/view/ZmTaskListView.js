@@ -35,8 +35,9 @@ ZmTaskListView.prototype.constructor = ZmTaskListView;
 
 
 // Consts
-ZmTaskListView.COL_WIDTH_STATUS		= 145;
-ZmTaskListView.KEY_ID				= "_keyId";
+ZmTaskListView.COL_WIDTH_STATUS				= 145;
+ZmTaskListView.KEY_ID						= "_keyId";
+ZmTaskListView.TASKLIST_REPLENISH_THRESHOLD = 0;
 
 
 // Public Methods
@@ -55,6 +56,11 @@ ZmTaskListView.prototype.setBounds =
 function(x, y, width, height) {
 	ZmListView.prototype.setBounds.call(this, x, y, width, height);
 	this._resetColWidth();
+};
+
+ZmTaskListView.prototype.getReplenishThreshold =
+function() {
+	return ZmTaskListView.TASKLIST_REPLENISH_THRESHOLD;
 };
 
 ZmTaskListView.prototype.saveNewTask =

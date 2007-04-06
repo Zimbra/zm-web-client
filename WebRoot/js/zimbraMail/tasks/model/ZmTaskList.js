@@ -48,6 +48,37 @@ function() {
 	return "ZmTaskList";
 };
 
+/**
+* Moves a list of tasks to the given folder.
+*
+* @param items		[Array]			a list of task items to move
+* @param folder		[ZmTaskFolder]	destination folder
+* @param attrs		[Object]		additional attrs for SOAP command
+*/
+ZmList.prototype.moveItems =
+function(items, folder, attrs) {
+	if (this.type != ZmItem.TASK) {
+		ZmList.prototype.moveItems.call(this, items, folder, attrs);
+		return;
+	}
+
+	attrs = attrs || (new Object());
+	attrs.l = folder.id;
+	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, folder);
+	this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback});
+};
+
+ZmTaskList.prototype._handleResponseMoveItems =
+function(folder, result) {
+	var movedItems = result.getResponse();
+	if (movedItems && movedItems.length) {
+		this.moveLocal(movedItems, folder.id);
+		for (var i = 0; i < movedItems.length; i++)
+			movedItems[i].moveLocal(folder.id);
+		this._notify(ZmEvent.E_MOVE, {items: movedItems, replenish: true});
+	}
+};
+
 // Handle modified task.
 ZmTaskList.prototype.modifyLocal =
 function(item, details) {
