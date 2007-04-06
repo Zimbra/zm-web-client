@@ -62,7 +62,8 @@ function(type) {
 		}
 		return list;
 	} else {
-		return this._results[type];
+		// if we don't have results for the requested type, the search was probably for the wrong type
+		return this._results[type] ? this._results[type] : ZmItem.RESULTS_LIST[type](this.search);
 	}
 };
 
