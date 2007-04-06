@@ -1065,7 +1065,7 @@ function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 		if (this._validAttachments) {
 			for (var i = 0; i < this._validAttachments.length; i++) {
 				var msgPartNode = soapDoc.set("mp", null, attachNode);
-				msgPartNode.setAttribute("mid", this.message.id); 				// shouldnt this be this.invId ??
+				msgPartNode.setAttribute("mid", (this.invId || this.message.id));
 				msgPartNode.setAttribute("part", this._validAttachments[i].part);
 			}
 		}
