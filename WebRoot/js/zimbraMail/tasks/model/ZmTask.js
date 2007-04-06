@@ -173,7 +173,8 @@ function(node, instNode) {
 //	this.ms = node.ms;
 
 	this._parseFlags(node.f);
-	this._parseTags(node.t);			// future
+	if (node.t)
+		this._parseTags(node.t);
 };
 
 ZmTask.prototype._getPart =
