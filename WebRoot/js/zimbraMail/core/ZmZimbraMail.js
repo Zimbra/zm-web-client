@@ -157,6 +157,7 @@ function(domain, app, userShellId, offlineMode, devMode) {
     if (devMode) {
     	DBG.println(AjxDebug.DBG1, "DEV MODE");
     	appCtxt.set(ZmSetting.DEV, true);
+    	appCtxt.set(ZmSetting.POLLING_INTERVAL, 0);
     }
 
 	var userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
