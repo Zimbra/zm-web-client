@@ -624,7 +624,7 @@ function(on) {
         }
         this._kickPolling(true);
     } else {
-        this.setPollInterval();
+        this.setPollInterval(true);
     }
 }
 
@@ -632,15 +632,18 @@ function(on) {
  * Resets the interval between poll requests, based on what's in the settings,
  * only if we are not in instant notify mode.
  *
+ * @param kickMe	[boolean]*		if true, start the poll timer
  */
 ZmZimbraMail.prototype.setPollInterval =
-function() {
+function(kickMe) {
     if (!this._pollInstantNotifications) {
         this._pollInterval = this._appCtxt.get(ZmSetting.POLLING_INTERVAL) * 1000;
         DBG.println(AjxDebug.DBG1, "poll interval = " + this._pollInterval + "ms");
 
         if (this._pollInterval) {
-            this._kickPolling(true);
+        	if (kickMe) {
+	            this._kickPolling(true);
+	        }
         } else {
             // cancel pending request if there is one
             if (this._pollRequest) {
