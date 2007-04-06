@@ -454,6 +454,7 @@ function(results, search, isMixed) {
 	var app = this._appCtxt.getApp(ZmItem.APP[resultsType]);
 	app.currentQuery = search.query;
 	app.showSearchResults(results, loadCallback, isInGal, search.folderId);
+	this._appCtxt.getAppController().focusContentPane();
 };
 
 ZmSearchController.prototype._handleLoadShowResults =

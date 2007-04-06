@@ -1470,16 +1470,8 @@ function(actionCode, ev) {
 			break;
 		}
 
-		// Set focus to the list view that's in the content pane. If there is no list view in the
-		// content pane, nothing happens. The list view will be in the tab group tree.
 		case ZmKeyMap.FOCUS_CONTENT_PANE: {
-			var content = this._appViewMgr.getCurrentView();
-			var view = this._appViewMgr.getCurrentView();
-			var ctlr = (view && view.getController) ? view.getController() : null;
-			var content = ctlr ? ctlr.getCurrentView() : null;
-			if (content) {
-				this._appCtxt.getKeyboardMgr().grabFocus(content);
-			}
+			this.focusContentPane();
 			break;
 		}
 			
@@ -1497,6 +1489,19 @@ function(actionCode, ev) {
 		}
 	}
 	return true;
+};
+
+ZmZimbraMail.prototype.focusContentPane =
+function() {
+	// Set focus to the list view that's in the content pane. If there is no list view in the
+	// content pane, nothing happens. The list view will be found in the root tab group hierarchy.
+	var content = this._appViewMgr.getCurrentView();
+	var view = this._appViewMgr.getCurrentView();
+	var ctlr = (view && view.getController) ? view.getController() : null;
+	var content = ctlr ? ctlr.getCurrentView() : null;
+	if (content) {
+		this._appCtxt.getKeyboardMgr().grabFocus(content);
+	}
 };
 
 /**
