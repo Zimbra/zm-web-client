@@ -30,7 +30,7 @@ function ZmTaskTreeController(appCtxt, type, dropTgt) {
 
 	this._listeners[ZmOperation.NEW_TASK_FOLDER] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.SHARE_TASKFOLDER] = new AjxListener(this, this._shareTaskFolderListener);
-	this._listeners[ZmOperation.MOUNT_TASKFOLDER] = new AjxListener(this, this._mountTaskFolderListener);
+	this._listeners[ZmOperation.MOUNT_TASK_FOLDER] = new AjxListener(this, this._mountTaskFolderListener);
 
 	this._eventMgrs = {};
 }
