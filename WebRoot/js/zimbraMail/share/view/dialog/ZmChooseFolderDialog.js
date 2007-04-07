@@ -59,6 +59,7 @@ function() {
  * @param title			[string]*	dialog title
  * @param description	[string]*	description of what the user is selecting
  * @param skipReadOnly	[boolean]* 	if true, read-only folders will not be displayed
+ * @param hideNewButton [boolean]*	if true, New button will not be shown
  * @param orgType		[constant]*	primary tree type
  */
 ZmChooseFolderDialog.prototype.popup =
@@ -90,7 +91,7 @@ function(params) {
 	// New button doesn't make sense if we're only showing saved searches
 	var newButton = this.getButton(ZmChooseFolderDialog.NEW_BUTTON);
 	var searchOnly = (treeIds.length == 1 && treeIds[0] == ZmOrganizer.SEARCH);
-	newButton.setVisible(!searchOnly);
+	newButton.setVisible(!searchOnly && !params.hideNewButton);
 
 	this._data = params.data;
 	

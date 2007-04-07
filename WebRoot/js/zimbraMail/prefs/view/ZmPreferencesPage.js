@@ -496,8 +496,11 @@ function(ev) {
 	var omit = {};
 	omit[ZmFolder.ID_TRASH] = true;
 
-	dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], omit:omit,
-				  title:ZmMsg.chooseAddrBook, description:ZmMsg.chooseAddrBookToExport});
+	dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK],
+				omit:omit,
+				title:ZmMsg.chooseAddrBook,
+				hideNewButton:true,
+				description:ZmMsg.chooseAddrBookToExport});
 };
 
 ZmPreferencesPage.prototype._importContactsListener =
