@@ -129,6 +129,9 @@ function(markAsSpam, folder, result) {
 		for (var i = 0; i < movedItems.length; i++)
 			movedItems[i].moveLocal(folderId);
 		this._notify(ZmEvent.E_MOVE, {items: movedItems, replenish: true});
+
+		var msg = markAsSpam ? ZmMsg.markedAsJunk : ZmMsg.markedAsNotJunk;
+		this._appCtxt.setStatusMsg(AjxMessageFormat.format(msg, movedItems.length));
 	}
 };
 
