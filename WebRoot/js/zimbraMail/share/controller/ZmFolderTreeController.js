@@ -282,10 +282,10 @@ function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
 	if (organizer.id == ZmFolder.ID_SPAM || organizer.isInTrash()) {
 		this._pendingActionData = organizer;
-		var ds = this._deleteShield = this._appCtxt.getYesNoCancelMsgDialog();
+		var ds = this._deleteShield = this._appCtxt.getOkCancelMsgDialog();
 		ds.reset();
-		ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, organizer);
-		ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
+		ds.registerCallback(DwtDialog.OK_BUTTON, this._deleteShieldYesCallback, this, organizer);
+		ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._deleteShield);
 		var confirm = organizer.type == ZmOrganizer.SEARCH ? ZmMsg.confirmDeleteSavedSearch : ZmMsg.confirmEmptyFolder;
 		var msg = AjxMessageFormat.format(confirm, organizer.getName());
 		ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
