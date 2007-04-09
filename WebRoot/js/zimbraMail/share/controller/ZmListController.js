@@ -611,12 +611,8 @@ function(ev) {
 
 ZmListController.prototype._syncOfflineListener =
 function(ev) {
-    var respCallback = new AjxCallback(this, this._handleResponseSyncOfflineListener);
-	this._appCtxt.getAppController().sendSync(respCallback);
+	this._appCtxt.getAppController().sendSync();
 };
-
-// override to do something after sync request
-ZmListController.prototype._handleResponseSyncOfflineListener = function() {};
 
 // Navbar listeners
 

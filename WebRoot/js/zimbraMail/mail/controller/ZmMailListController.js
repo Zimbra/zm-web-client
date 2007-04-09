@@ -572,8 +572,9 @@ function(action, inNewWindow, msg, extraBodyText, accountName) {
 								  extraBodyText: extraBodyText, accountName: accountName});
 };
 
-ZmMailListController.prototype._handleResponseSyncOfflineListener =
+ZmMailListController.prototype._syncOfflineListener =
 function(ev) {
+	ZmListController.prototype._syncOfflineListener.apply(this, arguments);
 	this._checkMailListener(ev);
 };
 
