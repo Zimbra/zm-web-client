@@ -107,7 +107,10 @@
 	String ext = (String) request.getAttribute("fileExtension");
 	if (ext == null) ext = "";
 	
-	String offlineMode = application.getInitParameter("offlineMode");
+	String offlineMode = (String) request.getParameter("offline");
+	if (offlineMode == null) {
+		offlineMode = application.getInitParameter("offlineMode");
+	}
 %>
 <link rel="SHORTCUT ICON" href="<%=contextPath %>/img/loRes/logo/favicon.ico">
 <link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
