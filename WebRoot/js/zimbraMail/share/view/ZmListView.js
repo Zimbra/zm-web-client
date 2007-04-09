@@ -471,9 +471,7 @@ function (ev, listEv, clickedEl) {
 	} else if (ev.button == DwtMouseEvent.RIGHT) {
 		this._actionEv.field = m ? m.field : null;
 		if (m && m.field) {
-			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
-				ev.target.className = "ImgBlank_16";
-			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) {
+			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) {
 				var item = this.getItemFromElement(clickedEl);
 				this._actionEv.detail = item.participants ? item.participants.get(m.participant) : null;
 			}
