@@ -15,6 +15,10 @@ AjxPackage.require("ajax.dwt.core.DwtDragTracker");
 AjxPackage.require("ajax.dwt.widgets.DwtSlider");
 AjxPackage.require("ajax.dwt.widgets.DwtSoundPlugin");
 
+AjxPackage.require("zimbraMail.prefs.view.ZmPrefListView");
+AjxPackage.require("zimbraMail.prefs.controller.ZmPrefListController");
+
+AjxPackage.require("zimbraMail.voicemail.model.ZmCallFeature");
 AjxPackage.require("zimbraMail.voicemail.model.ZmPhone");
 AjxPackage.require("zimbraMail.voicemail.model.ZmCallingParty");
 AjxPackage.require("zimbraMail.voicemail.model.ZmVoiceItem");
@@ -28,9 +32,11 @@ AjxPackage.require("zimbraMail.voicemail.view.ZmVoiceListView");
 AjxPackage.require("zimbraMail.voicemail.view.ZmCallListView");
 AjxPackage.require("zimbraMail.voicemail.view.ZmVoicemailListView");
 AjxPackage.require("zimbraMail.voicemail.view.ZmVoiceTreeView");
+AjxPackage.require("zimbraMail.voicemail.view.ZmVoicePrefsView");
 
 AjxPackage.require("zimbraMail.voicemail.controller.ZmVoiceListController");
 AjxPackage.require("zimbraMail.voicemail.controller.ZmCallListController");
 AjxPackage.require("zimbraMail.voicemail.controller.ZmVoicemailListController");
 AjxPackage.require("zimbraMail.voicemail.controller.ZmVoiceTreeController");
+AjxPackage.require("zimbraMail.voicemail.controller.ZmVoicePrefsController");
 

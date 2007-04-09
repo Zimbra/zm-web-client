@@ -24,7 +24,7 @@
  */
 
 function ZmVoiceApp(appCtxt, container, parentController) {
-	this._phones = [];
+	this.phones = [];
 	ZmApp.call(this, ZmApp.VOICE, appCtxt, container, parentController);
 }
 
@@ -65,6 +65,7 @@ ZmVoiceApp.prototype._defineAPI =
 function() {
 	AjxDispatcher.registerMethod("GetVoiceController", "Voicemail", new AjxCallback(this, this.getVoiceController));
 	AjxDispatcher.registerMethod("GetCallListController", "Voicemail", new AjxCallback(this, this.getCallListController));
+	AjxDispatcher.registerMethod("GetVoicePrefsController", ["PreferencesCore", "Preferences", "Voicemail"], new AjxCallback(this, this.GetVoicePrefsController));
 };
 
 ZmVoiceApp.prototype._registerItems =
@@ -161,6 +162,40 @@ function(list) {
 	this._handleModifies(list);
 };
 
+ZmVoiceApp.prototype.getVoiceInfo =
+function(callback) {
+	if (!this.phones.length) {
+	    var soapDoc = AjxSoapDoc.create("GetVoiceInfoRequest", "urn:zimbraVoice");
+	    var respCallback = new AjxCallback(this, this._handleResponseVoiceInfo, callback);
+	    var params = {
+	    	soapDoc: soapDoc, 
+	    	asyncMode: true,
+			callback: respCallback
+		};
+		this._appCtxt.getAppController().sendRequest(params);
+	} else if (callback) {
+		callback.run();
+	}
+};
+
+ZmVoiceApp.prototype._handleResponseVoiceInfo =
+function(callback, response) {
+	var folderTree = this._appCtxt.getFolderTree();
+	var phones = response._data.GetVoiceInfoResponse.phone;
+	for (var i = 0, count = phones.length; i < count; i++) {
+		var obj = phones[i];
+		var phone = new ZmPhone(this._appCtxt);
+		phone._loadFromDom(obj);
+		this.phones.push(phone);
+		if (obj.folder && obj.folder.length) {
+			this._createFolder(folderTree.root, phone, obj.folder[0]);
+		}
+	}
+	if (callback) {
+		callback.run();
+	}
+};
+
 ZmVoiceApp.prototype.search =
 function(folder, callback, sortBy) {
 	var searchParams = {
@@ -233,29 +268,12 @@ function(callback) {
 
 ZmVoiceApp.prototype._handleLoadLaunch =
 function(callback) {
-    var soapDoc = AjxSoapDoc.create("GetVoiceInfoRequest", "urn:zimbraVoice");
-    var respCallback = new AjxCallback(this, this._handleResponseVoiceInfo, callback);
-    var params = {
-    	soapDoc: soapDoc, 
-    	asyncMode: true,
-		callback: respCallback
-	};
-	this._appCtxt.getAppController().sendRequest(params);
+    var respCallback = new AjxCallback(this, this._handleResponseLoadLaunchGotInfo, callback);
+    this.getVoiceInfo(respCallback);
 };
 
-ZmVoiceApp.prototype._handleResponseVoiceInfo =
+ZmVoiceApp.prototype._handleResponseLoadLaunchGotInfo =
 function(callback, response) {
-	var folderTree = this._appCtxt.getFolderTree();
-	var phones = response._data.GetVoiceInfoResponse.phone;
-	for (var i = 0, count = phones.length; i < count; i++) {
-		var obj = phones[i];
-		var phone = new ZmPhone();
-		phone._loadFromDom(obj);
-		this._phones.push(phone);
-		if (obj.folder && obj.folder.length) {
-			this._createFolder(folderTree.root, phone, obj.folder[0]);
-		}
-	}
 	if (this.startFolder) {
 		this.search(this.startFolder, callback);
 	} else if (callback) {
@@ -292,18 +310,30 @@ ZmVoiceApp.prototype.activate =
 function(active, view) {
 };
 
-ZmVoiceApp.prototype.getVoiceController = function() {
+ZmVoiceApp.prototype.getVoiceController =
+function() {
 	if (!this._voiceController) {
 		this._voiceController = new ZmVoicemailListController(this._appCtxt, this._container, this);
 	}
 	return this._voiceController;
 };
 
-ZmVoiceApp.prototype.getCallListController = function() {
+ZmVoiceApp.prototype.getCallListController =
+function() {
 	if (!this._callListController) {
 		this._callListController = new ZmCallListController(this._appCtxt, this._container, this);
 	}
 	return this._callListController;
+};
+
+ZmVoiceApp.prototype.GetVoicePrefsController =
+function() {
+	if (!this._voicePrefsController) {
+        var prefsView = AjxDispatcher.run("GetPrefController").getPrefsView();
+        var prefsApp = this._appCtxt.getApp(ZmApp.PREFERENCES);
+        this._voicePrefsController = new ZmVoicePrefsController(this._appCtxt, this._container, prefsApp, prefsView);
+	}
+	return this._voicePrefsController;
 };
 
 ZmVoiceApp.prototype._handleDeletes =

@@ -30,7 +30,8 @@
 * This class represents a phone.
 *
 */
-function ZmPhone() {
+function ZmPhone(appCtxt) {
+	this._appCtxt = appCtxt;
 	this.name = null; // The internal representation of the phone.
 	this.used = null; // Amount of quota used.
 	this.limit = null; // Quota size.
@@ -74,3 +75,40 @@ function(node) {
 	if (this.limit && this.limit.length) this.limit = node.limit[0]._content;
 };
 
+/////////////////////////////////////////////////////
+// Make a subclass for this stuff?
+/////////////////////////////////////////////////////
+
+ZmPhone.prototype.getCallFeatures = 
+function(callback) {
+	if (this._features) {
+		if (callback) {
+			callback.run();
+		}
+		return;
+	} else {
+	    var soapDoc = AjxSoapDoc.create("GetVoiceCallFeaturesRequest", "urn:zimbraVoice");
+	    var node = soapDoc.set("phone");
+	    node.setAttribute("name", this.name);
+	    var respCallback = new AjxCallback(this, this._handleResponseGetVoiceCallFeatures, callback);
+	    var params = {
+	    	soapDoc: soapDoc, 
+	    	asyncMode: true,
+			callback: respCallback
+		};
+		this._appCtxt.getAppController().sendRequest(params);
+	}
+};
+
+ZmPhone.prototype._handleResponseGetVoiceCallFeatures = 
+function(callback, response) {
+	var features = response._data.GetVoiceCallFeaturesResponse.phone[0];
+	this._features = {};
+	for(var i in features) {
+		this._features[i] = new ZmCallFeature(this._appCtxt);
+		this._features[i]._loadFromDom(features[i][0]);
+	}
+	if (callback) {
+		callback.run(this._features);
+	}
+};

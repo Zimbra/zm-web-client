@@ -74,6 +74,23 @@
     </tr></table>
 </template>
 
+<template id='ZmVoicePrefsView'>
+    <table>
+	    <tr id='${id}_anonymousRejection'>
+	    	<td class='ZLabelCell'><$= ZmMsg.anonymousRejectionLabel $></td>
+	    	<td><div id='${id}_anonymousRejectionCheckbox'></div></td>
+	    </tr>
+	    <tr id='${id}_emailNotification'>
+	    	<td class='ZLabelCell'><$= ZmMsg.emailNotificationLabel $></td>
+	    	<td><div id='${id}_emailNotificationCheckbox'></div></td>
+	    </tr>
+	    <tr id='${id}_callForwarding'>
+	    	<td class='ZLabelCell'><$= ZmMsg.callForwardingLabel $></td>
+	    	<td><div id='${id}_callForwardingCheckbox'></div></td>
+	    </tr>
+    </table>
+</template>
+
 
 
 

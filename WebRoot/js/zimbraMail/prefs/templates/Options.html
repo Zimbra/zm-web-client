@@ -48,13 +48,17 @@
 	</td>
 	<td class='ZmOptionsFormFormCell' valign=bottom>
 		<table style='height:100%;width:100%;' cellspacing=0 cellpadding=0 >
-			<tr id="${id}_infoBox_container">
-				<td><$= AjxTemplate.expand("zimbraMail.prefs.templates.Widgets#infoBox", data) $></td>
-			</tr>
+			<$ if (data.showInfoBox) { $>
+				<tr id="${id}_infoBox_container">
+					<td><$= AjxTemplate.expand("zimbraMail.prefs.templates.Widgets#infoBox", data) $></td>
+				</tr>
+			<$ } $>
 			<tr>
 				<td>
 					<div class='ZSubPanelHead'>
-						<div id='${id}_help_button' class='ImgInformation ZInfoBoxImg' onclick='Dwt.toggle("${id}_infoBox_container")'></div>
+						<$ if (data.showInfoBox) { $>
+							<div id='${id}_help_button' class='ImgInformation ZInfoBoxImg' onclick='Dwt.toggle("${id}_infoBox_container")'></div>
+						<$ } $>
 						${_labels.detailsHeader}
 					</div>
 				</td>

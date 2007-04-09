@@ -207,7 +207,7 @@ ZmPrefListView.prototype._createPrefListHtml =
 function() {
 	this._templateId = Dwt.getNextId();
 	var id = this._templateId;
-	var data = { id: id, _labels: this._labels };
+	var data = { id: id, _labels: this._labels, showInfoBox: this._showInfoBox() };
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Options#ListOptionPage", data);
 
 	// Create the list view and the contents of the detail pane.
@@ -244,6 +244,11 @@ function() {
 	return "";	
 };
 
+ZmPrefListView.prototype._showInfoBox =
+function() {
+	return true;
+};
+
 ZmPrefListView.prototype._createItemHtml =
 function(item) {
 	var	div = document.createElement("div");
@@ -255,10 +260,15 @@ function(item) {
 	var iconClass = error ? "Critical" : "";
 	div.innerHTML = [
 		"<table cellspacing=0 cellpadding=0><tr><td",AjxEnv.isIE?" width='20px'":"",">", AjxImg.getImageHtml(iconClass), "</td><td>",
-		AjxStringUtil.htmlEncode(item.name, true), "</td></tr></table>"
+		this._getItemText(item), "</td></tr></table>"
 	].join("");
 
 	return div;
+};
+
+ZmPrefListView.prototype._getItemText =
+function(item) {
+	return AjxStringUtil.htmlEncode(item.name, true);
 };
 
 ZmPrefListView.prototype._updateListSize = 

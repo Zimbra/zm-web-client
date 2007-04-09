@@ -87,7 +87,7 @@ function(node) {
 		for(var i = 0, count = node.cp.length; i < count; i++) {
 			var party = node.cp[i];
 // Consider keeping a cache of calling parties. There's going to be a lot of repetition here....			
-			var callingParty = new ZmCallingParty();
+			var callingParty = new ZmCallingParty(this._appCtxt);
 			callingParty._loadFromDom(node.cp[i]);
 			this._callingParties[callingParty.type] = callingParty;
 		}
