@@ -120,7 +120,7 @@ function(ev) {
 		if (window.command == "compose" || window.command == "composeDetach") {
 			// compose controller adds listeners to parent window's list so we need to 
 			// remove them before closing this window!
-			var cc = mailApp.getComposeController();
+			var cc = AjxDispatcher.run("GetComposeController");
 			if (cc) {
 				cc.dispose();
 			}
@@ -144,7 +144,7 @@ function(ev) {
 		// is there a better way to get a ref to the compose controller?
 		var shell = AjxCore.objectWithId(window._dwtShell);
 		var appCtxt = shell ? shell.getData(ZmAppCtxt.LABEL) : null;
-		var cc = appCtxt ? appCtxt.getApp(ZmApp.MAIL).getComposeController() : null;
+		var cc = AjxDispatcher.run("GetComposeController");
 		// only show native confirmation dialog if compose view is dirty
 		if (cc && cc._composeView.isDirty()) {
 			return ZmMsg.newWinComposeExit;
@@ -213,16 +213,17 @@ function() {
 	apps[ZmApp.PREFERENCES] = true;
     this._createEnabledApps(apps);
 
+	var parentCtxt = window.parentController._appCtxt;
+
 	// get access to identities
 	if (window.parentController) {
-		var parentCtxt = window.parentController._appCtxt;
 		var identityCollection = parentCtxt.getApp(ZmApp.PREFERENCES).getIdentityCollection();
 		this._appCtxt.getApp(ZmApp.PREFERENCES)._identityCollection = identityCollection;
 	}
 
     // depending on the command, do the right thing
 	if (window.command == "compose" || window.command == "composeDetach") {
-		var cc = AjxDispatcher.run("GetComposeController");
+		var cc = AjxDispatcher.run("GetComposeController", parentCtxt);
 		cc.isChildWindow = true;
 		if (window.params.action == ZmOperation.REPLY_ALL) {
 			window.params.msg = this._deepCopyMsg(window.params.msg);

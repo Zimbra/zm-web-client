@@ -42,7 +42,7 @@ function ZmComposeView(parent, controller, composeMode) {
 
 	this._onMsgDataChange = new AjxCallback(this, this._onMsgDataChange);
 
-	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
+	this._appCtxt = controller._appCtxt;
 	this._controller = controller;
 	this._contactPickerEnabled = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ||
 								 this._appCtxt.get(ZmSetting.GAL_ENABLED);
