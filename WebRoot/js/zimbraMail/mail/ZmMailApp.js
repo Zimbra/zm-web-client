@@ -469,15 +469,18 @@ function(list, force) {
 ZmMailApp.prototype.handleOp =
 function(op, params) {
 	var inNewWindow = false;
+	var showLoadingPage = true;
 	switch (op) {
 		case ZmOperation.NEW_MESSAGE_WIN:
 			inNewWindow = true;
+			showLoadingPage = false;	// don't show "Loading ..." page since main window view doesn't change
 		case ZmOperation.NEW_MESSAGE:
 			if (!inNewWindow && params && params.ev) {
 				inNewWindow = this._inNewWindow(params.ev);
+				showLoadingPage = false;
 			}
 			var loadCallback = new AjxCallback(this, this._handleLoadNewMessage, [inNewWindow]);
-			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, true);
+			AjxDispatcher.require(["ContactsCore", "Contacts"], false, loadCallback, null, showLoadingPage);
 			break;
 	}
 };
@@ -607,10 +610,14 @@ function() {
 	return this._hybridController;
 };
 
+/**
+ * @param appCtxt	[ZmAppCtxt]*	new window passes in its own app ctxt
+ */
 ZmMailApp.prototype.getComposeController =
-function() {
+function(appCtxt) {
+	appCtxt = appCtxt || this._appCtxt;
 	if (!this._composeController) {
-		this._composeController = new ZmComposeController(this._appCtxt, this._container, this);
+		this._composeController = new ZmComposeController(appCtxt, this._container, this);
 	}
 	return this._composeController;
 };
