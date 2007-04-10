@@ -614,10 +614,9 @@ function() {
  * @param appCtxt	[ZmAppCtxt]*	new window passes in its own app ctxt
  */
 ZmMailApp.prototype.getComposeController =
-function(appCtxt) {
-	appCtxt = appCtxt || this._appCtxt;
+function() {
 	if (!this._composeController) {
-		this._composeController = new ZmComposeController(appCtxt, this._container, this);
+		this._composeController = new ZmComposeController(this._appCtxt, this._container, this);
 	}
 	return this._composeController;
 };
