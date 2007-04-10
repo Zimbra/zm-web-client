@@ -5,7 +5,7 @@
 <%@ attribute name="rawdate" rtexprvalue="true" required="false" type="java.util.Calendar"%>
 <%@ attribute name="timezone" rtexprvalue="true" required="false" type="java.util.TimeZone"%>
 <%@ attribute name="date" rtexprvalue="true" required="false" %>
-<%@ attribute name="appt" rtexprvalue="true" required="false" type="com.zimbra.cs.zclient.ZApptSummary" %>
+<%@ attribute name="appt" rtexprvalue="true" required="false" type="com.zimbra.cs.zclient.ZAppointmentHit" %>
 <%@ attribute name="nodate" rtexprvalue="true" required="false" %>
 <%@ attribute name="toggleInstance" rtexprvalue="true" required="false" %>
 <%@ attribute name="apptFromParam" rtexprvalue="true" required="false" %>

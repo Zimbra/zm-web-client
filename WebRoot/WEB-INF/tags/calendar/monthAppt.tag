@@ -1,5 +1,5 @@
 <%@ tag body-content="empty" %>
-<%@ attribute name="appt" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZApptSummary" %>
+<%@ attribute name="appt" rtexprvalue="true" required="true" type="com.zimbra.cs.zclient.ZAppointmentHit" %>
 <%@ attribute name="start" rtexprvalue="true" required="true"%>
 <%@ attribute name="end" rtexprvalue="true" required="true"%>
 <%@ attribute name="timezone" rtexprvalue="true" required="true" type="java.util.TimeZone"%>
