@@ -288,7 +288,7 @@ function() {
 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
 	var menu = appToolbar.getViewButton().getMenu();
 	var mi = menu.getItemById(ZmOperation.MENUITEM_ID, ZmController.READING_PANE_VIEW);
-	var icon = mi.getImage();
+	var icon = mi ? mi.getImage() : null;
 	if (icon) {
 		appToolbar._viewButton.setImage(icon);
 	}

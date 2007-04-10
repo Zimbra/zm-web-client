@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -60,7 +60,7 @@ function ZmNewWindow(appCtxt, domain) {
 ZmNewWindow.prototype = new ZmController;
 ZmNewWindow.prototype.constructor = ZmNewWindow;
 
-ZmNewWindow.prototype.toString = 
+ZmNewWindow.prototype.toString =
 function() {
 	return "ZmNewWindow";
 };
@@ -79,17 +79,20 @@ function(domain) {
 	// inherit parent window's debug level but only enable debug window if not already open
 	DBG.setDebugLevel(window.opener.DBG._level, true);
 
-	// Create the global app context
-	var appCtxt = new ZmAppCtxt();
-	var settings = new ZmSettings(appCtxt);
-	appCtxt.setSettings(settings);
-	settings.initialize();
-	ZmOperation.initialize();
-	ZmApp.initialize();
-
 	if (!window.parentController) {
 		window.parentController = window.opener._zimbraMail;
 	}
+
+	// Create the global app context
+	var appCtxt = new ZmAppCtxt();
+
+	// set any global references in parent w/in child window
+	var parentCtxt = window.parentController._appCtxt;
+	appCtxt.setSettings(parentCtxt.getSettings());
+	ZmSetting = window.opener["ZmSetting"];
+
+	ZmOperation.initialize();
+	ZmApp.initialize();
 
 	var shell = new DwtShell("MainShell", false, ZmNewWindow._confirmExitMethod);
 	appCtxt.setShell(shell);
@@ -97,17 +100,15 @@ function(domain) {
 	// Create upload manager (for sending attachments)
 	appCtxt.setUploadManager(new AjxPost(appCtxt.getUploadFrameId()));
 
-	// create new window
+	// create new window and Go!
 	var newWindow = new ZmNewWindow(appCtxt, domain);
-	
-	// Go!
     newWindow.startup();
 };
 
 /**
 * Allows this child window to inform parent it's going away
 */
-ZmNewWindow.unload = 
+ZmNewWindow.unload =
 function(ev) {
 	if (window.opener == null || window.parentController == null)
 		return;
@@ -118,8 +119,8 @@ function(ev) {
 	var mailApp = appCtxt ? appCtxt.getApp(ZmApp.MAIL) : null;
 	if (mailApp) {
 		if (window.command == "compose" || window.command == "composeDetach") {
-			// compose controller adds listeners to parent window's list so we need to 
-			// remove them before closing this window!
+			// compose controller adds listeners to parent window's list so we
+			// need to remove them before closing this window!
 			var cc = AjxDispatcher.run("GetComposeController");
 			if (cc) {
 				cc.dispose();
@@ -140,7 +141,9 @@ function(ev) {
 
 ZmNewWindow._confirmExitMethod =
 function(ev) {
-	if (window.parentController && (window.command == "compose" || window.command == "composeDetach")) {
+	if (window.parentController &&
+		(window.command == "compose" || window.command == "composeDetach"))
+	{
 		// is there a better way to get a ref to the compose controller?
 		var shell = AjxCore.objectWithId(window._dwtShell);
 		var appCtxt = shell ? shell.getData(ZmAppCtxt.LABEL) : null;
@@ -155,7 +158,7 @@ function(ev) {
 /**
  * Instantiates enabled apps. An optional argument may be given limiting the set
  * of apps that may be created.
- * 
+ *
  * @param apps	[hash]*		the set of apps to create
  */
 ZmNewWindow.prototype._createEnabledApps =
@@ -168,8 +171,9 @@ function(apps) {
 	ZmApp.APPS.sort(function(a, b) {
 		return ZmZimbraMail.hashSortCompare(ZmApp.LOAD_SORT, a, b);
 	});
-	
+
 	this._appCtxt.set(ZmSetting.IM_ENABLED, false);	// defaults to true in LDAP
+
 	// instantiate enabled apps - this will invoke app registration
 	for (var i = 0; i < ZmApp.APPS.length; i++) {
 		var app = ZmApp.APPS[i];
@@ -193,7 +197,7 @@ function() {
 	if (!this._appViewMgr) {
 		this._appViewMgr = new ZmAppViewMgr(this._shell, this, true, false);
 	}
-	
+
 	var rootTg = this._appCtxt.getRootTabGroup();
 	var startupFocusItem;
 
@@ -209,21 +213,17 @@ function() {
 	var apps = {};
 	apps[ZmApp.MAIL] = true;
 	apps[ZmApp.CONTACTS] = true;
-	apps[ZmApp.CALENDAR] = true;
+//	apps[ZmApp.CALENDAR] = true;		// XXX: why?
 	apps[ZmApp.PREFERENCES] = true;
     this._createEnabledApps(apps);
 
-	var parentCtxt = window.parentController._appCtxt;
+	// inherit parent's identity collection
+	var parentPrefsApp = window.parentController._appCtxt.getApp(ZmApp.PREFERENCES);
+	this._appCtxt.getApp(ZmApp.PREFERENCES)._identityCollection = parentPrefsApp.getIdentityCollection();
 
-	// get access to identities
-	if (window.parentController) {
-		var identityCollection = parentCtxt.getApp(ZmApp.PREFERENCES).getIdentityCollection();
-		this._appCtxt.getApp(ZmApp.PREFERENCES)._identityCollection = identityCollection;
-	}
-
-    // depending on the command, do the right thing
+	// depending on the command, do the right thing
 	if (window.command == "compose" || window.command == "composeDetach") {
-		var cc = AjxDispatcher.run("GetComposeController", parentCtxt);
+		var cc = AjxDispatcher.run("GetComposeController");
 		cc.isChildWindow = true;
 		if (window.params.action == ZmOperation.REPLY_ALL) {
 			window.params.msg = this._deepCopyMsg(window.params.msg);
@@ -236,8 +236,8 @@ function() {
 			var op = window.params.action ? window.params.action : ZmOperation.NEW_MESSAGE;
 			if (window.params.msg && window.params.msg._mode) {
 				switch (window.params.msg._mode) {
-					case ZmAppt.MODE_DELETE: 
-					case ZmAppt.MODE_DELETE_INSTANCE: 
+					case ZmAppt.MODE_DELETE:
+					case ZmAppt.MODE_DELETE_INSTANCE:
 					case ZmAppt.MODE_DELETE_SERIES: {
 						op = ZmOperation.REPLY_CANCEL;
 						break;
@@ -274,7 +274,7 @@ function() {
 /**
 * Pass server requests to the main controller.
 */
-ZmNewWindow.prototype.sendRequest = 
+ZmNewWindow.prototype.sendRequest =
 function(params) {
 	return window.parentController ? window.parentController.sendRequest(params) : null;
 };
@@ -282,7 +282,7 @@ function(params) {
 /**
 * Set status messages via the main controller, so they show up in the client's status area.
 */
-ZmNewWindow.prototype.setStatusMsg = 
+ZmNewWindow.prototype.setStatusMsg =
 function(msg, level, detail, delay, transition) {
 	if (window.parentController)
 		window.parentController.setStatusMsg(msg, level, detail, delay, transition);
@@ -327,7 +327,7 @@ function(appName) {
 	this._apps[appName] = new appClass(this._appCtxt, this._shell, window.parentController);
 };
 
-ZmNewWindow.prototype._deepCopyMsg = 
+ZmNewWindow.prototype._deepCopyMsg =
 function(msg) {
 	// initialize new ZmSearch if applicable
 	var newSearch = null;
