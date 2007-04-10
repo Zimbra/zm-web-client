@@ -409,49 +409,99 @@ function(notify) {
  * For mail creates, there is no authoritative list (mail lists are always the result
  * of a search), so we notify each ZmMailList that we know about. To make life easier,
  * we figure out which folder(s) a conv spans before we hand it off.
+ * <p>
+ * Since the offline client may receive hundreds of create notifications at a time, we
+ * make sure a create notification is relevant before creating a mail object.</p>
  * 
- * @param list	[array]		list of create notifications
+ * @param creates	[hash]		hash of create notifications
  */
 ZmMailApp.prototype.createNotify =
-function(list, force) {
-	if (!force && this._deferNotifications("create", list)) { return; }
+function(creates, force) {
+	if (!creates["m"] && !creates["c"] && !creates["link"]) { return; }
+	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
+
 	var convs = {};
 	var msgs = {};
 	var folders = {};
 	var numMsgs = {};
 	var gotMail = false;
-	for (var i = 0; i < list.length; i++) {
-		var create = list[i];
-		var name = create._name;
-		// ignore stuff we already have, and virtual convs that got normalized
-		if (this._appCtxt.cacheGet(create.id) || ((name == "c") && create._wasVirtConv)) {
-			create._handled = true;
-			continue;
-		}
 
-		if (name == "m") {
-			DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + name);
-			var msg = ZmMailMsg.createFromDom(create, {appCtxt: this._appCtxt}, true);
-			msgs[msg.id] = msg;
-			var cid = msg.cid;
-			var folder = msg.folderId;
-			if (cid && folder) {
-				if (!folders[cid]) {
-					folders[cid] = {};
-				}
-				folders[cid][folder] = true;
+	// we can only handle new mail notifications if:
+	// 	- we are currently in a mail view
+	//	- the view is the result of a simple folder search
+	var currList = this._appCtxt.getCurrentList();
+	if (!(currList instanceof ZmMailList)) { return; }
+	var folderId = currList.search.folderId;
+	if (!folderId) { return; }
+	var sortBy = currList.search.sortBy;
+	var a = currList.getArray();
+	var last = a ? a[a.length - 1] : null;
+	var cutoff = last ? last.date : null;
+	DBG.println("cutoff = " + cutoff + ", list size = " + a.length);
+
+	for (var name in creates) {
+		var list = creates[name];
+		for (var i = 0; i < list.length; i++) {
+			var create = list[i];
+
+			// ignore items that are not of the current type
+			if ((currList.type == ZmItem.MSG && name == "c") ||
+				(currList.type == ZmItem.CONV && name == "m")) {
+				DBG.println(AjxDebug.DBG2, "new " + name + " not of current type");
+				create._handled = true;
+				continue;
 			}
-			numMsgs[cid] = numMsgs[cid] ? numMsgs[cid] + 1 : 1;
-			gotMail = true;
-			create._handled = true;
-		} else if (name == "c") {
-			DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + name);
-			var conv = ZmConv.createFromDom(create, {appCtxt: this._appCtxt}, true);
-			convs[conv.id] = conv;
-			gotMail = true;
-			create._handled = true;
-		} else if (name == "link") {
-			this._handleCreateLink(create, ZmOrganizer.FOLDER);
+			
+			// ignore msgs that are not in the current folder; can't do this check
+			// for convs since they can span folders and lack the "l" property
+			if (name == "m" && (create.l != folderId)) {
+				DBG.println(AjxDebug.DBG2, "new " + name + " in other folder: " + create.l);
+				create._handled = true;
+				continue;
+			}
+			
+			// ignore mail that falls outside our range
+			if (sortBy == ZmSearch.DATE_DESC && (create.d < cutoff)) {
+				DBG.println(AjxDebug.DBG2, "new " + name + " is too old: " + create.d);
+				create._handled = true;
+				continue;
+			}
+			if (sortBy == ZmSearch.DATE_ASC && (create.d > cutoff)) {
+				DBG.println(AjxDebug.DBG2, "new " + name + " is too new: " + create.d);
+				create._handled = true;
+				continue;
+			}
+			
+			// ignore stuff we already have, and virtual convs that got normalized
+			if (this._appCtxt.cacheGet(create.id) || ((name == "c") && create._wasVirtConv)) {
+				create._handled = true;
+				continue;
+			}
+	
+			if (name == "m") {
+				DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + name);
+				var msg = ZmMailMsg.createFromDom(create, {appCtxt: this._appCtxt}, true);
+				msgs[msg.id] = msg;
+				var cid = msg.cid;
+				var folder = msg.folderId;
+				if (cid && folder) {
+					if (!folders[cid]) {
+						folders[cid] = {};
+					}
+					folders[cid][folder] = true;
+				}
+				numMsgs[cid] = numMsgs[cid] ? numMsgs[cid] + 1 : 1;
+				gotMail = true;
+				create._handled = true;
+			} else if (name == "c") {
+				DBG.println(AjxDebug.DBG1, "ZmMailApp: handling CREATE for node: " + name);
+				var conv = ZmConv.createFromDom(create, {appCtxt: this._appCtxt}, true);
+				convs[conv.id] = conv;
+				gotMail = true;
+				create._handled = true;
+			} else if (name == "link") {
+				this._handleCreateLink(create, ZmOrganizer.FOLDER);
+			}
 		}
 	}
 	if (gotMail) {
@@ -459,7 +509,6 @@ function(list, force) {
 			var conv = convs[cid];
 			conv.folders = folders[cid] ? folders[cid] : null;
 		}
-		var currList = this._appCtxt.getCurrentList();
 		if (currList && (currList instanceof ZmMailList)) {
 			currList.notifyCreate(convs, msgs);
 		}

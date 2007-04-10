@@ -1597,7 +1597,7 @@ function(start,end, fanoutAllDay, folderIds, callback) {
 
 // TODO: appt is null for now. we are just clearing our caches...
 ZmCalViewController.prototype.notifyCreate =
-function(appt) {
+function(create) {
 	if (!this._clearCache) {
 		this._clearCache = true;
 	}
@@ -1610,10 +1610,13 @@ function(ids) {
 };
 
 ZmCalViewController.prototype.notifyModify =
-function(items) {
+function(modifies) {
 	if (this._clearCache) return;
 	// if any of the ids are in the cache then...
-	this._clearCache = this._apptCache.containsAnyItem(items);
+	for (var name in modifies) {
+		var list = modifies[name];
+		this._clearCache = this._clearCache || this._apptCache.containsAnyItem(list);
+	}
 }
 
 // this gets called afer all the above notify* methods get called

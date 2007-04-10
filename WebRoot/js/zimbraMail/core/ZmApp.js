@@ -313,6 +313,7 @@ function(type, data) {
 		this._deferredNotifications.push({type:type, data:data});
 		return true;
 	} else {
+		this._noDefer = true;
 		return false;
 	}
 };

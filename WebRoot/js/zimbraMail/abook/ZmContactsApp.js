@@ -287,24 +287,28 @@ function(result) {
  * Checks for the creation of an address book or a mount point to one. Regular
  * contact creates are handed to the canonical list.
  * 
- * @param list	[array]		list of create notifications
+ * @param creates	[hash]		hash of create notifications
  */
 ZmContactsApp.prototype.createNotify =
-function(list, force) {
-	if (!force && this._deferNotifications("create", list)) { return; }
-	for (var i = 0; i < list.length; i++) {
-		var create = list[i];
-		var name = create._name;
-		if (this._appCtxt.cacheGet(create.id)) { continue; }
+function(creates, force) {
+	if (!creates["folder"] && !creates["cn"] && !creates["link"]) { return; }
+	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
 
-		if (name == "folder") {
-			this._handleCreateFolder(create, ZmOrganizer.ADDRBOOK);
-		} else if (name == "link") {
-			this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
-		} else if (name == "cn") {
-			DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
-			AjxDispatcher.run("GetContacts").notifyCreate(create);
-			create._handled = true;
+	for (var name in creates) {
+		var list = creates[name];
+		for (var i = 0; i < list.length; i++) {
+			var create = list[i];
+			if (this._appCtxt.cacheGet(create.id)) { continue; }
+	
+			if (name == "folder") {
+				this._handleCreateFolder(create, ZmOrganizer.ADDRBOOK);
+			} else if (name == "link") {
+				this._handleCreateLink(create, ZmOrganizer.ADDRBOOK);
+			} else if (name == "cn") {
+				DBG.println(AjxDebug.DBG1, "ZmContactsApp: handling CREATE for node: " + name);
+				AjxDispatcher.run("GetContacts").notifyCreate(create);
+				create._handled = true;
+			}
 		}
 	}
 };

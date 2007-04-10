@@ -288,29 +288,38 @@ function(ids, force) {
 	AjxDispatcher.run("GetCalController").notifyDelete(ids);
 };
 
+/**
+ * Checks for the creation of a calendar or a mount point to one, or an
+ * appointment.
+ * 
+ * @param creates	[hash]		hash of create notifications
+ */
 ZmCalendarApp.prototype.createNotify =
-function(list, force) {
-	if (!force && this._deferNotifications("create", list)) { return; }
-	for (var i = 0; i < list.length; i++) {
-		var create = list[i];
-		var name = create._name;
-		if (this._appCtxt.cacheGet(create.id)) { continue; }
-
-		if (name == "folder") {
-			this._handleCreateFolder(create, ZmOrganizer.CALENDAR);
-		} else if (name == "link") {
-			this._handleCreateLink(create, ZmOrganizer.CALENDAR);
-		} else if (name == "appt") {
-			// TODO: create appt object and pass into notify create
-			AjxDispatcher.run("GetCalController").notifyCreate(null);
+function(creates, force) {
+	if (!creates["folder"] && !creates["appt"] && !creates["link"]) { return; }
+	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
+	
+	for (var name in creates) {
+		var list = creates[name];
+		for (var i = 0; i < list.length; i++) {
+			var create = list[i];
+			if (this._appCtxt.cacheGet(create.id)) { continue; }
+	
+			if (name == "folder") {
+				this._handleCreateFolder(create, ZmOrganizer.CALENDAR);
+			} else if (name == "link") {
+				this._handleCreateLink(create, ZmOrganizer.CALENDAR);
+			} else if (name == "appt") {
+				AjxDispatcher.run("GetCalController").notifyCreate(create);
+			}
 		}
 	}
 };
 
 ZmCalendarApp.prototype.modifyNotify =
-function(list, force) {
-	if (!force && this._deferNotifications("modify", list)) { return; }
-	AjxDispatcher.run("GetCalController").notifyModify(list);
+function(modifies, force) {
+	if (!force && !this._noDefer && this._deferNotifications("modify", modifies)) { return; }
+	AjxDispatcher.run("GetCalController").notifyModify(modifies);
 };
 
 ZmCalendarApp.prototype.postNotify =

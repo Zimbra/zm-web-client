@@ -397,25 +397,25 @@ function(deletes) {
  */
 ZmRequestMgr.prototype._handleCreates =
 function(creates) {
-	var list = ZmRequestMgr._getObjList(creates);
-	this._controller.runAppFunction("createNotify", list);
+	this._controller.runAppFunction("createNotify", creates);
 
-	for (var i = 0; i < list.length; i++) {
-		var create = list[i];
-		if (create._handled) { continue; }
-		// ignore create notif for item we already have (except tags, which can
-		// reuse IDs)
-		var name = create._name;
-		if (this._appCtxt.cacheGet(create.id) && name != "tag") { continue; }
-
-		DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
-		if (name == "tag") {
-			this._appCtxt.getTagTree().root.notifyCreate(create);
-		} else if (name == "folder" || name == "search") {
-			var parentId = create.l;
-			var parent = this._appCtxt.getById(parentId);
-			if (parent) {
-				parent.notifyCreate(create, (name == "search"));
+	for (var name in creates) {
+		var list = creates[name];
+		for (var i = 0; i < list.length; i++) {
+			var create = list[i];
+			if (create._handled) { continue; }
+			// ignore create notif for item we already have (except tags, which can reuse IDs)
+			if (this._appCtxt.cacheGet(create.id) && name != "tag") { continue; }
+	
+			DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
+			if (name == "tag") {
+				this._appCtxt.getTagTree().root.notifyCreate(create);
+			} else if (name == "folder" || name == "search") {
+				var parentId = create.l;
+				var parent = this._appCtxt.getById(parentId);
+				if (parent) {
+					parent.notifyCreate(create, (name == "search"));
+				}
 			}
 		}
 	}
@@ -435,10 +435,10 @@ function(modifies) {
 	// clear it out before handling a set of notifications.
 	this._modifyHandled = {};
 
-	var list = ZmRequestMgr._getObjList(modifies);
-
 	// mark the last "item moved" notify to trigger replenishment (we don't want to
 	// replenish after each one)
+	// TODO: handle this a different way
+	/*
 	var lastMove = null;
 	for (var i = 0; i < list.length; i++) {
 		if (list[i].l) {
@@ -448,21 +448,25 @@ function(modifies) {
 	if (lastMove != null) {
 		list[lastMove].lastModify = true;
 	}
+	*/
 	
-	this._controller.runAppFunction("modifyNotify", list);
+	this._controller.runAppFunction("modifyNotify", modifies);
 
-	for (var i = 0; i < list.length; i++) {
-		var mod = list[i];
-		if (mod._handled || this._modifyHandled[mod.id]) { continue; }
-		DBG.println(AjxDebug.DBG2, "ZmRequestMgr: handling modified notif for ID " + mod.id + ", node type = " + mod._name);
-		if (mod._name == "mbx") {
-			var setting = this._controller._settings.getSetting(ZmSetting.QUOTA_USED);
-			setting.notifyModify(mod);
-			continue;
-		} else {
-			var item = this._appCtxt.cacheGet(mod.id);
-			if (item) {
-				item.notifyModify(mod);
+	for (var name in modifies) {
+		var list = modifies[name];
+		for (var i = 0; i < list.length; i++) {
+			var mod = list[i];
+			if (mod._handled || this._modifyHandled[mod.id]) { continue; }
+			DBG.println(AjxDebug.DBG2, "ZmRequestMgr: handling modified notif for ID " + mod.id + ", node type = " + name);
+			if (name == "mbx") {
+				var setting = this._controller._settings.getSetting(ZmSetting.QUOTA_USED);
+				setting.notifyModify(mod);
+				continue;
+			} else {
+				var item = this._appCtxt.cacheGet(mod.id);
+				if (item) {
+					item.notifyModify(mod);
+				}
 			}
 		}
 	}
@@ -473,6 +477,8 @@ function(modifies) {
  * arrays in the process. It also saves each child's name into it.
  *
  * @param parent	[object]	notification subnode
+ *
+ * TODO: remove this func (still used by ZmMailApp::_adjustNotifies)
  */
 ZmRequestMgr._getObjList =
 function(parent) {

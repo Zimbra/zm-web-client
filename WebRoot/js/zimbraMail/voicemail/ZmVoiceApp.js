@@ -153,13 +153,13 @@ function(ids) {
 };
 
 ZmVoiceApp.prototype.createNotify =
-function(list) {
-	this._handleCreates(list);
+function(creates) {
+	this._handleCreates(creates);
 };
 
 ZmVoiceApp.prototype.modifyNotify =
-function(list) {
-	this._handleModifies(list);
+function(modifies) {
+	this._handleModifies(modifies);
 };
 
 ZmVoiceApp.prototype.getVoiceInfo =
@@ -341,7 +341,7 @@ function(ids) {
 };
 
 ZmVoiceApp.prototype._handleCreates =
-function(list) {
+function(creates) {
 };
 
 ZmVoiceApp.prototype._handleModifies =

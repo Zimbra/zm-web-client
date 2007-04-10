@@ -215,92 +215,100 @@ function(ids, force) {
  * Checks for the creation of a notebook or a mount point to one, or of a page
  * or document.
  * 
- * @param list	[array]		list of create notifications
+ * @param creates	[hash]		hash of create notifications
  */
 ZmNotebookApp.prototype.createNotify =
-function(list, force) {
-	if (!force && this._deferNotifications("create", list)) { return; }
-	for (var i = 0; i < list.length; i++) {
-		var create = list[i];
-		var name = create._name;
-		if (this._appCtxt.cacheGet(create.id)) { continue; }
+function(creates, force) {
+	if (!creates["folder"] && !creates["w"] && !creates["doc"] && !creates["link"]) { return; }
+	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
 
-		if (name == "folder") {
-			this._handleCreateFolder(create, ZmOrganizer.NOTEBOOK);
-		} else if (name == "link") {
-			this._handleCreateLink(create, ZmOrganizer.NOTEBOOK);
-		} else if (name == "w") {
-			DBG.println(AjxDebug.DBG1, "ZmNotebookApp: handling CREATE for node: " + name);
-			// REVISIT: use app context item cache
-			var cache = this.getNotebookCache();
-			var page = new ZmPage(this._appCtxt);
-			page.set(create);
-			cache.putPage(page);
-
-			// re-render current page, if necessary
-			var notebookController = AjxDispatcher.run("GetNotebookController");
-			var shownPage = notebookController.getPage();
-			if (shownPage && shownPage.name == ZmNotebook.PAGE_INDEX) {
-				notebookController.gotoPage(shownPage);
+	for (var name in creates) {
+		var list = creates[name];
+		for (var i = 0; i < list.length; i++) {
+			var create = list[i];
+			if (this._appCtxt.cacheGet(create.id)) { continue; }
+	
+			if (name == "folder") {
+				this._handleCreateFolder(create, ZmOrganizer.NOTEBOOK);
+			} else if (name == "link") {
+				this._handleCreateLink(create, ZmOrganizer.NOTEBOOK);
+			} else if (name == "w") {
+				DBG.println(AjxDebug.DBG1, "ZmNotebookApp: handling CREATE for node: " + name);
+				// REVISIT: use app context item cache
+				var cache = this.getNotebookCache();
+				var page = new ZmPage(this._appCtxt);
+				page.set(create);
+				cache.putPage(page);
+	
+				// re-render current page, if necessary
+				var notebookController = AjxDispatcher.run("GetNotebookController");
+				var shownPage = notebookController.getPage();
+				if (shownPage && shownPage.name == ZmNotebook.PAGE_INDEX) {
+					notebookController.gotoPage(shownPage);
+				}
+			} else if (name == "doc") {
+				DBG.println(AjxDebug.DBG1, "ZmNotebookApp: handling CREATE for node: " + name);
+				// REVISIT: use app context item cache
+				var cache = this.getNotebookCache();
+				var doc = new ZmDocument(this._appCtxt);
+				doc.set(create);
+				cache.putDocument(doc);
 			}
-		} else if (name == "doc") {
-			DBG.println(AjxDebug.DBG1, "ZmNotebookApp: handling CREATE for node: " + name);
-			// REVISIT: use app context item cache
-			var cache = this.getNotebookCache();
-			var doc = new ZmDocument(this._appCtxt);
-			doc.set(create);
-			cache.putDocument(doc);
 		}
 	}
 };
 
 ZmNotebookApp.prototype.modifyNotify =
-function(list, force) {
-	if (!force && this._deferNotifications("modify", list)) { return; }
-	for (var i = 0; i < list.length; i++) {
-		var mod = list[i];
-		var id = mod.id;
-		if (!id) { continue; }
-		var name = mod._name;
-
-		if (name == "w") {
-			DBG.println(AjxDebug.DBG2, "ZmNotebookApp: handling modified notif for ID " + id + ", node type = " + name);
-			// REVISIT: Use app context item cache
-			var cache = this.getNotebookCache();
-			var page = cache.getPageById(id);
-			if (!page) {
-				page = new ZmPage(this._appCtxt);
-				page.set(mod);
-				cache.putPage(page);
-			} else {
-				page.notifyModify(mod);
-				page.set(mod);
-			}
-			
-			// re-render current page, if necessary
-			var notebookController = AjxDispatcher.run("GetNotebookController");
-			var shownPage = notebookController.getPage();
-			if (shownPage && shownPage.folderId == page.folderId) {
-				if (shownPage.name == ZmNotebook.PAGE_INDEX || shownPage.name == page.name) {
-					notebookController.gotoPage(shownPage);
+function(modifies, force) {
+	if (!modifies["w"] && !modifies["doc"]) { return; }
+	if (!force && !this._noDefer && this._deferNotifications("modify", list)) { return; }
+	
+	for (var name in modifies) {
+		var list = modifies[name];
+		for (var i = 0; i < list.length; i++) {
+			var mod = list[i];
+			var id = mod.id;
+			if (!id) { continue; }
+	
+			if (name == "w") {
+				DBG.println(AjxDebug.DBG2, "ZmNotebookApp: handling modified notif for ID " + id + ", node type = " + name);
+				// REVISIT: Use app context item cache
+				var cache = this.getNotebookCache();
+				var page = cache.getPageById(id);
+				if (!page) {
+					page = new ZmPage(this._appCtxt);
+					page.set(mod);
+					cache.putPage(page);
+				} else {
+					page.notifyModify(mod);
+					page.set(mod);
 				}
+				
+				// re-render current page, if necessary
+				var notebookController = AjxDispatcher.run("GetNotebookController");
+				var shownPage = notebookController.getPage();
+				if (shownPage && shownPage.folderId == page.folderId) {
+					if (shownPage.name == ZmNotebook.PAGE_INDEX || shownPage.name == page.name) {
+						notebookController.gotoPage(shownPage);
+					}
+				}
+				mod._handled = true;
+			} else if (name == "doc") {
+				DBG.println(AjxDebug.DBG2, "ZmNotebookApp: handling modified notif for ID " + id + ", node type = " + name);
+				// REVISIT: Use app context item cache
+				var cache = this.getNotebookCache();
+				var doc = cache.getDocumentById(id);
+				if (!doc) {
+					doc = new ZmDocument(this._appCtxt);
+					doc.set(mod);
+					cache.putDocument(doc);
+				}
+				else {
+					doc.notifyModify(mod);
+					doc.set(mod);
+				}
+				mod._handled = true;
 			}
-			mod._handled = true;
-		} else if (name == "doc") {
-			DBG.println(AjxDebug.DBG2, "ZmNotebookApp: handling modified notif for ID " + id + ", node type = " + name);
-			// REVISIT: Use app context item cache
-			var cache = this.getNotebookCache();
-			var doc = cache.getDocumentById(id);
-			if (!doc) {
-				doc = new ZmDocument(this._appCtxt);
-				doc.set(mod);
-				cache.putDocument(doc);
-			}
-			else {
-				doc.notifyModify(mod);
-				doc.set(mod);
-			}
-			mod._handled = true;
 		}
 	}
 };
