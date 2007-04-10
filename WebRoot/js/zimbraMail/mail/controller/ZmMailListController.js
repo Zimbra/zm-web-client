@@ -777,7 +777,11 @@ ZmMailListController.prototype._detachListener =
 function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	var msg = items.length ? items[0] : items;
-	ZmMailMsgView.rfc822Callback(msg.id);
+
+	if (msg.isLoaded())
+		ZmMailMsgView.detachMsgInNewWindow(this._appCtxt, msg);
+	else
+		ZmMailMsgView.rfc822Callback(msg.id);
 };
 
 ZmMailListController.prototype._checkMailListener =
