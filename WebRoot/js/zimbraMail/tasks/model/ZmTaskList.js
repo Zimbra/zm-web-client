@@ -55,7 +55,7 @@ function() {
 * @param folder		[ZmTaskFolder]	destination folder
 * @param attrs		[Object]		additional attrs for SOAP command
 */
-ZmList.prototype.moveItems =
+ZmTaskList.prototype.moveItems =
 function(items, folder, attrs) {
 	if (this.type != ZmItem.TASK) {
 		ZmList.prototype.moveItems.call(this, items, folder, attrs);
