@@ -99,6 +99,7 @@
                             <app:button name="actionContactAdd" src="contacts/ContactsPicker.gif" tooltip="addAttendeesFromContacts" text="addAttendeesFromContacts"/>
 
 
+
                             <c:if test="${canDelete}">
                                 <td><div class='vertSep'></div></td>
                                 <c:choose>
@@ -112,8 +113,22 @@
                                         <app:button name="actionApptDelete" src="common/Delete.gif" tooltip="actionApptDeleteTT" text="delete"/>
                                     </c:otherwise>
                                 </c:choose>
-
                             </c:if>
+
+                            <c:if test="${canDelete and not isInstance}">
+                                <td><div class='vertSep'></div></td>
+                                <td  nowrap valign=middle>
+                                    <select name="actionOp">
+                                        <option value="" selected/><fmt:message key="moreActions"/>
+                                        <option value="flag"/><fmt:message key="actionAddFlag"/>
+                                        <option value="unflag"/><fmt:message key="actionRemoveFlag"/>
+                                        <app:tagOptions mailbox="${mailbox}"/>
+                                    </select>
+                                </td>
+                                <app:button name="actionGo" tooltip="actionConvGoTT" text="actionGo"/>
+                                <td><div class='vertSep'></div></td>
+                            </c:if>
+
                             
                             <%--
                             <td><div class='vertSep'></div></td>
@@ -163,6 +178,20 @@
                                         <td width=24><center><app:img src="${apptImage}" altkey="${apptImageAlt}"/></center></td>
                                         <td class='apptHeader'>
                                             ${fn:escapeXml(apptSubject)}
+                                        </td>
+                                        <td width=1% nowrap align='right' class='Tags' style='padding-right:5px'>
+                                            <c:if test="${(message.hasTags and mailbox.features.tagging) or (message.isFlagged)}">
+                                                <c:set var="tags" value="${zm:getTags(pageContext, message.tagIds)}"/>
+                                                <c:forEach items="${tags}" var="tag">
+                                                    <span style='white-space:nowrap;'>
+                                                        <app:img altkey="${fn:escapeXml(tag.name)}" src="${tag.miniImage}"/>${fn:escapeXml(tag.name)} </span>
+                                                </c:forEach>
+                                                <c:if test="${message.isFlagged}">
+                                                    <span style='white-space:nowrap;'>
+                                                        <app:flagImage flagged="${message.isFlagged}"/>
+                                                    </span>
+                                                </c:if>
+                                            </c:if>
                                         </td>
                                     </tr>
                                 </table>

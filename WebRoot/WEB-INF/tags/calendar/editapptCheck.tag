@@ -11,6 +11,34 @@
     <c:set var="needEditView" value="${param.action eq 'edit'}"/>
     <c:if test="${uploader.isUpload}">
         <c:choose>
+            <c:when test="${not empty uploader.paramValues.actionGo}">
+                <c:set var="actionOp" value="${uploader.paramValues.actionOp[0]}"/>
+                <c:set var="id" value="${uploader.compose.inviteId}"/>
+                <c:choose>
+                    <c:when test="${actionOp eq 'flag' or actionOp eq 'unflag'}">
+                        <zm:flagItem var="result" id="${id}" flag="${actionOp eq 'flag'}"/>
+                        <app:status>
+                            <fmt:message key="${actionOp eq 'flag' ? 'actionApptFlag' : 'actionApptUnflag'}">
+                                <fmt:param value="${result.idCount}"/>
+                            </fmt:message>
+                        </app:status>
+                    </c:when>
+                    <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
+                        <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
+                        <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
+                        <zm:tagItem tagid="${tagid}"var="result" id="${id}" tag="${tag}"/>
+                        <app:status>
+                            <fmt:message key="${tag ? 'actionApptTag' : 'actionApptUntag'}">
+                                <fmt:param value="${result.idCount}"/>
+                                <fmt:param value="${zm:getTagName(pageContext, tagid)}"/>
+                            </fmt:message>
+                        </app:status>
+                    </c:when>
+                    <c:otherwise>
+                        <app:status style="Warning"><fmt:message key="actionNoActionSelected"/></app:status>
+                    </c:otherwise>
+                </c:choose>
+            </c:when>
             <c:when test="${uploader.isRepeatEdit}">
                 <jsp:forward page="/h/repeat"/>
             </c:when>

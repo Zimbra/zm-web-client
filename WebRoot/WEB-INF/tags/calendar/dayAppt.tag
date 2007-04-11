@@ -20,7 +20,9 @@
     <table width="100%" height="100%" border="0" cellspacing="0" cellpadding="0">
         <tr>
         <td class='ZhApptSel'>
-</c:if> 
+</c:if>
+<c:set var="needImages" value="${appt.otherAttendees or appt.exception or appt.hasTags or appt.isFlagged}"/>
+
 <c:choose>
     <c:when test="${appt.allDay}">
         <c:if test="${appt.startTime lt start}"><c:set var="bleft" value='border-left:none;'/></c:if>
@@ -34,7 +36,7 @@
                 <td>
                     <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
                 </td>
-                <c:if test="${appt.otherAttendees or appt.exception}">
+                <c:if test="${needImages}">
                     <td width=1% align=right>
                         <table border="0" cellspacing="0" cellpadding="0">
                             <tr>
@@ -48,6 +50,12 @@
                                         <app:img src="calendar/ApptException.gif"/>
                                     </td>
                                 </c:if>
+                                <c:if test="${not empty appt.tagIds}">
+                                    <td class='Img'><app:miniTagImage ids="${appt.tagIds}"/></td>
+                                </c:if>
+                                <c:if test="${not empty appt.isFlagged}">
+                                    <td class='Img'><app:flagImage flagged="${appt.isFlagged}"/></td>
+                                </c:if>
                             </tr>
                         </table>
                     </td>
@@ -58,7 +66,7 @@
     <c:when test="${appt.duration gt 1000*60*15}">
         <table class='ZhCalDayAppt${needsAction ? 'New' : ''}' width=100% height=100% border=0 cellspacing=0 cellpadding="2">
             <tr>
-                <td colspan="${appt.otherAttendees or appt.exception ? 1 : 2}" nowrap class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}' valign=top>
+                <td colspan="${needImages ? 1 : 2}" nowrap class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}' valign=top>
                     <c:choose>
                         <c:when test="${appt.startTime lt start}">
                             <fmt:formatDate value="${appt.startDate}" type="both" timeStyle="short" dateStyle="short"/>
@@ -68,23 +76,29 @@
                         </c:otherwise>
                     </c:choose>
                 </td>
-                <c:if test="${appt.otherAttendees or appt.exception}">
-                <td width=1% align=right class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}'>
-                <table border="0" cellspacing="0" cellpadding="0">
-                    <tr>
-                        <c:if test="${appt.otherAttendees}">
-                        <td valign='top'>
-                            <app:img src="calendar/ApptMeeting.gif"/>
-                        </td>
-                        </c:if>
-                        <c:if test="${appt.exception}">
-                            <td valign='top'>
-                                <app:img src="calendar/ApptException.gif"/>
-                            </td>
-                        </c:if>
-                    </tr>
-                </table>
-                </td>
+                <c:if test="${needImages}">
+                    <td width=1% align=right class='${color}${appt.partStatusNeedsAction ? 'Dark' : 'Light'}'>
+                        <table border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <c:if test="${appt.otherAttendees}">
+                                    <td valign='top'>
+                                        <app:img src="calendar/ApptMeeting.gif"/>
+                                    </td>
+                                </c:if>
+                                <c:if test="${appt.exception}">
+                                    <td valign='top'>
+                                        <app:img src="calendar/ApptException.gif"/>
+                                    </td>
+                                </c:if>
+                                <c:if test="${not empty appt.tagIds}">
+                                    <td class='Img'><app:miniTagImage ids="${appt.tagIds}"/></td>
+                                </c:if>
+                                <c:if test="${not empty appt.isFlagged}">
+                                    <td class='Img'><app:flagImage flagged="${appt.isFlagged}"/></td>
+                                </c:if>
+                            </tr>
+                        </table>
+                    </td>
                 </c:if>
             </tr>
             <tr>
@@ -115,8 +129,8 @@
                     <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
                      &nbsp; <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
                 </td>
-                <c:if test="${appt.otherAttendees or appt.exception}">
-                    <td width=1% align=right class='${color}${needsAction ? 'Dark' : 'Light'}'>
+                <c:if test="${needImages}">
+                    <td valign='top' width=1% align=right class='${color}${needsAction ? 'Dark' : 'Light'}'>
                         <table border="0" cellspacing="0" cellpadding="0">
                             <tr>
                                 <c:if test="${appt.otherAttendees}">
@@ -129,6 +143,12 @@
                                         <app:img src="calendar/ApptException.gif"/>
                                     </td>
                                 </c:if>
+                                <c:if test="${not empty appt.tagIds}">
+                                    <td class='Img'><app:miniTagImage ids="${appt.tagIds}"/></td>
+                                </c:if>
+                                <c:if test="${not empty appt.isFlagged}">
+                                    <td class='Img'><app:flagImage flagged="${appt.isFlagged}"/></td>
+                                </c:if>                                
                             </tr>
                         </table>
                     </td>
