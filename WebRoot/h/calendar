@@ -10,6 +10,14 @@
 <app:handleError>
      
     <zm:getMailbox var="mailbox"/>
+
+    <c:if test="${not empty param.st and param.st ne 'appointment'}">
+        <c:redirect url="/h/search">
+            <c:param name="sq" value="${param.sq}"/>
+            <c:param name="st" value="${param.st}"/>
+        </c:redirect>
+    </c:if>
+
     <c:choose>
         <c:when test="${not empty param.tz}">
             <fmt:setTimeZone var="tz" value="${param.tz}" scope="request"/>
@@ -39,6 +47,8 @@
         </c:otherwise>
     </c:choose>
 
+
+    <c:set scope="request" var="calendarQuery" value="${param.sq}"/>
     
     <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
 

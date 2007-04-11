@@ -49,17 +49,12 @@
 
     <%-- fetch mini cal appts first, so they are in cache, as well as any data neded by this view --%>
     <c:set var="startOfMonth" value="${zm:getFirstDayOfMonthView(date, mailbox.prefs.calendarFirstDayOfWeek)}"/>
-    <zm:getAppointmentSummaries timezone="${timezone}" var="minicalappts" folderid="${checkedCalendars}" start="${startOfMonth.timeInMillis}" end="${zm:addDay(startOfMonth, 42).timeInMillis}"/>
+    <zm:getAppointmentSummaries timezone="${timezone}" var="minicalappts" folderid="${checkedCalendars}" start="${startOfMonth.timeInMillis}" end="${zm:addDay(startOfMonth, 42).timeInMillis}" query="${requestScope.calendarQuery}"/>
 
     <c:set var="multiDay">
-        <app:multiDay date="${date}" numdays="${numdays}" view="${view}" timezone="${timezone}" checkedCalendars="${checkedCalendars}"/>
+        <app:multiDay date="${date}" numdays="${numdays}" view="${view}" timezone="${timezone}" checkedCalendars="${checkedCalendars}" query="${requestScope.calendarQuery}"/>
     </c:set>
-    
-    <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${rangeEnd}"/>
-    <zm:apptMultiDayLayout timezone="${timezone}"
-            schedule="${scheduleView ? checkedCalendars : ''}"
-            var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
-            hourstart="${mailbox.prefs.calendarDayHourStart}" hourend="${mailbox.prefs.calendarDayHourEnd}"/>
+
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${pageTitle}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true"

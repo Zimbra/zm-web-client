@@ -32,7 +32,14 @@
              <app:contactListViewAction/>
          </c:when>
      </c:choose>
+
+    <c:if test="${param.st eq 'appointment'}">
+        <c:redirect url="/h/calendar">
+            <c:param name="sq" value="${param.sq}"/>
+        </c:redirect>
+    </c:if>
     <zm:computeSearchContext var="context" usecache="true"/>
+
 </app:handleError>
 
  <%-- switch based on context saerch types --%>

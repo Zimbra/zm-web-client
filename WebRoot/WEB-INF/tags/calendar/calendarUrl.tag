@@ -23,6 +23,7 @@
     </c:if>
     <c:if test="${not empty param.numdays and view eq 'day'}"><c:param name='numdays' value='${param.numdays}'/></c:if>
     <c:if test="${not empty param.tz}"><c:param name='tz' value='${param.tz}'/></c:if>
+    <c:if test="${not empty param.sq}"><c:param name='sq' value='${param.sq}'/></c:if> 
     <c:choose>
         <c:when test="${not empty rawdate}">
             <c:param name='date'><fmt:formatDate timeZone="${timezone}" value="${rawdate.time}" pattern="yyyyMMdd"/></c:param>
