@@ -51,10 +51,10 @@
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.tagIds}">
-                                    <td class='Img'><app:miniTagImage ids="${appt.tagIds}"/></td>
+                                    <td><app:miniTagImage ids="${appt.tagIds}"/></td>
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">
-                                    <td class='Img'><app:flagImage flagged="${appt.isFlagged}"/></td>
+                                    <td><app:flagImage flagged="${appt.isFlagged}"/></td>
                                 </c:if>
                             </tr>
                         </table>
@@ -91,10 +91,10 @@
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.tagIds}">
-                                    <td class='Img'><app:miniTagImage ids="${appt.tagIds}"/></td>
+                                    <td><app:miniTagImage ids="${appt.tagIds}"/></td>
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">
-                                    <td class='Img'><app:flagImage flagged="${appt.isFlagged}"/></td>
+                                    <td><app:flagImage flagged="${appt.isFlagged}"/></td>
                                 </c:if>
                             </tr>
                         </table>
@@ -144,10 +144,10 @@
                                     </td>
                                 </c:if>
                                 <c:if test="${not empty appt.tagIds}">
-                                    <td class='Img'><app:miniTagImage ids="${appt.tagIds}"/></td>
+                                    <td><app:miniTagImage ids="${appt.tagIds}"/></td>
                                 </c:if>
                                 <c:if test="${not empty appt.isFlagged}">
-                                    <td class='Img'><app:flagImage flagged="${appt.isFlagged}"/></td>
+                                    <td><app:flagImage flagged="${appt.isFlagged}"/></td>
                                 </c:if>                                
                             </tr>
                         </table>
