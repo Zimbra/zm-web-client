@@ -319,16 +319,20 @@ ZmChatWidget.prototype.focus = function() {
 };
 
 ZmChatWidget.prototype._removeUnreadStatus = function() {
-	Dwt.delClass(this.getTabLabel().getHtmlElement(), "ZmChatTab-Unread");
+	if (!this.chat.isZimbraAssistant()) {
+		Dwt.delClass(this.getTabLabel().getHtmlElement(), "ZmChatTab-Unread");
+	}
 };
 
 ZmChatWidget.prototype._setUnreadStatus = function() {
-	var label = this.getTabLabel().getHtmlElement();
+	if (!this.chat.isZimbraAssistant()) {
+		var label = this.getTabLabel().getHtmlElement();
 
-	// Only if it's not already active -- the easiest way is to
-	// check the className.  Hopefully no one will change it.
-	if (!/active/i.test(label.className))
-		Dwt.addClass(label, "ZmChatTab-Unread");
+		// Only if it's not already active -- the easiest way is to
+		// check the className.  Hopefully no one will change it.
+		if (!/active/i.test(label.className))
+			Dwt.addClass(label, "ZmChatTab-Unread");
+	}
 };
 
 ZmChatWidget.prototype.popup = function(pos) {
