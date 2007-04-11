@@ -1899,6 +1899,15 @@ HTML>BODY .appt-selected .appt_allday_body
   -moz-border-radius-bottomright: 2px;
 }
 
+.ZmChatTab-Unread .ZWidgetTitle { color: #f00; }
+
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable { width: auto; }
+/* .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTitle { width: auto; padding-top: 0; padding-bottom: 0; } */
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTitle { width: auto; padding: 0; }
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable .ZLeftIcon div { margin-left: 0; }
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable div { margin: 0; }
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZButton { height: auto; }
+
 .ZmChatTabs-TabBar .ZmChatTabs-Tab-Active {
   @ToolbarContainer@
   float: left;

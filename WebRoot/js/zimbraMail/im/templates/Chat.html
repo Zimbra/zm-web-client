@@ -13,7 +13,9 @@
 
     <tr>
       <td id="${id}_inputLayout" style="height: 1em; padding-top: 1px;">
-        <input class="ZmChatWindowInput" style="width: 100%; height: auto;" type="text" id="${id}_input" />
+        <div style="overflow:auto"><!-- Firefox caret hack -->
+          <input class="ZmChatWindowInput" style="width: 100%; height: auto;" type="text" id="${id}_input" />
+        </div>
       </td>
     </tr>
   </table>

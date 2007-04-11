@@ -3,7 +3,6 @@ function ZmChatTabs(parent) {
 	this.addControlListener(new AjxListener(this, this.__onResize));
 	this.__tabs = new AjxVector();
 	this.__currentTab = null;
-	this._chatDisposeListener = new AjxListener(this, this._chatDisposeListener);
 };
 
 ZmChatTabs.prototype = new DwtComposite;
@@ -36,6 +35,12 @@ ZmChatTabs.prototype.getTabLabelDiv = function(index) {
 	if (index == null)
 		index = this.__currentTab;
 	return this.__tabBarEl.childNodes[index];
+};
+
+ZmChatTabs.prototype.getTabLabelWidget = function(pos) {
+	if (pos instanceof ZmChatWidget)
+		pos = this.__tabs.indexOf(pos);
+	return Dwt.getObjectFromElement(this.getTabLabelDiv(pos));
 };
 
 ZmChatTabs.prototype.getCurrentChatWidget = ZmChatTabs.prototype.getTabWidget;
@@ -85,53 +90,42 @@ ZmChatTabs.prototype.__onResize = function(ev) {
 	this.getCurrentChatWidget().setSize(ev.newWidth, ev.newHeight);
 };
 
-// ZmChatTabs.prototype.addChild = function(child, index) {
-// 	DwtComposite.prototype.addChild.call(this, child, index);
-// };
-
-ZmChatTabs.prototype.addTab = function(chat/*, index // TODO */) {
-	var child = new ZmChatWidget(this, Dwt.RELATIVE_STYLE);
+ZmChatTabs.prototype.addTab = function(chat, index) {
+	var child;
+	if (chat instanceof ZmChatWidget) {
+		if (chat.parent === this)
+			return chat; // nothing to do
+		child = chat;
+		child.reparent(this);
+		chat = chat.chat;
+	} else {
+		child = new ZmChatWidget(this, Dwt.RELATIVE_STYLE);
+		child._setChat(chat);
+	}
 	var cont = document.createElement("div");
 	cont.className = "ZmChatTabs-Container";
 	this.getHtmlElement().appendChild(cont);
 	child._tabContainer = cont;
-	child.reparentHtmlElement(cont /*this.__contEl*/);
-	child._setChat(chat);
-	this.__tabs.add(child);
+	child.reparentHtmlElement(cont, index);
+	this.__tabs.add(child, index);
 	this.parent.enableMoveWithElement(child._toolbar);
-	this._createTabButton(child, true);
-	child.addDisposeListener(this._chatDisposeListener);
+	this._createTabButton(child, true, index);
 	return child;
 };
 
-ZmChatTabs.prototype._createTabButton = function(chatWidget, active) {
-	var div = document.createElement("div");
-	div.className = "ZmChatTabs-Tab";
-	div.innerHTML = AjxStringUtil.htmlEncode(chatWidget._titleStr);
-	var t = this.__tabBarEl;
-	t.appendChild(div);
-	t.className = t.className.replace(/ZmChatTabs-TabBarCount-[0-9]+/,
-					  "ZmChatTabs-TabBarCount-" + this.__tabs.size());
-	var index = this.__tabs.size() - 1;
-	this.setActiveTab(index);
-	div.onclick = AjxCallback.simpleClosure(this.setActiveTabWidget, this, chatWidget);
-//	this.parent.enableMoveWithElement(div);
-};
-
-ZmChatTabs.prototype._chatDisposeListener = function(ev) {
-	var chatWidget = ev.dwtObj;
+ZmChatTabs.prototype.detachChatWidget = function(chatWidget) {
 	var index = this.__tabs.indexOf(chatWidget);
-	if (index == this.__currentTab) {
-		// activate some other
-	};
+	var newTab = this.__currentTab;
 	this.__tabs.remove(chatWidget);
+
+	if (index < newTab)
+		newTab -= 1;
 
 	// deactivate current tab first
 	this.__currentTab = null;
 
 	// remove the button in the tabbar
-	var el = this.getTabLabelDiv(index);
-	el.parentNode.removeChild(el);
+	this.getTabLabelWidget(index).dispose();
 
 	// update the tabbar class name
 	var t = this.__tabBarEl;
@@ -147,5 +141,48 @@ ZmChatTabs.prototype._chatDisposeListener = function(ev) {
 	if (this.__tabs.size() == 0)
 		this.dispose();
 	else
-		this.setActiveTab(index);
+		this.setActiveTab(newTab);
+};
+
+ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
+	var cont = new DwtComposite(this, "ZmChatTabs-Tab");
+	var tb = new DwtToolBar(cont);
+
+	var t = this.__tabBarEl;
+	cont.reparentHtmlElement(t, index);
+	t.className = t.className.replace(/ZmChatTabs-TabBarCount-[0-9]+/,
+					  "ZmChatTabs-TabBarCount-" + this.__tabs.size());
+	var index = this.__tabs.size() - 1;
+	this.setActiveTab(index);
+	var label = new DwtLabel(tb);
+	label.setText(AjxStringUtil.htmlEncode(chatWidget._titleStr));
+
+	var listener = new AjxListener(this, this.setActiveTabWidget, [ chatWidget ]);
+	label._setMouseEventHdlrs();
+	label.addListener(DwtEvent.ONMOUSEDOWN, listener);
+
+	cont._setMouseEventHdlrs();
+	cont.addListener(DwtEvent.ONMOUSEDOWN, listener);
+
+	label.setImage(this.getCurrentChat().getRosterItem().getPresence().getIcon());
+
+	// d'n'd
+	var ds = new DwtDragSource(Dwt.DND_DROP_MOVE);
+	label.setDragSource(ds);
+	ds.addDragListener(new AjxListener(this, function(ev) {
+		if (ev.action == DwtDragEvent.SET_DATA)
+			ev.srcData = chatWidget;
+	}));
+	label._getDnDIcon = function() {
+		var icon = document.createElement("div");
+		icon.style.position = "absolute";
+		icon.appendChild(label.getHtmlElement().cloneNode(true));
+		DwtShell.getShell(window).getHtmlElement().appendChild(icon);
+		Dwt.setZIndex(icon, Dwt.Z_DND);
+		return icon;
+	};
+
+	var close = new DwtToolBarButton(tb);
+	close.setImage("Close");
+	close.addSelectionListener(chatWidget._closeListener); // ;-)
 };

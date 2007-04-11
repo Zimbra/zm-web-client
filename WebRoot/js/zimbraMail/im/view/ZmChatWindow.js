@@ -37,7 +37,6 @@ ZmChatWindow.prototype._init = function(chat) {
 	var tabs = this._tabs = new ZmChatTabs(this);
 	tabs.addDisposeListener(new AjxListener(this, this._tabsDisposeListener));
 	this.setView(tabs);
-	this.chat = chat;
 	tabs.addTab(chat);
 	this.setSize(400, 300);
 	this.setMinSize(200, 100);

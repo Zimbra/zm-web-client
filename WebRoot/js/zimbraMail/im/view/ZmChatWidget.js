@@ -88,6 +88,7 @@ ZmChatWidget.prototype._chatChangeListener = function(ev, treeView) {
 ZmChatWidget.prototype.handleMessage = function(msg) {
 	var str = msg.toHtml(this._objectManager, this.chat, this.__lastFrom);
 	this.__lastFrom = msg.from;
+	this._setUnreadStatus();
 	return this.handleHtmlMessage(str);
 };
 
@@ -216,7 +217,8 @@ ZmChatWidget.prototype._init = function() {
 	this._close = new DwtToolBarButton(this._toolbar, null);
 	this._close.setImage("Close");
 	this._close.setToolTipContent(ZmMsg.imEndChat);
-	this._close.addSelectionListener(new AjxListener(this, this._closeListener));
+	this._closeListener = new AjxListener(this, this._closeListener);
+	this._close.addSelectionListener(this._closeListener);
 
 	this._label = new DwtLabel(this._toolbar, DwtLabel.IMAGE_LEFT | DwtLabel.ALIGN_LEFT, "ZmChatWindowLabel");
 	this._label.setText("Chat title here");
@@ -246,6 +248,8 @@ ZmChatWidget.prototype._init = function() {
 	this._label.setDropTarget(dropTgt);
 	this._toolbar.setDropTarget(dropTgt);
 	dropTgt.addDropListener(new AjxListener(this, this._dropOnTitleListener));
+
+	this.addDisposeListener(new AjxListener(this, this._disposeListener));
 };
 
 // "this" is here the input field.
@@ -310,12 +314,30 @@ ZmChatWidget.prototype.__onResize = function(ev) {
 };
 
 ZmChatWidget.prototype.focus = function() {
+	this._removeUnreadStatus();
 	this._getElement("input").focus();
+};
+
+ZmChatWidget.prototype._removeUnreadStatus = function() {
+	Dwt.delClass(this.getTabLabel().getHtmlElement(), "ZmChatTab-Unread");
+};
+
+ZmChatWidget.prototype._setUnreadStatus = function() {
+	var label = this.getTabLabel().getHtmlElement();
+
+	// Only if it's not already active -- the easiest way is to
+	// check the className.  Hopefully no one will change it.
+	if (!/active/i.test(label.className))
+		Dwt.addClass(label, "ZmChatTab-Unread");
 };
 
 ZmChatWidget.prototype.popup = function(pos) {
 	return this.getChatWindow().popup(pos);
 	this.focus();
+};
+
+ZmChatWidget.prototype.getTabLabel = function() {
+	return this.parent.getTabLabelWidget(this);
 };
 
 ZmChatWidget.prototype.getChatWindow = function() {
@@ -331,18 +353,28 @@ ZmChatWidget.prototype.select = function() {
 	this.focus();
 };
 
+ZmChatWidget.prototype.detach = function(pos) {
+	var tabs = this.parent;
+	var wm = this.getChatWindow().parent; // window manager
+	this._removedEl = this.getHtmlElement();
+	tabs.detachChatWidget(this);
+	var win = new ZmChatWindow(wm, this);
+	wm.manageWindow(win, pos);
+};
+
 ZmChatWidget.prototype._closeListener = function() {
 	ZmChatMultiWindowView.getInstance().endChat(this.chat);
 };
 
 ZmChatWidget.prototype._stickyListener = function(ev) {
 	var button = ev.item;
+	button._mouseOutListener();
 	var sticky = button.isToggled();
 	var view = ZmChatMultiWindowView.getInstance();
 	var win = this.getChatWindow();
 	var wp = Dwt.toWindow(win.getHtmlElement(), 0, 0);
 	var p, wm;
-	button.setImage(sticky ? "RoundMinus" : "RoundPlus");
+	// button.setImage(sticky ? "RoundMinus" : "RoundPlus");
 	win.popdown();
 	if (sticky) {
 		wm = view.getShellWindowManager();
@@ -388,4 +420,8 @@ ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
 // 			this._controller.chatWithRosterItems(srcData.getRosterItems(), srcData.getName()+" "+ZmMsg.imGroupChat);
 // 		}
 	}
+};
+
+ZmChatWidget.prototype._disposeListener = function() {
+	this.parent.detachChatWidget(this);
 };
