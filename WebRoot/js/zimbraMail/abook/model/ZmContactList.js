@@ -748,9 +748,12 @@ function(str) {
 	}
 	var result = {};
 	if (!this._userDomain) {
-		var a = this._appCtxt.get(ZmSetting.USERNAME).split("@");
-		if (a && a.length) {
-			this._userDomain = a[a.length - 1];
+		var uname = this._appCtxt.get(ZmSetting.USERNAME);
+		if (uname) {
+			var a = uname.split("@");
+			if (a && a.length) {
+				this._userDomain = a[a.length - 1];
+			}
 		}
 	}
 	if (this._userDomain) {

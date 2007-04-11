@@ -153,11 +153,13 @@ function(item, now, isDndIcon) {
 		}
 		else if (field == ZmItem.F_PARTICIPANT) {
 			var creator = item.creator.split("@");
-			var user = this._appCtxt.get(ZmSetting.USERNAME).split("@");
-
 			var cname = creator[0];
-			if (creator[1] != user[1]) {
-				cname = creator.join("@");
+			var uname = this._appCtxt.get(ZmSetting.USERNAME);
+			if (uname) {
+				var user = uname.split("@");
+				if (creator[1] != user[1]) {
+					cname = creator.join("@");
+				}
 			}
 			htmlArr[idx++] = "<td id='" + fieldId + "'";
 			htmlArr[idx++] = " width=" + width + ">";

@@ -960,7 +960,10 @@ function(action, toOverride) {
 	{
 		// Prevent user's login name and aliases from going into To: or Cc:
 		var used = {};
-		used[this._appCtxt.get(ZmSetting.USERNAME).toLowerCase()] = true;
+		var uname = this._appCtxt.get(ZmSetting.USERNAME);
+		if (uname) {
+			used[uname.toLowerCase()] = true;
+		}
 		var aliases = this._appCtxt.get(ZmSetting.MAIL_ALIASES);
 		for (var i = 0, count = aliases.length; i < count; i++) {
 			used[aliases[i].toLowerCase()] = true;
