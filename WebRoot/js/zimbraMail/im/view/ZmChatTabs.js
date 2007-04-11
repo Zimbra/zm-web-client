@@ -31,15 +31,18 @@ ZmChatTabs.prototype.getTabContentDiv = function(index) {
 	return this.getTabWidget(index)._tabContainer;
 };
 
-ZmChatTabs.prototype.getTabLabelDiv = function(index) {
-	if (index == null)
-		index = this.__currentTab;
-	return this.__tabBarEl.childNodes[index];
+ZmChatTabs.prototype.getTabLabelDiv = function(pos) {
+	if (pos instanceof ZmChatWidget) {
+		pos = this.__tabs.indexOf(pos);
+		if (pos == -1)
+			pos = null;
+	}
+	if (pos == null)
+		pos = this.__currentTab;
+	return this.__tabBarEl.childNodes[pos];
 };
 
 ZmChatTabs.prototype.getTabLabelWidget = function(pos) {
-	if (pos instanceof ZmChatWidget)
-		pos = this.__tabs.indexOf(pos);
 	return Dwt.getObjectFromElement(this.getTabLabelDiv(pos));
 };
 
