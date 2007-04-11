@@ -22,6 +22,7 @@
                                 <fmt:param value="${result.idCount}"/>
                             </fmt:message>
                         </app:status>
+                        ${zm:clearMessageCache(mailbox)}
                     </c:when>
                     <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
                         <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
@@ -33,6 +34,7 @@
                                 <fmt:param value="${zm:getTagName(pageContext, tagid)}"/>
                             </fmt:message>
                         </app:status>
+                        ${zm:clearMessageCache(mailbox)}
                     </c:when>
                     <c:otherwise>
                         <app:status style="Warning"><fmt:message key="actionNoActionSelected"/></app:status>
