@@ -334,7 +334,6 @@ function(appt,id, body_style, controller) {
 		starttime: appt.getDurationText(true, true),
 		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate),
 		location: AjxStringUtil.htmlEncode(appt.getLocation()),
-		statusKey: appt.ptst,
 		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr()
 	};	
 	var template = "calendar_appt_allday";

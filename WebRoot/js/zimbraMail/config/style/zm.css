@@ -1301,14 +1301,6 @@ td.DDSepInvisible div {
 .appt_time						{	@SmallBoxPadding@;																}
 .appt_new_time					{	@SmallBoxPadding@;	font-weight:bold;	color:white;							}
 .appt_end_time					{	@SmallBoxPadding@;						color:#666666;	@NoWrap@	}
-
-.appt_status-					{	@SmallBoxPadding@;										@NoWrap@	}
-.appt_status-NE					{	@SmallBoxPadding@;	font-weight:bold;	color:FFE640;	@NoWrap@	}
-.appt_status-TE					{	@SmallBoxPadding@;						color:FF3300;	@NoWrap@	}
-.appt_status-AC					{	@SmallBoxPadding@;						color:black;	@NoWrap@	}
-.appt_status-DE					{	@SmallBoxPadding@;						color:black;	@NoWrap@	}
-.appt_status-DG					{	@SmallBoxPadding@;						color:black;	@NoWrap@	}
-
 .appt_location					{	@SmallBoxPadding@;						}
 
 .appt_top_sash,

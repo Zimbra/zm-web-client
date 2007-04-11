@@ -684,7 +684,6 @@ function(div, allDay, folderId) {
 		starttime: "",
 		endtime: "",
 		location: "",
-		statusKey: "",
 		status: ""
 	};
 
@@ -738,7 +737,6 @@ function(appt) {
 		starttime: appt.getDurationText(true, true),
 		endtime: ((!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate))+this._padding,
 		location: location,
-		statusKey: appt.ptst,
 		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr()
 	};	
 	
