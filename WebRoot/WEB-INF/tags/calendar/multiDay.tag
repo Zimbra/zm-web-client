@@ -24,7 +24,14 @@
     <c:if test="${empty checkedCalendars}">
         <c:set var="checkedCalendars" value="${zm:getCheckedCalendarFolderIds(mailbox)}"/>
     </c:if>
-    <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${rangeEnd}" query="${query}"/>
+    <zm:getAppointmentSummaries timezone="${timezone}" var="appts" folderid="${checkedCalendars}" start="${currentDay.timeInMillis}" end="${rangeEnd}" query="${query}" varexception="gasException"/>
+    <c:if test="${not empty gasException}">
+        <zm:getException var="error" exception="${gasException}"/>
+        <app:status style="Critical">
+            <fmt:message key="${error.code}"/>
+        </app:status>
+        <!-- ${fn:escapeXml(error.stackStrace)} -->
+    </c:if>
     <zm:apptMultiDayLayout timezone="${timezone}"
             schedule="${scheduleView ? checkedCalendars : ''}"
             var="layout" appointments="${appts}" start="${currentDay.timeInMillis}" days="${numdays}"
