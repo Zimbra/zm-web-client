@@ -12,7 +12,7 @@
 <tr><td nowrap colspan='3' class='Folder ${tag.hasUnread ? ' Unread':''}'>
     <c:choose>
         <c:when test="${calendars}">
-            <app:calendarUrl var="url" tag="${tag.name}" sq='tag:"${tag.name}"'/>
+            <app:calendarUrl var="url" sq='tag:"${tag.name}"'/>
         </c:when>
         <c:otherwise>
             <c:url value="/h/search" var="url">
