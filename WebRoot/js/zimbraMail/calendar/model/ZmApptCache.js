@@ -287,7 +287,7 @@ function(context, result) {
 		}
 	}
 
-	if (this._rawAppts.length) {
+	if (this._rawAppts && this._rawAppts.length) {
 		var fanoutAllDay = context.fanoutAllDay;
 		var folderIds = context.needToFetch;
 		var start = context.start;
