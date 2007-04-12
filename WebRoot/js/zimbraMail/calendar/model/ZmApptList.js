@@ -44,8 +44,7 @@ function() {
 };
 
 ZmApptList.prototype.loadFromSummaryJs =
-function(resp) {
-	var appts = resp.appt;
+function(appts) {
 	if (!appts) return;
 
 	for (var i = 0; i < appts.length; i++) {
