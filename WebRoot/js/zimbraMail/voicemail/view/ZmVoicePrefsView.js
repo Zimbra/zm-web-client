@@ -23,6 +23,12 @@
  * ***** END LICENSE BLOCK *****
  */
 
+// TODOs
+// Clean up the interface for the ui class.
+// Implement the rest of the interface for a prefs page...cancelling, etc.
+// Somewhere in here, I need to create proxies of the features.
+
+
 function ZmVoicePrefsView(parent, appCtxt, controller) {
 	var labels = { listHeader: ZmMsg.phoneNumbers, detailsHeader: ZmMsg.callSettings };
 
@@ -63,12 +69,48 @@ function() {
 
 ZmVoicePrefsView.prototype.isDirty =
 function() {
+	this._getChanges();
+	return this._changes != null;
+};
+
+ZmVoicePrefsView.prototype._getChanges =
+function() {
+	if (!this._phone) {
+		return;
+	}
 	for(var i = 0, count = this._ui.length; i < count; i++) {
 		if (this._ui[i].isDirty()) {
-			return true;
+			this._addChange(this._ui[i]);
 		}
 	}
-	return false;
+};
+
+ZmVoicePrefsView.prototype._addChange =
+function(ui) {
+	var list;
+	if (!this._changes) {
+		this._changes = {};
+	} else {
+		var change = this._changes[this._phone.name];
+		if (change) {
+			list = change.list;
+		}
+	}
+	
+	if (list) {
+		var found = false;
+		for (var i = 0, count = list.length; i < count; i++) {
+			if (list[i] == this._phone) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) {
+			list.push(ui.getFeature());
+		}
+	} else {
+		this._changes[this._phone.name] = {phone: this._phone, list: [ui.getFeature()]};
+	}
 };
 
 ZmVoicePrefsView.prototype.reset =
@@ -96,6 +138,10 @@ function(parentElement) {
 
 ZmVoicePrefsView.prototype.showItem =
 function(phone) {
+	this._getChanges();
+//Retarded: saving a reference to the phone here, even though the parent class has it (as _item).
+//Even more retarded because IdentityView does the same retarded thing.
+	this._phone = phone;
 	phone.getCallFeatures(new AjxCallback(this, this._handleResponseGetFeatures, phone));
 };
 
@@ -103,7 +149,7 @@ ZmVoicePrefsView.prototype._handleResponseGetFeatures =
 function(phone, features) {
 	for(var i = 0, count = this._ui.length; i < count; i++) {
 		var feature = features[this._ui[i].getName()];
-		this._ui[i].set(feature);
+		this._ui[i].setFeature(feature);
 	}
 };
 
@@ -114,7 +160,10 @@ function(errors) {
 
 ZmVoicePrefsView.prototype.addCommand =
 function(batchCommand) {
-	alert('ZmVoicePrefsView.prototype._validateSelectedItem');
+	for (var i in this._changes) {
+		var phone = this._changes[i].phone;
+		phone.modifyCallFeatures(batchCommand, this._changes[i].list, null);
+ 	}
 };
 
 ZmVoicePrefsView.prototype._getItemText =
@@ -182,47 +231,28 @@ function() {
 //	this._updates.length = 0;
 };
 
-ZmVoicePrefsView.prototype.getChanges =
-function() {
-//	var dirty = false;
-//	if (!this._identity) {
-//		return dirty;
-//	}
-//	if (this._identity.hasOwnProperty("name")) {
-//		dirty = true;
-//	}
-//	for (var i = 0, count = this._pages.length; i < count; i++) {
-//		dirty = this._pages[i].getChanges(this._identity) || dirty;
-//	}
-//	
-//	if (dirty && this._identity._object_) {
-//		var found = false;
-//		for (var i = 0, count = this._updates.length; i < count; i++) {
-//			if (this._updates[i].id == this._identity.id) {
-//				found = true; 
-//				break;
-//			}
-//		}
-//		if (!found) {
-//			this._updates[this._updates.length] = this._identity;
-//		}
-//	}
-//	return dirty;
-};
-
 function ZmCallFeatureUI(view) {
 	this._view = view;
 }
 
-ZmCallFeatureUI.prototype.set =
+ZmCallFeatureUI.prototype.setFeature =
 function(feature) {
 	this._feature = feature;
 	this._checkbox.setSelected(feature.isActive);
-	this._show(feature);
+	this.show(feature);
+};
+
+ZmCallFeatureUI.prototype.getFeature =
+function() {
+	this._feature.isActive = this._checkbox.isSelected();
+	return this._feature;
 };
 
 ZmCallFeatureUI.prototype.isDirty =
 function() {
+	if (!this._feature) {
+		return false;
+	}
 	if (this._feature.isActive != this._checkbox.isSelected()) {
 		return true;
 	}
@@ -233,14 +263,6 @@ function() {
 ZmCallFeatureUI.prototype.getName =
 function() {
 	alert('ZmCallFeatureUI.prototype.getName');
-};
-ZmCallFeatureUI.prototype._setValue =
-function(value) {
-	alert('ZmCallFeatureUI.prototype._setValue');
-};
-ZmCallFeatureUI.prototype._getValue =
-function() {
-	alert('ZmCallFeatureUI.prototype._getValue');
 };
 ZmCallFeatureUI.prototype._initialize =
 function(id) {
@@ -262,23 +284,17 @@ function() {
 
 ZmAnonymousRejectionUI.prototype.getName =
 function() {
-	return "anoncallrejection";
+	return ZmCallFeature.ANONYNOUS_REJECTION;
 };
 
-ZmAnonymousRejectionUI.prototype._show =
+ZmAnonymousRejectionUI.prototype.show =
 function(feature) {
 	// Nothing to do here.
 };
 
 ZmAnonymousRejectionUI.prototype._isValueDirty =
-function(feature) {
-	return false;
-};
-
-ZmAnonymousRejectionUI.prototype._getValue =
 function() {
-	return this._checkbox.isSelected() ? "TRUE" : "FALSE";
-	alert('ZmCallFeatureUI.prototype._getValue');
+	return false;
 };
 
 ZmAnonymousRejectionUI.prototype._initialize =
@@ -304,23 +320,38 @@ function() {
 
 ZmCallForwardingUI.prototype.getName =
 function() {
-	return "anoncallrejection";
+	return ZmCallFeature.CALL_FORWARDING;
 };
 
-ZmCallForwardingUI.prototype._show =
+ZmCallForwardingUI.prototype.show =
 function(feature) {
-	// Nothing to do here.
+	var display = ZmPhone.calculateDisplay(feature.data.ft);
+	this._comboBox.setText(display);
 };
 
 ZmCallForwardingUI.prototype._isValueDirty =
-function(feature) {
+function() {
+	if (this._getSelectedValue() != this._feature.data.ft) {
+		return true;
+	}
 	return false;
 };
 
-ZmCallForwardingUI.prototype._getValue =
+ZmCallForwardingUI.prototype.getFeature =
 function() {
-	return this._checkbox.isSelected() ? "TRUE" : "FALSE";
-	alert('ZmCallFeatureUI.prototype._getValue');
+	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
+	result.data.ft = this._comboBox.getText();
+	return result;
+};
+
+ZmCallForwardingUI.prototype._getSelectedValue =
+function() {
+	var value = this._comboBox.getValue();
+	if (value) {
+		return value;
+	} else {
+		return ZmPhone.calculateName(this._comboBox.getText());
+	}
 };
 
 ZmCallForwardingUI.prototype._initialize =
@@ -328,6 +359,15 @@ function(id) {
 	this._checkbox = new DwtCheckbox(this._view);
 	this._checkbox.setText(ZmMsg.callForwardingDescription);
 	this._checkbox.replaceElement(id + "_callForwardingCheckbox");
+	
+	var inputParams = { size:25 }
+	this._comboBox = new DwtComboBox(this._view, inputParams);
+	var phones = this._view._appCtxt.getApp(ZmApp.VOICE).phones;
+	for (var i = 0, count = phones.length; i < count; i++) {
+		var phone = phones[i];
+		this._comboBox.add(phone.getDisplay(), phone.name, false);
+	}
+	this._comboBox.replaceElement(id + "_callForwardingComboBox");
 };
 
 
@@ -352,7 +392,7 @@ function() {
 	return "donotdisturb";
 };
 
-ZmEmailNotificationUI.prototype._show =
+ZmEmailNotificationUI.prototype.show =
 function(feature) {
 // TODO: Fill in combo box.....
 };

@@ -52,13 +52,19 @@ function() {
 	
 	this._listView.getAddButton().setVisible(false);
 	this._listView.getRemoveButton().setVisible(false);
+
+	var listControl = this._listView.getList();
+	var list = listControl.getList();
+	if (list.size()) {
+		listControl.setSelection(list.get(0));
+	}
 };
 
 ZmVoicePrefsController.prototype._getListData =
 function() {
 	var result = new AjxVector();
 	var app = this._appCtxt.getApp(ZmApp.VOICE);
-	for(var i = 0, count = app.phones.length; i < count; i++) {
+	for (var i = 0, count = app.phones.length; i < count; i++) {
 		result.add(app.phones[i]);
 	}
 	return result;
