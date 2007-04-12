@@ -24,6 +24,20 @@
                         <app:button name="actionApptDelete" src="common/Delete.gif" tooltip="actionApptDeleteTT" text="delete"/>
                     </c:otherwise>
                 </c:choose>
+
+                <c:if test="${not isInstance}">
+                    <td><div class='vertSep'></div></td>
+                    <td  nowrap valign=middle>
+                        <select name="actionOp">
+                            <option value="" selected/><fmt:message key="moreActions"/>
+                            <option value="flag"/><fmt:message key="actionAddFlag"/>
+                            <option value="unflag"/><fmt:message key="actionRemoveFlag"/>
+                            <app:tagOptions mailbox="${mailbox}"/>
+                        </select>
+                    </td>
+                    <app:button name="actionGo" tooltip="actionConvGoTT" text="actionGo"/>
+                    <td><div class='vertSep'></div></td>
+                </c:if>
             </c:if>
         </td>
     </c:set>

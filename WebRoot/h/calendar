@@ -83,23 +83,55 @@
 
     <c:if test="${param.action eq 'view'}">
         <c:set var="needViewAppt" value="${true}"/>
-        <c:if test="${zm:actionSet(param,'actionApptDelete')}">
-            <c:choose>
-                <c:when test="${param.useInstance eq '1'}">
-                    <c:set var="id" value="${not empty param.exInvId ? param.exInvId : param.invId}"/>
-                    <c:set var="compNum" value="${empty param.exCompNum ? 0 : param.exCompNum}"/>
-                    <c:set var="instance" value="${param.instStartTime}"/>
-                </c:when>
-                <c:otherwise>
-                    <c:set var="id" value="${param.invId}"/>
-                    <c:set var="compNum" value="${empty param.invCompNum ? 0 : param.invCompNum}"/>
-                    <c:set var="instance" value="${0}"/>
-                </c:otherwise>
-            </c:choose>
-            <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}"/>
-            <zm:cancelAppointment message="${message}" instance="${instance}"/>
-            <c:set var="needViewAppt" value="${false}"/>
-        </c:if>
+        <c:choose>
+            <c:when test="${zm:actionSet(param,'actionGo')}">
+                <c:set var="actionOp" value="${param.actionOp}"/>
+                <c:set var="id" value="${param.invId}"/>
+                <c:choose>
+                    <c:when test="${actionOp eq 'flag' or actionOp eq 'unflag'}">
+                        <zm:flagItem var="result" id="${id}" flag="${actionOp eq 'flag'}"/>
+                        <app:status>
+                            <fmt:message key="${actionOp eq 'flag' ? 'actionApptFlag' : 'actionApptUnflag'}">
+                                <fmt:param value="${result.idCount}"/>
+                            </fmt:message>
+                        </app:status>
+                        ${zm:clearMessageCache(mailbox)}
+                    </c:when>
+                    <c:when test="${fn:startsWith(actionOp, 't:') or fn:startsWith(actionOp, 'u:')}">
+                        <c:set var="tag" value="${fn:startsWith(actionOp, 't')}"/>
+                        <c:set var="tagid" value="${fn:substring(actionOp, 2, -1)}"/>
+                        <zm:tagItem tagid="${tagid}"var="result" id="${id}" tag="${tag}"/>
+                        <app:status>
+                            <fmt:message key="${tag ? 'actionApptTag' : 'actionApptUntag'}">
+                                <fmt:param value="${result.idCount}"/>
+                                <fmt:param value="${zm:getTagName(pageContext, tagid)}"/>
+                            </fmt:message>
+                        </app:status>
+                        ${zm:clearMessageCache(mailbox)}
+                    </c:when>
+                    <c:otherwise>
+                        <app:status style="Warning"><fmt:message key="actionNoActionSelected"/></app:status>
+                    </c:otherwise>
+                </c:choose>
+            </c:when>
+            <c:when test="${zm:actionSet(param,'actionApptDelete')}">
+                <c:choose>
+                    <c:when test="${param.useInstance eq '1'}">
+                        <c:set var="id" value="${not empty param.exInvId ? param.exInvId : param.invId}"/>
+                        <c:set var="compNum" value="${empty param.exCompNum ? 0 : param.exCompNum}"/>
+                        <c:set var="instance" value="${param.instStartTime}"/>
+                    </c:when>
+                    <c:otherwise>
+                        <c:set var="id" value="${param.invId}"/>
+                        <c:set var="compNum" value="${empty param.invCompNum ? 0 : param.invCompNum}"/>
+                        <c:set var="instance" value="${0}"/>
+                    </c:otherwise>
+                </c:choose>
+                <zm:getMessage var="message" id="${id}" markread="true" neuterimages="${empty param.xim}"/>
+                <zm:cancelAppointment message="${message}" instance="${instance}"/>
+                <c:set var="needViewAppt" value="${false}"/>
+            </c:when>
+        </c:choose>
     </c:if>
 
     <c:set var="view" value="${not empty param.view ? param.view : mailbox.prefs.calendarInitialView}"/>
