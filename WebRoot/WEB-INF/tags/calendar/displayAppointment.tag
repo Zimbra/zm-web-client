@@ -179,11 +179,7 @@
                     </td>
                     <td valign='top'>
                         <table width=100% cellpadding=2 cellspacing=0 border=0>
-                            <tr>
-                                <td nowrap align='right' class='MsgHdrSent'>
-                                    &nbsp;
-                                </td>
-                            </tr>
+
                             <c:if test="${message.hasTags or message.isFlagged}">
                                 <tr>
                                     <td nowrap align='right' class='Tags'>
@@ -212,6 +208,11 @@
                                     </td>
                                 </tr>
                             </c:if>
+                            <tr>
+                                <td nowrap align='right' class='MsgHdrSent'>
+                                    &nbsp;
+                                </td>
+                            </tr>
                         </table>
                     </td>
                 </tr>
