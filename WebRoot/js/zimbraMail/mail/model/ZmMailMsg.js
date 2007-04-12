@@ -923,7 +923,7 @@ function(findHits) {
 
 			// set other meta info
 			props.isHit = findHits && this._isAttInHitList(attach);
-			props.mpId = attach.part;
+			props.part = attach.part;
 			if (!useCL)
 				props.url = csfeMsgFetchSvc + "id=" + this.getId() + "&part=" + attach.part;
 

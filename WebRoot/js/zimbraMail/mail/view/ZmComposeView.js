@@ -1576,7 +1576,7 @@ function(msg, action, replyPref) {
 					html[idx++] = " CHECKED";
 				}
 				html[idx++] = " id='";
-				html[idx++] = att.mpId;
+				html[idx++] = att.part;
 				html[idx++] = "'></td><td class='nobreak'>";
 				html[idx++] = att.link;
 				html[idx++] = AjxStringUtil.htmlEncode(att.label);

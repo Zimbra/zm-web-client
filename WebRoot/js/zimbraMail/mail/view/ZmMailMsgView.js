@@ -1188,7 +1188,17 @@ function() {
 	var dividx = idx;	// we might get back here
 	htmlArr[idx++] = "<div style='overflow: auto;'>";
 	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0>";
+
 	var rows = 0;
+	if (attLinks.length > 1) {
+		htmlArr[idx++] = "<tr><td colspan=";
+		htmlArr[idx++] = ZmMailMsgView.ATTC_COLUMNS;
+		htmlArr[idx++] = ">";
+		idx = ZmMailMsgView._buildZipUrl(this._appCtxt.getCsfeMsgFetcher(), this._msg.id, attLinks, htmlArr, idx);
+		htmlArr[idx++] = "</td></tr>";
+		rows++;
+	}
+
 	for (var i = 0; i < attLinks.length; i++) {
 		var att = attLinks[i];
 
@@ -1604,4 +1614,24 @@ function(msgId, vcardPartId) {
 		: window._zimbraMail._appCtxt;
 
 	appCtxt.getApp(ZmApp.CONTACTS).createFromVCard(msgId, vcardPartId);
+};
+
+ZmMailMsgView._buildZipUrl =
+function(csfeUrl, itemId, attachments, htmlArr, idx) {
+	var url = csfeUrl + "id=" + itemId + "&part=";
+	for (var j = 0; j < attachments.length; j++) {
+		url += attachments[j].part;
+		if (j <= attachments.length)
+			url += ",";
+	}
+	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='margin-right:1em; margin-bottom:1px'><tr>";
+	htmlArr[idx++] = "<td style='width:18px'>";
+	htmlArr[idx++] = AjxImg.getImageHtml(ZmMimeTable.getInfo(ZmMimeTable.APP_ZIP).image, "position:relative;");
+	htmlArr[idx++] = "</td><td style='white-space:nowrap'><a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' href='";
+	htmlArr[idx++] = url;
+	htmlArr[idx++] = "&disp=a&fmt=zip'>";
+	htmlArr[idx++] = ZmMsg.downloadAll;
+	htmlArr[idx++] = "</td></tr></table>";
+
+	return idx;
 };
