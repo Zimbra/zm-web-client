@@ -32,7 +32,7 @@
     </c:if>
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" date="${date}">
+<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" date="${date}" tags="true">
     <table width=100%  cellpadding="0" cellspacing="0" border=0>
         <tr>
             <td class='TbTop'>

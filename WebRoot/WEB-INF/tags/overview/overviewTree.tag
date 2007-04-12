@@ -22,6 +22,6 @@
 <c:if test="${searches}"><app:searchFolderTree keys="${keys}" editmode="${editmode}"/><br></c:if>
 </c:if>
 <c:if test="${mailbox.features.tagging}">
-<c:if test="${tags}"><app:tagTree keys="${keys}" editmode="${editmode}"/></c:if>
+<c:if test="${tags}"><app:tagTree calendars="${calendars}" keys="${keys}" editmode="${editmode}"/><br></c:if>
 </c:if>
 <c:if test="${minical}"><app:miniCal date="${not empty date ? date : zm:getToday(mailbox.prefs.timeZone)}"/></c:if>

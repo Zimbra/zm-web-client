@@ -2,6 +2,7 @@
 <%@ attribute name="var" rtexprvalue="false" required="true" type="java.lang.String" %>
 <%@ attribute name="value" rtexprvalue="true" required="false" type="java.lang.String" %>
 <%@ attribute name="view" rtexprvalue="true" required="false" %>
+<%@ attribute name="sq" rtexprvalue="true" required="false" %>
 <%@ attribute name="rawdate" rtexprvalue="true" required="false" type="java.util.Calendar"%>
 <%@ attribute name="timezone" rtexprvalue="true" required="false" type="java.util.TimeZone"%>
 <%@ attribute name="date" rtexprvalue="true" required="false" %>
@@ -23,7 +24,7 @@
     </c:if>
     <c:if test="${not empty param.numdays and view eq 'day'}"><c:param name='numdays' value='${param.numdays}'/></c:if>
     <c:if test="${not empty param.tz}"><c:param name='tz' value='${param.tz}'/></c:if>
-    <c:if test="${not empty param.sq}"><c:param name='sq' value='${param.sq}'/></c:if> 
+    <c:if test="${not empty param.sq or not empty sq}"><c:param name='sq' value='${not empty sq ? sq : param.sq}'/></c:if> 
     <c:choose>
         <c:when test="${not empty rawdate}">
             <c:param name='date'><fmt:formatDate timeZone="${timezone}" value="${rawdate.time}" pattern="yyyyMMdd"/></c:param>

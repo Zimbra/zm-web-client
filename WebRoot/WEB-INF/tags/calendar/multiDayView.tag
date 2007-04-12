@@ -63,7 +63,7 @@
 
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${pageTitle}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true"
+<app:view mailbox="${mailbox}" title="${pageTitle}" context="${null}" selected='calendar' calendars="true" minical="true" keys="true" tags="true"
           date="${date}">
     <table width=100% height=100% cellpadding="0" cellspacing="0" border=0>
         <tr>

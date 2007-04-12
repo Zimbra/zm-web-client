@@ -1,6 +1,7 @@
 <%@ tag body-content="empty" %>
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
+<%@ attribute name="calendars" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -31,7 +32,7 @@
         </tr>
         <c:if test="${expanded}">
             <zm:forEachTag var="tag">
-                <app:overviewTag tag="${tag}"/>
+                <app:overviewTag calendars="${calendars}" tag="${tag}"/>
             </zm:forEachTag>
         </c:if>
     </table>
