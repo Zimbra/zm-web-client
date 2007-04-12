@@ -51,6 +51,10 @@ ZmChatWidget.prototype._setChat = function(chat) {
 	}
 };
 
+ZmChatWidget.prototype.getIcon = function() {
+	return this.chat.getIcon();
+};
+
 ZmChatWidget.prototype._rosterItemChangeListener = function(item, fields, setAll) {
 	var doShow = setAll || (ZmRosterItem.F_PRESENCE in fields);
 	var doUnread = setAll || (ZmRosterItem.F_UNREAD in fields);
@@ -244,7 +248,7 @@ ZmChatWidget.prototype._init = function() {
 	this._getElement("input")[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] =
 		ZmChatWidget._inputKeyPress;
 
-	var dropTgt = new DwtDropTarget(["ZmRosterTreeItem", "ZmRosterTreeGroup"]);
+	var dropTgt = new DwtDropTarget(["ZmRosterTreeItem", "ZmRosterTreeGroup", "ZmChatWidget"]);
 	this._label.setDropTarget(dropTgt);
 	this._toolbar.setDropTarget(dropTgt);
 	dropTgt.addDropListener(new AjxListener(this, this._dropOnTitleListener));
@@ -330,8 +334,19 @@ ZmChatWidget.prototype._setUnreadStatus = function() {
 
 		// Only if it's not already active -- the easiest way is to
 		// check the className.  Hopefully no one will change it.
-		if (!/active/i.test(label.className))
+		if (!/active/i.test(label.className)) {
 			Dwt.addClass(label, "ZmChatTab-Unread");
+			var steps = 5;
+			var timer = setInterval(function() {
+				if (steps-- & 1) {
+					Dwt.addClass(label, "ZmChatTab-Flash");
+				} else {
+					Dwt.delClass(label, "ZmChatTab-Flash");
+					if (steps < 0)
+						clearInterval(timer);
+				}
+			}, 150);
+		}
 	}
 };
 
@@ -357,12 +372,20 @@ ZmChatWidget.prototype.select = function() {
 	this.focus();
 };
 
+ZmChatWidget.prototype.attach = function(tabs) {
+	if (tabs !== this.parent) {
+		this.parent.detachChatWidget(this);
+		tabs.addTab(this);
+	}
+};
+
 ZmChatWidget.prototype.detach = function(pos) {
 	var tabs = this.parent;
-	var wm = this.getChatWindow().parent; // window manager
-	this._removedEl = this.getHtmlElement();
+	var win = this.getChatWindow();
+	var wm = win.getWindowManager();
+	var sticky = win._sticky;
 	tabs.detachChatWidget(this);
-	var win = new ZmChatWindow(wm, this);
+	win = new ZmChatWindow(wm, this, sticky);
 	wm.manageWindow(win, pos);
 };
 
@@ -399,12 +422,16 @@ ZmChatWidget.prototype._stickyListener = function(ev) {
 	if (wp.y < 0)
 		wp.y = 0;
 	wm.manageWindow(win, wp); // does popup automagically
+	win._sticky = sticky;
+	this.parent.updateStickyButtons();
 };
 
 ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		var srcData = ev.srcData;
-		if (!((srcData instanceof ZmRosterTreeItem) || (srcData instanceof ZmRosterTreeGroup))) {
+		if (!(srcData instanceof ZmRosterTreeItem ||
+		      srcData instanceof ZmRosterTreeGroup ||
+		      srcData instanceof ZmChatWidget)) {
 			ev.doIt = false;
 			return;
 		}
@@ -415,6 +442,9 @@ ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
 			var item = srcData.getRosterItem();
 			ZmChatMultiWindowView.getInstance().chatInNewTab(item, this.parent);
  		}
+		if (srcData instanceof ZmChatWidget) {
+			srcData.attach(this.parent);
+		}
 // 		if ((srcData instanceof ZmRosterTreeGroup)) {
 // 			var mouseEv = DwtShell.mouseEvent;
 //             		mouseEv.setFromDhtmlEvent(ev.uiEvent);

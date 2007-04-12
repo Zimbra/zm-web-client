@@ -61,6 +61,16 @@ ZmChatTabs.prototype.setActiveTab = function(index) {
 			this._hideTab();
 		this.__currentTab = index;
 		this._showTab();
+		this.parent.select(); // activate window
+	}
+};
+
+ZmChatTabs.prototype.updateStickyButtons = function() {
+	var win = this.parent;
+	var sticky = !!win._sticky;
+	for (var i = this.__tabs.size(); --i >= 0;) {
+		var chatWidget = this.__tabs.get(i);
+		chatWidget._sticky.setToggled(sticky);
 	}
 };
 
@@ -113,10 +123,12 @@ ZmChatTabs.prototype.addTab = function(chat, index) {
 	this.__tabs.add(child, index);
 	this.parent.enableMoveWithElement(child._toolbar);
 	this._createTabButton(child, true, index);
+	this.updateStickyButtons();
 	return child;
 };
 
 ZmChatTabs.prototype.detachChatWidget = function(chatWidget) {
+	chatWidget._removedEl = chatWidget.getHtmlElement();
 	var index = this.__tabs.indexOf(chatWidget);
 	var newTab = this.__currentTab;
 	this.__tabs.remove(chatWidget);
@@ -151,10 +163,18 @@ ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
 	var cont = new DwtComposite(this, "ZmChatTabs-Tab");
 	var tb = new DwtToolBar(cont);
 
+	var close = new DwtToolBarButton(tb);
+	close.addSelectionListener(chatWidget._closeListener); // ;-)
+	close.setHoverImage("Close");
+	close.setEnabledImage(chatWidget.getIcon());
+
+	tb.addSpacer();
+
 	var t = this.__tabBarEl;
 	cont.reparentHtmlElement(t, index);
-	t.className = t.className.replace(/ZmChatTabs-TabBarCount-[0-9]+/,
-					  "ZmChatTabs-TabBarCount-" + this.__tabs.size());
+	Dwt.delClass(t, /ZmChatTabs-TabBarCount-[0-9]+/,
+		     "ZmChatTabs-TabBarCount-" + this.__tabs.size());
+
 	var index = this.__tabs.size() - 1;
 	this.setActiveTab(index);
 	var label = new DwtLabel(tb);
@@ -167,14 +187,17 @@ ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
 	cont._setMouseEventHdlrs();
 	cont.addListener(DwtEvent.ONMOUSEDOWN, listener);
 
-	label.setImage(this.getCurrentChat().getRosterItem().getPresence().getIcon());
-
 	// d'n'd
 	var ds = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	label.setDragSource(ds);
 	ds.addDragListener(new AjxListener(this, function(ev) {
-		if (ev.action == DwtDragEvent.SET_DATA)
+		if (ev.action == DwtDragEvent.SET_DATA) {
+			this.parent.getWindowManager().takeOver(true);
 			ev.srcData = chatWidget;
+		} else if (ev.action == DwtDragEvent.DRAG_END ||
+			   ev.action == DwtDragEvent.DRAG_CANCEL) {
+			this.parent.getWindowManager().takeOver(false);
+		}
 	}));
 	label._getDnDIcon = function() {
 		var icon = document.createElement("div");
@@ -184,8 +207,4 @@ ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
 		Dwt.setZIndex(icon, Dwt.Z_DND);
 		return icon;
 	};
-
-	var close = new DwtToolBarButton(tb);
-	close.setImage("Close");
-	close.addSelectionListener(chatWidget._closeListener); // ;-)
 };

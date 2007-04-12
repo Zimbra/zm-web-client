@@ -57,13 +57,15 @@ ZmChatMultiWindowView.getInstance = function() {
 
 ZmChatMultiWindowView.prototype.getWindowManager = function() {
 	if (!this._wm)
-		this._wm = new DwtWindowManager(this);
+		this._wm = new ZmChatWindowManager(this);
+		// this._wm = new DwtWindowManager(this);
 	return this._wm;
 };
 
 ZmChatMultiWindowView.prototype.getShellWindowManager = function() {
 	if (!this._shellWm)
-		this._shellWm = new DwtWindowManager(DwtShell.getShell(window));
+		this._shellWm = new ZmChatWindowManager(DwtShell.getShell(window));
+		// this._shellWm = new DwtWindowManager(DwtShell.getShell(window));
 	return this._shellWm;
 };
 
@@ -198,8 +200,7 @@ function(ev) {
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		var srcData = ev.srcData;
 		if (!( (srcData instanceof ZmRosterTreeItem) ||
-			(srcData instanceof ZmRosterTreeGroup) ||
-		       (srcData instanceof ZmChatWidget) )) {
+			(srcData instanceof ZmRosterTreeGroup) )) {
 			ev.doIt = false;
 			return;
 		}
@@ -210,18 +211,13 @@ function(ev) {
 		var pos = this.getLocation();
 		var newPos = { x: mouseEv.docX - pos.x,
 			       y: mouseEv.docY - pos.y };
-		if ((srcData instanceof ZmRosterTreeItem)) {
-			this._nextInitX = newPos.x
-            		this._nextInitY = newPos.y;
+		this._nextInitX = newPos.x
+            	this._nextInitY = newPos.y;
+		if (srcData instanceof ZmRosterTreeItem) {
 			this._controller.chatWithRosterItem(srcData.getRosterItem());
 		}
-		if ((srcData instanceof ZmRosterTreeGroup)) {
-			this._nextInitX = newPos.x
-            		this._nextInitY = newPos.y;
+		if (srcData instanceof ZmRosterTreeGroup) {
 			this._controller.chatWithRosterItems(srcData.getRosterItems(), srcData.getName()+" "+ZmMsg.imGroupChat);
-		}
-		if ((srcData instanceof ZmChatWidget)) {
-			srcData.detach(newPos);
 		}
 	}
 };

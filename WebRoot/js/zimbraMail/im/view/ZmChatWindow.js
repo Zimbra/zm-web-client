@@ -23,17 +23,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmChatWindow(parent, chat) {
+function ZmChatWindow(parent, chat, sticky) {
 	if (arguments.length == 0) return;
 	DwtResizableWindow.call(this, parent);
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
-	this._init(chat);
+	this._init(chat, sticky);
 };
 
 ZmChatWindow.prototype = new DwtResizableWindow;
 ZmChatWindow.prototype.constructor = ZmChatWindow;
 
-ZmChatWindow.prototype._init = function(chat) {
+ZmChatWindow.prototype._init = function(chat, sticky) {
+	this._sticky = !!sticky;
 	var tabs = this._tabs = new ZmChatTabs(this);
 	tabs.addDisposeListener(new AjxListener(this, this._tabsDisposeListener));
 	this.setView(tabs);

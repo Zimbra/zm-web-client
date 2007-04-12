@@ -1891,7 +1891,8 @@ HTML>BODY .appt-selected .appt_allday_body
   -moz-border-radius-bottomright: 2px;
 }
 
-.ZmChatTab-Unread .ZWidgetTitle { color: #f00; }
+.ZmChatTab-Unread .ZWidgetTitle { color: #c00; }
+.ZmChatTab-Flash .ZWidgetTitle { visibility: hidden; }
 
 .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable { width: auto; }
 /* .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTitle { width: auto; padding-top: 0; padding-bottom: 0; } */
@@ -1903,7 +1904,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatTabs-TabBar .ZmChatTabs-Tab-Active {
   @ToolbarContainer@
   float: left;
-  padding: 2px 4px 4px 4px;
+  padding: 2px 4px 3px 4px;
   border-top: none;
   margin-top: -1px;
   -moz-border-radius-topleft: 0;
