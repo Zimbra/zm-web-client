@@ -25,7 +25,7 @@
     
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" selected='calendar' calendars="true" keys="false" minical="true" date="${requestScope.dateContext}">
+<app:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" selected='calendar' calendars="true" keys="false" minical="true" date="${requestScope.dateContext}" tags="true">
     <form action="" method="post">
 
         <table width=100% cellpadding="0" cellspacing="0">

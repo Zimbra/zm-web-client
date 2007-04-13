@@ -73,7 +73,7 @@
     
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='calendar' calendars="true" minical="true" context="${null}" keys="false" date="${requestScope.dateContext}">
+<app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='calendar' calendars="true" minical="true" context="${null}" keys="false" date="${requestScope.dateContext}" tags="true">
     <c:set var="toolbar">
         <table width=100% cellspacing=0 cellpadding=0 class='Tb'>
             <tr valign='middle'>
