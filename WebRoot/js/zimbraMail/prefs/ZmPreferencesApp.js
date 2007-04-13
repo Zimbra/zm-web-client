@@ -42,7 +42,7 @@ ZmItem.DATA_SOURCE			= ZmEvent.S_DATA_SOURCE;
 // App-related constants
 ZmApp.PREFERENCES					= "Options";
 ZmApp.CLASS[ZmApp.PREFERENCES]		= "ZmPreferencesApp";
-ZmApp.SETTING[ZmApp.PREFERENCES]	= ZmSetting.PREFERENCES_ENABLED;
+ZmApp.SETTING[ZmApp.PREFERENCES]	= ZmSetting.OPTIONS_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.PREFERENCES]	= 10;
 ZmApp.QS_ARG[ZmApp.PREFERENCES]		= "options";
 
