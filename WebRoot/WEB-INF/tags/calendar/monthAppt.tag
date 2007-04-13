@@ -27,17 +27,19 @@
     </c:when>
     <c:otherwise>
         <div class='ZhCalMonthAppt ${color}${needsAction ? 'DarkC' : 'C'}'>
-            &bull;&nbsp;
-            <c:choose>
-                <c:when test="${appt.startTime lt start}">
-                    <fmt:formatDate value="${appt.startDate}" type="date" dateStyle="short"/>
-                </c:when>
-                <c:otherwise>
-                    <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
-                </c:otherwise>
-            </c:choose>
-            &nbsp;
-                <a href="${apptUrl}">${fn:escapeXml(subject)}</a>
+            <a href="${apptUrl}">
+                &bull;&nbsp;
+                <c:choose>
+                    <c:when test="${appt.startTime lt start}">
+                        <fmt:formatDate value="${appt.startDate}" type="date" dateStyle="short"/>
+                    </c:when>
+                    <c:otherwise>
+                        <fmt:formatDate value="${appt.startDate}" type="time" timeStyle="short"/>
+                    </c:otherwise>
+                </c:choose>
+                &nbsp;
+                    ${fn:escapeXml(subject)}
+            </a>
         </div>
     </c:otherwise>
 </c:choose>
