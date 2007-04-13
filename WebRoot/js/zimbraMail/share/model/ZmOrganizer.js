@@ -550,6 +550,16 @@ function() {
 	return url;
 };
 
+ZmOrganizer.prototype.getRemoteId =
+function() {
+	if (!this._remoteId) {
+		this._remoteId = this.isRemote()
+			? this.zid + ":" + this.rid
+			: this.id;
+	}
+	return this._remoteId;
+}
+
 ZmOrganizer.prototype.getRestUrl =
 function() {
 	// return REST URL as seen by server
