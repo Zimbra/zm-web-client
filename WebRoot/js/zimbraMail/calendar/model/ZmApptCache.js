@@ -275,7 +275,9 @@ function(context, result) {
 
 	var searchResp = resp.SearchResponse;
 	if (searchResp && searchResp.appt && searchResp.appt.length) {
-		this._rawAppts = this._rawAppts.concat(searchResp.appt);
+		this._rawAppts = this._rawAppts != null 
+			? this._rawAppts.concat(searchResp.appt)
+			: searchResp.appt;
 
 		// if "more" flag set, keep requesting more appts
 		if (searchResp.more) {
