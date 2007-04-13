@@ -229,8 +229,9 @@ function(baseId, overrides) {
 	var image = ZmOperation.getProp(baseId, "image");
 	var disImage = ZmOperation.getProp(baseId, "disImage");
 	var enabled = (overrides && (overrides.enabled !== false));
+    var style = ZmOperation.getProp(baseId, "style");
 
-	var opDesc = {id:id, text:text, image:image, disImage:disImage, enabled:enabled, tooltip:tooltip};
+    var opDesc = {id:id, text:text, image:image, disImage:disImage, enabled:enabled, tooltip:tooltip, style:style};
 	if (overrides) {
 		for (var i in overrides) {
 			opDesc[i] = overrides[i];

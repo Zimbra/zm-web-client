@@ -153,7 +153,7 @@ function() {
 		this._prefsView = new ZmPrefView(this._container, this._appCtxt, Dwt.ABSOLUTE_STYLE, this);
 		var elements = new Object();
 		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar;
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._prefsView;
+		elements[ZmAppViewMgr.C_APP_CONTENT_FULL] = this._prefsView;
 		this._app.createView(ZmController.PREF_VIEW, elements, callbacks, true);
 		this._initializeTabGroup();
 	}

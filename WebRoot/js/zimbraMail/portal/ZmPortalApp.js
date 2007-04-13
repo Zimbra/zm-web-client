@@ -36,11 +36,11 @@ ZmPortalApp.prototype.toString = function() {
 
 // Construction
 
-ZmPortalApp.prototype._registerApp =
-function() {
+ZmPortalApp.prototype._registerApp = function() {
     ZmApp.registerApp(ZmApp.PORTAL, {
         nameKey: "portal",
         icon: "Globe",
+        chooserTooltipKey:	"goToPortal",
         button: ZmAppChooser.B_PORTAL,
         chooserSort: 1,
         defaultSort: 1
@@ -73,24 +73,22 @@ ZmPortalApp.prototype.refreshPortlets = function() {
     }
 };
 
-ZmPortalApp.prototype.launch =
-function(callback) {
-	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
+ZmPortalApp.prototype.launch = function(callback) {
+    var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
 	AjxDispatcher.require("Portal", false, loadCallback, null, true);
 };
 
-ZmPortalApp.prototype._handleLoadLaunch =
-function(callback) {
-    this.setActive(true);
+ZmPortalApp.prototype._handleLoadLaunch = function(callback) {
+    this.activate(true);
     ZmApp.prototype.launch.call(this, callback);
 };
 
-ZmPortalApp.prototype.setActive =
-function(active) {
+ZmPortalApp.prototype.activate = function(active) {
+    var controller = this.getPortalController();
 	if (active) {
-		var controller = this.getPortalController();
 		controller.show();
-	}
+    }
+    controller.setPaused(!active);
 };
 
 ZmPortalApp.prototype.getManifest = function() {
@@ -99,7 +97,7 @@ ZmPortalApp.prototype.getManifest = function() {
         var portalName = this._appCtxt.get(ZmSetting.PORTAL_NAME);
         var e;
         if (portalName) {
-            var url = [ "/zimbra/portals/",portalName,"/manifest.xml?v=",new Date().getTime() ].join("");
+            var url = [ window.appContextPath,"/portals/",portalName,"/manifest.xml?v=",new Date().getTime() ].join("");
             var req = AjxLoader.load(url);
             if (req.status == 200 && req.responseXML) {
                 try {
@@ -136,20 +134,7 @@ ZmPortalApp.prototype.getManifest = function() {
             e = ""
         }
 
-        // create portlets
-        if (this._manifest) {
-            var portalDef = this._manifest.portal;
-            var portletDefs = portalDef && portalDef.portlets;
-            if (portletDefs) {
-                var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
-                for (var i = 0; i < portletDefs.length; i++) {
-                    var portletDef = portletDefs[i];
-                    var id = (portletDef.panel && portletDef.panel.id) || ++ZmPortalApp.__PORTLET_ID;
-                    portletMgr.createPortlet(id, portletDef);
-                }
-            }
-        }
-        else {
+        if (!this._manifest) {
             this._manifest = { error: e };
         }
     }

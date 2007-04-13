@@ -152,6 +152,7 @@ ZmAppViewMgr.ALL_COMPONENTS = [ZmAppViewMgr.C_BANNER, ZmAppViewMgr.C_USER_INFO, 
  * in full screen mode.
  */
 ZmAppViewMgr.APP_COMPONENTS = [
+    ZmAppViewMgr.C_CURRENT_APP,
     ZmAppViewMgr.C_TREE, ZmAppViewMgr.C_TREE_FOOTER,
     ZmAppViewMgr.C_STATUS, ZmAppViewMgr.C_SASH
 ];
@@ -704,10 +705,10 @@ function(view, force, isNewView) {
 ZmAppViewMgr.prototype._setViewVisible =
 function(view, show) {
 	var elements = this._views[view];
-    var wasFull = this._lastView ? this.isFullScreen(this._lastView) : false;
+    var wasFull = this._lastView ? this.isFullScreen(this._lastView) : null;
     var isFull = this.isFullScreen(view);
     if (show) {
-        if (wasFull != isFull) {
+        if (wasFull !== isFull) {
             if (this._hasSkin) {
                 skin.show("fullScreen", isFull);
             }
@@ -878,61 +879,6 @@ function(delta) {
 		var newWidth = this._contBounds[cid].width - delta;
 		this._components[cid].setBounds(newX, Dwt.DEFAULT, newWidth, Dwt.DEFAULT);
 	}
-
-	return delta;
-
-//	var x = this._shellSz.x - (tableSz.x + delta);
-//	DBG.println("inferred right side width (after) = " + x);
-
-//	table = document.getElementById("skin_table_main");
-	table = document.getElementById("skin_col_main");
-	tableSz = Dwt.getSize(table);
-	DBG.println("right table width = " + tableSz.x);
-	Dwt.setSize(table, tableSz.x - delta, Dwt.DEFAULT);
-
-	var contSz = Dwt.getSize(this._appContentContainer);
-//	var width = contSz.x;
-	var width = this._contWidth;
-	DBG.println("app cont width = " + this._contWidth);
-	var height = contSz.y;
-	if (viewId != null) {
-		width -= delta;
-		DBG.println("setting app stuff to width " + width);
-		var topToolbar = this._views[viewId][0];
-		topToolbar.setSize(width, Dwt.DEFAULT);
-		var appContent = this._views[viewId][1];
-		appContent.setSize(width, Dwt.DEFAULT);
-		this._contWidth = width;
-	}
-	if (AjxEnv.isIE)
-		return delta;
-
-	var settings = this._appCtxt.getSettings();
-	
-	var currentApp = this._appCtxt.getCurrentAppToolbar()
-	var caSz = currentApp.getSize();
-	var width = caSz.x + delta;
-	currentApp.setSize(width, Dwt.DEFAULT);
-	DBG.println("current app width: " + caSz.x + " -> " + width);
-	var currentAppEl = document.getElementById(settings.get(ZmSetting.SKIN_CURRENT_APP_ID));
-	var caSz = Dwt.getSize(currentAppEl);
-	Dwt.setSize(currentAppEl, width, Dwt.DEFAULT);
-	DBG.println(" *** current app el width = " + currentAppEl.style.width);
-
-	var statusEl = document.getElementById(settings.get(ZmSetting.SKIN_STATUS_ID));
-//	var sbSz = Dwt.getSize(statusEl);
-//	var sbSz = this._statusBox.getSize();
-//	var width = sbSz.x + delta;
-	this._statusBox.setSize(width, Dwt.DEFAULT);
-	DBG.println("status box width: " + width);
-	Dwt.setSize(statusEl, width, Dwt.DEFAULT);
-
-	var ovSz = this._overviewPanel.getSize();
-	var width = ovSz.x + delta;
-	this._overviewPanel.setSize(width, Dwt.DEFAULT);
-	DBG.println("overview width: " + ovSz.x + " -> " + width);
-	var ovSz = Dwt.getSize(this._overviewContainer);
-	Dwt.setSize(this._overviewContainer, ovSz.x + delta, Dwt.DEFAULT);
 
 	return delta;
 };

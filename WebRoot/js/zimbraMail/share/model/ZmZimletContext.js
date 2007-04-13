@@ -110,7 +110,7 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 	this._handleMenuItemSelected = new AjxListener(this, this._handleMenuItemSelected);
 }
 
-ZmZimletContext.RE_ARRAY_ELEMENTS = /^(dragSource|include|includeCSS|menuItem|param|property|resource)$/;
+ZmZimletContext.RE_ARRAY_ELEMENTS = /^(dragSource|include|includeCSS|menuItem|param|property|resource|portlet)$/;
 
 /** This function creates a 'sane' JSON object, given one returned by the
  * Zimbra server.
@@ -201,14 +201,7 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
     if (this._appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
         AjxPackage.require("Portal");
         var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
-        var portlets = portletMgr.getPortlets();
-        for (var pname in portlets) {
-            var portlet = portlets[pname];
-            if (portlet.zimletName == this.name) {
-                portlet.zimlet = this.handlerObject;
-                this.handlerObject.portletCreated(portlet);
-            }
-        }
+        portletMgr.zimletLoaded(this);
     }
 
     DBG.println(AjxDebug.DBG2, "Zimlets - init() complete: " + this.name);

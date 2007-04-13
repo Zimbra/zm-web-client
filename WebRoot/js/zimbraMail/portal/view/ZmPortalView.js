@@ -29,8 +29,9 @@ function ZmPortalView(parent, appCtxt, controller, dropTgt) {
         parent, "ZmPortalView", Dwt.ABSOLUTE_STYLE,
         ZmController.PORTAL_VIEW, null, controller, headerList, dropTgt
     );
+    this.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 
-	this._appCtxt = appCtxt;
+    this._appCtxt = appCtxt;
 	this._controller = controller;
 
     this._initializeView();
@@ -40,6 +41,14 @@ ZmPortalView.prototype.constructor = ZmPortalView;
 
 ZmPortalView.prototype.toString = function() {
 	return "ZmPortalView";
+};
+
+//
+// Public methods
+//
+
+ZmPortalView.prototype.getPortletIds = function() {
+    return this._portletIds || [];
 };
 
 //
@@ -60,19 +69,6 @@ ZmPortalView.prototype._initializeView = function() {
     }
 
     // populate portlets
-    var portletDefs = portalDef && portalDef.portlets;
-    if (portletDefs) {
-        var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
-        for (var i = 0; i < portletDefs.length; i++) {
-            var portletDef = portletDefs[i];
-            var panelId = portletDef.panel && portletDef.panel.id;
-            var portlet = portletMgr.getPortletById(panelId);
-            if (portlet) {
-                var panelEl = document.getElementById(panelId);
-                if (panelEl && !panelEl.portlet) {
-                    new ZmPortletView(panelEl, portlet);
-                }
-            }
-        }
-    }
+    var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+    this._portletIds = portletMgr.createPortlets();
 };

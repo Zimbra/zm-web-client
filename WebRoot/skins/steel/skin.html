@@ -76,14 +76,15 @@
 						<table class="ConsoleInsetTable" cellpadding=0>
 						<tr class='ToolbarBg'>
 							<td class="ConsoleToolbarCorner_L" align=right><div class="ImgConsoleSearchBuilderToolbar_L"></div></td>
-							<td class="ConsoleHorizontal"      ><div class="ImgConsoleTopToolbar__H" style='width:100%;'>
+							<td class="ConsoleHorizontal">
+                <div class="ImgConsoleTopToolbar__H" style='width:100%;'>
 									<div id="skin_container_search_builder_toolbar" class="skin_container">
 <!--
 SEARCH BUILDER TOOLBAR
 -->
 									</div>
-								
-							</div></td>
+							  </div>
+              </td>
 							<td class="ConsoleToolbarCorner_R"><div class="ImgConsoleSearchBuilderToolbar_R"></div></td>
 						</tr>
 						<tr><td class="ConsoleVertical"  ><div class="ImgConsoleInset_L__V" style='height:100%'></div></td>
@@ -244,7 +245,8 @@ Watch this space for important news!
 					<tr id="skin_tr_top_toolbar" class="ImgToolbar__BG">
 						<td class="ConsoleToolbarCorner_L_1"><div class="ImgConsoleTopToolbar_L_1"></div></td>
 						<td class="ConsoleToolbarCorner_L_2"><div class="ImgConsoleTopToolbar_L_2"></div></td>
-						<td class="ConsoleHorizontal"      ><div class="ImgConsoleTopToolbar__H" style='width:100%;'>
+						<td class="ConsoleHorizontal">
+              <div id='skin_app_top_toolbar' class="ImgConsoleTopToolbar__H" style='width:100%;'>
 								<div id="skin_container_app_top_toolbar" class="skin_container">
 <!--
 <A HREF='javascript:skin.hideTopToolbar();'>
@@ -252,8 +254,8 @@ Watch this space for important news!
 <A>
 -->
 								</div>
-							
-						</div></td>
+							</div>
+            </td>
 						<td class="ConsoleToolbarCorner_R_1"><div class="ImgConsoleTopToolbar_R_1"></div></td>
 						<td class="ConsoleToolbarCorner_R_2"><div class="ImgConsoleTopToolbar_R_2"></div></td>
 					</tr>
@@ -303,6 +305,54 @@ Watch this space for important news!
 					</table>
 				</td>
 			</tr>
+
+      <tr id="skin_tr_outer_main_full">
+        <td id="skin_td_left_chrome_full" colspan=4>
+          <table id="skin_table_left_chrome_full" class="skin_table" cellpadding=0 Xborder=1>
+            <colgroup>
+              <col id="skin_col_app_chooser_full">
+              <!--<col id="skin_col_tree">-->
+            </colgroup>
+            <tr>
+              <td><!--gap--></td>
+              <td id="skin_td_right_frame_full" colspan=5>
+                <table id='skin_table_main_full' class=skin_table cellpadding=0 Xborder=1>
+                  <tr id="skin_tr_top_toolbar_full" class="ImgToolbar__BG">
+                    <td class="ConsoleToolbarCorner_L_1"><div class="ImgConsoleTopToolbar_L_1"></div></td>
+                    <td class="ConsoleToolbarCorner_L_2"><div class="ImgConsoleTopToolbar_L_2"></div></td>
+                    <td class="ConsoleHorizontal">
+                      <div id='skin_app_top_toolbar_full' class="ImgConsoleTopToolbar__H" style='width:100%;'>
+                        <!-- APP TOOLBAR FULL -->
+                      </div>
+                    </td>
+                    <td class="ConsoleToolbarCorner_R_1"><div class="ImgConsoleTopToolbar_R_1"></div></td>
+                    <td class="ConsoleToolbarCorner_R_2"><div class="ImgConsoleTopToolbar_R_2"></div></td>
+                  </tr>
+                </table>
+                </td>
+              </td>
+            </tr>
+            <tr>
+              <td id="skin_td_app_chooser_full">
+                <!-- APP CHOOSER FULL -->
+              </td>
+              <td class="ConsoleCenterFull" colspan=5 valign=top>
+                <table class=skin_table cellpadding=0 Xborder=1>
+                  <tr class="ImgToolbar__BG">
+                    <td><div class='ImgConsoleInsetApp_L__V'></div></td>
+                    <td class='ConsoleHorizontal' valign=top>
+                      <div id="skin_container_app_main_full" class="skin_container">
+                        <!-- APP CONTENT FULL -->
+                      </div>
+                    </td>
+                    <td><div class='ImgConsoleInsetApp_R__V'></div></td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
 
 		</table>
 

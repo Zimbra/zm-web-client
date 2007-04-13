@@ -44,7 +44,8 @@ body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
 .ConsoleInsetCorner			{	width:10;		height:10;		}
 .ConsoleHorizontal			{	width:100%;						}
 .ConsoleVertical			{					height:100%;	}
-.ConsoleCenter				{	width:100%;		height:100%;	}
+.ConsoleCenter, .ConsoleCenterFull				{	width:100%;		height:100%;	}
+.ConsoleCenterFull      { background-color: white; }
 
 .ConsoleToolbarCorner_L_1	{	width:3;	}
 .ConsoleToolbarCorner_L_2	{	width:4;	}
@@ -66,16 +67,19 @@ body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
 	#skin_col_main					{	width:auto;											}
 
 	#skin_tr_outer_top				{														}
-	#skin_tr_outer_main				{	height:100%;										}
+	#skin_tr_outer_main, #skin_tr_outer_main_full				{	height:100%;										}
+  #skin_tr_outer_main_full { display: none; }
 
 		
-#skin_table_left_chrome				{	width:210; 	height:100%;	table-layout:fixed; 	}
-	#skin_col_app_chooser			{	width:40px;											}
+#skin_table_left_chrome, #skin_table_left_chrome_full				{	height:100%;	table-layout:fixed; 	}
+#skin_table_left_chrome { width:210; }
+#skin_table_left_chrome_full { width:100%; } 	
+  #skin_col_app_chooser, #skin_col_app_chooser_full			{	width:40px;											}
 	#skin_col_tree					{	width:170px;										}
 	#skin_tr_tree					{	height:100%;										}
 
 	
-#skin_table_main					{	width:100%; height:100%;						 	}
+#skin_table_main, #skin_table_main_full					{	width:100%; height:100%;						 	}
 	#skin_tr_app_main				{	height:100%;										}
 
 	
@@ -98,13 +102,13 @@ body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
 #skin_td_search_builder				{	background-color:white;								}
 
 		
-#skin_td_left_chrome				{														}
-#skin_td_right_frame				{	background-color:white;	vertical-align:top;			}
+#skin_td_left_chrome, #skin_td_left_chrome_full				{														}
+#skin_td_right_frame, #skin_td_right_frame_full				{	background-color:white;	vertical-align:top;			}
 
 	
 #skin_td_current_app				{	background-color:white;								}
 #skin_td_current_app_end			{	background-color:#EEEEEE;							}
-#skin_td_app_chooser				{														}
+#skin_td_app_chooser, #skin_td_app_chooser_full				{														}
 #skin_td_tree						{														}
 #skin_td_status						{	background-color:#EEEEEE;							}
 #skin_td_tree_app_sash				{						 								}
@@ -121,6 +125,7 @@ body						{	margin:0px; padding:0px; height:100%;background-color:#B7B7B7;}
 #ENDIF
 #skin_tr_tree_footer_sep			{	display:none;										}
 #skin_tr_tree_footer				{	display:none;										}
+#skin_tr_top_toolbar, #skin_tr_top_toolbar_full {             }
 #skin_tr_top_toolbar_shim			{	display:none;										}
 #skin_tr_bottom_toolbar				{	display:none;										}
 

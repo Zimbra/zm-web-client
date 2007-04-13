@@ -1521,5 +1521,11 @@ function() {
 	for (var app in ZmApp.SHOW_ZIMLETS) {
 		ZmApp.OVERVIEW_TREES[app].push(ZmOrganizer.ZIMLET);
 	}
+
+    // create global portlets
+    if (this._appCtxt.get(ZmSettings.PORTAL_ENABLED)) {
+        var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+        var portletIds = portletMgr.createPortlets(true);
+    }
 };
 ZmOrganizer.ZIMLET = "Zimlet";

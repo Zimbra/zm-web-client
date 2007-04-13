@@ -33,6 +33,7 @@ function ZmPortlet(appCtxt, list, id, def) {
     this.zimlet = this.zimletCtxt && this.zimletCtxt.handlerObject;
 
     // save data
+    this.global = def.global;
     this.icon = def.icon;
     this.title = def.title;
     if (this.title) {
@@ -72,12 +73,15 @@ ZmPortlet.prototype.toString = function() { return "ZmPortlet"; }
 /** The view associated to this portlet. Type is ZmPortletView. */
 ZmPortlet.prototype.view;
 
+ZmPortlet.prototype._refreshActionId = -1;
+
 //
 // Public methods
 //
 
 ZmPortlet.prototype.refresh = function() {
     if (this.view) {
+        this._refreshTime = new Date().getTime();
         if (this.actionUrl) {
             this.view.setContentUrl(this.actionUrl.target);
         }
@@ -96,13 +100,16 @@ ZmPortlet.prototype.refresh = function() {
 };
 
 ZmPortlet.prototype.setRefreshInterval = function(interval) {
-    if (this._refreshActionId) {
+    if (this._refreshActionId != -1) {
         clearInterval(this._refreshActionId);
-        delete this._refreshActionId;
+        this._refreshActionId = -1;
     }
+    this._refreshInterval = interval;
     if (interval) {
-        var action = AjxCallback.simpleClosure(this.refresh, this);
-        this._refreshActionId = setInterval(action, interval);
+        if (!this._refreshAction) {
+            this._refreshAction = AjxCallback.simpleClosure(this.refresh, this);
+        }
+        this._refreshActionId = setInterval(this._refreshAction, interval);
     }
 };
 
@@ -121,4 +128,27 @@ ZmPortlet.prototype.setContentUrl = function(url) {
     else {
         DBG.println("no view to set content url ("+this.id+")");
     }
+};
+
+ZmPortlet.prototype.setPaused = function(paused) {
+    if (this._refreshActionId != -1 && paused) {
+        this._pauseTime = new Date().getTime();
+        clearInterval(this._refreshActionId);
+        this._refreshActionId = -1;
+    }
+    else if (this._refreshInterval && !paused) {
+        var delta = this._refreshInterval - (this._pauseTime - this._refreshTime);
+        var delay = delta < this._refreshInterval ? delta : 0;
+        var resumeAction = AjxCallback.simpleClosure(this._resumeRefresh, this);
+        setTimeout(resumeAction, delay);
+    }
+};
+
+//
+// Protected methods
+//
+
+ZmPortlet.prototype._resumeRefresh = function() {
+    this.refresh();
+    this._refreshActionId = setInterval(this._refreshAction, this._refreshInterval);
 };

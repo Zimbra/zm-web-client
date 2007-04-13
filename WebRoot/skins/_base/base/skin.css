@@ -123,9 +123,11 @@ body						{	@ChromeBg@	}
 #skin_border_tree_app_sash				{	@SkinBorderTreeSash@ 	}
 #skin_container_tree_app_sash			{							}
 
-#skin_td_app_top_toolbar,
+#skin_td_app_top_toolbar, skin_td_app_top_toolbar_full,
 #skin_td_app_toolbar_sep				{	padding:0px;	margin-bottom:-1px;	}
-#skin_border_app_top_toolbar			{	padding-right:6px;		}
+#skin_border_app_top_toolbar, #skin_border_app_top_toolbar_full   {
+  padding-right:6px;
+}
 .skin_border_app_top_toolbar			{	@SkinBorderAppToolbar@	}
 #skin_container_app_top_toolbar,
 #skin_container_app_toolbar_sep			{	
@@ -200,7 +202,13 @@ body						{	@ChromeBg@	}
 }
 
 
-#skin_tr_main_full {
+/*
+ * NOTE:
+ * Start by showing full screen mode since that's visually cleaner. That way
+ * when the app starts in full screen mode the user doesn't see the outline
+ * of the normal view before switching to full-screen.
+ */
+#skin_tr_toolbar, #skin_tr_main, #skin_tr_status {
 	display:none;
 }
 

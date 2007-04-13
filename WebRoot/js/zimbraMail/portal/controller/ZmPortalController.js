@@ -27,7 +27,11 @@ function ZmPortalController(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmListController.call(this, appCtxt, container, app);
 
-	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
+    // TODO: Where does this really belong?
+    ZmOperation.registerOp("PAUSE_TOGGLE", {textKey:"pause", image:"Pause", style: DwtButton.TOGGLE_STYLE});
+
+    this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
+    this._listeners[ZmOperation.PAUSE_TOGGLE] = new AjxListener(this, this._pauseListener);
 }
 ZmPortalController.prototype = new ZmListController;
 ZmPortalController.prototype.constructor = ZmPortalController;
@@ -50,6 +54,18 @@ ZmPortalController.prototype.show = function() {
 	this._setView(this._currentView, elements, true);
 };
 
+ZmPortalController.prototype.setPaused = function(paused) {
+    var view = this._listView[this._currentView];
+    var portletIds = view && view.getPortletIds();
+    if (portletIds && portletIds.length > 0) {
+        var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+        for (var i = 0; i < portletIds.length; i++) {
+            var portlet = portletMgr.getPortletById(portletIds[i]);
+            portlet.setPaused(paused);
+        }
+    }
+};
+
 //
 // Protected methods
 //
@@ -59,7 +75,7 @@ ZmPortalController.prototype._defaultView = function() {
 };
 
 ZmPortalController.prototype._getToolBarOps = function() {
-	return [ ZmOperation.REFRESH ];
+	return [ ZmOperation.REFRESH /*, ZmOperation.PAUSE_TOGGLE*/ ];
 };
 
 ZmPortalController.prototype._createNewView = function(view) {
@@ -69,14 +85,24 @@ ZmPortalController.prototype._createNewView = function(view) {
 // listeners
 
 ZmPortalController.prototype._refreshListener = function() {
-    /***/
     this._app.refreshPortlets();
-    /***
-    this._listView[this._currentView]._initializeView();
-    /***/
+};
+
+ZmPortalController.prototype._pauseListener = function(event) {
+    var toolbar = this._toolbar[this._currentView];
+
+    // en/disable refresh button
+    var button = toolbar && toolbar.getButton(ZmOperation.REFRESH);
+    var paused = event.item.isToggled();
+    if (button) {
+        button.setEnabled(!paused);
+    }
+
+    // pause portlets appearing on portal page
+    this.setPaused(paused);
 };
 
 ZmPortalController.prototype._resetOperations = function(parent, num) {
 //    ZmListController.prototype._resetOperations.call(parent, num);
-    parent.enable(ZmOperation.REFRESH, true);
+    parent.enable(this._getToolBarOps(), true);
 };

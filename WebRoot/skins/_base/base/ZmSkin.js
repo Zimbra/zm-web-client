@@ -46,7 +46,8 @@ ZmSkin.merge = function(dest, src1 /*, ..., srcN */) {
         var src = arguments[i];
         for (var pname in src) {
             // recurse through properties
-            if (typeof dest[pname] == "object") {
+            var prop = dest[pname];
+            if (typeof prop == "object" && !(prop instanceof Array)) {
                 ZmSkin.merge(dest[pname], src[pname]);
                 continue;
             }
@@ -84,6 +85,14 @@ ZmSkin.prototype._showEl = function(id, state) {
 		else value = "block";
 	}
 	el.style.display = value;
+};
+
+ZmSkin.prototype._reparentEl = function(id, containerId) {
+    var containerEl = this._getEl(containerId);
+    var el = containerEl && this._getEl(id);
+    if (el) {
+        containerEl.appendChild(el);
+    }
 };
 
 ZmSkin.prototype._hideEl = function(id) {
