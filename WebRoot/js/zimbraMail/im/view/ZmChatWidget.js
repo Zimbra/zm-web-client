@@ -396,7 +396,7 @@ ZmChatWidget.prototype.detach = function(pos) {
 		var wm = win.getWindowManager();
 		var sticky = win._sticky;
 		tabs.detachChatWidget(this);
-		win = new ZmChatWindow(wm, this, sticky);
+		win = new ZmChatWindow(wm, this, sticky, win.getSize());
 		wm.manageWindow(win, pos);
 	} else {
 		win.setLocation(pos.x, pos.y);
