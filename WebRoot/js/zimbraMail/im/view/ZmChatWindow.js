@@ -39,7 +39,7 @@ ZmChatWindow.prototype._init = function(chat, sticky) {
 	tabs.addDisposeListener(new AjxListener(this, this._tabsDisposeListener));
 	this.setView(tabs);
 	tabs.addTab(chat);
-	this.setSize(400, 300);
+	this.setSize(400, 200);
 	this.setMinSize(200, 100);
 	this.setMinPos(0, 0);
 	tabs = null;
@@ -59,6 +59,10 @@ ZmChatWindow.prototype.getCurrentChatWidget = function() {
 
 ZmChatWindow.prototype.addTab = function(chat) {
 	return this._tabs.addTab(chat);
+};
+
+ZmChatWindow.prototype.isSticky = function() {
+	return this._sticky;
 };
 
 ZmChatWindow.prototype._selectionListener = function(ev) {

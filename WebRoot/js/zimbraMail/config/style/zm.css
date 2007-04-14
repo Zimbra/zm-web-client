@@ -1878,7 +1878,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 /* hide the tab bar unless we have 2 or more tabs */
-.ZmChatTabs-TabBarCount-0, .ZmChatTabs-TabBarCount-1 { display: none; }
+.ZmChatTabs-TabBarCount-0 /*, .ZmChatTabs-TabBarCount-1 */ { display: none; }
 
 .ZmChatTabs-TabBar .ZmChatTabs-Tab {
   @WindowContainer@

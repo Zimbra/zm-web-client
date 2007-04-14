@@ -91,7 +91,7 @@ ZmChatWidget.prototype._chatChangeListener = function(ev, treeView) {
 
 ZmChatWidget.prototype.handleMessage = function(msg) {
 	var str = msg.toHtml(this._objectManager, this.chat, this.__lastFrom);
-	this.__lastFrom = msg.from;
+	this.__lastFrom = msg.isSystem ? "@@system" : msg.from;
 	this._setUnreadStatus();
 	return this.handleHtmlMessage(str);
 };
@@ -324,29 +324,39 @@ ZmChatWidget.prototype.focus = function() {
 
 ZmChatWidget.prototype._removeUnreadStatus = function() {
 	if (!this.chat.isZimbraAssistant()) {
-		Dwt.delClass(this.getTabLabel().getHtmlElement(), "ZmChatTab-Unread");
+		var tab = this.getTabLabel();
+		Dwt.delClass(tab.getHtmlElement(), "ZmChatTab-Unread");
+		if (tab.label)
+			tab.label.setText(AjxStringUtil.htmlEncode(this._titleStr));
 	}
 };
 
 ZmChatWidget.prototype._setUnreadStatus = function() {
 	if (!this.chat.isZimbraAssistant()) {
-		var label = this.getTabLabel().getHtmlElement();
+		var tab = this.getTabLabel();
+		var tab_el = tab.getHtmlElement();
 
 		// Only if it's not already active -- the easiest way is to
 		// check the className.  Hopefully no one will change it.
-		if (!/active/i.test(label.className)) {
-			Dwt.addClass(label, "ZmChatTab-Unread");
+		if (!/active/i.test(tab_el.className)) {
+			Dwt.addClass(tab_el, "ZmChatTab-Unread");
+			var unread = this.chat.incUnread();
+			if (tab.label)
+				tab.label.setText(AjxStringUtil.htmlEncode(this._titleStr) + " (" + unread + ")");
 			var steps = 5;
 			var timer = setInterval(function() {
 				if (steps-- & 1) {
-					Dwt.addClass(label, "ZmChatTab-Flash");
+					Dwt.addClass(tab_el, "ZmChatTab-Flash");
 				} else {
-					Dwt.delClass(label, "ZmChatTab-Flash");
+					Dwt.delClass(tab_el, "ZmChatTab-Flash");
 					if (steps < 0)
 						clearInterval(timer);
 				}
 			}, 150);
 		}
+
+		if (this.getChatWindow().isSticky())
+			AjxDispatcher.run("GetRoster").stopFlashingIcon();
 	}
 };
 
@@ -382,11 +392,15 @@ ZmChatWidget.prototype.attach = function(tabs) {
 ZmChatWidget.prototype.detach = function(pos) {
 	var tabs = this.parent;
 	var win = this.getChatWindow();
-	var wm = win.getWindowManager();
-	var sticky = win._sticky;
-	tabs.detachChatWidget(this);
-	win = new ZmChatWindow(wm, this, sticky);
-	wm.manageWindow(win, pos);
+	if (tabs.size() > 1) {
+		var wm = win.getWindowManager();
+		var sticky = win._sticky;
+		tabs.detachChatWidget(this);
+		win = new ZmChatWindow(wm, this, sticky);
+		wm.manageWindow(win, pos);
+	} else {
+		win.setLocation(pos.x, pos.y);
+	}
 };
 
 ZmChatWidget.prototype._closeListener = function() {
@@ -427,25 +441,83 @@ ZmChatWidget.prototype._stickyListener = function(ev) {
 };
 
 ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
+	var srcData = ev.srcData;
+
+	function isBuddy()  { return srcData instanceof ZmRosterTreeItem };
+	function isGroup()  { return srcData instanceof ZmRosterTreeGroup };
+	function isTab()    { return srcData instanceof ZmChatWidget };
+	function isGenericItem(type)   {
+		if (!(srcData.data && srcData.controller))
+			return false;
+		if (!(srcData.data instanceof Array))
+			srcData.data = [ srcData.data ];
+		return srcData.data[0] instanceof type
+	};
+
+	var isMailItem = AjxCallback.simpleClosure(isGenericItem, null, ZmMailItem);
+	var isContact  = AjxCallback.simpleClosure(isGenericItem, null, ZmContact);
+
+	var dropOK = [ isBuddy, isGroup, isTab, isMailItem, isContact ];
+
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		var srcData = ev.srcData;
-		if (!(srcData instanceof ZmRosterTreeItem ||
-		      srcData instanceof ZmRosterTreeGroup ||
-		      srcData instanceof ZmChatWidget)) {
-			ev.doIt = false;
-			return;
-		}
+		for (var i = dropOK.length; --i >= 0;)
+			if (dropOK[i]())
+				return;
+		ev.doIt = false;
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
-		var srcData = ev.srcData;
- 		if (srcData instanceof ZmRosterTreeItem) {
- 			// this._controller.chatWithRosterItem(srcData.getRosterItem());
+
+		if (isBuddy()) {
+
+			// this._controller.chatWithRosterItem(srcData.getRosterItem());
 			var item = srcData.getRosterItem();
 			ZmChatMultiWindowView.getInstance().chatInNewTab(item, this.parent);
- 		}
-		if (srcData instanceof ZmChatWidget) {
+
+ 		} else if (isTab()) {
+
 			srcData.attach(this.parent);
+
+		} else if (isMailItem() || isContact()) {
+
+			var contacts;
+
+			if (isMailItem()) {
+
+				var contactList = AjxDispatcher.run("GetContacts");
+				var conversations = AjxVector.fromArray(srcData.data);
+
+				// retrieve list of participants to dropped conversations
+				var participants = new AjxVector();
+				conversations.foreach(function(conv) {
+					participants.merge(participants.size(), conv.participants);
+				});
+
+				// participants are AjxEmailAddress-es, we need emails...
+				var emails = participants.map("address");
+
+				// ... so we can lookup contacts.
+				contacts = emails.map(contactList.getContactByEmail, contactList);
+
+			} else if (isContact()) {
+				contacts = AjxVector.fromArray(srcData.data);
+			}
+
+			// retrieve their IM addresses
+			var imAddresses = contacts.map("getIMAddress");
+
+			var roster = AjxDispatcher.run("GetRoster");
+			var seen = [];
+			imAddresses.foreach(function(addr) {
+				if (addr && !seen[addr]) {
+					seen[addr] = true;
+					var item = roster.getRosterItem(addr);
+					if (item)
+						ZmChatMultiWindowView.getInstance().chatInNewTab(item, this.parent);
+				}
+			}, this);
+
 		}
-// 		if ((srcData instanceof ZmRosterTreeGroup)) {
+
+// 		if (isGroup()) {
 // 			var mouseEv = DwtShell.mouseEvent;
 //             		mouseEv.setFromDhtmlEvent(ev.uiEvent);
 //             		var pos = this.getLocation();

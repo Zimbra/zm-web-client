@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -35,7 +35,7 @@
 *
 * <p>Support is also present for handling multiple views (eg contacts).</p>
 *
-* <p>Controllers for single items may extend this class, since the functionality needed is 
+* <p>Controllers for single items may extend this class, since the functionality needed is
 * virtually the same. An item can be thought of as the degenerate form of a list.</p>
 *
 * @author Conrad Damon
@@ -55,7 +55,7 @@ function ZmListController(appCtxt, container, app) {
 	this._list = null;				// ZmList (the data)
 	this._actionMenu = null; 		// ZmActionMenu
 	this._actionEv = null;
-	
+
 	this._tagList = this._appCtxt.getTagTree();
 	if (this._tagList) {
 		this._tagChangeLstnr = new AjxListener(this, this._tagChangeListener);
@@ -92,7 +92,7 @@ ZmListController.prototype.constructor = ZmListController;
 
 // public methods
 
-ZmListController.prototype.toString = 
+ZmListController.prototype.toString =
 function() {
 	return "ZmListController";
 };
@@ -116,7 +116,7 @@ function(searchResults, view) {
 	this.pageIsDirty = {};
 };
 
-ZmListController.prototype.getSearchString = 
+ZmListController.prototype.getSearchString =
 function() {
 	return this._currentSearch.query;
 };
@@ -152,14 +152,14 @@ function(actionCode) {
 	if (shortcut) {
 		actionCode = shortcut.baseAction;
 	}
-	
+
 	var app = ZmApp.ACTION_CODES_R[actionCode];
 	if (app) {
 		var op = ZmApp.ACTION_CODES[actionCode];
 		if (op) {
 			this._appCtxt.getApp(app).handleOp(op);
 			return true;
-		}	
+		}
 	}
 
 	switch (actionCode) {
@@ -200,7 +200,7 @@ function(actionCode) {
 			}
 			break;
 		}
-	
+
 		case ZmKeyMap.NEW_FOLDER:
 		case ZmKeyMap.NEW_TAG:
 			var op = ZmApp.ACTION_CODES[actionCode];
@@ -215,7 +215,7 @@ function(actionCode) {
 				this._printListener();
 			}
 			break;
-		
+
 		case ZmKeyMap.UNTAG:
 			if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 				var items = listView.getSelection();
@@ -224,7 +224,7 @@ function(actionCode) {
 				}
 			}
 			break;
-			
+
 		case ZmKeyMap.FLAG:
 			this._doFlag(listView.getSelection());
 			break;
@@ -236,7 +236,7 @@ function(actionCode) {
 				this._doTag(items, tag, true);
 			}
 			break;
-			
+
 		case ZmKeyMap.GOTO_TAG:
 			var tag = this._appCtxt.getById(shortcut.arg);
 			this._appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
@@ -246,7 +246,7 @@ function(actionCode) {
 			var searchFolder = this._appCtxt.getById(shortcut.arg);
 			this._appCtxt.getSearchController().redoSearch(searchFolder.search);
 			break;
-			
+
 		default:
 			return ZmController.prototype.handleKeyAction.call(this, origActionCode);
 	}
@@ -324,9 +324,12 @@ function() {
 
 ZmListController.prototype._participantOps =
 function() {
-	return [ZmOperation.SEARCH, ZmOperation.BROWSE,
-			ZmOperation.NEW_MESSAGE, //ZmOperation.IM,
-			ZmOperation.CONTACT];
+	var ops = [ZmOperation.SEARCH, ZmOperation.BROWSE,
+		   ZmOperation.NEW_MESSAGE];
+	if (ZmSetting.IM_ENABLED)
+		ops.push(ZmOperation.IM);
+	ops.push(ZmOperation.CONTACT);
+	return ops;
 };
 
 // toolbar: buttons and listeners
@@ -406,7 +409,7 @@ function(menu) {
 ZmListController.prototype._initializeTabGroup =
 function(view) {
 	if (this._tabGroups[view]) return;
-	
+
 	this._tabGroups[view] = this._createTabGroup();
 	this._tabGroups[view].newParent(this._appCtxt.getRootTabGroup());
 	this._tabGroups[view].addMember(this._toolbar[view]);
@@ -489,7 +492,7 @@ function() {
 /**
  * Create some new thing, via a dialog. If just the button has been pressed (rather than
  * a menu item), the action taken depends on the app.
- * 
+ *
  * @param ev		[DwtUiEvent]	UI event
  * @param op		[constant]		operation ID
  * @param newWin	[boolean]		true if we're in a separate window
@@ -660,10 +663,27 @@ ZmListController.prototype._participantImListener =
 function(ev) {
 	// get the first selected message
 	var msg = this._listView[this._currentView].getSelection()[0];
-	var screenName = msg._contact._fullName;
-	var newImDialog = this._appCtxt.getNewImDialog();
-	newImDialog.setScreenName(screenName);
-	newImDialog.popup();
+
+	// FIXME: this code should be some place else; definitely not here.
+	var contacts;
+	if (msg instanceof ZmMailItem) {
+		var emails = msg.getEmails();
+		contacts = AjxDispatcher.run("GetContacts");
+		contacts = emails.map(contacts.getContactByEmail, contacts);
+	} else if (msg instanceof ZmContact) {
+		contacts = AjxVector.fromArray([ msg ]);
+	}
+	var imAddresses = contacts.map("getIMAddress");
+	var roster = AjxDispatcher.run("GetRoster");
+	var seen = [];
+	imAddresses.foreach(function(addr) {
+		if (addr && !seen[addr]) {
+			seen[addr] = true;
+			var item = roster.getRosterItem(addr);
+			if (item)
+				ZmChatMultiWindowView.getInstance().chatWithRosterItem(item);
+		}
+	}, this);
 };
 
 // If there's a contact for the participant, edit it, otherwise add it.
@@ -695,7 +715,7 @@ function(ev) {
 	contact.initFromEmail(ev.address);
 	return contact;
 };
-		
+
 ZmListController.prototype._loadContactCallback =
 function(resp, contact) {
 	AjxDispatcher.run("GetContactController").show(contact);
@@ -1015,11 +1035,11 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 };
 
 /*
-* Gets next or previous page of items. The set of items may come from the 
+* Gets next or previous page of items. The set of items may come from the
 * cached list, or from the server (using the current search as a base).
 * <p>
-* The loadIndex is the index'd item w/in the list that needs to be loaded - 
-* initiated only when user is in CV and pages a conversation that has not 
+* The loadIndex is the index'd item w/in the list that needs to be loaded -
+* initiated only when user is in CV and pages a conversation that has not
 * been loaded yet.</p>
 * <p>
 * Note that this method returns a value even though it may make an
@@ -1031,7 +1051,7 @@ function(view, offset, limit, callback, isCurrent, lastId, lastSortVal) {
 * @param forward	[boolean]		if true, get next page rather than previous
 * @param loadIndex	[int]			index of item to show
 */
-ZmListController.prototype._paginate = 
+ZmListController.prototype._paginate =
 function(view, forward, loadIndex) {
 	var offset = this._listView[view].getNewOffset(forward);
 	var limit = this._listView[view].getLimit();
@@ -1039,7 +1059,7 @@ function(view, forward, loadIndex) {
 	this.maxPage = Math.max(this.maxPage, this.currentPage);
 
 	this._listView[view].setOffset(offset);
-	
+
 	// see if we're out of items and the server has more
 	if ((offset + limit > this._list.size() && this._list.hasMore()) || this.pageIsDirty[this.currentPage]) {
 		// figure out how many items we need to fetch
@@ -1081,20 +1101,20 @@ function(view, forward, loadIndex) {
 ZmListController.prototype._handleResponsePaginate =
 function(view, saveSelection, loadIndex, offset, result, ignoreResetSelection) {
 	var searchResult = result.getResponse();
-	
+
 	// update "more" flag
 	this._list.setHasMore(searchResult.getAttribute("more"));
-	
+
 	// cache search results into internal list
 	this._cacheList(searchResult, offset);
-	
+
 	this._resetOperations(this._toolbar[view], 0);
 	this._resetNavToolBarButtons(view);
 
 	// remember selected index if told to
 	var selItem = saveSelection ? this._listView[this._currentView].getSelection()[0] : null;
 	var selectedIdx = selItem ? this._listView[this._currentView]._getItemIndex(selItem) : -1;
-	
+
 	this._setViewContents(view);
 	this.pageIsDirty[this.currentPage] = false;
 
@@ -1109,7 +1129,7 @@ function(params) {
 	// overload me if more params are needed for SearchRequest
 };
 
-ZmListController.prototype._checkReplenish = 
+ZmListController.prototype._checkReplenish =
 function(callback) {
 	var view = this._listView[this._currentView];
 	var list = view.getList();
@@ -1126,12 +1146,12 @@ function(callback) {
 		callback.run();
 };
 
-ZmListController.prototype._replenishList = 
+ZmListController.prototype._replenishList =
 function(view, replCount, callback) {
 	// determine if there are any more items to replenish with
 	var idxStart = this._listView[view].getOffset() + this._listView[view].size();
 	var totalCount = this._list.size();
-	
+
 	if (idxStart < totalCount) {
 		// replenish from cache
 		var idxEnd = idxStart + replCount;
@@ -1148,7 +1168,7 @@ function(view, replCount, callback) {
 	}
 };
 
-ZmListController.prototype._resetSelection = 
+ZmListController.prototype._resetSelection =
 function(idx) {
 	var list = this._listView[this._currentView].getList();
 	if (list) {
@@ -1165,7 +1185,7 @@ function(idx) {
 * @param replCount 	[int]			number of items to replenish
 * @param callback	[AjxCallback]	async callback
 */
-ZmListController.prototype._getMoreToReplenish = 
+ZmListController.prototype._getMoreToReplenish =
 function(view, replCount, callback) {
 	if (this._list.hasMore()) {
 		DBG.println(AjxDebug.DBG2, "need to replenish: " + replCount);
@@ -1179,14 +1199,14 @@ function(view, replCount, callback) {
 	}
 };
 
-ZmListController.prototype._handleResponseGetMoreToReplenish = 
+ZmListController.prototype._handleResponseGetMoreToReplenish =
 function(view, callback, result) {
 	var searchResult = result.getResponse();
-	
+
 	// set updated has more flag
 	var more = searchResult.getAttribute("more");
 	this._list.setHasMore(more);
-	
+
 	// cache search results into internal list
 	this._cacheList(searchResult);
 
@@ -1196,11 +1216,11 @@ function(view, callback, result) {
 
 	// reset forward pagination button only
 	this._toolbar[view].enable(ZmOperation.PAGE_FORWARD, more);
-	
+
 	if (callback) callback.run(result);
 };
 
-ZmListController.prototype._setNavToolBar = 
+ZmListController.prototype._setNavToolBar =
 function(toolbar, view) {
 	this._navToolBar[view] = toolbar;
 	if (this._navToolBar[view]) {
@@ -1216,7 +1236,7 @@ function(toolbar, view) {
 	}
 };
 
-ZmListController.prototype._resetNavToolBarButtons = 
+ZmListController.prototype._resetNavToolBarButtons =
 function(view) {
 	if (!this._navToolBar[view]) return;
 
@@ -1226,7 +1246,7 @@ function(view) {
 	if (this._navToolBar[view].hasSingleArrows) {
 		var offset = this._listView[view].getOffset();
 		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, offset > 0);
-	
+
 		// determine also if we have more cached conv to show (in case more is wrong)
 		var hasMore = false;
 		if (this._list) {
@@ -1245,7 +1265,7 @@ function(enabled, view) {
 
 	if (enabled) {
 		this._resetNavToolBarButtons(view);
-	} else {	
+	} else {
 		if (this._navToolBar[view].hasDoubleArrows)
 			this._navToolBar[view].enable([ZmOperation.PAGE_DBL_BACK, ZmOperation.PAGE_DBL_FORW], false);
 		if (this._navToolBar[view].hasSingleArrows)
@@ -1253,7 +1273,7 @@ function(enabled, view) {
 	}
 };
 
-ZmListController.prototype._showListRange = 
+ZmListController.prototype._showListRange =
 function(view) {
 	var offset = this._listView[view].getOffset();
 	var limit = this._listView[view].getLimit();
@@ -1278,7 +1298,7 @@ function(view, viewPushed) {
 * Creates the New menu's drop down menu the first time the drop down arrow is used,
 * then removes itself as a listener.
 */
-ZmListController._newDropDownListener = 
+ZmListController._newDropDownListener =
 function(event) {
 	var toolbar = this;
 
@@ -1293,7 +1313,7 @@ function(event) {
 	delete toolbar._ZmListController_newDropDownListener;
 };
 
-ZmListController.prototype._getDefaultFocusItem = 
+ZmListController.prototype._getDefaultFocusItem =
 function() {
 	return this._listView[this._currentView];
 };

@@ -58,25 +58,39 @@ ZmChatMultiWindowView.getInstance = function() {
 ZmChatMultiWindowView.prototype.getWindowManager = function() {
 	if (!this._wm)
 		this._wm = new ZmChatWindowManager(this);
-		// this._wm = new DwtWindowManager(this);
 	return this._wm;
 };
 
 ZmChatMultiWindowView.prototype.getShellWindowManager = function() {
 	if (!this._shellWm)
 		this._shellWm = new ZmChatWindowManager(DwtShell.getShell(window));
-		// this._shellWm = new DwtWindowManager(DwtShell.getShell(window));
 	return this._shellWm;
 };
 
 ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {
+	var activeApp = this._appCtxt.getAppController().getActiveApp();
 	if (!win)
 		win = this.__useTab;
 	this.__useTab = null;
+	var wm, sticky;
 	if (!win) {
-		var wm = this.getWindowManager();
-		var win = new ZmChatWindow(wm, chat);
-		wm.manageWindow(win);
+		sticky = activeApp != "IM";
+		wm = sticky ? this.getShellWindowManager() : this.getWindowManager();
+		if (sticky)
+			// reuse windows on global WM, so we don't clutter the display too much
+			win = wm.getActiveWindow();
+	}
+	if (!win) {
+		win = new ZmChatWindow(wm, chat, sticky);
+		var pos = null;
+		if (sticky) {
+			// put it in the bottom-right corner
+			var s = win.getSize();
+			var ws = wm.getSize();
+			pos = { x: ws.x - s.x - 16,
+				y: ws.y - s.y - 40 };
+		}
+		wm.manageWindow(win, pos);
 	} else {
 		win.addTab(chat);
 	}
@@ -224,5 +238,9 @@ function(ev) {
 
 ZmChatMultiWindowView.prototype.chatInNewTab = function(item, tabs) {
 	this.__useTab = tabs;
+	this._controller.chatWithRosterItem(item);
+};
+
+ZmChatMultiWindowView.prototype.chatWithRosterItem = function(item) {
 	this._controller.chatWithRosterItem(item);
 };

@@ -63,6 +63,8 @@ ZmContactView.otherAddrInfo		= [ZmContact.F_otherStreet, ZmContact.F_otherCity, 
 ZmContactView.otherPhoneInfo	= [ZmContact.F_otherPhone, ZmContact.F_otherFax];
 ZmContactView.miscInfo			= [ZmContact.F_birthday];
 
+ZmContactView.imInfo = [ ZmContact.F_imAddress1, ZmContact.F_imAddress2, ZmContact.F_imAddress3 ];
+
 ZmContactView.BIRTHDAY_ID		= "--b";
 
 ZmContactView._selectFields = {
@@ -608,6 +610,10 @@ function() {
 	for (var i=0; i<ZmContactView.emailInfo.length; i++)
 		this._setValue(ZmContactView.emailInfo[i]);
 
+	// set IM info
+	for (var i=0; i<ZmContactView.imInfo.length; i++)
+		this._setValue(ZmContactView.imInfo[i]);
+
 	// set work address fields
 	for (var i=0; i<ZmContactView.workAddrInfo.length; i++)
 		this._setValue(ZmContactView.workAddrInfo[i]);
@@ -672,6 +678,10 @@ function() {
 	// get email info
 	for (var i=0; i<ZmContactView.emailInfo.length; i++)
 		this._getValue(ZmContactView.emailInfo[i]);
+
+	// get IM info
+	for (var i=0; i<ZmContactView.imInfo.length; i++)
+		this._getValue(ZmContactView.imInfo[i]);
 
 	// get work address fields
 	for (var i=0; i<ZmContactView.workAddrInfo.length; i++)
@@ -758,7 +768,7 @@ function(contact) {
 	html[idx++] = "<table cellpadding=0 cellspacing=10 border=0>";
 
 	idx = this._generateHtml(html, idx, null, ZmContactView.primaryInfoOne, ZmContactView.primaryInfoTwo);
-	idx = this._generateHtml(html, idx, ZmMsg.email, ZmContactView.emailInfo);
+	idx = this._generateHtml(html, idx, ZmMsg.emailAndIM, ZmContactView.emailInfo, ZmContactView.imInfo);
 	idx = this._generateHtml(html, idx, ZmMsg.work, ZmContactView.workAddrInfo, ZmContactView.workPhoneInfo);
 	idx = this._generateHtml(html, idx, ZmMsg.home, ZmContactView.homeAddrInfo, ZmContactView.homePhoneInfo);
 	idx = this._generateHtml(html, idx, ZmMsg.other, ZmContactView.otherAddrInfo, ZmContactView.otherPhoneInfo, ZmContactView.miscInfo);
@@ -784,9 +794,10 @@ ZmContactView.prototype._getTabGroupMembers =
 function() {
 	var ids = [];
 	ids = ids.concat(ZmContactView.primaryInfoOne, ZmContactView.primaryInfoTwo, ZmContactView.emailInfo,
-					 ZmContactView.workAddrInfo, ZmContactView.workPhoneInfo, ZmContactView.homeAddrInfo,
-					 ZmContactView.homePhoneInfo, ZmContactView.otherAddrInfo, ZmContactView.otherPhoneInfo,
-					 ZmContact.F_birthday, ZmContact.F_notes);
+			 ZmContactView.imInfo,
+			 ZmContactView.workAddrInfo, ZmContactView.workPhoneInfo, ZmContactView.homeAddrInfo,
+			 ZmContactView.homePhoneInfo, ZmContactView.otherAddrInfo, ZmContactView.otherPhoneInfo,
+			 ZmContact.F_birthday, ZmContact.F_notes);
 	var fields = [];
 	for (var i = 0; i < ids.length; i++) {
 		var field = document.getElementById(this._fieldIds[ids[i]]);

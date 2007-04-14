@@ -21,6 +21,10 @@ ZmChatTabs.prototype.__initCtrl = function() {
 	this.__tabBarEl = cont.firstChild;
 };
 
+ZmChatTabs.prototype.size = function() {
+	return this.__tabs.size();
+};
+
 ZmChatTabs.prototype.getTabWidget = function(index) {
 	if (index == null)
 		index = this.__currentTab;
@@ -113,13 +117,14 @@ ZmChatTabs.prototype.addTab = function(chat, index) {
 		chat = chat.chat;
 	} else {
 		child = new ZmChatWidget(this, Dwt.RELATIVE_STYLE);
-		child._setChat(chat);
 	}
 	var cont = document.createElement("div");
 	cont.className = "ZmChatTabs-Container";
 	this.getHtmlElement().appendChild(cont);
 	child._tabContainer = cont;
 	child.reparentHtmlElement(cont, index);
+	if (!child.chat)
+		child._setChat(chat);
 	this.__tabs.add(child, index);
 	this.parent.enableMoveWithElement(child._toolbar);
 	this._createTabButton(child, true, index);
@@ -151,6 +156,7 @@ ZmChatTabs.prototype.detachChatWidget = function(chatWidget) {
 	el = chatWidget._tabContainer;
 	el.parentNode.removeChild(el);
 	chatWidget._tabContainer = null;
+	chatWidget.reparent(DwtShell.getShell(window));
 
 	// if there are no other tabs, destroy this widget
 	if (this.__tabs.size() == 0)
@@ -165,8 +171,12 @@ ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
 
 	var close = new DwtToolBarButton(tb);
 	close.addSelectionListener(chatWidget._closeListener); // ;-)
-	close.setHoverImage("Close");
+	// close.setHoverImage("Close");
+	// close.setEnabledImage(chatWidget.getIcon());
+
+	close.setImage(chatWidget.getIcon());
 	close.setEnabledImage(chatWidget.getIcon());
+	close.setHoverImage("Close");
 
 	tb.addSpacer();
 
@@ -180,6 +190,8 @@ ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
 	var label = new DwtLabel(tb);
 	label.setText(AjxStringUtil.htmlEncode(chatWidget._titleStr));
 
+	cont.label = label;
+
 	var listener = new AjxListener(this, this.setActiveTabWidget, [ chatWidget ]);
 	label._setMouseEventHdlrs();
 	label.addListener(DwtEvent.ONMOUSEDOWN, listener);
@@ -191,8 +203,9 @@ ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
 	var ds = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	label.setDragSource(ds);
 	ds.addDragListener(new AjxListener(this, function(ev) {
-		if (ev.action == DwtDragEvent.SET_DATA) {
+		if (ev.action == DwtDragEvent.DRAG_START) {
 			this.parent.getWindowManager().takeOver(true);
+		} else if (ev.action == DwtDragEvent.SET_DATA) {
 			ev.srcData = chatWidget;
 		} else if (ev.action == DwtDragEvent.DRAG_END ||
 			   ev.action == DwtDragEvent.DRAG_CANCEL) {

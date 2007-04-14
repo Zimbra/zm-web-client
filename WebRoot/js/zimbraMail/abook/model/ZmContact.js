@@ -112,6 +112,11 @@ ZmContact.F_workState		= "workState";
 ZmContact.F_workStreet		= "workStreet";
 ZmContact.F_workURL			= "workURL";
 
+// IM addresses
+ZmContact.F_imAddress1 = "imAddress1";
+ZmContact.F_imAddress2 = "imAddress2";
+ZmContact.F_imAddress3 = "imAddress3";
+
 // Group fields
 ZmContact.F_dlist			= "dlist";
 
@@ -141,6 +146,7 @@ ZmContact.F_PHONE_FIELDS = [
 	ZmContact.F_homeFax, ZmContact.F_homePhone, ZmContact.F_homePhone2, ZmContact.F_mobilePhone,
 	ZmContact.F_otherPhone, ZmContact.F_workPhone, ZmContact.F_workPhone2
 ];
+ZmContact.F_IM_FIELDS = [ ZmContact.F_imAddress1, ZmContact.F_imAddress2, ZmContact.F_imAddress3 ];
 
 ZmContact.prototype.toString =
 function() {
@@ -378,7 +384,7 @@ function() {
 		: false;
 };
 
-ZmContact.prototype.isGroup = 
+ZmContact.prototype.isGroup =
 function() {
 	return (this.getAttr(ZmContact.F_dlist) != null || this.type == ZmItem.GROUP);
 };
@@ -739,13 +745,15 @@ function() {
 			this.getAttr(ZmContact.F_email3));
 };
 
-ZmContact.prototype.getIMAddress = function(type) {
-	return this.getAttr(ZmContact.F_email3); // FIXME: temporary for testing
+ZmContact.prototype.getIMAddress = function() {
+	return this.getAttr(ZmContact.F_imAddress1) ||
+		this.getAttr(ZmContact.F_imAddress2) ||
+		this.getAttr(ZmContact.F_imAddress3);
 };
 
-ZmContact.prototype.getBuddy = function(type) {
+ZmContact.prototype.getBuddy = function() {
 	var roster = AjxDispatcher.run("GetRoster");
-	var buddy = roster.getRosterItem(this.getIMAddress(type));
+	var buddy = roster.getRosterItem(this.getIMAddress());
 	return buddy;
 };
 
@@ -801,7 +809,7 @@ function(email, isGal) {
 	// IM status can change anytime so let's always rebuild the tooltip
 	var buddy = null;
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
-		buddy = this.getBuddy("zimbra");
+		buddy = this.getBuddy();
 	}
 	var subs = { contact	: this,
 		     entryTitle	: this.getFileAs(),
@@ -1081,6 +1089,11 @@ ZmContact._AB_FIELD = {
 	email: ZmMsg.AB_FIELD_email,
 	email2: ZmMsg.AB_FIELD_email2,
 	email3: ZmMsg.AB_FIELD_email3,
+
+	// IM addresses
+	imAddress1: ZmMsg.AB_FIELD_imAddress1,
+	imAddress2: ZmMsg.AB_FIELD_imAddress2,
+	imAddress3: ZmMsg.AB_FIELD_imAddress3,
 
 	// work address
 	workStreet: ZmMsg.AB_FIELD_street,

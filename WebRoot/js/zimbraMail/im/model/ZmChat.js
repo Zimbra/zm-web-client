@@ -33,6 +33,7 @@ function ZmChat(id, chatName, appCtxt, chatList) {
 	this._isGroupChat = false;
 	this._chatName = chatName;
 	this._thread = null;
+	this._unread = 0;
 }
 
 ZmChat.prototype = new ZmItem;
@@ -85,13 +86,20 @@ function(chatName) {
 // get the display name for a roster item on the list
 ZmChat.prototype.getDisplayName =
 function(addr, isMe) {
-    var ri = isMe ? null : this._rosterItemList.getByAddr(addr);
-    var dname = ri ? ri.getDisplayName() : addr;
-    if (isMe || this._rosterItemList.size() == 1) {
-        var i = dname.indexOf("@");
-        if (i != -1) dname = dname.substring(0, i);
-    }
-    return dname;
+	if (!addr)
+		return ZmMsg.imSystem;
+	try {
+		var buddies = AjxDispatcher.run("GetRoster");
+		return buddies.getRosterItem(addr).getDisplayName();
+	} catch (ex) {
+		var ri = isMe ? null : this._rosterItemList.getByAddr(addr);
+		var dname = ri ? ri.getDisplayName() : addr;
+		if (isMe || this._rosterItemList.size() == 1) {
+			var i = dname.indexOf("@");
+			if (i != -1) dname = dname.substring(0, i);
+		}
+		return dname;
+	}
 };
 
 ZmChat.prototype.isGroupChat =
@@ -139,6 +147,20 @@ function(msg) {
 	fields[ZmChat.F_MESSAGE] = msg;
 	this._notify(ZmEvent.E_MODIFY, {fields: fields});
 	// list notify as well?
+};
+
+ZmChat.prototype.resetUnread = function() {
+	this._unread = 0;
+};
+
+ZmChat.prototype.getUnread = function() {
+	return this._unread;
+};
+
+// can't increment in addMessage because this chat might be visible
+// and active, so the message is "instantly read".
+ZmChat.prototype.incUnread = function() {
+	return ++this._unread;
 };
 
 /**

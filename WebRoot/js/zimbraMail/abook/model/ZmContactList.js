@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2004, 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -49,7 +49,7 @@
 * @param type		[constant]*		item type
 */
 ZmContactList = function(appCtxt, search, isGal, type) {
-	
+
 	if (arguments.length == 0) return;
 	type = type ? type : ZmItem.CONTACT;
 	ZmList.call(this, type, appCtxt, search);
@@ -58,6 +58,7 @@ ZmContactList = function(appCtxt, search, isGal, type) {
 	this.isCanonical = false;
 
 	this._emailToContact = {};
+	this._imAddressToContact = {};
 	this._phoneToContact = {};
 	this._acAddrList = {};
 	this._galResults = {};
@@ -330,8 +331,9 @@ function(address) {
 	return contact ? this._realizeContact(contact) : null;
 };
 
-ZmContactList.prototype.getContactByIMAddress = function(addr, type) {
-	return this.getContactByEmail(addr); // FIXME: temporary for testing
+ZmContactList.prototype.getContactByIMAddress = function(addr) {
+	var contact = this._imAddressToContact[addr.toLowerCase()];
+	return contact ? this._realizeContact(contact) : null;
 };
 
 /**
@@ -569,7 +571,7 @@ function(contact, doAdd) {
 				delete this._emailToContact[email.toLowerCase()];
 		}
 	}
-	
+
 	// Update phone hash.
 	for (var i = 0; i < ZmContact.F_PHONE_FIELDS.length; i++) {
 		var phone = ZmContact.getAttr(contact, ZmContact.F_PHONE_FIELDS[i]);
@@ -581,6 +583,18 @@ function(contact, doAdd) {
 				else
 					delete this._phoneToContact[digits];
 			}
+		}
+	}
+
+	// Update IM hash.
+	for (var i = 0; i < ZmContact.F_IM_FIELDS.length; i++) {
+		var imaddr = ZmContact.getAttr(contact, ZmContact.F_IM_FIELDS[i]);
+		if (imaddr) {
+			imaddr = imaddr.toLowerCase();
+			if (doAdd)
+				this._imAddressToContact[imaddr] = contact;
+			else
+				delete this._imAddressToContact[imaddr];
 		}
 	}
 };
@@ -647,7 +661,7 @@ function(str, callback, aclv) {
 			}
 		}
 	}
-	
+
 	// return local results
 	var results = this._matchList(str);
 	callback.run(results);
@@ -676,7 +690,7 @@ function(str, callback) {
 
 ZmContactList.prototype._checkExistingResults =
 function(str, which) {
-	
+
 	// have we already done this string?
 	if (this._matchingDone(str, which)) {
 		DBG.println(AjxDebug.DBG3, "found previous match for " + str);
@@ -719,13 +733,13 @@ function(str, which) {
 		}
 		return true;
 	}
-	
+
 	return false;
 };
 
 /**
  * Returns true if the given string is a valid email.
- * 
+ *
  * @param str	[string]	a string
  */
 ZmContactList.prototype.isComplete =
@@ -736,7 +750,7 @@ function(str) {
 /**
  * Quick completion of a string when there are no matches. Appends the
  * user's domain to the given string.
- * 
+ *
  * @param str	[string]	text that was typed in
  */
 ZmContactList.prototype.quickComplete =
@@ -1061,7 +1075,7 @@ function(str, aclv, callback) {
 	// cancel any outstanding GAL requests for substrings of current string
 	for (var substr in this._galRequests) {
 		if (str.indexOf(substr) === 0) {
-			DBG.println(AjxDebug.DBG1, "bypassing GAL request for '" + str + 
+			DBG.println(AjxDebug.DBG1, "bypassing GAL request for '" + str +
 						"' due to outstanding request for '" + substr + "'");
 			return;
 		}
@@ -1088,7 +1102,7 @@ function(str, aclv, callback, result) {
 	for (var i = 0; i < a.length; i++) {
 		this._acAddrList[str].push(a[i]);
 	}
-	
+
 	// check to see if the GAL results that came back are for the string we're
 	// currently matching - if not, propagate its matches forward to the current
 	// string
@@ -1104,7 +1118,7 @@ function(str, aclv, callback, result) {
 		this._acAddrList[this._curAcStr].hasGalMatches = (this._acAddrList[this._curAcStr].length > 0);
 		this._acAddrList[this._curAcStr].galMatchingDone = true;
 	}
-	
+
 	this._acAddrList[str].hasGalMatches = (a.length > 0);
 	this._acAddrList[str].galMatchingDone = true;
 
@@ -1173,8 +1187,8 @@ function(ev) {
 	var setting = ev.source;
 	if (setting.id == ZmSetting.GAL_AUTOCOMPLETE ||
 		setting.id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) {
-	
-		this._acAddrList = {};	
+
+		this._acAddrList = {};
 		this._setGalAutocompleteEnabled();
 	}
 };

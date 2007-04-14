@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 function ZmRosterItem(id, list, appCtxt, name, presence, groupNames) {
@@ -41,7 +41,7 @@ ZmRosterItem.F_GROUPS = "ZmRosterItem.groups";
 ZmRosterItem.F_NAME = "ZmRosterItem.name";
 ZmRosterItem.F_UNREAD = "ZmRosterItem.unread";
 
-ZmRosterItem.prototype.toString = 
+ZmRosterItem.prototype.toString =
 function() {
 	return "ZmRosterItem - " + this.name;
 };
@@ -74,7 +74,7 @@ function() {
 };
 
 // debugging hack, to be removed
-ZmRosterItem.prototype.__setShow  = 
+ZmRosterItem.prototype.__setShow  =
 function(show, status) {
     this.presence.setShow(show).setStatus(status);
     this._notifyPresence();
@@ -88,38 +88,38 @@ function() {
     delete this._toolTip;
 };
 
-ZmRosterItem.prototype.setUnread  = 
+ZmRosterItem.prototype.setUnread  =
 function(num, addToTotal) {
     this.numUnreadIMs = addToTotal ? this.numUnreadIMs + num : num;
     var fields = {};
     fields[ZmRosterItem.F_UNREAD] = this.numUnreadIMs;
     this.list._notify(ZmEvent.E_MODIFY, {fields: fields, items: [this]});
-    delete this._toolTip;    
+    delete this._toolTip;
 };
 
-ZmRosterItem.prototype._notifySetGroups = 
+ZmRosterItem.prototype._notifySetGroups =
 function(newGroups) {
     this.groupNames = newGroups;
     this.groups = this.groupNames ? this.groupNames.split(/,/) : [];
     var fields = {};
     fields[ZmRosterItem.F_GROUPS] = this.groupNames;
     this.list._notify(ZmEvent.E_MODIFY, {fields: fields, items: [this]});
-    delete this._toolTip;    
+    delete this._toolTip;
 };
 
-ZmRosterItem.prototype._notifySetName = 
+ZmRosterItem.prototype._notifySetName =
 function(newName) {
     this.name = newName;
     var fields = {};
     fields[ZmRosterItem.F_NAME] = this.name;
     this.list._notify(ZmEvent.E_MODIFY, {fields: fields, items: [this]});
-    delete this._toolTip;    
+    delete this._toolTip;
 };
 
 /**
  * sends updated group list to server
  */
-ZmRosterItem.prototype.doRenameGroup = 
+ZmRosterItem.prototype.doRenameGroup =
 function(oldGroup, newGroup) {
     var oldI = -1;
     var newI = -1;
@@ -134,10 +134,10 @@ function(oldGroup, newGroup) {
     }
     newGroups.push(newGroup);
     var newGroupNames = newGroups.join(",");
-    this._modify(this.id, this.name, newGroupNames, false);    
+    this._modify(this.id, this.name, newGroupNames, false);
 };
 
-ZmRosterItem.sortCompare = 
+ZmRosterItem.sortCompare =
 function(itemA, itemB) {
 	var check = ZmOrganizer.checkSortArgs(itemA, itemB);
 	if (check != null) return check;
@@ -161,7 +161,13 @@ ZmRosterItem.prototype.getGroupNames = function() { return this.groupNames; };
 
 ZmRosterItem.prototype.getName = function() {	return this.name; }
 
-ZmRosterItem.prototype.getDisplayName = function() {	return this.name ? this.name : this.id;};
+ZmRosterItem.prototype.getDisplayName = function() {
+	var contacts = AjxDispatcher.run("GetContacts");
+	var c = contacts.getContactByIMAddress(this.id);
+	if (c)
+		return c.getFullName();
+	return this.name ? this.name : this.id;
+};
 
 ZmRosterItem.prototype.getUnread = function() { return this.numUnreadIMs; };
 
@@ -185,8 +191,8 @@ ZmRosterItem.prototype.handleInput = function(args) {};
 
 ZmRosterItem.prototype.chatStarted = function(chat, widget) {}; // called when a new ZmChat is started with this item
 
-ZmRosterItem.prototype.inGroup = 
-function(name) { 
+ZmRosterItem.prototype.inGroup =
+function(name) {
     for (var i in this.groups) {
         if (this.groups[i] == name) return true;
     }
@@ -260,15 +266,15 @@ function() {
 		html[idx++] = "<td valign='middle'>" + AjxImg.getImageHtml(this.getPresence().getIcon()) + "</td>";
 		html[idx++] = "<td valign='middle' align='center'><b>";
 		html[idx++] = AjxStringUtil.htmlEncode(this.getDisplayName() + " (" + this.getPresence().getShowText() + ")");
-		html[idx++] = "</td></b>";	
+		html[idx++] = "</td></b>";
 		html[idx++] = "<td align='right' valign='middle'>";
 		html[idx++] = AjxImg.getImageHtml("HappyEmoticon");
 		html[idx++] = "</td>";
-		html[idx++] = "</tr>";		
+		html[idx++] = "</tr>";
 		html[idx++] = "</table>";
 		html[idx++] = "</div>";
-		html[idx++] = "</td></tr>";				
-		idx = this._addEntryRow(ZmMsg.imAddress, this.getAddress(), html, idx, false); //true, "250");		
+		html[idx++] = "</td></tr>";
+		idx = this._addEntryRow(ZmMsg.imAddress, this.getAddress(), html, idx, false); //true, "250");
 		idx = this._addEntryRow(ZmMsg.imName, this.name, html, idx, false);  // use this.name
 		idx = this._addEntryRow(ZmMsg.imGroups, this.getGroups().join(", "), html, idx, false);
 		html[idx++] = "</table>";

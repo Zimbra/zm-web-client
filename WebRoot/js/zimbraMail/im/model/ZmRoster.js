@@ -193,10 +193,11 @@ function(subscribed) {
  */
 ZmRoster.prototype.handleNotification =
 function(im) {
-	// console.dir(im);
 	if (im.n) {
+		var cl = this.getChatList();
 		for (var curNot=0; curNot < im.n.length; curNot++) {
 			var not = im.n[curNot];
+			// console.log("IM Notification: ", not);
 			if (not.type == "roster") {
 				this.getRosterItemList().removeAllItems();
 				var list = this.getRosterItemList();
@@ -240,20 +241,24 @@ function(im) {
 				var p = not;
 				if (p.from == this.getMyAddress()) {
 					if (this.getPresence().setFromJS(p)) this._notifyPresence();            
-				} else {
+				}
+				// else
+				{
 					var ri = this.getRosterItemList().getByAddr(p.from);
 					if (ri) {
 						if (ri.getPresence().setFromJS(p)) {
 							ri._notifyPresence();
 							var toast = this._presenceToastFormatter.format([ri.getDisplayName(), ri.getPresence().getShowText()]);
 							this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
+							var chat = cl.getChatByRosterAddr(p.from);
+							if (chat)
+								chat.addMessage(ZmChatMessage.system(toast));
 						}
 					}
 				}
 			} else if (not.type == "message") {
 				var msg = not;
 				var chatMessage = new ZmChatMessage(msg, msg.from == this.getMyAddress());
-				var cl = this.getChatList();
 				var chat = cl.getChatByThread(chatMessage.thread);
 				if (chat == null) {
 					if (!chatMessage.fromMe) {
@@ -264,11 +269,11 @@ function(im) {
 					if (chat) chat.setThread(chatMessage.thread);
 				}
 				if (chat) {
-					chat.addMessage(chatMessage);
 					if (!this._imApp.isActive()) {
 						this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, true);
-						this._imApp.startFlashingIcon();
+						this.startFlashingIcon();
 					}
+					chat.addMessage(chatMessage);
 				}
 			} else if (not.type == "leftchat") {
 				var lc = not;
@@ -281,4 +286,12 @@ function(im) {
 		}
 	}
 
+};
+
+ZmRoster.prototype.startFlashingIcon = function() {
+	this._imApp.startFlashingIcon();
+};
+
+ZmRoster.prototype.stopFlashingIcon = function() {
+	this._imApp.stopFlashingIcon();
 };

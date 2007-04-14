@@ -40,7 +40,7 @@ function ZmChicletButton(parent, className, icon, text, isLast) {
 
     var style = DwtLabel.IMAGE_LEFT;
     DwtButton.call(this, parent, style, className, DwtControl.RELATIVE_STYLE);
-    
+
     this.setImage(icon);
     this.setText(text);
 };
@@ -100,22 +100,24 @@ function(actionCode, ev) {
 };
 
 ZmChicletButton.prototype.startFlashing = function() {
-//	if (!this.__flashTimer) {
-//		// don't start twice
-//		this.__flashIconStatus = false;
-//		this.__flashTimer = setInterval(AjxCallback.simpleClosure(this.__flashIconCallback, this), 333);
-//	}
+	if (!this.__flashTimer) {
+		// don't start twice
+		this._origImage = this.getImage();
+		this.__flashIconStatus = false;
+		this.__flashTimer = setInterval(AjxCallback.simpleClosure(this.__flashIconCallback, this), 333);
+	}
 };
 
 ZmChicletButton.prototype.stopFlashing = function() {
-//	if (this.__flashTimer) {
-//		clearInterval(this.__flashTimer);
-//		this.__flashTimer = null;
-//		this.setImage(this._origInnerClass);
-//	}
+	if (this.__flashTimer) {
+		clearInterval(this.__flashTimer);
+		this.__flashTimer = null;
+		this.setImage(this._origImage);
+		this._origImage = null;
+	}
 };
 
 ZmChicletButton.prototype.__flashIconCallback = function() {
-//	this.__flashIconStatus = !this.__flashIconStatus;
-//	this.setImage(this.__flashIconStatus ? "Blank_16" : this._origInnerClass);
+	this.__flashIconStatus = !this.__flashIconStatus;
+	this.setImage(this.__flashIconStatus ? "Blank_16" : this._origImage);
 };
