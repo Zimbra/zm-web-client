@@ -7,28 +7,47 @@
 
 
 <app:handleError>
+<zm:fileUploader var="uploader"/>
+
 <c:choose>
-    <c:when test="${zm:actionSet(param, 'actionSave')}">
-        <c:set var="folder" value="${zm:getFolder(pageContext, param.folderId)}"/>
+    <c:when test="${not empty uploader.params.actionImport}">
         <c:choose>
-            <c:when test="${not empty param.folderNameVisible and empty param.folderName}">
+            <c:when test="${empty uploader.params.fileUpload}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoCalendarFileImportSpecified"/>
+                </app:status>
+            </c:when>
+            <c:otherwise>
+                <zm:importAppointments var="result" uploader="${uploader}" folderid="${uploader.params.folderId}"/>
+                <app:status>
+                    <fmt:message key="actionCalendarAppointmentsImported">
+                        <fmt:param value="${result.count}"/>
+                    </fmt:message>
+                </app:status>
+            </c:otherwise>
+        </c:choose>
+    </c:when>
+    <c:when test="${not empty uploader.params.actionSave}">
+        <c:set var="folder" value="${zm:getFolder(pageContext, uploader.params.folderId)}"/>
+        <c:choose>
+            <c:when test="${not empty uploader.params.folderNameVisible and empty uploader.params.folderName}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoCalendarNameSpecified"/>
                 </app:status>
             </c:when>
-            <c:when test="${not empty param.folderUrlVisible and empty param.folderUrl}">
+            <c:when test="${not empty uploader.params.folderUrlVisible and empty uploader.params.folderUrl}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoCalendarUrlSpecified"/>
                 </app:status>
             </c:when>
             <c:otherwise>
                 <zm:updateFolder
-                        id="${param.folderId}"
-                        name="${param.folderName}"
-                        color="${param.folderColor}"
-                        flags="${param.folderExcludeFlag}${param.folderCheckedFlag}"/>
-                <c:if test="${not empty param.folderUrl and param.folderUrl ne folder.remoteURL}">
-                    <zm:modifyFolderUrl id="${param.folderId}" url="${param.folderUrl}"/>
+                        id="${uploader.params.folderId}"
+                        name="${uploader.params.folderName}"
+                        color="${uploader.params.folderColor}"
+                        flags="${uploader.params.folderExcludeFlag}${uploader.params.folderCheckedFlag}"/>
+                <c:if test="${not empty uploader.params.folderUrl and uploader.params.folderUrl ne folder.remoteURL}">
+                    <zm:modifyFolderUrl id="${uploader.params.folderId}" url="${uploader.params.folderUrl}"/>
                 </c:if>
                 <app:status>
                     <fmt:message key="calendarUpdated"/>
@@ -36,70 +55,70 @@
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionNew')}">
+    <c:when test="${not empty uploader.params.actionNew}">
          <c:choose>
-            <c:when test="${empty param.newFolderName}">
+            <c:when test="${empty uploader.params.newFolderName}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoCalendarNameSpecified"/>
                 </app:status>
             </c:when>
-            <c:when test="${not empty param.newFolderUrlVisible and empty param.newFolderUrl}">
+            <c:when test="${not empty uploader.params.newFolderUrlVisible and empty uploader.params.newFolderUrl}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoCalendarUrlSpecified"/>
                 </app:status>
             </c:when>
-             <c:when test="${not empty param.newFolderOwnersEmailVisible and empty param.newFolderOwnersEmail}">
+             <c:when test="${not empty uploader.params.newFolderOwnersEmailVisible and empty uploader.params.newFolderOwnersEmail}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoOwnerEmailSpecified"/>
                 </app:status>
             </c:when>
-            <c:when test="${not empty param.newFolderOwnersCalendarVisible and empty param.newFolderOwnersCalendar}">
+            <c:when test="${not empty uploader.params.newFolderOwnersCalendarVisible and empty uploader.params.newFolderOwnersCalendar}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoOwnerCalendarSpecified"/>
                 </app:status>
             </c:when>
             <c:otherwise>
                 <c:choose>
-                    <c:when test="${not empty param.newFolderOwnersEmailVisible}">
+                    <c:when test="${not empty uploader.params.newFolderOwnersEmailVisible}">
                         <zm:createMountpoint var="folder"
                                              parentid="1"
-                                             name="${param.newFolderName}"
+                                             name="${uploader.params.newFolderName}"
                                              view="appointment"
-                                             color="${param.newFolderColor}"
-                                             flags="${param.newFolderExcludeFlag}${param.newFolderCheckedFlag}"
-                                             owner="${param.newFolderOwnersEmail}" ownerby="BY_NAME"
-                                             shareditem="${param.newFolderOwnersCalendar}" shareditemby="BY_PATH"/>
+                                             color="${uploader.params.newFolderColor}"
+                                             flags="${uploader.params.newFolderExcludeFlag}${uploader.params.newFolderCheckedFlag}"
+                                             owner="${uploader.params.newFolderOwnersEmail}" ownerby="BY_NAME"
+                                             shareditem="${uploader.params.newFolderOwnersCalendar}" shareditemby="BY_PATH"/>
                     </c:when>
                     <c:otherwise>
                         <zm:createFolder var="folder"
                                          parentid="1"
-                                         name="${param.newFolderName}"
+                                         name="${uploader.params.newFolderName}"
                                          view="appointment"
-                                         color="${param.newFolderColor}"
-                                         url="${param.newFolderUrl}"
-                                         flags="${param.newFolderExcludeFlag}${param.newFolderCheckedFlag}"/>
+                                         color="${uploader.params.newFolderColor}"
+                                         url="${uploader.params.newFolderUrl}"
+                                         flags="${uploader.params.newFolderExcludeFlag}${uploader.params.newFolderCheckedFlag}"/>
                     </c:otherwise>
                 </c:choose>
                 <app:status>
                     <fmt:message key="actionCalendarCreated">
-                        <fmt:param value="${param.newFolderName}"/>
+                        <fmt:param value="${uploader.params.newFolderName}"/>
                     </fmt:message>
                 </app:status>
                 <c:set var="newlyCreatedCalendarId" value="${folder.id}" scope="request"/>
             </c:otherwise>
         </c:choose>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionDelete')}">
-        <c:set var="folder" value="${zm:getFolder(pageContext, param.folderDeleteId)}"/>
+    <c:when test="${not empty uploader.params.actionDelete}">
+        <c:set var="folder" value="${zm:getFolder(pageContext, uploader.params.folderDeleteId)}"/>
         <c:choose>
-            <c:when test="${empty param.folderDeleteConfirm}">
+            <c:when test="${empty uploader.params.folderDeleteConfirm}">
                 <app:status style="Warning">
                     <fmt:message key="actionCalendarCheckConfirm"/>
                 </app:status>
             </c:when>
             <c:otherwise>
                 <c:set var="folderName" value="${folder.name}"/>
-                <zm:deleteFolder id="${param.folderDeleteId}"/>
+                <zm:deleteFolder id="${uploader.params.folderDeleteId}"/>
                 <app:status>
                     <fmt:message key="actionCalendarDeleted">
                         <fmt:param value="${folderName}"/>

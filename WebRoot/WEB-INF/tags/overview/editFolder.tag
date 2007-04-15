@@ -347,6 +347,22 @@
         </td>
     </tr>
 
+    <c:if test="${not (folder.isMountPoint or folder.isFeed)}">
+        <tr>
+            <td align=right><fmt:message key="calendarImport"/>:</td>
+            <td>
+                <input type=file size="40" name="fileUpload">
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>
+                <input class='tbButton' type="submit" name="actionImport"
+                       value="<fmt:message key="import"/>">
+            </td>
+        </tr>
+    </c:if>
+
 </c:if>
 
 

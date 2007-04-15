@@ -8,7 +8,9 @@
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
-    <c:if test="${!empty param.doAction}">
+    <zm:fileUploader var="uploader"/>
+
+    <c:if test="${uploader.isUpload}">
         <app:calendarAction/>
     </c:if>
 
@@ -23,13 +25,13 @@
     </c:choose>
 
     <c:if test="${empty selectedFolder or not selectedFolder.isAppointmentView}"><c:set var="selectedFolder" value="${mailbox.calendar}"/></c:if>
-    <c:set var="newCalendar" value="${zm:actionSet(param, 'actionNewCalendar') or zm:actionSet(param, 'actionNewSubscribedCalendar') or zm:actionSet(param, 'actionNewSharedCalendar')}"/>
+    <c:set var="newCalendar" value="${not empty uploader.params.actionNewCalendar or not empty uploader.params.actionNewSubscribedCalendar or not empty uploader.params.actionNewSharedCalendar}"/>
 
     <fmt:message var="title" key="manageCalendars"/>
 
-    <c:if test="${not empty param.sync}">
-        <zm:syncFolder id="${param.sync}"/>
-        <c:set var="folderName" value="${zm:getFolderName(pageContext, param.sync)}"/>
+    <c:if test="${not empty uploader.params.sync}">
+        <zm:syncFolder id="${uploader.params.sync}"/>
+        <c:set var="folderName" value="${zm:getFolderName(pageContext, uploader.params.sync)}"/>
         <app:status>
             <fmt:message key="actionCalendarReloaded">
                 <fmt:param value="${folderName}"/>
@@ -41,7 +43,7 @@
 
 <app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' calendars="true" minical="false" editmode="true" keys="true">
 
-    <form action="" method="post">
+    <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
         <table width=100% cellspacing="0" cellpadding="0">
             <tr>
                 <td class='TbTop'>
@@ -100,13 +102,13 @@
                             </td>
                             <td class='ZhEditCalendarContent' valign='top'>
                                 <c:choose>
-                                    <c:when test="${zm:actionSet(param, 'actionNewCalendar')}">
+                                    <c:when test="${not empty uploader.params.actionNewCalendar}">
                                         <app:newFolder calendar="true"/>
                                     </c:when>
-                                    <c:when test="${zm:actionSet(param, 'actionNewSharedCalendar')}">
+                                    <c:when test="${not empty uploader.params.actionNewSharedCalendar}">
                                         <app:newFolder calendar="true"  link="true"/>
                                     </c:when>
-                                    <c:when test="${zm:actionSet(param, 'actionNewSubscribedCalendar')}">
+                                    <c:when test="${not empty uploader.params.actionNewSubscribedCalendar}">
                                         <app:newFolder calendar="true" url="true"/>
                                     </c:when>
                                     <c:otherwise>
