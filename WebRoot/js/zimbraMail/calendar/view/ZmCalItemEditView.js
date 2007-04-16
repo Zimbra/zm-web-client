@@ -798,7 +798,6 @@ ZmCalItemEditView.prototype._attsDoneCallback =
 function(status, attId) {
 	DBG.println(AjxDebug.DBG1, "Attachments: status = " + status + ", attId = " + attId);
 	if (status == 200) {
-		this._removeAllAttachments();
 		this._controller.saveCalItem(attId);
 	} else {
 		DBG.println(AjxDebug.DBG1, "attachment error: " + status);
