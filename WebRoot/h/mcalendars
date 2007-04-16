@@ -25,7 +25,8 @@
     </c:choose>
 
     <c:if test="${empty selectedFolder or not selectedFolder.isAppointmentView}"><c:set var="selectedFolder" value="${mailbox.calendar}"/></c:if>
-    <c:set var="newCalendar" value="${not empty uploader.params.actionNewCalendar or not empty uploader.params.actionNewSubscribedCalendar or not empty uploader.params.actionNewSharedCalendar}"/>
+    <c:set var="newShared" value="${not empty uploader.params.actionNewSharedCalendar or param.action eq 'newShared'}"/>
+    <c:set var="newCalendar" value="${not empty uploader.params.actionNewCalendar or not empty uploader.params.actionNewSubscribedCalendar or newShared}"/>
 
     <fmt:message var="title" key="manageCalendars"/>
 
@@ -105,7 +106,7 @@
                                     <c:when test="${not empty uploader.params.actionNewCalendar}">
                                         <app:newFolder calendar="true"/>
                                     </c:when>
-                                    <c:when test="${not empty uploader.params.actionNewSharedCalendar}">
+                                    <c:when test="${newShared}">
                                         <app:newFolder calendar="true"  link="true"/>
                                     </c:when>
                                     <c:when test="${not empty uploader.params.actionNewSubscribedCalendar}">

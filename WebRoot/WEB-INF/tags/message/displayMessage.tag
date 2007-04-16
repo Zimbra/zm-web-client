@@ -27,6 +27,9 @@
     <c:set var="appt" value="${message.invite.component}"/>
     <c:set var="showInviteReply" value="${not zm:getFolder(pageContext, message.folderId).isInTrash and not empty message.invite.component}"/>
 </c:if>
+<c:set var="showShareInfo" value="${not empty message.share and not zm:hasShareMountPoint(mailbox, message)}"/>
+<c:set var="needExtraCol" value="${showInviteReply or showShareInfo}"/>
+
 <fmt:message var="unknownSender" key="unknownSender"/>
 
 <c:set var="isPart" value="${!empty message.partName}"/>
@@ -278,7 +281,7 @@
         </tr>
     </c:if>
     <tr>
-        <td class=MsgBody valign='top' colspan="${showInviteReply ? 1 : 2}">
+        <td class=MsgBody valign='top' colspan="${needExtraCol ? 1 : 2}">
             <c:choose>
                 <c:when test="${body.isTextHtml}">
                     <c:url var="iframeUrl" value="/h/imessage">
@@ -303,12 +306,21 @@
                     <pre>${message.mimeStructure}</pre>
                 </c:if>
         </td>
-        <c:if test="${showInviteReply}">
-            <td width=25% valign=top  class='ZhAppContent2'>
-                <c:catch>
-                    <app:multiDay selectedId="${message.id}" date="${appt.start.calendar}" numdays="1" view="day" timezone="${mailbox.prefs.timeZone}"/>
-                </c:catch>
-            </td>
+        <c:if test="${needExtraCol}">
+            <c:choose>
+                <c:when test="${showInviteReply}">
+                    <td width=25% valign=top  class='ZhAppContent2'>
+                        <c:catch>
+                            <app:multiDay selectedId="${message.id}" date="${appt.start.calendar}" numdays="1" view="day" timezone="${mailbox.prefs.timeZone}"/>
+                        </c:catch>
+                    </td>
+                </c:when>
+                <c:when test="${showShareInfo}">
+                    <td width=45% valign=top  class='ZhAppContent2'>
+                        <app:shareInfo message="${message}"/>
+                    </td>
+                </c:when>
+            </c:choose>
         </c:if>
     </tr>
 </table>
