@@ -10,10 +10,10 @@
 <c:set var="calendar" value="${share.link.view.appointment}"/>
 <c:set var="addressbook" value="${share.link.view.contact}"/>
 
+<fmt:message var="createLabel" key="acceptShare"/>
 <c:choose>
     <c:when test="${calendar}">
         <fmt:message var="label" key="calendarNew"/>
-        <fmt:message var="createLabel" key="createCalendar"/>
         <c:set var="icon" value="calendar/SharedCalendarFolder.gif"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>
         <c:set var="newFolderStyleColor" value="${zm:getFolderStyleColor(newFolderColor,'appointment')}"/>
@@ -23,7 +23,6 @@
     </c:when>
     <c:when test="${addressbook}">
         <fmt:message var="label" key="addressBookNew"/>
-        <fmt:message var="createLabel" key="createAddressBook"/>
         <c:set var="icon" value="contacts/SharedContactsFolder.gif"/>
         <fmt:message var="folderType" key="addressBookShared"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>
@@ -33,7 +32,6 @@
         <c:set var="icon" value="mail/SharedMailFolder.gif"/>
         <fmt:message var="label" key="folderNew"/>
         <fmt:message var="folderType" key="folderUser"/>
-        <fmt:message var="createLabel" key="folderCreate"/>
         <c:set var="newFolderColor" value="${empty param.newFolderColor ? 'blue' : param.newFolderColor}"/>
         <c:set var="newFolderStyleColor" value="${zm:getFolderStyleColor(newFolderColor,'message')}"/>
     </c:otherwise>
