@@ -63,6 +63,7 @@
                 <fmt:message key="actionNoNameSpecified"/>
             </c:when>
             <c:otherwise>
+                <c:set var="newFlags" value="${param.newFolderView eq 'appointment' ? '#' : ''}"/>
                 <zm:createMountpoint var="result" parentid="${param.newFolderParentId}"
                                      name="${param.newFolderName}"
                                      ownerby="BY_ID"
@@ -70,6 +71,7 @@
                                      shareditemby="BY_ID"
                                      shareditem="${param.newFolderLinkId}"
                                      color="${param.newFolderColor}"
+                                     flags="${newFlags}"
                                      view="${param.newFolderView}"/>
                 <app:status>
                     <fmt:message key="shareAccepted"/>
