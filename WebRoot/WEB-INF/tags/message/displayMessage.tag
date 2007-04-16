@@ -27,7 +27,8 @@
     <c:set var="appt" value="${message.invite.component}"/>
     <c:set var="showInviteReply" value="${not zm:getFolder(pageContext, message.folderId).isInTrash and not empty message.invite.component}"/>
 </c:if>
-<c:set var="showShareInfo" value="${not empty message.share and not zm:hasShareMountPoint(mailbox, message)}"/>
+<c:set var="shareAccepted" value="${not empty message.share and zm:hasShareMountPoint(mailbox, message)}"/>
+<c:set var="showShareInfo" value="${not empty message.share and not shareAccepted}"/>
 <c:set var="needExtraCol" value="${showInviteReply or showShareInfo}"/>
 
 <fmt:message var="unknownSender" key="unknownSender"/>
@@ -277,6 +278,16 @@
                 &nbsp;<a accesskey='x' href="${externalImageUrl}">
                 <fmt:message key="displayExternalImages"/>
             </a>
+            </td>
+        </tr>
+    </c:if>
+    <c:if test="${shareAccepted}">
+        <tr>
+            <td width=1% class='DisplayImages'>
+                <app:img src="dwt/Information.gif"/>
+            </td>
+            <td class='DisplayImages' colspan=1>
+                <fmt:message key="shareAlreadyAccepted"/>
             </td>
         </tr>
     </c:if>
