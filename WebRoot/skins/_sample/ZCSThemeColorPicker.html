@@ -1,7 +1,8 @@
 <html>
 <title>Theme Color Picker</title>
 <style type='text/css'>
-* {	font-family:Verdana; font-size:10px;	}
+* 	{	font-family:Verdana; }
+TD	{	font-size:12px;	}
 
 body {
 	background-color:#e8dcc1;
@@ -13,7 +14,7 @@ body {
 }
 
 .instructions {
-	font-style:italic;
+	/*font-style:italic;*/
 }
 
 .colorChip	{
@@ -253,6 +254,7 @@ function setCurrentFocus(id) {
 function hilightFocusedField() {
 	$('colorRGB1').className = (currentColorField == 'colorRGB1' ? "focused" : "");
 	$('colorRGB2').className = (currentColorField == 'colorRGB2' ? "focused" : "");
+	$('colorRGB3').className = (currentColorField == 'colorRGB3' ? "focused" : "");
 }
 
 function getFocusColor() {
@@ -273,7 +275,7 @@ function getColorName(baseName, modifier) {
 	return baseName + modifier;
 }
 
-function getJSRep(name, value) {
+function getPropertiesString(name, value) {
 	return "\t"+name + "\t\t=\t#" + value;
 }
 
@@ -284,7 +286,8 @@ function drawCurrentColors() {
 					  "#                               Skin Colors                              #\n"+
 					  "#------------------------------------------------------------------------#\n#\n";
 	drawCurrentColor(1, "AppC", "#### Base color and variants ####");
-	drawCurrentColor(2, "SelC", "#### Selection color and variants ####");	
+	drawCurrentColor(2, "AltC", "#### Alternate color and variants ####");	
+	drawCurrentColor(3, "SelC", "#### Selection color and variants ####");	
 	clipboard.value += "#\n#========================================================================#\n"
 	hilightFocusedField();
 }
@@ -292,7 +295,7 @@ function drawCurrentColors() {
 function drawCurrentColor(num, name, jsHeader) {
 	var baseColor = safeColor($('colorRGB'+num).value);
 
-	var darkJS = [jsHeader,getJSRep(getColorName(name)+"\t", baseColor)];
+	var darkJS = [jsHeader,getPropertiesString(getColorName(name), baseColor)];
 	var lightJS = [];
 
 	var html = 
@@ -308,7 +311,7 @@ function drawCurrentColor(num, name, jsHeader) {
 				"<td><div class='colorChip' style='background-color:", darkColor, "'><\/div><\/td>",
 			].join(""));
 
-		darkJS.push(getJSRep(darkName, darkColor));
+		darkJS.push(getPropertiesString(darkName, darkColor));
 	}
 
 	html.push([
@@ -323,7 +326,7 @@ function drawCurrentColor(num, name, jsHeader) {
 				"<td><div class='colorChip' style='background-color:", lightColor, "'><\/div><\/td>",
 			].join(""));
 
-		lightJS.push(getJSRep(lightName, lightColor));
+		lightJS.push(getPropertiesString(lightName, lightColor));
 	}
 	html.push("<\/tr><\/table>");
 	
@@ -388,12 +391,13 @@ function drawHues() {
 			please see the <a href=http://wiki.zimbra.com/index.php?title=Themes>Zimbra Wiki</a>.
 			<br><br>
 			<b>Note: this file works best in <a href=http://www.mozilla.com/firefox/ target=_blank>Mozilla FireFox</a></b><br><br>
-			Each Zimbra Theme is composed of two families of colors:
+			Each Zimbra Theme is composed of three families of colors:
 			<ul>
 				<li>the "AppC" used for the main body of the application, and</li>
+				<li>the "AltC" used for accent colors within the app, and</li>
 				<li>the "SelC" used to indicate selection, (eg: the background color of the selected message).</li>
 			</ul>
-			To pick these colors for your theme:<br><br>
+			<h2>To pick these colors for your theme:</h2>
 			
 			<b>1)</b> Click in the appropriate "RGB Value" box below and either paste a color value
 			or pick one from the gradient to the right.
@@ -406,14 +410,21 @@ function drawHues() {
 		<td><div id='display1'></div></td>
 	</tr>
 
+
 	<tr>
-		<td class=label>SelC:</td>
-		<td class=field><input class=rgbField id='colorRGB2' value='C7E6F6'  onfocus='focusInColorField(2)' onblur='drawCurrentColors()'></td>
+		<td class=label>AltC:</td>
+		<td class=field><input class=rgbField id='colorRGB2' value='c6e5f5'  onfocus='focusInColorField(2)' onblur='drawCurrentColors()'></td>
 		<td><div id='display2'></div></td>
 	</tr>
 
+	<tr>
+		<td class=label>SelC:</td>
+		<td class=field><input class=rgbField id='colorRGB3' value='fffccc'  onfocus='focusInColorField(3)' onblur='drawCurrentColors()'></td>
+		<td><div id='display3'></div></td>
+	</tr>
+
 	<tr><td colspan=3 class='instructions'>
-			<b>2)</b> Then copy and paste the text below into your <b>mytheme_subs.txt</b> file.<br><br>
+			<b>2)</b> Then copy and paste the text below into your <b>skin.properties</b> file.<br><br>
 		</td>
 	</tr>
 
