@@ -296,7 +296,7 @@
             </c:choose>
             <c:if test="${not empty message.attachments}">
                 <hr/>
-                <a name="attachments${message.partName}"/>
+                <a name="attachments${message.partName}"></a>
                 <app:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
             </c:if>
                 <c:if test="${not empty param.debug}">

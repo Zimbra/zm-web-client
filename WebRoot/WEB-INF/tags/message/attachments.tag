@@ -49,3 +49,17 @@
         </table>
     </c:if>
 </c:forEach>
+
+<c:if test="${message.numberOfAttachments gt 1}">
+    <c:set var="url" value="/service/home/~/?id=${message.id}&part=${message.attachmentIds}&auth=co&disp=a&fmt=zip"/>
+    <table cellspacing=8>
+        <tr>
+            <td>
+                <app:img src="doctypes/ZipDoc.gif" alt="zip" title="zip"/>
+            </td>
+            <td>
+                <a href="${url}"><fmt:message key="downloadAllAttachments"/></a>
+            </td>
+        </tr>
+    </table>
+</c:if>
