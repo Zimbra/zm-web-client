@@ -126,8 +126,8 @@ function(id, params, index) {
 	if (params.text) {
 		b.setText(params.text);
 	}
-	if (params.toolTip) {
-		b.setToolTipContent(params.toolTip);
+	if (params.tooltip) {
+		b.setToolTipContent(params.tooltip);
 	}
 	if (params.disImage) {
 		b.setDisabledImage(params.disImage);
