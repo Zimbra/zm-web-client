@@ -206,6 +206,7 @@ function(ev) {
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			if (this._list && this._list.contains(item)) { continue; } // skip if we already have it
+			if (!this._handleEventType[item.type]) { return; }
 
 			// Check to see if ZmMailList::notifyCreate gave us an index for the item.
 			// If not, we assume that the new conv/msg is the most recent one. If we're on the
