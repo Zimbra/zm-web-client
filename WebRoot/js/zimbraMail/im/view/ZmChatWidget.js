@@ -176,6 +176,7 @@ ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
 };
 
 ZmChatWidget.prototype.sendInput = function(text) {
+	text = AjxStringUtil.trim(text);
 	if (text == "")
 		return;		// don't send empty strings
 // 	if (text.substring(0,1) == "$") {
@@ -203,6 +204,7 @@ ZmChatWidget.prototype._updateGroupChatTitle = function(force) {
 ZmChatWidget.IDS = [
 	"toolbarLayout",
 	"convLayout",
+	"sash",
 	"inputLayout",
 	"input"
 ];
@@ -254,6 +256,8 @@ ZmChatWidget.prototype._init = function() {
 	dropTgt.addDropListener(new AjxListener(this, this._dropOnTitleListener));
 
 	this.addDisposeListener(new AjxListener(this, this._disposeListener));
+
+	this._setupSash();
 };
 
 // "this" is here the input field.
@@ -531,4 +535,47 @@ ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
 
 ZmChatWidget.prototype._disposeListener = function() {
 	this.parent.detachChatWidget(this);
+};
+
+ZmChatWidget.prototype._setupSash = function() {
+	var el = this._getElement("sash");
+	this._sashCapture = new DwtMouseEventCapture(
+		this, "ZmChatWidget",
+		null, // no mouseover
+		null, // no mousedown
+		AjxCallback.simpleClosure(this._sashMouseMove, this),
+		AjxCallback.simpleClosure(this._sashMouseUp, this),
+		null, // no mouseout
+		true);
+	el.onmousedown = AjxCallback.simpleClosure(this._sashMouseDown, this);
+};
+
+ZmChatWidget.prototype._sashMouseDown = function(ev) {
+	this._sashCapture.capture();
+	var dwtEv = DwtShell.mouseEvent;
+	dwtEv.setFromDhtmlEvent(ev);
+	this._sashCapture.origY = dwtEv.docY;
+	this._sashCapture.origHeight = this._getElement("input").offsetHeight;
+	dwtEv._stopPropagation = true;
+	dwtEv._returnValue = false;
+	dwtEv.setToDhtmlEvent(ev);
+};
+
+ZmChatWidget.prototype._sashMouseMove = function(ev) {
+	var dwtEv = DwtShell.mouseEvent;
+	dwtEv.setFromDhtmlEvent(ev);
+	var diff = dwtEv.docY - this._sashCapture.origY;
+	var el = this._getElement("input");
+	var h = Math.min(Math.max(this._sashCapture.origHeight - diff, 30),
+			 Math.round(this.getSize().y * 0.5));
+	el.style.height = h + "px";
+	this._doResize();
+	dwtEv._stopPropagation = true;
+	dwtEv._returnValue = false;
+	dwtEv.setToDhtmlEvent(ev);
+};
+
+ZmChatWidget.prototype._sashMouseUp = function(ev) {
+	this._sashCapture.release();
+	this._sashCapture.pos = null;
 };

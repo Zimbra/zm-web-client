@@ -62,17 +62,18 @@ function() {
 ZmChatMessage.prototype.toHtml =
 function(objectManager, chat, lastFrom) {
 	var body;
+	body = this.body.replace(/\r?\n/g, "<br/>");
 	if (objectManager && this.objectify) {
-//		body = objectManager.findObjects(this.body, this.htmlEncode);
+//		body = objectManager.findObjects(body, this.htmlEncode);
 		var div = document.createElement("div");
-		div.innerHTML = this.body;
-		objectManager.findObjectsInNode(div, null, /^(font|b|strong|i|em|span|a|img|ding)$/i,
+		div.innerHTML = body;
+		objectManager.findObjectsInNode(div, null, /^(font|b|strong|i|em|span|a|img|ding|br)$/i,
 						{ foreachElement: AjxCallback.simpleClosure(this.normalizeElement, this) });
 		body = div.innerHTML;
 	} else {
 		body = this.htmlEncode
-			? AjxStringUtil.htmlEncode(this.body)
-			: this.body;
+			? AjxStringUtil.htmlEncode(body)
+			: body;
 	}
 	var params = { isSystem		 : this.isSystem,
 		       fromMe		 : this.fromMe,
@@ -88,7 +89,7 @@ function(objectManager, chat, lastFrom) {
 	return html.join("");
 };
 
-ZmChatMessage.prototype.normalizeElement = function(el, tag) {
+ZmChatMessage.prototype.normalizeElement = function(el, tag, re_discard, re_allow) {
 	switch (tag) {
 	    case "font":
 		if (el.size) {
@@ -103,7 +104,7 @@ ZmChatMessage.prototype.normalizeElement = function(el, tag) {
 			// CSS works.
 			el.style.fontSize = size + "px";
 		}
-		break;
+		return null;
 
 	    case "ding":
 		// /buzz in gaim
@@ -111,6 +112,22 @@ ZmChatMessage.prototype.normalizeElement = function(el, tag) {
 		el.innerHTML = "* buzz *"; // XXX
 		this.isSystem = true;
 		this.fromMe = false;
-		break;
+		return null;
 	}
+
+	if (!re_allow.test(tag)) {
+		// convert to plain text instead of discarding it
+		var doc = el.ownerDocument;
+		var df = doc.createDocumentFragment();
+		var next = doc.createTextNode("<" + tag + ">");
+		df.appendChild(next);
+		while (el.firstChild)
+			df.appendChild(el.firstChild);
+		df.appendChild(doc.createTextNode("</" + tag + ">"));
+		el.parentNode.insertBefore(df, el);
+		el.parentNode.removeChild(el);
+		return next;
+	}
+
+	return null;
 };

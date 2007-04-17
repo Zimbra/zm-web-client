@@ -305,41 +305,47 @@ function(node, re_discard, re_allow, callbacks) {
 	// This inner function does the actual work.  BEWARE that it return-s
 	// in various places, not only at the end.
 	function recurse(node, handlers) {
-		var tmp, i, val;
+		var tmp, i, val, next;
 		switch (node.nodeType) {
 		    case 1:	// ELEMENT_NODE
 			node.normalize();
 			tmp = node.tagName.toLowerCase();
-			if (callbacks && callbacks.foreachElement)
-				callbacks.foreachElement(node, tmp);
-			if (/^(img|a)$/.test(tmp)) {
-				if (tmp == "a" && node.target
-				    && (ZmMailMsgView._URL_RE.test(node.href)
-					|| ZmMailMsgView._MAILTO_RE.test(node.href)))
-				{
-					// tricky.
-					var txt = RegExp.$1;
-					tmp = doc.createElement("div");
-					tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1));
-					tmp = tmp.firstChild;
-					if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
-						// probably no objects were found.  A warning would be OK here
-						// since the regexps guarantee that objects _should_ be found.
-						return tmp.nextSibling;
+			if (callbacks && callbacks.foreachElement) {
+				next = callbacks.foreachElement(node, tmp, re_discard, re_allow);
+			}
+			if (next == null) {
+				if (/^(img|a)$/.test(tmp)) {
+					if (tmp == "a" && node.target
+					    && (ZmMailMsgView._URL_RE.test(node.href)
+						|| ZmMailMsgView._MAILTO_RE.test(node.href)))
+					{
+						// tricky.
+						var txt = RegExp.$1;
+						tmp = doc.createElement("div");
+						tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1));
+						tmp = tmp.firstChild;
+						if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
+							// probably no objects were found.  A warning would be OK here
+							// since the regexps guarantee that objects _should_ be found.
+							return tmp.nextSibling;
+						}
+						// here, tmp is an object span, but it
+						// contains the URL (href) instead of
+						// the original link text.
+						node.parentNode.insertBefore(tmp, node); // add it to DOM
+						tmp.innerHTML = "";
+						tmp.appendChild(node); // we have the original link now
+						return tmp.nextSibling;	// move on
 					}
-					// here, tmp is an object span, but it
-					// contains the URL (href) instead of
-					// the original link text.
-					node.parentNode.insertBefore(tmp, node); // add it to DOM
-					tmp.innerHTML = "";
-					tmp.appendChild(node); // we have the original link now
-					return tmp.nextSibling;	// move on
+					handlers = false;
+				} else if (re_discard.test(tmp) || (re_allow && !re_allow.test(tmp))) {
+					tmp = node.nextSibling;
+					node.parentNode.removeChild(node);
+					return tmp;
 				}
-				handlers = false;
-			} else if (re_discard.test(tmp) || (re_allow && !re_allow.test(tmp))) {
-				tmp = node.nextSibling;
-				node.parentNode.removeChild(node);
-				return tmp;
+			} else {
+				// consider processed
+				node = next;
 			}
 			// fix style
 			// node.nowrap = "";
