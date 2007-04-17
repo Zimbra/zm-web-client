@@ -109,7 +109,7 @@ function(parent, type, id) {
 		}
 		// only allow Inbox and Sent system folders to be share-able for now
 		if (!folder.link && (id == ZmFolder.ID_INBOX || id == ZmFolder.ID_SENT))
-			parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], true);
+			parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER, ZmOperation.EDIT_PROPS], true);
 	}
 
 	if (folder.link && folder.isReadOnly()) {
