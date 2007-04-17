@@ -554,8 +554,7 @@ function(callback, checkQS) {
 
 ZmMailApp.prototype._handleLoadLaunch =
 function(callback, checkQS) {
-	var respCallback = new AjxCallback(this, this._handleResponseLaunch, [callback]);
-	var query = null;
+	var query;
 	if (checkQS) {
 		if (location && (location.search.match(/\bview=compose\b/))) {
 			var cc = AjxDispatcher.run("GetComposeController");
@@ -566,7 +565,7 @@ function(callback, checkQS) {
 			match = location.search.match(/\bbody=([^&]+)/);
 			var body = match ? decodeURIComponent(match[1]) : null;
 			var params = {action:ZmOperation.NEW_MESSAGE, toOverride:to, subjOverride:subject,
-						  extraBodyText:body, callback:respCallback};
+						  extraBodyText:body, callback:callback};
 			cc.doAction(params);
 			return;
 		} else if (location.search && (location.search.match(/\bview=msg\b/))) {
@@ -577,18 +576,21 @@ function(callback, checkQS) {
 			}
 		}
 	}
-	query = query ? query : this._appCtxt.get(ZmSetting.INITIAL_SEARCH);
+	query = query || this._appCtxt.get(ZmSetting.INITIAL_SEARCH);
 	var types = new AjxVector();
 	types.add(this.getGroupMailBy());
-	
-	var params = {query:query, callback:respCallback, types:types};
+
+	var params = {query:query, callback:callback, types:types};
+	params.errorCallback = new AjxCallback(this, this._handleErrorLaunch, params);
 	this._appCtxt.getSearchController().search(params);
 };
 
-ZmMailApp.prototype._handleResponseLaunch =
-function(callback) {
-	if (callback) {
-		callback.run();
+ZmMailApp.prototype._handleErrorLaunch =
+function(params, ex) {
+	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
+		// reset the params so we default to searching the inbox which *will* work
+		var newParams = {query:"in:inbox", callback:params.callback, errorCallback:null, types:params.types};
+		this._appCtxt.getSearchController().search(newParams);
 	}
 };
 
