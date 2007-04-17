@@ -604,7 +604,7 @@ ZmZimbraMail.prototype.sendSync =
 function(callback) {
     var soapDoc = AjxSoapDoc.create("SyncRequest", "urn:zimbraOffline");
     var respCallback = new AjxCallback(this, this._handleResponseSendSync, [callback]);
-    this.sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+    this.sendRequest({soapDoc:soapDoc, asyncMode:true, noBusyOverlay:true, callback:respCallback});
 };
 
 ZmZimbraMail.prototype._handleResponseSendSync =
