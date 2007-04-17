@@ -470,8 +470,13 @@ function(ev) {
 		this._actionEv.address = address;
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 			var contacts = AjxDispatcher.run("GetContacts");
-			this._actionEv.contact = contacts.getContactByEmail(this._actionEv.address.getAddress());
-			this._setContactText(this._actionEv.contact != null);
+			var c = this._actionEv.contact = contacts.getContactByEmail(this._actionEv.address.getAddress());
+			this._setContactText(c != null);
+			var buddy = c && c.getBuddy();
+			this._participantActionMenu.getOp(ZmOperation.IM).setEnabled(buddy != null);
+			if (buddy) {
+				this._participantActionMenu.getOp(ZmOperation.IM).setImage(buddy.getPresence().getIcon());
+			}
 		}
 		this._enableFlags(this._participantActionMenu, bHasUnread, bHasRead);
 		this._participantActionMenu.popup(0, ev.docX, ev.docY);

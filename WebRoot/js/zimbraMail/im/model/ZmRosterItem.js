@@ -51,7 +51,7 @@ function() {
  */
 ZmRosterItem.prototype._delete =
 function() {
-    this._modify(this.id, this.name, this.groupNames, true);
+	this._modify(this.id, this.name, this.groupNames, true);
 };
 
 /**
@@ -59,8 +59,8 @@ function() {
  */
 ZmRosterItem.prototype._modify =
 function(id, name, groupNames, doDelete) {
-    var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraIM");
-    var method = soapDoc.getMethod();
+	var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraIM");
+	var method = soapDoc.getMethod();
 	method.setAttribute("addr", id);
 	if (name) method.setAttribute("name", name);
 	if (groupNames) method.setAttribute("groups", groupNames);
@@ -161,12 +161,17 @@ ZmRosterItem.prototype.getGroupNames = function() { return this.groupNames; };
 
 ZmRosterItem.prototype.getName = function() {	return this.name; }
 
+ZmRosterItem.prototype.getContact = function() {
+	return AjxDispatcher.run("GetContacts").getContactByIMAddress(this.id);
+};
+
 ZmRosterItem.prototype.getDisplayName = function() {
-	var contacts = AjxDispatcher.run("GetContacts");
-	var c = contacts.getContactByIMAddress(this.id);
+	if (this.name)
+		return this.name;
+	var c = this.getContact();
 	if (c)
 		return c.getFullName();
-	return this.name ? this.name : this.id;
+	return this.id;
 };
 
 ZmRosterItem.prototype.getUnread = function() { return this.numUnreadIMs; };
@@ -229,58 +234,11 @@ function(groups) {
     return null;
 };
 
-
-// Adds a row to the tool tip.
-// FIXME: move to AjxTemplate
-ZmRosterItem.prototype._addEntryRow =
-function(field, data, html, idx, wrap, width) {
-	if (data != null && data != "") {
-		html[idx++] = "<tr valign='top'><td align='right' style='padding-right: 5px;'><b><div style='white-space:nowrap'>";
-		html[idx++] = AjxStringUtil.htmlEncode(field) + ":";
-		html[idx++] = "</div></b></td><td align='left'><div style='white-space:";
-		html[idx++] = wrap ? "wrap;" : "nowrap;";
-		if (width) html[idx++] = "width:"+width+"px;";
-		html[idx++] = "'>";
-		html[idx++] = AjxStringUtil.htmlEncode(data);
-		html[idx++] = "</div></td></tr>";
-	}
-	return idx;
-};
-
-/**
-* Returns HTML for a tool tip for this appt.
-*
-* FIXME: move to AjxTemplate
-*/
-ZmRosterItem.prototype.getToolTip =
-function() {
-	if (!this._toolTip) {
-		var html = new Array(20);
-		var idx = 0;
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 >";
-		html[idx++] = "<tr valign='middle'><td colspan=2 align='left'>";
-		html[idx++] = "<div style='border-bottom: 1px solid black;'>";
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
-		html[idx++] = "<tr valign='middle'>";
-		html[idx++] = "<td valign='middle'><b>";
-		html[idx++] = "<td valign='middle'>" + AjxImg.getImageHtml(this.getPresence().getIcon()) + "</td>";
-		html[idx++] = "<td valign='middle' align='center'><b>";
-		html[idx++] = AjxStringUtil.htmlEncode(this.getDisplayName() + " (" + this.getPresence().getShowText() + ")");
-		html[idx++] = "</td></b>";
-		html[idx++] = "<td align='right' valign='middle'>";
-		html[idx++] = AjxImg.getImageHtml("HappyEmoticon");
-		html[idx++] = "</td>";
-		html[idx++] = "</tr>";
-		html[idx++] = "</table>";
-		html[idx++] = "</div>";
-		html[idx++] = "</td></tr>";
-		idx = this._addEntryRow(ZmMsg.imAddress, this.getAddress(), html, idx, false); //true, "250");
-		idx = this._addEntryRow(ZmMsg.imName, this.name, html, idx, false);  // use this.name
-		idx = this._addEntryRow(ZmMsg.imGroups, this.getGroups().join(", "), html, idx, false);
-		html[idx++] = "</table>";
-		this._toolTip = html.join("");
-	}
-	return this._toolTip;
+ZmRosterItem.prototype.getToolTip = function() {
+	return AjxTemplate.expand("zimbraMail.im.templates.Chat#RosterItemTooltip",
+				  { buddy   : this,
+				    contact : this.getContact()
+				  });
 };
 
 ZmRosterItem.prototype.isDefaultBuddy = function() {

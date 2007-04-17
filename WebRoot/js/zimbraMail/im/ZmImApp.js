@@ -80,6 +80,9 @@ function() {
 	ZmOperation.registerOp("IM_PRESENCE_ONLINE", {textKey:"imStatusOnline", image:"ImAvailable"});
 	ZmOperation.registerOp("IM_PRESENCE_XA", {textKey:"imStatusExtAway", image:"ImExtendedAway"});
 	ZmOperation.registerOp("NEW_ROSTER_ITEM", {textKey:"newRosterItem", image:"ImBuddy"});
+	ZmOperation.registerOp("IM_CREATE_CONTACT", { textKey: "addToNewContact", image: "NewContact" });
+	ZmOperation.registerOp("IM_ADD_TO_CONTACT", { textKey: "addToExistingContact", image: "Edit" });
+	ZmOperation.registerOp("IM_EDIT_CONTACT", { textKey: "editContact", image: "Edit" });
 };
 
 ZmImApp.prototype._registerItems =
@@ -170,7 +173,6 @@ function(active) {
 	// console.log("activate");
 	this._active = active;
 	if (active) {
-		this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, false);
 		this._appCtxt.getAppController().setBuddyListTab("buddies");
 		this.stopFlashingIcon();
 	}
@@ -206,6 +208,7 @@ ZmImApp.prototype.startFlashingIcon = function() {
 };
 
 ZmImApp.prototype.stopFlashingIcon = function() {
+	this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, false);
 	this._appCtxt.getAppController().getAppChooserButton("IM").stopFlashing();
 };
 

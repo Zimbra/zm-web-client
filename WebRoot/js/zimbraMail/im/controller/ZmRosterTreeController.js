@@ -50,6 +50,9 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.IM_NEW_CHAT] = new AjxListener(this, this._imNewChatListener);
 	this._listeners[ZmOperation.IM_NEW_GROUP_CHAT] = new AjxListener(this, this._imNewGroupChatListener);
 	this._listeners[ZmOperation.EDIT_PROPS] = new AjxListener(this, this._editRosterItemListener);
+	this._listeners[ZmOperation.IM_CREATE_CONTACT] = new AjxListener(this, this._imCreateContactListener);
+	this._listeners[ZmOperation.IM_ADD_TO_CONTACT] = new AjxListener(this, this._imAddToContactListener);
+	this._listeners[ZmOperation.IM_EDIT_CONTACT] = new AjxListener(this, this._imEditContactListener);
 
 	this._treeItemHoverListenerListener = new AjxListener(this, this._treeItemHoverListener);
 };
@@ -195,7 +198,12 @@ ZmRosterTreeController.prototype._getHeaderActionMenuOps = function() {
 
 // Returns a list of desired action menu operations
 ZmRosterTreeController.prototype._getItemActionMenuOps = function() {
-	return [ZmOperation.IM_NEW_CHAT, ZmOperation.SEP, ZmOperation.EDIT_PROPS, ZmOperation.DELETE];
+	return [ZmOperation.IM_NEW_CHAT,
+		ZmOperation.SEP, //-----------
+		ZmOperation.EDIT_PROPS, ZmOperation.DELETE,
+		ZmOperation.SEP, //-----------
+		ZmOperation.IM_CREATE_CONTACT, ZmOperation.IM_ADD_TO_CONTACT, ZmOperation.IM_EDIT_CONTACT
+	       ];
 };
 
 // Returns a list of desired action menu operations
@@ -235,9 +243,17 @@ function(ev) {
 		menu = this._itemActionMenu;
 		if (menu == null)
 			menu = this._itemActionMenu = this._createActionMenu(this._shell, this._getItemActionMenuOps());
+
+		var item = org.getRosterItem();
+
 		// disallow these operations for implicit buddies (i.e. Zimbra Assistant)
-		menu.getOp(ZmOperation.EDIT_PROPS).setEnabled(!org.rosterItem.isDefaultBuddy());
-		menu.getOp(ZmOperation.DELETE).setEnabled(!org.rosterItem.isDefaultBuddy());
+		menu.getOp(ZmOperation.EDIT_PROPS).setEnabled(!item.isDefaultBuddy());
+		menu.getOp(ZmOperation.DELETE).setEnabled(!item.isDefaultBuddy());
+
+		var contact = item.getContact();
+		menu.getOp(ZmOperation.IM_ADD_TO_CONTACT).setVisible(!contact);
+		menu.getOp(ZmOperation.IM_CREATE_CONTACT).setVisible(!contact);
+		menu.getOp(ZmOperation.IM_EDIT_CONTACT).setVisible(!!contact);
 	} else if (org instanceof ZmRosterTreeGroup) {
 		menu = this._groupActionMenu;
 		if (menu == null)
@@ -464,4 +480,45 @@ function(ev, treeView, overviewId) {
 			this._addNew(treeView, parentNode, organizer, idx); // add to new parent
 		}
 	}
+};
+
+ZmRosterTreeController.prototype._imCreateContactListener = function(ev) {
+	var item = this._getActionedOrganizer(ev).getRosterItem();
+	var contact = new ZmContact(this._appCtxt);
+	contact.setAttr(ZmContact.F_imAddress1, item.getAddress());
+	AjxDispatcher.run("GetContactController").show(contact, true);
+};
+
+ZmRosterTreeController.prototype._imAddToContactListener = function(ev) {
+	var item = this._getActionedOrganizer(ev).getRosterItem();
+	ZmOneContactPicker.showPicker(
+		{
+			onAutocomplete: AjxCallback.simpleClosure(function(contact, dlg) {
+				dlg.popdown();
+				var fields = [ ZmContact.F_imAddress1, ZmContact.F_imAddress2, ZmContact.F_imAddress3 ];
+				for (var i = 0; i < fields.length; ++i) {
+					var f = fields[i];
+					var orig = contact.getAttr(f);
+					if (!orig || !/\S/.test(orig)) {
+						contact.setAttr(f, item.getAddress());
+						AjxDispatcher.run("GetContactController").show(contact, true);
+						// reset the attribute now so that
+						// ZmContactView thinks it's been
+						// modified.  sort of makes sense. ;-)
+						contact.setAttr(f, orig);
+						break;
+					}
+				}
+				if (i == fields.length) {
+					// not set as all IM fields are filed
+					// XXX: warn?
+				}
+			}, this )
+		}
+	);
+};
+
+ZmRosterTreeController.prototype._imEditContactListener = function(ev) {
+	var item = this._getActionedOrganizer(ev).getRosterItem();
+	AjxDispatcher.run("GetContactController").show(item.getContact(), false);
 };

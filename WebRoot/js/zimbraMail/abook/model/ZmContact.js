@@ -715,6 +715,12 @@ function(obj) {
 	// update this contact's list per old/new attrs
 	this.list.modifyLocal(obj, details);
 	this._notify(ZmEvent.E_MODIFY, obj);
+
+	var buddy = this.getBuddy();
+	if (buddy) {
+		// trigger a refresh
+		buddy._notifySetName(buddy.name);
+	}
 };
 
 /**
@@ -752,8 +758,11 @@ ZmContact.prototype.getIMAddress = function() {
 };
 
 ZmContact.prototype.getBuddy = function() {
-	var roster = AjxDispatcher.run("GetRoster");
-	var buddy = roster.getRosterItem(this.getIMAddress());
+	var buddy = null;
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
+		var roster = AjxDispatcher.run("GetRoster");
+		buddy = roster.getRosterItem(this.getIMAddress());
+	}
 	return buddy;
 };
 
@@ -807,10 +816,7 @@ function(email, isGal) {
 //	if (!this._toolTip || this._toolTipEmail != email) {
 
 	// IM status can change anytime so let's always rebuild the tooltip
-	var buddy = null;
-	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
-		buddy = this.getBuddy();
-	}
+	var buddy = this.getBuddy();
 	var subs = { contact	: this,
 		     entryTitle	: this.getFileAs(),
 		     buddy	: buddy };

@@ -31,8 +31,8 @@
 * @author
 * @param view			the view this manager is going to hilite for
 * @param appCtxt 		the global ZmAppCtxt
-* @param selectCallback AjxCallback triggered when user clicks on hilited object 
-* 						(provide if you want to do something before the clicked 
+* @param selectCallback AjxCallback triggered when user clicks on hilited object
+* 						(provide if you want to do something before the clicked
 * 						on object opens its corresponding view)
 * @param skipHandlers 	true to avoid adding the standard handlers
 */
@@ -52,7 +52,7 @@ function ZmObjectManager(view, appCtxt, selectCallback, skipHandlers) {
 	// create handlers (see registerHandler below)
 	if (!skipHandlers) {
 		this._createHandlers();
-	
+
 		// get Zimlet handler's
 		if (this._appCtxt && this._appCtxt.zimletsPresent()) {
 			var zimlets = this._appCtxt.getZimletMgr().getContentZimlets();
@@ -143,7 +143,7 @@ function() {
 	for (i in this._objectHandlers) {
 		// Object handlers grouped by Type
 		this._objectHandlers[i].sort(ZmObjectManager.__byPriority);
-		
+
 		// Copy each array to a single array of all Object Handlers
 		for (var k=0;k< this._objectHandlers[i].length;k++) {
 			this._allObjectHandlers.push(this._objectHandlers[i][k]);
@@ -245,7 +245,7 @@ function(content, htmlEncode, type, isTextMsg) {
 					html[idx++] = content;
 				}
 				return html.join("");
-			}	
+			}
 		} else {
 			for (var j = 0; j < this._allObjectHandlers.length; j++) {
 				var handler = this._allObjectHandlers[j];
@@ -293,6 +293,133 @@ function(content, htmlEncode, type, isTextMsg) {
 	}
 
 	return html.join("");
+};
+
+ZmObjectManager.prototype.findObjectsInNode =
+function(node, re_discard, re_allow, callbacks) {
+	var objectManager = this, doc = node.ownerDocument, tmpdiv = doc.createElement("div");
+
+	if (!re_discard)
+		re_discard = /^(script|link|object|iframe|applet)$/i;
+
+	// This inner function does the actual work.  BEWARE that it return-s
+	// in various places, not only at the end.
+	function recurse(node, handlers) {
+		var tmp, i, val;
+		switch (node.nodeType) {
+		    case 1:	// ELEMENT_NODE
+			node.normalize();
+			tmp = node.tagName.toLowerCase();
+			if (callbacks && callbacks.foreachElement)
+				callbacks.foreachElement(node, tmp);
+			if (/^(img|a)$/.test(tmp)) {
+				if (tmp == "a" && node.target
+				    && (ZmMailMsgView._URL_RE.test(node.href)
+					|| ZmMailMsgView._MAILTO_RE.test(node.href)))
+				{
+					// tricky.
+					var txt = RegExp.$1;
+					tmp = doc.createElement("div");
+					tmp.innerHTML = objectManager.findObjects(AjxStringUtil.trim(RegExp.$1));
+					tmp = tmp.firstChild;
+					if (tmp.nodeType == 3 /* Node.TEXT_NODE */) {
+						// probably no objects were found.  A warning would be OK here
+						// since the regexps guarantee that objects _should_ be found.
+						return tmp.nextSibling;
+					}
+					// here, tmp is an object span, but it
+					// contains the URL (href) instead of
+					// the original link text.
+					node.parentNode.insertBefore(tmp, node); // add it to DOM
+					tmp.innerHTML = "";
+					tmp.appendChild(node); // we have the original link now
+					return tmp.nextSibling;	// move on
+				}
+				handlers = false;
+			} else if (re_discard.test(tmp) || (re_allow && !re_allow.test(tmp))) {
+				tmp = node.nextSibling;
+				node.parentNode.removeChild(node);
+				return tmp;
+			}
+			// fix style
+			// node.nowrap = "";
+			// node.className = "";
+
+			if (AjxEnv.isIE)
+				// strips expression()-s, bwuahahaha!
+				// granted, they get lost on the server-side anyway, but assuming some get through...
+				// the line below exterminates them.
+				node.style.cssText = node.style.cssText;
+
+			// Clear dangerous rules.  FIXME: implement proper way
+			// using removeAttribute (kind of difficult as it's
+			// (expectedly) quite different in IE from *other*
+			// browsers, so for now style.prop="" will do.)
+			tmp = ZmMailMsgView._dangerousCSS;
+			for (i in tmp) {
+				val = tmp[i];
+				if (!val || val.test(node.style[i]))
+					node.style[i] = "";
+			}
+			for (i = node.firstChild; i; i = recurse(i, handlers));
+			return node.nextSibling;
+
+		    case 3:	// TEXT_NODE
+		    case 4:	// CDATA_SECTION_NODE (just in case)
+			// generate ObjectHandler-s
+			if (handlers && /[^\s\xA0]/.test(node.data)) try {
+ 				var a = null, b = null;
+
+				if (!AjxEnv.isIE) {
+					// this block of code is supposed to free the object handlers from
+					// dealing with whitespace.  However, IE sometimes crashes here, for
+					// reasons that weren't possible to determine--hence we avoid this
+					// step for IE.  (bug #5345)
+					var results = /^[\s\xA0]+/.exec(node.data);
+					if (results) {
+						a = node;
+						node = node.splitText(results[0].length);
+					}
+					results = /[\s\xA0]+$/.exec(node.data);
+					if (results)
+						b = node.splitText(node.data.length - results[0].length);
+				}
+
+				tmp = tmpdiv;
+				var code = objectManager.findObjects(node.data, true, null, false);
+				var disembowel = false;
+				if (AjxEnv.isIE) {
+					// Bug #6481, #4498: innerHTML in IE massacrates whitespace
+					//            unless it sees a <pre> in the code.
+					tmp.innerHTML = [ "<pre>", code, "</pre>" ].join("");
+					disembowel = true;
+				} else {
+					tmp.innerHTML = code;
+				}
+
+				if (a)
+					tmp.insertBefore(a, tmp.firstChild);
+				if (b)
+					tmp.appendChild(b);
+
+				a = node.parentNode;
+				if (disembowel)
+					tmp = tmp.firstChild;
+				while (tmp.firstChild)
+					a.insertBefore(tmp.firstChild, node);
+				tmp = node.nextSibling;
+				a.removeChild(node);
+				return tmp;
+			} catch(ex) {};
+		}
+		return node.nextSibling;
+	};
+	var df = doc.createDocumentFragment();
+	while (node.firstChild) {
+		df.appendChild(node.firstChild); // NODE now out of the displayable DOM
+		recurse(df.lastChild, true, this);	 // parse tree and findObjects()
+	}
+	node.appendChild(df);	// put nodes back in the document
 };
 
 /**
@@ -580,7 +707,7 @@ function(ev) {
 
 	span.className = object.handler.getTriggeredClassName(object.object, object.context);
 	if (ev.button == DwtMouseEvent.RIGHT) {
-		// NOTE: we need to know if the current view is a dialog since action 
+		// NOTE: we need to know if the current view is a dialog since action
 		//       menu needs to be a higher z-index
 		var isDialog = (this._view instanceof DwtDialog);
 		var menu = object.handler.getActionMenu(object.object, span, object.context, isDialog);

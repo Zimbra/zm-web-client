@@ -151,6 +151,9 @@ function(msg) {
 
 ZmChat.prototype.resetUnread = function() {
 	this._unread = 0;
+	if (this.getRosterSize() == 1) {
+		this.getRosterItem(0).setUnread(0);
+	}
 };
 
 ZmChat.prototype.getUnread = function() {
@@ -160,7 +163,11 @@ ZmChat.prototype.getUnread = function() {
 // can't increment in addMessage because this chat might be visible
 // and active, so the message is "instantly read".
 ZmChat.prototype.incUnread = function() {
-	return ++this._unread;
+	++this._unread;
+	if (this.getRosterSize() == 1) {
+		this.getRosterItem(0).setUnread(this._unread);
+	}
+	return this._unread;
 };
 
 /**

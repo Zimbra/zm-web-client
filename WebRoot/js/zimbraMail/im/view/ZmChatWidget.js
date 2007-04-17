@@ -91,7 +91,7 @@ ZmChatWidget.prototype._chatChangeListener = function(ev, treeView) {
 
 ZmChatWidget.prototype.handleMessage = function(msg) {
 	var str = msg.toHtml(this._objectManager, this.chat, this.__lastFrom);
-	this.__lastFrom = msg.isSystem ? "@@system" : msg.from;
+	this.__lastFrom = (msg.isSystem && !msg.from) ? "@@system" : msg.from;
 	this._setUnreadStatus();
 	return this.handleHtmlMessage(str);
 };
@@ -178,15 +178,15 @@ ZmChatWidget.prototype._keypressNotifyItems = function(last_key, enter) {
 ZmChatWidget.prototype.sendInput = function(text) {
 	if (text == "")
 		return;		// don't send empty strings
-	if (text.substring(0,1) == "$") {
-		if (text.substring(1, 2) == "p") {
-			this.chat.getRosterItem().__setShow(AjxStringUtil.trim(text.substring(3)));
-		} else if (text.substring(1, 3) == "et") {
-			text = ">:) :) =)) =(( :(( <:-P :O)";
-		} else if (text.substring(1, 2) == "u") {
-			this.chat.getRosterItem().setUnread(parseInt(text.substring(2)));
-		}
-	}
+// 	if (text.substring(0,1) == "$") {
+// 		if (text.substring(1, 2) == "p") {
+// 			this.chat.getRosterItem().__setShow(AjxStringUtil.trim(text.substring(3)));
+// 		} else if (text.substring(1, 3) == "et") {
+// 			text = ">:) :) =)) =(( :(( <:-P :O)";
+// 		} else if (text.substring(1, 2) == "u") {
+// 			this.chat.getRosterItem().setUnread(parseInt(text.substring(2)));
+// 		}
+// 	}
 	this.chat.sendMessage(text);
 };
 
@@ -328,6 +328,7 @@ ZmChatWidget.prototype._removeUnreadStatus = function() {
 		Dwt.delClass(tab.getHtmlElement(), "ZmChatTab-Unread");
 		if (tab.label)
 			tab.label.setText(AjxStringUtil.htmlEncode(this._titleStr));
+		this.chat.resetUnread();
 	}
 };
 
