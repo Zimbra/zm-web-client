@@ -48,10 +48,14 @@ function ZmDoublePaneController(appCtxt, container, mailApp) {
 	this._listeners[ZmOperation.ADD_FILTER_RULE] = new AjxListener(this, this._filterListener);
 	
 	this._viewMenuCallback = new AjxCallback(this, this._checkViewMenu);
+
+	this._listSelectionShortcutDelayAction = new AjxTimedAction(this, this._listSelectionTimedAction);
 };
 
 ZmDoublePaneController.prototype = new ZmMailListController;
 ZmDoublePaneController.prototype.constructor = ZmDoublePaneController;
+
+ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY = 300;
 
 // Public methods
 
@@ -397,14 +401,35 @@ function(ev) {
 		}
 	} else {
 		if (this._readingPaneOn) {
-			this._setSelectedMsg();
+			// Give the user a chance to zip around the list view via shortcuts without having to
+			// wait for each successively selected msg to load, by waiting briefly for more list
+			// selection shortcut actions. An event will have the 'ersatz' property set if it's
+			// the result of a shortcut.
+			if (ev.ersatz && ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY) {
+				if (this._listSelectionShortcutDelayActionId) {
+					AjxTimedAction.cancelAction(this._listSelectionShortcutDelayActionId);
+				}
+				this._listSelectionShortcutDelayActionId = AjxTimedAction.scheduleAction(this._listSelectionShortcutDelayAction,
+																						 ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY);
+			} else {
+				this._setSelectedMsg();
+			}
 	    } else {
 			var msg = currView.getSelection()[0];
-			if (msg)
+			if (msg) {
 				this._doublePaneView.resetMsg(msg);
+			}
 	    }
     }
 	DBG.timePt("***** CONV: msg selection");
+};
+
+ZmDoublePaneController.prototype._listSelectionTimedAction =
+function() {
+	if (this._listSelectionShortcutDelayActionId) {
+		AjxTimedAction.cancelAction(this._listSelectionShortcutDelayActionId);
+	}
+	this._setSelectedMsg();
 };
 
 ZmDoublePaneController.prototype._listActionListener =
