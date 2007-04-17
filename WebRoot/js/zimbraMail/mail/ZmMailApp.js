@@ -587,7 +587,9 @@ function(callback, checkQS) {
 
 ZmMailApp.prototype._handleErrorLaunch =
 function(params, ex) {
-	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
+	if (ex.code == ZmCsfeException.MAIL_NO_SUCH_FOLDER ||
+		ex.code == ZmCsfeException.MAIL_NO_SUCH_TAG)
+	{
 		// reset the params so we default to searching the inbox which *will* work
 		var newParams = {query:"in:inbox", callback:params.callback, errorCallback:null, types:params.types};
 		this._appCtxt.getSearchController().search(newParams);
