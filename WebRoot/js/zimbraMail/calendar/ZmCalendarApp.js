@@ -87,7 +87,9 @@ ZmCalendarApp.prototype._registerSettings =
 function() {
 	var settings = this._appCtxt.getSettings();
 	settings.registerSetting("CAL_ALWAYS_SHOW_MINI_CAL",	{name: "zimbraPrefCalendarAlwaysShowMiniCal", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("CAL_EXPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("CAL_FIRST_DAY_OF_WEEK",		{name: "zimbraPrefCalendarFirstDayOfWeek", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0});
+	settings.registerSetting("CAL_IMPORT",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	settings.registerSetting("CAL_REMINDER_WARNING_TIME",	{name: "zimbraPrefCalendarApptReminderWarningTime", type: ZmSetting.T_PREF, dataType: ZmSetting.D_INT, defaultValue: 0});
 	settings.registerSetting("CAL_SHOW_TIMEZONE",			{name: "zimbraPrefUseTimeZoneListInCalendar", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("CAL_USE_QUICK_ADD",			{name: "zimbraPrefCalendarUseQuickAdd", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
@@ -99,7 +101,7 @@ ZmCalendarApp.prototype._registerPrefs =
 function() {
 	var list = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DAY_OF_WEEK, 
 				ZmSetting.CAL_SHOW_TIMEZONE, ZmSetting.CAL_USE_QUICK_ADD, ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL,
-				ZmSetting.CAL_REMINDER_WARNING_TIME];
+				ZmSetting.CAL_REMINDER_WARNING_TIME, ZmSetting.CAL_IMPORT, ZmSetting.CAL_EXPORT];
 
 	ZmPref.setPrefList("CALENDAR_PREFS", list);
 
@@ -108,18 +110,30 @@ function() {
 	 	displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 	
+	ZmPref.registerPref("CAL_EXPORT", {
+		displayName:		ZmMsg.exportToICS,
+		displayContainer:	ZmPref.TYPE_EXPORT,
+		displaySeparator:	true
+	});
+
 	ZmPref.registerPref("CAL_FIRST_DAY_OF_WEEK", {
 	 	displayName:		ZmMsg.calendarFirstDayOfWeek,
 	 	displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		AjxDateUtil.WEEKDAY_LONG,
 		options:			[0,1,2,3,4,5,6]
 	});
-	
+
+	ZmPref.registerPref("CAL_IMPORT", {
+		displayName:		ZmMsg.importFromICS,
+		displayContainer:	ZmPref.TYPE_IMPORT
+	});
+
 	ZmPref.registerPref("CAL_REMINDER_WARNING_TIME", {
 		displayName:		ZmMsg.numberOfMinutes,
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		[ZmMsg.neverShow, "1", "5", "10", "15", "30", "45", "60"],
-		options:			[0, 1, 5, 10, 15, 30, 45, 60]
+		options:			[0, 1, 5, 10, 15, 30, 45, 60],
+		displaySeparator:	true
 	});
 	
 	ZmPref.registerPref("CAL_SHOW_TIMEZONE", {

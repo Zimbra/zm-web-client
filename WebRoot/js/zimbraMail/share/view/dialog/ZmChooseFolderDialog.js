@@ -106,9 +106,12 @@ function(params) {
 	this._orgType = params.orgType || treeIds[0];
 	this._folderTreeView = this._treeView[this._orgType];
 
-	// bug fix #13159 (regression of #10676)
-	// - small hack to get selecting Trash folder working again
 	if (this._folderTreeView) {
+		// remove checkboxes if treeview has them as re-enable selection
+		this._folderTreeView.showCheckboxes(false);
+
+		// bug fix #13159 (regression of #10676)
+		// - small hack to get selecting Trash folder working again
 		var ti = this._folderTreeView.getTreeItemById(ZmOrganizer.ID_TRASH);
 		if (ti) {
 			ti.setData(ZmTreeView.KEY_TYPE, this._orgType);
@@ -131,6 +134,16 @@ function(params) {
 			treeView.setSelected(folderTree.root);
 		}
 	}
+};
+
+ZmChooseFolderDialog.prototype.popdown =
+function() {
+	if (this._folderTreeView) {
+		// re-add checkboxes if treeview has them and re-enable selection
+		this._folderTreeView.showCheckboxes(true);
+	}
+
+	DwtDialog.prototype.popdown.call(this);
 };
 
 ZmChooseFolderDialog.prototype.reset =
@@ -185,6 +198,7 @@ function(ev) {
 			organizers = [ev.source];
 		}
 		this._folderTreeView.setSelected(organizers[0], true);
+		this._folderTreeView.showCheckboxes(false);
 		this._creatingFolder = false;
 	}
 };

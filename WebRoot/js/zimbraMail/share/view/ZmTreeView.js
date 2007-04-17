@@ -194,6 +194,24 @@ function(organizer, skipNotify) {
 	this.setSelection(this._treeHash[id], skipNotify);
 };
 
+// shows/hides checkboxes if treeview is checkbox style
+ZmTreeView.prototype.showCheckboxes =
+function(show) {
+	if (!this._isCheckedStyle())
+		return;
+
+	var treeItems = this.getHeaderItem().getItems();
+	if (treeItems && treeItems.length) {
+		for (var i = 0; i < treeItems.length; i++) {
+			var ti = treeItems[i];
+			if (ti._isSeparator) continue;
+			ti.showCheckBox(show);
+			ti.enableSelection(!show);
+		}
+	}
+};
+
+
 // Private and protected methods
 
 /*
