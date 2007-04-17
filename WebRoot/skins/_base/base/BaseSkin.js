@@ -4,7 +4,11 @@ function BaseSkin(hints) {
         app_chooser:    { style: "tabs", direction: "LR" },
         help_button:    { style: "link", container: "quota" },
         logout_button:  { style: "link", container: "quota" },
-
+        toast:          { location: "N", transitions: [
+            { type: "fade-in", step: 10, duration: 200 },
+            { type: "pause", duration: 1000 },
+            { type: "fade-out", step: -10, duration: 500 }
+        ] },
         // skin regions
         skin:           { containers: "skin_outer" },
         quota:          { containers: [ "skin_td_quota_spacer", "skin_td_quota" ] },

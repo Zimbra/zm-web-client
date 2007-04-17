@@ -23,3 +23,35 @@
     <td id='${id}_right_icon' class='ZRightIcon ZWidgetIcon'></td>
   </tr></table>
 </template>
+
+<template id='ZmStatusView'>
+  <table border=0 cellpadding=0 cellspacing=0 style='width:100%;'>
+    <tr>
+      <td style='width:20px;' align='center'><div id='${id}_inbox' class="ImgInbox"></div></td>
+      <td style='width:20px;' align='center'><div id='${id}_im' class="ImgImStartChat"></div></td>
+      <td style='height:16px' align='center'><div id='${id}_main' class='ZmStatusMainText'></div></td>
+      <td style='width:20px;' align='center'><div id='${id}_busy' class='DwtWait16Icon'/></td>
+      <td style='width:20px;' align='center'><div id='${id}_blank' class='Blank_16'/></td>
+    </tr>
+  </table>
+  <!--
+  <div id='${id}_toast'>
+    <table style='width:100%;height:100%;' align='center'>
+      <tr>
+        <td align=center>
+          <div id='${id}_toastContent' class='ZmStatusToastText'></div>
+        </td>
+      </tr>
+    </table>
+  </div>
+  -->
+</template>
+
+<template id='ZToast' class='ZToastInfo'>
+  <div class='ZToastBG'>
+    <div class='ZToastContent'>
+      <div id='${id}_icon' class='ZToastIcon'></div>
+      <div id='${id}_text' class='ZToastText'></div>
+    </div>
+  </div>
+</template>

@@ -1516,8 +1516,8 @@ function(words) {
 		if (misspelled == null || misspelled.length == 0) {
 			this._appCtxt.setStatusMsg(ZmMsg.noMisspellingsFound, ZmStatusView.LEVEL_INFO);
 		} else {
-			var msg = misspelled.length + " " + (misspelled.length > 1 ? ZmMsg.misspellings : ZmMsg.misspelling);
-			this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
+            var msg = AjxMessageFormat.format(ZmMsg.misspellingsResult, misspelled.length);
+            this._appCtxt.setStatusMsg(msg, ZmStatusView.LEVEL_WARNING);
 
 			this.highlightMisspelledWords(misspelled);
 			wordsFound = true;

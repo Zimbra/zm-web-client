@@ -2896,3 +2896,47 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZTab .ZLeftIcon  DIV				{	margin-left:5px;}
 .ZTab .ZRightIcon DIV				{	margin-left:2px; margin-right:6px;}
 */
+
+.ZToast {
+  position: absolute;
+  top: -10000; left: -10000;
+  margin-top: 115px;
+  overflow: visible;
+}
+.ZToastBG {
+  #IFDEF MSIE
+  filter: alpha(opacity=95);
+  #ELSE
+  opacity: .95;
+  #ENDIF
+  #IFDEF GECKO
+  -moz-border-radius: 14px;
+  #ENDIF
+}
+.ZToastContent {
+  padding: 1.5em;
+}
+.ZToastIcon {
+  float: left;
+  display: none;
+}
+.ZToastText {
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 16pt;
+  color: black;
+  text-align: center;
+}
+
+.ZToastInfo .ZToastBG {
+  background-color: lightgreen;
+  border: solid 3px darkgreen;
+}
+.ZToastWarn .ZToastBG {
+  background-color: lightyellow;
+  border: solid 3px yellow;
+}
+.ZToastCrit .ZToastBG {
+  background-color: pink;
+  border: solid 3px red;
+}

@@ -539,9 +539,9 @@ function(attr, isBatchMode, result) {
 		var msg = this.isGroup() ? ZmMsg.groupCreated : ZmMsg.contactCreated;
 		this._appCtxt.getAppController().setStatusMsg(msg);
 	} else {
-		var err = this.isGroup() ? ZmMsg.errorCreateGroup : ZmMsg.errorCreateContact;
-		var msg = err + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
-		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
+		var msg = this.isGroup() ? ZmMsg.errorCreateGroup : ZmMsg.errorCreateContact;
+		var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
+		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL, detail);
 	}
 };
 
@@ -634,8 +634,9 @@ function(attr, callback, result) {
 				this._setFolder(attr[ZmContact.F_folderId]);
 		}
 	} else {
-		var msg = ZmMsg.errorModifyContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
-		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
+		var msg = ZmMsg.errorModifyContact;
+        var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
+        this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL, detail);
 	}
 	// NOTE: we no longer process callbacks here since notification handling
 	//       takes care of everything

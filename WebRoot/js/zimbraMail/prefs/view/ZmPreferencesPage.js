@@ -555,7 +555,8 @@ function(folderId, status, aid) {
 													  callback:respCallback, errorCallback:errorCallback,
 													  timeout:ZmPreferencesPage.IMPORT_TIMEOUT});
 	} else {
-		appCtlr.setStatusMsg(ZmMsg.errorImporting + " (" + status + ")", ZmStatusView.LEVEL_CRITICAL);
+        var msg = AjxMessageFormat.format(ZmMsg.errorImportStatus, status);
+        appCtlr.setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
 		// always re-render input file widget and its parent IFRAME
 		this._importDiv.innerHTML = "";
 		this._addImportWidgets(this._importDiv);
@@ -566,8 +567,8 @@ ZmPreferencesPage.prototype._handleResponseFinishImport =
 function(aid, result) {
 	var resp = result.getResponse().ImportContactsResponse.cn[0];
 	
-	var msg = resp.n + " " + ZmMsg.contactsImported;
-	var appCtlr = this._appCtxt.getAppController();
+    var msg = AjxMessageFormat.format(ZmMsg.contactsImportedResult, Number(resp.n));
+    var appCtlr = this._appCtxt.getAppController();
 	appCtlr.setStatusMsg(msg);
 		
 	// always re-render input file widget and its parent IFRAME
