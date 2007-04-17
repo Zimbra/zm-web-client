@@ -208,7 +208,8 @@ body						{	@ChromeBg@	}
  * when the app starts in full screen mode the user doesn't see the outline
  * of the normal view before switching to full-screen.
  */
-#skin_tr_toolbar, #skin_tr_main, #skin_tr_status {
+#skin_tr_toolbar, #skin_tr_main, #skin_tr_status,
+#skin_tr_toolbar_full, #skin_tr_main_full {
 	display:none;
 }
 
