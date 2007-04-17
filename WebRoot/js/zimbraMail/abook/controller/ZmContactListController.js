@@ -481,10 +481,12 @@ function(ev) {
 		ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, ZmOperation.EDIT_CONTACT, ZmMsg.AB_EDIT_GROUP);
 	} else {
 		this._setContactText(!this.isGalSearch());
-		var buddy = contact.getBuddy();
-		actionMenu.getOp(ZmOperation.IM).setEnabled(buddy != null);
-		if (buddy) {
-			actionMenu.getOp(ZmOperation.IM).setImage(buddy.getPresence().getIcon());
+		if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
+			var buddy = contact.getBuddy();
+			actionMenu.getOp(ZmOperation.IM).setEnabled(buddy != null);
+			if (buddy) {
+				actionMenu.getOp(ZmOperation.IM).setImage(buddy.getPresence().getIcon());
+			}
 		}
 	}
 	ZmOperation.setOperation(actionMenu, ZmOperation.TAG_MENU, ZmOperation.TAG_MENU, contact.isGroup() ? ZmMsg.AB_TAG_GROUP : ZmMsg.AB_TAG_CONTACT);
