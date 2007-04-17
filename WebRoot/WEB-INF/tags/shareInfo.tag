@@ -100,7 +100,7 @@
             :
         </td>
         <td>
-            <input name='newFolderOwnersEmail' readonly type='text' autocomplete='off' size='35' value="${fn:escapeXml(share.grantor.email)}">
+            <input name='newFolderOwnersEmail' disabled readonly type='text' autocomplete='off' size='35' value="${fn:escapeXml(share.grantor.email)}">
         </td>
     </tr>
     <tr>
@@ -108,19 +108,19 @@
     <c:when test="${addressbook}">
         <td nowrap align=right><fmt:message key="ownersAddressBookName"/>:</td>
         <td>
-            <input name='newFolderOwnersAddressBook' readonly type='text' autocomplete='off' size='35' value="${fn:escapeXml(share.link.name)}">
+            <input name='newFolderOwnersAddressBook' disabled readonly type='text' autocomplete='off' size='35' value="${fn:escapeXml(share.link.name)}">
         </td>
         </c:when>
     <c:when test="${calendar}">
         <td nowrap align=right><fmt:message key="ownersCalendarName"/>:</td>
         <td>
-            <input readonly name='newFolderOwnersCalendar' type='text' autocomplete='off' size='35' value="${fn:escapeXml(share.link.name)}">
+            <input disabled readonly name='newFolderOwnersCalendar' type='text' autocomplete='off' size='35' value="${fn:escapeXml(share.link.name)}">
         </td>
     </c:when>
     <c:otherwise>
         <td nowrap align=right><fmt:message key="ownersFolderName"/>:</td>
         <td>
-            <input readonly name='newFolderOwnersFolder' type='text' autocomplete='off' size='35' value="${fn:escapeXml(share.link.name)}">
+            <input disabled readonly name='newFolderOwnersFolder' type='text' autocomplete='off' size='35' value="${fn:escapeXml(share.link.name)}">
         </td>
     </c:otherwise>
 </c:choose>
