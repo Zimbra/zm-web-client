@@ -362,7 +362,7 @@ ZmConvController.prototype._search =
 function(view, offset, limit, callback) {
 
 	var sortby = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
-	this._conv.load(this.getSearchString(), sortby, offset, limit, callback);
+	this._conv.load({query:this.getSearchString(), sortBy:sortby, offset:offset, limit:limit, callback:callback});
 }
 
 ZmConvController.prototype._paginateDouble = 

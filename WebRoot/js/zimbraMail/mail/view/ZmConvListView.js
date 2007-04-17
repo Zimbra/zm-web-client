@@ -237,6 +237,8 @@ function(colHeader) {
 
 ZmConvListView.prototype._changeListener =
 function(ev) {
+	if (!this._handleEventType[ev.type]) { return; }
+
 	// update count field for this conv
 	var fields = ev.getDetail("fields");
 	var items = ev.getDetail("items");
@@ -281,19 +283,13 @@ function(ev) {
 		}
 	}
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_INDEX])) {
-		// a conv had gotten a new msg and may need to be moved to top or bottom of list
-		var addToTop = ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC));
-		var addToBottom = addToTop ? false : ((this._controller.getList().hasMore() === false) &&
-											  (this._sortByString == ZmSearch.DATE_ASC)) &&
-											  (this.size() < this.getLimit());
-		if (addToTop || addToBottom) {
-			for (var i = 0; i < items.length; i++) {
-				var item = items[i];
-				var curIndex = this._list.indexOf(item);
-				if (addToTop && curIndex == 0) continue;
-				this.removeItem(item);
-				this.addItem(item, addToTop ? 0 : null);
-			}
+		// a conv has gotten a new msg and may need to be moved within its list
+		var sortIndex = ev.getDetail("sortIndex");
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if ((sortIndex[item.id] == -1) || (this._list.indexOf(item) == sortIndex[item.id])) { continue; }
+			this.removeItem(item);
+			this.addItem(item, sortIndex[item.id]);
 		}
 	}
 	ZmMailListView.prototype._changeListener.call(this, ev);

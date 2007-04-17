@@ -117,7 +117,7 @@ function() {
 
 ZmMailMsgView.prototype.set =
 function(msg) {
-	if (this._msg == msg) return;
+	if (this._msg && (this._msg.id == msg.id)) return;
 
 	this.reset();
 	var contentDiv = this.getHtmlElement();

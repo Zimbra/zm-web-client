@@ -75,6 +75,8 @@ function() {
 	var isSentFolder = (this._folderId == ZmFolder.ID_SENT);
 	var isDraftsFolder = (this._folderId == ZmFolder.ID_DRAFTS);
 
+	// XXX: is the code below necessary?
+	
 	// if not in Sent/Drafts, deep dive into query to be certain		
 	if (!isSentFolder && !isDraftsFolder) {
 		// check for is:sent or is:draft w/in search query
@@ -181,6 +183,8 @@ function() {
 
 ZmMailListView.prototype._changeListener =
 function(ev) {
+	if (!this._handleEventType[ev.type]) { return; }
+
 	var items = ev.getDetail("items");
 	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" flag
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: FLAGS");
@@ -198,28 +202,21 @@ function(ev) {
 		ZmListView.prototype._changeListener.call(this, ev); // handle other flags
 	} else if (ev.event == ZmEvent.E_CREATE) {
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: CREATE");
+		var sortIndex = ev.getDetail("sortIndex");
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
-			if (this._list && this._list.contains(item)) // skip if we already have it
-				continue;
-			// For now, we assume that the new conv/msg is the most recent one. If we're on the
+			if (this._list && this._list.contains(item)) { continue; } // skip if we already have it
+
+			// Check to see if ZmMailList::notifyCreate gave us an index for the item.
+			// If not, we assume that the new conv/msg is the most recent one. If we're on the
 			// first page with date desc order, we insert it at the top. If we're on the last
-			// page with date asc order, we insert it at the bottom. Otherwise, we do nothing.
-			// TODO: put result of ZmMailList._sortIndex() in ev.details
-			if ((this.getOffset() == 0) &&
-				(!this._sortByString || this._sortByString == ZmSearch.DATE_DESC))
-			{
-				// add new item at the beg. of list view's internal list
+			// page with date asc order, we insert it at the bottom.
+			var index = sortIndex[item.id];
+			if (index != null) {
+				this.addItem(item, index);
+			} else if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
 				this.addItem(item, 0);
-	
-				// and remove the last one to maintain limit
-				if (this.size() > this.getLimit()) {
-					this.removeLastItem();
-				}
-			}
-			else if ((this._controller.getList().hasMore() === false) &&
-					 (this._sortByString == ZmSearch.DATE_ASC))
-			{
+			} else if ((this._controller.getList().hasMore() === false) && (this._sortByString == ZmSearch.DATE_ASC)) {
 				if (this.size() < this.getLimit()) {
 					// add new item at the end of list view's internal list
 					this.addItem(item);

@@ -68,7 +68,6 @@ function() {
 */
 ZmHybridController.prototype.show =
 function(search) {
-	this._expanded = {};	// all convs start out collapsed
 	this._list = search.getResults(ZmItem.CONV);
 
 	// call base class
@@ -81,7 +80,9 @@ function(search) {
 
 ZmHybridController.prototype._createDoublePaneView = 
 function() {
-	return (new ZmHybridView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt));
+	var dpv = new ZmHybridView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
+	this._mailListView = dpv.getMailListView();
+	return dpv;
 };
 
 ZmHybridController.prototype._getViewType =
@@ -102,6 +103,12 @@ function(view) {
 	if (!AjxEnv.isIE) {
 		this._tabGroups[view].addMember(this.getReferenceView().getMsgView());
 	}
+};
+
+ZmHybridController.prototype._setViewContents =
+function(view) {
+	this._mailListView._resetExpansion();
+	ZmDoublePaneController.prototype._setViewContents.apply(this, arguments);
 };
 
 ZmHybridController.prototype._paginate = 
@@ -127,22 +134,21 @@ function(params) {
 ZmHybridController.prototype._listSelectionListener =
 function(ev) {
 	var item = ev.item;
-	var mlv = this._doublePaneView.getMailListView();
-	if (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_EXPAND]) {
-		if (!item) { return; }
-		if (mlv._expandable[item.id]) {
-			this._toggle(item);
-		} else {
-			ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
-		}
-	} else if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
+	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		if (!item) { return; }
 		var div = Dwt.findAncestor(ev.target, "_itemIndex");
-		mlv._itemSelected(div, ev);
+		this._mailListView._itemSelected(div, ev);
 		if (item.type == ZmItem.CONV) {
 			AjxDispatcher.run("GetConvController").show(this._activeSearch, item);
 		} else if (item.type == ZmItem.MSG) {
 			AjxDispatcher.run("GetMsgController").show(item);
+		}
+	} else if (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_EXPAND]) {
+		if (!item) { return; }
+		if (this._mailListView._expandable[item.id]) {
+			this._toggle(item);
+		} else {
+			ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
 		}
 	} else {
 		ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
@@ -151,51 +157,52 @@ function(ev) {
 
 ZmHybridController.prototype._toggle =
 function(item) {
-	if (this._expanded[item.id]) {
+	if (this._mailListView._expanded[item.id]) {
 		this._collapse(item);
 	} else {
-		var conv = (item.type == ZmItem.MSG) ? this._appCtxt.getById(item.cid) : item;
-		var msg = (item.type == ZmItem.MSG) ? item : null;
-		this._expand(conv, msg, item.offset);
+		var conv = item, msg = null, offset = 0;
+		if (item.type == ZmItem.MSG) {
+			conv = this._appCtxt.getById(item.cid);
+			msg = item;
+			offset = this._mailListView._msgOffset[item.id];
+		}
+		this._expand(conv, msg, offset);
 	}
 };
 
 ZmHybridController.prototype._expand =
 function(conv, msg, offset) {
 	offset = offset || 0;
-	var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE);
-	var respCallback = new AjxCallback(this, this._handleResponseLoadItem, [conv, msg, offset, limit]);
+	var respCallback = new AjxCallback(this, this._handleResponseLoadItem, [conv, msg, offset]);
 	var pageWasCached = false;
 	if (offset) {
-		if (this._paginateConv(conv, offset, limit, respCallback)) {
+		if (this._paginateConv(conv, offset, respCallback)) {
 			// page was cached, callback won't be run
-			this._handleResponseLoadItem(conv, msg, offset, limit, new ZmCsfeResult(conv.msgs));
+			this._handleResponseLoadItem(conv, msg, offset, new ZmCsfeResult(conv.msgs));
 		}
 	} else if (!conv.isLoaded()) {
 		// no msgs have been loaded yet
-		conv.load(this.getSearchString(), null, null, limit, null, respCallback, false);
+		conv.load({query:this.getSearchString(), callback:respCallback});
 	} else {
 		// re-expanding first page of msgs
-		this._handleResponseLoadItem(conv, msg, offset, limit, new ZmCsfeResult(conv.msgs));
+		this._handleResponseLoadItem(conv, msg, offset, new ZmCsfeResult(conv.msgs));
 	}
 };
 
 ZmHybridController.prototype._handleResponseLoadItem =
-function(conv, msg, offset, limit, result) {
+function(conv, msg, offset, result) {
 	if (!result) { return; }
-	var mlv = this._doublePaneView.getMailListView();
-	mlv._expand(conv, msg, offset, limit);
-	var expandedId = msg ? msg.id : conv.id;
-	this._expanded[expandedId] = true;
+	this._mailListView._expand(conv, msg, offset);
 };
 
 /**
  * Adapted from ZmListController::_paginate
  */
 ZmHybridController.prototype._paginateConv =
-function(conv, offset, limit, callback) {
+function(conv, offset, callback) {
 	var list = conv.msgs;
 	// see if we're out of msgs and the server has more
+	var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE);
 	if (offset && ((offset + limit > list.size()) && list.hasMore())) {
 		// figure out how many items we need to fetch
 		var delta = (offset + limit) - list.size();
@@ -204,7 +211,7 @@ function(conv, offset, limit, callback) {
 			offset = ((offset + limit) - max) + 1;
 		}
 		var respCallback = new AjxCallback(this, this._handleResponsePaginateConv, [conv, offset, callback]);
-		conv.load(this.getSearchString(), null, offset, limit, respCallback, null, false);
+		conv.load({query:this.getSearchString(), offset:offset, callback:respCallback});
 		return false;
 	} else {
 		return true;
@@ -224,13 +231,10 @@ function(conv, offset, callback, result) {
 
 ZmHybridController.prototype._collapse =
 function(item) {
-	var mlv = this._doublePaneView.getMailListView();
-	if (mlv._rowsArePresent(item)) {	
-		mlv._collapse(item);
-		this._expanded[item.id] = false;
+	if (this._mailListView._rowsArePresent(item)) {	
+		this._mailListView._collapse(item);
 	} else {
 		// reset state and expand instead
-		this._expanded[item.id] = false;
 		this._toggle(item);
 	}
 };
@@ -240,84 +244,11 @@ function(item) {
 // Since a selection might contain both convs and msgs, we need to split them up and
 // invoke the action for each type separately.
 
-ZmHybridController.prototype._doFlag =
-function(items) {
-	var lists = this._divvyItems(items);
-	var on = !items[0].isFlagged;
-	if (lists[ZmItem.MSG] && lists[ZmItem.MSG].length) {
-		ZmDoublePaneController.prototype._doFlag.call(this, lists[ZmItem.MSG], on);
-	}
-	if (lists[ZmItem.CONV] && lists[ZmItem.CONV].length) {
-		ZmDoublePaneController.prototype._doFlag.call(this, lists[ZmItem.CONV], on);
-	}
-};
-
-ZmHybridController.prototype._doTag =
-function(items, tag, doTag) {
-	var lists = this._divvyItems(items);
-	if (lists[ZmItem.MSG] && lists[ZmItem.MSG].length) {
-		ZmDoublePaneController.prototype._doTag.call(this, lists[ZmItem.MSG], tag, doTag);
-	}
-	if (lists[ZmItem.CONV] && lists[ZmItem.CONV].length) {
-		ZmDoublePaneController.prototype._doTag.call(this, lists[ZmItem.CONV], tag, doTag);
-	}
-};
-
-ZmHybridController.prototype._doRemoveAllTags =
-function(items) {
-	var lists = this._divvyItems(items);
-	if (lists[ZmItem.MSG] && lists[ZmItem.MSG].length) {
-		ZmDoublePaneController.prototype._doRemoveAllTags.call(this, lists[ZmItem.MSG]);
-	}
-	if (lists[ZmItem.CONV] && lists[ZmItem.CONV].length) {
-		ZmDoublePaneController.prototype._doRemoveAllTags.call(this, lists[ZmItem.CONV]);
-	}
-};
-
-ZmHybridController.prototype._doDelete =
-function(items, hardDelete, attrs) {
-	var lists = this._divvyItems(items);
-	if (lists[ZmItem.MSG] && lists[ZmItem.MSG].length) {
-		ZmDoublePaneController.prototype._doDelete.call(this, lists[ZmItem.MSG], hardDelete, attrs);
-	}
-	if (lists[ZmItem.CONV] && lists[ZmItem.CONV].length) {
-		ZmDoublePaneController.prototype._doDelete.call(this, lists[ZmItem.CONV], hardDelete, attrs);
-	}
-};
-
-ZmHybridController.prototype._doMove =
-function(items, folder, attrs, force) {
-	var lists = this._divvyItems(items);
-	if (lists[ZmItem.MSG] && lists[ZmItem.MSG].length) {
-		ZmDoublePaneController.prototype._doMove.call(this, lists[ZmItem.MSG], folder, attrs, force);
-	}
-	if (lists[ZmItem.CONV] && lists[ZmItem.CONV].length) {
-		ZmDoublePaneController.prototype._doMove.call(this, lists[ZmItem.CONV], folder, attrs, force);
-	}
-};
-
-ZmHybridController.prototype._doMarkRead =
-function(items, on) {
-	var lists = this._divvyItems(items);
-	if (lists[ZmItem.MSG] && lists[ZmItem.MSG].length) {
-		ZmDoublePaneController.prototype._doMarkRead.call(this, lists[ZmItem.MSG], on);
-	}
-	if (lists[ZmItem.CONV] && lists[ZmItem.CONV].length) {
-		ZmDoublePaneController.prototype._doMarkRead.call(this, lists[ZmItem.CONV], on);
-	}
-};
-
-ZmHybridController.prototype._doSpam =
-function(items, markAsSpam, folder) {
-	var lists = this._divvyItems(items);
-	if (lists[ZmItem.MSG] && lists[ZmItem.MSG].length) {
-		ZmDoublePaneController.prototype._doSpam.call(this, lists[ZmItem.MSG], markAsSpam, folder);
-	}
-	if (lists[ZmItem.CONV] && lists[ZmItem.CONV].length) {
-		ZmDoublePaneController.prototype._doSpam.call(this, lists[ZmItem.CONV], markAsSpam, folder);
-	}
-};
-
+/**
+ * Takes the given list of items (convs and msgs) and splits it into one list of each
+ * type. Since an action applied to a conv is also applied to its msgs, we remove any
+ * msgs whose owning conv is also in the list.
+ */
 ZmHybridController.prototype._divvyItems =
 function(items) {
 	var convs = [], msgs = [];
@@ -342,6 +273,66 @@ function(items) {
 	lists[ZmItem.CONV] = convs;
 	
 	return lists;
+};
+
+/**
+ * Splits the given items into two lists, one of convs and one of msgs, and
+ * applies the given method and args to each.
+ *
+ * @param items		[array]		list of convs and/or msgs
+ * @param method	[string]	name of function to call in parent class
+ * @param args		[array]		additional args to pass to function
+ */
+ZmHybridController.prototype._applyAction =
+function(items, method, args) {
+	args = args ? args : [];
+	var lists = this._divvyItems(items);
+	var hasMsgs = false;
+	if (lists[ZmItem.MSG] && lists[ZmItem.MSG].length) {
+		args.unshift(lists[ZmItem.MSG]);
+		ZmDoublePaneController.prototype[method].apply(this, args);
+		hasMsgs = true;
+	}
+	if (lists[ZmItem.CONV] && lists[ZmItem.CONV].length) {
+		hasMsgs ? args[0] = lists[ZmItem.CONV] : args.unshift(lists[ZmItem.CONV])
+		ZmDoublePaneController.prototype[method].apply(this, args);
+	}
+};
+
+ZmHybridController.prototype._doFlag =
+function(items) {
+	var on = !items[0].isFlagged;
+	this._applyAction(items, "_doFlag", [on]);
+};
+
+ZmHybridController.prototype._doTag =
+function(items, tag, doTag) {
+	this._applyAction(items, "_doTag", [tag, doTag]);
+};
+
+ZmHybridController.prototype._doRemoveAllTags =
+function(items) {
+	this._applyAction(items, "_doRemoveAllTags");
+};
+
+ZmHybridController.prototype._doDelete =
+function(items, hardDelete, attrs) {
+	this._applyAction(items, "_doDelete", [hardDelete, attrs]);
+};
+
+ZmHybridController.prototype._doMove =
+function(items, folder, attrs, force) {
+	this._applyAction(items, "_doMove", [folder, attrs, force]);
+};
+
+ZmHybridController.prototype._doMarkRead =
+function(items, on) {
+	this._applyAction(items, "_doMarkRead", [on]);
+};
+
+ZmHybridController.prototype._doSpam =
+function(items, markAsSpam, folder) {
+	this._applyAction(items, "_doSpam", [markAsSpam, folder]);
 };
 
 // Callbacks

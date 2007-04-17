@@ -196,16 +196,18 @@ function(convs, msgs) {
 	var modifiedItems = [];
 	var newConvs = {};
 	var fields = {};
+	var sortBy = this.search ? this.search.sortBy : null;
+	var sortIndex = {};
 	if (this.type == ZmItem.CONV && searchFolder) {
 		// handle new convs first so we can set their fragments from new msgs
-		var sortBy = this.search ? this.search.sortBy : null;
 		for (var id in convs) {
-			if (this.getById(id)) continue;
+			if (this.getById(id)) { continue; }	// already have this conv
 			newConvs[id] = true;
 			var conv = convs[id];
 			if (conv.folders && conv.folders[searchFolder]) {
-				var index = this._getSortIndex(conv, sortBy);
-				this.add(conv, index);
+				// conv's msg matches current search
+				sortIndex[id] = this._getSortIndex(conv, sortBy);
+				this.add(conv, sortIndex[id]);
 				conv.list = this;
 				createdItems.push(conv);
 			}
@@ -232,34 +234,41 @@ function(convs, msgs) {
 					conv.isUnread = true;
 					flaggedItems.push(conv);
 				}
-				if (conv.fragment != msg.fragment) {
+				// if the new msg matches current search, update conv date and fragment
+				// TODO: handle simple tag searches
+				var msgMatches = (msg.folderId == searchFolder);
+				if (msgMatches && (conv.fragment != msg.fragment)) {
 					conv.fragment = msg.fragment;
 					fields[ZmItem.F_FRAGMENT] = true;
 				}
-				if (conv.date != msg.date) {
+				if (msgMatches && (conv.date != msg.date)) {
 					conv.date = msg.date;
+					// recalculate conv's sort position since we changed its date
+					sortIndex[conv.id] = this._getSortIndex(conv, sortBy);
 					fields[ZmItem.F_DATE] = true;
 				}
 				// conv gained a msg, may need to be moved to top/bottom
-				if (!newConvs[conv.id] && this._vector.contains(conv)) {
+				if (msgMatches && !newConvs[conv.id] && this._vector.contains(conv)) {
 					fields[ZmItem.F_INDEX] = true;
 				}
 				modifiedItems.push(conv);
 			}
+			createdItems.push(msg);
 		}
 	} else if (this.type == ZmItem.MSG) {
 		for (var id in msgs) {
 			if (this.getById(id)) continue;
 			var msg = msgs[id];
+			sortIndex[id] = this._getSortIndex(msg, sortBy);
 			if (this.convId) { // MLV within conv
 				if (msg.cid == this.convId && !this.getById(msg.id)) {
-					this.add(msg, 0); // add to top of msg list
+					this.add(msg, sortIndex[id]);
 					msg.list = this;
 					createdItems.push(msg);
 				}
 			} else { // MLV (traditional)
 				if (msg.folderId == searchFolder) {
-					this.add(msg, 0); // add to top of msg list
+					this.add(msg, sortIndex[id]);
 					msg.list = this;
 					createdItems.push(msg);
 				}
@@ -267,13 +276,13 @@ function(convs, msgs) {
 		}
 	}
 	if (createdItems.length) {
-		this._notify(ZmEvent.E_CREATE, {items: createdItems});
+		this._notify(ZmEvent.E_CREATE, {items:createdItems, sortIndex:sortIndex});
 	}
 	if (flaggedItems.length) {
-		this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [ZmItem.FLAG_UNREAD]});
+		this._notify(ZmEvent.E_FLAGS, {items:flaggedItems, flags:[ZmItem.FLAG_UNREAD]});
 	}
 	if (modifiedItems.length) {
-		this._notify(ZmEvent.E_MODIFY, {items: modifiedItems, fields: fields});
+		this._notify(ZmEvent.E_MODIFY, {items:modifiedItems, fields:fields, sortIndex:sortIndex});
 	}
 };
 

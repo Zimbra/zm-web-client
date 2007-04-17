@@ -80,6 +80,13 @@ ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE]		= "u";
 ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED]		= "v";
 ZmListView.FIELD_PREFIX[ZmItem.F_EXPAND]		= "w";
 
+ZmListView.PREFIX_FIELD = {};
+(function() {
+	for (var i in ZmListView.FIELD_PREFIX) {
+		ZmListView.PREFIX_FIELD[ZmListView.FIELD_PREFIX[i]] = i;
+	}
+})();
+
 // column widths
 ZmListView.COL_WIDTH_ICON 					= 19;
 ZmListView.COL_WIDTH_DATE 					= 75;

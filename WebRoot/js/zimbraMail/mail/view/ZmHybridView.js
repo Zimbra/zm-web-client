@@ -167,7 +167,6 @@ function ZmHybridListView(parent, className, posStyle, controller, dropTgt) {
 
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
 	this._msgRowIdList = {};	// hash of lists, each list has row IDs for an expandable item
-	this._expandable = {};		// whether a row for a msg/conv ID has a +/- icon
 	this._dblClickIsolation = true;
 };
 
@@ -201,6 +200,10 @@ function(actionCode, ev) {
 			var item = this.getItemFromElement(this._kbAnchor);
 			if (item && this._expandable[item.id]) {
 				this._controller._toggle(item);
+			} else if (item.type == ZmItem.MSG && this._expandable[item.cid]) {
+				var conv = this._appCtxt.getById(item.cid);
+				this._controller._toggle(conv);
+				this.setSelection(conv, true);
 			}
 			break;
 			
@@ -233,6 +236,7 @@ function(parent) {
 	return hList;
 };
 
+// TODO: this could be a generic version of this function
 ZmHybridListView.prototype._createItemHtml =
 function(item, now, isDndIcon, isMixedView, myDiv) {
 
@@ -249,44 +253,13 @@ function(item, now, isDndIcon, isMixedView, myDiv) {
 	idx = this._getTable(htmlArr, idx, isDndIcon);
 	idx = this._getRow(htmlArr, idx, item, item.isUnread ? "Unread" : null);
 
-	for (var i = 0; i < this._headerList.length; i++) {
-		if (!this._headerList[i]._visible)
-			continue;
+	for (var colIdx = 0; colIdx < this._headerList.length; colIdx++) {
+		if (!this._headerList[colIdx]._visible) { continue; }
 
-		var id = this._headerList[i]._id;
-		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_EXPAND]) == 0) {
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_EXPAND, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) == 0) {
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_STATUS, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER]) == 0) {
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_FOLDER, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) == 0) {
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_FLAG, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) == 0) {
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_TAG, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) == 0) {
-			var fieldId = this._getFieldId(item, ZmItem.F_PARTICIPANT);
-			htmlArr[idx++] = "<td width=";
-			htmlArr[idx++] = this._getFieldWidth(i);
-			htmlArr[idx++] = " id='";
-			htmlArr[idx++] = fieldId;
-			htmlArr[idx++] = "'>";
-			if (AjxEnv.isSafari)
-				htmlArr[idx++] = "<div style='overflow:hidden'>";
-			htmlArr[idx++] = this._getParticipantHtml(item, fieldId);
-			if (AjxEnv.isSafari)
-				htmlArr[idx++] = "</div>";
-			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_ATTACHMENT, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_SUBJECT, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]) == 0) {
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_SIZE, i, now);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
-			// Date
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_DATE, i, now);
-		}
+		var id = this._headerList[colIdx]._id;
+		var prefix = id.substr(0,1);
+		var field = ZmListView.PREFIX_FIELD[prefix];
+		idx = this._getField(htmlArr, idx, item, field, colIdx, now);
 	}
 
 	htmlArr[idx++] = "</tr></table>";
@@ -300,16 +273,15 @@ function(htmlArr, idx, item, field, colIdx, now) {
 	var fieldId = this._getFieldId(item, field);
 	var width = this._getFieldWidth(colIdx);
 	if (field == ZmItem.F_EXPAND) {
-		var expandable = (((item.type == ZmItem.CONV) && (item.numMsgs > 1)) || (item.offset > 0));
-		this._expandable[item.id] = expandable;
+		var expandable = this._isExpandable(item);
 		var imageInfo = expandable ? "NodeCollapsed" : "Blank_16";
 		htmlArr[idx++] = "<td width=";
 		htmlArr[idx++] = width;
 		htmlArr[idx++] = " class='Icon'>";
 		htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, ["id='", fieldId, "'"].join(""));
 		htmlArr[idx++] = "</td>";
-		
 		return idx;
+
 	} else if (field == ZmItem.F_STATUS) {
 		var imageInfo = "Blank_16";
 		htmlArr[idx++] = "<td width=";
@@ -325,8 +297,25 @@ function(htmlArr, idx, item, field, colIdx, now) {
 		}
 		htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, ["id='", this._getFieldId(item, ZmItem.F_STATUS), "'"].join(""));	
 		htmlArr[idx++] = "</center></td>";
-
 		return idx;
+
+	} else if (field == ZmItem.F_PARTICIPANT) {
+		var fieldId = this._getFieldId(item, ZmItem.F_PARTICIPANT);
+		htmlArr[idx++] = "<td width=";
+		htmlArr[idx++] = this._getFieldWidth(colIdx);
+		htmlArr[idx++] = " id='";
+		htmlArr[idx++] = fieldId;
+		htmlArr[idx++] = "'>";
+		if (AjxEnv.isSafari) {
+			htmlArr[idx++] = "<div style='overflow:hidden'>";
+		}
+		htmlArr[idx++] = this._getParticipantHtml(item, fieldId);
+		if (AjxEnv.isSafari) {
+			htmlArr[idx++] = "</div>";
+		}
+		htmlArr[idx++] = "</td>";
+		return idx;	
+
 	} else if (field == ZmItem.F_SUBJECT) {
 		if (item.type == ZmItem.CONV) {
 			htmlArr[idx++] = "<td id='";
@@ -348,10 +337,9 @@ function(htmlArr, idx, item, field, colIdx, now) {
 			htmlArr[idx++] = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(item.fragment, true);
 		}
-		
 		return idx;
+
 	} else if (field == ZmItem.F_FOLDER) {
-		// Folder
 		htmlArr[idx++] = "<td width=";
 		htmlArr[idx++] = width;
 		htmlArr[idx++] = ">";
@@ -366,13 +354,13 @@ function(htmlArr, idx, item, field, colIdx, now) {
 		}
 		htmlArr[idx++] = "</nobr>";
 		htmlArr[idx++] = "</td>";
-
 		return idx;
+
 	} else if (field == ZmItem.F_SIZE) {
 		if (item.type == ZmItem.CONV) {
 			// Conversation count
 			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = this._getFieldId(item, ZmItem.F_SIZE);
+			htmlArr[idx++] = this._getFieldId(item, ZmItem.F_COUNT);
 			htmlArr[idx++] = "' width=";
 			htmlArr[idx++] = this._getFieldWidth(colIdx);
 			htmlArr[idx++] = ">";
@@ -390,8 +378,8 @@ function(htmlArr, idx, item, field, colIdx, now) {
 			htmlArr[idx++] = AjxUtil.formatSize(item.size);
 			htmlArr[idx++] = "</td>";
 		}
-		
 		return idx;
+
 	} else {
 		return ZmListView.prototype._getField.apply(this, arguments);
 	}
@@ -401,34 +389,30 @@ function(htmlArr, idx, item, field, colIdx, now) {
  * @param conv		[ZmConv]		conv that owns the messages we will display
  * @param msg		[ZmMailMsg]*	msg that is the anchor for paging in more msgs
  * @param offset	[int]*			start of current page of msgs within conv
- * @param limit		[int]*			size of one batch of msgs
  */
 ZmHybridListView.prototype._expand =
-function(conv, msg, offset, limit) {
+function(conv, msg, offset) {
 	var item = msg || conv;
 	var rowIds = this._msgRowIdList[item.id];
 	if (rowIds && rowIds.length && this._rowsArePresent(item)) {
 		this._showMsgs(rowIds, true);
 	} else {
 		this._msgRowIdList[item.id] = [];
-		msgList = conv.msgs;
+		var msgList = conv.msgs;
 		if (item.type == ZmItem.CONV) {
 			// should be here only when the conv is first expanded
 			msgList.addChangeListener(this._listChangeListener);
 		}
 		var index = this._getRowIndex(item);	// row after which to add rows
 
-		// work with entire list of conv's msgs, using offset and limit
+		// work with entire list of conv's msgs, using offset
 		var a = msgList.getArray();
 		if (!(a && a.length)) { return; }
-		var hasMore = false;
+		var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE);
+		offset = this._msgOffset[item.id] || 0;
 		var num = Math.min(limit, msgList.size() - offset);
 		for (var i = 0; i < num; i++) {
 			var msg = a[offset + i];
-			if (msgList._hasMore && (i == (num - 1))) {
-				// add hint so that msg row gets an expand icon
-				msg.offset = a.length;
-			}
 			var div = this._createItemHtml(msg, this._now);
 			this._addRow(div, index + i + 1);
 			this._msgRowIdList[item.id].push(div.id);
@@ -439,6 +423,7 @@ function(conv, msg, offset, limit) {
 	if (img && img.parentNode) {
 		AjxImg.setImage(img.parentNode, "NodeExpanded");
 	}
+	this._expanded[item.id] = true;
 };
 
 ZmHybridListView.prototype._collapse =
@@ -450,6 +435,7 @@ function(item) {
 	if (img && img.parentNode) {
 		AjxImg.setImage(img.parentNode, "NodeCollapsed");
 	}
+	this._expanded[item.id] = false;
 };
 
 ZmHybridListView.prototype._showMsgs =
@@ -481,33 +467,176 @@ function(item) {
 	return false;
 };
 
+/**
+ * Returns true if the given conv or msg should have an expansion icon. A conv is
+ * expandable if it has 2 or more msgs. A msg is expandable if it's the last on a
+ * page and there are more msgs.
+ *
+ * @param item		[ZmMailItem]	conv or msg to check
+ */
+ZmHybridListView.prototype._isExpandable =
+function(item) {
+	var expandable = false;
+	if (item.type == ZmItem.CONV) {
+		expandable = (item.numMsgs > 1);
+	} else {
+		var conv = this._appCtxt.getById(item.cid);
+		
+		var a = conv.msgs.getArray();
+		if (a && a.length) {
+			var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE);
+			var idx = null;
+			for (var i = 0; i < a.length; i++) {
+				if (a[i].id == item.id) {
+					idx = i + 1;	// start with 1
+					break;
+				}
+			}
+			if (idx && (idx % limit == 0) && (idx < a.length || conv.msgs._hasMore)) {
+				this._msgOffset[item.id] = idx;
+				expandable = true;
+			}
+		}
+	}
+	this._expandable[item.id] = expandable;
+	return expandable;
+};
+
+ZmHybridListView.prototype._resetExpansion =
+function() {
+	this._expanded = {};		// current expansion state, by ID
+	this._expandable = {};		// whether a row for a msg/conv ID has a +/- icon
+	this._msgRowIdList = {};	// list of row IDs for a conv ID
+	this._msgOffset = {};		// the offset for a msg ID
+};
+
 ZmHybridListView.prototype._changeListener =
 function(ev) {
 	if (!this._handleEventType[ev.type]) { return; }
 
+	var done = false;
 	var fields = ev.getDetail("fields");
 	var items = ev.getDetail("items");
 	
 	// prevent redundant handling for same item due to multiple change listeners
 	// (msg will notify containing conv, and then notif for same conv gets processed)
-	var reqMgr = this._appCtxt.getRequestMgr();
-	for (var i = 0; i < items.length; i++) {
-		reqMgr._modifyHandled[items[i].id] = true;
+	if (ev.event != ZmEvent.E_DELETE && ev.event != ZmEvent.E_CREATE) {
+		var reqMgr = this._appCtxt.getRequestMgr();
+		for (var i = 0; i < items.length; i++) {
+			reqMgr._modifyHandled[items[i].id] = true;
+		}
 	}
 	
+	// virtual conv promoted to real conv, got new ID
+	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_ID])) {
+		// a virtual conv has become real, and changed its ID
+		var conv = items[0];
+		this._expanded[conv.id] = this._expanded[conv._oldId];
+		this._expandable[conv.id] = this._expandable[conv._oldId];
+		this._msgRowIdList[conv.id] = this._msgRowIdList[conv._oldId];
+	}
+	
+	// msg count in a conv changed - see if we need to add or remove an expand icon
+	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_COUNT])) {
+		var conv = items[0];
+		var img = document.getElementById(this._getFieldId(conv, ZmItem.F_EXPAND));
+		if (img && img.parentNode) {
+			AjxImg.setImage(img.parentNode, this._isExpandable(conv) ? "NodeCollapsed" : "Blank_16");
+		}
+	}
+
+	// msg moved or deleted	
 	if (ev.type == ZmItem.MSG && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
-				this._controller._list.remove(item, true);
-//				this._checkExpandable(item, true);
-				ZmConvListView.prototype._changeListener.call(this, ev);
+		// msg move: change folder name
+		var msg = items[0];
+		var	conv = this._appCtxt.getById(msg.cid);
+		if (msg.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
+			// msg marked as Junk, or deleted via Empty Trash
+			// TODO: handle expansion cases (should be rare) - msg with + could go away
+			conv.msgs.remove(msg, true);
+			conv.numMsgs = conv.msgs.size();
+			if (this._expandable[conv.id] && conv.numMsgs == 1) {
+				var img = document.getElementById(this._getFieldId(conv, ZmItem.F_EXPAND));
+				if (img && img.parentNode) {
+					AjxImg.setImage(img.parentNode, "Blank_16");
+				}
+				this._removeMsgRows(conv.id);
+			}
+		} else {
+			var removeConv = true;
+			var folderId = this._appCtxt.getCurrentSearch().folderId;
+			if (folderId) {
+				var msgs = conv.msgs.getArray();
+				for (var i = 0; i < msgs.length; i++) {
+					if (msgs[i].folderId == folderId) {
+						removeConv = false;
+						break;
+					}
+				}
+			}
+			if (removeConv) {
+				ev.type = ZmItem.CONV;
+				ev.setDetail("items", [conv]);
+				items = [conv];
 			} else {
-				this._changeFolderName([item]);
+				this._changeFolderName([msg]);
+				done = true;
 			}
 		}
-	} else {
+	}
+
+	// conv moved or deleted	
+	if (ev.type == ZmItem.CONV && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
+		// conv move: remove msg rows
+		this._removeMsgRows(items[0].id);
+		if (this._list.size() <= 1) {
+			// clear msg pane
+		}
+	}
+
+	// if an expanded conv gets a new msg, don't move it to top	
+	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_INDEX])) {
+		var sortIndex = ev.getDetail("sortIndex");
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if ((sortIndex[item.id] != null) && this._expanded[item.id]) {
+				sortIndex[item.id] = -1;
+			}
+		}
+	}
+
+	// if we get a new msg that's part of an expanded conv, insert it into the
+	// expanded conv, and don't move that conv
+	if (ev.event == ZmEvent.E_CREATE) {
+		var sortIndex = ev.getDetail("sortIndex");
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+			if (item.type == ZmItem.MSG && this._expanded[item.cid]) {
+				var div = this._createItemHtml(item, this._now);
+				var conv = this._appCtxt.getById(item.cid);
+				var convIndex = this._getRowIndex(conv);
+				var msgIndex = sortIndex[item.id] || 0;
+				this._addRow(div, convIndex + msgIndex + 1);
+				this._msgRowIdList[item.cid].push(div.id);
+			}
+		}
+		done = true;
+	}
+
+	if (!done) {
 		ZmConvListView.prototype._changeListener.call(this, ev);
+	}
+};
+
+ZmHybridListView.prototype._removeMsgRows =
+function(convId) {
+	var msgRows = this._msgRowIdList[convId];
+	if (msgRows && msgRows.length) {
+		for (var i = 0; i < msgRows.length; i++) {
+			var row = document.getElementById(msgRows[i]);
+			this._selectedItems.remove(row);
+			this._parentEl.removeChild(row);
+		}
 	}
 };
 
@@ -520,10 +649,12 @@ function(item, skipNotify) {
 	OUT:
 	for (var id in this._msgRowIdList) {
 		var list = this._msgRowIdList[id];
-		for (var i = 0; i < list.length; i++) {
-			if (list[i] == rowId) {
-				list[i] = null;
-				break OUT;
+		if (list && list.length) {
+			for (var i = 0; i < list.length; i++) {
+				if (list[i] == rowId) {
+					list[i] = null;
+					break OUT;
+				}
 			}
 		}
 	}

@@ -55,7 +55,7 @@ function ZmDoublePaneController(appCtxt, container, mailApp) {
 ZmDoublePaneController.prototype = new ZmMailListController;
 ZmDoublePaneController.prototype.constructor = ZmDoublePaneController;
 
-ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY = 300;
+ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY = 500;
 
 // Public methods
 
@@ -315,7 +315,7 @@ function(item, view) {
 		DBG.timePt("***** CONV: load", true);
 		if (!item.isLoaded()) {
 			var respCallback = new AjxCallback(this, this._handleResponseLoadItem, view);
-			item.load(this.getSearchString(), null, null, null, null, respCallback);
+			item.load({query:this.getSearchString(), callback:respCallback});
 		} else {
 			this._handleResponseLoadItem(view, new ZmCsfeResult(item.msgs));
 		}
