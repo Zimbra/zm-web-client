@@ -283,25 +283,36 @@ ZmChatWidget.prototype._init = function() {
 ZmChatWidget._inputKeyPress = function(ev) {
 	if (AjxEnv.isIE)
 		ev = window.event;
-	var keyEvent = DwtShell.keyEvent;
+	// var keyEvent = DwtShell.keyEvent;
+	var keyEvent = new DwtKeyEvent();
 	keyEvent.setFromDhtmlEvent(ev);
 	var self = DwtUiEvent.getDwtObjFromEvent(keyEvent);
 	if (self.__clearSelectionTimeout)
 		clearTimeout(self.__clearSelectionTimeout);
 	var input = this;
-	setTimeout(function() {
-		if (self) {
-			var isEnter = keyEvent.charCode == 13 && !keyEvent.shiftKey;
-			var ret = self._keypressNotifyItems(keyEvent.charCode, isEnter);
-			if (isEnter && !(ret && ret.stop)) {
-    				self.sendInput(input.value);
-        			input.value = "";
-			}
+	if (keyEvent.ctrlKey) {
+		if (keyEvent.charCode >= "0".charCodeAt(0) && keyEvent.charCode <= "9".charCodeAt(0)) {
+			// CTRL + 0..9 switch tabs
+			var tabIndex = keyEvent.charCode - "1".charCodeAt(0);
+			if (tabIndex < 0)
+				tabIndex += 11;
+			self.parent.setActiveTab(tabIndex);
 		}
-		input = null;
-		keyEvent = null;
-		self = null;
-	}, 25);
+	} else {
+		setTimeout(function() {
+			if (self) {
+				var isEnter = keyEvent.charCode == 13 && !keyEvent.shiftKey;
+				var ret = self._keypressNotifyItems(keyEvent.charCode, isEnter);
+				if (isEnter && !(ret && ret.stop)) {
+    					self.sendInput(input.value);
+        				input.value = "";
+				}
+			}
+			input = null;
+			keyEvent = null;
+			self = null;
+		}, 25);
+	}
 };
 
 ZmChatWidget.prototype._getElement = function(id) {
