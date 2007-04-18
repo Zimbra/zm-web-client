@@ -458,7 +458,7 @@ function ZmPopAccountBasicPage(parent, appCtxt, pageId, className, posStyle) {
 	DwtTabViewPage.call(this, parent, className, posStyle || DwtControl.STATIC_STYLE);
 	this._appCtxt = appCtxt;
 	this._pageId = pageId;
-    this._createHtml();
+    this._createPopAccountHtml();
 }
 ZmPopAccountBasicPage.prototype = new DwtTabViewPage;
 ZmPopAccountBasicPage.prototype.constructor = ZmPopAccountBasicPage;
@@ -663,7 +663,7 @@ ZmPopAccountBasicPage.prototype._validateEmail = function(value) {
     return null;
 };
 
-ZmPopAccountBasicPage.prototype._createHtml = function() {
+ZmPopAccountBasicPage.prototype._createPopAccountHtml = function() {
     // create controls
     this._nameField = new DwtInputField({
         parent:this, required:true,
@@ -711,7 +711,7 @@ ZmPopAccountBasicPage.prototype._createHtml = function() {
     var id = this._htmlElId;
     var div = document.createElement("DIV");
     div.innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Options#PopForm", id);
-    this.getHtmlElement().appendChild(div);
+    this.getContentHtmlElement().appendChild(div);
 
     // insert dwt controls
     this._nameField.replaceElement(id+"_name");
