@@ -37,6 +37,8 @@
             </c:if>
         </c:forEach>
     </c:if>
+    <fmt:message var="unknownSender" key="unknownSender"/>
+
 </app:handleError>
 
 <%-- get the message up front, so when we output the overview tree unread counts are correctly reflected --%>
@@ -109,7 +111,10 @@
                                                         <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                                     </c:if>
                                                     <td class='MsgStatusImg' align=center><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'mail/MsgStatusRead.gif' : hit.messageHit.statusImage}" altkey="${(hit.messageHit.isUnread and hit.id == message.id) ? 'ALT_MSG_STATUS_READ' : hit.messageHit.statusImageAltKey}"/></td>
-                                                    <td nowrap><a href="${msgUrl}">${fn:escapeXml(hit.messageHit.displaySender)}</a></td>
+                                                    <td nowrap><a href="${msgUrl}">
+                                                        <c:set var="sender" value="${hit.messageHit.displaySender}"/>
+                                                            ${fn:escapeXml(empty sender ? unknownSender : sender)}
+                                                    </a></td>
                                                     <td class='Img' ><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                                     <td ><%-- allow this column to wrap --%>
                                                         <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>
