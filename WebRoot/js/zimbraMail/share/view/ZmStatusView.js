@@ -95,6 +95,7 @@ function(msg, level, detail, delay, transition, position) {
 
 	var work = {
         msg: msg, detail: detail, level: level,
+        transition: transition,
         date: new Date()
     };
 	this._updateHistory(work);
