@@ -205,7 +205,7 @@ function(ids, force) {
 					notebookController.gotoPage(pageRef);
 				}
 			}
-			this._appCtxt.cacheRemove(id);
+			this._appCtxt.cacheRemove(page.id);
 			ids[i] = null;
 		}
 	}
