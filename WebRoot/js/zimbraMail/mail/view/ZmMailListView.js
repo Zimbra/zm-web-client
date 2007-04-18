@@ -183,50 +183,49 @@ function() {
 
 ZmMailListView.prototype._changeListener =
 function(ev) {
-	if (!this._handleEventType[ev.type]) { return; }
 
-	var items = ev.getDetail("items");
+	var item = ev.item;
+	if (ev.handled || !this._handleEventType[item.type]) { return; }
+
 	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" flag
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: FLAGS");
 		var flags = ev.getDetail("flags");
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			for (var j = 0; j < flags.length; j++) {
-				var flag = flags[j];
-				if (flag == ZmItem.FLAG_UNREAD) {
-					var on = item[ZmItem.FLAG_PROP[flag]];
-					this.markUIAsRead([item], !on);
-				}
+		for (var j = 0; j < flags.length; j++) {
+			var flag = flags[j];
+			if (flag == ZmItem.FLAG_UNREAD) {
+				var on = item[ZmItem.FLAG_PROP[flag]];
+				this.markUIAsRead([item], !on);
 			}
 		}
-		ZmListView.prototype._changeListener.call(this, ev); // handle other flags
-	} else if (ev.event == ZmEvent.E_CREATE) {
+	}
+	
+	if (ev.event == ZmEvent.E_CREATE) {
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: CREATE");
 		var sortIndex = ev.getDetail("sortIndex");
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			if (this._list && this._list.contains(item)) { continue; } // skip if we already have it
-			if (!this._handleEventType[item.type]) { return; }
+		if (this._list && this._list.contains(item)) { return; } // skip if we already have it
+		if (!this._handleEventType[item.type]) { return; }
 
-			// Check to see if ZmMailList::notifyCreate gave us an index for the item.
-			// If not, we assume that the new conv/msg is the most recent one. If we're on the
-			// first page with date desc order, we insert it at the top. If we're on the last
-			// page with date asc order, we insert it at the bottom.
-			var index = sortIndex[item.id];
-			if (index != null) {
-				this.addItem(item, index);
-			} else if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
-				this.addItem(item, 0);
-			} else if ((this._controller.getList().hasMore() === false) && (this._sortByString == ZmSearch.DATE_ASC)) {
-				if (this.size() < this.getLimit()) {
-					// add new item at the end of list view's internal list
-					this.addItem(item);
-				} else {
-					// XXX: reset pagination buttons?
-				}
+		// Check to see if ZmMailList::notifyCreate gave us an index for the item.
+		// If not, we assume that the new conv/msg is the most recent one. If we're on the
+		// first page with date desc order, we insert it at the top. If we're on the last
+		// page with date asc order, we insert it at the bottom.
+		var index = sortIndex[item.id];
+		if (index != null) {
+			this.addItem(item, index);
+		} else if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
+			this.addItem(item, 0);
+		} else if ((this._controller.getList().hasMore() === false) && (this._sortByString == ZmSearch.DATE_ASC)) {
+			if (this.size() < this.getLimit()) {
+				// add new item at the end of list view's internal list
+				this.addItem(item);
+			} else {
+				// XXX: reset pagination buttons?
 			}
 		}
-	} else {
+		ev.handled = true;
+	}
+
+	if (!ev.handled) {
 		ZmListView.prototype._changeListener.call(this, ev);
 	}
 };

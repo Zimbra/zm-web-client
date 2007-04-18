@@ -455,6 +455,12 @@ function(creates, force) {
 					}
 					folders[cid][folder] = true;
 				}
+				// see if conv already has this msg
+				var conv = this._appCtxt.getById(cid);
+				if (conv && conv.msgs && conv.msgs.getById(create.id)) {
+					create._handled = true;
+					continue;
+				}
 				var msg = ZmMailMsg.createFromDom(create, {appCtxt: this._appCtxt}, true);
 				msgs[msg.id] = msg;
 				gotMail = true;

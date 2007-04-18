@@ -237,62 +237,60 @@ function(colHeader) {
 
 ZmConvListView.prototype._changeListener =
 function(ev) {
-	if (!this._handleEventType[ev.type]) { return; }
+
+	var conv = ev.item;
+	if (ev.handled || (conv.type != ZmItem.CONV)) { return; }
 
 	// update count field for this conv
 	var fields = ev.getDetail("fields");
-	var items = ev.getDetail("items");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_COUNT])) {
-		for (var i = 0; i < items.length; i++) {
-			var countField = document.getElementById(this._getFieldId(items[i], ZmItem.F_COUNT));
-			if (countField) {
-				countField.innerHTML = items[i].numMsgs > 1 ? "(" + items[i].numMsgs + ")" : "";
-			}
+		var countField = document.getElementById(this._getFieldId(conv, ZmItem.F_COUNT));
+		if (countField) {
+			countField.innerHTML = conv.numMsgs > 1 ? "(" + conv.numMsgs + ")" : "";
 		}
 	}
+
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_ID])) {
 		// a virtual conv has become real, and changed its ID
-		for (var i = 0; i < items.length; i++) {
-			var conv = items[i];
-			var div = document.getElementById(this._getItemId({id: conv._oldId}));
-			if (div) {
-				this._createItemHtml(conv, this._now, false, false, div);
-				this.associateItemWithElement(conv, div, DwtListView.TYPE_LIST_ITEM);
-				DBG.println(AjxDebug.DBG1, "conv updated from ID " + conv._oldId + " to ID " + conv.id);
-			}
+		var div = document.getElementById(this._getItemId({id: conv._oldId}));
+		if (div) {
+			this._createItemHtml(conv, this._now, false, false, div);
+			this.associateItemWithElement(conv, div, DwtListView.TYPE_LIST_ITEM);
+			DBG.println(AjxDebug.DBG1, "conv updated from ID " + conv._oldId + " to ID " + conv.id);
 		}
 	}
+
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_PARTICIPANT])) {
-		for (var i = 0; i < items.length; i++) {
-			var fieldId = this._getFieldId(items[i], ZmItem.F_PARTICIPANT);
-			var participantField = document.getElementById(fieldId);
-			if (participantField) {
-				participantField.innerHTML = this._getParticipantHtml(items[i], fieldId);
-			}
+		var fieldId = this._getFieldId(conv, ZmItem.F_PARTICIPANT);
+		var participantField = document.getElementById(fieldId);
+		if (participantField) {
+			participantField.innerHTML = this._getParticipantHtml(conv, fieldId);
 		}
 	}
+
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_DATE])) {
-		for (var i = 0; i < items.length; i++) {
-			var fieldId = this._getFieldId(items[i], ZmItem.F_DATE);
-			var dateField = document.getElementById(fieldId);
-			if (dateField) {
-				var html = [];
-				this._getField(html, 0, items[i], ZmItem.F_DATE, 6, new Date());
-				dateField.innerHTML = html.join("");
-			}
+		var fieldId = this._getFieldId(conv, ZmItem.F_DATE);
+		var dateField = document.getElementById(fieldId);
+		if (dateField) {
+			var html = [];
+			this._getField(html, 0, conv, ZmItem.F_DATE, 6, new Date());
+			dateField.innerHTML = html.join("");
 		}
 	}
+
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_INDEX])) {
 		// a conv has gotten a new msg and may need to be moved within its list
 		var sortIndex = ev.getDetail("sortIndex");
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			if ((sortIndex[item.id] == -1) || (this._list.indexOf(item) == sortIndex[item.id])) { continue; }
-			this.removeItem(item);
-			this.addItem(item, sortIndex[item.id]);
+		if ((sortIndex[conv.id] != null) && (this._list.indexOf(conv) != sortIndex[conv.id])) {
+			this.removeItem(conv);
+			this.addItem(conv, sortIndex[conv.id]);
 		}
 	}
-	ZmMailListView.prototype._changeListener.call(this, ev);
+
+	if (!ev.handled) {
+		ZmMailListView.prototype._changeListener.call(this, ev);
+	}
+
 	if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE)	{
 		this._resetColWidth();
 	}

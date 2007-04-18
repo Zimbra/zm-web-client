@@ -129,36 +129,36 @@ function() {
 
 ZmListView.prototype._changeListener =
 function(ev) {
-	if (!this._handleEventType[ev.type] && (this.type != ZmItem.MIXED)) { return; }
-	var items = ev.getDetail("items");
+	
+	var item = ev.item || ev.getDetail("items")[0];
+	if (ev.handled || !this._handleEventType[item.type] && (this.type != ZmItem.MIXED)) { return; }
+
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: TAG");
-		for (var i = 0; i < items.length; i++)
-			this._setTagImg(items[i]);
-	} else if (ev.event == ZmEvent.E_FLAGS) { // handle "flagged" and "has attachment" flags
+		this._setTagImg(item);
+	}
+	
+	if (ev.event == ZmEvent.E_FLAGS) { // handle "flagged" and "has attachment" flags
 		DBG.println(AjxDebug.DBG2, "ZmListView: FLAGS");
 		var flags = ev.getDetail("flags");
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			for (var j = 0; j < flags.length; j++) {
-				var flag = flags[j];
-				var on = item[ZmItem.FLAG_PROP[flag]];
-				if (flag == ZmItem.FLAG_FLAGGED) {
-					var img = document.getElementById(this._getFieldId(item, ZmItem.F_FLAG));
-					if (img && img.parentNode)
-						AjxImg.setImage(img.parentNode, on ? "FlagRed" : "Blank_16");
-				} else if (flag == ZmItem.FLAG_ATTACH) {
-					var img = document.getElementById(this._getFieldId(item, ZmItem.F_ATTACHMENT));
-					if (img && img.parentNode)
-						AjxImg.setImage(img.parentNode, on ? "Attachment" : "Blank_16");
-				}
+		for (var j = 0; j < flags.length; j++) {
+			var flag = flags[j];
+			var on = item[ZmItem.FLAG_PROP[flag]];
+			if (flag == ZmItem.FLAG_FLAGGED) {
+				var img = document.getElementById(this._getFieldId(item, ZmItem.F_FLAG));
+				if (img && img.parentNode)
+					AjxImg.setImage(img.parentNode, on ? "FlagRed" : "Blank_16");
+			} else if (flag == ZmItem.FLAG_ATTACH) {
+				var img = document.getElementById(this._getFieldId(item, ZmItem.F_ATTACHMENT));
+				if (img && img.parentNode)
+					AjxImg.setImage(img.parentNode, on ? "Attachment" : "Blank_16");
 			}
 		}
-	} else if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
+	}
+	
+	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: DELETE or MOVE");
-		for (var i = 0; i < items.length; i++) {
-            this.removeItem(items[i], true);
-		}
+        this.removeItem(item, true);
 		if (ev.getDetail("replenish")) {
 			var respCallback = new AjxCallback(this, this._handleResponseChangeListener);
 			this._controller._checkReplenish(respCallback);
@@ -166,14 +166,6 @@ function(ev) {
 			this._handleResponseChangeListener();
 		}
 		this._controller._resetToolbarOperations();		
-	} else if (ev.event == ZmEvent.E_MODIFY && (ev.getDetail("action") == "set")) {
-		DBG.println(AjxDebug.DBG2, "ZmListView: SET");
-	} else if (ev.event == ZmEvent.E_MODIFY) {
-		DBG.println(AjxDebug.DBG2, "ZmListView: MODIFY");
-	} else if (ev.event == ZmEvent.E_CREATE) {
-		DBG.println(AjxDebug.DBG2, "ZmListView: CREATE");
-	} else {
-		DBG.println(AjxDebug.DBG1, "ZmListView: UNKNOWN event");
 	}
 }
 

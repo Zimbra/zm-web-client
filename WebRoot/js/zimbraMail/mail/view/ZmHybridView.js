@@ -512,48 +512,43 @@ function() {
 
 ZmHybridListView.prototype._changeListener =
 function(ev) {
-	if (!this._handleEventType[ev.type]) { return; }
 
-	var done = false;
+	var item = ev.item;
+	if (ev.handled || !this._handleEventType[item.type]) { return; }
+
 	var fields = ev.getDetail("fields");
-	var items = ev.getDetail("items");
+	var isConv = (item.type == ZmItem.CONV);
 	
 	// prevent redundant handling for same item due to multiple change listeners
 	// (msg will notify containing conv, and then notif for same conv gets processed)
 	if (ev.event != ZmEvent.E_DELETE && ev.event != ZmEvent.E_CREATE) {
-		var reqMgr = this._appCtxt.getRequestMgr();
-		for (var i = 0; i < items.length; i++) {
-			reqMgr._modifyHandled[items[i].id] = true;
-		}
+		this._appCtxt.getRequestMgr()._modifyHandled[item.id] = true;
 	}
 	
 	// virtual conv promoted to real conv, got new ID
-	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_ID])) {
+	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_ID])) {
 		// a virtual conv has become real, and changed its ID
-		var conv = items[0];
-		this._expanded[conv.id] = this._expanded[conv._oldId];
-		this._expandable[conv.id] = this._expandable[conv._oldId];
-		this._msgRowIdList[conv.id] = this._msgRowIdList[conv._oldId];
+		this._expanded[item.id] = this._expanded[item._oldId];
+		this._expandable[item.id] = this._expandable[item._oldId];
+		this._msgRowIdList[item.id] = this._msgRowIdList[item._oldId];
 	}
 	
 	// msg count in a conv changed - see if we need to add or remove an expand icon
-	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_COUNT])) {
-		var conv = items[0];
-		var img = document.getElementById(this._getFieldId(conv, ZmItem.F_EXPAND));
+	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_COUNT])) {
+		var img = document.getElementById(this._getFieldId(item, ZmItem.F_EXPAND));
 		if (img && img.parentNode) {
-			AjxImg.setImage(img.parentNode, this._isExpandable(conv) ? "NodeCollapsed" : "Blank_16");
+			var icon = !this._isExpandable(item) ? "Blank_16" : this._expanded[item.id] ? "NodeExpanded" : "NodeCollapsed";
+			AjxImg.setImage(img.parentNode, icon);
 		}
 	}
 
 	// msg moved or deleted	
-	if (ev.type == ZmItem.MSG && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
-		// msg move: change folder name
-		var msg = items[0];
-		var	conv = this._appCtxt.getById(msg.cid);
-		if (msg.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
+	if (!isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
+		var	conv = this._appCtxt.getById(item.cid);
+		if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
 			// msg marked as Junk, or deleted via Empty Trash
-			// TODO: handle expansion cases (should be rare) - msg with + could go away
-			conv.msgs.remove(msg, true);
+			// TODO: handle expandable msg removal
+			conv.msgs.remove(item, true);
 			conv.numMsgs = conv.msgs.size();
 			if (this._expandable[conv.id] && conv.numMsgs == 1) {
 				var img = document.getElementById(this._getFieldId(conv, ZmItem.F_EXPAND));
@@ -563,6 +558,7 @@ function(ev) {
 				this._removeMsgRows(conv.id);
 			}
 		} else {
+			// if this conv now has no msgs that match current search, remove it
 			var removeConv = true;
 			var folderId = this._appCtxt.getCurrentSearch().folderId;
 			if (folderId) {
@@ -575,59 +571,50 @@ function(ev) {
 				}
 			}
 			if (removeConv) {
+				ev.item = conv;
+
 				ev.type = ZmItem.CONV;
 				ev.setDetail("items", [conv]);
 				items = [conv];
 			} else {
-				this._changeFolderName([msg]);
-				done = true;
+				// normal case: just change folder name for msg
+				this._changeFolderName([item]);
 			}
 		}
+		ev.handled = true;
 	}
 
 	// conv moved or deleted	
-	if (ev.type == ZmItem.CONV && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
+	if (isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
 		// conv move: remove msg rows
-		this._removeMsgRows(items[0].id);
+		this._removeMsgRows(item.id);
 		if (this._list.size() <= 1) {
 			// clear msg pane
 		}
 	}
 
 	// if an expanded conv gets a new msg, don't move it to top	
-	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_INDEX])) {
+	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_INDEX])) {
 		var sortIndex = ev.getDetail("sortIndex");
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			if ((sortIndex[item.id] != null) && this._expanded[item.id]) {
-				sortIndex[item.id] = -1;
-			}
+		if ((sortIndex[item.id] != null) && this._expanded[item.id]) {
+			sortIndex[item.id] = null;	// hint to parent change listener not to move it
 		}
 	}
 
 	// if we get a new msg that's part of an expanded conv, insert it into the
 	// expanded conv, and don't move that conv
-	if (ev.event == ZmEvent.E_CREATE) {
+	if (!isConv && (ev.event == ZmEvent.E_CREATE) && this._expanded[item.cid]) {
+		var div = this._createItemHtml(item, this._now);
+		var conv = this._appCtxt.getById(item.cid);
+		var convIndex = this._getRowIndex(conv);
 		var sortIndex = ev.getDetail("sortIndex");
-		var newItems = [];
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			if (item.type == ZmItem.MSG && this._expanded[item.cid]) {
-				var div = this._createItemHtml(item, this._now);
-				var conv = this._appCtxt.getById(item.cid);
-				var convIndex = this._getRowIndex(conv);
-				var msgIndex = sortIndex[item.id] || 0;
-				this._addRow(div, convIndex + msgIndex + 1);
-				this._msgRowIdList[item.cid].push(div.id);
-			}				
-			if (item.type == ZmItem.CONV) {
-				newItems.push(item);
-			}
-		}
-		ev.setDetail("items", newItems);
+		var msgIndex = sortIndex ? sortIndex[item.id] || 0 : 0;
+		this._addRow(div, convIndex + msgIndex + 1);
+		this._msgRowIdList[item.cid].push(div.id);
+		ev.handled = true;
 	}
 
-	if (!done) {
+	if (!ev.handled) {
 		ZmConvListView.prototype._changeListener.call(this, ev);
 	}
 };

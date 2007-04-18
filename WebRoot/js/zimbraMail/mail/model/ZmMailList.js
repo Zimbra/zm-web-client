@@ -89,9 +89,10 @@ function(folder, result) {
 	var movedItems = result.getResponse();	
 	if (movedItems && movedItems.length) {
 		this.moveLocal(movedItems, folder.id);
-		for (var i = 0; i < movedItems.length; i++)
+		for (var i = 0; i < movedItems.length; i++) {
 			movedItems[i].moveLocal(folder.id);
-		this._notify(ZmEvent.E_MOVE, {items: movedItems, replenish: true});
+		}
+		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE, {replenish:true});
 	}
 };
 
@@ -126,9 +127,10 @@ function(markAsSpam, folder, result) {
 	if (movedItems && movedItems.length) {
 		folderId = markAsSpam ? ZmFolder.ID_SPAM : (folder ? folder.id : ZmFolder.ID_INBOX);
 		this.moveLocal(movedItems, folderId);
-		for (var i = 0; i < movedItems.length; i++)
+		for (var i = 0; i < movedItems.length; i++) {
 			movedItems[i].moveLocal(folderId);
-		this._notify(ZmEvent.E_MOVE, {items: movedItems, replenish: true});
+		}
+		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE, {replenish:true});
 
 		var msg = markAsSpam ? ZmMsg.markedAsJunk : ZmMsg.markedAsNotJunk;
 		this._appCtxt.setStatusMsg(AjxMessageFormat.format(msg, movedItems.length));
@@ -184,17 +186,18 @@ function(items, folderId) {
 			flaggedItems.push(items[i]);
 		}
 	}
-	if (flaggedItems.length)
-		this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [ZmItem.FLAG_UNREAD]});
+	ZmModel.notifyEach(flaggedItems, ZmEvent.E_FLAGS, {flags:[ZmItem.FLAG_UNREAD]});
 };
 
 ZmMailList.prototype.notifyCreate = 
 function(convs, msgs) {
 	var searchFolder = this.search ? this.search.folderId : null;
 	var createdItems = [];
+	var newConvs = [];
+	var newMsgs = [];
 	var flaggedItems = [];
 	var modifiedItems = [];
-	var newConvs = {};
+	var newConvId = {};
 	var fields = {};
 	var sortBy = this.search ? this.search.sortBy : null;
 	var sortIndex = {};
@@ -202,21 +205,21 @@ function(convs, msgs) {
 		// handle new convs first so we can set their fragments from new msgs
 		for (var id in convs) {
 			if (this.getById(id)) { continue; }	// already have this conv
-			newConvs[id] = true;
+			newConvId[id] = true;
 			var conv = convs[id];
 			if (conv.folders && conv.folders[searchFolder]) {
 				// conv's msg matches current search
 				sortIndex[id] = this._getSortIndex(conv, sortBy);
 				this.add(conv, sortIndex[id]);
 				conv.list = this;
-				createdItems.push(conv);
+				newConvs.push(conv);
 			}
 		}
-		// sort item list so they show up in correct order when processed
-		if (createdItems.length > 1) {
+		// sort item list to reverse so they show up in correct order when processed
+		if (newConvs.length > 1) {
 			ZmMailItem.sortBy = sortBy;
-			createdItems.sort(ZmMailItem.sortCompare);
-			createdItems.reverse();
+			newConvs.sort(ZmMailItem.sortCompare);
+			newConvs.reverse();
 		}
 		for (var id in msgs) {
 			var msg = msgs[id];
@@ -248,12 +251,12 @@ function(convs, msgs) {
 					fields[ZmItem.F_DATE] = true;
 				}
 				// conv gained a msg, may need to be moved to top/bottom
-				if (msgMatches && !newConvs[conv.id] && this._vector.contains(conv)) {
+				if (msgMatches && !newConvId[conv.id] && this._vector.contains(conv)) {
 					fields[ZmItem.F_INDEX] = true;
 				}
 				modifiedItems.push(conv);
 			}
-			createdItems.push(msg);
+			newMsgs.push(msg);
 		}
 	} else if (this.type == ZmItem.MSG) {
 		for (var id in msgs) {
@@ -264,26 +267,21 @@ function(convs, msgs) {
 				if (msg.cid == this.convId && !this.getById(msg.id)) {
 					this.add(msg, sortIndex[id]);
 					msg.list = this;
-					createdItems.push(msg);
+					newMsgs.push(msg);
 				}
 			} else { // MLV (traditional)
 				if (msg.folderId == searchFolder) {
 					this.add(msg, sortIndex[id]);
 					msg.list = this;
-					createdItems.push(msg);
+					newMsgs.push(msg);
 				}
 			}
 		}
 	}
-	if (createdItems.length) {
-		this._notify(ZmEvent.E_CREATE, {items:createdItems, sortIndex:sortIndex});
-	}
-	if (flaggedItems.length) {
-		this._notify(ZmEvent.E_FLAGS, {items:flaggedItems, flags:[ZmItem.FLAG_UNREAD]});
-	}
-	if (modifiedItems.length) {
-		this._notify(ZmEvent.E_MODIFY, {items:modifiedItems, fields:fields, sortIndex:sortIndex});
-	}
+	ZmModel.notifyEach(newConvs, ZmEvent.E_CREATE, {sortIndex:sortIndex});
+	ZmModel.notifyEach(newMsgs, ZmEvent.E_CREATE, {sortIndex:sortIndex});
+	ZmModel.notifyEach(flaggedItems, ZmEvent.E_FLAGS, {flags:[ZmItem.FLAG_UNREAD]});
+	ZmModel.notifyEach(modifiedItems, ZmEvent.E_MODIFY, {fields:fields, sortIndex:sortIndex});
 };
 
 /**
@@ -304,8 +302,7 @@ function(msgs) {
 			addedMsgs.push(msg);
 		}
 	}
-	if (addedMsgs.length)
-		this._notify(ZmEvent.E_CREATE, {items: addedMsgs});
+	ZmModel.notifyEach(addedMsgs, ZmEvent.E_CREATE);
 };
 
 ZmMailList.prototype.remove = 
@@ -395,8 +392,7 @@ function(ev) {
 						flaggedItems.push(msg);
 					}
 				}
-				if (flaggedItems.length)
-					this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [flag]});
+				ZmModel.notifyEach(flaggedItems, ZmEvent.E_FLAGS, {flags:[flag]});
 			}
 		}
 	} else {

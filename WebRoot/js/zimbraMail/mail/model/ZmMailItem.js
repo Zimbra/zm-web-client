@@ -104,10 +104,11 @@ function(obj) {
 	if (obj.e != null) {
 		this._clearParticipants();
 		this._initializeParticipants();
-		for (var i = 0; i < obj.e.length; i++)
+		for (var i = 0; i < obj.e.length; i++) {
 			this._parseParticipantNode(obj.e[i]);
+		}
 		fields[ZmItem.F_PARTICIPANT] = true;
-		this._notify(ZmEvent.E_MODIFY, {fields : fields});
+		this._notify(ZmEvent.E_MODIFY, {fields:fields});
 	}
 
 	ZmItem.prototype.notifyModify.call(this, obj);
@@ -138,7 +139,7 @@ function() {
 ZmMailItem.prototype._markReadLocal =
 function(on) {
 	this.isUnread = !on;
-	this._notify(ZmEvent.E_FLAGS, {flags: [ZmItem.FLAG_UNREAD]});
+	this._notify(ZmEvent.E_FLAGS, {flags:[ZmItem.FLAG_UNREAD]});
 }
 
 ZmMailItem.prototype._parseParticipantNode =

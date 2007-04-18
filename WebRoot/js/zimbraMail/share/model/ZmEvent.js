@@ -34,9 +34,10 @@
 */
 function ZmEvent(type) {
 
-	this.type = type; //source type
-	this.event = null; //event type
-	this.source = null;
+	this.type = type;	// source type (conv, msg, contact, folder, etc)
+	this.event = null;	// event type (create, modify, etc)
+	this.source = null;	// notifying model (often a list)
+	this.item = null;	// item that is subject of the notification
 	this._details = {};
 }
 

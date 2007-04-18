@@ -79,33 +79,33 @@ ZmItem.ICON[ZmItem.NOTE] = "Note";
 // Function for creating search results list
 ZmItem.RESULTS_LIST = {};
 
-// fields that can be part of a displayed item
-var i = 1;
-ZmItem.F_ID				= i++;
-ZmItem.F_ITEM_ROW		= i++;
-ZmItem.F_ICON			= i++;
-ZmItem.F_FLAG			= i++;
-ZmItem.F_ATTACHMENT		= i++;
-ZmItem.F_TAG			= i++;
-ZmItem.F_PARTICIPANT	= i++;
-ZmItem.F_FROM			= i++;
-ZmItem.F_FRAGMENT		= i++;
-ZmItem.F_SUBJECT		= i++;
-ZmItem.F_COUNT			= i++;
-ZmItem.F_DATE			= i++;
-ZmItem.F_STATUS			= i++;
-ZmItem.F_FOLDER			= i++;
-ZmItem.F_COMPANY		= i++;
-ZmItem.F_EMAIL			= i++;
-ZmItem.F_ITEM_TYPE		= i++;
-ZmItem.F_TAG_CELL		= i++;
-ZmItem.F_SIZE			= i++;
-ZmItem.F_INDEX			= i++;
-ZmItem.F_EXPAND			= i++;	// hybrid mail view
+// fields that can be part of a displayed item (need to be short because
+// they are used in many DOM IDs)
+ZmItem.F_ID				= "id";
+ZmItem.F_ITEM_ROW		= "r";
+ZmItem.F_ICON			= "ic";
+ZmItem.F_FLAG			= "g";
+ZmItem.F_ATTACHMENT		= "a";
+ZmItem.F_TAG			= "t";
+ZmItem.F_PARTICIPANT	= "p";
+ZmItem.F_FROM			= "f";
+ZmItem.F_FRAGMENT		= "";
+ZmItem.F_SUBJECT		= "j";
+ZmItem.F_COUNT			= "n";
+ZmItem.F_DATE			= "d";
+ZmItem.F_STATUS			= "s";
+ZmItem.F_FOLDER			= "l";
+ZmItem.F_COMPANY		= "co";
+ZmItem.F_EMAIL			= "e";
+ZmItem.F_ITEM_TYPE		= "it";
+ZmItem.F_TAG_CELL		= "tc";
+ZmItem.F_SIZE			= "z";
+ZmItem.F_INDEX			= "ix";
+ZmItem.F_EXPAND			= "x";	// hybrid mail view
 // task specific
-ZmItem.F_PRIORITY		= i++;
-ZmItem.F_PCOMPLETE		= i++;
-ZmItem.F_COMPLETED		= i++;
+ZmItem.F_PRIORITY		= "pr";
+ZmItem.F_PCOMPLETE		= "pc";
+ZmItem.F_COMPLETED		= "cm";
 
 // Action requests for different items
 ZmItem.SOAP_CMD = {};
@@ -459,10 +459,12 @@ ZmItem.prototype._notify =
 function(event, details) {
 	ZmModel.prototype._notify.call(this, event, details);
 	if (this.list) {
-		if (details)
+		if (details) {
 			details.items = [this];
-		else
+		} else {
 			details = {items: [this]};
+		}
+		this.list._evt.item = this;
 		this.list._notify(event, details);
 	}
 };
