@@ -337,9 +337,6 @@ function(params, result) {
 		opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
 							selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true,
 							hideEmpty: ZmZimbraMail.HIDE_EMPTY});
-// 		if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
-// 			this._createBuddyListTabs();
-// 		}
 	}
 	this._setUserInfo();
 
@@ -1474,53 +1471,3 @@ function() {
     }
 };
 ZmOrganizer.ZIMLET = "Zimlet";
-
-
-// XXX: buddy list code that shouldnt be here
-ZmZimbraMail.prototype.__buddyListTabsListener = function(ev) {
-	var btn = ev.item;
-	if (!btn.isSelected) {
-		var show_buddies = btn === this.__btnBuddies;
-		var opc = this._appCtxt.getOverviewController();
-		var a = opc.getAllTreeViews(ZmZimbraMail._OVERVIEW_ID);
-		var buddies_view = opc.getTreeView(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.ROSTER_TREE_ITEM);
-		for (var i = a.length; --i >= 0;) {
-			var view = a[i];
-			try {
-				// where's XOR when you need it?
-				var show = ( (show_buddies && (view === buddies_view)) ||
-					     (!show_buddies && (view !== buddies_view)) );
-				view.setDisplay(show ? Dwt.DISPLAY_BLOCK : Dwt.DISPLAY_NONE);
-			} catch(ex) {}
-		}
-	}
-};
-
-ZmZimbraMail.prototype._createBuddyListTabs = function() {
-	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
-		var opc = this._appCtxt.getOverviewController();
-        var tabbar = new DwtTabBar(opc.getOverview(ZmZimbraMail._OVERVIEW_ID));
-
-        var listener = new AjxListener(this, this.__buddyListTabsListener);
-
-        // NOTE: Tab key of 1 means that it's auto-selected.
-        this.__btnFolders = tabbar.addButton(1, ZmMsg.folders);
-        this.__btnFolders.addSelectionListener(listener);
-
-        this.__btnBuddies = tabbar.addButton(2, ZmMsg.buddies);
-        this.__btnBuddies.addSelectionListener(listener);
-    }
-};
-
-ZmZimbraMail.prototype.setBuddyListTab = function(tabName) {
-	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
-		var selectBtn = null;
-		switch (tabName) {
-		    case "buddies": selectBtn = this.__btnBuddies; break;
-		    case "folders": selectBtn = this.__btnFolders; break;
-		}
-		if (selectBtn)
-			this.__buddyListTabsListener({ item: selectBtn });
-	}
-};
-

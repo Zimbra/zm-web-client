@@ -173,7 +173,6 @@ function(active) {
 	// console.log("activate");
 	this._active = active;
 	if (active) {
-		this._appCtxt.getAppController().setBuddyListTab("buddies");
 		this.stopFlashingIcon();
 	}
 };
