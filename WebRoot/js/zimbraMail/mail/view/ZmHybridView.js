@@ -609,6 +609,7 @@ function(ev) {
 	// expanded conv, and don't move that conv
 	if (ev.event == ZmEvent.E_CREATE) {
 		var sortIndex = ev.getDetail("sortIndex");
+		var newItems = [];
 		for (var i = 0; i < items.length; i++) {
 			var item = items[i];
 			if (item.type == ZmItem.MSG && this._expanded[item.cid]) {
@@ -618,9 +619,12 @@ function(ev) {
 				var msgIndex = sortIndex[item.id] || 0;
 				this._addRow(div, convIndex + msgIndex + 1);
 				this._msgRowIdList[item.cid].push(div.id);
+			}				
+			if (item.type == ZmItem.CONV) {
+				newItems.push(item);
 			}
 		}
-		done = true;
+		ev.setDetail("items", newItems);
 	}
 
 	if (!done) {
