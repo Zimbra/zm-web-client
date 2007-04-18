@@ -157,7 +157,7 @@ function(callback) {
 ZmImApp.prototype._handleLoadLaunch =
 function(callback) {
 	// console.log("_handleLoadLaunch");
-	this.refresh();
+// 	this.refresh();
 	var clc = this.getChatListController();
 	clc.show();
 	if (callback)

@@ -46,6 +46,8 @@ ZmRoster.prototype.constructor = ZmRoster;
 
 ZmRoster.F_PRESENCE = "ZmRoster.presence";
 
+ZmRoster.NOTIFICATION_FOO_TIMEOUT = 10000; // 10 sec.
+
 ZmRoster.prototype.toString = 
 function() {
 	return "ZmRoster";
@@ -132,6 +134,7 @@ function(args) {
 		this.getPresence().setFromJS(roster.presence);
 		this._notifyPresence();
 	}
+	this.__avoidNotifyTimeout = new Date().getTime();
 };
 
 /**
@@ -159,6 +162,7 @@ function(show, priority, showStatus) {
 	if (priority) presence.setAttribute("priority", priority);
 	if (showStatus) soapDoc.set("status", showStatus, presence);	
 	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+	this.__avoidNotifyTimeout = new Date().getTime();
 };
 
 /**
@@ -194,6 +198,9 @@ function(subscribed) {
 ZmRoster.prototype.handleNotification =
 function(im) {
 	if (im.n) {
+		// console.log("IM notification: ", im.n);
+		var notifications = !this.__avoidNotifyTimeout ||
+			(new Date().getTime() - this.__avoidNotifyTimeout > ZmRoster.NOTIFICATION_FOO_TIMEOUT);
 		var cl = this.getChatList();
 		for (var curNot=0; curNot < im.n.length; curNot++) {
 			var not = im.n[curNot];
@@ -224,8 +231,10 @@ function(im) {
 						// create
 						var item = new ZmRosterItem(sub.to, list, this._appCtxt, sub.name, null, sub.groups);
 						list.addItem(item);
-						var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
-						this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
+						if (notifications) {
+							var toast = this._newRosterItemtoastFormatter.format([item.getDisplayName()]);
+							this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
+						}
 					}
 				} else if (sub.from) {
 				    // toast, should we user if they want to add user if they aren't in buddy list?
@@ -249,10 +258,12 @@ function(im) {
 						if (ri.getPresence().setFromJS(p)) {
 							ri._notifyPresence();
 							var toast = this._presenceToastFormatter.format([ri.getDisplayName(), ri.getPresence().getShowText()]);
-							this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
-							var chat = cl.getChatByRosterAddr(p.from);
-							if (chat)
-								chat.addMessage(ZmChatMessage.system(toast));
+							if (notifications) {
+								this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
+								var chat = cl.getChatByRosterAddr(p.from);
+								if (chat)
+									chat.addMessage(ZmChatMessage.system(toast));
+							}
 						}
 					}
 				}
