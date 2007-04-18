@@ -268,6 +268,7 @@ function() {
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmMailApp.addForwardMenu, parent);
 	}));
+	ZmOperation.registerOp("IM", {textKey:"newIM", image:"ImStartChat"}, ZmSetting.IM_ENABLED);
 	ZmOperation.registerOp("INC_ATTACHMENT", {textKey:"includeMenuAttachment"});
 	ZmOperation.registerOp("INC_NONE", {textKey:"includeMenuNone"});
 	ZmOperation.registerOp("INC_NO_PREFIX", {textKey:"includeMenuNoPrefix"});

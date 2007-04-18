@@ -69,7 +69,6 @@ function() {
 
 ZmImApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp("IM", {textKey:"newIM", image:"ImStartChat"});
 	ZmOperation.registerOp("IM_NEW_CHAT", {textKey:"imNewChat", image:"ImFree2Chat"});
 	ZmOperation.registerOp("IM_NEW_GROUP_CHAT", {textKey:"imNewGroupChat", image:"ImFree2Chat"});
 	ZmOperation.registerOp("IM_PRESENCE_AWAY", {textKey:"imStatusAway", image:"ImAway"});
