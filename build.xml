@@ -81,9 +81,6 @@
   <property name='l10n.includes' value='msgs/*.properties,keys/*.properties' />
   <property name='l10n.excludes' value='msgs/*_*.properties,keys/*_*.properties' />
 
-  <!-- list all the skins with custom images to build here -->
-  <property name='skins' value='steel,_demo' />
-
   <condition property='isProduction' value='true' else='false'>
     <or>
       <not><isset property='env.ZIMBRA_BUILD'/></not>
@@ -543,7 +540,11 @@ if (ext == null) ext = "";
   <target name='skin-images' depends='default-skins,customer-skin' />
 
   <target name='default-skins'>
-    <foreach list='${skins}' target='build-skin-images' param='skindir'>
+    <dirset id='skins.dirset' dir='WebRoot/skins' includes='*' />
+    <pathconvert property='skins.dirs' refid='skins.dirset' pathsep=','>
+        <flattenmapper />
+    </pathconvert>
+    <foreach list='${skins.dirs}' target='build-skin-images' param='skindir'>
 		<param name="csspathprefix" value="/zimbra/img/"/>
 		<param name="skinbasedir" value="WebRoot"/>
     </foreach>
@@ -562,7 +563,7 @@ if (ext == null) ext = "";
 	</foreach>
   </target>
 
-  <target name='build-skin-images' depends='compile' unless='imagesdone'>
+  <target name='build-skin-images' depends='build-skin-images-init,compile' if='skin-images-present' unless='imagesdone'>
 	<property name='dir.skincache' value='../../../../skins/${skindir}' />
     <!-- merge loRes skin images -->
     <mkdir dir="${images.loRes.destDir}/skins/${skindir}"/>
@@ -583,6 +584,9 @@ if (ext == null) ext = "";
     <echo/>
   </target>
 
+  <target name='build-skin-images-init'>
+      <available property="skin-images-present" file="${skinbasedir}/skins/${skindir}/img" type="dir" />
+  </target>
 
   <target name='images-are-dirty' unless='images.force'>
     <dependset>
