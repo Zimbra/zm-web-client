@@ -338,19 +338,23 @@ function(uname, pword, result) {
 	var mailServer = resp.refer;
 
 	var settings = ZmLogin._settings;
-	var prefs = !resp.prefs ? null : (resp.prefs instanceof Array) ? resp.prefs[0].pref : resp.prefs.pref;
-	if (prefs && prefs.length) {
+	var prefs = resp.prefs ? resp.prefs._attrs : null;
+	if (prefs) {
 		settings.createFromJs(prefs);
 	}
-	var attrs = !resp.attrs ? null : (resp.attrs instanceof Array) ? resp.attrs[0].attr : resp.attrs.attr;
-	if (attrs && attrs.length) {
+	var attrs = resp.attrs ? resp.attrs._attrs : null;
+	if (attrs) {
 		settings.createFromJs(attrs);
 	}
 
     var match = location.search ? location.search.match(/\bredirect=([01])/) : null;
 	var redirect = match ? match[1] : null;
-	if (redirect == '0' || (location.hostname == "localhost") || (location.hostname && location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/))) {
-		if (redirect != '1') mailServer = location.hostname;
+	if (redirect == '0' ||
+		(location.hostname == "localhost") ||
+		(location.hostname && location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/)))
+	{
+		if (redirect != '1')
+			mailServer = location.hostname;
 	}
 
 	var rmChecked = document.getElementById(ZLoginFactory.REMEMBER_ME_ID).checked;
