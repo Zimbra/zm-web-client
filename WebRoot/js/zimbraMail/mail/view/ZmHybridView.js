@@ -545,6 +545,7 @@ function(ev) {
 	// msg moved or deleted	
 	if (!isConv && (ev.event == ZmEvent.E_MOVE || ev.event == ZmEvent.E_DELETE)) {
 		var	conv = this._appCtxt.getById(item.cid);
+		ev.handled = true;
 		if (item.folderId == ZmFolder.ID_SPAM || ev.event == ZmEvent.E_DELETE) {
 			// msg marked as Junk, or deleted via Empty Trash
 			// TODO: handle expandable msg removal
@@ -571,17 +572,17 @@ function(ev) {
 				}
 			}
 			if (removeConv) {
-				ev.item = conv;
-
-				ev.type = ZmItem.CONV;
-				ev.setDetail("items", [conv]);
-				items = [conv];
+				this._list.remove(conv);				// view has sublist of controller list
+				this._controller._list.remove(conv);	// complete list
+				ev.item = item = conv;
+				isConv = true;
+				ev.handled = false;
+				ev.setDetail("replenish", true);
 			} else {
 				// normal case: just change folder name for msg
 				this._changeFolderName([item]);
 			}
 		}
-		ev.handled = true;
 	}
 
 	// conv moved or deleted	
