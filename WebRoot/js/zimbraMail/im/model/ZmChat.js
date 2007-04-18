@@ -131,7 +131,8 @@ function() {
 
 ZmChat.prototype.getTitle =
 function() {
-
+	// return this.getRosterItem(0).getDisplayName(); // XXX
+	return AjxMessageFormat.format(ZmMsg.chatWith, [ this.getRosterItem(0).getDisplayName() ]);
 };
 
 ZmChat.prototype.getStatusTitle =
@@ -199,6 +200,18 @@ function(text) {
 	var body = soapDoc.set("body", text, message);
 	// TODO: error handling
 	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: this._sendMessageCallbackObj});
+};
+
+ZmChat.prototype.sendByEmail = function() {
+	var emails = this._rosterItemList.getVector()
+		.map("getContact")
+		.map("getEmail")
+		.join(AjxEmailAddress.SEPARATOR);
+	AjxDispatcher.run("Compose", { action	     : ZmOperation.NEW_MESSAGE,
+				       toOverride    : emails,
+				       subjOverride  : this.getTitle(),
+				       extraBodyText : AjxVector.fromArray(this._messages).map("toText").join("\n")
+				     });
 };
 
 // stash the thread

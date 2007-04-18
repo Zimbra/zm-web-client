@@ -32,8 +32,8 @@ function ZmChatMultiWindowView(parent, className, posStyle, controller) {
 	this.setDropTarget(dropTgt);
 	dropTgt.addDropListener(new AjxListener(this, this._dropListener));
 
-//	this.setScrollStyle(DwtControl.CLIP);
-	this.setScrollStyle(DwtControl.SCROLL);
+	this.setScrollStyle(DwtControl.CLIP);
+//	this.setScrollStyle(DwtControl.SCROLL);
 	this._chatIdToChatWidget = {};
 	this._initX = 20;
 	this._initY = 20;
@@ -132,10 +132,12 @@ ZmChatMultiWindowView.prototype._changeListener = function(ev) {
 	}
 };
 
-ZmChatMultiWindowView.prototype.selectChat = function(chat) {
+ZmChatMultiWindowView.prototype.selectChat = function(chat, text) {
 	var cw = this._getChatWidgetForChat(chat);
 	if (cw)
 		cw.select();
+	if (text)
+		cw.setInputContent(AjxStringUtil.trim(text));
 };
 
 ZmChatMultiWindowView.prototype._rosterItemChangeListener = function(chat, item, fields) {

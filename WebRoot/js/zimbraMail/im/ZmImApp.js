@@ -63,6 +63,7 @@ function() {
 ZmImApp.prototype._defineAPI =
 function() {
 	AjxDispatcher.registerMethod("GetRoster", "IM", new AjxCallback(this, this.getRoster));
+	AjxDispatcher.registerMethod("GetChatListController", "IM", new AjxCallback(this, this.getChatListController));
 };
 ////	AjxDispatcher.run("GetRoster").reload();
 

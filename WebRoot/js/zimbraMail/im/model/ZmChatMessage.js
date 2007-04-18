@@ -59,6 +59,10 @@ function() {
 	return formatter.format(new Date(this.ts));
 };
 
+ZmChatMessage.prototype.toText = function() {
+	return AjxStringUtil.trim(AjxTemplate.expand("zimbraMail.im.templates.Chat#ChatMessagePlainText", this));
+};
+
 ZmChatMessage.prototype.toHtml =
 function(objectManager, chat, lastFrom) {
 	var body;

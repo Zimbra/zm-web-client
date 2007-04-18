@@ -39,7 +39,7 @@ function ZmComposeController(appCtxt, container, mailApp) {
 	ZmController.call(this, appCtxt, container, mailApp);
 
 	this._action = null;
-	
+
 	// settings whose changes affect us (so we add a listener to them)
 	ZmComposeController.SETTINGS = [ZmSetting.SHOW_BCC];
 
@@ -54,7 +54,7 @@ function ZmComposeController(appCtxt, container, mailApp) {
 	ZmComposeController.RADIO_GROUP[ZmOperation.INC_NONE]		= 3;
 	ZmComposeController.RADIO_GROUP[ZmOperation.INC_PREFIX]		= 3;
 	ZmComposeController.RADIO_GROUP[ZmOperation.INC_SMART]		= 3;
-	
+
 	// translate between include preferences and operations
 	ZmComposeController.INC_OP = {};
 	ZmComposeController.INC_OP[ZmSetting.INCLUDE_ATTACH]	= ZmOperation.INC_ATTACHMENT;
@@ -66,7 +66,7 @@ function ZmComposeController(appCtxt, container, mailApp) {
 	for (var i in ZmComposeController.INC_OP)
 		ZmComposeController.INC_MAP[ZmComposeController.INC_OP[i]] = i;
 	delete i;
-	
+
 	ZmComposeController.OPTIONS_TT = {};
 	ZmComposeController.OPTIONS_TT[ZmOperation.NEW_MESSAGE]		= "composeOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.REPLY]			= "replyOptions";
@@ -76,6 +76,7 @@ function ZmComposeController(appCtxt, container, mailApp) {
 
 	this._listeners = {};
 	this._listeners[ZmOperation.SEND] = new AjxListener(this, this._sendListener);
+	this._listeners[ZmOperation.IM] = new AjxListener(this, this._imListener);
 	this._listeners[ZmOperation.CANCEL] = new AjxListener(this, this._cancelListener);
 	this._listeners[ZmOperation.ATTACHMENT] = new AjxListener(this, this._attachmentListener);
 	this._listeners[ZmOperation.DETACH_COMPOSE] = new AjxListener(this, this._detachListener);
@@ -83,9 +84,9 @@ function ZmComposeController(appCtxt, container, mailApp) {
 	this._listeners[ZmOperation.ADD_SIGNATURE] = new AjxListener(this, this._addSignatureListener);
 	this._listeners[ZmOperation.SPELL_CHECK] = new AjxListener(this, this._spellCheckListener);
 	this._listeners[ZmOperation.COMPOSE_OPTIONS] = new AjxListener(this, this._optionsListener);
-	
+
 	this._dialogPopdownListener = new AjxListener(this, this._dialogPopdownActionListener);
-	
+
 	var settings = this._appCtxt.getSettings();
 	var scl = this._settingsChangeListener = new AjxListener(this, this._settingsChangeListener);
 	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
@@ -104,12 +105,12 @@ function() {
 // Public methods
 
 /**
-* Called by ZmNewWindow.unload to remove ZmSettings listeners (which reside in 
-* the parent window). Otherwise, after the child window is closed, the parent 
+* Called by ZmNewWindow.unload to remove ZmSettings listeners (which reside in
+* the parent window). Otherwise, after the child window is closed, the parent
 * window is still referencing the child window's compose controller, which has
 * been unloaded!!
 */
-ZmComposeController.prototype.dispose = 
+ZmComposeController.prototype.dispose =
 function() {
 	var settings = this._appCtxt.getSettings();
 	for (var i = 0; i < ZmComposeController.SETTINGS.length; i++) {
@@ -120,7 +121,7 @@ function() {
 
 /**
  * Begins a compose session by presenting a form to the user.
- * 
+ *
  * @param action		[constant]		new message, reply, forward, or an invite action
  * @param inNewWindow	[boolean]*		if true, we are in detached window
  * @param msg			[ZmMailMsg]*	the original message (reply/forward), or address (new message)
@@ -146,7 +147,7 @@ function(params) {
 	}
 };
 
-ZmComposeController.prototype.toggleSpellCheckButton = 
+ZmComposeController.prototype.toggleSpellCheckButton =
 function(toggled) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	spellCheckButton.setToggled((toggled || false));
@@ -174,7 +175,7 @@ function() {
 	var newWinObj = this._appCtxt.getNewWindow();
 	newWinObj.command = "composeDetach";
 	newWinObj.params = {action:this._action, msg:msg, addrs:addrs, subj:subj, forwardHtml:forAttHtml, body:body,
-					  composeMode:composeMode, identityId:identityId, accountName:this._accountName, 
+					  composeMode:composeMode, identityId:identityId, accountName:this._accountName,
 					  backupForm:backupForm, sendUID:sendUID};
 };
 
@@ -209,17 +210,17 @@ function(view, force) {
 	return force ? true : this.popShield();
 };
 
-ZmComposeController.prototype._postShowCallback = 
+ZmComposeController.prototype._postShowCallback =
 function() {
 	ZmController.prototype._postShowCallback.call(this);
 	var composeMode = this._composeView.getComposeMode();
 	if (composeMode == DwtHtmlEditor.HTML) {
 		this._composeView._retryHtmlEditorFocus();
 	}
-	if (this._action != ZmOperation.NEW_MESSAGE && 
-		this._action != ZmOperation.FORWARD_INLINE && 
+	if (this._action != ZmOperation.NEW_MESSAGE &&
+		this._action != ZmOperation.FORWARD_INLINE &&
 		this._action != ZmOperation.FORWARD_ATT) {
-	
+
 		this._composeView._setBodyFieldCursor();
 	}
 };
@@ -306,10 +307,10 @@ function(ex) {
 /**
 * Creates a new ZmComposeView if one does not already exist
 *
-* @param initHide	Set to true if compose view should be initially rendered 
+* @param initHide	Set to true if compose view should be initially rendered
 *					off screen (used as an optimization to preload this view)
 */
-ZmComposeController.prototype.initComposeView = 
+ZmComposeController.prototype.initComposeView =
 function(initHide, composeMode) {
 	if (this._composeView) return;
 
@@ -398,7 +399,7 @@ function(actionCode) {
 		case ZmKeyMap.CANCEL:
 			this._cancelCompose();
 			break;
-			
+
 		case ZmKeyMap.SAVE: // Save to draft
 			if (this._appCtxt.get(ZmSetting.SAVE_DRAFT_ENABLED)) {
 				this._saveDraft();
@@ -417,7 +418,7 @@ function(actionCode) {
 			this.toggleSpellCheckButton(true);
 			this._spellCheckListener();
 			break;
-		
+
 		case ZmKeyMap.HTML_FORMAT:
 			if (this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED)) {
 				var mode = this._composeView.getComposeMode();
@@ -474,7 +475,7 @@ function(delMsg) {
 /**
  * Creates the compose view based on the mode we're in. Lazily creates the
  * compose toolbar, a contact picker, and the compose view itself.
- * 
+ *
  * @param action		[constant]		new message, reply, forward, or an invite action
  * @param msg			[ZmMailMsg]*	the original message (reply/forward), or address (new message)
  * @param toOverride 	[string]*		initial value for To: field
@@ -493,7 +494,7 @@ function(params) {
 	this._subjOverride = params.subjOverride;
 	this._extraBodyText = params.extraBodyText;
 	this._accountName = params.accountName;
-	
+
 	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
 	var identity = (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
 	params.identity = identity;
@@ -527,12 +528,17 @@ function(params) {
 ZmComposeController.prototype._initializeToolBar =
 function() {
 	if (this._toolbar) return;
-	
-	var buttons = [ZmOperation.SEND, ZmOperation.CANCEL,
-				   ZmOperation.SEP, ZmOperation.SAVE_DRAFT,
-				   ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK,
-				   ZmOperation.ADD_SIGNATURE, ZmOperation.COMPOSE_OPTIONS,
-				   ZmOperation.FILLER]; // right-align remaining buttons
+
+	var buttons = [ZmOperation.SEND];
+
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
+		buttons.push(ZmOperation.IM);
+
+	buttons.push(ZmOperation.CANCEL,
+		     ZmOperation.SEP, ZmOperation.SAVE_DRAFT,
+		     ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK,
+		     ZmOperation.ADD_SIGNATURE, ZmOperation.COMPOSE_OPTIONS,
+		     ZmOperation.FILLER); // right-align remaining buttons
 
 	if (!this.isChildWindow) {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
@@ -610,7 +616,7 @@ function(action) {
 	}
 
 	var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
-	
+
 	var overrides = {};
 	for (var i = 0; i < list.length; i++) {
 		var op = list[i];
@@ -622,7 +628,7 @@ function(action) {
 		if (op == ZmOperation.REPLY) {
 			overrides[op].text = ZmMsg.replySender;
 		}
-		
+
 	}
 
 	var menu = new ZmActionMenu({parent:button, menuItems:list, overrides:overrides});
@@ -636,7 +642,7 @@ function(action) {
 		} else if (op == ZmOperation.FORMAT_TEXT) {
 			mi.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.TEXT);
 		}
-		mi.setData(ZmOperation.KEY_ID, op);		
+		mi.setData(ZmOperation.KEY_ID, op);
 		mi.addSelectionListener(this._listeners[ZmOperation.COMPOSE_OPTIONS]);
 	}
 
@@ -664,7 +670,7 @@ function(composeMode, identity) {
 		}
 	}
 	menu.getItemById(ZmOperation.KEY_ID, ZmOperation.SHOW_BCC).setChecked(this._appCtxt.get(ZmSetting.SHOW_BCC), true);
-	
+
 	button.setMenu(menu);
 };
 
@@ -725,7 +731,7 @@ function(mode) {
 	}
 };
 
-ZmComposeController.prototype._processSendMsg = 
+ZmComposeController.prototype._processSendMsg =
 function(isDraft, msg, resp) {
 	if (!isDraft) {
 		if (this.isChildWindow && window.parentController) {
@@ -766,6 +772,15 @@ function(isDraft, msg, resp) {
 ZmComposeController.prototype._sendListener =
 function(ev) {
 	this._send();
+};
+
+ZmComposeController.prototype._imListener = function(ev) {
+	var msg = this._composeView.getMsg();
+	if (msg) {
+		var text = this._composeView._htmlEditor.getContent();
+		var contacts = msg.getAddresses(AjxEmailAddress.TO, {}, true);
+		AjxDispatcher.run("GetChatListController").chatWithContacts(contacts, msg, text);
+	}
 };
 
 ZmComposeController.prototype._send =
@@ -822,9 +837,9 @@ function(ev) {
 		var button = this._toolbar.getButton(ZmOperation.COMPOSE_OPTIONS);
 		var bounds = button.getBounds();
 		this._optionsMenu[this._action].popup(0, bounds.x, bounds.y + bounds.height, false);
-		return;	
+		return;
 	}
-	
+
 	// the rest are radio buttons, we only care when they're selected
 	if (ev.detail != DwtMenuItem.CHECKED) return;
 
@@ -883,7 +898,7 @@ function(ev) {
 	this._composeView.addSignature(this._composeView.getHtmlEditor().getContent());
 };
 
-ZmComposeController.prototype._spellCheckListener = 
+ZmComposeController.prototype._spellCheckListener =
 function(ev) {
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);
 	var htmlEditor = this._composeView.getHtmlEditor();
@@ -1022,10 +1037,10 @@ function() {
 	menu.checkItem(ZmOperation.KEY_ID, this._curIncOption, true);
 };
 
-ZmComposeController.prototype._getDefaultFocusItem = 
+ZmComposeController.prototype._getDefaultFocusItem =
 function() {
-	if (this._action == ZmOperation.NEW_MESSAGE || 
-		this._action == ZmOperation.FORWARD_INLINE || 
+	if (this._action == ZmOperation.NEW_MESSAGE ||
+		this._action == ZmOperation.FORWARD_INLINE ||
 		this._action == ZmOperation.FORWARD_ATT) {
 
 		return this._composeView._field[AjxEmailAddress.TO];

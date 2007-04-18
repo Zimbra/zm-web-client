@@ -39,7 +39,7 @@ ZmChatTabs.prototype.getTabLabelDiv = function(pos) {
 	if (pos instanceof ZmChatWidget) {
 		pos = this.__tabs.indexOf(pos);
 		if (pos == -1)
-			pos = null;
+			return null;
 	}
 	if (pos == null)
 		pos = this.__currentTab;
@@ -47,7 +47,8 @@ ZmChatTabs.prototype.getTabLabelDiv = function(pos) {
 };
 
 ZmChatTabs.prototype.getTabLabelWidget = function(pos) {
-	return Dwt.getObjectFromElement(this.getTabLabelDiv(pos));
+	var div = this.getTabLabelDiv(pos);
+	return div ? Dwt.getObjectFromElement(div) : null;
 };
 
 ZmChatTabs.prototype.getCurrentChatWidget = ZmChatTabs.prototype.getTabWidget;
@@ -191,6 +192,7 @@ ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
 	label.setText(AjxStringUtil.htmlEncode(chatWidget._titleStr));
 
 	cont.label = label;
+	cont.closeBtn = close;
 
 	var listener = new AjxListener(this, this.setActiveTabWidget, [ chatWidget ]);
 	label._setMouseEventHdlrs();

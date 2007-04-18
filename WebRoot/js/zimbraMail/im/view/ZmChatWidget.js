@@ -92,7 +92,8 @@ ZmChatWidget.prototype._chatChangeListener = function(ev, treeView) {
 ZmChatWidget.prototype.handleMessage = function(msg) {
 	var str = msg.toHtml(this._objectManager, this.chat, this.__lastFrom);
 	this.__lastFrom = (msg.isSystem && !msg.from) ? "@@system" : msg.from;
-	this._setUnreadStatus();
+	if (!msg.isSystem)
+		this._setUnreadStatus();
 	return this.handleHtmlMessage(str);
 };
 
@@ -118,6 +119,12 @@ ZmChatWidget.prototype.scrollTo = function(el, append) {
 
 ZmChatWidget.prototype.setImage = function(imageInfo) {
 	this._label.setImage(imageInfo);
+	var tab = this.parent.getTabLabelWidget(this);
+	if (tab) {
+		// tabs might not be initialized yet
+		tab.closeBtn.setImage(imageInfo);
+		tab.closeBtn.setEnabledImage(imageInfo);
+	}
 };
 
 ZmChatWidget.prototype.setTitle = function(text) {
@@ -127,6 +134,10 @@ ZmChatWidget.prototype.setTitle = function(text) {
 
 ZmChatWidget.prototype.setStatusTitle = function(text) {
 	// this._statusLabel.setText(text);
+};
+
+ZmChatWidget.prototype.setInputContent = function(text) {
+	this._getElement("input").value = text;
 };
 
 ZmChatWidget.prototype.addRosterItem = function(item) {
@@ -230,6 +241,14 @@ ZmChatWidget.prototype._init = function() {
 	this._label.setText("Chat title here");
 
 	this._toolbar.addFiller();
+
+	var btn = new DwtToolBarButton(this._toolbar, null);
+	btn.setToolTipContent(ZmMsg.sendByEmail);
+	btn.setImage("Send");
+	btn.addSelectionListener(new AjxListener(this, this._sendByEmailListener));
+
+	// this._toolbar.addSeparator("vertSep");
+	new DwtControl(this._toolbar, "vertSep");
 
 	this._sticky = new DwtToolBarButton(this._toolbar, DwtButton.TOGGLE_STYLE);
 	this._sticky.setImage("RoundPlus");
@@ -531,6 +550,10 @@ ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
 // 			this._controller.chatWithRosterItems(srcData.getRosterItems(), srcData.getName()+" "+ZmMsg.imGroupChat);
 // 		}
 	}
+};
+
+ZmChatWidget.prototype._sendByEmailListener = function() {
+	this.chat.sendByEmail();
 };
 
 ZmChatWidget.prototype._disposeListener = function() {
