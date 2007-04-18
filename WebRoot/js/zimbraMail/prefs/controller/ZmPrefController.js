@@ -204,8 +204,11 @@ function(ev, callback, noPop) {
 		list = this._prefsView.getChangedPrefs(false, false, batchCommand);
 	} catch (e) {
 		// getChangedPrefs throws an AjxException if any of the values have not passed validation.
-		if (e instanceof AjxException)
+		if (e instanceof AjxException) {
 			this._appCtxt.setStatusMsg(e.msg, ZmStatusView.LEVEL_CRITICAL);
+		} else {
+			throw e;
+		}
 		return;
 	}
 

@@ -66,12 +66,33 @@ function() {
 };
 
 ZmCallFeature.prototype.addChangeNode = 
-function(soapDoc,phoneNode) {
+function(soapDoc, phoneNode) {
 	var child = soapDoc.set(this.name, null, phoneNode);
 	child.setAttribute("s", this.isSubscribed);
 	child.setAttribute("a", this.isActive);
-	for (var i in this.data) {
-		child.setAttribute(i, this.data[i]);
+	this._addNode(soapDoc, child, this.data);
+};
+
+ZmCallFeature.prototype._addNode = 
+function(soapDoc, parentNode, data) {
+	for (var i in data) {
+		var obj = data[i]
+		if (obj instanceof Array) {
+			this._addArrayNode(soapDoc, parentNode, i, obj);
+		} else if (typeof obj == "object") {
+			var child = soapDoc.set(i, null, parentNode);
+			this._addNode(soapDoc, child, obj);
+		} else {
+			parentNode.setAttribute(i, obj);
+		}
+	}
+};
+
+ZmCallFeature.prototype._addArrayNode = 
+function(soapDoc, parentNode, name, array) {
+	for (var i = 0, count = array.length; i < count; i++) {
+		var child = soapDoc.set(name, null, parentNode);
+		this._addNode(soapDoc, child, array[i]);
 	}
 };
 

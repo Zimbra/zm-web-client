@@ -44,14 +44,22 @@ function() {
 
 ZmPhone.calculateDisplay =
 function(name) {
+	var offset = 0;
+	var doIt = false;
 	if (name.length == 10) {
+		doIt = true;
+	} else if ((name.length == 11) && (name.charAt(0) == '1')) {
+		doIt = true;
+		offset = 1;
+	}
+	if (doIt) {
 		var array = [
 			"(",
-			name.substring(0, 3),
+			name.substring(offset, offset + 3),
 			") ",
-			name.substring(3, 6),
+			name.substring(offset + 3, offset + 6),
 			"-",
-			name.substring(6, 10)
+			name.substring(offset + 6, offset + 10)
 		];
 		return array.join("");
 	} else {
@@ -95,6 +103,9 @@ function(callback) {
 	    var soapDoc = AjxSoapDoc.create("GetVoiceFeaturesRequest", "urn:zimbraVoice");
 	    var node = soapDoc.set("phone");
 	    node.setAttribute("name", this.name);
+	    for (var i = 0, count = ZmCallFeature.CALL_FEATURES.length; i < count; i++) {
+	    	soapDoc.set(ZmCallFeature.CALL_FEATURES[i], null, node);
+	    }
 	    var respCallback = new AjxCallback(this, this._handleResponseGetVoiceFeatures, callback);
 	    var params = {
 	    	soapDoc: soapDoc, 

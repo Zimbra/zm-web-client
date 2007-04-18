@@ -26,7 +26,7 @@
 // TODOs
 // Clean up the interface for the ui class.
 // Implement the rest of the interface for a prefs page...cancelling, etc.
-// Somewhere in here, I need to create proxies of the features.
+// Somewhere in here, I need to create proxies of the features. (Or maybe as an easy hack, just work directly on the model. It's not used anywhere else.)
 
 
 function ZmVoicePrefsView(parent, appCtxt, controller) {
@@ -39,7 +39,8 @@ function ZmVoicePrefsView(parent, appCtxt, controller) {
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.VOICE]].join(": ");
 	this._ui = [
 		new ZmAnonymousRejectionUI(this), 
-		new ZmCallForwardingUI(this)
+		new ZmCallForwardingUI(this),
+		new ZmSelectiveCallForwardingUI(this)
 	];
 };
 
@@ -368,6 +369,161 @@ function(id) {
 		this._comboBox.add(phone.getDisplay(), phone.name, false);
 	}
 	this._comboBox.replaceElement(id + "_callForwardingComboBox");
+};
+
+/////////////////////////////////////////////////////////////////////////
+
+function ZmSelectiveCallForwardingUI(view) {
+	ZmCallFeatureUI.call(this, view);
+	this._checkbox = null;
+	this._removeCallbackObj = AjxCallback.simpleClosure(this._removeCallback, this);
+	this._tableIsDirty = false;
+}
+ZmSelectiveCallForwardingUI.prototype = new ZmCallFeatureUI;
+ZmSelectiveCallForwardingUI.prototype.constructor = ZmSelectiveCallForwardingUI;
+ZmSelectiveCallForwardingUI.prototype.toString = 
+function() {
+	return "ZmSelectiveCallForwardingUI";
+}
+
+ZmSelectiveCallForwardingUI.prototype.getName =
+function() {
+	return ZmCallFeature.SELECTIVE_CALL_FORWARDING;
+};
+
+ZmSelectiveCallForwardingUI.prototype.show =
+function(feature) {
+	var display = ZmPhone.calculateDisplay(feature.data.ft);
+	this._comboBox.setText(display);
+	var parent = this._getTableParent();
+	
+	var phones = [];
+	var rowCount = feature.data.phone.length;
+	for(var i = 0; i < rowCount; i++) {
+		var name = feature.data.phone[i].pn;
+		phones[i] = ZmPhone.calculateDisplay(name);
+	}
+	var args = { phones: phones, id: this._view._htmlElId};
+	parent.innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoiceSelectiveCallForwardingTable", args);
+	for (var i = 0; i < rowCount; i++) {
+		var link = document.getElementById(this._view._htmlElId + "_selectiveCallForwardingRemove_" + i);
+		link.onclick = this._removeCallbackObj;
+	}
+	this._tableIsDirty = false;
+};
+
+
+ZmSelectiveCallForwardingUI.prototype._getTableParent =
+function() {
+	return document.getElementById(this._view._htmlElId + "_selectiveCallForwardingTableParent");
+};
+
+ZmSelectiveCallForwardingUI.prototype._getTable =
+function() {
+	return document.getElementById(this._view._htmlElId + "_selectiveCallForwardingTable");
+};
+
+ZmSelectiveCallForwardingUI.prototype._isValueDirty =
+function() {
+	if (this._getSelectedValue() != this._feature.data.ft) {
+		return true;
+	} else if (this._tableIsDirty) {
+		return true;
+	}
+	return false;
+};
+
+ZmSelectiveCallForwardingUI.prototype.getFeature =
+function() {
+	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
+	result.data.ft = ZmPhone.calculateName(this._comboBox.getText());
+	result.data.phone = [];
+	var rows = this._getTable().rows;
+	for(var i = 1, count = rows.length; i < count; i++) {
+		var cell = rows[i].cells[0].childNodes[0].rows[0].cells[0]; // Byick....surf through the big table structures to find the phone number text.
+		var display = AjxUtil.getInnerText(cell);
+		var name = ZmPhone.calculateName(display);
+		result.data.phone.push({ a: true, pn: name });
+	}
+	return result;
+};
+
+ZmSelectiveCallForwardingUI.prototype._getSelectedValue =
+function() {
+	var value = this._comboBox.getValue();
+	if (value) {
+		return value;
+	} else {
+		return ZmPhone.calculateName(this._comboBox.getText());
+	}
+};
+
+ZmSelectiveCallForwardingUI.prototype._addListener =
+function(ev) {
+	var row = this._getTable().insertRow(-1);
+	row.className = (row.rowIndex % 2) ? "Line1" : "Line2"
+	var cell = row.insertCell(-1);
+	var args = { text: this._addInput.getValue(), linkId: Dwt.getNextId() };
+	cell.innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoiceSelectiveCallForwardingTableRow", args);
+	var link = document.getElementById(args.linkId);
+	link.onclick = this._removeCallbackObj;
+	this._addInput.setValue("");
+	this._tableIsDirty = true;
+};
+
+ZmSelectiveCallForwardingUI.prototype._inputKeyListener =
+function(ev) {
+	if (ev.keyCode == DwtKeyEvent.KEY_RETURN) {
+		this._addListener(ev);
+	}
+};
+
+ZmSelectiveCallForwardingUI.prototype._removeCallback =
+function(ev) {
+	var node = DwtUiEvent.getTarget(ev);
+	while (node) {
+		if (node.tagName.toUpperCase() == "TR") {
+			var className = node.className;
+			if (className == "Line1" || className == "Line2") {
+				var rowIndex = node.rowIndex;
+				var table = this._getTable();
+				table.deleteRow(rowIndex);
+				var rows = table.rows;
+				for (var i = rowIndex || 0, count = rows.length; i < count; i++) {
+					rows[i].className = (i % 2) ? "Line1" : "Line2";
+				}
+				this._tableIsDirty = true;
+				break;
+			}
+		}
+		node = node.parentNode;
+	}
+};
+
+ZmSelectiveCallForwardingUI.prototype._initialize =
+function(id) {
+	this._checkbox = new DwtCheckbox(this._view);
+	this._checkbox.setText(ZmMsg.selectiveCallForwardingDescription);
+	this._checkbox.replaceElement(id + "_selectiveCallForwardingCheckbox");
+	
+	var inputParams = { size:25 }
+	this._comboBox = new DwtComboBox(this._view, inputParams);
+	var phones = this._view._appCtxt.getApp(ZmApp.VOICE).phones;
+	for (var i = 0, count = phones.length; i < count; i++) {
+		var phone = phones[i];
+		this._comboBox.add(phone.getDisplay(), phone.name, false);
+	}
+	this._comboBox.replaceElement(id + "_selectiveCallForwardingComboBox");
+	
+	var addParams = { parent: this._view, size: 25 };
+	this._addInput = new DwtInputField(addParams);
+	this._addInput.replaceElement(id + "_selectiveCallForwardingAddInput");
+	this._addInput.addListener(DwtEvent.ONKEYUP, new AjxListener(this, this._inputKeyListener));
+	
+	this._addButton = new DwtButton(this._view);
+	this._addButton.setText(ZmMsg.add);
+	this._addButton.addSelectionListener(new AjxListener(this, this._addListener));
+	this._addButton.replaceElement(id + "_selectiveCallForwardingAddButton");
 };
 
 
