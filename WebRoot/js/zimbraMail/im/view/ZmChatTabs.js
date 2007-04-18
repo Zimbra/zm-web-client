@@ -95,9 +95,12 @@ ZmChatTabs.prototype._showTab = function(index) {
 	Dwt.addClass(div, "ZmChatTabs-Tab-Active");
 	div = this.getTabContentDiv(index);
 	Dwt.addClass(div, "ZmChatTabs-Container-Active");
-	var size = this.getSize();
-	this.getTabWidget(index).setSize(size.x, size.y);
-	this.getTabWidget(index).focus();
+	var w = this.getTabWidget(index);
+	if (!w._sizeSet) {
+		var size = this.getSize();
+		w.setSize(size.x, size.y);
+	}
+	w.focus();
 };
 
 ZmChatTabs.prototype.getCurrentChat = function() {
@@ -105,7 +108,12 @@ ZmChatTabs.prototype.getCurrentChat = function() {
 };
 
 ZmChatTabs.prototype.__onResize = function(ev) {
-	this.getCurrentChatWidget().setSize(ev.newWidth, ev.newHeight);
+	var current = this.getCurrentChatWidget(), width = ev.newWidth, height = ev.newHeight;
+	this.__tabs.foreach(function(w) {
+		w._sizeSet = w === current;
+		if (w._sizeSet)
+			w.setSize(width, height);
+	});
 };
 
 ZmChatTabs.prototype.addTab = function(chat, index) {
