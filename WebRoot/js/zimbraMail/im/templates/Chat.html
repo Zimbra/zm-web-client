@@ -101,5 +101,5 @@
 </template>
 
 <template id="ChatMessagePlainText">
-  <$= data.isSystem ? ZmMsg.imSystem : data.from $>: <$= data.body $>
+  <$= data.isSystem ? ZmMsg.imSystem : data.from $>: <$= data.getTextBody() $>
 </template>
