@@ -541,7 +541,7 @@ function(ev) {
 	if (contacts.length == 1) {
 		var contact = contacts[0];
 		if (contact) {
-			if (contact.isLoaded()) {
+			if (contact.isLoaded) {
 				printView.render(contact);
 			} else {
 				var callback = new AjxCallback(this, this._handleResponsePrintLoad);

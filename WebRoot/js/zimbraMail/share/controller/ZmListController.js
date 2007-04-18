@@ -697,7 +697,7 @@ ZmListController.prototype._handleLoadParticipantContactListener =
 function() {
 	var cc = AjxDispatcher.run("GetContactController");
 	if (this._actionEv.contact) {
-		if (this._actionEv.contact.isLoaded()) {
+		if (this._actionEv.contact.isLoaded) {
 			cc.show(this._actionEv.contact);
 		} else {
 			var callback = new AjxCallback(this, this._loadContactCallback);

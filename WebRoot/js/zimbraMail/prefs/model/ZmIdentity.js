@@ -129,13 +129,13 @@ function(data) {
 		}
 	}
 	this.id = data.id;
-	var props = data.a;
+	var props = data._attrs;
+
 	if (props) {
-		for (var i = 0, count = props.length; i < count; i++) {
-			var name = props[i].name;
-			var field = ZmIdentity._SOAP[name];
+		for (var i in props) {
+			var field = ZmIdentity._SOAP[i];
 			if (field) {
-				var value = props[i]._content;
+				var value = props[i];
 				if (field.type == ZmIdentity.BOOLEAN) {
 					this[field.name] = (value.toString().toUpperCase() == "TRUE");
 				} else if (field.type == ZmIdentity.ARRAY) {

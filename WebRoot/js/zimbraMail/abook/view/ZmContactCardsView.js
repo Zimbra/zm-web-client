@@ -321,7 +321,7 @@ function(contact, html, idx, isDndIcon) {
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</td></tr>";
-	if (!contact.isLoaded()) {
+	if (!contact.isLoaded) {
 		html[idx++] = "<tr><td colspan=10 class='FinishLoading' onclick='ZmContactCardsView._loadContact(this, ";
 		html[idx++] = '"';
 		html[idx++] = contact.id;
@@ -575,7 +575,7 @@ ZmContactCardsView._loadContact =
 function(cell, contactId) {
 	var appCtxt = window._zimbraMail._appCtxt;
 	var contact = appCtxt.cacheGet(contactId);
-	if (contact && !contact.isLoaded()) {
+	if (contact && !contact.isLoaded) {
 		var clc = AjxDispatcher.run("GetContactListController");
 		var cardsView = clc.getParentView();
 		var callback = new AjxCallback(cardsView, cardsView._handleResponseLoad);

@@ -56,6 +56,7 @@ ZmContactList = function(appCtxt, search, isGal, type) {
 
 	this.isGal = (isGal === true);
 	this.isCanonical = false;
+	this.isLoaded = false;
 
 	this._emailToContact = {};
 	this._imAddressToContact = {};
@@ -64,7 +65,6 @@ ZmContactList = function(appCtxt, search, isGal, type) {
 	this._galResults = {};
 	this._galRequests = {};
 	this._loadCount = 0;
-	this._loaded = false;
 	this._showStatus = true;
 	this._galFailures = 0;
 
@@ -142,7 +142,7 @@ function(callback, result) {
 		}
 		this.set(list);
 	} else {
-		this._loaded = true; // user has no contacts
+		this.isLoaded = true; // user has no contacts
 	}
 	this._setGalAutocompleteEnabled();
     var listener = new AjxListener(this, this._settingsChangeListener);
@@ -191,7 +191,7 @@ function(list) {
 		AjxTimedAction.scheduleAction(this._loadAction, ZmContactList.LOAD_PAUSE);
 	} else {
 		DBG.timePt("done loading contacts");
-		this._loaded = true;
+		this.isLoaded = true;
 	}
 };
 
@@ -208,14 +208,6 @@ function(node, args) {
 	} else {
 		ZmList.prototype.addFromDom.call(this, node, args);
 	}
-};
-
-/**
-* Returns true if contacts have finished loading.
-*/
-ZmContactList.prototype.isLoaded =
-function() {
-	return this._loaded;
 };
 
 /*
@@ -382,7 +374,7 @@ function(items, folder, attrs) {
 
 		if (contact.isShared() || folder.link) {
 			hardMove.push(contact);
-			if (contact.isLoaded()) {
+			if (contact.isLoaded) {
 				moveBatchCmd.add(this._getCopyCmd(contact, folder));
 			} else {
 				var loadCallback = new AjxCallback(this, this._handleResponseBatchLoad, [moveBatchCmd, folder]);
@@ -640,7 +632,7 @@ function(str, callback, aclv) {
 
 	// if local contacts haven't finished loading, don't return any results (even
 	// though we could still search the GAL)
-	if (!this.isLoaded()) {
+	if (!this.isLoaded) {
 		if (this._showStatus) {
 			this._appCtxt.setStatusMsg(ZmMsg.autocompleteNotReady, ZmStatusView.LEVEL_WARNING);
 			this._showStatus = false; // only show status message once

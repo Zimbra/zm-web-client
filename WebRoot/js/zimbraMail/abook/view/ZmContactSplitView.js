@@ -117,7 +117,7 @@ function(contact, isGal) {
 
 	this._contact = contact;
 
-	if (this._contact.isLoaded()) {
+	if (this._contact.isLoaded) {
 		this._setContact(contact, isGal);
 	} else {
 		var callback = new AjxCallback(this, this._handleResponseLoad, [isGal]);

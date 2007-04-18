@@ -110,38 +110,20 @@ function(id) {
 	return this._settings[id];
 };
 
-ZmSettings.prototype.createFromDom = 
-function(node) {
-	var children = node.childNodes;
-	for (i = 0; i < children.length; i++) {
-		var child = children[i];
-		var name = child.getAttribute("name");
-		var value = child.firstChild.nodeValue;
-		var setting = this._settings[this._nameToId[name]];
-		if (setting) {
-			setting.setValue(value);
-		} else {
-			DBG.println(AjxDebug.DBG1, "*** Unrecognized setting: " + name);
-		}
-	}
-};
-
 /**
 * Populates settings values.
 *
-* @param list		a list of preference or attribute objects
-* TODO: handle multivalue
+* @param list		a hash of preference or attribute values
 */
 ZmSettings.prototype.createFromJs = 
 function(list) {
-	if (list == null) return;
-	for (i = 0; i < list.length; i++) {
-		var obj = list[i];
-		var setting = this._settings[this._nameToId[obj.name]];
+	for (var i in list) {
+		var val = list[i];
+		var setting = this._settings[this._nameToId[i]];
 		if (setting) {
-			setting.setValue(obj._content);
+			setting.setValue(val);
 		} else {
-			DBG.println(AjxDebug.DBG1, "*** Unrecognized setting: " + obj.name);
+			DBG.println(AjxDebug.DBG1, "*** Unrecognized setting: " + i);
 		}
 	}
 };
@@ -173,11 +155,11 @@ function(callback, result) {
 	if (obj.used) {
 		this._settings[ZmSetting.QUOTA_USED].setValue(obj.used);
 	}
-	if (obj.prefs && obj.prefs.pref) {
-		this.createFromJs(obj.prefs.pref);
+	if (obj.prefs && obj.prefs._attrs) {
+		this.createFromJs(obj.prefs._attrs);
 	}
-	if (obj.attrs && obj.attrs.attr) {
-		this.createFromJs(obj.attrs.attr);
+	if (obj.attrs && obj.attrs._attrs) {
+		this.createFromJs(obj.attrs._attrs);
 	}
 	if (obj.license) {
 		this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status);
@@ -200,7 +182,6 @@ function(callback, result) {
 	if (AjxEnv.isSafari && !AjxEnv.isSafariNightly) {
 		this._settings[ZmSetting.HTML_COMPOSE_ENABLED].setValue(false);
 	}
-
 	// load Zimlets
 	if (obj.zimlets && obj.zimlets.zimlet) {
 		DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + obj.zimlets.zimlet.length + " Zimlets");
