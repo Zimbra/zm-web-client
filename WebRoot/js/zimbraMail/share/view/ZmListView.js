@@ -162,6 +162,8 @@ function(ev) {
 		if (ev.getDetail("replenish")) {
 			var respCallback = new AjxCallback(this, this._handleResponseChangeListener);
 			this._controller._checkReplenish(respCallback);
+		} else {
+			this._handleResponseChangeListener();
 		}
 		this._controller._resetToolbarOperations();		
 	} else if (ev.event == ZmEvent.E_MODIFY && (ev.getDetail("action") == "set")) {
@@ -177,8 +179,13 @@ function(ev) {
 
 ZmListView.prototype._handleResponseChangeListener =
 function(args) {
-	this._setNextSelection();
-}
+	if (this.size() == 0) {
+		this.removeAll(true); // be anal
+		this._setNoResultsHtml();
+	} else {
+		this._setNextSelection();
+	}
+};
 
 ZmListView.prototype._tagChangeListener =
 function(ev) {
@@ -709,8 +716,9 @@ function(dropAllowed) {
 	if (this._dndImg)
 		AjxImg.setImage(this._dndImg, dropAllowed ? "DndMultiYes_48" : "DndMultiNo_48");
 	else {
-		this._dndIcon.className = (dropAllowed) ? this._dndIcon._origClassName + " DropAllowed" 
-												: this._dndIcon._origClassName + " DropNotAllowed";
+		this._dndIcon.className = (dropAllowed)
+			? this._dndIcon._origClassName + " DropAllowed"
+			: this._dndIcon._origClassName + " DropNotAllowed";
 	}
 }
 

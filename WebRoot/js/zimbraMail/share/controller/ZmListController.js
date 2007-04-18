@@ -1188,14 +1188,11 @@ function(idx) {
 ZmListController.prototype._getMoreToReplenish =
 function(view, replCount, callback) {
 	if (this._list.hasMore()) {
-		DBG.println(AjxDebug.DBG2, "need to replenish: " + replCount);
-		var offset = this._list.size();
 		var respCallback = new AjxCallback(this, this._handleResponseGetMoreToReplenish, [view, callback]);
-		this._search(view, offset, replCount, respCallback);
+		this._search(view, this._list.size(), replCount, respCallback);
 	} else {
-		if (this._listView[view].size() == 0)
-			this._listView[view]._setNoResultsHtml();
-		if (callback) callback.run();
+		if (callback)
+			callback.run();
 	}
 };
 
@@ -1217,7 +1214,8 @@ function(view, callback, result) {
 	// reset forward pagination button only
 	this._toolbar[view].enable(ZmOperation.PAGE_FORWARD, more);
 
-	if (callback) callback.run(result);
+	if (callback)
+		callback.run(result);
 };
 
 ZmListController.prototype._setNavToolBar =

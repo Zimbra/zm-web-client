@@ -613,6 +613,12 @@ function(list, defaultColumnSort) {
 	this.parent.enableAlphabetBar(!list.isGal);
 };
 
+ZmContactSimpleView.prototype._setNoResultsHtml =
+function() {
+	ZmContactsBaseView.prototype._setNoResultsHtml.call(this);
+	this.parent.clear();
+};
+
 ZmContactSimpleView.prototype._modifyContact =
 function(ev) {
 	ZmContactsBaseView.prototype._modifyContact.call(this, ev);
