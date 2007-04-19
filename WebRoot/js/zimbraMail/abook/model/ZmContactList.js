@@ -70,11 +70,14 @@ ZmContactList = function(appCtxt, search, isGal, type) {
 
 	this._acMatchFields = ZmContactList.AC_FIELDS;
 
+	// XXX: not sure what this is supposed to do, but seems that it should be done
+	// as part of load of canonical list (currently will happen even for search results)
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
 		setTimeout(AjxCallback.simpleClosure(function() {
 			var roster = AjxDispatcher.run("GetRoster");
-			var list = roster.getRosterItemList();
-			list.addChangeListener(new AjxListener(this, this.__rosterListener));
+			if (roster) {
+				roster.getRosterItemList().addChangeListener(new AjxListener(this, this.__rosterListener));
+			}
 		}, this), 500);
 	}
 };

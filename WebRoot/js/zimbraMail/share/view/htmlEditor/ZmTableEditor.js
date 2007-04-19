@@ -313,7 +313,9 @@ ZmTablePropsDialog.prototype.setup = function(editor, table) {
 	this._wCellPadding.setValue(cellPadding);
 
 	var borderCollapse = table.style.borderCollapse;
-	document.getElementById(this._idBorderCollapse).checked = (borderCollapse.toLowerCase().indexOf("collapse") != -1);
+	if (borderCollapse) {
+		document.getElementById(this._idBorderCollapse).checked = (borderCollapse.toLowerCase().indexOf("collapse") != -1);
+	}
 };
 
 ZmTablePropsDialog.prototype._setManualWidthState = function() {

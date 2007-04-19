@@ -526,7 +526,7 @@ function(requestParams, folderId, callback, errorCallback, response) {
 		}
 
 		// retrieve another block of pages, if necessary
-		if (searchResponse.more) {
+		if (searchResponse.more && requestParams) {
 			var soapDoc = requestParams.soapDoc;
 			var limit = Number(soapDoc.getMethod().getAttribute("limit")) * 2;
 			soapDoc.setMethodAttribute("offset", searchResponse.offset + words.length);
