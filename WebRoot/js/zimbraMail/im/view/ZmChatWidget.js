@@ -462,6 +462,12 @@ ZmChatWidget.prototype.detach = function(pos) {
 	}
 };
 
+ZmChatWidget.prototype.dispose = function() {
+	this._getElement("sash").onmousedown = null;
+	this._getElement("input")[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = null;
+	DwtComposite.prototype.dispose.call(this);
+};
+
 ZmChatWidget.prototype._closeListener = function() {
 	ZmChatMultiWindowView.getInstance().endChat(this.chat);
 };
@@ -592,8 +598,6 @@ ZmChatWidget.prototype._sendByEmailListener = function() {
 };
 
 ZmChatWidget.prototype._disposeListener = function() {
-	this._getElement("sash").onmousedown = null;
-	this._getElement("input")[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = null;
 	this.parent.detachChatWidget(this);
 };
 
