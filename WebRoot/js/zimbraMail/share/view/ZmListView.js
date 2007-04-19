@@ -497,11 +497,16 @@ function(clickedEl, ev, button) {
 	if (id && type && type == DwtListView.TYPE_LIST_ITEM) {
 		var m = this._parseId(id);
 		if (m && m.field) {
-			return (!this._disallowSelection[m.field]);
+			return this._allowFieldSelection(m.item, m.field);
 		}
 	}
 	return true;
 }
+
+ZmListView.prototype._allowFieldSelection =
+function(id, field) {
+	return (!this._disallowSelection[field]);
+};
 
 ZmListView.prototype._setParticipantToolTip = 
 function(address) {

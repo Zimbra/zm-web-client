@@ -162,9 +162,6 @@ function ZmHybridListView(parent, className, posStyle, controller, dropTgt) {
 	this._handleEventType[ZmItem.CONV] = true;
 	this._handleEventType[ZmItem.MSG] = true;
 
-	// click on + or - icon does not select the row
-	this._disallowSelection[ZmListView.FIELD_PREFIX[ZmItem.F_EXPAND]] = true;
-
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
 	this._msgRowIdList = {};	// hash of lists, each list has row IDs for an expandable item
 	this._dblClickIsolation = true;
@@ -172,6 +169,8 @@ function ZmHybridListView(parent, className, posStyle, controller, dropTgt) {
 
 ZmHybridListView.prototype = new ZmConvListView;
 ZmHybridListView.prototype.constructor = ZmHybridListView;
+
+ZmHybridListView.INDENT = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
 // Copy some functions from ZmMailMsgListView, for handling message rows
 ZmHybridListView.prototype._changeFolderName = ZmMailMsgListView.prototype._changeFolderName;
@@ -272,6 +271,7 @@ ZmHybridListView.prototype._getField =
 function(htmlArr, idx, item, field, colIdx, now) {
 	var fieldId = this._getFieldId(item, field);
 	var width = this._getFieldWidth(colIdx);
+	var isConv = (item.type == ZmItem.CONV);
 	if (field == ZmItem.F_EXPAND) {
 		var expandable = this._isExpandable(item);
 		var imageInfo = expandable ? "NodeCollapsed" : "Blank_16";
@@ -287,7 +287,7 @@ function(htmlArr, idx, item, field, colIdx, now) {
 		htmlArr[idx++] = "<td width=";
 		htmlArr[idx++] = width;
 		htmlArr[idx++] = "><center>";
-		if (item.type == ZmItem.MSG) {
+		if (!isConv) {
 			if (item.isInvite())		{ imageInfo = "Appointment"; }
 			else if (item.isDraft)		{ imageInfo = "MsgStatusDraft"; }
 			else if (item.isReplied)	{ imageInfo = "MsgStatusReply"; }
@@ -309,6 +309,9 @@ function(htmlArr, idx, item, field, colIdx, now) {
 		if (AjxEnv.isSafari) {
 			htmlArr[idx++] = "<div style='overflow:hidden'>";
 		}
+		if (!isConv) {
+			htmlArr[idx++] = ZmHybridListView.INDENT;
+		}
 		htmlArr[idx++] = this._getParticipantHtml(item, fieldId);
 		if (AjxEnv.isSafari) {
 			htmlArr[idx++] = "</div>";
@@ -317,7 +320,7 @@ function(htmlArr, idx, item, field, colIdx, now) {
 		return idx;	
 
 	} else if (field == ZmItem.F_SUBJECT) {
-		if (item.type == ZmItem.CONV) {
+		if (isConv) {
 			htmlArr[idx++] = "<td id='";
 			htmlArr[idx++] = this._getFieldId(item, ZmItem.F_SUBJECT);
 			htmlArr[idx++] = "'>";
@@ -334,7 +337,7 @@ function(htmlArr, idx, item, field, colIdx, now) {
 			htmlArr[idx++] = this._getFieldId(item, ZmItem.F_FRAGMENT);
 			htmlArr[idx++] = "'";
 			htmlArr[idx++] = AjxEnv.isSafari ? " style='width:auto;'><div style='overflow:hidden'>" : " width=100%>";
-			htmlArr[idx++] = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+			htmlArr[idx++] = ZmHybridListView.INDENT;
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(item.fragment, true);
 		}
 		return idx;
@@ -346,7 +349,7 @@ function(htmlArr, idx, item, field, colIdx, now) {
 		htmlArr[idx++] = "<nobr id='";
 		htmlArr[idx++] = this._getFieldId(item, ZmItem.F_FOLDER);
 		htmlArr[idx++] = "'>"; // required for IE bug
-		if (item.type == ZmItem.MSG) {
+		if (!isConv) {
 			var folder = this._appCtxt.getById(item.folderId);
 			if (folder) {
 				htmlArr[idx++] = folder.getName();
@@ -357,7 +360,7 @@ function(htmlArr, idx, item, field, colIdx, now) {
 		return idx;
 
 	} else if (field == ZmItem.F_SIZE) {
-		if (item.type == ZmItem.CONV) {
+		if (isConv) {
 			// Conversation count
 			htmlArr[idx++] = "<td id='";
 			htmlArr[idx++] = this._getFieldId(item, ZmItem.F_COUNT);
@@ -653,16 +656,12 @@ function(item, skipNotify) {
 	DwtListView.prototype.removeItem.apply(this, arguments);
 };
 
-ZmHybridListView.prototype._checkExpandable =
-function(item, removed, added) {
-	var expandable;
-	if (item.type == ZmItem.MSG) {
-		var conv = this._appCtxt.getById(item.cid);
-		
-		expandable = (item.numMsgs > 1);
-
-	}
-	if (expandable != this._expandable[item.id]) {
-	
+ZmHybridListView.prototype._allowFieldSelection =
+function(id, field) {
+	// allow left selection if clicking on blank icon
+	if (field == ZmListView.FIELD_PREFIX[ZmItem.F_EXPAND]) {
+		return !this._expandable[id];
+	} else {
+		return ZmListView.prototype._allowFieldSelection.apply(this, arguments);
 	}
 };
