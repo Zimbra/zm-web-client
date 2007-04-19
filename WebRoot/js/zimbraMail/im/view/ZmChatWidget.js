@@ -290,6 +290,11 @@ ZmChatWidget._inputKeyPress = function(ev) {
 	if (self.__clearSelectionTimeout)
 		clearTimeout(self.__clearSelectionTimeout);
 	var input = this;
+	function stopEvent() {
+		keyEvent._stopPropagation = true;
+		keyEvent._returnValue = false;
+		keyEvent.setToDhtmlEvent(ev);
+	};
 	if (keyEvent.ctrlKey) {
 		if (keyEvent.charCode >= "0".charCodeAt(0) && keyEvent.charCode <= "9".charCodeAt(0)) {
 			// CTRL + 0..9 switch tabs
@@ -297,16 +302,25 @@ ZmChatWidget._inputKeyPress = function(ev) {
 			if (tabIndex < 0)
 				tabIndex += 11;
 			self.parent.setActiveTab(tabIndex);
-		} else if (keyEvent.charCode == 38) {
+			stopEvent();
+		} else if (keyEvent.charCode == 38) { // UP
 			// history back
 			var line = self.chat.getHistory(-1);
 			if (line)
 				this.value = line;
-		} else if (keyEvent.charCode == 40) {
+			stopEvent();
+		} else if (keyEvent.charCode == 40) { // DOWN
 			// history fwd
 			var line = self.chat.getHistory(1);
 			if (line)
 				this.value = line;
+			stopEvent();
+		} else if (keyEvent.charCode == 37) { // LEFT
+			self.getChatWindow().getWindowManager().activatePrevWindow();
+			stopEvent();
+		} else if (keyEvent.charCode == 39) { // RIGHT
+			self.getChatWindow().getWindowManager().activateNextWindow();
+			stopEvent();
 		}
 	} else {
 		setTimeout(function() {
@@ -578,11 +592,12 @@ ZmChatWidget.prototype._sendByEmailListener = function() {
 };
 
 ZmChatWidget.prototype._disposeListener = function() {
+	this._getElement("sash").onmousedown = null;
+	this._getElement("input")[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] = null;
 	this.parent.detachChatWidget(this);
 };
 
 ZmChatWidget.prototype._setupSash = function() {
-	var el = this._getElement("sash");
 	this._sashCapture = new DwtMouseEventCapture(
 		this, "ZmChatWidget",
 		null, // no mouseover
@@ -591,7 +606,7 @@ ZmChatWidget.prototype._setupSash = function() {
 		AjxCallback.simpleClosure(this._sashMouseUp, this),
 		null, // no mouseout
 		true);
-	el.onmousedown = AjxCallback.simpleClosure(this._sashMouseDown, this);
+	this._getElement("sash").onmousedown = AjxCallback.simpleClosure(this._sashMouseDown, this);
 };
 
 ZmChatWidget.prototype._sashMouseDown = function(ev) {
