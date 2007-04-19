@@ -155,6 +155,13 @@ function(ev) {
 	}
 };
 
+// need to reset special dbl-click handling for list view
+ZmHybridController.prototype._toggleReadingPane = 
+function(view, toggle) {
+	ZmDoublePaneController.prototype._toggleReadingPane.apply(this, arguments);
+	this._mailListView._dblClickIsolation = this._readingPaneOn;
+};
+
 ZmHybridController.prototype._toggle =
 function(item) {
 	if (this._mailListView._expanded[item.id]) {
