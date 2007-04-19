@@ -59,7 +59,7 @@ function() {
 	return formatter.format(new Date(this.ts));
 };
 
-ZmChatMessage.ALLOWED_HTML = /<(\x2f?)(font|a|b|strong|i|em|ding)([^>]*)>/ig;
+ZmChatMessage.ALLOWED_HTML = /<(\x2f?)(font|a|b|strong|i|em|ding)(\s[^>]*)?>/ig;
 
 ZmChatMessage.prototype.getHtmlBody = function(objectManager) {
 	var body = this._htmlBody;
@@ -71,17 +71,18 @@ ZmChatMessage.prototype.getHtmlBody = function(objectManager) {
 		while (true) {
 			var match = re.exec(tmp);
 			var text = tmp.substring(start, match ? match.index : tmp.length);
-			if (objectManager)
+			if (objectManager) {
 				text = objectManager.findObjects(text, this.htmlEncode);
+			}
 			body.push(text);
 
 			// END loop
 			if (!match)
 				break;
 
-			var isClosingTag = match[1];
-			var tagName = match[2];
-			var attrs = match[3];
+			var isClosingTag = match[1] || "";
+			var tagName = match[2] || "";
+			var attrs = match[3] || "";
 			start = re.lastIndex;
 			if (tagName.toLowerCase() == "font" && attrs) {
 				attrs = attrs.replace(/size=([\x22\x27]?)([0-9]+)\1/g,
