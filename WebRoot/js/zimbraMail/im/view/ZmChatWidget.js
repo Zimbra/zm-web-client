@@ -315,13 +315,18 @@ ZmChatWidget._inputKeyPress = function(ev) {
 			if (line)
 				this.value = line;
 			stopEvent();
-		} else if (keyEvent.charCode == 37) { // LEFT
+		}
+	} else if (keyEvent.altKey) {
+		if (keyEvent.charCode == 37) { // LEFT
 			self.getChatWindow().getWindowManager().activatePrevWindow();
 			stopEvent();
 		} else if (keyEvent.charCode == 39) { // RIGHT
 			self.getChatWindow().getWindowManager().activateNextWindow();
 			stopEvent();
 		}
+	} else if (keyEvent.charCode == 27) { // ESC
+		stopEvent();
+		self.close();
 	} else {
 		setTimeout(function() {
 			if (self) {
@@ -468,8 +473,12 @@ ZmChatWidget.prototype.dispose = function() {
 	DwtComposite.prototype.dispose.call(this);
 };
 
-ZmChatWidget.prototype._closeListener = function() {
+ZmChatWidget.prototype.close = function() {
 	ZmChatMultiWindowView.getInstance().endChat(this.chat);
+};
+
+ZmChatWidget.prototype._closeListener = function() {
+	this.close();
 };
 
 ZmChatWidget.prototype._stickyListener = function(ev) {
