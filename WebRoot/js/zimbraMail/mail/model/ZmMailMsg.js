@@ -900,16 +900,17 @@ function(findHits) {
 					props.download = "<a style='text-decoration:underline' class='AttLink' href='" + url + "&disp=a' onclick='ZmZimbraMail.unloadHackCallback();'>";
 
 				if (!useCL) {
-					if (attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct) &&
+					// check for vcard *first* since we dont care to view it in HTML
+					if (attach.ct == ZmMimeTable.TEXT_VCARD)
+					{
+						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.getId() + "," + attach.part + ");";
+						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
+					}
+					else if (attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct) &&
 						this._appCtxt.get(ZmSetting.VIEW_ATTACHMENT_AS_HTML))
 					{
 						// set the anchor html for the HTML version of this attachment on the server
 						props.htmlLink = "<a style='text-decoration:underline' target='_blank' class='AttLink' href='" + url + "&view=html" + "'>";
-					}
-					else if (attach.ct == ZmMimeTable.TEXT_VCARD)
-					{
-						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.getId() + "," + attach.part + ");";
-						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
 					}
 					else
 					{
