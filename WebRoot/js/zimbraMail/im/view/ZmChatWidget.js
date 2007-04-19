@@ -190,6 +190,17 @@ ZmChatWidget.prototype.sendInput = function(text) {
 	text = AjxStringUtil.trim(text);
 	if (text == "")
 		return;		// don't send empty strings
+
+
+// 	if (/^\x2f/.test(text)) {
+// 		var cmd = text.substr(1);
+// 		switch (cmd) {
+// 		    case "gg":
+// 			break;
+// 		}
+// 	}
+
+
 // 	if (text.substring(0,1) == "$") {
 // 		if (text.substring(1, 2) == "p") {
 // 			this.chat.getRosterItem().__setShow(AjxStringUtil.trim(text.substring(3)));
@@ -259,8 +270,12 @@ ZmChatWidget.prototype._init = function() {
 	this._content.setScrollStyle(Dwt.SCROLL);
 
 	this._objectManager = new ZmObjectManager(this._content, this._appCtxt);
-	this._objectManager.addHandler(new ZmEmoticonObjectHandler(this._appCtxt));
-	this._objectManager.sortHandlers();
+	// add YM Emoticons if zimlet installed
+	var YM_smileys = this._appCtxt.getZimletMgr().zimletExists("com_zimbra_ymemoticons");
+	if (YM_smileys) {
+		this._objectManager.addHandler(YM_smileys.handlerObject);
+		this._objectManager.sortHandlers();
+	}
 
 	// this.parent.enableMoveWithElement(this._toolbar);
 

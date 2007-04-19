@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -32,13 +32,14 @@
 */
 function ZmRoster(appCtxt, imApp) {
 	ZmModel.call(this, ZmEvent.S_ROSTER);
-	
+
 	this._appCtxt = appCtxt;
 	this.getRosterItemTree(); // pre-create
-	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);	
-	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);   	
+	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
+	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
 	this._imApp = imApp;
+	this._requestGateways();
 }
 
 ZmRoster.prototype = new ZmModel;
@@ -48,7 +49,7 @@ ZmRoster.F_PRESENCE = "ZmRoster.presence";
 
 ZmRoster.NOTIFICATION_FOO_TIMEOUT = 10000; // 10 sec.
 
-ZmRoster.prototype.toString = 
+ZmRoster.prototype.toString =
 function() {
 	return "ZmRoster";
 }
@@ -66,7 +67,7 @@ function() {
 		this._myAddress = this._appCtxt.get(ZmSetting.USERNAME);
     return this._myAddress;
 };
-    
+
 ZmRoster.prototype.getRosterItemTree =
 function() {
 	if (!this._rosterItemTree) {
@@ -128,7 +129,7 @@ function(args) {
 				var rosterItem = new ZmRosterItem(item.addr, list, this._appCtxt, item.name, rp, item.groups);
 				list.addItem(rosterItem);
 			}
-		}        
+		}
 	}
 	if (roster.presence) {
 		this.getPresence().setFromJS(roster.presence);
@@ -144,7 +145,7 @@ ZmRoster.prototype.createRosterItem =
 function(addr, name, groups) {
     var soapDoc = AjxSoapDoc.create("IMSubscribeRequest", "urn:zimbraIM");
     var method = soapDoc.getMethod();
-	method.setAttribute("addr", addr);    
+	method.setAttribute("addr", addr);
 	if (name) method.setAttribute("name", name);
 	if (groups) method.setAttribute("groups", groups);
 	method.setAttribute("op", "add");
@@ -160,7 +161,7 @@ function(show, priority, showStatus) {
 	var presence = soapDoc.set("presence");
 	presence.setAttribute("show", show);
 	if (priority) presence.setAttribute("priority", priority);
-	if (showStatus) soapDoc.set("status", showStatus, presence);	
+	if (showStatus) soapDoc.set("status", showStatus, presence);
 	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
 	this.__avoidNotifyTimeout = new Date().getTime();
 };
@@ -215,7 +216,7 @@ function(im) {
 							var item = new ZmRosterItem(rosterItem.to, list, this._appCtxt, rosterItem.name, null, rosterItem.groups);
 							list.addItem(item);
 //						}
-					}	
+					}
 				}
 				// ignore unsubscribed entries for now (TODO FIXME)
 			} else if (not.type == "subscribed") {
@@ -249,7 +250,7 @@ function(im) {
 			} else if (not.type == "presence") {
 				var p = not;
 				if (p.from == this.getMyAddress()) {
-					if (this.getPresence().setFromJS(p)) this._notifyPresence();            
+					if (this.getPresence().setFromJS(p)) this._notifyPresence();
 				}
 				// else
 				{
@@ -305,6 +306,66 @@ ZmRoster.prototype.startFlashingIcon = function() {
 
 ZmRoster.prototype.stopFlashingIcon = function() {
 	this._imApp.stopFlashingIcon();
+};
+
+ZmRoster.prototype._requestGateways = function() {
+	var sd = AjxSoapDoc.create("IMGatewayListRequest", "urn:zimbraIM");
+	this._appCtxt.getAppController().sendRequest(
+		{ soapDoc   : sd,
+		  asyncMode : true,
+		  callback  : new AjxCallback(this, this._handleRequestGateways)
+		}
+	);
+};
+
+ZmRoster.prototype._handleRequestGateways = function(args) {
+	var resp = args.getResponse();
+	if (!resp || !resp.IMGatewayListResponse)
+		return;
+	var a = resp.IMGatewayListResponse.service;
+	var byService = {};
+	var byDomain = {};
+	for (var i = 0; i < a.length; ++i) {
+		byService[a[i].type.toLowerCase()] = a[i];
+		byDomain[a[i].domain.toLowerCase()] = a[i];
+	}
+	this._gateways = { byService : byService,
+			   byDomain  : byDomain,
+			   array     : a
+			 };
+};
+
+ZmRoster.prototype.getGatewayByType = function(type) {
+	return this._gateways.byService[type.toLowerCase()];
+};
+
+ZmRoster.prototype.getGatewayByDomain = function(domain) {
+	return this._gateways.byDomain[domain.toLowerCase()];
+};
+
+ZmRoster.prototype.getGateways = function() {
+	return this._gateways.array;
+};
+
+ZmRoster.prototype.makeServerAddress = function(addr, type) {
+	if (type == null)
+		return addr;
+	return addr + "@" + this.getGatewayByType(type).domain;
+};
+
+ZmRoster.prototype.breakDownAddress = function(addr) {
+	var re = /@(.*)$/;
+	var m = re.exec(addr);
+	if (m) {
+		var gw = this.getGatewayByDomain(m[1]);
+		if (gw) {
+			return { type: gw.type,
+				 addr: addr.substr(0, m.index)
+			       };
+		}
+	}
+	return { type: null,
+		 addr: addr };
 };
 
 ZmRoster.prototype.getGroups = function() {

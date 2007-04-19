@@ -1834,7 +1834,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 .ZmChatWindowChatEntry {
-  padding: 1px 5px;
+  padding: 3px 5px;
 }
 
 .ZmChatWindowChatEntry-sep { border-top: 1px solid #edd; margin-top: 4px; margin-bottom: 2px; font-size: 1px; line-height: 1px; overflow: hidden; height: 1px; }
