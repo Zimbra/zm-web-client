@@ -138,7 +138,9 @@ function(ev) {
 		if (!item) { return; }
 		var div = Dwt.findAncestor(ev.target, "_itemIndex");
 		this._mailListView._itemSelected(div, ev);
-		if (item.type == ZmItem.CONV) {
+		if (item.isDraft) {
+			this._doAction(ev, ZmOperation.DRAFT);
+		} else if (item.type == ZmItem.CONV) {
 			AjxDispatcher.run("GetConvController").show(this._activeSearch, item);
 		} else if (item.type == ZmItem.MSG) {
 			AjxDispatcher.run("GetMsgController").show(item);
