@@ -24,13 +24,14 @@
  */
 
 /**
-* Creates a controller to run ZmNewWindow. Do not call directly, instead use the run()
-* factory method.
+* Creates a controller to run ZmNewWindow. Do not call directly, instead use
+* the run() factory method.
 * @constructor
 * @class
-* This class is the controller for a window created outside the main client window. It is
-* a very stripped down and specialized version of ZmZimbraMail. The child window is
-* single-use; it does not support switching among multiple views.
+* This class is the controller for a window created outside the main client
+* window. It is a very stripped down and specialized version of ZmZimbraMail.
+* The child window is single-use; it does not support switching among multiple
+* views.
 *
 * @author Parag Shah
 *
@@ -86,9 +87,9 @@ function(domain) {
 	// Create the global app context
 	var appCtxt = new ZmAppCtxt();
 
-	// set any global references in parent w/in child window
-	var parentCtxt = window.parentController._appCtxt;
-	appCtxt.setSettings(parentCtxt.getSettings());
+	// XXX: DO NOT MOVE THIS LINE
+	// redefine ZmSetting from parent window since it loses this info.
+	appCtxt.setSettings(window.parentController._appCtxt.getSettings());
 	ZmSetting = window.opener["ZmSetting"];
 
 	ZmOperation.initialize();
@@ -139,51 +140,6 @@ function(ev) {
 	}
 };
 
-ZmNewWindow._confirmExitMethod =
-function(ev) {
-	if (window.parentController &&
-		(window.command == "compose" || window.command == "composeDetach"))
-	{
-		// is there a better way to get a ref to the compose controller?
-		var shell = AjxCore.objectWithId(window._dwtShell);
-		var appCtxt = shell ? shell.getData(ZmAppCtxt.LABEL) : null;
-		var cc = AjxDispatcher.run("GetComposeController");
-		// only show native confirmation dialog if compose view is dirty
-		if (cc && cc._composeView.isDirty()) {
-			return ZmMsg.newWinComposeExit;
-		}
-	}
-};
-
-/**
- * Instantiates enabled apps. An optional argument may be given limiting the set
- * of apps that may be created.
- *
- * @param apps	[hash]*		the set of apps to create
- */
-ZmNewWindow.prototype._createEnabledApps =
-function(apps) {
-	for (var app in ZmApp.CLASS) {
-		if (!apps || apps[app]) {
-			ZmApp.APPS.push(app);
-		}
-	}
-	ZmApp.APPS.sort(function(a, b) {
-		return ZmZimbraMail.hashSortCompare(ZmApp.LOAD_SORT, a, b);
-	});
-
-	this._appCtxt.set(ZmSetting.IM_ENABLED, false);	// defaults to true in LDAP
-
-	// instantiate enabled apps - this will invoke app registration
-	for (var i = 0; i < ZmApp.APPS.length; i++) {
-		var app = ZmApp.APPS[i];
-		var setting = ZmApp.SETTING[app];
-		if (!setting || this._appCtxt.get(setting)) {
-			this._createApp(app);
-		}
-	}
-};
-
 /**
 * Presents a view based on a command passed through the window object. Possible commands are:
 *
@@ -213,7 +169,6 @@ function() {
 	var apps = {};
 	apps[ZmApp.MAIL] = true;
 	apps[ZmApp.CONTACTS] = true;
-//	apps[ZmApp.CALENDAR] = true;		// XXX: why?
 	apps[ZmApp.PREFERENCES] = true;
     this._createEnabledApps(apps);
 
@@ -316,8 +271,68 @@ function() {
 	return true;
 };
 
+ZmNewWindow.prototype.getKeyMapName =
+function() {
+	var curView = this._appViewMgr.getCurrentView();
+	if (curView && curView.getController) {
+		var ctlr = curView.getController();
+		if (ctlr && ctlr.getKeyMapName) {
+			return ctlr.getKeyMapName();
+		}
+	}
+	return "Global";
+};
+
+ZmNewWindow.prototype.handleKeyAction =
+function(actionCode, ev) {
+	switch (actionCode) {
+		default: {
+			var curView = this._appViewMgr.getCurrentView();
+			if (curView && curView.getController) {
+				var ctlr = curView.getController();
+				if (ctlr && ctlr.handleKeyAction) {
+					return ctlr.handleKeyAction(actionCode, ev);
+				}
+			} else {
+				return false;
+			}
+			break;
+		}
+	}
+	return true;
+};
+
 
 // Private methods
+
+/**
+ * Instantiates enabled apps. An optional argument may be given limiting the set
+ * of apps that may be created.
+ *
+ * @param apps	[hash]*		the set of apps to create
+ */
+ZmNewWindow.prototype._createEnabledApps =
+function(apps) {
+	for (var app in ZmApp.CLASS) {
+		if (!apps || apps[app]) {
+			ZmApp.APPS.push(app);
+		}
+	}
+	ZmApp.APPS.sort(function(a, b) {
+		return ZmZimbraMail.hashSortCompare(ZmApp.LOAD_SORT, a, b);
+	});
+
+	this._appCtxt.set(ZmSetting.IM_ENABLED, false);	// defaults to true in LDAP
+
+	// instantiate enabled apps - this will invoke app registration
+	for (var i = 0; i < ZmApp.APPS.length; i++) {
+		var app = ZmApp.APPS[i];
+		var setting = ZmApp.SETTING[app];
+		if (!setting || this._appCtxt.get(setting)) {
+			this._createApp(app);
+		}
+	}
+};
 
 // Creates an app object, which doesn't necessarily do anything just yet.
 ZmNewWindow.prototype._createApp =
@@ -401,33 +416,22 @@ function(msg) {
 	return newMsg;
 };
 
-ZmNewWindow.prototype.getKeyMapName =
-function() {
-	var curView = this._appViewMgr.getCurrentView();
-	if (curView && curView.getController) {
-		var ctlr = curView.getController();
-		if (ctlr && ctlr.getKeyMapName) {
-			return ctlr.getKeyMapName();
+
+// Static Methods
+
+ZmNewWindow._confirmExitMethod =
+function(ev) {
+	if (window.parentController &&
+		(window.command == "compose" || window.command == "composeDetach"))
+	{
+		// is there a better way to get a ref to the compose controller?
+		var shell = AjxCore.objectWithId(window._dwtShell);
+		var appCtxt = shell ? shell.getData(ZmAppCtxt.LABEL) : null;
+		var cc = AjxDispatcher.run("GetComposeController");
+		// only show native confirmation dialog if compose view is dirty
+		if (cc && cc._composeView.isDirty()) {
+			return ZmMsg.newWinComposeExit;
 		}
 	}
-	return "Global";
 };
 
-ZmNewWindow.prototype.handleKeyAction =
-function(actionCode, ev) {
-	switch (actionCode) {
-		default: {
-			var curView = this._appViewMgr.getCurrentView();
-			if (curView && curView.getController) {
-				var ctlr = curView.getController();
-				if (ctlr && ctlr.handleKeyAction) {
-					return ctlr.handleKeyAction(actionCode, ev);
-				}
-			} else {
-				return false;
-			}
-			break;
-		}
-	}
-	return true;
-};

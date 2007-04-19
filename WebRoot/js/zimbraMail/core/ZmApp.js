@@ -51,7 +51,8 @@ function ZmApp(name, appCtxt, container, parentController) {
 	this._deferredNotifications = [];
 	
 	this._defineAPI();
-	this._registerSettings();
+	if (!parentController)
+		this._registerSettings();
 	this._registerOperations();
 	this._registerItems();
 	this._registerOrganizers();
