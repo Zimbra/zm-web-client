@@ -425,6 +425,9 @@ function(creates, force) {
 	var msgs = {};
 	var folders = {};
 	var gotMail = false;
+	var view = this._appCtxt.getCurrentViewId();
+	var isListView = (view == ZmController.TRAD_VIEW || view == ZmController.CONVLIST_VIEW ||
+					  view == ZmController.HYBRID_VIEW);
 
 	// we can only handle new mail notifications if:
 	// 	- we are currently in a mail view
@@ -432,11 +435,15 @@ function(creates, force) {
 	// TODO: support simple tag search
 	var currList = this._appCtxt.getCurrentList();
 	if (!(currList instanceof ZmMailList)) { return; }
+
+	// for CV, folderId will correspond to parent list view
 	var folderId = currList.search.folderId;
 	if (!folderId) { return; }
+
 	var sortBy = currList.search.sortBy;
 	var a = currList.getArray();
-	var last = a ? a[a.length - 1] : null;
+	var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE);
+	var last = (a && a.length >= limit) ? a[a.length - 1] : null;
 	var cutoff = last ? last.date : null;
 	DBG.println("cutoff = " + cutoff + ", list size = " + a.length);
 
@@ -476,7 +483,7 @@ function(creates, force) {
 			
 			// ignore msgs that are not in the current folder; can't do this check
 			// for convs since they can span folders and lack the "l" property
-			if (name == "m" && (create.l != folderId)) {
+			if (isListView && (name == "m") && (create.l != folderId)) {
 				DBG.println(AjxDebug.DBG2, "new " + name + " in other folder: " + create.l);
 				create._handled = true;
 				continue;

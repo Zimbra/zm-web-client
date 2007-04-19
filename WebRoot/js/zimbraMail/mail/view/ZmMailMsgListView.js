@@ -295,14 +295,14 @@ function(msg, now, isDndIcon, isMixedView) {
 
 ZmMailMsgListView.prototype._changeListener =
 function(ev) {
+
+	var msg = ev.item;
+	if (ev.handled || !this._handleEventType[msg.type]) { return; }
+
 	// only update if we're currently visible or we're the view underneath
 	if (this._mode != this._appCtxt.getCurrentViewId() &&
-		this._mode != this._appCtxt.getAppViewMgr().getLastViewId())
-	{
-		return;
-	}
+		this._mode != this._appCtxt.getAppViewMgr().getLastViewId()) { return; }
 
-	var items = ev.getDetail("items");
 	if ((ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) && this._mode == ZmController.CONV_VIEW) {
 		if (!this._controller.handleDelete()) {
 			if (ev.event == ZmEvent.E_DELETE) {
@@ -310,35 +310,31 @@ function(ev) {
 			} else {
 				// bug fix #2362 - you can only move to a single folder at a time so
 				// just check folderId of 1st item, and if spam, remove it from listview
-				if (items[0].folderId == ZmFolder.ID_SPAM) {
-					for (var i=0; i<items.length; i++)
-						this._controller._list.remove(items[i], true);
+				if (msg.folderId == ZmFolder.ID_SPAM) {
+					this._controller._list.remove(msg, true);
 					ZmMailListView.prototype._changeListener.call(this, ev);
 				} else {
-					this._changeTrashStatus(items);
-					this._changeFolderName(items);
+					this._changeTrashStatus(msg);
+					this._changeFolderName(msg);
 				}
 			}
 		}
 	} else if (this._mode == ZmController.CONV_VIEW && ev.event == ZmEvent.E_CREATE) {
 		var conv = AjxDispatcher.run("GetConvController").getConv();
-		var msg = items[0].type == ZmItem.MSG ? items[0] : null;
-		if (conv && msg && (msg.cid == conv.id)) {
+		if (conv && (msg.cid == conv.id)) {
 			ZmMailListView.prototype._changeListener.call(this, ev);
 		}
 	} else if (ev.event == ZmEvent.E_FLAGS) { // handle "replied" and "forwarded" flags
 		var flags = ev.getDetail("flags");
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
-			if (img && img.parentNode) {
-				for (var j = 0; j < flags.length; j++) {
-					var flag = flags[j];
-					var on = item[ZmItem.FLAG_PROP[flag]];
-					if (flag == ZmItem.FLAG_REPLIED && on)
-						AjxImg.setImage(img.parentNode, "MsgStatusReply");
-					else if (flag == ZmItem.FLAG_FORWARDED && on)
-						AjxImg.setImage(img.parentNode, "MsgStatusForward");
+		var img = document.getElementById(this._getFieldId(msg, ZmItem.F_STATUS));
+		if (img && img.parentNode) {
+			for (var j = 0; j < flags.length; j++) {
+				var flag = flags[j];
+				var on = msg[ZmItem.FLAG_PROP[flag]];
+				if (flag == ZmItem.FLAG_REPLIED && on) {
+					AjxImg.setImage(img.parentNode, "MsgStatusReply");
+				} else if (flag == ZmItem.FLAG_FORWARDED && on) {
+					AjxImg.setImage(img.parentNode, "MsgStatusForward");
 				}
 			}
 		}
@@ -352,39 +348,36 @@ function(ev) {
 };
 
 ZmMailMsgListView.prototype._changeFolderName = 
-function(items) {
-
-	for (var i = 0; i < items.length; i++) {
-		var folderCell = document.getElementById(this._getFieldId(items[i], ZmItem.F_FOLDER));
-		if (folderCell) {
-			var folder = this._appCtxt.getById(items[i].folderId);
-			if (folder)
-				folderCell.innerHTML = folder.getName();
-			if (items[i].folderId == ZmFolder.ID_TRASH)
-				this._changeTrashStatus([items[i]]);
+function(msg) {
+	var folderCell = document.getElementById(this._getFieldId(msg, ZmItem.F_FOLDER));
+	if (folderCell) {
+		var folder = this._appCtxt.getById(msg.folderId);
+		if (folder) {
+			folderCell.innerHTML = folder.getName();
+		}
+		if (items[i].folderId == ZmFolder.ID_TRASH) {
+			this._changeTrashStatus(msg);
 		}
 	}
 };
 
 ZmMailMsgListView.prototype._changeTrashStatus = 
-function(items) {
-	for (var i = 0; i < items.length; i++) {
-		var row = document.getElementById(this._getFieldId(items[i], ZmItem.F_ITEM_ROW));
-		if (row) {
-			var folder = this._appCtxt.getById(items[i].folderId);
-			var className = null;
-			if (items[i].isUnread) {
-				className = "Unread";
-			}
-			if ((folder != null) && folder.isInTrash()) {
-				className = (className ? (className + " ") : "") + "Trash";
-			}
-			if (items[i].isSent) {
-				className = (className ? (className + " ") : "") + "Sent";
-			}
-			if (className) {
-				row.className = className;
-			}
+function(msg) {
+	var row = document.getElementById(this._getFieldId(msg, ZmItem.F_ITEM_ROW));
+	if (row) {
+		var folder = this._appCtxt.getById(msg.folderId);
+		var className = null;
+		if (msg.isUnread) {
+			className = "Unread";
+		}
+		if ((folder != null) && folder.isInTrash()) {
+			className = (className ? (className + " ") : "") + "Trash";
+		}
+		if (msg.isSent) {
+			className = (className ? (className + " ") : "") + "Sent";
+		}
+		if (className) {
+			row.className = className;
 		}
 	}
 };
