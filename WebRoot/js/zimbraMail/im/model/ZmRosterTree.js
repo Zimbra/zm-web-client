@@ -85,8 +85,8 @@ function(tree) {
 // for autocomplete
 //------------------------------------------
 
-function ZmRosterTreeGroups(tree) {
-	this._root = tree.root;
+function ZmRosterTreeGroups(roster) {
+	this._groups = roster.getGroups();
 };
 
 ZmRosterTreeGroups.prototype.constructor = ZmRosterTreeGroups;
@@ -94,18 +94,18 @@ ZmRosterTreeGroups.prototype.constructor = ZmRosterTreeGroups;
 /**
  * Returns a list of matching groups for a given string
  */
-ZmRosterTreeGroups.prototype.autocompleteMatch = function(str) {
+ZmRosterTreeGroups.prototype.autocompleteMatch = function(str, callback) {
 	str = str.toLowerCase();
 	var result = [];
 
-	var a = this._root.children.getArray();
-	var sz = this._root.children.size();
-	for (var i =0; i < sz; i++) {
-		var g = a[i].getName();
+	var a = this._groups;
+	var sz = a.size();
+	for (var i = 0; i < sz; i++) {
+		var g = a.get(i);
 		if (g.toLowerCase().indexOf(str) == 0)
-			result.push({data: g, text: g });
+			result.push({ data: g, text: g });
 	}
-	return result;
+	callback.run(result);
 };
 
 ZmRosterTreeGroups.prototype.isUniqueValue =

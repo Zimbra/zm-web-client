@@ -306,3 +306,7 @@ ZmRoster.prototype.startFlashingIcon = function() {
 ZmRoster.prototype.stopFlashingIcon = function() {
 	this._imApp.stopFlashingIcon();
 };
+
+ZmRoster.prototype.getGroups = function() {
+	return AjxVector.fromArray(this.getRosterItemList().getGroupsArray());
+};

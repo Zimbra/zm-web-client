@@ -199,7 +199,7 @@ function() {
 
 ZmImApp.prototype.getAutoCompleteGroups =
 function() {
-    return new ZmRosterTreeGroups(this.getRoster().getRosterItemTree());
+	return new ZmRosterTreeGroups(this.getRoster());
 };
 
 ZmImApp.prototype.startFlashingIcon = function() {
@@ -224,7 +224,7 @@ function(parent) {
 		var mi = menu.createMenuItem(op, {image:ZmOperation.getProp(op, "image"), text:ZmMsg[ZmOperation.getProp(op, "textKey")],
 										  style:DwtMenuItem.RADIO_STYLE});
 		mi.setData(ZmOperation.MENUITEM_ID, op);
-		mi.setData(ZmOperation.KEY_ID, op);		
+		mi.setData(ZmOperation.KEY_ID, op);
 		if (op == ZmOperation.IM_PRESENCE_OFFLINE) mi.setChecked(true, true);
 	}
 
