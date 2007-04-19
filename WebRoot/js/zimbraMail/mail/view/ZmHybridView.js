@@ -188,24 +188,26 @@ function(newHeight) {
 };
 
 /**
- * Double-click action toggles expanded state of a conv or msg (paging). Note that that action
- * code actually results from pressing the Enter or O key, and not from a mouse double-click
- * (which is handled by _listSelectionListener).
+ * Double-click action toggles expanded state of a conv or msg (paging), if it is expandable.
+ * Note that that action code actually results from pressing the Enter or O key, and not from
+ * a mouse double-click (which is handled by _listSelectionListener).
  */
 ZmHybridListView.prototype.handleKeyAction =
 function(actionCode, ev) {
 	switch (actionCode) {
 		case DwtKeyMap.DBLCLICK:
+			if (this.getSelectionCount() != 1) { break; }
 			var item = this.getItemFromElement(this._kbAnchor);
 			if (item && this._expandable[item.id]) {
 				this._controller._toggle(item);
-			} else if (item.type == ZmItem.MSG && this._expandable[item.cid]) {
+				break;
+			} else if (this._controller._readingPaneOn && item.type == ZmItem.MSG && this._expanded[item.cid]) {
 				var conv = this._appCtxt.getById(item.cid);
 				this._controller._toggle(conv);
 				this.setSelection(conv, true);
+				break;
 			}
-			break;
-			
+
 		default:
 			return DwtListView.prototype.handleKeyAction.call(this, actionCode, ev);
 	}
