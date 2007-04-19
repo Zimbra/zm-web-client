@@ -297,6 +297,16 @@ ZmChatWidget._inputKeyPress = function(ev) {
 			if (tabIndex < 0)
 				tabIndex += 11;
 			self.parent.setActiveTab(tabIndex);
+		} else if (keyEvent.charCode == 38) {
+			// history back
+			var line = self.chat.getHistory(-1);
+			if (line)
+				this.value = line;
+		} else if (keyEvent.charCode == 40) {
+			// history fwd
+			var line = self.chat.getHistory(1);
+			if (line)
+				this.value = line;
 		}
 	} else {
 		setTimeout(function() {

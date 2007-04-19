@@ -34,7 +34,8 @@ function ZmChat(id, chatName, appCtxt, chatList) {
 	this._chatName = chatName;
 	this._thread = null;
 	this._unread = 0;
-}
+	this._historyIndex = 0;
+};
 
 ZmChat.prototype = new ZmItem;
 ZmChat.prototype.constructor = ZmChat;
@@ -144,6 +145,7 @@ function() {
 ZmChat.prototype.addMessage =
 function(msg) {
 	this._messages.push(msg);
+	this._historyIndex = this._messages.length;
 	var fields = {};
 	fields[ZmChat.F_MESSAGE] = msg;
 	this._notify(ZmEvent.E_MODIFY, {fields: fields});
@@ -212,6 +214,20 @@ ZmChat.prototype.sendByEmail = function() {
 				       subjOverride  : this.getTitle(),
 				       extraBodyText : AjxVector.fromArray(this._messages).map("toText").join("\n")
 				     });
+};
+
+ZmChat.prototype.getHistory = function(dir) {
+	while (true) {
+		this._historyIndex += dir;
+		if (this._historyIndex < 0)
+			this._historyIndex = -1;
+		if (this._historyIndex >= this._messages.length)
+			this._historyIndex = this._messages.length;
+		var msg = this._messages[this._historyIndex];
+		if (!msg || msg.fromMe)
+			break;
+	}
+	return msg && msg.body;
 };
 
 // stash the thread
