@@ -121,7 +121,7 @@ function(view, toggle) {
 	}
 
 	// need to reset special dbl-click handling for list view
-	this._mailListView._dblClickIsolation = this._readingPaneOn;
+	this._mailListView._dblClickIsolation = (this._readingPaneOn && !AjxEnv.isIE);
 
 	this._doublePaneView.getMailListView()._resetColWidth();
 };
