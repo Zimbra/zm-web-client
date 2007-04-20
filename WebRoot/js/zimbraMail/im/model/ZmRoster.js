@@ -323,16 +323,18 @@ ZmRoster.prototype._handleRequestGateways = function(args) {
 	if (!resp || !resp.IMGatewayListResponse)
 		return;
 	var a = resp.IMGatewayListResponse.service;
-	var byService = {};
-	var byDomain = {};
-	for (var i = 0; i < a.length; ++i) {
-		byService[a[i].type.toLowerCase()] = a[i];
-		byDomain[a[i].domain.toLowerCase()] = a[i];
+	if (a && a.length) {
+		var byService = {};
+		var byDomain = {};
+		for (var i = 0; i < a.length; ++i) {
+			byService[a[i].type.toLowerCase()] = a[i];
+			byDomain[a[i].domain.toLowerCase()] = a[i];
+		}
+		this._gateways = { byService : byService,
+				   byDomain  : byDomain,
+				   array     : a
+				 };
 	}
-	this._gateways = { byService : byService,
-			   byDomain  : byDomain,
-			   array     : a
-			 };
 };
 
 ZmRoster.prototype.getGatewayByType = function(type) {
