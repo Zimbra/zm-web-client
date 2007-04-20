@@ -39,6 +39,7 @@ function ZmVoicePrefsView(parent, appCtxt, controller) {
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.VOICE]].join(": ");
 	this._ui = [
 		new ZmAnonymousRejectionUI(this), 
+		new ZmEmailNotificationUI(this), 
 		new ZmCallForwardingUI(this),
 		new ZmSelectiveCallForwardingUI(this)
 	];
@@ -317,7 +318,7 @@ function() {
 ZmCallForwardingUI.prototype.getFeature =
 function() {
 	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
-	result.data.ft = this._comboBox.getText();
+	result.data.ft = ZmPhone.calculateName(this._comboBox.getText());
 	return result;
 };
 
@@ -502,11 +503,8 @@ function(id) {
 	this._addButton.replaceElement(id + "_selectiveCallForwardingAddButton");
 };
 
+/////////////////////////////////////////////////////////////////////////
 
-
-///////////////////////////////////////////////////////////////////////////
-
-/* Hold off till maybe this is implemented as a call feature...
 function ZmEmailNotificationUI(view) {
 	ZmCallFeatureUI.call(this, view);
 	this._checkbox = null;
@@ -520,30 +518,44 @@ function() {
 
 ZmEmailNotificationUI.prototype.getName =
 function() {
-//!!!!! Not an actual call preference.	
-	return "donotdisturb";
+	return ZmCallFeature.EMAIL_NOTIFICATION;
 };
 
 ZmEmailNotificationUI.prototype.show =
 function(feature) {
-// TODO: Fill in combo box.....
+	this._comboBox.setText(feature.data.value);
 };
 
 ZmEmailNotificationUI.prototype._isValueDirty =
-function(feature) {
-// TODO: Compare value of combo box to feature....
+function() {
+	if (this._getSelectedValue() != this._feature.data.ft) {
+		return true;
+	}
+	return false;
 };
 
-ZmEmailNotificationUI.prototype._getValue =
+ZmEmailNotificationUI.prototype.getFeature =
 function() {
-	return this._checkbox.isSelected() ? "TRUE" : "FALSE";
-	alert('ZmCallFeatureUI.prototype._getValue');
+	var result = ZmCallFeatureUI.prototype.getFeature.call(this);
+	result.data.value = this._getSelectedValue();
+	return result;
+};
+
+ZmEmailNotificationUI.prototype._getSelectedValue =
+function() {
+	return AjxStringUtil.trim(this._comboBox.getText());
 };
 
 ZmEmailNotificationUI.prototype._initialize =
 function(id) {
 	this._checkbox = new DwtCheckbox(this._view);
-	this._checkbox.setText(ZmMsg.emailNotificationDescription);
+	this._checkbox.setText(ZmMsg.EmailNotificationDescription);
 	this._checkbox.replaceElement(id + "_emailNotificationCheckbox");
+	
+	var inputParams = { size:25 }
+	this._comboBox = new DwtComboBox(this._view, inputParams);
+	var accountAddress = this._view._appCtxt.get(ZmSetting.USERNAME);
+	this._comboBox.add(accountAddress, false);
+	this._comboBox.replaceElement(id + "_emailNotificationComboBox");
 };
-*/
+

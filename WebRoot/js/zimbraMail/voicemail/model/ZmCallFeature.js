@@ -39,6 +39,7 @@ function ZmCallFeature(appCtxt, name) {
 	this.isSubscribed = false;
 	this.isActive = false;
 	this.data = {};
+	this.isVoicemailPref = false;
 }
 
 ZmCallFeature.prototype.toString = 
@@ -54,8 +55,8 @@ ZmCallFeature.VOICEMAIL_PREFS = "voicemailprefs"
 ZmCallFeature.CALL_FEATURES = [ZmCallFeature.ANONYNOUS_REJECTION, ZmCallFeature.CALL_FORWARDING, ZmCallFeature.SELECTIVE_CALL_FORWARDING, ZmCallFeature.VOICEMAIL_PREFS];
 
 // Voicemail preferences.
-ZmCallFeature.EMAIL_NOTIFY = "EN"
-ZmCallFeature.VOICE_FEATURES = [ZmCallFeature.EMAIL_NOTIFY];
+ZmCallFeature.EMAIL_NOTIFICATION = "vmPrefEmailNotifAddress";
+ZmCallFeature.VOICE_FEATURES = [ZmCallFeature.EMAIL_NOTIFICATION];
 
 
 ZmCallFeature.prototype.createProxy = 
@@ -63,6 +64,13 @@ function() {
 	var result = AjxUtil.createProxy(this);
 	result.data = AjxUtil.createProxy(this.data);
 	return result;
+};
+
+ZmCallFeature.prototype.addVoicemailChangeNode = 
+function(soapDoc, parentNode) {
+	var value = this.isActive ? this.data.value : "";
+	var child = soapDoc.set("pref", value, parentNode);
+	child.setAttribute("name", this.name);
 };
 
 ZmCallFeature.prototype.addChangeNode = 
@@ -106,7 +114,7 @@ function(feature) {
 	}
 };
 
-ZmCallFeature.prototype._loadFromDom = 
+ZmCallFeature.prototype._loadCallFeature = 
 function(node) {
 	for (var i in node) {
 		if (i == "s") {
@@ -117,5 +125,13 @@ function(node) {
 			this.data[i] = node[i];
 		}
 	}
+};
+
+ZmCallFeature.prototype._loadVoicemailPref = 
+function(node) {
+	this.isVoicemailPref = true;
+	this.isSubscribed = true;
+	this.isActive = true;
+	this.data.value = node._content;
 };
 

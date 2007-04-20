@@ -120,14 +120,14 @@ ZmPhone.prototype._handleResponseGetVoiceFeatures =
 function(callback, response) {
 	var features = response._data.GetVoiceFeaturesResponse.phone[0];
 	this._features = {};
+	this._initializeVoicemailPrefs();
 	for(var i in features) {
 		if (i == ZmCallFeature.VOICEMAIL_PREFS) {
-// TODO: deal with this...
-//			var voicemailPrefs = features[i][0].pref;
-//			this._loadVoicemailPrefs(voicemailPrefs);
+			var voicemailPrefs = features[i][0].pref;
+			this._loadVoicemailPrefs(voicemailPrefs);
 		} else {
 			this._features[i] = new ZmCallFeature(this._appCtxt, i);
-			this._features[i]._loadFromDom(features[i][0]);
+			this._features[i]._loadCallFeature(features[i][0]);
 		}
 	}
 	if (callback) {
@@ -137,11 +137,23 @@ function(callback, response) {
 
 ZmPhone.prototype._loadVoicemailPrefs = 
 function(voicemailPrefs) {
-	this._voicemailPrefs = {};
 	for(var i = 0, count = voicemailPrefs.length; i < count; i++) {
-		var pref = voicemailPrefs[i]
-		this._voicemailPrefs[pref.name] = new ZmCallFeature(this._appCtxt, pref.name);
-		this._features[i]._loadFromDom(features[i][0]);
+		var obj = voicemailPrefs[i];
+		var feature = this._features[obj.name];
+		if (feature) {
+			feature._loadVoicemailPref(obj);
+		}
+	}
+};
+
+ZmPhone.prototype._initializeVoicemailPrefs = 
+function() {
+	for(var i = 0, count = ZmCallFeature.VOICE_FEATURES.length; i < count; i++) {
+		var name = ZmCallFeature.VOICE_FEATURES[i];
+		var feature = new ZmCallFeature(this._appCtxt, name);
+		feature.isVoicemailPref = true;
+		feature.data.value = "";
+		this._features[name] = feature;
 	}
 };
 
@@ -150,8 +162,16 @@ function(batchCommand, newFeatures, callback) {
     var soapDoc = AjxSoapDoc.create("ModifyVoiceFeaturesRequest", "urn:zimbraVoice");
     var node = soapDoc.set("phone");
     node.setAttribute("name", this.name);
+	var voicemailPrefsNode = null;
 	for (var i = 0, count = newFeatures.length; i < count; i++) {
-		newFeatures[i].addChangeNode(soapDoc, node);
+		if (newFeatures[i].isVoicemailPref) {
+			if (!voicemailPrefsNode) {
+				voicemailPrefsNode = soapDoc.set(ZmCallFeature.VOICEMAIL_PREFS, null, node);
+			}
+			newFeatures[i].addVoicemailChangeNode(soapDoc, voicemailPrefsNode);
+		} else {
+			newFeatures[i].addChangeNode(soapDoc, node);
+		}
 	}
 	var respCallback = new AjxCallback(this, this._handleResponseModifyVoiceFeatures, [newFeatures, callback]);
 	batchCommand.addNewRequestParams(soapDoc, respCallback);
