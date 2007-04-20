@@ -119,6 +119,10 @@ function(view, toggle) {
 	if (this._readingPaneOn) {
 		this._setSelectedMsg();
 	}
+
+	// need to reset special dbl-click handling for list view
+	this._mailListView._dblClickIsolation = this._readingPaneOn;
+
 	this._doublePaneView.getMailListView()._resetColWidth();
 };
 
@@ -148,9 +152,11 @@ ZmDoublePaneController.prototype._initialize =
 function(view) {
 	// set up double pane view (which creates the MLV and MV)
 	if (!this._doublePaneView){
-		this._doublePaneView = this._createDoublePaneView();
-		this._doublePaneView.addInviteReplyListener(this._inviteReplyListener);
-		this._doublePaneView.addShareListener(this._shareListener);
+		var dpv = this._doublePaneView = this._createDoublePaneView();
+		this._mailListView = dpv.getMailListView();
+		this._mailListView._dblClickIsolation = this._readingPaneOn;
+		dpv.addInviteReplyListener(this._inviteReplyListener);
+		dpv.addShareListener(this._shareListener);
 	}
 
 	ZmMailListController.prototype._initialize.call(this, view);
@@ -382,21 +388,18 @@ function(ev) {
 	var currView = this._listView[this._currentView];
 
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-		var msg = this._getMsg();
-		if (msg) {
-			if (msg.isDraft) {
-				// open draft in compose view
-				this._doAction(ev, ZmOperation.DRAFT);
-			} else if (!this._readingPaneOn) {
-				try {
-					AjxDispatcher.run("GetMsgController").show(msg, currView._mode);
-
-					// if msg is cached, then mark read if unread
-					if (msg.isLoaded() && msg.isUnread)
-						this._list.markRead([msg], true);
-				} catch (ex) {
-					this._handleException(ex, this._listSelectionListener, ev, false);
-				}
+		var item = ev.item;
+		if (!item) { return; }
+		var div = Dwt.findAncestor(ev.target, "_itemIndex");
+		this._mailListView._itemSelected(div, ev);
+		if (item.isDraft) {
+			this._doAction(ev, ZmOperation.DRAFT);
+		} else if (item.type == ZmItem.CONV) {
+			AjxDispatcher.run("GetConvController").show(this._activeSearch, item);
+		} else if (item.type == ZmItem.MSG) {
+			AjxDispatcher.run("GetMsgController").show(item);
+			if (item.isLoaded() && item.isUnread) {
+				this._list.markRead([item], true);
 			}
 		}
 	} else {

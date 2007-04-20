@@ -80,9 +80,7 @@ function(search) {
 
 ZmHybridController.prototype._createDoublePaneView = 
 function() {
-	var dpv = new ZmHybridView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
-	this._mailListView = dpv.getMailListView();
-	return dpv;
+	return new ZmHybridView(this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
 };
 
 ZmHybridController.prototype._getViewType =
@@ -134,34 +132,12 @@ function(params) {
 ZmHybridController.prototype._listSelectionListener =
 function(ev) {
 	var item = ev.item;
-	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
-		if (!item) { return; }
-		var div = Dwt.findAncestor(ev.target, "_itemIndex");
-		this._mailListView._itemSelected(div, ev);
-		if (item.isDraft) {
-			this._doAction(ev, ZmOperation.DRAFT);
-		} else if (item.type == ZmItem.CONV) {
-			AjxDispatcher.run("GetConvController").show(this._activeSearch, item);
-		} else if (item.type == ZmItem.MSG) {
-			AjxDispatcher.run("GetMsgController").show(item);
-		}
-	} else if (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_EXPAND]) {
-		if (!item) { return; }
-		if (this._mailListView._expandable[item.id]) {
-			this._toggle(item);
-		} else {
-			ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
-		}
+	if (!item) { return; }
+	if (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_EXPAND] && (this._mailListView._expandable[item.id])) {
+		this._toggle(item);
 	} else {
 		ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
 	}
-};
-
-// need to reset special dbl-click handling for list view
-ZmHybridController.prototype._toggleReadingPane = 
-function(view, toggle) {
-	ZmDoublePaneController.prototype._toggleReadingPane.apply(this, arguments);
-	this._mailListView._dblClickIsolation = this._readingPaneOn;
 };
 
 ZmHybridController.prototype._toggle =
