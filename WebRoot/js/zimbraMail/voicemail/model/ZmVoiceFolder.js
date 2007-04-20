@@ -83,7 +83,15 @@ function() {
 
 ZmVoiceFolder.prototype.getName =
 function(showUnread, maxLength, noMarkup) {
-	var name = this.name == ZmVoiceFolder.ACCOUNT ? this.phone.getDisplay() : this.name;
+	var name;
+	switch (this.name) {
+		case ZmVoiceFolder.ACCOUNT: name = this.phone.getDisplay(); break;
+		case ZmVoiceFolder.PLACED_CALL: name = ZmMsg.placedCalls; break;
+		case ZmVoiceFolder.ANSWERED_CALL: name = ZmMsg.answeredCalls; break;
+		case ZmVoiceFolder.MISSED_CALL: name = ZmMsg.missedCalls; break;
+		case ZmVoiceFolder.VOICEMAIL: name = ZmMsg.voiceMail; break;
+		case ZmVoiceFolder.TRASH: name = ZmMsg.trash; break;
+	}
 	return this._markupName(name, showUnread && (this.callType != ZmVoiceFolder.TRASH), noMarkup);
 };
 
