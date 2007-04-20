@@ -1,0 +1,28 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/plain; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%--
+{"Result" : [
+  {"h" : "alex@foo.com" },
+  {"h" : "andrew@foo.com" },
+  {"h" : "anne@foo.com" }
+]
+}
+
+<zm:search var="search" query="${param.query}" types="contact" field="contact:"/>
+{"Result" : [
+<c:forEach items="${search.hits}" var="hit" varStatus="status">
+<c:if test="${not empty hit.contactHit.email}">
+  {"h" : "${hit.contactHit.email}"},
+  </c:if>
+
+</c:forEach>
+ {}
+]}
+--%>
+<zm:contactAutoComplete query="${param.query}" json="true"/>
+ 
