@@ -130,8 +130,8 @@ function(node) {
 ZmCallFeature.prototype._loadVoicemailPref = 
 function(node) {
 	this.isVoicemailPref = true;
-	this.isSubscribed = true;
-	this.isActive = true;
 	this.data.value = node._content;
+	this.isSubscribed = true;
+	this.isActive = Boolean(this.data.value);
 };
 
