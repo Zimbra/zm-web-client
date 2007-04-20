@@ -48,10 +48,8 @@ ZmCallListView.prototype.createHeaderHtml =
 function(defaultColumnSort) {
 	ZmVoiceListView.prototype.createHeaderHtml.call(this, defaultColumnSort);
 	var isPlaced = this._getCallType() == ZmVoiceFolder.PLACED_CALL;
-	var callerLabel = isPlaced ? ZmMsg.to : ZmMsg.from;
-	this._setColumnHeader(ZmCallListView.F_CALLER, callerLabel);
-	var dateLabel = isPlaced ? ZmMsg.placed : ZmMsg.received;	
-	this._setColumnHeader(ZmCallListView.F_DATE, dateLabel);
+	this._setColumnHeader(ZmCallListView.F_CALLER, isPlaced ? ZmMsg.to : ZmMsg.from);
+	this._setColumnHeader(ZmCallListView.F_DATE, isPlaced ? ZmMsg.placed : ZmMsg.received);
 };
 
 ZmCallListView.prototype._setColumnHeader = 
@@ -71,6 +69,28 @@ function() {
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmCallListView.F_DATE], ZmMsg.received, null, ZmCallListView.DATE_WIDTH, ZmCallListView.F_DATE, true));
 
 	return headerList;
+};
+
+ZmCallListView.prototype.getPrintHtml =
+function() {
+	var buffer = [];
+	var rowArgs = {};
+	for(var i = 0, count = this._list.size(); i < count; i++) {
+		var item = this._list.get(i);
+		rowArgs.caller = this._getCallerHtml(item);
+		rowArgs.duration = AjxDateUtil.computeDuration(item.duration);
+		rowArgs.date = AjxDateUtil.simpleComputeDateStr(item.date);
+		AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmCallListPrintViewRow", rowArgs, buffer);
+	}
+	
+	var isPlaced = this._getCallType() == ZmVoiceFolder.PLACED_CALL;
+	var args = {
+		name: this._folder.getName(false, 0, true),
+		callerHeader: isPlaced ? ZmMsg.to : ZmMsg.from,
+		dateHeader: isPlaced ? ZmMsg.placed : ZmMsg.received,
+		rows: buffer.join("")
+	}
+	return  AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmCallListPrintView", args);
 };
 
 ZmCallListView.prototype._createItemHtml =

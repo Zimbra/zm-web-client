@@ -86,6 +86,13 @@ function(parent, num) {
 	}
 };
 
+ZmCallListController.prototype._printListener =
+function(ev) {
+	var html = this._getView().getPrintHtml();
+	this._appCtxt.getPrintView().renderHtml(html);
+};
+
+
 ZmCallListController.prototype._callByDateListener = 
 function(ev) {
 //	alert('Grrrrrr');

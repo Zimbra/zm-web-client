@@ -2805,6 +2805,13 @@ HTML>BODY .appt-selected .appt_allday_body
 	height: 25px;
 }
 
+.ZmCallListPrintView TD {
+	padding-left:20;
+	padding-right:20;
+	border-bottom:1px solid;
+}
+
+
 /*************
  *
  *	Sound player

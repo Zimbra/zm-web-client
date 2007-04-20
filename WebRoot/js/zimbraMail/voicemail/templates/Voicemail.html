@@ -138,3 +138,24 @@
 		<td width=80><a id=${linkId} class='Object'><$= ZmMsg.remove $></a></td>
 	</tr></table>
 </template>
+
+<template id='ZmCallListPrintView'>
+	<div class='ZmHead'><b>${name}</b></div>
+	<div class='ZSmallSpacer'></div>
+	<table class="ZmCallListPrintView" cellspacing=0>
+		<tr style='font-weight:bold'>
+			<td> ${callerHeader} </td>
+			<td> <$= ZmMsg.duration $> </td>
+			<td> ${dateHeader} </td>
+		</tr>
+		${rows}
+	</table>
+</template>
+
+<template id='ZmCallListPrintViewRow'>
+	<tr>
+		<td> ${caller} </td>
+		<td> ${duration} </td>
+		<td> ${date} </td>
+	</tr>
+</template>
