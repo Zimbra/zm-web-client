@@ -42,6 +42,7 @@ function ZmVoicePrefsView(parent, appCtxt, controller) {
 		new ZmCallForwardingUI(this),
 		new ZmSelectiveCallForwardingUI(this)
 	];
+	this._changes = null;
 };
 
 ZmVoicePrefsView.prototype = new ZmPrefListView;
@@ -116,10 +117,8 @@ function(ui) {
 
 ZmVoicePrefsView.prototype.reset =
 function() {
-	var listView = this.getList();
-	listView.set(this._controller._getListData());
-	listView.setSelection(AjxDispatcher.run("GetIdentityCollection").defaultIdentity);
-	this._clearChanges();
+	this._changes = null;
+	this.showItem(this._item, true);
 	this.clearAllErrors();
 };
 
@@ -138,8 +137,10 @@ function(parentElement) {
 };
 
 ZmVoicePrefsView.prototype.showItem =
-function(phone) {
-	this._getChanges();
+function(phone, ignoreChanges) {
+	if (!ignoreChanges) {
+		this._getChanges();
+	}
 //Retarded: saving a reference to the phone here, even though the parent class has it (as _item).
 //Even more retarded because IdentityView does the same retarded thing.
 	this._phone = phone;
@@ -205,32 +206,7 @@ function(identity, request, result) {
 //	}
 };
 
-ZmVoicePrefsView.prototype._updateList =
-function() {
-//	// Just redraw the whole list.
-//	var listView = this.getList();
-//	listView.set(this._controller._getListData());
-//
-//	// Make sure the correct proxy identity is now selected.
-//	if (this._identity) {
-//		var identityCollection = AjxDispatcher.run("GetIdentityCollection");
-//		var list = this.getList().getList();
-//		for (var i = 0, count = list.size(); i < count; i++) {
-//			var identity = list.get(i);
-//			if (identity.id == this._identity.id) {
-//				this.getList().setSelection(identity);
-//				break;
-//			}
-//		}
-//	}
-};
 
-ZmVoicePrefsView.prototype._clearChanges =
-function() {
-//	this._adds.length = 0;
-//	this._deletes.length = 0;
-//	this._updates.length = 0;
-};
 
 function ZmCallFeatureUI(view) {
 	this._view = view;
