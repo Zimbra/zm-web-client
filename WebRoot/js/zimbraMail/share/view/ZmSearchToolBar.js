@@ -195,7 +195,7 @@ ZmSearchToolBar.prototype.createCustomSearchBtn =
 function(icon, text, listener) {
 	var btn = this.getButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON);
 	if (!btn) {
-		btn = this.createButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON, {image:icon, text:text, className:"DwtButton"}, 1);
+		btn = this.createButton(ZmSearchToolBar.CUSTOM_SEARCH_BUTTON, {image:icon, text:text, className:"DwtButton", index:1});
 		btn.setData("CustomSearchItem", [ icon, text, listener ]);
 		btn.addSelectionListener(this._customSearchBtnListener);
 	} else {

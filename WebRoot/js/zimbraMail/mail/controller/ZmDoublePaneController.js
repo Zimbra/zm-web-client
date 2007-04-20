@@ -359,15 +359,17 @@ ZmDoublePaneController.prototype._resetOperations =
 function(parent, num) {
 	ZmMailListController.prototype._resetOperations.call(this, parent, num);
 	var isMsg = false;
+	var isDraft = false;
 	if (num == 1) {
 		var item = this._doublePaneView.getSelection()[0];
 		isMsg = (item.type == ZmItem.MSG);
+		isDraft = item.isDraft;
 	}
 	parent.enable(ZmOperation.SHOW_ORIG, isMsg);
 	if (this._appCtxt.get(ZmSetting.FILTERS_ENABLED)) {
 		parent.enable(ZmOperation.ADD_FILTER_RULE, isMsg);
 	}
-	parent.enable(ZmOperation.DETACH, isMsg);
+	parent.enable(ZmOperation.DETACH, isMsg && !isDraft);
 };
 
 // top level view means this view is allowed to get shown when user clicks on 

@@ -117,7 +117,7 @@ function(enabled) {
  * @param index			[int]*			position at which to add the button
  */
 ZmToolBar.prototype.createButton =
-function(id, params, index) {
+function(id, params) {
 //	var className = params.className || "DwtToolbarButton";
 	var b = this._buttons[id] = this._createButton(params/*, className*/);
 	if (params.image) {
@@ -148,7 +148,8 @@ ZmToolBar.prototype.SEPARATOR_TEMPLATE = "zimbraMail.share.templates.Widgets#ZmT
 // Protected methods
 //
 
-ZmToolBar.prototype._createButton = function(params, className) {
+ZmToolBar.prototype._createButton =
+function(params, className) {
     return new DwtToolBarButton(this, params.style, className, null, null, null, params.index);
 };
 

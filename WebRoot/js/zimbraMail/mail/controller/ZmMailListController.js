@@ -69,6 +69,7 @@ function ZmMailListController(appCtxt, container, mailApp) {
 		this._listeners[ZmOperation.FORWARD] = forwardLis;
 	}
 
+	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._checkMailListener);
 			
 	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED))
@@ -128,8 +129,8 @@ function(view, toggle) {
 		var sc = this._appCtxt.getSearchController();
 		var sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
 		var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE); // bug fix #3365
-		sc.redoSearch(this._appCtxt.getCurrentSearch(), null, {types:[ZmMailListController.GROUP_BY_ITEM[view]], offset:0,
-															   sortBy:sortBy, limit:limit});
+		var params = {types:[ZmMailListController.GROUP_BY_ITEM[view]], offset:0, sortBy:sortBy, limit:limit};
+		sc.redoSearch(this._appCtxt.getCurrentSearch(), null, params);
 	}
 };
 
@@ -145,7 +146,7 @@ function() {
 ZmMailListController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmMailListController.handleKeyAction");
-	
+
 	var isDrafts = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
 	var lv = this._listView[this._currentView];
 	var num = lv.getSelectionCount();
@@ -375,6 +376,7 @@ function(view, arrowStyle) {
 
 	this._setupDeleteButton(view);
 	this._setupSpamButton(view);
+	this._setupReplyForwardButton(view);
 
 	var detach = this._toolbar[view].getButton(ZmOperation.DETACH);
 	if (detach) detach.setText(ZmMsg.detach2);
@@ -412,17 +414,17 @@ function() {
 
 ZmMailListController.prototype._msgOps =
 function() {
-	var list = new Array();
-	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED))
-		list.push(ZmOperation.REPLY_MENU);
-	else
-		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+	var list = [];
+	this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)
+		? list.push(ZmOperation.REPLY_MENU)
+		: list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
 
-	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED))
-		list.push(ZmOperation.FORWARD_MENU);
-	else
-		list.push(ZmOperation.FORWARD);
-	
+	this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)
+		? list.push(ZmOperation.FORWARD_MENU)
+		: list.push(ZmOperation.FORWARD);
+
+	list.push(ZmOperation.EDIT);
+
 	return list;
 };
 
@@ -656,6 +658,26 @@ function(view) {
 	}
 };
 
+// If we're in the Spam folder, the "Spam" button becomes the "Not Spam" button
+ZmMailListController.prototype._setupReplyForwardButton =
+function(view) {
+	var tb = this._toolbar[view];
+	var inDraftsFolder = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
+
+	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
+		tb.getButton(ZmOperation.REPLY_MENU).setVisible(!inDraftsFolder);
+	} else {
+		tb.getButton(ZmOperation.REPLY).setVisible(!inDraftsFolder);
+		tb.getButton(ZmOperation.REPLY_ALL).setVisible(!inDraftsFolder);
+	}
+
+	this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)
+		? tb.getButton(ZmOperation.FORWARD_MENU).setVisible(!inDraftsFolder)
+		: tb.getButton(ZmOperation.FORWARD).setVisible(!inDraftsFolder);
+
+	tb.getButton(ZmOperation.EDIT).setVisible(inDraftsFolder);
+};
+
 // this method gets overloaded if folder id is retrieved another way
 ZmMailListController.prototype._getSearchFolderId = 
 function() {
@@ -791,6 +813,11 @@ function(ev) {
 		ZmMailMsgView.rfc822Callback(msg.id);
 };
 
+ZmMailListController.prototype._editListener =
+function(ev) {
+	this._doAction(ev, ZmOperation.DRAFT);
+};
+
 ZmMailListController.prototype._checkMailListener =
 function() {
     var folderId = this._getSearchFolderId();
@@ -904,9 +931,10 @@ function(parent, num) {
 				checkMailBtn.setToolTipContent(ZmMsg.checkMailTooltip);
 			}
 		}
-        
-		var isDrafts = folderId == ZmFolder.ID_DRAFTS;
-		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD, ZmOperation.DETACH], !isDrafts && num == 1);
+
+		var item = num == 1 ? this._listView[this._currentView].getSelection()[0] : null;
+		var isDrafts = (item && item.isDraft) || (folderId == ZmFolder.ID_DRAFTS);
+		parent.enable([ZmOperation.REPLY_MENU, ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD_MENU, ZmOperation.FORWARD, ZmOperation.DETACH], !isDrafts && num == 1);
 		parent.enable([ZmOperation.SPAM, ZmOperation.MOVE], !isDrafts && num > 0);
 		parent.enable([ZmOperation.CHECK_MAIL], true);
 	}

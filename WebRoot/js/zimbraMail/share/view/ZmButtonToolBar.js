@@ -88,14 +88,11 @@ function() {
  * @param index			[int]*			position at which to add the button
  */
 ZmButtonToolBar.prototype.createOp =
-function(id, params, index) {
-	var b;
+function(id, params) {
 	params.className = this._buttonStyle;
-	if (id == ZmOperation.TEXT) {
-		b = new DwtText(this, "ZWidgetTitle");
-	} else {
-		b = this.createButton(id, params, index);
-	}
+	var b = (id == ZmOperation.TEXT)
+		? (new DwtText(this, "ZWidgetTitle"))
+		: this.createButton(id, params);
 	b.setData(ZmOperation.KEY_ID, id);
 
 	return b;
