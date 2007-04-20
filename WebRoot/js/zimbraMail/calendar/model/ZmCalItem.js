@@ -151,11 +151,29 @@ ZmCalItem.prototype.hasAttendees		= function() { return false; } // override if 
 
 // Setters
 ZmCalItem.prototype.setAllDayEvent 		= function(isAllDay) 	{ this.allDayEvent = isAllDay ? "1" : "0"; };
-ZmCalItem.prototype.setFolderId 		= function(folderId) 	{ this.folderId = folderId || ZmOrganizer.ID_CALENDAR; };
 ZmCalItem.prototype.setName 			= function(newName) 	{ this.name = newName; };
 ZmCalItem.prototype.setOrganizer 		= function(organizer) 	{ this.organizer = organizer != "" ? organizer : null; };
 ZmCalItem.prototype.setRecurType		= function(repeatType)	{ this._recurrence.repeatType = repeatType; };
 ZmCalItem.prototype.setType 			= function(newType) 	{ this.type = newType; };
+
+
+ZmCalItem.prototype.setFolderId =
+function(folderId) {
+	this.folderId = folderId || ZmOrganizer.ID_CALENDAR;
+};
+
+// Returns the "local" folder Id even for remote folders. Otherwise, just use
+// this.folderId if you dont care.
+ZmCalItem.prototype.getLocalFolderId =
+function() {
+	var fid = this.folderId;
+	if (this.isShared()) {
+		var folder = this._appCtxt.getById(this.folderId);
+		if (folder)
+			fid = folder.id;
+	}
+	return fid;
+};
 
 ZmCalItem.prototype.setEndDate =
 function(endDate, keepCache) {

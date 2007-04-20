@@ -1530,7 +1530,7 @@ function() {
 ZmCalViewController.prototype._enableActionMenuReplyOptions =
 function(appt, actionMenu) {
 	var isOrganizer = appt.isOrganizer();
-	var calendar = this.getCheckedCalendar(appt.folderId);
+	var calendar = this.getCheckedCalendar(appt.getLocalFolderId());
 	var share = calendar && calendar.link ? calendar.shares[0] : null;
 	var workflow = share ? share.isWorkflow() : true;
 	var enabled = !isOrganizer && workflow;
