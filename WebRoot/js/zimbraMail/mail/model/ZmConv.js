@@ -95,7 +95,7 @@ function(params) {
 				// i.e. new msgs that are in the hit list wont be marked hot this way!
 				// dont bother searching for more msgs if all have been loaded	
 				if (!this.msgs.hasMore() || offset + limit <= size)
-					if (callback) callback.run(new ZmCsfeResult(this.msgs));
+					if (params.callback) callback.run(new ZmCsfeResult(this.msgs));
 			}
 		}
 	}
