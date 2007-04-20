@@ -58,11 +58,7 @@ function() {
 
 ZmBrowseController.prototype._getPickers =
 function() {
-	var list = [ZmPicker.ATTACHMENT,
-				ZmPicker.BASIC,
-				ZmPicker.DATE,
-				ZmPicker.DOMAIN,
-				ZmPicker.FOLDER];
+	var list = ZmPicker.DEFAULT_PICKERS;
 	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		list.push(ZmPicker.SEARCH);
 	}
