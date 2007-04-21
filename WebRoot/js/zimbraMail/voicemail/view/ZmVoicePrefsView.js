@@ -216,8 +216,10 @@ function ZmCallFeatureUI(view) {
 ZmCallFeatureUI.prototype.setFeature =
 function(feature) {
 	this._feature = feature;
-	this._checkbox.setSelected(feature.isActive);
 	this.show(feature);
+	this._checkbox.setSelected(feature.isActive);
+	this._checkbox.setEnabled(feature.isSubscribed);
+	this.setEnabled(feature.isActive);
 };
 
 ZmCallFeatureUI.prototype.getFeature =
@@ -237,6 +239,19 @@ function() {
 	return this._isValueDirty();
 };
 
+ZmCallFeatureUI.prototype._createCheckbox =
+function(text, id) {
+	this._checkbox = new DwtCheckbox(this._view);
+	this._checkbox.setText(text);
+	this._checkbox.replaceElement(id);
+	this._checkbox.addSelectionListener(new AjxListener(this, this._checkboxListener));
+};
+
+ZmCallFeatureUI.prototype._checkboxListener =
+function(ev) {
+	this.setEnabled(this._checkbox.isSelected());
+};
+
 // "Abstract" methods:
 ZmCallFeatureUI.prototype.getName =
 function() {
@@ -246,6 +261,11 @@ ZmCallFeatureUI.prototype._initialize =
 function(id) {
 	alert('ZmCallFeatureUI.prototype._initialize');
 };
+ZmCallFeatureUI.prototype.setEnabled =
+function(enabled) {
+	alert('ZmCallFeatureUI.prototype.setEnabled ' + enabled);
+};
+
 
 /////////////////////////////////////////////////////////////////////////
 
@@ -275,11 +295,14 @@ function() {
 	return false;
 };
 
+ZmAnonymousRejectionUI.prototype.setEnabled =
+function(enabled) {
+	// Nothing to do here.
+};
+
 ZmAnonymousRejectionUI.prototype._initialize =
 function(id) {
-	this._checkbox = new DwtCheckbox(this._view);
-	this._checkbox.setText(ZmMsg.anonymousRejectionDescription);
-	this._checkbox.replaceElement(id + "_anonymousRejectionCheckbox");
+	this._createCheckbox(ZmMsg.anonymousRejectionDescription, id + "_anonymousRejectionCheckbox");
 };
 
 
@@ -322,6 +345,11 @@ function() {
 	return result;
 };
 
+ZmCallForwardingUI.prototype.setEnabled =
+function(enabled) {
+	this._comboBox.setEnabled(enabled);
+};
+
 ZmCallForwardingUI.prototype._getSelectedValue =
 function() {
 	var value = this._comboBox.getValue();
@@ -334,9 +362,7 @@ function() {
 
 ZmCallForwardingUI.prototype._initialize =
 function(id) {
-	this._checkbox = new DwtCheckbox(this._view);
-	this._checkbox.setText(ZmMsg.callForwardingDescription);
-	this._checkbox.replaceElement(id + "_callForwardingCheckbox");
+	this._createCheckbox(ZmMsg.callForwardingDescription, id + "_callForwardingCheckbox");
 	
 	var inputParams = { size:25 }
 	this._comboBox = new DwtComboBox(this._view, inputParams);
@@ -425,6 +451,13 @@ function() {
 	return result;
 };
 
+ZmSelectiveCallForwardingUI.prototype.setEnabled =
+function(enabled) {
+	this._comboBox.setEnabled(enabled);
+	this._addInput.setEnabled(enabled);
+	this._addButton.setEnabled(enabled);
+};
+
 ZmSelectiveCallForwardingUI.prototype._getSelectedValue =
 function() {
 	var value = this._comboBox.getValue();
@@ -479,9 +512,7 @@ function(ev) {
 
 ZmSelectiveCallForwardingUI.prototype._initialize =
 function(id) {
-	this._checkbox = new DwtCheckbox(this._view);
-	this._checkbox.setText(ZmMsg.selectiveCallForwardingDescription);
-	this._checkbox.replaceElement(id + "_selectiveCallForwardingCheckbox");
+	this._createCheckbox(ZmMsg.selectiveCallForwardingDescription, id + "_selectiveCallForwardingCheckbox");
 	
 	var inputParams = { size:25 }
 	this._comboBox = new DwtComboBox(this._view, inputParams);
@@ -541,6 +572,11 @@ function() {
 	return result;
 };
 
+ZmEmailNotificationUI.prototype.setEnabled =
+function(enabled) {
+	this._comboBox.setEnabled(enabled);
+};
+
 ZmEmailNotificationUI.prototype._getSelectedValue =
 function() {
 	return AjxStringUtil.trim(this._comboBox.getText());
@@ -548,9 +584,7 @@ function() {
 
 ZmEmailNotificationUI.prototype._initialize =
 function(id) {
-	this._checkbox = new DwtCheckbox(this._view);
-	this._checkbox.setText(ZmMsg.EmailNotificationDescription);
-	this._checkbox.replaceElement(id + "_emailNotificationCheckbox");
+	this._createCheckbox(ZmMsg.EmailNotificationDescription, id + "_emailNotificationCheckbox");
 	
 	var inputParams = { size:25 }
 	this._comboBox = new DwtComboBox(this._view, inputParams);
