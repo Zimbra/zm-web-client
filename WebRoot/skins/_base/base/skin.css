@@ -163,7 +163,7 @@ body						{	@ChromeBg@	}
 	margin:2 0 0 0;
 #ENDIF
 #IFDEF MSIE
-	margin:0 0 0 0;
+	margin:4px 0 0 0;
 #ENDIF
 }
 
