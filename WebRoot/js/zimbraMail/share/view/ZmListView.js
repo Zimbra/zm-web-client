@@ -172,8 +172,7 @@ function(ev) {
 ZmListView.prototype._handleResponseChangeListener =
 function(args) {
 	if (this.size() == 0) {
-		this.removeAll(true); // be anal
-		this._setNoResultsHtml();
+		this._controller._handleEmptyList(this);
 	} else {
 		this._setNextSelection();
 	}

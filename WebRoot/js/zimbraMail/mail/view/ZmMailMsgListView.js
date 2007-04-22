@@ -308,8 +308,7 @@ function(ev) {
 			if (ev.event == ZmEvent.E_DELETE) {
 				ZmMailListView.prototype._changeListener.call(this, ev);
 			} else {
-				// bug fix #2362 - you can only move to a single folder at a time so
-				// just check folderId of 1st item, and if spam, remove it from listview
+				// if spam, remove it from listview
 				if (msg.folderId == ZmFolder.ID_SPAM) {
 					this._controller._list.remove(msg, true);
 					ZmMailListView.prototype._changeListener.call(this, ev);

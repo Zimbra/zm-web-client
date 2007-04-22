@@ -89,8 +89,9 @@ function(search, item) {
 */
 ZmDoublePaneController.prototype.reset =
 function() {
-	if (this._doublePaneView)
+	if (this._doublePaneView) {
 		this._doublePaneView.reset();
+	}
 };
 
 /**
@@ -123,7 +124,7 @@ function(view, toggle) {
 	// need to reset special dbl-click handling for list view
 	this._mailListView._dblClickIsolation = (this._readingPaneOn && !AjxEnv.isIE);
 
-	this._mailListView()._resetColWidth();
+	this._mailListView._resetColWidth();
 };
 
 ZmDoublePaneController.prototype._handleResponseSwitchView = 
@@ -377,6 +378,12 @@ function() {
 	return true;
 };
 
+// All items in the list view are gone - show "No Results" and clear reading pane
+ZmDoublePaneController.prototype._handleEmptyList =
+function(listView) {
+	ZmMailListController.prototype._handleEmptyList.apply(this, arguments);
+	this.reset();
+};
 
 // List listeners
 
