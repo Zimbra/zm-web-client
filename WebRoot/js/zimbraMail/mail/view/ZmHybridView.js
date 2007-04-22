@@ -621,7 +621,8 @@ function(ev) {
 	}
 
 	if (!ev.handled) {
-		ZmConvListView.prototype._changeListener.call(this, ev);
+		isConv ? ZmConvListView.prototype._changeListener.call(this, ev) :
+				 ZmMailListView.prototype._changeListener.call(this, ev);
 	}
 };
 
