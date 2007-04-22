@@ -75,38 +75,37 @@ function(defaultColumnSort) {
 };
 
 ZmMailMsgListView.prototype.markUIAsRead = 
-function(items, on) {
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		var row = document.getElementById(this._getFieldId(item, ZmItem.F_ITEM_ROW));
-		if (row) {
-			var className =  on ? "" : "Unread";
-			// don't worry about unread/read trash if in trad. view
-			if (this._mode != ZmController.TRAD_VIEW) {
-				var folder = this._appCtxt.getById(item.folderId);
-				if (folder && folder.isInTrash())
-					className = (className ? (className + " ") : "") + "Trash";
+function(item, on) {
+	var row = document.getElementById(this._getFieldId(item, ZmItem.F_ITEM_ROW));
+	if (row) {
+		var className =  on ? "" : "Unread";
+		// don't worry about unread/read trash if in trad. view
+		if (this._mode != ZmController.TRAD_VIEW) {
+			var folder = this._appCtxt.getById(item.folderId);
+			if (folder && folder.isInTrash()) {
+				className = (className ? (className + " ") : "") + "Trash";
 			}
-			if (item.isSent)
-				className = (className ? (className + " ") : "") + "Sent";
+		}
+		if (item.isSent) {
+			className = (className ? (className + " ") : "") + "Sent";
+		}
 
-			row.className = className;
+		row.className = className;
+	}
+	var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
+	if (img && img.parentNode) {
+		if (on) {
+			var imageInfo;
+			if (item.isInvite())		{ imageInfo = "Appointment"; }
+			else if (item.isDraft)		{ imageInfo = "MsgStatusDraft"; }
+			else if (item.isReplied)	{ imageInfo = "MsgStatusReply"; }
+			else if (item.isForwarded)	{ imageInfo = "MsgStatusForward"; }
+			else if (item.isSent)		{ imageInfo = "MsgStatusSent"; }
+			else						{ imageInfo = "MsgStatusRead"; }
+		} else {
+			imageInfo = item.isInvite() ? "Appointment" : "MsgStatusUnread";
 		}
-		var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
-		if (img && img.parentNode) {
-			if (on) {
-				var imageInfo;
-				if (item.isInvite())		imageInfo = "Appointment";
-				else if (item.isDraft)		imageInfo = "MsgStatusDraft";
-				else if (item.isReplied)	imageInfo = "MsgStatusReply";
-				else if (item.isForwarded)	imageInfo = "MsgStatusForward";
-				else if (item.isSent)		imageInfo = "MsgStatusSent";
-				else						imageInfo = "MsgStatusRead";
-			} else {
-				imageInfo = item.isInvite() ? "Appointment" : "MsgStatusUnread";
-			}
-			AjxImg.setImage(img.parentNode, imageInfo);
-		}
+		AjxImg.setImage(img.parentNode, imageInfo);
 	}
 };
 
@@ -300,8 +299,9 @@ function(ev) {
 	if (ev.handled || !this._handleEventType[msg.type]) { return; }
 
 	// only update if we're currently visible or we're the view underneath
-	if (this._mode != this._appCtxt.getCurrentViewId() &&
-		this._mode != this._appCtxt.getAppViewMgr().getLastViewId()) { return; }
+	if (this._mode &&
+		(this._mode != this._appCtxt.getCurrentViewId()) &&
+		(this._mode != this._appCtxt.getAppViewMgr().getLastViewId())) { return; }
 
 	if ((ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) && this._mode == ZmController.CONV_VIEW) {
 		if (!this._controller.handleDelete()) {

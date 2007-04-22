@@ -214,6 +214,14 @@ function(actionCode, ev) {
 	return true;
 };
 
+// Feh. Pass off to appropriate function (since we get called by generic ZmMailListView).
+ZmHybridListView.prototype.markUIAsRead =
+function(item, on) {
+	(item.type == ZmItem.CONV) ? ZmConvListView.prototype.markUIAsRead.apply(this, arguments) :
+								 ZmMailMsgListView.prototype.markUIAsRead.apply(this, arguments);
+
+};
+
 ZmHybridListView.prototype._getHeaderList =
 function(parent) {
 	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
@@ -621,8 +629,8 @@ function(ev) {
 	}
 
 	if (!ev.handled) {
-		isConv ? ZmConvListView.prototype._changeListener.call(this, ev) :
-				 ZmMailListView.prototype._changeListener.call(this, ev);
+		isConv ? ZmConvListView.prototype._changeListener.apply(this, arguments) :
+				 ZmMailMsgListView.prototype._changeListener.apply(this, arguments);
 	}
 };
 

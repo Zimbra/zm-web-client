@@ -48,7 +48,7 @@ function() {
 
 // abstract method
 ZmMailListView.prototype.markUIAsRead = 
-function(items, on) {}
+function(item, on) {}
 
 ZmMailListView.prototype.set =
 function(list, sortField) {
@@ -194,7 +194,7 @@ function(ev) {
 			var flag = flags[j];
 			if (flag == ZmItem.FLAG_UNREAD) {
 				var on = item[ZmItem.FLAG_PROP[flag]];
-				this.markUIAsRead([item], !on);
+				this.markUIAsRead(item, !on);
 			}
 		}
 	}

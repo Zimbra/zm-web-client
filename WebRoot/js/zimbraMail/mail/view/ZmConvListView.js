@@ -73,15 +73,14 @@ function(defaultColumnSort) {
 };
 
 ZmConvListView.prototype.markUIAsRead =
-function(items, on) {
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		var row = document.getElementById(this._getFieldId(item, ZmItem.F_ITEM_ROW));
-		if (row)
-			row.className = on ? "" : "Unread";
-		var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
-		if (img && img.parentNode)
-			AjxImg.setImage(img.parentNode, on ? "MsgStatusRead" : "MsgStatusUnread");
+function(item, on) {
+	var row = document.getElementById(this._getFieldId(item, ZmItem.F_ITEM_ROW));
+	if (row) {
+		row.className = on ? "" : "Unread";
+	}
+	var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
+	if (img && img.parentNode) {
+		AjxImg.setImage(img.parentNode, on ? "MsgStatusRead" : "MsgStatusUnread");
 	}
 }
 
