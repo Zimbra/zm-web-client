@@ -286,15 +286,19 @@ function(actionCode) {
 
 		case ZmKeyMap.GOTO_FOLDER:
 			var folder = this._appCtxt.getById(shortcut.arg);
-			this._appCtxt.getSearchController().search({query: folder.createQuery()});
+			if (folder) {
+				this._appCtxt.getSearchController().search({query: folder.createQuery()});
+			}
 			break;
 
 		case ZmKeyMap.MOVE_TO_FOLDER:
 			// Handle action code like "MoveToFolder3"
 			if (num && !isDrafts) {
 				var folder = this._appCtxt.getById(shortcut.arg);
-				var items = lv.getSelection();
-				this._doMove(items, folder);
+				if (folder) {
+					var items = lv.getSelection();
+					this._doMove(items, folder);
+				}
 			}
 			break;
 

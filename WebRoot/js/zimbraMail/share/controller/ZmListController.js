@@ -233,18 +233,24 @@ function(actionCode) {
 			var items = listView.getSelection();
 			if (items && items.length) {
 				var tag = this._appCtxt.getById(shortcut.arg);
-				this._doTag(items, tag, true);
+				if (tag) {
+					this._doTag(items, tag, true);
+				}
 			}
 			break;
 
 		case ZmKeyMap.GOTO_TAG:
 			var tag = this._appCtxt.getById(shortcut.arg);
-			this._appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
+			if (tag) {
+				this._appCtxt.getSearchController().search({query: 'tag:"' + tag.name + '"'});
+			}
 			break;
 
 		case ZmKeyMap.SAVED_SEARCH:
 			var searchFolder = this._appCtxt.getById(shortcut.arg);
-			this._appCtxt.getSearchController().redoSearch(searchFolder.search);
+			if (searchFolder) {
+				this._appCtxt.getSearchController().redoSearch(searchFolder.search);
+			}
 			break;
 
 		default:
