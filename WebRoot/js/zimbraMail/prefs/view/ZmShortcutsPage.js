@@ -843,9 +843,11 @@ function(shortcut) {
 	var organizer = null, value = "";
 	if (shortcut) {
 		organizer = this._appCtxt.getById(shortcut.arg);
-		value = (org == ZmOrganizer.FOLDER) ? organizer.getPath(false, false, null, true, true) :
-											  organizer.getName(false, null, true);
-		button.setData(ZmShortcutsPageTabViewCustom.DATA, value);
+		if (organizer) {
+			value = (org == ZmOrganizer.FOLDER) ? organizer.getPath(false, false, null, true, true) :
+												  organizer.getName(false, null, true);
+			button.setData(ZmShortcutsPageTabViewCustom.DATA, value);
+		}
 	}
 	button.setText(organizer ? value : ZmMsg.browse);
 	var id = Dwt.getNextId();
@@ -859,7 +861,7 @@ function(shortcut) {
 	html[i++] = "'></td>";
 
 	id = Dwt.getNextId();
-	var value = shortcut ? shortcut.num : null;
+	var value = (shortcut && organizer) ? shortcut.num : null;
 	var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: value});
 	Dwt.setSize(input.getInputElement(), '100%', Dwt.DEFAULT);
 	this._inputs[rowId]["num"] = {id: id, dwtObj: input};
