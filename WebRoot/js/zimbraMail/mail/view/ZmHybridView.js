@@ -406,13 +406,14 @@ function(htmlArr, idx, item, field, colIdx, now) {
 ZmHybridListView.prototype._expand =
 function(conv, msg, offset) {
 	var item = msg || conv;
+	var isConv = (item.type == ZmItem.CONV);
 	var rowIds = this._msgRowIdList[item.id];
 	if (rowIds && rowIds.length && this._rowsArePresent(item)) {
 		this._showMsgs(rowIds, true);
 	} else {
 		this._msgRowIdList[item.id] = [];
 		var msgList = conv.msgs;
-		if (item.type == ZmItem.CONV) {
+		if (isConv) {
 			// should be here only when the conv is first expanded
 			msgList.addChangeListener(this._listChangeListener);
 		}
@@ -437,9 +438,33 @@ function(conv, msg, offset) {
 		AjxImg.setImage(img.parentNode, "NodeExpanded");
 	}
 	this._expanded[item.id] = true;
+	
+	var cid = isConv ? item.id : item.cid;
+	if (!this._expandedItems[cid]) {
+		this._expandedItems[cid] = [];
+	}
+	this._expandedItems[cid].push(item);
 };
 
 ZmHybridListView.prototype._collapse =
+function(item) {
+	var isConv = (item.type == ZmItem.CONV);
+	var cid = isConv ? item.id : item.cid;
+	var expItems = this._expandedItems[cid];
+	// also collapse any expanded sections below us within same conv
+	if (expItems && expItems.length) {
+		var done = false;
+		while (!done) {
+			var nextItem = expItems.pop();
+			this._doCollapse(nextItem);
+			done = ((nextItem.id == item.id) || (expItems.length == 0));
+		}
+	} else {
+		this._doCollapse(item);
+	}
+};
+
+ZmHybridListView.prototype._doCollapse =
 function(item) {
 	var rowIds = this._msgRowIdList[item.id];
 	this._showMsgs(rowIds, false);
@@ -521,6 +546,7 @@ function() {
 	this._expandable = {};		// whether a row for a msg/conv ID has a +/- icon
 	this._msgRowIdList = {};	// list of row IDs for a conv ID
 	this._msgOffset = {};		// the offset for a msg ID
+	this._expandedItems = {};	// list of expanded items for a conv ID (inc conv)
 };
 
 ZmHybridListView.prototype._changeListener =
