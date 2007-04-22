@@ -123,7 +123,7 @@ function(view, toggle) {
 	// need to reset special dbl-click handling for list view
 	this._mailListView._dblClickIsolation = (this._readingPaneOn && !AjxEnv.isIE);
 
-	this._doublePaneView.getMailListView()._resetColWidth();
+	this._mailListView()._resetColWidth();
 };
 
 ZmDoublePaneController.prototype._handleResponseSwitchView = 
@@ -154,7 +154,7 @@ function(view) {
 	if (!this._doublePaneView){
 		var dpv = this._doublePaneView = this._createDoublePaneView();
 		this._mailListView = dpv.getMailListView();
-		this._mailListView._dblClickIsolation = this._readingPaneOn;
+		this._mailListView._dblClickIsolation = (this._readingPaneOn && !AjxEnv.isIE);
 		dpv.addInviteReplyListener(this._inviteReplyListener);
 		dpv.addShareListener(this._shareListener);
 	}
@@ -192,12 +192,10 @@ function() {
 // Returns the already-created message list view.
 ZmDoublePaneController.prototype._createNewView = 
 function() {
-	var mlv = null;
-	if (this._doublePaneView) {
-		mlv = this._doublePaneView.getMailListView();
-		mlv.setDragSource(this._dragSrc);
+	if (this._mailListView) {
+		this._mailListView.setDragSource(this._dragSrc);
 	}
-	return mlv;
+	return this._mailListView;
 };
 
 ZmDoublePaneController.prototype.getReferenceView = 
@@ -398,11 +396,15 @@ function(ev) {
 			this._doAction(ev, ZmOperation.DRAFT);
 		} else if (item.type == ZmItem.CONV) {
 			AjxDispatcher.run("GetConvController").show(this._activeSearch, item);
+			// make sure correct msg is displayed in msg pane when user returns
+			this._setSelectedMsg();
 		} else if (item.type == ZmItem.MSG) {
 			AjxDispatcher.run("GetMsgController").show(item);
 			if (item.isLoaded() && item.isUnread) {
 				this._list.markRead([item], true);
 			}
+			// make sure correct msg is displayed in msg pane when user returns
+			this._setSelectedMsg();
 		}
 	} else {
 		if (this._readingPaneOn) {

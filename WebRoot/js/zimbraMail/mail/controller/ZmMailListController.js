@@ -916,6 +916,7 @@ function(parent, num) {
             hasPopAccounts = popAccounts.length > 0;
         }
 
+		// XXX: do we really need to do this button check every time an item is selected?
         var checkMailBtn = parent.getButton(ZmOperation.CHECK_MAIL);
 		if (checkMailBtn) {
 			if (!isInbox && isFeed) {
@@ -932,7 +933,13 @@ function(parent, num) {
 			}
 		}
 
-		var item = num == 1 ? this._listView[this._currentView].getSelection()[0] : null;
+		var item = null;
+		if (num == 1 && (folderId != ZmFolder.ID_DRAFTS)) {
+			var sel = this._listView[this._currentView].getSelection();
+			if (sel && sel.length) {
+				item = sel[0];
+			}
+		}
 		var isDrafts = (item && item.isDraft) || (folderId == ZmFolder.ID_DRAFTS);
 		parent.enable([ZmOperation.REPLY_MENU, ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD_MENU, ZmOperation.FORWARD, ZmOperation.DETACH], !isDrafts && num == 1);
 		parent.enable([ZmOperation.SPAM, ZmOperation.MOVE], !isDrafts && num > 0);
