@@ -409,6 +409,7 @@ function() {
 	this.registerSetting("QUOTA",							{name: "zimbraMailQuota", type: ZmSetting.T_COS, dataType: ZmSetting.D_INT, defaultValue: 0});
 	this.registerSetting("SAVED_SEARCHES_ENABLED",			{name: "zimbraFeatureSavedSearchesEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("SHARING_ENABLED",					{name: "zimbraFeatureSharingEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
+	this.registerSetting("SHORTCUT_ALIASES_ENABLED",		{name: "zimbraFeatureShortcutAliasesEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("SKIN_CHANGE_ENABLED",				{name: "zimbraFeatureSkinChangeEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("TAGGING_ENABLED",					{name: "zimbraFeatureTaggingEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("TASKS_ENABLED",					{name: "zimbraFeatureTasksEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});

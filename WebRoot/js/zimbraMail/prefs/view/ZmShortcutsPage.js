@@ -200,7 +200,8 @@ function ZmShortcutsPageTabView(parent, appCtxt, controller, organizers, prefId)
 	this._parent = parent;
     this._appCtxt = appCtxt;
 	this._controller = controller;
-	this._organizers = organizers;
+	this._organizers = this._appCtxt.get(ZmSetting.SHORTCUT_ALIASES_ENABLED) ? organizers : [];
+	this._tabBar.setVisible(this._organizers.length > 1);
 
 	this._scTabView = {};
 	this._hasRendered = false;
@@ -235,6 +236,7 @@ function() {
 		this._scTabView[view] = viewObj;
 		this.addTab(ZmShortcutsPageTabView.TAB_NAME[view], this._scTabView[view]);
 	}
+
 	this._resetSize();
 	this._hasRendered = true;
 };
