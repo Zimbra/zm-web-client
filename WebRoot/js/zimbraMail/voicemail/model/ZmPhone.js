@@ -44,6 +44,9 @@ function() {
 
 ZmPhone.calculateDisplay =
 function(name) {
+	if (!name) {
+		return "";
+	}
 	var offset = 0;
 	var doIt = false;
 	if (name.length == 10) {
@@ -89,12 +92,14 @@ function(node) {
 	if (this.limit && this.limit.length) this.limit = node.limit[0]._content;
 	this._initializeFeatures();
 	var features = node.callfeatures[0].callfeature;
+	this._featuresDefined = true;
 	if (features) {
 		for (var i = 0, count = features.length; i < count; i++) {
 			var name = features[i].name;
 			var feature = this._features[name];
 			if (feature) {
 				feature.isSubscribed = true;
+				this._featuresDefined = false;
 			}
 		}
 	}
@@ -163,7 +168,6 @@ function(voicemailPrefs) {
 
 ZmPhone.prototype._initializeFeatures = 
 function() {
-	this._featuresDefined = false;
 	this._features = {};
 	for(var i = 0, count = ZmCallFeature.CALL_FEATURES.length; i < count; i++) {
 		var name = ZmCallFeature.CALL_FEATURES[i];

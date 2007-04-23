@@ -401,7 +401,7 @@ function(feature) {
 	var parent = this._getTableParent();
 	
 	var phones = [];
-	var rowCount = feature.data.phone.length;
+	var rowCount = feature.data.phone ? feature.data.phone.length : 0;
 	for(var i = 0; i < rowCount; i++) {
 		var name = feature.data.phone[i].pn;
 		phones[i] = ZmPhone.calculateDisplay(name);
