@@ -261,10 +261,10 @@ function() {
 	ZmOperation.registerOp("DELETE_MENU", {tooltipKey:"deleteTooltip", image:"Delete"});
 	ZmOperation.registerOp("DETACH_COMPOSE", {tooltipKey:"detachTooltip", image:"OpenInNewWindow"});
 	ZmOperation.registerOp("DRAFT", null, ZmSetting.SAVE_DRAFT_ENABLED);
-	ZmOperation.registerOp("FORWARD", {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward"}, ZmSetting.MAIL_FORWARDING_ENABLED);
-	ZmOperation.registerOp("FORWARD_ATT", {textKey:"forwardAtt", tooltipKey:"forwardAtt", image:"Forward"}, ZmSetting.MAIL_FORWARDING_ENABLED);
-	ZmOperation.registerOp("FORWARD_INLINE", {textKey:"forwardInline", tooltipKey:"forwardTooltip", image:"Forward"}, ZmSetting.MAIL_FORWARDING_ENABLED);
-	ZmOperation.registerOp("FORWARD_MENU", {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward"}, ZmSetting.MAIL_FORWARDING_ENABLED,
+	ZmOperation.registerOp("FORWARD", {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward"});
+	ZmOperation.registerOp("FORWARD_ATT", {textKey:"forwardAtt", tooltipKey:"forwardAtt", image:"Forward"});
+	ZmOperation.registerOp("FORWARD_INLINE", {textKey:"forwardInline", tooltipKey:"forwardTooltip", image:"Forward"});
+	ZmOperation.registerOp("FORWARD_MENU", {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward"}, null,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmMailApp.addForwardMenu, parent);
 	}));

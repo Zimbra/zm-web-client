@@ -359,21 +359,18 @@ function(view, arrowStyle) {
 
 		// nuke the text for tag menu for 800x600 resolutions
 		if (AjxEnv.is800x600orLower) {
-			if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-				this._toolbar[view].getButton(ZmOperation.TAG_MENU).setText("");
-
-			// nuke the text for reply/forward for 800x600 resolutions or lower
-			if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
-				this._toolbar[view].getButton(ZmOperation.REPLY_MENU).setText("");
-			} else {
-				this._toolbar[view].getButton(ZmOperation.REPLY).setText("");
-				this._toolbar[view].getButton(ZmOperation.REPLY_ALL).setText("");
+			var buttons = [];
+			if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+				buttons.push(ZmOperation.TAG_MENU);
 			}
-		
-			if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
-				this._toolbar[view].getButton(ZmOperation.FORWARD_MENU).setText("");
-			} else {
-				this._toolbar[view].getButton(ZmOperation.FORWARD).setText("");
+			this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED) ? buttons.push(ZmOperation.REPLY_MENU) :
+															  buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+			buttons.push(this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED) ? ZmOperation.FORWARD_MENU : ZmOperation.FORWARD);
+			for (var i = 0; i < buttons.length; i++) {
+				var button = tb.getButton(buttons[i]);
+				if (button) {
+					button.setText("");
+				}
 			}
 		}
 	}
@@ -668,18 +665,17 @@ function(view) {
 	var tb = this._toolbar[view];
 	var inDraftsFolder = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
 
-	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
-		tb.getButton(ZmOperation.REPLY_MENU).setVisible(!inDraftsFolder);
-	} else {
-		tb.getButton(ZmOperation.REPLY).setVisible(!inDraftsFolder);
-		tb.getButton(ZmOperation.REPLY_ALL).setVisible(!inDraftsFolder);
+	var buttons = [];
+	this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED) ? buttons.push(ZmOperation.REPLY_MENU) :
+													  buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+	buttons.push(this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED) ? ZmOperation.FORWARD_MENU : ZmOperation.FORWARD);
+	buttons.push(ZmOperation.EDIT);
+	for (var i = 0; i < buttons.length; i++) {
+		var button = tb.getButton(buttons[i]);
+		if (button) {
+			button.setVisible(!inDraftsFolder || (buttons[i] == ZmOperation.EDIT));
+		}
 	}
-
-	this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)
-		? tb.getButton(ZmOperation.FORWARD_MENU).setVisible(!inDraftsFolder)
-		: tb.getButton(ZmOperation.FORWARD).setVisible(!inDraftsFolder);
-
-	tb.getButton(ZmOperation.EDIT).setVisible(inDraftsFolder);
 };
 
 // this method gets overloaded if folder id is retrieved another way
