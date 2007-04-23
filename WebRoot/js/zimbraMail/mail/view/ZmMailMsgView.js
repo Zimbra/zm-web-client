@@ -984,10 +984,9 @@ function(msg, container, callback) {
 	// add the expand/collapse arrow button now that we have add to the DOM tree
 	var expandHeaderEl = document.getElementById(this._expandHeaderId);
 	if (expandHeaderEl) {
-		this._expandButton = new DwtButton(this, null, "DwtToolbarButton");
+		this._expandButton = new DwtToolBarButton(this);
 		var image = this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed";
 		this._expandButton.setImage(image);
-		this._expandButton.setSize("14", "14");
 		this._expandButton.reparentHtmlElement(this._expandHeaderId);
 		this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener))
 	}
