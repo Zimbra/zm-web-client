@@ -52,6 +52,10 @@ function() {
 ZmSoundPlayer.COMPACT_EVENT = "Compact"
 ZmSoundPlayer.HELP_EVENT = "Help"
 
+ZmSoundPlayer._PLAYING	= "Playing";
+ZmSoundPlayer._PAUSED	= "Paused";
+ZmSoundPlayer._NONE 	= "None";
+
 /**
  * Plays the currently loaded sound.
  */
@@ -74,6 +78,7 @@ function() {
 			// Will start playing automatically.
 			this._getPlugin();
 		}
+		this._setPlayState(ZmSoundPlayer._PLAYING);
 	}
 };
 
@@ -84,6 +89,7 @@ ZmSoundPlayer.prototype.pause =
 function() {
 	if (this._soundPlugin) {
 		this._soundPlugin.pause();
+		this._setPlayState(ZmSoundPlayer._PAUSED);
 	}
 };
 
@@ -173,6 +179,12 @@ function() {
 	DwtControl.prototype.dispose.call(this);
 };
 
+ZmSoundPlayer.prototype._setPlayState =
+function(state) {
+	this._playButton.setToggled(state == ZmSoundPlayer._PLAYING);
+	this._pauseButton.setToggled(state == ZmSoundPlayer._PAUSED);
+};
+
 ZmSoundPlayer.prototype._setStatus =
 function(time) {
 	if (!this._durationStr) {
@@ -207,6 +219,9 @@ function(event) {
 			this._timeSlider.setValue(event.time);
 		}
 		this._setStatus(event.time);
+	}
+	if (event.finished) {
+		this._setPlayState(ZmSoundPlayer._NONE);
 	}
 	this.notifyListeners(DwtEvent.ONCHANGE, event);
 };
