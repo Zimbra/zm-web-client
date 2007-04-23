@@ -60,21 +60,11 @@ function() {
 // Data
 //
 
-ZmQuickAddDialog.prototype._borderStyle = "DwtSemiModalDialog";
+ZmQuickAddDialog.prototype.TEMPLATE = "ajax.dwt.templates.Widgets#DwtSemiModalDialog";
 
 //
 // Public methods
 //
-
-ZmQuickAddDialog.prototype.setContent =
-function(text) {
-	this._contentDiv.innerHTML = text;
-};
-
-ZmQuickAddDialog.prototype.setTitle =
-function(title) {
-	this._titleCell.innerHTML = title;
-};
 
 ZmQuickAddDialog.prototype.addSelectionListener = 
 function(buttonId, listener) {

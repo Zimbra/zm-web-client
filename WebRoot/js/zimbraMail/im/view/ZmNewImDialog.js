@@ -28,7 +28,7 @@ function ZmNewImDialog(parent, className, screenName) {
 	this._screenName = screenName;
 	var title = "Instant Message - " + screenName;
 
-	DwtDialog.call(this, parent, className, title, DwtDialog.NO_BUTTONS);
+	DwtBaseDialog.call(this, parent, className, title);
 	this.setContent(this._contentHtml());
 
     this._sendButton = new DwtButton(this);
@@ -52,7 +52,7 @@ function ZmNewImDialog(parent, className, screenName) {
  		"Ya, ok.");
 }
 
-ZmNewImDialog.prototype = new DwtDialog;
+ZmNewImDialog.prototype = new DwtBaseDialog;
 ZmNewImDialog.prototype.constructor = ZmNewImDialog;
 
 ZmNewImDialog.IMOUT_ID = "imout";
