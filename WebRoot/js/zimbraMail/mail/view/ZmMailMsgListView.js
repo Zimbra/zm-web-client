@@ -354,7 +354,7 @@ function(msg) {
 		if (folder) {
 			folderCell.innerHTML = folder.getName();
 		}
-		if (items[i].folderId == ZmFolder.ID_TRASH) {
+		if (msg.folderId == ZmFolder.ID_TRASH) {
 			this._changeTrashStatus(msg);
 		}
 	}
