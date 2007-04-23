@@ -34,11 +34,9 @@ function ZmSoundPlayer(parent, voicemail, className, positionType) {
 	this._playButton = null;
 	this._pauseButton = null;
 	this._timeSlider = null;
-	this._volumeButton = null;
 
 	this._pluginMissing = DwtSoundPlugin.isPluginMissing();
 	this._createHtml();
-	this._volume = DwtSoundPlugin.MAX_VOLUME;
 	
 	this._pluginChangeListenerObj = new AjxListener(this, this._pluginChangeListener);
 };
@@ -101,18 +99,6 @@ function() {
 };
 
 /**
- * Adjusts the volume of the player.
- *
- * @param volume the volume on a scale of 0 - DwtSoundPlugin.MAX_VOLUME.
- */
-ZmSoundPlayer.prototype.setVolume =
-function(volume) {
-	if (this._soundPlugin) {
-		this._soundPlugin.setVolume(volume);
-	}
-};
-
-/**
  * Sets the compactness pf the player.
  *
  * @param compact if true, then only the play button is displayed
@@ -123,7 +109,6 @@ function(compact) {
 		// Set visiblity.
 		this._timeSlider.setVisible(!compact);
 		this._pauseButton.setVisible(!compact);
-		this._volumeButton.setVisible(!compact);
 		this._isCompact = compact;
 		this._setStatus(0);
 
@@ -226,25 +211,6 @@ function(event) {
 	this.notifyListeners(DwtEvent.ONCHANGE, event);
 };
 
-ZmSoundPlayer.prototype._volumeButtonListener =
-function(event) {
-	if (!this._volumeMenu) {
-		this._volumeMenu = new DwtMenu(this._volumeButton, DwtMenu.GENERIC_WIDGET_STYLE, "DwtMenu DwtVolumeMenu");
-		this._volumeSlider = new DwtSlider(this._volumeMenu, DwtSlider.VERTICAL, "DwtVerticalSlider DwtVolumeSlider");
-		this._volumeSlider.setRange(0, this._volume, this._volume);
-		this._volumeSlider.addChangeListener(new AjxListener(this, this._volumeSliderListener));
-	}
-	this._volumeButton.popup(this._volumeMenu);
-};
-
-ZmSoundPlayer.prototype._volumeSliderListener =
-function(event) {
-	if (this._soundPlugin) {
-		this._volume = this._volumeSlider.getValue();
-		this._soundPlugin.setVolume(this._volume);
-	}
-};
-
 ZmSoundPlayer.prototype._getPlugin =
 function(url) {
 	if (this._pluginMissing) {
@@ -258,7 +224,7 @@ function(url) {
 			offscreen: true, 
 			positionType: DwtControl.RELATIVE_STYLE,
 			url: this.voicemail.soundUrl,
-			volume: this._volume
+			volume: DwtSoundPlugin.MAX_VOLUME
 		};
 		this._soundPlugin = DwtSoundPlugin.create(args);
 		this._soundPlugin.addChangeListener(this._pluginChangeListenerObj);
@@ -289,12 +255,6 @@ function() {
 	this._timeSlider.replaceElement(id + "_postition");
 	this._timeSlider.addChangeListener(new AjxListener(this, this._timeSliderListener));
 
-	this._volumeButton = new DwtButton(this);
-	this._volumeButton.replaceElement(id + "_volume");
-	this._volumeButton.setImage("Volume");
-	this._volumeButton.setToolTipContent(ZmMsg.volume);
-	this._volumeButton.addSelectionListener(new AjxListener(this, this._volumeButtonListener));
-	
 	this.setCompact(true);
 };
 
