@@ -87,11 +87,15 @@ function(node) {
 	this.name =  node.name;
 	if (node.used && node.used.length) this.used =  node.used[0]._content;
 	if (this.limit && this.limit.length) this.limit = node.limit[0]._content;
-	this._featureNames = [];
+	this._initializeFeatures();
 	var features = node.callfeatures[0].callfeature;
 	if (features) {
 		for (var i = 0, count = features.length; i < count; i++) {
-			this._featureNames[i] = features[i].name;
+			var name = features[i].name;
+			var feature = this._features[name];
+			if (feature) {
+				feature.isSubscribed = true;
+			}
 		}
 	}
 };
@@ -102,7 +106,7 @@ function(node) {
 
 ZmPhone.prototype.getCallFeatures = 
 function(callback) {
-	if (this._features) {
+	if (this._featuresDefined) {
 		if (callback) {
 			callback.run(this._features);
 		}
@@ -110,8 +114,11 @@ function(callback) {
 	    var soapDoc = AjxSoapDoc.create("GetVoiceFeaturesRequest", "urn:zimbraVoice");
 	    var node = soapDoc.set("phone");
 	    node.setAttribute("name", this.name);
-	    for (var i = 0, count = this._featureNames.length; i < count; i++) {
-	    	soapDoc.set(this._featureNames[i], null, node);
+	    for (var i in this._features) {
+	    	var feature = this._features[i];
+	    	if (feature.isSubscribed) {
+		    	soapDoc.set(feature.name, null, node);
+	    	}
 	    }
 	    var respCallback = new AjxCallback(this, this._handleResponseGetVoiceFeatures, callback);
 	    var params = {
@@ -126,19 +133,18 @@ function(callback) {
 ZmPhone.prototype._handleResponseGetVoiceFeatures = 
 function(callback, response) {
 	var features = response._data.GetVoiceFeaturesResponse.phone[0];
-	this._features = {};
-	this._initializeFeatures();
 	for(var i in features) {
 		if (i == ZmCallFeature.VOICEMAIL_PREFS) {
 			var voicemailPrefs = features[i][0].pref;
 			this._loadVoicemailPrefs(voicemailPrefs);
 		} else {
 			var feature = this._features[i];
-			if (feature) {
-				this._features[i]._loadCallFeature(features[i][0]);
+			if (feature) { //TODO: this check is sposed to be unnecessary.
+				feature._loadCallFeature(features[i][0]);
 			}
 		}
 	}
+	this._featuresDefined = true;
 	if (callback) {
 		callback.run(this._features);
 	}
@@ -157,18 +163,15 @@ function(voicemailPrefs) {
 
 ZmPhone.prototype._initializeFeatures = 
 function() {
+	this._featuresDefined = false;
+	this._features = {};
 	for(var i = 0, count = ZmCallFeature.CALL_FEATURES.length; i < count; i++) {
 		var name = ZmCallFeature.CALL_FEATURES[i];
-		var feature = new ZmCallFeature(this._appCtxt, name);
-		feature.data = {};
-		this._features[name] = feature;
+		this._features[name] = new ZmCallFeature(this._appCtxt, name, false);
 	}
 	for(var i = 0, count = ZmCallFeature.VOICE_FEATURES.length; i < count; i++) {
 		var name = ZmCallFeature.VOICE_FEATURES[i];
-		var feature = new ZmCallFeature(this._appCtxt, name);
-		feature.isVoicemailPref = true;
-		feature.data.value = "";
-		this._features[name] = feature;
+		this._features[name] = new ZmCallFeature(this._appCtxt, name, true);
 	}
 };
 
