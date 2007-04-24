@@ -33,6 +33,7 @@ function ZmVoicemailListController(appCtxt, container, app) {
 	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
+	this._listeners[ZmOperation.REPLY] = new AjxListener(this, this._replyListener);
 	this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
 	this._listeners[ZmOperation.AUTO_PLAY] = new AjxListener(this, this._autoPlayListener);
 	this._listeners[ZmOperation.MARK_HEARD] = new AjxListener(this, this._markHeardListener);
@@ -81,6 +82,7 @@ function() {
 	list.push(ZmOperation.SAVE);
 	list.push(ZmOperation.DELETE);
 	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.REPLY);
 	list.push(ZmOperation.FORWARD);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.AUTO_PLAY);
@@ -91,6 +93,7 @@ function() {
 ZmVoicemailListController.prototype._getActionMenuOps =
 function() {
 	var list = this._flagOps();
+	list.push(ZmOperation.REPLY);
 	list.push(ZmOperation.FORWARD);
 	list.push(ZmOperation.SAVE);
 	list.push(ZmOperation.DELETE);
@@ -182,12 +185,55 @@ function(ev) {
 	// pointing at. Because the server will send back a "Content-Disposition:attachment"
 	// header for this url, the browser opens a dialog to let the user save the file.
 	var voicemail = this._getView().getSelection()[0];
-	document.location = voicemail.soundUrl + "&disp=a";
+	document.location = this._getAttachmentUrl(voicemail);
+};
+
+ZmVoicemailListController.prototype._getAttachmentUrl = 
+function(voicemail) {
+	return voicemail.soundUrl + "&disp=a";
+};
+
+ZmVoicemailListController.prototype._replyListener = 
+function(ev) {
+	var voicemail = this._getView().getSelection()[0];
+	var contact = voicemail.participants.get(0);
+	this._sendMail(ev, contact.getEmail());
 };
 
 ZmVoicemailListController.prototype._forwardListener = 
 function(ev) {
+	this._sendMail(ev);
+};
+
+ZmVoicemailListController.prototype._sendMail = 
+function(ev, to) {
 	var voicemail = this._getView().getSelection()[0];
+    var soapDoc = AjxSoapDoc.create("UploadVoiceMailRequest", "urn:zimbraVoice");
+    var node = soapDoc.set("vm");
+    node.setAttribute("id", voicemail.id);
+    node.setAttribute("phone", this._folder.phone.name);
+    var params = {
+    	soapDoc: soapDoc, 
+    	asyncMode: true,
+		callback: new AjxCallback(this, this._handleResponseUpload, [ev, to])
+	};
+	this._appCtxt.getAppController().sendRequest(params);
+   
+};
+
+ZmVoicemailListController.prototype._handleResponseUpload = 
+function(ev, to, response) {
+	var voicemail = this._getView().getSelection()[0];
+	var mailMsg = new ZmMailMsg(this._appCtxt);
+	mailMsg.getAttachments()[0] = {
+		name: "voicemail.wav", 
+		ct: "audio/x-wave",
+		cl: this._getAttachmentUrl(voicemail),
+		relativeCl: true
+	};
+	mailMsg.hasAttach = true;
+	var id = response._data.UploadVoiceMailResponse.upload[0].id;
+	mailMsg.addAttachmentId(id);
 	var duration = AjxDateUtil.computeDuration(voicemail.duration);
 	var date = AjxDateUtil.computeDateStr(new Date(), voicemail.date);
 	var callingParty = voicemail.getCallingParty(ZmVoiceItem.FROM);
@@ -198,7 +244,8 @@ function(ev) {
 	var params = {
 		action: ZmOperation.NEW_MESSAGE, 
 		inNewWindow: this._app._inNewWindow(ev), 
-		msg: new ZmMailMsg(this._appCtxt),
+		msg: mailMsg,
+		toOverride: to,
 		subjOverride: ZmMsg.voicemailSubject,
 		extraBodyText: body
 	};

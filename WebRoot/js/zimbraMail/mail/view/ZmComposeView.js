@@ -286,7 +286,7 @@ function() {
 */
 ZmComposeView.prototype.getMsg =
 function(attId, isDraft) {	
-	// Check destination addresses.
+	//Check destination addresses.
 	var addrs = this._collectAddrs();
 
 	// Any addresses at all provided? If not, bail.
@@ -428,8 +428,15 @@ function(attId, isDraft) {
 		msg.irtMessageId = this._msg.messageId;
 	}
 
-	if (attId)
-		msg.setAttachmentId(attId);
+	if (attId) {
+		msg.addAttachmentId(attId);
+	}
+	if (this._msg) {
+		 var msgAttId = this._msg.getAttachmentId();
+		 if (msgAttId) {
+			msg.addAttachmentId(msgAttId);
+		 }
+	}
 
 	if (this._msgAttId)
 		msg.setMessageAttachmentId(this._msgAttId);
@@ -1179,8 +1186,7 @@ function(action, msg, extraBodyText, incOption) {
 		this._htmlEditor.setContent(value);
 	}
 	
-	if (action != ZmOperation.NEW_MESSAGE)
-		this._showForwardField(msg, action, incOption);
+	this._showForwardField(msg, action, incOption);
 };
 
 ZmComposeView.prototype.resetBody =
@@ -1550,12 +1556,7 @@ function(msg, action, replyPref) {
 
 		this._attachCount = 1;
 	}
-	else if (msg &&
-			((msg.hasAttach && 
-			 (action == ZmOperation.FORWARD_INLINE || 
-			  action == ZmOperation.REPLY || action == ZmOperation.REPLY_ALL)) ||
-			 action == ZmOperation.DRAFT))
-	{
+	else if (msg && msg.hasAttach) {
 		var attLinks = msg.getAttachmentLinks();
 		if (attLinks.length > 0) {
 			html[idx++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%>";
@@ -1566,18 +1567,22 @@ function(msg, action, replyPref) {
 				if (i == 0) {
 					html[idx++] = AjxImg.getImageHtml("Attachment");
 				}
-				html[idx++] = "</td><td width=1%><input name='";
-				html[idx++] = ZmComposeView.FORWARD_ATT_NAME;
-				html[idx++] = "' type='checkbox'";
-				if (action == ZmOperation.FORWARD || 
-					action == ZmOperation.FORWARD_INLINE || 
-					action == ZmOperation.DRAFT)
-				{
-					html[idx++] = " CHECKED";
+				html[idx++] = "</td><td width=1%>";
+				if (action != ZmOperation.NEW_MESSAGE) { // Disallow unchecking of attachments inserted automatically.
+					html[idx++] = "<input name='";
+					html[idx++] = ZmComposeView.FORWARD_ATT_NAME;
+					html[idx++] = "' type='checkbox'";
+					if (action == ZmOperation.FORWARD || 
+						action == ZmOperation.FORWARD_INLINE || 
+						action == ZmOperation.DRAFT)
+					{
+						html[idx++] = " CHECKED";
+					}
+					html[idx++] = " id='";
+					html[idx++] = att.part;
+					html[idx++] = "'>";
 				}
-				html[idx++] = " id='";
-				html[idx++] = att.part;
-				html[idx++] = "'></td><td class='nobreak'>";
+				html[idx++] = "</td><td class='nobreak'>";
 				html[idx++] = att.link;
 				html[idx++] = AjxStringUtil.htmlEncode(att.label);
 				html[idx++] = "</a>";

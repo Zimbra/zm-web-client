@@ -363,10 +363,22 @@ function(parts) {
 *
 * @param id		an attachment ID
 */
-ZmMailMsg.prototype.setAttachmentId =
+ZmMailMsg.prototype.addAttachmentId =
 function(id) {
+	if (this._attId) {
+		id = this._attId + "," + id;
+	}
 	this._onChange("attachmentId", id);
 	this._attId = id;
+};
+
+/**
+* Returns the ID of any attachments which have already been uploaded.
+*
+*/
+ZmMailMsg.prototype.getAttachmentId = 
+function() {
+	return this._attId;
 };
 
 /**
@@ -866,7 +878,7 @@ function(findHits) {
                 else if (attach.s < 1024^2)	props.size = Math.round((attach.s / 1024) * 10) / 10 + " KB";
                 else 						props.size = Math.round((attach.s / (1024*1024)) * 10) / 10 + " MB";
     		} else {
-    			useCL = attach.cl && ZmMailMsg.URL_RE.test(attach.cl);
+    			useCL = attach.cl && (attach.relativeCl || ZmMailMsg.URL_RE.test(attach.cl));
     		}
 
 			// handle rfc/822 attachments differently

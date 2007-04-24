@@ -27,8 +27,6 @@ function ZmCallListController(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	
 	ZmVoiceListController.call(this, appCtxt, container, app);
-
-	this._listeners[ZmOperation.VIEW_BY_DATE] = new AjxListener(this, this._callByDateListener);
 }
 
 ZmCallListController.prototype = new ZmVoiceListController;
@@ -62,7 +60,6 @@ function(view) {
 ZmCallListController.prototype._getToolBarOps =
 function() {
 	var list = [];
-	list.push(ZmOperation.VIEW_BY_DATE);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.PRINT);
 	return list;
@@ -92,9 +89,4 @@ function(ev) {
 	this._appCtxt.getPrintView().renderHtml(html);
 };
 
-
-ZmCallListController.prototype._callByDateListener = 
-function(ev) {
-//	alert('Grrrrrr');
-};
 
