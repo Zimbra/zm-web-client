@@ -657,7 +657,13 @@ function(message, viewMode) {
             this.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
         }
 
-		this.repeatCustomMonthDay = this.startDate.getDate();
+        var tzrule = AjxTimezone.getRule(AjxTimezone.getClientId(this.getTimezone()));
+        if (tzrule && tzrule.aliasId) {
+            tzrule = AjxTimezone.getRule(tzrule.aliasId);
+            this.setTimezone(tzrule.serverId);
+        }
+
+        this.repeatCustomMonthDay = this.startDate.getDate();
 
 		// parse out attendees for this invite
 		this._attendees[ZmAppt.PERSON] = [];
