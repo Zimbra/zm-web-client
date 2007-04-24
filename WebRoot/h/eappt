@@ -406,8 +406,13 @@
                         </tr>
                         <tr>
                             <td valign='top' width=1% align=right nowrap> <fmt:message key="attendees"/>: </td>
-                            <td colspan=2 nowrap><textarea rows="3" style='width:99%' cols="80"
-                                                               name="attendees">${fn:escapeXml(compose.attendees)}</textarea></td>
+                            <td colspan=2 nowrap>
+                                <div class="ZhAC ZhACTo">
+                                    <textarea id="attField" rows="3" style='width:99%' cols="80"
+                                              name="attendees">${fn:escapeXml(compose.attendees)}</textarea>
+                                    <br><div class='ZhACCont' id="attContainer" style='width:99%;'></div>
+                                </div>
+                            </td>
                         </tr>
                         <c:set var="firstAttachment" value="${true}"/>
                         <c:if test="${!empty compose.messageAttachments}">
@@ -516,4 +521,8 @@
         <input type="hidden" name="repeatEndDate" value="${fn:escapeXml(compose.repeatEndDate)}"/>
 
     </form>
+
+    <app:autoComplete>
+        initAuto("attField","attContainer");
+    </app:autoComplete>
 </app:view>
