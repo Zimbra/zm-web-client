@@ -82,7 +82,7 @@
                                 <td valign='top' width=1% align=right nowrap> <fmt:message key="to"/>: </td>
                                 <td colspan=2 nowrap>
                                     <div class="ZhAC ZhACTo">
-                                    <textarea  tabindex="1" id="toField" rows="2" style='width:99%' cols="80"
+                                    <textarea  id="toField" rows="2" style='width:99%' cols="80"
                                                                name="to">${fn:escapeXml(compose.to)}</textarea>
                                         <br><div class='ZhACCont' id="toContainer" style='width:99%;'></div></div>
                                 </td>
@@ -92,7 +92,7 @@
                                 <td valign='top' align=right nowrap> <fmt:message key="cc"/>: </td>
                                 <td colspan=2 nowrap>
                                     <div class="ZhAC ZhACCc">
-                                        <input tabindex="2" style='width:99%' id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" size=100 name="cc">
+                                        <input style='width:99%' id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" size=100 name="cc">
                                         <br><div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
                                     </div>
                                 </td>
@@ -101,14 +101,14 @@
                                 <td valign='top' align=right nowrap> <fmt:message key="bcc"/>: </td>
                                 <td colspan=2 nowrap>
                                     <div class="ZhAC ZhAcBcc">
-                                        <input tabindex="3" style='width:99%' id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" size=100 name="bcc">
+                                        <input style='width:99%' id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" size=100 name="bcc">
                                         <br><div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
                                     </div>
                                 </td>
                             </tr>
                             <tr>
                                 <td valign='top' align=right nowrap> <fmt:message key="subject"/>: </td>
-                                <td colspan=2 nowrap><input tabindex="4" style='width:99%' type="text" size=100 name="subject"
+                                <td colspan=2 nowrap><input style='width:99%' type="text" size=100 name="subject"
                                                             value="${fn:escapeXml(compose.subject)}"></td>
                             </tr>
                             <c:set var="firstAttachment" value="${true}"/>
@@ -166,7 +166,7 @@
                             </c:if>
                             <tr>
                                 <td colspan="3" >
-                                    <textarea tabindex="5" class='MsgCompose' rows="30" cols="80" style='width:100%'
+                                    <textarea class='MsgCompose' rows="30" cols="80" style='width:100%'
                                               name="body">${fn:escapeXml(compose.content)}</textarea>
                                 </td>
                             </tr>

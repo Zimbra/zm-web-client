@@ -21,6 +21,7 @@
         var e = aResultItem[1];
         var f = aResultItem[2];
         var l = aResultItem[3];
+        var g = aResultItem[4];
         var fs = zhStartsWith(f, query);
         var ls = fs ? false : zhStartsWith(l, query);
         var es = fs || ls ? false : zhStartsWith(e, query);
@@ -38,7 +39,9 @@
         }
 
         if(sResult) {
-            return ["<table><tr><td><img src='/zimbra/images/contacts/Contact.gif'></td><td>",
+            return ["<table><tr><td><img src='/zimbra/images/contacts/",
+                    g == 1 ? "GALContact.gif" : "Contact.gif",
+                    "'></td><td>",
                     zhFmt(f, fls ? fq : query, fs),
                     " ",
                     zhFmt(l, fls ? lq : query, ls),
@@ -50,12 +53,12 @@
             return "";
         }
     };
-    var myDataSource = new YAHOO.widget.DS_XHR("/zimbra/h/ac", ["Result","m","e","f","l"]);
+    var myDataSource = new YAHOO.widget.DS_XHR("/zimbra/h/ac", ["Result","m","e","f","l","g"]);
     var initAuto = function(field,container) {
         var ac = new YAHOO.widget.AutoComplete(field, container, myDataSource);
         ac.delimChar = [",",";"];
         ac.queryDelay = 0.25;
-        ac.useShadow = true;
+        //ac.useShadow = true;
         ac.formatResult = myacformat;
         ac.queryMatchContains = true;
         ac.maxResultsDisplayed = 20;
