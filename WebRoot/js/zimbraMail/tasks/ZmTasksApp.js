@@ -96,6 +96,7 @@ function() {
 							 orgPackage:		"TasksCore",
 							 treeController:	"ZmTaskTreeController",
 							 labelKey:			"tasks",
+							 itemsKey:			"tasks",
 							 hasColor:			true,
 							 defaultColor:		ZmOrganizer.C_GRAY,
 							 views:				["task"],

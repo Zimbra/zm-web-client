@@ -38,6 +38,7 @@
 * @param tree		[ZmTree]		tree model that contains this folder
 * @param numUnread	[int]*			number of unread items for this folder
 * @param numTotal	[int]*			number of items for this folder
+* @param sizeTotal	[int]*			total size of folder's items
 * @param url		[string]*		URL for this folder's feed
 * @param owner		[string]* 		Owner for this organizer
 * @param zid		[string]*		Zimbra ID of owner, if remote folder
@@ -245,8 +246,9 @@ function(obj, isSearch, skipNotify) {
 	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
 	this.children.add(folder, index);
 
-	if (!skipNotify)
+	if (!skipNotify) {
 		folder._notify(ZmEvent.E_CREATE);
+	}
 };
 
 /*

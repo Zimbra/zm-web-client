@@ -227,12 +227,6 @@ function(view) {
 	this._listView[view].set(this._list);
 };
 
-ZmNotebookFileController.prototype._resetNavToolBarButtons =
-function(view) {
-	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
-	this._showListRange(view);
-};
-
 ZmNotebookFileController.prototype._setFilterButtonProps =
 function(op, setChecked) {
 	var icon = ZmOperation.getProp(op, "image");

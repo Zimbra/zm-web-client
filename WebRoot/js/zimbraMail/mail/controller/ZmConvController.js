@@ -357,6 +357,11 @@ function(view) {
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_DBL_FORW, ZmMsg.next + " " + ZmMsg.conversation);
 }
 
+ZmConvController.prototype._getNumTotal =
+function() {
+	return this._conv.numMsgs;
+};
+
 // overloaded...
 ZmConvController.prototype._search = 
 function(view, offset, limit, callback) {

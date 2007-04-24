@@ -109,8 +109,9 @@ function(searchResults, view) {
 	this._currentView = view || this._defaultView();
 	this._activeSearch = searchResults;
 	// save current search for use by replenishment
-	if (searchResults)
+	if (searchResults) {
 		this._currentSearch = searchResults.search;
+	}
 	this.currentPage = 1;
 	this.maxPage = 1;
 	this.pageIsDirty = {};
@@ -1009,6 +1010,12 @@ function() {
 	this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());
 };
 
+// this method gets overloaded if folder id is retrieved another way
+ZmListController.prototype._getSearchFolderId = 
+function() {
+	return this._activeSearch.search ? this._activeSearch.search.folderId : null;
+};
+
 // Pagination
 
 ZmListController.prototype._cacheList =
@@ -1148,8 +1155,9 @@ function(callback) {
 			replenishmentDone = true;
 		}
 	}
-	if (callback && !replenishmentDone)
+	if (callback && !replenishmentDone) {
 		callback.run();
+	}
 };
 
 ZmListController.prototype._replenishList =
@@ -1161,8 +1169,9 @@ function(view, replCount, callback) {
 	if (idxStart < totalCount) {
 		// replenish from cache
 		var idxEnd = idxStart + replCount;
-		if (idxEnd > totalCount)
+		if (idxEnd > totalCount) {
 			idxEnd = totalCount;
+		}
 		var list = this._list.getVector().getArray();
 		var sublist = list.slice(idxStart, idxEnd);
 		var subVector = AjxVector.fromArray(sublist);
@@ -1197,8 +1206,9 @@ function(view, replCount, callback) {
 		var respCallback = new AjxCallback(this, this._handleResponseGetMoreToReplenish, [view, callback]);
 		this._search(view, this._list.size(), replCount, respCallback);
 	} else {
-		if (callback)
+		if (callback) {
 			callback.run();
+		}
 	}
 };
 
@@ -1244,23 +1254,27 @@ ZmListController.prototype._resetNavToolBarButtons =
 function(view) {
 	if (!this._navToolBar[view]) return;
 
-	if (this._navToolBar[view].hasDoubleArrows)
+	if (this._navToolBar[view].hasDoubleArrows) {
 		this._navToolBar[view].enable([ZmOperation.PAGE_DBL_BACK, ZmOperation.PAGE_DBL_FORW], false);
+	}
 
 	if (this._navToolBar[view].hasSingleArrows) {
 		var offset = this._listView[view].getOffset();
 		this._navToolBar[view].enable(ZmOperation.PAGE_BACK, offset > 0);
 
-		// determine also if we have more cached conv to show (in case more is wrong)
+		// determine if we have more cached items to show (in case hasMore is wrong)
 		var hasMore = false;
 		if (this._list) {
 			hasMore = this._list.hasMore();
-			if (!hasMore && ((offset + this._listView[view].getLimit()) < this._list.size()))
+			if (!hasMore && ((offset + this._listView[view].getLimit()) < this._list.size())) {
 				hasMore = true;
+			}
 		}
 
 		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, hasMore);
 	}
+
+	this._navToolBar[view].setText(this._getNavText(view));
 };
 
 ZmListController.prototype.enablePagination =
@@ -1277,18 +1291,41 @@ function(enabled, view) {
 	}
 };
 
-ZmListController.prototype._showListRange =
+ZmListController.prototype._getNavText =
+function(view) {
+	var se = this._getNavStartEnd(view);
+	if (!se) { return ""; }
+	
+	var total = this._getNumTotal();
+	var msgText = total ? ZmMsg.navText2 : ZmMsg.navText1;
+	return AjxMessageFormat.format(msgText, [se.start, se.end, total]);
+};
+
+ZmListController.prototype._getNavStartEnd =
 function(view) {
 	var offset = this._listView[view].getOffset();
 	var limit = this._listView[view].getLimit();
 	var size = this._list.size();
-	var text = "";
+
+	var start, end;
 	if (size > 0) {
-		var start = offset + 1;
-		var end = Math.min(offset + limit, size);
-		text = start + " - " + end;
+		start = offset + 1;
+		end = Math.min(offset + limit, size);
 	}
-	this._navToolBar[view].setText(text);
+	
+	return (start && end) ? {start:start, end:end} : null;
+};
+
+ZmListController.prototype._getNumTotal =
+function() {
+	var folderId = this._getSearchFolderId();
+	if (folderId) {
+		var folder = this._appCtxt.getById(folderId);
+		if (folder) {
+			return folder.numTotal;
+		}
+	}
+	return null;
 };
 
 // default callback before a view is shown - enable/disable nav buttons

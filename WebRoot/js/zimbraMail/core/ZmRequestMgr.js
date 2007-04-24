@@ -74,6 +74,10 @@ function() {
 	return "Req_" + ZmRequestMgr._nextReqId++;
 };
 
+ZmRequestMgr.prototype.toString =
+function() {
+	return "ZmRequestMgr";
+};
 
 /**
 * Sends a request to the CSFE and processes the response. Notifications and
@@ -434,21 +438,6 @@ function(modifies) {
 	// clients can set this directly with the ID of the item as the key;
 	// clear it out before handling a set of notifications.
 	this._modifyHandled = {};
-
-	// mark the last "item moved" notify to trigger replenishment (we don't want to
-	// replenish after each one)
-	// TODO: handle this a different way
-	/*
-	var lastMove = null;
-	for (var i = 0; i < list.length; i++) {
-		if (list[i].l) {
-			lastMove = i;
-		}
-	}
-	if (lastMove != null) {
-		list[lastMove].lastModify = true;
-	}
-	*/
 	
 	this._controller.runAppFunction("modifyNotify", modifies);
 

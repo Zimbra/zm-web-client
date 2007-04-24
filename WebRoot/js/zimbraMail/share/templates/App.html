@@ -78,3 +78,26 @@
 	</body>
 	</html>
 </template>
+
+<template id="FolderTooltip">
+	<table cellpadding=0 cellspacing=0 border=0 width=100>
+		<tr>
+			<td valign='top'>
+				<$= data.itemText $>:
+			</td>
+			<td valign='top'>
+				<$= data.numTotal $>
+			</td>
+		</tr>
+<$ if (data.sizeTotal) { $>
+		<tr>
+			<td valign='top'>
+				<$= ZmMsg.size $>:
+			</td>
+			<td valign='top'>
+				<$= AjxUtil.formatSize(data.sizeTotal) $>
+			</td>
+		</tr>
+<$ } $>
+	</table>
+</template>

@@ -122,6 +122,9 @@ function(view) {
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
 };
 
+// no support for showing total items, which are msgs
+ZmHybridController.prototype._getNumTotal = function() { return null; }
+
 ZmHybridController.prototype._getMoreSearchParams = 
 function(params) {
 	// OPTIMIZATION: find out if we need to pre-fetch the first hit message

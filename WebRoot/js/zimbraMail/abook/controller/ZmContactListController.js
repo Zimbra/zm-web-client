@@ -283,6 +283,11 @@ function() {
 	return params;
 };
 
+ZmContactListController.prototype._getSearchFolderId = 
+function() {
+	return this._folderId;
+};
+
 ZmContactListController.prototype._initializeToolBar =
 function(view) {
 	if (this._toolbar[view]) return;
@@ -417,31 +422,28 @@ ZmContactListController.prototype._resetNavToolBarButtons =
 function(view) {
 	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
 
-	if (this._list.isCanonical)
+	if (this._list.isCanonical) {
 		this._navToolBar[view].enable(ZmOperation.PAGE_FORWARD, this._list.hasMore());
+	}
 
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_BACK, ZmMsg.previous + " " + ZmMsg.page);
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
-
-	this._showListRange(view);
 };
 
-ZmContactListController.prototype._showListRange =
+ZmContactListController.prototype._getNavStartEnd =
 function(view) {
 	var offset = this._listView[view].getOffset();
 	var list = this._listView[view].getList();
 	var size = list ? list.size() : null;
 
-	var text = "";
+	var start, end;
 	if (size && size > 0) {
 		var start = offset + 1;
 		var end = offset + size;
-		text = start + " - " + end;
 	}
-	this._navToolBar[view].setText(text);
+
+	return (start && end) ? {start:start, end:end} : null;
 };
-
-
 
 // List listeners
 

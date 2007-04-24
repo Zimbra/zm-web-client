@@ -92,7 +92,8 @@ function(folder, result) {
 		for (var i = 0; i < movedItems.length; i++) {
 			movedItems[i].moveLocal(folder.id);
 		}
-		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE, {replenish:true});
+		// note: this happens before we process real notifications
+		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
 	}
 };
 
@@ -130,7 +131,7 @@ function(markAsSpam, folder, result) {
 		for (var i = 0; i < movedItems.length; i++) {
 			movedItems[i].moveLocal(folderId);
 		}
-		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE, {replenish:true});
+		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
 
 		var msg = markAsSpam ? ZmMsg.markedAsJunk : ZmMsg.markedAsNotJunk;
 		this._appCtxt.setStatusMsg(AjxMessageFormat.format(msg, movedItems.length));
@@ -170,6 +171,15 @@ function(items, on) {
 	}
 	if (items1.length) {
 		this.flagItems(items1, "read", on);
+	}
+};
+
+// set "force" flag to true on actual hard deletes, so that msgs
+// in a conv list are removed
+ZmMailList.prototype.deleteLocal =
+function(items) {
+	for (var i = 0; i < items.length; i++) {
+		this.remove(items[i], true);
 	}
 };
 
@@ -306,11 +316,12 @@ function(msgs) {
 };
 
 ZmMailList.prototype.remove = 
-function(item, bForce) {
+function(item, force) {
 	// Don't really remove an item if this is a list of msgs of a conv b/c a
 	// msg is always going to be part of a conv unless it's a hard delete!
-	if (!this.convId || bForce)
+	if (!this.convId || force) {
 		ZmList.prototype.remove.call(this, item);
+	}
 };
 
 ZmMailList.prototype.clear =

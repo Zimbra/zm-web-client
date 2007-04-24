@@ -203,6 +203,7 @@ function() {
 							 orgPackage:		"ContactsCore",
 							 treeController:	"ZmAddrBookTreeController",
 							 labelKey:			"addressBooks",
+							 itemsKey:			"contacts",
 							 hasColor:			true,
 							 defaultColor:		ZmOrganizer.C_GRAY,
 							 orgColor:			orgColor,
@@ -310,6 +311,14 @@ function(creates, force) {
 				create._handled = true;
 			}
 		}
+	}
+};
+
+ZmContactsApp.prototype.postNotify =
+function(notify) {
+	if (this._checkReplenishListView) {
+		this._checkReplenishListView._checkReplenish();
+		this._checkReplenishListView = null;
 	}
 };
 

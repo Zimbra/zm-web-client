@@ -274,6 +274,10 @@ function(parentNode, organizer, index) {
 	ti.setData(Dwt.KEY_OBJECT, organizer);
 	ti.setData(ZmTreeView.KEY_ID, this.overviewId);
 	ti.setData(ZmTreeView.KEY_TYPE, organizer.type);
+	var tooltip = organizer.getToolTip();
+	if (tooltip) {
+		ti.setToolTipContent(tooltip);
+	}
 	if (this._dragSrc) {
 		ti.setDragSource(this._dragSrc);
 	}

@@ -150,6 +150,8 @@ function() {
 	return (this.id == ZmOrganizer.ID_ROOT) ? null : ZmTag.COLOR_ICON[this.color];
 };
 
+ZmTag.prototype.getToolTip = function() {};
+
 ZmTag.prototype.notifyCreate =
 function(obj) {
 	var child = ZmTag.createFromJs(this, obj, this.tree, true);

@@ -230,6 +230,7 @@ function() {
 							 orgPackage:		"CalendarCore",
 							 treeController:	"ZmCalendarTreeController",
 							 labelKey:			"calendars",
+							 itemsKey:			"appointments",
 							 hasColor:			true,
 							 views:				["appointment"],
 							 folderKey:			"calendarFolder",

@@ -34,13 +34,15 @@ function ZmListView(parent, className, posStyle, view, type, controller, headerL
 	this.setDropTarget(dropTgt);
 	this._viewPrefix = ["V", "_", this.view, "_"].join("");
 
-	// create listeners for changes to the list model, and to tags
+	// create listeners for changes to the list model, folder tree, and tag list
 	this._listChangeListener = new AjxListener(this, this._changeListener);
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	var tagList = this._appCtxt.getTagTree();
 	if (tagList) {
 		tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	}
+	this._appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._folderChangeListener));
+
 	this._handleEventType = {};
 	this._handleEventType[this.type] = true;
 	this._disallowSelection = {};
@@ -159,22 +161,44 @@ function(ev) {
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: DELETE or MOVE");
         this.removeItem(item, true);
-		if (ev.getDetail("replenish")) {
-			var respCallback = new AjxCallback(this, this._handleResponseChangeListener);
-			this._controller._checkReplenish(respCallback);
-		} else {
-			this._handleResponseChangeListener();
-		}
+        this._controller._app._checkReplenishListView = this;
 		this._controller._resetToolbarOperations();		
 	}
 }
 
-ZmListView.prototype._handleResponseChangeListener =
-function(args) {
+ZmListView.prototype._checkReplenish =
+function() {
+	var respCallback = new AjxCallback(this, this._handleResponseCheckReplenish);
+	this._controller._checkReplenish(respCallback);
+};
+
+ZmListView.prototype._handleResponseCheckReplenish =
+function() {
 	if (this.size() == 0) {
 		this._controller._handleEmptyList(this);
 	} else {
+		this._controller._resetNavToolBarButtons(this._controller._getViewType());
 		this._setNextSelection();
+	}
+};
+
+ZmListView.prototype._folderChangeListener = 
+function(ev) {
+	// make sure this is current list view
+	if (this._appCtxt.getCurrentController() != this._controller) { return; }
+	// see if it will be handled by app's postNotify()
+	if (this._controller._app._checkReplenishListView == this) { return; }
+
+	var organizers = ev.getDetail("organizers");
+	var organizer = (organizers && organizers.length) ? organizers[0] : ev.source;
+
+	var id = organizer.id;
+	var fields = ev.getDetail("fields");
+	if (ev.event == ZmEvent.E_MODIFY) {
+		if (!fields) { return; }
+		if (fields[ZmOrganizer.F_TOTAL]) {
+			this._controller._resetNavToolBarButtons(this._controller._getViewType());
+		}
 	}
 };
 

@@ -212,12 +212,6 @@ function(parent, num) {
 	}
 };
 
-ZmTaskListController.prototype._resetNavToolBarButtons = 
-function(view) {
-	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
-	this._showListRange(view);
-};
-
 // Delete one or more items.
 ZmTaskListController.prototype._deleteListener =
 function(ev) {

@@ -273,12 +273,9 @@ function() {
 
 ZmNewWindow.prototype.getKeyMapName =
 function() {
-	var curView = this._appViewMgr.getCurrentView();
-	if (curView && curView.getController) {
-		var ctlr = curView.getController();
-		if (ctlr && ctlr.getKeyMapName) {
-			return ctlr.getKeyMapName();
-		}
+	var ctlr = this._appCtxt.getCurrentController();
+	if (ctlr && ctlr.getKeyMapName) {
+		return ctlr.getKeyMapName();
 	}
 	return "Global";
 };
@@ -287,12 +284,9 @@ ZmNewWindow.prototype.handleKeyAction =
 function(actionCode, ev) {
 	switch (actionCode) {
 		default: {
-			var curView = this._appViewMgr.getCurrentView();
-			if (curView && curView.getController) {
-				var ctlr = curView.getController();
-				if (ctlr && ctlr.handleKeyAction) {
-					return ctlr.handleKeyAction(actionCode, ev);
-				}
+			var ctlr = this._appCtxt.getCurrentController();
+			if (ctlr && ctlr.handleKeyAction) {
+				return ctlr.handleKeyAction(actionCode, ev);
 			} else {
 				return false;
 			}

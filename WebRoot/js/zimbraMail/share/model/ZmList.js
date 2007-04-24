@@ -107,8 +107,9 @@ function(item, index) {
 ZmList.prototype.remove = 
 function(item) {
 	this._vector.remove(item);
-	if (item.id)
+	if (item.id) {
 		delete this._idHash[item.id];
+	}
 }
 
 /**
@@ -476,15 +477,17 @@ ZmList.prototype.removeAllTagsLocal = function(items) {}
 // default action is to remove each deleted item from this list
 ZmList.prototype.deleteLocal =
 function(items) {
-	for (var i = 0; i < items.length; i++)
+	for (var i = 0; i < items.length; i++) {
 		this.remove(items[i]);
+	}
 };
 
 // default action is to remove each moved item from this list
 ZmList.prototype.moveLocal = 
 function(items, folderId) {
-	for (var i = 0; i < items.length; i++)
+	for (var i = 0; i < items.length; i++) {
 		this.remove(items[i]);
+	}
 };
 
 /*
@@ -644,7 +647,6 @@ function(ev) {
 		var curView = ctlr.getCurrentView();
 		if (curView) curView.setOffset(0);
 		ctlr._resetNavToolBarButtons(view);
-		ctlr._showListRange(view);
 	} else if (isCurrentList && ctlr && ctlr._currentSearch && (ev.event == ZmEvent.E_MOVE ||
 			   (ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME])) {
 		// on folder rename or move, update current query if folder is part of query

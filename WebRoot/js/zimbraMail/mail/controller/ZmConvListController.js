@@ -229,6 +229,9 @@ function(view) {
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_FORWARD, ZmMsg.next + " " + ZmMsg.page);
 };
 
+// no support for showing total items, which are msgs
+ZmConvListController.prototype._getNumTotal = function() { return null; }
+
 ZmConvListController.prototype._processPrePopView = 
 function(view) {
 	this._resetNavToolBarButtons(view);

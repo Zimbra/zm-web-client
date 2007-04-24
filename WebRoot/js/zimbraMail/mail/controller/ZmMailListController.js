@@ -678,12 +678,6 @@ function(view) {
 	}
 };
 
-// this method gets overloaded if folder id is retrieved another way
-ZmMailListController.prototype._getSearchFolderId = 
-function() {
-	return this._activeSearch.search ? this._activeSearch.search.folderId : null;
-};
-
 ZmMailListController.prototype._getMsg =
 function(item) {
 	item = (item && (item instanceof ZmMailItem))
@@ -945,12 +939,6 @@ function(parent, num) {
 		parent.enable([ZmOperation.SPAM, ZmOperation.MOVE], !isDrafts && num > 0);
 		parent.enable([ZmOperation.CHECK_MAIL], true);
 	}
-};
-
-ZmMailListController.prototype._resetNavToolBarButtons = 
-function(view) {
-	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
-	this._showListRange(view);
 };
 
 // Enable mark read/unread as appropriate.

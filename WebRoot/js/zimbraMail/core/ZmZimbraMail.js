@@ -1343,12 +1343,9 @@ function(ev) {
 
 ZmZimbraMail.prototype.getKeyMapName =
 function() {
-	var curView = this._appViewMgr.getCurrentView();
-	if (curView && curView.getController) {
-		var ctlr = curView.getController();
-		if (ctlr && ctlr.getKeyMapName) {
-			return ctlr.getKeyMapName();
-		}
+	var ctlr = this._appCtxt.getCurrentController();
+	if (ctlr && ctlr.getKeyMapName) {
+		return ctlr.getKeyMapName();
 	}
 	return "Global";
 };
@@ -1418,12 +1415,9 @@ function(actionCode, ev) {
 		}
 			
 		default: {
-			var curView = this._appViewMgr.getCurrentView();
-			if (curView && curView.getController) {
-				var ctlr = curView.getController();
-				if (ctlr && ctlr.handleKeyAction) {
-					return ctlr.handleKeyAction(actionCode, ev);
-				}
+			var ctlr = this._appCtxt.getCurrentController();
+			if (ctlr && ctlr.handleKeyAction) {
+				return ctlr.handleKeyAction(actionCode, ev);
 			} else {
 				return false;
 			}
@@ -1438,8 +1432,7 @@ function() {
 	// Set focus to the list view that's in the content pane. If there is no
 	// list view in the content pane, nothing happens. The list view will be
 	// found in the root tab group hierarchy.
-	var view = this._appViewMgr.getCurrentView();
-	var ctlr = (view && view.getController) ? view.getController() : null;
+	var ctlr = this._appCtxt.getCurrentController();
 	var content = ctlr ? ctlr.getCurrentView() : null;
 	if (content) {
 		this._appCtxt.getKeyboardMgr().grabFocus(content);

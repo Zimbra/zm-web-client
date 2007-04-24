@@ -534,6 +534,14 @@ function(creates, force) {
 	}
 };
 
+ZmMailApp.prototype.postNotify =
+function(notify) {
+	if (this._checkReplenishListView) {
+		this._checkReplenishListView._checkReplenish();
+		this._checkReplenishListView = null;
+	}
+};
+
 ZmMailApp.prototype.handleOp =
 function(op, params) {
 	var inNewWindow = false;

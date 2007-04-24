@@ -566,6 +566,9 @@ function(ev, treeView, overviewId) {
 			this._evHandled[overviewId] = true;
 		} else if (ev.event == ZmEvent.E_MODIFY) {
 			if (!fields) { return; }
+			if (fields[ZmOrganizer.F_TOTAL] || fields[ZmOrganizer.F_SIZE]) {
+				node.setToolTipContent(organizer.getToolTip(true));
+			}
 			var parentNode = this._getParentNode(organizer, ev, overviewId);
 			if (!parentNode) { return; }
 			if (fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_UNREAD] || fields[ZmOrganizer.F_FLAGS] || fields[ZmOrganizer.F_COLOR] ||

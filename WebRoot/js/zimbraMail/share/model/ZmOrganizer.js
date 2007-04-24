@@ -42,6 +42,7 @@
 * @param color		[constant]		color for this organizer
 * @param numUnread	[int]*			number of unread items for this organizer
 * @param numTotal	[int]*			number of items for this organizer
+* @param sizeTotal	[int]*			total size of organizer's items
 * @param url		[string]*		URL for this organizer's feed
 * @param owner		[string]* 		Owner for this organizer
 * @param zid		[string]*		Zimbra ID of owner, if remote folder
@@ -60,6 +61,7 @@ function ZmOrganizer(params) {
 	this.color = params.color || ZmOrganizer.ORG_COLOR[id] || ZmOrganizer.DEFAULT_COLOR[this.type];
 	this.numUnread = params.numUnread || 0;
 	this.numTotal = params.numTotal || 0;
+	this.sizeTotal = params.sizeTotal || 0;
 	this.url = params.url;
 	this.owner = params.owner;
 	this.link = Boolean(params.zid);
@@ -131,6 +133,7 @@ ZmOrganizer.FIRST_USER_ID[ZmOrganizer.SEARCH]	= 256;
 ZmOrganizer.F_NAME		= "name";
 ZmOrganizer.F_UNREAD	= "unread";
 ZmOrganizer.F_TOTAL		= "total";
+ZmOrganizer.F_SIZE		= "size";
 ZmOrganizer.F_COLOR		= "color";
 ZmOrganizer.F_QUERY		= "query";
 ZmOrganizer.F_SHARES	= "shares";
@@ -228,6 +231,10 @@ ZmOrganizer.LABEL[ZmOrganizer.FOLDER]	= "folders";
 ZmOrganizer.LABEL[ZmOrganizer.TAG]		= "tags";
 ZmOrganizer.LABEL[ZmOrganizer.SEARCH]	= "searches";
 
+// msg key for text describing contents
+ZmOrganizer.ITEMS_KEY = {};
+ZmOrganizer.ITEMS_KEY[ZmOrganizer.FOLDER]	= "messages";
+
 // views by type
 ZmOrganizer.VIEWS = {};
 ZmOrganizer.VIEWS[ZmOrganizer.FOLDER]	= ["message", "conversation"];
@@ -260,6 +267,7 @@ ZmOrganizer.DEFERRABLE = {};
  * @param orgPackage		[string]	name of smallest package with org class
  * @param treeController	[string]	name of associated tree controller
  * @param labelKey			[string]	msg key for label in overview
+ * @param itemsKey			[string]	msg key for text describing contents
  * @param hasColor			[boolean]	true if org has color associated with it
  * @param defaultColor		[constant]	default color for org in overview
  * @param orgColor			[array]		color override by ID (in pairs)
@@ -281,6 +289,7 @@ function(org, params) {
 	if (params.orgPackage)		{ ZmOrganizer.ORG_PACKAGE[org]			= params.orgPackage;}
 	if (params.treeController)	{ ZmOverviewController.CONTROLLER[org]	= params.treeController;}
 	if (params.labelKey)		{ ZmOrganizer.LABEL[org]				= params.labelKey;}
+	if (params.itemsKey)		{ ZmOrganizer.ITEMS_KEY[org]			= params.itemsKey;}
 	if (params.hasColor)		{ ZmOrganizer.HAS_COLOR[org]			= params.hasColor;}
 	if (params.views)			{ ZmOrganizer.VIEWS[org]				= params.views;}
 	if (params.folderKey)		{ ZmOrganizer.FOLDER_KEY[org]			= params.folderKey;}
@@ -531,6 +540,23 @@ function(includeRoot, showUnread, maxLength, noMarkup, useSystemName) {
 	return path;
 };
 
+/**
+ * Folder tooltip shows number of items and total size.
+ *
+ * @param force		[boolean]*		if true, don't use cached tooltip
+ */
+ZmOrganizer.prototype.getToolTip =
+function(force) {
+	if (this.numTotal == null) { return ""; }
+	if (!this._tooltip || force) {
+		var subs = {itemText:ZmMsg[ZmOrganizer.ITEMS_KEY[this.type]], numTotal:this.numTotal, sizeTotal:this.sizeTotal};
+		if (!subs.itemText || (this.id == ZmFolder.ID_TRASH)) {
+			subs.itemText = ZmMsg.items;
+		}
+		this._tooltip = AjxTemplate.expand("zimbraMail.share.templates.App#FolderTooltip", subs);
+	}
+	return this._tooltip;
+};
 
 /** Returns the full path, suitable for use in search expressions. */
 ZmOrganizer.prototype.getSearchPath =
@@ -764,6 +790,11 @@ function(obj, details) {
 	if (obj.n != null && this.numTotal != obj.n) {
 		this.numTotal = obj.n;
 		fields[ZmOrganizer.F_TOTAL] = true;
+		doNotify = true;
+	}
+	if (obj.s != null && this.sizeTotal != obj.s) {
+		this.sizeTotal = obj.s;
+		fields[ZmOrganizer.F_SIZE] = true;
 		doNotify = true;
 	}
 	if (obj.color != null) {

@@ -159,7 +159,7 @@ function(type, parent, obj, tree, path) {
 	DBG.println(AjxDebug.DBG2, "Creating " + type + " with id " + obj.id + " and name " + obj.name);
 	var params = {id:obj.id, name:obj.name, parent:parent, tree:tree, color:obj.color,
 				  owner:obj.owner, zid:obj.zid, rid:obj.rid, restUrl:obj.rest,
-				  url:obj.url, numUnread:obj.u, numTotal:obj.n};
+				  url:obj.url, numUnread:obj.u, numTotal:obj.n, sizeTotal:obj.s};
 	var folder = new orgClass(params);
 	ZmFolderTree._fillInFolder(folder, obj, path);
 

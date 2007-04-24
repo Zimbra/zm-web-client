@@ -120,6 +120,7 @@ function() {
 							 orgPackage:		"VoicemailCore",
 							 treeController:	"ZmVoiceTreeController",
 							 labelKey:			"voicemail",
+							 itemsKey:			"messages",
 							 views:				["voicemail"],
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmVoiceFolder.sortCompare",

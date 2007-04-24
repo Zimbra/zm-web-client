@@ -133,6 +133,7 @@ function() {
 							 orgPackage:		"NotebookCore",
 							 treeController:	"ZmNotebookTreeController",
 							 labelKey:			"notebooks",
+							 itemsKey:			"documents",
 							 views:				["wiki"],
 							 folderKey:			"notebookFolder",
 							 mountKey:			"mountNotebook",

@@ -217,12 +217,6 @@ function(view) {
 	this._listView[view].set(this._list);
 };
 
-ZmMixedController.prototype._resetNavToolBarButtons = 
-function(view) {
-	ZmListController.prototype._resetNavToolBarButtons.call(this, view);
-	this._showListRange(view);
-};
-
 ZmMixedController.prototype._setFilterButtonProps =
 function(op, setChecked) {
 	var button = this._toolbar[this._currentView].getButton(ZmOperation.SHOW_ALL_MENU);

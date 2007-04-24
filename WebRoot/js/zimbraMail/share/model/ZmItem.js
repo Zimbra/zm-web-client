@@ -354,11 +354,10 @@ function(obj) {
 	}
 	if (obj.l != null && obj.l != this.folderId) {
 		this.moveLocal(obj.l);
-		if (this.list)
+		if (this.list) {
 			this.list.moveLocal([this], obj.l);
-		// if this was the last item in a list of items that moved,
-		// it's safe to do replenishment now
-		this._notify(ZmEvent.E_MOVE, {replenish: obj.lastModify});
+		}
+		this._notify(ZmEvent.E_MOVE);
 	}
 };
 
