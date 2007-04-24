@@ -68,23 +68,10 @@
     </c:set>
 
     <%--
-    <!-- Dependencies -->
     <script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-
-    <!-- OPTIONAL: Connection (required only if using XHR DataSource) -->
     <script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/connection/connection-min.js"></script>
-
-    <!-- OPTIONAL: Animation (required only if enabling animation) -->
-<!--    <script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/animation/animation-min.js"></script> -->
-
-    <!-- OPTIONAL: External JSON parser from http://www.json.org/ (enables JSON validation) -->
-    <!-- <script type="text/javascript" src="http://www.json.org/json.js"></script> -->
-
-    <!-- Source file -->
     <script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/autocomplete/autocomplete-min.js"></script>
-
-    --%>
-    
+--%>    
     <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
         <table width=100% cellpadding="0" cellspacing="0">
             <tr>
@@ -94,11 +81,12 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
+                    <div class='ZhAC'>
                         <table cellpadding=2 cellspacing=5 height=80% width=100% class='Compose'>
                             <tr>
                                 <td valign='top' width=1% align=right nowrap> <fmt:message key="to"/>: </td>
                                 <td colspan=2 nowrap>
-                                    <div class="ZhAC">
+                                    <div class="ZhAC ZhACTo">
                                     <textarea id="toField" rows="2" style='width:99%' cols="80"
                                                                name="to">${fn:escapeXml(compose.to)}</textarea>
                                         <br><div class='ZhACCont' id="toContainer" style='width:99%;'></div></div>
@@ -108,7 +96,7 @@
                             <tr>
                                 <td valign='top' align=right nowrap> <fmt:message key="cc"/>: </td>
                                 <td colspan=2 nowrap>
-                                    <div class="ZhAC">
+                                    <div class="ZhAC ZhACCc">
                                         <input style='width:99%' id="ccField" type="text" value="${fn:escapeXml(compose.cc)}" size=100 name="cc">
                                         <br><div class='ZhACCont' id="ccContainer" style='width:99%;'></div>
                                     </div>
@@ -117,7 +105,7 @@
                             <tr>
                                 <td valign='top' align=right nowrap> <fmt:message key="bcc"/>: </td>
                                 <td colspan=2 nowrap>
-                                    <div class="ZhAC">
+                                    <div class="ZhAC ZhAcBcc">
                                         <input style='width:99%' id="bccField" type="text" value="${fn:escapeXml(compose.bcc)}" size=100 name="bcc">
                                         <br><div class='ZhACCont' id="bccContainer" style='width:99%;'></div>
                                     </div>
@@ -188,6 +176,7 @@
                                 </td>
                             </tr>
                         </table>
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -214,14 +203,31 @@
 
     <%--
     <script type="text/javascript">
-        var myencode = function htmlEncode(s) {return s == null ? '' : s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");}
-        var myacformat = function(aResultItem, sQuery) {
+        function zhStartsWith(str,query) { return str == null ? false : str.toLowerCase().indexOf(query.toLowerCase()) == 0; }
+        function zhFmt(str,query,bold) {
+            return bold ?
+                   ["<span class='ZhACB'>",zhEncode(str.substring(0, query.length)), "</span>", zhEncode(str.substring(query.length))].join("")
+                    : zhEncode(str);
+            
+        }
+        function zhEncode(s) {return s == null ? '' : s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");}
+        var myacformat = function(aResultItem, query) {
             var sResult = aResultItem[0];
-            var e = myencode(aResultItem[1]);
-            var f = myencode(aResultItem[2]);
-            var l = myencode(aResultItem[3]);
+            var e = aResultItem[1];
+            var f = aResultItem[2];
+            var l = aResultItem[3];
+            var fs = zhStartsWith(f, query);
+            var ls = fs ? false : zhStartsWith(l, query);
+            var es = fs || ls ? false : zhStartsWith(e, query);
+            
             if(sResult) {
-                return "<table><tr><td><img src='/zimbra/images/contacts/Contact.gif'></td><td>"+f+" "+l+" &lt;"+e+"&gt;</td></tr></table>";
+                return ["<table><tr><td><img src='/zimbra/images/contacts/Contact.gif'></td><td>",
+                        zhFmt(f,query,fs),
+                        " ",
+                        zhFmt(l,query,ls),
+                        " &lt;",
+                        zhFmt(e,query,es),
+                        "&gt;</td></tr></table>"].join("");
             }
             else {
                 return "";
@@ -234,11 +240,13 @@
             ac.useShadow = true;
             ac.formatResult = myacformat;
             ac.queryMatchContains = true;
+            ac.maxResultsDisplayed = 20;
+            ac.allowBrowserAutocomplete = false;
+
         };
         initAuto(new YAHOO.widget.AutoComplete("toField","toContainer", myDataSource));
         initAuto(new YAHOO.widget.AutoComplete("ccField","ccContainer", myDataSource));
         initAuto(new YAHOO.widget.AutoComplete("bccField","bccContainer", myDataSource));
     </script>
-    --%>
-
+  --%>
 </app:view>
