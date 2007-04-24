@@ -139,6 +139,7 @@ ZmCalItem.prototype.getOrigTimezone     = function() { return this._origTimezone
 ZmCalItem.prototype.getRecurBlurb		= function() { return this._recurrence.getBlurb(); };
 ZmCalItem.prototype.getRecurType		= function() { return this._recurrence.repeatType; };
 ZmCalItem.prototype.getStartTime 		= function() { return this.startDate.getTime(); }; 	// start time in ms
+ZmCalItem.prototype.getTimezone         = function() { return this.timezone; };
 ZmCalItem.prototype.getSummary			= function(isHtml) { /* override */ };
 ZmCalItem.prototype.getToolTip			= function(controller) { /* override */ };
 
@@ -585,6 +586,12 @@ function(message, viewMode) {
 		ZmCalItem.__adjustDateForTimezone(this.endDate, timezone, this.endsInUTC);
         this.setTimezone(AjxTimezone.getServerId(AjxTimezone.DEFAULT));
 	}
+
+    var tzrule = AjxTimezone.getRule(AjxTimezone.getClientId(this.getTimezone()));
+    if (tzrule && tzrule.aliasId) {
+        tzrule = AjxTimezone.getRule(tzrule.aliasId);
+        this.setTimezone(tzrule.serverId);
+    }
 };
 
 ZmCalItem.prototype._setExtrasFromMessage =

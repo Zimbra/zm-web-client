@@ -61,8 +61,34 @@ function(node) {
     var inv = node[0];
     if (inv.tz) {
         for (var i = 0; i < inv.tz.length; i++) {
+            // get known rule
             var tz = inv.tz[i];
             var rule = AjxTimezone.getRule(tz.id);
+
+            // get known rule that exactly matches tz definition
+            if (!rule) {
+                var tzrule = {
+                    standard: AjxUtil.createProxy(tz.standard[0]),
+                    daylight: tz.daylight ? AjxUtil.createProxy(tz.daylight[0]) : null
+                };
+                tzrule.standard.offset = tz.stdoff;
+                delete tzrule.standard._object_;
+                if (tz.daylight) {
+                    tzrule.daylight.offset = tz.dayoff;
+                    delete tzrule.daylight._object_;
+                }
+
+                rule = AjxTimezone.getRule(tz.id, tzrule);
+                if (rule) {
+                    var alias = AjxUtil.createProxy(rule);
+                    alias.aliasId = rule.clientId;
+                    alias.clientId = tz.id;
+                    alias.serverId = tz.id;
+                    AjxTimezone.addRule(alias);
+                }
+            }
+
+            // add custom rule to known list
             if (!rule) {
                 rule = { clientId: tz.id, serverId: tz.id, autoDetected: true };
                 if (tz.daylight) {
