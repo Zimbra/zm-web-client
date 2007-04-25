@@ -195,7 +195,6 @@ ZmCalendar.__traverse = function(calendar, parent, obj, tree, path) {
                 var childCalendar = ZmCalendar.createFromJs(calendar, folder, tree, path);
                 calendar.children.add(childCalendar);
             }
-            ZmCalendar.__traverse(calendar, parent, folder, tree, path);
         }
         if (!isRoot) path.pop();
     }
