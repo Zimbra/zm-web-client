@@ -103,9 +103,10 @@ function() {
 
 ZmVoiceApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp("AUTO_PLAY", {textKey:"autoPlay", tooltipKey:"autoPlayTooltip", image:"ApptRecur"});
-	ZmOperation.registerOp("MARK_HEARD", {textKey:"markAsHeard", image:"ReadMessage"});
-	ZmOperation.registerOp("MARK_UNHEARD", {textKey:"markAsUnheard", image:"UnreadMessage"});
+	ZmOperation.registerOp("CHECK_VOICEMAIL", {textKey:"checkVoicemail", tooltipKey:"checkVoicemailTooltip", image:"Refresh"});
+	ZmOperation.registerOp("AUTO_PLAY", {textKey:"autoPlay", tooltipKey:"autoPlayTooltip", image:"PlayingMessage"});
+	ZmOperation.registerOp("MARK_HEARD", {textKey:"markAsHeard", image:"MarkAsHeard"});
+	ZmOperation.registerOp("MARK_UNHEARD", {textKey:"markAsUnheard", image:"MarkAsUnheard"});
 	ZmOperation.registerOp("VIEW_BY_DATE", {textKey:"viewByDate"});
 };
 

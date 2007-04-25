@@ -30,7 +30,7 @@ function ZmVoicemailListController(appCtxt, container, app) {
 	this._autoPlayIndex = 0;
 	this._autoPlaying = false;
 
-	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._refreshListener);
+	this._listeners[ZmOperation.CHECK_VOICEMAIL] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
 	this._listeners[ZmOperation.REPLY] = new AjxListener(this, this._replyListener);
@@ -77,7 +77,7 @@ function(view) {
 ZmVoicemailListController.prototype._getToolBarOps =
 function() {
 	var list = [];
-	list.push(ZmOperation.CHECK_MAIL);
+	list.push(ZmOperation.CHECK_VOICEMAIL);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.SAVE);
 	list.push(ZmOperation.DELETE);
@@ -108,7 +108,6 @@ function() {
 ZmVoicemailListController.prototype._initializeToolBar =
 function(view) {
 	ZmVoiceListController.prototype._initializeToolBar.call(this, view);
-	this._toolbar[view].getButton(ZmOperation.CHECK_MAIL).setText(ZmMsg.checkVoicemail);
 	var autoPlayButton = this._toolbar[view].getButton(ZmOperation.AUTO_PLAY);
 	autoPlayButton.setAlign(DwtLabel.IMAGE_LEFT | DwtButton.TOGGLE_STYLE);
 };
@@ -116,7 +115,7 @@ function(view) {
 ZmVoicemailListController.prototype._resetOperations = 
 function(parent, num) {
 	ZmVoiceListController.prototype._resetOperations.call(this, parent, num);
-	parent.enable(ZmOperation.CHECK_MAIL, true);
+	parent.enable(ZmOperation.CHECK_VOICEMAIL, true);
 	parent.enable(ZmOperation.AUTO_PLAY, this._folder && this._folder.numUnread);
 	
 	var hasHeard = false;

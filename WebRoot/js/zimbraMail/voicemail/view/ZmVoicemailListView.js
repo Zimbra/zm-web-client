@@ -101,7 +101,7 @@ ZmVoicemailListView.prototype._getHeaderList =
 function() {
 
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_PRIORITY], null, "Critical", ZmVoicemailListView.PRIORITY_WIDTH, null, false));
+	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_PRIORITY], null, "FlagRed", ZmVoicemailListView.PRIORITY_WIDTH, null, false));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_CALLER], ZmMsg.from, null, ZmVoicemailListView.FROM_WIDTH, null, true));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_PLAYING], ZmMsg.message, null, ZmVoicemailListView.PLAYING_WIDTH, ZmVoicemailListView.F_PLAYING, true));
 	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmVoicemailListView.F_DATE], ZmMsg.received, null, ZmVoicemailListView.DATE_WIDTH, ZmVoicemailListView.F_DATE, true));
@@ -281,7 +281,7 @@ function(ev) {
 
 ZmVoicemailListView.prototype._getPriorityHtml =
 function(voicemail) {
-	return voicemail.isHighPriority ? "<div class='ImgCritical'></div>" : "";
+	return voicemail.isHighPriority ? "<div class='ImgFlagRed'></div>" : "";
 };
 
 ZmVoicemailListView.prototype._sortColumn =
