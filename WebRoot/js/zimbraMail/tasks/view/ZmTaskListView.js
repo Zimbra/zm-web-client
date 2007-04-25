@@ -272,7 +272,7 @@ function(item, now, isDndIcon) {
 			htmlArr[idx++] = " id='";
 			htmlArr[idx++] = this._getFieldId(item, ZmItem.F_PARTICIPANT);
 			htmlArr[idx++] = "'>";
-			htmlArr[idx++] = "&nbsp;"; // print nothing for participant
+			htmlArr[idx++] = (item.organizer) || "&nbsp";
 			htmlArr[idx++] = "</td>";
 		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
 			// Attachment icon

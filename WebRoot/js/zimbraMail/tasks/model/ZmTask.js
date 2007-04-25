@@ -164,6 +164,7 @@ function(node, instNode) {
 	this.pComplete = parseInt(this._getPart(node, comp, "percentComplete"));
 	this.status = this._getPart(node, comp, "status");
 	this.isOrg = this._getPart(node, comp, "isOrg");
+	this.organizer = node.or ? node.or.a : null;
 	this.ptst = this._getPart(node, comp, "ptst");
 	this.compNum = this._getPart(node, comp, "compNum");
 	if (node.d) this.date = node.d;		// XXX: modified date?
