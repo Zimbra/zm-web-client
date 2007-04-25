@@ -207,7 +207,9 @@ function(components, doFit, noSetZ) {
 		}
 
 		if (cid == ZmAppViewMgr.C_SASH) {
-//			comp.registerCallback(this._sashCallback, this);
+			if(this.isSashSupported()){
+			comp.registerCallback(this._sashCallback, this);
+			}
 			comp.setCursor("default");
 		}
 	}
@@ -331,6 +333,11 @@ function(viewId, appName, elements, callbacks, isAppView, isTransient) {
 ZmAppViewMgr.prototype.pushView =
 function(viewId, force) {
 
+	var sashX = null;
+	if(this._components[ZmAppViewMgr.C_SASH]){
+		sashX = this._components[ZmAppViewMgr.C_SASH].getBounds().x;
+	}	
+	
 	var viewController = null;
 	if (viewId == ZmAppViewMgr.PENDING_VIEW) {
 		viewId = this._pendingView;
@@ -349,6 +356,7 @@ function(viewId, force) {
 		if (viewController) {
 			viewController._restoreFocus();
 		}
+		this.fixSash(sashX);
 		return true;
 	}
 
@@ -362,6 +370,7 @@ function(viewId, force) {
 	if (!this._hideView(this._currentView, force)) {
 		this._pendingAction = this._pushCallback;
 		this._pendingView = viewId;
+		this.fixSash(sashX);
 	 	return false;
 	}
 	this.addComponents(this._views[viewId]);
@@ -380,6 +389,7 @@ function(viewId, force) {
 		this._lastView = temp;
 		this._pendingAction = this._pushCallback;
 		this._pendingView = viewId;
+		this.fixSash(sashX);
 		return false;
 	}
 	DBG.println(AjxDebug.DBG2, "hidden (after): " + this._hidden);
@@ -392,7 +402,8 @@ function(viewId, force) {
 	if (this._isAppView[viewId]) {
 		this.setAppView(this._viewApp[viewId], viewId);
 	}
-	
+
+	this.fixSash(sashX);	
 	return true;
 };
 
@@ -713,7 +724,16 @@ function(view) {
 // Handles shell resizing event.
 ZmAppViewMgr.prototype._shellControlListener =
 function(ev) {
+
+	var sashX = null;
+	if(this._components[ZmAppViewMgr.C_SASH]){
+	sashX = this._components[ZmAppViewMgr.C_SASH].getBounds().x;
+	}
+
 	if (ev.oldWidth != ev.newWidth || ev.oldHeight != ev.newHeight) {
+		if(this.isSashSupported() && this._containers[ZmAppViewMgr.C_APP_CONTENT]!=null){
+		this.fixMainApp(ev.newWidth);
+		}
 		this._shellSz.x = ev.newWidth;
 		this._shellSz.y = ev.newHeight;
 		var deltaWidth = ev.newWidth - ev.oldWidth;
@@ -745,6 +765,9 @@ function(ev) {
 			}
 		}
 	}
+
+	this.fixSash(sashX);	
+
 };
 
 ZmAppViewMgr.prototype._debugShowMetrics =
@@ -759,15 +782,28 @@ function(components) {
 	}
 };
 
+
 // Handles sash movement. An attempt to move the sash beyond the extent of the overview 
 // panel or the view results in no movement at all.
 ZmAppViewMgr.prototype._sashCallback =
 function(delta) {
-	
+
 	DBG.println("************ sash callback **************");
 	DBG.println("delta = " + delta);
-	
-//	skin.moveSash(delta);
+
+	var skinBdrTree=document.getElementById("skin_border_tree");
+	var skinBdr=document.getElementById("skin_border_app_main");
+	var skinTree = document.getElementById("skin_td_tree");
+
+	var appSashBdr = document.getElementById("skin_border_tree_app_sash");
+	var sash_el = document.getElementById("skin_border_tree_app_sash");
+	var sashSize = sash_el.offsetWidth;
+
+	if(!skinBdrTree.initSize){
+		skinBdrTree.initSize = skinTree.offsetWidth+sash_el.offsetWidth+2; //fine tune
+	}
+
+//	s.moveSash(delta);
 	
 	DBG.println("shell width = " + this._shellSz.x);
 
@@ -775,85 +811,94 @@ function(delta) {
 	var w = this._components[ZmAppViewMgr.C_APP_CONTENT].getSize().x;
 	DBG.println("main app width = " + w);
 
-
-//	delta = 100;
-//	var table = document.getElementById("skin_td_left_chrome");
-	var table = document.getElementById("skin_table_left_chrome");
-//	var table = document.getElementById("skin_col_left");
+	var table = document.getElementById("skin_table_tree");
+	var sknTreeFtr = document.getElementById("skin_border_tree_footer");
+	var sknBdrSts =	document.getElementById("skin_border_status");
 	var tableSz = Dwt.getSize(table);
-	DBG.println("left table width = " + tableSz.x);
-
-//	var x = this._shellSz.x - tableSz.x;
-//	DBG.println("inferred right side width (before) = " + x);
-
-	Dwt.setSize(table, tableSz.x + delta, Dwt.DEFAULT);
-
-	var list = [ZmAppViewMgr.C_CURRENT_APP, ZmAppViewMgr.C_TREE,
-				ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_STATUS];
+	
+	if(this.initTreeSize == null){
+		this.initTreeSize = tableSz.x;
+		this.treeSashLimit = tableSz.x+200;
+	}
+	
+	DBG.println("###:"+this.treeSashLimit+"...."+tableSz.x);
+	if(this.treeSashLimit!=null && (delta > 0) && this.treeSashLimit < (tableSz.x+delta)){
+		return 0;
+	}
+	
+	if(this.initTreeSize!=null && (delta < 0) && this.initTreeSize > (tableSz.x+delta)){
+		return 0;
+	}
+	
+	var newSize = tableSz.x+delta;
+	var newSize1 = tableSz.x+delta-sashSize;
+	
+	Dwt.setSize(table, newSize , Dwt.DEFAULT);
+	Dwt.setSize(sknBdrSts,newSize1 , Dwt.DEFAULT);
+			
+	var list = [ZmAppViewMgr.C_TREE,
+				ZmAppViewMgr.C_TREE_FOOTER, ZmAppViewMgr.C_STATUS,
+                ZmAppViewMgr.C_APP_CONTENT_FULL];
 	this._fitToContainer(list);
 
 	list = [ZmAppViewMgr.C_TOOLBAR_TOP, ZmAppViewMgr.C_APP_CONTENT];
+
 	for (var i = 0; i < list.length; i++) {
+
 		var cid = list[i];
 		var newX = this._contBounds[cid].x + delta;
+		this._contBounds[cid].x=newX;
 		var newWidth = this._contBounds[cid].width - delta;
-		this._components[cid].setBounds(newX, Dwt.DEFAULT, newWidth, Dwt.DEFAULT);
+		this._contBounds[cid].width = newWidth;
+		this._components[cid].setBounds(newX, Dwt.DEFAULT, Dwt.DEFAULT, Dwt.DEFAULT);
+		
+		if(cid==ZmAppViewMgr.C_APP_CONTENT){
+			skinBdr.style.left = (newX-skinBdrTree.initSize)+"px";
+			this.fixMainApp(this._shellSz.x);
+			this._fitToContainer([cid,ZmAppViewMgr.C_STATUS]);
+		}
 	}
-
-	return delta;
-
-//	var x = this._shellSz.x - (tableSz.x + delta);
-//	DBG.println("inferred right side width (after) = " + x);
-
-//	table = document.getElementById("skin_table_main");
-	table = document.getElementById("skin_col_main");
-	tableSz = Dwt.getSize(table);
-	DBG.println("right table width = " + tableSz.x);
-	Dwt.setSize(table, tableSz.x - delta, Dwt.DEFAULT);
-
-	var contSz = Dwt.getSize(this._appContentContainer);
-//	var width = contSz.x;
-	var width = this._contWidth;
-	DBG.println("app cont width = " + this._contWidth);
-	var height = contSz.y;
-	if (viewId != null) {
-		width -= delta;
-		DBG.println("setting app stuff to width " + width);
-		var topToolbar = this._views[viewId][0];
-		topToolbar.setSize(width, Dwt.DEFAULT);
-		var appContent = this._views[viewId][1];
-		appContent.setSize(width, Dwt.DEFAULT);
-		this._contWidth = width;
-	}
-	if (AjxEnv.isIE)
-		return delta;
-
-	var settings = this._appCtxt.getSettings();
 	
-	var currentApp = this._appCtxt.getCurrentAppToolbar()
-	var caSz = currentApp.getSize();
-	var width = caSz.x + delta;
-	currentApp.setSize(width, Dwt.DEFAULT);
-	DBG.println("current app width: " + caSz.x + " -> " + width);
-	var currentAppEl = document.getElementById(settings.get(ZmSetting.SKIN_CURRENT_APP_ID));
-	var caSz = Dwt.getSize(currentAppEl);
-	Dwt.setSize(currentAppEl, width, Dwt.DEFAULT);
-	DBG.println(" *** current app el width = " + currentAppEl.style.width);
-
-	var statusEl = document.getElementById(settings.get(ZmSetting.SKIN_STATUS_ID));
-//	var sbSz = Dwt.getSize(statusEl);
-//	var sbSz = this._statusBox.getSize();
-//	var width = sbSz.x + delta;
-	this._statusBox.setSize(width, Dwt.DEFAULT);
-	DBG.println("status box width: " + width);
-	Dwt.setSize(statusEl, width, Dwt.DEFAULT);
-
-	var ovSz = this._overviewPanel.getSize();
-	var width = ovSz.x + delta;
-	this._overviewPanel.setSize(width, Dwt.DEFAULT);
-	DBG.println("overview width: " + ovSz.x + " -> " + width);
-	var ovSz = Dwt.getSize(this._overviewContainer);
-	Dwt.setSize(this._overviewContainer, ovSz.x + delta, Dwt.DEFAULT);
-
 	return delta;
 };
+
+ZmAppViewMgr.prototype.fixMainApp = function(shellWidth){
+
+		var skinBdr = document.getElementById("skin_border_app_main");
+		var skinTBar = document.getElementById("skin_border_app_top_toolbar");
+		
+		var appCBnds = Dwt.getBounds(skinBdr);
+		var diffWidth = shellWidth - appCBnds.x - 6; //fine tune
+		
+		Dwt.setSize(skinBdr,diffWidth,Dwt.DEFAULT);
+		var topToolbar = this._views[this._currentView][ZmAppViewMgr.C_TOOLBAR_TOP];
+		if (topToolbar) {
+			topToolbar.setSize(diffWidth, Dwt.DEFAULT);
+		}
+};	
+
+ZmAppViewMgr.prototype.isSashSupported = function(){
+
+	var skinEl = document.getElementById("skin_table_tree");
+	if(skinEl!=null){
+		return true;
+	}else{
+		DBG.println("current skin doesn't support tree sash movement")
+		return false;		
+	}
+};
+
+
+ZmAppViewMgr.prototype.fixSash = function(sashX){
+	
+	if(sashX==null){
+	return;
+	}
+	
+	if(this.isSashSupported()){
+	//sash movement is retained
+	this._components[ZmAppViewMgr.C_SASH].setBounds(sashX,Dwt.DEFAULT,Dwt.DEFAULT,Dwt.DEFAULT);
+	}
+	
+};
+
