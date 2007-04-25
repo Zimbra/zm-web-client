@@ -70,9 +70,10 @@ ZmDialog.prototype.setView =
 function(newView, noReset) {
 	this.reset();
 	if (newView) {
-		var el = newView.getHtmlElement();
-		var td = this._contentDiv.parentNode;
-		td.replaceChild(el, this._contentDiv);
+        var contentDiv = this._getContentDiv();
+        var el = newView.getHtmlElement();
+		var td = contentDiv.parentNode;
+		td.replaceChild(el, contentDiv);
 		this._contentDiv = el;
 	}
 };
