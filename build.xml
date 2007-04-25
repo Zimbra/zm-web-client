@@ -319,7 +319,10 @@
         </or>
       </condition>
       <condition property='pkgdir' value='zimbra'>
+        <or>
           <equals arg1='${arg}' arg2='Zimbra' />
+          <equals arg1='${arg}' arg2='ZimbraZWC' />
+        </or>
       </condition>
       <condition property='pkgdir' value='zimbraMail'>
           <equals arg1='${arg}' arg2='ZimbraCore' />
