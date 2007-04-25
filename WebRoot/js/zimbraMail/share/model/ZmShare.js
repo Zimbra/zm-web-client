@@ -289,13 +289,6 @@ function(view) {
 	return "";
 };
 
-ZmShare._init =
-function() {
-	if (ZmShare._SUBJECTS) return;
-
-};
-
-
 
 // Static methods
 
@@ -569,8 +562,6 @@ function(ex) {
 
 ZmShare.prototype._createMsg =
 function(mode, isCompose, addrs) {
-	ZmShare._init();
-
 	// generate message
 	var textPart = this._createTextPart(mode, isCompose);
 	var htmlPart = this._createHtmlPart(mode, isCompose);
@@ -619,7 +610,7 @@ function(mode, isCompose) {
 	var formatter = ZmShare._getHtml(mode);
 	var content = this._createContent(formatter);
 	if (this.notes || isCompose) {
-		var formatter = ZmShare._getHtmlNote();
+		formatter = ZmShare._getHtmlNote();
 		var notes = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(this.notes));
 		content = [content, formatter.format(notes)].join("");
 	}
@@ -668,7 +659,5 @@ function(formatter) {
 		ZmShare.getRoleName(this.link.perm),
 		ZmShare.getRoleActions(this.link.perm)
 	];
-	var content = formatter.format(params);
-
-	return content;
+	return formatter.format(params);
 };

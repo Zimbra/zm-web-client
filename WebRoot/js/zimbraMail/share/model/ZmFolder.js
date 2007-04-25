@@ -373,42 +373,55 @@ function(what, folderType) {
 	var thisType = folderType || this.type;
 	var invalid = false;
 	if (what instanceof ZmFolder) {
-		var folder = what;
-		invalid = (folder.parent == this || this.isChildOf(folder) || 
-				   this.id == ZmFolder.ID_DRAFTS || this.id == ZmFolder.ID_SPAM || 
-				   (!this.isInTrash() && this.hasChild(folder.name)) ||
-				   (folder.type == ZmOrganizer.FOLDER && thisType == ZmOrganizer.SEARCH) ||
-				   (folder.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.id == ZmOrganizer.ID_ROOT) ||
-				   (folder.id == this.id));
+		invalid = (what.parent == this || this.isChildOf(what) || this.id == ZmFolder.ID_DRAFTS || this.id == ZmFolder.ID_SPAM || 
+				   (!this.isInTrash() && this.hasChild(what.name)) ||
+				   (what.type == ZmOrganizer.FOLDER && thisType == ZmOrganizer.SEARCH) ||
+				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.id == ZmOrganizer.ID_ROOT) ||
+				   (what.id == this.id) ||
+				   (what.isRemote() && what.parent && what.parent.isRemote()));	// this means a remote folder can be DnD but not its children
 	} else {
 		// An item or an array of items is being moved
 		var items = (what instanceof Array) ? what : [what];
 		var item = items[0];
 		if (this.id == ZmOrganizer.ID_ROOT) {
-			invalid = true;		// container can only have folders/searches
+			invalid = true;														// container can only have folders/searches
 		} else if (this.link) {
-			// cannot drop anything onto a read-only item
-			invalid = this.isReadOnly();
+			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
 		} else if (thisType == ZmOrganizer.SEARCH) {
-			invalid = true;		// can't drop items into saved searches
+			invalid = true;														// can't drop items into saved searches
 		} else if ((item.type == ZmItem.CONTACT) && item.isGal) {
 			invalid = true;
-		} else if ((item.type == ZmItem.CONV) && item.list.search && (item.list.search.folderId == this.id)) {
-			invalid = true;		// convs which are a result of a search for this folder
-		} else {	// checks that need to be done for each item
+		} else if ((item.type == ZmItem.CONV) &&
+			 item.list.search &&
+			 (item.list.search.folderId == this.id))
+		{
+			invalid = true;														// convs which are a result of a search for this folder
+		} else {																// checks that need to be done for each item
 			for (var i = 0; i < items.length; i++) {
-				if ((items[i].type == ZmItem.CONTACT) && (this.id != ZmFolder.ID_TRASH)) {
-					invalid = true;		// can only move contacts into Trash
+				if ((items[i].type == ZmItem.CONTACT) &&
+					(this.id != ZmFolder.ID_TRASH))
+				{
+					// can only move contacts into Trash
+					invalid = true;
 					break;
-				} else if (items[i].isDraft && (this.id != ZmFolder.ID_TRASH && this.id != ZmFolder.ID_DRAFTS)) {
-					invalid = true;		// can move drafts into Trash or Drafts
+				}
+				else if (items[i].isDraft &&
+						 (this.id != ZmFolder.ID_TRASH && this.id != ZmFolder.ID_DRAFTS))
+				{
+					// can move drafts into Trash or Drafts
+					invalid = true;
 					break;
-				} else if (this.id == ZmFolder.ID_DRAFTS && !items[i].isDraft) {
-					invalid = true;		// only drafts can be moved into Drafts
+				}
+				else if (this.id == ZmFolder.ID_DRAFTS &&
+						 !items[i].isDraft)
+				{
+					// only drafts can be moved into Drafts
+					invalid = true;
 					break;
 				}
 			}
-			// can't move items to folder they're already in; we're okay if we have one item from another folder
+			// can't move items to folder they're already in; we're okay if we
+			// have one item from another folder
 			if (!invalid) {
 				if (items[0].folderId) {
 					invalid = true;

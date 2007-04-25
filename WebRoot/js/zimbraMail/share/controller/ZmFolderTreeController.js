@@ -93,7 +93,15 @@ function(parent, type, id) {
 	{
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed());
-		parent.enable([ZmOperation.MOVE, ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], !folder.link);
+		parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], !folder.link);
+
+		if (folder.isRemote() && folder.isReadOnly()) {
+			if (folder.parent && folder.parent.isRemote()) {
+				parent.enableAll(false);
+			} else {
+				parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ], false);
+			}
+		}
 	}
 	// system folder
 	else
@@ -112,12 +120,8 @@ function(parent, type, id) {
 			parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER, ZmOperation.EDIT_PROPS], true);
 	}
 
-	if (folder.link && folder.isReadOnly()) {
-		parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ, ZmOperation.RENAME_FOLDER], false);
-	}
-
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
-	if (id != ZmOrganizer.ID_ROOT)
+	if (id != ZmOrganizer.ID_ROOT && !folder.isReadOnly())
 		parent.enable(ZmOperation.MARK_ALL_READ, (folder.numUnread > 0));
 
 	var op = parent.getOp(ZmOperation.DELETE);

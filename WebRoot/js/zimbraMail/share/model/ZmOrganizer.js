@@ -68,6 +68,7 @@ function ZmOrganizer(params) {
 	this.zid = params.zid;
 	this.rid = params.rid;
 	this.restUrl = params.restUrl;
+	if (params.perm) this.setPermissions(params.perm);
 	this.noSuchFolder = false; // Is this a link to some folder that ain't there.
 
 	this._appCtxt = params.tree._appCtxt;
@@ -1084,13 +1085,18 @@ function() {
 
 ZmOrganizer.prototype.isReadOnly =
 function() {
-	var share = this.shares ? this.shares[0] : null;
-	return (this.isRemote() && share && !share.isWrite());
+	if (!this._isReadOnly) {
+		var share = this.shares ? this.shares[0] : null;
+		this._isReadOnly = (this.isRemote() && share && !share.isWrite());
+	}
+	return this._isReadOnly;
 };
 
 ZmOrganizer.prototype.isRemote =
 function() {
-	return (this.zid != null || this.id.indexOf(":") != -1);
+	if (!this._isRemote)
+		this._isRemote = (this.zid != null || this.id.indexOf(":") != -1);
+	return this._isRemote;
 };
 
 /**
