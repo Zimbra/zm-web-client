@@ -47,14 +47,16 @@ function(params) {
 ZmVoiceTreeController.prototype._postSetup =
 function(overviewId) {
 	ZmTreeController.prototype._postSetup.call(this, overviewId);
-	
-	// Expand the default account.
-	var app = this._appCtxt.getApp(ZmApp.VOICE);
-	if (app.startFolder) {
-		var view = this._treeView[overviewId];
-		var parentItem = view.getTreeItemById(app.startFolder.parent.id);
-		parentItem.setExpanded(true, false);
-//TODO: Select the start item here...
+
+	// expand all root account folders
+	var view = this._treeView[overviewId];
+	var folders = this._appCtxt.getFolderTree().getByType(ZmOrganizer.VOICE);
+	for (var i = 0; i < folders.length; i++) {
+		var folder = folders[i];
+		if (folder.callType == ZmVoiceFolder.ACCOUNT) {
+			var ti = view.getTreeItemById(folder.id);
+			ti.setExpanded(true, false);
+		}
 	}
 };
 

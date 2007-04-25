@@ -65,12 +65,17 @@ function(parentNode, organizer, index) {
 ZmVoiceTreeView.prototype._createAccountItem =
 function(organizer) {
 	var item = new DwtTreeItem(this, null, null, null, null, "overviewHeader");
-	item.enableSelection(false); // by default, disallow selection
-	item.setText(organizer.getName());
+	item.enableSelection(false);
+	item.showExpansionIcon(false);
 	item.setData(Dwt.KEY_ID, organizer.id);
 	item.setData(Dwt.KEY_OBJECT, organizer);
 	item.setData(ZmTreeView.KEY_ID, this.overviewId);
 	item.setData(ZmTreeView.KEY_TYPE, this.type);
+
+	// DwtAccordion voodoo
+	var overview = organizer._appCtxt.getOverviewController().getOverview(ZmZimbraMail._OVERVIEW_ID);
+	item.reparentHtmlElement(overview.getBody(organizer.accordionItemId));
+
 	this._treeHash[organizer.id] = item;
 	return item;
 };

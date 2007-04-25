@@ -78,6 +78,7 @@ ZmApp.VIEW_TOOLTIP			= {};	// msg key for app tooltip
 ZmApp.DEFAULT_SEARCH		= {};	// type of item to search for in the app
 ZmApp.ORGANIZER				= {};	// main organizer for this app
 ZmApp.OVERVIEW_TREES		= {};	// list of tree IDs to show in overview
+ZmApp.OVERVIEW_ACCORD_ITEMS = {};	// list of DwtAccordion item IDs to show in overview
 ZmApp.SHOW_ZIMLETS			= {};	// whether to show Zimlet tree in overview
 ZmApp.SEARCH_TYPES			= {};	// list of types of saved searches to show in overview
 ZmApp.SEARCH_TYPES_R		= {};

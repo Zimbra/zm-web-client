@@ -96,7 +96,11 @@ function(params) {
     if (params.posStyle == Dwt.ABSOLUTE_STYLE) {
         Dwt.setLocation(overview.getHtmlElement(), Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
     }
-    this._overview[overviewId].setScrollStyle(params.scroll ? params.scroll : Dwt.SCROLL);
+
+	// cache original scroll style since overview's w/ accordion does different things
+	overview._origScrollStyle = params.scroll || Dwt.SCROLL;
+	overview.setScrollStyle(overview._origScrollStyle);
+
 	this._selectionSupported[overviewId] = params.selectionSupported;
 	this._actionSupported[overviewId] = params.actionSupported;
 	this._dndSupported[overviewId] = params.dndSupported;
@@ -167,6 +171,17 @@ function(overviewId, treeIds, omit, reset) {
 
 	// add tree views to the overview
 	var app = this._appCtxt.getAppController().getActiveApp();
+
+	var accordItems = ZmApp.OVERVIEW_ACCORD_ITEMS[app];
+	if (accordItems && accordItems.length) {
+		overview.showAccordionItems(false);
+		for (var i = 0; i < accordItems.length; i++) {
+			overview.showAccordionItems(true, accordItems[i]);
+		}
+		// TEMP
+		overview.expandItem(accordItems[0]);
+	}
+
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
 		// lazily create appropriate tree controller
@@ -187,14 +202,17 @@ function(overviewId, treeIds, omit, reset) {
 			treeView.setCheckboxes();
 		}
 
-		////////////////////////////////////////////////////////////////////
-		// XXX: HACK HACK HACK HACK HACK - AINT SHE PRETTY?
-		////////////////////////////////////////////////////////////////////
-		if (app == ZmApp.MAIL) {
-			var body = overview.getBody();
-			if (body) treeView.reparentHtmlElement(body);
+		// HACK: reparent the body of the accordion item
+		if (accordItems && accordItems.length) {
+			var body = overview.getBody(accordItems[0]);
+			if (body) {
+				treeView.reparentHtmlElement(body);
+				overview.setScrollStyle(Dwt.CLIP);
+				overview.resize(overview.getSize().x, overview.getSize().y);
+			}
 			overview.show(true);
 		} else {
+			overview.setScrollStyle(overview._origScrollStyle);
 			overview.show(false);
 		}
 	}

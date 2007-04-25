@@ -48,6 +48,7 @@ function ZmVoiceFolder(params) {
 //TODO: clean up this callType...shouldn't be necessary, when .name field has same thing.	
 	this.callType = params.name; // A constant...ACCOUNT, PLACED, etc.
 	this.view = params.view;
+	this.accordionItemId = params.accordionItemId;
 }
 
 ZmVoiceFolder.prototype = new ZmOrganizer;

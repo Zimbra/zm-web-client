@@ -181,6 +181,14 @@ function(callback) {
 
 ZmVoiceApp.prototype._handleResponseVoiceInfo =
 function(callback, response) {
+	// DwtAccordion voodoo
+	var overview = this._appCtxt.getOverviewController().getOverview(ZmZimbraMail._OVERVIEW_ID);
+//	overview.addSelectionListener(new AjxListener(this, this._overviewSelectionListener));
+	var itemIds = ZmApp.OVERVIEW_ACCORD_ITEMS[ZmApp.VOICE];
+	if (!itemIds) {
+		itemIds = ZmApp.OVERVIEW_ACCORD_ITEMS[ZmApp.VOICE] = [];
+	}
+
 	var folderTree = this._appCtxt.getFolderTree();
 	var phones = response._data.GetVoiceInfoResponse.phone;
 	for (var i = 0, count = phones.length; i < count; i++) {
@@ -188,8 +196,13 @@ function(callback, response) {
 		var phone = new ZmPhone(this._appCtxt);
 		phone._loadFromDom(obj);
 		this.phones.push(phone);
+
+		// add accordion items
+		var itemId = overview.addAccordionItem({title:phone.getDisplay()});
+		itemIds.push(itemId);
+
 		if (obj.folder && obj.folder.length) {
-			this._createFolder(folderTree.root, phone, obj.folder[0]);
+			this._createFolder(folderTree.root, phone, obj.folder[0], itemId);
 		}
 	}
 	if (callback) {
@@ -283,8 +296,8 @@ function(callback, response) {
 };
 
 ZmVoiceApp.prototype._createFolder =
-function(parent, phone, obj) {
-	var params = { 
+function(parent, phone, obj, accordionItemId) {
+	var params = {
 		id: obj.id,
 		name: obj.name,
 		phone: phone,
@@ -292,8 +305,9 @@ function(parent, phone, obj) {
 		view: obj.view,
 		numUnread: obj.u,
 		parent: parent,
-		tree: parent.tree
-	}		
+		tree: parent.tree,
+		accordionItemId: accordionItemId
+	};
 	var folder = new ZmVoiceFolder(params);
 	parent.children.add(folder);
 	if (!this.startFolder && (folder.callType == ZmVoiceFolder.VOICEMAIL)) {
