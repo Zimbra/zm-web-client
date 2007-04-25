@@ -588,8 +588,10 @@ function(message, viewMode) {
 	}
 
     var tzrule = AjxTimezone.getRule(AjxTimezone.getClientId(this.getTimezone()));
-    if (tzrule && tzrule.aliasId) {
-        tzrule = AjxTimezone.getRule(tzrule.aliasId);
+    if (tzrule) {
+        if (tzrule.aliasId) {
+            tzrule = AjxTimezone.getRule(tzrule.aliasId) || tzrule;
+        }
         this.setTimezone(tzrule.serverId);
     }
 };
