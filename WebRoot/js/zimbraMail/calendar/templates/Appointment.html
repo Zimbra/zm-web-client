@@ -252,7 +252,7 @@
     <tr>
       <$ for (var k = 0; k < data.cellCount; k++) { $>
         <td class='ZmScheduler-free'>
-          <div class='ZmSchedulerGridDiv'></div>
+          <div class='ZmSchedulerGrid<$= data.isAllAttendees ? "TopCell" : "Div" $>'></div>
         </td>
       <$ } $>
     </tr>
