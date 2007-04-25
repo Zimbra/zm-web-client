@@ -185,6 +185,7 @@ function() {
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	list.push(ZmOperation.SEP);
+	list.push(ZmOperation.SPAM);
 	list.push(ZmOperation.SHOW_ORIG);
 	list.push(ZmOperation.ADD_FILTER_RULE);
 	return list;

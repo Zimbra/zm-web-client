@@ -377,7 +377,8 @@ function(view, arrowStyle) {
 
 	this._setupDeleteButton(view);
 	this._setupSpamButton(view);
-	this._setupReplyForwardButton(view);
+	this._setupReplyForwardOps(this._toolbar[view]);
+	this._setupCheckMailButton(this._toolbar[view]);
 
 	var detach = this._toolbar[view].getButton(ZmOperation.DETACH);
 	if (detach) detach.setText(ZmMsg.detach2);
@@ -394,6 +395,7 @@ function() {
 	this._propagateMenuListeners(actionMenu, ZmOperation.REPLY_MENU);
 	this._propagateMenuListeners(actionMenu, ZmOperation.FORWARD_MENU);
 	this._setReplyText(actionMenu);
+	this._setupReplyForwardOps(this._actionMenu);
 };
 
 // Groups of mail-related operations
@@ -659,21 +661,54 @@ function(view) {
 	}
 };
 
-// If we're in the Spam folder, the "Spam" button becomes the "Not Spam" button
-ZmMailListController.prototype._setupReplyForwardButton =
-function(view) {
-	var tb = this._toolbar[view];
-	var inDraftsFolder = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
+ZmMailListController.prototype._setupCheckMailButton = 
+function(parent) {
+    var folderId = this._getSearchFolderId();
+    var folder = this._appCtxt.getById(folderId);
 
-	var buttons = [];
-	this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED) ? buttons.push(ZmOperation.REPLY_MENU) :
-													  buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
-	buttons.push(this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED) ? ZmOperation.FORWARD_MENU : ZmOperation.FORWARD);
-	buttons.push(ZmOperation.EDIT);
-	for (var i = 0; i < buttons.length; i++) {
-		var button = tb.getButton(buttons[i]);
-		if (button) {
-			button.setVisible(!inDraftsFolder || (buttons[i] == ZmOperation.EDIT));
+    var isInbox = (folderId == ZmFolder.ID_INBOX);
+    var isFeed = (folder && folder.isFeed());
+    var hasPopAccounts = false;
+
+    if (folder && !isInbox && !isFeed && this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
+        var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
+        var popAccounts = dsCollection.getPopAccountsFor(folderId);
+        hasPopAccounts = popAccounts.length > 0;
+    }
+
+    var checkMailBtn = parent.getButton(ZmOperation.CHECK_MAIL);
+	if (checkMailBtn) {
+		if (!isInbox && isFeed) {
+			checkMailBtn.setText(ZmMsg.checkFeed);
+			checkMailBtn.setToolTipContent(ZmMsg.checkRssTooltip);
+		}
+		else if (!isInbox && hasPopAccounts) {
+			checkMailBtn.setText(ZmMsg.checkPopMail);
+			checkMailBtn.setToolTipContent(ZmMsg.checkPopMail);
+		}
+		else {
+			checkMailBtn.setText(ZmMsg.checkMail);
+			checkMailBtn.setToolTipContent(ZmMsg.checkMailTooltip);
+		}
+	}
+};
+
+// If we're in the Spam folder, the "Spam" button becomes the "Not Spam" button
+ZmMailListController.prototype._setupReplyForwardOps =
+function(parent) {
+	var inDraftsFolder = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
+	var ops = [];
+	this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED) ? ops.push(ZmOperation.REPLY_MENU) :
+													  ops.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+	ops.push(this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED) ? ZmOperation.FORWARD_MENU : ZmOperation.FORWARD);
+	ops.push(ZmOperation.EDIT);
+
+	for (var i = 0; i < ops.length; i++) {
+		var op = ops[i];
+		var show = (inDraftsFolder == (op == ZmOperation.EDIT));
+		var item = parent.getOp(op);
+		if (item) {
+			item.setVisible(show);
 		}
 	}
 };
@@ -900,33 +935,6 @@ function(parent, num) {
         var folderId = this._getSearchFolderId();
         var folder = this._appCtxt.getById(folderId);
 
-        var isInbox = folderId == ZmFolder.ID_INBOX;
-        var isFeed = folder && folder.isFeed();
-        var hasPopAccounts = false;
-
-        if (folder && !isInbox && !isFeed && this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) {
-            var dsCollection = AjxDispatcher.run("GetDataSourceCollection");
-            var popAccounts = dsCollection.getPopAccountsFor(folderId);
-            hasPopAccounts = popAccounts.length > 0;
-        }
-
-		// XXX: do we really need to do this button check every time an item is selected?
-        var checkMailBtn = parent.getButton(ZmOperation.CHECK_MAIL);
-		if (checkMailBtn) {
-			if (!isInbox && isFeed) {
-				checkMailBtn.setText(ZmMsg.checkFeed);
-				checkMailBtn.setToolTipContent(ZmMsg.checkRssTooltip);
-			}
-			else if (!isInbox && hasPopAccounts) {
-				checkMailBtn.setText(ZmMsg.checkPopMail);
-				checkMailBtn.setToolTipContent(ZmMsg.checkPopMail);
-			}
-			else {
-				checkMailBtn.setText(ZmMsg.checkMail);
-				checkMailBtn.setToolTipContent(ZmMsg.checkMailTooltip);
-			}
-		}
-
 		var item = null;
 		if (num == 1 && (folderId != ZmFolder.ID_DRAFTS)) {
 			var sel = this._listView[this._currentView].getSelection();
@@ -935,8 +943,8 @@ function(parent, num) {
 			}
 		}
 		var isDrafts = (item && item.isDraft) || (folderId == ZmFolder.ID_DRAFTS);
-		parent.enable([ZmOperation.REPLY_MENU, ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD_MENU, ZmOperation.FORWARD, ZmOperation.DETACH], !isDrafts && num == 1);
-		parent.enable([ZmOperation.SPAM, ZmOperation.MOVE], !isDrafts && num > 0);
+		parent.enable([ZmOperation.REPLY_MENU, ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD_MENU, ZmOperation.FORWARD, ZmOperation.DETACH], (!isDrafts && num == 1));
+		parent.enable([ZmOperation.SPAM, ZmOperation.MOVE], (!isDrafts && num > 0));
 		parent.enable([ZmOperation.CHECK_MAIL], true);
 	}
 };
