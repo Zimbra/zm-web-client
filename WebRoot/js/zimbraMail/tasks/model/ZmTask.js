@@ -152,30 +152,29 @@ ZmTask.prototype._loadFromDom =
 function(node, instNode) {
 	var inv = node.inv ? node.inv[0] : null
 	var comp = inv ? inv.comp[0] : null;
-	this.id = node.id;
-	this.invId = (node.invId) || (inv ? [node.id, inv.id].join("-") : null);
-	this.uid = node.uid;				// XXX: what is this?
-	this.folderId = node.l;
-	this.size = node.s;					// XXX: do we care?
-	this.name = this._getPart(node, comp, "name");
-	this.location = this._getPart(node, comp, "loc");
-	this.setAllDayEvent(this._getPart(node, comp, "allDay"));
-	this.priority = parseInt(this._getPart(node, comp, "priority"));
-	this.pComplete = parseInt(this._getPart(node, comp, "percentComplete"));
-	this.status = this._getPart(node, comp, "status");
-	this.isOrg = this._getPart(node, comp, "isOrg");
-	this.organizer = node.or ? node.or.a : null;
-	this.ptst = this._getPart(node, comp, "ptst");
-	this.compNum = this._getPart(node, comp, "compNum");
-	if (node.d) this.date = node.d;		// XXX: modified date?
-	this.sf = node.sf;
-//	this.rev = node.rev;
-//	this.md = node.md;
-//	this.ms = node.ms;
 
-	this._parseFlags(node.f);
-	if (node.t)
-		this._parseTags(node.t);
+	if (!node.id) this.id = node.id;
+	if (!this.invId) this.invId = (node.invId) || (inv ? [node.id, inv.id].join("-") : null);
+	if (!node.uid) this.uid = node.uid;				// XXX: what is this?
+
+	if (node.l) this.folderId = node.l;
+	if (node.s) this.size = node.s;					// XXX: do we care?
+	if (node.d) this.date = node.d;					// XXX: modified date?
+	if (node.sf) this.sf = node.sf;
+
+	if (node.name || comp) this.name = this._getPart(node, comp, "name");
+	if (node.loc || comp) this.location = this._getPart(node, comp, "loc");
+	if (node.allDay || comp) this.setAllDayEvent(this._getPart(node, comp, "allDay"));
+	if (node.priority || comp) this.priority = parseInt(this._getPart(node, comp, "priority"));
+	if (node.percentComplete || comp) this.pComplete = parseInt(this._getPart(node, comp, "percentComplete"));
+	if (node.status || comp) this.status = this._getPart(node, comp, "status");
+	if (node.isOrg || comp) this.isOrg = this._getPart(node, comp, "isOrg");
+	if (node.or || comp) this.organizer = node.or ? node.or.a : (comp.or ? comp.or.a : null);
+	if (node.ptst || comp) this.ptst = this._getPart(node, comp, "ptst");
+	if (node.compNum != null) this.compNum = this._getPart(node, comp, "compNum");
+
+	if (node.f)	this._parseFlags(node.f);
+	if (node.t)	this._parseTags(node.t);
 };
 
 ZmTask.prototype._getPart =
