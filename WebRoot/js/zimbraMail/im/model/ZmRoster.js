@@ -324,6 +324,9 @@ ZmRoster.prototype._handleRequestGateways = function(args) {
 		return;
 	var a = resp.IMGatewayListResponse.service;
 	if (a && a.length) {
+		var defaultGateway = { type   : "XMPP",
+				       domain : "XMPP" };
+		a.unshift(defaultGateway);
 		var byService = {};
 		var byDomain = {};
 		for (var i = 0; i < a.length; ++i) {
@@ -350,7 +353,7 @@ ZmRoster.prototype.getGateways = function() {
 };
 
 ZmRoster.prototype.makeServerAddress = function(addr, type) {
-	if (type == null)
+	if (type == null || type == "XMPP")
 		return addr;
 	return addr + "@" + this.getGatewayByType(type).domain;
 };
@@ -366,7 +369,7 @@ ZmRoster.prototype.breakDownAddress = function(addr) {
 			       };
 		}
 	}
-	return { type: null,
+	return { type: "XMPP",
 		 addr: addr };
 };
 
