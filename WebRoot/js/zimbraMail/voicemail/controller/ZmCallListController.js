@@ -83,6 +83,25 @@ function(parent, num) {
 	}
 };
 
+ZmCallListController.prototype.getKeyMapName =
+function() {
+	return "ZmCallListController";
+};
+
+ZmCallListController.prototype.handleKeyAction =
+function(actionCode) {
+	switch (actionCode) {
+		case ZmKeyMap.PRINT:
+			this._printListener();
+			break;
+		default:
+			return ZmVoiceListController.prototype.handleKeyAction.call(this, actionCode);
+	}
+	return true;
+};
+
+
+
 ZmCallListController.prototype._printListener =
 function(ev) {
 	var html = this._getView().getPrintHtml();

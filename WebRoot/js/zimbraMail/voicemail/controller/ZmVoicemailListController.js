@@ -135,7 +135,6 @@ function() {
 	return "ZmVoicemailListController";
 };
 
-// We need to stay in sync with what's allowed by _resetOperations
 ZmVoicemailListController.prototype.handleKeyAction =
 function(actionCode) {
 	var view = this._getView();
@@ -177,10 +176,8 @@ function(actionCode) {
 		case ZmKeyMap.MARK_UNHEARD:
 			this._markUnheardListener();
 			break;
-			
 		default:
-			return ZmListController.prototype.handleKeyAction.call(this, origActionCode);
-
+			return ZmVoiceListController.prototype.handleKeyAction.call(this, actionCode);
 	}
 	return true;
 };

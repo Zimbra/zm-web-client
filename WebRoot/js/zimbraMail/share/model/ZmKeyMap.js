@@ -76,6 +76,7 @@ ZmKeyMap.MAP_NAME["tasks"]				= "ZmTaskListController";
 ZmKeyMap.MAP_NAME["editTask"]			= "ZmTaskController";
 ZmKeyMap.MAP_NAME["tabView"]			= "DwtTabView";
 ZmKeyMap.MAP_NAME["voicemail"]			= "ZmVoicemailListController";
+ZmKeyMap.MAP_NAME["call"]				= "ZmCallListController";
 
 // Action codes
 ZmKeyMap.ADDRESS_PICKER		= "AddressPicker";
