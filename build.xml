@@ -761,9 +761,9 @@ if (ext == null) ext = "";
   </target>
 
   <target name="inject-build-info" depends="set-buildinfo-vars,generate-build-info">
-	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSetting.js" token="@buildVersion@" value="${zimbra.buildinfo.version}" />
-	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSetting.js" token="@buildRelease@" value="${zimbra.buildinfo.release}" />
-	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSetting.js" token="@buildDateTime@" value="${DSTAMP}-${TSTAMP}" />
+	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSettings.js" token="@buildVersion@" value="${zimbra.buildinfo.version}" />
+	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSettings.js" token="@buildRelease@" value="${zimbra.buildinfo.release}" />
+	<replace file="${build.dir}/WebRoot/js/zimbraMail/share/model/ZmSettings.js" token="@buildDateTime@" value="${DSTAMP}-${TSTAMP}" />
   </target>
 
   <!--
