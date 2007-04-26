@@ -80,23 +80,50 @@ function() {
 
 // Public methods
 
+ZmChatListController.prototype.prepareVisuals = function(view) {
+	view = view || this._currentView || this._defaultView();
+	this._setup(view);
+	// create the view (if we haven't yet)
+	if (!this._appViews[view]) {
+		var elements = new Object();
+		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
+		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
+
+		// view management callbacks
+		var callbacks = new Object();
+		callbacks[ZmAppViewMgr.CB_PRE_HIDE] =
+			this._preHideCallback ? new AjxCallback(this, this._preHideCallback) : null;
+		callbacks[ZmAppViewMgr.CB_POST_HIDE] =
+			this._postHideCallback ? new AjxCallback(this, this._postHideCallback) : null;
+		callbacks[ZmAppViewMgr.CB_PRE_SHOW] =
+			this._preShowCallback ? new AjxCallback(this, this._preShowCallback) : null;
+		callbacks[ZmAppViewMgr.CB_POST_SHOW] =
+			this._postShowCallback ? new AjxCallback(this, this._postShowCallback) : null;
+
+		this._app.createView(view, elements, callbacks, true);
+		this._appViews[view] = 1;
+	}
+};
+
 ZmChatListController.prototype.show =
 function() {
 	var view = this._currentView || this._defaultView();
 	this.switchView(view, true);
-}
+};
 
 ZmChatListController.prototype.switchView =
 function(view, force) {
 	if (view != this._currentView || force) {
-		this._setup(view);
-		var elements = new Object();
-		elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
-		elements[ZmAppViewMgr.C_APP_CONTENT] = this._parentView[view];
-		var ok = this._setView(view, elements, true);
+		var ok = this._setView(view);
 		this._currentView = view;
 	}
-}
+};
+
+ZmChatListController.prototype._setView =
+function(view, clear, pushOnly) {
+	this.prepareVisuals(view);
+	return (clear ? this._app.setView(view) : this._app.pushView(view));
+};
 
 ZmChatListController.prototype._preShowCallback =
 function(view) {
@@ -301,34 +328,6 @@ function(view) {
 	return menu;
 }
 
-ZmChatListController.prototype._setView =
-function(view, elements, isAppView, clear, pushOnly) {
-
-	// create the view (if we haven't yet)
-	if (!this._appViews[view]) {
-		// view management callbacks
-		var callbacks = new Object();
-		callbacks[ZmAppViewMgr.CB_PRE_HIDE] =
-			this._preHideCallback ? new AjxCallback(this, this._preHideCallback) : null;
-		callbacks[ZmAppViewMgr.CB_POST_HIDE] =
-			this._postHideCallback ? new AjxCallback(this, this._postHideCallback) : null;
-		callbacks[ZmAppViewMgr.CB_PRE_SHOW] =
-			this._preShowCallback ? new AjxCallback(this, this._preShowCallback) : null;
-		callbacks[ZmAppViewMgr.CB_POST_SHOW] =
-			this._postShowCallback ? new AjxCallback(this, this._postShowCallback) : null;
-
-		this._app.createView(view, elements, callbacks, isAppView);
-		this._appViews[view] = 1;
-	}
-
-	// populate the view
-//	if (!pushOnly)
-//		this._setViewContents(view);
-
-	// push the view
-	 return (clear ? this._app.setView(view) : this._app.pushView(view));
-}
-
 ZmChatListController.prototype._refreshListener =
 function(ev) {
     var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
@@ -411,7 +410,7 @@ function(item) {
     // TODO: change this to select most recently active chat?
     if (chat == null && chats.length > 0) chat = chats[0];
 
-    if (chat != null) this._parentView[this._currentView].selectChat(chat);
+    if (chat != null) this._getView().selectChat(chat);
 };
 
 ZmChatListController.prototype.chatWithContacts = function(contacts, mailMsg, text) {
@@ -425,7 +424,7 @@ ZmChatListController.prototype.chatWithRosterItem =
 function(item, text) {
 	var chat = this._list.getChatByRosterAddr(item.getAddress(), true);
 	// currentview or all? probably all...
-	this._parentView[this._currentView].selectChat(chat, text);
+	this._getView().selectChat(chat, text);
 };
 
 ZmChatListController.prototype.chatWithRosterItems =
@@ -437,7 +436,7 @@ function(items, chatName) {
 	// listeners take care of rest...
 	this._list.addChat(chat);
 	// currentview or all? probably all...
-	this._parentView[this._currentView].selectChat(chat, text);
+	this._getView().selectChat(chat, text);
 };
 
 ZmChatListController.prototype.endChat =
@@ -446,21 +445,25 @@ function(chat) {
     this._list.removeChat(chat);
 };
 
+ZmChatListController.prototype._getView = function() {
+	return ZmChatMultiWindowView.getInstance();
+};
+
 ZmChatListController.prototype._rosterListChangeListener =
 function(ev, treeView) {
-    if (ev.event == ZmEvent.E_MODIFY) {
-        var items = ev.getItems();
-        for (var i=0; i < items.length; i++) {
-             var item = items[i];
-             if (item instanceof ZmRosterItem) {
-                var fields = ev.getDetail("fields");
-                var chats = this._list.getChatsByRosterAddr(item.getAddress());
-                // currentview or all? probably all...
-                for (var c in chats) {
-                    var chat = chats[c];
-                    this._parentView[this._currentView]._rosterItemChangeListener(chat, item, fields);
-                }
-             }
-        }
-    }
+	if (ev.event == ZmEvent.E_MODIFY) {
+		var items = ev.getItems();
+		for (var i=0; i < items.length; i++) {
+			var item = items[i];
+			if (item instanceof ZmRosterItem) {
+				var fields = ev.getDetail("fields");
+				var chats = this._list.getChatsByRosterAddr(item.getAddress());
+				// currentview or all? probably all...
+				for (var c in chats) {
+					var chat = chats[c];
+					this._getView()._rosterItemChangeListener(chat, item, fields);
+				}
+			}
+		}
+	}
 };

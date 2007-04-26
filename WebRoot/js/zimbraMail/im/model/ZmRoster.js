@@ -269,6 +269,7 @@ function(im) {
 					}
 				}
 			} else if (not.type == "message") {
+				this._appCtxt.getApp(ZmApp.IM).prepareVisuals();
 				var msg = not;
 				var chatMessage = new ZmChatMessage(msg, msg.from == this.getMyAddress());
 				var chat = cl.getChatByThread(chatMessage.thread);
@@ -288,6 +289,7 @@ function(im) {
 					chat.addMessage(chatMessage);
 				}
 			} else if (not.type == "leftchat") {
+				this._appCtxt.getApp(ZmApp.IM).prepareVisuals();
 				var lc = not;
 				var chat = this.getChatList().getChatByThread(lc.thread);
 				if (chat) {

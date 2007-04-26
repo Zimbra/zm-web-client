@@ -156,16 +156,11 @@ function(callback) {
 
 ZmImApp.prototype._handleLoadLaunch =
 function(callback) {
-	// console.log("_handleLoadLaunch");
-// 	this.refresh();
 	var clc = this.getChatListController();
+	this.prepareVisuals();
 	clc.show();
 	if (callback)
 		callback.run();
-	var self = this;
-	setTimeout(function() {
-		self.refresh();
-	}, 100);
 };
 
 ZmImApp.prototype.activate =
@@ -213,9 +208,9 @@ ZmImApp.prototype.stopFlashingIcon = function() {
 
 ZmImApp.addImPresenceMenu =
 function(parent) {
-	var list = [ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
-                ZmOperation.IM_PRESENCE_DND, ZmOperation.IM_PRESENCE_AWAY, ZmOperation.IM_PRESENCE_XA,
-                ZmOperation.IM_PRESENCE_INVISIBLE];
+	var list = [ ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
+                     ZmOperation.IM_PRESENCE_DND, ZmOperation.IM_PRESENCE_AWAY, ZmOperation.IM_PRESENCE_XA,
+                     ZmOperation.IM_PRESENCE_INVISIBLE];
 
 	var menu = new ZmPopupMenu(parent);
 
@@ -230,4 +225,13 @@ function(parent) {
 
 	parent.setMenu(menu, false, DwtMenuItem.RADIO_STYLE);
 	return menu;
+};
+
+ZmImApp.prototype.prepareVisuals = function() {
+	AjxDispatcher.require("IM", false);
+	this.getChatListController().prepareVisuals();
+	if (!this.__haveRoster) {
+		setTimeout(AjxCallback.simpleClosure(this.refresh, this), 100);
+		this.__haveRoster = true;
+	}
 };
