@@ -107,9 +107,10 @@ function() {
 ZmContactView.prototype.set =
 function(contact, isDirty) {
 
-	this._attr = new Object();
+	this._attr = {};
 	for (var a in contact.getAttrs()) {
-		this._attr[a] = contact.getAttr(a);
+		if (a != "objectClass" && a != "modifyTimeStamp" && a != "createTimeStamp" && a != "zimbraId")
+			this._attr[a] = contact.getAttr(a);
 	}
 
 	if (!this._htmlInitialized) {
