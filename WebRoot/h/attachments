@@ -61,6 +61,7 @@
             </tr>
         </table>
         <input type="hidden" name="to" value="${fn:escapeXml(compose.to)}"/>
+        <input type="hidden" name="sendUID" value="${fn:escapeXml(compose.sendUID)}"/>        
         <input type="hidden" name="cc" value="${fn:escapeXml(compose.cc)}"/>
         <input type="hidden" name="bcc" value="${fn:escapeXml(compose.bcc)}"/>
         <input type="hidden" name="subject" value="${fn:escapeXml(compose.subject)}"/>

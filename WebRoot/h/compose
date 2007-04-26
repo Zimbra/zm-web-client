@@ -180,6 +180,7 @@
                 </td>
             </tr>
         </table>
+        <input type="hidden" name="sendUID" value="${fn:escapeXml(compose.sendUID)}"/>
         <input type="hidden" name="replyto" value="${fn:escapeXml(compose.replyTo)}"/>
         <input type="hidden" name="from" value="${fn:escapeXml(compose.from)}"/>
         <input type="hidden" name="inreplyto" value="${fn:escapeXml(compose.inReplyTo)}"/>
