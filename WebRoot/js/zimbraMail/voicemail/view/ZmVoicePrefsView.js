@@ -584,7 +584,7 @@ function() {
 
 ZmEmailNotificationUI.prototype._initialize =
 function(id) {
-	this._createCheckbox(ZmMsg.EmailNotificationDescription, id + "_emailNotificationCheckbox");
+	this._createCheckbox(ZmMsg.emailNotificationDescription, id + "_emailNotificationCheckbox");
 	
 	var inputParams = { size:25 }
 	this._comboBox = new DwtComboBox(this._view, inputParams);
