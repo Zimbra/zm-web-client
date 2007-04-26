@@ -73,10 +73,10 @@ ZmPrefView.VIEWS = [
     ZmPrefView.IDENTITY,
     ZmPrefView.POP_ACCOUNTS,
     ZmPrefView.FILTER_RULES,
+    ZmPrefView.VOICE,
     ZmPrefView.ADDR_BOOK,
     ZmPrefView.CALENDAR,
-    ZmPrefView.SHORTCUTS,
-    ZmPrefView.VOICE
+    ZmPrefView.SHORTCUTS
 ];
 
 // list of prefs for each page
