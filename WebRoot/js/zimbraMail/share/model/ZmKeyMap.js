@@ -75,6 +75,7 @@ ZmKeyMap.MAP_NAME["notebook"]			= "ZmNotebookPageController";
 ZmKeyMap.MAP_NAME["tasks"]				= "ZmTaskListController";
 ZmKeyMap.MAP_NAME["editTask"]			= "ZmTaskController";
 ZmKeyMap.MAP_NAME["tabView"]			= "DwtTabView";
+ZmKeyMap.MAP_NAME["voicemail"]			= "ZmVoicemailListController";
 
 // Action codes
 ZmKeyMap.ADDRESS_PICKER		= "AddressPicker";
@@ -117,8 +118,10 @@ ZmKeyMap.GOTO_TRASH			= "GoToTrash";
 ZmKeyMap.HTML_FORMAT		= "HtmlFormat";
 ZmKeyMap.LOGOFF				= "LogOff";
 ZmKeyMap.MARK_COMPLETE		= "MarkComplete";
+ZmKeyMap.MARK_HEARD			= "MarkHeard";
 ZmKeyMap.MARK_READ			= "MarkRead";
 ZmKeyMap.MARK_UNCOMPLETE	= "MarkUncomplete";
+ZmKeyMap.MARK_UNHEARD		= "MarkUnheard";
 ZmKeyMap.MARK_UNREAD		= "MarkUnread";
 ZmKeyMap.MOVE_TO_FOLDER		= "MoveToFolder";	// takes NNN
 ZmKeyMap.MOVE_TO_INBOX		= "MoveToInbox";
@@ -139,6 +142,8 @@ ZmKeyMap.NEW_WINDOW			= "NewWindow";
 ZmKeyMap.NEXT_CONV			= "NextConversation";
 ZmKeyMap.NEXT_PAGE			= "NextPage";
 ZmKeyMap.NEXT_UNREAD		= "NextUnread";
+ZmKeyMap.PLAY				= "Play";
+ZmKeyMap.PLAY_ALL			= "PlayAll";
 ZmKeyMap.PREV_CONV			= "PreviousConversation";
 ZmKeyMap.PREV_PAGE			= "PreviousPage";
 ZmKeyMap.PREV_UNREAD		= "PreviousUnread";

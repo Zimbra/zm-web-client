@@ -37,7 +37,7 @@ function ZmVoicemailListController(appCtxt, container, app) {
 	this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
 	this._listeners[ZmOperation.AUTO_PLAY] = new AjxListener(this, this._autoPlayListener);
 	this._listeners[ZmOperation.MARK_HEARD] = new AjxListener(this, this._markHeardListener);
-	this._listeners[ZmOperation.MARK_UNHEARD] = new AjxListener(this, this._markUnreadListener);
+	this._listeners[ZmOperation.MARK_UNHEARD] = new AjxListener(this, this._markUnheardListener);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
@@ -130,6 +130,62 @@ function(parent, num) {
 	parent.enable(ZmOperation.MARK_UNHEARD, hasHeard);
 };
 
+ZmVoicemailListController.prototype.getKeyMapName =
+function() {
+	return "ZmVoicemailListController";
+};
+
+// We need to stay in sync with what's allowed by _resetOperations
+ZmVoicemailListController.prototype.handleKeyAction =
+function(actionCode) {
+	var view = this._getView();
+	var num = view.getSelectionCount();
+	switch (actionCode) {
+		case ZmKeyMap.SAVE:
+			if (num == 1) {
+				this._saveListener();
+			}
+			break;
+		case ZmKeyMap.REPLY:
+			if (num == 1) {
+				this._replyListener();
+			}
+			break;
+		case ZmKeyMap.FORWARD:
+			if (num == 1) {
+				this._forwardListener();
+			}
+			break;
+		case ZmKeyMap.DEL:
+			if (num > 0) {
+				this._deleteListener();
+			}
+			break;
+		case ZmKeyMap.PLAY:
+			if (num == 1) {
+				view.setPlaying(view.getSelection()[0]);
+			}
+			break;
+		case ZmKeyMap.PLAY_ALL:
+			if (this._folder && this._folder.numUnread) {
+				this._autoPlayListener();
+			}
+			break;
+		case ZmKeyMap.MARK_HEARD:
+			this._markHeardListener();
+			break;
+		case ZmKeyMap.MARK_UNHEARD:
+			this._markUnheardListener();
+			break;
+			
+		default:
+			return ZmListController.prototype.handleKeyAction.call(this, origActionCode);
+
+	}
+	return true;
+};
+
+
 ZmVoicemailListController.prototype._markHeard = 
 function(items, heard) {
 	var changeItems = [];
@@ -179,7 +235,7 @@ function(ev) {
 };
 
 ZmVoicemailListController.prototype._saveListener = 
-function(ev) {
+function() {
 	// This scary looking piece of code does not change the page that the browser is
 	// pointing at. Because the server will send back a "Content-Disposition:attachment"
 	// header for this url, the browser opens a dialog to let the user save the file.
@@ -196,7 +252,7 @@ ZmVoicemailListController.prototype._replyListener =
 function(ev) {
 	var voicemail = this._getView().getSelection()[0];
 	var contact = voicemail.participants.get(0);
-	this._sendMail(ev, contact.getEmail());
+	this._sendMail(ev, contact ? contact.getEmail() : null);
 };
 
 ZmVoicemailListController.prototype._forwardListener = 
@@ -206,6 +262,7 @@ function(ev) {
 
 ZmVoicemailListController.prototype._sendMail = 
 function(ev, to) {
+	var inNewWindow = this._app._inNewWindow(ev);
 	var voicemail = this._getView().getSelection()[0];
     var soapDoc = AjxSoapDoc.create("UploadVoiceMailRequest", "urn:zimbraVoice");
     var node = soapDoc.set("vm");
@@ -214,14 +271,14 @@ function(ev, to) {
     var params = {
     	soapDoc: soapDoc, 
     	asyncMode: true,
-		callback: new AjxCallback(this, this._handleResponseUpload, [ev, to])
+		callback: new AjxCallback(this, this._handleResponseUpload, [inNewWindow, to])
 	};
 	this._appCtxt.getAppController().sendRequest(params);
    
 };
 
 ZmVoicemailListController.prototype._handleResponseUpload = 
-function(ev, to, response) {
+function(inNewWindow, to, response) {
 	var voicemail = this._getView().getSelection()[0];
 	var mailMsg = new ZmMailMsg(this._appCtxt);
 	mailMsg.getAttachments()[0] = {
@@ -242,7 +299,7 @@ function(ev, to, response) {
 	var body = AjxMessageFormat.format(message, [phoneNumber, duration, date]);
 	var params = {
 		action: ZmOperation.NEW_MESSAGE, 
-		inNewWindow: this._app._inNewWindow(ev), 
+		inNewWindow: inNewWindow, 
 		msg: mailMsg,
 		toOverride: to,
 		subjOverride: ZmMsg.voicemailSubject,
@@ -252,7 +309,7 @@ function(ev, to, response) {
 };
 
 ZmVoicemailListController.prototype._autoPlayListener = 
-function(ev) {
+function() {
 	if (!this._autoPlaying) {
 		var firstUnheard;
 		var list = this._getView().getList();
@@ -272,7 +329,7 @@ function(ev) {
 	this._markHeard(this._getView().getSelection(), true);
 };
 
-ZmVoicemailListController.prototype._markUnreadListener = 
+ZmVoicemailListController.prototype._markUnheardListener = 
 function(ev) {
 	this._markHeard(this._getView().getSelection(), false);
 };
