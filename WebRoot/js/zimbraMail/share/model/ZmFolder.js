@@ -290,21 +290,20 @@ function(obj) {
 
 ZmFolder.prototype.createQuery =
 function(pathOnly) {
-	var query;
 	if (this.isSystem()) {
-		query = pathOnly ? ZmFolder.QUERY_NAME[this.id] : "in:" + ZmFolder.QUERY_NAME[this.id];
-		return query;
+		return pathOnly
+			? ZmFolder.QUERY_NAME[this.id]
+			: ("in:" + ZmFolder.QUERY_NAME[this.id]);
 	}
 	var path = this.name;
 	var f = this.parent;
-	while (f && f.id > ZmFolder.ID_ROOT && f.name.length) {
+	while (f && f.id != ZmFolder.ID_ROOT && f.name.length) {
 		var name = f.isSystem() ? ZmFolder.QUERY_NAME[f.id] : f.name;
 		path = name + "/" + path;
 		f = f.parent;
 	}
 	path = '"' + path + '"';
-	query = pathOnly ? path : "in:" + path;
-	return query;
+	return pathOnly ? path : ("in:" + path);
 };
 
 ZmFolder.prototype.getName =
