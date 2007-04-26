@@ -23,9 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewSearchDialog(parent, msgDialog, className) {
+function ZmNewSearchDialog(parent, className) {
 
-	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.saveSearch);
+	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.saveSearch});
 
 	this._setNameField(this._nameFieldId);
 	var omit = new Object();
@@ -36,8 +36,7 @@ function ZmNewSearchDialog(parent, msgDialog, className) {
 					  [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH], omit);
 	this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
 	this._searchTreeView = this._treeView[ZmOrganizer.SEARCH];
-	this._folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-	this._searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
+	this._folderTree = this._appCtxt.getFolderTree();
 }
 
 ZmNewSearchDialog._OVERVIEW_ID = "ZmNewSearchDialog";
@@ -51,10 +50,10 @@ function() {
 }
 
 ZmNewSearchDialog.prototype.popup =
-function(search, loc) {
+function(search) {
 	this._search = search;
-	this._searchTreeView.setSelected(this._searchTree.root, true);
-	ZmDialog.prototype.popup.call(this, loc);
+	this._searchTreeView.setSelected(this._folderTree.root, true);
+	ZmDialog.prototype.popup.call(this);
 }
 
 ZmNewSearchDialog.prototype._contentHtml = 
@@ -104,7 +103,7 @@ function() {
 	if (!msg && (parentFolder.id == ZmOrganizer.ID_ROOT) && this._folderTree.root.hasChild(name))
 		msg = ZmMsg.folderOrSearchNameExists;
 
-	return (msg ? this._showError(msg) : [parentFolder, name, this._search]);
+	return (msg ? this._showError(msg) : {parent:parentFolder, name:name, search:this._search});
 }
 
 ZmNewSearchDialog.prototype._enterListener =

@@ -87,3 +87,11 @@ function(event, details) {
 		this._evtMgr.notifyListeners(ZmEvent.L_MODIFY, this._evt);
 	}
 };
+
+ZmModel.notifyEach =
+function(list, event, details) {
+	if (!(list && list.length)) { return; }
+	for (var i = 0; i < list.length; i++) {
+		list[i]._notify(event, details);
+	}
+};

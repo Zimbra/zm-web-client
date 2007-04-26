@@ -84,7 +84,7 @@ ZmNotebookCache.prototype.fillCache =
 function(folderId, callback, errorCallback) {
 	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	/***
-	var notebook = tree.getById(folderId);
+	var notebook = this._appCtxt.getById(folderId);
 	var path = notebook.getSearchPath();
 	var search = 'in:"'+path+'"';
 	/***/
@@ -245,7 +245,7 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 		for (var specialName in ZmNotebookCache._SPECIAL_NAMES) {
 			if (this._foldersMap[folderId].pages[specialName]) continue;
 			var requestNode = soapDoc.set("GetWikiRequest",null,null,"urn:zimbraMail");
-			requestNode.setAttribute("id", specialName);
+			requestNode.setAttribute("requestId", specialName);
 			var wordNode = soapDoc.set("w", null, requestNode);
 			wordNode.setAttribute("l", folderId);
 			wordNode.setAttribute("name", specialName);
@@ -365,21 +365,20 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 	}
 
 	// link: /Foo/Bar
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var notebook = null;
 	if (link.match(/^\//)) {
 		// TODO: Handle case where current folder owner is not me
 		//       because absolute paths should be relative to where
 		//       the link was followed. [Q] Should they?
-		notebook = tree.getById(ZmOrganizer.ID_ROOT);
+		notebook = this._appCtxt.getById(ZmOrganizer.ID_ROOT);
 		link = link.substr(1);
 	}
 	if (!notebook) {
-		var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+		var app = this._appCtxt.getApp(ZmApp.NOTEBOOK);
 		var controller = app.getNotebookController();
 		var currentPage = controller.getPage();
 		var folderId = (currentPage && currentPage.folderId) || ZmOrganizer.ID_NOTEBOOK;
-		notebook = tree.getById(folderId);
+		notebook = this._appCtxt.getById(folderId);
 	}
 
 	// link: Foo/Bar
@@ -389,8 +388,8 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 			var name = names[i];
             if (name == ".") continue;
             if (name == "..") {
-                notebook = notebook.parent;
                 if (notebook == null) return null;
+                notebook = notebook.parent;
                 continue;
             }
             notebook = ZmNotebookCache.__getNotebookByName(notebook, name);
@@ -411,7 +410,7 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 
 	// link: Foo (item)
 	var traverseUp = Boolean(link.match(/^_/));
-	var item = this.getItemByName(notebook.id, link, traverseUp);
+	var item = notebook ? this.getItemByName(notebook.id, link, traverseUp) : null;
 	return item;
 };
 ZmNotebookCache.prototype.getPageByLink = function(link) {
@@ -489,9 +488,8 @@ ZmNotebookCache.prototype.makeProxyPage = function(page, folderId) {
 
 ZmNotebookCache.prototype._fillCacheResponse = 
 function(requestParams, folderId, callback, errorCallback, response) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(folderId);
-	var remoteFolderId = notebook.zid ? notebook.zid+":"+notebook.rid : undefined;
+	var notebook = this._appCtxt.getById(folderId);
+	var remoteFolderId = (notebook && notebook.zid) ? notebook.zid + ":" + notebook.rid : undefined;
 
 	// add pages to folder map in cache
 	if (response && (response.SearchResponse || response._data.SearchResponse)) {
@@ -528,7 +526,7 @@ function(requestParams, folderId, callback, errorCallback, response) {
 		}
 
 		// retrieve another block of pages, if necessary
-		if (searchResponse.more) {
+		if (searchResponse.more && requestParams) {
 			var soapDoc = requestParams.soapDoc;
 			var limit = Number(soapDoc.getMethod().getAttribute("limit")) * 2;
 			soapDoc.setMethodAttribute("offset", searchResponse.offset + words.length);
@@ -578,21 +576,20 @@ function(folderId, callback, errorCallback, response) {
 	var resp = response.GetFolderResponse || (response._data && response._data.GetFolderResponse);
 	var folder = resp.folder && resp.folder[0];
 	var folders = folder && folder.folder;
-	if (folders) {
-		var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-		var parent = tree.getById(folderId);
+	var parent = this._appCtxt.getById(folderId);
+	if (folders && parent) {
 		for (var i = 0; i < folders.length; i++) {
 			var obj = folders[i];
 
 			// remove sub-tree if it already exists
-			var notebook = tree.getById(obj.id);
+			var notebook = this._appCtxt.getById(obj.id);
 			if (notebook) {
 				parent.children.remove(notebook);
 				notebook._notify(ZmEvent.E_DELETE);
 			}
 
 			// create sub-tree and add to tree
-			var notebook = ZmNotebook.createFromJs(parent, obj, tree, null);
+			var notebook = ZmFolderTree.createFromJs(parent, obj, tree);
 			parent.children.add(notebook);
 			notebook._notify(ZmEvent.E_CREATE);
 		}

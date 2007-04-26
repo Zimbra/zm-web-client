@@ -66,7 +66,7 @@ function(soapDoc, timezoneClientId, parentNode, skipKnownTimezone) {
 	if (timezone.autoDetected || !skipKnownTimezone) {
 		var tz = soapDoc.set("tz", null, parentNode);
 		var id = AjxTimezone.getServerId(timezoneClientId);
-		if (AjxEnv.isSafari) id = AjxStringUtil.xmlEncode(id);
+		if (AjxEnv.isSafari && !AjxEnv.isSafariNightly) id = AjxStringUtil.xmlEncode(id);
 		tz.setAttribute("id", id);
 		if (timezone.autoDetected) {
 			tz.setAttribute("stdoff", timezone.standard.offset);

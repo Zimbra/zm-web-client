@@ -30,11 +30,10 @@ function ZmConvView(parent, controller, dropTgt) {
 	this._changeListener = new AjxListener(this, this._convChangeListener);
 	
 	// add change listener to tree view to catch empty trash action
-	var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-	folderTree.addChangeListener(new AjxListener(this, this._folderChangeListener));
+	this._appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._folderChangeListener));
 	
 	// Add a change listener to taglist to track tag color changes
-	this._tagList = this.shell.getData(ZmAppCtxt.LABEL).getTree(ZmOrganizer.TAG);
+	this._tagList = this._appCtxt.getTagTree();
 	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	
 	this._controller = controller;
@@ -73,13 +72,13 @@ function(conv) {
 	this._conv = conv;
 	conv.addChangeListener(this._changeListener);
 	
-	this._msgListView.set(conv.msgs, ZmItem.F_DATE);
+	this._mailListView.set(conv.msgs, ZmItem.F_DATE);
 	this._setSubject(conv.subject);
 	this._setTags(conv);
 	
 	// display "hot" message (or newest if no search performed)
-	var hot = this._conv.getHotMsg(this._msgListView.getOffset(), this._msgListView.getLimit());
-	this._msgListView.setSelection(hot);
+	var hot = this._conv.getHotMsg(this._mailListView.getOffset(), this._mailListView.getLimit());
+	this._mailListView.setSelection(hot);
 };
 
 ZmConvView.prototype.reset = 
@@ -119,13 +118,13 @@ function(newWidth, newHeight) {
 		var sashHeight = this._msgSash.getSize().y;
 		if (!this._sashMoved) {
 			// calc. height MLV based on num of msgs in conv
-			var list = this._msgListView.getList();
+			var list = this._mailListView.getList();
 			if (list && list.size() > 0) {
 				var threshold = Math.min(list.size() + 1, 6);
-				var div = document.getElementById(this._msgListView._getItemId(list.get(0)));
+				var div = document.getElementById(this._mailListView._getItemId(list.get(0)));
 				var maxHeight = Dwt.getSize(div).y * threshold;
 				this._summaryTotalHeight = summaryHeight + maxHeight + DwtListView.HEADERITEM_HEIGHT;
-				this._msgListView.resetHeight(maxHeight + DwtListView.HEADERITEM_HEIGHT);
+				this._mailListView.resetHeight(maxHeight + DwtListView.HEADERITEM_HEIGHT);
 				var mvHeight = Math.max((newHeight - (this._summaryTotalHeight + sashHeight)), 0);
 				this._msgView.setBounds(Dwt.DEFAULT, this._summaryTotalHeight + sashHeight, Dwt.DEFAULT, mvHeight);
 				this._msgSash.setLocation(Dwt.DEFAULT, this._summaryTotalHeight);
@@ -135,7 +134,7 @@ function(newWidth, newHeight) {
 			var minHeight = this._msgView.getMinHeight();
 			
 			if (mvHeight < minHeight) {
-				this._msgListView.resetHeight(newHeight - (summaryHeight + minHeight));
+				this._mailListView.resetHeight(newHeight - (summaryHeight + minHeight));
 				this._msgView.setBounds(Dwt.DEFAULT, (newHeight - minHeight) + sashHeight, Dwt.DEFAULT, minHeight - sashHeight);
 				this._msgSash.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - sashHeight);
 			} else {
@@ -143,13 +142,13 @@ function(newWidth, newHeight) {
 			}
 		}
 	} else {
-		this._msgListView.resetHeight(newHeight - summaryHeight);
+		this._mailListView.resetHeight(newHeight - summaryHeight);
 	}
 
 	if (AjxEnv.isIE && this._subjectDiv)
 		Dwt.setSize(this._subjectDiv, newWidth - 95);
 	
-	this._msgListView._resetColWidth();
+	this._mailListView._resetColWidth();
 };
 
 ZmConvView.prototype._initHeader = 
@@ -285,11 +284,10 @@ function(ev) {
 		// user emptied trash folder.. search for any msgs in trash and remove from list view
 		var list = this._conv.msgs.getArray();
 		var len = list.length; // save original length
-		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		for (var i = 0; i < list.length; i++) {
-			var folder = folderTree.getById(list[i].folderId);
+			var folder = this._appCtxt.getById(list[i].folderId);
 			if (folder.isInTrash()) {
-				this._msgListView.removeItem(list[i]);
+				this._mailListView.removeItem(list[i]);
 				this._conv.msgs.remove(list[i], true);
 				i--;
 			}
@@ -308,7 +306,7 @@ function(ev) {
 			fields[ZmItem.F_COUNT] = true;
 			this._conv.list._notify(ZmEvent.E_MODIFY, {items: [this._conv], fields: fields});
 			// reset selection to first msg
-			this._msgListView.setSelection(this._conv.msgs.getVector().get(0));
+			this._mailListView.setSelection(this._conv.msgs.getVector().get(0));
 		}
 	}
 };
@@ -346,7 +344,7 @@ function(delta) {
 		var minMsgViewHeight = this._msgView.getMinHeight();
 		// make sure msg header remains visible
 		if (newMsgViewHeight > minMsgViewHeight) {
-			this._msgListView.resetHeight(this._msgListView.getSize().y + delta);
+			this._mailListView.resetHeight(this._mailListView.getSize().y + delta);
 			this._msgView.setSize(Dwt.DEFAULT, newMsgViewHeight);
 			this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y + delta);
 		} else {
@@ -357,7 +355,7 @@ function(delta) {
 		var absDelta = Math.abs(delta);
 		// make sure summary and MLV remain visible
 		if (this._msgSash.getLocation().y - absDelta > this._summaryTotalHeight) {
-			this._msgListView.resetHeight(this._msgListView.getSize().y - absDelta);
+			this._mailListView.resetHeight(this._mailListView.getSize().y - absDelta);
 			this._msgView.setSize(Dwt.DEFAULT, this._msgView.getSize().y + absDelta);
 			this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - absDelta);
 		} else {
@@ -366,7 +364,7 @@ function(delta) {
 	}
 	
 	if (delta)
-		this._msgListView._resetColWidth();
+		this._mailListView._resetColWidth();
 	
 	return delta;
 };

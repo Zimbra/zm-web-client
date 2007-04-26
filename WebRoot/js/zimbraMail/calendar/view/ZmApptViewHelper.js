@@ -24,19 +24,14 @@
  */
 
 /**
-* Static class used by ZmApptQuickAddDialog, ZmApptTabViewPage, ZmApptRecurDialog,
-* ZmSchedTabViewPage, and possibly others that have shared code.
+* Does nothing.
 * @constructor
 * @class
-* This class provides a form for creating/editing appointments.
+* This static class provides utility functions for dealing with appointments
+* and their related forms and views.
 *
 * @author Parag Shah
-* @param parent			the element that created this view
-* @param className 		class name for this view (defaults to ZmApptComposeView)
-* @param calApp			a handle to the owning calendar application
-* @param controller		the controller for this view
-* @param contactPicker	handle to a ZmContactPicker for selecting addresses
-* @param composeMode 	passed in so detached window knows which mode to be in on startup
+* @author Conrad Damon
 */
 
 /**
@@ -54,54 +49,6 @@ ZmApptViewHelper.REPEAT_OPTIONS = [
 	{ label: ZmMsg.everyMonth, 			value: "MON", 	selected: false },
 	{ label: ZmMsg.everyYear, 			value: "YEA", 	selected: false },
 	{ label: ZmMsg.custom, 				value: "CUS", 	selected: false }];
-
-/**
- * creates a new button with a DwtCalendar as its menu
- * @document 					the DOM document
- * @parent						parent this DwtButton gets appended to
- * @buttonId 					buttonId to fetch inside DOM and append DwtButton to
- * @dateButtonListener			AjxListener to call when date button is pressed
- * @dateCalSelectionListener	AjxListener to call when date is selected in DwtCalendar
- * @isInDialog 					true if mini cal is inside a DwtDialog (otherwise z-index will be too low)
-*/
-ZmApptViewHelper.createMiniCalButton =
-function(parent, buttonId, dateButtonListener, dateCalSelectionListener, appCtxt, isInDialog) {
-	// create button
-	var dateButton = new DwtButton(parent, null, "DwtSelect");
-	dateButton.addDropDownSelectionListener(dateButtonListener);
-	if (AjxEnv.isIE)
-		dateButton.setSize("20");
-
-	// create menu for button
-	var calMenu = new DwtMenu(dateButton, null, null, null, isInDialog);
-	calMenu.setSize("150");
-	calMenu._table.width = "100%";
-	dateButton.setMenu(calMenu, true);
-
-	// create mini cal for menu for button
-	var cal = new DwtCalendar(calMenu);
-	cal.setSkipNotifyOnPage(true);
-	cal.setFirstDayOfWeek(appCtxt.get(ZmSetting.CAL_FIRST_DAY_OF_WEEK));
-	cal.addSelectionListener(dateCalSelectionListener);
-	// add settings change listener on mini cal in case first day of week setting changes
-	var listener = new AjxListener(null, ZmApptViewHelper._settingsChangeListener, cal);
-	appCtxt.getSettings().getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK).addChangeListener(listener);
-
-	// reparent and cleanup
-	dateButton.reparentHtmlElement(buttonId);
-	delete buttonId;
-
-	return dateButton;
-};
-
-ZmApptViewHelper._settingsChangeListener =
-function(cal, ev) {
-	if (ev.type != ZmEvent.S_SETTING) return;
-
-	var setting = ev.source;
-	if (setting.id == ZmSetting.CAL_FIRST_DAY_OF_WEEK)
-		cal.setFirstDayOfWeek(setting.getValue());
-};
 
 /**
 * Returns an object with the indices of the currently selected time fields.
@@ -171,307 +118,76 @@ function(startDateField, endDateField, isStartDate, skipCheck) {
 	return needsUpdate;
 };
 
-//TODO : i18n
-ZmApptViewHelper.getRecurrenceDisplayString = 
-function(recurrences, startDate) {
-	var list, arr, t, ord, i, j, k, x, y, z;
-	var str = new Array();
-	var idx = 0;
-	// iterate through the whole thing, and see if we can't come up
-	// with a gramatically correct interpretation.
-	var repeatWeekday = ZmApptViewHelper._isRepeatWeekday(recurrences);
-	for (k = 0; k < recurrences.length ; ++k) {
-		adds = recurrences[k].add;
-		excludes = recurrences[k].excludes;
-		excepts = recurrences[k].except;
-		if (adds != null) {
-			str[idx++] = "Every ";
-			for (i = 0; i < adds.length; ++i){
-				rules = adds[i].rule;
-				if (rules) {
-					for (j =0; j < rules.length; ++j){
-						rule = rules[j];
-						idx = ZmApptViewHelper._ruleToString(rule, str, idx, startDate, repeatWeekday);
-					}
-				}
-			}
-		}
-		if (excludes != null) {
-			if (idx > 0) {
-				str[idx++] = " except for every ";
-			} else {
-				str[idx++] = "Except every ";
-			}
-			for (i = 0; i < excludes.length; ++i){
-				rules = excludes[i].rule;
-				if (rules) {
-					for (j =0; j < rules.length; ++j){
-						rule = rules[j];
-						idx = ZmApptViewHelper._ruleToString(rule, str, idx, startDate);
-					}
-				}
-			}
+ZmApptViewHelper.getDayToolTipText =
+function(date, list, controller, noheader) {
+	var html = new AjxBuffer();
+
+	var formatter = DwtCalendar.getDateFullFormatter();	
+	var title = formatter.format(date);
+	
+	html.append("<div>");
+
+	html.append("<table cellpadding='0' cellspacing='0' border='0'>");
+	if (!noheader) html.append("<tr><td><div class='calendar_tooltip_month_day_label'>", title, "</div></td></tr>");
+	html.append("<tr><td>");
+	html.append("<table cellpadding='1' cellspacing='0' border='0' width=100%>");
+	
+	var size = list ? list.size() : 0;
+
+	for (var i = 0; i < size; i++) {
+		var ao = list.get(i);
+		if (ao.isAllDayEvent()) {
+			//DBG.println("AO    "+ao);
+			var bs = "";
+			if (!ao._fanoutFirst) bs = "border-left:none;";
+			if (!ao._fanoutLast) bs += "border-right:none;";
+			var body_style = (bs != "") ? "style='"+bs+"'" : "";
+			html.append("<tr><td><div class=appt>");
+			html.append(ZmApptViewHelper._allDayItemHtml(ao, Dwt.getNextId(), body_style, controller));
+			html.append("</div></td></tr>");
 		}
 	}
-	return str.join("");
-};
 
-ZmApptViewHelper._ruleToString = 
-function(rule, str, idx, startDate, repeatWeekday) {
-	idx = ZmApptViewHelper._getFreqString(rule, str, idx, repeatWeekday);
-	idx = ZmApptViewHelper._getByMonthString(rule, str, idx);
-	idx = ZmApptViewHelper._getByWeeknoString(rule, str, idx);
-	idx = ZmApptViewHelper._getByYearDayString(rule, str, idx);
-	idx = ZmApptViewHelper._getMonthDayString(rule, str, idx);
-	idx = ZmApptViewHelper._getByDayString(rule, str, idx);
-	idx = ZmApptViewHelper._getRecurrenceTimeString(rule, str, idx, startDate);
-	return idx;
-};
+	for (var i = 0; i < size; i++) {
+		var ao = list.get(i);
+		if (!ao.isAllDayEvent()) {
+		
+			var color = ZmCalendarApp.COLORS[controller.getCalendarColor(ao.folderId)];
+			var isNew = ao.status == ZmCalItem.PSTATUS_NEEDS_ACTION;
 
-ZmApptViewHelper._getFreqString = 
-function(rule, str, idx, repeatWeekday) {
-	if (rule.freq) {
-		var count = 0;
-		if (rule.interval && rule.interval[0].ival) 
-			count = rule.interval[0].ival;
-		if (count > 1 ) {
-			str[idx++] = count; 
-			str[idx++] = " ";
-		}
-		freq = rule.freq.substring(0,3);
-		str[idx++] = ZmApptViewHelper._frequencyToDisplayString(freq, count, repeatWeekday);
-	}
-	return idx;
-};
-
-ZmApptViewHelper._getByMonthString = 
-function(rule, str, idx) {
-	if (rule.bymonth) {
-		list = rule.bymonth[0].molist;
-		arr = list.split(',');
-		if (arr && arr.length > 0) 
-			str[idx++] = " in ";
-		var ord;
-		for (t = 0; t < arr.length; ++t) {
-			ord = parseInt(arr[t]);
-			str[idx++] = AjxDateUtil.MONTH_MEDIUM[ord];
-			if (t < arr.length -1) {
-				str[idx++] = " and ";
+			html.append("<tr><td class='calendar_month_day_item'><div class='", color, isNew ? "DarkC" : "C", "'>");		
+			if (isNew) html.append("<b>");
+			//html.append("&bull;&nbsp;");
+			//var dur = ao.getShortStartHour();
+			var dur = ao.getDurationText(false, false);
+			html.append(dur);
+			if (dur != "") {
+				html.append("&nbsp;");
 			}
+			html.append(AjxStringUtil.htmlEncode(ao.getName()));
+			if (isNew) html.append("</b>");			
+			html.append("</div>");
+			html.append("</td></tr>");
 		}
 	}
-	return idx;
-};
-
-ZmApptViewHelper._getByWeeknoString = 
-function(rule, str, idx) {
-	var list, arr, t, ord;
-	if (rule.byweekno) {
-		list = rule.bymonth[0].molist;
-		arr = list.split(',');
-		if (arr && arr.length > 0) str[idx++] = " weeks ";
-		for (t = 0; t < arr.length; ++t) {
-			ord = parseInt(arr[t]);
-			if (ord == -1 ){
-				str[idx++] = " the last week of the year ";
-			} else {
-				str[idx++] = " the ";
-				str[idx++] = ( ord * -1);
-				str[idx++] = " from the last week of the year ";
-			}
-			str[idx++] = arr[t];
-			if (t < arr.length -1) {
-				str[idx++] = " and ";
-			}
-		}
+	if ( size == 0) {
+		html.append("<tr><td>"+ZmMsg.noAppts+"</td></tr>");
 	}
-	return idx;
-};
+	html.append("</table>");
+	html.append("</tr></td></table>");
+	html.append("</div>");
 
-ZmApptViewHelper._getMonthDayString = 
-function(rule, str, idx) {
-	var arr, list, t;
-	if (rule.monthday) {
-		list = rule.bymonthday[0].modaylist;
-		arr = list.split(',');
-		for (t = 0; t < arr.length; ++t) {
-			ord = parseInt(arr[t]);
-			if (ord == -1 ){
-				str[idx++] = " the last day of the month ";
-			} else {
-				str[idx++] = " the ";
-				str[idx++] = ( ord * -1);
-				str[idx++] = " from the last day of the month ";
-			}
-			str[idx++] = arr[t];
-			if (t < arr.length -1) {
-				str[idx++] = " and ";
-			}
-		}
-	}
-	return idx;
-};
-
-ZmApptViewHelper._getByDayString = 
-function(rule, str, idx) {
-	var x;
-	if (rule.byday) {
-		for (x = 0; x < rule.byday.length; ++x) {
-			str[idx++] = " on ";
-			str[idx++] = ZmAppt.SERVER_DAYS_TO_DISPLAY[rule.byday[x].wkday[0].day];
-			var serverOrd = rule.byday[x].wkday[0].ordwk;
-			if (serverOrd != null) {
-				var fChar = serverOrd.charAt(0);
-				var num;
-				if (serverOrd == "-1") {
-					str[idx++] = " the last week of the";
-				} else if ( fChar == '-') {
-					num = parseInt(serverOrd.substring(1,serverOrd.length - 1));
-					str[idx++] = " the ";
-					str[idx++] = num;
-					str[idx++] = " from the last week of the ";
-				} else {
-					if (fChar == '+') {
-						num = parseInt(serverOrd.substring(1,serverOrd.length - 1));
-					} else {
-						num = parseInt(serverOrd);
-					}
-					str[idx++] = " the ";
-					str[idx++] = num;
-					str[idx++] = " week of the ";
-				}
-				// REVISIT: Where is this value coming from?!
-				str[idx++] = freq;
-				str[idx++] = " ";
-			}
-		}
-	}
-	return idx;
-};
-
-ZmApptViewHelper._getRecurrenceTimeString = 
-function(rule, str, idx, startDate) {
-	var hours;
-	if (rule.byhour) {
-		list = rule.byhour[0].hrlist;
-		hours = list.split(',');
-	} else {
-		hours = [startDate.getHours()];
-	}
-
-	var minutes;
-	if (rule.byminute) {
-		list = rule.byminute[0].minlist;
-		minutes = list.split(',');
-	} else {
-		minutes = [startDate.getMinutes()];
-	}
-
-	var seconds;
-	if (rule.bysecond) {
-		list = rule.bysecond[0].seclist;
-		seconds = list.split(',');
-	} else {
-		seconds = [startDate.getSeconds()];
-	}
-							
-	str[idx++] = " at ";
-	for (x=0; x < hours.length; ++x){ 
-		for (y=0; y < minutes.length; ++y) {
-			for (z = 0; z < seconds.length; ++z){
-										
-				var h = parseInt(hours[x]);
-				var ampm = " AM";
-				if (h >= 12) ampm = " PM";
-				str[idx++] = (h != 12)? (h % 12): h;
-				str[idx++] = ":";
-				str[idx++] = AjxDateUtil._pad(minutes[y]);
-// 				if (seconds[z] == '0' || seconds[z] == '00') {
-// 				} else {
-// 					str[idx++] = ":";
-// 					str[idx++] = AjxDateUtil._pad(seconds[z]);
-// 				}
-				str[idx++] = ampm;
-				if (z < seconds.length - 1 || y < seconds.length - 1 || x < hours.length -1){
-					str[idx++] = ", and ";
-				}
-			}
-		}
-	}
-	return idx;
-};
-
-ZmApptViewHelper._getByYearDayString = 
-function(rule, str, idx) {
-	var list, arr, t, ord;
-	if (rule.byyearday) {
-		list = rule.byyearday[0].yrdaylist;
-		arr = list.split(',');
-		for (t = 0; t < arr.length; ++t) {
-			ord = parseInt(arr[t]);
-			if (ord == -1 ){
-				str[idx++] = " the last day of the year ";
-			} else {
-				str[idx++] = " the ";
-				str[idx++] = ( ord * -1);
-				str[idx++] = " from the last day of the year ";
-			}
-			str[idx++] = arr[t];
-			if (t < arr.length -1) {
-				str[idx++] = " and ";
-			}
-		}
-	}
-	return idx;
-};
-
-ZmApptViewHelper._frequencyToDisplayString = 
-function(freq, count, repeatWeekday) {
-	var plural = count > 1 ? 1 : 0;
-	return freq == "DAI" && repeatWeekday 
-		? ZmMsg.weekday
-		: AjxDateUtil.FREQ_TO_DISPLAY[freq][plural];
-};
-
-ZmApptViewHelper._isRepeatWeekday = 
-function(recurrences) {
-	// NOTE: Taken from ZmAppt.prototype._populateRecurrenceFields and
-	//       stripped down to minimal amount to calculate repeatWeekday.
-	var repeatWeekday = false;
-	for (var k = 0; k < recurrences.length ; ++k) {
-		var adds = recurrences[k].add;
-		if (adds != null) {
-			var repeatType;
-			for (var i = 0; i < adds.length; ++i) {
-				var rules = adds[i].rule;
-				if (rules) {
-					for (var j =0; j < rules.length; ++j) {
-						var rule = rules[j];
-						if (rule.freq) {
-							repeatType = rule.freq.substring(0,3);
-						}
-						if (rule.byday && rule.byday[0] && rule.byday[0].wkday) {
-							var wkdayLen = rule.byday[0].wkday.length;
-							if (repeatType == "WEE" || (repeatType == "DAI" && wkdayLen == 5)) {
-								repeatWeekday = repeatType == "DAI";
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	return repeatWeekday;
+	return html.toString();
 };
 
 /*
-* Takes a string, ZmEmailAddress, or contact/resource and returns
+* Takes a string, AjxEmailAddress, or contact/resource and returns
 * a ZmContact or a ZmResource. If the attendee cannot be found in
 * contacts, locations, or equipment, a new contact or
 * resource is created and initialized.
 *
 * @param appCtxt		[ZmAppCtxt]		the app context
-* @param item			[object]		string, ZmEmailAddress, ZmContact, or ZmResource
+* @param item			[object]		string, AjxEmailAddress, ZmContact, or ZmResource
 * @param type			[constant]*		attendee type
 * @param strictText		[boolean]*		if true, new location will not be created from free text
 * @param strictEmail	[boolean]*		if true, new attendee will not be created from email address
@@ -482,52 +198,52 @@ function(appCtxt, item, type, strictText, strictEmail) {
 	if (!item || !type) return null;
 
 	if (!ZmApptViewHelper._contacts) {
-		ZmApptViewHelper._contacts = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+		ZmApptViewHelper._contacts = AjxDispatcher.run("GetContacts");
 	}
 	if (!ZmApptViewHelper._locations) {
-		ZmApptViewHelper._locations = appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getLocations();
+		ZmApptViewHelper._locations = appCtxt.getApp(ZmApp.CALENDAR).getLocations();
 	}
 	if (!ZmApptViewHelper._equipment) {
-		ZmApptViewHelper._equipment = appCtxt.getApp(ZmZimbraMail.CALENDAR_APP).getEquipment();
+		ZmApptViewHelper._equipment = appCtxt.getApp(ZmApp.CALENDAR).getEquipment();
 	}
 
 	var attendee = null;
-	if (item instanceof ZmContact) {
+	if ((item instanceof ZmContact) || (item instanceof ZmResource)) {
 		// it's already a contact or resource, return it as is
 		attendee = item;
-	} else if (item instanceof ZmEmailAddress) {
+	} else if (item instanceof AjxEmailAddress) {
 		var addr = item.getAddress();
 		// see if we have this contact/resource by checking email address
 		attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
 		if (!attendee && !strictEmail) {
-			// ZmEmailAddress has name and email, init a new contact/resource from those
-			attendee = (type == ZmAppt.PERSON) ? new ZmContact(appCtxt) :
-												 new ZmResource(appCtxt, type);
+			// AjxEmailAddress has name and email, init a new contact/resource from those
+			attendee = (type == ZmCalItem.PERSON) ? new ZmContact(appCtxt) :
+													new ZmResource(appCtxt, type);
 			attendee.initFromEmail(item, true);
 		}
 	} else if (typeof item == "string") {
 		item = AjxStringUtil.trim(item);	// trim white space
 		item = item.replace(/;$/, "");		// trim separator
 		// see if it's an email we can use for lookup
-	 	var email = ZmEmailAddress.parse(item);
+	 	var email = AjxEmailAddress.parse(item);
 	 	if (email) {
 	 		var addr = email.getAddress();
 	 		// is it a contact/resource we already know about?
 			attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
 			if (!attendee && !strictEmail) {
-				if (type == ZmAppt.PERSON) {
+				if (type == ZmCalItem.PERSON) {
 					attendee = new ZmContact(appCtxt);
-				} else if (type == ZmAppt.LOCATION) {
-					attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._locations, ZmAppt.LOCATION);
-				} else if (type == ZmAppt.EQUIPMENT) {
-					attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._equipment, ZmAppt.EQUIPMENT);
+				} else if (type == ZmCalItem.LOCATION) {
+					attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._locations, ZmCalItem.LOCATION);
+				} else if (type == ZmCalItem.EQUIPMENT) {
+					attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._equipment, ZmCalItem.EQUIPMENT);
 				}
 				attendee.initFromEmail(email, true);
-			} else if (type == ZmAppt.PERSON) {
+			} else if (type == ZmCalItem.PERSON) {
 				// remember actual address (in case it's email2 or email3)
 				attendee._inviteAddress = addr;
 			}
-		} else if (type != ZmAppt.PERSON) {
+		} else if (type != ZmCalItem.PERSON) {
 			// check if it's a location or piece of equipment we know by name
 			if (ZmApptViewHelper._locations) {
 				attendee = ZmApptViewHelper._locations.getResourceByName(item);
@@ -538,10 +254,10 @@ function(appCtxt, item, type, strictText, strictEmail) {
 		}
 		// non-email string: initialize as a resource if it's a location, since
 		// those can be free-text
-		if (!attendee && type == ZmAppt.LOCATION && !strictText && ZmApptViewHelper._locations) {
-			attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._locations, ZmAppt.LOCATION);
+		if (!attendee && type == ZmCalItem.LOCATION && !strictText && ZmApptViewHelper._locations) {
+			attendee = new ZmResource(appCtxt, null, ZmApptViewHelper._locations, ZmCalItem.LOCATION);
 			attendee.setAttr(ZmResource.F_name, item);
-			attendee.setAttr(ZmResource.F_type, ZmResource.TYPE_LOCATION);
+			attendee.setAttr(ZmResource.F_type, ZmResource.ATTR_LOCATION);
 			ZmApptViewHelper._locations.updateHashes(attendee);
 		}
 	}
@@ -551,18 +267,18 @@ function(appCtxt, item, type, strictText, strictEmail) {
 ZmApptViewHelper._getAttendeeFromAddr =
 function(addr, type) {
 	var attendee = null;
-	if ((type == ZmAppt.PERSON) && ZmApptViewHelper._contacts) {
+	if ((type == ZmCalItem.PERSON) && ZmApptViewHelper._contacts) {
 		attendee = ZmApptViewHelper._contacts.getContactByEmail(addr);
-	} else if ((type == ZmAppt.LOCATION) && ZmApptViewHelper._locations) {
+	} else if ((type == ZmCalItem.LOCATION) && ZmApptViewHelper._locations) {
 		attendee = ZmApptViewHelper._locations.getResourceByEmail(addr);
-	} else if ((type == ZmAppt.EQUIPMENT) && ZmApptViewHelper._equipment) {
+	} else if ((type == ZmCalItem.EQUIPMENT) && ZmApptViewHelper._equipment) {
 		attendee = ZmApptViewHelper._equipment.getResourceByEmail(addr);
 	}
 	return attendee;
 };
 
 /**
-* Returns a ZmEmailAddress for the organizer.
+* Returns a AjxEmailAddress for the organizer.
 *
 * @param appCtxt	[ZmAppCtxt]		the app context
 * @param organizer	[string]*		organizer's email address
@@ -571,7 +287,7 @@ ZmApptViewHelper.getOrganizerEmail =
 function(appCtxt, organizer) {
 	var orgAddress = organizer ? organizer : appCtxt.get(ZmSetting.USERNAME);
 	var orgName = (orgAddress == appCtxt.get(ZmSetting.USERNAME)) ? appCtxt.get(ZmSetting.DISPLAY_NAME) : null;
-	return new ZmEmailAddress(orgAddress, null, orgName);
+	return new AjxEmailAddress(orgAddress, null, orgName);
 };
 
 /*
@@ -601,6 +317,29 @@ function(list, type, includeDisplayName) {
 
 	return a.join(ZmAppt.ATTENDEES_SEPARATOR);
 };
+
+ZmApptViewHelper._allDayItemHtml =
+function(appt,id, body_style, controller) {
+	var isNew = appt.ptst == ZmCalItem.PSTATUS_NEEDS_ACTION;
+	var isAccepted = appt.ptst == ZmCalItem.PSTATUS_ACCEPT;
+	var color = ZmCalendarApp.COLORS[controller.getCalendarColor(appt.folderId)];
+	var subs = {
+		id: id,
+		body_style: body_style,
+		newState: isNew ? "_new" : "",
+		headerColor: color + (isNew ? "Dark" : "Light"),
+		bodyColor: color + (isNew ? "" : "Bg"),
+		name: AjxStringUtil.htmlEncode(appt.getName()),
+//		tag: isNew ? "NEW" : "",		//  HACK: i18n
+		starttime: appt.getDurationText(true, true),
+		endtime: (!appt._fanoutLast && (appt._fanoutFirst || (appt._fanoutNum > 0))) ? "" : ZmCalItem._getTTHour(appt.endDate),
+		location: AjxStringUtil.htmlEncode(appt.getLocation()),
+		status: appt.isOrganizer() ? "" : appt.getParticipantStatusStr()
+	};	
+	var template = "calendar_appt_allday";
+    return AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#"+template, subs);
+};
+
 
 /**
 * Creates up to three separate DwtSelects for the time (hour, minute, am|pm)

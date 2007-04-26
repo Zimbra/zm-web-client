@@ -53,17 +53,17 @@ function ZmMailMsg(appCtxt, id, list) {
 ZmMailMsg.prototype = new ZmMailItem;
 ZmMailMsg.prototype.constructor = ZmMailMsg;
 
-ZmMailMsg.ADDRS = [ZmEmailAddress.FROM, ZmEmailAddress.TO, ZmEmailAddress.CC,
-				   ZmEmailAddress.BCC, ZmEmailAddress.REPLY_TO, ZmEmailAddress.SENDER];
+ZmMailMsg.ADDRS = [AjxEmailAddress.FROM, AjxEmailAddress.TO, AjxEmailAddress.CC,
+				   AjxEmailAddress.BCC, AjxEmailAddress.REPLY_TO, AjxEmailAddress.SENDER];
 
-ZmMailMsg.HDR_FROM		= ZmEmailAddress.FROM;
-ZmMailMsg.HDR_TO		= ZmEmailAddress.TO;
-ZmMailMsg.HDR_CC		= ZmEmailAddress.CC;
-ZmMailMsg.HDR_BCC		= ZmEmailAddress.BCC;
-ZmMailMsg.HDR_REPLY_TO	= ZmEmailAddress.REPLY_TO;
-ZmMailMsg.HDR_SENDER	= ZmEmailAddress.SENDER;
-ZmMailMsg.HDR_DATE		= ZmEmailAddress.LAST_ADDR + 1;
-ZmMailMsg.HDR_SUBJECT	= ZmEmailAddress.LAST_ADDR + 2;
+ZmMailMsg.HDR_FROM		= AjxEmailAddress.FROM;
+ZmMailMsg.HDR_TO		= AjxEmailAddress.TO;
+ZmMailMsg.HDR_CC		= AjxEmailAddress.CC;
+ZmMailMsg.HDR_BCC		= AjxEmailAddress.BCC;
+ZmMailMsg.HDR_REPLY_TO	= AjxEmailAddress.REPLY_TO;
+ZmMailMsg.HDR_SENDER	= AjxEmailAddress.SENDER;
+ZmMailMsg.HDR_DATE		= AjxEmailAddress.LAST_ADDR + 1;
+ZmMailMsg.HDR_SUBJECT	= AjxEmailAddress.LAST_ADDR + 2;
 
 ZmMailMsg.HDR_KEY = new Object();
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_FROM]		= ZmMsg.from;
@@ -143,8 +143,8 @@ function(type, used, addAsContact) {
 			if (!used[email]) {
 				var contact = addr;
 				if (addAsContact) {
-					var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
-					contact = clc.getContactByEmail(email);
+					var cl = AjxDispatcher.run("GetContacts");
+					contact = cl.getContactByEmail(email);
 					if (contact == null) {
 						contact = new ZmContact(this._appCtxt);
 						contact.initFromEmail(addr);
@@ -163,11 +163,6 @@ function() {
 	return this._attachments;
 }
 
-ZmMailMsg.prototype.getInviteOrganizer =
-function() {
-	return this.isInvite() ? this.invite.getOrganizerEmail() : null;
-};
-
 /**
 * Returns a Reply-To address if there is one, otherwise the From address
 * unless this message was sent by the user, in which case, it is the To
@@ -176,12 +171,12 @@ function() {
 */
 ZmMailMsg.prototype.getReplyAddresses =
 function(mode) {
-	var addrVec = this._addrs[ZmEmailAddress.REPLY_TO];
+	var addrVec = this._addrs[AjxEmailAddress.REPLY_TO];
 	var invAddr = null;
 	if (!addrVec && this.isInvite() && this.needsRsvp()) {
 		var invEmail = this.invite.getOrganizerEmail(0);
 		if (invEmail)
-			invAddr = new ZmEmailAddress(invEmail);
+			invAddr = new AjxEmailAddress(invEmail);
 	}
 
 	if (invAddr) {
@@ -189,8 +184,8 @@ function(mode) {
 	} else {
 		if (!(addrVec && addrVec.size())) {
 			addrVec = (mode == ZmOperation.REPLY_CANCEL || this.isSent && mode == ZmOperation.REPLY_ALL)
-				? this._addrs[ZmEmailAddress.TO]
-				: this._addrs[ZmEmailAddress.FROM];
+				? this._addrs[AjxEmailAddress.TO]
+				: this._addrs[AjxEmailAddress.FROM];
 		}
 		return addrVec;
 	}
@@ -252,7 +247,7 @@ function(hdr) {
 	} else if (hdr == ZmMailMsg.HDR_SUBJECT) {
 		var subj = this.getSubject();
 		return subj ? ZmMailMsg.HDR_KEY[hdr] + ": " + subj : "";
-	} else if (hdr <= ZmEmailAddress.LAST_ADDR) {
+	} else if (hdr <= AjxEmailAddress.LAST_ADDR) {
 		var addrs = this.getAddresses(hdr);
 		var addrStr = addrs.toString(", ", true);
 		if (addrStr)
@@ -325,7 +320,7 @@ function(type, addrs) {
 */
 ZmMailMsg.prototype.addAddress =
 function(addr) {
-	var type = addr.type || ZmEmailAddress.TO;
+	var type = addr.type || AjxEmailAddress.TO;
 	this._addrs[type].add(addr);
 };
 
@@ -368,10 +363,22 @@ function(parts) {
 *
 * @param id		an attachment ID
 */
-ZmMailMsg.prototype.setAttachmentId =
+ZmMailMsg.prototype.addAttachmentId =
 function(id) {
+	if (this._attId) {
+		id = this._attId + "," + id;
+	}
 	this._onChange("attachmentId", id);
 	this._attId = id;
+};
+
+/**
+* Returns the ID of any attachments which have already been uploaded.
+*
+*/
+ZmMailMsg.prototype.getAttachmentId = 
+function() {
+	return this._attId;
 };
 
 /**
@@ -570,16 +577,17 @@ function(contactList, edited, componentId, callback, errorCallback, instanceDate
 	soapDoc.setMethodAttribute("verb", verb);
 
 	var inv = this._origMsg.getInvite();
-	if (this.getAddress(ZmEmailAddress.TO) == null && !inv.isOrganizer()) {
+	if (this.getAddress(AjxEmailAddress.TO) == null && !inv.isOrganizer()) {
 		var to = inv.getSentBy() || inv.getOrganizerEmail();
-		this.setAddress(ZmEmailAddress.TO, (new ZmEmailAddress(to)));
+		this.setAddress(AjxEmailAddress.TO, (new AjxEmailAddress(to)));
 	}
 
 	soapDoc.setMethodAttribute("updateOrganizer", "TRUE" );
 	if (instanceDate) {
 		var serverDateTime = AjxDateUtil.getServerDateTime(instanceDate);
 		var timeZone = AjxTimezone.getServerId(AjxTimezone.DEFAULT);
-        if (AjxEnv.isSafari) timeZone = AjxStringUtil.xmlEncode(timeZone);
+        if (AjxEnv.isSafari && !AjxEnv.isSafariNightly)
+			timeZone = AjxStringUtil.xmlEncode(timeZone);
 
         var clientId = AjxTimezone.getClientId(timeZone);
         ZmTimezone.set(soapDoc, clientId, null, true);
@@ -870,7 +878,7 @@ function(findHits) {
                 else if (attach.s < 1024^2)	props.size = Math.round((attach.s / 1024) * 10) / 10 + " KB";
                 else 						props.size = Math.round((attach.s / (1024*1024)) * 10) / 10 + " MB";
     		} else {
-    			useCL = attach.cl && ZmMailMsg.URL_RE.test(attach.cl);
+    			useCL = attach.cl && (attach.relativeCl || ZmMailMsg.URL_RE.test(attach.cl));
     		}
 
 			// handle rfc/822 attachments differently
@@ -928,7 +936,7 @@ function(findHits) {
 
 			// set other meta info
 			props.isHit = findHits && this._isAttInHitList(attach);
-			props.mpId = attach.part;
+			props.part = attach.part;
 			if (!useCL)
 				props.url = csfeMsgFetchSvc + "id=" + this.getId() + "&part=" + attach.part;
 
@@ -959,7 +967,7 @@ function(msgNode) {
 	if (msgNode.su) 	this.subject = msgNode.su;
 	if (msgNode.fr) 	this.fragment = msgNode.fr;
 	if (msgNode.rt) 	this.rt = msgNode.rt;
-	if (msgNode.idnt)	this.identity = this._appCtxt.getIdentityCollection().getById(msgNode.idnt);
+	if (msgNode.idnt)	this.identity = AjxDispatcher.run("GetIdentityCollection").getById(msgNode.idnt);
 	if (msgNode.origid) this.origId = msgNode.origid;
 	if (msgNode.hp) 	this._attHitList = msgNode.hp;
 	if (msgNode.mid)	this.messageId = msgNode.mid;
@@ -977,6 +985,7 @@ function(msgNode) {
 		// TODO: Make server output better msgNode.shr property...
 		var shareXmlDoc = AjxXmlDoc.createFromXml(msgNode.shr[0].content);
 		try {
+			AjxDispatcher.require("Share");
 			this.share = ZmShare.createFromDom(shareXmlDoc.getDoc(), this._appCtxt);
 			this.share._msgId = msgNode.id;
 		} catch (ex) {
@@ -1031,10 +1040,13 @@ function(soapDoc, parent, type, contactList, isDraft) {
 		var addr = addrs.get(i);
 		var email = addr.getAddress();
 		var e = soapDoc.set("e", null, parent);
-		e.setAttribute("t", ZmEmailAddress.toSoapType[type]);
+		e.setAttribute("t", AjxEmailAddress.toSoapType[type]);
 		e.setAttribute("a", email);
+
 		// tell server to add this email to address book if not found
-		if (!isDraft && this._appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS) && !contactList.getContactByEmail(email)) {
+		if (contactList && !isDraft && this._appCtxt.get(ZmSetting.AUTO_ADD_ADDRESS) &&
+			!contactList.getContactByEmail(email)) {
+
 			DBG.println(AjxDebug.DBG2, "adding contact: " + email);
 			e.setAttribute("add", "1");
 		}
@@ -1090,4 +1102,9 @@ ZmMailMsg.prototype._onChange =
 function(what, a, b, c) {
 	if (this.onChange && this.onChange instanceof AjxCallback)
 		this.onChange.run(what, a, b, c);
+};
+
+ZmMailMsg.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	ZmMailMsgView.getPrintHtml(this, preferHtml, callback);
 };

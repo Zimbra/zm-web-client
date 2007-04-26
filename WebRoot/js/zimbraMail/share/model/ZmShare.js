@@ -151,15 +151,6 @@ ZmShare.TYPE_PUBLIC	= "pub";
 ZmShare.ZID_ALL = "00000000-0000-0000-0000-000000000000";
 ZmShare.ZID_PUBLIC = "99999999-9999-9999-9999-999999999999";
 
-// view types
-ZmShare._VIEWS = {};
-ZmShare._VIEWS["conversation"] = ZmMsg.mailFolder;
-ZmShare._VIEWS["message"] = ZmMsg.mailFolder;
-ZmShare._VIEWS["appointment"] = ZmMsg.calendarFolder;
-ZmShare._VIEWS["wiki"] = ZmMsg.notebookFolder;
-ZmShare._VIEWS["contact"] = ZmMsg.addressBookFolder;
-ZmShare._VIEWS["any"] = ZmMsg.folder;
-
 // message subjects
 ZmShare._SUBJECTS = {};
 ZmShare._SUBJECTS[ZmShare.NEW] = ZmMsg.shareCreatedSubject;
@@ -291,18 +282,12 @@ ZmShare.prototype.isWorkflow = function() { return this.isPermAllowed(ZmShare.PE
 ZmShare._getFolderType =
 function(view) {
 	if (view) {
-		var folderType = ZmShare._VIEWS[view] || ZmShare._VIEWS["any"];
-		return "(" + folderType + ")";
+		var type = ZmOrganizer.TYPE[view];
+		var folderKey = ZmOrganizer.FOLDER_KEY[type] || "folder";
+		return "(" + ZmMsg[folderKey] + ")";
 	}
 	return "";
 };
-
-ZmShare._init =
-function() {
-	if (ZmShare._SUBJECTS) return;
-
-};
-
 
 
 // Static methods
@@ -380,8 +365,10 @@ function(name, color, replyType, notes, callback) {
 		"color": color,
 		"view": this.link.view
 	};
-	if (this.link.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR]) {
-		params.f = ZmOrganizer.FLAG_CHECKED;
+	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+		if (this.link.view == ZmOrganizer.VIEWS[ZmOrganizer.CALENDAR][0]) {
+			params.f = ZmOrganizer.FLAG_CHECKED;
+		}
 	}
 	ZmMountpoint.create(this._appCtxt, params, respCallback, errorCallback);
 };
@@ -423,15 +410,12 @@ function(mode, addrs) {
 	if (!addrs) {
 		var email = this.grantee.email;
 		addrs = new AjxVector();
-		addrs.add(new ZmEmailAddress(email, ZmEmailAddress.TO));
+		addrs.add(new AjxEmailAddress(email, AjxEmailAddress.TO));
 	}
 	var msg = this._createMsg(mode, false, addrs);
 
 	// send message
-	var contactsApp = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
-	var contactList = contactsApp.getContactList();
-
-	msg.send(contactList);
+	msg.send(AjxDispatcher.run("GetContacts"));
 };
 
 ZmShare.prototype.composeMessage =
@@ -440,12 +424,10 @@ function(mode, addrs) {
 	if (!addrs) {
 		var email = this.grantee.email;
 		addrs = new AjxVector();
-		addrs.add(new ZmEmailAddress(email, ZmEmailAddress.TO));
+		addrs.add(new AjxEmailAddress(email, AjxEmailAddress.TO));
 	}
 
 	var msg = this._createMsg(mode, true, addrs);
-	var mailApp = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
-	var composeController = mailApp.getComposeController();
 
 	// NOTE: Assumes text, html, and xml parts are in the top part
 	var parts = msg._topPart.children;
@@ -453,7 +435,7 @@ function(mode, addrs) {
 	var htmlPart = parts.get(1);
 	var xmlPart = parts.get(2);
 	msg.setBodyParts([ textPart.node, htmlPart.node, xmlPart.node ]);
-	composeController.doAction(ZmOperation.SHARE, true, msg);
+	AjxDispatcher.run("Compose", {action: ZmOperation.SHARE, inNewWindow: true, msg: msg});
 };
 
 
@@ -580,8 +562,6 @@ function(ex) {
 
 ZmShare.prototype._createMsg =
 function(mode, isCompose, addrs) {
-	ZmShare._init();
-
 	// generate message
 	var textPart = this._createTextPart(mode, isCompose);
 	var htmlPart = this._createHtmlPart(mode, isCompose);
@@ -596,11 +576,11 @@ function(mode, isCompose, addrs) {
 	var msg = new ZmMailMsg(this._appCtxt);
 	var toEmail, fromEmail;
 	if (mode == ZmShare.ACCEPT || mode == ZmShare.DECLINE) {
-		msg.setAddress(ZmEmailAddress.FROM, new ZmEmailAddress(this.grantee.email, ZmEmailAddress.FROM));
-		msg.setAddress(ZmEmailAddress.TO, new ZmEmailAddress(this.grantor.email), ZmEmailAddress.TO);
+		msg.setAddress(AjxEmailAddress.FROM, new AjxEmailAddress(this.grantee.email, AjxEmailAddress.FROM));
+		msg.setAddress(AjxEmailAddress.TO, new AjxEmailAddress(this.grantor.email), AjxEmailAddress.TO);
 	} else {
-		msg.setAddress(ZmEmailAddress.FROM, new ZmEmailAddress(this.grantee.email, ZmEmailAddress.FROM));
-		var addrType = (addrs.size() > 1) ? ZmEmailAddress.BCC : ZmEmailAddress.TO;
+		msg.setAddress(AjxEmailAddress.FROM, new AjxEmailAddress(this.grantee.email, AjxEmailAddress.FROM));
+		var addrType = (addrs.size() > 1) ? AjxEmailAddress.BCC : AjxEmailAddress.TO;
 		msg.setAddresses(addrType, addrs);
 	}
 	msg.setSubject(ZmShare._SUBJECTS[mode]);
@@ -615,7 +595,7 @@ function(mode, isCompose) {
 	var content = this._createContent(formatter);
 	if (this.notes || isCompose) {
 		var notes = this.notes;
-		content = [content, ZmAppt.NOTES_SEPARATOR, notes].join("\n");
+		content = [content, ZmCalItem.NOTES_SEPARATOR, notes].join("\n");
 	}
 
 	var mimePart = new ZmMimePart();
@@ -630,7 +610,7 @@ function(mode, isCompose) {
 	var formatter = ZmShare._getHtml(mode);
 	var content = this._createContent(formatter);
 	if (this.notes || isCompose) {
-		var formatter = ZmShare._getHtmlNote();
+		formatter = ZmShare._getHtmlNote();
 		var notes = AjxStringUtil.nl2br(AjxStringUtil.htmlEncode(this.notes));
 		content = [content, formatter.format(notes)].join("");
 	}
@@ -679,7 +659,5 @@ function(formatter) {
 		ZmShare.getRoleName(this.link.perm),
 		ZmShare.getRoleActions(this.link.perm)
 	];
-	var content = formatter.format(params);
-
-	return content;
+	return formatter.format(params);
 };

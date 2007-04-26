@@ -43,7 +43,7 @@ function ZmFileListView(parent, className, posStyle, mode, controller, dropTgt) 
 		var hCol = headerList[i];
 		// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
 		if (hCol._width) {
-			var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, null, hCol._name, null, null, DwtMenuItem.CHECK_STYLE);
+			var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
 			mi.setData(ZmFileListView.KEY_ID, hCol._id);
 			mi.setChecked(true, true);
 			this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
@@ -153,11 +153,13 @@ function(item, now, isDndIcon) {
 		}
 		else if (field == ZmItem.F_PARTICIPANT) {
 			var creator = item.creator.split("@");
-			var user = this._appCtxt.get(ZmSetting.USERNAME).split("@");
-
 			var cname = creator[0];
-			if (creator[1] != user[1]) {
-				cname = creator.join("@");
+			var uname = this._appCtxt.get(ZmSetting.USERNAME);
+			if (uname) {
+				var user = uname.split("@");
+				if (creator[1] != user[1]) {
+					cname = creator.join("@");
+				}
 			}
 			htmlArr[idx++] = "<td id='" + fieldId + "'";
 			htmlArr[idx++] = " width=" + width + ">";
@@ -167,8 +169,7 @@ function(item, now, isDndIcon) {
 			htmlArr[idx++] = "</td>";
 		}
 		else if (field == ZmItem.F_FOLDER) {
-			var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-			var notebook = tree.getById(item.folderId);
+			var notebook = this._appCtxt.getById(item.folderId);
 			var path = notebook ? notebook.getPath() : item.folderId;
 			htmlArr[idx++] = "<td id='" + fieldId + "'";
 			htmlArr[idx++] = " width=" + width + ">";

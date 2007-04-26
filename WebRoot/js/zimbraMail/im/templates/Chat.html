@@ -1,0 +1,105 @@
+<template id="ChatWidget">
+
+  <table style="width: 100%; height: 100%;" cellspacing="0" cellpadding="0">
+    <tr>
+      <td style="height: 26px" id="${id}_toolbarLayout"></td>
+    </tr>
+
+    <tr><td style="height: 1px"></td></tr>
+
+    <tr>
+      <td id="${id}_convLayout"></td>
+    </tr>
+
+    <tr>
+      <td style="height: 3px; cursor: s-resize" id="${id}_sash"></td>
+    </tr>
+
+    <tr>
+      <td id="${id}_inputLayout" style="height: 1px">
+        <div style="overflow:auto"><!-- Firefox caret hack -->
+<!--          <input class="ZmChatWindowInput" style="width: 100%; height: auto;" type="text" id="${id}_input" /> -->
+          <textarea class="ZmChatWindowInput" style="width: 100%; height: 3em;" id="${id}_input"></textarea>
+        </div>
+      </td>
+    </tr>
+  </table>
+
+</template>
+
+<template id="ChatMessageLine">
+  <$ if (data.isSystem) { $>
+
+  <div class="ZmChatWindowChatEntry ZmChatWindowChatEntrySystem">
+    <div class="time">${shortTime}</div>
+    <div class="body">${body}</div>
+  </div>
+
+  <$ } else { $>
+
+  <div class="ZmChatWindowChatEntry <$= data.fromMe ? 'ZmChatWindowChatEntryMe' : 'ZmChatWindowChatEntryThem' $>">
+  <$ if (data.displayName) { $>
+    <div class="from">${displayName}</div>
+  <$ } $>
+    <div class="time">${shortTime}</div>
+    <div class="body">${body}</div>
+  </div>
+
+  <$ } $>
+</template>
+
+<template id="RosterItemTooltip-row">
+  <$ if (data.data) { $>
+    <tr>
+      <td align="right" valign="middle" style="padding-right: 5px"><b><div style="white-space: nowrap">
+        <$= AjxStringUtil.htmlEncode(data.label) $>:
+      </div></b></td>
+      <td align="left"><div style="white-space: nowrap">
+        <$= AjxStringUtil.htmlEncode(data.data) $>
+      </div></td>
+    </tr>  
+  <$ } $>
+</template>
+
+<template id="RosterItemTooltip">
+  <table><tr><td>
+
+    <!-- display contact toolipt first if available -->
+    <$ if (data.contact) { $>
+      <$= data.contact.getToolTip() $>
+      <div style="padding-top: 10px"></div>
+    <$ } $>
+
+    <!-- buddy tooltip -->
+    <table cellpadding="0" cellspacing="0" border="0" align="center" width="100%">
+      <tr valign="middle">
+        <td colspan="2" align="left">
+          <div style="border-bottom: 1px solid black;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+              <tr valign="middle">
+                <td valign="middle"><$= AjxImg.getImageHtml(data.buddy.getPresence().getIcon()) $></td>
+                <td valign="middle" align="center">
+                  <b>
+                    <$= AjxStringUtil.htmlEncode(data.buddy.getDisplayName()) $>
+                    (<$= data.buddy.getPresence().getShowText() $>)
+                  </b>
+                </td>
+                <td align="right" valign="middle">
+                  <$= AjxImg.getImageHtml("HappyEmoticon") $>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </td>
+      </tr>
+      <$= AjxTemplate.expand("zimbraMail.im.templates.Chat#RosterItemTooltip-row", { label: ZmMsg.imAddress, data: data.buddy.getAddress() }) $>
+      <$= AjxTemplate.expand("zimbraMail.im.templates.Chat#RosterItemTooltip-row", { label: ZmMsg.imName, data: data.buddy.name }) $>
+      <$= AjxTemplate.expand("zimbraMail.im.templates.Chat#RosterItemTooltip-row", { label: ZmMsg.imGroups, data: data.buddy.getGroups().join(", ") }) $>
+    </table>
+
+  </td></tr></table>
+</template>
+
+<template id="ChatMessagePlainText">
+  <$= data.isSystem ? ZmMsg.imSystem : data.from $>: <$= data.getTextBody() $>
+</template>

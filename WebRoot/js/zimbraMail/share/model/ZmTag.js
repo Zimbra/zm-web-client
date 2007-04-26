@@ -23,11 +23,9 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmTag(id, name, color, parent, tree, numUnread) {
-
-	ZmOrganizer.call(this, ZmOrganizer.TAG, id, name, parent, tree, numUnread);
-	color = color || ZmTag.DEFAULT_COLOR;
-	this.color = color;
+function ZmTag(params) {
+	params.type = ZmOrganizer.TAG;
+	ZmOrganizer.call(this, params);
 };
 
 ZmTag.prototype = new ZmOrganizer;
@@ -67,8 +65,6 @@ ZmTag.ID_REPLIED	= 35;
 ZmTag.ID_FORWARDED	= 36;
 ZmTag.ID_ATTACHED	= 37;
 
-ZmTag.DEFAULT_COLOR = ZmOrganizer.DEFAULT_COLOR;
-
 /**
 * Tags come from back end as a flat list, and we manually create a root tag, so all tags
 * have the root as parent. If tags ever have a tree structure, then this should do what
@@ -76,9 +72,9 @@ ZmTag.DEFAULT_COLOR = ZmOrganizer.DEFAULT_COLOR;
 */
 ZmTag.createFromJs =
 function(parent, obj, tree, sorted) {
-	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG])
-		return;
-	var tag = new ZmTag(obj.id, obj.name, ZmTag.checkColor(obj.color), parent, tree, obj.u);
+	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]) { return; }
+	var tag = new ZmTag({id: obj.id, name: obj.name, color: ZmTag.checkColor(obj.color),
+						 parent: parent, tree: tree, numUnread: obj.u});
 	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
 	parent.children.add(tag, index);
 
@@ -108,17 +104,36 @@ function(name) {
 
 ZmTag.checkColor =
 function(color) {
-	return ((color != null) && (color >= 0 && color <= ZmTag.MAX_COLOR)) ? color : ZmTag.DEFAULT_COLOR;
+	color = Number(color);
+	return ((color != null) && (color >= 0 && color <= ZmOrganizer.MAX_COLOR)) ? color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
 };
 
-ZmTag.prototype.create =
-function(name, color, callback, errorCallback) {
-	color = ZmOrganizer.checkColor(color);
+ZmTag.create =
+function(appCtxt, params) {
 	var soapDoc = AjxSoapDoc.create("CreateTagRequest", "urn:zimbraMail");
 	var tagNode = soapDoc.set("tag");
-	tagNode.setAttribute("name", AjxEnv.isSafari ? AjxStringUtil.xmlEncode(name) : name);
-	tagNode.setAttribute("color", color);
-	this.tree._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, errorCallback: errorCallback});
+	var name = AjxEnv.isSafari && !AjxEnv.isSafariNightly
+		? AjxStringUtil.xmlEncode(params.name) : params.name
+	tagNode.setAttribute("name", name);
+	var color = ZmOrganizer.checkColor(params.color);
+	if (color && (color != ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG])) {
+		tagNode.setAttribute("color", color);
+	}
+	var errorCallback = new AjxCallback(null, ZmTag._handleErrorCreate, [appCtxt, params]);
+	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
+};
+
+ZmTag._handleErrorCreate =
+function(appCtxt, params, ex) {
+	if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
+		var msg = AjxMessageFormat.format(ZmMsg.errorInvalidName, params.name);
+		var msgDialog = appCtxt.getMsgDialog();
+		msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
+		msgDialog.popup();
+		return true;
+	} else {
+		return false;
+	}
 };
 
 ZmTag.prototype.getName = 
@@ -135,24 +150,10 @@ function() {
 	return (this.id == ZmOrganizer.ID_ROOT) ? null : ZmTag.COLOR_ICON[this.color];
 };
 
+ZmTag.prototype.getToolTip = function() {};
+
 ZmTag.prototype.notifyCreate =
 function(obj) {
 	var child = ZmTag.createFromJs(this, obj, this.tree, true);
 	child._notify(ZmEvent.E_CREATE);
-};
-
-/**
-* Tags come from back end as a flat list, and we manually create a root tag, so all tags
-* have the root as parent. If tags ever have a tree structure, then this should do what
-* ZmFolder does (recursively create children).
-*/
-ZmTag.createFromJs =
-function(parent, obj, tree, sorted) {
-	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG])
-		return;
-	var tag = new ZmTag(obj.id, obj.name, ZmOrganizer.checkColor(obj.color), parent, tree, obj.u);
-	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;
-	parent.children.add(tag, index);
-
-	return tag;
 };

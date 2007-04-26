@@ -37,12 +37,14 @@
  * file. The identifiers used in the properties file must match those used here.
  * 
  * @author Ross Dargahi
+ * @author Conrad Damon
  * 
  * @param appCtxt		[ZmAppCtxt]		the app context
  */
 function ZmKeyMap(appCtxt) {
 	
 	this._appCtxt = appCtxt;
+	ZmKeyMap._setPreconditions();
 	DwtKeyMap.call(this);
 	this._load(this._map, ZmKeys, ZmKeyMap.MAP_NAME);
 
@@ -70,6 +72,8 @@ ZmKeyMap.MAP_NAME["editAppointment"]	= "ZmApptComposeController";
 ZmKeyMap.MAP_NAME["options"]			= "ZmPrefController";
 ZmKeyMap.MAP_NAME["mixed"]				= "ZmMixedController";
 ZmKeyMap.MAP_NAME["notebook"]			= "ZmNotebookPageController";
+ZmKeyMap.MAP_NAME["tasks"]				= "ZmTaskListController";
+ZmKeyMap.MAP_NAME["editTask"]			= "ZmTaskController";
 ZmKeyMap.MAP_NAME["tabView"]			= "DwtTabView";
 
 // Action codes
@@ -91,6 +95,8 @@ ZmKeyMap.DBG_TIMING			= "ToggleDebugTiming";
 ZmKeyMap.DEL				= "Delete";
 ZmKeyMap.EDIT				= "Edit";
 ZmKeyMap.FLAG				= "Flag";
+ZmKeyMap.FOCUS_CONTENT_PANE	= "FocusContentPane";
+ZmKeyMap.FOCUS_SEARCH_BOX	= "FocusSearchBox";
 ZmKeyMap.FORWARD			= "Forward";
 ZmKeyMap.FORWARD_ATT		= "ForwardAsAttachment";
 ZmKeyMap.FORWARD_INLINE		= "ForwardInline";
@@ -103,12 +109,16 @@ ZmKeyMap.GOTO_INBOX			= "GoToInbox";
 ZmKeyMap.GOTO_MAIL			= "GoToMail";
 ZmKeyMap.GOTO_NOTEBOOK		= "GoToNotebook";
 ZmKeyMap.GOTO_OPTIONS		= "GoToOptions";
+ZmKeyMap.GOTO_VOICEMAIL		= "GoToVoice";
 ZmKeyMap.GOTO_SENT			= "GoToSent";
 ZmKeyMap.GOTO_TAG			= "GoToTag";		// takes NNN
+ZmKeyMap.GOTO_TASKS			= "GoToTasks";
 ZmKeyMap.GOTO_TRASH			= "GoToTrash";
 ZmKeyMap.HTML_FORMAT		= "HtmlFormat";
 ZmKeyMap.LOGOFF				= "LogOff";
+ZmKeyMap.MARK_COMPLETE		= "MarkComplete";
 ZmKeyMap.MARK_READ			= "MarkRead";
+ZmKeyMap.MARK_UNCOMPLETE	= "MarkUncomplete";
 ZmKeyMap.MARK_UNREAD		= "MarkUnread";
 ZmKeyMap.MOVE_TO_FOLDER		= "MoveToFolder";	// takes NNN
 ZmKeyMap.MOVE_TO_INBOX		= "MoveToInbox";
@@ -124,6 +134,7 @@ ZmKeyMap.NEW_MESSAGE_WIN	= "NewMessageWindow";
 ZmKeyMap.NEW_NOTEBOOK		= "NewNotebook";
 ZmKeyMap.NEW_PAGE			= "NewPage";
 ZmKeyMap.NEW_TAG			= "NewTag";
+ZmKeyMap.NEW_TASK			= "NewTask";
 ZmKeyMap.NEW_WINDOW			= "NewWindow";
 ZmKeyMap.NEXT_CONV			= "NextConversation";
 ZmKeyMap.NEXT_PAGE			= "NextPage";
@@ -149,6 +160,7 @@ ZmKeyMap.TODAY				= "Today";
 ZmKeyMap.UNTAG				= "Untag";
 ZmKeyMap.VIEW_BY_CONV		= "ViewByConversation";
 ZmKeyMap.VIEW_BY_MSG		= "ViewByMessage";
+ZmKeyMap.VIEW_HYBRID		= "ViewHybrid";
 
 // shifted chars
 ZmKeyMap.SHIFT = {};
@@ -191,45 +203,54 @@ ZmKeyMap.ENTITY[DwtKeyMap.BACKSLASH] 	= "\\";
 
 // preconditions for maps
 ZmKeyMap.MAP_PRECONDITION = {};
-ZmKeyMap.MAP_PRECONDITION["ZmComposeController"]		= ZmSetting.MAIL_ENABLED;
-ZmKeyMap.MAP_PRECONDITION["ZmMailListController"]		= ZmSetting.MAIL_ENABLED;
-ZmKeyMap.MAP_PRECONDITION["ZmConvController"]			= ZmSetting.MAIL_ENABLED;
-ZmKeyMap.MAP_PRECONDITION["ZmMsgController"]			= ZmSetting.MAIL_ENABLED;
-ZmKeyMap.MAP_PRECONDITION["ZmContactListController"]	= ZmSetting.CONTACTS_ENABLED;
-ZmKeyMap.MAP_PRECONDITION["ZmContactController"]		= ZmSetting.CONTACTS_ENABLED;
-ZmKeyMap.MAP_PRECONDITION["ZmCalViewController"]		= ZmSetting.CALENDAR_ENABLED;
-ZmKeyMap.MAP_PRECONDITION["ZmApptComposeController"]	= ZmSetting.CALENDAR_ENABLED;
-ZmKeyMap.MAP_PRECONDITION["ZmPrefController"]			= ZmSetting.OPTIONS_ENABLED;
-ZmKeyMap.MAP_PRECONDITION["ZmNotebookPageController"]	= ZmSetting.NOTEBOOK_ENABLED;
 
 // preconditions for specific shortcuts
 ZmKeyMap.ACTION_PRECONDITION = {};
-ZmKeyMap.ACTION_PRECONDITION["Global"] = {};
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_APPT]			= ZmSetting.CALENDAR_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_CONTACTS]		= ZmSetting.CONTACTS_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_CONTACT]		= ZmSetting.CONTACTS_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_MAIL]			= ZmSetting.MAIL_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_MESSAGE]		= ZmSetting.MAIL_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_MESSAGE_WIN]	= ZmSetting.MAIL_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_OPTIONS]		= ZmSetting.OPTIONS_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_NOTEBOOK]		= ZmSetting.NOTEBOOK_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_NOTEBOOK]		= ZmSetting.NOTEBOOK_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_PAGE]			= ZmSetting.NOTEBOOK_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_IM]			= ZmSetting.IM_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_TAG]			= ZmSetting.TAGGING_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TAG]			= ZmSetting.TAGGING_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.TAG]				= ZmSetting.TAGGING_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.UNTAG]				= ZmSetting.TAGGING_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.SAVED_SEARCH]		= ZmSetting.SAVED_SEARCHES_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"] = {};
-ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.SAVE]				= ZmSetting.SAVE_DRAFT_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.HTML_FORMAT]		= ZmSetting.HTML_COMPOSE_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.NEW_WINDOW]		= ZmSetting.NEW_WINDOW_COMPOSE;
-ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.ADDRESS_PICKER]	= ZmSetting.CONTACTS_ENABLED;
-ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"] = {};
-ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"][ZmKeyMap.HTML_FORMAT]	= ZmSetting.HTML_COMPOSE_ENABLED;
+
+ZmKeyMap._setPreconditions =
+function() {
+	ZmKeyMap.MAP_PRECONDITION["ZmComposeController"]		= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmMailListController"]		= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmConvController"]			= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmMsgController"]			= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmContactListController"]	= ZmSetting.CONTACTS_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmContactController"]		= ZmSetting.CONTACTS_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmCalViewController"]		= ZmSetting.CALENDAR_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmApptComposeController"]	= ZmSetting.CALENDAR_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmPrefController"]			= ZmSetting.OPTIONS_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmNotebookPageController"]	= ZmSetting.NOTEBOOK_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmTaskListController"]		= ZmSetting.TASKS_ENABLED;
+	ZmKeyMap.MAP_PRECONDITION["ZmTaskController"]			= ZmSetting.TASKS_ENABLED;
+	
+	ZmKeyMap.ACTION_PRECONDITION["Global"] = {};
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_APPT]			= ZmSetting.CALENDAR_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_CALENDAR]		= ZmSetting.CALENDAR_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_CONTACTS]		= ZmSetting.CONTACTS_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_CONTACT]		= ZmSetting.CONTACTS_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_MAIL]			= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_MESSAGE]		= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_MESSAGE_WIN]	= ZmSetting.MAIL_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_OPTIONS]		= ZmSetting.OPTIONS_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_NOTEBOOK]		= ZmSetting.NOTEBOOK_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_NOTEBOOK]		= ZmSetting.NOTEBOOK_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_PAGE]			= ZmSetting.NOTEBOOK_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_IM]			= ZmSetting.IM_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_TASK]			= ZmSetting.TASKS_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TASK]			= ZmSetting.TASKS_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_TAG]			= ZmSetting.TAGGING_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.NEW_TAG]			= ZmSetting.TAGGING_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.TAG]				= ZmSetting.TAGGING_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.UNTAG]				= ZmSetting.TAGGING_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.SAVED_SEARCH]		= ZmSetting.SAVED_SEARCHES_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"] = {};
+	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.SAVE]				= ZmSetting.SAVE_DRAFT_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.HTML_FORMAT]		= ZmSetting.HTML_COMPOSE_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.NEW_WINDOW]		= ZmSetting.NEW_WINDOW_COMPOSE;
+	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.ADDRESS_PICKER]	= ZmSetting.CONTACTS_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"] = {};
+	ZmKeyMap.ACTION_PRECONDITION["ZmApptComposeController"][ZmKeyMap.HTML_FORMAT]	= ZmSetting.HTML_COMPOSE_ENABLED;
+};
 
 /**
  * Returns true if this map is valid. A map may have a precondition,
@@ -285,6 +306,8 @@ function(mapName, action) {
  * For example:
  * 
  *     mail.MoveToFolder4.538=M,4
+ * 
+ * @author Conrad Damon
  */
 function ZmShortcut(mapName, keySequence, action, arg, baseAction, num) {
 	this.mapName = mapName;

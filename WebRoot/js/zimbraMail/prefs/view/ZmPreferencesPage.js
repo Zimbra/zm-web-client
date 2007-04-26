@@ -36,16 +36,14 @@
 * @param appCtxt			[ZmAppCtxt]					the app context
 * @param view				[constant]					which page we are
 * @param controller			[ZmPrefController]			prefs controller
-* @param passwordDialog		[ZmChangePasswordDialog]	change password dialog
 */
-function ZmPreferencesPage(parent, appCtxt, view, controller, passwordDialog) {
+function ZmPreferencesPage(parent, appCtxt, view, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 	
 	this._appCtxt = appCtxt;
 	this._view = view; // which preferences page we are
 	this._controller = controller;
-	this._passwordDialog = passwordDialog;
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[view]].join(": ");
 
 	this._dwtObjects = {};
@@ -90,7 +88,7 @@ function() {
 	DBG.println(AjxDebug.DBG2, "rendering preferences page " + this._view);
 
 	this._prefPresent = {};
-	var prefs = ZmPrefView.PREFS[this._view];
+	var prefs = ZmPrefView.PREFS[this._view] || [];
 	var settings = this._appCtxt.getSettings();
 	for (var i = 0; i < prefs.length; i++) {
 		var id = prefs[i];
@@ -178,9 +176,10 @@ function() {
 				this._addButton(buttonId, ZmMsg.change, 50,	new AjxListener(this, this._changePasswordListener));
 			} else if (type == ZmPref.TYPE_IMPORT) {
 				this._importDiv = document.getElementById(buttonId);
-				this._addImportWidgets(this._importDiv);
+				this._addImportWidgets(this._importDiv, id);
 			} else if (type == ZmPref.TYPE_EXPORT) {
-				this._addButton(buttonId, ZmMsg._export, 65, new AjxListener(this, this._exportContactsListener));
+				var btn = this._addButton(buttonId, ZmMsg._export, 65, new AjxListener(this, this._exportButtonListener));
+				btn.setData(Dwt.KEY_ID, id);
 			} else if (type == ZmPref.TYPE_FONT) {
 				this._addFontPrefs(buttonId, setup);
 			}
@@ -245,7 +244,7 @@ function(useDefaults) {
 		if (type == ZmPref.TYPE_SELECT || type == ZmPref.TYPE_FONT) {
 			var obj = this._dwtObjects[id];
 			if (!obj) continue;
-			
+
 			if (id == ZmSetting.COMPOSE_INIT_FONT_COLOR) {
 				obj.setColor(newValue);
 			} else {
@@ -256,7 +255,7 @@ function(useDefaults) {
 		} else if (type == ZmPref.TYPE_INPUT) {
 			var input = this._dwtObjects[id];
 			if (!input) continue;
-			
+
 			var curValue = this._dwtObjects[id].getValue();
 			if (newValue != null && (curValue != newValue))
 				this._dwtObjects[id].setValue(newValue);
@@ -305,7 +304,7 @@ function() {
 	var i = 0;
 	var tableId = Dwt.getNextId();
 	this._resetId = Dwt.getNextId();
-	
+
 	html[i++] = "<div class='TitleBar'><table id='";
 	html[i++] = tableId;
 	html[i++] = "' cellpadding=0 cellspacing=5 class='prefTable'></table></div>";
@@ -313,7 +312,7 @@ function() {
 	html[i++] = this._resetId;
 	html[i++] = "' style='padding-left:5px'></div>";
 	this.getHtmlElement().innerHTML = html.join("");
-	
+
 	this._table = document.getElementById(tableId);
 };
 
@@ -337,7 +336,7 @@ function(label, content, addSep) {
 
 	var cell3 = tr.insertCell(2);
 	cell3.innerHTML = "<div>&nbsp;</div>";
-    
+
 	if (addSep) {
 		this._addSep();
 	}
@@ -367,7 +366,7 @@ function() {
 	sepCell.innerHTML = "<div class='horizSep'></div>";
 };
 
-ZmPreferencesPage.prototype._setupSelect = 
+ZmPreferencesPage.prototype._setupSelect =
 function(id, setup, value) {
 	var selObj = new DwtSelect(this);
 	this._dwtObjects[id] = selObj;
@@ -389,39 +388,38 @@ function(id, setup, value) {
 
 	selObj.setName(id);
 	selObj.setSelectedValue(value);
-	
+
 	var div = document.createElement("div");
 	div.appendChild(selObj.getHtmlElement());
-	
+
 	return div;
 };
 
-ZmPreferencesPage.prototype._setupInput = 
+ZmPreferencesPage.prototype._setupInput =
 function(id, setup, value) {
 	var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: value, size: 40});
 	this._dwtObjects[id] = input;
 
 	var div = document.createElement("div");
 	div.appendChild(input.getHtmlElement());
-	
+
 	return div;
 };
 
-ZmPreferencesPage.prototype._addImportWidgets = 
-function(buttonDiv) {
+ZmPreferencesPage.prototype._addImportWidgets =
+function(buttonDiv, settingId) {
 	this._uploadFormId = Dwt.getNextId();
 	this._attInputId = Dwt.getNextId();
 
 	var uri = location.protocol + "//" + document.domain + this._appCtxt.get(ZmSetting.CSFE_UPLOAD_URI);
-	
+
 	var html = [];
 	var idx = 0;
 	html[idx++] = "<form style='margin: 0px; padding: 0px;' method='POST' action='";
 	html[idx++] = uri;
 	html[idx++] = "' id='";
 	html[idx++] = this._uploadFormId;
-	html[idx++] = "' enctype='multipart/form-data'>";
-	html[idx++] = "<input style='font-family:Tahoma; font-size:10px' name='";
+	html[idx++] = "' enctype='multipart/form-data'><input style='font-family:Tahoma; font-size:10px' name='";
 	html[idx++] = ZmPreferencesPage.IMPORT_FIELD_NAME;
 	html[idx++] = "' type='file' id='";
 	html[idx++] = this._attInputId;
@@ -431,9 +429,12 @@ function(buttonDiv) {
 	div.innerHTML = html.join("");
 
 	buttonDiv.appendChild(div);
-	
+
 	// set up import button
-	this._importBtn = this._addButton(buttonDiv.id, ZmMsg._import, 65, new AjxListener(this, this._importContactsListener));
+	this._importBtn = this._addButton(buttonDiv.id, ZmMsg._import, 65, new AjxListener(this, this._importButtonListener));
+	if (settingId) {
+		this._importBtn.setData(Dwt.KEY_ID, settingId);
+	}
 };
 
 ZmPreferencesPage.prototype._addFontPrefs =
@@ -464,7 +465,7 @@ function(buttonId, setup) {
 
 	// add color picker
 	id = ZmSetting.COMPOSE_INIT_FONT_COLOR;
-	var cp = new DwtButtonColorPicker(this, null, "DwtButton");
+	var cp = new DwtButtonColorPicker(this);
 	cp.setImage("FontColor");
 	cp.showColorDisplay(true);
 	cp.setToolTipContent(ZmMsg.fontColor);
@@ -483,40 +484,64 @@ function(buttonId, setup) {
 // Popup the change password dialog.
 ZmPreferencesPage.prototype._changePasswordListener =
 function(ev) {
-	this._passwordDialog.popup();
+	var passwordDialog = this._appCtxt.getChangePasswordDialog();
+	passwordDialog.registerCallback(DwtDialog.OK_BUTTON, this._controller._changePassword, this._controller);
+	passwordDialog.popup();
 };
 
-ZmPreferencesPage.prototype._exportContactsListener =
+ZmPreferencesPage.prototype._exportButtonListener =
 function(ev) {
+	var settingId = ev.dwtObj.getData(Dwt.KEY_ID);
+
 	var dialog = this._appCtxt.getChooseFolderDialog();
 	dialog.reset();
-	dialog.registerCallback(DwtDialog.OK_BUTTON, this._exportOkCallback, this, dialog);
+	dialog.registerCallback(DwtDialog.OK_BUTTON, this._exportOkCallback, this, [dialog, settingId]);
 
 	var omit = {};
 	omit[ZmFolder.ID_TRASH] = true;
 
-	dialog.popup([ZmOrganizer.ADDRBOOK], omit, false, ZmMsg.chooseFolderToExport);
+	if (settingId == ZmSetting.EXPORT) {
+		AjxDispatcher.require(["ContactsCore", "Contacts"]);
+		dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK],
+					omit:omit,
+					title:ZmMsg.chooseAddrBook,
+					hideNewButton:true,
+					description:ZmMsg.chooseAddrBookToExport});
+	} else {
+		AjxDispatcher.require(["CalendarCore", "Calendar"]);
+		dialog.popup({treeIds:[ZmOrganizer.CALENDAR],
+					omit:omit,
+					title:ZmMsg.chooseCalendar,
+					hideNewButton:true,
+					description:ZmMsg.chooseCalendarToExport});
+	}
 };
 
-ZmPreferencesPage.prototype._importContactsListener =
+ZmPreferencesPage.prototype._importButtonListener =
 function(ev) {
+	var settingId = this._importBtn.getData(Dwt.KEY_ID);
 	var fileInput = document.getElementById(this._attInputId);
 	var val = fileInput ? AjxStringUtil.trim(fileInput.value) : null;
 
 	if (val) {
-		var dialog = this._appCtxt.getMoveToDialog();
+		var dialog = this._appCtxt.getChooseFolderDialog();
 		dialog.reset();
 		dialog.setTitle(ZmMsg._import);
 		dialog.registerCallback(DwtDialog.OK_BUTTON, this._importOkCallback, this, dialog);
 
-		var blankContact = new ZmContact(this._appCtxt);
-		dialog.popup([blankContact]);
+		if (settingId == ZmSetting.IMPORT) {
+			AjxDispatcher.require(["ContactsCore", "Contacts"]);
+			dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK], title:ZmMsg.chooseAddrBook, description:ZmMsg.chooseAddrBookToImport, skipReadOnly:true});
+		} else {
+			AjxDispatcher.require(["CalendarCore", "Calendar"]);
+			dialog.popup({treeIds:[ZmOrganizer.CALENDAR], title:ZmMsg.chooseCalendar, description:ZmMsg.chooseCalendarToImport, skipReadOnly:true});
+		}
 	}
 };
 
 ZmPreferencesPage.prototype._importOkCallback =
 function(dialog, folder) {
-	if (folder && folder.id) {
+	if (folder && folder.id && folder.id != ZmFolder.ID_ROOT) {
 		dialog.popdown();
 
 		var callback = new AjxCallback(this, this._importDoneCallback, folder.id);
@@ -526,53 +551,70 @@ function(dialog, folder) {
 	}
 };
 
-ZmPreferencesPage.prototype._importDoneCallback = 
+ZmPreferencesPage.prototype._importDoneCallback =
 function(folderId, status, aid) {
 	var appCtlr = this._appCtxt.getAppController();
-	
+	var settingId = this._importBtn.getData(Dwt.KEY_ID);
+
 	if (status == 200) {
-		this._importBtn.setEnabled(false);
 		appCtlr.setStatusMsg(ZmMsg.importingContacts);
+		this._importBtn.setEnabled(false);
 
-		// send the import request w/ the att Id to the server
-		var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:zimbraMail");
-		var method = soapDoc.getMethod();
-		method.setAttribute("ct", "csv"); // always "csv" for now
-		method.setAttribute("l", folderId);
-		var content = soapDoc.set("content", "");
-		content.setAttribute("aid", aid);
-
-		var respCallback = new AjxCallback(this, this._handleResponseFinishImport, [aid]);
+		// send the import request w/ the att Id to the server per import setting
+		if (settingId == ZmSetting.IMPORT)
+		{
+			var soapDoc = AjxSoapDoc.create("ImportContactsRequest", "urn:zimbraMail");
+			var method = soapDoc.getMethod();
+			method.setAttribute("ct", "csv"); // always "csv" for now
+			method.setAttribute("l", folderId);
+			var content = soapDoc.set("content", "");
+			content.setAttribute("aid", aid);
+		} else {
+			var soapDoc = AjxSoapDoc.create("ImportAppointmentsRequest", "urn:zimbraMail");
+			var method = soapDoc.getMethod();
+			method.setAttribute("ct", "ics");
+			method.setAttribute("l", folderId);
+			var content = soapDoc.set("content", "");
+			content.setAttribute("aid", aid);
+		}
+		var respCallback = new AjxCallback(this, this._handleResponseFinishImport, [aid, settingId]);
 		var errorCallback = new AjxCallback(this, this._handleErrorFinishImport);
 		this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true,
 													  callback:respCallback, errorCallback:errorCallback,
 													  timeout:ZmPreferencesPage.IMPORT_TIMEOUT});
 	} else {
-		appCtlr.setStatusMsg(ZmMsg.errorImporting + " (" + status + ")", ZmStatusView.LEVEL_CRITICAL);
+        var msg = AjxMessageFormat.format(ZmMsg.errorImportStatus, status);
+        appCtlr.setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
 		// always re-render input file widget and its parent IFRAME
 		this._importDiv.innerHTML = "";
-		this._addImportWidgets(this._importDiv);
+		this._addImportWidgets(this._importDiv, settingId);
 	}
 };
 
 ZmPreferencesPage.prototype._handleResponseFinishImport =
-function(aid, result) {
-	var resp = result.getResponse().ImportContactsResponse.cn[0];
-	
-	var msg = resp.n + " " + ZmMsg.contactsImported;
-	var appCtlr = this._appCtxt.getAppController();
-	appCtlr.setStatusMsg(msg);
-		
+function(aid, settingId, result) {
+	var msg;
+	if (settingId == ZmSetting.IMPORT) {
+		var resp = result.getResponse().ImportContactsResponse.cn[0];
+		msg = AjxMessageFormat.format(ZmMsg.contactsImportedResult, Number(resp.n));
+	} else {
+		var resp = result.getResponse().ImportAppointmentsResponse.appt[0];
+		msg = AjxMessageFormat.format(ZmMsg.apptsImportedResult, Number(resp.n));
+	}
+	this._appCtxt.getAppController().setStatusMsg(msg);
+
 	// always re-render input file widget and its parent IFRAME
 	this._importDiv.innerHTML = "";
-	this._addImportWidgets(this._importDiv);
+	this._addImportWidgets(this._importDiv, settingId);
 };
 
-ZmPreferencesPage.prototype._handleErrorFinishImport = 
+ZmPreferencesPage.prototype._handleErrorFinishImport =
 function(ex) {
 	this._importBtn.setEnabled(true);
 
-	if (ex.code == ZmCsfeException.MAIL_UNABLE_TO_IMPORT_CONTACTS) {
+	if (ex.code == ZmCsfeException.MAIL_UNABLE_TO_IMPORT_CONTACTS ||
+		ex.code == ZmCsfeException.MAIL_UNABLE_TO_IMPORT_APPOINTMENTS)
+	{
 		var errDialog = this._appCtxt.getErrorDialog();
 		errDialog.setMessage(ex.getErrorMsg(), ex.msg, DwtMessageDialog.WARNING_STYLE);
 		errDialog.popup();
@@ -582,11 +624,13 @@ function(ex) {
 };
 
 ZmPreferencesPage.prototype._exportOkCallback =
-function(dialog, folder) {
-	if (folder && folder.id) {
+function(dialog, settingId, folder) {
+	if (folder && folder.id && folder.id != ZmFolder.ID_ROOT) {
 		var portPrefix = (location.port == "" || location.port == "80")
-			? "" : (":" + location.port);
-		var uri = [location.protocol, "//", document.domain, portPrefix, "/service/home/~/", folder.name, "?auth=co&fmt=csv"].join("");
+			? ""
+			: (":" + location.port);
+		var format = settingId == ZmSetting.IMPORT ? "csv" : "ics";
+		var uri = [location.protocol, "//", document.domain, portPrefix, "/service/home/~/", folder.name, "?auth=co&fmt=", format].join("");
 		window.open(uri, "_blank");
 
 		dialog.popdown();

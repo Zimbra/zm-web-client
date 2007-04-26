@@ -37,11 +37,9 @@ function ZmContactSplitView(parent, className, posStyle, controller, dropTgt) {
 	this._controller = controller;
 	this._appCtxt = controller._appCtxt;
 
-	this._addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
-	this._addrbookTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
+	this._appCtxt.getFolderTree().addChangeListener(new AjxListener(this, this._addrbookTreeListener));
+	this._appCtxt.getTagTree().addChangeListener(new AjxListener(this, this._tagChangeListener));
 
-	this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
-	this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 	this._tagCellId = Dwt.getNextId();
 
 	// find out if the user's locale has a alphabet defined
@@ -119,7 +117,7 @@ function(contact, isGal) {
 
 	this._contact = contact;
 
-	if (this._contact.isLoaded()) {
+	if (this._contact.isLoaded) {
 		this._setContact(contact, isGal);
 	} else {
 		var callback = new AjxCallback(this, this._handleResponseLoad, [isGal]);
@@ -237,7 +235,7 @@ function(ev, treeView) {
 		for (var i = 0; i < organizers.length; i++) {
 			var organizer = organizers[i];
 			var folderId = this._contact.isShared()
-				? this._addrbookTree.getById(this._contact.folderId).id
+				? this._appCtxt.getById(this._contact.folderId).id
 				: this._contact.folderId;
 
 			if (organizer.id == folderId)
@@ -519,7 +517,7 @@ function(contact) {
 	// get sorted list of tags for this msg
 	var ta = new Array();
 	for (var i = 0; i < contact.tags.length; i++)
-		ta.push(this._tagList.getById(contact.tags[i]));
+		ta.push(this._appCtxt.getById(contact.tags[i]));
 	ta.sort(ZmTag.sortCompare);
 
 	for (var j = 0; j < ta.length; j++) {
@@ -553,7 +551,7 @@ function(html, idx, label, field, objMgr) {
 ZmContactSplitView.prototype._setHeaderColor =
 function(folder) {
 	// set background color of header
-	var color = folder ? folder.color : ZmAddrBook.DEFAULT_COLOR;
+	var color = folder ? folder.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 	var bkgdColor = ZmOrganizer.COLOR_TEXT[color] + "Bg";
 	var contactHdrRow = document.getElementById(this._contactHeaderRowId);
 	contactHdrRow.className = "contactHeaderRow " + bkgdColor;
@@ -580,7 +578,7 @@ function(tagId) {
 	var appCtxt = window._zimbraMail._appCtxt;
 	var sc = appCtxt ? appCtxt.getSearchController() : null;
 	if (sc) {
-		var tag = appCtxt.getTree(ZmOrganizer.TAG).getById(tagId);
+		var tag = appCtxt.getById(tagId);
 		var query = 'tag:"' + tag.name + '"';
 		sc.search({query: query});
 	}
@@ -613,6 +611,12 @@ function(list, defaultColumnSort) {
 	}
 
 	this.parent.enableAlphabetBar(!list.isGal);
+};
+
+ZmContactSimpleView.prototype._setNoResultsHtml =
+function() {
+	ZmContactsBaseView.prototype._setNoResultsHtml.call(this);
+	this.parent.clear();
 };
 
 ZmContactSimpleView.prototype._modifyContact =

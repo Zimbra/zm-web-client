@@ -84,13 +84,8 @@ ZmNotebookController.prototype.switchView = function(view, force) {
 // Overrides ZmListController method, leaving ZmOperation.MOVE off the menu.
 ZmNotebookController.prototype._standardActionMenuOps =
 function() {
-	var list = [];
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	list.push(ZmOperation.DELETE);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
-	return list;
+	return [ZmOperation.TAG_MENU, ZmOperation.DELETE,
+			ZmOperation.PRINT];
 };
 
 
@@ -110,21 +105,8 @@ ZmNotebookController.prototype._getBasicToolBarOps = function() {
 	];
 };
 ZmNotebookController.prototype._getItemToolBarOps = function() {
-	var list = [];
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		list.push(ZmOperation.TAG_MENU, ZmOperation.SEP);
-	}
-	list.push(
-		ZmOperation.DELETE,
-		ZmOperation.PRINT
-		// ZmOperation.MOVE
-	);
-	/***
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-		list.push(ZmOperation.PRINT);
-	}
-	/***/
-	return list;
+	return [ZmOperation.TAG_MENU, ZmOperation.SEP,
+			ZmOperation.DELETE, ZmOperation.PRINT];
 };
 ZmNotebookController.prototype._getNaviToolBarOps = function() {
 	return [
@@ -255,11 +237,11 @@ ZmNotebookController.prototype._setViewMenu = function(view) {
 
 		menu = new ZmPopupMenu(appToolbar.getViewButton());
 
-		var item = menu.createMenuItem(ZmNotebookApp.PAGE, "Page", ZmMsg.notebookPageView, null, true, DwtMenuItem.RADIO_STYLE);
+		var item = menu.createMenuItem(ZmNotebookApp.PAGE, {image:"Page", text:ZmMsg.notebookPageView, style:DwtMenuItem.RADIO_STYLE});
 		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTEBOOK_PAGE_VIEW);
 		item.addSelectionListener(listener);
 
-		var item = menu.createMenuItem(ZmNotebookApp.FILE, "Folder", ZmMsg.notebookFileView, null, true, DwtMenuItem.RADIO_STYLE);
+		var item = menu.createMenuItem(ZmNotebookApp.FILE, {image:"Folder", text:ZmMsg.notebookFileView, style:DwtMenuItem.RADIO_STYLE});
 		item.setData(ZmOperation.MENUITEM_ID, ZmController.NOTEBOOK_FILE_VIEW);
 		item.addSelectionListener(listener);
 	}
@@ -297,8 +279,7 @@ ZmNotebookController.prototype._editListener = function(event) {
 
 /***
 ZmNotebookController.prototype._uploadListener = function(event) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(this._folderId || ZmNotebookItem.DEFAULT_FOLDER);
+	var notebook = this._appCtxt.getById(this._folderId || ZmNotebookItem.DEFAULT_FOLDER);
 	var callback = null;
 
 	var dialog = this._appCtxt.getUploadDialog();
@@ -313,11 +294,10 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 
 	var names = [];
 	var urls = [];
-	var inNewWindow = this._inNewWindow(event);
+	var inNewWindow = this._app._inNewWindow(event);
 
 	var content = "<wiklet class='NAME'/>";
 
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var notebook, shares;
 	var noprompt = false;
 
@@ -327,7 +307,7 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 		names.push(ZmWikletProcessor.process(this._appCtxt, item, content));
 		if (noprompt) continue;
 
-		notebook = tree.getById(item.folderId);
+		notebook = this._appCtxt.getById(item.folderId);
 		shares = notebook && notebook.shares;
 		if (shares) {
 			for (var j = 0; j < shares.length; j++) {
@@ -350,16 +330,14 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 
 ZmNotebookController.prototype._sendPageListener2 =
 function(names, urls, inNewWindow) {
-	var app = this._appCtxt.getApp(ZmZimbraMail.MAIL_APP);
-	var controller = app.getComposeController();
-
 	var action = ZmOperation.NEW_MESSAGE;
 	var msg = new ZmMailMsg(this._appCtxt);
 	var toOverride = null;
 	var subjOverride = new AjxListFormat().format(names);
 	var extraBodyText = urls.join("\n");
-
-	controller.doAction(action, inNewWindow, msg, toOverride, subjOverride, extraBodyText);
+	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
+								  toOverride: toOverride, subjOverride: subjOverride,
+								  extraBodyText: extraBodyText});
 };
 
 ZmNotebookController.prototype._detachListener = function(event) {

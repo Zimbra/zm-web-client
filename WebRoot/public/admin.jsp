@@ -39,18 +39,15 @@
 	        }
 	    }    
 	}
-	String mode = (String) request.getAttribute("mode");
-	String vers = (String) request.getAttribute("version");
-	String ext = (String) request.getAttribute("fileExtension");
-	if (vers == null){
-	   vers = "";
-	}
-	if (ext == null){
-	   ext = "";
-	}
-	if(mode == null) {
-		mode= "";
-	}
+    String mode = (String)request.getAttribute("mode");
+    if (mode == null) mode = "";
+    Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
+
+    String vers = (String)request.getAttribute("version");
+    if (vers == null) vers = "";
+
+    String ext = (String)request.getAttribute("fileExtension");
+    if (ext == null) ext = "";
 
 	final String SKIN_COOKIE_NAME = "ZA_SKIN";
 	String skin = "sand";
@@ -106,28 +103,38 @@
 		appContextPath = "<%= contextPath %>";
 	 	appCurrentSkin = "<%= skin %>";
 	</script>
-<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZaMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
+<jsp:include page="Messages.jsp"/>
 <script type="text/javascript" src="<%=contextPath %>/js/keys/AjxKeys.js<%=ext %>?v=<%=vers %>"></script>
-<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
-	<style type="text/css">
-		<!--
-        @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>_imgs,skin.css?v=<%= vers %>&skin=<%= skin %>);
-		-->
-	</style>
-    <jsp:include page="Boot.jsp"/>
-	<jsp:include page="/public/Ajax.jsp"/>
-	<jsp:include page="/public/XForms.jsp"/>
-   	<jsp:include page="/public/Zimbra.jsp"/>
-    <jsp:include page="/public/ZimbraAdmin.jsp"/>
-<% } else { %>
-	<style type="text/css">
-	  <!--
-	  @import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>_imgs,skin.css?v=<%= vers %>&skin=<%= skin %>);
-	  -->
-	</style>
-	<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
-	<script type="text/javascript" src="<%= contextPath %>/js/ZimbraAdmin_all.js<%= ext %>?v=<%= vers %>"></script>
-<% } %>    
+<style type="text/css">
+<!--
+@import url(<%= contextPath %>/css/dwt,common,zmadmin,login,msgview,spellcheck,imgs,<%= skin %>_imgs,skin.css?v=<%= vers %>&skin=<%= skin %>);
+-->
+</style>
+<jsp:include page="Boot.jsp"/>
+<%
+    String packages = "Ajax,XForms,Zimbra,Admin";
+
+    String extraPackages = request.getParameter("packages");
+    if (extraPackages != null) packages += ","+extraPackages;
+
+    String pprefix = inDevMode ? "public/jsp" : "js";
+    String psuffix = inDevMode ? ".jsp" : "_all.js";
+
+    String[] pnames = packages.split(",");
+    for (String pname : pnames) {
+        String pageurl = "/"+pprefix+"/"+pname+psuffix;
+        if (inDevMode) { %>
+            <jsp:include>
+                <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
+            </jsp:include>
+        <% } else { %>
+            <script type="text/javascript" src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script>
+        <% } %>
+    <% }
+%>
+<script type="text/javascript">
+AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
+</script>
     <script type="text/javascript" language="JavaScript">
 	   function launch() {
 		AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp"
@@ -179,6 +186,7 @@
     </script>
   </head>
   <body>
+    <script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>"></script> 
     <%
 		// NOTE: This inserts raw HTML files from the user's skin
 		//       into the JSP output. It's done *this* way so that
@@ -195,7 +203,7 @@
 		dispatcher.include(wrappedReq, response);
 	%>
   <script type="text/javascript" language=Javascript>
-    skin.hideQuota();
+    //skin.hideQuota();
     skin.hideTreeFooter();
   </script>
   </body>

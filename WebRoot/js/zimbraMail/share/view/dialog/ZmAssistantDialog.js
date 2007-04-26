@@ -50,28 +50,36 @@ function ZmAssistantDialog(appCtxt) {
 	this._parseInterval = 75; //this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
 	this._parseTimedAction = new AjxTimedAction(this, this._parseAction);
 	this._parseActionId = -1;
-	
-	
-	// TODO: need to init these based on COS features (calendars, contacts, etc)
-	if (!ZmAssistantDialog._handlerInit) {
-		ZmAssistantDialog._handlerInit = true;
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			ZmAssistant.register(new ZmContactAssistant(appCtxt));
-		}
-		if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
-			ZmAssistant.register(new ZmCalendarAssistant(appCtxt));	
-			ZmAssistant.register(new ZmAppointmentAssistant(appCtxt));
-		}
-//		ZmAssistant.register(new ZmCallAssistant(appCtxt));
-		ZmAssistant.register(new ZmMailAssistant(appCtxt));
-		ZmAssistant.register(new ZmVersionAssistant(appCtxt));
-		ZmAssistant.register(new ZmDebugAssistant(appCtxt));
-	}	
+
+	ZmAssistantDialog.initializeAssistants(appCtxt);
 };
 
 //ZmAssistantDialog.prototype = new ZmQuickAddDialog;
 ZmAssistantDialog.prototype = new DwtDialog;
 ZmAssistantDialog.prototype.constructor = ZmAssistantDialog;
+
+ZmAssistantDialog.initializeAssistants = function(appCtxt) {
+	if (!ZmAssistantDialog._handlerInit) {
+		ZmAssistant.register(new ZmVersionAssistant(appCtxt));
+		ZmAssistant.register(new ZmDebugAssistant(appCtxt));
+		// ZmAssistant.register(new ZmCallAssistant(appCtxt));
+		for (var i = 0; i < ZmApp.APPS.length; i++) {
+			var app = ZmApp.APPS[i];
+			var setting = ZmApp.SETTING[app];
+			if (!setting || appCtxt.get(setting)) {
+				var assistants = ZmApp.ASSISTANTS[app];
+				if (assistants) {
+					for (var asstName in assistants) {
+						var pkg = assistants[asstName];
+						AjxDispatcher.require(pkg);
+						var asst = eval(asstName);
+						ZmAssistant.register(new asst(appCtxt));
+					}
+				}
+			}
+		}
+	}
+};
 
 ZmAssistantDialog.HELP_BUTTON = ++DwtDialog.LAST_BUTTON;
 ZmAssistantDialog.EXTRA_BUTTON = ++DwtDialog.LAST_BUTTON;

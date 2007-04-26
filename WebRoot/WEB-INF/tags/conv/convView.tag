@@ -5,11 +5,10 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-
 <app:handleError>
+    <zm:getMailbox var="mailbox"/>
     <fmt:message var="emptyFragment" key="fragmentIsEmpty"/>
     <fmt:message var="emptySubject" key="noSubject"/>
-    <zm:getMailbox var="mailbox"/>
     <c:set var="csi" value="${param.csi}"/>
     
     <zm:searchConv var="convSearchResult" id="${not empty param.cid ? param.cid : context.currentItem.id}" context="${context}" fetch="${empty csi ? 'first': 'none'}" markread="true" sort="${param.css}"/>
@@ -38,12 +37,14 @@
             </c:if>
         </c:forEach>
     </c:if>
+    <fmt:message var="unknownSender" key="unknownSender"/>
+
 </app:handleError>
 
 <%-- get the message up front, so when we output the overview tree unread counts are correctly reflected --%>
 <c:set var="ads" value='${message.subject} ${message.fragment}'/>
 
-<app:view title="${message.subject}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
+<app:view mailbox="${mailbox}" title="${message.subject}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="search" action="view" cid="${convSummary.id}" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
     <form action="${currentUrl}" method="post" name="zform">
         <table width=100% cellpadding=0 cellspacing=0>
@@ -110,7 +111,10 @@
                                                         <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                                     </c:if>
                                                     <td class='MsgStatusImg' align=center><app:img src="${(hit.messageHit.isUnread and hit.id == message.id) ? 'mail/MsgStatusRead.gif' : hit.messageHit.statusImage}" altkey="${(hit.messageHit.isUnread and hit.id == message.id) ? 'ALT_MSG_STATUS_READ' : hit.messageHit.statusImageAltKey}"/></td>
-                                                    <td nowrap><a href="${msgUrl}">${fn:escapeXml(hit.messageHit.displaySender)}</a></td>
+                                                    <td nowrap><a href="${msgUrl}">
+                                                        <c:set var="sender" value="${hit.messageHit.displaySender}"/>
+                                                            ${fn:escapeXml(empty sender ? unknownSender : sender)}
+                                                    </a></td>
                                                     <td class='Img' ><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                                     <td ><%-- allow this column to wrap --%>
                                                         <a href="${msgUrl}"><span style='overflow: hidden;'>${fn:escapeXml(empty hit.messageHit.fragment ? emptyFragment : zm:truncate(hit.messageHit.fragment,100, true))}</span></a>

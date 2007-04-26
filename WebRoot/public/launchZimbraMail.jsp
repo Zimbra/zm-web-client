@@ -38,7 +38,7 @@
 --><%
 	final String AUTH_TOKEN_COOKIE_NAME = "ZM_AUTH_TOKEN";
 	String contextPath = request.getContextPath();
-	if(contextPath.equals("/")) {
+	if (contextPath.equals("/")) {
 		contextPath = "";
 	}
 	String authToken = request.getParameter("auth");
@@ -78,6 +78,25 @@
 			}
 		}
 	}
+	
+	String isDev = (String) request.getParameter("dev");
+	if (isDev != null) {
+		request.setAttribute("mode", "mjsf");
+		request.setAttribute("gzip", "false");
+		request.setAttribute("fileExtension", "");
+		request.setAttribute("debug", "1");
+		request.setAttribute("packages", "dev");
+	}
+	String debug = (String) request.getParameter("debug");
+	if (debug == null) {
+		debug = (String) request.getAttribute("debug");
+	}
+	String extraPackages = (String) request.getParameter("packages");
+	if (extraPackages == null) {
+		extraPackages = (String) request.getAttribute("packages");
+	}
+	String startApp = (String) request.getParameter("app");
+	
 	String mode = (String) request.getAttribute("mode");
 	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
 	Boolean inSkinDebugMode = (mode != null) && (mode.equalsIgnoreCase("skindebug"));
@@ -87,6 +106,11 @@
 
 	String ext = (String) request.getAttribute("fileExtension");
 	if (ext == null) ext = "";
+	
+	String offlineMode = (String) request.getParameter("offline");
+	if (offlineMode == null) {
+		offlineMode = application.getInitParameter("offlineMode");
+	}
 %>
 <link rel="SHORTCUT ICON" href="<%=contextPath %>/img/loRes/logo/favicon.ico">
 <link rel="ICON" type="image/gif" href="<%=contextPath %>/img/loRes/logo/favicon.gif">
@@ -100,7 +124,7 @@
 	appCurrentSkin = "<%=skin %>";
 </script>
 
-<script type="text/javascript" src="<%=contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%=ext %>?v=<%=vers %>"></script>
+<jsp:include page="Messages.jsp"/>
 <script type="text/javascript" src="<%=contextPath %>/js/keys/AjxKeys,ZmKeys.js<%=ext %>?v=<%=vers %>"></script>
 <style type="text/css">
 <!--
@@ -108,15 +132,34 @@
 -->
 </style>
 
-<% if (inDevMode) { %>
-    <jsp:include page="Boot.jsp"/>
-	<jsp:include page="Ajax.jsp" />
-	<jsp:include page="Zimbra.jsp" />
-	<jsp:include page="ZimbraMail.jsp" />
-<% } else { %>
-	<script type="text/javascript" src="<%=contextPath%>/js/Ajax_all.js<%=ext %>?v=<%=vers%>"></script>
-	<script type="text/javascript" src="<%=contextPath%>/js/ZimbraMail_all.js<%=ext %>?v=<%=vers%>"></script>
-<% } %>
+<jsp:include page="Boot.jsp"/>
+<%
+    String allPackages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore";
+    if (extraPackages != null) {
+    	if (extraPackages.equals("dev")) {
+    		extraPackages = "CalendarCore,Calendar,ContactsCore,Contacts,IM,Mail,Mixed,NotebookCore,Notebook,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal";
+    	}
+    	allPackages += "," + extraPackages;
+    }
+
+    String pprefix = inDevMode ? "public/jsp" : "js";
+    String psuffix = inDevMode ? ".jsp" : "_all.js";
+
+    String[] pnames = allPackages.split(",");
+    for (String pname : pnames) {
+        String pageurl = "/"+pprefix+"/"+pname+psuffix;
+        if (inDevMode) { %>
+            <jsp:include>
+                <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
+            </jsp:include>
+        <% } else { %>
+            <script type="text/javascript" src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script> 
+        <% } %>
+    <% }
+%>
+<script type="text/javascript">
+AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
+</script>
 
 <script type="text/javascript" language="JavaScript">
 	zJSloading = (new Date()).getTime() - zJSloading;
@@ -140,27 +183,20 @@
 		AjxWindowOpener.HELPER_URL = "<%=contextPath%>/public/frameOpenerHelper.jsp"
 		DBG = new AjxDebug(AjxDebug.NONE, null, false);
 		// figure out the debug level
-		if (location.search && (location.search.indexOf("debug=") != -1)) {
-			var m = location.search.match(/debug=(\w+)/);
-			if (m && m.length) {
-				var level = m[1];
-				if (level == 't') {
-					DBG.showTiming(true);
-				} else {
-					DBG.setDebugLevel(level);
-				}
+		var debugLevel = "<%= (debug != null) ? debug : "" %>";
+		if (debugLevel) {
+			if (debugLevel == 't') {
+				DBG.showTiming(true);
+			} else {
+				DBG.setDebugLevel(debugLevel);
 			}
 		}
 
-		// figure out which app to start with, if supplied
-		var app = null;
-		if (location.search && (location.search.indexOf("app=") != -1)) {
-			var m = location.search.match(/app=(\w+)/);
-			if (m && m.length)
-				app = m[1];
-		}
+		var app = "<%= (startApp != null) ? startApp : "" %>";
+		var offlineMode = "<%= (offlineMode != null) ? offlineMode : "" %>";
+		var isDev = "<%= (isDev != null) ? isDev : "" %>";
 
-		ZmZimbraMail.run(document.domain, app);
+		ZmZimbraMail.run(document.domain, app, null, offlineMode, isDev);
 	}
 
     //	START DOMContentLoaded
@@ -197,8 +233,11 @@
 </head>
 <body>
 <noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
-    <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="/zimbra" value='/h/'/></fmt:param></fmt:message>
+    <fmt:message key="errorJavaScriptRequired"><fmt:param>
+    <c:url context="/zimbra" value='/h/'></c:url>
+    </fmt:param></fmt:message>
 </noscript>
+<script type="text/javascript" src="<%=contextPath%>/js/skin.js?v=<%=vers %>&skin=<%=skin%>"></script> 
 <%
 	// NOTE: This inserts raw HTML files from the user's skin
 	//       into the JSP output. It's done *this* way so that

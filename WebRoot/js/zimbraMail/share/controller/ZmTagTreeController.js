@@ -34,19 +34,26 @@
 */
 function ZmTagTreeController(appCtxt) {
 
-	var list = [ZmConv, ZmMailMsg];
+	var list = [];
+	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		list.push("ZmMailMsg");
+		list.push("ZmConv");
+	}
 	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		list.push(ZmContact);
+		list.push("ZmContact");
+	}
+	if (appCtxt.get(ZmSetting.TASKS_ENABLED)) {
+		list.push("ZmTask");
 	}
 	if (appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
-		list.push(ZmPage, ZmDocument);
+		list.push("ZmPage");
+		list.push("ZmDocument");
 	}
-	var dropTgt = new DwtDropTarget(list);
-	ZmTreeController.call(this, appCtxt, ZmOrganizer.TAG, dropTgt);
+	ZmTreeController.call(this, appCtxt, ZmOrganizer.TAG, new DwtDropTarget(list));
 
 	this._listeners[ZmOperation.NEW_TAG] = new AjxListener(this, this._newListener);
 	this._listeners[ZmOperation.RENAME_TAG] = new AjxListener(this, this._renameListener);
-	this._listeners[ZmOperation.COLOR_MENU] = new AjxListener(this, this._colorListener);
+	this._listeners[ZmOperation.TAG_COLOR_MENU] = new AjxListener(this, this._colorListener);
 };
 
 ZmTagTreeController.prototype = new ZmTreeController;
@@ -66,11 +73,11 @@ ZmTagTreeController.prototype._getActionMenu =
 function() {
 	var menu = ZmTreeController.prototype._getActionMenu.call(this);
 	if (menu && !menu._initialized) {
-		var mi = menu.getMenuItem(ZmOperation.COLOR_MENU);
+		var mi = menu.getMenuItem(ZmOperation.TAG_COLOR_MENU);
 		if (mi) {
 			var items = mi.getMenu().getItems();
 			for (var i = 0; i < items.length; i++) {
-				items[i].addSelectionListener(this._listeners[ZmOperation.COLOR_MENU]);
+				items[i].addSelectionListener(this._listeners[ZmOperation.TAG_COLOR_MENU]);
 			}
 		}
 		menu._initialized = true;
@@ -86,15 +93,20 @@ function() {
 */
 ZmTagTreeController.prototype.resetOperations = 
 function(parent, type, id) {
-	var tag = this._dataTree.getById(id);
+	var tag = this._appCtxt.getById(id);
 	parent.enableAll(true);
 	if (tag.isSystem())
 		parent.enable([ZmOperation.RENAME_TAG, 
-					   ZmOperation.COLOR_MENU, ZmOperation.DELETE], false);
+					   ZmOperation.TAG_COLOR_MENU, ZmOperation.DELETE], false);
 	parent.enable(ZmOperation.MARK_ALL_READ, (tag && (tag.numUnread > 0)));
 };
 
 // Private/protected methods
+
+ZmTagTreeController.prototype._getDataTree =
+function() {
+	return this._appCtxt.getTagTree();
+};
 
 /*
 * Returns ops available for "Tags" container.
@@ -114,7 +126,7 @@ function() {
 			  ZmOperation.MARK_ALL_READ,
 			  ZmOperation.RENAME_TAG,
 			  ZmOperation.DELETE,
-			  ZmOperation.COLOR_MENU);
+			  ZmOperation.TAG_COLOR_MENU);
 	return list;
 };
 
@@ -148,9 +160,9 @@ function(tag) {
 	var app = this._appCtxt.getAppController().getActiveApp();
 
 	var searchFor;
-	if (app == ZmZimbraMail.CONTACTS_APP) {
+	if (app == ZmApp.CONTACTS) {
 		searchFor = ZmItem.CONTACT;
-	} else if (app == ZmZimbraMail.NOTEBOOK_APP) {
+	} else if (app == ZmApp.NOTEBOOK) {
 		searchFor = ZmItem.PAGE;
 	} else {
 		searchFor = ZmSearchToolBar.FOR_MAIL_MI;
@@ -241,47 +253,5 @@ function(ev, treeView, overviewId) {
 		} else {
 			ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
 		}
-	}
-};
-
-// Callbacks
-
-/*
-* Called when a "New Tag" dialog is submitted. This override is necessary because we
-* need to pass the tag color to _doCreate().
-* 
-* @param 0	[string]	name of the new tag
-* @param 1	[constant]	color of the new tag
-*/
-ZmTagTreeController.prototype._newCallback =
-function(parent, name) {
-	this._doCreate(parent, name);
-	this._clearDialog(this._getNewDialog());
-};
-
-// Actions
-
-/*
-* Creates a new tag.
-*
-* @param name	[string]	name of the new tag
-* @param color	[constant]	color of the new tag
-*/
-ZmTagTreeController.prototype._doCreate =
-function(name, color) {
-	var parent = this._dataTree.root;
-	var errorCallback = new AjxCallback(this, this._handleErrorDoCreate);
-	parent.create(name, color, null, errorCallback);
-};
-
-ZmTagTreeController.prototype._handleErrorDoCreate =
-function(ex) {
-	if (ex.code == ZmCsfeException.MAIL_INVALID_NAME) {
-		var msg = AjxMessageFormat.format(ZmMsg.errorInvalidName, params.name);
-		this._msgDialog.setMessage(msg, DwtMessageDialog.CRITICAL_STYLE);
-		this._msgDialog.popup();
-		return true;
-	} else {
-		return false;
 	}
 };

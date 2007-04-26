@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2004, 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -48,25 +48,38 @@
 * @param isGal		[boolean]*		if true, this is a list of GAL contacts
 * @param type		[constant]*		item type
 */
-function ZmContactList(appCtxt, search, isGal, type) {
-	
+ZmContactList = function(appCtxt, search, isGal, type) {
+
 	if (arguments.length == 0) return;
 	type = type ? type : ZmItem.CONTACT;
 	ZmList.call(this, type, appCtxt, search);
 
 	this.isGal = (isGal === true);
 	this.isCanonical = false;
+	this.isLoaded = false;
 
 	this._emailToContact = {};
+	this._imAddressToContact = {};
+	this._phoneToContact = {};
 	this._acAddrList = {};
 	this._galResults = {};
 	this._galRequests = {};
 	this._loadCount = 0;
-	this._loaded = false;
 	this._showStatus = true;
 	this._galFailures = 0;
 
 	this._acMatchFields = ZmContactList.AC_FIELDS;
+
+	// XXX: not sure what this is supposed to do, but seems that it should be done
+	// as part of load of canonical list (currently will happen even for search results)
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
+		setTimeout(AjxCallback.simpleClosure(function() {
+			var roster = AjxDispatcher.run("GetRoster");
+			if (roster) {
+				roster.getRosterItemList().addChangeListener(new AjxListener(this, this.__rosterListener));
+			}
+		}, this), 500);
+	}
 };
 
 ZmContactList.prototype = new ZmList;
@@ -79,9 +92,6 @@ ZmContactList.prototype.constructor = ZmContactList;
 ZmContactList.AC_FIELDS 		= [ZmContact.F_firstName, ZmContact.F_lastName, ZmContact.X_fullName, ZmContact.X_firstLast,
 								   ZmContact.F_fileAs, ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
 ZmContactList.AC_NAME_FIELDS	= [ZmContact.F_firstName, ZmContact.F_lastName];
-ZmContactList.AC_VALUE_FULL 	= "fullAddress";
-ZmContactList.AC_VALUE_EMAIL	= "email";
-ZmContactList.AC_VALUE_NAME		= "name";
 ZmContactList.AC_MAX 			= 20;	// max # of autocomplete matches to return
 ZmContactList.AC_PREMATCH		= 2;	// # of characters to do pre-matching for
 ZmContactList.AC_GAL_TIMEOUT	= 15;	// GAL autocomplete timeout (in seconds)
@@ -111,7 +121,6 @@ function() {
 */
 ZmContactList.prototype.load =
 function(callback, errorCallback) {
-
 	// only the canonical list gets loaded
 	DBG.println(AjxDebug.DBG1, "loading contacts");
 	this.isCanonical = true;
@@ -136,7 +145,7 @@ function(callback, result) {
 		}
 		this.set(list);
 	} else {
-		this._loaded = true; // user has no contacts
+		this.isLoaded = true; // user has no contacts
 	}
 	this._setGalAutocompleteEnabled();
     var listener = new AjxListener(this, this._settingsChangeListener);
@@ -165,7 +174,7 @@ function(list) {
 		if (!contact._attrs) contact._attrs = {}; // handle empty contacts
 		// note that we don't create a ZmContact here (optimization)
 		contact.list = this;
-		this._updateEmailHash(contact, true);
+		this._updateHashes(contact, true);
 		var fn = [], fl = [];
 		if (contact._attrs[ZmContact.F_firstName])	{ fn.push(contact._attrs[ZmContact.F_firstName]); }
 		if (contact._attrs[ZmContact.F_middleName])	{ fn.push(contact._attrs[ZmContact.F_middleName]); }
@@ -185,14 +194,14 @@ function(list) {
 		AjxTimedAction.scheduleAction(this._loadAction, ZmContactList.LOAD_PAUSE);
 	} else {
 		DBG.timePt("done loading contacts");
-		this._loaded = true;
+		this.isLoaded = true;
 	}
 };
 
 ZmContactList.prototype.addFromDom =
 function(node, args) {
 	// first make sure this contact isnt already in the canonical list
-	var canonicalList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+	var canonicalList = AjxDispatcher.run("GetContacts");
 	var contact = canonicalList.getById(node.id);
 	if (contact) {
 		// NOTE: we dont realize contact b/c getById already does that for us
@@ -202,14 +211,6 @@ function(node, args) {
 	} else {
 		ZmList.prototype.addFromDom.call(this, node, args);
 	}
-};
-
-/**
-* Returns true if contacts have finished loading.
-*/
-ZmContactList.prototype.isLoaded =
-function() {
-	return this._loaded;
 };
 
 /*
@@ -232,7 +233,7 @@ function(contact, idx) {
 		var a = this.getArray();
 		idx = idx || this._getIndexById(contact.id);
 		a[idx] = realContact;
-		this._updateEmailHash(realContact, true);
+		this._updateHashes(realContact, true);
 		this._idHash[contact.id] = realContact;
 	}
 
@@ -325,6 +326,25 @@ function(address) {
 	return contact ? this._realizeContact(contact) : null;
 };
 
+ZmContactList.prototype.getContactByIMAddress = function(addr) {
+	var contact = this._imAddressToContact[addr.toLowerCase()];
+	return contact ? this._realizeContact(contact) : null;
+};
+
+/**
+* Returns the contact with the given phone number, if any. Canonical list only.
+*
+* @param phone	[string]	a phone number
+*/
+ZmContactList.prototype.getContactByPhone =
+function(phone) {
+	if (!phone || !this.isCanonical) return null;
+
+	var digits = this._getPhoneDigits(phone);
+	var contact = this._phoneToContact[digits];
+	return contact ? this._realizeContact(contact) : null;
+};
+
 /**
 * Moves a list of items to the given folder.
 * <p>
@@ -357,7 +377,7 @@ function(items, folder, attrs) {
 
 		if (contact.isShared() || folder.link) {
 			hardMove.push(contact);
-			if (contact.isLoaded()) {
+			if (contact.isLoaded) {
 				moveBatchCmd.add(this._getCopyCmd(contact, folder));
 			} else {
 				var loadCallback = new AjxCallback(this, this._handleResponseBatchLoad, [moveBatchCmd, folder]);
@@ -386,57 +406,6 @@ function(items, folder, attrs) {
 	if (softMove.length > 0) {
 		ZmList.prototype.moveItems.call(this, softMove, folder, attrs);
 	}
-};
-
-/**
-* Copies a list of items to the given folder.
-* <p>
-* Search results are treated as though they're in a temporary folder, so that they behave as
-* they would if they were in any other folder such as Inbox.
-* </p>
-*
-* @param items		[Array]			a list of items to move
-* @param folder		[ZmFolder]		destination folder
-* @param attrs		[Object]		additional attrs for SOAP command
-*/
-ZmContactList.prototype.copyItems =
-function(items, folder, attrs) {
-	// Since we may be sharing with multiple users, use a batch command
-	var copyBatchCmd = new ZmBatchCommand(this._appCtxt);
-	var loadBatchCmd = new ZmBatchCommand(this._appCtxt);
-
-	for (var i = 0; i  < items.length; i++) {
-		var contact = items[i];
-		if (contact.isLoaded()) {
-			copyBatchCmd.add(this._getCopyCmd(contact, folder));
-		} else {
-			// if not loaded, lets try to batch-load contacts before trying to copy them
-			var loadCallback = new AjxCallback(this, this._handleResponseBatchLoad, [copyBatchCmd, folder]);
-			var cmd = new AjxCallback(contact, contact.load, [loadCallback, null]);
-			loadBatchCmd.add(cmd);
-		}
-	}
-
-	if (loadBatchCmd.size()) {
-		var respCallback = new AjxCallback(this, this._handleResponseLoadCopy, [copyBatchCmd]);
-		loadBatchCmd.run(respCallback);
-	} else {
-		var respCallback = new AjxCallback(this, this._handleResponseCopyBatchCmd);
-		copyBatchCmd.run(respCallback);
-	}
-};
-
-ZmContactList.prototype._handleResponseCopyBatchCmd =
-function(result) {
-	var resp = result.getResponse().BatchResponse.CreateContactResponse;
-	var msg = AjxMessageFormat.format(ZmMsg.contactCopied, resp.length)
-	this._appCtxt.getAppController().setStatusMsg(msg);
-};
-
-ZmContactList.prototype._handleResponseLoadCopy =
-function(copyBatchCmd, result) {
-	var respCallback = new AjxCallback(this, this._handleResponseCopyBatchCmd);
-	copyBatchCmd.run(respCallback);
 };
 
 ZmContactList.prototype._handleResponseMoveBatchCmd =
@@ -528,7 +497,7 @@ function(items, folderId) {
 		ZmList.prototype.moveLocal.call(this, items, folderId);
 	if (folderId == ZmFolder.ID_TRASH) {
 		for (var i = 0; i < items.length; i++) {
-			this._updateEmailHash(items[i], false);
+			this._updateHashes(items[i], false);
 			this._updateAcList(items[i], false);
 		}
 	}
@@ -538,7 +507,7 @@ ZmContactList.prototype.deleteLocal =
 function(items) {
 	ZmList.prototype.deleteLocal.call(this, items);
 	for (var i = 0; i < items.length; i++) {
-		this._updateEmailHash(items[i], false);
+		this._updateHashes(items[i], false);
 		this._updateAcList(items[i], false);
 	}
 }
@@ -559,11 +528,11 @@ function(item, details) {
 		var oldContact = new ZmContact(this._appCtxt, null, this);
 		oldContact.id = details.contact.id;
 		oldContact.attr = details.oldAttr;
-		this._updateEmailHash(oldContact, false);
+		this._updateHashes(oldContact, false);
 		this._updateAcList(oldContact, false);
 
 		// add new contact to hashes
-		this._updateEmailHash(contact, true);
+		this._updateHashes(contact, true);
 		this._updateAcList(contact, true);
 	}
 
@@ -574,18 +543,20 @@ function(item, details) {
 	}
 
 	// reset addrbook property
-	if (contact.addrbook.id != contact.folderId)
-		contact.addrbook = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(contact.folderId);
+	if (contact.addrbook && (contact.addrbook.id != contact.folderId)) {
+		contact.addrbook = this._appCtxt.getById(contact.folderId);
+	}
 };
 
 ZmContactList.prototype.createLocal =
 function(item) {
-	this._updateEmailHash(item, true);
+	this._updateHashes(item, true);
 	this._updateAcList(item, true);
 };
 
-ZmContactList.prototype._updateEmailHash =
+ZmContactList.prototype._updateHashes =
 function(contact, doAdd) {
+	// Update email hash.
 	for (var i = 0; i < ZmContact.F_EMAIL_FIELDS.length; i++) {
 		var email = ZmContact.getAttr(contact, ZmContact.F_EMAIL_FIELDS[i]);
 		if (email) {
@@ -595,6 +566,39 @@ function(contact, doAdd) {
 				delete this._emailToContact[email.toLowerCase()];
 		}
 	}
+
+	// Update phone hash.
+	for (var i = 0; i < ZmContact.F_PHONE_FIELDS.length; i++) {
+		var phone = ZmContact.getAttr(contact, ZmContact.F_PHONE_FIELDS[i]);
+		if (phone) {
+			var digits = this._getPhoneDigits(phone);
+			if (digits) {
+				if (doAdd)
+					this._phoneToContact[digits] = contact;
+				else
+					delete this._phoneToContact[digits];
+			}
+		}
+	}
+
+	// Update IM hash.
+	for (var i = 0; i < ZmContact.F_IM_FIELDS.length; i++) {
+		var imaddr = ZmContact.getAttr(contact, ZmContact.F_IM_FIELDS[i]);
+		if (imaddr) {
+			imaddr = imaddr.toLowerCase();
+			if (doAdd)
+				this._imAddressToContact[imaddr] = contact;
+			else
+				delete this._imAddressToContact[imaddr];
+		}
+	}
+};
+
+// Strips all non-digit characters from a phone number.
+ZmContactList.prototype._getPhoneDigits =
+function(phone) {
+	var match = phone.match(/\d+/g);
+	return match ? match.join("") : null
 };
 
 // Returns the position at which the given contact should be inserted in this list.
@@ -631,7 +635,7 @@ function(str, callback, aclv) {
 
 	// if local contacts haven't finished loading, don't return any results (even
 	// though we could still search the GAL)
-	if (!this.isLoaded()) {
+	if (!this.isLoaded) {
 		if (this._showStatus) {
 			this._appCtxt.setStatusMsg(ZmMsg.autocompleteNotReady, ZmStatusView.LEVEL_WARNING);
 			this._showStatus = false; // only show status message once
@@ -652,7 +656,7 @@ function(str, callback, aclv) {
 			}
 		}
 	}
-	
+
 	// return local results
 	var results = this._matchList(str);
 	callback.run(results);
@@ -681,7 +685,7 @@ function(str, callback) {
 
 ZmContactList.prototype._checkExistingResults =
 function(str, which) {
-	
+
 	// have we already done this string?
 	if (this._matchingDone(str, which)) {
 		DBG.println(AjxDebug.DBG3, "found previous match for " + str);
@@ -724,24 +728,24 @@ function(str, which) {
 		}
 		return true;
 	}
-	
+
 	return false;
 };
 
 /**
  * Returns true if the given string is a valid email.
- * 
+ *
  * @param str	[string]	a string
  */
 ZmContactList.prototype.isComplete =
 function(str) {
-	return ZmEmailAddress.isValid(str);
+	return AjxEmailAddress.isValid(str);
 };
 
 /**
  * Quick completion of a string when there are no matches. Appends the
  * user's domain to the given string.
- * 
+ *
  * @param str	[string]	text that was typed in
  */
 ZmContactList.prototype.quickComplete =
@@ -753,16 +757,19 @@ function(str) {
 	}
 	var result = {};
 	if (!this._userDomain) {
-		var a = this._appCtxt.get(ZmSetting.USERNAME).split("@");
-		if (a && a.length) {
-			this._userDomain = a[a.length - 1];
+		var uname = this._appCtxt.get(ZmSetting.USERNAME);
+		if (uname) {
+			var a = uname.split("@");
+			if (a && a.length) {
+				this._userDomain = a[a.length - 1];
+			}
 		}
 	}
 	if (this._userDomain) {
 		var text = [str, this._userDomain].join("@");
-		result[ZmContactList.AC_VALUE_FULL] = text;
-		result[ZmContactList.AC_VALUE_EMAIL] = text;
-		result[ZmContactList.AC_VALUE_NAME] = text;
+		result[ZmContactsApp.AC_VALUE_FULL] = text;
+		result[ZmContactsApp.AC_VALUE_EMAIL] = text;
+		result[ZmContactsApp.AC_VALUE_NAME] = text;
 		return result;
 	} else {
 		return null;
@@ -903,7 +910,7 @@ function(str) {
 		var matches = this._getMatches(list[i], str);
 		if (matches && matches.length) {
 			for (var j = 0; j < matches.length; j++) {
-				var email = matches[j][ZmContactList.AC_VALUE_EMAIL];
+				var email = matches[j][ZmContactsApp.AC_VALUE_EMAIL];
 				if (!emails[email]) {
 					results.push(matches[j]);
 					emails[email] = true;
@@ -997,7 +1004,7 @@ function(nameHL, emailHL, name, email, contact) {
 		: (contact.isGal ? "GALContact" : "Contact");
 
 	if (contact.isGroup()) {
-		result[ZmContactList.AC_VALUE_FULL] = emailHL.toString(ZmEmailAddress.SEPARATOR);
+		result[ZmContactsApp.AC_VALUE_FULL] = emailHL.toString(AjxEmailAddress.SEPARATOR);
 
 		var members = emailHL.getArray();
 		var emailArr = [];
@@ -1009,12 +1016,12 @@ function(nameHL, emailHL, name, email, contact) {
 			emailArr.push(e);
 			nameArr.push(members[i].name || e);
 		}
-		result[ZmContactList.AC_VALUE_EMAIL] = emailArr.join(ZmEmailAddress.SEPARATOR);
-		result[ZmContactList.AC_VALUE_NAME] = nameArr.join(ZmEmailAddress.SEPARATOR);
+		result[ZmContactsApp.AC_VALUE_EMAIL] = emailArr.join(AjxEmailAddress.SEPARATOR);
+		result[ZmContactsApp.AC_VALUE_NAME] = nameArr.join(AjxEmailAddress.SEPARATOR);
 	} else {
-		result[ZmContactList.AC_VALUE_FULL] = name ? ['"', name, '" <', email, ">"].join("") : email;
-		result[ZmContactList.AC_VALUE_EMAIL] = email;
-		result[ZmContactList.AC_VALUE_NAME] = name || email;
+		result[ZmContactsApp.AC_VALUE_FULL] = name ? ['"', name, '" <', email, ">"].join("") : email;
+		result[ZmContactsApp.AC_VALUE_EMAIL] = email;
+		result[ZmContactsApp.AC_VALUE_NAME] = name || email;
 	}
 
 	return result;
@@ -1063,16 +1070,14 @@ function(str, aclv, callback) {
 	// cancel any outstanding GAL requests for substrings of current string
 	for (var substr in this._galRequests) {
 		if (str.indexOf(substr) === 0) {
-			DBG.println(AjxDebug.DBG1, "bypassing GAL request for '" + str + 
+			DBG.println(AjxDebug.DBG1, "bypassing GAL request for '" + str +
 						"' due to outstanding request for '" + substr + "'");
 			return;
 		}
 	}
 	var sortBy = ZmSearch.NAME_DESC;
 	var types = AjxVector.fromArray([ZmItem.CONTACT]);
-	var isChildWindow = aclv._appCtxt.getAppController().isChildWindow(); // make sure to check isChildWindow from aclv's appCtxt!
-	var params = {query: str, types: types, sortBy: sortBy, offset: 0,
-		limit: ZmContactList.AC_MAX, isGalAutocompleteSearch: true, isChildWindw:isChildWindow};
+	var params = {query: str, types: types, sortBy: sortBy, offset: 0, limit: ZmContactList.AC_MAX, isGalAutocompleteSearch: true};
 	var search = new ZmSearch(this._appCtxt, params);
 	var respCallback = new AjxCallback(this, this._handleResponseGetGalMatches, [str, aclv, callback]);
 	var errorCallback = new AjxCallback(this, this._handleErrorGetGalMatches, [aclv, callback]);
@@ -1092,7 +1097,7 @@ function(str, aclv, callback, result) {
 	for (var i = 0; i < a.length; i++) {
 		this._acAddrList[str].push(a[i]);
 	}
-	
+
 	// check to see if the GAL results that came back are for the string we're
 	// currently matching - if not, propagate its matches forward to the current
 	// string
@@ -1108,7 +1113,7 @@ function(str, aclv, callback, result) {
 		this._acAddrList[this._curAcStr].hasGalMatches = (this._acAddrList[this._curAcStr].length > 0);
 		this._acAddrList[this._curAcStr].galMatchingDone = true;
 	}
-	
+
 	this._acAddrList[str].hasGalMatches = (a.length > 0);
 	this._acAddrList[str].galMatchingDone = true;
 
@@ -1164,7 +1169,7 @@ function(aclv, callback, ex) {
 			var settings = this._appCtxt.getSettings();
 			var setting = settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE_SESSION);
 			setting.setValue(false);
-			this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController().setDirty(ZmPrefView.ADDR_BOOK, true);
+			AjxDispatcher.run("GetPrefController").setDirty(ZmPrefView.ADDR_BOOK, true);
 			this._galFailures = 0;
 		}
 	}
@@ -1177,8 +1182,17 @@ function(ev) {
 	var setting = ev.source;
 	if (setting.id == ZmSetting.GAL_AUTOCOMPLETE ||
 		setting.id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) {
-	
-		this._acAddrList = {};	
+
+		this._acAddrList = {};
 		this._setGalAutocompleteEnabled();
 	}
+};
+
+ZmContactList.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	return ZmContactCardsView.getPrintHtml(this);
+};
+
+ZmContactList.prototype.__rosterListener = function(ev) {
+//	console.log("ROSTER Event: ", ev);
 };

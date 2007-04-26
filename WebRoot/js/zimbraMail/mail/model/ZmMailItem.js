@@ -1,25 +1,25 @@
 /*
  * ***** BEGIN LICENSE BLOCK *****
  * Version: ZPL 1.2
- * 
+ *
  * The contents of this file are subject to the Zimbra Public License
  * Version 1.2 ("License"); you may not use this file except in
  * compliance with the License. You may obtain a copy of the License at
  * http://www.zimbra.com/license
- * 
+ *
  * Software distributed under the License is distributed on an "AS IS"
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or implied. See
  * the License for the specific language governing rights and limitations
  * under the License.
- * 
+ *
  * The Original Code is: Zimbra Collaboration Suite Web Client
- * 
+ *
  * The Initial Developer of the Original Code is Zimbra, Inc.
  * Portions created by Zimbra are Copyright (C) 2005, 2006 Zimbra, Inc.
  * All Rights Reserved.
- * 
+ *
  * Contributor(s):
- * 
+ *
  * ***** END LICENSE BLOCK *****
  */
 
@@ -52,7 +52,7 @@ ZmMailItem.sortCompare =
 function(itemA, itemB) {
 	var sortBy = ZmMailItem.sortBy;
 	if (!sortBy || (sortBy != ZmSearch.DATE_DESC && sortBy != ZmSearch.DATE_ASC)) { return 0; }
-	
+
 	var itemDateA = parseInt(itemA.date);
 	var itemDateB = parseInt(itemB.date);
 	if (sortBy == ZmSearch.DATE_DESC) {
@@ -63,7 +63,7 @@ function(itemA, itemB) {
 	}
 };
 
-ZmMailItem.prototype.toString = 
+ZmMailItem.prototype.toString =
 function() {
 	return "ZmMailItem";
 }
@@ -74,6 +74,12 @@ function() {
 ZmMailItem.prototype.isLoaded =
 function() {
 	return this._loaded;
+};
+
+ZmMailItem.prototype.isShared =
+function() {
+	return (this.id && this.id != -1)
+		? (this.id.indexOf(":") != -1) : false;
 };
 
 ZmMailItem.prototype.clear =
@@ -96,12 +102,13 @@ ZmMailItem.prototype.notifyModify =
 function(obj) {
 	var fields = new Object();
 	if (obj.e != null) {
-		this._clearParticipants();	
-		this._initializeParticipants();	
-		for (var i = 0; i < obj.e.length; i++)
+		this._clearParticipants();
+		this._initializeParticipants();
+		for (var i = 0; i < obj.e.length; i++) {
 			this._parseParticipantNode(obj.e[i]);
+		}
 		fields[ZmItem.F_PARTICIPANT] = true;
-		this._notify(ZmEvent.E_MODIFY, {fields : fields});
+		this._notify(ZmEvent.E_MODIFY, {fields:fields});
 	}
 
 	ZmItem.prototype.notifyModify.call(this, obj);
@@ -132,11 +139,15 @@ function() {
 ZmMailItem.prototype._markReadLocal =
 function(on) {
 	this.isUnread = !on;
-	this._notify(ZmEvent.E_FLAGS, {flags: [ZmItem.FLAG_UNREAD]});
+	this._notify(ZmEvent.E_FLAGS, {flags:[ZmItem.FLAG_UNREAD]});
 }
 
-ZmMailItem.prototype._parseParticipantNode = 
+ZmMailItem.prototype._parseParticipantNode =
 function(node) {
-	var type = ZmEmailAddress.fromSoapType[node.t];
-	this.participants.add(new ZmEmailAddress(node.a, type, node.p, node.d));
+	var type = AjxEmailAddress.fromSoapType[node.t];
+	this.participants.add(new AjxEmailAddress(node.a, type, node.p, node.d));
 }
+
+ZmMailItem.prototype.getEmails = function() {
+	return this.participants.map("address");
+};

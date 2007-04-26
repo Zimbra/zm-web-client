@@ -62,7 +62,7 @@ function ZmShortcutsPage(parent, appCtxt, view, controller) {
 		this._organizers.push(ZmOrganizer.TAG);
 	}
 
-	this._createHtml();
+//	this._createHtml();
 	
 	this._scTabView = new ZmShortcutsPageTabView(this, appCtxt, controller, this._organizers, this._prefId );
 	var element = this._scTabView.getHtmlElement();
@@ -200,7 +200,8 @@ function ZmShortcutsPageTabView(parent, appCtxt, controller, organizers, prefId)
 	this._parent = parent;
     this._appCtxt = appCtxt;
 	this._controller = controller;
-	this._organizers = organizers;
+	this._organizers = this._appCtxt.get(ZmSetting.SHORTCUT_ALIASES_ENABLED) ? organizers : [];
+	this._tabBar.setVisible(this._organizers.length > 1);
 
 	this._scTabView = {};
 	this._hasRendered = false;
@@ -235,6 +236,7 @@ function() {
 		this._scTabView[view] = viewObj;
 		this.addTab(ZmShortcutsPageTabView.TAB_NAME[view], this._scTabView[view]);
 	}
+
 	this._resetSize();
 	this._hasRendered = true;
 };
@@ -487,7 +489,7 @@ function ZmShortcutsPageTabViewCustom(parent, appCtxt, organizer, controller, se
 	this._setting = setting;
 
 	this._dwtObjects = {};
-	this._createHtml();
+	this._createShortcutsPageHtml();
 	this._rendered = false;
 	this._hasRendered = false;
 
@@ -598,11 +600,11 @@ function() {
 		// error checking
 		var errorStr;
 		if (!data) {
-			errorStr = AjxMessageFormat.format(ZmMsg.missingShortcutOrg, [ZmOrganizer.TEXT[this._organizer], num]);
+			errorStr = AjxMessageFormat.format(ZmMsg.missingShortcutOrg, [ZmMsg[ZmOrganizer.MSG_KEY[this._organizer]], num]);
 		} else if (!num) {
-			errorStr = AjxMessageFormat.format(ZmMsg.missingShortcutNumber, [ZmOrganizer.TEXT[this._organizer], data]);
+			errorStr = AjxMessageFormat.format(ZmMsg.missingShortcutNumber, [ZmMsg[ZmOrganizer.MSG_KEY[this._organizer]], data]);
 		} else if (!AjxUtil.isNumeric(num)) {
-			errorStr = AjxMessageFormat.format(ZmMsg.nonnumericShortcut, [ZmOrganizer.TEXT[this._organizer], data]);
+			errorStr = AjxMessageFormat.format(ZmMsg.nonnumericShortcut, [ZmMsg[ZmOrganizer.MSG_KEY[this._organizer]], data]);
 		}
 		if (!errorStr && numToData[num]) {
 			if (numToData[num] != data) {
@@ -645,7 +647,7 @@ function() {
 	return shortcuts;
 };
 
-ZmShortcutsPageTabViewCustom.prototype._createHtml =
+ZmShortcutsPageTabViewCustom.prototype._createShortcutsPageHtml =
 function() {
 
 	this._addButtonDivId = Dwt.getNextId();
@@ -718,7 +720,7 @@ function(html, i, closeLinkId) {
 	html[i++] = AjxMessageFormat.format(ZmMsg.assignShortcuts, [ZmShortcutsPageTabViewCustom.ORG_TEXT_PLURAL[this._organizer]]);
 	html[i++] = "<div>";
 	var key = ZmShortcutsPageTabViewList._formatKey(ZmShortcutsPageTabViewCustom.SAMPLE_KEY);
-	var org = ZmOrganizer.TEXT[this._organizer];
+	var org = ZmMsg[ZmOrganizer.MSG_KEY[this._organizer]];
 	var exampleOrg = ["<i>", ZmShortcutsPageTabViewCustom.SAMPLE_ORG[this._organizer], "</i>"].join("");
 	html[i++] = AjxMessageFormat.format(ZmMsg.exampleShortcutIntro, [key, org, exampleOrg]);
 	html[i++] = "<ul>";
@@ -767,7 +769,7 @@ function(html, i) {
 	html[i++] = "<th width=";
 	html[i++] = ZmShortcutsPageTabViewCustom.COL1_WIDTH;
 	html[i++] = ">";
-	html[i++] = ZmOrganizer.TEXT[this._organizer];
+	html[i++] = ZmMsg[ZmOrganizer.MSG_KEY[this._organizer]];
 	html[i++] = "</th>";
 	html[i++] = "<th width=";
 	html[i++] = ZmShortcutsPageTabViewCustom.COL2_WIDTH;
@@ -840,10 +842,12 @@ function(shortcut) {
 	button.setSize(bWidth, bHeight);
 	var organizer = null, value = "";
 	if (shortcut) {
-		organizer = this._appCtxt.getTree(org).getById(shortcut.arg);
-		value = (org == ZmOrganizer.FOLDER) ? organizer.getPath(false, false, null, true, true) :
-											  organizer.getName(false, null, true);
-		button.setData(ZmShortcutsPageTabViewCustom.DATA, value);
+		organizer = this._appCtxt.getById(shortcut.arg);
+		if (organizer) {
+			value = (org == ZmOrganizer.FOLDER) ? organizer.getPath(false, false, null, true, true) :
+												  organizer.getName(false, null, true);
+			button.setData(ZmShortcutsPageTabViewCustom.DATA, value);
+		}
 	}
 	button.setText(organizer ? value : ZmMsg.browse);
 	var id = Dwt.getNextId();
@@ -857,7 +861,7 @@ function(shortcut) {
 	html[i++] = "'></td>";
 
 	id = Dwt.getNextId();
-	var value = shortcut ? shortcut.num : null;
+	var value = (shortcut && organizer) ? shortcut.num : null;
 	var input = new DwtInputField({parent: this, type: DwtInputField.STRING, initialValue: value});
 	Dwt.setSize(input.getInputElement(), '100%', Dwt.DEFAULT);
 	this._inputs[rowId]["num"] = {id: id, dwtObj: input};
@@ -919,21 +923,20 @@ function(rowId) {
 
 ZmShortcutsPageTabViewCustom.prototype._browseListener =
 function(ev) {
-	var dialog, treeIds;
+	var dialog, treeIds, params;
 	var button = ev.item;
 	if (this._organizer == ZmOrganizer.TAG) {
-		if (!this._tagPicker) {
-			this._tagPicker = new ZmPickTagDialog(this._appCtxt.getShell(), this._appCtxt.getMsgDialog());
-		}
-		dialog = this._tagPicker;
+		dialog = this._appCtxt.getPickTagDialog();
 	} else {
-		dialog = this._appCtxt.getMoveToDialog();
+		dialog = this._appCtxt.getChooseFolderDialog();
 		treeIds = [this._organizer];
+		var title = (this._organizer == ZmOrganizer.SEARCH) ? ZmMsg.chooseSearch : ZmMsg.chooseFolder;
+		params = {treeIds:treeIds, title:title};
 	}
 	dialog.reset();
 	dialog.setTitle(ZmShortcutsPageTabViewCustom.DIALOG_TEXT[this._organizer]);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._browseSelectionCallback, this, [ev.item, dialog]);
-	dialog.popup(null, null, treeIds, true);
+	dialog.popup(params);
 };
 
 /*

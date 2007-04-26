@@ -80,7 +80,7 @@ function(attachment, now) {
 	
 	if (msg) {
 		// Sender
-		var fromAddr = msg._addrs[ZmEmailAddress.FROM].get(0);
+		var fromAddr = msg._addrs[AjxEmailAddress.FROM].get(0);
 		if (fromAddr) {
 			fieldId = this._getFieldId(attachment, ZmItem.F_FROM);
 	    	htmlArr[idx++] = "<td id='" + fieldId;
@@ -135,7 +135,7 @@ function(ev, div) {
 	var msg = this.getItemFromElement(div).getMessage();
 	if (m && m.field && msg) {
 		if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) {
-			var fromAddr = msg._addrs[ZmEmailAddress.FROM].get(0);
+			var fromAddr = msg._addrs[AjxEmailAddress.FROM].get(0);
 			this._setParticipantToolTip(fromAddr);
 		} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) {
 			this.setToolTipContent(AjxStringUtil.htmlEncode(msg.fragment));

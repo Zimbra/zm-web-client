@@ -44,7 +44,7 @@ function ZmMailList(type, appCtxt, search) {
 	this.convId = null; // for msg list within a conv
 
 	// mail list can be changed via folder or tag action (eg "Mark All Read")
-	var folderTree = appCtxt.getTree(ZmOrganizer.FOLDER);
+	var folderTree = appCtxt.getFolderTree();
 	if (folderTree) {
 		this._folderChangeListener = new AjxListener(this, this._folderTreeChangeListener);
 		folderTree.addChangeListener(this._folderChangeListener);
@@ -79,8 +79,9 @@ function(items, folder, attrs) {
 	var attrs = {};
 	attrs.tcon = this._getTcon();
 	attrs.l = folder.id;
+	var action = folder.id == ZmFolder.ID_TRASH ? "trash" : "move";
 	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder]);
-	this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback});
+	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback});
 };
 
 ZmMailList.prototype._handleResponseMoveItems =
@@ -88,9 +89,11 @@ function(folder, result) {
 	var movedItems = result.getResponse();	
 	if (movedItems && movedItems.length) {
 		this.moveLocal(movedItems, folder.id);
-		for (var i = 0; i < movedItems.length; i++)
+		for (var i = 0; i < movedItems.length; i++) {
 			movedItems[i].moveLocal(folder.id);
-		this._notify(ZmEvent.E_MOVE, {items: movedItems, replenish: true});
+		}
+		// note: this happens before we process real notifications
+		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
 	}
 };
 
@@ -104,7 +107,7 @@ function(folder, result) {
 */
 ZmMailList.prototype.spamItems = 
 function(items, markAsSpam, folder) {
-	if (this.type == ZmList.MIXED && !this._mixedType) {
+	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("spamItems", [items, markAsSpam, folder]);
 		return;
 	}
@@ -125,9 +128,13 @@ function(markAsSpam, folder, result) {
 	if (movedItems && movedItems.length) {
 		folderId = markAsSpam ? ZmFolder.ID_SPAM : (folder ? folder.id : ZmFolder.ID_INBOX);
 		this.moveLocal(movedItems, folderId);
-		for (var i = 0; i < movedItems.length; i++)
+		for (var i = 0; i < movedItems.length; i++) {
 			movedItems[i].moveLocal(folderId);
-		this._notify(ZmEvent.E_MOVE, {items: movedItems, replenish: true});
+		}
+		ZmModel.notifyEach(movedItems, ZmEvent.E_MOVE);
+
+		var msg = markAsSpam ? ZmMsg.markedAsJunk : ZmMsg.markedAsNotJunk;
+		this._appCtxt.setStatusMsg(AjxMessageFormat.format(msg, movedItems.length));
 	}
 };
 
@@ -142,7 +149,7 @@ function(markAsSpam, folder, result) {
 ZmMailList.prototype.deleteItems =
 function(items, folder, attrs) {
 	if (this.type == ZmItem.CONV || this._mixedType == ZmItem.CONV) {
-		var searchFolder = this.search ? this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(this.search.folderId) : null;
+		var searchFolder = this.search ? this._appCtxt.getById(this.search.folderId) : null;
 		if (searchFolder && searchFolder.isInTrash()) {
 			if (!attrs) attrs = {};
 			attrs.tcon = ZmFolder.TCON_CODE[ZmFolder.ID_TRASH];
@@ -167,6 +174,15 @@ function(items, on) {
 	}
 };
 
+// set "force" flag to true on actual hard deletes, so that msgs
+// in a conv list are removed
+ZmMailList.prototype.deleteLocal =
+function(items) {
+	for (var i = 0; i < items.length; i++) {
+		this.remove(items[i], true);
+	}
+};
+
 // When a conv or msg is moved to Trash, it is marked read by the server.
 ZmMailList.prototype.moveLocal =
 function(items, folderId) {
@@ -180,37 +196,40 @@ function(items, folderId) {
 			flaggedItems.push(items[i]);
 		}
 	}
-	if (flaggedItems.length)
-		this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [ZmItem.FLAG_UNREAD]});
+	ZmModel.notifyEach(flaggedItems, ZmEvent.E_FLAGS, {flags:[ZmItem.FLAG_UNREAD]});
 };
 
 ZmMailList.prototype.notifyCreate = 
 function(convs, msgs) {
 	var searchFolder = this.search ? this.search.folderId : null;
 	var createdItems = [];
+	var newConvs = [];
+	var newMsgs = [];
 	var flaggedItems = [];
 	var modifiedItems = [];
-	var newConvs = {};
+	var newConvId = {};
 	var fields = {};
+	var sortBy = this.search ? this.search.sortBy : null;
+	var sortIndex = {};
 	if (this.type == ZmItem.CONV && searchFolder) {
 		// handle new convs first so we can set their fragments from new msgs
-		var sortBy = this.search ? this.search.sortBy : null;
 		for (var id in convs) {
-			if (this.getById(id)) continue;
-			newConvs[id] = true;
+			if (this.getById(id)) { continue; }	// already have this conv
+			newConvId[id] = true;
 			var conv = convs[id];
 			if (conv.folders && conv.folders[searchFolder]) {
-				var index = this._getSortIndex(conv, sortBy);
-				this.add(conv, index);
+				// conv's msg matches current search
+				sortIndex[id] = this._getSortIndex(conv, sortBy);
+				this.add(conv, sortIndex[id]);
 				conv.list = this;
-				createdItems.push(conv);
+				newConvs.push(conv);
 			}
 		}
-		// sort item list so they show up in correct order when processed
-		if (createdItems.length > 1) {
+		// sort item list to reverse so they show up in correct order when processed
+		if (newConvs.length > 1) {
 			ZmMailItem.sortBy = sortBy;
-			createdItems.sort(ZmMailItem.sortCompare);
-			createdItems.reverse();
+			newConvs.sort(ZmMailItem.sortCompare);
+			newConvs.reverse();
 		}
 		for (var id in msgs) {
 			var msg = msgs[id];
@@ -228,49 +247,51 @@ function(convs, msgs) {
 					conv.isUnread = true;
 					flaggedItems.push(conv);
 				}
-				if (conv.fragment != msg.fragment) {
+				// if the new msg matches current search, update conv date and fragment
+				// TODO: handle simple tag searches
+				var msgMatches = (msg.folderId == searchFolder);
+				if (msgMatches && (conv.fragment != msg.fragment)) {
 					conv.fragment = msg.fragment;
 					fields[ZmItem.F_FRAGMENT] = true;
 				}
-				if (conv.date != msg.date) {
+				if (msgMatches && (conv.date != msg.date)) {
 					conv.date = msg.date;
+					// recalculate conv's sort position since we changed its date
+					sortIndex[conv.id] = this._getSortIndex(conv, sortBy);
 					fields[ZmItem.F_DATE] = true;
 				}
 				// conv gained a msg, may need to be moved to top/bottom
-				if (!newConvs[conv.id] && this._vector.contains(conv)) {
+				if (msgMatches && !newConvId[conv.id] && this._vector.contains(conv)) {
 					fields[ZmItem.F_INDEX] = true;
 				}
 				modifiedItems.push(conv);
 			}
+			newMsgs.push(msg);
 		}
 	} else if (this.type == ZmItem.MSG) {
 		for (var id in msgs) {
 			if (this.getById(id)) continue;
 			var msg = msgs[id];
+			sortIndex[id] = this._getSortIndex(msg, sortBy);
 			if (this.convId) { // MLV within conv
 				if (msg.cid == this.convId && !this.getById(msg.id)) {
-					this.add(msg, 0); // add to top of msg list
+					this.add(msg, sortIndex[id]);
 					msg.list = this;
-					createdItems.push(msg);
+					newMsgs.push(msg);
 				}
 			} else { // MLV (traditional)
 				if (msg.folderId == searchFolder) {
-					this.add(msg, 0); // add to top of msg list
+					this.add(msg, sortIndex[id]);
 					msg.list = this;
-					createdItems.push(msg);
+					newMsgs.push(msg);
 				}
 			}
 		}
 	}
-	if (createdItems.length) {
-		this._notify(ZmEvent.E_CREATE, {items: createdItems});
-	}
-	if (flaggedItems.length) {
-		this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [ZmItem.FLAG_UNREAD]});
-	}
-	if (modifiedItems.length) {
-		this._notify(ZmEvent.E_MODIFY, {items: modifiedItems, fields: fields});
-	}
+	ZmModel.notifyEach(newConvs, ZmEvent.E_CREATE, {sortIndex:sortIndex});
+	ZmModel.notifyEach(newMsgs, ZmEvent.E_CREATE, {sortIndex:sortIndex});
+	ZmModel.notifyEach(flaggedItems, ZmEvent.E_FLAGS, {flags:[ZmItem.FLAG_UNREAD]});
+	ZmModel.notifyEach(modifiedItems, ZmEvent.E_MODIFY, {fields:fields, sortIndex:sortIndex});
 };
 
 /**
@@ -291,25 +312,27 @@ function(msgs) {
 			addedMsgs.push(msg);
 		}
 	}
-	if (addedMsgs.length)
-		this._notify(ZmEvent.E_CREATE, {items: addedMsgs});
+	ZmModel.notifyEach(addedMsgs, ZmEvent.E_CREATE);
 };
 
 ZmMailList.prototype.remove = 
-function(item, bForce) {
+function(item, force) {
 	// Don't really remove an item if this is a list of msgs of a conv b/c a
 	// msg is always going to be part of a conv unless it's a hard delete!
-	if (!this.convId || bForce)
+	if (!this.convId || force) {
 		ZmList.prototype.remove.call(this, item);
+	}
 };
 
 ZmMailList.prototype.clear =
 function() {
 	// remove listeners for this list from folder tree and tag list
-	if (this._folderChangeListener)
-		this._appCtxt.getTree(ZmOrganizer.FOLDER).removeChangeListener(this._folderChangeListener);
-	if (this._tagChangeListener)
-		this._appCtxt.getTree(ZmOrganizer.TAG).removeChangeListener(this._tagChangeListener);
+	if (this._folderChangeListener) {
+		this._appCtxt.getFolderTree().removeChangeListener(this._folderChangeListener);
+	}
+	if (this._tagChangeListener) {
+		this._appCtxt.getTagTree().removeChangeListener(this._tagChangeListener);
+	}
 
 	ZmList.prototype.clear.call(this);
 };
@@ -380,8 +403,7 @@ function(ev) {
 						flaggedItems.push(msg);
 					}
 				}
-				if (flaggedItems.length)
-					this._notify(ZmEvent.E_FLAGS, {items: flaggedItems, flags: [flag]});
+				ZmModel.notifyEach(flaggedItems, ZmEvent.E_FLAGS, {flags:[flag]});
 			}
 		}
 	} else {

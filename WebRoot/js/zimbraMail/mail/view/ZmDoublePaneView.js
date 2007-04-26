@@ -31,7 +31,7 @@ function ZmDoublePaneView(parent, className, posStyle, mode, controller, dropTgt
 	this._controller = controller;
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._initHeader();
-	this._msgListView = new ZmMailMsgListView(this, null, Dwt.ABSOLUTE_STYLE, mode, controller, dropTgt);
+	this._mailListView = this._createMailListView(mode, controller, dropTgt);
 	this._msgSash = new DwtSash(this, DwtSash.VERTICAL_STYLE, "AppSash-vert", ZmDoublePaneView.SASH_THRESHOLD, Dwt.ABSOLUTE_STYLE);
 	this._msgView = new ZmMailMsgView(this, null, posStyle, mode, controller);
 
@@ -64,6 +64,11 @@ function() {
 	return this._controller;
 };
 
+ZmDoublePaneView.prototype.getTitle =
+function() {
+	return this._mailListView.getTitle();
+};
+
 ZmDoublePaneView.prototype.toggleView = 
 function() {
 	var bIsVisible = this._isMsgViewVisible();
@@ -75,9 +80,14 @@ function() {
 	this._resetSize(sz.x, sz.y);
 };
 
-ZmDoublePaneView.prototype.getMsgListView =
+ZmDoublePaneView.prototype._createMailListView =
+function(mode, controller, dropTgt) {
+	return new ZmMailMsgListView(this, null, Dwt.ABSOLUTE_STYLE, mode, controller, dropTgt);
+};
+
+ZmDoublePaneView.prototype.getMailListView =
 function() {
-	return this._msgListView;
+	return this._mailListView;
 };
 
 ZmDoublePaneView.prototype.getMsgView = 
@@ -87,12 +97,12 @@ function() {
 
 ZmDoublePaneView.prototype.getSelectionCount = 
 function() {
-	return this._msgListView.getSelectionCount();
+	return this._mailListView.getSelectionCount();
 };
 
 ZmDoublePaneView.prototype.getSelection = 
 function() {
-	return this._msgListView.getSelection();
+	return this._mailListView.getSelection();
 };
 
 ZmDoublePaneView.prototype.reset =

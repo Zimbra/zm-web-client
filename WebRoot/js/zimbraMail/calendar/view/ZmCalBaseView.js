@@ -47,6 +47,7 @@ function ZmCalBaseView(parent, className, posStyle, controller, view) {
 	
 	this._controller = controller;
 	this.view = view;	
+	this._viewPrefix = ["V", "_", this.view, "_"].join("");
 	this._evtMgr = new AjxEventMgr();	 
 	this._selectedItems = new AjxVector();
 	this._selEv = new DwtSelectionEvent(true);
@@ -78,18 +79,6 @@ ZmCalBaseView.TYPE_DAY_HEADER = 6; // over date header for a day
 ZmCalBaseView.TYPE_MONTH_DAY = 7; // over a day in month view
 ZmCalBaseView.TYPE_ALL_DAY = 8; // all day div area in day view
 ZmCalBaseView.TYPE_SCHED_FREEBUSY = 9; // free/busy union
-
-ZmCalBaseView.COLORS = [];
-// these need to match CSS rules
-ZmCalBaseView.COLORS[ZmOrganizer.C_ORANGE]	= "Orange";
-ZmCalBaseView.COLORS[ZmOrganizer.C_BLUE]	= "Blue";
-ZmCalBaseView.COLORS[ZmOrganizer.C_CYAN]	= "Cyan";
-ZmCalBaseView.COLORS[ZmOrganizer.C_GREEN]	= "Green";
-ZmCalBaseView.COLORS[ZmOrganizer.C_PURPLE]	= "Purple";
-ZmCalBaseView.COLORS[ZmOrganizer.C_RED]	= "Red";
-ZmCalBaseView.COLORS[ZmOrganizer.C_YELLOW]	= "Yellow";
-ZmCalBaseView.COLORS[ZmOrganizer.C_PINK]	= "Pink";
-ZmCalBaseView.COLORS[ZmOrganizer.C_GRAY]	= "Gray";
 
 ZmCalBaseView.prototype.getController =
 function() {
@@ -147,7 +136,7 @@ function (item, element, type, optionalId) {
 
 ZmCalBaseView.prototype._getViewPrefix = 
 function() { 
-	return "V" + this.view + "_";
+	return this._viewPrefix;
 }
 
 ZmCalBaseView.prototype.deselectAll =
@@ -595,20 +584,29 @@ function(appt) {}
 
 ZmCalBaseView.prototype._addApptIcons =
 function(appt, html, idx) {
-
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
 
-	if (appt.hasOtherAttendees())
-		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptMeeting") + "</td>";
+	if (appt.hasOtherAttendees()) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptMeeting");
+		html[idx++] = "</td>";
+	}
 
-	if (appt.isException())
-		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptException") + "</td>";
-	else if (appt.isRecurring())
-		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptRecur") + "</td>";
+	if (appt.isException) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptException")
+		html[idx++] = "</td>";
+	} else if (appt.isRecurring()) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptRecur");
+		html[idx++] = "</td>";
+	}
 
-	if (appt.hasAlarm())
-		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptReminder") + "</td>";
-	
+	if (appt.alarm) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptReminder");
+		html[idx++] = "</td>";
+	}
 	html[idx++] = "</tr></table>";
 
 	return idx;

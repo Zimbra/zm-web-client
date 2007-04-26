@@ -56,14 +56,10 @@ function ZmOverviewController(appCtxt, container) {
 };
 
 ZmOverviewController.CONTROLLER = {};
-ZmOverviewController.CONTROLLER[ZmOrganizer.FOLDER]				= ZmFolderTreeController;
-ZmOverviewController.CONTROLLER[ZmOrganizer.SEARCH]				= ZmSearchTreeController;
-ZmOverviewController.CONTROLLER[ZmOrganizer.TAG]				= ZmTagTreeController;
-ZmOverviewController.CONTROLLER[ZmOrganizer.CALENDAR]			= ZmCalendarTreeController;
-ZmOverviewController.CONTROLLER[ZmOrganizer.ADDRBOOK] 			= ZmAddrBookTreeController;
-ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]				= ZmZimletTreeController;
-ZmOverviewController.CONTROLLER[ZmOrganizer.ROSTER_TREE_ITEM]	= ZmRosterTreeController;
-ZmOverviewController.CONTROLLER[ZmOrganizer.NOTEBOOK]			= ZmNotebookTreeController;
+ZmOverviewController.CONTROLLER[ZmOrganizer.FOLDER]				= "ZmFolderTreeController";
+ZmOverviewController.CONTROLLER[ZmOrganizer.SEARCH]				= "ZmSearchTreeController";
+ZmOverviewController.CONTROLLER[ZmOrganizer.TAG]				= "ZmTagTreeController";
+ZmOverviewController.CONTROLLER[ZmOrganizer.ZIMLET]				= "ZmZimletTreeController";
 
 ZmOverviewController.DEFAULT_FOLDER_ID = ZmFolder.ID_INBOX;
 
@@ -96,8 +92,15 @@ function(params) {
 	var overviewId = params.overviewId;
 	var parent = params.parent ? params.parent : this._shell;
 	var overviewClass = params.overviewClass ? params.overviewClass : "overview";
-	var overview = this._overview[overviewId] = new DwtComposite(parent, overviewClass, params.posStyle);
-	this._overview[overviewId].setScrollStyle(params.scroll ? params.scroll : Dwt.SCROLL);
+	var overview = this._overview[overviewId] = new DwtAccordion(parent, overviewClass, params.posStyle);
+    if (params.posStyle == Dwt.ABSOLUTE_STYLE) {
+        Dwt.setLocation(overview.getHtmlElement(), Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+    }
+
+	// cache original scroll style since overview's w/ accordion does different things
+	overview._origScrollStyle = params.scroll || Dwt.SCROLL;
+	overview.setScrollStyle(overview._origScrollStyle);
+
 	this._selectionSupported[overviewId] = params.selectionSupported;
 	this._actionSupported[overviewId] = params.actionSupported;
 	this._dndSupported[overviewId] = params.dndSupported;
@@ -168,6 +171,17 @@ function(overviewId, treeIds, omit, reset) {
 
 	// add tree views to the overview
 	var app = this._appCtxt.getAppController().getActiveApp();
+
+	var accordItems = ZmApp.OVERVIEW_ACCORD_ITEMS[app];
+	if (accordItems && accordItems.length) {
+		overview.showAccordionItems(false);
+		for (var i = 0; i < accordItems.length; i++) {
+			overview.showAccordionItems(true, accordItems[i]);
+		}
+		// TEMP
+		overview.expandItem(accordItems[0]);
+	}
+
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
 		// lazily create appropriate tree controller
@@ -176,11 +190,30 @@ function(overviewId, treeIds, omit, reset) {
 		if (!treeView || (reset && reset[treeId])) {
 			var hideEmpty = this._hideEmpty[overviewId] ? this._hideEmpty[overviewId][treeId] : false;
 			// create the tree view as a child of the overview
-			treeController.show(overviewId, this._showUnread[overviewId], omit, false, app, hideEmpty);
+			var params = {overviewId:overviewId, omit:omit, app:app, hideEmpty:hideEmpty};
+			params.showUnread = this._showUnread[overviewId];
+			treeController.show(params);
+
+			// reset treeView once its been created
+			treeView = this.getTreeView(overviewId, treeIds[i], app);
 		} else {
 			// add the tree view's HTML element back to the overview
 			overview.addChild(treeView);
 			treeView.setCheckboxes();
+		}
+
+		// HACK: reparent the body of the accordion item
+		if (accordItems && accordItems.length) {
+			var body = overview.getBody(accordItems[0]);
+			if (body) {
+				treeView.reparentHtmlElement(body);
+				overview.setScrollStyle(Dwt.CLIP);
+				overview.resize(overview.getSize().x, overview.getSize().y);
+			}
+			overview.show(true);
+		} else {
+			overview.setScrollStyle(overview._origScrollStyle);
+			overview.show(false);
 		}
 	}
 	this._treeIds[overviewId] = treeIds;
@@ -193,21 +226,22 @@ function(overviewId, treeIds, omit, reset) {
 */
 ZmOverviewController.prototype.getTreeController =
 function(treeId) {
+	if (!treeId) { return null; }
 	if (!this._controllers[treeId]) {
-		var treeControllerCtor = ZmOverviewController.CONTROLLER[treeId];
+		var treeControllerCtor = eval(ZmOverviewController.CONTROLLER[treeId]);
 		this._controllers[treeId] = new treeControllerCtor(this._appCtxt);
 	}
 	return this._controllers[treeId];
 };
 
 /**
-* Returns the given tree controller.
+* Returns the tree for the given organizer type.
 *
 * @param treeId		[constant]		organizer type
 */
 ZmOverviewController.prototype.getTreeData =
 function(treeId) {
-	return this._appCtxt.getTree(treeId);
+	return treeId ? this._appCtxt.getTree(treeId) : null;
 };
 
 /**
@@ -279,7 +313,40 @@ function(overviewId) {
 */
 ZmOverviewController.prototype.getTreeView =
 function(overviewId, treeId, app) {
+	if (!overviewId || !treeId) { return null; }
 	return this.getTreeController(treeId).getTreeView(overviewId, app);
+};
+
+ZmOverviewController.prototype.getAllTreeViews =
+function(overviewId, app) {
+	var a = [], i = 0, id;
+	for (id in this._controllers)
+		a[i++] = this._controllers[id].getTreeView(overviewId, app);
+	return a;
+};
+
+/**
+ * Searches the tree views for the given overviewId for the tree item
+ * whose data object has the given ID and type.
+ * 
+ * @param overviewId	[constant]		overview ID
+ * @param id			[int]			ID to look for
+ * @param type			[constant]*		item must also have this type
+ */
+ZmOverviewController.prototype.getTreeItemById =
+function(overviewId, id, type) {
+	if (!overviewId || !id) { return null; }
+	for (var org in this._controllers) {
+		var treeView = this._controllers[org].getTreeView(overviewId);
+		if (treeView) {
+			var item = treeView.getTreeItemById(id);
+			if (item && (!type || (org == type))) {
+				return item;
+			}
+		}
+	}
+
+	return null;
 };
 
 /**
@@ -290,10 +357,15 @@ function(overviewId, treeId, app) {
 ZmOverviewController.prototype.getSelected =
 function(overviewId) {
 	var treeIds = this._treeIds[overviewId];
+	if (!(treeIds && treeIds.length)) { return null; }
 	for (var i = 0; i < treeIds.length; i++) {
-		var item = this.getTreeView(overviewId, treeIds[i]).getSelected();
-		if (item)
-			return item;
+		var treeView = this.getTreeView(overviewId, treeIds[i]);
+		if (treeView) {
+			var item = treeView.getSelected();
+			if (item) {
+				return item;
+			}
+		}
 	}
 	return null;
 };
@@ -310,7 +382,10 @@ function(overviewId, treeId) {
 	var treeIds = this._treeIds[overviewId];
 	for (var i = 0; i < treeIds.length; i++) {
 		if (treeIds[i] != treeId) {
-			this.getTreeView(overviewId, treeIds[i]).deselectAll();
+			var treeView = this.getTreeView(overviewId, treeIds[i]);
+			if (treeView) {
+				treeView.deselectAll();
+			}
 		}
 	}
 };

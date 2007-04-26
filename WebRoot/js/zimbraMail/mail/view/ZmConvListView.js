@@ -23,11 +23,14 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmConvListView(parent, className, posStyle, controller, dropTgt) {
+function ZmConvListView(parent, className, posStyle, controller, dropTgt, view) {
+
+	if (arguments.length == 0) { return; }
 
 	var headerList = this._getHeaderList(parent);
-	ZmMailListView.call(this, parent, className, posStyle, ZmController.CONVLIST_VIEW, ZmItem.CONV, controller, headerList, dropTgt);
-	this.setHtmlElementId("ZmConvListView")
+	view = view || ZmController.CONVLIST_VIEW;
+	ZmMailListView.call(this, parent, className, posStyle, view, ZmItem.CONV, controller, headerList, dropTgt);
+	this.setHtmlElementId(this.toString());
 };
 
 ZmConvListView.prototype = new ZmMailListView;
@@ -36,9 +39,7 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 // Consts
 
 ZmConvListView.CONVLIST_REPLENISH_THRESHOLD = 0;
-ZmConvListView.CLV_COLWIDTH_ICON 			= 19;
-ZmConvListView.CLV_COLWIDTH_FROM 			= 145;
-ZmConvListView.CLV_COLWIDTH_DATE 			= 60;
+ZmConvListView.COL_WIDTH_FROM 				= 145;
 
 
 // Public methods
@@ -61,26 +62,25 @@ function(defaultColumnSort) {
 	var fromColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]);
 	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
 	if (fromColSpan) fromColSpan.innerHTML = "&nbsp;" + colLabel;
-	this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
+	if (this._colHeaderActionMenu) this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
 
 	// bug fix #4786
 	colLabel = isFolder.sent ? ZmMsg.sentAt : ZmMsg.received;
 	var dateColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]);
 	var dateColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[dateColIdx]._id);
 	if (dateColSpan) dateColSpan.innerHTML = "&nbsp;" + colLabel;
-	this._colHeaderActionMenu.getItem(dateColIdx).setText(colLabel);
+	if (this._colHeaderActionMenu) this._colHeaderActionMenu.getItem(dateColIdx).setText(colLabel);
 };
 
 ZmConvListView.prototype.markUIAsRead =
-function(items, on) {
-	for (var i = 0; i < items.length; i++) {
-		var item = items[i];
-		var row = document.getElementById(this._getFieldId(item, ZmItem.F_ITEM_ROW));
-		if (row)
-			row.className = on ? "" : "Unread";
-		var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
-		if (img && img.parentNode)
-			AjxImg.setImage(img.parentNode, on ? "MsgStatusRead" : "MsgStatusUnread");
+function(item, on) {
+	var row = document.getElementById(this._getFieldId(item, ZmItem.F_ITEM_ROW));
+	if (row) {
+		row.className = on ? "" : "Unread";
+	}
+	var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
+	if (img && img.parentNode) {
+		AjxImg.setImage(img.parentNode, on ? "MsgStatusRead" : "MsgStatusUnread");
 	}
 }
 
@@ -194,22 +194,22 @@ function(conv, now, isDndIcon, isMixedView, myDiv) {
 
 ZmConvListView.prototype._getHeaderList =
 function(parent) {
-
-	var headerList = new Array();
-
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, "FlagRed", ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.flag));
 	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
 	var appCtxt = shell.getData(ZmAppCtxt.LABEL); // this._appCtxt not set until parent constructor is called
-	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "MiniTag", ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.tag));
-	}
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], ZmMsg.from, null, ZmConvListView.CLV_COLWIDTH_FROM, null, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, "Attachment", ZmConvListView.CLV_COLWIDTH_ICON, null, null, null, ZmMsg.attachment));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT], null, "Conversation", 25, null, null, null, ZmMsg.count));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.received, null, ZmConvListView.CLV_COLWIDTH_DATE, ZmItem.F_DATE));
 
-	return headerList;
+	var hList = [];
+
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, "FlagRed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.flag));
+	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+		hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "MiniTag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));
+	}
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], ZmMsg.from, null, ZmConvListView.COL_WIDTH_FROM, null, true));
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT], null, "Conversation", 25, null, null, null, ZmMsg.count));
+	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.received, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_DATE));
+
+	return hList;
 };
 
 ZmConvListView.prototype._sortColumn =
@@ -236,66 +236,60 @@ function(colHeader) {
 
 ZmConvListView.prototype._changeListener =
 function(ev) {
+
+	var conv = ev.item;
+	if (ev.handled || (conv.type != ZmItem.CONV)) { return; }
+
 	// update count field for this conv
 	var fields = ev.getDetail("fields");
-	var items = ev.getDetail("items");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_COUNT])) {
-		for (var i = 0; i < items.length; i++) {
-			var countField = document.getElementById(this._getFieldId(items[i], ZmItem.F_COUNT));
-			if (countField) {
-				countField.innerHTML = items[i].numMsgs > 1 ? "(" + items[i].numMsgs + ")" : "";
-			}
+		var countField = document.getElementById(this._getFieldId(conv, ZmItem.F_COUNT));
+		if (countField) {
+			countField.innerHTML = conv.numMsgs > 1 ? "(" + conv.numMsgs + ")" : "";
 		}
 	}
+
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_ID])) {
 		// a virtual conv has become real, and changed its ID
-		for (var i = 0; i < items.length; i++) {
-			var conv = items[i];
-			var div = document.getElementById(this._getItemId({id: conv._oldId}));
-			if (div) {
-				this._createItemHtml(conv, this._now, false, false, div);
-				this.associateItemWithElement(conv, div, DwtListView.TYPE_LIST_ITEM);
-				DBG.println(AjxDebug.DBG1, "conv updated from ID " + conv._oldId + " to ID " + conv.id);
-			}
+		var div = document.getElementById(this._getItemId({id: conv._oldId}));
+		if (div) {
+			this._createItemHtml(conv, this._now, false, false, div);
+			this.associateItemWithElement(conv, div, DwtListView.TYPE_LIST_ITEM);
+			DBG.println(AjxDebug.DBG1, "conv updated from ID " + conv._oldId + " to ID " + conv.id);
 		}
 	}
+
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_PARTICIPANT])) {
-		for (var i = 0; i < items.length; i++) {
-			var fieldId = this._getFieldId(items[i], ZmItem.F_PARTICIPANT);
-			var participantField = document.getElementById(fieldId);
-			if (participantField) {
-				participantField.innerHTML = this._getParticipantHtml(items[i], fieldId);
-			}
+		var fieldId = this._getFieldId(conv, ZmItem.F_PARTICIPANT);
+		var participantField = document.getElementById(fieldId);
+		if (participantField) {
+			participantField.innerHTML = this._getParticipantHtml(conv, fieldId);
 		}
 	}
+
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_DATE])) {
-		for (var i = 0; i < items.length; i++) {
-			var fieldId = this._getFieldId(items[i], ZmItem.F_DATE);
-			var dateField = document.getElementById(fieldId);
-			if (dateField) {
-				var html = [];
-				this._getField(html, 0, items[i], ZmItem.F_DATE, 6, new Date());
-				dateField.innerHTML = html.join("");
-			}
+		var fieldId = this._getFieldId(conv, ZmItem.F_DATE);
+		var dateField = document.getElementById(fieldId);
+		if (dateField) {
+			var html = [];
+			this._getField(html, 0, conv, ZmItem.F_DATE, 6, new Date());
+			dateField.innerHTML = html.join("");
 		}
 	}
+
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_INDEX])) {
-		// a conv had gotten a new msg and may need to be moved to top or bottom of list
-		var addToTop = ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC));
-		var addToBottom = addToTop ? false : ((this._controller.getList().hasMore() === false) &&
-											  (this._sortByString == ZmSearch.DATE_ASC)) &&
-											  (this.size() < this.getLimit());
-		if (addToTop || addToBottom) {
-			for (var i = 0; i < items.length; i++) {
-				var item = items[i];
-				var curIndex = this._list.indexOf(item);
-				if (addToTop && curIndex == 0) continue;
-				this.removeItem(item);
-				this.addItem(item, addToTop ? 0 : null);
-			}
+		// a conv has gotten a new msg and may need to be moved within its list
+		var sortIndex = ev.getDetail("sortIndex");
+		if ((sortIndex[conv.id] != null) && (this._list.indexOf(conv) != sortIndex[conv.id])) {
+			this.removeItem(conv);
+			this.addItem(conv, sortIndex[conv.id]);
 		}
 	}
-	ZmMailListView.prototype._changeListener.call(this, ev);
+
+	if (!ev.handled) {
+		ZmMailListView.prototype._changeListener.call(this, ev);
+	}
+
 	if (ev.event == ZmEvent.E_CREATE || ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE)	{
 		this._resetColWidth();
 	}
@@ -353,7 +347,7 @@ function(conv, preferHtml, callback, appCtxt) {
 		var respCallback = new AjxCallback(null, ZmConvListView._handleResponseGetPrintHtml, [conv, preferHtml, appCtxt, callback]);
 		window._zimbraMail.sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 	} else {
-		ZmConvListView._printMessages(conv, preferHtml, callback);
+		ZmConvListView._printMessages(conv, preferHtml, appCtxt, callback);
 	}
 };
 

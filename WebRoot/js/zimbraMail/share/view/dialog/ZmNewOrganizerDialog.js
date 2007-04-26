@@ -23,10 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewOrganizerDialog(parent, msgDialog, className, title, type) {
+function ZmNewOrganizerDialog(parent, className, title, type) {
 	if (arguments.length == 0) return;
 	
-	ZmDialog.call(this, parent, msgDialog, className, title);
+	ZmDialog.call(this, {parent:parent, className:className, title:title});
 	this._organizerType = type;
 	this._setupControls();
 };
@@ -42,17 +42,18 @@ function() {
 // Public methods
 
 ZmNewOrganizerDialog.prototype.popup =
-function(folder, loc) {
-	folder = folder ? folder : this._folderTree.root;
-
-	this._folderTreeView.setSelected(folder);
-	if (folder.id == ZmOrganizer.ID_ROOT) {
-		var ti = this._folderTreeView.getTreeItemById(folder.id);
-		ti.setExpanded(true);
+function(folder) {
+	if (this._folderTreeView) {
+		folder = folder ? folder : this._folderTree.root;
+		this._folderTreeView.setSelected(folder);
+		if (folder.id == ZmOrganizer.ID_ROOT) {
+			var ti = this._folderTreeView.getTreeItemById(folder.id);
+			ti.setExpanded(true);
+		}
 	}
 	DBG.timePt("selected folder", true);
 	
-	ZmDialog.prototype.popup.call(this, loc);
+	ZmDialog.prototype.popup.call(this);
 };
 
 ZmNewOrganizerDialog.prototype.reset =
@@ -64,7 +65,7 @@ function() {
 
 	if (this._remoteCheckboxField) {
 		this._remoteCheckboxField.checked = false;
-		var urlRow = document.getElementById(this._remoteCheckboxField.id+"URLrow");		
+		var urlRow = document.getElementById(this._remoteCheckboxFieldId+"URLrow");
 		if (urlRow) urlRow.style.display = "none";
 	}
 
@@ -245,8 +246,10 @@ function() {
 
 ZmNewOrganizerDialog.prototype._setupFolderControl =
 function() {
+	if (!this._folderTreeCellId) { return; }
+	
 	var organizerType = this._organizerType;
-	this._folderTree = this._appCtxt.getTree(organizerType);
+	this._folderTree = this._appCtxt.getFolderTree();
 
 	var omit = new Object();
 	omit[ZmFolder.ID_SPAM] = true;
@@ -279,21 +282,19 @@ function() {
 	var msg = ZmFolder.checkName(name);
 
 	// make sure a parent was selected
-	var parentFolder = this._folderTreeView.getSelected();
-	if (!msg && !parentFolder) {
-		msg = ZmMsg.folderNameNoLocation;
+	var parentFolder;
+	if (this._folderTreeView) {
+		parentFolder = this._folderTreeView.getSelected();
+		if (!msg && !parentFolder) {
+			msg = ZmMsg.folderNameNoLocation;
+		}
+	} else {
+		parentFolder = this._appCtxt.getFolderTree().root;
 	}
 
 	// make sure parent doesn't already have a child by this name
 	if (!msg && parentFolder.hasChild(name)) {
 		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
-	}
-
-	// if we're creating a top-level folder, check for conflict with top-level search
-	if (!msg && (parentFolder.id == ZmOrganizer.ID_ROOT)) {
-		var searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
-		if (searchTree && searchTree.root.hasChild(name))
-			msg = ZmMsg.folderOrSearchNameExists;
 	}
 
 	var color = null;
@@ -309,7 +310,7 @@ function() {
 		}
 	}
 
-	return (msg ? this._showError(msg) : [parentFolder, name, color, url]);
+	return (msg ? this._showError(msg) : {l:parentFolder.id, name:name, color:color, url:url});
 };
 
 ZmNewOrganizerDialog.prototype._getTabGroupMembers =

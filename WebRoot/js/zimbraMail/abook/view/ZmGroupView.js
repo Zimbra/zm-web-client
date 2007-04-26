@@ -30,13 +30,6 @@ function ZmGroupView(parent, appCtxt, controller) {
 ZmGroupView.prototype = new ZmContactView;
 ZmGroupView.prototype.constructor = ZmGroupView;
 
-
-// Consts
-ZmGroupListView.ID_ICON  = "i--";
-ZmGroupListView.ID_NAME  = "n--";
-ZmGroupListView.ID_EMAIL = "e--";
-
-
 // Public Methods
 
 ZmGroupView.prototype.toString =
@@ -221,7 +214,7 @@ function() {
 		this._searchInSelect = new DwtSelect(this);
 		this._searchInSelect.addOption(ZmMsg.contacts, true, ZmContactPicker.SEARCHFOR_CONTACTS);
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
-			this._searchInSelect.addOption(ZmMsg.searchPersonalAndShared, false, ZmContactPicker.SEARCHFOR_PAS);
+			this._searchInSelect.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactPicker.SEARCHFOR_PAS);
 		if (this._appCtxt.get(ZmSetting.GAL_ENABLED))
 			this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactPicker.SEARCHFOR_GAL);
 		this._searchInSelect.reparentHtmlElement(this._listSelectId);
@@ -308,7 +301,7 @@ ZmGroupView.prototype._getFolderId =
 function() {
 	var id = ZmFolder.ID_CONTACTS;
 	if (this._contact.id == null) {
-		var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+		var clc = this._appCtxt.getApp(ZmApp.CONTACTS).getContactListController();
 		id = clc._folderId;
 	} else {
 		if (this._contact.addrbook)
@@ -345,7 +338,7 @@ function(ev) {
 				? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 			// hack the query if searching for personal and shared contacts
 			if (searchFor == ZmContactPicker.SEARCHFOR_PAS) {
-				var addrbookList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getAddrbookList();
+				var addrbookList = this._appCtxt.getApp(ZmApp.CONTACTS).getAddrbookList();
 				this._query += " (" + addrbookList.join(" or ") + ")";
 			}
 		} else {
@@ -386,7 +379,7 @@ function(list) {
 	var items = new Array();
 	for (var i = 0; i < list.length; i++) {
 		if (list[i].isGroup) {
-			var emails = list[i].address.split(ZmEmailAddress.SEPARATOR);
+			var emails = list[i].address.split(AjxEmailAddress.SEPARATOR);
 			for (var j = 0; j < emails.length; j++)
 				items.push(emails[j]);
 		} else {
@@ -437,8 +430,8 @@ function(result) {
 	for (var i = 0; i < a.length; i++) {
 		var contact = a[i];
 		if (contact.isGroup()) {
-			var members = contact.getGroupMembers().good.toString(ZmEmailAddress.SEPARATOR);
-			var email = new ZmEmailAddress(members, null, contact.getFileAs(), null, true);
+			var members = contact.getGroupMembers().good.toString(AjxEmailAddress.SEPARATOR);
+			var email = new AjxEmailAddress(members, null, contact.getFileAs(), null, true);
 			email.id = Dwt.getNextId();
 			email.contactId = contact.id;
 			email.icon = "Group";
@@ -446,7 +439,7 @@ function(result) {
 		} else {
 			var emails = contact.getEmails();
 			for (var j = 0; j < emails.length; j++) {
-				var email = new ZmEmailAddress(emails[j], null, contact.getFileAs());
+				var email = new AjxEmailAddress(emails[j], null, contact.getFileAs());
 				email.id = Dwt.getNextId();
 				email.contactId = contact.id;
 				email.icon = contact.isGal ? "GAL" : contact.addrbook.getIcon();
@@ -552,6 +545,11 @@ function ZmGroupListView(parent) {
 	DwtListView.call(this, parent, "DwtChooserListView", null, this._getHeaderList(parent));
 };
 
+// Consts
+ZmGroupListView.ID_ICON  = "i--";
+ZmGroupListView.ID_NAME  = "n--";
+ZmGroupListView.ID_EMAIL = "e--";
+
 ZmGroupListView.prototype = new DwtListView;
 ZmGroupListView.prototype.constructor = ZmGroupListView;
 
@@ -575,7 +573,7 @@ function() {
 	return headerList;
 };
 
-// The items are ZmEmailAddress objects
+// The items are AjxEmailAddress objects
 ZmGroupListView.prototype._createItemHtml =
 function(item) {
 	var div = document.createElement("div");

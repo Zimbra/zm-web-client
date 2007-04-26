@@ -72,6 +72,7 @@ ZmPicker.DEFAULT_PICKERS=[ZmPicker.ATTACHMENT,
 				ZmPicker.DOMAIN,
 				ZmPicker.FOLDER];
 
+
 // Button labels
 ZmPicker.MSG_KEY = new Object();
 ZmPicker.MSG_KEY[ZmPicker.ATTACHMENT]	= "attachment";

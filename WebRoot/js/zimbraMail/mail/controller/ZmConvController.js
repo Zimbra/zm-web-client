@@ -121,7 +121,7 @@ function(view) {
 		delButton.setMenu(menu);
 		
 		var id = ZmOperation.DELETE_CONV;
-		var mi = menu.createMenuItem(id, ZmOperation.getProp(id, "image"), ZmMsg[ZmOperation.getProp(id, "textKey")]);
+		var mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
 		mi.setData(ZmOperation.MENUITEM_ID, ZmOperation.DELETE_CONV);
 		mi.addSelectionListener(this._listeners[ZmOperation.DELETE]);
 
@@ -136,16 +136,10 @@ function(view) {
 */
 ZmConvController.prototype._standardToolBarOps =
 function() {
-	var list = [ZmOperation.NEW_MENU];
-	list.push(ZmOperation.CHECK_MAIL);
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.DELETE_MENU);
-	list.push(ZmOperation.MOVE);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
-	return list;
+	return [ZmOperation.NEW_MENU, ZmOperation.CHECK_MAIL,
+			ZmOperation.TAG_MENU, ZmOperation.SEP,
+			ZmOperation.DELETE_MENU, ZmOperation.MOVE,
+			ZmOperation.PRINT];
 }
 
 ZmConvController.prototype._getViewType =
@@ -156,11 +150,6 @@ function() {
 ZmConvController.prototype._getItemType =
 function() {
 	return ZmItem.MSG;
-}
-
-ZmConvController.prototype._defaultView =
-function() {
-	return ZmController.CONV_VIEW;
 }
 
 ZmConvController.prototype._resetSelection = 
@@ -181,7 +170,7 @@ function(ev) {
 	
 	if (ev.item.getData(ZmOperation.MENUITEM_ID) == ZmOperation.DELETE_CONV) {
 		// use conv list controller to delete conv
-		var clc = this._app.getConvListController();
+		var clc = AjxDispatcher.run("GetConvListController");
 		clc._doDelete([this._conv]);
 		this._app.popView();
 	} else {
@@ -195,7 +184,7 @@ function(ev) {
 // or deleted, it's just removed from the view and its underlying list.
 ZmConvController.prototype._checkConvLocation =
 function() {
-	var clc = this._app.getConvListController();
+	var clc = AjxDispatcher.run("GetConvListController");
 	var list = clc.getList();
 	var folderId = list.search.folderId;
 	if (folderId) {
@@ -211,7 +200,7 @@ function() {
 // Tag in the summary area clicked, do a tag search.
 ZmConvController.prototype._convTagClicked =
 function(tagId) {
-	var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getById(tagId);
+	var tag = this._appCtxt.getById(tagId);
 	var query = 'tag:"' + tag.name + '"';
 	var searchController = this._appCtxt.getSearchController();
 	searchController.search({query: query});
@@ -245,7 +234,7 @@ function() {
 
 	if (this._conv.numMsgs > 1) {
 		// get the search folder if one exists
-		var clc = this._app.getConvListController();
+		var clc = AjxDispatcher.run("GetConvListController");
 		var search = clc.getList().search;
 		var folderId = search.folderId ? (parseInt(search.folderId)) : null;
 		if (folderId && this._conv.msgs) {
@@ -368,17 +357,22 @@ function(view) {
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_DBL_FORW, ZmMsg.next + " " + ZmMsg.conversation);
 }
 
+ZmConvController.prototype._getNumTotal =
+function() {
+	return this._conv.numMsgs;
+};
+
 // overloaded...
 ZmConvController.prototype._search = 
 function(view, offset, limit, callback) {
 
 	var sortby = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
-	this._conv.load(this.getSearchString(), sortby, offset, limit, callback);
+	this._conv.load({query:this.getSearchString(), sortBy:sortby, offset:offset, limit:limit, callback:callback});
 }
 
 ZmConvController.prototype._paginateDouble = 
 function(bDoubleForward) {
-	var clc = this._app.getConvListController();
+	var clc = AjxDispatcher.run("GetConvListController");
 	if (clc)
 		clc.pageItemSilently(this._conv, bDoubleForward);
 }
