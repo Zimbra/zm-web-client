@@ -110,7 +110,7 @@ ZmKeyMap.GOTO_INBOX			= "GoToInbox";
 ZmKeyMap.GOTO_MAIL			= "GoToMail";
 ZmKeyMap.GOTO_NOTEBOOK		= "GoToNotebook";
 ZmKeyMap.GOTO_OPTIONS		= "GoToOptions";
-ZmKeyMap.GOTO_VOICEMAIL		= "GoToVoice";
+ZmKeyMap.GOTO_VOICE			= "GoToVoice";
 ZmKeyMap.GOTO_SENT			= "GoToSent";
 ZmKeyMap.GOTO_TAG			= "GoToTag";		// takes NNN
 ZmKeyMap.GOTO_TASKS			= "GoToTasks";
@@ -248,6 +248,7 @@ function() {
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.TAG]				= ZmSetting.TAGGING_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.UNTAG]				= ZmSetting.TAGGING_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.SAVED_SEARCH]		= ZmSetting.SAVED_SEARCHES_ENABLED;
+	ZmKeyMap.ACTION_PRECONDITION["Global"][ZmKeyMap.GOTO_VOICE]			= ZmSetting.VOICE_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"] = {};
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.SAVE]				= ZmSetting.SAVE_DRAFT_ENABLED;
 	ZmKeyMap.ACTION_PRECONDITION["ZmComposeController"][ZmKeyMap.HTML_FORMAT]		= ZmSetting.HTML_COMPOSE_ENABLED;

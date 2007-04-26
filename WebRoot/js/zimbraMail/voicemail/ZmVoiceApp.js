@@ -141,7 +141,7 @@ function() {
 							  overviewTrees:		[ZmOrganizer.VOICE],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.VOICEMAIL],
-							  gotoActionCode:		ZmKeyMap.GOTO_VOICEMAIL,
+							  gotoActionCode:		ZmKeyMap.GOTO_VOICE,
 							  chooserSort:			15,
 							  defaultSort:			15
 							  });
