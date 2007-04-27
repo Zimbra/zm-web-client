@@ -25,6 +25,7 @@
 
 function ZmVoiceApp(appCtxt, container, parentController) {
 	this.phones = [];
+	this._accordianItem = null; // Currently selected accordian item.
 	ZmApp.call(this, ZmApp.VOICE, appCtxt, container, parentController);
 }
 
@@ -184,7 +185,7 @@ ZmVoiceApp.prototype._handleResponseVoiceInfo =
 function(callback, response) {
 	// DwtAccordion voodoo
 	var overview = this._appCtxt.getOverviewController().getOverview(ZmZimbraMail._OVERVIEW_ID);
-//	overview.addSelectionListener(new AjxListener(this, this._overviewSelectionListener));
+	overview.addSelectionListener(new AjxListener(this, this._overviewSelectionListener));
 	var itemIds = ZmApp.OVERVIEW_ACCORD_ITEMS[ZmApp.VOICE];
 	if (!itemIds) {
 		itemIds = ZmApp.OVERVIEW_ACCORD_ITEMS[ZmApp.VOICE] = [];
@@ -199,15 +200,42 @@ function(callback, response) {
 		this.phones.push(phone);
 
 		// add accordion items
-		var itemId = overview.addAccordionItem({title:phone.getDisplay()});
-		itemIds.push(itemId);
+		var data = { phone: phone, lastFolder: null };
+		var item = overview.addAccordionItem({title: phone.getDisplay(), data: data});
+		if (i == 0) {
+			this._accordianItem = item;
+		}
+		itemIds.push(item.itemId);
 
 		if (obj.folder && obj.folder.length) {
-			this._createFolder(folderTree.root, phone, obj.folder[0], itemId);
+			this._createFolder(folderTree.root, phone, obj.folder[0], item.itemId);
 		}
 	}
 	if (callback) {
 		callback.run();
+	}
+};
+
+ZmVoiceApp.prototype._overviewSelectionListener =
+function(ev) {
+	// Save most recent search.
+	if (this._accordianItem) {
+		var folder = this._appCtxt.getCurrentController().getFolder();
+		if (folder && folder.phone == this._accordianItem.data.phone) {
+			this._accordianItem.data.lastFolder = folder;
+		}
+	}
+
+	// Run new search inside of accordian item.
+	this._accordianItem = ev.detail;
+	var folder = this._accordianItem.data.lastFolder;
+	if (!folder) {
+		var folderId = ZmVoiceFolder.VOICEMAIL_ID + "-" + this._accordianItem.data.phone.name;
+		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		folder = tree.getById(folderId);
+	}
+	if (folder) {
+		this.search(folder);
 	}
 };
 

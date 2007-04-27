@@ -58,6 +58,11 @@ function(searchResult, folder) {
 	this._setView(this._currentView, elements, true);
 };
 
+ZmVoiceListController.prototype.getFolder =
+function(searchResult, folder) {
+	return this._folder;
+};
+
 ZmVoiceListController.prototype._setViewContents =
 function(viewId) {
 	var view = this._listView[viewId];
