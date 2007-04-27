@@ -77,7 +77,11 @@
     <table cellspacing=4 cellpadding=4>
 	    <tr id='${id}_anonymousRejection' valign='top'>
 	    	<td class='prefLabel'><$= ZmMsg.anonymousRejectionLabel $></td>
-	    	<td><div id='${id}_anonymousRejectionCheckbox'></div></td>
+	    	<td>
+	    		<table><tr><td>
+			    	<div id='${id}_anonymousRejectionCheckbox'></div>
+		    	</td></tr></table>
+			</td>
 	    </tr>
 	    <tr><td colspan=2><hr></td></tr>
 	    
@@ -110,15 +114,18 @@
 	    			<td><div id='${id}_selectiveCallForwardingCheckbox'></div></td>
 		    		<td><div id='${id}_selectiveCallForwardingComboBox'></div></td>
 		    	</tr></table>
-				<div class='ZSmallSpacer'></div>
-	    		<div id='${id}_selectiveCallForwardingTableParent'></div>
-				<div class='ZSmallSpacer'></div>
-	    		<table><tr>
-		    		<td><b><$= ZmMsg.addLabel $></b></td>
-	    			<td><div id='${id}_selectiveCallForwardingAddInput'></div></td>
-		    		<td><div id='${id}_selectiveCallForwardingAddButton'></div></td>
-		    	</tr></table>
-		    	<div style='padding-left: 16'><$= ZmMsg.selectiveCallForwardingRules$></div>
+		    	<div style='padding-left:10'>
+					<div class='ZSmallSpacer'></div>
+		    		<div id='${id}_selectiveCallForwardingTableParent'></div>
+					<div class='ZSmallSpacer'></div>
+		    		<table><tr>
+			    		<td><b><$= ZmMsg.addLabel $></b></td>
+		    			<td><div id='${id}_selectiveCallForwardingAddInput'></div></td>
+			    		<td><div id='${id}_selectiveCallForwardingAddButton'></div></td>
+			    	</tr></table>
+					<div class='ZSmallSpacer'></div>
+			    	<div style='padding-left: 16'><$= ZmMsg.selectiveCallForwardingRules$></div>
+		    	</div>
 	    	</td>
 	    </tr>
 	    
