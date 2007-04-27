@@ -147,7 +147,7 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
 
 	var writable = this._object && !this._object.isReadOnly();
 	toolbarOrActionMenu.enable([ZmOperation.EDIT, ZmOperation.DELETE], writable);
-	var taggable = this._object && !this._object.isShared();
+	var taggable = this._object && !this._object.isShared() && !this._object.isIndex();
 	toolbarOrActionMenu.enable([ZmOperation.TAG_MENU], taggable);
 };
 
