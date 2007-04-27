@@ -177,7 +177,7 @@ function() {
 						 resultsList:
 		AjxCallback.simpleClosure(function(search) {
 			AjxDispatcher.require("ContactsCore");
-			return new ZmContactList(this._appCtxt, search, search ? search.isGalSearch : null);
+			return new ZmContactList(this._appCtxt, search, search ? search.isGalSearch || search.isGalAutocompleteSearch : null);
 		}, this)
 						});
 
