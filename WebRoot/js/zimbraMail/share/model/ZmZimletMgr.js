@@ -32,7 +32,20 @@ function ZmZimletMgr(appCtxt) {
 
 ZmZimletMgr.prototype.constructor = ZmZimletMgr;
 
-// Public api
+ZmZimletMgr.prototype.toString = function() {
+	return "ZmZimletMgr";
+};
+
+//
+// Constants
+//
+
+ZmZimletMgr._RE_REMOTE = /^((https?|ftps?):\x2f\x2f|\x2f)/;
+
+//
+// Public methods
+//
+
 ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps) {
 	if(!zimletArray || !zimletArray.length) {return;}
@@ -61,6 +74,11 @@ function(zimletArray, userProps) {
 	 	zimletTree.reset();
 	 	zimletTree.loadFromJs(panelZimlets, "zimlet");
  	}
+
+    // load zimlet code/CSS
+    var zimletNames = this._getZimletNames(zimletArray);
+    this._loadIncludes(zimletArray, zimletNames);
+//    this._loadStyles(zimletArray, zimletNames);
 };
 
 ZmZimletMgr.prototype.getPanelZimlets =
@@ -140,11 +158,6 @@ function(name) {
 	return this._ZIMLETS_BY_ID[name];
 };
 
-ZmZimletMgr.prototype.toString =
-function() {
-	return "ZmZimletMgr";
-};
-
 ZmZimletMgr.prototype.notifyZimlets = function(event) {
 	var args = new Array(arguments.length - 1);
 	for (var i = 0; i < args.length;)
@@ -158,4 +171,82 @@ ZmZimletMgr.prototype.notifyZimlets = function(event) {
 		    && typeof z[event] == "function")
 			z[event].apply(z, args);
 	}
+};
+
+//
+// Protected methods
+//
+
+ZmZimletMgr.prototype._getZimletNames = function(zimletArray) {
+    var array = new Array(zimletArray ? zimletArray.length : 0);
+    for (var i = 0; i < zimletArray.length; i++) {
+        array[i] = zimletArray[i].zimlet[0].name;
+    }
+    return array;
+};
+
+ZmZimletMgr.prototype._loadIncludes = function(zimletArray, zimletNames) {
+    var includes = this.__getIncludes(zimletArray, zimletNames, true);
+    var baseUrl = null;
+    var callback = new AjxCallback(this, this._finished_loadIncludes, [zimletNames] );
+    var proxy = ZmZimletBase.PROXY;
+    
+    AjxInclude(includes, baseUrl, callback, proxy);
+};
+
+ZmZimletMgr.prototype._finished_loadIncludes = function(zimletNames) {
+    var zimlets = this.getZimletsHash();
+    for (var i = 0; i < zimletNames.length; i++) {
+        var name = zimletNames[i];
+        zimlets[name]._finished_loadIncludes();
+    }
+};
+
+ZmZimletMgr.prototype._loadStyles = function(zimletArray, zimletNames) {
+    var head = document.getElementsByTagName("head")[0];
+    var includes = this.__getIncludes(zimletArray, zimletNames, false);
+    for (var i = 0; i < includes.length; i++) {
+        var style = document.createElement("link");
+        style.type = "text/css";
+        style.rel = "stylesheet";
+        style.href = includes[i];
+
+        head.appendChild(style);
+
+        // TODO: What does this do?
+        style.disabled = true;
+        style.disabled = false;
+    }
+};
+
+//
+// Private methods
+//
+
+ZmZimletMgr.prototype.__getIncludes = function(zimletArray, zimletNames, isJS) {
+    // add remote urls
+    var includes = [];
+    for (var i = 0; i < zimletArray.length; i++) {
+        var zimlet = zimletArray[i].zimlet[0];
+        var links = (isJS ? zimlet.include : zimlet.includeCSS) || [];
+        for (var j = 0; j < links.length; j++) {
+            var url = links[j]._content;
+            if (ZmZimletMgr._RE_REMOTE.test(url)) {
+                var fullurl = [ ZmZimletBase.PROXY, AjxStringUtil.urlComponentEncode(url) ].join("");
+                includes.push(fullurl);
+            }
+        }
+    }
+
+    // add link to aggregated files
+    includes.push( [
+        "/service/zimlet/res/", zimletNames.join(","), "/zimlet", isJS ? ".js" : ".css"
+    ].join("") );
+
+    // add cache killer to each url
+    for (var i = 0; i < includes.length; i++) {
+        includes[i] = [ includes[i], "?v=", cacheKillerVersion ].join("");
+    }
+
+    return includes;
 };

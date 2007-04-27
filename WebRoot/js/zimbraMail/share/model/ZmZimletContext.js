@@ -104,7 +104,6 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 		this._translateConfig();
 	}
 
-	this._loadIncludes();
 	this._loadStyles();
 
 	this._handleMenuItemSelected = new AjxListener(this, this._handleMenuItemSelected);
@@ -165,18 +164,11 @@ function() {
 	return "ZmZimletContext - " + this.name;
 };
 
-ZmZimletContext.prototype._loadIncludes =
-function() {
-	if (!this.includes) {
-		this._finished_loadIncludes();
-		return;
-	}
-	AjxInclude(this.includes, this._url, new AjxCallback(this, this._finished_loadIncludes) ,ZmZimletBase.PROXY);
-};
-
+/**
+ * <strong>Note:</strong>
+ * This method is called by ZmZimletMgr#_finished_loadIncludes.
+ */
 ZmZimletContext.prototype._finished_loadIncludes = function() {
-	// We don't allow _loadIncludes a second time
-	this.includes = null;
 	var CTOR  = this.handlerObject ? window[this.handlerObject] : ZmZimletBase;
 	this.handlerObject = new CTOR();
 	if(!this.handlerObject._init) {
