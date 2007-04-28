@@ -199,7 +199,6 @@ function(subscribed) {
 ZmRoster.prototype.handleNotification =
 function(im) {
 	if (im.n) {
-		// console.log("IM notification: ", im.n);
 		var notifications = !this.__avoidNotifyTimeout ||
 			(new Date().getTime() - this.__avoidNotifyTimeout > ZmRoster.NOTIFICATION_FOO_TIMEOUT);
 		var cl = this.getChatList();
@@ -308,6 +307,20 @@ ZmRoster.prototype.startFlashingIcon = function() {
 
 ZmRoster.prototype.stopFlashingIcon = function() {
 	this._imApp.stopFlashingIcon();
+};
+
+ZmRoster.prototype.registerGateway = function(service, screenName, password) {
+	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
+	var method = sd.getMethod();
+	method.setAttribute("op", "reg");
+	method.setAttribute("service", service);
+	method.setAttribute("name", screenName);
+	method.setAttribute("password", password);
+	// FIXME: error handling
+	this._appCtxt.getAppController().sendRequest({ soapDoc	 : sd,
+						       asyncMode : true
+						     });
+	this.__avoidNotifyTimeout = new Date().getTime();
 };
 
 ZmRoster.prototype._requestGateways = function() {

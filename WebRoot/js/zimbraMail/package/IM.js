@@ -31,6 +31,7 @@ AjxPackage.require("zimbraMail.im.view.ZmChatBaseView");
 AjxPackage.require("zimbraMail.im.view.ZmChatMultiWindowView");
 AjxPackage.require("zimbraMail.im.view.ZmNewImDialog");
 AjxPackage.require("zimbraMail.im.view.ZmNewRosterItemDialog");
+AjxPackage.require("zimbraMail.im.view.ZmExternalGatewayDlg");
 
 AjxPackage.require("zimbraMail.im.controller.ZmChatListController");
 AjxPackage.require("zimbraMail.im.controller.ZmRosterTreeController");

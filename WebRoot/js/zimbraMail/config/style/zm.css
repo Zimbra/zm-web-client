@@ -1839,7 +1839,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmChatWindowChatEntry-sep { border-top: 1px solid #edd; margin-top: 4px; margin-bottom: 2px; font-size: 1px; line-height: 1px; overflow: hidden; height: 1px; }
 
-.ZmChatWindowChatEntry .from { font-weight: bold; }
+.ZmChatWindowChatEntry .from { font-weight: bold; margin-bottom: 5px; }
 .ZmChatWindowChatEntry .time { float: right; color: #888; }
 .ZmChatWindowChatEntry .body { padding-left: 15px; margin-right: 4.2em; }
 

@@ -297,6 +297,15 @@ function() {
 	return this._newRosterItemDialog;
 };
 
+ZmAppCtxt.prototype.getIMGatewayLoginDialog =
+function() {
+	if (!this._imGatewayLoginDialog) {
+		AjxDispatcher.require("IM");
+		this._imGatewayLoginDialog = new ZmExternalGatewayDlg(this._shell, this);
+	}
+	return this._imGatewayLoginDialog;
+};
+
 ZmAppCtxt.prototype.getNewSearchDialog =
 function() {
 	if (!this._newSearchDialog) {

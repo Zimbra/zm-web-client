@@ -57,7 +57,7 @@
       <td align="left"><div style="white-space: nowrap">
         <$= AjxStringUtil.htmlEncode(data.data) $>
       </div></td>
-    </tr>  
+    </tr>
   <$ } $>
 </template>
 
@@ -102,4 +102,21 @@
 
 <template id="ChatMessagePlainText">
   <$= data.isSystem ? ZmMsg.imSystem : data.from $>: <$= data.getTextBody() $>
+</template>
+
+<template id="GatewayLoginDlg">
+  <table>
+    <tr>
+      <td style="text-align: right; white-space: nowrap;"><$= ZmMsg.imGateway $>:</td>
+      <td id="${id}_gatewayLayout"></td>
+    </tr>
+    <tr>
+      <td style="text-align: right; white-space: nowrap;"><$= ZmMsg.imScreenName $>:</td>
+      <td id="${id}_screenNameLayout"></td>
+    </tr>
+    <tr>
+      <td style="text-align: right; white-space: nowrap;"><$= ZmMsg.password $>:</td>
+      <td id="${id}_passwordLayout"></td>
+    </tr>
+  </table>
 </template>

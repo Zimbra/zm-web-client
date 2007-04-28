@@ -53,6 +53,7 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.IM_CREATE_CONTACT] = new AjxListener(this, this._imCreateContactListener);
 	this._listeners[ZmOperation.IM_ADD_TO_CONTACT] = new AjxListener(this, this._imAddToContactListener);
 	this._listeners[ZmOperation.IM_EDIT_CONTACT] = new AjxListener(this, this._imEditContactListener);
+	this._listeners[ZmOperation.IM_GATEWAY_LOGIN] = new AjxListener(this, this._imGatewayLoginListener);
 
 	this._treeItemHoverListenerListener = new AjxListener(this, this._treeItemHoverListener);
 };
@@ -193,7 +194,7 @@ function(ev) {
 
 // Returns a list of desired header action menu operations
 ZmRosterTreeController.prototype._getHeaderActionMenuOps = function() {
-	return [ZmOperation.NEW_ROSTER_ITEM];
+	return [ZmOperation.NEW_ROSTER_ITEM, ZmOperation.IM_GATEWAY_LOGIN];
 };
 
 // Returns a list of desired action menu operations
@@ -397,6 +398,19 @@ function(name) {
 		}
 	}
 	return group;
+};
+
+ZmRosterTreeController.prototype._imGatewayLoginListener = function(ev) {
+	var dlg = this._appCtxt.getIMGatewayLoginDialog();
+	if (!this._registerGatewayCb) {
+		this._registerGatewayCb = new AjxCallback(this, this._registerGatewayCallback);
+	}
+	ZmController.showDialog(dlg, this._registerGatewayCb);
+};
+
+ZmRosterTreeController.prototype._registerGatewayCallback = function(service, screenName, password) {
+	this._appCtxt.getIMGatewayLoginDialog().popdown();
+	AjxDispatcher.run("GetRoster").registerGateway(service, screenName, password);
 };
 
 ZmRosterTreeController.prototype._newRosterItemListener =
