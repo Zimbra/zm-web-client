@@ -68,7 +68,7 @@ function(node) {
             // get known rule that exactly matches tz definition
             if (!rule) {
                 var tzrule = {
-                    standard: AjxUtil.createProxy(tz.standard[0]),
+                    standard: tz.standard ? AjxUtil.createProxy(tz.standard[0]) : {},
                     daylight: tz.daylight ? AjxUtil.createProxy(tz.daylight[0]) : null
                 };
                 tzrule.standard.offset = tz.stdoff;
