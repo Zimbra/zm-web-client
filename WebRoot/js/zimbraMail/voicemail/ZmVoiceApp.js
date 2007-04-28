@@ -235,6 +235,14 @@ function(ev) {
 		folder = tree.getById(folderId);
 	}
 	if (folder) {
+		// Highlight the folder.
+		var overviewController = this._appCtxt.getOverviewController();
+		var treeController = overviewController.getTreeController(ZmOrganizer.VOICE);
+		var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+		var treeItem = treeView.getTreeItemById(folder.id);
+		treeView.setSelection(treeItem, true);
+		
+		// Run search.
 		this.search(folder);
 	}
 };

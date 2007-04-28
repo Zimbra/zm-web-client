@@ -58,6 +58,11 @@ function(overviewId) {
 			ti.setExpanded(true, false);
 		}
 	}
+	var app = this._appCtxt.getApp(ZmApp.VOICE);
+	if (app.startFolder) {
+		var treeItem = view.getTreeItemById(app.startFolder.id);
+		view.setSelection(treeItem, true);
+	}
 };
 
 ZmVoiceTreeController.prototype.resetOperations =
