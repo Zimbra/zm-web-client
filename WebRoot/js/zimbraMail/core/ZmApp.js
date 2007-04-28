@@ -63,9 +63,9 @@ function ZmApp(name, appCtxt, container, parentController) {
 // app information ("_R" means "reverse map")
 
 // these are needed statically (before we get user settings)
-ZmApp.CLASS				= {};	// constructor for app class
-ZmApp.SETTING			= {};	// ID of setting that's true when app is enabled
-ZmApp.LOAD_SORT			= {};	// controls order in which apps are instantiated
+ZmApp.CLASS					= {};	// constructor for app class
+ZmApp.SETTING				= {};	// ID of setting that's true when app is enabled
+ZmApp.LOAD_SORT				= {};	// controls order in which apps are instantiated
 
 // these are set via registerApp() in app constructor
 ZmApp.MAIN_PKG				= {};	// main package that composes the app
@@ -78,7 +78,6 @@ ZmApp.VIEW_TOOLTIP			= {};	// msg key for app tooltip
 ZmApp.DEFAULT_SEARCH		= {};	// type of item to search for in the app
 ZmApp.ORGANIZER				= {};	// main organizer for this app
 ZmApp.OVERVIEW_TREES		= {};	// list of tree IDs to show in overview
-ZmApp.OVERVIEW_ACCORD_ITEMS = {};	// list of DwtAccordion item IDs to show in overview
 ZmApp.SHOW_ZIMLETS			= {};	// whether to show Zimlet tree in overview
 ZmApp.SEARCH_TYPES			= {};	// list of types of saved searches to show in overview
 ZmApp.SEARCH_TYPES_R		= {};
@@ -94,15 +93,15 @@ ZmApp.TRASH_VIEW_OP			= {};	// menu choice for "Show Only ..." in Trash view
 
 // assistants for each app; each valu is a hash where the key is the name of the
 // assistant class and the value is the required package
-ZmApp.ASSISTANTS		= {};
+ZmApp.ASSISTANTS			= {};
 
 // indexes to control order of appearance/action
-ZmApp.CHOOSER_SORT		= {};	// controls order of apps in app chooser toolbar
-ZmApp.DEFAULT_SORT		= {};	// controls order in which app is chosen as default start app
+ZmApp.CHOOSER_SORT			= {};	// controls order of apps in app chooser toolbar
+ZmApp.DEFAULT_SORT			= {};	// controls order in which app is chosen as default start app
 
 // ordered lists of apps
-ZmApp.APPS				= [];	// ordered list
-ZmApp.DEFAULT_APPS		= [];	// ordered list
+ZmApp.APPS					= [];	// ordered list
+ZmApp.DEFAULT_APPS			= [];	// ordered list
 
 ZmApp.initialize =
 function() {
@@ -212,17 +211,17 @@ ZmApp.prototype._registerItems		= function() {};
 ZmApp.prototype._registerOrganizers	= function() {};
 ZmApp.prototype._setupSearchToolbar	= function() {};
 ZmApp.prototype._registerApp		= function() {};
-ZmApp.prototype._registerPrefs		= function() {};	// called when Preferences pkg is loaded
+ZmApp.prototype._registerPrefs		= function() {};							// called when Preferences pkg is loaded
 
 // Functions that apps can override in response to certain events
-ZmApp.prototype.startup			= function(result) {};		// run during startup
-ZmApp.prototype.refresh			= function(refresh) {};		// run when a <refresh> block arrives
-ZmApp.prototype.preNotify		= function(notify) {};		// run before handling notifications
-ZmApp.prototype.deleteNotify	= function(ids) {};			// run on delete notifications
-ZmApp.prototype.createNotify	= function(list) {};		// run on create notifications
-ZmApp.prototype.modifyNotify	= function(list) {};		// run on modify notifications
-ZmApp.prototype.postNotify		= function(notify) {};		// run after handling notifications
-ZmApp.prototype.handleOp		= function(op, params) {};	// handle an operation
+ZmApp.prototype.startup				= function(result) {};						// run during startup
+ZmApp.prototype.refresh				= function(refresh) {};						// run when a <refresh> block arrives
+ZmApp.prototype.preNotify			= function(notify) {};						// run before handling notifications
+ZmApp.prototype.deleteNotify		= function(ids) {};							// run on delete notifications
+ZmApp.prototype.createNotify		= function(list) {};						// run on create notifications
+ZmApp.prototype.modifyNotify		= function(list) {};						// run on modify notifications
+ZmApp.prototype.postNotify			= function(notify) {};						// run after handling notifications
+ZmApp.prototype.handleOp			= function(op, params) {};					// handle an operation
 
 /**
 * Returns the app's name.

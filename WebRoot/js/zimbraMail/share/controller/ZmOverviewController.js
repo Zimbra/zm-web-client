@@ -93,7 +93,7 @@ function(params) {
 	var parent = params.parent ? params.parent : this._shell;
 	var overviewClass = params.overviewClass ? params.overviewClass : "overview";
 	var overview = this._overview[overviewId] = new DwtAccordion(parent, overviewClass, params.posStyle);
-    if (params.posStyle == Dwt.ABSOLUTE_STYLE) {
+	if (params.posStyle == Dwt.ABSOLUTE_STYLE) {
         Dwt.setLocation(overview.getHtmlElement(), Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
     }
 
@@ -172,14 +172,19 @@ function(overviewId, treeIds, omit, reset) {
 	// add tree views to the overview
 	var app = this._appCtxt.getAppController().getActiveApp();
 
-	var accordItems = ZmApp.OVERVIEW_ACCORD_ITEMS[app];
+	// DwtAccordion voodoo
+	var accordItem;
+	var accordItems = overview.getItems();
 	if (accordItems && accordItems.length) {
-		overview.showAccordionItems(false);
+		overview.hideAccordionItems();
 		for (var i = 0; i < accordItems.length; i++) {
-			overview.showAccordionItems(true, accordItems[i]);
+			var item = accordItems[i];
+			if (item.data.appName == app)
+				overview.showAccordionItem(item.id);
 		}
-		// TEMP
-		overview.expandItem(accordItems[0]);
+		accordItem = this._appCtxt.getApp(app).accordionItem;
+		if (accordItem)
+			overview.expandItem(accordItem.id);
 	}
 
 	for (var i = 0; i < treeIds.length; i++) {
@@ -203,8 +208,8 @@ function(overviewId, treeIds, omit, reset) {
 		}
 
 		// HACK: reparent the body of the accordion item
-		if (accordItems && accordItems.length) {
-			var body = overview.getBody(accordItems[0]);
+		if (accordItem) {
+			var body = overview.getBody(accordItem.id);
 			if (body) {
 				treeView.reparentHtmlElement(body);
 				overview.setScrollStyle(Dwt.CLIP);

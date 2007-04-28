@@ -371,7 +371,6 @@ function(params, result) {
 		if (!this._TAB_SKIN_ENABLED) {
 			rootTg.addMember(appChooserTg);
 		}
-		var kbMgr = this._appCtxt.getKeyboardMgr();
 		kbMgr.setTabGroup(rootTg);
 		
 		this._settings._loadShortcuts();
@@ -869,17 +868,6 @@ function(appName) {
 	DBG.println(AjxDebug.DBG1, "Creating app " + appName);
 	var appClass = eval(ZmApp.CLASS[appName]);
 	this._apps[appName] = new appClass(this._appCtxt, this._shell);
-};
-
-// Launching an app causes it to create a view (if necessary) and display it. The view that is created is up to the app.
-// Since most apps schedule an action as part of their launch, a call to this function should not be
-// followed by any code that depends on it (ie, it should be a leaf action).
-ZmZimbraMail.prototype._launchApp =
-function(appName) {
-	if (!this._apps[appName])
-		this._createApp(appName);
-	DBG.println(AjxDebug.DBG1, "Launching app " + appName);
-	this._apps[appName].launch();
 };
 
 ZmZimbraMail.prototype._checkOverviewLayout =
