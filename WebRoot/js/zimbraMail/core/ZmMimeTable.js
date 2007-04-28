@@ -122,26 +122,18 @@ function(type, createIfUndefined) {
 
 ZmMimeTable.isIgnored = 
 function(type) {
-	if (type == ZmMimeTable.MULTI_ALT || 
-		type == ZmMimeTable.MULTI_MIXED || 
-		type == ZmMimeTable.MULTI_RELATED || 
-		type == ZmMimeTable.MULTI_APPLE_DBL ||
-		type == ZmMimeTable.APP_APPLE_DOUBLE ||
-		type == ZmMimeTable.APP_MS_TNEF ||
-		type == ZmMimeTable.APP_MS_TNEF2)
-	{
-		return true;
-	}
-	return false;
+	return (type == ZmMimeTable.MULTI_ALT ||
+			type == ZmMimeTable.MULTI_MIXED ||
+			type == ZmMimeTable.MULTI_RELATED ||
+			type == ZmMimeTable.MULTI_APPLE_DBL ||
+			type == ZmMimeTable.APP_MS_TNEF ||
+			type == ZmMimeTable.APP_MS_TNEF2);
 };
 
 ZmMimeTable.hasHtmlVersion = 
 function(type) {
-	if (ZmMimeTable.isIgnored(type) || 
-		type.match(/^image/) || type.match(/^audio/) || type.match(/^video/)) 
-	{
-		return false;
-	}
-
-	return true;
+	return (!(ZmMimeTable.isIgnored(type) ||
+				type.match(/^image/) ||
+				type.match(/^audio/) ||
+				type.match(/^video/)));
 };
