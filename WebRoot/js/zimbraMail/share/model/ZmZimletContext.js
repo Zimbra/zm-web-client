@@ -104,8 +104,6 @@ function ZmZimletContext(id, zimlet, appCtxt) {
 		this._translateConfig();
 	}
 
-	this._loadStyles();
-
 	this._handleMenuItemSelected = new AjxListener(this, this._handleMenuItemSelected);
 }
 
@@ -197,31 +195,6 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
     }
 
     DBG.println(AjxDebug.DBG2, "Zimlets - init() complete: " + this.name);
-};
-
-ZmZimletContext.prototype._loadStyles = function() {
-    // Safari can choke loading certian CSS files;
-    // might be related to the following issues.
-    // http://bugs.webkit.org/show_bug.cgi?id=8463
-    // http://bugs.webkit.org/show_bug.cgi?id=5476
-    if (!this.includeCSS || AjxEnv.isSafari) {return;}
-	var head = document.getElementsByTagName("head")[0];
-	for (var i = 0; i < this.includeCSS.length; ++i) {
-		var fullurl = this.includeCSS[i];
-		if (!(/^((https?|ftps?):\x2f\x2f|\x2f)/).test(fullurl)) {
-			fullurl = this._url + fullurl;
-		}
-        fullurl = fullurl + "?v=" + cacheKillerVersion
-        var style = document.createElement("link");
-		style.type = "text/css";
-		style.rel = "stylesheet";
-		style.href = fullurl;
-		style.title = this.name + " " + this.includeCSS[i];
-		head.appendChild(style);
-		style.disabled = true;
-		style.disabled = false;
-	}
-	this.includeCSS = null;
 };
 
 ZmZimletContext.prototype.getOrganizer = function() {

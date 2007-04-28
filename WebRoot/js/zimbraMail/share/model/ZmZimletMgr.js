@@ -78,7 +78,7 @@ function(zimletArray, userProps) {
     // load zimlet code/CSS
     var zimletNames = this._getZimletNames(zimletArray);
     this._loadIncludes(zimletArray, zimletNames);
-//    this._loadStyles(zimletArray, zimletNames);
+    this._loadStyles(zimletArray, zimletNames);
 };
 
 ZmZimletMgr.prototype.getPanelZimlets =
