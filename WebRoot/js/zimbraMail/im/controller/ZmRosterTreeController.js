@@ -96,14 +96,14 @@ ZmRosterTreeController.prototype._rosterListChangeListener = function(ev) {
 	var treeView = this.getTreeView(ZmZimbraMail._OVERVIEW_ID);
 	var items= ev.getItems();
 
-	if (!this._zimbraAssistantBuddy) {
-		// create the Zimbra Assistant buddy
-		var list = this._imApp.getRoster().getRosterItemList();
-		var assistant = new ZmAssistantBuddy(list, this._appCtxt);
-		list.addItem(assistant, true, 0);
-		this._zimbraAssistantBuddy = assistant;
-		items.unshift(assistant);
-	}
+// 	if (!this._zimbraAssistantBuddy) {
+// 		// create the Zimbra Assistant buddy
+// 		var list = this._imApp.getRoster().getRosterItemList();
+// 		var assistant = new ZmAssistantBuddy(list, this._appCtxt);
+// 		list.addItem(assistant, true, 0);
+// 		this._zimbraAssistantBuddy = assistant;
+// 		items.unshift(assistant);
+// 	}
 
 	for (var n=0; n < items.length; n++) {
 		var item = items[n];

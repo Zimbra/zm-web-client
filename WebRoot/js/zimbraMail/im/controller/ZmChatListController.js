@@ -212,30 +212,42 @@ function(view) {
 		}
 	}
 
-    // init presence menu
-    var presenceButton = this._toolbar[view].getButton(ZmOperation.IM_PRESENCE_MENU);
-    presenceButton.setImage(ZmOperation.getProp(ZmOperation.IM_PRESENCE_OFFLINE, "image"));
-    presenceButton.setText(ZmMsg[ZmOperation.getProp(ZmOperation.IM_PRESENCE_OFFLINE, "textKey")]);
-    var presenceMenu = presenceButton.getMenu();
-
-   	var list = [ZmOperation.IM_PRESENCE_OFFLINE, ZmOperation.IM_PRESENCE_ONLINE, ZmOperation.IM_PRESENCE_CHAT,
-                ZmOperation.IM_PRESENCE_DND, ZmOperation.IM_PRESENCE_AWAY, ZmOperation.IM_PRESENCE_XA,
-                ZmOperation.IM_PRESENCE_INVISIBLE];
-    var currentShowOp = this._imApp.getRoster().getPresence().getShowOperation();
-    for (var i=0; i < list.length; i++) {
-        var mi = presenceMenu.getItemById(ZmOperation.MENUITEM_ID, list[i]);
-        mi.addSelectionListener(new AjxListener(this, this._presenceItemListener));
-        if (list[i] == currentShowOp) {
-            mi.setChecked(true, true);
-            mi.parent.parent.setText(mi.getText());
-        }
-    }
+	// init presence menu
+	this.updatePresenceMenu(true);
 
 	this._propagateMenuListeners(this._toolbar[view], ZmOperation.NEW_MENU);
 	this._setupViewMenu(view);
 
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
-}
+};
+
+ZmChatListController.prototype.updatePresenceMenu = function(addListeners) {
+	var view = view || this._currentView || this._defaultView();
+	var presenceButton = this._toolbar[view].getButton(ZmOperation.IM_PRESENCE_MENU);
+	var presenceMenu = presenceButton.getMenu();
+
+   	var list = [ ZmOperation.IM_PRESENCE_OFFLINE,
+		     ZmOperation.IM_PRESENCE_ONLINE,
+		     ZmOperation.IM_PRESENCE_CHAT,
+                     ZmOperation.IM_PRESENCE_DND,
+		     ZmOperation.IM_PRESENCE_AWAY,
+		     ZmOperation.IM_PRESENCE_XA,
+                     ZmOperation.IM_PRESENCE_INVISIBLE
+		   ];
+	var presence = this._imApp.getRoster().getPresence();
+	var currentShowOp = presence.getShowOperation();
+	for (var i=0; i < list.length; i++) {
+		var mi = presenceMenu.getItemById(ZmOperation.MENUITEM_ID, list[i]);
+		if (addListeners)
+			mi.addSelectionListener(new AjxListener(this, this._presenceItemListener));
+		if (list[i] == currentShowOp) {
+			mi.setChecked(true, true);
+			// mi.parent.parent.setText(mi.getText());
+		}
+	}
+	presenceButton.setImage(presence.getIcon());
+	presenceButton.setText(presence.getShowText());
+};
 
 ZmChatListController.prototype._initializeActionMenu =
 function(view) {
@@ -343,12 +355,13 @@ function(ev) {
 
 ZmChatListController.prototype._presenceItemListener =
 function(ev) {
-    if (ev.detail != DwtMenuItem.CHECKED) return;
+	if (ev.detail != DwtMenuItem.CHECKED) return;
 	var id = ev.item.getData(ZmOperation.KEY_ID);
 	ev.item.parent.parent.setText(ev.item.getText());
+	ev.item.parent.parent.setImage(ev.item.getImage());
 	var show = ZmRosterPresence.operationToShow(id);
 	this._imApp.getRoster().setPresence(show, 0, null);
-}
+};
 
 
 // Create a folder.
