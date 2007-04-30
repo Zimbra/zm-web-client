@@ -137,7 +137,7 @@ function() {
 							  organizer:			ZmOrganizer.TASKS,
 							  overviewTrees:		[ZmOrganizer.TASKS, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
 							  showZimlets:			true,
-							  assistants:			{"ZmTaskAssistant":"Task"},
+							  assistants:			{"ZmTaskAssistant":"Tasks"},
 							  newItemOps:			newItemOps,
 							  newOrgOps:			newOrgOps,
 							  actionCodes:			actionCodes,
