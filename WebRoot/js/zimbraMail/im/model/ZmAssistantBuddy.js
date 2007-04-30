@@ -34,10 +34,7 @@ function ZmAssistantBuddy(list, appCtxt) {
 	this._msgDialog = this._appCtxt.getMsgDialog();
 	this.shell = appCtxt.getShell(); // FIXME: not sure this is needed, but it's accessed in some Assistant objects
 
-	AjxPackage.require("zimbraMail.share.view.dialog.ZmAssistantDialog");
-	AjxPackage.require("zimbraMail.share.view.assistant.ZmCallAssistant");
-	AjxPackage.require("zimbraMail.share.view.assistant.ZmVersionAssistant");
-	AjxPackage.require("zimbraMail.share.view.assistant.ZmDebugAssistant");
+	AjxDispatcher.require("Assistant");
 };
 
 ZmAssistantBuddy.prototype = new ZmRosterItem;
