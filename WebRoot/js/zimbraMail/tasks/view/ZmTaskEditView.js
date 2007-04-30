@@ -45,8 +45,7 @@ ZmTaskEditView.STATUS_VALUES = [
 	ZmCalItem.STATUS_COMP,
 	ZmCalItem.STATUS_INPR,
 	ZmCalItem.STATUS_WAIT,
-	ZmCalItem.STATUS_DEFR,
-	ZmCalItem.STATUS_CANC ];
+	ZmCalItem.STATUS_DEFR ];
 
 // Message dialog placement
 ZmTaskEditView.DIALOG_X = 50;
