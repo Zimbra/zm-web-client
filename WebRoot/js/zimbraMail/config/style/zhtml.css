@@ -506,9 +506,9 @@ padding: 8px 0px 6px 0px;
 
 }
 
-.StatusInfo     { @WindowOuterContainer@ @ToastBg-info@ }
-.StatusWarning  { @WindowOuterContainer@ @ToastBg-warning@}
-.StatusCritical { @WindowOuterContainer@ @ToastBg-critical@ }
+.StatusInfo     { @WindowOuterContainer@ background-color: lightgreen;}
+.StatusWarning  { @WindowOuterContainer@ background-color: yellow;}
+.StatusCritical { @WindowOuterContainer@ background-color: pink; }
 
 /*
  *   Shortcut key display
