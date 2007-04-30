@@ -95,30 +95,6 @@ function() {
 	return types;
 };
 
-
-// Listeners
-
-ZmVoiceTreeController.prototype._changeListener =
-function(ev, treeView, overviewId) {
-	ZmFolderTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
-
-	if (ev.type != this.type) return;
-
-	var organizers = ev.getDetail("organizers");
-	if (!organizers && ev.source)
-		organizers = [ev.source];
-
-	for (var i = 0; i < organizers.length; i++) {
-		var organizer = organizers[i];
-		var id = organizer.id;
-		var node = treeView.getTreeItemById(id);
-		if (!node) continue;
-
-		var fields = ev.getDetail("fields");
-//TODO: make changes here....
-	}
-};
-
 /*
 * Called when a left click occurs (by the tree view listener).
 *

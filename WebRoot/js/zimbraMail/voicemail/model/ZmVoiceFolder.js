@@ -45,7 +45,6 @@ function ZmVoiceFolder(params) {
 	params.type = ZmOrganizer.VOICE;
 	ZmOrganizer.call(this, params);
 	this.phone = params.phone;
-//TODO: clean up this callType...shouldn't be necessary, when .name field has same thing.	
 	this.callType = params.name; // A constant...ACCOUNT, PLACED, etc.
 	this.view = params.view;
 	this.accordionItemId = params.accordionItemId;
@@ -85,7 +84,7 @@ function() {
 ZmVoiceFolder.prototype.getName =
 function(showUnread, maxLength, noMarkup) {
 	var name;
-	switch (this.name) {
+	switch (this.callType) {
 		case ZmVoiceFolder.ACCOUNT: name = this.phone.getDisplay(); break;
 		case ZmVoiceFolder.PLACED_CALL: name = ZmMsg.placedCalls; break;
 		case ZmVoiceFolder.ANSWERED_CALL: name = ZmMsg.answeredCalls; break;

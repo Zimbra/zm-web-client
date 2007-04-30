@@ -36,9 +36,6 @@ ZmEvent.S_CALL					= "CALL";
 ZmItem.CALL						= ZmEvent.S_CALL;
 ZmOrganizer.VOICE				= ZmEvent.S_VOICEMAIL;
 
-//TODO: Figure out what id to use or should I just use something unique?
-ZmOrganizer.ID_VOICEMAIL		= 8675;
-
 // App-related constants
 ZmApp.VOICE						= "Voice";
 ZmApp.CLASS[ZmApp.VOICE]		= "ZmVoiceApp";
@@ -116,7 +113,7 @@ function() {
 	ZmOrganizer.registerOrg(ZmOrganizer.VOICE,
 							{app:				ZmApp.VOICE,
 							 nameKey:			"voicemailFolder",
-							 defaultFolder:		ZmOrganizer.ID_VOICEMAIL,
+							 defaultFolder:		0,
 							 firstUserId:		256,
 							 orgClass:			"ZmVoiceFolder",
 							 orgPackage:		"VoicemailCore",

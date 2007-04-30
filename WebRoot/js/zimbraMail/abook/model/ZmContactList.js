@@ -597,8 +597,7 @@ function(contact, doAdd) {
 // Strips all non-digit characters from a phone number.
 ZmContactList.prototype._getPhoneDigits =
 function(phone) {
-	var match = phone.match(/\d+/g);
-	return match ? match.join("") : null
+	return phone.replace(/[^\d]/g, '');
 };
 
 // Returns the position at which the given contact should be inserted in this list.

@@ -73,8 +73,7 @@ function(name) {
 
 ZmPhone.calculateName =
 function(display) {
-	var match = display.match(/\d+/g);
-	return match ? match.join("") : "";
+	return display.replace(/[^\d]/g, '');
 };
 
 ZmPhone.prototype.getDisplay = 
