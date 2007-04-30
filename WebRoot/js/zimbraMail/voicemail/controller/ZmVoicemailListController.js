@@ -116,7 +116,7 @@ ZmVoicemailListController.prototype._resetOperations =
 function(parent, num) {
 	ZmVoiceListController.prototype._resetOperations.call(this, parent, num);
 	parent.enable(ZmOperation.CHECK_VOICEMAIL, true);
-	parent.enable(ZmOperation.AUTO_PLAY, this._folder && this._folder.numUnread);
+	parent.enable(ZmOperation.AUTO_PLAY, this._folder && this._folder.numUnread && !DwtSoundPlugin.isScriptingBroken());
 	
 	var hasHeard = false;
 	var hasUnheard = false;

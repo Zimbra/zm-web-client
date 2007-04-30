@@ -231,7 +231,7 @@ function(event) {
 
 ZmSoundPlayer.prototype._pluginChangeListener =
 function(event) {
-	if (!this._timeSlider.isDragging()) {
+	if (this._timeSlider && !this._timeSlider.isDragging()) {
 		if (event.duration != this._timeSlider.getMaximum()) {
 			this._timeSlider.setRange(0, event.duration, event.time);
 		} else if (event.status != DwtSoundPlugin.ERROR) {
@@ -252,7 +252,7 @@ function() {
 	}
 	if (!this._soundPlugin) {
 		var args = {
-			parent: this.shell,
+			parent: this._isScriptable ? this.shell : this,
 			width: 200,
 			height: 16,
 			offscreen: this._isScriptable, 
@@ -261,9 +261,8 @@ function() {
 			volume: DwtSoundPlugin.MAX_VOLUME
 		};
 		this._soundPlugin = DwtSoundPlugin.create(args);
-		if (this._isScriptable) {
-			this._soundPlugin.addChangeListener(this._pluginChangeListenerObj);
-		} else {
+		this._soundPlugin.addChangeListener(this._pluginChangeListenerObj);
+		if (!this._isScriptable) {
 			this._soundPlugin.reparentHtmlElement(this._htmlElId + "_player");
 		}
 	}
