@@ -68,8 +68,16 @@
     <table cellspacing=0 cellpadding=0><tr>
     	<td><div id='${id}_play' class='ZmPlayButton'>Play</div></td>
     	<td><div id='${id}_pause' class='ZmPauseButton'>Pause</div></td>
-    	<td><div id='${id}_status' class='ZmSoundStatus'>Grrrrrrrrr</div></td>
+    	<td><div id='${id}_status' class='ZmSoundStatus'>Time</div></td>
     	<td><div id='${id}_postition' class='DwtPositionSlider'>...Position...</div></td>
+    </tr></table>
+</template>
+
+<template id='ZmSoundPlayerNoScript' class='ZmSoundPlayer ZWidget'>
+    <table cellspacing=0 cellpadding=0><tr>
+    	<td><div id='${id}_play' class='ZmPlayButton'>Play</div></td>
+    	<td><div id='${id}_status' class='ZmSoundStatus'>Time</div></td>
+    	<td id='${id}_player' style='padding-left:6px'></td>
     </tr></table>
 </template>
 

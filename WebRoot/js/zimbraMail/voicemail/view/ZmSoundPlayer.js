@@ -36,6 +36,7 @@ function ZmSoundPlayer(parent, voicemail, className, positionType) {
 	this._timeSlider = null;
 
 	this._pluginMissing = DwtSoundPlugin.isPluginMissing();
+    this._isScriptable = !DwtSoundPlugin.isScriptingBroken();
 	this._createHtml();
 	
 	this._pluginChangeListenerObj = new AjxListener(this, this._pluginChangeListener);
@@ -70,7 +71,7 @@ function() {
 			}
 		    this.notifyListeners(ZmSoundPlayer.HELP_EVENT, this._helpEvent);
 		}
-	} else {
+	} else if (this._isScriptable) {
 		this.setCompact(false);
 		if (this._soundPlugin) {
 			this._soundPlugin.play();
@@ -79,6 +80,8 @@ function() {
 			this._getPlugin();
 		}
 		this._setPlayState(ZmSoundPlayer._PLAYING);
+	} else {
+		this.setCompact(!this._isCompact);
 	}
 };
 
@@ -105,7 +108,7 @@ function() {
 };
 
 /**
- * Sets the compactness pf the player.
+ * Sets the compactness of the player.
  *
  * @param compact if true, then only the play button is displayed
  */
@@ -113,9 +116,23 @@ ZmSoundPlayer.prototype.setCompact =
 function(compact) {
 	if (compact != this._isCompact) {
 		// Set visiblity.
-		this._timeSlider.setVisible(!compact);
-		this._pauseButton.setVisible(!compact);
+		if (this._isScriptable) {
+			this._timeSlider.setVisible(!compact);
+			this._pauseButton.setVisible(!compact);
+		} else {
+			if (compact) {
+				if (this._soundPlugin) {
+					this._soundPlugin.dispose();
+					this._soundPlugin = null;
+				}
+			} else {
+				this._getPlugin();
+			}
+			this._playButton.setToggled(!compact);
+		}
 		this._isCompact = compact;
+
+		// Update status.
 		this._setStatus(0);
 
 		// Fire event.
@@ -123,8 +140,8 @@ function(compact) {
 			if (!this._compactEvent) {
 				this._compactEvent = new DwtEvent(true);
 				this._compactEvent.dwtObj = this;
-				this._compactEvent.isCompact = compact;
 			}
+			this._compactEvent.isCompact = compact;
 		    this.notifyListeners(ZmSoundPlayer.COMPACT_EVENT, this._compactEvent);
 		}
 	}
@@ -181,8 +198,10 @@ function() {
 
 ZmSoundPlayer.prototype._setPlayState =
 function(state) {
-	this._playButton.setToggled(state == ZmSoundPlayer._PLAYING);
-	this._pauseButton.setToggled(state == ZmSoundPlayer._PAUSED);
+	if (this._isScriptable) {
+		this._playButton.setToggled(state == ZmSoundPlayer._PLAYING);
+		this._pauseButton.setToggled(state == ZmSoundPlayer._PAUSED);
+	}
 };
 
 ZmSoundPlayer.prototype._setStatus =
@@ -191,7 +210,7 @@ function(time) {
 		this._durationStr = AjxDateUtil.computeDuration(this.voicemail.duration, true);
 	}
 	var status;
-	if (this._isCompact) {
+	if (this._isCompact || !this._isScriptable) {
 		status = this._durationStr;
 	} else {
 		status = AjxDateUtil.computeDuration(time, true) + " / " + this._durationStr;
@@ -227,7 +246,7 @@ function(event) {
 };
 
 ZmSoundPlayer.prototype._getPlugin =
-function(url) {
+function() {
 	if (this._pluginMissing) {
 		return;
 	}
@@ -236,13 +255,17 @@ function(url) {
 			parent: this.shell,
 			width: 200,
 			height: 16,
-			offscreen: true, 
+			offscreen: this._isScriptable, 
 			positionType: DwtControl.RELATIVE_STYLE,
 			url: this.voicemail.soundUrl,
 			volume: DwtSoundPlugin.MAX_VOLUME
 		};
 		this._soundPlugin = DwtSoundPlugin.create(args);
-		this._soundPlugin.addChangeListener(this._pluginChangeListenerObj);
+		if (this._isScriptable) {
+			this._soundPlugin.addChangeListener(this._pluginChangeListenerObj);
+		} else {
+			this._soundPlugin.reparentHtmlElement(this._htmlElId + "_player");
+		}
 	}
 	return this._soundPlugin;
 };
@@ -251,25 +274,32 @@ ZmSoundPlayer.prototype._createHtml =
 function() {
 	var element = this.getHtmlElement();
     var id = this._htmlElId;
-    element.innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmSoundPlayer", id);
+    var template = this._isScriptable ? 
+    	"zimbraMail.voicemail.templates.Voicemail#ZmSoundPlayer" : 
+    	"zimbraMail.voicemail.templates.Voicemail#ZmSoundPlayerNoScript";
+
+    element.innerHTML = AjxTemplate.expand(template, id);
 	this._playButton = new DwtButton(this);
 	this._playButton.replaceElement(id + "_play");
 	this._playButton.setImage("Play");
 	this._playButton.setToolTipContent(ZmMsg.play);
 	this._playButton.addSelectionListener(new AjxListener(this, this.play));
 
-	this._pauseButton = new DwtButton(this);
-	this._pauseButton.replaceElement(id + "_pause");
-	this._pauseButton.setImage("Pause");
-	this._pauseButton.setToolTipContent(ZmMsg.pause);
-	this._pauseButton.addSelectionListener(new AjxListener(this, this.pause));
-
-	this._statusId = id + "_status";
-
-	this._timeSlider = new DwtSlider(this, null, null, Dwt.RELATIVE_STYLE);
-	this._timeSlider.replaceElement(id + "_postition");
-	this._timeSlider.addChangeListener(new AjxListener(this, this._timeSliderListener));
-
+    if (this._isScriptable) {
+		this._pauseButton = new DwtButton(this);
+		this._pauseButton.replaceElement(id + "_pause");
+		this._pauseButton.setImage("Pause");
+		this._pauseButton.setToolTipContent(ZmMsg.pause);
+		this._pauseButton.addSelectionListener(new AjxListener(this, this.pause));
+	
+		this._statusId = id + "_status";
+	
+		this._timeSlider = new DwtSlider(this, null, null, Dwt.RELATIVE_STYLE);
+		this._timeSlider.replaceElement(id + "_postition");
+		this._timeSlider.addChangeListener(new AjxListener(this, this._timeSliderListener));
+    } else {
+		this._statusId = id + "_status";
+    }
 	this.setCompact(true);
 };
 

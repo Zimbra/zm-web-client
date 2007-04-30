@@ -275,7 +275,8 @@ function(ev) {
 	if (!ev.isCompact) {
 		this.stopPlaying(true);
 		this._playing = ev.dwtObj.voicemail;
-		this._activePlayer;
+	} else if (this._playing && (ev.dwtObj == this._players[this._playing.id])){
+		this._playing = null;
 	}
 };
 
