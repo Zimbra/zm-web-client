@@ -940,7 +940,7 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "'></td><td class='LabelColName'>";
 	htmlArr[idx++] = ZmMsg.sentBy;
 	htmlArr[idx++] = ": </td></tr></table></td>";
-	htmlArr[idx++] = "<td class='LabelColValue' style='vertical-align:bottom'>";
+	htmlArr[idx++] = "<td class='LabelColValue'>";
 	if (addr instanceof AjxEmailAddress) {
 		addr = addr.address || (AjxStringUtil.htmlEncode(addr.name));
 	}
