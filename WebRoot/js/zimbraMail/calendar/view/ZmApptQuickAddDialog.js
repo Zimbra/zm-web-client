@@ -227,7 +227,7 @@ function() {
 	html[i++] = ":</td><td colspan=2>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
 	html[i++] = "<td>";
-	html[i++] = "<input style='height:22px;' type='text' autocomplete='off' size=11 maxlength=10 id='";
+	html[i++] = "<input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='";
 	html[i++] = this._startDateFieldId;
 	html[i++] = "'></td><td id='";
 	html[i++] = this._startMiniCalBtnId;
@@ -240,7 +240,7 @@ function() {
 	html[i++] = ":</td><td colspan=2>";
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0><tr>";
 	html[i++] = "<td>";
-	html[i++] = "<input style='height:22px;' type='text' autocomplete='off' size=11 maxlength=10 id='";
+	html[i++] = "<input style='height:22px;' type='text' autocomplete='off' size=8 maxlength=10 id='";
 	html[i++] = this._endDateFieldId;
 	html[i++] = "'></td><td id='";
 	html[i++] = this._endMiniCalBtnId;
