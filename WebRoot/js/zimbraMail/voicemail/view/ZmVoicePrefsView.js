@@ -471,7 +471,7 @@ function() {
 ZmSelectiveCallForwardingUI.prototype._addListener =
 function(ev) {
 	var row = this._getTable().insertRow(-1);
-	row.className = (row.rowIndex % 2) ? "Line1" : "Line2"
+	row.className = (row.rowIndex % 2) ? DwtListView.ROW_CLASS_ODD : DwtListView.ROW_CLASS_EVEN;
 	var cell = row.insertCell(-1);
 	var args = { text: this._addInput.getValue(), linkId: Dwt.getNextId() };
 	cell.innerHTML = AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmVoiceSelectiveCallForwardingTableRow", args);
@@ -494,13 +494,13 @@ function(ev) {
 	while (node) {
 		if (node.tagName.toUpperCase() == "TR") {
 			var className = node.className;
-			if (className == "Line1" || className == "Line2") {
+			if (className == DwtListView.ROW_CLASS_ODD || className == DwtListView.ROW_CLASS_EVEN) {
 				var rowIndex = node.rowIndex;
 				var table = this._getTable();
 				table.deleteRow(rowIndex);
 				var rows = table.rows;
 				for (var i = rowIndex || 0, count = rows.length; i < count; i++) {
-					rows[i].className = (i % 2) ? "Line1" : "Line2";
+					rows[i].className = (i % 2) ? DwtListView.ROW_CLASS_ODD : DwtListView.ROW_CLASS_EVEN;
 				}
 				this._tableIsDirty = true;
 				break;

@@ -46,7 +46,7 @@ function ZmListView(parent, className, posStyle, view, type, controller, headerL
 	this._handleEventType = {};
 	this._handleEventType[this.type] = true;
 	this._disallowSelection = {};
-	this._disallowSelection[ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]] = true;
+	this._disallowSelection[ZmItem.F_FLAG] = true;
 }
 
 ZmListView.prototype = new DwtListView;
@@ -57,47 +57,9 @@ function() {
 	return "ZmListView";
 }
 
-ZmListView.FIELD_PREFIX = {};
-ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_ROW]		= "a";
-ZmListView.FIELD_PREFIX[ZmItem.F_ICON]			= "b";
-ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]			= "c";
-ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]	= "d";
-ZmListView.FIELD_PREFIX[ZmItem.F_TAG]			= "e";
-ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]	= "f";
-ZmListView.FIELD_PREFIX[ZmItem.F_FROM]			= "g";
-ZmListView.FIELD_PREFIX[ZmItem.F_FRAGMENT]		= "h";
-ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]		= "i";
-ZmListView.FIELD_PREFIX[ZmItem.F_COUNT]			= "j";
-ZmListView.FIELD_PREFIX[ZmItem.F_DATE]			= "k";
-ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]		= "l";
-ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER]		= "m";
-ZmListView.FIELD_PREFIX[ZmItem.F_COMPANY]		= "n";
-ZmListView.FIELD_PREFIX[ZmItem.F_EMAIL]			= "o";
-ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]		= "p";
-ZmListView.FIELD_PREFIX[ZmItem.F_TAG_CELL]		= "q";
-ZmListView.FIELD_PREFIX[ZmItem.F_SIZE]			= "r";
-ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY]		= "s";
-ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]		= "t";
-ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE]		= "u";
-ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED]		= "v";
-ZmListView.FIELD_PREFIX[ZmItem.F_EXPAND]		= "w";
-
-ZmListView.PREFIX_FIELD = {};
-(function() {
-	for (var i in ZmListView.FIELD_PREFIX) {
-		ZmListView.PREFIX_FIELD[ZmListView.FIELD_PREFIX[i]] = i;
-	}
-})();
-
 // column widths
 ZmListView.COL_WIDTH_ICON 					= 19;
 ZmListView.COL_WIDTH_DATE 					= 75;
-
-
-ZmListView.PREFIX_MAP = {};
-for (var field in ZmListView.FIELD_PREFIX) {
-	ZmListView.PREFIX_MAP[ZmListView.FIELD_PREFIX[field]] = field;
-};
 
 ZmListView.ITEM_FLAG_CLICKED = DwtListView._LAST_REASON + 1;
 
@@ -148,12 +110,14 @@ function(ev) {
 			var on = item[ZmItem.FLAG_PROP[flag]];
 			if (flag == ZmItem.FLAG_FLAGGED) {
 				var img = document.getElementById(this._getFieldId(item, ZmItem.F_FLAG));
-				if (img && img.parentNode)
+				if (img && img.parentNode) {
 					AjxImg.setImage(img.parentNode, on ? "FlagRed" : "Blank_16");
+				}
 			} else if (flag == ZmItem.FLAG_ATTACH) {
 				var img = document.getElementById(this._getFieldId(item, ZmItem.F_ATTACHMENT));
-				if (img && img.parentNode)
+				if (img && img.parentNode) {
 					AjxImg.setImage(img.parentNode, on ? "Attachment" : "Blank_16");
+				}
 			}
 		}
 	}
@@ -226,67 +190,20 @@ function() {
 
 // Common routines for createItemHtml()
 
-// The enclosing div and its styles
-ZmListView.prototype._getDiv =
-function(item, isDndIcon, isMatched) {
-	var	div = document.createElement("div");
-
-	var base = "Row";
-	div[DwtListView._KBFOCUS_CLASS] = "Row-Focus";
-	div[DwtListView._STYLE_CLASS] = base;
-	div[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
-	if (isDndIcon && isMatched) {
-		var one = [base, DwtCssStyle.MATCHED, DwtCssStyle.DND].join("-");
-		var two = [base, DwtCssStyle.DND].join("-");
-		div[DwtListView._STYLE_CLASS] = [one, two].join(" ");							// Row-matched-dnd Row-dnd
-	} else if (isMatched) {
-		div[DwtListView._STYLE_CLASS] = [base, DwtCssStyle.MATCHED].join("-");		// Row-matched
-	} else if (isDndIcon) {
-		div[DwtListView._STYLE_CLASS] = [base, DwtCssStyle.DND].join("-");			// Row-dnd
-		// bug fix #3654 - yuck
-		if (AjxEnv.isMozilla) {
-			div.style.overflow = "visible";
-		}
-	}
-	div.className = div[DwtListView._STYLE_CLASS];
-
-	if (isDndIcon) {
-		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
-	}
-
-	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
-
-	return div;
-}
-
-// The table that holds the items
-ZmListView.prototype._getTable =
-function(htmlArr, idx, isDndIcon) {
-	htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=";
-	htmlArr[idx++] = !isDndIcon ? "100%>" : (this.getSize().x + ">");
-	return idx;
-}
-
-// A table row for one item
-ZmListView.prototype._getRow =
-function(htmlArr, idx, item, className) {
-	htmlArr[idx++] = ["<tr id='", this._getFieldId(item, ZmItem.F_ITEM_ROW), "'"].join("");
-	htmlArr[idx++] = className ? ([" class='", className, "'>"].join("")) : ">";
-	return idx;
-}
-
-ZmListView.prototype._getFieldWidth =
-function(colIdx) {
-	// IE/Safari do not obey box model properly so we over compensate :(
-	return AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[colIdx]._width + 4): this._headerList[colIdx]._width;
+ZmListView.prototype._getRowId =
+function(item) {
+	return this._getFieldId(item, ZmItem.F_ITEM_ROW);
 };
 
 // A table cell for one field of the item
 ZmListView.prototype._getField =
-function(htmlArr, idx, item, field, colIdx, now) {
-	var fieldId = this._getFieldId(item, field);
-	var width = this._getFieldWidth(colIdx);
-	if (field == ZmItem.F_ITEM_TYPE) {
+function(htmlArr, idx, item, field, colIdx, params) {
+
+	params = params || {};
+	var fieldId = params.fieldId || this._getFieldId(item, field);
+	var width = params.width || this._getFieldWidth(colIdx);
+
+	if (field == ZmItem.F_TYPE) {
 		htmlArr[idx++] = "<td style='width:";
 		htmlArr[idx++] = width;
 		htmlArr[idx++] = "' class='Icon'>";
@@ -300,8 +217,7 @@ function(htmlArr, idx, item, field, colIdx, now) {
 		htmlArr[idx++] = AjxImg.getImageHtml(flagImageInfo, null, ["id='", fieldId, "'"].join(""));
 		htmlArr[idx++] = "</td>";
 	} else if (field == ZmItem.F_TAG) {
-		if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-			return idx;
+		if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) { return idx; }
 		htmlArr[idx++] = "<td width=";
 		htmlArr[idx++] = width;
 		htmlArr[idx++] = " class='Tag' id='";
@@ -322,10 +238,8 @@ function(htmlArr, idx, item, field, colIdx, now) {
 		htmlArr[idx++] = "' width=";
 		htmlArr[idx++] = width;
 		htmlArr[idx++] = ">";
-		htmlArr[idx++] = AjxDateUtil.computeDateStr(now, item.date);
+		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now || new Date(), item.date);
 		htmlArr[idx++] = "</td>";
-	} else {
-		return null;
 	}
 	
 	return idx;
@@ -343,29 +257,28 @@ function(item, id) {
 ZmListView.prototype._setTagImg =
 function(item) {
 	var tagCell = document.getElementById(this._getFieldId(item, ZmItem.F_TAG_CELL));
-	if (!tagCell) return;
+	if (!tagCell) { return; }
 	tagCell.innerHTML = this._getTagImgHtml(item, this._getFieldId(item, ZmItem.F_TAG));
 }
 
 /**
  * Parse the DOM ID to figure out what got clicked. Most IDs will look something like 
- * "V_CONVLIST_a551".
- * Item IDs will look like "V_CONVLIST_551". Participant IDs will look like
- * "V_CONVLIST_a551_0".
+ * "V_CLV_fg551".
+ * Item IDs will look like "V_CLV_551". Participant IDs will look like
+ * "V_CLV_pa551_0".
  *
- *     V_CONVLIST	- conv list view (number is from view constant in ZmController)
+ *     V_CLV		- conv list view (string of caps is from view constant in ZmController)
  *     _   			- separator
- *     a   			- flag field (see constants above)
+ *     fg  			- flag field (two small letters - see constants ZmItem.F_*)
  *     551 			- item ID
  *     _   			- separator
  *     0   			- first participant
- * 
  */
 ZmListView.prototype._parseId =
 function(id) {
-	var m = id.match(/^V_(\w+)_([a-z]?)((DWT)?-?\d+)_?(\d*)$/);
+	var m = id.match(/^V_(\w+)_([a-z]*)((DWT)?-?\d+)_?(\d*)$/);
 	if (m) {
-		return {view: m[1], field: m[2], item: m[3], participant: m[5]};
+		return {view:m[1], field:m[2], item:m[3], participant:m[5]};
 	} else {
 		return null;
 	}
@@ -381,24 +294,24 @@ function(ev, div) {
 	var type = Dwt.getAttr(div, "_type");
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
 		var itemIdx = Dwt.getAttr(div, "_itemIndex");
-		var id = this._headerList[itemIdx]._id;
-		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) == 0) {
+		var field = DwtListHeaderItem.getHeaderField(this._headerList[itemIdx]._id);
+		if (field == ZmItem.F_FLAG) {
 			this.setToolTipContent(ZmMsg.flag);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) == 0) {
+		} else if (field == ZmItem.F_TAG) {
 			this.setToolTipContent(ZmMsg.tag);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
+		} else if (field == ZmItem.F_ATTACHMENT) {
 			this.setToolTipContent(ZmMsg.attachment);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
+		} else if (field == ZmItem.F_SUBJECT) {
 			if (this._headerList[itemIdx]._sortable)
 				this.setToolTipContent(ZmMsg.sortBySubject);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT]) == 0) {
+		} else if (field == ZmItem.F_COUNT) {
 			this.setToolTipContent(ZmMsg.convCountTooltip);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
+		} else if (field == ZmItem.F_DATE) {
 			if (this._headerList[itemIdx]._sortable)
 				this.setToolTipContent(ZmMsg.sortByReceived);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) == 0) {
+		} else if (field == ZmItem.F_STATUS) {
 			this.setToolTipContent(ZmMsg.messageStatus);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) == 0) {
+		} else if (field == ZmItem.F_FROM) {
 			this.setToolTipContent(ZmMsg.sortByFrom);
 		} else {
 			this.setToolTipContent(null);
@@ -407,37 +320,37 @@ function(ev, div) {
 		var m = this._parseId(id);
 		if (m && m.field) {
 			var item = this.getItemFromElement(div);
-			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
+			if (m.field == ZmItem.F_FLAG) {
 				if (!item.isFlagged)
 					ev.target.className = "ImgFlagRedDis";
-			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) {
+			} else if (m.field == ZmItem.F_TAG) {
 				this._setTagToolTip(div);
-			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) {
+			} else if (m.field == ZmItem.F_STATUS) {
 				this._setStatusToolTip(item);
-			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) {
+			} else if (m.field == ZmItem.F_PARTICIPANT) {
 				if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && item instanceof ZmContact) {	
 					var toolTip = item.getToolTip(item.getAttr(ZmContact.F_email));
 					this.setToolTipContent(toolTip);
 				} else if (item.participants) {
 				    this._setParticipantToolTip(item.participants.get(m.participant));
 				}
-			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) {
+			} else if (m.field == ZmItem.F_FROM) {
 				this._setParticipantToolTip(item.getAddress(AjxEmailAddress.FROM));
-			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) {
+			} else if (m.field == ZmItem.F_SUBJECT) {
 				if (this._appCtxt.get(ZmSetting.MAIL_ENABLED) && item instanceof ZmMailMsg && item.isInvite() && item.needsRsvp()) {
 					this.setToolTipContent(item.getInvite().getToolTip());
 				} else {
 				    var frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
 					this.setToolTipContent(AjxStringUtil.htmlEncode(frag));
 				}
-			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) {
+			} else if (m.field == ZmItem.F_DATE) {
 				this._setDateToolTip(item, div);
-			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER]) {
+			} else if (m.field == ZmItem.F_FOLDER) {
 				var folder = this._appCtxt.getById(item.folderId);
 				if (folder && folder.parent) {
 					this.setToolTipContent(folder.getPath());
 				}
-			} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE]) {
+			} else if (m.field == ZmItem.F_TYPE) {
 				this.setToolTipContent(ZmMsg[ZmItem.MSG_KEY[item.type]]);
 			} else {
 				this.setToolTipContent(null);
@@ -461,7 +374,7 @@ function(ev, div) {
 		var m = this._parseId(id);
 		if (m && m.field) {
 			var item = this.getItemFromElement(div);
-			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
+			if (m.field == ZmItem.F_FLAG) {
 				if (!item.isFlagged)
 					ev.target.className = "ImgBlank_16";
 			}
@@ -477,7 +390,7 @@ function(ev, div) {
 	if (!id) return true;
 
 	var m = this._parseId(id);
-	if (m && (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG])) {
+	if (m && (m.field == ZmItem.F_FLAG)) {
 		return false;
 	}
 	return true;
@@ -500,7 +413,7 @@ function (ev, listEv, clickedEl) {
 	} else if (ev.button == DwtMouseEvent.RIGHT) {
 		this._actionEv.field = m ? m.field : null;
 		if (m && m.field) {
-			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) {
+			if (m.field == ZmItem.F_PARTICIPANT) {
 				var item = this.getItemFromElement(clickedEl);
 				this._actionEv.detail = item.participants ? item.participants.get(m.participant) : null;
 			}
@@ -657,88 +570,6 @@ function(columnItem, bSortAsc) {
 	if (sortBy) {
 		this._sortByString = sortBy;
 		this._appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
-	}
-}
-
-ZmListView.prototype._getFieldId =
-function(item, field) {
-	return this._getFieldIdFromPrefix(item, ZmListView.FIELD_PREFIX[field]);
-}
-
-ZmListView.prototype._getFieldIdFromPrefix =
-function(item, prefix) {
-	return [this._getViewPrefix(), prefix, item.id].join("");
-}
-
-ZmListView.prototype._getDnDIcon =
-function(dragOp) {
-	var dndSelection = this.getDnDSelection();
-	if (dndSelection == null)
-		return null;
-
-	var icon;
-	var div;
-	var roundPlusStyle;
-	this._dndImg = null;
-
-	if (!(dndSelection instanceof Array) || dndSelection.length == 1) {
-		var item = null;
-		if (dndSelection instanceof Array) {
-			item = dndSelection[0];
-		} else {
-			item = dndSelection;
-		}
-		icon = this._createItemHtml(item, new Date(), true);
-		icon._origClassName = icon.className;
-
-		roundPlusStyle = "position:absolute; top:18; left:-11;visibility:hidden";
-	} else {
-		// Create multi one
-		icon = document.createElement("div");
-		icon.className = "DndIcon";
-		Dwt.setPosition(icon, Dwt.ABSOLUTE_STYLE); 
-		
-		AjxImg.setImage(icon, "DndMultiYes_48");
-		this._dndImg = icon;
-								
-		div = document.createElement("div");
-		Dwt.setPosition(div, Dwt.ABSOLUTE_STYLE);
-		div.innerHTML = "<table><tr><td class='DndIconTextLabel'>" 
-						+ dndSelection.length + "</td></tr></table>";
-		icon.appendChild(div);
-
-		roundPlusStyle = "position:absolute;top:30;left:0;visibility:hidden";
-
-		// The size of the Icon is envelopeImg.width + sealImg.width - 20, ditto for height
-		Dwt.setBounds(icon, Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE, 43 + 32 - 16, 36 + 32 - 20);
-	}
-	
-	var imgHtml = AjxImg.getImageHtml("RoundPlus", roundPlusStyle);
-	icon.appendChild(Dwt.parseHtmlFragment(imgHtml));
-
-	this.shell.getHtmlElement().appendChild(icon);
-	
-	// If we have multiple items selected, then we have our cool little dnd icon,
-	// so position the text in the middle of the seal
-	if (div) {
-		var sz = Dwt.getSize(div);
-		Dwt.setLocation(div, 16 + (32 - sz.x) / 2, 19 + (32 - sz.y) / 2);
-	}
-	
-	Dwt.setZIndex(icon, Dwt.Z_DND);
-	return icon;
-}
-
-ZmListView.prototype._setDnDIconState =
-function(dropAllowed) {
-	// If we are moving multiple items then set borders & icons, else delegate up
-	// to DwtControl.prototype._setDnDIconState()
-	if (this._dndImg)
-		AjxImg.setImage(this._dndImg, dropAllowed ? "DndMultiYes_48" : "DndMultiNo_48");
-	else {
-		this._dndIcon.className = (dropAllowed)
-			? this._dndIcon._origClassName + " DropAllowed"
-			: this._dndIcon._origClassName + " DropNotAllowed";
 	}
 }
 

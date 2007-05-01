@@ -55,7 +55,7 @@ function ZmDoublePaneController(appCtxt, container, mailApp) {
 ZmDoublePaneController.prototype = new ZmMailListController;
 ZmDoublePaneController.prototype.constructor = ZmDoublePaneController;
 
-ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY = 500;
+ZmDoublePaneController.LIST_SELECTION_SHORTCUT_DELAY = 300;
 
 // Public methods
 

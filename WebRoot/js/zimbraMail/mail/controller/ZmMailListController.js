@@ -463,12 +463,12 @@ function(ev) {
 	}
 	
 	// bug fix #3602
-	var address = ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT] 
+	var address = (ev.field == ZmItem.F_PARTICIPANT) 
 		? ev.detail 
 		: ((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null); // yuck
 	if (address && items.length == 1 && 
-		(ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT] || 
-		 ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM])) 
+		(ev.field == ZmItem.F_PARTICIPANT || 
+		 ev.field == ZmItem.F_FROM)) 
 	{
 		// show participant menu
 		this._setTagMenu(this._participantActionMenu);

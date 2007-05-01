@@ -77,118 +77,87 @@ ZmFileListView.prototype._getHeaderList = function(parent) {
 	var headers = [];
 	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		headers.push(
-			new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "Tag", ZmFileListView.COLWIDTH_ICON, null, null, true, ZmMsg.tag)
+			new DwtListHeaderItem(ZmItem.F_TAG, null, "Tag", ZmFileListView.COLWIDTH_ICON, null, null, true, ZmMsg.tag)
 		);
 	}
 	headers.push(
 		// new DwtListHeaderItem(id, label, icon, width, sortable, resizeable, visible, tt)
-		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ICON], null, "Globe", ZmFileListView.COLWIDTH_ICON, null, null, true, null),
-		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg._name, null, ZmFileListView.COLWIDTH_NAME, null, true, true, null),
-		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ITEM_TYPE], ZmMsg.type, null, ZmFileListView.COLWIDTH_TYPE, null, null, true, null),
-		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE], ZmMsg.size, null, ZmFileListView.COLWIDTH_SIZE, null, null, true, null),
-		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.date, null, ZmFileListView.COLWIDTH_DATE, null, null, true, null),
-		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], ZmMsg.owner, null, ZmFileListView.COLWIDTH_OWNER, null, null, true, null),
-		new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER], ZmMsg.folder, null, ZmFileListView.COLWIDTH_FOLDER, null, null, true, null)
+		new DwtListHeaderItem(ZmItem.F_TYPE, null, "Globe", ZmFileListView.COLWIDTH_ICON, null, null, true, null),
+		new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg._name, null, ZmFileListView.COLWIDTH_NAME, null, true, true, null),
+		new DwtListHeaderItem(ZmItem.F_FILE_TYPE, ZmMsg.type, null, ZmFileListView.COLWIDTH_TYPE, null, null, true, null),
+		new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmFileListView.COLWIDTH_SIZE, null, null, true, null),
+		new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.date, null, ZmFileListView.COLWIDTH_DATE, null, null, true, null),
+		new DwtListHeaderItem(ZmItem.F_PARTICIPANT, ZmMsg.owner, null, ZmFileListView.COLWIDTH_OWNER, null, null, true, null),
+		new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmFileListView.COLWIDTH_FOLDER, null, null, true, null)
 	);
 	return headers;
 };
 
-ZmFileListView.prototype._createItemHtml =
-function(item, now, isDndIcon) {
-	var isMatched = false; // ???
-	var	div = this._getDiv(item, isDndIcon, isMatched);
-
-	var htmlArr = [];
-	var idx = 0;
-
-	// Table
-	idx = this._getTable(htmlArr, idx, isDndIcon);
-
-	// Row
-	var className = null;
-	idx = this._getRow(htmlArr, idx, item, className);
-	for (var colIdx = 0; colIdx < this._headerList.length; colIdx++) {
-		var header = this._headerList[colIdx];
-		if (!header._visible)
-			continue;
-
-		var field = ZmListView.PREFIX_MAP[header._id.substr(0,1)];
-		var fieldId = this._getFieldId(item, field);
-		var width = this._getFieldWidth(colIdx);
-
-		if (field == ZmItem.F_SUBJECT) {
-			htmlArr[idx++] = "<td id='" + fieldId + "'";
-			htmlArr[idx++] = " width=" + width + ">";
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
-			htmlArr[idx++] = "</td>";
+ZmFileListView.prototype._getField =
+function(htmlArr, idx, item, field, colIdx, params) {
+	if (field == ZmItem.F_SUBJECT) {
+		htmlArr[idx++] = "<td id='" + params.fieldId + "'";
+		htmlArr[idx++] = " width=" + params.width + ">";
+		htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
+		htmlArr[idx++] = "</td>";
+	} else if (field == ZmItem.F_SIZE) {
+		htmlArr[idx++] = "<td id='" + params.fieldId + "'";
+		htmlArr[idx++] = " width=" + params.width + " align=right>";
+		htmlArr[idx++] = AjxUtil.formatSize(item.size);
+		htmlArr[idx++] = "</td>";
+	} else if (field == ZmItem.F_FILE_TYPE) {
+		var desc = (item instanceof ZmPage) ? ZmMsg.page : null;
+		if (!desc) {
+			var mimeInfo = item.ct ? ZmMimeTable.getInfo(item.ct) : null;
+			desc = mimeInfo ? mimeInfo.desc : "&nbsp;";
 		}
-		else if (field == ZmItem.F_SIZE) {
-			htmlArr[idx++] = "<td id='" + fieldId + "'";
-			htmlArr[idx++] = " width=" + width + " align=right>";
-			htmlArr[idx++] = AjxUtil.formatSize(item.size);
-			htmlArr[idx++] = "</td>";
+		htmlArr[idx++] = "<td id='" + params.fieldId + "'";
+		htmlArr[idx++] = " width=" + params.width + ">";
+		htmlArr[idx++] = desc;
+		htmlArr[idx++] = "</td>";
+	} else if (field == ZmItem.F_TYPE) {
+		var icon = (item instanceof ZmPage) ? "Page" : null;
+		if (!icon) {
+			var contentType = item.contentType;
+			var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
+			icon = mimeInfo ? mimeInfo.image : "UnknownDoc";
 		}
-		else if (field == ZmItem.F_ITEM_TYPE) {
-			var desc = item instanceof ZmPage ? ZmMsg.page : null;
-			if (!desc) {
-				var mimeInfo = item.ct ? ZmMimeTable.getInfo(item.ct) : null;
-				desc = mimeInfo ? mimeInfo.desc : "&nbsp;";
+		htmlArr[idx++] = "<td id=" + params.fieldId;
+		htmlArr[idx++] = " width=" + params.width + " align=middle>";
+		htmlArr[idx++] = "<div class='Img"+icon+"'></div>";
+		htmlArr[idx++] = "</td>";
+	} else if (field == ZmItem.F_PARTICIPANT) {
+		var creator = item.creator.split("@");
+		var cname = creator[0];
+		var uname = this._appCtxt.get(ZmSetting.USERNAME);
+		if (uname) {
+			var user = uname.split("@");
+			if (creator[1] != user[1]) {
+				cname = creator.join("@");
 			}
-			htmlArr[idx++] = "<td id='" + fieldId + "'";
-			htmlArr[idx++] = " width=" + width + ">";
-			htmlArr[idx++] = desc;
-			htmlArr[idx++] = "</td>";
 		}
-		else if (field == ZmItem.F_ICON) {
-			var icon = item instanceof ZmPage ? "Page" : null;
-			if (!icon) {
-				var contentType = item.contentType;
-				var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
-				icon = mimeInfo ? mimeInfo.image : "UnknownDoc";
-			}
-			htmlArr[idx++] = "<td id=" + fieldId;
-			htmlArr[idx++] = " width=" + width + " align=middle>";
-			htmlArr[idx++] = "<div class='Img"+icon+"'></div>";
-			htmlArr[idx++] = "</td>";
+		htmlArr[idx++] = "<td id='" + params.fieldId + "'";
+		htmlArr[idx++] = " width=" + params.width + ">";
+		htmlArr[idx++] = "<span style='white-space: nowrap'>";
+		htmlArr[idx++] = cname;
+		htmlArr[idx++] = "</span>";
+		htmlArr[idx++] = "</td>";
+	} else if (field == ZmItem.F_FOLDER) {
+		var notebook = this._appCtxt.getById(item.folderId);
+		var path = notebook ? notebook.getPath() : item.folderId;
+		htmlArr[idx++] = "<td id='" + params.fieldId + "'";
+		htmlArr[idx++] = " width=" + params.width + ">";
+		htmlArr[idx++] = path;
+		htmlArr[idx++] = "</td>";
+	} else {
+		if (field == ZmItem.F_DATE) {
+			item = AjxUtil.createProxy(item);
+			item.date = item.modifyDate;
 		}
-		else if (field == ZmItem.F_PARTICIPANT) {
-			var creator = item.creator.split("@");
-			var cname = creator[0];
-			var uname = this._appCtxt.get(ZmSetting.USERNAME);
-			if (uname) {
-				var user = uname.split("@");
-				if (creator[1] != user[1]) {
-					cname = creator.join("@");
-				}
-			}
-			htmlArr[idx++] = "<td id='" + fieldId + "'";
-			htmlArr[idx++] = " width=" + width + ">";
-			htmlArr[idx++] = "<span style='white-space: nowrap'>";
-			htmlArr[idx++] = cname;
-			htmlArr[idx++] = "</span>";
-			htmlArr[idx++] = "</td>";
-		}
-		else if (field == ZmItem.F_FOLDER) {
-			var notebook = this._appCtxt.getById(item.folderId);
-			var path = notebook ? notebook.getPath() : item.folderId;
-			htmlArr[idx++] = "<td id='" + fieldId + "'";
-			htmlArr[idx++] = " width=" + width + ">";
-			htmlArr[idx++] = path;
-			htmlArr[idx++] = "</td>";
-		}
-		else {
-			if (field == ZmItem.F_DATE) {
-				item = AjxUtil.createProxy(item);
-				item.date = item.modifyDate;
-			}
-			idx = this._getField(htmlArr, idx, item, field, colIdx, now);
-		}
+		idx = ZmListView.prototype._getField.apply(this, arguments);
 	}
-
-	htmlArr[idx++] = "</tr></table>";
-
-	div.innerHTML = htmlArr.join("");
-	return div;
+	
+	return idx;
 };
 
 // listeners

@@ -107,43 +107,42 @@ function(data, type) {
 };
 
 ZmContactCardsView.prototype._createItemHtml =
-function(contact, now, isDndIcon, getHtml) {
+function(contact, params) {
+
 	var html = [];
 	var idx = 0;
 	var div = null;
-
-	if (getHtml) {
-		html[idx++] = "<div name='";
-		html[idx++] = ZmContactCardsView.CARD_NAME;
-		html[idx++] = "' class='ZmContactCard' ";
-		html[idx++] = DwtListView._STYLE_CLASS;
-		html[idx++] = "='ZmContactCard' ";
-		html[idx++] = DwtListView._SELECTED_STYLE_CLASS;
-		html[idx++] = "='ZmContactCard-";
-		html[idx++] = DwtCssStyle.SELECTED;
-		// manually associate item with element :(
-		html[idx++] = "' ";
-		html[idx++] = DwtListView._KBFOCUS_CLASS;
-		html[idx++] = "='ZmContactCard-focused' id='";
-		html[idx++] = this._getItemId(contact);
-		html[idx++] = "' _itemIndex='";
-		html[idx++] = AjxCore.assignId(contact);
-		html[idx++] = "' _type='";
-		html[idx++] = DwtListView.TYPE_LIST_ITEM;
-		html[idx++] = "' style='width:";
-		html[idx++] = this._cardWidth;
-		html[idx++] = "'>";
+	
+	var base = "ZmContactCard";
+	if (params.getHtml) {
+		var attrs = {};
+		attrs.name = ZmContactCardsView.CARD_NAME;
+		attrs['class'] = base;
+		attrs[DwtListView._STYLE_CLASS] = base;
+		attrs[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");
+		attrs[DwtListView._KBFOCUS_CLASS] = [base, DwtCssStyle.FOCUSED].join("-");
+		attrs['id'] = this._getItemId(contact);
+		attrs['_itemIndex'] = AjxCore.assignId(contact);
+		attrs['_type'] = DwtListView.TYPE_LIST_ITEM;
+		attrs['style'] = ["width:", this._cardWidth].join("");
+		var attrList = [];
+		for (var attr in attrs) {
+			attrList.push([attr, "='", attrs[attr], "'"].join(""));
+		}
+		html[idx++] = "<div ";
+		html[idx++] = attrList.join(" ");
+		html[idx++] = ">";
 	} else {
 		// create div for DnD
 		div = document.createElement("div");
-		div[DwtListView._STYLE_CLASS] = "ZmContactCard-dnd";
+		div[DwtListView._STYLE_CLASS] = [base, DwtCssStyle.DND].join("-");
 		// bug fix #3654 - yuck
 		if (AjxEnv.isMozilla) {
 			div.style.overflow = "visible";
 		}
 		div.style.position = "absolute";
 		div.className = div[DwtListView._STYLE_CLASS];
-		if (isDndIcon) {
+		if (params.isDnDIcon) {
 			div.style.width = this._cardWidth;
 		}
 		this.associateItemWithElement(contact, div, DwtListView.TYPE_LIST_ITEM);
@@ -175,8 +174,8 @@ function(contact, now, isDndIcon, getHtml) {
 	html[idx++] = "</tr>";
 
 	idx = contact.isGroup()
-		? this._getGroupHtml(contact, html, idx, isDndIcon)
-		: this._getContactHtml(contact, html, idx, isDndIcon);
+		? this._getGroupHtml(contact, html, idx, params.isDnDIcon)
+		: this._getContactHtml(contact, html, idx, params.isDnDIcon);
 
 	html[idx++] = "</table>";
 
@@ -190,7 +189,7 @@ function(contact, now, isDndIcon, getHtml) {
 };
 
 ZmContactCardsView.prototype._getGroupHtml =
-function(contact, html, idx, isDndIcon) {
+function(contact, html, idx, isDnDIcon) {
 	var style = AjxEnv.isLinux ? " style='line-height:13px'" : "";
 	var members = contact.getGroupMembers().good.getArray();
 	var size = members.length <= 5 ? members.length : Math.min(members.length, 5);
@@ -228,7 +227,7 @@ function(contact, html, idx, isDndIcon) {
 };
 
 ZmContactCardsView.prototype._getContactHtml =
-function(contact, html, idx, isDndIcon) {
+function(contact, html, idx, isDnDIcon) {
 	var style = AjxEnv.isLinux ? " style='line-height:13px'" : "";
 
 	html[idx++] = "<tr";
@@ -249,9 +248,9 @@ function(contact, html, idx, isDndIcon) {
 	html[idx++] = ">";
 	// add first column of work info here
 	if (value = contact.getWorkAddrField()) {
-		html[idx++] = this._getField("W", value, isDndIcon);
+		html[idx++] = this._getContactField("W", value, isDnDIcon);
 	} else if (value = contact.getHomeAddrField()) {
-		html[idx++] = this._getField("H", value, isDndIcon);
+		html[idx++] = this._getContactField("H", value, isDnDIcon);
 	}
 	html[idx++] = "</tr>";
 
@@ -259,7 +258,7 @@ function(contact, html, idx, isDndIcon) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("E", value, isDndIcon, ZmObjectManager.EMAIL);
+		html[idx++] = this._getContactField("E", value, isDnDIcon, ZmObjectManager.EMAIL);
 		html[idx++] = "</tr>";
 	}
 
@@ -267,13 +266,13 @@ function(contact, html, idx, isDndIcon) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("E2", value, isDndIcon, ZmObjectManager.EMAIL);
+		html[idx++] = this._getContactField("E2", value, isDnDIcon, ZmObjectManager.EMAIL);
 		html[idx++] = "</tr>";
 	} else if (value = contact.getAttr("email3")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("E3", value, isDndIcon, ZmObjectManager.EMAIL);
+		html[idx++] = this._getContactField("E3", value, isDnDIcon, ZmObjectManager.EMAIL);
 		html[idx++] = "</tr>";
 	}
 
@@ -286,35 +285,35 @@ function(contact, html, idx, isDndIcon) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("W", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("W", value, isDnDIcon, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("workPhone2")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("W2", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("W2", value, isDnDIcon, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("workFax")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("F", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("F", value, isDnDIcon, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("mobilePhone")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("M", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("M", value, isDnDIcon, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("homePhone")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("H", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("H", value, isDnDIcon, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 
@@ -334,7 +333,7 @@ function(contact, html, idx, isDndIcon) {
 	return idx;
 };
 
-ZmContactCardsView.prototype._getField =
+ZmContactCardsView.prototype._getContactField =
 function(fname, value, skipObjectify, type) {
 	var newValue = skipObjectify ? value : this._generateObject(value, type);
 	var html = new Array();
@@ -382,7 +381,7 @@ function() {
 			count++;
 
 			html[i++] = "<td valign=top>";
-			html[i++] = this._createItemHtml(contact, null, null, true);
+			html[i++] = this._createItemHtml(contact, {getHtml:true});
 			html[i++] = "</td>";
 
 			if (count%2 == 0)
@@ -452,16 +451,16 @@ function(dropAllowed) {
 		ZmContactsBaseView.prototype._setDnDIconState.call(this, dropAllowed)
 	} else {
 		// bug fix #3235 - no opacity for linux
-		this._dndIcon._origClassName = dropAllowed
-			? this._dndIcon._origClassName + " DropAllowed-linux" 
-			: this._dndIcon._origClassName + " DropNotAllowed-linux";
+		var addClass = dropAllowed ? DwtCssStyle.DROP_OK : DwtCssStyle.DROP_NOT_OK;
+		var linuxClass = [addClass, DwtCssStyle.LINUX].join("-");
+		this._dndIcon.className = [this._dndIcon._origClassName, linuxClass].join(" ");
 	}
 };
 
 ZmContactCardsView.prototype._handleResponseLoad =
 function(result, contact) {
 	var div = document.getElementById(this._getItemId(contact));
-	var html = this._createItemHtml(contact, null, null, true);
+	var html = this._createItemHtml(contact, {getHtml:true});
 	var newDiv = Dwt.parseHtmlFragment(html);
 	div.innerHTML = newDiv.innerHTML;
 };

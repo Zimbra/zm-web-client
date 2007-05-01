@@ -128,7 +128,7 @@ function(ev) {
 	ZmListController.prototype._listActionListener.call(this, ev);
 
 	var view = ev.dwtObj;
-	var isParticipant = ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT];
+	var isParticipant = ev.field == ZmItem.F_PARTICIPANT;
 	var actionMenu;
 	if (isParticipant) {
 		var item = ev.item;

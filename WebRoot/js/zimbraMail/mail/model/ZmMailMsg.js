@@ -62,8 +62,8 @@ ZmMailMsg.HDR_CC		= AjxEmailAddress.CC;
 ZmMailMsg.HDR_BCC		= AjxEmailAddress.BCC;
 ZmMailMsg.HDR_REPLY_TO	= AjxEmailAddress.REPLY_TO;
 ZmMailMsg.HDR_SENDER	= AjxEmailAddress.SENDER;
-ZmMailMsg.HDR_DATE		= AjxEmailAddress.LAST_ADDR + 1;
-ZmMailMsg.HDR_SUBJECT	= AjxEmailAddress.LAST_ADDR + 2;
+ZmMailMsg.HDR_DATE		= "DATE";
+ZmMailMsg.HDR_SUBJECT	= "SUBJECT";
 
 ZmMailMsg.HDR_KEY = new Object();
 ZmMailMsg.HDR_KEY[ZmMailMsg.HDR_FROM]		= ZmMsg.from;
@@ -247,7 +247,7 @@ function(hdr) {
 	} else if (hdr == ZmMailMsg.HDR_SUBJECT) {
 		var subj = this.getSubject();
 		return subj ? ZmMailMsg.HDR_KEY[hdr] + ": " + subj : "";
-	} else if (hdr <= AjxEmailAddress.LAST_ADDR) {
+	} else {
 		var addrs = this.getAddresses(hdr);
 		var addrStr = addrs.toString(", ", true);
 		if (addrStr)
@@ -1108,3 +1108,17 @@ ZmMailMsg.prototype.getPrintHtml =
 function(preferHtml, callback) {
 	ZmMailMsgView.getPrintHtml(this, preferHtml, callback);
 };
+
+ZmMailMsg.prototype.getStatusIcon =
+function() {
+	var imageInfo;
+	if (this.isInvite())		{ imageInfo = "Appointment"; }
+	else if (this.isDraft)		{ imageInfo = "MsgStatusDraft"; }
+	else if (this.isReplied)	{ imageInfo = "MsgStatusReply"; }
+	else if (this.isForwarded)	{ imageInfo = "MsgStatusForward"; }
+	else if (this.isSent)		{ imageInfo = "MsgStatusSent"; }
+	else						{ imageInfo = this.isUnread ? "MsgStatusUnread" : "MsgStatusRead"; }
+
+	return imageInfo;
+};
+

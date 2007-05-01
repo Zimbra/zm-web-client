@@ -54,7 +54,7 @@ function(defaultColumnSort) {
 
 ZmCallListView.prototype._setColumnHeader = 
 function(fieldId, label) {
-	var index = this.getColIndexForId(ZmListView.FIELD_PREFIX[fieldId]);
+	var index = this.getColIndexForId(fieldId);
 	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[index]._id);
 	if (fromColSpan) fromColSpan.innerHTML = "&nbsp;" + label;
 	if (this._colHeaderActionMenu) this._colHeaderActionMenu.getItem(index).setText(label);
@@ -64,9 +64,9 @@ ZmCallListView.prototype._getHeaderList =
 function() {
 
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmCallListView.F_CALLER], ZmMsg.from, null, ZmCallListView.FROM_WIDTH, null, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmCallListView.F_SIZE], ZmMsg.duration, null, ZmCallListView.DURATION_WIDTH, ZmCallListView.F_SIZE, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmCallListView.F_DATE], ZmMsg.received, null, ZmCallListView.DATE_WIDTH, ZmCallListView.F_DATE, true));
+	headerList.push(new DwtListHeaderItem(ZmCallListView.F_CALLER, ZmMsg.from, null, ZmCallListView.FROM_WIDTH, null, true));
+	headerList.push(new DwtListHeaderItem(ZmCallListView.F_SIZE, ZmMsg.duration, null, ZmCallListView.DURATION_WIDTH, ZmCallListView.F_SIZE, true));
+	headerList.push(new DwtListHeaderItem(ZmCallListView.F_DATE, ZmMsg.received, null, ZmCallListView.DATE_WIDTH, ZmCallListView.F_DATE, true));
 
 	return headerList;
 };
@@ -93,47 +93,15 @@ function() {
 	return  AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmCallListPrintView", args);
 };
 
-ZmCallListView.prototype._createItemHtml =
-function(voicemail, now, isDndIcon, isMixedView, myDiv) {
+ZmCallListView.prototype._getField =
+function(htmlArr, idx, voicemail, field, colIdx, params) {
+	if (field == ZmCallListView.F_SIZE) {
+		htmlArr[idx++] = AjxDateUtil.computeDuration(voicemail.duration);
+	} else {
+		idx = ZmVoiceListView.prototype._getField.apply(this, arguments);
+	}
 	
-	var	div = this._getDiv(voicemail, isDndIcon, false);
-	var htmlArr = [];
-	var idx = 0;
-	
-	idx = this._getTable(htmlArr, idx, isDndIcon);
-	var className = voicemail.isUnheard ? "Unread" : "";
-	idx = this._getRow(htmlArr, idx, voicemail, className);
-	var columnCount = this._headerList.length;
-
-	for (var i = 0; i < columnCount; i++) {
-		if (!this._headerList[i]._visible)
-			continue;
-		var width = this._getFieldWidth(i);
-		var id = this._headerList[i]._id;
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = width;
-		var prefix = id.length ? id.charAt(0) : null;
-		if (prefix) {
-			htmlArr[idx++] = " id='";
-			htmlArr[idx++] = this._getFieldIdFromPrefix(voicemail, prefix);
-			htmlArr[idx++] = "'";
-		}
-		htmlArr[idx++] = ">";
-		
-		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmCallListView.F_CALLER]) == 0) {
-			htmlArr[idx++] = this._getCallerNameHtml(voicemail);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmCallListView.F_SIZE]) == 0) {
-			htmlArr[idx++] = AjxDateUtil.computeDuration(voicemail.duration);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmCallListView.F_DATE]) == 0) {
-			htmlArr[idx++] = AjxDateUtil.computeDateStr(now, voicemail.date);
-		}
-		htmlArr[idx++] = "</td>";
-	}	
-	
-	htmlArr[idx++] = "</tr></table>";
-	
-	div.innerHTML = htmlArr.join("");
-	return div;
+	return idx;
 };
 
 ZmCallListView.prototype._sortColumn =
@@ -149,12 +117,12 @@ function(columnItem, bSortAsc) {
 
 ZmCallListView.prototype._getHeaderTooltip =
 function(prefix) {
-	if (prefix == ZmListView.FIELD_PREFIX[ZmCallListView.F_CALLER]) {
+	if (prefix == ZmCallListView.F_CALLER) {
 		var isPlaced = this._getCallType() == ZmVoiceFolder.PLACED_CALL;
 		return isPlaced ? ZmMsg.to : ZmMsg.from;
-	} else if (prefix == ZmListView.FIELD_PREFIX[ZmCallListView.F_SIZE]) {
+	} else if (prefix == ZmCallListView.F_SIZE) {
 		return ZmMsg.sortByDuration;
-	} else if (prefix == ZmListView.FIELD_PREFIX[ZmCallListView.F_DATE]) {
+	} else if (prefix == ZmCallListView.F_DATE) {
 		return ZmMsg.sortByReceived;
 	}
 	return null;

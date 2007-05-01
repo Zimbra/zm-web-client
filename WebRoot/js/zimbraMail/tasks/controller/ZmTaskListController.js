@@ -349,7 +349,7 @@ function(ev) {
 
 	if (ev.detail == DwtListView.ITEM_DBL_CLICKED)
 		this._editTask(ev.item);
-	else if (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED])
+	else if (ev.field == ZmItem.F_COMPLETED)
 		this._doCheckCompleted(ev.item);
 };
 

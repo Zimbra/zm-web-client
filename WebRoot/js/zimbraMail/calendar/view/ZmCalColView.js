@@ -1828,7 +1828,7 @@ function(data) {
 	} else {
 		icon = document.getElementById(this._apptDndIconDivId);
 	}
-	icon.className = "DropNotAllowed";
+	icon.className = DwtCssStyle.DROP_NOT_OK;
 
 	var appt = data.appt;
 	var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
@@ -1924,12 +1924,12 @@ function(ev) {
             	    //DBG.println("dwtObj = "+destDwtObj._dropTarget);
         			if (destDwtObj._dropTarget._dragEnter(	Dwt.DND_DROP_MOVE, destDwtObj, {data: data.appt}, mouseEv)) {
 	        			//obj._setDnDIconState(true);
-	        			data.icon.className = 'DropAllowed';
+	        			data.icon.className = DwtCssStyle.DROP_OK;
         				obj._dropAllowed = true;
         				destDwtObj._dragEnter(mouseEv);
         			} else {
         				//obj._setDnDIconState(false);
-	        			data.icon.className = 'DropNotAllowed';
+	        			data.icon.className = DwtCssStyle.DROP_NOT_OK;
         				obj._dropAllowed = false;
         			}
         			//DBG.println(" dropAllowed = "+obj._dropAllowed);
@@ -1937,7 +1937,7 @@ function(ev) {
         			destDwtObj._dragOver(mouseEv);
         		}
         	} else {
-        		data.icon.className = 'DropNotAllowed';
+        		data.icon.className = DwtCssStyle.DROP_NOT_OK;
         		//obj._setDnDIconState(false);
         	}
         	if (obj._lastDestDwtObj && obj._lastDestDwtObj != destDwtObj && obj._lastDestDwtObj._dropTarget && obj._lastDestDwtObj != obj) {

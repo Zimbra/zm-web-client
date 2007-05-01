@@ -400,7 +400,7 @@ DIV.vSpace {
 	@ListItemText-matched@
 }
 
-.Row-Focus {
+.Row-focused {
 	@ListItemContainer-focused@
 }
 

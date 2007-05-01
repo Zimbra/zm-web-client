@@ -86,8 +86,8 @@ function ZmFilterListView(parent, appCtxt, controller) {
 	this._internalId = AjxCore.assignId(this);
 };
 
-ZmFilterListView.COL_ACTIVE	= 1;
-ZmFilterListView.COL_NAME	= 2;
+ZmFilterListView.COL_ACTIVE	= "ac";
+ZmFilterListView.COL_NAME	= "na";
 
 ZmFilterListView.COL_WIDTH_ACTIVE = 40;
 
@@ -127,37 +127,28 @@ function() {
 	return headerList;
 };
 
-ZmFilterListView.prototype._createItemHtml =
-function(item) {
-	var	div = document.createElement("div");
-	var base = "Row";
-	div[DwtListView._STYLE_CLASS] = base;
-	div[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
-	div.className = div[DwtListView._STYLE_CLASS];
-	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
-
-	var html = [];
-	var i = 0;
-
-	html[i++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
-
-	html[i++] = "<tr id='" + item.id + "'>";
-
-	var checked = item.isActive() ? "checked": "";
-	var inputId = "_ruleCheckbox" + item.id;
-
-	html[i++] = "<td width=" + this._headerList[0]._width + ">";
-	html[i++] = "<input type='checkbox' " + checked + " id='" + inputId + "'></td>";
-	html[i++] = "<td width=" + this._headerList[1]._width + ">";
-	html[i++] = item.getName();
-	html[i++] = "</td>";
-	html[i++] = "</tr></table>";
-
-	div.innerHTML = html.join("");
-
-	this._checkboxIds.push(inputId);
-
-	return div;
+ZmFilterListView.prototype._getField =
+function(html, idx, item, field, colIdx, params) {
+	if (field == ZmFilterListView.COL_ACTIVE) {
+		var checked = item.isActive() ? "checked" : "";
+		var inputId = "_ruleCheckbox" + item.id;
+		html[idx++] = "<td width=";
+		html[idx++] = params.width;
+		html[idx++] = ">";
+		html[idx++] = "<input type='checkbox' ";
+		html[idx++] = checked;
+		html[idx++] = " id='";
+		html[idx++] = inputId;
+		html[idx++] = "'></td>";
+	} else if (field == ZmFilterListView.COL_NAME) {
+		html[idx++] = "<td width=";
+		html[idx++] = params.width;
+		html[idx++] = ">";
+		html[idx++] = item.getName();
+		html[idx++] = "</td>";
+	}
+	
+	return idx;
 };
 
 /*

@@ -67,9 +67,8 @@ function() {
 
 ZmVoiceListView.prototype._getColumnIndex = 
 function(field) {
-	var prefix = ZmListView.FIELD_PREFIX[field];
 	for (var i = 0, count = this._headerList.length; i < count; i++) {
-		if (this._headerList[i]._id.indexOf(prefix) == 0) {
+		if (DwtListHeaderItem.getHeaderField(this._headerList[i]._id) == field) {
 			return i;
 		}
 	}
@@ -80,6 +79,22 @@ ZmVoiceListView.prototype._getCell =
 function(columnIndex, element) {
 	var table = element.firstChild;
 	return table.rows[0].cells[columnIndex];
+};
+
+ZmVoiceListView.prototype._getRowClassName =
+function(voicemail, params) {
+	return voicemail.isUnheard ? "Unread" : "";
+};
+
+ZmVoiceListView.prototype._getField =
+function(htmlArr, idx, voicemail, field, colIdx, params) {
+	if (field == ZmCallListView.F_CALLER) {
+		htmlArr[idx++] = this._getCallerNameHtml(voicemail);
+	} else if (field == ZmCallListView.F_DATE) {
+		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now, voicemail.date);
+	}
+	
+	return idx;
 };
 
 ZmVoiceListView.prototype._getCallerNameHtml =
@@ -135,10 +150,9 @@ function(ev, div) {
 	var type = Dwt.getAttr(div, "_type");
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
 		var itemIdx = Dwt.getAttr(div, "_itemIndex");
-		var headerId = this._headerList[itemIdx]._id;
-		if (headerId && headerId.length) {
-			var prefix = headerId.charAt(0);
-			tooltip = this._getHeaderTooltip(prefix);
+		var field = DwtListHeaderItem.getHeaderField(this._headerList[itemIdx]._id);
+		if (field) {
+			tooltip = this._getHeaderTooltip(field);
 		}
 	} else {
 		var item = this.getItemFromElement(div);

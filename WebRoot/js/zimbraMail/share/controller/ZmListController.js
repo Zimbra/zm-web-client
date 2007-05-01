@@ -468,7 +468,7 @@ function(view, elements, isAppView, clear, pushOnly, isTransient) {
 // the toolbar based on how many items are selected.
 ZmListController.prototype._listSelectionListener =
 function(ev) {
-	if (ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) {
+	if (ev.field == ZmItem.F_FLAG) {
 		this._doFlag([ev.item]);
 	} else {
 		this._resetOperations(this._toolbar[this._currentView], this._listView[this._currentView].getSelectionCount());

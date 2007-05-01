@@ -43,16 +43,15 @@ function ZmContactPicker(appCtxt, buttonInfo) {
 	this._appCtxt = appCtxt;
 	this._buttonInfo = buttonInfo;
 	this._initialized = false;
+
+	this._searchRespCallback = new AjxCallback(this, this._handleResponseSearch);
+	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
 };
 
 ZmContactPicker.prototype = new DwtDialog;
 ZmContactPicker.prototype.constructor = ZmContactPicker;
 
 // Consts
-
-ZmContactPicker.ID_ICON 		= "i--";
-ZmContactPicker.ID_PARTICIPANT 	= "p--";
-ZmContactPicker.ID_EMAIL 		= "e--";
 
 ZmContactPicker.CHOOSER_HEIGHT = 300;
 
@@ -81,7 +80,7 @@ function(buttonId, addrs, str) {
 	}
 
 	// reset column sorting preference
-	this._chooser.sourceListView.setSortByAsc(ZmItem.F_PARTICIPANT, true);
+	this._chooser.sourceListView.setSortByAsc(ZmItem.F_NAME, true);
 
 	// reset button states
 	this._chooser.reset();
@@ -241,29 +240,8 @@ function(ev) {
 
 		// XXX: line below doesn't have intended effect (turn off column sorting for GAL search)
 		this._chooser.sourceListView.enableSorting(this._contactSource == ZmItem.CONTACT);
-		this.search(ZmItem.F_PARTICIPANT, true);
+		ZmContactsHelper.search(this, ZmItem.F_NAME, true, this._searchRespCallback, this._searchErrorCallback);
 	}
-};
-
-/**
-* Performs a contact search (in either personal contacts or in the GAL) and populates
-* the source list view with the results.
-*
-* @param columnItem		[constant]		ID of column to sort by
-* @param ascending		[boolean]		if true, sort in ascending order
-*/
-ZmContactPicker.prototype.search =
-function(columnItem, ascending) {
-	this._searchButton.setEnabled(false);
-
-	var sortBy = ascending ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC;
-	var types = AjxVector.fromArray([ZmItem.CONTACT]);
-	var params = {query:this._query, types:types, sortBy:sortBy, offset:0,
-				  limit:ZmContactsApp.SEARCHFOR_MAX, contactSource:this._contactSource,
-				  field:"contact"};
-	var search = new ZmSearch(this._appCtxt, params);
-	search.execute({callback: new AjxCallback(this, this._handleResponseSearch),
-					errorCallback: new AjxCallback(this, this._handleErrorSearch)});
 };
 
 ZmContactPicker.prototype._handleResponseSearch =
@@ -275,30 +253,7 @@ function(result) {
 		d.setMessage(ZmMsg.errorSearchNotExpanded);
 		d.popup();
 	} else {
-		var vec = resp.getResults(ZmItem.CONTACT);
-
-		// Take the contacts and create a list of their email addresses (a contact may have more than one)
-		var list = [];
-		var a = vec.getArray();
-		for (var i = 0; i < a.length; i++) {
-			var contact = a[i];
-			if (contact.isGroup()) {
-				var members = contact.getGroupMembers().good.toString(AjxEmailAddress.SEPARATOR);
-				var email = new AjxEmailAddress(members, null, contact.getFileAs(), null, true);
-				email.id = Dwt.getNextId();
-				email.__contact = contact;
-				list.push(email);
-			} else {
-				var emails = contact.isGal ? [contact.getEmail()] : contact.getEmails();
-				for (var j = 0; j < emails.length; j++) {
-					var email = new AjxEmailAddress(emails[j], null, contact.getFileAs());
-					email.id = Dwt.getNextId();
-					email.__contact = contact;
-					list.push(email);
-				}
-			}
-		}
-
+		var list = ZmContactsHelper._processSearchResponse(resp);
 		// bug fix #2269 - enable/disable sort column per type of search
 		this._resetColHeaders();
 		this._chooser.setItems(AjxVector.fromArray(list));
@@ -321,14 +276,14 @@ function() {
 	// find the participant column
 	var part = 0;
 	for (var i = 0; i < slv._headerList.length; i++) {
-		if (slv._headerList[i]._id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
+		if (DwtListHeaderItem.getHeaderField(slv._headerList[i]._id) == ZmItem.F_NAME) {
 			part = i;
 			break;
 		}
 	}
 
 	var sortable = (this._selectDiv && this._selectDiv.getValue() == ZmContactsApp.SEARCHFOR_GAL)
-		? null : ZmContactPicker.ID_PARTICIPANT;
+		? null : ZmItem.F_NAME;
 	slv._headerList[part]._sortable = sortable;
 	slv.createHeaderHtml(sortable);
 };
@@ -427,9 +382,9 @@ function() {
 ZmContactChooserSourceListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_ICON, null, "Folder", 20));
-	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_PARTICIPANT, ZmMsg._name, null, 100));
-	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_EMAIL, ZmMsg.email));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_TYPE, null, "Folder", 20));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_NAME, ZmMsg._name, null, 100));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_EMAIL, ZmMsg.email));
 
 	return headerList;
 };
@@ -455,45 +410,9 @@ function(ev, div) {
 	return true;
 };
 
-// The items are AjxEmailAddress objects
-ZmContactChooserSourceListView.prototype._createItemHtml =
-function(item) {
-	var div = document.createElement("div");
-	div[DwtListView._STYLE_CLASS] = "Row";
-	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
-	div.className = div[DwtListView._STYLE_CLASS];
-
-	var html = [];
-	var idx = 0;
-
-	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>";
-	for (var i = 0; i < this._headerList.length; i++) {
-		var id = this._headerList[i]._id;
-		if (id.indexOf(ZmContactPicker.ID_ICON) == 0) {
-			html[idx++] = "<td width=";
-			html[idx++] = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4): this._headerList[i]._width;
-			html[idx++] = ">";
-			html[idx++] = AjxImg.getImageHtml(item.__contact.getIcon());
-			html[idx++] = "</td>";
-		} else if (id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
-			html[idx++] = "<td width=";
-			html[idx++] = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4): this._headerList[i]._width;
-			html[idx++] = "><nobr>";
-			html[idx++] = item.name;
-			html[idx++] = "</td>";
-		} else if (id.indexOf(ZmContactPicker.ID_EMAIL) == 0) {
-			html[idx++] = "<td>";
-			html[idx++] = item.address;
-			html[idx++] = "</td>";
-		}
-	}
-	html[idx++] = "</tr></table>";
-
-	div.innerHTML = html.join("");
-
-	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
-
-	return div;
+ZmContactChooserSourceListView.prototype._getField =
+function(html, idx, item, field, colIdx, now) {
+	return ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, now, this._getFieldWidth(colIdx));
 };
 
 /***********************************************************************************/
@@ -522,75 +441,30 @@ ZmContactChooserTargetListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
 	if (this._showType) {
-		headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_ICON, null, "ContactsPicker", 20));
+		headerList.push(new DwtListHeaderItem(ZmItem.F_TYPE, null, "ContactsPicker", 20));
 	}
-	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_PARTICIPANT, ZmMsg._name, null, 100));
-	headerList.push(new DwtListHeaderItem(ZmContactPicker.ID_EMAIL, ZmMsg.email));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_NAME, ZmMsg._name, null, 100));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_EMAIL, ZmMsg.email));
 
 	return headerList;
 };
 
 ZmContactChooserTargetListView.prototype._mouseOverAction =
-function(ev, div) {
-	DwtChooserListView.prototype._mouseOverAction.call(this, ev, div);
-	var id = ev.target.id || div.id;
-	var item = this.getItemFromElement(div);
-
-	if (id && item) {
-		var contact = item.__contact;
-		if (contact) {
-			var tt = contact.getToolTip(item.address, contact.isGal);
-			this.setToolTipContent(tt);
-		} else {
-			this.setToolTipContent(item.address);
-		}
-	} else {
-		this.setToolTipContent(null);
-	}
-
-	return true;
-};
+ZmContactChooserSourceListView.prototype._mouseOverAction;
 
 // The items are AjxEmailAddress objects
-ZmContactChooserTargetListView.prototype._createItemHtml =
-function(item) {
-
-	item.setType(item._buttonId);
-
-	var div = document.createElement("div");
-	div[DwtListView._STYLE_CLASS] = "Row";
-	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
-	div.className = div[DwtListView._STYLE_CLASS];
-
-	var html = [];
-	var idx = 0;
-
-	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>";
-	for (var i = 0; i < this._headerList.length; i++) {
-		var id = this._headerList[i]._id;
-		if (id.indexOf(ZmContactPicker.ID_ICON) == 0 && this._showType) {
-			html[idx++] = "<td width=";
-			html[idx++] = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4): this._headerList[i]._width;
-			html[idx++] = ">";
-			html[idx++] = ZmMsg[item.getTypeAsString()];
-			html[idx++] = ":</td>";
-		} else if (id.indexOf(ZmContactPicker.ID_PARTICIPANT) == 0) {
-			html[idx++] = "<td width=";
-			html[idx++] = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4): this._headerList[i]._width;
-			html[idx++] = "><nobr>";
-			html[idx++] = item.name;
-			html[idx++] = "</td>";
-		} else if (id.indexOf(ZmContactPicker.ID_EMAIL) == 0) {
-			html[idx++] = "<td>";
-			html[idx++] = item.address;
-			html[idx++] = "</td>";
-		}
+ZmContactChooserTargetListView.prototype._getField =
+function(html, idx, item, field, colIdx, now) {
+	var width = this._getFieldWidth(colIdx);
+	if (field == ZmItem.F_TYPE) {
+		item.setType(item._buttonId);
+		html[idx++] = "<td width=";
+		html[idx++] = width;
+		html[idx++] = ">";
+		html[idx++] = ZmMsg[item.getTypeAsString()];
+		html[idx++] = ":</td>";
+	} else {
+		idx = ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, now, width);
 	}
-	html[idx++] = "</tr></table>";
-
-	div.innerHTML = html.join("");
-
-	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
-
-	return div;
+	return idx;
 };

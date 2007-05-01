@@ -59,17 +59,25 @@ function(defaultColumnSort) {
 
 	// set the from column name based on query string
 	var colLabel = (isFolder.sent || isFolder.drafts) ? ZmMsg.to : ZmMsg.from;
-	var fromColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]);
+	var fromColIdx = this.getColIndexForId(ZmItem.F_PARTICIPANT);
 	var fromColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[fromColIdx]._id);
-	if (fromColSpan) fromColSpan.innerHTML = "&nbsp;" + colLabel;
-	if (this._colHeaderActionMenu) this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
+	if (fromColSpan) {
+		fromColSpan.innerHTML = "&nbsp;" + colLabel;
+	}
+	if (this._colHeaderActionMenu) {
+		this._colHeaderActionMenu.getItem(fromColIdx).setText(colLabel);
+	}
 
 	// bug fix #4786
 	colLabel = isFolder.sent ? ZmMsg.sentAt : ZmMsg.received;
-	var dateColIdx = this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]);
+	var dateColIdx = this.getColIndexForId(ZmItem.F_DATE);
 	var dateColSpan = document.getElementById(DwtListView.HEADERITEM_LABEL + this._headerList[dateColIdx]._id);
-	if (dateColSpan) dateColSpan.innerHTML = "&nbsp;" + colLabel;
-	if (this._colHeaderActionMenu) this._colHeaderActionMenu.getItem(dateColIdx).setText(colLabel);
+	if (dateColSpan) {
+		dateColSpan.innerHTML = "&nbsp;" + colLabel;
+	}
+	if (this._colHeaderActionMenu) {
+		this._colHeaderActionMenu.getItem(dateColIdx).setText(colLabel);
+	}
 };
 
 ZmConvListView.prototype.markUIAsRead =
@@ -104,94 +112,6 @@ function() {
 
 // Private / protected methods
 
-ZmConvListView.prototype._createItemHtml =
-function(conv, now, isDndIcon, isMixedView, myDiv) {
-
-	var	div = myDiv || this._getDiv(conv, isDndIcon);
-
-	var htmlArr = [];
-	var idx = 0;
-
-	idx = this._getTable(htmlArr, idx, isDndIcon);
-	idx = this._getRow(htmlArr, idx, conv, conv.isUnread ? "Unread" : null);
-
-	for (var i = 0; i < this._headerList.length; i++) {
-		if (!this._headerList[i]._visible)
-			continue;
-
-		var id = this._headerList[i]._id;
-		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) == 0) {
-			// Flags
-			idx = this._getField(htmlArr, idx, conv, ZmItem.F_FLAG, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) == 0) {
-			// Tags
-			idx = this._getField(htmlArr, idx, conv, ZmItem.F_TAG, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) == 0) {
-			// Participants
-			var fieldId = this._getFieldId(conv, ZmItem.F_PARTICIPANT);
-			htmlArr[idx++] = "<td width=";
-			htmlArr[idx++] = this._getFieldWidth(i);
-			htmlArr[idx++] = " id='";
-			htmlArr[idx++] = fieldId;
-			htmlArr[idx++] = "'>";
-			if (AjxEnv.isSafari)
-				htmlArr[idx++] = "<div style='overflow:hidden'>";
-			htmlArr[idx++] = this._getParticipantHtml(conv, fieldId);
-			if (AjxEnv.isSafari)
-				htmlArr[idx++] = "</div>";
-			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
-			// Attachments icon
-			idx = this._getField(htmlArr, idx, conv, ZmItem.F_ATTACHMENT, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
-			// Subject
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = this._getFieldId(conv, ZmItem.F_SUBJECT);
-			htmlArr[idx++] = "'>";
-			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
-			htmlArr[idx++] = conv.subject ? AjxStringUtil.htmlEncode(conv.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-			if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && conv.fragment) {
-				htmlArr[idx++] = "<span class='ZmConvListFragment'> - ";
-				htmlArr[idx++] = AjxStringUtil.htmlEncode(conv.fragment, true);
-				htmlArr[idx++] = "</span>";
-			}
-			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT]) == 0) {
-			// Conversation count
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = this._getFieldId(conv, ZmItem.F_COUNT);
-			htmlArr[idx++] = "' width=";
-			htmlArr[idx++] = this._getFieldWidth(i);
-			htmlArr[idx++] = ">";
-			if (conv.numMsgs > 1) {
-				htmlArr[idx++] = "(";
-				htmlArr[idx++] = conv.numMsgs;
-				htmlArr[idx++] = ")";
-			}
-			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
-			// Date
-			idx = this._getField(htmlArr, idx, conv, ZmItem.F_DATE, i, now);
-		} else if (isMixedView && id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ICON]) == 0) {
-			// Type icon (mixed view only)
-			if (conv.isDraft) {
-				htmlArr[idx++] = "<td style='width:";
-				htmlArr[idx++] = this._getFieldWidth(i);
-				htmlArr[idx++] = "' class='Icon'>";
-				htmlArr[idx++] = AjxImg.getImageHtml("MsgStatusDraft", null, ["id='", this._getFieldId(conv, ZmItem.F_STATUS), "'"].join(""));
-				htmlArr[idx++] = "</td>";
-			} else {
-				idx = this._getField(htmlArr, idx, conv, ZmItem.F_ITEM_TYPE, i);
-			}
-		}
-	}
-
-	htmlArr[idx++] = "</tr></table>";
-
-	div.innerHTML = htmlArr.join("");
-	return div;
-};
-
 ZmConvListView.prototype._getHeaderList =
 function(parent) {
 	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
@@ -199,17 +119,76 @@ function(parent) {
 
 	var hList = [];
 
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, "FlagRed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.flag));
+	hList.push(new DwtListHeaderItem(ZmItem.F_FLAG, null, "FlagRed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.flag));
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "MiniTag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));
+		hList.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "MiniTag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));
 	}
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], ZmMsg.from, null, ZmConvListView.COL_WIDTH_FROM, null, true));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_COUNT], null, "Conversation", 25, null, null, null, ZmMsg.count));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.received, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_DATE));
+	hList.push(new DwtListHeaderItem(ZmItem.F_PARTICIPANT, ZmMsg.from, null, ZmConvListView.COL_WIDTH_FROM, null, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_ATTACHMENT, null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
+	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
+	hList.push(new DwtListHeaderItem(ZmItem.F_COUNT, null, "Conversation", 25, null, null, null, ZmMsg.count));
+	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.received, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_DATE));
 
 	return hList;
+};
+
+ZmConvListView.prototype._getField =
+function(htmlArr, idx, conv, field, colIdx, params) {
+
+	if (field == ZmItem.F_PARTICIPANT) {
+		htmlArr[idx++] = "<td width=";
+		htmlArr[idx++] = params.width;
+		htmlArr[idx++] = " id='";
+		htmlArr[idx++] = params.fieldId;
+		htmlArr[idx++] = "'>";
+		if (AjxEnv.isSafari) {
+			htmlArr[idx++] = "<div style='overflow:hidden'>";
+		}
+		htmlArr[idx++] = this._getParticipantHtml(conv, params.fieldId);
+		if (AjxEnv.isSafari) {
+			htmlArr[idx++] = "</div>";
+		}
+		htmlArr[idx++] = "</td>";
+	} else if (field == ZmItem.F_SUBJECT) {
+		htmlArr[idx++] = "<td id='";
+		htmlArr[idx++] = params.fieldId;
+		htmlArr[idx++] = "'>";
+		htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
+		htmlArr[idx++] = conv.subject ? AjxStringUtil.htmlEncode(conv.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
+		if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && conv.fragment) {
+			htmlArr[idx++] = "<span class='ZmConvListFragment'> - ";
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(conv.fragment, true);
+			htmlArr[idx++] = "</span>";
+		}
+		htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
+	} else if (field == ZmItem.F_COUNT) {
+		htmlArr[idx++] = "<td id='";
+		htmlArr[idx++] = params.fieldId;
+		htmlArr[idx++] = "' width=";
+		htmlArr[idx++] = params.width;
+		htmlArr[idx++] = ">";
+		if (conv.numMsgs > 1) {
+			htmlArr[idx++] = "(";
+			htmlArr[idx++] = conv.numMsgs;
+			htmlArr[idx++] = ")";
+		}
+		htmlArr[idx++] = "</td>";
+	} else if (params.isMixedView && (field == ZmItem.F_TYPE)) {
+		// Type icon (mixed view only)
+		if (conv.isDraft) {
+			htmlArr[idx++] = "<td style='width:";
+			htmlArr[idx++] = params.width;
+			htmlArr[idx++] = "' class='Icon'>";
+			htmlArr[idx++] = AjxImg.getImageHtml("MsgStatusDraft", null, ["id='", this._getFieldId(conv, ZmItem.F_STATUS), "'"].join(""));
+			htmlArr[idx++] = "</td>";
+		} else {
+			idx = ZmListView.prototype._getField.apply(this, arguments);
+		}
+	} else {
+		idx = ZmListView.prototype._getField.apply(this, arguments);
+	}
+
+	return idx;
 };
 
 ZmConvListView.prototype._sortColumn =
@@ -304,7 +283,7 @@ function(conv, fieldId) {
 	var origLen = part1.length;
 	// might get a weird case where there are no participants in message
 	if (origLen > 0) {
-		var partColWidth = this._headerList[this.getColIndexForId(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT])]._width;
+		var partColWidth = this._headerList[this.getColIndexForId(ZmItem.F_PARTICIPANT)]._width;
 		var part2 = this._fitParticipants(part1, conv.participantsElided, partColWidth);
 		for (var j = 0; j < part2.length; j++) {
 			if (j == 1 && (conv.participantsElided || part2.length < origLen)) {

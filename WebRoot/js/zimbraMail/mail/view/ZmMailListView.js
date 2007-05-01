@@ -94,6 +94,11 @@ function() {
 	return {sent:isSentFolder, drafts:isDraftsFolder};
 };
 
+ZmMailListView.prototype._getRowClassName =
+function(item) {
+	return item.isUnread ? "Unread" : null;
+};
+
 // Figure out how many of the participants will fit into a given pixel width.
 // We always include the originator, and then as many of the most recent participants
 // as possible. If any have been elided (either by the server or because they don't

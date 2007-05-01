@@ -108,14 +108,12 @@ function(list, noResultsOk) {
 
 	htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100% class='newTaskBannerSep'><tr>";
 	for (var i = 0; i < this._headerList.length; i++) {
-		if (!this._headerList[i]._visible)
-			continue;
+		if (!this._headerList[i]._visible) { continue; }
 
-		var id = this._headerList[i]._id;
+		var field = DwtListHeaderItem.getHeaderField(this._headerList[i]._id);
 		var width = this._headerList[i]._width;
 
-		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0)
-		{
+		if (field == ZmItem.F_SUBJECT) {
 			htmlArr[idx++] = "<td><div class='newTaskBanner' onclick='ZmTaskListView._handleOnClick(this)'>";
 			htmlArr[idx++] = ZmMsg.createNewTaskHint;
 			htmlArr[idx++] = "</div></td>";
@@ -146,154 +144,82 @@ function() {
 	this._rightSelItems = null;
 };
 
-ZmTaskListView.prototype._createItemHtml =
-function(task, now, isDndIcon, myDiv) {
-	var div = myDiv || this._getDiv(task, isDndIcon);
+ZmTaskListView.prototype._getField =
+function(htmlArr, idx, task, field, colIdx, params) {
 
-	var htmlArr = [];
-	var idx = 0;
-
-	htmlArr[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=";
-	htmlArr[idx++] = !isDndIcon ? "100%>" : (this.getSize().x + ">");
-	htmlArr[idx++] = "<tr id='";
-	htmlArr[idx++] = this._getFieldId(task, ZmItem.F_ITEM_ROW);
-	htmlArr[idx++] = "'>";
-
-	for (var i = 0; i < this._headerList.length; i++) {
-		if (!this._headerList[i]._visible)
-			continue;
-
-		var id = this._headerList[i]._id;
-		var width = AjxEnv.isIE || AjxEnv.isSafari
-			? (this._headerList[i]._width + 4)
-			: this._headerList[i]._width;
-
-		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED]) == 0)
-		{
-			var fieldId = this._getFieldId(task, ZmItem.F_COMPLETED);
-			var cboxIcon = "TaskCheckbox";
-			if (task.isComplete())
-				cboxIcon = "TaskCheckboxCompleted";
-			else if (task.isPastDue())
-				cboxIcon = "TaskCheckboxOverdue";
-
-			// complete checkbox
-			htmlArr[idx++] = "<td width=";
-			htmlArr[idx++] = width;
-			htmlArr[idx++] = ">";
-			htmlArr[idx++] = AjxImg.getImageHtml(cboxIcon, null, ["id='", fieldId, "'"].join(""));
-			htmlArr[idx++] = "</td>";
+	if (field == ZmItem.F_COMPLETED) {
+		var cboxIcon = "TaskCheckbox";
+		if (task.isComplete()) {
+			cboxIcon = "TaskCheckboxCompleted";
+		} else if (task.isPastDue()) {
+			cboxIcon = "TaskCheckboxOverdue";
 		}
-		else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) == 0) {
-			// Tags
-			idx = this._getField(htmlArr, idx, task, ZmItem.F_TAG, i);
-		}
-		else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY]) == 0)
-		{
-			// priority
-			idx = this._getTableCell(task, ZmItem.F_PRIORITY, width, htmlArr, idx);
-			htmlArr[idx++] = "<center>";
-			htmlArr[idx++] = ZmCalItem.getImageForPriority(task, this._getFieldId(task, ZmItem.F_PRIORITY));
-			htmlArr[idx++] = "</center></td>";
-		}
-		else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0)
-		{
-			// attachment icon
-			idx = this._getField(htmlArr, idx, task, ZmItem.F_ATTACHMENT, i);
-		}
-		else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0)
-		{
-			// subject
-			idx = this._getTableCell(task, ZmItem.F_SUBJECT, width, htmlArr, idx);
+
+		// complete checkbox
+		htmlArr[idx++] = "<td width=";
+		htmlArr[idx++] = params.width;
+		htmlArr[idx++] = ">";
+		htmlArr[idx++] = AjxImg.getImageHtml(cboxIcon, null, ["id='", params.fieldId, "'"].join(""));
+		htmlArr[idx++] = "</td>";
+
+	} else if (field == ZmItem.F_PRIORITY) {
+		idx = this._getTableCell(task, ZmItem.F_PRIORITY, params.width, htmlArr, idx);
+		htmlArr[idx++] = "<center>";
+		htmlArr[idx++] = ZmCalItem.getImageForPriority(task, params.fieldId);
+		htmlArr[idx++] = "</center></td>";
+
+	} else if (params.isMixedView && (field == ZmItem.F_PARTICIPANT)) {
+		htmlArr[idx++] = "<td width=";
+		htmlArr[idx++] = params.width;
+		htmlArr[idx++] = " id='";
+		htmlArr[idx++] = params.fieldId;
+		htmlArr[idx++] = "'>";
+		htmlArr[idx++] = (task.organizer) || "&nbsp";
+		htmlArr[idx++] = "</td>";
+		
+	} else if (field == ZmItem.F_SUBJECT) {
+		if (params.isMixedView) {
+			htmlArr[idx++] = "<td id='";
+			htmlArr[idx++] = params.fieldId;
+			htmlArr[idx++] = "'>";
+			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
+			htmlArr[idx++] = task.name ? AjxStringUtil.htmlEncode(task.name, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
+			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
+		} else {
+			idx = this._getTableCell(task, ZmItem.F_SUBJECT, params.width, htmlArr, idx);
 			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(task.getName(), true);
 			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
 		}
-		else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) == 0)
-		{
-			// status
-			idx = this._getTableCell(task, ZmItem.F_STATUS, width, htmlArr, idx);
-			htmlArr[idx++] = ZmCalItem.getLabelForStatus(task.status);
-			htmlArr[idx++] = "</td>";
-		}
-		else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE]) == 0)
-		{
-			// percent complete
-			idx = this._getTableCell(task, ZmItem.F_PCOMPLETE, width, htmlArr, idx);
-			htmlArr[idx++] = task.pComplete || 0;
-			htmlArr[idx++] = "%</td>";
-		}
-		else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0)
-		{
+
+	} else if (field == ZmItem.F_STATUS) {
+		idx = this._getTableCell(task, ZmItem.F_STATUS, params.width, htmlArr, idx);
+		htmlArr[idx++] = ZmCalItem.getLabelForStatus(task.status);
+		htmlArr[idx++] = "</td>";
+
+	} else if (field == ZmItem.F_PCOMPLETE) {	// percent complete
+		idx = this._getTableCell(task, ZmItem.F_PCOMPLETE, params.width, htmlArr, idx);
+		htmlArr[idx++] = task.pComplete || 0;
+		htmlArr[idx++] = "%</td>";
+
+	} else if (field == ZmItem.F_DATE) {
+		if (params.isMixedView) {
+			idx = ZmListView.prototype._getField.apply(this, arguments);
+		} else {
 			// date - dont call base class since we *always* want to show date (not time)
 			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = fieldId;
+			htmlArr[idx++] = params.fieldId;
 			htmlArr[idx++] = "' width=";
-			htmlArr[idx++] = width;
+			htmlArr[idx++] = params.width;
 			htmlArr[idx++] = ">";
 			htmlArr[idx++] = AjxDateUtil.simpleComputeDateStr(new Date(task.date));
 			htmlArr[idx++] = "</td>";
 		}
+	} else {
+		idx = ZmListView.prototype._getField.apply(this, arguments);
 	}
-
-	htmlArr[idx++] = "</tr></table>";
-
-	div.innerHTML = htmlArr.join("");
-	return div;
-};
-
-ZmTaskListView.prototype._createTaskHtmlForMixed =
-function(item, now, isDndIcon) {
-	var	div = this._getDiv(item, isDndIcon);
-
-	var htmlArr = [];
-	var idx = 0;
-
-	idx = this._getTable(htmlArr, idx, isDndIcon);
-	idx = this._getRow(htmlArr, idx, item);
-
-	for (var i = 0; i < this._headerList.length; i++) {
-		var id = this._headerList[i]._id;
-		var width = this._getFieldWidth(i);
-
-		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) == 0) {
-			// Flag
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_FLAG, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) == 0) {
-			// Tags
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_TAG, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ICON]) == 0) {
-			// Icon
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_ITEM_TYPE, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) == 0) {
-			// Participant
-			htmlArr[idx++] = "<td width=";
-			htmlArr[idx++] = width;
-			htmlArr[idx++] = " id='";
-			htmlArr[idx++] = this._getFieldId(item, ZmItem.F_PARTICIPANT);
-			htmlArr[idx++] = "'>";
-			htmlArr[idx++] = (item.organizer) || "&nbsp";
-			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
-			// Attachment icon
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_ATTACHMENT, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = this._getFieldId(item, ZmItem.F_SUBJECT);
-			htmlArr[idx++] = "'>";
-			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
-			htmlArr[idx++] = item.name ? AjxStringUtil.htmlEncode(item.name, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
-			// Date
-			idx = this._getField(htmlArr, idx, item, ZmItem.F_DATE, i, now);
-		}
-
-	}
-	htmlArr[idx++] = "</tr></table>";
-
-	div.innerHTML = htmlArr.join("");
-	return div;
+	
+	return idx;
 };
 
 ZmTaskListView.prototype._getActionMenuForColHeader =
@@ -305,7 +231,7 @@ function() {
 		for (var i = 0; i < this._headerList.length; i++) {
 			var hCol = this._headerList[i];
 
-			if (hCol._id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0)
+			if (hCol._id.indexOf(ZmItem.F_SUBJECT) == 0)
 				continue;
 
 			var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
@@ -326,18 +252,18 @@ function(ev, div) {
 	var type = Dwt.getAttr(div, "_type");
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
 		var itemIdx = Dwt.getAttr(div, "_itemIndex");
-		var id = this._headerList[itemIdx]._id;
-		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED]) == 0) {
+		var field = DwtListHeaderItem.getHeaderField(this._headerList[itemIdx]._id);
+		if (field == ZmItem.F_COMPLETED) {
 			this.setToolTipContent(ZmMsg.status);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY]) == 0) {
+		} else if (field == ZmItem.F_PRIORITY) {
 			this.setToolTipContent(ZmMsg.priority);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
+		} else if (field == ZmItem.F_SUBJECT) {
 			this.setToolTipContent(ZmMsg.subject);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS]) == 0) {
+		} else if (field == ZmItem.F_STATUS) {
 			this.setToolTipContent(ZmMsg.status);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE]) == 0) {
+		} else if (field == ZmItem.F_PCOMPLETE) {
 			this.setToolTipContent(ZmMsg.percentComplete);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
+		} else if (field == ZmItem.F_DATE) {
 			this.setToolTipContent(ZmMsg.dateDue);
 		} else {
 			return ZmListView.prototype._mouseOverAction.call(this, ev, div);
@@ -345,15 +271,12 @@ function(ev, div) {
 	} else {
 		var m = this._parseId(id);
 		if (m && m.field) {
-			if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY])
-			{
+			if (m.field == ZmItem.F_PRIORITY) {
 				var item = this.getItemFromElement(div);
 				if (item && item.priority != ZmCalItem.PRIORITY_NORMAL)
 					this.setToolTipContent(ZmCalItem.getLabelForPriority(item.priority));
 				return true;
-			}
-			else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED])
-			{
+			} else if (m.field == ZmItem.F_COMPLETED) {
 				var item = this.getItemFromElement(div);
 				var tt = item && item.isComplete()
 					? ZmMsg.clickToMarkNotStarted
@@ -362,10 +285,9 @@ function(ev, div) {
 						: ZmMsg.clickToMarkCompleted;
 				this.setToolTipContent(tt);
 				return true;
-			}
-			else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT] ||
-					m.field == ZmListView.FIELD_PREFIX[ZmItem.F_STATUS] ||
-					m.field == ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE])
+			} else if (m.field == ZmItem.F_SUBJECT ||
+					m.field == ZmItem.F_STATUS ||
+					m.field == ZmItem.F_PCOMPLETE)
 			{
 				// do nothing for now
 				// this.setToolTipContent();
@@ -425,16 +347,16 @@ function(parent) {
 
 	var hList = [];
 
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_COMPLETED], null, "TaskCheckbox", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.completed));
+	hList.push(new DwtListHeaderItem(ZmItem.F_COMPLETED, null, "TaskCheckbox", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.completed));
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "MiniTag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));
+		hList.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "MiniTag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));
 	}
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PRIORITY], null, "TaskHigh", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.priority));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null/*, ZmItem.F_SUBJECT*/));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS], ZmMsg.status, null, ZmTaskListView.COL_WIDTH_STATUS));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PCOMPLETE], ZmMsg.pComplete, null, ZmListView.COL_WIDTH_DATE));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.dateDue, null, ZmListView.COL_WIDTH_DATE));
+	hList.push(new DwtListHeaderItem(ZmItem.F_PRIORITY, null, "TaskHigh", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.priority));
+	hList.push(new DwtListHeaderItem(ZmItem.F_ATTACHMENT, null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
+	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject, null, null/*, ZmItem.F_SUBJECT*/));
+	hList.push(new DwtListHeaderItem(ZmItem.F_STATUS, ZmMsg.status, null, ZmTaskListView.COL_WIDTH_STATUS));
+	hList.push(new DwtListHeaderItem(ZmItem.F_PCOMPLETE, ZmMsg.pComplete, null, ZmListView.COL_WIDTH_DATE));
+	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.dateDue, null, ZmListView.COL_WIDTH_DATE));
 
 	return hList;
 };

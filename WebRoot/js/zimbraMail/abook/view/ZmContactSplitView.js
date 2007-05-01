@@ -641,26 +641,29 @@ function() {
 	var size = this._list.size();
 	for (var i = 0; i < size; i++) {
 		var item = this._list.get(i);
-		var div = item ? this._createItemHtml(item, this._now) : null;
+		var div = item ? this._createItemHtml(item, {now:this._now}) : null;
 		if (div)
 			this._addRow(div);
 	}
 };
 
+// A contact is normally displayed in a list view with no headers, and shows
+// just an icon and name. The Trash list view has headers, and the row can
+// be built in the standard way.
 ZmContactSimpleView.prototype._createItemHtml =
-function(contact, now, isDndIcon) {
+function(contact, params) {
 
-	// in canonical view, don't show contacts in the Trash unless explicitly set in prefs
-	if (contact.list.isCanonical &&
-		(contact.folderId == ZmFolder.ID_TRASH &&
-		 !this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH)))
-	{
-		return null;
+	if (params.isMixedView) {
+		return ZmContactsBaseView.prototype._createItemHtml.apply(this, arguments);
 	}
 
-	var div = this._getDiv(contact, isDndIcon);
+	// in canonical view, don't show contacts in the Trash unless explicitly set in prefs
+	if (contact.list.isCanonical &&	(contact.folderId == ZmFolder.ID_TRASH) &&
+		!this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH)) { return null;	}
+
+	var div = this._getDiv(contact, params);
 	
-	if (isDndIcon) {
+	if (params.isDnDIcon) {
 		div.style.width = "175px";
 		div.style.padding = "4px";
 	}
@@ -670,12 +673,12 @@ function(contact, now, isDndIcon) {
 	//div._hoverStyleClass = "SimpleContactHover";
 	div.id = this._getItemId(contact);
 
-	var htmlArr = new Array();
+	var htmlArr = [];
 	var idx = 0;
 
 	// table/row
-	idx = this._getTable(htmlArr, idx, isDndIcon);
-	idx = this._getRow(htmlArr, idx, contact);
+	idx = this._getTable(htmlArr, idx, params);
+	idx = this._getRow(htmlArr, idx, contact, params);
 
 	// icon
 	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
@@ -687,7 +690,7 @@ function(contact, now, isDndIcon) {
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
 	htmlArr[idx++] = "</td>";
 
-	if (!isDndIcon) {
+	if (!params.isDnDIcon) {
 		// if read only, show lock icon in place of the tag column since we dont
 		// currently support tags for "read-only" contacts (i.e. shares)
 		if (contact.isReadOnly()) {
@@ -712,30 +715,32 @@ function(contact, now, isDndIcon) {
 };
 
 // this is used by mixed view to create the old listview version of contact list
+/*
 ZmContactSimpleView.prototype._createContactHtmlForMixed =
-function(contact, now, isDndIcon) {
-	var	div = this._getDiv(contact, isDndIcon);
+function(contact, params) {
+	var	div = this._getDiv(contact, params);
 
 	var htmlArr = [];
 	var idx = 0;
 
-	idx = this._getTable(htmlArr, idx, isDndIcon);
-	idx = this._getRow(htmlArr, idx, contact);
+	idx = this._getTable(htmlArr, idx, params);
+	idx = this._getRow(htmlArr, idx, contact, params);
 	
 	for (var i = 0; i < this._headerList.length; i++) {
 		var id = this._headerList[i]._id;
+		var field = DwtListHeaderItem.getHeaderField(this._headerList[i]._id);
 		var width = this._getFieldWidth(i);
 
-		if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ICON]) == 0) {
+		if (id.indexOf(ZmItem.F_TYPE) == 0) {
 			// Type icon
-			idx = this._getField(htmlArr, idx, contact, ZmItem.F_ITEM_TYPE, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG]) == 0) {
+			idx = this._getField(htmlArr, idx, contact, ZmItem.F_TYPE, i);
+		} else if (id.indexOf(ZmItem.F_FLAG) == 0) {
 			// Flag
 			idx = this._getField(htmlArr, idx, contact, ZmItem.F_FLAG, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_TAG]) == 0) {
+		} else if (id.indexOf(ZmItem.F_TAG) == 0) {
 			// Tags
 			idx = this._getField(htmlArr, idx, contact, ZmItem.F_TAG, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT]) == 0) {
+		} else if (id.indexOf(ZmItem.F_PARTICIPANT) == 0) {
 			// Name (fileAs)
 			htmlArr[idx++] = "<td width=";
 			htmlArr[idx++] = width;
@@ -744,17 +749,17 @@ function(contact, now, isDndIcon) {
 			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
 			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT]) == 0) {
+		} else if (id.indexOf(ZmItem.F_ATTACHMENT) == 0) {
 			// Attachment icon
 			idx = this._getField(htmlArr, idx, contact, ZmItem.F_ATTACHMENT, i);
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) == 0) {
+		} else if (id.indexOf(ZmItem.F_SUBJECT) == 0) {
 			// Company
 			htmlArr[idx++] = "<td id='";
 			htmlArr[idx++] = this._getFieldId(contact, ZmItem.F_COMPANY);
 			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getCompanyField());
 			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(ZmListView.FIELD_PREFIX[ZmItem.F_DATE]) == 0) {
+		} else if (id.indexOf(ZmItem.F_DATE) == 0) {
 			htmlArr[idx++] = "<td width=";
 			htmlArr[idx++] = width;
 			htmlArr[idx++] = " id='";
@@ -768,4 +773,37 @@ function(contact, now, isDndIcon) {
 
 	div.innerHTML = htmlArr.join("");
 	return div;
+};
+*/
+ZmContactSimpleView.prototype._getField =
+function(htmlArr, idx, contact, field, colIdx, params) {
+	if (field == ZmItem.F_PARTICIPANT) {
+		// Name (fileAs)
+		htmlArr[idx++] = "<td width=";
+		htmlArr[idx++] = params.width;
+		htmlArr[idx++] = " id='";
+		htmlArr[idx++] = params.fieldId;
+		htmlArr[idx++] = "'>";
+		htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
+		htmlArr[idx++] = "</td>";
+	} else if (field == ZmItem.F_SUBJECT) {
+		// Company
+		htmlArr[idx++] = "<td id='";
+		htmlArr[idx++] = params.fieldId;
+		htmlArr[idx++] = "'>";
+		htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getCompanyField());
+		htmlArr[idx++] = "</td>";
+	} else if (field == ZmItem.F_DATE) {
+		htmlArr[idx++] = "<td width=";
+		htmlArr[idx++] = params.width;
+		htmlArr[idx++] = " id='";
+		htmlArr[idx++] = params.fieldId;
+		htmlArr[idx++] = "'>";
+		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now, contact.modified);
+		htmlArr[idx++] = "</td>";
+	} else {
+		idx = ZmContactsBaseView.prototype._getField.apply(this, arguments);
+	}
+	
+	return idx;
 };

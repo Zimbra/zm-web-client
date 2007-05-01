@@ -158,11 +158,11 @@ function(ev) {
 	ZmMailListController.prototype._listSelectionListener.call(this, ev);
 
 	var msg = ev.item.getMessage();
-	if (msg && ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) {
+	if (msg && ev.field == ZmItem.F_FROM) {
 		var fromAddr = msg._addrs[AjxEmailAddress.FROM].get(0);
 		var sctrl = this._appCtxt.getSearchController();
 		sctrl.fromSearch(fromAddr.getAddress());
-	} else if (msg && ev.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) {
+	} else if (msg && ev.field == ZmItem.F_SUBJECT) {
 		var conv = new ZmConv(this._appCtxt); // should probably do search instead
 		conv.id = msg.getConvId();
 		conv.msgs.add(msg);

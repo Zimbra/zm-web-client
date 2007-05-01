@@ -162,6 +162,7 @@ function ZmHybridListView(parent, className, posStyle, controller, dropTgt) {
 	this._handleEventType[ZmItem.CONV] = true;
 	this._handleEventType[ZmItem.MSG] = true;
 
+	this._mode = ZmController.HYBRID_VIEW;
 	this._hasHiddenRows = true;	// so that up and down arrow keys work
 	this._msgRowIdList = {};	// hash of lists, each list has row IDs for an expandable item
 	this._dblClickIsolation = (this._controller._readingPaneOn && !AjxEnv.isIE);
@@ -229,110 +230,82 @@ function(parent) {
 
 	var hList = [];
 
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_EXPAND], null, "NodeCollapsed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.expand));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, "FlagRed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.flag));
+	hList.push(new DwtListHeaderItem(ZmItem.F_EXPAND, null, "NodeCollapsed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.expand));
+	hList.push(new DwtListHeaderItem(ZmItem.F_FLAG, null, "FlagRed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.flag));
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "MiniTag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));
+		hList.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "MiniTag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));
 	}
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_STATUS], null, "MsgStatus", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.status));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], ZmMsg.from, null, ZmConvListView.COL_WIDTH_FROM, null, true));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FOLDER], ZmMsg.folder, null, ZmMailMsgListView.COL_WIDTH_FOLDER, null, true));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SIZE], ZmMsg.size, null, ZmMailMsgListView.COL_WIDTH_SIZE, null, true));
-	hList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.received, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_DATE));
+	hList.push(new DwtListHeaderItem(ZmItem.F_STATUS, null, "MsgStatus", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.status));
+	hList.push(new DwtListHeaderItem(ZmItem.F_PARTICIPANT, ZmMsg.from, null, ZmConvListView.COL_WIDTH_FROM, null, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_ATTACHMENT, null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
+	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject, null, null, ZmItem.F_SUBJECT));
+	hList.push(new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmMailMsgListView.COL_WIDTH_FOLDER, null, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmMailMsgListView.COL_WIDTH_SIZE, null, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.received, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_DATE));
 
 	return hList;
 };
 
-// TODO: this could be a generic version of this function
-ZmHybridListView.prototype._createItemHtml =
-function(item, now, isDndIcon, isMixedView, myDiv) {
-
-	var isMatched = ((item.type == ZmItem.MSG) && item.isInHitList() && !this._appCtxt.getCurrentSearch().folderId);
-	var	div = myDiv || this._getDiv(item, isDndIcon, isMatched);
-	if ((item.type == ZmItem.MSG) && !isMatched) {
-		// XXX: move to skins
-		div.style.backgroundColor = "EEEEFF";
+ZmHybridListView.prototype._getDiv =
+function(item, params) {
+	var div = DwtListView.prototype._getDiv.apply(this, arguments);
+	if ((item.type == ZmItem.MSG) && !params.isMatched) {
+		div.style.backgroundColor = "EEEEFF";	// XXX: move to skins
 	}
-
-	var htmlArr = [];
-	var idx = 0;
-
-	idx = this._getTable(htmlArr, idx, isDndIcon);
-	idx = this._getRow(htmlArr, idx, item, item.isUnread ? "Unread" : null);
-
-	for (var colIdx = 0; colIdx < this._headerList.length; colIdx++) {
-		if (!this._headerList[colIdx]._visible) { continue; }
-
-		var id = this._headerList[colIdx]._id;
-		var prefix = id.substr(0,1);
-		var field = ZmListView.PREFIX_FIELD[prefix];
-		idx = this._getField(htmlArr, idx, item, field, colIdx, now);
-	}
-
-	htmlArr[idx++] = "</tr></table>";
-
-	div.innerHTML = htmlArr.join("");
 	return div;
 };
 
+// set isMatched for msgs	
+ZmHybridListView.prototype._addParams =
+function(item, params) {
+	if (item.type == ZmItem.MSG) {
+		ZmMailMsgListView.prototype._addParams.apply(this, arguments);
+	}
+};
+
 ZmHybridListView.prototype._getField =
-function(htmlArr, idx, item, field, colIdx, now) {
-	var fieldId = this._getFieldId(item, field);
-	var width = this._getFieldWidth(colIdx);
+function(htmlArr, idx, item, field, colIdx, params) {
 	var isConv = (item.type == ZmItem.CONV);
 	if (field == ZmItem.F_EXPAND) {
 		var expandable = this._isExpandable(item);
 		var imageInfo = expandable ? "NodeCollapsed" : "Blank_16";
 		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = width;
+		htmlArr[idx++] = params.width;
 		htmlArr[idx++] = " class='Icon'>";
-		htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, ["id='", fieldId, "'"].join(""));
+		htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, ["id='", params.fieldId, "'"].join(""));
 		htmlArr[idx++] = "</td>";
-		return idx;
 
 	} else if (field == ZmItem.F_STATUS) {
-		var imageInfo = "Blank_16";
+		var imageInfo = isConv ? "Blank_16" : item.getStatusIcon();
 		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = width;
+		htmlArr[idx++] = params.width;
 		htmlArr[idx++] = "><center>";
-		if (!isConv) {
-			if (item.isInvite())		{ imageInfo = "Appointment"; }
-			else if (item.isDraft)		{ imageInfo = "MsgStatusDraft"; }
-			else if (item.isReplied)	{ imageInfo = "MsgStatusReply"; }
-			else if (item.isForwarded)	{ imageInfo = "MsgStatusForward"; }
-			else if (item.isSent)		{ imageInfo = "MsgStatusSent"; }
-			else						{ imageInfo = item.isUnread ? "MsgStatusUnread" : "MsgStatusRead"; }
-		}
-		htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, ["id='", this._getFieldId(item, ZmItem.F_STATUS), "'"].join(""));	
+		htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, ["id='", params.fieldId, "'"].join(""));	
 		htmlArr[idx++] = "</center></td>";
-		return idx;
 
 	} else if (field == ZmItem.F_PARTICIPANT) {
-		var fieldId = this._getFieldId(item, ZmItem.F_PARTICIPANT);
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = this._getFieldWidth(colIdx);
-		htmlArr[idx++] = " id='";
-		htmlArr[idx++] = fieldId;
-		htmlArr[idx++] = "'>";
-		if (AjxEnv.isSafari) {
-			htmlArr[idx++] = "<div style='overflow:hidden'>";
+		if (isConv) {
+			htmlArr[idx++] = "<td width=";
+			htmlArr[idx++] = params.width;
+			htmlArr[idx++] = " id='";
+			htmlArr[idx++] = params.fieldId;
+			htmlArr[idx++] = "'>";
+			if (AjxEnv.isSafari) {
+				htmlArr[idx++] = "<div style='overflow:hidden'>";
+			}
+			htmlArr[idx++] = this._getParticipantHtml(item, params.fieldId);
+			if ( AjxEnv.isSafari) {
+				htmlArr[idx++] = "</div>";
+			}
+			htmlArr[idx++] = "</td>";
+		} else {
+			idx = ZmMailMsgListView.prototype._getField.apply(this, arguments);
 		}
-		if (!isConv) {
-			htmlArr[idx++] = ZmHybridListView.INDENT;
-		}
-		htmlArr[idx++] = this._getParticipantHtml(item, fieldId);
-		if (AjxEnv.isSafari) {
-			htmlArr[idx++] = "</div>";
-		}
-		htmlArr[idx++] = "</td>";
-		return idx;	
 
 	} else if (field == ZmItem.F_SUBJECT) {
 		if (isConv) {
 			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = this._getFieldId(item, ZmItem.F_SUBJECT);
+			htmlArr[idx++] = params.fieldId;
 			htmlArr[idx++] = "'>";
 			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 			htmlArr[idx++] = item.subject ? AjxStringUtil.htmlEncode(item.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
@@ -343,31 +316,15 @@ function(htmlArr, idx, item, field, colIdx, now) {
 			}
 			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
 		} else {
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = this._getFieldId(item, ZmItem.F_FRAGMENT);
-			htmlArr[idx++] = "'";
-			htmlArr[idx++] = AjxEnv.isSafari ? " style='width:auto;'><div style='overflow:hidden'>" : " width=100%>";
-			htmlArr[idx++] = ZmHybridListView.INDENT;
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(item.fragment, true);
+			idx = ZmMailMsgListView.prototype._getField.apply(this, arguments);
 		}
-		return idx;
 
 	} else if (field == ZmItem.F_FOLDER) {
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = width;
-		htmlArr[idx++] = ">";
-		htmlArr[idx++] = "<nobr id='";
-		htmlArr[idx++] = this._getFieldId(item, ZmItem.F_FOLDER);
-		htmlArr[idx++] = "'>"; // required for IE bug
-		if (!isConv) {
-			var folder = this._appCtxt.getById(item.folderId);
-			if (folder) {
-				htmlArr[idx++] = folder.getName();
-			}
+		if (isConv) {
+			idx = DwtListView.prototype._getField.apply(this, arguments);
+		} else {
+			idx = ZmMailMsgListView.prototype._getField.apply(this, arguments);
 		}
-		htmlArr[idx++] = "</nobr>";
-		htmlArr[idx++] = "</td>";
-		return idx;
 
 	} else if (field == ZmItem.F_SIZE) {
 		if (isConv) {
@@ -375,7 +332,7 @@ function(htmlArr, idx, item, field, colIdx, now) {
 			htmlArr[idx++] = "<td id='";
 			htmlArr[idx++] = this._getFieldId(item, ZmItem.F_COUNT);
 			htmlArr[idx++] = "' width=";
-			htmlArr[idx++] = this._getFieldWidth(colIdx);
+			htmlArr[idx++] = params.width;
 			htmlArr[idx++] = ">";
 			if (item.numMsgs > 1) {
 				htmlArr[idx++] = "(";
@@ -385,17 +342,14 @@ function(htmlArr, idx, item, field, colIdx, now) {
 			htmlArr[idx++] = "</td>";
 		} else {
 			// Message size
-			htmlArr[idx++] = "<td width=";
-			htmlArr[idx++] = width;
-			htmlArr[idx++] = "><nobr>";
-			htmlArr[idx++] = AjxUtil.formatSize(item.size);
-			htmlArr[idx++] = "</td>";
+			idx = ZmMailMsgListView.prototype._getField.apply(this, arguments);
 		}
-		return idx;
 
 	} else {
-		return ZmListView.prototype._getField.apply(this, arguments);
+		idx = ZmListView.prototype._getField.apply(this, arguments);
 	}
+	
+	return idx;
 };
 
 /**
@@ -695,7 +649,7 @@ function(item, skipNotify) {
 ZmHybridListView.prototype._allowFieldSelection =
 function(id, field) {
 	// allow left selection if clicking on blank icon
-	if (field == ZmListView.FIELD_PREFIX[ZmItem.F_EXPAND]) {
+	if (field == ZmItem.F_EXPAND) {
 		return !this._expandable[id];
 	} else {
 		return ZmListView.prototype._allowFieldSelection.apply(this, arguments);

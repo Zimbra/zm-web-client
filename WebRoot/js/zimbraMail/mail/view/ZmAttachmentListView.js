@@ -63,7 +63,7 @@ function(attachment, now) {
 	
 	// Icon
 	var mimeInfo = ZmMimeTable.getInfo(attachment.getContentType());
-	fieldId = this._getFieldId(attachment, ZmItem.F_ICON);
+	fieldId = this._getFieldId(attachment, ZmItem.F_TYPE);
 	htmlArr[idx++] = "<td class='Icon'>";
 	htmlArr[idx++] = AjxImg.getImageHtml(mimeInfo ? mimeInfo.image : "GenericDoc" , null, ["id='", fieldId, "'"].join(""));
 	htmlArr[idx++] = "</td>";
@@ -134,10 +134,10 @@ function(ev, div) {
 	
 	var msg = this.getItemFromElement(div).getMessage();
 	if (m && m.field && msg) {
-		if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) {
+		if (m.field == ZmItem.F_FROM) {
 			var fromAddr = msg._addrs[AjxEmailAddress.FROM].get(0);
 			this._setParticipantToolTip(fromAddr);
-		} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) {
+		} else if (m.field == ZmItem.F_SUBJECT) {
 			this.setToolTipContent(AjxStringUtil.htmlEncode(msg.fragment));
 		} else {
 			this.setToolTipContent(null);

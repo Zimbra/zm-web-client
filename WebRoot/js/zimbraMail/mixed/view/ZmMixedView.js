@@ -65,18 +65,30 @@ function(list, sortField) {
 	}
 };
 
+/**
+ * Let the main view for the given item handle creating the HTML for it.
+ * We also need to make sure any functions called by DwtListView._createItemHtml
+ * come from the right class.
+ */
 ZmMixedView.prototype._createItemHtml =
-function(item, now, isDndIcon) {
+function(item, params) {
+	params = params || {};
+	params.isMixedView = true;
 	if (item.type == ZmItem.CONTACT || item.type == ZmItem.GROUP) {
-		return ZmContactSimpleView.prototype._createContactHtmlForMixed.call(this, item, now, isDndIcon);
+		this._getField = ZmContactSimpleView.prototype._getField;
+		return ZmContactSimpleView.prototype._createItemHtml.apply(this, arguments);
 	} else if (item.type == ZmItem.CONV) {
-		return ZmConvListView.prototype._createItemHtml.call(this, item, now, isDndIcon, true);
+		this._getField = ZmConvListView.prototype._getField;
+		return ZmConvListView.prototype._createItemHtml.apply(this, arguments);
 	} else if (item.type == ZmItem.MSG) {
-		return ZmMailMsgListView.prototype._createItemHtml.call(this, item, now, isDndIcon, true);
+		this._getField = ZmMailMsgListView.prototype._getRowClassName;
+		this._getField = ZmMailMsgListView.prototype._getField;
+		return ZmMailMsgListView.prototype._createItemHtml.apply(this, arguments);
 	} else if (item.type == ZmItem.TASK) {
-		return ZmTaskListView.prototype._createTaskHtmlForMixed.call(this, item, now, isDndIcon);
+		this._getField = ZmTaskListView.prototype._getField;
+		return ZmTaskListView.prototype._createItemHtml.apply(this, arguments);
 	} else if (item.type == ZmItem.PAGE || item.type == ZmItem.DOCUMENT) {
-		return ZmFileListView.prototype._createItemHtml.call(this, item, now, isDndIcon);
+		return ZmFileListView.prototype._createItemHtml.apply(this, arguments);
 	}
 };
 
@@ -121,19 +133,19 @@ function(parent) {
 
 	var headerList = new Array();
 	
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_FLAG], null, "FlagRed", ZmMixedView.COLWIDTH_ICON));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_FLAG, null, "FlagRed", ZmMixedView.COLWIDTH_ICON));
 	
 	var shell = (parent instanceof DwtShell) ? parent : parent.shell;
 	var appCtxt = shell.getData(ZmAppCtxt.LABEL); // this._appCtxt not set until parent constructor is called
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-		headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_TAG], null, "MiniTag", ZmMixedView.COLWIDTH_ICON));
+		headerList.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "MiniTag", ZmMixedView.COLWIDTH_ICON));
 	}
 	
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ICON], null, "Globe", ZmMixedView.COLWIDTH_ICON));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_PARTICIPANT], ZmMsg.from, null, ZmMixedView.COLWIDTH_FROM, null, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_ATTACHMENT], null, "Attachment", ZmMixedView.COLWIDTH_ICON));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT], ZmMsg.subject, null, null, null, true));
-	headerList.push(new DwtListHeaderItem(ZmListView.FIELD_PREFIX[ZmItem.F_DATE], ZmMsg.date, null, ZmMixedView.COLWIDTH_DATE));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_TYPE, null, "Globe", ZmMixedView.COLWIDTH_ICON));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_PARTICIPANT, ZmMsg.from, null, ZmMixedView.COLWIDTH_FROM, null, true));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_ATTACHMENT, null, "Attachment", ZmMixedView.COLWIDTH_ICON));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject, null, null, null, true));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.date, null, ZmMixedView.COLWIDTH_DATE));
 	
 	return headerList;
 };
