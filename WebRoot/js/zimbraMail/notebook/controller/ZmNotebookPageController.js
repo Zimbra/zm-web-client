@@ -232,7 +232,11 @@ ZmNotebookPageController.prototype._dropListener =
 function(ev) {
 	// only tags can be dropped on us
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
+		if(this._object && (this._object.isShared() || this._object.isIndex() )){
+		ev.doIt = false;	
+		}else{
 		ev.doIt = this._dropTgt.isValidTarget(ev.srcData);
+		}
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		var tag = ev.srcData;
 		this._doTag([this._object], tag, true);
