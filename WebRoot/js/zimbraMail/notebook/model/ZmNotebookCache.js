@@ -573,6 +573,7 @@ function(requestParams, folderId, callback, errorCallback, response) {
 ZmNotebookCache.prototype._fillCacheResponse2 =
 function(folderId, callback, errorCallback, response) {
 
+	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var resp = response.GetFolderResponse || (response._data && response._data.GetFolderResponse);
 	var folder = resp.folder && resp.folder[0];
 	var folders = folder && folder.folder;
