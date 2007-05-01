@@ -194,8 +194,9 @@ function() {
 	this._endTimeSelectId	= Dwt.getNextId();
 	this._repeatSelectId	= Dwt.getNextId();
 	this._repeatDescId 		= Dwt.getNextId();
+	this._calRowId          = Dwt.getNextId();
 
-	var html = [];
+    var html = [];
 	var i = 0;
 
 	html[i++] = "<table border=0 width=330>";
@@ -214,7 +215,7 @@ function() {
 	html[i++] = "</td><td colspan=2 id='";
 	html[i++] = this._showAsSelectId;
 	html[i++] = "'></td></tr>";
-	html[i++] = "<tr><td class='ZmApptTabViewPageField' id='";
+	html[i++] = "<tr id='" + this._calRowId + "'><td class='ZmApptTabViewPageField' id='";
 	html[i++] = this._calLabelId;
 	html[i++] = "'>";
 	html[i++] = ZmMsg.calendar;
@@ -361,10 +362,9 @@ function(appt) {
 	}
 
 	var len = this._calendarSelect.size();
-	Dwt.setVisibility(this._calendarSelect.getHtmlElement(), len>1);
-	Dwt.setVisibility(this._calLabelField, len>1);
+	Dwt.setVisible(document.getElementById(this._calRowId), len > 1);
 
-	this._calendarSelect.setSelectedValue(appt.folderId);
+    this._calendarSelect.setSelectedValue(appt.folderId);
 };
 
 ZmApptQuickAddDialog.prototype._showTimeFields = 
