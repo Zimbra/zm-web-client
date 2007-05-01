@@ -714,67 +714,6 @@ function(contact, params) {
 	return div;
 };
 
-// this is used by mixed view to create the old listview version of contact list
-/*
-ZmContactSimpleView.prototype._createContactHtmlForMixed =
-function(contact, params) {
-	var	div = this._getDiv(contact, params);
-
-	var htmlArr = [];
-	var idx = 0;
-
-	idx = this._getTable(htmlArr, idx, params);
-	idx = this._getRow(htmlArr, idx, contact, params);
-	
-	for (var i = 0; i < this._headerList.length; i++) {
-		var id = this._headerList[i]._id;
-		var field = DwtListHeaderItem.getHeaderField(this._headerList[i]._id);
-		var width = this._getFieldWidth(i);
-
-		if (id.indexOf(ZmItem.F_TYPE) == 0) {
-			// Type icon
-			idx = this._getField(htmlArr, idx, contact, ZmItem.F_TYPE, i);
-		} else if (id.indexOf(ZmItem.F_FLAG) == 0) {
-			// Flag
-			idx = this._getField(htmlArr, idx, contact, ZmItem.F_FLAG, i);
-		} else if (id.indexOf(ZmItem.F_TAG) == 0) {
-			// Tags
-			idx = this._getField(htmlArr, idx, contact, ZmItem.F_TAG, i);
-		} else if (id.indexOf(ZmItem.F_PARTICIPANT) == 0) {
-			// Name (fileAs)
-			htmlArr[idx++] = "<td width=";
-			htmlArr[idx++] = width;
-			htmlArr[idx++] = " id='";
-			htmlArr[idx++] = this._getFieldId(contact, ZmItem.F_PARTICIPANT);
-			htmlArr[idx++] = "'>";
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
-			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(ZmItem.F_ATTACHMENT) == 0) {
-			// Attachment icon
-			idx = this._getField(htmlArr, idx, contact, ZmItem.F_ATTACHMENT, i);
-		} else if (id.indexOf(ZmItem.F_SUBJECT) == 0) {
-			// Company
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = this._getFieldId(contact, ZmItem.F_COMPANY);
-			htmlArr[idx++] = "'>";
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getCompanyField());
-			htmlArr[idx++] = "</td>";
-		} else if (id.indexOf(ZmItem.F_DATE) == 0) {
-			htmlArr[idx++] = "<td width=";
-			htmlArr[idx++] = width;
-			htmlArr[idx++] = " id='";
-			htmlArr[idx++] = this._getFieldId(contact, ZmItem.F_DATE);
-			htmlArr[idx++] = "'>";
-			htmlArr[idx++] = AjxDateUtil.computeDateStr(now, contact.modified);
-			htmlArr[idx++] = "</td>";
-		}
-	}
-	htmlArr[idx++] = "</tr></table>";
-
-	div.innerHTML = htmlArr.join("");
-	return div;
-};
-*/
 ZmContactSimpleView.prototype._getField =
 function(htmlArr, idx, contact, field, colIdx, params) {
 	if (field == ZmItem.F_PARTICIPANT) {
