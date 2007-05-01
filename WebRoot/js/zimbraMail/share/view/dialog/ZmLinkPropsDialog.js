@@ -400,8 +400,10 @@ function(children, depth) {
 	for (var i = 0; i < children.length; i++) {
 		var child = children[i];
 		//this._notebookSelect.addOption(depth+child.name, false, child.id);
+		if(child instanceof ZmNotebook ){
 		this._notebookSelect.addOption(child.getSearchPath(), false, child.id);
 		var grandChildren = child.children.getArray();
 		this.__addNotebookChildren(grandChildren, depth+"&nbsp;");
+		}
 	}
 };
