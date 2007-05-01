@@ -75,21 +75,6 @@ function() {
 	return [ZmOperation.CONTACT];
 };
 
-ZmVoiceListController.prototype._getParticipantActionMenu =
-function() {
-	if (!this._participantActionMenu) {
-		var menuItems = this._participantOps();
-		menuItems.push(ZmOperation.SEP);
-		var ops = this._getActionMenuOps();
-		if (ops && ops.length) {
-			menuItems = menuItems.concat(ops);
-		}
-    	this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
-    	this._addMenuListeners(this._participantActionMenu);
-	}
-	return this._participantActionMenu;
-};
-
 ZmVoiceListController.prototype._initializeToolBar =
 function(view) {
 	if (!this._toolbar[view]) {
@@ -129,25 +114,17 @@ function(ev) {
 
 	var view = ev.dwtObj;
 	var isParticipant = ev.field == ZmItem.F_PARTICIPANT;
-	var actionMenu;
-	if (isParticipant) {
+	var actionMenu = this.getActionMenu();
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
 		var item = ev.item;
 		var contact = item.participants ? item.participants.getArray()[0] : null;
-	 	actionMenu = this._getParticipantActionMenu();
 		var newOp = contact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
 		var newText = contact? null : ZmMsg.AB_ADD_CONTACT;
-		ZmOperation.setOperation(this._participantActionMenu, ZmOperation.CONTACT, newOp, newText);
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			var contacts = AjxDispatcher.run("GetContacts");
-			this._actionEv.contact = contact;
-			this._setContactText(contact != null);
-		}
-		this._resetOperations(actionMenu, this._getView().getSelectionCount());
-	} else  {
-	 	actionMenu = this.getActionMenu();
+		ZmOperation.setOperation(actionMenu, ZmOperation.CONTACT, newOp, newText);
+		var contacts = AjxDispatcher.run("GetContacts");
+		this._actionEv.contact = contact;
+		this._setContactText(contact != null);
 	}
-	if (actionMenu) {
-		actionMenu.popup(0, ev.docX, ev.docY);
-	}
+	actionMenu.popup(0, ev.docX, ev.docY);
 };
 

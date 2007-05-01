@@ -92,17 +92,19 @@ function() {
 
 ZmVoicemailListController.prototype._getActionMenuOps =
 function() {
-	var list = this._flagOps();
+	var list = []
+	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		list.push(ZmOperation.CONTACT);
+		list.push(ZmOperation.SEP);
+	}
+	list.push(ZmOperation.MARK_HEARD);
+	list.push(ZmOperation.MARK_UNHEARD);
+	list.push(ZmOperation.REPLY);
 	list.push(ZmOperation.REPLY);
 	list.push(ZmOperation.FORWARD);
 	list.push(ZmOperation.SAVE);
 	list.push(ZmOperation.DELETE);
 	return list;
-};
-
-ZmVoicemailListController.prototype._flagOps =
-function() {
-	return [ZmOperation.MARK_HEARD, ZmOperation.MARK_UNHEARD];
 };
 
 ZmVoicemailListController.prototype._initializeToolBar =
