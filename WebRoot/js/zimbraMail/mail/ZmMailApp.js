@@ -598,13 +598,8 @@ function(callback, checkQS) {
 			}
 		}
 	}
-	query = query || this._appCtxt.get(ZmSetting.INITIAL_SEARCH);
-	var types = new AjxVector();
-	types.add(this.getGroupMailBy());
 
-	var params = {query:query, callback:callback, types:types};
-	params.errorCallback = new AjxCallback(this, this._handleErrorLaunch, params);
-	this._appCtxt.getSearchController().search(params);
+	this._mailSearch(query, callback);
 };
 
 ZmMailApp.prototype._handleErrorLaunch =
@@ -616,6 +611,17 @@ function(params, ex) {
 		var newParams = {query:"in:inbox", callback:params.callback, errorCallback:null, types:params.types};
 		this._appCtxt.getSearchController().search(newParams);
 	}
+};
+
+ZmMailApp.prototype._mailSearch =
+function(query, callback) {
+	query = query || this._appCtxt.get(ZmSetting.INITIAL_SEARCH);
+	var types = new AjxVector();
+	types.add(this.getGroupMailBy());
+
+	var params = {query:query, callback:callback, types:types};
+	params.errorCallback = new AjxCallback(this, this._handleErrorLaunch, params);
+	this._appCtxt.getSearchController().search(params);
 };
 
 ZmMailApp.prototype.showSearchResults =

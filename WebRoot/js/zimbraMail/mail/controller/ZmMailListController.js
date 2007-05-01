@@ -870,7 +870,7 @@ function() {
             dsCollection.importPopMailFor(folderId);
         }
         if (isInbox || !hasPopAccounts) {
-            this._folderSearch(ZmFolder.ID_INBOX, ZmSearchToolBar.FOR_MAIL_MI);
+        	this._app._mailSearch();
         }
     }
 };
