@@ -215,6 +215,9 @@ function(ev) {
 	this._doSave(false);
 };
 
+ZmPageEditController.INVALID_DOC_NAME_CHARS = "[\\|]";
+ZmPageEditController.INVALID_DOC_NAME_RE = new RegExp(ZmPageEditController.INVALID_DOC_NAME_CHARS);
+
 ZmPageEditController.prototype._doSave =
 function(popViewWhenSaved) {
 	var name = this._pageEditView.getPageName();
@@ -222,7 +225,7 @@ function(popViewWhenSaved) {
 	var message;
 	if (name == "") {
 		message = ZmMsg.errorSavingPageNameRequired;
-	} else if (!ZmOrganizer.VALID_NAME_RE.test(name)) {
+	} else if (!ZmOrganizer.VALID_NAME_RE.test(name) || ZmPageEditController.INVALID_DOC_NAME_RE.test(name)) {
 		message = AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
 	}
 
