@@ -86,24 +86,20 @@ function() {
 };
 
 /**
- * Pauses the currently loaded sound.
+ * Stops the currently loaded sound.
  */
-ZmSoundPlayer.prototype.pause =
+ZmSoundPlayer.prototype.stop =
 function() {
 	if (this._soundPlugin) {
-		this._soundPlugin.pause();
-		this._setPlayState(ZmSoundPlayer._PAUSED);
-	}
-};
-
-/**
- * Rewinds the currently loaded sound to the beginning.
- */
-ZmSoundPlayer.prototype.rewind =
-function() {
-	if (this._soundPlugin) {
-		this._soundPlugin.rewind();
-		this._timeSlider.setValue(this._timeSlider.getMinimum());
+		if (this._isScriptable) {
+			this._soundPlugin.pause();
+			this._setPlayState(ZmSoundPlayer._NONE);
+			this._soundPlugin.rewind();
+			this._timeSlider.setValue(this._timeSlider.getMinimum());
+		} else {
+			this._soundPlugin.dispose();
+			this._soundPlugin = null;
+		}
 	}
 };
 

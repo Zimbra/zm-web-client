@@ -86,8 +86,7 @@ function(compact) {
 		if (compact) {
 			player.setCompact(true);
 		}
-		player.pause();
-		player.rewind();
+		player.stop();
 	}
 };
 
