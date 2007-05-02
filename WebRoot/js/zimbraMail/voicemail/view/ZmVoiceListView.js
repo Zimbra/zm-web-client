@@ -41,6 +41,9 @@ ZmVoiceListView.prototype.toString = function() {
 	return "ZmVoiceListView";
 };
 
+ZmVoiceListView.F_DATE = ZmItem.F_DATE;
+ZmVoiceListView.F_CALLER = "cl";
+
 ZmVoiceListView.prototype.getTitle =
 function() {
 	var text = this._folder ? this._folder.getName(false, 0, true) : ZmMsg.voice;
@@ -74,6 +77,23 @@ function(element, field) {
 ZmVoiceListView.prototype._getRowClassName =
 function(voicemail, params) {
 	return voicemail.isUnheard ? "Unread" : "";
+};
+
+ZmVoiceListView.prototype._getField =
+function(voicemail) {
+	// Bypass ZmListView implementation.
+	return DwtListView.prototype._getField.apply(this, arguments);
+};
+
+ZmVoiceListView.prototype._getFieldContents =
+function(htmlArr, idx, voicemail, field, colIdx, params) {
+	if (field == ZmVoiceListView.F_CALLER) {
+		htmlArr[idx++] = this._getCallerNameHtml(voicemail);
+	} else if (field == ZmVoiceListView.F_DATE) {
+		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now, voicemail.date);
+	}
+	
+	return idx;
 };
 
 ZmVoiceListView.prototype._getCallerNameHtml =

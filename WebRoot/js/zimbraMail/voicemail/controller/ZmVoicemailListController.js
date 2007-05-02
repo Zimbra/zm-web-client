@@ -99,9 +99,10 @@ function() {
 	}
 	list.push(ZmOperation.MARK_HEARD);
 	list.push(ZmOperation.MARK_UNHEARD);
-	list.push(ZmOperation.REPLY);
+	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.REPLY);
 	list.push(ZmOperation.FORWARD);
+	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.SAVE);
 	list.push(ZmOperation.DELETE);
 	return list;
@@ -367,8 +368,7 @@ function(voicemail) {
 
 ZmVoicemailListController.prototype._selectListener = 
 function(ev) {
-	if (ev.detail == DwtListView.ITEM_DBL_CLICKED ||
-		ev.detail == ZmVoiceListView.PLAY_BUTTON_PRESSED) {
+	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		var selection = this._getView().getSelection();
 		if (selection.length == 1) {
 			if (this._autoPlaying) {

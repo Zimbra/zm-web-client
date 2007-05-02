@@ -46,14 +46,8 @@ ZmVoicemailListView.PLAYING_WIDTH = null; // Auto
 ZmVoicemailListView.PRIORITY_WIDTH = ZmListView.COL_WIDTH_ICON;
 ZmVoicemailListView.DATE_WIDTH = 120;
 
-// Resuse existing field codes rather than adding voice-specific stuff to ZmList...
-ZmVoicemailListView.F_CALLER = "cl";
 ZmVoicemailListView.F_PLAYING = "pl";
 ZmVoicemailListView.F_PRIORITY = "py";
-ZmVoicemailListView.F_DATE = ZmItem.F_DATE;
-
-// Event details.
-ZmVoicemailListView.PLAY_BUTTON_PRESSED = "PlayButtonPressed";
 
 ZmVoicemailListView.prototype.setPlaying =
 function(voicemail) {
@@ -103,33 +97,22 @@ function() {
 	var headerList = [];
 
 	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_PRIORITY, null, "FlagRed", ZmVoicemailListView.PRIORITY_WIDTH, null, false));
-	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_CALLER, ZmMsg.from, null, ZmVoicemailListView.FROM_WIDTH, null, true));
+	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_CALLER, ZmMsg.from, null, ZmVoicemailListView.FROM_WIDTH, null, true));
 	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_PLAYING, ZmMsg.message, null, ZmVoicemailListView.PLAYING_WIDTH, ZmVoicemailListView.F_PLAYING, true));
-	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_DATE, ZmMsg.received, null, ZmVoicemailListView.DATE_WIDTH, ZmVoicemailListView.F_DATE, true));
+	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_DATE, ZmMsg.received, null, ZmVoicemailListView.DATE_WIDTH, ZmVoiceListView.F_DATE, true));
 
 	return headerList;
 };
 
-ZmVoicemailListView.prototype._getField =
+ZmVoicemailListView.prototype._getFieldContents =
 function(htmlArr, idx, voicemail, field, colIdx, params) {
-	var width = params.width || this._getFieldWidth(colIdx);
-	htmlArr[idx++] = "<td width=";
-	htmlArr[idx++] = width;
-	htmlArr[idx++] = " id='";
-	htmlArr[idx++] = this._getFieldId(voicemail, field);
-	htmlArr[idx++] = "'>";
-
 	if (field == ZmVoicemailListView.F_PRIORITY) {
 		htmlArr[idx++] = this._getPriorityHtml(voicemail);
 	} else if (field == ZmVoicemailListView.F_PLAYING) {
 		// No-op. This is handled in _addRow()
-	} else if (field == ZmVoicemailListView.F_CALLER) {
-		htmlArr[idx++] = this._getCallerNameHtml(voicemail);
-	} else if (field == ZmVoicemailListView.F_DATE) {
-		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now, voicemail.date);
+	} else {
+		idx = ZmVoiceListView.prototype._getFieldContents.apply(this, arguments);
 	}
-
-	htmlArr[idx++] = "</td>";
 	return idx;
 };
 
@@ -268,7 +251,7 @@ function(columnItem, bSortAsc) {
 	var sortBy;
 	switch (columnItem._sortable) {
 		case ZmVoicemailListView.F_PLAYING: sortBy = bSortAsc ? ZmSearch.DURATION_ASC : ZmSearch.DURATION_DESC; break;
-		case ZmVoicemailListView.F_DATE: sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC; break;
+		case ZmVoiceListView.F_DATE: sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC; break;
 		default: break;
 	}
 	this._appCtxt.getApp(ZmApp.VOICE).search(this._controller._folder, null, sortBy)
@@ -278,11 +261,11 @@ ZmVoicemailListView.prototype._getHeaderTooltip =
 function(prefix) {
 	if (prefix == ZmVoicemailListView.F_PRIORITY) {
 		return ZmMsg.priority;
-	} else if (prefix == ZmVoicemailListView.F_CALLER) {
+	} else if (prefix == ZmVoiceListView.F_CALLER) {
 		return ZmMsg.from;
 	} else if (prefix == ZmVoicemailListView.F_PLAYING) {
 		return ZmMsg.sortByDuration;
-	} else if (prefix == ZmVoicemailListView.F_DATE) {
+	} else if (prefix == ZmVoiceListView.F_DATE) {
 		return ZmMsg.sortByReceived;
 	}
 	return null;
