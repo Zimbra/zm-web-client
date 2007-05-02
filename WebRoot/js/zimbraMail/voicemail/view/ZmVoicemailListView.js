@@ -101,10 +101,6 @@ ZmVoicemailListView.prototype._getHeaderList =
 function() {
 
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_PRIORITY, null, "Critical", ZmVoicemailListView.PRIORITY_WIDTH, null, false));
-	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_CALLER, ZmMsg.from, null, ZmVoicemailListView.FROM_WIDTH, null, true));
-	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_PLAYING, ZmMsg.message, null, ZmVoicemailListView.PLAYING_WIDTH, ZmVoicemailListView.F_PLAYING, true));
-	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_DATE, ZmMsg.received, null, ZmVoicemailListView.DATE_WIDTH, ZmVoicemailListView.F_DATE, true));
 
 	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_PRIORITY, null, "FlagRed", ZmVoicemailListView.PRIORITY_WIDTH, null, false));
 	headerList.push(new DwtListHeaderItem(ZmVoicemailListView.F_CALLER, ZmMsg.from, null, ZmVoicemailListView.FROM_WIDTH, null, true));
@@ -116,13 +112,25 @@ function() {
 
 ZmVoicemailListView.prototype._getField =
 function(htmlArr, idx, voicemail, field, colIdx, params) {
+	var width = params.width || this._getFieldWidth(colIdx);
+	htmlArr[idx++] = "<td width=";
+	htmlArr[idx++] = width;
+	htmlArr[idx++] = " id='";
+	htmlArr[idx++] = this._getFieldId(voicemail, field);
+	htmlArr[idx++] = "'>";
+
 	if (field == ZmVoicemailListView.F_PRIORITY) {
 		htmlArr[idx++] = this._getPriorityHtml(voicemail);
 	} else if (field == ZmVoicemailListView.F_PLAYING) {
 		// No-op. This is handled in _addRow()
-	} else {
-		idx = ZmVoiceListView.prototype._getField.apply(this, arguments);
+	} else if (field == ZmVoicemailListView.F_CALLER) {
+		htmlArr[idx++] = this._getCallerNameHtml(voicemail);
+	} else if (field == ZmVoicemailListView.F_DATE) {
+		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now, voicemail.date);
 	}
+
+	htmlArr[idx++] = "</td>";
+	return idx;
 };
 
 ZmVoicemailListView.prototype.removeItem =
@@ -205,8 +213,7 @@ function(row, index) {
 		return;
 	}
 	var voicemail = this.getItemFromElement(row);
-	var columnIndex = this._getColumnIndex(ZmVoicemailListView.F_PLAYING);
-	var cell = this._getCell(columnIndex, row);
+	var cell = this._getCell(voicemail, ZmVoicemailListView.F_PLAYING);
 	
 	var player;
 	if (this._reconnect && (this._reconnect.id == voicemail.id)) {

@@ -65,36 +65,15 @@ function() {
 	return this._folder ? this._folder.callType : ZmVoiceFolder.VOICEMAIL;
 };
 
-ZmVoiceListView.prototype._getColumnIndex = 
-function(field) {
-	for (var i = 0, count = this._headerList.length; i < count; i++) {
-		if (DwtListHeaderItem.getHeaderField(this._headerList[i]._id) == field) {
-			return i;
-		}
-	}
-	return 0;
-};
-
 ZmVoiceListView.prototype._getCell = 
-function(columnIndex, element) {
-	var table = element.firstChild;
-	return table.rows[0].cells[columnIndex];
+function(element, field) {
+	var id = this._getFieldId(element, field);
+	return document.getElementById(id);
 };
 
 ZmVoiceListView.prototype._getRowClassName =
 function(voicemail, params) {
 	return voicemail.isUnheard ? "Unread" : "";
-};
-
-ZmVoiceListView.prototype._getField =
-function(htmlArr, idx, voicemail, field, colIdx, params) {
-	if (field == ZmCallListView.F_CALLER) {
-		htmlArr[idx++] = this._getCallerNameHtml(voicemail);
-	} else if (field == ZmCallListView.F_DATE) {
-		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now, voicemail.date);
-	}
-	
-	return idx;
 };
 
 ZmVoiceListView.prototype._getCallerNameHtml =

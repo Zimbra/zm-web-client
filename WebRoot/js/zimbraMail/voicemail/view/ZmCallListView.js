@@ -95,12 +95,22 @@ function() {
 
 ZmCallListView.prototype._getField =
 function(htmlArr, idx, voicemail, field, colIdx, params) {
+	var width = params.width || this._getFieldWidth(colIdx);
+	htmlArr[idx++] = "<td width=";
+	htmlArr[idx++] = width;
+	htmlArr[idx++] = " id='";
+	htmlArr[idx++] = this._getFieldId(voicemail, field);
+	htmlArr[idx++] = "'>";
+
 	if (field == ZmCallListView.F_SIZE) {
 		htmlArr[idx++] = AjxDateUtil.computeDuration(voicemail.duration);
-	} else {
-		idx = ZmVoiceListView.prototype._getField.apply(this, arguments);
+	} else if (field == ZmCallListView.F_CALLER) {
+		htmlArr[idx++] = this._getCallerNameHtml(voicemail);
+	} else if (field == ZmCallListView.F_DATE) {
+		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now, voicemail.date);
 	}
 	
+	htmlArr[idx++] = "</td>";
 	return idx;
 };
 
