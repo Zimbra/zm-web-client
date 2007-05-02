@@ -33,8 +33,8 @@ function ZmVoicemailListController(appCtxt, container, app) {
 	this._listeners[ZmOperation.CHECK_VOICEMAIL] = new AjxListener(this, this._refreshListener);
 	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.SAVE] = new AjxListener(this, this._saveListener);
-	this._listeners[ZmOperation.REPLY] = new AjxListener(this, this._replyListener);
-	this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
+	this._listeners[ZmOperation.REPLY_BY_EMAIL] = new AjxListener(this, this._replyListener);
+	this._listeners[ZmOperation.FORWARD_BY_EMAIL] = new AjxListener(this, this._forwardListener);
 	this._listeners[ZmOperation.AUTO_PLAY] = new AjxListener(this, this._autoPlayListener);
 	this._listeners[ZmOperation.MARK_HEARD] = new AjxListener(this, this._markHeardListener);
 	this._listeners[ZmOperation.MARK_UNHEARD] = new AjxListener(this, this._markUnheardListener);
@@ -82,8 +82,8 @@ function() {
 	list.push(ZmOperation.SAVE);
 	list.push(ZmOperation.DELETE);
 	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.REPLY);
-	list.push(ZmOperation.FORWARD);
+	list.push(ZmOperation.REPLY_BY_EMAIL);
+	list.push(ZmOperation.FORWARD_BY_EMAIL);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.AUTO_PLAY);
 	list.push(ZmOperation.SEP);
@@ -100,8 +100,8 @@ function() {
 	list.push(ZmOperation.MARK_HEARD);
 	list.push(ZmOperation.MARK_UNHEARD);
 	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.REPLY);
-	list.push(ZmOperation.FORWARD);
+	list.push(ZmOperation.REPLY_BY_EMAIL);
+	list.push(ZmOperation.FORWARD_BY_EMAIL);
 	list.push(ZmOperation.SEP);
 	list.push(ZmOperation.SAVE);
 	list.push(ZmOperation.DELETE);

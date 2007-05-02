@@ -106,6 +106,8 @@ function() {
 	ZmOperation.registerOp("MARK_HEARD", {textKey:"markAsHeard", image:"MarkAsHeard"});
 	ZmOperation.registerOp("MARK_UNHEARD", {textKey:"markAsUnheard", image:"MarkAsUnheard"});
 	ZmOperation.registerOp("VIEW_BY_DATE", {textKey:"viewByDate"});
+	ZmOperation.registerOp("REPLY_BY_EMAIL", {textKey:"replyByEmail", tooltipKey:"replyByEmailTooltip", image:"Reply"});
+	ZmOperation.registerOp("FORWARD_BY_EMAIL", {textKey:"forwardByEmail", tooltipKey:"forwardByEmailTooltip", image:"Forward"});
 };
 
 ZmVoiceApp.prototype._registerOrganizers =
