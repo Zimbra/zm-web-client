@@ -10,6 +10,7 @@
 AjxPackage.require("ajax.dwt.core.DwtDragTracker");
 AjxPackage.require("ajax.dwt.widgets.DwtResizableWindow");
 
+AjxPackage.require("zimbraMail.im.model.ZmImGateway");
 AjxPackage.require("zimbraMail.im.model.ZmRosterTree");
 AjxPackage.require("zimbraMail.im.model.ZmRosterTreeGroup");
 AjxPackage.require("zimbraMail.im.model.ZmRosterTreeItem");

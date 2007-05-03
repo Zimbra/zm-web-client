@@ -230,9 +230,19 @@ function(parent) {
 
 ZmImApp.prototype.prepareVisuals = function() {
 	AjxDispatcher.require("IM", false);
-	this.getChatListController().prepareVisuals();
+
 	if (!this.__haveRoster) {
-		setTimeout(AjxCallback.simpleClosure(this.refresh, this), 100);
+		// architecture... such a wonderful thing.  here's how we get a singleton:
+		var treeController = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.ROSTER_TREE_ITEM);
+
+		// and this seems to be the only way to properly instantiate the buddy list tree:
+		treeController.show({ overviewId  : ZmZimbraMail._OVERVIEW_ID,
+				      app	  : ZmApp.IM
+				    });
+
+		this.getChatListController().prepareVisuals();
+		// setTimeout(AjxCallback.simpleClosure(this.refresh, this), 100);
 		this.__haveRoster = true;
+		this.refresh();
 	}
 };

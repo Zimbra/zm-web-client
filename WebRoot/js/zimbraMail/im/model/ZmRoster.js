@@ -294,6 +294,17 @@ function(im) {
 					chat.addMessage(ZmChatMessage.system(this._leftChatFormatter.format([lc.addr])));
 					chat.setThread(null);
 				}
+			} else if (not.type == "gwConnectStatus") {
+				var gw = this.getGatewayByType(not.service);
+				var status = not.status == "success"
+					? ZmImGateway.STATE.ONLINE
+					: ( not.cause == "auth"
+					    ? ZmImGateway.STATE.BAD_AUTH
+					    : ZmImGateway.STATE.UNKNOWN );
+				gw.setState(status);
+				if (status == ZmImGateway.STATE.BAD_AUTH) {
+					this._appCtxt.setStatusMsg(ZmMsg.errorNotAuthenticated, ZmStatusView.LEVEL_WARNING);
+				}
 			}
 		}
 	}
@@ -308,6 +319,16 @@ ZmRoster.prototype.stopFlashingIcon = function() {
 	this._imApp.stopFlashingIcon();
 };
 
+ZmRoster.prototype.unregisterGateway = function(service, screenName) {
+	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
+	var method = sd.getMethod();
+	method.setAttribute("op", "unreg");
+	method.setAttribute("service", service);
+	this._appCtxt.getAppController().sendRequest({ soapDoc	 : sd,
+						       asyncMode : true });
+	this.__avoidNotifyTimeout = new Date().getTime();
+};
+
 ZmRoster.prototype.registerGateway = function(service, screenName, password) {
 	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
 	var method = sd.getMethod();
@@ -315,7 +336,6 @@ ZmRoster.prototype.registerGateway = function(service, screenName, password) {
 	method.setAttribute("service", service);
 	method.setAttribute("name", screenName);
 	method.setAttribute("password", password);
-	// FIXME: error handling
 	this._appCtxt.getAppController().sendRequest({ soapDoc	 : sd,
 						       asyncMode : true
 						     });
@@ -332,6 +352,18 @@ ZmRoster.prototype._requestGateways = function() {
 	);
 };
 
+// {"IMGatewayListResponse": {"service": [
+// 				   {"type":"msn","domain":"msn.ibm"},
+// 				   {"type":"aol","domain":"aol.ibm"},
+// 				   {"registration": [
+// 					    {"state":"online","name":"mihai_bazon2"}
+// 				    ],
+// 				    "type":"yahoo",
+// 				    "domain":"yahoo.ibm"
+// 				   }],
+// 			   "_jsns":"urn:zimbraIM"}
+// };
+
 ZmRoster.prototype._handleRequestGateways = function(args) {
 	var resp = args.getResponse();
 	if (!resp || !resp.IMGatewayListResponse)
@@ -344,8 +376,9 @@ ZmRoster.prototype._handleRequestGateways = function(args) {
 		var byService = {};
 		var byDomain = {};
 		for (var i = 0; i < a.length; ++i) {
-			byService[a[i].type.toLowerCase()] = a[i];
-			byDomain[a[i].domain.toLowerCase()] = a[i];
+			var gw = a[i] = new ZmImGateway(a[i]);
+			byService[a[i].type.toLowerCase()] = gw;
+			byDomain[a[i].domain.toLowerCase()] = gw;
 		}
 		this._gateways = { byService : byService,
 				   byDomain  : byDomain,

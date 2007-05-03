@@ -24,14 +24,20 @@
  */
 
 function ZmExternalGatewayDlg(parent, appCtxt) {
+	var logoutBtn = new DwtDialog_ButtonDescriptor(ZmExternalGatewayDlg.LOGOUT_BUTTON,
+						       ZmMsg.logOff,
+						       DwtDialog.ALIGN_LEFT);
 	DwtDialog.call(this, parent, null, ZmMsg.imGatewayLogin,
 		       [ DwtDialog.OK_BUTTON,
-			 DwtDialog.CANCEL_BUTTON ]
+			 DwtDialog.CANCEL_BUTTON ],
+		       [ logoutBtn ]
 		      );
 	var id = this._baseId = Dwt.getNextId();
 	this.setContent(AjxTemplate.expand("zimbraMail.im.templates.Chat#GatewayLoginDlg", { id: id }));
 	this.__initWidgets();
 };
+
+ZmExternalGatewayDlg.LOGOUT_BUTTON = ++DwtDialog.LAST_BUTTON;
 
 ZmExternalGatewayDlg.prototype = new DwtDialog;
 ZmExternalGatewayDlg.prototype.constructor = ZmExternalGatewayDlg;
@@ -46,7 +52,9 @@ ZmExternalGatewayDlg.prototype.__initWidgets = function() {
 	var select = new DwtSelect(this, options);
 	select.reparentHtmlElement(this._baseId + "_gatewayLayout");
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
+	this.setButtonListener(ZmExternalGatewayDlg.LOGOUT_BUTTON, new AjxListener(this, this._logoutButtonListener));
 	this._gwSelect = select;
+	select.addChangeListener(new AjxListener(this, this._updateForRegisteredGw));
 
 	var input = new DwtInputField({ parent	       : this,
 					type	       : DwtInputField.STRING,
@@ -65,6 +73,11 @@ ZmExternalGatewayDlg.prototype.__initWidgets = function() {
 				      });
 	input.reparentHtmlElement(this._baseId + "_passwordLayout");
 	this._passwordInput = input;
+};
+
+ZmExternalGatewayDlg.prototype._logoutButtonListener = function() {
+	AjxDispatcher.run("GetRoster").unregisterGateway(this._gwSelect.getValue());
+	this.popdown();
 };
 
 ZmExternalGatewayDlg.prototype._okButtonListener = function(ev) {
@@ -86,4 +99,33 @@ ZmExternalGatewayDlg.prototype.reset = function() {
 	DwtDialog.prototype.reset.call(this);
 	this._screenNameInput.setValue("");
 	this._passwordInput.setValue("");
+	this._updateForRegisteredGw();
+};
+
+ZmExternalGatewayDlg.prototype._updateForRegisteredGw = function() {
+	var service = this._gwSelect.getValue();
+	if (service) {
+		var gw = AjxDispatcher.run("GetRoster").getGatewayByType(service);
+		if (gw) {
+			var state = gw.getState();
+			if (state) {
+				var nick = null;
+				for (var i in state) {
+					nick = i;
+					state = state[i];
+					break;
+				}
+				if (nick) {
+					this._screenNameInput.setValue(nick);
+					this._screenNameInput.setEnabled(false);
+					this._passwordInput.setEnabled(false);
+					this.getButton(ZmExternalGatewayDlg.LOGOUT_BUTTON).setEnabled(true);
+					return;
+				}
+			}
+		}
+	}
+	this._screenNameInput.setEnabled(true);
+	this._passwordInput.setEnabled(true);
+	this.getButton(ZmExternalGatewayDlg.LOGOUT_BUTTON).setEnabled(false);
 };
