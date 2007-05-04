@@ -324,14 +324,22 @@ function(inNewWindow, to, response) {
 
 ZmVoicemailListController.prototype._checkEmail = 
 function() {
-	if (!this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+	var message;
+	var voicemail = this._getView().getSelection()[0];
+	if (voicemail.isPrivate) {
+		message = ZmMsg.errorPrivateVoicemail;
+	} else if (!this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		//TODO: Check the contents of this message....		
+		message = ZmMsg.sellEmail;
+	}
+	if (message) {
 		var dialog = this._appCtxt.getMsgDialog();
-//TODO: Check the contents of this message....		
-		dialog.setMessage(ZmMsg.sellEmail, DwtMessageDialog.CRITICAL_STYLE);
+		dialog.setMessage(message, DwtMessageDialog.CRITICAL_STYLE);
 		dialog.popup();
 		return false;
+	} else {
+		return true;
 	}
-	return true;
 };
 
 ZmVoicemailListController.prototype._autoPlayListener = 
