@@ -65,6 +65,11 @@ function(items, folder, attrs) {
 // folders and such after a move.
 ZmVoiceList.prototype._handleResponseMoveItems =
 function(items, destinationFolder) {
+	// Remove the items.
+	for(var i = 0, count = items.length; i < count; i++) {
+		this.remove(items[i]);
+	}
+	
 	// Update the unread counts in the folders.
 	var numUnheard = 0;
 	for(var i = 0, count = items.length; i < count; i++) {
@@ -77,15 +82,13 @@ function(items, destinationFolder) {
 		sourceFolder.changeNumUnheardBy(-numUnheard);
 		destinationFolder.changeNumUnheardBy(numUnheard);
 	}
-
+	
 	// Replenish the list view.
 	//
-	// This is sort of a hack having the model call back to the app, but without notifications
+	// This is sort of a hack having the model call back to the controller, but without notifications
 	// this seems like the best approach.
-	//
-	// We should consider using a "replenish" call rather than redoing the whole search again.
-	var app = this._appCtxt.getApp(ZmApp.VOICE);
-	app.search(sourceFolder);
+	var controller = AjxDispatcher.run("GetVoiceController");
+	controller._handleResponseMoveItems(items);
 };
 
 ZmVoiceList.prototype._getActionNamespace =

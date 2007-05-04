@@ -234,6 +234,16 @@ function(ev) {
 	list.moveItems(items, destination);
 };
 
+// This is being called directly by ZmVoiceList.
+ZmVoicemailListController.prototype._handleResponseMoveItems = 
+function(items) {
+	var view = this._getView();
+	for(var i = 0, count = items.length; i < count; i++) {
+		view.removeItem(items[i]);
+	}
+	this._checkReplenish();
+};
+
 ZmVoicemailListController.prototype._saveListener = 
 function() {
 	// This scary looking piece of code does not change the page that the browser is
@@ -250,14 +260,18 @@ function(voicemail) {
 
 ZmVoicemailListController.prototype._replyListener = 
 function(ev) {
-	var voicemail = this._getView().getSelection()[0];
-	var contact = voicemail.participants.get(0);
-	this._sendMail(ev, contact ? contact.getEmail() : null);
+	if (this._checkEmail()) {
+		var voicemail = this._getView().getSelection()[0];
+		var contact = voicemail.participants.get(0);
+		this._sendMail(ev, contact ? contact.getEmail() : null);
+	}
 };
 
 ZmVoicemailListController.prototype._forwardListener = 
 function(ev) {
-	this._sendMail(ev);
+	if (this._checkEmail()) {
+		this._sendMail(ev);
+	}
 };
 
 ZmVoicemailListController.prototype._sendMail = 
@@ -306,6 +320,18 @@ function(inNewWindow, to, response) {
 		extraBodyText: body
 	};
 	AjxDispatcher.run("Compose", params);
+};
+
+ZmVoicemailListController.prototype._checkEmail = 
+function() {
+	if (!this._appCtxt.get(ZmSetting.MAIL_ENABLED)) {
+		var dialog = this._appCtxt.getMsgDialog();
+//TODO: Check the contents of this message....		
+		dialog.setMessage(ZmMsg.sellEmail, DwtMessageDialog.CRITICAL_STYLE);
+		dialog.popup();
+		return false;
+	}
+	return true;
 };
 
 ZmVoicemailListController.prototype._autoPlayListener = 

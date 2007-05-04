@@ -137,7 +137,7 @@ function() {
 							  icon:					"VoicemailApp",
 							  qsArg:				"voicemail",
 							  chooserTooltipKey:	"goToVoice",
-							  defaultSearch:		ZmSearchToolBar.FOR_ANY_MI,
+							  defaultSearch:		ZmSearchToolBar.FOR_MAIL_MI,
 							  overviewTrees:		[ZmOrganizer.VOICE],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.VOICEMAIL],
@@ -338,6 +338,7 @@ function(parent, phone, obj, accordionItemId) {
 		callType: obj.name || ZmVoiceFolder.ACCOUNT,
 		view: obj.view,
 		numUnread: obj.u,
+		numTotal: obj.n,
 		parent: parent,
 		tree: parent.tree,
 		accordionItemId: accordionItemId

@@ -190,6 +190,11 @@ function(skipNotify) {
 	ZmListView.prototype.removeAll.call(this, skipNotify);
 };
 
+ZmVoiceListView.prototype.getReplenishThreshold =
+function() {
+	return 0;
+};
+
 ZmVoiceListView.prototype._resetList =
 function() {
 	this._contactToItem = {};
