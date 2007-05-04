@@ -95,10 +95,13 @@ function ZmZimletContext(id, zimlet, appCtxt) {
         portlet.portletProperties = (portlet.portletProperties && portlet.portletProperties.property) || {};
         this.portlet = portlet;
     }
+
+    this.userProperties = zimlet.userProperties ? zimlet.userProperties[0] : [];
+    this._propsById = {};
     if(zimlet.userProperties) {
-		this.userProperties = zimlet.userProperties[0];
 		this._translateUserProp();
 	}
+
 	if(this.config) {
 		this.config = this.config[0];
 		this._translateConfig();
@@ -227,16 +230,18 @@ ZmZimletContext.prototype.callHandler = function(funcname, args) {
 
 ZmZimletContext.prototype._translateUserProp = function() {
 	var a = this.userProperties = this.userProperties.property;
-	this._propsById = {};
 	for (var i = 0; i < a.length; ++i) {
 		this._propsById[a[i].name] = a[i];
 	}
 };
 
 ZmZimletContext.prototype.setPropValue = function(name, val) {
-	if(this._propsById[name]) {
-		this._propsById[name].value = val;
+	if(!this._propsById[name]) {
+        var prop = { name: name };
+        this.userProperties.push(prop);
+        this._propsById[name] = prop;
 	}
+    this._propsById[name].value = val;
 };
 
 ZmZimletContext.prototype.getPropValue = function(name) {

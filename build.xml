@@ -53,7 +53,7 @@
   <property name="server.build.dir" location="${server.dir}/build"/>
   <property name="server.build.classes.dir" location="${server.build.dir}/classes"/>
 
-  <condition property="deploy.dir" value="${env.DEPLOY_DIR}" else='/opt/zimbra/tomcat/webapps'>
+  <condition property="deploy.dir" value="${env.DEPLOY_DIR}" else='/opt/zimbra/${webserver.name}/webapps'>
     <isset property="env.DEPLOY_DIR" />
   </condition>	
   <condition property="deploy.url" value="${env.DEPLOY_URL}" else='http://localhost:7070/manager/'>
