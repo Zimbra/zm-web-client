@@ -84,6 +84,11 @@ function() {
 	return this._display;
 };
 
+ZmPhone.prototype.getCallUrl = 
+function() {
+	return "callto:+1" + this.name;
+};
+
 ZmPhone.prototype._loadFromDom = 
 function(node) {
 	this.name =  node.name;

@@ -26,6 +26,7 @@
 function ZmVoiceListController(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmListController.call(this, appCtxt, container, app);
+	this._listeners[ZmOperation.VOICE_CALL] = new AjxListener(this, this._callListener);
 
 	this._folder = null;
 }
@@ -106,6 +107,14 @@ function(ev) {
 	var contact = new ZmContact(this._appCtxt);
 	contact.initFromPhone(this._getView().getCallingParty(item).getDisplay());
 	return contact;
+};
+
+ZmVoiceListController.prototype._callListener =
+function(ev) {
+	var view = this._getView()
+	var item = view.getSelection()[0];
+	var phone = view.getCallingParty(item);
+	document.location = phone.getCallUrl();
 };
 
 ZmVoiceListController.prototype._listActionListener =

@@ -108,6 +108,7 @@ function() {
 	ZmOperation.registerOp("VIEW_BY_DATE", {textKey:"viewByDate"});
 	ZmOperation.registerOp("REPLY_BY_EMAIL", {textKey:"replyByEmail", tooltipKey:"replyByEmailTooltip", image:"Reply"});
 	ZmOperation.registerOp("FORWARD_BY_EMAIL", {textKey:"forwardByEmail", tooltipKey:"forwardByEmailTooltip", image:"Forward"});
+	ZmOperation.registerOp("VOICE_CALL", {textKey: "call", image:"Telephone"});
 };
 
 ZmVoiceApp.prototype._registerOrganizers =
