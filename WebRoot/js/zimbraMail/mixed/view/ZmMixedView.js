@@ -68,26 +68,31 @@ function(list, sortField) {
 /**
  * Let the main view for the given item handle creating the HTML for it.
  * We also need to make sure any functions called by DwtListView._createItemHtml
- * come from the right class.
+ * come from the right class. Kinda hacky, but it works.
  */
 ZmMixedView.prototype._createItemHtml =
 function(item, params) {
 	params = params || {};
 	params.isMixedView = true;
 	if (item.type == ZmItem.CONTACT || item.type == ZmItem.GROUP) {
-		this._getField = ZmContactSimpleView.prototype._getField;
+		this._getCellContents = ZmContactSimpleView.prototype._getCellContents;
 		return ZmContactSimpleView.prototype._createItemHtml.apply(this, arguments);
 	} else if (item.type == ZmItem.CONV) {
-		this._getField = ZmConvListView.prototype._getField;
+		this._getCellId = ZmConvListView.prototype._getCellId;
+		this._getCellContents = ZmConvListView.prototype._getCellContents;
 		return ZmConvListView.prototype._createItemHtml.apply(this, arguments);
 	} else if (item.type == ZmItem.MSG) {
-		this._getField = ZmMailMsgListView.prototype._getRowClassName;
-		this._getField = ZmMailMsgListView.prototype._getField;
+		this._getRowClass = ZmMailMsgListView.prototype._getRowClass;
+		this._getCellId = ZmMailMsgListView.prototype._getCellId;
+		this._getCellContents = ZmMailMsgListView.prototype._getCellContents;
 		return ZmMailMsgListView.prototype._createItemHtml.apply(this, arguments);
 	} else if (item.type == ZmItem.TASK) {
-		this._getField = ZmTaskListView.prototype._getField;
+		this._getCellId = ZmTaskListView.prototype._getCellId;
+		this._getCellContents = ZmTaskListView.prototype._getCellContents;
 		return ZmTaskListView.prototype._createItemHtml.apply(this, arguments);
 	} else if (item.type == ZmItem.PAGE || item.type == ZmItem.DOCUMENT) {
+		this._getCellAttrText = ZmFileListView.prototype._getCellAttrText;
+		this._getCellContents = ZmFileListView.prototype._getCellContents;
 		return ZmFileListView.prototype._createItemHtml.apply(this, arguments);
 	}
 };

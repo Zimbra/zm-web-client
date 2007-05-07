@@ -218,14 +218,14 @@ function(convs, msgs) {
 			newConvId[id] = true;
 			var conv = convs[id];
 			if (conv.folders && conv.folders[searchFolder]) {
-				// conv's msg matches current search
+				// a new msg for this conv matches current search
 				sortIndex[id] = this._getSortIndex(conv, sortBy);
 				this.add(conv, sortIndex[id]);
 				conv.list = this;
 				newConvs.push(conv);
 			}
 		}
-		// sort item list to reverse so they show up in correct order when processed
+		// sort item list in reverse so they show up in correct order when processed
 		if (newConvs.length > 1) {
 			ZmMailItem.sortBy = sortBy;
 			newConvs.sort(ZmMailItem.sortCompare);

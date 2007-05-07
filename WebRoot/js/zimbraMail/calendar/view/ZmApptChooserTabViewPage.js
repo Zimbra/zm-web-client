@@ -685,9 +685,14 @@ function() {
 	return headerList;
 };
 
-ZmApptChooserListView.prototype._getField =
-function(html, idx, item, field, colIdx, now) {
-	var width = this._headerList[colIdx]._width;
+ZmApptChooserListView.prototype._getCellAttrText =
+function(item, field, params) {
+	return (field == ZmItem.F_CAPACITY) ? "align='center'" : "align='left'";
+};
+
+ZmApptChooserListView.prototype._getCellContents =
+function(html, idx, item, field, colIdx, params) {
+	html[idx++] = "&nbsp;";
 	if (field == ZmItem.F_FOLDER) {
 		var name = "";
 		if (item.isGal) {
@@ -696,43 +701,31 @@ function(html, idx, item, field, colIdx, now) {
 			var folder = this._appCtxt.getById(item.folderId);
 			name = folder ? folder.name : "";
 		}
-		html[idx++] = this._getFieldHtml(name, width);
+		html[idx++] = name;
 	} else if (field == ZmItem.F_NAME) {
 		var name = (this._chooserType == ZmCalItem.PERSON) ? item.getFullName() : item.getAttr(ZmResource.F_name);
-		html[idx++] = this._getFieldHtml(name, width);
+		html[idx++] = name;
 	} else if (field == ZmItem.F_EMAIL) {
-		html[idx++] = this._getFieldHtml(item.getEmail(), width);
+		html[idx++] = item.getEmail();
 	} else if (field == ZmItem.F_WORK_PHONE) {
-		html[idx++] = this._getFieldHtml(item.getAttr(ZmContact.F_workPhone), width);
+		html[idx++] = item.getAttr(ZmContact.F_workPhone);
 	} else if (field == ZmItem.F_HOME_PHONE) {
-		html[idx++] = this._getFieldHtml(item.getAttr(ZmContact.F_homePhone), width);
+		html[idx++] = item.getAttr(ZmContact.F_homePhone);
 	} else if (field == ZmItem.F_LOCATION) {
-		html[idx++] = this._getFieldHtml(item.getAttr(ZmResource.F_locationName), width);
+		html[idx++] = item.getAttr(ZmResource.F_locationName);
 	} else if (field == ZmItem.F_CONTACT) {
-		html[idx++] = this._getFieldHtml(item.getAttr(ZmResource.F_contactMail), width);
+		html[idx++] = item.getAttr(ZmResource.F_contactMail);
 	} else if (field == ZmItem.F_CAPACITY) {
-		html[idx++] = this._getFieldHtml(item.getAttr(ZmResource.F_capacity), width, 'center');
+		html[idx++] = item.getAttr(ZmResource.F_capacity);
 	} else if (field == ZmItem.F_NOTES) {
 		var notes = item.getAttr(ZmContact.F_description);
 		if (notes) {
-			var notesId = Dwt.getNextId();
+			var notesId = this._getFieldId(item, field);
 			this._notes[notesId] = notes;
-			html[idx++] = "<td align='center' width=" + this._headerList[colIdx]._width + ">";
 			html[idx++] = AjxImg.getImageHtml("SearchNotes", null, ["id='", notesId, "'"].join(""));
-			html[idx++] = "</td>";					
-		} else {
-			html[idx++] = this._getFieldHtml(notes, width);
 		}
 	}
 	return idx;
-};
-
-ZmApptChooserListView.prototype._getFieldHtml =
-function(value, width, align) {
-	var widthText = width ? " width='" + width + "'" : "";
-	var alignText = align ? " align='" + align + "'" : " align='left'";
-	value = value ? value : "";
-	return "<td" + alignText + widthText + ">&nbsp;" + value + "</td>";
 };
 
 ZmApptChooserListView.prototype._mouseOverAction =

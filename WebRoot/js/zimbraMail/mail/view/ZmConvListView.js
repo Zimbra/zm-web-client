@@ -82,15 +82,13 @@ function(defaultColumnSort) {
 
 ZmConvListView.prototype.markUIAsRead =
 function(item, on) {
-	var row = document.getElementById(this._getFieldId(item, ZmItem.F_ITEM_ROW));
+	var row = this._getElement(item, ZmItem.F_ITEM_ROW);
 	if (row) {
 		row.className = on ? "" : "Unread";
 	}
-	var img = document.getElementById(this._getFieldId(item, ZmItem.F_STATUS));
-	if (img && img.parentNode) {
-		AjxImg.setImage(img.parentNode, on ? "MsgStatusRead" : "MsgStatusUnread");
-	}
-}
+	// for hybrid view
+	this._setImage(item, ZmItem.F_STATUS, on ? "MsgStatusRead" : "MsgStatusUnread");
+};
 
 ZmConvListView.prototype.setSize =
 function(width, height) {
@@ -132,27 +130,23 @@ function(parent) {
 	return hList;
 };
 
-ZmConvListView.prototype._getField =
+ZmConvListView.prototype._getCellId =
+function(item, field) {
+	if (field == ZmItem.F_PARTICIPANT || field == ZmItem.F_SUBJECT || field == ZmItem.F_COUNT) {
+		return this._getFieldId(item, field);
+	} else {
+		return null;
+	}
+};
+
+ZmConvListView.prototype._getCellContents =
 function(htmlArr, idx, conv, field, colIdx, params) {
 
 	if (field == ZmItem.F_PARTICIPANT) {
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = params.width;
-		htmlArr[idx++] = " id='";
-		htmlArr[idx++] = params.fieldId;
-		htmlArr[idx++] = "'>";
-		if (AjxEnv.isSafari) {
-			htmlArr[idx++] = "<div style='overflow:hidden'>";
-		}
-		htmlArr[idx++] = this._getParticipantHtml(conv, params.fieldId);
-		if (AjxEnv.isSafari) {
-			htmlArr[idx++] = "</div>";
-		}
-		htmlArr[idx++] = "</td>";
+		htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
+		htmlArr[idx++] = this._getParticipantHtml(conv, this._getFieldId(conv, field));
+		htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
 	} else if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = "<td id='";
-		htmlArr[idx++] = params.fieldId;
-		htmlArr[idx++] = "'>";
 		htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 		htmlArr[idx++] = conv.subject ? AjxStringUtil.htmlEncode(conv.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
 		if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && conv.fragment) {
@@ -160,32 +154,22 @@ function(htmlArr, idx, conv, field, colIdx, params) {
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(conv.fragment, true);
 			htmlArr[idx++] = "</span>";
 		}
-		htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
+		htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
 	} else if (field == ZmItem.F_COUNT) {
-		htmlArr[idx++] = "<td id='";
-		htmlArr[idx++] = params.fieldId;
-		htmlArr[idx++] = "' width=";
-		htmlArr[idx++] = params.width;
-		htmlArr[idx++] = ">";
 		if (conv.numMsgs > 1) {
 			htmlArr[idx++] = "(";
 			htmlArr[idx++] = conv.numMsgs;
 			htmlArr[idx++] = ")";
 		}
-		htmlArr[idx++] = "</td>";
-	} else if (params.isMixedView && (field == ZmItem.F_TYPE)) {
+	} else if (field == ZmItem.F_TYPE) {
 		// Type icon (mixed view only)
 		if (conv.isDraft) {
-			htmlArr[idx++] = "<td style='width:";
-			htmlArr[idx++] = params.width;
-			htmlArr[idx++] = "' class='Icon'>";
 			htmlArr[idx++] = AjxImg.getImageHtml("MsgStatusDraft", null, ["id='", this._getFieldId(conv, ZmItem.F_STATUS), "'"].join(""));
-			htmlArr[idx++] = "</td>";
 		} else {
-			idx = ZmListView.prototype._getField.apply(this, arguments);
+			idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 		}
 	} else {
-		idx = ZmListView.prototype._getField.apply(this, arguments);
+		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}
 
 	return idx;
@@ -222,7 +206,7 @@ function(ev) {
 	// update count field for this conv
 	var fields = ev.getDetail("fields");
 	if (ev.event == ZmEvent.E_MODIFY && (fields && fields[ZmItem.F_COUNT])) {
-		var countField = document.getElementById(this._getFieldId(conv, ZmItem.F_COUNT));
+		var countField = this._getElement(conv, ZmItem.F_COUNT);
 		if (countField) {
 			countField.innerHTML = conv.numMsgs > 1 ? "(" + conv.numMsgs + ")" : "";
 		}
@@ -232,7 +216,7 @@ function(ev) {
 		// a virtual conv has become real, and changed its ID
 		var div = document.getElementById(this._getItemId({id: conv._oldId}));
 		if (div) {
-			this._createItemHtml(conv, this._now, false, false, div);
+			this._createItemHtml(conv, {now:this._now, div:div});
 			this.associateItemWithElement(conv, div, DwtListView.TYPE_LIST_ITEM);
 			DBG.println(AjxDebug.DBG1, "conv updated from ID " + conv._oldId + " to ID " + conv.id);
 		}
@@ -276,7 +260,7 @@ function(ev) {
 
 ZmConvListView.prototype._getParticipantHtml =
 function(conv, fieldId) {
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 
 	var part1 = conv.participants.getArray();
@@ -291,18 +275,18 @@ function(conv, fieldId) {
 			} else if (part2.length > 1 && j > 0) {
 				html[idx++] = ", ";
 			}
+			var spanId = [fieldId, part2[j].index].join("_");
 			html[idx++] = "<span style='white-space: nowrap' id='";
-			html[idx++] = fieldId;
-			html[idx++] = "_";
-			html[idx++] = part2[j].index;
+			html[idx++] = spanId;
 			html[idx++] = "'>";
 			html[idx++] = part2[j].name;
 			html[idx++] = "</span>";
 		}
 
 		// bug fix #724
-		if (part2.length == 1 && origLen > 1)
+		if (part2.length == 1 && origLen > 1) {
 			html[idx++] = AjxStringUtil.ELLIPSIS;
+		}
 	} else {
 		// XXX: possible import bug but we must take into account
 		html[idx++] = ZmMsg.noWhere;

@@ -127,25 +127,18 @@ function() {
 	return headerList;
 };
 
-ZmFilterListView.prototype._getField =
+ZmFilterListView.prototype._getCellContents =
 function(html, idx, item, field, colIdx, params) {
 	if (field == ZmFilterListView.COL_ACTIVE) {
 		var checked = item.isActive() ? "checked" : "";
 		var inputId = "_ruleCheckbox" + item.id;
-		html[idx++] = "<td width=";
-		html[idx++] = params.width;
-		html[idx++] = ">";
 		html[idx++] = "<input type='checkbox' ";
 		html[idx++] = checked;
 		html[idx++] = " id='";
 		html[idx++] = inputId;
-		html[idx++] = "'></td>";
+		html[idx++] = "'>";
 	} else if (field == ZmFilterListView.COL_NAME) {
-		html[idx++] = "<td width=";
-		html[idx++] = params.width;
-		html[idx++] = ">";
 		html[idx++] = item.getName();
-		html[idx++] = "</td>";
 	}
 	
 	return idx;

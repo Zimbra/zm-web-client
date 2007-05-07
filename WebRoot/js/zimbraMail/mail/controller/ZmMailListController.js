@@ -458,8 +458,7 @@ function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	for (var i = 0; i < items.length; i++) {
 		(items[i].isUnread) ? bHasUnread = true : bHasRead = true;
-		if (bHasUnread && bHasRead)
-			break;
+		if (bHasUnread && bHasRead) { break; }
 	}
 	
 	// bug fix #3602

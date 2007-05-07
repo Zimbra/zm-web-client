@@ -351,7 +351,7 @@ function(notify) {
 	DBG.println(AjxDebug.DBG2, "Handling NOTIFY");
 	this._controller.runAppFunction("preNotify", notify);
 	try {
-		if (notify.deleted) {
+		if (notify.deleted && notify.deleted.id) {
 			this._handleDeletes(notify.deleted);
 		}
 		if (notify.created) {

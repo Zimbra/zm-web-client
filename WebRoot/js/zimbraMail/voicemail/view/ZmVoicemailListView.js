@@ -72,7 +72,7 @@ function(items, on) {
 	var className = on ? "" : "Unread";
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		var row = document.getElementById(this._getFieldId(item, ZmItem.F_ITEM_ROW));
+		var row = this._getElement(item, ZmItem.F_ITEM_ROW);
 		if (row) {
 			row.className = className;
 		}
@@ -103,14 +103,14 @@ function() {
 	return headerList;
 };
 
-ZmVoicemailListView.prototype._getFieldContents =
+ZmVoicemailListView.prototype._getCellContents =
 function(htmlArr, idx, voicemail, field, colIdx, params) {
 	if (field == ZmVoicemailListView.F_PRIORITY) {
 		htmlArr[idx++] = this._getPriorityHtml(voicemail);
 	} else if (field == ZmVoicemailListView.F_PLAYING) {
 		// No-op. This is handled in _addRow()
 	} else {
-		idx = ZmVoiceListView.prototype._getFieldContents.apply(this, arguments);
+		idx = ZmVoiceListView.prototype._getCellContents.apply(this, arguments);
 	}
 	return idx;
 };
@@ -195,7 +195,7 @@ function(row, index) {
 		return;
 	}
 	var voicemail = this.getItemFromElement(row);
-	var cell = this._getCell(voicemail, ZmVoicemailListView.F_PLAYING);
+	var cell = this._getElement(voicemail, ZmVoicemailListView.F_PLAYING);
 	
 	var player;
 	if (this._reconnect && (this._reconnect.id == voicemail.id)) {

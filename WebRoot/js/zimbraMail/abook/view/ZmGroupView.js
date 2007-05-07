@@ -527,9 +527,9 @@ function() {
 	return headerList;
 };
 
-ZmGroupListView.prototype._getField =
-function(html, idx, item, field, colIdx, now) {
-	return ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, now, this._getFieldWidth(colIdx));
+ZmGroupListView.prototype._getCellContents =
+function(html, idx, item, field, colIdx, params) {
+	return ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, params);
 };
 
 ZmGroupListView.prototype._itemClicked =

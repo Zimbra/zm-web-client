@@ -90,12 +90,12 @@ function() {
 	return  AjxTemplate.expand("zimbraMail.voicemail.templates.Voicemail#ZmCallListPrintView", args);
 };
 
-ZmCallListView.prototype._getFieldContents =
+ZmCallListView.prototype._getCellContents =
 function(htmlArr, idx, voicemail, field, colIdx, params) {
 	if (field == ZmCallListView.F_DURATION) {
 		htmlArr[idx++] = AjxDateUtil.computeDuration(voicemail.duration);
 	} else {
-		idx = ZmVoiceListView.prototype._getFieldContents.apply(this, arguments);
+		idx = ZmVoiceListView.prototype._getCellContents.apply(this, arguments);
 	}
 	
 	return idx;

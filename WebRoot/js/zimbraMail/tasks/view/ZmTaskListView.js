@@ -144,7 +144,12 @@ function() {
 	this._rightSelItems = null;
 };
 
-ZmTaskListView.prototype._getField =
+ZmTaskListView.prototype._getCellId =
+function(item, field) {
+	return (field == ZmItem.F_COMPLETED || field == ZmItem.F_PRIORITY) ? this._getFieldId(item, field) : null;
+};
+
+ZmTaskListView.prototype._getCellContents =
 function(htmlArr, idx, task, field, colIdx, params) {
 
 	if (field == ZmItem.F_COMPLETED) {
@@ -156,67 +161,41 @@ function(htmlArr, idx, task, field, colIdx, params) {
 		}
 
 		// complete checkbox
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = params.width;
-		htmlArr[idx++] = ">";
 		htmlArr[idx++] = AjxImg.getImageHtml(cboxIcon, null, ["id='", params.fieldId, "'"].join(""));
-		htmlArr[idx++] = "</td>";
 
 	} else if (field == ZmItem.F_PRIORITY) {
-		idx = this._getTableCell(task, ZmItem.F_PRIORITY, params.width, htmlArr, idx);
 		htmlArr[idx++] = "<center>";
 		htmlArr[idx++] = ZmCalItem.getImageForPriority(task, params.fieldId);
-		htmlArr[idx++] = "</center></td>";
+		htmlArr[idx++] = "</center>";
 
 	} else if (params.isMixedView && (field == ZmItem.F_PARTICIPANT)) {
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = params.width;
-		htmlArr[idx++] = " id='";
-		htmlArr[idx++] = params.fieldId;
-		htmlArr[idx++] = "'>";
-		htmlArr[idx++] = (task.organizer) || "&nbsp";
-		htmlArr[idx++] = "</td>";
+		htmlArr[idx++] = task.organizer || "&nbsp";
 		
 	} else if (field == ZmItem.F_SUBJECT) {
+		htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 		if (params.isMixedView) {
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = params.fieldId;
-			htmlArr[idx++] = "'>";
-			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 			htmlArr[idx++] = task.name ? AjxStringUtil.htmlEncode(task.name, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
 		} else {
-			idx = this._getTableCell(task, ZmItem.F_SUBJECT, params.width, htmlArr, idx);
-			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(task.getName(), true);
-			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
 		}
+		htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
 
 	} else if (field == ZmItem.F_STATUS) {
-		idx = this._getTableCell(task, ZmItem.F_STATUS, params.width, htmlArr, idx);
 		htmlArr[idx++] = ZmCalItem.getLabelForStatus(task.status);
-		htmlArr[idx++] = "</td>";
 
 	} else if (field == ZmItem.F_PCOMPLETE) {	// percent complete
-		idx = this._getTableCell(task, ZmItem.F_PCOMPLETE, params.width, htmlArr, idx);
 		htmlArr[idx++] = task.pComplete || 0;
-		htmlArr[idx++] = "%</td>";
+		htmlArr[idx++] = "%";
 
 	} else if (field == ZmItem.F_DATE) {
 		if (params.isMixedView) {
-			idx = ZmListView.prototype._getField.apply(this, arguments);
+			idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 		} else {
 			// date - dont call base class since we *always* want to show date (not time)
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = params.fieldId;
-			htmlArr[idx++] = "' width=";
-			htmlArr[idx++] = params.width;
-			htmlArr[idx++] = ">";
 			htmlArr[idx++] = AjxDateUtil.simpleComputeDateStr(new Date(task.date));
-			htmlArr[idx++] = "</td>";
 		}
 	} else {
-		idx = ZmListView.prototype._getField.apply(this, arguments);
+		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}
 	
 	return idx;
@@ -299,19 +278,6 @@ function(ev, div) {
 	return true;
 };
 
-ZmTaskListView.prototype._getTableCell =
-function(task, id, width, htmlArr, idx) {
-	htmlArr[idx++] = "<td id='";
-	htmlArr[idx++] = this._getFieldId(task, id);
-	if (width) {
-		htmlArr[idx++] = "' width=";
-		htmlArr[idx++] = width;
-	}
-	htmlArr[idx++] = ">";
-
-	return idx;
-};
-
 ZmTaskListView.prototype._handleNewTaskClick =
 function(el) {
 	if (!this._newTaskInputEl) {
@@ -386,7 +352,7 @@ function(ev) {
 		var task = items[0];
 		var div = this._getElFromItem(task);
 		if (div) {
-			this._createItemHtml(task, this._now, false, div);
+			this._createItemHtml(task, {now:this._now, div:div});
 			this.associateItemWithElement(task, div, DwtListView.TYPE_LIST_ITEM);
 		}
 	}

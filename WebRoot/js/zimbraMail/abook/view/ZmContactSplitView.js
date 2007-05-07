@@ -185,7 +185,7 @@ function() {
 	this._contactHeaderId = Dwt.getNextId();
 	this._contactBodyId = Dwt.getNextId();
 
-	var html = new Array();
+	var html = [];
 	var idx = 0;
 
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width=100% height=100%>";
@@ -699,11 +699,8 @@ function(contact, params) {
 			htmlArr[idx++] = "</td>";
 		} else if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 			// otherwise, show tag if there is one
-			var cellId = this._getFieldId(contact, ZmItem.F_TAG_CELL);
-			htmlArr[idx++] = "<td style='vertical-align:middle;' width=16 class='Tag' id='";
-			htmlArr[idx++] = cellId;
-			htmlArr[idx++] = "'>";
-			htmlArr[idx++] = this._getTagImgHtml(contact, ZmItem.F_TAG);
+			htmlArr[idx++] = "<td style='vertical-align:middle;' width=16 class='Tag'>";
+			idx = this._getImageHtml(htmlArr, idx, contact.getTagImageInfo(), this._getFieldId(contact, ZmItem.F_TAG));
 			htmlArr[idx++] = "</td>";
 		}
 	}
@@ -714,32 +711,17 @@ function(contact, params) {
 	return div;
 };
 
-ZmContactSimpleView.prototype._getField =
+// mixed view
+ZmContactSimpleView.prototype._getCellContents =
 function(htmlArr, idx, contact, field, colIdx, params) {
 	if (field == ZmItem.F_PARTICIPANT) {
 		// Name (fileAs)
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = params.width;
-		htmlArr[idx++] = " id='";
-		htmlArr[idx++] = params.fieldId;
-		htmlArr[idx++] = "'>";
 		htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
-		htmlArr[idx++] = "</td>";
 	} else if (field == ZmItem.F_SUBJECT) {
 		// Company
-		htmlArr[idx++] = "<td id='";
-		htmlArr[idx++] = params.fieldId;
-		htmlArr[idx++] = "'>";
 		htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getCompanyField());
-		htmlArr[idx++] = "</td>";
 	} else if (field == ZmItem.F_DATE) {
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = params.width;
-		htmlArr[idx++] = " id='";
-		htmlArr[idx++] = params.fieldId;
-		htmlArr[idx++] = "'>";
 		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now, contact.modified);
-		htmlArr[idx++] = "</td>";
 	} else {
 		idx = ZmContactsBaseView.prototype._getField.apply(this, arguments);
 	}

@@ -93,28 +93,28 @@ ZmFileListView.prototype._getHeaderList = function(parent) {
 	return headers;
 };
 
-ZmFileListView.prototype._getField =
+ZmFileListView.prototype._getCellAttrText =
+function(item, field, params) {
+	if (field == ZmItem.F_SIZE) {
+		return "align='right'";
+	} else if (field == ZmItem.F_TYPE) {
+		return "align='middle'";
+	}
+};
+
+ZmFileListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_SUBJECT) {
-		htmlArr[idx++] = "<td id='" + params.fieldId + "'";
-		htmlArr[idx++] = " width=" + params.width + ">";
 		htmlArr[idx++] = AjxStringUtil.htmlEncode(item.name);
-		htmlArr[idx++] = "</td>";
 	} else if (field == ZmItem.F_SIZE) {
-		htmlArr[idx++] = "<td id='" + params.fieldId + "'";
-		htmlArr[idx++] = " width=" + params.width + " align=right>";
 		htmlArr[idx++] = AjxUtil.formatSize(item.size);
-		htmlArr[idx++] = "</td>";
 	} else if (field == ZmItem.F_FILE_TYPE) {
 		var desc = (item instanceof ZmPage) ? ZmMsg.page : null;
 		if (!desc) {
 			var mimeInfo = item.ct ? ZmMimeTable.getInfo(item.ct) : null;
 			desc = mimeInfo ? mimeInfo.desc : "&nbsp;";
 		}
-		htmlArr[idx++] = "<td id='" + params.fieldId + "'";
-		htmlArr[idx++] = " width=" + params.width + ">";
 		htmlArr[idx++] = desc;
-		htmlArr[idx++] = "</td>";
 	} else if (field == ZmItem.F_TYPE) {
 		var icon = (item instanceof ZmPage) ? "Page" : null;
 		if (!icon) {
@@ -122,10 +122,7 @@ function(htmlArr, idx, item, field, colIdx, params) {
 			var mimeInfo = contentType ? ZmMimeTable.getInfo(contentType) : null;
 			icon = mimeInfo ? mimeInfo.image : "UnknownDoc";
 		}
-		htmlArr[idx++] = "<td id=" + params.fieldId;
-		htmlArr[idx++] = " width=" + params.width + " align=middle>";
-		htmlArr[idx++] = "<div class='Img"+icon+"'></div>";
-		htmlArr[idx++] = "</td>";
+		htmlArr[idx++] = "<div class='Img" + icon + "'></div>";
 	} else if (field == ZmItem.F_PARTICIPANT) {
 		var creator = item.creator.split("@");
 		var cname = creator[0];
@@ -136,25 +133,19 @@ function(htmlArr, idx, item, field, colIdx, params) {
 				cname = creator.join("@");
 			}
 		}
-		htmlArr[idx++] = "<td id='" + params.fieldId + "'";
-		htmlArr[idx++] = " width=" + params.width + ">";
 		htmlArr[idx++] = "<span style='white-space: nowrap'>";
 		htmlArr[idx++] = cname;
 		htmlArr[idx++] = "</span>";
-		htmlArr[idx++] = "</td>";
 	} else if (field == ZmItem.F_FOLDER) {
 		var notebook = this._appCtxt.getById(item.folderId);
 		var path = notebook ? notebook.getPath() : item.folderId;
-		htmlArr[idx++] = "<td id='" + params.fieldId + "'";
-		htmlArr[idx++] = " width=" + params.width + ">";
 		htmlArr[idx++] = path;
-		htmlArr[idx++] = "</td>";
 	} else {
 		if (field == ZmItem.F_DATE) {
 			item = AjxUtil.createProxy(item);
 			item.date = item.modifyDate;
 		}
-		idx = ZmListView.prototype._getField.apply(this, arguments);
+		idx = ZmListView.prototype._getCellContents.apply(this, arguments);
 	}
 	
 	return idx;

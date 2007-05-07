@@ -437,6 +437,7 @@ function(creates, force) {
 	if (!(currList instanceof ZmMailList)) { return; }
 
 	// for CV, folderId will correspond to parent list view
+	// XXX: should handle simple tag search as well
 	var folderId = currList.search.folderId;
 	if (!folderId) { return; }
 
@@ -447,6 +448,25 @@ function(creates, force) {
 	var cutoff = last ? last.date : null;
 	DBG.println("cutoff = " + cutoff + ", list size = " + a.length);
 
+	// first, remember which folders each conv spans
+/*
+	var list = creates["c"];
+	if (list && list.length) {
+		for (var i = 0; i < list.length; i++) {
+			var create = list[i];
+			var folderList = create._folders ? create._folders.split(",") : null;
+			if (folderList && folderList.length) {
+				var cid = create.id;
+				if (!folders[cid]) {
+					folders[cid] = {};
+				}
+				for (var j = 0; j < folderList.length; j++) {
+					folders[cid][folderList[j]] = true;
+				}
+			}
+		}
+	}
+*/	
 	for (var name in creates) {
 		var list = creates[name];
 		for (var i = 0; i < list.length; i++) {
@@ -455,6 +475,7 @@ function(creates, force) {
 			// if we're showing convs and get a new msg notif, update its conv
 			if (currList.type == ZmItem.CONV && name == "m") {
 				var cid = create.cid;
+
 				var folder = create.l;
 				if (cid && folder) {
 					if (!folders[cid]) {
@@ -462,6 +483,7 @@ function(creates, force) {
 					}
 					folders[cid][folder] = true;
 				}
+
 				// see if conv already has this msg
 				var conv = this._appCtxt.getById(cid);
 				if (conv && conv.msgs && conv.msgs.getById(create.id)) {
@@ -741,11 +763,61 @@ function() {
 	return setting ? ZmMailApp.GROUP_MAIL_BY_ITEM[setting] : ZmItem.MSG;
 };
 
-// Normalize the notifications that occur when a virtual conv gets promoted to a real conv.
+/**
+ * Normalize the notifications that occur when a virtual conv gets promoted to a real conv.
+ * Instead of processing a delete (old conv with negative ID) and a create (new conv with
+ * positive ID) for the conv, we generate a "modified" notification with a change in ID.
+ */
 ZmMailApp.prototype._adjustNotifies =
 function(notify) {
+/*
 	if (!(notify.deleted && notify.created && notify.modified))	{ return notify; }
 	
+	var folders = {};
+	var createList = ZmRequestMgr._getObjList(notify.created);
+	for (var i = 0; i < createList.length; i++) {
+		var create = createList[i];
+		var id = create.id;
+		var name = create._name;
+		if (name == "m" && create.cid && create.l) {
+			if (!folders[create.cid]) {
+				folders[create.cid] = [];
+			}
+			folders[create.cid].push(create.l);
+		}
+	}
+	var modList = ZmRequestMgr._getObjList(notify.modified);
+	for (var i = 0; i < modList.length; i++) {
+		var mod = modList[i];
+		var id = mod.id;
+		var name = mod._name;
+		if (name == "m") {
+			var msg = this._appCtxt.getById(id);
+			if (msg.folderId && mod.cid) {
+				msg.cid = mod.cid;
+				if (!folders[mod.cid]) {
+					folders[mod.cid] = [];
+				}
+				folders[mod.cid].push(msg.folderId);
+			}
+		}
+	}
+	for (var i = 0; i < createList.length; i++) {
+		var create = createList[i];
+		var id = create.id;
+		var name = create._name;
+		if (name == "c" && folders[id]) {
+			create._folders = folders[id].join(",");
+		}
+	}
+	
+	return notify;
+*/	
+	
+	
+	if (!(notify.deleted && notify.created && notify.modified))	{ return notify; }
+	
+	// first, see if we are deleting any virtual convs (which have negative IDs)
 	var virtConvDeleted = false;
 	var deletedIds = notify.deleted.id.split(",");
 	var virtConv = {};
@@ -761,6 +833,7 @@ function(notify) {
 	}
 	if (!virtConvDeleted) { return notify; }
 
+	// look for creates of convs that mean a virtual conv got promoted
 	var gotNewConv = false;
 	var createList = ZmRequestMgr._getObjList(notify.created);
 	var createdMsgs = {};
@@ -772,6 +845,7 @@ function(notify) {
 		if (name == "m") {
 			createdMsgs[id] = create;
 		} else if (name == "c" && (create.n > 1)) {
+			// this is probably  a create for the new real conv from a virtual conv
 			createdConvs[id] = create;
 			gotNewConv = true;
 		}
@@ -792,6 +866,10 @@ function(notify) {
 				msgMoved = true;
 				movedMsgs[id] = mod;
 				newToOldCid[mod.cid] = virtCid;
+				var msg = this._appCtxt.getById(id);
+				if (msg) {
+					msg.cid = mod.cid;
+				}
 			}
 		}
 	}
@@ -801,20 +879,32 @@ function(notify) {
 	// process a preliminary notif that will update the virtual conv's ID to its
 	// new value.
 	
-	// First, ignore the deleted notif for the virtual conv
-	notify.deleted.id = newDeletedIds.join(",");
+	// First, remove the virt conv from the list of deleted IDs
+	if (newDeletedIds.length) {
+		notify.deleted.id = newDeletedIds.join(",");
+	} else {
+		delete notify.deleted;
+	}
 	
-	// Next, make sure we ignore the create for the real conv by placing a marker in its node.
+	// Next, remove the create for the new real conv
+	var convCreates = [];
 	for (var i = 0; i < createList.length; i++) {
 		var create = createList[i];
 		var id = create.id;
 		var name = create._name;
-		if (name == "c" && virtConv[newToOldCid[id]]) {
-			createdConvs[id]._wasVirtConv = true;
+		if (name == "c") {
+			if (!virtConv[newToOldCid[id]]) {
+				convCreates.push(create);
+			}
 		}
 	}
+	if (convCreates.length) {
+		notify.created["c"] = convCreates;
+	} else {
+		delete notify.created["c"];
+	}
 
-	// Create modified notifs for the virtual convs that have been promoted.
+	// Create modified notifs for the virtual convs that have been promoted
 	var newMods = [];
 	for (var cid in newToOldCid) {
 		var node = createdConvs[cid];
@@ -827,7 +917,7 @@ function(notify) {
 	// from its virtual (negative) ID to its real (positive) one.
 	if (newMods.length) {
 		var mods = {};
-		mods.c = newMods;
+		mods["c"] = newMods;
 		this._appCtxt.getRequestMgr()._handleModifies(mods);
 	}
 	

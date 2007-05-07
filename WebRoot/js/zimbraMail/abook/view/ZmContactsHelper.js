@@ -90,23 +90,15 @@ function(list, contact, addr, isGroup) {
 
 // The items are AjxEmailAddress objects
 ZmContactsHelper._getEmailField =
-function(html, idx, item, field, colIdx, now, width) {
+function(html, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_TYPE) {
-		html[idx++] = "<td width=";
-		html[idx++] = width;
-		html[idx++] = ">";
 		html[idx++] = AjxImg.getImageHtml(item.icon);
-		html[idx++] = "</td>";
 	} else if (field == ZmItem.F_NAME) {
-		html[idx++] = "<td width=";
-		html[idx++] = width;
-		html[idx++] = "><nobr>";
+		html[idx++] = "<nobr>";
 		html[idx++] = item.name;
-		html[idx++] = "</td>";
+		html[idx++] = "</nobr>";
 	} else if (field == ZmItem.F_EMAIL) {
-		html[idx++] = "<td>";
 		html[idx++] = item.address;
-		html[idx++] = "</td>";
 	}
 	return idx;
 };

@@ -38,10 +38,10 @@ function ZmMailMsg(appCtxt, id, list) {
 	ZmMailItem.call(this, appCtxt, ZmItem.MSG, id, list);
 
 	this._inHitList = false;
-	this._attHitList = new Array();
-	this._attachments = new Array();
-	this._bodyParts = new Array();
-	this._addrs = new Array();
+	this._attHitList = [];
+	this._attachments = [];
+	this._bodyParts = [];
+	this._addrs = [];
 
 	for (var i = 0; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];

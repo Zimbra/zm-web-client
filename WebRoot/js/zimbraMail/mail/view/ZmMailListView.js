@@ -94,7 +94,7 @@ function() {
 	return {sent:isSentFolder, drafts:isDraftsFolder};
 };
 
-ZmMailListView.prototype._getRowClassName =
+ZmMailListView.prototype._getRowClass =
 function(item) {
 	return item.isUnread ? "Unread" : null;
 };

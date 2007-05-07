@@ -68,24 +68,12 @@ function() {
 	return this._folder ? this._folder.callType : ZmVoiceFolder.VOICEMAIL;
 };
 
-ZmVoiceListView.prototype._getCell = 
-function(element, field) {
-	var id = this._getFieldId(element, field);
-	return document.getElementById(id);
-};
-
-ZmVoiceListView.prototype._getRowClassName =
+ZmVoiceListView.prototype._getRowClass =
 function(voicemail, params) {
 	return voicemail.isUnheard ? "Unread" : "";
 };
 
-ZmVoiceListView.prototype._getField =
-function(voicemail) {
-	// Bypass ZmListView implementation.
-	return DwtListView.prototype._getField.apply(this, arguments);
-};
-
-ZmVoiceListView.prototype._getFieldContents =
+ZmVoiceListView.prototype._getCellContents =
 function(htmlArr, idx, voicemail, field, colIdx, params) {
 	if (field == ZmVoiceListView.F_CALLER) {
 		htmlArr[idx++] = this._getCallerNameHtml(voicemail);

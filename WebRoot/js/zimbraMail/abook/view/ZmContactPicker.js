@@ -410,9 +410,9 @@ function(ev, div) {
 	return true;
 };
 
-ZmContactChooserSourceListView.prototype._getField =
-function(html, idx, item, field, colIdx, now) {
-	return ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, now, this._getFieldWidth(colIdx));
+ZmContactChooserSourceListView.prototype._getCellContents =
+function(html, idx, item, field, colIdx, params) {
+	return ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, params);
 };
 
 /***********************************************************************************/
@@ -453,16 +453,12 @@ ZmContactChooserTargetListView.prototype._mouseOverAction =
 ZmContactChooserSourceListView.prototype._mouseOverAction;
 
 // The items are AjxEmailAddress objects
-ZmContactChooserTargetListView.prototype._getField =
-function(html, idx, item, field, colIdx, now) {
-	var width = this._getFieldWidth(colIdx);
+ZmContactChooserTargetListView.prototype._getCellContents =
+function(html, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_TYPE) {
 		item.setType(item._buttonId);
-		html[idx++] = "<td width=";
-		html[idx++] = width;
-		html[idx++] = ">";
 		html[idx++] = ZmMsg[item.getTypeAsString()];
-		html[idx++] = ":</td>";
+		html[idx++] = ":";
 	} else {
 		idx = ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, now, width);
 	}

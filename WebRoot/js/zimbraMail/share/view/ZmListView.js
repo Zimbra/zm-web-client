@@ -61,6 +61,13 @@ function() {
 ZmListView.COL_WIDTH_ICON 					= 19;
 ZmListView.COL_WIDTH_DATE 					= 75;
 
+// TD class for fields
+ZmListView.FIELD_CLASS = {};
+ZmListView.FIELD_CLASS[ZmItem.F_TYPE]		= "Icon";
+ZmListView.FIELD_CLASS[ZmItem.F_FLAG]		= "Flag";
+ZmListView.FIELD_CLASS[ZmItem.F_TAG]		= "Tag";
+ZmListView.FIELD_CLASS[ZmItem.F_ATTACHMENT]	= "Attach";
+
 ZmListView.ITEM_FLAG_CLICKED = DwtListView._LAST_REASON + 1;
 
 ZmListView.prototype.getController =
@@ -99,7 +106,7 @@ function(ev) {
 
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL) {
 		DBG.println(AjxDebug.DBG2, "ZmListView: TAG");
-		this._setTagImg(item);
+		this._setImage(item, ZmItem.F_TAG, item.getTagImageInfo());
 	}
 	
 	if (ev.event == ZmEvent.E_FLAGS) { // handle "flagged" and "has attachment" flags
@@ -109,15 +116,9 @@ function(ev) {
 			var flag = flags[j];
 			var on = item[ZmItem.FLAG_PROP[flag]];
 			if (flag == ZmItem.FLAG_FLAGGED) {
-				var img = document.getElementById(this._getFieldId(item, ZmItem.F_FLAG));
-				if (img && img.parentNode) {
-					AjxImg.setImage(img.parentNode, on ? "FlagRed" : "Blank_16");
-				}
+				this._setImage(item, ZmItem.F_FLAG, on ? "FlagRed" : null);
 			} else if (flag == ZmItem.FLAG_ATTACH) {
-				var img = document.getElementById(this._getFieldId(item, ZmItem.F_ATTACHMENT));
-				if (img && img.parentNode) {
-					AjxImg.setImage(img.parentNode, on ? "Attachment" : "Blank_16");
-				}
+				this._setImage(item, ZmItem.F_ATTACHMENT, on ? "Attachment" : null);
 			}
 		}
 	}
@@ -177,7 +178,7 @@ function(ev) {
 		for (var i = 0; i < divs.length; i++) {
 			var item = this.getItemFromElement(divs[i]);
 			if (item && item.tags && (item.tags.length == 1) && (item.tags[0] == tag.id))
-				this._setTagImg(item);
+				this._setImage(item, ZmItem.F_TAG, item.getTagImageInfo());
 		}
 	}
 }
@@ -195,71 +196,51 @@ function(item) {
 	return this._getFieldId(item, ZmItem.F_ITEM_ROW);
 };
 
-// A table cell for one field of the item
-ZmListView.prototype._getField =
+ZmListView.prototype._getCellId =
+function(item, field) {
+	return (field == ZmItem.F_DATE) ? this._getFieldId(item, field) : null;
+};
+
+ZmListView.prototype._getCellClass =
+function(item, field, params) {
+	return ZmListView.FIELD_CLASS[field];
+};
+
+ZmListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
-
-	params = params || {};
-	var fieldId = params.fieldId || this._getFieldId(item, field);
-	var width = params.width || this._getFieldWidth(colIdx);
-
 	if (field == ZmItem.F_TYPE) {
-		htmlArr[idx++] = "<td style='width:";
-		htmlArr[idx++] = width;
-		htmlArr[idx++] = "' class='Icon'>";
-		htmlArr[idx++] = AjxImg.getImageHtml(ZmItem.ICON[item.type], null, ["id='", fieldId, "'"].join(""));
-		htmlArr[idx++] = "</td>";					
+		idx = this._getImageHtml(htmlArr, idx, ZmItem.ICON[item.type]);
 	} else if (field == ZmItem.F_FLAG) {
-		var flagImageInfo = item.isFlagged ? "FlagRed" : "Blank_16";
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = width;
-		htmlArr[idx++] = " class='Flag'>";
-		htmlArr[idx++] = AjxImg.getImageHtml(flagImageInfo, null, ["id='", fieldId, "'"].join(""));
-		htmlArr[idx++] = "</td>";
+		idx = this._getImageHtml(htmlArr, idx, item.isFlagged ? "FlagRed" : null, this._getFieldId(item, field));
 	} else if (field == ZmItem.F_TAG) {
-		if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) { return idx; }
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = width;
-		htmlArr[idx++] = " class='Tag' id='";
-		htmlArr[idx++] = this._getFieldId(item, ZmItem.F_TAG_CELL);
-		htmlArr[idx++] = "'>";
-		htmlArr[idx++] = this._getTagImgHtml(item, fieldId);
-		htmlArr[idx++] = "</td>";
+		idx = this._getImageHtml(htmlArr, idx, item.getTagImageInfo(), this._getFieldId(item, field));
 	} else if (field == ZmItem.F_ATTACHMENT) {
-		var attImageInfo = item.hasAttach ? "Attachment" : "Blank_16";
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = width;
-		htmlArr[idx++] = " class='Attach'>";
-		htmlArr[idx++] = AjxImg.getImageHtml(attImageInfo, null, ["id='", fieldId, "'"].join(""));
-		htmlArr[idx++] = "</td>";					
+		idx = this._getImageHtml(htmlArr, idx, item.hasAttach ? "Attachment" : null, this._getFieldId(item, field));
 	} else if (field == ZmItem.F_DATE) {
-		htmlArr[idx++] = "<td id='";
-		htmlArr[idx++] = fieldId;
-		htmlArr[idx++] = "' width=";
-		htmlArr[idx++] = width;
-		htmlArr[idx++] = ">";
 		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now || new Date(), item.date);
-		htmlArr[idx++] = "</td>";
+	} else {
+		idx = DwtListView.prototype._getCellContents.apply(this, arguments);
 	}
 	
 	return idx;
-}
+};
 
-// We use HTML to set the tag image, so that we don't need the blank image if there are no tags.
-ZmListView.prototype._getTagImgHtml =
-function(item, id) {
-	var tagImageInfo = item.getTagImageInfo();
-	var idStr = id ? ["id='", id, "'"].join("") : null;
-	return AjxImg.getImageHtml(tagImageInfo, null, idStr);
-}
+ZmListView.prototype._getImageHtml =
+function(htmlArr, idx, imageInfo, id) {
+	imageInfo = imageInfo || "Blank_16";
+	var idText = id ? ["id='", id, "'"].join("") : null;
+	htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, idText);
+	return idx;
+};
 
-// Find the tag cell and reset its HTML depending on the item's tags.
-ZmListView.prototype._setTagImg =
-function(item) {
-	var tagCell = document.getElementById(this._getFieldId(item, ZmItem.F_TAG_CELL));
-	if (!tagCell) { return; }
-	tagCell.innerHTML = this._getTagImgHtml(item, this._getFieldId(item, ZmItem.F_TAG));
-}
+ZmListView.prototype._setImage =
+function(item, field, imageInfo) {
+	var img = this._getElement(item, field);
+	if (img && img.parentNode) {
+		imageInfo = imageInfo || "Blank_16";
+		AjxImg.setImage(img.parentNode, imageInfo);
+	}
+};
 
 /**
  * Parse the DOM ID to figure out what got clicked. Most IDs will look something like 
@@ -276,14 +257,15 @@ function(item) {
  */
 ZmListView.prototype._parseId =
 function(id) {
-	var m = id.match(/^V_(\w+)_([a-z]*)((DWT)?-?\d+)_?(\d*)$/);
+	var m = id.match(/^V_([A-Z]+)_([a-z]*)((DWT)?-?\d+)_?(\d*)$/);
 	if (m) {
 		return {view:m[1], field:m[2], item:m[3], participant:m[5]};
 	} else {
 		return null;
 	}
-}
+};
 
+// XXX: apps should be handling some of these
 ZmListView.prototype._mouseOverAction =
 function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
@@ -321,12 +303,16 @@ function(ev, div) {
 		if (m && m.field) {
 			var item = this.getItemFromElement(div);
 			if (m.field == ZmItem.F_FLAG) {
-				if (!item.isFlagged)
+				if (!item.isFlagged) {
 					ev.target.className = "ImgFlagRedDis";
+				}
 			} else if (m.field == ZmItem.F_TAG) {
 				this._setTagToolTip(div);
 			} else if (m.field == ZmItem.F_STATUS) {
 				this._setStatusToolTip(item);
+			} else if (m.field == ZmItem.F_ATTACHMENT) {
+				// disable for now, we only get att info once msg is loaded
+//				this._setAttachmentToolTip(item);
 			} else if (m.field == ZmItem.F_PARTICIPANT) {
 				if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && item instanceof ZmContact) {	
 					var toolTip = item.getToolTip(item.getAttr(ZmContact.F_email));
@@ -347,8 +333,10 @@ function(ev, div) {
 				this._setDateToolTip(item, div);
 			} else if (m.field == ZmItem.F_FOLDER) {
 				var folder = this._appCtxt.getById(item.folderId);
-				if (folder && folder.parent) {
-					this.setToolTipContent(folder.getPath());
+				var name = folder.getName();
+				var path = folder.getPath();
+				if (folder && folder.parent && (path != name)) {
+					this.setToolTipContent(path);
 				}
 			} else if (m.field == ZmItem.F_TYPE) {
 				this.setToolTipContent(ZmMsg[ZmItem.MSG_KEY[item.type]]);
@@ -497,22 +485,30 @@ function(div) {
 ZmListView.prototype._setStatusToolTip = 
 function(item) {
 	var tooltip = null;
-	// check unread first since it has precedence
-	if (item.isDraft)
-		tooltip = ZmMsg.draft;
-	else if (item.isUnread)
-		tooltip = ZmMsg.unread;
-	else if (item.isReplied)
-		tooltip = ZmMsg.replied;
-	else if (item.isForwarded)
-		tooltip = ZmMsg.forwarded;
-	else if (item.isSent)
-		tooltip = ZmMsg.sentAt;
-	else
-		tooltip = ZmMsg.read;
+	if (item.isDraft)			{ tooltip = ZmMsg.draft; }
+	else if (item.isUnread)		{ tooltip = ZmMsg.unread; }
+	else if (item.isReplied)	{ tooltip = ZmMsg.replied; }
+	else if (item.isForwarded)	{ tooltip = ZmMsg.forwarded; }
+	else if (item.isSent)		{ tooltip = ZmMsg.sentAt; }
+	else if (item.isInvite)		{ tooltip = ZmMsg.appointment; }
+	else						{ tooltip = ZmMsg.read; }
 	
 	this.setToolTipContent(tooltip);
-}
+};
+
+ZmListView.prototype._setAttachmentToolTip = 
+function(item) {
+	var tooltip = null;
+	var atts = item.getAttachments ? item.getAttachments() : [];
+	if (atts.length == 1) {
+		var info = ZmMimeTable.getInfo(atts[0].ct);
+		tooltip = info ? info.desc : null;
+	} else if (atts.length > 1) {
+		tooltip = AjxMessageFormat.format(ZmMsg.multipleAttachmentsTooltip, [atts.length]);
+	}
+
+	this.setToolTipContent(tooltip);
+};
 
 ZmListView.prototype._setDateToolTip = 
 function(item, div) {
@@ -526,7 +522,7 @@ function(item, div) {
 			date = item.date;
 		}
 		if (date) {
-			var dateStr = new Array()
+			var dateStr = [];
 			var i = 0;
 			dateStr[i++] = prefix;
 			var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);

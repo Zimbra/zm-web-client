@@ -449,7 +449,7 @@ ZmContactCardsView.prototype._setDnDIconState =
 function(dropAllowed) {
 	if (this._dndImg || !AjxEnv.isLinux) {
 		ZmContactsBaseView.prototype._setDnDIconState.call(this, dropAllowed)
-	} else {
+	} else if (this._dndIcon) {
 		// bug fix #3235 - no opacity for linux
 		var addClass = dropAllowed ? DwtCssStyle.DROP_OK : DwtCssStyle.DROP_NOT_OK;
 		var linuxClass = [addClass, DwtCssStyle.LINUX].join("-");
@@ -499,8 +499,9 @@ function(ev) {
 	// need custom handling for delete (can't just remove row)
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		var items = ev.getDetail("items");
-		for (var i = 0; i < items.length; i++)
+		for (var i = 0; i < items.length; i++) {
 			this._list.remove(items[i]);
+		}
 		this._layout();
 	} else {
 		ZmContactsBaseView.prototype._changeListener.call(this, ev);

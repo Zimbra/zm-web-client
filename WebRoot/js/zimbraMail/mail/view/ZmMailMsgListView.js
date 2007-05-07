@@ -84,14 +84,11 @@ function(defaultColumnSort) {
 // Reset row style and status icon
 ZmMailMsgListView.prototype.markUIAsRead = 
 function(msg, on) {
-	var row = document.getElementById(this._getFieldId(msg, ZmItem.F_ITEM_ROW));
+	var row = this._getElement(msg, ZmItem.F_ITEM_ROW);
 	if (row) {
-		row.className = this._getRowClassName(msg);
+		row.className = this._getRowClass(msg);
 	}
-	var img = document.getElementById(this._getFieldId(msg, ZmItem.F_STATUS));
-	if (img && img.parentNode) {
-		AjxImg.setImage(img.parentNode, msg.getStatusIcon());
-	}
+	this._setImage(msg, ZmItem.F_STATUS, msg.getStatusIcon());
 };
 
 ZmMailMsgListView.prototype.resetHeight = 
@@ -114,7 +111,7 @@ function(msg, params) {
 	params.isMatched = (msg.isInHitList() && (this._mode == ZmController.CONV_VIEW) && !this._appCtxt.getCurrentSearch().folderId);
 };
 
-ZmMailMsgListView.prototype._getDivStyle =
+ZmMailMsgListView.prototype._getDivClass =
 function(base, item, params) {
 	var style;
 	if (params.isDnDIcon && params.isMatched) {
@@ -124,13 +121,13 @@ function(base, item, params) {
 	} else if (params.isMatched) {
 		style = [base, DwtCssStyle.MATCHED].join("-");			// Row-matched
 	} else {
-		style = ZmMailListView.prototype._getDivStyle.apply(this, arguments);
+		style = ZmMailListView.prototype._getDivClass.apply(this, arguments);
 	}
 
 	return style;
 };
 
-ZmMailMsgListView.prototype._getRowClassName =
+ZmMailMsgListView.prototype._getRowClass =
 function(msg) {
 	var classes = [];
 	if (this._mode == ZmController.CONV_VIEW) {
@@ -145,28 +142,31 @@ function(msg) {
 	return classes.length ? classes.join(" ") : null;
 };
 
-ZmMailMsgListView.prototype._getField =
+ZmMailMsgListView.prototype._getCellId =
+function(item, field) {
+	if (field == ZmItem.F_SUBJECT && (this._mode == ZmController.CONV_VIEW || this._mode == ZmController.HYBRID_VIEW)) {
+		return this._getFieldId(item, ZmItem.F_FRAGMENT);
+	} else {
+		return ZmMailListView.prototype._getCellId.apply(this, arguments);
+	}
+};
+
+ZmMailMsgListView.prototype._getCellContents =
 function(htmlArr, idx, msg, field, colIdx, params) {
 
 	if (field == ZmItem.F_STATUS) {
-		var imageInfo = msg.getStatusIcon();
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = params.width;
-		htmlArr[idx++] = "><center>";
-		htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, ["id='", params.fieldId, "'"].join(""));	
-		htmlArr[idx++] = "</center></td>";
+		htmlArr[idx++] = "<center>";
+		idx = this._getImageHtml(htmlArr, idx, msg.getStatusIcon(), this._getFieldId(msg, field));
+		htmlArr[idx++] = "</center>";
 
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = params.width;
-		htmlArr[idx++] = ">";
-		if (this._mode == ZmController.TRAD_VIEW && 
-			(msg.folderId == ZmFolder.ID_SENT || msg.folderId == ZmFolder.ID_DRAFTS || msg.folderId == ZmFolder.ID_OUTBOX)) 
-		{
+		if (this._mode == ZmController.TRAD_VIEW && (msg.folderId == ZmFolder.ID_SENT ||
+			msg.folderId == ZmFolder.ID_DRAFTS || msg.folderId == ZmFolder.ID_OUTBOX)) {
+
 			var addrs = msg.getAddresses(AjxEmailAddress.TO).getArray();
 	
 			// default to FROM addresses if no TO: found
-			if (addrs == null || addrs.length == 0) {
+			if (!(addrs && addrs.length)) {
 				addrs = msg.getAddresses(AjxEmailAddress.FROM).getArray();
 			}
 			
@@ -182,10 +182,8 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 						htmlArr[idx++] = ", ";
 					}
 					htmlArr[idx++] = "<span style='white-space: nowrap' id='";
-					htmlArr[idx++] = fieldId;
-					htmlArr[idx++] = "_";
 					// bug fix #3001 - always add one to index value (to take FROM: address into account)
-					htmlArr[idx++] = parts[j].index+1;
+					htmlArr[idx++] = [fieldId, parts[j].index + 1].join("_");
 					htmlArr[idx++] = "'>";
 					htmlArr[idx++] = parts[j].name;
 					htmlArr[idx++] = "</span>";
@@ -208,23 +206,15 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 				htmlArr[idx++] = "</span>";
 			}
 		}
-		htmlArr[idx++] = "</td>";
 
 	} else if (field == ZmItem.F_SUBJECT) {
+		htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 		if (this._mode == ZmController.CONV_VIEW || this._mode == ZmController.HYBRID_VIEW) {
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = this._getFieldId(msg, ZmItem.F_FRAGMENT);
-			htmlArr[idx++] = "'";
-			htmlArr[idx++] = AjxEnv.isSafari ? " style='width:auto;'><div style='overflow:hidden'>" : " width=100%>";
 			if (this._mode == ZmController.HYBRID_VIEW) {
 				htmlArr[idx++] = ZmHybridListView.INDENT;
 			}
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
 		} else {
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = params.fieldId;
-			htmlArr[idx++] = "'";
-			htmlArr[idx++] = AjxEnv.isSafari ? " style='width:auto;'><div style='overflow:hidden'>" : " width=100%>";
 			var subj = msg.getSubject() || ZmMsg.noSubject;
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj);
 			if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
@@ -233,34 +223,25 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 				htmlArr[idx++] = "</span>";
 			}
 		}
-		if (AjxEnv.isSafari) {
-			htmlArr[idx++] = "</div>";
-		}
-		htmlArr[idx++] = "</td>";
+		htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
 
 	} else if (field == ZmItem.F_FOLDER) {
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = params.width;
-		htmlArr[idx++] = ">";
 		htmlArr[idx++] = "<nobr id='";
-		htmlArr[idx++] = params.fieldId;
+		htmlArr[idx++] = this._getFieldId(msg, field);
 		htmlArr[idx++] = "'>"; // required for IE bug
 		var folder = this._appCtxt.getById(msg.folderId);
 		if (folder) {
 			htmlArr[idx++] = folder.getName();
 		}
 		htmlArr[idx++] = "</nobr>";
-		htmlArr[idx++] = "</td>";
 
 	} else if (field == ZmItem.F_SIZE) {
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = params.width;
-		htmlArr[idx++] = "><nobr>";
+		htmlArr[idx++] = "<nobr>";
 		htmlArr[idx++] = AjxUtil.formatSize(msg.size);
-		htmlArr[idx++] = "</td>";
+		htmlArr[idx++] = "</nobr>";
 
 	} else {
-		idx = ZmListView.prototype._getField.apply(this, arguments);
+		idx = ZmMailListView.prototype._getCellContents.apply(this, arguments);
 	}
 	
 	return idx;
@@ -301,16 +282,13 @@ function(ev) {
 		}
 	} else if (ev.event == ZmEvent.E_FLAGS) { // handle "replied" and "forwarded" flags
 		var flags = ev.getDetail("flags");
-		var img = document.getElementById(this._getFieldId(msg, ZmItem.F_STATUS));
-		if (img && img.parentNode) {
-			for (var j = 0; j < flags.length; j++) {
-				var flag = flags[j];
-				var on = msg[ZmItem.FLAG_PROP[flag]];
-				if (flag == ZmItem.FLAG_REPLIED && on) {
-					AjxImg.setImage(img.parentNode, "MsgStatusReply");
-				} else if (flag == ZmItem.FLAG_FORWARDED && on) {
-					AjxImg.setImage(img.parentNode, "MsgStatusForward");
-				}
+		for (var j = 0; j < flags.length; j++) {
+			var flag = flags[j];
+			var on = msg[ZmItem.FLAG_PROP[flag]];
+			if (flag == ZmItem.FLAG_REPLIED && on) {
+				this._setImage(msg, ZmItem.F_STATUS, "MsgStatusReply");
+			} else if (flag == ZmItem.FLAG_FORWARDED && on) {
+				this._setImage(msg, ZmItem.F_STATUS, "MsgStatusForward");
 			}
 		}
 		ZmMailListView.prototype._changeListener.call(this, ev); // handle other flags
@@ -324,7 +302,7 @@ function(ev) {
 
 ZmMailMsgListView.prototype._changeFolderName = 
 function(msg) {
-	var folderCell = document.getElementById(this._getFieldId(msg, ZmItem.F_FOLDER));
+	var folderCell = this._getElement(msg, ZmItem.F_FOLDER);
 	if (folderCell) {
 		var folder = this._appCtxt.getById(msg.folderId);
 		if (folder) {
@@ -338,7 +316,7 @@ function(msg) {
 
 ZmMailMsgListView.prototype._changeTrashStatus = 
 function(msg) {
-	var row = document.getElementById(this._getFieldId(msg, ZmItem.F_ITEM_ROW));
+	var row = this._getElement(msg, ZmItem.F_ITEM_ROW);
 	if (row) {
 		var folder = this._appCtxt.getById(msg.folderId);
 		var className = null;

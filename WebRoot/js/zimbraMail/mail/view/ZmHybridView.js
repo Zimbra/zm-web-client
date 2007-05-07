@@ -173,6 +173,8 @@ ZmHybridListView.prototype.constructor = ZmHybridListView;
 
 ZmHybridListView.INDENT = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
+ZmListView.FIELD_CLASS[ZmItem.F_EXPAND] = "Icon";
+
 // Copy some functions from ZmMailMsgListView, for handling message rows
 ZmHybridListView.prototype._changeFolderName = ZmMailMsgListView.prototype._changeFolderName;
 ZmHybridListView.prototype._changeTrashStatus = ZmMailMsgListView.prototype._changeTrashStatus;
@@ -263,90 +265,16 @@ function(item, params) {
 	}
 };
 
-ZmHybridListView.prototype._getField =
+ZmHybridListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
-	var isConv = (item.type == ZmItem.CONV);
 	if (field == ZmItem.F_EXPAND) {
-		var expandable = this._isExpandable(item);
-		var imageInfo = expandable ? "NodeCollapsed" : "Blank_16";
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = params.width;
-		htmlArr[idx++] = " class='Icon'>";
-		htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, ["id='", params.fieldId, "'"].join(""));
-		htmlArr[idx++] = "</td>";
-
-	} else if (field == ZmItem.F_STATUS) {
-		var imageInfo = isConv ? "Blank_16" : item.getStatusIcon();
-		htmlArr[idx++] = "<td width=";
-		htmlArr[idx++] = params.width;
-		htmlArr[idx++] = "><center>";
-		htmlArr[idx++] = AjxImg.getImageHtml(imageInfo, null, ["id='", params.fieldId, "'"].join(""));	
-		htmlArr[idx++] = "</center></td>";
-
-	} else if (field == ZmItem.F_PARTICIPANT) {
-		if (isConv) {
-			htmlArr[idx++] = "<td width=";
-			htmlArr[idx++] = params.width;
-			htmlArr[idx++] = " id='";
-			htmlArr[idx++] = params.fieldId;
-			htmlArr[idx++] = "'>";
-			if (AjxEnv.isSafari) {
-				htmlArr[idx++] = "<div style='overflow:hidden'>";
-			}
-			htmlArr[idx++] = this._getParticipantHtml(item, params.fieldId);
-			if ( AjxEnv.isSafari) {
-				htmlArr[idx++] = "</div>";
-			}
-			htmlArr[idx++] = "</td>";
-		} else {
-			idx = ZmMailMsgListView.prototype._getField.apply(this, arguments);
-		}
-
-	} else if (field == ZmItem.F_SUBJECT) {
-		if (isConv) {
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = params.fieldId;
-			htmlArr[idx++] = "'>";
-			htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
-			htmlArr[idx++] = item.subject ? AjxStringUtil.htmlEncode(item.subject, true) : AjxStringUtil.htmlEncode(ZmMsg.noSubject);
-			if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && item.fragment) {
-				htmlArr[idx++] = "<span class='ZmConvListFragment'> - ";
-				htmlArr[idx++] = AjxStringUtil.htmlEncode(item.fragment, true);
-				htmlArr[idx++] = "</span>";
-			}
-			htmlArr[idx++] = AjxEnv.isSafari ? "</div></td>" : "</td>";
-		} else {
-			idx = ZmMailMsgListView.prototype._getField.apply(this, arguments);
-		}
-
-	} else if (field == ZmItem.F_FOLDER) {
-		if (isConv) {
-			idx = DwtListView.prototype._getField.apply(this, arguments);
-		} else {
-			idx = ZmMailMsgListView.prototype._getField.apply(this, arguments);
-		}
-
-	} else if (field == ZmItem.F_SIZE) {
-		if (isConv) {
-			// Conversation count
-			htmlArr[idx++] = "<td id='";
-			htmlArr[idx++] = this._getFieldId(item, ZmItem.F_COUNT);
-			htmlArr[idx++] = "' width=";
-			htmlArr[idx++] = params.width;
-			htmlArr[idx++] = ">";
-			if (item.numMsgs > 1) {
-				htmlArr[idx++] = "(";
-				htmlArr[idx++] = item.numMsgs;
-				htmlArr[idx++] = ")";
-			}
-			htmlArr[idx++] = "</td>";
-		} else {
-			// Message size
-			idx = ZmMailMsgListView.prototype._getField.apply(this, arguments);
-		}
-
+		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
 	} else {
-		idx = ZmListView.prototype._getField.apply(this, arguments);
+		if (item.type == ZmItem.CONV) {
+			idx = ZmConvListView.prototype._getCellContents.apply(this, arguments);
+		} else {
+			idx = ZmMailMsgListView.prototype._getCellContents.apply(this, arguments);
+		}
 	}
 	
 	return idx;
@@ -381,16 +309,13 @@ function(conv, msg, offset) {
 		var num = Math.min(limit, msgList.size() - offset);
 		for (var i = 0; i < num; i++) {
 			var msg = a[offset + i];
-			var div = this._createItemHtml(msg, this._now);
+			var div = this._createItemHtml(msg, {now:this._now});
 			this._addRow(div, index + i + 1);
 			this._msgRowIdList[item.id].push(div.id);
 		}
 	}
-	
-	var img = document.getElementById(this._getFieldId(item, ZmItem.F_EXPAND));
-	if (img && img.parentNode) {
-		AjxImg.setImage(img.parentNode, "NodeExpanded");
-	}
+
+	this._setImage(item, ZmItem.F_EXPAND, "NodeExpanded");
 	this._expanded[item.id] = true;
 	
 	var cid = isConv ? item.id : item.cid;
@@ -422,11 +347,7 @@ ZmHybridListView.prototype._doCollapse =
 function(item) {
 	var rowIds = this._msgRowIdList[item.id];
 	this._showMsgs(rowIds, false);
-
-	var img = document.getElementById(this._getFieldId(item, ZmItem.F_EXPAND));
-	if (img && img.parentNode) {
-		AjxImg.setImage(img.parentNode, "NodeCollapsed");
-	}
+	this._setImage(item, ZmItem.F_EXPAND, "NodeCollapsed");
 	this._expanded[item.id] = false;
 };
 
@@ -528,11 +449,8 @@ function(ev) {
 	
 	// msg count in a conv changed - see if we need to add or remove an expand icon
 	if (isConv && (ev.event == ZmEvent.E_MODIFY) && (fields && fields[ZmItem.F_COUNT])) {
-		var img = document.getElementById(this._getFieldId(item, ZmItem.F_EXPAND));
-		if (img && img.parentNode) {
-			var icon = !this._isExpandable(item) ? "Blank_16" : this._expanded[item.id] ? "NodeExpanded" : "NodeCollapsed";
-			AjxImg.setImage(img.parentNode, icon);
-		}
+		var imageInfo = !this._isExpandable(item) ? null : this._expanded[item.id] ? "NodeExpanded" : "NodeCollapsed";
+		this._setImage(item, ZmItem.F_EXPAND, imageInfo);
 	}
 
 	// msg moved or deleted	
@@ -545,10 +463,7 @@ function(ev) {
 			conv.msgs.remove(item, true);
 			conv.numMsgs = conv.msgs.size();
 			if (this._expandable[conv.id] && conv.numMsgs == 1) {
-				var img = document.getElementById(this._getFieldId(conv, ZmItem.F_EXPAND));
-				if (img && img.parentNode) {
-					AjxImg.setImage(img.parentNode, "Blank_16");
-				}
+				this._setImage(conv, ZmItem.F_EXPAND, null);
 				this._removeMsgRows(conv.id);
 			}
 		} else {
@@ -597,7 +512,7 @@ function(ev) {
 	// if we get a new msg that's part of an expanded conv, insert it into the
 	// expanded conv, and don't move that conv
 	if (!isConv && (ev.event == ZmEvent.E_CREATE) && this._expanded[item.cid]) {
-		var div = this._createItemHtml(item, this._now);
+		var div = this._createItemHtml(item, {now:this._now});
 		var conv = this._appCtxt.getById(item.cid);
 		var convIndex = this._getRowIndex(conv);
 		var sortIndex = ev.getDetail("sortIndex");
