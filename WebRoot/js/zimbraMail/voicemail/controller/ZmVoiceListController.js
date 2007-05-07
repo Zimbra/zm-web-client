@@ -124,8 +124,10 @@ function(ev) {
 	var view = ev.dwtObj;
 	var isParticipant = ev.field == ZmItem.F_PARTICIPANT;
 	var actionMenu = this.getActionMenu();
+	var item = ev.item;
+	
+	// Update the add/edit contact item.
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var item = ev.item;
 		var contact = item.participants ? item.participants.getArray()[0] : null;
 		var newOp = contact ? ZmOperation.EDIT_CONTACT : ZmOperation.NEW_CONTACT;
 		var newText = contact? null : ZmMsg.AB_ADD_CONTACT;
@@ -134,6 +136,17 @@ function(ev) {
 		this._actionEv.contact = contact;
 		this._setContactText(contact != null);
 	}
+
+	// Update the call item to show the number it'll call.
+	var callItem = actionMenu.getMenuItem(ZmOperation.VOICE_CALL);
+	if (callItem.getEnabled()) {
+		var phone = view.getCallingParty(item);
+		var text = AjxMessageFormat.format(ZmMsg.callNumber, phone.getDisplay());
+		callItem.setText(text);
+	} else {
+		callItem.setText(ZmMsg.call);
+	}
+	
 	actionMenu.popup(0, ev.docX, ev.docY);
 };
 
