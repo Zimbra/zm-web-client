@@ -223,7 +223,9 @@ function(view) {
 
 ZmChatListController.prototype.updatePresenceMenu = function(addListeners) {
 	var view = view || this._currentView || this._defaultView();
-	var presenceButton = this._toolbar[view].getButton(ZmOperation.IM_PRESENCE_MENU);
+	var toolbar = this._toolbar[view];
+	if (!toolbar) { return; }
+	var presenceButton = toolbar.getButton(ZmOperation.IM_PRESENCE_MENU);
 	var presenceMenu = presenceButton.getMenu();
 
    	var list = [ ZmOperation.IM_PRESENCE_OFFLINE,
