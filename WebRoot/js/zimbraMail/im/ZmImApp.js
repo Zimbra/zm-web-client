@@ -92,7 +92,12 @@ function() {
 	ZmItem.registerItem(ZmItem.CHAT,
 						{app:			ZmApp.IM,
 						 nameKey:		"chat",
-						 icon:			"ImStartChat"
+						 icon:			"ImStartChat",
+						 soapCmd:		"ItemAction",
+						 itemClass:		"ZmChat",
+						 node:			"chat",
+						 organizer:		ZmOrganizer.ROSTER,
+						 searchType:	"chat"
 						});
 };
 
