@@ -142,8 +142,10 @@ function(call) {
 	} else {
 		location = ZmMsg.unknown;
 	}
+	var callerLabel = (this._getCallType() == ZmVoiceFolder.PLACED_CALL) ? ZmMsg.toLabel : ZmMsg.fromLabel;
 	var data = { 
 		image: "Img" + this._controller._folder.getIcon(), 
+		callerLabel: callerLabel, 
 		caller: this._getCallerHtml(call), 
 		duration: AjxDateUtil.computeDuration(call.duration),
 		date: AjxDateUtil.computeDateTimeString(call.date),
