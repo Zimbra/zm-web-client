@@ -35,7 +35,7 @@ ZmCallListView.prototype.toString = function() {
 	return "ZmCallListView";
 };
 
-ZmCallListView.FROM_WIDTH = 150;
+ZmCallListView.FROM_WIDTH = 190;
 ZmCallListView.DURATION_WIDTH = 120;
 ZmCallListView.DATE_WIDTH = null; // Auto
 

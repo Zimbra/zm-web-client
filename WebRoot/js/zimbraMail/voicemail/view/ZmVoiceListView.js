@@ -41,6 +41,19 @@ ZmVoiceListView.prototype.toString = function() {
 	return "ZmVoiceListView";
 };
 
+ZmVoiceListView.PHONE_FIELDS_LABEL = { };
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_callbackPhone] = ZmMsg.phoneLabelCallback;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_carPhone] = ZmMsg.phoneLabelCar;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_assistantPhone] = ZmMsg.phoneLabelAssistant;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_companyPhone] = ZmMsg.phoneLabelCompany;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_homeFax] = ZmMsg.phoneLabelHomeFax;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_homePhone] = ZmMsg.phoneLabelHome;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_homePhone2] = ZmMsg.phoneLabelHome2;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_mobilePhone] = ZmMsg.phoneLabelMobile;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_otherPhone] = ZmMsg.phoneLabelOther;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_workPhone] = ZmMsg.phoneLabelWork;
+ZmVoiceListView.PHONE_FIELDS_LABEL[ZmContact.F_workPhone2] = ZmMsg.phoneLabelWork2;
+
 ZmVoiceListView.F_DATE = ZmItem.F_DATE;
 ZmVoiceListView.F_CALLER = "cl";
 
@@ -88,12 +101,16 @@ ZmVoiceListView.prototype._getCallerNameHtml =
 function(voicemail) {
 	var contactList = AjxDispatcher.run("GetContacts");
 	var callingParty = this.getCallingParty(voicemail);
-	var contact = contactList.getContactByPhone(callingParty.name);
-	if (contact) {
-		this._addToContactMap(contact, voicemail);
+	var data = contactList.getContactByPhone(callingParty.name);
+	if (data) {
+		this._addToContactMap(data.contact, voicemail);
 // TODO: Seems like this should go on ZmVoicemail?!?!?		
-		voicemail.participants.getArray()[0] = contact;
-		return AjxStringUtil.htmlEncode(contact.getFullName());
+		voicemail.participants.getArray()[0] = data.contact;
+		if (!ZmVoiceListView._callerFormat) {
+			ZmVoiceListView._callerFormat = new AjxMessageFormat(ZmMsg.callingPartyFormat);
+		}
+		var text = ZmVoiceListView._callerFormat.format([data.contact.getFullName(), ZmVoiceListView.PHONE_FIELDS_LABEL[data.field]]);
+		return AjxStringUtil.htmlEncode(text);
 	} else {
 		return this._getCallerHtml(voicemail);
 	}

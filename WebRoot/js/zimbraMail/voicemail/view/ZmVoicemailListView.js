@@ -41,7 +41,7 @@ ZmVoicemailListView.prototype.toString = function() {
 	return "ZmVoicemailListView";
 };
 
-ZmVoicemailListView.FROM_WIDTH = 150;
+ZmVoicemailListView.FROM_WIDTH = 190;
 ZmVoicemailListView.PLAYING_WIDTH = null; // Auto
 ZmVoicemailListView.PRIORITY_WIDTH = ZmListView.COL_WIDTH_ICON;
 ZmVoicemailListView.DATE_WIDTH = 120;
@@ -101,6 +101,15 @@ function() {
 	headerList.push(new DwtListHeaderItem(ZmVoiceListView.F_DATE, ZmMsg.received, null, ZmVoicemailListView.DATE_WIDTH, ZmVoiceListView.F_DATE, true));
 
 	return headerList;
+};
+
+ZmVoicemailListView.prototype._getCellId =
+function(item, field) {
+	if (field == ZmVoicemailListView.F_PLAYING) {
+		return this._getFieldId(item, field);
+	} else {
+		return ZmVoiceListView.prototype._getCellId.apply(this, arguments);
+	}
 };
 
 ZmVoicemailListView.prototype._getCellContents =

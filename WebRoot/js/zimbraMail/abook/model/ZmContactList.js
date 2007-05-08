@@ -332,17 +332,24 @@ ZmContactList.prototype.getContactByIMAddress = function(addr) {
 };
 
 /**
-* Returns the contact with the given phone number, if any. Canonical list only.
+* Returns information about the contact with the given phone number, if any.
+* Canonical list only.
 *
 * @param phone	[string]	a phone number
+* @return	[Object]	an object with contact = the contact & field = the field with the matching phone number
 */
 ZmContactList.prototype.getContactByPhone =
 function(phone) {
 	if (!phone || !this.isCanonical) return null;
 
 	var digits = this._getPhoneDigits(phone);
-	var contact = this._phoneToContact[digits];
-	return contact ? this._realizeContact(contact) : null;
+	var data = this._phoneToContact[digits];
+	if (data) {
+		data.contact = this._realizeContact(data.contact);
+		return data;
+	} else {
+		return null;
+	}
 };
 
 /**
@@ -569,12 +576,13 @@ function(contact, doAdd) {
 
 	// Update phone hash.
 	for (var i = 0; i < ZmContact.F_PHONE_FIELDS.length; i++) {
-		var phone = ZmContact.getAttr(contact, ZmContact.F_PHONE_FIELDS[i]);
+		var field = ZmContact.F_PHONE_FIELDS[i];
+		var phone = ZmContact.getAttr(contact, field);
 		if (phone) {
 			var digits = this._getPhoneDigits(phone);
 			if (digits) {
 				if (doAdd)
-					this._phoneToContact[digits] = contact;
+					this._phoneToContact[digits] = {contact: contact, field: field};
 				else
 					delete this._phoneToContact[digits];
 			}
