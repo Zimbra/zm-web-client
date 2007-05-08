@@ -723,7 +723,7 @@ function(htmlArr, idx, contact, field, colIdx, params) {
 	} else if (field == ZmItem.F_DATE) {
 		htmlArr[idx++] = AjxDateUtil.computeDateStr(params.now, contact.modified);
 	} else {
-		idx = ZmContactsBaseView.prototype._getField.apply(this, arguments);
+		idx = ZmContactsBaseView.prototype._getCellContents.apply(this, arguments);
 	}
 	
 	return idx;
