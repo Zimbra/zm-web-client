@@ -84,6 +84,7 @@ function() {
 	ZmOperation.registerOp("IM_ADD_TO_CONTACT", { textKey: "addToExistingContact", image: "Edit" });
 	ZmOperation.registerOp("IM_EDIT_CONTACT", { textKey: "editContact", image: "Edit" });
 	ZmOperation.registerOp("IM_GATEWAY_LOGIN", { textKey: "imGatewayLogin" });
+	ZmOperation.registerOp("IM_TOGGLE_OFFLINE", { textKey: "imToggleOffline" });
 };
 
 ZmImApp.prototype._registerItems =
@@ -171,6 +172,8 @@ function(active) {
 	if (active) {
 		this.stopFlashingIcon();
 	}
+	var treeController = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.ROSTER_TREE_ITEM);
+	treeController.appActivated(active);
 };
 
 ZmImApp.prototype.isActive =

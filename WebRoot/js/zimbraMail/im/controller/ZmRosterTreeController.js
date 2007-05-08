@@ -54,12 +54,60 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.IM_ADD_TO_CONTACT] = new AjxListener(this, this._imAddToContactListener);
 	this._listeners[ZmOperation.IM_EDIT_CONTACT] = new AjxListener(this, this._imEditContactListener);
 	this._listeners[ZmOperation.IM_GATEWAY_LOGIN] = new AjxListener(this, this._imGatewayLoginListener);
+	this._listeners[ZmOperation.IM_TOGGLE_OFFLINE] = new AjxListener(this, this._imToggleOffline);
 
 	this._treeItemHoverListenerListener = new AjxListener(this, this._treeItemHoverListener);
 };
 
 ZmRosterTreeController.prototype = new ZmTreeController;
 ZmRosterTreeController.prototype.constructor = ZmRosterTreeController;
+
+ZmRosterTreeController.FILTER_OFFLINE_BUDDIES = function(item) {
+	var rti = item.getData(Dwt.KEY_OBJECT).getRosterItem();
+	var presence = rti.getPresence();
+	return presence.getShow() == ZmRosterPresence.SHOW_OFFLINE;
+};
+
+// comment this out if we want to disable the search input field
+ZmRosterTreeController.FILTER_SEARCH = {
+	func : function(item) {
+		var search = this.__searchInputEl.value.toLowerCase();
+		var rti = item.getData(Dwt.KEY_OBJECT).getRosterItem();
+		return rti.getDisplayName().toLowerCase().indexOf(search) < 0;
+	},
+
+	_doKeyPress : function() {
+		var search = this.__searchInputEl.value;
+		if (!/\S/.test(search))
+			this.removeFilter(ZmRosterTreeController.FILTER_SEARCH.func);
+		else
+			this.addFilter(ZmRosterTreeController.FILTER_SEARCH.func);
+	},
+
+	inputFocus : function() {
+		Dwt.delClass(this.__searchInputEl, "DwtSimpleInput-hint", "DwtSimpleInput-focused");
+		if (this.__searchInputEl.value == ZmMsg.search)
+			this.__searchInputEl.value = "";
+		else try {
+			this.__searchInputEl.select();
+		} catch(ex) {};
+	},
+
+	inputBlur : function() {
+		Dwt.delClass(this.__searchInputEl, "DwtSimpleInput-focused", "DwtSimpleInput-hint");
+		if (!/\S/.test(this.__searchInputEl.value))
+			this.__searchInputEl.value = ZmMsg.search;
+	},
+
+	inputKeyPress : function() {
+		if (this.__searchInputTimeout)
+			clearTimeout(this.__searchInputTimeout);
+		this.__searchInputTimeout = setTimeout(
+			AjxCallback.simpleClosure(
+				ZmRosterTreeController.FILTER_SEARCH._doKeyPress, this
+			), 500);
+	}
+};
 
 ZmRosterTreeController.prototype.toString = function() {
 	return "ZmRosterTreeController";
@@ -81,6 +129,106 @@ function(overviewId, listener) {
 	if (this._eventMgrs[overviewId]) {
 		this._eventMgrs[overviewId].removeListener(DwtEvent.SELECTION, listener);
 	}
+};
+
+ZmRosterTreeController.prototype.addFilter = function(f) {
+	if (!this.__filters)
+		this.__filters = [];
+
+	// don't add same filter twice
+	for (var i = this.__filters.length; --i >= 0;)
+		if (this.__filters[i] === f)
+			this.__filters.splice(i, 1);
+
+	this.__filters.push(f);
+	this._applyFilters();
+};
+
+ZmRosterTreeController.prototype.removeFilter = function(f) {
+	if (!this.__filters)
+		return;
+
+	for (var i = this.__filters.length; --i >= 0;)
+		if (this.__filters[i] === f)
+			this.__filters.splice(i, 1);
+
+	// this is needed even if the array is empty in order to
+	// redisplay any hidden items
+	this._applyFilters();
+
+	if (this.__filters.length == 0) {
+		// completely drop it so we don't spend useful
+		// time in _applyFilters if there are no filters
+		this.__filters = null;
+	}
+};
+
+ZmRosterTreeController.prototype._applyFilters = function(items) {
+	var filters = this.__filters;
+	if (!filters)
+		return;
+	function doItems(items) {
+		var oneVisible = false;
+		for (var j = items.length; --j >= 0;) {
+			var item = items[j];
+			var display = true;
+			for (var k = filters.length; --k >= 0;) {
+				var f = filters[k];
+				if (f.call(this, item)) {
+					display = false;
+					break;
+				}
+			}
+			oneVisible = oneVisible || display;
+			item.setVisible(display);
+		}
+		return oneVisible;
+	};
+	if (items) {
+		doItems.call(this, items);
+	} else {
+		var treeView = this.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+		items = treeView.getItems();
+		var root = items && items.length ? items[0] : null;
+		if (!root)
+			return;
+		var groups = root.getItems();
+		for (var i = groups.length; --i >= 0;) {
+			var group = groups[i];
+			var oneVisible = doItems.call(this, group.getItems());
+			group.setVisible(oneVisible);
+			if (oneVisible)
+				group.setExpanded(true);
+		}
+	}
+};
+
+ZmRosterTreeController.prototype.appActivated = function(active) {
+	if (this.__searchInputEl) {
+		Dwt.setVisible(this.__searchInputEl, active);
+	}
+};
+
+ZmRosterTreeController.prototype._createView = function(params) {
+	var tree = ZmTreeController.prototype._createView.call(this, params);
+
+	if (ZmRosterTreeController.FILTER_SEARCH) {
+		// enable the search filter
+		var div = tree.getHtmlElement();
+		var input = div.ownerDocument.createElement("input");
+		this.__searchInputEl = input;
+		input.autocomplete = "off";
+		// input.type = "text"; // DwtSimpleInput-hint gets overriden if we specify type="text"
+		input.style.width = "100%";
+		input.className = "DwtSimpleInput";
+		div.parentNode.insertBefore(input, div);
+		input.onkeypress = AjxCallback.simpleClosure(ZmRosterTreeController.FILTER_SEARCH.inputKeyPress, this);
+		input.onfocus = AjxCallback.simpleClosure(ZmRosterTreeController.FILTER_SEARCH.inputFocus, this);
+		input.onblur = AjxCallback.simpleClosure(ZmRosterTreeController.FILTER_SEARCH.inputBlur, this);
+		input.onblur();
+	}
+
+	return tree;
 };
 
 ZmRosterTreeController.prototype._getDataTree =
@@ -143,13 +291,18 @@ function(item, fields, treeView) {
 	var newName = !doUnread ? null :
 		(numUnread == 0 ? item.getDisplayName() : AjxBuffer.concat("<b>",AjxStringUtil.htmlEncode(item.getDisplayName()), " (", numUnread, ")</b>"));
 
-	if (items) for (var i in items) {
-		var rti = items[i];
-		var ti = treeView.getTreeItemById(rti.id);
-		if (ti) {
-			if (doShow) ti.setImage(rti.getIcon());
-			if (doUnread) ti.setText(newName);
+	if (items) {
+		var treeItems = [];
+		for (var i = 0; i < items.length; ++i) {
+			var rti = items[i];
+			var ti = treeView.getTreeItemById(rti.id);
+			if (ti) {
+				if (doShow) ti.setImage(rti.getIcon());
+				if (doUnread) ti.setText(newName);
+				treeItems.push(ti);
+			}
 		}
+		this._applyFilters(treeItems);
 	}
 
 };
@@ -194,7 +347,7 @@ function(ev) {
 
 // Returns a list of desired header action menu operations
 ZmRosterTreeController.prototype._getHeaderActionMenuOps = function() {
-	return [ZmOperation.NEW_ROSTER_ITEM, ZmOperation.IM_GATEWAY_LOGIN];
+	return [ZmOperation.NEW_ROSTER_ITEM, ZmOperation.IM_GATEWAY_LOGIN, ZmOperation.IM_TOGGLE_OFFLINE];
 };
 
 // Returns a list of desired action menu operations
@@ -398,6 +551,17 @@ function(name) {
 		}
 	}
 	return group;
+};
+
+ZmRosterTreeController.prototype._imToggleOffline = function(ev) {
+	this.__filterOffline = !this.__filterOffline;
+	if (this.__filterOffline) {
+		ev.dwtObj.setImage("Check");
+		this.addFilter(ZmRosterTreeController.FILTER_OFFLINE_BUDDIES);
+	} else {
+		ev.dwtObj.setImage(null);
+		this.removeFilter(ZmRosterTreeController.FILTER_OFFLINE_BUDDIES);
+	}
 };
 
 ZmRosterTreeController.prototype._imGatewayLoginListener = function(ev) {
