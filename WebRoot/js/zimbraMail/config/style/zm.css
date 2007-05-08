@@ -222,12 +222,26 @@
 	padding-left:5px;
 }
 
+
+/* MESSED UP STUFF TO GET THE SEARCH TOOLBAR TO LINE UP */
+/*
 .ZmSearchToolbar TABLE {
-	@FullSize@
+	height:20px;
+	width:100%;
+}
+*/
+.ZmSearchToolbar .DwtCompositeTable TD {
+	padding-top:3px;
+}
+.ZmSearchToolbar .DwtCompositeTable TD.MessageControl1 {
+	padding-top:0px;
+	vertical-align:top;
 }
 
+
 .ZmSearchToolbar .ZNormal .ZButtonBorder {
-	@ZTransparentBg@ @TransparentBorder@
+/*	@ZTransparentBg@ @TransparentBorder@
+*/
 }
 
 /* Search builder toolbar (buttons only) */
