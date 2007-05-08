@@ -86,6 +86,18 @@ function() {
 };
 
 /**
+ * Pauses the currently loaded sound.
+ */
+ZmSoundPlayer.prototype.pause =
+function() {
+	if (this._soundPlugin && this._isScriptable) {
+		this._soundPlugin.pause();
+		this._setPlayState(ZmSoundPlayer._PAUSED);
+	}
+};
+
+
+/**
  * Stops the currently loaded sound.
  */
 ZmSoundPlayer.prototype.stop =
