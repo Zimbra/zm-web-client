@@ -225,16 +225,28 @@ function(convs, msgs) {
 				newConvs.push(conv);
 			}
 		}
-		// sort item list in reverse so they show up in correct order when processed
-		if (newConvs.length > 1) {
-			ZmMailItem.sortBy = sortBy;
-			newConvs.sort(ZmMailItem.sortCompare);
-			newConvs.reverse();
-		}
+
 		for (var id in msgs) {
 			var msg = msgs[id];
 			var cid = msg.cid;
+			var msgMatches = (msg.folderId == searchFolder);
 			var conv = this.getById(cid);
+			if (!conv && msgMatches) {
+				// msg will have _convCreateNode if it is 2nd msg and caused promotion of virtual conv;
+				// the conv node will have proper count and subject
+				var args = {appCtxt:this._appCtxt, list:this};
+				conv = msg._convCreateNode ? ZmConv.createFromDom(msg._convCreateNode, args) :
+											 this._appCtxt.getById(cid);
+				if (!conv) {
+					conv = ZmConv.createFromMsg(msg, args);
+				}
+				newConvId[cid] = true;
+				conv.folders[msg.folderId] = true;
+				sortIndex[cid] = this._getSortIndex(conv, sortBy);
+				this.add(conv, sortIndex[cid]);
+				conv.list = this;
+				newConvs.push(conv);
+			}
 			if (conv && !(conv.msgs && conv.msgs.getById(id))) {
 				if (!conv.msgs) {
 					conv.msgs = new ZmMailList(ZmItem.MSG, this._appCtxt);
@@ -249,7 +261,6 @@ function(convs, msgs) {
 				}
 				// if the new msg matches current search, update conv date and fragment
 				// TODO: handle simple tag searches
-				var msgMatches = (msg.folderId == searchFolder);
 				if (msgMatches && (conv.fragment != msg.fragment)) {
 					conv.fragment = msg.fragment;
 					fields[ZmItem.F_FRAGMENT] = true;
@@ -288,6 +299,14 @@ function(convs, msgs) {
 			}
 		}
 	}
+
+	// sort item list in reverse so they show up in correct order when processed
+	if (newConvs.length > 1) {
+		ZmMailItem.sortBy = sortBy;
+		newConvs.sort(ZmMailItem.sortCompare);
+		newConvs.reverse();
+	}
+
 	ZmModel.notifyEach(newConvs, ZmEvent.E_CREATE, {sortIndex:sortIndex});
 	ZmModel.notifyEach(newMsgs, ZmEvent.E_CREATE, {sortIndex:sortIndex});
 	ZmModel.notifyEach(flaggedItems, ZmEvent.E_FLAGS, {flags:[ZmItem.FLAG_UNREAD]});

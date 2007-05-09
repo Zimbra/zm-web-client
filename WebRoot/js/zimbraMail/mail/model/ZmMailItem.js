@@ -100,8 +100,8 @@ function() {
 
 ZmMailItem.prototype.notifyModify =
 function(obj) {
-	var fields = new Object();
-	if (obj.e != null) {
+	var fields = {};
+	if (obj.e && obj.e.length) {
 		this._clearParticipants();
 		this._initializeParticipants();
 		for (var i = 0; i < obj.e.length; i++) {

@@ -41,6 +41,7 @@ function ZmConv(appCtxt, id, list) {
 	// conversations are always sorted by date desc initially
 	this._sortBy = ZmSearch.DATE_DESC;
 	this._listChangeListener = new AjxListener(this, this._msgListChangeListener);
+	this.folders = {};
 };
 
 ZmConv.prototype = new ZmMailItem;
@@ -57,6 +58,20 @@ ZmConv.createFromDom =
 function(node, args) {
 	var conv = new ZmConv(args.appCtxt, node.id, args.list);
 	conv._loadFromDom(node);
+	return conv;
+};
+
+ZmConv.createFromDomMsg =
+function(node, args) {
+	var conv = new ZmConv(args.appCtxt, node.cid, args.list);
+	conv._loadFromDomMsg(node);
+	return conv;
+};
+
+ZmConv.createFromMsg =
+function(msg, args) {
+	var conv = new ZmConv(args.appCtxt, msg.cid, args.list);
+	conv._loadFromMsg(msg);
 	return conv;
 };
 
@@ -176,7 +191,7 @@ function() {
 */
 ZmConv.prototype.notifyModify =
 function(obj) {
-	var fields = new Object();
+	var fields = {};
 	// a conv's ID can change if it's a virtual conv becoming real
 	if (obj._newId != null) {
 		this._oldId = this.id;
@@ -201,7 +216,7 @@ function(obj) {
 		this._notify(ZmEvent.E_MODIFY, {fields : fields});
 	}
 
-	ZmMailItem.prototype.notifyModify.call(this, obj);
+	ZmMailItem.prototype.notifyModify.apply(this, arguments);
 };
 
 ZmConv.prototype.getPrintHtml =
@@ -212,8 +227,8 @@ function(preferHtml, callback) {
 ZmConv.prototype._checkFlags = 
 function(flags) {
 	var msgs = this.msgs.getArray();
-	var convOn = new Object();
-	var msgsOn = new Object();
+	var convOn = {};
+	var msgsOn = {};
 	for (var i = 0; i < flags.length; i++) {
 		var flag = flags[i];
 		if (!(flag == ZmItem.FLAG_FLAGGED || flag == ZmItem.FLAG_UNREAD 
@@ -248,8 +263,8 @@ function(flags) {
 */
 ZmConv.prototype._checkTags = 
 function() {
-	newTags = new Object();
-	allTags = new Object();
+	newTags = {};
+	allTags = {};
 	
 	for (var tagId in this.tagHash)
 		allTags[tagId] = true;
@@ -295,9 +310,10 @@ function(folderId) {
 
 ZmConv.prototype.moveLocal =
 function(folderId) {
-	if (this.folders)
+	if (this.folders) {
 		delete this.folders;
-	this.folders = new Object();
+	}
+	this.folders = {};
 	this.folders[folderId] = true;
 };
 
@@ -382,8 +398,44 @@ function(convNode) {
 
 	// this is the ID of the msg that will be used if user tries to 
 	// reply/forward w/o having loaded the conv.
-	if (convNode.m)
+	if (convNode.m) {
 		this.msgOpId = convNode.m[0].id;
+	}
+	if (convNode._folders) {
+		var folders = convNode._folders.split(",");
+		for (var i = 0; i < folders.length; i++) {
+			this.folders[folders[i]] = true;
+		}
+	}
+};
+
+ZmConv.prototype._loadFromDomMsg =
+function(msgNode) {
+	this.date = msgNode.d;
+	this._parseFlags(msgNode.f);
+	this._parseTags(msgNode.t);	
+	if (msgNode.e) {
+		for (var i = 0; i < msgNode.e.length; i++) {
+			this._parseParticipantNode(msgNode.e[i]);
+		}
+	}
+	this.subject = msgNode.su;
+	this.fragment = msgNode.fr;
+	this.msgOpId = msgNode.id;
+};
+
+ZmConv.prototype._loadFromMsg =
+function(msg) {
+	this.date = msg.date;
+	this.isFlagged = msg.isFlagged;
+	this.isUnread = msg.isUnread;
+	for (var i = 0; i < msg.tags.length; i++) {
+		this.tags.push(msg.tags[i]);
+	}
+	this.participants = msg.participants.clone();
+	this.subject = msg.subject;
+	this.fragment = msg.fragment;
+	this.msgOpId = msg.id;
 };
 
 ZmConv.prototype._loadMsgs = 

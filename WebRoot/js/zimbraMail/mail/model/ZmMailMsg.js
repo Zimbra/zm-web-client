@@ -956,21 +956,33 @@ ZmMailMsg.prototype._loadFromDom =
 function(msgNode) {
 	// this method could potentially be called twice (SearchConvResponse and
 	// GetMsgResponse) so always check param before setting!
-	if (msgNode.id)		this.id = msgNode.id;
-	if (msgNode.cid) 	this.cid = msgNode.cid;
-	if (msgNode.s) 		this.size = msgNode.s;
-	if (msgNode.d) 		this.date = msgNode.d;
-	if (msgNode.sd) 	this.sentDate = msgNode.sd;
-	if (msgNode.l) 		this.folderId = msgNode.l;
-	if (msgNode.t) 		this._parseTags(msgNode.t);
-	if (msgNode.cm) 	this._inHitList = msgNode.cm;
-	if (msgNode.su) 	this.subject = msgNode.su;
-	if (msgNode.fr) 	this.fragment = msgNode.fr;
-	if (msgNode.rt) 	this.rt = msgNode.rt;
-	if (msgNode.idnt)	this.identity = AjxDispatcher.run("GetIdentityCollection").getById(msgNode.idnt);
-	if (msgNode.origid) this.origId = msgNode.origid;
-	if (msgNode.hp) 	this._attHitList = msgNode.hp;
-	if (msgNode.mid)	this.messageId = msgNode.mid;
+	if (msgNode.id)		{ this.id = msgNode.id; }
+	if (msgNode.cid) 	{ this.cid = msgNode.cid; }
+	if (msgNode.s) 		{ this.size = msgNode.s; }
+	if (msgNode.d) 		{ this.date = msgNode.d; }
+	if (msgNode.sd) 	{ this.sentDate = msgNode.sd; }
+	if (msgNode.l) 		{ this.folderId = msgNode.l; }
+	if (msgNode.t) 		{ this._parseTags(msgNode.t); }
+	if (msgNode.cm) 	{ this._inHitList = msgNode.cm; }
+	if (msgNode.su) 	{ this.subject = msgNode.su; }
+	if (msgNode.fr) 	{ this.fragment = msgNode.fr; }
+	if (msgNode.rt) 	{ this.rt = msgNode.rt; }
+	if (msgNode.idnt)	{ this.identity = AjxDispatcher.run("GetIdentityCollection").getById(msgNode.idnt); }
+	if (msgNode.origid) { this.origId = msgNode.origid; }
+	if (msgNode.hp) 	{ this._attHitList = msgNode.hp; }
+	if (msgNode.mid)	{ this.messageId = msgNode.mid; }
+
+	if (msgNode._convCreateNode) {
+		this._convCreateNode = msgNode._convCreateNode;
+	}
+
+	// update conv's folder list
+	if (msgNode.cid && msgNode.l) {
+		var conv = this._appCtxt.getById(msgNode.cid);
+		if (conv) {
+			conv.folders[msgNode.l] = true;
+		}
+	}
 
 	// always call parseFlags even if server didnt return any
 	this._parseFlags(msgNode.f);
@@ -1122,3 +1134,11 @@ function() {
 	return imageInfo;
 };
 
+ZmMailMsg.prototype.notifyModify =
+function(obj) {
+	if (obj.cid != null) {
+		this.cid = obj.cid;
+	}
+
+	ZmMailItem.prototype.notifyModify.apply(this, arguments);
+};
