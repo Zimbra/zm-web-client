@@ -347,7 +347,11 @@ function(ev) {
 
 // Returns a list of desired header action menu operations
 ZmRosterTreeController.prototype._getHeaderActionMenuOps = function() {
-	return [ZmOperation.NEW_ROSTER_ITEM, ZmOperation.IM_GATEWAY_LOGIN, ZmOperation.IM_TOGGLE_OFFLINE];
+	return [ ZmOperation.NEW_ROSTER_ITEM,
+		 ZmOperation.SEP, //-----------
+		 ZmOperation.IM_GATEWAY_LOGIN,
+		 ZmOperation.SEP, //-----------
+		 ZmOperation.IM_TOGGLE_OFFLINE ];
 };
 
 // Returns a list of desired action menu operations

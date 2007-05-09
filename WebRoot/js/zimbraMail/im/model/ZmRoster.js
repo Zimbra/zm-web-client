@@ -400,7 +400,7 @@ ZmRoster.prototype.getGateways = function() {
 };
 
 ZmRoster.prototype.makeServerAddress = function(addr, type) {
-	if (type == null || type == "XMPP")
+	if (type == null || /^xmpp$/i.test(type))
 		return addr;
 	return addr + "@" + this.getGatewayByType(type).domain;
 };

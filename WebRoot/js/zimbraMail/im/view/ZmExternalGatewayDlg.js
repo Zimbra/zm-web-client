@@ -115,7 +115,12 @@ ZmExternalGatewayDlg.prototype._updateForRegisteredGw = function() {
 					state = state[i];
 					break;
 				}
-				if (nick) {
+				state = state.state;
+				if (nick && ( state == ZmImGateway.STATE.ONLINE ||
+					      state == ZmImGateway.STATE.INTENTIONALLY_OFFLINE ||
+					      state == ZmImGateway.STATE.START ||
+					      state == ZmImGateway.STATE.TRYING_TO_CONNECT ||
+					      state == ZmImGateway.STATE.BOOTED_BY_OTHER_LOGIN) ) {
 					this._screenNameInput.setValue(nick);
 					this._screenNameInput.setEnabled(false);
 					this._passwordInput.setEnabled(false);
