@@ -343,9 +343,9 @@ ZmChatWidget._inputKeyPress = function(ev) {
 		stopEvent();
 		self.close();
 	} else {
-		setTimeout(function() {
+		var isEnter = keyEvent.charCode == 13 && !keyEvent.shiftKey;
+		function processKey() {
 			if (self) {
-				var isEnter = keyEvent.charCode == 13 && !keyEvent.shiftKey;
 				var ret = self._keypressNotifyItems(keyEvent.charCode, isEnter);
 				if (isEnter && !(ret && ret.stop)) {
     					self.sendInput(input.value);
@@ -355,7 +355,13 @@ ZmChatWidget._inputKeyPress = function(ev) {
 			input = null;
 			keyEvent = null;
 			self = null;
-		}, 25);
+		};
+		if (isEnter) {
+			processKey();
+			return false;
+		} else {
+			setTimeout(processKey, 25);
+		}
 	}
 };
 

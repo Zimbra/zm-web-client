@@ -73,12 +73,17 @@ ZmRosterTreeController.FILTER_SEARCH = {
 	func : function(item) {
 		var search = this.__searchInputEl.value.toLowerCase();
 		var rti = item.getData(Dwt.KEY_OBJECT).getRosterItem();
-		return rti.getDisplayName().toLowerCase().indexOf(search) < 0;
+		if (/^#/.test(search)) {
+			// search address -- easy way to display only Y! buddies, for instance.
+			return rti.getAddress().indexOf(search.substr(1)) < 0;
+		} else {
+			return rti.getDisplayName().toLowerCase().indexOf(search) < 0;
+		}
 	},
 
 	_doKeyPress : function() {
 		var search = this.__searchInputEl.value;
-		if (!/\S/.test(search))
+		if (!/\S/.test(search) || search == ZmMsg.search)
 			this.removeFilter(ZmRosterTreeController.FILTER_SEARCH.func);
 		else
 			this.addFilter(ZmRosterTreeController.FILTER_SEARCH.func);
@@ -99,9 +104,41 @@ ZmRosterTreeController.FILTER_SEARCH = {
 			this.__searchInputEl.value = ZmMsg.search;
 	},
 
-	inputKeyPress : function() {
+	inputKeyPress : function(ev) {
+		if (!ev)
+			ev = window.event;
+
 		if (this.__searchInputTimeout)
 			clearTimeout(this.__searchInputTimeout);
+
+		if (ev.keyCode == 27) {
+			this.__searchInputEl.value = "";
+			ZmRosterTreeController.FILTER_SEARCH._doKeyPress.call(this);
+			ZmRosterTreeController.FILTER_SEARCH.inputBlur.call(this);
+			this.__searchInputEl.blur();
+		}
+
+		if (ev.keyCode == 13) {
+			// filter right now
+			ZmRosterTreeController.FILTER_SEARCH._doKeyPress.call(this);
+
+			if (!/\S/.test(this.__searchInputEl.value))
+				return;
+
+			// initiate chat with the first item, if found
+			if (this._firstFilterItem) {
+				var rti = this._firstFilterItem.getData(Dwt.KEY_OBJECT).getRosterItem();
+				var clc = this._imApp.getChatListController();
+				clc.chatWithRosterItem(rti);
+
+				// and clear value to reset filters
+				this.__searchInputEl.value = "";
+
+				ZmRosterTreeController.FILTER_SEARCH.inputBlur.call(this);
+				this.__searchInputEl.blur();
+			}
+		}
+
 		this.__searchInputTimeout = setTimeout(
 			AjxCallback.simpleClosure(
 				ZmRosterTreeController.FILTER_SEARCH._doKeyPress, this
@@ -167,6 +204,7 @@ ZmRosterTreeController.prototype._applyFilters = function(items) {
 	var filters = this.__filters;
 	if (!filters)
 		return;
+	this._firstFilterItem = null;
 	function doItems(items) {
 		var oneVisible = false;
 		for (var j = items.length; --j >= 0;) {
@@ -179,6 +217,8 @@ ZmRosterTreeController.prototype._applyFilters = function(items) {
 					break;
 				}
 			}
+			if (!this._firstFilterItem && display)
+				this._firstFilterItem = item;
 			oneVisible = oneVisible || display;
 			item.setVisible(display);
 		}
@@ -222,7 +262,7 @@ ZmRosterTreeController.prototype._createView = function(params) {
 		input.style.width = "100%";
 		input.className = "DwtSimpleInput";
 		div.parentNode.insertBefore(input, div);
-		input.onkeypress = AjxCallback.simpleClosure(ZmRosterTreeController.FILTER_SEARCH.inputKeyPress, this);
+		input.onkeydown = AjxCallback.simpleClosure(ZmRosterTreeController.FILTER_SEARCH.inputKeyPress, this);
 		input.onfocus = AjxCallback.simpleClosure(ZmRosterTreeController.FILTER_SEARCH.inputFocus, this);
 		input.onblur = AjxCallback.simpleClosure(ZmRosterTreeController.FILTER_SEARCH.inputBlur, this);
 		input.onblur();
