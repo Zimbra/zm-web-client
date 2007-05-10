@@ -426,11 +426,12 @@ DIV.vSpace {
 	@ListItemText@
 }
 
-.Row td.Flag, .Row td.Attach, .Row td.Tag, .Row td.Icon,
-.Row-dnd td.Flag, .Row-dnd td.Attach, .Row-dnd td.Tag, .Row-dnd td.Icon, 
-.Row-selected-drag td.Flag, .Row-selected-drag td.Attach, .Row-selected-drag td.Tag, .Row-selected-drag td.Icon, 
-.Row-matched-drag td.Flag, .Row-matched-drag td.Attach, .Row-matched-drag td.Tag, .Row-matched-drag td.Icon, 
-.Row-drag td.Flag, .Row-drag td.Attach,.Row-drag td.Tag, .Row-drag td.Icon {
+.Row td.Flag, .Row td.Attach, .Row td.Tag, .Row td.Icon, .Row td.Count,
+.Row-selected td.Flag, .Row-selected td.Attach, .Row-selected td.Tag, .Row-selected td.Icon, .Row-selected td.Count,
+.Row-dnd td.Flag, .Row-dnd td.Attach, .Row-dnd td.Tag, .Row-dnd td.Icon, .Row-dnd td.Count,
+.Row-selected-drag td.Flag, .Row-selected-drag td.Attach, .Row-selected-drag td.Tag, .Row-selected-drag td.Icon, .Row-selected-drag td.Count,
+.Row-matched-drag td.Flag, .Row-matched-drag td.Attach, .Row-matched-drag td.Tag, .Row-matched-drag td.Icon, .Row-matched-drag td.Count,
+.Row-drag td.Flag, .Row-drag td.Attach,.Row-drag td.Tag, .Row-drag td.Icon, .Row-drag td.Count {
 	text-align: center;
 }
 

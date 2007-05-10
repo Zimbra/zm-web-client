@@ -41,6 +41,7 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 ZmConvListView.CONVLIST_REPLENISH_THRESHOLD = 0;
 ZmConvListView.COL_WIDTH_FROM 				= 145;
 
+ZmListView.FIELD_CLASS[ZmItem.F_COUNT]		= "Count";
 
 // Public methods
 

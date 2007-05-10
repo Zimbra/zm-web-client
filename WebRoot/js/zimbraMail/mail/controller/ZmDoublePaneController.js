@@ -362,7 +362,7 @@ function(parent, num) {
 	var isDraft = false;
 	if (num == 1) {
 		var item = this._doublePaneView.getSelection()[0];
-		isMsg = (item.type == ZmItem.MSG);
+		isMsg = (item.type == ZmItem.MSG || (item.numMsgs == 1));
 		isDraft = item.isDraft;
 	}
 	parent.enable(ZmOperation.SHOW_ORIG, isMsg);
@@ -461,7 +461,8 @@ function(ev) {
 
 ZmDoublePaneController.prototype._showOrigListener = 
 function(ev) {
-	var msg = this._listView[this._currentView].getSelection()[0];
+	var item = this._listView[this._currentView].getSelection()[0];
+	var msg = (item.type == ZmItem.CONV) ? item.getFirstMsg() : item;
 	if (msg) {
 		var msgFetchUrl = this._appCtxt.getCsfeMsgFetcher() + "id=" + msg.id;
 		// create a new window w/ generated msg based on msg id
@@ -471,7 +472,8 @@ function(ev) {
 
 ZmDoublePaneController.prototype._filterListener = 
 function(ev) {
-	var msg = this._listView[this._currentView].getSelection()[0];
+	var item = this._listView[this._currentView].getSelection()[0];
+	var msg = (item.type == ZmItem.CONV) ? item.getFirstMsg() : item;
 	if (!msg) return;
 	
 	AjxDispatcher.require(["PreferencesCore", "Preferences"]);

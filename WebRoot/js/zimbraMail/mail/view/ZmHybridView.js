@@ -265,13 +265,28 @@ function(item, params) {
 	}
 };
 
+ZmHybridListView.prototype._getCellClass =
+function(item, field, params) {
+	if (item.type == ZmItem.CONV && field == ZmItem.F_SIZE) {
+		field = ZmItem.F_COUNT;
+	}
+	return ZmConvListView.prototype._getCellClass.apply(this, arguments);
+};
+
 ZmHybridListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_EXPAND) {
 		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
 	} else {
 		if (item.type == ZmItem.CONV) {
-			idx = ZmConvListView.prototype._getCellContents.apply(this, arguments);
+			if (field == ZmItem.F_STATUS || field == ZmItem.F_FOLDER) {
+				htmlArr[idx++] = "&nbsp;";
+			} else {
+				if (field == ZmItem.F_SIZE) {
+					field = ZmItem.F_COUNT;
+				}
+				idx = ZmConvListView.prototype._getCellContents.apply(this, arguments);
+			}
 		} else {
 			idx = ZmMailMsgListView.prototype._getCellContents.apply(this, arguments);
 		}

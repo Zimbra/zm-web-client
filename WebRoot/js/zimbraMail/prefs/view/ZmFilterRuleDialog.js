@@ -249,7 +249,7 @@ function(rule, isCondition) {
 		}
 	}
 	this._resetOperations(isCondition);
-	return row.id;
+	return row ? row.id : null;
 };
 
 /*
@@ -506,6 +506,7 @@ ZmFilterRuleDialog.prototype._resetOperations =
 function(isCondition) {
 	var table = document.getElementById(isCondition ? this._conditionsTableId : this._actionsTableId);
 	var rows = table.rows;
+	if (!(rows && rows.length)) { return; }
 	var input = this._inputs[rows[0].id];
 	if (input) {
 		var minusButton = input["Minus"].dwtObj;
