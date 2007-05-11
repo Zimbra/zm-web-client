@@ -95,7 +95,8 @@ function(domain) {
 	ZmOperation.initialize();
 	ZmApp.initialize();
 
-	var shell = new DwtShell("MainShell", false, ZmNewWindow._confirmExitMethod);
+	var shell = new DwtShell({className:"MainShell"});
+	window.onbeforeunload = ZmNewWindow._confirmExitMethod;
 	appCtxt.setShell(shell);
 
 	// Create upload manager (for sending attachments)

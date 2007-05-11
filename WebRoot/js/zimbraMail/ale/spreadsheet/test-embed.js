@@ -1,5 +1,5 @@
 function Test() {
-	this.shell = new DwtShell("MainShell", false, null, null, false);
+	this.shell = new DwtShell({className:"MainShell"});
 
 // 	this.shell._setMouseEventHdlrs();
 // 	this.shell.addListener(DwtEvent.ONMOUSEMOVE, new AjxListener(this, this.func));

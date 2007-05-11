@@ -5,7 +5,7 @@ var spreadSheet = null;
 var model = null;
 
 function create(data) {
-	shell = new DwtShell("MainShell", false, null, null, false);
+	shell = new DwtShell({className:"MainShell"});
 	shell.getKeyboardMgr().registerKeyMap(new DwtKeyMap(true));
 	spreadSheet = new ZmSpreadSheet(shell, null, "absolute");
 	if (data != null) {

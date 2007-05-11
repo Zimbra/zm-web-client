@@ -158,11 +158,11 @@ function(domain, app, userShellId, offlineMode, devMode) {
     	DBG.println(AjxDebug.DBG1, "DEV MODE");
     	appCtxt.set(ZmSetting.DEV, true);
     	appCtxt.set(ZmSetting.POLLING_INTERVAL, 0);
+    	this._devMode = true;
     }
 
 	var userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
-	var confirmExit = devMode ? null : ZmZimbraMail._confirmExitMethod;
-	var shell = new DwtShell(null, false, confirmExit, userShell);
+	var shell = new DwtShell({userShell:userShell});
 	appCtxt.setShell(shell);
 
 	appCtxt.setItemCache(new AjxCache());
@@ -309,10 +309,15 @@ function(params, result) {
 
 	if (params && params.settings) {
 		this._needOverviewLayout = true;
-		for (var id in params.settings)
+		for (var id in params.settings) {
 			this._settings.getSetting(id).setValue(params.settings[id]);
+		}
 	}
-
+	
+	if (!this._devMode && this._appCtxt.get(ZmSetting.WARN_ON_EXIT)) {
+		window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
+	}	
+	
 	// run any app-requested startup routines
 	this.runAppFunction("startup", result);
 
