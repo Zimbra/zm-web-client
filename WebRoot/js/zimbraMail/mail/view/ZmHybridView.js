@@ -190,26 +190,13 @@ function(newHeight) {
 	Dwt.setSize(this._parentEl, Dwt.DEFAULT, newHeight - DwtListView.HEADERITEM_HEIGHT);
 };
 
-/**
- * Double-click action toggles expanded state of a conv or msg (paging), if it is expandable.
- * Note that that action code actually results from pressing the Enter or O key, and not from
- * a mouse double-click (which is handled by _listSelectionListener).
- */
+// Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op it here so
+// that it gets handled as an app shortcut (app shortcuts happen after widget shortcuts).
 ZmHybridListView.prototype.handleKeyAction =
 function(actionCode, ev) {
 	switch (actionCode) {
 		case DwtKeyMap.DBLCLICK:
-			if (this.getSelectionCount() != 1) { break; }
-			var item = this.getItemFromElement(this._kbAnchor);
-			if (item && this._expandable[item.id]) {
-				this._controller._toggle(item);
-				break;
-			} else if (this._controller._readingPaneOn && item.type == ZmItem.MSG && this._expanded[item.cid]) {
-				var conv = this._appCtxt.getById(item.cid);
-				this._controller._toggle(conv);
-				this.setSelection(conv, true);
-				break;
-			}
+			return false;
 
 		default:
 			return DwtListView.prototype.handleKeyAction.call(this, actionCode, ev);
@@ -437,6 +424,17 @@ function() {
 	this._msgRowIdList = {};	// list of row IDs for a conv ID
 	this._msgOffset = {};		// the offset for a msg ID
 	this._expandedItems = {};	// list of expanded items for a conv ID (inc conv)
+};
+
+ZmHybridListView.prototype._expandItem =
+function(item) {
+	if (item && this._expandable[item.id]) {
+		this._controller._toggle(item);
+	} else if (this._controller._readingPaneOn && item.type == ZmItem.MSG && this._expanded[item.cid]) {
+		var conv = this._appCtxt.getById(item.cid);
+		this._controller._toggle(conv);
+		this.setSelection(conv, true);
+	}
 };
 
 ZmHybridListView.prototype._changeListener =

@@ -76,6 +76,38 @@ function(search) {
 //	this._resetNavToolBarButtons(ZmController.HYBRID_VIEW);
 };
 
+ZmHybridController.prototype.getKeyMapName =
+function() {
+	return "ZmHybridController";
+};
+
+ZmHybridController.prototype.handleKeyAction =
+function(actionCode) {
+	DBG.println(AjxDebug.DBG3, "ZmHybridController.handleKeyAction");
+	
+	var mlv = this._mailListView;
+	switch (actionCode) {
+		case ZmKeyMap.EXPAND:
+			if (mlv.getSelectionCount() != 1) { return false; }
+			var item = mlv.getItemFromElement(mlv._kbAnchor);
+			if (!item) { return false; }
+			if (item.type == ZmItem.CONV && item.numMsgs == 1) {
+				return DwtListView.prototype.handleKeyAction.call(mlv, DwtKeyMap.DBLCLICK);
+			} else {
+				mlv._expandItem(item);
+			}
+			break;
+
+		// need to invoke DwtListView method directly since our list view no-ops DBLCLICK
+		case DwtKeyMap.DBLCLICK:
+			return DwtListView.prototype.handleKeyAction.apply(mlv, arguments);
+
+		default:
+			return ZmMailListController.prototype.handleKeyAction.call(this, actionCode);
+	}
+	return true;
+};
+
 // Private methods
 
 ZmHybridController.prototype._createDoublePaneView = 
