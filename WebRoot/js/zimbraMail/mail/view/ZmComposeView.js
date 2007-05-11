@@ -432,14 +432,16 @@ function(attId, isDraft) {
 		msg.addAttachmentId(attId);
 	}
 	if (this._msg) {
-		 var msgAttId = this._msg.getAttachmentId();
-		 if (msgAttId) {
+		// replied/forw msg or draft shouldn't have att ID (a repl/forw voicemail mail msg may)
+		var msgAttId = this._msg.getAttachmentId();
+		if (msgAttId) {
 			msg.addAttachmentId(msgAttId);
-		 }
+		}
 	}
 
-	if (this._msgAttId)
+	if (this._msgAttId) {
 		msg.setMessageAttachmentId(this._msgAttId);
+	}
 
 	return msg;
 };
@@ -785,14 +787,20 @@ function(incAddrs, incSubject) {
 
 ZmComposeView.prototype.cleanupAttachments = 
 function(all) {
-	if (this._uploadForm && this._uploadForm.parentNode)
+	if (this._uploadForm && this._uploadForm.parentNode) {
 		this._uploadForm.parentNode.removeChild(this._uploadForm);
+	}
 	this._attachmentTable = this._uploadForm = null;
 
 	if (all) {
 		this._attcDiv.innerHTML = "";
 		this._attcDiv.style.height = "";
 		this._attachCount = 0;
+	}
+	
+	// make sure att IDs don't get reused
+	if (this._msg) {
+		this._msg._attId = null;
 	}
 };
 
