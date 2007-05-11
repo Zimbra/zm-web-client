@@ -158,7 +158,6 @@ function(domain, app, userShellId, offlineMode, devMode) {
     	DBG.println(AjxDebug.DBG1, "DEV MODE");
     	appCtxt.set(ZmSetting.DEV, true);
     	appCtxt.set(ZmSetting.POLLING_INTERVAL, 0);
-    	this._devMode = true;
     }
 
 	var userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
@@ -314,7 +313,7 @@ function(params, result) {
 		}
 	}
 	
-	if (!this._devMode && this._appCtxt.get(ZmSetting.WARN_ON_EXIT)) {
+	if (!this._appCtxt.get(ZmSetting.DEV) && this._appCtxt.get(ZmSetting.WARN_ON_EXIT)) {
 		window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
 	}	
 	
