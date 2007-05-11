@@ -102,6 +102,16 @@ function() {
 	return ZmMailMsgListView.MSGLIST_REPLENISH_THRESHOLD;
 };
 
+ZmMailMsgListView.prototype.set =
+function(list, sortField) {
+	var showFolder = !list || !list.search || !list.search.folderId;
+	var folderColumn = this.getColIndexForId(ZmItem.F_FOLDER);
+	if (this._headerList[folderColumn]._visible != showFolder) {
+		this._headerList[folderColumn]._visible = showFolder;
+		this._relayout();
+	}
+	ZmMailListView.prototype.set.call(this, list, sortField);
+};
 
 // Private / protected methods
 
