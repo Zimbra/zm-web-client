@@ -59,17 +59,19 @@ function() {
 * created in _loadConv(), since it is a scheduled method and must execute
 * last.
 *
-* @param activeSearch	the current search results
-* @param conv			a conversation (ZmConv)
+* @param activeSearch		[ZmSearch]				the current search results
+* @param conv				[ZmConv]				a conversation
+* @param parentController	[ZmMailController]*		controller that called this method
 */
 ZmConvController.prototype.show =
-function(activeSearch, conv) {
+function(activeSearch, conv, parentController) {
 	this._conv = conv;
 	// always reset offset & sortby to asc.
 	if (this._listView[this._currentView]) {
 		this._listView[this._currentView].setOffset(0);	
 		this._listView[this._currentView].setSortByAsc(ZmItem.F_DATE, false);
 	}
+	this._parentController = parentController;
 
 	// this._list will be set when conv is loaded
 	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv);
@@ -372,10 +374,11 @@ function(view, offset, limit, callback) {
 
 ZmConvController.prototype._paginateDouble = 
 function(bDoubleForward) {
-	var clc = AjxDispatcher.run("GetConvListController");
-	if (clc)
-		clc.pageItemSilently(this._conv, bDoubleForward);
-}
+	var ctlr = this._parentController || AjxDispatcher.run("GetConvListController");
+	if (ctlr) {
+		ctlr.pageItemSilently(this._conv, bDoubleForward);
+	}
+};
 
 ZmConvController.prototype._getSearchFolderId = 
 function() {

@@ -403,7 +403,7 @@ function(ev) {
 		if (item.isDraft) {
 			this._doAction(ev, ZmOperation.DRAFT);
 		} else if (item.type == ZmItem.CONV) {
-			AjxDispatcher.run("GetConvController").show(this._activeSearch, item);
+			AjxDispatcher.run("GetConvController").show(this._activeSearch, item, this);
 			// make sure correct msg is displayed in msg pane when user returns
 			this._setSelectedMsg();
 		} else if (item.type == ZmItem.MSG) {
