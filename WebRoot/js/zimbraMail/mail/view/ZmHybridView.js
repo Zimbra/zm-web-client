@@ -430,7 +430,7 @@ ZmHybridListView.prototype._expandItem =
 function(item) {
 	if (item && this._expandable[item.id]) {
 		this._controller._toggle(item);
-	} else if (this._controller._readingPaneOn && item.type == ZmItem.MSG && this._expanded[item.cid]) {
+	} else if (item.type == ZmItem.MSG && this._expanded[item.cid]) {
 		var conv = this._appCtxt.getById(item.cid);
 		this._controller._toggle(conv);
 		this.setSelection(conv, true);

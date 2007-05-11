@@ -202,7 +202,7 @@ function(conv, msg, offset) {
 		}
 	} else if (!conv.isLoaded()) {
 		// no msgs have been loaded yet
-		conv.load({query:this.getSearchString(), callback:respCallback});
+		conv.load({query:this.getSearchString(), callback:respCallback, getFirstMsg:this._readingPaneOn});
 	} else {
 		// re-expanding first page of msgs
 		this._handleResponseLoadItem(conv, msg, offset, new ZmCsfeResult(conv.msgs));
