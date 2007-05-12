@@ -79,8 +79,9 @@ function(params) {
 	var searchTypes = this._searchTypes[id] =
 		(activeApp == ZmApp.MIXED && prevApp == ZmApp.CONTACTS) ?
 			ZmApp.SEARCH_TYPES_R[ZmApp.CONTACTS] : ZmApp.SEARCH_TYPES_R[activeApp];
-	if (this._dataTree) {
-		params.dataTree = this._dataTree;
+    var dataTree = this.getDataTree();
+    if (dataTree) {
+		params.dataTree = dataTree;
 		params.searchTypes = searchTypes;
 		this._treeView[id].set(params);
 		this._checkTreeView(id, searchTypes);

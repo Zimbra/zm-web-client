@@ -378,7 +378,7 @@ function() {
 ZmCalendarApp.prototype.launch =
 function(callback, checkQS) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback, checkQS]);
-	AjxDispatcher.require(["CalendarCore", "Calendar"], false, loadCallback, null, true);
+	AjxDispatcher.require(["CalendarCore", "Calendar"], true, loadCallback, null, true);
 };
 
 ZmCalendarApp.prototype._handleLoadLaunch =

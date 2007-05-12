@@ -230,7 +230,7 @@ function(result) {
 ZmPreferencesApp.prototype.launch =
 function(callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
-	AjxDispatcher.require(["PreferencesCore", "Preferences"], false, loadCallback, null, true);
+	AjxDispatcher.require(["PreferencesCore", "Preferences"], true, loadCallback, null, true);
 };
 
 ZmPreferencesApp.prototype._handleLoadLaunch =

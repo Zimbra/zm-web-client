@@ -185,8 +185,8 @@ function(callback, result) {
 	// load Zimlets
 	if (obj.zimlets && obj.zimlets.zimlet) {
 		DBG.println(AjxDebug.DBG1, "Zimlets - Loading " + obj.zimlets.zimlet.length + " Zimlets");
-		AjxDispatcher.require("Zimlet");
-		this._appCtxt.getZimletMgr().loadZimlets(obj.zimlets.zimlet, obj.props.prop);
+        var zimletsCallback = new AjxCallback(this, this._loadZimlets, [obj.zimlets.zimlet, obj.props.prop]);
+        AjxDispatcher.require("Zimlet", true, zimletsCallback);
 	}
 
     this.userSettingsLoaded = true;
@@ -194,6 +194,25 @@ function(callback, result) {
 	if (callback) {
 		callback.run(result);
 	}
+};
+
+ZmSettings.prototype._loadZimlets = function(zimlets, props) {
+    var appCtxt = this._appCtxt;
+    appCtxt.getZimletMgr().loadZimlets(zimlets, props);
+
+    if (zimlets && zimlets.length) {
+        var appController = appCtxt.getAppController();
+        var activeApp = appController.getActiveApp();
+
+        var overviewId = ZmZimbraMail._OVERVIEW_ID;
+        var treeIds = appController._getOverviewTrees(activeApp);
+        var omit = null;
+        var reset = {};
+        reset[ZmOrganizer.ZIMLET] = true;
+
+        var overviewController = appCtxt.getOverviewController();
+        overviewController.set(overviewId, treeIds, omit, reset);
+    }
 };
 
 ZmSettings.prototype.loadAvailableSkins =

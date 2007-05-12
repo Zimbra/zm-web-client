@@ -38,9 +38,6 @@ function ZmRosterTreeController(appCtxt, type, dropTgt) {
 	// initialize tree data from roster item list
 	var list = this._imApp.getRoster().getRosterItemList();
 	list.addChangeListener(new AjxListener(this, this._rosterListChangeListener));
-	//	if (this._dataTree.root == null) {
-	//	    this._dataTree.root = ZmRosterTree.createRoot(this._dataTree);
-	//	}
 	var listArray = list.getArray();
 	for (var i=0; i < listArray.length; i++) {
 		this._addRosterItem(listArray[i]);
@@ -273,11 +270,9 @@ ZmRosterTreeController.prototype._createView = function(params) {
 
 ZmRosterTreeController.prototype._getDataTree =
 function() {
-	if (!this._dataTree) {
-		this._dataTree = new ZmTree(this.type, this._appCtxt);
-		this._dataTree.root = ZmRosterTree.createRoot(this._dataTree);
-	}
-	return this._dataTree;
+    var tree = new ZmTree(this.type, this._appCtxt);
+    tree.root = ZmRosterTree.createRoot(tree);
+	return tree;
 };
 
 ZmRosterTreeController.prototype._rosterListChangeListener = function(ev) {
@@ -544,7 +539,7 @@ function(rosterItem) {
 		var args = { id		      : id,
 			     rosterItem	      : rosterItem,
 			     parent	      : rosterGroup,
-			     tree	      : this._dataTree };
+			     tree	      : this.getDataTree() };
 		var item = new ZmRosterTreeItem(args);
 		item._notify(ZmEvent.E_CREATE);
 		rosterGroup.children.add(item);
@@ -583,9 +578,10 @@ function(name) {
 	var groupId = this._prefixId+"_group_"+name;
 	var group = this._appCtxt.getById(groupId);
 	if (group == null) {
-		group = new ZmRosterTreeGroup({id: groupId, name: name, parent: this._dataTree.root, tree: this._dataTree});
+        var dataTree = this.getDataTree();
+        group = new ZmRosterTreeGroup({id: groupId, name: name, parent: dataTree.root, tree: dataTree});
 		group._notify(ZmEvent.E_CREATE);
-		this._dataTree.root.children.add(group);
+		dataTree.root.children.add(group);
 
 		// expand groups if tree is created
 		var treeView = this.getTreeView(ZmZimbraMail._OVERVIEW_ID);

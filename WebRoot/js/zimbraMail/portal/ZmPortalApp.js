@@ -75,7 +75,7 @@ ZmPortalApp.prototype.refreshPortlets = function() {
 
 ZmPortalApp.prototype.launch = function(callback) {
     var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
-	AjxDispatcher.require("Portal", false, loadCallback, null, true);
+	AjxDispatcher.require("Portal", true, loadCallback, null, true);
 };
 
 ZmPortalApp.prototype._handleLoadLaunch = function(callback) {

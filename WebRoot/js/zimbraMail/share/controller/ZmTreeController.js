@@ -62,13 +62,6 @@ function ZmTreeController(appCtxt, type, dropTgt) {
 		this._dropTgt.addDropListener(new AjxListener(this, this._dropListener));
 	}
 
-	// change listening
-	this._dataTree = this._getDataTree();
-	if (this._dataTree) {
-		this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
-		this._dataTree.addChangeListener(this._dataChangeListener);
-	}
-	
 	this._treeView = {};	// hash of tree views of this type, by overview ID
 	this._hideEmpty = {};	// which tree views to hide if they have no data
 	
@@ -140,13 +133,14 @@ ZmTreeController.prototype.show =
 function(params) {
 	var id = params.overviewId;
 	this._hideEmpty[id] = params.hideEmpty;
-	var treeViewCreated = false;
+    var treeViewCreated = false;
 	if (!this._treeView[id] || params.forceCreate) {
-		this._treeView[id] = this._setup(id);
+        this._treeView[id] = this._setup(id);
 		treeViewCreated = true;
 	}
-	if (this._dataTree) {
-		params.dataTree = this._dataTree;		
+    var dataTree = this.getDataTree();
+    if (dataTree) {
+        params.dataTree = dataTree;
 		this._treeView[id].set(params);
 		this._checkTreeView(id);
 	}
@@ -185,6 +179,17 @@ ZmTreeController.prototype.getDropTarget =
 function() {
 	return this._dropTgt;
 };
+
+ZmTreeController.prototype.getDataTree = function() {
+    if (!this._dataTree) {
+        this._dataTree = this._getDataTree();
+        if (this._dataTree) {
+            this._dataChangeListener = new AjxListener(this, this._treeChangeListener);
+            this._dataTree.addChangeListener(this._dataChangeListener);
+        }
+    }
+    return this._dataTree;
+}
 
 // Private and protected methods
 
@@ -848,6 +853,7 @@ function(ev) {
 ZmTreeController.prototype._checkTreeView =
 function(overviewId) {
 	if (!overviewId || !this._treeView[overviewId].getHtmlElement()) return;	// tree view may have been pruned from overview
-	var show = ((this._dataTree.size() > 0) || !this._hideEmpty[overviewId]);
+    var dataTree = this.getDataTree();
+    var show = ((dataTree.size() > 0) || !this._hideEmpty[overviewId]);
 	this._treeView[overviewId].setVisible(show);
 };

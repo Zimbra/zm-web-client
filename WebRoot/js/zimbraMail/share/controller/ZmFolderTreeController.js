@@ -67,8 +67,9 @@ function(params) {
 	for (var id in ZmFolder.HIDE_ID) {
 		omit[id] = true;		
 	}
-	for (var name in ZmFolder.HIDE_NAME) {
-		var folder = this._dataTree.getByName(name);
+    var dataTree = this.getDataTree();
+    for (var name in ZmFolder.HIDE_NAME) {
+		var folder = dataTree.getByName(name);
 		if (folder) {
 			omit[folder.id] = true;
 		}

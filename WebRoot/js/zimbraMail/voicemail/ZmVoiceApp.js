@@ -312,7 +312,7 @@ function(items, op, attributes, callback) {
 ZmVoiceApp.prototype.launch =
 function(callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
-	AjxDispatcher.require("Voicemail", false, loadCallback, null, true);
+	AjxDispatcher.require("Voicemail", true, loadCallback, null, true);
 };
 
 ZmVoiceApp.prototype._handleLoadLaunch =

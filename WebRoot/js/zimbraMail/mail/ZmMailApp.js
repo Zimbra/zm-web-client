@@ -703,7 +703,7 @@ function(inNewWindow) {
 ZmMailApp.prototype.launch =
 function(callback, checkQS) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback, checkQS]);
-	AjxDispatcher.require("Mail", false, loadCallback, null, true);
+	AjxDispatcher.require("Mail", true, loadCallback, null, true);
 };
 
 ZmMailApp.prototype._handleLoadLaunch =

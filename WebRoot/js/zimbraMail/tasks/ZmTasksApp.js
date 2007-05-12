@@ -219,7 +219,7 @@ function(creates, force) {
 ZmTasksApp.prototype.launch =
 function(callback) {
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, callback);
-	AjxDispatcher.require(["TasksCore", "Tasks"], false, loadCallback, null, true);
+	AjxDispatcher.require(["TasksCore", "Tasks"], true, loadCallback, null, true);
 };
 
 

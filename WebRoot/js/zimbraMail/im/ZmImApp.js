@@ -158,7 +158,7 @@ ZmImApp.prototype.launch =
 function(callback) {
 	// console.log("launch");
 	var loadCallback = new AjxCallback(this, this._handleLoadLaunch, [callback]);
-	AjxDispatcher.require("IM", false, loadCallback, null, true);
+	AjxDispatcher.require("IM", true, loadCallback, null, true);
 };
 
 ZmImApp.prototype._handleLoadLaunch =
