@@ -25,7 +25,7 @@
 
 function ZmGroupView(parent, appCtxt, controller) {
 	ZmContactView.call(this, parent, appCtxt, controller);
-	
+
 	this._searchRespCallback = new AjxCallback(this, this._handleResponseSearch);
 	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
 };
@@ -117,7 +117,7 @@ function() {
 	if (this.isDirty() && this.isEmpty(true)) {
 		throw ZmMsg.errorMissingGroup;
 	}
-			
+
 	return true;
 };
 
@@ -405,11 +405,20 @@ function() {
 
 ZmGroupView.prototype._handleResponseSearch =
 function(result) {
-	var list = ZmContactsHelper._processSearchResponse(result.getResponse());
+	var resp = result.getResponse();
+	var list = ZmContactsHelper._processSearchResponse(resp);
 	this._listview.setItems(list);
 	this._addButton.setEnabled(list.length > 0);
 	this._addAllButton.setEnabled(list.length > 0);
 	this._searchButton.setEnabled(true);
+
+	var more = resp.getAttribute("more");
+	if (more) {
+		var dlg = this._appCtxt.getMsgDialog();
+		dlg.reset();
+		dlg.setMessage(ZmMsg.errorSearchNotExpanded, DwtMessageDialog.WARNING_STYLE);
+		dlg.popup();
+	}
 };
 
 ZmGroupView.prototype._handleErrorSearch =
