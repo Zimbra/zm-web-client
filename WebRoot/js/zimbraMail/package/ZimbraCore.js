@@ -30,6 +30,7 @@ AjxPackage.require("zimbraMail.share.model.ZmTagTree");
 AjxPackage.require("zimbraMail.share.model.ZmFolderTree");
 AjxPackage.require("zimbraMail.share.model.ZmInvite");
 AjxPackage.require("zimbraMail.share.model.ZmList");
+AjxPackage.require("zimbraMail.share.model.ZmAccount");
 
 AjxPackage.require("zimbraMail.core.ZmApp");
 

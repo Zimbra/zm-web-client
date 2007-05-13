@@ -67,8 +67,8 @@ function() {
 };
 
 ZmPreferencesApp.prototype._registerSettings =
-function() {
-	var settings = this._appCtxt.getSettings();
+function(settings) {
+	var settings = settings || this._appCtxt.getSettings();
 	settings.registerSetting("ALLOW_ANY_FROM_ADDRESS",	{name: "zimbraAllowAnyFromAddress", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("ALLOW_FROM_ADDRESSES",	{name: "zimbraAllowFromAddress", type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
 	settings.registerSetting("FILTERS_ENABLED",			{name: "zimbraFeatureFiltersEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN,	defaultValue: false});

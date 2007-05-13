@@ -40,8 +40,9 @@ function ZmSettings(appCtxt) {
 	ZmModel.call(this, ZmEvent.S_SETTING);
 
 	this._appCtxt = appCtxt;
-	this._settings = {}; // settings by ID
-	this._nameToId = {}; // map to get from server setting name to setting ID
+	this._settings = {};	// settings by ID
+	this._nameToId = {};	// map to get from server setting name to setting ID
+	this._accountList = {};	// list of child accounts
 };
 
 ZmSettings.prototype = new ZmModel;
@@ -62,7 +63,7 @@ ZmSetting.VOICE_ENABLED			= "VOICE_ENABLED";
 
 /**
  * Creates a new setting and adds it to the settings.
- * 
+ *
  * @param id			[string]		unique ID of the setting
  * @param name			[string]*		the name of the pref or attr on the server
  * @param type			[constant]*		config, pref, or COS
@@ -110,12 +111,18 @@ function(id) {
 	return this._settings[id];
 };
 
+ZmSettings.prototype.getAccountList =
+function() {
+	// XXX: do we need a ZmAccountList class?
+	return this._accountList;
+};
+
 /**
 * Populates settings values.
 *
 * @param list		a hash of preference or attribute values
 */
-ZmSettings.prototype.createFromJs = 
+ZmSettings.prototype.createFromJs =
 function(list) {
 	for (var i in list) {
 		var val = list[i];
@@ -132,14 +139,19 @@ function(list) {
 * Retrieves the preferences, COS settings, and metadata for the current user.
 * All the data gets stored into the settings collection.
 *
-* @param callback [AjxCallback]		callback to run after response is received
+* @param callback 		[AjxCallback]*		callback to run after response is received
+* @param errorCallback 	[AjxCallback]*		callback to run error is received
+* @param accountName	[String]*			name of account to load settings for
 */
 ZmSettings.prototype.loadUserSettings =
-function(callback, errorCallback) {
+function(callback, errorCallback, accountName) {
     var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
     var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, callback);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true,
-												  callback: respCallback, errorCallback: errorCallback});
+	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc,
+												asyncMode: true,
+												accountName: accountName,
+												callback: respCallback,
+												errorCallback: errorCallback});
 };
 
 ZmSettings.prototype._handleResponseLoadUserSettings =
@@ -164,7 +176,25 @@ function(callback, result) {
 	if (obj.license) {
 		this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status);
 	}
-	
+
+	var accounts = obj.childAccounts.childAccount;
+	if (accounts) {
+		// setup parent account if child accounts exist
+		var aname = this.get(ZmSetting.USERNAME);
+		var parentAcct = this._accountList[aname] = new ZmAccount(this._appCtxt);
+		parentAcct.name = aname;
+		parentAcct.visible = true;
+		parentAcct.loaded = true;
+		parentAcct.isParent = true;
+		this._appCtxt.setActiveAccount(parentAcct);
+
+		// now create ZmAccount's for each child account
+		for (var i = 0; i < accounts.length; i++) {
+			var acct = ZmAccount.createFromDom(accounts[i], this._appCtxt);
+			this._accountList[acct.name] = acct;
+		}
+	}
+
 	// handle settings whose values may depend on other settings
 	this._settings[ZmSetting.GROUP_MAIL_BY].setValue(this.get(ZmSetting.INITIAL_GROUP_MAIL_BY), null, true);
 	if ((this.get(ZmSetting.GROUP_MAIL_BY) == ZmSetting.GROUP_BY_CONV) && !this.get(ZmSetting.CONVERSATIONS_ENABLED)) {

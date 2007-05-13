@@ -58,8 +58,6 @@ ZmNotebookTreeController.prototype.toString = function() {
 ZmNotebookTreeController.prototype.resetOperations =
 function(actionMenu, type, id) {
 	if (actionMenu && id != ZmOrganizer.ID_ROOT) {
-		var overviewController = this._appCtxt.getOverviewController();
-		var treeData = overviewController.getTreeData(ZmOrganizer.NOTEBOOK);
 		var notebook = this._appCtxt.getById(id);
 		if (!notebook) { return; }
 
@@ -72,21 +70,21 @@ function(actionMenu, type, id) {
 		var menuItem = actionMenu.getMenuItem(ZmOperation.DELETE);
 		menuItem.setEnabled(!isNotebook && (!isLinkOrRemote || (isLink && isTopLevel) || ZmNotebookTreeController.__isAllowed(notebook.parent, ZmShare.PERM_DELETE)));
 
-		var menuItem = actionMenu.getMenuItem(ZmOperation.NEW_NOTEBOOK);
+		menuItem = actionMenu.getMenuItem(ZmOperation.NEW_NOTEBOOK);
 		menuItem.setText(ZmMsg.newSection);
 		menuItem.setImage("NewSection");
 		menuItem.setDisabledImage("NewSectionDis");
 		menuItem.setEnabled(!isLinkOrRemote || ZmNotebookTreeController.__isAllowed(notebook, ZmShare.PERM_CREATE_SUBDIR));
 
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-			var isNotebook = !isRoot && notebook.parent.id == ZmOrganizer.ID_ROOT;
-			var menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_NOTEBOOK);
+			isNotebook = !isRoot && notebook.parent.id == ZmOrganizer.ID_ROOT;
+			menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_NOTEBOOK);
 			//menuItem.setText(isRoot ? ZmMsg.mountNotebook : ZmMsg.mountSection);
 			menuItem.setImage(isRoot ? "SharedNotebook" : "SharedSection");
 			menuItem.setDisabledImage(menuItem.getImage()+"Dis");
 			menuItem.setEnabled(!isLinkOrRemote || ZmNotebookTreeController.__isAllowed(notebook, ZmShare.PERM_CREATE_SUBDIR));
 
-			var menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_NOTEBOOK);
+			menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_NOTEBOOK);
 			menuItem.setText(isNotebook ? ZmMsg.shareNotebook : ZmMsg.shareSection);
 			menuItem.setImage(isNotebook ? "Notebook" : "Section");
 			menuItem.setDisabledImage(menuItem.getImage()+"Dis");

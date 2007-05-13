@@ -37,8 +37,9 @@ function ZmAppCtxt() {
 };
 
 ZmAppCtxt.LABEL = "appCtxt";
+ZmAppCtxt.PARENT_ACCT = "__PARENT__";
 
-ZmAppCtxt.prototype.toString = 
+ZmAppCtxt.prototype.toString =
 function() {
 	return "ZmAppCtxt";
 };
@@ -529,6 +530,18 @@ ZmAppCtxt.prototype.setShell =
 function(shell) {
 	this._shell = shell;
 	shell.setData(ZmAppCtxt.LABEL, this);
+};
+
+ZmAppCtxt.prototype.setActiveAccount =
+function(account, callback) {
+	var accountList = this._settings.getAccountList();
+	this._activeAccount = accountList[account.name];
+	this._activeAccount.load(callback);
+};
+
+ZmAppCtxt.prototype.getActiveAccountName =
+function() {
+	return this._activeAccount ? this._activeAccount.name : null;
 };
 
 ZmAppCtxt.prototype.getTree =

@@ -76,8 +76,8 @@ function() {
 };
 
 ZmMailApp.prototype._registerSettings =
-function() {
-	var settings = this._appCtxt.getSettings();
+function(settings) {
+	var settings = settings || this._appCtxt.getSettings();
 	settings.registerSetting("CONVERSATIONS_ENABLED",			{name: "zimbraFeatureConversationsEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("DEDUPE_MSG_TO_SELF",				{name: "zimbraPrefDedupeMessagesSentToSelf", type: ZmSetting.T_PREF, defaultValue: ZmSetting.DEDUPE_NONE});
 	settings.registerSetting("FORWARD_INCLUDE_ORIG",			{name: "zimbraPrefForwardIncludeOriginalText", type: ZmSetting.T_PREF, defaultValue: ZmSetting.INCLUDE});
@@ -708,6 +708,22 @@ function(callback, checkQS) {
 
 ZmMailApp.prototype._handleLoadLaunch =
 function(callback, checkQS) {
+	var overview = this._appCtxt.getOverviewController().getOverview(ZmZimbraMail._OVERVIEW_ID);
+	overview.addSelectionListener(new AjxListener(this, this._overviewSelectionListener));
+
+	var acctList = this._appCtxt.getSettings().getAccountList();
+
+	for (var i in acctList) {
+		var data = { appName:ZmApp.MAIL };
+		var acct = data.account = acctList[i];
+		if (acct.visible) {
+			var item = overview.addAccordionItem( {title:acct.name, data:data} );
+			acct.itemId = item.id;
+			if (acct.isParent)
+				this.accordionItem = item;
+		}
+	}
+
 	var query;
 	if (checkQS) {
 		if (location && (location.search.match(/\bview=compose\b/))) {
@@ -873,6 +889,28 @@ function() {
 	return setting ? ZmMailApp.GROUP_MAIL_BY_ITEM[setting] : ZmItem.MSG;
 };
 
+ZmMailApp.prototype._overviewSelectionListener =
+function(ev) {
+	var accordionItem = ev.detail;
+	var data = accordionItem.data;
+	if (data.appName != ZmApp.MAIL) { return };
+
+	this.accordionItem = accordionItem;
+
+DBG.println("---------- MAIL overview selection listener for: " + accordionItem.id);
+	var callback = new AjxCallback(this, this._handleSetActiveAccount);
+	this._appCtxt.setActiveAccount(data.account, callback);
+};
+
+ZmMailApp.prototype._handleSetActiveAccount =
+function(account, ev) {
+DBG.println("-------- TODO: get folder tree for active account and reparent ---------");
+
+	var controller = this._appCtxt.getAppController();
+	var opc = this._appCtxt.getOverviewController();
+	opc.set(ZmZimbraMail._OVERVIEW_ID, controller._getOverviewTrees(ZmApp.MAIL));
+};
+
 /**
 * Adds a "Reply" submenu for replying to sender or all.
 *
@@ -898,4 +936,3 @@ function(parent) {
 	parent.setMenu(menu);
 	return menu;
 };
-

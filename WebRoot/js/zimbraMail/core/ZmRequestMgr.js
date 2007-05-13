@@ -105,8 +105,9 @@ function(params) {
 	var command = new ZmCsfeCommand();
 	// bug fix #10652 - dont set change token if accountName is specified
 	// (since we're executing on someone else's mbox)
-	var changeToken = params.accountName ? null : this._changeToken;
-	var cmdParams = {soapDoc:params.soapDoc, accountName:params.accountName, useXml:this._useXml,
+	var accountName = params.accountName || this._appCtxt.getActiveAccountName();
+	var changeToken = accountName ? null : this._changeToken;
+	var cmdParams = {soapDoc:params.soapDoc, accountName:accountName, useXml:this._useXml,
 					 changeToken:changeToken, asyncMode:params.asyncMode, callback:asyncCallback,
 					 logRequest:this._logRequest, highestNotifySeen:this._highestNotifySeen };
 
