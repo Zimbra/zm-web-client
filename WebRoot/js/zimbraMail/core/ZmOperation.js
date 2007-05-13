@@ -157,7 +157,7 @@ function() {
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addColorMenu, parent);
 		}));
-	ZmOperation.registerOp("TAG_MENU", {textKey:"tag", tooltipKey:"tagTooltip", image:"Tag"}, ZmSetting.TAGGING_ENABLED,
+	ZmOperation.registerOp("TAG_MENU", {tooltipKey:"tagTooltip", image:"Tag"}, ZmSetting.TAGGING_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmOperation.addTagMenu, parent);
 		}));

@@ -402,11 +402,11 @@ function() {
 
 ZmMailListController.prototype._standardToolBarOps =
 function() {
-	var list = [ZmOperation.NEW_MENU];
+	var list = [ZmOperation.NEW_MENU,ZmOperation.NEW_MENU];
 	list.push(this._appCtxt.get(ZmSetting.OFFLINE) ? ZmOperation.SYNC_OFFLINE : ZmOperation.CHECK_MAIL);
-	list = list.concat([ZmOperation.TAG_MENU, ZmOperation.SEP,
+	list = list.concat([ZmOperation.SEP,
 						ZmOperation.DELETE, ZmOperation.MOVE,
-						ZmOperation.PRINT]);
+						ZmOperation.PRINT, ZmOperation.SEP]);
 	return list;
 };
 
