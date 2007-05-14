@@ -29,7 +29,7 @@ function ZmNotebookPageView(parent, appCtxt, controller, dropTgt) {
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 
-	this._USE_IFRAME = false;
+	this._USE_IFRAME = true;
 
 	this._createHtml();	
 	this._setMouseEventHdlrs(); // needed by object manager
