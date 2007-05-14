@@ -90,6 +90,12 @@ ZmNotebookPageController.prototype.gotoPage = function(pageRef) {
 	this._resetOperations(this._toolbar[this._currentView]);
 };
 
+ZmNotebookPageController.prototype.setPage = function(page) {
+	var cache = this._app.getNotebookCache();
+	this._object = page;
+	this._resetOperations(this._toolbar[this._currentView]);
+};
+
 ZmNotebookPageController.prototype.getPage = function() {
 	return this._object;
 };
@@ -139,6 +145,7 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 		return;
 	}
 
+	if(!this._currentView._USE_IFRAME){		
 	// update history
 	this._folderId = null;
 	if (this._object) {
@@ -158,6 +165,7 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 	this._list = new ZmList(ZmItem.PAGE, this._appCtxt);
 	if (this._object) {
 		this._list.add(this._object);
+	}
 	}
 
 	// show this page
@@ -218,11 +226,13 @@ ZmNotebookPageController.prototype._enableNaviButtons = function() {
 // listeners
 
 ZmNotebookPageController.prototype._pageBackListener = function(event) {
+	this.historyLoading = true;
 	if (this._place > 0) {
 		this.gotoPage(this._history[--this._place]);
 	}
 };
 ZmNotebookPageController.prototype._pageForwardListener = function(event) {
+	this.historyLoading = true;
 	if (this._place + 1 < this._history.length) {
 		this.gotoPage(this._history[++this._place]);
 	}
@@ -268,4 +278,29 @@ ZmNotebookPageController.__setButtonToolTip = function(appCtxt, button, pageRef,
 		}
 	}
 	button.setToolTipContent(text);
+};
+
+ZmNotebookPageController.prototype.updateHistory = function() {
+	
+	this._folderId = null;
+	
+	if (this._object) {
+		this._folderId = this._object.folderId;
+		for (var i = this._place + 1; i < this._history.length; i++) {
+			this._history[i] = null;
+		}
+		this._history.length = ++this._place;
+		var pageRef = { folderId: this._object.folderId, name: this._object.name };
+		this._history[this._place] = pageRef;
+	}
+	this._enableNaviButtons();
+
+	// REVISIT: Need to do proper list management! For now we fake
+	//          a list of a single item so that operations like
+	//          tagging and delete work.
+	this._list = new ZmList(ZmItem.PAGE, this._appCtxt);
+	if (this._object) {
+		this._list.add(this._object);
+	}
+	
 };

@@ -145,6 +145,8 @@ ZmNotebookController.prototype._resetOperations = function(toolbarOrActionMenu, 
 	//toolbarOrActionMenu.enable(ZmOperation.ATTACHMENT, true);
 	//toolbarOrActionMenu.enable(ZmOperation.DETACH, false);
 
+	var buttonIds = [ ZmOperation.SEND_PAGE, ZmOperation.DETACH ];
+	toolbarOrActionMenu.enable(buttonIds, true);
 	var writable = this._object && !this._object.isReadOnly();
 	toolbarOrActionMenu.enable([ZmOperation.EDIT, ZmOperation.DELETE], writable);
 	var taggable = this._object && !this._object.isShared() && !this._object.isIndex();
@@ -155,8 +157,11 @@ ZmNotebookController.prototype._getTagMenuMsg = function() {
 	return ZmMsg.tagPage;
 };
 
-ZmNotebookController.prototype._doDelete = function(items) {
-	var items = this._listView[this._currentView].getSelection();
+ZmNotebookController.prototype._doDelete = function(items,delcallback) {
+	
+	if(!items){
+	items = this._listView[this._currentView].getSelection();
+	}
 	var dialog = this._appCtxt.getConfirmationDialog();
 	var message = items instanceof Array && items.length > 1 ? ZmMsg.confirmDeleteItemList : null;
 	if (!message) {
@@ -167,11 +172,11 @@ ZmNotebookController.prototype._doDelete = function(items) {
 		var item = items instanceof Array ? items[0] : items;
 		message = this._confirmDeleteFormatter.format(item.name);
 	}
-	var callback = new AjxCallback(this, this._doDelete2, [items]);
+	var callback = new AjxCallback(this, this._doDelete2, [items,delcallback]);
 	dialog.popup(message, callback);
 };
 
-ZmNotebookController.prototype._doDelete2 = function(items) {
+ZmNotebookController.prototype._doDelete2 = function(items,delcallback) {
 	var ids = ZmNotebookController.__itemize(items);
 	if (!ids) return;
 
@@ -181,6 +186,11 @@ ZmNotebookController.prototype._doDelete2 = function(items) {
 	actionNode.setAttribute("op", "delete");
 
 	var responseHandler = this._current == ZmController.NOTEBOOK_PAGE_VIEW ? this._listeners[ZmOperation.PAGE_BACK] : null;
+
+	if(delcallback){
+		responseHandler = delcallback;
+	}
+
 	var params = {
 		soapDoc: soapDoc,
 		asyncMode: true,

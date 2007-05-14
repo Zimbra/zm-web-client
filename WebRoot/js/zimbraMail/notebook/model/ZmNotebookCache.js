@@ -603,3 +603,53 @@ function(folderId, callback, errorCallback, response) {
 
 ZmNotebookCache.prototype._handleChange = function(event) {
 };
+
+ZmNotebookCache.prototype._processResponse = function(searchResponse)
+{
+	try{
+		var result = [];
+		
+		if(!searchResponse){		
+			return result;
+		}
+		
+		//var searchResponse = response.SearchResponse || response._data.SearchResponse;
+		var words = searchResponse.w || [];
+		for (var i = 0; i < words.length; i++) {
+			var word = words[i];
+			var item = this.getPageById(word.id);
+			if (!item) {
+				item = new ZmPage(this._appCtxt);
+				item.set(word);
+				item.folderId = word.l || ZmNotebookItem.DEFAULT_FOLDER;
+				this.putPage(item);
+			}
+			else {
+				item.set(word);
+			}
+			result.push(item);
+		}
+		var docs = searchResponse.doc || [];
+		for (var i = 0; i < docs.length; i++) {
+			var doc = docs[i];
+			var item = this.getDocumentById(doc.id);
+			if (!item) {
+				item = new ZmDocument(this._appCtxt);
+				item.set(doc);
+				item.folderId = doc.l || ZmNotebookItem.DEFAULT_FOLDER;
+				this.putDocument(item);
+			}
+			else {
+				item.set(doc);
+			}
+			result.push(item);
+		}
+		
+		return result;
+		
+	}
+	//TODO: remote folder id
+	catch(ex){ 
+		DBG.println(AjxDebug.DBG1,'zmnotebook cache excep:'+ex); 
+	} 
+};
