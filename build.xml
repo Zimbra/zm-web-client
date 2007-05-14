@@ -571,6 +571,15 @@ if (ext == null) ext = "";
 	</foreach>
   </target>
 
+  <target name='package-skin'>
+      <mkdir dir='${build.dir}/skins' />
+      <zip destfile="${build.dir}/skins/${skinname}.zip">
+          <fileset dir='${build.dir}/WebRoot' includes='skins/${skinname}/**' />
+          <fileset dir='${build.dir}/WebRoot' includes='img/loRes/skins/${skinname}/**' />
+          <fileset dir='${build.dir}/WebRoot' includes='portals/${skinname}/**' />
+      </zip>
+  </target>
+
   <target name='build-skin-images' depends='build-skin-images-init,compile' if='skin-images-present' unless='imagesdone'>
 	<property name='dir.skincache' value='../../../../skins/${skindir}' />
     <!-- merge loRes skin images -->
