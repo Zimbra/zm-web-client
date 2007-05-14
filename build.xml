@@ -20,8 +20,10 @@
   <property name="dist.webapps.dir" location="${dist.webserver.dir}/webapps"/>
   <property name="dist.tarfile"         value="dev-zimbra.tar"/>
 
-  <property name="warfile"            location="${dist.webapps.dir}/zimbra.war"/>
-  <property name="adminwarfile"      location="${dist.webapps.dir}/zimbraAdmin.war"/>		
+  <property name='warfilename' value='zimbra.war' />
+  <property name="warfile"            location="${dist.webapps.dir}/${warfilename}"/>
+  <property name='adminwarfilename' value='zimbraAdmin.war' />
+  <property name="adminwarfile"      location="${dist.webapps.dir}/${adminwarfilename}"/>		
   
   <property name="jars.dir"           location="jars"/>
   <property name="src.dir"            location="src"/>
@@ -916,6 +918,8 @@ if (ext == null) ext = "";
 		<antcall target="deploy-war">
 			<param name="param.path" value="${deploy.path}"/>
 			<param name="param.warfile" value="${deploy.war}"/>
+            <param name='param.dirname' value='zimbra' />
+            <param name="param.warfilename" value="${warfilename}"/>
 		</antcall>
     </target>
 
@@ -923,6 +927,8 @@ if (ext == null) ext = "";
 		<antcall target="deploy-war">
 			<param name="param.path" value="${deploy.path}"/>
 			<param name="param.warfile" value="${deploy.war}"/>
+            <param name='param.dirname' value='zimbra' />
+            <param name="param.warfilename" value="${warfilename}"/>
 		</antcall>
     </target>
 
@@ -1037,6 +1043,8 @@ if (ext == null) ext = "";
 		<antcall target="deploy-war">
 			<param name="param.path" value="${deploy.admin.path}"/>
 			<param name="param.warfile" value="${deploy.admin.war}"/>
+            <param name='param.dirname' value='zimbraAdmin' />
+            <param name="param.warfilename" value="${adminwarfilename}"/>
 		</antcall>
 	</target>
 	
@@ -1044,6 +1052,8 @@ if (ext == null) ext = "";
 		<antcall target="deploy-war">
 			<param name="param.path" value="${deploy.admin.path}"/>
 			<param name="param.warfile" value="${deploy.admin.war}"/>
+            <param name='param.dirname' value='zimbraAdmin' />
+            <param name="param.warfilename" value="${adminwarfilename}"/>
 		</antcall>
     </target>
 
@@ -1055,7 +1065,9 @@ if (ext == null) ext = "";
   			<echo>Deploy ${param.warfile} to ${webserver.root.dir}/webapps</echo>
   			<ant dir="../ZimbraServer" target="stop-jetty" inheritAll="false"/>
 			<copy file="${param.warfile}" todir="${webserver.root.dir}/webapps"/>
-  			<ant dir="../ZimbraServer" target="start-jetty" inheritAll="false"/>
+            <mkdir dir='${webserver.root.dir}/webapps/${param.dirname}' />
+            <unzip dest='${webserver.root.dir}/webapps/${param.dirname}' src="${webserver.root.dir}/webapps/${param.warfilename}" /> 
+            <ant dir="../ZimbraServer" target="start-jetty" inheritAll="false"/>
   		</else></if>
   	</target>
 
