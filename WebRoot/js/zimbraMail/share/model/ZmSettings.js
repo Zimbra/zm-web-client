@@ -60,6 +60,7 @@ ZmSetting.PORTAL_ENABLED		= "PORTAL_ENABLED";
 ZmSetting.SKIN_NAME				= "SKIN_NAME";
 ZmSetting.TASKS_ENABLED			= "TASKS_ENABLED";
 ZmSetting.VOICE_ENABLED			= "VOICE_ENABLED";
+ZmSetting.LOCALE_NAME			= "LOCALE_NAME";
 
 /**
  * Creates a new setting and adds it to the settings.
@@ -245,24 +246,40 @@ ZmSettings.prototype._loadZimlets = function(zimlets, props) {
     }
 };
 
-ZmSettings.prototype.loadAvailableSkins =
+ZmSettings.prototype.loadSkinsAndLocales =
 function(callback) {
-	var soapDoc = AjxSoapDoc.create("GetAvailableSkinsRequest", "urn:zimbraAccount");
-	var respCallback = new AjxCallback(this, this._handleResponseLoadAvailableSkins, [callback]);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
+	var command = new ZmBatchCommand(this._appCtxt);
+
+	var skinDoc = AjxSoapDoc.create("GetAvailableSkinsRequest", "urn:zimbraAccount");
+	var skinCallback = new AjxCallback(this, this._handleResponseLoadAvailableSkins);
+	command.addNewRequestParams(skinDoc, skinCallback);
+
+	var localeDoc = AjxSoapDoc.create("GetAllLocalesRequest", "urn:zimbraAccount");
+	var localeCallback = new AjxCallback(this, this._handleResponseGetAllLocales);
+	command.addNewRequestParams(localeDoc, localeCallback);
+
+	command.run(callback);
 };
 
 ZmSettings.prototype._handleResponseLoadAvailableSkins =
-function(callback, result) {
+function(result) {
 	var resp = result.getResponse().GetAvailableSkinsResponse;
 	var skins = resp.skin;
 	for (var i = 0; i < skins.length; i++) {
 		var name = skins[i].name;
 		this._settings[ZmSetting.AVAILABLE_SKINS].setValue(name);
 	}
-	if (callback) {
-		callback.run();
+};
+
+ZmSettings.prototype._handleResponseGetAllLocales =
+function(response) {
+	var locales = response._data.GetAllLocalesResponse.locale;
+	var setting = this._settings[ZmSetting.LOCALES];
+	for(var i = 0, count = locales.length; i < count; i++) {
+		var locale = locales[i];
+		setting.setValue({ name: locale.name, id: locale.id });
 	}
+	this.getSetting(ZmSetting.LOCALE_CHANGE_ENABLED).setValue(count > 0);
 };
 
 /**
@@ -436,6 +453,7 @@ function() {
 	
 	// COS SETTINGS
 	this.registerSetting("AVAILABLE_SKINS",					{type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
+	this.registerSetting("LOCALES",							{type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
 	this.registerSetting("BROWSE_ENABLED",					{name: "zimbraFeatureAdvancedSearchEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("CALENDAR_ENABLED",				{name: "zimbraFeatureCalendarEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("CHANGE_PASSWORD_ENABLED",			{name: "zimbraFeatureChangePasswordEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
@@ -464,6 +482,7 @@ function() {
 	this.registerSetting("TASKS_ENABLED",					{name: "zimbraFeatureTasksEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("VIEW_ATTACHMENT_AS_HTML",			{name: "zimbraFeatureViewInHtmlEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("VOICE_ENABLED",					{name: "zimbraFeatureVoiceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});	
+	this.registerSetting("LOCALE_CHANGE_ENABLED",			{name: "zimbraFeatureLocaleChangeEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	// user metadata (included with COS since the user can't change them)
 	this.registerSetting("LICENSE_STATUS",					{type: ZmSetting.T_COS, defaultValue: ZmSetting.LICENSE_GOOD});
 	this.registerSetting("QUOTA_USED",						{type: ZmSetting.T_COS, dataType: ZmSetting.D_INT});
@@ -502,6 +521,7 @@ function() {
 	this.registerSetting("SHORTCUTS",						{name: "zimbraPrefShortcuts", type: ZmSetting.T_PREF});
 	this.registerSetting("SHOW_SEARCH_STRING",				{name: "zimbraPrefShowSearchString", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("SKIN_NAME",						{name: "zimbraPrefSkin", type: ZmSetting.T_PREF, defaultValue: "skin"});
+	this.registerSetting("LOCALE_NAME",						{name: "zimbraPrefLocale", type: ZmSetting.T_PREF, defaultValue: "en_US"});
 	this.registerSetting("SORTING_PREF",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("USE_KEYBOARD_SHORTCUTS",			{name: "zimbraPrefUseKeyboardShortcuts", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("VIEW_AS_HTML",					{name: "zimbraPrefMessageViewHtmlPreferred", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
@@ -519,6 +539,8 @@ function() {
 	this.registerSetting("OPTIONS_ENABLED",					{name: "zimbraFeatureOptionsEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("PORTAL_ENABLED",					{name: "zimbraFeaturePortalEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("SKIN_NAME",						{name: "zimbraPrefSkin", type: ZmSetting.T_PREF, defaultValue: "skin"});
+	this.registerSetting("LOCALE_NAME",						{name: "zimbraPrefLocale", type: ZmSetting.T_PREF, defaultValue: "en_US"});
 	this.registerSetting("TASKS_ENABLED",					{name: "zimbraFeatureTasksEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("VOICE_ENABLED",					{name: "zimbraFeatureVoiceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 };
+	

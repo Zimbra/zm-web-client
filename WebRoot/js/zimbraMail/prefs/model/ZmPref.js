@@ -64,6 +64,18 @@ function(appCtxt, setup) {
 	}
 };
 
+ZmPref.loadLocales =
+function(appCtxt, setup) {
+	var locales = appCtxt.get(ZmSetting.LOCALES);
+	for (var i = 0; i < locales.length; i++) {
+		var locale = locales[i];
+		setup.options.push(locale.id);
+		setup.displayOptions.push(locale.name);
+		var country = locale.id.substring(locale.id.length - 2);
+		setup.images.push("Flag" + country);
+	}
+};
+
 ZmPref.validateEmail = 
 function(emailStr) {
 	if (emailStr) {

@@ -375,7 +375,8 @@ function(id, setup, value) {
 	if (setup.options || setup.displayOptions) {
 		options = setup.options || setup.displayOptions;
 		for (var j = 0; j < options.length; j++) {
-			var data = new DwtSelectOptionData(options[j], setup.displayOptions[j], false);
+			var image = setup.images ? setup.images[j] : null;
+			var data = new DwtSelectOptionData(options[j], setup.displayOptions[j], false, null, image);
 			selObj.addOption(data);
 		}
 	} else {

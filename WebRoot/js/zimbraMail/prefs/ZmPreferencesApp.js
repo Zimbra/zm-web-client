@@ -148,7 +148,16 @@ function() {
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 	
-	
+	ZmPref.registerPref("LOCALE_NAME", {
+		displayName:		ZmMsg.selectLanguage,
+		displayContainer:	ZmPref.TYPE_SELECT,
+		images:				[],
+		displayOptions:		[],
+		options:			[],
+		loadFunction:		ZmPref.loadLocales,
+		displaySeparator:	true,
+		precondition:		ZmSetting.LOCALE_CHANGE_ENABLED
+	});
 	
 	ZmPref.registerPref("PAGE_SIZE", {
 		displayName:		ZmMsg.itemsPerPage,
@@ -236,7 +245,7 @@ function(callback) {
 ZmPreferencesApp.prototype._handleLoadLaunch =
 function(callback) {
 	var respCallback = new AjxCallback(this, this._handleResponseLaunch, [callback]);
-	this._appCtxt.getSettings().loadAvailableSkins(respCallback);
+	this._appCtxt.getSettings().loadSkinsAndLocales(respCallback);
 };
 
 ZmPreferencesApp.prototype._handleResponseLaunch =
