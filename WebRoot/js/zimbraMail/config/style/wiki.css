@@ -57,17 +57,14 @@
 	white-space:nowrap; overflow:hidden;
 	font-size:18px;
 	font-weight:bold;
-	vertical-align:bottom;
+	/*vertical-align:bottom;*/
 }
 
 #ZimbraWikiPage .zmwiki-author {
 	white-space:nowrap; overflow:hidden;
-	padding-left:10px;
-	padding-right:5px;
-	padding-bottom:2px;
-	vertical-align:bottom;
-	@FontSize-normal@
+	font-size:11px;
 	color:#666666;
+	/*vertical-align:bottom;*/
 }
 
 #ZimbraWikiPage .zmwiki-history {
@@ -104,7 +101,7 @@
 
 
 #ZimbraWikiPage .zmwiki-breadcrumbs {
-	@FontSize-normal@		
+	@FontSize-normal@
 }
 
 #ZimbraWikiPage .zmwiki-breadcrumbsSimple {
@@ -113,7 +110,7 @@
 #ZimbraWikiPage .zmwiki-breadCrumbSeparator {
 	padding-left:3px;
 	padding-right:3px;
-	@FontSize-normal@	
+	@FontSize-normal@
 	color:#999999;
 }
 
@@ -135,8 +132,8 @@
 }
 
 #ZimbraWikiPage .zmwiki-tocHeader {
-	background-color:#eeeeee;
-	font-size:13px;
+	/*background-color:#eeeeee;*/
+	font-size:14px;
 	font-weight:bold;
 }
 
@@ -155,12 +152,10 @@
 	color:#999999;
 }
 
-
-
-
 #ZimbraWikiPage .zmwiki-pageLink {
-	@FontSize-normal@	
+	@FontSize-normal@
 	cursor:pointer;
+	font-weight: bold;
 }
 
 #ZimbraWikiPage .zmwiki-tag {
@@ -172,7 +167,6 @@
 
 #ZimbraWikiPage .zmwiki-pageIcon {
 	width:16;
-	padding-left:3px;
 	cursor:pointer;
 }
 
@@ -197,3 +191,37 @@
 	font-variant: inherit;
 }
 #endif
+
+
+
+.zmwiki-horzBorder{
+
+	border-bottom: 1px solid #CCCCCC;
+	padding: 10px;
+}
+
+.zmwiki-docTiles{
+	
+	line-height: 18px;
+	margin-bottom: 15px;
+	/*float: left;*/
+	padding-left: 20px;
+}
+
+.zmwiki-header{
+	font-size: 12px;
+	font-weight: bold;
+}
+
+.zmwiki-headerUnderLine td{
+	border-bottom: 1px solid #CCCCCC;
+}
+
+.zmwiki-dotLine td{
+	border-bottom: 1px dotted #EEEEEE;
+}
+.selDoc td{
+ background-color: infobackground;
+}
+
+
