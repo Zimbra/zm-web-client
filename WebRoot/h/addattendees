@@ -89,9 +89,9 @@
                 <tr>
                     <td class='SearchBar'>
                         &nbsp;
-                        <fmt:message key="find"/>
-                        :
-                        <input class="searchField" style='width:50%' maxlength=2048 name='contactSearchQuery'
+                        <label for="findField"><fmt:message key="find"/>
+                        :</label>
+                        <input id="findField" class="searchField" style='width:50%' maxlength=2048 name='contactSearchQuery'
                                value="${fn:escapeXml(query)}">
                         &nbsp;
                         <fmt:message key="in"/>

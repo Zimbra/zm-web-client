@@ -13,11 +13,11 @@
     <tbody>
         <tr>
             <td nowrap align=right width=30%>
-                <fmt:message key="calendarInitialView"/>
-                :
+                <label for="initView"><fmt:message key="calendarInitialView"/>
+                :</label>
             </td>
             <td>
-                <select name="zimbraPrefCalendarInitialView">
+                <select name="zimbraPrefCalendarInitialView" id="initView">
                     <c:set var="view" value="${mailbox.prefs.calendarInitialView}"/>
                     <option value="day" <c:if test="${view eq 'day'}"> selected</c:if>><fmt:message key="calViewDay"/></option>
                     <option value="workWeek" <c:if test="${view eq 'workWeek'}"> selected</c:if>><fmt:message key="calViewWorkWeek"/></option>
@@ -29,12 +29,12 @@
         </tr>
         <tr>
             <td nowrap align=right width=30%>
-                <fmt:message key="calendarFirstDayOfWeek"/>
-                :
+                <label for="fdow"><fmt:message key="calendarFirstDayOfWeek"/>
+                :</label>
             </td>
             <td>
                 <c:set var="dow" value="${mailbox.prefs.calendarFirstDayOfWeek}"/>
-                <select name="zimbraPrefCalendarFirstdayOfWeek">
+                <select name="zimbraPrefCalendarFirstdayOfWeek" id="fdow">
                     <c:forEach var="day" begin="1" end="7">
                         <option value="${day-1}" <c:if test="${dow eq (day+1)}"> selected</c:if>>${weekDays[day]}</option>
                     </c:forEach>
@@ -46,12 +46,12 @@
         <app:optSeparator/>
         <tr>
             <td nowrap align=right width=30%>
-                <fmt:message key="calendarDayStartsAt"/>
-                :
+                <label for="dayStart"><fmt:message key="calendarDayStartsAt"/>
+                :</label>
             </td>
             <td>
                 <c:set var="hour" value="${mailbox.prefs.calendarDayHourStart}"/>
-                <select name="zimbraPrefCalendarDayHourStart">
+                <select name="zimbraPrefCalendarDayHourStart" id="dayStart">
                     <c:forEach var="h" begin="0" end="23">
                         <option value="${h}" <c:if test="${h eq hour}"> selected</c:if>>
                              <fmt:formatDate value="${zm:getTodayHour(h, null).time}" type="time" timeStyle="short"/>
@@ -62,12 +62,12 @@
         </tr>
         <tr>
             <td nowrap align=right width=30%>
-                <fmt:message key="calendarDayEndsAt"/>
-                :
+                <label for="dayEnd"><fmt:message key="calendarDayEndsAt"/>
+                :</label>
             </td>
             <td>
                 <c:set var="hour" value="${mailbox.prefs.calendarDayHourEnd}"/>
-                <select name="zimbraPrefCalendarDayHourEnd">
+                <select name="zimbraPrefCalendarDayHourEnd" id="dayEnd">
                     <c:forEach var="h" begin="1" end="24">
                         <option value="${h}" <c:if test="${h eq hour}"> selected</c:if>>
                             <fmt:formatDate value="${zm:getTodayHour(h % 24, null).time}" type="time" timeStyle="short"/>

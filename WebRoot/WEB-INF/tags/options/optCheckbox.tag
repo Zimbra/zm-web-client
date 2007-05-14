@@ -7,7 +7,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <tr>
-    <td width=30% nowrap align=right><fmt:message key="${label}"/> :</td>
-    <td><input type="checkbox" name='${pref}' value="TRUE" <c:if test="${checked}">checked</c:if>></td>
+    <td width=30% nowrap align=right><label for="${pref}"><fmt:message key="${label}"/> :</label></td>
+    <td><input type="checkbox" id="${pref}" name='${pref}' value="TRUE" <c:if test="${checked}">checked</c:if>></td>
 </tr>
 

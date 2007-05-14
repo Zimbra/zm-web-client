@@ -14,14 +14,14 @@
 
 <tr>
     <td nowrap align=right>
-        <fmt:message key="sendMailFrom"/>
-        :
+        <label for="mailFrom"><fmt:message key="sendMailFrom"/>
+        :</label>
     </td>
     <td>
         <table border="0" cellpadding="0" cellspacing="2">
             <tr>
                 <td>
-                    <input size="30" type="text" name='zimbraPrefFromDisplay' autocomplete='off' value="${fn:escapeXml(identity.fromDisplay)}">
+                    <input id="mailFrom" size="30" type="text" name='zimbraPrefFromDisplay' autocomplete='off' value="${fn:escapeXml(identity.fromDisplay)}">
                 </td>
                 <td>
                     <select name="zimbraPrefFromAddress">
@@ -49,8 +49,8 @@
                     <input type="checkbox" name='zimbraPrefReplyToEnabled' value="TRUE" <c:if test="${identity.replyToEnabled}">checked</c:if>>
                 </td>
                 <td>
-                    <fmt:message key="replyToIdentity"/>
-                    :
+                    <label for="replyTo"><fmt:message key="replyToIdentity"/>
+                    :</label>
                 </td>
             </tr>
         </table>
@@ -60,7 +60,7 @@
         <table border="0" cellpadding="0" cellspacing="2">
             <tr>
                 <td>
-                    <input size="30" type="text" name='zimbraPrefReplyToDisplay' autocomplete='off' value="${fn:escapeXml(identity.replyToDisplay)}">
+                    <input id="replyTo" size="30" type="text" name='zimbraPrefReplyToDisplay' autocomplete='off' value="${fn:escapeXml(identity.replyToDisplay)}">
                 </td>
                 <td>
                     <input size="30" type="text" name='zimbraPrefReplyToAddress' autocomplete='off' value="${fn:escapeXml(identity.replyToAddress)}">
@@ -73,11 +73,11 @@
 <app:optSeparator/>
 <tr>
     <td nowrap align=right>
-        <fmt:message key="placeSignature"/>
-        :
+        <label for="placeSig"><fmt:message key="placeSignature"/>
+        :</label>
     </td>
     <td>
-        <select name="zimbraPrefMailSignatureStyle">
+        <select name="zimbraPrefMailSignatureStyle" id="placeSig">
             <option
                     <c:if test="${identity.signatureStyleTop}"> selected</c:if> value="outlook">
                 <fmt:message key="aboveQuotedText"/>
@@ -92,14 +92,14 @@
 
 
 <tr>
-    <td width=30% nowrap align=right><fmt:message key="automaticallyAddSignature"/> :</td>
-    <td><input type="checkbox" name='zimbraPrefMailSignatureEnabled' value="TRUE" <c:if test="${identity.signatureEnabled}">checked</c:if>></td>
+    <td width=30% nowrap align=right><label for="autoSig"><fmt:message key="automaticallyAddSignature"/> :</label></td>
+    <td><input id="autoSig" type="checkbox" name='zimbraPrefMailSignatureEnabled' value="TRUE" <c:if test="${identity.signatureEnabled}">checked</c:if>></td>
 </tr>
 
 <tr>
-    <td width=30% nowrap align=right valign='top'><fmt:message key="signature"/> :</td>
+    <td width=30% nowrap align=right valign='top'><label for="signature"><fmt:message key="signature"/> :</label></td>
     <td>
-        <textarea name='zimbraPrefMailSignature' cols='80' rows='6'>${fn:escapeXml(identity.signature)}</textarea>
+        <textarea id="signature" name='zimbraPrefMailSignature' cols='80' rows='6'>${fn:escapeXml(identity.signature)}</textarea>
     </td>
 </tr>
 
@@ -107,11 +107,11 @@
 
 <tr>
     <td nowrap align=right>
-        <fmt:message key="whenReplying"/>
-        :
+        <label for="whenReply"><fmt:message key="whenReplying"/>
+        :</label>
     </td>
     <td>
-        <select name="zimbraPrefReplyIncludeOriginalText">
+        <select name="zimbraPrefReplyIncludeOriginalText" id="whenReply">
             <option
                     <c:if test="${identity.replyIncludeNone}"> selected</c:if> value="includeNone">
                 <fmt:message key="includeMenuNone"/>
@@ -134,11 +134,11 @@
 
 <tr>
     <td nowrap align=right>
-        <fmt:message key="whenForwarding"/>
-        :
+        <label for="whenForward"><fmt:message key="whenForwarding"/>
+        :</label>
     </td>
     <td>
-        <select name="zimbraPrefForwardIncludeOriginalText">
+        <select name="zimbraPrefForwardIncludeOriginalText" id="whenForward">
             <option
                     <c:if test="${identity.forwardIncludeBody}"> selected</c:if> value="includeBody">
                 <fmt:message key="includeInBody"/>
@@ -157,11 +157,11 @@
 
 <tr>
     <td nowrap align=right>
-        <fmt:message key="prefixTextWith"/>
-        :
+        <label for="prefixText"><fmt:message key="prefixTextWith"/>
+        :</label>
     </td>
     <td>
-        <select name="zimbraPrefForwardReplyPrefixChar">
+        <select name="zimbraPrefForwardReplyPrefixChar" id="prefixText">
             <option
                     <c:if test="${identity.forwardReplyPrefixChar eq '>'}"> selected</c:if> value="&gt;">
                 &gt;

@@ -206,17 +206,17 @@
                                             <legend><fmt:message key="details"/></legend>
                                             <table cellpadding="5" cellspacing="0">
                                                 <tr>
-                                                    <td width="1%" align="right"><fmt:message key="subject"/>:</td>
-                                                    <td><input style="width:99%" type="text" size="100" name="subject" value="${fn:escapeXml(compose.subject)}"></td>
+                                                    <td width="1%" align="right"><label for="subject"><fmt:message key="subject"/>:</label></td>
+                                                    <td><input style="width:99%" type="text" size="100" id="subject" name="subject" value="${fn:escapeXml(compose.subject)}"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td width="1%" align="right"><fmt:message key="location"/>:</td>
-                                                    <td><input style="width:99%" type="text" size="100" name="location" value="${fn:escapeXml(compose.location)}"></td>
+                                                    <td width="1%" align="right"><label for="location"><fmt:message key="location"/>:</label></td>
+                                                    <td><input style="width:99%" id="location" type="text" size="100" name="location" value="${fn:escapeXml(compose.location)}"></td>
                                                 </tr>
                                                 <tr>
-                                                    <td width="1%" align="right"><fmt:message key="showAs"/>:</td>
+                                                    <td width="1%" align="right"><label for="showAs"><fmt:message key="showAs"/>:</label></td>
                                                     <td>
-                                                        <select name="freeBusyStatus">
+                                                        <select name="freeBusyStatus" id="showAs">
                                                             <option <c:if test="${compose.freeBusyStatus eq 'F'}">selected </c:if>value="F"><fmt:message key="free"/>
                                                             <option <c:if test="${compose.freeBusyStatus eq 'T'}">selected </c:if> value="T"><fmt:message key="tentative"/>
                                                             <option <c:if test="${compose.freeBusyStatus eq 'B'}">selected </c:if> value="B"><fmt:message key="busy"/>
@@ -234,9 +234,9 @@
                                                 <c:choose>
                                                     <c:when test="${numCalendars gt 1}">
                                                         <tr>
-                                                            <td width="1%" align="right"><fmt:message key="calendar"/>:</td>
+                                                            <td width="1%" align="right"><label for="apptFolderId"><fmt:message key="calendar"/>:</label></td>
                                                             <td>
-                                                                <select name='apptFolderId'>
+                                                                <select name='apptFolderId' id="apptFolderId">
                                                                     <zm:forEachFolder var="folder">
                                                                         <c:if test="${folder.isAppointmentView and folder.isAppointmentMoveTarget}">
                                                                             <option value="${folder.id}" <c:if test="${compose.apptFolderId eq folder.id}">selected </c:if>/>
@@ -266,22 +266,22 @@
                                                     <table cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
-                                                                <input type=checkbox name="allDay" <c:if test="${compose.allDay}">checked</c:if> value="1">
+                                                                <input id="allday" type=checkbox name="allDay" <c:if test="${compose.allDay}">checked</c:if> value="1">
                                                             </td>
                                                             <td>
-                                                               <fmt:message key="allDayEvent"/>
+                                                               <label for="allday"><fmt:message key="allDayEvent"/></label>
                                                             </td>
                                                         </tr>
                                                     </table>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td width="1%" align="right"><fmt:message key="start"/>:</td>
+                                                <td width="1%" align="right"><label for="start"><fmt:message key="start"/>:</label></td>
                                                 <td>
                                                     <table cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
-                                                                <input autocomplete="off" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}">
+                                                                <input id="start" autocomplete="off" type=text size="12" maxlength="20" name="startDate" value="${fn:escapeXml(compose.startDate)}">
                                                             </td>
                                                             <td>&nbsp;</td>
                                                             <td>@</td>
@@ -322,12 +322,12 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td width="1%" align="right"><fmt:message key="end"/>:</td>
+                                                <td width="1%" align="right"><label for="end"><fmt:message key="end"/>:</label></td>
                                                 <td>
                                                     <table cellpadding="0" cellspacing="0">
                                                         <tr>
                                                             <td>
-                                                                <input autocomplete="off" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}">
+                                                                <input id="end" autocomplete="off" type=text size="12" maxlength="20" name="endDate" value="${fn:escapeXml(compose.endDate)}">
                                                             </td>
                                                             <td>&nbsp;</td>
                                                             <td>@</td>
@@ -368,10 +368,10 @@
                                                 <c:set var="addedTimeZone" value="true"/>
                                                 <tr>
                                                     <td nowrap align=right>
-                                                        <fmt:message key="timeZonePref"/> :
+                                                        <label for="timeZone"><fmt:message key="timeZonePref"/> :</label>
                                                     </td>
                                                     <td>
-                                                        <select name="timeZone">
+                                                        <select name="timeZone" id="timeZone">
                                                             <zm:forEachTimeZone var="tz">
                                                                 <option
                                                                         <c:if test="${compose.timeZone eq tz.id}">selected</c:if>
@@ -405,7 +405,7 @@
 
                         </tr>
                         <tr>
-                            <td valign='top' width=1% align=right nowrap> <fmt:message key="attendees"/>: </td>
+                            <td valign='top' width=1% align=right nowrap> <label for="attField"><fmt:message key="attendees"/>: </label></td>
                             <td colspan=2 nowrap>
                                 <div class="ZhAC ZhACTo">
                                     <textarea id="attField" rows="3" style='width:99%' cols="80"

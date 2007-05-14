@@ -132,12 +132,12 @@
 <%---------- name (rename) ----------%>
 <tr>
     <td width=20% nowrap align=right>
-        <fmt:message key="name"/>
-        :
+        <label for="name"><fmt:message key="name"/>
+        :</label>
     </td>
     <td>
         <input type="hidden" name="folderId" value="${folder.id}"/>
-        <input
+        <input id="name"
         <c:if test="${folder.isSystemFolder}"> disabled </c:if> name='folderName' type='text' autocomplete='off'
                                                size='35' value="${fn:escapeXml(folder.name)}">
         <c:if test="${not folder.isSystemFolder}">
@@ -150,11 +150,11 @@
 <c:if test="${folder.isMessageFolderMoveSource}">
     <tr>
         <td nowrap align='right'>
-            <fmt:message key="parentFolder"/>
-            :
+            <label for="parentFolder"><fmt:message key="parentFolder"/>
+            :</label>
         </td>
         <td>
-            <select name="folderParentId">
+            <select name="folderParentId" id="parentFolder">
                 <option
                         <c:if test="${folder.parentId eq 1}">selected</c:if> value="1"/>
                 <fmt:message key="rootFolder"/>
@@ -176,11 +176,11 @@
 <c:if test="${folder.isAppointmentView or folder.isContactView}">
     <tr>
         <td nowrap align='right'>
-            <fmt:message key="color"/>
-            :
+            <label for="folderColor"><fmt:message key="color"/>
+            :</label>
         </td>
         <td>
-            <select name="folderColor">
+            <select name="folderColor" id="folderColor">
                 <option
                         <c:if test="${folder.color eq 'blue'}">selected</c:if> value="blue"/>
                 <fmt:message key="blue"/>
@@ -217,11 +217,12 @@
 <c:if test="${folder.isSearchFolder}">
     <tr>
         <td width=20% nowrap align=right>
-            <fmt:message key="searchQuery"/>
+            <label for="folderQuery"><fmt:message key="searchQuery"/>
             :
+                </label>
         </td>
         <td>
-            <input name='folderQuery' type='text' autocomplete='off' size='70' value="${fn:escapeXml(folder.query)}">
+            <input id="folderQuery" name='folderQuery' type='text' autocomplete='off' size='70' value="${fn:escapeXml(folder.query)}">
             <input name='folderQueryVisible' type='hidden' value="true"/>
         </td>
     </tr>
@@ -231,14 +232,15 @@
 <c:if test="${not empty folder.remoteURL}">
     <tr>
         <td width=20% nowrap align=right>
-            <fmt:message key="url"/>
+            <label for="folderUrl"><fmt:message key="url"/>
             :
+                </label>
         </td>
         <td>
             <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign=middle>
                     <td>
-                        <input name='folderUrl' type='text' autocomplete='off' size='70'
+                        <input id="folderUrl" name='folderUrl' type='text' autocomplete='off' size='70'
                                value="${fn:escapeXml(folder.remoteURL)}">
                         <input name='folderUrlVisible' type='hidden' value="true"/>
                     </td>
@@ -294,12 +296,12 @@
             <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
                     <td>
-                        <input name='folderExcludeFlag' type='checkbox'
+                        <input id="exclude" name='folderExcludeFlag' type='checkbox'
                         <c:if test="${folder.isExcludedFromFreeBusy}"> checked</c:if> value="b">
                     </td>
                     <td>&nbsp;</td>
                     <td>
-                        <fmt:message key="excludeFromFreeBusyTimes"/>
+                        <label for="exclude"><fmt:message key="excludeFromFreeBusyTimes"/></label>
                     </td>
                 </tr>
             </table>
@@ -314,12 +316,12 @@
             <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
                     <td>
-                        <input name='folderCheckedFlag' type='checkbox'
+                        <input id="checked" name='folderCheckedFlag' type='checkbox'
                         <c:if test="${folder.isCheckedInUI}"> checked</c:if> value="#">
                     </td>
                     <td>&nbsp;</td>
                     <td>
-                        <fmt:message key="calendarCheckedInUI"/>
+                        <label for="checked"><fmt:message key="calendarCheckedInUI"/></label>
                     </td>
                 </tr>
             </table>
@@ -353,9 +355,9 @@
 
     <c:if test="${not (folder.isMountPoint or folder.isFeed)}">
         <tr>
-            <td align=right><fmt:message key="calendarImport"/>:</td>
+            <td align=right><label for="import"><fmt:message key="calendarImport"/>:</label></td>
             <td>
-                <input type=file size="40" name="fileUpload">
+                <input id="import" type=file size="40" name="fileUpload">
             </td>
         </tr>
         <tr>
@@ -385,9 +387,9 @@
 
     <c:if test="${not (folder.isMountPoint or folder.isFeed)}">
         <tr>
-            <td align=right><fmt:message key="contactImport"/>:</td>
+            <td align=right><label for="export"><fmt:message key="contactImport"/>:</label></td>
             <td>
-                <input type=file size="40" name="fileUpload">
+                <input id="export" type=file size="40" name="fileUpload">
             </td>
         </tr>
         <tr>
@@ -470,11 +472,11 @@
             <table border="0" cellpadding="0" cellspacing="0">
                 <tr>
                     <td>
-                        <input name='folderDeleteConfirm' type='checkbox' value="true">
+                        <input id="deleteConfirm" name='folderDeleteConfirm' type='checkbox' value="true">
                     </td>
                     <td>&nbsp;</td>
                     <td>
-                            ${fn:escapeXml(deleteConfirm)}
+                            <label for="deleteConfirm">${fn:escapeXml(deleteConfirm)}</label>
                     </td>
                 </tr>
             </table>

@@ -73,11 +73,11 @@
 
     <tr>
         <td nowrap align=right>
-            <fmt:message key="name"/>
-            :
+            <label for="name"><fmt:message key="name"/>
+            :</label>
         </td>
         <td>
-            <input name='newFolderName' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderName)}">
+            <input id="name" name='newFolderName' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderName)}">
         </td>
     </tr>
 
@@ -85,11 +85,12 @@
     <c:when test="${not calendar and not addressbook}">
     <tr>
         <td nowrap align='right'>
+            <label for="parentFolder">
             <fmt:message key="parentFolder"/>
-            :
+            :</label>
         </td>
         <td>
-            <select name="newFolderParentId">
+            <select name="newFolderParentId" id="parentFolder">
                 <option selected value="1"/>
                 <fmt:message key="rootFolder"/>
                 <zm:forEachFolder var="parent">
@@ -110,14 +111,14 @@
     <c:if test="${url}">
         <tr>
             <td nowrap align=right>
-                <fmt:message key="url"/>
-                :
+                <label for="url"><fmt:message key="url"/>
+                :</label>
             </td>
             <td>
             <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign=center>
                     <td>
-                        <input name='newFolderUrl' type='text' autocomplete='off' size='70' value="${fn:escapeXml(param.newFolderUrl)}">
+                        <input id="url" name='newFolderUrl' type='text' autocomplete='off' size='70' value="${fn:escapeXml(param.newFolderUrl)}">
                         <input name='newFolderUrlVisible' type='hidden' value='TRUE'/>
                     </td>
                 </tr>
@@ -130,22 +131,22 @@
     <c:if test="${link}">
         <tr>
             <td nowrap align=right>
-                <fmt:message key="ownersEmail"/>
-                :
+                <label for="ownersEmail"><fmt:message key="ownersEmail"/>
+                :</label>
             </td>
             <td>
-                <input name='newFolderOwnersEmail' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersEmail)}">
+                <input id="ownersEmail" name='newFolderOwnersEmail' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersEmail)}">
                 <input name='newFolderOwnersEmailVisible' type='hidden' value='TRUE'/>
             </td>
         </tr>
         <c:if test="${addressbook}">
          <tr>
             <td nowrap align=right>
-                <fmt:message key="ownersAddressBookName"/>
-                :
+                <label for="ownersAbName"><fmt:message key="ownersAddressBookName"/>
+                :</label>
             </td>
             <td>
-                <input name='newFolderOwnersAddressBook' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersAddressBook)}">
+                <input id="ownersAbName" name='newFolderOwnersAddressBook' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersAddressBook)}">
                 <input name='newFolderOwnersAddressBookVisible' type='hidden' value='TRUE'/>
             </td>
         </tr>           
@@ -153,11 +154,11 @@
         <c:if test="${calendar}">
             <tr>
                 <td nowrap align=right>
-                    <fmt:message key="ownersCalendarName"/>
-                    :
+                    <label for="ownersCalName"><fmt:message key="ownersCalendarName"/>
+                    :</label>
                 </td>
                 <td>
-                    <input name='newFolderOwnersCalendar' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersCalendar)}">
+                    <input id="ownersCalName" name='newFolderOwnersCalendar' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderOwnersCalendar)}">
                     <input name='newFolderOwnersCalendarVisible' type='hidden' value='TRUE'/>
                 </td>
             </tr>
@@ -167,11 +168,11 @@
     <c:if test="${calendar or addressbook}">
         <tr>
             <td nowrap align='right'>
-                <fmt:message key="color"/>
-                :
+                <label for="color"><fmt:message key="color"/>
+                :</label>
             </td>
             <td>
-                <select name="newFolderColor">
+                <select name="newFolderColor" id="color">
                     <option <c:if test="${newFolderColor eq 'blue'}">selected</c:if> value="blue"/><fmt:message key="blue"/>
                     <option <c:if test="${newFolderColor eq 'cyan'}">selected</c:if> value="cyan"/><fmt:message key="cyan"/>
                     <option <c:if test="${newFolderColor eq 'green'}">selected</c:if> value="green"/><fmt:message key="green"/>
@@ -193,11 +194,11 @@
                   <table border="0" cellpadding="0" cellspacing="0">
                       <tr>
                           <td>
-                              <input name='newFolderExcludeFlag' type='checkbox' <c:if test="${newFolderExcludeFlag eq 'b'}">checked</c:if> value="b">
+                              <input id="exclude" name='newFolderExcludeFlag' type='checkbox' <c:if test="${newFolderExcludeFlag eq 'b'}">checked</c:if> value="b">
                           </td
                           <td>&nbsp;</td>
                           <td>
-                              <fmt:message key="excludeFromFreeBusyTimes"/>
+                              <label for="exclude"><fmt:message key="excludeFromFreeBusyTimes"/></label>
                           </td>
                       </tr>
                   </table>
@@ -210,11 +211,11 @@
                   <table border="0" cellpadding="0" cellspacing="0">
                       <tr>
                           <td>
-                              <input name='newFolderCheckedFlag' type='checkbox' <c:if test="${newFolderCheckedFlag eq '#'}">checked</c:if> value="#">
+                              <input id="checked" name='newFolderCheckedFlag' type='checkbox' <c:if test="${newFolderCheckedFlag eq '#'}">checked</c:if> value="#">
                           </td>
                           <td>&nbsp;</td>
                           <td>
-                              <fmt:message key="calendarCheckedInUI"/>
+                              <label for="checked"><fmt:message key="calendarCheckedInUI"/></label>
                           </td>
                       </tr>
                   </table>
@@ -225,14 +226,14 @@
     <c:if test="${search}">
         <tr>
             <td nowrap align=right>
-                <fmt:message key="searchQuery"/>
-                :
+                <label for="folderQuery"><fmt:message key="searchQuery"/>
+                :</label>
             </td>
             <td>
             <table border="0" cellpadding="0" cellspacing="0">
                 <tr valign=center>
                     <td>
-                        <input name='newFolderQuery' type='text' autocomplete='off' size='70' value="${fn:escapeXml(param.newFolderQuery)}">
+                        <input id="folderQuery" name='newFolderQuery' type='text' autocomplete='off' size='70' value="${fn:escapeXml(param.newFolderQuery)}">
                         <input name='newFolderQueryVisible' type='hidden' value='TRUE'/>
                     </td>
                 </tr>
