@@ -239,7 +239,8 @@ ZmNotebookPageView._iframeOnLoad = function(iframe) {
 		window.parent.DBG.println("JSON URL FETCH:"+url);
 		view.fetchPageInfo(url);
 	}	
-	
+
+	view.addIconStyles(iframe.contentWindow.document);	
 	}
 	catch(ex){
 		DBG.println(AjxDebug.DBG1,'exception in iframe load processing:'+ex);
@@ -366,6 +367,20 @@ ZmNotebookPageView.prototype.fetchPageInfo = function(iSrc){
 	
 };
 
+ZmNotebookPageView.prototype.addIconStyles = function(doc)
+{
+	var headTags = doc.getElementsByTagName("head");
+	
+	if(!headTags)
+	return;
+	
+	var el = doc.createElement("link");	
+	el.rel = "stylesheet";
+	el.type = "text/css";
+	el.href = "/zimbra/css/imgs.css";
+	headTags[0].appendChild(el);	
+	
+};
 
 ZmNotebookPageView.prototype.addColumn = function(doc)
 {
