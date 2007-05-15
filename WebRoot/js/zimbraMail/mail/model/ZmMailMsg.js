@@ -911,7 +911,7 @@ function(findHits) {
 					// check for vcard *first* since we dont care to view it in HTML
 					if (attach.ct == ZmMimeTable.TEXT_VCARD)
 					{
-						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.getId() + "," + attach.part + ");";
+						var onclickStr = "ZmMailMsgView.vcardCallback(" + this.getId() + ",\"" + attach.part + "\");";
 						props.vcardLink = "<a style='text-decoration:underline' class='AttLink' href='javascript:;' onclick='" + onclickStr + "'>";
 					}
 					else if (attach.body == null && ZmMimeTable.hasHtmlVersion(attach.ct) &&
