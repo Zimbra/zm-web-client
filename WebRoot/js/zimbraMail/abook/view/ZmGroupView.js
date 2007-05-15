@@ -114,8 +114,24 @@ function(checkEither) {
 
 ZmGroupView.prototype.isValid =
 function() {
+	// check for required group name
 	if (this.isDirty() && this.isEmpty(true)) {
 		throw ZmMsg.errorMissingGroup;
+	}
+
+	// validate email addresses
+	var addrs = this._getGroupMembers(true);
+	if (addrs) {
+		var invalidAddrs = [];
+		for (var i = 0; i < addrs.length; i++) {
+			var addr = addrs[i];
+			if (!AjxEmailAddress.isValid(addr))
+				invalidAddrs.push(addr);
+		}
+		if (invalidAddrs.length) {
+			var bad = invalidAddrs.join("<br>");
+			throw AjxMessageFormat.format(ZmMsg.groupBadAddresses, bad);
+		}
 	}
 
 	return true;
@@ -280,8 +296,12 @@ function() {
 	return document.getElementById(this._groupNameId);
 };
 
+/*
+ * @asArray	[Boolean]	true, if you want group members back in an Array
+ *						otherwise, returns comma-separated String
+*/
 ZmGroupView.prototype._getGroupMembers =
-function() {
+function(asArray) {
 	var addrs = AjxStringUtil.split(this._groupMembers.value, ['\n', ';', ',']);
 
 	// if there are any empty values, remove them
@@ -297,7 +317,9 @@ function() {
 			break;
 	}
 
-	return addrs.length > 0 ? addrs.join(", ") : null;
+	return addrs.length > 0
+		? (asArray ? addrs : addrs.join(", "))
+		: null;
 };
 
 ZmGroupView.prototype._getFolderId =

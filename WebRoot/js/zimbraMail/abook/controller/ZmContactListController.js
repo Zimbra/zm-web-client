@@ -438,8 +438,8 @@ function(view) {
 
 	var start, end;
 	if (size && size > 0) {
-		var start = offset + 1;
-		var end = offset + size;
+		start = offset + 1;
+		end = offset + size;
 	}
 
 	return (start && end) ? {start:start, end:end} : null;
