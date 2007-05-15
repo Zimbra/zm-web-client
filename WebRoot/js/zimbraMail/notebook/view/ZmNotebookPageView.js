@@ -65,8 +65,9 @@ function(page) {
 		toolbar.enable([ZmOperation.REFRESH,ZmOperation.EDIT,ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT,ZmOperation.SEND_PAGE,ZmOperation.DETACH], false);
 
 		if(page!=null){
-		this._iframe1.src = page.getRestUrl();
+		this.loadURL(page.getRestUrl());
 		}
+		
 	}
 	else {
 		var element = this.getHtmlElement();
@@ -335,9 +336,21 @@ ZmNotebookPageView.prototype.mutateLink = function(linkNode,doc,linkPrefix){
 	var thref = linkNode.href;
 	var target = "_new";
 	if(thref.match(/^https?:\/\//)){
+
+		//handling http: login and https: REST URL access from server
+		var newLink = this.fixLinkProtocol(thref,linkPrefix);
+		
+		if(newLink!=thref){
+			linkNode.href = newLink;
+			thref = newLink;
+		}
+
 		if(thref.indexOf(linkPrefix)>=0){		
 			target = this._iframe1.id;
-		}else{
+			if(thref == (window.location.href +"#")){
+			linkNode.href= "javascript:;";		
+			}
+		}else{						
 			target = "_new";
 		}
 		
@@ -500,7 +513,7 @@ ZmNotebookPageView.prototype.onDelete = function(){
 
 	var controller = this._controller;
 	var object = controller._object;
-	this._iframe1.src = object.getRestUrl();
+	this.loadURL(object.getRestUrl());
 
 };
 
@@ -563,3 +576,29 @@ ZmNotebookPageView.prototype.createNewPage = function(iSrc){
 			controller.show(item);
 	}
 };
+
+ZmNotebookPageView.prototype.fixLinkProtocol = function(lhref,linkPrefix){
+
+		var tmp = lhref;
+		var linkPrefix1 = linkPrefix;
+						
+		if(linkPrefix.match(/^http:\/\//)){
+			linkPrefix1 = linkPrefix.replace(/^http:\/\//,"https://");
+		}else if(linkPrefix.match(/^https:\/\//)){
+			linkPrefix1 = linkPrefix.replace(/^https:\/\//,"http://");
+		}
+
+		if(lhref.indexOf(linkPrefix1)>=0){		
+			tmp = lhref.replace(linkPrefix1,linkPrefix);
+		}
+		return tmp;
+};
+
+ZmNotebookPageView.prototype.loadURL = function(restUrl){
+	
+	//wiki iframe loading cannot access content of different protocol (https)
+	var refURL = window.location.protocol+"//"+window.location.host;
+	var url = this.fixLinkProtocol(restUrl,refURL);		
+	this._iframe1.src = url;
+};
+
