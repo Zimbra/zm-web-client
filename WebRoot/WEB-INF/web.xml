@@ -205,7 +205,27 @@
 
     <jsp-config>
       <jsp-property-group>
-          <url-pattern>/h/*</url-pattern>
+          <url-pattern>/h/ac</url-pattern>
+          <url-pattern>/h/addattendees</url-pattern>
+          <url-pattern>/h/addcontacts</url-pattern>
+          <url-pattern>/h/ads</url-pattern>
+          <url-pattern>/h/attachments</url-pattern>
+          <url-pattern>/h/calendar</url-pattern>
+          <url-pattern>/h/changepass</url-pattern>
+          <url-pattern>/h/compose</url-pattern>
+          <url-pattern>/h/eappt</url-pattern>
+          <url-pattern>/h/econtact</url-pattern>
+          <url-pattern>/h/imessage</url-pattern>
+          <url-pattern>/h/login</url-pattern>
+          <url-pattern>/h/maddrbooks</url-pattern>
+          <url-pattern>/h/mcalendars</url-pattern>
+          <url-pattern>/h/message</url-pattern>
+          <url-pattern>/h/mfolders</url-pattern>
+          <url-pattern>/h/mtags</url-pattern>
+          <url-pattern>/h/options</url-pattern>
+          <url-pattern>/h/repeat</url-pattern>
+          <url-pattern>/h/search</url-pattern>
+          <url-pattern>/h/test</url-pattern>
       </jsp-property-group>
     </jsp-config>
 
