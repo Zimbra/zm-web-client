@@ -660,14 +660,13 @@ function(attachmentId, callback, errorCallback, notifyList) {
 		!this.isException)
 	{
 		this._addInviteAndCompNum(soapDoc);
-		soapDoc.setMethodAttribute("s", this.getOrigStartTime());
 		needsExceptionId = true;
 	}
 	else if (this.viewMode == ZmCalItem.MODE_EDIT ||
 			 this.viewMode == ZmCalItem.MODE_EDIT_SERIES)
 	{
 		this._addInviteAndCompNum(soapDoc);
-        needsExceptionId = this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE || this.isException;
+        needsExceptionId = this.isException;
 	}
 
 	var accountName = this.getRemoteFolderOwner();
@@ -1035,8 +1034,6 @@ ZmCalItem.prototype._setSimpleSoapAttributes =
 function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 
 	var m = this._messageNode = soapDoc.set('m');
-
-	m.setAttribute("d", new Date().getTime());
 
 	if (this.viewMode == ZmCalItem.MODE_EDIT_SINGLE_INSTANCE && !this.isException) {
 		// do nothing for instance requests
