@@ -38,6 +38,8 @@ ZmMailListView.prototype.constructor = ZmMailListView;
 
 ZmMailListView.KEY_ID = "_keyId";
 
+ZmMailListView.COL_WIDTH_FOLDER	= 47;
+ZmMailListView.COL_WIDTH_SIZE	= 45;
 
 // Public methods
 
@@ -46,9 +48,14 @@ function() {
 	return "ZmMailListView";
 };
 
-// abstract method
+// Reset row style
 ZmMailListView.prototype.markUIAsRead = 
-function(item, on) {}
+function(item) {
+	var row = this._getElement(item, ZmItem.F_ITEM_ROW);
+	if (row) {
+		row.className = this._getRowClass(item);
+	}
+};
 
 ZmMailListView.prototype.set =
 function(list, sortField) {
@@ -66,6 +73,12 @@ ZmMailListView.prototype.replenish =
 function(list) {
 	DwtListView.prototype.replenish.call(this, list);
 	this._resetColWidth();
+};
+
+ZmMailListView.prototype.resetHeight =
+function(newHeight) {
+	this.setSize(Dwt.DEFAULT, newHeight);
+	Dwt.setSize(this._parentEl, Dwt.DEFAULT, newHeight - DwtListView.HEADERITEM_HEIGHT);
 };
 
 // Private / protected methods
@@ -97,6 +110,99 @@ function() {
 ZmMailListView.prototype._getRowClass =
 function(item) {
 	return item.isUnread ? "Unread" : null;
+};
+
+ZmMailListView.prototype._getCellId =
+function(item, field) {
+	return (field == ZmItem.F_SIZE) ? this._getFieldId(item, field) :
+									  ZmListView.prototype._getCellId.apply(this, arguments);
+};
+
+ZmMailListView.prototype._getFragmentSpan =
+function(item) {
+	var html = [];
+	var idx = 0;
+	html[idx++] = "<span class='ZmConvListFragment' id='";
+	html[idx++] = this._getFieldId(item, ZmItem.F_FRAGMENT);
+	html[idx++] = "'>";
+	html[idx++] = this._getFragmentHtml(item);
+	html[idx++] = "</span>";
+	
+	return html.join("");
+};
+
+ZmMailListView.prototype._getFragmentHtml =
+function(item) {
+	return [" - ", AjxStringUtil.htmlEncode(item.fragment, true)].join("");
+};
+
+ZmMailListView.prototype._getHeaderToolTip =
+function(field, itemIdx) {
+	return (field == ZmItem.F_STATUS) ? ZmMsg.messageStatus :
+										ZmListView.prototype._getHeaderToolTip.apply(this, arguments);
+};
+
+ZmMailListView.prototype._getToolTip =
+function(field, item, ev, div, match) {
+	if (!item) { return; }
+	var tooltip = null;
+	if (field == ZmItem.F_STATUS) {
+		if (item.isDraft)			{ tooltip = ZmMsg.draft; }
+		else if (item.isUnread)		{ tooltip = ZmMsg.unread; }
+		else if (item.isReplied)	{ tooltip = ZmMsg.replied; }
+		else if (item.isForwarded)	{ tooltip = ZmMsg.forwarded; }
+		else if (item.isSent)		{ tooltip = ZmMsg.sentAt; }
+		else if (item.isInvite)		{ tooltip = ZmMsg.appointment; }
+		else						{ tooltip = ZmMsg.read; }
+	} else if (field == ZmItem.F_FROM) {
+		tooltip = this._getParticipantToolTip(item.getAddress(AjxEmailAddress.FROM));
+	} else if (field == ZmItem.F_SUBJECT) {
+		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
+			tooltip = item.getInvite().getToolTip();
+		} else {
+		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
+		}
+	} else if (field == ZmItem.F_FOLDER) {
+		var folder = this._appCtxt.getById(item.folderId);
+		if (folder && folder.parent) {
+			var name = folder.getName();
+			var path = folder.getPath();
+			if (path != name) {
+				tooltip = path;
+			}
+		}
+	} else {
+		tooltip = ZmListView.prototype._getToolTip.apply(this, arguments);
+	}
+	
+	return tooltip;
+};
+
+ZmMailListView.prototype._getParticipantToolTip =
+function(address) {
+	if (!address) { return; }
+	try {
+		var toolTip;
+		var addr = address.getAddress();
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && addr) {
+			var contactApp = ZmAppCtxt.getFromShell(this.shell).getApp(ZmApp.CONTACTS);
+			var contacts = AjxDispatcher.run("GetContacts");
+			var contact = contacts ? contacts.getContactByEmail(addr) : null;
+			if (contact) {
+				toolTip = contact.getToolTip(addr);
+			}
+		}
+		
+		if (!toolTip) {
+			var addrstr = address.toString();
+			if (addrstr) {
+			    toolTip = ["<div style='white-space:nowrap;'><span style='font-weight:bold'", ZmMsg.email, ": </span>", AjxStringUtil.htmlEncode(addrstr), "</div>"].join("");
+			}
+	    }
+	} catch (ex) {
+		this._appCtxt.getAppController()._handleException(ex, contactApp.getContactList, null, false, contactApp);
+	}
+	return toolTip;
 };
 
 // Figure out how many of the participants will fit into a given pixel width.

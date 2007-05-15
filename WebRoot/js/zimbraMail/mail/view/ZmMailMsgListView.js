@@ -37,9 +37,6 @@ ZmMailMsgListView.prototype.constructor = ZmMailMsgListView;
 
 ZmMailMsgListView.MSGLIST_REPLENISH_THRESHOLD 	= 0;
 ZmMailMsgListView.COL_WIDTH_FROM 				= 105;
-ZmMailMsgListView.COL_WIDTH_FOLDER 				= 47;
-ZmMailMsgListView.COL_WIDTH_SIZE 				= 45;
-
 
 // Public methods
 
@@ -81,22 +78,6 @@ function(defaultColumnSort) {
 	}
 };
 
-// Reset row style and status icon
-ZmMailMsgListView.prototype.markUIAsRead = 
-function(msg, on) {
-	var row = this._getElement(msg, ZmItem.F_ITEM_ROW);
-	if (row) {
-		row.className = this._getRowClass(msg);
-	}
-	this._setImage(msg, ZmItem.F_STATUS, msg.getStatusIcon());
-};
-
-ZmMailMsgListView.prototype.resetHeight = 
-function(newHeight) {
-	this.setSize(Dwt.DEFAULT, newHeight);
-	Dwt.setSize(this._parentEl, Dwt.DEFAULT, newHeight - DwtListView.HEADERITEM_HEIGHT);
-};
-
 ZmMailMsgListView.prototype.getReplenishThreshold = 
 function() {
 	return ZmMailMsgListView.MSGLIST_REPLENISH_THRESHOLD;
@@ -113,7 +94,16 @@ function(list, sortField) {
 	ZmMailListView.prototype.set.call(this, list, sortField);
 };
 
+ZmMailMsgListView.prototype.markUIAsRead = 
+function(msg) {
+	ZmMailListView.prototype.markUIAsRead.apply(this, arguments);
+	this._setImage(msg, ZmItem.F_STATUS, msg.getStatusIcon());
+};
+
 // Private / protected methods
+
+// following _createItemHtml support methods are also used for creating msg
+// rows in ZmConvListView
 
 ZmMailMsgListView.prototype._addParams =
 function(msg, params) {
@@ -154,8 +144,9 @@ function(msg) {
 
 ZmMailMsgListView.prototype._getCellId =
 function(item, field) {
-	if (field == ZmItem.F_SUBJECT && (this._mode == ZmController.CONV_VIEW || this._mode == ZmController.HYBRID_VIEW)) {
-		return this._getFieldId(item, ZmItem.F_FRAGMENT);
+	if (field == ZmItem.F_SUBJECT && (this._mode == ZmController.CONV_VIEW ||
+									  this._mode == ZmController.CONVLIST_VIEW)) {
+		return this._getFieldId(item, field);
 	} else {
 		return ZmMailListView.prototype._getCellId.apply(this, arguments);
 	}
@@ -201,12 +192,13 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 						htmlArr[idx++] = AjxStringUtil.ELLIPSIS;
 					}
 				}
-			}		
+			}
+
 		} else {
 			var fromAddr = msg.getAddress(AjxEmailAddress.FROM);
 			if (fromAddr) {
-				if (this._mode == ZmController.HYBRID_VIEW) {
-					htmlArr[idx++] = ZmHybridListView.INDENT;
+				if (this._mode == ZmController.CONVLIST_VIEW) {
+					htmlArr[idx++] = ZmConvListView.INDENT;
 				}
 				htmlArr[idx++] = "<span style='white-space:nowrap' id='";
 				htmlArr[idx++] = this._getFieldId(msg, ZmItem.F_FROM);
@@ -219,18 +211,18 @@ function(htmlArr, idx, msg, field, colIdx, params) {
 
 	} else if (field == ZmItem.F_SUBJECT) {
 		htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
-		if (this._mode == ZmController.CONV_VIEW || this._mode == ZmController.HYBRID_VIEW) {
-			if (this._mode == ZmController.HYBRID_VIEW) {
-				htmlArr[idx++] = ZmHybridListView.INDENT;
+		if (this._mode == ZmController.CONV_VIEW || this._mode == ZmController.CONVLIST_VIEW) {
+			// msg within a conv shows just the fragment
+			if (this._mode == ZmController.CONVLIST_VIEW) {
+				htmlArr[idx++] = ZmConvListView.INDENT;
 			}
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
 		} else {
+			// msg on its own (TV) shows subject and fragment
 			var subj = msg.getSubject() || ZmMsg.noSubject;
 			htmlArr[idx++] = AjxStringUtil.htmlEncode(subj);
 			if (this._appCtxt.get(ZmSetting.SHOW_FRAGMENTS) && msg.fragment) {
-				htmlArr[idx++] = "<span class='ZmConvListFragment'> - ";
-				htmlArr[idx++] = AjxStringUtil.htmlEncode(msg.fragment, true);
-				htmlArr[idx++] = "</span>";
+				htmlArr[idx++] = this._getFragmentSpan(msg);
 			}
 		}
 		htmlArr[idx++] = AjxEnv.isSafari ? "</div>" : "";
@@ -365,8 +357,8 @@ function(parent) {
 	var colName = isConvView ? ZmMsg.fragment : ZmMsg.subject;
 	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, colName, null, null, sortBy));
 
-	hList.push(new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmMailMsgListView.COL_WIDTH_FOLDER, null, true));
-	hList.push(new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmMailMsgListView.COL_WIDTH_SIZE, null, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_FOLDER, ZmMsg.folder, null, ZmMailListView.COL_WIDTH_FOLDER, null, true));
+	hList.push(new DwtListHeaderItem(ZmItem.F_SIZE, ZmMsg.size, null, ZmMailListView.COL_WIDTH_SIZE, null, true));
 	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.received, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_DATE, true));
 
 	return hList;

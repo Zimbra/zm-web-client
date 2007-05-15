@@ -714,7 +714,7 @@ function(contact, params) {
 // mixed view
 ZmContactSimpleView.prototype._getCellContents =
 function(htmlArr, idx, contact, field, colIdx, params) {
-	if (field == ZmItem.F_PARTICIPANT) {
+	if (field == ZmItem.F_FROM) {
 		// Name (fileAs)
 		htmlArr[idx++] = AjxStringUtil.htmlEncode(contact.getFileAs());
 	} else if (field == ZmItem.F_SUBJECT) {
@@ -727,4 +727,16 @@ function(htmlArr, idx, contact, field, colIdx, params) {
 	}
 	
 	return idx;
+};
+
+ZmContactSimpleView.prototype._getToolTip =
+function(field, item, ev) {
+	return (item && (field == ZmItem.F_FROM)) ? item.getToolTip(item.getAttr(ZmContact.F_email)) :
+												ZmContactBaseView.prototype._getToolTip.apply(this, arguments);
+};
+
+ZmContactSimpleView.prototype._getDateToolTip = 
+function(item, div) {
+	div._dateStr = div._dateStr || this._getDateToolTipText(item.modified, ["<b>", ZmMsg.lastModified, ":</b><br>"].join(""));
+	return div._dateStr;
 };

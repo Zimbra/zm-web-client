@@ -212,7 +212,7 @@ function(obj) {
 	}
 	if (obj.n != null) {
 		this.numMsgs = obj.n;
-		fields[ZmItem.F_COUNT] = true;
+		fields[ZmItem.F_SIZE] = true;
 		this._notify(ZmEvent.E_MODIFY, {fields : fields});
 	}
 

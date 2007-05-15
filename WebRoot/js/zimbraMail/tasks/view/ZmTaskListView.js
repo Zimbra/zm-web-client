@@ -168,7 +168,7 @@ function(htmlArr, idx, task, field, colIdx, params) {
 		htmlArr[idx++] = ZmCalItem.getImageForPriority(task, params.fieldId);
 		htmlArr[idx++] = "</center>";
 
-	} else if (params.isMixedView && (field == ZmItem.F_PARTICIPANT)) {
+	} else if (params.isMixedView && (field == ZmItem.F_FROM)) {
 		htmlArr[idx++] = task.organizer || "&nbsp";
 		
 	} else if (field == ZmItem.F_SUBJECT) {

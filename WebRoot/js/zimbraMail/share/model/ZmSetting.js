@@ -98,7 +98,6 @@ ZmSetting.DEDUPE_INBOX		= "moveSentMessageToInbox";
 ZmSetting.DEDUPE_ALL		= "dedupeAll";
 ZmSetting.GROUP_BY_CONV		= "conversation";			// zimbraPrefGroupMailBy
 ZmSetting.GROUP_BY_MESSAGE	= "message";
-ZmSetting.GROUP_BY_HYBRID	= "hybrid";
 ZmSetting.INCLUDE_NONE		= "includeNone";			// zimbraPrefForwardIncludeOriginalText
 ZmSetting.INCLUDE			= "includeBody";
 ZmSetting.INCLUDE_PREFIX	= "includeBodyWithPrefix";

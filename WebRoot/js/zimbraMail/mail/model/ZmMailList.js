@@ -373,8 +373,8 @@ function(item, sortBy) {
 	var a = this.getArray();
 	for (var i = 0; i < a.length; i++) {
 		var date = parseInt(a[i].date);
-		if ((sortBy == ZmSearch.DATE_DESC && (itemDate > date)) ||
-			(sortBy == ZmSearch.DATE_ASC && (itemDate < date))) {
+		if ((sortBy == ZmSearch.DATE_DESC && (itemDate >= date)) ||
+			(sortBy == ZmSearch.DATE_ASC && (itemDate <= date))) {
 			return i;
 		}
 	}

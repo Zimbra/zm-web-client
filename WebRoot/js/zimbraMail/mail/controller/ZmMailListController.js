@@ -214,10 +214,6 @@ function(actionCode) {
 			this.switchView(ZmController.TRAD_VIEW);
 			break;
 
-		case ZmKeyMap.VIEW_HYBRID:
-			this.switchView(ZmController.HYBRID_VIEW);
-			break;
-
 		case ZmKeyMap.READING_PANE:
 			this.switchView(ZmController.READING_PANE_VIEW, true);
 			break;
@@ -402,7 +398,7 @@ function() {
 
 ZmMailListController.prototype._standardToolBarOps =
 function() {
-	var list = [ZmOperation.NEW_MENU,ZmOperation.NEW_MENU];
+	var list = [ZmOperation.NEW_MENU, ZmOperation.SEP];
 	list.push(this._appCtxt.get(ZmSetting.OFFLINE) ? ZmOperation.SYNC_OFFLINE : ZmOperation.CHECK_MAIL);
 	list = list.concat([ZmOperation.SEP,
 						ZmOperation.DELETE, ZmOperation.MOVE,
@@ -462,13 +458,9 @@ function(ev) {
 	}
 	
 	// bug fix #3602
-	var address = (ev.field == ZmItem.F_PARTICIPANT) 
-		? ev.detail 
-		: ((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null); // yuck
-	if (address && items.length == 1 && 
-		(ev.field == ZmItem.F_PARTICIPANT || 
-		 ev.field == ZmItem.F_FROM)) 
-	{
+	var address = (ev.field == ZmItem.F_PARTICIPANT) ? ev.detail :
+		((ev.item instanceof ZmMailMsg) ? ev.item.getAddress(AjxEmailAddress.FROM) : null); // yuck
+	if (address && items.length == 1 && (ev.field == ZmItem.F_PARTICIPANT || ev.field == ZmItem.F_FROM)) {
 		// show participant menu
 		this._setTagMenu(this._participantActionMenu);
 		this._actionEv.address = address;

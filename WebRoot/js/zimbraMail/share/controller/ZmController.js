@@ -86,7 +86,6 @@ ZmController.TASK_VIEW					= "TKV";
 ZmController.LOADING_VIEW				= "LOADING";
 ZmController.VOICEMAIL_VIEW				= "VM";
 ZmController.CALLLIST_VIEW				= "CLIST";
-ZmController.HYBRID_VIEW				= "HY";
 
 /* ROSSD - It feels like we may need a ZmAppViewController class to help with
  * the tab group work. Delaying this until I have more experience pushing the 

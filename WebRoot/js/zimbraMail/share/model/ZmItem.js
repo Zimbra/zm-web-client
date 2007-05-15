@@ -92,7 +92,6 @@ ZmItem.F_NAME			= "na";
 ZmItem.F_FROM			= "fr";
 ZmItem.F_FRAGMENT		= "fm";
 ZmItem.F_SUBJECT		= "su";
-ZmItem.F_COUNT			= "ct";
 ZmItem.F_DATE			= "dt";
 ZmItem.F_STATUS			= "st";
 ZmItem.F_FOLDER			= "fo";
@@ -102,7 +101,7 @@ ZmItem.F_TYPE			= "ty";
 ZmItem.F_TAG_CELL		= "tc";
 ZmItem.F_SIZE			= "sz";
 ZmItem.F_INDEX			= "ix";
-ZmItem.F_EXPAND			= "ex";	// hybrid mail view
+ZmItem.F_EXPAND			= "ex";	// conv list view
 ZmItem.F_FILE_TYPE		= "ft";	// notebook
 // task specific
 ZmItem.F_PRIORITY		= "pr";

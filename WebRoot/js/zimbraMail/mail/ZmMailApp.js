@@ -52,7 +52,6 @@ function() {
 	ZmMailApp.GROUP_MAIL_BY_ITEM	= {};
 	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_CONV]		= ZmItem.CONV;
 	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_MESSAGE]	= ZmItem.MSG;
-	ZmMailApp.GROUP_MAIL_BY_ITEM[ZmSetting.GROUP_BY_HYBRID]		= ZmItem.CONV;
 };
 
 ZmMailApp.prototype.toString = 
@@ -71,7 +70,6 @@ function() {
 	AjxDispatcher.registerMethod("GetConvListController", "Mail", new AjxCallback(this, this.getConvListController));
 	AjxDispatcher.registerMethod("GetMsgController", "Mail", new AjxCallback(this, this.getMsgController));
 	AjxDispatcher.registerMethod("GetTradController", "Mail", new AjxCallback(this, this.getTradController));
-	AjxDispatcher.registerMethod("GetHybridController", "Mail", new AjxCallback(this, this.getHybridController));
 	AjxDispatcher.registerMethod("GetMailListController", "Mail", new AjxCallback(this, this.getMailListController));
 };
 
@@ -655,8 +653,7 @@ function(create, type, currList, sortBy, cutoff) {
 	if (type == ZmItem.MSG) {
 		var view = this._appCtxt.getCurrentViewId();
 		var folderId = currList.search.folderId;
-		var isListView = (folderId && (view == ZmController.TRAD_VIEW || view == ZmController.CONVLIST_VIEW ||
-						  view == ZmController.HYBRID_VIEW));
+		var isListView = (folderId && (view == ZmController.TRAD_VIEW || view == ZmController.CONVLIST_VIEW));
 		if (isListView && (create.l != folderId)) {
 			DBG.println(AjxDebug.DBG2, "new MSG not in folder view");
 			return false;
@@ -778,16 +775,10 @@ function(results, callback) {
 	AjxDispatcher.require("Mail", false, loadCallback, null, true);
 };
 
-/**
- * Messages have only one list view - Trad View. Convs default to
- * Conv List View unless user is using Hybrid View.
- */
 ZmMailApp.prototype._handleLoadShowSearchResults =
 function(results, callback) {
 	if (results.type == ZmItem.MSG) {
 		this.getTradController().show(results);
-	} else if (this._groupBy == ZmSetting.GROUP_BY_HYBRID) {
-		this.getHybridController().show(results);
 	} else {
 		this.getConvListController().show(results);
 	}
@@ -834,14 +825,6 @@ function() {
 		this._msgController = new ZmMsgController(this._appCtxt, this._container, this);
 	}
 	return this._msgController;
-};
-
-ZmMailApp.prototype.getHybridController =
-function() {
-	if (!this._hybridController) {
-		this._hybridController = new ZmHybridController(this._appCtxt, this._container, this);
-	}
-	return this._hybridController;
 };
 
 /**

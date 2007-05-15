@@ -107,7 +107,7 @@ function(obj) {
 		for (var i = 0; i < obj.e.length; i++) {
 			this._parseParticipantNode(obj.e[i]);
 		}
-		fields[ZmItem.F_PARTICIPANT] = true;
+		fields[ZmItem.F_FROM] = true;
 		this._notify(ZmEvent.E_MODIFY, {fields:fields});
 	}
 

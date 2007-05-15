@@ -198,7 +198,8 @@ function(item) {
 
 ZmListView.prototype._getCellId =
 function(item, field) {
-	return (field == ZmItem.F_DATE) ? this._getFieldId(item, field) : null;
+	return (field == ZmItem.F_DATE) ? this._getFieldId(item, field) :
+									  DwtListView.prototype._getCellId.apply(this, arguments);
 };
 
 ZmListView.prototype._getCellClass =
@@ -265,7 +266,6 @@ function(id) {
 	}
 };
 
-// XXX: apps should be handling some of these
 ZmListView.prototype._mouseOverAction =
 function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
@@ -277,78 +277,115 @@ function(ev, div) {
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
 		var itemIdx = Dwt.getAttr(div, "_itemIndex");
 		var field = DwtListHeaderItem.getHeaderField(this._headerList[itemIdx]._id);
-		if (field == ZmItem.F_FLAG) {
-			this.setToolTipContent(ZmMsg.flag);
-		} else if (field == ZmItem.F_TAG) {
-			this.setToolTipContent(ZmMsg.tag);
-		} else if (field == ZmItem.F_ATTACHMENT) {
-			this.setToolTipContent(ZmMsg.attachment);
-		} else if (field == ZmItem.F_SUBJECT) {
-			if (this._headerList[itemIdx]._sortable)
-				this.setToolTipContent(ZmMsg.sortBySubject);
-		} else if (field == ZmItem.F_COUNT) {
-			this.setToolTipContent(ZmMsg.convCountTooltip);
-		} else if (field == ZmItem.F_DATE) {
-			if (this._headerList[itemIdx]._sortable)
-				this.setToolTipContent(ZmMsg.sortByReceived);
-		} else if (field == ZmItem.F_STATUS) {
-			this.setToolTipContent(ZmMsg.messageStatus);
-		} else if (field == ZmItem.F_FROM) {
-			this.setToolTipContent(ZmMsg.sortByFrom);
-		} else {
-			this.setToolTipContent(null);
-		}
+		this.setToolTipContent(this._getHeaderToolTip(field, itemIdx));
 	} else {
-		var m = this._parseId(id);
-		if (m && m.field) {
+		var match = this._parseId(id);
+		if (match && match.field) {
 			var item = this.getItemFromElement(div);
-			if (m.field == ZmItem.F_FLAG) {
-				if (!item.isFlagged) {
-					ev.target.className = "ImgFlagRedDis";
-				}
-			} else if (m.field == ZmItem.F_TAG) {
-				this._setTagToolTip(div);
-			} else if (m.field == ZmItem.F_STATUS) {
-				this._setStatusToolTip(item);
-			} else if (m.field == ZmItem.F_ATTACHMENT) {
-				// disable for now, we only get att info once msg is loaded
-//				this._setAttachmentToolTip(item);
-			} else if (m.field == ZmItem.F_PARTICIPANT) {
-				if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && item instanceof ZmContact) {	
-					var toolTip = item.getToolTip(item.getAttr(ZmContact.F_email));
-					this.setToolTipContent(toolTip);
-				} else if (item.participants) {
-				    this._setParticipantToolTip(item.participants.get(m.participant));
-				}
-			} else if (m.field == ZmItem.F_FROM) {
-				this._setParticipantToolTip(item.getAddress(AjxEmailAddress.FROM));
-			} else if (m.field == ZmItem.F_SUBJECT) {
-				if (this._appCtxt.get(ZmSetting.MAIL_ENABLED) && item instanceof ZmMailMsg && item.isInvite() && item.needsRsvp()) {
-					this.setToolTipContent(item.getInvite().getToolTip());
-				} else {
-				    var frag = item.fragment ? item.fragment : ZmMsg.fragmentIsEmpty;
-					this.setToolTipContent(AjxStringUtil.htmlEncode(frag));
-				}
-			} else if (m.field == ZmItem.F_DATE) {
-				this._setDateToolTip(item, div);
-			} else if (m.field == ZmItem.F_FOLDER) {
-				var folder = this._appCtxt.getById(item.folderId);
-				var name = folder.getName();
-				var path = folder.getPath();
-				if (folder && folder.parent && (path != name)) {
-					this.setToolTipContent(path);
-				}
-			} else if (m.field == ZmItem.F_TYPE) {
-				this.setToolTipContent(ZmMsg[ZmItem.MSG_KEY[item.type]]);
-			} else {
-				this.setToolTipContent(null);
-			}
-		} else {
-			this.setToolTipContent(null);
+			this.setToolTipContent(this._getToolTip(match.field, item, ev, div, match));
 		}
 	}
 	return true;
+};
+
+ZmListView.prototype._getHeaderToolTip =
+function(field, itemIdx) {
+	var tooltip = null;
+	if (field == ZmItem.F_FLAG) {
+		tooltip = ZmMsg.flag;
+	} else if (field == ZmItem.F_TAG) {
+		tooltip = ZmMsg.tag;
+	} else if (field == ZmItem.F_ATTACHMENT) {
+		tooltip = ZmMsg.attachment;
+	} else if (field == ZmItem.F_SUBJECT) {
+		if (this._headerList[itemIdx]._sortable) {
+			tooltip = ZmMsg.sortBySubject;
+		}
+	} else if (field == ZmItem.F_DATE) {
+		if (this._headerList[itemIdx]._sortable) {
+			tooltip = ZmMsg.sortByReceived;
+		}
+	} else if (field == ZmItem.F_FROM) {
+		if (this._headerList[itemIdx]._sortable) {
+			tooltip = ZmMsg.sortByFrom;
+		}
+	}
+	return tooltip;
+};
+
+ZmListView.prototype._getToolTip =
+function(field, item, ev, div, match) {
+	var tooltip = null;
+	if (field == ZmItem.F_FLAG) {
+		if (!item.isFlagged) {
+			ev.target.className = "ImgFlagRedDis";
+		}
+	} else if (field == ZmItem.F_TAG) {
+		tooltip = this._getTagToolTip(item);
+	} else if (field == ZmItem.F_ATTACHMENT) {
+		// disable att tooltip for now, we only get att info once msg is loaded
+		// tooltip = this._getAttachmentToolTip(item);
+	} else if (field == ZmItem.F_DATE) {
+		tooltip = this._getDateToolTip(item, div);
+	}
+	return tooltip;
+};
+
+ZmListView.prototype._getTagToolTip =
+function(item) {
+	if (!item) { return };
+	var numTags = item.tags.length;
+	if (!numTags) { return };
+	var tagList = this._appCtxt.getTagTree();
+	var tags = item.tags;
+	var html = [];
+	var idx = 0;
+	for (var i = 0; i < numTags; i++) {
+		var tag = tagList.getById(tags[i]);
+		html[idx++] = "<table><tr><td>";
+		html[idx++] = AjxImg.getImageHtml(ZmTag.COLOR_MINI_ICON[tag.color]);
+		html[idx++] = "</td><td valign='middle'>";
+		html[idx++] = AjxStringUtil.htmlEncode(tag.name);
+		html[idx++] = "</td></tr></table>";
+	}
+	return html.join("");
 }
+
+ZmListView.prototype._getAttachmentToolTip = 
+function(item) {
+	var tooltip = null;
+	var atts = item.getAttachments ? item.getAttachments() : [];
+	if (atts.length == 1) {
+		var info = ZmMimeTable.getInfo(atts[0].ct);
+		tooltip = info ? info.desc : null;
+	} else if (atts.length > 1) {
+		tooltip = AjxMessageFormat.format(ZmMsg.multipleAttachmentsTooltip, [atts.length]);
+	}
+	return tooltip;
+};
+
+ZmListView.prototype._getDateToolTip = 
+function(item, div) {
+	div._dateStr = div._dateStr || this._getDateToolTipText(item.date);
+	return div._dateStr;
+};
+
+ZmListView.prototype._getDateToolTipText = 
+function(date, prefix) {
+	if (!date) { return ""; }
+	var dateStr = [];
+	var i = 0;
+	dateStr[i++] = prefix;
+	var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
+	dateStr[i++] = dateFormatter.format(new Date(date));
+	var delta = AjxDateUtil.computeDateDelta(date);
+	if (delta) {
+		dateStr[i++] = "<br><center><span style='white-space:nowrap'>(";
+		dateStr[i++] = delta;
+		dateStr[i++] = ")</span></center>";
+	}
+	return dateStr.join("");
+};
 
 ZmListView.prototype._mouseOutAction = 
 function(ev, div) {
@@ -432,129 +469,16 @@ function(id, field) {
 	return (!this._disallowSelection[field]);
 };
 
-ZmListView.prototype._setParticipantToolTip = 
-function(address) {
-	if (!address) return;
-	
-	try {
-		var toolTip;
-		var addr = address.getAddress();
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && addr) {
-			var contactApp = ZmAppCtxt.getFromShell(this.shell).getApp(ZmApp.CONTACTS);
-			var contacts = AjxDispatcher.run("GetContacts");
-			var contact = contacts ? contacts.getContactByEmail(addr) : null;
-			if (contact)
-				toolTip = contact.getToolTip(addr);
-		}
-		
-		if (!toolTip) {
-			var addrstr = address.toString();
-			if (addrstr) {
-			    toolTip = ["<div style='white-space:nowrap;'><span style='font-weight:bold'", ZmMsg.email, ": </span>", AjxStringUtil.htmlEncode(addrstr), "</div>"].join("");
-			}
-	    }
-	    
-	    if (toolTip) {
-			this.setToolTipContent(toolTip);
-		}
-	} catch (ex) {
-		this._appCtxt.getAppController()._handleException(ex, contactApp.getContactList, null, false, contactApp);
-	}
-}
-
-ZmListView.prototype._setTagToolTip = 
-function(div) {
-	var item = this.getItemFromElement(div);
-	var numTags = item.tags.length;
-	if (!numTags) return;
-	var tagList = this._appCtxt.getTagTree();
-	var tags = item.tags;
-	var html = new Array();
-	var idx = 0;
-	for (var i = 0; i < numTags; i++) {
-		var tag = tagList.getById(tags[i]);
-		html[idx++] = "<table><tr><td>";
-		html[idx++] = AjxImg.getImageHtml(ZmTag.COLOR_MINI_ICON[tag.color]);
-		html[idx++] = "</td><td valign='middle'>";
-		html[idx++] = AjxStringUtil.htmlEncode(tag.name);
-		html[idx++] = "</td></tr></table>";
-	}
-	this.setToolTipContent(html.join(""));
-}
-
-ZmListView.prototype._setStatusToolTip = 
-function(item) {
-	var tooltip = null;
-	if (item.isDraft)			{ tooltip = ZmMsg.draft; }
-	else if (item.isUnread)		{ tooltip = ZmMsg.unread; }
-	else if (item.isReplied)	{ tooltip = ZmMsg.replied; }
-	else if (item.isForwarded)	{ tooltip = ZmMsg.forwarded; }
-	else if (item.isSent)		{ tooltip = ZmMsg.sentAt; }
-	else if (item.isInvite)		{ tooltip = ZmMsg.appointment; }
-	else						{ tooltip = ZmMsg.read; }
-	
-	this.setToolTipContent(tooltip);
-};
-
-ZmListView.prototype._setAttachmentToolTip = 
-function(item) {
-	var tooltip = null;
-	var atts = item.getAttachments ? item.getAttachments() : [];
-	if (atts.length == 1) {
-		var info = ZmMimeTable.getInfo(atts[0].ct);
-		tooltip = info ? info.desc : null;
-	} else if (atts.length > 1) {
-		tooltip = AjxMessageFormat.format(ZmMsg.multipleAttachmentsTooltip, [atts.length]);
-	}
-
-	this.setToolTipContent(tooltip);
-};
-
-ZmListView.prototype._setDateToolTip = 
-function(item, div) {
-	if (!div._dateStr) {
-		var date;
-		var prefix = "";
-		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && item instanceof ZmContact) {
-			date = item.modified;
-			prefix = "<b>" + ZmMsg.lastModified + ":</b><br>";
-		} else {
-			date = item.date;
-		}
-		if (date) {
-			var dateStr = [];
-			var i = 0;
-			dateStr[i++] = prefix;
-			var dateFormatter = AjxDateFormat.getDateTimeInstance(AjxDateFormat.FULL, AjxDateFormat.MEDIUM);
-			dateStr[i++] = dateFormatter.format(new Date(date));
-			var delta = AjxDateUtil.computeDateDelta(date);
-			if (delta) {
-				dateStr[i++] = "<br><center><span style='white-space:nowrap'>(";
-				dateStr[i++] = delta;
-				dateStr[i++] = ")</span></center>";
-			}
-			div._dateStr = dateStr.join("");
-		} else {
-			div._dateStr = "";
-		}
-	}
-
-	if (div._dateStr && div._dateStr != "")
-		this.setToolTipContent(div._dateStr);
-}
-
 ZmListView.prototype._sortColumn = 
 function(columnItem, bSortAsc) { 
 	// change the sort preference for this view in the settings
 	var sortBy = null;
 	switch (columnItem._sortable) {
-		case ZmItem.F_PARTICIPANT: 
 		case ZmItem.F_FROM:
 			sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC; 
 			break;
 			
 		case ZmItem.F_SUBJECT:
-		case ZmItem.F_FRAGMENT:
 			sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC; 
 			break;
 			

@@ -1352,6 +1352,10 @@ function(actionCode, ev) {
 		return true;
 	}
 
+	// don't honor Enter in an input field as an app shortcut
+	if (ev && ev.target && (ev.target.tagName.toUpperCase() == "INPUT") &&
+		(ev.keyCode == 13 || ev.keyCode == 3)) { return false; }
+
 	switch (actionCode) {
 		case ZmKeyMap.DBG_NONE:
 			this._appCtxt.setStatusMsg("Setting Debug Level To: " + AjxDebug.NONE);

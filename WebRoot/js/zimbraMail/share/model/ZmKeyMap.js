@@ -63,9 +63,9 @@ ZmKeyMap.MAP_NAME = {};
 ZmKeyMap.MAP_NAME["global"]				= "Global";
 ZmKeyMap.MAP_NAME["compose"]			= "ZmComposeController";
 ZmKeyMap.MAP_NAME["mail"]				= "ZmMailListController";
+ZmKeyMap.MAP_NAME["conversationList"]	= "ZmConvListController";
 ZmKeyMap.MAP_NAME["conversation"]		= "ZmConvController";
 ZmKeyMap.MAP_NAME["message"]			= "ZmMsgController";
-ZmKeyMap.MAP_NAME["hybrid"]				= "ZmHybridController";
 ZmKeyMap.MAP_NAME["contacts"]			= "ZmContactListController";
 ZmKeyMap.MAP_NAME["editContact"]		= "ZmContactController";
 ZmKeyMap.MAP_NAME["calendar"]			= "ZmCalViewController";
@@ -168,7 +168,6 @@ ZmKeyMap.TODAY				= "Today";
 ZmKeyMap.UNTAG				= "Untag";
 ZmKeyMap.VIEW_BY_CONV		= "ViewByConversation";
 ZmKeyMap.VIEW_BY_MSG		= "ViewByMessage";
-ZmKeyMap.VIEW_HYBRID		= "ViewHybrid";
 
 // shifted chars
 ZmKeyMap.SHIFT = {};
