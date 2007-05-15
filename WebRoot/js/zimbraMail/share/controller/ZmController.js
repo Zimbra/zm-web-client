@@ -141,6 +141,11 @@ function(view) {
 	this._currentView = view;
 };
 
+ZmController.prototype.getCurrentView =
+function() {
+	return this._currentView;
+};
+
 ZmController.prototype.handleKeyAction =
 function(actionCode) {
 	DBG.println(AjxDebug.DBG3, "ZmController.handleKeyAction");
