@@ -399,13 +399,7 @@ function(calItem, mode) {
 			this.addAttachmentField(calItem, attachList[i]);
 	}
 
-	// bug fix #15820 - task edit view takes long to init so set content on timer :/
-	if (AjxEnv.isGeckoBased) {
-		var ta = new AjxTimedAction(this, this._setContent, calItem);
-		AjxTimedAction.scheduleAction(ta, 500);
-	} else {
-		this._setContent(calItem);
-	}
+	this._setContent(calItem);
 };
 
 ZmCalItemEditView.prototype._setContent =
