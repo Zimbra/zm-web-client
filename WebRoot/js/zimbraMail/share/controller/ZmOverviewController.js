@@ -163,7 +163,8 @@ function(overviewId, treeIds, omit, reset) {
 					this.getTreeController(treeId).clearTreeView(overviewId);
 				} else {
 					// preserve a ref to the element so we can add it back later
-					overview.removeChild(treeView, true);
+					// overview.removeChild(treeView, true);
+					treeView.setVisible(false);
 				}
 			}
 		}
@@ -203,7 +204,8 @@ function(overviewId, treeIds, omit, reset) {
 			treeView = this.getTreeView(overviewId, treeIds[i], app);
 		} else {
 			// add the tree view's HTML element back to the overview
-			overview.addChild(treeView);
+			// overview.addChild(treeView);
+			treeView.setVisible(true);
 			treeView.setCheckboxes();
 		}
 
