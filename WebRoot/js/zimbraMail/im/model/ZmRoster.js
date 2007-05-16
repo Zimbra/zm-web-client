@@ -205,7 +205,7 @@ function(im) {
 		var cl = this.getChatList();
 		for (var curNot=0; curNot < im.n.length; curNot++) {
 			var not = im.n[curNot];
-//			console.log("IM Notification: ", not);
+			// console.log("IM Notification: ", not);
 			if (not.type == "roster") {
 				this.getRosterItemList().removeAllItems();
 				var list = this.getRosterItemList();
@@ -294,15 +294,10 @@ function(im) {
 					chat.addMessage(ZmChatMessage.system(this._leftChatFormatter.format([lc.addr])));
 					chat.setThread(null);
 				}
-			} else if (not.type == "gwConnectStatus") {
+			} else if (not.type == "gwStatus") {
 				var gw = this.getGatewayByType(not.service);
-				var status = not.status == "success"
-					? ZmImGateway.STATE.ONLINE
-					: ( not.cause == "auth"
-					    ? ZmImGateway.STATE.BAD_AUTH
-					    : ZmImGateway.STATE.UNKNOWN );
-				gw.setState(status);
-				if (status == ZmImGateway.STATE.BAD_AUTH) {
+				gw.setState("-", not.state);
+				if (not.state == ZmImGateway.STATE.BAD_AUTH) {
 					this._appCtxt.setStatusMsg(ZmMsg.errorNotAuthenticated, ZmStatusView.LEVEL_WARNING);
 				}
 			}

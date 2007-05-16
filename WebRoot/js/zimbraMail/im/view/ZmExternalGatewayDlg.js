@@ -116,11 +116,8 @@ ZmExternalGatewayDlg.prototype._updateForRegisteredGw = function() {
 					break;
 				}
 				state = state.state;
-				if (nick && ( state == ZmImGateway.STATE.ONLINE ||
-					      state == ZmImGateway.STATE.INTENTIONALLY_OFFLINE ||
-					      state == ZmImGateway.STATE.START ||
-					      state == ZmImGateway.STATE.TRYING_TO_CONNECT ||
-					      state == ZmImGateway.STATE.BOOTED_BY_OTHER_LOGIN) ) {
+				if (state && nick && ZmImGateway.LOGIN_FORBIDDEN_STATES[state]) {
+					nick = "";
 					this._screenNameInput.setValue(nick);
 					this._screenNameInput.setEnabled(false);
 					this._passwordInput.setEnabled(false);

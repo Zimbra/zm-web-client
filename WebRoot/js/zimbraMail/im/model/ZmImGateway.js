@@ -30,7 +30,8 @@ function ZmImGateway(obj) {
 	if (obj.registration) {
 		for (var i = 0; i < obj.registration.length; ++i) {
 			var r = obj.registration[i];
-			cs[r.name] = r;
+			// cs[r.name] = r;
+			cs["-"] = r;
 		}
 	}
 };
@@ -45,6 +46,12 @@ ZmImGateway.STATE = {
 	TRYING_TO_CONNECT      : "trying_to_connect",
 	BOOTED_BY_OTHER_LOGIN  : "booted_by_other_login"
 };
+
+ZmImGateway.LOGIN_FORBIDDEN_STATES = {};
+ZmImGateway.LOGIN_FORBIDDEN_STATES[ZmImGateway.STATE.ONLINE] = true;
+ZmImGateway.LOGIN_FORBIDDEN_STATES[ZmImGateway.STATE.INTENTIONALLY_OFFLINE] = true;
+ZmImGateway.LOGIN_FORBIDDEN_STATES[ZmImGateway.STATE.START] = true;
+ZmImGateway.LOGIN_FORBIDDEN_STATES[ZmImGateway.STATE.TRYING_TO_CONNECT] = true;
 
 ZmImGateway.prototype.getState = function(name) {
 	if (name) {
