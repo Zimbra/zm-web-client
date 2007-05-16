@@ -1353,7 +1353,7 @@ function(actionCode, ev) {
 	}
 
 	// don't honor Enter in an input field as an app shortcut
-	if (ev && ev.target && (ev.target.tagName.toUpperCase() == "INPUT") &&
+	if (ev && ev.target && (ev.target.id != DwtKeyboardMgr.FOCUS_FIELD_ID) &&
 		(ev.keyCode == 13 || ev.keyCode == 3)) { return false; }
 
 	switch (actionCode) {
