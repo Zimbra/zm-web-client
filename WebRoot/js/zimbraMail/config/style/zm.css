@@ -645,6 +645,9 @@ td.DDSepInvisible div {
 }
 #ENDIF
 
+.ZmSpellMenuItem .ZWidgetTitle {
+	font-weight: bold;
+}
 
 
 

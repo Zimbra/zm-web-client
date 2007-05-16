@@ -1446,8 +1446,7 @@ function(ev) {
 			if (plainText) {
 				// in plain text mode we want to be able to edit misspelled words
 				var txt = fixall ? "Edit all" : "Edit";
-				var text = "<b style='color: #d62'>" + txt + "</b>";
-				item = menu.createMenuItem("edit", {text:text});
+				item = menu.createMenuItem("edit", {text:txt, className:"ZMenuItem ZmSpellMenuItem"});
 				item.setData("fixall", fixall);
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
@@ -1465,7 +1464,7 @@ function(ev) {
 					item.addSelectionListener(self._spellCheckSuggestionListenerObj);
 				}
 			} else {
-				item = menu.createMenuItem("clear", {text:"<b style='color: red'>Clear text</b>"});
+				item = menu.createMenuItem("clear", {text:"Clear text", className:"ZMenuItem ZmSpellMenuItem"});
 				item.setData("fixall", fixall);
 				item.setData("value", "");
 				item.setData("orig", word);
