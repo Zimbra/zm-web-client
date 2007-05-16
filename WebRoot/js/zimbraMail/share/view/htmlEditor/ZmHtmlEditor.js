@@ -44,9 +44,6 @@ ZmHtmlEditor = function(parent, posStyle, content, mode, appCtxt, withAce) {
 
 	this.addStateChangeListener(new AjxListener(this, this._rteStateChangeListener));
 
-	this.__contextMenuSelectionListener = new AjxListener(this, this.__contextMenuSelectionListener);
-	this.addListener(DwtEvent.ONCONTEXTMENU, new AjxListener(this, this.__onContextMenu));
-
 	var settings = appCtxt.getSettings();
 	var listener = new AjxListener(this, this._settingsChangeListener);
 	settings.getSetting(ZmSetting.COMPOSE_INIT_FONT_COLOR).addChangeListener(listener);
@@ -218,6 +215,8 @@ function(keepModeDiv) {
 			p.parentNode.removeChild(p);
 
 		doc.body.style.display = "";
+		this._unregisterEditorEventHandler(doc, "contextmenu");
+		
 	} else if (this._spellCheckDivId != null) {
 		var div = document.getElementById(this._spellCheckDivId);
 		var scrollTop = div.scrollTop;
@@ -453,6 +452,7 @@ function(words, keepModeDiv) {
 		else
 			body.innerHTML = body.innerHTML;
 		body.style.display = ""; // redisplay the body
+		this._registerEditorEventHandler(doc, "contextmenu");
 
 	} else { // TEXT mode
 
@@ -1624,144 +1624,6 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 			bookmark = null;
 			state = 1;
 		}, this);
-};
-
-ZmHtmlEditor.prototype.__contextMenuSelectionListener =
-function(ev) {
-	var item = ev.item;
-	var data = item.getData(ZmHtmlEditor._VALUE);
-
-	function callback() {
-		this.focus();
-		switch (data) {
-		    case "cut":
-		    case "copy":
-		    case "paste":
-			this._execCommand(data);
-			break;
-
-		    case DwtHtmlEditor.JUSTIFY_LEFT:
-		    case DwtHtmlEditor.JUSTIFY_CENTER:
-		    case DwtHtmlEditor.JUSTIFY_RIGHT:
-		    case DwtHtmlEditor.JUSTIFY_FULL:
-			this.setJustification(data);
-			break;
-		}
-	};
-
-// 	var t1 = new AjxTimedAction(this, this.focus);
-// 	AjxTimedAction.scheduleAction(t1, 10);
-
-	var t2 = new AjxTimedAction(this, callback);
-	AjxTimedAction.scheduleAction(t2, 10);
-};
-
-ZmHtmlEditor.prototype.__onContextMenu = function(ev) {
-	if (this._spellCheck) {
-		if (this._mode == DwtHtmlEditor.HTML) {
-			var p = this._getParentElement();
-			if (/^span$/i.test(p.tagName) && /ZM-SPELLCHECK/.test(p.className)) {
-				return;
-			}
-		}
-	}
-	var menu = this.__contextMenu;
-	if (!menu) {
-		menu = this.__contextMenu = new DwtMenu(this);
-		menu.dontStealFocus();
-
-		var item;
-		var listener = this.__contextMenuSelectionListener;
-
-		if (!AjxEnv.isGeckoBased) {
-			// Gecko forbids custom clipboard operations
-			item = new DwtMenuItem(menu);
-			item.setImage("Cut");
-			item.setData(ZmHtmlEditor._VALUE, "cut");
-			item.setText(ZmMsg.cut);
-			item.addSelectionListener(listener);
-
-			item = new DwtMenuItem(menu);
-			item.setImage("Copy");
-			item.setData(ZmHtmlEditor._VALUE, "copy");
-			item.setText(ZmMsg.copy);
-			item.addSelectionListener(listener);
-
-			item = new DwtMenuItem(menu);
-			item.setImage("Paste");
-			item.setData(ZmHtmlEditor._VALUE, "paste");
-			item.setText(ZmMsg.paste);
-			item.addSelectionListener(listener);
-
-			new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
-		}
-
-		// justification
-
-		item = new DwtMenuItem(menu);
-		item.setImage("LeftJustify");
-		item.setText(ZmMsg.leftJustify);
-		item.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_LEFT);
-		item.addSelectionListener(listener);
-
-		item = new DwtMenuItem(menu);
-		item.setImage("CenterJustify");
-		item.setText(ZmMsg.centerJustify);
-		item.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_CENTER);
-		item.addSelectionListener(listener);
-
-		item = new DwtMenuItem(menu);
-		item.setImage("RightJustify");
-		item.setText(ZmMsg.rightJustify);
-		item.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_RIGHT);
-		item.addSelectionListener(listener);
-
-		item = new DwtMenuItem(menu);
-		item.setImage("FullJustify");
-		item.setText(ZmMsg.justify);
-		item.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.JUSTIFY_FULL);
-		item.addSelectionListener(listener);
-
-		item = new DwtMenuItem(menu);
-		item.setText(ZmMsg.insertTable);
-		var grid_menu = new DwtMenu(item, DwtMenu.GENERIC_WIDGET_STYLE);
-		grid_menu.dontStealFocus();
- 		var grid = new DwtGridSizePicker(grid_menu, ZmMsg.tableSize);
- 		grid.addSelectionListener(new AjxListener(this, this._createTableListener));
- 		item.setMenu(grid_menu);
-		item.setImage("InsertTable");
-		menu.Item_insertTable = item;
-
-		// new DwtMenuItem(menu, DwtMenuItem.SEPARATOR_STYLE);
-
-		item = new DwtMenuItem(menu);
-		item.setImage("Table");
-		item.setText(ZmMsg.tableOperations);
-		var m2 = new DwtMenu(item);
-		m2.dontStealFocus();
-		item.setMenu(m2);
-		menu.Item_tableOperations = item;
-
-		this.__createTableOperationItems(m2);
-	}
-	var table = this.getNearestElement("table");
-
-	// don't display insert table if we're already in some table
-	menu.Item_insertTable.setDisplay(table ? "none" : "");
-
-	// but do display table operations only if we're in some table
-	menu.Item_tableOperations.setDisplay(table ? "" : "none");
-
-	if (!AjxEnv.isGeckoBased) {
-		if (AjxEnv.isIE) {
-			var hasSelection = this._getSelection().type != "None";
-		} else {
-			var hasSelection = this._getSelection().toString().length > 0;
-		}
-		menu.getItemById(ZmHtmlEditor._VALUE, "cut").setEnabled(hasSelection);
-		menu.getItemById(ZmHtmlEditor._VALUE, "copy").setEnabled(hasSelection);
-	}
-	menu.popup(0, ev.docX, ev.docY);
 };
 
 function ZmHtmlEditorColorPicker(parent) {
