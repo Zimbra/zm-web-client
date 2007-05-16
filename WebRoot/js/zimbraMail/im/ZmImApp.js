@@ -139,6 +139,47 @@ function() {
 							  });
 };
 
+ZmImApp.prototype._registerSettings = function(settings) {
+	settings = settings || this._appCtxt.getSettings();
+        settings.registerSetting("IM_PREF_FLASH_ICON",
+				 { name         : "zimbraPrefIMFlashIcon",
+                                   type         : ZmSetting.T_PREF,
+                                   dataType     : ZmSetting.D_BOOLEAN,
+                                   defaultValue : true });
+
+        settings.registerSetting("IM_PREF_NOTIFY_PRESENCE",
+				 { name         : "zimbraPrefIMNotifyPresence",
+                                   type         : ZmSetting.T_PREF,
+                                   dataType     : ZmSetting.D_BOOLEAN,
+                                   defaultValue : true });
+
+        settings.registerSetting("IM_PREF_NOTIFY_STATUS",
+				 { name         : "zimbraPrefIMNotifyStatus",
+                                   type         : ZmSetting.T_PREF,
+                                   dataType     : ZmSetting.D_BOOLEAN,
+                                   defaultValue : true });
+};
+
+ZmImApp.prototype._registerPrefs = function() {
+	var list = [ ZmSetting.IM_PREF_FLASH_ICON,
+		     ZmSetting.IM_PREF_NOTIFY_PRESENCE,
+		     ZmSetting.IM_PREF_NOTIFY_STATUS ];
+
+	ZmPref.setPrefList("IM_PREFS", list);
+
+	ZmPref.registerPref("IM_PREF_FLASH_ICON",
+			    { displayName      : ZmMsg.imPrefFlashIcon,
+			      displayContainer : ZmPref.TYPE_CHECKBOX });
+
+	ZmPref.registerPref("IM_PREF_NOTIFY_PRESENCE",
+			    { displayName      : ZmMsg.imPrefNotifyPresence,
+			      displayContainer : ZmPref.TYPE_CHECKBOX });
+
+	ZmPref.registerPref("IM_PREF_NOTIFY_STATUS",
+			    { displayName      : ZmMsg.imPrefNotifyStatus,
+			      displayContainer : ZmPref.TYPE_CHECKBOX });
+};
+
 // App API
 
 ZmImApp.prototype.refresh =
