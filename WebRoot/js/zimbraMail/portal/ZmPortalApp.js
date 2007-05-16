@@ -91,7 +91,7 @@ ZmPortalApp.prototype.activate = function(active) {
     controller.setPaused(!active);
 };
 
-ZmPortalApp.prototype.getManifest = function() {
+ZmPortalApp.prototype.getManifest = function(callback) {
     if (!this._manifest) {
         // load the portal manifest
         var portalName = this._appCtxt.get(ZmSetting.PORTAL_NAME);
