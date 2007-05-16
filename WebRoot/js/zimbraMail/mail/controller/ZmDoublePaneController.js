@@ -122,7 +122,7 @@ function(view, toggle) {
 	}
 
 	// need to reset special dbl-click handling for list view
-	this._mailListView._dblClickIsolation = (this._readingPaneOn && !AjxEnv.isIE);
+//	this._mailListView._dblClickIsolation = (this._readingPaneOn && !AjxEnv.isIE);
 
 	this._mailListView._resetColWidth();
 };
@@ -155,7 +155,7 @@ function(view) {
 	if (!this._doublePaneView){
 		var dpv = this._doublePaneView = this._createDoublePaneView();
 		this._mailListView = dpv.getMailListView();
-		this._mailListView._dblClickIsolation = (this._readingPaneOn && !AjxEnv.isIE);
+//		this._mailListView._dblClickIsolation = (this._readingPaneOn && !AjxEnv.isIE);
 		dpv.addInviteReplyListener(this._inviteReplyListener);
 		dpv.addShareListener(this._shareListener);
 	}
