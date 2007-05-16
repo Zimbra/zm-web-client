@@ -232,6 +232,7 @@ ZmSettings.prototype._loadZimlets = function(zimlets, props) {
     appCtxt.getZimletMgr().loadZimlets(zimlets, props);
 
     if (zimlets && zimlets.length) {
+        // update overview tree
         var appController = appCtxt.getAppController();
         var activeApp = appController.getActiveApp();
 
@@ -243,6 +244,12 @@ ZmSettings.prototype._loadZimlets = function(zimlets, props) {
 
         var overviewController = appCtxt.getOverviewController();
         overviewController.set(overviewId, treeIds, omit, reset);
+
+        // create global portlets
+        if (this._appCtxt.get(ZmSettings.PORTAL_ENABLED)) {
+            var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+            var portletIds = portletMgr.createPortlets(true);
+        }
     }
 };
 

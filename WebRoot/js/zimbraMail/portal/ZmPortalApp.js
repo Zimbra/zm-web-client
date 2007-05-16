@@ -95,50 +95,65 @@ ZmPortalApp.prototype.getManifest = function() {
     if (!this._manifest) {
         // load the portal manifest
         var portalName = this._appCtxt.get(ZmSetting.PORTAL_NAME);
-        var e;
         if (portalName) {
-            var url = [ window.appContextPath,"/portals/",portalName,"/manifest.xml?v=",new Date().getTime() ].join("");
-            var req = AjxLoader.load(url);
-            if (req.status == 200 && req.responseXML) {
-                try {
-                    // serialize manifest into JSON and evaluate
-                    var json = new AjxJsonSerializer(true).serialize(req.responseXML);
-                    eval("this._manifest = "+json);
-
-                    // further minimize the object structure
-                    var portalDef = this._manifest.portal ;
-                    var portletsDef = portalDef && portalDef.portlets;
-                    if (portletsDef && !(portletsDef.portlet instanceof Array)) {
-                        portletsDef.portlet = [ portletsDef.portlet ];
-                    }
-                    portalDef.portlets = portletsDef.portlet;
-
-                    if (portalDef.portlets) {
-                        for (var i = 0; i < portalDef.portlets.length; i++) {
-                            var portletDef = portalDef.portlets[i];
-                            var propertyDef = portletDef.property;
-                            if (propertyDef && !(propertyDef instanceof Array)) {
-                                propertyDef = [ propertyDef ];
-                            }
-                            portletDef.properties = propertyDef;
-                            delete portletDef.property;
-                        }
-                    }
-                }
-                catch (e) {
-                    DBG.println(e);
-                }
+            var timestamp = new Date().getTime(); 
+            var params = {
+                url: [ window.appContextPath,"/portals/",portalName,"/manifest.xml?v=",timestamp ].join(""),
+                callback: callback ? new AjxCallback(this, this._handleLoadManifest, [callback]) : null
+            };
+            var req = AjxLoader.load(params);
+            if (!callback) {
+                this._handleLoadManifest(callback, req);
             }
-        }
-        else {
-            e = ""
-        }
-
-        if (!this._manifest) {
-            this._manifest = { error: e };
         }
     }
     return this._manifest;
+};
+
+ZmPortalApp.prototype._handleLoadManifest = function(callback, req) {
+    var e;
+    if (req.status == 200 && req.responseXML) {
+        try {
+            // serialize manifest into JSON and evaluate
+            var json = new AjxJsonSerializer(true).serialize(req.responseXML);
+            eval("this._manifest = "+json);
+
+            // further minimize the object structure
+            var portalDef = this._manifest.portal ;
+            var portletsDef = portalDef && portalDef.portlets;
+            if (portletsDef && !(portletsDef.portlet instanceof Array)) {
+                portletsDef.portlet = [ portletsDef.portlet ];
+            }
+            portalDef.portlets = portletsDef.portlet;
+
+            if (portalDef.portlets) {
+                for (var i = 0; i < portalDef.portlets.length; i++) {
+                    var portletDef = portalDef.portlets[i];
+                    var propertyDef = portletDef.property;
+                    if (propertyDef && !(propertyDef instanceof Array)) {
+                        propertyDef = [ propertyDef ];
+                    }
+                    portletDef.properties = propertyDef;
+                    delete portletDef.property;
+                }
+            }
+        }
+        catch (e) {
+            DBG.println(e);
+        }
+    }
+    else {
+        e = ""
+    }
+
+    if (!this._manifest) {
+        this._manifest = { error: e };
+    }
+    
+    // callback
+    if (callback) {
+        callback.run(this._manifest);
+    }
 };
 
 ZmPortalApp.prototype.getPortalController = function() {

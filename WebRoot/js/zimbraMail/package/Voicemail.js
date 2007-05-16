@@ -12,7 +12,6 @@ AjxPackage.require("ajax.util.AjxPluginDetector");
 
 AjxPackage.require("ajax.dwt.core.DwtDragTracker");
 
-AjxPackage.require("ajax.dwt.widgets.DwtComboBox");
 AjxPackage.require("ajax.dwt.widgets.DwtSlider");
 AjxPackage.require("ajax.dwt.widgets.DwtSoundPlugin");
 

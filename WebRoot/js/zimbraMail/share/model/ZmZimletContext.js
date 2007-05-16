@@ -192,12 +192,19 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 
     // initialize portlets
     if (this._appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
-        AjxPackage.require("Portal");
-        var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
-        portletMgr.zimletLoaded(this);
+        var params = {
+            name: "Portal",
+            callback: new AjxCallback(this, this._finished_loadIncludes2)
+        };
+        AjxPackage.require(params);
     }
 
     DBG.println(AjxDebug.DBG2, "Zimlets - init() complete: " + this.name);
+};
+
+ZmZimletContext.prototype._finished_loadIncludes2 = function() {
+    var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
+    portletMgr.zimletLoaded(this);
 };
 
 ZmZimletContext.prototype.getOrganizer = function() {

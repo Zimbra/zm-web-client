@@ -60,15 +60,18 @@ ZmPortalView.prototype._getHeaderList = function() {
 };
 
 ZmPortalView.prototype._initializeView = function() {
+    var callback = new AjxCallback(this, this._initializeView2);
+    this._appCtxt.getApp(ZmApp.PORTAL).getManifest(callback);
+};
 
+ZmPortalView.prototype._initializeView2 = function(manifest) {
     // layout view
-    var manifest = this._appCtxt.getApp(ZmApp.PORTAL).getManifest();
     var portalDef = manifest && manifest.portal;
     if (portalDef) {
         this.getHtmlElement().innerHTML = portalDef.html || "";
     }
 
-    // populate portlets
+    // create portlets
     var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
     this._portletIds = portletMgr.createPortlets();
 };
