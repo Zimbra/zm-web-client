@@ -173,7 +173,7 @@ function(callback) {
 		AjxDispatcher.require("Extras");
 		this._spellChecker = new ZmSpellChecker(this, this._appCtxt);
 		this._spellCheck = null;
-		this._spellCheckSuggestionListener = new AjxListener(this, this._spellCheckSuggestionListener);
+		this._spellCheckSuggestionListenerObj = new AjxListener(this, this._spellCheckSuggestionListener);
 		if (!this.onExitSpellChecker) {
 			this.onExitSpellChecker = callback;
 		}
@@ -1441,7 +1441,7 @@ function(ev) {
 				item.setData("value", word);
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
-				item.addSelectionListener(self._spellCheckSuggestionListener);
+				item.addSelectionListener(self._spellCheckSuggestionListenerObj);
 			}
 			if (plainText) {
 				// in plain text mode we want to be able to edit misspelled words
@@ -1451,7 +1451,7 @@ function(ev) {
 				item.setData("fixall", fixall);
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
-				item.addSelectionListener(self._spellCheckSuggestionListener);
+				item.addSelectionListener(self._spellCheckSuggestionListenerObj);
 			}
 			if (modified || plainText)
 				menu.createSeparator();
@@ -1462,7 +1462,7 @@ function(ev) {
 					item.setData("value", suggestions[i]);
 					item.setData("orig", word);
 					item.setData("spanId", p.id);
-					item.addSelectionListener(self._spellCheckSuggestionListener);
+					item.addSelectionListener(self._spellCheckSuggestionListenerObj);
 				}
 			} else {
 				item = menu.createMenuItem("clear", {text:"<b style='color: red'>Clear text</b>"});
@@ -1470,7 +1470,7 @@ function(ev) {
 				item.setData("value", "");
 				item.setData("orig", word);
 				item.setData("spanId", p.id);
-				item.addSelectionListener(self._spellCheckSuggestionListener);
+				item.addSelectionListener(self._spellCheckSuggestionListenerObj);
 			}
 			return menu;
 		};
