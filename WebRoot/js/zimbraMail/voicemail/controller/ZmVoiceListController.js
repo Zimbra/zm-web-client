@@ -111,10 +111,16 @@ function(ev) {
 
 ZmVoiceListController.prototype._callListener =
 function(ev) {
+	// Point an iframe at the callto url, which will launch the client's callto application.
 	var view = this._getView()
 	var item = view.getSelection()[0];
 	var phone = view.getCallingParty(item);
-	document.location = phone.getCallUrl();
+	if (!this._callControl) {
+		this._callControl = new DwtControl(this._appCtxt.getShell());
+		this._callControl.setVisible(false);
+	}
+	var iframeHtml = ["<iframe src='", phone.getCallUrl(),"'></iframe>"].join("");
+	this._callControl.getHtmlElement().innerHTML = iframeHtml;
 };
 
 ZmVoiceListController.prototype._listActionListener =
