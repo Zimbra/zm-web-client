@@ -1122,7 +1122,7 @@ function() {
 
 ZmOrganizer.getSortIndex =
 function(child, sortFunction) {
-	if (!sortFunction) return null;
+	if (!(child && child.parent && sortFunction)) { return null };
 	var children = child.parent.children.getArray();
 	for (var i = 0; i < children.length; i++) {
 		var test = sortFunction(child, children[i]);
