@@ -644,21 +644,6 @@ function(create, type, currList, sortBy, cutoff) {
 		return false;
 	}
 	if (create._wasVirtConv) { return false; }
-	
-	// can only add a msg if we are viewing a folder in a list view, and
-	// the msg belongs to that folder; can't do this check for convs since
-	// they can span folders and lack the "l" property; if we are in CLV and
-	// a conv gets a new non-matching msg, we don't need to update the conv -
-	// a conv notif will update its count
-	if (type == ZmItem.MSG) {
-		var view = this._appCtxt.getCurrentViewId();
-		var folderId = currList.search.folderId;
-		var isListView = (folderId && (view == ZmController.TRAD_VIEW || view == ZmController.CONVLIST_VIEW));
-		if (isListView && (create.l != folderId)) {
-			DBG.println(AjxDebug.DBG2, "new MSG not in folder view");
-			return false;
-		}
-	}
 
 	return true;
 };
