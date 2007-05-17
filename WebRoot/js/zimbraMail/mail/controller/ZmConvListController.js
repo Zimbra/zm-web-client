@@ -181,14 +181,14 @@ function(ev) {
 	var item = ev.item;
 	if (!item) { return; }
 	if (ev.field == ZmItem.F_EXPAND && (this._mailListView._expandable[item.id])) {
-		this._toggle(item);
+		this._toggle(item, false);
 	} else {
 		ZmDoublePaneController.prototype._listSelectionListener.apply(this, arguments);
 	}
 };
 
 ZmConvListController.prototype._toggle =
-function(item) {
+function(item, getFirstMsg) {
 	if (this._mailListView._expanded[item.id]) {
 		this._collapse(item);
 	} else {
@@ -198,12 +198,12 @@ function(item) {
 			msg = item;
 			offset = this._mailListView._msgOffset[item.id];
 		}
-		this._expand(conv, msg, offset);
+		this._expand(conv, msg, offset, getFirstMsg);
 	}
 };
 
 ZmConvListController.prototype._expand =
-function(conv, msg, offset) {
+function(conv, msg, offset, getFirstMsg) {
 	offset = offset || 0;
 	var respCallback = new AjxCallback(this, this._handleResponseLoadItem, [conv, msg, offset]);
 	var pageWasCached = false;
@@ -214,7 +214,8 @@ function(conv, msg, offset) {
 		}
 	} else if (!conv.isLoaded()) {
 		// no msgs have been loaded yet
-		conv.load({query:this.getSearchString(), callback:respCallback, getFirstMsg:this._readingPaneOn});
+		var getFirstMsg = (getFirstMsg === false) ? false : this._readingPaneOn;
+		conv.load({query:this.getSearchString(), callback:respCallback, getFirstMsg:getFirstMsg});
 	} else {
 		// re-expanding first page of msgs
 		this._handleResponseLoadItem(conv, msg, offset, new ZmCsfeResult(conv.msgs));

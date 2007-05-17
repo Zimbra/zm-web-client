@@ -79,7 +79,7 @@ function(items, folder, attrs) {
 	var attrs = {};
 	attrs.tcon = this._getTcon();
 	attrs.l = folder.id;
-	var action = folder.id == ZmFolder.ID_TRASH ? "trash" : "move";
+	var action = (folder.id == ZmFolder.ID_TRASH) ? "trash" : "move";
 	var respCallback = new AjxCallback(this, this._handleResponseMoveItems, [folder]);
 	this._itemAction({items: items, action: action, attrs: attrs, callback: respCallback});
 };

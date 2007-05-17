@@ -618,7 +618,7 @@ function(ev) {
 	var msg = cache.get(ev._share._msgId);
 	var folder = cache.get(ZmFolder.ID_TRASH);
 
-	var list = this.getList();
+	var list = msg.list || this.getList();
 	list.moveItems(msg, folder);
 };
 

@@ -1352,9 +1352,11 @@ function(actionCode, ev) {
 		return true;
 	}
 
-	// don't honor Enter in an input field as an app shortcut
-	if (ev && ev.target && (ev.target.id != DwtKeyboardMgr.FOCUS_FIELD_ID) &&
-		(ev.keyCode == 13 || ev.keyCode == 3)) { return false; }
+	// don't honor plain Enter in an input field as an app shortcut, since it often
+	// equates to button press in that situation
+	if (ev && (ev.keyCode == 13 || ev.keyCode == 3) && 
+		!(ev.altKey || ev.ctrlKey || ev.metaKey || ev.shiftKey) &&
+		 ev.target && (ev.target.id != DwtKeyboardMgr.FOCUS_FIELD_ID)) { return false; }
 
 	switch (actionCode) {
 		case ZmKeyMap.DBG_NONE:

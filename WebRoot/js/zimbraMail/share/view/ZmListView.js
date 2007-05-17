@@ -196,6 +196,7 @@ function(item) {
 	return this._getFieldId(item, ZmItem.F_ITEM_ROW);
 };
 
+// Note that images typically get IDs in _getCellContents().
 ZmListView.prototype._getCellId =
 function(item, field) {
 	return (field == ZmItem.F_DATE) ? this._getFieldId(item, field) :
@@ -210,7 +211,7 @@ function(item, field, params) {
 ZmListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
 	if (field == ZmItem.F_TYPE) {
-		idx = this._getImageHtml(htmlArr, idx, ZmItem.ICON[item.type]);
+		idx = this._getImageHtml(htmlArr, idx, ZmItem.ICON[item.type], this._getFieldId(item, field));
 	} else if (field == ZmItem.F_FLAG) {
 		idx = this._getImageHtml(htmlArr, idx, item.isFlagged ? "FlagRed" : null, this._getFieldId(item, field));
 	} else if (field == ZmItem.F_TAG) {

@@ -40,6 +40,12 @@ ZmMixedView.COLWIDTH_ICON 			= 19;
 ZmMixedView.COLWIDTH_FROM 			= 145;
 ZmMixedView.COLWIDTH_DATE 			= 60;
 
+// support functions for _createItemHtml
+ZmMixedView.LIST_VIEW_FUNCS = ["_addParams", "_getDiv", "_getDivClass", "_getTable",
+							   "_getRow", "_getRowClass", "_getRowId", "_getCell", "_getCellId",
+							   "_getCellClass", "_getCellAttrText", "_getCellContents",
+							   "_getFieldId"];
+
 ZmMixedView.prototype.toString = 
 function() {
 	return "ZmMixedView";
@@ -96,37 +102,41 @@ ZmMixedView.prototype._createItemHtml =
 function(item, params) {
 	params = params || {};
 	params.isMixedView = true;
+	var listViewClass;
+	var funcs = ZmMixedView.LIST_VIEW_FUNCS;
 	if (item.type == ZmItem.CONTACT || item.type == ZmItem.GROUP) {
-		this._getCellContents = ZmContactSimpleView.prototype._getCellContents;
-		return ZmContactSimpleView.prototype._createItemHtml.apply(this, arguments);
+		AjxDispatcher.require(["ContactsCore", "Contacts"]);
+		listViewClass = ZmContactSimpleView;
+		this._emulateListView(listViewClass, funcs);
 	} else if (item.type == ZmItem.CONV) {
-		this._getCellId = ZmConvListView.prototype._getCellId;
-		this._getCellContents = ZmConvListView.prototype._getCellContents;
-		return ZmConvListView.prototype._createItemHtml.apply(this, arguments);
+		AjxDispatcher.require("Mail");
+		funcs = funcs.concat(["_getFragmentSpan", "_getFragmentHtml",
+							  "_getParticipantHtml", "_fitParticipants"]);
+		listViewClass = ZmConvListView;
+		this._emulateListView(listViewClass, funcs);
 	} else if (item.type == ZmItem.MSG) {
-		this._getRowClass = ZmMailMsgListView.prototype._getRowClass;
-		this._getCellId = ZmMailMsgListView.prototype._getCellId;
-		this._getCellContents = ZmMailMsgListView.prototype._getCellContents;
-		return ZmMailMsgListView.prototype._createItemHtml.apply(this, arguments);
+		AjxDispatcher.require("Mail");
+		funcs = funcs.concat(["_getFragmentSpan", "_getFragmentHtml"]);
+		listViewClass = ZmMailMsgListView;
+		this._emulateListView(listViewClass, funcs);
 	} else if (item.type == ZmItem.TASK) {
-		this._getCellId = ZmTaskListView.prototype._getCellId;
-		this._getCellContents = ZmTaskListView.prototype._getCellContents;
-		return ZmTaskListView.prototype._createItemHtml.apply(this, arguments);
+		AjxDispatcher.require(["TasksCore", "Tasks"]);
+		listViewClass = ZmTaskListView;
+		this._emulateListView(listViewClass, funcs);
 	} else if (item.type == ZmItem.PAGE || item.type == ZmItem.DOCUMENT) {
-		this._getCellAttrText = ZmFileListView.prototype._getCellAttrText;
-		this._getCellContents = ZmFileListView.prototype._getCellContents;
-		return ZmFileListView.prototype._createItemHtml.apply(this, arguments);
+		AjxDispatcher.require(["NotebookCore", "Notebook"]);
+		listViewClass = ZmFileListView;
+		this._emulateListView(listViewClass, funcs);
 	}
+	return listViewClass.prototype._createItemHtml.call(this, item, params);
 };
 
-ZmMixedView.prototype._getParticipantHtml =
-function(conv, fieldId) {
-	return ZmConvListView.prototype._getParticipantHtml.call(this, conv, fieldId);
-};
-
-ZmMixedView.prototype._fitParticipants = 
-function(participants, participantsElided, width) {
-	return ZmMailListView.prototype._fitParticipants.call(this, participants, participantsElided, width);
+ZmMixedView.prototype._emulateListView =
+function(listViewClass, funcs) {
+	for (var i = 0; i < funcs.length; i++) {
+		var funcName = funcs[i];
+		ZmMixedView.prototype[funcName] = listViewClass.prototype[funcName];
+	}
 };
 
 ZmMixedView.prototype._getHeaderToolTip =
@@ -138,19 +148,34 @@ function(field, itemIdx) {
 ZmMixedView.prototype._getToolTip =
 function(field, item, ev, div, match) {
 	var tooltip = null;
+	var listViewClass;
 	if (field == ZmItem.F_FROM) {
 		if (item.type == ZmItem.CONTACT) {
-			tooltip = ZmContactSimpleView.prototype._getToolTip.apply(this, arguments);
-		} else if (item.type == ZmItem.CONV || item.type == ZmItem.MSG) {
-			tooltip = ZmMailListView.prototype._getToolTip.apply(this, arguments);
+			listViewClass = ZmContactSimpleView;
+		} else if (item.type == ZmItem.CONV) {
+			listViewClass = ZmConvListView;
+			this._emulateListView(listViewClass, ["_getParticipantToolTip"]);
+		} else if (item.type == ZmItem.MSG) {
+			listViewClass = ZmMailMsgListView;
+			this._emulateListView(listViewClass, ["_getParticipantToolTip"]);
 		} else {
-			tooltip = ZmListView.prototype._getToolTip.apply(this, arguments);
+			listViewClass = ZmListView;
+		}
+	} else if (field == ZmItem.F_SUBJECT) {
+		if (item.type == ZmItem.CONV) {
+			listViewClass = ZmConvListView;
+		} else if (item.type == ZmItem.MSG) {
+			listViewClass = ZmMailMsgListView;
+		} else {
+			listViewClass = ZmListView;
 		}
 	} else if (field == ZmItem.F_TYPE) {
 		tooltip = ZmMsg[ZmItem.MSG_KEY[item.type]];
 	} else {
-		tooltip = ZmListView.prototype._getToolTip.apply(this, arguments);
+		listViewClass = ZmListView;
 	}
+
+	tooltip = listViewClass ? listViewClass.prototype._getToolTip.apply(this, arguments) : tooltip;
 	return tooltip;
 };
 

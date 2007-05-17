@@ -236,6 +236,43 @@ function(htmlArr, idx, item, field, colIdx, params) {
 	return idx;
 };
 
+ZmConvListView.prototype._getParticipantHtml =
+function(conv, fieldId) {
+	var html = [];
+	var idx = 0;
+
+	var part1 = conv.participants ? conv.participants.getArray() : null;
+	var origLen = part1 ? part1.length : 0;
+	// might get a weird case where there are no participants in message
+	if (origLen > 0) {
+		var partColWidth = this._headerList[this.getColIndexForId(ZmItem.F_FROM)]._width;
+		var part2 = this._fitParticipants(part1, conv.participantsElided, partColWidth);
+		for (var j = 0; j < part2.length; j++) {
+			if (j == 1 && (conv.participantsElided || part2.length < origLen)) {
+				html[idx++] = AjxStringUtil.ELLIPSIS;
+			} else if (part2.length > 1 && j > 0) {
+				html[idx++] = ", ";
+			}
+			var spanId = [fieldId, part2[j].index].join("_");
+			html[idx++] = "<span style='white-space: nowrap' id='";
+			html[idx++] = spanId;
+			html[idx++] = "'>";
+			html[idx++] = part2[j].name;
+			html[idx++] = "</span>";
+		}
+
+		// bug fix #724
+		if (part2.length == 1 && origLen > 1) {
+			html[idx++] = AjxStringUtil.ELLIPSIS;
+		}
+	} else {
+		// XXX: possible import bug but we must take into account
+		html[idx++] = ZmMsg.noWhere;
+	}
+
+	return html.join("");
+};
+
 ZmConvListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
 	return (field == ZmItem.F_EXPAND) ? ZmMsg.expandCollapse :
@@ -245,8 +282,8 @@ function(field, itemIdx) {
 ZmConvListView.prototype._getToolTip =
 function(field, item, ev, div, match) {
 	if (!item) { return; }
-	if ((field == ZmItem.F_PARTICIPANT || field == ZmItem.F_FROM) && item.participants) {
-		return this._getParticipantToolTip(item.participants.get(match.participant || 0));
+	if (field == ZmItem.F_PARTICIPANT || field == ZmItem.F_FROM) {
+		return item.participants ? this._getParticipantToolTip(item.participants.get(match.participant || 0)) : null;
 	} else {
 		return ZmMailListView.prototype._getToolTip.apply(this, arguments);
 	}
@@ -367,7 +404,7 @@ function(item) {
 	} else {
 		var conv = this._appCtxt.getById(item.cid);
 		
-		var a = conv.msgs.getArray();
+		var a = conv.msgs ? conv.msgs.getArray() : null;
 		if (a && a.length) {
 			var limit = this._appCtxt.get(ZmSetting.PAGE_SIZE);
 			var idx = null;
@@ -560,43 +597,6 @@ function(ev) {
 		isConv ? ZmMailListView.prototype._changeListener.apply(this, arguments) :
 				 ZmMailMsgListView.prototype._changeListener.apply(this, arguments);
 	}
-};
-
-ZmConvListView.prototype._getParticipantHtml =
-function(conv, fieldId) {
-	var html = [];
-	var idx = 0;
-
-	var part1 = conv.participants ? conv.participants.getArray() : null;
-	var origLen = part1 ? part1.length : 0;
-	// might get a weird case where there are no participants in message
-	if (origLen > 0) {
-		var partColWidth = this._headerList[this.getColIndexForId(ZmItem.F_FROM)]._width;
-		var part2 = this._fitParticipants(part1, conv.participantsElided, partColWidth);
-		for (var j = 0; j < part2.length; j++) {
-			if (j == 1 && (conv.participantsElided || part2.length < origLen)) {
-				html[idx++] = AjxStringUtil.ELLIPSIS;
-			} else if (part2.length > 1 && j > 0) {
-				html[idx++] = ", ";
-			}
-			var spanId = [fieldId, part2[j].index].join("_");
-			html[idx++] = "<span style='white-space: nowrap' id='";
-			html[idx++] = spanId;
-			html[idx++] = "'>";
-			html[idx++] = part2[j].name;
-			html[idx++] = "</span>";
-		}
-
-		// bug fix #724
-		if (part2.length == 1 && origLen > 1) {
-			html[idx++] = AjxStringUtil.ELLIPSIS;
-		}
-	} else {
-		// XXX: possible import bug but we must take into account
-		html[idx++] = ZmMsg.noWhere;
-	}
-
-	return html.join("");
 };
 
 ZmConvListView.prototype._removeMsgRows =

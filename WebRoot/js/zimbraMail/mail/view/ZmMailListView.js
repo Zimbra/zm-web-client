@@ -114,8 +114,8 @@ function(item) {
 
 ZmMailListView.prototype._getCellId =
 function(item, field) {
-	return (field == ZmItem.F_SIZE) ? this._getFieldId(item, field) :
-									  ZmListView.prototype._getCellId.apply(this, arguments);
+	return (field == ZmItem.F_SIZE || field == ZmItem.F_SUBJECT) ?
+		this._getFieldId(item, field) : ZmListView.prototype._getCellId.apply(this, arguments);
 };
 
 ZmMailListView.prototype._getFragmentSpan =

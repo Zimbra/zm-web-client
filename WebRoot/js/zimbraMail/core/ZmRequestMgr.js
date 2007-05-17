@@ -109,7 +109,7 @@ function(params) {
 	var changeToken = accountName ? null : this._changeToken;
 	var cmdParams = {soapDoc:params.soapDoc, accountName:accountName, useXml:this._useXml,
 					 changeToken:changeToken, asyncMode:params.asyncMode, callback:asyncCallback,
-					 logRequest:this._logRequest, highestNotifySeen:this._highestNotifySeen };
+					 logRequest:this._logRequest, highestNotifySeen:this._highestNotifySeen};
 
 	DBG.println(AjxDebug.DBG2, "sendRequest(" + reqId + "): " + params.soapDoc._methodEl.nodeName);
 	var cancelParams = timeout ? [reqId, params.errorCallback, params.noBusyOverlay] : null;
