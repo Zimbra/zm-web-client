@@ -38,7 +38,6 @@ function ZmSearchTreeController(appCtxt) {
 	ZmFolderTreeController.call(this, appCtxt, ZmOrganizer.SEARCH, dropTgt);
 
 	this._listeners[ZmOperation.RENAME_SEARCH] = new AjxListener(this, this._renameListener);
-	this._listeners[ZmOperation.MODIFY_SEARCH] = new AjxListener(this, this._modifySearchListener);
 	
 	this._searchTypes = {};	// search types for each overview ID
 };

@@ -121,7 +121,6 @@ function() {
 	ZmOperation.registerOp("FORMAT_TEXT", {textKey:"formatAsText", image:"GenericDoc"}, ZmSetting.HTML_COMPOSE_ENABLED);
 	ZmOperation.registerOp("GO_TO_URL", {image:"URL"});
 	ZmOperation.registerOp("MARK_ALL_READ", {textKey:"markAllRead", image:"ReadMessage"});
-	ZmOperation.registerOp("MODIFY_SEARCH", {textKey:"modifySearch", image:"SearchFolder"}, ZmSetting.SEARCH_ENABLED);
 	ZmOperation.registerOp("MOUNT_FOLDER", {textKey:"mountFolder", image:"Folder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("MOVE", {textKey:"move", tooltipKey:"moveTooltip", image:"MoveToFolder"});
 	ZmOperation.registerOp("NEW_FOLDER", {textKey:"newFolder", tooltipKey:"newFolderTooltip", image:"NewFolder"}, ZmSetting.USER_FOLDERS_ENABLED);

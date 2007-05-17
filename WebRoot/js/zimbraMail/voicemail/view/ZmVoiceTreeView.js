@@ -36,7 +36,6 @@ function ZmVoiceTreeView(params) {
 
 	params.headerClass = params.headerClass || "ZmVoiceTreeHeader";
 	ZmTreeView.call(this, params);
-	this._headerClickListenerObj = new AjxListener(this, this.__headerClickListener);
 };
 
 ZmVoiceTreeView.prototype = new ZmTreeView;
