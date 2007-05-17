@@ -247,12 +247,16 @@ function() {
 };
 
 ZmImApp.prototype.startFlashingIcon = function() {
-	this._appCtxt.getAppController().getAppChooserButton("IM").startFlashing();
+	if (this._appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
+		this._appCtxt.getAppController().getAppChooserButton("IM").startFlashing();
+	}
 };
 
 ZmImApp.prototype.stopFlashingIcon = function() {
-	this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, false);
-	this._appCtxt.getAppController().getAppChooserButton("IM").stopFlashing();
+	if (this._appCtxt.get(ZmSetting.IM_PREF_FLASH_ICON)) {
+		this._appCtxt.setStatusIconVisible(ZmStatusView.ICON_IM, false);
+		this._appCtxt.getAppController().getAppChooserButton("IM").stopFlashing();
+	}
 };
 
 ZmImApp.addImPresenceMenu =

@@ -255,10 +255,13 @@ function(im) {
 				}
 				var ri = this.getRosterItemList().getByAddr(p.from);
 				if (ri) {
+					var old_pres = ri.getPresence().getShow();
 					if (ri.getPresence().setFromJS(p)) {
 						ri._notifyPresence();
 						var toast = this._presenceToastFormatter.format([ri.getDisplayName(), ri.getPresence().getShowText()]);
-						if (notifications) {
+						var is_status = old_pres == ri.getPresence().getShow();
+						if (notifications && ( (!is_status && this._appCtxt.get(ZmSetting.IM_PREF_NOTIFY_PRESENCE)) ||
+								       (is_status && this._appCtxt.get(ZmSetting.IM_PREF_NOTIFY_STATUS)) ) ) {
 							this._appCtxt.setStatusMsg(toast, null, null, null, ZmStatusView.TRANSITION_SLIDE_LEFT);
 							var chat = cl.getChatByRosterAddr(p.from);
 							if (chat)
