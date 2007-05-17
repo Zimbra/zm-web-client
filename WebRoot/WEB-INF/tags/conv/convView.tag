@@ -122,11 +122,11 @@
                                                             <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                             <c:if test="${messCursor.hasPrev}">
                                                                 <zm:currentResultUrl var="prevMsgUrl" value="search" action='view' context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
-                                                                <a href="${prevMsgUrl}" accesskey='k'></a>
+                                                                <a href="${prevMsgUrl}" accesskey='k' id="PREV_ITEM"></a>
                                                             </c:if>
                                                             <c:if test="${messCursor.hasNext}">
                                                                 <zm:currentResultUrl var="nextMsgUrl" value="search"  action="view" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
-                                                                <a href="${nextMsgUrl}" accesskey='j'></a>
+                                                                <a href="${nextMsgUrl}" accesskey='j' id="NEXT_ITEM"></a>
                                                             </c:if>
                                                         </c:if>
                                                     </td>
@@ -164,4 +164,22 @@
             <input type="hidden" name="doMessageAction" value="1"/>
         </table>
     </form>
+    <%--
+    <zm:keyboard>
+        <zm:keyboardBindings>
+            <zm:bindKey key="C" id="TAB_COMPOSE"/>
+            <zm:bindKey key="N,M" id="TAB_COMPOSE"/>
+            <zm:bindKey key="G,C" id="TAB_CALENDAR"/>
+            <zm:bindKey key="G,A" id="TAB_ADDRESSBOOK"/>
+            <zm:bindKey key="G,M" id="TAB_MAIL"/>
+            <zm:bindKey key="G,O" id="TAB_OPTIONS"/>
+            <zm:bindKey key="Esc; Z" id="CLOSE_ITEM"/>
+            <zm:bindKey key="Enter; O" id="CURR_ITEM"/>
+            <zm:bindKey key="ArrowUp; K" id="PREV_ITEM"/>
+            <zm:bindKey key="ArrowDown; J" id="NEXT_ITEM"/>
+            <zm:bindKey key="ArrowLeft" id="PREV_PAGE"/>
+            <zm:bindKey key="ArrowRight" id="NEXT_PAGE"/>
+        </zm:keyboardBindings>
+    </zm:keyboard>
+    --%>
 </app:view>

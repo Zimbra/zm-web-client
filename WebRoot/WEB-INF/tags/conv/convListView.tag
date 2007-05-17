@@ -67,7 +67,7 @@
                                     </td>
                                     <td class='Img'><app:attachmentImage attachment="${hit.conversationHit.hasAttachment}"/></td>
                                     <td><%-- allow this column to wrap --%>
-                                        <a href="${convUrl}" <c:if test="${hit.conversationHit.id == context.currentItem.id}">accesskey='o'</c:if>>
+                                        <a href="${convUrl}" <c:if test="${hit.conversationHit.id == context.currentItem.id}">accesskey='o' id="CURR_ITEM"</c:if>>
                                             <c:set var='subj' value="${empty hit.conversationHit.subject ? unknownSubject : zm:truncate(hit.conversationHit.subject,100,true)}"/>
                                             <c:out value="${subj}"/>
                                             <c:if test="${mailbox.prefs.showFragments and not empty hit.conversationHit.fragment and fn:length(subj) lt 90}">
@@ -78,11 +78,11 @@
                                             <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
                                             <c:if test="${cursor.hasPrev}">
                                                 <zm:prevItemUrl var="prevItemUrl" value="search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                                <a href="${prevItemUrl}" accesskey='k'></a>
+                                                <a href="${prevItemUrl}" accesskey='k' id="PREV_ITEM"></a>
                                             </c:if>
                                             <c:if test="${cursor.hasNext}">
                                                 <zm:nextItemUrl var="nextItemUrl" value="search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                                <a href="${nextItemUrl}" accesskey='j'></a>
+                                                <a href="${nextItemUrl}" accesskey='j' id="NEXT_ITEM"></a>
                                             </c:if>
                                         </c:if>
                                     </td>
@@ -105,4 +105,21 @@
         </table>
         <input type="hidden" name="doConvListViewAction" value="1"/>
     </form>
+    <%--
+    <zm:keyboard>
+        <zm:keyboardBindings>
+            <zm:bindKey key="C" id="TAB_COMPOSE"/>
+            <zm:bindKey key="N,M" id="TAB_COMPOSE"/>
+            <zm:bindKey key="G,C" id="TAB_CALENDAR"/>
+            <zm:bindKey key="G,A" id="TAB_ADDRESSBOOK"/>
+            <zm:bindKey key="G,M" id="TAB_MAIL"/>
+            <zm:bindKey key="G,O" id="TAB_OPTIONS"/>
+            <zm:bindKey key="Enter; O" id="CURR_ITEM"/>
+            <zm:bindKey key="ArrowUp; K" id="PREV_ITEM"/>
+            <zm:bindKey key="ArrowDown; J" id="NEXT_ITEM"/>
+            <zm:bindKey key="ArrowLeft" id="PREV_PAGE"/>
+            <zm:bindKey key="ArrowRight" id="NEXT_PAGE"/>
+        </zm:keyboardBindings>
+    </zm:keyboard>
+    --%>
 </app:view>
