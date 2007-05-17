@@ -304,3 +304,25 @@ ZmNotebookPageController.prototype.updateHistory = function() {
 	}
 	
 };
+
+ZmNotebookPageController.prototype.refreshCurrentPage = function(){
+	if(this._object && this._listView[ZmController.NOTEBOOK_PAGE_VIEW]){
+	this._listView[ZmController.NOTEBOOK_PAGE_VIEW].refresh();
+	}
+};
+
+ZmNotebookPageController.prototype.isIframeEnabled = function(){
+	if(this._listView[ZmController.NOTEBOOK_PAGE_VIEW]){
+		return this._listView[ZmController.NOTEBOOK_PAGE_VIEW]._USE_IFRAME;
+	}else{
+		return false;	
+	}
+};
+
+ZmNotebookPageController.prototype._refreshListener = function(event) {
+	if(this.isIframeEnabled()){
+		this.refreshCurrentPage();
+	}else{	
+		ZmNotebookController.prototype._refreshListener.call(this, event);		
+	}
+};

@@ -439,7 +439,12 @@ function(view, force) {
 	}
 
 	if (!this._pageEditView.isDirty()) {
-		this._showCurrentPage();
+		var notebookController = this._app.getNotebookController();
+		if (notebookController.isIframeEnabled()) {
+			notebookController.refreshCurrentPage();
+		}else{
+			this._showCurrentPage();
+		}
 		return true;
 	}
 

@@ -243,9 +243,11 @@ function(creates, force) {
 	
 				// re-render current page, if necessary
 				var notebookController = AjxDispatcher.run("GetNotebookController");
-				var shownPage = notebookController.getPage();
-				if (shownPage && shownPage.name == ZmNotebook.PAGE_INDEX) {
-					notebookController.gotoPage(shownPage);
+				if(!notebookController.isIframeEnabled()){
+					var shownPage = notebookController.getPage();
+					if (shownPage && shownPage.name == ZmNotebook.PAGE_INDEX) {
+						notebookController.gotoPage(shownPage);
+					}
 				}
 			} else if (name == "doc") {
 				DBG.println(AjxDebug.DBG1, "ZmNotebookApp: handling CREATE for node: " + name);
@@ -287,11 +289,13 @@ function(modifies, force) {
 				
 				// re-render current page, if necessary
 				var notebookController = AjxDispatcher.run("GetNotebookController");
+				if(!notebookController.isIframeEnabled()){
 				var shownPage = notebookController.getPage();
 				if (shownPage && shownPage.folderId == page.folderId) {
 					if (shownPage.name == ZmNotebook.PAGE_INDEX || shownPage.name == page.name) {
 						notebookController.gotoPage(shownPage);
 					}
+				}
 				}
 				mod._handled = true;
 			} else if (name == "doc") {

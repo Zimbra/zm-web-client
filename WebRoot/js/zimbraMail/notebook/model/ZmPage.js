@@ -120,10 +120,18 @@ ZmPage.prototype.isReadOnly =
 function() {
 	if (this.isIndex())
 		return true;
-		
-	return this.isShared()
-		? this.getNotebook().isReadOnly()
-		: false;
+	
+	//if one of the ancestor is readonly then no chances of childs being writable		
+	var isReadOnly = false;
+	var folder = this._appCtxt.getById(this.folderId);
+	while (folder && folder.parent && (folder.parent.id != ZmOrganizer.ID_ROOT) && !folder.isReadOnly()) {
+		folder = folder.parent;
+	}
+	if(folder && folder.isReadOnly()){
+		isReadOnly = true;
+	}
+	
+	return isReadOnly;
 };
 
 ZmPage.prototype.isIndex =

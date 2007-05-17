@@ -63,11 +63,11 @@ function(page) {
 		
 		var toolbar = this._controller._toolbar[this._controller._currentView];
 		toolbar.enable([ZmOperation.REFRESH,ZmOperation.EDIT,ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT,ZmOperation.SEND_PAGE,ZmOperation.DETACH], false);
-
+		
 		if(page!=null){
 		this.loadURL(page.getRestUrl());
 		}
-		
+
 	}
 	else {
 		var element = this.getHtmlElement();
@@ -232,6 +232,18 @@ ZmNotebookPageView._iframeOnLoad = function(iframe) {
 	view.mutateLinks(iframe.contentWindow.document);
 	
 	var url = iframe.contentWindow.location.href;
+	var path = iframe.contentWindow.location.pathname;
+
+	if(view.currentPath){
+		path = view.currentPath;
+		view.currentPath = null;
+		view.fetchInfo(path);
+	}else if(path!=window.parent.location.pathname && path!=""){
+		window.parent.DBG.println("JSON PATH FETCH:"+path);
+		view.fetchInfo(path);
+	}	
+	
+	/*
 	if(view.currentSrc){
 		url = view.currentSrc;
 		view.currentSrc = null;
@@ -240,13 +252,15 @@ ZmNotebookPageView._iframeOnLoad = function(iframe) {
 		window.parent.DBG.println("JSON URL FETCH:"+url);
 		view.fetchPageInfo(url);
 	}	
-
-	view.addIconStyles(iframe.contentWindow.document);	
+	*/
+	
+	view.addIconStyles(iframe.contentWindow.document);
 	}
 	catch(ex){
 		DBG.println(AjxDebug.DBG1,'exception in iframe load processing:'+ex);
 	}
 	view.currentSrc = null;		
+	view.currentPath = null;		
 	
 	return; //cdel				
 	// highlight objects
@@ -263,7 +277,7 @@ ZmNotebookPageView.prototype.processPageInfo = function(iSrc,t){
 	}
 
 	var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
-	
+
 	try{
 
 	var data = eval('['+t+']');
@@ -276,7 +290,7 @@ ZmNotebookPageView.prototype.processPageInfo = function(iSrc,t){
 		
 		if(items && items.length >1){
 			isPage = false;
-		}else if(items && items.length==1){
+		}else if(items && items.length==1){			
 			if(unescape(items[0].getRestUrl())!=unescape(iSrc)){
 				isPage = false;
 			}
@@ -544,6 +558,7 @@ ZmNotebookPageView._iframeOnLoad1 = function(iframe) {
 	
 	if(!isErrorPage){	
 		view.currentSrc = iSrc;
+		view.currentPath = iframe.contentWindow.location.pathname;
 		ndoc.open();
 		ndoc.write(cwin.document.documentElement.innerHTML);
 		ndoc.close();
@@ -602,3 +617,119 @@ ZmNotebookPageView.prototype.loadURL = function(restUrl){
 	this._iframe1.src = url;
 };
 
+ZmNotebookPageView.prototype.fetchInfo = function(path)
+{
+	if(!path || path=="blank")
+	return;
+	
+	path = unescape(path);
+	
+	if(path.charAt(0)=='/'){
+		path = path.substring(1);
+	}		
+	var accountName = null;
+	var wikiPath = null;	
+	var parts = path.split("/");	
+	if(parts.length>=3 && parts[0] == "home"){
+		var accountName = parts[1];
+		var len = parts.length;
+		var newParts = parts.splice(2,len-2);
+		wikiPath = newParts.join("/");	
+		//DBG.println(AjxDebug.DBG1,'path='+wikiPath+","+accountName);
+		this.getItem(wikiPath,accountName);
+	}
+			
+};
+
+ZmNotebookPageView.prototype.getItem = function(path,accountName)
+{
+		var soapDoc = AjxSoapDoc.create("GetItemRequest", "urn:zimbraMail");		
+		var folderNode = soapDoc.set("item");
+		folderNode.setAttribute("path", path);
+
+		var args = [];
+		var handleResponse = new AjxCallback(this, this.handleGetItemResponse);
+		var params = {
+			soapDoc: soapDoc,
+			asyncMode: Boolean(handleResponse),
+			callback: handleResponse,
+			accountName: accountName		
+		};
+		var appController = this._appCtxt.getAppController();
+		appController.sendRequest(params);
+	
+};
+
+ZmNotebookPageView.prototype.handleGetItemResponse = function(response)
+{
+		try{
+			var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
+			var getItemResponse = response && response._data && response._data.GetItemResponse;
+			var folderResp = getItemResponse && getItemResponse.folder && getItemResponse.folder[0];
+			var wikiResp = getItemResponse && getItemResponse.w && getItemResponse.w[0];
+			var linkResp = getItemResponse && getItemResponse.link && getItemResponse.link[0];
+		
+			var result = false;
+
+			if(folderResp){
+				var item = new ZmPage(this._appCtxt);
+				item.set(folderResp);
+				item.folderId = folderResp.id || ZmNotebookItem.DEFAULT_FOLDER;
+				item.name = "_Index";
+				cache.putDocument(item);
+				this._controller.setPage(item);		
+				result = true;
+				//var iPage1 = cache.getPageByName(item.folderId,"Just");				
+			}
+			if(wikiResp){
+				var item = new ZmPage(this._appCtxt);
+				item.set(wikiResp);
+				item.folderId = wikiResp.l || ZmNotebookItem.DEFAULT_FOLDER;
+				cache.putItem(item);
+				this._controller.setPage(item);	
+				result = true;
+				//var iPage1 = cache.getPageByName(item.folderId,"Just");
+			}
+			if(linkResp){
+				var item = new ZmPage(this._appCtxt);
+				item.set(linkResp);
+				item.folderId = linkResp.id || ZmNotebookItem.DEFAULT_FOLDER;
+				item.remoteFolderId = (linkResp && linkResp.zid) ? linkResp.zid + ":" + linkResp.rid : undefined;
+				item.name = "_Index";
+				cache.putDocument(item);
+				this._controller.setPage(item);
+				result = true;
+				//var iPage1 = cache.getPageByName(item.folderId,"page1");				
+			}			
+			
+			if(result){
+				
+			if(!this._controller.historyLoading){
+			this._controller.updateHistory();
+			}else{
+			this._controller.historyLoading = null;
+			}
+			
+			var overviewController = this._appCtxt.getOverviewController();
+			var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
+			var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+			if (treeView) {
+				var folderId = this._controller._object.getFolderId();
+				var skipNotify = true;
+				treeView.setSelected(folderId, skipNotify);
+			}
+			
+			this.addColumn(this._iframe.contentWindow.document);
+			}			
+			
+		}catch(ex){
+			DBG.println(AjxDebug.DBG1,'exception in handleGetItemResponse:'+ex);
+		}
+};
+
+ZmNotebookPageView.prototype.refresh = function(restUrl){
+	this.historyLoading = true;
+	if(this._iframe1.contentWindow.location.href){
+	this._iframe1.contentWindow.location.reload();
+	}
+};
