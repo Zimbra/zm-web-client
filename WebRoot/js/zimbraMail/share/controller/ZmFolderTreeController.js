@@ -331,8 +331,7 @@ function(ev) {
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		var type = ev.targetControl.getData(ZmTreeView.KEY_TYPE);
 		if (srcData instanceof ZmFolder) {
-			var dragFolder = srcData; // note that folders cannot be moved as a list
-			ev.doIt = dropFolder.mayContain(dragFolder, type);
+			ev.doIt = dropFolder.mayContain(srcData, type);
 		} else if (srcData instanceof ZmTag) {
 			ev.doIt = false; // tags cannot be moved
 		} else {

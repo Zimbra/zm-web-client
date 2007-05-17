@@ -63,7 +63,7 @@ ZmAddrBookTreeController.prototype.show =
 function(params) {
 	params.include = {};
 	params.include[ZmFolder.ID_TRASH] = true;
-	ZmTreeController.prototype.show.call(this, params);
+	ZmFolderTreeController.prototype.show.call(this, params);
 };
 
 // Enables/disables operations based on the given organizer ID
@@ -98,7 +98,10 @@ function(parent, type, id) {
 
 ZmAddrBookTreeController.prototype._getAllowedSubTypes =
 function() {
-	return ZmTreeController.prototype._getAllowedSubTypes.call(this);
+	var types = {};
+	types[ZmOrganizer.SEARCH] = true;
+	types[this.type] = true;
+	return types;
 };
 
 // Returns a list of desired header action menu operations
@@ -156,22 +159,28 @@ function(ev) {
 */
 ZmAddrBookTreeController.prototype._itemClicked =
 function(folder) {
-	// always reset the search type to be Contacts
-	var sc = this._appCtxt.getSearchController();
-	sc.setDefaultSearchType(ZmItem.CONTACT, true);
-
-	var capp = this._appCtxt.getApp(ZmApp.CONTACTS);
-
-	// force a search if user clicked Trash folder or share
-	if (folder.id == ZmFolder.ID_TRASH || folder.link) {
-		var types = sc.getTypes(ZmItem.CONTACT);
-		sc.search({query:folder.createQuery(), types:types, fetch:true, sortBy:ZmSearch.NAME_ASC});
+	if (folder.type == ZmOrganizer.SEARCH) {
+		// if the clicked item is a search (within the folder tree), hand
+		// it off to the search tree controller
+		var stc = this._opc.getTreeController(ZmOrganizer.SEARCH);
+		stc._itemClicked(folder);
 	} else {
-		capp.showFolder(folder);
-	}
+		var sc = this._appCtxt.getSearchController();
+		sc.setDefaultSearchType(ZmItem.CONTACT, true);
 
-	if (folder.id != ZmFolder.ID_TRASH) {
-		var clc = AjxDispatcher.run("GetContactListController");
-		clc.getParentView().getAlphabetBar().reset();
+		var capp = this._appCtxt.getApp(ZmApp.CONTACTS);
+
+		// force a search if user clicked Trash folder or share
+		if (folder.id == ZmFolder.ID_TRASH || folder.link) {
+			var types = sc.getTypes(ZmItem.CONTACT);
+			sc.search({query:folder.createQuery(), types:types, fetch:true, sortBy:ZmSearch.NAME_ASC});
+		} else {
+			capp.showFolder(folder);
+		}
+
+		if (folder.id != ZmFolder.ID_TRASH) {
+			var clc = AjxDispatcher.run("GetContactListController");
+			clc.getParentView().getAlphabetBar().reset();
+		}
 	}
 };
