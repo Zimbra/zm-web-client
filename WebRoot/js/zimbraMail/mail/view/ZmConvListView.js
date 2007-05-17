@@ -497,6 +497,8 @@ function(ev) {
 						break;
 					}
 				}
+			} else {
+				removeConv = false;
 			}
 			if (removeConv) {
 				this._list.remove(conv);				// view has sublist of controller list
