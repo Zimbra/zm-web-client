@@ -258,6 +258,7 @@ ZmRosterTreeController.prototype._createView = function(params) {
 		// input.type = "text"; // DwtSimpleInput-hint gets overriden if we specify type="text"
 		input.style.width = "100%";
 		input.className = "DwtSimpleInput";
+		Dwt.setVisible(input, false);
 		div.parentNode.insertBefore(input, div);
 		input.onkeydown = AjxCallback.simpleClosure(ZmRosterTreeController.FILTER_SEARCH.inputKeyPress, this);
 		input.onfocus = AjxCallback.simpleClosure(ZmRosterTreeController.FILTER_SEARCH.inputFocus, this);

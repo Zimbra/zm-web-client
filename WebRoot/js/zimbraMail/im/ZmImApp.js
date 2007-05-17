@@ -222,9 +222,8 @@ function(active) {
 	treeController.appActivated(active);
 };
 
-ZmImApp.prototype.isActive =
-function() {
-    return this._active;
+ZmImApp.prototype.isActive = function() {
+	return this._active;
 };
 
 ZmImApp.prototype.getChatListController =
@@ -288,6 +287,9 @@ ZmImApp.prototype.prepareVisuals = function() {
 		treeController.show({ overviewId  : ZmZimbraMail._OVERVIEW_ID,
 				      app	  : ZmApp.IM
 				    });
+
+		treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID).setVisible(this._active);
+		treeController.appActivated(this._active);
 
 		this.getChatListController().prepareVisuals();
 		// setTimeout(AjxCallback.simpleClosure(this.refresh, this), 100);
