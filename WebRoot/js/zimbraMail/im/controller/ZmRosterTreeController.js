@@ -548,11 +548,15 @@ function(rosterItem) {
 	}
 	this._addr2Items[rosterItem.getAddress()] = items;
 	var treeView = this.getTreeView(ZmZimbraMail._OVERVIEW_ID);
-	if (treeView) for (var i in items) {
-		var ti = treeView.getTreeItemById(items[i].id);
-		if (ti) {
-			ti.setToolTipContent(rosterItem.getAddress());
-			ti.addListener(DwtEvent.HOVEROVER, this._treeItemHoverListenerListener);
+	if (treeView) {
+		if (!this._imApp.isActive())
+			treeView.setVisible(false);
+		for (var i in items) {
+			var ti = treeView.getTreeItemById(items[i].id);
+			if (ti) {
+				ti.setToolTipContent(rosterItem.getAddress());
+				ti.addListener(DwtEvent.HOVEROVER, this._treeItemHoverListenerListener);
+			}
 		}
 	}
 }

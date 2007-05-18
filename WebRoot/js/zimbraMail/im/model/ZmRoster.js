@@ -222,6 +222,7 @@ function(im) {
 			} else if (not.type == "subscribed") {
 				var sub = not;
 				if (sub.to) {
+					this._appCtxt.getApp(ZmApp.IM).prepareVisuals();
 					var list = this.getRosterItemList();
 					var item = list.getByAddr(sub.to);
 					if (item) {
@@ -243,6 +244,7 @@ function(im) {
 			} else if (not.type == "unsubscribed") {
 				var unsub = not;
 				if (unsub.to) {
+					this._appCtxt.getApp(ZmApp.IM).prepareVisuals();
 					var list = this.getRosterItemList();
 					var item = list.getByAddr(unsub.to);
 					if (item) list.removeItem(item);
