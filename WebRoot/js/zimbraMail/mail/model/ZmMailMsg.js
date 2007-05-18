@@ -933,7 +933,8 @@ function(findHits) {
 			// set the link icon
 			var mimeInfo = ZmMimeTable.getInfo(attach.ct);
 			props.linkIcon = mimeInfo ? mimeInfo.image : "GenericDoc";
-
+	        props.ct = attach.ct;
+	        
 			// set other meta info
 			props.isHit = findHits && this._isAttInHitList(attach);
 			props.part = attach.part;
