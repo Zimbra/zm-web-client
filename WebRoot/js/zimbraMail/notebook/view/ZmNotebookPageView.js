@@ -428,6 +428,16 @@ ZmNotebookPageView.prototype.addColumn = function(doc)
 	return;
 
 	var object = this._controller._object;
+	
+	var folder = this._appCtxt.getById(object.folderId);
+	var isReadOnly = false;
+	while (folder && folder.parent && (folder.parent.id != ZmOrganizer.ID_ROOT) && !folder.isReadOnly()) {
+		folder = folder.parent;
+	}
+	if(folder && folder.isReadOnly()){
+		isReadOnly = true;
+	}	
+	
 	var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();	
 	
 	var tblBodyObj = table.tBodies[0];
@@ -449,14 +459,6 @@ ZmNotebookPageView.prototype.addColumn = function(doc)
 				var isPage = (row.cells[j-1].firstChild.className=="ImgPage")?true:false;
 				var newCell = row.insertCell(j+1);			
 				
-				var isReadOnly = false;
-				
-				var page = cache.getPageByName(object.folderId,wikiName);
-				
-				if(page!=null){
-					isReadOnly = page.isReadOnly();
-				}
-			
 				if(isPage && !isReadOnly){
 					var editLink = this.createEditLink(doc,wikiName);
 					var delLink = this.createDeleteLink(doc,wikiName);
@@ -636,74 +638,27 @@ ZmNotebookPageView.prototype.fetchInfo = function(path)
 		var newParts = parts.splice(2,len-2);
 		wikiPath = newParts.join("/");	
 		//DBG.println(AjxDebug.DBG1,'path='+wikiPath+","+accountName);
-		this.getItem(wikiPath,accountName);
+		var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
+		var callback = new AjxCallback(this,this.handleItemResponse);
+		cache.getItemInfo(wikiPath,accountName,callback);
 	}
 			
 };
 
-ZmNotebookPageView.prototype.getItem = function(path,accountName)
-{
-		var soapDoc = AjxSoapDoc.create("GetItemRequest", "urn:zimbraMail");		
-		var folderNode = soapDoc.set("item");
-		folderNode.setAttribute("path", path);
-
-		var args = [];
-		var handleResponse = new AjxCallback(this, this.handleGetItemResponse);
-		var params = {
-			soapDoc: soapDoc,
-			asyncMode: Boolean(handleResponse),
-			callback: handleResponse,
-			accountName: accountName		
-		};
-		var appController = this._appCtxt.getAppController();
-		appController.sendRequest(params);
-	
+ZmNotebookPageView.prototype.refresh = function(restUrl){
+	this.historyLoading = true;
+	if(this._iframe1.contentWindow.location.href){
+	this._iframe1.contentWindow.location.reload();
+	}
 };
 
-ZmNotebookPageView.prototype.handleGetItemResponse = function(response)
-{
-		try{
-			var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
-			var getItemResponse = response && response._data && response._data.GetItemResponse;
-			var folderResp = getItemResponse && getItemResponse.folder && getItemResponse.folder[0];
-			var wikiResp = getItemResponse && getItemResponse.w && getItemResponse.w[0];
-			var linkResp = getItemResponse && getItemResponse.link && getItemResponse.link[0];
-		
-			var result = false;
+ZmNotebookPageView.prototype.handleItemResponse = function(item){
 
-			if(folderResp){
-				var item = new ZmPage(this._appCtxt);
-				item.set(folderResp);
-				item.folderId = folderResp.id || ZmNotebookItem.DEFAULT_FOLDER;
-				item.name = "_Index";
-				cache.putDocument(item);
-				this._controller.setPage(item);		
-				result = true;
-				//var iPage1 = cache.getPageByName(item.folderId,"Just");				
-			}
-			if(wikiResp){
-				var item = new ZmPage(this._appCtxt);
-				item.set(wikiResp);
-				item.folderId = wikiResp.l || ZmNotebookItem.DEFAULT_FOLDER;
-				cache.putItem(item);
-				this._controller.setPage(item);	
-				result = true;
-				//var iPage1 = cache.getPageByName(item.folderId,"Just");
-			}
-			if(linkResp){
-				var item = new ZmPage(this._appCtxt);
-				item.set(linkResp);
-				item.folderId = linkResp.id || ZmNotebookItem.DEFAULT_FOLDER;
-				item.remoteFolderId = (linkResp && linkResp.zid) ? linkResp.zid + ":" + linkResp.rid : undefined;
-				item.name = "_Index";
-				cache.putDocument(item);
-				this._controller.setPage(item);
-				result = true;
-				//var iPage1 = cache.getPageByName(item.folderId,"page1");				
-			}			
+			if(!item){
+				return;
+			}	
+			this._controller.setPage(item);
 			
-			if(result){
-				
 			if(!this._controller.historyLoading){
 			this._controller.updateHistory();
 			}else{
@@ -720,16 +675,4 @@ ZmNotebookPageView.prototype.handleGetItemResponse = function(response)
 			}
 			
 			this.addColumn(this._iframe.contentWindow.document);
-			}			
-			
-		}catch(ex){
-			DBG.println(AjxDebug.DBG1,'exception in handleGetItemResponse:'+ex);
-		}
-};
-
-ZmNotebookPageView.prototype.refresh = function(restUrl){
-	this.historyLoading = true;
-	if(this._iframe1.contentWindow.location.href){
-	this._iframe1.contentWindow.location.reload();
-	}
 };

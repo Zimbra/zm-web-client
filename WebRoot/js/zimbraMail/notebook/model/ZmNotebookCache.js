@@ -71,6 +71,8 @@ ZmNotebookCache.prototype._appCtxt;
 
 ZmNotebookCache.prototype._idMap;
 ZmNotebookCache.prototype._foldersMap;
+ZmNotebookCache.prototype._pathMap;
+ZmNotebookCache.prototype._idPathMap;
 
 ZmNotebookCache.prototype._changeListener;
 
@@ -126,6 +128,10 @@ ZmNotebookCache.prototype.putItem = function(item) {
 	if (item.id) {
 		this._idMap[item.id] = item;
 	}
+	if(item.path && item.id) {
+		this._pathMap[item.path] = item;
+		this._idPathMap[item.id] = item.path;
+	}
 	var folderId = item.folderId || ZmNotebookItem.DEFAULT_FOLDER;
 	var items = this.getItemsInFolder(folderId);
 	items.all[item.name] = item;
@@ -166,7 +172,11 @@ ZmNotebookCache.prototype.renameDocument = function(doc, newName) {
 };
 
 ZmNotebookCache.prototype.removeItem = function(item) {
+	if(item.path){
+		delete this._pathMap[item.path];
+	}
 	if (item.id) {
+		delete this._idPathMap[item.id];
 		delete this._idMap[item.id];
 	}
 	var items = this.getItemsInFolder(item.folderId);
@@ -203,17 +213,23 @@ ZmNotebookCache.prototype.removeDocument = function(doc) {
 ZmNotebookCache.prototype.clearCache = function() {
 	this._idMap = {};
 	this._foldersMap = {};
+	this._pathMap = {};
+	this._idPathMap = {};
 };
 
 // query methods
-
+ZmNotebookCache.prototype.getPaths = function() {
+	return this._pathMap;
+};
 ZmNotebookCache.prototype.getIds = function() {
 	return this._idMap;
 };
 ZmNotebookCache.prototype.getFolders = function() {
 	return this._foldersMap;
 };
-
+ZmNotebookCache.prototype.getItemByPath = function(path) {
+	return this._pathMap[path];
+};
 ZmNotebookCache.prototype.getItemById = function(id) {
 	return this._idMap[id];
 };
@@ -490,7 +506,6 @@ ZmNotebookCache.prototype._fillCacheResponse =
 function(requestParams, folderId, callback, errorCallback, response) {
 	var notebook = this._appCtxt.getById(folderId);
 	var remoteFolderId = (notebook && notebook.zid) ? notebook.zid + ":" + notebook.rid : undefined;
-
 	// add pages to folder map in cache
 	if (response && (response.SearchResponse || response._data.SearchResponse)) {
 		var searchResponse = response.SearchResponse || response._data.SearchResponse;
@@ -652,4 +667,76 @@ ZmNotebookCache.prototype._processResponse = function(searchResponse)
 	catch(ex){ 
 		DBG.println(AjxDebug.DBG1,'zmnotebook cache excep:'+ex); 
 	} 
+};
+
+
+ZmNotebookCache.prototype.getItemInfo = function(path,accountName,callback)
+{
+		var item = this.getItemByPath(path);
+		
+		if(item){
+		//DBG.println("item found on cache:"+item+","+item.id+",folder:"+item.folderId);
+			if(callback){
+				callback.run(item);
+			}
+			return item;
+		}
+		var soapDoc = AjxSoapDoc.create("GetItemRequest", "urn:zimbraMail");		
+		var folderNode = soapDoc.set("item");
+		folderNode.setAttribute("path", path);
+
+		var args = [];
+		var handleResponse = new AjxCallback(this, this.handleGetItemResponse,[path,callback]);
+		var params = {
+			soapDoc: soapDoc,
+			asyncMode: Boolean(handleResponse),
+			callback: handleResponse,
+			accountName: accountName		
+		};
+		var appController = this._appCtxt.getAppController();
+		appController.sendRequest(params);
+	
+};
+
+ZmNotebookCache.prototype.handleGetItemResponse = function(path,callback,response)
+{
+		try{
+			var getItemResponse = response && response._data && response._data.GetItemResponse;
+			var folderResp = getItemResponse && getItemResponse.folder && getItemResponse.folder[0];
+			var wikiResp = getItemResponse && getItemResponse.w && getItemResponse.w[0];
+			var linkResp = getItemResponse && getItemResponse.link && getItemResponse.link[0];
+		
+			var item = null;
+
+			if(folderResp){
+				item = new ZmPage(this._appCtxt);
+				item.set(folderResp);
+				item.folderId = folderResp.id || ZmNotebookItem.DEFAULT_FOLDER;
+				item.name = "_Index";
+			}
+			if(wikiResp){
+				item = new ZmPage(this._appCtxt);
+				item.set(wikiResp);
+				item.folderId = wikiResp.l || ZmNotebookItem.DEFAULT_FOLDER;
+			}
+			if(linkResp){
+				item = new ZmPage(this._appCtxt);
+				item.set(linkResp);
+				item.folderId = linkResp.id || ZmNotebookItem.DEFAULT_FOLDER;
+				item.remoteFolderId = (linkResp && linkResp.zid) ? linkResp.zid + ":" + linkResp.rid : undefined;
+				item.name = "_Index";
+			}			
+
+			if(item){
+				item.path = path;
+				this.putItem(item);
+			}
+			
+			if(callback){
+				callback.run(item);
+			}
+			
+		}catch(ex){
+			DBG.println(AjxDebug.DBG1,'exception in handleGetItemResponse:'+ex);
+		}
 };
