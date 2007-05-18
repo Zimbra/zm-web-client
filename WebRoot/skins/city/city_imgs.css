@@ -1,0 +1,65 @@
+.Imglogin_page_bg{background:0px 0px no-repeat;
+#IFDEF MSIE
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/waves/img.png?v=070508144431',sizingMethod='scale');
+#ELSE
+background-image:url("/zimbra/img/loRes/skins/waves/img.png?v=070508144431");#ENDIF}
+.Imgbg_waves{background:-250px 0px no-repeat;
+#IFDEF MSIE
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/waves/img.png?v=070508144431',sizingMethod='scale');
+#ELSE
+background-image:url("/zimbra/img/loRes/skins/waves/img.png?v=070508144431");#ENDIF}
+.Imgtree_bg{background:-259px 0px no-repeat;
+#IFDEF MSIE
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/waves/img.png?v=070508144431',sizingMethod='scale');
+#ELSE
+background-image:url("/zimbra/img/loRes/skins/waves/img.png?v=070508144431");#ENDIF}
+.Imglogin_bg{background:0px -1100px no-repeat;
+#IFDEF MSIE
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/waves/img.png?v=070508144431',sizingMethod='scale');
+#ELSE
+background-image:url("/zimbra/img/loRes/skins/waves/img.png?v=070508144431");#ENDIF}
+.Imglogin_header{background:0px -1460px no-repeat;
+#IFDEF MSIE
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/waves/img.png?v=070508144431',sizingMethod='scale');
+#ELSE
+background-image:url("/zimbra/img/loRes/skins/waves/img.png?v=070508144431");#ENDIF}
+.Imgmessage_header{background:-14px -1460px no-repeat;
+#IFDEF MSIE
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/waves/img.png?v=070508144431',sizingMethod='scale');
+#ELSE
+background-image:url("/zimbra/img/loRes/skins/waves/img.png?v=070508144431");#ENDIF}
+.Imginfo_box_bg{background:-26px -1460px no-repeat;
+#IFDEF MSIE
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/waves/img.png?v=070508144431',sizingMethod='scale');
+#ELSE
+background-image:url("/zimbra/img/loRes/skins/waves/img.png?v=070508144431");#ENDIF}
+.Imgsearch_bg{background:-35px -1460px no-repeat;
+#IFDEF MSIE
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/waves/img.png?v=070508144431',sizingMethod='scale');
+#ELSE
+background-image:url("/zimbra/img/loRes/skins/waves/img.png?v=070508144431");#ENDIF}
+.Imgtoolbar_bg{background:-40px -1460px no-repeat;
+#IFDEF MSIE
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/waves/img.png?v=070508144431',sizingMethod='scale');
+#ELSE
+background-image:url("/zimbra/img/loRes/skins/waves/img.png?v=070508144431");#ENDIF}
+.Imgheader_bg{background:-44px -1460px no-repeat;
+#IFDEF MSIE
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/waves/img.png?v=070508144431',sizingMethod='scale');
+#ELSE
+background-image:url("/zimbra/img/loRes/skins/waves/img.png?v=070508144431");#ENDIF}
+.Imgdark_btn_bg{background:-52px -1460px no-repeat;
+#IFDEF MSIE
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/waves/img.png?v=070508144431',sizingMethod='scale');
+#ELSE
+background-image:url("/zimbra/img/loRes/skins/waves/img.png?v=070508144431");#ENDIF}
+.Imglogin_btn{background:-59px -1460px no-repeat;
+#IFDEF MSIE
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/waves/img.png?v=070508144431',sizingMethod='scale');
+#ELSE
+background-image:url("/zimbra/img/loRes/skins/waves/img.png?v=070508144431");#ENDIF}
+.Imgtree_header_bg{background:-67px -1460px no-repeat;
+#IFDEF MSIE
+filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src='/zimbra/img/loRes/skins/waves/img.png?v=070508144431',sizingMethod='scale');
+#ELSE
+background-image:url("/zimbra/img/loRes/skins/waves/img.png?v=070508144431");#ENDIF}
