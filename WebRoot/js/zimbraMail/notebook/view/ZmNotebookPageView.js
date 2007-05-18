@@ -550,14 +550,18 @@ ZmNotebookPageView._iframeOnLoad1 = function(iframe) {
 	
 	var isErrorPage = false;
 
-	if(title.match(/- Error report$/)){
+	if(title.match(/- Error report$/) || title.match(/^Error 404/)){
 		var info = doc.body.firstChild;
 		if((info.tagName.toLowerCase() == "h1") && (info.innerHTML == "HTTP Status 404 - no such item"))
 		{
 			isErrorPage = true;
 		}
+		if((info.tagName.toLowerCase() == "h2") && (info.innerHTML == "HTTP ERROR: 404"))
+		{
+			isErrorPage = true;
+		}
 	}
-	
+		
 	if(!isErrorPage){	
 		view.currentSrc = iSrc;
 		view.currentPath = iframe.contentWindow.location.pathname;
