@@ -240,8 +240,7 @@ ZmZimletMgr.prototype.__getIncludes = function(zimletArray, zimletNames, isJS) {
 
     // add link to aggregated files
     includes.push( [
-//        "/service/zimlet/res/zimlet", isJS ? ".js"+appExtension : ".css"
-        "/service/zimlet/res/zimlet", isJS ? ".js" : ".css"
+        "/service/zimlet/res/zimlet", isJS ? ".js"+appExtension : ".css"
     ].join("") );
 
     // add cache killer to each url
