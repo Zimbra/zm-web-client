@@ -246,8 +246,8 @@ ZmRosterTreeController.prototype.appActivated = function(active) {
 	}
 };
 
-ZmRosterTreeController.prototype._createView = function(params) {
-	var tree = ZmTreeController.prototype._createView.call(this, params);
+ZmRosterTreeController.prototype._createTreeView = function(params) {
+	var tree = ZmTreeController.prototype._createTreeView.call(this, params);
 
 	if (ZmRosterTreeController.FILTER_SEARCH) {
 		// enable the search filter

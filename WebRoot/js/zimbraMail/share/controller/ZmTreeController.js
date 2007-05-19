@@ -272,13 +272,13 @@ function(overviewId) {
 				  headerClass:this._opc.getHeaderClass(overviewId), dragSrc:dragSrc, dropTgt:dropTgt,
 				  treeStyle:this.getTreeStyle() || this._opc.getTreeStyle(overviewId),
 				  allowedTypes:this._getAllowedTypes(), allowedSubTypes:this._getAllowedSubTypes()};
-	var treeView = this._createView(params);
+	var treeView = this._createTreeView(params);
 	treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
 	
 	return treeView;
 };
 
-ZmTreeController.prototype._createView =
+ZmTreeController.prototype._createTreeView =
 function(params) {
 	return new ZmTreeView(params);
 };
@@ -853,7 +853,8 @@ function(ev) {
 ZmTreeController.prototype._checkTreeView =
 function(overviewId) {
 	if (!overviewId || !this._treeView[overviewId].getHtmlElement()) return;	// tree view may have been pruned from overview
-    var dataTree = this.getDataTree();
-    var show = ((dataTree.size() > 0) || !this._hideEmpty[overviewId]);
+	var dataTree = this.getDataTree();
+	var curIds = this._opc._treeIdHash[overviewId];
+	var show = (curIds && curIds[this.type] &&  ((dataTree.size() > 0) || !this._hideEmpty[overviewId]));
 	this._treeView[overviewId].setVisible(show);
 };

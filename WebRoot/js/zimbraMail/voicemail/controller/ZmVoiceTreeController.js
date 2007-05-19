@@ -39,7 +39,7 @@ function() {
 	return "ZmVoiceTreeController";
 };
 
-ZmVoiceTreeController.prototype._createView =
+ZmVoiceTreeController.prototype._createTreeView =
 function(params) {
 	return new ZmVoiceTreeView(params);
 };

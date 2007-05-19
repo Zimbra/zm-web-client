@@ -45,6 +45,7 @@ function ZmOverviewController(appCtxt, container) {
 	this._overview = {};
 	this._controllers = {};
 	this._treeIds = {};
+	this._treeIdHash = {};
 	this._selectionSupported = {};
 	this._actionSupported = {};
 	this._dndSupported = {};
@@ -146,24 +147,30 @@ ZmOverviewController.prototype.set =
 function(overviewId, treeIds, omit, reset) {
 	if (!overviewId) return;
 	if (!(treeIds && treeIds.length)) return;
-	
+
 	// clear current tree views out of the overview
-	var curTreeIds = this._treeIds[overviewId];
 	var overview = this.getOverview(overviewId);
 	// TODO: following line results in a bug if you're switching overviews
 	// but not apps (eg shortcuts); need to differentiate tree IDs some
 	// other way; should probably redesign and simplify
 	var oldApp = this._appCtxt.getAppController().getPreviousApp();
+	var removed = {};
+DBG.println("overview", "-------------------------------------------------------------------");
+DBG.println("overview", treeIds);
+	var curTreeIds = this._treeIds[overviewId];
 	if (curTreeIds && curTreeIds.length) {
 		for (var i = 0; i < curTreeIds.length; i++) {
 			var treeId = curTreeIds[i];
 			var treeView = this.getTreeView(overviewId, treeId, oldApp);
 			if (treeView) {
 				if (reset && reset[treeId]) {
+DBG.println("overview", "RESET: " + overviewId + " / " + treeId + ", " + treeView._htmlElId);
 					this.getTreeController(treeId).clearTreeView(overviewId);
 				} else {
 					// preserve a ref to the element so we can add it back later
+DBG.println("overview", "REMOVE: " + overviewId + " / " + treeId + ", " + treeView._htmlElId);
 					overview.removeChild(treeView, true);
+					removed[treeId] = treeView;
 				}
 			}
 		}
@@ -179,14 +186,24 @@ function(overviewId, treeIds, omit, reset) {
 		overview.hideAccordionItems();
 		for (var i = 0; i < accordItems.length; i++) {
 			var item = accordItems[i];
-			if (item.data.appName == app)
+			if (item.data.appName == app) {
 				overview.showAccordionItem(item.id);
+			}
 		}
 		accordItem = this._appCtxt.getApp(app).accordionItem;
-		if (accordItem)
+		if (accordItem) {
 			overview.expandItem(accordItem.id);
+		}
 	}
 
+	// bookkeeping	
+	this._treeIds[overviewId] = treeIds;
+	this._treeIdHash[overviewId] = {};
+	for (var i = 0; i < treeIds.length; i++) {
+		this._treeIdHash[overviewId][treeIds[i]] = true;
+	}
+
+	var added = {};
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
 		// lazily create appropriate tree controller
@@ -197,16 +214,18 @@ function(overviewId, treeIds, omit, reset) {
 			// create the tree view as a child of the overview
 			var params = {overviewId:overviewId, omit:omit, app:app, hideEmpty:hideEmpty};
 			params.showUnread = this._showUnread[overviewId];
-			treeController.show(params);
+			treeController.show(params);	// render tree view
 
 			// reset treeView once its been created
 			treeView = this.getTreeView(overviewId, treeIds[i], app);
 		} else {
 			// add the tree view's HTML element back to the overview
 			overview.addChild(treeView);
+			treeView.setVisible(true);
+			added[treeId] = treeView;
 			treeView.setCheckboxes();
 		}
-
+		
 		// HACK: reparent the body of the accordion item
 		if (accordItem) {
 			var body = overview.getBody(accordItem.id);
@@ -221,7 +240,14 @@ function(overviewId, treeIds, omit, reset) {
 			overview.show(false);
 		}
 	}
-	this._treeIds[overviewId] = treeIds;
+	
+	for (var treeId in removed) {
+		if (!added[treeId]) {
+			var treeView = removed[treeId]
+			overview.addChild(treeView);
+			treeView.setVisible(false);
+		}			
+	}
 };
 
 /**
