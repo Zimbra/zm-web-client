@@ -630,7 +630,7 @@ function(dialog, settingId, folder) {
 		var portPrefix = (location.port == "" || location.port == "80")
 			? ""
 			: (":" + location.port);
-		var format = settingId == ZmSetting.IMPORT ? "csv" : "ics";
+		var format = (settingId == ZmSetting.IMPORT || settingId == ZmSetting.EXPORT) ? "csv" : "ics";
 		var uri = [location.protocol, "//", document.domain, portPrefix, "/service/home/~/", folder.name, "?auth=co&fmt=", format].join("");
 		window.open(uri, "_blank");
 
