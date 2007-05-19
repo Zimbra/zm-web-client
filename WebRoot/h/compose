@@ -41,8 +41,10 @@
 
 </app:handleError>
 
+<c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/>
+<app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
+        onload="var e=document.getElementById('${focusField}'); if (e) e.focus();">
 
-<app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
     <c:set var="toolbar">
         <table width=100% cellspacing=0 cellpadding=0>
             <tr valign='middle'>
@@ -167,7 +169,7 @@
                             <tr>
                                 <td colspan="3" >
                                     <textarea class='MsgCompose' rows="30" cols="80" style='width:100%'
-                                              name="body">${fn:escapeXml(compose.content)}</textarea>
+                                              id="bodyField" name="body">${fn:escapeXml(compose.content)}</textarea>
                                 </td>
                             </tr>
                         </table>

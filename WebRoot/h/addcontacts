@@ -31,7 +31,8 @@
     </c:choose>
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false">
+<app:view mailbox="${mailbox}" title="${title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
+        onload="var e=document.getElementById('findField'); if (e) e.focus();">
 
 <c:set var="toolbar">
     <table width=100% cellspacing=0>
@@ -50,6 +51,13 @@
         </tr>
     </table>
 </c:set>
+
+<SCRIPT TYPE="text/javascript">
+<!--
+var checkEnter = function(f,e) {var k;if (window.event) k = window.event.keyCode;else if (e) k = e.which;else return true;
+if (k == 13) { document.getElementById("doSearch").click();return false;} else {return true;}}
+//-->
+</SCRIPT>
 
 <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
     <table width=100% cellpadding="0" cellspacing="0">
@@ -133,7 +141,7 @@
                             <label for="findField"><fmt:message key="find"/>
                             :</label>
                             <input id="findField" class="searchField" style='width:50%' maxlength=2048 name='contactSearchQuery'
-                                   value="${fn:escapeXml(query)}">
+                                   value="${fn:escapeXml(query)}" onkeypress="return checkEnter(this,event)">
                             &nbsp;
                             <fmt:message key="in"/>
                             &nbsp;
@@ -152,7 +160,7 @@
                                 <fmt:message key="GAL"/>
                                 </c:if>
                             </select>
-                            <input class="SearchButton" type=submit name='actionContactSearch'
+                            <input class="SearchButton" type=submit name='actionContactSearch' id="doSearch"
                                    value="<fmt:message key="searchContacts"/>">
                     </td>
                 </tr>

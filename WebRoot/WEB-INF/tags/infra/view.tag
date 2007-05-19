@@ -9,6 +9,7 @@
 <%@ attribute name="editmode" rtexprvalue="true" required="false" %>
 <%@ attribute name="title" rtexprvalue="true" required="true" %>
 <%@ attribute name="ads" rtexprvalue="true" required="false" %>
+<%@ attribute name="onload" rtexprvalue="true" required="false" %>
 <%@ attribute name="tags" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ attribute name="context" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.tag.SearchContext"%>
@@ -22,7 +23,7 @@
 <html>
 <app:head mailbox="${mailbox}" title="${title}"/>
 
-<body>
+<body <c:if test="${not empty onload}">onload="${onload}"</c:if>>
 <table width=100% cellpadding="0" cellspacing="0">
     <tr>
         <td class='TopContent' colspan=3  align=right valign=top>&nbsp;</td>
