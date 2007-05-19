@@ -65,7 +65,11 @@ function(page) {
 		toolbar.enable([ZmOperation.REFRESH,ZmOperation.EDIT,ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT,ZmOperation.SEND_PAGE,ZmOperation.DETACH], false);
 		
 		if(page!=null){
-		this.loadURL(page.getRestUrl());
+			var url = page.getRestUrl();			
+			if(page.restUrl && (url!=page.restUrl) && page.id && page.id.match(/:/)){
+				url = page.restUrl;					
+			}
+			this.loadURL(url);
 		}
 
 	}
@@ -239,7 +243,6 @@ ZmNotebookPageView._iframeOnLoad = function(iframe) {
 		view.currentPath = null;
 		view.fetchInfo(path);
 	}else if(path!=window.parent.location.pathname && path!=""){
-		window.parent.DBG.println("JSON PATH FETCH:"+path);
 		view.fetchInfo(path);
 	}	
 	
@@ -311,7 +314,7 @@ ZmNotebookPageView.prototype.processPageInfo = function(iSrc,t){
 			this.addColumn(this._iframe.contentWindow.document);
 		}
 	
-		DBG.println("isPage:"+isPage);//cdel	
+		//DBG.println("isPage:"+isPage);//cdel	
 	}
 	}catch(ex){	
 		DBG.println(AjxDebug.DBG1,'exception in processing page info:'+ex);	
@@ -644,7 +647,7 @@ ZmNotebookPageView.prototype.fetchInfo = function(path)
 		//DBG.println(AjxDebug.DBG1,'path='+wikiPath+","+accountName);
 		var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();
 		var callback = new AjxCallback(this,this.handleItemResponse);
-		cache.getItemInfo(wikiPath,accountName,callback);
+		cache.getItemInfo({path:wikiPath,accountName:accountName,callback:callback});
 	}
 			
 };

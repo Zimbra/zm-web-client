@@ -670,38 +670,76 @@ ZmNotebookCache.prototype._processResponse = function(searchResponse)
 };
 
 
-ZmNotebookCache.prototype.getItemInfo = function(path,accountName,callback)
+ZmNotebookCache.prototype.checkCache = function(params){
+	var item = null;
+	if(params.path){
+		item = this.getItemByPath(params.path);
+	}else if(params.folderId && params.name){
+		item = this.getItemByName(params.folderId,params.name);
+	}else if(params.id){
+		item = this.getItemById(params.id);
+	}
+	return item;
+};
+
+ZmNotebookCache.prototype.getItemInfo = function(params)
 {
-		var item = this.getItemByPath(path);
+		var item = this.checkCache(params);
 		
 		if(item){
-		//DBG.println("item found on cache:"+item+","+item.id+",folder:"+item.folderId);
-			if(callback){
-				callback.run(item);
+			//DBG.println("item found on cache:"+item+","+item.id+",folder:"+item.folderId+","+item.getRestUrl());
+			if(params.callback){
+				params.callback.run(item);
 			}
 			return item;
 		}
+		
 		var soapDoc = AjxSoapDoc.create("GetItemRequest", "urn:zimbraMail");		
 		var folderNode = soapDoc.set("item");
-		folderNode.setAttribute("path", path);
-
+		
+		if(params.path){
+			folderNode.setAttribute("path", params.path);
+		}else if(params.folderId && params.name){
+			folderNode.setAttribute("l", params.folderId);			
+			folderNode.setAttribute("name", params.name);			
+		}else if(params.id){
+			folderNode.setAttribute("id", params.id);			
+		}
+		
 		var args = [];
-		var handleResponse = new AjxCallback(this, this.handleGetItemResponse,[path,callback]);
-		var params = {
+		var asyncMode = (params.callback?true:false);
+
+		var handleResponse = null;
+		if(asyncMode){
+			handleResponse = new AjxCallback(this, this.handleGetItemResponse,[params]);
+		}
+		
+		var reqParams = {
 			soapDoc: soapDoc,
-			asyncMode: Boolean(handleResponse),
+			asyncMode: asyncMode,
 			callback: handleResponse,
-			accountName: accountName		
+			accountName: params.accountName		
 		};
+		
 		var appController = this._appCtxt.getAppController();
-		appController.sendRequest(params);
-	
+		var response = appController.sendRequest(reqParams);
+		
+		if(!asyncMode){
+		var item = this.handleGetItemResponse(params,response.GetItemResponse);		
+		return item;
+		}	
 };
 
-ZmNotebookCache.prototype.handleGetItemResponse = function(path,callback,response)
+ZmNotebookCache.prototype.handleGetItemResponse = function(params,response)
 {
 		try{
-			var getItemResponse = response && response._data && response._data.GetItemResponse;
+			var path = params.path;
+			var callback = params.callback;
+			
+			var getItemResponse = response;
+			if(response && response._data){
+				getItemResponse = response && response._data && response._data.GetItemResponse;
+			}
 			var folderResp = getItemResponse && getItemResponse.folder && getItemResponse.folder[0];
 			var wikiResp = getItemResponse && getItemResponse.w && getItemResponse.w[0];
 			var linkResp = getItemResponse && getItemResponse.link && getItemResponse.link[0];
@@ -727,15 +765,16 @@ ZmNotebookCache.prototype.handleGetItemResponse = function(path,callback,respons
 				item.name = "_Index";
 			}			
 
-			if(item){
-				item.path = path;
-				this.putItem(item);
+			if(item && !params.ignoreCaching){								
+				item.path = path;				
+				this.putItem(item);				
 			}
-			
+	
 			if(callback){
 				callback.run(item);
 			}
-			
+
+			return item;			
 		}catch(ex){
 			DBG.println(AjxDebug.DBG1,'exception in handleGetItemResponse:'+ex);
 		}

@@ -313,7 +313,18 @@ ZmNotebookController.prototype._sendPageListener = function(event) {
 
 	for (var i = 0; i < items.length; i++) {
 		var item = items[i];
-		urls.push(item.getRestUrl());
+		var url = item.getRestUrl();
+		
+		if(item.remoteFolderId){
+			//fetching the remote URL
+			var cache = this._app.getNotebookCache();
+			var item1 = cache.getItemInfo({id:item.remoteFolderId,ignoreCaching:true});
+			if(item1){			
+			url = item1.getRestUrl();
+			}
+		}		
+		
+		urls.push(url);
 		names.push(ZmWikletProcessor.process(this._appCtxt, item, content));
 		if (noprompt) continue;
 
