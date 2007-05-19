@@ -196,9 +196,9 @@ AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/html/");
 		HttpServletRequest wrappedReq = new HttpServletRequestWrapper(request) {
-			public String getRequestURI() {
-				return "/html/skin.html";
-			}
+      public String getServletPath() { return "/html"; }
+      public String getPathInfo() { return "/skin.html"; }
+      public String getRequestURI() { return getServletPath() + getPathInfo(); }
 		};
 		dispatcher.include(wrappedReq, response);
 	%>
