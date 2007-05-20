@@ -155,7 +155,7 @@
 
             var afunc = function() { alert('hello'); }
 
-            <zm:bindKey key="Q" func="afunc"/>
+            <zm:bindKey key="Ctrl+Q" func="afunc"/>
         </zm:keyboardBindings>
     </app:keyboard>
     --%>
