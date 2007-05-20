@@ -27,14 +27,14 @@
         <td  nowrap valign=middle>
         <select name="actionOp">
             <option value="" selected/><fmt:message key="moreActions"/>
-            <option value="read"/><fmt:message key="actionMarkRead"/>
-            <option value="unread"/><fmt:message key="actionMarkUnread"/>
-            <option value="flag"/><fmt:message key="actionAddFlag"/>
-            <option value="unflag"/><fmt:message key="actionRemoveFlag"/>
+            <option <c:if test="${keys}">id="OPREAD" </c:if> value="read"/><fmt:message key="actionMarkRead"/>
+            <option <c:if test="${keys}">id="OPUNREAD" </c:if> value="unread"/><fmt:message key="actionMarkUnread"/>
+            <option <c:if test="${keys}">id="OPFLAG" </c:if> value="flag"/><fmt:message key="actionAddFlag"/>
+            <option <c:if test="${keys}">id="OPUNFLAG" </c:if> value="unflag"/><fmt:message key="actionRemoveFlag"/>
             <app:tagOptions mailbox="${mailbox}"/>
         </select>
         </td>
-        <app:button name="action" tooltip="actionConvGoTT" text="actionGo"/>
+        <app:button id="OPGO" name="action" tooltip="actionConvGoTT" text="actionGo"/>
         <td><div class='vertSep'></div></td>        
        <c:choose>
             <c:when test="${context.isFolderSearch and context.folder.isTrash}">
