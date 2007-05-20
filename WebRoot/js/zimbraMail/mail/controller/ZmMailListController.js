@@ -541,7 +541,7 @@ function(ev, action, extraBodyText, instanceDate, accountName) {
 	var prefersHtml = identity.getComposeAsFormat() == ZmSetting.COMPOSE_HTML;
 	var sameFormat = identity.getComposeSameFormat();
 	
-	var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg.isLoaded() && sameFormat)))));
+	var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg._loaded && sameFormat)))));
 	var inNewWindow = this._app._inNewWindow(ev);
 	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText, accountName]);
 	msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
@@ -827,10 +827,11 @@ function(ev) {
 	var items = this._listView[this._currentView].getSelection();
 	var msg = items.length ? items[0] : items;
 
-	if (msg.isLoaded())
+	if (msg._loaded) {
 		ZmMailMsgView.detachMsgInNewWindow(this._appCtxt, msg);
-	else
+	} else {
 		ZmMailMsgView.rfc822Callback(msg.id);
+	}
 };
 
 ZmMailListController.prototype._editListener =

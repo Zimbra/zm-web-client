@@ -56,18 +56,30 @@ function() {
 *
 * @param msg		the message to display
 * @param conv		the conv to which the message belongs, if any
+* @param callback	client callback
 */
 ZmMsgController.prototype.show = 
-function(msg, mode) {
+function(msg, mode, callback) {
 	this.setMsg(msg);
 	this._mode = mode;
 	this._currentView = this._getViewType();
 	this._list = msg.list;
-	if (!msg.isLoaded()) {
-		var respCallback = new AjxCallback(this, this._handleResponseShow);
+	if (!msg._loaded) {
+		var respCallback = new AjxCallback(this, this._handleResponseShow, callback);
 		msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback);
 	} else {
-		this._showMsg();	
+		this._showMsg();
+		if (callback) {
+			callback.run();
+		}
+	}
+};
+
+ZmMsgController.prototype._handleResponseShow = 
+function(callback, result) {
+	this._showMsg();
+	if (callback) {
+		callback.run();
 	}
 };
 
@@ -80,11 +92,6 @@ function(msg, mode) {
 ZmMsgController.prototype.dispose = 
 function() {
 	this._tagList.removeChangeListener(this._tagChangeLstnr);
-};
-
-ZmMsgController.prototype._handleResponseShow = 
-function(result) {
-	this._showMsg();
 };
 
 ZmMsgController.prototype._showMsg = 

@@ -1408,7 +1408,7 @@ function(msg, preferHtml, callback) {
 	if (!(msg.toString() == "ZmMailMsg"))
 		return;
 
-	if (!msg.isLoaded()) {
+	if (!msg._loaded) {
 		var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
 		var msgNode = soapDoc.set("m");
 		msgNode.setAttribute("id", msg.id);

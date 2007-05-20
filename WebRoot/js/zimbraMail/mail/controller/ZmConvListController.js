@@ -212,7 +212,7 @@ function(conv, msg, offset, getFirstMsg) {
 			// page was cached, callback won't be run
 			this._handleResponseLoadItem(conv, msg, offset, new ZmCsfeResult(conv.msgs));
 		}
-	} else if (!conv.isLoaded()) {
+	} else if (!conv._loaded) {
 		// no msgs have been loaded yet
 		var getFirstMsg = (getFirstMsg === false) ? false : this._readingPaneOn;
 		conv.load({query:this.getSearchString(), callback:respCallback, getFirstMsg:getFirstMsg});

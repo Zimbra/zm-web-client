@@ -62,9 +62,10 @@ function() {
 * @param activeSearch		[ZmSearch]				the current search results
 * @param conv				[ZmConv]				a conversation
 * @param parentController	[ZmMailController]*		controller that called this method
+* @param callback			[AjxCallback]*			client callback
 */
 ZmConvController.prototype.show =
-function(activeSearch, conv, parentController) {
+function(activeSearch, conv, parentController, callback) {
 	this._conv = conv;
 	// always reset offset & sortby to asc.
 	if (this._listView[this._currentView]) {
@@ -74,7 +75,7 @@ function(activeSearch, conv, parentController) {
 	this._parentController = parentController;
 
 	// this._list will be set when conv is loaded
-	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv);
+	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv, callback);
 }
 
 ZmConvController.prototype.getConv = 

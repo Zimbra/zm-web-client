@@ -68,14 +68,6 @@ function() {
 	return "ZmMailItem";
 }
 
-/**
-* Returns true if this item's content has been populated via a server call.
-*/
-ZmMailItem.prototype.isLoaded =
-function() {
-	return this._loaded;
-};
-
 ZmMailItem.prototype.isShared =
 function() {
 	return (this.id && this.id != -1)

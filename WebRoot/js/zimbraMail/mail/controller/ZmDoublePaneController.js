@@ -68,11 +68,12 @@ function() {
 * Displays the given item in a two-pane view. The view is actually
 * created in _loadItem(), since it must execute last.
 *
-* @param search		[ZmSearch]	the current search results
-* @param item		[ZmItem]	a generic item
+* @param search		[ZmSearch]		the current search results
+* @param item		[ZmItem]		a generic item
+* @param callback	[AjxCallback]*	client callback
 */
 ZmDoublePaneController.prototype.show =
-function(search, item) {
+function(search, item, callback) {
 
 	ZmMailListController.prototype.show.call(this, search);
 	this.reset();
@@ -80,8 +81,16 @@ function(search, item) {
 	this._setup(this._currentView);
 
 	// see if we have it cached? Check if conv loaded?
-	this._loadItem(item, this._currentView);
+	var respCallback = new AjxCallback(this, this._handleResponseShow, [item, callback]);
+	this._loadItem(item, this._currentView, respCallback);
+};
+
+ZmDoublePaneController.prototype._handleResponseShow =
+function(item, callback, results) {
 	this._checkViewMenu();
+	if (callback) {
+		callback.run();
+	}
 };
 
 /**
@@ -229,7 +238,7 @@ function() {
 		// Check if currently displaying selected element in message view
 		var item = this._listView[this._currentView].getSelection()[0];
 		var msg = (item.type == ZmItem.CONV) ? item.getFirstMsg() : item;
-		if (!msg.isLoaded()) {
+		if (!msg._loaded) {
 			this._appCtxt.getSearchController().setEnabled(false);
 			this._doGetMsg(msg);
 		} else {
@@ -314,27 +323,45 @@ function() {
 * list. If passed a list, simply displays it. The first message will be 
 * selected, which will trigger a message load/display.
 *
-* @param item	[ZmConv or ZmMailList]		conv or list of msgs
-* @param view	[constant]					owning view type
+* @param item		[ZmConv or ZmMailList]		conv or list of msgs
+* @param view		[constant]					owning view type
+* @param callback	[AjxCallback]*				client callback
 */
 ZmDoublePaneController.prototype._loadItem =
-function(item, view) {
+function(item, view, callback) {
 	if (item instanceof ZmMailItem) { // conv
 		DBG.timePt("***** CONV: load", true);
-		if (!item.isLoaded()) {
-			var respCallback = new AjxCallback(this, this._handleResponseLoadItem, view);
+		if (!item._loaded) {
+			var respCallback = new AjxCallback(this, this._handleResponseLoadItem, [view, callback]);
 			item.load({query:this.getSearchString(), callback:respCallback});
 		} else {
-			this._handleResponseLoadItem(view, new ZmCsfeResult(item.msgs));
+			this._handleResponseLoadItem(view, callback, new ZmCsfeResult(item.msgs));
 		}
 	} else { // msg list
 		this._displayResults(view);
+		if (callback) {
+			callback.run();
+		}
+	}
+};
+
+ZmDoublePaneController.prototype._handleResponseLoadItem =
+function(view, callback, result) {
+	var response = result.getResponse();
+	if (response instanceof ZmList) {
+		this._list = response;
+		this._activeSearch = response;
+	}
+	DBG.timePt("***** CONV: render");
+	this._displayResults(view);
+	if (callback) {
+		callback.run();
 	}
 };
 
 ZmDoublePaneController.prototype._displayResults =
 function(view) {
-	var elements = new Object();
+	var elements = {};
 	elements[ZmAppViewMgr.C_TOOLBAR_TOP] = this._toolbar[view];
 	elements[ZmAppViewMgr.C_APP_CONTENT] = this._doublePaneView;
 	this._setView(view, elements, this._isTopLevelView());
@@ -355,6 +382,12 @@ function(msg) {
 	} else {
 		DBG.println("XXX: msg not loaded!");
 	}
+};
+
+ZmDoublePaneController.prototype._handleResponseDoGetMsg =
+function(msg) {
+	this._doublePaneView.setMsg(msg);
+	this._appCtxt.getSearchController().setEnabled(true);
 };
 
 ZmDoublePaneController.prototype._resetOperations = 
@@ -405,16 +438,11 @@ function(ev) {
 		if (item.isDraft) {
 			this._doAction(ev, ZmOperation.DRAFT);
 		} else if (item.type == ZmItem.CONV) {
-			AjxDispatcher.run("GetConvController").show(this._activeSearch, item, this);
-			// make sure correct msg is displayed in msg pane when user returns
-			this._setSelectedMsg();
+			var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
+			AjxDispatcher.run("GetConvController").show(this._activeSearch, item, this, respCallback);
 		} else if (item.type == ZmItem.MSG) {
-			AjxDispatcher.run("GetMsgController").show(item);
-			if (item.isLoaded() && item.isUnread) {
-				this._list.markRead([item], true);
-			}
-			// make sure correct msg is displayed in msg pane when user returns
-			this._setSelectedMsg();
+			var respCallback = new AjxCallback(this, this._handleResponseListSelectionListener, item);
+			AjxDispatcher.run("GetMsgController").show(item, null, respCallback);
 		}
 	} else {
 		if (this._readingPaneOn) {
@@ -439,6 +467,15 @@ function(ev) {
 	    }
     }
 	DBG.timePt("***** CONV: msg selection");
+};
+
+ZmDoublePaneController.prototype._handleResponseListSelectionListener =
+function(item) {
+	if (item.type == ZmItem.MSG && item._loaded && item.isUnread) {
+		this._list.markRead([item], true);
+	}
+	// make sure correct msg is displayed in msg pane when user returns
+	this._setSelectedMsg();
 };
 
 ZmDoublePaneController.prototype._listSelectionTimedAction =
@@ -498,24 +535,4 @@ function(ev) {
 	ZmListController.prototype._dragListener.call(this, ev);
 	if (ev.action == DwtDragEvent.DRAG_END)
 		this._resetOperations(this._toolbar[this._currentView], this._doublePaneView.getSelection().length);
-};
-
-
-// Callbacks
-
-ZmDoublePaneController.prototype._handleResponseLoadItem =
-function(view, result) {
-	var response = result.getResponse();
-	if (response instanceof ZmList) {
-		this._list = response;
-		this._activeSearch = response;
-	}
-	DBG.timePt("***** CONV: render");
-	this._displayResults(view);
-};
-
-ZmDoublePaneController.prototype._handleResponseDoGetMsg =
-function(msg) {
-	this._doublePaneView.setMsg(msg);
-	this._appCtxt.getSearchController().setEnabled(true);
 };
