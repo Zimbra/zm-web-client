@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
  
-function ZmChatMemberListView(parent, rosterList) {
+ZmChatMemberListView = function(parent, rosterList) {
 	DwtListView.call(this, parent, "ZmChatMemberList", DwtControl.ABSOLUTE_STYLE, this._getHeaderList());
 	this.type = ZmItem.ROSTER_ITEM;
 	this.rosterList = rosterList;

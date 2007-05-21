@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAttachmentPicker(parent) {
+ZmAttachmentPicker = function(parent) {
 	ZmPicker.call(this, parent, ZmPicker.ATTACHMENT);
     this._checkedItems = {};
 };

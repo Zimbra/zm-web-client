@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmContactAssistant(appCtxt) {
+ZmContactAssistant = function(appCtxt) {
 	if (arguments.length == 0) return;
 	ZmAssistant.call(this, appCtxt, ZmMsg.createNewContact, ZmMsg.ASST_CMD_CONTACT, ZmMsg.ASST_CMD_SUM_CONTACT);
 	this._commandIndex = {};	

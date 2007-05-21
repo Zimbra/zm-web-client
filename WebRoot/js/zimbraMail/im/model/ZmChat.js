@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmChat(id, chatName, appCtxt, chatList) {
+ZmChat = function(id, chatName, appCtxt, chatList) {
 //	if (id == null) id = rosterItem.getAddress() + "_chat";
 	if (chatList == null) chatList = appCtxt.getApp(ZmApp.IM).getRoster().getChatList();
 	ZmItem.call(this, appCtxt, ZmItem.CHAT, id, chatList);

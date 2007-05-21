@@ -29,7 +29,7 @@
 * button/menu for switching views within the current app.
 * @class
 */
-function ZmCurrentAppToolBar(parent, tabStyle) {
+ZmCurrentAppToolBar = function(parent, tabStyle) {
 
 	DwtToolBar.call(this, parent, null, Dwt.ABSOLUTE_STYLE);
 

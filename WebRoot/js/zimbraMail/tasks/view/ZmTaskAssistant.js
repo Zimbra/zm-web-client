@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmTaskAssistant(appCtxt) {
+ZmTaskAssistant = function(appCtxt) {
 	if (arguments.length == 0) return;
 	ZmAssistant.call(this, appCtxt, ZmMsg.createNewTask, ZmMsg.ASST_CMD_TASK, ZmMsg.ASST_CMD_SUM_TASK);
 };

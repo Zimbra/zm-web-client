@@ -24,7 +24,7 @@
  */
 
 // This class is currently not being used and has been removed from the build
-function ZmEmoticonObjectHandler(appCtxt) {
+ZmEmoticonObjectHandler = function(appCtxt) {
 
 	ZmObjectHandler.call(this, appCtxt, ZmEmoticonObjectHandler.TYPE);
 

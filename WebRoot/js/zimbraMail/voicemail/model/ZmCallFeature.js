@@ -32,7 +32,7 @@
 * the JSON data. Whoever uses this class just has to know how to deal with the data.
 *
 */
-function ZmCallFeature(appCtxt, name, isVoicemailPref) {
+ZmCallFeature = function(appCtxt, name, isVoicemailPref) {
 	this._appCtxt = appCtxt;
 	
 	this.name = name;

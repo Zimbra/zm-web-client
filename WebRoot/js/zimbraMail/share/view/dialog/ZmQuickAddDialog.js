@@ -42,7 +42,7 @@
 * @param extraButtons 		any extra buttons to be added in addition to the standard ones
 * @param loc				where to popup (optional)
 */
-function ZmQuickAddDialog(parent, title, standardButtons, extraButtons, loc) {
+ZmQuickAddDialog = function(parent, title, standardButtons, extraButtons, loc) {
 	if (arguments.length == 0) return;
 
 	DwtDialog.call(this, parent, null, title, standardButtons, extraButtons, null, null, loc);

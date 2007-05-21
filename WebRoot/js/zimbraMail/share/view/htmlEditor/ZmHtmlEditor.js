@@ -377,7 +377,7 @@ function(words, keepModeDiv) {
 	// having the data, this function will parse the DOM and replace
 	// occurrences of the misspelled words with <span
 	// class="ZM-SPELLCHECK-MISSPELLED">word</span>
-	function rec(node) {
+	rec = function(node) {
 		switch (node.nodeType) {
 		    case 1: /* ELEMENT */
 			for (var i = node.firstChild; i; i = rec(i));
@@ -1625,7 +1625,7 @@ ZmHtmlEditor.prototype.__enableGeckoFocusHacks = function() {
 		}, this);
 };
 
-function ZmHtmlEditorColorPicker(parent) {
+ZmHtmlEditorColorPicker = function(parent) {
     DwtButtonColorPicker.call(this, parent);
 }
 ZmHtmlEditorColorPicker.prototype = new DwtButtonColorPicker;

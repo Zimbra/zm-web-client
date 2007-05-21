@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmZimlet(id, name, parent, tree, color) {
+ZmZimlet = function(id, name, parent, tree, color) {
 	ZmOrganizer.call(this, {type: ZmOrganizer.ZIMLET, id: id, name: name, parent: parent, tree: tree});
 }
 

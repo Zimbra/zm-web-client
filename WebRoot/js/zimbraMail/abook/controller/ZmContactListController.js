@@ -38,7 +38,7 @@
 * @param container		containing shell
 * @param contactsApp	containing app
 */
-function ZmContactListController(appCtxt, container, contactsApp) {
+ZmContactListController = function(appCtxt, container, contactsApp) {
 
 	ZmListController.call(this, appCtxt, container, contactsApp);
 

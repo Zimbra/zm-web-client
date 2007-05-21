@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPortletView(parentEl, portlet, className) {
+ZmPortletView = function(parentEl, portlet, className) {
     className = className || "ZmPortlet";
     DwtComposite.call(this, DwtShell.getShell(window), className, DwtControl.STATIC_STYLE);
 

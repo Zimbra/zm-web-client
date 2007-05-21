@@ -30,7 +30,7 @@
 * This class represents a list of tasks.
 *
 */
-function ZmTaskList(appCtxt, search, type) {
+ZmTaskList = function(appCtxt, search, type) {
 	if (arguments.length == 0) return;
 
 	type = type ? type : ZmItem.TASK;

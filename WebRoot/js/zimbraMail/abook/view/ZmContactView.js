@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmContactView(parent, appCtxt, controller, isReadOnly) {
+ZmContactView = function(parent, appCtxt, controller, isReadOnly) {
 
 	if (arguments.length == 0) return;
 

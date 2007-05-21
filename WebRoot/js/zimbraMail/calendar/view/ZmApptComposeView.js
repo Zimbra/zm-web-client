@@ -40,7 +40,7 @@
 * @param calApp			[ZmCalendarApp]				a handle to the owning calendar application
 * @param controller		[ZmApptComposeController]	the controller for this view
 */
-function ZmApptComposeView(parent, className, calApp, controller) {
+ZmApptComposeView = function(parent, className, calApp, controller) {
 
 	className = className ? className : "ZmApptComposeView";
 	DwtTabView.call(this, parent, className, Dwt.ABSOLUTE_STYLE);

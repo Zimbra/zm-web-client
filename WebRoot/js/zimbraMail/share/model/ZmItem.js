@@ -41,7 +41,7 @@
 * @param id			[int]			unique ID
 * @param list		[ZmList]		list that contains this item
 */
-function ZmItem(appCtxt, type, id, list) {
+ZmItem = function(appCtxt, type, id, list) {
 
 	if (arguments.length == 0) return;
 	ZmModel.call(this, type);

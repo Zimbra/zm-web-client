@@ -41,7 +41,7 @@
  * 
  * @param appCtxt		[ZmAppCtxt]		the app context
  */
-function ZmKeyMap(appCtxt) {
+ZmKeyMap = function(appCtxt) {
 	
 	this._appCtxt = appCtxt;
 	ZmKeyMap._setPreconditions();
@@ -317,7 +317,7 @@ function(mapName, action) {
  * 
  * @author Conrad Damon
  */
-function ZmShortcut(mapName, keySequence, action, arg, baseAction, num) {
+ZmShortcut = function(mapName, keySequence, action, arg, baseAction, num) {
 	this.mapName = mapName;
 	this.keySequence = keySequence;
 	this.action = action;

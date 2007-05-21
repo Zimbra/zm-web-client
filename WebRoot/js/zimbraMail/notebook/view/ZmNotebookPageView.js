@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNotebookPageView(parent, appCtxt, controller, dropTgt) {
+ZmNotebookPageView = function(parent, appCtxt, controller, dropTgt) {
 	DwtComposite.call(this, parent, "ZmNotebookPageView", DwtControl.ABSOLUTE_STYLE);
 	
 	this._appCtxt = appCtxt;

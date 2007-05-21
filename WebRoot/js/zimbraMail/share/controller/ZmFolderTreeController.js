@@ -34,7 +34,7 @@
 * @param type		[constant]*		type of organizer we are displaying/controlling (folder or search)
 * @param dropTgt	[DwtDropTgt]	drop target for this type
 */
-function ZmFolderTreeController(appCtxt, type, dropTgt) {
+ZmFolderTreeController = function(appCtxt, type, dropTgt) {
 
 	if (arguments.length == 0) return;
 

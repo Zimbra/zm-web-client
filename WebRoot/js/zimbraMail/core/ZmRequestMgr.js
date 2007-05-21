@@ -36,7 +36,7 @@
  * @param controller	[ZmController]	main controller
  * @param domain		[string]		current domain
  */
-function ZmRequestMgr(appCtxt, controller, domain) {
+ZmRequestMgr = function(appCtxt, controller, domain) {
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;

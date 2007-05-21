@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmDoublePaneView(parent, className, posStyle, mode, controller, dropTgt) {
+ZmDoublePaneView = function(parent, className, posStyle, mode, controller, dropTgt) {
 
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, parent, className, posStyle);

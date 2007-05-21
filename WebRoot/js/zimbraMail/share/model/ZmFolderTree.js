@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmFolderTree(appCtxt, type) {
+ZmFolderTree = function(appCtxt, type) {
 	
 	ZmTree.call(this, type, appCtxt);
 };

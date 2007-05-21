@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMimeTable() {
+ZmMimeTable = function() {
 };
 
 // IGNORE means the client will not display these attachment types to the user

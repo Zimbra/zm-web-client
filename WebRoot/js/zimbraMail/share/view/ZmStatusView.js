@@ -22,7 +22,7 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-function ZmStatusView(parent, className, posStyle) {
+ZmStatusView = function(parent, className, posStyle) {
 
 	if (arguments.length == 0) return;
 	className = className || "ZmStatus";
@@ -239,7 +239,7 @@ function(ev) {
 // Classes
 //
 
-function ZmToast(parent) {
+ZmToast = function(parent) {
     DwtControl.call(this, parent.shell, "ZToast", Dwt.ABSOLUTE_STYLE);
     this._statusView = parent;
     this._createHtml();

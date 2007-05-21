@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalViewMgr(parent, controller, dropTgt) {
+ZmCalViewMgr = function(parent, controller, dropTgt) {
 
 	DwtComposite.call(this, parent, "ZmCalViewMgr", Dwt.ABSOLUTE_STYLE);
 	this.addControlListener(new AjxListener(this, this._controlListener));

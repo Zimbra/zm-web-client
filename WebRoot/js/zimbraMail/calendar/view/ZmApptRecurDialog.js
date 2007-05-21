@@ -34,7 +34,7 @@
 * @param appCtxt 		the singleton app context
 * @param className 		optional class name for this view
 */
-function ZmApptRecurDialog(parent, appCtxt, className) {
+ZmApptRecurDialog = function(parent, appCtxt, className) {
 
 	DwtDialog.call(this, parent, className, ZmMsg.customRepeat);
 	this._appCtxt = appCtxt;

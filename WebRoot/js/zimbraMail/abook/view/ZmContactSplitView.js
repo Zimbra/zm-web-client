@@ -27,7 +27,7 @@
 // ZmContactSplitView
 // - parent for the simple list view and xform view
 //////////////////////////////////////////////////////////////////////////////
-function ZmContactSplitView(parent, className, posStyle, controller, dropTgt) {
+ZmContactSplitView = function(parent, className, posStyle, controller, dropTgt) {
 	if (arguments.length == 0) return;
 
 	className = className || "ZmContactSplitView";
@@ -588,7 +588,7 @@ function(tagId) {
 // ZmContactSimpleView
 // - a simple contact list view (contains only full name)
 //////////////////////////////////////////////////////////////////////////////
-function ZmContactSimpleView(parent, className, posStyle, controller, dropTgt) {
+ZmContactSimpleView = function(parent, className, posStyle, controller, dropTgt) {
 	className = className || "ZmContactSimpleView";
 	ZmContactsBaseView.call(this, parent, className, posStyle, ZmController.CONTACT_SIMPLE_VIEW, controller, null, dropTgt);
 };

@@ -36,7 +36,7 @@
 * @param prefsApp		[ZmPreferencesApp]	the preferences app
 * @param prefsView		[ZmPreferencesView]	the preferences view
 */
-function ZmVoicePrefsController(appCtxt, container, prefsApp, prefsView) {
+ZmVoicePrefsController = function(appCtxt, container, prefsApp, prefsView) {
 	ZmPrefListController.call(this, appCtxt, container, prefsApp, prefsView);
 
 	this._listView = new ZmVoicePrefsView(prefsView._parent, appCtxt, this);

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmTasksApp(appCtxt, container) {
+ZmTasksApp = function(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.TASKS, appCtxt, container);
 };

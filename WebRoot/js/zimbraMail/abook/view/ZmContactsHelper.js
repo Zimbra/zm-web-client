@@ -30,7 +30,7 @@
  *
  * @author Conrad Damon
  */
-function ZmContactsHelper() {};
+ZmContactsHelper = function() {};
 
 /**
  * Performs a contact search (in either personal contacts or in the GAL) and populates

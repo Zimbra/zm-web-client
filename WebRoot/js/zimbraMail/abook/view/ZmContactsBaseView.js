@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmContactsBaseView(parent, className, posStyle, view, controller, headerList, dropTgt) {
+ZmContactsBaseView = function(parent, className, posStyle, view, controller, headerList, dropTgt) {
 
 	if (arguments.length == 0) return;
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
@@ -161,7 +161,7 @@ function() {
 };
 
 
-function ZmContactAlphabetBar(parent, appCtxt, className) {
+ZmContactAlphabetBar = function(parent, appCtxt, className) {
 	if (arguments.length == 0) return;
 
 	DwtComposite.call(this, parent, className);

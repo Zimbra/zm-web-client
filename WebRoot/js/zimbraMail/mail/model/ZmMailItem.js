@@ -35,7 +35,7 @@
 * @param id			[int]			unique ID
 * @param list		[ZmMailList]	list that contains this mail item
 */
-function ZmMailItem(appCtxt, type, id, list) {
+ZmMailItem = function(appCtxt, type, id, list) {
 
 	if (arguments.length == 0) return;
 	ZmItem.call(this, appCtxt, type, id, list);

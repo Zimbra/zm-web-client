@@ -36,7 +36,7 @@
 * 						on object opens its corresponding view)
 * @param skipHandlers 	true to avoid adding the standard handlers
 */
-function ZmObjectManager(view, appCtxt, selectCallback, skipHandlers) {
+ZmObjectManager = function(view, appCtxt, selectCallback, skipHandlers) {
 
 	if (arguments.length < 1) {return;}
 	//DBG.println(AjxDebug.DBG2, "ZmObjectManager created by: " + view);
@@ -304,7 +304,7 @@ function(node, re_discard, re_allow, callbacks) {
 
 	// This inner function does the actual work.  BEWARE that it return-s
 	// in various places, not only at the end.
-	function recurse(node, handlers) {
+	recurse = function(node, handlers) {
 		var tmp, i, val, next;
 		switch (node.nodeType) {
 		    case 1:	// ELEMENT_NODE

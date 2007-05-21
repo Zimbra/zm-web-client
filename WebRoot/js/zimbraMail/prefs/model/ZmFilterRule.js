@@ -35,7 +35,7 @@
 * @param name	[string]*	rule name
 * @param active	[boolean]*	true if the rule is enabled
 */
-function ZmFilterRule(name, active) {
+ZmFilterRule = function(name, active) {
 	this.name = name;
 	this.groupOp = ZmFilterRule.GROUP_ANY;
 	this.actions = [];
@@ -496,7 +496,7 @@ function(appCtxt) {
 * @param subjectModifier	[string]*	further detail for the subject
 * @param valueModifier		[string]*	further detail for the value
 */
-function ZmCondition(subject, comparator, value, subjectModifier, valueModifier) {
+ZmCondition = function(subject, comparator, value, subjectModifier, valueModifier) {
 	this.subject = subject;
 	this.comparator = comparator;
 	this.value = value;
@@ -513,7 +513,7 @@ function ZmCondition(subject, comparator, value, subjectModifier, valueModifier)
 * @param name	[constant]	action name
 * @param arg	[string]*	optional argument
 */
-function ZmAction(name, arg) {
+ZmAction = function(name, arg) {
 	this.name = name;
 	this.arg = arg;
 };

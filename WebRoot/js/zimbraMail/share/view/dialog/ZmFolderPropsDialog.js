@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmFolderPropsDialog(appCtxt, parent, className) {
+ZmFolderPropsDialog = function(appCtxt, parent, className) {
 	className = className || "ZmFolderPropsDialog";
 	var extraButtons;
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMimePart() {
+ZmMimePart = function() {
 	
 	ZmModel.call(this, ZmEvent.S_ATT);
 	

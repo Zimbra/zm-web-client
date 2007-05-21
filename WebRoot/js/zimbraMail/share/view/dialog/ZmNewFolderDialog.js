@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewFolderDialog(parent, className) {
+ZmNewFolderDialog = function(parent, className) {
 	var title = ZmMsg.createNewFolder;
 	var type = ZmOrganizer.FOLDER;
 	ZmNewOrganizerDialog.call(this, parent, className, title, type);

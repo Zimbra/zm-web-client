@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalColView(parent, posStyle, controller, dropTgt, view, numDays, scheduleMode) {
+ZmCalColView = function(parent, posStyle, controller, dropTgt, view, numDays, scheduleMode) {
 	if (arguments.length == 0) return;
 
 	if (numDays == null) numDays = 1;

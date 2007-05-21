@@ -28,7 +28,7 @@
  * mountpoints in an overview tree but is mostly used as a utility to
  * create mountpoints.
  */
-function ZmMountpoint(params) {
+ZmMountpoint = function(params) {
 	params.type = ZmOrganizer.MOUNTPOINT;
 	ZmOrganizer.call(this, params);
 	this.view = params.view;

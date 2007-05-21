@@ -36,7 +36,7 @@
 * @param className		[string]*			CSS class
 * @param posStyle		[constant]*			positioning style
 */
-function ZmToolBar(parent, className, posStyle) {
+ZmToolBar = function(parent, className, posStyle) {
 
 	if (arguments.length == 0) return;
 //	className = className ? className : "ZmToolBar";

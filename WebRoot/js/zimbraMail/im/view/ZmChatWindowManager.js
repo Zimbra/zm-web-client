@@ -1,4 +1,4 @@
-function ZmChatWindowManager(parent) {
+ZmChatWindowManager = function(parent) {
 	DwtWindowManager.call(this, parent);
 	var dt = new DwtDropTarget([ "ZmChatWidget" ]);
 	this.setDropTarget(dt);

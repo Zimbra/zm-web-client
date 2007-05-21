@@ -4,7 +4,7 @@ var shell = null;
 var spreadSheet = null;
 var model = null;
 
-function create(data) {
+create = function(data) {
 	shell = new DwtShell({className:"MainShell"});
 	shell.getKeyboardMgr().registerKeyMap(new DwtKeyMap(true));
 	spreadSheet = new ZmSpreadSheet(shell, null, "absolute");
@@ -23,7 +23,7 @@ function create(data) {
 	spreadSheet.focus();
 };
 
-function _resize() {
+_resize = function() {
 	spreadSheet.setDisplay("none");
 	var w = document.body.clientWidth;
 	var h = document.body.clientHeight;
@@ -35,21 +35,21 @@ function _resize() {
 	spreadSheet.setBounds(0, 0, w, h);
 };
 
-function serialize() {
+serialize = function() {
 	return model.serialize();
 };
 
-function deserialize(data) {
+deserialize = function(data) {
 	model = new ZmSpreadSheetModel(0, 0);
 	model.deserialize(data);
 	spreadSheet.setModel(model);
 };
 
-function getHTML() {
+getHTML = function() {
 	return model.getHtml();
 };
 
-function getHeadHTML() {
+getHeadHTML = function() {
 	return [ "<style type='text/css'>",
 		 "td.SpreadSheet-Type-number { text-align: right; }",
 		 "td.SpreadSheet-Type-currency { text-align: right; }",

@@ -39,7 +39,7 @@
  *
  * @author Conrad Damon
  */
-function ZmConvDoublePaneView(parent, className, posStyle, controller, dropTgt) {
+ZmConvDoublePaneView = function(parent, className, posStyle, controller, dropTgt) {
 
 	className = className || "ZmConvDoublePaneView";
 	ZmDoublePaneView.call(this, parent, className, posStyle, ZmController.CONVLIST_VIEW, controller, dropTgt);
@@ -77,7 +77,7 @@ function(mode, controller, dropTgt) {
  * It handles expanding convs as well as paging additional messages in. Message rows are
  * inserted after the row of the owning conv.
  */
-function ZmConvListView(parent, className, posStyle, controller, dropTgt) {
+ZmConvListView = function(parent, className, posStyle, controller, dropTgt) {
 
 	var headerList = this._getHeaderList(parent);
 	ZmMailListView.call(this, parent, className, posStyle, ZmController.CONVLIST_VIEW, ZmItem.CONV, controller, headerList, dropTgt);

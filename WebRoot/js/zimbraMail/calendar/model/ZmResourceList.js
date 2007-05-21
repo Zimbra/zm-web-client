@@ -36,7 +36,7 @@
 * @param resType	[constant]		type of resources (location or equipment)
 * @param search		[ZmSearch]*		search that generated this list
 */
-function ZmResourceList(appCtxt, resType, search) {
+ZmResourceList = function(appCtxt, resType, search) {
 	ZmContactList.call(this, appCtxt, search, true, ZmItem.RESOURCE);
 
 	this.resType = resType;

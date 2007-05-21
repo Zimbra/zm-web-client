@@ -32,7 +32,7 @@
 * @author Conrad Damon
 * @param appCtxt	[ZmAppCtxt]		app context
 */
-function ZmSearchTreeController(appCtxt) {
+ZmSearchTreeController = function(appCtxt) {
 
 	var dropTgt = new DwtDropTarget("ZmSearchFolder");
 	ZmFolderTreeController.call(this, appCtxt, ZmOrganizer.SEARCH, dropTgt);

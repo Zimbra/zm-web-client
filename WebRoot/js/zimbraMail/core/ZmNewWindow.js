@@ -38,7 +38,7 @@
 * @param appCtxt	[ZmAppCtxt]		the app context
 * @param domain		[string]	current domain
 */
-function ZmNewWindow(appCtxt, domain) {
+ZmNewWindow = function(appCtxt, domain) {
 
 	ZmController.call(this, appCtxt);
 

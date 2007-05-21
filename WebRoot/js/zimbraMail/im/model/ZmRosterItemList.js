@@ -30,7 +30,7 @@
 * This class represents a list of appts.
 *
 */
-function ZmRosterItemList(appCtxt) {
+ZmRosterItemList = function(appCtxt) {
 	ZmList.call(this, ZmItem.ROSTER_ITEM, appCtxt);
 };
 

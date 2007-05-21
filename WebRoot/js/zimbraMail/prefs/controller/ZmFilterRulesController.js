@@ -35,7 +35,7 @@
 * @param container		[DwtShell]			the shell
 * @param prefsApp		[ZmPreferencesApp]	the preferences app
 */
-function ZmFilterRulesController(appCtxt, container, prefsApp, prefsView) {
+ZmFilterRulesController = function(appCtxt, container, prefsApp, prefsView) {
 
 	ZmController.call(this, appCtxt, container, prefsApp);
 

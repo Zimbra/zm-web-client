@@ -30,7 +30,7 @@
 * @param appCtxt		app context
 * @param container		containing shell
 */
-function ZmChatListController(appCtxt, container, imApp) {
+ZmChatListController = function(appCtxt, container, imApp) {
     if (arguments.length == 0) return;
 
 	ZmController.call(this, appCtxt, container, imApp);

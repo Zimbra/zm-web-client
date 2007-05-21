@@ -36,7 +36,7 @@
 * @param container	containing shell
 * @param mailApp	containing app
 */
-function ZmMsgController(appCtxt, container, mailApp) {
+ZmMsgController = function(appCtxt, container, mailApp) {
 
 	ZmMailListController.call(this, appCtxt, container, mailApp);
 };

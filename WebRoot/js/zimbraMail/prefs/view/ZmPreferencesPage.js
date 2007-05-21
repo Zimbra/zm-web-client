@@ -37,7 +37,7 @@
 * @param view				[constant]					which page we are
 * @param controller			[ZmPrefController]			prefs controller
 */
-function ZmPreferencesPage(parent, appCtxt, view, controller) {
+ZmPreferencesPage = function(parent, appCtxt, view, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmPreferencesPage");
 	

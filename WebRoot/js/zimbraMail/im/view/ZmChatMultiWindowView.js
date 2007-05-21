@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmChatMultiWindowView(parent, className, posStyle, controller) {
+ZmChatMultiWindowView = function(parent, className, posStyle, controller) {
 	if (arguments.length == 0) return;
 	className = className ? className : "ZmChatMultiWindowView";
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;

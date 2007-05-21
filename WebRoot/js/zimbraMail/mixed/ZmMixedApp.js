@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMixedApp(appCtxt, container) {
+ZmMixedApp = function(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.MIXED, appCtxt, container);
 };

@@ -36,7 +36,7 @@
 * @param container			the element that contains everything but the banner (aka _composite)
 * @param parentController	this is an optional parent window controller set by the child window
 */
-function ZmApp(name, appCtxt, container, parentController) {
+ZmApp = function(name, appCtxt, container, parentController) {
 
 	if (arguments.length == 0) return;
 	

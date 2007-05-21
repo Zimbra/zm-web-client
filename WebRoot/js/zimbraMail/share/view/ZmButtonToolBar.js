@@ -41,7 +41,7 @@
  * @param buttonClassName	[string]*			CSS class name for buttons
  * @param overrides			[hash]*				hash of overrides by op ID
  */
-function ZmButtonToolBar(params) {
+ZmButtonToolBar = function(params) {
 	if (arguments.length == 0) return;
 
 //    var className = params.className || "ZToolbar";

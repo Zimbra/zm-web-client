@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmController(appCtxt, container, app) {
+ZmController = function(appCtxt, container, app) {
 
 	if (arguments.length == 0) return;
 

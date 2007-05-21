@@ -30,7 +30,7 @@
  * @param model - A ZmSpreadSheetModel to pick cell values from
  * @param formula - the formula string, without the preceding equal sign
  */
-function ZmSpreadSheetFormulae(model, formula) {
+ZmSpreadSheetFormulae = function(model, formula) {
 	this._model = model;
 	if (formula) {
 		this.compile(formula);

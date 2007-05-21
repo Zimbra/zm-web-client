@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewImDialog(parent, className, screenName) {
+ZmNewImDialog = function(parent, className, screenName) {
 
 	this._screenName = screenName;
 	var title = "Instant Message - " + screenName;

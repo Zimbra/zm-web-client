@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAttachmentListView(parent, className, posStyle, controller) {
+ZmAttachmentListView = function(parent, className, posStyle, controller) {
 
 	var headerList = this._getHeaderList(parent);
 	ZmMailListView.call(this, parent, className, posStyle, ZmController.ATT_LIST_VIEW, ZmItem.ATT, controller, headerList);

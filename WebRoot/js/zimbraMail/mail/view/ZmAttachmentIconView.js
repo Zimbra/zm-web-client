@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAttachmentIconView(parent, className, posStyle, controller) {
+ZmAttachmentIconView = function(parent, className, posStyle, controller) {
 
 	ZmMailListView.call(this, parent, className, posStyle, ZmController.ATT_ICON_VIEW, ZmItem.ATT, controller);
 

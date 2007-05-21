@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmVoiceApp(appCtxt, container, parentController) {
+ZmVoiceApp = function(appCtxt, container, parentController) {
 	this.phones = [];
 	this.accordionItem = null; // Currently selected accordion item.
 	ZmApp.call(this, ZmApp.VOICE, appCtxt, container, parentController);

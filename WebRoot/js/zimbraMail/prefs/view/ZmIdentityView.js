@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
- function ZmIdentityView(parent, appCtxt, controller) {
+ ZmIdentityView = function(parent, appCtxt, controller) {
 	var labels = { 
 		infoTitle: ZmMsg.identityInfoTitle, infoContents: ZmMsg.identityInfoContent,
 		listHeader: ZmMsg.identities, detailsHeader: ZmMsg.identitiesLabel
@@ -326,7 +326,7 @@ function(originalValue) {
 * @constructor
 * A page inside of the identities preferences
 */
-function ZmIdentityPage(parent, appCtxt, pageId, className, posStyle) {
+ZmIdentityPage = function(parent, appCtxt, pageId, className, posStyle) {
 	DwtTabViewPage.call(this, parent, className, posStyle);
 	this._appCtxt = appCtxt;
 	this._pageId = pageId;

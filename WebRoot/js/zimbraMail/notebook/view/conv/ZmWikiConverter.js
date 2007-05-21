@@ -27,7 +27,7 @@
 // ZmWikiConverter class
 //
 
-function ZmWikiConverter(toHtmlRules, toWikiRules) {
+ZmWikiConverter = function(toHtmlRules, toWikiRules) {
 	if (arguments.length == 0) return;
 	this._toHtmlRules = toHtmlRules;
 	this._toWikiRules = toWikiRules;
@@ -67,7 +67,7 @@ ZmWikiConverter.restore = function(id) {
 // MediaWikiConverter syntax conversion
 //
 
-function MediaWikiConverter() {
+MediaWikiConverter = function() {
 	ZmWikiConverter.call(this, MediaWikiConverter.toHtml.rules, MediaWikiConverter.toWiki.rules);
 }
 MediaWikiConverter.prototype = new ZmWikiConverter;
@@ -251,7 +251,7 @@ MediaWikiConverter.toWiki.rules = [
 // TWikiConverter syntax conversion
 //
 
-function TWikiConverter() {
+TWikiConverter = function() {
 	ZmWikiConverter.call(this, TWikiConverter.toHtml.rules, TWikiConverter.toWiki.rules);
 	this._webMap = {};
 	this._varMap = {

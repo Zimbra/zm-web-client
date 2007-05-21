@@ -30,7 +30,7 @@
 * This class represents a phone.
 *
 */
-function ZmPhone(appCtxt) {
+ZmPhone = function(appCtxt) {
 	this._appCtxt = appCtxt;
 	this.name = null; // The internal representation of the phone.
 	this.used = null; // Amount of quota used.

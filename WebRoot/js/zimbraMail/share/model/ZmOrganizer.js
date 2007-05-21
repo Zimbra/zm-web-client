@@ -49,7 +49,7 @@
 * @param rid		[string]*		Remote ID of organizer, if remote folder
 * @param restUrl	[string]*		REST URL of this organizer.
 */
-function ZmOrganizer(params) {
+ZmOrganizer = function(params) {
 
 	if (arguments.length == 0) return;
 	

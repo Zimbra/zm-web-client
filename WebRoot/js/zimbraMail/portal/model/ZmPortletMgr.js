@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPortletMgr(appCtxt) {
+ZmPortletMgr = function(appCtxt) {
     this._appCtxt = appCtxt;
     this._portlets = {};
     this._loadedZimlets = {};

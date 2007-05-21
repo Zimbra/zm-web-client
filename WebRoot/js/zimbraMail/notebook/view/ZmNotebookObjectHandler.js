@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNotebookObjectHandler(appCtxt) {
+ZmNotebookObjectHandler = function(appCtxt) {
 	ZmObjectHandler.call(this, appCtxt, ZmNotebookObjectHandler.TYPE);
 };
 ZmNotebookObjectHandler.prototype = new ZmObjectHandler;

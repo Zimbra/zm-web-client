@@ -1,4 +1,4 @@
-function Test() {
+Test = function() {
 	this.shell = new DwtShell({className:"MainShell"});
 
 // 	this.shell._setMouseEventHdlrs();

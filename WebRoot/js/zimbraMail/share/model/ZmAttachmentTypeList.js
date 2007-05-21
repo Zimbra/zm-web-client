@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAttachmentTypeList(appCtxt) {
+ZmAttachmentTypeList = function(appCtxt) {
 	if (arguments.length == 0) return;
 	ZmModel.call(this, ZmEvent.S_ATT);
 

@@ -22,7 +22,7 @@
  *
  * ***** END LICENSE BLOCK *****
  */
-function ZmRosterItem(id, list, appCtxt, name, presence, groupNames) {
+ZmRosterItem = function(id, list, appCtxt, name, presence, groupNames) {
 	if (arguments.length > 0) {
 		ZmItem.call(this, appCtxt, ZmOrganizer.ROSTER_ITEM, id, list);
 		this.name = name;

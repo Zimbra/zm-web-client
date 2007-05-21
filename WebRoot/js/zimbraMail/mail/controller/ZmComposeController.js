@@ -34,7 +34,7 @@
 * @param container		the containing element
 * @param mailApp		a handle to the mail application
 */
-function ZmComposeController(appCtxt, container, mailApp) {
+ZmComposeController = function(appCtxt, container, mailApp) {
 
 	ZmController.call(this, appCtxt, container, mailApp);
 

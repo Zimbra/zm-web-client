@@ -34,7 +34,7 @@
 * @param container		containing shell
 * @param mixedApp		containing app
 */
-function ZmMixedController(appCtxt, container, mixedApp) {
+ZmMixedController = function(appCtxt, container, mixedApp) {
 
 	ZmMailListController.call(this, appCtxt, container, mixedApp);
 

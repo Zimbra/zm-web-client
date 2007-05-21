@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmTradView(parent, className, posStyle, controller, dropTgt) {
+ZmTradView = function(parent, className, posStyle, controller, dropTgt) {
 
 	className = className || "ZmTradView";
 	ZmDoublePaneView.call(this, parent, className, posStyle, ZmController.TRAD_VIEW, controller, dropTgt);

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPage(appCtxt, id, list) {
+ZmPage = function(appCtxt, id, list) {
 	if (arguments.length == 0) return;
 	ZmNotebookItem.call(this, appCtxt, ZmItem.PAGE, id, list);
 }

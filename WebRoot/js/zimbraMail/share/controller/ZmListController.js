@@ -43,7 +43,7 @@
 * @param container	containing shell
 * @param app		containing app
 */
-function ZmListController(appCtxt, container, app) {
+ZmListController = function(appCtxt, container, app) {
 
 	if (arguments.length == 0) return;
 	ZmController.call(this, appCtxt, container, app);

@@ -36,7 +36,7 @@
  *  Abstract method:
  * _createDetails() creates the contents of the details pane.
  */
- function ZmPrefListView(parent, appCtxt, controller, labels, className, posStyle) {
+ ZmPrefListView = function(parent, appCtxt, controller, labels, className, posStyle) {
 	if (arguments.length == 0) return;
 
 	DwtTabViewPage.call(this, parent, className, posStyle);
@@ -293,7 +293,7 @@ function(ev) {
 * ZmPrefList
 * The list on the left side of the view.
 */
-function ZmPrefList(parent, appCtxt, listHeader) {
+ZmPrefList = function(parent, appCtxt, listHeader) {
 	var headerList = [new DwtListHeaderItem(ZmPrefList.COLUMN, listHeader, null, ZmPrefList.COLUMN_WIDTH)];
 	DwtListView.call(this, parent, "ZmPrefList", null, headerList);	
 

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPageEditController(appCtxt, container, app) {
+ZmPageEditController = function(appCtxt, container, app) {
 	ZmListController.call(this, appCtxt, container, app);
 
 	ZmPageEditController.RADIO_GROUP = {};

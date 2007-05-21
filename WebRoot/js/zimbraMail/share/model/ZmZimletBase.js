@@ -29,7 +29,7 @@
  *
  * @author Mihai Bazon
  */
-function ZmZimletBase() {
+ZmZimletBase = function() {
 	// For Zimlets, the ZmObjectHandler constructor is a no-op.  Zimlets
 	// don't receive any arguments in constructor.  In the init() function
 	// below we call ZmObjectHandler.init() in order to set some arguments.

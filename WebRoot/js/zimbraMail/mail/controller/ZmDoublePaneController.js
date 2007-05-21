@@ -35,7 +35,7 @@
 * @param container	containing shell
 * @param mailApp	containing app
 */
-function ZmDoublePaneController(appCtxt, container, mailApp) {
+ZmDoublePaneController = function(appCtxt, container, mailApp) {
 
 	if (arguments.length == 0) return;
 	ZmMailListController.call(this, appCtxt, container, mailApp);

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmTag(params) {
+ZmTag = function(params) {
 	params.type = ZmOrganizer.TAG;
 	ZmOrganizer.call(this, params);
 };

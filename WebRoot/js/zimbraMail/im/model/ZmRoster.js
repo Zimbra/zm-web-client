@@ -30,7 +30,7 @@
 * This class represents a list of appts.
 *
 */
-function ZmRoster(appCtxt, imApp) {
+ZmRoster = function(appCtxt, imApp) {
 	ZmModel.call(this, ZmEvent.S_ROSTER);
 
 	this._appCtxt = appCtxt;

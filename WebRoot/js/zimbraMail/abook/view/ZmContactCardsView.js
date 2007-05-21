@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmContactCardsView(parent, className, posStyle, controller, dropTgt) {
+ZmContactCardsView = function(parent, className, posStyle, controller, dropTgt) {
 
 	className = className ? className : "ZmContactCardsView";
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;

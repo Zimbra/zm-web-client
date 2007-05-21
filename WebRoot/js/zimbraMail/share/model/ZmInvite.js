@@ -30,7 +30,7 @@
 * 
 * @author
 */
-function ZmInvite() {
+ZmInvite = function() {
 	ZmModel.call(this);
 };
 

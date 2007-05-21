@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAttachmentToolBar(parent) {
+ZmAttachmentToolBar = function(parent) {
 
 	ZmToolBar.call(this, parent);
 

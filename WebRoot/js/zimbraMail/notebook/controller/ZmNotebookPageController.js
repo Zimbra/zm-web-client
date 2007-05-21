@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNotebookPageController(appCtxt, container, app) {
+ZmNotebookPageController = function(appCtxt, container, app) {
 	ZmNotebookController.call(this, appCtxt, container, app);
 
 	this._listeners[ZmOperation.PAGE_BACK] = new AjxListener(this, this._pageBackListener);

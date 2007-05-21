@@ -86,7 +86,7 @@
 * @param isNewWindow	true if we are a child window of the main app
 * @param hasSkin		true if the app has provided containing HTML
 */
-function ZmAppViewMgr(shell, controller, isNewWindow, hasSkin) {
+ZmAppViewMgr = function(shell, controller, isNewWindow, hasSkin) {
 
 	ZmAppViewMgr._setContainerIds();
 

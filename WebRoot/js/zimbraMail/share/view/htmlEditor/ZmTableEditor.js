@@ -122,7 +122,7 @@ ZmTableEditor = {
 
 };
 
-function ZmTablePropsDialog(parent) {
+ZmTablePropsDialog = function(parent) {
 	if (arguments.length == 0) return;
 	var advancedBtn = new DwtDialog_ButtonDescriptor(ZmTablePropsDialog.ADVANCED_BUTTON, ZmMsg.advanced, DwtDialog.ALIGN_LEFT);
 	DwtDialog.call(this, parent, null, ZmMsg.tableProperties,
@@ -375,7 +375,7 @@ ZmTablePropsDialog.prototype.getValues = function() {
 // ****************************************************************
 // cell properties dialog
 
-function ZmCellPropsDialog(parent) {
+ZmCellPropsDialog = function(parent) {
 	DwtDialog.call(this, parent, null, ZmMsg.cellProperties,
 		       [ DwtDialog.OK_BUTTON,
 			 DwtDialog.CANCEL_BUTTON ]);

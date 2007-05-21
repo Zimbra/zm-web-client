@@ -33,7 +33,7 @@
 * @param id			[int]			numeric ID
 * @param name		[string]		name
 */
-function ZmTask(appCtxt, list, id, folderId) {
+ZmTask = function(appCtxt, list, id, folderId) {
 	ZmCalItem.call(this, appCtxt, ZmItem.TASK, list, id, folderId);
 
 	this.priority = ZmCalItem.PRIORITY_NORMAL;

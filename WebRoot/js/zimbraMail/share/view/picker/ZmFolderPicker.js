@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmFolderPicker(parent) {
+ZmFolderPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.FOLDER);
 

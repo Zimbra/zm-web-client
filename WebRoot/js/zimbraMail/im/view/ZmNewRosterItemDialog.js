@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewRosterItemDialog(parent, appCtxt) {
+ZmNewRosterItemDialog = function(parent, appCtxt) {
 	ZmQuickAddDialog.call(this, parent, null, null);
 	this._appCtxt = appCtxt;
 	this.setContent(this._contentHtml());

@@ -38,7 +38,7 @@
 * @param controller			[ZmApptComposeController]	the appt compose controller
 * @param dateInfo			[object]					hash of date info
 */
-function ZmSchedTabViewPage(parent, appCtxt, attendees, controller, dateInfo) {
+ZmSchedTabViewPage = function(parent, appCtxt, attendees, controller, dateInfo) {
 
 	DwtTabViewPage.call(this, parent);
 

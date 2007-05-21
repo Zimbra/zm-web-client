@@ -37,7 +37,7 @@
 * @param appCtxt	[ZmAppCtxt]		app context
 * @param container	[DwtControl]	top-level container
 */
-function ZmOverviewController(appCtxt, container) {
+ZmOverviewController = function(appCtxt, container) {
 
 	ZmController.call(this, appCtxt, container);
 	

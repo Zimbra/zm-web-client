@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPicker(parent, id) {
+ZmPicker = function(parent, id) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, parent, "ZmPicker", DwtControl.ABSOLUTE_STYLE);
 
@@ -169,7 +169,7 @@ ZmPicker.KEY_ID = "_id_";
 ZmPicker.KEY_CTOR = "_ctor_";
 ZmPicker.KEY_PICKER = "_picker_";
 
-function ZmPicker_Descriptor(id, label, image, toolTip, ctor) {
+ZmPicker_Descriptor = function(id, label, image, toolTip, ctor) {
 	this.id = id;
 	this.label = label || ZmMsg[ZmPicker.MSG_KEY[id]];
 	this.image = image || ZmPicker.IMAGE[id];

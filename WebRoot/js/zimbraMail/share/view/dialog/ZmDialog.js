@@ -39,7 +39,7 @@
 * @param extraButtons		[Array]*		buttons to show in addition to standard set
 * @param view				[DwtControl]*	dialog contents
 */
-function ZmDialog(params) {
+ZmDialog = function(params) {
 
 	if (arguments.length == 0) return;
 	DwtDialog.call(this, params.parent, params.className, params.title,

@@ -35,7 +35,7 @@
 * @param container	containing shell
 * @param mailApp	containing app
 */
-function ZmMailListController(appCtxt, container, mailApp) {
+ZmMailListController = function(appCtxt, container, mailApp) {
 
 	if (arguments.length == 0) return;
 	ZmListController.call(this, appCtxt, container, mailApp);

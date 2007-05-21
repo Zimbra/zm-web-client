@@ -39,7 +39,7 @@
  * - Helper methods shared by several views associated w/ creating new appointments.
  *   XXX: move to new files when fully baked!
 */
-function ZmApptViewHelper() {
+ZmApptViewHelper = function() {
 };
 
 ZmApptViewHelper.REPEAT_OPTIONS = [
@@ -350,7 +350,7 @@ function(appt,id, body_style, controller) {
 * @param parent		[DwtComposite]	the parent widget
 * @param id			[string]*		an ID that is propagated to component select objects
 */
-function ZmTimeSelect(parent, id) {
+ZmTimeSelect = function(parent, id) {
 	DwtComposite.call(this, parent);
 
 	this.id = id;

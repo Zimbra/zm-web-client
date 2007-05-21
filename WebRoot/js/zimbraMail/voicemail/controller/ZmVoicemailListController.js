@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmVoicemailListController(appCtxt, container, app) {
+ZmVoicemailListController = function(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmVoiceListController.call(this, appCtxt, container, app);
 

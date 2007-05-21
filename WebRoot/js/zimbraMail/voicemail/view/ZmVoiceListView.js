@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmVoiceListView(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
+ZmVoiceListView = function(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
 	if (arguments.length == 0) return;
 	ZmListView.call(this, parent, className, posStyle, view, type, controller, headerList, dropTgt);
 

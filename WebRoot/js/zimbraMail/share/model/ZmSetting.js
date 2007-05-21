@@ -40,7 +40,7 @@
 * @param dataType		string, int, or boolean
 * @param defaultValue	default value
 */
-function ZmSetting(id, name, type, dataType, defaultValue) {
+ZmSetting = function(id, name, type, dataType, defaultValue) {
 
 	if (arguments.length == 0) return;
 	ZmModel.call(this, ZmEvent.S_SETTING);

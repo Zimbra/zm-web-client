@@ -63,7 +63,7 @@
 * @param keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
 * @param keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
 */
-function ZmAutocompleteListView(params) {
+ZmAutocompleteListView = function(params) {
 
 	var className = params.className ? params.className : "ZmAutocompleteListView";
 	DwtComposite.call(this, params.parent, className, DwtControl.ABSOLUTE_STYLE);

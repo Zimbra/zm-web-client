@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmSearchResult(appCtxt, search) {
+ZmSearchResult = function(appCtxt, search) {
 	if (!search) { return; }
 	this._results = {};
 	this._appCtxt = appCtxt;

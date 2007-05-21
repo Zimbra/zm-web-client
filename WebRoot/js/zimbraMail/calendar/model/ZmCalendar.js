@@ -41,7 +41,7 @@
 * @param rid		[string]*		Remote id of organizer, if remote share
 * @param restUrl	[string]*		The REST URL of this organizer.
 */
-function ZmCalendar(params) {
+ZmCalendar = function(params) {
 	params.type = ZmOrganizer.CALENDAR;
 	ZmOrganizer.call(this, params);
 }

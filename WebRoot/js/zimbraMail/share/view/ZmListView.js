@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmListView(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
+ZmListView = function(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
 
 	if (arguments.length == 0) return;
 	DwtListView.call(this, parent, className, posStyle, headerList);

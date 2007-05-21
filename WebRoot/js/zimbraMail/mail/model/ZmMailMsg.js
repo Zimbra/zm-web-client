@@ -33,7 +33,7 @@
 * @param id			[int]			unique ID
 * @param list		[ZmMailList]	list that contains this message
 */
-function ZmMailMsg(appCtxt, id, list) {
+ZmMailMsg = function(appCtxt, id, list) {
 
 	ZmMailItem.call(this, appCtxt, ZmItem.MSG, id, list);
 

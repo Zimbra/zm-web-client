@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmLinkPropsDialog(appCtxt, shell, className) {
+ZmLinkPropsDialog = function(appCtxt, shell, className) {
 	className = className || "ZmLinkPropsDialog";
 	DwtDialog.call(this, shell, className, ZmMsg.linkProperties);
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));

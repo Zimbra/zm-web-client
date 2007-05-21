@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmTaskListView(parent, controller, dropTgt) {
+ZmTaskListView = function(parent, controller, dropTgt) {
 	if (arguments.length == 0) return;
 
 	var headerList = this._getHeaderList(parent);

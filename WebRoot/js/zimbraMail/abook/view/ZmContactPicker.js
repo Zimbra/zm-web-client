@@ -36,7 +36,7 @@
 * @param appCtxt		[ZmAppCtxt]		app context
 * @param buttonInfo		[array]			transfer button IDs and labels
 */
-function ZmContactPicker(appCtxt, buttonInfo) {
+ZmContactPicker = function(appCtxt, buttonInfo) {
 
 	DwtDialog.call(this, appCtxt.getShell(), null, ZmMsg.selectAddresses);
 
@@ -331,7 +331,7 @@ function(ev) {
 * @param parent			[DwtComposite]	the contact picker
 * @param buttonInfo		[array]			transfer button IDs and labels
 */
-function ZmContactChooser(params) {
+ZmContactChooser = function(params) {
 	this._appCtxt = params.appCtxt;
 	DwtChooser.call(this, params);
 };
@@ -365,7 +365,7 @@ function(item, list) {
 /**
 * This class creates a specialized source list view for the contact chooser.
 */
-function ZmContactChooserSourceListView(parent, appCtxt) {
+ZmContactChooserSourceListView = function(parent, appCtxt) {
 	DwtChooserListView.call(this, parent, DwtChooserListView.SOURCE);
 	this.getHtmlElement().style.overflowX = "hidden";
 	this._appCtxt = appCtxt;
@@ -420,7 +420,7 @@ function(html, idx, item, field, colIdx, params) {
 /**
 * This class creates a specialized target list view for the contact chooser.
 */
-function ZmContactChooserTargetListView(parent, showType, appCtxt) {
+ZmContactChooserTargetListView = function(parent, showType, appCtxt) {
 	this._showType = showType; // call before base class since base calls getHeaderList
 
 	DwtChooserListView.call(this, parent, DwtChooserListView.TARGET);

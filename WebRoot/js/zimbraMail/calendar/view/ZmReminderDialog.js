@@ -27,7 +27,7 @@
 * show history of the status window
 * @param parent			the element that created this view
 */
-function ZmReminderDialog(parent, appCtxt, reminderController, calController) {
+ZmReminderDialog = function(parent, appCtxt, reminderController, calController) {
 	var selectId = Dwt.getNextId();
 	var html = new Array(5);
 	var i = 0;

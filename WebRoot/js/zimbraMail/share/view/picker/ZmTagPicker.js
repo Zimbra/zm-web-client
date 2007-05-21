@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmTagPicker(parent) {
+ZmTagPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.TAG);
 

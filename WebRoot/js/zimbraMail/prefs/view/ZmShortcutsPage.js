@@ -44,7 +44,7 @@
 * @param view				[constant]					which page we are
 * @param controller			[ZmPrefController]			prefs controller
 */
-function ZmShortcutsPage(parent, appCtxt, view, controller) {
+ZmShortcutsPage = function(parent, appCtxt, view, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmShortcutsPage");
 	
@@ -193,7 +193,7 @@ function(ev) {
  * @param organizers		[array]				list of organizer types to handle
  * @param prefId			[int]				ID of shortcuts setting
  */
-function ZmShortcutsPageTabView(parent, appCtxt, controller, organizers, prefId) {
+ZmShortcutsPageTabView = function(parent, appCtxt, controller, organizers, prefId) {
 
     DwtTabView.call(this, parent, "ZmPrefView");
 
@@ -279,7 +279,7 @@ function(delta) {
  * @param appCtxt			[ZmAppCtxt]					the app context
  * @param controller		[ZmPrefController]			prefs controller
  */
-function ZmShortcutsPageTabViewList(parent, appCtxt, controller) {
+ZmShortcutsPageTabViewList = function(parent, appCtxt, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmShortcutsPageTabViewList");
 	
@@ -479,7 +479,7 @@ function(key) {
  * @param controller		[ZmPrefController]			prefs controller
  * @param setting			[string]					value of user's custom shortcuts pref
  */
-function ZmShortcutsPageTabViewCustom(parent, appCtxt, organizer, controller, setting) {
+ZmShortcutsPageTabViewCustom = function(parent, appCtxt, organizer, controller, setting) {
 
 	DwtTabViewPage.call(this, parent, "ZmShortcutsPageTabViewCustom");
 	

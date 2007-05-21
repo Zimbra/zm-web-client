@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmBrowseToolBar(parent, pickers) {
+ZmBrowseToolBar = function(parent, pickers) {
 
 	ZmToolBar.call(this, parent, "ZmBrowseToolBar");
 	

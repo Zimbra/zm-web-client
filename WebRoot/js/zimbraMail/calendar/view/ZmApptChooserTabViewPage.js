@@ -38,7 +38,7 @@
 * @param controller	[ZmApptComposeController]	the appt compose controller
 * @param type		[constant]					chooser page type
 */
-function ZmApptChooserTabViewPage(parent, appCtxt, attendees, controller, type) {
+ZmApptChooserTabViewPage = function(parent, appCtxt, attendees, controller, type) {
 
 	DwtTabViewPage.call(this, parent, "ZmApptChooserTabViewPage");
 
@@ -605,7 +605,7 @@ function(ev) {
 * @param buttonInfo		[array]			transfer button IDs and labels
 * @param appCtxt		[ZmAppCtxt]		global app context
 */
-function ZmApptChooser(parent, buttonInfo, appCtxt) {
+ZmApptChooser = function(parent, buttonInfo, appCtxt) {
 	this._appCtxt = appCtxt;
 	var selectStyle = (parent.type == ZmCalItem.LOCATION) ? DwtChooser.SINGLE_SELECT : null;
 	DwtChooser.call(this, {parent: parent, buttonInfo: buttonInfo, layoutStyle: DwtChooser.VERT_STYLE,
@@ -653,7 +653,7 @@ function(item, list) {
 * @param chooserType	[constant]		type of owning chooser (attendee/location/resource)
 * @param appCtxt 		[ZmAppCtxt] 	global app context
 */
-function ZmApptChooserListView(parent, type, chooserType, appCtxt) {
+ZmApptChooserListView = function(parent, type, chooserType, appCtxt) {
 
 	this._chooserType = chooserType;
 	DwtChooserListView.call(this, parent, type);

@@ -29,7 +29,7 @@
 // Somewhere in here, I need to create proxies of the features. (Or maybe as an easy hack, just work directly on the model. It's not used anywhere else.)
 
 
-function ZmVoicePrefsView(parent, appCtxt, controller) {
+ZmVoicePrefsView = function(parent, appCtxt, controller) {
 	var labels = { listHeader: ZmMsg.phoneNumbers, detailsHeader: ZmMsg.callSettings };
 
 	ZmPrefListView.call(this, parent, appCtxt, controller, labels, "ZmVoicePrefsView", DwtControl.STATIC_STYLE);
@@ -209,7 +209,7 @@ function(identity, request, result) {
 
 
 
-function ZmCallFeatureUI(view) {
+ZmCallFeatureUI = function(view) {
 	this._view = view;
 }
 
@@ -269,7 +269,7 @@ function(enabled) {
 
 /////////////////////////////////////////////////////////////////////////
 
-function ZmAnonymousRejectionUI(view) {
+ZmAnonymousRejectionUI = function(view) {
 	ZmCallFeatureUI.call(this, view);
 	this._checkbox = null;
 }
@@ -308,7 +308,7 @@ function(id) {
 
 /////////////////////////////////////////////////////////////////////////
 
-function ZmCallForwardingUI(view) {
+ZmCallForwardingUI = function(view) {
 	ZmCallFeatureUI.call(this, view);
 	this._checkbox = null;
 }
@@ -376,7 +376,7 @@ function(id) {
 
 /////////////////////////////////////////////////////////////////////////
 
-function ZmSelectiveCallForwardingUI(view) {
+ZmSelectiveCallForwardingUI = function(view) {
 	ZmCallFeatureUI.call(this, view);
 	this._checkbox = null;
 	this._removeCallbackObj = AjxCallback.simpleClosure(this._removeCallback, this);
@@ -536,7 +536,7 @@ function(id) {
 
 /////////////////////////////////////////////////////////////////////////
 
-function ZmEmailNotificationUI(view) {
+ZmEmailNotificationUI = function(view) {
 	ZmCallFeatureUI.call(this, view);
 	this._checkbox = null;
 }

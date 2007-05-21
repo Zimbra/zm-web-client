@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmUploadDialog(appCtxt, shell, className) {
+ZmUploadDialog = function(appCtxt, shell, className) {
 	className = className || "ZmUploadDialog";
 	var title = ZmMsg.uploadDocs;
 	DwtDialog.call(this, shell, className, title);

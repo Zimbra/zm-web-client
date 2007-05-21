@@ -45,7 +45,7 @@
 * @param rid		[string]*		Remote ID of organizer, if remote folder
 * @param restUrl	[string]*		The REST URL of this organizer.
 */
-function ZmFolder(params) {
+ZmFolder = function(params) {
 	if (arguments.length == 0) { return; }
 	params.type = params.type || ZmOrganizer.FOLDER;
 	ZmOrganizer.call(this, params);

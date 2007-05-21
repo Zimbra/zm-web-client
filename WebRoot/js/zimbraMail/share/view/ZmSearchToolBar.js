@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmSearchToolBar(appCtxt, parent, posStyle) {
+ZmSearchToolBar = function(appCtxt, parent, posStyle) {
 
 	this._appCtxt = appCtxt;
 	ZmToolBar.call(this, parent, "ZmSearchToolbar");

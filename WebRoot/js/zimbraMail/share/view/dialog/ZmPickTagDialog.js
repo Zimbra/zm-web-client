@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPickTagDialog(parent, className) {
+ZmPickTagDialog = function(parent, className) {
 
 	if (arguments.length == 0) return;
 

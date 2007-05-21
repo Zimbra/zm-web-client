@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMailApp(appCtxt, container, parentController) {
+ZmMailApp = function(appCtxt, container, parentController) {
 
 	ZmApp.call(this, ZmApp.MAIL, appCtxt, container, parentController);
 };

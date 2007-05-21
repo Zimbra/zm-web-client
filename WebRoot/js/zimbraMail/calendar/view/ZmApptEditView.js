@@ -37,7 +37,7 @@
 * @param dateInfo			[object]					hash of date info
 * @param controller			[ZmController]				the compose controller for this view
 */
-function ZmApptEditView(parent, appCtxt, attendees, controller, dateInfo) {
+ZmApptEditView = function(parent, appCtxt, attendees, controller, dateInfo) {
 	if (arguments.length == 0) return;
 
 	ZmCalItemEditView.call(this, parent, appCtxt, attendees, controller, dateInfo);

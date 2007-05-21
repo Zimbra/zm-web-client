@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmZimletTreeController(appCtxt, type, dropTgt) {
+ZmZimletTreeController = function(appCtxt, type, dropTgt) {
 	if (arguments.length === 0) {return;}
 
 	type = type ? type : ZmOrganizer.ZIMLET;

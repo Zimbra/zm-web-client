@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmTimezone() {
+ZmTimezone = function() {
 }
 
 // Static methods

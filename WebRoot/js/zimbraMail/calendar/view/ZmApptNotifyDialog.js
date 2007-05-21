@@ -31,7 +31,7 @@
 * @author Parag Shah
 * @param parent			the element that created this view
 */
-function ZmApptNotifyDialog(parent) {
+ZmApptNotifyDialog = function(parent) {
 
 	DwtDialog.call(this, parent);
 

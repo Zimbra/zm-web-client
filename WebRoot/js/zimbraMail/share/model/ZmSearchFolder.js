@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmSearchFolder(params) {
+ZmSearchFolder = function(params) {
 	params.type = ZmOrganizer.SEARCH;
 	ZmFolder.call(this, params);
 	

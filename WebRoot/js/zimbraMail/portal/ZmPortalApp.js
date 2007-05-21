@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPortalApp(appCtxt, container, parentController) {
+ZmPortalApp = function(appCtxt, container, parentController) {
 	ZmApp.call(this, ZmApp.PORTAL, appCtxt, container, parentController);
 }
 

@@ -65,7 +65,7 @@
  * @param perm			[constant]*		grantee's permissions on the shared object
  * @param inherit		[boolean]*		if true, children inherit share info
  */
-function ZmShare(params) {
+ZmShare = function(params) {
 
 	this.grantee = {};
 	this.grantor = {};

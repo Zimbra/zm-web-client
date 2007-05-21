@@ -22,7 +22,7 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-function ZmIdentity(appCtxt, name) {
+ZmIdentity = function(appCtxt, name) {
 	if (arguments.length == 0) return;
 	
 	this._appCtxt = appCtxt;
@@ -293,7 +293,7 @@ function() {
 	this.replyOption = identity.replyOption;
 };
 
-function ZmIdentityCollection(appCtxt) {
+ZmIdentityCollection = function(appCtxt) {
 	ZmModel.call(this, ZmEvent.S_IDENTITY);
 	this._appCtxt = appCtxt;
 	this.defaultIdentity = null;

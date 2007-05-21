@@ -42,7 +42,7 @@
 * @param allowedTypes		[hash]*				org types this tree may display
 * @param allowedSubTypes	[hash]*				org types this tree may display below top level
 */
-function ZmTreeView(params) {
+ZmTreeView = function(params) {
 
 	if (arguments.length == 0) return;
 

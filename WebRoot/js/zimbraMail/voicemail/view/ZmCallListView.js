@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCallListView(parent, controller, dropTgt) {
+ZmCallListView = function(parent, controller, dropTgt) {
 	if (arguments.length == 0) return;
 	var headerList = this._getHeaderList();
 	ZmVoiceListView.call(this, parent, null, Dwt.ABSOLUTE_STYLE, ZmController.CALLLIST_VIEW, ZmItem.CALL, controller, headerList, dropTgt);

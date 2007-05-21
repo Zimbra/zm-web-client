@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNotebookTreeController(appCtxt, type, dropTgt) {
+ZmNotebookTreeController = function(appCtxt, type, dropTgt) {
 	
 	type = type ? type : ZmOrganizer.NOTEBOOK;
 	dropTgt = dropTgt ? dropTgt : null;

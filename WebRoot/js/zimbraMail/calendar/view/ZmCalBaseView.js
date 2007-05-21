@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalBaseView(parent, className, posStyle, controller, view) {
+ZmCalBaseView = function(parent, className, posStyle, controller, view) {
 	if (arguments.length == 0) return;
 
 	DwtComposite.call(this, parent, className, posStyle, view);

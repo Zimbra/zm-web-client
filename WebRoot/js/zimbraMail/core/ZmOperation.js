@@ -37,7 +37,7 @@
  * 
  * @author Conrad Damon
  */
-function ZmOperation() {};
+ZmOperation = function() {};
 
 // Special operations
 ZmOperation.NONE 					= "NONE";		// no operations or menu items

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalendarApp(appCtxt, container) {
+ZmCalendarApp = function(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.CALENDAR, appCtxt, container);
 

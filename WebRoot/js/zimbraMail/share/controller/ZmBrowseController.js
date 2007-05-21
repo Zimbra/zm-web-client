@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmBrowseController(appCtxt, parent) {
+ZmBrowseController = function(appCtxt, parent) {
 
 	ZmController.call(this, appCtxt);
     var pickers = this._allPickers = this._getPickers();

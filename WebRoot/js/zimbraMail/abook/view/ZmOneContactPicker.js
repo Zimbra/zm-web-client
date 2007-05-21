@@ -25,7 +25,7 @@
 
 /** small dialog for picking one contact with an autocompletion entry */
 
-function ZmOneContactPicker() {
+ZmOneContactPicker = function() {
 	DwtDialog.call(this, DwtShell.getShell(window), null, ZmMsg.selectContact);
 	this._init();
 };

@@ -35,7 +35,7 @@
 * @param container		the shell
 * @param prefsApp		the preferences app
 */
-function ZmPrefController(appCtxt, container, prefsApp) {
+ZmPrefController = function(appCtxt, container, prefsApp) {
 
 	ZmController.call(this, appCtxt, container, prefsApp);
 

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmImApp(appCtxt, container) {
+ZmImApp = function(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.IM, appCtxt, container);
 

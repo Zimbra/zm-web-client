@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmClientCmdHandler(appCtxt) {
+ZmClientCmdHandler = function(appCtxt) {
 	this._appCtxt = appCtxt;
 	this._settings = new Object();
 };

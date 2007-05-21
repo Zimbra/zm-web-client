@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmGroupView(parent, appCtxt, controller) {
+ZmGroupView = function(parent, appCtxt, controller) {
 	ZmContactView.call(this, parent, appCtxt, controller);
 
 	this._searchRespCallback = new AjxCallback(this, this._handleResponseSearch);
@@ -530,7 +530,7 @@ function(contact, abridged, appCtxt) {
 *
 * @param parent			[ZmGroupView]	containing widget
 */
-function ZmGroupListView(parent) {
+ZmGroupListView = function(parent) {
 	if (arguments.length == 0) return;
 	DwtListView.call(this, parent, "DwtChooserListView", null, this._getHeaderList(parent));
 };

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmChangePasswordDialog(parent, className) {
+ZmChangePasswordDialog = function(parent, className) {
 
 	DwtDialog.call(this, parent, className, ZmMsg.changePassword);
 

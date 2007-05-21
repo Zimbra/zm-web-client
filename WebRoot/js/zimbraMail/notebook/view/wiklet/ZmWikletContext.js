@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmWikletContext(appCtxt, notebookCache) {
+ZmWikletContext = function(appCtxt, notebookCache) {
 	this._appCtxt = appCtxt;
 	this._notebookCache = notebookCache;
 	this._items = [];

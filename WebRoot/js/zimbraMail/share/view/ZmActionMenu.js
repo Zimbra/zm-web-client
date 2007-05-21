@@ -39,7 +39,7 @@
  * @param dialog		[DwtDialog]*		containing dialog, if any
  * @param overrides		[hash]*				hash of overrides by op ID
  */
-function ZmActionMenu(params) {
+ZmActionMenu = function(params) {
 
 	ZmPopupMenu.call(this, params.parent, null, params.dialog);
 

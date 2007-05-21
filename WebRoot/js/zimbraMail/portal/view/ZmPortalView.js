@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPortalView(parent, appCtxt, controller, dropTgt) {
+ZmPortalView = function(parent, appCtxt, controller, dropTgt) {
 	var headerList = this._getHeaderList(appCtxt);
 	ZmListView.call(this,
         parent, "ZmPortalView", Dwt.ABSOLUTE_STYLE,

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNotebookCache(appCtxt) {
+ZmNotebookCache = function(appCtxt) {
 	this._appCtxt = appCtxt;
 	this.clearCache();
 	this._changeListener = new AjxListener(this, this._handleChange);

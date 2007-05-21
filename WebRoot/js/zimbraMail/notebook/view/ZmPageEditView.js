@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPageEditView(parent, appCtxt, controller) {
+ZmPageEditView = function(parent, appCtxt, controller) {
 	DwtComposite.call(this, parent, "ZmPageEditView", DwtControl.ABSOLUTE_STYLE);
 	
 	this._appCtxt = appCtxt;
@@ -312,7 +312,7 @@ function() {
 // ZmPageEditor class
 //
 
-function ZmPageEditor(parent, posStyle, content, mode, appCtxt, controller) {
+ZmPageEditor = function(parent, posStyle, content, mode, appCtxt, controller) {
 	if (arguments.length == 0) return;
 	ZmHtmlEditor.call(this, parent, posStyle, content, mode, appCtxt, true /* enable ace */);
 	this._controller = controller;

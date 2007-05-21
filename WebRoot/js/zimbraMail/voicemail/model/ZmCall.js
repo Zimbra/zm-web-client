@@ -33,7 +33,7 @@
 * @param id			[int]			unique ID
 * @param list		[ZmVoiceList]	list that contains this item
 */
-function ZmCall(appCtxt, id, list) {
+ZmCall = function(appCtxt, id, list) {
 
 	if (arguments.length == 0) return;
 	ZmVoiceItem.call(this, appCtxt, ZmItem.VOICEMAIL, id, list);

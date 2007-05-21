@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmZimletPicker(parent) {
+ZmZimletPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.ZIMLET);
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);

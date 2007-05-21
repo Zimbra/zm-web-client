@@ -32,7 +32,7 @@
 * stuff that is common to the app as a whole (such as tags). The methods are almost all
 * just getters and setters.
 */
-function ZmAppCtxt() {
+ZmAppCtxt = function() {
 	this._trees = {};
 };
 

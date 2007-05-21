@@ -36,7 +36,7 @@
 * @param posStyle			[constant]					positioning style
 * @param controller			[ZmPrefController]			prefs controller
 */
-function ZmPrefView(parent, appCtxt, posStyle, controller) {
+ZmPrefView = function(parent, appCtxt, posStyle, controller) {
 
     DwtTabView.call(this, parent, "ZmPrefView", posStyle);
 

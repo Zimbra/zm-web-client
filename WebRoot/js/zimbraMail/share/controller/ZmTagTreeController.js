@@ -32,7 +32,7 @@
 * @author Conrad Damon
 * @param appCtxt	[ZmAppCtxt]		app context
 */
-function ZmTagTreeController(appCtxt) {
+ZmTagTreeController = function(appCtxt) {
 
 	var list = [];
 	if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {

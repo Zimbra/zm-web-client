@@ -34,7 +34,7 @@
 *
 * @param appCtxt	[ZmAppCtxt]		app context
 */
-function ZmFilterRules(appCtxt) {
+ZmFilterRules = function(appCtxt) {
 
 	ZmModel.call(this, ZmEvent.S_FILTER);
 

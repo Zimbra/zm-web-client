@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmDeclineShareDialog(appCtxt, parent, className) {
+ZmDeclineShareDialog = function(appCtxt, parent, className) {
 	className = className || "ZmDeclineShareDialog";
 	var title = ZmMsg.declineShare;
 	var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON ];

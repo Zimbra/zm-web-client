@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmImGateway(obj) {
+ZmImGateway = function(obj) {
 	this.type = obj.type.toLowerCase();
 	this.domain = obj.domain.toLowerCase();
 	var cs = this.connect_state = {};

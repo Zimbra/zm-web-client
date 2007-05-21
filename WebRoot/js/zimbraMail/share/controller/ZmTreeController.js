@@ -37,7 +37,7 @@
 * @param type		[constant]		type of organizer we are displaying/controlling
 * @param dropTgt	[DwtDropTgt]	drop target for this type
 */
-function ZmTreeController(appCtxt, type, dropTgt) {
+ZmTreeController = function(appCtxt, type, dropTgt) {
 
 	if (arguments.length == 0) return;
 	ZmController.call(this, appCtxt);

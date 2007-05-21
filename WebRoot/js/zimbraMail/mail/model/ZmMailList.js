@@ -37,7 +37,7 @@
 * @param appCtxt	global app context
 * @param search		the search that generated this list
 */
-function ZmMailList(type, appCtxt, search) {
+ZmMailList = function(type, appCtxt, search) {
 
 	ZmList.call(this, type, appCtxt, search);
 

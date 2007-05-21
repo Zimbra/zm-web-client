@@ -41,7 +41,7 @@
 * @param rid		[string]*		Remote id of organizer, if remote share
 * @param restUrl	[string]*		The REST URL of this organizer.
 */
-function ZmTaskFolder(params) {
+ZmTaskFolder = function(params) {
 	params.type = ZmOrganizer.TASKS;
 	ZmFolder.call(this, params);
 }

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmChatWindow(parent, chat, sticky, initialSize) {
+ZmChatWindow = function(parent, chat, sticky, initialSize) {
 	if (arguments.length == 0) return;
 	DwtResizableWindow.call(this, parent);
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);

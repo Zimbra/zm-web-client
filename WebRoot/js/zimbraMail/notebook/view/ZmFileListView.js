@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmFileListView(parent, className, posStyle, mode, controller, dropTgt) {
+ZmFileListView = function(parent, className, posStyle, mode, controller, dropTgt) {
 	if (arguments.length == 0) return;
 
 	// save data

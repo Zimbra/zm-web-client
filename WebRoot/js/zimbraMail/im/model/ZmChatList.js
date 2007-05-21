@@ -22,7 +22,7 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-function ZmChatList(appCtxt, roster) {
+ZmChatList = function(appCtxt, roster) {
 	ZmList.call(this, ZmItem.CHAT, appCtxt);
 	this._roster = roster;
 };

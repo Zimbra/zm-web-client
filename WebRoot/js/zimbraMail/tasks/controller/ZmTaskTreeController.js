@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmTaskTreeController(appCtxt, type, dropTgt) {
+ZmTaskTreeController = function(appCtxt, type, dropTgt) {
 	if (arguments.length == 0) return;
 
 	ZmFolderTreeController.call(this, appCtxt, (type || ZmOrganizer.TASKS), dropTgt);

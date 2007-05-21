@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmSearchController(appCtxt, container) {
+ZmSearchController = function(appCtxt, container) {
 
 	ZmController.call(this, appCtxt, container);
 

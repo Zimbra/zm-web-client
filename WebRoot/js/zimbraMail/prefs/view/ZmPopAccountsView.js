@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPopAccountsView(parent, appCtxt, controller) {
+ZmPopAccountsView = function(parent, appCtxt, controller) {
     var labels = {
         infoTitle: ZmMsg.popAccountsInfoHeader,
         infoContents: ZmMsg.popAccountsInfo,
@@ -454,7 +454,7 @@ ZmPopAccountsView._handleItemCheckbox = function(event) {
 // Class: ZmPopAccountBasicPage
 //
 
-function ZmPopAccountBasicPage(parent, appCtxt, pageId, className, posStyle) {
+ZmPopAccountBasicPage = function(parent, appCtxt, pageId, className, posStyle) {
 	DwtTabViewPage.call(this, parent, className, posStyle || DwtControl.STATIC_STYLE);
 	this._appCtxt = appCtxt;
 	this._pageId = pageId;
@@ -928,7 +928,7 @@ ZmPopAccountBasicPage.prototype._dirtyListener = function(evt) {
 // Class: ZmPopAccountAdvancedPage
 //
 
-function ZmPopAccountAdvancedPage(parent, appCtxt, pageId, className, posStyle) {
+ZmPopAccountAdvancedPage = function(parent, appCtxt, pageId, className, posStyle) {
 	DwtTabViewPage.call(this, parent, className, posStyle);
 	this._appCtxt = appCtxt;
 	this._pageId = pageId;

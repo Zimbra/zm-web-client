@@ -39,7 +39,7 @@
 * @param parent				parent widget (the shell)
 * @param appCtxt 			singleton appCtxt
 */
-function ZmApptQuickAddDialog(parent, appCtxt) {
+ZmApptQuickAddDialog = function(parent, appCtxt) {
 	// create extra "more details" button to be added at the footer of DwtDialog
 	var moreDetailsButton = new DwtDialog_ButtonDescriptor(ZmApptQuickAddDialog.MORE_DETAILS_BUTTON, 
 														   ZmMsg.moreDetails, DwtDialog.ALIGN_LEFT);

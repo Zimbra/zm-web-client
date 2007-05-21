@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNotebookApp(appCtxt, container, parentController) {
+ZmNotebookApp = function(appCtxt, container, parentController) {
 
 	ZmApp.call(this, ZmApp.NOTEBOOK, appCtxt, container, parentController);
 }

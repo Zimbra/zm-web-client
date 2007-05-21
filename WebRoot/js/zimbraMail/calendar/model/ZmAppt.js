@@ -22,7 +22,7 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-function ZmAppt(appCtxt, list, noinit) {
+ZmAppt = function(appCtxt, list, noinit) {
 
 	if (arguments.length == 0) { return; }
 	

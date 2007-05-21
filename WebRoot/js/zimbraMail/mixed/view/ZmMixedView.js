@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMixedView(parent, className, posStyle, controller, dropTgt) {
+ZmMixedView = function(parent, className, posStyle, controller, dropTgt) {
 
 	var headerList = this._getHeaderList(parent);
 	ZmListView.call(this, parent, className, posStyle, ZmController.MIXED_VIEW, ZmItem.MIXED, controller, headerList, dropTgt);

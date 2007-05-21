@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewAddrBookDialog(parent, className) {
+ZmNewAddrBookDialog = function(parent, className) {
 	var title = ZmMsg.createNewAddrBook;
 	var type = ZmOrganizer.ADDRBOOK;
 	ZmNewOrganizerDialog.call(this, parent, className, title, type);

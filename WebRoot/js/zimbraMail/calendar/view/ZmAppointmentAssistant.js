@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAppointmentAssistant(appCtxt) {
+ZmAppointmentAssistant = function(appCtxt) {
 	if (arguments.length == 0) return;
 	ZmAssistant.call(this, appCtxt, ZmMsg.createNewAppt, ZmMsg.ASST_CMD_APPOINTMENT, ZmMsg.ASST_CMD_SUM_APPOINTMENT);
 };

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmResource(appCtxt, id, list, resType) {
+ZmResource = function(appCtxt, id, list, resType) {
 	id = id ? id : Dwt.getNextId();
 	ZmContact.call(this, appCtxt, id, list, ZmItem.RESOURCE);
 	

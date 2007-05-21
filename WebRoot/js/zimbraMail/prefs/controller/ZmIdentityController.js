@@ -36,7 +36,7 @@
 * @param prefsApp		[ZmPreferencesApp]	the preferences app
 * @param prefsView		[ZmPreferencesView]	the preferences view
 */
-function ZmIdentityController(appCtxt, container, prefsApp, prefsView) {
+ZmIdentityController = function(appCtxt, container, prefsApp, prefsView) {
 	ZmPrefListController.call(this, appCtxt, container, prefsApp, prefsView);
 
 	this._listView = new ZmIdentityView(prefsView._parent, appCtxt, this);

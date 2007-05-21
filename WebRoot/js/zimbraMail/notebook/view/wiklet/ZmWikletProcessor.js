@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmWikletProcessor() {
+ZmWikletProcessor = function() {
 }
 
 // Static data

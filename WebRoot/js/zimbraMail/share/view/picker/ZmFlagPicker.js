@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmFlagPicker(parent) {
+ZmFlagPicker = function(parent) {
 	ZmPicker.call(this, parent, ZmPicker.FLAG);
 };
 

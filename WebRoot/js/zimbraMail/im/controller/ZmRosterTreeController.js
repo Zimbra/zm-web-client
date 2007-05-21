@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmRosterTreeController(appCtxt, type, dropTgt) {
+ZmRosterTreeController = function(appCtxt, type, dropTgt) {
 	if (arguments.length === 0) { return; }
 
 	type = type ? type : ZmOrganizer.ROSTER_TREE_ITEM;
@@ -202,7 +202,7 @@ ZmRosterTreeController.prototype._applyFilters = function(items) {
 	if (!filters)
 		return;
 	this._firstFilterItem = null;
-	function doItems(items) {
+	doItems = function(items) {
 		var oneVisible = false;
 		for (var j = items.length; --j >= 0;) {
 			var item = items[j];

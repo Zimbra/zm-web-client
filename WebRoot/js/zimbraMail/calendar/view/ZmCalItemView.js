@@ -38,7 +38,7 @@
 * @param posStyle	[constant]		positioning style
 * @param controller	[ZmController]	owning controller
 */
-function ZmCalItemView(parent, posStyle, controller) {
+ZmCalItemView = function(parent, posStyle, controller) {
 	if (arguments.length == 0) return;
 
 	ZmMailMsgView.call(this, parent, null, posStyle, null, controller);
@@ -225,7 +225,7 @@ function(calItem) {
 * @param posStyle	[constant]		positioning style
 * @param controller	[ZmController]	owning controller
 */
-function ZmApptView(parent, posStyle, controller) {
+ZmApptView = function(parent, posStyle, controller) {
 
 	ZmCalItemView.call(this, parent, posStyle, controller);
 };
@@ -381,7 +381,7 @@ function(calItem) {
 * @param posStyle	[constant]		positioning style
 * @param controller	[ZmController]	owning controller
 */
-function ZmTaskView(parent, posStyle, controller) {
+ZmTaskView = function(parent, posStyle, controller) {
 
 	ZmCalItemView.call(this, parent, posStyle, controller);
 };

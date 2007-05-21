@@ -27,7 +27,7 @@
 *
 * @param appCtxt	[ZmAppCtxt]			the app context
 */
-function ZmAssistantDialog(appCtxt) {
+ZmAssistantDialog = function(appCtxt) {
 
 	var helpButton = new DwtDialog_ButtonDescriptor(ZmAssistantDialog.HELP_BUTTON, ZmMsg.help, DwtDialog.ALIGN_LEFT);
 														   

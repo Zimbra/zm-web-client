@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmVoiceTreeController(appCtxt, type, dropTgt) {
+ZmVoiceTreeController = function(appCtxt, type, dropTgt) {
 	if (arguments.length == 0) return;
 
 	ZmFolderTreeController.call(this, appCtxt, (type || ZmOrganizer.VOICE), dropTgt);

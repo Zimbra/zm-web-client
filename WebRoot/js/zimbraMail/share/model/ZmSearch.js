@@ -48,7 +48,7 @@
 * @param field						[string]*		field to search within (instead of default)
 * @param soapInfo					[object]*		object with method, namespace, and response fields for creating soap doc
 */
-function ZmSearch(appCtxt, params) {
+ZmSearch = function(appCtxt, params) {
 
 	this._appCtxt = appCtxt;
 

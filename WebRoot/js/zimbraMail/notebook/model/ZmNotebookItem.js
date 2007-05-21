@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNotebookItem(appCtxt, type, id, list) {
+ZmNotebookItem = function(appCtxt, type, id, list) {
 	if (arguments.length == 0) return;
 	ZmItem.call(this, appCtxt, type, id, list);
 	this.folderId = ZmNotebookItem.DEFAULT_FOLDER;

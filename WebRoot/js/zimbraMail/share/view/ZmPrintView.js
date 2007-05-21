@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPrintView(appCtxt) {
+ZmPrintView = function(appCtxt) {
 	this._appCtxt = appCtxt;
 };
 

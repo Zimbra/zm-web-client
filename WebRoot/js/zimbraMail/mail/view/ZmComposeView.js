@@ -34,7 +34,7 @@
 * @param controller		[ZmController]		controller managing this view
 * @param composeMode 	[constant]			passed in so detached window knows which mode to be in on startup
 */
-function ZmComposeView(parent, controller, composeMode) {
+ZmComposeView = function(parent, controller, composeMode) {
 
 	DwtComposite.call(this, parent, "ZmComposeView", Dwt.ABSOLUTE_STYLE);
 

@@ -41,7 +41,7 @@
 * @param rid		[string]*		Remote id of organizer, if remote share
 * @param restUrl	[string]*		The REST URL of this organizer.
 */
-function ZmVoiceFolder(params) {
+ZmVoiceFolder = function(params) {
 	params.type = ZmOrganizer.VOICE;
 	ZmOrganizer.call(this, params);
 	this.phone = params.phone;

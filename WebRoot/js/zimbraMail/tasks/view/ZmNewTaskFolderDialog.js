@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewTaskFolderDialog(parent, className) {
+ZmNewTaskFolderDialog = function(parent, className) {
 	ZmNewOrganizerDialog.call(this, parent, className, ZmMsg.createNewTaskFolder, ZmOrganizer.TASKS);
 };
 

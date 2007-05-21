@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMailMsgListView(parent, className, posStyle, mode, controller, dropTgt) {
+ZmMailMsgListView = function(parent, className, posStyle, mode, controller, dropTgt) {
 	this._mode = mode;
 	var headerList = this._getHeaderList(parent);
 	ZmMailListView.call(this, parent, className, posStyle, mode, ZmItem.MSG, controller, headerList, dropTgt);

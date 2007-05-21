@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmTaskEditView(parent, appCtxt, controller) {
+ZmTaskEditView = function(parent, appCtxt, controller) {
 	if (arguments.length == 0) return;
 
 	ZmCalItemEditView.call(this, parent, appCtxt, null, controller, null, DwtControl.ABSOLUTE_STYLE);

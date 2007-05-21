@@ -34,7 +34,7 @@
 * @param type		type of thing in the list
 * @param search		the search that generated this list
 */
-function ZmVoiceList(appCtxt, type, search) {
+ZmVoiceList = function(appCtxt, type, search) {
 	ZmList.call(this, type, appCtxt, search);
 	this.folder = null;
 };

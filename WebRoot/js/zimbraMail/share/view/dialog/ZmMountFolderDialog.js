@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMountFolderDialog(appCtxt, shell, className) {
+ZmMountFolderDialog = function(appCtxt, shell, className) {
 	className = className || "ZmMountFolderDialog";
 	var title = ZmMsg[ZmOrganizer.MOUNT_KEY[ZmOrganizer.FOLDER]];
 	DwtDialog.call(this, shell, className, title);

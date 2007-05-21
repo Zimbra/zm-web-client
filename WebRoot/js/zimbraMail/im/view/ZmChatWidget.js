@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmChatWidget(parent, posStyle) {
+ZmChatWidget = function(parent, posStyle) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, parent, "ZmChatWidget", posStyle);
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmApptCache(calViewController, appCtxt) {
+ZmApptCache = function(calViewController, appCtxt) {
 	if (arguments.length == 0) return;
 	this._calViewController = calViewController;
 	this._appCtxt = appCtxt;

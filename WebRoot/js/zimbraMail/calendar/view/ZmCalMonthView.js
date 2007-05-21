@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalMonthView(parent, posStyle, controller, dropTgt) {
+ZmCalMonthView = function(parent, posStyle, controller, dropTgt) {
 	ZmCalBaseView.call(this, parent, "calendar_view", posStyle, controller, ZmController.CAL_MONTH_VIEW, dropTgt);	
 	//this.getHtmlElement().style.overflow = "hidden";
 	this.setScrollStyle(DwtControl.CLIP);

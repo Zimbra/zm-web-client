@@ -27,7 +27,7 @@
  * widget itself (when parent == spreadSheet), in which case they will be
  * inserted at the top, or to any other widget.
  */
-function ZmSpreadSheetToolbars(parent, spreadSheet) {
+ZmSpreadSheetToolbars = function(parent, spreadSheet) {
 	if (spreadSheet == null)
 		spreadSheet = parent;
 	this._spreadSheet = spreadSheet;

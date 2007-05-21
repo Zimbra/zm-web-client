@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAssistantBuddy(list, appCtxt) {
+ZmAssistantBuddy = function(list, appCtxt) {
 	var assistant_rp = new ZmRosterPresence(ZmRosterPresence.SHOW_ONLINE, null, null);
 	assistant_rp.getIcon = function() {
 		return "ZimbraIcon";

@@ -36,7 +36,7 @@
 	ZmListControl.prototype.initializeToolBar
 */
 
-function ZmCalViewController(appCtxt, container, calApp) {
+ZmCalViewController = function(appCtxt, container, calApp) {
 	ZmListController.call(this, appCtxt, container, calApp);
 
 	var apptListener = new AjxListener(this, this._handleApptRespondAction);

@@ -32,7 +32,7 @@
 *    by default, next appt start time minus lead time pref (i..e, 5 minutes before).
 *    but, also could be controlled by snooze prefs.
 */
-function ZmReminderController(appCtxt, calController) {
+ZmReminderController = function(appCtxt, calController) {
 	this._calController = calController;
 	this._appCtxt = appCtxt;
 	this._apptState = {};	// keyed on appt.getUniqueId(true)

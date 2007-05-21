@@ -39,7 +39,7 @@
 *
 * @param appCtxt	[ZmAppCtxt]			the app context
 */
-function ZmFilterRuleDialog(appCtxt) {
+ZmFilterRuleDialog = function(appCtxt) {
 
 	DwtDialog.call(this, appCtxt.getShell(), "ZmFilterRuleDialog", ZmMsg.selectAddresses);
 

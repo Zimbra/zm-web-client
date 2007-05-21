@@ -34,7 +34,7 @@
  *
  * @param appCtxt		[ZmAppCtxt]		the app context
  */
-function ZmAccount(appCtxt) {
+ZmAccount = function(appCtxt) {
 	this._appCtxt = appCtxt;
 };
 

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmRosterTree(params) {
+ZmRosterTree = function(params) {
 	this._appCtxt = params.tree._appCtxt;
 	params.type = ZmOrganizer.ROSTER_TREE_ITEM;
 	ZmOrganizer.call(this, params);
@@ -85,7 +85,7 @@ function(tree) {
 // for autocomplete
 //------------------------------------------
 
-function ZmRosterTreeGroups(roster) {
+ZmRosterTreeGroups = function(roster) {
 	this._groups = roster.getGroups();
 };
 

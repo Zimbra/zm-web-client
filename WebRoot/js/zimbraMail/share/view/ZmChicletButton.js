@@ -35,7 +35,7 @@
 *
 * @author Conrad Damon
 */
-function ZmChicletButton(parent, className, icon, text, isLast) {
+ZmChicletButton = function(parent, className, icon, text, isLast) {
 	if (arguments.length == 0) return;
 
     var style = DwtLabel.IMAGE_LEFT;

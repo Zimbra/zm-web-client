@@ -35,7 +35,7 @@
 * @param container	[DwtComposite]	the containing element
 * @param calApp		[ZmApp]			a handle to the [calendar|task] application
 */
-function ZmTaskController(appCtxt, container, app) {
+ZmTaskController = function(appCtxt, container, app) {
 	if (arguments.length == 0) return;
 	ZmCalItemComposeController.call(this, appCtxt, container, app);
 };

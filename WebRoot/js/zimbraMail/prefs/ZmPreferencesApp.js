@@ -28,7 +28,7 @@
 * Application for the preferences UI. This is where the preferences
 * hook into the overall application.
 */
-function ZmPreferencesApp(appCtxt, container) {
+ZmPreferencesApp = function(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.PREFERENCES, appCtxt, container);
 };

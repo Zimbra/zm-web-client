@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmVoicemailListView(parent, controller, dropTgt) {
+ZmVoicemailListView = function(parent, controller, dropTgt) {
 	if (arguments.length == 0) return;
 	var headerList = this._getHeaderList();
 	ZmVoiceListView.call(this, parent, "DwtListView ZmVoicemailListView", Dwt.ABSOLUTE_STYLE, ZmController.VOICEMAIL_VIEW, ZmItem.VOICEMAIL, controller, headerList, dropTgt);

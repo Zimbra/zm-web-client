@@ -31,7 +31,7 @@
 * done in the base class, drawing the top-level account items as headers.
 *
 */
-function ZmVoiceTreeView(params) {
+ZmVoiceTreeView = function(params) {
 	if (arguments.length == 0) return;
 
 	params.headerClass = params.headerClass || "ZmVoiceTreeHeader";

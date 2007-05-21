@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmRenameFolderDialog(parent, className) {
+ZmRenameFolderDialog = function(parent, className) {
 
 	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.renameFolder});
 

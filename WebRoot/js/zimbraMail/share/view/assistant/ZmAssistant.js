@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAssistant(appCtxt, title, command, commandSummary) {
+ZmAssistant = function(appCtxt, title, command, commandSummary) {
 	if (arguments.length == 0) return;
 	this._appCtxt = appCtxt;
 	this._objectManager = new ZmObjectManager(null, this._appCtxt, null);

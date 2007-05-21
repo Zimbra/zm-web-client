@@ -22,7 +22,7 @@
  *
  * ***** END LICENSE BLOCK *****
  */
-function ZmRecurrence(calItem) {
+ZmRecurrence = function(calItem) {
 	this._startDate 			= (calItem && calItem.startDate) ? calItem.startDate : (new Date());
 
 	// initialize all params (listed alphabetically)

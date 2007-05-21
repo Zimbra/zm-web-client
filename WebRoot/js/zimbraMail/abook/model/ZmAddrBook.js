@@ -40,7 +40,7 @@
 * @param rid		[string]*		the remote folder id of a shared addrbook
 * @param restUrl	[string]*		The REST URL of this organizer.
 */
-function ZmAddrBook(params) {
+ZmAddrBook = function(params) {
 	params.type = ZmOrganizer.ADDRBOOK;
 	ZmFolder.call(this, params);
 };

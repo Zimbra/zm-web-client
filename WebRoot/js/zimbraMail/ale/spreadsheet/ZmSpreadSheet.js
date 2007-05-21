@@ -27,7 +27,7 @@
  * A SpreadSheet Widget.
  * @author Mihai Bazon, <mihai@zimbra.com>
  */
-function ZmSpreadSheet(parent, className, posStyle, deferred) {
+ZmSpreadSheet = function(parent, className, posStyle, deferred) {
 	if (arguments.length == 0)
 		return;
 	className = className || "ZmSpreadSheet";

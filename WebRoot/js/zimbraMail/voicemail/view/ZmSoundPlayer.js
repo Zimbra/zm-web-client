@@ -24,7 +24,7 @@
  * @param positionType {string} Positioning style (absolute, static, or relative). If
  * 		not provided defaults to DwtControl.STATIC_STYLE (optional)
  */
-function ZmSoundPlayer(parent, voicemail, className, positionType) {
+ZmSoundPlayer = function(parent, voicemail, className, positionType) {
 	if (arguments.length == 0) return;
 	className = className || "ZmSoundPlayer";
 	DwtComposite.call(this, parent, className, positionType);

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmZimletContext(id, zimlet, appCtxt) {
+ZmZimletContext = function(id, zimlet, appCtxt) {
 	this._appCtxt = appCtxt;
 	// sanitize JSON here
 	this.json = ZmZimletContext.sanitize(zimlet, "zimlet", ZmZimletContext.RE_ARRAY_ELEMENTS);

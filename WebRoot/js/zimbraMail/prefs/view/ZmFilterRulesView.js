@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
  
-function ZmFilterRulesView(parent, appCtxt, controller) {
+ZmFilterRulesView = function(parent, appCtxt, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmFilterRulesView");
 
@@ -73,7 +73,7 @@ ZmFilterRulesView.prototype.reset = function() {};
 /*
 * ZmFilterListView
 */
-function ZmFilterListView(parent, appCtxt, controller) {
+ZmFilterListView = function(parent, appCtxt, controller) {
 	var headerList = this._getHeaderList();
 	DwtListView.call(this, parent, "ZmFilterListView", null, headerList);	
 

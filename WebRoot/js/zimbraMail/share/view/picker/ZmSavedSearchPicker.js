@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmSavedSearchPicker(parent) {
+ZmSavedSearchPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.SEARCH);
 

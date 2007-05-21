@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmZimletMgr(appCtxt) {
+ZmZimletMgr = function(appCtxt) {
 	this._appCtxt = appCtxt;
 	this._ZIMLETS = [];
 	this._ZIMLETS_BY_ID = {};

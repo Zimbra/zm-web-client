@@ -35,7 +35,7 @@
 * @author Conrad Damon
 * @param appCtxt	[ZmAppCtxt]*	the app context
 */
-function ZmSettings(appCtxt) {
+ZmSettings = function(appCtxt) {
 
 	ZmModel.call(this, ZmEvent.S_SETTING);
 

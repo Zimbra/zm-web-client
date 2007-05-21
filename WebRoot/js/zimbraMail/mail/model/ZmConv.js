@@ -34,7 +34,7 @@
 * @param id			[int]			unique ID
 * @param list		[ZmMailList]	list that contains this conversation
 */
-function ZmConv(appCtxt, id, list) {
+ZmConv = function(appCtxt, id, list) {
 
 	ZmMailItem.call(this, appCtxt, ZmItem.CONV, id, list);
 	

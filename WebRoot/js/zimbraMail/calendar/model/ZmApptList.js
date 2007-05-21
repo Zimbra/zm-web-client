@@ -30,7 +30,7 @@
 * This class represents a list of appts.
 *
 */
-function ZmApptList(appCtxt) {
+ZmApptList = function(appCtxt) {
 	
 	ZmList.call(this, ZmItem.APPT, appCtxt);
 };

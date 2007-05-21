@@ -33,7 +33,7 @@
 *
 * @param type	[constant]		event source type (see ZmEvent)
 */
-function ZmModel(type) {
+ZmModel = function(type) {
  	if (arguments.length == 0) return;
 
 	this._evt = new ZmEvent(type);

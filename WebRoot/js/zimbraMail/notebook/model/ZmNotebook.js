@@ -40,7 +40,7 @@
 * @param rid		[string]*		Remote id of organizer, if remote share
 * @param restUrl	[string]*		The REST URL of this organizer.
 */
-function ZmNotebook(params) {
+ZmNotebook = function(params) {
 	params.type = ZmOrganizer.NOTEBOOK;
 	ZmOrganizer.call(this, params);
 }

@@ -27,7 +27,7 @@
  * This singleton class presents a dialog with various trees so that the
  * user can choose a folder.
  */
-function ZmChooseFolderDialog(parent, className) {
+ZmChooseFolderDialog = function(parent, className) {
 	var newButton = new DwtDialog_ButtonDescriptor(ZmChooseFolderDialog.NEW_BUTTON, ZmMsg._new, DwtDialog.ALIGN_LEFT);
 	var params = {parent:parent, className:className, extraButtons:[newButton]};
 	ZmDialog.call(this, params);

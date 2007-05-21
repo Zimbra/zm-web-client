@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmChatMessage(notifyJs, fromMe, isSystem) {
+ZmChatMessage = function(notifyJs, fromMe, isSystem) {
 	if (notifyJs) {
 		this.subject = notifyJs.subject;
 		this.body = notifyJs.body[0]._content;

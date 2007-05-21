@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmImg() {
+ZmImg = function() {
 }
 
 // Data for images = filename, width, height]

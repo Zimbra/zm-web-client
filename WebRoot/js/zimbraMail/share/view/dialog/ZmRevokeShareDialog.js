@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmRevokeShareDialog(appCtxt, parent, className) {
+ZmRevokeShareDialog = function(appCtxt, parent, className) {
 	className = className || "ZmRevokeShareDialog";
 	var title = ZmMsg.revokeShare;
 	var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON ];

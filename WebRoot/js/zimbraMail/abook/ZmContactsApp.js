@@ -34,7 +34,7 @@
 * @param container			the element that contains everything but the banner (aka _composite)
 * @param parentController	Reference to the parent "uber" controller - populated if this is a child window opened by the parent
 */
-function ZmContactsApp(appCtxt, container, parentController) {
+ZmContactsApp = function(appCtxt, container, parentController) {
 
 	ZmApp.call(this, ZmApp.CONTACTS, appCtxt, container, parentController);
 

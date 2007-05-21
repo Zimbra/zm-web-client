@@ -30,7 +30,7 @@
 * This class represents a calling party. Should be treated as immutable.
 *
 */
-function ZmCallingParty(appCtxt) {
+ZmCallingParty = function(appCtxt) {
 	ZmPhone.call(this, appCtxt);
 
 	this.type = null;

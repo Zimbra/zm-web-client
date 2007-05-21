@@ -35,7 +35,7 @@
  * Construct a model by passing the maximum number of rows and columns in your
  * spreadsheet.
  */
-function ZmSpreadSheetModel(rows, cols) {
+ZmSpreadSheetModel = function(rows, cols) {
 	this.ROWS = rows;
 	this.COLS = cols;
 	this.version = 1;
@@ -572,7 +572,7 @@ ZmSpreadSheetModel.prototype.getHtml = function() {
 
 /// A Range copy
 
-function ZmSpreadSheetClipboard(model, range, move) {
+ZmSpreadSheetClipboard = function(model, range, move) {
 	this._move = !!move;
 	this.model = model;
 	this.geometry = ZmSpreadSheetModel.getRangeGeometry(range);
@@ -628,7 +628,7 @@ ZmSpreadSheetClipboard.prototype.paste = function(row, col, dest, dr, dc) {
 
 /// The Cell Model
 
-function ZmSpreadSheetCellModel(model, type, editValue, style) {
+ZmSpreadSheetCellModel = function(model, type, editValue, style) {
 	if (editValue == null)
 		editValue = "";
 	if (type == null)

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMailListView(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
+ZmMailListView = function(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
 
 	if (arguments.length == 0) return;
 	ZmListView.call(this, parent, className, posStyle, view, type, controller, headerList, dropTgt);

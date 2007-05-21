@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmDatePicker(parent) {
+ZmDatePicker = function(parent) {
 	ZmPicker.call(this, parent, ZmPicker.DATE);
 };
 

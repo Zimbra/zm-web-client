@@ -35,7 +35,7 @@
 * @param domain		[string]		current domain
 * @param app		[constant]		starting app
 */
-function ZmZimbraMail(appCtxt, domain, app, userShell) {
+ZmZimbraMail = function(appCtxt, domain, app, userShell) {
 
 	ZmController.call(this, appCtxt);
 

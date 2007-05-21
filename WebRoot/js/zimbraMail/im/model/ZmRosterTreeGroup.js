@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmRosterTreeGroup(params) {
+ZmRosterTreeGroup = function(params) {
 	params.type = ZmOrganizer.ROSTER_TREE_GROUP;
 	ZmOrganizer.call(this, params);
 }

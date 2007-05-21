@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmContactController(appCtxt, container, abApp) {
+ZmContactController = function(appCtxt, container, abApp) {
 
 	ZmListController.call(this, appCtxt, container, abApp);
 

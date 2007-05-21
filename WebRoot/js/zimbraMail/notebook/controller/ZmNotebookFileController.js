@@ -28,7 +28,7 @@
 * @param container		containing shell
 * @param app			containing app
 */
-function ZmNotebookFileController(appCtxt, container, app) {
+ZmNotebookFileController = function(appCtxt, container, app) {
 	ZmNotebookController.call(this, appCtxt, container, app);
 
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);

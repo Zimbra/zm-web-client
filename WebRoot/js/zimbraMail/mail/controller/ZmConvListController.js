@@ -37,7 +37,7 @@
  * @param container	containing shell
  * @param mailApp	containing app
  */
-function ZmConvListController(appCtxt, container, mailApp) {
+ZmConvListController = function(appCtxt, container, mailApp) {
 	ZmDoublePaneController.call(this, appCtxt, container, mailApp);
 };
 

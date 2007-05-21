@@ -44,7 +44,7 @@
 * @param appCtxt	[ZmAppCtxt]		the app context
 * @param search		[ZmSearch]*		search that generated this list
 */
-function ZmList(type, appCtxt, search) {
+ZmList = function(type, appCtxt, search) {
 
 	if (arguments.length == 0) return;
 	ZmModel.call(this, type);

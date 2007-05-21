@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmWiklet() {
+ZmWiklet = function() {
 }
 
 // Constants

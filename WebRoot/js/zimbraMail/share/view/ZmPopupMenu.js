@@ -36,7 +36,7 @@
 * @param className		[string]*			CSS class
 * @param dialog			[DwtDialog]*		containing dialog, if any
 */
-function ZmPopupMenu(parent, className, dialog) {
+ZmPopupMenu = function(parent, className, dialog) {
 
 	if (arguments.length == 0) return;
 	className = className ? className : "ActionMenu";
