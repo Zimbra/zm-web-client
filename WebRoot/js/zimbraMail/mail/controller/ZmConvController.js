@@ -42,6 +42,7 @@ function ZmConvController(appCtxt, container, mailApp) {
 
 	this._convDeleteListener = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DELETE_MENU] = this._convDeleteListener;
+	this._readingPaneOn = true;	// always start with reading pane on
 }
 
 ZmConvController.prototype = new ZmDoublePaneController;
@@ -113,7 +114,7 @@ function(view) {
 
 ZmConvController.prototype._setupViewMenu =
 function(view) {
-	this._setupReadingPaneMenuItem(view, null, this._appCtxt.get(ZmSetting.READING_PANE_ENABLED));
+	this._setupReadingPaneMenuItem(view, null, true);
 }
 
 ZmConvController.prototype._setupDeleteMenu =

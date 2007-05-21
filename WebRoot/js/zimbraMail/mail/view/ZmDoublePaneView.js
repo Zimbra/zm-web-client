@@ -35,7 +35,7 @@ function ZmDoublePaneView(parent, className, posStyle, mode, controller, dropTgt
 	this._msgSash = new DwtSash(this, DwtSash.VERTICAL_STYLE, "AppSash-vert", ZmDoublePaneView.SASH_THRESHOLD, Dwt.ABSOLUTE_STYLE);
 	this._msgView = new ZmMailMsgView(this, null, posStyle, mode, controller);
 
-	if (!this._appCtxt.get(ZmSetting.READING_PANE_ENABLED)) {
+	if (!controller._readingPaneOn) {
 		this._msgView.setVisible(false);
 		this._msgSash.setVisible(false);
 	}
