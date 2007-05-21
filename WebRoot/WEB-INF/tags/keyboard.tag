@@ -13,9 +13,11 @@
     var pendingKey = "";
     var timerId = null;
     var actions = {};
+    var handled = false;
     var bindKey = function(keys, action) { actions[keys] = action;}
     var isMulti = function(keySeq) {for (var k in actions) if (k.indexOf(keySeq) == 0) return true; return false;}
-    var handler = function(ev, obj) {
+    var keydownH = function(ev, obj) {
+        handled = false;
         var el = YAHOO.util.Event.getTarget(ev);
         if (el == null || el.nodeName == 'INPUT' || el.nodeName == 'TEXTAREA')
             return true;
@@ -26,10 +28,11 @@
         pendingKey += ":" + k ;
         if (isMulti(pendingKey+":")) {
             timerId = window.setTimeout(function() {process(null);}, 750);
-            return true;
+            handled = true;
         } else {
-            return process(ev);
+            handled = process(ev);
         }
+        return !handled;
     }
     var process = function(ev) {
         if (ev == null) timerId = null;
@@ -40,17 +43,20 @@
             if (ev) YAHOO.util.Event.stopEvent(ev);
             var e = document.getElementById(action);
             if (e && e.href) window.location = e.href;
-            return false;
+            handled = true;
         } else if (typeof action == 'function') {
             if (ev) YAHOO.util.Event.stopEvent(ev);
             action();
-            return false;
+            handled = true;
         } else {
-            return true;
+            handled = false;
         }
+        return handled;
     }
+    var keypressH = function(ev, obj) { if (handled) YAHOO.util.Event.stopEvent(ev); return !handled;}
     var init = function() {
-        YAHOO.util.Event.addListener(document, "keydown", handler);
+        YAHOO.util.Event.addListener(document, "keydown", keydownH);
+        YAHOO.util.Event.addListener(document, "keypress", keypressH);
     }
     YAHOO.util.Event.addListener(window, "load", init);
     <jsp:doBody/>
