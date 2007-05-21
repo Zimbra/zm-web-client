@@ -106,7 +106,7 @@
         <input type="hidden" name="doConvListViewAction" value="1"/>
     </form>
 
-    <%--
+<%--
     <SCRIPT TYPE="text/javascript">
         <!--
         var zrc = ${context.searchResult.size};
@@ -148,15 +148,15 @@
             <zm:bindKey key="M,U" func="zunread"/>
             <zm:bindKey key="X" func="zcs"/>
             <zm:bindKey key="Enter; O" func="zos"/>
-            <zm:bindKey key="ArrowUp; K" func="zsp"/>
-            <zm:bindKey key="ArrowDown; J" func="zsn"/>
-            <zm:bindKey key="ArrowLeft" id="PREV_PAGE"/>
-            <zm:bindKey key="ArrowRight" id="NEXT_PAGE"/>
+            <zm:bindKey key="Shift+ArrowUp; K" func="zsp"/>
+            <zm:bindKey key="Shift+ArrowDown; J" func="zsn"/>
+            <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
+            <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
 
             var afunc = function() { alert('hello'); }
 
             <zm:bindKey key="Ctrl+Q" func="afunc"/>
         </zm:keyboardBindings>
     </app:keyboard>
-    --%>
+--%>
 </app:view>

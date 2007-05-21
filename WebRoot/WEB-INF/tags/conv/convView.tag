@@ -164,8 +164,9 @@
             <input type="hidden" name="doMessageAction" value="1"/>
         </table>
     </form>
-    <%--
-    <zm:keyboard>
+
+<%--
+    <app:keyboard>
         <zm:keyboardBindings>
             <zm:bindKey key="C" id="TAB_COMPOSE"/>
             <zm:bindKey key="N,M" id="TAB_COMPOSE"/>
@@ -173,13 +174,18 @@
             <zm:bindKey key="G,A" id="TAB_ADDRESSBOOK"/>
             <zm:bindKey key="G,M" id="TAB_MAIL"/>
             <zm:bindKey key="G,O" id="TAB_OPTIONS"/>
+            <zm:bindKey key="R" id="OPREPLY"/>
+            <zm:bindKey key="A" id="OPREPLYALL"/>
+            <zm:bindKey key="F" id="OPFORW"/>
             <zm:bindKey key="Esc; Z" id="CLOSE_ITEM"/>
             <zm:bindKey key="Enter; O" id="CURR_ITEM"/>
-            <zm:bindKey key="ArrowUp; K" id="PREV_ITEM"/>
-            <zm:bindKey key="ArrowDown; J" id="NEXT_ITEM"/>
-            <zm:bindKey key="ArrowLeft" id="PREV_PAGE"/>
-            <zm:bindKey key="ArrowRight" id="NEXT_PAGE"/>
+            <zm:bindKey key="Shift+ArrowUp; K" id="PREV_ITEM"/>
+            <zm:bindKey key="Shift+ArrowDown; J" id="NEXT_ITEM"/>
+            <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
+            <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
+            <zm:bindKey key="Ctrl+Shift+ArrowLeft; Shift+H" id="PREV_CONV"/>
+            <zm:bindKey key="Ctrl+Shift+ArrowRight; Shift+L" id="NEXT_CONV"/>
         </zm:keyboardBindings>
-    </zm:keyboard>
+    </app:keyboard>
     --%>
 </app:view>

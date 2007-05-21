@@ -207,7 +207,7 @@
                                     <td><div class='vertSep'></div></td>
                                 </c:if>
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">accesskey="${keyOffset+1}"</c:if> href="${composeUrl}&op=reply">
+                                    <a <c:if test="${not isPart}">accesskey="${keyOffset+1}" id="OPREPLY"</c:if> href="${composeUrl}&op=reply">
                                         <img src="<c:url value="/images/mail/Reply.gif"/>" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="reply"/></span>
@@ -215,7 +215,7 @@
                                 </td>
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">accesskey="${keyOffset+2}"</c:if> href="${composeUrl}&op=replyAll">
+                                    <a <c:if test="${not isPart}">accesskey="${keyOffset+2}" id="OPREPLYALL"</c:if> href="${composeUrl}&op=replyAll">
                                         <img src="<c:url value="/images/mail/ReplyAll.gif"/>" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="replyAll"/></span>
@@ -223,7 +223,7 @@
                                 </td>
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">accesskey="${keyOffset+3}"</c:if> href="${composeUrl}&op=forward">
+                                    <a <c:if test="${not isPart}">accesskey="${keyOffset+3}" id="OPFORW"</c:if> href="${composeUrl}&op=forward">
                                         <img src="<c:url value="/images/mail/Forward.gif"/>" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="forward"/></span>

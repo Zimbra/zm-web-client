@@ -38,19 +38,15 @@
         if (ev == null) timerId = null;
         if (timerId) { window.clearTimeout(timerId); timerId = null; }
         var action = actions[pendingKey];
+        handled = action != null;
         pendingKey = "";
         if (typeof action == 'string') {
-            if (ev) YAHOO.util.Event.stopEvent(ev);
             var e = document.getElementById(action);
             if (e && e.href) window.location = e.href;
-            handled = true;
         } else if (typeof action == 'function') {
-            if (ev) YAHOO.util.Event.stopEvent(ev);
             action();
-            handled = true;
-        } else {
-            handled = false;
         }
+        if (ev && handled) YAHOO.util.Event.stopEvent(ev);
         return handled;
     }
     var keypressH = function(ev, obj) { if (handled) YAHOO.util.Event.stopEvent(ev); return !handled;}
