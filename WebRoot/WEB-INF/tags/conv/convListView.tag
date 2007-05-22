@@ -12,6 +12,7 @@
     <fmt:message var="unknownRecipient" key="unknownRecipient"/>
     <fmt:message var="unknownSubject" key="noSubject"/>
     <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
+    <c:set var="selectedRow" value="${param.selectedRow}"/>
 </app:handleError>
 <app:view mailbox="${mailbox}" title="${title}" selected='mail' folders="true" tags="true" searches="true" context="${context}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
@@ -55,7 +56,7 @@
                                         <zm:currentResultUrl var="convUrl" value="search" cid="${hit.id}" action='view' index="${status.index}" context="${context}" usecache="true"/>
                                     </c:otherwise>
                                 </c:choose>
-                                <c:if test="${hit.conversationHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
+                                <c:if test="${empty selectedRow and hit.conversationHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
                                 <tr id="R${status.index}" class='ZhRow ${hit.conversationHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ''}'>
                                     <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="id" value="${hit.conversationHit.id}"></td>
                                     <td class='Img'><app:flagImage flagged="${hit.conversationHit.isFlagged}"/></td>
@@ -104,6 +105,8 @@
             </tr>
         </table>
         <input type="hidden" name="doConvListViewAction" value="1"/>
+        <input id="sr" type="hidden" name="selectedRow" value="${empty selectedRow ? 0 : selectedRow}"/>        
+
     </form>
 
 <%--
@@ -114,13 +117,18 @@
         var zss = function(r,s) {
             var e = document.getElementById("R"+r);
             if (e == null) return;
-            if (s) { if (e.className.indexOf(" RowSelected") == -1) e.className = e.className + " RowSelected";}
+            if (s) {
+                if (e.className.indexOf(" RowSelected") == -1) e.className = e.className + " RowSelected";
+                var e2 = document.getElementById("sr"); if (e2) e2.value = r; 
+            }
             else { if (e.className.indexOf(" RowSelected") != -1) e.className = e.className.replace(" RowSelected", "");}
         }
         var zsn = function() {if (zrc == 0 || (zsr+1 == zrc)) return; zss(zsr, false); zss(++zsr, true);}
         var zsp = function() {if (zrc == 0 || (zsr == 0)) return; zss(zsr, false); zss(--zsr, true);}
         var zos = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
-        var zcs = function() {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = !e.checked;}
+        var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
+        var zcsn = function () { zcs(true); zsn(); }
+        var zcsp = function () { zcs(true); zsp(); }
         var zaction = function(a) {
             var e = document.getElementById(a); if (e) {
                e.selected = true;
@@ -148,6 +156,8 @@
             <zm:bindKey key="M,U" func="zunread"/>
             <zm:bindKey key="X" func="zcs"/>
             <zm:bindKey key="Enter; O" func="zos"/>
+            <zm:bindKey key="Shift+K" func="zcsp"/>
+            <zm:bindKey key="Shift+J" func="zcsn"/>
             <zm:bindKey key="Shift+ArrowUp; K" func="zsp"/>
             <zm:bindKey key="Shift+ArrowDown; J" func="zsn"/>
             <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
