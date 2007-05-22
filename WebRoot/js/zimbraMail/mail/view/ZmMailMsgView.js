@@ -1087,7 +1087,8 @@ function(el, bodyPart, callback, result) {
 
 ZmMailMsgView.prototype._setTags =
 function(msg) {
-	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) return;
+	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED) || msg == null)
+		return;
 
 	var numTags = msg.tags.length;
 	var table = document.getElementById(this._hdrTableId);
