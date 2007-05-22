@@ -541,6 +541,18 @@ function(creates, force) {
 	if (!creates["m"] && !creates["c"] && !creates["link"]) { return; }
 	if (!force && !this._noDefer && this._deferNotifications("create", creates)) { return; }
 
+	if (creates["link"]) {
+		var list = creates["link"];
+		for (var i = 0; i < list.length; i++) {
+			var create = list[i];
+
+			if (this._appCtxt.cacheGet(create.id))
+				continue;
+
+			this._handleCreateLink(create, ZmOrganizer.FOLDER);
+		}
+	}
+
 	var convs = {};
 	var msgs = {};
 	var folders = {};
