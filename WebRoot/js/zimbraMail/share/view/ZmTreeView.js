@@ -296,3 +296,69 @@ function(parentNode, organizer, index) {
 
 	return ti;
 };
+
+
+/*
+* returns the nearest organizer to the given ID 
+*
+* @param parentNode	[int]	an organizer ID
+*/
+ZmTreeView.prototype.getNextData =
+function(id) {
+	
+		var treeItem = this.getTreeItemById(id);
+		if(!treeItem || !treeItem.parent){
+		return null;
+		}
+		while (treeItem && treeItem.parent) {
+		var parentN = treeItem.parent;
+		var treeItems = parentN.getItems();
+		var result = null;
+				
+		if(treeItems && treeItems.length>1){
+		
+		for(var i=0;i<treeItems.length;i++){ 
+ 		    var tmp=treeItems[i]; 
+		    if(tmp==treeItem){ 
+		    	
+		    	//nearest data
+		    	var nextData = this.findNext(treeItem,treeItems,i);
+		    	var prevData = this.findPrev(treeItem,treeItems,i);
+
+		    	if(nextData){
+			    	return nextData;
+		    	}else if(prevData){
+					return prevData;	    		
+		    	}		    	
+    		}
+		}		
+		}
+		
+		treeItem = treeItem.parent;
+		}
+		return null;
+};
+
+ZmTreeView.prototype.findNext = function(treeItem,treeItems,i){
+
+	for(var j= i+1;j<treeItems.length;j++){
+		var next = treeItems[j];
+		if(next && next.getData){		    		
+			return next.getData(Dwt.KEY_OBJECT);   		
+		}
+   	}
+
+	return null;
+};
+
+ZmTreeView.prototype.findPrev = function(treeItem,treeItems,i){
+
+	for(var j= i-1;j>=0;j--){
+		var next = treeItems[j];
+		if(next && next.getData){		    		
+			return next.getData(Dwt.KEY_OBJECT);   		
+		}
+   	}
+
+	return null;
+};
