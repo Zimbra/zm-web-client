@@ -188,28 +188,57 @@ function() {
 
 ZmNotebookApp.prototype.deleteNotify =
 function(ids, force) {
+
 	if (!force && this._deferNotifications("delete", ids)) { return; }
+
+	var nextData = null;
+	var idStr = ids.join(",")+",";
+	var pageInUse = false;
+	var notebookController = AjxDispatcher.run("GetNotebookController");
+	var shownPage = notebookController.getPage();
+	var overviewController = this._appCtxt.getOverviewController();
+	var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
+	var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+	var cache = this.getNotebookCache();
+					
 	for (var i = 0; i < ids.length; i++) {
-		var cache = this.getNotebookCache();
+		var tmp = treeView.getNextData(ids[i]);
+			//next node might also be in the delete list : parent deleted
+			if(tmp && idStr.indexOf(tmp.id+",")<0){
+				nextData = tmp;
+			}
+			if (shownPage && shownPage.id == ids[i]) {
+				pageInUse = true;				
+			}
+	}	
+				
+	for (var i = 0; i < ids.length; i++) {
+
 		var page = cache.getPageById(ids[i]);
 		if (page) {
 			DBG.println(AjxDebug.DBG2, "ZmNotebookApp: handling delete notif for ID " + ids[i]);
 			cache.removePage(page);
-			page.notifyDelete();
-				
-			// re-render, if necessary
-			var notebookController = AjxDispatcher.run("GetNotebookController");
-			var shownPage = notebookController.getPage();
-			if (shownPage && shownPage.id == page.id) {
-				if (shownPage.name == ZmNotebook.PAGE_INDEX || shownPage.name == page.name) {
-					var pageRef = { folderId: page.folderId, name: ZmNotebook.PAGE_INDEX };
-					notebookController.gotoPage(pageRef);
-				}
-			}
-			this._appCtxt.cacheRemove(page.id);
-			ids[i] = null;
+			page.notifyDelete();							
 		}
+		this._appCtxt.cacheRemove(ids[i]);
 	}
+	
+	if(nextData && pageInUse){
+	var pageRef = { folderId: nextData.id, name: ZmNotebook.PAGE_INDEX };
+	notebookController.gotoPage(pageRef);
+	}
+	
+	
+		for (var i = 0; i < ids.length; i++) {
+		var tmp1 = treeView.getTreeItemById(ids[i]);
+		DBG.println("tmp1:"+tmp1+","+page);//cdebugs
+		if(tmp1){
+			tmp1.dispose();
+		}
+		ids[i] = null;
+			
+	}
+	
 };
 
 /**
@@ -242,7 +271,7 @@ function(creates, force) {
 				cache.putPage(page);
 	
 				// re-render current page, if necessary
-				var notebookController = AjxDispatcher.run("GetNotebookController");
+				var notebookController = AjxDispatcher.run("GetNotebookController");	
 				if(!notebookController.isIframeEnabled()){
 					var shownPage = notebookController.getPage();
 					if (shownPage && shownPage.name == ZmNotebook.PAGE_INDEX) {

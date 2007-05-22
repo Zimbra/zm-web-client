@@ -672,12 +672,12 @@ ZmNotebookCache.prototype._processResponse = function(searchResponse)
 
 ZmNotebookCache.prototype.checkCache = function(params){
 	var item = null;
-	if(params.path){
-		item = this.getItemByPath(params.path);
-	}else if(params.folderId && params.name){
+	if(params.folderId && params.name){
 		item = this.getItemByName(params.folderId,params.name);
 	}else if(params.id){
 		item = this.getItemById(params.id);
+	}else if(params.path){
+		item = this.getItemByPath(params.path);
 	}
 	return item;
 };
@@ -724,10 +724,12 @@ ZmNotebookCache.prototype.getItemInfo = function(params)
 		var appController = this._appCtxt.getAppController();
 		var response = appController.sendRequest(reqParams);
 		
-		if(!asyncMode){
+		if(!asyncMode && response){
 		var item = this.handleGetItemResponse(params,response.GetItemResponse);		
 		return item;
 		}	
+		
+		return null;
 };
 
 ZmNotebookCache.prototype.handleGetItemResponse = function(params,response)
@@ -765,7 +767,10 @@ ZmNotebookCache.prototype.handleGetItemResponse = function(params,response)
 				item.name = "_Index";
 			}			
 
-			if(item && !params.ignoreCaching){								
+			if(item && !params.ignoreCaching){	
+				if(!path){
+					path = this.getPath(item.restUrl);
+				}							
 				item.path = path;				
 				this.putItem(item);				
 			}
@@ -779,3 +784,51 @@ ZmNotebookCache.prototype.handleGetItemResponse = function(params,response)
 			DBG.println(AjxDebug.DBG1,'exception in handleGetItemResponse:'+ex);
 		}
 };
+
+ZmNotebookCache.prototype.getPath = function(url){
+
+	var parts = this.parseURL(url);
+
+	if(!parts)
+	return;
+	
+	var path = parts.path;
+//	var path = path1.replace(/^\/?home\//,"");
+
+	if(!path || path=="blank")
+	return;
+	
+	path = unescape(path);
+	
+	if(path.charAt(0)=='/'){
+		path = path.substring(1);
+	}		
+	var accountName = null;
+	var wikiPath = null;	
+	var parts = path.split("/");	
+	if(parts.length>=3 && parts[0] == "home"){
+		var accountName = parts[1];
+		var len = parts.length;
+		var newParts = parts.splice(2,len-2);
+		wikiPath = newParts.join("/");	
+		return wikiPath;
+	}
+	return path;
+};
+
+ZmNotebookCache.prototype.parseURL = function(sourceUri) {
+
+    var names = ["source","protocol","authority","domain","port","path","directoryPath","fileName","query","anchor"];
+    var parts = new RegExp("^(?:([^:/?#.]+):)?(?://)?(([^:/?#]*)(?::(\\d*))?)?((/(?:[^?#](?![^?#/]*\\.[^?#/.]+(?:[\\?#]|$)))*/?)?([^?#/]*))?(?:\\?([^#]*))?(?:#(.*))?").exec(sourceUri);
+    var uri = {};
+    
+    for(var i = 0; i < 10; i++){
+        uri[names[i]] = (parts[i] ? parts[i] : "");
+    }
+    
+    if(uri.directoryPath.length > 0){
+        uri.directoryPath = uri.directoryPath.replace(/\/?$/, "/");
+    }
+    
+    return uri;
+}

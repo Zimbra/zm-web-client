@@ -65,10 +65,7 @@ function(page) {
 		toolbar.enable([ZmOperation.REFRESH,ZmOperation.EDIT,ZmOperation.TAG_MENU, ZmOperation.DELETE, ZmOperation.PRINT,ZmOperation.SEND_PAGE,ZmOperation.DETACH], false);
 		
 		if(page!=null){
-			var url = page.getRestUrl();			
-			if(page.restUrl && (url!=page.restUrl) && page.id && page.id.match(/:/)){
-				url = page.restUrl;					
-			}
+			var url = page.getRestUrl();						
 			this.loadURL(url);
 		}
 

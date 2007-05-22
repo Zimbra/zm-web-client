@@ -84,7 +84,14 @@ function(actionCode) {
 
 ZmNotebookPageController.prototype.gotoPage = function(pageRef) {
 	var cache = this._app.getNotebookCache();
-	var page = cache.getPageByName(pageRef.folderId, pageRef.name);
+	//var page = cache.getPageByName(pageRef.folderId, pageRef.name);
+	var params = null;//ctry
+	if(pageRef.name=="_Index"){
+		params = {id:pageRef.folderId};
+	}else{
+		params={folderId:pageRef.folderId,name:pageRef.name};
+	}
+	var page = cache.getItemInfo(params);
 	this._object = page;
 	this._setViewContents(this._currentView);
 	this._resetOperations(this._toolbar[this._currentView]);
@@ -257,7 +264,9 @@ function(ev) {
 
 ZmNotebookPageController.prototype._showIndex = function(folderId) {
 	var cache = this._app.getNotebookCache();
-	var index = cache.getPageByName(folderId, ZmNotebook.PAGE_INDEX, true);
+	var params = {id:folderId};	
+//	var index = cache.getPageByName(folderId, ZmNotebook.PAGE_INDEX, true);
+	var index = cache.getItemInfo(params);
 	this.show(index);
 };
 
