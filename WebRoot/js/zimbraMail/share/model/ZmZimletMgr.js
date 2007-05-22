@@ -46,10 +46,18 @@ ZmZimletMgr._RE_REMOTE = /^((https?|ftps?):\x2f\x2f|\x2f)/;
 // Public methods
 //
 
+ZmZimletMgr.prototype.isLoaded = function() {
+    return this.loaded;
+};
+
 ZmZimletMgr.prototype.loadZimlets =
 function(zimletArray, userProps) {
-	if(!zimletArray || !zimletArray.length) {return;}
-	for (var i = 0; i < zimletArray.length; i++)
+	if(!zimletArray || !zimletArray.length) {
+        this.loaded = true;
+        return;
+    }
+
+    for (var i = 0; i < zimletArray.length; i++)
 		this._ZIMLETS_BY_ID[zimletArray[i].zimlet[0].name] = true;
 	for(var i=0; i < zimletArray.length; i++) {
 		var z = new ZmZimletContext(i, zimletArray[i], this._appCtxt);
@@ -195,6 +203,7 @@ ZmZimletMgr.prototype._loadIncludes = function(zimletArray, zimletNames) {
 };
 
 ZmZimletMgr.prototype._finished_loadIncludes = function(zimletNames) {
+    this.loaded = true;
     var zimlets = this.getZimletsHash();
     for (var i = 0; i < zimletNames.length; i++) {
         var name = zimletNames[i];

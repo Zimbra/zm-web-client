@@ -51,18 +51,14 @@ ZmObjectManager = function(view, appCtxt, selectCallback, skipHandlers) {
 
 	// create handlers (see registerHandler below)
 	if (!skipHandlers) {
-		this._createHandlers();
-
-		// get Zimlet handler's
-		if (this._appCtxt && this._appCtxt.zimletsPresent()) {
-			var zimlets = this._appCtxt.getZimletMgr().getContentZimlets();
-			for (var i = 0; i < zimlets.length; i++) {
-				this.addHandler(zimlets[i], zimlets[i].type, zimlets[i].prio);
-			}
-		}
+        this.initialized = false;
+        this._addAutoHandlers();
 	}
+    else {
+        this.initialized = true;
+    }
 
-	this.sortHandlers();
+    this.sortHandlers();
 	this.reset();
 
 	//DBG.println(AjxDebug.DBG3, "ZmObjectManager " + zimlets.length + " Zimlets loaded");
@@ -126,13 +122,27 @@ function(obj) {
 	}
 };
 
+ZmObjectManager.prototype.getHandlers = function() {
+    if (!this.initialized && this._appCtxt && this._appCtxt.zimletsPresent()) {
+        var zimletMgr = this._appCtxt.getZimletMgr();
+        if (zimletMgr.isLoaded()) {
+            this.initialized = true;
+            var zimlets = zimletMgr.getContentZimlets();
+            for (var i = 0; i < zimlets.length; i++) {
+                this.addHandler(zimlets[i], zimlets[i].type, zimlets[i].prio);
+            }
+        }
+    }
+    return this._objectHandlers;
+};
+
 ZmObjectManager.prototype.addHandler =
 function(h, type, priority) {
 	type = type ? type : (h.getTypeName() ? h.getTypeName() : "none");
 	priority = priority ? priority : -1;
 	h._prio = priority;
 	//DBG.println(AjxDebug.DBG3, "addHandler " + h + " type: " + type + " prio: " + priority);
-	var oh = this._objectHandlers;
+	var oh = this.getHandlers();
 	if (!oh[type]) {oh[type] = [];}
 	oh[type].push(h);
 };
@@ -140,19 +150,20 @@ function(h, type, priority) {
 ZmObjectManager.prototype.sortHandlers =
 function() {
 	this._allObjectHandlers = [];
-	for (i in this._objectHandlers) {
+    var objectHandlers = this.getHandlers();
+    for (i in objectHandlers) {
 		// Object handlers grouped by Type
-		this._objectHandlers[i].sort(ZmObjectManager.__byPriority);
+		objectHandlers[i].sort(ZmObjectManager.__byPriority);
 
 		// Copy each array to a single array of all Object Handlers
-		for (var k=0;k< this._objectHandlers[i].length;k++) {
-			this._allObjectHandlers.push(this._objectHandlers[i][k]);
+		for (var k=0;k< objectHandlers[i].length;k++) {
+			this._allObjectHandlers.push(objectHandlers[i][k]);
 		}
 	}
 	this._allObjectHandlers.sort(ZmObjectManager.__byPriority);
 };
 
-ZmObjectManager.prototype._createHandlers =
+ZmObjectManager.prototype._addAutoHandlers =
 function() {
 	var c = ZmObjectManager._autohandlers, i, obj, prio;
 	for (i = 0; i < c.length; ++i) {
@@ -205,7 +216,8 @@ function(content, htmlEncode, type, isTextMsg) {
 	var maxIndex = content.length;
 	var lastIndex = 0;
 
-	while (true) {
+    var objectHandlers = this.getHandlers();
+    while (true) {
 		var lowestResult = null;
 		var lowestIndex = maxIndex;
 		var lowestHandler = null;
@@ -223,7 +235,7 @@ function(content, htmlEncode, type, isTextMsg) {
 		var result = null;
 		if (type) {
 			//DBG.println(AjxDebug.DBG3, "findObjects type [" + type + "]");
-			handlers = this._objectHandlers[type];
+			handlers = objectHandlers[type];
 			if (handlers) {
 				for (i = 0; i < handlers.length; i++) {
 					//DBG.println(AjxDebug.DBG3, "findObjects by TYPE (" + handlers[i] + ")");
@@ -450,7 +462,7 @@ function(content, type) {
 	var result = null;
 	if (type) {
 		//DBG.println(AjxDebug.DBG3, "findObjects type [" + type + "]");
-		var handlers = this._objectHandlers[type];
+		var handlers = this.getHandlers()[type];
 		if (handlers) {
 			for (i = 0; i < handlers.length; i++) {
 				//DBG.println(AjxDebug.DBG3, "findObjects by TYPE (" + handlers[i] + ")");
@@ -614,7 +626,7 @@ function(node, handlers, discard, ignore) {
 
 ZmObjectManager.prototype.setHandlerAttr =
 function(type, name, value) {
-    var handlers = this._objectHandlers[type];
+    var handlers = this.getHandlers()[type];
 	if (handlers) {
 		for (var i = 0; i < handlers.length; i++) {
 			handlers[i][name] = value;
