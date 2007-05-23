@@ -28,13 +28,6 @@ ZmChatMessage = function(notifyJs, fromMe, isSystem) {
 		this.subject = notifyJs.subject;
 		if (notifyJs.body != null && notifyJs.body.length > 0) {
 			this.body = notifyJs.body[0]._content;
-		} else {
-			// just a typing notification -tim
-			if (notifyJs.typing != null) {
-				this.body = "(typing)";			
-			} else {
-				this.body = "(not typing)"				
-			}
 		}
 		this.from = notifyJs.from;
 		this.to = notifyJs.to;

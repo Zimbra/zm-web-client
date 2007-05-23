@@ -310,15 +310,22 @@ ZmRosterTreeController.prototype._rosterListChangeListener = function(ev) {
 
 ZmRosterTreeController.prototype._handleRosterItemModify =
 function(item, fields, treeView) {
-	var doShow = ZmRosterItem.F_PRESENCE in fields;
-	var doUnread = ZmRosterItem.F_UNREAD in fields;
-	var doGroups = ZmRosterItem.F_GROUPS in fields;
-	var doName = ZmRosterItem.F_NAME in fields;
+	var doShow    = ZmRosterItem.F_PRESENCE	 in fields;
+	var doUnread  = ZmRosterItem.F_UNREAD	 in fields;
+	var doGroups  = ZmRosterItem.F_GROUPS	 in fields;
+	var doName    = ZmRosterItem.F_NAME	 in fields;
+	var doTyping  = ZmRosterItem.F_TYPING	 in fields;
 
 	if (doGroups || doName) {
-		// easier to remove/add it
+		// easier to remove/add it (FIXME)
 		this._removeRosterItem(item);
 		this._addRosterItem(item);
+	}
+
+	if (doTyping) {
+		var chat = AjxDispatcher.run("GetRoster").getChatList().getChatByRosterAddr(item.getAddress());
+		if (chat)
+			chat.setTyping(item, fields[ZmRosterItem.F_TYPING]);
 	}
 
 	var items = (doShow != null) || (doUnread != null) ? this.getAllItemsByAddr(item.getAddress()) : null;
@@ -335,6 +342,11 @@ function(item, fields, treeView) {
 			if (ti) {
 				if (doShow) ti.setImage(rti.getIcon());
 				if (doUnread) ti.setText(newName);
+				if (doTyping) {
+					Dwt.condClass(ti.getHtmlElement(),
+						      fields[ZmRosterItem.F_TYPING],
+						      "ZmRosterItem-typing");
+				}
 				treeItems.push(ti);
 			}
 		}

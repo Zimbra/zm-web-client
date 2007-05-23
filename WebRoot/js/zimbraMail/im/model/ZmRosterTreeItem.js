@@ -71,3 +71,7 @@ ZmRosterTreeItem.prototype.getRosterItem = function() { return this.rosterItem; 
 ZmRosterTreeItem.prototype.getGroupName = function() { return this.parent.getName(); }
 
 ZmRosterTreeItem.prototype.getName = function() { return this.rosterItem.getDisplayName(); }
+
+ZmRosterTreeItem.prototype.setTyping = function(typing) {
+	
+};

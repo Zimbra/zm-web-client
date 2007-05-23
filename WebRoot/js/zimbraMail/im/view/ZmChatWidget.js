@@ -86,7 +86,17 @@ ZmChatWidget.prototype._chatChangeListener = function(ev, treeView) {
 		var msg = fields[ZmChat.F_MESSAGE];
 		if (msg)
 			this.handleMessage(msg);
+		if (ZmChat.F_TYPING in fields) {
+			this.setTyping(ev.getDetail("item"), fields[ZmChat.F_TYPING]);
+		}
 	}
+};
+
+ZmChatWidget.prototype.setTyping = function(item, typing) {
+// 	console.log("ZmChatWidget: %s is %s", item.getAddress(),
+// 		    typing ? "typing" : "not typing");
+	var label = this.getTabLabel();
+	Dwt.condClass(label.getHtmlElement(), typing, "ZmRosterItem-typing");
 };
 
 ZmChatWidget.prototype.handleMessage = function(msg) {
@@ -360,7 +370,9 @@ ZmChatWidget._inputKeyPress = function(ev) {
 			processKey();
 			return false;
 		} else {
-			setTimeout(processKey, 25);
+			if (self.__processKeyTimeout)
+				clearTimeout(self.__processKeyTimeout);
+			self.__processKeyTimeout = setTimeout(processKey, 50);
 		}
 	}
 };

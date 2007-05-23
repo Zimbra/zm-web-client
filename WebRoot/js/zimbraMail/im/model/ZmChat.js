@@ -41,6 +41,7 @@ ZmChat.prototype = new ZmItem;
 ZmChat.prototype.constructor = ZmChat;
 
 ZmChat.F_MESSAGE = "ZmChat.message";
+ZmChat.F_TYPING = "ZmChat.typing";
 
 ZmChat.prototype.toString =
 function() {
@@ -82,6 +83,13 @@ function(thread) {
 ZmChat.prototype.setName =
 function(chatName) {
     this._chatName = chatName;
+};
+
+ZmChat.prototype.setTyping = function(item, typing) {
+	var fields = {};
+	fields[ZmChat.F_TYPING] = typing;
+	this._notify(ZmEvent.E_MODIFY, { item	: item,
+					 fields	: fields });
 };
 
 // get the display name for a roster item on the list
@@ -191,15 +199,18 @@ function(text) {
 /**
  * create item on server.
  */
-ZmChat.prototype.sendMessage =
-function(text) {
+ZmChat.prototype.sendMessage = function(text, typing) {
 	var soapDoc = AjxSoapDoc.create("IMSendMessageRequest", "urn:zimbraIM");
 	var method = soapDoc.getMethod();
 	var message = soapDoc.set("message");
+	if (typing)
+		soapDoc.set("typing", null, message);
 	var thread = this.getThread();
-	if (thread) 	message.setAttribute("thread", thread);
+	if (thread)
+		message.setAttribute("thread", thread);
 	message.setAttribute("addr", this.getRosterItem(0).getAddress());
-	var body = soapDoc.set("body", text, message);
+	if (text != null)
+		soapDoc.set("body", text, message);
 	// TODO: error handling
 	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: this._sendMessageCallbackObj});
 };

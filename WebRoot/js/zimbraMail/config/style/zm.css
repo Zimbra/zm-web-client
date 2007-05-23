@@ -1863,6 +1863,9 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatWindowChatEntryMe .from { color: #00c; }
 .ZmChatWindowChatEntryThem .from { color: #c00; }
 
+.ZmRosterItem-typing .DwtTreeItem .DwtTreeItem-Text { color: #1a1; }
+.ZmRosterItem-typing .ZWidgetTitle { color: #070; }
+
 /* chat with Zimbra Assistant */
 
 .ZmAssistantChat .ZmAssistantButtons { float: right; }
@@ -2796,6 +2799,8 @@ HTML>BODY .appt-selected .appt_allday_body
 /* tabs for buddy list/folders in the overview bar */
 /* FIXME: look broken */
 
+/* <REMOVE -- IS THIS NEEDED?>
+
 .ZmBuddyFolderTabBar {
 }
 
@@ -2810,6 +2815,8 @@ HTML>BODY .appt-selected .appt_allday_body
 .BuddyFolderTab-active {
   @AppTabContainer-selected@
 }
+
+</REMOVE> */
 
 .ZmVoiceListView .Row,
 .ZmVoiceListView .Row-selected,

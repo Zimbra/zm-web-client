@@ -40,6 +40,7 @@ ZmRosterItem.F_PRESENCE = "ZmRosterItem.presence";
 ZmRosterItem.F_GROUPS = "ZmRosterItem.groups";
 ZmRosterItem.F_NAME = "ZmRosterItem.name";
 ZmRosterItem.F_UNREAD = "ZmRosterItem.unread";
+ZmRosterItem.F_TYPING = "ZmRosterItem.typing";
 
 ZmRosterItem.prototype.toString =
 function() {
@@ -70,50 +71,57 @@ function(id, name, groupNames, doDelete) {
 
 ZmRosterItem.prototype.getPresence =
 function() {
-    return this.presence;
+	return this.presence;
 };
 
 // debugging hack, to be removed
 ZmRosterItem.prototype.__setShow  =
 function(show, status) {
-    this.presence.setShow(show).setStatus(status);
-    this._notifyPresence();
+	this.presence.setShow(show).setStatus(status);
+	this._notifyPresence();
+};
+
+ZmRosterItem.prototype._notifyTyping = function(typing) {
+	var fields = {};
+	fields[ZmRosterItem.F_TYPING] = !!typing;
+	this.list._notify(ZmEvent.E_MODIFY, { fields : fields,
+					      items  : [ this ] });
 };
 
 ZmRosterItem.prototype._notifyPresence =
 function() {
-    var fields = {};
-    fields[ZmRosterItem.F_PRESENCE] = this.getPresence();
-    this.list._notify(ZmEvent.E_MODIFY, {fields: fields, items: [this]});
-    delete this._toolTip;
+	var fields = {};
+	fields[ZmRosterItem.F_PRESENCE] = this.getPresence();
+	this.list._notify(ZmEvent.E_MODIFY, {fields: fields, items: [this]});
+	delete this._toolTip;
 };
 
 ZmRosterItem.prototype.setUnread  =
 function(num, addToTotal) {
-    this.numUnreadIMs = addToTotal ? this.numUnreadIMs + num : num;
-    var fields = {};
-    fields[ZmRosterItem.F_UNREAD] = this.numUnreadIMs;
-    this.list._notify(ZmEvent.E_MODIFY, {fields: fields, items: [this]});
-    delete this._toolTip;
+	this.numUnreadIMs = addToTotal ? this.numUnreadIMs + num : num;
+	var fields = {};
+	fields[ZmRosterItem.F_UNREAD] = this.numUnreadIMs;
+	this.list._notify(ZmEvent.E_MODIFY, {fields: fields, items: [this]});
+	delete this._toolTip;
 };
 
 ZmRosterItem.prototype._notifySetGroups =
 function(newGroups) {
-    this.groupNames = newGroups;
-    this.groups = this.groupNames ? this.groupNames.split(/,/) : [];
-    var fields = {};
-    fields[ZmRosterItem.F_GROUPS] = this.groupNames;
-    this.list._notify(ZmEvent.E_MODIFY, {fields: fields, items: [this]});
-    delete this._toolTip;
+	this.groupNames = newGroups;
+	this.groups = this.groupNames ? this.groupNames.split(/,/) : [];
+	var fields = {};
+	fields[ZmRosterItem.F_GROUPS] = this.groupNames;
+	this.list._notify(ZmEvent.E_MODIFY, {fields: fields, items: [this]});
+	delete this._toolTip;
 };
 
 ZmRosterItem.prototype._notifySetName =
 function(newName) {
-    this.name = newName;
-    var fields = {};
-    fields[ZmRosterItem.F_NAME] = this.name;
-    this.list._notify(ZmEvent.E_MODIFY, {fields: fields, items: [this]});
-    delete this._toolTip;
+	this.name = newName;
+	var fields = {};
+	fields[ZmRosterItem.F_NAME] = this.name;
+	this.list._notify(ZmEvent.E_MODIFY, {fields: fields, items: [this]});
+	delete this._toolTip;
 };
 
 /**
@@ -121,20 +129,20 @@ function(newName) {
  */
 ZmRosterItem.prototype.doRenameGroup =
 function(oldGroup, newGroup) {
-    var oldI = -1;
-    var newI = -1;
-    for (var i in this.groups) {
-        if (this.groups[i] == oldGroup) oldI = i;
-        if (this.groups[i] == newGroup) newI = i;
-    }
-    if (newI !=-1 || oldI == -1) return;
-    var newGroups = [];
-    for (var i in this.groups) {
-        if (i != oldI) newGroups.push(this.groups[i]);
-    }
-    newGroups.push(newGroup);
-    var newGroupNames = newGroups.join(",");
-    this._modify(this.id, this.name, newGroupNames, false);
+	var oldI = -1;
+	var newI = -1;
+	for (var i in this.groups) {
+		if (this.groups[i] == oldGroup) oldI = i;
+		if (this.groups[i] == newGroup) newI = i;
+	}
+	if (newI !=-1 || oldI == -1) return;
+	var newGroups = [];
+	for (var i in this.groups) {
+		if (i != oldI) newGroups.push(this.groups[i]);
+	}
+	newGroups.push(newGroup);
+	var newGroupNames = newGroups.join(",");
+	this._modify(this.id, this.name, newGroupNames, false);
 };
 
 ZmRosterItem.sortCompare =
@@ -192,16 +200,31 @@ ZmRosterItem.prototype.getUnread = function() { return this.numUnreadIMs; };
 // sel_start : place new selection
 // sel_end   : ^^
 // stop      : true to avoid sending the message to server (useful for Zimbra Assistant)
-ZmRosterItem.prototype.handleInput = function(args) {};
+ZmRosterItem.prototype.handleInput = function(args) {
+	// by default we do typing notification
+	function clearTyping(chat) {
+		chat.sendMessage(null);
+		this._isTyping = null;
+	};
+	if (!this._isTyping) {
+		var typing = !args.enter;
+		this._isTyping = typing;
+		args.chat.sendMessage(null, typing);
+		if (this._clearTypingTimer)
+			clearTimeout(this._clearTypingTimer);
+		this._clearTypingTimer = setTimeout(AjxCallback.simpleClosure(clearTyping, this, args.chat),
+						    5000);
+	}
+};
 
 ZmRosterItem.prototype.chatStarted = function(chat, widget) {}; // called when a new ZmChat is started with this item
 
 ZmRosterItem.prototype.inGroup =
 function(name) {
-    for (var i in this.groups) {
-        if (this.groups[i] == name) return true;
-    }
-    return false;
+	for (var i in this.groups) {
+		if (this.groups[i] == name) return true;
+	}
+	return false;
 };
 
 /**
@@ -223,15 +246,15 @@ function(name) {
 */
 ZmRosterItem.checkAddress =
 function(address) {
-    if (address == null || address == "")
-        return ZmMsg.rosterItemAddressNoValue;
-    else
+	if (address == null || address == "")
+		return ZmMsg.rosterItemAddressNoValue;
+	else
         	return null;
 };
 
 ZmRosterItem.checkGroups =
 function(groups) {
-    return null;
+	return null;
 };
 
 ZmRosterItem.prototype.getToolTip = function() {
