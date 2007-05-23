@@ -1,0 +1,201 @@
+<!--
+The templates in this file represent the various pages ("tabs") in the
+preferences app. Each template determines the layout of the page and
+which controls appear on that page.
+
+When the user selects a page, the application will expand the appropriate
+template and replace the innerHTML of the tab with the result. Then, the
+app will iterate the identifier list of known components. If there is a
+container element with that identifer, the appropriate control is created
+and the container element is replaced with that control.
+
+A list of the known components appears at the bottom of this file. Each
+component is written as:
+
+  component name { type : value* } // comment
+
+In order to place the component in a page template, you must join the
+string "${id}" and all parts of the component name with an underscore.
+use this as the container element id. For example, to include the
+component "search include junk", the container element would look like
+this:
+
+  <div id='${id}_search_include_junk'></div>
+-->
+
+<template id='General'>
+</template>
+
+<template id='Mail'>
+</template>
+
+<template id='Composing'>
+</template>
+
+<template id='Signatures'>
+</template>
+
+<template id='Voice'>
+</template>
+
+<template id='Contacts'>
+</template>
+
+<template id='Accounts'>
+</template>
+
+<template id='MailFilters'>
+</template>
+
+<template id='Calendar'>
+</template>
+
+<template id='IM'>
+</template>
+
+<template id='Shortcuts'>
+</template>
+
+<!--
+== General
+
+search include junk { boolean }
+search include trash { boolean }
+
+search show { boolean }
+
+editor { string: text | html }
+
+editor html font name { string }
+editor html font size { string }
+editor html font color { string? }
+
+password change (button)
+
+theme name { string: sand | ... }
+
+defaults restore (button) // every page
+
+
+== Mail
+
+mail display view { choice: message | conversation }
+
+mail display count { choice: 10 | 25 | 50 | 100 }
+mail display fragments { boolean }
+
+mail initial search { string } // in:inbox
+mail poll interval { integer } // mins
+mail display preview { boolean }
+
+mail sent save { boolean }
+mail away enabled { boolean }
+mail away message { text }
+
+mail new notify { boolean }
+mail new notify address { email }
+
+mail forward address { email } // empty == disabled?
+mail forward no save { boolean }
+
+mail display html { boolean }
+mail self action { choice: normal | to-or-cc | ignore }
+mail compose new window { boolean }
+
+
+== Mail Identities
+
+identities { list }
+
+identity name { string }
+identity from name { string }
+identity from address { email }
+identity reply enabled { boolean }
+identity reply name { string }
+identity reply address { email }
+
+identity reply from enabled { boolean }
+identity reply from address { email }
+
+identity reply folder enabled { boolean }
+identity reply folder name { folder }
+
+identity signature position { choice: above | below }
+identity signature apply { choice: automatic | manual }
+identity signature { text }
+
+identity message format { choice: original | text | html }
+identity reply action { choice: none | message | message-with-prefix | message-as-attachment | last-message }
+identity forward action { choice: message | message-with-prefix | message-as-attachment }
+identity message prefix { choice: ">" | "|" }
+
+
+== POP Accounts
+
+pop accounts { list }
+
+pop account name { string }
+pop account download folder { folder }
+pop account download action { choice: leave | remove }
+
+pop account server { host }
+pop account username { string }
+pop account password { password }
+
+pop account ssl enabled { boolean }
+pop account port { int } // 110 or 995 (ssl)
+
+pop account test (button)
+
+pop account identity create { boolean }
+pop account identity name { label }
+pop account identity address { email }
+pop account identity link reply { boolean }
+pop account identity link folder { boolean }
+
+
+== Mail Filters
+
+filters { list } // can be ordered
+
+filter name { string }
+filter enabled { boolean }
+filter conditions select { choice: any | all }
+filter conditions { list }
+filter condition { CUSTOM }
+filter actions
+filter action { CUSTOM }
+filter stop { boolean }
+
+
+== Address Book
+
+contacts auto add { boolean }
+contacts complete gal { boolean }
+contacts display view { choice: cards | list }
+contacts display count { choice: 10 | 25 | 50 | 100 }
+
+contacts import (button) // file input
+contacts export (button)
+
+
+== Calendar
+
+calendar display view { choice: day | work-week | week | month | schedule }
+calendar display start { choice: sun | mon | tue | wed | thu | fri | sat }
+calendar display timezone { boolean }
+
+calendar quickadd { boolean }
+
+minical enabled { boolean }
+
+calendar reminder { choice: never | 1 | 5 | 10 | 15 | 30 | 45 | 60 } // mins
+
+calendar import (button) // file input
+calendar export (button)
+
+
+== Shortcuts
+
+TODO
+-->
