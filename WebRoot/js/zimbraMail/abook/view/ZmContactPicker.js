@@ -460,7 +460,7 @@ function(html, idx, item, field, colIdx, params) {
 		html[idx++] = ZmMsg[item.getTypeAsString()];
 		html[idx++] = ":";
 	} else {
-		idx = ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, now, width);
+		idx = ZmContactsHelper._getEmailField(html, idx, item, field, colIdx);
 	}
 	return idx;
 };

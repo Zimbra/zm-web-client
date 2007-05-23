@@ -90,7 +90,7 @@ function(list, contact, addr, isGroup) {
 
 // The items are AjxEmailAddress objects
 ZmContactsHelper._getEmailField =
-function(html, idx, item, field, colIdx, params) {
+function(html, idx, item, field, colIdx) {
 	if (field == ZmItem.F_TYPE) {
 		html[idx++] = AjxImg.getImageHtml(item.icon);
 	} else if (field == ZmItem.F_NAME) {
