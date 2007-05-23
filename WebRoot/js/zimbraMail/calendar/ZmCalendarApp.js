@@ -95,13 +95,15 @@ function(settings) {
 	settings.registerSetting("CAL_USE_QUICK_ADD",			{name: "zimbraPrefCalendarUseQuickAdd", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("CALENDAR_INITIAL_VIEW",		{name: "zimbraPrefCalendarInitialView", type: ZmSetting.T_PREF, defaultValue: ZmSetting.CAL_DAY});
 	settings.registerSetting("DEFAULT_CALENDAR_TIMEZONE",	{name: "zimbraPrefTimeZoneId", type: ZmSetting.T_PREF});
+	settings.registerSetting("DELETE_INVITE_ON_REPLY",      {name: "zimbraPrefDeleteInviteOnReply",type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 };
 
 ZmCalendarApp.prototype._registerPrefs =
 function() {
 	var list = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DAY_OF_WEEK, 
 				ZmSetting.CAL_SHOW_TIMEZONE, ZmSetting.CAL_USE_QUICK_ADD, ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL,
-				ZmSetting.CAL_REMINDER_WARNING_TIME, ZmSetting.CAL_IMPORT, ZmSetting.CAL_EXPORT];
+				ZmSetting.CAL_REMINDER_WARNING_TIME, ZmSetting.CAL_IMPORT, ZmSetting.CAL_EXPORT,
+				ZmSetting.DELETE_INVITE_ON_REPLY];
 
 	ZmPref.setPrefList("CALENDAR_PREFS", list);
 
@@ -151,6 +153,11 @@ function() {
 	 	displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		[ZmMsg.calViewDay, ZmMsg.calViewWorkWeek, ZmMsg.calViewWeek, ZmMsg.calViewMonth, ZmMsg.calViewSchedule],
 		options:			[ZmSetting.CAL_DAY, ZmSetting.CAL_WORK_WEEK, ZmSetting.CAL_WEEK, ZmSetting.CAL_MONTH, ZmSetting.CAL_SCHEDULE]
+	});
+	
+	ZmPref.registerPref("DELETE_INVITE_ON_REPLY",{
+		displayName: ZmMsg.deleteInviteOnReply,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 };
 
