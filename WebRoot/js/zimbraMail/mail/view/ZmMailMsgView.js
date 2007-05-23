@@ -912,7 +912,7 @@ function(msg, container, callback) {
 
 	// Subject
 	var subject = msg.getSubject() || ZmMsg.noSubject;
-	htmlArr[idx++] = "<tr><td width=100 class='SubjectCol LabelColName' valign=top>";
+	htmlArr[idx++] = "<tr><td width=10% class='SubjectCol LabelColName' valign=top>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.subject);
 	htmlArr[idx++] = ": </td><td colspan=3>";
 	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td class='SubjectCol LabelColValue'>";
@@ -940,7 +940,7 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "'></td><td class='LabelColName'>";
 	htmlArr[idx++] = ZmMsg.sentBy;
 	htmlArr[idx++] = ": </td></tr></table></td>";
-	htmlArr[idx++] = "<td class='LabelColValue'>";
+	htmlArr[idx++] = "<td class='LabelColValue' colspan=3>";
 	if (addr instanceof AjxEmailAddress) {
 		addr = addr.address || (AjxStringUtil.htmlEncode(addr.name));
 	}
@@ -957,9 +957,9 @@ function(msg, container, callback) {
 
 	if (sentBy) {
 		// on behalf of (if applicable)
-		htmlArr[idx++] = "<tr><td width=100 valign='top' class='LabelColName'>";
+		htmlArr[idx++] = "<tr><td width=10% valign='top' class='LabelColName'>";
 		htmlArr[idx++] = ZmMsg.onBehalfOf;
-		htmlArr[idx++] = ":</td><td class='LabelColValue'>";
+		htmlArr[idx++] = ":</td><td class='LabelColValue' colspan=3>";
 		htmlArr[idx++] = this._objectManager
 			? this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL)
 			: addr;
