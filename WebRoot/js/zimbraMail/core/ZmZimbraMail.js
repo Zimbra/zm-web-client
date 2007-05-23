@@ -161,7 +161,7 @@ function(domain, app, userShellId, offlineMode, devMode) {
     }
 
 	var userShell = window.document.getElementById(settings.get(ZmSetting.SKIN_SHELL_ID));
-	var shell = new DwtShell({userShell:userShell});
+	var shell = new DwtShell({userShell:userShell, docBodyScrollable:false});
 	appCtxt.setShell(shell);
 
 	appCtxt.setItemCache(new AjxCache());
