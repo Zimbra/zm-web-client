@@ -503,10 +503,9 @@ function(x, y) {
 	if (!AjxEnv.isSafari)
 		main.style.display = "none";
 
-	// FUDGE: we must substract borders and paddings
-	var delta = 2 + 6;
-	if (this._mode == DwtHtmlEditor.HTML)
-		delta += 2;	// for some reason... yuck
+	// FUDGE: we must substract borders and paddings - yuck.
+	var delta = this._mode == DwtHtmlEditor.HTML ? 10 : 12;
+
 	x -= delta;
 
 	// subtract spellchecker DIV if applicable
