@@ -2911,7 +2911,11 @@ HTML>BODY .appt-selected .appt_allday_body
  ***************/
 
 
-.ZAppTabBorder							{	@ZWidgetBg@		@NormalOutsetBorder@	@AppTab-lighter@	@AppTabRoundCorners@	margin-right:10px;	}
+.ZAppTabBorder							{	@ZWidgetBg@		@NormalOutsetBorder@	@AppTab-lighter@	@AppTabRoundCorners@	margin-right:10px;
+ #IFDEF MSIE
+  padding-right:3px; margin-right: 12px;
+ #ENDIF
+}
 .ZHover		.ZAppTabBorder				{	@ZWidgetBg@								@FullOpacity@		@AppTabRoundCorners@	}
 .ZDisabled	.ZAppTabBorder				{	@ZWidgetBg@ 	@DisabledBorder@		@FullOpacity@		@AppTabRoundCorners@	}
 .ZFocused	.ZAppTabBorder				{	@ZWidgetBg@		@NormalOutsetBorder@	@FullOpacity@		@AppTabRoundCorners@	}
