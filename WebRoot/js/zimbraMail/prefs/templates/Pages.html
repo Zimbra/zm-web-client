@@ -24,6 +24,39 @@ this:
 -->
 
 <template id='General'>
+	<$ if (data.isEnabled('login') { $>
+		<table>
+			<tr>
+				<td>L</td>
+				<td>smartzone</td>
+				<td>R</td>
+			</tr>
+			<tr><td colspan=3>
+				<table width=100%>
+					${ expandPref('login') }
+				</table>
+			</td></tr>
+		</table>
+	<$ } $>
+	
+		<br><br>
+	
+	<$ if (data.isEnabled('search_include_junk') 
+		&& data.isEnabled('search_include_trash') { $>
+		<table>
+			<tr>
+				<td>L</td>
+				<td>Searches</td>
+				<td>R</td>
+			</tr>
+			<tr><td colspan=3>
+				<table width=100%>
+					${ expandPref('search_include_junk') }
+					${ expandPref('search_include_trash') }
+				</table>
+			</td></tr>
+		</table>
+	<$ } $>
 </template>
 
 <template id='Mail'>
@@ -56,8 +89,39 @@ this:
 <template id='Shortcuts'>
 </template>
 
+
+
+<!-- General -->
+
+<!-- 	login { choice: ajax | html }	-->
+<template id='login'>
+	<tr><td>Configuration:</td>
+		<td><div id='${id}_login'></div></td>
+	</tr>
+</template>
+
+<!-- 	search_include_junk { boolean }	-->
+<template id='search_include_junk'>
+	<tr><td>Search Settings:</td>
+		<td><div id='${id}_search_include_junk'></div></td>
+	</tr>
+</template>
+
+<!-- 	search_include_trash { boolean }	-->
+<template id='search_include_trash'>
+	<tr><td>&nbsp;</td>
+		<td><div id='${id}_search_include_trash'></div></td>
+	</tr>
+</template>
+
+
+
+
+
 <!--
 == General
+
+login { choice: ajax | html }
 
 search include junk { boolean }
 search include trash { boolean }
