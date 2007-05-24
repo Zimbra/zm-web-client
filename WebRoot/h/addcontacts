@@ -40,7 +40,7 @@
             <td class='TbBt'>
                 <table cellspacing=0 cellpadding=0 class='Tb'>
                     <tr>
-                        <app:button name="actionContactDone" src="common/Close.gif" tooltip="done" text="done"/>
+                        <app:button name="actionContactDone" src="common/Check.gif" tooltip="done" text="done"/>
                         <td><div class='vertSep'></div></td>
                         <app:button name="actionContactAdd" src="contacts/ContactsPicker.gif" tooltip="addSelected" text="addSelected"/>
                         <td><div class='vertSep'></div></td>
