@@ -100,7 +100,7 @@
                                         <input type="hidden" name="loginOp" value="login"/>
                                         <table width=100% cellpadding=4>
                                             <tr>
-                                                <td class='zLoginLabelContainer'><fmt:message key="password"/>:</td>
+                                                <td class='zLoginLabelContainer'><fmt:message key="oldPassword"/>:</td>
                                                 <td colspan=2 class='zLoginFieldContainer'>
                                                     <input autocomplete="off" class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
                                                 </td>
