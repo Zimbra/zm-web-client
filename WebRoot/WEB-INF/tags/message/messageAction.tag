@@ -51,6 +51,7 @@
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionLoadFeed')}">
         <zm:syncFolder id="${param.contextFolderId}"/>
+        <zm:clearSearchCache/>
         <app:status>
             <fmt:message key="feedLoaded">
                 <fmt:param value="${zm:getFolderName(pageContext, param.contextFolderId)}"/>
