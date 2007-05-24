@@ -24,7 +24,7 @@ this:
 -->
 
 <template id='General'>
-	<$ if (data.isEnabled('login') { $>
+	<$ if (data.isEnabled('login')) { $>
 		<table>
 			<tr>
 				<td>L</td>
@@ -42,7 +42,7 @@ this:
 		<br><br>
 	
 	<$ if (data.isEnabled('search_include_junk') 
-		&& data.isEnabled('search_include_trash') { $>
+		&& data.isEnabled('search_include_trash')) { $>
 		<table>
 			<tr>
 				<td>L</td>
