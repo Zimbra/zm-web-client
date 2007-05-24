@@ -1937,6 +1937,26 @@ HTML>BODY .appt-selected .appt_allday_body
   -moz-border-radius-bottomright: 2px;
 }
 
+.ZmChatGwIcon {
+  width: 44px;
+  height: 44px;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  padding: 1px;
+}
+
+/* FIXME: these are temporary until Owen adds them as proper icons */
+.ImgYahooBig { background-image: url("/zimbra/public/tmp/yahoo.png"); }
+.ImgMsnBig { background-image: url("/zimbra/public/tmp/msn.png"); }
+.ImgAolBig { background-image: url("/zimbra/public/tmp/aol.png"); }
+
+.ZmChatGwIcon-offline { opacity: 0.3; filter: alpha(opacity=30); }
+.ZmChatGwIcon-hover {
+  opacity: 0.8; filter: alpha(opacity=80); 
+  border: 1px solid #aaa; padding: 0;
+  background-color: #fff;
+}
 
 
 /*

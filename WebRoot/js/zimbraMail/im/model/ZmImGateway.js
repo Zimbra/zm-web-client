@@ -34,6 +34,7 @@ ZmImGateway = function(obj) {
 			cs["-"] = r;
 		}
 	}
+	this._eventMgr = new AjxEventMgr();
 };
 
 ZmImGateway.STATE = {
@@ -53,6 +54,8 @@ ZmImGateway.LOGIN_FORBIDDEN_STATES[ZmImGateway.STATE.INTENTIONALLY_OFFLINE] = tr
 ZmImGateway.LOGIN_FORBIDDEN_STATES[ZmImGateway.STATE.START] = true;
 ZmImGateway.LOGIN_FORBIDDEN_STATES[ZmImGateway.STATE.TRYING_TO_CONNECT] = true;
 
+ZmImGateway.EVENT_SET_STATE = "ZmImGateway.setState";
+
 ZmImGateway.prototype.getState = function(name) {
 	if (name) {
 		var s = this.connect_state[name];
@@ -66,4 +69,28 @@ ZmImGateway.prototype.setState = function(name, state) {
 	if (s == null)
 		s = this.connect_state[name] = {};
 	s.state = state;
+	this._eventMgr.notifyListeners(ZmImGateway.EVENT_SET_STATE, { nick  : name,
+								      state : state });
+};
+
+ZmImGateway.prototype.isOnline = function() {
+	var state = this.getState();
+	var nick = null;
+	for (var i in state) {
+		nick = i;
+		state = state[i];
+		break;
+	}
+	state = state.state;
+	if (state && nick && ZmImGateway.LOGIN_FORBIDDEN_STATES[state])
+		return nick;
+	return null;
+};
+
+ZmImGateway.prototype.addListener = function(ev, listener) {
+	this._eventMgr.addListener(ev, listener);
+};
+
+ZmImGateway.prototype.removeListener = function(ev, listener) {
+	this._eventMgr.removeListener(ev, listener);
 };

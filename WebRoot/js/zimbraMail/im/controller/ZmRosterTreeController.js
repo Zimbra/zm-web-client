@@ -626,6 +626,8 @@ ZmRosterTreeController.prototype._imGatewayLoginListener = function(ev) {
 	if (!this._registerGatewayCb) {
 		this._registerGatewayCb = new AjxCallback(this, this._registerGatewayCallback);
 	}
+	if (ev && ev.gwType)
+		dlg.selectGwType(ev.gwType);
 	ZmController.showDialog(dlg, this._registerGatewayCb);
 };
 

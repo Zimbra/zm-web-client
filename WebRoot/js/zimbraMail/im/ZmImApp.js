@@ -218,8 +218,11 @@ function(active) {
 	if (active) {
 		this.stopFlashingIcon();
 	}
-	var treeController = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.ROSTER_TREE_ITEM);
-	treeController.appActivated(active);
+	this.getRosterTreeController().appActivated(active);
+};
+
+ZmImApp.prototype.getRosterTreeController = function() {
+	return this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.ROSTER_TREE_ITEM);
 };
 
 ZmImApp.prototype.isActive = function() {
@@ -285,7 +288,7 @@ ZmImApp.prototype.prepareVisuals = function() {
 
 	if (!this.__haveRoster) {
 		// architecture... such a wonderful thing.  here's how we get a singleton:
-		var treeController = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.ROSTER_TREE_ITEM);
+		var treeController = this.getRosterTreeController();
 
 		// and this seems to be the only way to properly instantiate the buddy list tree:
 		treeController.show({ overviewId  : ZmZimbraMail._OVERVIEW_ID,

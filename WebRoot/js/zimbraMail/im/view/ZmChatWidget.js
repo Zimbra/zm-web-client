@@ -95,8 +95,15 @@ ZmChatWidget.prototype._chatChangeListener = function(ev, treeView) {
 ZmChatWidget.prototype.setTyping = function(item, typing) {
 // 	console.log("ZmChatWidget: %s is %s", item.getAddress(),
 // 		    typing ? "typing" : "not typing");
-	var label = this.getTabLabel();
-	Dwt.condClass(label.getHtmlElement(), typing, "ZmRosterItem-typing");
+	if (this.chat.getRosterSize() == 1) {
+		var label = this.getTabLabel();
+		Dwt.condClass(label.getHtmlElement(), typing, "ZmRosterItem-typing");
+		this.setImage(typing ? "Edit" : item.getPresence().getIcon());
+		var title = item.getDisplayName();
+		if (typing)
+			title += " (" + ZmMsg.typing + ")";
+		this.setTitle(title);
+	}
 };
 
 ZmChatWidget.prototype.handleMessage = function(msg) {

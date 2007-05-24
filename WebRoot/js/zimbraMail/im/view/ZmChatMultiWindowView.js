@@ -111,6 +111,67 @@ ZmChatMultiWindowView.prototype._createHtml =
 function() {
    // this._content = new DwtComposite(this, "ZmChatMultiWindow", Dwt.RELATIVE_STYLE);
     //this.getHtmlElement().innerHTML = "<div id='"+this._contentId+"'></div>";
+	var gws = AjxDispatcher.run("GetRoster").getGateways();
+	var cont = new DwtComposite(this, null, Dwt.ABSOLUTE_STYLE);
+	var s = cont.getHtmlElement().style;
+	// s.left = "100%";
+	// s.top = "100%";
+	s.right = s.bottom = "20px";
+	var toolbar = new DwtToolBar(cont, null, null, 10);
+	for (var i = 1; i < gws.length; ++i) {
+		var gw = gws[i];
+
+		var cls = "ZmChatGwIcon Img" + AjxStringUtil.capitalize(gw.type) + "Big";
+		var btn = new DwtControl(toolbar, cls);
+		btn._setMouseEventHdlrs();
+		btn.condClassName(!gw.isOnline(), "ZmChatGwIcon-offline");
+		btn.setToolTipContent("-");
+		btn.gateway = gw;
+
+		btn.getToolTipContent = function() {
+			var gw = this.gateway;
+			var nick = gw.isOnline();
+			var tooltip;
+			if (nick)
+				tooltip = ZmMsg.imGwOnlineTooltip;
+			else
+				tooltip = ZmMsg.imGwOfflineTooltip;
+			return AjxMessageFormat.format(tooltip, [ AjxStringUtil.capitalize(gw.type) ]);
+		};
+
+		btn.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, function(gw, ev) {
+			var imApp = this._appCtxt.getApp(ZmApp.IM);
+			var treeController = imApp.getRosterTreeController();
+			treeController._imGatewayLoginListener({ gwType : gw.type });
+		}, [ gw ]));
+
+		btn.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(btn, function(ev) {
+			this.addClassName("ZmChatGwIcon-hover");
+		}));
+
+		btn.addListener(DwtEvent.ONMOUSEOUT, new AjxListener(btn, function(ev) {
+			this.delClassName("ZmChatGwIcon-hover");
+		}));
+
+		gw.addListener(ZmImGateway.EVENT_SET_STATE, new AjxListener(btn, function(gw, ev) {
+			var gw = this.gateway;
+			this.condClassName(!gw.isOnline(), "ZmChatGwIcon-offline");
+			// no blinking -- looks ugly.
+// 			if (gw.isOnline()) {
+// 				var blink = 4;
+// 				var timer = setInterval(function() {
+// 					this.setVisibility(!(--blink & 1));
+// 					if (blink == 0)
+// 						clearInterval(timer);
+// 				}, 100);
+// 			}
+		}));
+
+		// this._appCtxt.getAppController().getActiveApp();
+	}
+	// var size = toolbar.getSize();
+	// cont.marginLeft = -size.x + "px";
+	// cont.marginTop = -size.y + "px";
 };
 
 /**
