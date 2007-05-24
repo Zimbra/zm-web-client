@@ -38,7 +38,7 @@
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionCreate') and not contactError}">
         <app:editContactAction id="${param.id}"/>
-        <app:status><fmt:message key="contactCreated"/></app:status>
+        <app:status><fmt:message key="${not empty param.dlist and param.isgroup ? 'contactGroupCreated' :'contactCreated'}"/></app:status>
         <zm:clearSearchCache type="contact"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionModify') and not contactError}">
