@@ -78,7 +78,10 @@
                                      <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                 </c:if>
                                 <td class='MsgStatusImg' align=center><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
-                                <td><%-- allow wrap --%> <a href="${currentItemUrl}">${fn:escapeXml(empty hit.messageHit.displaySender ? unknownRecipient :  hit.messageHit.displaySender)}</a></td>
+                                <td><%-- allow wrap --%>
+                                    <c:set var="dispAddr" value="${hit.messageHit.displayAddresses}"/>
+                                    <a href="${currentItemUrl}">${fn:escapeXml(empty dispAddr ? unknownRecipient :  dispAddr)}</a>
+                                </td>
                                 <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                 <td > <%-- allow this col to wrap --%>
 

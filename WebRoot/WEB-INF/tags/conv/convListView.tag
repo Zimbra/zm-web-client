@@ -64,7 +64,8 @@
                                         <td class='Img'><app:miniTagImage ids="${hit.conversationHit.tagIds}"/></td>
                                     </c:if>
                                     <td><%-- allow this column to wrap --%>
-                                        <a href="${convUrl}">${fn:escapeXml(empty hit.conversationHit.displayRecipients ? unknownRecipient : hit.conversationHit.displayRecipients)}</a>
+                                        <c:set var="dispRec" value="${hit.conversationHit.displayRecipients}"/>
+                                        <a href="${convUrl}">${fn:escapeXml(empty dispRec ? unknownRecipient : dispRec)}</a>
                                     </td>
                                     <td class='Img'><app:attachmentImage attachment="${hit.conversationHit.hasAttachment}"/></td>
                                     <td><%-- allow this column to wrap --%>
