@@ -314,7 +314,7 @@
                 <app:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
             </c:if>
                 <c:if test="${not empty param.debug}">
-                    <pre>${message.mimeStructure}</pre>
+                    <pre>${fn:escapeXml(message)}</pre>
                 </c:if>
         </td>
         <c:if test="${needExtraCol}">
