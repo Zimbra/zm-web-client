@@ -1257,6 +1257,22 @@ function() {
 				htmlArr[idx++] = ZmMsg.download;
 				htmlArr[idx++] = "</a>";
 			}
+			
+			//Attachment Link Handlers
+			if(ZmMailMsgView._attachmentHandlers){
+				var contentHandlers = ZmMailMsgView._attachmentHandlers[att.ct];
+				var handlerFunc;
+				if(contentHandlers){
+					for(handlerId in contentHandlers){
+						handlerFunc = contentHandlers[handlerId];
+						if(handlerFunc){	
+							htmlArr[idx++] = ", "+handlerFunc.call(this,att);
+						}
+					}	
+				}
+			}
+			//End of Attachment Link Handlers
+					
 			htmlArr[idx++] = ")";
 		}
 
@@ -1275,6 +1291,18 @@ function() {
 	cell.innerHTML = htmlArr.join("");
 };
 
+//AttachmentLink Handlers
+ZmMailMsgView.prototype.addAttachmentLinkHandler = function(contentType,handlerId,handlerFunc){
+	if(!ZmMailMsgView._attachmentHandlers){
+		ZmMailMsgView._attachmentHandlers = {};
+	}
+	
+	if(!ZmMailMsgView._attachmentHandlers[contentType]){
+		ZmMailMsgView._attachmentHandlers[contentType] = {};
+	}
+	
+	ZmMailMsgView._attachmentHandlers[contentType][handlerId] = handlerFunc;
+};
 
 // Listeners
 
