@@ -123,28 +123,28 @@
                                     <input type="hidden" name="loginOp" value="login"/>
                                     <table width=100% cellpadding=4>
                                         <tr>
-                                            <td class='zLoginLabelContainer'><fmt:message key="username"/>:</td>
+                                            <td class='zLoginLabelContainer'><label for="username"><fmt:message key="username"/>:</label></td>
                                             <td colspan=2 class='zLoginFieldContainer'>
-                                                <input class='zLoginField' name='username' type='text' value='${fn:escapeXml(param.username)}' />
+                                                <input id="username" class='zLoginField' name='username' type='text' value='${fn:escapeXml(param.username)}' />
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class='zLoginLabelContainer'><fmt:message key="password"/>:</td>
+                                            <td class='zLoginLabelContainer'><label for="password"><fmt:message key="password"/>:</label></td>
                                             <td colspan=2 class='zLoginFieldContainer'>
-                                                <input class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
+                                                <input id="password" class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
                                             </td>
                                         </tr>
                                         <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
                                            <tr>
-                                               <td class='zLoginLabelContainer'><fmt:message key="newPassword"/>:</td>
+                                               <td class='zLoginLabelContainer'><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
                                                <td colspan=2 class='zLoginFieldContainer'>
-                                                   <input class='zLoginField' name='loginNewPassword' type='password' value="${fn:escapeXml(param.loginNewPassword)}"/>
+                                                   <input id="loginNewPassword" class='zLoginField' name='loginNewPassword' type='password' value="${fn:escapeXml(param.loginNewPassword)}"/>
                                                </td>
                                            </tr>
                                             <tr>
-                                                <td class='zLoginLabelContainer'><fmt:message key="confirm"/>:</td>
+                                                <td class='zLoginLabelContainer'><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
                                                 <td colspan=2 class='zLoginFieldContainer'>
-                                                    <input class='zLoginField' name='loginConfirmNewPassword' type='password' value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
+                                                    <input id="confirmNew" class='zLoginField' name='loginConfirmNewPassword' type='password' value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
                                                 </td>
                                             </tr>
                                         </c:if>
@@ -153,9 +153,9 @@
                                             <td>
                                                 <table width=100%>
                                                     <tr>
-                                                        <td><input value="1" type=checkbox name='zrememberme' /></td>
-                                                        <td class='zLoginCheckboxLabelContainer'><fmt:message
-                                                                key="rememberMe"/></td>
+                                                        <td><input id="remember" value="1" type=checkbox name='zrememberme' /></td>
+                                                        <td class='zLoginCheckboxLabelContainer'><label for="remember"><fmt:message
+                                                                key="rememberMe"/></label></td>
                                                     </tr>
                                                 </table>
                                             </td>
