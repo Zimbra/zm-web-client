@@ -290,7 +290,7 @@
         </tr>
     </c:if>
     <tr>
-        <td class=MsgBody>
+        <td id="iframeBody" class=MsgBody>
             <c:choose>
                 <c:when test="${body.isTextHtml}">
                     <c:url var="iframeUrl" value="/h/imessage">
@@ -298,23 +298,27 @@
                         <c:param name="part" value="${message.partName}"/>
                         <c:param name="xim" value="${param.xim}"/>
                     </c:url>
-                    <script type="text/javascript">
-                        var isIE = ( /MSIE/.test(navigator.userAgent) &&!/(Opera|Gecko|KHTML)/.test(navigator.userAgent) );
-                        function onIframeLoad(iframe) {
-                            if (!isIE || iframe.readyState == "complete") {
-                                setTimeout(function() {
-                                    var el = iframe.contentWindow.document.body;
-                                    var height = el.scrollHeight;
-                                    iframe.style.height = height + "px";
-                                    iframe = null; // we no longer need it, cleanup
-                                }, 50);
-                            }
-                        };
-                    </script>
-                    <iframe scrolling="no" marginWidth="0" marginHeight="0" border="0" frameBorder="0"
-                            style="border: none; width: 100%; height: 600px;"
-                            src="${iframeUrl}" onreadystatechange="onIframeLoad(this)" onload="onIframeLoad(this)">
-                    </iframe>
+                    <noscript>
+                         <iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" border="0" frameBorder="0" src="${iframeUrl}"></iframe>
+                     </noscript>
+                     <script type="text/javascript">
+                         (function() {
+                             var isKonqueror = /KHTML/.test(navigator.userAgent);
+                             var isIE = ( /MSIE/.test(navigator.userAgent) && !/(Opera|Gecko|KHTML)/.test(navigator.userAgent) );
+                             var iframe = document.createElement("iframe");
+                             iframe.style.width = "100%";
+                             iframe.src = "${iframeUrl}";
+                             iframe.scrolling = "no";
+                             iframe.marginWidth = 0;
+                             iframe.marginHeight = 0;
+                             iframe.border = 0;
+                             iframe.frameBorder = 0;
+                             iframe.style.border = "none";
+                             function resizeIframe() { iframe.style.height = iframe.contentWindow.document.body.scrollHeight + "px"; iframe = null; };
+                             function onIframeLoad() { if (isKonqueror) setTimeout(resizeIframe, 100); else if (!isIE || iframe.readyState == "complete") resizeIframe();};
+                             if (isIE) iframe.onreadystatechange = onIframeLoad; else iframe.onload = onIframeLoad; document.getElementById("iframeBody").appendChild(iframe);
+                         })();
+                     </script>
                 </c:when>
                 <c:otherwise>
                     ${theBody}
