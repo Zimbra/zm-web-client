@@ -237,9 +237,10 @@ function(popViewWhenSaved) {
 
 	if (message) {
 		var style = DwtMessageDialog.WARNING_STYLE;
-		var dialog = this._appCtxt.getMsgDialog();
+		var dialog = this.warngDlg = this._appCtxt.getMsgDialog();
 		dialog.setMessage(message, style);
 		dialog.popup();
+	    dialog.registerCallback(DwtDialog.OK_BUTTON, this._focusPageInput, this);
 		this._pageEditView.focus();
 		return;
 	}
@@ -254,6 +255,13 @@ function(popViewWhenSaved) {
 	var saveCallback = new AjxCallback(this, this._saveResponseHandler, [content]);
 	var saveErrorCallback = new AjxCallback(this, this._saveErrorResponseHandler, [content]);
 	this._page.save(saveCallback, saveErrorCallback);
+};
+
+ZmPageEditController.prototype._focusPageInput = function() {
+if(this.warngDlg){
+	this.warngDlg.popdown();
+}
+this._pageEditView._pageNameInput.focus();
 };
 
 ZmPageEditController.prototype._showCurrentPage = function() {
