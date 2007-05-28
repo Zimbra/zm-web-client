@@ -185,7 +185,7 @@ ZmNotebookController.prototype._doDelete2 = function(items,delcallback) {
 	actionNode.setAttribute("id", ids);
 	actionNode.setAttribute("op", "delete");
 
-	var responseHandler = this._current == ZmController.NOTEBOOK_PAGE_VIEW ? this._listeners[ZmOperation.PAGE_BACK] : null;
+	var responseHandler = this._currentView == ZmController.NOTEBOOK_PAGE_VIEW ? this._listeners[ZmOperation.PAGE_BACK] : null;
 
 	if(delcallback){
 		responseHandler = delcallback;
