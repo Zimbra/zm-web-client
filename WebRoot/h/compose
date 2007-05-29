@@ -43,7 +43,7 @@
 
 <c:set var="focusField" value="${param.op eq 'reply' or param.op eq 'replyAll' ? 'bodyField' : 'toField'}"/>
 <app:view mailbox="${mailbox}" title="${not empty compose.subject ? compose.subject : title}" selected='compose' folders="true" tags="true" searches="true" context="${null}" keys="false"
-        onload="var e=document.getElementById('${focusField}'); if (e) e.focus();">
+        onload="var e=document.getElementById('${focusField}'); if (e) {e.focus(); if (e.setSelectionRange) e.setSelectionRange(0,0);}">
 
     <c:set var="toolbar">
         <table width=100% cellspacing=0 cellpadding=0>
