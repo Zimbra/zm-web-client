@@ -129,51 +129,37 @@
         var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
         var zcsn = function () { zcs(true); zsn(); }
         var zcsp = function () { zcs(true); zsp(); }
-        var zaction = function(a) {
-            var e = document.getElementById(a); if (e) {
-               e.selected = true;
-               var e2 = document.getElementById("SOPGO"); if (e2) e2.click()();
-            }
-        }
+        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click()(); }
+        var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
         var zunflag = function() { zaction("OPUNFLAG"); }
         var zflag = function() { zaction("OPFLAG"); }
         var zread = function() { zaction("OPREAD"); }
         var zunread = function() { zaction("OPUNREAD"); }
+        var zjunk = function() { zclick("SOPSPAM"); }
         //-->
     </SCRIPT>
 
-    <app:keyboard>
-        <zm:keyboardBindings>
-            <zm:bindKey key="C" id="TAB_COMPOSE"/>
-            <zm:bindKey key="N,M" id="TAB_COMPOSE"/>
-            <zm:bindKey key="G,C" id="TAB_CALENDAR"/>
-            <zm:bindKey key="G,A" id="TAB_ADDRESSBOOK"/>
-            <zm:bindKey key="G,M" id="TAB_MAIL"/>
-            <zm:bindKey key="G,O" id="TAB_OPTIONS"/>
+    <app:keyboard globals="true">
+        <zm:bindKey key="C" id="TAB_COMPOSE"/>
+        <zm:bindKey key="M,F" func="zflag"/>
+        <zm:bindKey key="M,N" func="zunflag"/>
+        <zm:bindKey key="M,R" func="zread"/>
+        <zm:bindKey key="M,U" func="zunread"/>
+        <zm:bindKey key="M,J" func="zjunk"/>
+        <zm:bindKey key="X" func="zcs"/>
 
-            <zm:bindKey key="V,I; I" id="FLDR2"/>
-            <zm:bindKey key="V,D" id="FLDR6"/>
-            <zm:bindKey key="V,S" id="FLDR5"/>
-            <zm:bindKey key="V,T" id="FLDR3"/>
+        <zm:bindKey key="V,I; I" id="FLDR2"/>
+        <zm:bindKey key="V,D" id="FLDR6"/>
+        <zm:bindKey key="V,S" id="FLDR5"/>
+        <zm:bindKey key="V,T" id="FLDR3"/>
 
-            <zm:bindKey key="G,O" id="TAB_OPTIONS"/>
-            <zm:bindKey key="M,F" func="zflag"/>
-            <zm:bindKey key="M,N" func="zunflag"/>
-            <zm:bindKey key="M,R" func="zread"/>
-            <zm:bindKey key="M,U" func="zunread"/>
-            <zm:bindKey key="X" func="zcs"/>
-            <zm:bindKey key="Enter; O" func="zos"/>
-            <zm:bindKey key="Shift+K" func="zcsp"/>
-            <zm:bindKey key="Shift+J" func="zcsn"/>
-            <zm:bindKey key="Shift+ArrowUp; K" func="zsp"/>
-            <zm:bindKey key="Shift+ArrowDown; J" func="zsn"/>
-            <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
-            <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
-
-            var afunc = function() { alert('hello'); }
-
-            <zm:bindKey key="Ctrl+Q" func="afunc"/>
-        </zm:keyboardBindings>
+        <zm:bindKey key="Enter; O" func="zos"/>
+        <zm:bindKey key="Shift+K" func="zcsp"/>
+        <zm:bindKey key="Shift+J" func="zcsn"/>
+        <zm:bindKey key="Shift+ArrowUp; K" func="zsp"/>
+        <zm:bindKey key="Shift+ArrowDown; J" func="zsn"/>
+        <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
+        <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
     </app:keyboard>
 
 </app:view>

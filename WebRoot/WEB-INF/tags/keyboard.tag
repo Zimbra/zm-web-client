@@ -55,5 +55,14 @@
         YAHOO.util.Event.addListener(document, "keypress", keypressH);
     }
     YAHOO.util.Event.addListener(window, "load", init);
+
+    <c:if test="${globals}">
+    <zm:bindKey key="N,M" id="TAB_COMPOSE"/>
+    <zm:bindKey key="G,C" id="TAB_CALENDAR"/>
+    <zm:bindKey key="G,A" id="TAB_ADDRESSBOOK"/>
+    <zm:bindKey key="G,M" id="TAB_MAIL"/>
+    <zm:bindKey key="G,O" id="TAB_OPTIONS"/>
+    </c:if>
+            
     <jsp:doBody/>
 </script>

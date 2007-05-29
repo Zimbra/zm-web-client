@@ -17,6 +17,7 @@
         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
         <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
     </c:if>
+    <c:set var="selectedRow" value="${param.selectedRow}"/>    
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${title}" context="${context}" selected='mail' folders="true" tags="true" searches="true" keys="true">
@@ -70,9 +71,10 @@
                                     <zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="view" context="${context}" id="${hit.messageHit.id}"/>
                                 </c:otherwise>
                             </c:choose>
+                            <c:if test="${empty selectedRow and hit.messageHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 
-                            <tr class='ZhRow ${hit.messageHit.isUnread ? ' Unread':''}${hit.messageHit.id == context.currentItem.id ? ' RowSelected' : ''}'>
-                                <td class='CB' nowrap><input type=checkbox name="id" value="${hit.messageHit.id}"></td>
+                            <tr id="R${status.index}" class='ZhRow ${hit.messageHit.isUnread ? ' Unread':''}${ selectedRow eq status.index ? ' RowSelected' : ''}'>
+                                <td class='CB' nowrap><input id="C${status.index}" type=checkbox name="id" value="${hit.messageHit.id}"></td>
                                 <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
                                  <c:if test="${mailbox.features.tagging}">
                                      <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
@@ -85,7 +87,7 @@
                                 <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                 <td > <%-- allow this col to wrap --%>
 
-                                    <a href="${currentItemUrl}" <c:if test="${hit.id == context.currentItem.id}">accesskey='o'</c:if>>
+                                    <a href="${currentItemUrl}" id="A${status.index}" <c:if test="${hit.id == context.currentItem.id}">accesskey='o'</c:if>>
                                         <c:set var="subj" value="${empty hit.messageHit.subject ? noSubject : hit.messageHit.subject}"/>
                                         <c:out value="${subj}"/>
                                         <c:if test="${mailbox.prefs.showFragments and not empty hit.messageHit.fragment and fn:length(subj) lt 90}">
@@ -138,5 +140,61 @@
         </c:if>
     </table>
     <input type="hidden" name="doMessageAction" value="1"/>
+    <input id="sr" type="hidden" name="selectedRow" value="${empty selectedRow ? 0 : selectedRow}"/>
+
   </form>
+
+
+<SCRIPT TYPE="text/javascript">
+    <!--
+    var zrc = ${context.searchResult.size};
+    var zsr = ${empty selectedRow ? 0 : selectedRow};
+    var zss = function(r,s) {
+        var e = document.getElementById("R"+r);
+        if (e == null) return;
+        if (s) {
+            if (e.className.indexOf(" RowSelected") == -1) e.className = e.className + " RowSelected";
+            var e2 = document.getElementById("sr"); if (e2) e2.value = r;
+        }
+        else { if (e.className.indexOf(" RowSelected") != -1) e.className = e.className.replace(" RowSelected", "");}
+    }
+    var zsn = function() {if (zrc == 0 || (zsr+1 == zrc)) return; zss(zsr, false); zss(++zsr, true);}
+    var zsp = function() {if (zrc == 0 || (zsr == 0)) return; zss(zsr, false); zss(--zsr, true);}
+    var zos = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
+    var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
+    var zcsn = function () { zcs(true); zsn(); }
+    var zcsp = function () { zcs(true); zsp(); }
+    var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click()(); }
+    var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
+    var zunflag = function() { zaction("OPUNFLAG"); }
+    var zflag = function() { zaction("OPFLAG"); }
+    var zread = function() { zaction("OPREAD"); }
+    var zunread = function() { zaction("OPUNREAD"); }
+    var zjunk = function() { zclick("SOPSPAM"); }
+    //-->
+</SCRIPT>
+
+<app:keyboard globals="true">
+    <zm:bindKey key="C" id="TAB_COMPOSE"/>
+    <zm:bindKey key="M,F" func="zflag"/>
+    <zm:bindKey key="M,N" func="zunflag"/>
+    <zm:bindKey key="M,R" func="zread"/>
+    <zm:bindKey key="M,U" func="zunread"/>
+    <zm:bindKey key="M,J" func="zjunk"/>
+    <zm:bindKey key="X" func="zcs"/>
+
+    <zm:bindKey key="V,I; I" id="FLDR2"/>
+    <zm:bindKey key="V,D" id="FLDR6"/>
+    <zm:bindKey key="V,S" id="FLDR5"/>
+    <zm:bindKey key="V,T" id="FLDR3"/>
+
+    <zm:bindKey key="Enter; O" func="zos"/>
+    <zm:bindKey key="Shift+K" func="zcsp"/>
+    <zm:bindKey key="Shift+J" func="zcsn"/>
+    <zm:bindKey key="Shift+ArrowUp; K" func="zsp"/>
+    <zm:bindKey key="Shift+ArrowDown; J" func="zsn"/>
+    <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
+    <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
+</app:keyboard>
+
 </app:view>

@@ -14,10 +14,10 @@
         <td><div class='vertSep'></div></td>
         <c:choose>
             <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                <app:button name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT"/>
+                <app:button id="OPDEL" name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT"/>
             </c:when>
             <c:otherwise>
-                <app:button name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
+                <app:button id="OPDEL" name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
             </c:otherwise>
         </c:choose>
         <td><div class='vertSep'></div></td>
@@ -37,22 +37,21 @@
         <td  nowrap valign=middle>
         <select name="actionOp">
             <option value="" selected/><fmt:message key="moreActions"/>
-            <option value="read"/><fmt:message key="actionMarkRead"/>
-            <option value="unread"/><fmt:message key="actionMarkUnread"/>
-            <option value="flag"/><fmt:message key="actionAddFlag"/>
-            <option value="unflag"/><fmt:message key="actionRemoveFlag"/>
+            <option <c:if test="${keys}">id="OPREAD" </c:if> value="read"/><fmt:message key="actionMarkRead"/>
+            <option <c:if test="${keys}">id="OPUNREAD" </c:if> value="unread"/><fmt:message key="actionMarkUnread"/>
+            <option <c:if test="${keys}">id="OPFLAG" </c:if> value="flag"/><fmt:message key="actionAddFlag"/>
+            <option <c:if test="${keys}">id="OPUNFLAG" </c:if> value="unflag"/><fmt:message key="actionRemoveFlag"/>
             <app:tagOptions mailbox="${mailbox}"/>
         </select>
         </td>
-        <app:button name="action" tooltip="actionMessageGoTT" text="actionGo" />
-
+        <app:button id="OPGO" name="action" tooltip="actionMessageGoTT" text="actionGo" />
 
         <td><div class='vertSep'></div></td>
         <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-            <app:button name="actionSpam" tooltip="actionSpamTT" text="actionSpam"/>
+            <app:button id="OPSPAM" name="actionSpam" tooltip="actionSpamTT" text="actionSpam"/>
         </c:if>
         <c:if test="${context.isFolderSearch and context.folder.isSpam}">
-            <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam"/>
+            <app:button id="OPSPAM" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam"/>
         </c:if>
 
         <%--

@@ -50,7 +50,7 @@
             <app:button id="OPSPAM" name="actionSpam" tooltip="actionSpamTT" text="actionSpam"/>
         </c:if>
         <c:if test="${context.isFolderSearch and context.folder.isSpam}">
-            <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam"/>
+            <app:button id="OPSPAM" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam"/>
         </c:if>
         <%--
           <c:choose>

@@ -13,12 +13,11 @@
     <c:set var="mvToolbarCache" scope="request">
         <td nowrap>
         <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
-        <a href="${closeurl}" <c:if test="${keys}">accesskey="z"</c:if>> <app:img src="common/Close.gif"/> <span>${fn:escapeXml(context.backTo)}&nbsp;</span></a>
+        <a href="${closeurl}" <c:if test="${keys}">accesskey="z" id="CLOSE_ITEM"</c:if>> <app:img src="common/Close.gif"/> <span>${fn:escapeXml(context.backTo)}&nbsp;</span></a>
         </td>
         <td><div class='vertSep'></div></td>
          <app:button name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
         <td><div class='vertSep'></div></td>
-         <td><div class='vertSep'></div></td>
         <td  nowrap valign=middle>
         <select name="folderId">
             <option value="" selected/><fmt:message key="moveAction"/>
@@ -35,19 +34,21 @@
         <td  nowrap valign=middle>
         <select name="actionOp">
             <option value="" selected/><fmt:message key="moreActions"/>
-            <option value="read"/><fmt:message key="actionMarkRead"/>
-            <option value="unread"/><fmt:message key="actionMarkUnread"/>
-            <option value="flag"/><fmt:message key="actionAddFlag"/>
-            <option value="unflag"/><fmt:message key="actionRemoveFlag"/>
+            <option <c:if test="${keys}">id="OPREAD" </c:if> value="read"/><fmt:message key="actionMarkRead"/>
+            <option <c:if test="${keys}">id="OPUNREAD" </c:if> value="unread"/><fmt:message key="actionMarkUnread"/>
+            <option <c:if test="${keys}">id="OPFLAG" </c:if> value="flag"/><fmt:message key="actionAddFlag"/>
+            <option <c:if test="${keys}">id="OPUNFLAG" </c:if> value="unflag"/><fmt:message key="actionRemoveFlag"/>
             <app:tagOptions mailbox="${mailbox}"/>
         </select>
         </td>
-        <app:button name="action" tooltip="actionMessageGoTT" text="actionGo" />
+        <app:button id="OPGO" name="action" tooltip="actionMessageGoTT" text="actionGo" />
         <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-            <app:button name="actionSpam" tooltip="actionSpamTT" text="actionSpam"/>
+            <td><div class='vertSep'></div></td>
+            <app:button id="OPSPAM" name="actionSpam" tooltip="actionSpamTT" text="actionSpam"/>
         </c:if>
         <c:if test="${context.isFolderSearch and context.folder.isSpam}">
-            <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam"/>
+            <td><div class='vertSep'></div></td>
+            <app:button id="OPSPAM" name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam"/>            
         </c:if>
     </c:set>
 </c:if>
@@ -64,7 +65,7 @@
         <td align=right>
             <c:if test="${context.hasPrevItem}">
                 <zm:prevItemUrl var="prevItemUrl" value="/h/search" action="view" cursor="${cursor}" context="${context}"/>
-                <a  <c:if test="${keys}">accesskey="p"</c:if> href="${prevItemUrl}"><img alt="<fmt:message key='ALT_MSG_PREVIOUS_MESSAGE'/>" src="<c:url value='/images/arrows/LeftArrow.gif'/>" border="0" /></a>
+                <a  <c:if test="${keys}">accesskey="p" id="PREV_ITEM" </c:if> href="${prevItemUrl}"><img alt="<fmt:message key='ALT_MSG_PREVIOUS_MESSAGE'/>" src="<c:url value='/images/arrows/LeftArrow.gif'/>" border="0" /></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
                 <app:img disabled='true' src="arrows/LeftArrow.gif" border="0"/>
@@ -72,7 +73,7 @@
             <span class='Paging'>${context.searchResult.offset+context.currentItemIndex+1}</span>
             <c:if test="${context.hasNextItem}">
                 <zm:nextItemUrl var="nextItemUrl" value="/h/search" action="view" cursor="${cursor}" context="${context}"/>
-                <a  <c:if test="${keys}">accesskey="n"</c:if> href="${nextItemUrl}"><img alt="<fmt:message key='ALT_MSG_NEXT_MESSAGE'/>" src="<c:url value='/images/arrows/RightArrow.gif'/>" border="0"/></a>
+                <a  <c:if test="${keys}">accesskey="n" id="NEXT_ITEM" </c:if> href="${nextItemUrl}"><img alt="<fmt:message key='ALT_MSG_NEXT_MESSAGE'/>" src="<c:url value='/images/arrows/RightArrow.gif'/>" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">
                 <app:img disabled='true' src="arrows/RightArrow.gif" border="0"/>

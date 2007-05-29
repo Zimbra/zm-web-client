@@ -191,32 +191,24 @@
         var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
         var zcsn = function () { zcs(true); zsn(); }
         var zcsp = function () { zcs(true); zsp(); }
-        var zaction = function(a) {
-            var e = document.getElementById(a); if (e) {
-               e.selected = true;
-               var e2 = document.getElementById("SOPGO"); if (e2) e2.click()();
-            }
-        }
+        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click()(); }
+        var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
         var zunflag = function() { zaction("OPUNFLAG"); }
         var zflag = function() { zaction("OPFLAG"); }
         var zread = function() { zaction("OPREAD"); }
         var zunread = function() { zaction("OPUNREAD"); }
+        var zjunk = function() { zclick("SOPSPAM"); }
         //-->
     </SCRIPT>
 
-    <app:keyboard>
-        <zm:keyboardBindings>
+    <app:keyboard globals="true">
             <zm:bindKey key="C" id="TAB_COMPOSE"/>
-            <zm:bindKey key="N,M" id="TAB_COMPOSE"/>
-            <zm:bindKey key="G,C" id="TAB_CALENDAR"/>
-            <zm:bindKey key="G,A" id="TAB_ADDRESSBOOK"/>
-            <zm:bindKey key="G,M" id="TAB_MAIL"/>
-            <zm:bindKey key="G,O" id="TAB_OPTIONS"/>
 
             <zm:bindKey key="M,F" func="zflag"/>
             <zm:bindKey key="M,N" func="zunflag"/>
             <zm:bindKey key="M,R" func="zread"/>
             <zm:bindKey key="M,U" func="zunread"/>
+            <zm:bindKey key="M,J" func="zjunk"/>
             <zm:bindKey key="X" func="zcs"/>                      
 
             <zm:bindKey key="Shift+X" id="DISPEXTIMG"/>                      
@@ -237,7 +229,6 @@
             <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
             <zm:bindKey key="Ctrl+Shift+ArrowLeft; Shift+H" id="PREV_CONV"/>
             <zm:bindKey key="Ctrl+Shift+ArrowRight; Shift+L" id="NEXT_CONV"/>
-        </zm:keyboardBindings>
     </app:keyboard>
 
 </app:view>

@@ -53,4 +53,42 @@
         <input type="hidden" name="id" value="${msg.id}"/>
         <input type="hidden" name="doMessageAction" value="1"/>
     </form>
+<SCRIPT TYPE="text/javascript">
+    <!--
+    var zos = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
+    var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
+    var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click()(); }
+    var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
+    var zunflag = function() { zaction("OPUNFLAG"); }
+    var zflag = function() { zaction("OPFLAG"); }
+    var zread = function() { zaction("OPREAD"); }
+    var zunread = function() { zaction("OPUNREAD"); }
+    var zjunk = function() { zclick("SOPSPAM"); }
+    //-->
+</SCRIPT>
+
+        <app:keyboard globals="true">
+            <zm:bindKey key="C" id="TAB_COMPOSE"/>
+
+            <zm:bindKey key="M,F" func="zflag"/>
+            <zm:bindKey key="M,N" func="zunflag"/>
+            <zm:bindKey key="M,R" func="zread"/>
+            <zm:bindKey key="M,U" func="zunread"/>
+            <zm:bindKey key="M,J" func="zjunk"/>
+            <zm:bindKey key="X" func="zcs"/>
+
+            <zm:bindKey key="Shift+X" id="DISPEXTIMG"/>
+
+            <zm:bindKey key="V,I; I" id="FLDR2"/>
+            <zm:bindKey key="V,D" id="FLDR6"/>
+            <zm:bindKey key="V,S" id="FLDR5"/>
+            <zm:bindKey key="V,T" id="FLDR3"/>
+
+            <zm:bindKey key="R" id="OPREPLY"/>
+            <zm:bindKey key="A" id="OPREPLYALL"/>
+            <zm:bindKey key="F" id="OPFORW"/>
+            <zm:bindKey key="Esc; Z" id="CLOSE_ITEM"/>
+            <zm:bindKey key="Shift+ArrowLeft; H;K" id="PREV_ITEM"/>
+            <zm:bindKey key="Shift+ArrowRight; L;J" id="NEXT_ITEM"/>
+    </app:keyboard>
 </app:view>
