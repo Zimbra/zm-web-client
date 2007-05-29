@@ -236,6 +236,9 @@ function(event) {
 	if (event) {
 		var organizers = event.getDetail("organizers");
 		organizer = organizers ? organizers[0] : null;
+		if(organizer.id != this._organizer.id){
+			return;
+		}
 	} else {
 		organizer = this._organizer;
 	}
