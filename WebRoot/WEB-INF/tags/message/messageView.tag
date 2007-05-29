@@ -28,7 +28,7 @@
     <!--
     var zos = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
     var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
-    var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click()(); }
+    var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
     var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
     var zunflag = function() { zaction("OPUNFLAG"); }
     var zflag = function() { zaction("OPFLAG"); }

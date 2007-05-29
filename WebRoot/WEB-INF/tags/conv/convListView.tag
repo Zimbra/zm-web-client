@@ -27,7 +27,7 @@
                 <td class='List'>
                         <table width=100% cellpadding=2 cellspacing=0>
                             <tr class='Header'>
-                                <th class='CB' nowrap><input id="CHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
+                                <th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                 <th class='Img' nowrap><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/>
                                 <c:if test="${mailbox.features.tagging}">
                                 <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG_TAG"/>
@@ -129,7 +129,7 @@
         var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
         var zcsn = function () { zcs(true); zsn(); }
         var zcsp = function () { zcs(true); zsp(); }
-        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click()(); }
+        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
         var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
         var zunflag = function() { zaction("OPUNFLAG"); }
         var zflag = function() { zaction("OPFLAG"); }
@@ -153,6 +153,7 @@
         <zm:bindKey key="V,S" id="FLDR5"/>
         <zm:bindKey key="V,T" id="FLDR3"/>
 
+        <zm:bindKey key="Ctrl+A" func="function() { zclick('OPCHALL')}"/>
         <zm:bindKey key="Enter; O" func="zos"/>
         <zm:bindKey key="Shift+K" func="zcsp"/>
         <zm:bindKey key="Shift+J" func="zcsn"/>
@@ -160,6 +161,7 @@
         <zm:bindKey key="Shift+ArrowDown; J" func="zsn"/>
         <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
         <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
+
     </app:keyboard>
 
 </app:view>

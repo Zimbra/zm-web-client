@@ -67,7 +67,7 @@
         var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
         var zcsn = function () { zcs(true); zsn(); }
         var zcsp = function () { zcs(true); zsp(); }
-        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click()(); }
+        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
         var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
         var zunflag = function() { zaction("OPUNFLAG"); }
         var zflag = function() { zaction("OPFLAG"); }
@@ -79,34 +79,35 @@
     </SCRIPT>
 
     <app:keyboard globals="true">
-            <zm:bindKey key="C" id="TAB_COMPOSE"/>
+        <zm:bindKey key="C" id="TAB_COMPOSE"/>
 
-            <zm:bindKey key="M,A" func="zmarkall"/>
-            <zm:bindKey key="M,F" func="zflag"/>
-            <zm:bindKey key="M,N" func="zunflag"/>
-            <zm:bindKey key="M,R" func="zread"/>
-            <zm:bindKey key="M,U" func="zunread"/>
-            <zm:bindKey key="M,J" func="zjunk"/>
-            <zm:bindKey key="X" func="zcs"/>
+        <zm:bindKey key="M,A" func="zmarkall"/>
+        <zm:bindKey key="M,F" func="zflag"/>
+        <zm:bindKey key="M,N" func="zunflag"/>
+        <zm:bindKey key="M,R" func="zread"/>
+        <zm:bindKey key="M,U" func="zunread"/>
+        <zm:bindKey key="M,J" func="zjunk"/>
+        <zm:bindKey key="X" func="zcs"/>
 
-            <zm:bindKey key="Shift+X" id="DISPEXTIMG"/>
+        <zm:bindKey key="Shift+X" id="DISPEXTIMG"/>
 
-            <zm:bindKey key="V,I; I" id="FLDR2"/>
-            <zm:bindKey key="V,D" id="FLDR6"/>
-            <zm:bindKey key="V,S" id="FLDR5"/>
-            <zm:bindKey key="V,T" id="FLDR3"/>
+        <zm:bindKey key="V,I; I" id="FLDR2"/>
+        <zm:bindKey key="V,D" id="FLDR6"/>
+        <zm:bindKey key="V,S" id="FLDR5"/>
+        <zm:bindKey key="V,T" id="FLDR3"/>
 
-            <zm:bindKey key="R" id="OPREPLY"/>
-            <zm:bindKey key="A" id="OPREPLYALL"/>
-            <zm:bindKey key="F" id="OPFORW"/>
-            <zm:bindKey key="Esc; Z" id="CLOSE_ITEM"/>
-            <zm:bindKey key="Enter; O" id="CURR_ITEM"/>
-            <zm:bindKey key="Shift+ArrowUp; K" id="PREV_ITEM"/>
-            <zm:bindKey key="Shift+ArrowDown; J" id="NEXT_ITEM"/>
-            <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
-            <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
-            <zm:bindKey key="Ctrl+Shift+ArrowLeft; Shift+H" id="PREV_CONV"/>
-            <zm:bindKey key="Ctrl+Shift+ArrowRight; Shift+L" id="NEXT_CONV"/>
+        <zm:bindKey key="R" id="OPREPLY"/>
+        <zm:bindKey key="A" id="OPREPLYALL"/>
+        <zm:bindKey key="F" id="OPFORW"/>
+        <zm:bindKey key="Ctrl+A" func="function() { zclick('OPCHALL')}"/>
+        <zm:bindKey key="Esc; Z" id="CLOSE_ITEM"/>
+        <zm:bindKey key="Enter; O" id="CURR_ITEM"/>
+        <zm:bindKey key="Shift+ArrowUp; K" id="PREV_ITEM"/>
+        <zm:bindKey key="Shift+ArrowDown; J" id="NEXT_ITEM"/>
+        <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
+        <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
+        <zm:bindKey key="Ctrl+Shift+ArrowLeft; Shift+H" id="PREV_CONV"/>
+        <zm:bindKey key="Ctrl+Shift+ArrowRight; Shift+L" id="NEXT_CONV"/>
     </app:keyboard>
     
     <form action="${currentUrl}" method="post" name="zform">
@@ -147,7 +148,7 @@
                                 <td class='List'>
                                         <table width=100% cellpadding=0 cellspacing=0>
                                             <tr>
-                                                <th class='CB'nowrap><input onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
+                                                <th class='CB'nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                                 <th class='Img' nowrap><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/>
                                                  <c:if test="${mailbox.features.tagging}">
                                                 <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG"/>
