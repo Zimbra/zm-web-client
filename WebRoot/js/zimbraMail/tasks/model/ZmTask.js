@@ -229,3 +229,8 @@ ZmTask.prototype._addLocationToSoap =
 function(inv) {
 	inv.setAttribute("loc", this.location);
 };
+
+ZmTask.prototype._getInviteFromError =
+function(result) {
+	return (result._data.GetTaskResponse.task[0].inv[0]);
+};

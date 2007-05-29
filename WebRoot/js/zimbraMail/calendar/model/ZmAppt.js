@@ -608,3 +608,8 @@ function(soapDoc, inv, m, notifyList, attendee, type) {
 		}
 	}
 };
+
+ZmAppt.prototype._getInviteFromError =
+function(result) {
+	return (result._data.GetAppointmentResponse.appt[0].inv[0]);
+};

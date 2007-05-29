@@ -508,7 +508,7 @@ function(mode, callback, errorCallback, ex) {
 ZmCalItem.prototype._handleErrorGetDetails2 =
 function(mode, callback, errorCallback, result) {
 	// Update invId and force a message reload
-	var invite = result._data.GetAppointmentResponse.appt[0].inv[0];
+	var invite = this._getInviteFromError(result);
 	this.invId = [this.id, invite.id].join("-");
 	this.message = null;
 	var ignoreOutOfDate = true;
@@ -1030,6 +1030,11 @@ function(mode, isException) {
 	// override
 };
 
+ZmCalItem.prototype._getInviteFromError =
+function(result) {
+	// override
+};
+
 ZmCalItem.prototype._setSimpleSoapAttributes =
 function(soapDoc, attachmentId, notifyList, onBehalfOf) {
 
@@ -1226,7 +1231,7 @@ function(calItemNode, instNode) {
     this.status 		= this._getAttr(calItemNode, instNode, "status");
 	this.ptst 			= this._getAttr(calItemNode, instNode, "ptst");
 	this.invId 			= this._getAttr(calItemNode, instNode, "invId");
-	this.compNum 		= this._getAttr(calItemNode, instNode, "compNum");
+	this.compNum 		= this._getAttr(calItemNode, instNode, "compNum") || "0";
 	this.isException 	= this._getAttr(calItemNode, instNode, "ex");
 	this.allDayEvent 	= this._getAttr(calItemNode, instNode, "allDay") || "0";
 	this.alarm 			= this._getAttr(calItemNode, instNode, "alarm");
