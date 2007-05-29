@@ -569,6 +569,7 @@ ZmNotebookPageView._iframeOnLoad1 = function(iframe) {
 		ndoc.write(cwin.document.documentElement.innerHTML);
 		ndoc.close();
 	}else{		
+		DBG.println(AjxDebug.DBG3,"Missing Page:"+iSrc);
 		view.createNewPage(cwin.location.pathname);	
 	}
 
@@ -620,6 +621,7 @@ ZmNotebookPageView.prototype.loadURL = function(restUrl){
 	//wiki iframe loading cannot access content of different protocol (https)
 	var refURL = window.location.protocol+"//"+window.location.host;
 	var url = this.fixLinkProtocol(restUrl,refURL);		
+	url = this.fixCrossDomainReference(url);
 	this._iframe1.src = url;
 };
 
@@ -679,4 +681,17 @@ ZmNotebookPageView.prototype.handleItemResponse = function(item){
 			}
 			
 			this.addColumn(this._iframe.contentWindow.document);
+};
+
+ZmNotebookPageView.prototype.fixCrossDomainReference = function(url){
+
+	var refURL = window.location.protocol+"//"+window.location.host;
+	var cache = this._appCtxt.getApp(ZmApp.NOTEBOOK).getNotebookCache();	
+	var urlParts = cache.parseURL(url);
+	if(urlParts.authority!=window.location.host){
+		var oldRef = urlParts.protocol +"://"+ urlParts.authority;
+		url = url.replace(oldRef,refURL);
+	}
+	return url;	
+
 };
