@@ -47,6 +47,68 @@
 
 <app:view mailbox="${mailbox}" title="${message.subject}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="search" action="view" cid="${convSummary.id}" context="${context}" csi="${param.csi}" cso="${param.cso}" css="${param.css}"/>
+
+    <SCRIPT TYPE="text/javascript">
+        <!--
+        var zrc = ${context.searchResult.size};
+        var zsr = ${empty selectedRow ? 0 : selectedRow};
+        var zss = function(r,s) {
+            var e = document.getElementById("R"+r);
+            if (e == null) return;
+            if (s) {
+                if (e.className.indexOf(" RowSelected") == -1) e.className = e.className + " RowSelected";
+                var e2 = document.getElementById("sr"); if (e2) e2.value = r;
+            }
+            else { if (e.className.indexOf(" RowSelected") != -1) e.className = e.className.replace(" RowSelected", "");}
+        }
+        var zsn = function() {if (zrc == 0 || (zsr+1 == zrc)) return; zss(zsr, false); zss(++zsr, true);}
+        var zsp = function() {if (zrc == 0 || (zsr == 0)) return; zss(zsr, false); zss(--zsr, true);}
+        var zos = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
+        var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
+        var zcsn = function () { zcs(true); zsn(); }
+        var zcsp = function () { zcs(true); zsp(); }
+        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click()(); }
+        var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
+        var zunflag = function() { zaction("OPUNFLAG"); }
+        var zflag = function() { zaction("OPFLAG"); }
+        var zread = function() { zaction("OPREAD"); }
+        var zunread = function() { zaction("OPUNREAD"); }
+        var zjunk = function() { zclick("SOPSPAM"); }
+        var zmarkall = function() { zclick("SOPMARKALL"); }
+        //-->
+    </SCRIPT>
+
+    <app:keyboard globals="true">
+            <zm:bindKey key="C" id="TAB_COMPOSE"/>
+
+            <zm:bindKey key="M,A" func="zmarkall"/>
+            <zm:bindKey key="M,F" func="zflag"/>
+            <zm:bindKey key="M,N" func="zunflag"/>
+            <zm:bindKey key="M,R" func="zread"/>
+            <zm:bindKey key="M,U" func="zunread"/>
+            <zm:bindKey key="M,J" func="zjunk"/>
+            <zm:bindKey key="X" func="zcs"/>
+
+            <zm:bindKey key="Shift+X" id="DISPEXTIMG"/>
+
+            <zm:bindKey key="V,I; I" id="FLDR2"/>
+            <zm:bindKey key="V,D" id="FLDR6"/>
+            <zm:bindKey key="V,S" id="FLDR5"/>
+            <zm:bindKey key="V,T" id="FLDR3"/>
+
+            <zm:bindKey key="R" id="OPREPLY"/>
+            <zm:bindKey key="A" id="OPREPLYALL"/>
+            <zm:bindKey key="F" id="OPFORW"/>
+            <zm:bindKey key="Esc; Z" id="CLOSE_ITEM"/>
+            <zm:bindKey key="Enter; O" id="CURR_ITEM"/>
+            <zm:bindKey key="Shift+ArrowUp; K" id="PREV_ITEM"/>
+            <zm:bindKey key="Shift+ArrowDown; J" id="NEXT_ITEM"/>
+            <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
+            <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
+            <zm:bindKey key="Ctrl+Shift+ArrowLeft; Shift+H" id="PREV_CONV"/>
+            <zm:bindKey key="Ctrl+Shift+ArrowRight; Shift+L" id="NEXT_CONV"/>
+    </app:keyboard>
+    
     <form action="${currentUrl}" method="post" name="zform">
         <table width=100% cellpadding=0 cellspacing=0>
             <tr>
@@ -171,66 +233,5 @@
 
         </table>
     </form>
-
-    <SCRIPT TYPE="text/javascript">
-        <!--
-        var zrc = ${context.searchResult.size};
-        var zsr = ${empty selectedRow ? 0 : selectedRow};
-        var zss = function(r,s) {
-            var e = document.getElementById("R"+r);
-            if (e == null) return;
-            if (s) {
-                if (e.className.indexOf(" RowSelected") == -1) e.className = e.className + " RowSelected";
-                var e2 = document.getElementById("sr"); if (e2) e2.value = r;
-            }
-            else { if (e.className.indexOf(" RowSelected") != -1) e.className = e.className.replace(" RowSelected", "");}
-        }
-        var zsn = function() {if (zrc == 0 || (zsr+1 == zrc)) return; zss(zsr, false); zss(++zsr, true);}
-        var zsp = function() {if (zrc == 0 || (zsr == 0)) return; zss(zsr, false); zss(--zsr, true);}
-        var zos = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
-        var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
-        var zcsn = function () { zcs(true); zsn(); }
-        var zcsp = function () { zcs(true); zsp(); }
-        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click()(); }
-        var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
-        var zunflag = function() { zaction("OPUNFLAG"); }
-        var zflag = function() { zaction("OPFLAG"); }
-        var zread = function() { zaction("OPREAD"); }
-        var zunread = function() { zaction("OPUNREAD"); }
-        var zjunk = function() { zclick("SOPSPAM"); }
-        var zmarkall = function() { zclick("SOPMARKALL"); }
-        //-->
-    </SCRIPT>
-
-    <app:keyboard globals="true">
-            <zm:bindKey key="C" id="TAB_COMPOSE"/>
-
-            <zm:bindKey key="M,A" func="zmarkall"/>
-            <zm:bindKey key="M,F" func="zflag"/>
-            <zm:bindKey key="M,N" func="zunflag"/>
-            <zm:bindKey key="M,R" func="zread"/>
-            <zm:bindKey key="M,U" func="zunread"/>
-            <zm:bindKey key="M,J" func="zjunk"/>
-            <zm:bindKey key="X" func="zcs"/>                      
-
-            <zm:bindKey key="Shift+X" id="DISPEXTIMG"/>                      
-
-            <zm:bindKey key="V,I; I" id="FLDR2"/>
-            <zm:bindKey key="V,D" id="FLDR6"/>
-            <zm:bindKey key="V,S" id="FLDR5"/>
-            <zm:bindKey key="V,T" id="FLDR3"/>
-
-            <zm:bindKey key="R" id="OPREPLY"/>
-            <zm:bindKey key="A" id="OPREPLYALL"/>
-            <zm:bindKey key="F" id="OPFORW"/>
-            <zm:bindKey key="Esc; Z" id="CLOSE_ITEM"/>
-            <zm:bindKey key="Enter; O" id="CURR_ITEM"/>
-            <zm:bindKey key="Shift+ArrowUp; K" id="PREV_ITEM"/>
-            <zm:bindKey key="Shift+ArrowDown; J" id="NEXT_ITEM"/>
-            <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
-            <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
-            <zm:bindKey key="Ctrl+Shift+ArrowLeft; Shift+H" id="PREV_CONV"/>
-            <zm:bindKey key="Ctrl+Shift+ArrowRight; Shift+L" id="NEXT_CONV"/>
-    </app:keyboard>
 
 </app:view>

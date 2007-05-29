@@ -320,6 +320,12 @@
                             doc.open();
                             doc.write("${zm:jsEncode(theBody)}");
                             doc.close();
+                            if (YAHOO && keydownH && keypressH) {
+                                YAHOO.util.Event.addListener(doc, "keydown", keydownH);
+                                YAHOO.util.Event.addListener(doc, "keypress", keypressH);
+                            }
+                            //if (keydownH) doc.onkeydown = keydownH;
+                            //if (keypressH) doc.onkeypress = keypressH;
                             setTimeout(resizeIframe, 0);
                         })();
                     </script>
