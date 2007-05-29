@@ -305,11 +305,9 @@
                     </noscript>
                     <script type="text/javascript">
                         (function() {
-                            var isKonqueror = /KHTML/.test(navigator.userAgent);
-                            var isIE = ( /MSIE/.test(navigator.userAgent) && !/(Opera|Gecko|KHTML)/.test(navigator.userAgent) );
                             var iframe = document.createElement("iframe");
                             iframe.style.width = "100%";
-                            iframe.src = "${iframeUrl}";
+                            iframe.style.height = "20px";
                             iframe.scrolling = "no";
                             iframe.marginWidth = 0;
                             iframe.marginHeight = 0;
@@ -317,8 +315,12 @@
                             iframe.frameBorder = 0;
                             iframe.style.border = "none";
                             function resizeIframe() { iframe.style.height = iframe.contentWindow.document.body.scrollHeight + "px"; iframe = null; };
-                            function onIframeLoad() { if (isKonqueror) setTimeout(resizeIframe, 100); else if (!isIE || iframe.readyState == "complete") resizeIframe();};
-                            if (isIE) iframe.onreadystatechange = onIframeLoad; else iframe.onload = onIframeLoad; document.getElementById("iframeBody").appendChild(iframe);
+                            document.getElementById("iframeBody").appendChild(iframe);
+                            var doc = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument;
+                            doc.open();
+                            doc.write("${zm:jsEncode(theBody)}");
+                            doc.close();
+                            setTimeout(resizeIframe, 0);
                         })();
                     </script>
                 </c:when>
