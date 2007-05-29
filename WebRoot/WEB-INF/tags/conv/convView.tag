@@ -198,12 +198,14 @@
         var zread = function() { zaction("OPREAD"); }
         var zunread = function() { zaction("OPUNREAD"); }
         var zjunk = function() { zclick("SOPSPAM"); }
+        var zmarkall = function() { zclick("SOPMARKALL"); }
         //-->
     </SCRIPT>
 
     <app:keyboard globals="true">
             <zm:bindKey key="C" id="TAB_COMPOSE"/>
 
+            <zm:bindKey key="M,A" func="zmarkall"/>
             <zm:bindKey key="M,F" func="zflag"/>
             <zm:bindKey key="M,N" func="zunflag"/>
             <zm:bindKey key="M,R" func="zread"/>

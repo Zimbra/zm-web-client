@@ -50,7 +50,7 @@
         </c:if>
         <td><div class='vertSep'></div></td>
         <input type="hidden" name="contextConvId" value="${convSearchResult.conversationSummary.id}">
-        <app:button name="actionMarkConvRead" src="mail/ReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
+        <app:button id="OPMARKALL" name="actionMarkConvRead" src="mail/ReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
     </c:set>
 </c:if>
 
