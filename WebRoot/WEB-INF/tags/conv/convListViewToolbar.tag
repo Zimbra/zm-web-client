@@ -11,6 +11,15 @@
     <zm:getMailbox var="mailbox"/>
     <c:set var="clvToolbarCache" scope="request">
         <td><div class='vertSep'></div></td>
+        <c:choose>
+            <c:when test="${context.isFolderSearch and context.folder.isTrash}">
+                <app:button  text="actionDelete" name="actionHardDelete" tooltip="actionTrashTT"/>
+            </c:when>
+            <c:otherwise>
+                <app:button text="actionDelete" name="actionDelete" tooltip="actionTrashTT"/>
+            </c:otherwise>
+        </c:choose>
+        <td><div class='vertSep'></div></td>
         <td nowrap valign=middle>
         <select name="folderId">
             <option value="" selected/><fmt:message key="moveAction"/>
@@ -22,7 +31,7 @@
             </zm:forEachFolder>
         </select>
         </td>        
-        <app:button name="actionMove" src="common/MoveToFolder.gif" tooltip="actionMoveTT"/>
+        <app:button name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
         <td><div class='vertSep'></div></td>
         <td  nowrap valign=middle>
         <select name="actionOp">
@@ -35,22 +44,15 @@
         </select>
         </td>
         <app:button id="OPGO" name="action" tooltip="actionConvGoTT" text="actionGo"/>
-        <td><div class='vertSep'></div></td>        
-       <c:choose>
-            <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                <app:button name="actionHardDelete" src="common/Delete.gif" tooltip="actionTrashTT"/>
-            </c:when>
-            <c:otherwise>
-                <app:button name="actionDelete" src="common/Delete.gif" tooltip="actionTrashTT"/>
-            </c:otherwise>
-        </c:choose>
+
         <td><div class='vertSep'></div></td>
         <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-            <app:button name="actionSpam" src="mail/SpamFolder.gif" tooltip="actionSpamTT" text="actionSpam"/>
+            <app:button id="OPSPAM" name="actionSpam" tooltip="actionSpamTT" text="actionSpam"/>
         </c:if>
         <c:if test="${context.isFolderSearch and context.folder.isSpam}">
-            <app:button name="actionNotSpam" src="mail/SpamFolder.gif" tooltip="actionNotSpamTT" text="actionNotSpam"/>
+            <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam"/>
         </c:if>
+        <%--
           <c:choose>
             <c:when test="${context.isTagSearch and mailbox.features.tagging}">
                 <td><div class='vertSep'></div></td>
@@ -62,7 +64,8 @@
                 <input type="hidden" name="contextFolderId" value="${context.selectedId}">
                 <app:button name="actionMarkFolderRead" src="mail/ReadMessage.gif" text="actionMarkAllRead" tooltip="actionMarkAllRead"/>
             </c:when>
-        </c:choose>      
+        </c:choose>
+              --%>
         <c:if test="${context.isFolderSearch}">
             <input type="hidden" name="contextFolderId" value="${context.selectedId}"/>
             <c:choose>

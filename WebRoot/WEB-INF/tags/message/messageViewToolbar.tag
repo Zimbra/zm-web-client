@@ -15,6 +15,9 @@
         <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
         <a href="${closeurl}" <c:if test="${keys}">accesskey="z"</c:if>> <app:img src="common/Close.gif"/> <span>${fn:escapeXml(context.backTo)}&nbsp;</span></a>
         </td>
+        <td><div class='vertSep'></div></td>
+         <app:button name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
+        <td><div class='vertSep'></div></td>
          <td><div class='vertSep'></div></td>
         <td  nowrap valign=middle>
         <select name="folderId">
@@ -27,7 +30,7 @@
             </zm:forEachFolder>
         </select>
         </td>
-        <app:button name="actionMove" src="common/MoveToFolder.gif" tooltip="actionMoveTT"/>
+        <app:button name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
         <td><div class='vertSep'></div></td>
         <td  nowrap valign=middle>
         <select name="actionOp">
@@ -40,14 +43,11 @@
         </select>
         </td>
         <app:button name="action" tooltip="actionMessageGoTT" text="actionGo" />
-        <td><div class='vertSep'></div></td>
-         <app:button name="actionDelete" src="common/Delete.gif" tooltip="actionTrashTT"/>
-        <td><div class='vertSep'></div></td>
         <c:if test="${!context.isFolderSearch or (context.isFolderSearch and !context.folder.isSpam)}">
-            <app:button name="actionSpam" src="mail/SpamFolder.gif" tooltip="actionSpamTT" text="actionSpam"/>
+            <app:button name="actionSpam" tooltip="actionSpamTT" text="actionSpam"/>
         </c:if>
         <c:if test="${context.isFolderSearch and context.folder.isSpam}">
-            <app:button name="actionNotSpam" src="mail/SpamFolder.gif" tooltip="actionNotSpamTT" text="actionNotSpam"/>
+            <app:button name="actionNotSpam" tooltip="actionNotSpamTT" text="actionNotSpam"/>
         </c:if>
     </c:set>
 </c:if>

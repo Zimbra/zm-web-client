@@ -20,6 +20,15 @@
             <app:button name="actionEdit" src="common/Edit.gif" tooltip="edit" text="edit"/>
             <input type='hidden' name="actionEditId" value="${contact.id}"/>
          </c:if>
+        <td><div class='vertSep'></div></td>
+         <c:choose>
+             <c:when test="${context.isFolderSearch and context.folder.isTrash}">
+                 <app:button name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT" />
+             </c:when>
+             <c:otherwise>
+                 <app:button name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
+             </c:otherwise>
+         </c:choose>
          <td><div class='vertSep'></div></td>
         <td nowrap>
             <select name="folderId">
@@ -32,7 +41,7 @@
                 </zm:forEachFolder>
             </select>
         </td>
-        <app:button name="actionMove" src="common/MoveToFolder.gif" tooltip="actionMoveTT"/>
+        <app:button name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
 
         <td><div class='vertSep'></div></td>
 
@@ -47,15 +56,7 @@
             </td>
             <app:button name="action" tooltip="actionContactGoTT" text="actionGo" />
         </c:if>
-        <td><div class='vertSep'></div></td>
-         <c:choose>
-             <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                 <app:button name="actionHardDelete" src="common/Delete.gif" tooltip="actionTrashTT" />
-             </c:when>
-             <c:otherwise>
-                 <app:button name="actionDelete" src="common/Delete.gif" tooltip="actionTrashTT"/>
-             </c:otherwise>
-         </c:choose>
+
         <c:if test="${context.folder.isTrash}">
             <td><div class='vertSep'></div></td>
             <input type="hidden" name="contextFolderId" value="${context.selectedId}"/>
