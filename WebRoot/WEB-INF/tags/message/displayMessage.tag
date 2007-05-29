@@ -275,7 +275,7 @@
         <tr>
             <td class='DisplayImages' colspan=2>
                 <fmt:message key="externalImages"/>
-                &nbsp;<a accesskey='x' href="${externalImageUrl}">
+                &nbsp;<a id="DISPEXTIMG" accesskey='x' href="${externalImageUrl}">
                 <fmt:message key="displayExternalImages"/>
             </a>
             </td>

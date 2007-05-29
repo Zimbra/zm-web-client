@@ -19,7 +19,7 @@
     var keydownH = function(ev, obj) {
         handled = false;
         var el = YAHOO.util.Event.getTarget(ev);
-        if (el == null || el.nodeName == 'INPUT' || el.nodeName == 'TEXTAREA')
+        if (el == null || (el.nodeName == 'INPUT' && el.type != 'checkbox')|| el.nodeName == 'TEXTAREA')
             return true;
         //alert(ev.which +" "+ev.charCode+" "+ev.keyCode);
         var kc = ev.keyCode;

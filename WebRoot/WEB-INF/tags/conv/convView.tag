@@ -38,6 +38,7 @@
         </c:forEach>
     </c:if>
     <fmt:message var="unknownSender" key="unknownSender"/>
+    <c:set var="selectedRow" value="${param.selectedRow}"/>
 
 </app:handleError>
 
@@ -104,8 +105,12 @@
                                             <c:forEach items="${convSearchResult.hits}" var="hit" varStatus="status">
                                                 <zm:currentResultUrl var="msgUrl" value="search" cid="${convSummary.id}" id="${hit.id}" action='view' context="${context}"
                                                                      cso="${convSearchResult.offset}" csi="${status.index}" css="${param.css}"/>
-                                                <tr class='ZhRow${hit.messageHit.isUnread ? ' Unread':''}${hit.id eq message.id ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
-                                                    <td class='CB' nowrap><input <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
+
+                                                <c:if test="${empty selectedRow and hit.id eq message.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
+
+
+                                                <tr id="R${status.index}" class='ZhRow${hit.messageHit.isUnread ? ' Unread':''}${selectedRow eq status.index ? ' RowSelected' : ((context.showMatches and hit.messageHit.messageMatched) ? ' RowMatched' : '')}'>
+                                                    <td class='CB' nowrap><input _ignore="1" id="C${status.index}" <c:if test="${hit.id eq message.id}">checked</c:if> type=checkbox name="id" value="${hit.id}"></td>
                                                     <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
                                                     <c:if test="${mailbox.features.tagging}">
                                                         <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
@@ -162,10 +167,43 @@
                 </td>
             </tr>
             <input type="hidden" name="doMessageAction" value="1"/>
+            <input id="sr" type="hidden" name="selectedRow" value="${empty selectedRow ? 0 : selectedRow}"/>
+
         </table>
     </form>
 
-<%--
+    <SCRIPT TYPE="text/javascript">
+        <!--
+        var zrc = ${context.searchResult.size};
+        var zsr = ${empty selectedRow ? 0 : selectedRow};
+        var zss = function(r,s) {
+            var e = document.getElementById("R"+r);
+            if (e == null) return;
+            if (s) {
+                if (e.className.indexOf(" RowSelected") == -1) e.className = e.className + " RowSelected";
+                var e2 = document.getElementById("sr"); if (e2) e2.value = r;
+            }
+            else { if (e.className.indexOf(" RowSelected") != -1) e.className = e.className.replace(" RowSelected", "");}
+        }
+        var zsn = function() {if (zrc == 0 || (zsr+1 == zrc)) return; zss(zsr, false); zss(++zsr, true);}
+        var zsp = function() {if (zrc == 0 || (zsr == 0)) return; zss(zsr, false); zss(--zsr, true);}
+        var zos = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
+        var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
+        var zcsn = function () { zcs(true); zsn(); }
+        var zcsp = function () { zcs(true); zsp(); }
+        var zaction = function(a) {
+            var e = document.getElementById(a); if (e) {
+               e.selected = true;
+               var e2 = document.getElementById("SOPGO"); if (e2) e2.click()();
+            }
+        }
+        var zunflag = function() { zaction("OPUNFLAG"); }
+        var zflag = function() { zaction("OPFLAG"); }
+        var zread = function() { zaction("OPREAD"); }
+        var zunread = function() { zaction("OPUNREAD"); }
+        //-->
+    </SCRIPT>
+
     <app:keyboard>
         <zm:keyboardBindings>
             <zm:bindKey key="C" id="TAB_COMPOSE"/>
@@ -174,6 +212,20 @@
             <zm:bindKey key="G,A" id="TAB_ADDRESSBOOK"/>
             <zm:bindKey key="G,M" id="TAB_MAIL"/>
             <zm:bindKey key="G,O" id="TAB_OPTIONS"/>
+
+            <zm:bindKey key="M,F" func="zflag"/>
+            <zm:bindKey key="M,N" func="zunflag"/>
+            <zm:bindKey key="M,R" func="zread"/>
+            <zm:bindKey key="M,U" func="zunread"/>
+            <zm:bindKey key="X" func="zcs"/>                      
+
+            <zm:bindKey key="Shift+X" id="DISPEXTIMG"/>                      
+
+            <zm:bindKey key="V,I; I" id="FLDR2"/>
+            <zm:bindKey key="V,D" id="FLDR6"/>
+            <zm:bindKey key="V,S" id="FLDR5"/>
+            <zm:bindKey key="V,T" id="FLDR3"/>
+
             <zm:bindKey key="R" id="OPREPLY"/>
             <zm:bindKey key="A" id="OPREPLYALL"/>
             <zm:bindKey key="F" id="OPFORW"/>
@@ -187,5 +239,5 @@
             <zm:bindKey key="Ctrl+Shift+ArrowRight; Shift+L" id="NEXT_CONV"/>
         </zm:keyboardBindings>
     </app:keyboard>
-    --%>
+
 </app:view>

@@ -32,7 +32,7 @@
         </c:if>
 
         <%--<span style='width:20px'><c:if test="${folder.hasChildren}"><app:img src="dwt/NodeExpanded.gif"/></c:if></span>--%>
-        <a href='${url}' <c:if test="${(not empty key) and keys}">accesskey="${key}" </c:if> >
+        <a href='${url}' id="FLDR${folder.id}" <c:if test="${(not empty key) and keys}">accesskey="${key}" </c:if> >
             <app:img src="${folder.image}" alt='${fn:escapeXml(label)}'/>
             <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>${fn:escapeXml(label)} <c:if test="${folder.hasUnread}">
                 (${folder.unreadCount}) </c:if></span>

@@ -110,7 +110,6 @@
 
     </form>
 
-<%--
     <SCRIPT TYPE="text/javascript">
         <!--
         var zrc = ${context.searchResult.size};
@@ -151,6 +150,13 @@
             <zm:bindKey key="G,A" id="TAB_ADDRESSBOOK"/>
             <zm:bindKey key="G,M" id="TAB_MAIL"/>
             <zm:bindKey key="G,O" id="TAB_OPTIONS"/>
+
+            <zm:bindKey key="V,I; I" id="FLDR2"/>
+            <zm:bindKey key="V,D" id="FLDR6"/>
+            <zm:bindKey key="V,S" id="FLDR5"/>
+            <zm:bindKey key="V,T" id="FLDR3"/>
+
+            <zm:bindKey key="G,O" id="TAB_OPTIONS"/>
             <zm:bindKey key="M,F" func="zflag"/>
             <zm:bindKey key="M,N" func="zunflag"/>
             <zm:bindKey key="M,R" func="zread"/>
@@ -169,5 +175,5 @@
             <zm:bindKey key="Ctrl+Q" func="afunc"/>
         </zm:keyboardBindings>
     </app:keyboard>
---%>
+
 </app:view>
