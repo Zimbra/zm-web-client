@@ -24,16 +24,24 @@ this:
 -->
 
 <template id='General'>
-	<$ if (data.isEnabled('login')) { $>
-		<table>
-			<tr>
-				<td>L</td>
-				<td>smartzone</td>
-				<td>R</td>
+	<$ if (data.isEnabled('login','SKIN_NAME','PASSWORD')) { $>
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>smartzone</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
 			</tr>
-			<tr><td colspan=3>
+			<tr><td class='ZOptionsSectionMain' colspan=3>
 				<table width=100%>
 					${ expandField('login') }
+					${ expandField('SKIN_NAME') }
+
+			<$ if (data.isEnabled('login','SKIN_NAME') 
+				&& data.isEnabled('PASSWORD')) { $>
+					${ expandField('twoColumnSeparator') }
+			<$ } $>
+
+					${ expandField('PASSWORD') }
 				</table>
 			</td></tr>
 		</table>
@@ -41,84 +49,736 @@ this:
 	
 		<br><br>
 	
-	<$ if (data.isEnabled('SEARCH_INCLUDES_SPAM','SEARCH_INCLUDES_TRASH')) { $>
-		<table>
-			<tr>
-				<td>L</td>
-				<td>Searches</td>
-				<td>R</td>
+	<$ if (data.isEnabled('SEARCH_INCLUDES_SPAM','SEARCH_INCLUDES_TRASH','SHOW_SEARCH_STRING')) { $>
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Searches</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
 			</tr>
-			<tr><td colspan=3>
+			<tr><td class='ZOptionsSectionMain' colspan=3>
 				<table width=100%>
 					${ expandField('SEARCH_INCLUDES_SPAM') }
 					${ expandField('SEARCH_INCLUDES_TRASH') }
+
+			<$ if (data.isEnabled('SEARCH_INCLUDES_SPAM','SEARCH_INCLUDES_TRASH') 
+				&& data.isEnabled('SHOW_SEARCH_STRING')) { $>
+					${ expandField('twoColumnSeparator') }
+			<$ } $>
+
+					${ expandField('SHOW_SEARCH_STRING') }
 				</table>
 			</td></tr>
 		</table>
 	<$ } $>
 </template>
 
+
 <template id='Mail'>
+		<!-- COMCAST ONLY:  HOW TO ENCODE ? -->
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Settings Managed on comcast.net</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMainLinks' colspan=3>
+					<a href=#>Restrict Incoming Email</a> <br>		
+					<a href=#>Spam Filtering / Confirmation</a> <br>		
+					<a href=#>Auto Reply</a> <br>		
+					<a href=#>Auto Forward</a> <br>		
+				</td>
+			</tr>
+		</table>
+		<!-- END COMCAST ONLY:  HOW TO ENCODE ? -->
+
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Schedule Email Deletion</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMainTable' colspan=3>
+					${ expandField('-emailDeletionMatrix') }
+				</td>
+			</tr>
+		</table>
+
+
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Displaying Messages</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+					${ expandField('PAGE_SIZE') }
+					${ expandField('INITIAL_GROUP_MAIL_BY') }
+					${ expandField('POLLING_INTERVAL') }
+					${ expandField('VIEW_AS_HTML') }
+
+					${ expandField('twoColumnSeparator') }
+
+					${ expandField('READING_PANE_ENABLED') }
+					${ expandField('SHOW_FRAGMENTS') }
+
+					${ expandField('twoColumnSeparator') }
+					
+					${ expandField('INITIAL_SEARCH') }
+				</table>
+				</td>
+			</tr>
+		</table>
+
+
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Receiving Messages</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+				<tr><td class='ZOptionsLabel'>When a message arrives:</td>
+					<td class='ZOptionsField' style='padding:0px'>
+						<table width=100%>
+			
+							${ expandField('MAIL_FORWARDING_ADDRESS') }
+							${ expandField('MAIL_LOCAL_DELIVERY_DISABLED') }
+							${ expandField('twoColumnSeparator') }
+			
+							${ expandField('NOTIF_ADDRESS') }
+							${ expandField('twoColumnSeparator') }
+			
+							${ expandField('VACATION_MSG') }
+						</table>
+					</td>
+				</tr>
+
+				${ expandField('twoColumnSeparator') }
+
+					${ expandField('DEDUPE_MSG_TO_SELF') }
+				</table>
+				</td>
+			</tr>
+		</table>
 </template>
 
 <template id='Composing'>
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>General</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+					${ expandField('SAVE_TO_SENT') }
+					${ expandField('NEW_WINDOW_COMPOSE') }
+				</table>
+				</td>
+			</tr>
+		</table>
+
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>General</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+					${ expandField('COMPOSE_AS_FORMAT') }
+					
+					${ expandField('twoColumnSeparator') }
+
+					${ expandField('REPLY_INCLUDE_ORIG') }
+
+					${ expandField('twoColumnSeparator') }
+
+					${ expandField('FORWARD_INCLUDE_ORIG') }
+
+					${ expandField('twoColumnSeparator') }
+
+					${ expandField('REPLY_TO_ADDRESS') }
+				</table>
+				</td>
+			</tr>
+		</table>
 </template>
 
 <template id='Signatures'>
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Signatures</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+
+					<!-- NOTE: this is a repeat -->
+					${ expandField('SIGNATURE') }
+
+					${ expandField('add_signature') }
+				</table>
+				</td>
+			</tr>
+		</table>
+
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Using Signatures</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+					${ expandField('SIGNATURE_ENABLED') }
+
+					${ expandField('twoColumnSeparator') }
+
+					${ expandField('SIGNATURE_STYLE') }
+				</table>
+				</td>
+			</tr>
+		</table>
 </template>
 
 <template id='Voice'>
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Comcast Phone numbers</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionTable' colspan=3>
+					${ expandField('ACCOUNT_LIST') }
+				</td>
+			</tr>
+		</table>
+
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Call Manager</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionTable' colspan=3>
+				<table width=100%>
+					${ expandField('-VOICE_EMAIL_NOTIFICATION') }
+					${ expandField('twoColumnSeparator') }
+
+					${ expandField('-VOICE_FORWARD_CALLS') }
+				</table>
+				</td>
+			</tr>
+		</table>
 </template>
 
 <template id='Contacts'>
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Account Details</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+					<tr><td class='ZOptionsLabel'>Details</td>
+						<td class='ZOptionsInfo'>
+							<b>Manage your account details at <a href=#>plaxo.com</a></b>
+								{plaxo img}
+					</tr>
+					${ expandField('oneColumnSeparator') }
+
+					<tr><td class='ZOptionsLabel'></td>
+						<td class='ZOptionsInfo'>
+							<a href=#>Your Communication Preferences</a>
+							<span class='ZOptionsInfo'>
+							 (Manage Plaxo preferences like: Birthday Reminders, Holiday Reminders...)
+							</span>
+					</tr>
+
+					${ expandField('oneColumnSeparator') }
+
+					<tr><td class='ZOptionsLabel'></td>
+						<td class='ZOptionsInfo'>
+							<a href=#>Auto Share</a>
+							<span class='ZOptionsInfo'>
+							 (Manage your Plaxo sharing preferences.)
+							</span>
+					</tr>
+				</table>
+				</td>
+			</tr>
+		</table>
+
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Contacts Options</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+					${ expandField('CONTACTS_PER_PAGE') }
+					${ expandField('CONTACTS_VIEW') }
+
+					${ expandField('twoColumnSeparator') }
+
+					${ expandField('AUTO_ADD_ADDRESS') }
+					${ expandField('GAL_AUTOCOMPLETE') }
+				</table>
+				</td>
+			</tr>
+		</table>
+
+
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Import / Export</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+					${ expandField('IMPORT') }
+
+					${ expandField('oneColumnSeparator') }
+					<tr><td class='ZOptionsLabel'></td>
+						<td class='ZOptionsInfo'>
+							<a href=#>Smart Address Book Builder</a>
+							<span class='ZOptionsInfo'>
+							 (Combine all of your contacts into <b>one place</b>.)
+							</span>
+					</tr>
+
+					${ expandField('oneColumnSeparator') }
+					<tr><td class='ZOptionsLabel'></td>
+						<td class='ZOptionsInfo'>
+							<a href=#>Address Book and Calendar De-Dupper</a>
+							<span class='ZOptionsInfo'>
+							 (Merge and <b>remove duplicates</b> from your address book and calendar.)
+							</span>
+					</tr>
+
+					${ expandField('oneColumnSeparator') }
+					<tr><td class='ZOptionsLabel'></td>
+						<td class='ZOptionsInfo'>
+							<a href=#>Address Book Rollback and Recovery</a>
+							<span class='ZOptionsInfo'>
+							 (Revert your address book back to a <b>previous date</b>.)
+							</span>
+					</tr>
+
+					${ expandField('twoColumnSeparator') }
+
+					${ expandField('EXPORT') }
+
+				</table>
+				</td>
+			</tr>
+		</table>
 </template>
 
 <template id='Accounts'>
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Accounts</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+<!-- HOW TO ENCODE LIST OF ACCOUNTS -->
+				</table>
+				</td>
+			</tr>
+		</table>
+
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Edit Account</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+					${ expandField('-POP_ACCOUNT_NAME') }					
+					${ expandField('twoColumnSeparator') }
+
+					${ expandField('-POP_ACCOUNT_TYPE') }
+					${ expandField('-POP_ACCOUNT_SERVER') }					
+					${ expandField('-POP_ACCOUNT_EMAIL') }					
+					${ expandField('-POP_ACCOUNT_USERNAME') }					
+					${ expandField('-POP_ACCOUNT_PASSWORD') }					
+					${ expandField('-POP_ACCOUNT_TEST_SETTINGS') }					
+					${ expandField('twoColumnSeparator') }
+
+					${ expandField('-POP_ACCOUNT_DOWNLOAD_FOLDER') }
+					${ expandField('twoColumnSeparator') }
+
+					${ expandField('-POP_ACCOUNT_PORT') }
+					${ expandField('-POP_ACCOUNT_SSL_ENABLED') }
+					${ expandField('-POP_ACCOUNT_DOWNLOAD_ACTION') }
+				</table>
+				</td>
+			</tr>
+		</table>
 </template>
 
 <template id='MailFilters'>
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Email Filters</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+<!-- HOW TO ENCODE ? -->
+				</table>				
+				</td>
+			</tr>
+		</table>
+
+<!-- HOW TO ENCODE EDIT FILTER HERE ? -->
+
 </template>
 
 <template id='Calendar'>
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>General</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+					${ expandField('CALENDAR_INITIAL_VIEW') }					
+					${ expandField('CAL_FIRST_DAY_OF_WEEK') }					
+					${ expandField('CAL_ALWAYS_SHOW_MINI_CAL') }					
+					${ expandField('twoColumnSeparator') }
+					${ expandField('DELETE_INVITE_ON_REPLY') }					
+					${ expandField('twoColumnSeparator') }
+					${ expandField('CAL_REMINDER_WARNING_TIME') }					
+				</table>				
+				</td>
+			</tr>
+		</table>
+
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Creating Appointments</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+					${ expandField('CAL_USE_QUICK_ADD') }					
+					${ expandField('twoColumnSeparator') }
+					${ expandField('CAL_SHOW_TIMEZONE') }					
+				</table>				
+				</td>
+			</tr>
+		</table>
+
+
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Import / Export</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+				<table width=100%>
+					${ expandField('CAL_IMPORT') }					
+					${ expandField('twoColumnSeparator') }
+					${ expandField('CAL_EXPORT') }					
+				</table>
+				</td>
+			</tr>
+		</table>
 </template>
 
 <template id='IM'>
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>Notifications</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+					${ expandField('IM_PREF_FLASH_ICON') }					
+					${ expandField('twoColumnSeparator') }
+					${ expandField('IM_PREF_NOTIFY_PRESENCE') }					
+					${ expandField('twoColumnSeparator') }
+					${ expandField('IM_PREF_NOTIFY_STATUS') }					
+				</td>
+			</tr>
+		</table>
 </template>
 
 <template id='Shortcuts'>
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>General</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+<!-- HOW TO ENCODE ? -->
+				</td>
+			</tr>
+		</table>
+</template>
+
+
+<!-- Generic pieces -->
+
+
+<!-- 	separators	-->
+<template id='oneColumnSeparator'>
+	<tr><td></td><td><hr style='width:100%'></td></tr>
+</template>
+
+<template id='twoColumnSeparator'>
+	<tr><td colspan=2><hr style='width:90%'></td></tr>
 </template>
 
 
 
-<!-- General -->
 
-<!-- 	login { choice: ajax | html }	-->
-<template id='login'>
-	<tr><td>Configuration:</td>
-		<td><div id='${id}_login'></div></td>
+<!-- ======= General ======= -->
+
+
+<!-- login { choice: ajax | html } -->
+<template id='-login'>
+	<tr><td class='ZOptionsLabel'>Configuration:</td>
+		<td class='ZOptionsField'><div id='${id}_login'></div></td>
 	</tr>
 </template>
 
-<!-- 	search_include_junk { boolean }	-->
+<!-- SKIN_NAME { string: sand | ... } // theme -->
+<template id='SKIN_NAME'>
+	<tr><td class='ZOptionsLabel'>Theme:</td>
+		<td class='ZOptionsField'><div id='${id}_SKIN_NAME'></div></td>
+	</tr>
+</template>
+
+
+<!-- PASSWORD (button) -->
+<template id='PASSWORD'>
+	<tr><td class='ZOptionsLabel'>&nbsp;</td>
+		<td class='ZOptionsField'><div id='${id}_PASSWORD'
+										label='Change Password'></div></td>
+	</tr>
+</template>
+
+
+<!-- SEARCH_INCLUDES_SPAM { boolean } -->
 <template id='SEARCH_INCLUDES_SPAM'>
-	<tr><td>Search Settings:</td>
-		<td><div id='${id}_SEARCH_INCLUDES_SPAM'></div></td>
+	<tr><td class='ZOptionsLabel'>Search Settings:</td>
+		<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_SPAM' 
+										label='Include Junk folder in searches'></div></td>
 	</tr>
 </template>
 
-<!-- 	search_include_trash { boolean }	-->
+
+<!-- SEARCH_INCLUDES_TRASH { boolean } -->
 <template id='SEARCH_INCLUDES_TRASH'>
-	<tr>
-    <td>
-      <$ if (!data.isEnabled('SEARCH_INCLUDES_SPAM')) { $>
-        Search Settings:
-      <$ } else { $>
-        &nbsp;
-      <$ } $>
-    </td>
-		<td><div id='${id}_SEARCH_INCLUDES_TRASH'></div></td>
+	<tr><td class='ZOptionsLabel'>
+			<$= (data.isEnabled('SEARCH_INCLUDES_SPAM') ? "Search Settings:" : "&nbsp;") $>
+    	</td>
+		<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_TRASH' 
+										label='Include Trash folder in searches'></div></td>
 	</tr>
 </template>
+
+
+<!-- SHOW_SEARCH_STRING { boolean } -->
+<template id='SHOW_SEARCH_STRING'>
+	<tr><td class='ZOptionsLabel'>Search Language:</td>
+		<td class='ZOptionsField'><div id='${id}_SHOW_SEARCH_STRING' 
+										label='Show advanced search language in search toolbar'></div></td>
+	</tr>
+</template>
+
+<!-- -emailDeletionMatrix { ??? } -->
+<template id='emailDeletionMatrix'>
+	<table width=95% cellspacing=1 cellpadding=0>
+		<tr><td class='ZOptionsTableLabel'>Inbox (Unread):</td>
+			<td class='ZOptionsTableRow'><div id='${id}_DELETION_TIME_INBOX_UNREAD'></div></td>
+		</tr>
+		<tr><td class='ZOptionsTableLabel'>Inbox (Read):</td>
+			<td class='ZOptionsTableRowOdd'><div id='${id}_DELETION_TIME_INBOX_READ'></div></td>
+		</tr>
+		<tr><td class='ZOptionsTableLabel'>Sent Email:</td>
+			<td class='ZOptionsTableRow'><div id='${id}_DELETION_TIME_SENT'></div></td>
+		</tr>
+		<tr><td class='ZOptionsTableLabel'>Junk:</td>
+			<td class='ZOptionsTableRowOdd'><div id='${id}_DELETION_TIME_JUNK'></div></td>
+		</tr>
+		<tr><td class='ZOptionsTableLabel'>Trash:</td>
+			<td class='ZOptionsTableRow'><div id='${id}_DELETION_TIME_TRASH'></div></td>
+		</tr>
+	</table>
+</template>
+
+
+<!-- PAGE_SIZE { choice: 10 | 25 | 50 | 100 } -->
+<template id='PAGE_SIZE'>
+	<tr><td class='ZOptionsLabel'>Display:</td>
+		<td class='ZOptionsField'><span id='${id}_PAGE_SIZE'></span>
+									Emails per page		
+								</td>
+	</tr>
+</template>
+
+<!-- INITIAL_GROUP_MAIL_BY { choice: message | conversation } -->
+<template id='INITIAL_GROUP_MAIL_BY'>
+	<tr><td class='ZOptionsLabel'>Group mail by:</td>
+		<td class='ZOptionsField'><div id='${id}_INITIAL_GROUP_MAIL_BY'></div></td>
+	</tr>
+</template>
+
+<!-- POLLING_INTERVAL { integer } // mins -->
+<template id='POLLING_INTERVAL'>
+	<tr><td class='ZOptionsLabel'>Check for new mail every:</td>
+		<td class='ZOptionsField'><div id='${id}_POLLING_INTERVAL'></div></td>
+	</tr>
+</template>
+
+<!-- VIEW_AS_HTML { boolean } -->	<!-- NOTE: DESIGN REQUIRES A CODE CHANGE -->
+<template id='VIEW_AS_HTML'>
+	<tr><td class='ZOptionsLabel'>Display HTML:</td>
+		<td class='ZOptionsField'><select id='${id}_VIEW_AS_HTML'>
+									<option value='true'>Inline</option>
+									<option value='false'>As Attachment</option>
+								  </select></td>
+	</tr>
+</template>
+
+<!-- READING_PANE_ENABLED { boolean } -->
+<template id='READING_PANE_ENABLED'>
+	<tr><td class='ZOptionsLabel'>Message Preview:</td>
+		<td class='ZOptionsField'><div id='${id}_READING_PANE_ENABLED'
+										label='Display message body preview'
+									></div></td>
+	</tr>
+</template>
+
+<!-- SHOW_FRAGMENTS { boolean } -->
+<template id='SHOW_FRAGMENTS'>
+	<tr><td class='ZOptionsLabel'>
+		<$= (data.isEnabled('READING_PANE_ENABLED') ? "Message Preview:" : "&nbsp;") $>
+		</td>
+		<td class='ZOptionsField'><div id='${id}_SHOW_FRAGMENTS'
+										label='Display message text in email list'
+									></div></td>
+	</tr>
+</template>
+
+<!-- INITIAL_SEARCH { string } // in:inbox -->
+<template id='INITIAL_SEARCH'>
+	<tr><td class='ZOptionsLabel'>Default Mail Search:</td>
+		<td class='ZOptionsField'><div id='${id}_INITIAL_SEARCH'></div></td>
+	</tr>
+</template>
+
+
+<!-- MAIL_FORWARDING_ADDRESS { email } // empty == disabled? -->
+<template id='-mail_arrival'>
+	<tr><td colspan=2>	<!-- checkbox ??? -->
+			<div id='${id}_MAIL_FORWARDING_ADDRESS-ON'
+							label='Forward a copy to:'
+			></div>
+		</td>
+	</tr>
+	<tr><td></td>
+		<td><div id='${id}_MAIL_FORWARDING_ADDRESS'
+							hint='enter email address'
+		></div></td>
+	</tr>
+</template>
+
+
+<!-- MAIL_LOCAL_DELIVERY_DISABLED ??? // == mail forward no save ???
+	mail forward no save { boolean } -->
+<template id='MAIL_LOCAL_DELIVERY_DISABLED'>
+	<tr><td></td>
+		<td><div id='${id}_MAIL_LOCAL_DELIVERY_DISABLED'
+							label='Keep a copy in my Inbox'
+		></div></td>
+	</tr>
+</template>
+
+
+<!-- NOTIF_ENABLED { boolean } -->
+<!-- NOTIF_ADDRESS { email } -->
+<template id='NOTIF_ADDRESS'>
+	<tr><td colspan=2>	<!-- checkbox -->
+			<div id='${id}_NOTIF_ENABLED'
+						label='Forward a copy to:'
+			></div>
+		</td>
+	</tr>
+	<tr><td></td>
+		<td><div id='${id}_NOTIF_ADDRESS'
+						hint='enter email address'
+		></div></td>
+	</tr>
+</template>
+
+
+<!-- VACATION_MSG_ENABLED { boolean } -->
+<!-- VACATION_MSG { text } -->
+<template id='VACATION_MSG'>
+	<tr><td colspan=2>	<!-- checkbox -->
+			<div id='${id}_VACATION_MSG_ENABLED'
+							label='Forward a copy to:'
+			></div>
+		</td>
+	</tr>
+	<tr><td></td>
+		<td><div id='${id}_VACATION_MSG'></div></td>
+	</tr>
+</template>
+
+
+<!-- DEDUPE_MSG_TO_SELF { choice: normal | to-or-cc | ignore } -->
+<template id='DEDUPE_MSG_TO_SELF'>
+	<tr><td class='ZOptionsLabel'>Messages from me:</td>
+		<td class='ZOptionsInfo'>When I receive a message originally sent by me:</td>
+	</tr>
+	<tr><td class='ZOptionsLabel'></td>
+		<td class='ZOptionsField'><div id='${id}_DEDUPE_MSG_TO_SELF'></div></td>
+	</tr>
+</template>
+
 
 
 
@@ -127,22 +787,12 @@ this:
 <!--
 == General
 
-login { choice: ajax | html }
-
-SEARCH_INCLUDES_SPAM { boolean }
-SEARCH_INCLUDES_TRASH { boolean }
-
-SHOW_SEARCH_STRING { boolean }
-
 COMPOSE_AS_FORMAT { string: text | html }
 
 COMPOSE_INIT_FONT_FAMILY { string }
 COMPOSE_INIT_FONT_SIZE { string }
 COMPOSE_INIT_FONT_COLOR { string }
 
-PASSWORD (button)
-
-SKIN_NAME { string: sand | ... } // theme
 
 LOCALE_NAME { string } // en_US
 
@@ -151,28 +801,8 @@ defaults restore (button) // every page
 
 == Mail
 
-INITIAL_GROUP_MAIL_BY { choice: message | conversation }
-
-PAGE_SIZE { choice: 10 | 25 | 50 | 100 }
-SHOW_FRAGMENTS { boolean }
-
-INITIAL_SEARCH { string } // in:inbox
-POLLING_INTERVAL { integer } // mins
-READING_PANE_ENABLED { boolean }
-
 SAVE_TO_SENT { boolean }
-VACATION_MSG_ENABLED { boolean }
-VACATION_MSG { text }
 
-NOTIF_ENABLED { boolean }
-NOTIF_ADDRESS { email }
-
-MAIL_FORWARDING_ADDRESS { email } // empty == disabled?
-MAIL_LOCAL_DELIVERY_DISABLED ??? // == mail forward no save ???
-mail forward no save { boolean }
-
-VIEW_AS_HTML { boolean }
-DEDUPE_MSG_TO_SELF { choice: normal | to-or-cc | ignore }
 NEW_WINDOW_COMPOSE { boolean }
 
 
