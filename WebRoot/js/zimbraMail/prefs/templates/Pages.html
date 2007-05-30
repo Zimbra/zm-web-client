@@ -33,7 +33,7 @@ this:
 			</tr>
 			<tr><td colspan=3>
 				<table width=100%>
-					${ expandPref('login') }
+					${ expandField('login') }
 				</table>
 			</td></tr>
 		</table>
@@ -41,8 +41,7 @@ this:
 	
 		<br><br>
 	
-	<$ if (data.isEnabled('search_include_junk') 
-		&& data.isEnabled('search_include_trash')) { $>
+	<$ if (data.isEnabled('SEARCH_INCLUDES_SPAM','SEARCH_INCLUDES_TRASH')) { $>
 		<table>
 			<tr>
 				<td>L</td>
@@ -51,8 +50,8 @@ this:
 			</tr>
 			<tr><td colspan=3>
 				<table width=100%>
-					${ expandPref('search_include_junk') }
-					${ expandPref('search_include_trash') }
+					${ expandField('SEARCH_INCLUDES_SPAM') }
+					${ expandField('SEARCH_INCLUDES_TRASH') }
 				</table>
 			</td></tr>
 		</table>
@@ -101,16 +100,23 @@ this:
 </template>
 
 <!-- 	search_include_junk { boolean }	-->
-<template id='search_include_junk'>
+<template id='SEARCH_INCLUDES_SPAM'>
 	<tr><td>Search Settings:</td>
-		<td><div id='${id}_search_include_junk'></div></td>
+		<td><div id='${id}_SEARCH_INCLUDES_SPAM'></div></td>
 	</tr>
 </template>
 
 <!-- 	search_include_trash { boolean }	-->
-<template id='search_include_trash'>
-	<tr><td>&nbsp;</td>
-		<td><div id='${id}_search_include_trash'></div></td>
+<template id='SEARCH_INCLUDES_TRASH'>
+	<tr>
+    <td>
+      <$ if (!data.isEnabled('SEARCH_INCLUDES_SPAM')) { $>
+        Search Settings:
+      <$ } else { $>
+        &nbsp;
+      <$ } $>
+    </td>
+		<td><div id='${id}_SEARCH_INCLUDES_TRASH'></div></td>
 	</tr>
 </template>
 
@@ -123,48 +129,51 @@ this:
 
 login { choice: ajax | html }
 
-search include junk { boolean }
-search include trash { boolean }
+SEARCH_INCLUDES_SPAM { boolean }
+SEARCH_INCLUDES_TRASH { boolean }
 
-search show { boolean }
+SHOW_SEARCH_STRING { boolean }
 
-editor { string: text | html }
+COMPOSE_AS_FORMAT { string: text | html }
 
-editor html font name { string }
-editor html font size { string }
-editor html font color { string? }
+COMPOSE_INIT_FONT_FAMILY { string }
+COMPOSE_INIT_FONT_SIZE { string }
+COMPOSE_INIT_FONT_COLOR { string }
 
-password change (button)
+PASSWORD (button)
 
-theme name { string: sand | ... }
+SKIN_NAME { string: sand | ... } // theme
+
+LOCALE_NAME { string } // en_US
 
 defaults restore (button) // every page
 
 
 == Mail
 
-mail display view { choice: message | conversation }
+INITIAL_GROUP_MAIL_BY { choice: message | conversation }
 
-mail display count { choice: 10 | 25 | 50 | 100 }
-mail display fragments { boolean }
+PAGE_SIZE { choice: 10 | 25 | 50 | 100 }
+SHOW_FRAGMENTS { boolean }
 
-mail initial search { string } // in:inbox
-mail poll interval { integer } // mins
-mail display preview { boolean }
+INITIAL_SEARCH { string } // in:inbox
+POLLING_INTERVAL { integer } // mins
+READING_PANE_ENABLED { boolean }
 
-mail sent save { boolean }
-mail away enabled { boolean }
-mail away message { text }
+SAVE_TO_SENT { boolean }
+VACATION_MSG_ENABLED { boolean }
+VACATION_MSG { text }
 
-mail new notify { boolean }
-mail new notify address { email }
+NOTIF_ENABLED { boolean }
+NOTIF_ADDRESS { email }
 
-mail forward address { email } // empty == disabled?
+MAIL_FORWARDING_ADDRESS { email } // empty == disabled?
+MAIL_LOCAL_DELIVERY_DISABLED ??? // == mail forward no save ???
 mail forward no save { boolean }
 
-mail display html { boolean }
-mail self action { choice: normal | to-or-cc | ignore }
-mail compose new window { boolean }
+VIEW_AS_HTML { boolean }
+DEDUPE_MSG_TO_SELF { choice: normal | to-or-cc | ignore }
+NEW_WINDOW_COMPOSE { boolean }
 
 
 == Mail Identities
@@ -179,19 +188,19 @@ identity reply name { string }
 identity reply address { email }
 
 identity reply from enabled { boolean }
-identity reply from address { email }
+REPLY_TO_ADDRESS { email }
 
 identity reply folder enabled { boolean }
 identity reply folder name { folder }
 
-identity signature position { choice: above | below }
-identity signature apply { choice: automatic | manual }
-identity signature { text }
+SIGNATURE_STYLE { choice: above | below }
+SIGNATURE_ENABLED { choice: automatic | manual }
+SIGNATURE { text }
 
-identity message format { choice: original | text | html }
-identity reply action { choice: none | message | message-with-prefix | message-as-attachment | last-message }
-identity forward action { choice: message | message-with-prefix | message-as-attachment }
-identity message prefix { choice: ">" | "|" }
+COMPOSE_SAME_FORMAT { choice: original | text | html }
+REPLY_INCLUDE_ORIG { choice: none | message | message-with-prefix | message-as-attachment | last-message }
+FORWARD_INCLUDE_ORIG { choice: message | message-with-prefix | message-as-attachment }
+REPLY_PREFIX { choice: ">" | "|" }
 
 
 == POP Accounts
@@ -234,32 +243,44 @@ filter stop { boolean }
 
 == Address Book
 
-contacts auto add { boolean }
-contacts complete gal { boolean }
-contacts display view { choice: cards | list }
-contacts display count { choice: 10 | 25 | 50 | 100 }
+AUTO_ADD_ADDRESS { boolean }
+GAL_AUTOCOMPLETE { boolean }
+GAL_AUTOCOMPLETE_SESSION ???
+CONTACTS_VIEW { choice: cards | list }
+CONTACTS_PER_PAGE { choice: 10 | 25 | 50 | 100 }
 
-contacts import (button) // file input
-contacts export (button)
+IMPORT (button) // file input
+EXPORT (button)
 
 
 == Calendar
 
-calendar display view { choice: day | work-week | week | month | schedule }
-calendar display start { choice: sun | mon | tue | wed | thu | fri | sat }
-calendar display timezone { boolean }
+CALENDAR_INITIAL_VIEW { choice: day | work-week | week | month | schedule }
+CAL_FIRST_DAY_OF_WEEK { choice: sun | mon | tue | wed | thu | fri | sat }
+CAL_SHOW_TIMEZONE { boolean }
 
-calendar quickadd { boolean }
+DELETE_INVITE_ON_REPLY { boolean }
 
-minical enabled { boolean }
+CAL_USE_QUICK_ADD { boolean }
 
-calendar reminder { choice: never | 1 | 5 | 10 | 15 | 30 | 45 | 60 } // mins
+CAL_ALWAYS_SHOW_MINI_CAL { boolean }
 
-calendar import (button) // file input
-calendar export (button)
+CAL_REMINDER_WARNING_TIME { choice: never | 1 | 5 | 10 | 15 | 30 | 45 | 60 } // mins
+
+CAL_IMPORT (button) // file input
+CAL_EXPORT (button)
+
+
+== Instant Messaging
+
+IM_PREF_FLASH_ICON { boolean }
+IM_PREF_NOTIFY_PRESENCE { boolean }
+IM_PREF_NOTIFY_STATUS { boolean }
 
 
 == Shortcuts
+
+SHORTCUTS { boolean }
 
 TODO
 -->
