@@ -9,12 +9,13 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <c:choose>
-        <c:when test="${zm:actionSet(param, 'actionNew')}">
+        <c:when test="${zm:actionSet(param, 'actionNew') or (param.action eq 'newcontact')}">
             <c:set var="contactId" value=""/>
             <fmt:message var="title" key="newContact"/>
         </c:when>
-        <c:when test="${zm:actionSet(param, 'actionNewGroup')}">
+        <c:when test="${zm:actionSet(param, 'actionNewGroup')or (param.action eq 'newcontactgroup')}">
             <c:set var="contactId" value=""/>
+            <c:set var="newGroup" value="true"/>
             <fmt:message var="title" key="newGroup"/>
             <!--- yeah -->
         </c:when>
@@ -43,7 +44,7 @@
     </c:choose>
 </app:handleError>
 
-<c:set var="isGroup" value="${contact.isGroup or zm:actionSet(param, 'actionNewGroup')}"/>
+<c:set var="isGroup" value="${contact.isGroup or newGroup}"/>
 
 <c:set var="focusField" value="${isGroup ? 'nickname' : 'lastName'}"/>
 
@@ -60,7 +61,7 @@
             </tr>
             <tr>
                 <td class='ZhAppContent'>
-                        <app:editContact title="${title}" contact="${contact}" context="${context}" isgroup="${zm:actionSet(param, 'actionNewGroup')}"/>
+                        <app:editContact title="${title}" contact="${contact}" context="${context}" isgroup="${newGroup}"/>
                 </td>
             </tr>
             <tr>

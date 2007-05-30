@@ -60,6 +60,7 @@
     <c:if test="${globals}">
     <zm:bindKey key="N,M" id="TAB_COMPOSE"/>
     <zm:bindKey key="N,A" url="calendar?action=new"/>
+    <zm:bindKey key="N,C" url="search?st=contact&action=newcontact"/>
     <zm:bindKey key="G,C" id="TAB_CALENDAR"/>
     <zm:bindKey key="G,A" id="TAB_ADDRESSBOOK"/>
     <zm:bindKey key="G,M" id="TAB_MAIL"/>

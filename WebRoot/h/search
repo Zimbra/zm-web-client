@@ -28,7 +28,7 @@
          <c:when test="${not empty param.doMessageAction}">
              <app:messageAction/>             
          </c:when>
-         <c:when test="${not empty param.doContactListViewAction}">
+         <c:when test="${not empty param.doContactListViewAction or param.action eq 'newcontact' or param.action eq 'newcontactgroup'}">
              <app:contactListViewAction/>
          </c:when>
      </c:choose>

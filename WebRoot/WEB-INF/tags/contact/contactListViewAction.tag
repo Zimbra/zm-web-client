@@ -6,8 +6,8 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <app:handleError>
-<zm:requirePost/>
 <zm:getMailbox var="mailbox"/>
+
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
@@ -51,10 +51,10 @@
     <c:when test="${zm:actionSet(param, 'actionCancelModify')}">
         <app:status style="Warning"><fmt:message key="contactCancelModify"/></app:status>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionNew')}">
+    <c:when test="${zm:actionSet(param, 'actionNew') or param.action eq 'newcontact'}">
         <jsp:forward page="/h/econtact"/>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionNewGroup')}">
+    <c:when test="${zm:actionSet(param, 'actionNewGroup') or param.action eq 'newcontactgroup'}">
         <jsp:forward page="/h/econtact"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionEdit')}">
@@ -66,6 +66,7 @@
     <c:otherwise>
         <c:choose>
             <c:when test="${zm:actionSet(param, 'actionDelete')}">
+                <zm:requirePost/>
                 <zm:trashContact  var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionContactMovedTrash">
@@ -74,6 +75,7 @@
                 </app:status>
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionHardDelete')}">
+                <zm:requirePost/>
                 <zm:deleteContact  var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionContactHardDeleted">
