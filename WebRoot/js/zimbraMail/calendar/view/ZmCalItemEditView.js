@@ -530,10 +530,13 @@ function(calItem, mode) {
 	for (var i = 0; i < len; i++) {
 		var cal = data[i];
 		this._calendarOrgs[cal.id] = cal.owner;
-		// don't show calendar if remote or don't have write perms
-		if (cal.isFeed()) continue;
-		if (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()) continue;
-		this._folderSelect.addOption(cal.getName(), false, cal.id);
+		// don't show calendar if feed, or remote and don't have write perms
+		if (cal.isFeed() ||
+			(cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()))
+		{
+			continue;
+		}
+		this._folderSelect.addOption(cal.getName(), false, cal.link ? cal.getRemoteId() : cal.id);
 	}
 	var num = this._folderSelect.size();
 	Dwt.setVisibility(this._folderSelect.getHtmlElement(), num > 1);
