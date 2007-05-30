@@ -2104,11 +2104,15 @@ HTML>BODY .appt-selected .appt_allday_body
 /* label for pereferences */
 .prefLabel {
 	@Label@
-	text-align:right;
 	width: 300px;		/* ??? SIZE */
+	text-align:right;
+	vertical-align: top;
+	padding-top: 2px;
 }
 .prefContent {
 	width: 420px;		/* ??? SIZE */
+	vertical-align: top;
+	white-space: nowrap;
 }
 
 /* button sizing */

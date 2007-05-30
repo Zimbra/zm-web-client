@@ -680,6 +680,13 @@ function(contact, params) {
 	idx = this._getTable(htmlArr, idx, params);
 	idx = this._getRow(htmlArr, idx, contact, params);
 
+	// checkbox selection
+	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+		htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
+		idx = this._getImageHtml(htmlArr, idx, "TaskCheckbox", this._getFieldId(contact, ZmItem.F_SELECTION));
+		htmlArr[idx++] = "</center></td>";
+	}
+
 	// icon
 	htmlArr[idx++] = "<td style='vertical-align:middle;' width=20><center>";
 	htmlArr[idx++] = AjxImg.getImageHtml(contact.getIcon());

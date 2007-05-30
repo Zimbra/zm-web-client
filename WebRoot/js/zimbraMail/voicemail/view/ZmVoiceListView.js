@@ -151,6 +151,7 @@ function(ev, div) {
 	var tooltip = null;
 	var id = ev.target.id || div.id;
 	if (!id) return true;
+
 	var type = Dwt.getAttr(div, "_type");
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
 		var itemIdx = Dwt.getAttr(div, "_itemIndex");
@@ -159,6 +160,13 @@ function(ev, div) {
 			tooltip = this._getHeaderTooltip(field);
 		}
 	} else {
+		var match = this._parseId(id);
+		if (match && match.field && match.field == ZmItem.F_SELECTION) {
+			if (ev.target.className != "ImgTaskCheckboxCompleted")
+				ev.target.className = "ImgTaskCheckboxCompleted";
+			return;
+		}
+
 		var item = this.getItemFromElement(div);
 		if (item) {
 			tooltip = this._getItemTooltip(item);
@@ -170,6 +178,24 @@ function(ev, div) {
 ZmVoiceListView.prototype._mouseOutAction =
 function(ev, div) {
 	DwtListView.prototype._mouseOverAction.call(this, ev, div);
+
+	// XXX: this is repetitive code. We really ought to call ZmListView base
+	// class to handle mouseout but looks like flag field is overloaded to be
+	// handled differently in voicemail
+	var id = ev.target.id || div.id;
+	if (!id) return true;
+
+	var type = Dwt.getAttr(div, "_type");
+	if (type && type == DwtListView.TYPE_LIST_ITEM) {
+		var m = this._parseId(id);
+		if (m && m.field) {
+			if (m.field == ZmItem.F_SELECTION) {
+				ev.target.className = (this.getSelectedItems().contains(div))
+					? "ImgTaskCheckboxCompleted"
+					: "ImgTaskCheckbox";
+			}
+		}
+	}
 };
 
 ZmVoiceListView.prototype.removeItem =

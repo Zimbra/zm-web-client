@@ -321,12 +321,11 @@ ZmPreferencesPage.prototype._createRow =
 function(label, content, addSep) {
 	var tr = this._table.insertRow(-1);
 	tr.id = Dwt.getNextId();
-	tr.valign = "top";
-	var cell1 = tr.insertCell(0);
+	var cell1 = tr.insertCell(-1);
 	cell1.className = "prefLabel";
 	cell1.innerHTML = AjxStringUtil.htmlEncode(label + ":");
 
-	var cell2 = tr.insertCell(1);
+	var cell2 = tr.insertCell(-1);
 	cell2.className = "prefContent";
 	if (typeof (content) == 'string'){
 		cell2.innerHTML = content;
@@ -334,7 +333,7 @@ function(label, content, addSep) {
 		cell2.appendChild(content);
 	}
 
-	var cell3 = tr.insertCell(2);
+	var cell3 = tr.insertCell(-1);
 	cell3.innerHTML = "<div>&nbsp;</div>";
 
 	if (addSep) {

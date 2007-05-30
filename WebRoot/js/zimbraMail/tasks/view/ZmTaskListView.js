@@ -146,22 +146,15 @@ function() {
 
 ZmTaskListView.prototype._getCellId =
 function(item, field) {
-	return (field == ZmItem.F_COMPLETED || field == ZmItem.F_PRIORITY) ? this._getFieldId(item, field) : null;
+	return (field == ZmItem.F_PRIORITY) ? this._getFieldId(item, field) : null;
 };
 
 ZmTaskListView.prototype._getCellContents =
 function(htmlArr, idx, task, field, colIdx, params) {
 
-	if (field == ZmItem.F_COMPLETED) {
-		var cboxIcon = "TaskCheckbox";
-		if (task.isComplete()) {
-			cboxIcon = "TaskCheckboxCompleted";
-		} else if (task.isPastDue()) {
-			cboxIcon = "TaskCheckboxOverdue";
-		}
-
-		// complete checkbox
-		htmlArr[idx++] = AjxImg.getImageHtml(cboxIcon, null, ["id='", params.fieldId, "'"].join(""));
+	if (field == ZmItem.F_SELECTION) {
+		var icon = params.bContained ? "TaskCheckboxCompleted" : "TaskCheckbox";
+		idx = this._getImageHtml(htmlArr, idx, icon, this._getFieldId(task, field));
 
 	} else if (field == ZmItem.F_PRIORITY) {
 		htmlArr[idx++] = "<center>";
@@ -170,7 +163,7 @@ function(htmlArr, idx, task, field, colIdx, params) {
 
 	} else if (params.isMixedView && (field == ZmItem.F_FROM)) {
 		htmlArr[idx++] = task.organizer || "&nbsp";
-		
+
 	} else if (field == ZmItem.F_SUBJECT) {
 		htmlArr[idx++] = AjxEnv.isSafari ? "<div style='overflow:hidden'>" : "";
 		if (params.isMixedView) {
@@ -232,9 +225,7 @@ function(ev, div) {
 	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
 		var itemIdx = Dwt.getAttr(div, "_itemIndex");
 		var field = DwtListHeaderItem.getHeaderField(this._headerList[itemIdx]._id);
-		if (field == ZmItem.F_COMPLETED) {
-			this.setToolTipContent(ZmMsg.status);
-		} else if (field == ZmItem.F_PRIORITY) {
+		if (field == ZmItem.F_PRIORITY) {
 			this.setToolTipContent(ZmMsg.priority);
 		} else if (field == ZmItem.F_SUBJECT) {
 			this.setToolTipContent(ZmMsg.subject);
@@ -255,18 +246,8 @@ function(ev, div) {
 				if (item && item.priority != ZmCalItem.PRIORITY_NORMAL)
 					this.setToolTipContent(ZmCalItem.getLabelForPriority(item.priority));
 				return true;
-			} else if (m.field == ZmItem.F_COMPLETED) {
-				var item = this.getItemFromElement(div);
-				var tt = item && item.isComplete()
-					? ZmMsg.clickToMarkNotStarted
-					: item.isPastDue()
-						? (ZmMsg.taskPastDue + " "  + ZmMsg.clickToMarkCompleted)
-						: ZmMsg.clickToMarkCompleted;
-				this.setToolTipContent(tt);
-				return true;
 			} else if (m.field == ZmItem.F_SUBJECT ||
-					m.field == ZmItem.F_STATUS ||
-					m.field == ZmItem.F_PCOMPLETE)
+					m.field == ZmItem.F_STATUS)
 			{
 				// do nothing for now
 				// this.setToolTipContent();
@@ -313,7 +294,9 @@ function(parent) {
 
 	var hList = [];
 
-	hList.push(new DwtListHeaderItem(ZmItem.F_COMPLETED, null, "TaskCheckbox", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.completed));
+	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+		hList.push(new DwtListHeaderItem(ZmItem.F_SELECTION, null, "TaskCheckbox", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.selection));
+	}
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		hList.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "MiniTag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));
 	}
@@ -335,7 +318,6 @@ function(ev) {
 	if ((ev.type != this.type) && (ZmList.MIXED != this.type))
 		return;
 
-	var fields = ev.getDetail("fields");
 	var items = ev.getDetail("items");
 
 	if (ev.event == ZmEvent.E_CREATE) {
@@ -352,7 +334,8 @@ function(ev) {
 		var task = items[0];
 		var div = this._getElFromItem(task);
 		if (div) {
-			this._createItemHtml(task, {now:this._now, div:div});
+			var bContained = this._selectedItems.contains(div);
+			this._createItemHtml(task, {now:this._now, div:div, bContained:bContained});
 			this.associateItemWithElement(task, div, DwtListView.TYPE_LIST_ITEM);
 		}
 	}

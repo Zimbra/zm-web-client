@@ -104,9 +104,10 @@ function() {
 ZmPreferencesApp.prototype._registerPrefs =
 function() {
 	var list = [ZmSetting.SEARCH_INCLUDES_SPAM, ZmSetting.SEARCH_INCLUDES_TRASH,
-				ZmSetting.SHOW_SEARCH_STRING, ZmSetting.COMPOSE_AS_FORMAT,
-				ZmSetting.COMPOSE_INIT_FONT_FAMILY, ZmSetting.COMPOSE_INIT_FONT_SIZE, ZmSetting.COMPOSE_INIT_FONT_COLOR,
-				ZmSetting.PASSWORD, ZmSetting.SKIN_NAME];
+				ZmSetting.SHOW_SEARCH_STRING, ZmSetting.SHOW_SELECTION_CHECKBOX,
+				ZmSetting.COMPOSE_AS_FORMAT, ZmSetting.COMPOSE_INIT_FONT_FAMILY,
+				ZmSetting.COMPOSE_INIT_FONT_SIZE, ZmSetting.COMPOSE_INIT_FONT_COLOR,
+				ZmSetting.SKIN_NAME, ZmSetting.PASSWORD];
 
 	ZmPref.setPrefList("GENERAL_PREFS", list);
 	ZmPref.setPrefList("SHORTCUT_PREFS", [ZmSetting.SHORTCUTS]);
@@ -117,37 +118,35 @@ function() {
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions: 	[ZmMsg.text, ZmMsg.htmlDocument],
 		options: 			[ZmSetting.COMPOSE_TEXT, ZmSetting.COMPOSE_HTML],
-		precondition:		ZmSetting.HTML_COMPOSE_ENABLED,
-		displaySeparator:	true
+		precondition:		ZmSetting.HTML_COMPOSE_ENABLED
 	});
-	
+
 	ZmPref.registerPref("COMPOSE_INIT_FONT_FAMILY", {
 		displayName:		ZmMsg.defaultFontSettings,
 		displayContainer:	ZmPref.TYPE_FONT,
 		displayOptions: 	["Arial", "Times New Roman", "Courier", "Verdana"],
 		options: 			["Arial", "Times New Roman", "Courier", "Verdana"],
-		precondition:		ZmSetting.HTML_COMPOSE_ENABLED,
-		displaySeparator:	true
+		precondition:		ZmSetting.HTML_COMPOSE_ENABLED
 	});
-	
+
 	ZmPref.registerPref("COMPOSE_INIT_FONT_SIZE", {
 		displayName:		null,
 		displayContainer:	ZmPref.TYPE_FONT,
 		displayOptions: 	["8pt", "10pt", "12pt", "14pt", "18pt", "24pt", "36pt"],
 		precondition:		ZmSetting.HTML_COMPOSE_ENABLED
 	});
-	
+
 	ZmPref.registerPref("COMPOSE_INIT_FONT_COLOR", {
 		displayOptions: 	["rgb(0, 0, 0)"],
 		displayContainer:	ZmPref.TYPE_FONT,
 		precondition:		ZmSetting.HTML_COMPOSE_ENABLED
 	});
-	
+
 	ZmPref.registerPref("COMPOSE_SAME_FORMAT", {
 		displayName:		ZmMsg.replyForwardInSameFormat,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
-	
+
 	ZmPref.registerPref("LOCALE_NAME", {
 		displayName:		ZmMsg.selectLanguage,
 		displayContainer:	ZmPref.TYPE_SELECT,
@@ -158,59 +157,65 @@ function() {
 		displaySeparator:	true,
 		precondition:		ZmSetting.LOCALE_CHANGE_ENABLED
 	});
-	
+
 	ZmPref.registerPref("PAGE_SIZE", {
 		displayName:		ZmMsg.itemsPerPage,
 		displayContainer:	ZmPref.TYPE_SELECT,
 		displayOptions:		["10", "25", "50", "100"]
 	});
-	
+
 	ZmPref.registerPref("PASSWORD", {
 		displayName:		ZmMsg.changePassword,
 		displayContainer:	ZmPref.TYPE_PASSWORD,
-		precondition:		ZmSetting.CHANGE_PASSWORD_ENABLED
+		precondition:		ZmSetting.CHANGE_PASSWORD_ENABLED,
+		displaySeparator:	true
 	});
-	
+
 	ZmPref.registerPref("POLLING_INTERVAL", {
 		displayName:		ZmMsg.pollingInterval,
 		displayContainer:	ZmPref.TYPE_INPUT,
 		validationFunction: ZmPref.validatePollingInterval
 	});
-	
+
 	ZmPref.registerPref("READING_PANE_ENABLED", {
 		displayName:		ZmMsg.alwaysShowReadingPane,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		displaySeparator:	true
 	});
-	
+
 	ZmPref.registerPref("SEARCH_INCLUDES_SPAM", {
 		displayName:		ZmMsg.includeJunkFolder,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		precondition:		ZmSetting.SPAM_ENABLED
 	});
-	
+
 	ZmPref.registerPref("SEARCH_INCLUDES_TRASH", {
 		displayName:		ZmMsg.includeTrashFolder,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		displaySeparator:	true
 	});
-	
+
 	ZmPref.registerPref("SHORTCUTS", {
 		displayContainer:	ZmPref.TYPE_SHORTCUTS,
 		precondition:		ZmSetting.USE_KEYBOARD_SHORTCUTS
 	});
-	
+
 	ZmPref.registerPref("SHOW_FRAGMENTS", {
 		displayName:		ZmMsg.showFragments,
 		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
-	
+
 	ZmPref.registerPref("SHOW_SEARCH_STRING", {
 		displayName:		ZmMsg.showSearchString,
+		displayContainer:	ZmPref.TYPE_CHECKBOX
+	});
+
+	ZmPref.registerPref("SHOW_SELECTION_CHECKBOX", {
+		displayName:		ZmMsg.showSelectionString,
 		displayContainer:	ZmPref.TYPE_CHECKBOX,
 		displaySeparator:	true
 	});
-	
+
 	ZmPref.registerPref("SKIN_NAME", {
 		displayName:		ZmMsg.selectSkin,
 		displayContainer:	ZmPref.TYPE_SELECT,
@@ -220,7 +225,7 @@ function() {
 		displaySeparator:	true,
 		precondition:		ZmSetting.SKIN_CHANGE_ENABLED
 	});
-	
+
 	ZmPref.registerPref("VIEW_AS_HTML", {
 		displayName:		ZmMsg.viewMailAsHtml,
 		displayContainer:	ZmPref.TYPE_CHECKBOX

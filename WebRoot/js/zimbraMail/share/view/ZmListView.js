@@ -199,8 +199,9 @@ function(item) {
 // Note that images typically get IDs in _getCellContents().
 ZmListView.prototype._getCellId =
 function(item, field) {
-	return (field == ZmItem.F_DATE) ? this._getFieldId(item, field) :
-									  DwtListView.prototype._getCellId.apply(this, arguments);
+	return (field == ZmItem.F_DATE)
+		? this._getFieldId(item, field)
+		: DwtListView.prototype._getCellId.apply(this, arguments);
 };
 
 ZmListView.prototype._getCellClass =
@@ -289,6 +290,167 @@ function(ev, div) {
 	return true;
 };
 
+ZmListView.prototype._mouseOutAction =
+function(ev, div) {
+	DwtListView.prototype._mouseOutAction.call(this, ev, div);
+
+	var id = ev.target.id || div.id;
+	if (!id) return true;
+
+	var type = Dwt.getAttr(div, "_type");
+	if (type && type == DwtListView.TYPE_LIST_ITEM) {
+		var m = this._parseId(id);
+		if (m && m.field) {
+			if (m.field == ZmItem.F_SELECTION) {
+				ev.target.className = (this.getSelectedItems().contains(div))
+					? "ImgTaskCheckboxCompleted"
+					: "ImgTaskCheckbox";
+			} else if (m.field == ZmItem.F_FLAG) {
+				var item = this.getItemFromElement(div);
+				if (!item.isFlagged)
+					ev.target.className = "ImgBlank_16";
+			}
+		}
+	}
+
+	return true;
+};
+
+ZmListView.prototype._doubleClickAction =
+function(ev, div) {
+	var id = ev.target.id ? ev.target.id : div.id;
+	if (!id) return true;
+
+	var m = this._parseId(id);
+	return (!(m && (m.field == ZmItem.F_FLAG)));
+};
+
+ZmListView.prototype._itemClicked =
+function(clickedEl, ev) {
+	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) &&
+		ev.button == DwtMouseEvent.LEFT)
+	{
+		if ((!ev.shiftKey && !ev.ctrlKey)) {
+			// get the field being clicked
+			var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1)
+				? ev.target.id : clickedEl.id;
+
+			// TODO - optimize by not calling parseId so much
+			var m = id ? this._parseId(id) : null;
+			if (m && m.field == ZmItem.F_SELECTION) {
+				var bContained = this._selectedItems.contains(clickedEl);
+				this.setMultiSelection(clickedEl, bContained);
+				return;	// do not call base class if "selection" field was clicked
+			}
+		} else if (ev.shiftKey) {
+			// uncheck all selected items first
+			this._checkSelectedItems(false);
+
+			// run base class first so we get the finalized list of selected items
+			DwtListView.prototype._itemClicked.call(this, clickedEl, ev);
+
+			// recheck new list of selected items
+			this._checkSelectedItems(true);
+
+			return;
+		}
+	}
+
+	DwtListView.prototype._itemClicked.call(this, clickedEl, ev);
+};
+
+ZmListView.prototype._columnClicked =
+function(clickedCol, ev) {
+	DwtListView.prototype._columnClicked.call(this, clickedCol, ev);
+
+	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+		var list = this.getList();
+		var size = list ? list.size() : null;
+		if (size > 0) {
+			var item = this._headerList[Dwt.getAttr(clickedCol, "_itemIndex")];
+			if (item && item._id.indexOf(ZmItem.F_SELECTION) != -1) {
+				var hdrId = DwtListView.HEADERITEM_ICON + item._id;
+				var hdrDiv = document.getElementById(hdrId);
+				if (hdrDiv) {
+					if (hdrDiv.className == "ImgTaskCheckboxCompleted") {
+						hdrDiv.className = "ImgTaskCheckbox";
+						this.deselectAll();
+					} else {
+						hdrDiv.className = "ImgTaskCheckboxCompleted";
+						this.setSelectedItems(this._list.getArray());
+					}
+				}
+			}
+		}
+	}
+};
+
+ZmListView.prototype.setMultiSelection =
+function(clickedEl, bContained) {
+	if (bContained) {
+		this.setSelectionHdrCbox(false);
+	}
+	this.setSelectionCbox(clickedEl, bContained);
+
+	// call base class
+	DwtListView.prototype.setMultiSelection.call(this, clickedEl, bContained);
+
+	// reset toolbar operations LAST
+	this._controller._resetToolbarOperations();
+};
+
+ZmListView.prototype.setSelectionCbox =
+function(obj, bContained) {
+	var item = obj.tagName
+		? AjxCore.objectWithId(Dwt.getAttr(obj, "_itemIndex")) : obj;
+	var selFieldId = item ? this._getFieldId(item, ZmItem.F_SELECTION) : null;
+	var selField = selFieldId ? document.getElementById(selFieldId) : null;
+	if (selField) {
+		selField.className = bContained
+			? "ImgTaskCheckbox"
+			: "ImgTaskCheckboxCompleted";
+	}
+};
+
+ZmListView.prototype.setSelectionHdrCbox =
+function(check) {
+	var idx = this.getColIndexForId(ZmItem.F_SELECTION);
+	var col = this._headerList ? this._headerList[idx] : null;
+	var hdrId = col ? (DwtListView.HEADERITEM_ICON + col._id) : null;
+	var hdrDiv = hdrId ? document.getElementById(hdrId) : null;
+	if (hdrDiv) {
+		hdrDiv.className = check
+			? "ImgTaskCheckboxCompleted"
+			: "ImgTaskCheckbox";
+	}
+};
+
+ZmListView.prototype.setSelectedItems =
+function(selectedArray) {
+	DwtListView.prototype.setSelectedItems.call(this, selectedArray);
+
+	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+		this._checkSelectedItems(true);
+	}
+};
+
+ZmListView.prototype.deselectAll =
+function() {
+	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+		this._checkSelectedItems(false);
+	}
+
+	DwtListView.prototype.deselectAll.call(this);
+};
+
+ZmListView.prototype._checkSelectedItems =
+function(check) {
+	var sel = this.getSelection();
+	for (var i = 0; i < sel.length; i++) {
+		this.setSelectionCbox(sel[i], !check);
+	}
+};
+
 ZmListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
 	var tooltip = null;
@@ -316,8 +478,11 @@ function(field, itemIdx) {
 
 ZmListView.prototype._getToolTip =
 function(field, item, ev, div, match) {
-	var tooltip = null;
-	if (field == ZmItem.F_FLAG) {
+	var tooltip;
+	if (field == ZmItem.F_SELECTION) {
+		if (ev.target.className != "ImgTaskCheckboxCompleted")
+			ev.target.className = "ImgTaskCheckboxCompleted";
+	} else if (field == ZmItem.F_FLAG) {
 		if (!item.isFlagged) {
 			ev.target.className = "ImgFlagRedDis";
 		}
@@ -388,40 +553,6 @@ function(date, prefix) {
 	return dateStr.join("");
 };
 
-ZmListView.prototype._mouseOutAction = 
-function(ev, div) {
-	DwtListView.prototype._mouseOutAction.call(this, ev, div);
-
-	var id = ev.target.id || div.id;
-	if (!id) return true;
-
-	var type = Dwt.getAttr(div, "_type");
-	if (type && type == DwtListView.TYPE_LIST_ITEM) {
-		var m = this._parseId(id);
-		if (m && m.field) {
-			var item = this.getItemFromElement(div);
-			if (m.field == ZmItem.F_FLAG) {
-				if (!item.isFlagged)
-					ev.target.className = "ImgBlank_16";
-			}
-		}
-	}
-
-	return true;
-}
-
-ZmListView.prototype._doubleClickAction =
-function(ev, div) {
-	var id = ev.target.id ? ev.target.id : div.id;
-	if (!id) return true;
-
-	var m = this._parseId(id);
-	if (m && (m.field == ZmItem.F_FLAG)) {
-		return false;
-	}
-	return true;
-}
-
 /*
 * Add a few properties to the list event for the listener to pick up.
 */
@@ -476,7 +607,7 @@ function(columnItem, bSortAsc) {
 	var sortBy = null;
 	switch (columnItem._sortable) {
 		case ZmItem.F_FROM:
-			sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC; 
+			sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC;
 			break;
 			
 		case ZmItem.F_SUBJECT:
@@ -492,7 +623,7 @@ function(columnItem, bSortAsc) {
 		this._sortByString = sortBy;
 		this._appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
 	}
-}
+};
 
 ZmListView.prototype._setNextSelection = 
 function() {
@@ -502,4 +633,4 @@ function() {
 	var item = this._list.get(this._firstSelIndex) || this._list.getLast();
 	if (item)
 		this.setSelection(item, false);
-}
+};

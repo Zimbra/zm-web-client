@@ -155,11 +155,12 @@ function(item, field) {
 ZmMailMsgListView.prototype._getCellContents =
 function(htmlArr, idx, msg, field, colIdx, params) {
 
-	if (field == ZmItem.F_STATUS) {
+	if (field == ZmItem.F_SELECTION) {
+		idx = this._getImageHtml(htmlArr, idx, "TaskCheckbox", this._getFieldId(msg, field));
+	} else if (field == ZmItem.F_STATUS) {
 		htmlArr[idx++] = "<center>";
 		idx = this._getImageHtml(htmlArr, idx, msg.getStatusIcon(), this._getFieldId(msg, field));
 		htmlArr[idx++] = "</center>";
-
 	} else if (field == ZmItem.F_FROM || field == ZmItem.F_PARTICIPANT) {
 		if (this._mode == ZmController.TRAD_VIEW && (msg.folderId == ZmFolder.ID_SENT ||
 			msg.folderId == ZmFolder.ID_DRAFTS || msg.folderId == ZmFolder.ID_OUTBOX)) {
@@ -344,6 +345,9 @@ function(parent) {
 
 	var hList = [];
 
+	if (appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+		hList.push(new DwtListHeaderItem(ZmItem.F_SELECTION, null, "TaskCheckbox", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.selection));
+	}
 	hList.push(new DwtListHeaderItem(ZmItem.F_FLAG, null, "FlagRed", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.flag));
 	if (appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 		hList.push(new DwtListHeaderItem(ZmItem.F_TAG, null, "MiniTag", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.tag));

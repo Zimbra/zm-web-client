@@ -347,10 +347,9 @@ ZmTaskListController.prototype._listSelectionListener =
 function(ev) {
 	ZmListController.prototype._listSelectionListener.call(this, ev);
 
-	if (ev.detail == DwtListView.ITEM_DBL_CLICKED)
+	if (ev.detail == DwtListView.ITEM_DBL_CLICKED) {
 		this._editTask(ev.item);
-	else if (ev.field == ZmItem.F_COMPLETED)
-		this._doCheckCompleted(ev.item);
+	}
 };
 
 ZmTaskListController.prototype._listActionListener =

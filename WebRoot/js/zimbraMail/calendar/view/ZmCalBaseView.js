@@ -333,6 +333,10 @@ function (element){
 	}
 }
 
+// YUCK: ZmListView overloads b/c ZmListController thinks its always dealing w/ ZmListView's
+ZmCalBaseView.prototype.setSelectionCbox = function(obj, bContained) {};
+ZmCalBaseView.prototype.setSelectionHdrCbox = function(check) {};
+
 ZmCalBaseView.prototype.setSelection =
 function(item, skipNotify) {
 	var el = this._getElFromItem(item);

@@ -114,8 +114,9 @@ function(item) {
 
 ZmMailListView.prototype._getCellId =
 function(item, field) {
-	return (field == ZmItem.F_SIZE || field == ZmItem.F_SUBJECT) ?
-		this._getFieldId(item, field) : ZmListView.prototype._getCellId.apply(this, arguments);
+	return (field == ZmItem.F_SIZE || field == ZmItem.F_SUBJECT)
+		? this._getFieldId(item, field)
+		: ZmListView.prototype._getCellId.apply(this, arguments);
 };
 
 ZmMailListView.prototype._getFragmentSpan =
@@ -138,8 +139,9 @@ function(item) {
 
 ZmMailListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
-	return (field == ZmItem.F_STATUS) ? ZmMsg.messageStatus :
-										ZmListView.prototype._getHeaderToolTip.apply(this, arguments);
+	return (field == ZmItem.F_STATUS)
+		? ZmMsg.messageStatus
+		: ZmListView.prototype._getHeaderToolTip.apply(this, arguments);
 };
 
 ZmMailListView.prototype._getToolTip =

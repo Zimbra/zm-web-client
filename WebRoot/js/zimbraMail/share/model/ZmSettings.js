@@ -521,6 +521,8 @@ function() {
 	this.registerSetting("COMPOSE_INIT_FONT_FAMILY",		{name: "zimbraPrefHtmlEditorDefaultFontFamily", type: ZmSetting.T_PREF, defaultValue: ZmSetting.COMPOSE_FONT_FAM});
 	this.registerSetting("COMPOSE_INIT_FONT_SIZE",			{name: "zimbraPrefHtmlEditorDefaultFontSize", type: ZmSetting.T_PREF, defaultValue: ZmSetting.COMPOSE_FONT_SIZE});
 	this.registerSetting("COMPOSE_SAME_FORMAT",				{name: "zimbraPrefForwardReplyInOriginalFormat", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("LOCALE_NAME",						{name: "zimbraPrefLocale", type: ZmSetting.T_PREF, defaultValue: "en_US"});
+	this.registerSetting("SHOW_SELECTION_CHECKBOX",			{name: "zimbraPrefShowSelectionCheckbox", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("PASSWORD",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_NONE});
 	this.registerSetting("POLLING_INTERVAL",				{name: "zimbraPrefMailPollingInterval", type: ZmSetting.T_PREF, dataType: ZmSetting.D_LDAP_TIME, defaultValue: 300});
 	this.registerSetting("SEARCH_INCLUDES_SPAM",			{name: "zimbraPrefIncludeSpamInSearch", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
@@ -528,7 +530,6 @@ function() {
 	this.registerSetting("SHORTCUTS",						{name: "zimbraPrefShortcuts", type: ZmSetting.T_PREF});
 	this.registerSetting("SHOW_SEARCH_STRING",				{name: "zimbraPrefShowSearchString", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("SKIN_NAME",						{name: "zimbraPrefSkin", type: ZmSetting.T_PREF, defaultValue: "skin"});
-	this.registerSetting("LOCALE_NAME",						{name: "zimbraPrefLocale", type: ZmSetting.T_PREF, defaultValue: "en_US"});
 	this.registerSetting("SORTING_PREF",					{type: ZmSetting.T_PREF, dataType: ZmSetting.D_HASH});
 	this.registerSetting("USE_KEYBOARD_SHORTCUTS",			{name: "zimbraPrefUseKeyboardShortcuts", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("VIEW_AS_HTML",					{name: "zimbraPrefMessageViewHtmlPreferred", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});

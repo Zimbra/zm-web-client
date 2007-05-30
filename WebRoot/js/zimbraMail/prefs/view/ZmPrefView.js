@@ -38,15 +38,15 @@
 */
 ZmPrefView = function(parent, appCtxt, posStyle, controller) {
 
-    DwtTabView.call(this, parent, "ZmPrefView", posStyle);
+	DwtTabView.call(this, parent, "ZmPrefView", posStyle);
 
 	ZmPrefView._setViewPrefs();
 	
 	this._parent = parent;
-    this._appCtxt = appCtxt;
+	this._appCtxt = appCtxt;
 	this._controller = controller;
 
-    this.setScrollStyle(DwtControl.SCROLL);
+	this.setScrollStyle(DwtControl.SCROLL);
 	this.prefView = {};
 	this._hasRendered = false;
 };
@@ -56,16 +56,16 @@ ZmPrefView.prototype.constructor = ZmPrefView;
 
 // preference pages
 var i = 1;
-ZmPrefView.ADDR_BOOK		 = i++;
-ZmPrefView.CALENDAR		 = i++;
-ZmPrefView.FILTER_RULES		 = i++;
-ZmPrefView.GENERAL		 = i++;
-ZmPrefView.IDENTITY		 = i++;
-ZmPrefView.MAIL			 = i++;
-ZmPrefView.IM			 = i++;
-ZmPrefView.POP_ACCOUNTS		 = i++;
-ZmPrefView.SHORTCUTS		 = i++;
-ZmPrefView.VOICE		 = i++;
+ZmPrefView.ADDR_BOOK	= i++;
+ZmPrefView.CALENDAR		= i++;
+ZmPrefView.FILTER_RULES	= i++;
+ZmPrefView.GENERAL		= i++;
+ZmPrefView.IDENTITY		= i++;
+ZmPrefView.MAIL			= i++;
+ZmPrefView.IM			= i++;
+ZmPrefView.POP_ACCOUNTS	= i++;
+ZmPrefView.SHORTCUTS	= i++;
+ZmPrefView.VOICE		= i++;
 delete i;
 
 ZmPrefView.VIEWS = [
@@ -85,31 +85,31 @@ ZmPrefView.VIEWS = [
 ZmPrefView.PREFS = {};
 ZmPrefView._setViewPrefs =
 function() {
-        ZmPrefView.PREFS[ZmPrefView.ADDR_BOOK]     = ZmPref.ADDR_BOOK_PREFS;
-        ZmPrefView.PREFS[ZmPrefView.CALENDAR]      = ZmPref.CALENDAR_PREFS;
-        ZmPrefView.PREFS[ZmPrefView.GENERAL]       = ZmPref.GENERAL_PREFS;
-        ZmPrefView.PREFS[ZmPrefView.MAIL]          = ZmPref.MAIL_PREFS;
-        ZmPrefView.PREFS[ZmPrefView.IM]            = ZmPref.IM_PREFS;
-        ZmPrefView.PREFS[ZmPrefView.POP_ACCOUNTS]  = ZmPref.POP_ACCOUNTS_PREFS;
-        ZmPrefView.PREFS[ZmPrefView.SHORTCUTS]     = ZmPref.SHORTCUT_PREFS;
+	ZmPrefView.PREFS[ZmPrefView.ADDR_BOOK]		= ZmPref.ADDR_BOOK_PREFS;
+	ZmPrefView.PREFS[ZmPrefView.CALENDAR]		= ZmPref.CALENDAR_PREFS;
+	ZmPrefView.PREFS[ZmPrefView.GENERAL]		= ZmPref.GENERAL_PREFS;
+	ZmPrefView.PREFS[ZmPrefView.MAIL]			= ZmPref.MAIL_PREFS;
+	ZmPrefView.PREFS[ZmPrefView.IM]				= ZmPref.IM_PREFS;
+	ZmPrefView.PREFS[ZmPrefView.POP_ACCOUNTS]	= ZmPref.POP_ACCOUNTS_PREFS;
+	ZmPrefView.PREFS[ZmPrefView.SHORTCUTS]		= ZmPref.SHORTCUT_PREFS;
 };
 
 // title for the page's tab
 ZmPrefView.TAB_NAME = {};
-ZmPrefView.TAB_NAME[ZmPrefView.ADDR_BOOK]          = ZmMsg.addressBook;
-ZmPrefView.TAB_NAME[ZmPrefView.CALENDAR]           = ZmMsg.calendar;
-ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]       = ZmMsg.filterRules;
-ZmPrefView.TAB_NAME[ZmPrefView.GENERAL]            = ZmMsg.general;
-ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]           = ZmMsg.identitiesTab;
-ZmPrefView.TAB_NAME[ZmPrefView.MAIL]               = ZmMsg.mail;
-ZmPrefView.TAB_NAME[ZmPrefView.IM]                 = ZmMsg.im;
-ZmPrefView.TAB_NAME[ZmPrefView.POP_ACCOUNTS]       = ZmMsg.popAccounts;
-ZmPrefView.TAB_NAME[ZmPrefView.SHORTCUTS]          = ZmMsg.shortcuts;
-ZmPrefView.TAB_NAME[ZmPrefView.VOICE]              = ZmMsg.voice;
+ZmPrefView.TAB_NAME[ZmPrefView.ADDR_BOOK]		= ZmMsg.addressBook;
+ZmPrefView.TAB_NAME[ZmPrefView.CALENDAR]		= ZmMsg.calendar;
+ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]	= ZmMsg.filterRules;
+ZmPrefView.TAB_NAME[ZmPrefView.GENERAL]			= ZmMsg.general;
+ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]		= ZmMsg.identitiesTab;
+ZmPrefView.TAB_NAME[ZmPrefView.MAIL]			= ZmMsg.mail;
+ZmPrefView.TAB_NAME[ZmPrefView.IM]				= ZmMsg.im;
+ZmPrefView.TAB_NAME[ZmPrefView.POP_ACCOUNTS]	= ZmMsg.popAccounts;
+ZmPrefView.TAB_NAME[ZmPrefView.SHORTCUTS]		= ZmMsg.shortcuts;
+ZmPrefView.TAB_NAME[ZmPrefView.VOICE]			= ZmMsg.voice;
 
 ZmPrefView.prototype.toString =
 function () {
-    return "ZmPrefView";
+	return "ZmPrefView";
 };
 
 /**
