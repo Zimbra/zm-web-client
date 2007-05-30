@@ -14,6 +14,7 @@
     var timerId = null;
     var actions = {};
     var handled = false;
+    var bindKeyUrl = function(keys, url) { actions[keys] = function() {window.location = url;}; }
     var bindKey = function(keys, action) { actions[keys] = action;}
     var isMulti = function(keySeq) {for (var k in actions) if (k.indexOf(keySeq) == 0) return true; return false;}
     var keydownH = function(ev, obj) {
@@ -58,6 +59,7 @@
 
     <c:if test="${globals}">
     <zm:bindKey key="N,M" id="TAB_COMPOSE"/>
+    <zm:bindKey key="N,A" url="calendar?action=new"/>
     <zm:bindKey key="G,C" id="TAB_CALENDAR"/>
     <zm:bindKey key="G,A" id="TAB_ADDRESSBOOK"/>
     <zm:bindKey key="G,M" id="TAB_MAIL"/>

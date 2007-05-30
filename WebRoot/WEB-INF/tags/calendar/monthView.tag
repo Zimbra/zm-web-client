@@ -108,7 +108,7 @@
         <zm:bindKey key="S; 0" id="CAL_SCHED"/>
         <zm:bindKey key="T" id="CAL_TODAY"/>
         <zm:bindKey key="R" id="CAL_REFRESH"/>
-        <zm:bindKey key="N,A; Q" id="CAL_NEWAPPT"/>
+        <zm:bindKey key="Q" id="CAL_NEWAPPT"/>
         <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
         <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
     </app:keyboard>

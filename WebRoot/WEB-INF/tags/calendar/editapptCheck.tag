@@ -8,7 +8,7 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <zm:composeUploader var="uploader"/>
-    <c:set var="needEditView" value="${param.action eq 'edit'}"/>
+    <c:set var="needEditView" value="${param.action eq 'edit' or param.action eq 'new'}"/>
     <c:if test="${uploader.isUpload}">
         <c:choose>
             <c:when test="${not empty uploader.paramValues.actionGo}">

@@ -161,7 +161,6 @@
         <zm:bindKey key="Shift+ArrowDown; J" func="zsn"/>
         <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
         <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
-
     </app:keyboard>
 
 </app:view>
