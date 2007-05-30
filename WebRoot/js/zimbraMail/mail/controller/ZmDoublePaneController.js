@@ -435,6 +435,12 @@ function(ev) {
 		if (!item) { return; }
 		var div = Dwt.findAncestor(ev.target, "_itemIndex");
 		this._mailListView._itemSelected(div, ev);
+
+		if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
+			this._mailListView.setSelectionHdrCbox(false);
+			this._mailListView.setSelectionCbox(ev.item, false);
+		}
+
 		if (item.isDraft) {
 			this._doAction(ev, ZmOperation.DRAFT);
 		} else if (item.type == ZmItem.CONV) {
