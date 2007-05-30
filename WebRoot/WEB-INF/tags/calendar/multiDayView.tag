@@ -83,4 +83,17 @@
             </td>
         </tr>
     </table>
+
+    <app:keyboard globals="true">
+        <zm:bindKey key="D; 1" id="CAL_DAY"/>
+        <zm:bindKey key="W; 7" id="CAL_WEEK"/>
+        <zm:bindKey key="W,W; 5" id="CAL_WORK"/>
+        <zm:bindKey key="M; 3" id="CAL_MONTH"/>
+        <zm:bindKey key="S; 0" id="CAL_SCHED"/>
+        <zm:bindKey key="T" id="CAL_TODAY"/>
+        <zm:bindKey key="R" id="CAL_REFRESH"/>
+        <zm:bindKey key="N,A; Q" id="CAL_NEWAPPT"/>
+        <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
+        <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
+    </app:keyboard>
 </app:view>
