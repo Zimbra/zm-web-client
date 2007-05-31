@@ -121,8 +121,18 @@ function() {
 	for (var i = 1; i < gws.length; ++i) {
 		var gw = gws[i];
 
+		var tb2 = new DwtComposite(toolbar);
+
+		var btnReconnect = new DwtButton(tb2, null);
+		btnReconnect.setVisibility(gw.getState() == ZmImGateway.STATE.BOOTED_BY_OTHER_LOGIN);
+		btnReconnect.setText(ZmMsg.imReconnect);
+
+		btnReconnect.addSelectionListener(new AjxListener(this, function(gw, ev) {
+			gw.reconnect();
+		}, [ gw ]));
+
 		var cls = "ZmChatGwIcon Img" + AjxStringUtil.capitalize(gw.type) + "Big";
-		var btn = new DwtControl(toolbar, cls);
+		var btn = new DwtControl(tb2, cls);
 		btn._setMouseEventHdlrs();
 		btn.condClassName(!gw.isOnline(), "ZmChatGwIcon-offline");
 		btn.setToolTipContent("-");
@@ -136,7 +146,7 @@ function() {
 				tooltip = ZmMsg.imGwOnlineTooltip;
 			else
 				tooltip = ZmMsg.imGwOfflineTooltip;
-			return AjxMessageFormat.format(tooltip, [ AjxStringUtil.capitalize(gw.type) ]);
+			return AjxMessageFormat.format(tooltip, [ AjxStringUtil.capitalize(gw.type), nick ]);
 		};
 
 		btn.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, function(gw, ev) {
@@ -153,9 +163,11 @@ function() {
 			this.delClassName("ZmChatGwIcon-hover");
 		}));
 
-		gw.addListener(ZmImGateway.EVENT_SET_STATE, new AjxListener(btn, function(gw, ev) {
-			var gw = this.gateway;
-			this.condClassName(!gw.isOnline(), "ZmChatGwIcon-offline");
+		gw.addListener(ZmImGateway.EVENT_SET_STATE,
+			       new AjxListener(this, function(gwBtn, btnReconnect, ev) {
+				       var gw = ev.gw;
+				       gwBtn.condClassName(!gw.isOnline(), "ZmChatGwIcon-offline");
+				       btnReconnect.setVisibility(gw.getState() == ZmImGateway.STATE.BOOTED_BY_OTHER_LOGIN);
 			// no blinking -- looks ugly.
 // 			if (gw.isOnline()) {
 // 				var blink = 4;
@@ -165,7 +177,7 @@ function() {
 // 						clearInterval(timer);
 // 				}, 100);
 // 			}
-		}));
+			       }, [ btn, btnReconnect ]));
 
 		// this._appCtxt.getAppController().getActiveApp();
 	}

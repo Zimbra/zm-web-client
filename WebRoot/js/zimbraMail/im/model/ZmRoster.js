@@ -311,9 +311,12 @@ function(im) {
 					chat.addMessage(ZmChatMessage.system(this._leftChatFormatter.format([lc.addr])));
 					chat.setThread(null);
 				}
+			} else if (not.type == "otherLocation") {
+				var gw = this.getGatewayByType(not.service);
+				gw.setState(not.username, ZmImGateway.STATE.BOOTED_BY_OTHER_LOGIN);
 			} else if (not.type == "gwStatus") {
 				var gw = this.getGatewayByType(not.service);
-				gw.setState("-", not.state);
+				gw.setState(null, not.state);
 				if (not.state == ZmImGateway.STATE.BAD_AUTH) {
 					this._appCtxt.setStatusMsg(ZmMsg.errorNotAuthenticated, ZmStatusView.LEVEL_WARNING);
 				}
@@ -329,6 +332,15 @@ ZmRoster.prototype.startFlashingIcon = function() {
 
 ZmRoster.prototype.stopFlashingIcon = function() {
 	this._imApp.stopFlashingIcon();
+};
+
+ZmRoster.prototype.reconnectGateway = function(gw) {
+	var sd = AjxSoapDoc.create("IMGatewayRegisterRequest", "urn:zimbraIM");
+	var method = sd.getMethod();
+	method.setAttribute("op", "reconnect");
+	method.setAttribute("service", gw.type);
+	this._appCtxt.getAppController().sendRequest({ soapDoc: sd, asyncMode: true });
+	this.__avoidNotifyTimeout = new Date().getTime();
 };
 
 ZmRoster.prototype.unregisterGateway = function(service, screenName) {
