@@ -35,8 +35,7 @@ ZmMailMsgListView.prototype.constructor = ZmMailMsgListView;
 
 // Consts
 
-ZmMailMsgListView.MSGLIST_REPLENISH_THRESHOLD 	= 0;
-ZmMailMsgListView.COL_WIDTH_FROM 				= 105;
+ZmMailMsgListView.COL_WIDTH_FROM = 105;
 
 // Public methods
 
@@ -76,11 +75,6 @@ function(defaultColumnSort) {
 			this._colHeaderActionMenu.getItem(recdColIdx).setText(colLabel);
 		}
 	}
-};
-
-ZmMailMsgListView.prototype.getReplenishThreshold = 
-function() {
-	return ZmMailMsgListView.MSGLIST_REPLENISH_THRESHOLD;
 };
 
 ZmMailMsgListView.prototype.set =

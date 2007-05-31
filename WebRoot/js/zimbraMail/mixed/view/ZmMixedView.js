@@ -33,9 +33,6 @@ ZmMixedView.prototype = new ZmListView;
 ZmMixedView.prototype.constructor = ZmMixedView;
 
 // Consts
-
-ZmMixedView.REPLENISH_THRESHOLD 	= 0;
-
 ZmMixedView.COLWIDTH_ICON 			= 19;
 ZmMixedView.COLWIDTH_FROM 			= 145;
 ZmMixedView.COLWIDTH_DATE 			= 60;

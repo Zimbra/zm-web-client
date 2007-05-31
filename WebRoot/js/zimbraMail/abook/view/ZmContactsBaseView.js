@@ -30,8 +30,6 @@ ZmContactsBaseView = function(parent, className, posStyle, view, controller, hea
 	ZmListView.call(this, parent, className, posStyle, view, ZmItem.CONTACT, controller, headerList, dropTgt);
 };
 
-ZmContactsBaseView.CONTACTLIST_REPLENISH_THRESHOLD = 0;
-
 ZmContactsBaseView.prototype = new ZmListView;
 ZmContactsBaseView.prototype.constructor = ZmContactsBaseView;
 
@@ -72,11 +70,6 @@ function(address) {
 ZmContactsBaseView.prototype.getLimit =
 function() {
 	return this._appCtxt.get(ZmSetting.CONTACTS_PER_PAGE);
-};
-
-ZmContactsBaseView.prototype.getReplenishThreshold =
-function() {
-	return ZmContactsBaseView.CONTACTLIST_REPLENISH_THRESHOLD;
 };
 
 ZmContactsBaseView.prototype.getListView =

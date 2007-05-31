@@ -68,7 +68,8 @@ ZmListView.FIELD_CLASS[ZmItem.F_FLAG]		= "Flag";
 ZmListView.FIELD_CLASS[ZmItem.F_TAG]		= "Tag";
 ZmListView.FIELD_CLASS[ZmItem.F_ATTACHMENT]	= "Attach";
 
-ZmListView.ITEM_FLAG_CLICKED = DwtListView._LAST_REASON + 1;
+ZmListView.ITEM_FLAG_CLICKED 				= DwtListView._LAST_REASON + 1;
+ZmListView.DEFAULT_REPLENISH_THRESHOLD		= 0;
 
 ZmListView.prototype.getController =
 function() {
@@ -85,17 +86,22 @@ function(list, sortField) {
 		subList = list;
 	}
 	DwtListView.prototype.set.call(this, subList, sortField);
-}
+};
 
 ZmListView.prototype.setUI = 
 function(defaultColumnSort) {
 	DwtListView.prototype.setUI.call(this, defaultColumnSort);
 	this._resetColWidth();	// reset column width in case scrollbar is set
-}
+};
 
 ZmListView.prototype.getLimit = 
 function() {
 	return this._appCtxt.get(ZmSetting.PAGE_SIZE);
+};
+
+ZmListView.prototype.getReplenishThreshold =
+function() {
+	return ZmListView.DEFAULT_REPLENISH_THRESHOLD;
 };
 
 ZmListView.prototype._changeListener =
@@ -129,7 +135,7 @@ function(ev) {
         this._controller._app._checkReplenishListView = this;
 		this._controller._resetToolbarOperations();		
 	}
-}
+};
 
 ZmListView.prototype._checkReplenish =
 function() {

@@ -97,10 +97,8 @@ ZmConvListView.prototype.constructor = ZmConvListView;
 
 // Constants
 
-ZmConvListView.CONVLIST_REPLENISH_THRESHOLD = 0;
-ZmConvListView.COL_WIDTH_FROM 				= 145;
-
-ZmConvListView.INDENT = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+ZmConvListView.COL_WIDTH_FROM	= 145;
+ZmConvListView.INDENT			= "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
 ZmListView.FIELD_CLASS[ZmItem.F_EXPAND] = "Icon";
 
@@ -111,11 +109,6 @@ ZmConvListView.prototype._changeTrashStatus = ZmMailMsgListView.prototype._chang
 ZmConvListView.prototype.toString = 
 function() {
 	return "ZmConvListView";
-}
-
-ZmConvListView.prototype.getReplenishThreshold =
-function() {
-	return ZmConvListView.CONVLIST_REPLENISH_THRESHOLD;
 };
 
 // Enter is normally a list view widget shortcut for DBLCLICK; we need to no-op
@@ -279,8 +272,9 @@ function(conv, fieldId) {
 
 ZmConvListView.prototype._getHeaderToolTip =
 function(field, itemIdx) {
-	return (field == ZmItem.F_EXPAND) ? ZmMsg.expandCollapse :
-										ZmMailListView.prototype._getHeaderToolTip.apply(this, arguments);
+	return (field == ZmItem.F_EXPAND)
+		? ZmMsg.expandCollapse
+		: ZmMailListView.prototype._getHeaderToolTip.apply(this, arguments);
 };
 
 ZmConvListView.prototype._getToolTip =

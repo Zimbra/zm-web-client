@@ -729,7 +729,7 @@ function(ev, div, dblclick) {
 	
 	switch (div._type) {
 		case ZmCalBaseView.TYPE_MONTH_DAY:
-			var date = new Date(this._days[div._loc].date.getTime());
+			date = new Date(this._days[div._loc].date.getTime());
 			var now = new Date();
 			date.setHours(now.getHours(), now.getMinutes());
 			break;
