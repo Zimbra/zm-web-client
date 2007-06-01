@@ -242,7 +242,7 @@ function(zimlets, props) {
     if (zimlets && zimlets.length) {
         // update overview tree
         var activeApp = appCtxt.getCurrentApp();
-        var overview = activeApp.getOverview();
+        var overview = activeApp ? activeApp.getOverview() : null;
         if (overview && overview.getTreeView(ZmOrganizer.ZIMLET)) {
         	overview.setTreeView(ZmOrganizer.ZIMLET);
         }
