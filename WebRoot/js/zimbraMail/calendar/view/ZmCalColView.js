@@ -758,7 +758,7 @@ function(appt) {
 	div.innerHTML = AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#"+template, subs);
 
 	// if (we can edit this appt) then create sash....
-	var tree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+	var tree = this._appCtxt.getFolderTree();
 	var calendar = tree.getById(appt.folderId);
 	var isRemote = Boolean(calendar.url);
 	 if (!appt.isReadOnly() && !appt.isAllDayEvent() && !isRemote) {
@@ -1786,7 +1786,7 @@ function(ev, apptEl) {
 		return false;
 
 	var appt = AjxCore.objectWithId(apptEl._itemIndex);
-	var tree = this._appCtxt.getTree(ZmOrganizer.CALENDAR);
+	var tree = this._appCtxt.getFolderTree();
 	var calendar = tree.getById(appt.folderId);
 	var isRemote = Boolean(calendar.url);
 	if (appt.isReadOnly() || appt.isAllDayEvent() || (appt._fanoutNum > 0) || isRemote) return false;

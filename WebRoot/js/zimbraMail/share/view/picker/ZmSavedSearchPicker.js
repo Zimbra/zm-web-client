@@ -104,8 +104,8 @@ function() {
 		}
 		// hide folders that don't have searches under them, and
 		// take the checkbox away from folders
-		for (var id in treeView._treeHash) {
-			var ti = treeView._treeHash[id];
+		for (var id in treeView._treeItemHash) {
+			var ti = treeView._treeItemHash[id];
 			var organizer = ti.getData(Dwt.KEY_OBJECT);
 			if (organizer.type == ZmOrganizer.FOLDER && organizer.id != ZmOrganizer.ID_ROOT) {
 				if (organizer.hasSearch()) {

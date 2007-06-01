@@ -74,7 +74,7 @@ ZmFolder.ID_OUTBOX	 		= ZmOrganizer.ID_OUTBOX;
 ZmFolder.ID_CHATS	 		= ZmOrganizer.ID_CHATS;
 
 // system folder names
-ZmFolder.MSG_KEY = new Object();
+ZmFolder.MSG_KEY = {};
 ZmFolder.MSG_KEY[ZmFolder.ID_INBOX]			= "inbox";
 ZmFolder.MSG_KEY[ZmFolder.ID_TRASH]			= "trash";
 ZmFolder.MSG_KEY[ZmFolder.ID_SPAM]			= "junk";
@@ -89,16 +89,16 @@ ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]	= "notebook";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]		= "chats";
 
 // system folder icons
-ZmFolder.IMAGE = new Object();
-ZmFolder.IMAGE[ZmFolder.ID_INBOX]		= "Inbox";
-ZmFolder.IMAGE[ZmFolder.ID_TRASH]		= "Trash";
-ZmFolder.IMAGE[ZmFolder.ID_SPAM]		= "SpamFolder";
-ZmFolder.IMAGE[ZmFolder.ID_SENT]		= "SentFolder";
-ZmFolder.IMAGE[ZmFolder.ID_OUTBOX]		= "Outbox";
-ZmFolder.IMAGE[ZmFolder.ID_DRAFTS]		= "DraftFolder";
+ZmFolder.ICON = {};
+ZmFolder.ICON[ZmFolder.ID_INBOX]	= "Inbox";
+ZmFolder.ICON[ZmFolder.ID_TRASH]	= "Trash";
+ZmFolder.ICON[ZmFolder.ID_SPAM]		= "SpamFolder";
+ZmFolder.ICON[ZmFolder.ID_SENT]		= "SentFolder";
+ZmFolder.ICON[ZmFolder.ID_OUTBOX]	= "Outbox";
+ZmFolder.ICON[ZmFolder.ID_DRAFTS]	= "DraftFolder";
 
 // name to use within the query language
-ZmFolder.QUERY_NAME = new Object();
+ZmFolder.QUERY_NAME = {};
 ZmFolder.QUERY_NAME[ZmFolder.ID_INBOX]			= "inbox";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TRASH]			= "trash";
 ZmFolder.QUERY_NAME[ZmFolder.ID_SPAM]			= "junk";
@@ -112,7 +112,7 @@ ZmFolder.QUERY_NAME[ZmOrganizer.ID_NOTEBOOK]	= "notebook";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
 
 // order within the overview panel
-ZmFolder.SORT_ORDER = new Object();
+ZmFolder.SORT_ORDER = {};
 ZmFolder.SORT_ORDER[ZmFolder.ID_INBOX]		= 1;
 ZmFolder.SORT_ORDER[ZmFolder.ID_CHATS]		= 2;
 ZmFolder.SORT_ORDER[ZmFolder.ID_SENT]		= 3;
@@ -124,7 +124,7 @@ ZmFolder.SORT_ORDER[ZmFolder.ID_SEP]		= 8;
 
 // character codes for "tcon" attribute in conv action request, which
 // controls which folders are affected
-ZmFolder.TCON_CODE = new Object();
+ZmFolder.TCON_CODE = {};
 ZmFolder.TCON_CODE[ZmFolder.ID_TRASH]	= "t";
 ZmFolder.TCON_CODE[ZmFolder.ID_SPAM]	= "j";
 ZmFolder.TCON_CODE[ZmFolder.ID_SENT]	= "s";
@@ -161,14 +161,15 @@ ZmFolder.QUERY_ID = {};
 ZmFolder.sortCompare =
 function(folderA, folderB) {
 	var check = ZmOrganizer.checkSortArgs(folderA, folderB);
-	if (check != null) return check;
+	if (check != null) { return check; }
 
-	if (ZmFolder.SORT_ORDER[folderA.id] && ZmFolder.SORT_ORDER[folderB.id])
-		return (ZmFolder.SORT_ORDER[folderA.id] - ZmFolder.SORT_ORDER[folderB.id]);
-	if (!ZmFolder.SORT_ORDER[folderA.id] && ZmFolder.SORT_ORDER[folderB.id]) return 1;
-	if (ZmFolder.SORT_ORDER[folderA.id] && !ZmFolder.SORT_ORDER[folderB.id]) return -1;
-	if (folderA.name.toLowerCase() > folderB.name.toLowerCase()) return 1;
-	if (folderA.name.toLowerCase() < folderB.name.toLowerCase()) return -1;
+	if (ZmFolder.SORT_ORDER[folderA.nId] && ZmFolder.SORT_ORDER[folderB.nId]) {
+		return (ZmFolder.SORT_ORDER[folderA.nId] - ZmFolder.SORT_ORDER[folderB.nId]);
+	}
+	if (!ZmFolder.SORT_ORDER[folderA.nId] && ZmFolder.SORT_ORDER[folderB.nId]) { return 1; }
+	if (ZmFolder.SORT_ORDER[folderA.nId] && !ZmFolder.SORT_ORDER[folderB.nId]) { return -1; }
+	if (folderA.name.toLowerCase() > folderB.name.toLowerCase()) { return 1; }
+	if (folderA.name.toLowerCase() < folderB.name.toLowerCase()) { return -1; }
 	return 0;
 };
 
@@ -186,8 +187,9 @@ function(name) {
 
 	// make sure name isn't a system folder (possibly not displayed)
 	for (var id in ZmFolder.MSG_KEY) {
-		if (name == ZmMsg[ZmFolder.MSG_KEY[id]])
+		if (name == ZmMsg[ZmFolder.MSG_KEY[id]]) {
 			return ZmMsg.folderNameReserved;
+		}
 	}
 	if (name.toLowerCase() == ZmFolder.SYNC_ISSUES.toLowerCase()) {
 		return ZmMsg.folderNameReserved;
@@ -207,23 +209,26 @@ ZmFolder.prototype.move =
 function(newParent) {
 	var origName = this.name;
 	var name = this.name;
-	while (newParent.hasChild(name))
+	while (newParent.hasChild(name)) {
 		name = name + "_";
-	if (origName != name)
+	}
+	if (origName != name) {
 		this.rename(name);
+	}
 	ZmOrganizer.prototype.move.call(this, newParent);
 };
 
 ZmFolder.prototype.hasSearch =
 function(id) {
-	if (this.type == ZmOrganizer.SEARCH)
-		return true;
+	if (this.type == ZmOrganizer.SEARCH) { return true; }
 
 	var a = this.children.getArray();
 	var sz = this.children.size();
-	for (var i = 0; i < sz; i++)
-		if (a[i].hasSearch())
+	for (var i = 0; i < sz; i++) {
+		if (a[i].hasSearch()) {
 			return true;
+		}
+	}
 
 	return false;
 };
@@ -240,7 +245,8 @@ function(id) {
 ZmFolder.prototype.notifyCreate =
 function(obj, isSearch, skipNotify) {
 	// ignore creates of system folders
-	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]) return;
+	var nId = ZmOrganizer.normalizeId(obj.id);
+	if (nId < ZmOrganizer.FIRST_USER_ID[this.type]) { return; }
 
 	var folder = ZmFolderTree.createFromJs(this, obj, this.tree, isSearch ? "search" : "folder");
 	var index = ZmOrganizer.getSortIndex(folder, ZmFolder.sortCompare);
@@ -291,14 +297,12 @@ function(obj) {
 ZmFolder.prototype.createQuery =
 function(pathOnly) {
 	if (this.isSystem()) {
-		return pathOnly
-			? ZmFolder.QUERY_NAME[this.id]
-			: ("in:" + ZmFolder.QUERY_NAME[this.id]);
+		return pathOnly	? ZmFolder.QUERY_NAME[this.nId] : ("in:" + ZmFolder.QUERY_NAME[this.nId]);
 	}
 	var path = this.name;
 	var f = this.parent;
-	while (f && f.id != ZmFolder.ID_ROOT && f.name.length) {
-		var name = f.isSystem() ? ZmFolder.QUERY_NAME[f.id] : f.name;
+	while (f && (f.nId != ZmFolder.ID_ROOT) && f.name.length) {
+		var name = f.isSystem() ? ZmFolder.QUERY_NAME[f.nId] : f.name;
 		path = name + "/" + path;
 		f = f.parent;
 	}
@@ -310,9 +314,9 @@ ZmFolder.prototype.getName =
 function(showUnread, maxLength, noMarkup, useSystemName) {
 	var name = (useSystemName && this._systemName) ? this._systemName : this.name;
 	name = (maxLength && name.length > maxLength) ? name.substring(0, maxLength - 3) + "..." : name;
-	if (this.id == ZmOrganizer.ID_ROOT) {
+	if (this.nId == ZmOrganizer.ID_ROOT) {
 		return ZmMsg.folders;
-	} else if (this.id == ZmFolder.ID_DRAFTS || this.id == ZmFolder.ID_OUTBOX) {
+	} else if (this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_OUTBOX) {
 		if (showUnread && this.numTotal > 0) {
 			name = [name, " (", this.numTotal, ")"].join("");
 			if (!noMarkup) {
@@ -327,10 +331,10 @@ function(showUnread, maxLength, noMarkup, useSystemName) {
 
 ZmFolder.prototype.getIcon = 
 function() {
-	if (this.id == ZmOrganizer.ID_ROOT) {
+	if (this.nId == ZmOrganizer.ID_ROOT) {
 		return null;
-	} else if (ZmFolder.IMAGE[this.id]) {
-		return ZmFolder.IMAGE[this.id];
+	} else if (ZmFolder.ICON[this.nId]) {
+		return ZmFolder.ICON[this.nId];
 	} else if (this.isFeed()) {
 		return "RSS";
 	} else if (this.isRemote()) {
@@ -372,17 +376,17 @@ function(what, folderType) {
 	var thisType = folderType || this.type;
 	var invalid = false;
 	if (what instanceof ZmFolder) {
-		invalid = (what.parent == this || this.isChildOf(what) || this.id == ZmFolder.ID_DRAFTS || this.id == ZmFolder.ID_SPAM || 
+		invalid = (what.parent == this || this.isChildOf(what) || this.nId == ZmFolder.ID_DRAFTS || this.nId == ZmFolder.ID_SPAM || 
 				   (!this.isInTrash() && this.hasChild(what.name)) ||
 				   (what.type == ZmOrganizer.FOLDER && thisType == ZmOrganizer.SEARCH) ||
-				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.id == ZmOrganizer.ID_ROOT) ||
+				   (what.type == ZmOrganizer.SEARCH && thisType == ZmOrganizer.FOLDER && this.nId == ZmOrganizer.ID_ROOT) ||
 				   (what.id == this.id) ||
 				   (what.isRemote() && what.parent && what.parent.isRemote()));	// this means a remote folder can be DnD but not its children
 	} else {
 		// An item or an array of items is being moved
 		var items = (what instanceof Array) ? what : [what];
 		var item = items[0];
-		if (this.id == ZmOrganizer.ID_ROOT) {
+		if (this.nId == ZmOrganizer.ID_ROOT) {
 			invalid = true;														// container can only have folders/searches
 		} else if (this.link) {
 			invalid = this.isReadOnly();										// cannot drop anything onto a read-only item
@@ -392,28 +396,20 @@ function(what, folderType) {
 			invalid = true;
 		} else if ((item.type == ZmItem.CONV) &&
 			 item.list.search &&
-			 (item.list.search.folderId == this.id))
-		{
+			 (item.list.search.folderId == this.id)) {
+
 			invalid = true;														// convs which are a result of a search for this folder
 		} else {																// checks that need to be done for each item
 			for (var i = 0; i < items.length; i++) {
-				if ((items[i].type == ZmItem.CONTACT) &&
-					(this.id != ZmFolder.ID_TRASH))
-				{
+				if ((items[i].type == ZmItem.CONTACT) && (this.nId != ZmFolder.ID_TRASH)) {
 					// can only move contacts into Trash
 					invalid = true;
 					break;
-				}
-				else if (items[i].isDraft &&
-						 (this.id != ZmFolder.ID_TRASH && this.id != ZmFolder.ID_DRAFTS))
-				{
+				} else if (items[i].isDraft && (this.nId != ZmFolder.ID_TRASH && this.nId != ZmFolder.ID_DRAFTS)) {
 					// can move drafts into Trash or Drafts
 					invalid = true;
 					break;
-				}
-				else if (this.id == ZmFolder.ID_DRAFTS &&
-						 !items[i].isDraft)
-				{
+				} else if (this.nId == ZmFolder.ID_DRAFTS && !items[i].isDraft)	{
 					// only drafts can be moved into Drafts
 					invalid = true;
 					break;
@@ -443,5 +439,5 @@ function(what, folderType) {
 */
 ZmFolder.prototype.isSyncIssuesFolder =
 function() {
-	return this.name == ZmFolder.SYNC_ISSUES;
+	return (this.name == ZmFolder.SYNC_ISSUES);
 };

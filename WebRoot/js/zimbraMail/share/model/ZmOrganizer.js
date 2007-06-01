@@ -55,6 +55,8 @@ ZmOrganizer = function(params) {
 	
 	this.type = params.type;
 	var id = this.id = params.id;
+	// save the local ID, for comparing against system IDs
+	this.nId = ZmOrganizer.normalizeId(id);
 	this.name = ZmFolder.MSG_KEY[id] ? ZmMsg[ZmFolder.MSG_KEY[id]] : params.name;
 	this.parent = params.parent;
 	this.tree = params.tree;
@@ -84,16 +86,12 @@ ZmOrganizer = function(params) {
 };
 
 // global organizer types
-ZmOrganizer.FOLDER				= ZmEvent.S_FOLDER;
 ZmOrganizer.TAG					= ZmEvent.S_TAG;
 ZmOrganizer.SEARCH				= ZmEvent.S_SEARCH;
 ZmOrganizer.MOUNTPOINT			= ZmEvent.S_MOUNTPOINT;
 
 // keys for org names
 ZmOrganizer.MSG_KEY = {};
-ZmOrganizer.MSG_KEY[ZmOrganizer.FOLDER]		= "folder";
-ZmOrganizer.MSG_KEY[ZmOrganizer.TAG]		= "tag";
-ZmOrganizer.MSG_KEY[ZmOrganizer.SEARCH]		= "savedSearch";
 
 // primary organizer for item types
 ZmOrganizer.ITEM_ORGANIZER = {};
@@ -116,19 +114,15 @@ ZmOrganizer.ID_ROSTER_TREE_ITEM	= -13;
 
 // default folder for org type
 ZmOrganizer.DEFAULT_FOLDER = {};
-ZmOrganizer.DEFAULT_FOLDER[ZmOrganizer.FOLDER]		= ZmOrganizer.ID_INBOX;
 
 // SOAP command for modifying an org
 ZmOrganizer.SOAP_CMD = {};
-ZmOrganizer.SOAP_CMD[ZmOrganizer.FOLDER]	= "FolderAction";
-ZmOrganizer.SOAP_CMD[ZmOrganizer.TAG]		= "TagAction";
-ZmOrganizer.SOAP_CMD[ZmOrganizer.SEARCH]	= "FolderAction";
 
 // lowest valid user ID for an org type
 ZmOrganizer.FIRST_USER_ID = {};
-ZmOrganizer.FIRST_USER_ID[ZmOrganizer.FOLDER]	= 256;
-ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]		= 64;
-ZmOrganizer.FIRST_USER_ID[ZmOrganizer.SEARCH]	= 256;
+
+// setting that this org type depends on
+ZmOrganizer.PRECONDITION = {};
 
 // fields that can be part of a displayed organizer
 ZmOrganizer.F_NAME		= "name";
@@ -163,6 +157,7 @@ ZmOrganizer.MAX_NAME_LENGTH			= 128;	// max allowed by server
 ZmOrganizer.MAX_DISPLAY_NAME_LENGTH	= 30;	// max we will show
 
 // color constants (server stores a number)
+ZmOrganizer.C_NONE		= -1;
 ZmOrganizer.C_BLUE		= 1;
 ZmOrganizer.C_CYAN		= 2;
 ZmOrganizer.C_GREEN		= 3;
@@ -200,12 +195,9 @@ ZmOrganizer.COLOR_CHOICES = [];
 
 // whether an org uses colors
 ZmOrganizer.HAS_COLOR = {};
-ZmOrganizer.HAS_COLOR[ZmOrganizer.FOLDER] = true;
 
 // default color for each org type
 ZmOrganizer.DEFAULT_COLOR = {};
-ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.SEARCH]	= ZmOrganizer.ORG_DEFAULT_COLOR;
-ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG]		= ZmOrganizer.ORG_DEFAULT_COLOR;
 
 // color overrides by ID
 ZmOrganizer.ORG_COLOR = {};
@@ -215,40 +207,32 @@ ZmOrganizer.APP = {};
 
 // constructor for organizer
 ZmOrganizer.ORG_CLASS = {};
-ZmOrganizer.ORG_CLASS[ZmOrganizer.FOLDER]	= "ZmFolder";
 
 // package required to construct organizer
 ZmOrganizer.ORG_PACKAGE = {};
 
 // function that creates this organizer; args: appCtxt, params
 ZmOrganizer.CREATE_FUNC = {};
-ZmOrganizer.CREATE_FUNC[ZmOrganizer.FOLDER]	= "ZmOrganizer.create";
-ZmOrganizer.CREATE_FUNC[ZmOrganizer.TAG]	= "ZmTag.create";
-ZmOrganizer.CREATE_FUNC[ZmOrganizer.SEARCH]	= "ZmSearchFolder.create";
 
 // msg key for text for tree view header item
 ZmOrganizer.LABEL = {};
-ZmOrganizer.LABEL[ZmOrganizer.FOLDER]	= "folders";
-ZmOrganizer.LABEL[ZmOrganizer.TAG]		= "tags";
-ZmOrganizer.LABEL[ZmOrganizer.SEARCH]	= "searches";
 
 // msg key for text describing contents
 ZmOrganizer.ITEMS_KEY = {};
-ZmOrganizer.ITEMS_KEY[ZmOrganizer.FOLDER]	= "messages";
+
+// type of server data tree that contains this type of organizer
+ZmOrganizer.TREE_TYPE = {};
 
 // views by type
 ZmOrganizer.VIEWS = {};
-ZmOrganizer.VIEWS[ZmOrganizer.FOLDER]	= ["message", "conversation"];
 // types by view (reverse map of above)
 ZmOrganizer.TYPE = {};
 
 // keys for label "[org] folder"
 ZmOrganizer.FOLDER_KEY = {};
-ZmOrganizer.FOLDER_KEY[ZmOrganizer.FOLDER]	= "mailFolder";
 
 // keys for label "mount [org]"
 ZmOrganizer.MOUNT_KEY = {}
-ZmOrganizer.MOUNT_KEY[ZmOrganizer.FOLDER]		= "mountFolder";
 
 // creation can be deferred to app launch
 ZmOrganizer.DEFERRABLE = {};
@@ -259,49 +243,56 @@ ZmOrganizer.DEFERRABLE = {};
  * Stores information about the given organizer type.
  * 
  * @param org				[constant]	organizer type
- * @param app				[constant]	app that handles this org type
- * @param nameKey			[string]	msg key for org name
- * @param defaultFolder		[int]		ID of folder for this org
- * @param soapCmd			[string]	SOAP command for acting on this org
- * @param firstUserId		[int]		minimum ID for a user instance of this org
- * @param orgClass			[string]	name of constructor for this org
- * @param orgPackage		[string]	name of smallest package with org class
- * @param treeController	[string]	name of associated tree controller
- * @param labelKey			[string]	msg key for label in overview
- * @param itemsKey			[string]	msg key for text describing contents
- * @param hasColor			[boolean]	true if org has color associated with it
- * @param defaultColor		[constant]	default color for org in overview
- * @param orgColor			[array]		color override by ID (in pairs)
- * @param views				[string]	associated folder views (JSON)
- * @param folderKey			[string]	msg key for folder props dialog
- * @param mountKey			[string]	msg key for folder mount dialog
- * @param createFunc		[string]	name of function for creating this org
- * @param compareFunc		[string]	name of function for comparing instances of this org
- * @param deferrable		[boolean]	true if creation can be deferred to app launch
+ * @param params			[hash]		hash of params:
+ *        app				[constant]	app that handles this org type
+ *        nameKey			[string]	msg key for org name
+ *        precondition		[constant]	setting that this org type depends on
+ *        defaultFolder		[int]		ID of default folder for this org
+ *        soapCmd			[string]	SOAP command for acting on this org
+ *        firstUserId		[int]		minimum ID for a user instance of this org
+ *        orgClass			[string]	name of constructor for this org
+ *        orgPackage		[string]	name of smallest package with org class
+ *        treeController	[string]	name of associated tree controller
+ *        labelKey			[string]	msg key for label in overview
+ *        itemsKey			[string]	msg key for text describing contents
+ *        hasColor			[boolean]	true if org has color associated with it
+ *        defaultColor		[constant]	default color for org in overview
+ *        orgColor			[array]		color override by ID (in pairs)
+ *        treeType			[constant]	type of data tree (from server) that contains this org
+ *        views				[string]	associated folder views (JSON)
+ *        folderKey			[string]	msg key for folder props dialog
+ *        mountKey			[string]	msg key for folder mount dialog
+ *        createFunc		[string]	name of function for creating this org
+ *        compareFunc		[string]	name of function for comparing instances of this org
+ *        deferrable		[boolean]	true if creation can be deferred to app launch
  */
 ZmOrganizer.registerOrg =
 function(org, params) {
 	if (params.nameKey)			{ ZmOrganizer.MSG_KEY[org]				= params.nameKey; }
 	if (params.app)				{ ZmOrganizer.APP[org]					= params.app; }
-	if (params.defaultFolder)	{ ZmOrganizer.DEFAULT_FOLDER[org]		= params.defaultFolder;}
-	if (params.soapCmd)			{ ZmOrganizer.SOAP_CMD[org]				= params.soapCmd;}
-	if (params.firstUserId)		{ ZmOrganizer.FIRST_USER_ID[org]		= params.firstUserId;}
-	if (params.orgClass)		{ ZmOrganizer.ORG_CLASS[org]			= params.orgClass;}
-	if (params.orgPackage)		{ ZmOrganizer.ORG_PACKAGE[org]			= params.orgPackage;}
-	if (params.treeController)	{ ZmOverviewController.CONTROLLER[org]	= params.treeController;}
-	if (params.labelKey)		{ ZmOrganizer.LABEL[org]				= params.labelKey;}
-	if (params.itemsKey)		{ ZmOrganizer.ITEMS_KEY[org]			= params.itemsKey;}
-	if (params.hasColor)		{ ZmOrganizer.HAS_COLOR[org]			= params.hasColor;}
-	if (params.views)			{ ZmOrganizer.VIEWS[org]				= params.views;}
-	if (params.folderKey)		{ ZmOrganizer.FOLDER_KEY[org]			= params.folderKey;}
-	if (params.mountKey)		{ ZmOrganizer.MOUNT_KEY[org]			= params.mountKey;}
-	if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc;}
-	if (params.deferrable)		{ ZmOrganizer.DEFERRABLE[org]			= params.deferrable;}
+	if (params.defaultFolder)	{ ZmOrganizer.DEFAULT_FOLDER[org]		= params.defaultFolder; }
+	if (params.precondition)	{ ZmOrganizer.PRECONDITION[org]			= params.precondition; }
+	if (params.soapCmd)			{ ZmOrganizer.SOAP_CMD[org]				= params.soapCmd; }
+	if (params.firstUserId)		{ ZmOrganizer.FIRST_USER_ID[org]		= params.firstUserId; }
+	if (params.orgClass)		{ ZmOrganizer.ORG_CLASS[org]			= params.orgClass; }
+	if (params.orgPackage)		{ ZmOrganizer.ORG_PACKAGE[org]			= params.orgPackage; }
+	if (params.treeController)	{ ZmOverviewController.CONTROLLER[org]	= params.treeController; }
+	if (params.labelKey)		{ ZmOrganizer.LABEL[org]				= params.labelKey; }
+	if (params.itemsKey)		{ ZmOrganizer.ITEMS_KEY[org]			= params.itemsKey; }
+	if (params.hasColor)		{ ZmOrganizer.HAS_COLOR[org]			= params.hasColor; }
+	if (params.views)			{ ZmOrganizer.VIEWS[org]				= params.views; }
+	if (params.folderKey)		{ ZmOrganizer.FOLDER_KEY[org]			= params.folderKey; }
+	if (params.mountKey)		{ ZmOrganizer.MOUNT_KEY[org]			= params.mountKey; }
+	if (params.compareFunc)		{ ZmTreeView.COMPARE_FUNC[org]			= params.compareFunc; }
+	if (params.deferrable)		{ ZmOrganizer.DEFERRABLE[org]			= params.deferrable; }
+
+	ZmOrganizer.TREE_TYPE[org] = params.treeType || org;	// default to own type
 
 	ZmOrganizer.CREATE_FUNC[org]	= params.createFunc || "ZmOrganizer.create";
 
 	if (params.hasColor) {
-		ZmOrganizer.DEFAULT_COLOR[org]	= params.defaultColor || ZmOrganizer.ORG_DEFAULT_COLOR;
+		ZmOrganizer.DEFAULT_COLOR[org]	= (params.defaultColor != null) ? params.defaultColor :
+																		  ZmOrganizer.ORG_DEFAULT_COLOR;
 	}
 	
 	if (params.orgColor) {
@@ -335,8 +326,7 @@ function(appCtxt, params) {
 		if (i == "type" || i == "errorCallback") { continue; }
 		var value = params[i];
 		if (i == "name") {
-			value = AjxEnv.isSafari && !AjxEnv.isSafariNightly
-				? AjxStringUtil.xmlEncode(value) : value;
+			value = (AjxEnv.isSafari && !AjxEnv.isSafariNightly) ? AjxStringUtil.xmlEncode(value) : value;
 		} else if (i == "color") {
 			// no need to save color if missing or default
 			if (!value || (value == ZmOrganizer.DEFAULT_COLOR[type])) {
@@ -458,14 +448,15 @@ function(organizerType) {
 */
 ZmOrganizer.checkName =
 function(name) {
-	if (name.length == 0)
-		return ZmMsg.nameEmpty;
+	if (name.length == 0) {	return ZmMsg.nameEmpty; }
 
-	if (name.length > ZmOrganizer.MAX_NAME_LENGTH)
+	if (name.length > ZmOrganizer.MAX_NAME_LENGTH) {
 		return AjxMessageFormat.format(ZmMsg.nameTooLong, ZmOrganizer.MAX_NAME_LENGTH);
+	}
 
-	if (!ZmOrganizer.VALID_NAME_RE.test(name))
+	if (!ZmOrganizer.VALID_NAME_RE.test(name)) {
 		return AjxMessageFormat.format(ZmMsg.errorInvalidName, name);
+	}
 
 	return null;
 };
@@ -498,6 +489,37 @@ ZmOrganizer.checkColor =
 function(color) {
 	return ((color != null) && (color >= 0 && color <= ZmOrganizer.MAX_COLOR))
 		? color : ZmOrganizer.ORG_DEFAULT_COLOR;
+};
+
+/**
+ * Returns the system ID for the given system ID and account. Unless this
+ * is a child account, the system ID is returned unchanged. For child
+ * accounts, the ID consists of the account ID and the local ID.
+ * 
+ * @param appCtxt	[ZmAppCtxt]		the app context
+ * @param id		[int]			ID of a system organizer
+ * @param account	[ZmAccount]*	an account
+ */
+ZmOrganizer.getSystemId =
+function(appCtxt, id, account) {
+	account = account || appCtxt.getActiveAccount();
+	return (account && !account.isMain) ? [account.id, id].join(":") : id;
+};
+
+/**
+ * Strips the account ID portion from a system ID for a child account, which
+ * can then be used to check against known system IDs. Any non-system ID is
+ * returned unchanged (if type is provided).
+ * 
+ * @param id	[string]		ID of an organizer
+ * @param type	[constant]		type of organizer
+ */
+ZmOrganizer.normalizeId =
+function(id, type) {
+	if (typeof(id) != "string") { return id; }
+	var idx = id.indexOf(":");
+	var localId = (idx == -1) ? id : id.substr(idx + 1);
+	return (type && (localId >= ZmOrganizer.FIRST_USER_ID[type])) ? id : localId;
 };
 
 // Public methods
@@ -533,7 +555,7 @@ ZmOrganizer.prototype.getPath =
 function(includeRoot, showUnread, maxLength, noMarkup, useSystemName) {
 	var parent = this.parent;
 	var path = this.getName(showUnread, maxLength, noMarkup, useSystemName);
-	while (parent && ((parent.id != ZmOrganizer.ID_ROOT) || includeRoot)) {
+	while (parent && ((parent.nId != ZmOrganizer.ID_ROOT) || includeRoot)) {
 		path = parent.getName(showUnread, maxLength, noMarkup, useSystemName) + ZmFolder.SEP + path;
 		parent = parent.parent;
 	}
@@ -551,7 +573,7 @@ function(force) {
 	if (this.numTotal == null) { return ""; }
 	if (!this._tooltip || force) {
 		var subs = {itemText:ZmMsg[ZmOrganizer.ITEMS_KEY[this.type]], numTotal:this.numTotal, sizeTotal:this.sizeTotal};
-		if (!subs.itemText || (this.id == ZmFolder.ID_TRASH)) {
+		if (!subs.itemText || (this.nId == ZmFolder.ID_TRASH)) {
 			subs.itemText = ZmMsg.items;
 		}
 		this._tooltip = AjxTemplate.expand("zimbraMail.share.templates.App#FolderTooltip", subs);
@@ -562,8 +584,7 @@ function(force) {
 /** Returns the full path, suitable for use in search expressions. */
 ZmOrganizer.prototype.getSearchPath =
 function() {
-	return this.id != ZmOrganizer.ID_ROOT
-		? this.getPath(null, null, null, true) : "/";
+	return (this.nId != ZmOrganizer.ID_ROOT) ? this.getPath(null, null, null, true) : "/";
 };
 
 /** @deprecated Use getRestUrl. */
@@ -580,9 +601,7 @@ function() {
 ZmOrganizer.prototype.getRemoteId =
 function() {
 	if (!this._remoteId) {
-		this._remoteId = this.isRemote()
-			? this.zid + ":" + this.rid
-			: this.id;
+		this._remoteId = this.isRemote() ? this.zid + ":" + this.rid : this.id;
 	}
 	return this._remoteId;
 }
@@ -668,8 +687,7 @@ ZmOrganizer.prototype.getIcon = function() {};
 ZmOrganizer.prototype.rename =
 function(name, callback, errorCallback) {
 	if (name == this.name) return;
-	name = AjxEnv.isSafari && !AjxEnv.isSafariNightly
-		? AjxStringUtil.xmlEncode(name) : name;
+	name = (AjxEnv.isSafari && !AjxEnv.isSafariNightly)	? AjxStringUtil.xmlEncode(name) : name;
 	this._organizerAction({action: "rename", attrs: {name: name}, callback: callback, errorCallback: errorCallback});
 };
 
@@ -698,9 +716,9 @@ function(attrs) {
 */
 ZmOrganizer.prototype.move =
 function(newParent) {
-	var newId = (newParent.id > 0) ? newParent.id : ZmOrganizer.ID_ROOT;
+	var newId = (newParent.nId > 0) ? newParent.id : ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
 	if ((newId == this.id || newId == this.parent.id) ||
-		(this.type == ZmOrganizer.FOLDER && newId == ZmFolder.ID_SPAM) ||
+		(this.type == ZmOrganizer.FOLDER && (ZmOrganizer.normalizeId(newId, this.type) == ZmFolder.ID_SPAM)) ||
 		(newParent.isChildOf(this))) {
 		return;
 	}
@@ -718,7 +736,7 @@ ZmOrganizer.prototype._delete =
 function() {
 	DBG.println(AjxDebug.DBG1, "deleting: " + this.name + ", ID: " + this.id);
 	var isEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) &&
-					 (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH));
+					 (this.nId == ZmFolder.ID_SPAM || this.nId == ZmFolder.ID_TRASH));
 	// make sure we're not deleting a system object (unless we're emptying SPAM or TRASH)
 	if (this.isSystem() && !isEmptyOp) return;
 
@@ -741,17 +759,17 @@ function() {
 ZmOrganizer.prototype.notifyDelete =
 function() {
 	// select next reasonable organizer if the currently selected
-	// organizer is the one being deleted or a descendent of the
+	// organizer is the one being deleted or is a descendent of the
 	// one being deleted
 	var overviewController = this._appCtxt.getOverviewController();
 	var treeController = overviewController.getTreeController(this.type);
-	var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+	var overviewId = this._appCtxt.getAppController().getOverviewId();
+	var treeView = treeController.getTreeView(overviewId);
 	var organizer = treeView && treeView.getSelected();
-	if (organizer &&
-		(organizer == this || organizer.isChildOf(this))) {
+	if (organizer && (organizer == this || organizer.isChildOf(this))) {
 		var folderId = this.parent.id;
-		if (folderId == ZmOrganizer.ID_ROOT) {
-			folderId = ZmOrganizer.DEFAULT_FOLDER[this.type];
+		if (this.parent.nId == ZmOrganizer.ID_ROOT) {
+			folderId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.DEFAULT_FOLDER[this.type]);
 		}
 		var skipNotify = false;
 		treeView.setSelected(folderId, skipNotify);
@@ -890,9 +908,11 @@ function(name) {
 	name = name.toLowerCase();
 	var a = this.children.getArray();
 	var sz = this.children.size();
-	for (var i = 0; i < sz; i++)
-		if (a[i].name && (a[i].name.toLowerCase() == name))
+	for (var i = 0; i < sz; i++) {
+		if (a[i].name && (a[i].name.toLowerCase() == name)) {
 			return a[i];
+		}
+	}
 
 	return null;
 };
@@ -907,7 +927,7 @@ function(path) {
 	// get starting organizer
 	var organizer = this;
 	if (path.match(/^\//)) {
-		while (organizer.id != ZmOrganizer.ID_ROOT) {
+		while (organizer.nId != ZmOrganizer.ID_ROOT) {
 			organizer = organizer.parent;
 		}
 		path = path.substr(1);
@@ -954,15 +974,17 @@ function(id) {
 			return this;
 	}
 
-	if (this.id == id)
+	if (this.id == id) {
 		return this;
+	}
 
 	var organizer;
 	var a = this.children.getArray();
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++) {
-		if (organizer = a[i].getById(id))
+		if (organizer = a[i].getById(id)) {
 			return organizer;
+		}
 	}
 	return null;
 };
@@ -1014,7 +1036,7 @@ function(path, useSystemName) {
 // Test the path of this folder and then descendants against the given path, case insensitively
 ZmOrganizer.prototype._getByPath =
 function(path, useSystemName) {
-	if (this.id == ZmFolder.ID_TAGS) { return null; }
+	if (this.nId == ZmFolder.ID_TAGS) { return null; }
 
 	if (path == this.getPath(false, false, null, true, useSystemName).toLowerCase()) {
 		return this;
@@ -1047,8 +1069,9 @@ ZmOrganizer.prototype.isChildOf =
 function (organizer) {
 	var parent = this.parent;
 	while (parent) {
-		if (parent == organizer)
+		if (parent == organizer) {
 			return true;
+		}
 		parent = parent.parent;
 	}
 	return false;
@@ -1069,11 +1092,12 @@ function(id) {
 	if (this.id == id) return true;
 
 	var parent = this.parent;
-	while (parent && parent.id != ZmOrganizer.ID_ROOT) {
-		if (parent.id == id)
+	while (parent && parent.nId != ZmOrganizer.ID_ROOT) {
+		if (parent.id == id) {
 			return true;
-		else
+		} else {
 			parent = parent.parent;
+		}
 	}
 	return false;
 };
@@ -1094,8 +1118,14 @@ function() {
 
 ZmOrganizer.prototype.isRemote =
 function() {
-	if (!this._isRemote)
-		this._isRemote = (this.zid != null || this.id.indexOf(":") != -1);
+	if (this._isRemote == null) {
+		if (this.zid != null) {
+			this._isRemote = true;
+		} else {
+			var acct = this._appCtxt.getActiveAccount();
+			this._isRemote = ((this.id.indexOf(":") != -1) && (this.id.indexOf(acct.id) != 0));
+		}
+	}
 	return this._isRemote;
 };
 
@@ -1104,7 +1134,7 @@ function() {
 */
 ZmOrganizer.prototype.isSystem =
 function () {
-	return (this.id < ZmOrganizer.FIRST_USER_ID[this.type]);
+	return (this.nId < ZmOrganizer.FIRST_USER_ID[this.type]);
 };
 
 /**
@@ -1126,8 +1156,9 @@ function(child, sortFunction) {
 	var children = child.parent.children.getArray();
 	for (var i = 0; i < children.length; i++) {
 		var test = sortFunction(child, children[i]);
-		if (test == -1)
+		if (test == -1) {
 			return i;
+		}
 	}
 	return i;
 };
@@ -1171,15 +1202,17 @@ function(params, result) {
 // Test the name of this organizer and then descendants against the given name, case insensitively
 ZmOrganizer.prototype._getByName =
 function(name) {
-	if (this.name && name == this.name.toLowerCase())
+	if (this.name && name == this.name.toLowerCase()) {
 		return this;
+	}
 
 	var organizer;
 	var a = this.children.getArray();
 	var sz = this.children.size();
 	for (var i = 0; i < sz; i++) {
-		if (organizer = a[i]._getByName(name))
+		if (organizer = a[i]._getByName(name)) {
 			return organizer;
+		}
 	}
 	return null;
 };
@@ -1221,7 +1254,7 @@ ZmOrganizer.prototype._setSharesFromJs =
 function(obj) {
 	if (obj.acl && obj.acl.grant && obj.acl.grant.length > 0) {
 		AjxDispatcher.require("Share");
-		var shares = new Array(obj.acl.grant.length);
+		var shares = [];
 		for (var i = 0; i < obj.acl.grant.length; i++) {
 			var grant = obj.acl.grant[i];
 			shares[i] = ZmShare.createFromJs(this, grant, this._appCtxt);
@@ -1251,12 +1284,14 @@ function(event, details) {
 */
 ZmOrganizer.prototype._markupName = 
 function(name, showUnread, noMarkup) {
-	if (!noMarkup)
+	if (!noMarkup) {
 		name = AjxStringUtil.htmlEncode(name, true);
+	}
 	if (showUnread && this.numUnread > 0) {
 		name = [name, " (", this.numUnread, ")"].join("");
-		if (!noMarkup)
+		if (!noMarkup) {
 			name = ["<span style='font-weight:bold'>", name, "</span>"].join("");
+		}
 	}
 	if (this.noSuchFolder && !noMarkup) {
 		name = ["<del>", name, "</del>"].join("");

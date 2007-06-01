@@ -57,13 +57,15 @@ ZmNotebookTreeController.prototype.toString = function() {
 
 ZmNotebookTreeController.prototype.resetOperations =
 function(actionMenu, type, id) {
-	if (actionMenu && id != ZmOrganizer.ID_ROOT) {
+	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	if (actionMenu && id != rootId) {
 		var notebook = this._appCtxt.getById(id);
 		if (!notebook) { return; }
 
-		var isRoot = notebook.id == ZmOrganizer.ID_ROOT;
-		var isNotebook = notebook.id == ZmOrganizer.ID_NOTEBOOK;
-		var isTopLevel = !isRoot && notebook.parent.id == ZmOrganizer.ID_ROOT;
+		var notebookId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_NOTEBOOK);
+		var isRoot = (notebook.id == rootId);
+		var isNotebook = (notebook.id == notebookId);
+		var isTopLevel = (!isRoot && notebook.parent.id == rootId);
 		var isLink = notebook.link;
 		var isLinkOrRemote = isLink || notebook.isRemote();
 
@@ -77,7 +79,7 @@ function(actionMenu, type, id) {
 		menuItem.setEnabled(!isLinkOrRemote || ZmNotebookTreeController.__isAllowed(notebook, ZmShare.PERM_CREATE_SUBDIR));
 
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
-			isNotebook = !isRoot && notebook.parent.id == ZmOrganizer.ID_ROOT;
+			isNotebook = (!isRoot && notebook.parent.id == rootId);
 			menuItem = actionMenu.getMenuItem(ZmOperation.MOUNT_NOTEBOOK);
 			//menuItem.setText(isRoot ? ZmMsg.mountNotebook : ZmMsg.mountSection);
 			menuItem.setImage(isRoot ? "SharedNotebook" : "SharedSection");
@@ -335,7 +337,8 @@ function(params) {
 	var message;
 
 	// bug: 9406 (short term fix, waiting for backend support)
-	var folderId = (params.parent && params.parent.id) || ZmOrganizer.ID_NOTEBOOK;
+	var notebookId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_NOTEBOOK);
+	var folderId = (params.parent && params.parent.id) || notebookId;
 	var cache = AjxDispatcher.run("GetNotebookCache");
 	if (cache.getPageByName(folderId, params.name)) {
 		message = AjxMessageFormat.format(ZmMsg.errorInvalidPageOrSectionName, params.name);
@@ -355,9 +358,11 @@ ZmNotebookTreeController.prototype._getItems =
 function(overviewId) {
 	var treeView = this.getTreeView(overviewId);
 	if (treeView) {
-		var root = treeView.getTreeItemById(ZmOrganizer.ID_ROOT);
-		if (root)
+		var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+		var root = treeView.getTreeItemById(rootId);
+		if (root) {
 			return root.getItems();
+		}
 	}
 	return [];
 };

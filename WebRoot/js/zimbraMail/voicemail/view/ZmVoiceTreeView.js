@@ -75,7 +75,7 @@ function(organizer) {
 	var overview = organizer._appCtxt.getOverviewController().getOverview(ZmZimbraMail._OVERVIEW_ID);
 	item.reparentHtmlElement(overview.getBody(organizer.accordionItemId));
 
-	this._treeHash[organizer.id] = item;
+	this._treeItemHash[organizer.id] = item;
 	return item;
 };
 

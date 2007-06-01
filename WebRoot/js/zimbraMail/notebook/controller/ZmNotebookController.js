@@ -229,7 +229,7 @@ ZmNotebookController.prototype._setViewContents = function(view) {
 	if (this._object) {
 		var overviewController = this._appCtxt.getOverviewController();
 		var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
-		var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+		var treeView = treeController.getTreeView(this._app.getOverviewId());
 		if (treeView) {
 			var folderId = this._object.getFolderId();
 			var skipNotify = true;

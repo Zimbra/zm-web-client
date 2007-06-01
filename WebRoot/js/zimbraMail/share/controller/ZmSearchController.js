@@ -272,11 +272,12 @@ function(search, noRender, changes, callback, errorCallback) {
 }
 
 /**
-* Assembles a list of item types to return based on a search menu value (which can
-* be passed in).
-*
-* @param searchFor		the value of a search menu item (see ZmSearchToolBar)
-*/
+ * Assembles a list of item types to return based on a search menu value (which can
+ * be passed in).
+ *
+ * @param searchFor		the value of a search menu item (see ZmSearchToolBar)
+ * TODO: APPS
+ */
 ZmSearchController.prototype.getTypes =
 function(searchFor) {
 	var types = new AjxVector();
@@ -302,8 +303,6 @@ function(searchFor) {
 			types.add(ZmItem.CONTACT);
 		if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED))
 			types.add(ZmItem.APPT);
-		if (this._appCtxt.get(ZmSetting.NOTES_ENABLED))
-			types.add(ZmItem.NOTE);
 		if (this._appCtxt.get(ZmSetting.TASKS_ENABLED))
 			types.add(ZmItem.TASK);
 		if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
@@ -571,9 +570,10 @@ function(ev, id, noSearch) {
 ZmSearchController.prototype._updateOverview =
 function(search) {
 	var id, type;
+	var app = this._appCtxt.getCurrentApp();
 	if (search.folderId) {
 		id = search.folderId;
-		type = ZmOrganizer.FOLDER;
+		type = ZmApp.ORGANIZER[app];
 	} else if (search.tagId) {
 		id = search.tagId;
 		type = ZmOrganizer.TAG;
@@ -581,14 +581,16 @@ function(search) {
 		id = search.searchId;
 		type = ZmOrganizer.SEARCH;
 	}
-	var opc = this._appCtxt.getOverviewController();
+	var overview = app.getOverview();
+	if (!overview) { return; }
 	if (id) {
-		var treeView = opc.getTreeView(ZmZimbraMail._OVERVIEW_ID, type);
-		var treeItem = treeView.getTreeItemById(id);
-		treeView.setSelected(id, true);
-		opc.itemSelected(ZmZimbraMail._OVERVIEW_ID, type);
+		var treeView = overview.getTreeView(type);
+		if (treeView) {
+			treeView.setSelected(id, true);
+		}
+		overview.itemSelected(type);
 	} else {
 		// clear overview of selection
-		opc.itemSelected(ZmZimbraMail._OVERVIEW_ID, 0);
+		overview.itemSelected();
 	}
 };

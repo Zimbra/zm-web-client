@@ -46,9 +46,7 @@ ZmEvent.L_MODIFY = 1;
 ZmEvent.L_PICKER = 2;
 
 // Source types (note: there are not separate types for list models)
-ZmEvent.S_FOLDER		= "FOLDER";
 ZmEvent.S_TAG			= "TAG";
-ZmEvent.S_NOTE			= "NOTE";
 ZmEvent.S_PICKER		= "PICKER";
 ZmEvent.S_SEARCH		= "SEARCH";
 ZmEvent.S_SETTING		= "SETTING";

@@ -273,7 +273,7 @@ function(uname, pword) {
     var prefs = [], attrs = [];
     if (ZmLogin.FETCH.length) {
     	if (!ZmLogin._settings) {
-    		ZmLogin._settings = new ZmSettings();
+    		ZmLogin._settings = new ZmSettings(null, true);
 			ZmLogin._settings._initializeLoginSettings();
     	}
 		for (var i = 0; i < ZmLogin.FETCH.length; i++) {

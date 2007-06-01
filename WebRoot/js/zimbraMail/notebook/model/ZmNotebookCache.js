@@ -84,7 +84,7 @@ ZmNotebookCache.prototype._changeListener;
 
 ZmNotebookCache.prototype.fillCache = 
 function(folderId, callback, errorCallback) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var tree = this._appCtxt.getFolderTree();
 	/***
 	var notebook = this._appCtxt.getById(folderId);
 	var path = notebook.getSearchPath();
@@ -386,7 +386,8 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 		// TODO: Handle case where current folder owner is not me
 		//       because absolute paths should be relative to where
 		//       the link was followed. [Q] Should they?
-		notebook = this._appCtxt.getById(ZmOrganizer.ID_ROOT);
+		var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+		notebook = this._appCtxt.getById(rootId);
 		link = link.substr(1);
 	}
 	if (!notebook) {
@@ -588,7 +589,7 @@ function(requestParams, folderId, callback, errorCallback, response) {
 ZmNotebookCache.prototype._fillCacheResponse2 =
 function(folderId, callback, errorCallback, response) {
 
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var tree = this._appCtxt.getFolderTree();
 	var resp = response.GetFolderResponse || (response._data && response._data.GetFolderResponse);
 	var folder = resp.folder && resp.folder[0];
 	var folders = folder && folder.folder;

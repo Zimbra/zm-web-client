@@ -275,12 +275,6 @@ function() {
 	return !this.isOrganizer() || isLinkAndReadOnly;
 };
 
-ZmCalItem.prototype.isShared =
-function() {
-	return (this.id && this.id != -1)
-		? (this.id.indexOf(":") != -1) : false;
-};
-
 ZmCalItem.prototype.resetRepeatWeeklyDays =
 function() {
 	if (this.startDate)

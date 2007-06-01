@@ -76,7 +76,8 @@ ZmPageEditView.prototype._setResponse = function(page) {
 	var appCtxt = this._appCtxt;
 
 	var content;
-	if (page.folderId == ZmFolder.ID_ROOT) {
+	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	if (page.folderId == rootId) {
 		content = this._appCtxt.getById(page.folderId).name;
 	}
 	else {
@@ -86,11 +87,11 @@ ZmPageEditView.prototype._setResponse = function(page) {
 		var a = [ ];
 
 		var folderId = page.folderId;
-		while (folderId != ZmFolder.ID_ROOT) {
+		while (folderId != rootId) {
 			var notebook = this._appCtxt.getById(folderId);
 			a.unshift(ZmWikletProcessor.process(appCtxt, notebook, iconAndName));
 			folderId = notebook.parent.id;
-			if (folderId != ZmFolder.ID_ROOT) {
+			if (folderId != rootId) {
 				a.unshift(separator);
 			}
 		}

@@ -99,6 +99,7 @@ function() {
 							 itemsKey:			"tasks",
 							 hasColor:			true,
 							 defaultColor:		ZmOrganizer.C_GRAY,
+							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["task"],
 							 createFunc:		"ZmOrganizer.create",
 							 compareFunc:		"ZmTaskFolder.sortCompare",
@@ -238,11 +239,6 @@ ZmTasksApp.prototype._handleLoadShowSearchResults =
 function(results, callback, folderId) {
 	this.getTaskListController().show(results, folderId);
 	if (callback) callback.run();
-};
-
-ZmTasksApp.prototype.activate =
-function(active, view) {
-	this._active = active;
 };
 
 ZmTasksApp.prototype.getTaskListController =

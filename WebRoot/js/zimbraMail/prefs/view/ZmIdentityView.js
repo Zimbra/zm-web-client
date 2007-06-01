@@ -791,7 +791,7 @@ function(folderInput) {
 	var dialog = this._appCtxt.getChooseFolderDialog();
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._chooseFolderOkCallback, this, [dialog, folderInput]);
-	dialog.popup({treeIds:[ZmOrganizer.FOLDER]});
+	dialog.popup({overviewId:this.toString()});
 };
 
 ZmIdentityPage.prototype._chooseFolderOkCallback =

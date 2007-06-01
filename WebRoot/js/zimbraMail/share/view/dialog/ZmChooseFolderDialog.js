@@ -32,15 +32,13 @@ ZmChooseFolderDialog = function(parent, className) {
 	var params = {parent:parent, className:className, extraButtons:[newButton]};
 	ZmDialog.call(this, params);
 
-	this._createOverview(ZmChooseFolderDialog._OVERVIEW_ID, this._folderTreeCellId);
+//	this._createOverview(this._folderTreeCellId);
 
 	this.registerCallback(ZmChooseFolderDialog.NEW_BUTTON, this._showNewDialog, this);
 	this._changeListener = new AjxListener(this, this._folderTreeChangeListener);
 
 	this._creatingFolder = false;
 };
-
-ZmChooseFolderDialog._OVERVIEW_ID = "ZmChooseFolderDialog";
 
 ZmChooseFolderDialog.prototype = new ZmDialog;
 ZmChooseFolderDialog.prototype.constructor = ZmChooseFolderDialog;
@@ -53,23 +51,30 @@ function() {
 };
 
 /**
- * @param data			[object]	array of items, a folder, an item, or null
- * @param treeIds		[array]		list of trees to show
- * @param omit			[hash]*		IDs to not show
- * @param title			[string]*	dialog title
- * @param description	[string]*	description of what the user is selecting
- * @param skipReadOnly	[boolean]* 	if true, read-only folders will not be displayed
- * @param hideNewButton [boolean]*	if true, New button will not be shown
- * @param orgType		[constant]*	primary tree type
+ * Since this dialog is intended for use in a variety of situations, we need to be
+ * able to create different sorts of overviews based on what the calling function
+ * wants. By default, we show the folder tree view.
+ * 
+ * @param params		[hash]*		hash of params:
+ *        data			[object]	array of items, a folder, an item, or null
+ *        treeIds		[array]		list of trees to show
+ *        overviewId	[string]*	ID to use as base for overview ID
+ *        omit			[hash]*		IDs to not show
+ *        title			[string]*	dialog title
+ *        description	[string]*	description of what the user is selecting
+ *        skipReadOnly	[boolean]* 	if true, read-only folders will not be displayed
+ *        hideNewButton [boolean]*	if true, New button will not be shown
+ *        orgType		[constant]*	primary tree type
  */
 ZmChooseFolderDialog.prototype.popup =
 function(params) {
+	// use reasonable defaults
 	params = params || {};
 	var omit = params.omit || {};
 	omit[ZmFolder.ID_DRAFTS] = true;
 	var treeIds = (params.treeIds && params.treeIds.length) ? params.treeIds : [ZmOrganizer.FOLDER];
 	var folderTree = this._appCtxt.getFolderTree();
-	
+
 	if (params.skipReadOnly) {
 		// omit any folders that are read only
 		var folders = folderTree.asList();
@@ -95,16 +100,13 @@ function(params) {
 
 	this._data = params.data;
 	
-	// clear overview if we're displaying different series of trees
-	var treeIdString = treeIds.join("|");
-	if (this._treeIdString && (treeIdString != this._treeIdString)) {
-		this._opc.clearOverview(ZmChooseFolderDialog._OVERVIEW_ID);
-	}
-	this._treeIdString = treeIdString;
-	this._renderOverview(ZmChooseFolderDialog._OVERVIEW_ID, treeIds, omit);
+	// use an overview ID that comprises calling class, this class, and current account
+	var base = [this.toString(), params.overviewId].join("-");
+	var overviewId = this._appCtxt.multiAccounts ? [base, this._appCtxt.getActiveAccount().name].join(":") : base;
+	this._setOverview({treeIds:treeIds, omit:omit, fieldId:this._folderTreeCellId, overviewId:overviewId});
 
 	this._orgType = params.orgType || treeIds[0];
-	this._folderTreeView = this._treeView[this._orgType];
+	this._folderTreeView = this._getOverview().getTreeView(this._orgType);
 
 	if (this._folderTreeView) {
 		// remove checkboxes if treeview has them as re-enable selection
@@ -125,9 +127,10 @@ function(params) {
 
 	ZmDialog.prototype.popup.call(this);
 	
+	// expand tree views, select current organizer if any
 	for (var i = 0; i < treeIds.length; i++) {
 		var treeId = treeIds[i];
-		var treeView = this._treeView[treeId] = this._opc.getTreeView(ZmChooseFolderDialog._OVERVIEW_ID, treeId);
+		var treeView = this._getOverview().getTreeView(treeId);
 		var ti = treeView.getTreeItemById(folderTree.root.id);
 		ti.setExpanded(true);
 		if (this._data && (treeId == this._data.type)) {
@@ -150,7 +153,6 @@ ZmChooseFolderDialog.prototype.reset =
 function() {
 	var descCell = document.getElementById(this._folderDescCellId);
 	descCell.innerHTML = "";
-	this._opc.clearOverview();
 	ZmDialog.prototype.reset.call(this);
 	this._data = this._orgType = this._folderTreeView = null;
 	this._creatingFolder = false;
@@ -206,7 +208,7 @@ function(ev) {
 ZmChooseFolderDialog.prototype._okButtonListener =
 function(ev) {
 	var msg;
-	var tgtFolder = this._opc.getSelected(ZmChooseFolderDialog._OVERVIEW_ID);
+	var tgtFolder = this._getOverview().getSelected();
 	if (!tgtFolder) {
 		msg = ZmMsg.noTargetFolder;
 	}

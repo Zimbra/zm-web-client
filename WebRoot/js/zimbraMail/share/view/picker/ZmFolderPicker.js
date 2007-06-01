@@ -51,7 +51,7 @@ function(parent) {
 
 ZmFolderPicker.prototype._updateQuery = 
 function() {
-	var folders = new Array();
+	var folders = [];
 	var num = this._checkedItems.size();
 	for (var i = 0; i < num; i++) {
 		var folder = this._checkedItems.get(i);
@@ -60,8 +60,9 @@ function() {
 	var query = "";
 	if (folders.length) {
 		var folderStr = folders.join(" OR ");
-		if (folders.length > 1)
+		if (folders.length > 1) {
 			folderStr = "(" + folderStr + ")";
+		}
 		query += "in:" + folderStr;
 	}
 	this.setQuery(query);
@@ -92,11 +93,12 @@ ZmFolderPicker.prototype._twiddle =
 function() {
 	for (var i in this._treeView) {
 		var treeView = this._treeView[i];
-		for (var id in treeView._treeHash) {
-			var ti = treeView._treeHash[id];
+		for (var id in treeView._treeItemHash) {
+			var ti = treeView._treeItemHash[id];
 			var organizer = ti.getData(Dwt.KEY_OBJECT);
-			if (organizer.type == ZmOrganizer.SEARCH)
+			if (organizer.type == ZmOrganizer.SEARCH) {
 				ti.setVisible(false);
+			}
 		}
 	}
-}
+};

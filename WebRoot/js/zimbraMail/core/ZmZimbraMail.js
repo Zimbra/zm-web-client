@@ -93,7 +93,7 @@ ZmZimbraMail = function(appCtxt, domain, app, userShell) {
 		ZmApp.QS_ARG_R[ZmApp.QS_ARG[i]] = i;
 	}
 
-	this.startup({app: app});
+	this.startup({app:app});
 };
 
 ZmZimbraMail.prototype = new ZmController;
@@ -105,16 +105,9 @@ ZmZimbraMail.prototype.constructor = ZmZimbraMail;
 //          remove the beta suffix from the app name.
 ZmMsg.BETA_documents = [ZmMsg.documents, ZmMsg.beta].join(" ");
 
-// trees to hide if they have no data
-ZmZimbraMail.HIDE_EMPTY = {};
-ZmZimbraMail.HIDE_EMPTY[ZmOrganizer.SEARCH]	= true;
-ZmZimbraMail.HIDE_EMPTY[ZmOrganizer.ZIMLET]	= true;
-
 ZmZimbraMail._PREFS_ID	= 1;
 ZmZimbraMail._HELP_ID	= 2;
 ZmZimbraMail._LOGOFF_ID	= 3;
-
-ZmZimbraMail._OVERVIEW_ID = "ZmZimbraMail";
 
 // Public methods
 
@@ -143,7 +136,6 @@ function(domain, app, userShellId, offlineMode, devMode) {
 	// Create the shell
 	var settings = new ZmSettings(appCtxt);
 	appCtxt.setSettings(settings);
-	settings.initialize();
 	ZmOperation.initialize();
 	ZmApp.initialize();
 
@@ -244,7 +236,7 @@ function(params) {
 		this._appViewMgr = new ZmAppViewMgr(this._shell, this, false, true);
 		this._loadingView = new DwtControl(this._shell, "DwtListView", Dwt.ABSOLUTE_STYLE);
 		var el = this._loadingView.getHtmlElement();
-		var htmlArr = new Array(3);
+		var htmlArr = [];
 		var idx = 0;
 		htmlArr[idx++] = "<table width='100%' cellspacing='0' cellpadding='1'><tr><td class='NoResults'><br>";
 		htmlArr[idx++] = "Loading...";
@@ -270,6 +262,7 @@ function(params) {
 	}
 
 	this._createEnabledApps();
+	this._registerOrganizers();
 
 	// set up map of search types to item types
 	for (var i in ZmSearch.TYPE) {
@@ -316,7 +309,7 @@ function(params, result) {
 	if (!this._appCtxt.get(ZmSetting.DEV) && this._appCtxt.get(ZmSetting.WARN_ON_EXIT)) {
 		window.onbeforeunload = ZmZimbraMail._confirmExitMethod;
 	}	
-	
+
 	// run any app-requested startup routines
 	this.runAppFunction("startup", result);
 
@@ -336,12 +329,6 @@ function(params, result) {
 		}
 	}
 
-	var opc = this._appCtxt.getOverviewController();
-	if (!opc.getOverview(ZmZimbraMail._OVERVIEW_ID)) {
-		opc.createOverview({overviewId: ZmZimbraMail._OVERVIEW_ID, parent: this._shell, posStyle: Dwt.ABSOLUTE_STYLE,
-							selectionSupported: true, actionSupported: true, dndSupported: true, showUnread: true,
-							hideEmpty: ZmZimbraMail.HIDE_EMPTY});
-	}
 	this._setUserInfo();
 
 	if (this._appCtxt.get(ZmSetting.SEARCH_ENABLED)) {
@@ -462,12 +449,16 @@ function() {
 	ZmCsfeCommand.setSessionId(null);	// so we get a refresh block
     this._highestNotifySeen = 0; 		// we have a new session
 
-    for (var t in this._appCtxt._trees) {
-    	var tree = this._appCtxt.getTree(t);
-    	if (tree && tree.reset) {
-    		tree.reset();
-    	}
-    }
+	var accts = this._appCtxt.getAccounts();
+	for (var id in accts) {
+		var trees = accts[id].trees;
+	    for (var type in trees) {
+	    	var tree = trees[type];
+	    	if (tree && tree.reset) {
+	    		tree.reset();
+	    	}
+	 	}
+	}
 
 	if (!this._appCtxt.rememberMe()) {
 		this._appCtxt.getLoginDialog().clearAll();
@@ -731,6 +722,23 @@ function(ex) {
    	this._kickPolling(true);
 };
 
+ZmZimbraMail.prototype._registerOrganizers =
+function() {
+	ZmOrganizer.registerOrg(ZmOrganizer.TAG,
+							{nameKey:			"tag",
+							 precondition:		ZmSetting.TAGGING_ENABLED,
+							 soapCmd:			"TagAction",
+							 firstUserId:		64,
+							 orgClass:			"ZmTag",
+							 treeController:	"ZmTagTreeController",
+							 hasColor:			true,
+							 defaultColor:		ZmOrganizer.C_ORANGE,
+							 labelKey:			"tags",
+							 treeType:			ZmOrganizer.TAG,
+							 createFunc:		"ZmTag.create",
+							 compareFunc:		"ZmTag.sortCompare"
+							});
+};
 
 /**
 * Returns a handle to the given app.
@@ -739,8 +747,9 @@ function(ex) {
 */
 ZmZimbraMail.prototype.getApp =
 function(appName) {
-	if (!this._apps[appName])
+	if (!this._apps[appName]) {
 		this._createApp(appName);
+	}
 	return this._apps[appName];
 };
 
@@ -778,7 +787,6 @@ function(appName, force, callback, errorCallback, checkQS) {
     var view = this._appViewMgr.getAppView(appName);
     if (view && !force) {
     	// if the app has been launched, make its view the current one
-    	bActivated = true;
 	    DBG.println(AjxDebug.DBG3, "activateApp, current " + appName + " view: " + view);
 		if (this._appViewMgr.pushView(view)) {
 		    this._appViewMgr.setAppView(appName, view);
@@ -825,7 +833,9 @@ function(appName, view) {
 	    if (this._activeApp) {
 			// some views are not stored in _apps collection, so check if it exists.
 			var app = this._apps[this._activeApp];
-			if (app) app.activate(false, view);
+			if (app) {
+				app.activate(false, view);
+			}
 			this._previousApp = this._activeApp;
 	    }
 
@@ -841,11 +851,10 @@ function(appName, view) {
 		var app = this._apps[this._activeApp];
 		this._appCtxt.getSearchController().getSearchToolbar().setSearchFieldValue(app.currentQuery ? app.currentQuery : "");
 
-		var reset = {};
-		reset[ZmOrganizer.SEARCH] = true;
-		this._checkOverviewLayout(true, reset);
 		// activate current app
-		if (app) app.activate(true, view);
+		if (app) {
+			app.activate(true, view);
+		}
 	}
 };
 
@@ -875,50 +884,15 @@ function(appName) {
 };
 
 ZmZimbraMail.prototype._checkOverviewLayout =
-function(force, reset) {
+function(force) {
 	if ((this._needOverviewLayout || force) && this._settings.userSettingsLoaded) {
-		DBG.println(AjxDebug.DBG1, "laying out overview panel");
-		var opc = this._appCtxt.getOverviewController();
-		opc.set(ZmZimbraMail._OVERVIEW_ID, this._getOverviewTrees(this._activeApp), null, reset);
-		this._components[ZmAppViewMgr.C_TREE] = opc.getOverview(ZmZimbraMail._OVERVIEW_ID);
-		// clear shared folder dialogs so they'll be recreated with new folder tree
-		this._appCtxt.clearFolderDialogs();
-		this._needOverviewLayout = false;
-	}
-};
-
-ZmZimbraMail.prototype._getOverviewTrees =
-function(app) {
-	var list = ZmApp.OVERVIEW_TREES[app];
-	if (!(list && list.length)) return null;
-	
-	var trees = [];
-	for (var i = 0; i < list.length; i++) {
-		var id = list[i];
-		if ((id == ZmOrganizer.SEARCH && !this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) ||
-			(id == ZmOrganizer.CALENDAR && !this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) ||
-			(id == ZmOrganizer.TASK_FOLDER && !this._appCtxt.get(ZmSetting.TASKS_ENABLED)) ||
-			(id == ZmOrganizer.NOTEBOOK && !this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) ||
-			(id == ZmOrganizer.ROSTER_TREE_ITEM && !this._appCtxt.get(ZmSetting.IM_ENABLED)) ||			
-			(id == ZmOrganizer.TAG && !this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) ||
-			(id == ZmOrganizer.ADDRBOOK && !this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)))
-		{
-			continue;
-		}
-
-		// dont show folders when viewing mixed app coming from contacts app
-		// and dont show addrbooks when viewing mixed app coming from mail app
-		if (this._activeApp == ZmApp.MIXED) {
-			if ((this._previousApp == ZmApp.CONTACTS && id == ZmOrganizer.FOLDER) ||
-				(this._previousApp == ZmApp.MAIL && id == ZmOrganizer.ADDRBOOK))
-			{
-				continue;
+		for (var app in this._apps) {
+			var overview = this._apps[app].getOverview();
+			if (overview && overview.clear) {
+				overview.clear();
 			}
 		}
-
-		trees.push(id);
 	}
-	return trees;
 };
 
 ZmZimbraMail.prototype._setUserInfo = 
@@ -935,8 +909,9 @@ function() {
 	var username = (this._appCtxt.get(ZmSetting.DISPLAY_NAME)) || login;
 	if (username) {
 		this._userNameField.getHtmlElement().innerHTML = username;
-		if (AjxEnv.isLinux)	// bug fix #3355
+		if (AjxEnv.isLinux) {	// bug fix #3355
 			this._userNameField.getHtmlElement().style.lineHeight = "13px";
+		}
 	}
 
 	var userTooltip = (username != login) ? login : null;
@@ -979,8 +954,9 @@ function() {
 	}
 	html[idx++] = "</tr></table></center>";
 
-	if (!(skin.hints && skin.hints.help_button.hideIcon))
+	if (!(skin.hints && skin.hints.help_button.hideIcon)) {
 		this._usedQuotaField.getHtmlElement().innerHTML = html.join("");
+	}
 
 	if (userTooltip || quotaTooltip) {
 		var tooltip = [];

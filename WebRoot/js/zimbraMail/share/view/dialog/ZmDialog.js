@@ -56,7 +56,7 @@ ZmDialog = function(params) {
 		this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	}
 
-	this._treeView = {};
+	this._overview = {};
 	this._opc = this._appCtxt.getOverviewController();
 	this._tabGroupComplete = false;
 };
@@ -112,30 +112,61 @@ function(fieldId) {
 	this.addEnterListener(new AjxListener(this, this._enterListener));
 };
 
-ZmDialog.prototype._setOverview =
-function(overviewId, fieldId, treeIds, omit) {
-	this._createOverview(overviewId, fieldId);
-	this._renderOverview(overviewId, treeIds, omit);
+/**
+ * Returns a unique ID for this dialog's overview.
+ */
+ZmDialog.prototype.getOverviewId =
+function() {
+	var base = this.toString();
+	return this._appCtxt.multiAccounts ? [base, this._appCtxt.getActiveAccount().name].join(":") : base;
 };
 
-ZmDialog.prototype._createOverview =
-function(overviewId, fieldId) {
-	var params = {
-		overviewId: overviewId, 
-		overviewClass: "dialogOverview",
-		headerClass: "DwtTreeItem"
-	};
-	var overview = this._opc.createOverview(params);
-	if (fieldId) {
-		document.getElementById(fieldId).appendChild(overview.getHtmlElement());
+/**
+ * Displays the given list of tree views in an overview, creating it if necessary, and appends
+ * the overview to an element in the dialog. Since dialogs may be reused, it is possible that
+ * it will display different overviews. That is handled by making sure that only the current
+ * overview is visible.
+ * 
+ * @param params		[hash]		hash of params:
+ *        treeIds		[array]		list of tree views to show
+ *        omit			[hash]		IDs of organizers to exclude
+ *        fieldId		[string]	DOM ID of element that contains overview
+ *        overviewId	[string]*	ID for the overview
+ */
+ZmDialog.prototype._setOverview =
+function(params) {
+	var overviewId = params.overviewId || this.getOverviewId();
+	var overview = this._opc.getOverview(overviewId);
+	if (!overview) {
+		var ovParams = {overviewId:overviewId, overviewClass:"dialogOverview",
+						headerClass:"DwtTreeItem", noTooltips:true};
+		overview = this._overview[overviewId] = this._opc.createOverview(ovParams);
+		this._renderOverview(overview, params.treeIds, params.omit);
+		document.getElementById(params.fieldId).appendChild(overview.getHtmlElement());
+	}
+	// make the current overview the only visible one
+	if (overviewId != this._curOverviewId) {
+		for (var id in this._overview) {
+			this._overview[id].setVisible(id == overviewId);
+		}
+		this._curOverviewId = overviewId;
 	}
 };
 
+/**
+ * Renders the tree views in the overview, and makes the header items
+ * selectable (since they can generally be targets of whatever action
+ * the dialog is facilitating).
+ * 
+ * @param overview		[ZmOverview]	the overview
+ * @param treeIds		[array]			list of tree views to show
+ * @param omit			[hash]			IDs of organizers to exclude
+ */
 ZmDialog.prototype._renderOverview =
-function(overviewId, treeIds, omit) {
-	this._opc.set(overviewId, treeIds, omit);
+function(overview, treeIds, omit) {
+	overview.set(treeIds, omit);
 	for (var i = 0; i < treeIds.length; i++) {
-		var treeView = this._treeView[treeIds[i]] = this._opc.getTreeView(overviewId, treeIds[i]);
+		var treeView = overview.getTreeView(treeIds[i]);
 		if (treeView) {
 			var hi = treeView.getHeaderItem();
 			if (hi) {
@@ -144,6 +175,22 @@ function(overviewId, treeIds, omit) {
 		}
 	}
 };
+
+ZmDialog.prototype._getOverview =
+function() {
+	return this._overview[this._curOverviewId];
+};
+
+/*
+ZmDialog.prototype._createOverview =
+function(fieldId) {
+	var params = {overviewId:this.getOverviewId(), overviewClass:"dialogOverview", headerClass:"DwtTreeItem"};
+	var overview = this._opc.createOverview(params);
+	if (fieldId) {
+		document.getElementById(fieldId).appendChild(overview.getHtmlElement());
+	}
+};
+*/
 
 ZmDialog.prototype._getInputFields = 
 function() {

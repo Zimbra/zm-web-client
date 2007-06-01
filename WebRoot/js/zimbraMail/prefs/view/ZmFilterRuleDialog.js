@@ -452,10 +452,14 @@ function(conf, field, options, dataValue, rowId, data) {
 		var button = new DwtButton(this);
 		var organizer = null;
 		if (dataValue) {
-			if (type == ZmFilterRule.TYPE_FOLDER_PICKER)
+			if (type == ZmFilterRule.TYPE_FOLDER_PICKER) {
 				organizer = this._appCtxt.getFolderTree().getByPath(dataValue.substring(1), true);
-			else
-				organizer = this._appCtxt.getTagTree().getByName(dataValue);
+			} else {
+				var tagTree = this._appCtxt.getTagTree();
+				if (tagTree) {
+					organizer = tagTree.getByName(dataValue);
+				}
+			}
 		}
 		var	text = organizer ? organizer.getName(false, null, true) : ZmMsg.browse;
 		button.setText(text);
@@ -623,7 +627,7 @@ function(ev) {
 	dialog.reset();
 	dialog.setTitle((type == ZmFilterRule.TYPE_FOLDER_PICKER) ? ZmMsg.chooseFolder : ZmMsg.chooseTag);
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._browseSelectionCallback, this, ev.item);
-	dialog.popup();
+	dialog.popup({overviewId:this.toString()});
 };
 
 /*

@@ -85,21 +85,23 @@ function(appCtxt, params, ex) {
 
 ZmCalendar.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
-    if (this.id == ZmOrganizer.ID_ROOT) return ZmMsg.calendars;
-    if (this.path) return [this.path, this.name].join("/");
+    if (this.nId == ZmOrganizer.ID_ROOT) {
+    	return ZmMsg.calendars;
+    }
+    if (this.path) {
+    	return [this.path, this.name].join("/");
+    }
     return this.name;
 };
 
 ZmCalendar.prototype.getIcon = 
 function() {
-	return this.id == ZmOrganizer.ID_ROOT 
-		? null
-		: (this.link ? "GroupSchedule" : "CalendarFolder");
+	return (this.nId == ZmOrganizer.ID_ROOT) ? null	: (this.link ? "GroupSchedule" : "CalendarFolder");
 };
 
 ZmCalendar.prototype.setFreeBusy = 
 function(exclude, callback, errorCallback) {
-	if (this.excludeFreeBusy == exclude) return;
+	if (this.excludeFreeBusy == exclude) { return; }
 	// NOTE: Don't need to store the value since the response will
 	//       report that the object was modified.
 	this._organizerAction({action: "fb", attrs: {excludeFreeBusy: exclude ? "1" : "0"}, callback: callback, errorCallback: errorCallback});
@@ -107,7 +109,7 @@ function(exclude, callback, errorCallback) {
 
 ZmCalendar.prototype.setChecked = 
 function(checked, batchCmd) {
-	if (this.isChecked == checked) return;
+	if (this.isChecked == checked) { return; }
 	var action = checked ? "check" : "!check";
 	this._organizerAction({action: action, batchCmd: batchCmd});
 };

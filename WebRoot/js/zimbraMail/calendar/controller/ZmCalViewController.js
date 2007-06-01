@@ -169,7 +169,7 @@ function(viewId, startDate) {
 	if (!this._calTreeController) {
 		this._calTreeController = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.CALENDAR);
 		if (this._calTreeController) {
-			this._calTreeController.addSelectionListener(ZmZimbraMail._OVERVIEW_ID, new AjxListener(this, this._calTreeSelectionListener));
+			this._calTreeController.addSelectionListener(this._app.getOverviewId(), new AjxListener(this, this._calTreeSelectionListener));
 			var calTree = this._appCtxt.getFolderTree();
 			if (calTree)
 				calTree.addChangeListener(new AjxListener(this, this._calTreeChangeListener));
@@ -285,7 +285,7 @@ ZmCalViewController.prototype._updateCheckedCalendars =
 function() {
 	if (!this._calTreeController)
 		return [];
-	var cc = this._calTreeController.getCheckedCalendars(ZmZimbraMail._OVERVIEW_ID);
+	var cc = this._calTreeController.getCheckedCalendars(this._app.getOverviewId());
 	this._checkedCalendars = cc;
 	this._checkedCalendarFolderIds = [];
 	this._checkedLocalCalendarFolderIds = [];

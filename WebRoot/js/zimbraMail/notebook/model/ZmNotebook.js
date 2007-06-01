@@ -72,14 +72,14 @@ function() {
 
 ZmNotebook.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
-	var name = this.id == ZmOrganizer.ID_ROOT ? ZmMsg.notebooks : this.name;
+	var name = (this.nId == ZmOrganizer.ID_ROOT) ? ZmMsg.notebooks : this.name;
 	return this._markupName(name, showUnread, noMarkup);
 };
 
 ZmNotebook.prototype.getIcon = 
 function() {
-	if (this.id == ZmOrganizer.ID_ROOT) return null;
-	if (this.parent.id == ZmOrganizer.ID_ROOT) {
+	if (this.nId == ZmOrganizer.ID_ROOT) { return null; }
+	if (this.parent.nId == ZmOrganizer.ID_ROOT) {
 		return this.link ? "SharedNotebook" : "Notebook";
 	}
 	return this.link ? "SharedSection" : "Section";

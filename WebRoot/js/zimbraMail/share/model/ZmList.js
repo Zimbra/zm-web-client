@@ -76,8 +76,6 @@ ZmList.NODE = {};
 // item types based on node name (reverse map of above)
 ZmList.ITEM_TYPE = {};
 
-ZmList.SEARCH_TYPES = [ZmItem.NOTE];
-
 ZmList.prototype.toString = 
 function() {
 	return "ZmList";
@@ -385,7 +383,7 @@ ZmList.prototype.copyItems =
 function(items, folder, attrs) {
 	if (!(items instanceof Array)) items = [items];
 
-	attrs = attrs || (new Object());
+	attrs = attrs || {};
 	attrs.l = folder.id;
 
 	var respCallback = new AjxCallback(this, this._handleResponseCopyItems);

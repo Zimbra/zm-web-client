@@ -65,6 +65,7 @@ function(overviewId) {
 	return calendars;
 };
 
+// XXX: 6/1/07 - each app manages own overview now, do we need this?
 ZmCalendarTreeController.prototype.addSelectionListener =
 function(overviewId, listener) {
 	// Each overview gets its own event manager
@@ -95,7 +96,8 @@ function(actionMenu, type, id) {
 			actionMenu.enable(ZmOperation.SYNC, calendar.isFeed());
 		}
 		actionMenu.enable(ZmOperation.DELETE, id != ZmOrganizer.ID_CALENDAR);
-		if (id == ZmOrganizer.ID_ROOT) {
+		var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+		if (id == rootId) {
 			var items = this._getItems(this._actionedOverviewId);
 			var foundChecked = false;
 			var foundUnchecked = false;
@@ -244,9 +246,11 @@ ZmCalendarTreeController.prototype._getItems =
 function(overviewId) {
 	var treeView = this.getTreeView(overviewId);
 	if (treeView) {
-		var root = treeView.getTreeItemById(ZmOrganizer.ID_ROOT);
-		if (root)
+		var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+		var root = treeView.getTreeItemById(rootId);
+		if (root) {
 			return root.getItems();
+		}
 	}
 	return [];
 };

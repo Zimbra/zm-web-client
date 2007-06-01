@@ -240,32 +240,33 @@ function() {
 	DwtComposite.prototype.dispose.call(this);
 	if (this._treeView) {
 		var opc = this._appCtxt.getOverviewController();
-		opc.clearOverview(this._overviewId);
+		this._overview.clear();
 	}
 }
 
 ZmPicker.prototype._setOverview =
 function(overviewId, parent, types) {
-	this._overviewId = overviewId;
 	this._picker.setScrollStyle(Dwt.CLIP);
 	var opc = this._appCtxt.getOverviewController();
-	opc.createOverview({overviewId: overviewId, parent: parent, //scroll: Dwt.VISIBLE,
-						headerClass: "DwtTreeItem",
-						treeStyle: DwtTree.CHECKEDITEM_STYLE});
-	opc.set(overviewId, types);
-	this._treeView = new Object();
+	var params = {overviewId:overviewId, parent:parent,	headerClass:"DwtTreeItem",
+				  treeStyle:DwtTree.CHECKEDITEM_STYLE};
+	var overview = this._overview = opc.createOverview(params);
+	overview.set(types);
+	this._treeView = {};
 	for (var i = 0; i < types.length; i++) {
-		var treeView = this._treeView[types[i]] = opc.getTreeView(overviewId, types[i]);
+		var treeView = this._treeView[types[i]] = overview.getTreeView(types[i]);
 		treeView.addSelectionListener(new AjxListener(this, this._treeListener));
 	}
-	if (types.length == 1)
+	if (types.length == 1) {
 		this._hideRoot(types[0]);
-}
+	}
+};
 
 ZmPicker.prototype._hideRoot =
 function(type) {
-	var ti = this._treeView[type].getTreeItemById(ZmOrganizer.ID_ROOT);
+	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	var ti = this._treeView[type].getTreeItemById(rootId);
 	Dwt.setVisible(ti._checkBoxCell, false);
 	ti.setExpanded(true);
 	ti.setVisible(false, true);
-}
+};

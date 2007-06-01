@@ -83,8 +83,7 @@ ZmSearch = function(appCtxt, params) {
 
 // Search types
 ZmSearch.TYPE = {};
-ZmSearch.TYPE[ZmItem.NOTE]		= "note";
-ZmSearch.TYPE_ANY				= "any";
+ZmSearch.TYPE_ANY = "any";
 
 ZmSearch.GAL_ACCOUNT	= "account";
 ZmSearch.GAL_RESOURCE	= "resource";
@@ -366,9 +365,12 @@ function() {
 	results = this.query.match(ZmSearch.TAG_QUERY_RE);
 	if (results) {
 		var name = results[1].toLowerCase();
-		var tag = this._appCtxt.getTagTree().getByName(name);
-		if (tag) {
-			this.tagId = tag.id;
+		var tagTree = this._appCtxt.getTagTree();
+		if (tagTree) {
+			var tag = tagTree.getByName(name);
+			if (tag) {
+				this.tagId = tag.id;
+			}
 		}
 	}
 	this.hasUnreadTerm = ZmSearch.UNREAD_QUERY_RE.test(this.query);

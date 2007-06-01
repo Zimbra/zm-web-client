@@ -41,8 +41,14 @@ function() {
 
 // Public methods
 
+/**
+ * Popup the dialog. Note that if family mailbox is enabled, we may have
+ * changed accounts since the last time we were popped up. In that case,
+ * we need to show the overview for the current account's folders.
+ */
 ZmNewOrganizerDialog.prototype.popup =
 function(folder) {
+	this._setOverview({treeIds:this._treeIds, omit:this._omit, fieldId:this._folderTreeCellId});
 	if (this._folderTreeView) {
 		folder = folder ? folder : this._folderTree.root;
 		this._folderTreeView.setSelected(folder);
@@ -60,8 +66,9 @@ ZmNewOrganizerDialog.prototype.reset =
 function() {
 	ZmDialog.prototype.reset.call(this);
 
-	if (this._colorSelect)
+	if (this._colorSelect) {
 		this._initColorSelect();
+	}
 
 	if (this._remoteCheckboxField) {
 		this._remoteCheckboxField.checked = false;
@@ -248,23 +255,26 @@ ZmNewOrganizerDialog.prototype._setupFolderControl =
 function() {
 	if (!this._folderTreeCellId) { return; }
 	
-	var organizerType = this._organizerType;
-	this._folderTree = this._appCtxt.getFolderTree();
+	this._treeIds = [this._organizerType];
 
-	var omit = new Object();
-	omit[ZmFolder.ID_SPAM] = true;
-	omit[ZmFolder.ID_DRAFTS] = true;
+	this._omit = {};
+	this._omit[ZmFolder.ID_SPAM] = true;
+	this._omit[ZmFolder.ID_DRAFTS] = true;
+	this._folderTree = this._appCtxt.getFolderTree();
 	var syncIssuesFolder = this._folderTree.getByName(ZmFolder.SYNC_ISSUES);
 	if (syncIssuesFolder) {
-		omit[syncIssuesFolder.id] = true;
+		this._omit[syncIssuesFolder.id] = true;
 	}
-	
-	var overviewId = this.toString();
-	this._setOverview(overviewId, this._folderTreeCellId, [organizerType], omit);
-	this._folderTreeView = this._treeView[organizerType];
 };
 
 // other
+
+ZmNewOrganizerDialog.prototype._renderOverview =
+function(overview, treeIds, omit) {
+	this._setupFolderControl();	// reset in case we changed accounts (family mailbox)
+	ZmDialog.prototype._renderOverview.apply(this, arguments);
+	this._folderTreeView = overview.getTreeView(this._organizerType);
+};
 
 /** 
  * Checks the input for validity and returns the following array of values:

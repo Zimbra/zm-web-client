@@ -217,7 +217,8 @@ function(organizerType, zid, rid) {
 
 				// Change its appearance in the tree.
 				if (!treeView) {
-					treeView = this._appCtxt.getOverviewController().getTreeView(ZmZimbraMail._OVERVIEW_ID, organizerType);
+					var overviewId = this._appCtxt.getAppController().getOverviewId();
+					treeView = this._appCtxt.getOverviewController().getTreeView(overviewId, organizerType);
 				}
 				var node = treeView.getTreeItemById(items[i].id);
 				node.setText(items[i].getName(true));

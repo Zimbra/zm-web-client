@@ -31,13 +31,9 @@ ZmPickTagDialog = function(parent, className) {
 	var params = {parent:parent, className:className, title:ZmMsg.pickATag, extraButtons:[newButton]};
 	ZmDialog.call(this, params);
 
-	this._setOverview(ZmPickTagDialog._OVERVIEW_ID, this._tagTreeCellId, [ZmOrganizer.TAG]);
-	this._tagTreeView = this._treeView[ZmOrganizer.TAG];
 	this._tagTree = this._appCtxt.getTagTree();
 	this._tagTree.addChangeListener(new AjxListener(this, this._tagTreeChangeListener));
 	this.registerCallback(ZmPickTagDialog.NEW_BUTTON, this._showNewDialog, this);
-	var root = this._tagTreeView.getTreeItemById(ZmOrganizer.ID_ROOT);
-	root.enableSelection(false);
 	this._creatingTag = false;
 };
 
@@ -45,11 +41,19 @@ ZmPickTagDialog.prototype = new ZmDialog;
 ZmPickTagDialog.prototype.constructor = ZmPickTagDialog;
 
 ZmPickTagDialog.NEW_BUTTON = DwtDialog.LAST_BUTTON + 1;
-ZmPickTagDialog._OVERVIEW_ID = "ZmPickTagDialog";
 
 ZmPickTagDialog.prototype.toString = 
 function() {
 	return "ZmPickTagDialog";
+};
+
+ZmPickTagDialog.prototype.popup = 
+function(params) {
+	this._setOverview({treeIds:[ZmOrganizer.TAG], fieldId:this._tagTreeCellId});
+	this._tagTreeView = this._getOverview().getTreeView(ZmOrganizer.TAG);
+	ZmDialog.prototype.popup.apply(this, arguments);
+	var root = this._tagTreeView.getTreeItemById(ZmOrganizer.ID_ROOT);
+	root.enableSelection(false);
 };
 
 ZmPickTagDialog.prototype._contentHtml = 
@@ -80,7 +84,7 @@ function() {
 ZmPickTagDialog.prototype._newCallback = 
 function(parent, name) {
 	this._appCtxt.getNewTagDialog().popdown();
-	var ttc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.TAG);
+	var ttc = this._opc.getTreeController(ZmOrganizer.TAG);
 	ttc._doCreate(parent, name);
 	this._creatingTag = true;
 };

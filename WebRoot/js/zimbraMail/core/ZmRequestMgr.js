@@ -105,7 +105,11 @@ function(params) {
 	var command = new ZmCsfeCommand();
 	// bug fix #10652 - dont set change token if accountName is specified
 	// (since we're executing on someone else's mbox)
-	var accountName = params.accountName || this._appCtxt.getActiveAccountName();
+	var accountName = params.accountName;
+	if (!accountName) {
+		var acct = this._appCtxt.getActiveAccount();
+		accountName = (acct && acct.id != ZmAccount.DEFAULT_ID) ? acct.name : null;
+	}
 	var changeToken = accountName ? null : this._changeToken;
 	var cmdParams = {soapDoc:params.soapDoc, accountName:accountName, useXml:this._useXml,
 					 changeToken:changeToken, asyncMode:params.asyncMode, callback:asyncCallback,
@@ -328,13 +332,13 @@ function(refresh, callback) {
 };
 
 ZmRequestMgr.prototype._loadTree =
-function(type, unread, obj, objType) {
+function(type, unread, obj, objType, account) {
 	var isTag = (type == ZmOrganizer.TAG);
-	var tree = isTag ? this._appCtxt.getTagTree() : this._appCtxt.getFolderTree();
+	var tree = this._appCtxt.getTree(type, account);
 	if (!tree) {
 		tree = isTag ? new ZmTagTree(this._appCtxt) : new ZmFolderTree(this._appCtxt);
 	}
-	isTag ? this._appCtxt.setTagTree(tree) : this._appCtxt.setFolderTree(tree);
+	this._appCtxt.setTree(type, tree, account);
 	tree.addChangeListener(this._unreadListener);
 	tree.getUnreadHash(unread);
 	tree.reset();
@@ -414,7 +418,10 @@ function(creates) {
 	
 			DBG.println(AjxDebug.DBG1, "ZmRequestMgr: handling CREATE for node: " + name);
 			if (name == "tag") {
-				this._appCtxt.getTagTree().root.notifyCreate(create);
+				var tagTree = this._appCtxt.getTagTree();
+				if (tagTree) {
+					tagTree.root.notifyCreate(create);
+				}
 			} else if (name == "folder" || name == "search") {
 				var parentId = create.l;
 				var parent = this._appCtxt.getById(parentId);

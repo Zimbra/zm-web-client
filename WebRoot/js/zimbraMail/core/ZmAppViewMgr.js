@@ -196,19 +196,20 @@ function() {
 	return "ZmAppViewMgr";
 };
 
-ZmAppViewMgr.prototype.isFullScreen = function(viewId) {
+ZmAppViewMgr.prototype.isFullScreen =
+function(viewId) {
     viewId = viewId || this._currentView;
     return Boolean(viewId && this._views[viewId] && this._views[viewId][ZmAppViewMgr.C_APP_CONTENT_FULL]);
 };
 
 /**
-* Registers the given components with the app view manager. This method should only be
-* called once for any given component.
-*
-* @param components		a hash of component IDs and matching objects
-* @param doFit			if true, go ahead and fit the components within their containers
-* @param noSetZ			if true, do not set the z-index to VIEW
-*/
+ * Registers the given components with the app view manager. This method should only be
+ * called once for any given component.
+ *
+ * @param components	[hash]		a hash of component IDs and matching objects
+ * @param doFit			[boolean]*	if true, go ahead and fit the components within their containers
+ * @param noSetZ		[boolean]*	if true, do not set the z-index to VIEW
+ */
 ZmAppViewMgr.prototype.addComponents =
 function(components, doFit, noSetZ) {
 	var list = [];
@@ -239,6 +240,23 @@ function(components, doFit, noSetZ) {
 	if (doFit) {
 		this._fitToContainer(list);
 	}
+};
+
+/**
+ * Replaces the component with the given ID with a new one.
+ * 
+ * @param cid		[constant]		component ID
+ * @param component	[DwtControl]	new component
+ */
+ZmAppViewMgr.prototype.setComponent =
+function(cid, component) {
+	var comp = this._components[cid];
+	if (comp) {
+		comp.setLocation(Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
+	}
+	var components = {};
+	components[cid] = component;
+	this.addComponents(components, true);
 };
 
 /**

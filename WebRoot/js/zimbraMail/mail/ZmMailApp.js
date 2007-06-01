@@ -22,7 +22,16 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-
+ 
+/**
+ * Creates and initializes the mail application.
+ * @constructor
+ * @class
+ * The mail app manages and displays mail messages. Messages may be grouped
+ * into conversations. New messages are created through a composer.
+ * 
+ * @author Conrad Damon
+ */
 ZmMailApp = function(appCtxt, container, parentController) {
 
 	ZmApp.call(this, ZmApp.MAIL, appCtxt, container, parentController);
@@ -32,9 +41,11 @@ ZmMailApp = function(appCtxt, container, parentController) {
 ZmEvent.S_CONV				= "CONV";
 ZmEvent.S_MSG				= "MSG";
 ZmEvent.S_ATT				= "ATT";
+ZmEvent.S_FOLDER			= "FOLDER";
 ZmItem.CONV					= ZmEvent.S_CONV;
 ZmItem.MSG					= ZmEvent.S_MSG;
 ZmItem.ATT					= ZmEvent.S_ATT;
+ZmOrganizer.FOLDER			= ZmEvent.S_FOLDER;
 
 // App-related constants
 ZmApp.MAIL					= "Mail";
@@ -339,6 +350,45 @@ function() {
 			return new ZmMailList(ZmItem.ATT, this._appCtxt, search);
 		}, this)
 						});
+};
+
+ZmMailApp.prototype._registerOrganizers =
+function() {
+	ZmOrganizer.registerOrg(ZmOrganizer.FOLDER,
+							{app:				ZmApp.MAIL,
+							 nameKey:			"folder",
+							 defaultFolder:		ZmOrganizer.ID_INBOX,
+							 soapCmd:			"FolderAction",
+							 firstUserId:		256,
+							 orgClass:			"ZmFolder",
+							 treeController:	"ZmFolderTreeController",
+							 labelKey:			"folders",
+							 itemsKey:			"messages",
+							 hasColor:			true,
+							 defaultColor:		ZmOrganizer.C_NONE,
+							 treeType:			ZmOrganizer.FOLDER,
+							 views:				["message", "conversation"],
+							 folderKey:			"mailFolder",
+							 mountKey:			"mountFolder",
+							 createFunc:		"ZmOrganizer.create",
+							 compareFunc:		"ZmFolder.sortCompare"
+							});
+
+	ZmOrganizer.registerOrg(ZmOrganizer.SEARCH,
+							{app:				ZmApp.MAIL,
+							 nameKey:			"savedSearch",
+							 precondition:		ZmSetting.SAVED_SEARCHES_ENABLED,
+							 soapCmd:			"FolderAction",
+							 firstUserId:		256,
+							 orgClass:			"ZmSearchFolder",
+							 treeController:	"ZmSearchTreeController",
+							 labelKey:			"searches",
+							 treeType:			ZmOrganizer.FOLDER,
+							 folderKey:			"mailFolder",
+							 mountKey:			"mountFolder",
+							 createFunc:		"ZmSearchFolder.create",
+							 compareFunc:		"ZmFolder.sortCompare"
+							});
 };
 
 ZmMailApp.prototype._setupSearchToolbar =
@@ -702,22 +752,6 @@ function(callback, checkQS) {
 
 ZmMailApp.prototype._handleLoadLaunch =
 function(callback, checkQS) {
-	var overview = this._appCtxt.getOverviewController().getOverview(ZmZimbraMail._OVERVIEW_ID);
-	overview.addSelectionListener(new AjxListener(this, this._overviewSelectionListener));
-
-	var acctList = this._appCtxt.getSettings().getAccountList();
-
-	for (var i in acctList) {
-		var data = { appName:ZmApp.MAIL };
-		var acct = data.account = acctList[i];
-		if (acct.visible) {
-			var item = overview.addAccordionItem( {title:acct.name, data:data} );
-			acct.itemId = item.id;
-			if (acct.isParent)
-				this.accordionItem = item;
-		}
-	}
-
 	var query;
 	if (checkQS) {
 		if (location && (location.search.match(/\bview=compose\b/))) {
@@ -753,6 +787,74 @@ function(params, ex) {
 		var newParams = {query:"in:inbox", callback:params.callback, errorCallback:null, types:params.types};
 		this._appCtxt.getSearchController().search(newParams);
 	}
+};
+
+ZmMailApp.prototype.getOverviewPanelContent =
+function() {
+	if (this._overviewPanelContent) {
+		return this._overviewPanelContent;
+	}
+	
+	if (this._appCtxt.multiAccounts) {
+		// create accordion
+		var accordionId = this.getOverviewPanelContentId();
+		var params = {accordionId:accordionId};
+		var accordion = this._overviewPanelContent = this._opc.createAccordion(params);
+		accordion.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
+		// add an accordion item for each account, and create overview for main account
+		var accts = this._appCtxt.getAccounts();
+		this._overview = {};
+		for (var i in accts) {
+			var data = {appName:ZmApp.MAIL};
+			var acct = data.account = accts[i];
+			if (acct.visible) {
+				var item = accordion.addAccordionItem({title:acct.name, data:data});
+				acct.itemId = item.id;
+				if (acct.isMain) {
+					this._activateAccordionItem(item);
+				}
+			}
+		}
+	} else {
+		this._overviewPanelContent = ZmApp.prototype.getOverviewPanelContent.apply(this, arguments);
+	}
+	return this._overviewPanelContent;
+};
+
+ZmApp.prototype.getOverview =
+function() {
+	return this._opc.getOverview(this.getOverviewId());
+};
+
+ZmMailApp.prototype.getOverviewId =
+function() {
+	return this._appCtxt.multiAccounts ?
+		[this.getOverviewPanelContentId(), this.accordionItem.data.account.name].join(":") :
+		ZmApp.prototype.getOverviewPanelContentId.apply(this, arguments);
+};
+
+ZmMailApp.prototype._accordionSelectionListener =
+function(ev) {
+	if (!ZmApp.prototype._accordionSelectionListener.apply(this, arguments)) { return; }
+
+	// hide and clear advanced search since it may have overviews for previous account
+	if (this._appCtxt.get(ZmSetting.BROWSE_ENABLED)) {
+		var searchCtlr = this._appCtxt.getSearchController();
+		var bvc = searchCtlr._browseViewController;
+		if (bvc) {
+			bvc.removeAllPickers();
+			bvc.setBrowseViewVisible(false);
+		}
+	}
+	var callback = new AjxCallback(this, this._handleSetActiveAccount, this.accordionItem);
+	this._appCtxt.setActiveAccount(this.accordionItem.data.account, callback);
+};
+
+ZmMailApp.prototype._handleSetActiveAccount =
+function(accordionItem) {
+	this._appCtxt.getAppController()._setUserInfo();
+	this._activateAccordionItem(accordionItem);
+	this._mailSearch();
 };
 
 ZmMailApp.prototype._mailSearch =
@@ -867,28 +969,6 @@ ZmMailApp.prototype.getGroupMailBy =
 function() {
 	var setting = this._groupBy || this._appCtxt.get(ZmSetting.GROUP_MAIL_BY);
 	return setting ? ZmMailApp.GROUP_MAIL_BY_ITEM[setting] : ZmItem.MSG;
-};
-
-ZmMailApp.prototype._overviewSelectionListener =
-function(ev) {
-	var accordionItem = ev.detail;
-	var data = accordionItem.data;
-	if (data.appName != ZmApp.MAIL) { return };
-
-	this.accordionItem = accordionItem;
-
-DBG.println("---------- MAIL overview selection listener for: " + accordionItem.id);
-	var callback = new AjxCallback(this, this._handleSetActiveAccount);
-	this._appCtxt.setActiveAccount(data.account, callback);
-};
-
-ZmMailApp.prototype._handleSetActiveAccount =
-function(account, ev) {
-DBG.println("-------- TODO: get folder tree for active account and reparent ---------");
-
-	var controller = this._appCtxt.getAppController();
-	var opc = this._appCtxt.getOverviewController();
-	opc.set(ZmZimbraMail._OVERVIEW_ID, controller._getOverviewTrees(ZmApp.MAIL));
 };
 
 /**

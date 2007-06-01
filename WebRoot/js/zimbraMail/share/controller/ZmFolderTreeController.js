@@ -67,7 +67,7 @@ function(params) {
 	for (var id in ZmFolder.HIDE_ID) {
 		omit[id] = true;		
 	}
-    var dataTree = this.getDataTree();
+    var dataTree = this.getDataTree(params.account);
     for (var name in ZmFolder.HIDE_NAME) {
 		var folder = dataTree.getByName(name);
 		if (folder) {
@@ -75,7 +75,7 @@ function(params) {
 		}
 	}
 	params.omit = omit;
-	ZmTreeController.prototype.show.call(this, params);
+	return ZmTreeController.prototype.show.call(this, params);
 };
 
 /**
@@ -90,8 +90,8 @@ function(parent, type, id) {
 	var folder = this._appCtxt.getById(id);
 
 	// user folder or Folders header
-	if (id == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder()))
-	{
+	var nId = ZmOrganizer.normalizeId(id, this.type);
+	if (nId == ZmOrganizer.ID_ROOT || ((!folder.isSystem()) && !folder.isSyncIssuesFolder()))	{
 		parent.enableAll(true);
 		parent.enable(ZmOperation.SYNC, folder.isFeed());
 		parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER], !folder.link);
@@ -103,31 +103,31 @@ function(parent, type, id) {
 				parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ], false);
 			}
 		}
-	}
-	// system folder
-	else
-	{
+	} else {	// system folder
 		parent.enableAll(false);
 		// can't create folders under Drafts or Junk
-		if (id == ZmFolder.ID_INBOX || id == ZmFolder.ID_SENT || id == ZmFolder.ID_TRASH)
+		if (nId == ZmFolder.ID_INBOX || nId == ZmFolder.ID_SENT || nId == ZmFolder.ID_TRASH)
 			parent.enable(ZmOperation.NEW_FOLDER, true);
 		// "Delete" for Junk and Trash is "Empty"
-		if (id == ZmFolder.ID_SPAM || id == ZmFolder.ID_TRASH) {
-			deleteText = (id == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
+		if (nId == ZmFolder.ID_SPAM || nId == ZmFolder.ID_TRASH) {
+			deleteText = (nId == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
 			parent.enable(ZmOperation.DELETE, true);
 		}
 		// only allow Inbox and Sent system folders to be share-able for now
-		if (!folder.link && (id == ZmFolder.ID_INBOX || id == ZmFolder.ID_SENT))
+		if (!folder.link && (nId == ZmFolder.ID_INBOX || nId == ZmFolder.ID_SENT)) {
 			parent.enable([ZmOperation.SHARE_FOLDER, ZmOperation.MOUNT_FOLDER, ZmOperation.EDIT_PROPS], true);
+		}
 	}
 
 	parent.enable(ZmOperation.EXPAND_ALL, (folder.size() > 0));
-	if (id != ZmOrganizer.ID_ROOT && !folder.isReadOnly())
+	if (nId != ZmOrganizer.ID_ROOT && !folder.isReadOnly()) {
 		parent.enable(ZmOperation.MARK_ALL_READ, (folder.numUnread > 0));
+	}
 
 	var op = parent.getOp(ZmOperation.DELETE);
-	if (op)
+	if (op) {
 		op.setText(deleteText);
+	}
 
     // are there any pop accounts associated to this folder?
     var button = parent.getOp(ZmOperation.SYNC);
@@ -285,13 +285,13 @@ function(treeView, parentNode, organizer, idx) {
 ZmFolderTreeController.prototype._deleteListener = 
 function(ev) {
 	var organizer = this._getActionedOrganizer(ev);
-	if (organizer.id == ZmFolder.ID_SPAM || organizer.isInTrash()) {
+	if (organizer.nId == ZmFolder.ID_SPAM || organizer.isInTrash()) {
 		this._pendingActionData = organizer;
 		var ds = this._deleteShield = this._appCtxt.getOkCancelMsgDialog();
 		ds.reset();
 		ds.registerCallback(DwtDialog.OK_BUTTON, this._deleteShieldYesCallback, this, organizer);
 		ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._deleteShield);
-		var confirm = organizer.type == ZmOrganizer.SEARCH ? ZmMsg.confirmDeleteSavedSearch : ZmMsg.confirmEmptyFolder;
+		var confirm = (organizer.type == ZmOrganizer.SEARCH) ? ZmMsg.confirmDeleteSavedSearch : ZmMsg.confirmEmptyFolder;
 		var msg = AjxMessageFormat.format(confirm, organizer.getName());
 		ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
 		ds.popup();

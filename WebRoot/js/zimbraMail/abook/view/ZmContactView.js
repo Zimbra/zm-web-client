@@ -832,7 +832,7 @@ function() {
 
 	for (var i = 0; i < folders.length; i++) {
 		var folder = folders[i];
-		if (folder.id == ZmFolder.ID_ROOT ||
+		if (folder.nId == ZmFolder.ID_ROOT ||
 			folder.isInTrash() ||
 			folder.isReadOnly())
 		{

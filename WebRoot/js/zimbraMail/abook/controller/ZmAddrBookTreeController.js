@@ -63,7 +63,7 @@ ZmAddrBookTreeController.prototype.show =
 function(params) {
 	params.include = {};
 	params.include[ZmFolder.ID_TRASH] = true;
-	ZmFolderTreeController.prototype.show.call(this, params);
+	return ZmFolderTreeController.prototype.show.call(this, params);
 };
 
 // Enables/disables operations based on the given organizer ID

@@ -24,25 +24,30 @@
  */
 
 /**
-* Creates a collection of settings with default values. If no app context is given,
-* then this is a skeletal, non-live version of settings which can provide default
-* settings and parse SOAP settings.
-* @constructor
-* @class
-* This class is a collection of various sorts of settings: config values, preferences,
-* and COS features. Each setting has an ID which can be used to retrieve it.
-*
-* @author Conrad Damon
-* @param appCtxt	[ZmAppCtxt]*	the app context
-*/
-ZmSettings = function(appCtxt) {
+ * Creates a collection of settings with default values. If no app context is given,
+ * then this is a skeletal, non-live version of settings which can provide default
+ * settings and parse SOAP settings.
+ * @constructor
+ * @class
+ * This class is a collection of various sorts of settings: config values, preferences,
+ * and COS features. Each setting has an ID which can be used to retrieve it.
+ *
+ * @author Conrad Damon
+ *
+ * @param appCtxt	[ZmAppCtxt]*	the app context
+ * @param noInit	[boolean]*		if true, skip initialization
+ */
+ZmSettings = function(appCtxt, noInit) {
 
 	ZmModel.call(this, ZmEvent.S_SETTING);
 
 	this._appCtxt = appCtxt;
 	this._settings = {};	// settings by ID
 	this._nameToId = {};	// map to get from server setting name to setting ID
-	this._accountList = {};	// list of child accounts
+	
+	if (!noInit) {
+		this.initialize();
+	}
 };
 
 ZmSettings.prototype = new ZmModel;
@@ -112,12 +117,6 @@ function(id) {
 	return this._settings[id];
 };
 
-ZmSettings.prototype.getAccountList =
-function() {
-	// XXX: do we need a ZmAccountList class?
-	return this._accountList;
-};
-
 /**
 * Populates settings values.
 *
@@ -147,16 +146,13 @@ function(list) {
 ZmSettings.prototype.loadUserSettings =
 function(callback, errorCallback, accountName) {
     var soapDoc = AjxSoapDoc.create("GetInfoRequest", "urn:zimbraAccount");
-    var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, callback);
-	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc,
-												asyncMode: true,
-												accountName: accountName,
-												callback: respCallback,
-												errorCallback: errorCallback});
+    var respCallback = new AjxCallback(this, this._handleResponseLoadUserSettings, [callback, accountName]);
+	this._appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, accountName:accountName,
+												  callback:respCallback, errorCallback:errorCallback});
 };
 
 ZmSettings.prototype._handleResponseLoadUserSettings =
-function(callback, result) {
+function(callback, accountName, result) {
 	var response = result.getResponse();
 	var obj = response.GetInfoResponse;
 	if (obj.name) {
@@ -178,21 +174,32 @@ function(callback, result) {
 		this._settings[ZmSetting.LICENSE_STATUS].setValue(obj.license.status);
 	}
 
-	var accounts = obj.childAccounts.childAccount;
+	// Create the main account. In the normal case, that is the only account, and
+	// represents the user who logged in. If family mailbox is enabled, that account
+	// is a parent account with dominion over child accounts.
+	if (!accountName) {
+		var mainAcct = this._appCtxt.getAccount(ZmAccount.DEFAULT_ID);
+		mainAcct.id = obj.id;
+		mainAcct.name = obj.name;
+		mainAcct.visible = true;
+		mainAcct.isMain = true;
+		mainAcct.loaded = true;
+		mainAcct.settings = this;
+		// replace dummy account with this one
+		this._appCtxt._accounts[mainAcct.id] = mainAcct;
+		delete this._appCtxt._accounts[ZmAccount.DEFAULT_ID];
+		this._appCtxt.setActiveAccount(mainAcct);
+	}
+	
+	var accounts = obj.childAccounts ? obj.childAccounts.childAccount : null;
 	if (accounts) {
-		// setup parent account if child accounts exist
-		var aname = this.get(ZmSetting.USERNAME);
-		var parentAcct = this._accountList[aname] = new ZmAccount(this._appCtxt);
-		parentAcct.name = aname;
-		parentAcct.visible = true;
-		parentAcct.loaded = true;
-		parentAcct.isParent = true;
-		this._appCtxt.setActiveAccount(parentAcct);
-
-		// now create ZmAccount's for each child account
+		// create a ZmAccount for each child account
 		for (var i = 0; i < accounts.length; i++) {
 			var acct = ZmAccount.createFromDom(accounts[i], this._appCtxt);
-			this._accountList[acct.name] = acct;
+			this._appCtxt.setAccount(acct);
+			if (acct.visible) {
+				this._appCtxt.multiAccounts = true;
+			}
 		}
 	}
 
@@ -227,7 +234,8 @@ function(callback, result) {
 	}
 };
 
-ZmSettings.prototype._loadZimlets = function(zimlets, props) {
+ZmSettings.prototype._loadZimlets =
+function(zimlets, props) {
     var appCtxt = this._appCtxt;
     appCtxt.getZimletMgr().loadZimlets(zimlets, props);
 
@@ -236,7 +244,7 @@ ZmSettings.prototype._loadZimlets = function(zimlets, props) {
         var appController = appCtxt.getAppController();
         var activeApp = appController.getActiveApp();
 
-        var overviewId = ZmZimbraMail._OVERVIEW_ID;
+        var overviewId = appController.getOverviewId();
         var treeIds = appController._getOverviewTrees(activeApp);
         var omit = null;
         var reset = {};
@@ -358,8 +366,9 @@ function() {
 
 	// CSFE_SERVER_URI
 	value = portPrefix + "/service/soap/";
-	if (location.search && location.search.indexOf("host=") != -1)
+	if (location.search && location.search.indexOf("host=") != -1) {
 		value += location.search;
+	}
 	this._settings[ZmSetting.CSFE_SERVER_URI].setValue(value, null, false, true);
 
 	// CSFE_MSG_FETCHER_URI

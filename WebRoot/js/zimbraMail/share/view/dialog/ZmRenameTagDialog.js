@@ -78,9 +78,13 @@ function() {
 	
 	// make sure tag name doesn't already exist
 	if (!msg) {
-		var t = this._appCtxt.getTagTree().getByName(name);
-		if (t && (t.id != this._tag.id))
-			msg = ZmMsg.tagNameExists;
+		var tagTree = this._appCtxt.getTagTree();
+		if (tagTree) {
+			var t = tagTree.getByName(name);
+			if (t && (t.id != this._tag.id)) {
+				msg = ZmMsg.tagNameExists;
+			}
+		}
 	}
 
 	return (msg ? this._showError(msg) : [this._tag, name]);

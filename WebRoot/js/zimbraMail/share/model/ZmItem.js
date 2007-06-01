@@ -63,19 +63,14 @@ ZmItem = function(appCtxt, type, id, list) {
 ZmItem.prototype = new ZmModel;
 ZmItem.prototype.constructor = ZmItem;
 
-// Item types
-ZmItem.NOTE = ZmEvent.S_NOTE;
-
 // App responsible for item
 ZmItem.APP = {};
 
 // Type names
 ZmItem.MSG_KEY = {};
-ZmItem.MSG_KEY[ZmItem.NOTE]	= "note";
 
 // Representative icons
 ZmItem.ICON = {};
-ZmItem.ICON[ZmItem.NOTE] = "Note";
 
 // Function for creating search results list
 ZmItem.RESULTS_LIST = {};
@@ -312,12 +307,19 @@ function() {
 };
 
 /**
-* This method should be overloaded by the derived object to determine whether it
-* is a share or not.
-*/
+ * Returns true if this item is shared (remote).
+ */
 ZmItem.prototype.isShared =
 function() {
-	return false;
+	if (this._isShared == null) {
+		if (this.id == -1) {
+			this._isShared = false;
+		} else {
+			var acct = this._appCtxt.getActiveAccount();
+			this._isShared = ((this.id.indexOf(":") != -1) && (this.id.indexOf(acct.id) != 0));
+		}
+	}
+	return this._isShared;
 };
 
 // Notification handling

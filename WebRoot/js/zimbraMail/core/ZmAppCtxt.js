@@ -34,10 +34,12 @@
 */
 ZmAppCtxt = function() {
 	this._trees = {};
+	this._accounts = {};
+	// create dummy account for startup
+	this._accounts[ZmAccount.DEFAULT_ID] = new ZmAccount(this, ZmAccount.DEFAULT_ID, null, false);
 };
 
 ZmAppCtxt.LABEL = "appCtxt";
-ZmAppCtxt.PARENT_ACCT = "__PARENT__";
 
 ZmAppCtxt.prototype.toString =
 function() {
@@ -96,33 +98,55 @@ function(icon, visible) {
 };
 
 ZmAppCtxt.prototype.getSettings =
-function() {
-	return this._settings;
+function(account) {
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmAccount.DEFAULT_ID;
+	return this._accounts[id] ? this._accounts[id].settings : null;
 };
 
 ZmAppCtxt.prototype.setSettings = 
-function(settings) {
-	this._settings = settings;
+function(settings, account) {
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmAccount.DEFAULT_ID;
+	if (this._accounts[id]) {
+		this._accounts[id].settings = settings;
+	}
 };
 
-// convenience method to return the value of a setting
-// key param is *optional* (used for hash table data type)
+/**
+ * Returns the value of a setting.
+ *
+ * @param id	[constant]		setting ID
+ * @param key	[string]*		setting key (for settings that are of the hash type)
+ */
 ZmAppCtxt.prototype.get =
 function(id, key) {
 	return this.getSettings().get(id, key);
 };
 
-// convenience method to set the value of a setting
+/**
+ * Returns the value of a setting.
+ *
+ * @param id			[constant]		setting ID
+ * @param value			[any]			setting value
+ * @param key			[string]*		setting key (for settings that are of the hash type)
+ * @param setDefault	[boolean]*		if true, also replace setting's default value
+ * @param skipNotify	[boolean]*		if true, do not notify setting listeners
+ */
 ZmAppCtxt.prototype.set =
 function(id, value, key, setDefault, skipNotify) {
 	var setting = this.getSettings().getSetting(id);
-	if (setting)
+	if (setting) {
 		setting.setValue(value, key, setDefault, skipNotify);
+	}
 };
 
 ZmAppCtxt.prototype.getApp =
 function(appName) {
 	return this._appController.getApp(appName);
+};
+
+ZmAppCtxt.prototype.getCurrentApp =
+function() {
+	return this.getApp(this._appController.getActiveApp());
 };
 
 ZmAppCtxt.prototype.getAppViewMgr =
@@ -532,75 +556,84 @@ function(shell) {
 	shell.setData(ZmAppCtxt.LABEL, this);
 };
 
-ZmAppCtxt.prototype.setActiveAccount =
-function(account, callback) {
-	var accountList = this._settings.getAccountList();
-	this._activeAccount = accountList[account.name];
-	this._activeAccount.load(callback);
-};
+ZmAppCtxt.prototype.multiAccounts = false;
 
-ZmAppCtxt.prototype.getActiveAccountName =
-function() {
-	return this._activeAccount ? this._activeAccount.name : null;
-};
-
-ZmAppCtxt.prototype.getTree =
-function(type) {
-	if (type == ZmOrganizer.TAG) {
-		return this.getTagTree();
-	} else if (type == ZmOrganizer.ZIMLET) {
-		return this.getZimletTree();
-	} else {
-		return this.getFolderTree();
+ZmAppCtxt.prototype.setAccount =
+function(account) {
+	this._accounts[account.id] = account;
+	if (account.isMain) {
+		this._mainAccountId = account.id;
 	}
 };
 
+ZmAppCtxt.prototype.getAccounts =
+function(id) {
+	return this._accounts;
+};
+
+ZmAppCtxt.prototype.getAccount =
+function(id) {
+	return this._accounts[id];
+};
+
+/**
+ * Makes the given account the active one, which will then be used
+ * when fetching any account-specific data such as settings or folder
+ * tree. The account goes and fetches its data if necessary.
+ *
+ * @param account	[ZmAccount]		account to make active
+ * @param callback	[AjxCallback]*	client callback
+ */
+ZmAppCtxt.prototype.setActiveAccount =
+function(account, callback) {
+	this._activeAccount = account;
+	this._activeAccount.load(callback);
+};
+
+ZmAppCtxt.prototype.getActiveAccount =
+function() {
+	return this._activeAccount;
+};
+
+ZmAppCtxt.prototype.getTree =
+function(type, account) {
+	if (this.getAppController().isChildWindow()) {
+		return window.parentController._appCtxt.getTree(type, account);
+	}
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmAccount.DEFAULT_ID;
+	var acct = this._accounts[id];
+	return acct ? acct.trees[ZmOrganizer.TREE_TYPE[type]] : null;
+};
+
 ZmAppCtxt.prototype.setTree =
-function(type, tree) {
-	this._trees[type] = tree;
+function(type, tree, account) {
+	var id = account ? account.id : this._activeAccount ? this._activeAccount.id : ZmAccount.DEFAULT_ID;
+	if (this._accounts[id]) {
+		this._accounts[id].trees[type] = tree;
+	}
 };
 
 ZmAppCtxt.prototype.getFolderTree =
-function() {
-	return this.getAppController().isChildWindow()
-		? window.parentController._appCtxt.getFolderTree()
-		: this._folderTree;
-};
-
-ZmAppCtxt.prototype.setFolderTree =
-function(tree) {
-	this._folderTree = tree;
+function(account) {
+	return this.getTree(ZmOrganizer.FOLDER, account);
 };
 
 ZmAppCtxt.prototype.getTagTree =
-function() {
-	return this.getAppController().isChildWindow()
-		? window.parentController._appCtxt.getTagTree()
-		: this._tagTree;
-};
-
-ZmAppCtxt.prototype.setTagTree =
-function(tree) {
-	this._tagTree = tree;
+function(account) {
+	return this.getTree(ZmOrganizer.TAG, account);
 };
 
 ZmAppCtxt.prototype.getZimletTree =
-function() {
-	return this.getAppController().isChildWindow()
-		? window.parentController._appCtxt.getZimletTree()
-		: this._zimletTree;
+function(account) {
+	return this.getTree(ZmOrganizer.ZIMLET, account);
 };
 
-ZmAppCtxt.prototype.setZimletTree =
-function(tree) {
-	this._zimletTree = tree;
-};
-
+// Note: the username is an email address
 ZmAppCtxt.prototype.getUsername = 
-function() { 
-	// get username from acct info received in GetInfoResponse
-	return this.get(ZmSetting.USERNAME);
+function(account) { 
+	return this.get(ZmSetting.USERNAME, account);
 };
+
 ZmAppCtxt.prototype.getUploadFrameId =
 function() {
 	if (!this._uploadManagerIframeId) {

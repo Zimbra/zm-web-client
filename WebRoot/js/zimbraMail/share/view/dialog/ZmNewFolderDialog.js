@@ -44,6 +44,7 @@ ZmNewFolderDialog.prototype._createColorContentHtml =
 function(html, idx) {
 	return idx;
 };
+
 ZmNewFolderDialog.prototype._setupColorControl =
 function() {
 };

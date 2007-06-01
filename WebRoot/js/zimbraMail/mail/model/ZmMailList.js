@@ -350,7 +350,10 @@ function() {
 		this._appCtxt.getFolderTree().removeChangeListener(this._folderChangeListener);
 	}
 	if (this._tagChangeListener) {
-		this._appCtxt.getTagTree().removeChangeListener(this._tagChangeListener);
+		var tagTree = this._appCtxt.getTagTree();
+		if (tagTree) {
+			tagTree.removeChangeListener(this._tagChangeListener);
+		}
 	}
 
 	ZmList.prototype.clear.call(this);

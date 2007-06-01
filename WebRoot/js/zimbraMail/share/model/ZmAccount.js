@@ -33,11 +33,23 @@
  * @author Parag Shah
  *
  * @param appCtxt		[ZmAppCtxt]		the app context
+ * @param id			[string]*		unique ID for this account
+ * @param name			[string]*		email address
+ * @param visible		[boolean]*		if true, make this account available in the overview (child accounts)
  */
-ZmAccount = function(appCtxt) {
+ZmAccount = function(appCtxt, id, name, visible) {
+
 	this._appCtxt = appCtxt;
+	this.id = id;
+	this.name = name;
+	this.visible = (visible !== false);
+
+	this.settings = null;
+	this.trees = {};
+	this.loaded = false;
 };
 
+ZmAccount.DEFAULT_ID = "main";
 
 // Public methods
 
@@ -58,8 +70,7 @@ ZmAccount.prototype.load =
 function(callback) {
 	if (!this.loaded) {
 		// create new ZmSetting for this account
-		this._settings = new ZmSettings(this._appCtxt);
-		this._settings.initialize();
+		this.settings = new ZmSettings(this._appCtxt);
 
 		// for all *loaded* apps, add their app-specific settings
 		for (var i = 0; i < ZmApp.APPS.length; i++) {
@@ -68,60 +79,39 @@ function(callback) {
 			if (setting && this._appCtxt.get(setting)) {
 				var app = this._appCtxt.getApp(appName);
 				if (app) {
-					app._registerSettings(this._settings);
+					app._registerSettings(this.settings);
 				}
 			}
 		}
 
 		// load user settings retrieved from server now
-		var respCallback = new AjxCallback(this, this._loadAcctSettings, callback);
-		var errorCallback = new AjxCallback(this, this._errorAcctSettings);
-		this._settings.loadUserSettings(respCallback, errorCallback, this.name);
+		var respCallback = new AjxCallback(this, this._handleResponseLoad, callback);
+		var errorCallback = new AjxCallback(this, this._handleErrorLoad);
+		this.settings.loadUserSettings(respCallback, errorCallback, this.name);
 	} else {
-		if (callback)
-			callback.run();
+		if (callback) {	callback.run(); }
 	}
 };
 
-
-// Private methods
-
-ZmAccount.prototype._loadFromDom =
-function(node) {
-	this.id = node.id;
-	this.name = node.name;
-	this.visible = node.visible;
-
-	this.loaded = false;
-};
-
-
-// Callbacks
-
-ZmAccount.prototype._loadAcctSettings =
+ZmAccount.prototype._handleResponseLoad =
 function(callback, result) {
-DBG.println("------- Account settings successfully loaded for " + this.name);
+	DBG.println(AjxDebug.DBG1, "Account settings successfully loaded for " + this.name);
 
-	// TODO - load folders/shares/zimlets/tags/saved-searches for this account
 	var soapDoc = AjxSoapDoc.create("GetFolderRequest", "urn:zimbraMail");
 	var method = soapDoc.getMethod();
 	method.setAttribute("visible", "1");
 
-	var respCallback = new AjxCallback(this, this._handleResponseFolder, callback);
+	var respCallback = new AjxCallback(this, this._handleResponseLoad1, callback);
 	this._appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
 };
 
-ZmAccount.prototype._handleResponseFolder =
+ZmAccount.prototype._handleResponseLoad1 =
 function(callback, result) {
 	var resp = result.getResponse().GetFolderResponse;
 	var folders = resp ? resp.folder[0] : null;
 	if (folders) {
-/*
-		var tree = new ZmFolderTree(this._appCtxt);
-		tree.loadFromJs(folders);
-//		tree.addChangeListener(this._unreadListener);
-		this._appCtxt.setFolderTree(tree, this.name);
-*/
+		this._appCtxt.getRequestMgr()._loadTree(ZmOrganizer.FOLDER, null, resp.folder[0], "folder", this);
+		this._appCtxt.getRequestMgr()._loadTree(ZmOrganizer.TAG, null, resp.tags, null, this);
 	}
 
 	this.loaded = true;
@@ -131,7 +121,14 @@ function(callback, result) {
 	}
 };
 
-ZmAccount.prototype._errorAcctSettings =
+ZmAccount.prototype._handleErrorLoad =
 function(ev) {
-DBG.println("------- ERROR loading account settings for " + this.name);
+	DBG.println(AjxDebug.DBG1, "------- ERROR loading account settings for " + this.name);
+};
+
+ZmAccount.prototype._loadFromDom =
+function(node) {
+	this.id = node.id;
+	this.name = node.name;
+	this.visible = node.visible;
 };

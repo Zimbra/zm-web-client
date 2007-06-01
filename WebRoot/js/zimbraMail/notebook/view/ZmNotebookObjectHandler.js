@@ -245,7 +245,8 @@ function(context) {
 		if (!item && !path.match(/^\/\//)) {
 			var notebookController = AjxDispatcher.run("GetNotebookController");
 			var currentPage = notebookController.getPage();
-			var folderId = path.match(/^\//) ? ZmOrganizer.ID_ROOT : (currentPage && currentPage.folderId) || ZmNotebookItem.DEFAULT_FOLDER;
+			var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+			var folderId = path.match(/^\//) ? rootId : (currentPage && currentPage.folderId) || ZmNotebookItem.DEFAULT_FOLDER;
 			var notebook = this._getNotebook(folderId, path);
 			if (notebook) {
 				// NOTE: We assume the page is new if there's no entry in the cache.

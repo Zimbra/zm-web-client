@@ -255,3 +255,7 @@ function(ev, treeView, overviewId) {
 		}
 	}
 };
+
+ZmTagTreeController.prototype._setTreeItemColor =
+function(treeItem, organizer) {
+};

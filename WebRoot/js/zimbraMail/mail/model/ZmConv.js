@@ -356,7 +356,7 @@ ZmConv.prototype.getFirstMsg =
 function() {
 	// has this conv been loaded yet?
 	var msg;
-	if (this.msgs) {
+	if (this.msgs && this.msgs.size()) {
 		// then always return the first msg in the list
 		msg = this.msgs.getVector().get(0);
 	} else if (this.tempMsg) {

@@ -61,7 +61,6 @@ function() {
 * @param showUnread		[boolean]*	if true, unread counts will be shown
 * @param omit			[Object]*	hash of organizer IDs to ignore
 * @param forceCreate	[boolean]*	if true, tree view will be created
-* @param app			[string]*	app that owns the overview
 * @param hideEmpty		[boolean]*	if true, don't show header if there is no data
 */
 ZmSearchTreeController.prototype.show =
@@ -73,7 +72,7 @@ function(params) {
 	}
 	// mixed app should be filtered based on the previous app!
 	var appController = this._appCtxt.getAppController();
-	var activeApp = params.app || appController.getActiveApp();
+	var activeApp = appController.getActiveApp();
 	var prevApp = appController.getPreviousApp();
 	var searchTypes = this._searchTypes[id] =
 		(activeApp == ZmApp.MIXED && prevApp == ZmApp.CONTACTS) ?
@@ -83,8 +82,10 @@ function(params) {
 		params.dataTree = dataTree;
 		params.searchTypes = searchTypes;
 		this._treeView[id].set(params);
-		this._checkTreeView(id, searchTypes);
+		this._checkTreeView(id, params.account);
 	}
+	
+	return this._treeView[id];
 };
 
 /**
@@ -173,11 +174,12 @@ function() {
  * @param overviewId		[constant]		overview ID
  */
 ZmSearchTreeController.prototype._checkTreeView =
-function(overviewId) {
+function(overviewId, account) {
 	var treeView = this._treeView[overviewId];
-	if (!overviewId || !treeView.getHtmlElement()) return;	// tree view may have been pruned from overview
+	if (!overviewId || !treeView) { return;	}
 
-	var show = 	!this._hideEmpty[overviewId] || this._treeItemTypeMatch(treeView.getTreeItemById(ZmOrganizer.ID_ROOT), this._searchTypes[overviewId]);
+	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT, account);
+	var show = 	!this._hideEmpty[overviewId] || this._treeItemTypeMatch(treeView.getTreeItemById(rootId), this._searchTypes[overviewId]);
 	this._treeView[overviewId].setVisible(show);
 };
 

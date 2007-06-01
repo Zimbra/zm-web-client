@@ -70,7 +70,27 @@ function() {
 							  });
 };
 
-ZmMixedApp.prototype.launch = function() {};
+ZmMixedApp.prototype.launch =
+function() {
+};
+
+// Don't show folders when viewing mixed app coming from contacts app,
+// and don't show addrbooks when viewing mixed app coming from mail app
+ZmMixedApp.prototype._getOverviewTrees =
+function() {
+	var list = ZmApp.OVERVIEW_TREES[this._name];
+	var trees = [];
+	var prevApp = this._appCtxt.getAppController().getPreviousApp();
+	for (var i = 0; i < list.length; i++) {
+		var id = list[i];
+		if (!((prevApp == ZmApp.CONTACTS && id == ZmOrganizer.FOLDER) ||
+			  (prevApp == ZmApp.MAIL && id == ZmOrganizer.ADDRBOOK))) {
+
+			trees.push[id];
+		}
+	}
+	return trees;
+};
 
 ZmMixedApp.prototype.showSearchResults =
 function(results, callback) {

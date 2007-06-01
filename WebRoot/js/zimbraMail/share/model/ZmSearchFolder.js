@@ -72,7 +72,7 @@ function() {
 
 ZmSearchFolder.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
-	if (this.id == ZmOrganizer.ID_ROOT) {
+	if (this.nId == ZmOrganizer.ID_ROOT) {
 		return ZmMsg.searches;
 	} else {
 		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
@@ -81,7 +81,7 @@ function(showUnread, maxLength, noMarkup) {
 
 ZmSearchFolder.prototype.getIcon = 
 function() {
-	return (this.id == ZmOrganizer.ID_ROOT) ? null : "SearchFolder";
+	return (this.nId == ZmOrganizer.ID_ROOT) ? null : "SearchFolder";
 };
 
 ZmSearchFolder.prototype.getToolTip = function() {};

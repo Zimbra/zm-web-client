@@ -66,14 +66,14 @@ function(addrBookA, addrBookB) {
 	}
 
 	// trash folder should always go last w/in personal addrbooks
-	if (addrBookA.id == ZmFolder.ID_TRASH) return 1;
-	if (addrBookB.id == ZmFolder.ID_TRASH) return -1;
+	if (addrBookA.nId == ZmFolder.ID_TRASH) { return 1; }
+	if (addrBookB.nId == ZmFolder.ID_TRASH) { return -1; }
 
 	// sort by calendar name
 	var addrBookAName = addrBookA.name.toLowerCase();
 	var addrBookBName = addrBookB.name.toLowerCase();
-	if (addrBookAName < addrBookBName) return -1;
-	if (addrBookAName > addrBookBName) return 1;
+	if (addrBookAName < addrBookBName) { return -1; }
+	if (addrBookAName > addrBookBName) { return 1; }
 	return 0;
 };
 
@@ -86,7 +86,7 @@ function() {
 
 ZmAddrBook.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
-	var name = this.id == ZmOrganizer.ID_ROOT ? ZmMsg.addressBooks : this.name;
+	var name = (this.nId == ZmOrganizer.ID_ROOT) ? ZmMsg.addressBooks : this.name;
 	return this._markupName(name, showUnread, noMarkup);
 };
 
@@ -94,11 +94,11 @@ ZmAddrBook.prototype.getIcon =
 function() {
 	var icon;
 
-	if (this.id == ZmFolder.ID_ROOT)			icon = null;
-	else if (this.id == ZmFolder.ID_TRASH)		icon = "Trash";
-	else if (this.link)							icon = "SharedContactsFolder";
-	else if (this.id == ZmFolder.ID_AUTO_ADDED)	icon = "EmailedContacts";
-	else										icon = "ContactsFolder";
+	if (this.nId == ZmFolder.ID_ROOT)				{ icon = null; }
+	else if (this.nId == ZmFolder.ID_TRASH)			{ icon = "Trash"; }
+	else if (this.link)								{ icon = "SharedContactsFolder"; }
+	else if (this.nId == ZmFolder.ID_AUTO_ADDED)	{ icon = "EmailedContacts"; }
+	else											{ icon = "ContactsFolder"; }
 
 	return icon;
 };
@@ -107,9 +107,7 @@ ZmAddrBook.create =
 function(appCtxt, params) {
 	var soapDoc = AjxSoapDoc.create("CreateFolderRequest", "urn:zimbraMail");
 	var folderNode = soapDoc.set("folder");
-	var name = AjxEnv.isSafari && !AjxEnv.isSafariNightly
-		? AjxStringUtil.xmlEncode(params.name)
-		: params.name;
+	var name = (AjxEnv.isSafari && !AjxEnv.isSafariNightly)	? AjxStringUtil.xmlEncode(params.name) : params.name;
 	folderNode.setAttribute("name", name);
 	folderNode.setAttribute("l", params.parent.id);
 	folderNode.setAttribute("color", params.color || ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK]);
@@ -141,12 +139,12 @@ function(what) {
 	if (what instanceof ZmAddrBook) {
 		// allow non-system folders in Trash to be dragged ONLY to root OR
 		// allow non-system folders not in Trash to be dragged into ONLY Trash
-		return (what.isInTrash() && this.id == ZmFolder.ID_ROOT) ||
-			   (!what.isInTrash() && this.id == ZmFolder.ID_TRASH);
+		return (what.isInTrash() && this.nId == ZmFolder.ID_ROOT) ||
+			   (!what.isInTrash() && this.nId == ZmFolder.ID_TRASH);
 	} else {
 		var invalid = false;
 
-		if (this.id == ZmOrganizer.ID_ROOT) {
+		if (this.nId == ZmOrganizer.ID_ROOT) {
 			// cannot drag anything onto root folder
 			invalid = true;
 		} else if (this.link) {
@@ -188,7 +186,8 @@ function(what) {
 ZmAddrBook.prototype.notifyCreate =
 function(obj) {
 	// ignore creates of system folders
-	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.ADDRBOOK]) return;
+	var nId = ZmOrganizer.normalizeId(obj.id);
+	if (nId < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.ADDRBOOK]) { return; }
 
 	var ab = ZmFolderTree.createFromJs(this, obj, this.tree);
 	var index = ZmOrganizer.getSortIndex(ab, ZmAddrBook.sortCompare);

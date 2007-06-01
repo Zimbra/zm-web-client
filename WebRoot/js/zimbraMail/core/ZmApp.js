@@ -31,10 +31,10 @@
 * functionality, such as mail, address book, or calendar. Looked at another way, an app is a 
 * collection of one or more controllers.
 *
-* @param name				the name of the app
-* @param appCtxt			global app context
-* @param container			the element that contains everything but the banner (aka _composite)
-* @param parentController	this is an optional parent window controller set by the child window
+* @param name				[string]		the name of the app
+* @param appCtxt			[ZmAppCtxt]		global app context
+* @param container			[DwtControl]	control that contains components
+* @param parentController	[ZmController]*	parent window controller (set by the child window)
 */
 ZmApp = function(name, appCtxt, container, parentController) {
 
@@ -45,19 +45,23 @@ ZmApp = function(name, appCtxt, container, parentController) {
 	this._appViewMgr = appCtxt.getAppViewMgr();
 	this._container = container;
 	this._parentController = parentController;
+	this._active = false;
 
 	this._deferredFolders = [];
 	this._deferredFolderHash = {};
 	this._deferredNotifications = [];
 	
 	this._defineAPI();
-	if (!parentController)
+	if (!parentController) {
 		this._registerSettings();
+	}
 	this._registerOperations();
 	this._registerItems();
 	this._registerOrganizers();
 	this._setupSearchToolbar();
 	this._registerApp();
+
+	this._opc = this._appCtxt.getOverviewController();
 }
 
 // app information ("_R" means "reverse map")
@@ -268,6 +272,123 @@ function(type, obj, tree, path) {
 };
 
 /**
+ * Creates the overview content for this app. The default implementation creates a ZmOverview
+ * with standard options. Other apps may want to use different options, or create a DwtAccordion
+ * or DwtComposite instead.
+ * 
+ * @param id	[string]*	unique identifier for overview object
+ */
+ZmApp.prototype.getOverviewPanelContent =
+function() {
+	if (!this._overviewPanelContent) {
+		var params = this._getOverviewParams();
+		var overview = this._overviewPanelContent = this._opc.createOverview(params);
+		overview.set(this._getOverviewTrees());
+	}
+	return this._overviewPanelContent;
+};
+
+/**
+ * Sets the overview tree to display this app's particular overview content.
+ */
+ZmApp.prototype.setOverviewPanelContent =
+function() {
+	this._appCtxt.getAppViewMgr().setComponent(ZmAppViewMgr.C_TREE, this.getOverviewPanelContent());
+};
+
+/**
+ * Returns the ID of the top-level overview object.
+ */
+ZmApp.prototype.getOverviewPanelContentId =
+function() {
+	return this._name;
+};
+
+/**
+ * Returns the current ZmOverview, if any. Subclasses should ensure that a ZmOverview is returned.
+ */
+ZmApp.prototype.getOverview =
+function() {
+	return this.getOverviewPanelContent();
+};
+
+/**
+ * Returns the ID of the current ZmOverview, if any.
+ */
+ZmApp.prototype.getOverviewId =
+function() {
+	return this.getOverviewPanelContentId();
+};
+
+/**
+ * Returns a hash of params with the standard overview options.
+ */
+ZmApp.prototype._getOverviewParams =
+function() {
+	var params = {overviewId:this.getOverviewPanelContentId(), posStyle:Dwt.ABSOLUTE_STYLE,
+				  selectionSupported:true, actionSupported:true, dndSupported:true,
+				  showUnread:true, hideEmpty:this._getHideEmpty()};
+	return params;	
+};
+
+/**
+ * Returns the list of trees to show in the overview for this app.
+ */
+ZmApp.prototype._getOverviewTrees =
+function() {
+	return ZmApp.OVERVIEW_TREES[this._name];
+};
+
+/**
+ * Returns a hash detailing which tree views to not show if they are empty.
+ */
+ZmApp.prototype._getHideEmpty =
+function() {
+	var hideEmpty = {};
+	hideEmpty[ZmOrganizer.SEARCH] = true;
+	hideEmpty[ZmOrganizer.ZIMLET] = true;
+
+	return hideEmpty;
+};
+
+/**
+ * Handles a click on on accordion item.
+ * 
+ * @param ev	[DwtUiEvent]	the click event
+ */
+ZmApp.prototype._accordionSelectionListener =
+function(ev) {
+	var accordionItem = ev.detail;
+	if (accordionItem == this.accordionItem) { return false; }
+	if (accordionItem.data.appName != this._name) { return false; }
+
+	this.accordionItem = accordionItem;
+
+	DBG.println(AjxDebug.DBG1, "Accordion switching to item: " + accordionItem.title);
+	return true;
+};
+
+/**
+ * Expands an accordion item by adding an overview to it and then populating the overview.
+ * 
+ * @param item		[DwtAccordionItem]		item to expand
+ */
+ZmApp.prototype._activateAccordionItem =
+function(item) {
+	this.accordionItem = item;
+	var accordion = item.accordion;
+	accordion.expandItem(item.id);
+	var overviewId = this.getOverviewId();
+	if (!this._opc.getOverview(overviewId)) {
+		var params = this._getOverviewParams();
+		params.overviewId = overviewId;
+		var overview = this._opc.createOverview(params);
+		overview.set(this._getOverviewTrees());
+		accordion.setItemContent(item.id, overview);
+	}
+};
+
+/**
  * Default function to run after an app's main package has been loaded.
  */
 ZmApp.prototype._postLoad =
@@ -362,7 +483,7 @@ function(create, org) {
 	}
 };
 
-// Abstract methods
+// Abstract/protected methods
 
 /**
 * Launches an app, which creates a view and shows it.
@@ -379,11 +500,15 @@ function(callback) {
 */
 ZmApp.prototype.activate =
 function(active) {
-}
+	this._active = active;
+	if (active) {
+		this.setOverviewPanelContent();
+	}
+};
 
 /**
 * Clears an app's state.
 */
 ZmApp.prototype.reset =
 function(active) {
-}
+};

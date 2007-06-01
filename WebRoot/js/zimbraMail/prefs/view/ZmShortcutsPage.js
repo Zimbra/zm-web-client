@@ -931,7 +931,8 @@ function(ev) {
 		dialog = this._appCtxt.getChooseFolderDialog();
 		treeIds = [this._organizer];
 		var title = (this._organizer == ZmOrganizer.SEARCH) ? ZmMsg.chooseSearch : ZmMsg.chooseFolder;
-		params = {treeIds:treeIds, title:title};
+		var overviewId = [this.toString(), this._organizer].join("-");
+		params = {treeIds:treeIds, title:title, overviewId:overviewId};
 	}
 	dialog.reset();
 	dialog.setTitle(ZmShortcutsPageTabViewCustom.DIALOG_TEXT[this._organizer]);

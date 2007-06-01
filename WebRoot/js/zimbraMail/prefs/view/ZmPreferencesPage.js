@@ -500,20 +500,23 @@ function(ev) {
 	var omit = {};
 	omit[ZmFolder.ID_TRASH] = true;
 
+	var overviewId = [this.toString, settingId].join("-");
 	if (settingId == ZmSetting.EXPORT) {
 		AjxDispatcher.require(["ContactsCore", "Contacts"]);
 		dialog.popup({treeIds:[ZmOrganizer.ADDRBOOK],
-					omit:omit,
-					title:ZmMsg.chooseAddrBook,
-					hideNewButton:true,
-					description:ZmMsg.chooseAddrBookToExport});
+					  overviewId:overviewId,
+					  omit:omit,
+					  title:ZmMsg.chooseAddrBook,
+					  hideNewButton:true,
+					  description:ZmMsg.chooseAddrBookToExport});
 	} else {
 		AjxDispatcher.require(["CalendarCore", "Calendar"]);
 		dialog.popup({treeIds:[ZmOrganizer.CALENDAR],
-					omit:omit,
-					title:ZmMsg.chooseCalendar,
-					hideNewButton:true,
-					description:ZmMsg.chooseCalendarToExport});
+					  overviewId:overviewId,
+					  omit:omit,
+					  title:ZmMsg.chooseCalendar,
+					  hideNewButton:true,
+					  description:ZmMsg.chooseCalendarToExport});
 	}
 };
 
@@ -541,7 +544,8 @@ function(ev) {
 
 ZmPreferencesPage.prototype._importOkCallback =
 function(dialog, folder) {
-	if (folder && folder.id && folder.id != ZmFolder.ID_ROOT) {
+	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	if (folder && folder.id && folder.id != rootId) {
 		dialog.popdown();
 
 		var callback = new AjxCallback(this, this._importDoneCallback, folder.id);
@@ -625,7 +629,8 @@ function(ex) {
 
 ZmPreferencesPage.prototype._exportOkCallback =
 function(dialog, settingId, folder) {
-	if (folder && folder.id && folder.id != ZmFolder.ID_ROOT) {
+	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	if (folder && folder.id && folder.id != rootId) {
 		var portPrefix = (location.port == "" || location.port == "80")
 			? ""
 			: (":" + location.port);

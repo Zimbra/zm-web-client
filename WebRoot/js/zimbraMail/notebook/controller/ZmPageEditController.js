@@ -173,11 +173,6 @@ function() {
 	return ZmController.NOTEBOOK_PAGE_EDIT_VIEW;
 };
 
-ZmPageEditController.prototype._getViewType =
-function() {
-	return ZmItem.NOTE;
-};
-
 ZmPageEditController.prototype._createNewView =
 function(view) {
 	if (!this._pageEditView) {

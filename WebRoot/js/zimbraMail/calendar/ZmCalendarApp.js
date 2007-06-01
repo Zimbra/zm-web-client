@@ -31,8 +31,6 @@ ZmCalendarApp = function(appCtxt, container) {
 	var listener = new AjxListener(this, this._settingsChangeListener);
 	settings.getSetting(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL).addChangeListener(listener);
 	settings.getSetting(ZmSetting.CAL_FIRST_DAY_OF_WEEK).addChangeListener(listener);
-
-	this._active = false;
 };
 
 // Organizer and item-related constants
@@ -239,6 +237,7 @@ function() {
 							 labelKey:			"calendars",
 							 itemsKey:			"appointments",
 							 hasColor:			true,
+							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["appointment"],
 							 folderKey:			"calendarFolder",
 							 mountKey:			"mountCalendar",
@@ -427,13 +426,14 @@ function(callback, checkQS) {
 	}
 
 	cc.show(view, sd);
-	if (callback)
+	if (callback) {
 		callback.run();
+	}
 };
 
 ZmCalendarApp.prototype.activate =
 function(active, view, date) {
-	this._active = active;
+	ZmApp.prototype.activate.apply(this, arguments);
 
 	var show = active || this._appCtxt.get(ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL);
 	AjxDispatcher.run("ShowMiniCalendar", show);

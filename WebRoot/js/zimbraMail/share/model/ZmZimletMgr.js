@@ -77,7 +77,7 @@ function(zimletArray, userProps) {
 		var zimletTree = this._appCtxt.getZimletTree();
 	 	if (!zimletTree) {
 	 		zimletTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ZIMLET);
-	 		this._appCtxt.setZimletTree(zimletTree);
+	 		this._appCtxt.setTree(ZmOrganizer.ZIMLET, zimletTree);
 	 	}
 	 	zimletTree.reset();
 	 	zimletTree.loadFromJs(panelZimlets, "zimlet");

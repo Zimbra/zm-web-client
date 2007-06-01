@@ -134,6 +134,7 @@ function() {
 							 treeController:	"ZmNotebookTreeController",
 							 labelKey:			"notebooks",
 							 itemsKey:			"documents",
+							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["wiki"],
 							 folderKey:			"notebookFolder",
 							 mountKey:			"mountNotebook",
@@ -198,7 +199,7 @@ function(ids, force) {
 	var shownPage = notebookController.getPage();
 	var overviewController = this._appCtxt.getOverviewController();
 	var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
-	var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+	var treeView = treeController.getTreeView(this.getOverviewId());
 	var cache = this.getNotebookCache();
 					
 	for (var i = 0; i < ids.length; i++) {
@@ -367,7 +368,7 @@ ZmNotebookApp.prototype._handleLoadNewPage =
 function() {
 	var overviewController = this._appCtxt.getOverviewController();
 	var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
-	var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
+	var treeView = treeController.getTreeView(this.getOverviewId());
 
 	var notebook = treeView ? treeView.getSelected() : null;
 	var page = new ZmPage(this._appCtxt);

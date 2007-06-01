@@ -47,7 +47,7 @@ ZmTag.COLOR_ICON[ZmOrganizer.C_RED]		= "TagRed";
 ZmTag.COLOR_ICON[ZmOrganizer.C_YELLOW]	= "TagYellow";
 
 // color mini icons
-ZmTag.COLOR_MINI_ICON = new Object();
+ZmTag.COLOR_MINI_ICON = {};
 ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_ORANGE]	= "MiniTagOrange";
 ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_BLUE]	= "MiniTagBlue";
 ZmTag.COLOR_MINI_ICON[ZmOrganizer.C_CYAN]	= "MiniTagCyan";
@@ -72,7 +72,8 @@ ZmTag.ID_ATTACHED	= 37;
 */
 ZmTag.createFromJs =
 function(parent, obj, tree, sorted) {
-	if (obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]) { return; }
+	var nId = ZmOrganizer.normalizeId(obj.id);
+	if (nId < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.TAG]) { return; }
 	var tag = new ZmTag({id: obj.id, name: obj.name, color: ZmTag.checkColor(obj.color),
 						 parent: parent, tree: tree, numUnread: obj.u});
 	var index = sorted ? ZmOrganizer.getSortIndex(tag, ZmTag.sortCompare) : null;

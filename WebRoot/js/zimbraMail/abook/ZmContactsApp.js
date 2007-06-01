@@ -24,16 +24,14 @@
  */
 
 /**
-* Contact app object
-* @constructor
-* @class
-* Description goes here
-*
-* @author Conrad Damon
-* @param appCtxt			The singleton appCtxt object
-* @param container			the element that contains everything but the banner (aka _composite)
-* @param parentController	Reference to the parent "uber" controller - populated if this is a child window opened by the parent
-*/
+ * Creates and initializes the contacts application.
+ * @constructor
+ * @class
+ * The contacts app manages the creation and display of contacts, which are grouped
+ * into address books.
+ * 
+ * @author Conrad Damon
+ */
 ZmContactsApp = function(appCtxt, container, parentController) {
 
 	ZmApp.call(this, ZmApp.CONTACTS, appCtxt, container, parentController);
@@ -207,6 +205,7 @@ function() {
 							 hasColor:			true,
 							 defaultColor:		ZmOrganizer.C_GRAY,
 							 orgColor:			orgColor,
+							 treeType:			ZmOrganizer.FOLDER,
 							 views:				["contact"],
 							 folderKey:			"addressBookFolder",
 							 mountKey:			"mountAddrBook",
@@ -383,8 +382,9 @@ function(callback) {
 		clc.switchView(clc._getViewType(), true, this._initialized);
 	}
 
-	if (callback)
+	if (callback) {
 		callback.run();
+	}
 
 	this._initialized = true;
 };
@@ -474,8 +474,7 @@ function() {
 	var addrbookList = [];
 	var folders = this._appCtxt.getFolderTree().asList();
 	for (var i = 0; i < folders.length; i++) {
-		if (folders[i].id == ZmFolder.ID_ROOT || folders[i].isInTrash())
-			continue;
+		if (folders[i].nId == ZmFolder.ID_ROOT || folders[i].isInTrash()) { continue; }
 		addrbookList.push(folders[i].createQuery());
 	}
 	return addrbookList;
