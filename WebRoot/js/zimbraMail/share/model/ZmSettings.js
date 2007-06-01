@@ -241,17 +241,11 @@ function(zimlets, props) {
 
     if (zimlets && zimlets.length) {
         // update overview tree
-        var appController = appCtxt.getAppController();
-        var activeApp = appController.getActiveApp();
-
-        var overviewId = appController.getOverviewId();
-        var treeIds = appController._getOverviewTrees(activeApp);
-        var omit = null;
-        var reset = {};
-        reset[ZmOrganizer.ZIMLET] = true;
-
-        var overviewController = appCtxt.getOverviewController();
-        overviewController.set(overviewId, treeIds, omit, reset);
+        var activeApp = appCtxt.getCurrentApp();
+        var overview = activeApp.getOverview();
+        if (overview && overview.getTreeView(ZmOrganizer.ZIMLET)) {
+        	overview.setTreeView(ZmOrganizer.ZIMLET);
+        }
 
         // create global portlets
         if (this._appCtxt.get(ZmSettings.PORTAL_ENABLED)) {

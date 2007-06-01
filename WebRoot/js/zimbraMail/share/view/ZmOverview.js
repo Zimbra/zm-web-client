@@ -81,31 +81,38 @@ function() {
 };
 
 /**
-* Displays the given list of tree views, applying the given options. If a tree
-* view has already been created, its HTML element will be added to the overview, so that
-* its state is preserved.
-*
-* @param treeIds	[array]		list of organizer types
-* @param omit		[hash]*		hash of organizer IDs to ignore
-*/
+ * Displays the given list of tree views in this overview.
+ *
+ * @param treeIds	[array]		list of organizer types
+ * @param omit		[hash]*		hash of organizer IDs to ignore
+ */
 ZmOverview.prototype.set =
 function(treeIds, omit) {
 	if (!(treeIds && treeIds.length)) { return; }
 	this._treeIds = treeIds;	
-
-	this.clear();
-
 	for (var i = 0; i < treeIds.length; i++) {
-		var treeId = treeIds[i];
-		var setting = ZmOrganizer.PRECONDITION[treeId];
-		if (setting && !this._appCtxt.get(setting)) { continue;	}
-		// lazily create appropriate tree controller
-		var treeController = this._controller.getTreeController(treeId);
-		// render tree view, creating it if needed
-		var params = {overviewId:this.id, omit:omit, hideEmpty:this.hideEmpty,
-					  showUnread:this.showUnread, noTooltips:this.noTooltips};
-		this._treeHash[treeId] = treeController.show(params);
+		this.setTreeView(treeIds[i], omit);
 	}
+};
+
+/**
+ * Sets the given tree view. Its tree controller is responsible for using the appropriate
+ * data tree to populate the tree view. The tree controller will be lazily created if
+ * necessary. The tree view is cleared before it is set. The tree view inherits options
+ * from this overview.
+ * 
+ * @param treeId	[constant]		organizer ID
+ * @param omit		[hash]*			hash of organizer IDs to ignore
+ */
+ZmOverview.prototype.setTreeView =
+function(treeId, omit) {
+	var treeController = this._controller.getTreeController(treeId);
+	if (this._treeHash[treeId]) {
+		treeController.clearTreeView(this.id);
+	}
+	var params = {overviewId:this.id, omit:omit, hideEmpty:this.hideEmpty,
+				  showUnread:this.showUnread};
+	this._treeHash[treeId] = treeController.show(params);	// render tree view
 };
 
 ZmOverview.prototype.getTreeView =
