@@ -12,12 +12,12 @@
      <zm:getMailbox var="mailbox"/>
     <c:set var="contactsToolbarCache" scope="request">
         <td><div class='vertSep'></div></td>
-        <app:button name="actionNew" src="contacts/NewContact.gif" tooltip="newContact" text="contact"/>
+        <app:button name="actionNew" id="NEW_CONTACT" src="contacts/NewContact.gif" tooltip="newContact" text="contact"/>
         <td><div class='vertSep'></div></td>
-        <app:button name="actionNewGroup" src="mail/NewGroup.gif" tooltip="newGroup" text="group"/>
+        <app:button name="actionNewGroup" id="NEW_GROUP" src="mail/NewGroup.gif" tooltip="newGroup" text="group"/>
         <c:if test="${not empty contact}">
             <td><div class='vertSep'></div></td>
-            <app:button name="actionEdit" src="common/Edit.gif" tooltip="edit" text="edit"/>
+            <app:button id="OPEDIT" name="actionEdit" src="common/Edit.gif" tooltip="edit" text="edit"/>
             <input type='hidden' name="actionEditId" value="${contact.id}"/>
          </c:if>
         <td><div class='vertSep'></div></td>

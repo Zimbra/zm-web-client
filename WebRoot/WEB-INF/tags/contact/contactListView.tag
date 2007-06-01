@@ -28,7 +28,7 @@
                    <td width=200 class='List' valign='top'>
                        <table width=100% cellpadding=2 cellspacing=0>
                            <tr>
-                               <th class='CB'><input onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
+                               <th class='CB'><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                <c:if test="${mailbox.features.tagging}">
                                 <th class='Img' nowrap><app:img atkey='ALT_TAG_TAG' src="tag/MiniTagOrange.gif"alt="Tagged"/>
                                 </c:if>
@@ -40,15 +40,16 @@
                                </a>
                            </tr>
                            <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
+                               <c:set var="isCurr" value="${hit.contactHit.id == context.currentItem.id}"/>
                                <tr <c:if test="${hit.contactHit.id == context.currentItem.id}">class='RowSelected'</c:if>>
-                                   <td class='CB' nowrap><input type=checkbox  name="id" value="${hit.contactHit.id}"></td>
+                                   <td class='CB' nowrap><input <c:if test="${isCurr}">id="CURRCHECK"</c:if> type=checkbox  name="id" value="${hit.contactHit.id}"></td>
                                    <c:if test="${mailbox.features.tagging}">
                                        <td class='Img'><app:miniTagImage ids="${hit.contactHit.tagIds}"/></td>
                                    </c:if>
                                    <td class='Img'><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
                                    <td ><span style='padding:3px'>
                                        <zm:currentResultUrl var="contactUrl" value="/h/search" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
-                                       <a href="${contactUrl}" <c:if test="${hit.contactHit.id == context.currentItem.id}">accesskey='o'</c:if>>
+                                       <a id="CURR_ITEM" href="${contactUrl}" <c:if test="${isCurr}">accesskey='o'</c:if>>
                                                ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '<None>' : hit.contactHit.fileAsStr)}
                                        </a></span>
                                        <c:if test="${hit.contactHit.id == context.currentItem.id}">
@@ -56,11 +57,11 @@
 
                                            <c:if test="${cursor.hasPrev}">
                                                <zm:prevItemUrl var="prevItemUrl" value="/h/search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                               <a href="${prevItemUrl}" accesskey='k'></a>
+                                               <a id="PREV_ITEM" href="${prevItemUrl}" accesskey='k'></a>
                                            </c:if>
                                            <c:if test="${cursor.hasNext}">
                                                <zm:nextItemUrl var="nextItemUrl" value="/h/search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                               <a href="${nextItemUrl}" accesskey='j'></a>
+                                               <a id="NEXT_ITEM" href="${nextItemUrl}" accesskey='j'></a>
                                            </c:if>
                                        </c:if>
                                    </td>
@@ -97,5 +98,24 @@
        </table>
     <input type="hidden" name="doContactListViewAction" value="1"/>
   </form>
+
+   <SCRIPT TYPE="text/javascript">
+    <!--
+    var zcheck = function() {var e = document.getElementById("CURRCHECK"); if (e) e.checked = !e.checked;}
+    var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    //-->
+   </SCRIPT>
+
+   <app:keyboard globals="true">
+       <zm:bindKey key="N,G" func="function() { zclick('SNEW_GROUP')}"/>
+       <zm:bindKey key="Ctrl+A" func="function() { zclick('OPCHALL')}"/>
+       <zm:bindKey key="Enter; E" func="function() { zclick('SOPEDIT')}"/>
+       <zm:bindKey key="X" func="zcheck"/>
+       <zm:bindKey key="Shift+ArrowUp; K" id="PREV_ITEM"/>
+       <zm:bindKey key="Shift+ArrowDown; J" id="NEXT_ITEM"/>
+       <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
+       <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
+   </app:keyboard>
+
 </app:view>
 
