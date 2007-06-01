@@ -83,11 +83,11 @@ function() {
 	var prevApp = this._appCtxt.getAppController().getPreviousApp();
 	for (var i = 0; i < list.length; i++) {
 		var id = list[i];
-		if (!((prevApp == ZmApp.CONTACTS && id == ZmOrganizer.FOLDER) ||
-			  (prevApp == ZmApp.MAIL && id == ZmOrganizer.ADDRBOOK))) {
-
-			trees.push[id];
+		if ((prevApp == ZmApp.CONTACTS && id == ZmOrganizer.FOLDER) ||
+			(prevApp == ZmApp.MAIL && id == ZmOrganizer.ADDRBOOK)) {
+			continue;
 		}
+		trees.push(id);
 	}
 	return trees;
 };
