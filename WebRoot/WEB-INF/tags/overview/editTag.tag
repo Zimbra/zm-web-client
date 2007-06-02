@@ -62,6 +62,22 @@
     <tr>
         <td colspan=2>&nbsp;</td>
     </tr>
+
+    <c:if test="${tag.unreadCount gt 0}">
+        <tr>
+            <td colspan=2>
+                <hr>
+            </td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>
+                <input class='tbButton' type="submit" name="actionMarkRead"
+                       value="<fmt:message key="actionMarkAllRead"/>">
+            </td>
+        </tr>
+    </c:if>
+    
     <tr>
         <td colspan=2><hr></td>
     </tr>

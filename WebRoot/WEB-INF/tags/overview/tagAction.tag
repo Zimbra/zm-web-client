@@ -77,15 +77,14 @@
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionMarkRead')}">
         <c:choose>
-            <c:when test="${!fn:startsWith(param.tagToMarkRead, 't:')}">
+            <c:when test="${empty param.tagId}">
                 <app:status style="Warning">
                     <fmt:message key="actionNoTagMarkReadSelected"/>
                 </app:status>
             </c:when>
             <c:otherwise>
-                <c:set var="tagid" value="${fn:substring(param.tagToMarkRead, 2, -1)}"/>
-                <c:set var="tagName" value="${zm:getTagName(pageContext, tagid)}"/>
-                <zm:markTagRead id="${tagid}"/>
+                <c:set var="tagName" value="${zm:getTagName(pageContext, param.tagId)}"/>
+                <zm:markTagRead id="${param.tagId}"/>
                 <app:status>
                     <fmt:message key="actionTagMarkRead">
                         <fmt:param value="${tagName}"/>
