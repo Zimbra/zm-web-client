@@ -821,7 +821,7 @@ function() {
 	return this._overviewPanelContent;
 };
 
-ZmApp.prototype.getOverview =
+ZmMailApp.prototype.getOverview =
 function() {
 	return this._opc.getOverview(this.getOverviewId());
 };
