@@ -51,16 +51,16 @@
                 <td align=left class="TbBt">
                     <table cellspacing=0 cellpadding=0 class='Tb'>
                         <tr>
-                            <app:button name="actionSend" src="mail/Send.gif" tooltip="send" text="send"/>
+                            <app:button id="OPSEND" name="actionSend" src="mail/Send.gif" tooltip="send" text="send"/>
                             <td><div class='vertSep'></div></td>
-                            <app:button name="actionCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
+                            <app:button id="OPCANCEL" name="actionCancel" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
                             <td><div class='vertSep'></div></td>
-                            <app:button name="actionDraft" src="mail/DraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
+                            <app:button id="OPDRAFT" name="actionDraft" src="mail/DraftFolder.gif" tooltip="saveDraft" text="saveDraft"/>
                             <td><div class='vertSep'></div></td>
-                            <app:button name="actionAttachAdd" src="common/Attachment.gif" tooltip="addAttachments" text="addAttachments"/>
+                            <app:button id="OPATTACH" name="actionAttachAdd" src="common/Attachment.gif" tooltip="addAttachments" text="addAttachments"/>
                             <c:if test="${mailbox.features.contacts or mailbox.features.gal}">
                                 <td><div class='vertSep'></div></td>
-                                <app:button name="actionContactAdd" src="contacts/ContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
+                                <app:button id="OPADDRECIP" name="actionContactAdd" src="contacts/ContactsPicker.gif" tooltip="addFromContacts" text="addFromContacts"/>
                             </c:if>
                         </tr>
                     </table>
@@ -204,5 +204,19 @@
         initAuto("ccField","ccContainer");
         initAuto("bccField","bccContainer");
     </app:autoComplete>
+
+    <SCRIPT TYPE="text/javascript">
+    <!--
+    var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
+    //-->
+   </SCRIPT>
+
+    <app:keyboard globals="false" passcontrol="true">
+        <zm:bindKey key="Ctrl+Enter;Ctrl+S" func="function() { zclick('SOPSEND')}"/>
+        <zm:bindKey key="Ctrl+D" func="function() { zclick('SOPDRAFT')}"/>
+        <zm:bindKey key="Ctrl+Q" func="function() { zclick('SOPATTACH')}"/>
+        <zm:bindKey key="Ctrl+G" func="function() { zclick('SOPADDRECIP')}"/>
+   </app:keyboard>
+
 
 </app:view>

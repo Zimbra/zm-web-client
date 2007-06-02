@@ -1,5 +1,6 @@
 <%@ tag body-content="scriptless" %>
 <%@ attribute name="globals" rtexprvalue="true" required="false" %>
+<%@ attribute name="passcontrol" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -9,7 +10,6 @@
 <script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/yahoo/yahoo-min.js" ></script>
 <script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/event/event-min.js" ></script>
 <script type="text/javascript">
-
     var pendingKey = "";
     var timerId = null;
     var actions = {};
@@ -20,8 +20,12 @@
     var keydownH = function(ev, obj) {
         handled = false;
         var el = YAHOO.util.Event.getTarget(ev);
-        if (el == null || (el.nodeName == 'INPUT' && el.type != 'checkbox')|| el.nodeName == 'TEXTAREA')
-            return true;
+        if (el == null || (el.nodeName == 'INPUT' && el.type != 'checkbox')|| el.nodeName == 'TEXTAREA') {
+        <c:choose>
+            <c:when test="${passcontrol}">if (!ev.ctrlKey) return;</c:when>
+            <c:otherwise>return true;</c:otherwise>
+        </c:choose>
+        }
         //alert(ev.which +" "+ev.charCode+" "+ev.keyCode);
         var kc = ev.keyCode;
         if (kc == 16 || kc == 17 || kc == 18 || kc == 91) return true;
