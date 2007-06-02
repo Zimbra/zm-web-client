@@ -69,17 +69,6 @@ ZmContactList = function(appCtxt, search, isGal, type) {
 	this._galFailures = 0;
 
 	this._acMatchFields = ZmContactList.AC_FIELDS;
-
-	// XXX: not sure what this is supposed to do, but seems that it should be done
-	// as part of load of canonical list (currently will happen even for search results)
-	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
-		setTimeout(AjxCallback.simpleClosure(function() {
-			var roster = AjxDispatcher.run("GetRoster");
-			if (roster) {
-				roster.getRosterItemList().addChangeListener(new AjxListener(this, this.__rosterListener));
-			}
-		}, this), 500);
-	}
 };
 
 ZmContactList.prototype = new ZmList;
@@ -1198,8 +1187,4 @@ function(ev) {
 ZmContactList.prototype.getPrintHtml =
 function(preferHtml, callback) {
 	return ZmContactCardsView.getPrintHtml(this);
-};
-
-ZmContactList.prototype.__rosterListener = function(ev) {
-//	console.log("ROSTER Event: ", ev);
 };
