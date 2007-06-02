@@ -25,6 +25,7 @@ AjxPackage.require("zimbraMail.voicemail.model.ZmVoiceItem");
 AjxPackage.require("zimbraMail.voicemail.model.ZmCall");
 AjxPackage.require("zimbraMail.voicemail.model.ZmVoicemail");
 AjxPackage.require("zimbraMail.voicemail.model.ZmVoiceFolder");
+AjxPackage.require("zimbraMail.voicemail.model.ZmVoiceFolderTree");
 AjxPackage.require("zimbraMail.voicemail.model.ZmVoiceList");
 
 AjxPackage.require("zimbraMail.voicemail.view.ZmSoundPlayer");

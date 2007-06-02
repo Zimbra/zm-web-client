@@ -309,7 +309,7 @@ function() {
  */
 ZmApp.prototype.getOverview =
 function() {
-	return this.getOverviewPanelContent();
+	return this._opc.getOverview(this.getOverviewId());
 };
 
 /**

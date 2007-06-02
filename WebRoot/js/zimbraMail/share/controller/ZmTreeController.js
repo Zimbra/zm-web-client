@@ -291,10 +291,15 @@ function(overviewId) {
 				  headerClass:overview.headerClass, dragSrc:dragSrc, dropTgt:dropTgt,
 				  treeStyle:this.getTreeStyle() || overview.treeStyle,
 				  allowedTypes:this._getAllowedTypes(), allowedSubTypes:this._getAllowedSubTypes()};
-	var treeView = new ZmTreeView(params);
+	var treeView = this._createTreeView(params);
 	treeView.addSelectionListener(new AjxListener(this, this._treeViewListener));
 	
 	return treeView;
+};
+
+ZmTreeController.prototype._createTreeView =
+function(params) {
+	return new ZmTreeView(params);
 };
 
 /**

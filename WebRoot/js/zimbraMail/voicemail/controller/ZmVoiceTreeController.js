@@ -27,6 +27,7 @@ ZmVoiceTreeController = function(appCtxt, type, dropTgt) {
 	if (arguments.length == 0) return;
 
 	ZmFolderTreeController.call(this, appCtxt, (type || ZmOrganizer.VOICE), dropTgt);
+	this._voiceApp = appCtxt.getApp(ZmApp.VOICE);
 }
 
 ZmVoiceTreeController.prototype = new ZmFolderTreeController;
@@ -37,6 +38,16 @@ ZmVoiceTreeController.prototype.constructor = ZmVoiceTreeController;
 ZmVoiceTreeController.prototype.toString =
 function() {
 	return "ZmVoiceTreeController";
+};
+
+ZmVoiceTreeController.prototype.getDataTree =
+function(phone) {
+	phone = phone || this._voiceApp.accordionItem.data.phone;
+	var dataTree = this._dataTree[phone.name];
+	if (!dataTree) {
+		dataTree = this._dataTree[phone.name] = phone.folderTree;
+	}
+	return dataTree;
 };
 
 ZmVoiceTreeController.prototype._createTreeView =
@@ -50,17 +61,18 @@ function(overviewId) {
 
 	// expand all root account folders
 	var view = this._treeView[overviewId];
-	var folders = this._appCtxt.getFolderTree().getByType(ZmOrganizer.VOICE);
-	for (var i = 0; i < folders.length; i++) {
-		var folder = folders[i];
-		if (folder.callType == ZmVoiceFolder.ACCOUNT) {
-			var ti = view.getTreeItemById(folder.id);
-			ti.setExpanded(true, false);
+	var app = this._appCtxt.getApp(ZmApp.VOICE);
+	for (var i = 0; i < app.phones.length; i++) {
+		var root = app.phones[i].folderTree.root;
+		var ti = this._treeView[overviewId].getTreeItemById(root.id);
+		if (ti) {
+			ti.setExpanded(true);
 		}
 	}
-	var app = this._appCtxt.getApp(ZmApp.VOICE);
-	if (app.startFolder) {
-		var treeItem = view.getTreeItemById(app.startFolder.id);
+
+	var startFolder = this._voiceApp.getStartFolder();
+	if (startFolder) {
+		var treeItem = view.getTreeItemById(startFolder.id);
 		view.setSelection(treeItem, true);
 	}
 };

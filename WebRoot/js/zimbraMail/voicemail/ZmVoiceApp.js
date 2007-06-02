@@ -165,6 +165,36 @@ function(modifies) {
 	this._handleModifies(modifies);
 };
 
+ZmVoiceApp.prototype.getOverviewPanelContent =
+function() {
+	if (this._overviewPanelContent) {
+		return this._overviewPanelContent;
+	}
+
+	// create accordion
+	var accordionId = this._name;
+	var opc = this._appCtxt.getOverviewController();
+	var params = {accordionId:accordionId};
+	var accordion = this._overviewPanelContent = opc.createAccordion(params);
+	accordion.addSelectionListener(new AjxListener(this, this._accordionSelectionListener));
+
+	for (var i = 0; i < this.phones.length; i++) {
+		var phone = this.phones[i];
+		var data = {phone:phone, lastFolder:null, appName:this._name};
+		var item = accordion.addAccordionItem({title:phone.getDisplay(), data:data});
+		if (i == 0) {
+			this._activateAccordionItem(item);
+		}
+	}
+
+	return this._overviewPanelContent;
+};
+
+ZmVoiceApp.prototype.getOverviewId =
+function() {
+	return [this.getOverviewPanelContentId(), this.accordionItem.data.phone.name].join(":");
+};
+
 ZmVoiceApp.prototype.getVoiceInfo =
 function(callback) {
 	if (!this.phones.length) {
@@ -183,11 +213,6 @@ function(callback) {
 
 ZmVoiceApp.prototype._handleResponseVoiceInfo =
 function(callback, response) {
-	// DwtAccordion voodoo
-	var overview = this._appCtxt.getOverviewController().getOverview(ZmZimbraMail._OVERVIEW_ID);
-	overview.addSelectionListener(new AjxListener(this, this._overviewSelectionListener));
-
-	var folderTree = this._appCtxt.getFolderTree();
 	var phones = response._data.GetVoiceInfoResponse.phone;
 	for (var i = 0, count = phones.length; i < count; i++) {
 		var obj = phones[i];
@@ -195,15 +220,9 @@ function(callback, response) {
 		phone._loadFromDom(obj);
 		this.phones.push(phone);
 
-		// add accordion items
-		var data = { phone: phone, lastFolder: null, appName: ZmApp.VOICE };
-		var item = overview.addAccordionItem({title: phone.getDisplay(), data: data});
-		if (i == 0) {
-			this.accordionItem = item;
-		}
-
 		if (obj.folder && obj.folder.length) {
-			this._createFolder(folderTree.root, phone, obj.folder[0], item.id);
+			phone.folderTree = new ZmVoiceFolderTree(this._appCtxt);
+			phone.folderTree.loadFromJs(obj.folder[0], phone);
 		}
 	}
 	if (callback) {
@@ -211,10 +230,11 @@ function(callback, response) {
 	}
 };
 
-ZmVoiceApp.prototype._overviewSelectionListener =
+ZmVoiceApp.prototype._accordionSelectionListener =
 function(ev) {
 	var accordionItem = ev.detail;
-	if (accordionItem.data.appName != ZmApp.VOICE) { return };
+	if (accordionItem == this.accordionItem) { return; }
+	if (accordionItem.data.appName != this._name) { return; }
 
 	// Save most recent search.
 	if (this.accordionItem) {
@@ -224,25 +244,27 @@ function(ev) {
 		}
 	}
 
-	// Run new search inside of accordian item.
+	// Run new search inside of accordion item.
 	this.accordionItem = accordionItem;
 	var folder = this.accordionItem.data.lastFolder;
+	var phone = this.accordionItem.data.phone;
 	if (!folder) {
-		var folderId = ZmVoiceFolder.VOICEMAIL_ID + "-" + this.accordionItem.data.phone.name;
-		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-		folder = tree.getById(folderId);
+		var folderId = ZmVoiceFolder.VOICEMAIL_ID + "-" + phone.name;
+		folder = phone.folderTree.getById(folderId);
 	}
 	if (folder) {
 		// Highlight the folder.
-		var overviewController = this._appCtxt.getOverviewController();
-		var treeController = overviewController.getTreeController(ZmOrganizer.VOICE);
-		var treeView = treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID);
-		var treeItem = treeView.getTreeItemById(folder.id);
-		treeView.setSelection(treeItem, true);
+		var overview = this._opc.getOverview(this.getOverviewId());
+		if (overview) {
+			var treeView = overview.getTreeView(ZmOrganizer.VOICE);
+			var treeItem = treeView.getTreeItemById(folder.id);
+			treeView.setSelection(treeItem, true);
+		}
 		
 		// Run search.
 		this.search(folder);
 	}
+	this._activateAccordionItem(accordionItem);
 };
 
 ZmVoiceApp.prototype.search =
@@ -323,42 +345,17 @@ function(callback) {
 
 ZmVoiceApp.prototype._handleResponseLoadLaunchGotInfo =
 function(callback, response) {
-	if (this.startFolder) {
-		this.search(this.startFolder, callback);
+	var startFolder = this.getStartFolder();
+	if (startFolder) {
+		this.search(startFolder, callback);
 	} else if (callback) {
 		callback.run();
 	}
 };
 
-ZmVoiceApp.prototype._createFolder =
-function(parent, phone, obj, accordionItemId) {
-	var params = {
-		id: obj.id,
-		name: obj.name,
-		phone: phone,
-		callType: obj.name || ZmVoiceFolder.ACCOUNT,
-		view: obj.view,
-		numUnread: obj.u,
-		numTotal: obj.n,
-		parent: parent,
-		tree: parent.tree,
-		accordionItemId: accordionItemId
-	};
-	var folder = new ZmVoiceFolder(params);
-	parent.children.add(folder);
-	if (!this.startFolder && (folder.callType == ZmVoiceFolder.VOICEMAIL)) {
-		this.startFolder = folder;
-	}
-	if (obj.folder) {
-		for (var i = 0, count = obj.folder.length; i < count; i++) {
-			this._createFolder(folder, phone, obj.folder[i]);
-		}
-	}
-	return folder;
-};
-
-ZmVoiceApp.prototype.activate =
-function(active, view) {
+ZmVoiceApp.prototype.getStartFolder =
+function() {
+	return this.phones[0].folderTree.getByName(ZmVoiceFolder.VOICEMAIL);
 };
 
 ZmVoiceApp.prototype.getVoiceController =

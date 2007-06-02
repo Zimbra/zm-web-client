@@ -47,7 +47,6 @@ ZmVoiceFolder = function(params) {
 	this.phone = params.phone;
 	this.callType = params.name; // A constant...ACCOUNT, PLACED, etc.
 	this.view = params.view;
-	this.accordionItemId = params.accordionItemId;
 }
 
 ZmVoiceFolder.prototype = new ZmOrganizer;

@@ -229,8 +229,9 @@ function(ev) {
 	}
 //TODO: this undeletes stuff in trash. Should really be hard delete. When we have the ability to create new messages anyways.
 	var folderId = this._folder.isInTrash() ? ZmVoiceFolder.VOICEMAIL_ID  : ZmVoiceFolder.TRASH_ID;
-	folderId += "-" + this._folder.phone.name;
-	var destination = this._appCtxt.getFolderTree().getById(folderId);
+	var phone = this._folder.phone;
+	folderId += "-" + phone.name;
+	var destination = phone.folderTree.getById(folderId);
 	var list = items[0].list;
 	list.moveItems(items, destination);
 };

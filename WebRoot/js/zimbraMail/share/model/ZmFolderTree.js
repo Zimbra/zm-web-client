@@ -23,6 +23,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
+/**
+ * Creates an empty folder tree.
+ * @constructor
+ * @class
+ * This class represents a tree of folders. It may be typed, in which case
+ * the folders are all of that type, or untyped.
+ * 
+ * @author Conrad Damon
+ * 
+ * @param appCtxt	[ZmAppCtxt]		the app context
+ * @param type		[constant]*		organizer type
+ */
 ZmFolderTree = function(appCtxt, type) {
 	
 	ZmTree.call(this, type, appCtxt);
@@ -54,8 +66,8 @@ function(rootObj, elementType) {
 };
 
 /**
- * Generic function for creating an organizer. Handles any organizer type other than
- * tag or zimlet.
+ * Generic function for creating a folder. Handles any organizer type that comes
+ * in the folder list.
  * 
  * @param parent		[ZmFolder]		parent folder
  * @param obj			[object]		JSON with folder data

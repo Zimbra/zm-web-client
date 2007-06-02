@@ -821,11 +821,6 @@ function() {
 	return this._overviewPanelContent;
 };
 
-ZmMailApp.prototype.getOverview =
-function() {
-	return this._opc.getOverview(this.getOverviewId());
-};
-
 ZmMailApp.prototype.getOverviewId =
 function() {
 	return this._appCtxt.multiAccounts ?
