@@ -1,12 +1,10 @@
 <%@ tag body-content="scriptless" %>
 <%@ attribute name="globals" rtexprvalue="true" required="false" %>
-<%@ attribute name="passcontrol" rtexprvalue="true" required="false" %>
+<%@ attribute name="passspecial" rtexprvalue="true" required="false" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
-<fmt:setBundle basename="/keys/ZmKeys" scope="request" var="keys"/>
 
 <script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/yahoo/yahoo-min.js" ></script>
 <script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/event/event-min.js" ></script>
@@ -23,7 +21,7 @@
         var el = YAHOO.util.Event.getTarget(ev);
         if (el == null || (el.nodeName == 'INPUT' && el.type != 'checkbox')|| el.nodeName == 'TEXTAREA') {
         <c:choose>
-            <c:when test="${passcontrol}">if (!ev.ctrlKey) return;</c:when>
+            <c:when test="${passspecial}">if (!(ev.ctrlKey||ev.altKey||ev.metaKey)) return;</c:when>
             <c:otherwise>return true;</c:otherwise>
         </c:choose>
         }
@@ -73,6 +71,4 @@
     </c:if>
             
     <jsp:doBody/>
-
-     /* ${keys} global.PreviousPage <fmt:message bundle="${keys}" key="global.PreviousPage"/> */
 </script>

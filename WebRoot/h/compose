@@ -205,19 +205,17 @@
         initAuto("bccField","bccContainer");
     </app:autoComplete>
 
-    <%--
     <SCRIPT TYPE="text/javascript">
     <!--
     var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
     //-->
    </SCRIPT>
 
-    <app:keyboard globals="false" passcontrol="true">
-        <zm:bindKey key="Ctrl+Enter;Ctrl+S" func="function() { zclick('SOPSEND')}"/>
-        <zm:bindKey key="Ctrl+D" func="function() { zclick('SOPDRAFT')}"/>
-        <zm:bindKey key="Ctrl+Q" func="function() { zclick('SOPATTACH')}"/>
-        <zm:bindKey key="Ctrl+G" func="function() { zclick('SOPADDRECIP')}"/>
+    <app:keyboard globals="false" passspecial="true">
+        <zm:bindKey message="compose.Send" func="function() { zclick('SOPSEND')}"/>
+        <zm:bindKey message="compose.Save" func="function() { zclick('SOPDRAFT')}"/>
+        <zm:bindKey message="compose.Attachment" func="function() { zclick('SOPATTACH')}"/>
+        <zm:bindKey message="compose.AddressPicker" func="function() { zclick('SOPADDRECIP')}"/>
    </app:keyboard>
-   --%>
 
 </app:view>
