@@ -6,6 +6,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<fmt:setBundle basename="/keys/ZmKeys" scope="request" var="keys"/>
 
 <script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/yahoo/yahoo-min.js" ></script>
 <script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/event/event-min.js" ></script>
@@ -62,14 +63,16 @@
     YAHOO.util.Event.addListener(window, "load", init);
 
     <c:if test="${globals}">
-    <zm:bindKey key="N,M" id="TAB_COMPOSE"/>
-    <zm:bindKey key="N,A" url="calendar?action=new"/>
-    <zm:bindKey key="N,C" url="search?st=contact&action=newcontact"/>
-    <zm:bindKey key="G,C" id="TAB_CALENDAR"/>
-    <zm:bindKey key="G,A" id="TAB_ADDRESSBOOK"/>
-    <zm:bindKey key="G,M" id="TAB_MAIL"/>
-    <zm:bindKey key="G,O" id="TAB_OPTIONS"/>
+    <zm:bindKey message="global.NewMessage" id="TAB_COMPOSE"/>
+    <zm:bindKey message="global.NewAppointment" url="calendar?action=new"/>
+    <zm:bindKey message="global.NewContact" url="search?st=contact&action=newcontact"/>
+    <zm:bindKey message="global.GoToCalendar" id="TAB_CALENDAR"/>
+    <zm:bindKey message="global.GoToContacts" id="TAB_ADDRESSBOOK"/>
+    <zm:bindKey message="global.GoToMail" id="TAB_MAIL"/>
+    <zm:bindKey message="global.GoToOptions" id="TAB_OPTIONS"/>
     </c:if>
             
     <jsp:doBody/>
+
+     /* ${keys} global.PreviousPage <fmt:message bundle="${keys}" key="global.PreviousPage"/> */
 </script>

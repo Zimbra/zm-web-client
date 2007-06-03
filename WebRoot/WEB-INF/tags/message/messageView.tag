@@ -39,28 +39,31 @@
     </SCRIPT>
 
     <app:keyboard globals="true">
-        <zm:bindKey key="C" id="TAB_COMPOSE"/>
+        <zm:bindKey message="mail.Flag" func="zflag"/>
+        <zm:bindKey message="mail.UnFlag" func="zunflag"/>
+        <zm:bindKey message="mail.MarkRead" func="zread"/>
+        <zm:bindKey message="mail.MarkUnread" func="zunread"/>
+        <zm:bindKey message="mail.Spam" func="zjunk"/>
+        <zm:bindKey message="global.CheckCheckBox" func="zcs"/>
 
-        <zm:bindKey key="M,F" func="zflag"/>
-        <zm:bindKey key="M,N" func="zunflag"/>
-        <zm:bindKey key="M,R" func="zread"/>
-        <zm:bindKey key="M,U" func="zunread"/>
-        <zm:bindKey key="M,J" func="zjunk"/>
-        <zm:bindKey key="X" func="zcs"/>
+        <zm:bindKey message="mail.ShowExternalImages" id="DISPEXTIMG"/>
 
-        <zm:bindKey key="Shift+X" id="DISPEXTIMG"/>
+        <zm:bindKey message="mail.GoToInbox" id="FLDR2"/>
+        <zm:bindKey message="mail.GoToDrafts" id="FLDR6"/>
+        <zm:bindKey message="mail.GoToSent" id="FLDR5"/>
+        <zm:bindKey message="mail.GoToTrash" id="FLDR3"/>
 
-        <zm:bindKey key="V,I; I" id="FLDR2"/>
-        <zm:bindKey key="V,D" id="FLDR6"/>
-        <zm:bindKey key="V,S" id="FLDR5"/>
-        <zm:bindKey key="V,T" id="FLDR3"/>
+        <zm:bindKey message="mail.Reply" id="OPREPLY"/>
+        <zm:bindKey message="mail.ReplyAll" id="OPREPLYALL"/>
+        <zm:bindKey message="mail.Forward" id="OPFORW"/>
 
-        <zm:bindKey key="R" id="OPREPLY"/>
-        <zm:bindKey key="A" id="OPREPLYALL"/>
-        <zm:bindKey key="F" id="OPFORW"/>
-        <zm:bindKey key="Esc; Z" id="CLOSE_ITEM"/>
-        <zm:bindKey key="Shift+ArrowLeft; H;K" id="PREV_ITEM"/>
-        <zm:bindKey key="Shift+ArrowRight; L;J" id="NEXT_ITEM"/>
+        <zm:bindKey message="mail.Close" id="CLOSE_ITEM"/>
+
+        <zm:bindKey message="global.PreviousPage" id="PREV_ITEM"/>
+        <zm:bindKey message="global.NextPage" id="NEXT_ITEM"/>
+        <zm:bindKey message="global.PreviousItem" id="PREV_ITEM"/>
+        <zm:bindKey message="global.NextItem" id="NEXT_ITEM"/>        
+        
     </app:keyboard>
 
     <form action="${currentUrl}" method="post">

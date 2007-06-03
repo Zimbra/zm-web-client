@@ -101,15 +101,14 @@
         </tr>
     </table>
     <app:keyboard globals="true">
-        <zm:bindKey key="D; 1" id="CAL_DAY"/>
-        <zm:bindKey key="W; 7" id="CAL_WEEK"/>
-        <zm:bindKey key="W,W; 5" id="CAL_WORK"/>
-        <zm:bindKey key="M; 3" id="CAL_MONTH"/>
-        <zm:bindKey key="S; 0" id="CAL_SCHED"/>
-        <zm:bindKey key="T" id="CAL_TODAY"/>
-        <zm:bindKey key="R" id="CAL_REFRESH"/>
-        <zm:bindKey key="Q" id="CAL_NEWAPPT"/>
-        <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
-        <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
+        <zm:bindKey message="calendar.DayView" id="CAL_DAY"/>
+        <zm:bindKey message="calendar.WeekView" id="CAL_WEEK"/>
+        <zm:bindKey message="calendar.WorkWeekView" id="CAL_WORK"/>
+        <zm:bindKey message="calendar.MonthView" id="CAL_MONTH"/>
+        <zm:bindKey message="calendar.ScheduleView" id="CAL_SCHED"/>
+        <zm:bindKey message="calendar.Today" id="CAL_TODAY"/>
+        <zm:bindKey message="calendar.Refresh" id="CAL_REFRESH"/>
+        <zm:bindKey message="global.PreviousPage" id="PREV_PAGE"/>
+        <zm:bindKey message="global.NextPage" id="NEXT_PAGE"/>
     </app:keyboard>
 </app:view>

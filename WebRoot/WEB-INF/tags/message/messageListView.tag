@@ -175,27 +175,27 @@
 </SCRIPT>
 
 <app:keyboard globals="true">
-    <zm:bindKey key="C" id="TAB_COMPOSE"/>
-    <zm:bindKey key="M,F" func="zflag"/>
-    <zm:bindKey key="M,N" func="zunflag"/>
-    <zm:bindKey key="M,R" func="zread"/>
-    <zm:bindKey key="M,U" func="zunread"/>
-    <zm:bindKey key="M,J" func="zjunk"/>
-    <zm:bindKey key="X" func="zcs"/>
 
-    <zm:bindKey key="V,I; I" id="FLDR2"/>
-    <zm:bindKey key="V,D" id="FLDR6"/>
-    <zm:bindKey key="V,S" id="FLDR5"/>
-    <zm:bindKey key="V,T" id="FLDR3"/>
+    <zm:bindKey message="mail.Flag" func="zflag"/>
+    <zm:bindKey message="mail.UnFlag" func="zunflag"/>
+    <zm:bindKey message="mail.MarkRead" func="zread"/>
+    <zm:bindKey message="mail.MarkUnread" func="zunread"/>
+    <zm:bindKey message="mail.Spam" func="zjunk"/>
+    <zm:bindKey message="global.CheckCheckBox" func="zcs"/>
 
-    <zm:bindKey key="Ctrl+A" func="function() { zclick('OPCHALL')}"/>
-    <zm:bindKey key="Enter; O" func="zos"/>
-    <zm:bindKey key="Shift+K" func="zcsp"/>
-    <zm:bindKey key="Shift+J" func="zcsn"/>
-    <zm:bindKey key="Shift+ArrowUp; K" func="zsp"/>
-    <zm:bindKey key="Shift+ArrowDown; J" func="zsn"/>
-    <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
-    <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
+    <zm:bindKey message="mail.GoToInbox" id="FLDR2"/>
+    <zm:bindKey message="mail.GoToDrafts" id="FLDR6"/>
+    <zm:bindKey message="mail.GoToSent" id="FLDR5"/>
+    <zm:bindKey message="mail.GoToTrash" id="FLDR3"/>
+
+    <zm:bindKey message="global.SelectAllCheckBoxes" func="function() { zclick('OPCHALL')}"/>
+    <zm:bindKey message="mail.Open" func="zos"/>
+    <zm:bindKey message="global.CheckAndPreviousItem" func="zcsp"/>
+    <zm:bindKey message="global.CheckAndNextItem" func="zcsn"/>
+    <zm:bindKey message="global.PreviousItem" func="zsp"/>
+    <zm:bindKey message="global.NextItem" func="zsn"/>
+    <zm:bindKey message="global.PreviousPage" id="PREV_PAGE"/>
+    <zm:bindKey message="global.NextPage" id="NEXT_PAGE"/>
 </app:keyboard>
 
 </app:view>

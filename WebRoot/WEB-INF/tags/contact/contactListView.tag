@@ -107,14 +107,14 @@
    </SCRIPT>
 
    <app:keyboard globals="true">
-       <zm:bindKey key="N,G" func="function() { zclick('SNEW_GROUP')}"/>
-       <zm:bindKey key="Ctrl+A" func="function() { zclick('OPCHALL')}"/>
-       <zm:bindKey key="Enter; E" func="function() { zclick('SOPEDIT')}"/>
-       <zm:bindKey key="X" func="zcheck"/>
-       <zm:bindKey key="Shift+ArrowUp; K" id="PREV_ITEM"/>
-       <zm:bindKey key="Shift+ArrowDown; J" id="NEXT_ITEM"/>
-       <zm:bindKey key="Shift+ArrowLeft; H" id="PREV_PAGE"/>
-       <zm:bindKey key="Shift+ArrowRight; L" id="NEXT_PAGE"/>
+       <zm:bindKey message="contacts.NewGroup" func="function() { zclick('SNEW_GROUP')}"/>
+       <zm:bindKey message="global.SelectAllCheckBoxes" func="function() { zclick('OPCHALL')}"/>
+       <zm:bindKey message="contacts.Edit" func="function() { zclick('SOPEDIT')}"/>
+       <zm:bindKey message="global.CheckCheckBox" func="zcheck"/>
+       <zm:bindKey message="global.PreviousItem" id="PREV_ITEM"/>
+       <zm:bindKey message="global.NextItem" id="NEXT_ITEM"/>
+       <zm:bindKey message="global.PreviousPage" id="PREV_PAGE"/>
+       <zm:bindKey message="global.NextPage" id="NEXT_PAGE"/>
    </app:keyboard>
 
 </app:view>
