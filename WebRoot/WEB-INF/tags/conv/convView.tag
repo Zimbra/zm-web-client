@@ -86,22 +86,17 @@
         <zm:bindKey message="mail.MarkUnread" func="zunread"/>
         <zm:bindKey message="mail.Spam" func="zjunk"/>
         <zm:bindKey message="global.CheckCheckBox" func="zcs"/>
+        <zm:bindKey message="global.SelectAllCheckBoxes" func="function() { zclick('OPCHALL')}"/>
 
         <zm:bindKey message="mail.ShowExternalImages" id="DISPEXTIMG"/>
-
         <zm:bindKey message="mail.GoToInbox" id="FLDR2"/>
         <zm:bindKey message="mail.GoToDrafts" id="FLDR6"/>
         <zm:bindKey message="mail.GoToSent" id="FLDR5"/>
         <zm:bindKey message="mail.GoToTrash" id="FLDR3"/>
-
         <zm:bindKey message="mail.Reply" id="OPREPLY"/>
         <zm:bindKey message="mail.ReplyAll" id="OPREPLYALL"/>
         <zm:bindKey message="mail.Forward" id="OPFORW"/>
-
-        <zm:bindKey message="global.SelectAllCheckBoxes" func="function() { zclick('OPCHALL')}"/>
-
         <zm:bindKey message="mail.Close" id="CLOSE_ITEM"/>
-
         <zm:bindKey message="mail.Open" id="CURR_ITEM"/>
 
         <zm:bindKey message="global.PreviousItem" id="PREV_ITEM"/>
