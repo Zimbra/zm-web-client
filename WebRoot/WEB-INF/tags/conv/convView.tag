@@ -102,7 +102,7 @@
 
         <zm:bindKey message="mail.Close" id="CLOSE_ITEM"/>
 
-        <zm:bindKey message="mail.OpenEnter; O" id="CURR_ITEM"/>
+        <zm:bindKey message="mail.Open" id="CURR_ITEM"/>
 
         <zm:bindKey message="global.PreviousItem" id="PREV_ITEM"/>
         <zm:bindKey message="global.NextItem" id="NEXT_ITEM"/>
