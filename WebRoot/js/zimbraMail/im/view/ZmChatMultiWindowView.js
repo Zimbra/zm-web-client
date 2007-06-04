@@ -28,9 +28,9 @@ ZmChatMultiWindowView = function(parent, className, posStyle, controller) {
 	className = className ? className : "ZmChatMultiWindowView";
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
 	ZmChatBaseView.call(this, parent, className, posStyle, controller, ZmController.IM_CHAT_TAB_VIEW);
-	var dropTgt = new DwtDropTarget(["ZmRosterTreeItem", "ZmRosterTreeGroup"]);
+	var dropTgt = new DwtDropTarget([ "ZmRosterItem" ]);
 	this.setDropTarget(dropTgt);
-	dropTgt.addDropListener(new AjxListener(this, this._dropListener));
+	dropTgt.addDropListener(new AjxListener(this, this._dropListener, [ dropTgt ]));
 
 	this.setScrollStyle(DwtControl.CLIP);
 //	this.setScrollStyle(DwtControl.SCROLL);
@@ -109,8 +109,6 @@ ZmChatMultiWindowView.prototype._postSet = function() {
 
 ZmChatMultiWindowView.prototype._createHtml =
 function() {
-   // this._content = new DwtComposite(this, "ZmChatMultiWindow", Dwt.RELATIVE_STYLE);
-    //this.getHtmlElement().innerHTML = "<div id='"+this._contentId+"'></div>";
 	var gws = AjxDispatcher.run("GetRoster").getGateways();
 	var cont = new DwtComposite(this, null, Dwt.ABSOLUTE_STYLE);
 	var s = cont.getHtmlElement().style;
@@ -179,7 +177,6 @@ function() {
 // 			}
 			       }, [ btn, btnReconnect ]));
 
-		// this._appCtxt.getAppController().getActiveApp();
 	}
 	// var size = toolbar.getSize();
 	// cont.marginLeft = -size.x + "px";
@@ -284,15 +281,11 @@ function(chat) {
 	this._controller.endChat(chat);
 };
 
-ZmChatMultiWindowView.prototype._dropListener =
-function(ev) {
+ZmChatMultiWindowView.prototype._dropListener = function(dropTgt, ev) {
+	if (!ev.srcData)
+		return false;
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		var srcData = ev.srcData;
-		if (!( (srcData instanceof ZmRosterTreeItem) ||
-			(srcData instanceof ZmRosterTreeGroup) )) {
-			ev.doIt = false;
-			return;
-		}
+		ev.doIt = dropTgt.isValidTarget(ev.srcData);
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
         	var srcData = ev.srcData;
 		var mouseEv = DwtShell.mouseEvent;
@@ -302,12 +295,13 @@ function(ev) {
 			       y: mouseEv.docY - pos.y };
 		this._nextInitX = newPos.x
             	this._nextInitY = newPos.y;
-		if (srcData instanceof ZmRosterTreeItem) {
-			this._controller.chatWithRosterItem(srcData.getRosterItem());
+		if (srcData instanceof ZmRosterItem) {
+			this._controller.chatWithRosterItem(srcData);
 		}
-		if (srcData instanceof ZmRosterTreeGroup) {
-			this._controller.chatWithRosterItems(srcData.getRosterItems(), srcData.getName()+" "+ZmMsg.imGroupChat);
-		}
+		// FIXME: not implemented
+		// 		if (srcData instanceof ZmRosterTreeGroup) {
+		// 			this._controller.chatWithRosterItems(srcData.getRosterItems(), srcData.getName()+" "+ZmMsg.imGroupChat);
+		// 		}
 	}
 };
 

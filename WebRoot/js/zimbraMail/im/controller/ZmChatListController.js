@@ -31,7 +31,7 @@
 * @param container		containing shell
 */
 ZmChatListController = function(appCtxt, container, imApp) {
-    if (arguments.length == 0) return;
+	if (arguments.length == 0) return;
 
 	ZmController.call(this, appCtxt, container, imApp);
 
@@ -45,10 +45,8 @@ ZmChatListController = function(appCtxt, container, imApp) {
 	this._listeners[ZmOperation.REFRESH] = new AjxListener(this, this._refreshListener);
 
 	this._viewFactory = new Object();
-//	this._viewFactory[ZmController.IM_CHAT_TAB_VIEW] = ZmChatTabbedView;
 	this._viewFactory[ZmController.IM_CHAT_MULTI_WINDOW_VIEW] = ZmChatMultiWindowView;
 
-//	this._appCtxt.getSettings().addChangeListener(new AjxListener(this, this._changeListener));
 	this._parentView = new Object();
 
 	// listen for roster list changes
@@ -57,7 +55,7 @@ ZmChatListController = function(appCtxt, container, imApp) {
 	var rosterList = imApp.getRoster().getRosterItemList();
 	rosterList.addChangeListener(this._rosterListListener);
 	this._imApp = imApp;
-}
+};
 
 ZmChatListController.prototype = new ZmController;
 ZmChatListController.prototype.constructor = ZmChatListController;
@@ -77,8 +75,6 @@ ZmChatListController.prototype.toString =
 function() {
 	return "ZmChatListController";
 }
-
-// Public methods
 
 ZmChatListController.prototype.prepareVisuals = function(view) {
 	view = view || this._currentView || this._defaultView();
@@ -128,37 +124,26 @@ function(view, clear, pushOnly) {
 ZmChatListController.prototype._preShowCallback =
 function(view) {
 	return true;
-}
-
-// Private and protected methods
+};
 
 ZmChatListController.prototype._standardToolBarOps =
 function() {
-	var list = [ZmOperation.NEW_MENU];
-	/*
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	list.push(ZmOperation.SEP);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT_MENU);
-	list.push(ZmOperation.DELETE, ZmOperation.MOVE);
-	*/
-	return list;
-}
+	return [ ZmOperation.NEW_MENU ];
+};
 
 ZmChatListController.prototype._getToolBarOps =
 function() {
 	var list = this._standardToolBarOps();
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.IM_PRESENCE_MENU);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.REFRESH);
+	list.push(ZmOperation.SEP,
+		  ZmOperation.IM_PRESENCE_MENU,
+		  ZmOperation.SEP,
+		  ZmOperation.REFRESH);
 	return list;
-}
+};
 
 ZmChatListController.prototype._getActionMenuOps =
 function() {
-    return [];
+	return [];
     /*
 //	var list = this._participantOps();
 	list.push(ZmOperation.SEP);
@@ -170,27 +155,14 @@ function() {
 ZmChatListController.prototype._getViewType =
 function() {
 	return this._currentView;
-}
+};
 
 ZmChatListController.prototype._defaultView =
 function() {
 	return (this._appCtxt.get(ZmSetting.IM_VIEW) == "tabbed") ? ZmController.IM_CHAT_TAB_VIEW : ZmController.IM_CHAT_MULTI_WINDOW_VIEW;
-}
+};
 
-/*
-ZmChatListController.prototype._getTagMenuMsg =
-function(num) {
-	return (num == 1) ? ZmMsg.AB_TAG_CONTACT : ZmMsg.AB_TAG_CONTACTS;
-}
-
-ZmChatListController.prototype._getMoveDialogTitle =
-function(num) {
-	return (num == 1) ? ZmMsg.AB_MOVE_CONTACT : ZmMsg.AB_MOVE_CONTACTS;
-}
-*/
-
-ZmChatListController.prototype._initializeToolBar =
-function(view) {
+ZmChatListController.prototype._initializeToolBar = function(view) {
 	if (this._toolbar[view]) return;
 
 	var buttons = this._getToolBarOps();
@@ -216,7 +188,7 @@ function(view) {
 	this.updatePresenceMenu(true);
 
 	this._propagateMenuListeners(this._toolbar[view], ZmOperation.NEW_MENU);
-	this._setupViewMenu(view);
+	// this._setupViewMenu(view);
 
 	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
 };
@@ -251,8 +223,7 @@ ZmChatListController.prototype.updatePresenceMenu = function(addListeners) {
 	presenceButton.setText(presence.getShowText());
 };
 
-ZmChatListController.prototype._initializeActionMenu =
-function(view) {
+ZmChatListController.prototype._initializeActionMenu = function(view) {
 	if (this._actionMenu) return;
 
 	var menuItems = this._getActionMenuOps();
@@ -267,25 +238,22 @@ function(view) {
 	}
 	this._actionMenu.addPopdownListener(this._popdownListener);
 
-}
+};
 
 // Load chats into the given view and perform layout.
-ZmChatListController.prototype._setViewContents =
-function(view) {
+ZmChatListController.prototype._setViewContents = function(view) {
 //	this._listView[view].set(this._list);
-}
+};
 
-ZmChatListController.prototype._createNewView =
-function(view) {
+ZmChatListController.prototype._createNewView = function(view) {
 	var view = this._parentView[view] = new this._viewFactory[view](this._container, null, Dwt.ABSOLUTE_STYLE, this, this._dropTgt);
 	view.set(this._list);
 	//view.setDragSource(this._dragSrc);
 	return view;
-}
+};
 
 // Creates basic elements and sets the toolbar and action menu
-ZmChatListController.prototype._setup =
-function(view) {
+ZmChatListController.prototype._setup = function(view) {
 	if (this._listView[view]) return;
 
 	this._initializeToolBar(view);
@@ -295,11 +263,10 @@ function(view) {
 	this._initializeActionMenu(view);
 	this._resetOperations(this._toolbar[view], 0);
 	this._resetOperations(this._actionMenu, 0);
-}
+};
 
 // Resets the available options on a toolbar or action menu.
-ZmChatListController.prototype._resetOperations =
-function(parent, num) {
+ZmChatListController.prototype._resetOperations = function(parent, num) {
 	if (!parent) return;
 	if (num == 0) {
 		parent.enableAll(true);
@@ -313,50 +280,47 @@ function(parent, num) {
 //		parent.enableAll(false);
 //		parent.enable([ZmOperation.NEW_MENU,ZmOperation.IM_PRESENCE_MENU, ZmOperation.REFRESH], true);
 	}
-}
+};
 
 // Switch to selected view.
-ZmChatListController.prototype._viewButtonListener =
-function(ev) {
+ZmChatListController.prototype._viewButtonListener = function(ev) {
 	this.switchView(ev.item.getData(ZmOperation.MENUITEM_ID));
-}
+};
 
-// Create menu for View button and add listeners.
-ZmChatListController.prototype._setupViewMenu =
-function(view) {
-	var appToolbar = this._appCtxt.getCurrentAppToolbar();
-	var menu = appToolbar.getViewMenu(view);
-	if (!menu) {
-		var menu = new ZmPopupMenu(appToolbar.getViewButton());
-		for (var i = 0; i < ZmChatListController.VIEWS.length; i++) {
-			var id = ZmChatListController.VIEWS[i];
-			var mi = menu.createMenuItem(id, {image:ZmChatListController.ICON[id], text:ZmMsg[ZmChatListController.MSG_KEY[id]],
-											  style:DwtMenuItem.RADIO_STYLE});
-			mi.setData(ZmOperation.MENUITEM_ID, id);
-			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
-			if (id == view)
-				mi.setChecked(true, true);
-		}
-		appToolbar.setViewMenu(view, menu);
-	}
-	return menu;
-}
+// // Create menu for View button and add listeners.
+// ZmChatListController.prototype._setupViewMenu = function(view) {
+// 	var appToolbar = this._appCtxt.getCurrentAppToolbar();
+// 	var menu = appToolbar.getViewMenu(view);
+// 	if (!menu) {
+// 		var menu = new ZmPopupMenu(appToolbar.getViewButton());
+// 		for (var i = 0; i < ZmChatListController.VIEWS.length; i++) {
+// 			var id = ZmChatListController.VIEWS[i];
+// 			var mi = menu.createMenuItem(id, { image : ZmChatListController.ICON[id],
+// 							   text	 : ZmMsg[ZmChatListController.MSG_KEY[id]],
+// 							   style : DwtMenuItem.RADIO_STYLE
+// 							 });
+// 			mi.setData(ZmOperation.MENUITEM_ID, id);
+// 			mi.addSelectionListener(this._listeners[ZmOperation.VIEW]);
+// 			if (id == view)
+// 				mi.setChecked(true, true);
+// 		}
+// 		appToolbar.setViewMenu(view, menu);
+// 	}
+// 	return menu;
+// };
 
-ZmChatListController.prototype._refreshListener =
-function(ev) {
-    var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
+ZmChatListController.prototype._refreshListener = function(ev) {
+	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
 	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
 };
 
-// Create some new thing, via a dialog. If just the button has been pressed (rather than
-// a menu item), the action taken depends on the app.
-ZmChatListController.prototype._newListener =
-function(ev) {
-	ZmListController.prototype._newListener.call(this, ev);
-}
+// // Create some new thing, via a dialog. If just the button has been pressed (rather than
+// // a menu item), the action taken depends on the app.
+ZmChatListController.prototype._newListener = function(ev) {
+ 	ZmListController.prototype._newListener.call(this, ev);
+};
 
-ZmChatListController.prototype._presenceItemListener =
-function(ev) {
+ZmChatListController.prototype._presenceItemListener = function(ev) {
 	if (ev.detail != DwtMenuItem.CHECKED) return;
 	var id = ev.item.getData(ZmOperation.KEY_ID);
 	ev.item.parent.parent.setText(ev.item.getText());
@@ -365,42 +329,23 @@ function(ev) {
 	this._imApp.getRoster().setPresence(show, 0, null);
 };
 
-
-// Create a folder.
-ZmChatListController.prototype._newFolderCallback =
-function(parent, name, url) {
-	this._appCtxt.getNewFolderDialog().popdown();
-	var ftc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.FOLDER);
-	ftc._doCreate(parent, name, null, url);
-}
-
-// Create a tag.
-ZmChatListController.prototype._newTagCallback =
-function(creatingTag, name, color) {
-	this._appCtxt.getNewTagDialog().popdown();
-	var ttc = this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.TAG);
-	ttc._doCreate(name, color);
-	this._creatingTag = creatingTag;
-}
-
 // Adds the same listener to all of a menu's items
-ZmChatListController.prototype._propagateMenuListeners =
-function(parent, op, listener) {
+ZmChatListController.prototype._propagateMenuListeners = function(parent, op, listener) {
 	if (!parent) return;
 	listener = listener || this._listeners[op];
 	var opWidget = parent.getOp(op);
 	if (opWidget) {
 		var menu = opWidget.getMenu();
-	    var items = menu.getItems();
+		var items = menu.getItems();
 		var cnt = menu.getItemCount();
 		for (var i = 0; i < cnt; i++)
 			items[i].addSelectionListener(listener);
 	}
 };
 
+// FIXME: do we need this?
 // Set up the New button based on the current app.
-ZmChatListController.prototype._setNewButtonProps =
-function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
+ZmChatListController.prototype._setNewButtonProps = function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
 	var newButton = this._toolbar[view].getButton(ZmOperation.NEW_MENU);
 	if (newButton) {
 		newButton.setToolTipContent(toolTip);
@@ -410,22 +355,21 @@ function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
 	}
 };
 
-ZmChatListController.prototype.selectChatForRosterItem =
-function(item) {
-    var chats = this._list.getChatsByRosterAddr(item.getAddress());
-    var chat = null;
-    for (var c in chats) {
-        // TODO: !chat.groupChat()?
-        if (chats[c].getRosterSize() == 1) {
-            chat = chats[c];
-            break;
-        }
-    }
-    // select first chat if not found in solo chat...
-    // TODO: change this to select most recently active chat?
-    if (chat == null && chats.length > 0) chat = chats[0];
+ZmChatListController.prototype.selectChatForRosterItem = function(item) {
+	var chats = this._list.getChatsByRosterAddr(item.getAddress());
+	var chat = null;
+	for (var c in chats) {
+		// TODO: !chat.groupChat()?
+		if (chats[c].getRosterSize() == 1) {
+			chat = chats[c];
+			break;
+		}
+	}
+	// select first chat if not found in solo chat...
+	// TODO: change this to select most recently active chat?
+	if (chat == null && chats.length > 0) chat = chats[0];
 
-    if (chat != null) this._getView().selectChat(chat);
+	if (chat != null) this._getView().selectChat(chat);
 };
 
 ZmChatListController.prototype.chatWithContacts = function(contacts, mailMsg, text) {
@@ -435,15 +379,13 @@ ZmChatListController.prototype.chatWithContacts = function(contacts, mailMsg, te
 		this.chatWithRosterItem(buddies.get(0), text);
 };
 
-ZmChatListController.prototype.chatWithRosterItem =
-function(item, text) {
+ZmChatListController.prototype.chatWithRosterItem = function(item, text) {
 	var chat = this._list.getChatByRosterAddr(item.getAddress(), true);
 	// currentview or all? probably all...
 	this._getView().selectChat(chat, text);
 };
 
-ZmChatListController.prototype.chatWithRosterItems =
-function(items, chatName) {
+ZmChatListController.prototype.chatWithRosterItems = function(items, chatName) {
 	chat = new ZmChat(Dwt.getNextId(), chatName, this._appCtxt, this);
 	for (var i=0; i < items.length; i++) {
 		chat.addRosterItem(items[i]);
@@ -454,18 +396,16 @@ function(items, chatName) {
 	this._getView().selectChat(chat, text);
 };
 
-ZmChatListController.prototype.endChat =
-function(chat) {
-    chat.sendClose();
-    this._list.removeChat(chat);
+ZmChatListController.prototype.endChat = function(chat) {
+	chat.sendClose();
+	this._list.removeChat(chat);
 };
 
 ZmChatListController.prototype._getView = function() {
 	return ZmChatMultiWindowView.getInstance();
 };
 
-ZmChatListController.prototype._rosterListChangeListener =
-function(ev, treeView) {
+ZmChatListController.prototype._rosterListChangeListener = function(ev, treeView) {
 	if (ev.event == ZmEvent.E_MODIFY) {
 		var items = ev.getItems();
 		for (var i=0; i < items.length; i++) {

@@ -29,7 +29,7 @@ ZmAssistantBuddy = function(list, appCtxt) {
 		return "ZimbraIcon";
 	};
 	ZmRosterItem.call(this, ZmAssistantBuddy.ADDR, list, appCtxt,
-			  ZmMsg.zimbraAssistant, assistant_rp, ZmMsg.buddies);
+			  ZmMsg.zimbraAssistant, assistant_rp);
 
 	this._msgDialog = this._appCtxt.getMsgDialog();
 	this.shell = appCtxt.getShell(); // FIXME: not sure this is needed, but it's accessed in some Assistant objects

@@ -27,6 +27,10 @@ ZmImApp = function(appCtxt, container) {
 
 	ZmApp.call(this, ZmApp.IM, appCtxt, container);
 
+	AjxPackage.require("IM");
+	this.getRoster().getRosterItemList();
+	this.getRoster().reload();
+
 	// IM is enabled, so show Chats folder
 	delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	this._active = false;
@@ -101,27 +105,6 @@ function() {
 						});
 };
 
-ZmImApp.prototype._registerOrganizers =
-function() {
-// 	// not really sure what this is
-//	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE,
-//							{app:				ZmApp.IM,
-//							 orgClass:			"ZmRosterTree",
-//							 orgPackage:		"IM",
-//							 labelKey:			"buddyList",
-//							 compareFunc:		"ZmRosterTreeItem.sortCompare"
-//							});
-
-	ZmOrganizer.registerOrg(ZmOrganizer.ROSTER_TREE_ITEM,
-							{app:				ZmApp.IM,
-							 orgClass:			"ZmRosterTreeItem",
-							 orgPackage:		"IM",
-							 treeController:	"ZmRosterTreeController",
-							 labelKey:			"buddyList",
-							 compareFunc:		"ZmRosterTreeItem.sortCompare"
-							});
-};
-
 ZmImApp.prototype._registerApp =
 function() {
 	ZmApp.registerApp(ZmApp.IM,
@@ -130,8 +113,6 @@ function() {
 							  icon:					"ImStartChat",
 							  chooserTooltipKey:	"goToIm",
 							  defaultSearch:		ZmSearchToolBar.FOR_MAIL_MI,
-							  organizer:			ZmOrganizer.ROSTER_TREE_ITEM,
-							  overviewTrees:		[ZmOrganizer.ROSTER_TREE_ITEM],
 							  showZimlets:			true,
 							  gotoActionCode:		ZmKeyMap.GOTO_IM,
 							  chooserSort:			40,
@@ -205,7 +186,6 @@ function(callback) {
 ZmImApp.prototype._handleLoadLaunch =
 function(callback) {
 	var clc = this.getChatListController();
-	this.prepareVisuals();
 	clc.show();
 	if (callback)
 		callback.run();
@@ -214,15 +194,18 @@ function(callback) {
 ZmImApp.prototype.activate =
 function(active) {
 	// console.log("activate");
-	this._active = active;
 	if (active) {
 		this.stopFlashingIcon();
 	}
-	this.getRosterTreeController().appActivated(active);
+	return ZmApp.prototype.activate.call(this, active);
 };
 
 ZmImApp.prototype.getRosterTreeController = function() {
-	return this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.ROSTER_TREE_ITEM);
+	// return this._appCtxt.getOverviewController().getTreeController(ZmOrganizer.ROSTER_TREE_ITEM);
+	if (!this._rosterTreeController) {
+		this._rosterTreeController = new ZmRosterTreeController(this._appCtxt);
+	}
+	return this._rosterTreeController;
 };
 
 ZmImApp.prototype.isActive = function() {
@@ -284,23 +267,14 @@ function(parent) {
 };
 
 ZmImApp.prototype.prepareVisuals = function() {
-	AjxDispatcher.require("IM", false);
-
-	if (!this.__haveRoster) {
-		// architecture... such a wonderful thing.  here's how we get a singleton:
-		var treeController = this.getRosterTreeController();
-
-		// and this seems to be the only way to properly instantiate the buddy list tree:
-		treeController.show({ overviewId  : ZmZimbraMail._OVERVIEW_ID,
-				      app	  : ZmApp.IM
-				    });
-
-		treeController.getTreeView(ZmZimbraMail._OVERVIEW_ID).setVisible(this._active);
-		treeController.appActivated(this._active);
-
+	if (!this._haveVisuals) {
+		this._haveVisuals = true;
 		this.getChatListController().prepareVisuals();
-		// setTimeout(AjxCallback.simpleClosure(this.refresh, this), 100);
-		this.__haveRoster = true;
-		this.refresh();
 	}
+};
+
+ZmImApp.prototype.getOverviewPanelContent = function() {
+	if (!this._imOvw)
+		this._imOvw = new ZmImOverview(this._appCtxt, this._container);
+	return this._imOvw;
 };

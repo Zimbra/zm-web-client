@@ -1777,6 +1777,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmChatWidget .ZToolbarTable td { vertical-align: middle; }
 
+.ZmChatWidget .ZToolbarTable .ZButton { min-width: 0; }
 .ZmChatWidget .ZToolbarTable .ZButton .ZLeftIcon div { margin-left: 2px; margin-right: 2px; }
 .ZmChatWidget .ZToolbarTable .ZButton .ZWidgetTitle { padding: 0; }
 
@@ -1923,7 +1924,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTitle { width: auto; padding: 0; }
 .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable .ZLeftIcon div { margin-left: 0; }
 .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable div { margin: 0; }
-.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZButton { height: auto; }
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZButton { min-width: 0; height: auto; }
 
 .ZmChatTabs-TabBar .ZmChatTabs-Tab-Active {
   @ToolbarContainer@
@@ -1957,7 +1958,6 @@ HTML>BODY .appt-selected .appt_allday_body
   border: 1px solid #aaa; padding: 0;
   background-color: #fff;
 }
-
 
 /*
  *	App chooser

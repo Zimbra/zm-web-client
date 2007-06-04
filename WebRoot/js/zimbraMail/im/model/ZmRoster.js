@@ -23,13 +23,6 @@
  * ***** END LICENSE BLOCK *****
  */
 
-/**
-* Create a new, empty appt list.
-* @constructor
-* @class
-* This class represents a list of appts.
-*
-*/
 ZmRoster = function(appCtxt, imApp) {
 	ZmModel.call(this, ZmEvent.S_ROSTER);
 
@@ -222,7 +215,6 @@ function(im) {
 			} else if (not.type == "subscribed") {
 				var sub = not;
 				if (sub.to) {
-					this._appCtxt.getApp(ZmApp.IM).prepareVisuals();
 					var list = this.getRosterItemList();
 					var item = list.getByAddr(sub.to);
 					if (item) {
@@ -244,7 +236,6 @@ function(im) {
 			} else if (not.type == "unsubscribed") {
 				var unsub = not;
 				if (unsub.to) {
-					this._appCtxt.getApp(ZmApp.IM).prepareVisuals();
 					var list = this.getRosterItemList();
 					var item = list.getByAddr(unsub.to);
 					if (item) list.removeItem(item);
@@ -304,7 +295,7 @@ function(im) {
 					}
 				}
 			} else if (not.type == "leftchat") {
-				this._appCtxt.getApp(ZmApp.IM).prepareVisuals();
+				this._appCtxt.getApp(ZmApp.IM).prepareVisuals(); // not sure we want this here but whatever
 				var lc = not;
 				var chat = this.getChatList().getChatByThread(lc.thread);
 				if (chat) {
@@ -446,4 +437,39 @@ ZmRoster.prototype.breakDownAddress = function(addr) {
 
 ZmRoster.prototype.getGroups = function() {
 	return AjxVector.fromArray(this.getRosterItemList().getGroupsArray());
+};
+
+
+
+
+//------------------------------------------
+// for autocomplete
+//------------------------------------------
+
+ZmRosterTreeGroups = function(roster) {
+	this._groups = roster.getGroups();
+};
+
+ZmRosterTreeGroups.prototype.constructor = ZmRosterTreeGroups;
+
+/**
+ * Returns a list of matching groups for a given string
+ */
+ZmRosterTreeGroups.prototype.autocompleteMatch = function(str, callback) {
+	str = str.toLowerCase();
+	var result = [];
+
+	var a = this._groups;
+	var sz = a.size();
+	for (var i = 0; i < sz; i++) {
+		var g = a.get(i);
+		if (g.toLowerCase().indexOf(str) == 0)
+			result.push({ data: g, text: g });
+	}
+	callback.run(result);
+};
+
+ZmRosterTreeGroups.prototype.isUniqueValue =
+function(str) {
+	return false;
 };

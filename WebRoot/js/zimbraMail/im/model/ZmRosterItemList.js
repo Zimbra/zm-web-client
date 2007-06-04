@@ -23,13 +23,6 @@
  * ***** END LICENSE BLOCK *****
  */
 
-/**
-* Create a new, empty appt list.
-* @constructor
-* @class
-* This class represents a list of appts.
-*
-*/
 ZmRosterItemList = function(appCtxt) {
 	ZmList.call(this, ZmItem.ROSTER_ITEM, appCtxt);
 };
@@ -67,8 +60,7 @@ function(addr) {
  * return an array of all groups (uniqified)
  */
 
-ZmRosterItemList.prototype.getGroupsArray =
-function() {
+ZmRosterItemList.prototype.getGroupsArray = function() {
 	// TODO: cache. not currently used.
 	var hash = {};
 	var result = [];
@@ -86,11 +78,10 @@ function() {
 	return result;
 };
 
-ZmRosterItemList.prototype.removeAllItems =
-function() {
+ZmRosterItemList.prototype.removeAllItems = function() {
 	// get a clone, since we are removing while iterating...
 	var listArray = this.getVector().clone().getArray();
-	for (var i=0; i < listArray.length; i++) {
+	for (var i = 0; i < listArray.length; i++) {
 		this.removeItem(listArray[i]);
 	}
 };

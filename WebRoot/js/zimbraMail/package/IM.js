@@ -11,9 +11,6 @@ AjxPackage.require("ajax.dwt.core.DwtDragTracker");
 AjxPackage.require("ajax.dwt.widgets.DwtResizableWindow");
 
 AjxPackage.require("zimbraMail.im.model.ZmImGateway");
-AjxPackage.require("zimbraMail.im.model.ZmRosterTree");
-AjxPackage.require("zimbraMail.im.model.ZmRosterTreeGroup");
-AjxPackage.require("zimbraMail.im.model.ZmRosterTreeItem");
 AjxPackage.require("zimbraMail.im.model.ZmRoster");
 AjxPackage.require("zimbraMail.im.model.ZmRosterItem");
 AjxPackage.require("zimbraMail.im.model.ZmRosterItemList");
@@ -23,6 +20,7 @@ AjxPackage.require("zimbraMail.im.model.ZmChatList");
 AjxPackage.require("zimbraMail.im.model.ZmChatMessage");
 AjxPackage.require("zimbraMail.im.model.ZmAssistantBuddy");
 
+AjxPackage.require("zimbraMail.im.view.ZmImOverview");
 AjxPackage.require("zimbraMail.im.view.ZmChatWindowManager");
 AjxPackage.require("zimbraMail.im.view.ZmChatWindow");
 AjxPackage.require("zimbraMail.im.view.ZmChatTabs");

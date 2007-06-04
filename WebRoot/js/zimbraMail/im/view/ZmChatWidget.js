@@ -59,6 +59,7 @@ ZmChatWidget.prototype._rosterItemChangeListener = function(item, fields, setAll
 	var doShow = setAll || (ZmRosterItem.F_PRESENCE in fields);
 	var doUnread = setAll || (ZmRosterItem.F_UNREAD in fields);
 	var doName = setAll || (ZmRosterItem.F_NAME in fields);
+	var doTyping = fields && ZmRosterItem.F_TYPING in fields;
 
 // 	if (this._memberListView && fields)
 // 		this._memberListView._rosterItemChangeListener(item, fields);
@@ -76,6 +77,9 @@ ZmChatWidget.prototype._rosterItemChangeListener = function(item, fields, setAll
 		}
 		if (doName) {
 			this.setTitle(item.getDisplayName());
+		}
+		if (doTyping) {
+			this.setTyping(item, fields[ZmRosterItem.F_TYPING]);
 		}
 	}
 };
@@ -301,7 +305,7 @@ ZmChatWidget.prototype._init = function() {
 	this._getElement("input")[ AjxEnv.isIE ? "onkeydown" : "onkeypress" ] =
 		ZmChatWidget._inputKeyPress;
 
-	var dropTgt = new DwtDropTarget(["ZmRosterTreeItem", "ZmRosterTreeGroup", "ZmChatWidget"]);
+	var dropTgt = new DwtDropTarget([ "ZmRosterItem", "ZmChatWidget" ]);
 	this._label.setDropTarget(dropTgt);
 	this._toolbar.setDropTarget(dropTgt);
 	dropTgt.addDropListener(new AjxListener(this, this._dropOnTitleListener));
@@ -557,8 +561,7 @@ ZmChatWidget.prototype._stickyListener = function(ev) {
 ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
 	var srcData = ev.srcData;
 
-	function isBuddy()  { return srcData instanceof ZmRosterTreeItem };
-	function isGroup()  { return srcData instanceof ZmRosterTreeGroup };
+	function isBuddy()  { return srcData instanceof ZmRosterItem };
 	function isTab()    { return srcData instanceof ZmChatWidget };
 	function isGenericItem(type)   {
 		if (!(srcData.data && srcData.controller))
@@ -571,7 +574,7 @@ ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
 	var isMailItem = AjxCallback.simpleClosure(isGenericItem, null, ZmMailItem);
 	var isContact  = AjxCallback.simpleClosure(isGenericItem, null, ZmContact);
 
-	var dropOK = [ isBuddy, isGroup, isTab, isMailItem, isContact ];
+	var dropOK = [ isBuddy, isTab, isMailItem, isContact ];
 
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
 		for (var i = dropOK.length; --i >= 0;)
@@ -582,9 +585,8 @@ ZmChatWidget.prototype._dropOnTitleListener = function(ev) {
 
 		if (isBuddy()) {
 
-			// this._controller.chatWithRosterItem(srcData.getRosterItem());
-			var item = srcData.getRosterItem();
-			ZmChatMultiWindowView.getInstance().chatInNewTab(item, this.parent);
+			// this._controller.chatWithRosterItem(srcData);
+			ZmChatMultiWindowView.getInstance().chatInNewTab(srcData, this.parent);
 
  		} else if (isTab()) {
 
