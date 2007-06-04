@@ -192,7 +192,8 @@ function() {
 
 ZmVoiceApp.prototype.getOverviewId =
 function() {
-	return [this.getOverviewPanelContentId(), this.accordionItem.data.phone.name].join(":");
+	var name = this.accordionItem ? this.accordionItem.data.phone.name : "";
+	return [this.getOverviewPanelContentId(), name].join(":");
 };
 
 ZmVoiceApp.prototype.getVoiceInfo =
