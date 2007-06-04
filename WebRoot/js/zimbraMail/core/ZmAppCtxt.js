@@ -576,6 +576,17 @@ function(id) {
 	return this._accounts[id];
 };
 
+ZmAppCtxt.prototype.getMainAccount =
+function(id) {
+	for (var id in this._accounts) {
+		var account = this._accounts[id];
+		if (account.isMain) {
+			return account;
+		}
+	}
+	return this._accounts[ZmAccount.DEFAULT_ID];
+};
+
 /**
  * Makes the given account the active one, which will then be used
  * when fetching any account-specific data such as settings or folder

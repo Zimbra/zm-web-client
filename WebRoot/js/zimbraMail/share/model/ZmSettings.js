@@ -178,7 +178,7 @@ function(callback, accountName, result) {
 	// represents the user who logged in. If family mailbox is enabled, that account
 	// is a parent account with dominion over child accounts.
 	if (!accountName) {
-		var mainAcct = this._appCtxt.getAccount(ZmAccount.DEFAULT_ID);
+		var mainAcct = this._appCtxt.getMainAccount();
 		mainAcct.id = obj.id;
 		mainAcct.name = obj.name;
 		mainAcct.visible = true;
@@ -186,8 +186,10 @@ function(callback, accountName, result) {
 		mainAcct.loaded = true;
 		mainAcct.settings = this;
 		// replace dummy account with this one
-		this._appCtxt._accounts[mainAcct.id] = mainAcct;
-		delete this._appCtxt._accounts[ZmAccount.DEFAULT_ID];
+		if (this._appCtxt._accounts[ZmAccount.DEFAULT_ID]) {
+			this._appCtxt._accounts[mainAcct.id] = mainAcct;
+			delete this._appCtxt._accounts[ZmAccount.DEFAULT_ID];
+		}
 		this._appCtxt.setActiveAccount(mainAcct);
 	}
 	

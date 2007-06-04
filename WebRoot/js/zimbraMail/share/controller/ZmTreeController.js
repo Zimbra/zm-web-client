@@ -174,8 +174,10 @@ function(overviewId) {
  */
 ZmTreeController.prototype.clearTreeView =
 function(overviewId) {
-	this._treeView[overviewId].dispose();
-	delete this._treeView[overviewId];
+	if (this._treeView[overviewId]) {
+		this._treeView[overviewId].dispose();
+		delete this._treeView[overviewId];
+	}
 };
 
 /**
