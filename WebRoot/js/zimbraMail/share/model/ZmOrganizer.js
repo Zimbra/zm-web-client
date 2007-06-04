@@ -763,7 +763,7 @@ function() {
 	// one being deleted
 	var overviewController = this._appCtxt.getOverviewController();
 	var treeController = overviewController.getTreeController(this.type);
-	var overviewId = this._appCtxt.getAppController().getOverviewId();
+	var overviewId = this._appCtxt.getCurrentApp().getOverviewId();
 	var treeView = treeController.getTreeView(overviewId);
 	var organizer = treeView && treeView.getSelected();
 	if (organizer && (organizer == this || organizer.isChildOf(this))) {
