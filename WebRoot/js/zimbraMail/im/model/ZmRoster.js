@@ -27,13 +27,13 @@ ZmRoster = function(appCtxt, imApp) {
 	ZmModel.call(this, ZmEvent.S_ROSTER);
 
 	this._appCtxt = appCtxt;
-	this.getRosterItemTree(); // pre-create
 	this._newRosterItemtoastFormatter = new AjxMessageFormat(ZmMsg.imNewRosterItemToast);
 	this._presenceToastFormatter = new AjxMessageFormat(ZmMsg.imStatusToast);
 	this._leftChatFormatter = new AjxMessageFormat(ZmMsg.imLeftChat);
 	this._imApp = imApp;
-	this._requestGateways();
-}
+
+	this.reload();
+};
 
 ZmRoster.prototype = new ZmModel;
 ZmRoster.prototype.constructor = ZmRoster;
@@ -45,7 +45,7 @@ ZmRoster.NOTIFICATION_FOO_TIMEOUT = 10000; // 10 sec.
 ZmRoster.prototype.toString =
 function() {
 	return "ZmRoster";
-}
+};
 
 ZmRoster.prototype.getChatList =
 function() {
@@ -61,19 +61,10 @@ function() {
     return this._myAddress;
 };
 
-ZmRoster.prototype.getRosterItemTree =
-function() {
-	if (!this._rosterItemTree) {
-		this._rosterItemTree = new ZmFolderTree(this._appCtxt, ZmOrganizer.ROSTER_TREE_ITEM);
-		this._appCtxt.setTree(ZmOrganizer.ROSTER_TREE_ITEM, this._rosterItemTree);
-	}
-	return this._rosterItemTree;
-};
-
 ZmRoster.prototype.getRosterItem =
 function(addr) {
 	return this.getRosterItemList().getByAddr(addr);
-}
+};
 
 ZmRoster.prototype.getRosterItemList =
 function() {
@@ -183,7 +174,7 @@ function(subscribed) {
 			}
 		}
 	}
-}
+};
 
 /**
  * handle async notifications. we might need to queue this with timed action and return
@@ -198,7 +189,6 @@ function(im) {
 		var cl = this.getChatList();
 		for (var curNot=0; curNot < im.n.length; curNot++) {
 			var not = im.n[curNot];
-			// console.log("IM Notification: ", not);
 			if (not.type == "roster") {
 				this.getRosterItemList().removeAllItems();
 				var list = this.getRosterItemList();

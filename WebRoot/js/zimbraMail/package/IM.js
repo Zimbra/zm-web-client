@@ -6,8 +6,7 @@
  * Loaded: When the user goes to the IM application
  */
 
-// Probably need just one of these two
-AjxPackage.require("ajax.dwt.core.DwtDragTracker");
+// AjxPackage.require("ajax.dwt.core.DwtDragTracker");
 AjxPackage.require("ajax.dwt.widgets.DwtResizableWindow");
 
 AjxPackage.require("zimbraMail.im.model.ZmImGateway");

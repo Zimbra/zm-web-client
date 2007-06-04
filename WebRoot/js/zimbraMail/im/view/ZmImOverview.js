@@ -183,8 +183,11 @@ ZmImOverview.prototype._init = function() {
 
 ZmImOverview.prototype._createBuddy = function(type, buddy) {
 	var groups = buddy.getGroups();
-	if (groups.length == 0)
-		groups = [ null ]; // add to root item
+	if (groups.length == 0) {
+		groups = type == "buddy"
+			? [ ZmMsg.buddies ] // default to "Buddies"
+			: [ null ]; // add to root item for type == i.e. "assistant"
+	}
 	for (var i = 0; i < groups.length; ++i) {
 		var parent = this.getGroupItem(groups[i]);
 		var item = new DwtTreeItem(parent, null, buddy.getDisplayName(),

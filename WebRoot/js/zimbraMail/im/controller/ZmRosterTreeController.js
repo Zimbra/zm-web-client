@@ -44,6 +44,7 @@ ZmRosterTreeController = function(appCtxt) {
 	this._listeners[ZmOperation.IM_EDIT_CONTACT] = new AjxListener(this, this._imEditContactListener);
 	this._listeners[ZmOperation.IM_GATEWAY_LOGIN] = new AjxListener(this, this._imGatewayLoginListener);
 	this._listeners[ZmOperation.IM_TOGGLE_OFFLINE] = new AjxListener(this, this._imToggleOffline);
+	this._listeners[ZmOperation.DELETE] = new AjxListener(this, this._deleteListener);
 };
 
 ZmRosterTreeController.prototype.toString = function() {
@@ -65,6 +66,10 @@ ZmRosterTreeController.prototype._deleteShieldYesCallback =
 function(buddy) {
 	buddy._delete();
 	this._clearDialog(this._deleteShield);
+};
+
+ZmRosterTreeController.prototype._clearDialog = function(dlg) {
+	dlg.popdown();
 };
 
 // FIXME: move this in ZmImOverview

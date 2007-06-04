@@ -312,6 +312,7 @@ ZmChatListController.prototype._viewButtonListener = function(ev) {
 ZmChatListController.prototype._refreshListener = function(ev) {
 	var soapDoc = AjxSoapDoc.create("NoOpRequest", "urn:zimbraMail");
 	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true});
+	AjxDispatcher.run("GetRoster").reload();
 };
 
 // // Create some new thing, via a dialog. If just the button has been pressed (rather than
