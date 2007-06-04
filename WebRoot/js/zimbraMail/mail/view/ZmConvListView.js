@@ -287,39 +287,6 @@ function(field, item, ev, div, match) {
 	}
 };
 
-ZmConvListView.prototype._itemClicked =
-function(clickedEl, ev) {
-	ZmListView.prototype._itemClicked.call(this, clickedEl, ev);
-
-	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) &&
-		ev.button == DwtMouseEvent.LEFT)
-	{
-		if ((!ev.shiftKey && !ev.ctrlKey)) {
-			var item = AjxCore.objectWithId(Dwt.getAttr(clickedEl, "_itemIndex"));
-			if (item.type == ZmItem.CONV) {
-				var rowIds = item ? this._msgRowIdList[item.id] : null;
-				if (rowIds && rowIds.length && this._rowsArePresent(item)) {
-					var isConvChecked = this._isItemChecked(item);
-
-					for (var i = 0; i < rowIds.length; i++) {
-						var row = document.getElementById(rowIds[i]);
-						if (row) {
-							this.setMultiSelection(row, !isConvChecked);
-						}
-					}
-				}
-			} else {
-				// If msg is clicked, then we're dealing with an expanded conv. 
-				// Just always uncheck the containing conv.
-				var conv = this._appCtxt.cacheGet(item.cid);
-				var div = conv ? this._getElFromItem(conv) : null;
-				if (div)
-					this.setMultiSelection(div, true);
-			}
-		}
-	}
-};
-
 /**
  * @param conv		[ZmConv]		conv that owns the messages we will display
  * @param msg		[ZmMailMsg]*	msg that is the anchor for paging in more msgs
@@ -331,7 +298,7 @@ function(conv, msg, offset) {
 	var isConv = (item.type == ZmItem.CONV);
 	var rowIds = this._msgRowIdList[item.id];
 	if (rowIds && rowIds.length && this._rowsArePresent(item)) {
-		this._showMsgs(rowIds, true, conv);
+		this._showMsgs(rowIds, true);
 	} else {
 		this._msgRowIdList[item.id] = [];
 		var msgList = conv.msgs;
@@ -352,11 +319,6 @@ function(conv, msg, offset) {
 			var div = this._createItemHtml(msg, {now:this._now});
 			this._addRow(div, index + i + 1);
 			this._msgRowIdList[item.id].push(div.id);
-
-			// if checkbox selection enabled, set the checked status
-			if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
-				this.setMultiSelection(div, !this._isItemChecked(conv));
-			}
 		}
 	}
 
@@ -397,29 +359,15 @@ function(item) {
 };
 
 ZmConvListView.prototype._showMsgs =
-function(ids, show, conv) {
+function(ids, show) {
 	if (!(ids && ids.length)) { return; }
-
-	var cboxSelEnabled = this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX);
-	var isConvChecked = cboxSelEnabled && conv ? !this._isItemChecked(conv) : null;
 
 	for (var i = 0; i < ids.length; i++) {
 		var row = document.getElementById(ids[i]);
 		if (row) {
 			Dwt.setVisible(row, show);
-
-			if (cboxSelEnabled && show && conv) {
-				this.setMultiSelection(row, !isConvChecked);
-			}
 		}
 	}
-};
-
-ZmConvListView.prototype._isItemChecked =
-function(item) {
-	var selFieldId = this._getFieldId(item, ZmItem.F_SELECTION);
-	var selField = selFieldId ? document.getElementById(selFieldId) : null;
-	return (selField && selField.className == "ImgTaskCheckboxCompleted");
 };
 
 /**
