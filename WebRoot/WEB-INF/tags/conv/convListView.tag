@@ -69,7 +69,7 @@
                                     </td>
                                     <td class='Img'><app:attachmentImage attachment="${hit.conversationHit.hasAttachment}"/></td>
                                     <td><%-- allow this column to wrap --%>
-                                        <a href="${convUrl}" id="A${status.index}" <c:if test="${hit.conversationHit.id == context.currentItem.id}">accesskey='o' </c:if>>
+                                        <a href="${convUrl}" id="A${status.index}">
                                             <c:set var='subj' value="${empty hit.conversationHit.subject ? unknownSubject : zm:truncate(hit.conversationHit.subject,100,true)}"/>
                                             <c:out value="${subj}"/>
                                             <c:if test="${mailbox.prefs.showFragments and not empty hit.conversationHit.fragment and fn:length(subj) lt 90}">
@@ -80,11 +80,11 @@
                                             <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
                                             <c:if test="${cursor.hasPrev}">
                                                 <zm:prevItemUrl var="prevItemUrl" value="search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                                <a href="${prevItemUrl}" accesskey='k' id="PREV_ITEM"></a>
+                                                <a href="${prevItemUrl}" id="PREV_ITEM"></a>
                                             </c:if>
                                             <c:if test="${cursor.hasNext}">
                                                 <zm:nextItemUrl var="nextItemUrl" value="search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                                <a href="${nextItemUrl}" accesskey='j' id="NEXT_ITEM"></a>
+                                                <a href="${nextItemUrl}" id="NEXT_ITEM"></a>
                                             </c:if>
                                         </c:if>
                                     </td>

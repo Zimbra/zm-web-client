@@ -28,21 +28,21 @@
                 <a href="${mfoldersUrl}"><fmt:message key="TREE_EDIT"/> </a>
             </th>
         </tr>
-
+ 
         <c:if test="${expanded}">
-            <app:overviewFolder folder="${mailbox.inbox}" keys="${keys}" key="i"/>
+            <app:overviewFolder folder="${mailbox.inbox}" keys="${keys}"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.inbox.id}" skipsystem="false"/>
 
-            <app:overviewFolder folder="${mailbox.sent}" keys="${keys}" key="s"/>
+            <app:overviewFolder folder="${mailbox.sent}" keys="${keys}"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.sent.id}" skipsystem="false"/>
 
-            <app:overviewFolder folder="${mailbox.drafts}" keys="${keys}" key="d"/>
+            <app:overviewFolder folder="${mailbox.drafts}" keys="${keys}"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.drafts.id}" skipsystem="false"/>
 
-            <app:overviewFolder folder="${mailbox.spam}" keys="${keys}" key="u"/>
+            <app:overviewFolder folder="${mailbox.spam}" keys="${keys}"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.spam.id}" skipsystem="false"/>
 
-            <app:overviewFolder folder="${mailbox.trash}" keys="${keys}" key="t"/>
+            <app:overviewFolder folder="${mailbox.trash}" keys="${keys}"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
         </c:if>
     </table>

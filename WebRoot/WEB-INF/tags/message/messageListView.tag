@@ -87,7 +87,7 @@
                                 <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                 <td > <%-- allow this col to wrap --%>
 
-                                    <a href="${currentItemUrl}" id="A${status.index}" <c:if test="${hit.id == context.currentItem.id}">accesskey='o'</c:if>>
+                                    <a href="${currentItemUrl}" id="A${status.index}">
                                         <c:set var="subj" value="${empty hit.messageHit.subject ? noSubject : hit.messageHit.subject}"/>
                                         <c:out value="${subj}"/>
                                         <c:if test="${mailbox.prefs.showFragments and not empty hit.messageHit.fragment and fn:length(subj) lt 90}">
@@ -98,11 +98,11 @@
                                         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
                                         <c:if test="${cursor.hasPrev}">
                                             <zm:prevItemUrl var="prevItemUrl" value="/h/search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                            <a href="${prevItemUrl}" accesskey='k'></a>
+                                            <a href="${prevItemUrl}"></a>
                                         </c:if>
                                         <c:if test="${cursor.hasNext}">
                                             <zm:nextItemUrl var="nextItemUrl" value="/h/search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                            <a href="${nextItemUrl}" accesskey='j'></a>
+                                            <a href="${nextItemUrl}"></a>
                                         </c:if>
                                     </c:if>
                                 </td>

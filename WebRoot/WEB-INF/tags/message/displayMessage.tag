@@ -178,11 +178,9 @@
                     <td nowrap align=left style='padding-left: 5px'>
                         <table cellspacing=4 cellpadding=0 class='Tb'>
                             <tr>
-                                <c:set var="accessKey" value="${0}"/>
                                 <c:if test="${showInviteReply}">
-                                    <c:set var="keyOffset" value="${3}"/>
                                     <td style='padding: 0 2px 0 2px'>
-                                        <a <c:if test="${not isPart}">accesskey="1" </c:if> href="${composeUrl}&op=accept">
+                                        <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="${composeUrl}&op=accept">
                                             <img src="<c:url value="/images/common/Check.gif"/>" alt=""/>
                                             &nbsp;
                                             <span><fmt:message key="replyAccept"/></span>
@@ -190,7 +188,7 @@
                                     </td>
                                     <td><div class='vertSep'></div></td>
                                     <td style='padding: 0 2px 0 2px'>
-                                        <a <c:if test="${not isPart}">accesskey="2" </c:if> href="${composeUrl}&op=tentative">
+                                        <a <c:if test="${not isPart}">id="OPTENT"</c:if> href="${composeUrl}&op=tentative">
                                             <img src="<c:url value="/images/common/QuestionMark.gif"/>" alt=""/>
                                             &nbsp;
                                             <span><fmt:message key="replyTentative"/></span>
@@ -198,7 +196,7 @@
                                     </td>
                                     <td><div class='vertSep'></div></td>
                                     <td style='padding: 0 2px 0 2px'>
-                                        <a <c:if test="${not isPart}">accesskey="3" </c:if> href="${composeUrl}&op=decline">
+                                        <a <c:if test="${not isPart}">id="OPDECLINE"</c:if> href="${composeUrl}&op=decline">
                                             <img src="<c:url value="/images/common/Cancel.gif"/>" alt=""/>
                                             &nbsp;
                                             <span><fmt:message key="replyDecline"/></span>
@@ -207,7 +205,7 @@
                                     <td><div class='vertSep'></div></td>
                                 </c:if>
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">accesskey="${keyOffset+1}" id="OPREPLY"</c:if> href="${composeUrl}&op=reply">
+                                    <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="${composeUrl}&op=reply">
                                         <img src="<c:url value="/images/mail/Reply.gif"/>" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="reply"/></span>
@@ -215,7 +213,7 @@
                                 </td>
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">accesskey="${keyOffset+2}" id="OPREPLYALL"</c:if> href="${composeUrl}&op=replyAll">
+                                    <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="${composeUrl}&op=replyAll">
                                         <img src="<c:url value="/images/mail/ReplyAll.gif"/>" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="replyAll"/></span>
@@ -223,7 +221,7 @@
                                 </td>
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">accesskey="${keyOffset+3}" id="OPFORW"</c:if> href="${composeUrl}&op=forward">
+                                    <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="${composeUrl}&op=forward">
                                         <img src="<c:url value="/images/mail/Forward.gif"/>" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="forward"/></span>
@@ -242,7 +240,7 @@
                                             <c:param name="st" value="conversation"/>
                                             <c:param name="sq" value='conv:"${message.conversationId}"'/>
                                         </c:url>
-                                        <a accesskey='${not empty newWindowUrl ? '8' : '9'}' href="${convUrl}">
+                                        <a id="OPSHOWCONV" href="${convUrl}">
                                             <img src="<c:url value="/images/mail/Conversation.gif"/>" alt="<fmt:message key="showConversation"/>" title="<fmt:message key="showConversation"/>"/>
                                         </a>
                                     </td>
@@ -250,7 +248,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <c:if test="${not empty newWindowUrl}">
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a accesskey='9' target="_blank" href="${newWindowUrl}">
+                                    <a id="OPNEWWIN" target="_blank" href="${newWindowUrl}">
                                         <img src="<c:url value="/images/common/OpenInNewWindow.gif"/>" alt="<fmt:message key="newWindow"/>" title="<fmt:message key="newWindow"/>"/>
                                     </a>
                                 </td>
@@ -258,7 +256,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <c:if test="${not isPart}">
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a accesskey='0' target="_blank" href="/service/home/~/?id=${message.id}&auth=co">
+                                    <a id="OPSHOWORIG" target="_blank" href="/service/home/~/?id=${message.id}&auth=co">
                                         <img src="<c:url value="/images/mail/Message.gif"/>" alt="<fmt:message key="showOrig"/>" title="<fmt:message key="showOrig"/>"/>
                                     </a>
                                     </c:if>
@@ -275,7 +273,7 @@
         <tr>
             <td class='DisplayImages' colspan=2>
                 <fmt:message key="externalImages"/>
-                &nbsp;<a id="DISPEXTIMG" accesskey='x' href="${externalImageUrl}">
+                &nbsp;<a id="DISPEXTIMG" href="${externalImageUrl}">
                 <fmt:message key="displayExternalImages"/>
             </a>
             </td>

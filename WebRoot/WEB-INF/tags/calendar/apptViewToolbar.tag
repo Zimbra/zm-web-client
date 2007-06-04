@@ -13,7 +13,7 @@
     <c:set var="apptToolbarCache" scope="request">
         <td nowrap>
             <app:calendarUrl var="closeurl" />
-            <a href="${closeurl}" <c:if test="${keys}">accesskey="z"</c:if>> <app:img src="common/Close.gif"/> <span><fmt:message key="close"/></span></a>
+            <a href="${closeurl}" <c:if test="${keys}"></c:if>> <app:img src="common/Close.gif"/> <span><fmt:message key="close"/></span></a>
             <c:if test="${not isReadOnly}">
                 <td><div class='vertSep'></div></td>
                 <c:choose>

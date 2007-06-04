@@ -188,11 +188,11 @@
                                                             <zm:computeNextPrevItem var="messCursor" searchResult="${convSearchResult}" index="${status.index}"/>
                                                             <c:if test="${messCursor.hasPrev}">
                                                                 <zm:currentResultUrl var="prevMsgUrl" value="search" action='view' context="${context}" cso="${messCursor.prevOffset}" csi="${messCursor.prevIndex}" css="${param.css}"/>
-                                                                <a href="${prevMsgUrl}" accesskey='k' id="PREV_ITEM"></a>
+                                                                <a href="${prevMsgUrl}" id="PREV_ITEM"></a>
                                                             </c:if>
                                                             <c:if test="${messCursor.hasNext}">
                                                                 <zm:currentResultUrl var="nextMsgUrl" value="search"  action="view" context="${context}" cso="${messCursor.nextOffset}" csi="${messCursor.nextIndex}" css="${param.css}"/>
-                                                                <a href="${nextMsgUrl}" accesskey='j' id="NEXT_ITEM"></a>
+                                                                <a href="${nextMsgUrl}" id="NEXT_ITEM"></a>
                                                             </c:if>
                                                         </c:if>
                                                     </td>

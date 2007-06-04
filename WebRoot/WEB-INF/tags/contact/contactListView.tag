@@ -49,7 +49,7 @@
                                    <td class='Img'><app:img src="${hit.contactHit.image}" altkey="${hit.contactHit.imageAltKey}"/></td>
                                    <td ><span style='padding:3px'>
                                        <zm:currentResultUrl var="contactUrl" value="/h/search" id="${hit.contactHit.id}" index="${status.index}" context="${context}"/>
-                                       <a id="CURR_ITEM" href="${contactUrl}" <c:if test="${isCurr}">accesskey='o'</c:if>>
+                                       <a  href="${contactUrl}" <c:if test="${isCurr}">id="CURR_ITEM"</c:if>>
                                                ${fn:escapeXml(empty hit.contactHit.fileAsStr ? '<None>' : hit.contactHit.fileAsStr)}
                                        </a></span>
                                        <c:if test="${hit.contactHit.id == context.currentItem.id}">
@@ -57,11 +57,11 @@
 
                                            <c:if test="${cursor.hasPrev}">
                                                <zm:prevItemUrl var="prevItemUrl" value="/h/search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                               <a id="PREV_ITEM" href="${prevItemUrl}" accesskey='k'></a>
+                                               <a id="PREV_ITEM" href="${prevItemUrl}"></a>
                                            </c:if>
                                            <c:if test="${cursor.hasNext}">
                                                <zm:nextItemUrl var="nextItemUrl" value="/h/search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                               <a id="NEXT_ITEM" href="${nextItemUrl}" accesskey='j'></a>
+                                               <a id="NEXT_ITEM" href="${nextItemUrl}"></a>
                                            </c:if>
                                        </c:if>
                                    </td>

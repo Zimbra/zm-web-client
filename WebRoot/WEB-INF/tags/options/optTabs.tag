@@ -7,58 +7,53 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 
-<c:set var="accessKey" value="${1}"/>
 <table cellpadding=0 cellspacing=0>
     <tr class='Tabs'>
         <td class='TabSpacer'/>
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='general' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options?selected=general"/>" accesskey="${accessKey}">
+            <a href="<c:url value="/h/options?selected=general"/>">
                 <span><fmt:message key="general"/></span>
             </a>
         </td>
-        <c:set var="accessKey" value="${accessKey+1}"/>
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='mail' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options?selected=mail"/>" accesskey="${accessKey}">
+            <a href="<c:url value="/h/options?selected=mail"/>">
                 <span><fmt:message key="mail"/></span></a>
         </td>
-        <c:set var="accessKey" value="${accessKey+1}"/>
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='identity' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options?selected=identity"/>" accesskey="${accessKey}">
+            <a href="<c:url value="/h/options?selected=identity"/>">
                 <span><fmt:message key="mailIdentity"/></span></a>
         </td>
         <c:if test="${mailbox.features.filters}">
-            <c:set var="accessKey" value="${accessKey+1}"/>
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='filter' ? 'TabSelected' :'TabNormal'}'>
-                <a href="<c:url value="/h/options?selected=filter"/>" accesskey="${accessKey}">
+                <a href="<c:url value="/h/options?selected=filter"/>">
                     <span><fmt:message key="mailFilters"/></span></a>
             </td>
         </c:if>
-        <c:set var="accessKey" value="${accessKey+1}"/>
         <c:if test="${mailbox.features.contacts}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='addressbook' ? 'TabSelected' :'TabNormal'}'>
-                <a href="<c:url value="/h/options?selected=addressbook"/>" accesskey="${accessKey}">
+                <a href="<c:url value="/h/options?selected=addressbook"/>">
                     <span><fmt:message key="addressBook"/></span></a>
             </td>
-            <c:set var="accessKey" value="${accessKey+1}"/>
         </c:if>
         <c:if test="${mailbox.features.calendar}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='calendar' ? 'TabSelected' :'TabNormal'}'>
-                <a href="<c:url value="/h/options?selected=calendar"/>" accesskey="${accessKey}">
+                <a href="<c:url value="/h/options?selected=calendar"/>">
                     <span><fmt:message key="calendar"/></span></a>
             </td>
-            <c:set var="accessKey" value="${accessKey+1}"/>
         </c:if>
+        <%--
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='shortcuts' ? 'TabSelected' :'TabNormal'}'>
-            <a href="<c:url value="/h/options?selected=shortcuts"/>" accesskey="${accessKey}">
+            <a href="<c:url value="/h/options?selected=shortcuts"/>">
                 <span><fmt:message key="shortcuts"/></span></a>
         </td>
+        --%>
         <td class='TabFiller'>
             &nbsp;
         </td>

@@ -231,7 +231,7 @@
                                     <c:when test="${showInviteReply}">
                                         <c:set var="keyOffset" value="${3}"/>
                                         <td style='padding: 0 2px 0 2px'>
-                                            <a <c:if test="${not isPart}">accesskey="1" </c:if> href="${composeUrl}&op=accept">
+                                            <a <c:if test="${not isPart}"></c:if> href="${composeUrl}&op=accept">
                                                 <img src="<c:url value="/images/common/Check.gif"/>" alt=""/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyAccept"/></span>
@@ -239,7 +239,7 @@
                                         </td>
                                         <td><div class='vertSep'></div></td>
                                         <td style='padding: 0 2px 0 2px'>
-                                            <a <c:if test="${not isPart}">accesskey="2" </c:if> href="${composeUrl}&op=tentative">
+                                            <a <c:if test="${not isPart}"></c:if> href="${composeUrl}&op=tentative">
                                                 <img src="<c:url value="/images/common/QuestionMark.gif"/>" alt=""/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyTentative"/></span>
@@ -247,7 +247,7 @@
                                         </td>
                                         <td><div class='vertSep'></div></td>
                                         <td style='padding: 0 2px 0 2px'>
-                                            <a <c:if test="${not isPart}">accesskey="3" </c:if> href="${composeUrl}&op=decline">
+                                            <a <c:if test="${not isPart}"></c:if> href="${composeUrl}&op=decline">
                                                 <img src="<c:url value="/images/common/Cancel.gif"/>" alt=""/>
                                                 &nbsp;
                                                 <span><fmt:message key="replyDecline"/></span>
@@ -266,7 +266,7 @@
                             <table cellspacing=4 cellpadding=0 class='Tb'>
                                 <tr>
                                     <td style='padding: 0 2px 0 2px'>
-                                        <a accesskey='9' target="_blank" href="${newWindowUrl}">
+                                        <a target="_blank" href="${newWindowUrl}">
                                             <img src="<c:url value="/images/common/OpenInNewWindow.gif"/>" alt="<fmt:message key="newWindow"/>" title="<fmt:message key="newWindow"/>"/>
                                         </a>
                                     </td>
@@ -283,7 +283,7 @@
         <tr>
             <td class='DisplayImages'>
                 <fmt:message key="externalImages"/>
-                &nbsp;<a accesskey='x' href="${externalImageUrl}">
+                &nbsp;<a href="${externalImageUrl}">
                 <fmt:message key="displayExternalImages"/>
             </a>
             </td>

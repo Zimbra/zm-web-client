@@ -165,7 +165,7 @@
                                         <td class='ZhApptRecurrInfo'>
                                             <app:calendarUrl toggleInstance="true" var="apptUrl"/>
                                             <fmt:message key="apptInstNote"/>
-                                            &nbsp;<a accesskey='x' href="${apptUrl}"><fmt:message key="apptInstEditSeries"/></a>
+                                            &nbsp;<a href="${apptUrl}"><fmt:message key="apptInstEditSeries"/></a>
                                         </td>
                                     </tr>
                                 </table>
