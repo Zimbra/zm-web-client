@@ -532,10 +532,9 @@ padding: 8px 0px 6px 0px;
 
 .shortcutKeys {
 	text-align:right;
-	padding:6px;
+	padding:6px 0;
 	vertical-align:top;
 	@SeparatorBorder@
-	width:250px;
 	font-weight:bold;
 	@Text-disabled@;
 }
@@ -548,8 +547,7 @@ padding: 8px 0px 6px 0px;
 
 .shortcutKeyCombo {
 	white-space:nowrap;
-	margin-right:5px;
-	margin-left:5px;
+	padding:5px;
 }
 
 .shortcutKey {

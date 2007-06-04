@@ -47,13 +47,11 @@
                     <span><fmt:message key="calendar"/></span></a>
             </td>
         </c:if>
-        <%--
         <td class='TabSpacer'/>
         <td class='Tab ${selected=='shortcuts' ? 'TabSelected' :'TabNormal'}'>
             <a href="<c:url value="/h/options?selected=shortcuts"/>">
                 <span><fmt:message key="shortcuts"/></span></a>
         </td>
-        --%>
         <td class='TabFiller'>
             &nbsp;
         </td>

@@ -104,8 +104,8 @@
         <zm:bindKey message="global.PreviousPage" id="PREV_PAGE"/>
         <zm:bindKey message="global.NextPage" id="NEXT_PAGE"/>
 
-        <zm:bindKey message="conversation.PreviousConversation" id="PREV_CONV"/>
-        <zm:bindKey message="conversation.NextConversation" id="NEXT_CONV"/>
+        <zm:bindKey message="conversation.PreviousConversationPage" id="PREV_CONVPAGE"/>
+        <zm:bindKey message="conversation.NextConversationPage" id="NEXT_CONVPAGE"/>
     </app:keyboard>
     
     <form action="${currentUrl}" method="post" name="zform">
