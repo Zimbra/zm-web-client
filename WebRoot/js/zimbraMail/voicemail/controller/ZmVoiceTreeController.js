@@ -70,10 +70,16 @@ function(overviewId) {
 		}
 	}
 
-	var startFolder = this._voiceApp.getStartFolder();
-	if (startFolder) {
-		var treeItem = view.getTreeItemById(startFolder.id);
-		view.setSelection(treeItem, true);
+	// show start folder as selected
+	var parts = overviewId.split(":");
+	if (parts && (parts.length == 2)) {
+		var startFolder = this._voiceApp.getStartFolder(parts[1]);
+		if (startFolder) {
+			var treeItem = view.getTreeItemById(startFolder.id);
+			if (treeItem) {
+				view.setSelection(treeItem, true);
+			}
+		}
 	}
 };
 

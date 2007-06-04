@@ -354,8 +354,17 @@ function(callback, response) {
 };
 
 ZmVoiceApp.prototype.getStartFolder =
-function() {
-	return this.phones[0].folderTree.getByName(ZmVoiceFolder.VOICEMAIL);
+function(name) {
+	var which = 0;
+	if (name) {
+		for (var i = 0; i < this.phones.length; i++) {
+			var phone = this.phones[i];
+			if (phone.name == name) {
+				which = i;
+			}
+		}
+	}
+	return this.phones[which].folderTree.getByName(ZmVoiceFolder.VOICEMAIL);
 };
 
 ZmVoiceApp.prototype.getVoiceController =
