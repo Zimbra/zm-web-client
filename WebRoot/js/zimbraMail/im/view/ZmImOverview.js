@@ -188,10 +188,14 @@ ZmImOverview.prototype._createBuddy = function(type, buddy) {
 			? [ ZmMsg.buddies ] // default to "Buddies"
 			: [ null ]; // add to root item for type == i.e. "assistant"
 	}
+	var label = buddy.getDisplayName();
+	var icon = buddy.getPresence().getIcon();
 	for (var i = 0; i < groups.length; ++i) {
 		var parent = this.getGroupItem(groups[i]);
-		var item = new DwtTreeItem(parent, null, buddy.getDisplayName(),
-					   buddy.getPresence().getIcon());
+		var item = new DwtTreeItem(parent,
+					   this.getSortIndex(label, parent),
+					   label,
+					   icon);
 		item.setToolTipContent("-"); // force it to have a tooltip
 		item.getToolTipContent = AjxCallback.simpleClosure(buddy.getToolTip, buddy);
 		item.setData("ZmImOverview.data", { type: type, buddy: buddy });
@@ -243,13 +247,37 @@ ZmImOverview.prototype.getGroupItem = function(group) {
 	var g = this._groupItems[group];
 	if (!g) {
 		g = this._groupItems[group] = new DwtTreeItem(this._rootItem,
-							      null, // index
+							      this.getSortIndex(group), // index
 							      group, // text
 							      "ImGroup" // image
 							     );
+		g.setToolTipContent("-");
+		g.getToolTipContent = function() {
+			var data = this.getData("ZmImOverview.data");
+			return AjxMessageFormat.format(ZmMsg.imGroupItemTooltip, [ data.group, this.getItemCount() ]);
+		};
 		g.setData("ZmImOverview.data", { type: "group", group: group });
 	}
 	return g;
+};
+
+ZmImOverview.prototype.getSortIndex = function(label, root) {
+	var type = "buddy";
+	if (root == null) {
+		type = "group";
+		root = this._rootItem;
+	}
+	var items = root.getItems();
+	for (var i = 0; i < items.length; ++i) {
+		var item = items[i];
+		var data = item.getData("ZmImOverview.data");
+		var txt = type == "buddy"
+			? data.buddy.getDisplayName()
+			: data.group;
+		if (txt > label)
+			break;
+	}
+	return i;
 };
 
 ZmImOverview.prototype.addFilter = function(f) {
