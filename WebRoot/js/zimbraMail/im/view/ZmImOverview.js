@@ -1,6 +1,8 @@
 ZmImOverview = function(appCtxt, parent) {
 	DwtComposite.call(this, parent);
 
+	this.setScrollStyle(DwtControl.SCROLL);
+
 	this._appCtxt = appCtxt;
 	this._groupItems = {};
 	this._itemsById = {};
