@@ -16,7 +16,7 @@
         <a href="${closeurl}" <c:if test="${keys}">id="CLOSE_ITEM"</c:if>> <app:img src="common/Close.gif"/> <span>${fn:escapeXml(context.backTo)}&nbsp;</span></a>
         </td>
         <td><div class='vertSep'></div></td>
-         <app:button name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
+         <app:button id="OPDELETE" name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
         <td><div class='vertSep'></div></td>
         <td  nowrap valign=middle>
         <select name="folderId">

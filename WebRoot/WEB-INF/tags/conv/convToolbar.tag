@@ -13,7 +13,7 @@
     <zm:getMailbox var="mailbox"/>
     <c:set var="cvToolbarCache" scope="request">
         <td><div class='vertSep'></div></td>
-        <app:button name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
+        <app:button id="OPDELETE" name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
         <td><div class='vertSep'></div></td>
         <td  nowrap valign=middle>
         <select name="folderId">

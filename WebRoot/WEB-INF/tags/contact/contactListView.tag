@@ -109,6 +109,7 @@
    <app:keyboard globals="true">
        <zm:bindKey message="contacts.NewGroup" func="function() { zclick('SNEW_GROUP')}"/>
        <zm:bindKey message="global.SelectAllCheckBoxes" func="function() { zclick('OPCHALL')}"/>
+       <zm:bindKey message="contacts.Delete" func="function() { zclick('SOPDELETE')}"/>
        <zm:bindKey message="contacts.Edit" func="function() { zclick('SOPEDIT')}"/>
        <zm:bindKey message="global.CheckCheckBox" func="zcheck"/>
        <zm:bindKey message="global.PreviousItem" id="PREV_ITEM"/>

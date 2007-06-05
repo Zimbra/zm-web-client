@@ -167,4 +167,6 @@
         </table>
         <input type="hidden" name="doAction" value="1"/>
     </form>
+
+    <app:keyboard globals="true"/>
 </app:view>

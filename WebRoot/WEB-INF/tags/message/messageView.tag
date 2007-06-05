@@ -44,6 +44,7 @@
         <zm:bindKey message="mail.MarkRead" func="zread"/>
         <zm:bindKey message="mail.MarkUnread" func="zunread"/>
         <zm:bindKey message="mail.Spam" func="zjunk"/>
+        <zm:bindKey message="mail.Delete" func="function() { zclick('SOPDELETE')}"/>
         <zm:bindKey message="global.CheckCheckBox" func="zcs"/>
 
         <zm:bindKey message="mail.ShowExternalImages" id="DISPEXTIMG"/>

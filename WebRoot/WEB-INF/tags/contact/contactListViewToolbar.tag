@@ -23,10 +23,10 @@
         <td><div class='vertSep'></div></td>
          <c:choose>
              <c:when test="${context.isFolderSearch and context.folder.isTrash}">
-                 <app:button name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT" />
+                 <app:button id="OPDELETE" name="actionHardDelete" text="actionDelete" tooltip="actionTrashTT" />
              </c:when>
              <c:otherwise>
-                 <app:button name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
+                 <app:button id="OPDELETE" name="actionDelete" text="actionDelete" tooltip="actionTrashTT"/>
              </c:otherwise>
          </c:choose>
          <td><div class='vertSep'></div></td>
