@@ -324,7 +324,7 @@
                             }
                             //if (keydownH) doc.onkeydown = keydownH;
                             //if (keypressH) doc.onkeypress = keypressH;
-                            setTimeout(resizeIframe, 0);
+                            setTimeout(resizeIframe, 10);
                         })();
                     </script>
                 </c:when>

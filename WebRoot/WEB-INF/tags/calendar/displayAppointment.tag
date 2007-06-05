@@ -318,7 +318,7 @@
                             doc.open();
                             doc.write("${zm:jsEncode(theBody)}");
                             doc.close();
-                            setTimeout(resizeIframe, 0);
+                            setTimeout(resizeIframe, 10);
                         })();
                     </script>
                 </c:when>
