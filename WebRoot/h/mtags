@@ -80,13 +80,15 @@
                                             <td width=1%>
                                                 &nbsp;
                                             </td>
-                                            <td>
+                                            <td nowrap colspan='3' class='Folder ${tag.hasUnread ? ' Unread':''}'>
                                                 <c:url var="selectUrl" value="">
                                                     <c:param name="id" value="${tag.id}"/>
                                                 </c:url>
                                                 <a href="${selectUrl}">
                                                     <app:img src="${tag.image}"/>
-                                                        <span style='vertical-align:middle;'>${fn:escapeXml(tag.name)}</span>
+                                                        <span style='vertical-align:middle;'>${fn:escapeXml(tag.name)}
+                                                            <c:if test="${tag.hasUnread}"> (${tag.unreadCount}) </c:if>
+                                                        </span>
                                                 </a>
                                             </td>
                                         </tr>
