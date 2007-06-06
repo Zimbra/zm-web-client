@@ -149,9 +149,6 @@ function(appt, mode, isDirty) {
 		button.setImage("Appointment");
 	}
 
-	// always switch to appointment tab
-	this.switchToTab(this._apptTabKey);
-
 	for (var i = 0; i < this._tabIds.length; i++) {
 		var id = this._tabIds[i];
 		var tabPage = this._tabPages[id];
@@ -159,6 +156,9 @@ function(appt, mode, isDirty) {
 			tabPage.initialize(appt, mode, isDirty);
 		}
 	}
+	
+	// always switch to appointment tab
+	this.switchToTab(this._apptTabKey);
 };
 
 ZmApptComposeView.prototype.cleanup = 
