@@ -21,6 +21,6 @@
     </c:if>
     <a href='search?sfi=${folder.id}'>
         <app:img alt='${fn:escapeXml(label)}' src="${folder.image}"/>
-        <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>${fn:escapeXml(label)}</span>
+        <span <c:if test="${folder.id eq requestScope.context.selectedId}"> class='ZhTISelected'</c:if>>${zm:truncate(fn:escapeXml(label),20,true)}</span>
     </a>
 </td></tr>
