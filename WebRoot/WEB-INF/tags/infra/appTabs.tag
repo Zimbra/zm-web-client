@@ -19,6 +19,13 @@
                 <span><fmt:message key="mail"/></span>
             </a>
         </td>
+        <c:if test="${mailbox.features.voice}">
+            <td class='TabSpacer'/>
+            <td class='Tab ${selected=='voice' ? 'TabSelected' :'TabNormal'}'>
+                <a id='TAB_VOICE' href="<c:url value="/h/search?st=voicemail"/>" <c:if test="${keys}">accesskey="v"</c:if>><app:img src="voicemail/VoicemailApp.gif" altkey='ALT_APP_CONTACTS'/><span><fmt:message
+                        key="voice"/></span></a>
+            </td>
+        </c:if>
         <c:if test="${mailbox.features.contacts}">
             <td class='TabSpacer'/>
             <td class='Tab ${selected=='contacts' ? 'TabSelected' :'TabNormal'}'>

@@ -3,6 +3,7 @@
 <%@ attribute name="folders" rtexprvalue="true" required="false" %>
 <%@ attribute name="searches" rtexprvalue="true" required="false" %>
 <%@ attribute name="contacts" rtexprvalue="true" required="false" %>
+<%@ attribute name="voice" rtexprvalue="true" required="false" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
 <%@ attribute name="minical" rtexprvalue="true" required="false" %>
 <%@ attribute name="date" rtexprvalue="true" required="false" type="java.util.Calendar" %>
@@ -37,7 +38,7 @@
             </a>
         </td>
         <td colspan=2 valign=top class='TopContent'>
-            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}"/>
+            <app:appTop mailbox="${mailbox}" keys="${keys}" query="${empty context.query ? param.sq : context.query}" calendars="${calendars}" voice="${voice}"/>
         </td>
     </tr>
     <tr>
@@ -73,7 +74,7 @@
     <tr>
         <c:if test="${empty editmode}">
             <td valign=top class='Overview'>
-                <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
+                <app:overviewTree mailbox="${mailbox}" keys="${keys}" minical="${minical}" calendars="${calendars}" contacts="${contacts}" voice="${voice}" tags="${tags}" searches="${searches}" folders="${folders}" editmode="${editmode}" date="${date}"/>
             </td>
         </c:if>
         <c:set var="adsOn" value="${!empty ads}"/>

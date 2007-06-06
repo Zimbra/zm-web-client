@@ -531,6 +531,35 @@
         <path>/WEB-INF/tags/keyboard.tag</path>
     </tag-file>
 
+    <tag-file>
+        <name>voiceMailListView</name>
+        <path>/WEB-INF/tags/voice/voiceMailListView.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>voiceMailListViewAction</name>
+        <path>/WEB-INF/tags/voice/voiceMailListViewAction.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>voiceFolderTree</name>
+        <path>/WEB-INF/tags/voice/voiceFolderTree.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>voiceFolder</name>
+        <path>/WEB-INF/tags/voice/voiceFolder.tag</path>
+    </tag-file>
+
+    <tag-file>
+        <name>doVoiceFolderTree</name>
+        <path>/WEB-INF/tags/voice/doVoiceFolderTree.tag</path>
+    </tag-file>
+
+    <tag-file>
+         <name>voiceMailListViewToolbar</name>
+         <path>/WEB-INF/tags/voice/voiceMailListViewToolbar.tag</path>
+     </tag-file>
 
 </taglib>
 

@@ -2,6 +2,7 @@
 <%@ attribute name="query" rtexprvalue="true" required="false" %>
 <%@ attribute name="keys" rtexprvalue="true" required="true" %>
 <%@ attribute name="calendars" rtexprvalue="true" required="false" %>
+<%@ attribute name="voice" rtexprvalue="true" required="false" %>
 <%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
@@ -22,6 +23,9 @@
             </c:choose>
         <form method="get" action="${searchUrl}">
             <c:set var="query">${fn:escapeXml((!empty query and mailbox.prefs.showSearchString) ? query : param.sq)}</c:set>
+            <c:if test="${voice}">
+                <c:set var="query"></c:set>
+            </c:if>
             &nbsp;<label for="searchField"><fmt:message key="find"/> :</label>
             <input id="searchField" class="searchField" style='width:50%' maxlength=2048 name=sq value="${query}">
             &nbsp;<fmt:message key="in"/>&nbsp;

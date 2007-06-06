@@ -11,25 +11,28 @@
     <app:composeCheck/>
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
     <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
-    
+
      <c:if test="${not empty param.expand}">
          <c:set target="${sessionScope.expanded}" property="${param.expand}" value="expand"/>
      </c:if>
      <c:if test="${not empty param.collapse}">
          <c:set target="${sessionScope.expanded}" property="${param.collapse}" value="collapse"/>
      </c:if>
-     
-     <%-- switch based on context saerch types --%>
+
+     <%-- switch based on context search types --%>
 
      <c:choose>
          <c:when test="${not empty param.doConvListViewAction}">
              <app:convListViewAction/>
          </c:when>
          <c:when test="${not empty param.doMessageAction}">
-             <app:messageAction/>             
+             <app:messageAction/>
          </c:when>
          <c:when test="${not empty param.doContactListViewAction or param.action eq 'newcontact' or param.action eq 'newcontactgroup'}">
              <app:contactListViewAction/>
+         </c:when>
+         <c:when test="${not empty param.doVoiceMailListViewAction}">
+             <app:voiceMailListViewAction/>
          </c:when>
      </c:choose>
 
@@ -42,7 +45,7 @@
 
 </app:handleError>
 
- <%-- switch based on context saerch types --%>
+ <%-- switch based on context search types --%>
 <c:choose>
     <c:when test="${context.isConversationSearch and action eq 'view'}">
         <app:convView context="${context}"/>
@@ -64,6 +67,9 @@
     </c:when>
     <c:when test="${context.isContactSearch}">
         <app:contactListView context="${context}"/>
+    </c:when>
+    <c:when test="${context.isVoiceMailSearch}">
+        <app:voiceMailListView context="${context}"/>
     </c:when>
     <c:otherwise>
         <fmt:message key="error" var="title"/>
