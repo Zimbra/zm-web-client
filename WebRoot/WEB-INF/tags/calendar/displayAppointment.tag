@@ -303,22 +303,33 @@
                     </noscript>
                     <script type="text/javascript">
                         (function() {
+                            var isKonqueror = /KHTML/.test(navigator.userAgent);
+                            var isIE = ( /MSIE/.test(navigator.userAgent) && !/(Opera|Gecko|KHTML)/.test(navigator.userAgent) );
                             var iframe = document.createElement("iframe");
                             iframe.style.width = "100%";
-                            iframe.style.height = "20px";                            
+                            iframe.style.height = "20px";
                             iframe.scrolling = "no";
                             iframe.marginWidth = 0;
                             iframe.marginHeight = 0;
                             iframe.border = 0;
                             iframe.frameBorder = 0;
                             iframe.style.border = "none";
-                            function resizeIframe() { iframe.style.height = iframe.contentWindow.document.body.scrollHeight + "px"; iframe = null; };
+                            function resizeAndNullIframe() { resizeIframe(); iframe = null;};
+                            function resizeIframe() { if (iframe !=null) iframe.style.height = iframe.contentWindow.document.body.scrollHeight + "px";};
                             document.getElementById("iframeBody").appendChild(iframe);
                             var doc = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument;
                             doc.open();
                             doc.write("${zm:jsEncode(theBody)}");
                             doc.close();
+                            if (YAHOO && keydownH && keypressH) {
+                                YAHOO.util.Event.addListener(doc, "keydown", keydownH);
+                                YAHOO.util.Event.addListener(doc, "keypress", keypressH);
+                            }
+                            //if (keydownH) doc.onkeydown = keydownH;
+                            //if (keypressH) doc.onkeypress = keypressH;
                             setTimeout(resizeIframe, 10);
+                            function onIframeLoad() { if (isKonqueror) setTimeout(resizeAndNullIframe, 100); else if (!isIE || iframe.readyState == "complete") resizeAndNullIframe();};
+                            if (isIE) iframe.onreadystatechange = onIframeLoad; else iframe.onload = onIframeLoad;
                         })();
                     </script>
                 </c:when>
