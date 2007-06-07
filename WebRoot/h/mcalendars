@@ -45,7 +45,7 @@
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' calendars="true" minical="false" editmode="true" keys="true"
-     onload="var e=document.getElementById('name'); if (e) e.focus();">
+     onload="var e=document.getElementById('newName'); if (e) e.focus();">
 
     <form action="" method="post" enctype="multipart/form-data" accept-charset="utf-8">
         <table width=100% cellspacing="0" cellpadding="0">

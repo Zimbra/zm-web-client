@@ -73,11 +73,11 @@
 
     <tr>
         <td nowrap align=right>
-            <label for="name"><fmt:message key="name"/>
+            <label for="newName"><fmt:message key="name"/>
             :</label>
         </td>
         <td>
-            <input id="name" name='newFolderName' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderName)}">
+            <input id="newName" name='newFolderName' type='text' autocomplete='off' size='35' value="${fn:escapeXml(param.newFolderName)}">
         </td>
     </tr>
 
