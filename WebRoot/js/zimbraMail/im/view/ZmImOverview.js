@@ -269,6 +269,7 @@ ZmImOverview.prototype.getSortIndex = function(label, root) {
 		type = "group";
 		root = this._rootItem;
 	}
+	label = label.toLowerCase();
 	var items = root.getItems();
 	for (var i = 0; i < items.length; ++i) {
 		var item = items[i];
@@ -276,7 +277,8 @@ ZmImOverview.prototype.getSortIndex = function(label, root) {
 		var txt = type == "buddy"
 			? data.buddy.getDisplayName()
 			: data.group;
-		if (txt > label)
+		// txt can be null if type is "assistant"
+		if (txt && txt.toLowerCase() > label)
 			break;
 	}
 	return i;

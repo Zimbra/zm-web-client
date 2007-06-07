@@ -39,13 +39,17 @@ ZmNewRosterItemDialog.prototype._init = function() {
 	this.setContent(this._contentHtml());
 	var id = this._baseId;
 
-	this._addrEntry = new DwtInputField({ parent: this, size: 30, required: true });
+	this._addrEntry = new DwtInputField({ parent	     : this,
+					      size	     : 30,
+					      required	     : true,
+					      errorIconStyle : DwtInputField.ERROR_ICON_RIGHT
+					    });
 	this._addrEntry.reparentHtmlElement(id + "_address");
 
 	this._nameEntry = new DwtInputField({ parent: this, size: 30 });
 	this._nameEntry.reparentHtmlElement(id + "_name");
 
-	this._groupsEntry = new DwtInputField({ parent: this, size: 30, required: true });
+	this._groupsEntry = new DwtInputField({ parent: this, size: 30 });
 	this._groupsEntry.reparentHtmlElement(id + "_groups");
 
 	var options = [];
