@@ -45,7 +45,8 @@
 
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' folders="true" searches="true" editmode="true" keys="true">
+<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' folders="true" searches="true" editmode="true" keys="true"
+        onload="var e=document.getElementById('name'); if (e) e.focus();">
 
     <form action="" method="post">
         <table width=100% cellspacing="0" cellpadding="0">
@@ -149,11 +150,12 @@
 
     //-->
     </SCRIPT>
-    <app:keyboard mailbox="${mailbox}" globals="true">
+    <app:keyboard mailbox="${mailbox}" passspecial="true" globals="true">
         <zm:bindKey message="global.Cancel" id="OPCLOSE"/>
         <zm:bindKey message="mfolders.NewFolder" func="function() {zclick('SOPNEWFOLD');}"/>
         <zm:bindKey message="mfolders.NewSearchFolder" func="function() {zclick('SOPNEWSEARCH');}"/>
         <zm:bindKey message="mfolders.NewRssFeed" func="function() {zclick('SOPNEWRSS');}"/>
+        <zm:bindKey message="mfolders.Save" func="function() {zclick('OPSAVE');}"/>
         <zm:bindKey message="mail.MarkAllRead" func="function() {zclick('OPMARKALLREAD');}"/>
         <zm:bindKey message="mfolders.EmptyFolder" func="function() {zclick('OPEMPTY');}"/>
         <zm:bindKey message="global.PreviousItem" func="zprev"/>

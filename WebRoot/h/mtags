@@ -44,7 +44,8 @@
     <c:set var="selectedRow" value="${-1}"/>    
 </app:handleError>
 
-<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' tags="true" editmode="true" keys="true">
+<app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' tags="true" editmode="true" keys="true"
+            onload="var e=document.getElementById('name'); if (e) e.focus();">
 
     <form action="" method="post">
         <table width=100% cellspacing="0" cellpadding="0">
@@ -140,11 +141,12 @@
     var znext = function() { if (zindex+1 < zrc) zget(zindex+1);}
     //-->
     </SCRIPT>
-    <app:keyboard mailbox="${mailbox}" globals="true">
+    <app:keyboard mailbox="${mailbox}" globals="true" passspecial="true">
         <zm:bindKey message="global.Cancel" id="OPCLOSE"/>
         <zm:bindKey message="mtags.NewTag" func="function() {zclick('SOPNEWTAG');}"/>
         <zm:bindKey message="global.PreviousItem" func="zprev"/>
         <zm:bindKey message="global.NextItem" func="znext"/>
-        <zm:bindKey message="mail.MarkAllRead" func="function() {zclick('OPMARKALLREAD');}"/>        
+        <zm:bindKey message="mail.MarkAllRead" func="function() {zclick('OPMARKALLREAD');}"/>
+        <zm:bindKey message="mtags.Save" func="function() {zclick('OPSAVE');}"/>
     </app:keyboard>
 </app:view>

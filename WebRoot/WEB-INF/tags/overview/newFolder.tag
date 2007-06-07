@@ -245,7 +245,7 @@
     <tr>
         <td>&nbsp;</td>
         <td>
-            <input class='tbButton' type="submit" name="actionNew"
+            <input id="OPSAVE" class='tbButton' type="submit" name="actionNew"
                    value="${createLabel}">
             &nbsp;
             <input class='tbButton' type="submit" name="actionCancel"

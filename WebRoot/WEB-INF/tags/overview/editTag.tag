@@ -28,7 +28,7 @@
             :
         </td>
         <td>
-            <input name='tagName' type='text' autocomplete='off' size='35' value="${fn:escapeXml(tag.name)}">
+            <input  name='tagName' type='text' autocomplete='off' size='35' value="${fn:escapeXml(tag.name)}">
         </td>
     </tr>
 
@@ -53,7 +53,7 @@
     <tr>
         <td>&nbsp;</td>
         <td>
-            <input class='tbButton' type="submit" name="actionSave"
+            <input id="OPSAVE" class='tbButton' type="submit" name="actionSave"
                    value="<fmt:message key="saveChanges"/>">
             <input type="hidden" name="tagId" value="${tag.id}"/>
         </td>

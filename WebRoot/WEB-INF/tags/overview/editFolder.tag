@@ -334,7 +334,7 @@
     <tr>
         <td>&nbsp;</td>
         <td>
-            <input class='tbButton' type="submit" name="actionSave"
+            <input id="OPSAVE" class='tbButton' type="submit" name="actionSave"
                    value="<fmt:message key="saveChanges"/>">
         </td>
     </tr>
