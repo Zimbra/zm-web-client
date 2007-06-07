@@ -13,14 +13,14 @@
         <td align=left class=TbBt>
             <table cellspacing=0 cellpadding=0 class='Tb'>
                 <tr>
-                    <app:button name="${create ? 'actionCreate' : 'actionModify'}" src="common/Save.gif" tooltip="save" text="save"/>
+                    <app:button id="OPSAVE" name="${create ? 'actionCreate' : 'actionModify'}" src="common/Save.gif" tooltip="save" text="save"/>
                     <td><div class='vertSep'></div></td>
                     <c:choose>
                         <c:when test="${create}">
-                            <app:button name="actionCancelCreate" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
+                            <app:button id="OPCANCEL" name="actionCancelCreate" src="common/Cancel.gif" tooltip="cancel" text="cancel"/>
                         </c:when>
                         <c:otherwise>
-                            <app:button name="actionCancelModify" src="common/Close.gif" tooltip="close" text="close"/>                            
+                            <app:button id="OPCANCEL" name="actionCancelModify" src="common/Close.gif" tooltip="close" text="close"/>                            
                         </c:otherwise>
                     </c:choose>
 

@@ -81,7 +81,7 @@
                 <td align=left class=TbBt>
                     <table cellspacing=0 cellpadding=0 class='Tb'>
                         <tr>
-                            <app:button name="actionSave" src="common/Save.gif" tooltip="save" text="save"/>
+                            <app:button id="OPSAVE" name="actionSave" src="common/Save.gif" tooltip="save" text="save"/>
                             <td><div class='vertSep'></div></td>
                             <c:choose>
                                 <c:when test="${isNewAppt}">
@@ -526,4 +526,12 @@
     <app:autoComplete>
         initAuto("attField","attContainer");
     </app:autoComplete>
+    <SCRIPT TYPE="text/javascript">
+    <!--
+    var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
+    //-->
+   </SCRIPT>
+    <app:keyboard globals="false" passspecial="true" mailbox="${mailbox}">
+        <zm:bindKey message="editAppointment.Save" func="function() { zclick('SOPSAVE')}"/>
+    </app:keyboard>
 </app:view>

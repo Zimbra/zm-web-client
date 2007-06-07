@@ -74,4 +74,12 @@
         <input type="hidden" name="id" value="${contact.id}"/>
     </form>
 
+    <SCRIPT TYPE="text/javascript">
+    <!--
+    var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
+    //-->
+   </SCRIPT>
+    <app:keyboard globals="false" passspecial="true" mailbox="${mailbox}">
+        <zm:bindKey message="editContact.Save" func="function() { zclick('SOPSAVE')}"/>
+    </app:keyboard>
 </app:view>

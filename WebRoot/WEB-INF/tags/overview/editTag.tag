@@ -72,7 +72,7 @@
         <tr>
             <td>&nbsp;</td>
             <td>
-                <input class='tbButton' type="submit" name="actionMarkRead"
+                <input id="OPMARKALLREAD" class='tbButton' type="submit" name="actionMarkRead"
                        value="<fmt:message key="actionMarkAllRead"/>">
             </td>
         </tr>

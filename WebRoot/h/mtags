@@ -145,5 +145,6 @@
         <zm:bindKey message="mtags.NewTag" func="function() {zclick('SOPNEWTAG');}"/>
         <zm:bindKey message="global.PreviousItem" func="zprev"/>
         <zm:bindKey message="global.NextItem" func="znext"/>
+        <zm:bindKey message="mail.MarkAllRead" func="function() {zclick('OPMARKALLREAD');}"/>        
     </app:keyboard>
 </app:view>
