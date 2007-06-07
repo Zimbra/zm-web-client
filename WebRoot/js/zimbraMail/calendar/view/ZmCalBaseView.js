@@ -443,10 +443,10 @@ function(listener) {
 	this.removeListener(DwtEvent.DATE_RANGE, listener);
 }
 
-// override. 
 ZmCalBaseView.prototype.getRollField =
 function(isDouble)
 {
+	// override.
 	return 0;
 }
 
@@ -477,13 +477,11 @@ function(appt) {
 
 ZmCalBaseView.prototype._dayKey =
 function(date) {
-	var key = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate();
-	return key;
+	return (date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate());
 }
 
 ZmCalBaseView.prototype.setDate =
-function(date, duration, roll)
-{
+function(date, duration, roll) {
 	this._duration = duration;
 	this._date = new Date(date.getTime());
 	var d = new Date(date.getTime());
@@ -509,24 +507,20 @@ function(date, duration, roll)
 	}
 }
 
-/*
-* override: responsible for updating any view-specific data when the date changes during a setDate call.
-*/
 ZmCalBaseView.prototype._dateUpdate =
-function(rangeChanged) 
-{
-
+function(rangeChanged) {
+	// override: responsible for updating any view-specific data when the date
+	// changes during a setDate call.
 }
 
-/*
-* override: called when an appointment is clicked to see if the view should de-select a selected time range. For example,
-* in day view if you have selected the 8:00 AM row and then click on an appt, the 8:00 AM row should be de-selected. If
-* you are in month view though and have a day selected, thne day should still be selected if the appt you clicked on is in 
-* the same day.
-*/
 ZmCalBaseView.prototype._apptSelected =
 function() {
-
+	// override: called when an appointment is clicked to see if the view should
+	// de-select a selected time range. For example, in day view if you have
+	// selected the 8:00 AM row and then click on an appt, the 8:00 AM row
+	// should be de-selected. If you are in month view though and have a day
+	// selected, thne day should still be selected if the appt you clicked on is
+	// in the same day.
 }
 
 // override
@@ -551,11 +545,9 @@ function(ao) {
 ZmCalBaseView.prototype.set = 
 function(list) {
 	this._preSet();
-//	ZmListView.prototype.set.call(this, list);
 	this._selectedItems.removeAll();
 	this._resetList();
 	this._list = list;	
-	var list = this.getList();
 	if (list) {
 		var size = list.size();
 		if (size != 0) {

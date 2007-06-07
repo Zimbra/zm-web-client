@@ -47,45 +47,45 @@ ZmController = function(appCtxt, container, app) {
 };
 
 // view identifiers - need to be all caps
-ZmController.CONVLIST_VIEW 				= "CLV";
-ZmController.CONV_VIEW 					= "CV";
-ZmController.TRAD_VIEW 					= "TV";
-ZmController.MSG_VIEW 					= "MSG";
-ZmController.MSG_NEW_WIN_VIEW			= "MSGNW"; // needed for HACK (see ZmMailMsg)
+ZmController.APPOINTMENT_VIEW 			= "APPT";
+ZmController.APPT_DETAIL_VIEW			= "APPTD";
+ZmController.ATT_ICON_VIEW 				= "ATI";
+ZmController.ATT_LIST_VIEW 				= "ATL";
+ZmController.CAL_APPT_VIEW				= "CLA";
+ZmController.CAL_DAY_VIEW				= "CLD";
+ZmController.CAL_MONTH_VIEW				= "CLM";
+ZmController.CAL_SCHEDULE_VIEW			= "CLS";
+ZmController.CAL_VIEW					= "CAL";
+ZmController.CAL_WEEK_VIEW				= "CLW";
+ZmController.CAL_WORK_WEEK_VIEW			= "CLWW";
+ZmController.CALLLIST_VIEW				= "CLIST";
+ZmController.COMPOSE_VIEW				= "COMPOSE";
 ZmController.CONTACT_CARDS_VIEW			= "CNC";
 ZmController.CONTACT_SIMPLE_VIEW 		= "CNS";
-ZmController.CONTACT_VIEW				= "CN";
-ZmController.GROUP_VIEW					= "GRP";
-ZmController.READING_PANE_VIEW 			= "RP";
-ZmController.ATT_LIST_VIEW 				= "ATL";
-ZmController.ATT_ICON_VIEW 				= "ATI";
-ZmController.CAL_VIEW					= "CAL";
-ZmController.COMPOSE_VIEW				= "COMPOSE";
 ZmController.CONTACT_SRC_VIEW			= "CNSRC"; // contact picker source list
 ZmController.CONTACT_TGT_VIEW			= "CNTGT"; // contact picker target list
-ZmController.PREF_VIEW					= "PREF";
-ZmController.CAL_DAY_VIEW				= "CLD";
-ZmController.CAL_SCHEDULE_VIEW			= "CLS";
-ZmController.CAL_WEEK_VIEW				= "CLW";
-ZmController.CAL_MONTH_VIEW				= "CLM";
-ZmController.CAL_WORK_WEEK_VIEW			= "CLWW";
-ZmController.CAL_APPT_VIEW				= "CLA";
-ZmController.APPT_DETAIL_VIEW			= "APPTD";
-ZmController.APPOINTMENT_VIEW 			= "APPT";
-ZmController.MIXED_VIEW					= "MX";
-ZmController.IM_CHAT_TAB_VIEW			= "IMCT";
+ZmController.CONTACT_VIEW				= "CN";
+ZmController.CONVLIST_VIEW 				= "CLV";
+ZmController.CONV_VIEW 					= "CV";
+ZmController.GROUP_VIEW					= "GRP";
 ZmController.IM_CHAT_MULTI_WINDOW_VIEW	= "IMCMW";
-ZmController.NOTEBOOK_PAGE_VIEW			= "NBP";
-ZmController.NOTEBOOK_PAGE_EDIT_VIEW	= "NBPE";
+ZmController.IM_CHAT_TAB_VIEW			= "IMCT";
+ZmController.LOADING_VIEW				= "LOADING";
+ZmController.MIXED_VIEW					= "MX";
+ZmController.MSG_NEW_WIN_VIEW			= "MSGNW"; // needed for HACK (see ZmMailMsg)
+ZmController.MSG_VIEW 					= "MSG";
 ZmController.NOTEBOOK_FILE_VIEW			= "NBF";
+ZmController.NOTEBOOK_PAGE_EDIT_VIEW	= "NBPE";
+ZmController.NOTEBOOK_PAGE_VIEW			= "NBP";
 ZmController.NOTEBOOK_SITE_VIEW			= "NBS";
 ZmController.PORTAL_VIEW                = "PORTAL";
-ZmController.TASKLIST_VIEW				= "TKL";
-ZmController.TASKEDIT_VIEW				= "TKE";
+ZmController.PREF_VIEW					= "PREF";
+ZmController.READING_PANE_VIEW 			= "RP";
 ZmController.TASK_VIEW					= "TKV";
-ZmController.LOADING_VIEW				= "LOADING";
+ZmController.TASKEDIT_VIEW				= "TKE";
+ZmController.TASKLIST_VIEW				= "TKL";
+ZmController.TRAD_VIEW 					= "TV";
 ZmController.VOICEMAIL_VIEW				= "VM";
-ZmController.CALLLIST_VIEW				= "CLIST";
 
 /* ROSSD - It feels like we may need a ZmAppViewController class to help with
  * the tab group work. Delaying this until I have more experience pushing the 
@@ -95,12 +95,12 @@ ZmController._currAppViewTabGroup = null;
 ZmController._setCurrentAppViewTabGroup =
 function(tabGroup) {
 	ZmController._currAppViewTabGroup = tabGroup;
-}
+};
 
 ZmController._getCurrentAppViewTabGroup =
 function() {
 	return ZmController._currAppViewTabGroup;
-}
+};
 
 // Abstract methods
 
@@ -117,8 +117,9 @@ function() {
 
 ZmController.prototype.popupErrorDialog = 
 function(msg, ex, noExecReset, hideReportButton)  {
-	if (!noExecReset)
+	if (!noExecReset) {
 		this._execFrame = {func: null, args: null, restartOnError: false};
+	}
 	// popup alert
 	var detailStr = "";
 	if (typeof ex == "string") {

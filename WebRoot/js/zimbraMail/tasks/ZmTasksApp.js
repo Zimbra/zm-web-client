@@ -109,7 +109,6 @@ function() {
 
 ZmTasksApp.prototype._setupSearchToolbar =
 function() {
-	ZmSearchToolBar.FOR_TASKS_MI = "FOR TASKS";
 	ZmSearchToolBar.addMenuItem(ZmItem.TASK,
 								{msgKey:		"tasks",
 								 tooltipKey:	"searchTasks",
@@ -277,9 +276,7 @@ ZmTasksApp.prototype.search =
 function(folder, startDate, endDate, callback) {
 	var query = folder ? folder.createQuery() : "in:tasks";
 	var sc = this._appCtxt.getSearchController();
-	var types = sc.getTypes(ZmSearchToolBar.FOR_TASKS_MI);
-
-	sc.search({query:query, types:types, sortBy:ZmSearch.DATE_DESC, callback:callback});
+	sc.search({query:query, types:sc.getTypes(), sortBy:ZmSearch.DATE_DESC, callback:callback});
 };
 
 

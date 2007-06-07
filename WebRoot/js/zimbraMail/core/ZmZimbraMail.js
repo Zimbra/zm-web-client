@@ -539,15 +539,7 @@ function() {
 ZmZimbraMail.prototype.sendSync =
 function(callback) {
     var soapDoc = AjxSoapDoc.create("SyncRequest", "urn:zimbraOffline");
-    var respCallback = new AjxCallback(this, this._handleResponseSendSync, [callback]);
-    this.sendRequest({soapDoc:soapDoc, asyncMode:true, noBusyOverlay:true, callback:respCallback});
-};
-
-ZmZimbraMail.prototype._handleResponseSendSync =
-function(callback) {
-	if (callback) {
-		callback.run();
-	}
+    this.sendRequest({soapDoc:soapDoc, asyncMode:true, noBusyOverlay:true, callback:callback});
 };
 
 /**
@@ -557,8 +549,8 @@ ZmZimbraMail.prototype.setInstantNotify =
 function(on) {
     if (on) {
         this._pollInstantNotifications = true;
-        // set a nonzero poll interval so that we cannot ever
-        // get into a full-speed request loop
+        // set a nonzero poll interval so that we cannot ever get into a
+		// full-speed request loop
         this._pollInterval = 100;
         if (this._pollActionId) {
             AjxTimedAction.cancelAction(this._pollActionId);
@@ -858,7 +850,8 @@ function(appName, view) {
 	}
 };
 
-ZmZimbraMail.prototype.getAppChooserButton = function(id) {
+ZmZimbraMail.prototype.getAppChooserButton =
+function(id) {
 	return this._components[ZmAppViewMgr.C_APP_CHOOSER].getButton(id);
 };
 
@@ -871,7 +864,9 @@ function() {
 
 ZmZimbraMail.prototype._killSplash =
 function() {
-	if (this._splashScreen)	this._splashScreen.setVisible(false);
+	if (this._splashScreen)	{
+		this._splashScreen.setVisible(false);
+	}
 };
 
 // Creates an app object, which doesn't necessarily do anything just yet.
@@ -885,7 +880,9 @@ function(appName) {
 
 ZmZimbraMail.prototype._checkOverviewLayout =
 function(force) {
-	if ((this._needOverviewLayout || force) && this._settings.userSettingsLoaded) {
+	if ((this._needOverviewLayout || force) &&
+		this._settings.userSettingsLoaded)
+	{
 		for (var app in this._apps) {
 			var overview = this._apps[app].getOverview();
 			if (overview && overview.clear) {
@@ -1390,12 +1387,9 @@ function(actionCode, ev) {
 			
 		default: {
 			var ctlr = this._appCtxt.getCurrentController();
-			if (ctlr && ctlr.handleKeyAction) {
-				return ctlr.handleKeyAction(actionCode, ev);
-			} else {
-				return false;
-			}
-			break;
+			return (ctlr && ctlr.handleKeyAction)
+				? ctlr.handleKeyAction(actionCode, ev)
+				: false;
 		}
 	}
 	return true;
@@ -1431,4 +1425,5 @@ function() {
 		ZmApp.OVERVIEW_TREES[app].push(ZmOrganizer.ZIMLET);
 	}
 };
+// YUCK:
 ZmOrganizer.ZIMLET = "Zimlet";
