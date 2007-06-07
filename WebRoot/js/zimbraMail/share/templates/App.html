@@ -46,7 +46,7 @@
 <template id="PrintView">
 	<html>
 		<head>
-			<title>Zimbra: <$= data.username $></title>
+			<title><$= ZmMsg.zimbraTitle $>: <$= data.username $></title>
 			<link rel='stylesheet' href='<$= data.appContextPath $>/css/msgview,zm,wiki.css?v=<$= data.cacheKillerVersion $>' media='screen'></link>
 			<$ if (data.onloadStr) { $>
 				<script language='javascript'>
