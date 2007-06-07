@@ -219,12 +219,12 @@ ZmApp.prototype._registerPrefs		= function() {};							// called when Preference
 
 // Functions that apps can override in response to certain events
 ZmApp.prototype.startup				= function(result) {};						// run during startup
-ZmApp.prototype.refresh				= function(refresh) {};						// run when a <refresh> block arrives
 ZmApp.prototype.preNotify			= function(notify) {};						// run before handling notifications
 ZmApp.prototype.deleteNotify		= function(ids) {};							// run on delete notifications
 ZmApp.prototype.createNotify		= function(list) {};						// run on create notifications
 ZmApp.prototype.modifyNotify		= function(list) {};						// run on modify notifications
 ZmApp.prototype.postNotify			= function(notify) {};						// run after handling notifications
+ZmApp.prototype.refresh				= function(refresh) {};						// run when a <refresh> block arrives
 ZmApp.prototype.handleOp			= function(op, params) {};					// handle an operation
 
 /**
@@ -290,9 +290,14 @@ function() {
 
 /**
  * Sets the overview tree to display this app's particular overview content.
+ * 
+ * @param reset		[boolean]*		if true, clear the content first
  */
 ZmApp.prototype.setOverviewPanelContent =
-function() {
+function(reset) {
+	if (reset) {
+		this._overviewPanelContent = null;
+	}
 	this._appCtxt.getAppViewMgr().setComponent(ZmAppViewMgr.C_TREE, this.getOverviewPanelContent());
 };
 
@@ -310,6 +315,18 @@ function() {
 ZmApp.prototype.getOverview =
 function() {
 	return this._opc.getOverview(this.getOverviewId());
+};
+
+/**
+ * Resets the current ZmOverview, if any.
+ */
+ZmApp.prototype.resetOverview =
+function(overviewId) {
+	var overview = overviewId ? this._opc.getOverview(overviewId) : this.getOverview();
+	if (overview) {
+		overview.clear();
+		overview.set(this._getOverviewTrees());
+	}
 };
 
 /**

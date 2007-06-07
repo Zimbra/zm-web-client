@@ -112,7 +112,6 @@ function() {
 			    icon	      : "ImStartChat",
 			    chooserTooltipKey : "goToIm",
 			    defaultSearch     : ZmSearchToolBar.FOR_MAIL_MI,
-			    showZimlets	      : true,
 			    gotoActionCode    : ZmKeyMap.GOTO_IM,
 			    chooserSort	      : 40,
 			    defaultSort	      : 50,

@@ -72,7 +72,6 @@ ZmZimbraMail = function(appCtxt, domain, app, userShell) {
 	this._pollActionId = null;	// AjaxTimedAction ID of timer counting down to next poll time
 	this._pollRequest = null;	// HTTP request of poll we've sent to server
 	this._pollInstantNotifications = false; // if TRUE, we're in "instant notification" mode
-	this._needOverviewLayout = false;
 
 //	if (this._appCtxt.get(ZmSetting.OFFLINE)) {
 //		this._pollInstantNotifications = true;
@@ -516,7 +515,6 @@ function(apps) {
 		return ZmZimbraMail.hashSortCompare(ZmApp.LOAD_SORT, a, b);
 	});
 	
-	this._appCtxt.set(ZmSetting.IM_ENABLED, false);	// defaults to true in LDAP
 	// instantiate enabled apps - this will invoke app registration
 	for (var i = 0; i < ZmApp.APPS.length; i++) {
 		var app = ZmApp.APPS[i];
@@ -876,20 +874,6 @@ function(appName) {
 	DBG.println(AjxDebug.DBG1, "Creating app " + appName);
 	var appClass = eval(ZmApp.CLASS[appName]);
 	this._apps[appName] = new appClass(this._appCtxt, this._shell);
-};
-
-ZmZimbraMail.prototype._checkOverviewLayout =
-function(force) {
-	if ((this._needOverviewLayout || force) &&
-		this._settings.userSettingsLoaded)
-	{
-		for (var app in this._apps) {
-			var overview = this._apps[app].getOverview();
-			if (overview && overview.clear) {
-				overview.clear();
-			}
-		}
-	}
 };
 
 ZmZimbraMail.prototype._setUserInfo = 
@@ -1422,7 +1406,8 @@ function() {
 							 compareFunc:		"ZmZimlet.sortCompare"
 							});
 	for (var app in ZmApp.SHOW_ZIMLETS) {
-		ZmApp.OVERVIEW_TREES[app].push(ZmOrganizer.ZIMLET);
+		var trees = ZmApp.OVERVIEW_TREES[app] || [];
+		trees.push(ZmOrganizer.ZIMLET);
 	}
 };
 // YUCK:

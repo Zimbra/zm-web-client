@@ -207,10 +207,13 @@ function(params, result) {
 
 	this._clearPendingRequest(params.reqId);
 
+	var methodName = params.soapDoc._methodEl.tagName;
 	if (params.asyncMode && params.callback) {
+		DBG.println(AjxDebug.DBG1, "------------------------- Running response callback for " + methodName);
 		params.callback.run(result);
 	}
 
+	DBG.println(AjxDebug.DBG1, "------------------------- Processing notifications for " + methodName);
 	this._handleNotifications(response.Header);
 
 	if (!params.asyncMode) {
@@ -259,17 +262,10 @@ function(hdr) {
 		this._changeToken = hdr.context.change.token;
 	}
 
-	// refresh block causes the overview panel to get updated
 	if (hdr && hdr.context && hdr.context.refresh) {
 		this._highestNotifySeen = 0;
-		var callback = new AjxCallback(this, this._handleHeaderResponse);
-		this._refreshHandler(hdr.context.refresh, callback);
+		this._refreshHandler(hdr.context.refresh);
 	}
-};
-
-ZmRequestMgr.prototype._handleHeaderResponse =
-function(ev) {
-	this._controller._checkOverviewLayout();
 };
 
 /**
@@ -295,18 +291,21 @@ function(hdr) {
 	}
 };
 
-// A <refresh> block is returned in a SOAP response any time the session ID has 
-// changed. It always happens on the first SOAP command (GetInfoRequest).
-// After that, it happens after a session timeout.
+/**
+ * A <refresh> block is returned in a SOAP response any time the session ID has 
+ * changed. It always happens on the first SOAP command (GetInfoRequest).
+ * After that, it happens after a session timeout. 
+ * 
+ * @param refresh	[object]	refresh block (JSON)
+ */
 ZmRequestMgr.prototype._refreshHandler =
-function(refresh, callback) {
+function(refresh) {
 	DBG.println(AjxDebug.DBG1, "Handling REFRESH");
 	this._controller.runAppFunction("_clearDeferredFolders");
 
 	var unread = {};
 	this._loadTree(ZmOrganizer.TAG, unread, refresh.tags);
 	this._loadTree(ZmOrganizer.FOLDER, unread, refresh.folder[0], "folder");
-	this._controller._needOverviewLayout = true;
 	
 	var inbox = this._appCtxt.getById(ZmFolder.ID_INBOX);
 	if (inbox) {
@@ -315,20 +314,17 @@ function(refresh, callback) {
 
 	// XXX: temp, get additional share info (see bug #4434)
 	if (refresh.folder) {
-		var respCallback = new AjxCallback(this, this._handleRefreshHandler, [refresh, callback]);
+		var respCallback = new AjxCallback(this, this._handleResponseRefreshHandler, [refresh]);
 		this._appCtxt.getFolderTree().getPermissions(null, respCallback, true);
 	} else {
-		// Run any app-requested refresh routines
-		this._controller.runAppFunction("refresh", refresh);
+		this._handleResponseRefreshHandler(refresh);
 	}
 };
 
-ZmRequestMgr.prototype._handleRefreshHandler =
-function(refresh, callback) {
+ZmRequestMgr.prototype._handleResponseRefreshHandler =
+function(refresh) {
 	// Run any app-requested refresh routines
 	this._controller.runAppFunction("refresh", refresh);
-
-	if (callback) callback.run();
 };
 
 ZmRequestMgr.prototype._loadTree =

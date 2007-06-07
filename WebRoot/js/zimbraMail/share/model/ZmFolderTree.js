@@ -289,6 +289,8 @@ function(type, callback, skipNotify) {
 
 		var respCallback = new AjxCallback(this, this._handleResponseGetShares, [callback, skipNotify]);
 		this._appCtxt.getRequestMgr().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:respCallback});
+	} else {
+		if (callback) { callback.run(); }
 	}
 };
 
@@ -338,7 +340,7 @@ function(callback, skipNotify, result) {
 		}
 	}
 
-	if (callback) callback.run();
+	if (callback) { callback.run(); }
 };
 
 /*

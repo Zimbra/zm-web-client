@@ -321,6 +321,11 @@ function(notify) {
 	}
 };
 
+ZmContactsApp.prototype.refresh =
+function(refresh) {
+	this.resetOverview();
+};
+
 ZmContactsApp.prototype.handleOp =
 function(op) {
 	switch (op) {

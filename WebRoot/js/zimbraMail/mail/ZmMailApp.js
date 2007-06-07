@@ -718,6 +718,14 @@ function(notify) {
 	}
 };
 
+ZmMailApp.prototype.refresh =
+function(refresh) {
+	if (!this._appCtxt.inStartup) {
+		var account = this._appCtxt.multiAccounts ? this._appCtxt.getMainAccount() : null;
+		this.resetOverview(this.getOverviewId(account));
+	}
+};
+
 ZmMailApp.prototype.handleOp =
 function(op, params) {
 	var inNewWindow = false;
@@ -822,9 +830,10 @@ function() {
 };
 
 ZmMailApp.prototype.getOverviewId =
-function() {
+function(account) {
+	account = !this._appCtxt.multiAccounts ? null : account || this.accordionItem.data.account;
 	return this._appCtxt.multiAccounts ?
-		[this.getOverviewPanelContentId(), this.accordionItem.data.account.name].join(":") :
+		[this.getOverviewPanelContentId(), account.name].join(":") :
 		ZmApp.prototype.getOverviewPanelContentId.apply(this, arguments);
 };
 
