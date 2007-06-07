@@ -50,7 +50,7 @@ ZmResourceList.ATTRS =
 	[ZmResource.F_name, ZmResource.F_mail, ZmResource.F_type, ZmResource.F_locationName,
 	 ZmResource.F_capacity, ZmResource.F_contactMail, ZmContact.F_description];
 
-ZmResourceList.AC_FIELDS = ["displayName"];
+ZmResourceList.AC_FIELDS = [ZmResource.F_name];
 
 ZmResourceList.prototype = new ZmContactList;
 ZmResourceList.prototype.constructor = ZmResourceList;
@@ -82,7 +82,8 @@ function(result) {
 		this._preMatch(resource);
 		this._idHash[resource.id] = resource;
 	}
-	this._loaded = true;
+	//bug:16436 this._loaded changed to this.isLoaded 
+	this.isLoaded = true;
 	this._galAutocompleteEnabled = false;
 };
 
