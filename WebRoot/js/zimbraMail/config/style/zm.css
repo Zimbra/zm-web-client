@@ -1859,7 +1859,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmChatWindowChatEntry .from { font-weight: bold; margin-bottom: 5px; }
 .ZmChatWindowChatEntry .time { float: right; color: #888; }
-.ZmChatWindowChatEntry .body { padding-left: 15px; margin-right: 4.2em; }
+.ZmChatWindowChatEntry .body { padding-left: 15px; margin-right: 4.2em; color: black;}
 
 .ZmChatWindowChatEntryMe .from { color: #00c; }
 .ZmChatWindowChatEntryThem .from { color: #c00; }
