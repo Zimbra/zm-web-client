@@ -286,18 +286,16 @@ function(searchFor) {
 	var groupBy;
 	if (searchFor == ZmSearchToolBar.FOR_MAIL_MI ||
 		searchFor == ZmSearchToolBar.FOR_ANY_MI ||
-		searchFor == ZmSearchToolBar.FOR_PAM_MI)
-	{
+		searchFor == ZmSearchToolBar.FOR_PAM_MI) {
+
 		groupBy = this._appCtxt.getApp(ZmApp.MAIL).getGroupMailBy();
 	}
 
 	if (searchFor == ZmSearchToolBar.FOR_MAIL_MI ||
-		searchFor == ZmSearchToolBar.FOR_PAM_MI)
-	{
+		searchFor == ZmSearchToolBar.FOR_PAM_MI) {
+
 		types.add(groupBy);
-	}
-	else if (searchFor == ZmSearchToolBar.FOR_ANY_MI)
-	{
+	} else if (searchFor == ZmSearchToolBar.FOR_ANY_MI)	{
 		types.add(groupBy);
 		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))
 			types.add(ZmItem.CONTACT);
@@ -309,18 +307,11 @@ function(searchFor) {
 			types.add(ZmItem.PAGE);
 			types.add(ZmItem.DOCUMENT);
 		}
-	}
-	else if (searchFor == ZmSearchToolBar.FOR_PAS_MI)
-	{
-		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
+	} else if (searchFor == ZmSearchToolBar.FOR_PAS_MI)	{
+		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 			types.add(ZmItem.CONTACT);
-	}
-	else if (searchFor == ZmSearchToolBar.FOR_TASKS_MI)
-	{
-		types.add(ZmItem.TASK);
-	}
-	else
-	{
+		}
+	} else {
 		types.add(searchFor);
 		if (searchFor == ZmItem.PAGE) {
 			types.add(ZmItem.DOCUMENT);
