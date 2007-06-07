@@ -81,6 +81,16 @@ ZmCalViewController = function(appCtxt, container, calApp) {
 	this._maintTimedAction = new AjxTimedAction(this, this._maintenanceAction);
 	this._pendingWork = ZmCalViewController.MAINT_NONE;
 	this._apptCache = new ZmApptCache(this, appCtxt);
+	ZmCalViewController.OPS = [ZmOperation.DAY_VIEW, ZmOperation.WORK_WEEK_VIEW, ZmOperation.WEEK_VIEW,
+							   ZmOperation.MONTH_VIEW, ZmOperation.SCHEDULE_VIEW];
+
+	// get view based on op
+	ZmCalViewController.OP_TO_VIEW = {};
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.DAY_VIEW]		= ZmController.CAL_DAY_VIEW;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.WEEK_VIEW]		= ZmController.CAL_WEEK_VIEW;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.WORK_WEEK_VIEW]	= ZmController.CAL_WORK_WEEK_VIEW;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.MONTH_VIEW]		= ZmController.CAL_MONTH_VIEW;
+	ZmCalViewController.OP_TO_VIEW[ZmOperation.SCHEDULE_VIEW]	= ZmController.CAL_SCHEDULE_VIEW;
 
 	this._initializeViewActionMenu();
 
@@ -106,7 +116,6 @@ ZmCalViewController.MSG_KEY[ZmController.CAL_SCHEDULE_VIEW]		= "viewSchedule";
 
 ZmCalViewController.VIEWS = [ZmController.CAL_DAY_VIEW, ZmController.CAL_WORK_WEEK_VIEW, ZmController.CAL_WEEK_VIEW,
 							 ZmController.CAL_MONTH_VIEW, ZmController.CAL_SCHEDULE_VIEW];
-
 ZmCalViewController.DEFAULT_APPOINTMENT_DURATION = 3600000;
 
 // maintenance needed on views and/or minical
@@ -993,8 +1002,11 @@ function(startDate, endDate, folderId, shiftKey) {
 ZmCalViewController.prototype.newAppointment =
 function(newAppt, mode, isDirty, startDate) {
 	AjxDispatcher.require(["CalendarCore", "Calendar"]);
-	var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
-	var appt = newAppt || this._newApptObject(sd);
+	//var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
+	var sd = this._viewVisible
+	         ? this._viewMgr.getDate()
+	         : (startDate || new Date());
+	var appt = newAppt || this._newApptObject(sd, AjxDateUtil.MSEC_PER_HALF_HOUR);
 	this._app.getApptComposeController().show(appt, mode, isDirty);
 };
 
