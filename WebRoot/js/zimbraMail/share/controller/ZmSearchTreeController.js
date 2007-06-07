@@ -179,8 +179,9 @@ function(overviewId, account) {
 	if (!overviewId || !treeView) { return;	}
 
 	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT, account);
-	var show = 	!this._hideEmpty[overviewId] || this._treeItemTypeMatch(treeView.getTreeItemById(rootId), this._searchTypes[overviewId]);
-	this._treeView[overviewId].setVisible(show);
+	var hideMe = (this._hideEmpty[overviewId] && this._hideEmpty[overviewId][this.type]);
+	var hide = (hideMe && !this._treeItemTypeMatch(treeView.getTreeItemById(rootId), this._searchTypes[overviewId]));
+	this._treeView[overviewId].setVisible(!hide);
 };
 
 ZmSearchTreeController.prototype._treeItemTypeMatch =

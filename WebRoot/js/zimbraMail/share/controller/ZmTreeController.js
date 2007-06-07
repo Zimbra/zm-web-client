@@ -888,6 +888,7 @@ ZmTreeController.prototype._checkTreeView =
 function(overviewId, account) {
 	if (!overviewId || !this._treeView[overviewId]) { return; }
 	var dataTree = this.getDataTree(account);
-	var show = ((dataTree && (dataTree.size() > 0)) || !this._hideEmpty[overviewId]);
-	this._treeView[overviewId].setVisible(show);
+	var hideMe = (this._hideEmpty[overviewId] && this._hideEmpty[overviewId][this.type]);
+	var hide = (hideMe && dataTree && (dataTree.size() == 0));
+	this._treeView[overviewId].setVisible(!hide);
 };
