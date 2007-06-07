@@ -45,19 +45,23 @@ function() {
  * Popup the dialog. Note that if family mailbox is enabled, we may have
  * changed accounts since the last time we were popped up. In that case,
  * we need to show the overview for the current account's folders.
+ * 
+ * @param folder	[ZmFolder]*		folder to select initially
  */
 ZmNewOrganizerDialog.prototype.popup =
 function(folder) {
-	this._setOverview({treeIds:this._treeIds, omit:this._omit, fieldId:this._folderTreeCellId});
-	if (this._folderTreeView) {
-		folder = folder ? folder : this._folderTree.root;
-		this._folderTreeView.setSelected(folder);
-		if (folder.id == ZmOrganizer.ID_ROOT) {
-			var ti = this._folderTreeView.getTreeItemById(folder.id);
-			ti.setExpanded(true);
+	if (this._folderTreeCellId) {
+		this._setOverview({treeIds:this._treeIds, omit:this._omit, fieldId:this._folderTreeCellId});
+		if (this._folderTreeView) {
+			folder = folder ? folder : this._folderTree.root;
+			this._folderTreeView.setSelected(folder);
+			if (folder.id == ZmOrganizer.ID_ROOT) {
+				var ti = this._folderTreeView.getTreeItemById(folder.id);
+				ti.setExpanded(true);
+			}
 		}
+		DBG.timePt("selected folder", true);
 	}
-	DBG.timePt("selected folder", true);
 	
 	ZmDialog.prototype.popup.call(this);
 };
