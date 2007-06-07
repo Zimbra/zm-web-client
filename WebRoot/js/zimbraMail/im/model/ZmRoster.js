@@ -297,7 +297,7 @@ function(im) {
 				gw.setState(not.username, ZmImGateway.STATE.BOOTED_BY_OTHER_LOGIN);
 			} else if (not.type == "gwStatus") {
 				var gw = this.getGatewayByType(not.service);
-				gw.setState(null, not.state);
+				gw.setState(not.name || null, not.state);
 				if (not.state == ZmImGateway.STATE.BAD_AUTH) {
 					this._appCtxt.setStatusMsg(ZmMsg.errorNotAuthenticated, ZmStatusView.LEVEL_WARNING);
 				}
@@ -345,6 +345,10 @@ ZmRoster.prototype.registerGateway = function(service, screenName, password) {
 						       asyncMode : true
 						     });
 	this.__avoidNotifyTimeout = new Date().getTime();
+	// since it's not returned by a gwStatus notification, let's
+	// set a nick here so the icon becomes "online" if a
+	// corresponding gwStatus notification gets in.
+	this.getGatewayByType(service).nick = screenName;
 };
 
 ZmRoster.prototype._requestGateways = function() {
