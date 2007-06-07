@@ -190,7 +190,8 @@ ZmChatListController.prototype._initializeToolBar = function(view) {
 	this._propagateMenuListeners(this._toolbar[view], ZmOperation.NEW_MENU);
 	// this._setupViewMenu(view);
 
-	this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+	// this._setNewButtonProps(view, ZmMsg.compose, "NewMessage", "NewMessageDis", ZmOperation.NEW_MESSAGE);
+	this._setNewButtonProps(view, ZmMsg.imNewChat, "ImFree2Chat", "ImFree2ChatDis", ZmOperation.IM_NEW_CHAT);
 };
 
 ZmChatListController.prototype.updatePresenceMenu = function(addListeners) {
@@ -344,8 +345,8 @@ ZmChatListController.prototype._propagateMenuListeners = function(parent, op, li
 	}
 };
 
-// FIXME: do we need this?
-// Set up the New button based on the current app.
+// // FIXME: do we need this?
+// // Set up the New button based on the current app.
 ZmChatListController.prototype._setNewButtonProps = function(view, toolTip, enabledIconId, disabledIconId, defaultId) {
 	var newButton = this._toolbar[view].getButton(ZmOperation.NEW_MENU);
 	if (newButton) {

@@ -49,6 +49,8 @@ ZmChatWidget.prototype._setChat = function(chat) {
 	for (var i = 0; i < chat._messages.length; i++) {
 		this.handleMessage(this.chat._messages[i]);
 	}
+	var listItem = AjxDispatcher.run("GetRoster").getRosterItem(item.getAddress());
+	this._addToBuddyListBtn.setVisible(!listItem);
 };
 
 ZmChatWidget.prototype.getIcon = function() {
@@ -65,6 +67,8 @@ ZmChatWidget.prototype._rosterItemChangeListener = function(item, fields, setAll
 // 		this._memberListView._rosterItemChangeListener(item, fields);
 
 	if (this.chat.getRosterSize() == 1) {
+		var listItem = AjxDispatcher.run("GetRoster").getRosterItem(this.chat.getRosterItem().getAddress());
+		this._addToBuddyListBtn.setVisible(!listItem);
 		if (doShow) this.setImage(item.getPresence().getIcon());
 		if (doShow || doUnread) {
 			var title = new AjxBuffer();
@@ -274,6 +278,13 @@ ZmChatWidget.prototype._init = function() {
 
 	this._toolbar.addFiller();
 
+	var btn = this._addToBuddyListBtn = new DwtToolBarButton(this._toolbar, null);
+	btn.setToolTipContent("-");
+	btn.getToolTipContent = AjxCallback.simpleClosure(this._getAddToBuddyListTooltip, this);
+	btn.setImage("NewContact");
+	btn.addSelectionListener(new AjxListener(this, this._addToBuddyListListener));
+	btn.setVisible(false);
+
 	var btn = new DwtToolBarButton(this._toolbar, null);
 	btn.setToolTipContent(ZmMsg.sendByEmail);
 	btn.setImage("Send");
@@ -313,6 +324,19 @@ ZmChatWidget.prototype._init = function() {
 	this.addDisposeListener(new AjxListener(this, this._disposeListener));
 
 	this._setupSash();
+};
+
+ZmChatWidget.prototype._getAddToBuddyListTooltip = function() {
+	return AjxMessageFormat.format(ZmMsg.imAddToBuddyList, [ this.chat.getRosterItem().getAddress() ]);
+};
+
+ZmChatWidget.prototype._addToBuddyListListener = function() {
+	this._appCtxt.getApp("IM").getRosterTreeController()._newRosterItemListener(
+		{
+			name	: this.chat.getRosterItem().getDisplayName(),
+			address	: this.chat.getRosterItem().getAddress()
+		}
+	);
 };
 
 // "this" is here the input field.

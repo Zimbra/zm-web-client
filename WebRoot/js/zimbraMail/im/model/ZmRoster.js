@@ -420,8 +420,9 @@ ZmRoster.prototype.breakDownAddress = function(addr) {
 	if (m) {
 		var gw = this.getGatewayByDomain(m[1]);
 		if (gw) {
-			return { type: gw.type,
-				 addr: addr.substr(0, m.index)
+			return { type	 : gw.type,
+				 addr	 : addr.substr(0, m.index),
+				 gateway : gw
 			       };
 		}
 	}

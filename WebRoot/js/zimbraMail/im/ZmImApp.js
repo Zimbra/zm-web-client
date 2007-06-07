@@ -104,6 +104,8 @@ function() {
 
 ZmImApp.prototype._registerApp =
 function() {
+	var newItemOps = {};
+	newItemOps[ZmOperation.IM_NEW_CHAT] = "chat";
 	ZmApp.registerApp(ZmApp.IM,
 			  { mainPkg	      : "IM",
 			    nameKey	      : "imAppTitle",
@@ -113,7 +115,8 @@ function() {
 			    showZimlets	      : true,
 			    gotoActionCode    : ZmKeyMap.GOTO_IM,
 			    chooserSort	      : 40,
-			    defaultSort	      : 50
+			    defaultSort	      : 50,
+			    newItemOps        : newItemOps
 			  });
 };
 
@@ -161,6 +164,16 @@ ZmImApp.prototype._registerPrefs = function() {
 ZmImApp.prototype.refresh =
 function() {
 	AjxDispatcher.run("GetRoster").reload();
+};
+
+ZmImApp.prototype.handleOp = function(op) {
+	switch (op) {
+	    case ZmOperation.IM_NEW_CHAT:
+		AjxDispatcher.run("GetRoster"); // forces loading IM...
+		this.prepareVisuals(); // ... and create views, if not yet done
+		this.getRosterTreeController()._imNewChatListener();
+		break;
+	}
 };
 
 ZmImApp.prototype.postNotify =
