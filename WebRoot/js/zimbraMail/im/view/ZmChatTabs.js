@@ -175,6 +175,14 @@ ZmChatTabs.prototype.detachChatWidget = function(chatWidget) {
 		this.setActiveTab(newTab);
 };
 
+ZmChatTabs.prototype.saveScrollPositions = function() {
+	this.__tabs.foreach("saveScrollPos");
+};
+
+ZmChatTabs.prototype.restoreScrollPositions = function() {
+	this.__tabs.foreach("restoreScrollPos");
+};
+
 ZmChatTabs.prototype._createTabButton = function(chatWidget, active, index) {
 	var cont = new DwtComposite(this, "ZmChatTabs-Tab");
 	var tb = new DwtToolBar(cont);

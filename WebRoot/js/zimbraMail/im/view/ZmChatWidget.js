@@ -128,6 +128,14 @@ ZmChatWidget.prototype.handleHtmlMessage = function(str) {
 	return this.scrollTo(div, true);
 };
 
+ZmChatWidget.prototype.saveScrollPos = function() {
+	this._scrollPos = this._content.getHtmlElement().scrollTop;
+};
+
+ZmChatWidget.prototype.restoreScrollPos = function() {
+	this._content.getHtmlElement().scrollTop = this._scrollPos;
+};
+
 ZmChatWidget.prototype.scrollTo = function(el, append) {
 	var content = this._content.getHtmlElement();
 	if (typeof el == "number") {
@@ -550,6 +558,7 @@ ZmChatWidget.prototype._closeListener = function() {
 };
 
 ZmChatWidget.prototype._stickyListener = function(ev) {
+	this.parent.saveScrollPositions();
 	var button = ev.item;
 	button._mouseOutListener();
 	var sticky = button.isToggled();
@@ -579,6 +588,7 @@ ZmChatWidget.prototype._stickyListener = function(ev) {
 		wp.y = 0;
 	wm.manageWindow(win, wp); // does popup automagically
 	win._sticky = sticky;
+	this.parent.restoreScrollPositions();
 	this.parent.updateStickyButtons();
 };
 
