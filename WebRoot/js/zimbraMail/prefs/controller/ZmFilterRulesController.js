@@ -188,7 +188,8 @@ function(ev) {
 	var sel = this._listView.getSelection();
 	
 	var filter = sel[0];
-	var ds = this._deleteShield = this._appCtxt.getYesNoCancelMsgDialog();
+	//bug:16053 changed getYesNoCancelMsgDialog to getYesNoMsgDialog
+	var ds = this._deleteShield = this._appCtxt.getYesNoMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
 	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, filter);
