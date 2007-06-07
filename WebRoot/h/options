@@ -168,5 +168,5 @@
         <input type="hidden" name="doAction" value="1"/>
     </form>
 
-    <app:keyboard globals="true"/>
+    <app:keyboard globals="true" tags="true" folders="true" calendars="true" contacts="true" mailbox="${mailbox}"/>
 </app:view>

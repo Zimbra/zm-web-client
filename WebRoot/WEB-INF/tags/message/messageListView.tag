@@ -174,7 +174,7 @@
     //-->
 </SCRIPT>
 
-<app:keyboard globals="true">
+<app:keyboard globals="true" mailbox="${mailbox}" folders="true" tags="true">
 
     <zm:bindKey message="mail.Flag" func="zflag"/>
     <zm:bindKey message="mail.UnFlag" func="zunflag"/>

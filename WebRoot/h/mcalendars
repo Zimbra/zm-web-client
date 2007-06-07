@@ -54,16 +54,16 @@
                                 <table cellspacing=0 cellpadding=0 class='Tb'>
                                     <tr>
                                         <td>
-                                            <a href="<c:url value="/h/calendar"/>">
+                                            <a id="OPCLOSE" href="<c:url value="/h/calendar"/>">
                                                 <app:img src="common/Close.gif"/><span><fmt:message key="close"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionNewCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNew" text="calendarNew"/>
+                                        <app:button id="OPNEWCAL" name="actionNewCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNew" text="calendarNew"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionNewSubscribedCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNewSubscribed" text="calendarNewSubscribed"/>
+                                        <app:button id="OPNEWSUB" name="actionNewSubscribedCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNewSubscribed" text="calendarNewSubscribed"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionNewSharedCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNewShared" text="calendarNewShared"/>
+                                        <app:button id="OPNEWLINK" name="actionNewSharedCalendar" src="calendar/NewAppointment.gif" tooltip="calendarNewShared" text="calendarNewShared"/>
                                     </tr>
                                 </table>
                             </td>
@@ -124,4 +124,15 @@
         </table>
         <input type="hidden" name="doAction" value="1"/>
     </form>
+        <SCRIPT TYPE="text/javascript">
+    <!--
+        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    //-->
+    </SCRIPT>
+    <app:keyboard mailbox="${mailbox}" globals="true">
+        <zm:bindKey message="global.Cancel" id="OPCLOSE"/>
+        <zm:bindKey message="mcalendars.NewCalendar" func="function() {zclick('SOPNEWCAL');}"/>
+        <zm:bindKey message="mcalendars.NewSubscription" func="function() {zclick('SOPNEWSUB');}"/>
+        <zm:bindKey message="mcalendars.NewLink" func="function() {zclick('SOPNEWLINK');}"/>
+    </app:keyboard>
 </app:view>

@@ -56,16 +56,16 @@
                                 <table cellspacing=0 cellpadding=0 class='Tb'>
                                     <tr>
                                         <td>
-                                            <a href="<c:url value="/h/search"/>">
+                                            <a id="OPCLOSE" href="<c:url value="/h/search"/>">
                                                 <app:img src="common/Close.gif"/><span><fmt:message key="close"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionNewFolder" src="common/NewFolder.gif" tooltip="folderNew" text="folderNew"/>
+                                        <app:button id="OPNEWFOLD" name="actionNewFolder" src="common/NewFolder.gif" tooltip="folderNew" text="folderNew"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionNewFeedFolder" src="common/NewFolder.gif" tooltip="folderNewRssAtomFeed" text="folderNewRssAtomFeed"/>
+                                        <app:button id="OPNEWRSS" name="actionNewFeedFolder" src="common/NewFolder.gif" tooltip="folderNewRssAtomFeed" text="folderNewRssAtomFeed"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionNewSearchFolder" src="common/NewFolder.gif" tooltip="folderNewSearchFolder" text="folderNewSearchFolder"/>
+                                        <app:button id="OPNEWSEARCH" name="actionNewSearchFolder" src="common/NewFolder.gif" tooltip="folderNewSearchFolder" text="folderNewSearchFolder"/>
                                     </tr>
                                 </table>
                             </td>
@@ -132,4 +132,19 @@
         </table>
         <input type="hidden" name="doAction" value="1"/>
     </form>
+
+    <SCRIPT TYPE="text/javascript">
+    <!--
+        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    //-->
+    </SCRIPT>
+    <app:keyboard mailbox="${mailbox}" globals="true">
+        <zm:bindKey message="global.Cancel" id="OPCLOSE"/>
+        <zm:bindKey message="mfolders.NewFolder" func="function() {zclick('SOPNEWFOLD');}"/>
+        <zm:bindKey message="mfolders.NewSearchFolder" func="function() {zclick('SOPNEWSEARCH');}"/>
+        <zm:bindKey message="mfolders.NewRssFeed" func="function() {zclick('SOPNEWRSS');}"/>
+        <zm:bindKey message="mail.MarkAllRead" func="function() {zclick('OPMARKALLREAD');}"/>
+        <zm:bindKey message="mfolders.EmptyFolder" func="function() {zclick('OPEMPTY');}"/>
+    </app:keyboard>
+    
 </app:view>

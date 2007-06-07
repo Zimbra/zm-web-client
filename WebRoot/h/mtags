@@ -55,12 +55,12 @@
                                 <table cellspacing=0 cellpadding=0 class='Tb'>
                                     <tr>
                                         <td>
-                                            <a href="<c:url value="/h/search"/>">
+                                            <a id="OPCLOSE" href="<c:url value="/h/search"/>">
                                                 <app:img src="common/Close.gif"/><span><fmt:message key="close"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionNewTag" src="tag/NewTag.gif" tooltip="tagNew" text="tagNew"/>
+                                        <app:button id="OPNEWTAG" name="actionNewTag" src="tag/NewTag.gif" tooltip="tagNew" text="tagNew"/>
                                     </tr>
                                 </table>
                             </td>
@@ -125,4 +125,13 @@
         </table>
         <input type="hidden" name="doAction" value="1"/>
     </form>
+     <SCRIPT TYPE="text/javascript">
+    <!--
+        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    //-->
+    </SCRIPT>
+    <app:keyboard mailbox="${mailbox}" globals="true">
+        <zm:bindKey message="global.Cancel" id="OPCLOSE"/>
+        <zm:bindKey message="mtags.NewTag" func="function() {zclick('SOPNEWTAG');}"/>
+    </app:keyboard>
 </app:view>

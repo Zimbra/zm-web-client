@@ -1,6 +1,12 @@
 <%@ tag body-content="scriptless" %>
 <%@ attribute name="globals" rtexprvalue="true" required="false" %>
 <%@ attribute name="passspecial" rtexprvalue="true" required="false" %>
+<%@ attribute name="mailbox" rtexprvalue="true" required="true" type="com.zimbra.cs.taglib.bean.ZMailboxBean"%>
+<%@ attribute name="calendars" rtexprvalue="true" required="false" %>
+<%@ attribute name="contacts" rtexprvalue="true" required="false" %>
+<%@ attribute name="folders" rtexprvalue="true" required="false" %>
+<%@ attribute name="tags" rtexprvalue="true" required="false" %>
+
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
@@ -61,14 +67,29 @@
     YAHOO.util.Event.addListener(window, "load", init);
 
     <c:if test="${globals}">
-    <zm:bindKey message="global.NewMessage" id="TAB_COMPOSE"/>
-    <zm:bindKey message="global.NewAppointment" url="calendar?action=new"/>
-    <zm:bindKey message="global.NewContact" url="search?st=contact&action=newcontact"/>
-    <zm:bindKey message="global.GoToCalendar" id="TAB_CALENDAR"/>
-    <zm:bindKey message="global.GoToContacts" id="TAB_ADDRESSBOOK"/>
-    <zm:bindKey message="global.GoToMail" id="TAB_MAIL"/>
-    <zm:bindKey message="global.GoToOptions" id="TAB_OPTIONS"/>
+     <zm:bindKey message="global.NewMessage" id="TAB_COMPOSE"/>
+     <zm:bindKey message="global.GoToMail" id="TAB_MAIL"/>
+     <zm:bindKey message="global.GoToOptions" id="TAB_OPTIONS"/>
+     <c:if test="${folders}">
+      <zm:bindKey message="overview.folders" url="mfolders"/>
+     </c:if>
+     <c:if test="${tags and mailbox.features.tagging}">
+      <zm:bindKey message="overview.tags" url="mtags"/>
+     </c:if>
+     <c:if test="${mailbox.features.calendar}">
+      <zm:bindKey message="global.GoToCalendar" id="TAB_CALENDAR"/>
+      <zm:bindKey message="global.NewAppointment" url="calendar?action=new"/>
+      <c:if test="${calendars}">
+       <zm:bindKey message="overview.calendars" url="mcalendars"/>
+      </c:if>
+     </c:if>
+     <c:if test="${mailbox.features.contacts}">
+      <zm:bindKey message="global.NewContact" url="search?st=contact&action=newcontact"/>
+      <zm:bindKey message="global.GoToContacts" id="TAB_ADDRESSBOOK"/>
+      <c:if test="${contacts}">
+       <zm:bindKey message="overview.addressbooks" url="maddrbooks"/>
+      </c:if>
+     </c:if>
     </c:if>
-            
     <jsp:doBody/>
 </script>

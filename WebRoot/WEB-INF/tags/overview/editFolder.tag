@@ -411,7 +411,7 @@
     <tr>
         <td>&nbsp;</td>
         <td>
-            <input class='tbButton' type="submit" name="actionMarkRead"
+            <input id="OPMARKALLREAD" class='tbButton' type="submit" name="actionMarkRead"
                    value="<fmt:message key="actionMarkAllRead"/>">
         </td>
     </tr>
@@ -426,7 +426,7 @@
     <tr>
         <td>&nbsp;</td>
         <td>
-            <input class='tbButton' type="submit" name="actionEmptyFolder"
+            <input id="OPEMPTY" class='tbButton' type="submit" name="actionEmptyFolder"
                    value="<fmt:message key="folderEmptyFolder"/>">
             <input type="hidden" name="folderEmptyId" value="${folder.id}"/>
         </td>

@@ -41,14 +41,14 @@
                                 <table cellspacing=0 cellpadding=0 class='Tb'>
                                     <tr>
                                         <td>
-                                            <a href="<c:url value="/h/search?st=contact"/>">
+                                            <a id="OPCLOSE" href="<c:url value="/h/search?st=contact"/>">
                                                 <app:img src="common/Close.gif"/><span><fmt:message key="close"/></span>
                                             </a>
                                         </td>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionNewAddressBook" src="contacts/NewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
+                                        <app:button id="OPNEWADDRBOOK" name="actionNewAddressBook" src="contacts/NewContact.gif" tooltip="addressBookNew" text="addressBookNew"/>
                                         <td><div class='vertSep'></div></td>
-                                        <app:button name="actionNewSharedAddressBook" src="contacts/NewContact.gif" tooltip="addressBookNewShared" text="addressBookNewShared"/>
+                                        <app:button id="OPNEWLINK" name="actionNewSharedAddressBook" src="contacts/NewContact.gif" tooltip="addressBookNewShared" text="addressBookNewShared"/>
                                     </tr>
                                 </table>
                             </td>
@@ -131,4 +131,14 @@
         </table>
         <input type="hidden" name="doAction" value="1"/>
     </form>
+    <SCRIPT TYPE="text/javascript">
+    <!--
+        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    //-->
+    </SCRIPT>
+    <app:keyboard mailbox="${mailbox}" globals="true">
+        <zm:bindKey message="global.Cancel" id="OPCLOSE"/>
+        <zm:bindKey message="maddrbooks.NewAddressBook" func="function() {zclick('SOPNEWADDRBOOK');}"/>
+        <zm:bindKey message="maddrbooks.NewLink" func="function() {zclick('SOPNEWLINK');}"/>
+    </app:keyboard>
 </app:view>

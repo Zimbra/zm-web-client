@@ -25,6 +25,16 @@
                 <app:optShortcutSection section="calendar" suffix="${suffix}"/>
             </c:if>
             <app:optShortcutSection section="list" suffix="${suffix}"/>
+            <app:optShortcutSection section="mfolders" suffix="${suffix}"/>
+            <c:if test="${mailbox.features.tagging}">
+                <app:optShortcutSection section="mtags" suffix="${suffix}"/>
+            </c:if>
+            <c:if test="${mailbox.features.contacts}">
+                <app:optShortcutSection section="maddrbooks" suffix="${suffix}"/>
+            </c:if>
+            <c:if test="${mailbox.features.calendar}">
+                <app:optShortcutSection section="mcalendars" suffix="${suffix}"/>
+            </c:if>
         </tbody>
     </table>
 </fmt:bundle>

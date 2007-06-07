@@ -139,7 +139,7 @@
         //-->
     </SCRIPT>
 
-    <app:keyboard globals="true">
+    <app:keyboard globals="true" mailbox="${mailbox}" tags="true" folders="true">
 
         <zm:bindKey message="mail.Flag" func="zflag"/>
         <zm:bindKey message="mail.UnFlag" func="zunflag"/>
@@ -162,6 +162,8 @@
         <zm:bindKey message="global.NextItem" func="zsn"/>
         <zm:bindKey message="global.PreviousPage" id="PREV_PAGE"/>
         <zm:bindKey message="global.NextPage" id="NEXT_PAGE"/>
+
+        
     </app:keyboard>
 
 </app:view>

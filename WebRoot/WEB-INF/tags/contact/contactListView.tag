@@ -106,7 +106,7 @@
     //-->
    </SCRIPT>
 
-   <app:keyboard globals="true">
+   <app:keyboard globals="true" mailbox="${mailbox}" contacts="true" tags="true">
        <zm:bindKey message="contacts.NewGroup" func="function() { zclick('SNEW_GROUP')}"/>
        <zm:bindKey message="global.SelectAllCheckBoxes" func="function() { zclick('OPCHALL')}"/>
        <zm:bindKey message="contacts.Delete" func="function() { zclick('SOPDELETE')}"/>
