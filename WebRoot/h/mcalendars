@@ -40,6 +40,8 @@
         </app:status>
     </c:if>
 
+    <c:set var="selectedRow" value="${-1}"/>
+
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' calendars="true" minical="false" editmode="true" keys="true">
@@ -78,10 +80,12 @@
                         <tr>
                             <td width=200 class='List' valign='top'>
                                 <table width=100% cellpadding=2 cellspacing=0>
+                                    <c:set var="index" value="${0}"/>
                                     <zm:forEachFolder var="folder">
                                         <c:if test="${folder.isAppointmentView}">
                                             <c:set var="rowColor" value="${folder.styleColor}${folder.styleColor ne 'Gray' ? 'Bg' :''}"/>
                                             <c:set var="selected" value="${selectedFolder.id eq folder.id and not newCalendar}"/>
+                                            <c:if test="${selected}"><c:set var="selectedRow" value="${index}"/></c:if>                                            
                                             <tr>
                                                 <td class='${rowColor}' width=1%>
                                                     &nbsp;
@@ -91,12 +95,13 @@
                                                     <c:url var="selectUrl" value="">
                                                         <c:param name="id" value="${folder.id}"/>
                                                     </c:url>
-                                                    <a href="${selectUrl}">
+                                                    <a id="A${index}" href="${selectUrl}">
                                                         <app:img src="${folder.image}"/>
                                                         <span <c:if test="${selected}">class='ZhTISelected'</c:if> style='vertical-align:middle'>${fn:escapeXml(label)}</span>
                                                     </a>
                                                 </td>
                                             </tr>
+                                            <c:set var="index" value="${index+1}"/>
                                         </c:if>
                                     </zm:forEachFolder>
                                 </table>
@@ -126,7 +131,12 @@
     </form>
         <SCRIPT TYPE="text/javascript">
     <!--
-        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    var zrc = ${index};
+    var zindex = ${selectedRow};
+    var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    var zget = function(i) { var e = document.getElementById("A"+i); if (e && e.href) window.location = e.href; }
+    var zprev = function() { if (zindex > 0) zget(zindex-1);}
+    var znext = function() { if (zindex+1 < zrc) zget(zindex+1);}
     //-->
     </SCRIPT>
     <app:keyboard mailbox="${mailbox}" globals="true">
@@ -134,5 +144,7 @@
         <zm:bindKey message="mcalendars.NewCalendar" func="function() {zclick('SOPNEWCAL');}"/>
         <zm:bindKey message="mcalendars.NewSubscription" func="function() {zclick('SOPNEWSUB');}"/>
         <zm:bindKey message="mcalendars.NewLink" func="function() {zclick('SOPNEWLINK');}"/>
+        <zm:bindKey message="global.PreviousItem" func="zprev"/>
+        <zm:bindKey message="global.NextItem" func="znext"/>
     </app:keyboard>
 </app:view>

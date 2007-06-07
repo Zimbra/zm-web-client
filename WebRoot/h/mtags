@@ -41,6 +41,7 @@
     </c:set>
     <fmt:message var="title" key="manageTags"/>
 
+    <c:set var="selectedRow" value="${-1}"/>    
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${title}" context="${null}" selected='folders' tags="true" editmode="true" keys="true">
@@ -74,9 +75,12 @@
                         <tr>
                             <td width=200 class='List' valign='top'>
                                 <table width=100% cellpadding=2 cellspacing=0>
+                                    <c:set var="index" value="${0}"/>
                                     <zm:forEachTag var="tag">
                                         <c:set var="hasTags" value="${true}"/>
-                                        <tr <c:if test="${selectedTag.id eq tag.id and not newTag}">class='RowSelected'</c:if>>
+                                        <c:if test="${selectedTag.id eq tag.id and not newTag}"><c:set var="selectedRow" value="${index}"/></c:if>
+
+                                        <tr <c:if test="${index eq selectedRow}">class='RowSelected'</c:if>>
                                             <td width=1%>
                                                 &nbsp;
                                             </td>
@@ -84,7 +88,7 @@
                                                 <c:url var="selectUrl" value="">
                                                     <c:param name="id" value="${tag.id}"/>
                                                 </c:url>
-                                                <a href="${selectUrl}">
+                                                <a id="A${index}" href="${selectUrl}">
                                                     <app:img src="${tag.image}"/>
                                                         <span style='vertical-align:middle;'>${fn:escapeXml(tag.name)}
                                                             <c:if test="${tag.hasUnread}"> (${tag.unreadCount}) </c:if>
@@ -92,6 +96,7 @@
                                                 </a>
                                             </td>
                                         </tr>
+                                        <c:set var="index" value="${index+1}"/>
                                     </zm:forEachTag>
                                     <c:if test="${not hasTags}">
                                         <tr>
@@ -127,11 +132,18 @@
     </form>
      <SCRIPT TYPE="text/javascript">
     <!--
-        var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    var zrc = ${index};
+    var zindex = ${selectedRow};
+    var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    var zget = function(i) { var e = document.getElementById("A"+i); if (e && e.href) window.location = e.href; }
+    var zprev = function() { if (zindex > 0) zget(zindex-1);}
+    var znext = function() { if (zindex+1 < zrc) zget(zindex+1);}
     //-->
     </SCRIPT>
     <app:keyboard mailbox="${mailbox}" globals="true">
         <zm:bindKey message="global.Cancel" id="OPCLOSE"/>
         <zm:bindKey message="mtags.NewTag" func="function() {zclick('SOPNEWTAG');}"/>
+        <zm:bindKey message="global.PreviousItem" func="zprev"/>
+        <zm:bindKey message="global.NextItem" func="znext"/>
     </app:keyboard>
 </app:view>
