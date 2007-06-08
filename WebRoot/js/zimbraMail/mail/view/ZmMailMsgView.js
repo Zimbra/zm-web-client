@@ -941,7 +941,8 @@ function(msg, container, callback) {
 	htmlArr[idx++] = ZmMsg.sentBy;
 	htmlArr[idx++] = ": </td></tr></table></td>";
 	htmlArr[idx++] = "<td class='LabelColValue' colspan=3>";
-	if (addr instanceof AjxEmailAddress) {
+	//bug fix #17016 - no need to check addr instanceof AjxEmailAddress
+	if (addr) {
 		addr = addr.address || (AjxStringUtil.htmlEncode(addr.name));
 	}
 	htmlArr[idx++] = this._objectManager
