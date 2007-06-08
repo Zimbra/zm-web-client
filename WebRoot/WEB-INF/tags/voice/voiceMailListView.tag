@@ -8,10 +8,6 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <app:searchTitle var="title" context="${context}"/>
-    <c:set var="cid" value="${empty param.id ? context.searchResult.hits[0].id : param.id}"/>
-    <fmt:message var="unknownRecipient" key="unknownRecipient"/>
-    <fmt:message var="unknownSubject" key="noSubject"/>
-    <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
 </app:handleError>
 <app:view mailbox="${mailbox}" title="${title}" selected='voice' voice="true" folders="false" tags="false" searches="false" context="${context}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
@@ -28,7 +24,7 @@
                             <tr class='Header'>
                                 <th class='CB' nowrap><input id="CHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                                 <th class='Img' nowrap><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/>
-                                <th width=10% nowrap><fmt:message key="${useTo ? 'to' : 'from'}"/>
+                                <th width=10% nowrap><fmt:message key="from"/>
                                 <th width=10% nowrap><fmt:message key="message"/></th>
                                 <th nowrap><fmt:message key="duration"/></th>
                                 <th width=1% nowrap>

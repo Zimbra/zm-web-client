@@ -71,6 +71,9 @@
     <c:when test="${context.isVoiceMailSearch}">
         <app:voiceMailListView context="${context}"/>
     </c:when>
+    <c:when test="${context.isCallSearch}">
+        <app:callListView context="${context}"/>
+    </c:when>
     <c:otherwise>
         <fmt:message key="error" var="title"/>
         <app:view mailbox="${mailbox}" title="${title}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="" keys="true">

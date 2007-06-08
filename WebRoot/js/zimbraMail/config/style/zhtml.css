@@ -890,6 +890,26 @@ padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
         border-bottom: 1px solid #777777;
 }
 
+.ZhCallListPrintView {
+    padding:10px;
+}
+
+.ZhCallListPrintTable TH {
+    font-weight:bold;
+}
+
+.ZhCallListPrintTable TD,
+.ZhCallListPrintTable TH {
+	padding-left:20;
+	padding-right:20;
+	border-bottom:1px solid;
+    text-align:left;
+}
+
+.ZhZimbraTitle {
+	@FontSize-biggest@
+}
+
 /*
  * Colors, for use in calendar and elsewhere.
  *

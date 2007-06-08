@@ -11,7 +11,7 @@
 <tr>
 <td nowrap style='padding-left: 0px'>
     <c:url var="url" value="/h/search">
-        <c:param name="st" value="voicemail"/>
+        <c:param name="st" value="${zm:getVoiceFolderType(folder)}"/>
         <c:param name="sq" value="${zm:getVoiceFolderQuery(folder)}"/>
     </c:url>
     <a href='${url}'>
