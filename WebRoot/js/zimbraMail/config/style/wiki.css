@@ -57,6 +57,7 @@
 	white-space:nowrap; overflow:hidden;
 	font-size:18px;
 	font-weight:bold;
+	font-family: verdana, arial, sans-serif;
 	/*vertical-align:bottom;*/
 }
 
@@ -64,6 +65,7 @@
 	white-space:nowrap; overflow:hidden;
 	font-size:11px;
 	color:#666666;
+	font-family: verdana, arial, sans-serif;
 	/*vertical-align:bottom;*/
 }
 
@@ -135,6 +137,7 @@
 	/*background-color:#eeeeee;*/
 	font-size:14px;
 	font-weight:bold;
+	font-family: verdana, arial, sans-serif;
 }
 
 #ZimbraWikiPage .zmwiki-tocLineSeparator {
@@ -156,6 +159,7 @@
 	@FontSize-normal@
 	cursor:pointer;
 	font-weight: bold;
+	font-family: verdana, arial, sans-serif;
 }
 
 #ZimbraWikiPage .zmwiki-tag {
@@ -211,6 +215,7 @@
 .zmwiki-header{
 	font-size: 12px;
 	font-weight: bold;
+	font-family: verdana, arial, sans-serif;
 }
 
 .zmwiki-headerUnderLine td{
