@@ -471,7 +471,8 @@ function(ev) {
 
 		if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 			lv.setSelectionHdrCbox(false);
-			lv.setSelectionCbox(ev.item, false);
+			if (!ev.ctrlKey)
+				lv.setSelectionCbox(ev.item, false);
 		}
 
 		this._resetOperations(this._toolbar[this._currentView], lv.getSelectionCount());

@@ -437,6 +437,10 @@ function(selectedArray) {
 
 	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		this._checkSelectedItems(true);
+
+		// check the "selection" column header if all items in list are checked
+		if (selectedArray.length == this.getList().size())
+			this.setSelectionHdrCbox(true);
 	}
 };
 
@@ -455,6 +459,9 @@ function(check) {
 	for (var i = 0; i < sel.length; i++) {
 		this.setSelectionCbox(sel[i], !check);
 	}
+
+	if (sel.length == this.getList().size())
+		this.setSelectionHdrCbox(true);
 };
 
 ZmListView.prototype._getHeaderToolTip =
