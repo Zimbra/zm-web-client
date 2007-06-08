@@ -830,6 +830,9 @@ if (ext == null) ext = "";
     <copy verbose="true" todir="${deploy.dir}${deploy.path}/h">
         <fileset dir="WebRoot/h" includes="**"/>
     </copy>
+    <copy verbose="true" todir="${deploy.dir}${deploy.path}/yui">
+        <fileset dir="WebRoot/yui" includes="**"/>
+    </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}/WEB-INF/tags">
         <fileset dir="WebRoot/WEB-INF/tags" includes="**"/>
     </copy>
@@ -878,6 +881,7 @@ if (ext == null) ext = "";
         <lib dir="${jars.dir}" includes="**.jar" excludes="${war.exclude}"/>
         <webinf dir="WebRoot/WEB-INF" includes="tags/**" excludes="**/web.xml"/>
         <zipfileset dir="WebRoot/h" includes="**" prefix="h"/>
+        <zipfileset dir="WebRoot/yui" includes="**" prefix="yui"/>
         <zipfileset dir="${ajaxdwt.images.dir}" prefix="images/dwt"/>
         <zipfileset dir="img/loRes" prefix="images"/>
         <zipfileset dir="WebRoot/skins/_base/logos" prefix="images/logos"/>
@@ -915,6 +919,7 @@ if (ext == null) ext = "";
         <lib dir="${jars.dir}" includes="**.jar" excludes="${war.exclude}"/>
         <webinf dir="WebRoot/WEB-INF" includes="tags/**" excludes="**/web.xml"/>
         <zipfileset dir="WebRoot/h" includes="**" prefix="h"/>
+        <zipfileset dir="WebRoot/yui" includes="**" prefix="yui"/>
         <zipfileset dir="${ajaxdwt.images.dir}" prefix="images/dwt"/>
         <zipfileset dir="img/loRes" prefix="images"/>
         <zipfileset dir="WebRoot/skins/_base/logos" prefix="images/logos"/>

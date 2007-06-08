@@ -12,8 +12,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/yahoo/yahoo-min.js" ></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/event/event-min.js" ></script>
+<c:if test="${not requestScope.yahooDomEvent}">
+<script type="text/javascript" src="<c:url value='/yui/2.2.2/build/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
+</c:if>     
 <script type="text/javascript">
     var pendingKey = "";
     var timerId = null;

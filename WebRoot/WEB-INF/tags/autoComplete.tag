@@ -4,9 +4,10 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/yahoo-dom-event/yahoo-dom-event.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/connection/connection-min.js"></script>
-<script type="text/javascript" src="http://yui.yahooapis.com/2.2.2/build/autocomplete/autocomplete-min.js"></script>
+<c:set var="yahooDomEvent" value="true" scope="request"/>
+<script type="text/javascript" src="<c:url value='/yui/2.2.2/build/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.2.2/build/connection/connection-min.js'/>"></script>
+<script type="text/javascript" src="<c:url value='/yui/2.2.2/build/autocomplete/autocomplete-min.js'/>"></script>
 
 <script type="text/javascript">
     var zhEncode = function(s) {return s == null ? '' : s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");}
