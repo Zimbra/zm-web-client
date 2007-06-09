@@ -72,10 +72,12 @@
      <zm:bindKey message="global.GoToMail" id="TAB_MAIL"/>
      <zm:bindKey message="global.GoToOptions" id="TAB_OPTIONS"/>
      <c:if test="${folders}">
-      <zm:bindKey message="overview.folders" url="mfolders"/>
+      <c:set var="sfi" value="?sfi=${param.sfi}"/>
+      <zm:bindKey message="overview.folders" url="mfolders${not empty param.sfi ? sfi : ''}"/>
      </c:if>
      <c:if test="${tags and mailbox.features.tagging}">
-      <zm:bindKey message="overview.tags" url="mtags"/>
+      <c:set var="sti" value="?sti=${param.sti}"/>
+      <zm:bindKey message="overview.tags" url="mtags${not empty param.sti ? sti : ''}"/>
      </c:if>
      <c:if test="${mailbox.features.calendar}">
       <zm:bindKey message="global.GoToCalendar" id="TAB_CALENDAR"/>
@@ -88,7 +90,8 @@
       <zm:bindKey message="global.NewContact" url="search?st=contact&action=newcontact"/>
       <zm:bindKey message="global.GoToContacts" id="TAB_ADDRESSBOOK"/>
       <c:if test="${contacts}">
-       <zm:bindKey message="overview.addressbooks" url="maddrbooks"/>
+       <c:set var="sfi" value="?sfi=${param.sfi}"/>
+       <zm:bindKey message="overview.addressbooks" url="maddrbooks${not empty param.sfi ? sfi : ''}"/>
       </c:if>
      </c:if>
     </c:if>
