@@ -150,6 +150,11 @@ function() {
 
 // App API
 
+ZmTasksApp.prototype.refresh =
+function(refresh) {
+	this._handleRefresh();
+};
+
 ZmTasksApp.prototype.handleOp =
 function(op, params) {
 	switch (op) {

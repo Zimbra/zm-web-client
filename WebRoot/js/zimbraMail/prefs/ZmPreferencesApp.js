@@ -261,6 +261,11 @@ function(callback) {
 	}
 };
 
+ZmPreferencesApp.prototype.refresh =
+function(refresh) {
+	this._handleRefresh();
+};
+
 ZmPreferencesApp.prototype.getPrefController =
 function() {
 	if (!this._prefController) {

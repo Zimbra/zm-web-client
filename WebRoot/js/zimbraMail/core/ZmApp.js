@@ -319,6 +319,8 @@ function() {
 
 /**
  * Resets the current ZmOverview, if any.
+ * 
+ * @param overviewId	[string]*		ID of overview to reset
  */
 ZmApp.prototype.resetOverview =
 function(overviewId) {
@@ -412,6 +414,19 @@ ZmApp.prototype._postLoad =
 function(type) {
 	this._createDeferredFolders(type);
 	this._handleDeferredNotifications();
+};
+
+/**
+ * Standard method for handling arrival of <refresh> block by resetting
+ * the overview content.
+ * 
+ * @param refresh	[object]	refresh object (JSON)
+ */
+ZmApp.prototype._handleRefresh =
+function(refresh) {
+	if (this._overviewPanelContent) {
+		this.resetOverview();
+	}
 };
 
 /**

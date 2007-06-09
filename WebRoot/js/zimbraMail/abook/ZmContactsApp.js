@@ -323,7 +323,7 @@ function(notify) {
 
 ZmContactsApp.prototype.refresh =
 function(refresh) {
-	this.resetOverview();
+	this._handleRefresh();
 };
 
 ZmContactsApp.prototype.handleOp =
