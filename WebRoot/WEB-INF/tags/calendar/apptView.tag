@@ -26,6 +26,9 @@
 </app:handleError>
 
 <app:view mailbox="${mailbox}" title="${msg.subject}" context="${null}" selected='calendar' calendars="true" keys="false" minical="true" date="${requestScope.dateContext}" tags="true">
+    <app:keyboard mailbox="${mailbox}" globals="true">
+        <zm:bindKey message="global.Cancel" id="OPCLOSE"/>
+    </app:keyboard>
     <form action="" method="post">
 
         <table width=100% cellpadding="0" cellspacing="0">
@@ -81,4 +84,5 @@
         <input type="hidden" name="id" value="${msg.id}"/>
         <input type="hidden" name="doMessageAction" value="1"/>
     </form>
+
 </app:view>
