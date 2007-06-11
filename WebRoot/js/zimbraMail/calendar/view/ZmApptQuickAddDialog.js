@@ -354,11 +354,12 @@ function(appt) {
 	this._calendarOrgs = [];
 	for (var i = 0; i < data.length; i++) {
 		var cal = data[i];
-		this._calendarOrgs[cal.id] = cal.owner;
+		var id = cal.link ? cal.getRemoteId() : cal.id;
+		this._calendarOrgs[id] = cal.owner;
 		// don't show calendar if remote or don't have write perms
 		if (cal.url) continue;
 		if (cal.link && cal.shares && cal.shares.length > 0 && !cal.shares[0].isWrite()) continue;
-		this._calendarSelect.addOption(cal.getName(), false, cal.id);
+		this._calendarSelect.addOption(cal.getName(), false, id);
 	}
 
 	var len = this._calendarSelect.size();
