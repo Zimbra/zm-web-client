@@ -97,7 +97,7 @@
     <filter>
         <filter-name>GZIPFilter</filter-name>
         <filter-class>
-            com.zimbra.webClient.filters.GZIPFilter
+            com.zimbra.common.filters.GZIPFilter
         </filter-class>
         <!--
         <init-param>
