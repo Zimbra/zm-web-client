@@ -19,7 +19,7 @@
             <c:set var="errorCode" value="${param.loginErrorCode}"/>
             <fmt:message var="errorMessage" key="${errorCode}"/>
         </c:when>
-        <c:when test="${param.loginOp eq 'logout' || param.loginOp eq 'relogin'}">
+        <c:when test="${param.loginOp eq 'logout'}">
             <zm:logout/>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
