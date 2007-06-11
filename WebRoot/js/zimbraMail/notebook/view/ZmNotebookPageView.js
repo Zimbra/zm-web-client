@@ -117,7 +117,7 @@ function() {
 	}
 	var folderId = page.getFolderId();
 	var notebook = this._appCtxt.getById(folderId);
-	var notebookName = notebook.getName();
+	var notebookName = (notebook?notebook.getName():"");
 	return [ZmMsg.zimbraTitle, notebookName].join(": ");
 };
 
