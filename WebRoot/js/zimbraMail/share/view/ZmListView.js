@@ -336,7 +336,7 @@ function(clickedEl, ev) {
 	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX) &&
 		ev.button == DwtMouseEvent.LEFT)
 	{
-		if ((!ev.shiftKey && !ev.ctrlKey)) {
+		if (!ev.shiftKey && !ev.ctrlKey) {
 			// get the field being clicked
 			var id = (ev.target.id && ev.target.id.indexOf("AjxImg") == -1)
 				? ev.target.id : clickedEl.id;
@@ -379,8 +379,8 @@ function(clickedCol, ev) {
 				var hdrDiv = document.getElementById(hdrId);
 				if (hdrDiv) {
 					if (hdrDiv.className == "ImgTaskCheckboxCompleted") {
-						hdrDiv.className = "ImgTaskCheckbox";
 						this.deselectAll();
+						hdrDiv.className = "ImgTaskCheckbox";
 					} else {
 						hdrDiv.className = "ImgTaskCheckboxCompleted";
 						this.setSelectedItems(this._list.getArray());
@@ -393,13 +393,11 @@ function(clickedCol, ev) {
 
 ZmListView.prototype.setMultiSelection =
 function(clickedEl, bContained) {
-	if (bContained) {
-		this.setSelectionHdrCbox(false);
-	}
-	this.setSelectionCbox(clickedEl, bContained);
-
 	// call base class
 	DwtListView.prototype.setMultiSelection.call(this, clickedEl, bContained);
+
+	this.setSelectionCbox(clickedEl, bContained);
+	this.setSelectionHdrCbox(this.getSelection().length == this.getList().size());
 
 	// reset toolbar operations LAST
 	this._controller._resetToolbarOperations();
@@ -437,10 +435,6 @@ function(selectedArray) {
 
 	if (this._appCtxt.get(ZmSetting.SHOW_SELECTION_CHECKBOX)) {
 		this._checkSelectedItems(true);
-
-		// check the "selection" column header if all items in list are checked
-		if (selectedArray.length == this.getList().size())
-			this.setSelectionHdrCbox(true);
 	}
 };
 
@@ -460,8 +454,7 @@ function(check) {
 		this.setSelectionCbox(sel[i], !check);
 	}
 
-	if (sel.length == this.getList().size())
-		this.setSelectionHdrCbox(true);
+	this.setSelectionHdrCbox(sel.length == this.getList().size());
 };
 
 ZmListView.prototype._getHeaderToolTip =
