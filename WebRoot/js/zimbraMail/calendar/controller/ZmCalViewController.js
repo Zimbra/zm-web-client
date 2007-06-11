@@ -642,7 +642,9 @@ function(ev) {
 		d = this._viewMgr ? this._viewMgr.getDate() : null;
 	}
 
-	var curr = new Date();
+	// Bug 15686, eshum
+	// Uses the selected timeslot if possible.
+	var curr = this._viewVisible ? this._viewMgr.getDate() : new Date(); //new Date();
 	if (d == null) {
 		d = curr;
 	} else {
@@ -959,10 +961,13 @@ function(startDate, endDate, folderId, shiftKey) {
 
 ZmCalViewController.prototype.newAppointment = 
 function(newAppt, mode, isDirty, startDate) {
-	//var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
+	var sd = startDate || (this._viewVisible ? this._viewMgr.getDate() : new Date());
+	/*
+	// Undoing part of 15686.  Should default to "now" for "New" action.
 	var sd = this._viewVisible
 	         ? this._viewMgr.getDate()
 	         : (startDate || new Date());
+	*/
 	var appt = newAppt || this._newApptObject(sd, AjxDateUtil.MSEC_PER_HALF_HOUR);
 	this._app.getApptComposeController().show(appt, mode, isDirty);
 };
