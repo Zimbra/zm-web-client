@@ -125,6 +125,7 @@ function() {
 
 // Getters
 
+ZmCalItem.prototype.getCompNum			= function() { return this.compNum || "0"; }
 ZmCalItem.prototype.getDuration 		= function() { return this.getEndTime() - this.getStartTime(); } // duration in ms
 ZmCalItem.prototype.getEndTime 			= function() { return this.endDate.getTime(); }; 	// end time in ms
 ZmCalItem.prototype.getFolder			= function() { /* override */ };
@@ -969,12 +970,12 @@ function(soapDoc) {
 	if (this.viewMode == ZmCalItem.MODE_EDIT_SERIES || this.viewMode == ZmCalItem.MODE_DELETE_SERIES) {
 		if (this.recurring && this._seriesInvId !== void 0 && this._seriesInvId != null) {
 			soapDoc.setMethodAttribute("id", this._seriesInvId);
-			soapDoc.setMethodAttribute("comp", this.compNum);
+			soapDoc.setMethodAttribute("comp", this.getCompNum());
 		}
 	} else {
 		if (this.invId !== void 0 && this.invId != null && this.invId != -1) {
 			soapDoc.setMethodAttribute("id", this.invId);
-			soapDoc.setMethodAttribute("comp", this.compNum);
+			soapDoc.setMethodAttribute("comp", this.getCompNum());
 		}
 	}
 };

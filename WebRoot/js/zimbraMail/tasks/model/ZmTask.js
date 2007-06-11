@@ -171,7 +171,7 @@ function(node, instNode) {
 	if (node.isOrg || comp) this.isOrg = this._getPart(node, comp, "isOrg");
 	if (node.or || comp) this.organizer = node.or ? node.or.a : (comp.or ? comp.or.a : null);
 	if (node.ptst || comp) this.ptst = this._getPart(node, comp, "ptst");
-	if (node.compNum != null) this.compNum = this._getPart(node, comp, "compNum");
+	if (node.compNum != null) this.compNum = (this._getPart(node, comp, "compNum") || "0");
 
 	if (node.f)	this._parseFlags(node.f);
 	if (node.t)	this._parseTags(node.t);
