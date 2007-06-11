@@ -1071,7 +1071,11 @@ if (ext == null) ext = "";
 		</antcall>
     </target>
 
-	<target name="deploy-war">
+    <target name='restart-webserver'>
+        <ant dir="${server.dir}" target="restart-webserver" />
+    </target>
+
+    <target name="deploy-war">
   		<if><isset property="use-tomcat"/><then>
   			<echo>Deploy ${param.warfile} to ${deploy.url}${param.path}</echo>
 			<deploy url="${deploy.url}" username="${deploy.user}" password="${deploy.password}" path="${param.path}" war="${param.warfile}" update="true"/>
