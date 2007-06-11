@@ -220,7 +220,7 @@ function(folder) {
 		var searchController = this._appCtxt.getSearchController();
 		var searchFor = ZmSearchToolBar.FOR_MAIL_MI;
 		if (folder.isInTrash()) {
-			var app = this._appCtxt.getAppController().getActiveApp();
+			var app = this._appCtxt.getCurrentAppName();
 			// if other apps add Trash to their folder tree, set appropriate type here:
 			if (app == ZmApp.CONTACTS)
 				searchFor = ZmItem.CONTACT;

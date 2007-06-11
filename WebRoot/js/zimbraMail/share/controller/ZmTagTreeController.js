@@ -157,7 +157,7 @@ function() {
 ZmTagTreeController.prototype._itemClicked =
 function(tag) {
 	var sc = this._appCtxt.getSearchController();
-	var app = this._appCtxt.getAppController().getActiveApp();
+	var app = this._appCtxt.getCurrentAppName();
 
 	var searchFor;
 	if (app == ZmApp.CONTACTS) {

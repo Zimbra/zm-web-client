@@ -552,19 +552,19 @@ function(ev, id, noSearch) {
 	}
 };
 
-/*
-* Selects the appropriate item in the overview based on the search. Selection only happens
-* if the search was a simple search for a folder or tag.
-*
-* @param search		[ZmSearch]		the current search
-*/
+/**
+ * Selects the appropriate item in the overview based on the search. Selection only happens
+ * if the search was a simple search for a folder, tag, or saved search.
+ *
+ * @param search		[ZmSearch]		the current search
+ */
 ZmSearchController.prototype._updateOverview =
 function(search) {
 	var id, type;
-	var app = this._appCtxt.getCurrentApp();
 	if (search.folderId) {
 		id = search.folderId;
-		type = ZmApp.ORGANIZER[app];
+		var folder = this._appCtxt.getFolderTree().getById(id);
+		type = folder ? folder.type : ZmOrganizer.FOLDER;
 	} else if (search.tagId) {
 		id = search.tagId;
 		type = ZmOrganizer.TAG;
@@ -572,6 +572,7 @@ function(search) {
 		id = search.searchId;
 		type = ZmOrganizer.SEARCH;
 	}
+	var app = this._appCtxt.getCurrentApp();
 	var overview = app.getOverview();
 	if (!overview) { return; }
 	if (id) {

@@ -190,7 +190,7 @@ function(actionCode) {
 
 		case ZmKeyMap.NEW: {
 			// find default "New" action code for current app
-			app = this._appCtxt.getAppController().getActiveApp();
+			app = this._appCtxt.getCurrentAppName();
 			var newActionCode = ZmApp.NEW_ACTION_CODE[app];
 			if (newActionCode) {
 				var op = ZmApp.ACTION_CODES[newActionCode];
