@@ -68,7 +68,7 @@ ZmChatMultiWindowView.prototype.getShellWindowManager = function() {
 };
 
 ZmChatMultiWindowView.prototype.__createChatWidget = function(chat, win) {
-	var activeApp = this._appCtxt.getCurrentAppName();
+	var activeApp = this._appCtxt.getCurrentApp().getName();
 	if (!win)
 		win = this.__useTab;
 	this.__useTab = null;
