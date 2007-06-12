@@ -37,6 +37,10 @@ ZmAppCtxt = function() {
 	this._accounts = {};
 	// create dummy account for startup
 	this._accounts[ZmAccount.DEFAULT_ID] = new ZmAccount(this, ZmAccount.DEFAULT_ID, null, false);
+
+	// public flags
+	this.inStartup = false;
+	this.multiAccounts = false;
 };
 
 ZmAppCtxt.LABEL = "appCtxt";
@@ -144,9 +148,14 @@ function(appName) {
 	return this._appController.getApp(appName);
 };
 
+ZmAppCtxt.prototype.getCurrentAppName =
+function() {
+	return this._appController.getActiveApp();
+};
+
 ZmAppCtxt.prototype.getCurrentApp =
 function() {
-	return this.getApp(this._appController.getActiveApp());
+	return this.getApp(this.getCurrentAppName());
 };
 
 ZmAppCtxt.prototype.getAppViewMgr =
@@ -555,8 +564,6 @@ function(shell) {
 	this._shell = shell;
 	shell.setData(ZmAppCtxt.LABEL, this);
 };
-
-ZmAppCtxt.prototype.multiAccounts = false;
 
 ZmAppCtxt.prototype.setAccount =
 function(account) {
