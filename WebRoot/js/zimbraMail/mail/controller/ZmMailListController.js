@@ -54,21 +54,15 @@ ZmMailListController = function(appCtxt, container, mailApp) {
 
 	this._listeners[ZmOperation.MARK_READ] = new AjxListener(this, this._markReadListener);
 	this._listeners[ZmOperation.MARK_UNREAD] = new AjxListener(this, this._markUnreadListener);
-
-	var replyLis = new AjxListener(this, this._replyListener);
+	//fixed bug:15460 removed reply and forward menu.
 	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
-		this._listeners[ZmOperation.REPLY_MENU] = replyLis;
-	} else {
-		this._listeners[ZmOperation.REPLY] = replyLis;
+		this._listeners[ZmOperation.REPLY] = new AjxListener(this, this._replyListener);
+		this._listeners[ZmOperation.REPLY_ALL] = new AjxListener(this, this._replyListener);
 	}
-
-	var forwardLis = new AjxListener(this, this._forwardListener);
-	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
-		this._listeners[ZmOperation.FORWARD_MENU] = forwardLis;
-	} else {
-		this._listeners[ZmOperation.FORWARD] = forwardLis;
-	}
-
+	
+	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) 
+		this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
+	//
 	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._checkMailListener);
 			
@@ -333,8 +327,9 @@ function(view) {
 		}
     	this._participantActionMenu = new ZmActionMenu({parent:this._shell, menuItems:menuItems});
     	this._addMenuListeners(this._participantActionMenu);
-		this._propagateMenuListeners(this._participantActionMenu, ZmOperation.REPLY_MENU);
-		this._propagateMenuListeners(this._participantActionMenu, ZmOperation.FORWARD_MENU);
+    	//fixed bug:15460 removed forward menu.
+		//this._propagateMenuListeners(this._participantActionMenu, ZmOperation.REPLY_MENU);
+		//this._propagateMenuListeners(this._participantActionMenu, ZmOperation.FORWARD_MENU);
 		this._participantActionMenu.addPopdownListener(this._popdownListener);
 		this._setupTagMenu(this._participantActionMenu);
     }
@@ -345,8 +340,10 @@ function(view, arrowStyle) {
 	if (!this._toolbar[view]) {
 		ZmListController.prototype._initializeToolBar.call(this, view);
 		this._setupViewMenu(view);
-		this._propagateMenuListeners(this._toolbar[view], ZmOperation.REPLY_MENU);
-		this._propagateMenuListeners(this._toolbar[view], ZmOperation.FORWARD_MENU);
+		//fixed bug:15460 removed forward menu.
+		//this._propagateMenuListeners(this._toolbar[view], ZmOperation.REPLY_MENU);
+		//this._propagateMenuListeners(this._toolbar[view], ZmOperation.FORWARD_MENU);
+		//
 		this._setReplyText(this._toolbar[view]);
 		this._toolbar[view].addFiller();
 		arrowStyle = arrowStyle ? arrowStyle : ZmNavToolBar.SINGLE_ARROWS;
@@ -359,9 +356,14 @@ function(view, arrowStyle) {
 			if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
 				buttons.push(ZmOperation.TAG_MENU);
 			}
-			this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED) ? buttons.push(ZmOperation.REPLY_MENU) :
-															  buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
-			buttons.push(this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED) ? ZmOperation.FORWARD_MENU : ZmOperation.FORWARD);
+			//fixed bug:15460 removed forward menu.
+			if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
+				buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+			}
+			if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
+				buttons.push(ZmOperation.FORWARD);
+			}
+			//
 			for (var i = 0; i < buttons.length; i++) {
 				var button = tb.getButton(buttons[i]);
 				if (button) {
@@ -388,9 +390,10 @@ function() {
 	ZmListController.prototype._initializeActionMenu.call(this);
 
 	var actionMenu = this._actionMenu;
-	this._propagateMenuListeners(actionMenu, ZmOperation.REPLY_MENU);
-	this._propagateMenuListeners(actionMenu, ZmOperation.FORWARD_MENU);
-	this._setReplyText(actionMenu);
+	//fixed bug:15460 removed forward menu.
+	//this._propagateMenuListeners(actionMenu, ZmOperation.REPLY_MENU);
+	//this._propagateMenuListeners(actionMenu, ZmOperation.FORWARD_MENU);
+	//this._setReplyText(actionMenu);
 	this._setupReplyForwardOps(this._actionMenu);
 };
 
@@ -414,14 +417,15 @@ function() {
 ZmMailListController.prototype._msgOps =
 function() {
 	var list = [];
-	this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)
-		? list.push(ZmOperation.REPLY_MENU)
-		: list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
-
-	this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)
-		? list.push(ZmOperation.FORWARD_MENU)
-		: list.push(ZmOperation.FORWARD);
-
+	
+	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
+		list.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+	}
+	
+	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
+		list.push(ZmOperation.FORWARD);
+	}
+			
 	list.push(ZmOperation.EDIT);
 
 	return list;
@@ -689,9 +693,15 @@ ZmMailListController.prototype._setupReplyForwardOps =
 function(parent) {
 	var inDraftsFolder = (this._getSearchFolderId() == ZmFolder.ID_DRAFTS);
 	var ops = [];
-	this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED) ? ops.push(ZmOperation.REPLY_MENU) :
-													  ops.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
-	ops.push(this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED) ? ZmOperation.FORWARD_MENU : ZmOperation.FORWARD);
+	
+	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
+		ops.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+	}
+			
+	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
+		ops.push(ZmOperation.FORWARD);
+	}
+	
 	ops.push(ZmOperation.EDIT);
 
 	for (var i = 0; i < ops.length; i++) {
@@ -935,7 +945,7 @@ function(parent, num) {
 			}
 		}
 		var isDrafts = (item && item.isDraft) || (folderId == ZmFolder.ID_DRAFTS);
-		parent.enable([ZmOperation.REPLY_MENU, ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD_MENU, ZmOperation.FORWARD, ZmOperation.DETACH], (!isDrafts && num == 1));
+		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD, ZmOperation.DETACH], (!isDrafts && num == 1));
 		parent.enable([ZmOperation.SPAM, ZmOperation.MOVE], (!isDrafts && num > 0));
 		parent.enable([ZmOperation.CHECK_MAIL], true);
 	}
