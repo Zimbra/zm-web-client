@@ -650,19 +650,20 @@ function() {
 	}
 };
 
-// A contact is normally displayed in a list view with no headers, and shows
-// just an icon and name. The Trash list view has headers, and the row can
-// be built in the standard way.
+/**
+ * A contact is normally displayed in a list view with no headers, and shows
+ * just an icon and name. The mixed list view has headers, and the row can
+ * be built in the standard way.
+ * 
+ * @param contact	[ZmContact]		contact to display
+ * @param params	[hash]*			optional params
+ */
 ZmContactSimpleView.prototype._createItemHtml =
 function(contact, params) {
 
 	if (params.isMixedView) {
 		return ZmContactsBaseView.prototype._createItemHtml.apply(this, arguments);
 	}
-
-	// in canonical view, don't show contacts in the Trash unless explicitly set in prefs
-	if (contact.list.isCanonical &&	(contact.folderId == ZmFolder.ID_TRASH) &&
-		!this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH)) { return null;	}
 
 	var div = this._getDiv(contact, params);
 	

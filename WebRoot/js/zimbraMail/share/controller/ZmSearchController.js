@@ -424,22 +424,22 @@ function(search, noRender, isMixed, callback, result) {
 ZmSearchController.prototype._showResults =
 function(results, search, isMixed) {
 	// allow old results to dtor itself
-	if (this._results && (this._results.type == results.type))
+	if (this._results && (this._results.type == results.type)) {
 		this._results.dtor();
+	}
 	this._results = results;
 
 	DBG.timePt("handle search results");
 
 	// determine if we need to default to mixed view
 	var folder = this._appCtxt.getById(search.folderId);
-	var inTrash = folder && folder.isInTrash();
 	var isInGal = (this._contactSource == ZmSearchToolBar.FOR_GAL_MI);
 	if (this._appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
 		this._searchToolBar.getButton(ZmSearchToolBar.SAVE_BUTTON).setEnabled(!isInGal);
 	}
 
 	// show results based on type - may invoke package load
-	var resultsType = (isMixed || inTrash) ? ZmItem.MIXED : results.type;
+	var resultsType = isMixed ? ZmItem.MIXED : results.type;
 	var loadCallback = new AjxCallback(this, this._handleLoadShowResults, [results, search]);
 	var app = this._appCtxt.getApp(ZmItem.APP[resultsType]);
 	app.currentQuery = search.query;

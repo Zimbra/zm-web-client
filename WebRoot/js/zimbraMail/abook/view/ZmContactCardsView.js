@@ -367,15 +367,7 @@ function() {
 		for (var j = 0; j < list.length; j++) {
 			var contact = list[j];
 			
-			// in canonical view, don't show contacts in the Trash unless explicitly set in prefs
-			if (contact.list.isCanonical &&
-				(contact.folderId == ZmFolder.ID_TRASH &&
-				 !this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH)))
-			{
-				continue;
-			}
-
-			if (count%2 == 0)
+			if (count % 2 == 0)
 				html[i++] = "<tr>";
 
 			count++;
