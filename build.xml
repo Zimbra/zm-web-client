@@ -838,7 +838,6 @@ if (ext == null) ext = "";
     </copy>
   </target>
 
-    <!-- ======= HTML ========== -->
     <property name="zimbratl.dir" location="../ZimbraTagLib"/>
     <property name="zimbratl.build.dir" location="${zimbratl.dir}/build"/>
     <property name="zimbratl.build.classes.dir" location="${zimbratl.build.dir}/classes"/>
@@ -853,7 +852,6 @@ if (ext == null) ext = "";
         <ant dir="${common.dir}" target="jar" inheritAll="false"/>
         <ant dir="${zimbratl.dir}" target="jar" inheritAll="false"/>
     </target>
-    <!-- ======= HTML ========== -->
 
   <target name="war" depends="external-jar,copy-files-to-build-area, tz, templates, jam-files, inject-build-info, images, i18n">
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
@@ -872,8 +870,6 @@ if (ext == null) ext = "";
                excludes="js/zimbraAdmin/**,js/ZimbraAdmin*all.*,**/config/msgs/**,**/config/keys/**"
       />
       <fileset dir="${build.dir}/WebRoot" includes="public/**" excludes="public/admin.jsp,public/XForms.jsp,public/ZimbraAdmin.jsp,**/config/msgs/**,**/config/keys/**"/>
-
-        <!-- ======= HTML ========== -->
         <lib dir="${server.build.dir}" includes="zimbrastore.jar"/>
         <lib dir="${common.build.dir}" includes="zimbracommon.jar"/>
         <lib dir="${zimbratl.build.dir}" includes="zimbrataglib.jar"/>
@@ -885,8 +881,6 @@ if (ext == null) ext = "";
         <zipfileset dir="${ajaxdwt.images.dir}" prefix="images/dwt"/>
         <zipfileset dir="img/loRes" prefix="images"/>
         <zipfileset dir="WebRoot/skins/_base/logos" prefix="images/logos"/>
-        <!-- ======= HTML ========== -->
-
     </war>
   </target>
 
@@ -1008,6 +1002,8 @@ if (ext == null) ext = "";
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar,gifencoder.jar,commons-cli-1.0.jar"/>
+      <lib dir="${common.build.dir}" includes="zimbracommon.jar"/>
+      <lib dir="${common.jars.dir}" includes="**.jar" excludes="${war.exclude}"/>
   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
@@ -1030,6 +1026,8 @@ if (ext == null) ext = "";
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar"/>
+      <lib dir="${common.build.dir}" includes="zimbracommon.jar"/>
+      <lib dir="${common.jars.dir}" includes="**.jar" excludes="${war.exclude}"/>
    	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
       <classes dir='${build.dir}/WebRoot/js/ajax/config' includes='${l10n.includes}' excludes='${l10n.excludes}' />
       <classes dir="${build.dir}/WebRoot/js/zimbra/config" includes='${l10n.includes}' excludes='${l10n.excludes}' />
