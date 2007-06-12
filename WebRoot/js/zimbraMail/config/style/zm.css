@@ -2963,7 +2963,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZToast {
   position: absolute;
   top: -10000; left: -10000;
-  margin-top: 115px;
+  margin-top: 10px;
   overflow: visible;
 }
 .ZToastBG {
