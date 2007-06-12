@@ -273,10 +273,11 @@ function() {
 	ZmOperation.registerOp("FORWARD", {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward"});
 	ZmOperation.registerOp("FORWARD_ATT", {textKey:"forwardAtt", tooltipKey:"forwardAtt", image:"Forward"});
 	ZmOperation.registerOp("FORWARD_INLINE", {textKey:"forwardInline", tooltipKey:"forwardTooltip", image:"Forward"});
-	ZmOperation.registerOp("FORWARD_MENU", {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward"}, null,
+	//fixed bug:15460 removed reply and forward menu.
+	/*ZmOperation.registerOp("FORWARD_MENU", {textKey:"forward", tooltipKey:"forwardTooltip", image:"Forward"}, null,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmMailApp.addForwardMenu, parent);
-	}));
+	}));*/
 	ZmOperation.registerOp("IM", {textKey:"newIM", image:"ImStartChat"}, ZmSetting.IM_ENABLED);
 	ZmOperation.registerOp("INC_ATTACHMENT", {textKey:"includeMenuAttachment"});
 	ZmOperation.registerOp("INC_NONE", {textKey:"includeMenuNone"});
@@ -292,10 +293,11 @@ function() {
 	ZmOperation.registerOp("REPLY_ALL", {textKey:"replyAll", tooltipKey:"replyAllTooltip", image:"ReplyAll"});
 	ZmOperation.registerOp("REPLY_CANCEL");
 	ZmOperation.registerOp("REPLY_DECLINE", {textKey:"replyDecline", image:"Cancel"});
-	ZmOperation.registerOp("REPLY_MENU", {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply"}, ZmSetting.REPLY_MENU_ENABLED,
+	//fixed bug:15460 removed reply and forward menu.
+	/*ZmOperation.registerOp("REPLY_MENU", {textKey:"reply", tooltipKey:"replyTooltip", image:"Reply"}, ZmSetting.REPLY_MENU_ENABLED,
 		AjxCallback.simpleClosure(function(parent) {
 			ZmOperation.addDeferredMenu(ZmMailApp.addReplyMenu, parent);
-	}));
+	}));*/
 	ZmOperation.registerOp("REPLY_MODIFY");
 	ZmOperation.registerOp("REPLY_NEW_TIME", {textKey:"replyNewTime", image:"NewTime"});
 	ZmOperation.registerOp("REPLY_TENTATIVE", {textKey:"replyTentative", image:"QuestionMark"});
