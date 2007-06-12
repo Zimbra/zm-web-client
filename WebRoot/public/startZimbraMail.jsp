@@ -1,7 +1,9 @@
 <%@ page session="false" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="com.zimbra.cs.zclient.ZAuthResult"%>
+<%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 
@@ -15,9 +17,14 @@
 <body>
 <%
 
+    ZAuthResult authResult = (ZAuthResult) request.getAttribute("authResult");
+    if (authResult != null) {
+        response.getWriter().println("my skin is "+ authResult.getPrefs().get("zimbraPrefSkin").get(0));
+    }
 %>
 
-hello world
+--------
+<br>
 
 prefs
 <br>
