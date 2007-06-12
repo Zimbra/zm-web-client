@@ -304,7 +304,7 @@ function(mapName, action) {
 
 /**
  * Creates a shortcut
- * @cnstructor
+ * @constructor
  * @class
  * This class represents a keyboard shortcut that can be saved with a user's
  * preferences. The saved preference takes the form:

@@ -149,9 +149,7 @@ function(item, field) {
 ZmMailMsgListView.prototype._getCellContents =
 function(htmlArr, idx, msg, field, colIdx, params) {
 
-	if (field == ZmItem.F_SELECTION) {
-		idx = this._getImageHtml(htmlArr, idx, "TaskCheckbox", this._getFieldId(msg, field));
-	} else if (field == ZmItem.F_STATUS) {
+	if (field == ZmItem.F_STATUS) {
 		htmlArr[idx++] = "<center>";
 		idx = this._getImageHtml(htmlArr, idx, msg.getStatusIcon(), this._getFieldId(msg, field));
 		htmlArr[idx++] = "</center>";

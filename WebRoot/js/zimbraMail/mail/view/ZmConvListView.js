@@ -192,9 +192,7 @@ function(item, field, params) {
 
 ZmConvListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
-	if (field == ZmItem.F_SELECTION) {
-		idx = this._getImageHtml(htmlArr, idx, "TaskCheckbox", this._getFieldId(item, field));
-	} else if (field == ZmItem.F_EXPAND) {
+	if (field == ZmItem.F_EXPAND) {
 		idx = this._getImageHtml(htmlArr, idx, this._isExpandable(item) ? "NodeCollapsed" : null, this._getFieldId(item, field));
 	} else if (item.type == ZmItem.MSG) {
 		idx = ZmMailMsgListView.prototype._getCellContents.apply(this, arguments);

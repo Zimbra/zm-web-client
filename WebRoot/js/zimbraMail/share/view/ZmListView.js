@@ -217,7 +217,9 @@ function(item, field, params) {
 
 ZmListView.prototype._getCellContents =
 function(htmlArr, idx, item, field, colIdx, params) {
-	if (field == ZmItem.F_TYPE) {
+	if (field == ZmItem.F_SELECTION) {
+		idx = this._getImageHtml(htmlArr, idx, "TaskCheckbox", this._getFieldId(item, field));
+	} else if (field == ZmItem.F_TYPE) {
 		idx = this._getImageHtml(htmlArr, idx, ZmItem.ICON[item.type], this._getFieldId(item, field));
 	} else if (field == ZmItem.F_FLAG) {
 		idx = this._getImageHtml(htmlArr, idx, item.isFlagged ? "FlagRed" : null, this._getFieldId(item, field));

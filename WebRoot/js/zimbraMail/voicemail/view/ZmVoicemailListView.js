@@ -120,9 +120,7 @@ function(item, field) {
 
 ZmVoicemailListView.prototype._getCellContents =
 function(htmlArr, idx, voicemail, field, colIdx, params) {
-	if (field == ZmItem.F_SELECTION) {
-		idx = this._getImageHtml(htmlArr, idx, "TaskCheckbox", this._getFieldId(voicemail, field));
-	} else if (field == ZmVoicemailListView.F_PRIORITY) {
+	if (field == ZmVoicemailListView.F_PRIORITY) {
 		htmlArr[idx++] = this._getPriorityHtml(voicemail);
 	} else if (field == ZmVoicemailListView.F_PLAYING) {
 		// No-op. This is handled in _addRow()
