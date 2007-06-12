@@ -12,6 +12,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<c:if test="${mailbox.prefs.useKeyboardShortcuts}">
 <c:if test="${not requestScope.yahooDomEvent}">
 <script type="text/javascript" src="<c:url value='/yui/2.2.2/build/yahoo-dom-event/yahoo-dom-event.js'/>"></script>
 </c:if>     
@@ -97,3 +98,4 @@
     </c:if>
     <jsp:doBody/>
 </script>
+</c:if>
