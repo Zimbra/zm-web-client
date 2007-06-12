@@ -744,6 +744,20 @@ function() {
 	this._organizerAction({action: action});
 };
 
+ZmOrganizer.prototype._empty = 
+function(){
+	var allowEmptyOp = ((this.type == ZmOrganizer.FOLDER || this.type == ZmOrganizer.ADDRBOOK) && 
+					  (this.id == ZmFolder.ID_SPAM || this.id == ZmFolder.ID_TRASH));
+	
+	//make sure we're not emptying a system object (unless it's SPAM or THRASH)
+	if(this.isSystem() && !allowEmptyOp) return;
+	
+	DBG.println(AjxDebug.DBG1, "emptying: " + this.name + ", ID: " + this.id);
+	var deleteSubFolders = (this.id == ZmFolder.ID_TRASH);
+	this._organizerAction({action:"empty",attrs:{recursive: deleteSubFolders}});
+};
+
+
 ZmOrganizer.prototype.markAllRead =
 function() {
 	this._organizerAction({action: "read", attrs: {l: this.id}});

@@ -54,6 +54,7 @@ ZmTreeController = function(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.MARK_ALL_READ]	= new AjxListener(this, this._markAllReadListener);
 	this._listeners[ZmOperation.SYNC]			= new AjxListener(this, this._syncListener);
 	this._listeners[ZmOperation.EDIT_PROPS]		= new AjxListener(this, this._editPropsListener);
+	this._listeners[ZmOperation.EMPTY_FOLDER]   = new AjxListener(this,this._emptyListener);
 
 	// drag-and-drop
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
@@ -431,6 +432,11 @@ function(organizer) {
 	organizer._delete();
 };
 
+ZmTreeController.prototype._doEmpty = 
+function(organizer) {
+	organizer._empty();
+};
+
 /**
  * Renames an organizer.
  *
@@ -697,6 +703,12 @@ function(ev) {
 	this._doDelete(this._getActionedOrganizer(ev));
 };
 
+
+ZmTreeController.prototype._emptyListener =
+function(ev) {
+	this._doEmpty(this._getActionedOrganizer(ev));
+};
+
 /**
  * Moves an organizer into another folder.
  *
@@ -848,6 +860,12 @@ ZmTreeController.prototype._deleteShieldYesCallback =
 function(organizer) {
 	this._doDelete(organizer);
 	this._clearDialog(this._deleteShield);
+};
+
+ZmTreeController.prototype._emptyShieldYesCallback = 
+function(organizer) {
+	this._doEmpty(organizer);
+	this._clearDialog(this._emptyShield);
 };
 
 // Miscellaneous private methods

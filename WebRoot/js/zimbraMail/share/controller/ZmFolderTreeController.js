@@ -46,6 +46,8 @@ ZmFolderTreeController = function(appCtxt, type, dropTgt) {
 	this._listeners[ZmOperation.RENAME_FOLDER] = new AjxListener(this, this._renameListener);
 	this._listeners[ZmOperation.SHARE_FOLDER] = new AjxListener(this, this._shareAddrBookListener);
 	this._listeners[ZmOperation.MOUNT_FOLDER] = new AjxListener(this, this._mountAddrBookListener);
+	
+	this._listeners[ZmOperation.EMPTY_FOLDER] = new AjxListener(this,this._emptyListener);
 };
 
 ZmFolderTreeController.prototype = new ZmTreeController;
@@ -86,7 +88,8 @@ function(params) {
 */
 ZmFolderTreeController.prototype.resetOperations = 
 function(parent, type, id) {
-	var deleteText = ZmMsg.del;
+	
+	var emptyText = ZmMsg.emptyFolder; //ZmMsg.empty + (ZmFolder.MSG_KEY[id]?" "+ZmFolder.MSG_KEY[id] : "");
 	var folder = this._appCtxt.getById(id);
 
 	// user folder or Folders header
@@ -100,7 +103,7 @@ function(parent, type, id) {
 			if (folder.parent && folder.parent.isRemote()) {
 				parent.enableAll(false);
 			} else {
-				parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ], false);
+				parent.enable([ZmOperation.NEW_FOLDER, ZmOperation.MARK_ALL_READ,ZmOperation.EMPTY_FOLDER], false);
 			}
 		}
 	} else {	// system folder
@@ -108,10 +111,12 @@ function(parent, type, id) {
 		// can't create folders under Drafts or Junk
 		if (nId == ZmFolder.ID_INBOX || nId == ZmFolder.ID_SENT || nId == ZmFolder.ID_TRASH)
 			parent.enable(ZmOperation.NEW_FOLDER, true);
-		// "Delete" for Junk and Trash is "Empty"
+		// "Empty" for Junk and Trash
 		if (nId == ZmFolder.ID_SPAM || nId == ZmFolder.ID_TRASH) {
-			deleteText = (nId == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
-			parent.enable(ZmOperation.DELETE, true);
+			emptyText = (id == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
+			parent.enable(ZmOperation.EMPTY_FOLDER,true);
+			//deleteText = (nId == ZmFolder.ID_SPAM) ? ZmMsg.emptyJunk : ZmMsg.emptyTrash;
+			//parent.enable(ZmOperation.DELETE, true);
 		}
 		// only allow Inbox and Sent system folders to be share-able for now
 		if (!folder.link && (nId == ZmFolder.ID_INBOX || nId == ZmFolder.ID_SENT)) {
@@ -124,9 +129,9 @@ function(parent, type, id) {
 		parent.enable(ZmOperation.MARK_ALL_READ, (folder.numUnread > 0));
 	}
 
-	var op = parent.getOp(ZmOperation.DELETE);
+	var op = parent.getOp(ZmOperation.EMPTY_FOLDER);
 	if (op) {
-		op.setText(deleteText);
+		op.setText(emptyText);
 	}
 
     // are there any pop accounts associated to this folder?
@@ -168,6 +173,7 @@ function() {
 	var list = new Array();
 	list.push(ZmOperation.NEW_FOLDER,
 			  ZmOperation.MARK_ALL_READ,
+			  ZmOperation.EMPTY_FOLDER,
 			  ZmOperation.DELETE,
 			  ZmOperation.RENAME_FOLDER,
 			  ZmOperation.MOVE,
@@ -299,6 +305,29 @@ function(ev) {
 		this._doMove(organizer, this._appCtxt.getById(ZmFolder.ID_TRASH));
 	}
 };
+
+/*
+* Empty's a folder. 
+* It removes all the items in the folder except sub-folders.
+* If the folder is Thrash, it empties even the sub-folders.
+* A warning dialog will be shown before any folder is emptied.
+*
+* @param ev		[DwtUiEvent]	the UI event
+*/
+ZmFolderTreeController.prototype._emptyListener = 
+function(ev) {
+	var organizer = this._getActionedOrganizer(ev);
+	this._pendingActionData = organizer;
+	var ds = this._emptyShield = this._appCtxt.getOkCancelMsgDialog();
+	ds.reset();
+	ds.registerCallback(DwtDialog.OK_BUTTON, this._emptyShieldYesCallback, this, organizer);
+	ds.registerCallback(DwtDialog.CANCEL_BUTTON, this._clearDialog, this, this._emptyShield);
+	var confirm = ZmMsg.confirmEmptyFolder;
+	var msg = AjxMessageFormat.format(confirm, organizer.getName());
+	ds.setMessage(msg, DwtMessageDialog.WARNING_STYLE);
+	ds.popup();	
+};
+
 
 /*
 * Don't allow dragging of system folders.
