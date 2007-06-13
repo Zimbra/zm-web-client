@@ -29,6 +29,7 @@
     var zos = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
     var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
     var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    var zmove = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPMOVE"); }}
     var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
     var zunflag = function() { zaction("OPUNFLAG"); }
     var zflag = function() { zaction("OPFLAG"); }
@@ -45,7 +46,6 @@
         <zm:bindKey message="mail.MarkUnread" func="zunread"/>
         <zm:bindKey message="mail.Spam" func="zjunk"/>
         <zm:bindKey message="mail.Delete" func="function() { zclick('SOPDELETE')}"/>
-        <zm:bindKey message="global.CheckCheckBox" func="zcs"/>
 
         <zm:bindKey message="mail.ShowExternalImages" id="DISPEXTIMG"/>
 
@@ -64,7 +64,11 @@
         <zm:bindKey message="global.NextPage" id="NEXT_ITEM"/>
         <zm:bindKey message="global.PreviousItem" id="PREV_ITEM"/>
         <zm:bindKey message="global.NextItem" id="NEXT_ITEM"/>        
-        
+
+        <c:if test="${mailbox.features.tagging}">
+            <zm:bindKey message="global.Tag" func="function() {zaction('OPTAG{TAGID}')}" alias="tag"/>
+        </c:if>
+        <zm:bindKey message="mail.MoveToFolder" func="function() {zmove('OPFLDR{FOLDERID}')}" alias="folder"/>        
     </app:keyboard>
 
     <form action="${currentUrl}" method="post">

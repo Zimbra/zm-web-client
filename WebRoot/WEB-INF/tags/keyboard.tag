@@ -75,10 +75,16 @@
      <c:if test="${folders}">
       <c:set var="sfi" value="?sfi=${param.sfi}"/>
       <zm:bindKey message="overview.folders" url="mfolders${not empty param.sfi ? sfi : ''}"/>
+      <zm:bindKey message="mail.GoToFolder" alias="gotofolder"/>
+      <c:if test="${mailbox.features.savedSearches}">
+            <zm:bindKey message="global.SavedSearch" alias="search"/>
+      </c:if>
      </c:if>
      <c:if test="${tags and mailbox.features.tagging}">
       <c:set var="sti" value="?sti=${param.sti}"/>
       <zm:bindKey message="overview.tags" url="mtags${not empty param.sti ? sti : ''}"/>
+      <zm:bindKey message="global.GoToTag" alias="gototag"/>
+
      </c:if>
      <c:if test="${mailbox.features.calendar}">
       <zm:bindKey message="global.GoToCalendar" id="TAB_CALENDAR"/>
@@ -96,6 +102,7 @@
       </c:if>
      </c:if>
     </c:if>
+
     <jsp:doBody/>
 </script>
 </c:if>

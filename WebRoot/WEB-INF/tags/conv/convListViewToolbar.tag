@@ -26,12 +26,12 @@
             <option disabled /><fmt:message key="actionOptSep"/>
             <zm:forEachFolder var="folder">
                 <c:if test="${folder.isConversationMoveTarget and !folder.isTrash and !folder.isSpam}">
-                    <option value="m:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
+                    <option id="OPFLDR${folder.id}" value="m:${folder.id}" />${fn:escapeXml(folder.rootRelativePath)}
                 </c:if>
             </zm:forEachFolder>
         </select>
         </td>        
-        <app:button name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
+        <app:button id="OPMOVE" name="actionMove" text="actionMove" tooltip="actionMoveTT"/>
         <td><div class='vertSep'></div></td>
         <td  nowrap valign=middle>
         <select name="actionOp">

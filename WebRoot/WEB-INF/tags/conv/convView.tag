@@ -68,6 +68,7 @@
         var zcsn = function () { zcs(true); zsn(); }
         var zcsp = function () { zcs(true); zsp(); }
         var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+        var zmove = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPMOVE"); }}
         var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
         var zunflag = function() { zaction("OPUNFLAG"); }
         var zflag = function() { zaction("OPFLAG"); }
@@ -107,6 +108,11 @@
 
         <zm:bindKey message="conversation.PreviousConversationPage" id="PREV_CONVPAGE"/>
         <zm:bindKey message="conversation.NextConversationPage" id="NEXT_CONVPAGE"/>
+        <c:if test="${mailbox.features.tagging}">
+            <zm:bindKey message="global.Tag" func="function() {zaction('OPTAG{TAGID}')}" alias="tag"/>
+        </c:if>
+        <zm:bindKey message="mail.MoveToFolder" func="function() {zmove('OPFLDR{FOLDERID}')}" alias="folder"/>
+
     </app:keyboard>
     
     <form action="${currentUrl}" method="post" name="zform">

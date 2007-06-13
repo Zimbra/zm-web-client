@@ -131,6 +131,7 @@
         var zcsp = function () { zcs(true); zsp(); }
         var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
         var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
+        var zmove = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPMOVE"); }}
         var zunflag = function() { zaction("OPUNFLAG"); }
         var zflag = function() { zaction("OPFLAG"); }
         var zread = function() { zaction("OPREAD"); }
@@ -162,8 +163,10 @@
         <zm:bindKey message="global.NextItem" func="zsn"/>
         <zm:bindKey message="global.PreviousPage" id="PREV_PAGE"/>
         <zm:bindKey message="global.NextPage" id="NEXT_PAGE"/>
-
-        
+        <c:if test="${mailbox.features.tagging}">
+            <zm:bindKey message="global.Tag" func="function() {zaction('OPTAG{TAGID}')}" alias="tag"/>
+        </c:if>
+        <zm:bindKey message="mail.MoveToFolder" func="function() {zmove('OPFLDR{FOLDERID}')}" alias="folder"/>
     </app:keyboard>
 
 </app:view>
