@@ -215,6 +215,17 @@ function(appCtxt, item, type, strictText, strictEmail) {
 		var addr = item.getAddress();
 		// see if we have this contact/resource by checking email address
 		attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
+
+		// Bug 7837: preserve the email address as it was typed
+		//           instead of using the contact's primary email.
+		if (attendee && type == ZmCalItem.PERSON) {
+			attendee = AjxUtil.createProxy(attendee);
+			attendee._inviteAddress = addr;
+			attendee.getEmail = function() {
+				return this._inviteAddress;
+			}
+		}
+
 		if (!attendee && !strictEmail) {
 			// AjxEmailAddress has name and email, init a new contact/resource from those
 			attendee = (type == ZmCalItem.PERSON) ? new ZmContact(appCtxt) :
