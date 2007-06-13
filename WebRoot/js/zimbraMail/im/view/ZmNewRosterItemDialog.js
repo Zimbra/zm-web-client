@@ -24,7 +24,7 @@
  */
 
 ZmNewRosterItemDialog = function(parent, appCtxt) {
-	ZmQuickAddDialog.call(this, parent, null, null);
+	DwtDialog.call(this, parent, null, ZmMsg.createNewRosterItem);
 	this._appCtxt = appCtxt;
 
 	this._init();
@@ -32,7 +32,7 @@ ZmNewRosterItemDialog = function(parent, appCtxt) {
 
 ZmNewRosterItemDialog._OVERVIEW_ID = "ZmNewRosterItemDialog";
 
-ZmNewRosterItemDialog.prototype = new ZmQuickAddDialog;
+ZmNewRosterItemDialog.prototype = new DwtDialog;
 ZmNewRosterItemDialog.prototype.constructor = ZmNewRosterItemDialog;
 
 ZmNewRosterItemDialog.prototype._init = function() {
@@ -71,17 +71,40 @@ ZmNewRosterItemDialog.prototype._init = function() {
 	this._tabGroup.addMember(this._addrEntry);
 	this._tabGroup.addMember(this._nameEntry);
 	this._tabGroup.addMember(this._groupsEntry);
+
+	this.addPopupListener(new AjxListener(this._addrEntry,
+					      this._addrEntry.focus));
+
+	// FIXME: the following works around a wicked FF bug that manifests
+	// only in Windows or Mac (because it's there where we display the
+	// semiopaque veil).  The bug prevents this dialog from being visible,
+	// because immediately after the veil is displayed, this.getSize()
+	// (used in DwtBaseDialog::_positionDialog) returns a huge width,
+	// ~7000px, which positions the left side of the dialog much below 0px.
+	this.addPopupListener(new AjxListener(this, function() {
+		var pos = this.getLocation();
+		if (pos.x < 0) {
+			// Amazing! the following doesn't work:
+			// pos.x = 400;
+			// this.setLocation(pos);
+			// console.log(pos);
+			// console.log(this.getLocation());
+
+			// this works
+// 			var el = this.getHtmlElement();
+// 			el.style.left = "400px";
+
+			setTimeout(AjxCallback.simpleClosure(function() {
+				this._positionDialog();
+			}, this), 1);
+		}
+	}));
 };
 
 ZmNewRosterItemDialog.prototype._contentHtml = function() {
 	var id = this._baseId = Dwt.getNextId();
 	return AjxTemplate.expand("zimbraMail.im.templates.Chat#NewRosterItemDlg",
 				  { id : id });
-};
-
-ZmNewRosterItemDialog.prototype.popup = function(loc) {
-	DwtDialog.prototype.popup.call(this, loc);
-	this._serviceTypeSelect.focus();
 };
 
 ZmNewRosterItemDialog.prototype._okButtonListener = function(ev) {
@@ -107,7 +130,7 @@ ZmNewRosterItemDialog.prototype._getRosterItemData = function() {
 };
 
 ZmNewRosterItemDialog.prototype.reset = function() {
-	ZmDialog.prototype.reset.call(this);
+	DwtDialog.prototype.reset.call(this);
 	this._addrEntry.setValue("");
 	this._addrEntry.setEnabled(true);
 	this._serviceTypeSelect.setEnabled(true);
