@@ -37,7 +37,7 @@
 
                             <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
                             <tr>
-                                <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="id" value="${hit.voiceMailItemHit.id}"></td>
+                                <td class='CB' nowrap><input  id="C${status.index}" type=checkbox name="voiceId" value="${hit.voiceMailItemHit.id}"></td>
                                 <td class='Img' nowrap><app:flagImage flagged="${hit.voiceMailItemHit.isFlagged}"/></td>
                             	<td nowrap>${hit.voiceMailItemHit.displayCaller}</td>
                                 <td nowrap><a href="${hit.voiceMailItemHit.soundUrl}"><app:img src="voicemail/PlayMessage.gif" altkey="ALT_FLAGGED"/><u><fmt:message key="listen"/></u></a></td>

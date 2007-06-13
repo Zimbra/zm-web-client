@@ -35,7 +35,7 @@
             <zm:messageCompose var="compose" message="${message}" action="${message.isDraft ? 'draft' : param.op}"/>
         </c:when>
         <c:when test="${uploader.isUpload and !empty message}">
-            <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems}"/>
+            <zm:fixupMessageCompose message="${message}" compose="${compose}" newattachments="${uploader.compose.hasFileItems or !empty uploader.compose.uploadedAttachment}"/>
         </c:when>
     </c:choose>
 
@@ -136,35 +136,18 @@
                             </c:if>
                             <c:if test="${!empty compose.originalAttachments}">
                                 <c:forEach var="part" items="${compose.originalAttachments}" varStatus="status">
-                                    <tr class="CompOrigAtt" valign="middle">
-                                        <td align='right'>
-                                            <c:if test="${firstAttachment}">
-                                                <app:img altkey="ALT_ATTACHMENT" src="common/Attachment.gif"/>
-                                                <c:set var="firstAttachment" value="${false}"/>
-                                            </c:if>
-                                        </td>
-                                        <c:set var="url" value="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"/>
-                                        <c:set var="pname" value="${part.displayName}"/>
-                                        <c:if test="${empty pname}">
-                                            <fmt:message key="unknownContentType" var="pname">
-                                                <fmt:param value="${part.contentType}"/>
-                                            </fmt:message>
-                                        </c:if>
-                                        <td>
-                                            <table cellpadding=0 cellspacing=0 border="0">
-                                                <tr valign="middle">
-                                                    <td>
-                                                        <input <c:if test="${compose.checkedAttachmentNames[part.partName]}">checked </c:if>type=checkbox name="originalAttachment" value="${part.partName}">
-                                                    </td>
-                                                    <td>&nbsp;</td>
-                                                    <td>
-                                                        <a target="_blank" href="${url}&disp=i">${fn:escapeXml(pname)}</a>&nbsp;(${part.displaySize})
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </td>
-                                    </tr>
+                                    <app:attachment firstAttachment="${firstAttachment}" url="/service/home/~/?id=${message.id}&part=${part.partName}&auth=co"
+                                            displayName="${part.displayName}" contentType="${part.contentType}"
+                                            checked="${compose.checkedAttachmentNames[part.partName]}" displaySize="${part.displaySize}"
+                                            value="${part.partName}" name="originalAttachment"/>
+                                    <c:set var="firstAttachment" value="${false}"/>
                                 </c:forEach>
+                            </c:if>
+                            <c:if test="${(!empty param.attachId) and (!empty param.attachUrl) and (!empty param.attachName)}">
+                                <app:attachment firstAttachment="${firstAttachment}" url="${param.attachUrl}"
+                                        displayName="${param.attachName}"
+                                        checked="true"
+                                        value="${param.attachId}" name="uploadedAttachment"/>
                             </c:if>
                             <tr>
                                 <td colspan="3" >

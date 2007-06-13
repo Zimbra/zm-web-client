@@ -7,7 +7,7 @@
 
 <app:handleError>
 <zm:getMailbox var="mailbox"/>
-<c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
+<c:set var="ids" value="${fn:join(paramValues.voiceId, ',')}"/>
 <c:set var="phone" value="${fn:join(paramValues.phone, ',')}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
@@ -20,6 +20,18 @@
                 <fmt:param value="${result.idCount}"/>
             </fmt:message>
         </app:status>
+    </c:when>
+    <c:when test="${zm:actionSet(param, 'actionReplyByEmail') or zm:actionSet(param, 'actionForwardByEmail')}">
+        <zm:uploadVoiceMail var="uploadId" phone="${phone}" id="${ids}"/>
+        <fmt:message key="voiceMailSubject" var="subject"/>
+        <fmt:message key="voiceMailBody" var="body"/>
+        <jsp:forward page="/h/compose">
+            <jsp:param name="subject" value="${subject}"/>
+            <jsp:param name="body" value="${body}"/>
+            <jsp:param name="attachId" value="${uploadId}"/>
+            <jsp:param name="attachName" value="voicemail.wav"/>
+            <jsp:param name="attachUrl" value="????"/>
+        </jsp:forward>
     </c:when>
 </c:choose>
 
