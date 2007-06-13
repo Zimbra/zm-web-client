@@ -250,9 +250,25 @@ function() {
 ZmShortcutsPageTabView.prototype.getShortcuts =
 function() {
 	var shortcuts = [];
-	for (var i = 0; i < this._organizers.length; i++) {
-		var tv = this._scTabView[this._organizers[i]];
-		shortcuts = shortcuts.concat(tv.getShortcuts());
+	for (var i = 0, count = this._organizers.length; i < count; i++) {
+		var org = this._organizers[i];
+		var tv = this._scTabView[org];
+		var sc = (tv && tv._hasRendered) ? tv.getShortcuts() : this._getShortcutsFromSetting(org);
+		shortcuts = shortcuts.concat(sc);
+	}
+	return shortcuts;
+};
+
+ZmShortcutsPageTabView.prototype._getShortcutsFromSetting =
+function(org) {
+	var shortcuts = [];
+	var sc = this._setting.split("|");
+	if (!(sc && sc.length)) { return shortcuts; }
+	for (var i = 0, count = sc.length; i < count; i++) {
+		var p = sc[i].split(",");
+		if (p[0] == ZmShortcut.ORG_KEY[org]) {
+			shortcuts.push(sc[i]);
+		}
 	}
 	return shortcuts;
 };
