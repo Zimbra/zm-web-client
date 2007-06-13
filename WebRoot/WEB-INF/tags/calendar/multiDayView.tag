@@ -84,7 +84,7 @@
         </tr>
     </table>
 
-    <app:keyboard globals="true" mailbox="${mailbox}" calendars="true" tags="true">
+    <app:keyboard cache="cal.multiDayView" globals="true" mailbox="${mailbox}" calendars="true" tags="true">
         <zm:bindKey message="calendar.DayView" id="CAL_DAY"/>
         <zm:bindKey message="calendar.WeekView" id="CAL_WEEK"/>
         <zm:bindKey message="calendar.WorkWeekView" id="CAL_WORK"/>

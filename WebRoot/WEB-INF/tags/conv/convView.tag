@@ -79,7 +79,7 @@
         //-->
     </SCRIPT>
 
-    <app:keyboard globals="true" mailbox="${mailbox}" folders="true" tags="true">
+    <app:keyboard cache="mail.convView" globals="true" mailbox="${mailbox}" folders="true" tags="true">
         <zm:bindKey message="mail.MarkAllRead" func="zmarkall"/>
         <zm:bindKey message="mail.Flag" func="zflag"/>
         <zm:bindKey message="mail.UnFlag" func="zunflag"/>

@@ -79,7 +79,7 @@
     var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
     //-->
    </SCRIPT>
-    <app:keyboard globals="false" passspecial="true" mailbox="${mailbox}">
+    <app:keyboard cache="ab.econtact" globals="false" passspecial="true" mailbox="${mailbox}">
         <zm:bindKey message="editContact.Save" func="function() { zclick('SOPSAVE')}"/>
     </app:keyboard>
 </app:view>

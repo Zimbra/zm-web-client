@@ -140,7 +140,7 @@
         //-->
     </SCRIPT>
 
-    <app:keyboard globals="true" mailbox="${mailbox}" tags="true" folders="true">
+    <app:keyboard cache="mail.convListView" globals="true" mailbox="${mailbox}" tags="true" folders="true">
 
         <zm:bindKey message="mail.Flag" func="zflag"/>
         <zm:bindKey message="mail.UnFlag" func="zunflag"/>

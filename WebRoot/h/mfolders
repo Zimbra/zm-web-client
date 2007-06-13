@@ -150,7 +150,7 @@
 
     //-->
     </SCRIPT>
-    <app:keyboard mailbox="${mailbox}" passspecial="true" globals="true">
+    <app:keyboard cache="mail.mfolders" mailbox="${mailbox}" passspecial="true" globals="true">
         <zm:bindKey message="global.Cancel" id="OPCLOSE"/>
         <zm:bindKey message="mfolders.NewFolder" func="function() {zclick('SOPNEWFOLD');}"/>
         <zm:bindKey message="mfolders.NewSearchFolder" func="function() {zclick('SOPNEWSEARCH');}"/>

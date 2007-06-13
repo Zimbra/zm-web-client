@@ -531,7 +531,7 @@
     var zclick = function(id) { var e = document.getElementById(id); if (e) e.click(); }
     //-->
    </SCRIPT>
-    <app:keyboard globals="false" passspecial="true" mailbox="${mailbox}">
+    <app:keyboard cache="cal.eappt" globals="false" passspecial="true" mailbox="${mailbox}">
         <zm:bindKey message="editAppointment.Save" func="function() { zclick('SOPSAVE')}"/>
     </app:keyboard>
 </app:view>
