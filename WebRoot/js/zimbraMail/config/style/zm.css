@@ -213,7 +213,13 @@
 .ZmSearchToolbar {
 	padding-left:5px;
 	margin-top:1px;
+	width:100%;
 }
+
+.ZmSearchToolbar .ZToolbarTable {
+	width: 100%;
+}
+
 .ZmSearchToolbar .MessageControl0 {
 	padding-right:5px;
 }
@@ -223,13 +229,6 @@
 }
 
 
-/* MESSED UP STUFF TO GET THE SEARCH TOOLBAR TO LINE UP */
-/*
-.ZmSearchToolbar TABLE {
-	height:20px;
-	width:100%;
-}
-*/
 .ZmSearchToolbar .DwtCompositeTable TD {
 	padding-top:3px;
 }

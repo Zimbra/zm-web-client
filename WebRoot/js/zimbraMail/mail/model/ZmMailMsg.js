@@ -632,16 +632,24 @@ function(callback, result) {
 */
 ZmMailMsg.prototype.send =
 function(contactList, isDraft, callback, errorCallback, accountName) {
+	var aName = accountName;
+	if (!aName) {
+		// only set the account name if this *isnt* the main/parent account
+		var acct = this._appCtxt.getActiveAccount();
+		if (acct && !acct.isMain)
+			aName = acct.name;
+	}
+
 	// if we have an invite reply, we have to send a different soap message
 	// TODO: disable Save Draft for invite replies!
 	if (this.isInviteReply && !isDraft) {
-		return this.sendInviteReply(contactList, true, 0, callback, errorCallback, this._instanceDate, accountName);
+		return this.sendInviteReply(contactList, true, 0, callback, errorCallback, this._instanceDate, aName);
 	} else {
 		var request = isDraft ? "SaveDraftRequest" : "SendMsgRequest";
 		var soapDoc = AjxSoapDoc.create(request, "urn:zimbraMail");
 		if (!isDraft && this.sendUID)
 			soapDoc.setMethodAttribute("suid", this.sendUID);
-		this._createMessageNode(soapDoc, contactList, isDraft, accountName);
+		this._createMessageNode(soapDoc, contactList, isDraft, aName);
 
 		var respCallback = new AjxCallback(this, this._handleResponseSend, [isDraft, callback]);
 		var execFrame = new AjxCallback(this, this.send, [contactList, isDraft, callback, errorCallback]);
@@ -673,8 +681,15 @@ function(soapDoc, contactList, isDraft, accountName) {
 
 	// if origId is given, means we're saving a draft or sending a msg that was
 	// originally a reply/forward
-	if (this.origId)
-		msgNode.setAttribute("origid", this.origId);
+	if (this.origId) {
+		var oid = this.origId;
+		// if dealing with sub-account, normalize the origId
+		if (accountName) {
+			var idx = this.origId.indexOf(":");
+			if (idx > 0) { oid = this.origId.substring(idx+1); }
+		}
+		msgNode.setAttribute("origid", oid);
+	}
 
 	// if id is given, means we are re-saving a draft
 	if ((isDraft || this.isDraft) && this.id)

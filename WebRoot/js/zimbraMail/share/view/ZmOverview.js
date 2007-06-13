@@ -106,6 +106,10 @@ function(treeIds, omit) {
  */
 ZmOverview.prototype.setTreeView =
 function(treeId, omit) {
+	// check for false since setting precondition is optional (can be null)
+	if (this._appCtxt.get(ZmOrganizer.PRECONDITION[treeId]) === false)
+		return;
+
 	var treeController = this._controller.getTreeController(treeId);
 	if (this._treeHash[treeId]) {
 		treeController.clearTreeView(this.id);

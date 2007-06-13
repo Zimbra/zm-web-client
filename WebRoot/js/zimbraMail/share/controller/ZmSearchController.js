@@ -562,14 +562,14 @@ ZmSearchController.prototype._updateOverview =
 function(search) {
 	var id, type;
 	if (search.folderId) {
-		id = search.folderId;
+		id = this._getNormalizedId(search.folderId);
 		var folder = this._appCtxt.getFolderTree().getById(id);
 		type = folder ? folder.type : ZmOrganizer.FOLDER;
 	} else if (search.tagId) {
-		id = search.tagId;
+		id = this._getNormalizedId(search.tagId);
 		type = ZmOrganizer.TAG;
 	} else if (search.searchId) {
-		id = search.searchId;
+		id = this._getNormalizedId(search.searchId);
 		type = ZmOrganizer.SEARCH;
 	}
 	var app = this._appCtxt.getCurrentApp();
@@ -586,3 +586,15 @@ function(search) {
 		overview.itemSelected();
 	}
 };
+
+ZmSearchController.prototype._getNormalizedId =
+function(id) {
+	var nid = id;
+
+	var acct = this._appCtxt.getActiveAccount();
+	if (!acct.isMain) {
+		nid = acct.id + ":" + id;
+	}
+
+	return nid;
+}
