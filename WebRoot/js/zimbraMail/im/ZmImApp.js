@@ -30,8 +30,6 @@ ZmImApp = function(appCtxt, container) {
 	// IM is enabled, so show Chats folder
 	delete ZmFolder.HIDE_ID[ZmOrganizer.ID_CHATS];
 	this._active = false;
-
-	this._imInit();
 };
 
 // Organizer and item-related constants
@@ -121,31 +119,49 @@ function() {
 
 ZmImApp.prototype._registerSettings = function(settings) {
 	settings = settings || this._appCtxt.getSettings();
+
+        settings.registerSetting("IM_PREF_AUTO_LOGIN",
+				 { name         : "zimbraPrefIMAutoLogin",
+                                   type         : ZmSetting.T_PREF,
+                                   dataType     : ZmSetting.D_BOOLEAN,
+				   defaultValue : false
+				 });
+
         settings.registerSetting("IM_PREF_FLASH_ICON",
 				 { name         : "zimbraPrefIMFlashIcon",
                                    type         : ZmSetting.T_PREF,
                                    dataType     : ZmSetting.D_BOOLEAN,
-                                   defaultValue : true });
+				   defaultValue : true
+				 });
 
         settings.registerSetting("IM_PREF_NOTIFY_PRESENCE",
 				 { name         : "zimbraPrefIMNotifyPresence",
                                    type         : ZmSetting.T_PREF,
                                    dataType     : ZmSetting.D_BOOLEAN,
-                                   defaultValue : true });
+				   defaultValue : true
+				 });
 
         settings.registerSetting("IM_PREF_NOTIFY_STATUS",
 				 { name         : "zimbraPrefIMNotifyStatus",
                                    type         : ZmSetting.T_PREF,
                                    dataType     : ZmSetting.D_BOOLEAN,
-                                   defaultValue : true });
+				   defaultValue : true
+				 });
 };
 
 ZmImApp.prototype._registerPrefs = function() {
-	var list = [ ZmSetting.IM_PREF_FLASH_ICON,
-		     ZmSetting.IM_PREF_NOTIFY_PRESENCE,
-		     ZmSetting.IM_PREF_NOTIFY_STATUS ];
+	var list = [
+		ZmSetting.IM_PREF_AUTO_LOGIN,
+		ZmSetting.IM_PREF_FLASH_ICON,
+		ZmSetting.IM_PREF_NOTIFY_PRESENCE,
+		ZmSetting.IM_PREF_NOTIFY_STATUS
+	];
 
 	ZmPref.setPrefList("IM_PREFS", list);
+
+	ZmPref.registerPref("IM_PREF_AUTO_LOGIN",
+			    { displayName      : ZmMsg.imPrefAutoLogin,
+			      displayContainer : ZmPref.TYPE_CHECKBOX });
 
 	ZmPref.registerPref("IM_PREF_FLASH_ICON",
 			    { displayName      : ZmMsg.imPrefFlashIcon,
@@ -162,7 +178,7 @@ ZmImApp.prototype._registerPrefs = function() {
 
 ZmImApp.prototype.refresh =
 function() {
-	AjxDispatcher.run("GetRoster").reload();
+//	AjxDispatcher.run("GetRoster").reload();
 };
 
 ZmImApp.prototype.handleOp = function(op) {
@@ -294,7 +310,7 @@ ZmImApp.prototype.getOverviewPanelContent = function() {
 	return this._imOvw;
 };
 
-ZmImApp.prototype._imInit = function() {
+ZmImApp.prototype.startup = function() {
 
 	var sd = AjxSoapDoc.create("IMGatewayListRequest", "urn:zimbraIM");
 	this._appCtxt.getAppController().sendRequest(
