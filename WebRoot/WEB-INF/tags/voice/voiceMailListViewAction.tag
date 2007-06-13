@@ -22,16 +22,25 @@
         </app:status>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionReplyByEmail') or zm:actionSet(param, 'actionForwardByEmail')}">
-        <zm:uploadVoiceMail var="uploadId" phone="${phone}" id="${ids}"/>
-        <fmt:message key="voiceMailSubject" var="subject"/>
-        <fmt:message key="voiceMailBody" var="body"/>
-        <jsp:forward page="/h/compose">
-            <jsp:param name="subject" value="${subject}"/>
-            <jsp:param name="body" value="${body}"/>
-            <jsp:param name="attachId" value="${uploadId}"/>
-            <jsp:param name="attachName" value="voicemail.wav"/>
-            <jsp:param name="attachUrl" value="????"/>
-        </jsp:forward>
+        <c:choose>
+            <c:when test="${empty paramValues.voiceId}">
+                <app:status style="Warning">
+                    <fmt:message key="actionNoVoiceMailMessageSelected"/>
+                </app:status>
+            </c:when>
+            <c:otherwise>
+                <zm:uploadVoiceMail var="uploadId" phone="${phone}" id="${ids}"/>
+                <fmt:message key="voiceMailSubject" var="subject"/>
+                <fmt:message key="voiceMailBody" var="body"/>
+                <jsp:forward page="/h/compose">
+                    <jsp:param name="subject" value="${subject}"/>
+                    <jsp:param name="body" value="${body}"/>
+                    <jsp:param name="attachId" value="${uploadId}"/>
+                    <jsp:param name="attachName" value="voicemail.wav"/>
+                    <jsp:param name="attachUrl" value="????"/>
+                </jsp:forward>
+            </c:otherwise>
+        </c:choose>
     </c:when>
 </c:choose>
 

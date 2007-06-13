@@ -11,7 +11,6 @@
     <zm:getMailbox var="mailbox"/>
     <c:set var="vmlvToolbarCache" scope="request">
         <td><div class='vertSep'></div></td>
-        <app:button  text="actionSave" name="actionSave" tooltip="actionSaveTT"/>
         <c:choose>
             <c:when test="${context.isFolderSearch and context.folder.isTrash}">
                 <app:button  text="actionDelete" name="actionHardDelete" tooltip="actionTrashTT"/>
