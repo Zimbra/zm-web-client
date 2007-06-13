@@ -42,6 +42,9 @@ ZmZimbraMail = function(appCtxt, domain, app, userShell) {
 	this._userShell = userShell;
 	this._requestMgr = new ZmRequestMgr(appCtxt, this, domain);
 
+	// ALWAYS set back reference into our world (also used by unload handler)
+	window._zimbraMail = this;
+
 	// settings structure and defaults
 	this._settings = appCtxt.getSettings();
 	var branch = appCtxt.get(ZmSetting.BRANCH);
@@ -726,7 +729,8 @@ function() {
 							 labelKey:			"tags",
 							 treeType:			ZmOrganizer.TAG,
 							 createFunc:		"ZmTag.create",
-							 compareFunc:		"ZmTag.sortCompare"
+							 compareFunc:		"ZmTag.sortCompare",
+							 shortcutKey:		"T"
 							});
 };
 
@@ -1044,9 +1048,6 @@ function(locationStr){
 ZmZimbraMail.prototype.setSessionTimer =
 function(bStartTimer) {
 
-	// ALWAYS set back reference into our world (also used by unload handler)
-	window._zimbraMail = this;
-	
 	// if no timeout value, user's client never times out from inactivity	
 	var timeout = this._appCtxt.get(ZmSetting.IDLE_SESSION_TIMEOUT) * 1000;
 	if (timeout <= 0)

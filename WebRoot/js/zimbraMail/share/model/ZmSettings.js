@@ -400,18 +400,18 @@ function() {
 ZmSettings.prototype._loadShortcuts =
 function() {
 	var kbm = this._appCtxt.getKeyboardMgr();
-	var maps = {};
 	var kmm = kbm.__keyMapMgr;
 	var scString = this.get(ZmSetting.SHORTCUTS);
 	if (!scString || !kmm) { return; }
-	var shortcuts = scString.split('|');
-	var len = shortcuts.length;
-	for (var i = 0; i < len; i++) {
-		var sc = ZmShortcut.parse(shortcuts[i]);
+	var shortcuts = ZmShortcut.parse(scString, kmm);
+	var maps = {};
+	for (var i = 0, count = shortcuts.length; i < count; i++) {
+		var sc = shortcuts[i];
 		kmm.setMapping(sc.mapName, sc.keySequence, sc.action);
 		kmm.setArg(sc.mapName, sc.action, sc.arg);
 		maps[sc.mapName] = true;
 	}
+
 	for (var map in maps) {
 		kmm.reloadMap(map);
 	}

@@ -307,26 +307,94 @@ function(mapName, action) {
  * @constructor
  * @class
  * This class represents a keyboard shortcut that can be saved with a user's
- * preferences. The saved preference takes the form:
+ * preferences. The saved preference takes one of two forms:
  * 
- *     [mapNameA].[actionA].[argA]=[keySequenceA]|[mapNameB].[actionB].[argB]=[keySequenceB]...
+ *    OLD: [mapName].[action].[arg]=[keySequence]
+ *    NEW: [orgType],[arg],[alias]
  * 
- * For example:
+ * See the parsing functions below for examples.
+ * 
+ * @author Conrad Damon
+ * 
+ * @param params		[hash]		hash of params:
+ *        mapName		[string]	name of map that contains this shortcut's key mapping
+ *        keySequence	[string]	key sequence
+ *        action		[string]	custom action triggered by this shortcut (eg GoToFolder1)
+ *        arg			[string]	ID of organizer tied to this shortcut
+ *        baseAction	[constant]	action without num appended
+ *        num			[int]		numeric alias
+ *        orgType		[constant]	type of organizer
+ */
+ZmShortcut = function(params) {
+	this.mapName = params.mapName;
+	this.keySequence = params.keySequence;
+	this.action = params.action;
+	this.arg = params.arg;
+	this.num = params.num;
+	this.baseAction = params.baseAction;
+	this.orgType = params.orgType;
+}
+
+// Key mappings that are custom shortcuts
+ZmShortcut._shortcuts;
+ZmShortcut._shortcutsCulled = false;
+
+// placeholder for numeric alias
+ZmShortcut.ALIAS = "NNN";
+
+// map letter to org type
+ZmShortcut.ORG_TYPE = {};
+
+// map org type to letter
+ZmShortcut.ORG_KEY = {};
+
+// map org key to substring as it appears in actions
+ZmShortcut.ACTION_KEY = {};
+ZmShortcut.ACTION_KEY["F"] = "Folder";
+ZmShortcut.ACTION_KEY["S"] = "SavedSearch";
+ZmShortcut.ACTION_KEY["T"] = "Tag";
+
+/**
+ * Takes an encoded list of user aliases or shortcuts, and returns a list of
+ * ZmShortcut objects.
+ * 
+ * @param str	[string]			a |-separated list of shortcuts or aliases
+ * @param kmm	[DwtKeyMapMgr]		key map mgr
+ */
+ZmShortcut.parse =
+function(str, kmm) {
+	var shortcuts = [];
+	if (!str) { return shortcuts; }
+	var chunks = str.split("|");
+	if (!(chunks && chunks.length)) { return shortcuts; }
+	
+	for (var i = 0, count = chunks.length; i < count; i++) {
+		var chunk = chunks[i];
+		var result = ZmShortcut._parse(chunks[i], kmm);
+		if (result instanceof Array) {
+			shortcuts = shortcuts.concat(result);
+		} else {
+			shortcuts.push(result);
+		}
+	}
+	
+	return shortcuts;
+};
+
+ZmShortcut._parse =
+function(str, kmm) {
+	return (str.indexOf("=") != -1) ? ZmShortcut._parseOld(str) : ZmShortcut._parseNew(str, kmm);
+};
+
+/**
+ * The given string represents one key mapping that we need to add. All necessary information
+ * is already encoded in the string. For example:
  * 
  *     mail.MoveToFolder4.538=M,4
  * 
- * @author Conrad Damon
+ * @param str	[string]	a shortcut encoded as above
  */
-ZmShortcut = function(mapName, keySequence, action, arg, baseAction, num) {
-	this.mapName = mapName;
-	this.keySequence = keySequence;
-	this.action = action;
-	this.arg = arg;
-	this.num = num;
-	this.baseAction = baseAction;
-}
-
-ZmShortcut.parse =
+ZmShortcut._parseOld =
 function(str) {
 	var p = str.split("=");
 	var p1 = p[0].split(".");
@@ -337,8 +405,60 @@ function(str) {
 		baseAction = m[1];
 		num = m[2];
 	}
+	var orgType;
+	for (var key in ZmShortcut.ACTION_KEY) {
+		var s = ZmShortcut.ACTION_KEY[key];
+		if (baseAction.indexOf(s) != -1) {
+			orgType = ZmShortcut.ORG_TYPE[key];
+			break;
+		}
+	}
 
-	return new ZmShortcut(ZmKeyMap.MAP_NAME[p1[0]], p[1], action, p1[2], baseAction, num);
+	var params = {mapName:ZmKeyMap.MAP_NAME[p1[0]], keySequence:p[1], action:action, arg:p1[2],
+				  baseAction:baseAction, num:num, orgType:orgType};
+	return new ZmShortcut(params);
+};
+
+/**
+ * All we get here is the organizer type, ID, and numeric alias:
+ * 
+ *     F,538,1
+ * 
+ * We need to apply that to all aliases related to the organizer type (in this case,
+ * folders), so we have a one-to-many situation.
+ * 
+ * @param str	[string]	a shortcut encoded as above
+ */
+ZmShortcut._parseNew =
+function(str, kmm) {
+
+	if (kmm && !ZmShortcut._shortcutsCulled) {
+		ZmShortcut._getShortcuts(kmm);
+	}
+
+	var p = str.split(",");
+	var shortcuts = [];
+	var key = p[0];
+	var actionKey = ZmShortcut.ACTION_KEY[key];
+	var arg = p[1];
+	var alias = p[2];
+	var mappings = ZmShortcut._shortcuts || kmm._map;
+	for (var mapName in mappings) {
+		var map = mappings[mapName];
+		for (var keySequence in map) {
+			if (keySequence.indexOf(ZmShortcut.ALIAS) == -1) { continue; }
+			var action = map[keySequence];
+			if (action.indexOf(actionKey) != -1) {
+				keySequence = keySequence.replace(ZmShortcut.ALIAS, alias);
+				var fullAction = [action, alias].join("");
+				var params = {mapName:mapName, keySequence:keySequence, action:fullAction, arg:arg,
+							  baseAction:action, num:alias, orgType:ZmShortcut.ORG_TYPE[key]};
+				shortcuts.push(new ZmShortcut(params));
+			}
+		}
+	}
+	
+	return shortcuts;
 };
 
 ZmShortcut.parseAction =
@@ -351,4 +471,31 @@ function(appCtxt, mapName, action) {
 	} else {
 		return null;
 	}
+};
+
+/**
+ * Cull the key mappings that are shortcuts (mappings with a user-configurable
+ * numeric alias). This is so we don't have to go through all the mappings for
+ * every alias when we parse shortcuts.
+ */
+ZmShortcut._getShortcuts =
+function(kmm) {
+	for (var mapName in kmm._map) {
+		if (mapName.indexOf("Dwt") == 0) { continue; }
+		var map = kmm._map[mapName];
+		for (var keySequence in map) {
+			if (keySequence.indexOf(ZmKeyMap.ALIAS) != -1) {
+				if (!ZmShortcut._shortcuts[mapName]) {
+					ZmShortcut._shortcuts[mapName] = {};
+				}
+				ZmShortcut._shortcuts[mapName][keySequence] = map[keySequence];
+			}
+		}
+	}
+	ZmShortcut._shortcutsCulled = true;
+};
+
+ZmShortcut.prototype.toString =
+function() {
+	return "ZmShortcut";
 };

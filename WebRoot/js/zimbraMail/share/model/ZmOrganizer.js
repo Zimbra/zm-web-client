@@ -265,6 +265,7 @@ ZmOrganizer.DEFERRABLE = {};
  *        createFunc		[string]	name of function for creating this org
  *        compareFunc		[string]	name of function for comparing instances of this org
  *        deferrable		[boolean]	true if creation can be deferred to app launch
+ *        shortcutKey		[string]	letter encoding of this org type for custom shortcuts
  */
 ZmOrganizer.registerOrg =
 function(org, params) {
@@ -299,6 +300,11 @@ function(org, params) {
 		for (var id in params.orgColor) {
 			ZmOrganizer.ORG_COLOR[id] = params.orgColor[id];
 		}
+	}
+	
+	if (params.shortcutKey) {
+		ZmShortcut.ORG_KEY[org] = params.shortcutKey;
+		ZmShortcut.ORG_TYPE[params.shortcutKey] = org;
 	}
 };
 

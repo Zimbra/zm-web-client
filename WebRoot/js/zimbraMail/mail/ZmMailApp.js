@@ -373,7 +373,8 @@ function() {
 							 folderKey:			"mailFolder",
 							 mountKey:			"mountFolder",
 							 createFunc:		"ZmOrganizer.create",
-							 compareFunc:		"ZmFolder.sortCompare"
+							 compareFunc:		"ZmFolder.sortCompare",
+							 shortcutKey:		"F"
 							});
 
 	ZmOrganizer.registerOrg(ZmOrganizer.SEARCH,
@@ -389,7 +390,8 @@ function() {
 							 folderKey:			"mailFolder",
 							 mountKey:			"mountFolder",
 							 createFunc:		"ZmSearchFolder.create",
-							 compareFunc:		"ZmFolder.sortCompare"
+							 compareFunc:		"ZmFolder.sortCompare",
+							 shortcutKey:		"S"
 							});
 };
 
