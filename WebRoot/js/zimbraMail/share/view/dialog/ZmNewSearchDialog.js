@@ -23,16 +23,24 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmNewSearchDialog = function(parent, className) {
+function ZmNewSearchDialog(parent, msgDialog, className) {
 
-	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.saveSearch});
+	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.saveSearch);
 
-	this._omit = {};
-	this._omit[ZmFolder.ID_SPAM] = true;
-	this._omit[ZmFolder.ID_DRAFTS] = true;
 	this._setNameField(this._nameFieldId);
-	this._folderTree = this._appCtxt.getFolderTree();
+	var omit = new Object();
+	omit[ZmFolder.ID_SPAM] = true;
+	omit[ZmFolder.ID_DRAFTS] = true;
+
+	this._setOverview(ZmNewSearchDialog._OVERVIEW_ID, this._folderTreeCellId,
+					  [ZmOrganizer.FOLDER, ZmOrganizer.SEARCH], omit);
+	this._folderTreeView = this._treeView[ZmOrganizer.FOLDER];
+	this._searchTreeView = this._treeView[ZmOrganizer.SEARCH];
+	this._folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+	this._searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
 }
+
+ZmNewSearchDialog._OVERVIEW_ID = "ZmNewSearchDialog";
 
 ZmNewSearchDialog.prototype = new ZmDialog;
 ZmNewSearchDialog.prototype.constructor = ZmNewSearchDialog;
@@ -43,13 +51,10 @@ function() {
 }
 
 ZmNewSearchDialog.prototype.popup =
-function(search) {
-	this._setOverview({treeIds:[ZmOrganizer.FOLDER, ZmOrganizer.SEARCH], fieldId:this._folderTreeCellId, omit:this._omit});
-	this._folderTreeView = this._getOverview().getTreeView(ZmOrganizer.FOLDER);
-	this._searchTreeView = this._getOverview().getTreeView(ZmOrganizer.SEARCH);
+function(search, loc) {
 	this._search = search;
-	this._searchTreeView.setSelected(this._folderTree.root, true);
-	ZmDialog.prototype.popup.call(this);
+	this._searchTreeView.setSelected(this._searchTree.root, true);
+	ZmDialog.prototype.popup.call(this, loc);
 }
 
 ZmNewSearchDialog.prototype._contentHtml = 
@@ -87,27 +92,24 @@ function() {
 	var msg = ZmFolder.checkName(name);
 
 	// make sure a parent was selected
-	var parentFolder = this._getOverview().getSelected();
-	if (!msg && !parentFolder) {
+	var parentFolder = this._opc.getSelected(ZmNewSearchDialog._OVERVIEW_ID);
+	if (!msg && !parentFolder)
 		msg = ZmMsg.searchNameNoLocation;
-	}
 
 	// make sure parent doesn't already have a child by this name
-	if (!msg && parentFolder.hasChild(name)) {
+	if (!msg && parentFolder.hasChild(name))
 		msg = ZmMsg.folderOrSearchNameExists;
-	}
 		
 	// if we're creating a top-level search, check for conflict with top-level folder
 	if (!msg && (parentFolder.id == ZmOrganizer.ID_ROOT) && this._folderTree.root.hasChild(name))
 		msg = ZmMsg.folderOrSearchNameExists;
 
-	return (msg ? this._showError(msg) : {parent:parentFolder, name:name, search:this._search});
-};
+	return (msg ? this._showError(msg) : [parentFolder, name, this._search]);
+}
 
 ZmNewSearchDialog.prototype._enterListener =
 function(ev) {
 	var results = this._getSearchData();
-	if (results) {
+	if (results)
 		this._runEnterCallback(results);
-	}
-};
+}

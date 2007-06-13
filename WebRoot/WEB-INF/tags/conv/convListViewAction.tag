@@ -44,7 +44,6 @@
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionLoadFeed')}">
         <zm:syncFolder id="${param.contextFolderId}"/>
-        <zm:clearSearchCache/>
         <app:status>
             <fmt:message key="feedLoaded">
                 <fmt:param value="${zm:getFolderName(pageContext, param.contextFolderId)}"/>
@@ -73,7 +72,7 @@
                 </app:status>
             </c:when>
             <c:when test="${zm:actionSet(param,'actionDelete')}">
-                <zm:trashConversation  var="result" id="${ids}"/>
+                <zm:moveConversation  var="result" id="${ids}" folderid="${mailbox.trash.id}"/>
                 <app:status>
                     <fmt:message key="actionConvMovedTrash">
                         <fmt:param value="${result.idCount}"/>

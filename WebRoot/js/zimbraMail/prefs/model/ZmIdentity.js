@@ -22,7 +22,7 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-ZmIdentity = function(appCtxt, name) {
+function ZmIdentity(appCtxt, name) {
 	if (arguments.length == 0) return;
 	
 	this._appCtxt = appCtxt;
@@ -129,13 +129,13 @@ function(data) {
 		}
 	}
 	this.id = data.id;
-	var props = data._attrs;
-
+	var props = data.a;
 	if (props) {
-		for (var i in props) {
-			var field = ZmIdentity._SOAP[i];
+		for (var i = 0, count = props.length; i < count; i++) {
+			var name = props[i].name;
+			var field = ZmIdentity._SOAP[name];
 			if (field) {
-				var value = props[i];
+				var value = props[i]._content;
 				if (field.type == ZmIdentity.BOOLEAN) {
 					this[field.name] = (value.toString().toUpperCase() == "TRUE");
 				} else if (field.type == ZmIdentity.ARRAY) {
@@ -195,7 +195,7 @@ function(request, batchCommand, callback, errorCallback) {
 
 ZmIdentity.prototype._handleAction =
 function(request, callback, result, response) {
-	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
+	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
 	if (request == "ModifyIdentityRequest") {
 		var identity = identityCollection.getById(this.id);
 		identityCollection._removeFromMaps(identity);
@@ -275,7 +275,7 @@ function() {
 ZmIdentity.prototype.getAdvancedIdentity =
 function() {
 	if (this.useDefaultAdvanced) {
-		var identityCollection = AjxDispatcher.run("GetIdentityCollection");
+		var identityCollection = this._appCtxt.getIdentityCollection();
 		return identityCollection.defaultIdentity;
 	} else {
 		return this;
@@ -286,14 +286,14 @@ function() {
 // the default identity's.
 ZmIdentity.prototype.setAllDefaultAdvancedFields =
 function() {
-	var identity = AjxDispatcher.run("GetIdentityCollection").defaultIdentity;
+	var identity = this._appCtxt.getIdentityCollection().defaultIdentity;
 	this.composeFormat = identity.composeFormat;
 	this.prefix = identity.prefix;
 	this.forwardOption = identity.forwardOption;
 	this.replyOption = identity.replyOption;
 };
 
-ZmIdentityCollection = function(appCtxt) {
+function ZmIdentityCollection(appCtxt) {
 	ZmModel.call(this, ZmEvent.S_IDENTITY);
 	this._appCtxt = appCtxt;
 	this.defaultIdentity = null;
@@ -419,13 +419,13 @@ function(mailMsg) {
 	}
 
 	// Check if the a identity's address was in the to field.
-	var identity = this._selectIdentityFromAddresses(mailMsg, AjxEmailAddress.TO);
+	var identity = this._selectIdentityFromAddresses(mailMsg, ZmEmailAddress.TO);
 	if (identity) {
 		return identity;
 	}
 
 	// Check if the a identity's address was in the cc field.
-	identity = this._selectIdentityFromAddresses(mailMsg, AjxEmailAddress.CC);
+	identity = this._selectIdentityFromAddresses(mailMsg, ZmEmailAddress.CC);
 	if (identity) {
 		return identity;
 	}

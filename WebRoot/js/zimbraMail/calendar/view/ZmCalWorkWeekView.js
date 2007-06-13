@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCalWorkWeekView = function(parent, posStyle, controller, dropTgt) {
+function ZmCalWorkWeekView(parent, posStyle, controller, dropTgt) {
 	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmController.CAL_WORK_WEEK_VIEW, 5, false);
 }
 

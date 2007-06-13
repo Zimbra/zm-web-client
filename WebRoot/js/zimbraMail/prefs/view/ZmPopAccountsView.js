@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPopAccountsView = function(parent, appCtxt, controller) {
+function ZmPopAccountsView(parent, appCtxt, controller) {
     var labels = {
         infoTitle: ZmMsg.popAccountsInfoHeader,
         infoContents: ZmMsg.popAccountsInfo,
@@ -370,7 +370,8 @@ ZmPopAccountsView.prototype.reset = function() {
 // Protected methods
 
 ZmPopAccountsView.prototype._commandResult = function(account, result) {
-    var collection = AjxDispatcher.run("GetDataSourceCollection");
+    var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
+    var collection = prefsApp.getDataSourceCollection();
 
     var data = result._data;
     if (data.CreateDataSourceResponse) {
@@ -454,11 +455,11 @@ ZmPopAccountsView._handleItemCheckbox = function(event) {
 // Class: ZmPopAccountBasicPage
 //
 
-ZmPopAccountBasicPage = function(parent, appCtxt, pageId, className, posStyle) {
+function ZmPopAccountBasicPage(parent, appCtxt, pageId, className, posStyle) {
 	DwtTabViewPage.call(this, parent, className, posStyle || DwtControl.STATIC_STYLE);
 	this._appCtxt = appCtxt;
 	this._pageId = pageId;
-    this._createPopAccountHtml();
+    this._createHtml();
 }
 ZmPopAccountBasicPage.prototype = new DwtTabViewPage;
 ZmPopAccountBasicPage.prototype.constructor = ZmPopAccountBasicPage;
@@ -514,7 +515,8 @@ ZmPopAccountBasicPage.prototype.setAccount = function(account) {
     // initialize input fields
     this._nameField.setValue(account.name);
     var folderId = account.folderId || ZmPopAccountBasicPage.DEFAULT_FOLDER_ID;
-    var folder = this._appCtxt.getById(folderId);
+    var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+    var folder = tree.getById(folderId);
     this._folderButton.setText(folder.name);
     this._downloadSelect.setSelectedValue(account.leaveOnServer);
 
@@ -663,7 +665,7 @@ ZmPopAccountBasicPage.prototype._validateEmail = function(value) {
     return null;
 };
 
-ZmPopAccountBasicPage.prototype._createPopAccountHtml = function() {
+ZmPopAccountBasicPage.prototype._createHtml = function() {
     // create controls
     this._nameField = new DwtInputField({
         parent:this, required:true,
@@ -711,7 +713,7 @@ ZmPopAccountBasicPage.prototype._createPopAccountHtml = function() {
     var id = this._htmlElId;
     var div = document.createElement("DIV");
     div.innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Options#PopForm", id);
-    this.getContentHtmlElement().appendChild(div);
+    this.getHtmlElement().appendChild(div);
 
     // insert dwt controls
     this._nameField.replaceElement(id+"_name");
@@ -804,7 +806,7 @@ ZmPopAccountBasicPage.prototype._folderListener = function(evt) {
     var dialog = this._appCtxt.getChooseFolderDialog();
     dialog.reset();
     dialog.registerCallback(DwtDialog.OK_BUTTON, this._folderOkListener, this, [dialog]);
-    dialog.popup({skipReadOnly:true, description:ZmMsg.popAccountFolderSelect, overviewId:this.toString()});
+    dialog.popup([ZmOrganizer.FOLDER], null, true, ZmMsg.popAccountFolderSelect);
 };
 ZmPopAccountBasicPage.prototype._folderOkListener = function(dialog, folder) {
     dialog.popdown();
@@ -928,7 +930,7 @@ ZmPopAccountBasicPage.prototype._dirtyListener = function(evt) {
 // Class: ZmPopAccountAdvancedPage
 //
 
-ZmPopAccountAdvancedPage = function(parent, appCtxt, pageId, className, posStyle) {
+function ZmPopAccountAdvancedPage(parent, appCtxt, pageId, className, posStyle) {
 	DwtTabViewPage.call(this, parent, className, posStyle);
 	this._appCtxt = appCtxt;
 	this._pageId = pageId;

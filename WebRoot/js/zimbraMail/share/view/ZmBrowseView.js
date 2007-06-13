@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmBrowseView = function(parent, pickers) {
+function ZmBrowseView(parent, pickers) {
 
 	DwtComposite.call(this, parent, "ZmBrowseView", DwtControl.ABSOLUTE_STYLE);
 

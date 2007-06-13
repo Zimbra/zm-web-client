@@ -9,9 +9,9 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <tr>
-    <td width=30% nowrap align=right valign='top'><label for="${pref}"><fmt:message key="${label}"/> :</label></td>
+    <td width=30% nowrap align=right valign='top'><fmt:message key="${label}"/> :</td>
     <td>
-        <textarea id="${pref}" name='${pref}' cols='${cols}' rows='${rows}'>${fn:escapeXml(value)}</textarea>
+        <textarea name='${pref}' cols='${cols}' rows='${rows}'>${fn:escapeXml(value)}</textarea>
     </td>
 
 </tr>

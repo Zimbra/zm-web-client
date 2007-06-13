@@ -6,8 +6,8 @@
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
 
 <app:handleError>
+<zm:requirePost/>
 <zm:getMailbox var="mailbox"/>
-
 <c:set var="ids" value="${fn:join(paramValues.id, ',')}"/>
 <c:set var="folderId" value="${not empty paramValues.folderId[0] ? paramValues.folderId[0] : paramValues.folderId[1]}"/>
 <c:set var="actionOp" value="${not empty paramValues.actionOp[0] ? paramValues.actionOp[0] :  paramValues.actionOp[1]}"/>
@@ -38,7 +38,7 @@
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionCreate') and not contactError}">
         <app:editContactAction id="${param.id}"/>
-        <app:status><fmt:message key="${not empty param.dlist and param.isgroup ? 'contactGroupCreated' :'contactCreated'}"/></app:status>
+        <app:status><fmt:message key="contactCreated"/></app:status>
         <zm:clearSearchCache type="contact"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionModify') and not contactError}">
@@ -51,10 +51,10 @@
     <c:when test="${zm:actionSet(param, 'actionCancelModify')}">
         <app:status style="Warning"><fmt:message key="contactCancelModify"/></app:status>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionNew') or param.action eq 'newcontact'}">
+    <c:when test="${zm:actionSet(param, 'actionNew')}">
         <jsp:forward page="/h/econtact"/>
     </c:when>
-    <c:when test="${zm:actionSet(param, 'actionNewGroup') or param.action eq 'newcontactgroup'}">
+    <c:when test="${zm:actionSet(param, 'actionNewGroup')}">
         <jsp:forward page="/h/econtact"/>
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionEdit')}">
@@ -66,8 +66,7 @@
     <c:otherwise>
         <c:choose>
             <c:when test="${zm:actionSet(param, 'actionDelete')}">
-                <zm:requirePost/>
-                <zm:trashContact  var="result" id="${ids}"/>
+                <zm:moveContact  var="result" id="${ids}" folderid="${mailbox.trash.id}"/>
                 <app:status>
                     <fmt:message key="actionContactMovedTrash">
                         <fmt:param value="${result.idCount}"/>
@@ -75,7 +74,6 @@
                 </app:status>
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionHardDelete')}">
-                <zm:requirePost/>
                 <zm:deleteContact  var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionContactHardDeleted">

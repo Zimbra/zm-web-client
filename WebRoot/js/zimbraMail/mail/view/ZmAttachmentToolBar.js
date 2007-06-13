@@ -23,11 +23,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmAttachmentToolBar = function(parent) {
+function ZmAttachmentToolBar(parent) {
 
 	ZmToolBar.call(this, parent);
 
-	this._viewButton = this.createButton(ZmAttachmentToolBar.VIEW_BUTTON, {text:ZmMsg.view});
+	this._viewButton = this._createButton(ZmAttachmentToolBar.VIEW_BUTTON, null, ZmMsg.view, null, null, true);
     var menu = new DwtMenu(this._viewButton, null, "ActionMenu");
     this._viewButton.setMenu(menu);
 

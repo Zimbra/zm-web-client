@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmZimletContext = function(id, zimlet, appCtxt) {
+function ZmZimletContext(id, zimlet, appCtxt) {
 	this._appCtxt = appCtxt;
 	// sanitize JSON here
 	this.json = ZmZimletContext.sanitize(zimlet, "zimlet", ZmZimletContext.RE_ARRAY_ELEMENTS);
@@ -48,10 +48,10 @@ ZmZimletContext = function(id, zimlet, appCtxt) {
 	}
 
     // Zimlets are won't load due to 6640 so disable for now.
-    // http://bugs.webkit.org/show_bug.cgi?id=6640
+    // http://bugzilla.opendarwin.org/show_bug.cgi?id=6640
 
     this._contentActionMenu = null;
-	if (zimlet.contentObject && (!AjxEnv.isSafari || AjxEnv.isSafariNightly)) {
+	if (zimlet.contentObject && !AjxEnv.isSafari) {
 		this.contentObject = zimlet.contentObject[0];
 		if(this.contentObject.type) {
 			this.type = this.contentObject.type;
@@ -63,7 +63,7 @@ ZmZimletContext = function(id, zimlet, appCtxt) {
 	}
 
 	this._panelActionMenu = null;
-	if (zimlet.zimletPanelItem && (!AjxEnv.isSafari || AjxEnv.isSafariNightly)) {
+	if(zimlet.zimletPanelItem && !AjxEnv.isSafari){
 		this.zimletPanelItem = zimlet.zimletPanelItem[0];
 		if (this.zimletPanelItem.toolTipText) {
 			this.zimletPanelItem.toolTipText = this.zimletPanelItem.toolTipText[0]._content;
@@ -84,33 +84,25 @@ ZmZimletContext = function(id, zimlet, appCtxt) {
 			this.zimletPanelItem.onDoubleClick = this.zimletPanelItem.onDoubleClick[0];
 		}
 	}
-
 	if(zimlet.handlerObject) {
 		this.handlerObject = zimlet.handlerObject[0]._content;
 	}
-
-	var portlet = zimlet.portlet && zimlet.portlet[0];
-    if (portlet) {
-        portlet = ZmZimletContext.sanitize(portlet);
-        portlet.portletProperties = (portlet.portletProperties && portlet.portletProperties.property) || {};
-        this.portlet = portlet;
-    }
-
-    this.userProperties = zimlet.userProperties ? zimlet.userProperties[0] : [];
-    this._propsById = {};
-    if(zimlet.userProperties) {
+	if(zimlet.userProperties) {
+		this.userProperties = zimlet.userProperties[0];
 		this._translateUserProp();
 	}
-
 	if(this.config) {
 		this.config = this.config[0];
 		this._translateConfig();
 	}
 
+	this._loadIncludes();
+	this._loadStyles();
+
 	this._handleMenuItemSelected = new AjxListener(this, this._handleMenuItemSelected);
 }
 
-ZmZimletContext.RE_ARRAY_ELEMENTS = /^(dragSource|include|includeCSS|menuItem|param|property|resource|portlet)$/;
+ZmZimletContext.RE_ARRAY_ELEMENTS = /^(dragSource|include|includeCSS|menuItem|param|property|resource)$/;
 
 /** This function creates a 'sane' JSON object, given one returned by the
  * Zimbra server.
@@ -165,11 +157,18 @@ function() {
 	return "ZmZimletContext - " + this.name;
 };
 
-/**
- * <strong>Note:</strong>
- * This method is called by ZmZimletMgr#_finished_loadIncludes.
- */
+ZmZimletContext.prototype._loadIncludes =
+function() {
+	if (!this.includes) {
+		this._finished_loadIncludes();
+		return;
+	}
+	AjxInclude(this.includes, this._url, new AjxCallback(this, this._finished_loadIncludes) ,ZmZimletBase.PROXY);
+};
+
 ZmZimletContext.prototype._finished_loadIncludes = function() {
+	// We don't allow _loadIncludes a second time
+	this.includes = null;
 	var CTOR  = this.handlerObject ? window[this.handlerObject] : ZmZimletBase;
 	this.handlerObject = new CTOR();
 	if(!this.handlerObject._init) {
@@ -185,26 +184,36 @@ ZmZimletContext.prototype._finished_loadIncludes = function() {
 	// If it has an _id then we need to make sure the treeItem
 	// is up-to-date now that the i18n files have loaded.
 	if(this._id) {
-		var tree = this._appCtxt.getZimletTree();
+		var tree = this._appCtxt.getTree(ZmOrganizer.ZIMLET);
 		var zimletItem = tree.getById(this._id);
 		zimletItem.resetNames();
 	}
-
-    // initialize portlets
-    if (this._appCtxt.get(ZmSetting.PORTAL_ENABLED)) {
-        var params = {
-            name: "Portal",
-            callback: new AjxCallback(this, this._finished_loadIncludes2)
-        };
-        AjxPackage.require(params);
-    }
-
-    DBG.println(AjxDebug.DBG2, "Zimlets - init() complete: " + this.name);
+	DBG.println(AjxDebug.DBG2, "Zimlets - init() complete: " + this.name);
 };
 
-ZmZimletContext.prototype._finished_loadIncludes2 = function() {
-    var portletMgr = this._appCtxt.getApp(ZmApp.PORTAL).getPortletMgr();
-    portletMgr.zimletLoaded(this);
+ZmZimletContext.prototype._loadStyles = function() {
+    // Safari can choke loading certian CSS files;
+    // might be related to the following issues.
+    // http://bugzilla.opendarwin.org/show_bug.cgi?id=8463
+    // http://bugzilla.opendarwin.org/show_bug.cgi?id=5476
+    if (!this.includeCSS || AjxEnv.isSafari) {return;}
+	var head = document.getElementsByTagName("head")[0];
+	for (var i = 0; i < this.includeCSS.length; ++i) {
+		var fullurl = this.includeCSS[i];
+		if (!(/^((https?|ftps?):\x2f\x2f|\x2f)/).test(fullurl)) {
+			fullurl = this._url + fullurl;
+		}
+        fullurl = fullurl + "?v=" + cacheKillerVersion
+        var style = document.createElement("link");
+		style.type = "text/css";
+		style.rel = "stylesheet";
+		style.href = fullurl;
+		style.title = this.name + " " + this.includeCSS[i];
+		head.appendChild(style);
+		style.disabled = true;
+		style.disabled = false;
+	}
+	this.includeCSS = null;
 };
 
 ZmZimletContext.prototype.getOrganizer = function() {
@@ -237,18 +246,16 @@ ZmZimletContext.prototype.callHandler = function(funcname, args) {
 
 ZmZimletContext.prototype._translateUserProp = function() {
 	var a = this.userProperties = this.userProperties.property;
+	this._propsById = {};
 	for (var i = 0; i < a.length; ++i) {
 		this._propsById[a[i].name] = a[i];
 	}
 };
 
 ZmZimletContext.prototype.setPropValue = function(name, val) {
-	if(!this._propsById[name]) {
-        var prop = { name: name };
-        this.userProperties.push(prop);
-        this._propsById[name] = prop;
+	if(this._propsById[name]) {
+		this._propsById[name].value = val;
 	}
-    this._propsById[name].value = val;
 };
 
 ZmZimletContext.prototype.getPropValue = function(name) {
@@ -263,14 +270,14 @@ ZmZimletContext.prototype._translateConfig = function() {
 	if (this.config.global) {
 		var prop = this.config.global[0].property;
 		this.config.global = {};
-		for (var i in prop) {
+		for (var i = 0; i < prop.length; i++) {
 			this.config.global[prop[i].name] = prop[i]._content;
 		}
 	}
 	if (this.config.local) {
 		var propLocal = this.config.local[0].property;
 		this.config.local = {};
-		for (var j in propLocal) {
+		for (var j = 0; j < propLocal.length; j++) {
 			this.config.local[propLocal[j].name] = propLocal[j]._content;
 		}
 	}
@@ -294,14 +301,14 @@ ZmZimletContext.prototype.getPanelActionMenu = function() {
 };
 
 ZmZimletContext.prototype._makeMenu = function(obj) {
-	var menu = new ZmActionMenu({parent:DwtShell.getShell(window), menuItems:ZmOperation.NONE});
+	var menu = new ZmActionMenu(DwtShell.getShell(window), ZmOperation.NONE);
 	for (var i = 0; i < obj.length; ++i) {
 		var data = obj[i];
 		if (!data.id) {
 			menu.createSeparator();
 		} else {
-			var item = menu.createMenuItem(data.id, {image:data.icon, text:this.processMessage(data.label),
-													 disImage:data.disabledIcon});
+			var item = menu.createMenuItem(data.id, data.icon, this.processMessage(data.label),
+						       data.disabledIcon, true);
 			item.setData("xmlMenuItem", data);
 			item.addSelectionListener(this._handleMenuItemSelected);
 		}
@@ -365,7 +372,7 @@ ZmZimletContext.prototype.replaceObj = function(re, str, obj) {
 		});
 };
 
-ZmZimletContext.prototype.makeURL = function(actionUrl, obj, props) {
+ZmZimletContext.prototype.makeURL = function(actionUrl, obj) {
 	var url = actionUrl.target;
 	var param = [];
 	if (actionUrl.param) {
@@ -373,11 +380,11 @@ ZmZimletContext.prototype.makeURL = function(actionUrl, obj, props) {
 		for (var i = 0; i < a.length; ++i) {
 			// trim whitespace as it's almost certain that the
 			// developer didn't intend it.
-			var val = AjxStringUtil.trim(a[i]._content || a[i]);
+			var val = AjxStringUtil.trim(a[i]._content);
 			if (obj) {
 				val = this.processString(val, obj);
 			}
-			val = this.replaceObj(ZmZimletContext.RE_SCAN_PROP, val, props || this._propsById);
+			val = this.replaceObj(ZmZimletContext.RE_SCAN_PROP, val, this._propsById);
 			param.push([ AjxStringUtil.urlEncode(a[i].name),
 				     "=",
 				     AjxStringUtil.urlEncode(val) ].join(""));
@@ -435,9 +442,9 @@ ZmZimletContext._zmObjectTransformers = {
 			var oi = o[i];
 			ret.id           = oi.getId();
 			ret.convId       = oi.getConvId();
-			ret.from         = oi.getAddresses(AjxEmailAddress.FROM).getArray();
-			ret.to           = oi.getAddresses(AjxEmailAddress.TO).getArray();
-			ret.cc           = oi.getAddresses(AjxEmailAddress.CC).getArray();
+			ret.from         = oi.getAddresses(ZmEmailAddress.FROM).getArray();
+			ret.to           = oi.getAddresses(ZmEmailAddress.TO).getArray();
+			ret.cc           = oi.getAddresses(ZmEmailAddress.CC).getArray();
 			ret.subject      = oi.getSubject();
 			ret.date         = oi.getDate();
 			ret.size         = oi.getSize();
@@ -446,7 +453,6 @@ ZmZimletContext._zmObjectTransformers = {
 			// ret.flagged      = oi.getFlagged();
 			ret.unread       = oi.isUnread;
 			ret.attachment   = oi._attachments.length > 0;
-			ret.attlinks     = oi._attLinks;
 			// ret.forwarded      = oi.isForwarded();
 			ret.sent         = oi.isSent;
 			ret.replied      = oi.isReplied;
@@ -583,20 +589,21 @@ ZmZimletContext._zmObjectTransformers = {
 		oi.getDetails();
 		var ret = { TYPE: "ZmAppt" };
 		ret.id             = oi.getId();
-		ret.uid            = oi.uid;
+		ret.uid            = oi.getUid();
+		ret.type           = oi.getType();
 		ret.subject        = oi.getName();
-		ret.startDate      = oi.startDate;
-		ret.endDate        = oi.endDate;
+		ret.startDate      = oi.getStartDate();
+		ret.endDate        = oi.getEndDate();
 		ret.allDayEvent    = oi.isAllDayEvent();
-		ret.exception      = oi.isException;
-		ret.alarm          = oi.alarm;
+		ret.exception      = oi.isException();
+		ret.alarm          = oi.hasAlarm();
 		ret.otherAttendees = oi.hasOtherAttendees();
 		ret.attendees      = oi.getAttendeesText();
 		ret.resources      = oi.getEquipmentText();
 		ret.location       = oi.getLocation();
 		ret.notes          = oi.getNotesPart();
 		ret.isRecurring    = oi.isRecurring();
-		ret.timeZone       = oi.timezone;
+		ret.timeZone       = oi.getTimezone();
 		return ret;
 	}
 

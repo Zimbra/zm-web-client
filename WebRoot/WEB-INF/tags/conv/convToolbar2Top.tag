@@ -56,13 +56,13 @@
     <tr>
         <td align=left class=TbBt>
             <zm:currentResultUrl var="closeurl" value="/h/search" index="${context.currentItemIndex}" context="${context}"/>
-            <a href="${closeurl}" <c:if test="${keys}"></c:if>>${fn:escapeXml(context.backTo)}</a>
+            <a href="${closeurl}" <c:if test="${keys}">accesskey="z"</c:if>>${fn:escapeXml(context.backTo)}</a>
             ${requestScope.cvToolbar2TopCache}
         </td>
         <td nowrap align=right>
             <c:if test="${context.hasPrevItem}">
                 <zm:prevItemUrl var="prevItemUrl" value="" cursor="${convCursor}" context="${context}" css="${param.css}" action="view2"/>
-                <a <c:if test="${keys}"></c:if> href="${prevItemUrl}"><img alt='left' src="<c:url value='/images/arrows/LeftArrow.gif'/>" border="0"/></a>
+                <a <c:if test="${keys}">accesskey="p"</c:if> href="${prevItemUrl}"><img alt='left' src="<c:url value='/images/arrows/LeftArrow.gif'/>" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
                 <app:img disabled='true' src="arrows/LeftArrow.gif" border="0"/>
@@ -77,7 +77,7 @@
             </span>
             <c:if test="${context.hasNextItem}">
                 <zm:nextItemUrl var="nextItemUrl" value="" cursor="${convCursor}" context="${context}" css="${param.css}" action="view2"/>
-                <a <c:if test="${keys}"></c:if> href="${nextItemUrl}"><img alt='right' src="<c:url value='/images/arrows/RightArrow.gif'/>" border="0"/></a>
+                <a <c:if test="${keys}">accesskey="n"</c:if> href="${nextItemUrl}"><img alt='right' src="<c:url value='/images/arrows/RightArrow.gif'/>" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">
                 <app:img disabled='true' src="arrows/RightArrow.gif" border="0"/>

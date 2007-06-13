@@ -24,44 +24,46 @@
  */
 
 /**
- * Creates a toolbar with the given buttons.
- * @constructor
- * @class
- * This class represents a toolbar that contains just buttons.
- * It can be easily created using a set of standard operations, and/or custom buttons
- * can be provided. This class is designed for use with items (ZmItem), so it can for
- * example contain a button with a tab submenu. See also ZmActionMenu.
- *
- * @author Conrad Damon
- *
- * @param parent			[DwtComposite]		the containing widget
- * @param buttons			[array]*			a list of operation IDs
- * @param posStyle			[constant]*			positioning style
- * @param className			[string]*			CSS class name
- * @param buttonClassName	[string]*			CSS class name for buttons
- * @param overrides			[hash]*				hash of overrides by op ID
- */
-ZmButtonToolBar = function(params) {
-	if (arguments.length == 0) return;
+* Creates a toolbar with the given buttons.
+* @constructor
+* @class
+* This class represents a toolbar that contains just buttons.
+* It can be easily created using a set of standard operations, and/or custom buttons
+* can be provided. This class is designed for use with items (ZmItem), so it can for
+* example contain a button with a tab submenu. See also ZmActionMenu.
+*
+* @author Conrad Damon
+*
+* @param parent					[DwtComposite]		the containing widget
+* @param standardButtons		[array]*			a list of operation IDs
+* @param extraButtons			[array]*			a list of operation descriptors
+* @param posStyle				[constant]*			positioning style
+* @param className				[string]*			CSS class name
+*/
+function ZmButtonToolBar(parent, standardButtons, extraButtons, posStyle, className, buttonClassName) {
 
-//    var className = params.className || "ZToolbar";
-    var className = null;
-    ZmToolBar.call(this, params.parent, className, params.posStyle);
+	if (arguments.length == 0) return;
+	ZmToolBar.call(this, parent, className, posStyle);
 	
-	this._buttonStyle = params.buttonClassName;
+	buttonClassName = buttonClassName ? buttonClassName : "DwtToolbarButton";
+	this._buttonStyle = buttonClassName;
 
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
 	// standard buttons default to New/Tag/Print/Delete
-	var buttons = params.buttons;
-	if (!buttons) {
-		buttons = [ZmOperation.NEW_MENU, ZmOperation.TAG_MENU, ZmOperation.PRINT, ZmOperation.DELETE];
-	} else if (buttons == ZmOperation.NONE) {
-		buttons = null;
+	if (!standardButtons) {
+		standardButtons = [ZmOperation.NEW_MENU];
+		if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
+			standardButtons.push(ZmOperation.TAG_MENU);
+		}
+		if (this._appCtxt.get(ZmSetting.PRINT_ENABLED)) {
+			standardButtons.push(ZmOperation.PRINT);
+		}
+		standardButtons.push(ZmOperation.DELETE);
+	} else if (standardButtons == ZmOperation.NONE) {
+		standardButtons = null;
 	}
-	// weed out disabled ops, save list of ones that make it
-	this.opList = ZmOperation.filterOperations(this._appCtxt, buttons);
-	this._buttons = ZmOperation.createOperations(this, this.opList, params.overrides);
+	this._buttons = ZmOperation.createOperations(this, standardButtons, extraButtons);
 };
 
 ZmButtonToolBar.prototype = new ZmToolBar;
@@ -75,27 +77,27 @@ function() {
 };
 
 /**
- * Creates a button and adds its operation ID as data.
- * 
- * @param id			[string]		name of the operation
- * @param text			[string]*		button text
- * @param tooltip		[string]*		button tooltip text
- * @param image			[string]*		icon class for the button
- * @param disImage		[string]*		disabled version of icon
- * @param enabled		[boolean]*		if true, button is enabled
- * @param className		[constant]*		CSS class name
- * @param style			[constant]*		button style
- * @param index			[int]*			position at which to add the button
- */
+* Creates a button and adds its operation ID as data.
+*/
 ZmButtonToolBar.prototype.createOp =
-function(id, params) {
-	params.className = this._buttonStyle;
-	var b = (id == ZmOperation.TEXT)
-		? (new DwtText(this, "ZWidgetTitle"))
-		: this.createButton(id, params);
-	b.setData(ZmOperation.KEY_ID, id);
+function(buttonId, text, imageInfo, disImageInfo, enabled, toolTip, index) {
+	var b;
+	if (buttonId == ZmOperation.TEXT) {
+		b = new DwtText(this);
+	} else {
+		b = this._createButton(buttonId, imageInfo, text, disImageInfo, toolTip, enabled, this._buttonStyle, null, index);
+	}
+	b.setData(ZmOperation.KEY_ID, buttonId);
 
 	return b;
+};
+
+/**
+* Creates a separator. Added because ZmToolBar defines _createSeparator().
+*/
+ZmButtonToolBar.prototype.createSeparator =
+function(index) {
+	this.addSeparator("vertSep", index);
 };
 
 ZmButtonToolBar.prototype.addOp =
@@ -129,9 +131,7 @@ function() {
 	}
 };
 
-//
 // Private methods
-//
 
 // Returns the ID for the given button.
 ZmButtonToolBar.prototype._buttonId =

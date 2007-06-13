@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmPicker = function(parent, id) {
+function ZmPicker(parent, id) {
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, parent, "ZmPicker", DwtControl.ABSOLUTE_STYLE);
 
@@ -66,15 +66,14 @@ ZmPicker.CLOSE		= i++;	// not really a picker
 
 ZmPicker.NEXT_ID	= i;
 
-ZmPicker.DEFAULT_PICKERS = [ZmPicker.ATTACHMENT,
+ZmPicker.DEFAULT_PICKERS=[ZmPicker.ATTACHMENT,
 				ZmPicker.BASIC,
 				ZmPicker.DATE,
 				ZmPicker.DOMAIN,
 				ZmPicker.FOLDER];
 
-
 // Button labels
-ZmPicker.MSG_KEY = {};
+ZmPicker.MSG_KEY = new Object();
 ZmPicker.MSG_KEY[ZmPicker.ATTACHMENT]	= "attachment";
 ZmPicker.MSG_KEY[ZmPicker.BASIC]		= "basic";
 ZmPicker.MSG_KEY[ZmPicker.CUSTOM]		= "custom";
@@ -91,7 +90,7 @@ ZmPicker.MSG_KEY[ZmPicker.RESET]		= "removeAll";
 ZmPicker.MSG_KEY[ZmPicker.CLOSE]		= "close";
 
 // Button and picker icons
-ZmPicker.IMAGE = {};
+ZmPicker.IMAGE = new Object();
 ZmPicker.IMAGE[ZmPicker.ATTACHMENT]	= "Attachment";
 ZmPicker.IMAGE[ZmPicker.BASIC]		= "Message";
 ZmPicker.IMAGE[ZmPicker.CUSTOM]		= "Search";
@@ -108,7 +107,7 @@ ZmPicker.IMAGE[ZmPicker.TIME]		= "Date";
 ZmPicker.IMAGE[ZmPicker.CLOSE]		= "Close";
 
 // Button tooltips
-ZmPicker.TT_MSG_KEY = {};
+ZmPicker.TT_MSG_KEY = new Object();
 ZmPicker.TT_MSG_KEY[ZmPicker.ATTACHMENT]	= "searchByAttachment";
 ZmPicker.TT_MSG_KEY[ZmPicker.BASIC]			= "searchByBasic";
 ZmPicker.TT_MSG_KEY[ZmPicker.CUSTOM]		= "searchByCustom";
@@ -125,7 +124,7 @@ ZmPicker.TT_MSG_KEY[ZmPicker.RESET]			= "clearAdvSearch";
 ZmPicker.TT_MSG_KEY[ZmPicker.CLOSE]			= "closeSearchBuilder";
 
 // Picker titles
-ZmPicker.T_MSG_KEY = {};
+ZmPicker.T_MSG_KEY = new Object();
 ZmPicker.T_MSG_KEY[ZmPicker.ATTACHMENT]	= "attachments";
 ZmPicker.T_MSG_KEY[ZmPicker.BASIC]		= "basicSearch";
 ZmPicker.T_MSG_KEY[ZmPicker.CUSTOM]		= "custom";
@@ -141,7 +140,7 @@ ZmPicker.T_MSG_KEY[ZmPicker.TIME]		= "time";
 
 // Max number of instances for each picker
 // -1 means no limit
-ZmPicker.LIMIT = {};
+ZmPicker.LIMIT = new Object();
 ZmPicker.LIMIT[ZmPicker.ATTACHMENT]	= 1;
 ZmPicker.LIMIT[ZmPicker.BASIC]		= -1;
 ZmPicker.LIMIT[ZmPicker.CUSTOM]		= 1;
@@ -155,10 +154,9 @@ ZmPicker.LIMIT[ZmPicker.SIZE]		= 2;
 ZmPicker.LIMIT[ZmPicker.TAG]		= -1;
 ZmPicker.LIMIT[ZmPicker.TIME]		= 1;
 
-ZmPicker.MULTI_JOIN = {};
-for (var i = 1; i <= ZmPicker.CLOSE; i++) {
+ZmPicker.MULTI_JOIN = new Object();
+for (var i = 1; i <= ZmPicker.CLOSE; i++)
 	ZmPicker.MULTI_JOIN[i] = " ";
-}
 ZmPicker.MULTI_JOIN[ZmPicker.BASIC] = " OR ";
 ZmPicker.MULTI_JOIN[ZmPicker.FLAG] = " OR ";
 
@@ -170,7 +168,7 @@ ZmPicker.KEY_ID = "_id_";
 ZmPicker.KEY_CTOR = "_ctor_";
 ZmPicker.KEY_PICKER = "_picker_";
 
-ZmPicker_Descriptor = function(id, label, image, toolTip, ctor) {
+function ZmPicker_Descriptor(id, label, image, toolTip, ctor) {
 	this.id = id;
 	this.label = label || ZmMsg[ZmPicker.MSG_KEY[id]];
 	this.image = image || ZmPicker.IMAGE[id];
@@ -181,26 +179,25 @@ ZmPicker_Descriptor = function(id, label, image, toolTip, ctor) {
 ZmPicker.prototype.toString = 
 function() {
 	return "ZmPicker";
-};
+}
 
-ZmPicker.prototype._setupPicker  = function() {};
-ZmPicker.prototype._updateQuery  = function() {};
-ZmPicker.prototype._treeListener  = function() {};
+ZmPicker.prototype._setupPicker  = function() {}
+ZmPicker.prototype._updateQuery  = function() {}
 
 ZmPicker.prototype.setTitle =
 function(text) {
     this._label.setText(text);
-};
+}
 
 ZmPicker.prototype.setImage =
 function(imageInfo) {
     this._label.setImage(imageInfo);
-};
+}
 
 ZmPicker.prototype.getCloseButton = 
 function() {
 	return this._close;
-};
+}
 
 ZmPicker.prototype.setEnabled =
 function(enabled) {
@@ -208,17 +205,17 @@ function(enabled) {
     this._label.setEnabled(enabled);
     if (this._picker.setEnabled)
 	    this._picker.setEnabled(enabled);
-};
+}
 
 ZmPicker.prototype.addPickerListener =
 function(listener) {
 	this.addListener(ZmEvent.L_PICKER, listener);
-};
+}
 
 ZmPicker.prototype.removePickerListener =
 function(listener) {
 	this.removeListener(ZmEvent.L_PICKER, listener);
-};
+}
 
 ZmPicker.prototype.execute =
 function() {
@@ -226,7 +223,7 @@ function() {
 		this._pickerEvent.set(ZmEvent.E_LOAD, this);
 		this.notifyListeners(ZmEvent.L_PICKER, this._pickerEvent);
 	}
-};
+}
 
 ZmPicker.prototype.setQuery =
 function(query) {
@@ -235,40 +232,39 @@ function(query) {
 		this._pickerEvent.set(ZmEvent.E_MODIFY, this);
 		this.notifyListeners(ZmEvent.L_PICKER, this._pickerEvent);
 	}
-};
+}
 
 ZmPicker.prototype.dispose =
 function() {
 	DwtComposite.prototype.dispose.call(this);
 	if (this._treeView) {
 		var opc = this._appCtxt.getOverviewController();
-		this._overview.clear();
+		opc.clearOverview(this._overviewId);
 	}
-};
+}
 
 ZmPicker.prototype._setOverview =
 function(overviewId, parent, types) {
+	this._overviewId = overviewId;
 	this._picker.setScrollStyle(Dwt.CLIP);
 	var opc = this._appCtxt.getOverviewController();
-	var params = {overviewId:overviewId, parent:parent,	headerClass:"DwtTreeItem",
-				  treeStyle:DwtTree.CHECKEDITEM_STYLE};
-	var overview = this._overview = opc.createOverview(params);
-	overview.set(types);
-	this._treeView = {};
+	opc.createOverview({overviewId: overviewId, parent: parent, //scroll: Dwt.VISIBLE,
+						headerClass: "DwtTreeItem",
+						treeStyle: DwtTree.CHECKEDITEM_STYLE});
+	opc.set(overviewId, types);
+	this._treeView = new Object();
 	for (var i = 0; i < types.length; i++) {
-		var treeView = this._treeView[types[i]] = overview.getTreeView(types[i]);
+		var treeView = this._treeView[types[i]] = opc.getTreeView(overviewId, types[i]);
 		treeView.addSelectionListener(new AjxListener(this, this._treeListener));
 	}
-	if (types.length == 1) {
+	if (types.length == 1)
 		this._hideRoot(types[0]);
-	}
-};
+}
 
 ZmPicker.prototype._hideRoot =
 function(type) {
-	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
-	var ti = this._treeView[type].getTreeItemById(rootId);
+	var ti = this._treeView[type].getTreeItemById(ZmOrganizer.ID_ROOT);
 	Dwt.setVisible(ti._checkBoxCell, false);
 	ti.setExpanded(true);
 	ti.setVisible(false, true);
-};
+}

@@ -26,7 +26,7 @@
 /**
 *
 */
-ZmRosterPresence = function(show, priority, showStatus) {
+function ZmRosterPresence(show, priority, showStatus) {
     this._show = show || ZmRosterPresence.SHOW_OFFLINE;
     this._priority = priority;
     this._showStatus = showStatus;

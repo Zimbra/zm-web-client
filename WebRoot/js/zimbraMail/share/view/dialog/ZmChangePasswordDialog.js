@@ -23,10 +23,11 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmChangePasswordDialog = function(parent, className) {
+function ZmChangePasswordDialog(parent, msgDialog, className) {
 
 	DwtDialog.call(this, parent, className, ZmMsg.changePassword);
 
+	this._msgDialog = msgDialog;
 	this._setContent();
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._okButtonListener));
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
@@ -41,8 +42,8 @@ function() {
 };
 
 ZmChangePasswordDialog.prototype.popup = 
-function() {
-	DwtDialog.prototype.popup.call(this);
+function(loc) {
+	DwtDialog.prototype.popup.call(this, loc);
 	this._oldPasswordField.focus();
 };
 
@@ -52,9 +53,8 @@ function(message, loc, style) {
 		var myLoc = this.getLocation();
 		loc = new DwtPoint(myLoc.x - 50, myLoc.y + 75);
 	}
-	var msgDialog = this._appCtxt.getMsgDialog();
-	msgDialog.setMessage(message, (style || DwtMessageDialog.CRITICAL_STYLE));
-	msgDialog.popup(loc);
+	this._msgDialog.setMessage(message, (style || DwtMessageDialog.CRITICAL_STYLE));
+	this._msgDialog.popup(loc);
 };
 
 ZmChangePasswordDialog.prototype._setContent =
@@ -106,8 +106,7 @@ function(ev) {
 ZmChangePasswordDialog.prototype._getPasswordData =
 function() {
 	// Reset the msg dialog (it is a shared resource)
-	var msgDialog = this._appCtxt.getMsgDialog();
-	msgDialog.reset();
+	this._msgDialog.reset();
 
 	// check to see that all input fields have been filled out
 	var oldPassword = this._oldPasswordField.value;

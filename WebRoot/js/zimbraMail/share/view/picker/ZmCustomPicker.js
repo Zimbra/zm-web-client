@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCustomPicker = function(parent) {
+function ZmCustomPicker(parent) {
 
 	ZmPicker.call(this, parent);
 

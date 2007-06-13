@@ -29,7 +29,7 @@
 * button/menu for switching views within the current app.
 * @class
 */
-ZmCurrentAppToolBar = function(parent, tabStyle) {
+function ZmCurrentAppToolBar(parent, tabStyle) {
 
 	DwtToolBar.call(this, parent, null, Dwt.ABSOLUTE_STYLE);
 
@@ -45,6 +45,10 @@ ZmCurrentAppToolBar = function(parent, tabStyle) {
 		}
 		this._viewLabel = new DwtLabel(this, DwtLabel.ALIGN_RIGHT, "viewLabel");
 		this._viewLabel.setText(ZmMsg.view + ":");
+		// HACK - expand out the parent table and shrink first child so view
+		// button can be as wide as possible
+		this._table.width = "100%";
+		this._table.rows[0].cells[0].width = "1%";
 	}
 
 	this._viewButton = new DwtButton(this, null, "DwtToolbarButton");
@@ -76,8 +80,8 @@ function() {
 ZmCurrentAppToolBar.prototype.setCurrentApp = 
 function(appName) {
 	if (this._currentAppLabel) {
-		this._currentAppLabel.setText(ZmMsg[ZmApp.NAME[appName]]);
-		this._currentAppLabel.setImage(ZmApp.ICON[appName]);
+		this._currentAppLabel.setText(ZmMsg[ZmZimbraMail.MSG_KEY[appName]]);
+		this._currentAppLabel.setImage(ZmZimbraMail.APP_ICON[appName]);
 	}
 };
 

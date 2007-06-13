@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDomainPicker = function(parent) {
+function ZmDomainPicker(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.DOMAIN);
 

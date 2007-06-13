@@ -23,14 +23,16 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmLinkPropsDialog = function(appCtxt, shell, className) {
+function ZmLinkPropsDialog(appCtxt, shell, className) {
 	className = className || "ZmLinkPropsDialog";
 	DwtDialog.call(this, shell, className, ZmMsg.linkProperties);
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 
 	this._appCtxt = appCtxt;
 
-	this._cache = AjxDispatcher.run("GetNotebookCache");
+	var appController = appCtxt.getAppController();
+	var app = appController.getApp(ZmZimbraMail.NOTEBOOK_APP);
+	this._cache = app.getNotebookCache();
 
 	// set view
 	this.setView(this._createView());
@@ -42,13 +44,14 @@ ZmLinkPropsDialog.prototype.constructor = ZmLinkPropsDialog;
 // Public methods
 
 ZmLinkPropsDialog.prototype.popup =
-function(linkInfo, callback) {
+function(linkInfo, callback, loc) {
 	this._linkInfo = linkInfo || {};
 	this._callback = callback;
 
 	var isUrlLink = this._linkInfo.url;
 	if (this._appCtxt.get(ZmSetting.NOTEBOOK_ENABLED)) {
-		var root = this._appCtxt.getById(ZmOrganizer.ID_ROOT);
+		var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+		var root = tree.getById(ZmOrganizer.ID_ROOT);
 		var children = root.children.getArray();
 
 		this._notebookSelect.clearOptions();
@@ -65,7 +68,7 @@ function(linkInfo, callback) {
 
 	ZmLinkPropsDialog._setRequiredFields(this, !isUrlLink);
 
-	DwtDialog.prototype.popup.call(this);
+	DwtDialog.prototype.popup.call(this, loc);
 	ZmLinkPropsDialog._enableFieldsOnEdit(this);
 };
 
@@ -216,7 +219,8 @@ function(event) {
 		var link;
 		if (this._pageRadioEl && this._pageRadioEl.checked) {
 			var notebookId = this._notebookSelect.getValue();
-			var notebook = this._appCtxt.getById(notebookId);
+			var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+			var notebook = tree.getById(notebookId);
 			var value = AjxStringUtil.trim(this._pageInput.getValue());
 			link = [
 				"[[",
@@ -400,10 +404,8 @@ function(children, depth) {
 	for (var i = 0; i < children.length; i++) {
 		var child = children[i];
 		//this._notebookSelect.addOption(depth+child.name, false, child.id);
-		if(child instanceof ZmNotebook ){
 		this._notebookSelect.addOption(child.getSearchPath(), false, child.id);
 		var grandChildren = child.children.getArray();
 		this.__addNotebookChildren(grandChildren, depth+"&nbsp;");
-		}
 	}
 };

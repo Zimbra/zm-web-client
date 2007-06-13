@@ -6,46 +6,38 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+
 <app:handleError>
-    <zm:getMailbox var="mailbox"/>
     <app:composeCheck/>
     <c:set var="action" value="${empty param.paction ? param.action : param.paction}" scope="request"/>
     <jsp:useBean id="expanded" scope="session" class="java.util.HashMap" />
-
+    
      <c:if test="${not empty param.expand}">
          <c:set target="${sessionScope.expanded}" property="${param.expand}" value="expand"/>
      </c:if>
      <c:if test="${not empty param.collapse}">
          <c:set target="${sessionScope.expanded}" property="${param.collapse}" value="collapse"/>
      </c:if>
-
-     <%-- switch based on context search types --%>
+     
+     <%-- switch based on context saerch types --%>
 
      <c:choose>
          <c:when test="${not empty param.doConvListViewAction}">
              <app:convListViewAction/>
          </c:when>
          <c:when test="${not empty param.doMessageAction}">
-             <app:messageAction/>
+             <app:messageAction/>             
          </c:when>
-         <c:when test="${not empty param.doContactListViewAction or param.action eq 'newcontact' or param.action eq 'newcontactgroup'}">
+         <c:when test="${not empty param.doContactListViewAction}">
              <app:contactListViewAction/>
-         </c:when>
-         <c:when test="${not empty param.doVoiceMailListViewAction}">
-             <app:voiceMailListViewAction/>
          </c:when>
      </c:choose>
 
-    <c:if test="${param.st eq 'appointment'}">
-        <c:redirect url="/h/calendar">
-            <c:param name="sq" value="${param.sq}"/>
-        </c:redirect>
-    </c:if>
+    <zm:getMailbox var="mailbox"/>
     <zm:computeSearchContext var="context" usecache="true"/>
-
 </app:handleError>
 
- <%-- switch based on context search types --%>
+ <%-- switch based on context saerch types --%>
 <c:choose>
     <c:when test="${context.isConversationSearch and action eq 'view'}">
         <app:convView context="${context}"/>
@@ -68,16 +60,7 @@
     <c:when test="${context.isContactSearch}">
         <app:contactListView context="${context}"/>
     </c:when>
-    <c:when test="${context.isVoiceMailSearch}">
-        <app:voiceMailListView context="${context}"/>
-    </c:when>
-    <c:when test="${context.isCallSearch}">
-        <app:callListView context="${context}"/>
-    </c:when>
     <c:otherwise>
-        <fmt:message key="error" var="title"/>
-        <app:view mailbox="${mailbox}" title="${title}" selected='mail' context="${context}" folders="true" tags="true" searches="true" ads="" keys="true">
-            <fmt:message key="ztaglib.TAG_EXCEPTION"/>
-        </app:view>
+        mixed view Types (${context.types})
     </c:otherwise>
 </c:choose>

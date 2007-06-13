@@ -13,11 +13,11 @@
                          checked="${mailbox.prefs.autoAddAddressEnabled}"/>
         <tr>
             <td nowrap align=right>
-                <label for="perPage"><fmt:message key="numberOfContactsToDisplayPerPage"/>
-                :</label>
+                <fmt:message key="numberOfContactsToDisplayPerPage"/>
+                :
             </td>
             <td>
-                <select name="zimbraPrefContactsPerPage" id="perPage">
+                <select name="zimbraPrefContactsPerPage">
                     <c:set var="contactsPP" value="${mailbox.prefs.contactsPerPage}"/>
                     <option
                             <c:if test="${contactsPP eq 10}"> selected</c:if>

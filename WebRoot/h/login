@@ -19,14 +19,12 @@
             <c:set var="errorCode" value="${param.loginErrorCode}"/>
             <fmt:message var="errorMessage" key="${errorCode}"/>
         </c:when>
-        <c:when test="${param.loginOp eq 'logout'}">
+        <c:when test="${param.loginOp eq 'logout' || param.loginOp eq 'relogin'}">
             <zm:logout/>
         </c:when>
         <c:when test="${(param.loginOp eq 'login') && !(empty param.username) && !(empty param.password)}">
             <zm:login username="${param.username}" password="${param.password}" varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
-                    prefs="zimbraPrefSkin"
-                    />
+                      newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"/>
             <c:if test="${empty postLoginUrl}"><c:set var="postLoginUrl" value="/h/search"/></c:if>
             <c:redirect url="${postLoginUrl}"/>
     </c:when>
@@ -36,9 +34,7 @@
         <c:if test="${not empty authtoken}">
             <zm:login authtoken="${authtoken}" authtokenInUrl="${not empty param.zauthtoken}"
                       varRedirectUrl="postLoginUrl" varAuthResult="authResult"
-                      rememberme="${param.zrememberme == '1'}"
-                      prefs="zimbraPrefSkin"
-                    />
+                      rememberme="${param.zrememberme == '1'}"/>
             <c:if test="${empty postLoginUrl}"><c:set var="postLoginUrl" value="/h/search"/></c:if>
             <c:redirect url="${postLoginUrl}"/>
         </c:if>
@@ -123,28 +119,28 @@
                                     <input type="hidden" name="loginOp" value="login"/>
                                     <table width=100% cellpadding=4>
                                         <tr>
-                                            <td class='zLoginLabelContainer'><label for="username"><fmt:message key="username"/>:</label></td>
+                                            <td class='zLoginLabelContainer'><fmt:message key="username"/>:</td>
                                             <td colspan=2 class='zLoginFieldContainer'>
-                                                <input id="username" class='zLoginField' name='username' type='text' value='${fn:escapeXml(param.username)}' />
+                                                <input class='zLoginField' name='username' type='text' value='${fn:escapeXml(param.username)}' />
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td class='zLoginLabelContainer'><label for="password"><fmt:message key="password"/>:</label></td>
+                                            <td class='zLoginLabelContainer'><fmt:message key="password"/>:</td>
                                             <td colspan=2 class='zLoginFieldContainer'>
-                                                <input id="password" class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
+                                                <input class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
                                             </td>
                                         </tr>
                                         <c:if test="${errorCode eq 'account.CHANGE_PASSWORD' or !empty param.loginNewPassword }">
                                            <tr>
-                                               <td class='zLoginLabelContainer'><label for="loginNewPassword"><fmt:message key="newPassword"/>:</label></td>
+                                               <td class='zLoginLabelContainer'><fmt:message key="newPassword"/>:</td>
                                                <td colspan=2 class='zLoginFieldContainer'>
-                                                   <input id="loginNewPassword" class='zLoginField' name='loginNewPassword' type='password' value="${fn:escapeXml(param.loginNewPassword)}"/>
+                                                   <input class='zLoginField' name='loginNewPassword' type='password' value="${fn:escapeXml(param.loginNewPassword)}"/>
                                                </td>
                                            </tr>
                                             <tr>
-                                                <td class='zLoginLabelContainer'><label for="confirmNew"><fmt:message key="confirm"/>:</label></td>
+                                                <td class='zLoginLabelContainer'><fmt:message key="confirm"/>:</td>
                                                 <td colspan=2 class='zLoginFieldContainer'>
-                                                    <input id="confirmNew" class='zLoginField' name='loginConfirmNewPassword' type='password' value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
+                                                    <input class='zLoginField' name='loginConfirmNewPassword' type='password' value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
                                                 </td>
                                             </tr>
                                         </c:if>
@@ -153,9 +149,9 @@
                                             <td>
                                                 <table width=100%>
                                                     <tr>
-                                                        <td><input id="remember" value="1" type=checkbox name='zrememberme' /></td>
-                                                        <td class='zLoginCheckboxLabelContainer'><label for="remember"><fmt:message
-                                                                key="rememberMe"/></label></td>
+                                                        <td><input value="1" type=checkbox name='zrememberme' /></td>
+                                                        <td class='zLoginCheckboxLabelContainer'><fmt:message
+                                                                key="rememberMe"/></td>
                                                     </tr>
                                                 </table>
                                             </td>

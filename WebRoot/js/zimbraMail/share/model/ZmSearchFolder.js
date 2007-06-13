@@ -23,56 +23,54 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmSearchFolder = function(params) {
-	params.type = ZmOrganizer.SEARCH;
-	ZmFolder.call(this, params);
+function ZmSearchFolder(id, name, parent, tree, numUnread, query, types, sortBy) {
+
+	ZmFolder.call(this, id, name, parent, tree, numUnread);
 	
-	if (params.query) {
-		this.search = new ZmSearch(params.tree._appCtxt, {query:params.query, types:params.types,
-								   sortBy:params.sortBy, searchId:params.id});
+	this.type = ZmOrganizer.SEARCH;
+	if (query) {
+		this.search = new ZmSearch(tree._appCtxt, {query: query, types: types, sortBy: sortBy, searchId: id});
 	}
-};
-
-ZmSearchFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
-
-ZmSearchFolder.create =
-function(appCtxt, params) {
-	var soapDoc = AjxSoapDoc.create("CreateSearchFolderRequest", "urn:zimbraMail");
-	var searchNode = soapDoc.set("search");
-	var name = AjxEnv.isSafari && !AjxEnv.isSafariNightly
-		? AjxStringUtil.xmlEncode(params.name) : params.name;
-	searchNode.setAttribute("name", name);
-	searchNode.setAttribute("query", params.search.query);
-	if (params.search.types) {
-		var a = params.search.types.getArray();
-		if (a.length) {
-			var typeStr = [];
-			for (var i = 0; i < a.length; i++) {
-				typeStr.push(ZmSearch.TYPE[a[i]]);
-			}
-			searchNode.setAttribute("types", typeStr.join(","));
-		}
-	}
-	if (params.search.sortBy) {
-		searchNode.setAttribute("sortBy", ZmSearch.SORT_BY[params.search.sortBy]);
-	}
-	searchNode.setAttribute("l", params.parent.id);
-	var errorCallback = new AjxCallback(null, ZmOrganizer._handleErrorCreate, [appCtxt, params]);
-	var appController = appCtxt.getAppController();
-	appController.sendRequest({soapDoc:soapDoc, asyncMode:true, errorCallback:errorCallback});
 };
 
 ZmSearchFolder.prototype = new ZmFolder;
 ZmSearchFolder.prototype.constructor = ZmSearchFolder;
 
-ZmSearchFolder.prototype.toString =
-function() {
-	return "ZmSearchFolder";
+ZmSearchFolder.ID_ROOT = ZmOrganizer.ID_ROOT;
+
+ZmSearchFolder.createFromJs =
+function(parent, obj, tree) {
+	if (!(obj && obj.id)) return;
+	
+	// check ID - can't be lower than root, or in tag range
+	if (obj.id < ZmFolder.ID_ROOT || (obj.id > ZmFolder.LAST_SYSTEM_ID &&
+		obj.id < ZmOrganizer.FIRST_USER_ID[ZmOrganizer.SEARCH])) return;
+
+	var types = null;
+	if (obj.types) {
+		var t = obj.types.split(",");
+		types = [];
+		for (var i = 0; i < t.length; i++)
+			types.push(ZmSearch.TYPE_MAP[t[i]]);
+	}
+	var sortBy = obj.sortBy ? ZmSearch.SORT_BY_MAP[obj.sortBy] : null;
+	var folder = new ZmSearchFolder(obj.id, obj.name, parent, tree, obj.u, obj.query, types, sortBy);
+
+	// a search may only contain other searches
+	if (obj.search && obj.search.length) {
+		for (var i = 0; i < obj.search.length; i++) {
+			var childFolder = ZmSearchFolder.createFromJs(folder, obj.search[i], tree);
+			if (childFolder)
+				folder.children.add(childFolder);
+		}
+	}
+
+	return folder;
 };
 
 ZmSearchFolder.prototype.getName = 
 function(showUnread, maxLength, noMarkup) {
-	if (this.nId == ZmOrganizer.ID_ROOT) {
+	if (this.id == ZmOrganizer.ID_ROOT) {
 		return ZmMsg.searches;
 	} else {
 		return ZmOrganizer.prototype.getName.call(this, showUnread, maxLength, noMarkup);
@@ -81,10 +79,8 @@ function(showUnread, maxLength, noMarkup) {
 
 ZmSearchFolder.prototype.getIcon = 
 function() {
-	return (this.nId == ZmOrganizer.ID_ROOT) ? null : "SearchFolder";
+	return (this.id == ZmOrganizer.ID_ROOT) ? null : "SearchFolder";
 };
-
-ZmSearchFolder.prototype.getToolTip = function() {};
 
 /*
 * Returns the organizer with the given ID. Looks in this organizer's tree first.
@@ -95,11 +91,12 @@ ZmSearchFolder.prototype.getToolTip = function() {};
 */
 ZmSearchFolder.prototype._getNewParent =
 function(parentId) {
-	var parent = this._appCtxt.getById(parentId);
+	var parent = this.tree.getById(parentId);
 	if (parent) return parent;
 	
 	var type = (this.parent.type == ZmOrganizer.SEARCH) ? ZmOrganizer.FOLDER : ZmOrganizer.SEARCH;
-	return this._appCtxt.getById(parentId); 
+	var tree = this.tree._appCtxt.getTree(type);
+	return tree.getById(parentId); 
 };
 
 /**
@@ -119,6 +116,26 @@ function(types) {
 	var childSearchTypes = this.search.types;
 	for (var j = 0; j < childSearchTypes.length; j++) {
 		if (types && types[childSearchTypes[j]]) {
+			return true;
+		}
+	}
+	return false;
+};
+
+/*
+ * Returns true if this search folder has a search folder for any of
+ * the given types anywhere in or under it.
+ *
+ * @param types		[hash]		a hash of search types (item type IDs)
+ */
+ZmSearchFolder.prototype._hasType =
+function(types) {
+	if (this._typeMatch(types)) return true;
+	
+	var a = this.children.getArray();
+	var sz = this.children.size();
+	for (var i = 0; i < sz; i++) {
+		if (a[i]._typeMatch(types)) {
 			return true;
 		}
 	}

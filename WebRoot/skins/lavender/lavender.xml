@@ -1,0 +1,13 @@
+<skin>
+	<substitutions>
+		<file>../_base/base/base_subs.txt</file>
+		<file>../_base/light/light_subs.txt</file>
+		<file>lavender_subs.txt</file>
+	</substitutions>
+	<css>
+		<file>../_base/base/base.css</file>
+	</css>
+	<html>
+		<file>../_base/base/base.html</file>
+	</html>
+</skin>

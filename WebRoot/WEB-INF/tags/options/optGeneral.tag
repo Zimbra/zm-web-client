@@ -33,11 +33,11 @@
         <c:if test="${mailbox.features.skinChange}">
             <tr>
                 <td nowrap align=right>
-                    <label for="skinPref"><fmt:message key="SKIN_uiTheme"/>
-                    :</label>
+                    <fmt:message key="SKIN_uiTheme"/>
+                    :
                 </td>
                 <td>
-                    <select name="zimbraPrefSkin" id="skinPref">
+                    <select name="zimbraPrefSkin">
                         <c:set var="skin" value="${mailbox.prefs.skin}"/>
                         <c:forEach var="name" items="${mailbox.availableSkins}">
                             <fmt:message var="displayName" key="SKIN_${name}"/>
@@ -50,23 +50,5 @@
             </tr>
             <app:optSeparator/>
         </c:if>
-              <tr>
-                <td nowrap align=right>
-                    <label for="timeZone"><fmt:message key="timeZonePref"/>
-                    :</label>
-                </td>
-                <td>
-                    <select name="zimbraPrefTimeZoneId" id="timeZone">
-                        <c:set var="tzpref" value="${mailbox.prefs.timeZoneWindowsId}"/>
-                        <zm:forEachTimeZone var="tz">
-                            <%--<fmt:message var="displayName" key="SKIN_${name}"/>--%>
-                            <option
-                                    <c:if test="${tzpref eq tz.id}">selected</c:if>
-                                    value="${fn:escapeXml(tz.id)}">${fn:escapeXml(tz.display)}</option>
-                        </zm:forEachTimeZone>
-                    </select>
-                </td>
-            </tr>
-            <app:optSeparator/>
     </tbody>
 </table>

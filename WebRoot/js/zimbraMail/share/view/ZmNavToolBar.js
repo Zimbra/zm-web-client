@@ -36,15 +36,12 @@
 * @param hasText		true if this toolbar includes text in the middle
 */
 
-ZmNavToolBar = function(parent, posStyle, className, arrowStyle, hasText) {
+function ZmNavToolBar(parent, posStyle, className, arrowStyle, hasText) {
 
 	className = className || "ZmNavToolBar";
-	var buttons = this._getButtons(arrowStyle, hasText);
-	var params = {parent:parent, buttons:buttons, posStyle:posStyle, className:className};
-	ZmButtonToolBar.call(this, params);
-	if (hasText) {
+	ZmButtonToolBar.call(this, parent, this._getButtons(arrowStyle, hasText), null, posStyle, className);
+	if (hasText)
 		this._textButton = this.getButton(ZmOperation.TEXT);
-	}
 };
 
 ZmNavToolBar.SINGLE_ARROWS	= 1;

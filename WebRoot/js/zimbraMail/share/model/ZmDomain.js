@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDomain = function(name, parent, headerFlags) {
+function ZmDomain(name, parent, headerFlags) {
 	
 	ZmModel.call(this);
 

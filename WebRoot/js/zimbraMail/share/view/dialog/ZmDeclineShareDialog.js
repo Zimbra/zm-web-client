@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDeclineShareDialog = function(appCtxt, parent, className) {
+function ZmDeclineShareDialog(appCtxt, parent, className) {
 	className = className || "ZmDeclineShareDialog";
 	var title = ZmMsg.declineShare;
 	var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON ];
@@ -55,7 +55,7 @@ ZmDeclineShareDialog.prototype.constructor = ZmDeclineShareDialog;
 // Public methods
 
 ZmDeclineShareDialog.prototype.popup =
-function(share) {
+function(share, loc) {
 	this._share = share;
 	var params = [ share.grantee.name, share.link.name ];
 	var message = this._formatter.format(params);
@@ -64,7 +64,7 @@ function(share) {
 	this._reply.setReplyType(ZmShareReply.STANDARD);
 	this._reply.setReplyNote("");
 	
-	DwtDialog.prototype.popup.call(this);
+	DwtDialog.prototype.popup.call(this, loc);
 };
 
 ZmDeclineShareDialog.prototype.setDeclineListener =

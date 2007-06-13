@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmObjectHandler = function(appCtxt, typeName, className) {
+function ZmObjectHandler(appCtxt, typeName, className) {
 	if (arguments.length > 0) {
 		this._appCtxt = appCtxt;
 		this.init(typeName, className);

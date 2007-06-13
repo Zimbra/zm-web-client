@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDataSourceCollection = function(appCtxt) {
+function ZmDataSourceCollection(appCtxt) {
     ZmModel.call(this, ZmEvent.S_DATA_SOURCE);
     this._appCtxt = appCtxt;
     this._itemMap = {};

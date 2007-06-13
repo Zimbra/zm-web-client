@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmLoginDialog = function(parent, appCtxt, className) {
+function ZmLoginDialog(parent, appCtxt, className) { 
 	
     className = className || "ZmLoginDialog";
     DwtComposite.call(this, parent, className, DwtControl.ABSOLUTE_STYLE);

@@ -35,7 +35,7 @@
 * @param name	[string]*	rule name
 * @param active	[boolean]*	true if the rule is enabled
 */
-ZmFilterRule = function(name, active) {
+function ZmFilterRule(name, active) {
 	this.name = name;
 	this.groupOp = ZmFilterRule.GROUP_ANY;
 	this.actions = [];
@@ -312,8 +312,6 @@ ZmFilterRule.A_LABEL[ZmFilterRule.A_FORWARD]	= ZmMsg.forwardTo;
 * param			[constant]		type of input widget for the action's argument
 * pOptions		[hash]*			name/value pairs for args
 * precondition	[constant]*		setting that must be enabled for action to be available
-* 								(preconditions are set by ZmFilterRulesController, after
-* 								 settings are available)
 */
 ZmFilterRule.ACTIONS = {};
 ZmFilterRule.ACTIONS[ZmFilterRule.A_KEEP] = {
@@ -330,20 +328,16 @@ ZmFilterRule.ACTIONS[ZmFilterRule.A_FLAG] = {
 		pOptions:		[{label: ZmMsg.asRead, value: "read"}, {label: ZmMsg.asFlagged, value: "flagged"}]
 };
 ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG] = {
-		param:			ZmFilterRule.TYPE_TAG_PICKER
+		param:			ZmFilterRule.TYPE_TAG_PICKER,
+		precondition:	ZmSetting.TAGGING_ENABLED
 };
 ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD] = {
-		param:			ZmFilterRule.TYPE_INPUT
+		param:			ZmFilterRule.TYPE_INPUT,
+		precondition:	ZmSetting.MAIL_FORWARDING_ENABLED
 };
 
 ZmFilterRule.ACTIONS_LIST = [ZmFilterRule.A_KEEP, ZmFilterRule.A_DISCARD, ZmFilterRule.A_FOLDER,
 							 ZmFilterRule.A_TAG, ZmFilterRule.A_FLAG, ZmFilterRule.A_FORWARD];
-
-ZmFilterRule._setPreconditions =
-function() {
-	ZmFilterRule.ACTIONS[ZmFilterRule.A_TAG].precondition = ZmSetting.TAGGING_ENABLED;
-	ZmFilterRule.ACTIONS[ZmFilterRule.A_FORWARD].precondition = ZmSetting.MAIL_FORWARDING_ENABLED;
-};
 
 ZmFilterRule.prototype.toString =
 function() {
@@ -484,6 +478,11 @@ function(appCtxt) {
 	return false;
 };
 
+// placeholder rule used for adding a new rule
+ZmFilterRule.DUMMY_RULE = new ZmFilterRule;
+ZmFilterRule.DUMMY_RULE.conditions = [new ZmCondition(ZmFilterRule.C_SUBJECT, ":contains")];
+ZmFilterRule.DUMMY_RULE.actions = [new ZmAction(ZmFilterRule.A_KEEP)];
+
 /**
 * Creates a ZmCondition.
 * @constructor
@@ -496,7 +495,7 @@ function(appCtxt) {
 * @param subjectModifier	[string]*	further detail for the subject
 * @param valueModifier		[string]*	further detail for the value
 */
-ZmCondition = function(subject, comparator, value, subjectModifier, valueModifier) {
+function ZmCondition(subject, comparator, value, subjectModifier, valueModifier) {
 	this.subject = subject;
 	this.comparator = comparator;
 	this.value = value;
@@ -513,12 +512,7 @@ ZmCondition = function(subject, comparator, value, subjectModifier, valueModifie
 * @param name	[constant]	action name
 * @param arg	[string]*	optional argument
 */
-ZmAction = function(name, arg) {
+function ZmAction(name, arg) {
 	this.name = name;
 	this.arg = arg;
 };
-
-// placeholder rule used for adding a new rule
-ZmFilterRule.DUMMY_RULE = new ZmFilterRule;
-ZmFilterRule.DUMMY_RULE.conditions = [new ZmCondition(ZmFilterRule.C_SUBJECT, ":contains")];
-ZmFilterRule.DUMMY_RULE.actions = [new ZmAction(ZmFilterRule.A_KEEP)];

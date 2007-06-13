@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmDomainTree = function(appCtxt) {
+function ZmDomainTree(appCtxt) {
 	ZmModel.call(this);
 	this._appCtxt = appCtxt;
 };

@@ -23,23 +23,18 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmZimletTreeController = function(appCtxt, type, dropTgt) {
+function ZmZimletTreeController(appCtxt, type, dropTgt) {
 	if (arguments.length === 0) {return;}
-
 	type = type ? type : ZmOrganizer.ZIMLET;
-	if (!dropTgt) {
-		var list = ["ZmFolder"];
-		if (appCtxt.get(ZmSetting.MAIL_ENABLED)) {
-			list.push("ZmMailMsg");
-			list.push("ZmConv");
-		}
-		if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-			list.push("ZmContact");
-		}
-		dropTgt = new DwtDropTarget(list);
+	var list =[ZmFolder, ZmConv, ZmMailMsg];
+	if (appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
+		list.push(ZmContact);
 	}
+	if (appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+		list.push(ZmAppt);
+	}
+	dropTgt = dropTgt ? dropTgt : new DwtDropTarget(list);
 	ZmTreeController.call(this, appCtxt, type, dropTgt);
-
 	this._eventMgrs = {};
 }
 
@@ -71,14 +66,18 @@ function(overviewId, listener) {
 };
 
 // Protected methods
-ZmZimletTreeController.prototype._postSetup =
-function(overviewId) {
-	var treeView = this.getTreeView(overviewId);
-	var root = treeView.getItems()[0];
-	if (root) {
-		var items = root.getItems();
-		for (var i = 0; i < items.length; i++) {
-			this.setToolTipText(items[i]);
+ZmZimletTreeController.prototype.show =
+function(overviewId, showUnread, omit, forceCreate, app, hideEmpty) {
+	var firstTime = !this._treeView[overviewId];
+	ZmTreeController.prototype.show.call(this, overviewId, showUnread, omit, forceCreate, app, hideEmpty);
+	if (firstTime) {
+		var treeView = this.getTreeView(overviewId);
+		var root = treeView.getItems()[0];
+		if (root) {
+			var items = root.getItems();
+			for (var i = 0; i < items.length; i++) {
+				this.setToolTipText(items[i]);
+			}
 		}
 	}
 };
@@ -92,8 +91,8 @@ function (item) {
 // ZmTreeController removes existing DwtTreeItem object then add a new one on ZmEvent.E_MODIFY,
 // wiping out any properties set on the object. 
 ZmZimletTreeController.prototype._changeListener =
-function(ev, treeView, overviewId) {
-	ZmTreeController.prototype._changeListener.call(this, ev, treeView, overviewId);
+function(ev, treeView) {
+	ZmTreeController.prototype._changeListener.call(this, ev, treeView);
 	var organizers = ev.getDetail("organizers");
 	if (!organizers && ev.source)
 		organizers = [ev.source];
@@ -104,11 +103,6 @@ function(ev, treeView, overviewId) {
 		var item = treeView.getTreeItemById(id);
 		this.setToolTipText(item);
 	}
-};
-
-ZmZimletTreeController.prototype._getDataTree =
-function() {
-	return this._appCtxt.getZimletTree();
 };
 
 // Returns a list of desired header action menu operations
@@ -164,10 +158,6 @@ ZmZimletTreeController.prototype._itemDblClicked = function(z) {
 // Handles a drop event
 ZmZimletTreeController.prototype._dropListener = function(ev) {
 	var z = ev.targetControl.getData(Dwt.KEY_OBJECT);
-	if (!z) {
-		ev.doIt = false;
-		return;
-	}
 	if (z.id == ZmZimlet.ID_ZIMLET) {
 		ev.doIt = false;
 		return;

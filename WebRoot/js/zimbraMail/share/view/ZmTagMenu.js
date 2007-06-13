@@ -37,7 +37,7 @@
 *
 * @param parent		[DwtControl]	parent widget
 */
-ZmTagMenu = function(parent) {
+function ZmTagMenu(parent) {
 
 	// create a menu (though we don't put anything in it yet) so that parent widget shows it has one
 	ZmPopupMenu.call(this, parent);

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmNotebookPageController = function(appCtxt, container, app) {
+function ZmNotebookPageController(appCtxt, container, app) {
 	ZmNotebookController.call(this, appCtxt, container, app);
 
 	this._listeners[ZmOperation.PAGE_BACK] = new AjxListener(this, this._pageBackListener);
@@ -84,22 +84,9 @@ function(actionCode) {
 
 ZmNotebookPageController.prototype.gotoPage = function(pageRef) {
 	var cache = this._app.getNotebookCache();
-	//var page = cache.getPageByName(pageRef.folderId, pageRef.name);
-	var params = null;//ctry
-	if(pageRef.name=="_Index"){
-		params = {id:pageRef.folderId};
-	}else{
-		params={folderId:pageRef.folderId,name:pageRef.name};
-	}
-	var page = cache.getItemInfo(params);
+	var page = cache.getPageByName(pageRef.folderId, pageRef.name);
 	this._object = page;
 	this._setViewContents(this._currentView);
-	this._resetOperations(this._toolbar[this._currentView]);
-};
-
-ZmNotebookPageController.prototype.setPage = function(page) {
-	var cache = this._app.getNotebookCache();
-	this._object = page;
 	this._resetOperations(this._toolbar[this._currentView]);
 };
 
@@ -152,7 +139,6 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 		return;
 	}
 
-	if(!this._currentView._USE_IFRAME){		
 	// update history
 	this._folderId = null;
 	if (this._object) {
@@ -172,7 +158,6 @@ ZmNotebookPageController.prototype.show = function(pageOrFolderId, force, fromSe
 	this._list = new ZmList(ZmItem.PAGE, this._appCtxt);
 	if (this._object) {
 		this._list.add(this._object);
-	}
 	}
 
 	// show this page
@@ -233,13 +218,11 @@ ZmNotebookPageController.prototype._enableNaviButtons = function() {
 // listeners
 
 ZmNotebookPageController.prototype._pageBackListener = function(event) {
-	this.historyLoading = true;
 	if (this._place > 0) {
 		this.gotoPage(this._history[--this._place]);
 	}
 };
 ZmNotebookPageController.prototype._pageForwardListener = function(event) {
-	this.historyLoading = true;
 	if (this._place + 1 < this._history.length) {
 		this.gotoPage(this._history[++this._place]);
 	}
@@ -249,11 +232,7 @@ ZmNotebookPageController.prototype._dropListener =
 function(ev) {
 	// only tags can be dropped on us
 	if (ev.action == DwtDropEvent.DRAG_ENTER) {
-		if(this._object && (this._object.isShared() || this._object.isIndex() )){
-		ev.doIt = false;	
-		}else{
 		ev.doIt = this._dropTgt.isValidTarget(ev.srcData);
-		}
 	} else if (ev.action == DwtDropEvent.DRAG_DROP) {
 		var tag = ev.srcData;
 		this._doTag([this._object], tag, true);
@@ -264,9 +243,7 @@ function(ev) {
 
 ZmNotebookPageController.prototype._showIndex = function(folderId) {
 	var cache = this._app.getNotebookCache();
-	var params = {id:folderId};	
-//	var index = cache.getPageByName(folderId, ZmNotebook.PAGE_INDEX, true);
-	var index = cache.getItemInfo(params);
+	var index = cache.getPageByName(folderId, ZmNotebook.PAGE_INDEX, true);
 	this.show(index);
 };
 
@@ -277,7 +254,7 @@ ZmNotebookPageController.prototype._showIndex = function(folderId) {
 ZmNotebookPageController.__setButtonToolTip = function(appCtxt, button, pageRef, defaultValue) {
 	var text = pageRef ? pageRef.name : defaultValue;
 	if (text == ZmNotebook.PAGE_INDEX) {
-		var notebook = appCtxt.getById(pageRef.folderId);
+		var notebook = appCtxt.getTree(ZmOrganizer.NOTEBOOK).getById(pageRef.folderId);
 		if (notebook) {
 			text = notebook.getName();
 		}
@@ -287,51 +264,4 @@ ZmNotebookPageController.__setButtonToolTip = function(appCtxt, button, pageRef,
 		}
 	}
 	button.setToolTipContent(text);
-};
-
-ZmNotebookPageController.prototype.updateHistory = function() {
-	
-	this._folderId = null;
-	
-	if (this._object) {
-		this._folderId = this._object.folderId;
-		for (var i = this._place + 1; i < this._history.length; i++) {
-			this._history[i] = null;
-		}
-		this._history.length = ++this._place;
-		var pageRef = { folderId: this._object.folderId, name: this._object.name };
-		this._history[this._place] = pageRef;
-	}
-	this._enableNaviButtons();
-
-	// REVISIT: Need to do proper list management! For now we fake
-	//          a list of a single item so that operations like
-	//          tagging and delete work.
-	this._list = new ZmList(ZmItem.PAGE, this._appCtxt);
-	if (this._object) {
-		this._list.add(this._object);
-	}
-	
-};
-
-ZmNotebookPageController.prototype.refreshCurrentPage = function(){
-	if(this._object && this._listView[ZmController.NOTEBOOK_PAGE_VIEW]){
-	this._listView[ZmController.NOTEBOOK_PAGE_VIEW].refresh();
-	}
-};
-
-ZmNotebookPageController.prototype.isIframeEnabled = function(){
-	if(this._listView[ZmController.NOTEBOOK_PAGE_VIEW]){
-		return this._listView[ZmController.NOTEBOOK_PAGE_VIEW]._USE_IFRAME;
-	}else{
-		return false;	
-	}
-};
-
-ZmNotebookPageController.prototype._refreshListener = function(event) {
-	if(this.isIframeEnabled()){
-		this.refreshCurrentPage();
-	}else{	
-		ZmNotebookController.prototype._refreshListener.call(this, event);		
-	}
 };

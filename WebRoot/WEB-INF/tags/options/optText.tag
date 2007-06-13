@@ -8,7 +8,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <tr>
-    <td width=30% nowrap align=right><label for="${pref}"><fmt:message key="${label}"/> :</label></td>
-    <td><input id="${pref}" size="${size}" type="text" name='${pref}' autocomplete='off' value="${fn:escapeXml(value)}"></td>
+    <td width=30% nowrap align=right><fmt:message key="${label}"/> :</td>
+    <td><input size="${size}" type="text" name='${pref}' autocomplete='off' value="${fn:escapeXml(value)}"></td>
 </tr>
 

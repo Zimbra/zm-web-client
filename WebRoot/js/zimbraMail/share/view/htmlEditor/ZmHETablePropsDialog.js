@@ -28,7 +28,7 @@
  *
  * @author Ross Dargahi
  */
-ZmHETablePropsDialog = function(parent) {
+function ZmHETablePropsDialog(parent) {
 	if (arguments.length == 0) return;
 
 	DwtDialog.call(this, parent, null, ZmMsg.insertTable, [DwtDialog.OK_BUTTON, DwtDialog.CANCEL_BUTTON]);

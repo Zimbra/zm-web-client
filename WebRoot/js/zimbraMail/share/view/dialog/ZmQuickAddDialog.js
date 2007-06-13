@@ -42,7 +42,7 @@
 * @param extraButtons 		any extra buttons to be added in addition to the standard ones
 * @param loc				where to popup (optional)
 */
-ZmQuickAddDialog = function(parent, title, standardButtons, extraButtons, loc) {
+function ZmQuickAddDialog(parent, title, standardButtons, extraButtons, loc) {
 	if (arguments.length == 0) return;
 
 	DwtDialog.call(this, parent, null, title, standardButtons, extraButtons, null, null, loc);
@@ -60,11 +60,21 @@ function() {
 // Data
 //
 
-ZmQuickAddDialog.prototype.TEMPLATE = "ajax.dwt.templates.Widgets#DwtSemiModalDialog";
+ZmQuickAddDialog.prototype._borderStyle = "DwtSemiModalDialog";
 
 //
 // Public methods
 //
+
+ZmQuickAddDialog.prototype.setContent =
+function(text) {
+	this._contentDiv.innerHTML = text;
+};
+
+ZmQuickAddDialog.prototype.setTitle =
+function(title) {
+	this._titleCell.innerHTML = title;
+};
 
 ZmQuickAddDialog.prototype.addSelectionListener = 
 function(buttonId, listener) {

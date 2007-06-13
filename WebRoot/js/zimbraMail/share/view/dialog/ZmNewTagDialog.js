@@ -23,8 +23,8 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmNewTagDialog = function(parent, className) {
-	ZmDialog.call(this, {parent:parent, className:className, title:ZmMsg.createNewTag});
+function ZmNewTagDialog(parent, msgDialog, className) {
+	ZmDialog.call(this, parent, msgDialog, className, ZmMsg.createNewTag);
 
 	this._setNameField(this._nameFieldId);
 	this._setTagColorMenu(this._tagColorButtonCellId);
@@ -54,13 +54,13 @@ function(ev) {
 
 ZmNewTagDialog.prototype._setTagColorMenu =
 function(fieldId) {
-    this._colorButton = new DwtButton(this);
+    this._colorButton = new DwtButton(this, null, "DwtSelect");
     this._colorButton.setHtmlElementId("ZmTagColorMenu");
     this._colorButton.noMenuBar = true;
  	document.getElementById(fieldId).appendChild(this._colorButton.getHtmlElement());
 	ZmOperation.addColorMenu(this._colorButton, this);
     this._tagColorListener = new AjxListener(this, this._colorListener);
-    var color = ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
+    var color = ZmTag.DEFAULT_COLOR;
  	this._setColorButton(color, ZmOrganizer.COLOR_TEXT[color], ZmTag.COLOR_ICON[color]);
 	var menu = this._colorButton.getMenu();
 	var items = menu.getItems();
@@ -101,12 +101,10 @@ function() {
 	var msg = ZmTag.checkName(name);
 
 	// make sure tag doesn't already exist
-	var tagTree = this._appCtxt.getTagTree();
-	if (!msg && tagTree && tagTree.getByName(name)) {
+	if (!msg && (this._appCtxt.getTree(ZmOrganizer.TAG).getByName(name)))
 		msg = ZmMsg.tagNameExists
-	}
 
-	return (msg ? this._showError(msg) : {name:name, color:this._colorButton.getData(ZmOperation.MENUITEM_ID)});
+	return (msg ? this._showError(msg) : [name, this._colorButton.getData(ZmOperation.MENUITEM_ID)]);
 };
 
 ZmNewTagDialog.prototype._enterListener =
@@ -118,25 +116,18 @@ function(ev) {
 
 ZmNewTagDialog.prototype._getNextColor =
 function() {
-	var colorUsed = {};
-	var tagTree = this._appCtxt.getTagTree();
-	if (!tagTree) {
-		return ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
-	}
-	var tags = tagTree.root.children.getArray();
-	if (!(tags && tags.length)) {
-		return ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
-	}
-	for (var i = 0; i < tags.length; i++) {
+	var colorUsed = new Object();
+	var tags = this._appCtxt.getTree(ZmOrganizer.TAG).root.children.getArray();
+	if (!(tags && tags.length))
+		return ZmTag.DEFAULT_COLOR;
+	for (var i = 0; i < tags.length; i++)
 		colorUsed[tags[i].color] = true;
-	}
 	for (var i = 0; i < ZmTagTree.COLOR_LIST.length; i++) {
 		var color = ZmTagTree.COLOR_LIST[i];
-		if (!colorUsed[color]) {
+		if (!colorUsed[color])
 			return color;
-		}
 	}
-	return ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
+	return ZmTag.DEFAULT_COLOR;
 };
 
 ZmNewTagDialog.prototype._getTabGroupMembers =

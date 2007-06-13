@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmNotebookFileView = function(parent, appCtxt, controller) {
+function ZmNotebookFileView(parent, appCtxt, controller) {
 	var className = null;
 	var posStyle = null;
 	var mode = null;

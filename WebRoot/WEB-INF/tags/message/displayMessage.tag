@@ -23,20 +23,12 @@
     </c:if>
 </c:set>
 
-<c:if test="${not empty message.invite and mailbox.features.calendar}">
-    <c:set var="appt" value="${message.invite.component}"/>
-    <c:set var="showInviteReply" value="${not zm:getFolder(pageContext, message.folderId).isInTrash and not empty message.invite.component}"/>
-</c:if>
-<c:set var="shareAccepted" value="${not empty message.share and zm:hasShareMountPoint(mailbox, message)}"/>
-<c:set var="showShareInfo" value="${not empty message.share and not shareAccepted}"/>
-<c:set var="needExtraCol" value="${showInviteReply or showShareInfo}"/>
-
 <fmt:message var="unknownSender" key="unknownSender"/>
 
 <c:set var="isPart" value="${!empty message.partName}"/>
 <table width=100% cellpadding=0 cellspacing=0 class=Msg>
     <tr>
-        <td class='MsgHdr' colspan=2>
+        <td class='MsgHdr'>
             <table width=100% cellpadding=0 cellspacing=0 border=0>
                 <tr>
                     <td>
@@ -133,7 +125,7 @@
                             <tr>
                                 <td nowrap align='right' class='MsgHdrSent'>
                                     <fmt:message var="dateFmt" key="formatDateSent"/>
-                                    <fmt:formatDate timeZone="${mailbox.prefs.timeZone}" pattern="${dateFmt}" value="${message.sentDate}"/>
+                                    <fmt:formatDate pattern="${dateFmt}" value="${message.sentDate}"/>
                                 </td>
                             </tr>
                             <c:if test="${message.hasTags or message.isFlagged}">
@@ -172,48 +164,23 @@
     </tr>
     <c:if test="${not hideops}">
     <tr>
-        <td class='MsgOps' colspan=2>
+        <td class='MsgOps'>
             <table width=100% >
                 <tr valign="middle">
                     <td nowrap align=left style='padding-left: 5px'>
                         <table cellspacing=4 cellpadding=0 class='Tb'>
                             <tr>
-                                <c:if test="${showInviteReply}">
-                                    <td style='padding: 0 2px 0 2px'>
-                                        <a <c:if test="${not isPart}">id="OPACCEPT"</c:if> href="${composeUrl}&op=accept">
-                                            <img src="<c:url value="/images/common/Check.gif"/>" alt=""/>
-                                            &nbsp;
-                                            <span><fmt:message key="replyAccept"/></span>
-                                        </a>
-                                    </td>
-                                    <td><div class='vertSep'></div></td>
-                                    <td style='padding: 0 2px 0 2px'>
-                                        <a <c:if test="${not isPart}">id="OPTENT"</c:if> href="${composeUrl}&op=tentative">
-                                            <img src="<c:url value="/images/common/QuestionMark.gif"/>" alt=""/>
-                                            &nbsp;
-                                            <span><fmt:message key="replyTentative"/></span>
-                                        </a>
-                                    </td>
-                                    <td><div class='vertSep'></div></td>
-                                    <td style='padding: 0 2px 0 2px'>
-                                        <a <c:if test="${not isPart}">id="OPDECLINE"</c:if> href="${composeUrl}&op=decline">
-                                            <img src="<c:url value="/images/common/Cancel.gif"/>" alt=""/>
-                                            &nbsp;
-                                            <span><fmt:message key="replyDecline"/></span>
-                                        </a>
-                                    </td>
-                                    <td><div class='vertSep'></div></td>
-                                </c:if>
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">id="OPREPLY"</c:if> href="${composeUrl}&op=reply">
+                                    <a <c:if test="${not isPart}">accesskey="1"</c:if> href="${composeUrl}&op=reply">
                                         <img src="<c:url value="/images/mail/Reply.gif"/>" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="reply"/></span>
                                     </a>
                                 </td>
                                 <td><div class='vertSep'></div></td>
+
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">id="OPREPLYALL"</c:if> href="${composeUrl}&op=replyAll">
+                                    <a <c:if test="${not isPart}">accesskey="2"</c:if> href="${composeUrl}&op=replyAll">
                                         <img src="<c:url value="/images/mail/ReplyAll.gif"/>" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="replyAll"/></span>
@@ -221,7 +188,7 @@
                                 </td>
                                 <td><div class='vertSep'></div></td>
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a <c:if test="${not isPart}">id="OPFORW"</c:if> href="${composeUrl}&op=forward">
+                                    <a <c:if test="${not isPart}">accesskey="3"</c:if> href="${composeUrl}&op=forward">
                                         <img src="<c:url value="/images/mail/Forward.gif"/>" alt=""/>
                                         &nbsp;
                                         <span><fmt:message key="forward"/></span>
@@ -240,7 +207,7 @@
                                             <c:param name="st" value="conversation"/>
                                             <c:param name="sq" value='conv:"${message.conversationId}"'/>
                                         </c:url>
-                                        <a id="OPSHOWCONV" href="${convUrl}">
+                                        <a accesskey='${not empty newWindowUrl ? '8' : '9'}' href="${convUrl}">
                                             <img src="<c:url value="/images/mail/Conversation.gif"/>" alt="<fmt:message key="showConversation"/>" title="<fmt:message key="showConversation"/>"/>
                                         </a>
                                     </td>
@@ -248,7 +215,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <c:if test="${not empty newWindowUrl}">
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a id="OPNEWWIN" target="_blank" href="${newWindowUrl}">
+                                    <a accesskey='9' target="_blank" href="${newWindowUrl}">
                                         <img src="<c:url value="/images/common/OpenInNewWindow.gif"/>" alt="<fmt:message key="newWindow"/>" title="<fmt:message key="newWindow"/>"/>
                                     </a>
                                 </td>
@@ -256,7 +223,7 @@
                                 <td><div class='vertSep'></div></td>
                                 <c:if test="${not isPart}">
                                 <td style='padding: 0 2px 0 2px'>
-                                    <a id="OPSHOWORIG" target="_blank" href="/service/home/~/?id=${message.id}&auth=co">
+                                    <a accesskey='0' target="_blank" href="/service/home/~/?id=${message.id}&auth=co">
                                         <img src="<c:url value="/images/mail/Message.gif"/>" alt="<fmt:message key="showOrig"/>" title="<fmt:message key="showOrig"/>"/>
                                     </a>
                                     </c:if>
@@ -271,26 +238,16 @@
     </c:if>
     <c:if test="${not empty externalImageUrl and (message.externalImageCount gt 0)}">
         <tr>
-            <td class='DisplayImages' colspan=2>
+            <td class='DisplayImages'>
                 <fmt:message key="externalImages"/>
-                &nbsp;<a id="DISPEXTIMG" href="${externalImageUrl}">
+                &nbsp;<a accesskey='x' href="${externalImageUrl}">
                 <fmt:message key="displayExternalImages"/>
             </a>
             </td>
         </tr>
     </c:if>
-    <c:if test="${shareAccepted}">
-        <tr>
-            <td width=1% class='DisplayImages'>
-                <app:img src="dwt/Information.gif"/>
-            </td>
-            <td class='DisplayImages' colspan=1>
-                <fmt:message key="shareAlreadyAccepted"/>
-            </td>
-        </tr>
-    </c:if>
     <tr>
-        <td id="iframeBody" class=MsgBody valign='top' colspan="${needExtraCol ? 1 : 2}">
+        <td class=MsgBody>
             <c:choose>
                 <c:when test="${body.isTextHtml}">
                     <c:url var="iframeUrl" value="/h/imessage">
@@ -298,44 +255,9 @@
                         <c:param name="part" value="${message.partName}"/>
                         <c:param name="xim" value="${param.xim}"/>
                     </c:url>
-                    <noscript>
-                        <iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" border="0" frameBorder="0" src="${iframeUrl}"></iframe>
-                    </noscript>
-                    <script type="text/javascript">
-                        (function() {
-                            var isKonqueror = /KHTML/.test(navigator.userAgent);
-                            var isIE = ( /MSIE/.test(navigator.userAgent) && !/(Opera|Gecko|KHTML)/.test(navigator.userAgent) );
-                            var iframe = document.createElement("iframe");
-                            iframe.style.width = "100%";
-                            iframe.style.height = "20px";
-                            iframe.scrolling = "no";
-                            iframe.marginWidth = 0;
-                            iframe.marginHeight = 0;
-                            iframe.border = 0;
-                            iframe.frameBorder = 0;
-                            iframe.style.border = "none";
-                            function resizeAndNullIframe() { resizeIframe(); iframe = null;};
-                            function resizeIframe() { if (iframe !=null) iframe.style.height = iframe.contentWindow.document.body.scrollHeight + "px";};
-                            document.getElementById("iframeBody").appendChild(iframe);
-                            var doc = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument;
-                            doc.open();
-                            doc.write("${zm:jsEncode(theBody)}");
-                            doc.close();
-                            try {
-                                if (YAHOO && keydownH && keypressH) {
-                                    YAHOO.util.Event.addListener(doc, "keydown", keydownH);
-                                    YAHOO.util.Event.addListener(doc, "keypress", keypressH);
-                                }
-                            } catch (error) {
-                                // ignore
-                            }
-                            //if (keydownH) doc.onkeydown = keydownH;
-                            //if (keypressH) doc.onkeypress = keypressH;
-                            setTimeout(resizeIframe, 10);
-                            function onIframeLoad() { if (isKonqueror) setTimeout(resizeAndNullIframe, 100); else if (!isIE || iframe.readyState == "complete") resizeAndNullIframe();};
-                            if (isIE) iframe.onreadystatechange = onIframeLoad; else iframe.onload = onIframeLoad;
-                        })();
-                    </script>
+                    <iframe width="100%" height="600px" src="${iframeUrl}" frameborder="0" scrolling="auto">
+
+                    </iframe>
                 </c:when>
                 <c:otherwise>
                     ${theBody}
@@ -343,28 +265,12 @@
             </c:choose>
             <c:if test="${not empty message.attachments}">
                 <hr/>
-                <a name="attachments${message.partName}"></a>
+                <a name="attachments${message.partName}"/>
                 <app:attachments mailbox="${mailbox}" message="${message}" composeUrl="${composeUrl}"/>
             </c:if>
                 <c:if test="${not empty param.debug}">
-                    <pre>${fn:escapeXml(message)}</pre>
+                    <pre>${message.mimeStructure}</pre>
                 </c:if>
         </td>
-        <c:if test="${needExtraCol}">
-            <c:choose>
-                <c:when test="${showInviteReply}">
-                    <td width=25% valign=top  class='ZhAppContent2'>
-                        <c:catch>
-                            <app:multiDay selectedId="${message.id}" date="${appt.start.calendar}" numdays="1" view="day" timezone="${mailbox.prefs.timeZone}"/>
-                        </c:catch>
-                    </td>
-                </c:when>
-                <c:when test="${showShareInfo}">
-                    <td width=45% valign=top  class='ZhAppContent2'>
-                        <app:shareInfo message="${message}"/>
-                    </td>
-                </c:when>
-            </c:choose>
-        </c:if>
     </tr>
 </table>

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmWiklet = function() {
+function ZmWiklet() {
 }
 
 // Constants
@@ -192,8 +192,7 @@ ZmWiklet.register(
 			var imgName = "Page";
 			var item = context.getItem();
 			if (item instanceof ZmNotebook) {
-				var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
-				imgName = (item.parent.id == rootId) ? "Notebook" : "Section";
+				imgName = item.parent.id == ZmOrganizer.ID_ROOT ? "Notebook" : "Section";
 			}
 			return ["<div class='Img",imgName," _pageIcon'></div>"].join("");
 		}
@@ -212,7 +211,7 @@ ZmWiklet.register(
 			a.push("<table border=0><tr>");
 			for (var i = 0; i < item.tags.length; i++) {
 				var tag = context.getTagById(item.tags[i]);
-				var color = tag ? tag.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.TAG];
+				var color = tag ? tag.color : ZmTag.DEFAULT_COLOR;
 				var tagImageInfo = ZmTag.COLOR_MINI_ICON[color];
 				a.push("<td><div class='Img",tagImageInfo,"'></div></td>");
 				a.push("<td style='white-space:nowrap'>",tag.name,"</td>");
@@ -633,8 +632,7 @@ ZmWiklet.register(
 			var notebook = context.getNotebookById(item.folderId || (item.parent && item.parent.id));
 
 			var trail = [];
-			var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
-			while (notebook.id != rootId) {
+			while (notebook.id != ZmOrganizer.ID_ROOT) {
 				trail.unshift(notebook);
 				notebook = context.getNotebookById(notebook.parent.id);
 			}

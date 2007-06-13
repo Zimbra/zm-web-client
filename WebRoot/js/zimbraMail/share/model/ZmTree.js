@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmTree = function(type, appCtxt) {
+function ZmTree(type, appCtxt) {
 
 	if (arguments.length == 0) return;
 	ZmModel.call(this, type);

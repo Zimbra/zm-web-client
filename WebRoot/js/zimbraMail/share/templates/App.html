@@ -2,7 +2,7 @@
 	<div id='${id}_inner'>
 		<table border=0 cellpadding=0 cellspacing=0>
 			<tr>
-				<td id="${id}_icon" nowrap class='<$= AjxImg.getClassForImage(data.innerClass) $>'></td>
+				<td nowrap class='<$= AjxImg.getClassForImage(data.innerClass) $>'></td>
 				<td>&nbsp;</td>
 				<td nowrap>${text}</td>
 			</tr>
@@ -21,7 +21,7 @@
 					<div id='${id}_middleBtn' class='ImgSkin_Tab_Normal__H skin_tab_text'>
 						<table border=0 cellpadding=0 cellspacing=0 width=100%>
 							<tr>
-								<td id="${id}_icon" width=1 nowrap class='skin_tab_text'>
+								<td width=1 nowrap class='skin_tab_text'>
 									<$= AjxImg.getImageHtml(data.innerClass) $>
 								</td>
 								<td width=1>&nbsp;</td>
@@ -41,63 +41,4 @@
 			</tr>
 		</table>
 	</div>
-</template>
-
-<template id="PrintView">
-	<html>
-		<head>
-			<title><$= ZmMsg.zimbraTitle $>: <$= data.username $></title>
-			<link rel='stylesheet' href='<$= data.appContextPath $>/css/msgview,zm,wiki.css?v=<$= data.cacheKillerVersion $>' media='screen'></link>
-			<$ if (data.onloadStr) { $>
-				<script language='javascript'>
-					function handleOnload() {
-						<$= data.onloadStr $>;
-					}
-				</script>
-				</head>
-				<body onload='handleOnload();'>
-			<$ } else { $>
-				</head>
-				<body>
-			<$ } $>
-
-		<table border=0 width=100%>
-			<tr>
-				<td class='ZmPrintView-company'>
-					<$= ZmMsg.zimbraTitle $> <$= ZmMsg.splashScreenAppName $>
-				</td>
-				<td class='ZmPrintView-username' align=right>
-					<$= data.username $>
-				</td>
-			</tr>
-		</table>
-		<hr>
-		<div style='padding:10px'>
-			<$= data.content $>
-		</div>
-	</body>
-	</html>
-</template>
-
-<template id="FolderTooltip">
-	<table cellpadding=0 cellspacing=0 border=0 width=100>
-		<tr>
-			<td valign='top'>
-				<$= data.itemText $>:
-			</td>
-			<td valign='top'>
-				<$= data.numTotal $>
-			</td>
-		</tr>
-<$ if (data.sizeTotal) { $>
-		<tr>
-			<td valign='top'>
-				<$= ZmMsg.size $>:
-			</td>
-			<td valign='top'>
-				<$= AjxUtil.formatSize(data.sizeTotal) $>
-			</td>
-		</tr>
-<$ } $>
-	</table>
 </template>

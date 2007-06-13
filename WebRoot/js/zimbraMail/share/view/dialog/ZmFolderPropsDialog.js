@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmFolderPropsDialog = function(appCtxt, parent, className) {
+function ZmFolderPropsDialog(appCtxt, parent, className) {
 	className = className || "ZmFolderPropsDialog";
 	var extraButtons;
 	if (appCtxt.get(ZmSetting.SHARING_ENABLED)) {
@@ -53,6 +53,12 @@ ZmFolderPropsDialog.prototype.constructor = ZmFolderPropsDialog;
 
 ZmFolderPropsDialog.ADD_SHARE_BUTTON = ++DwtDialog.LAST_BUTTON;
 
+ZmFolderPropsDialog.TYPE_CHOICES = new Object;
+ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.FOLDER] = ZmMsg.mailFolder;
+ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.CALENDAR] = ZmMsg.calendarFolder;
+ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.NOTEBOOK] = ZmMsg.notebookFolder;
+ZmFolderPropsDialog.TYPE_CHOICES[ZmOrganizer.ADDRBOOK] = ZmMsg.addressBookFolder;
+
 ZmFolderPropsDialog.SHARES_HEIGHT = "9em";
 
 // Public methods
@@ -63,19 +69,18 @@ function() {
 };
 
 ZmFolderPropsDialog.prototype.popup =
-function(organizer) {
+function(organizer, loc) {
 	this._organizer = organizer;
 	organizer.addChangeListener(this._folderChangeListener);
 	this._handleFolderChange();
 	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		this.setButtonVisible(ZmFolderPropsDialog.ADD_SHARE_BUTTON, !organizer.link);
 	}
-	DwtDialog.prototype.popup.call(this);
+	DwtDialog.prototype.popup.call(this, loc);
 
 	if (organizer.id != ZmCalendar.ID_CALENDAR &&
 		organizer.id != ZmOrganizer.ID_NOTEBOOK &&
 		organizer.id != ZmOrganizer.ID_ADDRBOOK &&
-		organizer.id != ZmOrganizer.ID_TASKS &&
 		organizer.id != ZmFolder.ID_AUTO_ADDED)
 	{
 		this._nameInputEl.focus();
@@ -118,7 +123,6 @@ function(event) {
 
 ZmFolderPropsDialog.prototype._handleResendShare =
 function(event) {
-	AjxDispatcher.require("Share");
 	var target = DwtUiEvent.getTarget(event);
 	var share = Dwt.getObjectFromElement(target);
 	var dialog = share._appCtxt.getFolderPropsDialog();
@@ -161,7 +165,6 @@ function(event) {
 	if (organizer.id != ZmCalendar.ID_CALENDAR &&
 		organizer.id != ZmOrganizer.ID_NOTEBOOK &&
 		organizer.id != ZmOrganizer.ID_ADDRBOOK &&
-		organizer.id != ZmOrganizer.ID_TASKS &&
 		organizer.id != ZmFolder.ID_AUTO_ADDED)
 	{
 		var name = this._nameInputEl.value;
@@ -175,8 +178,7 @@ function(event) {
 	callback.run(null);
 };
 
-ZmFolderPropsDialog.prototype._handleColor =
-function(response) {
+ZmFolderPropsDialog.prototype._handleColor = function(response) {
 	// change color
 	var callback = new AjxCallback(this, this._handleFreeBusy);
 	var organizer = this._organizer;
@@ -190,8 +192,7 @@ function(response) {
 	callback.run(response);
 };
 
-ZmFolderPropsDialog.prototype._handleFreeBusy =
-function(response) {
+ZmFolderPropsDialog.prototype._handleFreeBusy = function(response) {
 	// set free/busy
 	var callback = new AjxCallback(this, this.popdown);
 	var organizer = this._organizer;
@@ -207,13 +208,11 @@ function(response) {
 	callback.run(response);
 };
 
-ZmFolderPropsDialog.prototype._handleError =
-function(response) {
+ZmFolderPropsDialog.prototype._handleError = function(response) {
 	// TODO: Default handling?
 };
 
-ZmFolderPropsDialog.prototype._handleRenameError =
-function(response) {
+ZmFolderPropsDialog.prototype._handleRenameError = function(response) {
 	// REVISIT: This should be handled generically. But the server doesn't
 	//          send back the information necessary to generate the error
 	//          message.
@@ -235,10 +234,7 @@ function(event) {
 	var organizer;
 	if (event) {
 		var organizers = event.getDetail("organizers");
-		organizer = organizers ? organizers[0] : null;
-		if(organizer.id != this._organizer.id){
-			return;
-		}
+		var organizer = organizers ? organizers[0] : null;
 	} else {
 		organizer = this._organizer;
 	}
@@ -260,16 +256,14 @@ function(event) {
 		this._nameOutputEl.style.display = "none";
 	}
 	this._ownerEl.innerHTML = AjxStringUtil.htmlEncode(organizer.owner);
-	this._typeEl.innerHTML = ZmMsg[ZmOrganizer.FOLDER_KEY[organizer.type]] || ZmMsg.folder;
+	this._typeEl.innerHTML = ZmFolderPropsDialog.TYPE_CHOICES[organizer.type] || ZmMsg.folder;
 	this._urlEl.innerHTML = organizer.url || "";
 	this._color.setSelectedValue(organizer.color);
 	this._excludeFbCheckbox.checked = organizer.excludeFreeBusy;
 
 	var showPerm = organizer.link && organizer.shares && organizer.shares.length > 0;
-	if (showPerm) {
-		AjxDispatcher.require("Share");
+	if (showPerm)
 		this._permEl.innerHTML = ZmShare.getRoleActions(organizer.shares[0].link.perm);
-	}
 
 	if (this._appCtxt.get(ZmSetting.SHARING_ENABLED)) {
 		this._populateShares(organizer);
@@ -290,7 +284,6 @@ function(organizer) {
 	var shares = organizer.shares;
 	var visible = (!link && shares && shares.length > 0);
 	if (visible) {
-		AjxDispatcher.require("Share");
 		var table = document.createElement("TABLE");
 		table.border = 0;
 		table.cellSpacing = 0;

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmCalBaseView = function(parent, className, posStyle, controller, view) {
+function ZmCalBaseView(parent, className, posStyle, controller, view) {
 	if (arguments.length == 0) return;
 
 	DwtComposite.call(this, parent, className, posStyle, view);
@@ -47,7 +47,6 @@ ZmCalBaseView = function(parent, className, posStyle, controller, view) {
 	
 	this._controller = controller;
 	this.view = view;	
-	this._viewPrefix = ["V", "_", this.view, "_"].join("");
 	this._evtMgr = new AjxEventMgr();	 
 	this._selectedItems = new AjxVector();
 	this._selEv = new DwtSelectionEvent(true);
@@ -79,6 +78,18 @@ ZmCalBaseView.TYPE_DAY_HEADER = 6; // over date header for a day
 ZmCalBaseView.TYPE_MONTH_DAY = 7; // over a day in month view
 ZmCalBaseView.TYPE_ALL_DAY = 8; // all day div area in day view
 ZmCalBaseView.TYPE_SCHED_FREEBUSY = 9; // free/busy union
+
+ZmCalBaseView.COLORS = [];
+// these need to match CSS rules
+ZmCalBaseView.COLORS[ZmOrganizer.C_ORANGE]	= "Orange";
+ZmCalBaseView.COLORS[ZmOrganizer.C_BLUE]	= "Blue";
+ZmCalBaseView.COLORS[ZmOrganizer.C_CYAN]	= "Cyan";
+ZmCalBaseView.COLORS[ZmOrganizer.C_GREEN]	= "Green";
+ZmCalBaseView.COLORS[ZmOrganizer.C_PURPLE]	= "Purple";
+ZmCalBaseView.COLORS[ZmOrganizer.C_RED]	= "Red";
+ZmCalBaseView.COLORS[ZmOrganizer.C_YELLOW]	= "Yellow";
+ZmCalBaseView.COLORS[ZmOrganizer.C_PINK]	= "Pink";
+ZmCalBaseView.COLORS[ZmOrganizer.C_GRAY]	= "Gray";
 
 ZmCalBaseView.prototype.getController =
 function() {
@@ -136,7 +147,7 @@ function (item, element, type, optionalId) {
 
 ZmCalBaseView.prototype._getViewPrefix = 
 function() { 
-	return this._viewPrefix;
+	return "V" + this.view + "_";
 }
 
 ZmCalBaseView.prototype.deselectAll =
@@ -333,10 +344,6 @@ function (element){
 	}
 }
 
-// YUCK: ZmListView overloads b/c ZmListController thinks its always dealing w/ ZmListView's
-ZmCalBaseView.prototype.setSelectionCbox = function(obj, bContained) {};
-ZmCalBaseView.prototype.setSelectionHdrCbox = function(check) {};
-
 ZmCalBaseView.prototype.setSelection =
 function(item, skipNotify) {
 	var el = this._getElFromItem(item);
@@ -443,10 +450,10 @@ function(listener) {
 	this.removeListener(DwtEvent.DATE_RANGE, listener);
 }
 
+// override. 
 ZmCalBaseView.prototype.getRollField =
 function(isDouble)
 {
-	// override.
 	return 0;
 }
 
@@ -477,11 +484,13 @@ function(appt) {
 
 ZmCalBaseView.prototype._dayKey =
 function(date) {
-	return (date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate());
+	var key = date.getFullYear()+"/"+date.getMonth()+"/"+date.getDate();
+	return key;
 }
 
 ZmCalBaseView.prototype.setDate =
-function(date, duration, roll) {
+function(date, duration, roll)
+{
 	this._duration = duration;
 	this._date = new Date(date.getTime());
 	var d = new Date(date.getTime());
@@ -507,20 +516,24 @@ function(date, duration, roll) {
 	}
 }
 
+/*
+* override: responsible for updating any view-specific data when the date changes during a setDate call.
+*/
 ZmCalBaseView.prototype._dateUpdate =
-function(rangeChanged) {
-	// override: responsible for updating any view-specific data when the date
-	// changes during a setDate call.
+function(rangeChanged) 
+{
+
 }
 
+/*
+* override: called when an appointment is clicked to see if the view should de-select a selected time range. For example,
+* in day view if you have selected the 8:00 AM row and then click on an appt, the 8:00 AM row should be de-selected. If
+* you are in month view though and have a day selected, thne day should still be selected if the appt you clicked on is in 
+* the same day.
+*/
 ZmCalBaseView.prototype._apptSelected =
 function() {
-	// override: called when an appointment is clicked to see if the view should
-	// de-select a selected time range. For example, in day view if you have
-	// selected the 8:00 AM row and then click on an appt, the 8:00 AM row
-	// should be de-selected. If you are in month view though and have a day
-	// selected, thne day should still be selected if the appt you clicked on is
-	// in the same day.
+
 }
 
 // override
@@ -545,9 +558,11 @@ function(ao) {
 ZmCalBaseView.prototype.set = 
 function(list) {
 	this._preSet();
+//	ZmListView.prototype.set.call(this, list);
 	this._selectedItems.removeAll();
 	this._resetList();
 	this._list = list;	
+	var list = this.getList();
 	if (list) {
 		var size = list.size();
 		if (size != 0) {
@@ -580,29 +595,20 @@ function(appt) {}
 
 ZmCalBaseView.prototype._addApptIcons =
 function(appt, html, idx) {
+
 	html[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
 
-	if (appt.hasOtherAttendees()) {
-		html[idx++] = "<td>";
-		html[idx++] = AjxImg.getImageHtml("ApptMeeting");
-		html[idx++] = "</td>";
-	}
+	if (appt.hasOtherAttendees())
+		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptMeeting") + "</td>";
 
-	if (appt.isException) {
-		html[idx++] = "<td>";
-		html[idx++] = AjxImg.getImageHtml("ApptException")
-		html[idx++] = "</td>";
-	} else if (appt.isRecurring()) {
-		html[idx++] = "<td>";
-		html[idx++] = AjxImg.getImageHtml("ApptRecur");
-		html[idx++] = "</td>";
-	}
+	if (appt.isException())
+		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptException") + "</td>";
+	else if (appt.isRecurring())
+		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptRecur") + "</td>";
 
-	if (appt.alarm) {
-		html[idx++] = "<td>";
-		html[idx++] = AjxImg.getImageHtml("ApptReminder");
-		html[idx++] = "</td>";
-	}
+	if (appt.hasAlarm())
+		html[idx++] = "<td>" + AjxImg.getImageHtml("ApptReminder") + "</td>";
+	
 	html[idx++] = "</tr></table>";
 
 	return idx;

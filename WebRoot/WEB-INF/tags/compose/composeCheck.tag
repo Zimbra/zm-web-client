@@ -45,14 +45,7 @@
         <c:when test="${uploader.isSend}">
             <c:set var="needComposeView" value="${true}"/>
             <app:handleError>
-                <c:choose>
-                    <c:when test="${not empty uploader.compose.inviteReplyVerb}">
-                        <zm:sendInviteReply var="sendInviteReplyResult" compose="${uploader.compose}"/>
-                    </c:when>
-                    <c:otherwise>
-                        <zm:sendMessage var="sendResult" compose="${uploader.compose}"/>
-                    </c:otherwise>
-                </c:choose>
+                <zm:sendMessage var="sendResult" compose="${uploader.compose}"/>
                 <%-- TODO: check for errors, etc, set success message var and forward to prev page, or set error message and continue --%>
                 <app:status><fmt:message key="messageSent"/></app:status>
                 <c:if test="${!empty uploader.compose.draftId}">

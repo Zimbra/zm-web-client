@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmTimePicker = function(parent) {
+function ZmTimePicker(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.TIME);
 

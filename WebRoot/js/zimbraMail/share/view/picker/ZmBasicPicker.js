@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmBasicPicker = function(parent) {
+function ZmBasicPicker(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.BASIC);
 	

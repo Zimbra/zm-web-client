@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmTagTree = function(appCtxt) {
+function ZmTagTree(appCtxt) {
 
 	ZmTree.call(this, ZmOrganizer.TAG, appCtxt);
 };
@@ -55,7 +55,7 @@ function(tagsObj) {
 ZmTagTree.prototype.createRoot =
 function() {
 	if (!this.root)
-		this.root = new ZmTag({id: ZmTag.ID_ROOT, tree: this});
+		this.root = new ZmTag(ZmTag.ID_ROOT, null, null, null, this);
 };
 
 ZmTagTree.prototype.getByIndex =

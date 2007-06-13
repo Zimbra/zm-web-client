@@ -36,7 +36,7 @@
 * @param prefsApp		[ZmPreferencesApp]	the preferences app
 * @param prefsView		[ZmPreferencesView]	the preferences view
 */
-ZmIdentityController = function(appCtxt, container, prefsApp, prefsView) {
+function ZmIdentityController(appCtxt, container, prefsApp, prefsView) {
 	ZmPrefListController.call(this, appCtxt, container, prefsApp, prefsView);
 
 	this._listView = new ZmIdentityView(prefsView._parent, appCtxt, this);
@@ -49,7 +49,7 @@ ZmIdentityController.prototype.constructor = ZmIdentityController;
 ZmIdentityController.prototype._setup =
 function() {
 	ZmPrefListController.prototype._setup.call(this);
-	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
+	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
 	this._listView.getList().setSelection(identityCollection.defaultIdentity);
 	
 	if (!this._appCtxt.get(ZmSetting.IDENTITIES_ENABLED)) {
@@ -79,7 +79,7 @@ function() {
 	var list = listView.getList();
 	var identity = list.getSelection()[0];
 	if (identity) {
-		var identityCollection = AjxDispatcher.run("GetIdentityCollection");
+		var identityCollection = this._appCtxt.getIdentityCollection();
 		list.setSelection(identityCollection.defaultIdentity);
 		listView.remove(identity);
 		list.removeItem(identity);
@@ -88,7 +88,7 @@ function() {
 
 ZmIdentityController.prototype._getListData =
 function() {
-	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
+	var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
 	var result = new AjxVector();
 	var identities = identityCollection.getIdentities(true);
 	for (var i = 0, count = identities.length; i < count; i++) {

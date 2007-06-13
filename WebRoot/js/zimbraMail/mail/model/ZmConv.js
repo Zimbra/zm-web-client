@@ -34,14 +34,13 @@
 * @param id			[int]			unique ID
 * @param list		[ZmMailList]	list that contains this conversation
 */
-ZmConv = function(appCtxt, id, list) {
+function ZmConv(appCtxt, id, list) {
 
 	ZmMailItem.call(this, appCtxt, ZmItem.CONV, id, list);
 	
 	// conversations are always sorted by date desc initially
 	this._sortBy = ZmSearch.DATE_DESC;
 	this._listChangeListener = new AjxListener(this, this._msgListChangeListener);
-	this.folders = {};
 };
 
 ZmConv.prototype = new ZmMailItem;
@@ -61,39 +60,12 @@ function(node, args) {
 	return conv;
 };
 
-ZmConv.createFromDomMsg =
-function(node, args) {
-	var conv = new ZmConv(args.appCtxt, node.cid, args.list);
-	conv._loadFromDomMsg(node);
-	return conv;
-};
-
-ZmConv.createFromMsg =
-function(msg, args) {
-	var conv = new ZmConv(args.appCtxt, msg.cid, args.list);
-	conv._loadFromMsg(msg);
-	return conv;
-};
-
-/**
- * Ensures that the requested range of msgs is loaded, getting them from the server if needed.
- * Because the list of msgs returned by the server contains info about which msgs matched the
- * search, we need to be careful about caching those msgs.
- *
- * @param query				[string]		query used to retrieve this conv
- * @param sortBy			[constant]*		sort constraint
- * @param offset			[int]*			position of first msg to return
- * @param limit				[int]*			how many msgs to return
- * @param callback			[AjxCallback[*	callback to run with results
- * @param getFirstMsg		[boolean]*		if true, retrieve the content of the first msg
- *											in the conv as a side effect of the search
- */
 ZmConv.prototype.load =
-function(params) {
+function(searchString, sortBy, offset, limit, pagCallback, callback) {
 
-	var sortBy = params.sortBy ? params.sortBy : ZmSearch.DATE_DESC;
-	var offset = params.offset ? params.offset : 0;
-	var limit = params.limit ? params.limit : this.list._appCtxt.get(ZmSetting.PAGE_SIZE);
+	var sortBy = sortBy ? sortBy : ZmSearch.DATE_DESC;
+	var offset = offset ? offset : 0;
+	var limit = limit ? limit : this.list._appCtxt.get(ZmSetting.PAGE_SIZE);
 	
 	if (this.msgs) {
 		if (this._sortBy != sortBy) {
@@ -102,7 +74,7 @@ function(params) {
 			this._sortBy = sortBy;
 		} else {
 			var size = this.msgs.size();
-			if (size != this.numMsgs && !offset) {
+			if (size != this.numMsgs && pagCallback == null) {
 				// msgs list is out of sync
 				this.msgs.clear();
 			} else {
@@ -110,24 +82,24 @@ function(params) {
 				// i.e. new msgs that are in the hit list wont be marked hot this way!
 				// dont bother searching for more msgs if all have been loaded	
 				if (!this.msgs.hasMore() || offset + limit <= size)
-					if (params.callback) {
-						params.callback.run(new ZmCsfeResult(this.msgs));
-					}
+					if (callback) callback.run(new ZmCsfeResult(this.msgs));
 			}
 		}
 	}
 	
 	var types = AjxVector.fromArray([ZmItem.MSG]);
-	var searchParams = {query:params.query, types:types, sortBy:sortBy, offset:offset, limit:limit};
-	var search = new ZmSearch(this.list._appCtxt, searchParams);
-	var respCallback = new AjxCallback(this, this._handleResponseLoad, params);
-	search.getConv(this.id, respCallback, params.getFirstMsg);
+	var params = {query: searchString, types: types, sortBy: sortBy, offset: offset, limit: limit};
+	var search = new ZmSearch(this.list._appCtxt, params);
+	var respCallback = new AjxCallback(this, this._handleResponseLoad, [pagCallback, callback]);
+	search.getConv(this.id, respCallback);
 };
 
 ZmConv.prototype._handleResponseLoad =
-function(params, result) {
+function(pagCallback, callback, result) {
 	var results = result.getResponse();
-	if (!params.offset) {
+	if (pagCallback) {
+		pagCallback.run(result);	// user is paging...
+	} else {
 		this.msgs = results.getResults(ZmItem.MSG);
 		this.msgs.convId = this.id;
 		this.msgs.addChangeListener(this._listChangeListener);
@@ -139,13 +111,11 @@ function(params, result) {
 			this.tempMsg.clear();
 			this.tempMsg = null;
 		}
-		
-		if (params.callback) {
+
+		if (callback) {
 			result.set(this.msgs);
+			callback.run(result);
 		}
-	}
-	if (params.callback) {
-		params.callback.run(result);
 	}
 };
 
@@ -191,12 +161,11 @@ function() {
 */
 ZmConv.prototype.notifyModify =
 function(obj) {
-	var fields = {};
+	var fields = new Object();
 	// a conv's ID can change if it's a virtual conv becoming real
 	if (obj._newId != null) {
 		this._oldId = this.id;
 		this.id = obj._newId;
-		this._appCtxt.cacheSet(this.id, this);	// make sure we can get it from cache via new ID
 		if (this.msgs) {
 			this.msgs.convId = this.id;
 			var a = this.msgs.getArray();
@@ -212,23 +181,18 @@ function(obj) {
 	}
 	if (obj.n != null) {
 		this.numMsgs = obj.n;
-		fields[ZmItem.F_SIZE] = true;
+		fields[ZmItem.F_COUNT] = true;
 		this._notify(ZmEvent.E_MODIFY, {fields : fields});
 	}
 
-	ZmMailItem.prototype.notifyModify.apply(this, arguments);
-};
-
-ZmConv.prototype.getPrintHtml =
-function(preferHtml, callback) {
-	ZmConvListView.getPrintHtml(this, preferHtml, callback, this._appCtxt);
+	ZmMailItem.prototype.notifyModify.call(this, obj);
 };
 
 ZmConv.prototype._checkFlags = 
 function(flags) {
 	var msgs = this.msgs.getArray();
-	var convOn = {};
-	var msgsOn = {};
+	var convOn = new Object();
+	var msgsOn = new Object();
 	for (var i = 0; i < flags.length; i++) {
 		var flag = flags[i];
 		if (!(flag == ZmItem.FLAG_FLAGGED || flag == ZmItem.FLAG_UNREAD 
@@ -263,8 +227,8 @@ function(flags) {
 */
 ZmConv.prototype._checkTags = 
 function() {
-	newTags = {};
-	allTags = {};
+	newTags = new Object();
+	allTags = new Object();
 	
 	for (var tagId in this.tagHash)
 		allTags[tagId] = true;
@@ -310,10 +274,9 @@ function(folderId) {
 
 ZmConv.prototype.moveLocal =
 function(folderId) {
-	if (this.folders) {
+	if (this.folders)
 		delete this.folders;
-	}
-	this.folders = {};
+	this.folders = new Object();
 	this.folders[folderId] = true;
 };
 
@@ -355,8 +318,7 @@ function(offset, limit) {
 ZmConv.prototype.getFirstMsg = 
 function() {
 	// has this conv been loaded yet?
-	var msg;
-	if (this.msgs && this.msgs.size()) {
+	if (this.msgs) {
 		// then always return the first msg in the list
 		msg = this.msgs.getVector().get(0);
 	} else if (this.tempMsg) {
@@ -370,7 +332,8 @@ function() {
 			this.tempMsg = msg;
 	}
 	
-	msg.list = this.msgs || new ZmMailList(ZmItem.MSG, this._appCtxt);
+	// set the conv's list w/in msg
+	msg.list = this.list;
 	
 	return msg;
 };
@@ -398,44 +361,8 @@ function(convNode) {
 
 	// this is the ID of the msg that will be used if user tries to 
 	// reply/forward w/o having loaded the conv.
-	if (convNode.m) {
+	if (convNode.m)
 		this.msgOpId = convNode.m[0].id;
-	}
-	if (convNode._folders) {
-		var folders = convNode._folders.split(",");
-		for (var i = 0; i < folders.length; i++) {
-			this.folders[folders[i]] = true;
-		}
-	}
-};
-
-ZmConv.prototype._loadFromDomMsg =
-function(msgNode) {
-	this.date = msgNode.d;
-	this._parseFlags(msgNode.f);
-	this._parseTags(msgNode.t);	
-	if (msgNode.e) {
-		for (var i = 0; i < msgNode.e.length; i++) {
-			this._parseParticipantNode(msgNode.e[i]);
-		}
-	}
-	this.subject = msgNode.su;
-	this.fragment = msgNode.fr;
-	this.msgOpId = msgNode.id;
-};
-
-ZmConv.prototype._loadFromMsg =
-function(msg) {
-	this.date = msg.date;
-	this.isFlagged = msg.isFlagged;
-	this.isUnread = msg.isUnread;
-	for (var i = 0; i < msg.tags.length; i++) {
-		this.tags.push(msg.tags[i]);
-	}
-	this.participants = msg.participants.clone();
-	this.subject = msg.subject;
-	this.fragment = msg.fragment;
-	this.msgOpId = msg.id;
 };
 
 ZmConv.prototype._loadMsgs = 

@@ -96,22 +96,6 @@
 				<$= AjxTemplate.expand("zimbraMail.abook.templates.Contacts#AddEntry", {data:data, field:"email", val:data.email}) $>
 			<$	} $>
 		<$	} $>
-                <$ if (data.buddy) { $>
-                <tr>
-                  <td colspan="2">
-                    <table align="center">
-                      <tr>
-                        <td>
-                          <$= AjxImg.getImageHtml(data.buddy.getPresence().getIcon()) $>
-                        </td>
-                        <td>
-                          <$= data.buddy.getPresence().getShowText() $>
-                        </td>
-                      </tr>
-                    </table>
-                  </td>
-                </tr>
-                <$ } $>
 	</table>
 </template>
 
@@ -132,16 +116,4 @@
 		<$ } $>
 		</tr>
 	<$ } $>
-</template>
-
-<template id="OneContactPicker">
-  <table>
-    <tr>
-      <td>
-        <label for="${id}_entry"><$= ZmMsg.search $>:</label>
-      </td>
-      <td id="${id}_entryCell">
-      </td>
-    </tr>
-  </table>
 </template>

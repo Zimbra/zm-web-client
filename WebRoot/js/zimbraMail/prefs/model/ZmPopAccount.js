@@ -22,7 +22,7 @@
  * 
  * ***** END LICENSE BLOCK *****
  */
-ZmPopAccount = function(appCtxt, id, list) {
+function ZmPopAccount(appCtxt, id, list) {
     ZmItem.call(this, appCtxt, ZmItem.DATA_SOURCE, id, list);
     // NOTE: ZmItem sets folderId to 0, so reset it
     this.folderId = ZmPopAccount.prototype.folderId;

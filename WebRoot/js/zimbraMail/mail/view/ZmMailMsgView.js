@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
+function ZmMailMsgView(parent, className, posStyle, mode, controller) {
 	if (arguments.length == 0) return;
 	className = className ? className : "ZmMailMsgView";
 	DwtComposite.call(this, parent, className, posStyle);
@@ -47,7 +47,7 @@ ZmMailMsgView = function(parent, className, posStyle, mode, controller) {
 
 	if (!controller.isChildWindow) {
 		// Add change listener to taglist to track changes in tag color
-		this._tagList = this._appCtxt.getTagTree();
+		this._tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
 		this._tagList.addChangeListener(new AjxListener(this, this._tagChangeListener));
 		this.addListener(ZmMailMsgView._TAG_CLICK, new AjxListener(this, this._msgTagClicked));
 	}
@@ -117,37 +117,41 @@ function() {
 
 ZmMailMsgView.prototype.set =
 function(msg) {
-	if (this._msg && (this._msg.id == msg.id)) return;
+	if (this._msg == msg) return;
 
 	this.reset();
 	var contentDiv = this.getHtmlElement();
 	var oldMsg = this._msg;
 	this._msg = msg;
-	this._dateObjectHandlerDate = msg.sentDate
-		? new Date(msg.sentDate)
-		: new Date(msg.date);
-
+	this._dateObjectHandlerDate = msg.sentDate ? new Date(msg.sentDate) : new Date(msg.date);
 	if ((this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) &&
 		msg.isInvite() && msg.getInvite().type != "task" && 
 		!this._controller.isChildWindow)
 	{
 		var invite = msg.getInvite();
+		// in the single component case, which I think is going to be 90%
+		// of the time, we will just show a single toobar.
 		if (!invite.isEmpty() && !invite.hasMultipleComponents() &&
-			invite.getStatus() != ZmCalItem.STATUS_CANC &&
-			msg.folderId != ZmFolder.ID_TRASH &&
-			!msg.isShared())
+			invite.getStatus() != ZmAppt.STATUS_CANCELLED &&
+			msg.folderId != ZmFolder.ID_TRASH)
 		{
+			// create toolbar
 			var topToolbar = this._getInviteToolbar();
 			// nuke the old toolbar if it exists b4 appending the new one
 			var tEl = topToolbar.getHtmlElement();
 			if (tEl && tEl.parentNode)
 				tEl.parentNode.removeChild(tEl);
 			contentDiv.appendChild(tEl);
+		} else {
+			// TODO:
+			// here we want to show an arrow at the top which should drop down
+			// to show all the components that could be replied to.
+			// I think I want the toolbar at the top, to be applied to the
+			// selected component.
+			// We need an inviteComponentView. Ughhh.
 		}
 	}
-	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) &&
-			 msg.share &&
-			 msg.folderId != ZmFolder.ID_TRASH)
+	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) && msg.share && msg.folderId != ZmFolder.ID_TRASH)
 	{
 		var action = msg.share.action;
         var isNew = action == ZmShare.NEW;
@@ -165,19 +169,18 @@ function(msg) {
 	this._renderMessage(msg, contentDiv, respCallback);
 };
 
-ZmMailMsgView.prototype.__hasMountpoint =
-function(share) {
-	var tree = this._appCtxt.getFolderTree();
-	return tree
-		? this.__hasMountpoint2(tree.root, share.grantor.id, share.link.id)
-		: false;
+ZmMailMsgView.prototype.__hasMountpoint = function(share) {
+	var tree = this._appCtxt.getTree(ZmOrganizer.TYPES[share.link.view]);
+	if (!tree) {
+		DBG.println("ZmMailMsgView#__hasMountpoint: no tree for view "+share.link.view);
+		return false;
+	}
+	return this.__hasMountpoint2(tree.root, share.grantor.id, share.link.id);
 };
-
-ZmMailMsgView.prototype.__hasMountpoint2 =
-function(organizer, zid, rid) {
-	if (organizer.zid == zid && organizer.rid == rid)
+ZmMailMsgView.prototype.__hasMountpoint2 = function(organizer, zid, rid) {
+	if (organizer.zid == zid && organizer.rid == rid) {
 		return true;
-
+	}
 	if (organizer.children) {
 		var children = organizer.children.getArray();
 		for (var i = 0; i < children.length; i++) {
@@ -288,15 +291,14 @@ function() {
 
 	var operationButtonIds = [ZmOperation.REPLY_ACCEPT, ZmOperation.REPLY_TENTATIVE, ZmOperation.REPLY_DECLINE];
 	var replyButtonIds = [ZmOperation.INVITE_REPLY_ACCEPT,ZmOperation.INVITE_REPLY_TENTATIVE,ZmOperation.INVITE_REPLY_DECLINE];
-	var params = {parent:this, buttons:operationButtonIds, posStyle:DwtControl.STATIC_STYLE,
-				  className:"ZmInviteToolBar", buttonClassName:"DwtToolbarButton"};
-	this._inviteToolbar = new ZmButtonToolBar(params);
+	this._inviteToolbar = new ZmButtonToolBar(this,	operationButtonIds,
+						  null, DwtControl.STATIC_STYLE,
+						  "ZmInviteToolBar", "DwtToolbarButton");
 	// get a little space between the buttons.
 	var toolbarHtmlEl = this._inviteToolbar.getHtmlElement();
 	toolbarHtmlEl.firstChild.cellPadding = "3";
 
 	var inviteToolBarListener = new AjxListener(this, this._inviteToolBarListener);
-	operationButtonIds = this._inviteToolbar.opList;
 	for (var i = 0; i < operationButtonIds.length; i++) {
 		var id = operationButtonIds[i];
 
@@ -311,8 +313,7 @@ function() {
 		this._inviteToolbar.addSelectionListener(id, inviteToolBarListener);
 
 		var standardItems = [id, replyButtonIds[i]];
-		var menu = new ZmActionMenu({parent:button, menuItems:standardItems});
-		standardItems = menu.opList;
+		var menu = new ZmActionMenu(button, standardItems);
 		for (var j = 0; j < standardItems.length; j++) {
 			var menuItem = menu.getItem(j);
 			menuItem.addSelectionListener(inviteToolBarListener);
@@ -330,9 +331,9 @@ function() {
 		this._shareToolbar.dispose();
 
 	var buttonIds = [ZmOperation.SHARE_ACCEPT, ZmOperation.SHARE_DECLINE];
-	var params = {parent:this, buttons:buttonIds, posStyle:DwtControl.STATIC_STYLE,
-				  className:"ZmShareToolBar", buttonClassName:"DwtToolbarButton"};
-	this._shareToolbar = new ZmButtonToolBar(params);
+	this._shareToolbar = new ZmButtonToolBar(this,	buttonIds,
+											  null, DwtControl.STATIC_STYLE,
+											  "ZmShareToolBar", "DwtToolbarButton");
 	// get a little space between the buttons.
 	var toolbarHtmlEl = this._shareToolbar.getHtmlElement();
 	toolbarHtmlEl.firstChild.cellPadding = "3";
@@ -358,12 +359,15 @@ function() {
 ZmMailMsgView.prototype._handleResponseSet =
 function(msg, oldMsg) {
 	if (!this._controller.isChildWindow) {
-		if (this._mode == ZmController.MSG_VIEW) {
+		if (this._mode == ZmController.TRAD_VIEW) {
+			if (oldMsg != null)
+				oldMsg.list.removeChangeListener(this._listChangeListener);
+			msg.list.addChangeListener(new AjxListener(this, this._listChangeListener));
+		} else {
 			this._setTags(msg);
 			// Remove listener for current msg if it exists
-			if (oldMsg) {
+			if (oldMsg != null)
 				oldMsg.removeChangeListener(this._changeListener);
-			}
 			msg.addChangeListener(this._changeListener);
 		}
 	}
@@ -372,9 +376,7 @@ function(msg, oldMsg) {
 	this.getHtmlElement().scrollTop = 0;
 
 	// notify zimlets that a new message has been opened
-	if (this._appCtxt.zimletsPresent()) {
-		this._appCtxt.getZimletMgr().notifyZimlets("onMsgView", msg, oldMsg);
-	}
+	this._appCtxt.getZimletMgr().notifyZimlets("onMsgView", msg, oldMsg);
 };
 
 // Values in this hash MUST be null or RegExp.  If "null" is passed, then that
@@ -874,7 +876,7 @@ function(htmlArr, idx, addrs, prefix) {
 	htmlArr[idx++] = ": </td><td class='LabelColValue'>";
 	for (var i = 0; i < addrs.size(); i++) {
 		if (i > 0)
-			htmlArr[idx++] = AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR);
+			htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmEmailAddress.SEPARATOR);
 
 		var addr = addrs.get(i);
 		if (this._objectManager && addr.address) {
@@ -912,7 +914,7 @@ function(msg, container, callback) {
 
 	// Subject
 	var subject = msg.getSubject() || ZmMsg.noSubject;
-	htmlArr[idx++] = "<tr><td width='110' class='SubjectCol LabelColName' valign=top>";
+	htmlArr[idx++] = "<tr><td width=100 class='SubjectCol LabelColName' valign=top>";
 	htmlArr[idx++] = AjxStringUtil.htmlEncode(ZmMsg.subject);
 	htmlArr[idx++] = ": </td><td colspan=3>";
 	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 width=100%><tr><td class='SubjectCol LabelColValue'>";
@@ -927,8 +929,8 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "</td></tr>";
 
 	// bug fix #10652 - check invite if sentBy is set (which means on-behalf-of)
-	var sentBy = msg.getAddress(AjxEmailAddress.SENDER);
-	var addr = msg.getAddress(AjxEmailAddress.FROM) || ZmMsg.unknown; 
+	var sentBy = msg.getAddress(ZmEmailAddress.SENDER);
+	var addr = msg.getAddress(ZmEmailAddress.FROM) || ZmMsg.unknown; 
 	var dateString = msg.sentDate ? (new Date(msg.sentDate)).toLocaleString() : "";
 
 	// add non-collapsable header info (Sent by and date)
@@ -940,9 +942,8 @@ function(msg, container, callback) {
 	htmlArr[idx++] = "'></td><td class='LabelColName'>";
 	htmlArr[idx++] = ZmMsg.sentBy;
 	htmlArr[idx++] = ": </td></tr></table></td>";
-	htmlArr[idx++] = "<td class='LabelColValue' colspan=3>";
-	//bug fix #17016 - no need to check addr instanceof AjxEmailAddress
-	if (addr) {
+	htmlArr[idx++] = "<td class='LabelColValue' style='vertical-align:bottom'>";
+	if (addr instanceof ZmEmailAddress) {
 		addr = addr.address || (AjxStringUtil.htmlEncode(addr.name));
 	}
 	htmlArr[idx++] = this._objectManager
@@ -958,9 +959,9 @@ function(msg, container, callback) {
 
 	if (sentBy) {
 		// on behalf of (if applicable)
-		htmlArr[idx++] = "<tr><td width='110' valign='top' class='LabelColName'>";
+		htmlArr[idx++] = "<tr><td width=100 valign='top' class='LabelColName'>";
 		htmlArr[idx++] = ZmMsg.onBehalfOf;
-		htmlArr[idx++] = ":</td><td class='LabelColValue' colspan=3>";
+		htmlArr[idx++] = ":</td><td class='LabelColValue'>";
 		htmlArr[idx++] = this._objectManager
 			? this._objectManager.findObjects(addr, true, ZmObjectManager.EMAIL)
 			: addr;
@@ -970,10 +971,10 @@ function(msg, container, callback) {
 	// To/CC/Reply-to
 	for (var i = 1; i < ZmMailMsg.ADDRS.length; i++) {
 		var type = ZmMailMsg.ADDRS[i];
-		if (type == AjxEmailAddress.SENDER) continue;
+		if (type == ZmEmailAddress.SENDER) continue;
 		var addrs = msg.getAddresses(type);
 		if (addrs.size() > 0) {
-			var prefix = ZmMsg[AjxEmailAddress.TYPE_STRING[type]];
+			var prefix = ZmMsg[ZmEmailAddress.TYPE_STRING[type]];
 			idx = this._addAddressHeaderHtml(htmlArr, idx, addrs, prefix);
 		}
 	}
@@ -985,9 +986,10 @@ function(msg, container, callback) {
 	// add the expand/collapse arrow button now that we have add to the DOM tree
 	var expandHeaderEl = document.getElementById(this._expandHeaderId);
 	if (expandHeaderEl) {
-		this._expandButton = new DwtToolBarButton(this);
+		this._expandButton = new DwtButton(this, null, "DwtToolbarButton");
 		var image = this._expandHeader ? "HeaderExpanded" : "HeaderCollapsed";
 		this._expandButton.setImage(image);
+		this._expandButton.setSize("14", "14");
 		this._expandButton.reparentHtmlElement(this._expandHeaderId);
 		this._expandButton.addSelectionListener(new AjxListener(this, this._expandButtonListener))
 	}
@@ -1088,8 +1090,7 @@ function(el, bodyPart, callback, result) {
 
 ZmMailMsgView.prototype._setTags =
 function(msg) {
-	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED) || msg == null)
-		return;
+	if (!this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) return;
 
 	var numTags = msg.tags.length;
 	var table = document.getElementById(this._hdrTableId);
@@ -1189,17 +1190,7 @@ function() {
 	var dividx = idx;	// we might get back here
 	htmlArr[idx++] = "<div style='overflow: auto;'>";
 	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0>";
-
 	var rows = 0;
-	if (attLinks.length > 1) {
-		htmlArr[idx++] = "<tr><td colspan=";
-		htmlArr[idx++] = ZmMailMsgView.ATTC_COLUMNS;
-		htmlArr[idx++] = ">";
-		idx = ZmMailMsgView._buildZipUrl(this._appCtxt.getCsfeMsgFetcher(), this._msg.id, attLinks, htmlArr, idx);
-		htmlArr[idx++] = "</td></tr>";
-		rows++;
-	}
-
 	for (var i = 0; i < attLinks.length; i++) {
 		var att = attLinks[i];
 
@@ -1258,22 +1249,6 @@ function() {
 				htmlArr[idx++] = ZmMsg.download;
 				htmlArr[idx++] = "</a>";
 			}
-			
-			//Attachment Link Handlers
-			if(ZmMailMsgView._attachmentHandlers){
-				var contentHandlers = ZmMailMsgView._attachmentHandlers[att.ct];
-				var handlerFunc;
-				if(contentHandlers){
-					for(handlerId in contentHandlers){
-						handlerFunc = contentHandlers[handlerId];
-						if(handlerFunc){	
-							htmlArr[idx++] = ", "+handlerFunc.call(this,att);
-						}
-					}	
-				}
-			}
-			//End of Attachment Link Handlers
-					
 			htmlArr[idx++] = ")";
 		}
 
@@ -1292,18 +1267,6 @@ function() {
 	cell.innerHTML = htmlArr.join("");
 };
 
-//AttachmentLink Handlers
-ZmMailMsgView.prototype.addAttachmentLinkHandler = function(contentType,handlerId,handlerFunc){
-	if(!ZmMailMsgView._attachmentHandlers){
-		ZmMailMsgView._attachmentHandlers = {};
-	}
-	
-	if(!ZmMailMsgView._attachmentHandlers[contentType]){
-		ZmMailMsgView._attachmentHandlers[contentType] = {};
-	}
-	
-	ZmMailMsgView._attachmentHandlers[contentType][handlerId] = handlerFunc;
-};
 
 // Listeners
 
@@ -1337,6 +1300,13 @@ function(ev) {
 		return;
 	if (ev.event == ZmEvent.E_TAGS || ev.event == ZmEvent.E_REMOVE_ALL)
 		this._setTags(this._msg);
+};
+
+ZmMailMsgView.prototype._listChangeListener =
+function(ev) {
+	// bug fix #3398 - check list size before nuking the msg view
+	if (ev.source.size() == 0 && (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE))
+		this.reset();
 };
 
 ZmMailMsgView.prototype._selectStartListener =
@@ -1405,31 +1375,12 @@ function(ev) {
 
 ZmMailMsgView.prototype._msgTagClicked =
 function(tagId) {
-	var tag = this._appCtxt.getById(tagId);
+	var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getById(tagId);
 	var query = 'tag:"' + tag.name + '"';
 	var searchController = this._appCtxt.getSearchController();
 	searchController.search({query: query});
 };
 
-// Focus management - just pass through to native element's focus()
-// and blur() methods, which will indicate focus with a dotted border,
-// and make the element actively scrollable. Doesn't work in IE, which
-// does not support focus for non-input elements.
-
-ZmMailMsgView.prototype._focus =
-function() {
-	// need this flag because the hidden input field in DwtKeyboard Mgr
-	// gets a blur event which it passes to us
-	this._settingFocus = true;
-	this.getHtmlElement().focus();
-	this._settingFocus = false;
-};
-
-ZmMailMsgView.prototype._blur =
-function() {
-	if (this._settingFocus) { return; }
-	this.getHtmlElement().blur();
-};
 
 // Static methods
 
@@ -1438,7 +1389,7 @@ function(msg, preferHtml, callback) {
 	if (!(msg.toString() == "ZmMailMsg"))
 		return;
 
-	if (!msg._loaded) {
+	if (!msg.isLoaded()) {
 		var soapDoc = AjxSoapDoc.create("GetMsgRequest", "urn:zimbraMail", null);
 		var msgNode = soapDoc.set("m");
 		msgNode.setAttribute("id", msg.id);
@@ -1485,10 +1436,10 @@ function(msg, preferHtml, callback) {
 		var len = addrs.size();
 		if (len > 0) {
 			html[idx++] = "<tr><td valign=top style='text-align:right; font-size:14px'>";
-			html[idx++] = ZmMsg[AjxEmailAddress.TYPE_STRING[ZmMailMsg.ADDRS[j]]];
+			html[idx++] = ZmMsg[ZmEmailAddress.TYPE_STRING[ZmMailMsg.ADDRS[j]]];
 			html[idx++] = ": </td><td width=100% style='font-size: 14px'>";
 			for (var i = 0; i < len; i++) {
-				html[idx++] = i > 0 ? AjxStringUtil.htmlEncode(AjxEmailAddress.SEPARATOR) : "";
+				html[idx++] = i > 0 ? AjxStringUtil.htmlEncode(ZmEmailAddress.SEPARATOR) : "";
 				html[idx++] = addrs.get(i).address;
 			}
 			html[idx++] = "</td></tr>";
@@ -1613,14 +1564,9 @@ function(appCtxt, result) {
 	// bug fix #8868 - force load for rfc822 msgs since they may not return any content
 	msg._loaded = true;
 
-	ZmMailMsgView.detachMsgInNewWindow(appCtxt, msg);
-};
-
-ZmMailMsgView.detachMsgInNewWindow =
-function(appCtxt, msg) {
 	var newWinObj = appCtxt.getNewWindow(true);
 	newWinObj.command = "msgViewDetach";
-	newWinObj.params = { msg:msg };
+	newWinObj.args = { msg:msg };
 };
 
 ZmMailMsgView.rfc822Callback =
@@ -1642,25 +1588,5 @@ function(msgId, vcardPartId) {
 		? window.parentController._appCtxt
 		: window._zimbraMail._appCtxt;
 
-	appCtxt.getApp(ZmApp.CONTACTS).createFromVCard(msgId, vcardPartId);
-};
-
-ZmMailMsgView._buildZipUrl =
-function(csfeUrl, itemId, attachments, htmlArr, idx) {
-	var url = csfeUrl + "id=" + itemId + "&part=";
-	for (var j = 0; j < attachments.length; j++) {
-		url += attachments[j].part;
-		if (j <= attachments.length)
-			url += ",";
-	}
-	htmlArr[idx++] = "<table border=0 cellpadding=0 cellspacing=0 style='margin-right:1em; margin-bottom:1px'><tr>";
-	htmlArr[idx++] = "<td style='width:18px'>";
-	htmlArr[idx++] = AjxImg.getImageHtml(ZmMimeTable.getInfo(ZmMimeTable.APP_ZIP).image, "position:relative;");
-	htmlArr[idx++] = "</td><td style='white-space:nowrap'><a style='text-decoration:underline' class='AttLink' onclick='ZmZimbraMail.unloadHackCallback();' href='";
-	htmlArr[idx++] = url;
-	htmlArr[idx++] = "&disp=a&fmt=zip'>";
-	htmlArr[idx++] = ZmMsg.downloadAll;
-	htmlArr[idx++] = "</td></tr></table>";
-
-	return idx;
+	appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).createFromVCard(msgId, vcardPartId);
 };

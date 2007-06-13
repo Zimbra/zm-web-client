@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
+<zm:getMailbox var="mailbox"/>
 <c:set var="emptyStatus" value="${empty requestScope.statusMessage}"/>
 <table cellpadding=0 cellspacing=0>
     <tr>

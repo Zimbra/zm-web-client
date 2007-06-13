@@ -27,7 +27,7 @@
 
 
 
-<template id="ListOptionPage">
+<template id="ListOptionPage" xml:space="strip">
 <table id='${id}_outer' class='fullSize' cellspacing=0 cellpadding=0>
 <tr>
 	<td class='ZmOptionsFormListCell'>
@@ -48,17 +48,13 @@
 	</td>
 	<td class='ZmOptionsFormFormCell' valign=bottom>
 		<table style='height:100%;width:100%;' cellspacing=0 cellpadding=0 >
-			<$ if (data.showInfoBox) { $>
-				<tr id="${id}_infoBox_container">
-					<td><$= AjxTemplate.expand("zimbraMail.prefs.templates.Widgets#infoBox", data) $></td>
-				</tr>
-			<$ } $>
+			<tr id="${id}_infoBox_container">
+				<td><$= AjxTemplate.expand("zimbraMail.prefs.templates.Widgets#infoBox", data) $></td>
+			</tr>
 			<tr>
 				<td>
 					<div class='ZSubPanelHead'>
-						<$ if (data.showInfoBox) { $>
-							<div id='${id}_help_button' class='ImgInformation ZInfoBoxImg' onclick='Dwt.toggle("${id}_infoBox_container")'></div>
-						<$ } $>
+						<div id='${id}_help_button' class='ImgInformation ZInfoBoxImg' onclick='Dwt.toggle("${id}_infoBox_container")'></div>
 						${_labels.detailsHeader}
 					</div>
 				</td>
@@ -83,7 +79,7 @@
 
 
 -->
-<template id="PopForm">
+<template id="PopForm" xml:space="strip">
 <!--<div class='ZScrollContainerInner'>	-->
 	<table class="ZFormTable ZFixedTable" cellspacing=0 cellpadding=2 border=0>
 		<colgroup><col width=30%><col width=70%></colgroup>
@@ -204,7 +200,7 @@
 
 
 
-<template id="IdentityForm">
+<template id="IdentityForm" xml:space="strip">
 <table class="ZFormTable ZFixedTable" cellspacing=0 cellpadding=2 border=0 style='height:100%'>
 	<colgroup><col width=103><col width='100%'></colgroup>
 
@@ -230,7 +226,7 @@
 </template>
 
 
-<template id="IdentityForm_options">
+<template id="IdentityForm_options" xml:space="strip">
 <fieldset class='ZFieldset' style='width:auto'>
 	<legend class='ZLegend'><$= ZmMsg.sendWithIdentity $></legend>
 	<table class='ZFormTable XZFixedTable' cellspacing=0 cellpadding=2 width='99%'>
@@ -288,7 +284,7 @@
 </fieldset>
 </template>
 
-<template id="IdentityForm_signature">
+<template id="IdentityForm_signature" xml:space="strip">
 <table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 style='width:95%;' border=0>
 	<colgroup><col width=103><col width='100%'><col width=20></colgroup>
 
@@ -316,7 +312,7 @@
 </table>
 </template>
 
-<template id="IdentityForm_advanced">
+<template id="IdentityForm_advanced" xml:space="strip">
 	<table class='ZFormTable ZFixedTable' cellspacing=0 cellpadding=2 width='99%' border=0>
 		<colgroup><col width='200'><col width='100%'</colgroup>
 		<tr><td><div class='ZSmallSpacer'></div></td></tr>
@@ -377,7 +373,7 @@
 </template>
 
 
-<template id="GeneralForm">
+<template id="GeneralForm" xml:space="strip">
 
 General Options
 

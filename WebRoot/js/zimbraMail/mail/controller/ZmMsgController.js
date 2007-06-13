@@ -36,7 +36,7 @@
 * @param container	containing shell
 * @param mailApp	containing app
 */
-ZmMsgController = function(appCtxt, container, mailApp) {
+function ZmMsgController(appCtxt, container, mailApp) {
 
 	ZmMailListController.call(this, appCtxt, container, mailApp);
 };
@@ -56,30 +56,18 @@ function() {
 *
 * @param msg		the message to display
 * @param conv		the conv to which the message belongs, if any
-* @param callback	client callback
 */
 ZmMsgController.prototype.show = 
-function(msg, mode, callback) {
+function(msg, mode) {
 	this.setMsg(msg);
 	this._mode = mode;
 	this._currentView = this._getViewType();
 	this._list = msg.list;
-	if (!msg._loaded) {
-		var respCallback = new AjxCallback(this, this._handleResponseShow, callback);
+	if (!msg.isLoaded()) {
+		var respCallback = new AjxCallback(this, this._handleResponseShow);
 		msg.load(this._appCtxt.get(ZmSetting.VIEW_AS_HTML), false, respCallback);
 	} else {
-		this._showMsg();
-		if (callback) {
-			callback.run();
-		}
-	}
-};
-
-ZmMsgController.prototype._handleResponseShow = 
-function(callback, result) {
-	this._showMsg();
-	if (callback) {
-		callback.run();
+		this._showMsg();	
 	}
 };
 
@@ -92,6 +80,11 @@ function(callback, result) {
 ZmMsgController.prototype.dispose = 
 function() {
 	this._tagList.removeChangeListener(this._tagChangeLstnr);
+};
+
+ZmMsgController.prototype._handleResponseShow = 
+function(result) {
+	this._showMsg();
 };
 
 ZmMsgController.prototype._showMsg = 
@@ -137,8 +130,6 @@ function() {
 		list = list.concat(this._msgOps());
 		list.push(ZmOperation.SEP);
 		list.push(ZmOperation.SPAM);
-		list.push(ZmOperation.SEP);
-		list.push(ZmOperation.TAG_MENU);		
 		list.push(ZmOperation.DETACH);
 		return list;
 	}
@@ -151,15 +142,11 @@ function(view, arrowStyle) {
 	} else {
 		var buttons = this._getToolBarOps();
 		if (!buttons) return;
-		this._toolbar[view] = new ZmButtonToolBar({parent:this._container, buttons:buttons, className:"ZmMsgViewToolBar_cw"});
+		this._toolbar[view] = new ZmButtonToolBar(this._container, buttons, null, Dwt.ABSOLUTE_STYLE, "ZmMsgViewToolBar_cw");
 
-		buttons = this._toolbar[view].opList;
-		for (var i = 0; i < buttons.length; i++) {
-			var button = buttons[i];
-			if (this._listeners[button]) {
-				this._toolbar[view].addSelectionListener(button, this._listeners[button]);
-			}
-		}
+		for (var i = 0; i < buttons.length; i++)
+			if (buttons[i] > 0 && this._listeners[buttons[i]])
+				this._toolbar[view].addSelectionListener(buttons[i], this._listeners[buttons[i]]);
 	}
 };
 
@@ -172,6 +159,11 @@ ZmMsgController.prototype._getViewType =
 function() {
 	return ZmController.MSG_VIEW;
 };
+
+ZmMsgController.prototype._defaultView = 
+function() {
+	return ZmController.MSG_VIEW;
+}
 
 ZmMsgController.prototype._initializeListView = 
 function(view) {
@@ -226,8 +218,9 @@ function(view) {
 ZmMsgController.prototype._paginate = 
 function(view, bPageForward) {
 	// NOTE: do not call base class.
-	var controller = AjxDispatcher.run((this._mode == ZmController.TRAD_VIEW) ? "GetTradController" :
-																				"GetConvController");
+	var controller = this._mode == ZmController.TRAD_VIEW 
+		? this._app.getTradController() 
+		: this._app.getConvController();
 
 	if (controller) {
 		controller.pageItemSilently(this._msg, bPageForward);
@@ -240,7 +233,7 @@ function(view) {
 	this._resetNavToolBarButtons(view);
 }
 
-ZmMsgController.prototype._menuPopdownActionListener = 
+ZmMsgController.prototype._popdownActionListener = 
 function(ev) {
 	// dont do anything since msg view has no action menus
 };

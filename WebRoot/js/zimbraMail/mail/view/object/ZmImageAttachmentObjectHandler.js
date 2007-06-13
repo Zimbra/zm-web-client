@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmImageAttachmentObjectHandler = function(appCtxt) {
+function ZmImageAttachmentObjectHandler(appCtxt) {
 	ZmObjectHandler.call(this, appCtxt,ZmImageAttachmentObjectHandler.TYPE);
 }
 

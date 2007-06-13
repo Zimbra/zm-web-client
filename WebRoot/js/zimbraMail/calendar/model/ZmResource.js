@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-ZmResource = function(appCtxt, id, list, resType) {
+function ZmResource(appCtxt, id, list, resType) {
 	id = id ? id : Dwt.getNextId();
 	ZmContact.call(this, appCtxt, id, list, ZmItem.RESOURCE);
 	
@@ -51,11 +51,11 @@ function(node, args) {
 	var resource = new ZmResource(args.appCtxt, node.id, args.list);
 	resource._loadFromDom(node);
 	resource.resType = (resource.getAttr(ZmResource.F_type) == ZmResource.ATTR_LOCATION) ?
-						ZmCalItem.LOCATION : ZmCalItem.EQUIPMENT;
+						ZmAppt.LOCATION : ZmAppt.EQUIPMENT;
 	if (!resource.list) {
-		var calApp = args.appCtxt.getApp(ZmApp.CALENDAR);
-		resource.list = (resource.resType == ZmCalItem.LOCATION) ? calApp.getLocations() :
-																   calApp.getEquipment();
+		var calApp = args.appCtxt.getApp(ZmZimbraMail.CALENDAR_APP);
+		resource.list = (resource.resType == ZmAppt.LOCATION) ? calApp.getLocations() :
+																calApp.getEquipment();
 	}
 	
 	return resource;
@@ -64,14 +64,9 @@ function(node, args) {
 ZmResource.prototype = new ZmContact;
 ZmResource.prototype.constructor = ZmResource;
 
-ZmResource.prototype.toString =
-function() {
-	return "ZmResource";
-};
-
 ZmResource.prototype.isLocation =
 function() {
-	return (this.resType == ZmCalItem.LOCATION);
+	return (this.resType == ZmAppt.LOCATION);
 };
 
 ZmResource.prototype.getEmail =
@@ -87,11 +82,11 @@ function() {
 /**
 * 
 *
-* @param email	[object]	a AjxEmailAddress, or an email string
+* @param email	[object]	a ZmEmailAddress, or an email string
 */
 ZmResource.prototype.initFromEmail =
 function(email) {
-	if (email instanceof AjxEmailAddress) {
+	if (email instanceof ZmEmailAddress) {
 		this.setAttr(ZmResource.F_mail, email.getAddress());
 		this.setAttr(ZmResource.F_name, email.getName());
 	} else {

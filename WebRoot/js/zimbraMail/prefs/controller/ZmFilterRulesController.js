@@ -35,14 +35,12 @@
 * @param container		[DwtShell]			the shell
 * @param prefsApp		[ZmPreferencesApp]	the preferences app
 */
-ZmFilterRulesController = function(appCtxt, container, prefsApp, prefsView) {
+function ZmFilterRulesController(appCtxt, container, prefsApp, prefsView) {
 
 	ZmController.call(this, appCtxt, container, prefsApp);
 
-	ZmFilterRule._setPreconditions();
-
 	this._prefsView = prefsView;
-	this._rules = AjxDispatcher.run("GetFilterRules");
+	this._rules = prefsApp.getFilterRules();
 	this._filterRulesView = new ZmFilterRulesView(this._prefsView._parent, appCtxt, this);
 	
 	this._buttonListeners = new Object();
@@ -90,12 +88,12 @@ function() {
 				   ZmOperation.SEP,
 				   ZmOperation.MOVE_DOWN_FILTER_RULE];
 	
-	this._toolbar = new ZmButtonToolBar({parent:this._filterRulesView, buttons:buttons, posStyle:Dwt.STATIC_STYLE});
+	this._toolbar = new ZmButtonToolBar(this._filterRulesView, buttons, null, Dwt.STATIC_STYLE);
 
 	// add listeners
-	buttons = this._toolbar.opList;
+	var id;
 	for (var i = 0; i < buttons.length; i++) {
-		var id = buttons[i];
+		id = buttons[i];
 		if (this._buttonListeners[id]) {
 			this._toolbar.addSelectionListener(id, this._buttonListeners[id]);
 		}
@@ -188,8 +186,7 @@ function(ev) {
 	var sel = this._listView.getSelection();
 	
 	var filter = sel[0];
-	//bug:16053 changed getYesNoCancelMsgDialog to getYesNoMsgDialog
-	var ds = this._deleteShield = this._appCtxt.getYesNoMsgDialog();
+	var ds = this._deleteShield = this._appCtxt.getYesNoCancelMsgDialog();
 	ds.reset();
 	ds.registerCallback(DwtDialog.NO_BUTTON, this._clearDialog, this, this._deleteShield);
 	ds.registerCallback(DwtDialog.YES_BUTTON, this._deleteShieldYesCallback, this, filter);

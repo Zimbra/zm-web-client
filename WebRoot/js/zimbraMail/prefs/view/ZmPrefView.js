@@ -35,18 +35,18 @@
 * @param appCtxt			[ZmAppCtxt]					the app context
 * @param posStyle			[constant]					positioning style
 * @param controller			[ZmPrefController]			prefs controller
+* @param passwordDialog		[ZmChangePasswordDialog]	password change dialog
 */
-ZmPrefView = function(parent, appCtxt, posStyle, controller) {
+function ZmPrefView(parent, appCtxt, posStyle, controller, passwordDialog) {
 
-	DwtTabView.call(this, parent, "ZmPrefView", posStyle);
+    DwtTabView.call(this, parent, "ZmPrefView", posStyle);
 
-	ZmPrefView._setViewPrefs();
-	
 	this._parent = parent;
-	this._appCtxt = appCtxt;
+    this._appCtxt = appCtxt;
 	this._controller = controller;
+	this._passwordDialog = passwordDialog;
 
-	this.setScrollStyle(DwtControl.SCROLL);
+    this.setScrollStyle(DwtControl.SCROLL);
 	this.prefView = {};
 	this._hasRendered = false;
 };
@@ -62,37 +62,29 @@ ZmPrefView.FILTER_RULES	= i++;
 ZmPrefView.GENERAL		= i++;
 ZmPrefView.IDENTITY		= i++;
 ZmPrefView.MAIL			= i++;
-ZmPrefView.IM			= i++;
-ZmPrefView.POP_ACCOUNTS	= i++;
+ZmPrefView.POP_ACCOUNTS = i++;
 ZmPrefView.SHORTCUTS	= i++;
-ZmPrefView.VOICE		= i++;
 delete i;
 
 ZmPrefView.VIEWS = [
-	ZmPrefView.GENERAL,
-	ZmPrefView.MAIL,
-	ZmPrefView.IDENTITY,
-	ZmPrefView.POP_ACCOUNTS,
-	ZmPrefView.FILTER_RULES,
-	ZmPrefView.VOICE,
-	ZmPrefView.ADDR_BOOK,
-	ZmPrefView.CALENDAR,
-	ZmPrefView.IM,
-	ZmPrefView.SHORTCUTS
+    ZmPrefView.GENERAL,
+    ZmPrefView.MAIL,
+    ZmPrefView.IDENTITY,
+    ZmPrefView.POP_ACCOUNTS,
+    ZmPrefView.FILTER_RULES,
+    ZmPrefView.ADDR_BOOK,
+    ZmPrefView.CALENDAR,
+    ZmPrefView.SHORTCUTS
 ];
 
 // list of prefs for each page
 ZmPrefView.PREFS = {};
-ZmPrefView._setViewPrefs =
-function() {
-	ZmPrefView.PREFS[ZmPrefView.ADDR_BOOK]		= ZmPref.ADDR_BOOK_PREFS;
-	ZmPrefView.PREFS[ZmPrefView.CALENDAR]		= ZmPref.CALENDAR_PREFS;
-	ZmPrefView.PREFS[ZmPrefView.GENERAL]		= ZmPref.GENERAL_PREFS;
-	ZmPrefView.PREFS[ZmPrefView.MAIL]			= ZmPref.MAIL_PREFS;
-	ZmPrefView.PREFS[ZmPrefView.IM]				= ZmPref.IM_PREFS;
-	ZmPrefView.PREFS[ZmPrefView.POP_ACCOUNTS]	= ZmPref.POP_ACCOUNTS_PREFS;
-	ZmPrefView.PREFS[ZmPrefView.SHORTCUTS]		= ZmPref.SHORTCUT_PREFS;
-};
+ZmPrefView.PREFS[ZmPrefView.ADDR_BOOK]			= ZmPref.ADDR_BOOK_PREFS;
+ZmPrefView.PREFS[ZmPrefView.CALENDAR]			= ZmPref.CALENDAR_PREFS;
+ZmPrefView.PREFS[ZmPrefView.GENERAL]			= ZmPref.GENERAL_PREFS;
+ZmPrefView.PREFS[ZmPrefView.MAIL]				= ZmPref.MAIL_PREFS;
+ZmPrefView.PREFS[ZmPrefView.POP_ACCOUNTS]       = ZmPref.POP_ACCOUNTS_PREFS;
+ZmPrefView.PREFS[ZmPrefView.SHORTCUTS]			= ZmPref.SHORTCUT_PREFS;
 
 // title for the page's tab
 ZmPrefView.TAB_NAME = {};
@@ -102,14 +94,12 @@ ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]	= ZmMsg.filterRules;
 ZmPrefView.TAB_NAME[ZmPrefView.GENERAL]			= ZmMsg.general;
 ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]		= ZmMsg.identitiesTab;
 ZmPrefView.TAB_NAME[ZmPrefView.MAIL]			= ZmMsg.mail;
-ZmPrefView.TAB_NAME[ZmPrefView.IM]				= ZmMsg.im;
-ZmPrefView.TAB_NAME[ZmPrefView.POP_ACCOUNTS]	= ZmMsg.popAccounts;
+ZmPrefView.TAB_NAME[ZmPrefView.POP_ACCOUNTS]    = ZmMsg.popAccounts;
 ZmPrefView.TAB_NAME[ZmPrefView.SHORTCUTS]		= ZmMsg.shortcuts;
-ZmPrefView.TAB_NAME[ZmPrefView.VOICE]			= ZmMsg.voice;
 
 ZmPrefView.prototype.toString =
 function () {
-	return "ZmPrefView";
+    return "ZmPrefView";
 };
 
 /**
@@ -134,24 +124,20 @@ function() {
 		if ((view == ZmPrefView.FILTER_RULES) && (!this._appCtxt.get(ZmSetting.FILTERS_ENABLED))) continue;
 		if (view == ZmPrefView.ADDR_BOOK && (!this._appCtxt.get(ZmSetting.CONTACTS_ENABLED))) continue;
 		if (view == ZmPrefView.CALENDAR && (!this._appCtxt.get(ZmSetting.CALENDAR_ENABLED))) continue;
-		if (view == ZmPrefView.POP_ACCOUNTS && !this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) continue;
-		if (view == ZmPrefView.SHORTCUTS && !this._appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) continue;
-		if (view == ZmPrefView.VOICE && !this._appCtxt.get(ZmSetting.VOICE_ENABLED)) continue;
-		if (view == ZmPrefView.IM && !this._appCtxt.get(ZmSetting.IM_ENABLED)) continue;
+        if (view == ZmPrefView.POP_ACCOUNTS && !this._appCtxt.get(ZmSetting.POP_ACCOUNTS_ENABLED)) continue;
+        if (view == ZmPrefView.SHORTCUTS && !this._appCtxt.get(ZmSetting.USE_KEYBOARD_SHORTCUTS)) continue;
 
-		var viewObj = null;
+        var viewObj = null;
 		if (view == ZmPrefView.FILTER_RULES) {
 			viewObj = this._controller.getFilterRulesController().getFilterRulesView();
 		} else if (view == ZmPrefView.SHORTCUTS) {
 			viewObj = new ZmShortcutsPage(this._parent, this._appCtxt, view, this._controller);
 		} else if (view == ZmPrefView.IDENTITY) {
 			viewObj = this._controller.getIdentityController().getListView();
-		} else if (view == ZmPrefView.POP_ACCOUNTS) {
-			viewObj = AjxDispatcher.run("GetPopAccountsController").getListView();
-		} else if (view == ZmPrefView.VOICE) {
-			viewObj = AjxDispatcher.run("GetVoicePrefsController").getListView();
-		} else {
-			viewObj = new ZmPreferencesPage(this._parent, this._appCtxt, view, this._controller);
+        } else if (view == ZmPrefView.POP_ACCOUNTS) {
+            viewObj = this._controller._app.getPopAccountsController().getListView();
+        } else {
+			viewObj = new ZmPreferencesPage(this._parent, this._appCtxt, view, this._controller, this._passwordDialog);
 		}
 
 		this.prefView[view] = viewObj;
@@ -252,7 +238,7 @@ function(dirtyCheck, noValidation, batchCommand) {
 		if (!viewPage) continue; // if feature is disabled, may not have a view page
 		if (!viewPage.hasRendered()) continue; // if page hasn't rendered, nothing has changed
 
-		if (view == ZmPrefView.IDENTITY || view == ZmPrefView.POP_ACCOUNTS || view == ZmPrefView.VOICE) {
+		if (view == ZmPrefView.IDENTITY || view == ZmPrefView.POP_ACCOUNTS) {
 			var isDirty = viewPage.isDirty();
 			if (isDirty) {
 				if (dirtyCheck) {

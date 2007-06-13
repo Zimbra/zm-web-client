@@ -63,7 +63,7 @@
 * @param keyDownCallback	[AjxCallback]*		additional ONKEYDOWN handler
 * @param keyUpCallback		[AjxCallback]*		additional ONKEYUP handler
 */
-ZmAutocompleteListView = function(params) {
+function ZmAutocompleteListView(params) {
 
 	var className = params.className ? params.className : "ZmAutocompleteListView";
 	DwtComposite.call(this, params.parent, className, DwtControl.ABSOLUTE_STYLE);
@@ -73,7 +73,7 @@ ZmAutocompleteListView = function(params) {
 	this._dataLoader = params.dataLoader;
 	this._dataLoaded = false;
 	this._matchValue = params.matchValue;
-	this._separator = (params.separator != null) ? params.separator : AjxEmailAddress.SEPARATOR;
+	this._separator = (params.separator != null) ? params.separator : ZmEmailAddress.SEPARATOR;
 	this._locCallback = params.locCallback ? params.locCallback : new AjxCallback(this, this._getAcListLoc);
 	this._compCallback = params.compCallback;
 	this._keyDownCallback = params.keyDownCallback;
@@ -84,7 +84,7 @@ ZmAutocompleteListView = function(params) {
 	this.addListener(DwtEvent.ONMOUSEDOWN, new AjxListener(this, this._mouseDownListener));
 	this.addListener(DwtEvent.ONMOUSEOVER, new AjxListener(this, this._mouseOverListener));
 	this._addSelectionListener(new AjxListener(this, this._listSelectionListener));
-	this._outsideListener = new AjxListener(null, ZmAutocompleteListView._outsideMouseDownListener);
+	this._outsideListener = new AjxListener(this, this._outsideMouseDownListener);
 
 	// only trigger matching after a sufficient pause
 	this._acInterval = this._appCtxt.get(ZmSetting.AC_TIMER_INTERVAL);
@@ -477,7 +477,7 @@ function(text, start) {
 		}
 	}
 	var chunk = text.substring(start, i);
-	if (AjxEmailAddress.isValid(chunk)) {
+	if (ZmEmailAddress.isValid(chunk)) {
 		start = i;
 		chunk = text.substring(start, i);
 	}

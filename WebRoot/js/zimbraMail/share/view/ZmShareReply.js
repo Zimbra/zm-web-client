@@ -29,7 +29,7 @@
  * note, if wanted. This control can be used from within the various
  * share dialogs to add reply capabilities.
  */
-ZmShareReply = function(parent, className) {
+function ZmShareReply(parent, className) {
 	className = className || "ZmShareReply";
 	DwtComposite.call(this, parent, className);
 	this._initControl();
