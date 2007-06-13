@@ -82,7 +82,7 @@
 							<td id='${personId}'></td>
 						</tr>
 
-					<$ if (data.isGalEnabled) { $>
+					<$ if (data.isGalEnabled && data.isGroupCalEnabled) { $>
 						<tr>
 							<td width=1% align=right class='ZmApptTabViewPageField'><$= ZmMsg.resources $>:</td>
 							<td id='${equipmentId}'></td>

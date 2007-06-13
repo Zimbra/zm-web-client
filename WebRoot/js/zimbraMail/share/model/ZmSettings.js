@@ -469,7 +469,6 @@ function() {
 	
 	// COS SETTINGS
 	this.registerSetting("AVAILABLE_SKINS",					{type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
-	this.registerSetting("LOCALES",							{type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
 	this.registerSetting("BROWSE_ENABLED",					{name: "zimbraFeatureAdvancedSearchEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("CALENDAR_ENABLED",				{name: "zimbraFeatureCalendarEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("CHANGE_PASSWORD_ENABLED",			{name: "zimbraFeatureChangePasswordEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
@@ -477,9 +476,12 @@ function() {
 	this.registerSetting("DISPLAY_NAME",					{name: "displayName", type: ZmSetting.T_COS});
 	this.registerSetting("GAL_AUTOCOMPLETE_ENABLED",		{name: "zimbraFeatureGalAutoCompleteEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN,	defaultValue: false});
 	this.registerSetting("GAL_ENABLED",						{name: "zimbraFeatureGalEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN,	defaultValue: true});
+	this.registerSetting("GROUP_CALENDAR_ENABLED",			{name: "zimbraFeatureGroupCalendarEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("HTML_COMPOSE_ENABLED",			{name: "zimbraFeatureHtmlComposeEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("IDLE_SESSION_TIMEOUT",			{name: "zimbraMailIdleSessionTimeout", type: ZmSetting.T_COS, dataType: ZmSetting.D_LDAP_TIME, defaultValue: 0});
 	this.registerSetting("IM_ENABLED",						{name: "zimbraFeatureIMEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("LOCALE_CHANGE_ENABLED",			{name: "zimbraFeatureLocaleChangeEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	this.registerSetting("LOCALES",							{type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
 	this.registerSetting("MAIL_ENABLED",					{type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	this.registerSetting("MIN_POLLING_INTERVAL",			{name: "zimbraMailMinPollingInterval", type: ZmSetting.T_COS, dataType: ZmSetting.D_LDAP_TIME, defaultValue: 120});
 	this.registerSetting("NOTEBOOK_ENABLED",				{name: "zimbraFeatureNotebookEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
@@ -498,7 +500,6 @@ function() {
 	this.registerSetting("TASKS_ENABLED",					{name: "zimbraFeatureTasksEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("VIEW_ATTACHMENT_AS_HTML",			{name: "zimbraFeatureViewInHtmlEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	this.registerSetting("VOICE_ENABLED",					{name: "zimbraFeatureVoiceEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});	
-	this.registerSetting("LOCALE_CHANGE_ENABLED",			{name: "zimbraFeatureLocaleChangeEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	// user metadata (included with COS since the user can't change them)
 	this.registerSetting("LICENSE_STATUS",					{type: ZmSetting.T_COS, defaultValue: ZmSetting.LICENSE_GOOD});
 	this.registerSetting("QUOTA_USED",						{type: ZmSetting.T_COS, dataType: ZmSetting.D_INT});

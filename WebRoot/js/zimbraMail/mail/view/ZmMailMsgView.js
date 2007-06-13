@@ -146,8 +146,8 @@ function(msg) {
 		}
 	}
 	else if (this._appCtxt.get(ZmSetting.SHARING_ENABLED) &&
-			 msg.share &&
-			 msg.folderId != ZmFolder.ID_TRASH)
+			 this._appCtxt.get(ZmSetting.GROUP_CALENDAR_ENABLED) &&
+			 msg.share && msg.folderId != ZmFolder.ID_TRASH)
 	{
 		var action = msg.share.action;
         var isNew = action == ZmShare.NEW;
