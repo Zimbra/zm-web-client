@@ -499,6 +499,14 @@ function(appCtxt, item, type, strictText, strictEmail) {
 		var addr = item.getAddress();
 		// see if we have this contact/resource by checking email address
 		attendee = ZmApptViewHelper._getAttendeeFromAddr(addr, type);
+		if (attendee && type == ZmAppt.PERSON) {
+			attendee = AjxUtil.createProxy(attendee);
+			attendee._inviteAddress = addr;
+			attendee.getEmail = function() {
+				return this._inviteAddress;
+			}
+		}
+
 		if (!attendee && !strictEmail) {
 			// ZmEmailAddress has name and email, init a new contact/resource from those
 			attendee = (type == ZmAppt.PERSON) ? new ZmContact(appCtxt) :
