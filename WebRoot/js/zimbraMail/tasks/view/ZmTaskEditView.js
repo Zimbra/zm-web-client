@@ -122,17 +122,20 @@ function(calItem) {
 	if (startDate)
 		calItem.setStartDate(startDate, true);
 	else
-		calItem.startDate = null; // explicitly null out in case item has old data
+		calItem.startDate = null;	// explicitly null out in case item has old data
 
 	if (endDate)
 		calItem.setEndDate(endDate, true);
 	else
-		calItem.endDate = null;  // explicitly null out in case item has old data
+		calItem.endDate = null;		// explicitly null out in case item has old data
 
 	calItem.setAllDayEvent(true);
 	calItem.pComplete = this._pCompleteSelect.getValue();
 	calItem.priority = this._prioritySelect.getValue();
 	calItem.status = this._statusSelect.getValue();
+
+//	XXX: uncomment when supported
+//	this._getRecurrence(calItem);	// set any recurrence rules LAST
 
 	return calItem;
 };

@@ -220,6 +220,23 @@ function() {
 	return ZmAppt.quickClone(this._calItem);
 };
 
+/**
+ * sets any recurrence rules w/in given ZmAppt object
+*/
+ZmApptEditView.prototype._getRecurrence =
+function(calItem) {
+	ZmCalItemEditView.prototype._getRecurrence.call(this, calItem);
+
+	// bug fix #17048 - reset weekly day to reflect start date in case user changed it
+	if (calItem.getRecurType() == "WEE" &&
+		calItem._recurrence.repeatCustomCount == 1 &&
+		calItem._recurrence.repeatWeeklyDays.length == 1)
+	{
+		var day = ZmCalItem.SERVER_WEEK_DAYS[calItem.startDate.getDay()];
+		calItem._recurrence.repeatWeeklyDays = [day];
+	}
+};
+
 ZmApptEditView.prototype._populateForSave =
 function(calItem) {
 	ZmCalItemEditView.prototype._populateForSave.call(this, calItem);
@@ -247,14 +264,8 @@ function(calItem) {
 		calItem.setAttendees(this._attendees[type].getArray(), type);
 	}
 
-	// bug fix #17048 - reset weekly day to reflect start date in case user changed it
-	if (calItem.getRecurType() == "WEE" &&
-		calItem._recurrence.repeatCustomCount == 1 &&
-		calItem._recurrence.repeatWeeklyDays.length == 1)
-	{
-		var day = ZmCalItem.SERVER_WEEK_DAYS[startDate.getDay()];
-		calItem._recurrence.repeatWeeklyDays = [day];
-	}
+	// set any recurrence rules LAST
+	this._getRecurrence(calItem);
 
 	return calItem;
 };

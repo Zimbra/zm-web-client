@@ -373,9 +373,6 @@ function(calItem) {
 
 	calItem.notesTopPart = top;
 
-	// set any recurrence rules
-	this._getRecurrence(calItem);
-
 	return calItem;
 };
 
@@ -417,7 +414,7 @@ function(calItem) {
 };
 
 /**
- * sets any recurrence rules w/in given ZmAppt object
+ * sets any recurrence rules w/in given ZmCalItem object
 */
 ZmCalItemEditView.prototype._getRecurrence =
 function(calItem) {
