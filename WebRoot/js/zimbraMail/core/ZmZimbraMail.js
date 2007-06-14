@@ -250,7 +250,8 @@ function(params) {
 	}
 
 	skin.show("skin", true);
-	this._TAB_SKIN_ENABLED = skin.hints && skin.hints.app_chooser.style == "tabs";
+	var hint = this._appCtxt.get(ZmSetting.SKIN_HINTS, "app_chooser.style");
+	this._TAB_SKIN_ENABLED = (hint == "tabs");
 	if (!this._components) {
 		this._components = {};
 		this._components[ZmAppViewMgr.C_SASH] = new DwtSash(this._shell, DwtSash.HORIZONTAL_STYLE, "console_inset_app_l", 20);
@@ -883,9 +884,9 @@ function(appName) {
 ZmZimbraMail.prototype._setUserInfo = 
 function() {
 	if (this._TAB_SKIN_ENABLED) {
-		var hideIcon = skin.hints && skin.hints.help_button.hideIcon;
+		var hideIcon = this._appCtxt.get(ZmSetting.SKIN_HINTS, "help_button.hideIcon");
 		this._setUserInfoLink("ZmZimbraMail.helpLinkCallback();", "Help", ZmMsg.help, "skin_container_help", hideIcon);
-		hideIcon = skin.hints && skin.hints.logout_button.hideIcon;
+		hideIcon = this._appCtxt.get(ZmSetting.SKIN_HINTS, "logout_button.hideIcon");
 		var text = this._appCtxt.get(ZmSetting.OFFLINE) ? ZmMsg.setup : ZmMsg.logOff;
 		this._setUserInfoLink("ZmZimbraMail.conditionalLogOff();", "Logoff", text, "skin_container_logoff", hideIcon);
 	}
@@ -939,7 +940,7 @@ function() {
 	}
 	html[idx++] = "</tr></table></center>";
 
-	if (!(skin.hints && skin.hints.help_button.hideIcon)) {
+	if (!this._appCtxt.get(ZmSetting.SKIN_HINTS, "help_button.hideIcon")) {
 		this._usedQuotaField.getHtmlElement().innerHTML = html.join("");
 	}
 
@@ -1207,7 +1208,7 @@ ZmZimbraMail.prototype._createBanner =
 function() {
 	// The LogoContainer style centers the logo
 	var banner = new DwtComposite(this._shell, null, Dwt.ABSOLUTE_STYLE);
-	var logoUrl = skin.hints && skin.hints.logo && skin.hints.logo.url ? skin.hints.logo.url : this._appCtxt.get(ZmSetting.LOGO_URI);
+	var logoUrl = this._appCtxt.get(ZmSetting.SKIN_HINTS, "logo.url") || this._appCtxt.get(ZmSetting.LOGO_URI);
 	var html = [];
 	var i = 0;
 	html[i++] = "<table border=0 cellpadding=0 cellspacing=0 style='width:100%;height:100%'>";
@@ -1223,7 +1224,7 @@ function() {
 
 ZmZimbraMail.prototype._createUserInfo =
 function(className, cid) {
-    var position = skin && skin.hints[cid] && skin.hints[cid].position;
+    var position = this._appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
     var posStyle = position || Dwt.ABSOLUTE_STYLE;
     var ui = new DwtComposite(this._shell, className, posStyle);
     if (posStyle == Dwt.ABSOLUTE_STYLE) {
@@ -1251,7 +1252,7 @@ function() {
 		return ZmZimbraMail.hashSortCompare(ZmApp.CHOOSER_SORT, a, b);
 	});
 
-	var appChooser = new ZmAppChooser(this._shell, null, buttons, this._TAB_SKIN_ENABLED);
+	var appChooser = new ZmAppChooser(this._shell, null, buttons, this._TAB_SKIN_ENABLED, this._appCtxt);
 	
 	var buttonListener = new AjxListener(this, this._appButtonListener);
 	for (var i = 0; i < buttons.length; i++) {

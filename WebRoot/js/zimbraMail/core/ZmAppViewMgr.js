@@ -632,12 +632,12 @@ function(components) {
                 var contBds = Dwt.getBounds(cont);
                 this._contBounds[cid] = contBds;
 
-                // set style
-                var position = (skin && skin.hints[cid] && skin.hints[cid].position) || Dwt.ABSOLUTE_STYLE;
-                var compEl = comp.getHtmlElement();
-                compEl.style.position = position;
-
-                // position
+				// reset position if skin overrides default of absolute
+				var position = this._appCtxt.get(ZmSetting.SKIN_HINTS, [cid, "position"].join("."));
+				var compEl = comp.getHtmlElement();
+				if (position) {
+					compEl.style.position = position;
+				}
                 switch (position) {
                     case Dwt.STATIC_STYLE: {
                         cont.appendChild(compEl);

@@ -292,10 +292,8 @@ ZmToast.prototype.popup = function(level, text, icon, loc) {
     }
 
     // get transitions
-    var hints = window.skin && window.skin.hints;
-    var toast = hints && hints.toast;
-    var location = (toast && toast.location) || loc;
-    var transitions = (toast && toast.transitions) || ZmToast.DEFAULT_TRANSITIONS;
+    var location = this._appCtxt.get(ZmSetting.SKIN_HINTS, "toast.location") || loc;
+    var transitions = this._appCtxt.get(ZmSetting.SKIN_HINTS, "toast.transitions") || ZmToast.DEFAULT_TRANSITIONS;
     transitions = [].concat( {type:"position",location:location}, transitions, {type:"hide"} );
 
     // start animation

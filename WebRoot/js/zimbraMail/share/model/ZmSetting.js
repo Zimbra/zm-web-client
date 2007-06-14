@@ -154,13 +154,15 @@ function(value, key, setDefault, skipNotify) {
 		this.value = value;
 	} else if (this.dataType == ZmSetting.D_INT) {
 		this.value = parseInt(value);
-		if (isNaN(this.value)) // revert to string if NaN
+		if (isNaN(this.value)) { // revert to string if NaN
 			this.value = value;
+		}
 	} else if (this.dataType == ZmSetting.D_BOOLEAN) {
-		if (typeof(value) == "string")
+		if (typeof(value) == "string") {
 			this.value = (value.toLowerCase() == "true");
-		else
+		} else {
 			this.value = value;
+		}
 	} else if (this.dataType == ZmSetting.D_LDAP_TIME) {
 		var lastChar = (value.toLowerCase) ? lastChar = (value.toLowerCase()).charAt(value.length-1) : null;
 		var num = parseInt(value);
