@@ -393,10 +393,19 @@ function(id) {
 };
 
 /**
+* Sets the IDs of messages to attach (when attaching multiple msgs)
+* RR
+* @param msgIdArry an array containing ids of all the messages that will be attached
+*/
+ZmMailMsg.prototype.setMultiMessageAttachmentId =
+function(msgIdArry) {
+	this._msgAttIdArry = msgIdArry;
+};
+/**
 * Sets the list of attachment (message part) IDs to be forwarded
 * - This list will only be set for any msgs containing attachments that need to be forwarded
 *
-* @param id		list of attachment IDs
+* @param id list of attachment IDs
 */
 ZmMailMsg.prototype.setForwardAttIds =
 function(forAttIds) {
@@ -732,27 +741,37 @@ function(soapDoc, contactList, isDraft, accountName) {
 	if (this.irtMessageId)
 		soapDoc.set("irt", this.irtMessageId, msgNode);
 
-	if (this._attId || this._msgAttId ||
+	if (this._attId || this._msgAttId || this._msgAttIdArry ||
 		(this._forAttIds && this._forAttIds.length))
 	{
 		var attachNode = soapDoc.set("attach", null, msgNode);
 		if (this._attId)
 			attachNode.setAttribute("aid", this._attId);
 
+		//attach single msg...
+		var msgNode;
 		if (this._msgAttId) {
-			var msgNode = soapDoc.set("m", null, attachNode);
+			 msgNode = soapDoc.set("m", null, attachNode);
 			msgNode.setAttribute("id", this._msgAttId);
 		}
+
 		if (this._forAttIds) {
-			for (var i = 0; i < this._forAttIds.length; i++) {
-				var msgPartNode = soapDoc.set("mp", null, attachNode);
-				// XXX: this looks hacky but we cant send a null ID to the server!
-				var id = (isDraft || this.isDraft) ? (this.id || this.origId) : (this.origId || this.id);
-				msgPartNode.setAttribute("mid", id);
-				msgPartNode.setAttribute("part", this._forAttIds[i]);
+            for (var i = 0; i < this._forAttIds.length; i++) {
+                if (this._msgAttIdArry) { //if multiple msgs needs to be attached...
+				        msgNode = soapDoc.set("m", null, attachNode);
+				        msgNode.setAttribute("id", this._forAttIds[i]);
+		        } else{
+                        var msgPartNode = soapDoc.set("mp", null, attachNode);
+				        // XXX: this looks hacky but we cant send a null ID to the server!
+				        var id = (isDraft || this.isDraft) ? (this.id || this.origId) : (this.origId || this.id);
+				        msgPartNode.setAttribute("mid", id);
+				        msgPartNode.setAttribute("part", this._forAttIds[i]);
+                }
 			}
 		}
-	}
+
+        
+    }
 };
 
 /*

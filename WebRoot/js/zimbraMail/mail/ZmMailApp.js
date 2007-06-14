@@ -279,6 +279,7 @@ function() {
 			ZmOperation.addDeferredMenu(ZmMailApp.addForwardMenu, parent);
 	}));*/
 	ZmOperation.registerOp("IM", {textKey:"newIM", image:"ImStartChat"}, ZmSetting.IM_ENABLED);
+    ZmOperation.registerOp("ATTACH_ALL", {textKey:"attachMultiMsgs", tooltipKey:"attachMultiMsgs", image:"Attachment"}, ZmSetting.MAIL_FORWARDING_ENABLED);
 	ZmOperation.registerOp("INC_ATTACHMENT", {textKey:"includeMenuAttachment"});
 	ZmOperation.registerOp("INC_NONE", {textKey:"includeMenuNone"});
 	ZmOperation.registerOp("INC_NO_PREFIX", {textKey:"includeMenuNoPrefix"});
@@ -712,6 +713,7 @@ function(create, type, currList, sortBy, cutoff) {
 	if (create._wasVirtConv) { return false; }
 
 	return true;
+
 };
 
 ZmMailApp.prototype.postNotify =
@@ -1004,3 +1006,4 @@ function(parent) {
 	parent.setMenu(menu);
 	return menu;
 };
+ 

@@ -26,7 +26,7 @@
 /**
 * Creates a new compose view. The view does not display itself on construction.
 * @constructor
-* @class
+* @class        
 * This class provides a form for composing a message.
 *
 * @author Conrad Damon
@@ -119,6 +119,9 @@ function(params) {
 	if (params.identity) {
 		this._identitySelect.setSelectedValue(params.identity.id);
 	}
+    //used for multiple attachments and to avoid caching (donot remove this!!)
+    this._msgAttIdArry = params._msgAttIdArry;
+    this._msgSubArray = params._msgSubArray;
 
 	this.reset(true);
 
@@ -137,19 +140,20 @@ function(params) {
 	
 	this.getHtmlEditor().moveCaretToTop();
 
-	// save extra mime parts
-	var bodyParts = msg ? msg.getBodyParts() : [];
-	for (var i = 0; i < bodyParts.length; i++) {
-		var bodyPart = bodyParts[i];
-		var contentType = bodyPart.ct;
-		if (contentType != ZmMimeTable.TEXT_PLAIN && contentType != ZmMimeTable.TEXT_HTML) {
-			var mimePart = new ZmMimePart();
-			mimePart.setContentType(contentType);
-			mimePart.setContent(bodyPart.content);
-			this.addMimePart(mimePart);
+	if(action != ZmOperation.ATTACH_ALL){
+		// save extra mime parts
+		var bodyParts = msg ? msg.getBodyParts() : [];
+		for (var i = 0; i < bodyParts.length; i++) {
+			var bodyPart = bodyParts[i];
+			var contentType = bodyPart.ct;
+			if (contentType != ZmMimeTable.TEXT_PLAIN && contentType != ZmMimeTable.TEXT_HTML) {
+				var mimePart = new ZmMimePart();
+				mimePart.setContentType(contentType);
+				mimePart.setContent(bodyPart.content);
+				this.addMimePart(mimePart);
+			}
 		}
 	}
-
 	// save form state (to check for change later)
 	if (this._composeMode == DwtHtmlEditor.HTML) {
 		var ta = new AjxTimedAction(this, this._setFormValue);
@@ -285,7 +289,7 @@ function() {
 * Returns the message from the form, after some basic input validation.
 */
 ZmComposeView.prototype.getMsg =
-function(attId, isDraft) {	
+function(attId, isDraft) {
 	//Check destination addresses.
 	var addrs = this._collectAddrs();
 
@@ -345,7 +349,8 @@ function(attId, isDraft) {
 	}
 
 	// get list of message part id's for any forwarded attachements
-	var forwardAttIds = this._getForwardAttIds();
+	var forwardAttIds;
+	forwardAttIds = this._getForwardAttIds();
 
 	// --------------------------------------------
 	// Passed validation checks, message ok to send
@@ -406,7 +411,7 @@ function(attId, isDraft) {
 		msg._instanceDate = this._msg._instanceDate;
 	}
 
-	if (this._action != ZmOperation.NEW_MESSAGE) {
+	if (this._action != ZmOperation.NEW_MESSAGE && this._action != ZmOperation.ATTACH_ALL) {
 		var isInviteReply = this._isInviteReply(this._action);
 		if (this._action == ZmOperation.DRAFT) {
 			msg.isReplied = this._msg.rt == "r";
@@ -442,6 +447,9 @@ function(attId, isDraft) {
 	if (this._msgAttId) {
 		msg.setMessageAttachmentId(this._msgAttId);
 	}
+    if (this._msgAttIdArry) {
+        msg.setMultiMessageAttachmentId(this._msgAttIdArry);
+    }
 
 	return msg;
 };
@@ -1020,7 +1028,8 @@ function(action, toOverride) {
 
 ZmComposeView.prototype._setSubject =
 function(action, msg, subjOverride) {
-	if (action == ZmOperation.NEW_MESSAGE && subjOverride == null) return;
+	if ((action == ZmOperation.NEW_MESSAGE && subjOverride == null) || action == ZmOperation.ATTACH_ALL)
+		return;
 
 	var subj = subjOverride || msg.getSubject();
 
@@ -1104,9 +1113,11 @@ function(action, msg, extraBodyText, incOption) {
 	if (incOption == ZmSetting.INCLUDE_NONE || action == ZmOperation.NEW_MESSAGE) {
 		if (extraBodyText)
 			value = extraBodyText + value;
-	} else if (incOption == ZmSetting.INCLUDE_ATTACH) {
+	}
+	else if (incOption == ZmSetting.INCLUDE_ATTACH) {
 		this._msgAttId = this._msg.id;
-	} else {
+	}
+	else if(action != ZmOperation.ATTACH_ALL){
 		var crlf = composingHtml ? "<br>" : ZmMsg.CRLF;
 		var crlf2 = composingHtml ? "<br><br>" : ZmMsg.CRLF2;
 		var leadingText = extraBodyText ? extraBodyText + crlf : crlf;
@@ -1564,6 +1575,32 @@ function(msg, action, replyPref) {
 
 		this._attachCount = 1;
 	}
+	else if(action == ZmOperation.ATTACH_ALL){
+			html[idx++] = "<table cellspacing=0 cellpadding=0 border=0 width=100%>";
+			for (var i = 0; i < this._msgAttIdArry.length; i++) {
+				subj = (this._msgSubArray[i]) || AjxStringUtil.htmlEncode(ZmMsg.noSubject);
+				html[idx++] = "<tr><td width=65 align=right>";
+				html[idx++] = AjxImg.getImageHtml("Message");
+				html[idx++] = "</td><td width=1%><input name='";
+				html[idx++] = ZmComposeView.FORWARD_ATT_NAME;
+				html[idx++] = "' type='checkbox'";
+                html[idx++] = " checked='CHECKED'";
+				html[idx++] = " id='";
+				html[idx++] = this._msgAttIdArry[i];
+				html[idx++] = "'></td><td class='nobreak'>";
+				html[idx++] = "</td><td><b>";
+				html[idx++] = subj;
+				html[idx++] = "</b></td></tr>";
+			}
+			html[idx++] = "</table>";
+
+			if (this._msgAttIdArry.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
+				this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;
+				this._attcDiv.style.overflow = "auto";
+			}
+			this._attachCount = this._msgAttIdArry.length;
+
+	}
 	else if (msg && msg.hasAttach) {
 		var attLinks = msg.getAttachmentLinks();
 		if (attLinks.length > 0) {
@@ -1589,7 +1626,7 @@ function(msg, action, replyPref) {
 					html[idx++] = " id='";
 					html[idx++] = att.part;
 					html[idx++] = "'>";
-				}
+				
 				html[idx++] = "</td><td class='nobreak'>";
 				html[idx++] = att.link;
 				html[idx++] = AjxStringUtil.htmlEncode(att.label);
@@ -1601,7 +1638,8 @@ function(msg, action, replyPref) {
 				}
 				html[idx++] = "</td></tr>";
 			}
-			html[idx++] = "</table>";
+			html[idx++] = "</table>";}
+
 
 			if (attLinks.length >= ZmComposeView.SHOW_MAX_ATTACHMENTS) {
 				this._attcDiv.style.height = ZmComposeView.MAX_ATTACHMENT_HEIGHT;

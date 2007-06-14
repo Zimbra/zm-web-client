@@ -63,7 +63,7 @@ ZmMailListController = function(appCtxt, container, mailApp) {
 	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) 
 		this._listeners[ZmOperation.FORWARD] = new AjxListener(this, this._forwardListener);
 	//
-	this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
+    this._listeners[ZmOperation.EDIT] = new AjxListener(this, this._editListener);
 	this._listeners[ZmOperation.CHECK_MAIL] = new AjxListener(this, this._checkMailListener);
 			
 	if (this._appCtxt.get(ZmSetting.SPAM_ENABLED))
@@ -358,7 +358,7 @@ function(view, arrowStyle) {
 			}
 			//fixed bug:15460 removed forward menu.
 			if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
-				buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+															  buttons.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
 			}
 			if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
 				buttons.push(ZmOperation.FORWARD);
@@ -425,7 +425,7 @@ function() {
 	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
 		list.push(ZmOperation.FORWARD);
 	}
-			
+
 	list.push(ZmOperation.EDIT);
 
 	return list;
@@ -523,6 +523,11 @@ function(ev) {
 // This method may be called with a null ev parameter
 ZmMailListController.prototype._doAction = 
 function(ev, action, extraBodyText, instanceDate, accountName) {
+	//rr
+	var  convOrMsgItems;
+	if((this._listView[this._currentView].getSelectionCount() > 1) || action == ZmOperation.ATTACH_ALL || action == ZmOperation.FORWARD_ATT){
+		convOrMsgItems = this._getConvOrMsgItems(ev ? ev.item : null);
+	}
 	// retrieve msg and make sure it's loaded
 	var msg = this._getMsg(ev ? ev.item : null);
 	if (!msg) return;
@@ -536,19 +541,36 @@ function(ev, action, extraBodyText, instanceDate, accountName) {
 	var identity = identityCollection.selectIdentity(msg);
 
 	// always re-resolve forward action if forward toolbar button is clicked
-	if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD) {
-		action = identity.getForwardOption() == ZmSetting.INCLUDE_ATTACH 
+    if(this._listView[this._currentView].getSelectionCount() > 1 || action == ZmOperation.FORWARD_ATT){
+        //attach everything if more than one msg is selected or forwarding as attachment
+        action = ZmOperation.ATTACH_ALL;
+    }
+    else if (!action || action == ZmOperation.FORWARD_MENU || action == ZmOperation.FORWARD) {
+			action = identity.getForwardOption() == ZmSetting.INCLUDE_ATTACH
 			? ZmOperation.FORWARD_ATT : ZmOperation.FORWARD_INLINE;
 	}
 
-	var htmlEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
+    var htmlEnabled = this._appCtxt.get(ZmSetting.HTML_COMPOSE_ENABLED);
 	var prefersHtml = identity.getComposeAsFormat() == ZmSetting.COMPOSE_HTML;
 	var sameFormat = identity.getComposeSameFormat();
 	
 	var getHtml = (htmlEnabled && (action == ZmOperation.DRAFT || (action != ZmOperation.DRAFT && (prefersHtml || (!msg._loaded && sameFormat)))));
 	var inNewWindow = this._app._inNewWindow(ev);
-	var respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText, accountName]);
-	msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
+	if(action == ZmOperation.ATTACH_ALL){
+		var respCallback = new AjxCallback(this, this._handleResponseDoActionAttMsgs, [action, inNewWindow,  convOrMsgItems, extraBodyText, accountName]);
+		ZmMailListController.prototype.show.call(this, this._activeSearch);
+		if ( convOrMsgItems[0].type == ZmItem.MSG) {
+			convOrMsgItems[0].load(getHtml, action == ZmOperation.DRAFT, respCallback);
+		} else if (convOrMsgItems[0].type == ZmItem.CONV) {
+            if(convOrMsgItems[0].msgs) {
+                convOrMsgItems[0].msgs.clear();
+            }
+                convOrMsgItems[0].load({query:this.getSearchString(),callback:respCallback});
+		}
+	}else {
+		respCallback = new AjxCallback(this, this._handleResponseDoAction, [action, inNewWindow, msg, extraBodyText, accountName]);
+		msg.load(getHtml, action == ZmOperation.DRAFT, respCallback);
+	}
 };
 
 ZmMailListController.prototype._doMarkRead = 
@@ -579,9 +601,93 @@ function(action, inNewWindow, msg, extraBodyText, accountName) {
 								  extraBodyText: extraBodyText, accountName: accountName});
 };
 
+ZmMailListController.prototype._handleResponseDoActionAttMsgs =
+function(action, inNewWindow, convOrMsgArry, extraBodyText, accountName) {
+	var notLoaded;
+    var composeMsg;
+    //if we try to fwd (same set of)multiple conv twice, then, avoid opening multiple windows
+   // if(this._actionAlreadyHandled)  return;
+    var _msgAttIdArry = new Array();
+	var  _msgSubArray = new Array();
+	var msgCount = 0;
+	for(var i= 0; i <convOrMsgArry.length; i++ )  {
+		if(!convOrMsgArry[i]._loaded) {
+			notLoaded = true;
+			break;
+		} else
+			notLoaded = false;
+	}
+	if(notLoaded){
+		var respCallback = new AjxCallback(this, this._handleResponseDoActionAttMsgs, [action, inNewWindow,  convOrMsgArry, extraBodyText, accountName]);
+		ZmMailListController.prototype.show.call(this, this._activeSearch);
+		if ( convOrMsgArry[i].type == ZmItem.MSG) {
+			convOrMsgArry[i].load(false, action == ZmOperation.DRAFT, respCallback);
+		} else if (convOrMsgArry[i].type == ZmItem.CONV) {
+				convOrMsgArry[i].load({query:this.getSearchString(),callback:respCallback});
+		}
+	}else{  //if everything is loaded...
+         this._actionAlreadyHandled = true;//flag to avoid opening multiple compose windows
+        for(var j = 0; j <convOrMsgArry.length; j++ )  {
+			if(convOrMsgArry[j].type == ZmItem.MSG) {
+				_msgAttIdArry[msgCount]=  convOrMsgArry[j].id;
+				_msgSubArray[msgCount] =  convOrMsgArry[j].subject + ZmMailListController.prototype._fixFragments( convOrMsgArry[j].fragment);
+				msgCount++;
+			} else if (convOrMsgArry[j].type == ZmItem.CONV) {
+				var conv = convOrMsgArry[j];
+				var len = conv.msgs.getArray().length;
+				for(var n=0; n <=(len-1); n++) {
+					_msgAttIdArry[msgCount]= conv.msgs.getArray()[n].id;
+					if(len>1){
+                        _msgSubArray[msgCount] = conv.msgs.getArray()[n].subject + ZmMailListController.prototype._fixFragments(conv.msgs.getArray()[n].fragment);
+					}
+					else {
+						_msgSubArray[msgCount] = conv.msgs.getArray()[n].subject + ZmMailListController.prototype._fixFragments(conv.msgs.getArray()[n].fragment);
+					}
+					msgCount++;
+				}
+			}
+		}
+        _msgAttIdArry= ZmMailListController.prototype._removeDuplicateItmsInArry(_msgAttIdArry);
+        _msgSubArray= ZmMailListController.prototype._removeDuplicateItmsInArry(_msgSubArray);
+        composeMsg = AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, _msgAttIdArry: _msgAttIdArry,
+		_msgSubArray: _msgSubArray, extraBodyText: extraBodyText, accountName: accountName});
+	}
+};
+
+ZmMailListController.prototype._fixFragments =
+function(fragment){
+    if(!fragment)  return "";
+    var fragmentLen = 35;//max fragment length allowed
+          if(fragment.length >0 && fragment.length> fragmentLen){
+                fragment = fragment.substring(0,fragmentLen) +"...";
+                fragment = "("+ fragment +")";
+            }else if(fragment.length >0 && fragment.length < fragmentLen){
+                    fragment = fragment.substring(0,fragmentLen) ;
+                    fragment = "("+ fragment +")";
+            }else if(fragment.length ==0){
+                    fragment = "";
+            }               
+    return fragment;
+};
+ZmMailListController.prototype._removeDuplicateItmsInArry  =
+function(a){
+    var dupsArray = [];
+    var assocArray = [];
+    for (var loop=0; loop<a.length; loop++) {
+    var theValue = a[loop];
+    if (typeof(assocArray[theValue]) == 'undefined') {
+            dupsArray.push(theValue);
+            assocArray[theValue] = true;
+        }
+
+    }
+    return   dupsArray;
+ };
+
+
 ZmMailListController.prototype._syncOfflineListener =
 function(ev) {
-	ZmListController.prototype._syncOfflineListener.apply(this, arguments);
+    ZmListController.prototype._syncOfflineListener.apply(this, arguments);
 	this._checkMailListener(ev);
 };
 
@@ -695,7 +801,7 @@ function(parent) {
 	var ops = [];
 	
 	if (this._appCtxt.get(ZmSetting.REPLY_MENU_ENABLED)) {
-		ops.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
+													  ops.push(ZmOperation.REPLY, ZmOperation.REPLY_ALL);
 	}
 			
 	if (this._appCtxt.get(ZmSetting.FORWARD_MENU_ENABLED)) {
@@ -730,6 +836,19 @@ function(item) {
 	
 	return msg;
 };
+
+ZmMailListController.prototype._getConvOrMsgItems =
+function(item) {
+	item = (item && (item instanceof ZmMailItem))
+		? item
+		: this._listView[this._currentView].getSelection();
+	if (!item || !item[0]) return null;
+
+	if (item[0].type == ZmItem.MSG || item[0].type == ZmItem.CONV) {
+		return item;
+	}
+
+}
 
 ZmMailListController.prototype._getInviteReplyBody = 
 function(type, instanceDate) {
@@ -946,7 +1065,7 @@ function(parent, num) {
 		}
 		var isDrafts = (item && item.isDraft) || (folderId == ZmFolder.ID_DRAFTS);
 		parent.enable([ZmOperation.REPLY, ZmOperation.REPLY_ALL, ZmOperation.FORWARD, ZmOperation.DETACH], (!isDrafts && num == 1));
-		parent.enable([ZmOperation.SPAM, ZmOperation.MOVE], (!isDrafts && num > 0));
+		parent.enable([ZmOperation.SPAM, ZmOperation.MOVE,ZmOperation.FORWARD], (!isDrafts && num > 0));
 		parent.enable([ZmOperation.CHECK_MAIL], true);
 	}
 };

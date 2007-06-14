@@ -72,6 +72,7 @@ ZmComposeController = function(appCtxt, container, mailApp) {
 	ZmComposeController.OPTIONS_TT[ZmOperation.REPLY]			= "replyOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.REPLY_ALL]		= "replyOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_ATT]		= "forwardOptions";
+	ZmComposeController.OPTIONS_TT[ZmOperation.ATTACH_ALL]		= "forwardOptions";
 	ZmComposeController.OPTIONS_TT[ZmOperation.FORWARD_INLINE]	= "forwardOptions";
 
 	this._listeners = {};
@@ -170,13 +171,13 @@ function() {
 	var identityId = this._composeView.getIdentity().id;
 	var backupForm = this._composeView.backupForm;
 	var sendUID = this._composeView.getSendUID();
-
 	// this is how child window knows what to do once loading:
 	var newWinObj = this._appCtxt.getNewWindow();
 	newWinObj.command = "composeDetach";
 	newWinObj.params = {action:this._action, msg:msg, addrs:addrs, subj:subj, forwardHtml:forAttHtml, body:body,
 					  composeMode:composeMode, identityId:identityId, accountName:this._accountName,
-					  backupForm:backupForm, sendUID:sendUID};
+					  backupForm:backupForm, sendUID:sendUID,_msgAttIdArry:this._msgAttIdArry,
+                      _msgSubArray:this._msgSubArray, _forAttIds:this._forAttIds};
 };
 
 ZmComposeController.prototype.popShield =
@@ -219,9 +220,10 @@ function() {
 	}
 	if (this._action != ZmOperation.NEW_MESSAGE &&
 		this._action != ZmOperation.FORWARD_INLINE &&
-		this._action != ZmOperation.FORWARD_ATT) {
-
-		this._composeView._setBodyFieldCursor();
+		this._action != ZmOperation.FORWARD_ATT &&
+		this._action != ZmOperation.ATTACH_ALL
+		) {
+			this._composeView._setBodyFieldCursor();
 	}
 };
 
@@ -494,6 +496,8 @@ function(params) {
 	this._subjOverride = params.subjOverride;
 	this._extraBodyText = params.extraBodyText;
 	this._accountName = params.accountName;
+    this._msgAttIdArry = params._msgAttIdArry;
+    this._msgSubArray = params._msgSubArray;
 
 	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
 	var identity = (msg && msg.identity) ? msg.identity : identityCollection.selectIdentity(msg);
@@ -524,6 +528,9 @@ function(params) {
 	this._app.pushView(ZmController.COMPOSE_VIEW);
 	this._composeView.reEnableDesignMode();
 };
+
+
+
 
 ZmComposeController.prototype._initializeToolBar =
 function() {
@@ -558,9 +565,9 @@ function() {
 	var canAddSig = this._setAddSignatureVisibility(identity);
 
 	var actions = [ZmOperation.NEW_MESSAGE, ZmOperation.REPLY,
-				   ZmOperation.FORWARD_ATT, ZmOperation.DRAFT,
-				   ZmOperation.REPLY_CANCEL, ZmOperation.REPLY_ACCEPT,
-				   ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE];
+					ZmOperation.FORWARD_ATT,ZmOperation.DRAFT,
+					ZmOperation.ATTACH_ALL, ZmOperation.REPLY_CANCEL, ZmOperation.REPLY_ACCEPT,
+					ZmOperation.REPLY_DECLINE, ZmOperation.REPLY_TENTATIVE];
 	this._optionsMenu = {};
 	for (var i = 0; i < actions.length; i++) {
 		this._optionsMenu[actions[i]] = this._createOptionsMenu(actions[i]);
@@ -1041,12 +1048,13 @@ ZmComposeController.prototype._getDefaultFocusItem =
 function() {
 	if (this._action == ZmOperation.NEW_MESSAGE ||
 		this._action == ZmOperation.FORWARD_INLINE ||
-		this._action == ZmOperation.FORWARD_ATT) {
-
-		return this._composeView._field[AjxEmailAddress.TO];
+		this._action == ZmOperation.FORWARD_ATT  ||
+		this._action == ZmOperation.ATTACH_ALL ) 
+		{
+			return this._composeView._field[AjxEmailAddress.TO];
 	} else {
-		var composeMode = this._composeView.getComposeMode();
-		return (composeMode == DwtHtmlEditor.TEXT) ? this._composeView._bodyField :
+			var composeMode = this._composeView.getComposeMode();
+			return (composeMode == DwtHtmlEditor.TEXT) ? this._composeView._bodyField :
 													 this._composeView._htmlEditor;
 	}
-};
+};                             
