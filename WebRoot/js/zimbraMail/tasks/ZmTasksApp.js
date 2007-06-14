@@ -281,8 +281,7 @@ ZmTasksApp.prototype.search =
 function(folder, startDate, endDate, callback) {
 	var query = folder ? folder.createQuery() : "in:tasks";
 	var sc = this._appCtxt.getSearchController();
-	sc.search({query:query, types:[ZmItem.TASK],
-			   sortBy:ZmSearch.DATE_DESC, callback:callback});
+	sc.search({query:query, types:[ZmItem.TASK], callback:callback});
 };
 
 

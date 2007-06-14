@@ -323,20 +323,22 @@ function(searchFor) {
 
 ZmSearchController.prototype._getSuitableSortBy =
 function(types) {
-	var sortBy = null;
+	var sortBy;
 
 	if (types.size() == 1) {
 		var type = types.get(0);
-		var viewType = null;
+		var viewType;
 		switch (type) {
 			case ZmItem.CONV:		viewType = ZmController.CONVLIST_VIEW; break;
 			case ZmItem.MSG:		viewType = ZmController.TRAD_VIEW; break;
 			case ZmItem.CONTACT:	viewType = ZmController.CONTACT_SIMPLE_VIEW; break;
+			case ZmItem.TASK:		viewType = ZmController.TASKLIST_VIEW; break;
 			// more types go here as they are suported...
 		}
 
-		if (viewType)
+		if (viewType) {
 			sortBy = this._appCtxt.get(ZmSetting.SORTING_PREF, viewType);
+		}
 	}
 
 	return sortBy;

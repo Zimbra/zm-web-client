@@ -209,48 +209,37 @@ function() {
 	return this._colHeaderActionMenu;
 };
 
-ZmTaskListView.prototype._mouseOverAction =
-function(ev, div) {
-	var id = ev.target.id || div.id;
-	if (!id) return true;
-
-	// check if we're hovering over a column header
-	var type = Dwt.getAttr(div, "_type");
-	if (type && type == DwtListView.TYPE_HEADER_ITEM) {
-		var itemIdx = Dwt.getAttr(div, "_itemIndex");
-		var field = DwtListHeaderItem.getHeaderField(this._headerList[itemIdx]._id);
-		if (field == ZmItem.F_PRIORITY) {
-			this.setToolTipContent(ZmMsg.priority);
-		} else if (field == ZmItem.F_SUBJECT) {
-			this.setToolTipContent(ZmMsg.subject);
-		} else if (field == ZmItem.F_STATUS) {
-			this.setToolTipContent(ZmMsg.status);
-		} else if (field == ZmItem.F_PCOMPLETE) {
-			this.setToolTipContent(ZmMsg.percentComplete);
-		} else if (field == ZmItem.F_DATE) {
-			this.setToolTipContent(ZmMsg.dateDue);
-		} else {
-			return ZmListView.prototype._mouseOverAction.call(this, ev, div);
-		}
-	} else {
-		var m = this._parseId(id);
-		if (m && m.field) {
-			if (m.field == ZmItem.F_PRIORITY) {
-				var item = this.getItemFromElement(div);
-				if (item && item.priority != ZmCalItem.PRIORITY_NORMAL)
-					this.setToolTipContent(ZmCalItem.getLabelForPriority(item.priority));
-				return true;
-			} else if (m.field == ZmItem.F_SUBJECT ||
-					m.field == ZmItem.F_STATUS)
-			{
-				// do nothing for now
-				// this.setToolTipContent();
-				return true;
-			}
-		}
-		return ZmListView.prototype._mouseOverAction.call(this, ev, div);
+ZmTaskListView.prototype._getHeaderToolTip =
+function(field, itemIdx) {
+	switch (field) {
+		case ZmItem.F_PRIORITY: 	return ZmMsg.priority;
+		case ZmItem.F_STATUS:		return ZmMsg.status;
+		case ZmItem.F_PCOMPLETE:	return ZmMsg.percentComplete;
+		case ZmItem.F_DATE:			return ZmMsg.dateDue;
 	}
-	return true;
+	return ZmListView.prototype._getHeaderToolTip.call(this, field, itemIdx);
+};
+
+ZmTaskListView.prototype._sortColumn =
+function(columnItem, bSortAsc) {
+	// change the sort preference for this view in the settings
+	var sortBy;
+	switch (columnItem._sortable) {
+		case ZmItem.F_STATUS:		sortBy = bSortAsc ? ZmSearch.STATUS_ASC : ZmSearch.STATUS_DESC; break;
+		case ZmItem.F_PCOMPLETE:	sortBy = bSortAsc ? ZmSearch.PCOMPLETE_ASC : ZmSearch.PCOMPLETE_DESC; break;
+		case ZmItem.F_DATE:			sortBy = bSortAsc ? ZmSearch.DUE_DATE_ASC : ZmSearch.DUE_DATE_DESC;	break;
+	}
+
+	if (sortBy) {
+		this._sortByString = sortBy;
+		this._appCtxt.set(ZmSetting.SORTING_PREF, sortBy, this.view);
+	}
+
+	if (this.getList().size() > 1 && this._sortByString) {
+		var searchString = this._controller.getSearchString();
+		var params = {query:searchString, types:[ZmItem.TASK], sortBy:this._sortByString, limit:this.getLimit()};
+		this._appCtxt.getSearchController().search(params);
+	}
 };
 
 ZmTaskListView.prototype._handleNewTaskClick =
@@ -296,10 +285,10 @@ function(parent) {
 	}
 	hList.push(new DwtListHeaderItem(ZmItem.F_PRIORITY, null, "TaskHigh", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.priority));
 	hList.push(new DwtListHeaderItem(ZmItem.F_ATTACHMENT, null, "Attachment", ZmListView.COL_WIDTH_ICON, null, null, null, ZmMsg.attachment));
-	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject, null, null/*, ZmItem.F_SUBJECT*/));
-	hList.push(new DwtListHeaderItem(ZmItem.F_STATUS, ZmMsg.status, null, ZmTaskListView.COL_WIDTH_STATUS));
-	hList.push(new DwtListHeaderItem(ZmItem.F_PCOMPLETE, ZmMsg.pComplete, null, ZmListView.COL_WIDTH_DATE));
-	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.dateDue, null, ZmListView.COL_WIDTH_DATE));
+	hList.push(new DwtListHeaderItem(ZmItem.F_SUBJECT, ZmMsg.subject));
+	hList.push(new DwtListHeaderItem(ZmItem.F_STATUS, ZmMsg.status, null, ZmTaskListView.COL_WIDTH_STATUS, ZmItem.F_STATUS));
+	hList.push(new DwtListHeaderItem(ZmItem.F_PCOMPLETE, ZmMsg.pComplete, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_PCOMPLETE));
+	hList.push(new DwtListHeaderItem(ZmItem.F_DATE, ZmMsg.dateDue, null, ZmListView.COL_WIDTH_DATE, ZmItem.F_DATE));
 
 	return hList;
 };

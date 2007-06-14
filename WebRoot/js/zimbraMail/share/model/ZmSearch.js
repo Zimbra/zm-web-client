@@ -96,26 +96,38 @@ ZmSearch.TYPE_MAP = {};
 
 // Sort By
 var i = 1;
-ZmSearch.DATE_DESC 	= i++;
-ZmSearch.DATE_ASC 	= i++;
-ZmSearch.SUBJ_DESC 	= i++;
-ZmSearch.SUBJ_ASC 	= i++;
-ZmSearch.NAME_DESC 	= i++;
-ZmSearch.NAME_ASC 	= i++;
-ZmSearch.SCORE_DESC = i++;
+ZmSearch.DATE_DESC 		= i++;
+ZmSearch.DATE_ASC 		= i++;
+ZmSearch.SUBJ_DESC 		= i++;
+ZmSearch.SUBJ_ASC 		= i++;
+ZmSearch.NAME_DESC 		= i++;
+ZmSearch.NAME_ASC 		= i++;
+ZmSearch.SCORE_DESC 	= i++;
 ZmSearch.DURATION_DESC	= i++; 
 ZmSearch.DURATION_ASC	= i++;
+ZmSearch.STATUS_DESC	= i++;
+ZmSearch.STATUS_ASC		= i++;
+ZmSearch.PCOMPLETE_DESC	= i++;
+ZmSearch.PCOMPLETE_ASC	= i++;
+ZmSearch.DUE_DATE_DESC	= i++;
+ZmSearch.DUE_DATE_ASC	= i++;
 
 ZmSearch.SORT_BY = {};
-ZmSearch.SORT_BY[ZmSearch.DATE_DESC] 	= "dateDesc";
-ZmSearch.SORT_BY[ZmSearch.DATE_ASC] 	= "dateAsc";
-ZmSearch.SORT_BY[ZmSearch.SUBJ_DESC] 	= "subjDesc";
-ZmSearch.SORT_BY[ZmSearch.SUBJ_ASC] 	= "subjAsc";
-ZmSearch.SORT_BY[ZmSearch.NAME_DESC] 	= "nameDesc";
-ZmSearch.SORT_BY[ZmSearch.NAME_ASC] 	= "nameAsc";
-ZmSearch.SORT_BY[ZmSearch.SCORE_DESC]	= "scoreDesc";
-ZmSearch.SORT_BY[ZmSearch.DURATION_DESC]= "durDesc";
-ZmSearch.SORT_BY[ZmSearch.DURATION_ASC]	= "durAsc";
+ZmSearch.SORT_BY[ZmSearch.DATE_DESC] 		= "dateDesc";
+ZmSearch.SORT_BY[ZmSearch.DATE_ASC] 		= "dateAsc";
+ZmSearch.SORT_BY[ZmSearch.SUBJ_DESC] 		= "subjDesc";
+ZmSearch.SORT_BY[ZmSearch.SUBJ_ASC] 		= "subjAsc";
+ZmSearch.SORT_BY[ZmSearch.NAME_DESC] 		= "nameDesc";
+ZmSearch.SORT_BY[ZmSearch.NAME_ASC] 		= "nameAsc";
+ZmSearch.SORT_BY[ZmSearch.SCORE_DESC]		= "scoreDesc";
+ZmSearch.SORT_BY[ZmSearch.DURATION_DESC]	= "durDesc";
+ZmSearch.SORT_BY[ZmSearch.DURATION_ASC]		= "durAsc";
+ZmSearch.SORT_BY[ZmSearch.STATUS_DESC]		= "taskStatusDesc";
+ZmSearch.SORT_BY[ZmSearch.STATUS_ASC]		= "taskStatusAsc";
+ZmSearch.SORT_BY[ZmSearch.PCOMPLETE_DESC]	= "taskPercCompletedDesc";
+ZmSearch.SORT_BY[ZmSearch.PCOMPLETE_ASC]	= "taskPercCompletedAsc";
+ZmSearch.SORT_BY[ZmSearch.DUE_DATE_DESC]	= "taskDueDesc";
+ZmSearch.SORT_BY[ZmSearch.DUE_DATE_ASC]		= "taskDueAsc";
 
 ZmSearch.SORT_BY_MAP = {};
 for (var i in ZmSearch.SORT_BY)

@@ -469,17 +469,14 @@ function(field, itemIdx) {
 	} else if (field == ZmItem.F_ATTACHMENT) {
 		tooltip = ZmMsg.attachment;
 	} else if (field == ZmItem.F_SUBJECT) {
-		if (this._headerList[itemIdx]._sortable) {
-			tooltip = ZmMsg.sortBySubject;
-		}
+		tooltip = (this._headerList[itemIdx]._sortable)
+			? ZmMsg.sortBySubject : ZmMsg.subject;
 	} else if (field == ZmItem.F_DATE) {
-		if (this._headerList[itemIdx]._sortable) {
-			tooltip = ZmMsg.sortByReceived;
-		}
+		tooltip = (this._headerList[itemIdx]._sortable)
+			? ZmMsg.sortByReceived : ZmMsg.date;
 	} else if (field == ZmItem.F_FROM) {
-		if (this._headerList[itemIdx]._sortable) {
-			tooltip = ZmMsg.sortByFrom;
-		}
+		tooltip = (this._headerList[itemIdx]._sortable)
+			? ZmMsg.sortByFrom : ZmMsg.from;
 	}
 	return tooltip;
 };
@@ -612,19 +609,11 @@ function(id, field) {
 ZmListView.prototype._sortColumn = 
 function(columnItem, bSortAsc) { 
 	// change the sort preference for this view in the settings
-	var sortBy = null;
+	var sortBy;
 	switch (columnItem._sortable) {
-		case ZmItem.F_FROM:
-			sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC;
-			break;
-			
-		case ZmItem.F_SUBJECT:
-			sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC; 
-			break;
-			
-		case ZmItem.F_DATE:
-			sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC; 
-			break;
+		case ZmItem.F_FROM:		sortBy = bSortAsc ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC; break;
+		case ZmItem.F_SUBJECT:	sortBy = bSortAsc ? ZmSearch.SUBJ_ASC : ZmSearch.SUBJ_DESC;	break;
+		case ZmItem.F_DATE:		sortBy = bSortAsc ? ZmSearch.DATE_ASC : ZmSearch.DATE_DESC;	break;
 	}
 
 	if (sortBy) {

@@ -368,7 +368,7 @@ function(ev) {
 ZmTaskListController.prototype._setViewContents =
 function(view) {
 	// load tasks into the given view and perform layout.
-	this._listView[view].set(this._list, null, this.folderId);
+	this._listView[view].set(this._list, ZmItem.F_DATE);
 
 	var list = this._list.getVector();
 	if (list.size()) this._listView[view].setSelection(list.get(0));
