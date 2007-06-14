@@ -152,7 +152,7 @@ function() {
 	this._iconIds[ZmStatusView.ICON_IM] = id+"_im";
 	this._iconIds[ZmStatusView.ICON_BUSY] = id+"_busy";
 
-    this._toast = new ZmToast(this);
+    this._toast = new ZmToast(this, this._appCtxt);
 
     var html = AjxTemplate.expand("zimbraMail.share.templates.Widgets#ZmStatusView", id);
     this.getHtmlElement().innerHTML = html;
@@ -239,9 +239,10 @@ function(ev) {
 // Classes
 //
 
-ZmToast = function(parent) {
+ZmToast = function(parent, appCtxt) {
     DwtControl.call(this, parent.shell, "ZToast", Dwt.ABSOLUTE_STYLE);
     this._statusView = parent;
+    this._appCtxt = appCtxt;
     this._createHtml();
 
     this._funcs = {};
