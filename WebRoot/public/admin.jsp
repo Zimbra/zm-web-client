@@ -1,9 +1,22 @@
 <%@ page session="false" %>
+<%@ page session="false" language="java" import="javax.naming.*"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jstl/core" %>
 <%
    	Cookie[] cookies = request.getCookies();
    	String portsCSV = application.getInitParameter("admin.allowed.ports");
+   	String adminUrl = null;	
+	try {
+		Context initCtx = new InitialContext();
+		Context envCtx = (Context) initCtx.lookup("java:comp/env");
+		adminUrl = (String) envCtx.lookup("adminUrl");
+	} catch (NamingException ne) {
+		//nothing to do here
+	}
+	if (adminUrl == null) {
+		adminUrl = "/zimbraAdmin";
+    }
+
    	if (portsCSV != null) {
 	    // Split on zero-or-more spaces followed by comma followed by
 	    // zero-or-more spaces.
@@ -66,7 +79,7 @@
 
     String contextPath = request.getContextPath();
     if(contextPath == null || contextPath.equals("/")) {
-		response.sendRedirect("/zimbraAdmin?mode="+mode+"&version="+vers+"&fileExtension="+ext);    	
+		response.sendRedirect(adminUrl+"?mode="+mode+"&version="+vers+"&fileExtension="+ext);    	
     }
 %><!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>

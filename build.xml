@@ -31,6 +31,7 @@
   <property name="rhinoExtension" value=".rhino"/>
   <property name="licenseExtension" value=".license"/>	
   <property name="mail.url" value="/zimbra"/>
+  <property name="admin.url" value="zimbraAdmin"/>	
 
   <condition property="ajax.dir" value="${env.AJAX_DIR}" else='../Ajax'>
     <isset property="env.AJAX_DIR" />
@@ -468,7 +469,7 @@ if (ext == null) ext = "";
   
   <target name='admin-images'>
     <antcall target='build-images'>
-      <param name="csspathprefix" value="/zimbraAdmin/img/"/>
+      <param name="csspathprefix" value="${admin.url}/img/"/>
     </antcall>
   </target>
   
@@ -827,7 +828,8 @@ if (ext == null) ext = "";
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
-    <copy verbose="true" todir="${deploy.dir}${deploy.path}/h">
+    <replace file="${deploy.dir}${deploy.path}/WEB-INF/web.xml" token="@adminUrl@" value="${admin.url}" />
+  	<copy verbose="true" todir="${deploy.dir}${deploy.path}/h">
         <fileset dir="WebRoot/h" includes="**"/>
     </copy>
     <copy verbose="true" todir="${deploy.dir}${deploy.path}/yui">
@@ -857,6 +859,7 @@ if (ext == null) ext = "";
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@adminUrl@" value="${admin.url}" />  	
     <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar"/>
       <classes dir="${build.dir}/classes" includes="**/*.class" excludes="com/zimbra/kabuki/tools/**,**/build/*"/>
@@ -889,6 +892,7 @@ if (ext == null) ext = "";
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@adminUrl@" value="${admin.url}" />		
     <war warfile="${warfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar,gifencoder.jar,commons-cli-1.0.jar"/>
   	  <classes dir="${build.dir}/i18n" includes="msgs/*.properties" />
@@ -1000,6 +1004,7 @@ if (ext == null) ext = "";
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="true" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@adminUrl@" value="${admin.url}" />  	
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar,gifencoder.jar,commons-cli-1.0.jar"/>
       <lib dir="${common.build.dir}" includes="zimbracommon.jar"/>
@@ -1024,6 +1029,7 @@ if (ext == null) ext = "";
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@prodMode@" value="false" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@jsVersion@" value="${build.simpleDate}" />
     <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@mailUrl@" value="${mail.url}" />
+    <replace file="${build.dir}/WebRoot/WEB-INF/web.xml" token="@adminUrl@" value="${admin.url}" />  	
     <war destfile="${adminwarfile}" webxml="${build.dir}/WebRoot/WEB-INF/web.xml">
       <lib dir="${jars.dir}" includes="*.jar" excludes="servlet-api.jar,*ant*.jar"/>
       <lib dir="${common.build.dir}" includes="zimbracommon.jar"/>
