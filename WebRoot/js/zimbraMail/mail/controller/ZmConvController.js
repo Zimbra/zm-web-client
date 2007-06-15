@@ -79,12 +79,7 @@ function(activeSearch, conv, parentController, callback) {
 	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv, callback);
 }
 
-ZmConvController.prototype._handleConvLoad =
-function(){
-	msg = this._item.msgs.getArray();
-};
-
-ZmConvController.prototype.getConv = 
+ZmConvController.prototype.getConv =
 function() {
 	return this._conv;
 }

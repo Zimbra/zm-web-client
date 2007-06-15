@@ -221,9 +221,9 @@ function() {
 	if (this._action != ZmOperation.NEW_MESSAGE &&
 		this._action != ZmOperation.FORWARD_INLINE &&
 		this._action != ZmOperation.FORWARD_ATT &&
-		this._action != ZmOperation.ATTACH_ALL
-		) {
-			this._composeView._setBodyFieldCursor();
+		this._action != ZmOperation.ATTACH_ALL)
+	{
+		this._composeView._setBodyFieldCursor();
 	}
 };
 
@@ -529,9 +529,6 @@ function(params) {
 	this._composeView.reEnableDesignMode();
 };
 
-
-
-
 ZmComposeController.prototype._initializeToolBar =
 function() {
 	if (this._toolbar) return;
@@ -720,7 +717,7 @@ function(msg, identity) {
 
 ZmComposeController.prototype._setFormat =
 function(mode) {
-	if (mode == this._composeView.getComposeMode())	return;
+	if (mode == this._composeView.getComposeMode())	{ return; }
 
 	if (mode == DwtHtmlEditor.TEXT &&
 		(this._composeView.isDirty() || this._action == ZmOperation.DRAFT))
@@ -1048,13 +1045,16 @@ ZmComposeController.prototype._getDefaultFocusItem =
 function() {
 	if (this._action == ZmOperation.NEW_MESSAGE ||
 		this._action == ZmOperation.FORWARD_INLINE ||
-		this._action == ZmOperation.FORWARD_ATT  ||
-		this._action == ZmOperation.ATTACH_ALL ) 
-		{
-			return this._composeView._field[AjxEmailAddress.TO];
-	} else {
-			var composeMode = this._composeView.getComposeMode();
-			return (composeMode == DwtHtmlEditor.TEXT) ? this._composeView._bodyField :
-													 this._composeView._htmlEditor;
+		this._action == ZmOperation.FORWARD_ATT ||
+		this._action == ZmOperation.ATTACH_ALL)
+	{
+		return this._composeView._field[AjxEmailAddress.TO];
 	}
-};                             
+	else
+	{
+		var composeMode = this._composeView.getComposeMode();
+		return (composeMode == DwtHtmlEditor.TEXT)
+			? this._composeView._bodyField
+			: this._composeView._htmlEditor;
+	}
+};

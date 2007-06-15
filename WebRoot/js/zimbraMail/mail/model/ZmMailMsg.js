@@ -401,11 +401,12 @@ ZmMailMsg.prototype.setMultiMessageAttachmentId =
 function(msgIdArry) {
 	this._msgAttIdArry = msgIdArry;
 };
+
 /**
 * Sets the list of attachment (message part) IDs to be forwarded
 * - This list will only be set for any msgs containing attachments that need to be forwarded
 *
-* @param id list of attachment IDs
+* @param id		list of attachment IDs
 */
 ZmMailMsg.prototype.setForwardAttIds =
 function(forAttIds) {
@@ -748,29 +749,27 @@ function(soapDoc, contactList, isDraft, accountName) {
 		if (this._attId)
 			attachNode.setAttribute("aid", this._attId);
 
-		//attach single msg...
-		var msgNode;
+		// attach single msg...
 		if (this._msgAttId) {
-			 msgNode = soapDoc.set("m", null, attachNode);
-			msgNode.setAttribute("id", this._msgAttId);
+			var attNode = soapDoc.set("m", null, attachNode);
+			attNode.setAttribute("id", this._msgAttId);
 		}
 
 		if (this._forAttIds) {
             for (var i = 0; i < this._forAttIds.length; i++) {
-                if (this._msgAttIdArry) { //if multiple msgs needs to be attached...
-				        msgNode = soapDoc.set("m", null, attachNode);
-				        msgNode.setAttribute("id", this._forAttIds[i]);
-		        } else{
-                        var msgPartNode = soapDoc.set("mp", null, attachNode);
-				        // XXX: this looks hacky but we cant send a null ID to the server!
-				        var id = (isDraft || this.isDraft) ? (this.id || this.origId) : (this.origId || this.id);
-				        msgPartNode.setAttribute("mid", id);
-				        msgPartNode.setAttribute("part", this._forAttIds[i]);
-                }
+				// if multiple msgs needs to be attached...
+				if (this._msgAttIdArry) {
+					var attNode = soapDoc.set("m", null, attachNode);
+					attNode.setAttribute("id", this._forAttIds[i]);
+				} else {
+					var msgPartNode = soapDoc.set("mp", null, attachNode);
+					// XXX: this looks hacky but we cant send a null ID to the server!
+					var id = (isDraft || this.isDraft) ? (this.id || this.origId) : (this.origId || this.id);
+					msgPartNode.setAttribute("mid", id);
+					msgPartNode.setAttribute("part", this._forAttIds[i]);
+				}
 			}
 		}
-
-        
     }
 };
 

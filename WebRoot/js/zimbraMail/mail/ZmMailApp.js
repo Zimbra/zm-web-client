@@ -695,7 +695,7 @@ function(create, type, currList, sortBy, cutoff) {
 		DBG.println(AjxDebug.DBG2, "new " + type + " not of current type");
 		return false;
 	}
-	
+
 	// ignore mail that falls outside our range
 	if (sortBy == ZmSearch.DATE_DESC && (create.d < cutoff)) {
 		DBG.println(AjxDebug.DBG2, "new " + type + " is too old: " + create.d);
@@ -705,15 +705,13 @@ function(create, type, currList, sortBy, cutoff) {
 		DBG.println(AjxDebug.DBG2, "new " + type + " is too new: " + create.d);
 		return false;
 	}
-	
+
 	// ignore stuff we already have
-	if (this._appCtxt.cacheGet(create.id)) {
+	if (this._appCtxt.cacheGet(create.id) || create._wasVirtConv) {
 		return false;
 	}
-	if (create._wasVirtConv) { return false; }
 
 	return true;
-
 };
 
 ZmMailApp.prototype.postNotify =
