@@ -3002,3 +3002,59 @@ HTML>BODY .appt-selected .appt_allday_body
   background-color: pink;
   border: solid 3px red;
 }
+
+/*briefcase app*/
+
+.ZmBriefcaseView {
+background-color: #ffffff;
+}
+
+.ZmBriefcaseItem,.ZmBriefcaseItemSelected {
+background-color:transparent;
+background-repeat:no-repeat;
+cursor:pointer;
+float:left;
+height:120px;
+margin:8px;
+vertical-align:middle;
+width:100px;
+}
+
+.ZmBriefcaseItem .ZmThumbnailItem,.ZmBriefcaseItemSelected .ZmThumbnailItem{
+background-color:transparent;
+border:2px solid #CCCCCC;
+font-size:1px;
+height:100px;
+line-height:100px;
+text-align:center;
+width:96px;
+}
+
+.ZmBriefcaseItem .ZmThumbnailName,.ZmBriefcaseItemSelected .ZmThumbnailName{
+display:block;
+font-size:12px;
+margin:3px 0pt 0pt 0px;
+text-align:center;
+height: 14px;
+overflow: hidden;
+}
+
+.ZmBriefcaseItemSelected{
+color:#FFFFFF;
+}
+
+.ZmBriefcaseItemSelected .ZmThumbnailItem{
+border-color: #316AC5;
+}
+
+.ZmBriefcaseItemSelected .ZmThumbnailName span {
+background:#316AC5 none repeat scroll 0%;
+color:#FFFFFF;
+}
+.ZmBriefcaseItemSelected .ZmThumbnailName span a {
+color:#FFFFFF;
+}
+
+.ZmThumbnailIcon{
+margin:26px 24px;
+}

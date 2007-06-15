@@ -86,6 +86,7 @@ ZmFolder.MSG_KEY[ZmFolder.ID_TASKS]			= "tasks";
 ZmFolder.MSG_KEY[ZmFolder.ID_TAGS]			= "tags";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CALENDAR]	= "calendar";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_NOTEBOOK]	= "notebook";
+ZmFolder.MSG_KEY[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
 ZmFolder.MSG_KEY[ZmOrganizer.ID_CHATS]		= "chats";
 
 // system folder icons
@@ -109,6 +110,7 @@ ZmFolder.QUERY_NAME[ZmFolder.ID_CONTACTS]		= "contacts";
 ZmFolder.QUERY_NAME[ZmFolder.ID_TASKS]			= "tasks";
 ZmFolder.QUERY_NAME[ZmFolder.ID_AUTO_ADDED]		= '"Emailed Contacts"';
 ZmFolder.QUERY_NAME[ZmOrganizer.ID_NOTEBOOK]	= "notebook";
+ZmFolder.QUERY_NAME[ZmOrganizer.ID_BRIEFCASE]	= "briefcase";
 ZmFolder.QUERY_NAME[ZmFolder.ID_CHATS]			= "chats";
 
 // order within the overview panel
