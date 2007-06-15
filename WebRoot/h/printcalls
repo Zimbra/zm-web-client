@@ -1,0 +1,48 @@
+<%@ page buffer="8kb" autoFlush="true" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib prefix="zm" uri="com.zimbra.zm" %>
+<%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
+<app:handleError>
+    <zm:getMailbox var="mailbox"/>
+    <zm:computeSearchContext var="context" usecache="true"/>
+</app:handleError>
+
+<html>
+<app:head mailbox="${mailbox}"/>
+
+<body style='background-color:white;'>
+    <div class='ZhCallListPrintView'>
+        <table><tr>
+            <td class='ZhZimbraTitle'><fmt:message key="zimbraTitle"/></td>
+            <td nowrap width='1%'><b>${fn:escapeXml(mailbox.name)}</b></td>
+        </tr></table>
+        <hr/>
+<!--
+        Put the name of the folder here
+-->
+        <table class='ZhCallListPrintTable' cellpadding=2 cellspacing=0 >
+            <tr class='Header'>
+                <th><fmt:message key="${useTo ? 'to' : 'from'}"/>
+                <th><fmt:message key="duration"/></th>
+                <th><fmt:message key="received"/></th>
+            </tr>
+
+            <c:forEach items="${context.searchResult.hits}" var="hit" varStatus="status">
+            <tr>
+                <td nowrap>${hit.callHit.displayCaller}</td>
+                <td nowrap>${fn:escapeXml(zm:displayDuration(pageContext, hit.callHit.duration))}</td>
+                <td nowrap>${fn:escapeXml(zm:displayMsgDate(pageContext, hit.callHit.date))}</td>
+            </tr>
+            </c:forEach>
+        </table>
+        <c:if test="${context.searchResult.size == 0}">
+            <div class='NoResults'><fmt:message key="noResultsFound"/></div>
+        </c:if>
+    </div>
+
+</body>
+</html>

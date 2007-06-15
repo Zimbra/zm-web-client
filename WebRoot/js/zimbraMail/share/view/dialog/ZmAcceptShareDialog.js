@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAcceptShareDialog(appCtxt, parent, className) {
+ZmAcceptShareDialog = function(appCtxt, parent, className) {
 	className = className || "ZmAcceptShareDialog";
 	DwtDialog.call(this, parent, className, ZmMsg.acceptShare, [DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON]);
 	this.setButtonListener(DwtDialog.YES_BUTTON, new AjxListener(this, this._handleYesButton));
@@ -52,7 +52,7 @@ ZmAcceptShareDialog._ACTIONS[ZmShare.ROLE_MANAGER] = ZmMsg.acceptShareDetailsMan
 // Public methods
 
 ZmAcceptShareDialog.prototype.popup =
-function(share, loc) {
+function(share) {
 
 	this._share = share;
 	var params = [ share.grantor.name, share.link.name ];
@@ -75,7 +75,7 @@ function(share, loc) {
 	this._reply.setReplyType(ZmShareReply.NONE);
 	this._reply.setReplyNote("");
 	
-	DwtDialog.prototype.popup.call(this, loc);
+	DwtDialog.prototype.popup.call(this);
 };
 
 ZmAcceptShareDialog.prototype.setAcceptListener =

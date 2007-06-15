@@ -1,0 +1,1106 @@
+<!--
+The templates in this file represent the various pages ("tabs") in the
+preferences app. Each template determines the layout of the page and
+which controls appear on that page.
+
+When the user selects a page, the application will expand the appropriate
+template and replace the innerHTML of the tab with the result. Then, the
+app will iterate the identifier list of known components. If there is a
+container element with that identifer, the appropriate control is created
+and the container element is replaced with that control.
+
+A list of the known components appears at the bottom of this file. Each
+component is written as:
+
+  component name { type : value* } // comment
+
+In order to place the component in a page template, you must join the
+string "${id}" and all parts of the component name with an underscore.
+use this as the container element id. For example, to include the
+component "search include junk", the container element would look like
+this:
+
+  <div id='${id}_search_include_junk'></div>
+-->
+
+<template id='General'>
+	<!-- DEFAULTS_RESTORE (button) -->
+	<table classs='ZOptionsDefaultsTable'>
+		<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFUALTS_RESTORE'></div></td></tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>General</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr><td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+			
+			<!-- login { choice: ajax | html } -->
+			<tr><td class='ZOptionsLabel'>Login:</td>
+				<td class='ZOptionsField'><div id='${id}_login'></div></td>
+			</tr>
+			
+			<!-- SKIN_NAME { string: sand | ... } // theme -->
+			<tr><td class='ZOptionsLabel'>Theme:</td>
+				<td class='ZOptionsField'><div id='${id}_SKIN_NAME'></div></td>
+			</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- LOCALE_NAME { string } // en_US -->
+			<tr><td class='ZOptionsLabel'>Language:</td>
+				<td class='ZOptionsField'><div id='${id}_LOCALE_NAME'></div></td>
+			</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- PASSWORD (button) -->
+			<tr><td class='ZOptionsLabel'>&nbsp;</td>
+				<td class='ZOptionsField'><div id='${id}_PASSWORD'
+												label='Change Password'></div></td>
+			</tr>
+			</table>
+		</td></tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Searches</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr><td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+
+			<!-- SEARCH_INCLUDES_SPAM { boolean } -->
+				<tr><td class='ZOptionsLabel'>Search Settings:</td>
+					<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_SPAM' 
+													label='Include Junk folder in searches'></div></td>
+				</tr>
+
+			<!-- SEARCH_INCLUDES_TRASH { boolean } -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_SEARCH_INCLUDES_TRASH' 
+													label='Include Trash folder in searches'></div></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+			
+			<!-- SHOW_SEARCH_STRING { boolean } -->
+				<tr><td class='ZOptionsLabel'>Search Language:</td>
+					<td class='ZOptionsField'><div id='${id}_SHOW_SEARCH_STRING' 
+													label='Show advanced search language in search toolbar'></div></td>
+				</tr>
+			</table>
+		</td></tr>
+	</table>
+</template>
+
+<template id='Mail'>
+	<!-- DEFAULTS_RESTORE (button) -->
+	<table classs='ZOptionsDefaultsTable'>
+		<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFUALTS_RESTORE'></div></td></tr>
+	</table>
+
+	<!-- COMCAST ONLY:  HOW TO ENCODE ? -->
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Settings Managed on comcast.net</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMainLinks' colspan=3>
+				<a href=#>Restrict Incoming Email</a> <br>		
+				<a href=#>Spam Filtering / Confirmation</a> <br>		
+				<a href=#>Auto Reply</a> <br>		
+				<a href=#>Auto Forward</a> <br>		
+			</td>
+		</tr>
+	</table>
+	<!-- END COMCAST ONLY:  HOW TO ENCODE ? -->
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Schedule Email Deletion</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMainTable' colspan=3>
+
+			<!-- EMAIL DELETION MATRIX -->
+			<table width=95% cellspacing=1 cellpadding=0>
+				<tr><td class='ZOptionsTableLabel'>Inbox (Unread):</td>
+					<td class='ZOptionsTableRow'><div id='${id}_DELETION_TIME_INBOX_UNREAD'></div></td>
+				</tr>
+				<tr><td class='ZOptionsTableLabel'>Inbox (Read):</td>
+					<td class='ZOptionsTableRowOdd'><div id='${id}_DELETION_TIME_INBOX_READ'></div></td>
+				</tr>
+				<tr><td class='ZOptionsTableLabel'>Sent Email:</td>
+					<td class='ZOptionsTableRow'><div id='${id}_DELETION_TIME_SENT'></div></td>
+				</tr>
+				<tr><td class='ZOptionsTableLabel'>Junk:</td>
+					<td class='ZOptionsTableRowOdd'><div id='${id}_DELETION_TIME_JUNK'></div></td>
+				</tr>
+				<tr><td class='ZOptionsTableLabel'>Trash:</td>
+					<td class='ZOptionsTableRow'><div id='${id}_DELETION_TIME_TRASH'></div></td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Displaying Messages</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+			<!-- PAGE_SIZE { choice: 10 | 25 | 50 | 100 } -->
+				<tr><td class='ZOptionsLabel'>Display:</td>
+					<td class='ZOptionsField'><span id='${id}_PAGE_SIZE'></span>
+												Emails per page		
+											</td>
+				</tr>
+			
+			<!-- INITIAL_GROUP_MAIL_BY { choice: message | conversation } -->
+				<tr><td class='ZOptionsLabel'>Group mail by:</td>
+					<td class='ZOptionsField'><div id='${id}_INITIAL_GROUP_MAIL_BY'></div></td>
+				</tr>
+			
+			<!-- POLLING_INTERVAL { integer } // mins -->
+				<tr><td class='ZOptionsLabel'>Check for new mail every:</td>
+					<td class='ZOptionsField'><div id='${id}_POLLING_INTERVAL'></div></td>
+				</tr>
+			
+			<!-- VIEW_AS_HTML { boolean } -->
+<!-- NOTE: DESIGN REQUIRES A CODE CHANGE -->
+				<tr><td class='ZOptionsLabel'>Display HTML:</td>
+					<td class='ZOptionsField'><select id='${id}_VIEW_AS_HTML'>
+												<option value='true'>Inline</option>
+												<option value='false'>As Attachment</option>
+											  </select></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- READING_PANE_ENABLED { boolean } -->
+				<tr><td class='ZOptionsLabel'>Message Preview:</td>
+					<td class='ZOptionsField'><div id='${id}_READING_PANE_ENABLED'
+													label='Display message body preview'
+												></div></td>
+				</tr>
+				
+			<!-- SHOW_FRAGMENTS { boolean } -->
+				<tr><td class='ZOptionsLabel'>
+					<$= (data.isEnabled('READING_PANE_ENABLED') ? "Message Preview:" : "&nbsp;") $>
+					</td>
+					<td class='ZOptionsField'><div id='${id}_SHOW_FRAGMENTS'
+													label='Display message text in email list'
+												></div></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+				
+			<!-- INITIAL_SEARCH { string } // in:inbox -->
+				<tr><td class='ZOptionsLabel'>Default Mail Search:</td>
+					<td class='ZOptionsField'><div id='${id}_INITIAL_SEARCH'></div></td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Receiving Messages</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+			<tr><td class='ZOptionsLabel'>When a message arrives:</td>
+				<td class='ZOptionsField' style='padding:0px'>
+					<table width=100%>
+		
+					<!-- MAIL_FORWARDING_ADDRESS { email } // empty == disabled? -->
+						<tr><td colspan=2>	<!-- checkbox ??? -->
+								<div id='${id}_MAIL_FORWARDING_ADDRESS-ON'
+												label='Forward a copy to:'
+								></div>
+							</td>
+						</tr>
+						<tr><td></td>
+							<td><div id='${id}_MAIL_FORWARDING_ADDRESS'
+												hint='enter email address'
+							></div></td>
+						</tr>
+
+
+						<!-- MAIL_LOCAL_DELIVERY_DISABLED ??? // == mail forward no save ???
+							mail forward no save { boolean } -->
+							<tr><td></td>
+								<td><div id='${id}_MAIL_LOCAL_DELIVERY_DISABLED'
+													label='Keep a copy in my Inbox'
+								></div></td>
+							</tr>
+
+						<tr><td colspan=2><hr style='width:90%'></td></tr>
+		
+						<!-- NOTIF_ENABLED { boolean } -->
+						<!-- NOTIF_ADDRESS { email } -->
+							<tr><td colspan=2>	<!-- checkbox -->
+									<div id='${id}_NOTIF_ENABLED'
+												label='Forward a copy to:'
+									></div>
+								</td>
+							</tr>
+							<tr><td></td>
+								<td><div id='${id}_NOTIF_ADDRESS'
+												hint='enter email address'
+								></div></td>
+							</tr>
+							
+						<tr><td colspan=2><hr style='width:90%'></td></tr>
+		
+						<!-- VACATION_MSG_ENABLED { boolean } -->
+						<!-- VACATION_MSG { text } -->
+							<tr><td colspan=2>	<!-- checkbox -->
+									<div id='${id}_VACATION_MSG_ENABLED'
+													label='Forward a copy to:'
+									></div>
+								</td>
+							</tr>
+							<tr><td></td>
+								<td><div id='${id}_VACATION_MSG'></div></td>
+							</tr>
+					</table>
+				</td>
+			</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- DEDUPE_MSG_TO_SELF { choice: normal | to-or-cc | ignore } -->
+				<tr><td class='ZOptionsLabel'>Messages from me:</td>
+					<td class='ZOptionsInfo'>When I receive a message originally sent by me:</td>
+				</tr>
+				<tr><td class='ZOptionsLabel'></td>
+					<td class='ZOptionsField'><div id='${id}_DEDUPE_MSG_TO_SELF'></div></td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id='Composing'>
+	<!-- DEFAULTS_RESTORE (button) -->
+	<table classs='ZOptionsDefaultsTable'>
+		<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFUALTS_RESTORE'></div></td></tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>General</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+
+			<!-- SAVE_TO_SENT { boolean } -->
+				<tr><td class='ZOptionsLabel'>Sent Messages:</td>
+					<td class='ZOptionsField'><div id='${id}_SAVE_TO_SENT'
+													label='Save a copy of Sent Messages|Do not save Sent Messages'
+												></div></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- NEW_WINDOW_COMPOSE { boolean } -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_NEW_WINDOW_COMPOSE'
+													label='Always compose in a new window'
+												></div></td>
+				</tr>
+
+			</table>
+			</td>
+		</tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Format Email</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+
+			<!-- COMPOSE_AS_FORMAT { string: text | html } -->
+			<!-- COMPOSE_INIT_FONT_FAMILY { string } -->
+			<!-- COMPOSE_INIT_FONT_SIZE { string } -->
+				<tr><td class='ZOptionsLabel'>Compose;</td>
+					<td class='ZOptionsNestedTable'>
+						<table><tr>
+							<td class='ZOptionsField'>
+								<div id='${id}_COMPOSE_AS_FORMAT'
+										label='HTML|As Plain Text'
+								></div>
+							</td>
+							
+							<td class='ZOptionsLabel'>Font:</td>
+
+							<td class='ZOptionsField'>
+								<div id='${id}_COMPOSE_INIT_FONT_FAMILY'
+										label='HTML|As Plain Text'
+								></div>
+							</td>
+
+							<td class='ZOptionsLabel'>Size:</td>
+							<td class='ZOptionsField'>
+								<div id='${id}_COMPOSE_INIT_FONT_SIZE'
+										label='HTML|As Plain Text'
+								></div>
+							</td>
+						</tr></table>
+					</td>
+				</tr>
+
+			<!-- COMPOSE_SAME_FORMAT { choice: original | text | html } -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsInfo'><div id='${id}_COMPOSE_SAME_FORMAT'
+										label='Always use the same format as a message I receive'
+								></div></td>
+				</tr>
+
+
+				
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- REPLY_INCLUDE_ORIG { choice: none | message | message-with-prefix | message-as-attachment | last-message } -->
+				<tr><td class='ZOptionsLabel'>Reply/Reply All:</td>
+					<td class='ZOptionsInfo'>When replying to an email, include the original email message as:</td>
+				</tr>
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_REPLY_INCLUDE_ORIG'></div></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- FORWARD_INCLUDE_ORIG { choice: message | message-with-prefix | message-as-attachment } -->
+				<tr><td class='ZOptionsLabel'>Forward:</td>
+					<td class='ZOptionsInfo'>When forwarding an email, include the original email message as:</td>
+				</tr>
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_FORWARD_INCLUDE_ORIG'></div></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- REPLY_TO_ADDRESS { email } -->
+<!-- NOTE: DESIGN REQUIRES A CODE CHANGE -->
+				<tr><td class='ZOptionsLabel'>From:</td>
+					<td class='ZOptionsInfo'>Choose what appears in the "From" field of an email message that you send:</td>
+				</tr>
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_REPLY_TO_ADDRESS'></div></td>
+				</tr>
+
+			</table>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id='Signatures'>
+	<!-- DEFAULTS_RESTORE (button) -->
+	<table classs='ZOptionsDefaultsTable'>
+		<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFUALTS_RESTORE'></div></td></tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Signatures</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+
+			<!-- SIGNATURES BLOCK: USE SIGNATURE_INSTANCE FOR EACH ONE -->
+				<!-- OUTPUT SIGNATURES HERE  -->
+
+			<!-- ADD SIGNATURE BUTTON -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField' colspan=3><div id='${id}_ADD_SIGNATURE'></div></td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Using Signatures</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+			<!-- SIGNATURE_ENABLED { choice: automatic | manual } -->
+				<tr><td class='ZOptionsLabel'>Attach Signature:</td>
+					<td class='ZOptionsField'>
+							<div id='${id}_SIGNATURE_ENABLED'
+								label='Automatically attach my signature to every email I send.'></div>
+					</td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- SIGNATURE_STYLE { choice: above | below } -->
+				<tr><td class='ZOptionsLabel'>Placement:</td>
+					<td class='ZOptionsInfo'>Place the signature:</td>
+				</tr>
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsInfo'>
+							<div id='${id}_SIGNATURE_STYLE'></div>
+					</td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id='Voice'>
+	<!-- DEFAULTS_RESTORE (button) -->
+	<table classs='ZOptionsDefaultsTable'>
+		<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFUALTS_RESTORE'></div></td></tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Comcast Phone numbers</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionTable' colspan=3>
+				${ expandField('ACCOUNT_LIST') }
+			</td>
+		</tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Call Manager</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionTable' colspan=3>
+			<table width=100%>
+				${ expandField('-VOICE_EMAIL_NOTIFICATION') }
+
+		<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+				${ expandField('-VOICE_FORWARD_CALLS') }
+			</table>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id='Contacts'>
+	<!-- DEFAULTS_RESTORE (button) -->
+	<table classs='ZOptionsDefaultsTable'>
+		<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFUALTS_RESTORE'></div></td></tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Plaxo Account Details</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+				<tr><td class='ZOptionsLabel'>Details</td>
+					<td class='ZOptionsInfo'>
+						<b>Manage your account details at <a href=#>plaxo.com</a></b>
+							{plaxo img}
+				</tr>
+				<tr><td></td><td><hr style='width:100%'></td></tr>
+
+				<tr><td class='ZOptionsLabel'></td>
+					<td class='ZOptionsInfo'>
+						<a href=#>Your Communication Preferences</a>
+						<span class='ZOptionsInfo'>
+						 (Manage Plaxo preferences like: Birthday Reminders, Holiday Reminders...)
+						</span>
+				</tr>
+
+				<tr><td></td><td><hr style='width:100%'></td></tr>
+
+				<tr><td class='ZOptionsLabel'></td>
+					<td class='ZOptionsInfo'>
+						<a href=#>Auto Share</a>
+						<span class='ZOptionsInfo'>
+						 (Manage your Plaxo sharing preferences.)
+						</span>
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Contacts Options</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+			<!-- CONTACTS_PER_PAGE { choice: 10 | 25 | 50 | 100 } -->
+				<tr><td class='ZOptionsLabel'>Display:</td>
+					<td class='ZOptionsField'><span id='${id}_CONTACTS_PER_PAGE'></span>
+												Contacts per page		
+											</td>
+				</tr>
+			
+			<!-- CONTACTS_VIEW { choice: cards | list } -->
+				<tr><td class='ZOptionsLabel'>Default View:</td>
+					<td class='ZOptionsField'><div id='${id}_CONTACTS_VIEW'></div></td>
+				</tr>
+
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- AUTO_ADD_ADDRESS { boolean } -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_AUTO_ADD_ADDRESS'
+												label='Add new contacts to "Emailed Contacts"'
+					></div></td>
+				</tr>
+
+			<!-- GAL_AUTOCOMPLETE { boolean } -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_GAL_AUTOCOMPLETE'
+												label='Auto-complete includes addresses in the Global Address List'
+					></div></td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Import / Export</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+			
+			<!-- IMPORT (button) // file input -->
+				<tr><td class='ZOptionsLabel'>Import:</td>
+					<td class='ZOptionsInfo'>
+						If you are using another contact manager program, 
+						you can import your existing contacts by saving them in
+						"Comma-Separated Values" (CSV) format.
+						See documentation in that program for help saving in this format.
+					</td>
+				</tr>
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsInfo'>
+						<div id='${id}_IMPORT'></div>
+					</td>
+				</tr>
+
+			<tr><td></td><td><hr style='width:100%'></td></tr>
+		
+				<tr><td class='ZOptionsLabel'></td>
+					<td class='ZOptionsInfo'>
+						<a href=#>Smart Address Book Builder</a>
+						<span class='ZOptionsInfo'>
+						 (Combine all of your contacts into <b>one place</b>.)
+						</span>
+				</tr>
+
+			<tr><td></td><td><hr style='width:100%'></td></tr>
+		
+				<tr><td class='ZOptionsLabel'></td>
+					<td class='ZOptionsInfo'>
+						<a href=#>Address Book and Calendar De-Dupper</a>
+						<span class='ZOptionsInfo'>
+						 (Merge and <b>remove duplicates</b> from your address book and calendar.)
+						</span>
+				</tr>
+
+			<tr><td></td><td><hr style='width:100%'></td></tr>
+		
+				<tr><td class='ZOptionsLabel'></td>
+					<td class='ZOptionsInfo'>
+						<a href=#>Address Book Rollback and Recovery</a>
+						<span class='ZOptionsInfo'>
+						 (Revert your address book back to a <b>previous date</b>.)
+						</span>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- EXPORT (button) -->
+				<tr><td class='ZOptionsLabel'>Export:</td>
+					<td class='ZOptionsInfo'>
+						You can export your contacts in the standard "Comma-Separated Values" (CSV)
+						format, then import them into another contact manager program.
+						See documentation in the other porgram for help in importing.
+					</td>
+				</tr>
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsInfo'>
+						<div id='${id}_EXPORT'></div>
+					</td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id='Accounts'>
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Accounts</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMainTable' colspan=3>
+			<table width=100%>
+				<!-- POP_ACCOUNTS { list } -->
+				<tr><td rowspan=2><div id='${id}_POP_ACCOUNTS'></div></td>
+					<td valign=top><div id='${id}_ADD_ACCOUNT'></div></td>
+				</tr>
+				<tr>
+					<td valign=bottom><div id='${id}_DELETE_ACCOUNT'></div></td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Edit Account</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+
+			<!-- POP_ACCOUNT_NAME { string } -->
+				<tr><td class='ZOptionsLabel'>Account Name:</td>
+					<td class='ZOptionsField'><div id='${id}_POP_ACCOUNT_NAME'></div></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- POP_ACCOUNT_TYPE { choice: pop | imap } -->
+<!-- NOTE: NOT YET IMPLEMENTED -->
+				<tr><td class='ZOptionsLabel'>Account type:</td>
+					<td class='ZOptionsField'><div id='${id}_POP_ACCOUNT_TYPE'></div></td>
+				</tr>
+
+			<!-- POP_ACCOUNT_SERVER { string } -->
+				<tr><td class='ZOptionsLabel'>Email Server:</td>
+					<td class='ZOptionsField'><div id='${id}_POP_ACCOUNT_SERVER'
+												hint='e.g. pop.mail.yahoo.com'
+						></div></td>
+				</tr>
+
+			<!-- POP_ACCOUNT_EMAIL { string } -->
+<!-- NOTE: NOT YET IMPLEMENTED -->
+				<tr><td class='ZOptionsLabel'>Email Address:</td>
+					<td class='ZOptionsField'><div id='${id}_POP_ACCOUNT_EMAIL'
+												hint='e.g. username@yahoo.com'
+						></div></td>
+				</tr>
+
+			<!-- POP_ACCOUNT_USERNAME { string } -->
+				<tr><td class='ZOptionsLabel'>Username of Account:</td>
+					<td class='ZOptionsField'><div id='${id}_POP_ACCOUNT_USERNAME'></div></td>
+				</tr>
+
+
+			<!-- POP_ACCOUNT_PASSWORD { password } -->
+				<tr><td class='ZOptionsLabel'>Password:</td>
+					<td class='ZOptionsField'><div id='${id}_POP_ACCOUNT_PASSWORD'></div></td>
+				</tr>
+
+			<!-- POP_ACCOUNT_TEST (button) -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_POP_ACCOUNT_TEST'></div></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- POP_ACCOUNT_DOWNLOAD_FOLDER { folder } -->
+<!-- NOTE: DESIGN REQUIRES A CODE CHANGE -->
+				<tr><td class='ZOptionsLabel'>Download messages to:</td>
+					<td class='ZOptionsField'><div id='${id}_POP_ACCOUNT_DOWNLOAD_FOLDER'></div></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- POP_ACCOUNT_SSL_ENABLED { boolean } -->
+				<tr><td class='ZOptionsLabel'>Advanced Settings:</td>
+					<td class='ZOptionsField'><div id='${id}_POP_ACCOUNT_SSL_ENABLED'
+													label='Use an encrypted connection (SSL) when accessing this server'
+						></div></td>
+				</tr>
+			<!-- POP_ACCOUNT_PORT { int } // 110 or 995 (ssl) -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><span id='${id}_POP_ACCOUNT_PORT'
+													label='Change POP Port'></span>
+					</td>
+				</tr>
+
+			<!-- POP_ACCOUNT_DOWNLOAD_ACTION { choice: leave | remove } -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><span id='${id}_POP_ACCOUNT_PORT'
+													label='Delete messages on the server after downloading them'></span>
+					</td>
+				</tr>
+
+			</table>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id='MailFilters'>
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Email Filters</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+<!-- HOW TO ENCODE ? -->
+			</table>				
+			</td>
+		</tr>
+	</table>
+
+<!-- HOW TO ENCODE EDIT FILTER HERE ? -->
+
+</template>
+
+<template id='Calendar'>
+	<!-- DEFAULTS_RESTORE (button) -->
+	<table classs='ZOptionsDefaultsTable'>
+		<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFUALTS_RESTORE'></div></td></tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>General</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+			<!-- CALENDAR_INITIAL_VIEW { choice: day | work-week | week | month | schedule } -->
+				<tr><td class='ZOptionsLabel'>Default View:</td>
+					<td class='ZOptionsField'><div id='${id}_CALENDAR_INITIAL_VIEW'></div></td>
+				</tr>
+
+			<!-- CAL_FIRST_DAY_OF_WEEK { choice: sun | mon | tue | wed | thu | fri | sat } -->
+				<tr><td class='ZOptionsLabel'>Start week on:</td>
+					<td class='ZOptionsField'><div id='${id}_CAL_FIRST_DAY_OF_WEEK'></div></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- CAL_ALWAYS_SHOW_MINI_CAL { boolean } -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_CAL_ALWAYS_SHOW_MINI_CAL'
+												label='Always show mini-calendar'
+							></div></td>
+				</tr>
+
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+	
+			<!-- DELETE_INVITE_ON_REPLY { boolean } -->
+				<tr><td class='ZOptionsLabel'>After responding to an invitation:</td>
+					<td class='ZOptionsField'><div id='${id}_DELETE_INVITE_ON_REPLY'></div></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- CAL_REMINDER_WARNING_TIME { choice: never | 1 | 5 | 10 | 15 | 30 | 45 | 60 } // mins -->
+				<tr><td class='ZOptionsLabel'>Show reminders:</td>
+					<td class='ZOptionsField'><span id='${id}_CAL_REMINDER_WARNING_TIME'></span>
+										before an appointment
+					</td>
+				</tr>
+			</table>
+			</td>
+		</tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Creating Appointments</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+
+			<!-- CAL_USE_QUICK_ADD { boolean } -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_CAL_USE_QUICK_ADD'
+												label='Use the QuickAdd dialog when creating new appointments'
+							></div></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+
+			<!-- CAL_SHOW_TIMEZONE { boolean } -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_CAL_SHOW_TIMEZONE'
+												label='Show timezones when creating appointments'
+							></div></td>
+				</tr>
+			</table>				
+			</td>
+		</tr>
+	</table>
+
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Import / Export</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+
+			<!-- CAL_IMPORT (button) // file input -->
+				<tr><td class='ZOptionsLabel'>Import:</td>
+					<td class='ZOptionsInfo'>
+						If you are using another calendar program, 
+						you can import your existing contacts by saving them in
+						"???" (ICS) format.
+						See documentation in that program for help saving in this format.
+					</td>
+				</tr>
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsInfo'>
+						<div id='${id}_CAL_IMPORT'></div>
+					</td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- CAL_EXPORT (button) -->
+				<tr><td class='ZOptionsLabel'>Export:</td>
+					<td class='ZOptionsInfo'>
+						You can export your contacts in the standard "???" (ICS)
+						format, then import them into another calendar program.
+						See documentation in the other porgram for help in importing.
+					</td>
+				</tr>
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsInfo'>
+						<div id='${id}_CAL_EXPORT'></div>
+					</td>
+				</tr>
+
+			</table>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id='IM'>
+	<!-- DEFAULTS_RESTORE (button) -->
+	<table classs='ZOptionsDefaultsTable'>
+		<tr><td class='ZOptionsDefaultsField'><div id='${id}_DEFUALTS_RESTORE'></div></td></tr>
+	</table>
+
+	<table class='ZOptionsSectionTable'>
+		<tr class='ZOptionsHeaderRow'>
+			<td class='ZOptionsHeaderL'>&nbsp;</td>
+			<td class='ZOptionsHeader'>Notifications</td>
+			<td class='ZOptionsHeaderR'>&nbsp;</td>
+		</tr>
+		<tr>
+			<td class='ZOptionsSectionMain' colspan=3>
+			<table width=100%>
+
+			<!-- IM_PREF_FLASH_ICON { boolean } -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_IM_PREF_FLASH_ICON'
+												label='Flash IM icon when a new instant message is received'
+							></div></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- IM_PREF_NOTIFY_PRESENCE { boolean } -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_IM_PREF_NOTIFY_PRESENCE'
+												label='Show an indicator when buddies are online'
+							></div></td>
+				</tr>
+
+			<tr><td colspan=2><hr style='width:90%'></td></tr>
+
+			<!-- IM_PREF_NOTIFY_STATUS { boolean } -->
+				<tr><td class='ZOptionsLabel'>&nbsp;</td>
+					<td class='ZOptionsField'><div id='${id}_IM_PREF_NOTIFY_PRESENCE'
+												label='Show a notification when buddies change online status'
+							></div></td>
+				</tr>
+
+			</table>
+			</td>
+		</tr>
+	</table>
+</template>
+
+<template id='Shortcuts'>
+		<table class='ZOptionsSectionTable'>
+			<tr class='ZOptionsHeaderRow'>
+				<td class='ZOptionsHeaderL'>&nbsp;</td>
+				<td class='ZOptionsHeader'>General</td>
+				<td class='ZOptionsHeaderR'>&nbsp;</td>
+			</tr>
+			<tr>
+				<td class='ZOptionsSectionMain' colspan=3>
+<!-- HOW TO ENCODE ? -->
+				</td>
+			</tr>
+		</table>
+</template>
+
+
+
+<template id='SIGNATURE_INSTANCE'>
+	<tr><td class='ZOptionsLabel'>Signature Name:</td>
+		<td class='ZOptionsField'><div id='${id}_SIGNATURE_NAME'></div></td>
+		<td class='ZOptionsField'><div id='${id}_SIGNATURE_DEFAULT'></div></td>
+		<td class='ZOptionsField'><div id='${id}_SIGNATURE_DELETE'></div></td>
+	</tr>
+	<tr><td class='ZOptionsLabel'>&nbsp;</td>
+		<td class='ZOptionsField' colspan=3><div id='${id}_SIGNATURE'></div></td>
+	</tr>
+	<tr><td colspan=4><HR style='width:95%'></td></tr>
+</template>
+
+
+
+<!--
+== General
+
+COMPOSE_INIT_FONT_COLOR { string }
+
+
+== Mail
+
+
+== Mail Identities
+
+identities { list }
+
+identity name { string }
+identity from name { string }
+identity from address { email }
+identity reply enabled { boolean }
+identity reply name { string }
+identity reply address { email }
+
+identity reply from enabled { boolean }
+
+identity reply folder enabled { boolean }
+identity reply folder name { folder }
+
+
+REPLY_PREFIX { choice: ">" | "|" }
+
+
+== POP Accounts
+
+pop account identity create { boolean }
+pop account identity name { label }
+pop account identity address { email }
+pop account identity link reply { boolean }
+pop account identity link folder { boolean }
+
+
+== Mail Filters
+
+filters { list } // can be ordered
+
+filter name { string }
+filter enabled { boolean }
+filter conditions select { choice: any | all }
+filter conditions { list }
+filter condition { CUSTOM }
+filter actions
+filter action { CUSTOM }
+filter stop { boolean }
+
+
+== Address Book
+
+
+GAL_AUTOCOMPLETE_SESSION ???
+
+
+== Calendar
+
+
+== Instant Messaging
+
+
+== Shortcuts
+
+SHORTCUTS { boolean }
+
+TODO
+-->

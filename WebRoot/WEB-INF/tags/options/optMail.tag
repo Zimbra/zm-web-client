@@ -11,11 +11,11 @@
 <c:if test="${mailbox.features.conversations}">
     <tr>
         <td nowrap align=right>
-            <fmt:message key="groupMailBy"/>
-            :
+            <label for="groupMailBy"><fmt:message key="groupMailBy"/>
+            :</label>
         </td>
         <td>
-            <select name="zimbraPrefGroupMailBy">
+            <select name="zimbraPrefGroupMailBy" id="groupMailBy">
                 <c:set var="groupMailBy" value="${mailbox.prefs.groupMailBy}"/>
                 <option
                         <c:if test="${groupMailBy eq 'conversation'}">selected</c:if> value="conversation">
@@ -31,11 +31,11 @@
 </c:if>
 <tr>
     <td nowrap align=right>
-        <fmt:message key="numberOfItemsPerPage"/>
-        :
+        <label for="itemsPP"><fmt:message key="numberOfItemsPerPage"/>
+        :</label>
     </td>
     <td>
-        <select name="zimbraPrefMailItemsPerPage">
+        <select name="zimbraPrefMailItemsPerPage" id="itemsPP">
             <c:set var="mailItemsPP" value="${mailbox.prefs.mailItemsPerPage}"/>
             <option
                     <c:if test="${mailItemsPP eq 10}"> selected</c:if>
@@ -103,11 +103,11 @@
 
 <tr>
     <td nowrap align=right>
-        <fmt:message key="removeDupesToSelf"/>
-        :
+        <label for="dupes"><fmt:message key="removeDupesToSelf"/>
+        :</label>
     </td>
     <td>
-        <select name="zimbraPrefDedupeMessagesSentToSelf">
+        <select name="zimbraPrefDedupeMessagesSentToSelf" id="dupes">
             <c:set var="dedupe" value="${mailbox.prefs.dedupeMessagesSentToSelf}"/>
             <option
                     <c:if test="${dedupe eq 'dedupeNone'}"> selected</c:if> value="dedupeNone">

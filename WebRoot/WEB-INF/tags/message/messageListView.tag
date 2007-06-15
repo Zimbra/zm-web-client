@@ -5,22 +5,22 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-
 <app:handleError>
+    <zm:getMailbox var="mailbox"/>
     <app:searchTitle var="title" context="${context}"/>
     <fmt:message key="noSubject" var="noSubject"/>
     <fmt:message var="unknownRecipient" key="unknownRecipient"/>
     <zm:currentResultUrl var="currentUrl" value="/h/search" context="${context}"/>
-    <zm:getMailbox var="mailbox"/>
     <c:set var="useTo" value="${context.folder.isSent or context.folder.isDrafts}"/>
     <c:if test="${false and mailbox.prefs.readingPaneEnabled}">
         <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="true" neuterimages="${empty param.xim}"/>
         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
         <c:set var="ads" value='${msg.subject} ${msg.fragment}'/>
     </c:if>
+    <c:set var="selectedRow" value="${param.selectedRow}"/>
 </app:handleError>
 
-<app:view title="${title}" context="${context}" selected='mail' folders="true" tags="true" searches="true" keys="true">
+<app:view mailbox="${mailbox}" title="${title}" context="${context}" selected='mail' folders="true" tags="true" searches="true" keys="true">
 
 <form action="${currentUrl}" method="post" name="zform">
     <table width=100% cellpadding="0" cellspacing="0">
@@ -33,7 +33,7 @@
             <td class='List'>
                     <table width=100% cellpadding=2 cellspacing=0>
                         <tr>
-                            <th class='CB' nowrap><input onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
+                            <th class='CB' nowrap><input id="OPCHALL" onClick="checkAll(document.zform.id,this)" type=checkbox name="allids"/>
                             <th class='Img' nowrap><app:img src="tag/FlagRed.gif" altkey="ALT_FLAGGED"/>
                              <c:if test="${mailbox.features.tagging}">
                             <th class='Img' nowrap><app:img src="tag/MiniTagOrange.gif" altkey="ALT_TAG_TAG"/>
@@ -71,19 +71,23 @@
                                     <zm:currentResultUrl index="${status.index}" var="currentItemUrl" value="/h/search" action="view" context="${context}" id="${hit.messageHit.id}"/>
                                 </c:otherwise>
                             </c:choose>
+                            <c:if test="${empty selectedRow and hit.messageHit.id == context.currentItem.id}"><c:set var="selectedRow" value="${status.index}"/></c:if>
 
-                            <tr class='ZhRow ${hit.messageHit.isUnread ? ' Unread':''}${hit.messageHit.id == context.currentItem.id ? ' RowSelected' : ''}'>
-                                <td class='CB' nowrap><input type=checkbox name="id" value="${hit.messageHit.id}"></td>
+                            <tr id="R${status.index}" class='ZhRow ${hit.messageHit.isUnread ? ' Unread':''}${ selectedRow eq status.index ? ' RowSelected' : ''}'>
+                                <td class='CB' nowrap><input id="C${status.index}" type=checkbox name="id" value="${hit.messageHit.id}"></td>
                                 <td class='Img'><app:flagImage flagged="${hit.messageHit.isFlagged}"/></td>
                                  <c:if test="${mailbox.features.tagging}">
                                      <td class='Img'><app:miniTagImage ids="${hit.messageHit.tagIds}"/></td>
                                 </c:if>
                                 <td class='MsgStatusImg' align=center><app:img src="${hit.messageHit.statusImage}" altkey='${hit.messageHit.statusImageAltKey}'/></td>
-                                <td><%-- allow wrap --%> <a href="${currentItemUrl}">${fn:escapeXml(empty hit.messageHit.displaySender ? unknownRecipient :  hit.messageHit.displaySender)}</a></td>
+                                <td><%-- allow wrap --%>
+                                    <c:set var="dispAddr" value="${hit.messageHit.displayAddresses}"/>
+                                    <a href="${currentItemUrl}">${fn:escapeXml(empty dispAddr ? unknownRecipient :  dispAddr)}</a>
+                                </td>
                                 <td class='Img'><app:attachmentImage attachment="${hit.messageHit.hasAttachment}"/></td>
                                 <td > <%-- allow this col to wrap --%>
 
-                                    <a href="${currentItemUrl}" <c:if test="${hit.id == context.currentItem.id}">accesskey='o'</c:if>>
+                                    <a href="${currentItemUrl}" id="A${status.index}">
                                         <c:set var="subj" value="${empty hit.messageHit.subject ? noSubject : hit.messageHit.subject}"/>
                                         <c:out value="${subj}"/>
                                         <c:if test="${mailbox.prefs.showFragments and not empty hit.messageHit.fragment and fn:length(subj) lt 90}">
@@ -94,11 +98,11 @@
                                         <zm:computeNextPrevItem var="cursor" searchResult="${context.searchResult}" index="${context.currentItemIndex}"/>
                                         <c:if test="${cursor.hasPrev}">
                                             <zm:prevItemUrl var="prevItemUrl" value="/h/search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                            <a href="${prevItemUrl}" accesskey='k'></a>
+                                            <a href="${prevItemUrl}"></a>
                                         </c:if>
                                         <c:if test="${cursor.hasNext}">
                                             <zm:nextItemUrl var="nextItemUrl" value="/h/search" cursor="${cursor}" context="${context}" usecache="true"/>
-                                            <a href="${nextItemUrl}" accesskey='j'></a>
+                                            <a href="${nextItemUrl}"></a>
                                         </c:if>
                                     </c:if>
                                 </td>
@@ -136,5 +140,68 @@
         </c:if>
     </table>
     <input type="hidden" name="doMessageAction" value="1"/>
+    <input id="sr" type="hidden" name="selectedRow" value="${empty selectedRow ? 0 : selectedRow}"/>
+
   </form>
+
+
+<SCRIPT TYPE="text/javascript">
+    <!--
+    var zrc = ${context.searchResult.size};
+    var zsr = ${empty selectedRow ? 0 : selectedRow};
+    var zss = function(r,s) {
+        var e = document.getElementById("R"+r);
+        if (e == null) return;
+        if (s) {
+            if (e.className.indexOf(" RowSelected") == -1) e.className = e.className + " RowSelected";
+            var e2 = document.getElementById("sr"); if (e2) e2.value = r;
+        }
+        else { if (e.className.indexOf(" RowSelected") != -1) e.className = e.className.replace(" RowSelected", "");}
+    }
+    var zsn = function() {if (zrc == 0 || (zsr+1 == zrc)) return; zss(zsr, false); zss(++zsr, true);}
+    var zsp = function() {if (zrc == 0 || (zsr == 0)) return; zss(zsr, false); zss(--zsr, true);}
+    var zos = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
+    var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
+    var zcsn = function () { zcs(true); zsn(); }
+    var zcsp = function () { zcs(true); zsp(); }
+    var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    var zmove = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPMOVE"); }}
+    var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
+    var zunflag = function() { zaction("OPUNFLAG"); }
+    var zflag = function() { zaction("OPFLAG"); }
+    var zread = function() { zaction("OPREAD"); }
+    var zunread = function() { zaction("OPUNREAD"); }
+    var zjunk = function() { zclick("SOPSPAM"); }
+    //-->
+</SCRIPT>
+
+<app:keyboard cache="mail.messageListView" globals="true" mailbox="${mailbox}" folders="true" tags="true">
+
+    <zm:bindKey message="mail.Flag" func="zflag"/>
+    <zm:bindKey message="mail.UnFlag" func="zunflag"/>
+    <zm:bindKey message="mail.MarkRead" func="zread"/>
+    <zm:bindKey message="mail.MarkUnread" func="zunread"/>
+    <zm:bindKey message="mail.Spam" func="zjunk"/>
+    <zm:bindKey message="mail.Delete" func="function() { zclick('SOPDELETE')}"/>
+    <zm:bindKey message="global.CheckCheckBox" func="zcs"/>
+
+    <zm:bindKey message="mail.GoToInbox" id="FLDR2"/>
+    <zm:bindKey message="mail.GoToDrafts" id="FLDR6"/>
+    <zm:bindKey message="mail.GoToSent" id="FLDR5"/>
+    <zm:bindKey message="mail.GoToTrash" id="FLDR3"/>
+
+    <zm:bindKey message="global.SelectAllCheckBoxes" func="function() { zclick('OPCHALL')}"/>
+    <zm:bindKey message="mail.Open" func="zos"/>
+    <zm:bindKey message="global.CheckAndPreviousItem" func="zcsp"/>
+    <zm:bindKey message="global.CheckAndNextItem" func="zcsn"/>
+    <zm:bindKey message="global.PreviousItem" func="zsp"/>
+    <zm:bindKey message="global.NextItem" func="zsn"/>
+    <zm:bindKey message="global.PreviousPage" id="PREV_PAGE"/>
+    <zm:bindKey message="global.NextPage" id="NEXT_PAGE"/>
+    <c:if test="${mailbox.features.tagging}">
+        <zm:bindKey message="global.Tag" func="function() {zaction('OPTAG{TAGID}')}" alias="tag"/>
+    </c:if>
+    <zm:bindKey message="mail.MoveToFolder" func="function() {zmove('OPFLDR{FOLDERID}')}" alias="folder"/>
+</app:keyboard>
+
 </app:view>

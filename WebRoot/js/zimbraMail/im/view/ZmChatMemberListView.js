@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
  
-function ZmChatMemberListView(parent, rosterList) {
+ZmChatMemberListView = function(parent, rosterList) {
 	DwtListView.call(this, parent, "ZmChatMemberList", DwtControl.ABSOLUTE_STYLE, this._getHeaderList());
 	this.type = ZmItem.ROSTER_ITEM;
 	this.rosterList = rosterList;
@@ -65,7 +65,7 @@ function(width, height) {
 
 ZmChatMemberListView.prototype._getFieldId =
 function(item, id) {
-	return this._getViewPrefix() + id + item.id;
+	return this.getViewPrefix() + id + item.id;
 };
 
 ZmChatMemberListView.prototype._setNoResultsHtml = 
@@ -162,7 +162,7 @@ function(ev) {
    }
 };
 
-ZmChatMemberListView.prototype._getViewPrefix = 
+ZmChatMemberListView.prototype.getViewPrefix = 
 function() {
 	return this._viewPrefix;
 };

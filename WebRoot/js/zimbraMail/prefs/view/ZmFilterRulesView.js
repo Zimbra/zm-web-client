@@ -23,15 +23,15 @@
  * ***** END LICENSE BLOCK *****
  */
  
-function ZmFilterRulesView(parent, appCtxt, controller) {
+ZmFilterRulesView = function(parent, appCtxt, controller) {
 
 	DwtTabViewPage.call(this, parent, "ZmFilterRulesView");
 
 	this._appCtxt = appCtxt;
 	this._controller = controller;
-	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
+	this._prefsController = AjxDispatcher.run("GetPrefController");
 	
-	this._rules = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getFilterRules();
+	this._rules = AjxDispatcher.run("GetFilterRules");
 
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]].join(": ");
 
@@ -73,12 +73,12 @@ ZmFilterRulesView.prototype.reset = function() {};
 /*
 * ZmFilterListView
 */
-function ZmFilterListView(parent, appCtxt, controller) {
+ZmFilterListView = function(parent, appCtxt, controller) {
 	var headerList = this._getHeaderList();
 	DwtListView.call(this, parent, "ZmFilterListView", null, headerList);	
 
 	this._appCtxt = appCtxt;
-	this._rules = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getFilterRules();
+	this._rules = AjxDispatcher.run("GetFilterRules");
 	
 	this._controller = controller;
 	this._rules.addChangeListener(new AjxListener(this, this._changeListener));
@@ -86,8 +86,8 @@ function ZmFilterListView(parent, appCtxt, controller) {
 	this._internalId = AjxCore.assignId(this);
 };
 
-ZmFilterListView.COL_ACTIVE	= 1;
-ZmFilterListView.COL_NAME	= 2;
+ZmFilterListView.COL_ACTIVE	= "ac";
+ZmFilterListView.COL_NAME	= "na";
 
 ZmFilterListView.COL_WIDTH_ACTIVE = 40;
 
@@ -127,37 +127,21 @@ function() {
 	return headerList;
 };
 
-ZmFilterListView.prototype._createItemHtml =
-function(item) {
-	var	div = document.createElement("div");
-	var base = "Row";
-	div[DwtListView._STYLE_CLASS] = base;
-	div[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");	// Row-selected
-	div.className = div[DwtListView._STYLE_CLASS];
-	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
-
-	var html = [];
-	var i = 0;
-
-	html[i++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
-
-	html[i++] = "<tr id='" + item.id + "'>";
-
-	var checked = item.isActive() ? "checked": "";
-	var inputId = "_ruleCheckbox" + item.id;
-
-	html[i++] = "<td width=" + this._headerList[0]._width + ">";
-	html[i++] = "<input type='checkbox' " + checked + " id='" + inputId + "'></td>";
-	html[i++] = "<td width=" + this._headerList[1]._width + ">";
-	html[i++] = item.getName();
-	html[i++] = "</td>";
-	html[i++] = "</tr></table>";
-
-	div.innerHTML = html.join("");
-
-	this._checkboxIds.push(inputId);
-
-	return div;
+ZmFilterListView.prototype._getCellContents =
+function(html, idx, item, field, colIdx, params) {
+	if (field == ZmFilterListView.COL_ACTIVE) {
+		var checked = item.isActive() ? "checked" : "";
+		var inputId = "_ruleCheckbox" + item.id;
+		html[idx++] = "<input type='checkbox' ";
+		html[idx++] = checked;
+		html[idx++] = " id='";
+		html[idx++] = inputId;
+		html[idx++] = "'>";
+	} else if (field == ZmFilterListView.COL_NAME) {
+		html[idx++] = item.getName();
+	}
+	
+	return idx;
 };
 
 /*

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmSizePicker(parent) {
+ZmSizePicker = function(parent) {
 	ZmPicker.call(this, parent, ZmPicker.SIZE);
 };
 

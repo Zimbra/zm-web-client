@@ -46,8 +46,9 @@
 * @param conds						[array]*		list of search conditions (SearchCalendarResourcesRequest)
 * @param attrs						[array]*		list of attributes to return (SearchCalendarResourcesRequest)
 * @param field						[string]*		field to search within (instead of default)
+* @param soapInfo					[object]*		object with method, namespace, and response fields for creating soap doc
 */
-function ZmSearch(appCtxt, params) {
+ZmSearch = function(appCtxt, params) {
 
 	this._appCtxt = appCtxt;
 
@@ -71,7 +72,7 @@ function ZmSearch(appCtxt, params) {
 		this.attrs						= params.attrs;
 		this.userText					= params.userText;
 		this.field						= params.field;
-		this.isChildWindow			 	= params.isChildWindow;
+		this.soapInfo					= params.soapInfo;
 		
 		if (this.query)
 			this._parseQuery();
@@ -82,14 +83,7 @@ function ZmSearch(appCtxt, params) {
 
 // Search types
 ZmSearch.TYPE = {};
-ZmSearch.TYPE[ZmItem.CONV]		= "conversation";
-ZmSearch.TYPE[ZmItem.MSG]		= "message";
-ZmSearch.TYPE[ZmItem.CONTACT]	= "contact";
-ZmSearch.TYPE[ZmItem.APPT]		= "appointment";
-ZmSearch.TYPE[ZmItem.PAGE]		= "wiki";
-ZmSearch.TYPE[ZmItem.DOCUMENT]	= "document";
-ZmSearch.TYPE[ZmItem.NOTE]		= "note";
-ZmSearch.TYPE_ANY				= "any";
+ZmSearch.TYPE_ANY = "any";
 
 ZmSearch.GAL_ACCOUNT	= "account";
 ZmSearch.GAL_RESOURCE	= "resource";
@@ -99,27 +93,41 @@ ZmSearch.JOIN_AND	= 1;
 ZmSearch.JOIN_OR	= 2;
 
 ZmSearch.TYPE_MAP = {};
-for (var i in ZmSearch.TYPE)
-	ZmSearch.TYPE_MAP[ZmSearch.TYPE[i]] = i;
 
 // Sort By
 var i = 1;
-ZmSearch.DATE_DESC 	= i++;
-ZmSearch.DATE_ASC 	= i++;
-ZmSearch.SUBJ_DESC 	= i++;
-ZmSearch.SUBJ_ASC 	= i++;
-ZmSearch.NAME_DESC 	= i++;
-ZmSearch.NAME_ASC 	= i++;
-ZmSearch.SCORE_DESC = i++;
+ZmSearch.DATE_DESC 		= i++;
+ZmSearch.DATE_ASC 		= i++;
+ZmSearch.SUBJ_DESC 		= i++;
+ZmSearch.SUBJ_ASC 		= i++;
+ZmSearch.NAME_DESC 		= i++;
+ZmSearch.NAME_ASC 		= i++;
+ZmSearch.SCORE_DESC 	= i++;
+ZmSearch.DURATION_DESC	= i++; 
+ZmSearch.DURATION_ASC	= i++;
+ZmSearch.STATUS_DESC	= i++;
+ZmSearch.STATUS_ASC		= i++;
+ZmSearch.PCOMPLETE_DESC	= i++;
+ZmSearch.PCOMPLETE_ASC	= i++;
+ZmSearch.DUE_DATE_DESC	= i++;
+ZmSearch.DUE_DATE_ASC	= i++;
 
 ZmSearch.SORT_BY = {};
-ZmSearch.SORT_BY[ZmSearch.DATE_DESC] 	= "dateDesc";
-ZmSearch.SORT_BY[ZmSearch.DATE_ASC] 	= "dateAsc";
-ZmSearch.SORT_BY[ZmSearch.SUBJ_DESC] 	= "subjDesc";
-ZmSearch.SORT_BY[ZmSearch.SUBJ_ASC] 	= "subjAsc";
-ZmSearch.SORT_BY[ZmSearch.NAME_DESC] 	= "nameDesc";
-ZmSearch.SORT_BY[ZmSearch.NAME_ASC] 	= "nameAsc";
-ZmSearch.SORT_BY[ZmSearch.SCORE_DESC]	= "scoreDesc";
+ZmSearch.SORT_BY[ZmSearch.DATE_DESC] 		= "dateDesc";
+ZmSearch.SORT_BY[ZmSearch.DATE_ASC] 		= "dateAsc";
+ZmSearch.SORT_BY[ZmSearch.SUBJ_DESC] 		= "subjDesc";
+ZmSearch.SORT_BY[ZmSearch.SUBJ_ASC] 		= "subjAsc";
+ZmSearch.SORT_BY[ZmSearch.NAME_DESC] 		= "nameDesc";
+ZmSearch.SORT_BY[ZmSearch.NAME_ASC] 		= "nameAsc";
+ZmSearch.SORT_BY[ZmSearch.SCORE_DESC]		= "scoreDesc";
+ZmSearch.SORT_BY[ZmSearch.DURATION_DESC]	= "durDesc";
+ZmSearch.SORT_BY[ZmSearch.DURATION_ASC]		= "durAsc";
+ZmSearch.SORT_BY[ZmSearch.STATUS_DESC]		= "taskStatusDesc";
+ZmSearch.SORT_BY[ZmSearch.STATUS_ASC]		= "taskStatusAsc";
+ZmSearch.SORT_BY[ZmSearch.PCOMPLETE_DESC]	= "taskPercCompletedDesc";
+ZmSearch.SORT_BY[ZmSearch.PCOMPLETE_ASC]	= "taskPercCompletedAsc";
+ZmSearch.SORT_BY[ZmSearch.DUE_DATE_DESC]	= "taskDueDesc";
+ZmSearch.SORT_BY[ZmSearch.DUE_DATE_ASC]		= "taskDueAsc";
 
 ZmSearch.SORT_BY_MAP = {};
 for (var i in ZmSearch.SORT_BY)
@@ -147,7 +155,7 @@ function() {
 ZmSearch.prototype.execute =
 function(params) {
 
-	this.isGalSearch = (this.contactSource == ZmSearchToolBar.FOR_GAL_MI);
+	this.isGalSearch = (this.contactSource && (this.contactSource == ZmSearchToolBar.FOR_GAL_MI));
 	this.isCalResSearch = (this.conds != null);
 	if (!this.query && !this.isCalResSearch) return;
 
@@ -184,7 +192,11 @@ function(params) {
 			}
 		}
 	} else {
-		soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
+		if (this.soapInfo) {
+			soapDoc = AjxSoapDoc.create(this.soapInfo.method, this.soapInfo.namespace);
+		} else {
+			soapDoc = AjxSoapDoc.create("SearchRequest", "urn:zimbraMail");
+		}
 		var method = this._getStandardMethod(soapDoc);
 		if (this.types) {
 			var a = this.types.getArray();
@@ -230,10 +242,12 @@ function(isGalSearch, isGalAutocompleteSearch, isCalResSearch, callback, result)
 		response = response.SearchCalendarResourcesResponse;
 	} else if (isGalAutocompleteSearch) {
 		response = response.AutoCompleteGalResponse;
+	} else if (this.soapInfo) {
+		response = response[this.soapInfo.response];
 	} else {
 		response = response.SearchResponse;
 	}
-	var searchResult = new ZmSearchResult(this._appCtxt, this, this.isChildWindow);
+	var searchResult = new ZmSearchResult(this._appCtxt, this);
 	searchResult.set(response, this.contactSource);
 	result.set(searchResult);
 	
@@ -244,16 +258,19 @@ function(isGalSearch, isGalAutocompleteSearch, isCalResSearch, callback, result)
 
 // searching w/in a conv (to get its messages) has its own special command
 ZmSearch.prototype.getConv = 
-function(cid, callback) {
+function(cid, callback, getFirstMsg) {
 	if (!this.query || !cid) return;
 
 	var soapDoc = AjxSoapDoc.create("SearchConvRequest", "urn:zimbraMail");
 	var method = this._getStandardMethod(soapDoc);
 	method.setAttribute("cid", cid);
-	method.setAttribute("fetch", "1");	// fetch content of first msg
-	method.setAttribute("read", "1");	// mark that msg read
-	if (this._appCtxt.get(ZmSetting.VIEW_AS_HTML))
-		method.setAttribute("html", "1");
+	if (getFirstMsg !== false) {
+		method.setAttribute("fetch", "1");	// fetch content of first msg
+		method.setAttribute("read", "1");	// mark that msg read
+		if (this._appCtxt.get(ZmSetting.VIEW_AS_HTML)) {
+			method.setAttribute("html", "1");
+		}
+	}
 	var respCallback = new AjxCallback(this, this._handleResponseGetConv, callback);
 	this._appCtxt.getAppController().sendRequest({soapDoc: soapDoc, asyncMode: true, callback: respCallback});
 };
@@ -277,16 +294,11 @@ ZmSearch.prototype.getTitle =
 function() {
 	var where = null;
 	if (this.folderId) {
-		var folderTree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
-		if (folderTree) {
-			var folder = folderTree.getById(this.folderId);
-			if (folder)
-				where = folder.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
-		}
+		var folder = this._appCtxt.getById(this.folderId);
+		if (folder)
+			where = folder.getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 	} else if (this.tagId) {
-		var tagList = this._appCtxt.getTree(ZmOrganizer.TAG);
-		if (tagList)
-			where = tagList.getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
+			where = this._appCtxt.getById(this.tagId).getName(true, ZmOrganizer.MAX_DISPLAY_NAME_LENGTH, true);
 	}
 	var title = where ? [ZmMsg.zimbraTitle, where].join(": ") : 
 						[ZmMsg.zimbraTitle, ZmMsg.searchResults].join(": ");
@@ -355,25 +367,22 @@ function() {
 		}
 		// now check all folders by name
 		if (!this.folderId) {
-			var folders = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+			var folders = this._appCtxt.getFolderTree();
 			var folder = folders ? folders.getByPath(path) : null;
 			if (folder) {
 				this.folderId = folder.id;
-			} else {
-				var addrBooks = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
-				var addrBook = addrBooks ? addrBooks.getByPath(path) : null;
-				if (addrBook) {
-					this.folderId = addrBook.id;
-				}
 			}
 		}
 	}
 	results = this.query.match(ZmSearch.TAG_QUERY_RE);
 	if (results) {
 		var name = results[1].toLowerCase();
-		var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getByName(name);
-		if (tag) {
-			this.tagId = tag.id;
+		var tagTree = this._appCtxt.getTagTree();
+		if (tagTree) {
+			var tag = tagTree.getByName(name);
+			if (tag) {
+				this.tagId = tag.id;
+			}
 		}
 	}
 	this.hasUnreadTerm = ZmSearch.UNREAD_QUERY_RE.test(this.query);

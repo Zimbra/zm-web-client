@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmDatePicker(parent) {
+ZmDatePicker = function(parent) {
 	ZmPicker.call(this, parent, ZmPicker.DATE);
 };
 
@@ -95,8 +95,10 @@ ZmDatePicker.prototype._updateQuery =
 function() {
 	var d = this._cal.getDate();
 	if (d) {
-		var date = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
-		this.setQuery(this._select.getValue() + ":" + date);
+        var formatter = AjxDateFormat.getDateInstance(AjxDateFormat.SHORT);
+        var date = formatter.format(d);
+        var query = [this._select.getValue(),':"',date,'"'].join("");
+        this.setQuery(query);
 	} else {
 		this.setQuery("");
 	}

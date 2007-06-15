@@ -5,6 +5,10 @@ vertical-align: middle;
 
 }
 
+LEGEND {
+@Text-disabled@;
+}
+
 .tbButton, .searchButton {
     padding:2px;
     /* couldn't find a good match in base_subs for this */
@@ -69,7 +73,6 @@ border: none;
 }
 
 .Tree TD {
-    @TreeContainer@
     @TreeItem@
     padding: 2px 0px 2px 10px;
 }
@@ -86,6 +89,8 @@ border: none;
 }
 
 .Tree a:link, .Tree a:visited { color: black; text-decoration: none; }
+
+.ZhTISelected {  @SelectedBg-blurred@}
 
 /* ------- list --------------- */
 
@@ -140,7 +145,6 @@ border: none;
 
 .ZhDisplayRuleContent {
    @AppBg@  @OutsetBorder@
-
 }
 
 .ZhEditRuleContent {
@@ -177,7 +181,7 @@ A:visited { color: blue; }
 	text-decoration: none;    
 }
 
-.Overview { width: 150px; padding:0px 10px 0px 10px; }
+.Overview { width: 162px; padding:0px 10px 0px 10px; }
 
 .TopContent {
     padding:0 5px 0 0;
@@ -199,7 +203,7 @@ padding-right:4px;
 }
 
 .Conv2Tb {
-   @ToolbarBg
+   @ToolbarBg@
 }
 
 .ZhAppContent {
@@ -218,7 +222,8 @@ padding: 5px;
 }
 
 .TbTop INPUT, .TbBottom INPUT {
- padding: 0; 
+ padding: 0;
+ margin: 0;
  border: none;
  cursor: pointer;
  @FontSize-normal@
@@ -253,6 +258,8 @@ padding: 5px;
 padding: 0px 5px 0px 5px;
 }
 
+.TbBt#caltb a:link, .TbBt#caltb a:visited { color: black; text-decoration: none; }
+
 .Tb SPAN { vertical-align: middle; }
 
 .Tags SPAN { vertical-align: middle;  padding-right:5px;}
@@ -266,7 +273,7 @@ padding: 0px 5px 0px 5px;
 .Folder { padding-bottom: 2px;  }
 
 .Folder SPAN, .Tab SPAN { vertical-align: middle; padding-left: 3px; }
-.Folder.Selected {  @SelectedBg-blurred@}
+
 
 .Paging {
 padding: 0px 5px 0px 5px;
@@ -274,8 +281,6 @@ padding: 0px 5px 0px 5px;
 
 .Compose {
 @PageBg@;
-border: 1px solid;
-border-color: #98adbe #555555 #555555 #E0E0E0;
     
 }
 
@@ -438,12 +443,16 @@ width: 18em;
         background-color:#E9E9E9; /* TODO: dynamic based on folder */
 }
 
-.contactHeader {
+.contactHeader, .ZhFolderHeader {
         font-size:18px; 
         font-weight:bold;
         color: black;
-        white-space:nowrap; overflow:hidden;
+        overflow:hidden;
         padding: 3 0 3 2;
+}
+
+.ZhFolderHeader {
+        white-space:nowrap;
 }
 
 .searchField {
@@ -497,16 +506,15 @@ padding: 8px 0px 6px 0px;
 
 }
 
-.StatusInfo     { @WindowOuterContainer@ @ToastBg-info@ }
-.StatusWarning  { @WindowOuterContainer@ @ToastBg-warning@}
-.StatusCritical { @windowOuterContainer@ @ToastBg-critical@ }
+.StatusInfo     { @WindowOuterContainer@ background-color: lightgreen;}
+.StatusWarning  { @WindowOuterContainer@ background-color: yellow;}
+.StatusCritical { @WindowOuterContainer@ background-color: pink; }
 
 /*
  *   Shortcut key display
  */
 
 .shortcutIntro {
-        cursor: pointer;
         background-color: #FFFFCC;
         padding: 7px;
         border-bottom: 1px solid #777777;
@@ -524,10 +532,9 @@ padding: 8px 0px 6px 0px;
 
 .shortcutKeys {
 	text-align:right;
-	padding:6px;
+	padding:6px 0;
 	vertical-align:top;
 	@SeparatorBorder@
-	width:250px;
 	font-weight:bold;
 	@Text-disabled@;
 }
@@ -540,8 +547,7 @@ padding: 8px 0px 6px 0px;
 
 .shortcutKeyCombo {
 	white-space:nowrap;
-	margin-right:5px;
-	margin-left:5px;
+	padding:5px;
 }
 
 .shortcutKey {
@@ -579,3 +585,438 @@ padding: 8px 0px 6px 0px;
 .PanelHead {
 	background-color:#bab09a;
 }
+
+.ZhSubTabs {
+    padding-top: 10px;
+}
+
+.ZhEditFolderContent,.ZhEditAddressBookContent, .ZhEditCalendarContent, .ZhEditTagContent {
+   @AppBg@  @OutsetBorder@
+}
+
+.ZhCalType, .ZhABType, .ZhFolderType {
+@Text-disabled@;
+}
+
+.ZhCalMonthHeaderRow {
+	@PageHeaderBg@
+}
+
+
+.ZhCalMonthTable {
+	@CompactTable@
+    @AppBg@
+}
+
+/* label for the month */
+.ZhCalMonthHeaderMonth {
+    @PageHeaderBg@
+	@PageHeaderText@
+	@FontSize-biggest@
+	@Label@
+	text-align:center;
+}
+
+/* day of week label for the month */
+.ZhCalMonthHeaderCellsText {
+ 	@PageHeaderBg@
+	@PageHeaderText@
+	@FontSize-big@
+	@SmallBoxPadding@
+	@BottomSeparator@
+	@Label@
+	text-align:center;   
+}
+
+/* cell for each day in the month view in various states*/
+.ZhCalMonthDay, .ZhCalMonthDaySelected {
+    @SeparatorBorder@
+	@NoWrap@
+	vertical-align:top;
+}
+
+.ZhCalMonthDaySelected { @SelectedBg@ }
+
+/* header for day view */
+.ZhCalDayHeader, .ZhCalDayHeaderToday {
+    @PageHeaderBg@
+	@PageHeaderText@
+	@Label@
+	text-align:center;
+    @BottomSeparator@
+    line-height: 2.0em;
+}
+
+
+.ZhCalMonthHeaderRow a:link, .ZhCalMonthHeaderRow a:visited {
+    @Text@
+}
+
+.ZhCalDayHeaderToday, .ZhCalDayHeaderToday a:link, .ZhCalDayHeaderToday a:visited {
+    @Text-today@
+}
+
+/* label of a particular day in various states */
+.ZhCalDOM,
+.ZhCalDOMT,
+.ZhCalDOMO,
+.ZhCalDOMOT
+{
+	@NoWrap@
+	@FontSize-big@
+	@TextPadding@
+	text-align:right;
+}
+
+.ZhCalMonthTable a:link, .ZhCalMonthTable a:visited,
+.ZhCalMiniContainer a:link, .ZhCalMiniContainer a:visited,
+    .ZhCalMonthHeaderRow a:link, .ZhCalMonthHeaderRow a:visited { text-decoration: none; color:inherit;}
+
+.ZhCalDOM, .ZhCalDOM a:link, .ZhCalDOM a:visited {
+	@Text@
+}
+
+.ZhCalDOMT, .ZhCalDOMT a:link, .ZhCalDOMT:visited {
+	@Text-today@
+}
+
+.ZhCalDOMO, .ZhCalDOMO a:link, .ZhCalDOMO a:visited {
+	@Text-disabled@
+}
+
+.ZhCalDOMOT, .ZhCalDOMOT a:link, .ZhCalDOMOT a:visited {
+	@Text-disabled@
+	@Text-today@
+}
+
+.ZhCalMiniContainer {
+    @AppBg@ @OutsetBorder@
+    height: 135px;
+    padding-bottom: 5px;
+}
+
+.ZhCalMDS { @SelectedBg@ }
+
+.ZhCalMDOM,
+.ZhCalMDOMT,
+.ZhCalMDOMO,
+.ZhCalMDOMOT
+{
+	@NoWrap@
+	@FontSize-small@
+    @TextPadding@
+    padding:2px; border:0px;
+    text-align:center;
+}
+
+.ZhCalMDOMT {
+padding:1px; border:1px solid darkred;
+}
+
+.ZhCalMDOMO, .ZhCalMDOMO a:link, .ZhCalMDOMO a:visited {
+    @MiniCalDay-gray@
+
+}
+
+
+/*mini cal day has appt */
+.ZhCalMDHA {
+    @MiniCalDay-hilited@
+}
+
+.ZhCalMDOMOT, .ZhCalMDOMOT a:link, .ZhCalMDOMOT a:visited {
+    padding:1px; border:1px solid darkred;
+    @MiniCalDay-gray@
+}
+
+.ZhCalMDOM a:link, .ZhCalMDOM a:visited, ZhCalMDOMT a:link, .ZhCalMDOMT a:visited {
+    @Text@
+}
+
+
+/* Container of the calendar titlebar (arrows and month label, not DOW labels) */
+.ZhCalMiniTitlebar {
+	@MiniCalHeaderBg@
+}
+
+
+/* Name of the month in the calendar titlebar */
+.ZhCalMiniTitleCell {
+    white-space:nowrap;	
+	@MiniCalHeaderText@
+	@ActiveCursor@
+    font-weight: normal;
+}
+
+.ZhCalMiniTitleCell a:link, .ZhCalMiniTitleCell a:visited {
+    @Text@
+}
+
+/* Label for the days of the week in calendar titlebar */
+.ZhCalMiniDow {
+	@MiniCalDOWText@
+    font-weight: normal;
+}
+
+/* text box for a single appt in the month view in various states */
+.ZhCalMonthAppt {
+padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
+}
+
+.ZhApptSel {
+    border: 1px dashed black;
+}
+
+.ZhCalMonthAllDayAppt, .ZhCalMonthAllDayApptNew, .ZhCalDayAllDayAppt, .ZhCalDayAllDayApptNew {
+    border:2px solid #333333;
+#IFDEF GECKO
+    -moz-border-radius:2 2 2 2;
+#ENDIF
+	border-top-width:1px;
+	border-bottom-width:1px;
+}
+
+.ZhCalMonthAllDayAppt, .ZhCalMonthAllDayApptNew {
+   padding: 0 @BoxPaddingSize@ 0 @BoxPaddingSize@;
+}
+
+.ZhCalDayAllDayAppt, .ZhCalDayAllDayApptNew {
+    padding: 1 @BoxPaddingSize@ 1 @BoxPaddingSize@;
+}
+
+.ZhCalDayAppt, .ZhCalDayApptNew {
+    border:1px solid;
+  	border-color:#AAAAAA #333333 #333333 #AAAAAA;
+}
+
+.ZhCalDayApptNew, .ZhCalDayAllDayApptNew, .ZhCalMonthAllDayApptNew {
+    color:white;
+}
+
+.ZhCalDAyApptEnd, .ZhCalTimeZone {
+    @Text-disabled@
+}
+
+/* day of week label for the month */
+.ZhCalDayHour {
+ 	@AppBg@
+	@PageHeaderText@
+	@SmallBoxPadding@
+	@BottomSeparator@
+    @Label@
+	text-align:center;   
+}
+
+/* column between hours and appts */
+.ZhCalDayHS {
+    @RightSeparator@
+}
+.ZhCalAllDayDS {
+    @LeftSeparator@
+}
+.ZhCalDayHSB {
+    @RightSeparator@
+  	@BottomSeparator@
+}
+/* half hour bottom */
+.ZhCalDayHHB {
+    @BottomSeparator-light@
+    border-bottom-style: dashed;
+}
+
+/* hour bottom */
+.ZhCalDayHB {
+    @BottomSeparator-light@
+}
+
+/* allday bottom */
+.ZhCalDayADB {
+    @BottomSeparator-light@
+    border-bottom-width:4px;
+}
+
+.ZhCalDaySEP {
+    @LeftSeparator@       
+}
+
+.ZhCalDayADHS {
+    @RightSeparator@
+  	@BottomSeparator-light@
+    border-bottom-width:4px;
+}
+/* day of week label for the month */
+.ZhCalDayGrid {
+ 	@AppBg@
+}
+
+.ZhCalDayUnionSEP {
+    @LeftSeparator@
+    @RightSeparator@       
+}
+
+/* used in sched view for thermometer*/
+.ZhCalSchedUnion {
+	text-align:center;
+	background-color:#D90000;
+	color:black;
+    width:25px;
+}
+
+.apptHeaderRow {
+        height:28px;
+}
+
+.apptHeader {
+        font-size:18px;
+        font-weight:bold;
+        color: black;
+        overflow:hidden;
+}
+
+.ZhCalDayGrid A:link, .ZhCalDayGrid A:visited, .ZhCalMonthTable A:link, .ZhCalMonthTable A:visited  {
+	color: inherit;
+	text-decoration: none;
+}
+
+.ZhBottomSep {
+     @BottomSeparator@
+}
+
+.ZhApptRecurrInfo {
+        cursor: pointer;
+        background-color: #FFFFCC;
+        padding: 7px 0;
+        font-size: 10pt;
+        border-bottom: 1px solid #777777;
+}
+
+.ZhCallListPrintView {
+    padding:10px;
+}
+
+.ZhCallListPrintTable TH {
+    font-weight:bold;
+}
+
+.ZhCallListPrintTable TD,
+.ZhCallListPrintTable TH {
+	padding-left:20;
+	padding-right:20;
+	border-bottom:1px solid;
+    text-align:left;
+}
+
+.ZhZimbraTitle {
+	@FontSize-biggest@
+}
+
+/*
+ * Colors, for use in calendar and elsewhere.
+ *
+ * Use the base color (eg: "Red") to show a list of colors.
+ * Use the "Bg" version ("RedBg" as background in a list, etc)
+ * Dark and Light are primarily for use in borders
+ *
+ */
+
+.Selection			{ background-color:#ADD6D6;}
+.SelectionDark		{ background-color:#91C8C8; }
+.SelectionLight		{ background-color:#C8E4E4; }
+.SelectionBg		{ background-color:#E3F1F1; }
+
+.Red				{ background-color:#E34040;}
+.RedDark			{ background-color:#D90000; }
+.RedLight			{ background-color:#EC8080; }
+.RedBg				{ background-color:#F5BFBF; }
+.RedC				{ color:#E34040;}
+.RedDarkC			{ color:#D90000; }
+.RedLightC			{ color:#EC8080; }
+.RedBgC				{ color:#F5BFBF; }
+
+.Pink				{ background-color:#F492BF;}
+.PinkDark			{ background-color:#F06EA9; }
+.PinkLight			{ background-color:#F8B7D4; }
+.PinkBg				{ background-color:#FBDBE9; }
+.PinkC				{ color:#F492BF;}
+.PinkDarkC			{ color:#F06EA9; }
+.PinkLightC			{ color:#F8B7D4; }
+.PinkBgC			{ color:#FBDBE9; }
+
+.Orange				{ background-color:#FF9940;}
+.OrangeDark			{ background-color:#FF7700; }
+.OrangeLight		{ background-color:#FFBB80; }
+.OrangeBg			{ background-color:#FFDDBF; }
+.OrangeC			{ color:#FF9940;}
+.OrangeDarkC		{ color:#FF7700; }
+.OrangeLightC		{ color:#FFBB80; }
+.OrangeBgC			{ color:#FFDDBF; }
+
+.Yellow				{ background-color:#FFE640;}
+.YellowDark			{ background-color:#FFDD00; }
+.YellowLight		{ background-color:#FFEE80; }
+.YellowBg			{ background-color:#FFF6BF; }
+.YellowC			{ color:#FFE640;}
+.YellowDarkC		{ color:#FFDD00; }
+.YellowLightC		{ color:#FFEE80; }
+.YellowBgC			{ color:#FFF6BF; }
+
+.Green				{ background-color:#40A05F;}
+.GreenDark			{ background-color:#00802A; }
+.GreenLight			{ background-color:#80C095; }
+.GreenBg			{ background-color:#BFDFCA; }
+.GreenC				{ color:#40A05F;}
+.GreenDarkC			{ color:#00802A; }
+.GreenLightC		{ color:#80C095; }
+.GreenBgC			{ color:#BFDFCA; }
+
+.Cyan				{ background-color:#40D9D9;}
+.CyanDark			{ background-color:#00CCCC; }
+.CyanLight			{ background-color:#80E6E6; }
+.CyanBg				{ background-color:#BFF2F2; }
+.CyanC				{ color:#40D9D9;}
+.CyanDarkC			{ color:#00CCCC; }
+.CyanLightC			{ color:#80E6E6; }
+.CyanBgC			{ color:#BFF2F2; }
+
+.Blue				{ background-color:#4073D9;}
+.BlueDark			{ background-color:#0044CC; }
+.BlueLight			{ background-color:#80A2E6; }
+.BlueBg				{ background-color:#BFD0F2; }
+.BlueC				{ color:#4073D9;}
+.BlueDarkC			{ color:#0044CC; }
+.BlueLightC			{ color:#80A2E6; }
+.BlueBgC			{ color:#BFD0F2; }
+
+.Purple				{ background-color:#7940A0;}
+.PurpleDark			{ background-color:#4C0080; }
+.PurpleLight		{ background-color:#A680C0; }
+.PurpleBg			{ background-color:#D2BFDF; }
+.PurpleC			{ color:#7940A0; }
+.PurpleDarkC		{ color:#4C0080; }
+.PurpleLightC		{ color:#A680C0; }
+.PurpleBgC			{ color:#D2BFDF; }
+
+.Gray				{ background-color:#BFBFBF;}
+.GrayDark			{ background-color:#A9A9A9; }
+.GrayLight			{ background-color:#D4D4D4; }
+.GrayBg				{ background-color:#E9E9E9; }
+.GrayC				{ color:#BFBFBF;}
+.GrayDarkC			{ color:#A9A9A9; }
+.GrayLightC			{ color:#D4D4D4; }
+.GrayBgC			{ color:#E9E9E9; }
+
+
+
+.ZhAC {position:relative;}
+.ZhACB { font-weight: bold; }
+.ZhACCont {position:absolute;bottom:0;}
+.ZhACCont .yui-ac-content {position:absolute;border:1px solid #404040;background:#fff;overflow:hidden;z-index:9050;}
+.ZhACCont .yui-ac-shadow {position:absolute;margin:.3em;background:#a0a0a0;z-index:9010;}
+.ZhACCont ul {margin: 0; padding:1px 0; list-style: none}
+.ZhACCont li { margin: 0; padding:0 1px;cursor:default;white-space:nowrap;}
+.ZhACCont li.yui-ac-highlight {  @SelectedBg@ }
+.ZhACCont li.yui-ac-prehighlight {background:#FFFFCC;}
+
+.ZhACTo {z-index:9050;}
+.ZhACCc {z-index:9040;}
+.ZhACBcc {z-index:9030;}

@@ -36,7 +36,7 @@
  *  Abstract method:
  * _createDetails() creates the contents of the details pane.
  */
- function ZmPrefListView(parent, appCtxt, controller, labels, className, posStyle) {
+ ZmPrefListView = function(parent, appCtxt, controller, labels, className, posStyle) {
 	if (arguments.length == 0) return;
 
 	DwtTabViewPage.call(this, parent, className, posStyle);
@@ -44,7 +44,7 @@
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 	this._labels = labels;
-	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
+	this._prefsController = AjxDispatcher.run("GetPrefController");
 	
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]].join(": ");
 
@@ -73,7 +73,7 @@ function() {
 	this._prefsController._resetOperations(this._prefsController._toolbar, ZmPrefView.IDENTITY);
 	if (this._hasRendered) return;
 
-	this._createHtml();
+	this._createPrefListHtml();
 	this._hasRendered = true;
 };
 
@@ -203,11 +203,11 @@ ZmPrefListView.prototype._validateSelectedItem =
 function(errors) {
 };
 
-ZmPrefListView.prototype._createHtml =
+ZmPrefListView.prototype._createPrefListHtml =
 function() {
 	this._templateId = Dwt.getNextId();
 	var id = this._templateId;
-	var data = { id: id, _labels: this._labels };
+	var data = { id: id, _labels: this._labels, showInfoBox: this._showInfoBox() };
 	this.getHtmlElement().innerHTML = AjxTemplate.expand("zimbraMail.prefs.templates.Options#ListOptionPage", data);
 
 	// Create the list view and the contents of the detail pane.
@@ -244,6 +244,11 @@ function() {
 	return "";	
 };
 
+ZmPrefListView.prototype._showInfoBox =
+function() {
+	return true;
+};
+
 ZmPrefListView.prototype._createItemHtml =
 function(item) {
 	var	div = document.createElement("div");
@@ -255,10 +260,15 @@ function(item) {
 	var iconClass = error ? "Critical" : "";
 	div.innerHTML = [
 		"<table cellspacing=0 cellpadding=0><tr><td",AjxEnv.isIE?" width='20px'":"",">", AjxImg.getImageHtml(iconClass), "</td><td>",
-		AjxStringUtil.htmlEncode(item.name, true), "</td></tr></table>"
+		this._getItemText(item), "</td></tr></table>"
 	].join("");
 
 	return div;
+};
+
+ZmPrefListView.prototype._getItemText =
+function(item) {
+	return AjxStringUtil.htmlEncode(item.name, true);
 };
 
 ZmPrefListView.prototype._updateListSize = 
@@ -283,7 +293,7 @@ function(ev) {
 * ZmPrefList
 * The list on the left side of the view.
 */
-function ZmPrefList(parent, appCtxt, listHeader) {
+ZmPrefList = function(parent, appCtxt, listHeader) {
 	var headerList = [new DwtListHeaderItem(ZmPrefList.COLUMN, listHeader, null, ZmPrefList.COLUMN_WIDTH)];
 	DwtListView.call(this, parent, "ZmPrefList", null, headerList);	
 

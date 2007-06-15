@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmSavedSearchPicker(parent) {
+ZmSavedSearchPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.SEARCH);
 
@@ -77,7 +77,7 @@ function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED) {
  		// bug fix #7057 - remove when new version of safari is release
  		// see http://bugzilla.opendarwin.org/show_bug.cgi?id=7279
- 		if (AjxEnv.isSafari)
+ 		if (AjxEnv.isSafari && !AjxEnv.isSafariNightly)
  			ev.item._checkBox.checked = !ev.item._checkBox.checked;
  		var ti = ev.item;
  		var checked = ti.getChecked();
@@ -104,8 +104,8 @@ function() {
 		}
 		// hide folders that don't have searches under them, and
 		// take the checkbox away from folders
-		for (var id in treeView._treeHash) {
-			var ti = treeView._treeHash[id];
+		for (var id in treeView._treeItemHash) {
+			var ti = treeView._treeItemHash[id];
 			var organizer = ti.getData(Dwt.KEY_OBJECT);
 			if (organizer.type == ZmOrganizer.FOLDER && organizer.id != ZmOrganizer.ID_ROOT) {
 				if (organizer.hasSearch()) {

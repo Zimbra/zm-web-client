@@ -1,0 +1,18 @@
+<skin>
+	<script>
+		<file>../_base/base/ZmSkin.js</file>
+		<file>../_base/base/BaseSkin.js</file>
+		<file>../_base/base/skin.js</file>
+	</script>
+	<substitutions>
+		<file>../_base/base/skin.properties</file>		
+		<file>skin.properties</file>
+	</substitutions>
+	<css>
+		<file>../_base/base/skin.css</file>
+		<file>default.css</file>
+	</css>
+	<html>
+		<file>../_base/base/skin.html</file>
+	</html>
+</skin>

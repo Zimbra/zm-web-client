@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmVersionAssistant(appCtxt) {
+ZmVersionAssistant = function(appCtxt) {
 	if (arguments.length == 0) return;
 	ZmAssistant.call(this, appCtxt, "Client Version Information", ".version");
 };

@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmFolderPicker(parent) {
+ZmFolderPicker = function(parent) {
 
 	ZmPicker.call(this, parent, ZmPicker.FOLDER);
 
@@ -51,7 +51,7 @@ function(parent) {
 
 ZmFolderPicker.prototype._updateQuery = 
 function() {
-	var folders = new Array();
+	var folders = [];
 	var num = this._checkedItems.size();
 	for (var i = 0; i < num; i++) {
 		var folder = this._checkedItems.get(i);
@@ -60,8 +60,9 @@ function() {
 	var query = "";
 	if (folders.length) {
 		var folderStr = folders.join(" OR ");
-		if (folders.length > 1)
+		if (folders.length > 1) {
 			folderStr = "(" + folderStr + ")";
+		}
 		query += "in:" + folderStr;
 	}
 	this.setQuery(query);
@@ -72,8 +73,8 @@ ZmFolderPicker.prototype._treeListener =
 function(ev) {
  	if (ev.detail == DwtTree.ITEM_CHECKED) {
  		// bug fix #7057 - remove when new version of safari is release
- 		// see http://bugzilla.opendarwin.org/show_bug.cgi?id=7279
- 		if (AjxEnv.isSafari)
+ 		// see http://bugs.webkit.org/show_bug.cgi?id=7279
+ 		if (AjxEnv.isSafari && !AjxEnv.isSafariNightly)
  			ev.item._checkBox.checked = !ev.item._checkBox.checked;
  		var ti = ev.item;
  		var checked = ti.getChecked();
@@ -92,11 +93,12 @@ ZmFolderPicker.prototype._twiddle =
 function() {
 	for (var i in this._treeView) {
 		var treeView = this._treeView[i];
-		for (var id in treeView._treeHash) {
-			var ti = treeView._treeHash[id];
+		for (var id in treeView._treeItemHash) {
+			var ti = treeView._treeItemHash[id];
 			var organizer = ti.getData(Dwt.KEY_OBJECT);
-			if (organizer.type == ZmOrganizer.SEARCH)
+			if (organizer.type == ZmOrganizer.SEARCH) {
 				ti.setVisible(false);
+			}
 		}
 	}
-}
+};

@@ -32,7 +32,7 @@
 *    by default, next appt start time minus lead time pref (i..e, 5 minutes before).
 *    but, also could be controlled by snooze prefs.
 */
-function ZmReminderController(appCtxt, calController) {
+ZmReminderController = function(appCtxt, calController) {
 	this._calController = calController;
 	this._appCtxt = appCtxt;
 	this._apptState = {};	// keyed on appt.getUniqueId(true)
@@ -168,7 +168,7 @@ function() {
 
 	for (var i=0; i < cachedSize; i++) {
 		var appt = this._cachedAppts.get(i);
-		if (!appt || appt.isAllDayEvent() || appt.getEndTime() < startTime || appt.getParticipationStatus() == ZmAppt.PSTATUS_DECLINED) {
+		if (!appt || appt.isAllDayEvent() || appt.getEndTime() < startTime || appt.ptst == ZmCalItem.PSTATUS_DECLINED) {
 			toRemove.push(appt);
 		} else if (appt.isInRange(startTime, endTime)) {
 			toRemove.push(appt);

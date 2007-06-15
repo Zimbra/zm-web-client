@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalDayView(parent, posStyle, controller, dropTgt, view, numDays) {
+ZmCalDayView = function(parent, posStyle, controller, dropTgt, view, numDays) {
 	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmController.CAL_DAY_VIEW, 1, false);
 }
 

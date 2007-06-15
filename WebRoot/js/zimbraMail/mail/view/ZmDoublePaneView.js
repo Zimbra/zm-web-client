@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmDoublePaneView(parent, className, posStyle, mode, controller, dropTgt) {
+ZmDoublePaneView = function(parent, className, posStyle, mode, controller, dropTgt) {
 
 	if (arguments.length == 0) return;
 	DwtComposite.call(this, parent, className, posStyle);
@@ -31,11 +31,11 @@ function ZmDoublePaneView(parent, className, posStyle, mode, controller, dropTgt
 	this._controller = controller;
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 	this._initHeader();
-	this._msgListView = new ZmMailMsgListView(this, null, Dwt.ABSOLUTE_STYLE, mode, controller, dropTgt);
+	this._mailListView = this._createMailListView(mode, controller, dropTgt);
 	this._msgSash = new DwtSash(this, DwtSash.VERTICAL_STYLE, "AppSash-vert", ZmDoublePaneView.SASH_THRESHOLD, Dwt.ABSOLUTE_STYLE);
 	this._msgView = new ZmMailMsgView(this, null, posStyle, mode, controller);
 
-	if (!this._appCtxt.get(ZmSetting.READING_PANE_ENABLED)) {
+	if (!controller._readingPaneOn) {
 		this._msgView.setVisible(false);
 		this._msgSash.setVisible(false);
 	}
@@ -64,6 +64,11 @@ function() {
 	return this._controller;
 };
 
+ZmDoublePaneView.prototype.getTitle =
+function() {
+	return this._mailListView.getTitle();
+};
+
 ZmDoublePaneView.prototype.toggleView = 
 function() {
 	var bIsVisible = this._isMsgViewVisible();
@@ -75,9 +80,14 @@ function() {
 	this._resetSize(sz.x, sz.y);
 };
 
-ZmDoublePaneView.prototype.getMsgListView =
+ZmDoublePaneView.prototype._createMailListView =
+function(mode, controller, dropTgt) {
+	return new ZmMailMsgListView(this, null, Dwt.ABSOLUTE_STYLE, mode, controller, dropTgt);
+};
+
+ZmDoublePaneView.prototype.getMailListView =
 function() {
-	return this._msgListView;
+	return this._mailListView;
 };
 
 ZmDoublePaneView.prototype.getMsgView = 
@@ -87,12 +97,12 @@ function() {
 
 ZmDoublePaneView.prototype.getSelectionCount = 
 function() {
-	return this._msgListView.getSelectionCount();
+	return this._mailListView.getSelectionCount();
 };
 
 ZmDoublePaneView.prototype.getSelection = 
 function() {
-	return this._msgListView.getSelection();
+	return this._mailListView.getSelection();
 };
 
 ZmDoublePaneView.prototype.reset =
@@ -141,12 +151,81 @@ function() {
 
 ZmDoublePaneView.prototype._resetSize = 
 function(newWidth, newHeight) {
-	// overload me
-};
+	if (newHeight <= 0) { return; }
+	
+	if (this._isMsgViewVisible()) {
+		var sashHeight = this._msgSash.getSize().y;
+		if (!this._sashMoved) {
+			var listViewHeight = (newHeight / 2) - DwtListView.HEADERITEM_HEIGHT;
+			this._mailListView.resetHeight(listViewHeight);
+			this._msgView.setBounds(Dwt.DEFAULT, listViewHeight + sashHeight, Dwt.DEFAULT,
+									newHeight - (listViewHeight + sashHeight));
+			this._msgSash.setLocation(Dwt.DEFAULT, listViewHeight);
+		} else {
+			var mvHeight = newHeight - this._msgView.getLocation().y;
+			var minHeight = this._msgView.getMinHeight();
+			if (mvHeight < minHeight) {
+				this._mailListView.resetHeight(newHeight - minHeight);
+				this._msgView.setBounds(Dwt.DEFAULT, (newHeight - minHeight) + sashHeight,
+										Dwt.DEFAULT, minHeight - sashHeight);
+			} else {
+				this._msgView.setSize(Dwt.DEFAULT, mvHeight);
+			}
+			this._msgSash.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - sashHeight);
+		}
+	} else {
+		this._mailListView.resetHeight(newHeight);
+	}
+	this._mailListView._resetColWidth();
+}
 
 ZmDoublePaneView.prototype._sashCallback =
 function(delta) {
-	// overload me
+
+	if (!this._sashMoved) {
+		this._sashMoved = true;
+	}
+
+	if (delta > 0) {
+		var newMsgViewHeight = this._msgView.getSize().y - delta;
+		var minMsgViewHeight = this._msgView.getMinHeight();
+		if (newMsgViewHeight > minMsgViewHeight) {
+			// moving sash down
+			this._mailListView.resetHeight(this._mailListView.getSize().y + delta);
+			this._msgView.setSize(Dwt.DEFAULT, newMsgViewHeight);
+			this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y + delta);
+		} else {
+			delta = 0;
+		}
+	} else {
+		var absDelta = Math.abs(delta);
+		
+		if (!this._minMLVHeight) {
+			var list = this._mailListView.getList();
+			if (list && list.size()) {
+				var item = list.get(0);
+				var div = document.getElementById(this._mailListView._getItemId(item));
+				this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT + (Dwt.getSize(div).y * 2);
+			} else {
+				this._minMLVHeight = DwtListView.HEADERITEM_HEIGHT;
+			}
+		}
+		
+		if (this._msgSash.getLocation().y - absDelta > this._minMLVHeight) {
+			// moving sash up
+			this._mailListView.resetHeight(this._mailListView.getSize().y - absDelta);
+			this._msgView.setSize(Dwt.DEFAULT, this._msgView.getSize().y + absDelta);
+			this._msgView.setLocation(Dwt.DEFAULT, this._msgView.getLocation().y - absDelta);
+		} else {
+			delta = 0;
+		}
+	}
+
+	if (delta) {
+		this._mailListView._resetColWidth();
+	}
+
+	return delta;
 };
 
 ZmDoublePaneView.prototype._isMsgViewVisible = 

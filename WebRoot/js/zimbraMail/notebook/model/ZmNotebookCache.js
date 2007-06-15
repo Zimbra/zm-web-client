@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNotebookCache(appCtxt) {
+ZmNotebookCache = function(appCtxt) {
 	this._appCtxt = appCtxt;
 	this.clearCache();
 	this._changeListener = new AjxListener(this, this._handleChange);
@@ -71,6 +71,8 @@ ZmNotebookCache.prototype._appCtxt;
 
 ZmNotebookCache.prototype._idMap;
 ZmNotebookCache.prototype._foldersMap;
+ZmNotebookCache.prototype._pathMap;
+ZmNotebookCache.prototype._idPathMap;
 
 ZmNotebookCache.prototype._changeListener;
 
@@ -82,9 +84,9 @@ ZmNotebookCache.prototype._changeListener;
 
 ZmNotebookCache.prototype.fillCache = 
 function(folderId, callback, errorCallback) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
+	var tree = this._appCtxt.getFolderTree();
 	/***
-	var notebook = tree.getById(folderId);
+	var notebook = this._appCtxt.getById(folderId);
 	var path = notebook.getSearchPath();
 	var search = 'in:"'+path+'"';
 	/***/
@@ -126,6 +128,10 @@ ZmNotebookCache.prototype.putItem = function(item) {
 	if (item.id) {
 		this._idMap[item.id] = item;
 	}
+	if(item.path && item.id) {
+		this._pathMap[item.path] = item;
+		this._idPathMap[item.id] = item.path;
+	}
 	var folderId = item.folderId || ZmNotebookItem.DEFAULT_FOLDER;
 	var items = this.getItemsInFolder(folderId);
 	items.all[item.name] = item;
@@ -166,7 +172,11 @@ ZmNotebookCache.prototype.renameDocument = function(doc, newName) {
 };
 
 ZmNotebookCache.prototype.removeItem = function(item) {
+	if(item.path){
+		delete this._pathMap[item.path];
+	}
 	if (item.id) {
+		delete this._idPathMap[item.id];
 		delete this._idMap[item.id];
 	}
 	var items = this.getItemsInFolder(item.folderId);
@@ -203,17 +213,23 @@ ZmNotebookCache.prototype.removeDocument = function(doc) {
 ZmNotebookCache.prototype.clearCache = function() {
 	this._idMap = {};
 	this._foldersMap = {};
+	this._pathMap = {};
+	this._idPathMap = {};
 };
 
 // query methods
-
+ZmNotebookCache.prototype.getPaths = function() {
+	return this._pathMap;
+};
 ZmNotebookCache.prototype.getIds = function() {
 	return this._idMap;
 };
 ZmNotebookCache.prototype.getFolders = function() {
 	return this._foldersMap;
 };
-
+ZmNotebookCache.prototype.getItemByPath = function(path) {
+	return this._pathMap[path];
+};
 ZmNotebookCache.prototype.getItemById = function(id) {
 	return this._idMap[id];
 };
@@ -245,7 +261,7 @@ ZmNotebookCache.prototype.getPageByName = function(folderId, name, traverseUp) {
 		for (var specialName in ZmNotebookCache._SPECIAL_NAMES) {
 			if (this._foldersMap[folderId].pages[specialName]) continue;
 			var requestNode = soapDoc.set("GetWikiRequest",null,null,"urn:zimbraMail");
-			requestNode.setAttribute("id", specialName);
+			requestNode.setAttribute("requestId", specialName);
 			var wordNode = soapDoc.set("w", null, requestNode);
 			wordNode.setAttribute("l", folderId);
 			wordNode.setAttribute("name", specialName);
@@ -365,21 +381,21 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 	}
 
 	// link: /Foo/Bar
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var notebook = null;
 	if (link.match(/^\//)) {
 		// TODO: Handle case where current folder owner is not me
 		//       because absolute paths should be relative to where
 		//       the link was followed. [Q] Should they?
-		notebook = tree.getById(ZmOrganizer.ID_ROOT);
+		var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+		notebook = this._appCtxt.getById(rootId);
 		link = link.substr(1);
 	}
 	if (!notebook) {
-		var app = this._appCtxt.getApp(ZmZimbraMail.NOTEBOOK_APP);
+		var app = this._appCtxt.getApp(ZmApp.NOTEBOOK);
 		var controller = app.getNotebookController();
 		var currentPage = controller.getPage();
 		var folderId = (currentPage && currentPage.folderId) || ZmOrganizer.ID_NOTEBOOK;
-		notebook = tree.getById(folderId);
+		notebook = this._appCtxt.getById(folderId);
 	}
 
 	// link: Foo/Bar
@@ -389,8 +405,8 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 			var name = names[i];
             if (name == ".") continue;
             if (name == "..") {
-                notebook = notebook.parent;
                 if (notebook == null) return null;
+                notebook = notebook.parent;
                 continue;
             }
             notebook = ZmNotebookCache.__getNotebookByName(notebook, name);
@@ -411,7 +427,7 @@ ZmNotebookCache.prototype.getItemByLink = function(link) {
 
 	// link: Foo (item)
 	var traverseUp = Boolean(link.match(/^_/));
-	var item = this.getItemByName(notebook.id, link, traverseUp);
+	var item = notebook ? this.getItemByName(notebook.id, link, traverseUp) : null;
 	return item;
 };
 ZmNotebookCache.prototype.getPageByLink = function(link) {
@@ -489,10 +505,8 @@ ZmNotebookCache.prototype.makeProxyPage = function(page, folderId) {
 
 ZmNotebookCache.prototype._fillCacheResponse = 
 function(requestParams, folderId, callback, errorCallback, response) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(folderId);
-	var remoteFolderId = notebook.zid ? notebook.zid+":"+notebook.rid : undefined;
-
+	var notebook = this._appCtxt.getById(folderId);
+	var remoteFolderId = (notebook && notebook.zid) ? notebook.zid + ":" + notebook.rid : undefined;
 	// add pages to folder map in cache
 	if (response && (response.SearchResponse || response._data.SearchResponse)) {
 		var searchResponse = response.SearchResponse || response._data.SearchResponse;
@@ -528,7 +542,7 @@ function(requestParams, folderId, callback, errorCallback, response) {
 		}
 
 		// retrieve another block of pages, if necessary
-		if (searchResponse.more) {
+		if (searchResponse.more && requestParams) {
 			var soapDoc = requestParams.soapDoc;
 			var limit = Number(soapDoc.getMethod().getAttribute("limit")) * 2;
 			soapDoc.setMethodAttribute("offset", searchResponse.offset + words.length);
@@ -575,24 +589,24 @@ function(requestParams, folderId, callback, errorCallback, response) {
 ZmNotebookCache.prototype._fillCacheResponse2 =
 function(folderId, callback, errorCallback, response) {
 
+	var tree = this._appCtxt.getFolderTree();
 	var resp = response.GetFolderResponse || (response._data && response._data.GetFolderResponse);
 	var folder = resp.folder && resp.folder[0];
 	var folders = folder && folder.folder;
-	if (folders) {
-		var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-		var parent = tree.getById(folderId);
+	var parent = this._appCtxt.getById(folderId);
+	if (folders && parent) {
 		for (var i = 0; i < folders.length; i++) {
 			var obj = folders[i];
 
 			// remove sub-tree if it already exists
-			var notebook = tree.getById(obj.id);
+			var notebook = this._appCtxt.getById(obj.id);
 			if (notebook) {
 				parent.children.remove(notebook);
 				notebook._notify(ZmEvent.E_DELETE);
 			}
 
 			// create sub-tree and add to tree
-			var notebook = ZmNotebook.createFromJs(parent, obj, tree, null);
+			var notebook = ZmFolderTree.createFromJs(parent, obj, tree);
 			parent.children.add(notebook);
 			notebook._notify(ZmEvent.E_CREATE);
 		}
@@ -605,3 +619,217 @@ function(folderId, callback, errorCallback, response) {
 
 ZmNotebookCache.prototype._handleChange = function(event) {
 };
+
+ZmNotebookCache.prototype._processResponse = function(searchResponse)
+{
+	try{
+		var result = [];
+		
+		if(!searchResponse){		
+			return result;
+		}
+		
+		//var searchResponse = response.SearchResponse || response._data.SearchResponse;
+		var words = searchResponse.w || [];
+		for (var i = 0; i < words.length; i++) {
+			var word = words[i];
+			var item = this.getPageById(word.id);
+			if (!item) {
+				item = new ZmPage(this._appCtxt);
+				item.set(word);
+				item.folderId = word.l || ZmNotebookItem.DEFAULT_FOLDER;
+				this.putPage(item);
+			}
+			else {
+				item.set(word);
+			}
+			result.push(item);
+		}
+		var docs = searchResponse.doc || [];
+		for (var i = 0; i < docs.length; i++) {
+			var doc = docs[i];
+			var item = this.getDocumentById(doc.id);
+			if (!item) {
+				item = new ZmDocument(this._appCtxt);
+				item.set(doc);
+				item.folderId = doc.l || ZmNotebookItem.DEFAULT_FOLDER;
+				this.putDocument(item);
+			}
+			else {
+				item.set(doc);
+			}
+			result.push(item);
+		}
+		
+		return result;
+		
+	}
+	//TODO: remote folder id
+	catch(ex){ 
+		DBG.println(AjxDebug.DBG1,'zmnotebook cache excep:'+ex); 
+	} 
+};
+
+
+ZmNotebookCache.prototype.checkCache = function(params){
+	var item = null;
+	if(params.folderId && params.name){
+		item = this.getItemByName(params.folderId,params.name);
+	}else if(params.id){
+		item = this.getItemById(params.id);
+	}else if(params.path){
+		item = this.getItemByPath(params.path);
+	}
+	return item;
+};
+
+ZmNotebookCache.prototype.getItemInfo = function(params)
+{
+		var item = this.checkCache(params);
+		
+		if(item){
+			//DBG.println("item found on cache:"+item+","+item.id+",folder:"+item.folderId+","+item.getRestUrl());
+			if(params.callback){
+				params.callback.run(item);
+			}
+			return item;
+		}
+		
+		var soapDoc = AjxSoapDoc.create("GetItemRequest", "urn:zimbraMail");		
+		var folderNode = soapDoc.set("item");
+		
+		if(params.path){
+			folderNode.setAttribute("path", params.path);
+		}else if(params.folderId && params.name){
+			folderNode.setAttribute("l", params.folderId);			
+			folderNode.setAttribute("name", params.name);			
+		}else if(params.id){
+			folderNode.setAttribute("id", params.id);			
+		}
+		
+		var args = [];
+		var asyncMode = (params.callback?true:false);
+
+		var handleResponse = null;
+		if(asyncMode){
+			handleResponse = new AjxCallback(this, this.handleGetItemResponse,[params]);
+		}
+		
+		var reqParams = {
+			soapDoc: soapDoc,
+			asyncMode: asyncMode,
+			callback: handleResponse,
+			accountName: params.accountName		
+		};
+		
+		var appController = this._appCtxt.getAppController();
+		var response = appController.sendRequest(reqParams);
+		
+		if(!asyncMode && response){
+		var item = this.handleGetItemResponse(params,response.GetItemResponse);		
+		return item;
+		}	
+		
+		return null;
+};
+
+ZmNotebookCache.prototype.handleGetItemResponse = function(params,response)
+{
+		try{
+			var path = params.path;
+			var callback = params.callback;
+			
+			var getItemResponse = response;
+			if(response && response._data){
+				getItemResponse = response && response._data && response._data.GetItemResponse;
+			}
+			var folderResp = getItemResponse && getItemResponse.folder && getItemResponse.folder[0];
+			var wikiResp = getItemResponse && getItemResponse.w && getItemResponse.w[0];
+			var linkResp = getItemResponse && getItemResponse.link && getItemResponse.link[0];
+		
+			var item = null;
+
+			if(folderResp){
+				item = new ZmPage(this._appCtxt);
+				item.set(folderResp);
+				item.folderId = folderResp.id || ZmNotebookItem.DEFAULT_FOLDER;
+				item.name = "_Index";
+			}
+			if(wikiResp){
+				item = new ZmPage(this._appCtxt);
+				item.set(wikiResp);
+				item.folderId = wikiResp.l || ZmNotebookItem.DEFAULT_FOLDER;
+			}
+			if(linkResp){
+				item = new ZmPage(this._appCtxt);
+				item.set(linkResp);
+				item.folderId = linkResp.id || ZmNotebookItem.DEFAULT_FOLDER;
+				item.remoteFolderId = (linkResp && linkResp.zid) ? linkResp.zid + ":" + linkResp.rid : undefined;
+				item.name = "_Index";
+			}			
+
+			if(item && !params.ignoreCaching){	
+				if(!path){
+					path = this.getPath(item.restUrl);
+				}							
+				item.path = path;				
+				this.putItem(item);				
+			}
+	
+			if(callback){
+				callback.run(item);
+			}
+
+			return item;			
+		}catch(ex){
+			DBG.println(AjxDebug.DBG1,'exception in handleGetItemResponse:'+ex);
+		}
+};
+
+ZmNotebookCache.prototype.getPath = function(url){
+
+	var parts = this.parseURL(url);
+
+	if(!parts)
+	return;
+	
+	var path = parts.path;
+//	var path = path1.replace(/^\/?home\//,"");
+
+	if(!path || path=="blank")
+	return;
+	
+	path = unescape(path);
+	
+	if(path.charAt(0)=='/'){
+		path = path.substring(1);
+	}		
+	var accountName = null;
+	var wikiPath = null;	
+	var parts = path.split("/");	
+	if(parts.length>=3 && parts[0] == "home"){
+		var accountName = parts[1];
+		var len = parts.length;
+		var newParts = parts.splice(2,len-2);
+		wikiPath = newParts.join("/");	
+		return wikiPath;
+	}
+	return path;
+};
+
+ZmNotebookCache.prototype.parseURL = function(sourceUri) {
+
+    var names = ["source","protocol","authority","domain","port","path","directoryPath","fileName","query","anchor"];
+    var parts = new RegExp("^(?:([^:/?#.]+):)?(?://)?(([^:/?#]*)(?::(\\d*))?)?((/(?:[^?#](?![^?#/]*\\.[^?#/.]+(?:[\\?#]|$)))*/?)?([^?#/]*))?(?:\\?([^#]*))?(?:#(.*))?").exec(sourceUri);
+    var uri = {};
+    
+    for(var i = 0; i < 10; i++){
+        uri[names[i]] = (parts[i] ? parts[i] : "");
+    }
+    
+    if(uri.directoryPath.length > 0){
+        uri.directoryPath = uri.directoryPath.replace(/\/?$/, "/");
+    }
+    
+    return uri;
+}

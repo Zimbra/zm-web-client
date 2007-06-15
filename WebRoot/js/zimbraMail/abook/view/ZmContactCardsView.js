@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmContactCardsView(parent, className, posStyle, controller, dropTgt) {
+ZmContactCardsView = function(parent, className, posStyle, controller, dropTgt) {
 
 	className = className ? className : "ZmContactCardsView";
 	posStyle = posStyle ? posStyle : Dwt.ABSOLUTE_STYLE;
@@ -40,7 +40,7 @@ function ZmContactCardsView(parent, className, posStyle, controller, dropTgt) {
 
 	this.addControlListener(new AjxListener(this, this._controlListener));
 
-	this._addrbookTree = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK);
+	this._addrbookTree = this._appCtxt.getFolderTree();
 	this._addrbookTree.addChangeListener(new AjxListener(this, this._addrbookTreeListener));
 
 	this._initialResized = false;
@@ -107,43 +107,42 @@ function(data, type) {
 };
 
 ZmContactCardsView.prototype._createItemHtml =
-function(contact, now, isDndIcon, getHtml) {
+function(contact, params) {
+
 	var html = [];
 	var idx = 0;
 	var div = null;
-
-	if (getHtml) {
-		html[idx++] = "<div name='";
-		html[idx++] = ZmContactCardsView.CARD_NAME;
-		html[idx++] = "' class='ZmContactCard' ";
-		html[idx++] = DwtListView._STYLE_CLASS;
-		html[idx++] = "='ZmContactCard' ";
-		html[idx++] = DwtListView._SELECTED_STYLE_CLASS;
-		html[idx++] = "='ZmContactCard-";
-		html[idx++] = DwtCssStyle.SELECTED;
-		// manually associate item with element :(
-		html[idx++] = "' ";
-		html[idx++] = DwtListView._KBFOCUS_CLASS;
-		html[idx++] = "='ZmContactCard-focused' id='";
-		html[idx++] = this._getItemId(contact);
-		html[idx++] = "' _itemIndex='";
-		html[idx++] = AjxCore.assignId(contact);
-		html[idx++] = "' _type='";
-		html[idx++] = DwtListView.TYPE_LIST_ITEM;
-		html[idx++] = "' style='width:";
-		html[idx++] = this._cardWidth;
-		html[idx++] = "'>";
+	
+	var base = "ZmContactCard";
+	if (params.getHtml) {
+		var attrs = {};
+		attrs.name = ZmContactCardsView.CARD_NAME;
+		attrs['class'] = base;
+		attrs[DwtListView._STYLE_CLASS] = base;
+		attrs[DwtListView._SELECTED_STYLE_CLASS] = [base, DwtCssStyle.SELECTED].join("-");
+		attrs[DwtListView._KBFOCUS_CLASS] = [base, DwtCssStyle.FOCUSED].join("-");
+		attrs['id'] = this._getItemId(contact);
+		attrs['_itemIndex'] = AjxCore.assignId(contact);
+		attrs['_type'] = DwtListView.TYPE_LIST_ITEM;
+		attrs['style'] = ["width:", this._cardWidth].join("");
+		var attrList = [];
+		for (var attr in attrs) {
+			attrList.push([attr, "='", attrs[attr], "'"].join(""));
+		}
+		html[idx++] = "<div ";
+		html[idx++] = attrList.join(" ");
+		html[idx++] = ">";
 	} else {
 		// create div for DnD
 		div = document.createElement("div");
-		div[DwtListView._STYLE_CLASS] = "ZmContactCard-dnd";
+		div[DwtListView._STYLE_CLASS] = [base, DwtCssStyle.DND].join("-");
 		// bug fix #3654 - yuck
 		if (AjxEnv.isMozilla) {
 			div.style.overflow = "visible";
 		}
 		div.style.position = "absolute";
 		div.className = div[DwtListView._STYLE_CLASS];
-		if (isDndIcon) {
+		if (params.isDnDIcon) {
 			div.style.width = this._cardWidth;
 		}
 		this.associateItemWithElement(contact, div, DwtListView.TYPE_LIST_ITEM);
@@ -152,7 +151,7 @@ function(contact, now, isDndIcon, getHtml) {
 	html[idx++] = "<table border=0 width=100% height=100% cellpadding=0 cellspacing=0>";
 	html[idx++] = "<tr class='contactHeader ";
 
-	var color = contact.addrbook ? contact.addrbook.color : ZmAddrBook.DEFAULT_COLOR;
+	var color = contact.addrbook ? contact.addrbook.color : ZmOrganizer.DEFAULT_COLOR[ZmOrganizer.ADDRBOOK];
 	html[idx++] = ZmOrganizer.COLOR_TEXT[color] + "Bg";
 	html[idx++] = "'>";
 	html[idx++] = "<td width=16>";
@@ -175,8 +174,8 @@ function(contact, now, isDndIcon, getHtml) {
 	html[idx++] = "</tr>";
 
 	idx = contact.isGroup()
-		? this._getGroupHtml(contact, html, idx, isDndIcon)
-		: this._getContactHtml(contact, html, idx, isDndIcon);
+		? this._getGroupHtml(contact, html, idx, params.isDnDIcon)
+		: this._getContactHtml(contact, html, idx, params.isDnDIcon);
 
 	html[idx++] = "</table>";
 
@@ -190,7 +189,7 @@ function(contact, now, isDndIcon, getHtml) {
 };
 
 ZmContactCardsView.prototype._getGroupHtml =
-function(contact, html, idx, isDndIcon) {
+function(contact, html, idx, isDnDIcon) {
 	var style = AjxEnv.isLinux ? " style='line-height:13px'" : "";
 	var members = contact.getGroupMembers().good.getArray();
 	var size = members.length <= 5 ? members.length : Math.min(members.length, 5);
@@ -228,7 +227,7 @@ function(contact, html, idx, isDndIcon) {
 };
 
 ZmContactCardsView.prototype._getContactHtml =
-function(contact, html, idx, isDndIcon) {
+function(contact, html, idx, isDnDIcon) {
 	var style = AjxEnv.isLinux ? " style='line-height:13px'" : "";
 
 	html[idx++] = "<tr";
@@ -249,9 +248,9 @@ function(contact, html, idx, isDndIcon) {
 	html[idx++] = ">";
 	// add first column of work info here
 	if (value = contact.getWorkAddrField()) {
-		html[idx++] = this._getField("W", value, isDndIcon);
+		html[idx++] = this._getContactField("W", value, isDnDIcon);
 	} else if (value = contact.getHomeAddrField()) {
-		html[idx++] = this._getField("H", value, isDndIcon);
+		html[idx++] = this._getContactField("H", value, isDnDIcon);
 	}
 	html[idx++] = "</tr>";
 
@@ -259,7 +258,7 @@ function(contact, html, idx, isDndIcon) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("E", value, isDndIcon, ZmObjectManager.EMAIL);
+		html[idx++] = this._getContactField("E", value, isDnDIcon, ZmObjectManager.EMAIL);
 		html[idx++] = "</tr>";
 	}
 
@@ -267,13 +266,13 @@ function(contact, html, idx, isDndIcon) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("E2", value, isDndIcon, ZmObjectManager.EMAIL);
+		html[idx++] = this._getContactField("E2", value, isDnDIcon, ZmObjectManager.EMAIL);
 		html[idx++] = "</tr>";
 	} else if (value = contact.getAttr("email3")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("E3", value, isDndIcon, ZmObjectManager.EMAIL);
+		html[idx++] = this._getContactField("E3", value, isDnDIcon, ZmObjectManager.EMAIL);
 		html[idx++] = "</tr>";
 	}
 
@@ -286,42 +285,42 @@ function(contact, html, idx, isDndIcon) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("W", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("W", value, isDnDIcon, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("workPhone2")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("W2", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("W2", value, isDnDIcon, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("workFax")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("F", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("F", value, isDnDIcon, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("mobilePhone")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("M", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("M", value, isDnDIcon, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 	if (value = contact.getAttr("homePhone")) {
 		html[idx++] = "<tr";
 		html[idx++] = style;
 		html[idx++] = ">";
-		html[idx++] = this._getField("H", value, isDndIcon, ZmObjectManager.PHONE);
+		html[idx++] = this._getContactField("H", value, isDnDIcon, ZmObjectManager.PHONE);
 		html[idx++] = "</tr>";
 	}
 
 	html[idx++] = "</table>";
 	html[idx++] = "</td></tr></table>";
 	html[idx++] = "</td></tr>";
-	if (!contact.isLoaded()) {
+	if (!contact.isLoaded) {
 		html[idx++] = "<tr><td colspan=10 class='FinishLoading' onclick='ZmContactCardsView._loadContact(this, ";
 		html[idx++] = '"';
 		html[idx++] = contact.id;
@@ -334,7 +333,7 @@ function(contact, html, idx, isDndIcon) {
 	return idx;
 };
 
-ZmContactCardsView.prototype._getField =
+ZmContactCardsView.prototype._getContactField =
 function(fname, value, skipObjectify, type) {
 	var newValue = skipObjectify ? value : this._generateObject(value, type);
 	var html = new Array();
@@ -368,21 +367,13 @@ function() {
 		for (var j = 0; j < list.length; j++) {
 			var contact = list[j];
 			
-			// in canonical view, don't show contacts in the Trash unless explicitly set in prefs
-			if (contact.list.isCanonical &&
-				(contact.folderId == ZmFolder.ID_TRASH &&
-				 !this._appCtxt.get(ZmSetting.SEARCH_INCLUDES_TRASH)))
-			{
-				continue;
-			}
-
-			if (count%2 == 0)
+			if (count % 2 == 0)
 				html[i++] = "<tr>";
 
 			count++;
 
 			html[i++] = "<td valign=top>";
-			html[i++] = this._createItemHtml(contact, null, null, true);
+			html[i++] = this._createItemHtml(contact, {getHtml:true});
 			html[i++] = "</td>";
 
 			if (count%2 == 0)
@@ -450,18 +441,18 @@ ZmContactCardsView.prototype._setDnDIconState =
 function(dropAllowed) {
 	if (this._dndImg || !AjxEnv.isLinux) {
 		ZmContactsBaseView.prototype._setDnDIconState.call(this, dropAllowed)
-	} else {
+	} else if (this._dndIcon) {
 		// bug fix #3235 - no opacity for linux
-		this._dndIcon._origClassName = dropAllowed
-			? this._dndIcon._origClassName + " DropAllowed-linux" 
-			: this._dndIcon._origClassName + " DropNotAllowed-linux";
+		var addClass = dropAllowed ? DwtCssStyle.DROP_OK : DwtCssStyle.DROP_NOT_OK;
+		var linuxClass = [addClass, DwtCssStyle.LINUX].join("-");
+		this._dndIcon.className = [this._dndIcon._origClassName, linuxClass].join(" ");
 	}
 };
 
 ZmContactCardsView.prototype._handleResponseLoad =
 function(result, contact) {
 	var div = document.getElementById(this._getItemId(contact));
-	var html = this._createItemHtml(contact, null, null, true);
+	var html = this._createItemHtml(contact, {getHtml:true});
 	var newDiv = Dwt.parseHtmlFragment(html);
 	div.innerHTML = newDiv.innerHTML;
 };
@@ -500,8 +491,9 @@ function(ev) {
 	// need custom handling for delete (can't just remove row)
 	if (ev.event == ZmEvent.E_DELETE || ev.event == ZmEvent.E_MOVE) {
 		var items = ev.getDetail("items");
-		for (var i = 0; i < items.length; i++)
+		for (var i = 0; i < items.length; i++) {
 			this._list.remove(items[i]);
+		}
 		this._layout();
 	} else {
 		ZmContactsBaseView.prototype._changeListener.call(this, ev);
@@ -575,8 +567,8 @@ ZmContactCardsView._loadContact =
 function(cell, contactId) {
 	var appCtxt = window._zimbraMail._appCtxt;
 	var contact = appCtxt.cacheGet(contactId);
-	if (contact && !contact.isLoaded()) {
-		var clc = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+	if (contact && !contact.isLoaded) {
+		var clc = AjxDispatcher.run("GetContactListController");
 		var cardsView = clc.getParentView();
 		var callback = new AjxCallback(cardsView, cardsView._handleResponseLoad);
 		contact.load(callback);
@@ -592,7 +584,6 @@ function(contactId) {
 		? window.parentController._appCtxt
 		: window._zimbraMail._appCtxt;
 
-	var capp = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
-	var contact = capp.getContactList().getById(contactId);
-	capp.getContactController().show(contact);
+	var contact = AjxDispatcher.run("GetContacts").getById(contactId);
+	AjxDispatcher.run("GetContactController").show(contact);
 };

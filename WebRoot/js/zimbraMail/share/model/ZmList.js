@@ -44,7 +44,7 @@
 * @param appCtxt	[ZmAppCtxt]		the app context
 * @param search		[ZmSearch]*		search that generated this list
 */
-function ZmList(type, appCtxt, search) {
+ZmList = function(type, appCtxt, search) {
 
 	if (arguments.length == 0) return;
 	ZmModel.call(this, type);
@@ -57,7 +57,7 @@ function ZmList(type, appCtxt, search) {
 	this._hasMore = false;
 	this._idHash = new Object();
 
-	var tagList = appCtxt.getTree(ZmOrganizer.TAG);
+	var tagList = appCtxt.getTagTree();
 	if (tagList) {
 		this._tagChangeListener = new AjxListener(this, this._tagTreeChangeListener);
 		tagList.addChangeListener(this._tagChangeListener);
@@ -69,41 +69,20 @@ ZmList.prototype.constructor = ZmList;
 
 // for item creation
 ZmList.ITEM_CLASS = {};
-ZmList.ITEM_CLASS[ZmItem.CONV]		= "ZmConv";
-ZmList.ITEM_CLASS[ZmItem.MSG]		= "ZmMailMsg";
-ZmList.ITEM_CLASS[ZmItem.ATT]		= "ZmMimePart";
-ZmList.ITEM_CLASS[ZmItem.CONTACT]	= "ZmContact";
-ZmList.ITEM_CLASS[ZmItem.APPT]		= "ZmAppt";
-ZmList.ITEM_CLASS[ZmItem.RESOURCE]	= "ZmResource";
-ZmList.ITEM_CLASS[ZmItem.PAGE]		= "ZmPage";
-ZmList.ITEM_CLASS[ZmItem.DOCUMENT]	= "ZmDocument";
 
 // node names for item types
 ZmList.NODE = {};
-ZmList.NODE[ZmItem.CONV]		= "c";
-ZmList.NODE[ZmItem.MSG]			= "m";
-ZmList.NODE[ZmItem.ATT]			= "mp";
-ZmList.NODE[ZmItem.CONTACT]		= "cn";
-ZmList.NODE[ZmItem.RESOURCE]	= "calresource";
-ZmList.NODE[ZmItem.PAGE]		= "w";
-ZmList.NODE[ZmItem.DOCUMENT]	= "doc";
 
-// item types based on node name
+// item types based on node name (reverse map of above)
 ZmList.ITEM_TYPE = {};
-for (var i in ZmList.NODE) {
-	ZmList.ITEM_TYPE[ZmList.NODE[i]] = i;
-}
-
-ZmList.TYPES = [
-	ZmItem.CONTACT, ZmItem.CONV, ZmItem.MSG, ZmItem.ATT, ZmItem.APPT,
-	ZmItem.PAGE, ZmItem.DOCUMENT
-];
-ZmList.MIXED = -1; // special type for heterogeneous list
 
 ZmList.prototype.toString = 
 function() {
 	return "ZmList";
-}
+};
+
+// abstract methods
+ZmList.prototype.getPrintHtml = function(preferHtml, callback) {};
 
 /**
 * Adds an item to the list.
@@ -126,8 +105,9 @@ function(item, index) {
 ZmList.prototype.remove = 
 function(item) {
 	this._vector.remove(item);
-	if (item.id)
+	if (item.id) {
 		delete this._idHash[item.id];
+	}
 }
 
 /**
@@ -303,7 +283,7 @@ function(offset, newList) {
 */
 ZmList.prototype.flagItems =
 function(items, flagOp, on) {
-	if (this.type == ZmList.MIXED && !this._mixedType) {
+	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("flagItems", [items, flagOp, on]);
 		return;
 	}
@@ -322,7 +302,7 @@ function(items, flagOp, on) {
 */
 ZmList.prototype.tagItems =
 function(items, tagId, doTag) {
-	if (this.type == ZmList.MIXED && !this._mixedType) {
+	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("tagItems", [items, tagId, doTag]);
 		return;
 	}
@@ -343,7 +323,7 @@ function(items, tagId, doTag) {
 
 ZmList.prototype.removeAllTags = 
 function(items) {
-	if (this.type == ZmList.MIXED && !this._mixedType) {
+	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("removeAllTags", [items]);
 		return;
 	}
@@ -366,7 +346,7 @@ function(items) {
 */
 ZmList.prototype.moveItems =
 function(items, folder, attrs) {
-	if (this.type == ZmList.MIXED && !this._mixedType) {
+	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("moveItems", [items, folder, attrs]);
 		return;
 	}
@@ -376,7 +356,7 @@ function(items, folder, attrs) {
 	attrs.l = folder.id;
 	
 	var respCallback = null;
-	if (this.type == ZmList.MIXED)
+	if (this.type == ZmItem.MIXED)
 		respCallback = new AjxCallback(this, this._handleResponseMoveItems, folder);
 	this._itemAction({items: items, action: "move", attrs: attrs, callback: respCallback});
 };
@@ -394,10 +374,6 @@ function(folder, result) {
 
 /**
 * Copies a list of items to the given folder.
-* <p>
-* Search results are treated as though they're in a temporary folder, so that they behave as
-* they would if they were in any other folder such as Inbox.
-* </p>
 *
 * @param items		[Array]			a list of items to move
 * @param folder		[ZmFolder]		destination folder
@@ -405,7 +381,22 @@ function(folder, result) {
 */
 ZmList.prototype.copyItems =
 function(items, folder, attrs) {
-	// overload me
+	if (!(items instanceof Array)) items = [items];
+
+	attrs = attrs || {};
+	attrs.l = folder.id;
+
+	var respCallback = new AjxCallback(this, this._handleResponseCopyItems);
+	this._itemAction({items: items, action: "copy", attrs: attrs, callback: respCallback});
+};
+
+ZmList.prototype._handleResponseCopyItems =
+function(result) {
+	var resp = result.getResponse();
+	if (resp.length > 0) {
+		var msg = AjxMessageFormat.format(ZmMsg.itemCopied, resp.length);
+		this._appCtxt.getAppController().setStatusMsg(msg);
+	}
 };
 
 /**
@@ -419,7 +410,7 @@ function(items, folder, attrs) {
 */
 ZmList.prototype.deleteItems =
 function(items, hardDelete, attrs) {
-	if (this.type == ZmList.MIXED && !this._mixedType) {
+	if (this.type == ZmItem.MIXED && !this._mixedType) {
 		this._mixedAction("deleteItems", [items, hardDelete, attrs]);
 		return;
 	}
@@ -430,7 +421,7 @@ function(items, hardDelete, attrs) {
 	var toDelete = new Array();	
 	for (var i = 0; i < items.length; i++) {
 		var folderId = items[i].getFolderId();
-		var folder = this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(folderId);
+		var folder = this._appCtxt.getById(folderId);
 		if (hardDelete || (folder && folder.isInTrash()))
 			toDelete.push(items[i]);
 		else
@@ -439,7 +430,7 @@ function(items, hardDelete, attrs) {
 
 	// soft delete - items moved to Trash
 	if (toMove.length)
-		this.moveItems(toMove, this._appCtxt.getTree(ZmOrganizer.FOLDER).getById(ZmFolder.ID_TRASH), attrs);
+		this.moveItems(toMove, this._appCtxt.getById(ZmFolder.ID_TRASH), attrs);
 
 	// hard delete - items actually deleted from data store
 	if (toDelete.length)
@@ -484,15 +475,17 @@ ZmList.prototype.removeAllTagsLocal = function(items) {}
 // default action is to remove each deleted item from this list
 ZmList.prototype.deleteLocal =
 function(items) {
-	for (var i = 0; i < items.length; i++)
+	for (var i = 0; i < items.length; i++) {
 		this.remove(items[i]);
+	}
 };
 
 // default action is to remove each moved item from this list
 ZmList.prototype.moveLocal = 
 function(items, folderId) {
-	for (var i = 0; i < items.length; i++)
+	for (var i = 0; i < items.length; i++) {
 		this.remove(items[i]);
+	}
 };
 
 /*
@@ -507,7 +500,7 @@ ZmList.prototype._itemAction =
 function(params, batchCmd) {
 	var actionedItems = new Array();
 	var idHash = this._getIds(params.items);
-	var idStr = idHash.list.join(",");;
+	var idStr = idHash.list.join(",");
 	if (!(idStr && idStr.length)) {
 		if (params.callback)
 			params.callback.run(new ZmCsfeResult(actionedItems));
@@ -515,10 +508,10 @@ function(params, batchCmd) {
 			return actionedItems;
 	}
 
-	var type = (this.type == ZmList.MIXED) ? this._mixedType : this.type;
+	var type = (this.type == ZmItem.MIXED) ? this._mixedType : this.type;
 	if (!type) return;
 	var soapCmd = ZmItem.SOAP_CMD[type] + "Request";
-	var soapDoc = AjxSoapDoc.create(soapCmd, "urn:zimbraMail");
+	var soapDoc = AjxSoapDoc.create(soapCmd, this._getActionNamespace());
 	var actionNode = soapDoc.set("action");
 	actionNode.setAttribute("id", idStr);
 	actionNode.setAttribute("op", params.action);
@@ -555,14 +548,15 @@ function(type, idHash, callback, result) {
 	}
 };
 
-// Hack to support actions on a list of items of more than one type. Since some specialized
-// lists (ZmMailList or ZmContactList, for example) override action methods (such as
-// deleteItems), we need to be able to call the proper method for each item type.
+// Hack to support actions on a list of items of more than one type. Since some
+// specialized lists (ZmMailList or ZmContactList, for example) override action
+// methods (such as deleteItems), we need to be able to call the proper method
+// for each item type.
 //
-// XXX: We could optimize this a bit by either using a batch request, or by using
-// ItemActionRequest. But we still want to call the appropriate method for each item type,
-// so that any overridden methods get called. So for now, it's easier to do the requests
-// separately.
+// XXX: We could optimize this a bit by either using a batch request, or by
+// using ItemActionRequest. But we still want to call the appropriate method for
+// each item type, so that any overridden methods get called. So for now, it's
+// easier to do the requests separately.
 ZmList.prototype._mixedAction =
 function(method, args) {
 	var typedItems = this._getTypedItems(args[0]);
@@ -632,6 +626,11 @@ function(ctlr) {
 	sc.redoSearch(ctlr._currentSearch);
 };
 
+ZmList.prototype._getActionNamespace =
+function() {
+	return "urn:zimbraMail";
+};
+
 ZmList.prototype._folderTreeChangeListener = 
 function(ev) {
 	if (ev.type != ZmEvent.S_FOLDER) return;
@@ -646,7 +645,6 @@ function(ev) {
 		var curView = ctlr.getCurrentView();
 		if (curView) curView.setOffset(0);
 		ctlr._resetNavToolBarButtons(view);
-		ctlr._showListRange(view);
 	} else if (isCurrentList && ctlr && ctlr._currentSearch && (ev.event == ZmEvent.E_MOVE ||
 			   (ev.event == ZmEvent.E_MODIFY) && fields && fields[ZmOrganizer.F_NAME])) {
 		// on folder rename or move, update current query if folder is part of query

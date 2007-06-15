@@ -28,34 +28,25 @@
  * mountpoints in an overview tree but is mostly used as a utility to
  * create mountpoints.
  */
-function ZmMountpoint(id, name, parent, tree, color, view) {
-	ZmOrganizer.call(ZmOrganizer.MOUNTPOINT, id, name, parent, tree);
-	this.color = color || ZmOrganizer.DEFAULT_COLOR;
-	this.view = view;
+ZmMountpoint = function(params) {
+	params.type = ZmOrganizer.MOUNTPOINT;
+	ZmOrganizer.call(this, params);
+	this.view = params.view;
 }
+
 ZmMountpoint.prototype = new ZmOrganizer;
 ZmMountpoint.prototype.constructor = ZmMountpoint;
 
-ZmMountpoint.prototype.toString = function() {
-	return "ZmMountpoint";
-};
-
-//
 // Constants
-//
-
 ZmMountpoint.__CREATE_PARAMS = { "l":1, "name":1, "zid":1, "rid":1, "owner":1, "path":1, "view":1, "color":1, "f":1 };
 
-//
-// Data
-//
 
-ZmMountpoint.prototype.color;
-ZmMountpoint.prototype.view;
+// Public Methods
 
-//
-// Public functions
-//
+ZmMountpoint.prototype.toString =
+function() {
+	return "ZmMountpoint";
+};
 
 /**
  * @param params		[Object]		A hash of the request attributes and values.
@@ -70,5 +61,8 @@ function(appCtxt, params, callback, errorCallback) {
 		linkNode.setAttribute(p, params[p]);
 	}
 
-	appCtxt.getAppController().sendRequest({soapDoc:soapDoc, asyncMode:true, callback:callback, errorCallback:errorCallback});
+	appCtxt.getAppController().sendRequest({soapDoc:soapDoc,
+											asyncMode:true,
+											callback:callback,
+											errorCallback:errorCallback});
 };

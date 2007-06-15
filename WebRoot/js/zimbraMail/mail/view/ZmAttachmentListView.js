@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAttachmentListView(parent, className, posStyle, controller) {
+ZmAttachmentListView = function(parent, className, posStyle, controller) {
 
 	var headerList = this._getHeaderList(parent);
 	ZmMailListView.call(this, parent, className, posStyle, ZmController.ATT_LIST_VIEW, ZmItem.ATT, controller, headerList);
@@ -63,7 +63,7 @@ function(attachment, now) {
 	
 	// Icon
 	var mimeInfo = ZmMimeTable.getInfo(attachment.getContentType());
-	fieldId = this._getFieldId(attachment, ZmItem.F_ICON);
+	fieldId = this._getFieldId(attachment, ZmItem.F_TYPE);
 	htmlArr[idx++] = "<td class='Icon'>";
 	htmlArr[idx++] = AjxImg.getImageHtml(mimeInfo ? mimeInfo.image : "GenericDoc" , null, ["id='", fieldId, "'"].join(""));
 	htmlArr[idx++] = "</td>";
@@ -80,7 +80,7 @@ function(attachment, now) {
 	
 	if (msg) {
 		// Sender
-		var fromAddr = msg._addrs[ZmEmailAddress.FROM].get(0);
+		var fromAddr = msg._addrs[AjxEmailAddress.FROM].get(0);
 		if (fromAddr) {
 			fieldId = this._getFieldId(attachment, ZmItem.F_FROM);
 	    	htmlArr[idx++] = "<td id='" + fieldId;
@@ -134,10 +134,10 @@ function(ev, div) {
 	
 	var msg = this.getItemFromElement(div).getMessage();
 	if (m && m.field && msg) {
-		if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_FROM]) {
-			var fromAddr = msg._addrs[ZmEmailAddress.FROM].get(0);
+		if (m.field == ZmItem.F_FROM) {
+			var fromAddr = msg._addrs[AjxEmailAddress.FROM].get(0);
 			this._setParticipantToolTip(fromAddr);
-		} else if (m.field == ZmListView.FIELD_PREFIX[ZmItem.F_SUBJECT]) {
+		} else if (m.field == ZmItem.F_SUBJECT) {
 			this.setToolTipContent(AjxStringUtil.htmlEncode(msg.fragment));
 		} else {
 			this.setToolTipContent(null);

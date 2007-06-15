@@ -20,27 +20,29 @@
                <th style='width:20px'><a href="${toggleUrl}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}"/></a></th>
             <th class='Header'><fmt:message key="folders"/></th>
             <th width='1%' align='right'  class='ZhTreeEdit'>
-                <c:if test="${empty editmode}">
-                    <c:url value="/h/mfolders" var="mfoldersUrl"/>
-                    <a href="${mfoldersUrl}"><fmt:message key="TREE_EDIT"/> </a>
-                </c:if>
+                <c:url value="/h/mfolders" var="mfoldersUrl">
+                        <c:if test="${not empty param.sfi}">
+                            <c:param name="sfi" value="${param.sfi}"/>
+                        </c:if>
+                </c:url>
+                <a href="${mfoldersUrl}"><fmt:message key="TREE_EDIT"/> </a>
             </th>
         </tr>
-
+ 
         <c:if test="${expanded}">
-            <app:overviewFolder folder="${mailbox.inbox}" keys="${keys}" key="i" label="inbox" icon="mail/Inbox.gif"/>
+            <app:overviewFolder folder="${mailbox.inbox}" keys="${keys}"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.inbox.id}" skipsystem="false"/>
 
-            <app:overviewFolder folder="${mailbox.sent}" keys="${keys}" key="s" label="sent" icon="mail/SentFolder.gif"/>
+            <app:overviewFolder folder="${mailbox.sent}" keys="${keys}"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.sent.id}" skipsystem="false"/>
 
-            <app:overviewFolder folder="${mailbox.drafts}" keys="${keys}" key="d" label="drafts" icon="mail/DraftFolder.gif"/>
+            <app:overviewFolder folder="${mailbox.drafts}" keys="${keys}"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.drafts.id}" skipsystem="false"/>
 
-            <app:overviewFolder folder="${mailbox.spam}" keys="${keys}" key="u" label="junk" icon="mail/SpamFolder.gif"/>
+            <app:overviewFolder folder="${mailbox.spam}" keys="${keys}"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.spam.id}" skipsystem="false"/>
 
-            <app:overviewFolder folder="${mailbox.trash}" keys="${keys}" key="t" label="trash" icon="common/Trash.gif"/>
+            <app:overviewFolder folder="${mailbox.trash}" keys="${keys}"/>
             <app:doFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
         </c:if>
     </table>

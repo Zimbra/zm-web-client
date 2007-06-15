@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
- function ZmIdentityView(parent, appCtxt, controller) {
+ ZmIdentityView = function(parent, appCtxt, controller) {
 	var labels = { 
 		infoTitle: ZmMsg.identityInfoTitle, infoContents: ZmMsg.identityInfoContent,
 		listHeader: ZmMsg.identities, detailsHeader: ZmMsg.identitiesLabel
@@ -32,7 +32,7 @@
 	ZmPrefListView.call(this, parent, appCtxt, controller, labels, "ZmIdentityView", DwtControl.STATIC_STYLE);
 	this._appCtxt = appCtxt;
 	this._controller = controller;
-	this._prefsController = appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getPrefController();
+	this._prefsController = AjxDispatcher.run("GetPrefController");
 	
 	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]].join(": ");
 
@@ -70,7 +70,7 @@ ZmIdentityView.prototype.reset =
 function() {
 	var listView = this.getList();
 	listView.set(this._controller._getListData());
-	listView.setSelection(this._appCtxt.getIdentityCollection().defaultIdentity);
+	listView.setSelection(AjxDispatcher.run("GetIdentityCollection").defaultIdentity);
 	this._clearChanges();
 	this.clearAllErrors();
 };
@@ -101,7 +101,7 @@ function(parentElement) {
 	this._addPage(ZmIdentityPage.SIGNATURE, ZmMsg.signature, tabView);
 	this._addPage(ZmIdentityPage.ADVANCED, ZmMsg.identityAdvanced, tabView);
 
-	var identityCollection = this._appCtxt.getIdentityCollection();
+	var identityCollection = AjxDispatcher.run("GetIdentityCollection");
 	identityCollection.addChangeListener(new AjxListener(this, this._identityChangeListener));
 };
 
@@ -180,7 +180,7 @@ function(batchCommand) {
 	// Create a default account if there is nothing already defined.
 	// This is a little hack until we know the server always creates a default for us.
 	if (this._adds.length) {
-		var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+		var identityCollection = AjxDispatcher.run("GetIdentityCollection");
 		if (!identityCollection.getIdentities().length) {
 			this._adds[0].isDefault = true;
 		}
@@ -246,7 +246,7 @@ function() {
 
 	// Make sure the correct proxy identity is now selected.
 	if (this._identity) {
-		var identityCollection = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP).getIdentityCollection();
+		var identityCollection = AjxDispatcher.run("GetIdentityCollection");
 		var list = this.getList().getList();
 		for (var i = 0, count = list.size(); i < count; i++) {
 			var identity = list.get(i);
@@ -313,7 +313,7 @@ function(originalValue) {
 	} else if (!ZmOrganizer.VALID_NAME_RE.test(value)) {
 		throw AjxMessageFormat.format(ZmMsg.errorInvalidName, value);
 	} else {
-		var existing = this._appCtxt.getIdentityCollection().getByName(value);
+		var existing = AjxDispatcher.run("GetIdentityCollection").getByName(value);
 		if (existing && (existing.id != this._identity.id)) {
 	    	throw AjxMessageFormat.format(ZmMsg.errorIdentityAlreadyExists, existing.name);
 		}
@@ -326,7 +326,7 @@ function(originalValue) {
 * @constructor
 * A page inside of the identities preferences
 */
-function ZmIdentityPage(parent, appCtxt, pageId, className, posStyle) {
+ZmIdentityPage = function(parent, appCtxt, pageId, className, posStyle) {
 	DwtTabViewPage.call(this, parent, className, posStyle);
 	this._appCtxt = appCtxt;
 	this._pageId = pageId;
@@ -477,6 +477,7 @@ function() {
 
 ZmIdentityPage.prototype._populateSelects =
 function(identity) {
+	AjxDispatcher.run("GetIdentityCollection");
 	for (var field in this._selects) {
 		var select = this._selects[field];
 		var value = identity.getField(field);
@@ -550,7 +551,7 @@ function() {
 			options.push(new DwtSelectOptionData(aliases[i], aliases[i]));
 		}
 		var sendFromAddress = new DwtSelect(this, options);
-		sendFromAddress.getButton().getHtmlElement().style.minWidth = inputSizeInPixels;
+		sendFromAddress.getHtmlElement().style.minWidth = inputSizeInPixels;
 		sendFromAddress.replaceElement(id + "_sendFromAddress");
 		this._selects[ZmIdentity.SEND_FROM_ADDRESS] = sendFromAddress;
 	}
@@ -644,7 +645,7 @@ function(value) {
 	if (!value.split) return[]; 
 	var names = value.split(",");
 	if (names.length) {
-		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		var tree = this._appCtxt.getFolderTree();
 		for (var i = 0, count = names.length; i < count; i++) {
 			var path = AjxStringUtil.trim(names[i]);
 			if (path) {
@@ -663,7 +664,7 @@ ZmIdentityPage.prototype._containsInvalidFolders =
 function(value) {
 	var names = value.split(",");
 	if (names.length) {
-		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
+		var tree = this._appCtxt.getFolderTree();
 		for (var i = 0, count = names.length; i < count; i++) {
 			var path = AjxStringUtil.trim(names[i]);
 			if (path) {
@@ -681,9 +682,8 @@ ZmIdentityPage.prototype._folderArrayToString =
 function(value) {
 	var result = [];
 	if (value.length) {
-		var tree = this._appCtxt.getTree(ZmOrganizer.FOLDER);
 		for (var i = 0, count = value.length; i < count; i++) {
-			var folder = tree.getById(value[i]);
+			var folder = this._appCtxt.getById(value[i]);
 			if (folder) {
 				result[result.length] = folder.getPath(false, false, null, true, true);
 			}
@@ -777,7 +777,7 @@ function() {
 ZmIdentityPage.prototype._radioListener =
 function(event) {
 	var useDefault = event.detail.value;
-	var identity = useDefault ? this._appCtxt.getIdentityCollection().defaultIdentity : this._identity;
+	var identity = useDefault ? AjxDispatcher.run("GetIdentityCollection").defaultIdentity : this._identity;
 	this._populateSelects(identity);
 		
 	for (var i in this._selects) {
@@ -791,8 +791,7 @@ function(folderInput) {
 	var dialog = this._appCtxt.getChooseFolderDialog();
 	dialog.reset();
 	dialog.registerCallback(DwtDialog.OK_BUTTON, this._chooseFolderOkCallback, this, [dialog, folderInput]);
-	var omit = {};
-	dialog.popup([ZmOrganizer.FOLDER], omit, false, ZmMsg.chooseFolder);
+	dialog.popup({overviewId:this.toString()});
 };
 
 ZmIdentityPage.prototype._chooseFolderOkCallback =
@@ -841,7 +840,7 @@ ZmIdentityPage._validateEmailAddress =
 function(value) {
 	if (value == "") {
 		throw AjxMsg.valueIsRequired;
-	} else if (!ZmEmailAddress.isValid(value)) {
+	} else if (!AjxEmailAddress.isValid(value)) {
 		throw ZmMsg.errorInvalidEmail;
 	}
 	return value;
@@ -852,9 +851,9 @@ function(value) {
 	if (value == "") {
 		throw AjxMsg.valueIsRequired;
 	} else {
-		var addresses = ZmEmailAddress.split(value);
+		var addresses = AjxEmailAddress.split(value);
 		for (var i = 0, count = addresses.length; i < count; i++) {
-			if (!ZmEmailAddress.isValid(addresses[i])) {
+			if (!AjxEmailAddress.isValid(addresses[i])) {
 				throw AjxMessageFormat.format(ZmMsg.errorInvalidEmail, addresses[i]);
 			}
 		}

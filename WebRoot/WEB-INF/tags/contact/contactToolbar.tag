@@ -43,13 +43,13 @@
 <table width=100% cellspacing=0 class='Tb'>
     <tr>
         <td align=left class=TbBt>
-            <a href="${closeurl}" <c:if test="${keys}">accesskey="z"</c:if>>${fn:escapeXml(context.backTo)}</a>
+            <a href="${closeurl}" <c:if test="${keys}"></c:if>>${fn:escapeXml(context.backTo)}</a>
             ${requestScope.contactToolbarCache}
         </td>
         <td nowrap align=right>
             <c:if test="${context.hasPrevItem}">
                 <zm:prevItemUrl var="prevItemUrl" disp="1" value="" action="view" cursor="${cursor}" context="${context}" usecache="true"/>
-                <a <c:if test="${keys}">accesskey="p"</c:if> href="${prevItemUrl}"><img alt="<fmt:message key='ALT_CONTACT_PREVIOUS_CONTACT'/>" src="/images/arrows/LeftArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}"></c:if> href="${prevItemUrl}"><img alt="<fmt:message key='ALT_CONTACT_PREVIOUS_CONTACT'/>" src="/images/arrows/LeftArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasPrevItem}">
                 <app:img altkey='ALT_PAGE_NO_PREVIOUS' disabled='true' src="arrows/LeftArrow.gif" border="0"/>
@@ -57,7 +57,7 @@
             <span class='Paging'>${context.searchResult.offset+context.currentItemIndex+1}</span>
             <c:if test="${context.hasNextItem}">
                 <zm:nextItemUrl var="nextItemUrl" disp="1" value="" action="view" cursor="${cursor}" context="${context}" usecache="true"/>
-                <a <c:if test="${keys}">accesskey="n"</c:if>href="${nextItemUrl}"><img alt="<fmt:message key='ALT_CONTACT_NEXT_CONTACT'/>" src="/images/arrows/RightArrow.gif" border="0"/></a>
+                <a <c:if test="${keys}"></c:if>href="${nextItemUrl}"><img alt="<fmt:message key='ALT_CONTACT_NEXT_CONTACT'/>" src="/images/arrows/RightArrow.gif" border="0"/></a>
             </c:if>
             <c:if test="${!context.hasNextItem}">
                 <app:img altkey='ALT_PAGE_NO_NEXT' disabled='true' src="arrows/RightArrow.gif" border="0"/>

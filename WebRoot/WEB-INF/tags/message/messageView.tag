@@ -5,7 +5,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="app" uri="com.zimbra.htmlclient" %>
 <%@ taglib prefix="zm" uri="com.zimbra.zm" %>
-
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <zm:getMessage var="msg" id="${not empty param.id ? param.id : context.currentItem.id}" markread="true" neuterimages="${empty param.xim}"/>
@@ -23,8 +22,55 @@
     </c:if>
 </app:handleError>
 
-<app:view title="${msg.subject}" context="${context}" selected='mail' folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
+<app:view mailbox="${mailbox}" title="${msg.subject}" context="${context}" selected='mail' folders="true" tags="true" searches="true" ads="${initParam.zimbraShowAds != 0 ? ads : ''}" keys="true">
     <zm:currentResultUrl var="currentUrl" value="" action="view" context="${context}"/>
+    <SCRIPT TYPE="text/javascript">
+    <!--
+    var zos = function() {if (zrc == 0) return; var e = document.getElementById("A"+zsr); if (e && e.href) window.location = e.href;}
+    var zcs = function(c) {if (zrc == 0) return; var e = document.getElementById("C"+zsr); if (e) e.checked = c ? c : !e.checked;}
+    var zclick = function(id) { var e2 = document.getElementById(id); if (e2) e2.click(); }
+    var zmove = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPMOVE"); }}
+    var zaction = function(a) { var e = document.getElementById(a); if (e) { e.selected = true; zclick("SOPGO"); }}
+    var zunflag = function() { zaction("OPUNFLAG"); }
+    var zflag = function() { zaction("OPFLAG"); }
+    var zread = function() { zaction("OPREAD"); }
+    var zunread = function() { zaction("OPUNREAD"); }
+    var zjunk = function() { zclick("SOPSPAM"); }
+    //-->
+    </SCRIPT>
+
+    <app:keyboard cache="mail.messageView" globals="true" mailbox="${mailbox}" folders="true" tags="true">
+        <zm:bindKey message="mail.Flag" func="zflag"/>
+        <zm:bindKey message="mail.UnFlag" func="zunflag"/>
+        <zm:bindKey message="mail.MarkRead" func="zread"/>
+        <zm:bindKey message="mail.MarkUnread" func="zunread"/>
+        <zm:bindKey message="mail.Spam" func="zjunk"/>
+        <zm:bindKey message="mail.Delete" func="function() { zclick('SOPDELETE')}"/>
+
+        <zm:bindKey message="mail.ShowExternalImages" id="DISPEXTIMG"/>
+
+        <zm:bindKey message="mail.GoToInbox" id="FLDR2"/>
+        <zm:bindKey message="mail.GoToDrafts" id="FLDR6"/>
+        <zm:bindKey message="mail.GoToSent" id="FLDR5"/>
+        <zm:bindKey message="mail.GoToTrash" id="FLDR3"/>
+
+        <zm:bindKey message="mail.Reply" id="OPREPLY"/>
+        <zm:bindKey message="mail.ReplyAll" id="OPREPLYALL"/>
+        <zm:bindKey message="mail.Forward" id="OPFORW"/>
+
+        <zm:bindKey message="mail.Close" id="CLOSE_ITEM"/>
+
+        <zm:bindKey message="global.PreviousPage" id="PREV_ITEM"/>
+        <zm:bindKey message="global.NextPage" id="NEXT_ITEM"/>
+        <zm:bindKey message="global.PreviousItem" id="PREV_ITEM"/>
+        <zm:bindKey message="global.NextItem" id="NEXT_ITEM"/>        
+
+        <c:if test="${mailbox.features.tagging}">
+            <zm:bindKey message="global.Tag" func="function() {zaction('OPTAG{TAGID}')}" alias="tag"/>
+        </c:if>
+        <zm:bindKey message="mail.MoveToFolder" func="function() {zmove('OPFLDR{FOLDERID}')}" alias="folder"/>        
+    </app:keyboard>
+
     <form action="${currentUrl}" method="post">
 
         <table width=100% cellpadding="0" cellspacing="0">
@@ -54,4 +100,5 @@
         <input type="hidden" name="id" value="${msg.id}"/>
         <input type="hidden" name="doMessageAction" value="1"/>
     </form>
+
 </app:view>

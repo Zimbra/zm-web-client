@@ -42,7 +42,7 @@
 * _removeHandler()
 * 
 */
-function ZmPrefListController(appCtxt, container, prefsApp, prefsView) {
+ZmPrefListController = function(appCtxt, container, prefsApp, prefsView) {
 	if (arguments.length == 0) return;
 
 	ZmController.call(this, appCtxt, container, prefsApp);

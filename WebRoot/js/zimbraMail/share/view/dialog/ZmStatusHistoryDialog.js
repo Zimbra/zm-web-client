@@ -27,7 +27,7 @@
 * show history of the status window
 * @param parent			the element that created this view
 */
-function ZmStatusHistoryDialog(parent, appCtxt) {
+ZmStatusHistoryDialog = function(parent, appCtxt) {
 
 	DwtDialog.call(this, parent, null, null, [DwtDialog.OK_BUTTON]);
 

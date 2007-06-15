@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNotebookItem(appCtxt, type, id, list) {
+ZmNotebookItem = function(appCtxt, type, id, list) {
 	if (arguments.length == 0) return;
 	ZmItem.call(this, appCtxt, type, id, list);
 	this.folderId = ZmNotebookItem.DEFAULT_FOLDER;
@@ -60,8 +60,7 @@ ZmNotebookItem.createFromDom = function(node, args) {
 // Public methods
 
 ZmNotebookItem.prototype.getPath = function(dontIncludeThisName) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(this.folderId);
+	var notebook = this._appCtxt.getById(this.folderId);
 	var name = !dontIncludeThisName ? this.name : "";
 	return [ notebook.getPath(), "/", name ].join("");
 };
@@ -69,11 +68,10 @@ ZmNotebookItem.prototype.getPath = function(dontIncludeThisName) {
 ZmNotebookItem.prototype.getRestUrl = function(dontIncludeThisName) {
 	var url = ZmItem.prototype.getRestUrl.call(this);
 
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	var notebook = tree.getById(this.folderId);
-	if (notebook) {
-		url = url.replace(/^.*(\/[^\/]+)$/, notebook.getRestUrl()+"$1");
-	}
+	var notebook = this._appCtxt.getById(this.folderId);
+	/*if (notebook) {
+		url = url.replace(/^.*\/([^\/]+)$/, notebook.getRestUrl()+"$1");
+	}*/
 
 	if (dontIncludeThisName) {
 		url = url.replace(/[^\/]+$/,"");

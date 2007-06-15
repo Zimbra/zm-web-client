@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmDocument(appCtxt, id, list) {
+ZmDocument = function(appCtxt, id, list) {
 	if (arguments.length == 0) return;
 	ZmNotebookItem.call(this, appCtxt, ZmItem.DOCUMENT, id, list);
 }

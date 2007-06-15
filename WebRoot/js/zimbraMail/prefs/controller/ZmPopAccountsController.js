@@ -32,7 +32,7 @@
  * @param prefsApp		[ZmPreferencesApp]	the preferences app
  * @param prefsView		[ZmPreferencesView]	the preferences view
  */
-function ZmPopAccountsController(appCtxt, container, prefsApp, prefsView) {
+ZmPopAccountsController = function(appCtxt, container, prefsApp, prefsView) {
 	ZmPrefListController.call(this, appCtxt, container, prefsApp, prefsView);
 	this._listView = new ZmPopAccountsView(prefsView._parent, appCtxt, this);
     this._removedItems = {};
@@ -95,8 +95,7 @@ function(dwtList, account) {
 
 ZmPopAccountsController.prototype._getListData =
 function() {
-    var prefsApp = this._appCtxt.getApp(ZmZimbraMail.PREFERENCES_APP);
-    var collection = prefsApp.getDataSourceCollection();
+    var collection = AjxDispatcher.run("GetDataSourceCollection");
 
     var listener = new AjxListener(this, this._changeListener);
     collection.addChangeListener(listener);

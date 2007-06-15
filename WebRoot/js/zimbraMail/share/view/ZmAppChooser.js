@@ -23,13 +23,14 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAppChooser(parent, className, buttons, tabStyle) {
+ZmAppChooser = function(parent, className, buttons, useTabs, appCtxt) {
 
 	className = className || "ZmAppChooser";
-	var tbStyle = tabStyle ? DwtToolBar.HORIZ_STYLE : DwtToolBar.VERT_STYLE;
-	var width = skin.hints && skin.hints.app_chooser.fullWidth ? "100%" : null;
+	var tbStyle = useTabs ? DwtToolBar.HORIZ_STYLE : DwtToolBar.VERT_STYLE;
+	var width = appCtxt.get(ZmSetting.SKIN_HINTS, "app_chooser.fullWidth") ? "100%" : null;
 
 	DwtToolBar.call(this, parent, className, Dwt.ABSOLUTE_STYLE, null, null, width, tbStyle);
+    Dwt.setLocation(this.getHtmlElement(), Dwt.LOC_NOWHERE, Dwt.LOC_NOWHERE);
 
 	this.setScrollStyle(Dwt.CLIP);
 
@@ -39,70 +40,49 @@ function ZmAppChooser(parent, className, buttons, tabStyle) {
 		if (id == ZmAppChooser.SPACER) {
 			this.addSpacer(ZmAppChooser.SPACER_HEIGHT);
 		} else {
-			this._createButton(id, tabStyle, i == buttons.length-1);
+			this._createButton(id, tbStyle, i == buttons.length - 1);
 		}
 	}
-};
-
-var i = 1;
-ZmAppChooser.OUTER		= i++;
-ZmAppChooser.OUTER_ACT	= i++;
-ZmAppChooser.OUTER_TRIG	= i++;
-
-ZmAppChooser.SEP		= i++;
-
-ZmAppChooser.B_EMAIL	= i++;
-ZmAppChooser.B_CONTACTS	= i++;
-ZmAppChooser.B_CALENDAR	= i++;
-ZmAppChooser.B_IM	    = i++;
-ZmAppChooser.B_NOTEBOOK	= i++;
-ZmAppChooser.B_HELP		= i++;
-ZmAppChooser.B_OPTIONS	= i++;
-ZmAppChooser.B_LOGOUT	= i++;
-
-ZmAppChooser.IMAGE = {};
-ZmAppChooser.IMAGE[ZmAppChooser.OUTER]			= "ImgAppChiclet";
-ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]		= "ImgAppChicletHover";
-ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]		= "ImgAppChicletSel";
-
-ZmAppChooser.IMAGE[ZmAppChooser.B_EMAIL]    	= "MailApp";
-ZmAppChooser.IMAGE[ZmAppChooser.B_CONTACTS] 	= "ContactsApp";
-ZmAppChooser.IMAGE[ZmAppChooser.B_CALENDAR] 	= "CalendarApp";
-ZmAppChooser.IMAGE[ZmAppChooser.B_IM]			= "ImStartChat";
-ZmAppChooser.IMAGE[ZmAppChooser.B_NOTEBOOK]		= "NoteApp";
-ZmAppChooser.IMAGE[ZmAppChooser.B_HELP]     	= "Help";
-ZmAppChooser.IMAGE[ZmAppChooser.B_OPTIONS]		= "Preferences";
-ZmAppChooser.IMAGE[ZmAppChooser.B_LOGOUT]		= "Logoff";
-
-ZmAppChooser.TEXT = {};
-ZmAppChooser.TEXT[ZmAppChooser.B_EMAIL]			= ZmMsg.mail;
-ZmAppChooser.TEXT[ZmAppChooser.B_CONTACTS]		= ZmMsg.addressBook;
-ZmAppChooser.TEXT[ZmAppChooser.B_CALENDAR]		= ZmMsg.calendar;
-ZmAppChooser.TEXT[ZmAppChooser.B_IM]			= ZmMsg.chat;
-ZmAppChooser.TEXT[ZmAppChooser.B_NOTEBOOK]		= ZmMsg.documents + " " + ZmMsg.beta;
-ZmAppChooser.TEXT[ZmAppChooser.B_HELP]			= ZmMsg.help;
-ZmAppChooser.TEXT[ZmAppChooser.B_OPTIONS]		= ZmMsg.options;
-ZmAppChooser.TEXT[ZmAppChooser.B_LOGOUT]		= ZmMsg.logOff;
-
-ZmAppChooser.TOOLTIP = {};
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_EMAIL]		= ZmMsg.goToMail;
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_CONTACTS]	= ZmMsg.goToContacts;
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_CALENDAR]	= ZmMsg.goToCalendar;
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_IM]			= ZmMsg.goToIm;
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_NOTEBOOK]	= ZmMsg.goToDocuments;
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_HELP]		= ZmMsg.goToHelp;
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_OPTIONS]	= ZmMsg.goToOptions;
-ZmAppChooser.TOOLTIP[ZmAppChooser.B_LOGOUT]		= ZmMsg.logOff;
-
-ZmAppChooser.SPACER_HEIGHT = 10;
+}
 
 ZmAppChooser.prototype = new DwtToolBar;
 ZmAppChooser.prototype.constructor = ZmAppChooser;
 
-ZmAppChooser.prototype.toString = 
+ZmAppChooser.prototype.toString =
 function() {
 	return "ZmAppChooser";
 };
+
+//
+// Constants
+//
+
+ZmAppChooser.SPACER								= "spacer";
+ZmAppChooser.B_HELP								= "Help";
+ZmAppChooser.B_LOGOUT							= "Logout";
+
+ZmApp.CHOOSER_SORT[ZmAppChooser.SPACER]			= 160;
+ZmApp.CHOOSER_SORT[ZmAppChooser.B_HELP]			= 170;
+ZmApp.CHOOSER_SORT[ZmAppChooser.B_LOGOUT]		= 190;
+
+// hard code help/logout since they arent real "apps"
+ZmApp.ICON[ZmAppChooser.B_HELP]					= "Help";
+ZmApp.ICON[ZmAppChooser.B_LOGOUT]				= "Logoff";
+ZmApp.CHOOSER_TOOLTIP[ZmAppChooser.B_HELP]		= "goToHelp";
+ZmApp.CHOOSER_TOOLTIP[ZmAppChooser.B_LOGOUT]	= "logOff";
+
+ZmAppChooser.SPACER_HEIGHT = 10;
+
+//
+// Data
+//
+
+ZmAppChooser.prototype.TEMPLATE = "zimbraMail.share.templates.Widgets#ZmAppChooser";
+ZmAppChooser.prototype.ITEM_TEMPLATE = "zimbraMail.share.templates.Widgets#ZmAppChooserItem";
+
+//
+// Public methods
+//
 
 ZmAppChooser.prototype.getButton =
 function(id) {
@@ -111,22 +91,65 @@ function(id) {
 
 ZmAppChooser.prototype.setSelected =
 function(id) {
-	if (this._selectedId && this._buttons[this._selectedId])
+	if (this._selectedId && this._buttons[this._selectedId]) {
+        this.__markPrevNext(this._selectedId, false);
 		this._buttons[this._selectedId].setSelected(false);
+    }
 
-	if (this._buttons[id])
+    if (this._buttons[id]) {
 		this._buttons[id].setSelected(true);
+        this.__markPrevNext(id, true);
+    }
 
-	this._selectedId = id;
+    this._selectedId = id;
 };
 
 ZmAppChooser.prototype._createButton =
-function(id, tabStyle, isLast) {
-	var text = tabStyle == DwtToolBar.HORIZ_STYLE ? ZmAppChooser.TEXT[id]: null;
-	var b = new ZmChicletButton(this, ZmAppChooser.IMAGE[ZmAppChooser.OUTER], ZmAppChooser.IMAGE[id], text, isLast);
-	b.setActivatedImage(ZmAppChooser.IMAGE[ZmAppChooser.OUTER_ACT]);
-	b.setTriggeredImage(ZmAppChooser.IMAGE[ZmAppChooser.OUTER_TRIG]);
-	b.setToolTipContent(ZmAppChooser.TOOLTIP[id]);
+function(id, tbStyle, isLast) {
+	var text = ZmMsg[ZmApp.NAME[id]];
+    var outerClass = null;
+    var b = new ZmChicletButton(this, outerClass, ZmApp.ICON[id], text, isLast);
+	b.setToolTipContent(ZmMsg[ZmApp.CHOOSER_TOOLTIP[id]]);
 	b.setData(Dwt.KEY_ID, id);
 	this._buttons[id] = b;
 };
+
+//
+// Private methods
+//
+
+ZmAppChooser.prototype.__markPrevNext = function(id, opened) {
+    var index = this.__getButtonIndex(id);
+    var prev = this.__getButtonAt(index - 1);
+    var next = this.__getButtonAt(index + 1);
+    if (opened) {
+        if (prev) Dwt.delClass(prev.getHtmlElement(), DwtTabBar._NEXT_PREV_RE, DwtTabBar.SELECTED_PREV);
+        if (next) Dwt.delClass(next.getHtmlElement(), DwtTabBar._NEXT_PREV_RE, DwtTabBar.SELECTED_NEXT);
+    }
+    else {
+        if (prev) Dwt.delClass(prev.getHtmlElement(), DwtTabBar._NEXT_PREV_RE);
+        if (next) Dwt.delClass(next.getHtmlElement(), DwtTabBar._NEXT_PREV_RE);
+    }
+};
+
+ZmAppChooser.prototype.__getButtonIndex = function(id) {
+    var i = 0;
+    for (var name in this._buttons) {
+        if (name == id) {
+            return i;
+        }
+        i++;
+    }
+    return -1;
+};
+ZmAppChooser.prototype.__getButtonAt = function(index) {
+    var i = 0;
+    for (var name in this._buttons) {
+        if (i == index) {
+            return this._buttons[name];
+        }
+        i++;
+    }
+    return null;
+};
+

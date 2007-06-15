@@ -1,0 +1,299 @@
+<template id="TableProperties">
+  <table class="ZmHEDialog"><tr><td>
+
+    <fieldset class="ZmFieldset">
+      <legend class="ZmLegend"><$= ZmMsg.description $></legend>
+      <table width="100%">
+        <tr>
+          <td class="Label" style="width: auto"><$= ZmMsg.caption $>:</td>
+          <td width="100%" id="${id}_Caption"></td>
+        </tr>
+        <tr>
+          <td class="Label" style="width: auto"><$= ZmMsg.summary $>:</td>
+          <td width="100%" id="${id}_Summary"></td>
+        </tr>
+      </table>
+    </fieldset>
+
+    <fieldset class="ZmFieldset">
+      <legend class="ZmLegend"><$= ZmMsg.layout $></legend>
+      <table cellspacing="0">
+        <tr>
+          <td class="Label"><$= ZmMsg.tableWidth $>:</td>
+          <td colspan="4">
+            <table cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="padding-right: 2px"><input id="${id}_WidthAuto" checked="checked" name="${id}_WidthAuto" type="radio" /></td>
+                <td style="padding-right: 2em" colspan="2"><label for="${id}_WidthAuto"><$= ZmMsg.auto $></label></td>
+              </tr>
+              <tr>
+                <td style="padding-right: 2px"><input id="${id}_WidthAuto1" name="${id}_WidthAuto" type="radio" /></td>
+                <td style="padding-right: 3px" id="${id}_Width"></td>
+                <td id="${id}_WidthUnit"></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+      <table cellspacing="0" id="${id}_AdvancedMode1" style="margin-top: 4px; display: none">
+        <tr>
+          <td class="Label"><$= ZmMsg.tableAlignment $>:</td>
+          <td class="col2" id="${id}_Align"></td>
+          <td class="VSep-L">&nbsp;</td>
+          <td class="VSep-R">&nbsp;</td>
+          <td>
+            <table cellpadding="1" cellspacing="1">
+              <tr>
+                <td><input type="checkbox" id="${id}_FixedLayout" /></td>
+                <td><label for="${id}_FixedLayout"><$= ZmMsg.fixedCellWidth $></label></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </fieldset>
+
+    <fieldset class="ZmFieldset">
+      <legend class="ZmLegend"><$= ZmMsg.textStyle $></legend>
+      <table cellspacing="0">
+        <tr>
+          <td class="Label"><$= ZmMsg.textAlign $>:</td>
+          <td class="col2" id="${id}_TextAlign"></td>
+
+          <td class="VSep-L">&nbsp;</td>
+          <td class="VSep-R">&nbsp;</td>
+
+          <td class="Label"><$= ZmMsg.fontColor $>:</td>
+          <td id="${id}_ForegroundColor"></td>
+        </tr>
+
+        <tr>
+          <td class="Label"><$= ZmMsg.verticalAlign $>:</td>
+          <td id="${id}_TextVAlign"></td>
+
+          <td class="VSep-L">&nbsp;</td>
+          <td class="VSep-R">&nbsp;</td>
+
+          <td class="Label"><$= ZmMsg.fontBackground $>:</td>
+          <td id="${id}_BackgroundColor"></td>
+        </tr>
+      </table>
+    </fieldset>
+
+    <fieldset class="ZmFieldset">
+      <legend class="ZmLegend"><$= ZmMsg.borderStyle $></legend>
+      <table cellspacing="0">
+        <tr>
+          <td class="Label"><$= ZmMsg.borderWidth $>:</td>
+          <td class="col2" id="${id}_BorderWidth"></td>
+
+          <td class="VSep-L">&nbsp;</td>
+          <td class="VSep-R">&nbsp;</td>
+
+          <td class="Label"><$= ZmMsg.borderColor $>:</td>
+          <td>
+            <table cellspacing="0">
+              <tr>
+                <td id="${id}_BorderColor"></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="Label"><$= ZmMsg.cellPadding $>:</td>
+          <td id="${id}_CellPadding"></td>
+
+          <td class="VSep-L">&nbsp;</td>
+          <td class="VSep-R">&nbsp;</td>
+
+          <td class="Label"><$= ZmMsg.borderStyle $>:</td>
+          <td id="${id}_BorderStyle"></td>
+        </tr>
+
+        <tr id="${id}_AdvancedMode2" style="display: none">
+          <td class="Label"><$= ZmMsg.cellSpacing $>:</td>
+          <td id="${id}_BorderSpacing"></td>
+
+          <td class="VSep-L">&nbsp;</td>
+          <td class="VSep-R">&nbsp;</td>
+
+          <td colspan="2" style="padding: 2px 0 2px 0">
+            <table cellpadding="1" cellspacing="1" align="center">
+              <tr>
+                <td><input type="checkbox" id="${id}_BorderCollapse" /></td>
+                <td><label for="${id}_BorderCollapse"><$= ZmMsg.collapsedBorders $></label></td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </fieldset>
+
+  </td></tr></table>
+</template>
+
+<template id="CellProperties">
+  <table class="ZmHEDialog">
+    <tr>
+      <td>
+
+        <fieldset class="ZmFieldset">
+          <legend class="ZmLegend"><$= ZmMsg.borderStyle $></legend>
+          <table width="100%">
+            <tr>
+              <td style="width: 19em">
+                <!-- If you're wondering why this has to be so complex, check out this bug:
+                     https://bugzilla.mozilla.org/show_bug.cgi?id=258255 -->
+                <div style="padding-left: 1em; padding-top: 1em"><$= ZmMsg.clickToDrawABorder $>:</div>
+                <div style="margin-top: 10px;">
+                  <table align="center">
+                    <tr>
+                      <td><$= ZmMsg.style $>:</td>
+                      <td><$= ZmMsg.colorLabel $></td>
+                      <td><$= ZmMsg.width $>:</td>
+                    </tr>
+                    <tr>
+                      <td id="${id}_BorderStyle"></td>
+                      <td>
+                        <!-- embedded in a table so the widget doesn't enlarge -->
+                        <table cellspacing="0" cellpadding="0"><tr><td id="${id}_BorderColor"></td></tr></table>
+                      </td>
+                      <td id="${id}_BorderWidth"></td>
+                    </tr>
+                  </table>
+                </div>
+                <table id="${id}_PreviewGridHolder"
+                       style="width: 100px; height: 100px;"
+                       cellspacing="0" cellpadding="0" align="center"><tr><td>
+                  <table cellspacing="0" cellpadding="0" align="center"><tr><td>
+                    <table id="${id}_PreviewGrid"
+                           style="border-collapse: collapse; background-color: #fff; border: 1px dashed #ccc;"
+                           cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td style="border: 1px dashed #ccc;"><div style="width: 30px; height: 30px;"></div></td>
+                        <td style="border: 1px dashed #ccc;"><div style="width: 30px; height: 30px;"></div></td>
+                      </tr>
+                      <tr>
+                        <td style="border: 1px dashed #ccc;"><div style="width: 30px; height: 30px;"></div></td>
+                        <td style="border: 1px dashed #ccc;"><div style="width: 30px; height: 30px;"></div></td>
+                      </tr>
+                    </table>
+                  </td></tr></table>
+                </td></tr></table>
+              </td>
+              <td class="VSep-L">&nbsp;</td>
+              <td class="VSep-R">&nbsp;</td>
+              <td valign="top">
+                <div style="padding-left: 1em; padding-top: 1em; padding-bottom: 1em"><$= ZmMsg.orPickAStyleBelow $>:</div>
+                <table align="center" id="${id}_QuickBorders">
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </fieldset>
+
+        <fieldset class="ZmFieldset">
+          <legend class="ZmLegend"><$= ZmMsg.layout $></legend>
+          <table cellspacing="0">
+            <tr>
+              <td class="Label">
+                <table align="right" cellspacing="0" cellpadding="0"><tr>
+                  <td style="padding-right: 3px"><input id="${id}_EnableWidth" type="checkbox" /></td>
+                  <td><label for="${id}_EnableWidth"><$= ZmMsg.width $>:</label></td>
+                </tr></table>
+              </td>
+              <td class="col2" id="${id}_Width"></td>
+
+              <td class="VSep-L">&nbsp;</td>
+              <td class="VSep-R">&nbsp;</td>
+
+              <td class="Label">
+                <table align="right" cellspacing="0" cellpadding="0"><tr>
+                  <td style="padding-right: 3px"><input id="${id}_EnableHorizPadding" type="checkbox" /></td>
+                  <td><label for="${id}_EnableHorizPadding"><$= ZmMsg.paddingHorizontal $>:</label></td>
+                </tr></table>
+              </td>
+              <td id="${id}_HorizPadding"></td>
+            </tr>
+            <tr>
+              <td class="Label">
+                <table align="right" cellspacing="0" cellpadding="0"><tr>
+                  <td style="padding-right: 3px"><input id="${id}_EnableHeight" type="checkbox" /></td>
+                  <td><label for="${id}_EnableHeight"><$= ZmMsg.height $>:</label></td>
+                </tr></table>
+              </td>
+              <td class="col2" id="${id}_Height"></td>
+
+              <td class="VSep-L">&nbsp;</td>
+              <td class="VSep-R">&nbsp;</td>
+
+              <td class="Label">
+                <table align="right" cellspacing="0" cellpadding="0"><tr>
+                  <td style="padding-right: 3px"><input id="${id}_EnableVertPadding" type="checkbox" /></td>
+                  <td><label for="${id}_EnableVertPadding"><$= ZmMsg.paddingVertical $>:</label></td>
+                </tr></table>
+              </td>
+              <td id="${id}_VertPadding"></td>
+            </tr>
+          </table>
+        </fieldset>
+
+        <fieldset class="ZmFieldset">
+          <legend class="ZmLegend"><$= ZmMsg.textStyle $></legend>
+          <table cellspacing="0">
+            <tr>
+              <td class="Label">
+                <table align="right" cellspacing="0" cellpadding="0"><tr>
+                  <td style="padding-right: 3px"><input id="${id}_EnableTextAlign" type="checkbox" /></td>
+                  <td><label for="${id}_EnableTextAlign"><$= ZmMsg.textAlign $>:</label></td>
+                </tr></table>
+              </td>
+              <td class="col2" id="${id}_TextAlign"></td>
+
+              <td class="VSep-L">&nbsp;</td>
+              <td class="VSep-R">&nbsp;</td>
+
+              <td class="Label">
+                <table align="right" cellspacing="0" cellpadding="0"><tr>
+                  <td style="padding-right: 3px"><input id="${id}_EnableForegroundColor" type="checkbox" /></td>
+                  <td><label for="${id}_EnableForegroundColor"><$= ZmMsg.fontColor $>:</label></td>
+                </tr></table>
+              </td>
+              <td id="${id}_ForegroundColor"></td>
+            </tr>
+
+            <tr>
+              <td class="Label">
+                <table align="right" cellspacing="0" cellpadding="0"><tr>
+                  <td style="padding-right: 3px"><input id="${id}_EnableTextVAlign" type="checkbox" /></td>
+                  <td><label for="${id}_EnableTextVAlign"><$= ZmMsg.verticalAlign $>:</label></td>
+                </tr></table>
+              </td>
+              <td class="col2" id="${id}_TextVAlign"></td>
+
+              <td class="VSep-L">&nbsp;</td>
+              <td class="VSep-R">&nbsp;</td>
+
+              <td class="Label">
+                <table align="right" cellspacing="0" cellpadding="0"><tr>
+                  <td style="padding-right: 3px"><input id="${id}_EnableBackgroundColor" type="checkbox" /></td>
+                  <td><label for="${id}_EnableBackgroundColor"><$= ZmMsg.fontBackground $>:</label></td>
+                </tr></table>
+              </td>
+              <td id="${id}_BackgroundColor"></td>
+            </tr>
+          </table>
+        </fieldset>
+
+      </td>
+    </tr>
+  </table>
+</template>

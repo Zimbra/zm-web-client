@@ -30,7 +30,7 @@
 * 
 * @author
 */
-function ZmInvite() {
+ZmInvite = function() {
 	ZmModel.call(this);
 };
 
@@ -208,7 +208,7 @@ function(compNum) {
 	if (!(att && att.length)) return list;
 
 	for (var i = 0; i < att.length; i++) {
-		if (!att[i].cutype || (att[i].cutype == ZmAppt.CUTYPE_INDIVIDUAL)) {
+		if (!att[i].cutype || (att[i].cutype == ZmCalItem.CUTYPE_INDIVIDUAL)) {
 			list.push(att[i]);
 		}
 	}
@@ -224,7 +224,7 @@ function(compNum) {
 	if (!(att && att.length)) return list;
 
 	for (var i = 0; i < att.length; i++) {
-		if (att[i].cutype == ZmAppt.CUTYPE_RESOURCE) {
+		if (att[i].cutype == ZmCalItem.CUTYPE_RESOURCE) {
 			list.push(att[i]);
 		}
 	}
@@ -270,14 +270,15 @@ function(compNum) {
 
 ZmInvite.prototype.getServerEndTime = 
 function(compNum) {
-	if (this.components[compNum] == null) return;
+	var cn = compNum || 0;
+	if (this.components[cn] == null) return;
 
 	if (this._serverEndTime == null) {
-		if (this.components[compNum].e != null ) {
-			this._serverEndTime = this.components[compNum].e[0].d;
-		} else {
+		if (this.components[cn].e != null ) {
+			this._serverEndTime = this.components[cn].e[0].d;
+		} else if (this.components[cn].s) {
 			// get the duration
-			var dur	= this.components[compNum].dur;
+			var dur	= this.components[cn].dur;
 			var dd		= dur && dur[0].d || 0;
 			var weeks	= dur && dur[0].w || 0;
 			var hh		= dur && dur[0].h || 0;
@@ -285,15 +286,15 @@ function(compNum) {
 			var ss		= dur && dur[0].s || 0;
 			var t = parseInt(ss) + (parseInt(mm) * 60) + (parseInt(hh) * 3600) + (parseInt(dd) * 24 * 3600) + (parseInt(weeks) * 7 * 24 * 3600);
 			// parse the start date
-			var start = this.components[compNum].s[0].d;
+			var start = this.components[cn].s[0].d;
 			var yyyy = parseInt(start.substr(0,4), 10);
 			var MM = parseInt(start.substr(4,2), 10);
 			var dd = parseInt(start.substr(6,2), 10);
 			var d = new Date(yyyy, MM -1, dd);
 			if (start.charAt(8) == 'T') {
-				var hh = parseInt(start.substr(9,2), 10);
-				var mm = parseInt(start.substr(11,2), 10);
-				var ss = parseInt(start.substr(13,2), 10);
+				hh = parseInt(start.substr(9,2), 10);
+				mm = parseInt(start.substr(11,2), 10);
+				ss = parseInt(start.substr(13,2), 10);
 				d.setHours(hh, mm, ss, 0);
 			}
 			// calculate the end date -- start + offset;
@@ -324,7 +325,8 @@ function(compNum) {
 ZmInvite.prototype.getServerStartTime = 
 function(compNum) {
 	var cn = compNum || 0;
-	return this.components[cn] ? this.components[cn].s[0].d : null;
+	return this.components[cn] && this.components[cn].s
+		? this.components[cn].s[0].d : null;
 };
 
 ZmInvite.prototype.getServerStartDate =
@@ -338,26 +340,28 @@ function(compNum) {
 
 ZmInvite.prototype.getServerStartTimeTz = 
 function(compNum) {
-	if (this.components[compNum] == null) return;
+	var cn = compNum || 0;
+	if (this.components[cn] == null) return;
 
 	if (this._serverStartTimeZone == null) {
 		var startTime = this.getServerStartTime();
 		this._serverStartTimeZone = startTime && startTime.charAt(startTime.length -1) == 'Z'
 			? AjxTimezone.GMT_NO_DST
-			: this.components[compNum].s[0].tz;
+			: (this.components[cn].s ? this.components[cn].s[0].tz : null);
 	}
 	return this._serverStartTimeZone;
 };
 
 ZmInvite.prototype.getServerEndTimeTz = 
 function(compNum) {
-	if (this.components[compNum] == null) return;
+	var cn = compNum || 0;
+	if (this.components[cn] == null) return;
 
 	if (this._serverEndTimeZone == null) {
 		var endTime = this.getServerEndTime();
 		this._serverEndTimeZone = endTime && startTime.charAt(endTime.length -1) == 'Z'
 			? AjxTimezone.GMT_NO_DST
-			: this.components[compNum].e[0].tz;
+			: this.components[cn].e[0].tz;
 	}
 	return this._serverEndTimeZone;
 };
@@ -440,88 +444,62 @@ function(compNum) {
  * component object on the invite.
  */
 ZmInvite.prototype.getToolTip =
-function(/*calController*/) {
-	if (!this._toolTip) {
-		var compNum = 0;
-		
-		var html = new Array(20);
-		var idx = 0;
-		
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 >";
-		html[idx++] = "<tr valign='center'><td colspan=2 align='left'>";
-		html[idx++] = "<div style='border-bottom: 1px solid black;'>";
-		html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
-		html[idx++] = "<tr valign='center'>";
-		html[idx++] = "<td><b>";
-		
-		// IMGHACK - added outer table for new image changes...
-		html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
-		if (this.hasOtherAttendees(compNum)) {
-			html[idx++] = "<td>";
-			html[idx++] = AjxImg.getImageHtml("ApptMeeting");
-			html[idx++] = "</td>";
-		}
-		
-		if (this.isException(compNum)) {
-			html[idx++] = "<td>";
-			html[idx++] = AjxImg.getImageHtml("ApptException");
-			html[idx++] = "</td>";
-		}
-		else if (this.isRecurring(compNum)) {
-			html[idx++] = "<td>";
-			html[idx++] = AjxImg.getImageHtml("ApptRecur");
-			html[idx++] = "</td>";
-		}
-			
-//		if (this.hasAlarm()) 
-//			html[idx++] = "<td>" + AjxImg.getImageHtml("ApptReminder") + "</td>";
+function() {
+	if (this._toolTip)
+		return this._toolTip;
 
-		html[idx++] = "</tr></table>";
-		
-		html[idx++] = "&nbsp;";
-		html[idx++] = AjxStringUtil.htmlEncode(this.getName(compNum));
-		html[idx++] = "&nbsp;</div></b></td>";	
-		html[idx++] = "<td align='right'>";
+	var compNum = 0;
 
-		/***
-		var cal = this.getFolderId() != ZmOrganizer.ID_CALENDAR && calController
-			? calController.getCalendar(this.getFolderId()) : null;
-		/***/
-		var cal = null;
-		/***/
+	var html = [];
+	var idx = 0;
 
-		html[idx++] = cal && cal.link
-			? AjxImg.getImageHtml("GroupSchedule")
-			: AjxImg.getImageHtml("Appointment");
-					
+	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 >";
+	html[idx++] = "<tr valign='center'><td colspan=2 align='left'>";
+	html[idx++] = "<div style='border-bottom: 1px solid black;'>";
+	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%>";
+	html[idx++] = "<tr valign='center'><td><b>";
+
+	// IMGHACK - added outer table for new image changes...
+	html[idx++] = "<div style='white-space:nowrap'><table border=0 cellpadding=0 cellspacing=0 style='display:inline'><tr>";
+	if (this.hasOtherAttendees(compNum)) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptMeeting");
 		html[idx++] = "</td>";
-		html[idx++] = "</table>";
-		html[idx++] = "</div></td></tr>";
-		//idx = this._addEntryRow(ZmMsg.meetingStatus, this.getStatusString(), html, idx, false);
-
-		if (cal) {
-			idx = this._addEntryRow(ZmMsg.calendar, cal.getName(compNum), html, idx, false);
-		}
-
-		/***
-		if (this.hasOtherAttendees())
-			idx = this._addEntryRow(ZmMsg.status, this.getParticipationStatusString(), html, idx, false);		
-		/***/
-
-		var when = this.getDurationText(compNum, false, false);
-		idx = this._addEntryRow(ZmMsg.when, when, html, idx, false, null, true);		
-		if (this.isRecurring(compNum)) {
-			var recurrences = this.getRecurrenceRules(compNum);
-			var startDate = this.getServerStartDate(compNum);
-			var repeats = ZmApptViewHelper.getRecurrenceDisplayString(recurrences, startDate);
-			idx = this._addEntryRow(ZmMsg.repeats, repeats, html, idx, false, null, true);		
-		}
-		idx = this._addEntryRow(ZmMsg.location, this.getLocation(compNum), html, idx, false);
-		//idx = this._addEntryRow(ZmMsg.notes, this.getFragment(), html, idx, true, "250");
-
-		html[idx++] = "</table>";
-		this._toolTip = html.join("");
 	}
+
+	if (this.isException(compNum)) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptException");
+		html[idx++] = "</td>";
+	}
+	else if (this.isRecurring(compNum)) {
+		html[idx++] = "<td>";
+		html[idx++] = AjxImg.getImageHtml("ApptRecur");
+		html[idx++] = "</td>";
+	}
+
+	html[idx++] = "</tr></table>&nbsp;";
+	html[idx++] = AjxStringUtil.htmlEncode(this.getName(compNum));
+	html[idx++] = "&nbsp;</div></b></td><td align='right'>";
+	html[idx++] = AjxImg.getImageHtml("Appointment");
+	html[idx++] = "</td></table></div></td></tr>";
+
+	var when = this.getDurationText(compNum, false, false);
+	idx = this._addEntryRow(ZmMsg.when, when, html, idx, false, null, true);
+	if (this.isRecurring(compNum)) {
+		if (!this._recurBlurb) {
+			AjxDispatcher.require("CalendarCore");
+			var recur = new ZmRecurrence();
+			recur.parse(this.getRecurrenceRules(compNum));
+			this._recurBlurb = recur.getBlurb();
+		}
+		idx = this._addEntryRow(ZmMsg.repeats, this._recurBlurb, html, idx, true, null, true);
+	}
+	idx = this._addEntryRow(ZmMsg.location, this.getLocation(compNum), html, idx, false);
+
+	html[idx++] = "</table>";
+	this._toolTip = html.join("");
+
 	return this._toolTip;
 };
 

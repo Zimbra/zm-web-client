@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmPageEditView(parent, appCtxt, controller) {
+ZmPageEditView = function(parent, appCtxt, controller) {
 	DwtComposite.call(this, parent, "ZmPageEditView", DwtControl.ABSOLUTE_STYLE);
 	
 	this._appCtxt = appCtxt;
@@ -74,11 +74,11 @@ function(page) {
 ZmPageEditView.prototype._setResponse = function(page) {
 	// set location
 	var appCtxt = this._appCtxt;
-	var tree = appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 
 	var content;
-	if (page.folderId == ZmFolder.ID_ROOT) {
-		content = tree.getById(page.folderId).name;
+	var rootId = ZmOrganizer.getSystemId(this._appCtxt, ZmOrganizer.ID_ROOT);
+	if (page.folderId == rootId) {
+		content = this._appCtxt.getById(page.folderId).name;
 	}
 	else {
 		var iconAndName = "<td><wiklet class='ICON' /></td><td><wiklet class='NAME' /></td>";
@@ -87,11 +87,11 @@ ZmPageEditView.prototype._setResponse = function(page) {
 		var a = [ ];
 
 		var folderId = page.folderId;
-		while (folderId != ZmFolder.ID_ROOT) {
-			var notebook = tree.getById(folderId);
+		while (folderId != rootId) {
+			var notebook = this._appCtxt.getById(folderId);
 			a.unshift(ZmWikletProcessor.process(appCtxt, notebook, iconAndName));
 			folderId = notebook.parent.id;
-			if (folderId != ZmFolder.ID_ROOT) {
+			if (folderId != rootId) {
 				a.unshift(separator);
 			}
 		}
@@ -313,7 +313,7 @@ function() {
 // ZmPageEditor class
 //
 
-function ZmPageEditor(parent, posStyle, content, mode, appCtxt, controller) {
+ZmPageEditor = function(parent, posStyle, content, mode, appCtxt, controller) {
 	if (arguments.length == 0) return;
 	ZmHtmlEditor.call(this, parent, posStyle, content, mode, appCtxt, true /* enable ace */);
 	this._controller = controller;
@@ -502,30 +502,30 @@ function(html) {
 ZmPageEditor.prototype._createToolbars = function() {
 	// notebook page editor will have two separate toolbars
 	if (!this._toolbar1) {
-		var tb = this._toolbar1 = new DwtToolBar(this, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
+		var tb = this._toolbar1 = new DwtToolBar(this, "ZToolbar", DwtControl.RELATIVE_STYLE, 2);
 		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 		this._createToolBar1(tb);
 		this._toolbars.push(tb);
 	}
 	if (!this._toolbar2) {
-		var tb = this._toolbar2 = new DwtToolBar(this, "ToolBar", DwtControl.RELATIVE_STYLE, 2);
+		var tb = this._toolbar2 = new DwtToolBar(this, "ZToolbar", DwtControl.RELATIVE_STYLE, 2);
 		tb.setVisible(this._mode == DwtHtmlEditor.HTML);
 
 		// add extra buttons here
 		var listener = new AjxListener(this, this._fontStyleListener);
-		b = this._strikeThruButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+		b = this._strikeThruButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
 		b.setImage("StrikeThru");
 		b.setToolTipContent(ZmMsg.strikeThruText);
 		b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.STRIKETHRU_STYLE);
 		b.addSelectionListener(listener);
 
-		b = this._superscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+		b = this._superscriptButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
 		b.setImage("SuperScript");
 		b.setToolTipContent(ZmMsg.superscript);
 		b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUPERSCRIPT_STYLE);
 		b.addSelectionListener(listener);
 
-		b = this._subscriptButton = new DwtButton(tb, DwtButton.TOGGLE_STYLE, "DwtToolbarButton");
+		b = this._subscriptButton = new DwtToolBarButton(tb, DwtButton.TOGGLE_STYLE);
 		b.setImage("Subscript");
 		b.setToolTipContent(ZmMsg.subscript);
 		b.setData(ZmHtmlEditor._VALUE, DwtHtmlEditor.SUBSCRIPT_STYLE);
@@ -546,17 +546,17 @@ ZmPageEditor.prototype._createToolbars = function() {
 ZmPageEditor.prototype._createToolBar2 = function(parent) {
 	ZmHtmlEditor.prototype._createToolBar2.call(this, parent);
 
-	var button = new DwtButton(this._toolbar2, null, "DwtToolbarButton")
+	var button = new DwtToolBarButton(this._toolbar2)
 	button.setImage("ImageDoc");
 	button.setToolTipContent(ZmMsg.insertImage);
 	button.addSelectionListener(new AjxListener(this, this._insertImagesListener));
 
-	button = new DwtButton(this._toolbar2, null, "DwtToolbarButton")
+	button = new DwtToolBarButton(this._toolbar2)
 	button.setImage("Attachment");
 	button.setToolTipContent(ZmMsg.insertAttachment);
 	button.addSelectionListener(new AjxListener(this, this._insertAttachmentsListener));
 
-	button = new DwtButton(this._toolbar2, null, "DwtToolbarButton");
+	button = new DwtToolBarButton(this._toolbar2, null);
 	button.setImage("URL");
 	button.setToolTipContent(ZmMsg.insertLink);
 	button.addSelectionListener(new AjxListener(this, this._insertLinkListener));
@@ -630,9 +630,8 @@ ZmPageEditor.prototype._insertObjectsListener = function(event, func, title) {
 };
 
 ZmPageEditor.prototype.__popupUploadDialog = function(callback, title) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
 	var page = this._controller.getPage();
-	var notebook = tree.getById(page.folderId);
+	var notebook = this._appCtxt.getById(page.folderId);
 
 	var dialog = this._appCtxt.getUploadDialog();
 	dialog.popup(notebook, callback, title);
@@ -745,7 +744,7 @@ ZmPageEditor._wikletPressButton = function(button) {
 	}
 	
 	var shell = DwtShell.getShell(window);
-	var dialog = new ZmDialog(shell, null, null, ZmMsg.wikletParams);
+	var dialog = new ZmDialog({parent:shell, title:ZmMsg.wikletParams});
 	var propEditor = new DwtPropertyEditor(dialog);
 	propEditor.initProperties(schema);
 	dialog.setView(propEditor);

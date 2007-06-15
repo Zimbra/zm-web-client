@@ -23,24 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMailListView(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
+ZmMailListView = function(parent, className, posStyle, view, type, controller, headerList, dropTgt) {
 
 	if (arguments.length == 0) return;
 	ZmListView.call(this, parent, className, posStyle, view, type, controller, headerList, dropTgt);
-	
-	// create a action menu for the header list
-	this._colHeaderActionMenu = new ZmPopupMenu(this);
-	var actionListener = new AjxListener(this, this._colHeaderActionListener);
-	for (var i = 0; i < headerList.length; i++) {
-		var hCol = headerList[i];
-		// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
-		if (hCol._width) {
-			var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, null, hCol._name, null, null, DwtMenuItem.CHECK_STYLE);
-			mi.setData(ZmMailListView.KEY_ID, hCol._id);
-			mi.setChecked(true, true);
-			this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
-		}
-	}
 
 	this._folderId = null;
 };
@@ -52,6 +38,8 @@ ZmMailListView.prototype.constructor = ZmMailListView;
 
 ZmMailListView.KEY_ID = "_keyId";
 
+ZmMailListView.COL_WIDTH_FOLDER	= 47;
+ZmMailListView.COL_WIDTH_SIZE	= 45;
 
 // Public methods
 
@@ -60,9 +48,14 @@ function() {
 	return "ZmMailListView";
 };
 
-// abstract method
+// Reset row style
 ZmMailListView.prototype.markUIAsRead = 
-function(items, on) {}
+function(item) {
+	var row = this._getElement(item, ZmItem.F_ITEM_ROW);
+	if (row) {
+		row.className = this._getRowClass(item);
+	}
+};
 
 ZmMailListView.prototype.set =
 function(list, sortField) {
@@ -82,6 +75,12 @@ function(list) {
 	this._resetColWidth();
 };
 
+ZmMailListView.prototype.resetHeight =
+function(newHeight) {
+	this.setSize(Dwt.DEFAULT, newHeight);
+	Dwt.setSize(this._parentEl, Dwt.DEFAULT, newHeight - DwtListView.HEADERITEM_HEIGHT);
+};
+
 // Private / protected methods
 
 ZmMailListView.prototype._isSentOrDraftsFolder = 
@@ -89,6 +88,8 @@ function() {
 	var isSentFolder = (this._folderId == ZmFolder.ID_SENT);
 	var isDraftsFolder = (this._folderId == ZmFolder.ID_DRAFTS);
 
+	// XXX: is the code below necessary?
+	
 	// if not in Sent/Drafts, deep dive into query to be certain		
 	if (!isSentFolder && !isDraftsFolder) {
 		// check for is:sent or is:draft w/in search query
@@ -104,6 +105,106 @@ function() {
 		}
 	}
 	return {sent:isSentFolder, drafts:isDraftsFolder};
+};
+
+ZmMailListView.prototype._getRowClass =
+function(item) {
+	return item.isUnread ? "Unread" : null;
+};
+
+ZmMailListView.prototype._getCellId =
+function(item, field) {
+	return (field == ZmItem.F_SIZE || field == ZmItem.F_SUBJECT)
+		? this._getFieldId(item, field)
+		: ZmListView.prototype._getCellId.apply(this, arguments);
+};
+
+ZmMailListView.prototype._getFragmentSpan =
+function(item) {
+	var html = [];
+	var idx = 0;
+	html[idx++] = "<span class='ZmConvListFragment' id='";
+	html[idx++] = this._getFieldId(item, ZmItem.F_FRAGMENT);
+	html[idx++] = "'>";
+	html[idx++] = this._getFragmentHtml(item);
+	html[idx++] = "</span>";
+	
+	return html.join("");
+};
+
+ZmMailListView.prototype._getFragmentHtml =
+function(item) {
+	return [" - ", AjxStringUtil.htmlEncode(item.fragment, true)].join("");
+};
+
+ZmMailListView.prototype._getHeaderToolTip =
+function(field, itemIdx) {
+	return (field == ZmItem.F_STATUS)
+		? ZmMsg.messageStatus
+		: ZmListView.prototype._getHeaderToolTip.apply(this, arguments);
+};
+
+ZmMailListView.prototype._getToolTip =
+function(field, item, ev, div, match) {
+	if (!item) { return; }
+	var tooltip = null;
+	if (field == ZmItem.F_STATUS) {
+		if (item.isDraft)			{ tooltip = ZmMsg.draft; }
+		else if (item.isUnread)		{ tooltip = ZmMsg.unread; }
+		else if (item.isReplied)	{ tooltip = ZmMsg.replied; }
+		else if (item.isForwarded)	{ tooltip = ZmMsg.forwarded; }
+		else if (item.isSent)		{ tooltip = ZmMsg.sentAt; }
+		else if (item.isInvite)		{ tooltip = ZmMsg.appointment; }
+		else						{ tooltip = ZmMsg.read; }
+	} else if (field == ZmItem.F_FROM) {
+		tooltip = this._getParticipantToolTip(item.getAddress(AjxEmailAddress.FROM));
+	} else if (field == ZmItem.F_SUBJECT) {
+		if ((item.type == ZmItem.MSG) && item.isInvite() && item.needsRsvp()) {
+			tooltip = item.getInvite().getToolTip();
+		} else {
+		    tooltip = AjxStringUtil.htmlEncode(item.fragment || ZmMsg.fragmentIsEmpty);
+		}
+	} else if (field == ZmItem.F_FOLDER) {
+		var folder = this._appCtxt.getById(item.folderId);
+		if (folder && folder.parent) {
+			var name = folder.getName();
+			var path = folder.getPath();
+			if (path != name) {
+				tooltip = path;
+			}
+		}
+	} else {
+		tooltip = ZmListView.prototype._getToolTip.apply(this, arguments);
+	}
+	
+	return tooltip;
+};
+
+ZmMailListView.prototype._getParticipantToolTip =
+function(address) {
+	if (!address) { return; }
+	try {
+		var toolTip;
+		var addr = address.getAddress();
+		if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) && addr) {
+			var contactApp = ZmAppCtxt.getFromShell(this.shell).getApp(ZmApp.CONTACTS);
+			var contacts = AjxDispatcher.run("GetContacts");
+			var contact = contacts ? contacts.getContactByEmail(addr) : null;
+			if (contact) {
+				toolTip = contact.getToolTip(addr);
+			}
+		}
+		
+		if (!toolTip) {
+			var addrstr = address.toString();
+			if (addrstr) {
+			    toolTip = ["<div style='white-space:nowrap;'><span style='font-weight:bold'", ZmMsg.email, ": </span>", AjxStringUtil.htmlEncode(addrstr), "</div>"].join("");
+			}
+	    }
+	} catch (ex) {
+		this._appCtxt.getAppController()._handleException(ex, contactApp.getContactList, null, false, contactApp);
+	}
+	return toolTip;
 };
 
 // Figure out how many of the participants will fit into a given pixel width.
@@ -172,6 +273,21 @@ function(participants, participantsElided, width) {
 
 ZmMailListView.prototype._getActionMenuForColHeader = 
 function() {
+	if (!this._colHeaderActionMenu) {
+		// create a action menu for the header list
+		this._colHeaderActionMenu = new ZmPopupMenu(this);
+		var actionListener = new AjxListener(this, this._colHeaderActionListener);
+		for (var i = 0; i < this._headerList.length; i++) {
+			var hCol = this._headerList[i];
+			// lets not allow columns w/ relative width to be removed (for now) - it messes stuff up
+			if (hCol._width) {
+				var mi = this._colHeaderActionMenu.createMenuItem(hCol._id, {text:hCol._name, style:DwtMenuItem.CHECK_STYLE});
+				mi.setData(ZmMailListView.KEY_ID, hCol._id);
+				mi.setChecked(true, true);
+				this._colHeaderActionMenu.addSelectionListener(hCol._id, actionListener);
+			}
+		}
+	}
 	return this._colHeaderActionMenu;
 };
 
@@ -180,56 +296,54 @@ function() {
 
 ZmMailListView.prototype._changeListener =
 function(ev) {
-	var items = ev.getDetail("items");
+
+	var item = ev.item;
+	if (ev.handled || !this._handleEventType[item.type]) { return; }
+
 	if (ev.event == ZmEvent.E_FLAGS) { // handle "unread" flag
 		DBG.println(AjxDebug.DBG2, "ZmMailListView: FLAGS");
 		var flags = ev.getDetail("flags");
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			for (var j = 0; j < flags.length; j++) {
-				var flag = flags[j];
-				if (flag == ZmItem.FLAG_UNREAD) {
-					var on = item[ZmItem.FLAG_PROP[flag]];
-					this.markUIAsRead([item], !on);
-				}
+		for (var j = 0; j < flags.length; j++) {
+			var flag = flags[j];
+			if (flag == ZmItem.FLAG_UNREAD) {
+				var on = item[ZmItem.FLAG_PROP[flag]];
+				this.markUIAsRead(item, !on);
 			}
 		}
-		ZmListView.prototype._changeListener.call(this, ev); // handle other flags
-	} else if (ev.event == ZmEvent.E_CREATE) {
-		DBG.println(AjxDebug.DBG2, "ZmMailListView: CREATE");
-		var now = new Date();
-		for (var i = 0; i < items.length; i++) {
-			var item = items[i];
-			DBG.println(AjxDebug.DBG3, "Item to add: " + item.id);
-			if (this._list && this._list.contains(item)) // skip if we already have it
-				continue;
-			// For now, we assume that the new conv/msg is the most recent one. If we're on the
-			// first page with date desc order, we insert it at the top. If we're on the last
-			// page with date asc order, we insert it at the bottom. Otherwise, we do nothing.
-			// TODO: put result of ZmMailList._sortIndex() in ev.details
-			if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
-				// add new item at the beg. of list view's internal list
-				this.addItem(item, 0);
+	}
 	
-				// and remove the last one to maintain limit
-				if (this.size() > this.getLimit()) {
-					this.removeLastItem();
-				}
-			} else if ((this._controller.getList().hasMore() === false) && (this._sortByString == ZmSearch.DATE_ASC)) {
-				if (this.size() < this.getLimit()) {
-					// add new item at the end of list view's internal list
-					this.addItem(item);
-				} else {
-					// XXX: reset pagination buttons?
-				}
+	if (ev.event == ZmEvent.E_CREATE) {
+		DBG.println(AjxDebug.DBG2, "ZmMailListView: CREATE");
+		var sortIndex = ev.getDetail("sortIndex");
+		if (this._list && this._list.contains(item)) { return; } // skip if we already have it
+		if (!this._handleEventType[item.type]) { return; }
+
+		// Check to see if ZmMailList::notifyCreate gave us an index for the item.
+		// If not, we assume that the new conv/msg is the most recent one. If we're on the
+		// first page with date desc order, we insert it at the top. If we're on the last
+		// page with date asc order, we insert it at the bottom.
+		var index = sortIndex[item.id];
+		if (index != null) {
+			this.addItem(item, index);
+		} else if ((this.getOffset() == 0) && (!this._sortByString || this._sortByString == ZmSearch.DATE_DESC)) {
+			this.addItem(item, 0);
+		} else if ((this._controller.getList().hasMore() === false) && (this._sortByString == ZmSearch.DATE_ASC)) {
+			if (this.size() < this.getLimit()) {
+				// add new item at the end of list view's internal list
+				this.addItem(item);
+			} else {
+				// XXX: reset pagination buttons?
 			}
 		}
-	} else {
+		ev.handled = true;
+	}
+
+	if (!ev.handled) {
 		ZmListView.prototype._changeListener.call(this, ev);
 	}
 };
 
-ZmMailListView.prototype._colHeaderActionListener = 
+ZmMailListView.prototype._colHeaderActionListener =
 function(ev) {
 
 	var menuItemId = ev.item.getData(ZmMailListView.KEY_ID);

@@ -1,6 +1,43 @@
 <%@ page session="false" language="java" import="javax.naming.*"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%!
+	private static String protocolMode = null;
+	private static String httpsPort = null;
+	private static String httpPort = null;
+	private static String adminUrl = null;	
+	private static final String DEFAULT_HTTPS_PORT = "443";
+	private static final String DEFAULT_HTTP_PORT = "80";
+	private static final String PROTO_MIXED = "mixed";
+	private static final String PROTO_HTTP = "http";
+	private static final String PROTO_HTTPS = "https";
+	static {
+		try {
+			Context initCtx = new InitialContext();
+			Context envCtx = (Context) initCtx.lookup("java:comp/env");
+			protocolMode = (String) envCtx.lookup("protocolMode");
+			httpsPort = (String) envCtx.lookup("httpsPort");
+			adminUrl = (String) envCtx.lookup("adminUrl");			
+			if (httpsPort != null && httpsPort.equals(DEFAULT_HTTP_PORT)) {
+				httpsPort = "";
+			} else {
+				httpsPort = ":" + httpsPort;
+			}
+			httpPort = (String) envCtx.lookup("httpPort");
+			if (httpPort != null && httpPort.equals(DEFAULT_HTTP_PORT)) {
+				httpPort = "";
+			} else {
+				httpPort = ":" + httpPort;
+			}
+		} catch (NamingException ne) {
+			protocolMode = PROTO_HTTP;
+			httpsPort = DEFAULT_HTTPS_PORT;
+			httpsPort = DEFAULT_HTTP_PORT;
+		}
+		if (adminUrl == null) {
+			adminUrl = "/zimbraAdmin";
+	    }		
+	}
+%><%
 	// Set to expire far in the past.
 	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
 
@@ -44,42 +81,10 @@
 			}
 		}
 	}
-%><%!
-	private static String protocolMode = null;
-	private static String httpsPort = null;
-	private static String httpPort = null;
-	private static final String DEFAULT_HTTPS_PORT = "443";
-	private static final String DEFAULT_HTTP_PORT = "80";
-	private static final String PROTO_MIXED = "mixed";
-	private static final String PROTO_HTTP = "http";
-	private static final String PROTO_HTTPS = "https";
-	static {
-		try {
-			Context initCtx = new InitialContext();
-			Context envCtx = (Context) initCtx.lookup("java:comp/env");
-			protocolMode = (String) envCtx.lookup("protocolMode");
-			httpsPort = (String) envCtx.lookup("httpsPort");
-			if (httpsPort != null && httpsPort.equals(DEFAULT_HTTP_PORT)) {
-				httpsPort = "";
-			} else {
-				httpsPort = ":" + httpsPort;
-			}
-			httpPort = (String) envCtx.lookup("httpPort");
-			if (httpPort != null && httpPort.equals(DEFAULT_HTTP_PORT)) {
-				httpPort = "";
-			} else {
-				httpPort = ":" + httpPort;
-			}
-		} catch (NamingException ne) {
-			protocolMode = PROTO_HTTP;
-			httpsPort = DEFAULT_HTTPS_PORT;
-			httpsPort = DEFAULT_HTTP_PORT;
-		}
-	}
 %><%
 	Cookie[] cookies = request.getCookies();
 	String contextPath = request.getContextPath();
-	if(contextPath.equals("/")) {
+	if (contextPath.equals("/")) {
 		contextPath = "";
 	}
 
@@ -128,6 +133,22 @@
         }
     }
 
+	String isDev = (String) request.getParameter("dev");
+	if (isDev != null) {
+		request.setAttribute("mode", "mjsf");
+		request.setAttribute("gzip", "false");
+		request.setAttribute("debug", "1");
+		request.setAttribute("packages", "dev");
+	}
+	String debug = (String) request.getParameter("debug");
+	if (debug == null) {
+		debug = (String) request.getAttribute("debug");
+	}
+	String extraPackages = (String) request.getParameter("packages");
+	if (extraPackages == null) {
+		extraPackages = (String) request.getAttribute("packages");
+	}
+
 	String mode = (String) request.getAttribute("mode");
 	Boolean inDevMode = (mode != null) && (mode.equalsIgnoreCase("mjsf"));
 
@@ -174,15 +195,30 @@
 <script type="text/javascript" language="javascript">
 appContextPath = "<%= contextPath %>";
 </script>
-<script type="text/javascript" src="<%= contextPath %>/js/msgs/I18nMsg,AjxMsg,ZMsg,ZmMsg.js<%= ext %>?v=<%= vers %>"></script>
-<% if ( (mode != null) && (mode.equalsIgnoreCase("mjsf")) ) { %>
+<jsp:include page="Messages.jsp"/>
 <jsp:include page="Boot.jsp"/>
-<jsp:include page="Ajax.jsp"/>
-<jsp:include page="Zimbra.jsp"/>
-<jsp:include page="LoginFiles.jsp"/>
-<% } else { %>
-<script type="text/javascript" src="<%= contextPath %>/js/Ajax_all.js<%= ext %>?v=<%= vers %>"></script>
-<% } %>
+<%
+    String allPackages = "AjaxLogin,ZimbraLogin,Login";
+    if (extraPackages != null) allPackages += ","+extraPackages;
+
+    String pprefix = inDevMode ? "public/jsp" : "js";
+    String psuffix = inDevMode ? ".jsp" : "_all.js";
+
+    String[] pnames = allPackages.split(",");
+    for (String pname : pnames) {
+        String pageurl = "/"+pprefix+"/"+pname+psuffix;
+        if (inDevMode) { %>
+            <jsp:include>
+                <jsp:attribute name='page'><%=pageurl%></jsp:attribute>
+            </jsp:include>
+        <% } else { %>
+            <script type="text/javascript" src="<%=contextPath%><%=pageurl%><%=ext%>?v=<%=vers%>"></script>
+        <% } %>
+    <% }
+%>
+<script type="text/javascript">
+AjxEnv.DEFAULT_LOCALE = "<%=request.getLocale()%>";
+</script>
 <script type="text/javascript">
 	var initMode = "<%= initMode %>";
 	AjxWindowOpener.HELPER_URL = "<%= contextPath %>/public/frameOpenerHelper.jsp";
@@ -191,17 +227,15 @@ appContextPath = "<%= contextPath %>";
 		AjxDebug.deleteWindowCookie();
 	}
 	// figure out the debug level
-	if (location.search && (location.search.indexOf("debug=") != -1)) {
-		var m = location.search.match(/debug=(\w+)/);
-		if (m && m.length) {
-			var level = m[1];
-			if (level == 't') {
-				DBG.showTiming(true);
-			} else {
-				DBG.setDebugLevel(level);
-			}
+	var debugLevel = "<%= (debug != null) ? debug : "" %>";
+	if (debugLevel) {
+		if (debugLevel == 't') {
+			DBG.showTiming(true);
+		} else {
+			DBG.setDebugLevel(debugLevel);
 		}
 	}
+
 	function init() {
 		// quit if this function has already been called
 		if (arguments.callee.done) {return;}
@@ -258,7 +292,9 @@ appContextPath = "<%= contextPath %>";
 </head>
 <body>
 <noscript><fmt:setBundle basename="/msgs/ZmMsg"/>
-    <fmt:message key="errorJavaScriptRequired"><fmt:param><c:url context="/zimbra" value='/h/'/></fmt:param></fmt:message>
+    <fmt:message key="errorJavaScriptRequired"><fmt:param>
+    <c:url context="/zimbra" value='/h/'></c:url>
+    </fmt:param></fmt:message>
 </noscript>
 </body>
 </html>

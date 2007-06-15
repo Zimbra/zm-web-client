@@ -42,18 +42,18 @@
 * @param list		[ZmContactList]*	list that contains this contact
 * @param type		[constant]*			item type
 */
-function ZmContact(appCtxt, id, list, type) {
+ZmContact = function(appCtxt, id, list, type) {
 	if (arguments.length == 0) return;
 
 	// handle to canonical list (for contacts that are part of search results)
-	this.canonicalList = appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+	this.canonicalList = AjxDispatcher.run("GetContacts");
 
 	list = list || this.canonicalList;
 	type = type || ZmItem.CONTACT;
 	ZmItem.call(this, appCtxt, type, id, list);
 
 	this.attr = {};
-	this.isGal = this.list.isGal;
+	this.isGal = (this.list && this.list.isGal);
 
 	this.participants = new AjxVector(); // XXX: need to populate this guy (see ZmConv)
 };
@@ -112,6 +112,11 @@ ZmContact.F_workState		= "workState";
 ZmContact.F_workStreet		= "workStreet";
 ZmContact.F_workURL			= "workURL";
 
+// IM addresses
+ZmContact.F_imAddress1 = "imAddress1";
+ZmContact.F_imAddress2 = "imAddress2";
+ZmContact.F_imAddress3 = "imAddress3";
+
 // Group fields
 ZmContact.F_dlist			= "dlist";
 
@@ -136,6 +141,12 @@ ZmContact.FA_COMPANY_FIRST_LAST		= i++;
 ZmContact.FA_CUSTOM					= i++;
 
 ZmContact.F_EMAIL_FIELDS = [ZmContact.F_email, ZmContact.F_email2, ZmContact.F_email3];
+ZmContact.F_PHONE_FIELDS = [
+	ZmContact.F_assistantPhone, ZmContact.F_callbackPhone, ZmContact.F_carPhone, ZmContact.F_companyPhone,
+	ZmContact.F_homeFax, ZmContact.F_homePhone, ZmContact.F_homePhone2, ZmContact.F_mobilePhone,
+	ZmContact.F_otherPhone, ZmContact.F_workPhone, ZmContact.F_workPhone2
+];
+ZmContact.F_IM_FIELDS = [ ZmContact.F_imAddress1, ZmContact.F_imAddress2, ZmContact.F_imAddress3 ];
 
 ZmContact.prototype.toString =
 function() {
@@ -161,7 +172,7 @@ function(node, args) {
 		contact = new ZmContact(args.appCtxt, node.id, args.list);
 		contact._loadFromDom(node);
 	} else {
-		contact.list = args.list || args.appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactList();
+		contact.list = args.list || AjxDispatcher.run("GetContacts");
 	}
 
 	return contact;
@@ -290,9 +301,9 @@ function(customFileAs) {
 	return [ZmContact.FA_CUSTOM, ":", customFileAs].join("");
 };
 
-/* These next few static methods handle a contact that is either an anonymous object or an actual
-* ZmContact. The former is used to optimize loading. The anonymous object is upgraded to a
-* ZmContact when needed. */
+/* These next few static methods handle a contact that is either an anonymous
+*  object or an actual ZmContact. The former is used to optimize loading. The
+*  anonymous object is upgraded to a ZmContact when needed. */
 ZmContact.getAttr =
 function(contact, attr) {
 	return (contact instanceof ZmContact)
@@ -338,7 +349,7 @@ function(callback, result) {
 
 	// for now, we just assume only one contact was requested at a time
 	this.attr = resp.cn[0]._attrs;
-	this._loaded = true;
+	this.isLoaded = true;
 
 	if (callback)
 		callback.run(resp.cn[0], this);
@@ -354,11 +365,6 @@ function() {
 	return isEmpty;
 };
 
-ZmContact.prototype.isLoaded =
-function() {
-	return this._loaded;
-};
-
 ZmContact.prototype.isShared =
 function() {
 	return this.addrbook && this.addrbook.link;
@@ -369,28 +375,21 @@ function() {
 	if (this.isGal) return true;
 
 	return this.isShared()
-		? this.addrbook.isReadOnly()
+		? this.addrbook && this.addrbook.isReadOnly()
 		: false;
 };
 
-ZmContact.prototype.isGroup = 
+ZmContact.prototype.isGroup =
 function() {
 	return (this.getAttr(ZmContact.F_dlist) != null || this.type == ZmItem.GROUP);
 };
 
-// parses "dlist" attr into ZmEmailAddress objects stored in 3 vectors (all, good, and bad)
+// parses "dlist" attr into AjxEmailAddress objects stored in 3 vectors (all, good, and bad)
 ZmContact.prototype.getGroupMembers =
 function() {
 	return this.isGroup()
-		? ZmEmailAddress.parseEmailString(this.getAttr(ZmContact.F_dlist))
+		? AjxEmailAddress.parseEmailString(this.getAttr(ZmContact.F_dlist))
 		: null;
-};
-
-ZmContact.prototype.getDefaultDndAction =
-function() {
-	return (this.isShared() || this.isReadOnly())
-		? ZmItem.DND_ACTION_COPY
-		: ZmItem.DND_ACTION_MOVE;
 };
 
 ZmContact.prototype.getSortVal =
@@ -423,7 +422,8 @@ function(name) {
 	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
 		return this.attr[name];
 	} else {
-		return this.canonicalList.getById(this.id).attr[name];
+		var contact = this.canonicalList.getById(this.id);
+		return contact ? contact.attr[name] : null;
 	}
 };
 
@@ -434,7 +434,10 @@ function(name, value) {
 	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
 		this.attr[name] = value;
 	} else {
-		this.canonicalList.getById(this.id).attr[name] = value;
+		var contact = this.canonicalList.getById(this.id);
+		if (contact) {
+			contact.attr[name] = value;
+		}
 	}
 };
 
@@ -445,7 +448,10 @@ function(name) {
 	if (this.list.isCanonical || this.list.isGal || this.isShared()) {
 		delete this.attr[name];
 	} else {
-		delete this.canonicalList.getById(this.id).attr[name];
+		var contact = this.canonicalList.getById(this.id);
+		if (contact) {
+			delete contact.attr[name];
+		}
 	}
 };
 
@@ -528,9 +534,9 @@ function(attr, isBatchMode, result) {
 		var msg = this.isGroup() ? ZmMsg.groupCreated : ZmMsg.contactCreated;
 		this._appCtxt.getAppController().setStatusMsg(msg);
 	} else {
-		var err = this.isGroup() ? ZmMsg.errorCreateGroup : ZmMsg.errorCreateContact;
-		var msg = err + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
-		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
+		var msg = this.isGroup() ? ZmMsg.errorCreateGroup : ZmMsg.errorCreateContact;
+		var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
+		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL, detail);
 	}
 };
 
@@ -612,7 +618,7 @@ function(attr, callback, result) {
 	var id = cn ? cn.id : null;
 
 	if (id && id == this.id) {
-		this._appCtxt.getAppController().setStatusMsg(this.isGroup() ? ZmMsg.groupSaved : ZmMsg.contactSaved);
+		this._appCtxt.setStatusMsg(this.isGroup() ? ZmMsg.groupSaved : ZmMsg.contactSaved);
 		// the revision for this contact has changed -- we should refetch it
 		// ONLY DO THIS FOR SHARED CONTACT since normal contacts are handled by notifications
 		if (cn.rev && cn.rev != this.rev && this.isShared()) {
@@ -623,8 +629,9 @@ function(attr, callback, result) {
 				this._setFolder(attr[ZmContact.F_folderId]);
 		}
 	} else {
-		var msg = ZmMsg.errorModifyContact + " " + ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
-		this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL);
+		var msg = ZmMsg.errorModifyContact;
+        var detail = ZmMsg.errorTryAgain + "\n" + ZmMsg.errorContact;
+        this._appCtxt.getAppController().setStatusMsg(msg, ZmStatusView.LEVEL_CRITICAL, detail);
 	}
 	// NOTE: we no longer process callbacks here since notification handling
 	//       takes care of everything
@@ -655,7 +662,7 @@ function(newFolderId) {
 	if (this.folderId == newFolderId) return;
 
 	// moving out of a share or into one is handled differently (create then hard delete)
-	var newFolder = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(newFolderId)
+	var newFolder = this._appCtxt.getById(newFolderId)
 	if (this.isShared() || (newFolder && newFolder.link)) {
 		if (this.list) {
 			this.list.moveItems(this, newFolder);
@@ -704,17 +711,23 @@ function(obj) {
 	// update this contact's list per old/new attrs
 	this.list.modifyLocal(obj, details);
 	this._notify(ZmEvent.E_MODIFY, obj);
+
+	var buddy = this.getBuddy();
+	if (buddy) {
+		// trigger a refresh
+		buddy._notifySetName(buddy.name);
+	}
 };
 
 /**
 * Sets this contacts email address.
 *
-* @param email		[object]		an ZmEmailAddress, or an email string
+* @param email		[object]		an AjxEmailAddress, or an email string
 * @param strictName	[boolean]*		if true, don't try to set name from user portion of address
 */
 ZmContact.prototype.initFromEmail =
 function(email, strictName) {
-	if (email instanceof ZmEmailAddress) {
+	if (email instanceof AjxEmailAddress) {
 		this.setAttr(ZmContact.F_email, email.getAddress());
 		this._initFullName(email, strictName);
 	} else {
@@ -732,6 +745,21 @@ function() {
 	return (this.getAttr(ZmContact.F_email) ||
 			this.getAttr(ZmContact.F_email2) ||
 			this.getAttr(ZmContact.F_email3));
+};
+
+ZmContact.prototype.getIMAddress = function() {
+	return this.getAttr(ZmContact.F_imAddress1) ||
+		this.getAttr(ZmContact.F_imAddress2) ||
+		this.getAttr(ZmContact.F_imAddress3);
+};
+
+ZmContact.prototype.getBuddy = function() {
+	var buddy = null;
+	if (this._appCtxt.get(ZmSetting.IM_ENABLED)) {
+		var roster = AjxDispatcher.run("GetRoster");
+		buddy = roster.getRosterItem(this.getIMAddress());
+	}
+	return buddy;
 };
 
 // returns a list (array) of all valid emails for this contact
@@ -781,11 +809,16 @@ function() {
 ZmContact.prototype.getToolTip =
 function(email, isGal) {
 	// update/null if modified
-	if (!this._toolTip || this._toolTipEmail != email) {
-		var subs = { contact:this, entryTitle:this.getFileAs() };
-		this._toolTip = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#Tooltip", subs);
-		this._toolTipEmail = email;
-	}
+//	if (!this._toolTip || this._toolTipEmail != email) {
+
+	// IM status can change anytime so let's always rebuild the tooltip
+	var buddy = this.getBuddy();
+	var subs = { contact	: this,
+		     entryTitle	: this.getFileAs(),
+		     buddy	: buddy };
+	this._toolTip = AjxTemplate.expand("zimbraMail.abook.templates.Contacts#Tooltip", subs);
+	this._toolTipEmail = email;
+//	}
 	return this._toolTip;
 };
 
@@ -917,7 +950,7 @@ function(street, city, state, zipcode, country) {
 ZmContact.prototype._initFullName =
 function(email, strictName) {
 	var name = email.getName();
-	name = AjxStringUtil.trim(name.replace(ZmEmailAddress.commentPat, '')); // strip comment (text in parens)
+	name = AjxStringUtil.trim(name.replace(AjxEmailAddress.commentPat, '')); // strip comment (text in parens)
 
 	if (name && name.length) {
 		this._setFullName(name, [" "]);
@@ -964,56 +997,39 @@ function() {
 // Parse contact node. A contact will only have attr values if its in canonical list.
 ZmContact.prototype._loadFromDom =
 function(node) {
-	// "node.a" means we must be dealing with a GAL contact
-	// bug fix #7143 - check for length property instead of "instanceof Array"
-	//                 since opening new window loses type info :(
-	if (node.a && node.a.length) {
-		for (var i = 0; i < node.a.length; i++) {
-			var attr = node.a[i];
-			if (attr.n == ZmContact.X_fullName) {
-				this.attr[ZmContact.X_fullName] = attr._content;
-			} else if (attr.n == ZmContact.GAL_MODIFY_TIMESTAMP) {
-				this.modified = attr._content;
-			} else if (attr.n == ZmContact.GAL_CREATE_TIMESTAMP) {
-				this.created = attr._content;
-			} else {
-				// for now just save all other attrs regardless of dupes
-				this.attr[attr.n] = attr._content;
-			}
-		}
-		this._loaded = true;
-	} else {
-		this.rev = node.rev;
-		this.sf = node.sf;
-		this.folderId = node.l;
-		this.created = node.cd;
-		this.modified = node.md;
+	this.isLoaded = true;
+	this.rev = node.rev;
+	this.sf = node.sf;
+	this.folderId = node.l;
+	this.created = node.cd;
+	this.modified = node.md;
+
+	if (node.fileAsStr) {
 		this._fileAs = node.fileAsStr;
+		this._fileAsLC = node.fileAsStr.toLowerCase();
+	}
 
-		// for shared contacts, we'll always get fileAs
-		if (this._fileAs)
-			this._fileAsLC = this._fileAs.toLowerCase();
+	this.attr = node._attrs || {};
 
-		this.attr = node._attrs || {};
+	// for shared contacts, we get these fields outside of the attr part
+	if (node.email) this.attr[ZmContact.F_email] = node.email;
+	if (node.email2) this.attr[ZmContact.F_email2] = node.email2;
+	if (node.email3) this.attr[ZmContact.F_email3] = node.email3;
 
-		// for shared contacts, we get these fields outside of the attr part
-		if (node.email) this.attr[ZmContact.F_email] = node.email;
-		if (node.email2) this.attr[ZmContact.F_email2] = node.email2;
-		if (node.email3) this.attr[ZmContact.F_email3] = node.email3;
+	this.type = this.attr[ZmContact.F_dlist] != null
+		? ZmItem.GROUP : ZmItem.CONTACT;
 
-		this.type = this.attr[ZmContact.F_dlist] != null
-			? ZmItem.GROUP : ZmItem.CONTACT;
+	// check if the folderId is found in our address book (otherwise, we assume 
+	// this contact to be a shared contact)
+	this.addrbook = this._appCtxt.getById(this.folderId);
 
-		// check if the folderId is found in our address book (otherwise, we
-		// assume this contact to be a shared contact)
-		this.addrbook = this._appCtxt.getTree(ZmOrganizer.ADDRBOOK).getById(this.folderId);
-		this._loaded = !this.isShared();
-
-		// lets not process tags/flags for shared contacts until we get better server support
-		if (!this.isShared()) {
-			this._parseFlags(node.f);
-			this._parseTags(node.t);
-		}
+	// dont process tags/flags for shared contacts until we get server support
+	if (!this.isShared()) {
+		this._parseFlags(node.f);
+		this._parseTags(node.t);
+	} else {
+		// shared contacts are never fully loaded since we never cache them
+		this.isLoaded = false;
 	}
 };
 
@@ -1028,14 +1044,20 @@ function(type, shortForm) {
 	var text = "";
 	var name = this.getFullName();
 	var email = this.getEmail();
-	if (type == ZmAppt.PERSON && !shortForm) {
-		var e = new ZmEmailAddress(email, null, name);
+	if (type == ZmCalItem.PERSON && !shortForm) {
+		var e = new AjxEmailAddress(email, null, name);
 		text = e.toString();
 	} else {
 		text = name ? name : email ? email : "";
 	}
 
 	return text;
+};
+
+ZmContact.prototype.getPrintHtml =
+function(preferHtml, callback) {
+	return this.isGroup() ? ZmGroupView.getPrintHtml(this, false, this._appCtxt) :
+							ZmContactView.getPrintHtml(this, false, this._appCtxt);
 };
 
 // these need to be kept in sync with ZmContact.F_*
@@ -1052,6 +1074,11 @@ ZmContact._AB_FIELD = {
 	email: ZmMsg.AB_FIELD_email,
 	email2: ZmMsg.AB_FIELD_email2,
 	email3: ZmMsg.AB_FIELD_email3,
+
+	// IM addresses
+	imAddress1: ZmMsg.AB_FIELD_imAddress1,
+	imAddress2: ZmMsg.AB_FIELD_imAddress2,
+	imAddress3: ZmMsg.AB_FIELD_imAddress3,
 
 	// work address
 	workStreet: ZmMsg.AB_FIELD_street,

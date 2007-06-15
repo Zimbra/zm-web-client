@@ -29,7 +29,7 @@
  *
  * @author Mihai Bazon
  */
-function ZmZimletBase() {
+ZmZimletBase = function() {
 	// For Zimlets, the ZmObjectHandler constructor is a no-op.  Zimlets
 	// don't receive any arguments in constructor.  In the init() function
 	// below we call ZmObjectHandler.init() in order to set some arguments.
@@ -142,6 +142,13 @@ function(zmObject) {
 // - canvas
 ZmZimletBase.prototype.doDrop =
 function(zmObject) {};
+
+ZmZimletBase.prototype.portletCreated = function(portlet) {
+    DBG.println("portlet created: "+portlet.id);
+};
+ZmZimletBase.prototype.portletRefreshed = function(portlet) {
+    DBG.println("portlet refreshed: "+portlet.id);
+};
 
 // This method is called when the Zimlet panel item is double clicked. This
 // method defines the following formal parameters:
@@ -292,7 +299,7 @@ function(spanElement, contentObjText, matchContext, canvas) {
 		    txt = "fetching data...";
 		} else {
 			// If it's an email address just use the address value.
-			if (obj.objectContent instanceof ZmEmailAddress) {obj.objectContent = obj.objectContent.address;}
+			if (obj.objectContent instanceof AjxEmailAddress) {obj.objectContent = obj.objectContent.address;}
 			txt = this.xmlObj().processString(c.toolTip, obj);
 		}
 		canvas.innerHTML = txt;
@@ -471,7 +478,7 @@ ZmZimletBase.prototype.setIcon = function(icon) {
 	this.xmlObj().icon = icon;
 	var appCtxt = this.getAppCtxt();
 	var ctrl = appCtxt.getOverviewController();
-	var treeView = ctrl.getTreeView(ZmZimbraMail._OVERVIEW_ID, ZmOrganizer.ZIMLET);
+	var treeView = ctrl.getTreeView(ctrl.getOverviewId(), ZmOrganizer.ZIMLET);
 	var treeItem = treeView.getTreeItemById(this.xmlObj().getOrganizer().id);
 	// OMG, what we had to go through!
 	treeItem.setImage(icon);
@@ -552,14 +559,10 @@ ZmZimletBase.prototype.getBoolConfig = function(key, defaultValue) {
 			defaultValue = false;
 		if (defaultValue) {
 			// the default is TRUE, check if explicitely disabled
-			val = /^(0|false|off|no)$/i.test(val)
-				? false
-				: true;
+			val = !/^(0|false|off|no)$/i.test(val);
 		} else {
 			// default FALSE, check if explicitely enabled
-			val = /^(1|true|on|yes)$/i.test(val)
-				? true
-				: false;
+			val = /^(1|true|on|yes)$/i.test(val);
 		}
 	} else {
 		val = defaultValue;
@@ -577,9 +580,12 @@ ZmZimletBase.prototype.getEnabled = function() {
 	return this.__zimletEnabled;
 };
 
-ZmZimletBase.prototype.getUsername =
-function() {
-	return this.getAppCtxt().getUsername();
+ZmZimletBase.prototype.getUsername = function() {
+	return this.getAppCtxt().get(ZmSetting.USERNAME);
+};
+
+ZmZimletBase.prototype.getUserID = function() {
+	return this.getAppCtxt().get(ZmSetting.USERID);
 };
 
 // Make DOM safe id's
@@ -685,19 +691,16 @@ function(xsltUrl, doc) {
 
 /* Internal functions -- overriding is not recommended */
 
-ZmZimletBase.prototype._createDialog = function(args) {
-	return new ZmDialog(this.getShell(),
-			    args.msgDialog,
-			    args.className,
-			    args.title,
-			    args.extraButtons,
-			    args.view);
+ZmZimletBase.prototype._createDialog =
+function(params) {
+	params.parent = this.getShell();
+	return new ZmDialog(params);
 };
 
 /* Overrides default ZmObjectHandler methods for Zimlet API compat */
 ZmZimletBase.prototype._getHtmlContent =
 function(html, idx, obj, context) {
-	if (obj instanceof ZmEmailAddress) {
+	if (obj instanceof AjxEmailAddress) {
 		obj = obj.address;
 	}
 	var contentObj = this.xmlObj().getVal("contentObject");

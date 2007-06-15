@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAddressObjectHandler(appCtxt) {
+ZmAddressObjectHandler = function(appCtxt) {
 
 	ZmObjectHandler.call(this, appCtxt, ZmAddressObjectHandler.TYPE);
 }

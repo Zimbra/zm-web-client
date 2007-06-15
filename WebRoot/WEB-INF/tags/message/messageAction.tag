@@ -51,11 +51,34 @@
     </c:when>
     <c:when test="${zm:actionSet(param, 'actionLoadFeed')}">
         <zm:syncFolder id="${param.contextFolderId}"/>
+        <zm:clearSearchCache/>
         <app:status>
             <fmt:message key="feedLoaded">
                 <fmt:param value="${zm:getFolderName(pageContext, param.contextFolderId)}"/>
             </fmt:message>
         </app:status>
+    </c:when>
+    <c:when test="${zm:actionSet(param, 'actionNewShare')}">
+        <c:choose>
+            <c:when test="${empty param.newFolderName}">
+                <fmt:message key="actionNoNameSpecified"/>
+            </c:when>
+            <c:otherwise>
+                <c:set var="newFlags" value="${param.newFolderView eq 'appointment' ? '#' : ''}"/>
+                <zm:createMountpoint var="result" parentid="${param.newFolderParentId}"
+                                     name="${param.newFolderName}"
+                                     ownerby="BY_ID"
+                                     owner="${param.newFolderGrantorId}"
+                                     shareditemby="BY_ID"
+                                     shareditem="${param.newFolderLinkId}"
+                                     color="${param.newFolderColor}"
+                                     flags="${newFlags}"
+                                     view="${param.newFolderView}"/>
+                <app:status>
+                    <fmt:message key="shareAccepted"/>
+                </app:status>
+            </c:otherwise>
+        </c:choose>
     </c:when>
     <c:when test="${empty ids}">
         <app:status style="Warning"><fmt:message key="actionNoMessageSelected"/></app:status>
@@ -79,7 +102,7 @@
                 </app:status>
             </c:when>
             <c:when test="${zm:actionSet(param, 'actionDelete')}">
-                <zm:moveMessage  var="result" id="${ids}" folderid="${mailbox.trash.id}"/>
+                <zm:trashMessage  var="result" id="${ids}"/>
                 <app:status>
                     <fmt:message key="actionMessageMovedTrash">
                         <fmt:param value="${result.idCount}"/>

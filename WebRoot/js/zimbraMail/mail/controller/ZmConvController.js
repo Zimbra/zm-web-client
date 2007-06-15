@@ -36,12 +36,13 @@
 * @param container	containing shell
 * @param mailApp	containing app
 */
-function ZmConvController(appCtxt, container, mailApp) {
+ZmConvController = function(appCtxt, container, mailApp) {
 
 	ZmDoublePaneController.call(this, appCtxt, container, mailApp);
 
 	this._convDeleteListener = new AjxListener(this, this._deleteListener);
 	this._listeners[ZmOperation.DELETE_MENU] = this._convDeleteListener;
+	this._readingPaneOn = true;	// always start with reading pane on
 }
 
 ZmConvController.prototype = new ZmDoublePaneController;
@@ -59,23 +60,26 @@ function() {
 * created in _loadConv(), since it is a scheduled method and must execute
 * last.
 *
-* @param activeSearch	the current search results
-* @param conv			a conversation (ZmConv)
+* @param activeSearch		[ZmSearch]				the current search results
+* @param conv				[ZmConv]				a conversation
+* @param parentController	[ZmMailController]*		controller that called this method
+* @param callback			[AjxCallback]*			client callback
 */
 ZmConvController.prototype.show =
-function(activeSearch, conv) {
+function(activeSearch, conv, parentController, callback) {
 	this._conv = conv;
 	// always reset offset & sortby to asc.
 	if (this._listView[this._currentView]) {
 		this._listView[this._currentView].setOffset(0);	
 		this._listView[this._currentView].setSortByAsc(ZmItem.F_DATE, false);
 	}
+	this._parentController = parentController;
 
 	// this._list will be set when conv is loaded
-	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv);
+	ZmDoublePaneController.prototype.show.call(this, activeSearch, conv, callback);
 }
 
-ZmConvController.prototype.getConv = 
+ZmConvController.prototype.getConv =
 function() {
 	return this._conv;
 }
@@ -110,7 +114,7 @@ function(view) {
 
 ZmConvController.prototype._setupViewMenu =
 function(view) {
-	this._setupReadingPaneMenuItem(view, null, this._appCtxt.get(ZmSetting.READING_PANE_ENABLED));
+	this._setupReadingPaneMenuItem(view, null, true);
 }
 
 ZmConvController.prototype._setupDeleteMenu =
@@ -121,7 +125,7 @@ function(view) {
 		delButton.setMenu(menu);
 		
 		var id = ZmOperation.DELETE_CONV;
-		var mi = menu.createMenuItem(id, ZmOperation.getProp(id, "image"), ZmMsg[ZmOperation.getProp(id, "textKey")]);
+		var mi = menu.createMenuItem(id, {image:ZmOperation.getProp(id, "image"), text:ZmMsg[ZmOperation.getProp(id, "textKey")]});
 		mi.setData(ZmOperation.MENUITEM_ID, ZmOperation.DELETE_CONV);
 		mi.addSelectionListener(this._listeners[ZmOperation.DELETE]);
 
@@ -136,16 +140,10 @@ function(view) {
 */
 ZmConvController.prototype._standardToolBarOps =
 function() {
-	var list = [ZmOperation.NEW_MENU];
-	list.push(ZmOperation.CHECK_MAIL);
-	if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED))
-		list.push(ZmOperation.TAG_MENU);
-	list.push(ZmOperation.SEP);
-	list.push(ZmOperation.DELETE_MENU);
-	list.push(ZmOperation.MOVE);
-	if (this._appCtxt.get(ZmSetting.PRINT_ENABLED))
-		list.push(ZmOperation.PRINT);
-	return list;
+	return [ZmOperation.NEW_MENU, ZmOperation.SEP, ZmOperation.CHECK_MAIL,
+			ZmOperation.TAG_MENU, ZmOperation.SEP,
+			ZmOperation.DELETE_MENU, ZmOperation.MOVE,
+			ZmOperation.PRINT];
 }
 
 ZmConvController.prototype._getViewType =
@@ -156,11 +154,6 @@ function() {
 ZmConvController.prototype._getItemType =
 function() {
 	return ZmItem.MSG;
-}
-
-ZmConvController.prototype._defaultView =
-function() {
-	return ZmController.CONV_VIEW;
 }
 
 ZmConvController.prototype._resetSelection = 
@@ -181,7 +174,7 @@ function(ev) {
 	
 	if (ev.item.getData(ZmOperation.MENUITEM_ID) == ZmOperation.DELETE_CONV) {
 		// use conv list controller to delete conv
-		var clc = this._app.getConvListController();
+		var clc = AjxDispatcher.run("GetConvListController");
 		clc._doDelete([this._conv]);
 		this._app.popView();
 	} else {
@@ -195,14 +188,14 @@ function(ev) {
 // or deleted, it's just removed from the view and its underlying list.
 ZmConvController.prototype._checkConvLocation =
 function() {
-	var clc = this._app.getConvListController();
+	var clc = AjxDispatcher.run("GetConvListController");
 	var list = clc.getList();
 	var folderId = list.search.folderId;
 	if (folderId) {
 		if (this._conv.checkMoved(folderId)) { // view notif happens here
 			list.remove(this._conv);
 			var clv = clc.getCurrentView();
-			var respCallback = new AjxCallback(clv, clv._handleResponseChangeListener);
+			var respCallback = new AjxCallback(clv, clv._handleResponseCheckReplenish);
 			clc._checkReplenish(respCallback);
 		}
 	}
@@ -211,7 +204,7 @@ function() {
 // Tag in the summary area clicked, do a tag search.
 ZmConvController.prototype._convTagClicked =
 function(tagId) {
-	var tag = this._appCtxt.getTree(ZmOrganizer.TAG).getById(tagId);
+	var tag = this._appCtxt.getById(tagId);
 	var query = 'tag:"' + tag.name + '"';
 	var searchController = this._appCtxt.getSearchController();
 	searchController.search({query: query});
@@ -245,7 +238,7 @@ function() {
 
 	if (this._conv.numMsgs > 1) {
 		// get the search folder if one exists
-		var clc = this._app.getConvListController();
+		var clc = AjxDispatcher.run("GetConvListController");
 		var search = clc.getList().search;
 		var folderId = search.folderId ? (parseInt(search.folderId)) : null;
 		if (folderId && this._conv.msgs) {
@@ -368,20 +361,26 @@ function(view) {
 	this._navToolBar[view].setToolTip(ZmOperation.PAGE_DBL_FORW, ZmMsg.next + " " + ZmMsg.conversation);
 }
 
+ZmConvController.prototype._getNumTotal =
+function() {
+	return this._conv.numMsgs;
+};
+
 // overloaded...
 ZmConvController.prototype._search = 
 function(view, offset, limit, callback) {
 
 	var sortby = this._appCtxt.get(ZmSetting.SORTING_PREF, view);
-	this._conv.load(this.getSearchString(), sortby, offset, limit, callback);
+	this._conv.load({query:this.getSearchString(), sortBy:sortby, offset:offset, limit:limit, callback:callback});
 }
 
 ZmConvController.prototype._paginateDouble = 
 function(bDoubleForward) {
-	var clc = this._app.getConvListController();
-	if (clc)
-		clc.pageItemSilently(this._conv, bDoubleForward);
-}
+	var ctlr = this._parentController || AjxDispatcher.run("GetConvListController");
+	if (ctlr) {
+		ctlr.pageItemSilently(this._conv, bDoubleForward);
+	}
+};
 
 ZmConvController.prototype._getSearchFolderId = 
 function() {

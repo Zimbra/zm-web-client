@@ -8,11 +8,11 @@
     <option disabled /><fmt:message key="actionOptSep"/>
     <option disabled /><fmt:message key="actionAddTag"/>
     <zm:forEachTag var="tag">
-        <option value="t:${tag.id}" />${fn:escapeXml(tag.name)}
+        <option id="OPTAG${tag.id}" value="t:${tag.id}" />${fn:escapeXml(tag.name)}
     </zm:forEachTag>
     <option disabled /><fmt:message key="actionOptSep"/>
     <option disabled /><fmt:message key="actionRemoveTag"/>
     <zm:forEachTag var="tag">
-        <option value="u:${tag.id}" />${fn:escapeXml(tag.name)}
+        <option id="OPUNTAG${tag.id}" value="u:${tag.id}" />${fn:escapeXml(tag.name)}
     </zm:forEachTag>
 </c:if>

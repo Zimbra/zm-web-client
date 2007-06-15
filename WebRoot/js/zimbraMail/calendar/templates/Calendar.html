@@ -3,7 +3,7 @@
         <table style='width:100%;height:100%'cellspacing=0 cellpadding=2>
             <tr class='${headerColor}'>
                 <td class=appt${newState}_time id='${id}_st'>${starttime}</td>
-                <td class=appt_status-${statusKey} style='text-align:right'>${status}</td>
+                <td align=right><!-- FUTURE: use this space for icons --></td>
             </tr>
             <tr valign=top>
                 <td colspan=2 class=appt${newState}_name style='height:100%'>
@@ -56,151 +56,16 @@
     </div>
 </template>
 
-<template id='schedule'>
-  <table border=0 width=100% cellpadding=3>
-    <tr>
-      <td width=100%>
-        <$= AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#schedule_time", data) $>
-      </td>
-      <td style='text-align:right'>
-        <$= AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#schedule_key", data) $>
-      </td>
-    </tr>
-  </table>
-  <div style='margin-top:10'>
-    <$= AjxTemplate.expand("zimbraMail.calendar.templates.Calendar#schedule_freebusy", data) $>
-  </div>
-</template>
-
-<template id='schedule_time'>
-  <table border=0>
-    <tr>
-      <td></td>
-      <td>
-        <table border=0>
-          <tr>
-            <td><input type='checkbox' id='${id}_allday'></td>
-            <td class='ZmFieldLabelLeft'><$=ZmMsg.allDayEvent$></td>
-          </tr>
-        </table>
-      </td>
-      <td></td>
-      <td id='${id}_tz'></td>
-    </tr>
-    <tr>
-      <td class='ZmFieldLabelRight'><$=ZmMsg.startTime$></td>
-      <td>
-        <table border=0 cellpadding=0 cellspacing=0>
-          <tr>
-            <td><input id='${id}_sdate' autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 value=''></td>
-            <td id='${id}_scal'></td>
-          </tr>
-        </table>
-      </td>
-      <td id='${id}_sat' class='ZmFieldLabelCenter'>@</td>
-      <td id='${id}_stime'></td>
-    </tr>
-    <tr>
-      <td class='ZmFieldLabelRight'><$=ZmMsg.endTime$></td>
-      <td>
-        <table border=0 cellpadding=0 cellspacing=0>
-          <tr>
-            <td><input id='${id}_edate' autocomplete='off' style='height:22px;' type='text' size=11 maxlength=10 value=''></td>
-            <td id='${id}_ecal'></td>
-         </tr>
-        </table>
-      </td>
-      <td id='${id}_eat' class='ZmFieldLabelCenter'>@</td>
-      <td id='${id}_etime'></td>
-    </tr>
-  </table>
-</template>
-
-<template id='schedule_key'>
-  <table border=0 cellpadding=0 cellspacing=0 class='ZmGraphKey'>
-    <tr><td class='ZmGraphKeyHeader'><$=ZmMsg.key$></td></tr>
-    <tr>
-      <td class='ZmGraphKeyBody'>
-        <table border=0 cellspacing=2>
-          <tr>
-            <td><div class='ZmGraphKeyColorBox ZmScheduler-free'></div></td>
-            <td class='ZmGraphKeyColorText'><$=ZmMsg.free$></td>
-            <td>&nbsp;</td>
-            <td><div class='ZmGraphKeyColorBox ZmScheduler-busy'></div></td>
-            <td class='ZmGraphKeyColorText'><$=ZmMsg.busy$></td>
-            <td>&nbsp;</td>
-            <td><div class='ZmGraphKeyColorBox ZmScheduler-tentative'></div></td>
-            <td class='ZmGraphKeyColorText'><$=ZmMsg.tentative$></td>
-            <td>&nbsp;</td>
-          </tr>
-          <tr>
-            <td><div class='ZmGraphKeyColorBox ZmScheduler-unknown'></div></td>
-            <td class='ZmGraphKeyColorText'><$=ZmMsg.unknown$></td>
-            <td>&nbsp;</td>
-            <td><div class='ZmGraphKeyColorBox ZmScheduler-outOfOffice'></div></td>
-            <td class='ZmGraphKeyColorText'><$=ZmMsg.outOfOffice$></td>
-            <td>&nbsp;</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</template>
-
-<template id='schedule_freebusy'>
-  <table id='${id}_attendees' style='padding-left:3px;' border=0 cellpadding=0 cellspacing=0 width=100%>
-    <colgroup>
-      <col style='width:165px' />
-      <col style='width:626px' />
-    </colgroup>
-    <tr>
-      <td id='${id}_nav' align='center' <$= AjxEnv.isIE ? "width=100%" : "" $> ></td>
-      <td>
-        <table border=0 cellpadding=0 cellspacing=0 class='ZmSchedulerGridHeaderTable'>
-          <tr>
-            <$ for (var j = 0; j <= 24; j++) {
-                var hour = AjxDateUtil.isLocale24Hour() ? j : ((j % 12) || 12); $>
-              <td><div class='ZmSchedulerGridHeaderCell'><$=hour$></div></td>
-            <$ } $>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</template>
-
-<template id='schedule_attendee_name'>
-  <table border=0 cellpadding=0 cellspacing=0 width=100%>
-    <tr>
-      <$ if (data.isAllAttendees) { $>
-        <td style='padding: 5 0 5 0' class='ZmSchedulerAllTd'><$=ZmMsg.allAttendees$></td>
-      <$ } else if (data.organizer) { $>
-        <td width=38 align=center class='ZmSchedulerOrgIconTd'><$=AjxImg.getImageHtml("Person")$></td>
-      <$ } else { $>
-        <td width=38 id='${sched.dwtSelectId}'></td>
-      <$ } $>
-
-      <$ if (!data.isAllAttendees) { $>
-        <td class='ZmSchedulerNameTd' id='${sched.dwtNameId}'>
-        <$ if (data.organizer) { $>
-          <div class='ZmSchedulerInputDisabled'>${organizer}</div>
-        <$ } $>
-        </td>
-      <$ } $>
-    </tr>
-  </table>
-</template>
-
-<template id='schedule_attendee_fb'>
-  <table id='${sched.dwtTableId}'
-         class='ZmSchedulerGridTable<$= data.isAllAttendees ? "-allAttendees" : "" $>'
-         border=0 cellpadding=0 cellspacing=0>
-    <tr>
-      <$ for (var k = 0; k < data.cellCount; k++) { $>
-        <td class='ZmScheduler-free'>
-          <div class='ZmSchedulerGridDiv'></div>
-        </td>
-      <$ } $>
-    </tr>
-  </table>
+<template id='TypeDialog'>
+	<div style='width:275px' id='${id}_question'></div><p>
+	<table align=center border=0 width=1%>
+		<tr>
+			<td width=1%><input checked value='1' type='radio' id='${id}_defaultRadio' name='${id}_instSeriesName'></td>
+			<td style='white-space:nowrap' id='${id}_instanceMsg'></td>
+		</tr>
+		<tr>
+			<td width=1%><input value='2' type='radio' name='${id}_instSeriesName'></td>
+			<td style='white-space:nowrap' id='${id}_seriesMsg'></td>
+		</tr>
+	</table>
 </template>

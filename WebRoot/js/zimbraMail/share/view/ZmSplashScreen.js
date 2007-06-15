@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmSplashScreen(shell, imageInfo, className) {
+ZmSplashScreen = function(shell, imageInfo, className) {
  	className = className || "ZSplashScreen";
  	ZmBaseSplashScreen.call(this, shell, imageInfo, className);
 }

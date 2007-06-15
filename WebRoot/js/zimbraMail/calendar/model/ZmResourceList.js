@@ -36,7 +36,7 @@
 * @param resType	[constant]		type of resources (location or equipment)
 * @param search		[ZmSearch]*		search that generated this list
 */
-function ZmResourceList(appCtxt, resType, search) {
+ZmResourceList = function(appCtxt, resType, search) {
 	ZmContactList.call(this, appCtxt, search, true, ZmItem.RESOURCE);
 
 	this.resType = resType;
@@ -50,15 +50,20 @@ ZmResourceList.ATTRS =
 	[ZmResource.F_name, ZmResource.F_mail, ZmResource.F_type, ZmResource.F_locationName,
 	 ZmResource.F_capacity, ZmResource.F_contactMail, ZmContact.F_description];
 
-ZmResourceList.AC_FIELDS = ["displayName"];
+ZmResourceList.AC_FIELDS = [ZmResource.F_name];
 
 ZmResourceList.prototype = new ZmContactList;
 ZmResourceList.prototype.constructor = ZmResourceList;
 
+ZmResourceList.prototype.toString =
+function() {
+	return "ZmResourceList";
+};
+
 ZmResourceList.prototype.load =
 function(batchCmd) {
 	var conds = [];
-	var value = (this.resType == ZmAppt.LOCATION) ? ZmResource.ATTR_LOCATION : ZmResource.ATTR_EQUIPMENT;
+	var value = (this.resType == ZmCalItem.LOCATION) ? ZmResource.ATTR_LOCATION : ZmResource.ATTR_EQUIPMENT;
 	conds.push({attr: ZmResource.F_type, op: "eq", value: value});
 	var params = {conds: conds, join: ZmSearch.JOIN_OR, attrs: ZmResourceList.ATTRS};
 	var search = new ZmSearch(this._appCtxt, params);
@@ -77,7 +82,8 @@ function(result) {
 		this._preMatch(resource);
 		this._idHash[resource.id] = resource;
 	}
-	this._loaded = true;
+	//bug:16436 this._loaded changed to this.isLoaded 
+	this.isLoaded = true;
 	this._galAutocompleteEnabled = false;
 };
 
@@ -91,6 +97,12 @@ function(resource) {
 	if (email) {
 		this._emailToResource[email.toLowerCase()] = resource;
 	}
+};
+
+// Override so we don't invoke ZmContactList.addFromDom
+ZmResourceList.prototype.addFromDom =
+function(node, args) {
+	ZmList.prototype.addFromDom.call(this, node, args);
 };
 
 /**
@@ -174,8 +186,8 @@ function(match, resource) {
 	result.item = resource;
 	result.text = match.savedMatch;
 	result.plain = result.text ? result.text.replace(/<\/?b>/g, "") : "";	// for sorting results
-	result[ZmContactList.AC_VALUE_EMAIL] = resource.getEmail();
-	result[ZmContactList.AC_VALUE_NAME] = resource.getFullName();
+	result[ZmContactsApp.AC_VALUE_EMAIL] = resource.getEmail();
+	result[ZmContactsApp.AC_VALUE_NAME] = resource.getFullName();
 
 	return result;
 };

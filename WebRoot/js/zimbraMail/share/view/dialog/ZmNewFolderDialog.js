@@ -23,10 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewFolderDialog(parent, msgDialog, className) {
+ZmNewFolderDialog = function(parent, className) {
 	var title = ZmMsg.createNewFolder;
 	var type = ZmOrganizer.FOLDER;
-	ZmNewOrganizerDialog.call(this, parent, msgDialog, className, title, type);
+	ZmNewOrganizerDialog.call(this, parent, className, title, type);
 };
 
 ZmNewFolderDialog.prototype = new ZmNewOrganizerDialog;
@@ -44,6 +44,7 @@ ZmNewFolderDialog.prototype._createColorContentHtml =
 function(html, idx) {
 	return idx;
 };
+
 ZmNewFolderDialog.prototype._setupColorControl =
 function() {
 };

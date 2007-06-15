@@ -51,7 +51,7 @@
 *	- Miscellaneous stuff that multiple apps might use (objects, autocomplete)
 *	- Modifiers
 *
-* Many of the Dwt widgets don't have corresponding classes here, since they are only subclassed. 
+* Many of the Dwt widgets don't have corresponding classes here, since they are only subclassed.
 * If you create and display one of those widgets, you'll have to add a class for it.
 */
 
@@ -139,6 +139,7 @@
 	@NoWrap@
 	text-align: center;
 	font-weight: bold;
+	padding-top: 5px;
 }
 
 
@@ -147,11 +148,11 @@
 
 /* Status bar stuff */
 
-.ZmStatusMainText {	
+.ZmStatusMainText {
 	@ToastText@
 }
 
-.ZmStatusToastText { 
+.ZmStatusToastText {
 	@ToastText@
 }
 
@@ -159,18 +160,18 @@
 	@ToastContainer@
 	@ToastBg-info@
 }
-.ZmStatusWarningToast {	
+.ZmStatusWarningToast {
 	@ToastContainer@
 	@ToastBg-warning@
 }
-.ZmStatusCriticalToast {	
+.ZmStatusCriticalToast {
 	@ToastContainer@
 	@ToastBg-critical@
 }
 
-.ZmStatusHistory { 
+.ZmStatusHistory {
 	width: 400px; 				/* ??? SIZE */
-	height: 285px; 
+	height: 285px;
 	@BoxMargin@
 	margin-bottom: 0px;
 	overflow: auto;
@@ -211,7 +212,14 @@
 /* Search toolbar */
 .ZmSearchToolbar {
 	padding-left:5px;
+	margin-top:1px;
+	width:100%;
 }
+
+.ZmSearchToolbar .ZToolbarTable {
+	width: 100%;
+}
+
 .ZmSearchToolbar .MessageControl0 {
 	padding-right:5px;
 }
@@ -220,8 +228,19 @@
 	padding-left:5px;
 }
 
-.ZmSearchToolbar TABLE {
-	@FullSize@
+
+.ZmSearchToolbar .DwtCompositeTable TD {
+	padding-top:3px;
+}
+.ZmSearchToolbar .DwtCompositeTable TD.MessageControl1 {
+	padding-top:0px;
+	vertical-align:top;
+}
+
+
+.ZmSearchToolbar .ZNormal .ZButtonBorder {
+/*	@ZTransparentBg@ @TransparentBorder@
+*/
 }
 
 /* Search builder toolbar (buttons only) */
@@ -265,7 +284,7 @@
 
 /* ??? USE ? */
 td.DDSepVisible div {
-	background-color:black; 
+	background-color:black;
 	width:1px;
 	overflow:hidden;
 }
@@ -277,7 +296,7 @@ td.DDSepInvisible div {
 
 
 
-/* 
+/*
  * Search bar
  */
 
@@ -292,7 +311,7 @@ td.DDSepInvisible div {
 
 
 
-/* 
+/*
  * Search builder
  */
 
@@ -304,8 +323,8 @@ td.DDSepInvisible div {
 }
 
 
-/* 
- * Search builder "pickers" or panes 
+/*
+ * Search builder "pickers" or panes
  */
 
 /* outer container for an individual picker */
@@ -336,7 +355,7 @@ td.DDSepInvisible div {
 
 /* ??? SHOTGUN */
 .ZmPickerOverview td {
-	 @Label@ 
+	 @Label@
 }
 
 
@@ -348,9 +367,9 @@ td.DDSepInvisible div {
 
 /* message fragment text */
 .ZmConvListFragment,
-.Row-Selected .ZmConvListFragment { 
+.Row-Selected .ZmConvListFragment {
 	@Text-disabled@
-	font-weight: normal; 
+	font-weight: normal;
 }
 
 /* Conversation view outer container (header, list and reading pane) */
@@ -363,10 +382,10 @@ td.DDSepInvisible div {
 	border:0px;
 }
 
- 
+
 
 /* ??? SHOTGUN */
-.ZmConvView td { 
+.ZmConvView td {
 	@NoWrap@
 }
 
@@ -390,14 +409,14 @@ td.DDSepInvisible div {
 }
 
 /* put space between display of tag icons and their names */
-.Tags a { 
+.Tags a {
 	@NoWrap@
 	padding-right: @BoxPaddingSize@; 	/* ??? SIZE */
 }
 
 
 
-/* Container for the view of one particular message 
+/* Container for the view of one particular message
 	-- there can be two instances, one for "conversation" view and one for "messages" view */
 .ZmMailMsgView {
 	@FullWidth@
@@ -425,7 +444,7 @@ td.DDSepInvisible div {
 	@WidgetHeaderContainer@
 }
 
-.ZmMailMsgView .SubjectCol { 
+.ZmMailMsgView .SubjectCol {
 	@FontSize-bigger@
 	@Text@
 }
@@ -446,15 +465,15 @@ td.DDSepInvisible div {
 }
 
 /* ??? USE? */
-.ZmMailMsgView .AttName, 
+.ZmMailMsgView .AttName,
 .ZmMailMsgView .AttName-matched {
 	padding-right: 8px;
 }
 
 /* ??? USE? */
-.ZmMailMsgView .AttName-matched { 
+.ZmMailMsgView .AttName-matched {
 	@Anchor-matched@
-	white-space: nowrap; 
+	white-space: nowrap;
 }
 
 /* ??? MOVE ME */
@@ -494,8 +513,8 @@ td.DDSepInvisible div {
 
 
 /*
- * Message compose view 
- */ 
+ * Message compose view
+ */
 /* Outer container of message compose view */
 .ZmComposeView {
 	@PageBg@
@@ -554,8 +573,8 @@ td.DDSepInvisible div {
 
 /*
  *	ZmHtmlEditor -- HTML editor stuff
- */ 
- 
+ */
+
 /* Outer container */
 .ZmHtmlEditor {
 	@BoxPadding@
@@ -582,15 +601,15 @@ td.DDSepInvisible div {
 
 
 /* ??? USE? */
-.ZmHEDialog td.Label { 
+.ZmHEDialog td.Label {
 	@NoSelect@
-	text-align: right; 
-	width: 12em; 
+	text-align: right;
+	width: 12em;
 	padding-right: 3px;
 }
-.ZmHEDialog td.SmallLabel { 
+.ZmHEDialog td.SmallLabel {
 	@NoSelect@
-	text-align: right; 
+	text-align: right;
 	padding-right: 3px;
 }
 .ZmHEDialog td.col2 { width: 7em; }
@@ -625,13 +644,16 @@ td.DDSepInvisible div {
 }
 #ENDIF
 
+.ZmSpellMenuItem .ZWidgetTitle {
+	font-weight: bold;
+}
 
 
 
 /* ??? USED? */
 .NtdDialogTable .NtdLabel {
-	white-space:nowrap; 
-	padding:2px 5px; 
+	white-space:nowrap;
+	padding:2px 5px;
 	text-align:right;
 }
 
@@ -734,13 +756,25 @@ td.DDSepInvisible div {
 }
 
 .ZmContactInfoView .contactHeaderRow,
-.ZmContactView .contactHeaderRow {
+.ZmContactView .contactHeaderRow,
+.ZmTaskEditView .contactHeaderRow {
 	height: 40px;
 	@WidgetHeaderSize-big@
 }
 
+.newTaskBanner {
+	color: rgb(120, 111, 91);
+	cursor: default;
+	padding: 5 0 5 0;
+}
+
+.newTaskBannerSep {
+	border-bottom: 2px solid #AAAAAA;
+}
+
 .ZmContactInfoView .contactHeader,
-.ZmContactView .contactHeader {
+.ZmContactView .contactHeader,
+.ZmTaskEditView .contactHeader {
 	@FontSize-biggest@
 	@Text@
 	padding-left:@BoxPaddingSize@;
@@ -788,7 +822,8 @@ td.DDSepInvisible div {
 }
 
 /* ??? -> ZmFieldLabelRight */
-.ZmContactView .editLabel {
+.ZmContactView .editLabel,
+.ZmTaskEditView .editLabel {
 	@Label@
 	text-align:right;
 }
@@ -836,10 +871,10 @@ td.DDSepInvisible div {
 }
 
 /* Container for a single contact card in various states */
-.ZmContactCard, 
-.ZmContactCard-selected, 
+.ZmContactCard,
+.ZmContactCard-selected,
 .ZmContactCard-selected-right,
-.ZmContactCard-drag, 
+.ZmContactCard-drag,
 .ZmContactCard-selected-drag,
 .ZmContactCard-dnd {
 	@AppBg@
@@ -916,6 +951,14 @@ td.DDSepInvisible div {
 	border: solid gray 1px;
 }
 
+
+/*
+ * Task application
+ */
+.InlineWidget {
+	z-index: 300;
+	overflow: hidden;
+}
 
 
 
@@ -1085,19 +1128,19 @@ td.DDSepInvisible div {
 }
 
 
-/* set the width of each day column in the month view 
+/* set the width of each day column in the month view
 	-- extra space goes to the last column  			*/
 .month_calendar_c0,
 .month_calendar_c1,
 .month_calendar_c2,
 .month_calendar_c3,
 .month_calendar_c4,
-.month_calendar_c5 { 
-	width: 14%; 
+.month_calendar_c5 {
+	width: 14%;
 }
 
-.month_calendar_c6{ 
-	width: 16%; 
+.month_calendar_c6{
+	width: 16%;
 }
 
 
@@ -1251,7 +1294,7 @@ td.DDSepInvisible div {
 }
 
 
-/* 
+/*
  * appearance of appointments in day views -- NOTE: colors of these items are not skinned
  */
 .appt							{ 	z-index:10;	}
@@ -1274,30 +1317,22 @@ td.DDSepInvisible div {
 .appt_time						{	@SmallBoxPadding@;																}
 .appt_new_time					{	@SmallBoxPadding@;	font-weight:bold;	color:white;							}
 .appt_end_time					{	@SmallBoxPadding@;						color:#666666;	@NoWrap@	}
-
-.appt_status-					{	@SmallBoxPadding@;										@NoWrap@	}
-.appt_status-NE					{	@SmallBoxPadding@;	font-weight:bold;	color:FFE640;	@NoWrap@	}
-.appt_status-TE					{	@SmallBoxPadding@;						color:FF3300;	@NoWrap@	}
-.appt_status-AC					{	@SmallBoxPadding@;						color:black;	@NoWrap@	}
-.appt_status-DE					{	@SmallBoxPadding@;						color:black;	@NoWrap@	}
-.appt_status-DG					{	@SmallBoxPadding@;						color:black;	@NoWrap@	}
-
 .appt_location					{	@SmallBoxPadding@;						}
 
 .appt_top_sash,
-.appt_bottom_sash{ 
-	height: 5px; 
-	width:100%; 
-	position:absolute; 
-	font-size: 2pt; 
+.appt_bottom_sash{
+	height: 5px;
+	width:100%;
+	position:absolute;
+	font-size: 2pt;
 }
 
 .appt_top_sash {
-	top: 0; 
+	top: 0;
 	cursor: n-resize;
 }
-.appt_bottom_sash { 
-	bottom: 0; 
+.appt_bottom_sash {
+	bottom: 0;
 	cursor: s-resize;
 }
 
@@ -1378,7 +1413,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 
-/* 
+/*
  *  Print view of the calendar -- note this is always black text on white
  *		??? USED?  Calendar print view seems to be hard-coding
  */
@@ -1462,11 +1497,11 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 
-/* 
- * Reminder Dialog 
+/*
+ * Reminder Dialog
  */
 
-.ZmReminderDialog { 
+.ZmReminderDialog {
 	overflow: auto;
 	width: 475px; 			/*??? SIZE */
 	@BoxMargin@
@@ -1520,7 +1555,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /*
  *	Free/busy view
- */ 
+ */
 /* Colors for the free/busy blocks */		/*??? SKIN THIS ? */
 .ZmScheduler-free 		{	background-color: #FFFFFF;	}
 .ZmScheduler-busy 		{	background-color: #990000;	}
@@ -1732,12 +1767,18 @@ HTML>BODY .appt-selected .appt_allday_body
 
 /*
  *	Chat application
- */ 
+ */
 
 .ZmChatMultiWindowView, .ZmChatTabbedView {
 	@PageBg@
 	@FullSize@
 }
+
+.ZmChatWidget .ZToolbarTable td { vertical-align: middle; }
+
+.ZmChatWidget .ZToolbarTable .ZButton { min-width: 0; }
+.ZmChatWidget .ZToolbarTable .ZButton .ZLeftIcon div { margin-left: 2px; margin-right: 2px; }
+.ZmChatWidget .ZToolbarTable .ZButton .ZWidgetTitle { padding: 0; }
 
 .ZmChatWindowContainer {
 	@FullSize@
@@ -1753,7 +1794,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatWindow-selected {
 	@WindowContainer-focused@
 	width: 400px;
-	height: 300px;	
+	height: 300px;
 }
 
 .ZmChatDialogField {
@@ -1799,7 +1840,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZmChatWindowChat {
 	@AppBg@
 	@AppBorder@
-	overflow: hidden;
+	overflow: auto;
 }
 
 /* list of chat members for multi-person chat */
@@ -1809,40 +1850,113 @@ HTML>BODY .appt-selected .appt_allday_body
 	@AppBorder@
 }
 
-/* label in the chat record by text that user has typed, eg:  [2:10 PM] username: */
-.ZmChatWindowChatEntryMe {
-	@Text@
-	font-weight: bold;
-	padding: 1px;
-	padding-left: 2px;
+.ZmChatWindowChatEntry {
+  padding: 3px 5px;
 }
+
+.ZmChatWindowChatEntry-sep { border-top: 1px solid #edd; margin-top: 4px; margin-bottom: 2px; font-size: 1px; line-height: 1px; overflow: hidden; height: 1px; }
+
+.ZmChatWindowChatEntry .from { font-weight: bold; margin-bottom: 5px; }
+.ZmChatWindowChatEntry .time { float: right; color: #888; }
+.ZmChatWindowChatEntry .body { padding-left: 15px; margin-right: 4.2em; color: black;}
+
+.ZmChatWindowChatEntryMe .from { color: #00c; }
+.ZmChatWindowChatEntryThem .from { color: #c00; }
+
+.ZmRosterItem-typing .DwtTreeItem .DwtTreeItem-Text { color: #1a1; }
+.ZmRosterItem-typing .ZWidgetTitle { color: #070; }
+
+/* chat with Zimbra Assistant */
+
+.ZmAssistantChat .ZmAssistantButtons { float: right; }
+.ZmAssistantChat .ZmAssistantButtons span { @Anchor@ padding: 0 10px; font-weight: bold; margin-left: 5px; }
+.ZmAssistantChat .ZmAssistantButtons span:hover { @Anchor-hover@ }
+.ZmAssistantChat .ZmChatWindowChatEntry .time { display: none; }
+.ZmAssistantChat .ZmChatWindowChatEntry .body { margin-right: 0; padding-right: 15px; }
+.ZmAssistantChat .ZmAsstContactHelp { height: auto; overflow: auto; }
 
 /* label in the chat record for system notes (eg: roland goes offline, etc) */
 .ZmChatWindowChatEntrySystem {
-	@Label@
-	font-style: italic;
-	padding: 1px;
-	padding-left: 2px;
-}
-
-/* label in the chat record by text that chatees have typed */
-.ZmChatWindowChatEntryThem {
-	color: blue;
-	font-weight: bold;	
-	padding: 1px;
-	padding-left: 2px;
+  color: #888;
+  font-style: italic;
 }
 
 .ZmChatWindowInput {
-	border: 0px;
-	overflow: auto;
-/*	border: 1px solid #999999;*/
+	@AppBg@
+	@AppBorder@
+  border-width: 2px !important;
+  padding: 1px 2px;
 }
 
-.ZmChatWindowInput textarea {
-	@TextArea@
+.ZmChatTabs-Container {
+  position: absolute; left: 0; top: 0; display: none;
 }
 
+.ZmChatTabs-Container-Active { display: block; }
+
+.ZmChatTabs-TabBar {
+  position: absolute;
+  top: 100%;
+  margin-top: 4px;
+  left: 5px;
+}
+
+/* hide the tab bar unless we have 2 or more tabs */
+.ZmChatTabs-TabBarCount-0 /*, .ZmChatTabs-TabBarCount-1 */ { display: none; }
+
+.ZmChatTabs-TabBar .ZmChatTabs-Tab {
+  @WindowContainer@
+  float: left;
+  padding: 2px 4px;
+  border-top: none;
+  -moz-border-radius-topleft: 0;
+  -moz-border-radius-topright: 0;
+  -moz-border-radius-bottomleft: 2px;
+  -moz-border-radius-bottomright: 2px;
+}
+
+.ZmChatTab-Unread .ZWidgetTitle { color: #c00; }
+.ZmChatTab-Flash .ZWidgetTitle { visibility: hidden; }
+
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable { width: auto; }
+/* .ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTitle { width: auto; padding-top: 0; padding-bottom: 0; } */
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTitle { width: auto; padding: 0; }
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable .ZLeftIcon div { margin-left: 0; }
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZWidgetTable div { margin: 0; }
+.ZmChatTabs-TabBar .ZmChatTabs-Tab .ZButton { min-width: 0; height: auto; }
+
+.ZmChatTabs-TabBar .ZmChatTabs-Tab-Active {
+  @ToolbarContainer@
+  float: left;
+  padding: 2px 4px 3px 4px;
+  border-top: none;
+  margin-top: -1px;
+  -moz-border-radius-topleft: 0;
+  -moz-border-radius-topright: 0;
+  -moz-border-radius-bottomleft: 2px;
+  -moz-border-radius-bottomright: 2px;
+}
+
+.ZmChatGwIcon {
+  width: 44px;
+  height: 44px;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+  cursor: pointer;
+  padding: 1px;
+}
+
+/* FIXME: these are temporary until Owen adds them as proper icons */
+.ImgYahooBig { background-image: url("/zimbra/public/tmp/yahoo.png"); }
+.ImgMsnBig { background-image: url("/zimbra/public/tmp/msn.png"); }
+.ImgAolBig { background-image: url("/zimbra/public/tmp/aol.png"); }
+
+.ZmChatGwIcon-offline { opacity: 0.3; filter: alpha(opacity=30); }
+.ZmChatGwIcon-hover {
+  opacity: 0.8; filter: alpha(opacity=80); 
+  border: 1px solid #aaa; padding: 0;
+  background-color: #fff;
+}
 
 /*
  *	App chooser
@@ -1895,19 +2009,19 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 
 /* ??? USE? */
-.ZmAutocompleteListView .Row, 
+.ZmAutocompleteListView .Row,
 .ZmAutocompleteListView .Row-selected {
 	@TextPadding@
     height:auto;
 }
-.ZmAutocompleteListView .Row-selected { 
+.ZmAutocompleteListView .Row-selected {
 	/* color: white; */
 }
 
 
 
 /*
- * Filter rules 
+ * Filter rules
  */
 
 /* list of filters */
@@ -1969,8 +2083,8 @@ HTML>BODY .appt-selected .appt_allday_body
 /* Box that shows a color, allows you to click to set the color */
 .ZmPrefView .colorBox {
 	@AppBorder@		/* ??? */
-	width:18px; 
-	height:18px; 
+	width:18px;
+	height:18px;
 }
 
 
@@ -1989,11 +2103,15 @@ HTML>BODY .appt-selected .appt_allday_body
 /* label for pereferences */
 .prefLabel {
 	@Label@
-	text-align:right;
 	width: 300px;		/* ??? SIZE */
+	text-align:right;
+	vertical-align: top;
+	padding-top: 2px;
 }
 .prefContent {
 	width: 420px;		/* ??? SIZE */
+	vertical-align: top;
+	white-space: nowrap;
 }
 
 /* button sizing */
@@ -2088,12 +2206,12 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .OutsetPanel {
 	padding:0px;
-	border:1px solid; 
+	border:1px solid;
 	border-color:#a29a87 #746e61 #746e61 #a29a87;
 #IFDEF GECKO
     -moz-border-left-colors:#a29a87 #eae0c7;
-	-moz-border-top-colors: #a29a87 #eae0c7; 	
-	-moz-border-bottom-colors: #746e61 #bab09a;		
+	-moz-border-top-colors: #a29a87 #eae0c7;
+	-moz-border-bottom-colors: #746e61 #bab09a;
 	-moz-border-right-colors: #746e61 #bab09a;
 #ENDIF
 }
@@ -2236,7 +2354,7 @@ HTML>BODY .appt-selected .appt_allday_body
 }
 .ZmTestFailed {
     font-weight:bold;
-    @Text-error@ 
+    @Text-error@
 }
 .ZmTestError {
     @Text-error@
@@ -2248,7 +2366,7 @@ HTML>BODY .appt-selected .appt_allday_body
 /*
  *   Shortcut key display
  */
- 
+
 .shortcutList {
 	width:100%;
 	border-collapse:collapse;
@@ -2275,7 +2393,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	width:auto;
 }
 
-.shortcutKeyCombo { 
+.shortcutKeyCombo {
 	white-space:nowrap;
 	margin-right:5px;
 	margin-left:5px;
@@ -2482,7 +2600,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZmOptionsFormListButtonCell {
 	@PanelPadding@
-	background-color:@_SelColorL30_@;
+	background-color:@SelC-30@;
 	@TopSeparator@
 }
 
@@ -2535,7 +2653,7 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZCheckboxLabel {
 	cursor:pointer;
 }
- 
+
 .ZCheckboxLabelCell {}
 
 .ZCheckboxLabelInline {
@@ -2544,23 +2662,23 @@ HTML>BODY .appt-selected .appt_allday_body
 
 
 .ZSpacer {
-	height:7px; 
+	height:7px;
 	margin-bottom:7px;
 }
 .ZSmallSpacer {
-	height:3px; 
+	height:3px;
 	margin-bottom:3px;
 }
 .ZSectionSeparator {
 	border-bottom:3px double #666666;
-	height:10px; 
+	height:10px;
 	margin-bottom:10px;
 }
 
 
 .ZmPanelHead {
 	@FontSize-bigger@
-	background-color:@_SelColor_@;
+	background-color:@SelC@;
 	@BoxPadding@
 	padding-left:@PanelPaddingSize@;
 	font-weight:bold;
@@ -2584,7 +2702,7 @@ HTML>BODY .appt-selected .appt_allday_body
 
 .ZNestedFieldset {
 	width:auto;
-	padding:0px 0px 5px 0px;	
+	padding:0px 0px 5px 0px;
 }
 
 .ZLegend {
@@ -2620,7 +2738,7 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin-top:-.5em;
 	padding-left:3px;
 	padding-right:3px;
-}	
+}
 
 .ZHelpLabel,
 .ZHelpLabelIndent {
@@ -2684,31 +2802,6 @@ HTML>BODY .appt-selected .appt_allday_body
 	margin:0px;
 }
 
-.ZTab,
-.ZTab.selected {
-#IFDEF GECKO
-    -moz-border-radius:8px 8px 0px 0px;
-#ENDIF
-	padding:3px 10px 3px 10px;
-	margin:6px 1px 0px 0px;
-	min-width:40px;
-	float:left;
-	@InsetBg@
-	@SeparatorBorder@
-	text-align:center;
-	white-space:nowrap;
-	height:15px;
-	cursor:pointer;
-}
-
-.ZTab.selected {
-	border-bottom-color:@_SelColor_@;
-	background-color:@_SelColor_@;
-	margin-top:2px;
-	padding-top:7px;
-}
-
-
 
 .ZFieldSizeTiny 	{	width:50px;		}
 .ZFieldSizeSmall 	{	width:100px;	}
@@ -2716,3 +2809,252 @@ HTML>BODY .appt-selected .appt_allday_body
 .ZFieldSizeHusky	{	width:250px;	}
 .ZFieldSizeLarge	{	width:300px;	}
 .ZFieldSizeFull		{	width:100%;		}
+
+.ZmTooltipLabel {
+	text-align:right;
+	padding-right:5px;
+}
+
+.ZmVoiceTreeHeader {
+	display:none;
+}
+
+/* tabs for buddy list/folders in the overview bar */
+/* FIXME: look broken */
+
+/* <REMOVE -- IS THIS NEEDED?>
+
+.ZmBuddyFolderTabBar {
+}
+
+.BuddyFolderTab {
+  @AppTabContainer@
+}
+
+.BuddyFolderTab-hover {
+  @AppTabContainer-hover@
+}
+
+.BuddyFolderTab-active {
+  @AppTabContainer-selected@
+}
+
+</REMOVE> */
+
+.ZmVoiceListView .Row,
+.ZmVoiceListView .Row-selected,
+.ZmVoiceListView .Row-matched,
+.ZmVoiceListView .Row-matched-drag,
+.ZmVoiceListView .Row-drag,
+.ZmVoiceListView .Row-selected-drag,
+.ZmVoiceListView .Row-selected-right,
+.ZmVoiceListView .Row-selected-disabled {
+	height: 25px;
+}
+
+.ZmCallListPrintView TD {
+	padding-left:20;
+	padding-right:20;
+	border-bottom:1px solid;
+}
+
+
+/*************
+ *
+ *	Sound player
+ *
+ *************/
+
+
+.ZmSoundPlayer {
+
+}
+
+/* turn off padding for sound player buttons that live inside list rows */
+.DwtListView-Rows .ZmSoundPlayer TD {
+	padding-left:0px;
+	padding-right:0px;
+}
+
+.DwtMissingSoundPlayer {
+	background-color: #ffffcc;
+	color:darkred;
+	text-decoration: underline;
+	cursor: pointer;
+}
+.ZmSoundPlayer .DwtButton,
+.ZmSoundPlayer .ZButton {
+	width:30px; min-width:30px;
+}
+
+.ZmSoundPlayer .ZButton .ZLeftIcon  DIV {
+	margin-left:5px;
+	margin-right:5px;
+}
+.ZmSoundPlayer .ZButton .ZWidgetTitle {
+	padding:0px;
+}
+
+.ZmSoundPlayer .DwtPositionSlider	{	margin:0 2 0 2;		}
+.DwtMenu .DwtVolumeSlider			{	height:80px;	}
+
+.ZmSoundPlayer .ZmPlayButton,
+.ZmSoundPlayer .ZmPauseButton,
+.ZmSoundPlayer .ZmVolumeButton 		{	margin:0 2 0 2;		}
+
+
+.DwtSliderThumb {
+	cursor:move;
+}
+
+.DwtHorizontalSlider .DwtSliderThumb {
+	width:16px;
+}
+.DwtHorizontalSlider .DwtSliderThumbBorder {
+	width:10px;
+	padding:4px 0px 0px 2px;
+	height:12px;
+}
+
+.DwtVerticalSlider .DwtSliderThumb {
+	height:10px;
+	width:12px;
+}
+
+.DwtVerticalSlider .DwtSliderThumbBorder {
+	padding:2px 0px 0px 4px;
+}
+
+
+.ZmPortlet {
+  width: 100%;
+  height: 100%;
+}
+
+
+
+
+/***************
+ *
+ *	APP-TABS
+ *
+ ***************/
+
+
+.ZAppTabBorder							{	@ZWidgetBg@		@NormalOutsetBorder@	@AppTab-lighter@	@AppTabRoundCorners@	margin-right:10px;
+ #IFDEF MSIE
+  padding-right:3px; margin-right: 12px;
+ #ENDIF
+}
+.ZHover		.ZAppTabBorder				{	@ZWidgetBg@								@FullOpacity@		@AppTabRoundCorners@	}
+.ZDisabled	.ZAppTabBorder				{	@ZWidgetBg@ 	@DisabledBorder@		@FullOpacity@		@AppTabRoundCorners@	}
+.ZFocused	.ZAppTabBorder				{	@ZWidgetBg@		@NormalOutsetBorder@	@FullOpacity@		@AppTabRoundCorners@	}
+.ZActive	.ZAppTabBorder				{	@ZWidgetBg@		@NormalOutsetBorder@	@FullOpacity@		@AppTabRoundCorners@	}
+.ZSelected	.ZAppTabBorder				{	@ZWidgetBg@		@NormalOutsetBorder@	@FullOpacity@		@AppTabRoundCorners@	font-weight:bold;	}
+
+.ZTab .ZWidgetTitle						{	padding:0 6 0 6; text-align:center; white-space: nowrap; }
+
+/*
+.ZTab .ZLeftIcon  DIV				{	margin-left:5px;}
+.ZTab .ZRightIcon DIV				{	margin-left:2px; margin-right:6px;}
+*/
+
+.ZToast {
+  position: absolute;
+  top: -10000; left: -10000;
+  margin-top: 10px;
+  overflow: visible;
+}
+.ZToastBG {
+  #IFDEF MSIE
+  filter: alpha(opacity=95);
+  #ELSE
+  opacity: .95;
+  #ENDIF
+  #IFDEF GECKO
+  -moz-border-radius: 14px;
+  #ENDIF
+}
+.ZToastContent {
+  padding: 1.5em;
+}
+.ZToastIcon {
+  float: left;
+  display: none;
+}
+.ZToastText {
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 16pt;
+  color: black;
+  text-align: center;
+}
+
+.ZToastInfo .ZToastBG {
+  background-color: lightgreen;
+  border: solid 3px darkgreen;
+}
+.ZToastWarn .ZToastBG {
+  background-color: lightyellow;
+  border: solid 3px yellow;
+}
+.ZToastCrit .ZToastBG {
+  background-color: pink;
+  border: solid 3px red;
+}
+
+/*briefcase app*/
+
+.ZmBriefcaseView {
+background-color: #ffffff;
+}
+
+.ZmBriefcaseItem,.ZmBriefcaseItemSelected {
+background-color:transparent;
+background-repeat:no-repeat;
+cursor:pointer;
+float:left;
+height:120px;
+margin:8px;
+vertical-align:middle;
+width:100px;
+}
+
+.ZmBriefcaseItem .ZmThumbnailItem,.ZmBriefcaseItemSelected .ZmThumbnailItem{
+background-color:transparent;
+border:2px solid #CCCCCC;
+font-size:1px;
+height:100px;
+line-height:100px;
+text-align:center;
+width:96px;
+}
+
+.ZmBriefcaseItem .ZmThumbnailName,.ZmBriefcaseItemSelected .ZmThumbnailName{
+display:block;
+font-size:12px;
+margin:3px 0pt 0pt 0px;
+text-align:center;
+height: 14px;
+overflow: hidden;
+}
+
+.ZmBriefcaseItemSelected{
+color:#FFFFFF;
+}
+
+.ZmBriefcaseItemSelected .ZmThumbnailItem{
+border-color: #316AC5;
+}
+
+.ZmBriefcaseItemSelected .ZmThumbnailName span {
+background:#316AC5 none repeat scroll 0%;
+color:#FFFFFF;
+}
+.ZmBriefcaseItemSelected .ZmThumbnailName span a {
+color:#FFFFFF;
+}
+
+.ZmThumbnailIcon{
+margin:26px 24px;
+}

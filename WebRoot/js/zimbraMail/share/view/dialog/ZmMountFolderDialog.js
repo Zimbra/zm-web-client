@@ -23,21 +23,21 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMountFolderDialog(appCtxt, shell, className) {
+ZmMountFolderDialog = function(appCtxt, shell, className) {
 	className = className || "ZmMountFolderDialog";
-	var title = ZmMountFolderDialog.TITLES[ZmOrganizer.FOLDER];
+	var title = ZmMsg[ZmOrganizer.MOUNT_KEY[ZmOrganizer.FOLDER]];
 	DwtDialog.call(this, shell, className, title);
 	this.setButtonListener(DwtDialog.OK_BUTTON, new AjxListener(this, this._handleOkButton));
 	this._appCtxt = appCtxt;
 
 	// create auto-completer
 	if (this._appCtxt.get(ZmSetting.CONTACTS_ENABLED)) {
-		var dataClass = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP);
+		var dataClass = this._appCtxt.getApp(ZmApp.CONTACTS);
 		var dataLoader = dataClass.getContactList;
 		var locCallback = new AjxCallback(this, this._getNewAutocompleteLocation, [this]);
 		var compCallback = new AjxCallback(this, this._handleCompletionData, [this]);
 		var params = {parent: this, dataClass: dataClass, dataLoader: dataLoader,
-					  matchValue: ZmContactList.AC_VALUE_EMAIL, locCallback: locCallback,
+					  matchValue: ZmContactsApp.AC_VALUE_EMAIL, locCallback: locCallback,
 					  compCallback: compCallback,
 					  keyUpCallback: new AjxCallback(this, this._acKeyUpListener) };
 		this._acAddrSelectList = new ZmAutocompleteListView(params);
@@ -49,36 +49,17 @@ function ZmMountFolderDialog(appCtxt, shell, className) {
 ZmMountFolderDialog.prototype = new DwtDialog;
 ZmMountFolderDialog.prototype.constructor = ZmMountFolderDialog;
 
-// Constants
-
-ZmMountFolderDialog.TITLES = {};
-ZmMountFolderDialog.TITLES[ZmOrganizer.ADDRBOOK] = ZmMsg.mountAddrBook;
-ZmMountFolderDialog.TITLES[ZmOrganizer.CALENDAR] = ZmMsg.mountCalendar;
-ZmMountFolderDialog.TITLES[ZmOrganizer.FOLDER] = ZmMsg.mountFolder;
-ZmMountFolderDialog.TITLES[ZmOrganizer.NOTEBOOK] = ZmMsg.mountNotebook;
-
-// Data
-
-ZmMountFolderDialog.prototype._organizerType;
-ZmMountFolderDialog.prototype._folderId;
-
-ZmMountFolderDialog.prototype._userInput;
-ZmMountFolderDialog.prototype._pathInput;
-
-ZmMountFolderDialog.prototype._nameInput;
-ZmMountFolderDialog.prototype._nameInputDirty;
-ZmMountFolderDialog.prototype._colorSelect;
 
 // Public methods
 
 ZmMountFolderDialog.prototype.popup =
-function(organizerType, folderId, user, path, loc) {
+function(organizerType, folderId, user, path) {
 	// remember values
 	this._organizerType = organizerType;
 	this._folderId = folderId || ZmOrganizer.ID_ROOT;
 
 	// set title
-	this.setTitle(ZmMountFolderDialog.TITLES[organizerType] || ZmMountFolderDialog.TITLES[ZmOrganizer.FOLDER]);
+	this.setTitle(ZmMsg[ZmOrganizer.MOUNT_KEY[organizerType]] || ZmMsg[ZmOrganizer.MOUNT_KEY[ZmOrganizer.FOLDER]]);
 
 	// reset input fields
 	this._userInput.setValue(user || "");
@@ -87,7 +68,7 @@ function(organizerType, folderId, user, path, loc) {
 	this._nameInputDirty = false;
 
 	// show
-	DwtDialog.prototype.popup.call(this, loc);
+	DwtDialog.prototype.popup.call(this);
 	ZmMountFolderDialog._enableFieldsOnEdit(this);
 };
 
@@ -128,7 +109,8 @@ function(cv, ev) {
 
 // Protected functions
 
-ZmMountFolderDialog._handleOtherKeyUp = function(event){
+ZmMountFolderDialog._handleOtherKeyUp =
+function(event) {
 	var value = ZmMountFolderDialog._handleKeyUp(event);
 
 	var target = DwtUiEvent.getTarget(event);
@@ -158,7 +140,8 @@ ZmMountFolderDialog._handleOtherKeyUp = function(event){
 	return value;
 };
 
-ZmMountFolderDialog._handleNameKeyUp = function(event){
+ZmMountFolderDialog._handleNameKeyUp =
+function(event) {
 	var target = DwtUiEvent.getTarget(event);
 	var inputField = Dwt.getObjectFromElement(target);
 	var dialog = inputField.parent.parent;
@@ -168,7 +151,8 @@ ZmMountFolderDialog._handleNameKeyUp = function(event){
 	return ZmMountFolderDialog._handleKeyUp(event);
 };
 
-ZmMountFolderDialog._handleKeyUp = function(event){
+ZmMountFolderDialog._handleKeyUp =
+function(event) {
 	if (DwtInputField._keyUpHdlr(event)) {
 		var target = DwtUiEvent.getTarget(event);
 		var inputField = Dwt.getObjectFromElement(target);
@@ -178,7 +162,8 @@ ZmMountFolderDialog._handleKeyUp = function(event){
 	return false;
 };
 
-ZmMountFolderDialog._enableFieldsOnEdit = function(dialog) {
+ZmMountFolderDialog._enableFieldsOnEdit =
+function(dialog) {
 	var user = dialog._userInput.getValue();
 	var path = dialog._pathInput.getValue();
 	var name = dialog._nameInput.getValue();
@@ -190,18 +175,21 @@ ZmMountFolderDialog._enableFieldsOnEdit = function(dialog) {
 
 // Protected methods
 
-ZmMountFolderDialog.prototype._handleOkButton = function(event) {
+ZmMountFolderDialog.prototype._handleOkButton =
+function(event) {
 	var appCtxt = this._appCtxt;
 	var params = {
 		"l": this._folderId,
 		"name": this._nameInput.getValue(),
 		"owner": this._userInput.getValue(),
 		"path": this._pathInput.getValue(),
-		"view": ZmOrganizer.VIEWS[this._organizerType] || ZmOrganizer.VIEWS[ZmOrganizer.FOLDER],
+		"view": ZmOrganizer.VIEWS[this._organizerType][0] || ZmOrganizer.VIEWS[ZmOrganizer.FOLDER][0],
 		"color": this._colorSelect.getValue()
 	};
-	if (this._organizerType == ZmOrganizer.CALENDAR) {
-		params.f = ZmOrganizer.FLAG_CHECKED;
+	if (this._appCtxt.get(ZmSetting.CALENDAR_ENABLED)) {
+		if (this._organizerType == ZmOrganizer.CALENDAR) {
+			params.f = ZmOrganizer.FLAG_CHECKED;
+		}
 	}
 	var callback = new AjxCallback(this, this.popdown);
 	var errorCallback = new AjxCallback(this, this._handleCreateError);
@@ -209,7 +197,8 @@ ZmMountFolderDialog.prototype._handleOkButton = function(event) {
 	ZmMountpoint.create(appCtxt, params, callback, errorCallback)
 };
 
-ZmMountFolderDialog.prototype._handleCreateError = function(response) {
+ZmMountFolderDialog.prototype._handleCreateError =
+function(response) {
 	var code = response.code;
 	if (code == ZmCsfeException.SVC_PERM_DENIED ||
 		code == ZmCsfeException.MAIL_NO_SUCH_FOLDER) {
@@ -222,7 +211,8 @@ ZmMountFolderDialog.prototype._handleCreateError = function(response) {
 	}
 };
 
-ZmMountFolderDialog.prototype._createMountHtml = function() {
+ZmMountFolderDialog.prototype._createMountHtml =
+function() {
 	// create instructional elements
 	var instructEl1 = document.createElement("DIV");
 	instructEl1.innerHTML = ZmMsg.mountInstructions1;

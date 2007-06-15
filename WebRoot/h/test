@@ -8,13 +8,82 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
 <fmt:setBundle basename="/msgs/ZhMsg" scope="session"/>
-<app:head title="test contact create"/>
 
 <body>
-<zm:getMailbox var="mailbox"/>
-<pre>
-${mailbox.accountInfo}
+<zm:getUserAgent var="ua"/>
+<p>
+    useragent ${ua.userAgent}
 
-</pre>
+<p>    browser version ${ua.browserVersion}
+
+<p>    browser major version ${ua.browserVersion.major}
+
+<p>    browser minor version ${ua.browserVersion.minor}
+
+    <table border="1">
+        <tr><td colspan="2">OS</td></tr>
+        <tr>
+            <td>mac</td><td> ${ua.isOsMac}</td>
+        </tr>
+        <tr>
+            <td>windows</td><td> ${ua.isOsWindows}</td>
+        </tr>
+        <tr>
+            <td>linux </td><td>${ua.isOsLinux}</td>
+        </tr>
+    </table>
+
+<p>
+    <table border="1">
+        <tr><td colspan="2">Safari</td></tr>
+        <tr>
+            <td>isSafari</td><td> ${ua.isSafari}</td>
+        </tr>
+    </table>
+
+<p>
+    <table border="1">
+        <tr><td colspan="2">Opera</td></tr>
+        <tr>
+            <td>isOpera</td><td> ${ua.isOpera}</td>
+        </tr>
+    </table>
+
+<p>
+    <table border="1">
+    <tr><td colspan="2">Firefox</td></tr>
+    <tr><td>isFirefox</td><td> ${ua.isFirefox}</td></tr>
+    <tr><td>isFirefox1up</td><td> ${ua.isFirefox1up}</td></tr>
+    <tr><td>isFirefox1_5up</td><td> ${ua.isFirefox1_5up}</td></tr>
+    <tr><td>isFirefox2up</td><td> ${ua.isFirefox2up}</td></tr>
+    </table>
+
+<p>
+    <table border="1">
+    <tr><td colspan="2">Nav</td></tr>
+    <tr><td>isNav</td><td> ${ua.isNav}</td></tr>
+
+<p>
+    <table border="1">
+    <tr><td colspan="2">Mozilla</td></tr>
+    <tr><td>isMozilla</td><td> ${ua.isMozilla}</td></tr>
+<p>
+    <table border="1">
+    <tr><td colspan="2">IE</td></tr>
+    <tr><td>isIE</td><td> ${ua.isIE}</td></tr>
+    <tr><td>isIE3</td><td> ${ua.isIE3}</td></tr>
+    <tr><td>isIE4</td><td> ${ua.isIE4}</td></tr>
+    <tr><td>isIE4up</td><td> ${ua.isIE4up}</td></tr>
+    <tr><td>isIE5</td><td> ${ua.isIE5}</td></tr>
+    <tr><td>isIE5up</td><td> ${ua.isIE5up}</td></tr>
+    <tr><td>isIE5_5</td><td> ${ua.isIE5_5}</td></tr>
+    <tr><td>isIE5_5up</td><td> ${ua.isIE5_5up}</td></tr>
+    <tr><td>isIE6</td><td> ${ua.isIE6}</td></tr>
+    <tr><td>isIE6up</td><td> ${ua.isIE6up}</td></tr>
+    <tr><td>isIE7</td><td> ${ua.isIE7}</td></tr>
+    <tr><td>isIE7up</td><td> ${ua.isIE7up}</td></tr>
+    </table>
+
+
 </body>
 </html>

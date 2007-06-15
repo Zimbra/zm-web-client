@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmAuthenticate(appCtxt) {
+ZmAuthenticate = function(appCtxt) {
 	if (arguments.length == 0) return;
 	this._appCtxt = appCtxt;
 };

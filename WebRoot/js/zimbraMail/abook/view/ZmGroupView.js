@@ -23,19 +23,15 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmGroupView(parent, appCtxt, controller) {
+ZmGroupView = function(parent, appCtxt, controller) {
 	ZmContactView.call(this, parent, appCtxt, controller);
+
+	this._searchRespCallback = new AjxCallback(this, this._handleResponseSearch);
+	this._searchErrorCallback = new AjxCallback(this, this._handleErrorSearch);
 };
 
 ZmGroupView.prototype = new ZmContactView;
 ZmGroupView.prototype.constructor = ZmGroupView;
-
-
-// Consts
-ZmGroupListView.ID_ICON  = "i--";
-ZmGroupListView.ID_NAME  = "n--";
-ZmGroupListView.ID_EMAIL = "e--";
-
 
 // Public Methods
 
@@ -118,10 +114,26 @@ function(checkEither) {
 
 ZmGroupView.prototype.isValid =
 function() {
+	// check for required group name
 	if (this.isDirty() && this.isEmpty(true)) {
 		throw ZmMsg.errorMissingGroup;
 	}
-			
+
+	// validate email addresses
+	var addrs = this._getGroupMembers(true);
+	if (addrs) {
+		var invalidAddrs = [];
+		for (var i = 0; i < addrs.length; i++) {
+			var addr = addrs[i];
+			if (!AjxEmailAddress.isValid(addr))
+				invalidAddrs.push(addr);
+		}
+		if (invalidAddrs.length) {
+			var bad = invalidAddrs.join("<br>");
+			throw AjxMessageFormat.format(ZmMsg.groupBadAddresses, bad);
+		}
+	}
+
 	return true;
 };
 
@@ -219,11 +231,11 @@ function() {
 		this._appCtxt.get(ZmSetting.GAL_ENABLED))
 	{
 		this._searchInSelect = new DwtSelect(this);
-		this._searchInSelect.addOption(ZmMsg.contacts, true, ZmContactPicker.SEARCHFOR_CONTACTS);
+		this._searchInSelect.addOption(ZmMsg.contacts, true, ZmContactsApp.SEARCHFOR_CONTACTS);
 		if (this._appCtxt.get(ZmSetting.SHARING_ENABLED))
-			this._searchInSelect.addOption(ZmMsg.searchPersonalAndShared, false, ZmContactPicker.SEARCHFOR_PAS);
+			this._searchInSelect.addOption(ZmMsg.searchPersonalSharedContacts, false, ZmContactsApp.SEARCHFOR_PAS);
 		if (this._appCtxt.get(ZmSetting.GAL_ENABLED))
-			this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactPicker.SEARCHFOR_GAL);
+			this._searchInSelect.addOption(ZmMsg.GAL, true, ZmContactsApp.SEARCHFOR_GAL);
 		this._searchInSelect.reparentHtmlElement(this._listSelectId);
 	}
 
@@ -284,8 +296,12 @@ function() {
 	return document.getElementById(this._groupNameId);
 };
 
+/*
+ * @asArray	[Boolean]	true, if you want group members back in an Array
+ *						otherwise, returns comma-separated String
+*/
 ZmGroupView.prototype._getGroupMembers =
-function() {
+function(asArray) {
 	var addrs = AjxStringUtil.split(this._groupMembers.value, ['\n', ';', ',']);
 
 	// if there are any empty values, remove them
@@ -301,14 +317,16 @@ function() {
 			break;
 	}
 
-	return addrs.length > 0 ? addrs.join(", ") : null;
+	return addrs.length > 0
+		? (asArray ? addrs : addrs.join(", "))
+		: null;
 };
 
 ZmGroupView.prototype._getFolderId =
 function() {
 	var id = ZmFolder.ID_CONTACTS;
 	if (this._contact.id == null) {
-		var clc = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getContactListController();
+		var clc = this._appCtxt.getApp(ZmApp.CONTACTS).getContactListController();
 		id = clc._folderId;
 	} else {
 		if (this._contact.addrbook)
@@ -340,18 +358,18 @@ function(ev) {
 		if (this._appCtxt.get(ZmSetting.GAL_ENABLED)) {
 			var searchFor = this._searchInSelect
 				? this._searchInSelect.getSelectedOption().getValue()
-				: ZmContactPicker.SEARCHFOR_CONTACTS;
-			this._contactSource = (searchFor == ZmContactPicker.SEARCHFOR_CONTACTS || searchFor == ZmContactPicker.SEARCHFOR_PAS)
+				: ZmContactsApp.SEARCHFOR_CONTACTS;
+			this._contactSource = (searchFor == ZmContactsApp.SEARCHFOR_CONTACTS || searchFor == ZmContactsApp.SEARCHFOR_PAS)
 				? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 			// hack the query if searching for personal and shared contacts
-			if (searchFor == ZmContactPicker.SEARCHFOR_PAS) {
-				var addrbookList = this._appCtxt.getApp(ZmZimbraMail.CONTACTS_APP).getAddrbookList();
+			if (searchFor == ZmContactsApp.SEARCHFOR_PAS) {
+				var addrbookList = this._appCtxt.getApp(ZmApp.CONTACTS).getAddrbookList();
 				this._query += " (" + addrbookList.join(" or ") + ")";
 			}
 		} else {
 			this._contactSource = this._appCtxt.get(ZmSetting.CONTACTS_ENABLED) ? ZmItem.CONTACT : ZmSearchToolBar.FOR_GAL_MI;
 		}
-		this.search(ZmItem.F_PARTICIPANT, true);
+		ZmContactsHelper.search(this, ZmItem.F_NAME, true, this._searchRespCallback, this._searchErrorCallback);
 	}
 };
 
@@ -386,7 +404,7 @@ function(list) {
 	var items = new Array();
 	for (var i = 0; i < list.length; i++) {
 		if (list[i].isGroup) {
-			var emails = list[i].address.split(ZmEmailAddress.SEPARATOR);
+			var emails = list[i].address.split(AjxEmailAddress.SEPARATOR);
 			for (var j = 0; j < emails.length; j++)
 				items.push(emails[j]);
 		} else {
@@ -407,57 +425,22 @@ function() {
 	}
 };
 
-/**
-* Performs a contact search (in either personal contacts or in the GAL) and populates
-* the source list view with the results.
-*
-* @param columnItem		[constant]		ID of column to sort by
-* @param ascending		[boolean]		if true, sort in ascending order
-*/
-ZmGroupView.prototype.search =
-function(columnItem, ascending) {
-	this._searchButton.setEnabled(false);
-
-	var sortBy = ascending ? ZmSearch.NAME_ASC : ZmSearch.NAME_DESC;
-	var types = AjxVector.fromArray([ZmItem.CONTACT]);
-	var params = {query: this._query, types: types, sortBy: sortBy, offset: 0, limit: ZmContactPicker.SEARCHFOR_MAX, contactSource: this._contactSource};
-	var search = new ZmSearch(this._appCtxt, params);
-	search.execute({callback: new AjxCallback(this, this._handleResponseSearch),
-					errorCallback: new AjxCallback(this, this._handleErrorSearch)});
-};
-
 ZmGroupView.prototype._handleResponseSearch =
 function(result) {
 	var resp = result.getResponse();
-	var vec = resp.getResults(ZmItem.CONTACT);
-
-	// Take the contacts and create a list of their email addresses (a contact may have more than one)
-	var list = [];
-	var a = vec.getArray();
-	for (var i = 0; i < a.length; i++) {
-		var contact = a[i];
-		if (contact.isGroup()) {
-			var members = contact.getGroupMembers().good.toString(ZmEmailAddress.SEPARATOR);
-			var email = new ZmEmailAddress(members, null, contact.getFileAs(), null, true);
-			email.id = Dwt.getNextId();
-			email.contactId = contact.id;
-			email.icon = "Group";
-			list.push(email);
-		} else {
-			var emails = contact.getEmails();
-			for (var j = 0; j < emails.length; j++) {
-				var email = new ZmEmailAddress(emails[j], null, contact.getFileAs());
-				email.id = Dwt.getNextId();
-				email.contactId = contact.id;
-				email.icon = contact.isGal ? "GAL" : contact.addrbook.getIcon();
-				list.push(email);
-			}
-		}
-	}
+	var list = ZmContactsHelper._processSearchResponse(resp);
 	this._listview.setItems(list);
-	this._addButton.setEnabled(a.length > 0);
-	this._addAllButton.setEnabled(a.length > 0);
+	this._addButton.setEnabled(list.length > 0);
+	this._addAllButton.setEnabled(list.length > 0);
 	this._searchButton.setEnabled(true);
+
+	var more = resp.getAttribute("more");
+	if (more) {
+		var dlg = this._appCtxt.getMsgDialog();
+		dlg.reset();
+		dlg.setMessage(ZmMsg.errorSearchNotExpanded, DwtMessageDialog.WARNING_STYLE);
+		dlg.popup();
+	}
 };
 
 ZmGroupView.prototype._handleErrorSearch =
@@ -547,7 +530,7 @@ function(contact, abridged, appCtxt) {
 *
 * @param parent			[ZmGroupView]	containing widget
 */
-function ZmGroupListView(parent) {
+ZmGroupListView = function(parent) {
 	if (arguments.length == 0) return;
 	DwtListView.call(this, parent, "DwtChooserListView", null, this._getHeaderList(parent));
 };
@@ -569,49 +552,15 @@ function(items) {
 ZmGroupListView.prototype._getHeaderList =
 function() {
 	var headerList = [];
-	headerList.push(new DwtListHeaderItem(ZmGroupListView.ID_ICON, null, "Contact", 20));
-	headerList.push(new DwtListHeaderItem(ZmGroupListView.ID_NAME, ZmMsg._name, null, 100));
-	headerList.push(new DwtListHeaderItem(ZmGroupListView.ID_EMAIL, ZmMsg.email));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_TYPE, null, "Contact", 20));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_NAME, ZmMsg._name, null, 100));
+	headerList.push(new DwtListHeaderItem(ZmItem.F_EMAIL, ZmMsg.email));
 	return headerList;
 };
 
-// The items are ZmEmailAddress objects
-ZmGroupListView.prototype._createItemHtml =
-function(item) {
-	var div = document.createElement("div");
-	div[DwtListView._STYLE_CLASS] = "Row";
-	div[DwtListView._SELECTED_STYLE_CLASS] = div[DwtListView._STYLE_CLASS] + '-' + DwtCssStyle.SELECTED;
-	div.className = div[DwtListView._STYLE_CLASS];
-
-	var html = [];
-	var idx = 0;
-
-	html[idx++] = "<table cellpadding=0 cellspacing=0 border=0 width=100%><tr>";
-	for (var i = 0; i < this._headerList.length; i++) {
-		var id = this._headerList[i]._id;
-		if (id.indexOf(ZmGroupListView.ID_ICON) == 0) {
-			html[idx++] = "<td width=";
-			html[idx++] = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4): this._headerList[i]._width;
-			html[idx++] = ">";
-			html[idx++] = AjxImg.getImageHtml(item.icon);
-			html[idx++] = "</td>";
-		} else if (id.indexOf(ZmGroupListView.ID_NAME) == 0) {
-			html[idx++] = "<td width=";
-			html[idx++] = AjxEnv.isIE || AjxEnv.isSafari ? (this._headerList[i]._width + 4) : this._headerList[i]._width;
-			html[idx++] = "><nobr>";
-			html[idx++] = item.name;
-			html[idx++] = "</td>";
-		} else if (id.indexOf(ZmGroupListView.ID_EMAIL) == 0) {
-			html[idx++] = "<td>";
-			html[idx++] = item.address;
-			html[idx++] = "</td>";
-		}
-	}
-	html[idx++] = "</tr></table>";
-	div.innerHTML = html.join("");
-
-	this.associateItemWithElement(item, div, DwtListView.TYPE_LIST_ITEM);
-	return div;
+ZmGroupListView.prototype._getCellContents =
+function(html, idx, item, field, colIdx, params) {
+	return ZmContactsHelper._getEmailField(html, idx, item, field, colIdx, params);
 };
 
 ZmGroupListView.prototype._itemClicked =

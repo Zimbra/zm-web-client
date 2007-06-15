@@ -23,9 +23,19 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmMixedApp(appCtxt, container) {
-	ZmApp.call(this, ZmZimbraMail.MIXED_APP, appCtxt, container);
+ZmMixedApp = function(appCtxt, container) {
+
+	ZmApp.call(this, ZmApp.MIXED, appCtxt, container);
 };
+
+// Organizer and item-related constants
+ZmItem.MIXED	= "MIXED"; // special type for heterogeneous list
+
+// App-related constants
+ZmApp.MIXED						= "Mixed";
+ZmApp.CLASS[ZmApp.MIXED]		= "ZmMixedApp";
+ZmApp.SETTING[ZmApp.MIXED]		= null;	// so it gets instantiated
+ZmApp.LOAD_SORT[ZmApp.MIXED]	= 50;
 
 ZmMixedApp.prototype = new ZmApp;
 ZmMixedApp.prototype.constructor = ZmMixedApp;
@@ -35,16 +45,75 @@ function() {
 	return "ZmMixedApp";
 };
 
-ZmMixedApp.prototype.launch = function() {}
+// Construction
+
+ZmMixedApp.prototype._defineAPI =
+function() {
+	AjxDispatcher.registerMethod("GetMixedController", "Mixed", new AjxCallback(this, this.getMixedController));
+};
+
+ZmMixedApp.prototype._registerItems =
+function() {
+	ZmItem.registerItem(ZmItem.MIXED,
+						{app:			ZmApp.MIXED});
+};
+
+ZmMixedApp.prototype._registerApp =
+function() {
+	ZmApp.registerApp(ZmApp.MIXED,
+							 {mainPkg:			"Mixed",
+							  nameKey:			"zimbraTitle",
+							  icon:				"Globe",
+							  overviewTrees:	[ZmOrganizer.FOLDER, ZmOrganizer.ADDRBOOK, ZmOrganizer.SEARCH, ZmOrganizer.TAG],
+							  showZimlets:		true,
+							  searchTypes:		[ZmItem.MSG, ZmItem.CONV]
+							  });
+};
+
+ZmMixedApp.prototype.refresh =
+function(refresh) {
+	this._handleRefresh();
+};
+
+ZmMixedApp.prototype.launch =
+function() {
+};
+
+// Don't show folders when viewing mixed app coming from contacts app,
+// and don't show addrbooks when viewing mixed app coming from mail app
+ZmMixedApp.prototype._getOverviewTrees =
+function() {
+	var list = ZmApp.OVERVIEW_TREES[this._name];
+	var trees = [];
+	var prevApp = this._appCtxt.getAppController().getPreviousApp();
+	for (var i = 0; i < list.length; i++) {
+		var id = list[i];
+		if ((prevApp == ZmApp.CONTACTS && id == ZmOrganizer.FOLDER) ||
+			(prevApp == ZmApp.MAIL && id == ZmOrganizer.ADDRBOOK)) {
+			continue;
+		}
+		trees.push(id);
+	}
+	return trees;
+};
+
+ZmMixedApp.prototype.showSearchResults =
+function(results, callback) {
+	var loadCallback = new AjxCallback(this, this._handleLoadShowSearchResults, [results, callback]);
+	AjxDispatcher.require(["Mail", "Mixed"], false, loadCallback, null, true);
+};
+
+ZmMixedApp.prototype._handleLoadShowSearchResults =
+function(results, callback) {
+	this.getMixedController().show(results);
+	if (callback) {
+		callback.run();
+	}
+};
 
 ZmMixedApp.prototype.getMixedController =
 function() {
 	if (!this._mixedController)
 		this._mixedController = new ZmMixedController(this._appCtxt, this._container, this);
 	return this._mixedController;
-};
-
-ZmMixedApp.prototype.getComposeController =
-function() {
-	return this._appCtxt.getApp(ZmZimbraMail.MAIL_APP).getComposeController();
 };

@@ -23,10 +23,10 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmNewOrganizerDialog(parent, msgDialog, className, title, type) {
+ZmNewOrganizerDialog = function(parent, className, title, type) {
 	if (arguments.length == 0) return;
 	
-	ZmDialog.call(this, parent, msgDialog, className, title);
+	ZmDialog.call(this, {parent:parent, className:className, title:title});
 	this._organizerType = type;
 	this._setupControls();
 };
@@ -41,30 +41,42 @@ function() {
 
 // Public methods
 
+/**
+ * Popup the dialog. Note that if family mailbox is enabled, we may have
+ * changed accounts since the last time we were popped up. In that case,
+ * we need to show the overview for the current account's folders.
+ * 
+ * @param folder	[ZmFolder]*		folder to select initially
+ */
 ZmNewOrganizerDialog.prototype.popup =
-function(folder, loc) {
-	folder = folder ? folder : this._folderTree.root;
-
-	this._folderTreeView.setSelected(folder);
-	if (folder.id == ZmOrganizer.ID_ROOT) {
-		var ti = this._folderTreeView.getTreeItemById(folder.id);
-		ti.setExpanded(true);
+function(folder) {
+	if (this._folderTreeCellId) {
+		this._setOverview({treeIds:this._treeIds, omit:this._omit, fieldId:this._folderTreeCellId});
+		if (this._folderTreeView) {
+			folder = folder ? folder : this._folderTree.root;
+			this._folderTreeView.setSelected(folder);
+			if (folder.id == ZmOrganizer.ID_ROOT) {
+				var ti = this._folderTreeView.getTreeItemById(folder.id);
+				ti.setExpanded(true);
+			}
+		}
+		DBG.timePt("selected folder", true);
 	}
-	DBG.timePt("selected folder", true);
 	
-	ZmDialog.prototype.popup.call(this, loc);
+	ZmDialog.prototype.popup.call(this);
 };
 
 ZmNewOrganizerDialog.prototype.reset =
 function() {
 	ZmDialog.prototype.reset.call(this);
 
-	if (this._colorSelect)
+	if (this._colorSelect) {
 		this._initColorSelect();
+	}
 
 	if (this._remoteCheckboxField) {
 		this._remoteCheckboxField.checked = false;
-		var urlRow = document.getElementById(this._remoteCheckboxField.id+"URLrow");		
+		var urlRow = document.getElementById(this._remoteCheckboxFieldId+"URLrow");
 		if (urlRow) urlRow.style.display = "none";
 	}
 
@@ -245,23 +257,28 @@ function() {
 
 ZmNewOrganizerDialog.prototype._setupFolderControl =
 function() {
-	var organizerType = this._organizerType;
-	this._folderTree = this._appCtxt.getTree(organizerType);
+	if (!this._folderTreeCellId) { return; }
+	
+	this._treeIds = [this._organizerType];
 
-	var omit = new Object();
-	omit[ZmFolder.ID_SPAM] = true;
-	omit[ZmFolder.ID_DRAFTS] = true;
+	this._omit = {};
+	this._omit[ZmFolder.ID_SPAM] = true;
+	this._omit[ZmFolder.ID_DRAFTS] = true;
+	this._folderTree = this._appCtxt.getFolderTree();
 	var syncIssuesFolder = this._folderTree.getByName(ZmFolder.SYNC_ISSUES);
 	if (syncIssuesFolder) {
-		omit[syncIssuesFolder.id] = true;
+		this._omit[syncIssuesFolder.id] = true;
 	}
-	
-	var overviewId = this.toString();
-	this._setOverview(overviewId, this._folderTreeCellId, [organizerType], omit);
-	this._folderTreeView = this._treeView[organizerType];
 };
 
 // other
+
+ZmNewOrganizerDialog.prototype._renderOverview =
+function(overview, treeIds, omit) {
+	this._setupFolderControl();	// reset in case we changed accounts (family mailbox)
+	ZmDialog.prototype._renderOverview.apply(this, arguments);
+	this._folderTreeView = overview.getTreeView(this._organizerType);
+};
 
 /** 
  * Checks the input for validity and returns the following array of values:
@@ -279,21 +296,19 @@ function() {
 	var msg = ZmFolder.checkName(name);
 
 	// make sure a parent was selected
-	var parentFolder = this._folderTreeView.getSelected();
-	if (!msg && !parentFolder) {
-		msg = ZmMsg.folderNameNoLocation;
+	var parentFolder;
+	if (this._folderTreeView) {
+		parentFolder = this._folderTreeView.getSelected();
+		if (!msg && !parentFolder) {
+			msg = ZmMsg.folderNameNoLocation;
+		}
+	} else {
+		parentFolder = this._appCtxt.getFolderTree().root;
 	}
 
 	// make sure parent doesn't already have a child by this name
 	if (!msg && parentFolder.hasChild(name)) {
 		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [name]);
-	}
-
-	// if we're creating a top-level folder, check for conflict with top-level search
-	if (!msg && (parentFolder.id == ZmOrganizer.ID_ROOT)) {
-		var searchTree = this._appCtxt.getTree(ZmOrganizer.SEARCH);
-		if (searchTree && searchTree.root.hasChild(name))
-			msg = ZmMsg.folderOrSearchNameExists;
 	}
 
 	var color = null;
@@ -309,7 +324,7 @@ function() {
 		}
 	}
 
-	return (msg ? this._showError(msg) : [parentFolder, name, color, url]);
+	return (msg ? this._showError(msg) : {l:parentFolder.id, name:name, color:color, url:url});
 };
 
 ZmNewOrganizerDialog.prototype._getTabGroupMembers =

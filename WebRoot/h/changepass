@@ -100,21 +100,21 @@
                                         <input type="hidden" name="loginOp" value="login"/>
                                         <table width=100% cellpadding=4>
                                             <tr>
-                                                <td class='zLoginLabelContainer'><fmt:message key="oldPassword"/>:</td>
+                                                <td class='zLoginLabelContainer'><label for="oldPassword"><fmt:message key="oldPassword"/>:</label></td>
                                                 <td colspan=2 class='zLoginFieldContainer'>
-                                                    <input autocomplete="off" class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
+                                                    <input id="oldPassword" autocomplete="off" class='zLoginField' name='password' type='password' value="${fn:escapeXml(param.password)}"/>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td class='zLoginLabelContainer'><fmt:message key="newPassword"/>:</td>
+                                                <td class='zLoginLabelContainer'><label for="newPassword"><fmt:message key="newPassword"/>:</label></td>
                                                 <td colspan=2 class='zLoginFieldContainer'>
-                                                    <input autocomplete="off" class='zLoginField' name='loginNewPassword' type='password' value="${fn:escapeXml(param.loginNewPassword)}"/>
+                                                    <input id="newPassword" autocomplete="off" class='zLoginField' name='loginNewPassword' type='password' value="${fn:escapeXml(param.loginNewPassword)}"/>
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td class='zLoginLabelContainer'><fmt:message key="confirm"/>:</td>
+                                                <td class='zLoginLabelContainer'><label for="confirm"><fmt:message key="confirm"/>:</label></td>
                                                 <td colspan=2 class='zLoginFieldContainer'>
-                                                    <input autocomplete="off" class='zLoginField' name='loginConfirmNewPassword' type='password' value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
+                                                    <input id="confirm" autocomplete="off" class='zLoginField' name='loginConfirmNewPassword' type='password' value="${fn:escapeXml(param.loginConfirmNewPassword)}"/>
                                                 </td>
                                             </tr>
                                             <tr>

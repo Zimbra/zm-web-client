@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmWikletContext(appCtxt, notebookCache) {
+ZmWikletContext = function(appCtxt, notebookCache) {
 	this._appCtxt = appCtxt;
 	this._notebookCache = notebookCache;
 	this._items = [];
@@ -66,8 +66,7 @@ ZmWikletContext.prototype.getPageByName = function(notebookId, name, recurseUp) 
 };
 
 ZmWikletContext.prototype.getNotebookById = function(id) {
-	var treeController = this._appCtxt.getTree(ZmOrganizer.NOTEBOOK);
-	return treeController.getById(id);
+	return this._appCtxt.getById(id);
 };
 ZmWikletContext.prototype.getSections = function(notebookId) {
 	var notebook = this.getNotebookById(notebookId);
@@ -81,8 +80,7 @@ ZmWikletContext.prototype.getCache = function() {
 };
 
 ZmWikletContext.prototype.getTagById = function(tagId) {
-	var tree = this._appCtxt.getTree(ZmOrganizer.TAG);
-	return tree.getById(tagId);
+	return this._appCtxt.getById(tagId);
 };
 
 ZmWikletContext.prototype.process = function(content) {

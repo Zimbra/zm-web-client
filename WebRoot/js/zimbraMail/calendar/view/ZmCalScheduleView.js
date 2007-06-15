@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmCalScheduleView(parent, posStyle, controller, dropTgt) {
+ZmCalScheduleView = function(parent, posStyle, controller, dropTgt) {
 	ZmCalColView.call(this, parent, posStyle, controller, dropTgt, ZmController.CAL_SCHEDULE_VIEW, 1, true);
 }
 

@@ -19,10 +19,12 @@
             <th style='width:20px'><a href="${toggleUrl}"><app:img src="${ expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}" altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TERE_COLLAPSED'}"/></a></th>
             <th class='Header'><fmt:message key="searches"/></th>
             <th width='1%' align='right' class='ZhTreeEdit'>
-                <c:if test="${empty editmode}">
-                    <c:url value="/h/msearches" var="mfoldersUrl"/>
-                    <a href="${mfoldersUrl}"><fmt:message key="TREE_EDIT"/></a>
-                </c:if>
+                <c:url value="/h/mfolders" var="mfoldersUrl">
+                    <c:if test="${not empty param.sfi}">
+                        <c:param name="sfi" value="${param.sfi}"/>
+                    </c:if>
+                </c:url>
+                <a href="${mfoldersUrl}"><fmt:message key="TREE_EDIT"/></a>
             </th>
         </tr>
         <jsp:useBean id="done" scope="page" class="java.util.HashMap" />

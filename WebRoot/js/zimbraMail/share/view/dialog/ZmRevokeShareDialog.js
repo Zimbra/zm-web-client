@@ -23,7 +23,7 @@
  * ***** END LICENSE BLOCK *****
  */
 
-function ZmRevokeShareDialog(appCtxt, parent, className) {
+ZmRevokeShareDialog = function(appCtxt, parent, className) {
 	className = className || "ZmRevokeShareDialog";
 	var title = ZmMsg.revokeShare;
 	var buttons = [ DwtDialog.YES_BUTTON, DwtDialog.NO_BUTTON ];
@@ -45,7 +45,7 @@ ZmRevokeShareDialog.prototype.constructor = ZmRevokeShareDialog;
 // Public methods
 
 ZmRevokeShareDialog.prototype.popup =
-function(share, loc) {
+function(share) {
 	this._share = share;
 
 	var isPubShare = share.isPublic();
@@ -58,7 +58,7 @@ function(share, loc) {
 	this._reply.setReplyNote("");
 	this._reply.setVisible(!isPubShare);
 
-	DwtDialog.prototype.popup.call(this, loc);
+	DwtDialog.prototype.popup.call(this);
 	this.setButtonEnabled(DwtDialog.YES_BUTTON, true);
 };
 

@@ -22,29 +22,22 @@
              <th style='width:20px'><a href="${toggleUrl}"><app:img altkey="${ expanded ? 'ALT_TREE_EXPANDED' : 'ALT_TREE_COLLAPSED'}" src="${ expanded ? 'dwt/NodeExpanded.gif' : 'dwt/NodeCollapsed.gif'}"/></a></th>
             <th class='Header'><fmt:message key="addressBooks"/></th>
             <th width='1%' align='right' class='ZhTreeEdit'>
-                <c:if test="${empty editmode}">
-                    <c:url value="/h/maddrbooks" var="mabUrl"/>
-                    <a href="${mabUrl}" ><fmt:message key="TREE_EDIT"/></a>
-                </c:if>
+                <c:url value="/h/maddrbooks" var="mabUrl">
+                    <c:if test="${not empty param.sfi}">
+                        <c:param name="sfi" value="${param.sfi}"/>
+                    </c:if>
+                </c:url>
+                <a href="${mabUrl}" ><fmt:message key="TREE_EDIT"/></a>
             </th>
         </tr>
 
         <c:if test="${expanded}">
-            <app:overviewFolder types="contact" folder="${mailbox.contacts}" label="contacts"
-                                icon="contacts/ContactsFolder.gif"/>
-            <app:overviewFolder types="contact" folder="${mailbox.autoContacts}" label="emailedContacts"
-                                icon="contacts/EmailedContacts.gif"/>
 
-            <zm:forEachFolder var="folder">
-                <c:if test="${!folder.isSystemFolder and folder.isContactView and !folder.isSearchFolder}">
-                    <c:set var="icon"
-                           value="${folder.isMountPoint ? 'contacts/SharedContactsFolder.gif' : 'contacts/ContactsFolder.gif'}"/>
-                    <app:overviewFolder types="contact" folder="${folder}" icon="${icon}"/>
-                </c:if>
-            </zm:forEachFolder>
+            <app:doContactFolderTree skiproot="${false}" skipsystem="false" skiptrash="true"/>
 
-            <app:overviewFolder types="contact" folder="${mailbox.trash}" label="trash"
-                                icon="common/Trash.gif"/>
+            <app:overviewFolder types="contact" folder="${mailbox.trash}"/>
+            <app:doContactFolderTree skiproot="${true}" parentid="${mailbox.trash.id}" skipsystem="false"/>
         </c:if>
     </table>
+
 </div>

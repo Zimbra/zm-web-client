@@ -24,41 +24,38 @@
  */
 
 /**
-* Creates an action menu with the given menu items.
-* @constructor
-* @class
-* This class represents an action menu, which is a popup menu with a few added features.
-* It can be easily created using a set of standard operations, and/or custom menu items
-* can be provided. This class is designed for use with items (ZmItem), so it can for
-* example contain a tab submenu. See also ZmButtonToolBar.
-*
-* @author Conrad Damon
-*
-* @param parent					[DwtComposite]		the containing widget
-* @param standardMenuItems		[array]*			a list of operation IDs
-* @param extraMenuItems			[array]*			a list of operation descriptors
-* @param dialog					[DwtDialog]*		containing dialog, if any
-*/
-function ZmActionMenu(parent, standardMenuItems, extraMenuItems, dialog) {
+ * Creates an action menu with the given menu items.
+ * @constructor
+ * @class
+ * This class represents an action menu, which is a popup menu with a few added features.
+ * It can be easily created using a set of standard operations, and/or custom menu items
+ * can be provided. This class is designed for use with items (ZmItem), so it can for
+ * example contain a tab submenu. See also ZmButtonToolBar.
+ *
+ * @author Conrad Damon
+ *
+ * @param parent		[DwtComposite]		the containing widget
+ * @param menuItems		[array]*			a list of operation IDs
+ * @param dialog		[DwtDialog]*		containing dialog, if any
+ * @param overrides		[hash]*				hash of overrides by op ID
+ */
+ZmActionMenu = function(params) {
 
-	ZmPopupMenu.call(this, parent, null, dialog);
+	ZmPopupMenu.call(this, params.parent, null, params.dialog);
 
 	this._appCtxt = this.shell.getData(ZmAppCtxt.LABEL);
 
 	// standard menu items default to Tag/Print/Delete
-	if (!standardMenuItems) {
-		standardMenuItems = new Array();
-		if (this._appCtxt.get(ZmSetting.TAGGING_ENABLED)) {
-			standardMenuItems.push(ZmOperation.TAG_MENU);
-		}
-		if (this._appCtxt.get(ZmSetting.PRINT_ENABLED)) {
-			standardMenuItems.push(ZmOperation.PRINT);
-		}
-		standardMenuItems.push(ZmOperation.DELETE);
-	} else if (standardMenuItems == ZmOperation.NONE) {
-		standardMenuItems = null;
+	var menuItems = params.menuItems;
+	if (!menuItems) {
+		menuItems = [ZmOperation.TAG_MENU, ZmOperation.PRINT, ZmOperation.DELETE];
+	} else if (menuItems == ZmOperation.NONE) {
+		menuItems = null;
 	}
-	this._menuItems = ZmOperation.createOperations(this, standardMenuItems, extraMenuItems);
+	// weed out disabled ops, save list of ones that make it
+	this.opList = ZmOperation.filterOperations(this._appCtxt, menuItems);
+	var extraItems = params.extraMenuItems;
+	this._menuItems = ZmOperation.createOperations(this, this.opList, params.overrides);
 }
 
 ZmActionMenu.prototype = new ZmPopupMenu;
@@ -72,12 +69,20 @@ function() {
 }
 
 /**
-* Creates a menu item and adds its operation ID as data.
-*/
+ * Creates a menu item and adds its operation ID as data.
+ * 
+ * @param id			[string]		name of the operation
+ * @param text			[string]*		menu item text
+ * @param image			[string]*		icon class for the menu item
+ * @param disImage		[string]*		disabled version of icon
+ * @param enabled		[boolean]*		if true, menu item is enabled
+ * @param style			[constant]*		menu item style
+ * @param radioGroupId	[string]*		ID of radio group for this menu item
+ */
 ZmActionMenu.prototype.createOp =
-function(menuItemId, text, imageInfo, disImageInfo, enabled) {
-	var mi = this.createMenuItem(menuItemId, imageInfo, text, disImageInfo, enabled);
-	mi.setData(ZmOperation.KEY_ID, menuItemId);
+function(id, params) {
+	var mi = this.createMenuItem(id, params);
+	mi.setData(ZmOperation.KEY_ID, id);
 
 	return mi;
 };
