@@ -138,6 +138,16 @@ function(list) {
 };
 
 /**
+ * Returns the ID of the setting that is associated with the given server-side setting, if any.
+ * 
+ * @param name	[string]	server-side setting name, eg "zimbraFeatureContactsEnabled"
+ */
+ZmSettings.prototype.getSettingByName =
+function(name) {
+	return this._nameToId[name];
+};
+
+/**
 * Retrieves the preferences, COS settings, and metadata for the current user.
 * All the data gets stored into the settings collection.
 *
@@ -587,6 +597,7 @@ function() {
 	var shSetting = this.registerSetting("SKIN_HINTS", {type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_HASH});
 	
 	var hints = ["app_chooser.style",
+				 "foo.bar.baz",
 				 "app_chooser.fullWidth",
 				 "help_button.hideIcon",
 				 "help_button.style",
@@ -599,8 +610,11 @@ function() {
 
 	for (var i = 0, count = hints.length; i < count; i++) {
 		var hint = hints[i];
-		var value = eval(["skin.hints", hint].join("."));
-		shSetting.setValue(value, hint, true, true);
+		try {
+			// if we get an exception doing the eval, ignore it - that hint won't get a value
+			var value = eval(["skin.hints", hint].join("."));
+			shSetting.setValue(value, hint, true, true);
+		} catch(e) {}
 	}
 	
 	// skin.hints.[container ID].position
