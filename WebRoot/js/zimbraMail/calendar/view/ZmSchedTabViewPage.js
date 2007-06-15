@@ -952,7 +952,7 @@ function(status, slots, table, sched) {
 			}
 
 			for (j = startIdx; j <= endIdx; j++) {
-				if (row.cells[j]) {
+				if (row.cells[j]) {  // TODO: Do we need this check now that Bug 16606 made the indexes into ints?
 					if (status != ZmSchedTabViewPage.STATUS_UNKNOWN) {
 						this._allAttendees[j] = this._allAttendees[j] + 1;
 					}
@@ -1056,15 +1056,13 @@ function(time, isEnd, adjust) {
     }
     var idx = hourmin / 60 * 2;
 	var minutes = hourmin % 60;
-	if (minutes > 30) {
-		idx++;
-	}
+
 	// end times don't mark blocks on half-hour boundary
 	if (isEnd && (minutes == 0 || minutes == 30)) {
 		idx--;
 	}
 
-	return idx;
+	return Math.floor(idx);  // Bug 16606: Force index to nearest half-hour.
 };
 
 ZmSchedTabViewPage.prototype._getBordersFromDateInfo =
