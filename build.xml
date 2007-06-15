@@ -31,7 +31,7 @@
   <property name="rhinoExtension" value=".rhino"/>
   <property name="licenseExtension" value=".license"/>	
   <property name="mail.url" value="/zimbra"/>
-  <property name="admin.url" value="zimbraAdmin"/>	
+  <property name="admin.url" value="/zimbraAdmin"/>	
 
   <condition property="ajax.dir" value="${env.AJAX_DIR}" else='../Ajax'>
     <isset property="env.AJAX_DIR" />
