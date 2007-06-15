@@ -614,7 +614,7 @@ function(ev, treeView, overviewId) {
 			var parentNode = this._getParentNode(organizer, ev, overviewId);
 			if (!parentNode) { return; }
 			if (fields[ZmOrganizer.F_NAME] || fields[ZmOrganizer.F_UNREAD] || fields[ZmOrganizer.F_FLAGS] || fields[ZmOrganizer.F_COLOR] ||
-				((organizer.nId == ZmOrganizer.ID_DRAFTS || organizer.nId == ZmOrganizer.ID_OUTBOX) && fields[ZmOrganizer.F_TOTAL])) {
+				((organizer.nId == ZmFolder.ID_DRAFTS || organizer.nId == ZmOrganizer.ID_OUTBOX) && fields[ZmOrganizer.F_TOTAL])) {
 
 				node.setText(organizer.getName(treeView._showUnread));
 				if (fields && fields[ZmOrganizer.F_NAME]) {
