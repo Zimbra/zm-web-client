@@ -1,16 +1,6 @@
 <%@ page session="false" language="java" import="javax.naming.*"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%
-	// Set to expire far in the past.
-	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
-
-	// Set standard HTTP/1.1 no-cache headers.
-	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
-
-	// Set standard HTTP/1.0 no-cache header.
-	response.setHeader("Pragma", "no-cache");
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %><%!
 	private static String protocolMode = null;
 	private static String httpsPort = null;
 	private static String httpPort = null;
@@ -26,7 +16,7 @@
 			Context envCtx = (Context) initCtx.lookup("java:comp/env");
 			protocolMode = (String) envCtx.lookup("protocolMode");
 			httpsPort = (String) envCtx.lookup("httpsPort");
-			adminUrl = (String) envCtx.lookup("adminUrl");
+			adminUrl = (String) envCtx.lookup("adminUrl");			
 			if (httpsPort != null && httpsPort.equals(DEFAULT_HTTP_PORT)) {
 				httpsPort = "";
 			} else {
@@ -45,9 +35,18 @@
 		}
 		if (adminUrl == null) {
 			adminUrl = "/zimbraAdmin";
-	    }
+	    }		
 	}
-	
+%><%
+	// Set to expire far in the past.
+	response.setHeader("Expires", "Tue, 24 Jan 2000 17:46:50 GMT");
+
+	// Set standard HTTP/1.1 no-cache headers.
+	response.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0");
+
+	// Set standard HTTP/1.0 no-cache header.
+	response.setHeader("Pragma", "no-cache");
+
 	String portsCSV = application.getInitParameter("admin.allowed.ports");
 	if (portsCSV != null) {
 		// Split on zero-or-more spaces followed by comma followed by zero-or-more spaces.
@@ -70,7 +69,7 @@
 				for (int i = 0; i < mAllowedPorts.length; i++) {
 					if (mAllowedPorts[i] == incoming) {
 						String qs = request.getQueryString();
-						String path = adminUrl;
+						String path = "/zimbraAdmin";
 
 						if(qs != null)
 							path = path + "?" + qs;
@@ -82,6 +81,7 @@
 			}
 		}
 	}
+%><%
 	Cookie[] cookies = request.getCookies();
 	String contextPath = request.getContextPath();
 	if (contextPath.equals("/")) {
