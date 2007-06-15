@@ -597,7 +597,6 @@ function() {
 	var shSetting = this.registerSetting("SKIN_HINTS", {type:ZmSetting.T_CONFIG, dataType:ZmSetting.D_HASH});
 	
 	var hints = ["app_chooser.style",
-				 "foo.bar.baz",
 				 "app_chooser.fullWidth",
 				 "help_button.hideIcon",
 				 "help_button.style",
