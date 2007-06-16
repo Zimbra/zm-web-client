@@ -96,13 +96,27 @@ function(settings) {
 
 ZmContactsApp.prototype._registerPrefs =
 function() {
-	var list = [ZmSetting.AUTO_ADD_ADDRESS, ZmSetting.GAL_AUTOCOMPLETE,
+	var sections = {
+		CONTACTS: {
+			title: ZmMsg.addressBook,
+			templateId: "zimbraMail.prefs.templates.Pages#Contacts",
+			priority: 50,
+			precondition: ZmSetting.CONTACTS_ENABLED,
+			prefs: [
+				ZmSetting.AUTO_ADD_ADDRESS,
+				ZmSetting.CONTACTS_PER_PAGE,
+				ZmSetting.CONTACTS_VIEW,
+				ZmSetting.EXPORT,
+				ZmSetting.GAL_AUTOCOMPLETE,
 				ZmSetting.GAL_AUTOCOMPLETE_SESSION,
-				ZmSetting.CONTACTS_VIEW, ZmSetting.CONTACTS_PER_PAGE,
-				ZmSetting.IMPORT, ZmSetting.EXPORT];
+				ZmSetting.IMPORT
+			]
+		}
+	};
+	for (var id in sections) {
+		ZmPref.registerPrefSection(id, sections[id]);
+	}
 
-	ZmPref.setPrefList("ADDR_BOOK_PREFS", list);
-	
 	ZmPref.registerPref("AUTO_ADD_ADDRESS", {
 		displayName:		ZmMsg.autoAddContacts,
 		displayContainer:	ZmPref.TYPE_CHECKBOX

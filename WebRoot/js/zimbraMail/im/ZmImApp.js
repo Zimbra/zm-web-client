@@ -150,14 +150,23 @@ ZmImApp.prototype._registerSettings = function(settings) {
 };
 
 ZmImApp.prototype._registerPrefs = function() {
-	var list = [
-		ZmSetting.IM_PREF_AUTO_LOGIN,
-		ZmSetting.IM_PREF_FLASH_ICON,
-		ZmSetting.IM_PREF_NOTIFY_PRESENCE,
-		ZmSetting.IM_PREF_NOTIFY_STATUS
-	];
-
-	ZmPref.setPrefList("IM_PREFS", list);
+	var sections = {
+		IM: {
+			title: ZmMsg.im,
+			templateId: "zimbraMail.prefs.templates.Pages#IM",
+			priority: 90,
+			precondition: ZmSetting.IM_ENABLED,
+			prefs: [
+				ZmSetting.IM_PREF_AUTO_LOGIN,
+				ZmSetting.IM_PREF_FLASH_ICON,
+				ZmSetting.IM_PREF_NOTIFY_PRESENCE,
+				ZmSetting.IM_PREF_NOTIFY_STATUS
+			]
+		}
+	};
+	for (var id in sections) {
+		ZmPref.registerPrefSection(id, sections[id]);
+	}
 
 	ZmPref.registerPref("IM_PREF_AUTO_LOGIN",
 			    { displayName      : ZmMsg.imPrefAutoLogin,

@@ -136,7 +136,9 @@ function(view) {
 */
 ZmPrefController.prototype._resetOperations =
 function(parent, view) {
-	parent.enable(ZmOperation.SAVE, view != ZmPrefView.FILTER_RULES);
+    var section = ZmPref.getPrefSectionMap()[view];
+    var manageChanges = section && section.manageChanges; 
+    parent.enable(ZmOperation.SAVE, !manageChanges);
 	parent.enable(ZmOperation.CANCEL, true);
 };
 

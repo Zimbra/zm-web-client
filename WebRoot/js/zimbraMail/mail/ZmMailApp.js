@@ -97,6 +97,7 @@ function(settings) {
 	settings.registerSetting("MAIL_ALIASES",					{name: "zimbraMailAlias", type: ZmSetting.T_COS, dataType: ZmSetting.D_LIST});
 	settings.registerSetting("MAIL_FORWARDING_ADDRESS",			{name: "zimbraPrefMailForwardingAddress", type: ZmSetting.T_PREF});
 	settings.registerSetting("MAIL_FORWARDING_ENABLED",			{name: "zimbraFeatureMailForwardingEnabled", type: ZmSetting.T_COS, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
+	settings.registerSetting("MAIL_FROM_ADDRESS",				{name: "zimbraPrefFromAddress", type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST });
 	settings.registerSetting("MAIL_LOCAL_DELIVERY_DISABLED",	{name: "zimbraPrefMailLocalDeliveryDisabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
 	settings.registerSetting("NEW_WINDOW_COMPOSE",				{name: "zimbraPrefComposeInNewWindow", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("NOTIF_ADDRESS",					{name: "zimbraPrefNewMailNotificationAddress", type: ZmSetting.T_PREF});
@@ -106,7 +107,8 @@ function(settings) {
 	settings.registerSetting("READING_PANE_ENABLED",			{name: "zimbraPrefReadingPaneEnabled", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("REPLY_INCLUDE_ORIG",				{name: "zimbraPrefReplyIncludeOriginalText", type: ZmSetting.T_PREF, defaultValue: ZmSetting.INCLUDE});
 	settings.registerSetting("REPLY_PREFIX",					{name: "zimbraPrefForwardReplyPrefixChar", type: ZmSetting.T_PREF, defaultValue: ">"});
-	settings.registerSetting("REPLY_TO_ADDRESS",				{name: "zimbraPrefReplyToAddress", type: ZmSetting.T_PREF});
+	settings.registerSetting("REPLY_TO_ADDRESS",				{name: "zimbraPrefReplyToAddress", type: ZmSetting.T_PREF, dataType: ZmSetting.D_LIST });
+	settings.registerSetting("REPLY_TO_ENABLED",				{name: "zimbraPrefReplyToEnabled", type: ZmSetting.T_PREF /*, dataType: ZmSetting.D_LIST*/ }); // TODO: Is this a list or single?
 	settings.registerSetting("SAVE_TO_SENT",					{name: "zimbraPrefSaveToSent", type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: true});
 	settings.registerSetting("SENT_FOLDER_NAME",				{name: "zimbraPrefSentMailFolder", type: ZmSetting.T_PREF, defaultValue: "sent"});
 	settings.registerSetting("SHOW_BCC",						{type: ZmSetting.T_PREF, dataType: ZmSetting.D_BOOLEAN, defaultValue: false});
@@ -123,18 +125,58 @@ function(settings) {
 
 ZmMailApp.prototype._registerPrefs =
 function() {
-	var list = [ZmSetting.INITIAL_GROUP_MAIL_BY, ZmSetting.PAGE_SIZE, ZmSetting.SHOW_FRAGMENTS,
-				ZmSetting.INITIAL_SEARCH, ZmSetting.POLLING_INTERVAL, ZmSetting.READING_PANE_ENABLED,
-				ZmSetting.SAVE_TO_SENT, ZmSetting.VACATION_MSG_ENABLED, ZmSetting.VACATION_MSG,
-				ZmSetting.NOTIF_ENABLED, ZmSetting.NOTIF_ADDRESS, ZmSetting.MAIL_FORWARDING_ADDRESS,					 
-				ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED, ZmSetting.VIEW_AS_HTML, ZmSetting.DEDUPE_MSG_TO_SELF, 
-				ZmSetting.NEW_WINDOW_COMPOSE];
-				
-	ZmPref.setPrefList("MAIL_PREFS", list);
+	var sections = {
+		MAIL: {
+			title: ZmMsg.mail,
+			templateId: "zimbraMail.prefs.templates.Pages#Mail",
+			priority: 10,
+			precondition: ZmSetting.MAIL_ENABLED,
+			prefs: [
+				ZmSetting.DEDUPE_MSG_TO_SELF,
+				ZmSetting.INITIAL_GROUP_MAIL_BY,
+				ZmSetting.INITIAL_SEARCH,
+				ZmSetting.MAIL_FORWARDING_ADDRESS,
+				ZmSetting.MAIL_LOCAL_DELIVERY_DISABLED,
+				ZmSetting.NOTIF_ADDRESS,
+				ZmSetting.NOTIF_ENABLED,
+				ZmSetting.PAGE_SIZE,
+				ZmSetting.POLLING_INTERVAL,
+				ZmSetting.READING_PANE_ENABLED,
+				ZmSetting.SHOW_FRAGMENTS,
+				ZmSetting.VACATION_MSG_ENABLED,
+				ZmSetting.VACATION_MSG,
+				ZmSetting.VIEW_AS_HTML
+			]
+		},
+		SIGNATURES: {
+			title: ZmMsg.signatures,
+			templateId: "zimbraMail.prefs.templates.Pages#Signatures",
+			priority: 30,
+			precondition: false,//ZmSetting.MAIL_ENABLED,
+			prefs: [] // TODO
+		},
+		FILTERS: {
+			title: ZmMsg.filterRules,
+			templateId: "zimbraMail.prefs.templates.Pages#MailFilters",
+			priority: 70,
+			precondition: ZmSetting.FILTERS_ENABLED,
+			prefs: [
+				ZmSetting.FILTERS
+			],
+			manageChanges: true,
+			createView: function(parent, appCtxt, section, controller) {
+				return controller.getFilterRulesController().getFilterRulesView();
+			}
+		}
+	};
+	for (var id in sections) {
+		ZmPref.registerPrefSection(id, sections[id]);
+	}
 
 	ZmPref.registerPref("DEDUPE_MSG_TO_SELF", {
 		displayName:		ZmMsg.removeDupesToSelf,
-		displayContainer:	ZmPref.TYPE_SELECT,
+		displayContainer:	ZmPref.TYPE_RADIO_GROUP,
+		orientation:		ZmPref.ORIENT_HORIZONTAL,
 		displayOptions:		[ZmMsg.dedupeNone, ZmMsg.dedupeSecondCopy, ZmMsg.dedupeAll],
 		options:			[ZmSetting.DEDUPE_NONE, ZmSetting.DEDUPE_SECOND, ZmSetting.DEDUPE_ALL]
 	});
@@ -178,12 +220,6 @@ function() {
 		precondition:		ZmSetting.MAIL_FORWARDING_ENABLED
 	});
 	
-	ZmPref.registerPref("NEW_WINDOW_COMPOSE", {
-		displayName:		ZmMsg.composeInNewWin,
-		displayContainer:	ZmPref.TYPE_CHECKBOX,
-		displaySeparator: 	true
-	});
-	
 	ZmPref.registerPref("NOTIF_ADDRESS", {
 		displayName:		ZmMsg.mailNotifAddress,
 		displayContainer:	ZmPref.TYPE_INPUT,
@@ -220,11 +256,6 @@ function() {
 		displayContainer:	ZmPref.TYPE_INPUT,
 		validationFunction: ZmPref.validateEmail,
 		errorMessage:       ZmMsg.invalidEmail
-	});
-	
-	ZmPref.registerPref("SAVE_TO_SENT", {
-		displayName:		ZmMsg.saveToSent,
-		displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
 	
 	ZmPref.registerPref("SIGNATURE", {

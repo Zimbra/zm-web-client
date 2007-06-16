@@ -98,14 +98,30 @@ function(settings) {
 
 ZmCalendarApp.prototype._registerPrefs =
 function() {
-	var list = [ZmSetting.CALENDAR_INITIAL_VIEW, ZmSetting.CAL_FIRST_DAY_OF_WEEK, 
-				ZmSetting.CAL_SHOW_TIMEZONE, ZmSetting.CAL_USE_QUICK_ADD, ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL,
-				ZmSetting.CAL_REMINDER_WARNING_TIME, ZmSetting.CAL_IMPORT, ZmSetting.CAL_EXPORT,
-				ZmSetting.DELETE_INVITE_ON_REPLY];
+    var sections = {
+        CALENDAR: {
+            title: ZmMsg.calendar,
+            templateId: "zimbraMail.prefs.templates.Pages#Calendar",
+            priority: 80,
+            precondition: ZmSetting.CALENDAR_ENABLED,
+            prefs: [
+                ZmSetting.CAL_ALWAYS_SHOW_MINI_CAL,
+                ZmSetting.CAL_EXPORT,
+                ZmSetting.CAL_FIRST_DAY_OF_WEEK,
+                ZmSetting.CAL_IMPORT,
+                ZmSetting.CAL_REMINDER_WARNING_TIME,
+                ZmSetting.CAL_SHOW_TIMEZONE,
+                ZmSetting.CAL_USE_QUICK_ADD,
+                ZmSetting.CALENDAR_INITIAL_VIEW,
+                ZmSetting.DELETE_INVITE_ON_REPLY
+            ]
+        }
+    };
+    for (var id in sections) {
+        ZmPref.registerPrefSection(id, sections[id]);
+    }
 
-	ZmPref.setPrefList("CALENDAR_PREFS", list);
-
-	ZmPref.registerPref("CAL_ALWAYS_SHOW_MINI_CAL", {
+    ZmPref.registerPref("CAL_ALWAYS_SHOW_MINI_CAL", {
 	 	displayName:		ZmMsg.alwaysShowMiniCal,
 	 	displayContainer:	ZmPref.TYPE_CHECKBOX
 	});
@@ -131,7 +147,7 @@ function() {
 	ZmPref.registerPref("CAL_REMINDER_WARNING_TIME", {
 		displayName:		ZmMsg.numberOfMinutes,
 		displayContainer:	ZmPref.TYPE_SELECT,
-		displayOptions:		[ZmMsg.neverShow, "1", "5", "10", "15", "30", "45", "60"],
+		displayOptions:		[ZmMsg.apptRemindNever, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore, ZmMsg.apptRemindNMinutesBefore],
 		options:			[0, 1, 5, 10, 15, 30, 45, 60],
 		displaySeparator:	true
 	});

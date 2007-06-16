@@ -374,8 +374,10 @@ ZmFilterRules.prototype._handleResponseHandleErrorSaveRules =
 function() {
 	var prefController = AjxDispatcher.run("GetPrefController");
 	var prefsView = prefController.getPrefsView();
-	if (prefsView && prefsView.getView(ZmPrefView.FILTER_RULES))
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
+    if (section && prefsView && prefsView.getView(section.id)) {
 		prefController.getFilterRulesController()._setListView();
+    }
 };
 
 /*

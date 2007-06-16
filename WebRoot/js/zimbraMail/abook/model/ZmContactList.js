@@ -1165,7 +1165,7 @@ function(aclv, callback, ex) {
 			var settings = this._appCtxt.getSettings();
 			var setting = settings.getSetting(ZmSetting.GAL_AUTOCOMPLETE_SESSION);
 			setting.setValue(false);
-			AjxDispatcher.run("GetPrefController").setDirty(ZmPrefView.ADDR_BOOK, true);
+            AjxDispatcher.run("GetPrefController").setDirty("CONTACTS", true);
 			this._galFailures = 0;
 		}
 	}

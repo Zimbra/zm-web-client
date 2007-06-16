@@ -2064,6 +2064,49 @@ HTML>BODY .appt-selected .appt_allday_body
  * Preferences
  */
 
+.ZmPreferencesPage {
+  padding: 0.5em 1em;
+}
+
+.ZOptionsDefaultsTable {}
+.ZOptionsSectionTable {
+  @ChromeBg@
+  margin-top: 0.5em;
+}
+
+.ZOptionsHeaderRow {
+  @PageHeaderBg@
+}
+.ZOptionsHeaderL, .ZOptionsHeaderR {
+  width: 0.5em;
+}
+.ZOptionsHeader {
+  @PageHeaderText@
+  font-size: 0.9em;
+  font-weight: bold;
+  padding: 0.124em 0em;
+}
+.ZOptionsSectionMain {
+  padding: 0.5em 1em;
+}
+.ZOptionsLabel, .ZOptionsTableLabel {
+  width: 1%;
+  font-weight: bold;
+  white-space: nowrap;
+  text-align: right;
+  vertical-align: top;
+  padding-top: 0.4em;
+}
+.ZOptionsTableLabel {
+	@PageHeaderBg@
+}
+
+/* REVISIT: Why do disabled inputs have a fixed height of 20px? */
+.ZOptionsField INPUT[disabled],
+.ZOptionsTableRow INPUT[disabled] {
+	height: auto;
+}
+
 /* Container for the set of preference pages (including tabs) */
 .ZmPrefView {
 	@PageBg@
@@ -2214,6 +2257,10 @@ HTML>BODY .appt-selected .appt_allday_body
 	-moz-border-bottom-colors: #746e61 #bab09a;
 	-moz-border-right-colors: #746e61 #bab09a;
 #ENDIF
+}
+
+.ZmRadioButtonGroupHoriz .ZmRadioButtonGroupCell {
+  padding-right: 1em;
 }
 
 /*

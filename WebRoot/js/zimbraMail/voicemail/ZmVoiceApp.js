@@ -148,6 +148,27 @@ function() {
 							  });
 };
 
+ZmVoiceApp.prototype._registerPrefs = function() {
+    var sections = {
+        VOICE: {
+            title: ZmMsg.voice,
+            templateId: "zimbraMail.prefs.templates.Pages#Voice",
+            priority: 40,
+            precondition: ZmSetting.VOICE_ENABLED,
+            prefs: [
+                ZmSetting.VOICE_ACCOUNTS
+            ],
+            manageDirty: true,
+            createView: function(parent, appCtxt, section, controller) {
+                return AjxDispatcher.run("GetVoicePrefsController").getListView();
+            }
+        }
+    };
+    for (var id in sections) {
+        ZmPref.registerPrefSection(id, sections[id]);
+    }
+};
+
 // Public methods
 
 ZmVoiceApp.prototype.deleteNotify =

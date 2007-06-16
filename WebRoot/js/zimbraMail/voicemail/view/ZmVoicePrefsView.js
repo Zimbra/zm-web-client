@@ -36,7 +36,8 @@ ZmVoicePrefsView = function(parent, appCtxt, controller) {
 	this._appCtxt = appCtxt;
 	this._controller = controller;
 	
-	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.VOICE]].join(": ");
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.VOICE_ACCOUNTS);
+	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section && section.title].join(": ");
 	this._ui = [
 		new ZmAnonymousRejectionUI(this), 
 		new ZmEmailNotificationUI(this), 

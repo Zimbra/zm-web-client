@@ -33,7 +33,8 @@ ZmFilterRulesView = function(parent, appCtxt, controller) {
 	
 	this._rules = AjxDispatcher.run("GetFilterRules");
 
-	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.FILTER_RULES]].join(": ");
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
+    this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section && section.title].join(": ");
 
 	this._rendered = false;
 	this._hasRendered = false;
@@ -50,7 +51,8 @@ function() {
 ZmFilterRulesView.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
-	this._prefsController._resetOperations(this._prefsController._toolbar, ZmPrefView.FILTER_RULES);
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.FILTERS);
+    this._prefsController._resetOperations(this._prefsController._toolbar, section && section.id);
 	if (this._hasRendered) return;
 
 	this._controller._setup();

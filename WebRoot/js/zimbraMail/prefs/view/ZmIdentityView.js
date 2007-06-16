@@ -34,7 +34,8 @@
 	this._controller = controller;
 	this._prefsController = AjxDispatcher.run("GetPrefController");
 	
-	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]].join(": ");
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.IDENTITIES);
+	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section && section.title].join(": ");
 
 	this._identityNameInput = null;
 	this._pages = [];
@@ -51,6 +52,13 @@ ZmIdentityView.prototype.constructor = ZmIdentityView;
 ZmIdentityView.prototype.toString =
 function() {
 	return "ZmIdentityView";
+};
+
+ZmIdentityView.prototype.showMe =
+function() {
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.IDENTITIES);
+	this._prefsController._resetOperations(this._prefsController._toolbar, section && section.id);
+    ZmPrefListView.prototype.showMe.apply(this, arguments);
 };
 
 ZmIdentityView.prototype.getTitle =

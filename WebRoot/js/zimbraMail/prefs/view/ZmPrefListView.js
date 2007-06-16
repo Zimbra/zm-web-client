@@ -46,7 +46,8 @@
 	this._labels = labels;
 	this._prefsController = AjxDispatcher.run("GetPrefController");
 	
-	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.IDENTITY]].join(": ");
+    var sections = ZmPref.getPrefSectionMap();
+	this._title = [ZmMsg.zimbraTitle, ZmMsg.options].join(": ");
 
 	this._templateId = null;
 	this._rendered = false;
@@ -70,7 +71,6 @@ function() {
 ZmPrefListView.prototype.showMe =
 function() {
 	Dwt.setTitle(this._title);
-	this._prefsController._resetOperations(this._prefsController._toolbar, ZmPrefView.IDENTITY);
 	if (this._hasRendered) return;
 
 	this._createPrefListHtml();

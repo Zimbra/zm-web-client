@@ -64,6 +64,7 @@ AjxPackage.require("ajax.dwt.widgets.DwtBaseDialog");
 AjxPackage.require("ajax.dwt.widgets.DwtDialog");
 AjxPackage.require("ajax.dwt.widgets.DwtLabel");
 AjxPackage.require("ajax.dwt.widgets.DwtCheckbox");
+AjxPackage.require("ajax.dwt.widgets.DwtRadioButton");
 AjxPackage.require("ajax.dwt.widgets.DwtListView");
 AjxPackage.require("ajax.dwt.widgets.DwtButton");
 AjxPackage.require("ajax.dwt.widgets.DwtComboBox");

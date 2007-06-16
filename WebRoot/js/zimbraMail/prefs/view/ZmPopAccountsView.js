@@ -32,7 +32,8 @@ ZmPopAccountsView = function(parent, appCtxt, controller) {
     };
 	ZmPrefListView.call(this, parent, appCtxt, controller, labels, "ZmPopAccountView");
 
-	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[ZmPrefView.POP_ACCOUNTS]].join(": ");
+    var section = ZmPref.getPrefSectionWithPref(ZmSetting.ACCOUNTS);
+	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section && section.title].join(": ");
 };
 
 ZmPopAccountsView.prototype = new ZmPrefListView;

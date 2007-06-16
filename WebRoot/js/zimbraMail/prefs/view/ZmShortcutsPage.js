@@ -51,8 +51,9 @@ ZmShortcutsPage = function(parent, appCtxt, view, controller) {
 	this._appCtxt = appCtxt;
 	this._view = view; // which preferences page we are
 	this._controller = controller;
-	this._title = [ZmMsg.zimbraTitle, ZmMsg.options, ZmPrefView.TAB_NAME[view]].join(": ");
-	this._prefId = ZmPrefView.PREFS[ZmPrefView.SHORTCUTS][0]; // our sole pref
+    var section = ZmPref.getPrefSectionMap()[view];
+    this._title = [ZmMsg.zimbraTitle, ZmMsg.options, section.title].join(": ");
+	this._prefId = section.prefs[0]; // our sole pref
 
 	this._organizers = [ZmOrganizer.FOLDER];
 	if (appCtxt.get(ZmSetting.SAVED_SEARCHES_ENABLED)) {
