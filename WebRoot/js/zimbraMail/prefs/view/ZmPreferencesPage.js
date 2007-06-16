@@ -134,9 +134,11 @@ function() {
 		// save the current value (for checking later if it changed)
 		pref.origValue = this._getPrefValue(id);
 		var value = this._getPrefValue(id, false, true);
+		/***
 		if (id == ZmSetting.SHOW_FRAGMENTS && !this._appCtxt.get(ZmSetting.CONVERSATIONS_ENABLED)) {
 			setup.displayName = ZmMsg.showFragmentsMsg;
 		}
+		/***/
 		// we only show this one if it's false
 		if ((id == ZmSetting.GAL_AUTOCOMPLETE_SESSION) && value) {
 			continue;
