@@ -41,16 +41,18 @@ this:
 			<table width=100%>
 			
 				<!-- login { choice: ajax | html } -->
+				<!-- TODO: to be implemented
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.loginLabel$></td>
 					<td class='ZOptionsField'>
 						<div id='${id}_login'>
-							<!-- NOTE: values only demonstrative -->
+							<!-- NOTE: values only demonstrative -- >
 							<input type=radio disabled checked> <$=ZmMsg.loginEnhanced$>
 							<br>
 							<input type=radio disabled> <$=ZmMsg.loginLite$>
 						</div>
 					</td>
 				</tr>
+				-->
 
 				<!-- SKIN_NAME { string: sand | ... } // theme -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.themeLabel$></td>
@@ -120,24 +122,7 @@ this:
 	</table>
   </div>
 
-	<!-- COMCAST ONLY:  HOW TO ENCODE ? -->
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'>Settings Managed on comcast.net</td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
-		</tr>
-		<tr>
-			<td class='ZOptionsSectionMain ZOptionsSectionMainLinks' colspan=3>
-				<a href=#>Restrict Incoming Email</a> <br>		
-				<a href=#>Spam Filtering / Confirmation</a> <br>		
-				<a href=#>Auto Reply</a> <br>		
-				<a href=#>Auto Forward</a> <br>		
-			</td>
-		</tr>
-	</table>
-	<!-- END COMCAST ONLY:  HOW TO ENCODE ? -->
-
+	<!-- TODO: Is this a customer specific feature?
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'>&nbsp;</td>
@@ -147,7 +132,7 @@ this:
 		<tr>
 			<td class='ZOptionsSectionMain ZOptionsSectionMainTable' colspan=3>
 
-			<!-- EMAIL DELETION MATRIX -->
+			<!-- EMAIL DELETION MATRIX -- >
 			<table width=95% cellspacing=1 cellpadding=2>
 				<tr><td class='ZOptionsTableLabel'>Inbox (Unread):</td>
 					<td class='ZOptionsTableRow Line1'>
@@ -209,7 +194,7 @@ this:
 			</td>
 		</tr>
 	</table>
-
+	-->
 
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
@@ -238,7 +223,6 @@ this:
 				</tr>
 			
 				<!-- VIEW_AS_HTML { boolean } -->
-				<!-- NOTE: DESIGN REQUIRES A CODE CHANGE -->
 				<tr><td class='ZOptionsLabel'><$=ZmMsg.viewMailAsHtmlLabel$></td>
 					<td class='ZOptionsField'><select id='${id}_VIEW_AS_HTML'>
 												<option value='true'>Inline</option>
@@ -625,46 +609,6 @@ This section is used for reply options on an identity.
 	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
 		<tr class='ZOptionsHeaderRow'>
 			<td class='ZOptionsHeaderL'>&nbsp;</td>
-			<td class='ZOptionsHeader'>Plaxo Account Details</td>
-			<td class='ZOptionsHeaderR'>&nbsp;</td>
-		</tr>
-		<tr>
-			<td class='ZOptionsSectionMain' colspan=3>
-			<table width=100%>
-				<tr><td class='ZOptionsLabel'>Details</td>
-					<td class='ZOptionsInfo'>
-						<b>Manage your account details at <a href=#>plaxo.com</a></b>
-							{plaxo img}
-				</tr>
-				<tr><td></td><td><hr></td></tr>
-
-				<tr><td class='ZOptionsLabel'></td>
-					<td class='ZOptionsInfo'>
-						<a href=#>Your Communication Preferences</a>
-						<br>
-						<span class='ZOptionsInfo'>
-						 (Manage Plaxo preferences like: Birthday Reminders, Holiday Reminders...)
-						</span>
-				</tr>
-
-				<tr><td colspan=2><hr></td></tr>
-
-				<tr><td class='ZOptionsLabel'></td>
-					<td class='ZOptionsInfo'>
-						<a href=#>Auto Share</a>
-						<br>
-						<span class='ZOptionsInfo'>
-						 (Click here to manage your Plaxo sharing preferences.)
-						</span>
-				</tr>
-			</table>
-			</td>
-		</tr>
-	</table>
-
-	<table class='ZOptionsSectionTable' border=0 cellspacing=0 width=100%>
-		<tr class='ZOptionsHeaderRow'>
-			<td class='ZOptionsHeaderL'>&nbsp;</td>
 			<td class='ZOptionsHeader'><$=ZmMsg.options$></td>
 			<td class='ZOptionsHeaderR'>&nbsp;</td>
 		</tr>
@@ -735,36 +679,6 @@ This section is used for reply options on an identity.
 					<td class='ZOptionsInfo'>
 						<div id='${id}_IMPORT'></div>
 					</td>
-				</tr>
-
-			<tr><td></td><td><hr></td></tr>
-		
-				<tr><td class='ZOptionsLabel'></td>
-					<td class='ZOptionsInfo'>
-						<a href=#>Smart Address Book Builder</a>
-						<span class='ZOptionsInfo'>
-						 (Combine all of your contacts into <b>one place</b>.)
-						</span>
-				</tr>
-
-			<tr><td></td><td><hr></td></tr>
-		
-				<tr><td class='ZOptionsLabel'></td>
-					<td class='ZOptionsInfo'>
-						<a href=#>Address Book and Calendar De-Dupper</a>
-						<span class='ZOptionsInfo'>
-						 (Merge and <b>remove duplicates</b> from your address book and calendar.)
-						</span>
-				</tr>
-
-			<tr><td></td><td><hr></td></tr>
-		
-				<tr><td class='ZOptionsLabel'></td>
-					<td class='ZOptionsInfo'>
-						<a href=#>Address Book Rollback and Recovery</a>
-						<span class='ZOptionsInfo'>
-						 (Revert your address book back to a <b>previous date</b>.)
-						</span>
 				</tr>
 
 			<tr><td colspan=2><hr></td></tr>
