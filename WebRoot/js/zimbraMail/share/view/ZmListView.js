@@ -389,8 +389,20 @@ function(clickedCol, ev) {
 					}
 				}
 			}
+			this._controller._resetToolbarOperations();
 		}
 	}
+};
+
+ZmListView.prototype.handleKeyAction =
+function(actionCode, ev) {
+	var rv = DwtListView.prototype.handleKeyAction.call(this, actionCode, ev);
+
+	if (actionCode == DwtKeyMap.SELECT_ALL) {
+		this._controller._resetToolbarOperations();
+	}
+
+	return rv;
 };
 
 ZmListView.prototype.setMultiSelection =

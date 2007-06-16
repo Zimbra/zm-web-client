@@ -121,7 +121,7 @@ function(actionCode, ev) {
 			return false;
 
 		default:
-			return DwtListView.prototype.handleKeyAction.call(this, actionCode, ev);
+			return ZmMailListView.prototype.handleKeyAction.call(this, actionCode, ev);
 	}
 };
 
