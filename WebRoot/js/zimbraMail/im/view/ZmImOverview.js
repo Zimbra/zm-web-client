@@ -1,5 +1,5 @@
 ZmImOverview = function(appCtxt, parent) {
-	DwtComposite.call(this, parent);
+	DwtComposite.call(this, parent, Dwt.ABSOLUTE_STYLE);
 
 	this.setScrollStyle(DwtControl.SCROLL);
 
