@@ -89,5 +89,6 @@ AjxPackage.require("zimbraMail.tasks.ZmTasksApp");
 AjxPackage.require("zimbraMail.abook.ZmContactsApp");
 AjxPackage.require("zimbraMail.im.ZmImApp");
 AjxPackage.require("zimbraMail.notebook.ZmNotebookApp");
+AjxPackage.require("zimbraMail.briefcase.ZmBriefcaseApp");
 AjxPackage.require("zimbraMail.voicemail.ZmVoiceApp");
 AjxPackage.require("zimbraMail.mixed.ZmMixedApp");

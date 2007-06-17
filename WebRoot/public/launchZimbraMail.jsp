@@ -138,7 +138,7 @@
     String allPackages = "AjaxLogin,AjaxZWC,ZimbraLogin,ZimbraZWC,ZimbraCore";
     if (extraPackages != null) {
     	if (extraPackages.equals("dev")) {
-    		extraPackages = "CalendarCore,Calendar,ContactsCore,Contacts,IM,Mail,Mixed,NotebookCore,Notebook,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal";
+    		extraPackages = "CalendarCore,Calendar,ContactsCore,Contacts,IM,Mail,Mixed,NotebookCore,Notebook,BriefcaseCore,Briefcase,PreferencesCore,Preferences,TasksCore,Tasks,Voicemail,Assistant,Browse,Extras,Share,Zimlet,Portal";
     	}
     	allPackages += "," + extraPackages;
     }

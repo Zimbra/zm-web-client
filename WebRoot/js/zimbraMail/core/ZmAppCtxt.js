@@ -817,3 +817,12 @@ function() {
 	}
 	return this._printView;
 };
+
+ZmAppCtxt.prototype.getNewBriefcaseDialog =
+function() {
+	if (!this._newBriefcaseDialog) {
+		AjxDispatcher.require(["BriefcaseCore", "Briefcase"]);
+		this._newBriefcaseDialog = new ZmNewBriefcaseDialog(this._shell);
+	}
+	return this._newBriefcaseDialog;
+};
