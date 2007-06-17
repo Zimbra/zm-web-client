@@ -275,3 +275,40 @@ ZmBriefcaseView.prototype.onDelete = function(){
 ZmBriefcaseView.prototype.refresh = function(restUrl){
 };
 
+ZmBriefcaseView.prototype._getToolTip =
+function(field, item, ev, div, match) {
+	if (!item) { return; }
+	var tooltip = item.name;	
+	return tooltip;
+};
+
+
+ZmBriefcaseView.prototype._mouseOverAction =
+function(ev, div) {
+	DwtListView.prototype._mouseOverAction.call(this, ev, div);
+	var id = ev.target.id || div.id;
+	if (!id) return true;
+	
+	var match = this._parseId(id);
+	if (match) {
+		var item = this.getItemFromElement(div);
+		if(item){
+		this.setToolTipContent(this._getToolTip(match.field, item, ev, div, match));
+		}
+	}		
+	return true;
+};
+
+ZmBriefcaseView.prototype._mouseDownListener =
+function(ev) {
+	DwtListView.prototype._mouseDownListener.call(this,ev);	
+	if(this._dndSelection==null){
+	this.deselectAll();	
+	this._controller._resetOpForCurrentView();
+	}
+};
+
+ZmBriefcaseView.prototype._updateDragSelection =
+function(row, select) {
+    // TODO: new style to mark drop target  
+};

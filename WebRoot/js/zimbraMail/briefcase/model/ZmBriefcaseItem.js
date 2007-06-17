@@ -25,6 +25,9 @@
 
 ZmBriefcaseItem = function(appCtxt, type, id, list) {
 	if (arguments.length == 0) return;
+	if(!type){
+		type = ZmItem.BRIEFCASE;
+	}
 	ZmItem.call(this, appCtxt, type, id, list);
 	this.folderId = ZmBriefcaseItem.DEFAULT_FOLDER;
 }

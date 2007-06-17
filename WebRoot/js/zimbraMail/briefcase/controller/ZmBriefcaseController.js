@@ -30,6 +30,7 @@ ZmBriefcaseController = function(appCtxt, container, app) {
 	this._idMap = {};
 
     this._listeners[ZmOperation.OPEN_FILE] = new AjxListener(this, this._openFileListener);	
+   	this._listeners[ZmOperation.SEND_FILE] = new AjxListener(this, this._sendPageListener);
 	this._dragSrc = new DwtDragSource(Dwt.DND_DROP_MOVE);
 	this._dragSrc.addDragListener(new AjxListener(this, this._dragListener));
 	
@@ -51,8 +52,7 @@ ZmBriefcaseController.prototype._idMap;
 // Overrides ZmListController method, leaving ZmOperation.MOVE off the menu.
 ZmBriefcaseController.prototype._standardActionMenuOps =
 function() {
-	return [ZmOperation.TAG_MENU, ZmOperation.DELETE,
-			ZmOperation.PRINT];
+	return [ZmOperation.TAG_MENU, ZmOperation.DELETE,ZmOperation.MOVE];
 };
 
 
@@ -71,10 +71,10 @@ ZmBriefcaseController.prototype._getBasicToolBarOps = function() {
 };
 ZmBriefcaseController.prototype._getItemToolBarOps = function() {
 	return [ZmOperation.TAG_MENU, ZmOperation.SEP,
-			ZmOperation.DELETE, ZmOperation.PRINT];
+			ZmOperation.DELETE,ZmOperation.MOVE];
 };
 ZmBriefcaseController.prototype._getNaviToolBarOps = function() {
-	return [];
+	return [ZmOperation.SEND_FILE];
 };
 
 ZmBriefcaseController.prototype._initializeToolBar = function(view) {
@@ -99,9 +99,11 @@ ZmBriefcaseController.prototype._resetOperations = function(toolbarOrActionMenu,
 	ZmListController.prototype._resetOperations.call(this, toolbarOrActionMenu, num);
 	var isShared = this.isShared(this._currentFolder);
 	var isReadOnly = this.isReadOnly(this._currentFolder);	
-	
-	toolbarOrActionMenu.enable([ZmOperation.DELETE], !(isReadOnly && isReadOnly));
-	toolbarOrActionMenu.enable([ZmOperation.TAG_MENU], !isShared);	
+	var isItemSelected = (num>0);
+	toolbarOrActionMenu.enable([ZmOperation.OPEN_FILE], true && isItemSelected );	
+	toolbarOrActionMenu.enable([ZmOperation.SEND_FILE], isItemSelected );
+	toolbarOrActionMenu.enable([ZmOperation.DELETE], !(isReadOnly && isReadOnly) && isItemSelected);
+	toolbarOrActionMenu.enable([ZmOperation.TAG_MENU], !isShared && isItemSelected);	
 };
 
 ZmBriefcaseController.prototype._getTagMenuMsg = function() {
@@ -438,7 +440,6 @@ ZmBriefcaseController.prototype.getItemsInFolder = function(folderId,callback) {
 
 	folderId = folderId || ZmBriefcaseItem.DEFAULT_FOLDER;
 	if (!this._foldersMap[folderId]) {
-		DBG.println("not available in cache:"+folderId);
 		this._foldersMap[folderId] = {};
 		this.searchFolder(folderId,callback);
 	}else if(callback){	
@@ -475,8 +476,12 @@ ZmBriefcaseController.prototype.refreshFolder = function(){
 	this.show(this._object);
 };
 
-ZmBriefcaseController.prototype.removeCachedFolderItems = function(){
-	var folder = this._foldersMap[this._object];
+ZmBriefcaseController.prototype.removeCachedFolderItems = function(folderId){
+	if(!folderId){
+		folderId = this._object;
+	}
+	
+	var folder = this._foldersMap[folderId];
 	if(folder){
 		for(var i in folder){
 			if(this._idMap[i]){
@@ -484,7 +489,7 @@ ZmBriefcaseController.prototype.removeCachedFolderItems = function(){
 			}
 		}
 	}
-	delete this._foldersMap[this._object];
+	delete this._foldersMap[folderId];
 };
 
 ZmBriefcaseController.prototype.reloadFolder = function(){
@@ -552,7 +557,7 @@ function(ev) {
 
 ZmBriefcaseController.prototype._getActionMenuOps =
 function() {
-	var list = [ZmOperation.OPEN_FILE];
+	var list = [ZmOperation.OPEN_FILE,ZmOperation.SEND_FILE];
 	list.push(ZmOperation.SEP);
 	list = list.concat(this._standardActionMenuOps());
 	return list;
@@ -578,4 +583,71 @@ function(){
 			window.open(item.restUrl);
 		}
 	}
+};
+
+ZmBriefcaseController.prototype._sendPageListener = function(event) {
+	var view = this._listView[this._currentView];
+	var items = view.getSelection();
+	items = items instanceof Array ? items : [ items ];
+
+	var names = [];
+	var urls = [];
+	var inNewWindow = this._app._inNewWindow(event);
+
+	var briefcase, shares;
+	var noprompt = false;
+
+	for (var i = 0; i < items.length; i++) {
+		var item = items[i];
+		var url = item.getRestUrl();
+		urls.push(url);
+		names.push(item.name);
+
+		if (noprompt) continue;
+
+		briefcase = this._appCtxt.getById(item.folderId);
+		shares = briefcase && briefcase.shares;
+		if (shares) {
+			for (var j = 0; j < shares.length; j++) {
+				noprompt = noprompt || shares[j].grantee.type == ZmShare.TYPE_PUBLIC;
+			}
+		}
+	}
+
+	if (!shares || !noprompt) {
+		var args = [names, urls, inNewWindow];
+		var callback = new AjxCallback(this, this._sendPageListener2, args);
+
+		var dialog = this._appCtxt.getConfirmationDialog();
+		dialog.popup(ZmMsg.errorPermissionRequired, callback);
+	}
+	else {
+		this._sendPageListener2(names, urls);
+	}
+};
+
+ZmBriefcaseController.prototype._sendPageListener2 =
+function(names, urls, inNewWindow) {
+	var action = ZmOperation.NEW_MESSAGE;
+	var msg = new ZmMailMsg(this._appCtxt);
+	var toOverride = null;
+	var subjOverride = new AjxListFormat().format(names);
+	var extraBodyText = urls.join("\n");
+	AjxDispatcher.run("Compose", {action: action, inNewWindow: inNewWindow, msg: msg,
+								  toOverride: toOverride, subjOverride: subjOverride,
+								  extraBodyText: extraBodyText});
+};
+
+ZmBriefcaseController.prototype._moveCallback =
+function(folder) {
+	this._doMove(this._pendingActionData, folder, null, true);
+	this._clearDialog(this._appCtxt.getChooseFolderDialog());
+	this._pendingActionData = null;
+	this.removeCachedFolderItems(folder.id);
+	this.reloadFolder();
+};
+
+ZmBriefcaseController.prototype._resetOpForCurrentView = 
+function(num) {
+	this._resetOperations(this._toolbar[this._currentView], (num?num:0));
 };

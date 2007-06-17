@@ -153,3 +153,44 @@ function(nbA, nbB) {
 	return 0;
 };
 
+ZmBriefcase.prototype.mayContain =
+function(what) {
+	if (!what) return true;
+
+	var invalid = false;
+
+	if (this.id == ZmFolder.ID_ROOT) {
+		// cannot drag anything onto root folder
+		invalid = true;
+	} else if (this.link) {
+		// cannot drop anything onto a read-only task folder
+		invalid = this.isReadOnly();
+	}
+
+	if (!invalid) {
+		// An item or an array of items is being moved
+		var items = (what instanceof Array) ? what : [what];
+		var item = items[0];
+	
+		if ((item.type != ZmItem.BRIEFCASE) && (item.type != ZmItem.DOCUMENT)) {
+			// only tasks are valid for task folders
+			invalid = true;
+		} else {
+			
+			// can't move items to folder they're already in; we're okay if
+			// we have one item from another folder
+			if (!invalid && item.folderId) {
+				invalid = true;
+				for (var i = 0; i < items.length; i++) {
+					var tree = this._appCtxt.getById(items[i].folderId);
+					if (tree != this) {
+						invalid = false;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	return !invalid;
+};

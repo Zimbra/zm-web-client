@@ -40,7 +40,7 @@ ZmOrganizer.BRIEFCASE			= ZmEvent.S_BRIEFCASE;
 // App-related constants
 ZmApp.BRIEFCASE					= "Briefcase";
 ZmApp.CLASS[ZmApp.BRIEFCASE]		= "ZmBriefcaseApp";
-ZmApp.SETTING[ZmApp.BRIEFCASE]	= ZmSetting.NOTEBOOK_ENABLED;
+ZmApp.SETTING[ZmApp.BRIEFCASE]	= ZmSetting.BRIEFCASE_ENABLED;
 ZmApp.LOAD_SORT[ZmApp.BRIEFCASE]	= 60;
 ZmApp.QS_ARG[ZmApp.BRIEFCASE]	= "documents";
 
@@ -68,12 +68,12 @@ function() {
 
 ZmBriefcaseApp.prototype._registerOperations =
 function() {
-	ZmOperation.registerOp("NEW_BRIEFCASEITEM", {textKey:"newFolder", image:"NewNotebook"});
-	ZmOperation.registerOp("NEW_FILE", {textKey:"newFile", tooltipKey:"newFile", image:"NewPage"});
+	ZmOperation.registerOp("NEW_BRIEFCASEITEM", {textKey:"newBriefcase", image:"NewNotebook"});
+	ZmOperation.registerOp("NEW_FILE", {textKey:"uploadNewFile", tooltipKey:"newFile", image:"NewPage"});
 	ZmOperation.registerOp("SHARE_BRIEFCASE", {textKey:"shareFolder", image:"Folder"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("MOUNT_BRIEFCASE", {textKey:"mountBriefcase", image:"Notebook"}, ZmSetting.SHARING_ENABLED);
 	ZmOperation.registerOp("OPEN_FILE", {textKey:"openFile", tooltipKey:"openFileTooltip", image:"NewPage"});
-	
+	ZmOperation.registerOp("SEND_FILE", {textKey:"send", tooltipKey:"sendPageTT", image:"Send"});	
 };
 
 ZmBriefcaseApp.prototype._registerItems =
@@ -151,7 +151,7 @@ function() {
 							  icon:					"URL",
 							  chooserTooltipKey:	"gotoBriefcase",
 							  defaultSearch:		ZmItem.PAGE,
-							  organizer:			ZmOrganizer.DOCUMENT,
+							  organizer:			ZmOrganizer.BRIEFCASE,
 							  overviewTrees:		[ZmOrganizer.BRIEFCASE,ZmOrganizer.TAG],
 							  showZimlets:			true,
 							  searchTypes:			[ZmItem.PAGE, ZmItem.DOCUMENT],
@@ -280,12 +280,12 @@ function(modifies, force) {
 				if (!doc) {
 					doc = new ZmBriefcaseItem(this._appCtxt);
 					doc.set(mod);
-					briefcaseController.putItem(doc);
 				}
 				else {
 					doc.notifyModify(mod);
 					doc.set(mod);
 				}
+				//briefcaseController.putItem(doc);
 				mod._handled = true;
 			}
 		}
@@ -398,3 +398,4 @@ ZmBriefcaseApp.prototype.getBriefcaseController = function() {
 	}
 	return this._briefcaseController;
 };
+
