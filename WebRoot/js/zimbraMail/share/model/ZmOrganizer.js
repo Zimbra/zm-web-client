@@ -357,7 +357,7 @@ function(appCtxt, params, ex) {
 		msg = AjxMessageFormat.format(ZmMsg.errorAlreadyExists, [params.name]);
 	} else if (params.url) {
 		var errorMsg = (ex.code == ZmCsfeException.SVC_RESOURCE_UNREACHABLE) ? ZmMsg.feedUnreachable : ZmMsg.feedInvalid;
-		msg = AjxMessageFormat.format(errorMsg, url);
+		msg = AjxMessageFormat.format(errorMsg, params.url);
 	}
 
 	if (msg) {
