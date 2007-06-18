@@ -62,6 +62,7 @@ ZmLogin.APP_LETTER[ZmSetting.CONTACTS_ENABLED]		= "a";
 ZmLogin.APP_LETTER[ZmSetting.OPTIONS_ENABLED]		= "o";
 ZmLogin.APP_LETTER[ZmSetting.IM_ENABLED]			= "i";
 ZmLogin.APP_LETTER[ZmSetting.NOTEBOOK_ENABLED]		= "n";
+ZmLogin.APP_LETTER[ZmSetting.BRIEFCASE_ENABLED]		= "b";
 ZmLogin.APP_LETTER[ZmSetting.TASKS_ENABLED]			= "t";
 ZmLogin.APP_LETTER[ZmSetting.MIXED_VIEW_ENABLED]	= "x";
 ZmLogin.APP_LETTER[ZmSetting.VOICE_ENABLED]			= "v";
