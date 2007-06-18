@@ -2065,41 +2065,69 @@ HTML>BODY .appt-selected .appt_allday_body
  */
 
 .ZmPreferencesPage {
-  padding: 0.5em 1em;
+	padding: 0.5em 2em;
 }
 
-.ZOptionsDefaultsTable {}
+/* table that holds the 'restore defaults' button */
+.ZOptionsDefaultsTable {
+	margin-bottom: 0.5em;
+}
+
+/* Table for a section of prefs (head + body) */
 .ZOptionsSectionTable {
-  @ChromeBg@
-  margin-top: 0.5em;
+	margin-bottom:1.5em;
 }
 
-.ZOptionsHeaderRow {
-  @PageHeaderBg@
-}
-.ZOptionsHeaderL, .ZOptionsHeaderR {
-  width: 0.5em;
+/* header row for a section -- color/etc comes from graphics */
+.ZOptionsHeaderRow {}
+
+.ZOptionsHeaderL, 
+.ZOptionsHeaderR { }
+.ZOptionsHeader {
+ 	@FontSize-bigger@
+ 	color:white;
 }
 .ZOptionsHeader {
-  @PageHeaderText@
-  font-size: 0.9em;
-  font-weight: bold;
-  padding: 0.124em 0em;
+	width:100%;
 }
+
+/* container for body of a prefs section */
 .ZOptionsSectionMain {
-  padding: 0.5em 1em;
+	@ChromeBg@
+	padding:1em;
 }
-.ZOptionsLabel, .ZOptionsTableLabel {
-  width: 1%;
-  font-weight: bold;
-  white-space: nowrap;
-  text-align: right;
-  vertical-align: top;
-  padding-top: 0.4em;
+.ZOptionsLabel, 
+.ZOptionsLabelTop, 
+.ZOptionsLabelNarrow,
+.ZOptionsTableLabel {
+	width: 150px;
+	font-weight: bold;
+	white-space: nowrap;
+	text-align: right;
+	vertical-align: middle;
+	line-height:20px;
 }
+
+.ZOptionsSectionTable LABEL {
+	white-space:nowrap;
+}
+
+.ZOptionsLabelTop {
+	vertical-align:top;
+	line-height:20px;
+}
+
+.ZOptionsLabelNarrow {
+	width:auto;
+}
+
 .ZOptionsTableLabel {
 	@PageHeaderBg@
 }
+
+.ZOptionsInfo {
+	@Text-disabled@		/* TODO: Text-hint ? */
+}	
 
 /* REVISIT: Why do disabled inputs have a fixed height of 20px? */
 .ZOptionsField INPUT[disabled],
