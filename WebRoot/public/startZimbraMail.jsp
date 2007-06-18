@@ -34,5 +34,21 @@ attrs
 <br>
 ${fn:escapeXml(requestScope.authResult.attrs)}
 <br>
+<%
+	// NOTE: This inserts raw HTML files from the user's skin
+	//       into the JSP output. It's done *this* way so that
+	//       the SkinResources servlet sees the request URI as
+	//       "/html/skin.html" and not as "/public/launch...".
+	out.flush();
+	RequestDispatcher dispatcher = request.getRequestDispatcher("/html/");
+	HttpServletRequest wrappedReq = new HttpServletRequestWrapper(request) {
+    public String getServletPath() { return "/html"; }
+    public String getPathInfo() { return "/skin.html"; }
+    public String getRequestURI() { return getServletPath() + getPathInfo(); }
+	};
+	System.err.println("******************** calling dispatcher.include");
+	dispatcher.include(wrappedReq, response);
+	System.err.println("******************** called dispatcher.include");
+%>
 </body>
 </html>
