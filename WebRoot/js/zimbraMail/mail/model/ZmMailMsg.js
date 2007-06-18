@@ -758,7 +758,7 @@ function(soapDoc, contactList, isDraft, accountName) {
 		if (this._forAttIds) {
             for (var i = 0; i < this._forAttIds.length; i++) {
 				// if multiple msgs needs to be attached...
-				if (this._msgAttIdArry) {
+				if (this._msgAttIdArry && !this.isDraft) {
 					var attNode = soapDoc.set("m", null, attachNode);
 					attNode.setAttribute("id", this._forAttIds[i]);
 				} else {
