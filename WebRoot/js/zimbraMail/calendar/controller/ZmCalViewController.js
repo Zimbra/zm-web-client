@@ -1229,7 +1229,10 @@ function(appt, viewMode, startDateOffset, endDateOffset, callback, errorCallback
 			result.getResponse();
 		}
 		appt.setViewMode(viewMode);
-		if (startDateOffset) appt.setStartDate(new Date(appt.getStartTime() + startDateOffset));
+		if (startDateOffset) {
+                    appt.setStartDate(new Date(appt.getStartTime() + startDateOffset));
+                    appt.resetRepeatWeeklyDays();
+                }
 		if (endDateOffset) appt.setEndDate(new Date(appt.getEndTime() + endDateOffset));
 		var respCallback = callback != null
             ? new AjxCallback(this, this._handleResponseUpdateApptDateSave2, [callback])
