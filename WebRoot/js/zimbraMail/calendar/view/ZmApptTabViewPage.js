@@ -553,6 +553,15 @@ function(appt) {
 		this._recurDialog.setRepeatEndValues(appt);
 	} else {
 		appt.repeatType = repeatType != "CUS" ? repeatType : "NON";
+
+		// bug fix #17048 - reset weekly day to reflect start date in case user changed it
+		if (appt.repeatType == "WEE" &&
+			appt.repeatCustomCount == 1 &&
+			appt.repeatWeeklyDays.length == 1)
+		{
+			var day = ZmAppt.SERVER_WEEK_DAYS[appt.startDate.getDay()];
+			appt.repeatWeeklyDays = [day];
+		}
 	}
 };
 
