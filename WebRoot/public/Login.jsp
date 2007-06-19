@@ -69,7 +69,7 @@
 				for (int i = 0; i < mAllowedPorts.length; i++) {
 					if (mAllowedPorts[i] == incoming) {
 						String qs = request.getQueryString();
-						String path = "/zimbraAdmin";
+						String path = adminUrl;
 
 						if(qs != null)
 							path = path + "?" + qs;
