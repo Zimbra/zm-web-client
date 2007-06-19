@@ -80,8 +80,8 @@ function(actionMenu, type, id) {
 
 			menuItem = actionMenu.getMenuItem(ZmOperation.SHARE_BRIEFCASE);
 //			menuItem.setText(isBriefcase ? ZmMsg.shareNotebook : ZmMsg.shareSection);
-			menuItem.setText(ZmMsg.shareSection);
-			menuItem.setImage(isBriefcase ? "Notebook" : "Section");
+			menuItem.setText(ZmMsg.shareFolder);
+			menuItem.setImage(isBriefcase ? "Folder" : "Section");
 			menuItem.setDisabledImage(menuItem.getImage()+"Dis");
 			menuItem.setEnabled(!isLinkOrRemote);
 		}

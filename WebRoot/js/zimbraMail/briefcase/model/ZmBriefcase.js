@@ -80,7 +80,7 @@ ZmBriefcase.prototype.getIcon =
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT) { return null; }
 	if (this.parent.nId == ZmOrganizer.ID_ROOT) {
-		return this.link ? "SharedNotebook" : "Notebook";
+		return this.link ? "SharedNotebook" : "Folder";
 	}
 	return this.link ? "SharedSection" : "Section";
 };
