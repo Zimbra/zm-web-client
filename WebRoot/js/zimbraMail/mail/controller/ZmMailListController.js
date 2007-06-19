@@ -965,15 +965,17 @@ function(ev) {
 };
 
 ZmMailListController.prototype._detachListener =
-function(ev) {
-	var items = this._listView[this._currentView].getSelection();
-	var msg = items.length ? items[0] : items;
+function(ev, callback) {
+	var msg = this._getSelectedMsg();
 
-	if (msg._loaded) {
-		ZmMailMsgView.detachMsgInNewWindow(this._appCtxt, msg);
-	} else {
-		ZmMailMsgView.rfc822Callback(msg.id);
+	if (msg) {
+		if (msg._loaded) {
+			ZmMailMsgView.detachMsgInNewWindow(this._appCtxt, msg);
+		} else {
+			ZmMailMsgView.rfc822Callback(msg.id);
+		}
 	}
+	if (callback) { callback.run(); }
 };
 
 ZmMailListController.prototype._editListener =
@@ -1167,4 +1169,15 @@ ZmMailListController.prototype._handleEmptyList =
 function(listView) {
 	listView.removeAll(true);
 	listView._setNoResultsHtml();
+};
+
+/**
+ * Returns the first selected msg. If we are showing convs, returns the first
+ * msg in the first selected conv.
+ */
+ZmMailListController.prototype._getSelectedMsg =
+function() {
+	var item = this._listView[this._currentView].getSelection()[0];
+	var msg = (item.type == ZmItem.CONV) ? item.getFirstMsg() : item;
+	return msg;
 };

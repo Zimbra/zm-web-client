@@ -189,7 +189,8 @@ function () {
 
 ZmMsgController.prototype._getSearchFolderId = 
 function() {
-	return this._msg.list ? this._msg.list.search.folderId : null;
+	return this._msg.folderId ? this._msg.folderId : (this._msg.list && this._msg.list.search) ?
+		this._msg.list.search.folderId : null;
 };
 
 ZmMsgController.prototype._getTagMenuMsg = 
