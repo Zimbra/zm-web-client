@@ -10,8 +10,13 @@
 <app:handleError>
     <zm:getMailbox var="mailbox"/>
     <zm:getMessage var="message" id="${param.id}" markread="false"  part="${param.part}" neuterimages="${empty param.xim}"/>
-    <c:set var="body" value="${message.body}"/>
+    <c:if test="${not empty param.bodypart}">
+        <c:set var="body" value="${zm:getPart(message, param.bodypart)}"/>
+    </c:if>
+    <c:if test="${empty body}">
+        <c:set var="body" value="${message.body}"/>
+    </c:if>
 </app:handleError>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-${zm:getPartHtmlContent(message.body, message)}
+${zm:getPartHtmlContent(body, message)}

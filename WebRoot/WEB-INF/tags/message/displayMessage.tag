@@ -291,56 +291,15 @@
     </c:if>
     <tr>
         <td id="iframeBody" class=MsgBody valign='top' colspan="${needExtraCol ? 1 : 2}">
-            <c:choose>
-                <c:when test="${body.isTextHtml}">
-                    <c:url var="iframeUrl" value="/h/imessage">
-                        <c:param name="id" value="${message.id}"/>
-                        <c:param name="part" value="${message.partName}"/>
-                        <c:param name="xim" value="${param.xim}"/>
-                    </c:url>
-                    <noscript>
-                        <iframe style="width:100%; height:600px" scrolling="auto" marginWidth="0" marginHeight="0" border="0" frameBorder="0" src="${iframeUrl}"></iframe>
-                    </noscript>
-                    <script type="text/javascript">
-                        (function() {
-                            var isKonqueror = /KHTML/.test(navigator.userAgent);
-                            var isIE = ( /MSIE/.test(navigator.userAgent) && !/(Opera|Gecko|KHTML)/.test(navigator.userAgent) );
-                            var iframe = document.createElement("iframe");
-                            iframe.style.width = "100%";
-                            iframe.style.height = "20px";
-                            iframe.scrolling = "no";
-                            iframe.marginWidth = 0;
-                            iframe.marginHeight = 0;
-                            iframe.border = 0;
-                            iframe.frameBorder = 0;
-                            iframe.style.border = "none";
-                            function resizeAndNullIframe() { resizeIframe(); iframe = null;};
-                            function resizeIframe() { if (iframe !=null) iframe.style.height = iframe.contentWindow.document.body.scrollHeight + "px";};
-                            document.getElementById("iframeBody").appendChild(iframe);
-                            var doc = iframe.contentWindow ? iframe.contentWindow.document : iframe.contentDocument;
-                            doc.open();
-                            doc.write("${zm:jsEncode(theBody)}");
-                            doc.close();
-                            try {
-                                if (YAHOO && keydownH && keypressH) {
-                                    YAHOO.util.Event.addListener(doc, "keydown", keydownH);
-                                    YAHOO.util.Event.addListener(doc, "keypress", keypressH);
-                                }
-                            } catch (error) {
-                                // ignore
-                            }
-                            //if (keydownH) doc.onkeydown = keydownH;
-                            //if (keypressH) doc.onkeypress = keypressH;
-                            setTimeout(resizeIframe, 10);
-                            function onIframeLoad() { if (isKonqueror) setTimeout(resizeAndNullIframe, 100); else if (!isIE || iframe.readyState == "complete") resizeAndNullIframe();};
-                            if (isIE) iframe.onreadystatechange = onIframeLoad; else iframe.onload = onIframeLoad;
-                        })();
-                    </script>
-                </c:when>
-                <c:otherwise>
-                    ${theBody}
-                </c:otherwise>
-            </c:choose>
+            <app:body message="${message}" body="${body}" theBody="${theBody}" mailbox="${mailbox}"/>
+            <c:set var="bodies" value="${zm:getAdditionalBodies(body,message)}"/>
+            <c:if test="${not empty bodies}">
+                <br/>
+                <c:forEach var="addbody" items="${bodies}" varStatus="bstatus">
+                    <app:body message="${message}" body="${addbody}" mailbox="${mailbox}"
+                              theBody="${zm:getPartHtmlContent(addbody, message)}"/>
+                </c:forEach>
+            </c:if>
             <c:if test="${not empty message.attachments}">
                 <hr/>
                 <a name="attachments${message.partName}"></a>
