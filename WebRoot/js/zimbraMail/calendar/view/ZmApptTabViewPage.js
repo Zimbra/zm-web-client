@@ -492,22 +492,6 @@ function(appt, mode) {
 		now.setTime(now.getTime() + ZmCalViewController.DEFAULT_APPOINTMENT_DURATION);
 		this._endTimeSelect.set(now);
 
-		// bug 9969: remove the all day duration for display
-		// HACK: This is a total hack because there are two types
-		//       of all day appointment objects. Non-recurring ones
-		//       have their start time set to the current time (for
-		//       some unknown reason) and their end time set to the
-		//       the start time + the default appointment duration.
-		//       Recurring appointments have their start time and
-		//       end time set to 00:00:00 which means that when
-		//       editing it will look like the event ends on the
-		//       day *following* the actual end day. So this hack
-		//       is here until I can figure out why the two are
-		//       different.
-        var isNewFromQuickAdd = mode == ZmAppt.MODE_NEW_FROM_QUICKADD;
-        if (!isNewFromQuickAdd && ed.getHours() == 0 && ed.getMinutes() == 0 && ed.getSeconds() == 0) {
-			ed.setHours(-12);
-		}
 	} else {
 		this._startTimeSelect.set(appt.getStartDate());
 		this._endTimeSelect.set(appt.getEndDate());
