@@ -28,7 +28,14 @@
                       newpassword="${param.loginNewPassword}" rememberme="${param.zrememberme == '1'}"
                     prefs="zimbraPrefSkin" attrs="zimbraFeatureContactsEnabled"
                     />
-            <jsp:forward page="/public/startZimbraMail.jsp"/>
+            <c:choose>
+                <c:when test="${not empty postLoginUrl}">
+                    <c:redirect url="${postLoginUrl}"/>
+                </c:when>
+                <c:otherwise>
+                    <jsp:forward page="/public/startZimbraMail.jsp"/>
+                </c:otherwise>
+            </c:choose>
     </c:when>
     <c:otherwise>
         <%-- try and use existing cookie if possible --%>
@@ -39,7 +46,14 @@
                       rememberme="${param.zrememberme == '1'}"
                       prefs="zimbraPrefSkin" attrs="zimbraFeatureContactsEnabled"
                     />
-            <jsp:forward page="/public/startZimbraMail.jsp"/>
+            <c:choose>
+                <c:when test="${not empty postLoginUrl}">
+                    <c:redirect url="${postLoginUrl}"/>
+                </c:when>
+                <c:otherwise>
+                    <jsp:forward page="/public/startZimbraMail.jsp"/>
+                </c:otherwise>
+            </c:choose>
         </c:if>
     </c:otherwise>
     </c:choose>
