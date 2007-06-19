@@ -413,17 +413,8 @@ function(str) {
 		baseAction = m[1];
 		num = m[2];
 	}
-	var orgType;
-	for (var key in ZmShortcut.ACTION_KEY) {
-		var s = ZmShortcut.ACTION_KEY[key];
-		if (baseAction.indexOf(s) != -1) {
-			orgType = ZmShortcut.ORG_TYPE[key];
-			break;
-		}
-	}
-
 	var params = {mapName:ZmKeyMap.MAP_NAME[p1[0]], keySequence:p[1], action:action, arg:p1[2],
-				  baseAction:baseAction, num:num, orgType:orgType};
+				  baseAction:baseAction, num:num, orgType:ZmShortcut._getOrgType(baseAction)};
 	return new ZmShortcut(params);
 };
 
@@ -475,7 +466,8 @@ function(appCtxt, mapName, action) {
 	var m = action.match(/([a-zA-Z]+)(\d+)/);
 	if (m && m.length) {
 		var arg = kmm.getArg(mapName, action);
-		return new ZmShortcut(mapName, null, action, arg, m[1], m[2]);
+		return new ZmShortcut({mapName:mapName, action:action, arg:arg, baseAction:m[1], num:m[2],
+							   orgType:ZmShortcut._getOrgType(action)});
 	} else {
 		return null;
 	}
@@ -501,6 +493,19 @@ function(kmm) {
 		}
 	}
 	ZmShortcut._shortcutsCulled = true;
+};
+
+ZmShortcut._getOrgType =
+function(action) {
+	var orgType;
+	for (var key in ZmShortcut.ACTION_KEY) {
+		var s = ZmShortcut.ACTION_KEY[key];
+		if (action.indexOf(s) != -1) {
+			orgType = ZmShortcut.ORG_TYPE[key];
+			break;
+		}
+	}
+	return orgType;
 };
 
 ZmShortcut.prototype.toString =

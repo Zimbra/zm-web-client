@@ -263,6 +263,7 @@ function() {
 ZmShortcutsPageTabView.prototype._getShortcutsFromSetting =
 function(org) {
 	var shortcuts = [];
+	if (!this._setting) { return shortcuts; }
 	var sc = this._setting.split("|");
 	if (!(sc && sc.length)) { return shortcuts; }
 	for (var i = 0, count = sc.length; i < count; i++) {

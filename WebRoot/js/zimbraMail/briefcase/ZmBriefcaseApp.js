@@ -144,7 +144,6 @@ function() {
 	actionCodes[ZmKeyMap.NEW_FILE]		= ZmOperation.NEW_FILE;
 	actionCodes[ZmKeyMap.NEW_BRIEFCASEITEM]	= ZmOperation.NEW_BRIEFCASEITEM;
 
-	ZmMsg.briefCase = "Briefcase";
 	ZmApp.registerApp(ZmApp.BRIEFCASE,
 							 {mainPkg:				"Briefcase",
 							  nameKey:				"briefCase",

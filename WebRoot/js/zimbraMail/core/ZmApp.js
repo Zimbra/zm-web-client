@@ -173,6 +173,7 @@ function(app, params) {
 	
 	if (params.actionCodes) {
 		for (var ac in params.actionCodes) {
+			if (!ac) { continue; }
 			ZmApp.ACTION_CODES_R[ac] = app;
 			ZmApp.ACTION_CODES[ac] = params.actionCodes[ac];
 		}
@@ -180,6 +181,7 @@ function(app, params) {
 	
 	if (params.newItemOps) {
 		for (var op in params.newItemOps) {
+			if (!op) { continue; }
 			ZmApp.OPS_R[op] = app;
 			ZmOperation.NEW_ITEM_OPS.push(op);
 			ZmOperation.NEW_ITEM_KEY[op] = params.newItemOps[op];
@@ -187,6 +189,7 @@ function(app, params) {
 	}
 	if (params.newOrgOps) {
 		for (var op in params.newOrgOps) {
+			if (!op) { continue; }
 			ZmApp.OPS_R[op] = app;
 			ZmOperation.NEW_ORG_OPS.push(op);
 			ZmOperation.NEW_ORG_KEY[op] = params.newOrgOps[op];
@@ -200,7 +203,7 @@ function(app, params) {
 	}
 };
 
-// Public instance methodss
+// Public instance methods
 
 ZmApp.prototype.toString = 
 function() {
