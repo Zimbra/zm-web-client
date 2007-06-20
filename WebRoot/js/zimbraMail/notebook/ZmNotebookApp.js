@@ -200,6 +200,9 @@ function(ids, force) {
 	var overviewController = this._appCtxt.getOverviewController();
 	var treeController = overviewController.getTreeController(ZmOrganizer.NOTEBOOK);
 	var treeView = treeController.getTreeView(this.getOverviewId());
+	if(!treeView){
+		return;
+	}
 	var cache = this.getNotebookCache();
 					
 	for (var i = 0; i < ids.length; i++) {
