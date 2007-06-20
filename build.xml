@@ -592,7 +592,7 @@ if (ext == null) ext = "";
     <echo/>
     <imagemerge destdir='${images.loRes.destDir}/skins/${skindir}'
       cssfile='${skindir}.css' csspath='${csspathprefix}loRes/skins/${skindir}/'
-      cachefile='${dir.skincache}/CacheLoRes.html'>
+      cachefile='${dir.skincache}/CacheLoRes.html' disable="true">
       <dirset dir='${skinbasedir}/skins/${skindir}' includes='**/img/**'/>
     </imagemerge>
     <replace token="@jsVersion@" value="${build.simpleDate}" file='${images.loRes.destDir}/skins/${skindir}/${dir.skincache}/CacheLoRes.html' />
