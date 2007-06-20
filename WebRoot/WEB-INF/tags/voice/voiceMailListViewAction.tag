@@ -30,14 +30,20 @@
             </c:when>
             <c:otherwise>
                 <zm:uploadVoiceMail var="uploadId" phone="${phone}" id="${ids}"/>
-                <fmt:message key="voiceMailSubject" var="subject"/>
-                <fmt:message key="voiceMailBody" var="body"/>
+                <c:choose>
+                    <c:when test="${zm:actionSet(param, 'actionReplyByEmail')}">
+                        <fmt:message key="voiceMailReplySubject" var="subject"/>
+                    </c:when>
+                    <c:otherwise>
+                        <fmt:message key="voiceMailForwardSubject" var="subject"/>
+                    </c:otherwise>
+                </c:choose>
                 <jsp:forward page="/h/compose">
                     <jsp:param name="subject" value="${subject}"/>
-                    <jsp:param name="body" value="${body}"/>
+                    <jsp:param name="body" value=""/>
                     <jsp:param name="attachId" value="${uploadId}"/>
                     <jsp:param name="attachName" value="voicemail.wav"/>
-                    <jsp:param name="attachUrl" value="????"/>
+                    <jsp:param name="attachUrl" value="/service/extension/velodrome/voice/~/voicemail?phone=${phone}&id=${ids}"/>
                 </jsp:forward>
             </c:otherwise>
         </c:choose>
