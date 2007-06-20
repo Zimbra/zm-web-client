@@ -804,7 +804,10 @@ function(appName, force, callback, errorCallback, checkQS) {
 		if (this._appViewMgr.pushView(view)) {
 		    this._appViewMgr.setAppView(appName, view);
 		}
-    } else {
+		if (callback) {
+			callback.run();
+		}
+	} else {
     	// launch the app
     	if (!this._apps[appName]) {
 			this._createApp(appName);
