@@ -216,15 +216,25 @@ function(mode) {
 
 ZmCalItemComposeController.prototype._createToolBar =
 function() {
-	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL,
+	
+	var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL,ZmOperation.SEP];
+	
+	if(this._appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))
+		buttons.push(ZmOperation.ATTACHMENT);
+	
+	buttons.push( ZmOperation.SEP, ZmOperation.SPELL_CHECK,ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT);
+	
+	
+	/*var buttons = [ZmOperation.SAVE, ZmOperation.CANCEL,
 				   ZmOperation.SEP, ZmOperation.ATTACHMENT,
 				   ZmOperation.SEP, ZmOperation.SPELL_CHECK,
-				   ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT];
+				   ZmOperation.SEP, ZmOperation.COMPOSE_FORMAT];*/
 
 	this._toolbar = new ZmButtonToolBar({parent:this._container, buttons:buttons});
 	this._toolbar.addSelectionListener(ZmOperation.SAVE, new AjxListener(this, this._saveListener));
 	this._toolbar.addSelectionListener(ZmOperation.CANCEL, new AjxListener(this, this._cancelListener));
-	this._toolbar.addSelectionListener(ZmOperation.ATTACHMENT, new AjxListener(this, this._attachmentListener));
+	if(this._appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))
+		this._toolbar.addSelectionListener(ZmOperation.ATTACHMENT, new AjxListener(this, this._attachmentListener));
 
 	// change default button style to toggle for spell check button
 	var spellCheckButton = this._toolbar.getButton(ZmOperation.SPELL_CHECK);

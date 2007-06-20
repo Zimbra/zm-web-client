@@ -538,11 +538,18 @@ function() {
 	if (this._appCtxt.get(ZmSetting.IM_ENABLED))
 		buttons.push(ZmOperation.IM);
 
-	buttons.push(ZmOperation.CANCEL,
+	buttons.push(ZmOperation.CANCEL, ZmOperation.SEP, ZmOperation.SAVE_DRAFT);
+	
+	if (this._appCtxt.get(ZmSetting.ATTACHMENT_ENABLED))    
+		buttons.push(ZmOperation.ATTACHMENT);
+		     
+	buttons.push(ZmOperation.SPELL_CHECK,ZmOperation.ADD_SIGNATURE, ZmOperation.COMPOSE_OPTIONS,ZmOperation.FILLER); 
+	
+	/*buttons.push(ZmOperation.CANCEL,
 		     ZmOperation.SEP, ZmOperation.SAVE_DRAFT,
 		     ZmOperation.ATTACHMENT, ZmOperation.SPELL_CHECK,
 		     ZmOperation.ADD_SIGNATURE, ZmOperation.COMPOSE_OPTIONS,
-		     ZmOperation.FILLER); // right-align remaining buttons
+		     ZmOperation.FILLER); // right-align remaining buttons*/
 
 	if (!this.isChildWindow) {
 		buttons.push(ZmOperation.DETACH_COMPOSE);
@@ -583,7 +590,8 @@ function() {
 		// if "add signature" button exists, remove label for attachment button
 		if (canAddSig) {
 			var attachmentButton = this._toolbar.getButton(ZmOperation.ATTACHMENT);
-			attachmentButton.setText("");
+			if(attachmentButton)
+				attachmentButton.setText("");
 		}
 	}
 };
