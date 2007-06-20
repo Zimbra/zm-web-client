@@ -1951,11 +1951,21 @@ HTML>BODY .appt-selected .appt_allday_body
 .ImgMsnBig { background-image: url("/zimbra/public/tmp/msn.png"); }
 .ImgAolBig { background-image: url("/zimbra/public/tmp/aol.png"); }
 
-.ZmChatGwIcon-offline { opacity: 0.3; filter: alpha(opacity=30); }
+.ZmChatGwIcon-offline { 
+ opacity: 0.3;
+
+#IFDEF MSIE
+      
+	filter: alpha(opacity=30); 
+#ENDIF 
+}
 .ZmChatGwIcon-hover {
-  opacity: 0.8; filter: alpha(opacity=80); 
+   opacity: 0.8; 
   border: 1px solid #aaa; padding: 0;
   background-color: #fff;
+#IFDEF MSIE  
+   filter: alpha(opacity=80);
+#ENDIF
 }
 
 /*
