@@ -80,9 +80,9 @@ ZmBriefcase.prototype.getIcon =
 function() {
 	if (this.nId == ZmOrganizer.ID_ROOT) { return null; }
 	if (this.parent.nId == ZmOrganizer.ID_ROOT) {
-		return this.link ? "SharedNotebook" : "Folder";
+		return this.link ? "SharedMailFolder" : "Folder";
 	}
-	return this.link ? "SharedSection" : "Section";
+	return this.link ? "SharedMailFolder" : "Folder";
 };
 
 ZmBriefcase.prototype.getSearchPath = function() {
